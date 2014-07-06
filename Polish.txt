@@ -1,7 +1,6 @@
 Polish TODO:
  - Finalize example with resolution settings and proper GUI
   - Ensure that going fullscreen and windowed works fine
- - Mouse movement is release build is too slow
  - Add an example model
  - Test if example shuts down fine
 
@@ -19,7 +18,10 @@ Polish TODO:
  - Test checking out source and extracting dependencies and see if it compiles
  - Test compiling on another PC
 
-Transient meshes never get released. I'm assuming its circular reference MeshBase and MeshProxy have to each-other. Figure out a way to resolve it properly.
+Input issues:
+ - I cannot have input of 1 one frame and input of 0 another. This happens when frames are too short. I might need to add very short smoothing times?
+ - I cannot have input set to 1 during the entire frame if the frame is very long and user just moved the mouse a bit.
+   - This might be even more of an issue with joystick axes as I currently have no mechanism of knowing what % of the frame are they being moved.
 
 -----------------
 

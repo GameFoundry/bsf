@@ -19,6 +19,8 @@ namespace BansheeEngine
 	class BS_EXPORT RenderableHandler
 	{
 	public:
+		virtual ~RenderableHandler() {}
+
 		/**
 		 * @brief	Initializes the specified renderable element, making it ready
 		 *			to be used. Caller must ensure the renderable element actually

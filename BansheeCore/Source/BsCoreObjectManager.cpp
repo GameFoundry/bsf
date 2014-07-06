@@ -8,7 +8,7 @@ namespace BansheeEngine
 		:mNextAvailableID(1)
 	{
 
-	}
+	} 
 
 	CoreObjectManager::~CoreObjectManager()
 	{

@@ -98,6 +98,7 @@ namespace BansheeEngine
 		RenderWindowPtr mPrimaryWindow;
 
 		DynLib* mSceneManagerPlugin;
+		DynLib* mRendererPlugin;
 
 		bool mIsFrameRenderingFinished;
 		BS_MUTEX(mFrameRenderingFinishedMutex);

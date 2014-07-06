@@ -49,7 +49,8 @@
 namespace BansheeEngine
 {
 	CoreApplication::CoreApplication(START_UP_DESC& desc)
-		:mPrimaryWindow(nullptr), mIsFrameRenderingFinished(true), mRunMainLoop(false), mSceneManagerPlugin(nullptr)
+		:mPrimaryWindow(nullptr), mIsFrameRenderingFinished(true), mRunMainLoop(false), 
+		mSceneManagerPlugin(nullptr), mRendererPlugin(nullptr)
 	{
 		UINT32 numWorkerThreads = BS_THREAD_HARDWARE_CONCURRENCY - 1; // Number of cores while excluding current thread.
 
@@ -79,7 +80,7 @@ namespace BansheeEngine
 		Input::startUp();
 		RendererManager::startUp();
 
-		loadPlugin(desc.renderer);
+		loadPlugin(desc.renderer, &mRendererPlugin);
 		loadPlugin(desc.sceneManager, &mSceneManagerPlugin);
 
 		RendererManager::instance().setActive(desc.renderer);
@@ -109,14 +110,22 @@ namespace BansheeEngine
 		ProfilerGPU::shutDown();
 
 		unloadPlugin(mSceneManagerPlugin);
-
+		
 		RendererManager::shutDown();
 		RenderSystemManager::shutDown();
+		unloadPlugin(mRendererPlugin);
+
 		Input::shutDown();
 
 		GpuProgramManager::shutDown();
 		Resources::shutDown();
 		GameObjectManager::shutDown();
+
+		// All CoreObject related modules should be shut down now. They have likely queued CoreObjects for destruction, so
+		// we need to wait for those objects to get destroyed before continuing.
+		gCoreThread().update();
+		gCoreThread().submitAccessors(true);
+
 		CoreObjectManager::shutDown(); // Must shut down before DynLibManager to ensure all objects are destroyed before unloading their libraries
 		DynLibManager::shutDown();
 		Time::shutDown();

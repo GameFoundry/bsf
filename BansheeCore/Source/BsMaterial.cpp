@@ -23,7 +23,7 @@ namespace BansheeEngine
 
 	Material::~Material()
 	{
-		
+
 	}
 
 	void Material::setShader(ShaderPtr shader)

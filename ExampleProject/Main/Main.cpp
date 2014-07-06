@@ -29,6 +29,7 @@
 #include "BsCoreThread.h"
 #include "BsProfilerOverlay.h"
 #include "BsRenderer.h"
+#include "BsResources.h"
 
 #include "CameraFlyer.h"
 
@@ -41,6 +42,11 @@ namespace BansheeEngine
 	 * Imports all of our assets and prepares GameObject that handle the example logic.
 	 */
 	void setUpExample();
+
+	/**
+	 * Releases all resources and prepares the example fur shutdown.
+	 */
+	void shutDownExample();
 
 	/**
 	 * Toggles the primary window between full-screen and windowed mode.
@@ -78,13 +84,15 @@ int CALLBACK WinMain(
 	Application::startUp(renderWindowDesc, RenderSystemPlugin::DX11);
 
 	// Imports all of ours assets and prepares GameObject that handle the example logic.
-	setUpExample();
+	//setUpExample();
 	
 	// Runs the main loop that does most of the work. This method will exit when user closes the main
 	// window or exits in some other way.
 	Application::instance().runMainLoop();
 
 	// Perform cleanup
+	//shutDownExample();
+
 	Application::shutDown();
 
 	return 0;
@@ -387,6 +395,23 @@ namespace BansheeEngine
 
 		// Add a profiler overlay object that is resposible for displaying CPU and GPU profiling GUI
 		profilerOverlay = guiSO->addComponent<ProfilerOverlay>(guiCamera->getViewport());
+	}
+
+	void shutDownExample()
+	{
+		// We require all handles to be released before shutdown.
+		gResources().unload(exampleModel);
+		gResources().unload(exampleTexture);
+		gResources().unload(exampleFragmentGPUProg);
+		gResources().unload(exampleVertexGPUProg);
+
+		exampleModel = nullptr;
+		exampleTexture = nullptr;
+		exampleFragmentGPUProg = nullptr;
+		exampleVertexGPUProg = nullptr;
+
+		sceneCamera = nullptr;
+		profilerOverlay = nullptr;
 	}
 
 	void toggleFullscreen()

@@ -4,6 +4,12 @@
 
 namespace BansheeEngine
 {
+	RendererManager::~RendererManager()
+	{
+		if (mActiveRenderer != nullptr)
+			mActiveRenderer->_onDeactivated();
+	}
+
 	void RendererManager::setActive(const String& name)
 	{
 		for(auto iter = mAvailableFactories.begin(); iter != mAvailableFactories.end(); ++iter)

@@ -47,6 +47,8 @@ namespace BansheeEngine
 
 		growVertexBuffer(mNumVertices);
 		growIndexBuffer(mNumIndices);
+
+		CoreObject::initialize_internal();
 	}
 
 	void MeshHeap::destroy_internal()

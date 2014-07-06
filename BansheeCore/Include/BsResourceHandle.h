@@ -27,6 +27,8 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT ResourceHandleBase : public IReflectable
 	{
 	public:
+		virtual ~ResourceHandleBase();
+
 		/**
 		 * @brief	Checks if the resource is loaded. Until resource is loaded this handle
 		 *			is invalid and you may not get the internal resource from it.

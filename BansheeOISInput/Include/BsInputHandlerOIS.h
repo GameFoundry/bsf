@@ -144,6 +144,12 @@ namespace BansheeEngine
 		 */
 		static const float MOUSE_MAX;
 
+		/**
+		 * @brief	Number of seconds the mouse needs to reach the MOUSE_MAX value in, in order to
+		 *			max out the axis.
+		 */
+		static const float MOUSE_MAX_TIME;
+
 		OIS::InputManager* mInputManager;
 		OIS::Mouse*	mMouse;
 		OIS::Keyboard* mKeyboard;
@@ -155,6 +161,7 @@ namespace BansheeEngine
 		INT32 mMouseSampleAccumulator[2];
 		float mMouseSmoothedAxis[2];
 		UINT32 mLastMouseUpdateFrame;
+		bool mMouseSamplesObsolete;
 
 		UINT64 mTimestampClockOffset;
 	};

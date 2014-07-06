@@ -10,6 +10,7 @@ namespace BansheeEngine
 {
 	const UINT32 InputHandlerOIS::MOUSE_DPI = 800;
 	const float InputHandlerOIS::MOUSE_MAX = 0.05f;
+	const float InputHandlerOIS::MOUSE_MAX_TIME = 0.020f; // 20 ms
 
 	GamepadEventListener::GamepadEventListener(InputHandlerOIS* parentHandler, UINT32 joystickIdx)
 		:mParentHandler(parentHandler), mGamepadIdx(joystickIdx)
@@ -47,14 +48,12 @@ namespace BansheeEngine
 
 		mParentHandler->onAxisMoved(mGamepadIdx, axisState, (UINT32)axis);
 
-		LOGWRN(toString(axis) + " - " + toString(axisState.abs));
-
 		return true;
 	}
 
 	InputHandlerOIS::InputHandlerOIS(unsigned int hWnd)
 		:mInputManager(nullptr), mKeyboard(nullptr), mMouse(nullptr), mTimestampClockOffset(0),
-		mLastMouseUpdateFrame(0)
+		mLastMouseUpdateFrame(0), mMouseSamplesObsolete(true)
 	{
 		mMouseSampleAccumulator[0] = 0;
 		mMouseSampleAccumulator[1] = 0;
@@ -209,20 +208,22 @@ namespace BansheeEngine
 			rawYValue = (float)mMouseSampleAccumulator[1];
 		}
 
-		mMouseSampleAccumulator[0] = 0;
-		mMouseSampleAccumulator[1] = 0;
+		mMouseSamplesObsolete = true;
 
-		// Move the axis values in [-1.0, 1.0] range.
-		float maxAxis = MOUSE_DPI * MOUSE_MAX;
+		// Scale by time so that we are framerate independant: rawXValue = rawXValue * (MOUSE_MAX_TIME / gTime().getFrameDelta());
+		// Scale to valid [-1.0, 1.0] range: rawXValue / (MOUSE_DPI * MOUSE_MAX)
+		// This is just the combination of the two:
+
+		float axisScale = ((MOUSE_DPI * MOUSE_MAX) / MOUSE_MAX_TIME) * gTime().getFrameDelta();
 
 		RawAxisState xState;
-		xState.rel = -Math::clamp(rawXValue / maxAxis, -1.0f, 1.0f);
+		xState.rel = -Math::clamp(rawXValue / axisScale, -1.0f, 1.0f);
 		xState.abs = xState.rel; // Abs value irrelevant for mouse
 
 		onAxisMoved(0, xState, (UINT32)InputAxis::MouseX);
 
 		RawAxisState yState;
-		yState.rel = -Math::clamp(rawYValue / maxAxis, -1.0f, 1.0f);
+		yState.rel = -Math::clamp(rawYValue / axisScale, -1.0f, 1.0f);
 		yState.abs = yState.rel; // Abs value irrelevant for mouse
 		
 		onAxisMoved(0, yState, (UINT32)InputAxis::MouseY);
@@ -252,6 +253,14 @@ namespace BansheeEngine
 
 	bool InputHandlerOIS::mouseMoved(const OIS::MouseEvent& arg)
 	{
+		if (mMouseSamplesObsolete)
+		{
+			mMouseSampleAccumulator[0] = 0;
+			mMouseSampleAccumulator[1] = 0;
+
+			mMouseSamplesObsolete = false;
+		}
+
 		mMouseSampleAccumulator[0] += arg.state.X.rel;
 		mMouseSampleAccumulator[1] += arg.state.Y.rel;
 

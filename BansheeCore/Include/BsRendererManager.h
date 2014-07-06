@@ -15,6 +15,8 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT RendererManager : public Module<RendererManager>
 	{
 	public:
+		~RendererManager();
+
 		/**
 		 * @brief	Attempts to find a renderer with the specified name and makes it active.
 		 * 			Exception is thrown if renderer with the specified name doesn't exist.

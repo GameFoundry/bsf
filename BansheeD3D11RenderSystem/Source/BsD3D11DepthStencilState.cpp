@@ -12,7 +12,7 @@ namespace BansheeEngine
 
 	D3D11DepthStencilState::~D3D11DepthStencilState()
 	{
-		
+
 	}
 
 	void D3D11DepthStencilState::initialize_internal()

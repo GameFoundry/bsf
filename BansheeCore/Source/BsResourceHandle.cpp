@@ -14,6 +14,11 @@ namespace BansheeEngine
 		mData = nullptr;
 	}
 
+	ResourceHandleBase::~ResourceHandleBase() 
+	{ 
+
+	}
+
 	bool ResourceHandleBase::isLoaded() const 
 	{ 
 		return (mData != nullptr && mData->mIsCreated && mData->mPtr != nullptr); 

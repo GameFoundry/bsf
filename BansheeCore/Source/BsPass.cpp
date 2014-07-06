@@ -20,7 +20,7 @@ namespace BansheeEngine
 
     Pass::~Pass()
     {
-	
+
     }
 
     Pass& Pass::operator=(const Pass& oth)
@@ -41,7 +41,7 @@ namespace BansheeEngine
 		return *this;
     }
 
-    bool Pass::isTransparent(void) const
+    bool Pass::isTransparent() const
     {
 		bool transparent = false;
 
