@@ -150,6 +150,19 @@ namespace BansheeEngine
 		 */
 		static const float MOUSE_MAX_TIME;
 
+		/**
+		 * @brief	Minimum number of milliseconds that need to pass before mouse axes are updated again.
+		 *			
+		 * @note	At extremely high frame rates sampling the mouse too often will introduce jitter. This is because
+		 *			mouse will be sampled by the application faster than the hardware reports the samples. This means some
+		 *			of the samples will be reported as 0, while in truth mouse could be moving but it just hasn't been sampled.
+		 *			So we cannot tell if mouse is actually still, or moving but sample hasn't been updated, and must assume mouse
+		 *			is still, which causes jitter as one frame reports mouse as moving and another as still.
+		 *
+		 *			We could get around this if we knew the exact hardware sampling rate, but we don't.
+		 */
+		static const float MOUSE_MAX_SAMPLING_RATE;
+
 		OIS::InputManager* mInputManager;
 		OIS::Mouse*	mMouse;
 		OIS::Keyboard* mKeyboard;

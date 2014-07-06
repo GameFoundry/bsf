@@ -11,6 +11,7 @@ namespace BansheeEngine
 	const UINT32 InputHandlerOIS::MOUSE_DPI = 800;
 	const float InputHandlerOIS::MOUSE_MAX = 0.05f;
 	const float InputHandlerOIS::MOUSE_MAX_TIME = 0.020f; // 20 ms
+	const float InputHandlerOIS::MOUSE_MAX_SAMPLING_RATE = 0.006f; // 6ms
 
 	GamepadEventListener::GamepadEventListener(InputHandlerOIS* parentHandler, UINT32 joystickIdx)
 		:mParentHandler(parentHandler), mGamepadIdx(joystickIdx)
@@ -193,11 +194,10 @@ namespace BansheeEngine
 			gamepadData.gamepad->capture();
 		}
 
-		// We limit mouse sampling to at least 6ms interval because lower values might cause
-		// incorrect 0-sized samples to be introduced as DirectInput is not able to sample
-		// the mouse quick enough, which might cause jitter in the movement.
+		// Limit mouse sampling to a certain rate to avoid jitter at extremely high frame rates.
+		// (As the application might request samples faster than they are produced)
 		mMouseSampleCounter += gTime().getFrameDelta();
-		if (mMouseSampleCounter < 0.006f)
+		if (mMouseSampleCounter < MOUSE_MAX_SAMPLING_RATE)
 			return;
 
 		float rawXValue = 0.0f;
@@ -227,8 +227,6 @@ namespace BansheeEngine
 		RawAxisState xState;
 		xState.rel = -Math::clamp(rawXValue / axisScale, -1.0f, 1.0f);
 		xState.abs = xState.rel; // Abs value irrelevant for mouse
-
-		LOGWRN(toString(xState.rel));
 
 		onAxisMoved(0, xState, (UINT32)InputAxis::MouseX);
 
