@@ -1,13 +1,18 @@
 # BansheeEngine
 
-A free & modern multi-platform game development toolkit. It aims to provide simple yet powerful environment for creating games and other graphical applications. A wide range of features are offered, ranging from a math and utility library, to DirectX 11 and OpenGL render systems all the way to asset processing, fully featured editor and C# scripting.
+A free & modern multi-platform game development toolkit. It aims to provide simple yet powerful environment for creating games and other graphical applications. A wide range of features are available, ranging from a math and utility library, to DirectX 11 and OpenGL render systems all the way to asset processing, fully featured editor and C# scripting.
 
-## Download
+Banshee aims to become a standard in game development by providing rock solid implementations of known and widely used techniques while also being flexible enough to implement constantly changing cutting edge techniques. Built from ground up to be a modern library using modern design principles. Everything is modular, layered and decoupled as much as possible, making it easier to modify, replace or add functionality. Platform specific functionality is kept at a minimum making porting as easy as possible. Additionally every non-trivial method, class and field is documented.
 
-Along with the source you will need these dependencies (Extract to the same folder as the source code):
+On top of the powerful and flexible C++ core lies a fully featured editor and a C# scripting system. C# scripting makes your development easier by giving you access to the entire .NET library, along with fast iterations times while being safe and easy to write. Editor is fully extensible with the help of C# scripting so you may customize it for exact needs of your project.
+
+## Download/Install
+
+To get Banshee to run you will need to check out the source code either from GitHub or download the source code package below. Additionally you will need dependencies only available for download below. Dependencies should be extracted in the same folder as the root folder of the project (they share folder structure so it should be easy to see what goes where).
+
+To compile Banshee you will need Visual Studio 2013 (Express version will work, but earlier Visual Studio versions will not). Other Windows compilers might work but have not been tested. Support for more platforms and compilers will become available with time.
+
 [Download dependencies] (http://nolinkyet)
-
-Or download the combined package:
 [Download source + dependencies] (http://nolinkyet)
 
 ## Features (currently available)
@@ -33,7 +38,7 @@ Or download the combined package:
     * PNG, PSD, BMP, JPG, ... images
     * OTF, TTF fonts
     * HLSL9, HLSL11, GLSL shaders
-Powerful GUI system
+* Powerful GUI system
   * Unicode text rendering and input
   * Easy to use layout based system
   * Most common GUI controls
@@ -72,14 +77,14 @@ Easiest way to get started with Banshee is to check out `ExampleProject` include
 
 ### Starting a minimal application
 ```
-	RENDER_WINDOW_DESC renderWindowDesc;
-	renderWindowDesc.videoMode = VideoMode(1280, 720);
-	renderWindowDesc.title = "My App";
-	renderWindowDesc.fullscreen = false;
+  RENDER_WINDOW_DESC renderWindowDesc;
+  renderWindowDesc.videoMode = VideoMode(1280, 720);
+  renderWindowDesc.title = "My App";
+  renderWindowDesc.fullscreen = false;
 	
-	Application::startUp(renderWindowDesc, RenderSystemPlugin::DX11);
-	Application::instance().runMainLoop();
-	Application::shutDown();
+  Application::startUp(renderWindowDesc, RenderSystemPlugin::DX11);
+  Application::instance().runMainLoop();
+  Application::shutDown();
 ```
 
 ### Importing resources
@@ -93,17 +98,17 @@ Easiest way to get started with Banshee is to check out `ExampleProject` include
   HSceneObject sceneCameraSO = SceneObject::create("SceneCamera");
   HCamera sceneCamera = sceneCameraSO->addComponent<Camera>(window);
 
-	sceneCameraSO->setPosition(Vector3(40.0f, 30.0f, 230.0f));
-	sceneCameraSO->lookAt(Vector3(0, 0, 0));
+  sceneCameraSO->setPosition(Vector3(40.0f, 30.0f, 230.0f));
+  sceneCameraSO->lookAt(Vector3(0, 0, 0));
 ```
 
 ### Adding an object for rendering
 ```
   HSceneObject dragonSO = SceneObject::create("Dragon");
   
-	HRenderable renderable = dragonSO->addComponent<Renderable>();
-	renderable->setMesh(dragonModel);
-	renderable->setMaterial(dragonMaterial);
+  HRenderable renderable = dragonSO->addComponent<Renderable>();
+  renderable->setMesh(dragonModel);
+  renderable->setMaterial(dragonMaterial);
 ```
 
 ### Adding GUI
@@ -125,4 +130,4 @@ Banshee is offered completely free for personal or commercial use. Only requirem
 
 Banshee is developed by Marko Pintera. I created and built the entire project from my bedroom in my free time out of personal interest in game engine development, never having had the chance to do it professionally. 
 
-I appreciate any feedback at marko.pintera@com.gmail (antispam: flip gmail/com).
+I appreciate any feedback at marko.pintera@com.gmail (antispam: flip gmail/com). 
