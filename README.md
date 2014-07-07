@@ -128,6 +128,6 @@ Banshee is offered completely free for personal or commercial use. Only requirem
 
 # Author
 
-Banshee is developed by Marko Pintera. I created and built the entire project from my bedroom in my free time out of personal interest in game engine development, never having had the chance to do it professionally. 
+Banshee is developed by Marko Pintera. I built the entire project from in my free time out of personal interest in game engine development, never having had the chance to do it professionally. As time went by it evolved into something more and it's now hard to believe how far the project has progressed since I started. With time (especially if community joins in) I hope we can build something that can rival true AAA projects.
 
-I appreciate any feedback at marko.pintera@com.gmail (antispam: flip gmail/com). 
+I'd love to hear input from other developers, especially if it's positive! Contact me at marko.pintera@com.gmail (antispam: flip gmail/com). 
