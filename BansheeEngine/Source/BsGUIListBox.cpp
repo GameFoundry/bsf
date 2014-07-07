@@ -58,6 +58,11 @@ namespace BansheeEngine
 			openListBox();
 	}
 
+	void GUIListBox::selectElement(UINT32 idx)
+	{
+		elementSelected(idx);
+	}
+
 	bool GUIListBox::mouseEvent(const GUIMouseEvent& ev)
 	{
 		bool processed = GUIButtonBase::mouseEvent(ev);

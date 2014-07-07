@@ -54,22 +54,22 @@ namespace BansheeEngine
         /**
          * @brief	Gets the actual x coordinate of the viewport in pixels, in [0, RenderTargetWidth] range.
          */
-        INT32 getX() const { return mArea.x; }
+		INT32 getX() const;
 
         /**
          * @brief	Gets the actual y coordinate of the viewport in pixels, in [0, RenderTargetHeight] range.
          */
-        INT32 getY() const { return mArea.y; }
+		INT32 getY() const;
 
 		/**
          * @brief	Gets the actual width coordinate of the viewport in pixels, in [0, RenderTargetWidth] range.
          */
-        INT32 getWidth() const { return mArea.width; }
+		INT32 getWidth() const;
 
 		/**
          * @brief	Gets the actual height coordinate of the viewport in pixels, in [0, RenderTargetHeight] range.
          */
-        INT32 getHeight() const { return mArea.height; }
+		INT32 getHeight() const;
                
         /**
          * @brief	Changes the area that the viewport covers.
@@ -81,7 +81,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns actual area of the viewport, in pixels.
 		 */
-		const RectI& getArea() const { return mArea; }
+		RectI getArea() const;
 
 		/**
 		 * @brief	Activates or deactivates clears for color, depth or stencil buffers.
@@ -133,7 +133,6 @@ namespace BansheeEngine
         RenderTargetPtr mTarget;
 
 		RectF mNormArea;
-		RectI mArea;
 
 		bool mRequiresColorClear;
 		bool mRequiresDepthClear;
@@ -144,8 +143,5 @@ namespace BansheeEngine
 		UINT16 mStencilClearValue;
 
 		static const Color DEFAULT_CLEAR_COLOR;
-
-        void updateArea();
-		void targetResized();
     };
 }

@@ -35,8 +35,8 @@
 
 namespace BansheeEngine
 {
-	UINT32 resolutionWidth = 1280;
-	UINT32 resolutionHeight = 720;
+	UINT32 windowResWidth = 1280;
+	UINT32 windowResHeight = 720;
 
 	/**
 	 * Imports all of our assets and prepares GameObject that handle the example logic.
@@ -52,6 +52,16 @@ namespace BansheeEngine
 	 * Toggles the primary window between full-screen and windowed mode.
 	 */
 	void toggleFullscreen();
+
+	/**
+	 * Called whenever the main render window is resized.
+	 */
+	void renderWindowResized();
+
+	/**
+	 * Called when the selected video mode changes in the video mode list box.
+	 */
+	void videoModeChanged(UINT32 idx);
 
 	/**
 	 * Triggered whenever a virtual button is released.
@@ -73,7 +83,7 @@ int CALLBACK WinMain(
 {
 	// Descriptor used for initializing the primary application window.
 	RENDER_WINDOW_DESC renderWindowDesc;
-	renderWindowDesc.videoMode = VideoMode(resolutionWidth, resolutionHeight);
+	renderWindowDesc.videoMode = VideoMode(windowResWidth, windowResHeight);
 	renderWindowDesc.title = "Banshee Example App";
 	renderWindowDesc.fullscreen = false;
 
@@ -107,7 +117,9 @@ namespace BansheeEngine
 
 	GUIButton* toggleFullscreenButton = nullptr;
 	bool fullscreen = false;
-	const VideoMode* videoMode = nullptr;
+
+	const VideoMode* selectedVideoMode = nullptr;
+	Vector<const VideoMode*> videoModes;
 
 	HMesh exampleModel;
 	HTexture exampleTexture;
@@ -262,10 +274,13 @@ namespace BansheeEngine
 		// Like before, we create a new scene object at (0, 0, 0).
 		HSceneObject sceneCameraSO = SceneObject::create("SceneCamera");
 
-		// We retrieve the primary render window and add a Camera component that
-		// will output whatever it sees into that window (You could also use a render texture
-		// or another window you created).
+		// Get the primary render window we need for creating the camera. Additionally
+		// hook up a callback so we are notified when user resizes the window.
 		RenderWindowPtr window = gApplication().getPrimaryWindow();
+		window->onResized.connect(&renderWindowResized);
+
+		// Add a Camera component that will output whatever it sees into that window 
+		// (You could also use a render texture or another window you created).
 		sceneCamera = sceneCameraSO->addComponent<Camera>(window);
 
 		// Set up camera component properties
@@ -278,7 +293,7 @@ namespace BansheeEngine
 		sceneCamera->setNearClipDistance(5);
 
 		// Set aspect ratio depending on the current resolution
-		sceneCamera->setAspectRatio(resolutionWidth / (float)resolutionHeight); // TODO - This needs to get called whenever resolution changes
+		sceneCamera->setAspectRatio(windowResWidth / (float)windowResHeight);
 
 		// Add a CameraFlyer component that allows us to move the camera. See CameraFlyer for more information.
 		sceneCameraSO->addComponent<CameraFlyer>();
@@ -394,7 +409,47 @@ namespace BansheeEngine
 		rightLayout.addElement(toggleFullscreenButton);
 
 		// Add a profiler overlay object that is resposible for displaying CPU and GPU profiling GUI
-		profilerOverlay = guiSO->addComponent<ProfilerOverlay>(guiCamera->getViewport());
+		//profilerOverlay = guiSO->addComponent<ProfilerOverlay>(guiCamera->getViewport());
+
+		// Set up video mode list box
+		// First get a list of output devices
+		const VideoModeInfo& videoModeInfo = RenderSystem::instance().getVideoModeInfo();
+
+		// Get video mode info for the primary monitor
+		const VideoOutputInfo& primaryMonitorInfo = videoModeInfo.getOutputInfo(0);
+
+		// Make the current desktop mode the default video mode
+		selectedVideoMode = &primaryMonitorInfo.getDesktopVideoMode();
+
+		// Create list box elements for each available video mode
+		UINT32 numVideoModes = primaryMonitorInfo.getNumVideoModes();
+		Vector<HString> videoModeLabels(numVideoModes);
+		UINT32 selectedVideoModeIdx = 0;
+		for (UINT32 i = 0; i < numVideoModes; i++)
+		{
+			const VideoMode& curVideoMode = primaryMonitorInfo.getVideoMode(i);
+
+			HString videoModeLabel(L"{0} x {1} at {2}Hz");
+			videoModeLabel.setParameter(0, toWString(curVideoMode.getWidth()));
+			videoModeLabel.setParameter(1, toWString(curVideoMode.getHeight()));
+			videoModeLabel.setParameter(2, toWString(Math::roundToInt(curVideoMode.getRefreshRate())));
+
+			videoModeLabels[i] = videoModeLabel;
+			videoModes.push_back(&curVideoMode);
+
+			if (curVideoMode == *selectedVideoMode)
+				selectedVideoModeIdx = i;
+		}
+		
+		// Create the list box
+		GUIListBox* videoModeListBox = GUIListBox::create(videoModeLabels);
+		rightLayout.addElement(videoModeListBox);
+
+		// Select the default (desktop) video mode
+		videoModeListBox->selectElement(selectedVideoModeIdx);
+
+		// Set up a callback to be notified when video mode changes
+		videoModeListBox->onSelectionChanged.connect(&videoModeChanged);
 	}
 
 	void shutDownExample()
@@ -430,15 +485,38 @@ namespace BansheeEngine
 		// call something from the wrong thread.
 		if (fullscreen)
 		{
-			gCoreAccessor().setWindowed(window, resolutionWidth, resolutionHeight);
+			gCoreAccessor().setWindowed(window, windowResWidth, windowResHeight);
 		}
 		else
 		{
-			//gCoreAccessor().setFullscreen(window, *videoMode);
-			gCoreAccessor().setFullscreen(window, 1920, 1200);
+			gCoreAccessor().setFullscreen(window, *selectedVideoMode);
 		}
 
 		fullscreen = !fullscreen;
+	}
+
+	void renderWindowResized()
+	{
+		RenderWindowPtr window = gApplication().getPrimaryWindow();
+
+		if (!fullscreen)
+		{
+			windowResWidth = window->getWidth();
+			windowResHeight = window->getHeight();
+		}
+
+		sceneCamera->setAspectRatio(window->getWidth() / (float)window->getHeight());
+	}
+
+	void videoModeChanged(UINT32 idx)
+	{
+		selectedVideoMode = videoModes[idx];
+
+		if (fullscreen)
+		{
+			RenderWindowPtr window = gApplication().getPrimaryWindow();
+			gCoreAccessor().setFullscreen(window, *selectedVideoMode);
+		}
 	}
 
 	void buttonUp(const VirtualButton& button, UINT32 deviceIdx)

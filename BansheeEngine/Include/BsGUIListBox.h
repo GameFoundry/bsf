@@ -48,6 +48,11 @@ namespace BansheeEngine
 		void setElements(const Vector<HString>& elements);
 
 		/**
+		 * @brief	Makes the element with the specified index selected.
+		 */
+		void selectElement(UINT32 idx);
+
+		/**
 		 * @copydoc	GUIButtonBase::getElementType
 		 */
 		virtual ElementType getElementType() const { return ElementType::ListBox; }

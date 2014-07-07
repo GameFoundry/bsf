@@ -21,6 +21,10 @@ Polish TODO:
 Automatically release resources on shutdown instead of forcing the user to manually call unload() and set handles to nullptr.
  - e.g. just invalidate all handles automatically
 
+--------------------
+
+Delay this until release:
+
 Input issues:
  - I cannot have input of 1 one frame and input of 0 another. This happens when frames are too short. I might need to add very short smoothing times?
  - I cannot have input set to 1 during the entire frame if the frame is very long and user just moved the mouse a bit.

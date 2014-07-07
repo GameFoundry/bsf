@@ -115,6 +115,8 @@ namespace BansheeEngine
 					}
 
 					lastBracket = -1;
+
+					bracketChars.str(L"");
 					bracketChars.clear();
 				}
 			}

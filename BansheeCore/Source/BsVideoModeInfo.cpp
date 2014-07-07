@@ -11,6 +11,12 @@ namespace BansheeEngine
 	VideoMode::~VideoMode()
 	{ }
 
+	bool VideoMode::operator== (const VideoMode& other) const
+	{
+		return mWidth == other.mWidth && mHeight == other.mHeight && 
+			mOutputIdx == other.mOutputIdx && mRefreshRate == other.mRefreshRate;
+	}
+
 	VideoOutputInfo::~VideoOutputInfo()
 	{ 
 		for (auto& videoMode : mVideoModes)
