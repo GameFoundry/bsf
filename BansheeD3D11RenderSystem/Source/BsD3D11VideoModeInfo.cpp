@@ -9,8 +9,8 @@ namespace BansheeEngine
 		IDXGIOutput* output = nullptr;
 		while (dxgiAdapter->EnumOutputs(outputIdx, &output) != DXGI_ERROR_NOT_FOUND)
 		{
-			outputIdx++;
 			mOutputs.push_back(bs_new<D3D11VideoOutputInfo>(output, outputIdx));
+			outputIdx++;
 		}
 	}
 

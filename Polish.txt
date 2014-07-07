@@ -3,6 +3,7 @@ Polish TODO:
   - Ensure that going fullscreen and windowed works fine
  - Add an example model
  - Test if example shuts down fine
+ - Add readme to Git
 
  - Add license text to all files
 
@@ -17,6 +18,9 @@ Polish TODO:
  - Add a .zip with source and dependencies
  - Test checking out source and extracting dependencies and see if it compiles
  - Test compiling on another PC
+
+ - Updates links in git readme
+ - Update links in license text
 
 Automatically release resources on shutdown instead of forcing the user to manually call unload() and set handles to nullptr.
  - e.g. just invalidate all handles automatically

@@ -434,7 +434,7 @@ namespace BansheeEngine
 		mHeight = height;
 		mIsFullScreen = false;
 
-		mSwapChainDesc.Windowed = false;
+		mSwapChainDesc.Windowed = true;
 		mSwapChainDesc.BufferDesc.RefreshRate.Numerator = 0;
 		mSwapChainDesc.BufferDesc.RefreshRate.Denominator = 0;
 		mSwapChainDesc.BufferDesc.Width = mWidth;
@@ -449,8 +449,8 @@ namespace BansheeEngine
 		modeDesc.RefreshRate.Denominator = 0;
 		modeDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
-		mSwapChain->ResizeTarget(&modeDesc);
 		mSwapChain->SetFullscreenState(false, nullptr);
+		mSwapChain->ResizeTarget(&modeDesc);
 	}
 
 	void D3D11RenderWindow::getCustomAttribute( const String& name, void* pData ) const
@@ -583,7 +583,7 @@ namespace BansheeEngine
 		unsigned int width = rc.right - rc.left;
 		unsigned int height = rc.bottom - rc.top;
 
-		if (width == 0) 
+		if (width == 0)
 			width = 1;
 
 		if (height == 0)
