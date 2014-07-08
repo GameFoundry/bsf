@@ -15,6 +15,7 @@ namespace BansheeEngine
 	{
 	public:
 		QueryManager();
+		~QueryManager();
 
 		/**
 		 * @brief	Creates a new event query that allows you to get notified

@@ -311,7 +311,7 @@ namespace BansheeEngine
 	public:
 		static inline void* allocate(size_t bytes)
 		{
-			stackAlloc((UINT32)bytes);
+			return stackAlloc((UINT32)bytes);
 		}
 
 		static inline void* allocateArray(size_t bytes, UINT32 count)

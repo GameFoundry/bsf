@@ -10,6 +10,29 @@ namespace BansheeEngine
 
 	}
 
+	QueryManager::~QueryManager()
+	{
+		// Trigger all remaining queries, whether they completed or not
+
+		for (auto& query : mEventQueries)
+		{
+			if (query->isActive())
+				query->onTriggered();
+		}
+
+		for (auto& query : mTimerQueries)
+		{
+			if (query->isActive())
+				query->onTriggered(query->getTimeMs());
+		}
+
+		for (auto& query : mOcclusionQueries)
+		{
+			if (query->isActive())
+				query->onComplete(query->getNumSamples());
+		}
+	}
+
 	void QueryManager::_update()
 	{
 		for(auto& query : mEventQueries)

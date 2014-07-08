@@ -210,19 +210,19 @@ namespace BansheeEngine
 		UINT32 mNumVertices; // Core thread
 		UINT32 mNumIndices; // Core thread
 
+		Vector<UINT8*> mCPUVertexData; // Core thread
+		UINT8* mCPUIndexData; // Core thread
+
 		std::shared_ptr<VertexData> mVertexData; // Core thread
 		IndexBufferPtr mIndexBuffer; // Core thread
 
-		Vector<UINT8*> mCPUVertexData; // Core thread
-		UINT8* mCPUIndexData; // Core thread
+		Map<UINT32, AllocatedData> mMeshAllocData; // Core thread
 
 		VertexDataDescPtr mVertexDesc; // Immutable
 		IndexBuffer::IndexType mIndexType; // Immutable
 
 		Map<UINT32, TransientMeshPtr> mMeshes; // Sim thread
 		UINT32 mNextFreeId; // Sim thread
-
-		Map<UINT32, AllocatedData> mMeshAllocData; // Core thread
 
 		Vector<ChunkData> mVertChunks; // Core thread
 		Vector<ChunkData> mIdxChunks; // Core thread

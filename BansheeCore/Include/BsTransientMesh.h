@@ -87,7 +87,7 @@ namespace BansheeEngine
 
 	protected:
 		bool mIsDestroyed;
-		std::weak_ptr<MeshHeap> mParentHeap;
+		MeshHeapPtr mParentHeap;
 		UINT32 mId;
 	};
 }

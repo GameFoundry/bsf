@@ -65,9 +65,20 @@ namespace BansheeEngine
 			std::function<RetType(Args...)> func;
 		};
 
+		struct InternalData
+		{
+			InternalData()
+				:mHasDisconnectedCallbacks(false)
+			{ }
+
+			Vector<std::shared_ptr<ConnectionData>> mConnections;
+			bool mHasDisconnectedCallbacks;
+			BS_RECURSIVE_MUTEX(mMutex);
+		};
+
 	public:
 		TEvent()
-			:mHasDisconnectedCallbacks(false)
+			:mInternalData(bs_shared_ptr<InternalData>())
 		{ }
 
 		~TEvent()
@@ -85,8 +96,8 @@ namespace BansheeEngine
 			connData->isValid = true;
 
 			{
-				BS_LOCK_RECURSIVE_MUTEX(mMutex);
-				mConnections.push_back(connData);
+				BS_LOCK_RECURSIVE_MUTEX(mInternalData->mMutex);
+				mInternalData->mConnections.push_back(connData);
 			}
 			
 			return HEvent(connData, this, &TEvent::disconnectCallback);
@@ -97,29 +108,33 @@ namespace BansheeEngine
 		 */
 		void operator() (Args... args)
 		{
-			BS_LOCK_RECURSIVE_MUTEX(mMutex);
+			// Increase ref count to ensure this event data isn't destroyed if one of the callbacks
+			// deletes the event itself.
+			std::shared_ptr<InternalData> internalData = mInternalData;
+
+			BS_LOCK_RECURSIVE_MUTEX(internalData->mMutex);
 
 			// Here is the only place we remove connections, in order to allow disconnect() and clear() to be called
 			// recursively from the notify callbacks
-			if (mHasDisconnectedCallbacks)
+			if (internalData->mHasDisconnectedCallbacks)
 			{
-				for (UINT32 i = 0; i < mConnections.size(); i++)
+				for (UINT32 i = 0; i < internalData->mConnections.size(); i++)
 				{
-					if (!mConnections[i]->isValid)
+					if (!internalData->mConnections[i]->isValid)
 					{
-						mConnections.erase(mConnections.begin() + i);
+						internalData->mConnections.erase(internalData->mConnections.begin() + i);
 						i--;
 					}
 				}
 
-				mHasDisconnectedCallbacks = false;
+				internalData->mHasDisconnectedCallbacks = false;
 			}
 
 			// Do not use an iterator here, as new connections might be added during iteration from
 			// the notify callback
-			UINT32 numConnections = (UINT32)mConnections.size(); // Remember current num. connections as we don't want to notify new ones
+			UINT32 numConnections = (UINT32)internalData->mConnections.size(); // Remember current num. connections as we don't want to notify new ones
 			for (UINT32 i = 0; i < numConnections; i++)
-				mConnections[i]->func(args...);
+				internalData->mConnections[i]->func(args...);
 		}
 
 		/**
@@ -127,13 +142,13 @@ namespace BansheeEngine
 		 */
 		void clear()
 		{
-			BS_LOCK_RECURSIVE_MUTEX(mMutex);
+			BS_LOCK_RECURSIVE_MUTEX(mInternalData->mMutex);
 
-			for(auto& connection : mConnections)
+			for (auto& connection : mInternalData->mConnections)
 				connection->isValid = false;
 
-			if (mConnections.size() > 0)
-				mHasDisconnectedCallbacks = true;
+			if (mInternalData->mConnections.size() > 0)
+				mInternalData->mHasDisconnectedCallbacks = true;
 		}
 
 		/**
@@ -143,15 +158,13 @@ namespace BansheeEngine
 		 */
 		bool empty()
 		{
-			BS_LOCK_RECURSIVE_MUTEX(mMutex);
+			BS_LOCK_RECURSIVE_MUTEX(mInternalData->mMutex);
 
-			return mConnections.size() == 0;
+			return mInternalData->mConnections.size() == 0;
 		}
 
 	private:
-		Vector<std::shared_ptr<ConnectionData>> mConnections;
-		bool mHasDisconnectedCallbacks;
-		BS_RECURSIVE_MUTEX(mMutex);
+		std::shared_ptr<InternalData> mInternalData;
 
 		/**
 		 * @brief	Callback triggered by event handles when they want to disconnect from
@@ -169,14 +182,14 @@ namespace BansheeEngine
 		 */
 		void disconnect(const std::shared_ptr<BaseConnectionData>& connData)
 		{
-			BS_LOCK_RECURSIVE_MUTEX(mMutex);
+			BS_LOCK_RECURSIVE_MUTEX(mInternalData->mMutex);
 
-			for(auto& iter = mConnections.begin(); iter != mConnections.end(); ++iter)
+			for (auto& iter = mInternalData->mConnections.begin(); iter != mInternalData->mConnections.end(); ++iter)
 			{
 				if((*iter) == connData)
 				{
 					connData->isValid = false;
-					mHasDisconnectedCallbacks = true;
+					mInternalData->mHasDisconnectedCallbacks = true;
 					return;
 				}
 			}

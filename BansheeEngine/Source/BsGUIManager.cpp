@@ -173,6 +173,12 @@ namespace BansheeEngine
 
 		if(renderData.widgets.size() == 0)
 		{
+			for (auto& mesh : renderData.cachedMeshes)
+			{
+				if (mesh != nullptr)
+					mMeshHeap->dealloc(mesh);
+			}
+
 			mCachedGUIData.erase(renderTarget);
 		}
 		else
