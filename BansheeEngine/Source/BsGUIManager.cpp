@@ -114,6 +114,9 @@ namespace BansheeEngine
 		for(auto& widget : widgetCopy)
 			widget.widget->destroy();
 
+		// Ensure everything queued get destroyed
+		processDestroyQueue();
+
 		mOnPointerPressedConn.disconnect();
 		mOnPointerReleasedConn.disconnect();
 		mOnPointerMovedConn.disconnect();
