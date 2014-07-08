@@ -2,7 +2,7 @@
 
 A free & modern multi-platform game development toolkit. It aims to provide simple yet powerful environment for creating games and other graphical applications. A wide range of features are available, ranging from a math and utility library, to DirectX 11 and OpenGL render systems all the way to asset processing, fully featured editor and C# scripting.
 
-Banshee aims to become a standard in game development by providing rock solid implementations of known and widely used techniques while also being flexible enough to implement constantly changing cutting edge techniques. Built from ground up to be a modern library using modern design principles. Everything is modular, layered and decoupled as much as possible, making it easier to modify, replace or add functionality. Platform specific functionality is kept at a minimum making porting as easy as possible. Additionally every non-trivial method, class and field is documented.
+Banshee aims to become a standard in game development by providing rock solid implementations of known and widely used techniques while also being flexible enough to implement constantly changing cutting edge techniques. Built from ground up to be a modern library using modern design principles - everything is modular, layered and decoupled as much as possible, making it easier to modify, replace or add functionality. Platform specific functionality is kept at a minimum making porting as easy as possible. Additionally every non-trivial method, class and field is documented.
 
 On top of the powerful and flexible C++ core lies a fully featured editor and a C# scripting system. C# scripting makes your development easier by giving you access to the entire .NET library, along with fast iterations times while being safe and easy to write. Editor is fully extensible with the help of C# scripting so you may customize it for exact needs of your project.
 
@@ -13,6 +13,7 @@ To get Banshee to run you will need to check out the source code either from Git
 To compile Banshee you will need Visual Studio 2013 (Express version will work, but earlier Visual Studio versions will not). Other Windows compilers might work but have not been tested. Support for more platforms and compilers will become available with time.
 
 [Download dependencies] (http://nolinkyet)
+
 [Download source + dependencies] (http://nolinkyet)
 
 ## Features (currently available)
@@ -41,7 +42,7 @@ To compile Banshee you will need Visual Studio 2013 (Express version will work, 
 * Powerful GUI system
   * Unicode text rendering and input
   * Easy to use layout based system
-  * Most common GUI controls
+  * Many common GUI controls
   * Fully skinnable
   * Automatch batching
   * Support for texture atlases
