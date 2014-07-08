@@ -90,8 +90,8 @@ Easiest way to get started with Banshee is to check out `ExampleProject` include
 
 ### Importing resources
 ```
-  HMesh dragonModel = static_resource_cast<Mesh>(Importer::instance().import("Dragon.fbx"));
-  HTexture dragonTexture = static_resource_cast<Texture>(Importer::instance().import("Dragon.psd"));
+  HMesh dragonModel = Importer::instance().import<Mesh>("Dragon.fbx");
+  HTexture dragonTexture = Importer::instance().import<Texture>("Dragon.psd");
 ```
 
 ### Adding and positioning a camera

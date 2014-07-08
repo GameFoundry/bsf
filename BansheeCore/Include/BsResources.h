@@ -27,6 +27,15 @@ namespace BansheeEngine
 		HResource load(const Path& filePath);
 
 		/**
+		 * @copydoc	load
+		 */
+		template <class T>
+		ResourceHandle<T> load(const Path& filePath)
+		{
+			return static_resource_cast<T>(load(filePath));
+		}
+
+		/**
 		 * @brief	Loads the resource asynchronously. Initially returned resource handle will be invalid
 		 *			until resource loading is done.
 		 *
@@ -38,14 +47,23 @@ namespace BansheeEngine
 		HResource loadAsync(const Path& filePath);
 
 		/**
+		 * @copydoc	loadAsync
+		 */
+		template <class T>
+		ResourceHandle<T> loadAsync(const Path& filePath)
+		{
+			return static_resource_cast<T>(loadAsync(filePath));
+		}
+
+		/**
 		 * @brief	Loads the resource with the given UUID. Returns an empty handle if resource can't be loaded.
 		 *			Resource is loaded synchronously.
 		 */
 		HResource loadFromUUID(const String& uuid);
 
 		/**
-		* @brief	Loads the resource with the given UUID asynchronously. Initially returned resource handle will be invalid
-		*			until resource loading is done.
+		 * @brief	Loads the resource with the given UUID asynchronously. Initially returned resource handle will be invalid
+		 *			until resource loading is done.
 		 *
 		 * @param	uuid	UUID of the resource to load. 
 		 *

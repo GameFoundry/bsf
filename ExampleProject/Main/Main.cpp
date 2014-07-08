@@ -144,7 +144,7 @@ namespace BansheeEngine
 		// so next time the application is ran you can just load them directly. This can be done with Resources::save/load.
 
 		// Import an FBX mesh.
-		exampleModel = static_resource_cast<Mesh>(Importer::instance().import(exampleModelPath));
+		exampleModel = Importer::instance().import<Mesh>(exampleModelPath);
 
 		// When importing you may specify optional import options that control how is the asset imported.
 		ImportOptionsPtr textureImportOptions = Importer::instance().createImportOptions(exampleTexturePath);
@@ -160,7 +160,7 @@ namespace BansheeEngine
 		}
 
 		// Import texture with specified import options
-		exampleTexture = static_resource_cast<Texture>(Importer::instance().import(exampleTexturePath, textureImportOptions));
+		exampleTexture = Importer::instance().import<Texture>(exampleTexturePath, textureImportOptions);
 
 		// Create import options for fragment GPU program
 		ImportOptionsPtr gpuProgImportOptions = Importer::instance().createImportOptions(exampleFragmentShaderPath);
@@ -182,7 +182,7 @@ namespace BansheeEngine
 		}
 
 		// Import fragment GPU program
-		exampleFragmentGPUProg = static_resource_cast<GpuProgram>(Importer::instance().import(exampleFragmentShaderPath, gpuProgImportOptions));
+		exampleFragmentGPUProg = Importer::instance().import<GpuProgram>(exampleFragmentShaderPath, gpuProgImportOptions);
 
 		// Create import options for vertex GPU program. Similar as above.
 		gpuProgImportOptions = Importer::instance().createImportOptions(exampleVertexShaderPath);
@@ -197,7 +197,7 @@ namespace BansheeEngine
 		}
 
 		// Import vertex GPU program
-		exampleVertexGPUProg = static_resource_cast<GpuProgram>(Importer::instance().import(exampleVertexShaderPath, gpuProgImportOptions));
+		exampleVertexGPUProg = Importer::instance().import<GpuProgram>(exampleVertexShaderPath, gpuProgImportOptions);
 
 		/************************************************************************/
 		/* 							CREATE SHADER	                      		*/

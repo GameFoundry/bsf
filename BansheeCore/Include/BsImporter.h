@@ -28,6 +28,15 @@ namespace BansheeEngine
 		HResource import(const Path& inputFilePath, ConstImportOptionsPtr importOptions = nullptr);
 
 		/**
+		 * @copydoc import
+		 */
+		template <class T>
+		ResourceHandle<T> import(const Path& inputFilePath, ConstImportOptionsPtr importOptions = nullptr)
+		{
+			return static_resource_cast<T>(import(inputFilePath, importOptions));
+		}
+
+		/**
 		 * @brief	Imports a resource and replaces the contents of the provided existing resource with new imported data.
 		 *
 		 * @param	inputFilePath	Pathname of the input file.
