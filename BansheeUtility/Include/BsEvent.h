@@ -134,7 +134,10 @@ namespace BansheeEngine
 			// the notify callback
 			UINT32 numConnections = (UINT32)internalData->mConnections.size(); // Remember current num. connections as we don't want to notify new ones
 			for (UINT32 i = 0; i < numConnections; i++)
-				internalData->mConnections[i]->func(args...);
+			{
+				if (internalData->mConnections[i]->func != nullptr)
+					internalData->mConnections[i]->func(args...);
+			}
 		}
 
 		/**
@@ -145,7 +148,10 @@ namespace BansheeEngine
 			BS_LOCK_RECURSIVE_MUTEX(mInternalData->mMutex);
 
 			for (auto& connection : mInternalData->mConnections)
+			{
 				connection->isValid = false;
+				connection->func = nullptr;
+			}
 
 			if (mInternalData->mConnections.size() > 0)
 				mInternalData->mHasDisconnectedCallbacks = true;
@@ -184,11 +190,14 @@ namespace BansheeEngine
 		{
 			BS_LOCK_RECURSIVE_MUTEX(mInternalData->mMutex);
 
+			std::shared_ptr<ConnectionData> myConnData = std::static_pointer_cast<ConnectionData>(connData);
+
 			for (auto& iter = mInternalData->mConnections.begin(); iter != mInternalData->mConnections.end(); ++iter)
 			{
-				if((*iter) == connData)
+				if ((*iter) == myConnData)
 				{
-					connData->isValid = false;
+					myConnData->isValid = false;
+					myConnData->func = nullptr;
 					mInternalData->mHasDisconnectedCallbacks = true;
 					return;
 				}

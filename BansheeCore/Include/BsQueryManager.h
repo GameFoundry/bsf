@@ -51,22 +51,34 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Deletes an Event query. Always use this method and don't delete them manually.
+		 *			Actual deletion will be delayed until next update.
 		 */
 		static void deleteEventQuery(EventQuery* query);
 
 		/**
 		* @brief	Deletes a Timer query. Always use this method and don't delete them manually.
+		*			Actual deletion will be delayed until next update.
 		*/
 		static void deleteTimerQuery(TimerQuery* query);
 
 		/**
 		* @brief	Deletes an Occlusion query. Always use this method and don't delete them manually.
+		*			Actual deletion will be delayed until next update.
 		*/
 		static void deleteOcclusionQuery(OcclusionQuery* query);
+
+		/**
+		 * @brief	Deletes any queued queries.
+		 */
+		void processDeletedQueue();
 
 	protected:
 		mutable Vector<EventQuery*> mEventQueries;
 		mutable Vector<TimerQuery*> mTimerQueries;
 		mutable Vector<OcclusionQuery*> mOcclusionQueries;
+
+		mutable Vector<EventQuery*> mDeletedEventQueries;
+		mutable Vector<TimerQuery*> mDeletedTimerQueries;
+		mutable Vector<OcclusionQuery*> mDeletedOcclusionQueries;
 	};
 }

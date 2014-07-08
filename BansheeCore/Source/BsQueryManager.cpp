@@ -31,6 +31,8 @@ namespace BansheeEngine
 			if (query->isActive())
 				query->onComplete(query->getNumSamples());
 		}
+
+		processDeletedQueue();
 	}
 
 	void QueryManager::_update()
@@ -61,35 +63,61 @@ namespace BansheeEngine
 				query->setActive(false);
 			}
 		}
+
+		processDeletedQueue();
 	}
 
 	void QueryManager::deleteEventQuery(EventQuery* query)
 	{
-		auto iterFind = std::find(instance().mEventQueries.begin(), instance().mEventQueries.end(), query);
-
-		if(iterFind != instance().mEventQueries.end())
-			instance().mEventQueries.erase(iterFind);
-
-		bs_delete(query);
+		instance().mDeletedEventQueries.push_back(query);
 	}
 
 	void QueryManager::deleteTimerQuery(TimerQuery* query)
 	{
-		auto iterFind = std::find(instance().mTimerQueries.begin(), instance().mTimerQueries.end(), query);
-
-		if(iterFind != instance().mTimerQueries.end())
-			instance().mTimerQueries.erase(iterFind);
-
-		bs_delete(query);
+		instance().mDeletedTimerQueries.push_back(query);
 	}
 
 	void QueryManager::deleteOcclusionQuery(OcclusionQuery* query)
 	{
-		auto iterFind = std::find(instance().mOcclusionQueries.begin(), instance().mOcclusionQueries.end(), query);
+		instance().mDeletedOcclusionQueries.push_back(query);
+	}
 
-		if (iterFind != instance().mOcclusionQueries.end())
-			instance().mOcclusionQueries.erase(iterFind);
+	void QueryManager::processDeletedQueue()
+	{
+		for (auto& query : mDeletedEventQueries)
+		{
+			auto iterFind = std::find(mEventQueries.begin(), mEventQueries.end(), query);
 
-		bs_delete(query);
+			if (iterFind != mEventQueries.end())
+				mEventQueries.erase(iterFind);
+
+			bs_delete(query);
+		}
+
+		mDeletedEventQueries.clear();
+
+		for (auto& query : mDeletedTimerQueries)
+		{
+			auto iterFind = std::find(mTimerQueries.begin(), mTimerQueries.end(), query);
+
+			if (iterFind != mTimerQueries.end())
+				mTimerQueries.erase(iterFind);
+
+			bs_delete(query);
+		}
+
+		mDeletedTimerQueries.clear();
+
+		for (auto& query : mDeletedOcclusionQueries)
+		{
+			auto iterFind = std::find(mOcclusionQueries.begin(), mOcclusionQueries.end(), query);
+
+			if (iterFind != mOcclusionQueries.end())
+				mOcclusionQueries.erase(iterFind);
+
+			bs_delete(query);
+		}
+
+		mDeletedOcclusionQueries.clear();
 	}
 }

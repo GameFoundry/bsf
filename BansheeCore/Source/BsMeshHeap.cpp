@@ -550,23 +550,26 @@ namespace BansheeEngine
 		if(allocData.useFlags == UseFlags::GPUFree)
 			allocData.useFlags = UseFlags::Used;
 
+		MeshHeapPtr thisPtr = std::static_pointer_cast<MeshHeap>(getThisPtr());
+
 		QueryData& queryData = mEventQueries[allocData.eventQueryIdx];
 		queryData.queryId = mNextQueryId++;
 		queryData.query->onTriggered.clear();
-		queryData.query->onTriggered.connect(std::bind(&MeshHeap::queryTriggered, this, meshId, queryData.queryId));
+		queryData.query->onTriggered.connect(std::bind(&MeshHeap::queryTriggered, thisPtr, meshId, queryData.queryId));
 		queryData.query->begin();
 	}
 
-	void MeshHeap::queryTriggered(UINT32 meshId, UINT32 queryId)
+	// Note: Need to use a shared ptr here to ensure MeshHeap doesn't get deallocated sometime during this callback
+	void MeshHeap::queryTriggered(MeshHeapPtr thisPtr, UINT32 meshId, UINT32 queryId)
 	{
-		auto findIter = mMeshAllocData.find(meshId);
-		assert(findIter != mMeshAllocData.end());
+		auto findIter = thisPtr->mMeshAllocData.find(meshId);
+		assert(findIter != thisPtr->mMeshAllocData.end());
 
 		AllocatedData& allocData = findIter->second;
 
 		// If query ids don't match then it means there either a more recent query or
 		// the buffer was discarded and we are not interested in query result
-		QueryData& queryData = mEventQueries[allocData.eventQueryIdx];
+		QueryData& queryData = thisPtr->mEventQueries[allocData.eventQueryIdx];
 		if(queryId == queryData.queryId) 
 		{
 			assert(allocData.useFlags != UseFlags::Free && allocData.useFlags != UseFlags::GPUFree);
@@ -574,18 +577,20 @@ namespace BansheeEngine
 			if(allocData.useFlags == UseFlags::CPUFree)
 			{
 				allocData.useFlags = UseFlags::Free;
-				freeEventQuery(allocData.eventQueryIdx);
+				thisPtr->freeEventQuery(allocData.eventQueryIdx);
 
-				mFreeVertChunks.push_back(allocData.vertChunkIdx);
-				mFreeIdxChunks.push_back(allocData.idxChunkIdx);
+				thisPtr->mFreeVertChunks.push_back(allocData.vertChunkIdx);
+				thisPtr->mFreeIdxChunks.push_back(allocData.idxChunkIdx);
 
-				mergeWithNearbyChunks(allocData.vertChunkIdx, allocData.idxChunkIdx);
+				thisPtr->mergeWithNearbyChunks(allocData.vertChunkIdx, allocData.idxChunkIdx);
 
-				mMeshAllocData.erase(findIter);
+				thisPtr->mMeshAllocData.erase(findIter);
 			}
 			else
 				allocData.useFlags = UseFlags::GPUFree;
 		}
+
+		queryData.query->onTriggered.clear();
 	}
 
 	void MeshHeap::mergeWithNearbyChunks(UINT32 chunkVertIdx, UINT32 chunkIdxIdx)

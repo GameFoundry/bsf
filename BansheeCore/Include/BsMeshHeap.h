@@ -195,7 +195,7 @@ namespace BansheeEngine
 		 * @brief	Called by an GPU event query when GPU processes the query. Normally
 		 *			signals the heap that the GPU is done with the mesh.
 		 */
-		void queryTriggered(UINT32 meshId, UINT32 queryId);
+		static void queryTriggered(MeshHeapPtr thisPtr, UINT32 meshId, UINT32 queryId);
 
 		/**
 		 * @brief	Attempts to reorganize the vertex and index buffer chunks in order to 
