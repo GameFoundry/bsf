@@ -16,7 +16,11 @@ namespace BansheeEngine
 		if(!mIsDestroyed)
 		{
 			TransientMeshPtr meshPtr = std::static_pointer_cast<TransientMesh>(getThisPtr());
-			mParentHeap->dealloc(meshPtr);
+
+			MeshHeapPtr parentHeap = mParentHeap.lock();
+
+			if (parentHeap != nullptr)
+				parentHeap->dealloc(meshPtr);
 		}
 	}
 
@@ -32,27 +36,50 @@ namespace BansheeEngine
 
 	std::shared_ptr<VertexData> TransientMesh::_getVertexData() const
 	{
-		return mParentHeap->_getVertexData();
+		MeshHeapPtr parentHeap = mParentHeap.lock();
+
+		if (parentHeap != nullptr)
+			return parentHeap->_getVertexData();
+		else
+			return nullptr;
 	}
 
 	IndexBufferPtr TransientMesh::_getIndexBuffer() const
 	{
-		return mParentHeap->_getIndexBuffer();
+		MeshHeapPtr parentHeap = mParentHeap.lock();
+
+		if (parentHeap != nullptr)
+			return parentHeap->_getIndexBuffer();
+		else
+			return nullptr;
 	}
 
 	UINT32 TransientMesh::_getVertexOffset() const
 	{
-		return mParentHeap->getVertexOffset(mId);
+		MeshHeapPtr parentHeap = mParentHeap.lock();
+
+		if (parentHeap != nullptr)
+			return parentHeap->getVertexOffset(mId);
+		else
+			return 0;
 	}
 
 	UINT32 TransientMesh::_getIndexOffset() const
 	{
-		return mParentHeap->getIndexOffset(mId);
+		MeshHeapPtr parentHeap = mParentHeap.lock();
+
+		if (parentHeap != nullptr)
+			return parentHeap->getIndexOffset(mId);
+		else
+			return 0;
 	}
 
 	void TransientMesh::_notifyUsedOnGPU()
 	{
-		mParentHeap->notifyUsedOnGPU(mId);
+		MeshHeapPtr parentHeap = mParentHeap.lock();
+
+		if (parentHeap != nullptr)
+			parentHeap->notifyUsedOnGPU(mId);
 	}
 
 	MeshProxyPtr TransientMesh::_createProxy(UINT32 subMeshIdx)

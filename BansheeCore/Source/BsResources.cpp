@@ -19,7 +19,16 @@ namespace BansheeEngine
 
 	Resources::~Resources()
 	{
+		// Unload and invalidate all resources
+		UnorderedMap<String, HResource> loadedResourcesCopy = mLoadedResources;
 
+		for (auto& loadedResourcePair : loadedResourcesCopy)
+		{
+			unload(loadedResourcePair.second);
+
+			// Invalidate the handle
+			loadedResourcePair.second._setHandleData(nullptr, "");
+		}
 	}
 
 	HResource Resources::load(const Path& filePath)

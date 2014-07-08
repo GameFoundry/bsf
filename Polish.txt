@@ -3,7 +3,6 @@ Polish TODO:
   - Ensure that going fullscreen and windowed works fine
  - Add an example model
  - Test if example shuts down fine
- - Add readme to Git
 
  - Add license text to all files
 

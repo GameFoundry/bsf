@@ -38,6 +38,9 @@ namespace BansheeEngine
 		SpriteTexturePtr texturePtr = bs_core_ptr<SpriteTexture, PoolAlloc>
 			(new (bs_alloc<SpriteTexture, PoolAlloc>()) SpriteTexture(Vector2(0.0f, 0.0f), Vector2(1.0f, 1.0f), texture));
 
+		texturePtr->_setThisPtr(texturePtr);
+		texturePtr->initialize();
+
 		return static_resource_cast<SpriteTexture>(gResources()._createResourceHandle(texturePtr));
 	}
 
@@ -46,6 +49,9 @@ namespace BansheeEngine
 		SpriteTexturePtr texturePtr = bs_core_ptr<SpriteTexture, PoolAlloc>
 			(new (bs_alloc<SpriteTexture, PoolAlloc>()) SpriteTexture(uvOffset, uvScale, texture));
 
+		texturePtr->_setThisPtr(texturePtr);
+		texturePtr->initialize();
+
 		return static_resource_cast<SpriteTexture>(gResources()._createResourceHandle(texturePtr));
 	}
 
@@ -53,6 +59,9 @@ namespace BansheeEngine
 	{
 		SpriteTexturePtr texturePtr = bs_core_ptr<SpriteTexture, PoolAlloc>
 			(new (bs_alloc<SpriteTexture, PoolAlloc>()) SpriteTexture(Vector2(0.0f, 0.0f), Vector2(1.0f, 1.0f), Texture::dummy()));
+
+		texturePtr->_setThisPtr(texturePtr);
+		texturePtr->initialize();
 
 		return texturePtr;
 	}
