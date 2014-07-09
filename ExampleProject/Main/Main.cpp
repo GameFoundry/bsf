@@ -369,31 +369,28 @@ namespace BansheeEngine
 
 		// Create a GUI area that is used for displaying messages about toggling profiler overlays.
 		// This area will stretch the entire surface of its parent widget, even if the widget is resized.
-		GUIArea* topArea = GUIArea::createStretchedXY(*gui, 0, 0, 0, 0);
+		GUIArea* bottomArea = GUIArea::createStretchedXY(*gui, 0, 0, 0, 0);
 
 		// Add a vertical layout that will automatically position any child elements top to bottom.
-		GUILayout& topLayout = topArea->getLayout().addLayoutY();
+		GUILayout& bottomLayout = bottomArea->getLayout().addLayoutY();
+
+		// Add a flexible space that fills up any remaining area in the layout, making the two labels above be aligned
+		// to the bottom of the GUI widget (and the screen).
+		bottomLayout.addFlexibleSpace();
 
 		// Add a couple of labels to the layout with the needed messages. Labels expect a HString object that
 		// maps into a string table and allows for easily localization. 
-		topLayout.addElement(GUILabel::create(HString(L"Press F1 to toggle CPU profiler overlay")));
-		topLayout.addElement(GUILabel::create(HString(L"Press F2 to toggle GPU profiler overlay")));
-
-		// Add a flexible space that fills up any remaining area in the layout, making the two labels above be aligned
-		// to the top of the GUI widget (and the screen).
-		topLayout.addFlexibleSpace();
+		bottomLayout.addElement(GUILabel::create(HString(L"Press F1 to toggle CPU profiler overlay")));
+		bottomLayout.addElement(GUILabel::create(HString(L"Press F2 to toggle GPU profiler overlay")));
 
 		// Create a GUI area that is used for displaying resolution and fullscreen options.
-		GUIArea* rightArea = GUIArea::createStretchedXY(*gui, 0, 0, 0, 0);
+		GUIArea* rightArea = GUIArea::createStretchedXY(*gui, 30, 30, 30, 30);
 
 		// We want all the GUI elements be right aligned, so we add a flexible space first.
 		rightArea->getLayout().addFlexibleSpace();
 
 		// And we want the elements to be vertically placed, top to bottom
 		GUILayout& rightLayout = rightArea->getLayout().addLayoutY();
-
-		// Add an empty space of 50 pixels
-		rightLayout.addSpace(50);
 
 		// Add a button that will trigger a callback when clicked
 		toggleFullscreenButton = GUIButton::create(HString(L"Toggle fullscreen"));

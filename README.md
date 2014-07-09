@@ -76,7 +76,7 @@ Project is currently in active development. Current version is considered a prev
 
 ## Jump in
 
-Easiest way to get started with Banshee is to check out `ExampleProject` included with the source code. However to give you a taste here are a few code snippets.
+Easiest way to get started with Banshee is to check out the `ExampleProject` included with the source code. However to give you a taste here are a few code snippets.
 
 ### Starting a minimal application
 ```

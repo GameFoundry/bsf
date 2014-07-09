@@ -1,8 +1,6 @@
 Polish TODO:
  - Finalize example with resolution settings and proper GUI
-  - Ensure that going fullscreen and windowed works fine
  - Add an example model
- - Test if example shuts down fine
 
  - Add license text to all files
 
@@ -20,11 +18,6 @@ Polish TODO:
 
  - Updates links in git readme
  - Update links in license text
-
-TaskScheduler crashes on shutdown. My guess is because mutex and condition var go outs of scope but they're still being called on the task thread. Similar issue might exist in CoreThread.
-
-Automatically release resources on shutdown instead of forcing the user to manually call unload() and set handles to nullptr.
- - e.g. just invalidate all handles automatically
 
 --------------------
 
