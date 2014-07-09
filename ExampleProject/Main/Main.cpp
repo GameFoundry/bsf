@@ -127,8 +127,8 @@ int CALLBACK WinMain(
 
 namespace BansheeEngine
 {
-	Path exampleModelPath = "..\\..\\..\\..\\Data\\Examples\\Pyromancer.fbx";
-	Path exampleTexturePath = "..\\..\\..\\..\\Data\\Examples\\Pyromancer.psd";
+	Path exampleModelPath = "..\\..\\..\\..\\Data\\Examples\\Dragon.fbx";
+	Path exampleTexturePath = "..\\..\\..\\..\\Data\\Examples\\Dragon.tga";
 	Path exampleFragmentShaderPath = "..\\..\\..\\..\\Data\\Examples\\example_fs.gpuprog";
 	Path exampleVertexShaderPath = "..\\..\\..\\..\\Data\\Examples\\example_vs.gpuprog";
 
@@ -289,11 +289,11 @@ namespace BansheeEngine
 		// with the provided material.
 
 		// Create new scene object at (0, 0, 0)
-		HSceneObject pyromancerSO = SceneObject::create("Pyromancer");
+		HSceneObject dragonSO = SceneObject::create("Dragon");
 
 		// Attach the Renderable component and hook up the mesh we imported earlier,
 		// and the material we created in the previous section.
-		HRenderable renderable = pyromancerSO->addComponent<Renderable>();
+		HRenderable renderable = dragonSO->addComponent<Renderable>();
 		renderable->setMesh(mesh);
 		renderable->setMaterial(material);
 
@@ -331,7 +331,7 @@ namespace BansheeEngine
 		sceneCameraSO->addComponent<CameraFlyer>();
 
 		// Position and orient the camera scene object
-		sceneCameraSO->setPosition(Vector3(40.0f, 30.0f, 230.0f));
+		sceneCameraSO->setPosition(Vector3(-130.0f, 140.0f, 650.0f));
 		sceneCameraSO->lookAt(Vector3(0, 0, 0));
 	}
 
