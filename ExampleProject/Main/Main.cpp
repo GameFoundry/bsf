@@ -44,6 +44,31 @@ namespace BansheeEngine
 	void setUpExample();
 
 	/**
+	 * Import mesh/texture/GPU programs used by the example.
+	 */
+	void importAssets(HMesh& model, HTexture& texture, HGpuProgram& fragmentGPUProg, HGpuProgram& vertexGPUProg);
+
+	/**
+	 * Create a material used by our example model.
+	 */
+	HMaterial createMaterial(const HTexture& texture, const HGpuProgram& vertexGPUProg, const HGpuProgram& fragmentGPUProg);
+
+	/**
+	 * Set up example scene objects.
+	 */
+	void setUp3DScene(const HMesh& mesh, const HMaterial& material);
+
+	/**
+	 * Set up example GUI.
+	 */
+	void setUpGUI();
+
+	/**
+	 * Set up input configuration and callbacks.
+	 */
+	void setUpInput();
+
+	/**
 	 * Toggles the primary window between full-screen and windowed mode.
 	 */
 	void toggleFullscreen();
@@ -113,11 +138,6 @@ namespace BansheeEngine
 	const VideoMode* selectedVideoMode = nullptr;
 	Vector<const VideoMode*> videoModes;
 
-	HMesh exampleModel;
-	HTexture exampleTexture;
-	HGpuProgram exampleFragmentGPUProg;
-	HGpuProgram exampleVertexGPUProg;
-
 	HCamera sceneCamera;
 	HProfilerOverlay profilerOverlay;
 
@@ -129,14 +149,26 @@ namespace BansheeEngine
 
 	void setUpExample()
 	{
-		/************************************************************************/
-		/* 								IMPORT ASSETS                      		*/
-		/************************************************************************/
+		HMesh exampleModel;
+		HTexture exampleTexture;
+		HGpuProgram exampleFragmentGPUProg;
+		HGpuProgram exampleVertexGPUProg;
+
+		importAssets(exampleModel, exampleTexture, exampleFragmentGPUProg, exampleVertexGPUProg);
+		HMaterial exampleMaterial = createMaterial(exampleTexture, exampleVertexGPUProg, exampleFragmentGPUProg);
+
+		setUp3DScene(exampleModel, exampleMaterial);
+		setUpGUI();
+		setUpInput();
+	}
+
+	void importAssets(HMesh& model, HTexture& texture, HGpuProgram& fragmentGPUProg, HGpuProgram& vertexGPUProg)
+	{
 		// Import mesh, texture and shader from the disk. In a normal application you would want to save the imported assets
 		// so next time the application is ran you can just load them directly. This can be done with Resources::save/load.
 
 		// Import an FBX mesh.
-		exampleModel = Importer::instance().import<Mesh>(exampleModelPath);
+		model = Importer::instance().import<Mesh>(exampleModelPath);
 
 		// When importing you may specify optional import options that control how is the asset imported.
 		ImportOptionsPtr textureImportOptions = Importer::instance().createImportOptions(exampleTexturePath);
@@ -152,7 +184,7 @@ namespace BansheeEngine
 		}
 
 		// Import texture with specified import options
-		exampleTexture = Importer::instance().import<Texture>(exampleTexturePath, textureImportOptions);
+		texture = Importer::instance().import<Texture>(exampleTexturePath, textureImportOptions);
 
 		// Create import options for fragment GPU program
 		ImportOptionsPtr gpuProgImportOptions = Importer::instance().createImportOptions(exampleFragmentShaderPath);
@@ -174,7 +206,7 @@ namespace BansheeEngine
 		}
 
 		// Import fragment GPU program
-		exampleFragmentGPUProg = Importer::instance().import<GpuProgram>(exampleFragmentShaderPath, gpuProgImportOptions);
+		fragmentGPUProg = Importer::instance().import<GpuProgram>(exampleFragmentShaderPath, gpuProgImportOptions);
 
 		// Create import options for vertex GPU program. Similar as above.
 		gpuProgImportOptions = Importer::instance().createImportOptions(exampleVertexShaderPath);
@@ -189,8 +221,11 @@ namespace BansheeEngine
 		}
 
 		// Import vertex GPU program
-		exampleVertexGPUProg = Importer::instance().import<GpuProgram>(exampleVertexShaderPath, gpuProgImportOptions);
+		vertexGPUProg = Importer::instance().import<GpuProgram>(exampleVertexShaderPath, gpuProgImportOptions);
+	}
 
+	HMaterial createMaterial(const HTexture& texture, const HGpuProgram& vertexGPUProg, const HGpuProgram& fragmentGPUProg)
+	{
 		/************************************************************************/
 		/* 							CREATE SHADER	                      		*/
 		/************************************************************************/
@@ -229,16 +264,21 @@ namespace BansheeEngine
 		// Add a new pass to the technique. Each technique can have multiple passes that allow you to render the same
 		// object multiple times using different GPU programs.
 		PassPtr pass = technique->addPass();
-		pass->setVertexProgram(exampleVertexGPUProg);
-		pass->setFragmentProgram(exampleFragmentGPUProg);
+		pass->setVertexProgram(vertexGPUProg);
+		pass->setFragmentProgram(fragmentGPUProg);
 
 		// And finally create a material with the newly created shader
 		HMaterial exampleMaterial = Material::create(exampleShader);
 
 		// And set the texture to be used by the "tex" shader parameter. We leave the "samp"
 		// parameter at its defaults.
-		exampleMaterial->setTexture("tex", exampleTexture);
+		exampleMaterial->setTexture("tex", texture);
 
+		return exampleMaterial;
+	}
+
+	void setUp3DScene(const HMesh& mesh, const HMaterial& material)
+	{
 		/************************************************************************/
 		/* 								SCENE OBJECT                      		*/
 		/************************************************************************/
@@ -254,8 +294,8 @@ namespace BansheeEngine
 		// Attach the Renderable component and hook up the mesh we imported earlier,
 		// and the material we created in the previous section.
 		HRenderable renderable = pyromancerSO->addComponent<Renderable>();
-		renderable->setMesh(exampleModel);
-		renderable->setMaterial(exampleMaterial);
+		renderable->setMesh(mesh);
+		renderable->setMaterial(material);
 
 		/************************************************************************/
 		/* 									CAMERA	                     		*/
@@ -293,11 +333,10 @@ namespace BansheeEngine
 		// Position and orient the camera scene object
 		sceneCameraSO->setPosition(Vector3(40.0f, 30.0f, 230.0f));
 		sceneCameraSO->lookAt(Vector3(0, 0, 0));
+	}
 
-		/************************************************************************/
-		/* 									INPUT					       		*/
-		/************************************************************************/
-
+	void setUpInput()
+	{
 		// Register input configuration
 		// Banshee allows you to use VirtualInput system which will map input device buttons
 		// and axes to arbitrary names, which allows you to change input buttons without affecting
@@ -333,13 +372,15 @@ namespace BansheeEngine
 
 		// Hook up a callback that gets triggered whenever a virtual button is released
 		VirtualInput::instance().onButtonUp.connect(&buttonUp);
+	}
 
-		/************************************************************************/
-		/* 									GUI		                     		*/
-		/************************************************************************/
-
+	void setUpGUI()
+	{
 		// Create a scene object that will contain GUI components
 		HSceneObject guiSO = SceneObject::create("Example");
+
+		// Get the primary render window we need for creating the camera. 
+		RenderWindowPtr window = gApplication().getPrimaryWindow();
 
 		// First we want another camera that is responsible for rendering GUI
 		HCamera guiCamera = guiSO->addComponent<Camera>(window);
@@ -429,7 +470,7 @@ namespace BansheeEngine
 			if (curVideoMode == *selectedVideoMode)
 				selectedVideoModeIdx = i;
 		}
-		
+
 		// Create the list box
 		GUIListBox* videoModeListBox = GUIListBox::create(videoModeLabels);
 		rightLayout.addElement(videoModeListBox);
