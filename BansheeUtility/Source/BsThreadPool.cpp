@@ -20,7 +20,10 @@ namespace BansheeEngine
 			for (auto& thread : mPool->mThreads)
 			{
 				if (thread->getId() == mThreadId)
+				{
 					parentThread = thread;
+					break;
+				}
 			}
 		}
 
@@ -55,7 +58,7 @@ namespace BansheeEngine
 			BS_THREAD_WAIT(mStartedCond, mMutex, lock);
 	}
 
-	void PooledThread::start(std::function<void()> workerMethod)
+	void PooledThread::start(std::function<void()> workerMethod, UINT32 id)
 	{
 		{
 			BS_LOCK_MUTEX(mMutex);
@@ -64,7 +67,7 @@ namespace BansheeEngine
 			mIdle = false;
 			mIdleTime = std::time(nullptr);
 			mThreadReady = true;
-			mId++;
+			mId = id;
 		}
 
 		BS_THREAD_NOTIFY_ONE(mReadyCond);
@@ -167,7 +170,7 @@ namespace BansheeEngine
 	HThread ThreadPool::run(const String& name, std::function<void()> workerMethod)
 	{
 		PooledThread* thread = getThread(name);
-		thread->start(workerMethod);
+		thread->start(workerMethod, mUniqueId++);
 
 		return HThread(this, thread->getId());
 	}

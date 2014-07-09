@@ -137,7 +137,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void TaskScheduler::runTask(const TaskPtr& task)
+	void TaskScheduler::runTask(TaskPtr task)
 	{
 		task->mTaskWorker();
 

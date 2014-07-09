@@ -44,11 +44,6 @@ namespace BansheeEngine
 	void setUpExample();
 
 	/**
-	 * Releases all resources and prepares the example fur shutdown.
-	 */
-	void shutDownExample();
-
-	/**
 	 * Toggles the primary window between full-screen and windowed mode.
 	 */
 	void toggleFullscreen();
@@ -99,9 +94,6 @@ int CALLBACK WinMain(
 	// Runs the main loop that does most of the work. This method will exit when user closes the main
 	// window or exits in some other way.
 	Application::instance().runMainLoop();
-
-	// Perform cleanup
-	shutDownExample();
 
 	Application::shutDown();
 
@@ -450,23 +442,6 @@ namespace BansheeEngine
 
 		// Set up a callback to be notified when video mode changes
 		videoModeListBox->onSelectionChanged.connect(&videoModeChanged);
-	}
-
-	void shutDownExample()
-	{
-		// We require all handles to be released before shutdown.
-		gResources().unload(exampleModel);
-		gResources().unload(exampleTexture);
-		gResources().unload(exampleFragmentGPUProg);
-		gResources().unload(exampleVertexGPUProg);
-
-		exampleModel = nullptr;
-		exampleTexture = nullptr;
-		exampleFragmentGPUProg = nullptr;
-		exampleVertexGPUProg = nullptr;
-
-		sceneCamera = nullptr;
-		profilerOverlay = nullptr;
 	}
 
 	void toggleFullscreen()

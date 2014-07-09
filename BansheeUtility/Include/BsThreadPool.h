@@ -47,7 +47,7 @@ namespace BansheeEngine
 		 * @note	Caller must ensure worker method is not null and that the thread
 		 * 			is currently idle, otherwise undefined behavior will occur.
 		 */
-		void start(std::function<void()> workerMethod);
+		void start(std::function<void()> workerMethod, UINT32 id);
 
 		/**
 		 * @brief	Attempts to join the currently running thread and destroys it. Caller must ensure
@@ -233,6 +233,7 @@ namespace BansheeEngine
 		UINT32 mIdleTimeout;
 		UINT32 mAge;
 		
+		std::atomic_uint mUniqueId;
 		BS_MUTEX(mMutex);
 	};
 

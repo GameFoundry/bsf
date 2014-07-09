@@ -125,7 +125,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Worker method that runs a single task.
 		 */
-		void runTask(const TaskPtr& task);
+		void runTask(TaskPtr task);
 
 		/**
 		 * @brief	Blocks the calling thread until the specified task has completed.
