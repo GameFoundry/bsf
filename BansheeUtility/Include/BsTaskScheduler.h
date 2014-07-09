@@ -2,6 +2,7 @@
 
 #include "BsPrerequisitesUtil.h"
 #include "BsModule.h"
+#include "BsThreadPool.h"
 
 namespace BansheeEngine
 {
@@ -136,7 +137,9 @@ namespace BansheeEngine
 		 */
 		static bool taskCompare(const TaskPtr& lhs, const TaskPtr& rhs);
 
+		HThread mTaskSchedulerThread;
 		Set<TaskPtr, std::function<bool(const TaskPtr&, const TaskPtr&)>> mTaskQueue;
+		Vector<TaskPtr> mActiveTasks;
 		UINT32 mNumActiveTasks;
 		UINT32 mMaxActiveTasks;
 		UINT32 mNextTaskId;
@@ -144,6 +147,7 @@ namespace BansheeEngine
 
 		BS_MUTEX(mReadyMutex);
 		BS_MUTEX(mCompleteMutex);
+		BS_MUTEX(mActiveTaskMutex);
 		BS_THREAD_SYNCHRONISER(mTaskReadyCond);
 		BS_THREAD_SYNCHRONISER(mTaskCompleteCond);
 	};

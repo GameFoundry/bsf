@@ -2,9 +2,43 @@
 
 namespace BansheeEngine
 {
+	HThread::HThread()
+		:mPool(nullptr), mThreadId(0)
+	{ }
+
+	HThread::HThread(ThreadPool* pool, UINT32 threadId)
+		:mPool(pool), mThreadId(threadId)
+	{ }
+
+	void HThread::blockUntilComplete()
+	{
+		PooledThread* parentThread = nullptr;
+
+		{
+			BS_LOCK_MUTEX(mPool->mMutex);
+
+			for (auto& thread : mPool->mThreads)
+			{
+				if (thread->getId() == mThreadId)
+					parentThread = thread;
+			}
+		}
+
+		if (parentThread != nullptr)
+		{
+			BS_LOCK_MUTEX_NAMED(parentThread->mMutex, lock);
+
+			if (parentThread->mId == mThreadId) // Check again in case it changed
+			{
+				while (!parentThread->mIdle)
+					BS_THREAD_WAIT(parentThread->mWorkerEndedCond, parentThread->mMutex, lock);
+			}
+		}
+	}
+
 	PooledThread::PooledThread(const String& name)
 		:mName(name), mIdle(true), mThreadStarted(false),
-			mThreadReady(false), mIdleTime(0)
+		mThreadReady(false), mIdleTime(0), mId(0)
 	{ }
 
 	PooledThread::~PooledThread()
@@ -30,6 +64,7 @@ namespace BansheeEngine
 			mIdle = false;
 			mIdleTime = std::time(nullptr);
 			mThreadReady = true;
+			mId++;
 		}
 
 		BS_THREAD_NOTIFY_ONE(mReadyCond);
@@ -73,6 +108,8 @@ namespace BansheeEngine
 				mIdle = true;
 				mIdleTime = std::time(nullptr);
 				mThreadReady = false;
+
+				BS_THREAD_NOTIFY_ONE(mWorkerEndedCond);
 			}
 		}
 	}
@@ -109,6 +146,13 @@ namespace BansheeEngine
 		mName = name;
 	}
 
+	UINT32 PooledThread::getId() const
+	{ 
+		BS_LOCK_MUTEX(mMutex);
+
+		return mId; 
+	}
+
 	ThreadPool::ThreadPool(UINT32 threadCapacity, UINT32 maxCapacity, UINT32 idleTimeout)
 		:mDefaultCapacity(threadCapacity), mMaxCapacity(maxCapacity), mIdleTimeout(idleTimeout), mAge(0)
 	{
@@ -120,9 +164,12 @@ namespace BansheeEngine
 		stopAll();
 	}
 
-	void ThreadPool::run(const String& name, std::function<void()> workerMethod)
+	HThread ThreadPool::run(const String& name, std::function<void()> workerMethod)
 	{
-		getThread(name)->start(workerMethod);
+		PooledThread* thread = getThread(name);
+		thread->start(workerMethod);
+
+		return HThread(this, thread->getId());
 	}
 
 	void ThreadPool::stopAll()

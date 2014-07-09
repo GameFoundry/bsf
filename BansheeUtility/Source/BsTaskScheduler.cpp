@@ -42,15 +42,33 @@ namespace BansheeEngine
 	{
 		mMaxActiveTasks = BS_THREAD_HARDWARE_CONCURRENCY;
 
-		ThreadPool::instance().run("TaskScheduler", std::bind(&TaskScheduler::runMain, this));
+		mTaskSchedulerThread = ThreadPool::instance().run("TaskScheduler", std::bind(&TaskScheduler::runMain, this));
 	}
 
 	TaskScheduler::~TaskScheduler()
 	{
-		BS_LOCK_MUTEX(mReadyMutex);
+		// Wait until all tasks complete
+		BS_LOCK_MUTEX_NAMED(mActiveTaskMutex, activeTaskLock);
 
-		mShutdown = true;
+		while (mActiveTasks.size() > 0)
+		{
+			TaskPtr task = mActiveTasks[0];
+			activeTaskLock.unlock();
+
+			task->wait();
+			activeTaskLock.lock();
+		}
+
+		// Start shutdown of the main queue worker and wait until it exits
+		{
+			BS_LOCK_MUTEX(mReadyMutex);
+
+			mShutdown = true;
+		}
+
 		BS_THREAD_NOTIFY_ONE(mTaskReadyCond);
+
+		mTaskSchedulerThread.blockUntilComplete();
 	}
 
 	void TaskScheduler::addTask(const TaskPtr& task)
@@ -107,8 +125,12 @@ namespace BansheeEngine
 				if(curTask->mTaskDependency != nullptr && !curTask->mTaskDependency->isComplete())
 					continue;
 
-				curTask->mState.store(1);
-				mNumActiveTasks++;
+				BS_LOCK_MUTEX(mActiveTaskMutex);
+				{
+					curTask->mState.store(1);
+					mActiveTasks.push_back(curTask);
+					mNumActiveTasks++;
+				}
 
 				ThreadPool::instance().run(curTask->mName, std::bind(&TaskScheduler::runTask, this, curTask));
 			}
@@ -118,6 +140,14 @@ namespace BansheeEngine
 	void TaskScheduler::runTask(const TaskPtr& task)
 	{
 		task->mTaskWorker();
+
+		{
+			BS_LOCK_MUTEX(mActiveTaskMutex);
+
+			auto findIter = std::find(mActiveTasks.begin(), mActiveTasks.end(), task);
+			if (findIter != mActiveTasks.end())
+				mActiveTasks.erase(findIter);
+		}
 
 		{
 			BS_LOCK_MUTEX(mCompleteMutex);

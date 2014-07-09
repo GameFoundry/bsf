@@ -21,6 +21,8 @@ Polish TODO:
  - Updates links in git readme
  - Update links in license text
 
+TaskScheduler crashes on shutdown. My guess is because mutex and condition var go outs of scope but they're still being called on the task thread. Similar issue might exist in CoreThread.
+
 Automatically release resources on shutdown instead of forcing the user to manually call unload() and set handles to nullptr.
  - e.g. just invalidate all handles automatically
 

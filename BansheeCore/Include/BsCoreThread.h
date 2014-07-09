@@ -4,6 +4,7 @@
 #include "BsModule.h"
 #include "BsCommandQueue.h"
 #include "BsCoreThreadAccessor.h"
+#include "BsThreadPool.h"
 
 namespace BansheeEngine
 {
@@ -116,6 +117,7 @@ private:
 
 	volatile bool mCoreThreadShutdown;
 
+	HThread mCoreThread;
 	BS_THREAD_ID_TYPE mCoreThreadId;
 	BS_MUTEX(mCommandQueueMutex)
 	BS_MUTEX(mAccessorMutex)

@@ -11,17 +11,17 @@
 #include "BsSpinLock.h"
 
 #define BS_AUTO_MUTEX mutable std::mutex BS_AUTO_MUTEX_NAME;
-#define BS_LOCK_AUTO_MUTEX std::unique_lock<std::mutex> cmAutoMutexLock(BS_AUTO_MUTEX_NAME);
+#define BS_LOCK_AUTO_MUTEX std::unique_lock<std::mutex> bsAutoMutexLock(BS_AUTO_MUTEX_NAME);
 #define BS_MUTEX(name) mutable std::mutex name;
 #define BS_STATIC_MUTEX(name) static std::mutex name;
 #define BS_STATIC_MUTEX_INSTANCE(name) std::mutex name;
 #define BS_STATIC_MUTEX_CLASS_INSTANCE(name, classTypeName) std::mutex classTypeName##::name;
-#define BS_LOCK_MUTEX(name) std::unique_lock<std::mutex> cmnameLock(name);
+#define BS_LOCK_MUTEX(name) std::unique_lock<std::mutex> bsnameLock(name);
 #define BS_LOCK_MUTEX_NAMED(mutexName, lockName) std::unique_lock<std::mutex> lockName(mutexName);
 #define BS_LOCK_TYPE std::unique_lock<std::mutex>
 // like BS_AUTO_MUTEX but mutex held by pointer
 #define BS_AUTO_SHARED_MUTEX mutable std::mutex *BS_AUTO_MUTEX_NAME;
-#define BS_LOCK_AUTO_SHARED_MUTEX assert(BS_AUTO_MUTEX_NAME); std::lock_guard<std::mutex> cmAutoMutexLock(*BS_AUTO_MUTEX_NAME);
+#define BS_LOCK_AUTO_SHARED_MUTEX assert(BS_AUTO_MUTEX_NAME); std::lock_guard<std::mutex> bsAutoMutexLock(*BS_AUTO_MUTEX_NAME);
 #define BS_COPY_AUTO_SHARED_MUTEX(from) assert(!BS_AUTO_MUTEX_NAME); BS_AUTO_MUTEX_NAME = from;
 #define BS_SET_AUTO_SHARED_MUTEX_NULL BS_AUTO_MUTEX_NAME = 0;
 #define BS_MUTEX_CONDITIONAL(mutex) if (mutex)

@@ -51,6 +51,7 @@ namespace BansheeEngine
 	class StringTable;
 	struct LocalizedStringData;
 	class Path;
+	class HThread;
 	// Reflection
 	class IReflectable;
 	class RTTITypeBase;

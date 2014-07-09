@@ -5,6 +5,27 @@
 
 namespace BansheeEngine
 {
+	class ThreadPool;
+
+	/**
+	 * @brief	Handle to a thread managed by ThreadPool.
+	 */
+	class BS_UTILITY_EXPORT HThread
+	{
+	public:
+		HThread();
+		HThread(ThreadPool* pool, UINT32 threadId);
+
+		/**
+		 * @brief	Block the calling thread until the thread this handle points to completes.
+		 */
+		void blockUntilComplete();
+
+	private:
+		UINT32 mThreadId;
+		ThreadPool* mPool;
+	};
+
 	/**
 	 * @brief	Wrapper around a thread that is used within ThreadPool.
 	 */
@@ -51,6 +72,11 @@ namespace BansheeEngine
 		void setName(const String& name);
 
 		/**
+		 * @brief	Gets unique ID of the currently executing thread.
+		 */
+		UINT32 getId() const;
+
+		/**
 		 * @brief	Called when the thread is first created.
 		 */
 		virtual void onThreadStarted(const String& name) = 0;
@@ -61,6 +87,8 @@ namespace BansheeEngine
 		virtual void onThreadEnded(const String& name) = 0;
 
 	protected:
+		friend class HThread;
+
 		/**
 		 * @brief	Primary worker method that is ran when the thread is first
 		 * 			initialized.
@@ -71,6 +99,7 @@ namespace BansheeEngine
 		std::function<void()> mWorkerMethod;
 
 		String mName;
+		UINT32 mId;
 		bool mIdle;
 		bool mThreadStarted;
 		bool mThreadReady;
@@ -81,6 +110,7 @@ namespace BansheeEngine
 		BS_MUTEX(mMutex);
 		BS_THREAD_SYNCHRONISER(mStartedCond);
 		BS_THREAD_SYNCHRONISER(mReadyCond);
+		BS_THREAD_SYNCHRONISER(mWorkerEndedCond);
 	};
 
 	/**
@@ -140,8 +170,10 @@ namespace BansheeEngine
 		 *
 		 * @param	name			A name you may use for more easily identifying the thread.
 		 * @param	workerMethod	The worker method to be called by the thread.
+		 *
+		 * @returns	A thread handle you may use for monitoring the thread execution.
 		 */
-		void run(const String& name, std::function<void()> workerMethod);
+		HThread run(const String& name, std::function<void()> workerMethod);
 
 		/**
 		 * @brief	Stops all threads and destroys them. Caller must ensure each threads workerMethod
@@ -171,6 +203,8 @@ namespace BansheeEngine
 		UINT32 getNumAllocated() const;
 
 	protected:
+		friend class HThread;
+
 		Vector<PooledThread*> mThreads;
 		
 		/**
