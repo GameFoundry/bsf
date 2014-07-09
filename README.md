@@ -16,6 +16,8 @@ To compile Banshee you will need Visual Studio 2013 (Express version will work, 
 
 [Download source + dependencies] (http://nolinkyet)
 
+To compile DirectX render systems you will also need a separately installed DirectX SDK. Check "Dependencies.txt" for all information regarding used dependencies.
+
 ## Features (currently available)
 
 * Design

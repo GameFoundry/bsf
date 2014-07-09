@@ -10,7 +10,7 @@ BansheeEngine relies on the following 3rd party libraries:
 BansheeCore relies on the following 3rd party libraries:
  - NVIDIA Texture Tools 2.0.8
     - https://code.google.com/p/nvidia-texture-tools/
-	- See BansheeCompilationGuide.txt on how to compile it for Banshee (included with BansheeDependencies)
+	- See NVTTCompilationGuide.txt on how to compile it for Banshee
 
 Place dependency files in:
  - Library include files in (BansheeRootDir)/Dependencies/Include
@@ -21,28 +21,35 @@ Place dependency files in:
 
 Banshee plug-in dependencies:
 
-CamelotFBXImporter (optional) relies on:
+BansheeFBXImporter (optional) relies on:
  - FBX SDK 2015.1
    - http://usa.autodesk.com/fbx
 
-CamelotFreeImgImporter (optional) relies on:
+BansheeFreeImgImporter (optional) relies on:
  - FreeImage 3.13.1
   - http://freeimage.sourceforge.net
 
-CamelotFontImporter (optional) relies on:
+BansheeFontImporter (optional) relies on:
  - Freetype 2.3.5
   - http://www.freetype.org
   - IMPORTANT NOTE: When compiling as static library make sure to define "FREETYPE2_STATIC". It is not defined by default
     in provided Visual Studio projects, which can cause a headache.
 
-CamelotOISInput relies on:
- - CamelotOIS - Slightly modified version of OIS 1.3 specifically for Banshee
+BansheeOISInput (optional) relies on:
+ - BansheeOIS - Slightly modified version of OIS 1.3 specifically for Banshee
   - Supplied with Banshee source code but compiled as a separate project into a dependency
+
+BansheeD3D11RenderSystem & BansheeD3D9RenderSystem (both optional) rely on:
+ - Microsoft DirectX SDK June 2010
+  - http://www.microsoft.com/en-us/download/details.aspx?id=6812
+  - After installing the SDK make sure DXSDK_DIR environment variable is set up pointing to the installation path
 
 Place plug-in specific dependency files in:
  - Library include files in (BansheeRootDir)/(PluginDir)/Dependencies/Include
  - Static library files in (BansheeRootDir)/(PluginDir)/Dependencies/lib/(Platform)/(Configuration)
  - Dynamic library files in (BansheeRootDir)/bin/(Platform)/(Configuration)
+
+----------------------------------------------------------------------------------
 
  Legend:
   (BansheeRootDir) - Path to BansheeEngine folder
