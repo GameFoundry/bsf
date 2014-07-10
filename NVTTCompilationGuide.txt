@@ -1,0 +1,8 @@
+You might need to make some tweaks to get nvtt to compile on Visual Studio 2013. If you are using the Banshee provided source you do not have to do anything but if you want to compile a newever version of nvtt you might need to perform these steps:
+
+- Make sure to compile using the (no cuda) configurations.
+- In nvmath.h remove sqrt_asset, sqrtf_assert, acos_assert, acosf_assert, asin_assert, asinf_assert (and replace anything that complains about those missing with normal sqrt/sqrtf/acos/acosf/asin/asinf) methods.
+- Remove nvtt.rc resource file from nvtt project.
+- Remove libpng.lib;jpeg.lib;tiff.lib; input libraries from nvtt project
+- Remove ImageIO.h & ImageIO.cpp from nvimage project
+- Remove Image::load method from Image.h/Image.cpp in nvimage project

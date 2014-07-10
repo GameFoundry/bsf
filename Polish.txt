@@ -1,7 +1,4 @@
 Polish TODO:
- - Finalize example with resolution settings and proper GUI
- - Add an example model
-
  - Add license text to all files
 
  - Make a separate release branch with no editor/script stuff, and without .txt files and other development data
