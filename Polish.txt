@@ -1,6 +1,4 @@
 Polish TODO:
- - Add license text to all files
-
  - Make a separate release branch with no editor/script stuff, and without .txt files and other development data
   - Name the branch BansheeEnginePreview
   - Before I branch make a separate solution with example only projects
