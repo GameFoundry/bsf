@@ -8,7 +8,7 @@ On top of the powerful and flexible C++ core lies a fully featured editor and a 
 
 ## Download/Install
 
-To get Banshee to run you will need to check out the source code from GitHub and additionally you will need dependencies only available for download below. Dependencies should be extracted in the same folder as the root folder of the project (they share folder structure so it should be easy to see what goes where).
+To get Banshee to run you will need to check out the source code from GitHub and additionally you will need dependencies available for download below. Dependencies should be extracted in the same folder as the root folder of the project (they share folder structure so it should be easy to see what goes where).
 
 To compile Banshee you will need Visual Studio 2013 (Express version will work, but earlier Visual Studio versions will not). Other Windows compilers might work but have not been tested. Support for more platforms and compilers will become available with time.
 
