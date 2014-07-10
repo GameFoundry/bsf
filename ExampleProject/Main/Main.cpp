@@ -1,3 +1,6 @@
+//__________________________ Banshee Project - A modern game development toolkit _________________________________//
+//_____________________________________ www.banshee-project.com __________________________________________________//
+//________________________ Copyright (c) 2014 Marko Pintera. All rights reserved. ________________________________//
 #include <windows.h>
 
 #include "BsApplication.h"
@@ -127,10 +130,10 @@ int CALLBACK WinMain(
 
 namespace BansheeEngine
 {
-	Path exampleModelPath = "..\\..\\..\\..\\Data\\Examples\\Dragon.fbx";
-	Path exampleTexturePath = "..\\..\\..\\..\\Data\\Examples\\Dragon.tga";
-	Path exampleFragmentShaderPath = "..\\..\\..\\..\\Data\\Examples\\example_fs.gpuprog";
-	Path exampleVertexShaderPath = "..\\..\\..\\..\\Data\\Examples\\example_vs.gpuprog";
+	Path exampleModelPath = "..\\..\\Data\\Examples\\Dragon.fbx";
+	Path exampleTexturePath = "..\\..\\Data\\Examples\\Dragon.tga";
+	Path exampleFragmentShaderPath = "..\\..\\Data\\Examples\\example_fs.gpuprog";
+	Path exampleVertexShaderPath = "..\\..\\Data\\Examples\\example_vs.gpuprog";
 
 	GUIButton* toggleFullscreenButton = nullptr;
 	bool fullscreen = false;

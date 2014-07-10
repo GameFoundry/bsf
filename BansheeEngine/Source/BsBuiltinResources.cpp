@@ -1,3 +1,6 @@
+//__________________________ Banshee Project - A modern game development toolkit _________________________________//
+//_____________________________________ www.banshee-project.com __________________________________________________//
+//________________________ Copyright (c) 2014 Marko Pintera. All rights reserved. ________________________________//
 #include "BsBuiltinResources.h"
 #include "BsGUIElementStyle.h"
 
@@ -21,8 +24,8 @@ namespace BansheeEngine
 	const WString BuiltinResources::DefaultFontPath = L"arial.ttf";
 	const UINT32 BuiltinResources::DefaultFontSize = 10;
 
-	const Path BuiltinResources::DefaultSkinFolder = L"..\\..\\..\\..\\Data\\Engine\\Skin\\";
-	const Path BuiltinResources::DefaultCursorFolder = L"..\\..\\..\\..\\Data\\Engine\\Cursors\\";
+	const Path BuiltinResources::DefaultSkinFolder = L"..\\..\\Data\\Engine\\Skin\\";
+	const Path BuiltinResources::DefaultCursorFolder = L"..\\..\\Data\\Engine\\Cursors\\";
 
 	const WString BuiltinResources::WhiteTex = L"White.psd";
 

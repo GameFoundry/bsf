@@ -1,3 +1,6 @@
+//__________________________ Banshee Project - A modern game development toolkit _________________________________//
+//_____________________________________ www.banshee-project.com __________________________________________________//
+//________________________ Copyright (c) 2014 Marko Pintera. All rights reserved. ________________________________//
 #ifndef _WIN32_WINNT
 #define _WIN32_WINNT 0x0500
 #endif
