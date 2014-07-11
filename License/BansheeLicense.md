@@ -22,9 +22,13 @@ The Software includes Third Party Software components. Those components may incl
 The Software is provided “as is”, without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for particular purpose, title or non-infringement. In no event shall the copyright holders or anyone distributing the Software be liable for any damages or other liability, whether in contract, tort or otherwise, arising from, out of or in connection with the Software or the use or other dealings in the Software.
 ## Definitions
 “Author” means the original creator and copyright holder of the Software, Marko Pintera.
+
 “Banshee Engine Logo” means the image asset provided as Exhibit A.
+
 “Licensed Technology” means the Software source code, machine-executable code, documentation, tools, assets and any other files that are considered part of the “Banshee Project”.
+
 “Software” means the original set of files created and distributed as “Banshee Project” by the Author.
+
 “Third Party Software” means any third party components used by the Software, either in source or machine-executable code format and any assets they might include.
 
 ## Exhibits
