@@ -92,6 +92,13 @@ namespace BansheeEngine
 		virtual Vector2I _getOptimalSize() const = 0;
 
 		/**
+		 * @brief	Returns element optimal size constrained by its layout options.
+		 *
+		 * @note	Internal method.
+		 */
+		virtual Vector2I _calculateOptimalLayoutSize() const = 0;
+
+		/**
 		 * @brief	Returns element padding that determines how far apart to space out this element
 		 *			from other elements in a layout.
 		 *

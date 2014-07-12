@@ -3,6 +3,13 @@ Test new ScriptObject* system
 
 When I change an object in InspectableObject field I probably need to rebuild entire GUI hierarchy for that object. Right now I'm not.
 
+TODO
+ - I need to prototype how to decently refresh the inspector while still keeping the input field active (e.g. adding a new array element)
+ - Fix layout after new changes, especially pay attention to mActualHeight/mActualWidth stuff I had to remove
+ - Actually add GUILayoutUtility to C# for calculating optimal and actual GUI element sizes
+ - MAYBE just create a C++ GUI class that class updates when its size changes and allows the parent areas to resize as well.
+   - However this will mean those child areas are updated one frame later
+
 -----------------------------------------------
 IMPLEMENTATION STEPS
 

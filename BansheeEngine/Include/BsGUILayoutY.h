@@ -19,6 +19,11 @@ namespace BansheeEngine
 		 * @brief	Calculate optimal sizes of all child layout elements.
 		 */
 		void _updateOptimalLayoutSizes();
+
+		/**
+		 * @copydoc	GUIElementBase::_calculateOptimalLayoutSize
+		 */
+		virtual Vector2I _calculateOptimalLayoutSize() const;
 	protected:
 		/**
 		 * @brief	Positions/size all child layout elements based on the provided settings and their (previously calculated) optimal sizes.
@@ -32,5 +37,18 @@ namespace BansheeEngine
 		 * @brief	areaDepth	Depth of the parent area. Determines depth at which child elements will be placed on. Takes priority over element-specific depth.
 		 */
 		void _updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height, RectI clipRect, UINT8 widgetDepth, UINT16 areaDepth);
+
+		/**
+		 * @brief	Calculates positions & sizes of all elements in the layout. This method expects a pre-allocated array to store the data in.
+		 *
+		 * @param	width			Available width for the layout elements.
+		 * @param	height			Available height for the layout elements.
+		 * @param	elementAreas	Array to hold output areas. Must be the same size as the number of child elements.
+		 * @param	numElements		Size of the element areas array.
+		 * @param	optimalSizes	Optimal sizes used by the elements. Array must be same size as elements array.
+		 *
+		 * @note	Returned areas are relative to layout origin.
+		 */
+		void getElementAreas(UINT32 width, UINT32 height, RectI* elementAreas, UINT32 numElements, const Vector<Vector2I>& optimalSizes) const;
 	};
 }
