@@ -24,11 +24,12 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIFixedSpace::internal_destroy);
 		metaData.scriptClass->addInternalCall("Internal_SetVisible", &ScriptGUIFixedSpace::internal_setVisible);
 		metaData.scriptClass->addInternalCall("Internal_SetParent", &ScriptGUIFixedSpace::internal_setParent);
+		metaData.scriptClass->addInternalCall("Internal_SetSize", &ScriptGUIFixedSpace::internal_setSize);
 	}
 
 	void ScriptGUIFixedSpace::destroy()
 	{
-		if(!mIsDestroyed)
+		if (!mIsDestroyed)
 		{
 			mParentLayout->removeSpace(mFixedSpace);
 			mParentLayout = nullptr;
@@ -49,6 +50,11 @@ namespace BansheeEngine
 	void ScriptGUIFixedSpace::internal_destroy(ScriptGUIFixedSpace* nativeInstance)
 	{
 		nativeInstance->destroy();
+	}
+
+	void ScriptGUIFixedSpace::internal_setSize(ScriptGUIFixedSpace* nativeInstance, UINT32 size)
+	{
+		nativeInstance->mFixedSpace.setSize(size);
 	}
 
 	void ScriptGUIFixedSpace::internal_setVisible(ScriptGUIFixedSpace* nativeInstance, bool visible)

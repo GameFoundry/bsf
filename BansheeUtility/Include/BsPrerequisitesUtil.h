@@ -14,7 +14,7 @@
 #define BS_VER_DEV 1
 #define BS_VER_PREVIEW 2
 
-#define BS_VER VS_VER_PREVIEW
+#define BS_VER BS_VER_DEV
 
 // Platform-specific stuff
 #include "BsPlatformDefines.h"

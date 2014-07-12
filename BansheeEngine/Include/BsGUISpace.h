@@ -7,7 +7,7 @@ namespace BansheeEngine
 {
 	/**
 	 * @brief	GUI element that may be inserted into layouts in order to make
-	 *			a space of a fixed sized.
+	 *			a space of a fixed size.
 	 */
 	class BS_EXPORT GUIFixedSpace : public GUIElementBase
 	{
@@ -22,6 +22,11 @@ namespace BansheeEngine
 		 * @brief	Returns the size of the space in pixels.
 		 */
 		UINT32 getSize() const { return mSize; }
+
+		/**
+		 * @brief	Changes the size of the space to the specified value, in pixels.
+		 */
+		void setSize(UINT32 size) { mSize = size; markContentAsDirty(); }
 
 		/**
 		 * @copydoc	GUIElementBase::_getType

@@ -14,6 +14,7 @@ namespace BansheeEngine
 		static void internal_createInstance(MonoObject* instance, MonoObject* parentLayout, UINT32 size);
 
 		static void internal_destroy(ScriptGUIFixedSpace* nativeInstance);
+		static void internal_setSize(ScriptGUIFixedSpace* nativeInstance, UINT32 size);
 		static void internal_setVisible(ScriptGUIFixedSpace* nativeInstance, bool visible);
 		static void internal_setParent(ScriptGUIFixedSpace* nativeInstance, MonoObject* parentLayout);
 

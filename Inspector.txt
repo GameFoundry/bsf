@@ -4,6 +4,20 @@ Test new ScriptObject* system
 When I change an object in InspectableObject field I probably need to rebuild entire GUI hierarchy for that object. Right now I'm not.
 
 -----------------------------------------------
+IMPLEMENTATION STEPS
+
+Get the current foldouts and fields rendering with just labels properly, currently they're positioned wrong
+Find a way to calculate inspector height so the inspector entries can be positioned exactly
+Port IntField to C# and use that instead of a simple label
+Ensure get/set value works as intended
+Ensure Undo/redo works as intended
+ - This task needs decomposing. Likely need to port UndoRedo to C# first.
+Add hierarchical object fields and ensure they work/update properly
+Add array fields and ensure they work/update properly
+Similar to array add list and dictionary fields (will likely need SerializableDictionary & SerializableList classes)
+Add remaining field types
+
+-----------------------------------------------
 FINE GRAINED TASKS
 
 - Add GUIUtility and a way how to calculate GUILayout height for use in inspectors
@@ -84,12 +98,6 @@ Refactor BuiltinMaterialFactory to BuiltinEngineResources
 Cursor
  - A way to save/load a set of cursors
 
-Get rid of the CamelotFramework namespace
- - I shouldn't need to prefix each variable with 
- - Rename files/variables/macros starting with Cm
- - Rename projects starting with Camelot
- - Search for any remaining uses of "Camelot" and remove them
-
 Undocking a window wont remove the tabbed title bar
 While dragging an undocked window, dropping it over the main window (not over dock overlays) will not restore it
 
@@ -101,6 +109,3 @@ Make a common class for ScriptGUIElement as they all share:
  - Destroy(), DestroyInstance(), SetParent(), SetVisible() methods, and potentially others
 
 Add InsertElement to GUILayout
-
- Boost any replacement: http://www.codeproject.com/Articles/11250/High-Performance-Dynamic-Typing-in-C-using-a-Repla
-  - Also POCO has any class

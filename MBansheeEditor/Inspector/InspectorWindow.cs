@@ -9,6 +9,7 @@ namespace BansheeEditor
         private class InspectorData
         {
             public GUIFoldout foldout;
+            public GUIFixedSpace space;
             public Inspector inspector;
         }
 
@@ -30,6 +31,7 @@ namespace BansheeEditor
 
                 data.foldout = new GUIFoldout(allComponents[i].GetType().Name);
                 inspectorLayout.AddElement(data.foldout);
+                data.space = inspectorLayout.AddSpace(0);
 
                 data.inspector = GetInspector(allComponents[i].GetType());
                 data.inspector.Initialize(CreatePanel(0, 0, 0, 0), allComponents[i]);
@@ -38,6 +40,8 @@ namespace BansheeEditor
 
                 inspectorData.Add(data);
             }
+
+            inspectorLayout.AddFlexibleSpace();
 
             RepositionInspectors();
         }
@@ -92,6 +96,7 @@ namespace BansheeEditor
                 int inspectorHeight = inspectorData[i].inspector.GetOptimalHeight();
 
                 inspectorData[i].inspector.SetArea(0, curPosition, width, inspectorHeight);
+                inspectorData[i].space.SetSize(inspectorHeight);
                 curPosition += inspectorHeight;
             } 
         }
