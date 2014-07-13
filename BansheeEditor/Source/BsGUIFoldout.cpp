@@ -6,7 +6,6 @@
 #include "BsBuiltinResources.h"
 #include "BsGUIWidget.h"
 #include "BsGUIMouseEvent.h"
-#include "BsGUIWidget.h"
 
 namespace BansheeEngine
 {

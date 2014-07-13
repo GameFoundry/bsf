@@ -20,6 +20,8 @@ namespace BansheeEngine
 		void registerArea(ScriptGUIArea* area);
 		void unregisterArea(ScriptGUIArea* area);
 
+		const Vector<ScriptGUIArea*>& getAreas() const { return mAreas; }
+
 	protected:
 		ScriptGUIPanel(MonoObject* instance);
 
