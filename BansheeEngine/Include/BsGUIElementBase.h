@@ -78,11 +78,38 @@ namespace BansheeEngine
 			RectI clipRect, UINT8 widgetDepth, UINT16 areaDepth);
 
 		/**
+		 * @brief	Calculates positions & sizes of all elements in the layout. This method expects a pre-allocated array to store the data in.
+		 *
+		 * @brief	x				Start X coordinate of the layout area. First element will be placed here. Relative to parent widget.
+		 * @brief	y				Start Y coordinate of the layout area. First element will be placed here. Relative to parent widget.
+		 * @param	width			Available width for the layout elements.
+		 * @param	height			Available height for the layout elements.
+		 * @param	elementAreas	Array to hold output areas. Must be the same size as the number of child elements.
+		 * @param	numElements		Size of the element areas array.
+		 * @param	optimalSizes	Optimal sizes used by the elements. Array must be same size as elements array.
+		 */
+		virtual void _getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, RectI* elementAreas, UINT32 numElements, const Vector<Vector2I>& optimalSizes) const;
+
+		/**
 		 * @brief	Sets a new parent for this element.
 		 *
 		 * @note	Internal method.
 		 */
 		void _setParent(GUIElementBase* parent);
+
+		/**
+		 * @brief	Returns number of child elements.
+		 *
+		 * @note	Internal method.
+		 */
+		UINT32 _getNumChildren() const { return (UINT32)mChildren.size(); }
+
+		/**
+		 * @brief	Return the child element at the specified index.
+		 *
+		 * @note	Internal method.
+		 */
+		GUIElementBase* _getChild(UINT32 idx) const { return mChildren[idx]; }
 
 		/**
 		 * @brief	Returns previously calculated optimal size for this element.

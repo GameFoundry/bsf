@@ -247,7 +247,7 @@ namespace BansheeEngine
 		GUIDropDownData dropDownData = subMenu->menu->getDropDownData();
 		GUIWidget* widget = subMenu->button->_getParentWidget();
 
-		GUIDropDownAreaPlacement placement = GUIDropDownAreaPlacement::aroundBoundsHorz(subMenu->button->getBounds());
+		GUIDropDownAreaPlacement placement = GUIDropDownAreaPlacement::aroundBoundsHorz(subMenu->button->_getCachedBounds());
 
 		GameObjectHandle<GUIDropDownBox> dropDownBox = GUIDropDownBoxManager::instance().openDropDownBox(widget->getTarget(), 
 			placement, dropDownData, widget->getSkin(), GUIDropDownType::MenuBar, std::bind(&GUIMenuBar::onSubMenuClosed, this));
@@ -311,12 +311,12 @@ namespace BansheeEngine
 		mMainArea->_update();
 
 		Vector<RectI> nonClientAreas;
-		nonClientAreas.push_back(mLogoTexture->getBounds());
+		nonClientAreas.push_back(mLogoTexture->_getCachedBounds());
 
 		if(mChildMenus.size() > 0)
 		{
-			RectI lastButtonBounds = mChildMenus.back().button->getBounds();
-			RectI minButtonBounds = mMinBtn->getBounds();
+			RectI lastButtonBounds = mChildMenus.back().button->_getCachedBounds();
+			RectI minButtonBounds = mMinBtn->_getCachedBounds();
 
 			RectI emptyArea(lastButtonBounds.x + lastButtonBounds.width, mMainArea->y(), 
 				minButtonBounds.x - (lastButtonBounds.x + lastButtonBounds.width), mMainArea->height());

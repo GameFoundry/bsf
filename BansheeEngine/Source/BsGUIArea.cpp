@@ -11,7 +11,7 @@ namespace BansheeEngine
 		:mWidget(widget), mLeft(x), mTop(y), mDepth(depth), mIsDirty(true), mIsDisabled(false),
 		mResizeXWithWidget(false), mResizeYWithWidget(false), mWidth(0), mHeight(0), mRight(0), mBottom(0)
 	{
-		mLayout = bs_new<GUILayoutX, PoolAlloc>();
+		mLayout = bs_new<GUILayoutX, PoolAlloc>(this);
 		mLayout->_changeParentWidget(widget);
 
 		mWidget->registerArea(this);

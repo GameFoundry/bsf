@@ -400,7 +400,7 @@ namespace BansheeEngine
 		INT32 idx = uniqueIdxToSeqIdx(tabIdx);
 		if(idx != -1)
 		{
-			RectI bounds = getBounds();
+			RectI bounds = _getCachedBounds();
 			if(bounds.contains(dragPos))
 			{
 				if(!mDragInProgress)

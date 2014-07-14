@@ -193,7 +193,7 @@ namespace BansheeEngine
 		return Vector2I(optimalWidth, optimalHeight);
 	}
 
-	RectI GUIElement::getBounds() const
+	RectI GUIElement::_getCachedBounds() const
 	{
 		return RectI(mOffset.x, mOffset.y, mWidth, mHeight);
 	}

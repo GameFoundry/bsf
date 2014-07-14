@@ -62,6 +62,8 @@ Reminders:
   - Make a Getting Started guide, along with the example project. Or just finish up the manual.
   - I'm not too happy with HStrings using so many events. They use one internally which I think I can replace completely quite easily. And one externally for notifying GUI components, replacing
     which would require more thought.
+  - GUIElementBase::_getElementAreas is currently only implemented for layouts. It will work of child elements of layouts and layouts themselves but will not 
+    work for child elements of custom element types. This method is used for calculating size and position of an element in its parent.
 
 Potential optimizations:
  - bulkPixelConversion is EXTREMELY poorly unoptimized. Each pixel it calls a separate method that does redudant operations every pixel.

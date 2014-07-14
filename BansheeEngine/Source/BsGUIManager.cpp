@@ -1419,7 +1419,7 @@ namespace BansheeEngine
 			const Matrix4& worldTfrm = bridgeElement->_getParentWidget()->SO()->getWorldTfrm();
 
 			Vector4 vecLocalPos = worldTfrm.inverse().multiply3x4(Vector4((float)windowPos.x, (float)windowPos.y, 0.0f, 1.0f));
-			RectI bridgeBounds = bridgeElement->getBounds();
+			RectI bridgeBounds = bridgeElement->_getCachedBounds();
 
 			// Find coordinates relative to the bridge element
 			float x = vecLocalPos.x - (float)bridgeBounds.x;

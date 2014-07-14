@@ -227,6 +227,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsCursor.cpp" />
+    <ClCompile Include="Source\BsGUILayoutUtility.cpp" />
     <ClCompile Include="Source\BsInputConfiguration.cpp" />
     <ClCompile Include="Source\BsRenderableHandler.cpp" />
     <ClCompile Include="Source\BsRenderableProxy.cpp" />
@@ -252,6 +253,7 @@
     <ClInclude Include="Include\BsGUIDropDownHitBox.h" />
     <ClInclude Include="Include\BsGUIElementContainer.h" />
     <ClInclude Include="Include\BsGUIHelper.h" />
+    <ClInclude Include="Include\BsGUILayoutUtility.h" />
     <ClInclude Include="Include\BsGUIListBox.h" />
     <ClInclude Include="Include\BsGUIElementBase.h" />
     <ClInclude Include="Include\BsGUIInputTool.h" />

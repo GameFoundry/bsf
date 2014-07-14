@@ -97,11 +97,6 @@ namespace BansheeEngine
 		void updateRenderElements();
 
 		/**
-		 * @brief	Gets non-clipped bounds that were assigned to the element by the parent layout.
-		 */
-		RectI getBounds() const;
-
-		/**
 		 * @brief	Sets or removes focus from an element. Will change element style.
 		 */
 		void setFocus(bool enabled);
@@ -191,6 +186,15 @@ namespace BansheeEngine
 		void _setClipRect(const RectI& clipRect);
 
 		/**
+		 * @brief	Gets non-clipped bounds that were assigned to the element by the parent layout.
+		 *
+		 * @note	This value is updated during layout update which means it might be out of date
+		 *			if parent element bounds changed since.
+		 *			Internal method:
+		 */
+		RectI _getCachedBounds() const;
+
+		/**
 		 * @copydoc	GUIElementBase::_changeParentWidget
 		 */
 		virtual void _changeParentWidget(GUIWidget* widget);
@@ -198,21 +202,27 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns width of the element in pixels.
 		 *
-		 * @note	Internal method.
+		 * @note	This value is updated during layout update which means it might be out of date
+		 *			if parent element bounds changed since.
+		 *			Internal method:
 		 */
 		UINT32 _getWidth() const { return mWidth; }
 
 		/**
 		 * @brief	Returns height of the element in pixels.
 		 *
-		 * @note	Internal method.
+		 * @note	This value is updated during layout update which means it might be out of date
+		 *			if parent element bounds changed since.
+		 *			Internal method:
 		 */
 		UINT32 _getHeight() const { return mHeight; }
 
 		/**
 		 * @brief	Returns position of the element, relative to parent GUI widget origin.
 		 *
-		 * @note	Internal method.
+		 * @note	This value is updated during layout update which means it might be out of date
+		 *			if parent element bounds changed since.
+		 *			Internal method:
 		 */
 		Vector2I _getOffset() const { return mOffset; }
 

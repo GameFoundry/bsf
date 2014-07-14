@@ -205,7 +205,7 @@ namespace BansheeEngine
 				treeElement = element->getTreeElement();
 			}
 
-			if(treeElement != nullptr && event.getPosition().x >= treeElement->mElement->getBounds().x)
+			if(treeElement != nullptr && event.getPosition().x >= treeElement->mElement->_getCachedBounds().x)
 			{
 				if(event.isCtrlDown())
 				{

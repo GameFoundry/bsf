@@ -6,6 +6,10 @@
 
 namespace BansheeEngine
 {
+	GUILayoutX::GUILayoutX(GUIArea* parentArea)
+		:GUILayout(parentArea)
+	{ }
+
 	Vector2I GUILayoutX::_calculateOptimalLayoutSize() const
 	{
 		UINT32 optimalWidth = 0;
@@ -75,7 +79,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUILayoutX::getElementAreas(UINT32 width, UINT32 height, RectI* elementAreas, UINT32 numElements, const Vector<Vector2I>& optimalSizes) const
+	void GUILayoutX::_getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, RectI* elementAreas, UINT32 numElements, const Vector<Vector2I>& optimalSizes) const
 	{
 		assert(mChildren.size() == numElements);
 
@@ -357,16 +361,16 @@ namespace BansheeEngine
 				INT32 yOffset = Math::ceilToInt(((INT32)height - (INT32)(elemHeight + yPadding)) * 0.5f);
 				yOffset = std::max(0, yOffset);
 
-				elementAreas[childIdx].x = xOffset;
-				elementAreas[childIdx].y = yOffset;
+				elementAreas[childIdx].x = x + xOffset;
+				elementAreas[childIdx].y = y + yOffset;
 			}
 			else if (child->_getType() == GUIElementBase::Type::Layout)
 			{
 				GUILayout* layout = static_cast<GUILayout*>(child);
 
 				elementAreas[childIdx].height = height;
-				elementAreas[childIdx].x = xOffset;
-				elementAreas[childIdx].y = 0;
+				elementAreas[childIdx].x = x + xOffset;
+				elementAreas[childIdx].y = y;
 			}
 
 			xOffset += elemWidth + child->_getPadding().right;
@@ -388,7 +392,7 @@ namespace BansheeEngine
 		if (numElements > 0)
 			elementAreas = stackConstructN<RectI>(numElements);
 
-		getElementAreas(width, height, elementAreas, numElements, mOptimalSizes);
+		_getElementAreas(x, y,width, height, elementAreas, numElements, mOptimalSizes);
 
 		// Now that we have all the areas, actually assign them
 		UINT32 childIdx = 0;
@@ -405,7 +409,7 @@ namespace BansheeEngine
 				element->_setWidth(childArea.width);
 				element->_setHeight(childArea.height);
 
-				Vector2I offset(x + childArea.x, y + childArea.y);
+				Vector2I offset(childArea.x, childArea.y);
 				element->_setOffset(offset);
 				element->_setWidgetDepth(widgetDepth);
 				element->_setAreaDepth(areaDepth);
@@ -423,9 +427,9 @@ namespace BansheeEngine
 			{
 				GUILayout* layout = static_cast<GUILayout*>(child);
 
-				RectI newClipRect(x + childArea.x, y, childArea.width, height);
+				RectI newClipRect(childArea.x, childArea.y, childArea.width, height);
 				newClipRect.clip(clipRect);
-				layout->_updateLayoutInternal(x + childArea.x, y, childArea.width, height, newClipRect, widgetDepth, areaDepth);
+				layout->_updateLayoutInternal(childArea.x, childArea.y, childArea.width, height, newClipRect, widgetDepth, areaDepth);
 
 				UINT32 childHeight = layout->_getActualHeight();
 				mActualHeight = std::max(height, childHeight);

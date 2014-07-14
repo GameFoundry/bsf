@@ -47,7 +47,7 @@ namespace BansheeEngine
 		RectI draggableArea;
 
 		if(mLabel != nullptr)
-			draggableArea = mLabel->getBounds();
+			draggableArea = mLabel->_getCachedBounds();
 
 		if(draggableArea.contains(position))
 		{
@@ -65,7 +65,7 @@ namespace BansheeEngine
 		RectI draggableArea;
 
 		if(mLabel != nullptr)
-			draggableArea = mLabel->getBounds();
+			draggableArea = mLabel->_getCachedBounds();
 
 		if(event.getType() == GUIMouseEventType::MouseDragStart)
 		{

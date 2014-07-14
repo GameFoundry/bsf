@@ -563,7 +563,7 @@ namespace BansheeEngine
 	{
 		closeSubMenu();
 
-		mSubMenu = bs_new<DropDownSubMenu>(mOwner, GUIDropDownAreaPlacement::aroundBoundsVert(source->getBounds()), 
+		mSubMenu = bs_new<DropDownSubMenu>(mOwner, GUIDropDownAreaPlacement::aroundBoundsVert(source->_getCachedBounds()), 
 			mAvailableBounds, mData.entries[idx].getSubMenuData(), mType, mDepthOffset + 1);
 	}
 }

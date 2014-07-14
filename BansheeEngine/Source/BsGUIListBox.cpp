@@ -106,7 +106,7 @@ namespace BansheeEngine
 		}
 
 		GUIWidget* widget = _getParentWidget();
-		GUIDropDownAreaPlacement placement = GUIDropDownAreaPlacement::aroundBoundsHorz(getBounds());
+		GUIDropDownAreaPlacement placement = GUIDropDownAreaPlacement::aroundBoundsHorz(_getCachedBounds());
 
 		GameObjectHandle<GUIDropDownBox> dropDownBox = GUIDropDownBoxManager::instance().openDropDownBox(widget->getTarget(), 
 			placement, dropDownData, widget->getSkin(), GUIDropDownType::MenuBar, std::bind(&GUIListBox::onListBoxClosed, this));
