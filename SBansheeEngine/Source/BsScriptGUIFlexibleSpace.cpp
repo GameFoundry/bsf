@@ -12,7 +12,7 @@
 namespace BansheeEngine
 {
 	ScriptGUIFlexibleSpace::ScriptGUIFlexibleSpace(MonoObject* instance, GUIFlexibleSpace& flexibleSpace, GUILayout* parentLayout)
-		:ScriptObject(instance), mFlexibleSpace(flexibleSpace), mParentLayout(parentLayout), mIsDestroyed(false)
+		:TScriptGUIElementBase(instance, &flexibleSpace), mFlexibleSpace(flexibleSpace), mParentLayout(parentLayout), mIsDestroyed(false)
 	{
 
 	}
@@ -20,10 +20,6 @@ namespace BansheeEngine
 	void ScriptGUIFlexibleSpace::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIFlexibleSpace::internal_createInstance);
-
-		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIFlexibleSpace::internal_destroy);
-		metaData.scriptClass->addInternalCall("Internal_SetVisible", &ScriptGUIFlexibleSpace::internal_setVisible);
-		metaData.scriptClass->addInternalCall("Internal_SetParent", &ScriptGUIFlexibleSpace::internal_setParent);
 	}
 
 	void ScriptGUIFlexibleSpace::destroy()
@@ -37,6 +33,11 @@ namespace BansheeEngine
 		}
 	}
 
+	void ScriptGUIFlexibleSpace::setParent(GUILayout* parentLayout)
+	{
+		// FlexibleSpace parent is static, so do nothing
+	}
+
 	void ScriptGUIFlexibleSpace::internal_createInstance(MonoObject* instance, MonoObject* parentLayout)
 	{
 		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
@@ -44,23 +45,5 @@ namespace BansheeEngine
 		GUIFlexibleSpace& space = nativeLayout->addFlexibleSpace();
 
 		ScriptGUIFlexibleSpace* nativeInstance = new (bs_alloc<ScriptGUIFlexibleSpace>()) ScriptGUIFlexibleSpace(instance, space, nativeLayout);
-	}
-
-	void ScriptGUIFlexibleSpace::internal_destroy(ScriptGUIFlexibleSpace* nativeInstance)
-	{
-		nativeInstance->destroy();
-	}
-
-	void ScriptGUIFlexibleSpace::internal_setVisible(ScriptGUIFlexibleSpace* nativeInstance, bool visible)
-	{
-		if(visible)
-			nativeInstance->mFlexibleSpace.enableRecursively();
-		else
-			nativeInstance->mFlexibleSpace.disableRecursively();
-	}
-
-	void ScriptGUIFlexibleSpace::internal_setParent(ScriptGUIFlexibleSpace* nativeInstance, MonoObject* parentLayout)
-	{
-		// FlexibleSpace parent is static, so do nothing
 	}
 }

@@ -2,6 +2,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
+#include "BsScriptGUIElement.h"
 #include "BsVector2I.h"
 #include "BsRectI.h"
 
@@ -15,7 +16,7 @@ namespace BansheeEngine
 		ScriptGUILayoutUtility();
 
 	private:
-		static Vector2I internal_CalculateOptimalSize(MonoObject* managedInstance);
-		static RectI internal_CalculateBounds(MonoObject* managedInstance);
+		static Vector2I internal_CalculateOptimalSize(ScriptGUIElementBaseTBase* guiElement);
+		static RectI internal_CalculateBounds(ScriptGUIElementBaseTBase* guiElement);
 	};
 }

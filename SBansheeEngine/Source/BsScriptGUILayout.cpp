@@ -12,7 +12,7 @@
 namespace BansheeEngine
 {
 	ScriptGUILayout::ScriptGUILayout(MonoObject* instance, GUILayout* layout, GUILayout* parentLayout)
-		:ScriptObject(instance), mLayout(layout), mParentLayout(parentLayout), mIsDestroyed(false)
+		:TScriptGUIElementBase(instance, layout), mLayout(layout), mParentLayout(parentLayout), mIsDestroyed(false)
 	{
 
 	}
@@ -23,10 +23,6 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateInstanceXFromLayout", &ScriptGUILayout::internal_createInstanceXFromLayout);
 		metaData.scriptClass->addInternalCall("Internal_CreateInstanceYFromLayout", &ScriptGUILayout::internal_createInstanceYFromLayout);
 		metaData.scriptClass->addInternalCall("Internal_CreateInstanceYFromScrollArea", &ScriptGUILayout::internal_createInstanceYFromScrollArea);
-
-		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUILayout::internal_destroy);
-		metaData.scriptClass->addInternalCall("Internal_SetVisible", &ScriptGUILayout::internal_setVisible);
-		metaData.scriptClass->addInternalCall("Internal_SetParent", &ScriptGUILayout::internal_setParent);
 	}
 
 	void ScriptGUILayout::destroy()
@@ -41,6 +37,11 @@ namespace BansheeEngine
 
 			mIsDestroyed = true;
 		}
+	}
+
+	void ScriptGUILayout::setParent(GUILayout* parentLayout)
+	{
+		// FixedSpace parent is static, so do nothing
 	}
 
 	void ScriptGUILayout::internal_createInstanceXFromArea(MonoObject* instance, MonoObject* parentArea)
@@ -81,23 +82,5 @@ namespace BansheeEngine
 
 		ScriptGUILayout* nativeInstance = new (bs_alloc<ScriptGUILayout>()) 
 			ScriptGUILayout(instance, nativeLayout, nativeLayout);
-	}
-
-	void ScriptGUILayout::internal_destroy(ScriptGUILayout* nativeInstance)
-	{
-		nativeInstance->destroy();
-	}
-
-	void ScriptGUILayout::internal_setVisible(ScriptGUILayout* nativeInstance, bool visible)
-	{
-		if(visible)
-			nativeInstance->getInternalValue()->enableRecursively();
-		else
-			nativeInstance->getInternalValue()->disableRecursively();
-	}
-
-	void ScriptGUILayout::internal_setParent(ScriptGUILayout* nativeInstance, MonoObject* parentLayout)
-	{
-		// Layout parent is static, so do nothing
 	}
 }

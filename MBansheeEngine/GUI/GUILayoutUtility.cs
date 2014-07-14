@@ -10,18 +10,18 @@ namespace BansheeEngine
     {
         public static Vector2 CalculateOptimalSize(GUIElement element)
         {
-            return Internal_CalculateOptimalSize(element);
+            return Internal_CalculateOptimalSize(element.GetCachedPtr());
         }
 
         public static RectI CalculateBounds(GUIElement element)
         {
-            return Internal_CalculateBounds(element);
+            return Internal_CalculateBounds(element.GetCachedPtr());
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector2 Internal_CalculateOptimalSize(GUIElement element);
+        private static extern Vector2 Internal_CalculateOptimalSize(IntPtr element);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern RectI Internal_CalculateBounds(GUIElement element);
+        private static extern RectI Internal_CalculateBounds(IntPtr element);
     }
 }

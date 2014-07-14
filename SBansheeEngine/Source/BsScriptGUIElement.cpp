@@ -11,30 +11,46 @@
 
 namespace BansheeEngine
 {
-	ScriptGUIElementBase::ScriptGUIElementBase(MonoObject* instance)
+	ScriptGUIElementBaseTBase::ScriptGUIElementBaseTBase(MonoObject* instance)
 		:ScriptObjectBase(instance), mIsDestroyed(false), mElement(nullptr)
 	{ }
+
+
+
+	void ScriptGUIElementBaseTBase::initialize(GUIElementBase* element)
+	{
+		mElement = element;
+	}
+
+	ScriptGUIElementTBase::ScriptGUIElementTBase(MonoObject* instance)
+		:ScriptGUIElementBaseTBase(instance)
+	{
+
+	}
+
+	void ScriptGUIElementTBase::destroy()
+	{
+		if(!mIsDestroyed)
+		{
+			if (mElement->_getType() == GUIElementBase::Type::Element)
+			{
+				GUIElement::destroy((GUIElement*)mElement);
+				mElement = nullptr;
+
+				mIsDestroyed = true;
+			}
+		}
+	}
+
+	void ScriptGUIElementTBase::setParent(GUILayout* layout)
+	{
+		layout->addElement((GUIElement*)mElement);
+	}
 
 	ScriptGUIElement::ScriptGUIElement(MonoObject* instance)
 		:ScriptObject(instance)
 	{
 
-	}
-
-	void ScriptGUIElementBase::initialize(GUIElement* element)
-	{
-		mElement = element;
-	}
-
-	void ScriptGUIElementBase::destroy()
-	{
-		if(!mIsDestroyed)
-		{
-			GUIElement::destroy(mElement);
-			mElement = nullptr;
-
-			mIsDestroyed = true;
-		}
 	}
 
 	void ScriptGUIElement::initRuntimeData()
@@ -44,12 +60,12 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetParent", &ScriptGUIElement::internal_setParent);
 	}
 
-	void ScriptGUIElement::internal_destroy(ScriptGUIElementBase* nativeInstance)
+	void ScriptGUIElement::internal_destroy(ScriptGUIElementBaseTBase* nativeInstance)
 	{
 		nativeInstance->destroy();
 	}
 
-	void ScriptGUIElement::internal_setVisible(ScriptGUIElementBase* nativeInstance, bool visible)
+	void ScriptGUIElement::internal_setVisible(ScriptGUIElementBaseTBase* nativeInstance, bool visible)
 	{
 		if(visible)
 			nativeInstance->getGUIElement()->enableRecursively();
@@ -57,11 +73,11 @@ namespace BansheeEngine
 			nativeInstance->getGUIElement()->disableRecursively();
 	}
 
-	void ScriptGUIElement::internal_setParent(ScriptGUIElementBase* nativeInstance, MonoObject* parentLayout)
+	void ScriptGUIElement::internal_setParent(ScriptGUIElementBaseTBase* nativeInstance, MonoObject* parentLayout)
 	{
 		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
-
 		GUILayout* nativeLayout = scriptLayout->getInternalValue();
-		nativeLayout->addElement(nativeInstance->getGUIElement());
+
+		nativeInstance->setParent(nativeLayout);
 	}
 }

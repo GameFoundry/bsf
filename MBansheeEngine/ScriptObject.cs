@@ -12,6 +12,11 @@ namespace BansheeEngine
             Internal_ManagedInstanceDeleted(mCachedPtr);
         }
 
+        internal IntPtr GetCachedPtr()
+        {
+            return mCachedPtr;
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_ManagedInstanceDeleted(IntPtr nativeInstance);
     }

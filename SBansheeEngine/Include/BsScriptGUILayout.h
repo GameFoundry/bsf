@@ -1,11 +1,11 @@
 #pragma once
 
 #include "BsScriptEnginePrerequisites.h"
-#include "BsScriptObject.h"
+#include "BsScriptGUIElement.h"
 
 namespace BansheeEngine
 {
-	class BS_SCR_BE_EXPORT ScriptGUILayout : public ScriptObject<ScriptGUILayout>
+	class BS_SCR_BE_EXPORT ScriptGUILayout : public TScriptGUIElementBase<ScriptGUILayout>
 	{
 	public:
 		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "GUILayout")
@@ -19,13 +19,10 @@ namespace BansheeEngine
 		static void internal_createInstanceYFromLayout(MonoObject* instance, MonoObject* parentLayout);
 		static void internal_createInstanceYFromScrollArea(MonoObject* instance, MonoObject* parentScrollArea);
 
-		static void internal_destroy(ScriptGUILayout* nativeInstance);
-		static void internal_setVisible(ScriptGUILayout* nativeInstance, bool visible);
-		static void internal_setParent(ScriptGUILayout* nativeInstance, MonoObject* parentLayout);
-
 		ScriptGUILayout(MonoObject* instance, GUILayout* layout, GUILayout* parentLayout);
 
 		void destroy();
+		void setParent(GUILayout* parentLayout);
 
 		GUILayout* mLayout;
 		GUILayout* mParentLayout;
