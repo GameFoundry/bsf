@@ -47,6 +47,7 @@
     <Compile Include="EditorWindow.cs" />
     <Compile Include="GUI\GUIFoldout.cs" />
     <Compile Include="GUI\GUIIntField.cs" />
+    <Compile Include="GUI\GUIPanelContainer.cs" />
     <Compile Include="Inspector\CustomInspector.cs" />
     <Compile Include="Inspector\GenericInspector.cs" />
     <Compile Include="Inspector\InspectableArray.cs" />

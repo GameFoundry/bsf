@@ -26,6 +26,6 @@ namespace BansheeEngine
 
 	RectI ScriptGUILayoutUtility::internal_CalculateBounds(ScriptGUIElementBaseTBase* guiElement)
 	{
-		return GUILayoutUtility::calcArea(guiElement->getGUIElement());
+		return GUILayoutUtility::calcBounds(guiElement->getGUIElement());
 	}
 }

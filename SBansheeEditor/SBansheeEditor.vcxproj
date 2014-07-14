@@ -231,6 +231,7 @@
     <ClInclude Include="Include\BsScriptEditorWindow.h" />
     <ClInclude Include="Include\BsScriptGUIFoldout.h" />
     <ClInclude Include="Include\BsScriptGUIIntField.h" />
+    <ClInclude Include="Include\BsScriptGUIPanelContainer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsGUIPanelContainer.cpp" />
@@ -238,6 +239,7 @@
     <ClCompile Include="Source\BsScriptEditorWindow.cpp" />
     <ClCompile Include="Source\BsScriptGUIFoldout.cpp" />
     <ClCompile Include="Source\BsScriptGUIIntField.cpp" />
+    <ClCompile Include="Source\BsScriptGUIPanelContainer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

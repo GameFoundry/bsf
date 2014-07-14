@@ -22,6 +22,10 @@ namespace BansheeEngine
 		* Calculates position and size of a GUI element in its current layout.
 		* Returned position is relative to layout origin.
 		*/
-		static RectI calcArea(const GUIElementBase* elem);
+		// TODO - This method might fail if element is part of a more complex hierarchy
+		// other than just GUILayouts and base elements (e.g. a tree view) because for a lot
+		// of such custom container elements like tree view don't have method for calculating 
+		// element bounds implemented
+		static RectI calcBounds(const GUIElementBase* elem);
 	};
 }

@@ -10,13 +10,13 @@ namespace BansheeEngine
 		return elem->_calculateOptimalLayoutSize();
 	}
 
-	RectI GUILayoutUtility::calcArea(const GUIElementBase* elem)
+	RectI GUILayoutUtility::calcBounds(const GUIElementBase* elem)
 	{
 		RectI parentArea;
 
 		GUIElementBase* parent = elem->_getParent();
 		if (parent != nullptr)
-			parentArea = calcArea(parent);
+			parentArea = calcBounds(parent);
 		else
 		{
 			assert(elem->_getType() == GUIElementBase::Type::Layout);
