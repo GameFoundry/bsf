@@ -1,13 +1,13 @@
 #pragma once
 
 #include "BsScriptEditorPrerequisites.h"
-#include "BsScriptObject.h"
+#include "BsScriptGUIElement.h"
 #include "BsGUIPanelContainer.h"
 #include "BsScriptGUIPanel.h"
 
 namespace BansheeEngine
 {
-	class BS_SCR_BED_EXPORT ScriptGUIPanelContainer : public ScriptObject<ScriptGUIPanelContainer>
+	class BS_SCR_BED_EXPORT ScriptGUIPanelContainer : public TScriptGUIElement<ScriptGUIPanelContainer>
 	{
 	public:
 		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "GUIPanelContainer")
@@ -17,7 +17,5 @@ namespace BansheeEngine
 		static void internal_setPanel(ScriptGUIPanelContainer* nativeInstance, MonoObject* panel);
 
 		ScriptGUIPanelContainer(MonoObject* instance, GUIPanelContainer* panelContainer);
-
-		GUIPanelContainer* mGUIPanelContainer;
 	};
 }

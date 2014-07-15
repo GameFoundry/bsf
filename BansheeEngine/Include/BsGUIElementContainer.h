@@ -12,7 +12,7 @@ namespace BansheeEngine
 	class BS_EXPORT GUIElementContainer : public GUIElement
 	{
 	protected:
-		GUIElementContainer(const GUILayoutOptions& layoutOptions);
+		GUIElementContainer(const GUILayoutOptions& layoutOptions, const String& style = StringUtil::BLANK);
 		virtual ~GUIElementContainer();
 
 		/**

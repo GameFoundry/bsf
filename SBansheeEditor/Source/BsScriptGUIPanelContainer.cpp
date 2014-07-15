@@ -10,7 +10,7 @@
 namespace BansheeEngine
 {
 	ScriptGUIPanelContainer::ScriptGUIPanelContainer(MonoObject* instance, GUIPanelContainer* panelContainer)
-		:ScriptObject(instance), mGUIPanelContainer(panelContainer)
+		:TScriptGUIElement(instance, panelContainer)
 	{
 
 	}
@@ -39,6 +39,7 @@ namespace BansheeEngine
 	{
 		ScriptGUIPanel* guiPanel = ScriptGUIPanel::toNative(panel);
 
-		nativeInstance->mGUIPanelContainer->setPanel(*guiPanel);
+		GUIPanelContainer* panelContainer = static_cast<GUIPanelContainer*>(nativeInstance->getGUIElement());
+		panelContainer->setPanel(*guiPanel);
 	}
 }

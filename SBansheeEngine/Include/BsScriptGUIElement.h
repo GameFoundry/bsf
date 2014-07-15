@@ -2,6 +2,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
+#include "BsGUIOptions.h"
 
 namespace BansheeEngine
 {
@@ -15,6 +16,7 @@ namespace BansheeEngine
 
 		virtual void destroy() = 0;
 		virtual void setParent(GUILayout* layout) = 0;
+		virtual void setLayoutOptions(GUIOptions options) { }
 
 	protected:
 		void initialize(GUIElementBase* element);
@@ -55,6 +57,7 @@ namespace BansheeEngine
 
 		virtual void destroy();
 		virtual void setParent(GUILayout* layout);
+		virtual void setLayoutOptions(GUIOptions options);
 	};
 
 	template <class Type>
@@ -90,6 +93,7 @@ namespace BansheeEngine
 		static void internal_destroy(ScriptGUIElementBaseTBase* nativeInstance);
 		static void internal_setVisible(ScriptGUIElementBaseTBase* nativeInstance, bool visible);
 		static void internal_setParent(ScriptGUIElementBaseTBase* nativeInstance, MonoObject* parentLayout);
+		static void internal_setLayoutOptions(ScriptGUIElementBaseTBase* nativeInstance, MonoArray* guiOptions);
 
 		ScriptGUIElement(MonoObject* instance);
 	};

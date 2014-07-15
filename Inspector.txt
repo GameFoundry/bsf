@@ -38,8 +38,9 @@ KEEP IN MIND:
  - Modify C++ Editor fields so that calling setValue doesn't update the visual value until focus is lost
   - When user is currently writing in an input box I don't want refresh to overwrite that value.
 
-
-
+BUGS
+ - Composite GUI elements like Vector3Field need to set a style with min/max or fixed bounds to their GUIElementContainer
+   otherwise they get clipped when their parent layout is too small
 
 
 

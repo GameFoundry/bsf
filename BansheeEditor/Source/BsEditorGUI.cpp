@@ -349,6 +349,8 @@ namespace BansheeEngine
 
 		GUIElementStyle foldoutBackgroundStyle;
 		foldoutBackgroundStyle.normal.texture = getTexture(FoldoutBackgroundTex);
+		foldoutBackgroundStyle.fixedHeight = true;
+		foldoutBackgroundStyle.height = 8;
 
 		mSkin.setStyle("FoldoutBackground", foldoutBackgroundStyle);
 

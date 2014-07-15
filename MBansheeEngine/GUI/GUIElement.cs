@@ -45,8 +45,16 @@ namespace BansheeEngine
             Internal_SetVisible(mCachedPtr, visible);
         }
 
+        public void SetLayoutOptions(params GUIOption[] options)
+        {
+            Internal_SetLayoutOptions(mCachedPtr, options);
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetParent(IntPtr nativeInstance, GUILayout parent);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetLayoutOptions(IntPtr nativeInstance, GUIOption[] options);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetVisible(IntPtr nativeInstance, bool visible);

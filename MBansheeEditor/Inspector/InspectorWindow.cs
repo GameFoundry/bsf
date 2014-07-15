@@ -9,7 +9,7 @@ namespace BansheeEditor
         private class InspectorData
         {
             public GUIFoldout foldout;
-            public GUIFixedSpace space;
+            public GUIPanelContainer container;
             public Inspector inspector;
         }
 
@@ -28,13 +28,15 @@ namespace BansheeEditor
             for (int i = 0; i < allComponents.Length; i++)
             {
                 InspectorData data = new InspectorData();
+                GUIPanel inspectorPanel = CreatePanel(0, 0, 0, 0);
 
                 data.foldout = new GUIFoldout(allComponents[i].GetType().Name);
                 inspectorLayout.AddElement(data.foldout);
-                data.space = inspectorLayout.AddSpace(0);
+                data.container = new GUIPanelContainer(inspectorPanel);
+                inspectorLayout.AddElement(data.container);
 
                 data.inspector = GetInspector(allComponents[i].GetType());
-                data.inspector.Initialize(CreatePanel(0, 0, 0, 0), allComponents[i]);
+                data.inspector.Initialize(inspectorPanel, allComponents[i]);
 
                 data.foldout.OnToggled += (bool expanded) => Foldout_OnToggled(data.inspector, expanded);
 
@@ -96,7 +98,7 @@ namespace BansheeEditor
                 int inspectorHeight = inspectorData[i].inspector.GetOptimalHeight();
 
                 inspectorData[i].inspector.SetArea(0, curPosition, width, inspectorHeight);
-                inspectorData[i].space.SetSize(inspectorHeight);
+                inspectorData[i].container.SetLayoutOptions(GUIOption.FixedHeight(inspectorHeight));
                 curPosition += inspectorHeight;
             } 
         }

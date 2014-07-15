@@ -1,5 +1,6 @@
 #include "BsGUIPanelContainer.h"
 #include "BsGUIArea.h"
+#include "BsScriptGUIPanel.h"
 #include "BsGUILayout.h"
 #include "BsGUIWidget.h"
 #include "BsScriptGUIArea.h"

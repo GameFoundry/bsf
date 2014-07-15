@@ -14,7 +14,7 @@ namespace BansheeEngine
 
 	GUIFoldout::GUIFoldout(const PrivatelyConstruct& dummy, const String& toggleStyle, 
 		const String& backgroundStyle, const GUILayoutOptions& layoutOptions)
-		:GUIElementContainer(layoutOptions), mToggle(nullptr), mBackground(nullptr), mIsExpanded(false)
+		:GUIElementContainer(layoutOptions, backgroundStyle), mToggle(nullptr), mBackground(nullptr), mIsExpanded(false)
 	{
 		mToggle = GUIToggle::create(HString(L""), toggleStyle);
 		mBackground = GUITexture::create(backgroundStyle);
@@ -125,7 +125,7 @@ namespace BansheeEngine
 
 	const String& GUIFoldout::getGUITypeName()
 	{
-		static String typeName = "GUIFoldout";
+		static String typeName = "Foldout";
 		return typeName;
 	}
 }

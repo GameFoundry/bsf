@@ -102,6 +102,14 @@ namespace BansheeEngine
 		void setFocus(bool enabled);
 
 		/**
+		 * @brief	Sets new layout options for the element.
+		 *
+		 * @param	layoutOptions	Options that allows you to control how is the element positioned in
+		 *							GUI layout. This will override any similar options set by style.
+		 */
+		void setLayoutOptions(const GUIOptions& layoutOptions);
+
+		/**
 		 * @brief	Gets internal element style representing the exact type of GUI element
 		 *			in this object.
 		 */

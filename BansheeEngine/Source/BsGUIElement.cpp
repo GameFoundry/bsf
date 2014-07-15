@@ -203,6 +203,14 @@ namespace BansheeEngine
 		GUIManager::instance().setFocus(this, enabled);
 	}
 
+	void GUIElement::setLayoutOptions(const GUIOptions& layoutOptions)
+	{
+		mLayoutOptions = GUILayoutOptions::create(layoutOptions);
+		mLayoutOptions.updateWithStyle(mStyle);
+
+		markContentAsDirty();
+	}
+
 	RectI GUIElement::getVisibleBounds() const
 	{
 		RectI bounds = _getClippedBounds();

@@ -47,6 +47,12 @@ namespace BansheeEngine
 		layout->addElement((GUIElement*)mElement);
 	}
 
+	void ScriptGUIElementTBase::setLayoutOptions(GUIOptions options)
+	{
+		GUIElement* element = static_cast<GUIElement*>(mElement);
+		element->setLayoutOptions(options);
+	}
+
 	ScriptGUIElement::ScriptGUIElement(MonoObject* instance)
 		:ScriptObject(instance)
 	{
@@ -58,6 +64,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIElement::internal_destroy);
 		metaData.scriptClass->addInternalCall("Internal_SetVisible", &ScriptGUIElement::internal_setVisible);
 		metaData.scriptClass->addInternalCall("Internal_SetParent", &ScriptGUIElement::internal_setParent);
+		metaData.scriptClass->addInternalCall("Internal_SetLayoutOptions", &ScriptGUIElement::internal_setLayoutOptions);
 	}
 
 	void ScriptGUIElement::internal_destroy(ScriptGUIElementBaseTBase* nativeInstance)
@@ -79,5 +86,16 @@ namespace BansheeEngine
 		GUILayout* nativeLayout = scriptLayout->getInternalValue();
 
 		nativeInstance->setParent(nativeLayout);
+	}
+
+	void ScriptGUIElement::internal_setLayoutOptions(ScriptGUIElementBaseTBase* nativeInstance, MonoArray* guiOptions)
+	{
+		GUIOptions options;
+
+		UINT32 arrayLen = (UINT32)mono_array_length(guiOptions);
+		for (UINT32 i = 0; i < arrayLen; i++)
+			options.addOption(mono_array_get(guiOptions, GUIOption, i));
+
+		nativeInstance->setLayoutOptions(options);
 	}
 }
