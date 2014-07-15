@@ -17,7 +17,7 @@ namespace BansheeEngine
 		void _updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
 			RectI clipRect, UINT8 widgetDepth, UINT16 areaDepth);
 
-		Vector2I _getOptimalSize() const;
+		virtual Vector2I _getOptimalSize() const;
 	protected:
 		virtual ~GUIFieldBase() { }
 
@@ -62,7 +62,7 @@ namespace BansheeEngine
 
 		static T* create(const GUIOptions& layoutOptions, const String& entryElementStyle = StringUtil::BLANK)
 		{
-			return bs_new<T>(PrivatelyConstruct(), GUIContent(), 0, nullptr, entryElementStyle, 
+			return bs_new<T>(PrivatelyConstruct(), GUIContent(), 0, StringUtil::BLANK, entryElementStyle,
 				GUILayoutOptions::create(layoutOptions), false);
 		}
 
@@ -96,7 +96,7 @@ namespace BansheeEngine
 
 		static T* create(const String& entryElementStyle = StringUtil::BLANK)
 		{
-			return bs_new<T>(PrivatelyConstruct(), GUIContent(), 0, nullptr, entryElementStyle, 
+			return bs_new<T>(PrivatelyConstruct(), GUIContent(), 0, StringUtil::BLANK, entryElementStyle,
 				GUILayoutOptions::create(), false);
 		}
 

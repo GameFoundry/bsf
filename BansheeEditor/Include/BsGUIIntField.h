@@ -18,6 +18,8 @@ namespace BansheeEngine
 
 		Event<void(INT32)> onValueChanged;
 
+		virtual Vector2I _getOptimalSize() const;
+
 	protected:
 		virtual ~GUIIntField();
 

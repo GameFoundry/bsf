@@ -10,7 +10,7 @@ namespace BansheeEditor
     public class InspectableInt : InspectableObjectBase
     {
         private int oldPropertyValue;
-        private GUILabel guiLabel;
+        private GUIIntField guiIntField;
         private bool isInitialized = false;
 
         public InspectableInt(string title, SerializableProperty property)
@@ -23,8 +23,9 @@ namespace BansheeEditor
         {
             if(property.Type == SerializableProperty.FieldType.Int)
             {
-                guiLabel = new GUILabel(title);
-                layout.AddElement(guiLabel); // TODO - Use an IntEditorField
+                guiIntField = new GUIIntField(new GUIContent(title));
+                guiIntField.OnChanged += OnFieldValueChanged;
+                layout.AddElement(guiIntField); 
             }
 
             isInitialized = true;
@@ -53,13 +54,20 @@ namespace BansheeEditor
             if (!isInitialized)
                 Initialize(layout);
 
-            // TODO - Update GUI element(s) with value from property
+            // TODO - Skip update if it currently has input focus so user can modify the value in peace
+
+            guiIntField.Value = property.GetValue<int>();
+        }
+
+        private void OnFieldValueChanged(int newValue)
+        {
+            property.SetValue<int>(newValue);
         }
 
         public override void Destroy()
         {
-            if (guiLabel != null)
-                guiLabel.Destroy();
+            if (guiIntField != null)
+                guiIntField.Destroy();
 
             base.Destroy();
         }

@@ -10,7 +10,7 @@ namespace BansheeEngine
 
 	GUIFieldBase::GUIFieldBase(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth,
 		const String& labelStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
-		:GUIElementContainer(layoutOptions)
+		:GUIElementContainer(layoutOptions), mLabel(nullptr)
 	{
 		mLayout = &addLayoutXInternal(this);
 

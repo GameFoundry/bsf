@@ -49,14 +49,18 @@ namespace BansheeEngine
 		GUIIntField* guiIntField = nullptr;
 		if(withTitle)
 		{
+			String titleStyleName = toString(MonoUtil::monoToWString(titleStyle));
+			String inputStyleName = toString(MonoUtil::monoToWString(inputStyle));
+
 			GUIContent nativeContent(ScriptGUIContent::getText(title), ScriptGUIContent::getImage(title), ScriptGUIContent::getTooltip(title));
 			guiIntField = GUIIntField::create(nativeContent, titleWidth, options,
-				toString(MonoUtil::monoToWString(titleStyle)),
-				toString(MonoUtil::monoToWString(inputStyle)));
+				titleStyleName, inputStyleName);
 		}
 		else
 		{
-			guiIntField = GUIIntField::create(options, toString(MonoUtil::monoToWString(inputStyle)));
+			String inputStyleName = toString(MonoUtil::monoToWString(inputStyle));
+
+			guiIntField = GUIIntField::create(options, inputStyleName);
 		}
 
 		guiIntField->onValueChanged.connect(std::bind(&ScriptGUIIntField::onChanged, instance, _1));

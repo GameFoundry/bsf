@@ -42,6 +42,20 @@ namespace BansheeEngine
 
 	}
 
+	Vector2I GUIIntField::_getOptimalSize() const
+	{
+		UINT32 width = (UINT32)mInputBox->_getOptimalSize().x;
+		UINT32 height = (UINT32)mInputBox->_getOptimalSize().y;
+
+		if (mLabel != nullptr)
+		{
+			width += mLabel->_getOptimalSize().x;
+			height = std::max(height, (UINT32)mLabel->_getOptimalSize().y);
+		}
+
+		return Vector2I(width, height);
+	}
+
 	bool GUIIntField::_hasCustomCursor(const Vector2I position, CursorType& type) const
 	{
 		RectI draggableArea;
