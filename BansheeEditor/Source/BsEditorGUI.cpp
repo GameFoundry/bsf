@@ -342,7 +342,7 @@ namespace BansheeEngine
 		foldoutBtnStyle.activeOn.texture = foldoutBtnStyle.hoverOn.texture;
 		foldoutBtnStyle.fixedHeight = true;
 		foldoutBtnStyle.fixedWidth = true;
-		foldoutBtnStyle.height = 8;
+		foldoutBtnStyle.height = 10;
 		foldoutBtnStyle.width = 8;
 
 		mSkin.setStyle("FoldoutButton", foldoutBtnStyle);
@@ -350,7 +350,7 @@ namespace BansheeEngine
 		GUIElementStyle foldoutBackgroundStyle;
 		foldoutBackgroundStyle.normal.texture = getTexture(FoldoutBackgroundTex);
 		foldoutBackgroundStyle.fixedHeight = true;
-		foldoutBackgroundStyle.height = 8;
+		foldoutBackgroundStyle.height = 12;
 
 		mSkin.setStyle("FoldoutBackground", foldoutBackgroundStyle);
 

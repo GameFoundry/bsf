@@ -58,7 +58,7 @@ namespace BansheeEngine
 		GUIVector2Field* vec2Field = GUIVector2Field::create(HString(L"Vec2 Field"), GUIOptions(GUIOption::fixedWidth(200)));
 		GUIToggleField* toggleField = GUIToggleField::create(HString(L"Toggle Field"), GUIOptions(GUIOption::fixedWidth(200)));
 		GUIColorField* colorField = GUIColorField::create(HString(L"Color Field"), GUIOptions(GUIOption::fixedWidth(200)));
-		GUIFoldout* foldout = GUIFoldout::create(GUIOptions(GUIOption::fixedWidth(200)));
+		GUIFoldout* foldout = GUIFoldout::create(HString(L"Test"), GUIOptions(GUIOption::fixedWidth(200)));
 		GUIGameObjectField* gameObjectField = GUIGameObjectField::create(HString(L"Object Field"), GUIOptions(GUIOption::fixedWidth(200)));
 		colorField->setValue(Color::Red);
 

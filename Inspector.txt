@@ -8,11 +8,13 @@ IMPLEMENTATION STEPS:
    This will also likely require a refactor. Related to above.
 
 TODO:
- - Test GUIPanelContainer and make a C# wrapper. Ensure Inspector uses it.
+ - Hook up int field set/get callbacks
+    - Ensure int field isn't updated from app when in focus
+ - Hook up foldout expand/collapse callbacks
  - Think about how to handle arrays, adding and deleting elements from them.
  - Add labels to foldouts
  - Extend text field so it can be multi-line
- - Port to C#:
+ - Port to C# (+ see below for additional fixes to C++ versions):
    - IntField
    - FloatField
    - ColorField
@@ -41,7 +43,8 @@ KEEP IN MIND:
 BUGS
  - Composite GUI elements like Vector3Field need to set a style with min/max or fixed bounds to their GUIElementContainer
    otherwise they get clipped when their parent layout is too small
-
+ - Modify all editor fields so they implement virtual Vector2I _getOptimalSize() const; and remove it from GUIFieldBase.
+   See IntField for example
 
 
 
