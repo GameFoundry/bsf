@@ -19,13 +19,13 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CalculateBounds", &ScriptGUILayoutUtility::internal_CalculateBounds);
 	}
 
-	Vector2I ScriptGUILayoutUtility::internal_CalculateOptimalSize(ScriptGUIElementBaseTBase* guiElement)
+	void ScriptGUILayoutUtility::internal_CalculateOptimalSize(ScriptGUIElementBaseTBase* guiElement, Vector2I* output)
 	{
-		return GUILayoutUtility::calcOptimalSize(guiElement->getGUIElement());
+		*output = GUILayoutUtility::calcOptimalSize(guiElement->getGUIElement());;
 	}
 
-	RectI ScriptGUILayoutUtility::internal_CalculateBounds(ScriptGUIElementBaseTBase* guiElement)
+	void ScriptGUILayoutUtility::internal_CalculateBounds(ScriptGUIElementBaseTBase* guiElement, RectI* output)
 	{
-		return GUILayoutUtility::calcBounds(guiElement->getGUIElement());
+		*output = GUILayoutUtility::calcBounds(guiElement->getGUIElement());
 	}
 }

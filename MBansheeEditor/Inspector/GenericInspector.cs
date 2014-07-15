@@ -46,7 +46,7 @@ namespace BansheeEditor
 
         internal override int GetOptimalHeight()
         {
-            return 200; // TODO  - Implement properly
+            return GUILayoutUtility.CalculateOptimalSize(layout).y;
         }
     }
 }

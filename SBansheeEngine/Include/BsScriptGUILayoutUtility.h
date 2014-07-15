@@ -16,7 +16,7 @@ namespace BansheeEngine
 		ScriptGUILayoutUtility();
 
 	private:
-		static Vector2I internal_CalculateOptimalSize(ScriptGUIElementBaseTBase* guiElement);
-		static RectI internal_CalculateBounds(ScriptGUIElementBaseTBase* guiElement);
+		static void internal_CalculateOptimalSize(ScriptGUIElementBaseTBase* guiElement, Vector2I* output);
+		static void internal_CalculateBounds(ScriptGUIElementBaseTBase* guiElement, RectI* output);
 	};
 }

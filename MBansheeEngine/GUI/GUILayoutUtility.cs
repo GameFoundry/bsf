@@ -8,20 +8,24 @@ namespace BansheeEngine
 {
     public class GUILayoutUtility
     {
-        public static Vector2 CalculateOptimalSize(GUIElement element)
+        public static Vector2I CalculateOptimalSize(GUIElement element)
         {
-            return Internal_CalculateOptimalSize(element.GetCachedPtr());
+            Vector2I output;
+            Internal_CalculateOptimalSize(element.GetCachedPtr(), out output);
+            return output;
         }
 
         public static RectI CalculateBounds(GUIElement element)
         {
-            return Internal_CalculateBounds(element.GetCachedPtr());
+            RectI output;
+            Internal_CalculateBounds(element.GetCachedPtr(), out output);
+            return output;
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector2 Internal_CalculateOptimalSize(IntPtr element);
+        private static extern void Internal_CalculateOptimalSize(IntPtr element, out Vector2I output);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern RectI Internal_CalculateBounds(IntPtr element);
+        private static extern void Internal_CalculateBounds(IntPtr element, out RectI output);
     }
 }
