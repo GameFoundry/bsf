@@ -33,6 +33,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIIntField::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptGUIIntField::internal_getValue);
 		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptGUIIntField::internal_setValue);
+		metaData.scriptClass->addInternalCall("Internal_HasInputFocus", &ScriptGUIIntField::internal_hasInputFocus);
 
 		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("DoOnChanged", 1).getThunk();
 	}
@@ -64,11 +65,11 @@ namespace BansheeEngine
 		ScriptGUIIntField* nativeInstance = new (bs_alloc<ScriptGUIIntField>()) ScriptGUIIntField(instance, guiIntField);
 	}
 
-	INT32 ScriptGUIIntField::internal_getValue(ScriptGUIIntField* nativeInstance)
+	void ScriptGUIIntField::internal_getValue(ScriptGUIIntField* nativeInstance, INT32* output)
 	{
 		GUIIntField* intField = static_cast<GUIIntField*>(nativeInstance->getGUIElement());
 
-		return intField->getValue();
+		*output = intField->getValue();
 	}
 
 	void ScriptGUIIntField::internal_setValue(ScriptGUIIntField* nativeInstance, INT32 value)
@@ -76,6 +77,13 @@ namespace BansheeEngine
 		GUIIntField* intField = static_cast<GUIIntField*>(nativeInstance->getGUIElement());
 
 		return intField->setValue(value);
+	}
+
+	void ScriptGUIIntField::internal_hasInputFocus(ScriptGUIIntField* nativeInstance, bool* output)
+	{
+		GUIIntField* intField = static_cast<GUIIntField*>(nativeInstance->getGUIElement());
+
+		*output = intField->hasInputFocus();
 	}
 
 	void ScriptGUIIntField::onChanged(MonoObject* instance, INT32 newValue)

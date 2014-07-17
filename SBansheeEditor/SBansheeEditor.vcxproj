@@ -229,17 +229,31 @@
     <ClInclude Include="Include\BsGUIPanelContainer.h" />
     <ClInclude Include="Include\BsScriptEditorPrerequisites.h" />
     <ClInclude Include="Include\BsScriptEditorWindow.h" />
+    <ClInclude Include="Include\BsScriptGUIColorField.h" />
+    <ClInclude Include="Include\BsScriptGUIFloatField.h" />
     <ClInclude Include="Include\BsScriptGUIFoldout.h" />
     <ClInclude Include="Include\BsScriptGUIIntField.h" />
     <ClInclude Include="Include\BsScriptGUIPanelContainer.h" />
+    <ClInclude Include="Include\BsScriptGUITextField.h" />
+    <ClInclude Include="Include\BsScriptGUIToggleField.h" />
+    <ClInclude Include="Include\BsScriptGUIVector2Field.h" />
+    <ClInclude Include="Include\BsScriptGUIVector3Field.h" />
+    <ClInclude Include="Include\BsScriptGUIVector4Field.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsGUIPanelContainer.cpp" />
     <ClCompile Include="Source\BsScriptEditorPlugin.cpp" />
     <ClCompile Include="Source\BsScriptEditorWindow.cpp" />
+    <ClCompile Include="Source\BsScriptGUIColorField.cpp" />
+    <ClCompile Include="Source\BsScriptGUIFloatField.cpp" />
     <ClCompile Include="Source\BsScriptGUIFoldout.cpp" />
     <ClCompile Include="Source\BsScriptGUIIntField.cpp" />
     <ClCompile Include="Source\BsScriptGUIPanelContainer.cpp" />
+    <ClCompile Include="Source\BsScriptGUITextField.cpp" />
+    <ClCompile Include="Source\BsScriptGUIToggleField.cpp" />
+    <ClCompile Include="Source\BsScriptGUIVector2Field.cpp" />
+    <ClCompile Include="Source\BsScriptGUIVector3Field.cpp" />
+    <ClCompile Include="Source\BsScriptGUIVector4Field.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

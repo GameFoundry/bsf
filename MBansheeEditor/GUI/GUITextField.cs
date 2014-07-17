@@ -4,17 +4,17 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
-    public sealed class GUIIntField : GUIElement
+    public sealed class GUITextField : GUIElement
     {
-        public delegate void OnChangedDelegate(int newValue);
+        public delegate void OnChangedDelegate(String newValue);
 
         public event OnChangedDelegate OnChanged;
 
-        public int Value
+        public String Value
         {
             get
             {
-                int value; 
+                String value;
                 Internal_GetValue(mCachedPtr, out value);
                 return value;
             }
@@ -22,12 +22,12 @@ namespace BansheeEditor
             set { Internal_SetValue(mCachedPtr, value); }
         }
 
-        public GUIIntField(GUIContent title, int titleWidth = 100, string style = "", params GUIOption[] options)
+        public GUITextField(GUIContent title, int titleWidth = 100, string style = "", params GUIOption[] options)
         {
             Internal_CreateInstance(this, title, titleWidth, style, options, true);
         }
 
-        public GUIIntField(string style = "", params GUIOption[] options)
+        public GUITextField(string style = "", params GUIOption[] options)
         {
             Internal_CreateInstance(this, null, 0, style, options, false);
         }
@@ -39,21 +39,21 @@ namespace BansheeEditor
             return value;
         }
 
-        private void DoOnChanged(int newValue)
+        private void DoOnChanged(String newValue)
         {
             if (OnChanged != null)
                 OnChanged(newValue);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(GUIIntField instance, GUIContent title, int titleWidth, 
+        private static extern void Internal_CreateInstance(GUITextField instance, GUIContent title, int titleWidth,
             string style, GUIOption[] options, bool withTitle);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_GetValue(IntPtr nativeInstance, out int value);
+        private static extern void Internal_GetValue(IntPtr nativeInstance, out String value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetValue(IntPtr nativeInstance, int value);
+        private static extern void Internal_SetValue(IntPtr nativeInstance, String value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_HasInputFocus(IntPtr nativeInstance, out bool value);

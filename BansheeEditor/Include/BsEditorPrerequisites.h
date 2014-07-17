@@ -34,6 +34,11 @@ namespace BansheeEngine
 	class GUIIntField;
 	class GUIFloatField;
 	class GUITextField;
+	class GUIToggleField;
+	class GUIVector2Field;
+	class GUIVector3Field;
+	class GUIVector4Field;
+	class GUIColorField;
 	class GUIColor;
 	class GUIFoldout;
 	class GUIDropButton;

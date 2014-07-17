@@ -14,8 +14,9 @@ namespace BansheeEngine
 		static void internal_createInstance(MonoObject* instance, MonoObject* title, UINT32 titleWidth, 
 			MonoString* style, MonoArray* guiOptions, bool withTitle);
 
-		static INT32 internal_getValue(ScriptGUIIntField* nativeInstance);
+		static void internal_getValue(ScriptGUIIntField* nativeInstance, INT32* output);
 		static void internal_setValue(ScriptGUIIntField* nativeInstance, INT32 value);
+		static void internal_hasInputFocus(ScriptGUIIntField* nativeInstance, bool* output);
 
 		static void onChanged(MonoObject* instance, INT32 newValue);
 

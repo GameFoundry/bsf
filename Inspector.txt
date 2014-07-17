@@ -1,6 +1,3 @@
-Update all elements to use new sub-styles
- - Including GUIFoldout and potentially others
- - Override styleUpdated()
 Update C# GUIElementStyle
 
 TODO:
@@ -47,6 +44,8 @@ KEEP IN MIND:
      - Technically objects will never change their structure during runtime, this is only relevant for array sizes
  - Modify C++ Editor fields so that calling setValue doesn't update the visual value until focus is lost
   - When user is currently writing in an input box I don't want refresh to overwrite that value.
+
+
 
 
 
