@@ -2,6 +2,7 @@
 
 #include "BsEditorPrerequisites.h"
 #include "BsGUIElementContainer.h"
+#include "BsColor.h"
 
 namespace BansheeEngine
 {
@@ -11,31 +12,29 @@ namespace BansheeEngine
 
 	public:
 		static const String& getGUITypeName();
+		static const String& getLabelStyleType();
+		static const String& getColorInputStyleType();
 
 		static GUIColorField* create(const GUIContent& labelContent, 
-			const GUIOptions& layoutOptions, const String& labelStyle = StringUtil::BLANK, const String& toggleStyle = StringUtil::BLANK);
+			const GUIOptions& layoutOptions, const String& style = StringUtil::BLANK);
 
 		static GUIColorField* create(const HString& labelText, 
-			const GUIOptions& layoutOptions, const String& labelStyle = StringUtil::BLANK, const String& toggleStyle = StringUtil::BLANK);
+			const GUIOptions& layoutOptions, const String& style = StringUtil::BLANK);
 
-		static GUIColorField* create(const GUIOptions& layoutOptions, const String& labelStyle = StringUtil::BLANK, 
-			const String& toggleStyle = StringUtil::BLANK);
+		static GUIColorField* create(const GUIOptions& layoutOptions, const String& style = StringUtil::BLANK);
 
-		static GUIColorField* create(const GUIContent& labelContent, const String& labelStyle = StringUtil::BLANK, 
-			const String& toggleStyle = StringUtil::BLANK);
+		static GUIColorField* create(const GUIContent& labelContent, const String& style = StringUtil::BLANK);
 
-		static GUIColorField* create(const HString& labelText, const String& labelStyle = StringUtil::BLANK,
-			const String& toggleStyle = StringUtil::BLANK);
+		static GUIColorField* create(const HString& labelText, const String& style = StringUtil::BLANK);
 
-		static GUIColorField* create(const String& labelStyle = StringUtil::BLANK, const String& toggleStyle = StringUtil::BLANK);
+		static GUIColorField* create(const String& style = StringUtil::BLANK);
 
 		GUIColorField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, 
-			const String& labelStyle, const String& toggleStyle, const GUILayoutOptions& layoutOptions);
+			const String& style, const GUILayoutOptions& layoutOptions);
 
-		GUIColorField(const PrivatelyConstruct& dummy, const String& labelStyle, const String& toggleStyle, 
-			const GUILayoutOptions& layoutOptions);
+		GUIColorField(const PrivatelyConstruct& dummy, const String& style, const GUILayoutOptions& layoutOptions);
 
-		Color getValue() const;
+		Color getValue() const { return mValue; }
 		void setValue(const Color& value);
 
 		void setLabelWidth(UINT32 width);
@@ -44,11 +43,16 @@ namespace BansheeEngine
 			RectI clipRect, UINT8 widgetDepth, UINT16 areaDepth);
 
 		Vector2I _getOptimalSize() const;
+
+		Event<void(const Color&)> onValueChanged;
 	protected:
 		virtual ~GUIColorField();
 
-	protected:
+		void styleUpdated();
+		void valueChanged(const Color& newValue);
+
 		UINT32 mLabelWidth;
+		Color mValue;
 		GUILabel* mLabel;
 		GUIColor* mColor;
 	};

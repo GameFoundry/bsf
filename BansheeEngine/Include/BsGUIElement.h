@@ -110,6 +110,11 @@ namespace BansheeEngine
 		void setLayoutOptions(const GUIOptions& layoutOptions);
 
 		/**
+		 * @brief	Sets new style to be used by the element.
+		 */
+		void setStyle(const String& styleName);
+
+		/**
 		 * @brief	Gets internal element style representing the exact type of GUI element
 		 *			in this object.
 		 */
@@ -389,6 +394,17 @@ namespace BansheeEngine
 
 			return overrideStyle;
 		}
+
+		/**
+		 * @brief	Attempts to find a sub-style for the specified type in the currently
+		 *			set GUI element style. If one cannot be found empty string is returned.
+		 */
+		const String& getSubStyleName(const String& subStyleTypeName);
+
+		/**
+		 * @brief	Method that gets triggered whenever element style changes.
+		 */
+		virtual void styleUpdated() { }
 
 		/**
 		 * @brief	Returns clipped bounds excluding the margins. Relative to parent widget.

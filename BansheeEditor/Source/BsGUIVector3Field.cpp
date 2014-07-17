@@ -6,24 +6,33 @@
 #include "BsBuiltinResources.h"
 #include "BsGUIWidget.h"
 #include "BsGUIMouseEvent.h"
+#include "BsGUISpace.h"
 #include "BsGUIWidget.h"
+
+using namespace std::placeholders;
 
 namespace BansheeEngine
 {
 	const UINT32 GUIVector3Field::ELEMENT_LABEL_WIDTH = 10;
 
 	GUIVector3Field::GUIVector3Field(const PrivatelyConstruct& dummy, const GUIContent& labelContent, 
-		UINT32 labelWidth, const String& labelStyle, const String& inputBoxStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
-		:TGUIField(dummy, labelContent, labelWidth, labelStyle, layoutOptions, withLabel), mFieldX(nullptr), mFieldY(nullptr)
+		UINT32 labelWidth, const String& style, const GUILayoutOptions& layoutOptions, bool withLabel)
+		:TGUIField(dummy, labelContent, labelWidth, style, layoutOptions, withLabel), 
+		mFieldX(nullptr), mFieldY(nullptr), mFieldZ(nullptr)
 	{
-		mFieldX = GUIFloatField::create(HString(L"X"), ELEMENT_LABEL_WIDTH, labelStyle, inputBoxStyle);
-		mFieldY = GUIFloatField::create(HString(L"Y"), ELEMENT_LABEL_WIDTH, labelStyle, inputBoxStyle);
-		mFieldZ = GUIFloatField::create(HString(L"Z"), ELEMENT_LABEL_WIDTH, labelStyle, inputBoxStyle);
+		mFieldX = GUIFloatField::create(HString(L"X"), ELEMENT_LABEL_WIDTH, getSubStyleName(getFloatFieldStyleType()));
+		mFieldY = GUIFloatField::create(HString(L"Y"), ELEMENT_LABEL_WIDTH, getSubStyleName(getFloatFieldStyleType()));
+		mFieldZ = GUIFloatField::create(HString(L"Z"), ELEMENT_LABEL_WIDTH, getSubStyleName(getFloatFieldStyleType()));
+
+		mFieldX->onValueChanged.connect(std::bind(&GUIVector3Field::valueChanged, this, _1));
+		mFieldY->onValueChanged.connect(std::bind(&GUIVector3Field::valueChanged, this, _1));
+		mFieldZ->onValueChanged.connect(std::bind(&GUIVector3Field::valueChanged, this, _1));
 
 		mLayout->removeElement(mLabel);
 
 		GUILayout* layout = &mLayout->addLayoutY();
 		layout->addElement(mLabel);
+		mLabel->setLayoutOptions(GUIOptions());
 
 		GUILayout* elementLayout = &layout->addLayoutX();
 
@@ -49,9 +58,35 @@ namespace BansheeEngine
 		mFieldZ->setValue(value.z);
 	}
 
+	bool GUIVector3Field::hasInputFocus() const
+	{
+		return mFieldX->hasInputFocus() || mFieldY->hasInputFocus() || mFieldZ->hasInputFocus();
+	}
+
+	void GUIVector3Field::styleUpdated()
+	{
+		if (mLabel != nullptr)
+			mLabel->setStyle(getSubStyleName(getLabelStyleType()));
+
+		mFieldX->setStyle(getSubStyleName(getFloatFieldStyleType()));
+		mFieldY->setStyle(getSubStyleName(getFloatFieldStyleType()));
+		mFieldZ->setStyle(getSubStyleName(getFloatFieldStyleType()));
+	}
+
+	void GUIVector3Field::valueChanged(float newValue)
+	{
+		onValueChanged(getValue());
+	}
+
 	const String& GUIVector3Field::getGUITypeName()
 	{
 		static String typeName = "GUIVector3Field";
 		return typeName;
+	}
+
+	const String& GUIVector3Field::getFloatFieldStyleType()
+	{
+		static String LABEL_STYLE_TYPE = "EditorFloatField";
+		return LABEL_STYLE_TYPE;
 	}
 }

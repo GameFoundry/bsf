@@ -20,6 +20,7 @@ namespace BansheeEngine
 		void setColor(const Color& color);
 		Color getColor() const { return mColor; }
 
+		Event<void(const Color&)> onValueChanged;
 	protected:
 		GUIColor(const String& styleName, const GUILayoutOptions& layoutOptions);
 		virtual ~GUIColor();

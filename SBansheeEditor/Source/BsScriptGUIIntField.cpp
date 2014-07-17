@@ -37,8 +37,8 @@ namespace BansheeEngine
 		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("DoOnChanged", 1).getThunk();
 	}
 
-	void ScriptGUIIntField::internal_createInstance(MonoObject* instance, MonoObject* title, UINT32 titleWidth, MonoString* titleStyle, 
-		MonoString* inputStyle, MonoArray* guiOptions, bool withTitle)
+	void ScriptGUIIntField::internal_createInstance(MonoObject* instance, MonoObject* title, UINT32 titleWidth, 
+		MonoString* style, MonoArray* guiOptions, bool withTitle)
 	{
 		GUIOptions options;
 
@@ -46,21 +46,17 @@ namespace BansheeEngine
 		for(UINT32 i = 0; i < arrayLen; i++)
 			options.addOption(mono_array_get(guiOptions, GUIOption, i));
 
+		String styleName = toString(MonoUtil::monoToWString(style));
+
 		GUIIntField* guiIntField = nullptr;
 		if(withTitle)
 		{
-			String titleStyleName = toString(MonoUtil::monoToWString(titleStyle));
-			String inputStyleName = toString(MonoUtil::monoToWString(inputStyle));
-
 			GUIContent nativeContent(ScriptGUIContent::getText(title), ScriptGUIContent::getImage(title), ScriptGUIContent::getTooltip(title));
-			guiIntField = GUIIntField::create(nativeContent, titleWidth, options,
-				titleStyleName, inputStyleName);
+			guiIntField = GUIIntField::create(nativeContent, titleWidth, options, styleName);
 		}
 		else
 		{
-			String inputStyleName = toString(MonoUtil::monoToWString(inputStyle));
-
-			guiIntField = GUIIntField::create(options, inputStyleName);
+			guiIntField = GUIIntField::create(options, styleName);
 		}
 
 		guiIntField->onValueChanged.connect(std::bind(&ScriptGUIIntField::onChanged, instance, _1));

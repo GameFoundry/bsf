@@ -1,20 +1,18 @@
-
-IMPLEMENTATION STEPS:
-2. Each GUIElement needs to be aware of its parent GUIArea
-
-3. In ScriptGUILayoutUtility I have no way of casting a MonoObject to GUIElementBase. This will likely require a refactor.
-
-4. When constructing ScriptObject I store it as actual type. But in ScriptGUIElement internal methods I expect ScriptGUIElementBase type.
-   This will also likely require a refactor. Related to above.
+Update all elements to use new sub-styles
+ - Including GUIFoldout and potentially others
+ - Override styleUpdated()
+Update C# GUIElementStyle
 
 TODO:
  - Hook up int field set/get callbacks
     - Ensure int field isn't updated from app when in focus
  - Hook up foldout expand/collapse callbacks
  - Think about how to handle arrays, adding and deleting elements from them.
- - Add labels to foldouts
+   - Will likely need GUILayout::GetElementIndex()
+ - I should add project and scene tree views to the main editor window to make inspector testing easier
+ - Entire foldout should be clickable, not just the toggle button
  - Extend text field so it can be multi-line
- - Port to C# (+ see below for additional fixes to C++ versions):
+ - Port to C#:
    - IntField
    - FloatField
    - ColorField
@@ -30,8 +28,18 @@ TODO:
  - Extend GameObject field so it can only accept a certain type
  - Ensure Undo/redo works as intended
    - This task needs decomposing. Likely need to port UndoRedo to C# first.
+ - GUIColor needs to be hooked up to a window that actually changes its value.
+ - Need to add GUIResourceField along with GUIGameObjectField and figure out a way to make them
+   accept arbitrary types.
+     - Probably move them to SBansheeEditor
+ - I need to register UndoRedo command after user finishes modifying a field. This should be referencing an object using an URI?
+
+TO PONDER:
+ - How to limit resource/object fields to a custom type (user created type possibly)
+ - Need to figure out a better way of setting styles for container GUI elements (e.g. GUIFoldout requires three different styles)
 
 KEEP IN MIND:
+ - Clicking on an object/resource in inspector should ping it in their window
  - Inspector needs to be organized in such a way that scroll areas work. That should be possible with GUIPanelContainer.
  - When inspector object changes I need to rebuild that inspector element
    - This can happen if user drags a new object
@@ -40,11 +48,8 @@ KEEP IN MIND:
  - Modify C++ Editor fields so that calling setValue doesn't update the visual value until focus is lost
   - When user is currently writing in an input box I don't want refresh to overwrite that value.
 
-BUGS
- - Composite GUI elements like Vector3Field need to set a style with min/max or fixed bounds to their GUIElementContainer
-   otherwise they get clipped when their parent layout is too small
- - Modify all editor fields so they implement virtual Vector2I _getOptimalSize() const; and remove it from GUIFieldBase.
-   See IntField for example
+
+
 
 
 
@@ -90,7 +95,6 @@ UndoRedo should work on URI type basis where it remembers object ID, and path ac
  ----------------------
 
  Non-inspector:
-
   - Deleting first entry in input field moves the cursor incorrectly
   - Test if parsing int/float value from int/float field actually works
   - ProfilerOverlay elements are constantly dirty? even though I'm not calling update

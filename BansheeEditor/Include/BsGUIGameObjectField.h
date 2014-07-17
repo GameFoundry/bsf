@@ -11,48 +11,40 @@ namespace BansheeEngine
 
 	public:
 		static const String& getGUITypeName();
+		static const String& getLabelStyleType();
+		static const String& getDropButtonStyleType();
+		static const String& getClearButtonStyleType();
 
 		static GUIGameObjectField* create(const GUIContent& labelContent, UINT32 labelWidth, const GUIOptions& layoutOptions, 
-			const String& labelStyle = StringUtil::BLANK, const String& dropButtonStyle = StringUtil::BLANK,
-			const String& clearButtonStyle = StringUtil::BLANK);
+			const String& style = StringUtil::BLANK);
 
 		static GUIGameObjectField* create(const GUIContent& labelContent, const GUIOptions& layoutOptions, 
-			const String& labelStyle = StringUtil::BLANK, const String& dropButtonStyle = StringUtil::BLANK,
-			const String& clearButtonStyle = StringUtil::BLANK);
+			const String& style = StringUtil::BLANK);
 
 		static GUIGameObjectField* create(const HString& labelText, UINT32 labelWidth, const GUIOptions& layoutOptions, 
-			const String& labelStyle = StringUtil::BLANK, const String& dropButtonStyle = StringUtil::BLANK,
-			const String& clearButtonStyle = StringUtil::BLANK);
+			const String& style = StringUtil::BLANK);
 
 		static GUIGameObjectField* create(const HString& labelText, const GUIOptions& layoutOptions, 
-			const String& labelStyle = StringUtil::BLANK, const String& dropButtonStyle = StringUtil::BLANK,
-			const String& clearButtonStyle = StringUtil::BLANK);
+			const String& style = StringUtil::BLANK);
 
-		static GUIGameObjectField* create(const GUIOptions& layoutOptions, const String& dropButtonStyle = StringUtil::BLANK,
-			const String& clearButtonStyle = StringUtil::BLANK);
+		static GUIGameObjectField* create(const GUIOptions& layoutOptions, const String& style = StringUtil::BLANK);
 
 		static GUIGameObjectField* create(const GUIContent& labelContent, UINT32 labelWidth, 
-			const String& labelStyle = StringUtil::BLANK, const String& dropButtonStyle = StringUtil::BLANK,
-			const String& clearButtonStyle = StringUtil::BLANK);
+			const String& style = StringUtil::BLANK);
 
 		static GUIGameObjectField* create(const GUIContent& labelContent, 
-			const String& labelStyle = StringUtil::BLANK, const String& dropButtonStyle = StringUtil::BLANK,
-			const String& clearButtonStyle = StringUtil::BLANK);
+			const String& style = StringUtil::BLANK);
 
 		static GUIGameObjectField* create(const HString& labelText, UINT32 labelWidth, 
-			const String& labelStyle = StringUtil::BLANK, const String& dropButtonStyle = StringUtil::BLANK,
-			const String& clearButtonStyle = StringUtil::BLANK);
+			const String& style = StringUtil::BLANK);
 
 		static GUIGameObjectField* create(const HString& labelText, 
-			const String& labelStyle = StringUtil::BLANK, const String& dropButtonStyle = StringUtil::BLANK,
-			const String& clearButtonStyle = StringUtil::BLANK);
+			const String& style = StringUtil::BLANK);
 
-		static GUIGameObjectField* create(const String& dropButtonStyle = StringUtil::BLANK,
-			const String& clearButtonStyle = StringUtil::BLANK);
+		static GUIGameObjectField* create(const String& style = StringUtil::BLANK);
 
 		GUIGameObjectField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, 
-			UINT32 labelWidth, const String& labelStyle, const String& dropButtonStyle,
-			const String& clearButtonStyle, const GUILayoutOptions& layoutOptions, bool withLabel);
+			UINT32 labelWidth, const String& style, const GUILayoutOptions& layoutOptions, bool withLabel);
 
 		HGameObject getValue() const;
 		void setValue(const HGameObject& value);
@@ -64,12 +56,12 @@ namespace BansheeEngine
 	private:
 		virtual ~GUIGameObjectField();
 
+		void styleUpdated();
+
 		void dataDropped(void* data);
 
 	private:
 		static const UINT32 DEFAULT_LABEL_WIDTH;
-		static const String DROP_BUTTON_STYLE;
-		static const String CLEAR_BUTTON_STYLE;
 
 		GUILayout* mLayout;
 		GUILabel* mLabel;

@@ -68,5 +68,7 @@ namespace BansheeEngine
 		UINT32 minHeight, maxHeight; /**< Minimum and maximum height allowed for this object. Used by the layout only when exact height is not specified. */
 		bool fixedWidth; /**< If width is fixed, layout will not attempt to resize the element depending on available size. */
 		bool fixedHeight; /**< If height is fixed, layout will not attempt to resize the element depending on available size. */
+
+		Map<String, String> subStyles; /**< Sub-styles used by certain more complex elements. */
 	};
 }

@@ -3,20 +3,21 @@
 #include "BsGUILayout.h"
 #include "BsGUIWidget.h"
 #include "BsGUISkin.h"
+#include "BsGUILayoutUtility.h"
 
 namespace BansheeEngine
 {
 	const UINT32 GUIFieldBase::DEFAULT_LABEL_WIDTH = 100;
 
 	GUIFieldBase::GUIFieldBase(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth,
-		const String& labelStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
-		:GUIElementContainer(layoutOptions), mLabel(nullptr)
+		const String& style, const GUILayoutOptions& layoutOptions, bool withLabel)
+		:GUIElementContainer(layoutOptions, style), mLabel(nullptr)
 	{
 		mLayout = &addLayoutXInternal(this);
 
 		if(withLabel)
 		{
-			mLabel = GUILabel::create(labelContent, GUIOptions(GUIOption::fixedWidth(labelWidth)), labelStyle);
+			mLabel = GUILabel::create(labelContent, GUIOptions(GUIOption::fixedWidth(labelWidth)), getSubStyleName(getLabelStyleType()));
 			mLayout->addElement(mLabel);
 		}
 	}
@@ -29,6 +30,13 @@ namespace BansheeEngine
 
 	Vector2I GUIFieldBase::_getOptimalSize() const
 	{
-		return mLayout->_getOptimalSize();
+		return GUILayoutUtility::calcOptimalSize(mLayout);
+	}
+
+
+	void GUIFieldBase::styleUpdated()
+	{
+		if (mLabel != nullptr)
+			mLabel->setStyle(getSubStyleName(getLabelStyleType()));
 	}
 }

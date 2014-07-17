@@ -10,18 +10,25 @@ namespace BansheeEngine
 	{
 	public:
 		static const String& getGUITypeName();
+		static const String& getFloatFieldStyleType();
 
 		GUIVector2Field(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth,
-			const String& labelStyle, const String& inputBoxStyle, const GUILayoutOptions& layoutOptions, bool withLabel);
+			const String& style, const GUILayoutOptions& layoutOptions, bool withLabel);
 
 		Vector2 getValue() const;
 		void setValue(const Vector2& value);
 
+		bool hasInputFocus() const;
+
+		Event<void(const Vector2&)> onValueChanged;
 	protected:
 		virtual ~GUIVector2Field() { }
 
 	protected:
 		static const UINT32 ELEMENT_LABEL_WIDTH;
+
+		void styleUpdated();
+		void valueChanged(float newValue);
 
 		GUIFloatField* mFieldX;
 		GUIFloatField* mFieldY;

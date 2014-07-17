@@ -10,17 +10,23 @@ namespace BansheeEngine
 	{
 	public:
 		static const String& getGUITypeName();
+		static const String& getFloatFieldStyleType();
 
 		GUIVector3Field(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth,
-			const String& labelStyle, const String& inputBoxStyle, const GUILayoutOptions& layoutOptions, bool withLabel);
+			const String& style, const GUILayoutOptions& layoutOptions, bool withLabel);
 
 		Vector3 getValue() const;
 		void setValue(const Vector3& value);
 
+		bool hasInputFocus() const;
+
+		Event<void(const Vector3&)> onValueChanged;
 	protected:
 		virtual ~GUIVector3Field() { }
 
-	protected:
+		void styleUpdated();
+		void valueChanged(float newValue);
+
 		static const UINT32 ELEMENT_LABEL_WIDTH;
 
 		GUIFloatField* mFieldX;

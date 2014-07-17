@@ -10,6 +10,16 @@
 #include "BsSpriteTexture.h"
 #include "BsGUITreeViewEditBox.h"
 
+#include "BsGUIIntField.h"
+#include "BsGUIFloatField.h"
+#include "BsGUIColorField.h"
+#include "BsGUITextField.h"
+#include "BsGUIToggleField.h"
+#include "BsGUIVector2Field.h"
+#include "BsGUIVector3Field.h"
+#include "BsGUIVector4Field.h"
+#include "BsGUIGameObjectField.h"
+
 #include "BsFont.h"
 #include "BsFontImportOptions.h"
 #include "BsImporter.h"
@@ -803,7 +813,7 @@ namespace BansheeEngine
 		objectDropStyle.textHorzAlign = THA_Center;
 		objectDropStyle.textVertAlign = TVA_Center;
 
-		mSkin.setStyle("DropButton", objectDropStyle);
+		mSkin.setStyle(GUIGameObjectField::getDropButtonStyleType(), objectDropStyle);
 
 		GUIElementStyle objectClearBtnStyle;
 		objectClearBtnStyle.normal.texture = getTexture(ObjectClearBtnNormalTex);
@@ -814,8 +824,104 @@ namespace BansheeEngine
 		objectClearBtnStyle.height = 15;
 		objectClearBtnStyle.width = 13;
 
-		mSkin.setStyle("ObjectClearButton", objectClearBtnStyle);
+		mSkin.setStyle(GUIGameObjectField::getClearButtonStyleType(), objectClearBtnStyle);
 
+		GUIElementStyle editorObjectFieldStyle;
+		editorObjectFieldStyle.fixedHeight = true;
+		editorObjectFieldStyle.height = 15;
+		editorObjectFieldStyle.minWidth = 30;
+		editorObjectFieldStyle.subStyles[GUIGameObjectField::getLabelStyleType()] = GUITextField::getLabelStyleType();
+		editorObjectFieldStyle.subStyles[GUIGameObjectField::getDropButtonStyleType()] = GUIGameObjectField::getDropButtonStyleType();
+		editorObjectFieldStyle.subStyles[GUIGameObjectField::getClearButtonStyleType()] = GUIGameObjectField::getClearButtonStyleType();
+
+		mSkin.setStyle(GUIGameObjectField::getGUITypeName(), editorObjectFieldStyle);
+
+		/************************************************************************/
+		/* 								EDITOR FIELDS                      		*/
+		/************************************************************************/
+
+		GUIElementStyle editorFieldLabelStyle;
+		editorFieldLabelStyle.font = font;
+		editorFieldLabelStyle.fontSize = DefaultFontSize;
+		editorFieldLabelStyle.fixedWidth = false;
+		editorFieldLabelStyle.fixedHeight = true;
+		editorFieldLabelStyle.height = 11;
+		editorFieldLabelStyle.minWidth = 10;
+		editorFieldLabelStyle.textHorzAlign = THA_Left;
+
+		mSkin.setStyle(GUITextField::getLabelStyleType(), editorFieldLabelStyle);
+
+		GUIElementStyle editorIntFieldStyle;
+		editorIntFieldStyle.fixedHeight = true;
+		editorIntFieldStyle.height = 15;
+		editorIntFieldStyle.minWidth = 30;
+		editorIntFieldStyle.subStyles[GUIIntField::getLabelStyleType()] = GUITextField::getLabelStyleType();
+		editorIntFieldStyle.subStyles[GUIIntField::getInputStyleType()] = GUIInputBox::getGUITypeName();
+
+		mSkin.setStyle(GUIIntField::getGUITypeName(), editorIntFieldStyle);
+
+		GUIElementStyle editorFloatFieldStyle;
+		editorFloatFieldStyle.fixedHeight = true;
+		editorFloatFieldStyle.height = 15;
+		editorFloatFieldStyle.minWidth = 30;
+		editorFloatFieldStyle.subStyles[GUIFloatField::getLabelStyleType()] = GUITextField::getLabelStyleType();
+		editorFloatFieldStyle.subStyles[GUIFloatField::getInputStyleType()] = GUIInputBox::getGUITypeName();
+
+		mSkin.setStyle(GUIFloatField::getGUITypeName(), editorFloatFieldStyle);
+
+		GUIElementStyle editorTextFieldStyle;
+		editorTextFieldStyle.fixedHeight = true;
+		editorTextFieldStyle.height = 15;
+		editorTextFieldStyle.minWidth = 30;
+		editorTextFieldStyle.subStyles[GUITextField::getLabelStyleType()] = GUITextField::getLabelStyleType();
+		editorTextFieldStyle.subStyles[GUITextField::getInputStyleType()] = GUIInputBox::getGUITypeName();
+
+		mSkin.setStyle(GUITextField::getGUITypeName(), editorTextFieldStyle);
+
+		GUIElementStyle editorColorFieldStyle;
+		editorColorFieldStyle.fixedHeight = true;
+		editorColorFieldStyle.height = 15;
+		editorColorFieldStyle.minWidth = 30;
+		editorColorFieldStyle.subStyles[GUIColorField::getLabelStyleType()] = GUITextField::getLabelStyleType();
+		editorColorFieldStyle.subStyles[GUIColorField::getColorInputStyleType()] = GUIColor::getGUITypeName();
+
+		mSkin.setStyle(GUIColorField::getGUITypeName(), editorColorFieldStyle);
+
+		GUIElementStyle editorToggleFieldStyle;
+		editorToggleFieldStyle.fixedHeight = true;
+		editorToggleFieldStyle.height = 15;
+		editorToggleFieldStyle.minWidth = 30;
+		editorToggleFieldStyle.subStyles[GUIToggleField::getLabelStyleType()] = GUITextField::getLabelStyleType();
+		editorToggleFieldStyle.subStyles[GUIToggleField::getToggleStyleType()] = GUIToggle::getGUITypeName();
+
+		mSkin.setStyle(GUIToggleField::getGUITypeName(), editorToggleFieldStyle);
+
+		GUIElementStyle editorVector2FieldStyle;
+		editorVector2FieldStyle.fixedHeight = true;
+		editorVector2FieldStyle.height = 30;
+		editorVector2FieldStyle.minWidth = 30;
+		editorVector2FieldStyle.subStyles[GUIVector2Field::getLabelStyleType()] = GUITextField::getLabelStyleType();
+		editorVector2FieldStyle.subStyles[GUIVector2Field::getFloatFieldStyleType()] = GUIFloatField::getGUITypeName();
+
+		mSkin.setStyle(GUIVector2Field::getGUITypeName(), editorVector2FieldStyle);
+
+		GUIElementStyle editorVector3FieldStyle;
+		editorVector3FieldStyle.fixedHeight = true;
+		editorVector3FieldStyle.height = 30;
+		editorVector3FieldStyle.minWidth = 30;
+		editorVector3FieldStyle.subStyles[GUIVector3Field::getLabelStyleType()] = GUITextField::getLabelStyleType();
+		editorVector3FieldStyle.subStyles[GUIVector3Field::getFloatFieldStyleType()] = GUIFloatField::getGUITypeName();
+
+		mSkin.setStyle(GUIVector3Field::getGUITypeName(), editorVector3FieldStyle);
+
+		GUIElementStyle editorVector4FieldStyle;
+		editorVector4FieldStyle.fixedHeight = true;
+		editorVector4FieldStyle.height = 30;
+		editorVector4FieldStyle.minWidth = 30;
+		editorVector4FieldStyle.subStyles[GUIVector4Field::getLabelStyleType()] = GUITextField::getLabelStyleType();
+		editorVector4FieldStyle.subStyles[GUIVector4Field::getFloatFieldStyleType()] = GUIFloatField::getGUITypeName();
+
+		mSkin.setStyle(GUIVector4Field::getGUITypeName(), editorVector4FieldStyle);
 	}
 
 	HSpriteTexture EditorGUI::getTexture(const WString& name)

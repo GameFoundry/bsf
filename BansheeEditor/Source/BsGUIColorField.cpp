@@ -7,25 +7,30 @@
 #include "BsGUIWidget.h"
 #include "BsGUIMouseEvent.h"
 #include "BsGUIWidget.h"
+#include "BsCmdInputFieldValueChange.h"
+
+using namespace std::placeholders;
 
 namespace BansheeEngine
 {
 	GUIColorField::GUIColorField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, 
-		const String& labelStyle, const String& colorStyle, const GUILayoutOptions& layoutOptions)
-		:GUIElementContainer(layoutOptions), mLabel(nullptr), mColor(nullptr), mLabelWidth(100)
+		const String& style, const GUILayoutOptions& layoutOptions)
+		:GUIElementContainer(layoutOptions, style), mLabel(nullptr), mColor(nullptr), mLabelWidth(100)
 	{
-		mLabel = GUILabel::create(labelContent, labelStyle);
-		mColor = GUIColor::create(colorStyle);
+		mLabel = GUILabel::create(labelContent, getSubStyleName(getLabelStyleType()));
+		mColor = GUIColor::create(getSubStyleName(getColorInputStyleType()));
+
+		mColor->onValueChanged.connect(std::bind(&GUIColorField::valueChanged, this, _1));
 
 		_registerChildElement(mLabel);
 		_registerChildElement(mColor);
 	}
 
 	GUIColorField::GUIColorField(const PrivatelyConstruct& dummy, 
-		const String& labelStyle, const String& colorStyle, const GUILayoutOptions& layoutOptions)
-		:GUIElementContainer(layoutOptions), mLabel(nullptr), mColor(nullptr), mLabelWidth(100)
+		const String& style, const GUILayoutOptions& layoutOptions)
+		:GUIElementContainer(layoutOptions, style), mLabel(nullptr), mColor(nullptr), mLabelWidth(100)
 	{
-		mColor = GUIColor::create(colorStyle);
+		mColor = GUIColor::create(style);
 
 		_registerChildElement(mColor);
 	}
@@ -36,52 +41,69 @@ namespace BansheeEngine
 	}
 
 	GUIColorField* GUIColorField::create(const GUIContent& labelContent, const GUIOptions& layoutOptions, 
-		const String& labelStyle, const String& toggleStyle)
+		const String& style)
 	{
-		return bs_new<GUIColorField>(PrivatelyConstruct(), labelContent, labelStyle, toggleStyle, 
+		const String* curStyle = &style;
+		if (*curStyle == StringUtil::BLANK)
+			curStyle = &getGUITypeName();
+
+		return bs_new<GUIColorField>(PrivatelyConstruct(), labelContent, *curStyle,
 			GUILayoutOptions::create(layoutOptions));
 	}
 
-	GUIColorField* GUIColorField::create(const GUIContent& labelContent, const String& labelStyle, 
-		const String& toggleStyle)
+	GUIColorField* GUIColorField::create(const GUIContent& labelContent, const String& style)
 	{
-		return bs_new<GUIColorField>(PrivatelyConstruct(), labelContent, labelStyle, toggleStyle, 
+		const String* curStyle = &style;
+		if (*curStyle == StringUtil::BLANK)
+			curStyle = &getGUITypeName();
+
+		return bs_new<GUIColorField>(PrivatelyConstruct(), labelContent, *curStyle,
 			GUILayoutOptions::create());
 	}
 
 	GUIColorField* GUIColorField::create(const HString& labelContent, const GUIOptions& layoutOptions, 
-		const String& labelStyle, const String& toggleStyle)
+		const String& style)
 	{
-		return bs_new<GUIColorField>(PrivatelyConstruct(), GUIContent(labelContent), labelStyle, 
-			toggleStyle, GUILayoutOptions::create(layoutOptions));
-	}
+		const String* curStyle = &style;
+		if (*curStyle == StringUtil::BLANK)
+			curStyle = &getGUITypeName();
 
-	GUIColorField* GUIColorField::create( const HString& labelContent, const String& labelStyle, 
-		const String& toggleStyle)
-	{
-		return bs_new<GUIColorField>(PrivatelyConstruct(), GUIContent(labelContent), labelStyle, toggleStyle, 
-			GUILayoutOptions::create());
-	}
-
-	GUIColorField* GUIColorField::create(const GUIOptions& layoutOptions, const String& labelStyle, 
-		const String& toggleStyle)
-	{
-		return bs_new<GUIColorField>(PrivatelyConstruct(), labelStyle, toggleStyle, 
+		return bs_new<GUIColorField>(PrivatelyConstruct(), GUIContent(labelContent), *curStyle,
 			GUILayoutOptions::create(layoutOptions));
 	}
 
-	GUIColorField* GUIColorField::create(const String& labelStyle, const String& toggleStyle)
+	GUIColorField* GUIColorField::create(const HString& labelContent, const String& style)
 	{
-		return bs_new<GUIColorField>(PrivatelyConstruct(), labelStyle, toggleStyle, GUILayoutOptions::create());
+		const String* curStyle = &style;
+		if (*curStyle == StringUtil::BLANK)
+			curStyle = &getGUITypeName();
+
+		return bs_new<GUIColorField>(PrivatelyConstruct(), GUIContent(labelContent), *curStyle,
+			GUILayoutOptions::create());
 	}
 
-	Color GUIColorField::getValue() const
+	GUIColorField* GUIColorField::create(const GUIOptions& layoutOptions, const String& style)
 	{
-		return mColor->getColor();
+		const String* curStyle = &style;
+		if (*curStyle == StringUtil::BLANK)
+			curStyle = &getGUITypeName();
+
+		return bs_new<GUIColorField>(PrivatelyConstruct(), *curStyle,
+			GUILayoutOptions::create(layoutOptions));
+	}
+
+	GUIColorField* GUIColorField::create(const String& style)
+	{
+		const String* curStyle = &style;
+		if (*curStyle == StringUtil::BLANK)
+			curStyle = &getGUITypeName();
+
+		return bs_new<GUIColorField>(PrivatelyConstruct(), *curStyle, GUILayoutOptions::create());
 	}
 
 	void GUIColorField::setValue(const Color& color)
 	{
+		mValue = color;
 		mColor->setColor(color);
 	}
 
@@ -148,9 +170,37 @@ namespace BansheeEngine
 		return optimalsize;
 	}
 
+	void GUIColorField::styleUpdated()
+	{
+		if (mLabel != nullptr)
+			mLabel->setStyle(getSubStyleName(getLabelStyleType()));
+
+		mColor->setStyle(getSubStyleName(getColorInputStyleType()));
+	}
+
+	void GUIColorField::valueChanged(const Color& newValue)
+	{
+		setValue(newValue);
+
+		if (!onValueChanged.empty())
+			onValueChanged(newValue);
+	}
+
 	const String& GUIColorField::getGUITypeName()
 	{
 		static String typeName = "GUIColorField";
 		return typeName;
+	}
+
+	const String& GUIColorField::getLabelStyleType()
+	{
+		static String STYLE_TYPE = "EditorFieldLabel";
+		return STYLE_TYPE;
+	}
+
+	const String& GUIColorField::getColorInputStyleType()
+	{
+		static String STYLE_TYPE = "EditorFieldColor";
+		return STYLE_TYPE;
 	}
 }

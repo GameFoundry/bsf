@@ -21,11 +21,11 @@ namespace BansheeEngine
 	const INT32 GUIIntField::DRAG_SPEED = 5;
 
 	GUIIntField::GUIIntField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth,
-		const String& labelStyle, const String& inputBoxStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
-		:TGUIField(dummy, labelContent, labelWidth, labelStyle, layoutOptions, withLabel), mInputBox(nullptr), mIsDragging(false),
-		mLastDragPos(0), mIsDragCursorSet(false)
+		const String& style, const GUILayoutOptions& layoutOptions, bool withLabel)
+		:TGUIField(dummy, labelContent, labelWidth, style, layoutOptions, withLabel), mInputBox(nullptr), mIsDragging(false),
+		mLastDragPos(0), mIsDragCursorSet(false), mHasInputFocus(false)
 	{
-		mInputBox = GUIInputBox::create(false, GUIOptions(GUIOption::flexibleWidth()), inputBoxStyle);
+		mInputBox = GUIInputBox::create(false, GUIOptions(GUIOption::flexibleWidth()), getSubStyleName(getInputStyleType()));
 		mInputBox->setFilter(&GUIIntField::intFilter);
 
 		mInputBox->onValueChanged.connect(std::bind(&GUIIntField::valueChanged, this, _1));
@@ -40,20 +40,6 @@ namespace BansheeEngine
 	GUIIntField::~GUIIntField()
 	{
 
-	}
-
-	Vector2I GUIIntField::_getOptimalSize() const
-	{
-		UINT32 width = (UINT32)mInputBox->_getOptimalSize().x;
-		UINT32 height = (UINT32)mInputBox->_getOptimalSize().y;
-
-		if (mLabel != nullptr)
-		{
-			width += mLabel->_getOptimalSize().x;
-			height = std::max(height, (UINT32)mLabel->_getOptimalSize().y);
-		}
-
-		return Vector2I(width, height);
 	}
 
 	bool GUIIntField::_hasCustomCursor(const Vector2I position, CursorType& type) const
@@ -153,6 +139,14 @@ namespace BansheeEngine
 		return false;
 	}
 
+	void GUIIntField::styleUpdated()
+	{
+		if (mLabel != nullptr)
+			mLabel->setStyle(getSubStyleName(getLabelStyleType()));
+
+		mInputBox->setStyle(getSubStyleName(getInputStyleType()));
+	}
+
 	void GUIIntField::setValue(INT32 value)
 	{
 		mValue = value;
@@ -171,6 +165,12 @@ namespace BansheeEngine
 		return typeName;
 	}
 
+	const String& GUIIntField::getInputStyleType()
+	{
+		static String LABEL_STYLE_TYPE = "EditorFieldInput";
+		return LABEL_STYLE_TYPE;
+	}
+
 	void GUIIntField::valueChanged(const WString& newValue)
 	{
 		INT32 newIntValue = parseInt(newValue);
@@ -184,11 +184,13 @@ namespace BansheeEngine
 	void GUIIntField::focusGained()
 	{
 		UndoRedo::instance().pushGroup("InputBox");
+		mHasInputFocus = true;
 	}
 
 	void GUIIntField::focusLost()
 	{
 		UndoRedo::instance().popGroup("InputBox");
+		mHasInputFocus = false;
 	}
 
 	bool GUIIntField::intFilter(const WString& str)

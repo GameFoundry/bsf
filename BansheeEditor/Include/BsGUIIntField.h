@@ -9,23 +9,32 @@ namespace BansheeEngine
 	{
 	public:
 		static const String& getGUITypeName();
+		static const String& getInputStyleType();
 
 		GUIIntField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth,
-			const String& labelStyle, const String& inputBoxStyle, const GUILayoutOptions& layoutOptions, bool withLabel);
+			const String& style, const GUILayoutOptions& layoutOptions, bool withLabel);
 
 		INT32 getValue() const { return mValue; }
 		void setValue(INT32 value);
 
+		bool hasInputFocus() const { return mHasInputFocus; }
+
 		Event<void(INT32)> onValueChanged;
-
-		virtual Vector2I _getOptimalSize() const;
-
 	protected:
 		virtual ~GUIIntField();
 
 		void updateClippedBounds();
 
-	protected:
+		bool _hasCustomCursor(const Vector2I position, CursorType& type) const;
+		virtual bool mouseEvent(const GUIMouseEvent& ev);
+		void styleUpdated();
+
+		void valueChanged(const WString& newValue);
+		void focusGained();
+		void focusLost();
+
+		static bool intFilter(const WString& str);
+
 		static const INT32 DRAG_SPEED;
 
 		GUIInputBox* mInputBox;
@@ -33,14 +42,6 @@ namespace BansheeEngine
 		INT32 mLastDragPos;
 		bool mIsDragging;
 		bool mIsDragCursorSet;
-
-		bool _hasCustomCursor(const Vector2I position, CursorType& type) const;
-		virtual bool mouseEvent(const GUIMouseEvent& ev);
-
-		void valueChanged(const WString& newValue);
-		void focusGained();
-		void focusLost();
-
-		static bool intFilter(const WString& str);
+		bool mHasInputFocus;
 	};
 }

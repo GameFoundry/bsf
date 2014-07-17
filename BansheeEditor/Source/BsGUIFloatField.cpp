@@ -10,19 +10,26 @@
 #include "BsCursor.h"
 #include "BsGUIWidget.h"
 #include "BsViewport.h"
+#include "BsCmdInputFieldValueChange.h"
 #include <regex>
+
+using namespace std::placeholders;
 
 namespace BansheeEngine
 {
 	const float GUIFloatField::DRAG_SPEED = 0.05f;
 
 	GUIFloatField::GUIFloatField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth, 
-		const String& labelStyle, const String& inputBoxStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
-		:TGUIField(dummy, labelContent, labelWidth, labelStyle, layoutOptions, withLabel), mInputBox(nullptr), mIsDragging(false),
-		mLastDragPos(0)
+		const String& style, const GUILayoutOptions& layoutOptions, bool withLabel)
+		:TGUIField(dummy, labelContent, labelWidth, style, layoutOptions, withLabel), mInputBox(nullptr), mIsDragging(false),
+		mLastDragPos(0), mHasInputFocus(false), mValue(0.0f)
 	{
-		mInputBox = GUIInputBox::create(false, GUIOptions(GUIOption::flexibleWidth()), inputBoxStyle);
+		mInputBox = GUIInputBox::create(false, GUIOptions(GUIOption::flexibleWidth()), getSubStyleName(getInputStyleType()));
 		mInputBox->setFilter(&GUIFloatField::floatFilter);
+
+		mInputBox->onValueChanged.connect(std::bind(&GUIFloatField::valueChanged, this, _1));
+		mInputBox->onFocusGained.connect(std::bind(&GUIFloatField::focusGained, this));
+		mInputBox->onFocusLost.connect(std::bind(&GUIFloatField::focusLost, this));
 
 		mLayout->addElement(mInputBox);
 
@@ -114,13 +121,9 @@ namespace BansheeEngine
 		return false;
 	}
 
-	float GUIFloatField::getValue() const
-	{
-		return parseFloat(mInputBox->getText());
-	}
-
 	void GUIFloatField::setValue(float value)
 	{
+		mValue = value;
 		mInputBox->setText(toWString(value));
 	}
 
@@ -134,6 +137,42 @@ namespace BansheeEngine
 	{
 		static String typeName = "GUIFloatField";
 		return typeName;
+	}
+
+	const String& GUIFloatField::getInputStyleType()
+	{
+		static String LABEL_STYLE_TYPE = "EditorFieldInput";
+		return LABEL_STYLE_TYPE;
+	}
+
+	void GUIFloatField::styleUpdated()
+	{
+		if (mLabel != nullptr)
+			mLabel->setStyle(getSubStyleName(getLabelStyleType()));
+
+		mInputBox->setStyle(getSubStyleName(getInputStyleType()));
+	}
+
+	void GUIFloatField::valueChanged(const WString& newValue)
+	{
+		float newFloatValue = parseFloat(newValue);
+
+		CmdInputFieldValueChange<GUIFloatField, float>::execute(this, newFloatValue);
+
+		if (!onValueChanged.empty())
+			onValueChanged(newFloatValue);
+	}
+
+	void GUIFloatField::focusGained()
+	{
+		UndoRedo::instance().pushGroup("InputBox");
+		mHasInputFocus = true;
+	}
+
+	void GUIFloatField::focusLost()
+	{
+		UndoRedo::instance().popGroup("InputBox");
+		mHasInputFocus = false;
 	}
 
 	bool GUIFloatField::floatFilter(const WString& str)

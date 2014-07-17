@@ -9,28 +9,38 @@ namespace BansheeEngine
 	{
 	public:
 		static const String& getGUITypeName();
+		static const String& getInputStyleType();
 
 		GUIFloatField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth,
-			const String& labelStyle, const String& inputBoxStyle, const GUILayoutOptions& layoutOptions, bool withLabel);
+			const String& style, const GUILayoutOptions& layoutOptions, bool withLabel);
 
-		float getValue() const;
+		float getValue() const { return mValue; }
 		void setValue(float value);
 
+		bool hasInputFocus() const { return mHasInputFocus; }
+
+		Event<void(float)> onValueChanged;
 	protected:
 		virtual ~GUIFloatField();
 
 		void updateClippedBounds();
 
-	protected:
+		bool _hasCustomCursor(const Vector2I position, CursorType& type) const;
+		virtual bool mouseEvent(const GUIMouseEvent& ev);
+		void styleUpdated();
+
+		void valueChanged(const WString& newValue);
+		void focusGained();
+		void focusLost();
+
+		static bool floatFilter(const WString& str);
+
 		static const float DRAG_SPEED;
 
 		GUIInputBox* mInputBox;
+		float mValue;
 		INT32 mLastDragPos;
 		bool mIsDragging;
-
-		bool _hasCustomCursor(const Vector2I position, CursorType& type) const;
-		virtual bool mouseEvent(const GUIMouseEvent& ev);
-
-		static bool floatFilter(const WString& str);
+		bool mHasInputFocus;
 	};
 }

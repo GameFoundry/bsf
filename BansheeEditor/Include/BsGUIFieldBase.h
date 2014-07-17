@@ -18,10 +18,18 @@ namespace BansheeEngine
 			RectI clipRect, UINT8 widgetDepth, UINT16 areaDepth);
 
 		virtual Vector2I _getOptimalSize() const;
+
+		static const String& getLabelStyleType()
+		{
+			static String LABEL_STYLE_TYPE = "EditorFieldLabel";
+			return LABEL_STYLE_TYPE;
+		}
+
 	protected:
 		virtual ~GUIFieldBase() { }
 
-	protected:
+		virtual void styleUpdated();
+
 		static const UINT32 DEFAULT_LABEL_WIDTH;
 
 		GUILayout* mLayout;
@@ -32,77 +40,116 @@ namespace BansheeEngine
 	class TGUIField : public GUIFieldBase
 	{
 	public:
-		static T* create(const GUIContent& labelContent, UINT32 labelWidth, const GUIOptions& layoutOptions, 
-			const String& labelStyle = StringUtil::BLANK, const String& entryElementStyle = StringUtil::BLANK)
+		static T* create(const GUIContent& labelContent, UINT32 labelWidth, const GUIOptions& layoutOptions,
+			const String& style = StringUtil::BLANK)
 		{
-			return bs_new<T>(PrivatelyConstruct(), labelContent, labelWidth, labelStyle, entryElementStyle, 
+			const String* curStyle = &style;
+			if (*curStyle == StringUtil::BLANK)
+				curStyle = &T::getGUITypeName();
+
+			return bs_new<T>(PrivatelyConstruct(), labelContent, labelWidth, *curStyle,
 				GUILayoutOptions::create(layoutOptions), true);
 		}
 
-		static T* create(const GUIContent& labelContent, const GUIOptions& layoutOptions, 
-			const String& labelStyle = StringUtil::BLANK, const String& entryElementStyle = StringUtil::BLANK)
+		static T* create(const GUIContent& labelContent, const GUIOptions& layoutOptions,
+			const String& style = StringUtil::BLANK)
 		{
-			return bs_new<T>(PrivatelyConstruct(), labelContent, DEFAULT_LABEL_WIDTH, labelStyle, entryElementStyle, 
+			const String* curStyle = &style;
+			if (*curStyle == StringUtil::BLANK)
+				curStyle = &T::getGUITypeName();
+
+			return bs_new<T>(PrivatelyConstruct(), labelContent, DEFAULT_LABEL_WIDTH, *curStyle,
 				GUILayoutOptions::create(layoutOptions), true);
 		}
 
-		static T* create(const HString& labelText, UINT32 labelWidth, const GUIOptions& layoutOptions, 
-			const String& labelStyle = StringUtil::BLANK, const String& entryElementStyle = StringUtil::BLANK)
+		static T* create(const HString& labelText, UINT32 labelWidth, const GUIOptions& layoutOptions,
+			const String& style = StringUtil::BLANK)
 		{
-			return bs_new<T>(PrivatelyConstruct(), GUIContent(labelText), labelWidth, labelStyle, entryElementStyle, 
+			const String* curStyle = &style;
+			if (*curStyle == StringUtil::BLANK)
+				curStyle = &T::getGUITypeName();
+
+			return bs_new<T>(PrivatelyConstruct(), GUIContent(labelText), labelWidth, *curStyle,
 				GUILayoutOptions::create(layoutOptions), true);
 		}
 
-		static T* create(const HString& labelText, const GUIOptions& layoutOptions, 
-			const String& labelStyle = StringUtil::BLANK, const String& entryElementStyle = StringUtil::BLANK)
+		static T* create(const HString& labelText, const GUIOptions& layoutOptions,
+			const String& style = StringUtil::BLANK)
 		{
-			return bs_new<T>(PrivatelyConstruct(), GUIContent(labelText), DEFAULT_LABEL_WIDTH, labelStyle, entryElementStyle, 
+			const String* curStyle = &style;
+			if (*curStyle == StringUtil::BLANK)
+				curStyle = &T::getGUITypeName();
+
+			return bs_new<T>(PrivatelyConstruct(), GUIContent(labelText), DEFAULT_LABEL_WIDTH, *curStyle,
 				GUILayoutOptions::create(layoutOptions), true);
 		}
 
-		static T* create(const GUIOptions& layoutOptions, const String& entryElementStyle = StringUtil::BLANK)
+		static T* create(const GUIOptions& layoutOptions, const String& style = StringUtil::BLANK)
 		{
-			return bs_new<T>(PrivatelyConstruct(), GUIContent(), 0, StringUtil::BLANK, entryElementStyle,
+			const String* curStyle = &style;
+			if (*curStyle == StringUtil::BLANK)
+				curStyle = &T::getGUITypeName();
+
+			return bs_new<T>(PrivatelyConstruct(), GUIContent(), 0, *curStyle,
 				GUILayoutOptions::create(layoutOptions), false);
 		}
 
-		static T* create(const GUIContent& labelContent, UINT32 labelWidth, 
-			const String& labelStyle = StringUtil::BLANK, const String& entryElementStyle = StringUtil::BLANK)
+		static T* create(const GUIContent& labelContent, UINT32 labelWidth,
+			const String& style = StringUtil::BLANK)
 		{
-			return bs_new<T>(PrivatelyConstruct(), labelContent, labelWidth, labelStyle, entryElementStyle, 
+			const String* curStyle = &style;
+			if (*curStyle == StringUtil::BLANK)
+				curStyle = &T::getGUITypeName();
+
+			return bs_new<T>(PrivatelyConstruct(), labelContent, labelWidth, *curStyle, GUILayoutOptions::create(), true);
+		}
+
+		static T* create(const GUIContent& labelContent,
+			const String& style = StringUtil::BLANK)
+		{
+			const String* curStyle = &style;
+			if (*curStyle == StringUtil::BLANK)
+				curStyle = &T::getGUITypeName();
+
+			return bs_new<T>(PrivatelyConstruct(), labelContent, DEFAULT_LABEL_WIDTH, *curStyle,
 				GUILayoutOptions::create(), true);
 		}
 
-		static T* create(const GUIContent& labelContent, 
-			const String& labelStyle = StringUtil::BLANK, const String& entryElementStyle = StringUtil::BLANK)
+		static T* create(const HString& labelText, UINT32 labelWidth,
+			const String& style = StringUtil::BLANK)
 		{
-			return bs_new<T>(PrivatelyConstruct(), labelContent, DEFAULT_LABEL_WIDTH, labelStyle, entryElementStyle, 
+			const String* curStyle = &style;
+			if (*curStyle == StringUtil::BLANK)
+				curStyle = &T::getGUITypeName();
+
+			return bs_new<T>(PrivatelyConstruct(), GUIContent(labelText), labelWidth, *curStyle,
 				GUILayoutOptions::create(), true);
 		}
 
-		static T* create(const HString& labelText, UINT32 labelWidth, 
-			const String& labelStyle = StringUtil::BLANK, const String& entryElementStyle = StringUtil::BLANK)
+		static T* create(const HString& labelText,
+			const String& style = StringUtil::BLANK)
 		{
-			return bs_new<T>(PrivatelyConstruct(), GUIContent(labelText), labelWidth, labelStyle, entryElementStyle, 
+			const String* curStyle = &style;
+			if (*curStyle == StringUtil::BLANK)
+				curStyle = &T::getGUITypeName();
+
+			return bs_new<T>(PrivatelyConstruct(), GUIContent(labelText), DEFAULT_LABEL_WIDTH, *curStyle,
 				GUILayoutOptions::create(), true);
 		}
 
-		static T* create(const HString& labelText, 
-			const String& labelStyle = StringUtil::BLANK, const String& entryElementStyle = StringUtil::BLANK)
+		static T* create(const String& style = StringUtil::BLANK)
 		{
-			return bs_new<T>(PrivatelyConstruct(), GUIContent(labelText), DEFAULT_LABEL_WIDTH, labelStyle, entryElementStyle, 
-				GUILayoutOptions::create(), true);
-		}
+			const String* curStyle = &style;
+			if (*curStyle == StringUtil::BLANK)
+				curStyle = &T::getGUITypeName();
 
-		static T* create(const String& entryElementStyle = StringUtil::BLANK)
-		{
-			return bs_new<T>(PrivatelyConstruct(), GUIContent(), 0, StringUtil::BLANK, entryElementStyle,
+			return bs_new<T>(PrivatelyConstruct(), GUIContent(), 0, *curStyle,
 				GUILayoutOptions::create(), false);
 		}
 
 		TGUIField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth,
-			const String& labelStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
-			:GUIFieldBase(dummy, labelContent, labelWidth, labelStyle, layoutOptions, withLabel)
+			const String& style, const GUILayoutOptions& layoutOptions, bool withLabel)
+			:GUIFieldBase(dummy, labelContent, labelWidth, style, layoutOptions, withLabel)
 		{ }
 	};
 }

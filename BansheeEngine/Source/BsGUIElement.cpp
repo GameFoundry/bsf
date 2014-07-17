@@ -48,6 +48,11 @@ namespace BansheeEngine
 		mLayoutOptions = layoutOptions; 
 	}
 
+	void GUIElement::setStyle(const String& styleName)
+	{
+		mStyleName = styleName;
+		_refreshStyle();
+	}
 
 	bool GUIElement::mouseEvent(const GUIMouseEvent& ev)
 	{
@@ -272,9 +277,20 @@ namespace BansheeEngine
 		{
 			mStyle = newStyle;
 			mLayoutOptions.updateWithStyle(mStyle);
+			styleUpdated();
 
 			markContentAsDirty();
 		}
+	}
+
+	const String& GUIElement::getSubStyleName(const String& subStyleTypeName)
+	{
+		auto iterFind = mStyle->subStyles.find(subStyleTypeName);
+
+		if (iterFind != mStyle->subStyles.end())
+			return iterFind->second;
+		else
+			return StringUtil::BLANK;
 	}
 
 	void GUIElement::destroy(GUIElement* element)

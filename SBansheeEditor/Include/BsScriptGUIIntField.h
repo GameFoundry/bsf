@@ -11,8 +11,8 @@ namespace BansheeEngine
 		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "GUIIntField")
 
 	private:
-		static void internal_createInstance(MonoObject* instance, MonoObject* title, UINT32 titleWidth, MonoString* titleStyle, 
-			MonoString* inputStyle, MonoArray* guiOptions, bool withTitle);
+		static void internal_createInstance(MonoObject* instance, MonoObject* title, UINT32 titleWidth, 
+			MonoString* style, MonoArray* guiOptions, bool withTitle);
 
 		static INT32 internal_getValue(ScriptGUIIntField* nativeInstance);
 		static void internal_setValue(ScriptGUIIntField* nativeInstance, INT32 value);
