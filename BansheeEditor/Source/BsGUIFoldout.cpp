@@ -8,6 +8,8 @@
 #include "BsGUIWidget.h"
 #include "BsGUIMouseEvent.h"
 
+using namespace std::placeholders;
+
 namespace BansheeEngine
 {
 	const String GUIFoldout::FOLDOUT_BUTTON_STYLE = "FoldoutButton";
@@ -25,6 +27,8 @@ namespace BansheeEngine
 		_registerChildElement(mLabel);
 		_registerChildElement(mToggle);
 		_registerChildElement(mBackground);
+
+		mToggle->onToggled.connect(std::bind(&GUIFoldout::toggleTriggered, this, _1));
 	}
 
 	GUIFoldout::~GUIFoldout()
@@ -86,6 +90,15 @@ namespace BansheeEngine
 			if(!onStateChanged.empty())
 				onStateChanged(mIsExpanded);
 		}
+	}
+
+	void GUIFoldout::toggleTriggered(bool value)
+	{
+		mIsExpanded = value;
+
+		markContentAsDirty();
+
+		onStateChanged(value);
 	}
 
 	void GUIFoldout::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,

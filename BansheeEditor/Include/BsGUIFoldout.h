@@ -33,7 +33,8 @@ namespace BansheeEngine
 	protected:
 		virtual ~GUIFoldout();
 
-	protected:
+		void toggleTriggered(bool value);
+
 		static const String FOLDOUT_BUTTON_STYLE;
 		static const String FOLDOUT_BG_STYLE;
 		static const String FOLDOUT_LABEL_STYLE;

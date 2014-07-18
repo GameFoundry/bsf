@@ -13,6 +13,8 @@ namespace BansheeEngine
 	private:
 		static void internal_createInstance(MonoObject* instance, MonoObject* content, MonoString* style, MonoArray* guiOptions);
 		static void internal_setContent(ScriptGUIFoldout* nativeInstance, MonoObject* content);
+		static void internal_setExpanded(ScriptGUIFoldout* nativeInstance, bool expanded);
+		static void internal_getIsExpanded(ScriptGUIFoldout* nativeInstance, bool* isExpanded);
 
 		static void onToggled(MonoObject* instance, bool expanded);
 

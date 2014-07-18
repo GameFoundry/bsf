@@ -32,6 +32,8 @@ namespace BansheeEngine
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIFoldout::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_SetContent", &ScriptGUIFoldout::internal_setContent);
+		metaData.scriptClass->addInternalCall("Internal_SetExpanded", &ScriptGUIFoldout::internal_setExpanded);
+		metaData.scriptClass->addInternalCall("Internal_IsExpanded", &ScriptGUIFoldout::internal_getIsExpanded);
 
 		onToggledThunk = (OnToggledThunkDef)metaData.scriptClass->getMethod("DoOnToggled", 1).getThunk();
 	}
@@ -57,6 +59,20 @@ namespace BansheeEngine
 		GUIContent nativeContent(ScriptGUIContent::getText(content), ScriptGUIContent::getImage(content), ScriptGUIContent::getTooltip(content));
 		
 		// TODO - Update GUIFoldout once it has a label
+	}
+
+	void ScriptGUIFoldout::internal_setExpanded(ScriptGUIFoldout* nativeInstance, bool expanded)
+	{
+		GUIFoldout* foldout = static_cast<GUIFoldout*>(nativeInstance->getGUIElement());
+
+		foldout->setExpanded(expanded);
+	}
+
+	void ScriptGUIFoldout::internal_getIsExpanded(ScriptGUIFoldout* nativeInstance, bool* isExpanded)
+	{
+		GUIFoldout* foldout = static_cast<GUIFoldout*>(nativeInstance->getGUIElement());
+
+		*isExpanded = foldout->isExpanded();
 	}
 
 	void ScriptGUIFoldout::onToggled(MonoObject* instance, bool expanded)

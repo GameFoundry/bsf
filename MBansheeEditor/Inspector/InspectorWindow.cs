@@ -11,6 +11,7 @@ namespace BansheeEditor
             public GUIFoldout foldout;
             public GUIPanelContainer container;
             public Inspector inspector;
+            public bool expanded = true;
         }
 
         private List<InspectorData> inspectorData = new List<InspectorData>();
@@ -38,7 +39,8 @@ namespace BansheeEditor
                 data.inspector = GetInspector(allComponents[i].GetType());
                 data.inspector.Initialize(inspectorPanel, allComponents[i]);
 
-                data.foldout.OnToggled += (bool expanded) => Foldout_OnToggled(data.inspector, expanded);
+                data.foldout.SetExpanded(true);
+                data.foldout.OnToggled += (bool expanded) => Foldout_OnToggled(data, expanded);
 
                 inspectorData.Add(data);
             }
@@ -48,9 +50,12 @@ namespace BansheeEditor
             RepositionInspectors();
         }
 
-        void Foldout_OnToggled(Inspector inspector, bool expanded)
+        void Foldout_OnToggled(InspectorData inspectorData, bool expanded)
         {
-            inspector.SetVisible(expanded);
+            inspectorData.expanded = expanded;
+            inspectorData.inspector.SetVisible(expanded);
+
+            RepositionInspectors();
         }
 
         internal void Refresh()
@@ -96,6 +101,9 @@ namespace BansheeEditor
             for (int i = 0; i < inspectorData.Count; i++)
             {
                 int inspectorHeight = inspectorData[i].inspector.GetOptimalHeight();
+
+                if (!inspectorData[i].expanded)
+                    inspectorHeight = 0;
 
                 inspectorData[i].inspector.SetArea(0, curPosition, width, inspectorHeight);
                 inspectorData[i].container.SetLayoutOptions(GUIOption.FixedHeight(inspectorHeight));

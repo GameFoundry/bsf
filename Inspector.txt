@@ -1,25 +1,18 @@
 Update C# GUIElementStyle
+Update GUIFoldout with sub styles
 
 TODO:
  - Hook up int field set/get callbacks
     - Ensure int field isn't updated from app when in focus
- - Hook up foldout expand/collapse callbacks
  - Think about how to handle arrays, adding and deleting elements from them.
    - Will likely need GUILayout::GetElementIndex()
  - I should add project and scene tree views to the main editor window to make inspector testing easier
  - Entire foldout should be clickable, not just the toggle button
  - Extend text field so it can be multi-line
  - Port to C#:
-   - IntField
-   - FloatField
-   - ColorField
-   - ToggleField
-   - TextField
-   - Vector2Field
-   - Vector3Field
-   - Vector4Field
    - GameObjectField
    - ResourceField
+   - Create InspectableObjects for all different field types
  - Ensure get/set value from inspector fields works 
  - Add array fields and ensure they work/update properly
  - Extend GameObject field so it can only accept a certain type
@@ -33,7 +26,10 @@ TODO:
 
 TO PONDER:
  - How to limit resource/object fields to a custom type (user created type possibly)
- - Need to figure out a better way of setting styles for container GUI elements (e.g. GUIFoldout requires three different styles)
+ - How will I create undo/redo operations for serializable fields?
+   - UndoRedo.RecordField - Saves current state of the field, before you modify it
+     - Accepts a source object and a path that allows us to follow its properties to the exact modified field
+	 - Source object will be stored by its ID (it can either be GameObject or Resource, nothing else)
 
 KEEP IN MIND:
  - Clicking on an object/resource in inspector should ping it in their window
@@ -44,6 +40,17 @@ KEEP IN MIND:
      - Technically objects will never change their structure during runtime, this is only relevant for array sizes
  - Modify C++ Editor fields so that calling setValue doesn't update the visual value until focus is lost
   - When user is currently writing in an input box I don't want refresh to overwrite that value.
+
+
+
+
+
+
+
+
+
+
+
 
 
 
