@@ -11,6 +11,8 @@ namespace BansheeEngine
 		DbgEditorWidget1(const ConstructPrivately& dummy, EditorWidgetContainer& parentContainer);
 		virtual ~DbgEditorWidget1();
 
+		virtual void _update();
+
 		static DbgEditorWidget1* instance();
 		static DbgEditorWidget1* open();
 		static void close();
@@ -18,5 +20,7 @@ namespace BansheeEngine
 
 	private:
 		static DbgEditorWidget1* Instance;
+		GUISceneTreeView* mSceneTreeView = nullptr;
+		GUIResourceTreeView* mResourceTreeView = nullptr;
 	};
 }

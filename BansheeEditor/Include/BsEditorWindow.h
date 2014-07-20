@@ -12,6 +12,8 @@ namespace BansheeEngine
 
 		EditorWidgetContainer& widgets() const { return *mWidgets; }
 
+		virtual void update();
+
 		static EditorWindow* create();
 
 	protected:

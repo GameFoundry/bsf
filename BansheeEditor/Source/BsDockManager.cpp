@@ -355,6 +355,23 @@ namespace BansheeEngine
 		return mWidgets->getContentBounds();
 	}
 
+	void DockManager::DockContainer::update()
+	{
+		if (mIsLeaf)
+		{
+			if (mWidgets != nullptr)
+				mWidgets->_update();
+		}
+		else
+		{
+			if (mChildren[0] != nullptr)
+				mChildren[0]->update();
+
+			if (mChildren[1] != nullptr)
+				mChildren[1]->update();
+		}
+	}
+
 	DockManager::DockManager(RenderWindow* parentWindow, const GUILayoutOptions& layoutOptions)
 		:GUIElementContainer(layoutOptions), mParentWindow(parentWindow), mMouseOverContainer(nullptr), mHighlightedDropLoc(DockLocation::None),
 		mShowOverlay(false), mAddedRenderCallback(false)
@@ -387,6 +404,8 @@ namespace BansheeEngine
 			mHighlightedDropLoc = DockLocation::None;
 			mShowOverlay = false;
 		}
+
+		mRootContainer.update();
 	}
 
 	void DockManager::render(const Viewport* viewport, DrawList& drawList)

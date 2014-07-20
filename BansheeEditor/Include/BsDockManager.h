@@ -33,6 +33,8 @@ namespace BansheeEngine
 			void addWidget(EditorWidgetBase* widget);
 			void addWidget(const String& name);
 
+			void update();
+
 			DockContainer* find(EditorWidgetContainer* widgetContainer);
 
 			/**

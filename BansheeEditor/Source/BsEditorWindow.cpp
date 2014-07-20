@@ -18,6 +18,11 @@ namespace BansheeEngine
 		bs_delete(mWidgets);
 	}
 
+	void EditorWindow::update()
+	{
+		mWidgets->_update();
+	}
+
 	void EditorWindow::resized()
 	{
 		EditorWindowBase::resized();

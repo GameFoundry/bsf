@@ -7,6 +7,8 @@
 #include "BsGUIArea.h"
 #include "BsGUILayout.h"
 #include "BsEditorWidgetManager.h"
+#include "BsGUISceneTreeView.h"
+#include "BsGUIResourceTreeView.h"
 
 namespace BansheeEngine
 {
@@ -26,7 +28,7 @@ namespace BansheeEngine
 		GUIScrollArea* scrollArea = GUIScrollArea::create();
 		layout.addElement(scrollArea);
 
-		GUILayout& scrollLayout = scrollArea->getLayout().addLayoutX();
+		GUILayout& treeViewLayout = scrollArea->getLayout().addLayoutY();
 
 		//scrollLayout.addElement(GUIButton::create(*mGUI, L"Test A"));
 		//scrollLayout.addElement(GUIButton::create(*mGUI, L"Test B"));
@@ -41,9 +43,14 @@ namespace BansheeEngine
 		//scrollLayout.addElement(GUIButton::create(*mGUI, L"Test K"));
 		//scrollLayout.addElement(GUIButton::create(*mGUI, L"Test L"));
 
-		scrollLayout.addElement(GUIInputBox::create(true, GUIOptions(GUIOption::fixedWidth(100), GUIOption::fixedHeight(100))));
-		scrollLayout.addElement(GUIInputBox::create(true, GUIOptions(GUIOption::fixedWidth(100), GUIOption::fixedHeight(100))));
-		scrollLayout.addElement(GUIInputBox::create(true, GUIOptions(GUIOption::fixedWidth(100), GUIOption::fixedHeight(100))));
+		mSceneTreeView = GUISceneTreeView::create(GUIOptions(GUIOption::flexibleWidth(), GUIOption::flexibleHeight()));
+		mResourceTreeView = GUIResourceTreeView::create(GUIOptions(GUIOption::flexibleWidth(), GUIOption::flexibleHeight()));
+
+		treeViewLayout.addElement(GUILabel::create(HString(L"<<<<<<<<<<<<<<SCENE VIEW>>>>>>>>>>>>>>")));
+		treeViewLayout.addElement(mSceneTreeView);
+
+		treeViewLayout.addElement(GUILabel::create(HString(L"<<<<<<<<<<<<<<RESOURCE VIEW>>>>>>>>>>>>>>")));
+		treeViewLayout.addElement(mResourceTreeView);
 
 		//GUIFlexibleSpace& space4 = otherLayout.addFlexibleSpace();
 		//otherLayout.addElement(mDbgLabel);
@@ -73,6 +80,12 @@ namespace BansheeEngine
 	DbgEditorWidget1::~DbgEditorWidget1()
 	{
 
+	}
+
+	void DbgEditorWidget1::_update()
+	{
+		mSceneTreeView->update();
+		mResourceTreeView->update();
 	}
 
 	DbgEditorWidget1* DbgEditorWidget1::instance()
