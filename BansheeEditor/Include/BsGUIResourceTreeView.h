@@ -7,17 +7,17 @@
 
 namespace BansheeEngine
 {
+	struct DraggedResources
+	{
+		Vector<String> resourceUUIDs;
+	};
+
 	class GUIResourceTreeView : public GUITreeView
 	{
 		struct ResourceTreeElement : public GUITreeView::TreeElement
 		{
 			Path mFullPath;
 			WString mElementName;
-		};
-
-		struct DraggedResources
-		{
-			Vector<String> resourceUUIDs;
 		};
 
 		struct InternalDraggedResources

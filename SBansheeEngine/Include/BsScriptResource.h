@@ -5,7 +5,7 @@
 
 namespace BansheeEngine
 {
-	class BS_SCR_BE_EXPORT ScriptResource : public ScriptObjectBase
+	class BS_SCR_BE_EXPORT ScriptResourceBase : public ScriptObjectBase
 	{
 	public:
 		virtual HResource getNativeHandle() const = 0;
@@ -14,9 +14,23 @@ namespace BansheeEngine
 	protected:
 		friend class ScriptResourceManager;
 
-		ScriptResource(MonoObject* instance)
+		ScriptResourceBase(MonoObject* instance)
 			:ScriptObjectBase(instance)
 		{ }
-		virtual ~ScriptResource() {}
+		virtual ~ScriptResourceBase() {}
+	};
+
+	class BS_SCR_BE_EXPORT ScriptResource : public ScriptObject<ScriptResource, ScriptResourceBase>
+	{
+	public:
+		static String getAssemblyName() { return BansheeEngineAssemblyName; }
+		static String getNamespace() { return "BansheeEngine"; }
+		static String getTypeName() { return "Resource"; }
+		static void initRuntimeData() { }
+
+	private:
+		ScriptResource(MonoObject* instance)
+			:ScriptObject(instance)
+		{ }
 	};
 }

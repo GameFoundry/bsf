@@ -70,7 +70,7 @@ namespace BansheeEngine
 		return static_cast<ScriptSpriteTexture*>(getScriptResource(resourceHandle));
 	}
 
-	ScriptResource* ScriptResourceManager::getScriptResource(const HResource& resourceHandle)
+	ScriptResourceBase* ScriptResourceManager::getScriptResource(const HResource& resourceHandle)
 	{
 		const String& uuid = resourceHandle.getUUID();
 
@@ -84,7 +84,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	void ScriptResourceManager::destroyScriptResource(ScriptResource* resource)
+	void ScriptResourceManager::destroyScriptResource(ScriptResourceBase* resource)
 	{
 		HResource resourceHandle = resource->getNativeHandle();
 		const String& uuid = resourceHandle.getUUID();
@@ -95,7 +95,7 @@ namespace BansheeEngine
 		auto findIter = mScriptResources.find(uuid);
 		if(findIter != mScriptResources.end())
 		{
-			(resource)->~ScriptResource();
+			(resource)->~ScriptResourceBase();
 			MemoryAllocator<GenAlloc>::free(resource);
 
 			mScriptResources.erase(findIter);

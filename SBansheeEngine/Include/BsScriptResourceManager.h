@@ -48,12 +48,12 @@ namespace BansheeEngine
 		/**
 		 * @note Returns nullptr if script resource doesn't exist.
 		 */
-		ScriptResource* getScriptResource(const HResource& resourceHandle);
+		ScriptResourceBase* getScriptResource(const HResource& resourceHandle);
 
-		void destroyScriptResource(ScriptResource* resource);
+		void destroyScriptResource(ScriptResourceBase* resource);
 
 	private:
-		UnorderedMap<String, ScriptResource*> mScriptResources;
+		UnorderedMap<String, ScriptResourceBase*> mScriptResources;
 		MonoClass* mTextureClass;
 		MonoClass* mSpriteTextureClass;
 
