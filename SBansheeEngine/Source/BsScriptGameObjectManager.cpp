@@ -56,7 +56,7 @@ namespace BansheeEngine
 		return nativeInstance;
 	}
 
-	ScriptComponent* ScriptGameObjectManager::getScriptComponent(const GameObjectHandle<ManagedComponent>& component)
+	ScriptComponent* ScriptGameObjectManager::getScriptComponent(const GameObjectHandle<ManagedComponent>& component) const
 	{
 		auto findIter = mScriptGameObjects.find(component->getInstanceId());
 		if(findIter != mScriptGameObjects.end())
@@ -65,7 +65,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	ScriptSceneObject* ScriptGameObjectManager::getScriptSceneObject(const HSceneObject& sceneObject)
+	ScriptSceneObject* ScriptGameObjectManager::getScriptSceneObject(const HSceneObject& sceneObject) const
 	{
 		auto findIter = mScriptGameObjects.find(sceneObject->getInstanceId());
 		if(findIter != mScriptGameObjects.end())
@@ -74,7 +74,16 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	void ScriptGameObjectManager::destroyScriptGameObject(ScriptGameObject* gameObject)
+	ScriptGameObjectBase* ScriptGameObjectManager::getScriptGameObject(UINT64 instanceId) const
+	{
+		auto findIter = mScriptGameObjects.find(instanceId);
+		if (findIter != mScriptGameObjects.end())
+			return static_cast<ScriptSceneObject*>(findIter->second);
+
+		return nullptr;
+	}
+
+	void ScriptGameObjectManager::destroyScriptGameObject(ScriptGameObjectBase* gameObject)
 	{
 		UINT64 idx = gameObject->getNativeHandle()->getInstanceId();
 		mScriptGameObjects.erase(idx);

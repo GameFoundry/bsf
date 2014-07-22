@@ -226,12 +226,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\BsGUIGameObjectField.h" />
     <ClInclude Include="Include\BsGUIPanelContainer.h" />
     <ClInclude Include="Include\BsScriptEditorPrerequisites.h" />
     <ClInclude Include="Include\BsScriptEditorWindow.h" />
     <ClInclude Include="Include\BsScriptGUIColorField.h" />
     <ClInclude Include="Include\BsScriptGUIFloatField.h" />
     <ClInclude Include="Include\BsScriptGUIFoldout.h" />
+    <ClInclude Include="Include\BsScriptGUIGameObjectField.h" />
     <ClInclude Include="Include\BsScriptGUIIntField.h" />
     <ClInclude Include="Include\BsScriptGUIPanelContainer.h" />
     <ClInclude Include="Include\BsScriptGUITextField.h" />
@@ -241,12 +243,14 @@
     <ClInclude Include="Include\BsScriptGUIVector4Field.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\BsGUIGameObjectField.cpp" />
     <ClCompile Include="Source\BsGUIPanelContainer.cpp" />
     <ClCompile Include="Source\BsScriptEditorPlugin.cpp" />
     <ClCompile Include="Source\BsScriptEditorWindow.cpp" />
     <ClCompile Include="Source\BsScriptGUIColorField.cpp" />
     <ClCompile Include="Source\BsScriptGUIFloatField.cpp" />
     <ClCompile Include="Source\BsScriptGUIFoldout.cpp" />
+    <ClCompile Include="Source\BsScriptGUIGameObjectField.cpp" />
     <ClCompile Include="Source\BsScriptGUIIntField.cpp" />
     <ClCompile Include="Source\BsScriptGUIPanelContainer.cpp" />
     <ClCompile Include="Source\BsScriptGUITextField.cpp" />

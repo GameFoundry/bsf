@@ -6,7 +6,6 @@ TODO:
     - Ensure int field isn't updated from app when in focus
  - Think about how to handle arrays, adding and deleting elements from them.
    - Will likely need GUILayout::GetElementIndex()
- - I should add project and scene tree views to the main editor window to make inspector testing easier
  - Entire foldout should be clickable, not just the toggle button
  - Extend text field so it can be multi-line
  - Port to C#:

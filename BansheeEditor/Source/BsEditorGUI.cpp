@@ -18,7 +18,6 @@
 #include "BsGUIVector2Field.h"
 #include "BsGUIVector3Field.h"
 #include "BsGUIVector4Field.h"
-#include "BsGUIGameObjectField.h"
 
 #include "BsFont.h"
 #include "BsFontImportOptions.h"
@@ -28,6 +27,11 @@
 
 namespace BansheeEngine
 {
+	const String EditorGUI::ObjectFieldStyleName = "GUIObjectField";
+	const String EditorGUI::ObjectFieldLabelStyleName = "EditorFieldLabel";
+	const String EditorGUI::ObjectFieldDropBtnStyleName = "DropButton";
+	const String EditorGUI::ObjectFieldClearBtnStyleName = "ObjectClearButton";
+
 	const WString EditorGUI::DefaultFontPath = L"arial.ttf";
 	const UINT32 EditorGUI::DefaultFontSize = 10;
 
@@ -813,7 +817,7 @@ namespace BansheeEngine
 		objectDropStyle.textHorzAlign = THA_Center;
 		objectDropStyle.textVertAlign = TVA_Center;
 
-		mSkin.setStyle(GUIGameObjectField::getDropButtonStyleType(), objectDropStyle);
+		mSkin.setStyle(ObjectFieldDropBtnStyleName, objectDropStyle);
 
 		GUIElementStyle objectClearBtnStyle;
 		objectClearBtnStyle.normal.texture = getTexture(ObjectClearBtnNormalTex);
@@ -824,17 +828,17 @@ namespace BansheeEngine
 		objectClearBtnStyle.height = 15;
 		objectClearBtnStyle.width = 13;
 
-		mSkin.setStyle(GUIGameObjectField::getClearButtonStyleType(), objectClearBtnStyle);
+		mSkin.setStyle(ObjectFieldClearBtnStyleName, objectClearBtnStyle);
 
 		GUIElementStyle editorObjectFieldStyle;
 		editorObjectFieldStyle.fixedHeight = true;
 		editorObjectFieldStyle.height = 15;
 		editorObjectFieldStyle.minWidth = 30;
-		editorObjectFieldStyle.subStyles[GUIGameObjectField::getLabelStyleType()] = GUITextField::getLabelStyleType();
-		editorObjectFieldStyle.subStyles[GUIGameObjectField::getDropButtonStyleType()] = GUIGameObjectField::getDropButtonStyleType();
-		editorObjectFieldStyle.subStyles[GUIGameObjectField::getClearButtonStyleType()] = GUIGameObjectField::getClearButtonStyleType();
+		editorObjectFieldStyle.subStyles[ObjectFieldLabelStyleName] = GUITextField::getLabelStyleType();
+		editorObjectFieldStyle.subStyles[ObjectFieldDropBtnStyleName] = ObjectFieldDropBtnStyleName;
+		editorObjectFieldStyle.subStyles[ObjectFieldClearBtnStyleName] = ObjectFieldClearBtnStyleName;
 
-		mSkin.setStyle(GUIGameObjectField::getGUITypeName(), editorObjectFieldStyle);
+		mSkin.setStyle(ObjectFieldStyleName, editorObjectFieldStyle);
 
 		/************************************************************************/
 		/* 								EDITOR FIELDS                      		*/

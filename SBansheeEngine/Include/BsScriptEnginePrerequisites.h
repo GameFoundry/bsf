@@ -31,7 +31,7 @@ namespace BansheeEngine
 	class ScriptGUIArea;
 	class ScriptGUILayout;
 	class ScriptGUILabel;
-	class ScriptGameObject;
+	class ScriptGameObjectBase;
 	class ScriptSceneObject;
 	class ScriptComponent;
 	class ManagedComponent;
@@ -51,6 +51,8 @@ namespace BansheeEngine
 	class ManagedSerializableAssemblyInfo;
 	class ManagedSerializableObjectInfo;
 	class ManagedSerializableFieldInfo;
+
+	typedef GameObjectHandle<ManagedComponent> HManagedComponent;
 
 	enum TypeID_BansheeScript
 	{

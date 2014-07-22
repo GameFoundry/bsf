@@ -10,7 +10,7 @@
 
 namespace BansheeEngine
 {
-	class GUIDropButton : public GUIButtonBase
+	class BS_ED_EXPORT GUIDropButton : public GUIButtonBase
 	{
 	public:
 		static const String& getGUITypeName();

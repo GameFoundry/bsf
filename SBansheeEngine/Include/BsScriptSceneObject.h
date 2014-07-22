@@ -7,7 +7,7 @@
 
 namespace BansheeEngine
 {
-	class BS_SCR_BE_EXPORT ScriptSceneObject : public ScriptObject<ScriptSceneObject, ScriptGameObject>
+	class BS_SCR_BE_EXPORT ScriptSceneObject : public ScriptObject<ScriptSceneObject, ScriptGameObjectBase>
 	{
 	public:
 		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "SceneObject")

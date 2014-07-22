@@ -7,12 +7,17 @@
 
 namespace BansheeEngine
 {
-	class EditorGUI : public BansheeEngine::Module<EditorGUI>
+	class BS_ED_EXPORT EditorGUI : public BansheeEngine::Module<EditorGUI>
 	{
 	public:
 		EditorGUI();
 
 		const GUISkin& getSkin() const { return mSkin; }
+
+		static const String ObjectFieldStyleName;
+		static const String ObjectFieldLabelStyleName;
+		static const String ObjectFieldDropBtnStyleName;
+		static const String ObjectFieldClearBtnStyleName;
 
 	private:
 		GUISkin mSkin;

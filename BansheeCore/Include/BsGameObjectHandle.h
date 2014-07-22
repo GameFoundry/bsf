@@ -263,7 +263,7 @@ namespace BansheeEngine
 		friend class GameObjectManager;
 
 		/**
-		 * @brief	Creates a handle from a smart pointer.
+		 * @brief	Creates a GameObject handle from a smart pointer.
 		 */
 		explicit GameObjectHandle(const std::shared_ptr<T> ptr)
 			:GameObjectHandleBase(ptr)
@@ -271,7 +271,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Casts one handle type to another.
+	 * @brief	Casts one GameObject handle type to another.
 	 */
 	template<class _Ty1, class _Ty2>
 		GameObjectHandle<_Ty1> static_object_cast(const GameObjectHandle<_Ty2>& other)

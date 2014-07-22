@@ -45,6 +45,7 @@
     <Compile Include="Debug_Component2.cs" />
     <Compile Include="EditorApplication.cs" />
     <Compile Include="EditorWindow.cs" />
+    <Compile Include="GUI\GUIGameObjectField.cs" />
     <Compile Include="GUI\GUIVector3Field.cs" />
     <Compile Include="GUI\GUIColorField.cs" />
     <Compile Include="GUI\GUIFloatField.cs" />
