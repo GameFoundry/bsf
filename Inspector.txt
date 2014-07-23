@@ -1,6 +1,10 @@
 Update C# GUIElementStyle
 Update GUIFoldout with sub styles
 
+GUIResourceField needs to be able to check resource type without loading it
+ - I need this for ProjectLibrary too (so I can display valid icons in TreeView)
+ - But I need a more exact version since resources could be custom C# classes (This will likely need to be supported in some special way)
+
 TODO:
  - Hook up int field set/get callbacks
     - Ensure int field isn't updated from app when in focus
@@ -9,22 +13,15 @@ TODO:
  - Entire foldout should be clickable, not just the toggle button
  - Extend text field so it can be multi-line
  - Port to C#:
-   - GameObjectField
-   - ResourceField
    - Create InspectableObjects for all different field types
  - Ensure get/set value from inspector fields works 
  - Add array fields and ensure they work/update properly
- - Extend GameObject field so it can only accept a certain type
  - Ensure Undo/redo works as intended
    - This task needs decomposing. Likely need to port UndoRedo to C# first.
  - GUIColor needs to be hooked up to a window that actually changes its value.
- - Need to add GUIResourceField along with GUIGameObjectField and figure out a way to make them
-   accept arbitrary types.
-     - Probably move them to SBansheeEditor
  - I need to register UndoRedo command after user finishes modifying a field. This should be referencing an object using an URI?
 
 TO PONDER:
- - How to limit resource/object fields to a custom type (user created type possibly)
  - How will I create undo/redo operations for serializable fields?
    - UndoRedo.RecordField - Saves current state of the field, before you modify it
      - Accepts a source object and a path that allows us to follow its properties to the exact modified field

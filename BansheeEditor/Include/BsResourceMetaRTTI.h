@@ -13,6 +13,9 @@ namespace BansheeEngine
 		String& getUUID(ResourceMeta* obj) { return obj->mUUID; }
 		void setUUID(ResourceMeta* obj, String& val) { obj->mUUID = val; } 
 
+		WString& getDisplayName(ResourceMeta* obj) { return obj->mDisplayName; }
+		void setDisplayName(ResourceMeta* obj, WString& val) { obj->mDisplayName = val; }
+
 		ImportOptionsPtr getImportOptions(ResourceMeta* obj) { return obj->mImportOptions; }
 		void setImportOptions(ResourceMeta* obj, ImportOptionsPtr val) { obj->mImportOptions = val; }
 
@@ -21,6 +24,7 @@ namespace BansheeEngine
 		{
 			addPlainField("mUUID", 0, &ResourceMetaRTTI::getUUID, &ResourceMetaRTTI::setUUID);
 			addReflectablePtrField("mImportOptions", 1, &ResourceMetaRTTI::getImportOptions, &ResourceMetaRTTI::setImportOptions);
+			addPlainField("mDisplayName", 2, &ResourceMetaRTTI::getDisplayName, &ResourceMetaRTTI::setDisplayName);
 		}
 
 		virtual const String& getRTTIName()

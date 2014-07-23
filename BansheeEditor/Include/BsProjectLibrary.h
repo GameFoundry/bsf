@@ -58,6 +58,8 @@ namespace BansheeEngine
 		const LibraryEntry* getRootEntry() const { return mRootEntry; }
 		LibraryEntry* findEntry(const Path& fullPath) const;
 
+		ResourceMetaPtr findResourceMeta(const String& uuid) const;
+
 		void moveEntry(const Path& oldPath, const Path& newPath);
 		void deleteEntry(const Path& path);
 

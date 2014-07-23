@@ -8,10 +8,11 @@ namespace BansheeEngine
 
 	}
 
-	ResourceMetaPtr ResourceMeta::create(const String& uuid, const ImportOptionsPtr& importOptions)
+	ResourceMetaPtr ResourceMeta::create(const String& uuid, const WString& displayName, const ImportOptionsPtr& importOptions)
 	{
 		ResourceMetaPtr meta = bs_shared_ptr<ResourceMeta>(ConstructPrivately());
 		meta->mUUID = uuid;
+		meta->mDisplayName = displayName;
 		meta->mImportOptions = importOptions;
 
 		return meta;

@@ -13,13 +13,16 @@ namespace BansheeEngine
 	public:
 		explicit ResourceMeta(const ConstructPrivately&);
 
-		static ResourceMetaPtr create(const String& uuid, const ImportOptionsPtr& importOptions);
+		static ResourceMetaPtr create(const String& uuid, const WString& displayName, 
+			const ImportOptionsPtr& importOptions);
 
 		const String& getUUID() const { return mUUID; }
+		const WString& getDisplayName() const { return mDisplayName; }
 		const ImportOptionsPtr& getImportOptions() const { return mImportOptions; }
 
 	private:
 		String mUUID;
+		WString mDisplayName;
 		ImportOptionsPtr mImportOptions;
 
 		/************************************************************************/

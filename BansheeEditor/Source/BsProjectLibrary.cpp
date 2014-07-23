@@ -13,6 +13,7 @@
 #include "BsFolderMonitor.h"
 #include "BsDebug.h"
 #include "BsProjectLibraryEntries.h"
+#include "BsResource.h"
 
 using namespace std::placeholders;
 
@@ -377,7 +378,9 @@ namespace BansheeEngine
 			{
 				importedResource = Importer::instance().import(resource->path, importOptions);
 
-				resource->meta = ResourceMeta::create(importedResource.getUUID(), importOptions);
+				WString displayName = toWString(importedResource->getName());
+
+				resource->meta = ResourceMeta::create(importedResource.getUUID(), displayName, importOptions);
 				FileSerializer fs;
 				fs.encode(resource->meta.get(), metaPath);
 			}
@@ -458,6 +461,23 @@ namespace BansheeEngine
 		}
 
 		return nullptr;
+	}
+
+	ResourceMetaPtr ProjectLibrary::findResourceMeta(const String& uuid) const
+	{
+		if (mResourceManifest == nullptr)
+			return nullptr;
+
+		Path filePath;
+		if (!mResourceManifest->uuidToFilePath(uuid, filePath))
+			return nullptr;
+
+		LibraryEntry* libEntry = findEntry(filePath);
+		if (libEntry == nullptr || libEntry->type != LibraryEntryType::File)
+			return nullptr;
+
+		ResourceEntry* resEntry = static_cast<ResourceEntry*>(libEntry);
+		return resEntry->meta;
 	}
 
 	void ProjectLibrary::moveEntry(const Path& oldPath, const Path& newPath)

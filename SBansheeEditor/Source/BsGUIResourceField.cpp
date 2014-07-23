@@ -13,6 +13,7 @@
 #include "BsRuntimeScriptObjects.h"
 #include "BsMonoClass.h"
 #include "BsResources.h"
+#include "BsProjectLibrary.h"
 #include "BsEditorGUI.h"
 
 using namespace std::placeholders;
