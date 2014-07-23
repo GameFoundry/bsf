@@ -522,6 +522,12 @@
     <ClInclude Include="Include\BsTextureImportOptionsRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsResourceMetaData.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsResourceMetaDataRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsCoreApplication.cpp">
@@ -817,6 +823,9 @@
     </ClCompile>
     <ClCompile Include="Source\BsTextureImportOptions.cpp">
       <Filter>Source Files\Importer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsResourceMetaData.cpp">
+      <Filter>Source Files\Resources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

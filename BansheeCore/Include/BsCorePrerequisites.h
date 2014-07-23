@@ -148,6 +148,7 @@ namespace BansheeEngine
 	class TransientMesh;
 	class MeshHeap;
 	class Font;
+	class ResourceMetaData;
 	class OSDropTarget;
 	// Scene
 	class SceneObject;
@@ -234,6 +235,7 @@ namespace BansheeEngine
 	typedef std::shared_ptr<MeshProxy> MeshProxyPtr;
 	typedef std::shared_ptr<ShaderProxy> ShaderProxyPtr;
 	typedef std::shared_ptr<GpuParamDesc> GpuParamDescPtr;
+	typedef std::shared_ptr<ResourceMetaData> ResourceMetaDataPtr;
 }
 
 /************************************************************************/
@@ -296,7 +298,8 @@ namespace BansheeEngine
 		TID_ResourceManifest = 1067,
 		TID_ResourceManifestEntry = 1068,
 		TID_EmulatedParamBlock = 1069,
-		TID_TextureImportOptions = 1070
+		TID_TextureImportOptions = 1070,
+		TID_ResourceMetaData = 1071
 	};
 }
 

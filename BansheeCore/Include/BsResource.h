@@ -18,18 +18,23 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns the name of the resource.
 		 */
-		const String& getName() const { return mName; }
+		const WString& getName() const;
 
 		/**
 		 * @brief	Sets the name of the resource. 
 		 */
-		void setName(const String& name) { mName = name; }
+		void setName(const WString& name);
+
+		/**
+		 * @brief	Retrieves meta-data containing various information describing a resource.
+		 */
+		ResourceMetaDataPtr getMetaData() const { return mMetaData; }
 
 	protected:
 		friend class Resources;
 
 		UINT32 mSize;
-		String mName;
+		ResourceMetaDataPtr mMetaData;
 
 	/************************************************************************/
 	/* 								SERIALIZATION                      		*/

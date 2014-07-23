@@ -309,6 +309,8 @@
     <ClInclude Include="Include\BsQueryManager.h" />
     <ClInclude Include="Include\BsResourceManifest.h" />
     <ClInclude Include="Include\BsResourceManifestRTTI.h" />
+    <ClInclude Include="Include\BsResourceMetaData.h" />
+    <ClInclude Include="Include\BsResourceMetaDataRTTI.h" />
     <ClInclude Include="Include\BsSceneObjectRTTI.h" />
     <ClInclude Include="Include\BsCoreApplication.h" />
     <ClInclude Include="Include\BsBlendStateRTTI.h" />
@@ -470,6 +472,7 @@
     <ClCompile Include="Source\BsQueryManager.cpp" />
     <ClCompile Include="Source\BsRenderer.cpp" />
     <ClCompile Include="Source\BsResourceManifest.cpp" />
+    <ClCompile Include="Source\BsResourceMetaData.cpp" />
     <ClCompile Include="Source\BsTextureImportOptions.cpp" />
     <ClCompile Include="Source\BsTextureView.cpp" />
     <ClCompile Include="Source\BsTextData.cpp" />

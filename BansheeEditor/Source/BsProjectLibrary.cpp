@@ -5,7 +5,7 @@
 #include "BsResources.h"
 #include "BsResourceManifest.h"
 #include "BsImporter.h"
-#include "BsResourceMeta.h"
+#include "BsProjectResourceMeta.h"
 #include "BsResources.h"
 #include "BsImporter.h"
 #include "BsImportOptions.h"
@@ -355,9 +355,9 @@ namespace BansheeEngine
 			{
 				std::shared_ptr<IReflectable> loadedMeta = fs.decode(metaPath);
 
-				if(loadedMeta != nullptr && loadedMeta->isDerivedFrom(ResourceMeta::getRTTIStatic()))
+				if(loadedMeta != nullptr && loadedMeta->isDerivedFrom(ProjectResourceMeta::getRTTIStatic()))
 				{
-					ResourceMetaPtr resourceMeta = std::static_pointer_cast<ResourceMeta>(loadedMeta);
+					ProjectResourceMetaPtr resourceMeta = std::static_pointer_cast<ProjectResourceMeta>(loadedMeta);
 					resource->meta = resourceMeta;
 				}
 			}
@@ -378,9 +378,9 @@ namespace BansheeEngine
 			{
 				importedResource = Importer::instance().import(resource->path, importOptions);
 
-				WString displayName = toWString(importedResource->getName());
+				ResourceMetaDataPtr subMeta = importedResource->getMetaData();
 
-				resource->meta = ResourceMeta::create(importedResource.getUUID(), displayName, importOptions);
+				resource->meta = ProjectResourceMeta::create(importedResource.getUUID(), subMeta, importOptions);
 				FileSerializer fs;
 				fs.encode(resource->meta.get(), metaPath);
 			}
@@ -463,7 +463,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	ResourceMetaPtr ProjectLibrary::findResourceMeta(const String& uuid) const
+	ProjectResourceMetaPtr ProjectLibrary::findResourceMeta(const String& uuid) const
 	{
 		if (mResourceManifest == nullptr)
 			return nullptr;
@@ -731,9 +731,9 @@ namespace BansheeEngine
 						{
 							std::shared_ptr<IReflectable> loadedMeta = fs.decode(metaPath);
 
-							if(loadedMeta != nullptr && loadedMeta->isDerivedFrom(ResourceMeta::getRTTIStatic()))
+							if(loadedMeta != nullptr && loadedMeta->isDerivedFrom(ProjectResourceMeta::getRTTIStatic()))
 							{
-								ResourceMetaPtr resourceMeta = std::static_pointer_cast<ResourceMeta>(loadedMeta);
+								ProjectResourceMetaPtr resourceMeta = std::static_pointer_cast<ProjectResourceMeta>(loadedMeta);
 								resEntry->meta = resourceMeta;
 							}
 						}

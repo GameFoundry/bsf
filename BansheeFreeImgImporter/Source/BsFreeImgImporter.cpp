@@ -173,7 +173,7 @@ namespace BansheeEngine
 		fileData->close();
 
 		WString fileName = filePath.getWFilename(false);
-		newTexture->setName(toString(fileName));
+		newTexture->setName(fileName);
 
 		return newTexture;
 	}

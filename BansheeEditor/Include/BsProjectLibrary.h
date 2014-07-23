@@ -36,7 +36,7 @@ namespace BansheeEngine
 			ResourceEntry();
 			ResourceEntry(const Path& path, const WString& name, DirectoryEntry* parent);
 
-			ResourceMetaPtr meta;
+			ProjectResourceMetaPtr meta;
 			std::time_t lastUpdateTime;
 		};
 
@@ -58,7 +58,7 @@ namespace BansheeEngine
 		const LibraryEntry* getRootEntry() const { return mRootEntry; }
 		LibraryEntry* findEntry(const Path& fullPath) const;
 
-		ResourceMetaPtr findResourceMeta(const String& uuid) const;
+		ProjectResourceMetaPtr findResourceMeta(const String& uuid) const;
 
 		void moveEntry(const Path& oldPath, const Path& newPath);
 		void deleteEntry(const Path& path);

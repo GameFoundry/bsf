@@ -53,7 +53,7 @@ namespace BansheeEngine
 		MeshPtr mesh = Mesh::_createPtr(meshData, subMeshes);
 
 		WString fileName = filePath.getWFilename(false);
-		mesh->setName(toString(fileName));
+		mesh->setName(fileName);
 
 		return mesh;
 	}

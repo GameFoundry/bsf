@@ -48,7 +48,7 @@ namespace BansheeEngine
 		}
 
 		WString fileName = filePath.getWFilename(false);
-		gpuProgram->setName(toString(fileName));
+		gpuProgram->setName(fileName);
 
 		return gpuProgram;
 	}

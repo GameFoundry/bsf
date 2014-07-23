@@ -294,7 +294,7 @@ namespace BansheeEngine
 						RenderSystem::instancePtr(), newTex.getInternalPtr(), subresourceIdx, pixelData, false, _1));
 				}
 
-				newTex->setName("FontPage" + toString((UINT32)fontData.texturePages.size()));
+				newTex->setName(L"FontPage" + toWString((UINT32)fontData.texturePages.size()));
 				fontData.texturePages.push_back(newTex);
 
 				pageIdx++;
@@ -320,7 +320,7 @@ namespace BansheeEngine
 		FT_Done_FreeType(library);
 
 		WString fileName = filePath.getWFilename(false);
-		newFont->setName(toString(fileName));
+		newFont->setName(fileName);
 
 		return newFont;
 	}
