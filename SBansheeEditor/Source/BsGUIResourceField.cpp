@@ -14,6 +14,8 @@
 #include "BsMonoClass.h"
 #include "BsResources.h"
 #include "BsProjectLibrary.h"
+#include "BsProjectResourceMeta.h"
+#include "BsManagedResourceMetaData.h"
 #include "BsEditorGUI.h"
 
 using namespace std::placeholders;
@@ -205,7 +207,54 @@ namespace BansheeEngine
 
 		for (UINT32 i = 0; i < numResources; i++)
 		{
-			// TODO - I need to be able to check resource type without loading it
+			String uuid = draggedResources->resourceUUIDs[i];
+
+			ProjectResourceMetaPtr meta = ProjectLibrary::instance().findResourceMeta(uuid);
+			if (meta == nullptr)
+				continue;
+
+			bool found = false;
+			UINT32 typeId = meta->getTypeID();
+			switch (typeId)
+			{
+			case TID_Texture:
+			{
+				const String& texTypeName = RuntimeScriptObjects::instance().getTextureClass()->getFullName();
+				if (texTypeName == mType)
+				{
+					setUUID(uuid);
+					found = true;
+				}
+			}
+				break;
+			case TID_SpriteTexture:
+			{
+				const String& spriteTexTypeName = RuntimeScriptObjects::instance().getSpriteTextureClass()->getFullName();
+				if (spriteTexTypeName == mType)
+				{
+					setUUID(uuid);
+					found = true;
+				}
+			}
+				break;
+			case TID_ManagedResource:
+			{
+				ManagedResourceMetaDataPtr managedResMetaData = std::static_pointer_cast<ManagedResourceMetaData>(meta->getResourceMetaData());
+				String fullTypeName = managedResMetaData->typeNamespace + "." + managedResMetaData->typeName;
+
+				if (fullTypeName == mType)
+				{
+					setUUID(uuid);
+					found = true;
+				}
+			}
+				break;
+			default:
+				BS_EXCEPT(NotImplementedException, "Unsupported resource type added to resource field.");
+			}
+
+			if (found)
+				break;
 		}
 	}
 

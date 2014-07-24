@@ -28,6 +28,9 @@
     <Filter Include="Header Files\Serialization\RTTI">
       <UniqueIdentifier>{3225801f-fe74-4e07-aa59-37ad5d5ac1da}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\RTTI">
+      <UniqueIdentifier>{cff4d9c9-b006-4675-a58e-6a0e449ff8d5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\BsScriptFont.h">
@@ -58,9 +61,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsScriptComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsManagedComponentRTTI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsScriptResource.h">
@@ -188,6 +188,21 @@
     </ClInclude>
     <ClInclude Include="Include\BsScriptGUILayoutUtility.h">
       <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsManagedResource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsManagedResourceMetaData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsManagedComponentRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsManagedResourceRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsManagedResourceMetaDataRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -319,6 +334,12 @@
     </ClCompile>
     <ClCompile Include="Source\BsScriptGUILayoutUtility.cpp">
       <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsManagedResource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsManagedResourceMetaData.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

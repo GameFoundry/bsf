@@ -3,6 +3,7 @@
 #include "BsCorePrerequisites.h"
 #include "BsRTTIType.h"
 #include "BsResource.h"
+#include "BsResourceMetaData.h"
 
 namespace BansheeEngine
 {

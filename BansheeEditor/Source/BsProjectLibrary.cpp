@@ -379,8 +379,9 @@ namespace BansheeEngine
 				importedResource = Importer::instance().import(resource->path, importOptions);
 
 				ResourceMetaDataPtr subMeta = importedResource->getMetaData();
+				UINT32 typeId = importedResource->getTypeId();
 
-				resource->meta = ProjectResourceMeta::create(importedResource.getUUID(), subMeta, importOptions);
+				resource->meta = ProjectResourceMeta::create(importedResource.getUUID(), typeId, subMeta, importOptions);
 				FileSerializer fs;
 				fs.encode(resource->meta.get(), metaPath);
 			}

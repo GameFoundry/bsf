@@ -1,9 +1,14 @@
 Update C# GUIElementStyle
 Update GUIFoldout with sub styles
 
-GUIResourceField needs to be able to check resource type without loading it
- - I need this for ProjectLibrary too (so I can display valid icons in TreeView)
- - But I need a more exact version since resources could be custom C# classes (This will likely need to be supported in some special way)
+ManagedResource class is unfinished. Need to clean up managed instance after resource is released.
+Its getMetaData should return managed type of the stored resource
+Update GUIResourceField so it uses meta data for detecting valid type
+
+How will I create ManagedResource from C#?
+ - BansheeEditor::ProjectLibrary::create(obj, path)
+ - This call C++ with the managed instance. Object is checked if it is Serializable
+ - If so it is serialized using ManagedSerializableObjectPtr
 
 TODO:
  - Hook up int field set/get callbacks

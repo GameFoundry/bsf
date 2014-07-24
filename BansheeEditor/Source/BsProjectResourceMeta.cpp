@@ -8,11 +8,12 @@ namespace BansheeEngine
 
 	}
 
-	ProjectResourceMetaPtr ProjectResourceMeta::create(const String& uuid, const ResourceMetaDataPtr& resourceMetaData, 
+	ProjectResourceMetaPtr ProjectResourceMeta::create(const String& uuid, UINT32 typeId, const ResourceMetaDataPtr& resourceMetaData,
 		const ImportOptionsPtr& importOptions)
 	{
 		ProjectResourceMetaPtr meta = bs_shared_ptr<ProjectResourceMeta>(ConstructPrivately());
 		meta->mUUID = uuid;
+		meta->mTypeId = typeId;
 		meta->mResourceMeta = resourceMetaData;
 		meta->mImportOptions = importOptions;
 
@@ -30,7 +31,7 @@ namespace BansheeEngine
 
 	RTTITypeBase* ProjectResourceMeta::getRTTIStatic()
 	{
-		return ResourceMetaRTTI::instance();
+		return ProjectResourceMetaRTTI::instance();
 	}
 
 	RTTITypeBase* ProjectResourceMeta::getRTTI() const

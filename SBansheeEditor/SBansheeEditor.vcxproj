@@ -243,6 +243,7 @@
     <ClInclude Include="Include\BsScriptGUIVector2Field.h" />
     <ClInclude Include="Include\BsScriptGUIVector3Field.h" />
     <ClInclude Include="Include\BsScriptGUIVector4Field.h" />
+    <ClInclude Include="Include\BsScriptProjectLibrary.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsGUIGameObjectField.cpp" />
@@ -262,6 +263,7 @@
     <ClCompile Include="Source\BsScriptGUIVector2Field.cpp" />
     <ClCompile Include="Source\BsScriptGUIVector3Field.cpp" />
     <ClCompile Include="Source\BsScriptGUIVector4Field.cpp" />
+    <ClCompile Include="Source\BsScriptProjectLibrary.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

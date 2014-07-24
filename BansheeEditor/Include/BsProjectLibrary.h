@@ -6,7 +6,7 @@
 
 namespace BansheeEngine
 {
-	class ProjectLibrary : public Module<ProjectLibrary>
+	class BS_ED_EXPORT ProjectLibrary : public Module<ProjectLibrary>
 	{
 	public:
 		struct LibraryEntry;

@@ -68,7 +68,7 @@ namespace BansheeEngine
 
 	enum TypeID_BansheeEditor
 	{
-		TID_ResourceMeta = 40000,
+		TID_ProjectResourceMeta = 40000,
 		TID_ProjectLibraryEntries = 40001,
 		TID_ProjectLibraryResEntry = 40002,
 		TID_ProjectLibraryDirEntry = 40003,
