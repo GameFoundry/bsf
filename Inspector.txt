@@ -1,14 +1,12 @@
 Update C# GUIElementStyle
 Update GUIFoldout with sub styles
 
-ManagedResource class is unfinished. Need to clean up managed instance after resource is released.
-Its getMetaData should return managed type of the stored resource
-Update GUIResourceField so it uses meta data for detecting valid type
+Finish ProjectLibrary::create
+ - Resource gets serialized directly as .asset (whether its a mesh, texture or custom asset)
+ - When ProjectLibrary encounters such resource it will import it using a dummy pass through importer
 
-How will I create ManagedResource from C#?
- - BansheeEditor::ProjectLibrary::create(obj, path)
- - This call C++ with the managed instance. Object is checked if it is Serializable
- - If so it is serialized using ManagedSerializableObjectPtr
+Need to add stuff derived from ManagedResource to serializable list in RuntimeScriptObjects
+
 
 TODO:
  - Hook up int field set/get callbacks

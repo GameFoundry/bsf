@@ -23,6 +23,6 @@ namespace BansheeEngine
 		ScriptResource* scrResource = ScriptResource::toNative(resource);
 		Path resourcePath = MonoUtil::monoToWString(path);
 
-		//ProjectLibrary::instance().create(scrResource->getNativeHandle(), resourcePath);
+		ProjectLibrary::instance().createEntry(scrResource->getNativeHandle(), resourcePath);
 	}
 }

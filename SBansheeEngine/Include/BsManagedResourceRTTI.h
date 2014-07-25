@@ -40,11 +40,7 @@ namespace BansheeEngine
 			ManagedResource* mc = static_cast<ManagedResource*>(obj);
 			ManagedSerializableObjectPtr serializableObject = any_cast<ManagedSerializableObjectPtr>(mc->mRTTIData);
 
-			::MonoClass* monoClass = mono_object_get_class(serializableObject->getManagedInstance());
-			MonoType* monoType = mono_class_get_type(monoClass);
-			MonoReflectionType* runtimeType = mono_type_get_object(MonoManager::instance().getDomain(), monoType);
-
-			mc->construct(serializableObject->getManagedInstance(), runtimeType);
+			mc->construct(serializableObject->getManagedInstance());
 		}
 
 		virtual const String& getRTTIName()

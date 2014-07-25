@@ -17,7 +17,7 @@ namespace BansheeEngine
 		:mBaseTypesInitialized(false), mSerializeObjectAttribute(nullptr), mDontSerializeFieldAttribute(nullptr), 
 		mComponentClass(nullptr), mSceneObjectClass(nullptr), mTextureClass(nullptr), mSpriteTextureClass(nullptr),
 		mSerializeFieldAttribute(nullptr), mHideInInspectorAttribute(nullptr), mSystemArrayClass(nullptr), mSystemGenericListClass(nullptr),
-		mSystemGenericDictionaryClass(nullptr)
+		mSystemGenericDictionaryClass(nullptr), mManagedResourceClass(nullptr)
 	{
 
 	}
@@ -50,7 +50,8 @@ namespace BansheeEngine
 		const Vector<MonoClass*>& allClasses = curAssembly->getAllClasses();
 		for(auto& curClass : allClasses)
 		{
-			if((curClass->isSubClassOf(mComponentClass) || curClass->hasAttribute(mSerializeObjectAttribute)) && curClass != mComponentClass)
+			if((curClass->isSubClassOf(mComponentClass) || curClass->isSubClassOf(mManagedResourceClass) || 
+				curClass->hasAttribute(mSerializeObjectAttribute)) && curClass != mComponentClass && curClass != mManagedResourceClass)
 			{
 				std::shared_ptr<ManagedSerializableTypeInfoObject> typeInfo = bs_shared_ptr<ManagedSerializableTypeInfoObject>();
 				typeInfo->mTypeNamespace = curClass->getNamespace();
@@ -245,6 +246,12 @@ namespace BansheeEngine
 				typeInfo->mType = ScriptPrimitiveType::SpriteTextureRef;
 				return typeInfo;
 			}
+			else if (monoClass->isSubClassOf(mManagedResourceClass))
+			{
+				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr<ManagedSerializableTypeInfoPrimitive>();
+				typeInfo->mType = ScriptPrimitiveType::ManagedResourceRef;
+				return typeInfo;
+			}
 			else if(monoClass->isSubClassOf(mSceneObjectClass))
 			{
 				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr<ManagedSerializableTypeInfoPrimitive>();
@@ -358,6 +365,7 @@ namespace BansheeEngine
 		mComponentClass = nullptr;
 		mSceneObjectClass = nullptr;
 
+		mManagedResourceClass = nullptr;
 		mTextureClass = nullptr;
 		mSpriteTextureClass = nullptr;
 
@@ -403,6 +411,10 @@ namespace BansheeEngine
 		mSceneObjectClass = bansheeEngineAssembly->getClass("BansheeEngine", "SceneObject");
 		if(mSceneObjectClass == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find SceneObject managed class.");
+
+		mManagedResourceClass = bansheeEngineAssembly->getClass("BansheeEngine", "ManagedResource");
+		if (mManagedResourceClass == nullptr)
+			BS_EXCEPT(InvalidStateException, "Cannot find ManagedResource managed class.");
 
 		mTextureClass = bansheeEngineAssembly->getClass("BansheeEngine", "Texture2D");
 		if(mTextureClass == nullptr)

@@ -93,7 +93,8 @@ namespace BansheeEngine
 
 		if(mMonoImage != nullptr && !mIsDependency)
 		{
-			mono_image_close(mMonoImage);
+			//mono_image_close(mMonoImage); // This seems to cause a crash but unloading just the assembly /seems/ to work
+			mono_assembly_close(mMonoAssembly);
 			mMonoImage = nullptr;
 		}
 

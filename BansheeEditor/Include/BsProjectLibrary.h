@@ -60,6 +60,7 @@ namespace BansheeEngine
 
 		ProjectResourceMetaPtr findResourceMeta(const String& uuid) const;
 
+		void createEntry(const HResource& resource, const Path& path);
 		void moveEntry(const Path& oldPath, const Path& newPath);
 		void deleteEntry(const Path& path);
 

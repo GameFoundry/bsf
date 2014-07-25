@@ -10,19 +10,18 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedResource : public Resource
 	{
 	public:
-		ManagedResource(MonoReflectionType* runtimeType);
-		void construct(MonoObject* object, MonoReflectionType* runtimeType);
+		void construct(MonoObject* object);
 
 		MonoObject* getManagedInstance() const { return mManagedInstance; }
-		MonoReflectionType* getRuntimeType() const { return mRuntimeType; }
 
+		static HManagedResource create(MonoObject* managedResource);
 		static ManagedResourcePtr createEmpty();
 
 	private:
+		ManagedResource(MonoObject* managedInstance);
 		void destroy_internal();
 
 		MonoObject* mManagedInstance;
-		MonoReflectionType* mRuntimeType;
 		uint32_t mManagedHandle;
 
 		/************************************************************************/
@@ -34,6 +33,6 @@ namespace BansheeEngine
 		virtual RTTITypeBase* getRTTI() const;
 
 	protected:
-		ManagedResource() {} // Serialization only
+		ManagedResource(); // Serialization only
 	};
 }

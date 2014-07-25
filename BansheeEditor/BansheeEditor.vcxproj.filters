@@ -192,6 +192,9 @@
     <ClInclude Include="Include\BsProjectResourceMetaRTTI.h">
       <Filter>Header Files\Editor</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsResourceImporter.h">
+      <Filter>Header Files\Editor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsEditorWidgetContainer.cpp">
@@ -330,6 +333,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsProjectResourceMeta.cpp">
+      <Filter>Source Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsResourceImporter.cpp">
       <Filter>Source Files\Editor</Filter>
     </ClCompile>
   </ItemGroup>

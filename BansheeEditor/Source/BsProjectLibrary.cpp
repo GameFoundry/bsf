@@ -14,6 +14,7 @@
 #include "BsDebug.h"
 #include "BsProjectLibraryEntries.h"
 #include "BsResource.h"
+#include "BsResourceImporter.h"
 
 using namespace std::placeholders;
 
@@ -479,6 +480,25 @@ namespace BansheeEngine
 
 		ResourceEntry* resEntry = static_cast<ResourceEntry*>(libEntry);
 		return resEntry->meta;
+	}
+
+	void ProjectLibrary::createEntry(const HResource& resource, const Path& path)
+	{
+		if (resource == nullptr)
+			return;
+
+		if (!mResourcesFolder.includes(path))
+			BS_EXCEPT(InvalidParametersException, "Provided path is not within the project library directory: " + path.toString());
+
+		Path assetPath = path;
+		assetPath.setExtension(assetPath.getWExtension() + L"." + ResourceImporter::DEFAULT_EXTENSION);
+
+		LibraryEntry* existingEntry = findEntry(assetPath);
+		if (existingEntry != nullptr)
+			BS_EXCEPT(InvalidParametersException, "Existing resource already exists at the specified path: " + assetPath.toString());
+
+		Resources::instance().save(resource, assetPath, false);
+		checkForModifications(assetPath);
 	}
 
 	void ProjectLibrary::moveEntry(const Path& oldPath, const Path& newPath)

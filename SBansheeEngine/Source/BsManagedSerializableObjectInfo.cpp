@@ -116,6 +116,8 @@ namespace BansheeEngine
 			return RuntimeScriptObjects::instance().getTextureClass()->_getInternalClass();
 		case ScriptPrimitiveType::SpriteTextureRef:
 			return RuntimeScriptObjects::instance().getSpriteTextureClass()->_getInternalClass();
+		case ScriptPrimitiveType::ManagedResourceRef:
+			return RuntimeScriptObjects::instance().getManagedResourceClass()->_getInternalClass();
 		case ScriptPrimitiveType::SceneObjectRef:
 			return RuntimeScriptObjects::instance().getSceneObjectClass()->_getInternalClass();
 		case ScriptPrimitiveType::ComponentRef:

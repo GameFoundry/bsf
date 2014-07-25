@@ -23,6 +23,7 @@ namespace BansheeEngine
 		String,
 		TextureRef,
 		SpriteTextureRef,
+		ManagedResourceRef,
 		SceneObjectRef,
 		ComponentRef
 	};

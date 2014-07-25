@@ -36,6 +36,12 @@ namespace BansheeEngine
 		ScriptSpriteTexture* createScriptSpriteTexture(MonoObject* existingInstance, const HSpriteTexture& resourceHandle);
 
 		/**
+		* @note  Throws an exception if resource for the handle already exists.
+		* 		 Initializes the ScriptResource with an existing managed instance.
+		*/
+		ScriptManagedResource* createManagedResource(MonoObject* existingInstance, const HManagedResource& resourceHandle);
+
+		/**
 		 * @note Returns nullptr if script resource doesn't exist.
 		 */
 		ScriptTexture2D* getScriptTexture(const HTexture& resourceHandle);
@@ -44,6 +50,11 @@ namespace BansheeEngine
 		 * @note Returns nullptr if script resource doesn't exist.
 		 */
 		ScriptSpriteTexture* getScriptSpriteTexture(const HSpriteTexture& resourceHandle);
+
+		/**
+		 * @note Returns nullptr if script resource doesn't exist.
+		 */
+		ScriptManagedResource* getScriptManagedResource(const HManagedResource& resourceHandle);
 
 		/**
 		 * @note Returns nullptr if script resource doesn't exist.

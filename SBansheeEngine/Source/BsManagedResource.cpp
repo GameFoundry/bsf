@@ -3,18 +3,22 @@
 #include "BsManagedResourceMetaData.h"
 #include "BsMonoManager.h"
 #include "BsMonoClass.h"
+#include "BsResources.h"
 #include "BsDebug.h"
 
 namespace BansheeEngine
 {
-	ManagedResource::ManagedResource(MonoReflectionType* runtimeType)
-		:mManagedInstance(nullptr), mRuntimeType(runtimeType)
+	ManagedResource::ManagedResource()
+		:mManagedInstance(nullptr)
+	{ }
+
+	ManagedResource::ManagedResource(MonoObject* managedInstance)
+		:mManagedInstance(nullptr)
 	{
 		ManagedResourceMetaDataPtr metaData = bs_shared_ptr<ManagedResourceMetaData>();
 		mMetaData = metaData;
 
-		MonoType* monoType = mono_reflection_type_get_type(mRuntimeType);
-		::MonoClass* monoClass = mono_type_get_class(monoType);
+		::MonoClass* monoClass = mono_object_get_class(managedInstance);
 
 		metaData->typeNamespace = mono_class_get_namespace(monoClass);
 		metaData->typeName = mono_class_get_name(monoClass);
@@ -26,7 +30,16 @@ namespace BansheeEngine
 			return;
 		}
 
-		construct(managedClass->createInstance(), runtimeType);
+		construct(managedInstance);
+	}
+
+	HManagedResource ManagedResource::create(MonoObject* managedResource)
+	{
+		ManagedResourcePtr newRes = bs_core_ptr<ManagedResource, GenAlloc>(new (bs_alloc<ManagedResource>()) ManagedResource(managedResource));
+		newRes->_setThisPtr(newRes);
+		newRes->initialize();
+
+		return static_resource_cast<ManagedResource>(gResources()._createResourceHandle(newRes));
 	}
 
 	ManagedResourcePtr ManagedResource::createEmpty()
@@ -38,10 +51,9 @@ namespace BansheeEngine
 		return newRes;
 	}
 
-	void ManagedResource::construct(MonoObject* object, MonoReflectionType* runtimeType)
+	void ManagedResource::construct(MonoObject* object)
 	{
 		mManagedInstance = object;
-		mRuntimeType = runtimeType;
 		mManagedHandle = mono_gchandle_new(mManagedInstance, false);
 	}
 

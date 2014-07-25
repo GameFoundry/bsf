@@ -34,6 +34,7 @@ namespace BansheeEngine
 	class ScriptGameObjectBase;
 	class ScriptSceneObject;
 	class ScriptComponent;
+	class ScriptManagedResource;
 	class ManagedComponent;
 	class ManagedSerializableFieldData;
 	class ManagedSerializableFieldKey;

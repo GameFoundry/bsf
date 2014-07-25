@@ -4,6 +4,7 @@
 #include "BsMonoClass.h"
 #include "BsScriptTexture2D.h"
 #include "BsScriptSpriteTexture.h"
+#include "BsScriptManagedResource.h"
 
 namespace BansheeEngine
 {
@@ -60,6 +61,17 @@ namespace BansheeEngine
 		return scriptResource;
 	}
 
+	ScriptManagedResource* ScriptResourceManager::createManagedResource(MonoObject* existingInstance, const HManagedResource& resourceHandle)
+	{
+		const String& uuid = resourceHandle.getUUID();
+		throwExceptionIfInvalidOrDuplicate(uuid);
+
+		ScriptManagedResource* scriptResource = new (bs_alloc<ScriptManagedResource>()) ScriptManagedResource(existingInstance, resourceHandle);
+		mScriptResources[uuid] = scriptResource;
+
+		return scriptResource;
+	}
+
 	ScriptTexture2D* ScriptResourceManager::getScriptTexture(const HTexture& resourceHandle)
 	{
 		return static_cast<ScriptTexture2D*>(getScriptResource(resourceHandle));
@@ -68,6 +80,11 @@ namespace BansheeEngine
 	ScriptSpriteTexture* ScriptResourceManager::getScriptSpriteTexture(const HSpriteTexture& resourceHandle)
 	{
 		return static_cast<ScriptSpriteTexture*>(getScriptResource(resourceHandle));
+	}
+
+	ScriptManagedResource* ScriptResourceManager::getScriptManagedResource(const HManagedResource& resourceHandle)
+	{
+		return static_cast<ScriptManagedResource*>(getScriptResource(resourceHandle));
 	}
 
 	ScriptResourceBase* ScriptResourceManager::getScriptResource(const HResource& resourceHandle)

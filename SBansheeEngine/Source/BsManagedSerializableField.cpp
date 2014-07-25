@@ -7,6 +7,7 @@
 #include "BsScriptGameObjectManager.h"
 #include "BsScriptTexture2D.h"
 #include "BsScriptSpriteTexture.h"
+#include "BsScriptManagedResource.h"
 #include "BsScriptSceneObject.h"
 #include "BsScriptComponent.h"
 #include "BsManagedSerializableObject.h"
@@ -155,6 +156,18 @@ namespace BansheeEngine
 					{
 						ScriptSpriteTexture* scriptSpriteTexture = ScriptSpriteTexture::toNative(value);
 						fieldData->value = static_resource_cast<SpriteTexture>(scriptSpriteTexture->getNativeHandle());
+					}
+
+					return fieldData;
+				}
+			case ScriptPrimitiveType::ManagedResourceRef:
+				{
+					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataResourceRef>();
+					
+					if(value != nullptr)
+					{
+						ScriptManagedResource* scriptManagedResource = ScriptManagedResource::toNative(value);
+						fieldData->value = static_resource_cast<ManagedResource>(scriptManagedResource->getNativeHandle());
 					}
 
 					return fieldData;
@@ -416,6 +429,18 @@ namespace BansheeEngine
 
 					if(scriptResource != nullptr)
 						return scriptResource->getManagedInstance();
+				}
+				else
+					return nullptr;
+			}
+			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::ManagedResourceRef)
+			{
+				if (value)
+				{
+					ScriptManagedResource* scriptResource = ScriptResourceManager::instance().getScriptManagedResource(value);
+					assert(scriptResource != nullptr); // Managed resource managed instance is created upon creation so it may never be null
+
+					return scriptResource->getManagedInstance();
 				}
 				else
 					return nullptr;

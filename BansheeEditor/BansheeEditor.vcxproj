@@ -312,6 +312,7 @@
     <ClInclude Include="Include\BsProjectResourceMetaRTTI.h" />
     <ClInclude Include="Include\BsGUIVector2Field.h" />
     <ClInclude Include="Include\BsDebugCamera.h" />
+    <ClInclude Include="Include\BsResourceImporter.h" />
     <ClInclude Include="Include\BsTestTextSprite.h" />
     <ClInclude Include="Include\DbgEditorWidget1.h" />
     <ClInclude Include="Include\DbgEditorWidget2.h" />
@@ -358,6 +359,7 @@
     <ClCompile Include="Source\BsProjectLibrary.cpp" />
     <ClCompile Include="Source\BsProjectLibraryEntries.cpp" />
     <ClCompile Include="Source\BsProjectResourceMeta.cpp" />
+    <ClCompile Include="Source\BsResourceImporter.cpp" />
     <ClCompile Include="Source\BsUndoRedo.cpp" />
     <ClCompile Include="Source\BsDebugCamera.cpp" />
     <ClCompile Include="Source\BsEditorApplication.cpp" />

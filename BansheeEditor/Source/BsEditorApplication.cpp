@@ -8,6 +8,7 @@
 #include "BsFileSerializer.h"
 #include "BsFileSystem.h"
 #include "BsPath.h"
+#include "BsResourceImporter.h"
 #include "BsEditorWidgetLayout.h"
 
 // DEBUG ONLY
@@ -67,6 +68,9 @@ namespace BansheeEngine
 			inputConfig->registerButton("Paste", BC_V, VButtonModifier::Ctrl);
 			inputConfig->registerButton("Delete", BC_DELETE);
 		}
+
+		ResourceImporter* resourceImporter = bs_new<ResourceImporter>();
+		Importer::instance()._registerAssetImporter(resourceImporter);
 
 		ProjectLibrary::startUp(getActiveProjectPath());
 

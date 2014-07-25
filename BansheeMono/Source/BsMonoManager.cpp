@@ -6,6 +6,7 @@
 
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/mono-config.h>
+#include <mono/metadata/mono-gc.h>
 
 namespace BansheeEngine
 {
@@ -21,16 +22,25 @@ namespace BansheeEngine
 
 	MonoManager::~MonoManager()
 	{
-		if(mDomain != nullptr)
+		if (mDomain != nullptr)
 		{
+			// TODO - Someone suggested I need to GC collect and wait for finalizers before cleanup
+			// I don't see how that would help unless I manually release all references before that as well
+			// BUT that is a good way to debug those errors on exit
+
+			// TODO: This might not be necessary
+			//mono_gc_collect(mono_gc_max_generation());
+			//mono_domain_finalize(mDomain, -1);
+
+			// TODO: Commented out because it crashes for no reason
 			mono_jit_cleanup(mDomain);
 			mDomain = nullptr;
 		}
 
 		for (auto& entry : mAssemblies)
 		{
-			unloadAssembly(*entry.second);
-			bs_delete(entry.second);
+			//unloadAssembly(*entry.second);
+			//bs_delete(entry.second);
 		}
 
 		mAssemblies.clear();
@@ -105,10 +115,8 @@ namespace BansheeEngine
 		::MonoAssembly* monoAssembly = assembly.mMonoAssembly;
 		assembly.unload();
 
-		// TODO: Not calling this because it crashed if called before domain was unloaded. Try calling
-		// it after. I'm not sure if its even necessary to call it.
-		//if(monoAssembly)
-			//mono_assembly_close(monoAssembly);
+		if(monoAssembly)
+			mono_assembly_close(monoAssembly);
 	}
 
 	MonoAssembly* MonoManager::getAssembly(const String& name) const
