@@ -17,7 +17,8 @@ namespace BansheeEditor
             window.SetObjectToInspect(newDbgObject);
             window.Refresh(); // TODO - This should be called N times per second
 
-
+            DbgResource testResource = new DbgResource();
+            ProjectLibrary.Create(testResource, @"D:\DummyBansheeProject\Resources\testResource");
 
 
 

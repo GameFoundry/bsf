@@ -446,12 +446,12 @@ namespace BansheeEngine
 			else
 				curElem = relPath[idx];
 
-			current = nullptr;
 			if (current->type == LibraryEntryType::Directory)
 			{
 				DirectoryEntry* dirEntry = static_cast<DirectoryEntry*>(current);
 				for (auto& child : dirEntry->mChildren)
 				{
+					current = nullptr;
 					if (Path::comparePathElem(curElem, child->elementName))
 					{
 						idx++;
@@ -460,6 +460,8 @@ namespace BansheeEngine
 					}
 				}
 			}
+			else
+				break;
 		}
 
 		return nullptr;

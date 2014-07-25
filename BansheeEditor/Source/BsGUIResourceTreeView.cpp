@@ -215,7 +215,7 @@ namespace BansheeEngine
 			else
 				curElem = relPath[idx];
 
-			current = nullptr;
+			bool foundChild = false;
 			for (auto& child : current->mChildren)
 			{
 				ResourceTreeElement* resourceChild = static_cast<ResourceTreeElement*>(child);
@@ -223,9 +223,13 @@ namespace BansheeEngine
 				{
 					idx++;
 					current = resourceChild;
+					foundChild = true;
 					break;
 				}
 			}
+
+			if (!foundChild)
+				current = nullptr;
 		}
 
 		return nullptr;

@@ -10,10 +10,10 @@ namespace BansheeEngine
     {
         public ManagedResource()
         {
-            Internal_CreateResource(this);
+            Internal_CreateInstance(this);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateResource(ManagedResource resource);
+        private static extern void Internal_CreateInstance(ManagedResource resource);
     }
 }

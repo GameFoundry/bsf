@@ -60,12 +60,24 @@ namespace BansheeEngine
 		virtual void onDeserializationStarted(IReflectable* obj)
 		{
 			ManagedSerializableObject* serializableObject = static_cast<ManagedSerializableObject*>(obj);
-
+			
 			// If we are deserializing a GameObject we need to defer deserializing actual field values
 			// to ensure GameObject handles instances have been fixed up (which only happens after deserialization is done)
-			if(GameObjectManager::instance().isGameObjectDeserializationActive())
-				GameObjectManager::instance().registerOnDeserializationEndCallback([=] () { serializableObject->deserializeManagedInstance(); });
+			if (GameObjectManager::instance().isGameObjectDeserializationActive())
+			{
+				GameObjectManager::instance().registerOnDeserializationEndCallback([=]() { serializableObject->deserializeManagedInstance(); });
+				serializableObject->mRTTIData = true;
+			}
 			else
+				serializableObject->mRTTIData = false;
+		}
+
+		virtual void onDeserializationEnded(IReflectable* obj)
+		{
+			ManagedSerializableObject* serializableObject = static_cast<ManagedSerializableObject*>(obj);
+
+			bool isGameObjectDeserialization = any_cast<bool>(serializableObject->mRTTIData);
+			if (!isGameObjectDeserialization)
 				serializableObject->deserializeManagedInstance();
 		}
 

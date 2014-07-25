@@ -1,12 +1,9 @@
 Update C# GUIElementStyle
 Update GUIFoldout with sub styles
 
-Finish ProjectLibrary::create
- - Resource gets serialized directly as .asset (whether its a mesh, texture or custom asset)
- - When ProjectLibrary encounters such resource it will import it using a dummy pass through importer
-
-Need to add stuff derived from ManagedResource to serializable list in RuntimeScriptObjects
-
+Test custom resources:
+ - Can I load them? (Will likely need ProjectLIbrary::load)
+ - Can I reference them in Component and will the reference be held after after cloning?
 
 TODO:
  - Hook up int field set/get callbacks

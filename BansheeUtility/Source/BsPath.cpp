@@ -291,7 +291,7 @@ namespace BansheeEngine
 				return false;
 		}
 
-		if (mFilename != child.mFilename)
+		if (isFile() && mFilename != child.mFilename)
 			return false;
 
 		return true;

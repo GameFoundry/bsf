@@ -126,8 +126,6 @@ namespace BansheeEngine
 		if(!mIsLoaded)
 			BS_EXCEPT(InvalidStateException, "Trying to use an unloaded assembly.");
 
-
-
 		MonoAssembly::ClassId classId(namespaceName, name);
 		auto iterFind = mClasses.find(classId);
 
