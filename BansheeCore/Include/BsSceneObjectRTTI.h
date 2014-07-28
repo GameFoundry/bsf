@@ -11,6 +11,15 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT SceneObjectRTTI : public RTTIType<SceneObject, GameObject, SceneObjectRTTI>
 	{
 	private:
+		struct DeserializationData
+		{
+			DeserializationData(bool isDeserializationParent)
+				:isDeserializationParent(isDeserializationParent)
+			{ }
+
+			bool isDeserializationParent;
+		};
+
 		// NOTE - These can only be set sequentially, specific array index is ignored
 		std::shared_ptr<SceneObject> getChild(SceneObject* obj, UINT32 idx) { return obj->mChildren[idx].getInternalPtr(); }
 		void setChild(SceneObject* obj, UINT32 idx, std::shared_ptr<SceneObject> param) { param->setParent(obj->mThisHandle); } // NOTE: Can only be used for sequentially adding elements
@@ -30,6 +39,30 @@ namespace BansheeEngine
 				&SceneObjectRTTI::getNumChildren, &SceneObjectRTTI::setChild, &SceneObjectRTTI::setNumChildren);
 			addReflectablePtrArrayField("mComponents", 1, &SceneObjectRTTI::getComponent, 
 				&SceneObjectRTTI::getNumComponents, &SceneObjectRTTI::setComponent, &SceneObjectRTTI::setNumComponents);
+		}
+
+		virtual void onDeserializationStarted(IReflectable* obj)
+		{
+			SceneObject* so = static_cast<SceneObject*>(obj);
+
+			if (!GameObjectManager::instance().isGameObjectDeserializationActive())
+			{
+				GameObjectManager::instance().startDeserialization();
+				so->mRTTIData = DeserializationData(true);
+			}
+			else
+				so->mRTTIData = DeserializationData(false);
+		}
+
+		virtual void onDeserializationEnded(IReflectable* obj)
+		{
+			SceneObject* so = static_cast<SceneObject*>(obj);
+			DeserializationData deserializationData = any_cast<DeserializationData>(so->mRTTIData);
+
+			if (deserializationData.isDeserializationParent)
+				GameObjectManager::instance().endDeserialization();
+
+			so->mRTTIData = nullptr;
 		}
 
 		virtual const String& getRTTIName()

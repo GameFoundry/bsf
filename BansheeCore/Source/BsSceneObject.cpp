@@ -395,10 +395,8 @@ namespace BansheeEngine
 		MemorySerializer serializer;
 		UINT8* buffer = serializer.encode(this, bufferSize, &bs_alloc);
 
-		GameObjectManager::instance().startDeserialization();
 		std::shared_ptr<SceneObject> cloneObj = std::static_pointer_cast<SceneObject>(serializer.decode(buffer, bufferSize));
 		bs_free(buffer);
-		GameObjectManager::instance().endDeserialization();
 
 		return cloneObj->mThisHandle;
 	}

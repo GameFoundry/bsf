@@ -10,49 +10,49 @@ namespace BansheeEngine
     {
         static void Main()
         {
-            //SceneObject otherSO = new SceneObject("OtherSO");
-            //DbgComponent2 dbgComponent2 = otherSO.AddComponent<DbgComponent2>();
-            //dbgComponent2.a2 = 33;
+            SceneObject otherSO = new SceneObject("OtherSO");
+            DbgComponent2 dbgComponent2 = otherSO.AddComponent<DbgComponent2>();
+            dbgComponent2.a2 = 33;
 
-            //GUIElementStateStyle dbgStyle = new GUIElementStateStyle();
-            //SceneObject so = new SceneObject("TestSO");
-            //DbgComponent dbgComponent = so.AddComponent<DbgComponent>();
+            GUIElementStateStyle dbgStyle = new GUIElementStateStyle();
+            SceneObject so = new SceneObject("TestSO");
+            DbgComponent dbgComponent = so.AddComponent<DbgComponent>();
 
-            //dbgComponent.a = 5;
-            //dbgComponent.b = "SomeTestVal";
-            //dbgComponent.complex.someValue = 19;
-            //dbgComponent.complex.anotherValue = "AnotherValue";
-            //dbgComponent.complex2.someValue2 = 21;
-            //dbgComponent.complex2.anotherValue2 = "AnotherValue2";
+            dbgComponent.a = 5;
+            dbgComponent.b = "SomeTestVal";
+            dbgComponent.complex.someValue = 19;
+            dbgComponent.complex.anotherValue = "AnotherValue";
+            dbgComponent.complex2.someValue2 = 21;
+            dbgComponent.complex2.anotherValue2 = "AnotherValue2";
 
-            //dbgComponent.arrA = new int[5];
-            //dbgComponent.arrA[4] = 5;
-            //dbgComponent.arrB = new string[5];
-            //dbgComponent.arrB[4] = "ArrAnotherValue";
-            //dbgComponent.arrComplex = new DbgSerzObj[5];
-            //dbgComponent.arrComplex[4].someValue = 99;
-            //dbgComponent.arrComplex[4].anotherValue = "ArrComplexAnotherValue";
-            //dbgComponent.arrComplex2 = new DbgSerzCls[5];
-            //dbgComponent.arrComplex2[4] = new DbgSerzCls();
-            //dbgComponent.arrComplex2[4].someValue2 = 101;
-            //dbgComponent.arrComplex2[4].anotherValue2 = "ArrComplex2AnotherValue";
+            dbgComponent.arrA = new int[5];
+            dbgComponent.arrA[4] = 5;
+            dbgComponent.arrB = new string[5];
+            dbgComponent.arrB[4] = "ArrAnotherValue";
+            dbgComponent.arrComplex = new DbgSerzObj[5];
+            dbgComponent.arrComplex[4].someValue = 99;
+            dbgComponent.arrComplex[4].anotherValue = "ArrComplexAnotherValue";
+            dbgComponent.arrComplex2 = new DbgSerzCls[5];
+            dbgComponent.arrComplex2[4] = new DbgSerzCls();
+            dbgComponent.arrComplex2[4].someValue2 = 101;
+            dbgComponent.arrComplex2[4].anotherValue2 = "ArrComplex2AnotherValue";
 
-            //dbgComponent.listA = new List<int>();
-            //dbgComponent.listA.Add(5);
-            //dbgComponent.listB = new List<string>();
-            //dbgComponent.listB.Add("ListAnotherValue");
-            //dbgComponent.listB.Add(null);
-            //dbgComponent.listComplex = new List<DbgSerzObj>();
-            //dbgComponent.listComplex.Add(new DbgSerzObj());
-            //dbgComponent.listComplex.Add(new DbgSerzObj(99, "ListComplexAnotherValue"));
-            //dbgComponent.listComplex2 = new List<DbgSerzCls>();
-            //dbgComponent.listComplex2.Add(new DbgSerzCls());
-            //dbgComponent.listComplex2[0].someValue2 = 101;
-            //dbgComponent.listComplex2[0].anotherValue2 = "ListComplexAnotherValue";
-            //dbgComponent.listComplex2.Add(null);
+            dbgComponent.listA = new List<int>();
+            dbgComponent.listA.Add(5);
+            dbgComponent.listB = new List<string>();
+            dbgComponent.listB.Add("ListAnotherValue");
+            dbgComponent.listB.Add(null);
+            dbgComponent.listComplex = new List<DbgSerzObj>();
+            dbgComponent.listComplex.Add(new DbgSerzObj());
+            dbgComponent.listComplex.Add(new DbgSerzObj(99, "ListComplexAnotherValue"));
+            dbgComponent.listComplex2 = new List<DbgSerzCls>();
+            dbgComponent.listComplex2.Add(new DbgSerzCls());
+            dbgComponent.listComplex2[0].someValue2 = 101;
+            dbgComponent.listComplex2[0].anotherValue2 = "ListComplexAnotherValue";
+            dbgComponent.listComplex2.Add(null);
 
-            //dbgComponent.otherComponent = dbgComponent2;
-            //dbgComponent.otherSO = otherSO;
+            dbgComponent.otherComponent = dbgComponent2;
+            dbgComponent.otherSO = otherSO;
 
             //dbgComponent.zeArray = new int[5][][];
             //dbgComponent.zeList = new List<DbgSerzObj>();
@@ -83,24 +83,24 @@ namespace BansheeEngine
 
             //dbgComponent.zeArray[4][1][3] = 129;
 
-            //dbgTestComponentClone(so);
+            dbgTestComponentClone(so);
 
-            //for (int i = 0; i < so.GetNumChildren(); i++)
-            //{
-            //    SceneObject childSO = so.GetChild(i);
+            for (int i = 0; i < so.GetNumChildren(); i++)
+            {
+                SceneObject childSO = so.GetChild(i);
 
-            //    DbgComponent otherComponent = childSO.GetComponent<DbgComponent>();
-            //    reportDbgValue(otherComponent.a, otherComponent.b, otherComponent.complex.someValue,
-            //                   otherComponent.complex2.anotherValue2);
+                DbgComponent otherComponent = childSO.GetComponent<DbgComponent>();
+                reportDbgValue(otherComponent.a, otherComponent.b, otherComponent.complex.someValue,
+                               otherComponent.complex2.anotherValue2);
 
-            //    reportDbgValue(otherComponent.arrA[4], otherComponent.arrB[4], otherComponent.arrComplex[4].someValue,
-            //      otherComponent.arrComplex2[4].anotherValue2);
+                reportDbgValue(otherComponent.arrA[4], otherComponent.arrB[4], otherComponent.arrComplex[4].someValue,
+                  otherComponent.arrComplex2[4].anotherValue2);
 
-            //    reportDbgValue(otherComponent.listA[0], otherComponent.listB[0], otherComponent.listComplex[1].someValue,
-            //        otherComponent.listComplex2[0].anotherValue2);
+                reportDbgValue(otherComponent.listA[0], otherComponent.listB[0], otherComponent.listComplex[1].someValue,
+                    otherComponent.listComplex2[0].anotherValue2);
 
-            //    //reportDbgValue(childSO.GetComponent<DbgComponent>().zeDict["lolz"], childSO.GetComponent<DbgComponent>().zeList[2].someValue, childSO.GetComponent<DbgComponent>().zeArray[4][1][3], typeof(DbgComponent));
-            //}
+                //reportDbgValue(childSO.GetComponent<DbgComponent>().zeDict["lolz"], childSO.GetComponent<DbgComponent>().zeList[2].someValue, childSO.GetComponent<DbgComponent>().zeArray[4][1][3], typeof(DbgComponent));
+            }
 
             //Color newColor = Color.red;
 
