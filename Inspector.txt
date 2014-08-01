@@ -1,9 +1,27 @@
 Update C# GUIElementStyle
 Update GUIFoldout with sub styles
 
+Test if drag and dropping scene objects works with object and resource fields. Especially custom resources and components.
+
 Test custom resources:
  - Can I load them? (Will likely need ProjectLIbrary::load)
  - Can I reference them in Component and will the reference be held after after cloning?
+
+Test CmdRecordSO.
+ - Figure out how to properly restore all handles. Requirements:
+   1. Any active game object needs to replaced with the restored version
+   2. Replaced game objects must be destroyed
+   3. All handles to the object must be kept intact
+   4. All handles (internal and external) on the restored object must be kept intact
+ - Create hierarchy with three layers. One SO needs to have a couple of components. One components should reference child SO,
+   other component should reference outside SO. Outside component should reference one SO in hierarchy, and one component in hierarchy.
+   Then I perform Record.
+   Modify some plain values
+   Perform undo
+   Check that number of game objects remained the same and that they all have original IDs
+   Check that all above mentioned references are still active
+
+   Repeat the similar test but this time instead of modfying plain values, modify number of components and the hierarchy.
 
 TODO:
  - Hook up int field set/get callbacks

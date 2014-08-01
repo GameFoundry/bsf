@@ -4,7 +4,7 @@
 namespace BansheeEngine
 {
 	GameObjectManager::GameObjectManager()
-		:mNextAvailableID(1), mIsDeserializationActive(false)
+		:mNextAvailableID(1), mIsDeserializationActive(false), mGODeserializationMode(GODM_UseNewIds | GODM_BreakExternal)
 	{
 
 	}
@@ -40,6 +40,15 @@ namespace BansheeEngine
 		return mObjects.find(id) != mObjects.end(); 
 	}
 
+	void GameObjectManager::remapId(UINT64 oldId, UINT64 newId)
+	{
+		if (oldId == newId)
+			return;
+
+		mObjects[newId] = mObjects[oldId];
+		mObjects.erase(oldId);
+	}
+
 	GameObjectHandleBase GameObjectManager::registerObject(const std::shared_ptr<GameObject>& object)
 	{
 		object->initialize(object, mNextAvailableID);
@@ -70,17 +79,27 @@ namespace BansheeEngine
 		for(auto& unresolvedHandle : mUnresolvedHandles)
 		{
 			UINT64 instanceId = unresolvedHandle.getInstanceId();
-
+			
+			bool isInternalReference = false;
+			
 			auto findIter = mIdMapping.find(instanceId);
-			if(findIter != mIdMapping.end())
+			if (findIter != mIdMapping.end())
 			{
-				instanceId = findIter->second;
+				if ((mGODeserializationMode & GODM_UseNewIds) != 0)
+					instanceId = findIter->second;
+
+				isInternalReference = true;
 			}
 
-			auto findIterObj = mObjects.find(instanceId);
+			if (isInternalReference || (!isInternalReference && (mGODeserializationMode & GODM_RestoreExternal) != 0))
+			{
+				auto findIterObj = mObjects.find(instanceId);
 
-			if(findIterObj != mObjects.end())
-				unresolvedHandle._resolve(findIterObj->second);	
+				if (findIterObj != mObjects.end())
+					unresolvedHandle._resolve(findIterObj->second);
+				else
+					unresolvedHandle._resolve(nullptr);
+			}
 			else
 				unresolvedHandle._resolve(nullptr);
 		}
@@ -131,5 +150,17 @@ namespace BansheeEngine
 #endif
 
 		mEndCallbacks.push_back(callback);
+	}
+
+	void GameObjectManager::setDeserializationMode(UINT32 gameObjectDeserializationMode)
+	{
+#if BS_DEBUG_MODE
+		if (mIsDeserializationActive)
+		{
+			BS_EXCEPT(InvalidStateException, "Deserialization modes can not be modified when deserialization is not active.");
+		}
+#endif
+
+		mGODeserializationMode = gameObjectDeserializationMode;
 	}
 }

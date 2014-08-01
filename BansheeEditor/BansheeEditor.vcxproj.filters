@@ -195,6 +195,9 @@
     <ClInclude Include="Include\BsResourceImporter.h">
       <Filter>Header Files\Editor</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsCmdRecordSO.h">
+      <Filter>Header Files\Editor\Commands</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsEditorWidgetContainer.cpp">
@@ -337,6 +340,9 @@
     </ClCompile>
     <ClCompile Include="Source\BsResourceImporter.cpp">
       <Filter>Source Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsCmdRecordSO.cpp">
+      <Filter>Source Files\Editor\Command</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

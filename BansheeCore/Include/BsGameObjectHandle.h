@@ -104,6 +104,13 @@ namespace BansheeEngine
 		 */
 		void _resolve(const GameObjectHandleBase& object);
 
+		/**
+		 * @brief	Changes the GameObject instance the handle is pointing to.
+		 *
+		 * @note	Internal method.
+		 */
+		void _setHandleData(const GameObjectPtr& object);
+
 	protected:
 		friend class SceneObject;
 		friend class SceneObjectRTTI;
@@ -119,18 +126,15 @@ namespace BansheeEngine
 		inline void throwIfDestroyed() const;
 		
 		/**
-		 * @brief	Invalidates the handle signifiying the referenced object was destroyed.
+		 * @brief	Invalidates the handle signifying the referenced object was destroyed.
 		 */
 		void destroy()
 		{
-			// We need to clear mData->mPtr before we clear mData->mPtr->object,
-			// as this handle could be stored within the "object" and destroyed when
-			// we set it to null 
-			std::shared_ptr<GameObjectInstanceData> instanceData = mData->mPtr;
-			mData->mPtr = nullptr;
+			// It's important not to clear mData->mPtr as some code might rely
+			// on it. (e.g. for restoring lost handles)
 
-			if(instanceData != nullptr)
-				instanceData->object = nullptr;
+			if (mData->mPtr != nullptr)
+				mData->mPtr->object = nullptr;
 		}
 
 		std::shared_ptr<GameObjectHandleData> mData;

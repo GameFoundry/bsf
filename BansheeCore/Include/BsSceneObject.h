@@ -32,6 +32,15 @@ namespace BansheeEngine
 		 */
 		void destroy();
 
+		/**
+		 * @copydoc	GameObject::_setInstanceData
+		 */
+		void _setInstanceData(GameObjectInstanceDataPtr& other);
+
+		/**
+		 * @brief	Returns a handle to this object.
+		 */
+		HSceneObject getHandle() const { return mThisHandle; }
 	private:
 		SceneObject(const String& name);
 

@@ -16,6 +16,17 @@ namespace BansheeEngine
 		mInstanceData->object = object;
 		mInstanceData->mInstanceId = instanceId;
 	}
+
+	void GameObject::_setInstanceData(GameObjectInstanceDataPtr& other)
+	{
+		GameObjectPtr myPtr = mInstanceData->object;
+		UINT64 oldId = mInstanceData->mInstanceId;
+
+		mInstanceData = other;
+		mInstanceData->object = myPtr;
+
+		GameObjectManager::instance().remapId(oldId, mInstanceData->mInstanceId);
+	}
 	
 	RTTITypeBase* GameObject::getRTTIStatic()
 	{

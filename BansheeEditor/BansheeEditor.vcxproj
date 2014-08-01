@@ -264,6 +264,7 @@
   <ItemGroup>
     <ClInclude Include="Include\BsCmdEditPlainFieldGO.h" />
     <ClInclude Include="Include\BsCmdInputFieldValueChange.h" />
+    <ClInclude Include="Include\BsCmdRecordSO.h" />
     <ClInclude Include="Include\BsCmdReparentSO.h" />
     <ClInclude Include="Include\BsDbgTestGameObjectRef.h" />
     <ClInclude Include="Include\BsDbgTestGameObjectRefRTTI.h" />
@@ -319,6 +320,7 @@
     <ClInclude Include="Include\BsUndoRedo.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\BsCmdRecordSO.cpp" />
     <ClCompile Include="Source\BsCmdReparentSO.cpp" />
     <ClCompile Include="Source\BsDbgTestGameObjectRef.cpp" />
     <ClCompile Include="Source\BsDockManager.cpp" />

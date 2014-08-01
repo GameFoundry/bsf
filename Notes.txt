@@ -64,6 +64,7 @@ Reminders:
     which would require more thought.
   - GUIElementBase::_getElementAreas is currently only implemented for layouts. It will work of child elements of layouts and layouts themselves but will not 
     work for child elements of custom element types. This method is used for calculating size and position of an element in its parent.
+  - I shouldn't use WeakRef with GameObjects. They need be deserialized in the order of their hierarchy and weak ref can break that.
 
 Potential optimizations:
  - bulkPixelConversion is EXTREMELY poorly unoptimized. Each pixel it calls a separate method that does redudant operations every pixel.

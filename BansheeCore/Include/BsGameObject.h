@@ -11,12 +11,14 @@ namespace BansheeEngine
 	struct GameObjectInstanceData
 	{
 		GameObjectInstanceData()
-			:mInstanceId(0), object(nullptr)
+		:mInstanceId(0), object(nullptr)
 		{ }
 
 		std::shared_ptr<GameObject> object;
 		UINT64 mInstanceId;
 	};
+
+	typedef std::shared_ptr<GameObjectInstanceData> GameObjectInstanceDataPtr;
 
 	/**
 	 * @brief	Type of object that can be referenced by a GameObject handle.
@@ -43,6 +45,25 @@ namespace BansheeEngine
 		 */
 		void setName(const String& name) { mName = name; }
 
+		/**
+		 * @brief	Replaces the instance data with another objects instance data.
+		 *			This object will basically become the original owner of the provided
+		 *			instance data as far as all game object handles referencing it are concerned.
+		 *
+		 * @note	Internal method. 
+		 *			No alive objects should ever be sharing the same instance data. This can be used
+		 *			for restoring dead handles.
+		 */
+		virtual void _setInstanceData(GameObjectInstanceDataPtr& other);
+
+		/**
+		 * @brief	Returns instance data that identifies this GameObject and is used for referencing
+		 *			by game object handles.
+		 *
+		 * @note	Internal method.
+		 */
+		virtual GameObjectInstanceDataPtr _getInstanceData() const { return mInstanceData; }
+
 	protected:
 		friend class GameObjectHandleBase;
 		friend class GameObjectManager;
@@ -56,7 +77,7 @@ namespace BansheeEngine
 		String mName;
 
 	private:
-		std::shared_ptr<GameObjectInstanceData> mInstanceData;
+		GameObjectInstanceDataPtr mInstanceData;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

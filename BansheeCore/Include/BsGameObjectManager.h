@@ -7,6 +7,23 @@
 namespace BansheeEngine
 {
 	/**
+	 * @brief	Possible modes to use when deserializing games objects.
+	 */
+	enum GameObjectHandleDeserializationMode
+	{
+		/** All handles will point to old ID that were restored from the deserialized file. */
+		GODM_UseOriginalIds = 0x01, 
+		/** All handles will point to new IDs that were given to the deserialized GameObjects. */
+		GODM_UseNewIds = 0x02,
+		/** Handles pointing to GameObjects outside of the currently deserialized set
+		will attempt to be restored in case those objects are still active. */
+		GODM_RestoreExternal = 0x04,
+		/** Handles pointing to GameObjects outside of the currently deserialized set
+		will be broken. */
+		GODM_BreakExternal = 0x08
+	};
+
+	/**
 	 * @brief	Tracks GameObject creation and destructions. Also resolves
 	 *			GameObject references from GameObject handles.
 	 *
@@ -44,6 +61,13 @@ namespace BansheeEngine
 		 * @brief	Checks if the GameObject with the specified instance ID exists.
 		 */
 		bool objectExists(UINT64 id) const;
+
+		/**
+		 * @brief	Changes the instance ID by which an object can be retrieved by. 
+		 *
+		 * @note	Caller is required to update the object itself with the new ID.
+		 */
+		void remapId(UINT64 oldId, UINT64 newId);
 
 		/************************************************************************/
 		/* 							DESERIALIZATION                      		*/
@@ -89,6 +113,13 @@ namespace BansheeEngine
 		 */
 		void registerOnDeserializationEndCallback(std::function<void()> callback);
 
+		/**
+		 * @brief	Changes the deserialization mode for any following GameObject handle.
+		 *
+		 * @param	gameObjectDeserializationMode		Mode that controls how are GameObjects handles resolved when being deserialized.
+		 */
+		void setDeserializationMode(UINT32 gameObjectDeserializationMode);
+
 	private:
 		UINT64 mNextAvailableID; // 0 is not a valid ID
 		Map<UINT64, GameObjectHandleBase> mObjects;
@@ -98,5 +129,6 @@ namespace BansheeEngine
 		Map<UINT64, UINT64> mIdMapping;
 		Vector<GameObjectHandleBase> mUnresolvedHandles;
 		Vector<std::function<void()>> mEndCallbacks;
+		UINT32 mGODeserializationMode;
 	};
 }

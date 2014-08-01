@@ -80,6 +80,14 @@ namespace BansheeEngine
 		mThisHandle.destroy();
 	}
 
+	void SceneObject::_setInstanceData(GameObjectInstanceDataPtr& other)
+	{
+		GameObject::_setInstanceData(other);
+
+		// Instance data changed, so make sure to refresh the handles to reflect that
+		mThisHandle._setHandleData(mThisHandle.getInternalPtr());
+	}
+
 	/************************************************************************/
 	/* 								Transform	                     		*/
 	/************************************************************************/
@@ -395,6 +403,7 @@ namespace BansheeEngine
 		MemorySerializer serializer;
 		UINT8* buffer = serializer.encode(this, bufferSize, &bs_alloc);
 
+		GameObjectManager::instance().setDeserializationMode(GODM_UseNewIds | GODM_RestoreExternal);
 		std::shared_ptr<SceneObject> cloneObj = std::static_pointer_cast<SceneObject>(serializer.decode(buffer, bufferSize));
 		bs_free(buffer);
 

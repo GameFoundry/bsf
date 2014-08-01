@@ -199,7 +199,8 @@ namespace BansheeEngine
 	typedef std::shared_ptr<RendererFactory> RendererFactoryPtr;
 	typedef std::shared_ptr<PassParameters> PassParametersPtr;
 	typedef std::shared_ptr<Component> ComponentPtr;
-	typedef std::shared_ptr<SceneObject> GameObjectPtr;
+	typedef std::shared_ptr<GameObject> GameObjectPtr;
+	typedef std::shared_ptr<SceneObject> SceneObjectPtr;
 	typedef std::shared_ptr<SamplerState> SamplerStatePtr;
 	typedef std::shared_ptr<DepthStencilState> DepthStencilStatePtr;
 	typedef std::shared_ptr<RasterizerState> RasterizerStatePtr;

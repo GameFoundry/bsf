@@ -2,6 +2,7 @@
 #include "BsGameObject.h"
 #include "BsGameObjectHandle.h"
 #include "BsException.h"
+#include "BsGameObject.h"
 #include "BsGameObjectHandleRTTI.h"
 
 namespace BansheeEngine
@@ -29,6 +30,12 @@ namespace BansheeEngine
 	{ 
 		mData->mPtr = object.mData->mPtr;
 		mData->mInstanceId = object.mData->mInstanceId;
+	}
+
+	void GameObjectHandleBase::_setHandleData(const GameObjectPtr& object)
+	{
+		mData->mPtr = object->mInstanceData;
+		mData->mInstanceId = object->mInstanceData->mInstanceId;
 	}
 
 	void GameObjectHandleBase::throwIfDestroyed() const
