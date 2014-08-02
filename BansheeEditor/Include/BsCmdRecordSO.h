@@ -28,6 +28,7 @@ namespace BansheeEngine
 		friend class UndoRedo;
 
 		CmdRecordSO(const HSceneObject& sceneObject);
+		void recordSO(const HSceneObject& sceneObject);
 		void clear();
 		SceneObjProxy createProxy(const HSceneObject& sceneObject);
 		void restoreIds(const HSceneObject& restored);

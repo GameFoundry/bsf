@@ -141,6 +141,16 @@ namespace BansheeEngine
 	};
 
 	/**
+	 * @brief	Exception for signaling an error in an unit test.
+	 */
+	class BS_UTILITY_EXPORT UnitTestException : public Exception
+	{
+	public:
+		UnitTestException(const String& inDescription, const String& inSource, const char* inFile, long inLine)
+			: Exception("UnitTestException", inDescription, inSource, inFile, inLine) {}
+	};
+
+	/**
 	 * @brief Macro for throwing exceptions that will automatically fill out function name, file name and line number of the exception.
 	 */
 #ifndef BS_EXCEPT

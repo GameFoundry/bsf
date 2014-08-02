@@ -44,14 +44,7 @@ namespace BansheeEngine
 		if (mSceneObject == nullptr || mSceneObject.isDestroyed())
 			return;
 
-		MemorySerializer serializer;
-		mSerializedObject = serializer.encode(mSceneObject.get(), mSerializedObjectSize, &bs_alloc);
-
-		HSceneObject parent = mSceneObject->getParent();
-		if (parent != nullptr)
-			mSerializedObjectParentId = parent->getInstanceId();
-
-		mSceneObjectProxy = createProxy(mSceneObject);
+		recordSO(mSceneObject);
 	}
 
 	void CmdRecordSO::revert()
@@ -72,6 +65,19 @@ namespace BansheeEngine
 		std::shared_ptr<SceneObject> restored = std::static_pointer_cast<SceneObject>(serializer.decode(mSerializedObject, mSerializedObjectSize));
 
 		restoreIds(restored->getHandle());
+		restored->setParent(parent);
+	}
+
+	void CmdRecordSO::recordSO(const HSceneObject& sceneObject)
+	{
+		MemorySerializer serializer;
+		mSerializedObject = serializer.encode(mSceneObject.get(), mSerializedObjectSize, &bs_alloc);
+
+		HSceneObject parent = mSceneObject->getParent();
+		if (parent != nullptr)
+			mSerializedObjectParentId = parent->getInstanceId();
+
+		mSceneObjectProxy = createProxy(mSceneObject);
 	}
 
 	CmdRecordSO::SceneObjProxy CmdRecordSO::createProxy(const HSceneObject& sceneObject)

@@ -9,6 +9,8 @@
 #include "BsProfilingManager.h"
 #include "BsGUIArea.h"
 #include "BsGUILayout.h"
+#include "BsEditorTestSuite.h"
+#include "BsTestOutput.h"
 
 // DEBUG ONLY
 #include "BsTestTextSprite.h"
@@ -79,6 +81,9 @@ namespace BansheeEngine
 
 		mProfilerOverlay = mSceneObject->addComponent<ProfilerOverlay>(sceneCamera->getViewport());
 		mProfilerOverlay->show(ProfilerOverlayType::CPUSamples);
+
+		TestSuitePtr testSuite = TestSuite::create<EditorTestSuite>();
+		testSuite->run(ExceptionTestOutput());
 	}
 
 	MainEditorWindow::~MainEditorWindow()

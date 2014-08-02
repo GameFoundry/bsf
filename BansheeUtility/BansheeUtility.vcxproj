@@ -248,6 +248,8 @@
     <ClCompile Include="Source\BsBounds.cpp" />
     <ClCompile Include="Source\BsConvexVolume.cpp" />
     <ClCompile Include="Source\BsTaskScheduler.cpp" />
+    <ClCompile Include="Source\BsTestOutput.cpp" />
+    <ClCompile Include="Source\BsTestSuite.cpp" />
     <ClCompile Include="Source\BsThreadPool.cpp" />
     <ClCompile Include="Source\BsAABox.cpp" />
     <ClCompile Include="Source\BsAsyncOp.cpp" />
@@ -275,6 +277,8 @@
     <ClInclude Include="Include\BsEvent.h" />
     <ClInclude Include="Include\BsSpinLock.h" />
     <ClInclude Include="Include\BsTaskScheduler.h" />
+    <ClInclude Include="Include\BsTestOutput.h" />
+    <ClInclude Include="Include\BsTestSuite.h" />
     <ClInclude Include="Include\BsThreadPool.h" />
     <ClInclude Include="Include\BsAsyncOp.h" />
     <ClInclude Include="Include\BsBinarySerializer.h" />

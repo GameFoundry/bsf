@@ -52,6 +52,8 @@ namespace BansheeEngine
 	struct LocalizedStringData;
 	class Path;
 	class HThread;
+	class TestSuite;
+	class TestOutput;
 	// Reflection
 	class IReflectable;
 	class RTTITypeBase;
@@ -68,6 +70,7 @@ namespace BansheeEngine
 	typedef std::shared_ptr<DataStream> DataStreamPtr;
 	typedef std::shared_ptr<MemoryDataStream> MemoryDataStreamPtr;
 	typedef std::shared_ptr<Task> TaskPtr;
+	typedef std::shared_ptr<TestSuite> TestSuitePtr;
 
 	typedef List<DataStreamPtr> DataStreamList;
 	typedef std::shared_ptr<DataStreamList> DataStreamListPtr;
