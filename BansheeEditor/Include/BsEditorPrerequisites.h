@@ -75,6 +75,8 @@ namespace BansheeEngine
 		TID_DockManagerLayout = 40004,
 		TID_DockManagerLayoutEntry = 40005,
 		TID_EditorWidgetLayout = 40006,
-		TID_EditorWidgetLayoutEntry = 40007
+		TID_EditorWidgetLayoutEntry = 40007,
+		TID_TestComponentA = 40008,
+		TID_TestComponentB = 40009
 	};
 }

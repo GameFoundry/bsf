@@ -13,12 +13,12 @@ namespace BansheeEngine
 
 	CmdRecordSO::~CmdRecordSO()
 	{
+		mSceneObject = nullptr;
 		clear();
 	}
 
 	void CmdRecordSO::clear()
 	{
-		mSceneObject = nullptr;
 		mSerializedObjectSize = 0;
 		mSerializedObjectParentId = 0;
 

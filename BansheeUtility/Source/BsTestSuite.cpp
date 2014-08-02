@@ -44,9 +44,7 @@ namespace BansheeEngine
 
 	void TestSuite::assertment(bool success, const String& desc, const String& file, long line)
 	{
-		if (success)
-			mOutput->outputSuccess(desc, mActiveTestName, file, line);
-		else
+		if (!success)
 			mOutput->outputFail(desc, mActiveTestName, file, line);
 	}
 }

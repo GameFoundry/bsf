@@ -7,9 +7,4 @@ namespace BansheeEngine
 	{
 		throw UnitTestException(desc, function, file.c_str(), line);
 	}
-
-	void ExceptionTestOutput::outputSuccess(const String& desc, const String& function, const String& file, long line)
-	{
-		// Do nothing
-	}
 }
