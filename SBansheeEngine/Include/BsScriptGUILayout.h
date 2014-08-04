@@ -15,14 +15,17 @@ namespace BansheeEngine
 
 	private:
 		static void internal_createInstanceXFromArea(MonoObject* instance, MonoObject* parentArea);
-		static void internal_createInstanceXFromLayout(MonoObject* instance, MonoObject* parentLayout);
-		static void internal_createInstanceYFromLayout(MonoObject* instance, MonoObject* parentLayout);
+		static void internal_createInstanceXFromLayoutAdd(MonoObject* instance, MonoObject* parentLayout);
+		static void internal_createInstanceYFromLayoutAdd(MonoObject* instance, MonoObject* parentLayout);
+		static void internal_createInstanceXFromLayoutInsert(MonoObject* instance, MonoObject* parentLayout, UINT32 index);
+		static void internal_createInstanceYFromLayoutInsert(MonoObject* instance, MonoObject* parentLayout, UINT32 index);
 		static void internal_createInstanceYFromScrollArea(MonoObject* instance, MonoObject* parentScrollArea);
+		static void internal_addElement(ScriptGUILayout* instance, ScriptGUIElementTBase* element);
+		static void internal_insertElement(ScriptGUILayout* instance, UINT32 index, ScriptGUIElementTBase* element);
 
 		ScriptGUILayout(MonoObject* instance, GUILayout* layout, GUILayout* parentLayout);
 
 		void destroy();
-		void setParent(GUILayout* parentLayout);
 
 		GUILayout* mLayout;
 		GUILayout* mParentLayout;

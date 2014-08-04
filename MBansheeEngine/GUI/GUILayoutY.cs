@@ -7,12 +7,17 @@ namespace BansheeEngine
     {
         internal GUILayoutY(GUILayout parentLayout)
         {
-            Internal_CreateInstanceYFromLayout(this, parentLayout);
+            Internal_CreateInstanceYFromLayoutAdd(this, parentLayout);
         }
 
         internal GUILayoutY(GUIScrollArea parentArea)
         {
             Internal_CreateInstanceYFromScrollArea(this, parentArea);
+        }
+
+        internal GUILayoutY(GUILayout parentLayout, int index)
+        {
+            Internal_CreateInstanceYFromLayoutInsert(this, parentLayout, index);
         }
     }
 }

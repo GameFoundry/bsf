@@ -48,10 +48,17 @@
 
 namespace BansheeEngine
 {
+	void atExit()
+	{
+		BS_EXCEPT(InternalErrorException, "exit() called. Please shut down Banshee normally and do not use exit().");
+	}
+
 	CoreApplication::CoreApplication(START_UP_DESC& desc)
 		:mPrimaryWindow(nullptr), mIsFrameRenderingFinished(true), mRunMainLoop(false), 
 		mSceneManagerPlugin(nullptr), mRendererPlugin(nullptr)
 	{
+		atexit(atExit);
+
 		UINT32 numWorkerThreads = BS_THREAD_HARDWARE_CONCURRENCY - 1; // Number of cores while excluding current thread.
 
 		Platform::_startUp();

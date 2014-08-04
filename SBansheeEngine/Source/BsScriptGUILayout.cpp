@@ -20,9 +20,13 @@ namespace BansheeEngine
 	void ScriptGUILayout::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstanceXFromArea", &ScriptGUILayout::internal_createInstanceXFromArea);
-		metaData.scriptClass->addInternalCall("Internal_CreateInstanceXFromLayout", &ScriptGUILayout::internal_createInstanceXFromLayout);
-		metaData.scriptClass->addInternalCall("Internal_CreateInstanceYFromLayout", &ScriptGUILayout::internal_createInstanceYFromLayout);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstanceXFromLayoutAdd", &ScriptGUILayout::internal_createInstanceXFromLayoutAdd);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstanceYFromLayoutAdd", &ScriptGUILayout::internal_createInstanceYFromLayoutAdd);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstanceXFromLayoutInsert", &ScriptGUILayout::internal_createInstanceXFromLayoutInsert);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstanceYFromLayoutInsert", &ScriptGUILayout::internal_createInstanceYFromLayoutInsert);
 		metaData.scriptClass->addInternalCall("Internal_CreateInstanceYFromScrollArea", &ScriptGUILayout::internal_createInstanceYFromScrollArea);
+		metaData.scriptClass->addInternalCall("Internal_AddElement", &ScriptGUILayout::internal_addElement);
+		metaData.scriptClass->addInternalCall("Internal_InsertElement", &ScriptGUILayout::internal_insertElement);
 	}
 
 	void ScriptGUILayout::destroy()
@@ -39,11 +43,6 @@ namespace BansheeEngine
 		}
 	}
 
-	void ScriptGUILayout::setParent(GUILayout* parentLayout)
-	{
-		// FixedSpace parent is static, so do nothing
-	}
-
 	void ScriptGUILayout::internal_createInstanceXFromArea(MonoObject* instance, MonoObject* parentArea)
 	{
 		ScriptGUIArea* scriptArea = ScriptGUIArea::toNative(parentArea);
@@ -53,7 +52,7 @@ namespace BansheeEngine
 			ScriptGUILayout(instance, &nativeArea->getLayout(), nullptr);
 	}
 
-	void ScriptGUILayout::internal_createInstanceXFromLayout(MonoObject* instance, MonoObject* parentLayout)
+	void ScriptGUILayout::internal_createInstanceXFromLayoutAdd(MonoObject* instance, MonoObject* parentLayout)
 	{
 		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
 		GUILayout* nativeLayout = scriptLayout->getInternalValue();
@@ -63,13 +62,33 @@ namespace BansheeEngine
 			ScriptGUILayout(instance, &layout, nativeLayout);
 	}
 
-	void ScriptGUILayout::internal_createInstanceYFromLayout(MonoObject* instance, MonoObject* parentLayout)
+	void ScriptGUILayout::internal_createInstanceYFromLayoutAdd(MonoObject* instance, MonoObject* parentLayout)
 	{
 		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
 		GUILayout* nativeLayout = scriptLayout->getInternalValue();
 		GUILayout& layout = nativeLayout->addLayoutY();
 
 		ScriptGUILayout* nativeInstance = new (bs_alloc<ScriptGUILayout>()) 
+			ScriptGUILayout(instance, &layout, nativeLayout);
+	}
+
+	void ScriptGUILayout::internal_createInstanceXFromLayoutInsert(MonoObject* instance, MonoObject* parentLayout, UINT32 index)
+	{
+		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
+		GUILayout* nativeLayout = scriptLayout->getInternalValue();
+		GUILayout& layout = nativeLayout->insertLayoutX(index);
+
+		ScriptGUILayout* nativeInstance = new (bs_alloc<ScriptGUILayout>())
+			ScriptGUILayout(instance, &layout, nativeLayout);
+	}
+
+	void ScriptGUILayout::internal_createInstanceYFromLayoutInsert(MonoObject* instance, MonoObject* parentLayout, UINT32 index)
+	{
+		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
+		GUILayout* nativeLayout = scriptLayout->getInternalValue();
+		GUILayout& layout = nativeLayout->insertLayoutY(index);
+
+		ScriptGUILayout* nativeInstance = new (bs_alloc<ScriptGUILayout>())
 			ScriptGUILayout(instance, &layout, nativeLayout);
 	}
 
@@ -82,5 +101,15 @@ namespace BansheeEngine
 
 		ScriptGUILayout* nativeInstance = new (bs_alloc<ScriptGUILayout>()) 
 			ScriptGUILayout(instance, nativeLayout, nativeLayout);
+	}
+
+	void ScriptGUILayout::internal_addElement(ScriptGUILayout* instance, ScriptGUIElementTBase* element)
+	{
+		instance->getInternalValue()->addElement(static_cast<GUIElement*>(element->getGUIElement()));
+	}
+
+	void ScriptGUILayout::internal_insertElement(ScriptGUILayout* instance, UINT32 index, ScriptGUIElementTBase* element)
+	{
+		instance->getInternalValue()->insertElement(index, static_cast<GUIElement*>(element->getGUIElement()));
 	}
 }

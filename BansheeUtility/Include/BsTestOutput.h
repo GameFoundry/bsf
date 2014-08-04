@@ -5,7 +5,7 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Abstract interfaced used for outputting unit test results.
+	 * @brief	Abstract interface used for outputting unit test results.
 	 */
 	class BS_UTILITY_EXPORT TestOutput
 	{
@@ -32,6 +32,6 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	TestOutput::outputFail
 		 */
-		void outputFail(const String& desc, const String& function, const String& file, long line);
+		void outputFail(const String& desc, const String& function, const String& file, long line) final;
 	};
 }

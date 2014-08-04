@@ -65,6 +65,8 @@ Reminders:
   - GUIElementBase::_getElementAreas is currently only implemented for layouts. It will work of child elements of layouts and layouts themselves but will not 
     work for child elements of custom element types. This method is used for calculating size and position of an element in its parent.
   - I shouldn't use WeakRef with GameObjects. They need be deserialized in the order of their hierarchy and weak ref can break that.
+  - Make sure to add fixedUpdate() to run your game logic in. This should have an adjustable update rate. See: http://gameprogrammingpatterns.com/game-loop.html
+  - Will also need GameObject::destroy and GameObject::destroyImmediate. So I can remove GameObjects that might still be referenced that same frame (destroy() would just queue for destruction)
 
 Potential optimizations:
  - bulkPixelConversion is EXTREMELY poorly unoptimized. Each pixel it calls a separate method that does redudant operations every pixel.

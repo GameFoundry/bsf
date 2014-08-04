@@ -42,11 +42,6 @@ namespace BansheeEngine
 		}
 	}
 
-	void ScriptGUIElementTBase::setParent(GUILayout* layout)
-	{
-		layout->addElement((GUIElement*)mElement);
-	}
-
 	void ScriptGUIElementTBase::setLayoutOptions(GUIOptions options)
 	{
 		GUIElement* element = static_cast<GUIElement*>(mElement);
@@ -63,7 +58,6 @@ namespace BansheeEngine
 	{
 		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIElement::internal_destroy);
 		metaData.scriptClass->addInternalCall("Internal_SetVisible", &ScriptGUIElement::internal_setVisible);
-		metaData.scriptClass->addInternalCall("Internal_SetParent", &ScriptGUIElement::internal_setParent);
 		metaData.scriptClass->addInternalCall("Internal_SetLayoutOptions", &ScriptGUIElement::internal_setLayoutOptions);
 	}
 
@@ -78,14 +72,6 @@ namespace BansheeEngine
 			nativeInstance->getGUIElement()->enableRecursively();
 		else
 			nativeInstance->getGUIElement()->disableRecursively();
-	}
-
-	void ScriptGUIElement::internal_setParent(ScriptGUIElementBaseTBase* nativeInstance, MonoObject* parentLayout)
-	{
-		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
-		GUILayout* nativeLayout = scriptLayout->getInternalValue();
-
-		nativeInstance->setParent(nativeLayout);
 	}
 
 	void ScriptGUIElement::internal_setLayoutOptions(ScriptGUIElementBaseTBase* nativeInstance, MonoArray* guiOptions)

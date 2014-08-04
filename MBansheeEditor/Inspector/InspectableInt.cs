@@ -11,21 +11,22 @@ namespace BansheeEditor
     {
         private int oldPropertyValue;
         private GUIIntField guiIntField;
-        private bool isInitialized = false;
+        private bool isInitialized;
 
-        public InspectableInt(string title, SerializableProperty property)
-            :base(title, property)
+        public InspectableInt(string title, InspectableFieldLayout layout, SerializableProperty property)
+            : base(title, layout, property)
         {
 
         }
 
-        protected void Initialize(GUILayout layout)
+        private void Initialize(int layoutIndex)
         {
-            if(property.Type == SerializableProperty.FieldType.Int)
+            if (property.Type == SerializableProperty.FieldType.Int)
             {
                 guiIntField = new GUIIntField(new GUIContent(title));
                 guiIntField.OnChanged += OnFieldValueChanged;
-                layout.AddElement(guiIntField); 
+
+                layout.AddElement(layoutIndex, guiIntField);
             }
 
             isInitialized = true;
@@ -47,29 +48,22 @@ namespace BansheeEditor
             return base.IsModified();
         }
 
-        protected override void Update(GUILayout layout)
+        protected override void Update(int layoutIndex)
         {
-            base.Update(layout);
+            base.Update(layoutIndex);
 
             if (!isInitialized)
-                Initialize(layout);
+                Initialize(layoutIndex);
 
             // TODO - Skip update if it currently has input focus so user can modify the value in peace
 
-            guiIntField.Value = property.GetValue<int>();
+            if(guiIntField != null)
+                guiIntField.Value = property.GetValue<int>();
         }
 
         private void OnFieldValueChanged(int newValue)
         {
             property.SetValue<int>(newValue);
-        }
-
-        public override void Destroy()
-        {
-            if (guiIntField != null)
-                guiIntField.Destroy();
-
-            base.Destroy();
         }
     }
 }

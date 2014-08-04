@@ -13,16 +13,42 @@ namespace BansheeEngine
             return true;
         }
 
-        internal void AddElementInternal(GUIElement element)
+        internal bool AddElementInternal(GUIElement element)
         {
             if (IsDestroyed())
             {
                 Debug.LogWarning("Attempting to add an element to a destroyed layout. Ignoring operation.");
-                return;
+                return false;
             }
 
             if (!children.Contains(element))
+            {
                 element.SetParent(this);
+                children.Add(element);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        internal bool InsertElementInternal(int index, GUIElement element)
+        {
+            if (IsDestroyed())
+            {
+                Debug.LogWarning("Attempting to add an element to a destroyed layout. Ignoring operation.");
+                return false;
+            }
+
+            if (!children.Contains(element))
+            {
+                element.SetParent(this);
+                children.Insert(index, element);
+
+                return true;
+            }
+
+            return false;
         }
 
         internal override void SetParent(GUILayout layout)
@@ -44,13 +70,34 @@ namespace BansheeEngine
                 return;
             }
 
-            AddElementInternal(element);
+            if(AddElementInternal(element))
+                Internal_AddElement(mCachedPtr, element.mCachedPtr);
+        }
+
+        public void InsertElement(int index, GUIElement element)
+        {
+            if (element.IsStatic())
+            {
+                Debug.LogWarning("You are trying to change parent of a static GUI element. Ignoring operation.");
+                return;
+            }
+
+            if (InsertElementInternal(index, element))
+                Internal_InsertElement(mCachedPtr, index, element.mCachedPtr);
         }
 
         public GUIFixedSpace AddSpace(int size)
         {
             GUIFixedSpace fixedSpace = new GUIFixedSpace(this, size);
             AddElementInternal(fixedSpace);
+
+            return fixedSpace;
+        }
+
+        public GUIFixedSpace InsertSpace(int index, int size)
+        {
+            GUIFixedSpace fixedSpace = new GUIFixedSpace(this, index, size);
+            InsertElementInternal(index, fixedSpace);
 
             return fixedSpace;
         }
@@ -63,6 +110,14 @@ namespace BansheeEngine
             return flexibleSpace;
         }
 
+        public GUIFlexibleSpace InsertFlexibleSpace(int index)
+        {
+            GUIFlexibleSpace flexibleSpace = new GUIFlexibleSpace(this, index);
+            InsertElementInternal(index, flexibleSpace);
+
+            return flexibleSpace;
+        }
+
         public GUILayoutX AddLayoutX()
         {
             GUILayoutX layoutX = new GUILayoutX(this);
@@ -71,10 +126,26 @@ namespace BansheeEngine
             return layoutX;
         }
 
+        public GUILayoutX InsertLayoutX(int index)
+        {
+            GUILayoutX layoutX = new GUILayoutX(this, index);
+            InsertElementInternal(index, layoutX);
+
+            return layoutX;
+        }
+
         public GUILayoutY AddLayoutY()
         {
             GUILayoutY layoutY = new GUILayoutY(this);
             AddElementInternal(layoutY);
+
+            return layoutY;
+        }
+
+        public GUILayoutY InsertLayoutY(int index)
+        {
+            GUILayoutY layoutY = new GUILayoutY(this, index);
+            InsertElementInternal(index, layoutY);
 
             return layoutY;
         }
@@ -122,12 +193,24 @@ namespace BansheeEngine
         protected static extern void Internal_CreateInstanceXFromArea(GUILayout instance, GUIArea parentArea);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        protected static extern void Internal_CreateInstanceXFromLayout(GUILayout instance, GUILayout parentLayout);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
         protected static extern void Internal_CreateInstanceYFromScrollArea(GUILayout instance, GUIScrollArea parentArea);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        protected static extern void Internal_CreateInstanceYFromLayout(GUILayout instance, GUILayout parentLayout);
+        protected static extern void Internal_CreateInstanceXFromLayoutAdd(GUILayout instance, GUILayout parentLayout);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        protected static extern void Internal_CreateInstanceYFromLayoutAdd(GUILayout instance, GUILayout parentLayout);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        protected static extern void Internal_CreateInstanceXFromLayoutInsert(GUILayout instance, GUILayout parentLayout, int index);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        protected static extern void Internal_CreateInstanceYFromLayoutInsert(GUILayout instance, GUILayout parentLayout, int index);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        protected static extern void Internal_AddElement(IntPtr instance, IntPtr element);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        protected static extern void Internal_InsertElement(IntPtr instance, int index, IntPtr element);
     }
 }

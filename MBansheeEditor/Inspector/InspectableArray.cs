@@ -11,31 +11,31 @@ namespace BansheeEditor
     {
         private const int IndentAmount = 15;
 
-        private object oldPropertyValue;
-        private List<InspectableObjectBase> arrayElements = new List<InspectableObjectBase>();
+        private object oldPropertyValue; // TODO - This will unnecessarily hold references to the object
+        private int numArrayElements;
 
         private GUILabel guiLabel;
         private GUILayout guiChildLayout;
-        private GUILayout guiContentLayout;
+        private GUILayoutY guiContentLayout;
         private bool isInitialized;
 
-        public InspectableArray(string title, SerializableProperty property)
-            : base(title, property)
+        public InspectableArray(string title, InspectableFieldLayout layout, SerializableProperty property)
+            : base(title, layout, property)
         {
 
         }
 
-        protected void Initialize(GUILayout layout)
+        private void Initialize(int layoutIndex)
         {
             if (property.Type != SerializableProperty.FieldType.Array)
                 return;
 
-            guiLabel = new GUILabel(title);
-            layout.AddElement(guiLabel); // TODO - Add foldout and hook up its callbacks
+            guiLabel = new GUILabel(title); // TODO - Add foldout and hook up its callbacks
+            layout.AddElement(layoutIndex, guiLabel);
 
-            guiChildLayout = layout.AddLayoutX();
+            guiChildLayout = layout.AddLayoutX(layoutIndex);
+
             guiChildLayout.AddSpace(IndentAmount);
-
             guiContentLayout = guiChildLayout.AddLayoutY();
 
             isInitialized = true;
@@ -43,6 +43,9 @@ namespace BansheeEditor
 
         protected override bool IsModified()
         {
+            if (!isInitialized)
+                return true;
+
             object newPropertyValue = property.GetValue<object>();
             if (oldPropertyValue != newPropertyValue)
             {
@@ -52,52 +55,31 @@ namespace BansheeEditor
             }
 
             SerializableArray array = property.GetArray();
-            if (array.GetLength() != arrayElements.Count)
+            if (array.GetLength() != numArrayElements)
                 return true;
 
             return base.IsModified();
         }
 
-        protected override void Update(GUILayout layout)
+        protected override void Update(int layoutIndex)
         {
-            base.Update(layout);
+            base.Update(layoutIndex);
 
             if (!isInitialized)
-                Initialize(layout);
-
-            // TODO - Update base GUI elements
+                Initialize(layoutIndex);
 
             SerializableArray array = property.GetArray();
 
-            for (int i = arrayElements.Count; i < array.GetLength(); i++)
+            int childLayoutIndex = 0;
+            numArrayElements = array.GetLength();
+            for (int i = 0; i < numArrayElements; i++)
             {
-                InspectableObjectBase childObj = CreateDefaultInspectable(i + ".", array.GetProperty(i));
+                InspectableObjectBase childObj = CreateDefaultInspectable(i + ".", new InspectableFieldLayout(guiContentLayout), array.GetProperty(i));
                 AddChild(childObj);
-                arrayElements.Add(childObj);
 
-                childObj.Refresh(layout);
+                childObj.Refresh(childLayoutIndex);
+                childLayoutIndex += childObj.GetNumLayoutElements();
             }
-
-            for (int i = array.GetLength(); i < arrayElements.Count; i++)
-            {
-                arrayElements[i].Destroy();
-            }
-
-            arrayElements.RemoveRange(array.GetLength(), arrayElements.Count - array.GetLength());
-        }
-
-        public override void Destroy()
-        {
-            if (guiLabel != null)
-                guiLabel.Destroy();
-
-            if (guiContentLayout != null)
-                guiContentLayout.Destroy();
-
-            if (guiChildLayout != null)
-                guiChildLayout.Destroy();
-
-            base.Destroy();
         }
     }
 }

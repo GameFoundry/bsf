@@ -9,7 +9,7 @@ namespace BansheeEditor
     public abstract class Inspector
     {
         protected GUIPanel GUI;
-        protected GUILayout layout;
+        protected GUILayoutY layout;
         protected object referencedObject;
 
         internal void Initialize(GUIPanel gui, object instance)

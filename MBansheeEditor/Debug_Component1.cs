@@ -9,5 +9,6 @@ namespace BansheeEngine
     {
         public int value1;
         public int value2;
+        public int[] intArray = new int[5];
     }
 }

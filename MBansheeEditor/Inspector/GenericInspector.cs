@@ -24,9 +24,9 @@ namespace BansheeEditor
                         continue;
 
                     if (field.HasCustomInspector)
-                        inspectableFields.Add(InspectableObjectBase.CreateCustomInspectable(field.CustomInspectorType, field.Name, field.GetProperty()));
+                        inspectableFields.Add(InspectableObjectBase.CreateCustomInspectable(field.CustomInspectorType, field.Name, new InspectableFieldLayout(layout), field.GetProperty()));
                     else
-                        inspectableFields.Add(InspectableObjectBase.CreateDefaultInspectable(field.Name, field.GetProperty()));
+                        inspectableFields.Add(InspectableObjectBase.CreateDefaultInspectable(field.Name, new InspectableFieldLayout(layout), field.GetProperty()));
                 }
             }
 
@@ -38,9 +38,11 @@ namespace BansheeEditor
             if (!isInitialized)
                 Initialize();
 
+            int currentIndex = 0;
             foreach (var field in inspectableFields)
             {
-                field.Refresh(layout);
+                field.Refresh(currentIndex);
+                currentIndex += field.GetNumLayoutElements();
             }
         }
 

@@ -5,7 +5,7 @@ namespace BansheeEngine
 {
     public class ScriptObject
     {
-        protected IntPtr mCachedPtr;
+        internal IntPtr mCachedPtr;
 
         ~ScriptObject()
         {

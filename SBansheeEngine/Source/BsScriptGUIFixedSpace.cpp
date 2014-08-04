@@ -19,7 +19,8 @@ namespace BansheeEngine
 
 	void ScriptGUIFixedSpace::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIFixedSpace::internal_createInstance);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstanceAdd", &ScriptGUIFixedSpace::internal_createInstanceAdd);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstanceInsert", &ScriptGUIFixedSpace::internal_createInstanceInsert);
 		metaData.scriptClass->addInternalCall("Internal_SetSize", &ScriptGUIFixedSpace::internal_setSize);
 	}
 
@@ -34,16 +35,20 @@ namespace BansheeEngine
 		}
 	}
 
-	void ScriptGUIFixedSpace::setParent(GUILayout* parentLayout)
-	{
-		// FixedSpace parent is static, so do nothing
-	}
-
-	void ScriptGUIFixedSpace::internal_createInstance(MonoObject* instance, MonoObject* parentLayout, UINT32 size)
+	void ScriptGUIFixedSpace::internal_createInstanceAdd(MonoObject* instance, MonoObject* parentLayout, UINT32 size)
 	{
 		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
 		GUILayout* nativeLayout = scriptLayout->getInternalValue();
 		GUIFixedSpace& space = nativeLayout->addSpace(size);
+
+		ScriptGUIFixedSpace* nativeInstance = new (bs_alloc<ScriptGUIFixedSpace>()) ScriptGUIFixedSpace(instance, space, nativeLayout);
+	}
+
+	void ScriptGUIFixedSpace::internal_createInstanceInsert(MonoObject* instance, MonoObject* parentLayout, UINT32 index, UINT32 size)
+	{
+		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
+		GUILayout* nativeLayout = scriptLayout->getInternalValue();
+		GUIFixedSpace& space = nativeLayout->insertSpace(index, size);
 
 		ScriptGUIFixedSpace* nativeInstance = new (bs_alloc<ScriptGUIFixedSpace>()) ScriptGUIFixedSpace(instance, space, nativeLayout);
 	}

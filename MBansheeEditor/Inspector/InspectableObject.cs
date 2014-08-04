@@ -15,24 +15,24 @@ namespace BansheeEditor
 
         private GUILabel guiLabel;
         private GUILayout guiChildLayout;
-        private GUILayout guiContentLayout;
+        private GUILayoutY guiContentLayout;
         private bool isInitialized;
 
-        public InspectableObject(string title, SerializableProperty property)
-            : base(title, property)
+        public InspectableObject(string title, InspectableFieldLayout layout, SerializableProperty property)
+            : base(title, layout, property)
         {
             
         }
 
-        protected void Initialize(GUILayout layout)
+        protected void Initialize(int layoutIndex)
         {
             if (property.Type != SerializableProperty.FieldType.Object)
                 return;
 
             guiLabel = new GUILabel(title);
-            layout.AddElement(guiLabel);
+            layout.AddElement(layoutIndex, guiLabel);
 
-            guiChildLayout = layout.AddLayoutX();
+            guiChildLayout = layout.AddLayoutX(layoutIndex);
             guiChildLayout.AddSpace(IndentAmount);
 
             guiContentLayout = guiChildLayout.AddLayoutY();
@@ -45,9 +45,9 @@ namespace BansheeEditor
                     continue;
 
                 if (field.HasCustomInspector)
-                    AddChild(CreateCustomInspectable(field.CustomInspectorType, field.Name, field.GetProperty()));
+                    AddChild(CreateCustomInspectable(field.CustomInspectorType, field.Name, new InspectableFieldLayout(guiContentLayout), field.GetProperty()));
                 else
-                    AddChild(CreateDefaultInspectable(field.Name, field.GetProperty()));
+                    AddChild(CreateDefaultInspectable(field.Name, new InspectableFieldLayout(guiContentLayout), field.GetProperty()));
             }
 
             isInitialized = true;
@@ -55,6 +55,9 @@ namespace BansheeEditor
 
         protected override bool IsModified()
         {
+            if (!isInitialized)
+                return true;
+
             object newPropertyValue = property.GetValue<object>();
             if (oldPropertyValue != newPropertyValue)
             {
@@ -66,28 +69,14 @@ namespace BansheeEditor
             return base.IsModified();
         }
 
-        protected override void Update(GUILayout layout)
+        protected override void Update(int index)
         {
-            base.Update(layout);
+            base.Update(index);
 
             if (!isInitialized)
-                Initialize(layout);
+                Initialize(index);
 
             // TODO - Update GUI element(s) with value from property
-        }
-
-        public override void Destroy()
-        {
-            if (guiLabel != null)
-                guiLabel.Destroy();
-
-            if (guiContentLayout != null)
-                guiContentLayout.Destroy();
-
-            if (guiChildLayout != null)
-                guiChildLayout.Destroy();
-
-            base.Destroy();
         }
     }
 }

@@ -7,7 +7,12 @@ namespace BansheeEngine
     {
         internal GUIFixedSpace(GUILayout parentLayout, int size)
         {
-            Internal_CreateInstance(this, parentLayout, size);
+            Internal_CreateInstanceAdd(this, parentLayout, size);
+        }
+
+        internal GUIFixedSpace(GUILayout parentLayout, int index, int size)
+        {
+            Internal_CreateInstanceInsert(this, parentLayout, index, size);
         }
 
         internal override bool IsStatic()
@@ -33,7 +38,10 @@ namespace BansheeEngine
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(GUIFixedSpace instance, GUILayout parentLayout, int size);
+        private static extern void Internal_CreateInstanceAdd(GUIFixedSpace instance, GUILayout parentLayout, int size);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_CreateInstanceInsert(GUIFixedSpace instance, GUILayout parentLayout, int index, int size);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetSize(IntPtr nativeInstance, int size);
@@ -43,7 +51,12 @@ namespace BansheeEngine
     {
         internal GUIFlexibleSpace(GUILayout parentLayout)
         {
-            Internal_CreateInstance(this, parentLayout);
+            Internal_CreateInstanceAdd(this, parentLayout);
+        }
+
+        internal GUIFlexibleSpace(GUILayout parentLayout, int index)
+        {
+            Internal_CreateInstanceInsert(this, parentLayout, index);
         }
 
         internal override bool IsStatic()
@@ -64,6 +77,9 @@ namespace BansheeEngine
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(GUIFlexibleSpace instance, GUILayout parentLayout);
+        private static extern void Internal_CreateInstanceAdd(GUIFlexibleSpace instance, GUILayout parentLayout);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_CreateInstanceInsert(GUIFlexibleSpace instance, GUILayout parentLayout, int index);
     }
 }

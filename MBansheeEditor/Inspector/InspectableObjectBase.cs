@@ -11,12 +11,14 @@ namespace BansheeEditor
     {
         private List<InspectableObjectBase> children = new List<InspectableObjectBase>();
         private InspectableObjectBase parent;
-
+        
+        protected InspectableFieldLayout layout;
         protected SerializableProperty property;
         protected string title;
 
-        public InspectableObjectBase(string title, SerializableProperty property)
+        public InspectableObjectBase(string title, InspectableFieldLayout layout, SerializableProperty property)
         {
+            this.layout = layout;
             this.title = title;
             this.property = property;
         }
@@ -39,13 +41,22 @@ namespace BansheeEditor
             child.parent = null;
         }
 
-        public virtual void Refresh(GUILayout layout)
+        public virtual void Refresh(int layoutIndex)
         {
             if (IsModified())
-                Update(layout);
+                Update(layoutIndex);
 
+            int currentIndex = 0;
             for (int i = 0; i < children.Count; i++)
-                children[i].Refresh(layout);
+            {
+                children[i].Refresh(currentIndex);
+                currentIndex += children[i].GetNumLayoutElements();
+            }
+        }
+
+        public int GetNumLayoutElements()
+        {
+            return layout.GetNumElements();
         }
 
         protected virtual bool IsModified()
@@ -53,13 +64,21 @@ namespace BansheeEditor
             return false;
         }
 
-        protected virtual void Update(GUILayout layout)
+        protected virtual void Update(int layoutIndex)
         {
-            // Do nothing
+            // Destroy all children as we expect update to rebuild them
+
+            InspectableObjectBase[] childrenCopy = children.ToArray();
+            for (int i = 0; i < childrenCopy.Length; i++)
+                children[i].Destroy();
+
+            children.Clear();
         }
 
         public virtual void Destroy()
         {
+            layout.DestroyElements();
+
             InspectableObjectBase[] childrenCopy = children.ToArray();
             for (int i = 0; i < childrenCopy.Length; i++)
                 children[i].Destroy();
@@ -70,23 +89,23 @@ namespace BansheeEditor
                 parent.RemoveChild(this);
         }
 
-        public static InspectableObjectBase CreateDefaultInspectable(string title, SerializableProperty property)
+        public static InspectableObjectBase CreateDefaultInspectable(string title, InspectableFieldLayout layout, SerializableProperty property)
         {
             switch (property.Type)
             {
                 case SerializableProperty.FieldType.Int:
-                    return new InspectableInt(title, property);
+                    return new InspectableInt(title, layout, property);
                 case SerializableProperty.FieldType.Object:
-                    return new InspectableObject(title, property);
+                    return new InspectableObject(title, layout, property);
                 case SerializableProperty.FieldType.Array:
-                    return new InspectableArray(title, property);
+                    return new InspectableArray(title, layout, property);
                 // TODO - Add all other types
             }
 
             throw new Exception("No inspector exists for the provided field type.");
         }
 
-        public static InspectableObjectBase CreateCustomInspectable(Type inspectableType, string title, SerializableProperty property)
+        public static InspectableObjectBase CreateCustomInspectable(Type inspectableType, string title, InspectableFieldLayout layout, SerializableProperty property)
         {
             if (!inspectableType.IsSubclassOf(typeof (InspectableObjectBase)))
                 throw new Exception("Invalid inspector type.");

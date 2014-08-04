@@ -15,11 +15,6 @@ namespace BansheeEngine
                 parent.Remove(this);
 
             parent = layout;
-
-            if (parent != null)
-                parent.children.Add(this);
-
-            Internal_SetParent(mCachedPtr, layout);
         }
 
         internal virtual bool IsStatic()
@@ -49,9 +44,6 @@ namespace BansheeEngine
         {
             Internal_SetLayoutOptions(mCachedPtr, options);
         }
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetParent(IntPtr nativeInstance, GUILayout parent);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetLayoutOptions(IntPtr nativeInstance, GUIOption[] options);

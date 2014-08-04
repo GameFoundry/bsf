@@ -12,7 +12,12 @@ namespace BansheeEngine
 
         internal GUILayoutX(GUILayout parentLayout)
         {
-            Internal_CreateInstanceXFromLayout(this, parentLayout);
+            Internal_CreateInstanceXFromLayoutAdd(this, parentLayout);
+        }
+
+        internal GUILayoutX(GUILayout parentLayout, int index)
+        {
+            Internal_CreateInstanceXFromLayoutInsert(this, parentLayout, index);
         }
     }
 }

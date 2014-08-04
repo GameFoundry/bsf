@@ -1,4 +1,4 @@
-Update C# GUIElementStyle
+Update C# GUIElementStyle with sub styles
 Update GUIFoldout with sub styles
 
 Test if drag and dropping scene objects works with object and resource fields. Especially custom resources and components.
@@ -7,21 +7,21 @@ Test custom resources:
  - Can I load them? (Will likely need ProjectLIbrary::load)
  - Can I reference them in Component and will the reference be held after after cloning?
 
-Test CmdRecordSO.
- - Figure out how to properly restore all handles. Requirements:
-   1. Any active game object needs to replaced with the restored version
-   2. Replaced game objects must be destroyed
-   3. All handles to the object must be kept intact
-   4. All handles (internal and external) on the restored object must be kept intact
- - Create hierarchy with three layers. One SO needs to have a couple of components. One components should reference child SO,
-   other component should reference outside SO. Outside component should reference one SO in hierarchy, and one component in hierarchy.
-   Then I perform Record.
-   Modify some plain values
-   Perform undo
-   Check that number of game objects remained the same and that they all have original IDs
-   Check that all above mentioned references are still active
+ARRAY
+> MyArray    [_________] [Resize]
+   1. [_________] [X] [C] [^] [¡]
+   2. [_________] [X] [C] [^] [¡]
+   3. [_________] [X] [C] [^] [¡]
 
-   Repeat the similar test but this time instead of modfying plain values, modify number of components and the hierarchy.
+ARRAY TODO:
+ - Add a size field and a resize button that updates the array
+ - Add Delete/Clone/MoveUp/MoveDown buttons
+ - Ensure that case when array is null is handled properly. Will likely need a [Create] button
+ - Need a GUIFoldout that doesn't have BG and is just a single button.
+
+Inspectable Refresh/Refactor TODO:
+Parent layout element destruction should be automatic
+Child Inspectable element destruction should also probably be automatic
 
 TODO:
  - Hook up int field set/get callbacks
@@ -39,12 +39,6 @@ TODO:
  - GUIColor needs to be hooked up to a window that actually changes its value.
  - I need to register UndoRedo command after user finishes modifying a field. This should be referencing an object using an URI?
 
-TO PONDER:
- - How will I create undo/redo operations for serializable fields?
-   - UndoRedo.RecordField - Saves current state of the field, before you modify it
-     - Accepts a source object and a path that allows us to follow its properties to the exact modified field
-	 - Source object will be stored by its ID (it can either be GameObject or Resource, nothing else)
-
 KEEP IN MIND:
  - Clicking on an object/resource in inspector should ping it in their window
  - Inspector needs to be organized in such a way that scroll areas work. That should be possible with GUIPanelContainer.
@@ -54,6 +48,10 @@ KEEP IN MIND:
      - Technically objects will never change their structure during runtime, this is only relevant for array sizes
  - Modify C++ Editor fields so that calling setValue doesn't update the visual value until focus is lost
   - When user is currently writing in an input box I don't want refresh to overwrite that value.
+
+
+
+
 
 
 

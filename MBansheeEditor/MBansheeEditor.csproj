@@ -61,6 +61,7 @@
     <Compile Include="Inspector\CustomInspector.cs" />
     <Compile Include="Inspector\GenericInspector.cs" />
     <Compile Include="Inspector\InspectableArray.cs" />
+    <Compile Include="Inspector\InspectableFieldLayout.cs" />
     <Compile Include="Inspector\InspectableObject.cs" />
     <Compile Include="Inspector\InspectableObjectBase.cs" />
     <Compile Include="Inspector\InspectableInt.cs" />
