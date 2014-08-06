@@ -37,30 +37,30 @@ public:
 	BS_CORE_EXPORT ~CoreThread();
 
 	/**
-		* @brief	Returns the id of the core thread. 
-		*/
+	 * @brief	Returns the id of the core thread. 
+	 */
 	BS_CORE_EXPORT BS_THREAD_ID_TYPE getCoreThreadId() { return mCoreThreadId; }
 
 	/**
-		* @brief	Creates or retrieves an accessor that you can use for executing commands on the core thread from 
-		* 			a non-core thread. The accessor will be bound to the thread you call this method on.
-		* 			
-		* @note		Accessors contain their own command queue and their commands will only start to get executed once that queue is submitted
-		* 			to the core thread via "submitAccessors" method.
-		*/
+	 * @brief	Creates or retrieves an accessor that you can use for executing commands on the core thread from 
+	 * 			a non-core thread. The accessor will be bound to the thread you call this method on.
+	 * 			
+	 * @note		Accessors contain their own command queue and their commands will only start to get executed once that queue is submitted
+	 * 			to the core thread via "submitAccessors" method.
+	 */
 	BS_CORE_EXPORT CoreAccessorPtr getAccessor();
 
 	/**
-	* @brief	Retrieves an accessor that you can use for executing commands on the core thread from
-	* 			a non-core thread. There is only one synchronized accessor and you may access it from any thread you wish.
-	* 			Note however that it is much more efficient to retrieve a separate non-synchronized accessor using
-	* 			"getAccessor" for each thread you will be using it on.
-	* 			
-	* @note		Accessors contain their own command queue and their commands will only start to get executed once that queue is submitted
-	* 			to the core thread via "submitAccessors" method.
-	* 			
-	*			Synced accessor commands are sent after all non-synced accessor commands are sent.
-	*/
+	 * @brief	Retrieves an accessor that you can use for executing commands on the core thread from
+	 * 			a non-core thread. There is only one synchronized accessor and you may access it from any thread you wish.
+	 * 			Note however that it is much more efficient to retrieve a separate non-synchronized accessor using
+	 * 			"getAccessor" for each thread you will be using it on.
+	 * 			
+	 * @note		Accessors contain their own command queue and their commands will only start to get executed once that queue is submitted
+	 * 			to the core thread via "submitAccessors" method.
+	 * 			
+	 *			Synced accessor commands are sent after all non-synced accessor commands are sent.
+	 */
 	BS_CORE_EXPORT SyncedCoreAccessor& getSyncedAccessor();
 
 	/**
@@ -69,24 +69,24 @@ public:
 	BS_CORE_EXPORT void submitAccessors(bool blockUntilComplete = false);
 
 	/**
-		* @brief	Queues a new command that will be added to the global command queue. You are allowed to call this from any thread,
-		* 			however be aware that it involves possibly slow synchronization primitives, so limit your usage.
-		* 			
-		* @param	blockUntilComplete If true the thread will be blocked until the command executes. Be aware that there may be many commands queued before it
-		* 							   and they all need to be executed in order before the current command is reached, which might take a long time.
-		* 	
-		* @see		CommandQueue::queueReturn
-		*/
+	 * @brief	Queues a new command that will be added to the global command queue. You are allowed to call this from any thread,
+	 * 			however be aware that it involves possibly slow synchronization primitives, so limit your usage.
+	 * 			
+	 * @param	blockUntilComplete If true the thread will be blocked until the command executes. Be aware that there may be many commands queued before it
+	 * 							   and they all need to be executed in order before the current command is reached, which might take a long time.
+	 * 	
+	 * @see		CommandQueue::queueReturn
+	 */
 	BS_CORE_EXPORT AsyncOp queueReturnCommand(std::function<void(AsyncOp&)> commandCallback, bool blockUntilComplete = false);
 
 	/**
-	* @brief	Queues a new command that will be added to the global command queue.You are allowed to call this from any thread,
-		* 			however be aware that it involves possibly slow synchronization primitives, so limit your usage.
-		* 	
-		* @param	blockUntilComplete If true the thread will be blocked until the command executes. Be aware that there may be many commands queued before it
-		* 							   and they all need to be executed in order before the current command is reached, which might take a long time.
-		* @see		CommandQueue::queue
-		*/
+	 * @brief	Queues a new command that will be added to the global command queue.You are allowed to call this from any thread,
+	 * 			however be aware that it involves possibly slow synchronization primitives, so limit your usage.
+	 * 	
+	 * @param	blockUntilComplete If true the thread will be blocked until the command executes. Be aware that there may be many commands queued before it
+	 * 							   and they all need to be executed in order before the current command is reached, which might take a long time.
+	 * @see		CommandQueue::queue
+	 */
 	BS_CORE_EXPORT void queueCommand(std::function<void()> commandCallback, bool blockUntilComplete = false);
 
 	/**

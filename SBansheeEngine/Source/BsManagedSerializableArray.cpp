@@ -27,7 +27,7 @@ namespace BansheeEngine
 			mNumElements[i] = getLength(i);
 	}
 
-	ManagedSerializableArrayPtr ManagedSerializableArray::create(MonoObject* managedInstance, const ManagedSerializableTypeInfoArrayPtr& typeInfo)
+	ManagedSerializableArrayPtr ManagedSerializableArray::createFromExisting(MonoObject* managedInstance, const ManagedSerializableTypeInfoArrayPtr& typeInfo)
 	{
 		if(managedInstance == nullptr)
 			return nullptr;
@@ -38,9 +38,36 @@ namespace BansheeEngine
 		return bs_shared_ptr<ManagedSerializableArray>(ConstructPrivately(), typeInfo, managedInstance);
 	}
 
-	ManagedSerializableArrayPtr ManagedSerializableArray::createEmpty()
+	ManagedSerializableArrayPtr ManagedSerializableArray::createFromNew(const ManagedSerializableTypeInfoArrayPtr& typeInfo, const Vector<UINT32>& sizes)
+	{
+		return bs_shared_ptr<ManagedSerializableArray>(ConstructPrivately(), typeInfo, createManagedInstance(typeInfo, sizes));
+	}
+
+	ManagedSerializableArrayPtr ManagedSerializableArray::createFromNew()
 	{
 		return bs_shared_ptr<ManagedSerializableArray>(ConstructPrivately());
+	}
+
+	MonoObject* ManagedSerializableArray::createManagedInstance(const ManagedSerializableTypeInfoArrayPtr& typeInfo, const Vector<UINT32>& sizes)
+	{
+		if (!typeInfo->isTypeLoaded())
+			return nullptr;
+
+		MonoClass* arrayClass = RuntimeScriptObjects::instance().getSystemArrayClass();
+
+		MonoMethod* createInstance = arrayClass->getMethodExact("CreateInstance", "Type,int[]");
+		MonoArray* lengthArray = mono_array_new(MonoManager::instance().getDomain(), mono_get_int32_class(), (UINT32)sizes.size());
+
+		for (UINT32 i = 0; i < (UINT32)sizes.size(); i++)
+		{
+			void* elemAddr = mono_array_addr_with_size(lengthArray, sizeof(int), i);
+			memcpy(elemAddr, &sizes[i], sizeof(int));
+		}
+
+		void* params[2] = {
+			mono_type_get_object(MonoManager::instance().getDomain(), mono_class_get_type(typeInfo->getMonoClass())), lengthArray };
+
+		return createInstance->invoke(nullptr, params);
 	}
 
 	void ManagedSerializableArray::serializeManagedInstance()
@@ -60,24 +87,11 @@ namespace BansheeEngine
 
 	void ManagedSerializableArray::deserializeManagedInstance()
 	{
-		if(!mArrayTypeInfo->isTypeLoaded())
+		mManagedInstance = createManagedInstance(mArrayTypeInfo, mNumElements);
+
+		if (mManagedInstance == nullptr)
 			return;
 
-		MonoClass* arrayClass = RuntimeScriptObjects::instance().getSystemArrayClass();
-
-		MonoMethod* createInstance = arrayClass->getMethodExact("CreateInstance", "Type,int[]");
-		MonoArray* lengthArray = mono_array_new(MonoManager::instance().getDomain(), mono_get_int32_class(), (UINT32)mNumElements.size());
-
-		for(UINT32 i = 0; i < (UINT32)mNumElements.size(); i++)
-		{
-			void* elemAddr = mono_array_addr_with_size(lengthArray, sizeof(int), i);
-			memcpy(elemAddr, &mNumElements[i], sizeof(int));
-		}
-
-		void* params[2] = { 
-			mono_type_get_object(MonoManager::instance().getDomain(), mono_class_get_type(mArrayTypeInfo->getMonoClass())), lengthArray };
-
-		mManagedInstance = createInstance->invoke(nullptr, params);
 		initMonoObjects();
 
 		UINT32 idx = 0;

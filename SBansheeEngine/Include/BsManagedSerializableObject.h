@@ -18,7 +18,9 @@ namespace BansheeEngine
 		MonoObject* getManagedInstance() const { return mManagedInstance; }
 		ManagedSerializableObjectInfoPtr getObjectInfo() const { return mObjInfo; }
 
-		static ManagedSerializableObjectPtr create(MonoObject* managedInstance);
+		static ManagedSerializableObjectPtr createFromExisting(MonoObject* managedInstance);
+		static ManagedSerializableObjectPtr createFromNew(const ManagedSerializableTypeInfoObjectPtr& type);
+		static MonoObject* createManagedInstance(const ManagedSerializableTypeInfoObjectPtr& type);
 
 	protected:
 		ManagedSerializableObjectInfoPtr mObjInfo;

@@ -23,7 +23,8 @@ namespace BansheeEngine
 	GUIIntField::GUIIntField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth,
 		const String& style, const GUILayoutOptions& layoutOptions, bool withLabel)
 		:TGUIField(dummy, labelContent, labelWidth, style, layoutOptions, withLabel), mInputBox(nullptr), mIsDragging(false),
-		mLastDragPos(0), mIsDragCursorSet(false), mHasInputFocus(false)
+		mLastDragPos(0), mIsDragCursorSet(false), mHasInputFocus(false), mMinValue(std::numeric_limits<INT32>::lowest()), 
+		mMaxValue(std::numeric_limits<INT32>::max())
 	{
 		mInputBox = GUIInputBox::create(false, GUIOptions(GUIOption::flexibleWidth()), getSubStyleName(getInputStyleType()));
 		mInputBox->setFilter(&GUIIntField::intFilter);
@@ -149,8 +150,16 @@ namespace BansheeEngine
 
 	void GUIIntField::setValue(INT32 value)
 	{
+		value = Math::clamp(value, mMinValue, mMaxValue);
+
 		mValue = value;
 		mInputBox->setText(toWString(value));
+	}
+
+	void GUIIntField::setRange(INT32 min, INT32 max)
+	{
+		mMinValue = min;
+		mMaxValue = max;
 	}
 
 	void GUIIntField::updateClippedBounds()

@@ -181,7 +181,7 @@ namespace BansheeEngine
 	public:
 		ManagedSerializableObjectInfo();
 
-		ScriptSerializableTypeInfoObjectPtr mTypeInfo;
+		ManagedSerializableTypeInfoObjectPtr mTypeInfo;
 		UINT32 mTypeId;
 
 		MonoClass* mMonoClass;

@@ -18,6 +18,11 @@ namespace BansheeEngine
 		static MonoObject* internal_createObject(ScriptSerializableProperty* nativeInstance, MonoObject* object);
 		static MonoObject* internal_createArray(ScriptSerializableProperty* nativeInstance, MonoObject* object);
 
+		static MonoObject* internal_createManagedObjectInstance(ScriptSerializableProperty* nativeInstance);
+		static MonoObject* internal_createManagedArrayInstance(ScriptSerializableProperty* nativeInstance, MonoArray* sizes);
+
+		static MonoObject* internal_cloneManagedInstance(ScriptSerializableProperty* nativeInstance, MonoObject* original);
+
 		ScriptSerializableProperty(MonoObject* instance, const ManagedSerializableTypeInfoPtr& typeInfo);
 
 		ManagedSerializableTypeInfoPtr mTypeInfo;

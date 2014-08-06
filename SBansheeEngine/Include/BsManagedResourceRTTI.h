@@ -32,7 +32,7 @@ namespace BansheeEngine
 		{
 			ManagedResource* mc = static_cast<ManagedResource*>(obj);
 
-			mc->mRTTIData = ManagedSerializableObject::create(mc->getManagedInstance());
+			mc->mRTTIData = ManagedSerializableObject::createFromExisting(mc->getManagedInstance());
 		}
 
 		virtual void onDeserializationEnded(IReflectable* obj)

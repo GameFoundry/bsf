@@ -28,7 +28,7 @@ namespace BansheeEngine
 		mNumElements = getLength();
 	}
 
-	ManagedSerializableListPtr ManagedSerializableList::create(MonoObject* managedInstance, const ManagedSerializableTypeInfoListPtr& typeInfo)
+	ManagedSerializableListPtr ManagedSerializableList::createFromExisting(MonoObject* managedInstance, const ManagedSerializableTypeInfoListPtr& typeInfo)
 	{
 		if(managedInstance == nullptr)
 			return nullptr;
@@ -42,6 +42,25 @@ namespace BansheeEngine
 			return nullptr;
 
 		return bs_shared_ptr<ManagedSerializableList>(ConstructPrivately(), typeInfo, managedInstance);
+	}
+
+	ManagedSerializableListPtr ManagedSerializableList::createFromNew(const ManagedSerializableTypeInfoListPtr& typeInfo, UINT32 size)
+	{
+		return bs_shared_ptr<ManagedSerializableList>(ConstructPrivately(), typeInfo, createManagedInstance(typeInfo, size));
+	}
+
+	MonoObject* ManagedSerializableList::createManagedInstance(const ManagedSerializableTypeInfoListPtr& typeInfo, UINT32 size)
+	{
+		if (!typeInfo->isTypeLoaded())
+			return nullptr;
+
+		::MonoClass* listMonoClass = typeInfo->getMonoClass();
+		MonoClass* listClass = MonoManager::instance().findClass(listMonoClass);
+		if (listClass == nullptr)
+			return nullptr;
+
+		void* params[1] = { &size };
+		return listClass->createInstance("int", params);
 	}
 
 	ManagedSerializableListPtr ManagedSerializableList::createEmpty()
@@ -60,18 +79,13 @@ namespace BansheeEngine
 
 	void ManagedSerializableList::deserializeManagedInstance()
 	{
-		if(!mListTypeInfo->isTypeLoaded())
+		mManagedInstance = createManagedInstance(mListTypeInfo, mNumElements);
+
+		if (mManagedInstance == nullptr)
 			return;
 
-		::MonoClass* listMonoClass = mListTypeInfo->getMonoClass();
-		MonoClass* listClass = MonoManager::instance().findClass(listMonoClass);
-		if(listClass == nullptr)
-			return;
-
+		MonoClass* listClass = MonoManager::instance().findClass(mListTypeInfo->getMonoClass());
 		initMonoObjects(listClass);
-
-		void* params[1] = { &mNumElements };
-		mManagedInstance = listClass->createInstance("int", params);
 
 		for(auto& arrayEntry : mListEntries)
 		{

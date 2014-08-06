@@ -67,12 +67,12 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableObjectInfoRTTI : public RTTIType<ManagedSerializableObjectInfo, IReflectable, ManagedSerializableObjectInfoRTTI>
 	{
 	private:
-		ScriptSerializableTypeInfoObjectPtr getTypeInfo(ManagedSerializableObjectInfo* obj)
+		ManagedSerializableTypeInfoObjectPtr getTypeInfo(ManagedSerializableObjectInfo* obj)
 		{
 			return obj->mTypeInfo;
 		}
 
-		void setTypeInfo(ManagedSerializableObjectInfo* obj, ScriptSerializableTypeInfoObjectPtr val)
+		void setTypeInfo(ManagedSerializableObjectInfo* obj, ManagedSerializableTypeInfoObjectPtr val)
 		{
 			obj->mTypeInfo = val;
 		}

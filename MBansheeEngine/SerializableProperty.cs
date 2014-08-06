@@ -59,6 +59,14 @@ namespace BansheeEngine
             return (T)getter();
         }
 
+        public T GetValueCopy<T>()
+        {
+            if (!typeof(T).IsAssignableFrom(internalType))
+                throw new Exception("Attempted to retrieve a serializable value using an invalid type. Provided type: " + typeof(T) + ". Needed type: " + internalType);
+
+            return (T)Internal_CloneManagedInstance(mCachedPtr, getter());
+        }
+
         public void SetValue<T>(T value)
         {
             if (!typeof(T).IsAssignableFrom(internalType))
@@ -83,11 +91,36 @@ namespace BansheeEngine
             return Internal_CreateArray(mCachedPtr, GetValue<Array>());
         }
 
+        public T CreateObjectInstance<T>()
+        {
+            if (type != FieldType.Object)
+                throw new Exception("Attempting to retrieve object information from a field that doesn't contain an object.");
+
+            return (T) Internal_CreateMangedObjectInstance(mCachedPtr);
+        }
+
+        public Array CreateArrayInstance(int[] lengths)
+        {
+            if (type != FieldType.Array)
+                throw new Exception("Attempting to retrieve array information from a field that doesn't contain an array.");
+
+            return Internal_CreateManagedArrayInstance(mCachedPtr, lengths);
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern SerializableObject Internal_CreateObject(IntPtr nativeInstance, object instance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern SerializableArray Internal_CreateArray(IntPtr nativeInstance, Array instance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern object Internal_CreateMangedObjectInstance(IntPtr nativeInstance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern Array Internal_CreateManagedArrayInstance(IntPtr nativeInstance, int[] lengths);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern object Internal_CloneManagedInstance(IntPtr nativeInstance, object original);
 
         public static FieldType DetermineFieldType(Type internalType)
         {

@@ -106,7 +106,7 @@ namespace BansheeEngine
 	typedef std::shared_ptr<ManagedSerializableFieldKey> ManagedSerializableFieldKeyPtr;
 	typedef std::shared_ptr<ManagedSerializableFieldDataEntry> ManagedSerializableFieldDataEntryPtr;
 	typedef std::shared_ptr<ManagedSerializableTypeInfo> ManagedSerializableTypeInfoPtr;
-	typedef std::shared_ptr<ManagedSerializableTypeInfoObject> ScriptSerializableTypeInfoObjectPtr;
+	typedef std::shared_ptr<ManagedSerializableTypeInfoObject> ManagedSerializableTypeInfoObjectPtr;
 	typedef std::shared_ptr<ManagedSerializableObject> ManagedSerializableObjectPtr;
 	typedef std::shared_ptr<ManagedSerializableArray> ManagedSerializableArrayPtr;
 	typedef std::shared_ptr<ManagedSerializableList> ManagedSerializableListPtr;

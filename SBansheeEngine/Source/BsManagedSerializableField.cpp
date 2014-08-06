@@ -203,7 +203,7 @@ namespace BansheeEngine
 			auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataObject>();
 			if(value != nullptr)
 			{
-				fieldData->value = ManagedSerializableObject::create(value);
+				fieldData->value = ManagedSerializableObject::createFromExisting(value);
 			}
 
 			return fieldData;
@@ -213,7 +213,7 @@ namespace BansheeEngine
 			auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataArray>();
 			if(value != nullptr)
 			{
-				fieldData->value = ManagedSerializableArray::create(value, std::static_pointer_cast<ManagedSerializableTypeInfoArray>(typeInfo));
+				fieldData->value = ManagedSerializableArray::createFromExisting(value, std::static_pointer_cast<ManagedSerializableTypeInfoArray>(typeInfo));
 			}
 
 			return fieldData;
@@ -223,7 +223,7 @@ namespace BansheeEngine
 			auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataList>();
 			if(value != nullptr)
 			{
-				fieldData->value = ManagedSerializableList::create(value, std::static_pointer_cast<ManagedSerializableTypeInfoList>(typeInfo));
+				fieldData->value = ManagedSerializableList::createFromExisting(value, std::static_pointer_cast<ManagedSerializableTypeInfoList>(typeInfo));
 			}
 
 			return fieldData;
@@ -233,7 +233,7 @@ namespace BansheeEngine
 			auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataDictionary>();
 			if(value != nullptr)
 			{
-				fieldData->value = ManagedSerializableDictionary::create(value, std::static_pointer_cast<ManagedSerializableTypeInfoDictionary>(typeInfo));
+				fieldData->value = ManagedSerializableDictionary::createFromExisting(value, std::static_pointer_cast<ManagedSerializableTypeInfoDictionary>(typeInfo));
 			}
 
 			return fieldData;
@@ -555,6 +555,195 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	MonoObject* ManagedSerializableFieldDataBool::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		if (typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
+		{
+			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
+			if (primitiveTypeInfo->mType == ScriptPrimitiveType::Bool)
+				return mono_value_box(MonoManager::instance().getDomain(), mono_get_boolean_class(), &value);
+		}
+
+		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	MonoObject* ManagedSerializableFieldDataChar::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		if (typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
+		{
+			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
+			if (primitiveTypeInfo->mType == ScriptPrimitiveType::Char)
+				return mono_value_box(MonoManager::instance().getDomain(), mono_get_char_class(), &value);
+		}
+
+		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	MonoObject* ManagedSerializableFieldDataI8::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		if (typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
+		{
+			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
+			if (primitiveTypeInfo->mType == ScriptPrimitiveType::I8)
+				return mono_value_box(MonoManager::instance().getDomain(), mono_get_sbyte_class(), &value);
+		}
+
+		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	MonoObject* ManagedSerializableFieldDataU8::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		if (typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
+		{
+			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
+			if (primitiveTypeInfo->mType == ScriptPrimitiveType::U8)
+				return mono_value_box(MonoManager::instance().getDomain(), mono_get_byte_class(), &value);
+		}
+
+		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	MonoObject* ManagedSerializableFieldDataI16::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		if (typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
+		{
+			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
+			if (primitiveTypeInfo->mType == ScriptPrimitiveType::I16)
+				return mono_value_box(MonoManager::instance().getDomain(), mono_get_int16_class(), &value);
+		}
+
+		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	MonoObject* ManagedSerializableFieldDataU16::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		if (typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
+		{
+			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
+			if (primitiveTypeInfo->mType == ScriptPrimitiveType::U16)
+				return mono_value_box(MonoManager::instance().getDomain(), mono_get_uint16_class(), &value);
+		}
+
+		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	MonoObject* ManagedSerializableFieldDataI32::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		if (typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
+		{
+			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
+			if (primitiveTypeInfo->mType == ScriptPrimitiveType::I32)
+				return mono_value_box(MonoManager::instance().getDomain(), mono_get_int32_class(), &value);
+		}
+
+		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	MonoObject* ManagedSerializableFieldDataU32::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		if (typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
+		{
+			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
+			if (primitiveTypeInfo->mType == ScriptPrimitiveType::U32)
+				return mono_value_box(MonoManager::instance().getDomain(), mono_get_uint32_class(), &value);
+		}
+
+		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	MonoObject* ManagedSerializableFieldDataI64::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		if (typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
+		{
+			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
+			if (primitiveTypeInfo->mType == ScriptPrimitiveType::I64)
+				return mono_value_box(MonoManager::instance().getDomain(), mono_get_int64_class(), &value);
+		}
+
+		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	MonoObject* ManagedSerializableFieldDataU64::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		if (typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
+		{
+			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
+			if (primitiveTypeInfo->mType == ScriptPrimitiveType::U64)
+				return mono_value_box(MonoManager::instance().getDomain(), mono_get_uint64_class(), &value);
+		}
+
+		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	MonoObject* ManagedSerializableFieldDataFloat::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		if (typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
+		{
+			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
+			if (primitiveTypeInfo->mType == ScriptPrimitiveType::Float)
+				return mono_value_box(MonoManager::instance().getDomain(), mono_get_single_class(), &value);
+		}
+
+		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	MonoObject* ManagedSerializableFieldDataDouble::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		if (typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
+		{
+			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
+			if (primitiveTypeInfo->mType == ScriptPrimitiveType::Double)
+				return mono_value_box(MonoManager::instance().getDomain(), mono_get_double_class(), &value);
+		}
+
+		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	MonoObject* ManagedSerializableFieldDataString::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		return (MonoObject*)getValue(typeInfo);
+	}
+
+	MonoObject* ManagedSerializableFieldDataResourceRef::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		return (MonoObject*)getValue(typeInfo);
+	}
+
+	MonoObject* ManagedSerializableFieldDataGameObjectRef::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		return (MonoObject*)getValue(typeInfo);
+	}
+
+	MonoObject* ManagedSerializableFieldDataObject::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		if (typeInfo->getTypeId() == TID_SerializableTypeInfoObject)
+		{
+			auto objectTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoObject>(typeInfo);
+
+			if (value != nullptr)
+				return value->getManagedInstance();
+
+			return nullptr;
+		}
+
+		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	MonoObject* ManagedSerializableFieldDataArray::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		return (MonoObject*)getValue(typeInfo);
+	}
+
+	MonoObject* ManagedSerializableFieldDataList::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		return (MonoObject*)getValue(typeInfo);
+	}
+
+	MonoObject* ManagedSerializableFieldDataDictionary::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		return (MonoObject*)getValue(typeInfo);
 	}
 
 	RTTITypeBase* ManagedSerializableFieldKey::getRTTIStatic()

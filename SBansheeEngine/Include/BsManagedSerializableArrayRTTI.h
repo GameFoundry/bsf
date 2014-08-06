@@ -115,7 +115,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return ManagedSerializableArray::createEmpty();
+			return ManagedSerializableArray::createFromNew();
 		}
 	};
 }

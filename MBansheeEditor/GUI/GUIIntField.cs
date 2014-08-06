@@ -39,6 +39,11 @@ namespace BansheeEditor
             return value;
         }
 
+        public void SetRange(int min, int max)
+        {
+            Internal_SetRange(mCachedPtr, min, max);
+        }
+
         private void DoOnChanged(int newValue)
         {
             if (OnChanged != null)
@@ -57,5 +62,8 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_HasInputFocus(IntPtr nativeInstance, out bool value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetRange(IntPtr nativeInstance, int min, int max);
     }
 }

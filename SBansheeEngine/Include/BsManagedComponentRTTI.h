@@ -55,7 +55,7 @@ namespace BansheeEngine
 		{
 			ManagedComponent* mc = static_cast<ManagedComponent*>(obj);
 
-			mc->mRTTIData = ManagedSerializableObject::create(mc->getManagedInstance());
+			mc->mRTTIData = ManagedSerializableObject::createFromExisting(mc->getManagedInstance());
 		}
 
 		virtual void onDeserializationStarted(IReflectable* obj)

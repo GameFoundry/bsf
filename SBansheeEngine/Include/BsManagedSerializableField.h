@@ -29,6 +29,7 @@ namespace BansheeEngine
 	public:
 		static ManagedSerializableFieldDataPtr create(const ManagedSerializableTypeInfoPtr& typeInfo, MonoObject* value);
 		virtual void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) = 0;
+		virtual MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) = 0;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -64,6 +65,7 @@ namespace BansheeEngine
 		bool value;
 
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -81,6 +83,7 @@ namespace BansheeEngine
 		wchar_t value;
 
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -98,6 +101,7 @@ namespace BansheeEngine
 		INT8 value;
 
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -115,6 +119,7 @@ namespace BansheeEngine
 		UINT8 value;
 
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -132,6 +137,7 @@ namespace BansheeEngine
 		INT16 value;
 
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -149,6 +155,7 @@ namespace BansheeEngine
 		UINT16 value;
 
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -166,6 +173,7 @@ namespace BansheeEngine
 		INT32 value;
 
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -183,6 +191,7 @@ namespace BansheeEngine
 		UINT32 value;
 
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -200,6 +209,7 @@ namespace BansheeEngine
 		INT64 value;
 
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -217,6 +227,7 @@ namespace BansheeEngine
 		UINT64 value;
 
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -234,6 +245,7 @@ namespace BansheeEngine
 		float value;
 
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -252,6 +264,7 @@ namespace BansheeEngine
 		double value;
 
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -269,6 +282,7 @@ namespace BansheeEngine
 		WString value;
 
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -286,6 +300,7 @@ namespace BansheeEngine
 		HResource value;
 
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -303,6 +318,7 @@ namespace BansheeEngine
 		HGameObject value;
 
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -320,6 +336,7 @@ namespace BansheeEngine
 		ManagedSerializableObjectPtr value;
 
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -337,6 +354,7 @@ namespace BansheeEngine
 		ManagedSerializableArrayPtr value;
 
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -354,6 +372,7 @@ namespace BansheeEngine
 		ManagedSerializableListPtr value;
 
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -371,6 +390,7 @@ namespace BansheeEngine
 		ManagedSerializableDictionaryPtr value;
 
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

@@ -17,7 +17,9 @@ namespace BansheeEngine
 
 		MonoObject* getManagedInstance() const { return mManagedInstance; }
 
-		static ManagedSerializableArrayPtr create(MonoObject* managedInstance, const ManagedSerializableTypeInfoArrayPtr& typeInfo);
+		static ManagedSerializableArrayPtr createFromExisting(MonoObject* managedInstance, const ManagedSerializableTypeInfoArrayPtr& typeInfo);
+		static ManagedSerializableArrayPtr createFromNew(const ManagedSerializableTypeInfoArrayPtr& typeInfo, const Vector<UINT32>& sizes);
+		static MonoObject* createManagedInstance(const ManagedSerializableTypeInfoArrayPtr& typeInfo, const Vector<UINT32>& sizes);
 
 	protected:
 		MonoObject* mManagedInstance;
@@ -53,7 +55,7 @@ namespace BansheeEngine
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 		
-		static ManagedSerializableArrayPtr createEmpty();
+		static ManagedSerializableArrayPtr createFromNew();
 
 	public:
 		friend class ManagedSerializableArrayRTTI;

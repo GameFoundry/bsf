@@ -16,6 +16,7 @@ namespace BansheeEngine
 
 		INT32 getValue() const { return mValue; }
 		void setValue(INT32 value);
+		void setRange(INT32 min, INT32 max);
 
 		bool hasInputFocus() const { return mHasInputFocus; }
 
@@ -40,6 +41,8 @@ namespace BansheeEngine
 		GUIInputBox* mInputBox;
 		INT32 mValue;
 		INT32 mLastDragPos;
+		INT32 mMinValue;
+		INT32 mMaxValue;
 		bool mIsDragging;
 		bool mIsDragCursorSet;
 		bool mHasInputFocus;

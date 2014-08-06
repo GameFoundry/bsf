@@ -34,6 +34,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptGUIIntField::internal_getValue);
 		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptGUIIntField::internal_setValue);
 		metaData.scriptClass->addInternalCall("Internal_HasInputFocus", &ScriptGUIIntField::internal_hasInputFocus);
+		metaData.scriptClass->addInternalCall("Internal_SetRange", &ScriptGUIIntField::internal_setRange);
 
 		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("DoOnChanged", 1).getThunk();
 	}
@@ -84,6 +85,13 @@ namespace BansheeEngine
 		GUIIntField* intField = static_cast<GUIIntField*>(nativeInstance->getGUIElement());
 
 		*output = intField->hasInputFocus();
+	}
+
+	void ScriptGUIIntField::internal_setRange(ScriptGUIIntField* nativeInstance, INT32 min, INT32 max)
+	{
+		GUIIntField* intField = static_cast<GUIIntField*>(nativeInstance->getGUIElement());
+
+		intField->setRange(min, max);
 	}
 
 	void ScriptGUIIntField::onChanged(MonoObject* instance, INT32 newValue)

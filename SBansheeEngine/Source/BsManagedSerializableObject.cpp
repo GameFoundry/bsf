@@ -19,7 +19,7 @@ namespace BansheeEngine
 
 	}
 
-	ManagedSerializableObjectPtr ManagedSerializableObject::create(MonoObject* managedInstance)
+	ManagedSerializableObjectPtr ManagedSerializableObject::createFromExisting(MonoObject* managedInstance)
 	{
 		if(managedInstance == nullptr)
 			return nullptr;
@@ -33,6 +33,31 @@ namespace BansheeEngine
 			return nullptr;
 
 		return bs_shared_ptr<ManagedSerializableObject>(ConstructPrivately(), objInfo, managedInstance);
+	}
+
+	ManagedSerializableObjectPtr ManagedSerializableObject::createFromNew(const ManagedSerializableTypeInfoObjectPtr& type)
+	{
+		ManagedSerializableObjectInfoPtr currentObjInfo = nullptr;
+
+		// See if this type even still exists
+		if (!RuntimeScriptObjects::instance().getSerializableObjectInfo(type->mTypeNamespace, type->mTypeName, currentObjInfo))
+			return nullptr;
+
+		return bs_shared_ptr<ManagedSerializableObject>(ConstructPrivately(), currentObjInfo, createManagedInstance(type));
+	}
+
+	MonoObject* ManagedSerializableObject::createManagedInstance(const ManagedSerializableTypeInfoObjectPtr& type)
+	{
+		ManagedSerializableObjectInfoPtr currentObjInfo = nullptr;
+
+		// See if this type even still exists
+		if (!RuntimeScriptObjects::instance().getSerializableObjectInfo(type->mTypeNamespace, type->mTypeName, currentObjInfo))
+			return nullptr;
+
+		if (type->mValueType)
+			return currentObjInfo->mMonoClass->createInstance(false);
+		else
+			return currentObjInfo->mMonoClass->createInstance();
 	}
 
 	ManagedSerializableObjectPtr ManagedSerializableObject::createEmpty()
@@ -85,10 +110,10 @@ namespace BansheeEngine
 		if(!RuntimeScriptObjects::instance().getSerializableObjectInfo(storedObjInfo->mTypeInfo->mTypeNamespace, storedObjInfo->mTypeInfo->mTypeName, currentObjInfo))
 			return;
 
-		if(storedObjInfo->mTypeInfo->mValueType)
-			mManagedInstance = currentObjInfo->mMonoClass->createInstance(false);
-		else
-			mManagedInstance = currentObjInfo->mMonoClass->createInstance();
+		mManagedInstance = createManagedInstance(storedObjInfo->mTypeInfo);
+
+		if (mManagedInstance == nullptr)
+			return;
 
 		auto findFieldInfoFromKey = [&] (UINT16 typeId, UINT16 fieldId, ManagedSerializableObjectInfoPtr objInfo, 
 			ManagedSerializableFieldInfoPtr& outFieldInfo, ManagedSerializableObjectInfoPtr &outObjInfo) -> bool

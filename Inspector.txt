@@ -18,10 +18,10 @@ ARRAY TODO:
  - Add Delete/Clone/MoveUp/MoveDown buttons
  - Ensure that case when array is null is handled properly. Will likely need a [Create] button
  - Need a GUIFoldout that doesn't have BG and is just a single button.
+ - Add IntField that has min/max limits so it cannot go below 0 for array size
 
-Inspectable Refresh/Refactor TODO:
-Parent layout element destruction should be automatic
-Child Inspectable element destruction should also probably be automatic
+Need code for cloning an array element (or pretty much any element)
+Hook up array buttons
 
 TODO:
  - Hook up int field set/get callbacks
@@ -87,6 +87,9 @@ KEEP IN MIND:
 
 
 ----------------------------------------------
+
+Various trivial fixes:
+ - Add icons to array clone/delete/up/down buttons
 
 LATER:
  - Add support for list, dictionary and multi-rank array types

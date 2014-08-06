@@ -52,7 +52,7 @@ namespace BansheeEngine
 
 	}
 
-	ManagedSerializableDictionaryPtr ManagedSerializableDictionary::create(MonoObject* managedInstance, const ManagedSerializableTypeInfoDictionaryPtr& typeInfo)
+	ManagedSerializableDictionaryPtr ManagedSerializableDictionary::createFromExisting(MonoObject* managedInstance, const ManagedSerializableTypeInfoDictionaryPtr& typeInfo)
 	{
 		if(managedInstance == nullptr)
 			return nullptr;
@@ -66,6 +66,24 @@ namespace BansheeEngine
 			return nullptr;
 
 		return bs_shared_ptr<ManagedSerializableDictionary>(ConstructPrivately(), typeInfo, managedInstance);
+	}
+
+	ManagedSerializableDictionaryPtr ManagedSerializableDictionary::createFromNew(const ManagedSerializableTypeInfoDictionaryPtr& typeInfo)
+	{
+		return bs_shared_ptr<ManagedSerializableDictionary>(ConstructPrivately(), typeInfo, createManagedInstance(typeInfo));
+	}
+
+	MonoObject* ManagedSerializableDictionary::createManagedInstance(const ManagedSerializableTypeInfoDictionaryPtr& typeInfo)
+	{
+		if (!typeInfo->isTypeLoaded())
+			return nullptr;
+
+		::MonoClass* dictionaryMonoClass = typeInfo->getMonoClass();
+		MonoClass* dictionaryClass = MonoManager::instance().findClass(dictionaryMonoClass);
+		if (dictionaryClass == nullptr)
+			return nullptr;
+
+		return dictionaryClass->createInstance();
 	}
 
 	ManagedSerializableDictionaryPtr ManagedSerializableDictionary::createEmpty()
@@ -95,17 +113,17 @@ namespace BansheeEngine
 
 	void ManagedSerializableDictionary::deserializeManagedInstance()
 	{
-		if(!mDictionaryTypeInfo->isTypeLoaded())
+		mManagedInstance = createManagedInstance(mDictionaryTypeInfo);
+		if (mManagedInstance == nullptr)
 			return;
 
 		::MonoClass* dictionaryMonoClass = mDictionaryTypeInfo->getMonoClass();
 		MonoClass* dictionaryClass = MonoManager::instance().findClass(dictionaryMonoClass);
-		if(dictionaryClass == nullptr)
+		if (dictionaryClass == nullptr)
 			return;
 
 		initMonoObjects(dictionaryClass);
 
-		mManagedInstance = dictionaryClass->createInstance();
 		assert(mKeyEntries.size() == mValueEntries.size());
 
 		for(UINT32 i = 0; i < (UINT32)mKeyEntries.size(); i++)
