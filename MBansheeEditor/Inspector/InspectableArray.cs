@@ -18,7 +18,7 @@ namespace BansheeEditor
             public GUIButton moveUpBtn;
             public GUIButton moveDownBtn;
 
-            public EntryRow(GUILayout parentLayout)
+            public EntryRow(GUILayout parentLayout, int seqIndex, InspectableArray parent)
             {
                 rowLayout = parentLayout.AddLayoutX();
                 contentLayout = rowLayout.AddLayoutY();
@@ -26,6 +26,11 @@ namespace BansheeEditor
                 deleteBtn = new GUIButton("X");
                 moveUpBtn = new GUIButton("Up");
                 moveDownBtn = new GUIButton("Down");
+
+                cloneBtn.OnClick += () => parent.OnCloneButtonClicked(seqIndex);
+                deleteBtn.OnClick += () => parent.OnDeleteButtonClicked(seqIndex);
+                moveUpBtn.OnClick += () => parent.OnMoveUpButtonClicked(seqIndex);
+                moveDownBtn.OnClick += () => parent.OnMoveDownButtonClicked(seqIndex);
 
                 rowLayout.AddElement(cloneBtn);
                 rowLayout.AddElement(deleteBtn);
@@ -74,6 +79,7 @@ namespace BansheeEditor
 
             guiLabel = new GUILabel(title); // TODO - Add foldout and hook up its callbacks
             guiSizeField = new GUIIntField();
+            guiSizeField.Value = property.GetArray().GetLength();
             guiSizeField.SetRange(0, int.MaxValue);
             guiResizeBtn = new GUIButton("Resize");
             guiResizeBtn.OnClick += OnResizeButtonClicked;
@@ -128,7 +134,7 @@ namespace BansheeEditor
             numArrayElements = array.GetLength();
             for (int i = 0; i < numArrayElements; i++)
             {
-                EntryRow newRow = new EntryRow(guiContentLayout);
+                EntryRow newRow = new EntryRow(guiContentLayout, i, this);
                 rows.Add(newRow);
 
                 InspectableObjectBase childObj = CreateDefaultInspectable(i + ".", new InspectableFieldLayout(newRow.contentLayout), array.GetProperty(i));
@@ -189,7 +195,7 @@ namespace BansheeEditor
 
                 if (i == index)
                 {
-                    // TODO - Clone
+                    clonedEntry = array.GetProperty(i).GetValueCopy<object>();
                 }
             }
 

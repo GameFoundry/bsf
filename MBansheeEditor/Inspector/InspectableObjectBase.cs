@@ -67,10 +67,11 @@ namespace BansheeEditor
         protected virtual void Update(int layoutIndex)
         {
             // Destroy all children as we expect update to rebuild them
-
             InspectableObjectBase[] childrenCopy = children.ToArray();
             for (int i = 0; i < childrenCopy.Length; i++)
-                children[i].Destroy();
+            {
+                childrenCopy[i].Destroy();
+            }
 
             children.Clear();
         }
@@ -81,7 +82,7 @@ namespace BansheeEditor
 
             InspectableObjectBase[] childrenCopy = children.ToArray();
             for (int i = 0; i < childrenCopy.Length; i++)
-                children[i].Destroy();
+                childrenCopy[i].Destroy();
 
             children.Clear();
 

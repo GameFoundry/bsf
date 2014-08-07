@@ -69,6 +69,9 @@
     <ClInclude Include="Include\BsScriptProjectLibrary.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsEditorScriptManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsScriptEditorPlugin.cpp">
@@ -123,6 +126,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsScriptProjectLibrary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsEditorScriptManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

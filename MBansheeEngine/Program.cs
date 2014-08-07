@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Diagnostics;
 
 [assembly: InternalsVisibleTo("MBansheeEditor")]
 
@@ -8,7 +9,8 @@ namespace BansheeEngine
 {
     class Program
     {
-        static void Main()
+        // TODO: Make this an actual unit test
+        static void UnitTest1_ManagedSerialization()
         {
             SceneObject otherSO = new SceneObject("OtherSO");
             DbgComponent2 dbgComponent2 = otherSO.AddComponent<DbgComponent2>();
@@ -83,24 +85,35 @@ namespace BansheeEngine
 
             //dbgComponent.zeArray[4][1][3] = 129;
 
-            dbgTestComponentClone(so);
+            UnitTest1_GameObjectClone(so);
 
             for (int i = 0; i < so.GetNumChildren(); i++)
             {
                 SceneObject childSO = so.GetChild(i);
 
                 DbgComponent otherComponent = childSO.GetComponent<DbgComponent>();
-                reportDbgValue(otherComponent.a, otherComponent.b, otherComponent.complex.someValue,
-                               otherComponent.complex2.anotherValue2);
+                System.Diagnostics.Debug.Assert(otherComponent.a == 5);
+                System.Diagnostics.Debug.Assert(otherComponent.b == "SomeTestVal");
+                System.Diagnostics.Debug.Assert(otherComponent.complex.someValue == 19);
+                System.Diagnostics.Debug.Assert(otherComponent.complex2.anotherValue2 == "AnotherValue2");
 
-                reportDbgValue(otherComponent.arrA[4], otherComponent.arrB[4], otherComponent.arrComplex[4].someValue,
-                  otherComponent.arrComplex2[4].anotherValue2);
+                System.Diagnostics.Debug.Assert(otherComponent.arrA[4] == 5);
+                System.Diagnostics.Debug.Assert(otherComponent.arrB[4] == "ArrAnotherValue");
+                System.Diagnostics.Debug.Assert(otherComponent.arrComplex[4].someValue == 99);
+                System.Diagnostics.Debug.Assert(otherComponent.arrComplex2[4].anotherValue2 == "ArrComplex2AnotherValue");
 
-                reportDbgValue(otherComponent.listA[0], otherComponent.listB[0], otherComponent.listComplex[1].someValue,
-                    otherComponent.listComplex2[0].anotherValue2);
-
-                //reportDbgValue(childSO.GetComponent<DbgComponent>().zeDict["lolz"], childSO.GetComponent<DbgComponent>().zeList[2].someValue, childSO.GetComponent<DbgComponent>().zeArray[4][1][3], typeof(DbgComponent));
+                System.Diagnostics.Debug.Assert(otherComponent.listA[0] == 5);
+                System.Diagnostics.Debug.Assert(otherComponent.listB[0] == "ListAnotherValue");
+                System.Diagnostics.Debug.Assert(otherComponent.listComplex[1].someValue == 99);
+                System.Diagnostics.Debug.Assert(otherComponent.listComplex2[0].anotherValue2 == "ListComplexAnotherValue");
             }
+        }
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void UnitTest1_GameObjectClone(SceneObject so);
+        static void Main()
+        {
+            UnitTest1_ManagedSerialization();
 
             //Color newColor = Color.red;
 
@@ -133,11 +146,5 @@ namespace BansheeEngine
             else
                 Debug.Log("New value: " + prop2.GetValue<DbgSerzCls>().anotherValue2);
         }
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void dbgTestComponentClone(SceneObject so);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void reportDbgValue(int a, string b, int a2, string b2);
     }
 }

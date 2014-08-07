@@ -6,16 +6,17 @@ namespace BansheeEditor
 {
     class ProgramEd
     {
+        private static InspectorWindow window;
+
         static void Main()
         {
-            InspectorWindow window = EditorWindow.OpenWindow<InspectorWindow>();
+            window = EditorWindow.OpenWindow<InspectorWindow>();
 
             SceneObject newDbgObject = new SceneObject("NewDbgObject");
             newDbgObject.AddComponent<Debug_Component1>();
             newDbgObject.AddComponent<Debug_Component2>();
 
             window.SetObjectToInspect(newDbgObject);
-            window.Refresh(); // TODO - This should be called N times per second
 
             DbgResource testResource = new DbgResource();
             //ProjectLibrary.Create(testResource, @"D:\DummyBansheeProject\Resources\testResource");
@@ -34,6 +35,11 @@ namespace BansheeEditor
             //Color newColor = Color.red;
 
             //dbgStyle.textColor = newColor;
+        }
+
+        static void EditorUpdate()
+        {
+            window.Refresh();
         }
     }
 

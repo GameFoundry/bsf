@@ -147,11 +147,11 @@ namespace BansheeEngine
 
 		auto iterFind = std::find(begin(mElements), end(mElements), elem);
 
-		if(iterFind == mElements.end())
-			BS_EXCEPT(InvalidParametersException, "Cannot unregister an element that is not registered on this widget.");
-
-		mElements.erase(iterFind);
-		mWidgetIsDirty = true;
+		if (iterFind != mElements.end())
+		{
+			mElements.erase(iterFind);
+			mWidgetIsDirty = true;
+		}
 	}
 
 	void GUIWidget::registerArea(GUIArea* area)

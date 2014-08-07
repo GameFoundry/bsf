@@ -51,10 +51,16 @@ namespace BansheeEngine
             return false;
         }
 
+
+        internal void RemoveInternal(GUIElement element)
+        {
+            children.Remove(element);
+        }
+
         internal override void SetParent(GUILayout layout)
         {
             if (parent != null)
-                parent.Remove(this);
+                parent.RemoveInternal(this);
 
             parent = layout;
 

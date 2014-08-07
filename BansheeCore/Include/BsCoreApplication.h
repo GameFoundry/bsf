@@ -95,10 +95,14 @@ namespace BansheeEngine
 		void endCoreProfiling();
 
 	private:
+		typedef void(*UpdatePluginFunc)();
+
 		RenderWindowPtr mPrimaryWindow;
 
 		DynLib* mSceneManagerPlugin;
 		DynLib* mRendererPlugin;
+
+		Map<DynLib*, UpdatePluginFunc> mPluginUpdateFunctions;
 
 		bool mIsFrameRenderingFinished;
 		BS_MUTEX(mFrameRenderingFinishedMutex);

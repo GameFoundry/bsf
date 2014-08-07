@@ -3,6 +3,8 @@ Update GUIFoldout with sub styles
 
 Test if drag and dropping scene objects works with object and resource fields. Especially custom resources and components.
 
+Test clone method in SerializableProperty
+
 Test custom resources:
  - Can I load them? (Will likely need ProjectLIbrary::load)
  - Can I reference them in Component and will the reference be held after after cloning?

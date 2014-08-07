@@ -226,6 +226,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\BsEditorScriptManager.h" />
     <ClInclude Include="Include\BsGUIGameObjectField.h" />
     <ClInclude Include="Include\BsGUIPanelContainer.h" />
     <ClInclude Include="Include\BsGUIResourceField.h" />
@@ -246,6 +247,7 @@
     <ClInclude Include="Include\BsScriptProjectLibrary.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\BsEditorScriptManager.cpp" />
     <ClCompile Include="Source\BsGUIGameObjectField.cpp" />
     <ClCompile Include="Source\BsGUIPanelContainer.cpp" />
     <ClCompile Include="Source\BsGUIResourceField.cpp" />

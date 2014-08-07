@@ -12,7 +12,7 @@ namespace BansheeEngine
         internal virtual void SetParent(GUILayout layout)
         {
             if (parent != null)
-                parent.Remove(this);
+                parent.RemoveInternal(this);
 
             parent = layout;
         }

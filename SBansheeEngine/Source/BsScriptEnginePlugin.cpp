@@ -12,7 +12,7 @@
 
 namespace BansheeEngine
 {
-	void dbgTestComponentClone(MonoObject* instance)
+	void unitTest1_GameObjectClone(MonoObject* instance)
 	{
 		ScriptSceneObject* nativeInstance = ScriptSceneObject::toNative(instance);
 
@@ -20,14 +20,6 @@ namespace BansheeEngine
 		HSceneObject cloneSO = SO->clone();
 
 		cloneSO->setParent(SO);
-	}
-
-	void reportDbgValue(int a, MonoString* b, int a2, MonoString* b2)
-	{
-		WString bStr = MonoUtil::monoToWString(b);
-		WString b2Str = MonoUtil::monoToWString(b2);
-
-		int end = 5;
 	}
 
 	extern "C" BS_SCR_BE_EXPORT const String& getPluginName()
@@ -45,8 +37,7 @@ namespace BansheeEngine
 		MonoAssembly& bansheeEngineAssembly = MonoManager::instance().loadAssembly(ENGINE_ASSEMBLY_PATH, ENGINE_ASSEMBLY_NAME);
 
 		// DEBUG ONLY
-		mono_add_internal_call("BansheeEngine.Program::dbgTestComponentClone", &dbgTestComponentClone);
-		mono_add_internal_call("BansheeEngine.Program::reportDbgValue", &reportDbgValue);
+		mono_add_internal_call("BansheeEngine.Program::UnitTest1_GameObjectClone", &unitTest1_GameObjectClone);
 
 		RuntimeScriptObjects::startUp();
 		ScriptResourceManager::startUp();

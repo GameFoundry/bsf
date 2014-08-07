@@ -65,7 +65,7 @@ namespace BansheeEngine
 		}
 
 		void* params[2] = {
-			mono_type_get_object(MonoManager::instance().getDomain(), mono_class_get_type(typeInfo->getMonoClass())), lengthArray };
+			mono_type_get_object(MonoManager::instance().getDomain(), mono_class_get_type(typeInfo->mElementType->getMonoClass())), lengthArray };
 
 		return createInstance->invoke(nullptr, params);
 	}
@@ -142,6 +142,8 @@ namespace BansheeEngine
 		UINT32 numElems = (UINT32)mono_array_length(array);
 		assert(arrayIdx < numElems);
 	
+		UINT32 dbgSIze = mono_array_element_size(mono_object_get_class(mManagedInstance));
+
 		void* elemAddr = mono_array_addr_with_size(array, mElemSize, arrayIdx);
 		memcpy(elemAddr, val, mElemSize);
 	}

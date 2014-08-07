@@ -171,6 +171,10 @@ namespace BansheeEngine
 			gCoreThread().queueCommand(std::bind(&CoreApplication::beginCoreProfiling, this));
 			gCoreThread().queueCommand(std::bind(&QueryManager::_update, QueryManager::instancePtr()));
 
+			// Update plugins
+			for (auto& pluginUpdateFunc : mPluginUpdateFunctions)
+				pluginUpdateFunc.second();
+
 			update();
 
 			PROFILE_CALL(RendererManager::instance().getActive()->renderAll(), "Render");
@@ -256,6 +260,7 @@ namespace BansheeEngine
 		if(library != nullptr)
 			*library = loadedLibrary;
 
+		void* retVal = nullptr;
 		if(loadedLibrary != nullptr)
 		{
 			if (passThrough == nullptr)
@@ -265,7 +270,7 @@ namespace BansheeEngine
 				LoadPluginFunc loadPluginFunc = (LoadPluginFunc)loadedLibrary->getSymbol("loadPlugin");
 
 				if (loadPluginFunc != nullptr)
-					return loadPluginFunc();
+					retVal = loadPluginFunc();
 			}
 			else
 			{
@@ -274,11 +279,16 @@ namespace BansheeEngine
 				LoadPluginFunc loadPluginFunc = (LoadPluginFunc)loadedLibrary->getSymbol("loadPlugin");
 
 				if (loadPluginFunc != nullptr)
-					return loadPluginFunc(passThrough);
+					retVal = loadPluginFunc(passThrough);
 			}
+
+			UpdatePluginFunc loadPluginFunc = (UpdatePluginFunc)loadedLibrary->getSymbol("updatePlugin");
+
+			if (loadPluginFunc != nullptr)
+				mPluginUpdateFunctions[loadedLibrary] = loadPluginFunc;
 		}
 
-		return nullptr;
+		return retVal;
 	}
 
 	void CoreApplication::unloadPlugin(DynLib* library)
@@ -289,6 +299,8 @@ namespace BansheeEngine
 
 		if(unloadPluginFunc != nullptr)
 			unloadPluginFunc();
+
+		mPluginUpdateFunctions.erase(library);
 
 		gDynLibManager().unload(library);
 	}

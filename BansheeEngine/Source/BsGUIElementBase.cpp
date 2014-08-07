@@ -15,16 +15,16 @@ namespace BansheeEngine
 
 	GUIElementBase::~GUIElementBase()
 	{
-		for(auto& child : mChildren)
+		for (auto& child : mChildren)
 		{
-			// Non-GUIElement are owned by us
-			if(child->_getType() != GUIElementBase::Type::Element)
-				bs_delete<PoolAlloc>(child);
-			else
+			if (child->_getType() == GUIElementBase::Type::Element)
 			{
 				GUIElement* element = static_cast<GUIElement*>(child);
 				element->_setParent(nullptr);
+				GUIElement::destroy(element);
 			}
+			else
+				bs_delete(child);
 		}
 	}
 
@@ -119,11 +119,13 @@ namespace BansheeEngine
 		{
 			mParentElement = parent; 
 
-			if(parent != nullptr)
+			if (parent != nullptr)
 			{
-				if(_getParentWidget() != parent->_getParentWidget())
+				if (_getParentWidget() != parent->_getParentWidget())
 					_changeParentWidget(parent->_getParentWidget());
 			}
+			else
+				_changeParentWidget(nullptr);
 		}
 	}
 

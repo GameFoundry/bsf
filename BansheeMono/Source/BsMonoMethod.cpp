@@ -1,5 +1,6 @@
 #include "BsMonoMethod.h"
 #include "BsMonoManager.h"
+#include "BsMonoUtil.h"
 
 namespace BansheeEngine
 {
@@ -11,14 +12,22 @@ namespace BansheeEngine
 
 	MonoObject* MonoMethod::invoke(MonoObject* instance, void** params)
 	{
-		return mono_runtime_invoke(mMethod, instance, params, nullptr);
+		MonoObject* exception = nullptr;
+		MonoObject* retVal = mono_runtime_invoke(mMethod, instance, params, &exception);
+
+		MonoUtil::throwIfException(exception);
+		return retVal;
 	}		
 
 	MonoObject* MonoMethod::invokeVirtual(MonoObject* instance, void** params)
 	{
 		::MonoMethod* virtualMethod = mono_object_get_virtual_method(instance, mMethod);
 
-		return mono_runtime_invoke(virtualMethod, instance, params, nullptr);
+		MonoObject* exception = nullptr;
+		MonoObject* retVal = mono_runtime_invoke(virtualMethod, instance, params, nullptr);
+
+		MonoUtil::throwIfException(exception);
+		return retVal;
 	}		
 
 	void* MonoMethod::getThunk() const

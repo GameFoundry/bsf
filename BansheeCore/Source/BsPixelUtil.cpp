@@ -843,7 +843,7 @@ namespace BansheeEngine
 
 		virtual void beginImage(int size, int width, int height, int depth, int face, int miplevel)
 		{ 
-			assert(miplevel >= 0 && miplevel < buffers.size());
+			assert(miplevel >= 0 && miplevel < (int)buffers.size());
 			assert(size == buffers[miplevel]->getConsecutiveSize());
 
 			activeBuffer = buffers[miplevel];
