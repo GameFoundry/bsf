@@ -19,6 +19,9 @@ namespace BansheeEngine
 		{
 			Vector2I optimalSize = child->_calculateOptimalLayoutSize();
 
+			if (child->_getType() == GUIElementBase::Type::FixedSpace)
+				optimalSize.y = 0;
+
 			UINT32 paddingX = child->_getPadding().left + child->_getPadding().right;
 			UINT32 paddingY = child->_getPadding().top + child->_getPadding().bottom;
 
