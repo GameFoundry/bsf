@@ -79,7 +79,6 @@ namespace BansheeEditor
 
             guiLabel = new GUILabel(title); // TODO - Add foldout and hook up its callbacks
             guiSizeField = new GUIIntField();
-            guiSizeField.Value = property.GetArray().GetLength();
             guiSizeField.SetRange(0, int.MaxValue);
             guiResizeBtn = new GUIButton("Resize");
             guiResizeBtn.OnClick += OnResizeButtonClicked;
@@ -142,6 +141,8 @@ namespace BansheeEditor
 
                 childObj.Refresh(0);
             }
+
+            guiSizeField.Value = numArrayElements;
         }
 
         private void OnResizeButtonClicked()

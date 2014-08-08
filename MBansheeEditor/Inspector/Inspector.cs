@@ -35,7 +35,7 @@ namespace BansheeEditor
             GUI.Destroy();
         }
 
-        internal abstract void Refresh();
+        internal abstract bool Refresh();
         internal abstract int GetOptimalHeight();
     }
 }

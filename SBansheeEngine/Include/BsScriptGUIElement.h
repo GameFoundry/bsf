@@ -75,7 +75,7 @@ namespace BansheeEngine
 		{
 			// Elements with a GUIWidget parent are destroyed automatically when widget is destroyed, but those without one
 			// we need to destroy manually.
-			if (getGUIElement()->_getParentWidget() == nullptr)
+			if (!mIsDestroyed && getGUIElement()->_getParentWidget() == nullptr)
 				destroy();
 
 			ScriptObject::_onManagedInstanceDeleted();

@@ -41,17 +41,24 @@ namespace BansheeEditor
             child.parent = null;
         }
 
-        public virtual void Refresh(int layoutIndex)
+        public virtual bool Refresh(int layoutIndex)
         {
+            bool anythingModified = false;
+
             if (IsModified())
+            {
                 Update(layoutIndex);
+                anythingModified = true;
+            }
 
             int currentIndex = 0;
             for (int i = 0; i < children.Count; i++)
             {
-                children[i].Refresh(currentIndex);
+                anythingModified |= children[i].Refresh(currentIndex);
                 currentIndex += children[i].GetNumLayoutElements();
             }
+
+            return anythingModified;
         }
 
         public int GetNumLayoutElements()

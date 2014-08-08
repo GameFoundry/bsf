@@ -33,17 +33,21 @@ namespace BansheeEditor
             isInitialized = true;
         }
 
-        internal override void Refresh()
+        internal override bool Refresh()
         {
             if (!isInitialized)
                 Initialize();
 
+            bool anythingModified = false;
+
             int currentIndex = 0;
             foreach (var field in inspectableFields)
             {
-                field.Refresh(currentIndex);
+                anythingModified |= field.Refresh(currentIndex);
                 currentIndex += field.GetNumLayoutElements();
             }
+
+            return anythingModified;
         }
 
         internal override int GetOptimalHeight()

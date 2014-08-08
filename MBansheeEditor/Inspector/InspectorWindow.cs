@@ -60,8 +60,15 @@ namespace BansheeEditor
 
         internal void Refresh()
         {
+            bool anythingModified = false;
+
             for (int i = 0; i < inspectorData.Count; i++)
-                inspectorData[i].inspector.Refresh();
+            {
+                anythingModified |= inspectorData[i].inspector.Refresh();
+            }
+
+            if (anythingModified)
+                RepositionInspectors();
         }
 
         internal void Destroy()

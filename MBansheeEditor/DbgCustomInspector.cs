@@ -6,7 +6,7 @@ namespace BansheeEditor
     [CustomInspector(typeof(DbgComponent))]
     public class DbgCustomInspector : Inspector
     {
-        internal override void Refresh()
+        internal override bool Refresh()
         {
             throw new NotImplementedException();
         }

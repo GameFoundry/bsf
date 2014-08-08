@@ -111,15 +111,10 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void UnitTest1_GameObjectClone(SceneObject so);
+
         static void Main()
         {
             UnitTest1_ManagedSerialization();
-
-            //Color newColor = Color.red;
-
-            //dbgStyle.textColor = newColor;
-            //Color myColor = dbgStyle.textColor;
-            //dbgStyle.textColor = myColor;
 
             SerializableObject obj = new SerializableObject(typeof(DbgSerzCls), new DbgSerzCls());
 
