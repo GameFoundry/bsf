@@ -111,6 +111,7 @@ namespace BansheeEngine
 				mIdle = true;
 				mIdleTime = std::time(nullptr);
 				mThreadReady = false;
+				mWorkerMethod = nullptr; // Make sure to clear as it could have bound shared pointers and similar
 
 				BS_THREAD_NOTIFY_ONE(mWorkerEndedCond);
 			}

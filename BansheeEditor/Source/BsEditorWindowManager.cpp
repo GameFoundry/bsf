@@ -15,6 +15,11 @@ namespace BansheeEngine
 		while(mEditorWindows.size() > 0)
 			destroy(mEditorWindows[0]);
 
+		for (auto& windowToDestroy : mScheduledForDestruction)
+			bs_delete(windowToDestroy);
+
+		mScheduledForDestruction.clear();
+
 		if(mMainWindow != nullptr)
 			bs_delete(mMainWindow);
 	}

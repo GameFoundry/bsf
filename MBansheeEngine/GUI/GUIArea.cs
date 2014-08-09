@@ -24,7 +24,8 @@ namespace BansheeEngine
 
             this.parent = parent;
 
-            parent.childAreas.Add(this);
+            if(parent != null)
+                parent.childAreas.Add(this);
         }
 
         internal static GUIArea Create(GUIPanel parent, int x, int y, int width, int height, short depth)

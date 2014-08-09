@@ -46,18 +46,20 @@
 
 #include "BsRendererManager.h"
 
+#include <csignal>
+
 namespace BansheeEngine
 {
-	void atExit()
+	void handleAbort(int error)
 	{
-		BS_EXCEPT(InternalErrorException, "exit() called. Please shut down Banshee normally and do not use exit().");
+		BS_EXCEPT(InternalErrorException, "abort() called.");
 	}
 
 	CoreApplication::CoreApplication(START_UP_DESC& desc)
 		:mPrimaryWindow(nullptr), mIsFrameRenderingFinished(true), mRunMainLoop(false), 
 		mSceneManagerPlugin(nullptr), mRendererPlugin(nullptr)
 	{
-		atexit(atExit);
+		signal(SIGABRT, handleAbort);
 
 		UINT32 numWorkerThreads = BS_THREAD_HARDWARE_CONCURRENCY - 1; // Number of cores while excluding current thread.
 

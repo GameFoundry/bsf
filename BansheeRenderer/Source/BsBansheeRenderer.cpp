@@ -225,7 +225,8 @@ namespace BansheeEngine
 				proxy = renderable->_createProxy();
 				renderable->_setActiveProxy(proxy);
 
-				gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::addRenderableProxy, this, proxy));
+				if (proxy != nullptr)
+					gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::addRenderableProxy, this, proxy));
 
 				dirtyRenderables.push_back(renderable);
 				dirtySceneObjects.push_back(renderable->SO());
@@ -240,7 +241,7 @@ namespace BansheeEngine
 				dirtySceneObjects.push_back(renderable->SO());
 			}
 
-			if (!addedNewProxy)
+			if (!addedNewProxy && proxy != nullptr)
 			{
 				for (UINT32 i = 0; i < (UINT32)proxy->renderableElements.size(); i++)
 				{

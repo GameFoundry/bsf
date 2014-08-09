@@ -15,6 +15,7 @@ namespace BansheeEngine
 	{
 	public:
 		EditorWidgetManager();
+		~EditorWidgetManager();
 
 		/**
 		 * @brief	Registers a widget that can then be opened by calling "open". When loading

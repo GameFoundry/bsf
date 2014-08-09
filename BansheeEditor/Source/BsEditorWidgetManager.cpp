@@ -23,6 +23,14 @@ namespace BansheeEngine
 		}
 	}
 
+	EditorWidgetManager::~EditorWidgetManager()
+	{
+		Map<String, EditorWidgetBase*> widgetsCopy = mActiveWidgets;
+
+		for (auto& widget : widgetsCopy)
+			widget.second->close();
+	}
+
 	void EditorWidgetManager::registerWidget(const String& name, std::function<EditorWidgetBase*(EditorWidgetContainer&)> createCallback)
 	{
 		auto iterFind = mCreateCallbacks.find(name);
