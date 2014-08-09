@@ -376,23 +376,23 @@ namespace BansheeEngine
 	void RuntimeScriptObjects::initializeBaseTypes()
 	{
 		// Get necessary classes for detecting needed class & field information
-		MonoAssembly* mscorlib = MonoManager::instance().getAssembly("mscorlib");
-		if(mscorlib == nullptr)
-			BS_EXCEPT(InvalidStateException, "mscorlib assembly is not loaded.");
+		MonoAssembly* corlib = MonoManager::instance().getAssembly("corlib");
+		if(corlib == nullptr)
+			BS_EXCEPT(InvalidStateException, "corlib assembly is not loaded.");
 
 		MonoAssembly* bansheeEngineAssembly = MonoManager::instance().getAssembly(BansheeEngineAssemblyName);
 		if(bansheeEngineAssembly == nullptr)
 			BS_EXCEPT(InvalidStateException, String(BansheeEngineAssemblyName) +  " assembly is not loaded.");
 
-		mSystemArrayClass = mscorlib->getClass("System", "Array");
+		mSystemArrayClass = corlib->getClass("System", "Array");
 		if(mSystemArrayClass == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find System.Array managed class.");
 
-		mSystemGenericListClass = mscorlib->getClass("System.Collections.Generic", "List`1");
+		mSystemGenericListClass = corlib->getClass("System.Collections.Generic", "List`1");
 		if(mSystemGenericListClass == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find List<T> managed class.");
 
-		mSystemGenericDictionaryClass = mscorlib->getClass("System.Collections.Generic", "Dictionary`2");
+		mSystemGenericDictionaryClass = corlib->getClass("System.Collections.Generic", "Dictionary`2");
 		if(mSystemGenericDictionaryClass == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find Dictionary<TKey, TValue> managed class.");
 

@@ -1,0 +1,119 @@
+Download mono 3.2.3 source from http://download.mono-project.com/sources/.
+
+Mono can be a bit problematic to compile on Windows as MSVC solution is not maintained very often. 
+Cygwin option that is provided doesn't come with a 64bit configuration, plus it also has errors.
+
+--------------------------------------Compiling with Visual Studio 2012 on Windows 7 x64--------------------------------------------------
+ - 3.2.3 version is missing "mono.props" file and without it Visual Studio will fail to open some project files. To fix download the .props file 
+   from https://raw.github.com/mono/mono/master/msvc/mono.props and put it in mono-3.2.3\msvc folder before opening any projects or solution
+ - Even though solution is VS2010, it will only compile with VS2012 unless you change platform toolkit to 
+   v10 for all projects. (Haven't actually tested with VS2010)
+ - If compiler complains it cannot find pthreads.h make sure to define "HAS_64BITS_ATOMIC" in libmonoutils project (for all configurations)
+ - In dlmalloc.c change #include <dlmalloc.h> to #include "dlmalloc.h" if compiler complains it cannot find that file
+ - In "mono-proclib.c" add this bit of code somewhere near the start of the file:
+
+#ifdef HOST_WIN32
+#define strtoll _strtoi64
+#define strtoull _strtoui64
+#endif
+
+  - In "threads.c" replace a line in ves_icall_System_Threading_Interlocked_CompareExchange_Long method, from:
+
+return InterlockedCompareExchange64 (location, value, comparand);
+
+    to
+
+#ifdef HOST_WIN32
+	return _InterlockedCompareExchange64 (location, value, comparand);
+#else
+	return InterlockedCompareExchange64 (location, value, comparand); 
+#endif
+
+    InterlockedCompareExchange64 is just a typedef for _InterlockedCompareExchange64 on Windows and for some
+	reason compiler doesn't realize it (typedefs to intrinstics don't work?). Anyway, so we just reference the intrinsic
+	directly.
+
+  - In "threads.c" replace a line in ves_icall_System_Threading_Thread_VolatileRead8 method, from:
+
+return InterlockedCompareExchange64 (ptr, 0, 0);
+     
+	to
+
+#ifdef HOST_WIN32
+	return _InterlockedCompareExchange64 (ptr, 0, 0);
+#else
+	return InterlockedCompareExchange64 (ptr, 0, 0);    
+#endif
+
+    Same problem as previous.
+
+  - For all projects and configurations update their property pages under "C/C++->Optimization" and set "Enable Intrinsic Functions" to "Yes"
+    - You might be able to skip this step.
+  - In "exceptions-amd64.c" replace line 121:
+
+if (win32_chained_exception_needs_run) { 
+    
+   with
+
+if (mono_win_chained_exception_needs_run) {
+
+  - In "exceptions-amd64.c" delete lines 167 and 168:
+
+if (old_win32_toplevel_exception_filter)
+	SetUnhandledExceptionFilter(mono_old_win_toplevel_exception_filter);
+
+  - In "exceptions-amd64.c" move line 166 (line # after previous changes) to start of the function:
+
+guint32 ret = 0;
+
+  - in threads.c in mono_thread_get_stack_bounds method replace the bit of code under "#if defined(HOST_WIN32)" from:
+
+void* tib = (void*)__readfsdword(0x18);
+guint8 *stackTop = (guint8*)*(int*)((char*)tib + 4);
+guint8 *stackBottom = (guint8*)*(int*)((char*)tib + 8);
+
+    to:
+
+NT_TIB* tib = (NT_TIB*)NtCurrentTeb();
+guint8 *stackTop = (guint8*)tib->StackBase;
+guint8 *stackBottom = (guint8*)tib->StackLimit;
+
+    __readfsdword doesn't exist when building 64bit. Use may use __readgsqword instead but then you need
+	to double all your offsets. NtCurrentTeb works equally for both 32 and 64 bit builds.
+
+  - Build "mono" project. 
+  - You should end up with mono-2.0.dll, mono-2.0.lib, MonoPosixHelper.dll and mono.exe and we are done compiling
+
+--------------------------------------VS2013 specific changes--------------------------------------------
+
+If compiling for VS2013 you will also need to perform these modifications:
+ - Edit libmonoruntime project file and remove item "..\mono\metadata\sgen-bridge.c" as it is duplicate 
+  (just search for it and you'll see two copies). If you dont VS2013 will fail to load that project.
+
+ - In mono_compiler.h at line 192 rename "trunc" macro to "mono_trunc" and all its references too.
+   - (Should just be 4 references in jit-icalls.c at lines 888, 891, 904, 932.)
+   - This is needed because standard math.h now contains a trunc method which conflicts with the macro
+
+-------------------------------Special Banshee-specific changes--------------------------------------------
+
+Move & modify:
+  MonoClass* mono_class_bind_generic_parameters (MonoClass *klass, int type_argc, MonoType **types, gboolean is_dynamic) MONO_INTERNAL; 
+from object-internals.h
+to:
+  MONO_API MonoClass* mono_class_bind_generic_parameters (MonoClass *klass, int type_argc, MonoType **types, mono_bool is_dynamic);
+in object.h
+
+In reflection.c change:
+  MonoClass* mono_class_bind_generic_parameters (MonoClass *klass, int type_argc, MonoType **types, gboolean is_dynamic)
+to:
+  MonoClass* mono_class_bind_generic_parameters (MonoClass *klass, int type_argc, MonoType **types, mono_bool is_dynamic)
+
+
+--------------------------------Integrating Mono into Banshee----------------------------------------------
+ - Add mono-2.0.dll to (BansheeRootDir)/bin/(Platform)/(Configuration)
+ - Add mono-2.0.lib to (BansheeRootDir)/Dependencies/lib/(Platform)/(Configuration)
+ - Install mono 3.2.3 prebuilt binaries
+   - Copy contents of (PrebuiltMonoFolder)/include/mono/mono-2.0/mono to (BansheeRootDir)/Dependencies/Include/Mono
+   - Copy folders (PrebuiltMonoFolder)/etc and (PrebuiltMonoFolder)/lib folders into (BansheeRootDir)/bin/Mono
+     - TODO - Not all files from /lib are needed, but I haven't yet determined which are
+ - TODO - mono.exe and mono compiler are not used at the moment. Update docs once they are.

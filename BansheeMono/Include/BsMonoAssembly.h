@@ -69,12 +69,15 @@ namespace BansheeEngine
 		/**
 		 * @brief	Loads an assembly from the specified path.
 		 */
-		void load(const String& path, const String& name);
+		void load(MonoDomain* domain, const String& path, const String& name);
 
 		/**
 		 * @brief	Loads an assembly from an internal mono image.
+		 *
+		 * @note	Normally used for assemblies that were already loaded by the managed runtime
+		 *			as dependencies.
 		 */
-		void loadAsDependency(MonoImage* image, const String& name);
+		void loadFromImage(MonoImage* image, const String& name);
 
 		/**
 		 * @brief	Unloads the assembly and all the types associated with it.

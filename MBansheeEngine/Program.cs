@@ -87,6 +87,8 @@ namespace BansheeEngine
 
             UnitTest1_GameObjectClone(so);
 
+            System.Diagnostics.Debug.Assert(so.GetNumChildren() == 1);
+
             for (int i = 0; i < so.GetNumChildren(); i++)
             {
                 SceneObject childSO = so.GetChild(i);

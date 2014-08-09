@@ -88,6 +88,7 @@ namespace BansheeEngine
 
 	MainEditorWindow::~MainEditorWindow()
 	{
+		mDockManager->closeAll();
 		GUIElement::destroy(mDockManager);
 		bs_delete(mMenuBar);
 	}

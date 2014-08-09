@@ -180,7 +180,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Guides", "Guides", "{4259680D-8A9B-4C17-B75B-CA29482AB299}"
 	ProjectSection(SolutionItems) = preProject
 		Dependencies.txt = Dependencies.txt
-		MonoIntegrationGuide.txt = MonoIntegrationGuide.txt
+		Mono-3.2.3-IntegrationGuide.txt = Mono-3.2.3-IntegrationGuide.txt
+		Mono-3.4.0-IntegrationGuide.txt = Mono-3.4.0-IntegrationGuide.txt
 	EndProjectSection
 EndProject
 Global

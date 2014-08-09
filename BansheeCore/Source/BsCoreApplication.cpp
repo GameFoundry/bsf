@@ -119,12 +119,10 @@ namespace BansheeEngine
 		unloadPlugin(mSceneManagerPlugin);
 		
 		RendererManager::shutDown();
-		RenderSystemManager::shutDown();
 		unloadPlugin(mRendererPlugin);
 
 		Input::shutDown();
 
-		GpuProgramManager::shutDown();
 		Resources::shutDown();
 		GameObjectManager::shutDown();
 
@@ -132,6 +130,9 @@ namespace BansheeEngine
 		// we need to wait for those objects to get destroyed before continuing.
 		gCoreThread().update();
 		gCoreThread().submitAccessors(true);
+
+		RenderSystemManager::shutDown();
+		GpuProgramManager::shutDown();
 
 		CoreObjectManager::shutDown(); // Must shut down before DynLibManager to ensure all objects are destroyed before unloading their libraries
 		DynLibManager::shutDown();

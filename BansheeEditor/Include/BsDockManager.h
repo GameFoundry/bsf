@@ -91,6 +91,8 @@ namespace BansheeEngine
 
 		void setArea(INT32 x, INT32 y, UINT32 width, UINT32 height);
 
+		void closeAll();
+
 	protected:
 		~DockManager();
 

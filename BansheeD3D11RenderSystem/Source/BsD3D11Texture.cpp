@@ -54,8 +54,6 @@ namespace BansheeEngine
 		SAFE_RELEASE(m3DTex);
 		SAFE_RELEASE(mStagingBuffer);
 
-		clearBufferViews();
-
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Texture);
 		Texture::destroy_internal();
 	}

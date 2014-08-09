@@ -3,6 +3,7 @@
 #include "BsScriptMeta.h"
 #include "BsMonoAssembly.h"
 #include "BsMonoClass.h"
+#include "BsMonoUtil.h"
 
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/mono-config.h>
@@ -14,48 +15,58 @@ namespace BansheeEngine
 	const String MonoManager::MONO_ETC_DIR = "..\\..\\Mono\\etc";
 
 	MonoManager::MonoManager()
-		:mDomain(nullptr), mIsCoreLoaded(false)
+		:mRootDomain(nullptr), mScriptDomain(nullptr), mIsCoreLoaded(false)
 	{
 		mono_set_dirs(MONO_LIB_DIR.c_str(), MONO_ETC_DIR.c_str()); 
 		mono_config_parse(nullptr);
+
+		mRootDomain = mono_jit_init_version("BansheeMono", "v4.0.30319"); // TODO: Allow user-defined version here?
+		if (mRootDomain == nullptr)
+			BS_EXCEPT(InternalErrorException, "Cannot initialize Mono runtime.");
 	}
 
 	MonoManager::~MonoManager()
 	{
-		if (mDomain != nullptr)
-		{
-			// TODO - Someone suggested I need to GC collect and wait for finalizers before cleanup
-			// I don't see how that would help unless I manually release all references before that as well
-			// BUT that is a good way to debug those errors on exit
-
-			// TODO: This might not be necessary
-			//mono_gc_collect(mono_gc_max_generation());
-			//mono_domain_finalize(mDomain, -1);
-
-			// TODO: Commented out because it crashes for no reason
-			mono_jit_cleanup(mDomain);
-			mDomain = nullptr;
-		}
-
 		for (auto& entry : mAssemblies)
 		{
-			//unloadAssembly(*entry.second);
-			//bs_delete(entry.second);
+			bs_delete(entry.second);
 		}
 
 		mAssemblies.clear();
+
+		if (mScriptDomain != nullptr)
+		{
+			mono_domain_set(mono_get_root_domain(), false);
+			mono_domain_finalize(mScriptDomain, 2000);
+			
+			MonoObject* exception = nullptr;
+			mono_domain_try_unload(mScriptDomain, &exception);
+
+			if (exception != nullptr)
+				MonoUtil::throwIfException(exception);
+
+			mScriptDomain = nullptr;
+		}
+
+		if (mRootDomain != nullptr)
+		{
+			mono_jit_cleanup(mRootDomain);
+			mRootDomain = nullptr;
+		}
 	}
 
 	MonoAssembly& MonoManager::loadAssembly(const String& path, const String& name)
 	{
 		MonoAssembly* assembly = nullptr;
 
-		if(mDomain == nullptr)
+		if (mScriptDomain == nullptr)
 		{
-			mDomain = mono_jit_init (path.c_str());
-			if(mDomain == nullptr)
+			mScriptDomain = mono_domain_create_appdomain(const_cast<char *>(path.c_str()), nullptr);
+			mono_domain_set(mScriptDomain, false);
+
+			if (mScriptDomain == nullptr)
 			{
-				BS_EXCEPT(InternalErrorException, "Cannot initialize Mono runtime.");
+				BS_EXCEPT(InternalErrorException, "Cannot create script app domain.");
 			}
 		}
 
@@ -72,7 +83,7 @@ namespace BansheeEngine
 		
 		if(!assembly->mIsLoaded)
 		{
-			assembly->load(path, name);
+			assembly->load(mScriptDomain, path, name);
 
 			// Fully initialize all types that use this assembly
 			Vector<ScriptMeta*>& mTypeMetas = getTypesToInitialize()[name];
@@ -95,16 +106,10 @@ namespace BansheeEngine
 		{
 			mIsCoreLoaded = true;
 
-			MonoImage* existingImage = mono_image_loaded("mscorlib");
-			if(existingImage != nullptr)
-			{
-				MonoAssembly* mscorlib = new (bs_alloc<MonoAssembly>()) MonoAssembly();
-				mAssemblies["mscorlib"] = mscorlib;
+			MonoAssembly* corlib = new (bs_alloc<MonoAssembly>()) MonoAssembly();
+			mAssemblies["corlib"] = corlib;
 
-				mscorlib->loadAsDependency(existingImage, "mscorlib");
-			}
-			else
-				loadAssembly("mscorlib", "mscorlib");			
+			corlib->loadFromImage(mono_get_corlib(), "corlib");		
 		}
 
 		return *assembly;

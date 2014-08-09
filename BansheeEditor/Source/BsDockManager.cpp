@@ -495,6 +495,12 @@ namespace BansheeEngine
 		updateDropOverlay(x, y, width, height);
 	}
 
+	void DockManager::closeAll()
+	{
+		mRootContainer = DockContainer();
+		mMouseOverContainer = nullptr;
+	}
+
 	DockManagerLayoutPtr DockManager::getLayout() const
 	{
 		struct StackElem

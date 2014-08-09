@@ -65,7 +65,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns the current Mono domains.
 		 */
-		MonoDomain* getDomain() const { return mDomain; }
+		MonoDomain* getDomain() const { return mScriptDomain; }
 
 		/**
 		 * @brief	Attempts to find a previously loaded assembly with the specified name.
@@ -93,7 +93,8 @@ namespace BansheeEngine
 		}
 
 		UnorderedMap<String, MonoAssembly*> mAssemblies;
-		MonoDomain* mDomain;
+		MonoDomain* mScriptDomain;
+		MonoDomain* mRootDomain;
 		bool mIsCoreLoaded;
 	};
 }

@@ -61,8 +61,6 @@ namespace BansheeEngine
 		mMapDeviceToTextureResources.clear();
 		mSurfaceList.clear();
 
-		clearBufferViews();
-
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Texture);
 		Texture::destroy_internal();
 	}

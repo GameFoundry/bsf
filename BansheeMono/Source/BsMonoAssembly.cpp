@@ -44,9 +44,9 @@ namespace BansheeEngine
 		unload();
 	}
 
-	void MonoAssembly::load(const String& path, const String& name)
+	void MonoAssembly::load(MonoDomain* domain, const String& path, const String& name)
 	{
-		::MonoAssembly* monoAssembly = mono_domain_assembly_open (MonoManager::instance().getDomain(), path.c_str());
+		::MonoAssembly* monoAssembly = mono_domain_assembly_open(domain, path.c_str());
 		if(monoAssembly == nullptr)
 		{
 			BS_EXCEPT(InvalidParametersException, "Cannot load Mono assembly: " + path);
@@ -64,7 +64,7 @@ namespace BansheeEngine
 		mIsDependency = false;
 	}
 
-	void MonoAssembly::loadAsDependency(MonoImage* image, const String& name)
+	void MonoAssembly::loadFromImage(MonoImage* image, const String& name)
 	{
 		::MonoAssembly* monoAssembly = mono_image_get_assembly(image);
 		if(monoAssembly == nullptr)
@@ -93,8 +93,8 @@ namespace BansheeEngine
 
 		if(mMonoImage != nullptr && !mIsDependency)
 		{
-			//mono_image_close(mMonoImage); // This seems to cause a crash but unloading just the assembly /seems/ to work
-			mono_assembly_close(mMonoAssembly);
+			// Note: I used to call mono_image_close and mono_assembly_close here but those 
+			// didn't seem to be necessary and were just crashing the program.
 			mMonoImage = nullptr;
 		}
 
