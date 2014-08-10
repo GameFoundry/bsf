@@ -19,7 +19,8 @@ namespace BansheeEngine
 
 	EditorWidgetBase::~EditorWidgetBase()
 	{
-
+		if (mContent != nullptr)
+			GUIArea::destroy(mContent);
 	}
 
 	void EditorWidgetBase::close()

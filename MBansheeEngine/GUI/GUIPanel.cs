@@ -23,15 +23,6 @@ namespace BansheeEngine
             Internal_CreateInstance(this);
         }
 
-        ~GUIPanel()
-        {
-            GUIArea[] childArray = childAreas.ToArray(); // Iterating over it will modify it so make a copy
-            for (int i = 0; i < childArray.Length; i++)
-                childArray[i].Destroy();
-
-            childAreas.Clear();
-        }
-
         internal void Initialize()
         {
             mainArea = AddArea(0, 0, 0, 0);

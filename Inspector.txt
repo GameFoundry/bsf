@@ -3,19 +3,15 @@ Update GUIFoldout with sub styles
 
 Test if drag and dropping scene objects works with object and resource fields. Especially custom resources and components.
 
-Test clone method in SerializableProperty
-
-There an error on exit with GUI, likely due to new destruction scheme. I will likely need to adjust C# code so it marks all children as destroyed when parent is destroyed.
+Restore widget layout save/load methods
+Fix issue that happens when GUI element is destroyed and tries to access a previously deleted object
+Fix unreleased core objects
+Restore other commented out managed code
+Get InspectorWindow to show up in main window again
 
 Test custom resources:
  - Can I load them? (Will likely need ProjectLIbrary::load)
  - Can I reference them in Component and will the reference be held after after cloning?
-
-ARRAY
-> MyArray    [_________] [Resize]
-   1. [_________] [X] [C] [^] [¡]
-   2. [_________] [X] [C] [^] [¡]
-   3. [_________] [X] [C] [^] [¡]
 
 ARRAY TODO:
  - Ensure that case when array is null is handled properly. Will likely need a [Create] button. And a [Clear] button?

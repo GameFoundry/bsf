@@ -24,7 +24,7 @@ namespace BansheeEngine
 		::MonoMethod* virtualMethod = mono_object_get_virtual_method(instance, mMethod);
 
 		MonoObject* exception = nullptr;
-		MonoObject* retVal = mono_runtime_invoke(virtualMethod, instance, params, nullptr);
+		MonoObject* retVal = mono_runtime_invoke(virtualMethod, instance, params, &exception);
 
 		MonoUtil::throwIfException(exception);
 		return retVal;

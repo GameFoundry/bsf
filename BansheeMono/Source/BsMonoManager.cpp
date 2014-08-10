@@ -8,6 +8,7 @@
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/mono-config.h>
 #include <mono/metadata/mono-gc.h>
+#include <mono/metadata/mono-debug.h>
 
 namespace BansheeEngine
 {
@@ -17,7 +18,14 @@ namespace BansheeEngine
 	MonoManager::MonoManager()
 		:mRootDomain(nullptr), mScriptDomain(nullptr), mIsCoreLoaded(false)
 	{
-		mono_set_dirs(MONO_LIB_DIR.c_str(), MONO_ETC_DIR.c_str()); 
+		mono_set_dirs(MONO_LIB_DIR.c_str(), MONO_ETC_DIR.c_str());
+
+#if BS_DEBUG_MODE
+		mono_set_signal_chaining(true);
+		mono_debug_init(MONO_DEBUG_FORMAT_MONO);
+#endif
+
+		
 		mono_config_parse(nullptr);
 
 		mRootDomain = mono_jit_init_version("BansheeMono", "v4.0.30319"); // TODO: Allow user-defined version here?
