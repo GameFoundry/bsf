@@ -3,11 +3,7 @@ Update GUIFoldout with sub styles
 
 Test if drag and dropping scene objects works with object and resource fields. Especially custom resources and components.
 
-Restore widget layout save/load methods
-Fix issue that happens when GUI element is destroyed and tries to access a previously deleted object
-Fix unreleased core objects
-Restore other commented out managed code
-Get InspectorWindow to show up in main window again
+There might be an issue with unreleased TransientMeshes (or MeshHeap) after editor widgets are docked (to test disable layout loading, dock manually and then close)
 
 Test custom resources:
  - Can I load them? (Will likely need ProjectLIbrary::load)

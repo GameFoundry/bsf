@@ -18,6 +18,8 @@ namespace BansheeEngine
 		static ManagedResourcePtr createEmpty();
 
 	private:
+		friend class ScriptManagedResource;
+
 		ManagedResource(MonoObject* managedInstance);
 		void destroy_internal();
 

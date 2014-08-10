@@ -5,6 +5,7 @@
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
 #include "BsManagedResource.h"
+#include "BsResources.h"
 #include "BsException.h"
 
 namespace BansheeEngine
@@ -30,6 +31,13 @@ namespace BansheeEngine
 	void ScriptManagedResource::_onManagedInstanceDeleted()
 	{
 		mManagedInstance = nullptr;
+		
+		if (mResource != nullptr && mResource.isLoaded())
+		{
+			mResource->mManagedInstance = nullptr;
+			gResources().unload(mResource);
+		}
+
 		ScriptResourceManager::instance().destroyScriptResource(this);
 	}
 

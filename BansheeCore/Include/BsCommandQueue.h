@@ -296,14 +296,7 @@ namespace BansheeEngine
 		{ }
 
 		~CommandQueue() 
-		{
-#if BS_DEBUG_MODE
-#if BS_THREAD_SUPPORT != 0
-			if(!isValidThread(getThreadId()))
-				throwInvalidThreadException("Command queue accessed outside of its creation thread.");
-#endif
-#endif
-		}
+		{ }
 
 		/**
 		 * @copydoc CommandQueueBase::queueReturn
