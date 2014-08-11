@@ -4,16 +4,17 @@
 #include "BsMonoManager.h"
 #include "BsMonoClass.h"
 #include "BsResources.h"
+#include "BsManagedResourceManager.h"
 #include "BsDebug.h"
 
 namespace BansheeEngine
 {
 	ManagedResource::ManagedResource()
-		:mManagedInstance(nullptr)
+		:Resource(false), mManagedInstance(nullptr)
 	{ }
 
 	ManagedResource::ManagedResource(MonoObject* managedInstance)
-		:mManagedInstance(nullptr)
+		:Resource(false), mManagedInstance(nullptr)
 	{
 		ManagedResourceMetaDataPtr metaData = bs_shared_ptr<ManagedResourceMetaData>();
 		mMetaData = metaData;
@@ -29,8 +30,6 @@ namespace BansheeEngine
 			LOGWRN("Cannot create managed component: " + metaData->typeNamespace + "." + metaData->typeName + " because that type doesn't exist.");
 			return;
 		}
-
-		construct(managedInstance);
 	}
 
 	HManagedResource ManagedResource::create(MonoObject* managedResource)
@@ -39,7 +38,10 @@ namespace BansheeEngine
 		newRes->_setThisPtr(newRes);
 		newRes->initialize();
 
-		return static_resource_cast<ManagedResource>(gResources()._createResourceHandle(newRes));
+		HManagedResource handle = static_resource_cast<ManagedResource>(gResources()._createResourceHandle(newRes));
+		newRes->construct(managedResource, handle);
+
+		return handle;
 	}
 
 	ManagedResourcePtr ManagedResource::createEmpty()
@@ -51,10 +53,13 @@ namespace BansheeEngine
 		return newRes;
 	}
 
-	void ManagedResource::construct(MonoObject* object)
+	void ManagedResource::construct(MonoObject* object, const HManagedResource& myHandle)
 	{
 		mManagedInstance = object;
 		mManagedHandle = mono_gchandle_new(mManagedInstance, false);
+		mMyHandle = myHandle;
+
+		ManagedResourceManager::instance().registerManagedResource(mMyHandle);
 	}
 
 	void ManagedResource::destroy_internal()
@@ -66,6 +71,8 @@ namespace BansheeEngine
 			mManagedInstance = nullptr;
 			mono_gchandle_free(mManagedHandle);
 		}
+
+		ManagedResourceManager::instance().unregisterManagedResource(mMyHandle);
 	}
 
 	RTTITypeBase* ManagedResource::getRTTIStatic()

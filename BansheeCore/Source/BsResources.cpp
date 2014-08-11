@@ -195,6 +195,8 @@ namespace BansheeEngine
 			BS_LOCK_MUTEX(mLoadedResourceMutex);
 			mLoadedResources.erase(resource.getUUID());
 		}
+
+		resource._setHandleData(nullptr, "");
 	}
 
 	void Resources::unloadAllUnused()

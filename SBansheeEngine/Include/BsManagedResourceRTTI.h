@@ -6,6 +6,7 @@
 #include "BsManagedResource.h"
 #include "BsMonoManager.h"
 #include "BsManagedSerializableObject.h"
+#include "BsResources.h"
 
 namespace BansheeEngine
 {
@@ -37,10 +38,12 @@ namespace BansheeEngine
 
 		virtual void onDeserializationEnded(IReflectable* obj)
 		{
-			ManagedResource* mc = static_cast<ManagedResource*>(obj);
-			ManagedSerializableObjectPtr serializableObject = any_cast<ManagedSerializableObjectPtr>(mc->mRTTIData);
+			ManagedResource* mr = static_cast<ManagedResource*>(obj);
+			ManagedSerializableObjectPtr serializableObject = any_cast<ManagedSerializableObjectPtr>(mr->mRTTIData);
 
-			mc->construct(serializableObject->getManagedInstance());
+			ResourcePtr mrPtr = std::static_pointer_cast<Resource>(mr->getThisPtr());
+			HManagedResource handle = static_resource_cast<ManagedResource>(gResources()._createResourceHandle(mrPtr));
+			mr->construct(serializableObject->getManagedInstance(), handle);
 		}
 
 		virtual const String& getRTTIName()

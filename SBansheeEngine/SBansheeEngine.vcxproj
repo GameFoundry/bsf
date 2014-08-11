@@ -229,6 +229,7 @@
     <ClInclude Include="Include\BsManagedComponent.h" />
     <ClInclude Include="Include\BsManagedComponentRTTI.h" />
     <ClInclude Include="Include\BsManagedResource.h" />
+    <ClInclude Include="Include\BsManagedResourceManager.h" />
     <ClInclude Include="Include\BsManagedResourceMetaData.h" />
     <ClInclude Include="Include\BsManagedResourceMetaDataRTTI.h" />
     <ClInclude Include="Include\BsManagedResourceRTTI.h" />
@@ -288,6 +289,7 @@
   <ItemGroup>
     <ClCompile Include="Source\BsManagedComponent.cpp" />
     <ClCompile Include="Source\BsManagedResource.cpp" />
+    <ClCompile Include="Source\BsManagedResourceManager.cpp" />
     <ClCompile Include="Source\BsManagedResourceMetaData.cpp" />
     <ClCompile Include="Source\BsRuntimeScriptObjects.cpp" />
     <ClCompile Include="Source\BsScriptComponent.cpp" />

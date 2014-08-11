@@ -10,7 +10,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedResource : public Resource
 	{
 	public:
-		void construct(MonoObject* object);
+		void construct(MonoObject* object, const HManagedResource& myHandle);
 
 		MonoObject* getManagedInstance() const { return mManagedInstance; }
 
@@ -25,6 +25,7 @@ namespace BansheeEngine
 
 		MonoObject* mManagedInstance;
 		uint32_t mManagedHandle;
+		HManagedResource mMyHandle;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

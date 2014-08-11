@@ -59,7 +59,7 @@ namespace BansheeEngine
 		/**
 		 * @note Returns nullptr if script resource doesn't exist.
 		 */
-		ScriptResourceBase* getScriptResource(const HResource& resourceHandle);
+		ScriptResourceBase* getScriptResource(const String& UUID);
 
 		void destroyScriptResource(ScriptResourceBase* resource);
 

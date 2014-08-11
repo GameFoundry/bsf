@@ -3,7 +3,10 @@ Update GUIFoldout with sub styles
 
 Test if drag and dropping scene objects works with object and resource fields. Especially custom resources and components.
 
-There might be an issue with unreleased TransientMeshes (or MeshHeap) after editor widgets are docked (to test disable layout loading, dock manually and then close)
+Transient meshes don't seem to be released properly in 100% of the cases
+Finalizers get called from a different thread
+ - This is especially noticeable in ScriptManagedResource where I call gResources().unload from that thread. I should probably not be doing that and instead queuing that for later on main thread.
+ - I added some code for handling this. It needs testing
 
 Test custom resources:
  - Can I load them? (Will likely need ProjectLIbrary::load)
@@ -14,30 +17,20 @@ ARRAY TODO:
  - Need a GUIFoldout that doesn't have BG and is just a single button.
 
 TODO:
- - Hook up int field set/get callbacks
-    - Ensure int field isn't updated from app when in focus
- - Think about how to handle arrays, adding and deleting elements from them.
-   - Will likely need GUILayout::GetElementIndex()
+ - Add inspector support for lists and objects
+ - Add all remaining field type Inspectable* classes
+ - Ensure fields aren't updated from the app when in focus
  - Entire foldout should be clickable, not just the toggle button
  - Extend text field so it can be multi-line
- - Port to C#:
-   - Create InspectableObjects for all different field types
- - Ensure get/set value from inspector fields works 
- - Add array fields and ensure they work/update properly
- - Ensure Undo/redo works as intended
-   - This task needs decomposing. Likely need to port UndoRedo to C# first.
+ - Properly hook up UndoRedo, for both in-field and object-wide changes
  - GUIColor needs to be hooked up to a window that actually changes its value.
- - I need to register UndoRedo command after user finishes modifying a field. This should be referencing an object using an URI?
+ - Inspector scrolling
 
 KEEP IN MIND:
  - Clicking on an object/resource in inspector should ping it in their window
  - Inspector needs to be organized in such a way that scroll areas work. That should be possible with GUIPanelContainer.
- - When inspector object changes I need to rebuild that inspector element
-   - This can happen if user drags a new object
-   - Or while the application is running objects might change from code
-     - Technically objects will never change their structure during runtime, this is only relevant for array sizes
- - Modify C++ Editor fields so that calling setValue doesn't update the visual value until focus is lost
-  - When user is currently writing in an input box I don't want refresh to overwrite that value.
+
+
 
 
 

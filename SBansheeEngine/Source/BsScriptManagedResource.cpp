@@ -32,12 +32,13 @@ namespace BansheeEngine
 	{
 		mManagedInstance = nullptr;
 		
-		if (mResource != nullptr && mResource.isLoaded())
-		{
-			mResource->mManagedInstance = nullptr;
-			gResources().unload(mResource);
-		}
-
+		// The only way this method should be reachable is when Resource::unload is called, which means the resource
+		// has had to been already freed. Even if all managed instances are released ManagedResource itself holds the last
+		// instance which is only freed on unload().
+		// Note: During domain unload this could get called even if not all instances are released, but ManagedResourceManager
+		// should make sure all instances are unloaded before that happens.
+		assert(mResource == nullptr || !mResource.isLoaded()); 
+		
 		ScriptResourceManager::instance().destroyScriptResource(this);
 	}
 

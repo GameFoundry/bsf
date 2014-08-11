@@ -74,23 +74,21 @@ namespace BansheeEngine
 
 	ScriptTexture2D* ScriptResourceManager::getScriptTexture(const HTexture& resourceHandle)
 	{
-		return static_cast<ScriptTexture2D*>(getScriptResource(resourceHandle));
+		return static_cast<ScriptTexture2D*>(getScriptResource(resourceHandle.getUUID()));
 	}
 
 	ScriptSpriteTexture* ScriptResourceManager::getScriptSpriteTexture(const HSpriteTexture& resourceHandle)
 	{
-		return static_cast<ScriptSpriteTexture*>(getScriptResource(resourceHandle));
+		return static_cast<ScriptSpriteTexture*>(getScriptResource(resourceHandle.getUUID()));
 	}
 
 	ScriptManagedResource* ScriptResourceManager::getScriptManagedResource(const HManagedResource& resourceHandle)
 	{
-		return static_cast<ScriptManagedResource*>(getScriptResource(resourceHandle));
+		return static_cast<ScriptManagedResource*>(getScriptResource(resourceHandle.getUUID()));
 	}
 
-	ScriptResourceBase* ScriptResourceManager::getScriptResource(const HResource& resourceHandle)
+	ScriptResourceBase* ScriptResourceManager::getScriptResource(const String& uuid)
 	{
-		const String& uuid = resourceHandle.getUUID();
-
 		if(uuid == "")
 			BS_EXCEPT(InvalidParametersException, "Provided resource handle has an undefined resource UUID.");
 

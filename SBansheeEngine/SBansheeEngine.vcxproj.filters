@@ -207,6 +207,9 @@
     <ClInclude Include="Include\BsScriptManagedResource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsManagedResourceManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsScriptTexture2D.cpp">
@@ -345,6 +348,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsScriptManagedResource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsManagedResourceManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

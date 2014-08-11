@@ -4,6 +4,8 @@
 #include "BsRuntimeScriptObjects.h"
 #include "BsScriptResourceManager.h"
 #include "BsScriptGameObjectManager.h"
+#include "BsManagedResourceManager.h"
+#include "BsScriptManager.h"
 
 // DEBUG ONLY
 #include "BsScriptSceneObject.h"
@@ -39,6 +41,7 @@ namespace BansheeEngine
 		// DEBUG ONLY
 		mono_add_internal_call("BansheeEngine.Program::UnitTest1_GameObjectClone", &unitTest1_GameObjectClone);
 
+		ManagedResourceManager::startUp();
 		RuntimeScriptObjects::startUp();
 		ScriptResourceManager::startUp();
 		ScriptGameObjectManager::startUp();
@@ -52,6 +55,8 @@ namespace BansheeEngine
 
 	extern "C" BS_SCR_BE_EXPORT void unloadPlugin()
 	{
+		ManagedResourceManager::shutDown();
+		ScriptManager::instance().destroy();
 		ScriptGameObjectManager::shutDown();
 		ScriptResourceManager::shutDown();
 		RuntimeScriptObjects::shutDown();

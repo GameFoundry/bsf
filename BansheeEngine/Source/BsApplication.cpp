@@ -62,8 +62,6 @@ namespace BansheeEngine
 
 	Application::~Application()
 	{
-		ScriptManager::instance().destroy();
-
 #if BS_VER == BS_VER_DEV
 		unloadPlugin(mSBansheeEnginePlugin);
 		unloadPlugin(mMonoPlugin);
