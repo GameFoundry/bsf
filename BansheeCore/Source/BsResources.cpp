@@ -207,7 +207,7 @@ namespace BansheeEngine
 			BS_LOCK_MUTEX(mLoadedResourceMutex);
 			for(auto iter = mLoadedResources.begin(); iter != mLoadedResources.end(); ++iter)
 			{
-				if(iter->second.getInternalPtr().unique()) // We just have this one reference, meaning nothing is using this resource
+				if(iter->second.mData.unique()) // We just have this one reference, meaning nothing is using this resource
 					resourcesToUnload.push_back(iter->second);
 			}
 		}
