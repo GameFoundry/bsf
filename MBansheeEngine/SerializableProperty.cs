@@ -57,6 +57,11 @@ namespace BansheeEngine
             get { return internalType; }
         }
 
+        public bool IsValueType
+        {
+            get { return internalType.IsValueType; }
+        }
+
         public T GetValue<T>()
         {
             if (!typeof(T).IsAssignableFrom(internalType))
@@ -118,7 +123,7 @@ namespace BansheeEngine
             if (type != FieldType.Object)
                 throw new Exception("Attempting to retrieve object information from a field that doesn't contain an object.");
 
-            return (T) Internal_CreateMangedObjectInstance(mCachedPtr);
+            return (T)Internal_CreateManagedObjectInstance(mCachedPtr);
         }
 
         public Array CreateArrayInstance(int[] lengths)
@@ -158,7 +163,7 @@ namespace BansheeEngine
         private static extern SerializableDictionary Internal_CreateDictionary(IntPtr nativeInstance, IDictionary instance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern object Internal_CreateMangedObjectInstance(IntPtr nativeInstance);
+        private static extern object Internal_CreateManagedObjectInstance(IntPtr nativeInstance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern Array Internal_CreateManagedArrayInstance(IntPtr nativeInstance, int[] lengths);

@@ -43,6 +43,8 @@ namespace BansheeEditor
                 data.foldout.OnToggled += (bool expanded) => Foldout_OnToggled(data, expanded);
 
                 inspectorData.Add(data);
+
+                inspectorData[i].inspector.Refresh();
             }
 
             inspectorLayout.AddFlexibleSpace();

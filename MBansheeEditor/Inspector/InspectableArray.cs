@@ -54,15 +54,8 @@ namespace BansheeEditor
         private object oldPropertyValue; // TODO - This will unnecessarily hold references to the object
         private int numArrayElements;
 
-        private GUILabel guiLabel;
-        private GUIIntField guiSizeField;
-        private GUIButton guiResizeBtn;
-
-        private GUILayout guiTitleLayout;
-        private GUILayout guiChildLayout;
-        private GUILayoutY guiContentLayout;
-
         private List<EntryRow> rows = new List<EntryRow>();
+        private GUIIntField guiSizeField;
 
         private bool isInitialized;
 
@@ -70,30 +63,6 @@ namespace BansheeEditor
             : base(title, layout, property)
         {
 
-        }
-
-        private void Initialize(int layoutIndex)
-        {
-            if (property.Type != SerializableProperty.FieldType.Array)
-                return;
-
-            guiLabel = new GUILabel(title); // TODO - Add foldout and hook up its callbacks
-            guiSizeField = new GUIIntField();
-            guiSizeField.SetRange(0, int.MaxValue);
-            guiResizeBtn = new GUIButton("Resize");
-            guiResizeBtn.OnClick += OnResizeButtonClicked;
-
-            guiTitleLayout = layout.AddLayoutX(layoutIndex);
-            guiTitleLayout.AddElement(guiLabel);
-            guiTitleLayout.AddElement(guiSizeField);
-            guiTitleLayout.AddElement(guiResizeBtn);
-
-            guiChildLayout = layout.AddLayoutX(layoutIndex);
-
-            guiChildLayout.AddSpace(IndentAmount);
-            guiContentLayout = guiChildLayout.AddLayoutY();
-
-            isInitialized = true;
         }
 
         protected override bool IsModified()
@@ -109,9 +78,12 @@ namespace BansheeEditor
                 return true;
             }
 
-            SerializableArray array = property.GetArray();
-            if (array.GetLength() != numArrayElements)
-                return true;
+            if (newPropertyValue != null)
+            {
+                SerializableArray array = property.GetArray();
+                if (array.GetLength() != numArrayElements)
+                    return true;
+            }
 
             return base.IsModified();
         }
@@ -119,30 +91,71 @@ namespace BansheeEditor
         protected override void Update(int layoutIndex)
         {
             base.Update(layoutIndex);
+            isInitialized = true;
 
-            if (!isInitialized)
-                Initialize(layoutIndex);
+            if (property.Type != SerializableProperty.FieldType.Array)
+                return;
 
             foreach (var row in rows)
                 row.Destroy();
 
             rows.Clear();
 
-            SerializableArray array = property.GetArray();
+            layout.DestroyElements();
 
-            numArrayElements = array.GetLength();
-            for (int i = 0; i < numArrayElements; i++)
+            if (property.GetValue<object>() == null)
             {
-                EntryRow newRow = new EntryRow(guiContentLayout, i, this);
-                rows.Add(newRow);
+                GUILayoutX guiChildLayout = layout.AddLayoutX(layoutIndex);
 
-                InspectableObjectBase childObj = CreateDefaultInspectable(i + ".", new InspectableFieldLayout(newRow.contentLayout), array.GetProperty(i));
-                AddChild(childObj);
+                guiChildLayout.AddElement(new GUILabel(title));
+                guiChildLayout.AddElement(new GUILabel("Empty"));
 
-                childObj.Refresh(0);
+                if (!property.IsValueType)
+                {
+                    GUIButton createBtn = new GUIButton("Create");
+                    createBtn.OnClick += OnCreateButtonClicked;
+                    guiChildLayout.AddElement(createBtn);
+                }
+
+                numArrayElements = 0;
             }
+            else
+            {
+                GUILabel guiLabel = new GUILabel(title); // TODO - Add foldout and hook up its callbacks
+                guiSizeField = new GUIIntField();
+                guiSizeField.SetRange(0, int.MaxValue);
+                GUIButton guiResizeBtn = new GUIButton("Resize");
+                guiResizeBtn.OnClick += OnResizeButtonClicked;
+                GUIButton guiClearBtn = new GUIButton("Clear");
+                guiClearBtn.OnClick += OnClearButtonClicked;
 
-            guiSizeField.Value = numArrayElements;
+                GUILayoutX guiTitleLayout = layout.AddLayoutX(layoutIndex);
+                guiTitleLayout.AddElement(guiLabel);
+                guiTitleLayout.AddElement(guiSizeField);
+                guiTitleLayout.AddElement(guiResizeBtn);
+                guiTitleLayout.AddElement(guiClearBtn);
+
+                GUILayoutX guiChildLayout = layout.AddLayoutX(layoutIndex);
+
+                guiChildLayout.AddSpace(IndentAmount);
+                GUILayoutY guiContentLayout = guiChildLayout.AddLayoutY();
+
+                SerializableArray array = property.GetArray();
+
+                numArrayElements = array.GetLength();
+                for (int i = 0; i < numArrayElements; i++)
+                {
+                    EntryRow newRow = new EntryRow(guiContentLayout, i, this);
+                    rows.Add(newRow);
+
+                    InspectableObjectBase childObj = CreateDefaultInspectable(i + ".", new InspectableFieldLayout(newRow.contentLayout), array.GetProperty(i));
+                    AddChild(childObj);
+
+                    childObj.Refresh(0);
+                }
+
+                guiSizeField.Value = numArrayElements;
+            }
         }
 
         private void OnResizeButtonClicked()
@@ -229,6 +242,16 @@ namespace BansheeEditor
                 array.SetValue(array.GetValue(index), index + 1);
                 array.SetValue(nextEntry, index);
             }
+        }
+
+        private void OnCreateButtonClicked()
+        {
+            property.SetValue(property.CreateArrayInstance(new int[1] { 0 }));
+        }
+
+        private void OnClearButtonClicked()
+        {
+            property.SetValue<object>(null);
         }
     }
 }

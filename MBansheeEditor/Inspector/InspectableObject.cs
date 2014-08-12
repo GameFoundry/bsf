@@ -9,52 +9,15 @@ namespace BansheeEditor
 {
     public class InspectableObject : InspectableObjectBase
     {
-        private class FieldRow
-        {
-            public GUILayoutY layout;
-
-            public FieldRow(GUILayout parentLayout)
-            {
-                layout = parentLayout.AddLayoutY();
-            }
-
-            public void Destroy()
-            {
-                layout.Destroy();
-            }
-        }
-
         private const int IndentAmount = 15;
 
         private object oldPropertyValue;
-
-        private GUILabel guiLabel;
-        private GUILayout guiChildLayout;
-        private GUILayoutY guiContentLayout;
         private bool isInitialized;
-
-        private List<FieldRow> rows = new List<FieldRow>();
 
         public InspectableObject(string title, InspectableFieldLayout layout, SerializableProperty property)
             : base(title, layout, property)
         {
             
-        }
-
-        protected void Initialize(int layoutIndex)
-        {
-            if (property.Type != SerializableProperty.FieldType.Object)
-                return;
-
-            guiLabel = new GUILabel(title); // TODO - Use foldout
-            layout.AddElement(layoutIndex, guiLabel);
-
-            guiChildLayout = layout.AddLayoutX(layoutIndex);
-            guiChildLayout.AddSpace(IndentAmount);
-
-            guiContentLayout = guiChildLayout.AddLayoutY();
-
-            isInitialized = true;
         }
 
         protected override bool IsModified()
@@ -76,30 +39,66 @@ namespace BansheeEditor
         protected override void Update(int index)
         {
             base.Update(index);
+            isInitialized = true;
 
-            if (!isInitialized)
-                Initialize(index);
+            if (property.Type != SerializableProperty.FieldType.Object)
+                return;
 
-            foreach (var row in rows)
-                row.Destroy();
+            layout.DestroyElements();
 
-            rows.Clear();
-
-            SerializableObject serializableObject = property.GetObject();
-
-            foreach (var field in serializableObject.fields)
+            if (property.GetValue<object>() == null)
             {
-                if (!field.Inspectable)
-                    continue;
+                GUILayoutX guiChildLayout = layout.AddLayoutX(index);
 
-                FieldRow newRow = new FieldRow(guiContentLayout);
-                rows.Add(newRow);
+                guiChildLayout.AddElement(new GUILabel(title));
+                guiChildLayout.AddElement(new GUILabel("Empty"));
 
-                if (field.HasCustomInspector)
-                    AddChild(CreateCustomInspectable(field.CustomInspectorType, field.Name, new InspectableFieldLayout(newRow.layout), field.GetProperty()));
-                else
-                    AddChild(CreateDefaultInspectable(field.Name, new InspectableFieldLayout(newRow.layout), field.GetProperty()));
+                if (!property.IsValueType)
+                {
+                    GUIButton createBtn = new GUIButton("Create");
+                    createBtn.OnClick += OnCreateButtonClicked;
+                    guiChildLayout.AddElement(createBtn);
+                }
             }
+            else
+            {
+                GUILayoutX guiTitleLayout = layout.AddLayoutX(index);
+
+                GUILabel guiLabel = new GUILabel(title); // TODO - Use foldout
+                guiTitleLayout.AddElement(guiLabel);
+
+                GUIButton clearBtn = new GUIButton("Clear");
+                clearBtn.OnClick += OnClearButtonClicked;
+                guiTitleLayout.AddElement(clearBtn);
+
+                GUILayoutX guiChildLayout = layout.AddLayoutX(index);
+                guiChildLayout.AddSpace(IndentAmount);
+
+                GUILayoutY guiContentLayout = guiChildLayout.AddLayoutY();
+
+                SerializableObject serializableObject = property.GetObject();
+
+                foreach (var field in serializableObject.fields)
+                {
+                    if (!field.Inspectable)
+                        continue;
+
+                    if (field.HasCustomInspector)
+                        AddChild(CreateCustomInspectable(field.CustomInspectorType, field.Name, new InspectableFieldLayout(guiContentLayout), field.GetProperty()));
+                    else
+                        AddChild(CreateDefaultInspectable(field.Name, new InspectableFieldLayout(guiContentLayout), field.GetProperty()));
+                }
+            }
+        }
+
+        private void OnCreateButtonClicked()
+        {
+            property.SetValue(property.CreateObjectInstance<object>());
+        }
+
+        private void OnClearButtonClicked()
+        {
+            property.SetValue<object>(null);
         }
     }
 }

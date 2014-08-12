@@ -51,7 +51,7 @@ namespace BansheeEngine
 
 	void ScriptSerializableField::internal_setValue(ScriptSerializableField* nativeInstance, MonoObject* instance, MonoObject* value)
 	{
-		if(mono_class_is_valuetype(mono_object_get_class(value)))
+		if (value != nullptr && mono_class_is_valuetype(mono_object_get_class(value)))
 		{
 			void* rawValue = mono_object_unbox(value);
 			nativeInstance->mFieldInfo->mMonoField->setValue(instance, rawValue);

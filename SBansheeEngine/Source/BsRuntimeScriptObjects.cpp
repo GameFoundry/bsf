@@ -94,29 +94,29 @@ namespace BansheeEngine
 				if(field->isStatic())
 					continue;
 
-				std::shared_ptr<ManagedSerializableFieldInfo> fieldInfo = bs_shared_ptr<ManagedSerializableFieldInfo>();
+				ManagedSerializableTypeInfoPtr typeInfo = determineType(field->getType());
+				if (typeInfo == nullptr)
+					continue;
 
+				std::shared_ptr<ManagedSerializableFieldInfo> fieldInfo = bs_shared_ptr<ManagedSerializableFieldInfo>();
 				fieldInfo->mFieldId = mUniqueFieldId++;
 				fieldInfo->mName = field->getName();
 				fieldInfo->mMonoField = field;
-				fieldInfo->mTypeInfo = determineType(field->getType());
+				fieldInfo->mTypeInfo = typeInfo;
 				
-				if(fieldInfo->mTypeInfo != nullptr)
+				MonoFieldVisibility visibility = field->getVisibility();
+				if (visibility == MonoFieldVisibility::Public)
 				{
-					MonoFieldVisibility visibility = field->getVisibility();
-					if(visibility == MonoFieldVisibility::Public)
-					{
-						if(!field->hasAttribute(mDontSerializeFieldAttribute))
-							fieldInfo->mFlags = (ScriptFieldFlags)((UINT32)fieldInfo->mFlags | (UINT32)ScriptFieldFlags::Serializable);
+					if (!field->hasAttribute(mDontSerializeFieldAttribute))
+						fieldInfo->mFlags = (ScriptFieldFlags)((UINT32)fieldInfo->mFlags | (UINT32)ScriptFieldFlags::Serializable);
 
-						if(!field->hasAttribute(mHideInInspectorAttribute))
-							fieldInfo->mFlags = (ScriptFieldFlags)((UINT32)fieldInfo->mFlags | (UINT32)ScriptFieldFlags::Inspectable);
-					}
-					else
-					{
-						if(field->hasAttribute(mSerializeFieldAttribute))
-							fieldInfo->mFlags = (ScriptFieldFlags)((UINT32)fieldInfo->mFlags | (UINT32)ScriptFieldFlags::Serializable);
-					}
+					if (!field->hasAttribute(mHideInInspectorAttribute))
+						fieldInfo->mFlags = (ScriptFieldFlags)((UINT32)fieldInfo->mFlags | (UINT32)ScriptFieldFlags::Inspectable);
+				}
+				else
+				{
+					if (field->hasAttribute(mSerializeFieldAttribute))
+						fieldInfo->mFlags = (ScriptFieldFlags)((UINT32)fieldInfo->mFlags | (UINT32)ScriptFieldFlags::Serializable);
 				}
 
 				objInfo->mFieldNameToId[fieldInfo->mName] = fieldInfo->mFieldId;

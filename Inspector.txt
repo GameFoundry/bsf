@@ -11,6 +11,7 @@ Test custom resources:
 
 ARRAY TODO:
  - Ensure that case when array is null is handled properly. Will likely need a [Create] button. And a [Clear] button?
+   - Need the same for List and Object
  - Need a GUIFoldout that doesn't have BG and is just a single button.
  - Don't render inspector if array is multi-rank
 
