@@ -7,13 +7,13 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
-    public class InspectableInt : InspectableObjectBase
+    public class InspectableVector2 : InspectableObjectBase
     {
-        private int oldPropertyValue;
-        private GUIIntField guiIntField;
+        private Vector2 oldPropertyValue;
+        private GUIVector2Field guiField;
         private bool isInitialized;
 
-        public InspectableInt(string title, InspectableFieldLayout layout, SerializableProperty property)
+        public InspectableVector2(string title, InspectableFieldLayout layout, SerializableProperty property)
             : base(title, layout, property)
         {
 
@@ -21,12 +21,12 @@ namespace BansheeEditor
 
         private void Initialize(int layoutIndex)
         {
-            if (property.Type == SerializableProperty.FieldType.Int)
+            if (property.Type == SerializableProperty.FieldType.Vector2)
             {
-                guiIntField = new GUIIntField(new GUIContent(title));
-                guiIntField.OnChanged += OnFieldValueChanged;
+                guiField = new GUIVector2Field(new GUIContent(title));
+                guiField.OnChanged += OnFieldValueChanged;
 
-                layout.AddElement(layoutIndex, guiIntField);
+                layout.AddElement(layoutIndex, guiField);
             }
 
             isInitialized = true;
@@ -37,7 +37,7 @@ namespace BansheeEditor
             if (!isInitialized)
                 return true;
 
-            int newPropertyValue = property.GetValue<int>();
+            Vector2 newPropertyValue = property.GetValue<Vector2>();
             if (oldPropertyValue != newPropertyValue)
             {
                 oldPropertyValue = newPropertyValue;
@@ -57,11 +57,11 @@ namespace BansheeEditor
 
             // TODO - Skip update if it currently has input focus so user can modify the value in peace
 
-            if(guiIntField != null)
-                guiIntField.Value = property.GetValue<int>();
+            if (guiField != null)
+                guiField.Value = property.GetValue<Vector2>();
         }
 
-        private void OnFieldValueChanged(int newValue)
+        private void OnFieldValueChanged(Vector2 newValue)
         {
             property.SetValue(newValue);
         }

@@ -136,5 +136,32 @@ namespace BansheeEngine
         {
             return new Color(a.r / b, a.g / b, a.b / b, a.a / b);
         }
+
+        public static bool operator ==(Color lhs, Color rhs)
+        {
+            return lhs.r == rhs.r && lhs.g == rhs.g && lhs.b == rhs.b && lhs.a == rhs.a;
+        }
+
+        public static bool operator !=(Color lhs, Color rhs)
+        {
+            return !(lhs == rhs);
+        }
+
+        public override int GetHashCode()
+        {
+            return r.GetHashCode() ^ g.GetHashCode() << 2 ^ b.GetHashCode() >> 2 ^ a.GetHashCode() >> 1;
+        }
+
+        public override bool Equals(object other)
+        {
+            if (!(other is Color))
+                return false;
+
+            Color color = (Color)other;
+            if (r.Equals(color.r) && g.Equals(color.g) && b.Equals(color.b) && a.Equals(color.a))
+                return true;
+
+            return false;
+        }
     }
 }

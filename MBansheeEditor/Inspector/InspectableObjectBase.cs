@@ -103,11 +103,30 @@ namespace BansheeEditor
             {
                 case SerializableProperty.FieldType.Int:
                     return new InspectableInt(title, layout, property);
+                case SerializableProperty.FieldType.Float:
+                    return new InspectableFloat(title, layout, property);
+                case SerializableProperty.FieldType.Bool:
+                    return new InspectableBool(title, layout, property);
+                case SerializableProperty.FieldType.Color:
+                    return new InspectableColor(title, layout, property);
+                case SerializableProperty.FieldType.String:
+                    return new InspectableString(title, layout, property);
+                case SerializableProperty.FieldType.Vector2:
+                    return new InspectableVector2(title, layout, property);
+                case SerializableProperty.FieldType.Vector3:
+                    return new InspectableVector3(title, layout, property);
+                case SerializableProperty.FieldType.Vector4:
+                    return new InspectableVector4(title, layout, property);
+                case SerializableProperty.FieldType.ResourceRef:
+                    return new InspectableResourceRef(title, layout, property);
+                case SerializableProperty.FieldType.GameObjectRef:
+                    return new InspectableGameObjectRef(title, layout, property);
                 case SerializableProperty.FieldType.Object:
                     return new InspectableObject(title, layout, property);
                 case SerializableProperty.FieldType.Array:
                     return new InspectableArray(title, layout, property);
-                // TODO - Add all other types
+                case SerializableProperty.FieldType.List:
+                    return new InspectableList(title, layout, property);
             }
 
             throw new Exception("No inspector exists for the provided field type.");

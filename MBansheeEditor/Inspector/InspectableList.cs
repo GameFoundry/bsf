@@ -7,7 +7,7 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
-    public class InspectableArray : InspectableObjectBase
+    public class InspectableList : InspectableObjectBase
     {
         private class EntryRow
         {
@@ -18,7 +18,7 @@ namespace BansheeEditor
             public GUIButton moveUpBtn;
             public GUIButton moveDownBtn;
 
-            public EntryRow(GUILayout parentLayout, int seqIndex, InspectableArray parent)
+            public EntryRow(GUILayout parentLayout, int seqIndex, InspectableList parent)
             {
                 rowLayout = parentLayout.AddLayoutX();
                 contentLayout = rowLayout.AddLayoutY();
@@ -66,7 +66,7 @@ namespace BansheeEditor
 
         private bool isInitialized;
 
-        public InspectableArray(string title, InspectableFieldLayout layout, SerializableProperty property)
+        public InspectableList(string title, InspectableFieldLayout layout, SerializableProperty property)
             : base(title, layout, property)
         {
 
@@ -74,7 +74,7 @@ namespace BansheeEditor
 
         private void Initialize(int layoutIndex)
         {
-            if (property.Type != SerializableProperty.FieldType.Array)
+            if (property.Type != SerializableProperty.FieldType.List)
                 return;
 
             guiLabel = new GUILabel(title); // TODO - Add foldout and hook up its callbacks
@@ -109,8 +109,8 @@ namespace BansheeEditor
                 return true;
             }
 
-            SerializableArray array = property.GetArray();
-            if (array.GetLength() != numArrayElements)
+            SerializableList list = property.GetList();
+            if (list.GetLength() != numArrayElements)
                 return true;
 
             return base.IsModified();
@@ -128,15 +128,15 @@ namespace BansheeEditor
 
             rows.Clear();
 
-            SerializableArray array = property.GetArray();
+            SerializableList list = property.GetList();
 
-            numArrayElements = array.GetLength();
+            numArrayElements = list.GetLength();
             for (int i = 0; i < numArrayElements; i++)
             {
                 EntryRow newRow = new EntryRow(guiContentLayout, i, this);
                 rows.Add(newRow);
 
-                InspectableObjectBase childObj = CreateDefaultInspectable(i + ".", new InspectableFieldLayout(newRow.contentLayout), array.GetProperty(i));
+                InspectableObjectBase childObj = CreateDefaultInspectable(i + ".", new InspectableFieldLayout(newRow.contentLayout), list.GetProperty(i));
                 AddChild(childObj);
 
                 childObj.Refresh(0);
@@ -147,87 +147,63 @@ namespace BansheeEditor
 
         private void OnResizeButtonClicked()
         {
-            int size = guiSizeField.Value; // TODO - Support multi-rank arrays
+            int size = guiSizeField.Value;
 
-            Array newArray = property.CreateArrayInstance(new int[] {size});
-            Array array = property.GetValue<Array>();
+            IList newList = property.CreateListInstance(size);
+            IList list = property.GetValue<IList>();
 
-            int maxSize = MathEx.Min(size, array.Length);
+            int maxSize = MathEx.Min(size, list.Count);
 
             for (int i = 0; i < maxSize; i++)
-                newArray.SetValue(array.GetValue(i), i);
+                newList[i] = list[i];
 
-            property.SetValue(newArray);
+            property.SetValue(newList);
         }
 
         private void OnDeleteButtonClicked(int index)
         {
-            Array array = property.GetValue<Array>();
+            IList list = property.GetValue<IList>();
 
-            int size = MathEx.Max(0, array.Length - 1);
-            Array newArray = property.CreateArrayInstance(new int[] { size });
-
-            int destIdx = 0;
-            for (int i = 0; i < array.Length; i++)
-            {
-                if (i == index)
-                    continue;
-
-                newArray.SetValue(array.GetValue(i), destIdx);
-                destIdx++;
-            }
-
-            property.SetValue(newArray);
+            if (index >= 0 && index < list.Count)
+                list.RemoveAt(index);
         }
 
         private void OnCloneButtonClicked(int index)
         {
-            SerializableArray array = property.GetArray();
+            SerializableList serializableList = property.GetList();
+            IList list = property.GetValue<IList>();
 
-            int size = array.GetLength() + 1;
-            Array newArray = property.CreateArrayInstance(new int[] { size });
+            int size = serializableList.GetLength() + 1;
 
-            object clonedEntry = null;
-            for (int i = 0; i < array.GetLength(); i++)
+            if (index >= 0 && index < list.Count)
             {
-                object value = array.GetProperty(i).GetValue<object>();
-
-                newArray.SetValue(value, i);
-
-                if (i == index)
-                {
-                    clonedEntry = array.GetProperty(i).GetValueCopy<object>();
-                }
+                list.Add(serializableList.GetProperty(index).GetValueCopy<object>());
             }
-
-            newArray.SetValue(clonedEntry, size - 1);
-
-            property.SetValue(newArray);
         }
 
         private void OnMoveUpButtonClicked(int index)
         {
-            Array array = property.GetValue<Array>();
+            IList list = property.GetValue<IList>();
 
             if ((index - 1) >= 0)
             {
-                object previousEntry = array.GetValue(index - 1);
+                object previousEntry = list[index - 1];
 
-                array.SetValue(array.GetValue(index), index - 1);
-                array.SetValue(previousEntry, index);
+                list[index - 1] = list[index];
+                list[index] = previousEntry;
             }
         }
 
         private void OnMoveDownButtonClicked(int index)
         {
-            Array array = property.GetValue<Array>();
+            IList list = property.GetValue<IList>();
 
-            if ((index + 1) < array.Length)
+            if ((index + 1) < list.Count)
             {
-                object nextEntry = array.GetValue(index + 1);
+                object nextEntry = list[index + 1];
 
-                array.SetValue(array.GetValue(index), index + 1);
-                array.SetValue(nextEntry, index);
+                list[index + 1] = list[index];
+                list[index] = nextEntry;
             }
         }
     }

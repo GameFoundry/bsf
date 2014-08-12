@@ -17,9 +17,13 @@ namespace BansheeEngine
 	private:
 		static MonoObject* internal_createObject(ScriptSerializableProperty* nativeInstance, MonoObject* object);
 		static MonoObject* internal_createArray(ScriptSerializableProperty* nativeInstance, MonoObject* object);
+		static MonoObject* internal_createList(ScriptSerializableProperty* nativeInstance, MonoObject* object);
+		static MonoObject* internal_createDictionary(ScriptSerializableProperty* nativeInstance, MonoObject* object);
 
 		static MonoObject* internal_createManagedObjectInstance(ScriptSerializableProperty* nativeInstance);
 		static MonoObject* internal_createManagedArrayInstance(ScriptSerializableProperty* nativeInstance, MonoArray* sizes);
+		static MonoObject* internal_createManagedListInstance(ScriptSerializableProperty* nativeInstance, int size);
+		static MonoObject* internal_createManagedDictionaryInstance(ScriptSerializableProperty* nativeInstance);
 
 		static MonoObject* internal_cloneManagedInstance(ScriptSerializableProperty* nativeInstance, MonoObject* original);
 

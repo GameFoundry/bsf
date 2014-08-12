@@ -7,13 +7,13 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
-    public class InspectableInt : InspectableObjectBase
+    public class InspectableResourceRef : InspectableObjectBase
     {
-        private int oldPropertyValue;
-        private GUIIntField guiIntField;
+        private Resource oldPropertyValue;
+        private GUIResourceField guiField;
         private bool isInitialized;
 
-        public InspectableInt(string title, InspectableFieldLayout layout, SerializableProperty property)
+        public InspectableResourceRef(string title, InspectableFieldLayout layout, SerializableProperty property)
             : base(title, layout, property)
         {
 
@@ -21,12 +21,12 @@ namespace BansheeEditor
 
         private void Initialize(int layoutIndex)
         {
-            if (property.Type == SerializableProperty.FieldType.Int)
+            if (property.Type == SerializableProperty.FieldType.ResourceRef)
             {
-                guiIntField = new GUIIntField(new GUIContent(title));
-                guiIntField.OnChanged += OnFieldValueChanged;
+                guiField = new GUIResourceField(property.InternalType, new GUIContent(title));
+                guiField.OnChanged += OnFieldValueChanged;
 
-                layout.AddElement(layoutIndex, guiIntField);
+                layout.AddElement(layoutIndex, guiField);
             }
 
             isInitialized = true;
@@ -37,7 +37,7 @@ namespace BansheeEditor
             if (!isInitialized)
                 return true;
 
-            int newPropertyValue = property.GetValue<int>();
+            Resource newPropertyValue = property.GetValue<Resource>();
             if (oldPropertyValue != newPropertyValue)
             {
                 oldPropertyValue = newPropertyValue;
@@ -55,13 +55,11 @@ namespace BansheeEditor
             if (!isInitialized)
                 Initialize(layoutIndex);
 
-            // TODO - Skip update if it currently has input focus so user can modify the value in peace
-
-            if(guiIntField != null)
-                guiIntField.Value = property.GetValue<int>();
+            if (guiField != null)
+                guiField.Value = property.GetValue<Resource>();
         }
 
-        private void OnFieldValueChanged(int newValue)
+        private void OnFieldValueChanged(Resource newValue)
         {
             property.SetValue(newValue);
         }

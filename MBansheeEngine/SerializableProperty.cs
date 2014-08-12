@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -51,6 +52,11 @@ namespace BansheeEngine
             get { return type; }
         }
 
+        public Type InternalType
+        {
+            get { return internalType; }
+        }
+
         public T GetValue<T>()
         {
             if (!typeof(T).IsAssignableFrom(internalType))
@@ -91,6 +97,22 @@ namespace BansheeEngine
             return Internal_CreateArray(mCachedPtr, GetValue<Array>());
         }
 
+        public SerializableList GetList()
+        {
+            if (type != FieldType.List)
+                throw new Exception("Attempting to retrieve array information from a field that doesn't contain a list.");
+
+            return Internal_CreateList(mCachedPtr, GetValue<IList>());
+        }
+
+        public SerializableDictionary GetDictionary()
+        {
+            if (type != FieldType.Dictionary)
+                throw new Exception("Attempting to retrieve array information from a field that doesn't contain a dictionary.");
+
+            return Internal_CreateDictionary(mCachedPtr, GetValue<IDictionary>());
+        }
+
         public T CreateObjectInstance<T>()
         {
             if (type != FieldType.Object)
@@ -107,6 +129,22 @@ namespace BansheeEngine
             return Internal_CreateManagedArrayInstance(mCachedPtr, lengths);
         }
 
+        public IList CreateListInstance(int length)
+        {
+            if (type != FieldType.List)
+                throw new Exception("Attempting to retrieve array information from a field that doesn't contain a list.");
+
+            return Internal_CreateManagedListInstance(mCachedPtr, length);
+        }
+
+        public IDictionary CreateDictionaryInstance()
+        {
+            if (type != FieldType.Dictionary)
+                throw new Exception("Attempting to retrieve array information from a field that doesn't contain a dictionary.");
+
+            return Internal_CreateManagedDictionaryInstance(mCachedPtr);
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern SerializableObject Internal_CreateObject(IntPtr nativeInstance, object instance);
 
@@ -114,10 +152,22 @@ namespace BansheeEngine
         private static extern SerializableArray Internal_CreateArray(IntPtr nativeInstance, Array instance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern SerializableList Internal_CreateList(IntPtr nativeInstance, IList instance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern SerializableDictionary Internal_CreateDictionary(IntPtr nativeInstance, IDictionary instance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern object Internal_CreateMangedObjectInstance(IntPtr nativeInstance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern Array Internal_CreateManagedArrayInstance(IntPtr nativeInstance, int[] lengths);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern IList Internal_CreateManagedListInstance(IntPtr nativeInstance, int length);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern IDictionary Internal_CreateManagedDictionaryInstance(IntPtr nativeInstance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern object Internal_CloneManagedInstance(IntPtr nativeInstance, object original);

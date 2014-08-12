@@ -7,13 +7,13 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
-    public class InspectableInt : InspectableObjectBase
+    public class InspectableFloat : InspectableObjectBase
     {
-        private int oldPropertyValue;
-        private GUIIntField guiIntField;
+        private float oldPropertyValue;
+        private GUIFloatField guiFloatField;
         private bool isInitialized;
 
-        public InspectableInt(string title, InspectableFieldLayout layout, SerializableProperty property)
+        public InspectableFloat(string title, InspectableFieldLayout layout, SerializableProperty property)
             : base(title, layout, property)
         {
 
@@ -21,12 +21,12 @@ namespace BansheeEditor
 
         private void Initialize(int layoutIndex)
         {
-            if (property.Type == SerializableProperty.FieldType.Int)
+            if (property.Type == SerializableProperty.FieldType.Float)
             {
-                guiIntField = new GUIIntField(new GUIContent(title));
-                guiIntField.OnChanged += OnFieldValueChanged;
+                guiFloatField = new GUIFloatField(new GUIContent(title));
+                guiFloatField.OnChanged += OnFieldValueChanged;
 
-                layout.AddElement(layoutIndex, guiIntField);
+                layout.AddElement(layoutIndex, guiFloatField);
             }
 
             isInitialized = true;
@@ -37,7 +37,7 @@ namespace BansheeEditor
             if (!isInitialized)
                 return true;
 
-            int newPropertyValue = property.GetValue<int>();
+            float newPropertyValue = property.GetValue<float>();
             if (oldPropertyValue != newPropertyValue)
             {
                 oldPropertyValue = newPropertyValue;
@@ -57,11 +57,11 @@ namespace BansheeEditor
 
             // TODO - Skip update if it currently has input focus so user can modify the value in peace
 
-            if(guiIntField != null)
-                guiIntField.Value = property.GetValue<int>();
+            if (guiFloatField != null)
+                guiFloatField.Value = property.GetValue<float>();
         }
 
-        private void OnFieldValueChanged(int newValue)
+        private void OnFieldValueChanged(float newValue)
         {
             property.SetValue(newValue);
         }

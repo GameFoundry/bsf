@@ -7,8 +7,12 @@
 #include "BsManagedSerializableObjectInfo.h"
 #include "BsScriptSerializableObject.h"
 #include "BsScriptSerializableArray.h"
+#include "BsScriptSerializableList.h"
+#include "BsScriptSerializableDictionary.h"
 #include "BsManagedSerializableObject.h"
 #include "BsManagedSerializableArray.h"
+#include "BsManagedSerializableList.h"
+#include "BsManagedSerializableDictionary.h"
 #include "BsManagedSerializableField.h"
 #include "BsMemorySerializer.h"
 
@@ -24,8 +28,12 @@ namespace BansheeEngine
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateObject", &ScriptSerializableProperty::internal_createObject);
 		metaData.scriptClass->addInternalCall("Internal_CreateArray", &ScriptSerializableProperty::internal_createArray);
+		metaData.scriptClass->addInternalCall("Internal_CreateList", &ScriptSerializableProperty::internal_createList);
+		metaData.scriptClass->addInternalCall("Internal_CreateDictionary", &ScriptSerializableProperty::internal_createDictionary);
 		metaData.scriptClass->addInternalCall("Internal_CreateManagedObjectInstance", &ScriptSerializableProperty::internal_createManagedObjectInstance);
 		metaData.scriptClass->addInternalCall("Internal_CreateManagedArrayInstance", &ScriptSerializableProperty::internal_createManagedArrayInstance);
+		metaData.scriptClass->addInternalCall("Internal_CreateManagedListInstance", &ScriptSerializableProperty::internal_createManagedListInstance);
+		metaData.scriptClass->addInternalCall("Internal_CreateManagedDictionaryInstance", &ScriptSerializableProperty::internal_createManagedDictionaryInstance);
 		metaData.scriptClass->addInternalCall("Internal_CloneManagedInstance", &ScriptSerializableProperty::internal_cloneManagedInstance);
 	}
 
@@ -53,6 +61,22 @@ namespace BansheeEngine
 		return newObject->getManagedInstance();
 	}
 
+	MonoObject* ScriptSerializableProperty::internal_createList(ScriptSerializableProperty* nativeInstance, MonoObject* object)
+	{
+		ManagedSerializableTypeInfoListPtr listTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoList>(nativeInstance->mTypeInfo);
+		ScriptSerializableList* newObject = ScriptSerializableList::create(listTypeInfo, object);
+
+		return newObject->getManagedInstance();
+	}
+
+	MonoObject* ScriptSerializableProperty::internal_createDictionary(ScriptSerializableProperty* nativeInstance, MonoObject* object)
+	{
+		ManagedSerializableTypeInfoDictionaryPtr dictTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoDictionary>(nativeInstance->mTypeInfo);
+		ScriptSerializableDictionary* newObject = ScriptSerializableDictionary::create(dictTypeInfo, object);
+
+		return newObject->getManagedInstance();
+	}
+
 	MonoObject* ScriptSerializableProperty::internal_createManagedObjectInstance(ScriptSerializableProperty* nativeInstance)
 	{
 		ManagedSerializableTypeInfoObjectPtr objectTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoObject>(nativeInstance->mTypeInfo);
@@ -68,6 +92,18 @@ namespace BansheeEngine
 
 		ManagedSerializableTypeInfoArrayPtr arrayTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoArray>(nativeInstance->mTypeInfo);
 		return ManagedSerializableArray::createManagedInstance(arrayTypeInfo, nativeSizes);
+	}
+
+	MonoObject* ScriptSerializableProperty::internal_createManagedListInstance(ScriptSerializableProperty* nativeInstance, int size)
+	{
+		ManagedSerializableTypeInfoListPtr listTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoList>(nativeInstance->mTypeInfo);
+		return ManagedSerializableList::createManagedInstance(listTypeInfo, size);
+	}
+
+	MonoObject* ScriptSerializableProperty::internal_createManagedDictionaryInstance(ScriptSerializableProperty* nativeInstance)
+	{
+		ManagedSerializableTypeInfoDictionaryPtr dictTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoDictionary>(nativeInstance->mTypeInfo);
+		return ManagedSerializableDictionary::createManagedInstance(dictTypeInfo);
 	}
 
 	MonoObject* ScriptSerializableProperty::internal_cloneManagedInstance(ScriptSerializableProperty* nativeInstance, MonoObject* original)

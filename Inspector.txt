@@ -4,9 +4,6 @@ Update GUIFoldout with sub styles
 Test if drag and dropping scene objects works with object and resource fields. Especially custom resources and components.
 
 Transient meshes don't seem to be released properly in 100% of the cases
-Finalizers get called from a different thread
- - This is especially noticeable in ScriptManagedResource where I call gResources().unload from that thread. I should probably not be doing that and instead queuing that for later on main thread.
- - I added some code for handling this. It needs testing
 
 Test custom resources:
  - Can I load them? (Will likely need ProjectLIbrary::load)
@@ -15,6 +12,7 @@ Test custom resources:
 ARRAY TODO:
  - Ensure that case when array is null is handled properly. Will likely need a [Create] button. And a [Clear] button?
  - Need a GUIFoldout that doesn't have BG and is just a single button.
+ - Don't render inspector if array is multi-rank
 
 TODO:
  - Add inspector support for lists and objects

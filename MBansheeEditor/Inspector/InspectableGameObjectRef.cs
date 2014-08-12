@@ -7,13 +7,13 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
-    public class InspectableInt : InspectableObjectBase
+    public class InspectableGameObjectRef : InspectableObjectBase
     {
-        private int oldPropertyValue;
-        private GUIIntField guiIntField;
+        private GameObject oldPropertyValue;
+        private GUIGameObjectField guiField;
         private bool isInitialized;
 
-        public InspectableInt(string title, InspectableFieldLayout layout, SerializableProperty property)
+        public InspectableGameObjectRef(string title, InspectableFieldLayout layout, SerializableProperty property)
             : base(title, layout, property)
         {
 
@@ -21,12 +21,12 @@ namespace BansheeEditor
 
         private void Initialize(int layoutIndex)
         {
-            if (property.Type == SerializableProperty.FieldType.Int)
+            if (property.Type == SerializableProperty.FieldType.GameObjectRef)
             {
-                guiIntField = new GUIIntField(new GUIContent(title));
-                guiIntField.OnChanged += OnFieldValueChanged;
+                guiField = new GUIGameObjectField(property.InternalType, new GUIContent(title));
+                guiField.OnChanged += OnFieldValueChanged;
 
-                layout.AddElement(layoutIndex, guiIntField);
+                layout.AddElement(layoutIndex, guiField);
             }
 
             isInitialized = true;
@@ -37,7 +37,7 @@ namespace BansheeEditor
             if (!isInitialized)
                 return true;
 
-            int newPropertyValue = property.GetValue<int>();
+            GameObject newPropertyValue = property.GetValue<GameObject>();
             if (oldPropertyValue != newPropertyValue)
             {
                 oldPropertyValue = newPropertyValue;
@@ -55,13 +55,11 @@ namespace BansheeEditor
             if (!isInitialized)
                 Initialize(layoutIndex);
 
-            // TODO - Skip update if it currently has input focus so user can modify the value in peace
-
-            if(guiIntField != null)
-                guiIntField.Value = property.GetValue<int>();
+            if (guiField != null)
+                guiField.Value = property.GetValue<GameObject>();
         }
 
-        private void OnFieldValueChanged(int newValue)
+        private void OnFieldValueChanged(GameObject newValue)
         {
             property.SetValue(newValue);
         }
