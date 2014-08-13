@@ -7,6 +7,7 @@
 #include "BsException.h"
 #include "BsGUIElementStyle.h"
 #include "BsScriptGUIElementStateStyle.h"
+#include "BsMonoUtil.h"
 
 namespace BansheeEngine
 {
@@ -33,6 +34,7 @@ namespace BansheeEngine
 	void ScriptGUIElementStyle::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIElementStyle::internal_createInstance);
+		metaData.scriptClass->addInternalCall("Internal_AddSubStyle", &ScriptGUIElementStyle::internal_addSubStyle);
 
 		BS_SCRIPT_SETGET_META(ScriptGUIElementStyle, Font);
 
@@ -82,5 +84,13 @@ namespace BansheeEngine
 		free(nativeName);
 
 		ScriptGUIElementStyle* nativeInstance = new (bs_alloc<ScriptGUIElementStyle>()) ScriptGUIElementStyle(instance, styleName, externalStyle);
+	}
+
+	void ScriptGUIElementStyle::internal_addSubStyle(ScriptGUIElementStyle* nativeInstance, MonoString* guiType, MonoString* styleName)
+	{
+		String guiTypeStr = MonoUtil::monoToString(guiType);
+		String styleNameStr = MonoUtil::monoToString(styleName);
+
+		nativeInstance->getInternalValue()->subStyles[guiTypeStr] = styleNameStr;
 	}
 }

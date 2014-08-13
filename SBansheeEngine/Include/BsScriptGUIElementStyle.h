@@ -30,6 +30,7 @@ namespace BansheeEngine
 	private:
 		static void internal_createInstance(MonoObject* instance, MonoString* name);
 		static void internal_createInstanceExternal(MonoObject* instance, MonoString* name, GUIElementStyle* externalStyle);
+		static void internal_addSubStyle(ScriptGUIElementStyle* nativeInstance, MonoString* guiType, MonoString* styleName);
 
 		BS_SCRIPT_GETSET_OBJECT_SHRDPTR(ScriptGUIElementStyle, ScriptFont, Font, mElementStyle->font, mFont);
 

@@ -186,6 +186,14 @@ namespace BansheeEngine
             set { Internal_SetFixedHeight(mCachedPtr, value); }
         }
 
+        public void AddSubStyle(string guiType, string styleName)
+        {
+            if (guiType == null || styleName == null)
+                return;
+
+            Internal_AddSubStyle(mCachedPtr, guiType, styleName);
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateInstance(GUIElementStyle instance);
 
@@ -317,5 +325,8 @@ namespace BansheeEngine
         private static extern void Internal_GetFixedHeight(IntPtr nativeInstance, out bool value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_SetFixedHeight(IntPtr nativeInstance, bool value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_AddSubStyle(IntPtr nativeInstance, string guiType, string styleName);
     }
 }
