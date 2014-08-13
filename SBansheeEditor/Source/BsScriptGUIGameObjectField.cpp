@@ -56,17 +56,15 @@ namespace BansheeEngine
 		String typeNamespace = mono_class_get_namespace(monoClass);
 		String typeName = mono_class_get_name(monoClass);
 
-		String fullTypeName = typeNamespace + "::" + typeName;
-
 		GUIGameObjectField* guiGameObjectField = nullptr;
 		if (withTitle)
 		{
 			GUIContent nativeContent(ScriptGUIContent::getText(title), ScriptGUIContent::getImage(title), ScriptGUIContent::getTooltip(title));
-			guiGameObjectField = GUIGameObjectField::create(fullTypeName, nativeContent, titleWidth, options, styleName);
+			guiGameObjectField = GUIGameObjectField::create(typeNamespace, typeName, nativeContent, titleWidth, options, styleName);
 		}
 		else
 		{
-			guiGameObjectField = GUIGameObjectField::create(fullTypeName, options, styleName);
+			guiGameObjectField = GUIGameObjectField::create(typeNamespace, typeName, options, styleName);
 		}
 
 		guiGameObjectField->onValueChanged.connect(std::bind(&ScriptGUIGameObjectField::onChanged, instance, _1));

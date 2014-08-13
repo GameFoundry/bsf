@@ -12,6 +12,7 @@
 #include "BsGameObjectManager.h"
 #include "BsRuntimeScriptObjects.h"
 #include "BsMonoClass.h"
+#include "BsMonoManager.h"
 #include "BsResources.h"
 #include "BsProjectLibrary.h"
 #include "BsProjectResourceMeta.h"
@@ -24,9 +25,9 @@ namespace BansheeEngine
 {
 	const UINT32 GUIResourceField::DEFAULT_LABEL_WIDTH = 100;
 
-	GUIResourceField::GUIResourceField(const PrivatelyConstruct& dummy, const String& type, const GUIContent& labelContent, UINT32 labelWidth,
+	GUIResourceField::GUIResourceField(const PrivatelyConstruct& dummy, const String& typeNamespace, const String& type, const GUIContent& labelContent, UINT32 labelWidth,
 		const String& style, const GUILayoutOptions& layoutOptions, bool withLabel)
-		:GUIElementContainer(layoutOptions, style), mLabel(nullptr), mClearButton(nullptr), mDropButton(nullptr), mType(type)
+		:GUIElementContainer(layoutOptions, style), mLabel(nullptr), mClearButton(nullptr), mDropButton(nullptr), mType(type), mNamespace(typeNamespace)
 	{
 		mLayout = &addLayoutXInternal(this);
 
@@ -36,8 +37,9 @@ namespace BansheeEngine
 			mLayout->addElement(mLabel);
 		}
 
-		mDropButton = GUIDropButton::create((UINT32)DragAndDropType::SceneObject, GUIOptions(GUIOption::flexibleWidth()), getSubStyleName(EditorGUI::ObjectFieldDropBtnStyleName));
+		mDropButton = GUIDropButton::create((UINT32)DragAndDropType::Resources, GUIOptions(GUIOption::flexibleWidth()), getSubStyleName(EditorGUI::ObjectFieldDropBtnStyleName));
 		mClearButton = GUIButton::create(HString(L""), getSubStyleName(EditorGUI::ObjectFieldClearBtnStyleName));
+		mClearButton->onClick.connect(std::bind(&GUIResourceField::onClearButtonClicked, this));
 
 		mLayout->addElement(mDropButton);
 		mLayout->addElement(mClearButton);
@@ -50,111 +52,111 @@ namespace BansheeEngine
 
 	}
 
-	GUIResourceField* GUIResourceField::create(const String& type, const GUIContent& labelContent, UINT32 labelWidth, const GUIOptions& layoutOptions,
+	GUIResourceField* GUIResourceField::create(const String& typeNamespace, const String& type, const GUIContent& labelContent, UINT32 labelWidth, const GUIOptions& layoutOptions,
 		const String& style)
 	{
 		const String* curStyle = &style;
 		if (*curStyle == StringUtil::BLANK)
 			curStyle = &EditorGUI::ObjectFieldStyleName;
 
-		return bs_new<GUIResourceField>(PrivatelyConstruct(), type, labelContent, labelWidth, *curStyle,
+		return bs_new<GUIResourceField>(PrivatelyConstruct(), typeNamespace, type, labelContent, labelWidth, *curStyle,
 			GUILayoutOptions::create(layoutOptions), true);
 	}
 
-	GUIResourceField* GUIResourceField::create(const String& type, const GUIContent& labelContent, const GUIOptions& layoutOptions,
+	GUIResourceField* GUIResourceField::create(const String& typeNamespace, const String& type, const GUIContent& labelContent, const GUIOptions& layoutOptions,
 		const String& style)
 	{
 		const String* curStyle = &style;
 		if (*curStyle == StringUtil::BLANK)
 			curStyle = &EditorGUI::ObjectFieldStyleName;
 
-		return bs_new<GUIResourceField>(PrivatelyConstruct(), type, labelContent, DEFAULT_LABEL_WIDTH, *curStyle,
+		return bs_new<GUIResourceField>(PrivatelyConstruct(), typeNamespace, type, labelContent, DEFAULT_LABEL_WIDTH, *curStyle,
 			GUILayoutOptions::create(layoutOptions), true);
 	}
 
-	GUIResourceField* GUIResourceField::create(const String& type, const HString& labelText, UINT32 labelWidth, const GUIOptions& layoutOptions,
+	GUIResourceField* GUIResourceField::create(const String& typeNamespace, const String& type, const HString& labelText, UINT32 labelWidth, const GUIOptions& layoutOptions,
 		const String& style)
 	{
 		const String* curStyle = &style;
 		if (*curStyle == StringUtil::BLANK)
 			curStyle = &EditorGUI::ObjectFieldStyleName;
 
-		return bs_new<GUIResourceField>(PrivatelyConstruct(), type, GUIContent(labelText), labelWidth, *curStyle,
+		return bs_new<GUIResourceField>(PrivatelyConstruct(), typeNamespace, type, GUIContent(labelText), labelWidth, *curStyle,
 			GUILayoutOptions::create(layoutOptions), true);
 	}
 
-	GUIResourceField* GUIResourceField::create(const String& type, const HString& labelText, const GUIOptions& layoutOptions,
+	GUIResourceField* GUIResourceField::create(const String& typeNamespace, const String& type, const HString& labelText, const GUIOptions& layoutOptions,
 		const String& style)
 	{
 		const String* curStyle = &style;
 		if (*curStyle == StringUtil::BLANK)
 			curStyle = &EditorGUI::ObjectFieldStyleName;
 
-		return bs_new<GUIResourceField>(PrivatelyConstruct(), type, GUIContent(labelText), DEFAULT_LABEL_WIDTH, *curStyle,
+		return bs_new<GUIResourceField>(PrivatelyConstruct(), typeNamespace, type, GUIContent(labelText), DEFAULT_LABEL_WIDTH, *curStyle,
 			GUILayoutOptions::create(layoutOptions), true);
 	}
 
-	GUIResourceField* GUIResourceField::create(const String& type, const GUIOptions& layoutOptions, const String& style)
+	GUIResourceField* GUIResourceField::create(const String& typeNamespace, const String& type, const GUIOptions& layoutOptions, const String& style)
 	{
 		const String* curStyle = &style;
 		if (*curStyle == StringUtil::BLANK)
 			curStyle = &EditorGUI::ObjectFieldStyleName;
 
-		return bs_new<GUIResourceField>(PrivatelyConstruct(), type, GUIContent(), 0, *curStyle,
+		return bs_new<GUIResourceField>(PrivatelyConstruct(), typeNamespace, type, GUIContent(), 0, *curStyle,
 			GUILayoutOptions::create(layoutOptions), false);
 	}
 
-	GUIResourceField* GUIResourceField::create(const String& type, const GUIContent& labelContent, UINT32 labelWidth,
+	GUIResourceField* GUIResourceField::create(const String& typeNamespace, const String& type, const GUIContent& labelContent, UINT32 labelWidth,
 		const String& style)
 	{
 		const String* curStyle = &style;
 		if (*curStyle == StringUtil::BLANK)
 			curStyle = &EditorGUI::ObjectFieldStyleName;
 
-		return bs_new<GUIResourceField>(PrivatelyConstruct(), type, labelContent, labelWidth, *curStyle,
+		return bs_new<GUIResourceField>(PrivatelyConstruct(), typeNamespace, type, labelContent, labelWidth, *curStyle,
 			GUILayoutOptions::create(), true);
 	}
 
-	GUIResourceField* GUIResourceField::create(const String& type, const GUIContent& labelContent,
+	GUIResourceField* GUIResourceField::create(const String& typeNamespace, const String& type, const GUIContent& labelContent,
 		const String& style)
 	{
 		const String* curStyle = &style;
 		if (*curStyle == StringUtil::BLANK)
 			curStyle = &EditorGUI::ObjectFieldStyleName;
 
-		return bs_new<GUIResourceField>(PrivatelyConstruct(), type, labelContent, DEFAULT_LABEL_WIDTH, *curStyle,
+		return bs_new<GUIResourceField>(PrivatelyConstruct(), typeNamespace, type, labelContent, DEFAULT_LABEL_WIDTH, *curStyle,
 			GUILayoutOptions::create(), true);
 	}
 
-	GUIResourceField* GUIResourceField::create(const String& type, const HString& labelText, UINT32 labelWidth,
+	GUIResourceField* GUIResourceField::create(const String& typeNamespace, const String& type, const HString& labelText, UINT32 labelWidth,
 		const String& style)
 	{
 		const String* curStyle = &style;
 		if (*curStyle == StringUtil::BLANK)
 			curStyle = &EditorGUI::ObjectFieldStyleName;
 
-		return bs_new<GUIResourceField>(PrivatelyConstruct(), type, GUIContent(labelText), labelWidth, *curStyle,
+		return bs_new<GUIResourceField>(PrivatelyConstruct(), typeNamespace, type, GUIContent(labelText), labelWidth, *curStyle,
 			GUILayoutOptions::create(), true);
 	}
 
-	GUIResourceField* GUIResourceField::create(const String& type, const HString& labelText,
+	GUIResourceField* GUIResourceField::create(const String& typeNamespace, const String& type, const HString& labelText,
 		const String& style)
 	{
 		const String* curStyle = &style;
 		if (*curStyle == StringUtil::BLANK)
 			curStyle = &EditorGUI::ObjectFieldStyleName;
 
-		return bs_new<GUIResourceField>(PrivatelyConstruct(), type, GUIContent(labelText), DEFAULT_LABEL_WIDTH, *curStyle,
+		return bs_new<GUIResourceField>(PrivatelyConstruct(), typeNamespace, type, GUIContent(labelText), DEFAULT_LABEL_WIDTH, *curStyle,
 			GUILayoutOptions::create(), true);
 	}
 
-	GUIResourceField* GUIResourceField::create(const String& type, const String& style)
+	GUIResourceField* GUIResourceField::create(const String& typeNamespace, const String& type, const String& style)
 	{
 		const String* curStyle = &style;
 		if (*curStyle == StringUtil::BLANK)
 			curStyle = &EditorGUI::ObjectFieldStyleName;
 
-		return bs_new<GUIResourceField>(PrivatelyConstruct(), type, GUIContent(), 0, *curStyle,
+		return bs_new<GUIResourceField>(PrivatelyConstruct(), typeNamespace, type, GUIContent(), 0, *curStyle,
 			GUILayoutOptions::create(), false);
 	}
 
@@ -178,10 +180,11 @@ namespace BansheeEngine
 		Path filePath;
 		if (Resources::instance().getFilePathFromUUID(mUUID, filePath))
 		{
-			mDropButton->setContent(GUIContent(filePath.getFilename(false)));
+			WString title = filePath.getWFilename(false) + L" (" + toWString(mType) + L")";
+			mDropButton->setContent(GUIContent(HString(title)));
 		}
 		else
-			mDropButton->setContent(GUIContent(HString(L"None")));
+			mDropButton->setContent(GUIContent(HString(L"None (" + toWString(mType) + L")")));
 
 		onValueChanged(mUUID);
 	}
@@ -205,6 +208,8 @@ namespace BansheeEngine
 		if (numResources <= 0)
 			return;
 
+		MonoClass* acceptedClass = MonoManager::instance().findClass(mNamespace, mType);
+
 		for (UINT32 i = 0; i < numResources; i++)
 		{
 			String uuid = draggedResources->resourceUUIDs[i];
@@ -219,8 +224,7 @@ namespace BansheeEngine
 			{
 			case TID_Texture:
 			{
-				const String& texTypeName = RuntimeScriptObjects::instance().getTextureClass()->getFullName();
-				if (texTypeName == mType)
+				if (RuntimeScriptObjects::instance().getTextureClass()->isSubClassOf(acceptedClass))
 				{
 					setUUID(uuid);
 					found = true;
@@ -229,8 +233,7 @@ namespace BansheeEngine
 				break;
 			case TID_SpriteTexture:
 			{
-				const String& spriteTexTypeName = RuntimeScriptObjects::instance().getSpriteTextureClass()->getFullName();
-				if (spriteTexTypeName == mType)
+				if (RuntimeScriptObjects::instance().getSpriteTextureClass()->isSubClassOf(acceptedClass))
 				{
 					setUUID(uuid);
 					found = true;
@@ -240,9 +243,9 @@ namespace BansheeEngine
 			case TID_ManagedResource:
 			{
 				ManagedResourceMetaDataPtr managedResMetaData = std::static_pointer_cast<ManagedResourceMetaData>(meta->getResourceMetaData());
-				String fullTypeName = managedResMetaData->typeNamespace + "." + managedResMetaData->typeName;
+				MonoClass* providedClass = MonoManager::instance().findClass(managedResMetaData->typeNamespace, managedResMetaData->typeName);
 
-				if (fullTypeName == mType)
+				if (providedClass->isSubClassOf(acceptedClass))
 				{
 					setUUID(uuid);
 					found = true;
@@ -265,6 +268,11 @@ namespace BansheeEngine
 
 		mDropButton->setStyle(getSubStyleName(EditorGUI::ObjectFieldDropBtnStyleName));
 		mClearButton->setStyle(getSubStyleName(EditorGUI::ObjectFieldClearBtnStyleName));
+	}
+
+	void GUIResourceField::onClearButtonClicked()
+	{
+		setValue(HResource());
 	}
 
 	const String& GUIResourceField::getGUITypeName()

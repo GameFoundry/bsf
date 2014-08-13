@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace BansheeEngine
 {
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential), SerializeObject]
     public struct Vector3
     {
         public static readonly Vector3 zero = new Vector3(0.0f, 0.0f, 0.0f);

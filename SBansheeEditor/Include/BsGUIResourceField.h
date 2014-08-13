@@ -12,35 +12,35 @@ namespace BansheeEngine
 	public:
 		static const String& getGUITypeName();
 
-		static GUIResourceField* create(const String& type, const GUIContent& labelContent, UINT32 labelWidth, const GUIOptions& layoutOptions,
+		static GUIResourceField* create(const String& typeNamespace, const String& type, const GUIContent& labelContent, UINT32 labelWidth, const GUIOptions& layoutOptions,
 			const String& style = StringUtil::BLANK);
 
-		static GUIResourceField* create(const String& type, const GUIContent& labelContent, const GUIOptions& layoutOptions,
+		static GUIResourceField* create(const String& typeNamespace, const String& type, const GUIContent& labelContent, const GUIOptions& layoutOptions,
 			const String& style = StringUtil::BLANK);
 
-		static GUIResourceField* create(const String& type, const HString& labelText, UINT32 labelWidth, const GUIOptions& layoutOptions,
+		static GUIResourceField* create(const String& typeNamespace, const String& type, const HString& labelText, UINT32 labelWidth, const GUIOptions& layoutOptions,
 			const String& style = StringUtil::BLANK);
 
-		static GUIResourceField* create(const String& type, const HString& labelText, const GUIOptions& layoutOptions,
+		static GUIResourceField* create(const String& typeNamespace, const String& type, const HString& labelText, const GUIOptions& layoutOptions,
 			const String& style = StringUtil::BLANK);
 
-		static GUIResourceField* create(const String& type, const GUIOptions& layoutOptions, const String& style = StringUtil::BLANK);
+		static GUIResourceField* create(const String& typeNamespace, const String& type, const GUIOptions& layoutOptions, const String& style = StringUtil::BLANK);
 
-		static GUIResourceField* create(const String& type, const GUIContent& labelContent, UINT32 labelWidth,
+		static GUIResourceField* create(const String& typeNamespace, const String& type, const GUIContent& labelContent, UINT32 labelWidth,
 			const String& style = StringUtil::BLANK);
 
-		static GUIResourceField* create(const String& type, const GUIContent& labelContent,
+		static GUIResourceField* create(const String& typeNamespace, const String& type, const GUIContent& labelContent,
 			const String& style = StringUtil::BLANK);
 
-		static GUIResourceField* create(const String& type, const HString& labelText, UINT32 labelWidth,
+		static GUIResourceField* create(const String& typeNamespace, const String& type, const HString& labelText, UINT32 labelWidth,
 			const String& style = StringUtil::BLANK);
 
-		static GUIResourceField* create(const String& type, const HString& labelText,
+		static GUIResourceField* create(const String& typeNamespace, const String& type, const HString& labelText,
 			const String& style = StringUtil::BLANK);
 
-		static GUIResourceField* create(const String& type, const String& style = StringUtil::BLANK);
+		static GUIResourceField* create(const String& typeNamespace, const String& type, const String& style = StringUtil::BLANK);
 
-		GUIResourceField(const PrivatelyConstruct& dummy, const String& type, const GUIContent& labelContent,
+		GUIResourceField(const PrivatelyConstruct& dummy, const String& typeNamespace, const String& type, const GUIContent& labelContent,
 			UINT32 labelWidth, const String& style, const GUILayoutOptions& layoutOptions, bool withLabel);
 
 		HResource getValue() const;
@@ -61,6 +61,7 @@ namespace BansheeEngine
 		void styleUpdated();
 
 		void dataDropped(void* data);
+		void onClearButtonClicked();
 
 	private:
 		static const UINT32 DEFAULT_LABEL_WIDTH;
@@ -69,6 +70,7 @@ namespace BansheeEngine
 		GUILabel* mLabel;
 		GUIDropButton* mDropButton;
 		GUIButton* mClearButton;
+		String mNamespace;
 		String mType;
 		String mUUID;
 	};

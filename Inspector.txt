@@ -1,23 +1,18 @@
 Update C# GUIElementStyle with sub styles
 Update GUIFoldout with sub styles
 
-Test if drag and dropping scene objects works with object and resource fields. Especially custom resources and components.
-
 Transient meshes don't seem to be released properly in 100% of the cases
+ - Might be related to creating/destroying GUI elements?
 
 Test custom resources:
  - Can I load them? (Will likely need ProjectLIbrary::load)
  - Can I reference them in Component and will the reference be held after after cloning?
 
 ARRAY TODO:
- - Ensure that case when array is null is handled properly. Will likely need a [Create] button. And a [Clear] button?
-   - Need the same for List and Object
  - Need a GUIFoldout that doesn't have BG and is just a single button.
  - Don't render inspector if array is multi-rank
 
 TODO:
- - Add inspector support for lists and objects
- - Add all remaining field type Inspectable* classes
  - Ensure fields aren't updated from the app when in focus
  - Entire foldout should be clickable, not just the toggle button
  - Extend text field so it can be multi-line
@@ -28,6 +23,9 @@ TODO:
 KEEP IN MIND:
  - Clicking on an object/resource in inspector should ping it in their window
  - Inspector needs to be organized in such a way that scroll areas work. That should be possible with GUIPanelContainer.
+
+
+
 
 
 

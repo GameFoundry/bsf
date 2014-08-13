@@ -11,6 +11,9 @@ namespace BansheeEngine
 	public:
 		MonoObject* getManagedInstance() const { return mManagedInstance; }
 		MonoReflectionType* getRuntimeType() const { return mRuntimeType; }
+
+		const String& getManagedNamespace() const { return mNamespace; }
+		const String& getManagedTypeName() const { return mTypeName; }
 		const String& getManagedFullTypeName() const { return mFullTypeName; }
 
 	private:

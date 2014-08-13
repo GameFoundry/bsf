@@ -34,6 +34,7 @@ namespace BansheeEngine
 		mLayout->addElement(mInputBox);
 
 		setValue(0);
+		mInputBox->setText(L"0");
 	}
 
 	GUIFloatField::~GUIFloatField()
@@ -124,7 +125,13 @@ namespace BansheeEngine
 	void GUIFloatField::setValue(float value)
 	{
 		mValue = value;
-		mInputBox->setText(toWString(value));
+
+		// Only update with new value if it actually changed, otherwise
+		// problems can occur when user types in "0." and the field
+		// updates back to "0" effectively making "." unusable
+		float curValue = parseFloat(mInputBox->getText());
+		if (mValue != curValue)
+			mInputBox->setText(toWString(value));
 	}
 
 	void GUIFloatField::updateClippedBounds()

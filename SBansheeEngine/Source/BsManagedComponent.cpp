@@ -22,6 +22,8 @@ namespace BansheeEngine
 			return;
 		}
 
+		setName(mTypeName);
+
 		construct(managedClass->createInstance(), runtimeType);
 	}
 

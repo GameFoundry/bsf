@@ -19,7 +19,7 @@ namespace BansheeEngine
 	}
 
 	GUIDropButton::GUIDropButton(UINT32 dragType, const String& styleName, const GUILayoutOptions& layoutOptions)
-		:GUIButtonBase(styleName, GUIContent(HString(L"None")), layoutOptions)
+		:GUIButtonBase(styleName, GUIContent(HString(L"None")), layoutOptions), mDragType(dragType)
 	{
 
 	}
@@ -79,5 +79,10 @@ namespace BansheeEngine
 		}
 
 		return processed;
+	}
+
+	bool GUIDropButton::_acceptDragAndDrop(const Vector2I position, UINT32 typeId) const
+	{
+		return typeId == mDragType;
 	}
 }

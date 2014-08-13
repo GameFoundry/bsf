@@ -56,17 +56,15 @@ namespace BansheeEngine
 		String typeNamespace = mono_class_get_namespace(monoClass);
 		String typeName = mono_class_get_name(monoClass);
 
-		String fullTypeName = typeNamespace + "::" + typeName;
-
 		GUIResourceField* guiResourceField = nullptr;
 		if (withTitle)
 		{
 			GUIContent nativeContent(ScriptGUIContent::getText(title), ScriptGUIContent::getImage(title), ScriptGUIContent::getTooltip(title));
-			guiResourceField = GUIResourceField::create(fullTypeName, nativeContent, titleWidth, options, styleName);
+			guiResourceField = GUIResourceField::create(typeNamespace, typeName, nativeContent, titleWidth, options, styleName);
 		}
 		else
 		{
-			guiResourceField = GUIResourceField::create(fullTypeName, options, styleName);
+			guiResourceField = GUIResourceField::create(typeNamespace, typeName, options, styleName);
 		}
 
 		guiResourceField->onValueChanged.connect(std::bind(&ScriptGUIResourceField::onChanged, instance, _1));
