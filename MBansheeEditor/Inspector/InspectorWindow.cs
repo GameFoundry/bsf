@@ -8,7 +8,7 @@ namespace BansheeEditor
     {
         private class InspectorData
         {
-            public GUIFoldout foldout;
+            public GUIComponentFoldout foldout;
             public GUIPanelContainer container;
             public Inspector inspector;
             public bool expanded = true;
@@ -31,7 +31,7 @@ namespace BansheeEditor
                 InspectorData data = new InspectorData();
                 GUIPanel inspectorPanel = CreatePanel(0, 0, 0, 0);
 
-                data.foldout = new GUIFoldout(allComponents[i].GetType().Name);
+                data.foldout = new GUIComponentFoldout(allComponents[i].GetType().Name);
                 inspectorLayout.AddElement(data.foldout);
                 data.container = new GUIPanelContainer(inspectorPanel);
                 inspectorLayout.AddElement(data.container);

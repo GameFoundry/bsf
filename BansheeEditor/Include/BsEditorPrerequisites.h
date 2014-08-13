@@ -40,7 +40,7 @@ namespace BansheeEngine
 	class GUIVector4Field;
 	class GUIColorField;
 	class GUIColor;
-	class GUIFoldout;
+	class GUIComponentFoldout;
 	class GUIDropButton;
 	class EditorWindowManager;
 	class DockManager;

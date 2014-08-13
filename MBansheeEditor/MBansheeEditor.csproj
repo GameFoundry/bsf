@@ -51,7 +51,7 @@
     <Compile Include="GUI\GUIVector3Field.cs" />
     <Compile Include="GUI\GUIColorField.cs" />
     <Compile Include="GUI\GUIFloatField.cs" />
-    <Compile Include="GUI\GUIFoldout.cs" />
+    <Compile Include="GUI\GUIComponentFoldout.cs" />
     <Compile Include="GUI\GUIIntField.cs" />
     <Compile Include="GUI\GUIPanelContainer.cs" />
     <Compile Include="GUI\GUITextField.cs" />

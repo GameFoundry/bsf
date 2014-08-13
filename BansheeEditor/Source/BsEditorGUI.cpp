@@ -18,6 +18,7 @@
 #include "BsGUIVector2Field.h"
 #include "BsGUIVector3Field.h"
 #include "BsGUIVector4Field.h"
+#include "BsGUIComponentFoldout.h"
 
 #include "BsFont.h"
 #include "BsFontImportOptions.h"
@@ -345,28 +346,6 @@ namespace BansheeEngine
 		inputBoxStyle.textVertAlign = TVA_Top;
 
 		mSkin.setStyle(GUIInputBox::getGUITypeName(), inputBoxStyle);
-
-		// Foldout
-		GUIElementStyle foldoutBtnStyle;
-		foldoutBtnStyle.normal.texture = getTexture(FoldoutClosedNormalTex);
-		foldoutBtnStyle.hover.texture = getTexture(FoldoutClosedHoverTex);
-		foldoutBtnStyle.active.texture = foldoutBtnStyle.hover.texture;
-		foldoutBtnStyle.normalOn.texture = getTexture(FoldoutOpenNormalTex);
-		foldoutBtnStyle.hoverOn.texture = getTexture(FoldoutOpenHoverTex);
-		foldoutBtnStyle.activeOn.texture = foldoutBtnStyle.hoverOn.texture;
-		foldoutBtnStyle.fixedHeight = true;
-		foldoutBtnStyle.fixedWidth = true;
-		foldoutBtnStyle.height = 10;
-		foldoutBtnStyle.width = 8;
-
-		mSkin.setStyle("FoldoutButton", foldoutBtnStyle);
-
-		GUIElementStyle foldoutBackgroundStyle;
-		foldoutBackgroundStyle.normal.texture = getTexture(FoldoutBackgroundTex);
-		foldoutBackgroundStyle.fixedHeight = true;
-		foldoutBackgroundStyle.height = 12;
-
-		mSkin.setStyle("FoldoutBackground", foldoutBackgroundStyle);
 
 		/************************************************************************/
 		/* 								SCROLL BAR                      		*/
@@ -926,6 +905,40 @@ namespace BansheeEngine
 		editorVector4FieldStyle.subStyles[GUIVector4Field::getFloatFieldStyleType()] = GUIFloatField::getGUITypeName();
 
 		mSkin.setStyle(GUIVector4Field::getGUITypeName(), editorVector4FieldStyle);
+
+		/************************************************************************/
+		/* 							COMPONENT FOLDOUT                      		*/
+		/************************************************************************/
+		GUIElementStyle cmpFoldoutBtnStyle;
+		cmpFoldoutBtnStyle.normal.texture = getTexture(FoldoutClosedNormalTex);
+		cmpFoldoutBtnStyle.hover.texture = getTexture(FoldoutClosedHoverTex);
+		cmpFoldoutBtnStyle.active.texture = cmpFoldoutBtnStyle.hover.texture;
+		cmpFoldoutBtnStyle.normalOn.texture = getTexture(FoldoutOpenNormalTex);
+		cmpFoldoutBtnStyle.hoverOn.texture = getTexture(FoldoutOpenHoverTex);
+		cmpFoldoutBtnStyle.activeOn.texture = cmpFoldoutBtnStyle.hoverOn.texture;
+		cmpFoldoutBtnStyle.fixedHeight = true;
+		cmpFoldoutBtnStyle.fixedWidth = true;
+		cmpFoldoutBtnStyle.height = 10;
+		cmpFoldoutBtnStyle.width = 8;
+
+		mSkin.setStyle(GUIComponentFoldout::getFoldoutButtonStyleType(), cmpFoldoutBtnStyle);
+
+		GUIElementStyle cmpFoldoutBackgroundStyle;
+		cmpFoldoutBackgroundStyle.normal.texture = getTexture(FoldoutBackgroundTex);
+		cmpFoldoutBackgroundStyle.fixedHeight = true;
+		cmpFoldoutBackgroundStyle.height = 12;
+
+		mSkin.setStyle(GUIComponentFoldout::getBackgroundStyleType(), cmpFoldoutBackgroundStyle);
+
+		GUIElementStyle cmpFoldoutStyle;
+		cmpFoldoutStyle.fixedHeight = true;
+		cmpFoldoutStyle.height = 12;
+		cmpFoldoutStyle.minWidth = 30;
+		cmpFoldoutStyle.subStyles[GUIComponentFoldout::getLabelStyleType()] = GUIComponentFoldout::getLabelStyleType();
+		cmpFoldoutStyle.subStyles[GUIComponentFoldout::getFoldoutButtonStyleType()] = GUIComponentFoldout::getFoldoutButtonStyleType();
+		cmpFoldoutStyle.subStyles[GUIComponentFoldout::getBackgroundStyleType()] = GUIComponentFoldout::getBackgroundStyleType();
+
+		mSkin.setStyle(GUIComponentFoldout::getGUITypeName(), cmpFoldoutStyle);
 	}
 
 	HSpriteTexture EditorGUI::getTexture(const WString& name)

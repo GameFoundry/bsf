@@ -1,6 +1,3 @@
-Update C# GUIElementStyle with sub styles
-Update GUIFoldout with sub styles
-
 Transient meshes don't seem to be released properly in 100% of the cases
  - Might be related to creating/destroying GUI elements?
 
@@ -23,6 +20,12 @@ TODO:
 KEEP IN MIND:
  - Clicking on an object/resource in inspector should ping it in their window
  - Inspector needs to be organized in such a way that scroll areas work. That should be possible with GUIPanelContainer.
+
+
+
+
+
+
 
 
 

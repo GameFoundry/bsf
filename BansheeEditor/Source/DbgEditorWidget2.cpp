@@ -15,7 +15,7 @@
 #include "BsGUIToggleField.h"
 #include "BsGUIColorField.h"
 #include "BsGUIButton.h"
-#include "BsGUIFoldout.h"
+#include "BsGUIComponentFoldout.h"
 #include "BsGUISpace.h"
 #include "BsHString.h"
 
@@ -57,7 +57,7 @@ namespace BansheeEngine
 		GUIVector2Field* vec2Field = GUIVector2Field::create(HString(L"Vec2 Field"), GUIOptions(GUIOption::fixedWidth(200)));
 		GUIToggleField* toggleField = GUIToggleField::create(HString(L"Toggle Field"), GUIOptions(GUIOption::fixedWidth(200)));
 		GUIColorField* colorField = GUIColorField::create(HString(L"Color Field"), GUIOptions(GUIOption::fixedWidth(200)));
-		GUIFoldout* foldout = GUIFoldout::create(HString(L"Test"), GUIOptions(GUIOption::fixedWidth(200)));
+		GUIComponentFoldout* foldout = GUIComponentFoldout::create(HString(L"Test"), GUIOptions(GUIOption::fixedWidth(200)));
 		colorField->setValue(Color::Red);
 
 		GUIButton* button = GUIButton::create(HString(L"Testing"), GUIOptions(GUIOption::fixedWidth(100)));

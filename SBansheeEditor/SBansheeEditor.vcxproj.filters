@@ -21,9 +21,6 @@
     <ClInclude Include="Include\BsScriptEditorWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsScriptGUIFoldout.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsScriptGUIIntField.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -72,15 +69,15 @@
     <ClInclude Include="Include\BsEditorScriptManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsScriptGUIComponentFoldout.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsScriptEditorPlugin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsScriptEditorWindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsScriptGUIFoldout.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsScriptGUIIntField.cpp">
@@ -129,6 +126,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsEditorScriptManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptGUIComponentFoldout.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
