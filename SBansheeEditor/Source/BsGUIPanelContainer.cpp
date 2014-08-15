@@ -51,7 +51,20 @@ namespace BansheeEngine
 
 	Vector2I GUIPanelContainer::_getOptimalSize() const
 	{
-		return Vector2I(0, 0);
+		const Vector<ScriptGUIArea*> areas = mGUIPanel->getAreas();
+
+		Vector2I optimalSize;
+
+		for (auto& scriptArea : areas)
+		{
+			GUIArea* area = scriptArea->getInternalValue();
+			area->_update();
+
+			optimalSize.x = std::max(optimalSize.x, area->getLayout()._getOptimalSize().x);
+			optimalSize.y = std::max(optimalSize.y, area->getLayout()._getOptimalSize().y);
+		}
+
+		return optimalSize;
 	}
 
 	const String& GUIPanelContainer::getGUITypeName()

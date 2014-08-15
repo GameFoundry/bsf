@@ -15,6 +15,7 @@ namespace BansheeEditor
         }
 
         private List<InspectorData> inspectorData = new List<InspectorData>();
+        private GUIScrollArea inspectorScrollArea;
         private GUILayout inspectorLayout;
 
         internal void SetObjectToInspect(SceneObject so)
@@ -23,7 +24,9 @@ namespace BansheeEditor
 
             // TODO - Create SceneObject gui elements (name + transform)
 
-            inspectorLayout = GUI.layout.AddLayoutY();
+            inspectorScrollArea = new GUIScrollArea();
+            GUI.layout.AddElement(inspectorScrollArea);
+            inspectorLayout = inspectorScrollArea.layout;
 
             Component[] allComponents = so.GetComponents();
             for (int i = 0; i < allComponents.Length; i++)
@@ -90,10 +93,10 @@ namespace BansheeEditor
 
             inspectorData.Clear();
 
-            if (inspectorLayout != null)
+            if (inspectorScrollArea != null)
             {
-                inspectorLayout.Destroy();
-                inspectorLayout = null;
+                inspectorScrollArea.Destroy();
+                inspectorScrollArea = null;
             }
         }
 

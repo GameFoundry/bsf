@@ -49,15 +49,15 @@ namespace BansheeEngine
 		// technically provides "infinite" space
 		UINT32 contentLayoutWidth = width;
 		if(mHorzBarType != ScrollBarType::NeverShow)
-			contentLayoutWidth = mContentLayout->_getOptimalSize().x;
+			contentLayoutWidth = std::max((UINT32)mContentLayout->_getOptimalSize().x, mWidth);
 
 		UINT32 contentLayoutHeight = height;
 		if(mVertBarType != ScrollBarType::NeverShow)
-			contentLayoutHeight = mContentLayout->_getOptimalSize().y;
+			contentLayoutHeight = std::max((UINT32)mContentLayout->_getOptimalSize().y, mHeight);
 
 		mContentLayout->_updateLayoutInternal(x, y, contentLayoutWidth, contentLayoutHeight, clipRect, widgetDepth, areaDepth);
-		mContentWidth = mContentLayout->_getActualWidth();
-		mContentHeight = mContentLayout->_getActualHeight();
+		mContentWidth = std::max(mContentLayout->_getActualWidth(), mWidth);
+		mContentHeight = std::max(mContentLayout->_getActualHeight(), mHeight);
 
 		mClippedContentWidth = width;
 		mClippedContentHeight = height;
