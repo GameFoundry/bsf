@@ -100,7 +100,7 @@ namespace BansheeEngine
 		GUILayout* nativeLayout = &scrollArea->getLayout();
 
 		ScriptGUILayout* nativeInstance = new (bs_alloc<ScriptGUILayout>()) 
-			ScriptGUILayout(instance, nativeLayout, nativeLayout);
+			ScriptGUILayout(instance, nativeLayout, nullptr);
 	}
 
 	void ScriptGUILayout::internal_addElement(ScriptGUILayout* instance, ScriptGUIElementTBase* element)

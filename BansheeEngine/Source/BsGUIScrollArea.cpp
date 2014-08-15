@@ -105,7 +105,7 @@ namespace BansheeEngine
 			if (mHorzBarType == ScrollBarType::NeverShow)
 				maxedContentLayoutWidth = mClippedContentWidth;
 			else
-				maxedContentLayoutWidth = std::max(contentLayoutWidth, maxedContentLayoutWidth); // Never go below optimal size
+				maxedContentLayoutWidth = std::max(contentLayoutWidth, mClippedContentWidth); // Never go below optimal size
 
 			if(hasHorzScrollbar)
 			{

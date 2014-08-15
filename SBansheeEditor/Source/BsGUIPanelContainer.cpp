@@ -43,6 +43,10 @@ namespace BansheeEngine
 			if (area->width() != width || area->height() != height)
 				area->setSize(width, height);
 
+			RectI areaClipRect(clipRect.x - x, clipRect.y - y, clipRect.width, clipRect.height);
+			if (area->getClipRect() != areaClipRect)
+				area->setClipRect(areaClipRect);
+
 			// We want to force the layout update right away otherwise it might get delayed until next frame.
 			// (Since we are currently in a middle of a layout update its possible this area was already processed)
 			area->_update();
