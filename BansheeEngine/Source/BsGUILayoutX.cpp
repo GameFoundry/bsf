@@ -424,7 +424,7 @@ namespace BansheeEngine
 				newClipRect.clip(clipRect);
 				element->_updateLayoutInternal(offset.x, offset.y, childArea.width, childArea.height, newClipRect, widgetDepth, areaDepth);
 
-				mActualHeight = std::max(height, (UINT32)childArea.height);
+				mActualHeight = std::max(mActualHeight, (UINT32)childArea.height);
 			}
 			else if(child->_getType() == GUIElementBase::Type::Layout)
 			{
@@ -435,7 +435,7 @@ namespace BansheeEngine
 				layout->_updateLayoutInternal(childArea.x, childArea.y, childArea.width, height, newClipRect, widgetDepth, areaDepth);
 
 				UINT32 childHeight = layout->_getActualHeight();
-				mActualHeight = std::max(height, childHeight);
+				mActualHeight = std::max(mActualHeight, childHeight);
 			}
 
 			mActualWidth += childArea.width + child->_getPadding().left + child->_getPadding().right;

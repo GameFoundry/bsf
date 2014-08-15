@@ -49,15 +49,20 @@ namespace BansheeEngine
 		// technically provides "infinite" space
 		UINT32 contentLayoutWidth = width;
 		if(mHorzBarType != ScrollBarType::NeverShow)
-			contentLayoutWidth = std::max((UINT32)mContentLayout->_getOptimalSize().x, mWidth);
+			contentLayoutWidth = mContentLayout->_getOptimalSize().x;
 
 		UINT32 contentLayoutHeight = height;
 		if(mVertBarType != ScrollBarType::NeverShow)
-			contentLayoutHeight = std::max((UINT32)mContentLayout->_getOptimalSize().y, mHeight);
+			contentLayoutHeight = mContentLayout->_getOptimalSize().y;
 
-		mContentLayout->_updateLayoutInternal(x, y, contentLayoutWidth, contentLayoutHeight, clipRect, widgetDepth, areaDepth);
-		mContentWidth = std::max(mContentLayout->_getActualWidth(), mWidth);
-		mContentHeight = std::max(mContentLayout->_getActualHeight(), mHeight);
+		UINT32 maxedContentLayoutWidth = std::max(contentLayoutWidth, mWidth);
+		UINT32 maxedContentLayoutHeight = std::max(contentLayoutHeight, mHeight);
+
+		mContentLayout->_updateLayoutInternal(x, y, maxedContentLayoutWidth, maxedContentLayoutHeight, 
+			clipRect, widgetDepth, areaDepth);
+
+		mContentWidth = mContentLayout->_getActualWidth();
+		mContentHeight = mContentLayout->_getActualHeight();
 
 		mClippedContentWidth = width;
 		mClippedContentHeight = height;
@@ -75,11 +80,13 @@ namespace BansheeEngine
 			layoutClipRect.height = mClippedContentHeight;
 			hasHorzScrollbar = true;
 
-			if(mVertBarType == ScrollBarType::NeverShow)
-				contentLayoutHeight = mClippedContentHeight;
+			if (mVertBarType == ScrollBarType::NeverShow)
+				maxedContentLayoutHeight = mClippedContentHeight;
+			else
+				maxedContentLayoutHeight = std::max(contentLayoutHeight, mClippedContentHeight); // Never go below optimal size
 
 			mContentLayout->_updateLayoutInternal(x - Math::floorToInt(mHorzOffset), y, 
-				contentLayoutWidth, contentLayoutHeight, layoutClipRect, widgetDepth, areaDepth);
+				maxedContentLayoutWidth, maxedContentLayoutHeight, layoutClipRect, widgetDepth, areaDepth);
 
 			mContentWidth = mContentLayout->_getActualWidth();
 			mContentHeight = mContentLayout->_getActualHeight();
@@ -95,19 +102,21 @@ namespace BansheeEngine
 			layoutClipRect.width = mClippedContentWidth;
 			hasVertScrollbar = true;
 
-			if(mHorzBarType == ScrollBarType::NeverShow)
-				contentLayoutWidth = mClippedContentWidth;
+			if (mHorzBarType == ScrollBarType::NeverShow)
+				maxedContentLayoutWidth = mClippedContentWidth;
+			else
+				maxedContentLayoutWidth = std::max(contentLayoutWidth, maxedContentLayoutWidth); // Never go below optimal size
 
 			if(hasHorzScrollbar)
 			{
 				mContentLayout->_updateLayoutInternal(x - Math::floorToInt(mHorzOffset), y - Math::floorToInt(mVertOffset), 
-					contentLayoutWidth, contentLayoutHeight, 
+					maxedContentLayoutWidth, maxedContentLayoutHeight,
 					layoutClipRect, widgetDepth, areaDepth);
 			}
 			else
 			{
 				mContentLayout->_updateLayoutInternal(x, y - Math::floorToInt(mVertOffset), 
-					contentLayoutWidth, contentLayoutHeight, 
+					maxedContentLayoutWidth, maxedContentLayoutHeight,
 					layoutClipRect, widgetDepth, areaDepth);
 			}
 
@@ -124,11 +133,13 @@ namespace BansheeEngine
 					mClippedContentHeight = (UINT32)std::max(0, (INT32)height - (INT32)ScrollBarWidth);
 					layoutClipRect.height = mClippedContentHeight;
 
-					if(mVertBarType == ScrollBarType::NeverShow)
-						contentLayoutHeight = mClippedContentHeight;
+					if (mVertBarType == ScrollBarType::NeverShow)
+						maxedContentLayoutHeight = mClippedContentHeight;
+					else
+						maxedContentLayoutHeight = std::max(contentLayoutHeight, mClippedContentHeight); // Never go below optimal size
 
 					mContentLayout->_updateLayoutInternal(x - Math::floorToInt(mHorzOffset), y - Math::floorToInt(mVertOffset), 
-						contentLayoutWidth, contentLayoutHeight, 
+						maxedContentLayoutWidth, maxedContentLayoutHeight,
 						layoutClipRect, widgetDepth, areaDepth);
 
 					mContentWidth = mContentLayout->_getActualWidth();
