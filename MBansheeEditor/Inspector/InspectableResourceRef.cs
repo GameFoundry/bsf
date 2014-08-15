@@ -9,7 +9,7 @@ namespace BansheeEditor
 {
     public class InspectableResourceRef : InspectableObjectBase
     {
-        private Resource oldPropertyValue;
+        private Resource propertyValue;
         private GUIResourceField guiField;
         private bool isInitialized;
 
@@ -38,12 +38,8 @@ namespace BansheeEditor
                 return true;
 
             Resource newPropertyValue = property.GetValue<Resource>();
-            if (oldPropertyValue != newPropertyValue)
-            {
-                oldPropertyValue = newPropertyValue;
-
+            if (propertyValue != newPropertyValue)
                 return true;
-            }
 
             return base.IsModified();
         }
@@ -55,8 +51,9 @@ namespace BansheeEditor
             if (!isInitialized)
                 Initialize(layoutIndex);
 
+            propertyValue = property.GetValue<Resource>();
             if (guiField != null)
-                guiField.Value = property.GetValue<Resource>();
+                guiField.Value = propertyValue;
         }
 
         private void OnFieldValueChanged(Resource newValue)

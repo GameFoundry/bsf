@@ -9,7 +9,7 @@ namespace BansheeEditor
 {
     public class InspectableString : InspectableObjectBase
     {
-        private string oldPropertyValue;
+        private string propertyValue;
         private GUITextField guiField;
         private bool isInitialized;
 
@@ -38,12 +38,8 @@ namespace BansheeEditor
                 return true;
 
             string newPropertyValue = property.GetValue<string>();
-            if (oldPropertyValue != newPropertyValue)
-            {
-                oldPropertyValue = newPropertyValue;
-
+            if (propertyValue != newPropertyValue)
                 return true;
-            }
 
             return base.IsModified();
         }
@@ -57,8 +53,9 @@ namespace BansheeEditor
 
             // TODO - Skip update if it currently has input focus so user can modify the value in peace
 
+            propertyValue = property.GetValue<string>();
             if (guiField != null)
-                guiField.Value = property.GetValue<string>();
+                guiField.Value = propertyValue;
         }
 
         private void OnFieldValueChanged(string newValue)

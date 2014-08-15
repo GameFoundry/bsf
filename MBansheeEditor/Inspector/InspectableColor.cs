@@ -9,7 +9,7 @@ namespace BansheeEditor
 {
     public class InspectableColor : InspectableObjectBase
     {
-        private Color oldPropertyValue;
+        private Color propertyValue;
         private GUIColorField guiField;
         private bool isInitialized;
 
@@ -38,12 +38,8 @@ namespace BansheeEditor
                 return true;
 
             Color newPropertyValue = property.GetValue<Color>();
-            if (oldPropertyValue != newPropertyValue)
-            {
-                oldPropertyValue = newPropertyValue;
-
+            if (propertyValue != newPropertyValue)
                 return true;
-            }
 
             return base.IsModified();
         }
@@ -57,8 +53,9 @@ namespace BansheeEditor
 
             // TODO - Skip update if it currently has input focus so user can modify the value in peace
 
+            propertyValue = property.GetValue<Color>();
             if (guiField != null)
-                guiField.Value = property.GetValue<Color>();
+                guiField.Value = propertyValue;
         }
 
         private void OnFieldValueChanged(Color newValue)

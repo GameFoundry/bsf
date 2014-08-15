@@ -51,7 +51,7 @@ namespace BansheeEditor
 
         private const int IndentAmount = 15;
 
-        private object oldPropertyValue; // TODO - This will unnecessarily hold references to the object
+        private object propertyValue; // TODO - This will unnecessarily hold references to the object
         private int numArrayElements;
 
         private GUIIntField guiSizeField;
@@ -71,12 +71,8 @@ namespace BansheeEditor
                 return true;
 
             object newPropertyValue = property.GetValue<object>();
-            if (oldPropertyValue != newPropertyValue)
-            {
-                oldPropertyValue = newPropertyValue;
-
+            if (propertyValue != newPropertyValue)
                 return true;
-            }
 
             if (newPropertyValue != null)
             {
@@ -102,7 +98,8 @@ namespace BansheeEditor
 
             rows.Clear();
 
-            if (property.GetValue<object>() == null)
+            propertyValue = property.GetValue<object>();
+            if (propertyValue == null)
             {
                 GUILayoutX guiChildLayout = layout.AddLayoutX(layoutIndex);
 

@@ -11,7 +11,7 @@ namespace BansheeEditor
     {
         private const int IndentAmount = 15;
 
-        private object oldPropertyValue;
+        private object propertyValue;
         private bool isInitialized;
 
         public InspectableObject(string title, InspectableFieldLayout layout, SerializableProperty property)
@@ -26,12 +26,8 @@ namespace BansheeEditor
                 return true;
 
             object newPropertyValue = property.GetValue<object>();
-            if (oldPropertyValue != newPropertyValue)
-            {
-                oldPropertyValue = newPropertyValue;
-
+            if (propertyValue != newPropertyValue)
                 return true;
-            }
 
             return base.IsModified();
         }
@@ -46,7 +42,8 @@ namespace BansheeEditor
 
             layout.DestroyElements();
 
-            if (property.GetValue<object>() == null)
+            propertyValue = property.GetValue<object>();
+            if (propertyValue == null)
             {
                 GUILayoutX guiChildLayout = layout.AddLayoutX(index);
 

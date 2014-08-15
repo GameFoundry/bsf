@@ -9,7 +9,7 @@ namespace BansheeEditor
 {
     public class InspectableFloat : InspectableObjectBase
     {
-        private float oldPropertyValue;
+        private float propertyValue;
         private GUIFloatField guiFloatField;
         private bool isInitialized;
 
@@ -38,12 +38,8 @@ namespace BansheeEditor
                 return true;
 
             float newPropertyValue = property.GetValue<float>();
-            if (oldPropertyValue != newPropertyValue)
-            {
-                oldPropertyValue = newPropertyValue;
-
+            if (propertyValue != newPropertyValue)
                 return true;
-            }
 
             return base.IsModified();
         }
@@ -57,8 +53,9 @@ namespace BansheeEditor
 
             // TODO - Skip update if it currently has input focus so user can modify the value in peace
 
+            propertyValue = property.GetValue<float>();
             if (guiFloatField != null)
-                guiFloatField.Value = property.GetValue<float>();
+                guiFloatField.Value = propertyValue;
         }
 
         private void OnFieldValueChanged(float newValue)

@@ -44,6 +44,16 @@ namespace BansheeEngine
 		virtual Vector2I _calculateOptimalLayoutSize() const { return _getOptimalSize(); }
 
 		/**
+		 * @copydoc	GUIElementBase::_isContentDirty
+		 */
+		virtual bool _isContentDirty() const { return false; }
+
+		/**
+		 * @copydoc	GUIElementBase::_isMeshDirty
+		 */
+		virtual bool _isMeshDirty() const { return false; }
+
+		/**
 		 * @copydoc	GUIElementBase::_getPadding
 		 */
 		virtual const RectOffset& _getPadding() const 
@@ -89,6 +99,16 @@ namespace BansheeEngine
 		 * @copydoc	GUIElementBase::_calculateOptimalLayoutSize
 		 */
 		virtual Vector2I _calculateOptimalLayoutSize() const { return _getOptimalSize(); }
+
+		/**
+		 * @copydoc	GUIElementBase::_isContentDirty
+		 */
+		virtual bool _isContentDirty() const { return false; }
+
+		/**
+		 * @copydoc	GUIElementBase::_isMeshDirty
+		 */
+		virtual bool _isMeshDirty() const { return false; }
 
 		/**
 		 * @copydoc	GUIElementBase::_getPadding

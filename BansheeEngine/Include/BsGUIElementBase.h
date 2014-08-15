@@ -167,14 +167,14 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method.
 		 */
-		bool _isContentDirty() const;
+		virtual bool _isContentDirty() const;
 
 		/**
 		 * @brief	Returns true if mesh has changed and fillBuffers needs to be called.
 		 *
 		 * @note	Internal method.
 		 */
-		bool _isMeshDirty() const; 
+		virtual bool _isMeshDirty() const; 
 
 		/**
 		 * @brief	Returns true if element is disabled and won't be visible or interactable.

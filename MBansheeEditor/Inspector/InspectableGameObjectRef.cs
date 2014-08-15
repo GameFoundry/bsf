@@ -9,7 +9,7 @@ namespace BansheeEditor
 {
     public class InspectableGameObjectRef : InspectableObjectBase
     {
-        private GameObject oldPropertyValue;
+        private GameObject propertyValue;
         private GUIGameObjectField guiField;
         private bool isInitialized;
 
@@ -38,12 +38,8 @@ namespace BansheeEditor
                 return true;
 
             GameObject newPropertyValue = property.GetValue<GameObject>();
-            if (oldPropertyValue != newPropertyValue)
-            {
-                oldPropertyValue = newPropertyValue;
-
+            if (propertyValue != newPropertyValue)
                 return true;
-            }
 
             return base.IsModified();
         }
@@ -55,8 +51,9 @@ namespace BansheeEditor
             if (!isInitialized)
                 Initialize(layoutIndex);
 
+            propertyValue = property.GetValue<GameObject>();
             if (guiField != null)
-                guiField.Value = property.GetValue<GameObject>();
+                guiField.Value = propertyValue;
         }
 
         private void OnFieldValueChanged(GameObject newValue)

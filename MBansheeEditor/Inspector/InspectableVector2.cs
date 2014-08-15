@@ -9,7 +9,7 @@ namespace BansheeEditor
 {
     public class InspectableVector2 : InspectableObjectBase
     {
-        private Vector2 oldPropertyValue;
+        private Vector2 propertyValue;
         private GUIVector2Field guiField;
         private bool isInitialized;
 
@@ -38,12 +38,8 @@ namespace BansheeEditor
                 return true;
 
             Vector2 newPropertyValue = property.GetValue<Vector2>();
-            if (oldPropertyValue != newPropertyValue)
-            {
-                oldPropertyValue = newPropertyValue;
-
+            if (propertyValue != newPropertyValue)
                 return true;
-            }
 
             return base.IsModified();
         }
@@ -57,8 +53,9 @@ namespace BansheeEditor
 
             // TODO - Skip update if it currently has input focus so user can modify the value in peace
 
+            propertyValue = property.GetValue<Vector2>();
             if (guiField != null)
-                guiField.Value = property.GetValue<Vector2>();
+                guiField.Value = propertyValue;
         }
 
         private void OnFieldValueChanged(Vector2 newValue)

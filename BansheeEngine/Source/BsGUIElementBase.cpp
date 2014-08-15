@@ -15,12 +15,12 @@ namespace BansheeEngine
 
 	GUIElementBase::~GUIElementBase()
 	{
-		for (auto& child : mChildren)
+		Vector<GUIElementBase*> childCopy = mChildren;
+		for (auto& child : childCopy)
 		{
 			if (child->_getType() == GUIElementBase::Type::Element)
 			{
 				GUIElement* element = static_cast<GUIElement*>(child);
-				element->_setParent(nullptr);
 				GUIElement::destroy(element);
 			}
 			else

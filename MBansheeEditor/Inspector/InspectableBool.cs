@@ -9,7 +9,7 @@ namespace BansheeEditor
 {
     public class InspectableBool : InspectableObjectBase
     {
-        private bool oldPropertyValue;
+        private bool propertyValue;
         private GUIToggleField guiField;
         private bool isInitialized;
 
@@ -38,12 +38,8 @@ namespace BansheeEditor
                 return true;
 
             bool newPropertyValue = property.GetValue<bool>();
-            if (oldPropertyValue != newPropertyValue)
-            {
-                oldPropertyValue = newPropertyValue;
-
+            if (propertyValue != newPropertyValue)
                 return true;
-            }
 
             return base.IsModified();
         }
@@ -55,8 +51,9 @@ namespace BansheeEditor
             if (!isInitialized)
                 Initialize(layoutIndex);
 
+            propertyValue = property.GetValue<bool>();
             if (guiField != null)
-                guiField.Value = property.GetValue<bool>();
+                guiField.Value = propertyValue;
         }
 
         private void OnFieldValueChanged(bool newValue)

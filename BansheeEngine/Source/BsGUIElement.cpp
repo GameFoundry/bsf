@@ -15,10 +15,7 @@ namespace BansheeEngine
 	}
 
 	GUIElement::~GUIElement()
-	{
-		if(mParentElement != nullptr)
-			mParentElement->_unregisterChildElement(this);
-	}
+	{ }
 
 	void GUIElement::updateRenderElements()
 	{
@@ -300,6 +297,9 @@ namespace BansheeEngine
 
 		if(element->mParentWidget != nullptr)
 			element->mParentWidget->unregisterElement(element);
+
+		if (element->mParentElement != nullptr)
+			element->mParentElement->_unregisterChildElement(element);
 
 		element->mIsDestroyed = true;
 
