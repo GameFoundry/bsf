@@ -51,11 +51,14 @@ namespace BansheeEditor
             if (!isInitialized)
                 Initialize(layoutIndex);
 
-            // TODO - Skip update if it currently has input focus so user can modify the value in peace
-
             propertyValue = property.GetValue<float>();
             if (guiFloatField != null)
+            {
+                if (guiFloatField.HasInputFocus())
+                    return;
+
                 guiFloatField.Value = propertyValue;
+            }
         }
 
         private void OnFieldValueChanged(float newValue)

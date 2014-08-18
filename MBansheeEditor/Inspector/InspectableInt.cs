@@ -51,11 +51,14 @@ namespace BansheeEditor
             if (!isInitialized)
                 Initialize(layoutIndex);
 
-            // TODO - Skip update if it currently has input focus so user can modify the value in peace
-
             propertyValue = property.GetValue<int>();
-            if(guiIntField != null)
+            if (guiIntField != null)
+            {
+                if (guiIntField.HasInputFocus())
+                    return;
+
                 guiIntField.Value = propertyValue;
+            }
         }
 
         private void OnFieldValueChanged(int newValue)

@@ -36,6 +36,7 @@ namespace BansheeEngine
 		mLayout->addElement(mInputBox);
 
 		setValue(0);
+		mInputBox->setText(L"0");
 	}
 
 	GUIIntField::~GUIIntField()
@@ -150,10 +151,14 @@ namespace BansheeEngine
 
 	void GUIIntField::setValue(INT32 value)
 	{
-		value = Math::clamp(value, mMinValue, mMaxValue);
+		mValue = Math::clamp(value, mMinValue, mMaxValue);
 
-		mValue = value;
-		mInputBox->setText(toWString(value));
+		// Only update with new value if it actually changed, otherwise
+		// problems can occur when user types in "0." and the field
+		// updates back to "0" effectively making "." unusable
+		float curValue = parseFloat(mInputBox->getText());
+		if (mValue != curValue)
+			mInputBox->setText(toWString(value));
 	}
 
 	void GUIIntField::setRange(INT32 min, INT32 max)

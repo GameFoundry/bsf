@@ -11,7 +11,6 @@ ARRAY TODO:
 TODO:
  - Ensure fields aren't updated from the app when in focus
  - Entire foldout should be clickable, not just the toggle button
- - Extend text field so it can be multi-line
  - Properly hook up UndoRedo, for both in-field and object-wide changes
    - How do I track Ctrl+Z and Ctrl+Y keys? And in general how do I distinguish when I send
      input to the game and when to the editor.
