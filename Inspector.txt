@@ -7,21 +7,21 @@ Test custom resources:
 
 ARRAY TODO:
  - Need a GUIFoldout that doesn't have BG and is just a single button.
- - Don't render inspector if array is multi-rank
 
 TODO:
  - Ensure fields aren't updated from the app when in focus
  - Entire foldout should be clickable, not just the toggle button
  - Extend text field so it can be multi-line
  - Properly hook up UndoRedo, for both in-field and object-wide changes
+   - How do I track Ctrl+Z and Ctrl+Y keys? And in general how do I distinguish when I send
+     input to the game and when to the editor.
  - GUIColor needs to be hooked up to a window that actually changes its value.
  - Inspector scrolling
+ - Editor fields don't have a minimum width value?
+ - When editor field is small enough the label can overlap the input field
 
 KEEP IN MIND:
  - Clicking on an object/resource in inspector should ping it in their window
- - Inspector needs to be organized in such a way that scroll areas work. That should be possible with GUIPanelContainer.
-
-
 
 
 

@@ -89,7 +89,7 @@ namespace BansheeEditor
             base.Update(layoutIndex);
             isInitialized = true;
 
-            if (property.Type != SerializableProperty.FieldType.Array)
+            if (property.Type != SerializableProperty.FieldType.Array || property.InternalType.GetArrayRank() != 1) // We don't support multirank arrays
                 return;
 
             foreach (var row in rows)

@@ -38,7 +38,7 @@ namespace BansheeEngine
 		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("DoOnChanged", 1).getThunk();
 	}
 
-	void ScriptGUITextField::internal_createInstance(MonoObject* instance, MonoObject* title, UINT32 titleWidth,
+	void ScriptGUITextField::internal_createInstance(MonoObject* instance, bool multiline, MonoObject* title, UINT32 titleWidth,
 		MonoString* style, MonoArray* guiOptions, bool withTitle)
 	{
 		GUIOptions options;
@@ -53,11 +53,11 @@ namespace BansheeEngine
 		if (withTitle)
 		{
 			GUIContent nativeContent(ScriptGUIContent::getText(title), ScriptGUIContent::getImage(title), ScriptGUIContent::getTooltip(title));
-			guiField = GUITextField::create(nativeContent, titleWidth, options, styleName);
+			guiField = GUITextField::create(multiline, nativeContent, titleWidth, options, styleName);
 		}
 		else
 		{
-			guiField = GUITextField::create(options, styleName);
+			guiField = GUITextField::create(multiline, options, styleName);
 		}
 
 		guiField->onValueChanged.connect(std::bind(&ScriptGUITextField::onChanged, instance, _1));

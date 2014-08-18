@@ -22,14 +22,14 @@ namespace BansheeEditor
             set { Internal_SetValue(mCachedPtr, value); }
         }
 
-        public GUITextField(GUIContent title, int titleWidth = 100, string style = "", params GUIOption[] options)
+        public GUITextField(GUIContent title, int titleWidth = 100, bool multiline = false, string style = "", params GUIOption[] options)
         {
-            Internal_CreateInstance(this, title, titleWidth, style, options, true);
+            Internal_CreateInstance(this, multiline, title, titleWidth, style, options, true);
         }
 
-        public GUITextField(string style = "", params GUIOption[] options)
+        public GUITextField(bool multiline = false, string style = "", params GUIOption[] options)
         {
-            Internal_CreateInstance(this, null, 0, style, options, false);
+            Internal_CreateInstance(this, multiline, null, 0, style, options, false);
         }
 
         public bool HasInputFocus()
@@ -46,7 +46,7 @@ namespace BansheeEditor
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(GUITextField instance, GUIContent title, int titleWidth,
+        private static extern void Internal_CreateInstance(GUITextField instance, bool multiline, GUIContent title, int titleWidth,
             string style, GUIOption[] options, bool withTitle);
 
         [MethodImpl(MethodImplOptions.InternalCall)]

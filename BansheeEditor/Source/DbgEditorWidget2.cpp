@@ -51,7 +51,7 @@ namespace BansheeEngine
 
 		GUIIntField* intField = GUIIntField::create(GUIContent(HString(L"Int Field")), 100, GUIOptions(GUIOption::fixedWidth(200)));
 		GUIFloatField* floatField = GUIFloatField::create(HString(L"Float Field"), GUIOptions(GUIOption::fixedWidth(200)));
-		GUITextField* textField = GUITextField::create(HString(L"Text Field"), GUIOptions(GUIOption::fixedWidth(200)));
+		GUITextField* textField = GUITextField::create(false, HString(L"Text Field"), GUIOptions(GUIOption::fixedWidth(200)));
 		GUIVector4Field* vec4Field = GUIVector4Field::create(HString(L"Vec4 Field"), GUIOptions(GUIOption::fixedWidth(200)));
 		GUIVector3Field* vec3Field = GUIVector3Field::create(HString(L"Vec3 Field"), GUIOptions(GUIOption::fixedWidth(200)));
 		GUIVector2Field* vec2Field = GUIVector2Field::create(HString(L"Vec2 Field"), GUIOptions(GUIOption::fixedWidth(200)));
