@@ -134,6 +134,8 @@ namespace BansheeEngine
 
 		bs_delete<PoolAlloc>(mInputCaret);
 		bs_delete<PoolAlloc>(mInputSelection);
+
+		assert(mCachedGUIData.size() == 0);
 	}
 
 	void GUIManager::registerWidget(GUIWidget* widget)
@@ -521,6 +523,9 @@ namespace BansheeEngine
 
 			if(numMeshes < oldNumMeshes)
 			{
+				for (UINT32 i = numMeshes; i < oldNumMeshes; i++)
+					mMeshHeap->dealloc(renderData.cachedMeshes[i]);
+
 				renderData.cachedMeshes.resize(numMeshes);
 			}
 

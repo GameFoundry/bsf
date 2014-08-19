@@ -24,7 +24,14 @@ namespace BansheeEngine
 				GUIElement::destroy(element);
 			}
 			else
+			{
+				auto iterFind = std::find(mChildren.begin(), mChildren.end(), child);
+
+				if (iterFind != mChildren.end())
+					mChildren.erase(iterFind);
+
 				bs_delete(child);
+			}
 		}
 	}
 

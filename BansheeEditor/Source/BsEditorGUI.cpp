@@ -19,6 +19,7 @@
 #include "BsGUIVector3Field.h"
 #include "BsGUIVector4Field.h"
 #include "BsGUIComponentFoldout.h"
+#include "BsGUIFoldout.h"
 
 #include "BsFont.h"
 #include "BsFontImportOptions.h"
@@ -939,6 +940,20 @@ namespace BansheeEngine
 		cmpFoldoutStyle.subStyles[GUIComponentFoldout::getBackgroundStyleType()] = GUIComponentFoldout::getBackgroundStyleType();
 
 		mSkin.setStyle(GUIComponentFoldout::getGUITypeName(), cmpFoldoutStyle);
+
+		/************************************************************************/
+		/* 							     FOLDOUT                      		    */
+		/************************************************************************/
+		mSkin.setStyle(GUIFoldout::getFoldoutButtonStyleType(), cmpFoldoutBtnStyle);
+
+		GUIElementStyle foldoutStyle;
+		foldoutStyle.fixedHeight = true;
+		foldoutStyle.height = 12;
+		foldoutStyle.minWidth = 30;
+		foldoutStyle.subStyles[GUIFoldout::getLabelStyleType()] = GUIFoldout::getLabelStyleType();
+		foldoutStyle.subStyles[GUIFoldout::getFoldoutButtonStyleType()] = GUIFoldout::getFoldoutButtonStyleType();
+
+		mSkin.setStyle(GUIFoldout::getGUITypeName(), foldoutStyle);
 	}
 
 	HSpriteTexture EditorGUI::getTexture(const WString& name)

@@ -9,7 +9,6 @@ ARRAY TODO:
  - Need a GUIFoldout that doesn't have BG and is just a single button.
 
 TODO:
- - Ensure fields aren't updated from the app when in focus
  - Entire foldout should be clickable, not just the toggle button
  - Properly hook up UndoRedo, for both in-field and object-wide changes
    - How do I track Ctrl+Z and Ctrl+Y keys? And in general how do I distinguish when I send
