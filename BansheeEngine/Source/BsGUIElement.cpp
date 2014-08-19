@@ -155,6 +155,9 @@ namespace BansheeEngine
 
 	Vector2I GUIElement::_calculateOptimalLayoutSize() const
 	{
+		if (mIsDisabled)
+			return Vector2I(0, 0);
+
 		const GUILayoutOptions& layoutOptions = _getLayoutOptions();
 
 		UINT32 optimalWidth = 0;

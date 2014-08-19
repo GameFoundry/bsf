@@ -12,6 +12,9 @@ namespace BansheeEngine
 
 	Vector2I GUILayoutY::_calculateOptimalLayoutSize() const
 	{
+		if (mIsDisabled)
+			return Vector2I(0, 0);
+
 		UINT32 optimalWidth = 0;
 		UINT32 optimalHeight = 0;
 

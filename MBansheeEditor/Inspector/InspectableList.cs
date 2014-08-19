@@ -135,34 +135,35 @@ namespace BansheeEditor
                 guiTitleLayout.AddElement(guiResizeBtn);
                 guiTitleLayout.AddElement(guiClearBtn);
 
-                guiChildLayout = layout.AddLayoutX(layoutIndex);
-                guiChildLayout.SetVisible(isExpanded);
-                guiChildLayout.AddSpace(IndentAmount);
-
-                GUILayoutY guiContentLayout = guiChildLayout.AddLayoutY();
                 SerializableList list = property.GetList();
-
                 numArrayElements = list.GetLength();
-                for (int i = 0; i < numArrayElements; i++)
-                {
-                    EntryRow newRow = new EntryRow(guiContentLayout, i, this);
-                    rows.Add(newRow);
-
-                    InspectableObjectBase childObj = CreateDefaultInspectable(i + ".", new InspectableFieldLayout(newRow.contentLayout), list.GetProperty(i));
-                    AddChild(childObj);
-
-                    childObj.Refresh(0);
-                }
-
                 guiSizeField.Value = numArrayElements;
+
+                if (isExpanded)
+                {
+                    guiChildLayout = layout.AddLayoutX(layoutIndex);
+                    guiChildLayout.AddSpace(IndentAmount);
+
+                    GUILayoutY guiContentLayout = guiChildLayout.AddLayoutY();
+
+                    for (int i = 0; i < numArrayElements; i++)
+                    {
+                        EntryRow newRow = new EntryRow(guiContentLayout, i, this);
+                        rows.Add(newRow);
+
+                        InspectableObjectBase childObj = CreateDefaultInspectable(i + ".", new InspectableFieldLayout(newRow.contentLayout), list.GetProperty(i));
+                        AddChild(childObj);
+
+                        childObj.Refresh(0);
+                    }
+                }
+                else
+                    guiChildLayout = null;
             }
         }
 
         private void OnFoldoutToggled(bool expanded)
         {
-            if (guiChildLayout != null)
-                guiChildLayout.SetVisible(expanded);
-
             isExpanded = expanded;
             forceUpdate = true;
         }

@@ -74,32 +74,32 @@ namespace BansheeEditor
                 clearBtn.OnClick += OnClearButtonClicked;
                 guiTitleLayout.AddElement(clearBtn);
 
-                guiChildLayout = layout.AddLayoutX(index);
-                guiChildLayout.SetVisible(isExpanded);
-                guiChildLayout.AddSpace(IndentAmount);
-
-                GUILayoutY guiContentLayout = guiChildLayout.AddLayoutY();
-
-                SerializableObject serializableObject = property.GetObject();
-
-                foreach (var field in serializableObject.fields)
+                if (isExpanded)
                 {
-                    if (!field.Inspectable)
-                        continue;
+                    guiChildLayout = layout.AddLayoutX(index);
+                    guiChildLayout.AddSpace(IndentAmount);
 
-                    if (field.HasCustomInspector)
-                        AddChild(CreateCustomInspectable(field.CustomInspectorType, field.Name, new InspectableFieldLayout(guiContentLayout), field.GetProperty()));
-                    else
-                        AddChild(CreateDefaultInspectable(field.Name, new InspectableFieldLayout(guiContentLayout), field.GetProperty()));
+                    GUILayoutY guiContentLayout = guiChildLayout.AddLayoutY();
+
+                    SerializableObject serializableObject = property.GetObject();
+                    foreach (var field in serializableObject.fields)
+                    {
+                        if (!field.Inspectable)
+                            continue;
+
+                        if (field.HasCustomInspector)
+                            AddChild(CreateCustomInspectable(field.CustomInspectorType, field.Name, new InspectableFieldLayout(guiContentLayout), field.GetProperty()));
+                        else
+                            AddChild(CreateDefaultInspectable(field.Name, new InspectableFieldLayout(guiContentLayout), field.GetProperty()));
+                    }
                 }
+                else
+                    guiChildLayout = null;
             }
         }
 
         private void OnFoldoutToggled(bool expanded)
         {
-            if (guiChildLayout != null)
-                guiChildLayout.SetVisible(expanded);
-
             isExpanded = expanded;
             forceUpdate = true;
         }

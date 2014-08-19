@@ -72,6 +72,9 @@ namespace BansheeEngine
 
 	void GUIElementBase::enableRecursively()
 	{
+		if (mParentElement != nullptr && mParentElement->mIsDisabled)
+			return; // Cannot enable if parent is disabled
+
 		// Make sure to mark everything as dirty, as we didn't track any dirty flags while the element was disabled
 		mIsDisabled = false;
 		markContentAsDirty();
