@@ -12,7 +12,10 @@ namespace BansheeEditor
         private const int IndentAmount = 15;
 
         private object propertyValue;
-        private bool isInitialized;
+
+        private GUILayoutX guiChildLayout;
+        private bool isExpanded;
+        private bool forceUpdate = true;
 
         public InspectableObject(string title, InspectableFieldLayout layout, SerializableProperty property)
             : base(title, layout, property)
@@ -22,7 +25,7 @@ namespace BansheeEditor
 
         protected override bool IsModified()
         {
-            if (!isInitialized)
+            if (forceUpdate)
                 return true;
 
             object newPropertyValue = property.GetValue<object>();
@@ -35,7 +38,7 @@ namespace BansheeEditor
         protected override void Update(int index)
         {
             base.Update(index);
-            isInitialized = true;
+            forceUpdate = false;
 
             if (property.Type != SerializableProperty.FieldType.Object)
                 return;
@@ -45,30 +48,34 @@ namespace BansheeEditor
             propertyValue = property.GetValue<object>();
             if (propertyValue == null)
             {
-                GUILayoutX guiChildLayout = layout.AddLayoutX(index);
+                guiChildLayout = null;
+                GUILayoutX guiTitleLayout = layout.AddLayoutX(index);
 
-                guiChildLayout.AddElement(new GUILabel(title));
-                guiChildLayout.AddElement(new GUILabel("Empty"));
+                guiTitleLayout.AddElement(new GUILabel(title));
+                guiTitleLayout.AddElement(new GUILabel("Empty"));
 
                 if (!property.IsValueType)
                 {
                     GUIButton createBtn = new GUIButton("Create");
                     createBtn.OnClick += OnCreateButtonClicked;
-                    guiChildLayout.AddElement(createBtn);
+                    guiTitleLayout.AddElement(createBtn);
                 }
             }
             else
             {
                 GUILayoutX guiTitleLayout = layout.AddLayoutX(index);
 
-                GUILabel guiLabel = new GUILabel(title); // TODO - Use foldout
-                guiTitleLayout.AddElement(guiLabel);
+                GUIFoldout guiFoldout = new GUIFoldout(title);
+                guiFoldout.SetExpanded(isExpanded);
+                guiFoldout.OnToggled += OnFoldoutToggled;
+                guiTitleLayout.AddElement(guiFoldout);
 
                 GUIButton clearBtn = new GUIButton("Clear");
                 clearBtn.OnClick += OnClearButtonClicked;
                 guiTitleLayout.AddElement(clearBtn);
 
-                GUILayoutX guiChildLayout = layout.AddLayoutX(index);
+                guiChildLayout = layout.AddLayoutX(index);
+                guiChildLayout.SetVisible(isExpanded);
                 guiChildLayout.AddSpace(IndentAmount);
 
                 GUILayoutY guiContentLayout = guiChildLayout.AddLayoutY();
@@ -86,6 +93,15 @@ namespace BansheeEditor
                         AddChild(CreateDefaultInspectable(field.Name, new InspectableFieldLayout(guiContentLayout), field.GetProperty()));
                 }
             }
+        }
+
+        private void OnFoldoutToggled(bool expanded)
+        {
+            if (guiChildLayout != null)
+                guiChildLayout.SetVisible(expanded);
+
+            isExpanded = expanded;
+            forceUpdate = true;
         }
 
         private void OnCreateButtonClicked()

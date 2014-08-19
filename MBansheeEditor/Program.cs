@@ -7,13 +7,14 @@ namespace BansheeEditor
     class ProgramEd
     {
         private static InspectorWindow window;
+        private static Debug_Component1 dbgComponent;
 
         static void Main()
         {
             window = EditorWindow.OpenWindow<InspectorWindow>();
 
             SceneObject newDbgObject = new SceneObject("NewDbgObject");
-            newDbgObject.AddComponent<Debug_Component1>();
+            dbgComponent = newDbgObject.AddComponent<Debug_Component1>();
             newDbgObject.AddComponent<Debug_Component2>();
 
             window.SetObjectToInspect(newDbgObject);
@@ -40,6 +41,9 @@ namespace BansheeEditor
         static void EditorUpdate()
         {
             window.Refresh();
+
+            if (dbgComponent != null)
+                dbgComponent.intArray[0] = dbgComponent.intArray[0] + 1;
         }
     }
 

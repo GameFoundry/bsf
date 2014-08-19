@@ -12,8 +12,6 @@ namespace BansheeEngine
 	public:
 		static const String& getGUITypeName();
 		static const String& getFoldoutButtonStyleType();
-		static const String& getBackgroundStyleType();
-		static const String& getLabelStyleType();
 
 		static GUIComponentFoldout* create(const HString& label, const GUIOptions& layoutOptions, const String& style = StringUtil::BLANK);
 		static GUIComponentFoldout* create(const HString& label, const String& style = StringUtil::BLANK);
@@ -40,9 +38,7 @@ namespace BansheeEngine
 		void toggleTriggered(bool value);
 		void styleUpdated();
 
-		GUILabel* mLabel;
 		GUIToggle* mToggle;
-		GUITexture* mBackground;
 
 		bool mIsExpanded;
 	};

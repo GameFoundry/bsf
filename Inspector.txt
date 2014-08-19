@@ -1,6 +1,3 @@
-Transient meshes don't seem to be released properly in 100% of the cases
- - Might be related to creating/destroying GUI elements?
-
 Test custom resources:
  - Can I load them? (Will likely need ProjectLIbrary::load)
  - Can I reference them in Component and will the reference be held after after cloning?
@@ -9,14 +6,12 @@ ARRAY TODO:
  - Need a GUIFoldout that doesn't have BG and is just a single button.
 
 TODO:
- - Entire foldout should be clickable, not just the toggle button
+ - Add SceneObject fields (Name, Position, Rotation, Scale and optional switches between world/local)
  - Properly hook up UndoRedo, for both in-field and object-wide changes
    - How do I track Ctrl+Z and Ctrl+Y keys? And in general how do I distinguish when I send
      input to the game and when to the editor.
  - GUIColor needs to be hooked up to a window that actually changes its value.
  - Inspector scrolling
- - Editor fields don't have a minimum width value?
- - When editor field is small enough the label can overlap the input field
 
 KEEP IN MIND:
  - Clicking on an object/resource in inspector should ping it in their window
@@ -24,57 +19,15 @@ KEEP IN MIND:
 
 
 
+Polish (SECOND PASS - LATER):
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ - Add a dictionary inspector.
+    - Check Unity Full Inspector addon for inspiration on how it should look: http://forum.unity3d.com/threads/full-inspector-inspector-and-serialization-for-structs-dicts-generics-interfaces.224270/
+ - Add icons to array clone/delete/up/down buttons
+ - Add support for multi-rank array inspector
+ - Add tabbing between fields
 
 ----------------------------------------------
-
-Various trivial fixes:
- - Add icons to array clone/delete/up/down buttons
-
-LATER:
- - Add support for list, dictionary and multi-rank array types
- - Add tabbing between fields
 
 A way to close a window & destroy a GUI panel!
  - Will likely need to refactor ScriptEditorWindow as currently it performs initialization
@@ -83,29 +36,15 @@ A way to close a window & destroy a GUI panel!
  - Once closed the referenced GUIPanels should no longer work (set "destroyed" flag?)
  - What about calling Destroy on a GUIPanel?
    - It should notify owning EditorWindow
+ - IMPORTANT: Right now it seems there is Internal_Destroy method on managed GUIPanel but it isn't hooked up to the script
 
 Ensure that setting depth for GUIArea works properly. It's not properly implemented yet.
-
-UndoRedo should work on URI type basis where it remembers object ID, and path across its fields to the field that was modified
- - This way it wont keep an unnecessary reference to object
- - SerializableField should probably be the type responsible for handling the URI
- - Will I need two different URI types for resources and scene objects?
-   - Probably, resources don't need hierarchies, but I think I should ignore resources for now as I'm not sure they will be using Inspectable system
- - When trying to undo/redo and object id cannot be found, it just skips it
- - When recompiling clear the undo/redo queue
 
  ----------------------
 
  Non-inspector:
   - Deleting first entry in input field moves the cursor incorrectly
-  - Test if parsing int/float value from int/float field actually works
   - ProfilerOverlay elements are constantly dirty? even though I'm not calling update
 
 Undocking a window wont remove the tabbed title bar
 While dragging an undocked window, dropping it over the main window (not over dock overlays) will not restore it
-
- - GameObjectField
-   - When dragging over GameObjectField cursor needs to change depending whether drop will be accepted or not
-   - How will I limit it to just certain component types?
-
-Add InsertElement to GUILayout

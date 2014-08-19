@@ -142,6 +142,10 @@ namespace BansheeEngine
 		entry->_setParent(parent);
 
 		mChildren.push_back(entry);
+		
+		if (mIsDisabled)
+			entry->disableRecursively();
+
 		markContentAsDirty();
 
 		return *entry;
@@ -153,6 +157,10 @@ namespace BansheeEngine
 		entry->_setParent(parent);
 
 		mChildren.push_back(entry);
+
+		if (mIsDisabled)
+			entry->disableRecursively();
+
 		markContentAsDirty();
 
 		return *entry;
@@ -189,6 +197,10 @@ namespace BansheeEngine
 		entry->_setParent(parent);
 
 		mChildren.insert(mChildren.begin() + idx, entry);
+
+		if (mIsDisabled)
+			entry->disableRecursively();
+
 		markContentAsDirty();
 
 		return *entry;
@@ -203,6 +215,10 @@ namespace BansheeEngine
 		entry->_setParent(parent);
 
 		mChildren.insert(mChildren.begin() + idx, entry);
+
+		if (mIsDisabled)
+			entry->disableRecursively();
+
 		markContentAsDirty();
 
 		return *entry;
@@ -218,6 +234,9 @@ namespace BansheeEngine
 
 		element->_setParent(this);
 		mChildren.push_back(element);
+
+		if (mIsDisabled)
+			element->disableRecursively();
 
 		markContentAsDirty();
 	}

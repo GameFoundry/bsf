@@ -62,7 +62,13 @@ namespace BansheeEngine
 	const WString EditorGUI::FoldoutOpenHoverTex = L"FoldoutOpenHover.psd";
 	const WString EditorGUI::FoldoutClosedNormalTex = L"FoldoutClosedNormal.psd";
 	const WString EditorGUI::FoldoutClosedHoverTex = L"FoldoutClosedHover.psd";
-	const WString EditorGUI::FoldoutBackgroundTex = L"FoldoutBackground.psd";
+
+	const WString EditorGUI::CmpFoldoutOpenNormalTex = L"CmpFoldoutOpenNormal.psd";
+	const WString EditorGUI::CmpFoldoutOpenHoverTex = L"CmpFoldoutOpenHover.psd";
+	const WString EditorGUI::CmpFoldoutOpenActiveTex = L"CmpFoldoutOpenActive.psd";
+	const WString EditorGUI::CmpFoldoutClosedNormalTex = L"CmpFoldoutClosedNormal.psd";
+	const WString EditorGUI::CmpFoldoutClosedHoverTex = L"CmpFoldoutClosedHover.psd";
+	const WString EditorGUI::CmpFoldoutClosedActiveTex = L"CmpFoldoutClosedActive.psd";
 
 	const WString EditorGUI::WindowFrameNormal = L"WindowFrameNormal.psd";
 	const WString EditorGUI::WindowFrameFocused = L"WindowFrameFocused.psd";
@@ -911,40 +917,49 @@ namespace BansheeEngine
 		/* 							COMPONENT FOLDOUT                      		*/
 		/************************************************************************/
 		GUIElementStyle cmpFoldoutBtnStyle;
-		cmpFoldoutBtnStyle.normal.texture = getTexture(FoldoutClosedNormalTex);
-		cmpFoldoutBtnStyle.hover.texture = getTexture(FoldoutClosedHoverTex);
-		cmpFoldoutBtnStyle.active.texture = cmpFoldoutBtnStyle.hover.texture;
-		cmpFoldoutBtnStyle.normalOn.texture = getTexture(FoldoutOpenNormalTex);
-		cmpFoldoutBtnStyle.hoverOn.texture = getTexture(FoldoutOpenHoverTex);
-		cmpFoldoutBtnStyle.activeOn.texture = cmpFoldoutBtnStyle.hoverOn.texture;
+		cmpFoldoutBtnStyle.normal.texture = getTexture(CmpFoldoutClosedNormalTex);
+		cmpFoldoutBtnStyle.hover.texture = getTexture(CmpFoldoutClosedHoverTex);
+		cmpFoldoutBtnStyle.active.texture = getTexture(CmpFoldoutOpenActiveTex);
+		cmpFoldoutBtnStyle.normalOn.texture = getTexture(CmpFoldoutOpenNormalTex);
+		cmpFoldoutBtnStyle.hoverOn.texture = getTexture(CmpFoldoutOpenHoverTex);
+		cmpFoldoutBtnStyle.activeOn.texture = getTexture(CmpFoldoutOpenActiveTex);
 		cmpFoldoutBtnStyle.fixedHeight = true;
-		cmpFoldoutBtnStyle.fixedWidth = true;
+		cmpFoldoutBtnStyle.fixedWidth = false;
 		cmpFoldoutBtnStyle.height = 10;
-		cmpFoldoutBtnStyle.width = 8;
+		cmpFoldoutBtnStyle.minWidth = 10;
+		cmpFoldoutBtnStyle.font = font;
+		cmpFoldoutBtnStyle.fontSize = DefaultFontSize;
+		cmpFoldoutBtnStyle.textHorzAlign = THA_Left;
+		cmpFoldoutBtnStyle.textVertAlign = TVA_Center;
+		cmpFoldoutBtnStyle.contentOffset = RectOffset(12, 0, 0, 0);
+		cmpFoldoutBtnStyle.border.left = 8;
 
 		mSkin.setStyle(GUIComponentFoldout::getFoldoutButtonStyleType(), cmpFoldoutBtnStyle);
-
-		GUIElementStyle cmpFoldoutBackgroundStyle;
-		cmpFoldoutBackgroundStyle.normal.texture = getTexture(FoldoutBackgroundTex);
-		cmpFoldoutBackgroundStyle.fixedHeight = true;
-		cmpFoldoutBackgroundStyle.height = 12;
-
-		mSkin.setStyle(GUIComponentFoldout::getBackgroundStyleType(), cmpFoldoutBackgroundStyle);
 
 		GUIElementStyle cmpFoldoutStyle;
 		cmpFoldoutStyle.fixedHeight = true;
 		cmpFoldoutStyle.height = 12;
 		cmpFoldoutStyle.minWidth = 30;
-		cmpFoldoutStyle.subStyles[GUIComponentFoldout::getLabelStyleType()] = GUIComponentFoldout::getLabelStyleType();
 		cmpFoldoutStyle.subStyles[GUIComponentFoldout::getFoldoutButtonStyleType()] = GUIComponentFoldout::getFoldoutButtonStyleType();
-		cmpFoldoutStyle.subStyles[GUIComponentFoldout::getBackgroundStyleType()] = GUIComponentFoldout::getBackgroundStyleType();
 
 		mSkin.setStyle(GUIComponentFoldout::getGUITypeName(), cmpFoldoutStyle);
 
 		/************************************************************************/
 		/* 							     FOLDOUT                      		    */
 		/************************************************************************/
-		mSkin.setStyle(GUIFoldout::getFoldoutButtonStyleType(), cmpFoldoutBtnStyle);
+		GUIElementStyle foldoutBtnStyle;
+		foldoutBtnStyle.normal.texture = getTexture(FoldoutClosedNormalTex);
+		foldoutBtnStyle.hover.texture = getTexture(FoldoutClosedHoverTex);
+		foldoutBtnStyle.active.texture = foldoutBtnStyle.hover.texture;
+		foldoutBtnStyle.normalOn.texture = getTexture(FoldoutOpenNormalTex);
+		foldoutBtnStyle.hoverOn.texture = getTexture(FoldoutOpenHoverTex);
+		foldoutBtnStyle.activeOn.texture = foldoutBtnStyle.hoverOn.texture;
+		foldoutBtnStyle.fixedHeight = true;
+		foldoutBtnStyle.fixedWidth = true;
+		foldoutBtnStyle.height = 10;
+		foldoutBtnStyle.width = 8;
+
+		mSkin.setStyle(GUIFoldout::getFoldoutButtonStyleType(), foldoutBtnStyle);
 
 		GUIElementStyle foldoutStyle;
 		foldoutStyle.fixedHeight = true;

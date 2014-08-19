@@ -201,8 +201,11 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Destroys any elements or widgets queued for destruction.
+		 *
+		 * @note	Returns true if more elements have been added for destruction (will happen when destruction
+		 *			of one element queues up destruction of another).
 		 */
-		void processDestroyQueue();
+		bool processDestroyQueue();
 
 		/**
 		 * @brief	Finds a GUI element under the pointer at the specified screen position. This method will also

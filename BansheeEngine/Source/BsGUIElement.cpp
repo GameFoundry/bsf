@@ -280,7 +280,7 @@ namespace BansheeEngine
 		}
 	}
 
-	const String& GUIElement::getSubStyleName(const String& subStyleTypeName)
+	const String& GUIElement::getSubStyleName(const String& subStyleTypeName) const
 	{
 		auto iterFind = mStyle->subStyles.find(subStyleTypeName);
 

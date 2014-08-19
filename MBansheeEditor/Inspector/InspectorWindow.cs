@@ -43,7 +43,7 @@ namespace BansheeEditor
                 data.inspector.Initialize(inspectorPanel, allComponents[i]);
 
                 data.foldout.SetExpanded(true);
-                data.foldout.OnToggled += (bool expanded) => Foldout_OnToggled(data, expanded);
+                data.foldout.OnToggled += (bool expanded) => OnComponentFoldoutToggled(data, expanded);
 
                 inspectorData.Add(data);
 
@@ -55,7 +55,7 @@ namespace BansheeEditor
             RepositionInspectors();
         }
 
-        void Foldout_OnToggled(InspectorData inspectorData, bool expanded)
+        void OnComponentFoldoutToggled(InspectorData inspectorData, bool expanded)
         {
             inspectorData.expanded = expanded;
             inspectorData.inspector.SetVisible(expanded);

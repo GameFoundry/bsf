@@ -399,7 +399,12 @@ namespace BansheeEngine
 		 * @brief	Attempts to find a sub-style for the specified type in the currently
 		 *			set GUI element style. If one cannot be found empty string is returned.
 		 */
-		const String& getSubStyleName(const String& subStyleTypeName);
+		const String& getSubStyleName(const String& subStyleTypeName) const;
+
+		/**
+		 * @brief	Returns the name of the style used by this element.
+		 */
+		const String& getStyleName() const { return mStyleName; }
 
 		/**
 		 * @brief	Method that gets triggered whenever element style changes.

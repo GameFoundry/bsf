@@ -114,8 +114,9 @@ namespace BansheeEngine
 		for(auto& widget : widgetCopy)
 			widget.widget->destroy();
 
-		// Ensure everything queued get destroyed
-		processDestroyQueue();
+		// Ensure everything queued get destroyed, loop until queue empties
+		while (processDestroyQueue())
+		{ }
 
 		mOnPointerPressedConn.disconnect();
 		mOnPointerReleasedConn.disconnect();
@@ -218,76 +219,79 @@ namespace BansheeEngine
 
 		PROFILE_CALL(updateMeshes(), "UpdateMeshes");
 
-		mNewElementsUnderPointer.clear();
-		for(auto& elementInfo : mElementsUnderPointer)
+		// Destroy all queued elements (and loop in case any new ones get queued during destruction)
+		do
 		{
-			if(!elementInfo.element->_isDestroyed())
-				mNewElementsUnderPointer.push_back(elementInfo);
-		}
-
-		mElementsUnderPointer.swap(mNewElementsUnderPointer);
-
-		mNewActiveElements.clear();
-		for(auto& elementInfo : mActiveElements)
-		{
-			if(!elementInfo.element->_isDestroyed())
-				mNewActiveElements.push_back(elementInfo);
-		}
-
-		mActiveElements.swap(mNewActiveElements);
-
-		mNewElementsInFocus.clear();
-		for(auto& elementInfo : mElementsInFocus)
-		{
-			if(!elementInfo.element->_isDestroyed())
-				mNewElementsInFocus.push_back(elementInfo);
-		}
-
-		mElementsInFocus.swap(mNewElementsInFocus);
-
-		for(auto& focusElementInfo : mForcedFocusElements)
-		{
-			if(focusElementInfo.element->_isDestroyed())
-				continue;
-
-			if(focusElementInfo.focus)
+			mNewElementsUnderPointer.clear();
+			for (auto& elementInfo : mElementsUnderPointer)
 			{
-				auto iterFind = std::find_if(mElementsInFocus.begin(), mElementsInFocus.end(), 
-					[&](const ElementInfo& x) { return x.element == focusElementInfo.element; });
-
-				if(iterFind == mElementsInFocus.end())
-				{
-					mElementsInFocus.push_back(ElementInfo(focusElementInfo.element, focusElementInfo.element->_getParentWidget()));
-
-					mCommandEvent = GUICommandEvent();
-					mCommandEvent.setType(GUICommandEventType::FocusGained);
-
-					sendCommandEvent(focusElementInfo.element->_getParentWidget(), focusElementInfo.element, mCommandEvent);
-				}
+				if (!elementInfo.element->_isDestroyed())
+					mNewElementsUnderPointer.push_back(elementInfo);
 			}
-			else
+
+			mElementsUnderPointer.swap(mNewElementsUnderPointer);
+
+			mNewActiveElements.clear();
+			for (auto& elementInfo : mActiveElements)
 			{
-				mNewElementsInFocus.clear();
-				for(auto& elementInfo : mElementsInFocus)
+				if (!elementInfo.element->_isDestroyed())
+					mNewActiveElements.push_back(elementInfo);
+			}
+
+			mActiveElements.swap(mNewActiveElements);
+
+			mNewElementsInFocus.clear();
+			for (auto& elementInfo : mElementsInFocus)
+			{
+				if (!elementInfo.element->_isDestroyed())
+					mNewElementsInFocus.push_back(elementInfo);
+			}
+
+			mElementsInFocus.swap(mNewElementsInFocus);
+
+			for (auto& focusElementInfo : mForcedFocusElements)
+			{
+				if (focusElementInfo.element->_isDestroyed())
+					continue;
+
+				if (focusElementInfo.focus)
 				{
-					if(elementInfo.element == focusElementInfo.element)
+					auto iterFind = std::find_if(mElementsInFocus.begin(), mElementsInFocus.end(),
+						[&](const ElementInfo& x) { return x.element == focusElementInfo.element; });
+
+					if (iterFind == mElementsInFocus.end())
 					{
+						mElementsInFocus.push_back(ElementInfo(focusElementInfo.element, focusElementInfo.element->_getParentWidget()));
+
 						mCommandEvent = GUICommandEvent();
-						mCommandEvent.setType(GUICommandEventType::FocusLost);
+						mCommandEvent.setType(GUICommandEventType::FocusGained);
 
-						sendCommandEvent(elementInfo.widget, elementInfo.element, mCommandEvent);
+						sendCommandEvent(focusElementInfo.element->_getParentWidget(), focusElementInfo.element, mCommandEvent);
 					}
-					else
-						mNewElementsInFocus.push_back(elementInfo);
 				}
+				else
+				{
+					mNewElementsInFocus.clear();
+					for (auto& elementInfo : mElementsInFocus)
+					{
+						if (elementInfo.element == focusElementInfo.element)
+						{
+							mCommandEvent = GUICommandEvent();
+							mCommandEvent.setType(GUICommandEventType::FocusLost);
 
-				mElementsInFocus.swap(mNewElementsInFocus);
+							sendCommandEvent(elementInfo.widget, elementInfo.element, mCommandEvent);
+						}
+						else
+							mNewElementsInFocus.push_back(elementInfo);
+					}
+
+					mElementsInFocus.swap(mNewElementsInFocus);
+				}
 			}
-		}
 
-		mForcedFocusElements.clear();
+			mForcedFocusElements.clear();
 
-		processDestroyQueue();
+		} while (processDestroyQueue());
 	}
 
 	void GUIManager::render(ViewportPtr& target, DrawList& drawList) const
@@ -1355,21 +1359,18 @@ namespace BansheeEngine
 		mForcedFocusElements.push_back(efi);
 	}
 
-	void GUIManager::processDestroyQueue()
+	bool GUIManager::processDestroyQueue()
 	{
-		// Need two loops and a temporary since element destructors may themselves
-		// queue other elements for destruction
-		while(!mScheduledForDestruction.empty())
-		{
-			Stack<GUIElement*> toDestroy = mScheduledForDestruction;
-			mScheduledForDestruction = Stack<GUIElement*>();
+		Stack<GUIElement*> toDestroy = mScheduledForDestruction;
+		mScheduledForDestruction = Stack<GUIElement*>();
 
-			while(!toDestroy.empty())
-			{
-				bs_delete<PoolAlloc>(toDestroy.top());
-				toDestroy.pop();
-			}
+		while (!toDestroy.empty())
+		{
+			bs_delete<PoolAlloc>(toDestroy.top());
+			toDestroy.pop();
 		}
+
+		return !mScheduledForDestruction.empty();
 	}
 
 	void GUIManager::setInputBridge(const RenderTexture* renderTex, const GUIElement* element)

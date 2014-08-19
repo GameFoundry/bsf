@@ -67,7 +67,13 @@ namespace BansheeEngine
 		static const WString FoldoutOpenHoverTex;
 		static const WString FoldoutClosedNormalTex;
 		static const WString FoldoutClosedHoverTex;
-		static const WString FoldoutBackgroundTex;
+
+		static const WString CmpFoldoutOpenNormalTex;
+		static const WString CmpFoldoutOpenHoverTex;
+		static const WString CmpFoldoutOpenActiveTex;
+		static const WString CmpFoldoutClosedNormalTex;
+		static const WString CmpFoldoutClosedHoverTex;
+		static const WString CmpFoldoutClosedActiveTex;
 
 		static const WString InputBoxNormalTex;
 		static const WString InputBoxHoverTex;
