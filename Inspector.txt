@@ -2,19 +2,13 @@ Test custom resources:
  - Can I load them? (Will likely need ProjectLIbrary::load)
  - Can I reference them in Component and will the reference be held after after cloning?
 
-ARRAY TODO:
- - Need a GUIFoldout that doesn't have BG and is just a single button.
-
 TODO:
  - Add SceneObject fields (Name, Position, Rotation, Scale and optional switches between world/local)
  - Properly hook up UndoRedo, for both in-field and object-wide changes
    - How do I track Ctrl+Z and Ctrl+Y keys? And in general how do I distinguish when I send
      input to the game and when to the editor.
  - GUIColor needs to be hooked up to a window that actually changes its value.
- - Inspector scrolling
 
-KEEP IN MIND:
- - Clicking on an object/resource in inspector should ping it in their window
 
 
 
@@ -26,6 +20,7 @@ Polish (SECOND PASS - LATER):
  - Add icons to array clone/delete/up/down buttons
  - Add support for multi-rank array inspector
  - Add tabbing between fields
+ - Clicking on an object/resource in inspector should ping it in their window
 
 ----------------------------------------------
 

@@ -1,0 +1,10 @@
+Resizing SceneView requires a resize() method on RenderTexture
+
+Picking
+ - Create core thread class that accepts a screen coordinate and a camera and it determines object at its position
+ - System then renders all visible objects with diferent colors 
+ - Image then needs to be read back to determine what was hit
+ - Result is returned via async op
+ - Needs to support multi-select where I draw a rectangle on screen
+ - NOTE: I will also need to render gizmos which I assume will all be within a single buffer. This might require special care since normally I can color each buffer with a different color, which won't work in this case.
+     - Similar issue might happen with particles and other systems

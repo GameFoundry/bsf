@@ -15,6 +15,8 @@ namespace BansheeEngine
 		static void startUp(RenderSystemPlugin renderSystemPlugin);
 
 		bool isProjectLoaded() const;
+		bool isGameViewFocused() const;
+		bool isSceneViewFocused() const;
 		const Path& getActiveProjectPath() const;
 	private:
 		virtual void onStartUp();
@@ -46,4 +48,6 @@ namespace BansheeEngine
 		HTexture mTestTexRef;
 		HMesh mDbgMeshRef;
 	};
+
+	BS_ED_EXPORT EditorApplication& gEditorApplication();
 }

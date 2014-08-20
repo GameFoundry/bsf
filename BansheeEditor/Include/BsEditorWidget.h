@@ -38,6 +38,9 @@ namespace BansheeEngine
 		EditorWidgetBase(const HString& displayName, const String& name, EditorWidgetContainer& parentContainer);
 		virtual ~EditorWidgetBase();
 
+		virtual void doOnMoved(INT32 x, INT32 y);
+		virtual void doOnResized(UINT32 width, UINT32 height);
+
 		String mName;
 		HString mDisplayName;
 		EditorWidgetContainer* mParent;

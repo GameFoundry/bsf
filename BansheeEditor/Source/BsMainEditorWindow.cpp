@@ -11,6 +11,8 @@
 #include "BsGUILayout.h"
 #include "BsEditorTestSuite.h"
 #include "BsTestOutput.h"
+#include "BsVirtualInput.h"
+#include "BsSceneCameraController.h"
 
 // DEBUG ONLY
 #include "BsTestTextSprite.h"
@@ -49,25 +51,25 @@ namespace BansheeEngine
 		mMenuBar->addMenuItem(L"File/Exit", nullptr);
 		mMenuBar->addMenuItem(L"Window/Scene", nullptr);
 
-		// DEBUG ONLY
+		// Set up default editor input
+		auto inputConfig = VirtualInput::instance().getConfiguration();
 
-		RenderTexturePtr sceneRenderTarget = RenderTexture::create(TEX_TYPE_2D, 800, 600);
-		sceneRenderTarget->setPriority(1);
+		inputConfig->registerButton(SceneCameraController::MOVE_FORWARD_BTN, BC_W);
+		inputConfig->registerButton(SceneCameraController::MOVE_BACKWARD_BTN, BC_S);
+		inputConfig->registerButton(SceneCameraController::MOVE_LEFT_BTN, BC_A);
+		inputConfig->registerButton(SceneCameraController::MOVE_RIGHT_BTN, BC_D);
+		inputConfig->registerButton(SceneCameraController::MOVE_FORWARD_BTN, BC_UP);
+		inputConfig->registerButton(SceneCameraController::MOVE_BACKWARD_BTN, BC_BACK);
+		inputConfig->registerButton(SceneCameraController::MOVE_LEFT_BTN, BC_LEFT);
+		inputConfig->registerButton(SceneCameraController::MOVE_RIGHT_BTN, BC_RIGHT);
+		inputConfig->registerButton(SceneCameraController::FAST_MOVE_BTN, BC_LSHIFT);
+		inputConfig->registerButton(SceneCameraController::ROTATE_BTN, BC_MOUSE_RIGHT);
+		inputConfig->registerAxis(SceneCameraController::HORIZONTAL_AXIS, VIRTUAL_AXIS_DESC((UINT32)InputAxis::MouseX));
+		inputConfig->registerAxis(SceneCameraController::VERTICAL_AXIS, VIRTUAL_AXIS_DESC((UINT32)InputAxis::MouseY));
 
-		HSceneObject sceneCameraGO = SceneObject::create("SceneCamera");
-		HCamera sceneCamera = sceneCameraGO->addComponent<Camera>(sceneRenderTarget, 0.0f, 0.0f, 1.0f, 1.0f);
+		//GameObjectHandle<TestTextSprite> textSprite = mSceneObject->addComponent<TestTextSprite>(mCamera->getViewport().get());
 
-		sceneCamera->setPriority(1);
-		sceneCameraGO->setPosition(Vector3(0,50,1240));
-		sceneCameraGO->lookAt(Vector3(0,50,-300));
-		sceneCamera->setNearClipDistance(5);
-		sceneCamera->setAspectRatio(800.0f / 600.0f);
-
-		GameObjectHandle<DebugCamera> debugCamera = sceneCameraGO->addComponent<DebugCamera>();
-
-		GameObjectHandle<TestTextSprite> textSprite = mSceneObject->addComponent<TestTextSprite>(mCamera->getViewport().get());
-
-		textSprite->init(sceneCamera, "Testing in a new row, does this work?", sceneRenderTarget);
+		//textSprite->init(sceneCamera, "Testing in a new row, does this work?", sceneRenderTarget);
 
 		//DrawHelper2D::instance().drawQuad(sceneCamera, FRect(0.0f, 0.2f, 0.75f, 0.5f), Color::White, DebugDrawCoordType::Normalized, 250.0f);
 		//DrawHelper2D::instance().drawQuad(sceneCamera, FRect(50.0f, 50.0f, 100.0f, 50.0f), Color::Blue, DebugDrawCoordType::Pixel, 250.0f);

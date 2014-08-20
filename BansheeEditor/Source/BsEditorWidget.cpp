@@ -42,8 +42,7 @@ namespace BansheeEngine
 		if(mContent != nullptr)
 			mContent->setPosition(x, y);
 
-		if(!onMoved.empty())
-			onMoved(x, y);
+		doOnMoved(x, y);
 	}
 
 	void EditorWidgetBase::_setSize(UINT32 width, UINT32 height)
@@ -54,7 +53,18 @@ namespace BansheeEngine
 		if(mContent != nullptr)
 			mContent->setSize(width, height);
 
-		if(!onResized.empty())
+		doOnResized(width, height);
+	}
+
+	void EditorWidgetBase::doOnMoved(INT32 x, INT32 y)
+	{
+		if (!onMoved.empty())
+			onMoved(x, y);
+	}
+
+	void EditorWidgetBase::doOnResized(UINT32 width, UINT32 height)
+	{
+		if (!onResized.empty())
 			onResized(width, height);
 	}
 

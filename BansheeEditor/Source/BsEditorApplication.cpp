@@ -10,6 +10,7 @@
 #include "BsPath.h"
 #include "BsResourceImporter.h"
 #include "BsEditorWidgetLayout.h"
+#include "BsSceneEditorWidget.h"
 
 // DEBUG ONLY
 #include "DbgEditorWidget1.h"
@@ -133,6 +134,8 @@ namespace BansheeEngine
 		EditorWidgetLayoutPtr layout = loadWidgetLayout();
 		if (layout != nullptr)
 			EditorWidgetManager::instance().setLayout(layout);
+
+		SceneEditorWidget::open();
 
 		/************************************************************************/
 		/* 								DEBUG CODE                      		*/
@@ -383,6 +386,16 @@ namespace BansheeEngine
 		return true; // TODO - DEBUG ONLY
 	}
 
+	bool EditorApplication::isGameViewFocused() const
+	{
+		return false; // TODO
+	}
+
+	bool EditorApplication::isSceneViewFocused() const
+	{
+		return true; // TODO
+	}
+
 	const Path& EditorApplication::getActiveProjectPath() const
 	{
 		static Path dummyProjectPath = L"D:\\DummyBansheeProject\\";
@@ -411,5 +424,10 @@ namespace BansheeEngine
 
 		FileSerializer fs;
 		fs.encode(layout.get(), layoutPath);
+	}
+
+	EditorApplication& gEditorApplication()
+	{
+		return static_cast<EditorApplication&>(EditorApplication::instance());
 	}
 }
