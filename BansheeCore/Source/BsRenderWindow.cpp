@@ -7,9 +7,17 @@
 namespace BansheeEngine 
 {
     RenderWindow::RenderWindow(const RENDER_WINDOW_DESC& desc)
-        : RenderTarget(), mIsFullScreen(false), mDesc(desc), mHasFocus(false), mLeft(0), mTop(0), mHidden(false)
+		: RenderTarget(), mIsFullScreen(false), mDesc(desc), mHasFocus(false), mLeft(0), mTop(0), mHidden(false)
     {
-
+		mWidth = desc.videoMode.getWidth();
+		mHeight = desc.videoMode.getHeight();
+		mHwGamma = desc.gamma;
+		mVSync = desc.vsync;
+		mMultisampleCount = desc.multisampleCount;
+		mLeft = desc.left; 
+		mTop = desc.top;
+		mIsFullScreen = desc.fullscreen;
+		mHidden = desc.hidden;
     }
 
 	RenderWindow::~RenderWindow() 

@@ -21,10 +21,13 @@ namespace BansheeEngine
 	protected:
 		void doOnResized(UINT32 width, UINT32 height);
 
+		void updateRenderTexture(UINT32 width, UINT32 height);
+
 	private:
 		static SceneEditorWidget* Instance;
 
 		RenderTexturePtr mSceneRenderTarget;
+		GUIRenderTexture* mGUIRenderTexture;
 		HCamera mCamera;
 	};
 }

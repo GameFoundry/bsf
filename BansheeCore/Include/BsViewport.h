@@ -31,6 +31,11 @@ namespace BansheeEngine
          */
         RenderTargetPtr getTarget() const { return mTarget; }
 
+		/**
+		 * @brief	Sets the render target the viewport will be associated with.
+		 */
+		void setTarget(const RenderTargetPtr& target) { mTarget = target; markCoreDirty(); }
+
         /**
          * @brief	Gets the normalized x coordinate of the viewport, in [0, 1] range.
          */
@@ -129,7 +134,23 @@ namespace BansheeEngine
 		 * @brief	Makes an exact copy of this viewport.
 		 */
 		Viewport clone();
+
+		/**
+		 * @brief	Checks is the core dirty flag set. This is used by external systems 
+		 *			to know when internal data has changed and core thread potentially needs to be notified.
+		 */
+		bool _isCoreDirty() const { return mCoreDirtyFlags != 0; }
+
+		/**
+		 * @brief	Marks the core dirty flag as clean.
+		 */
+		void _markCoreClean() { mCoreDirtyFlags = 0; }
     protected:
+		/**
+		 * @brief	Marks the core data as dirty, signaling that the core thread needs an updated version.
+		 */
+		void markCoreDirty() { mCoreDirtyFlags = 0xFFFFFFFF; }
+
         RenderTargetPtr mTarget;
 
 		RectF mNormArea;
@@ -141,6 +162,8 @@ namespace BansheeEngine
 		Color mClearColor;
 		float mDepthClearValue;
 		UINT16 mStencilClearValue;
+
+		UINT32 mCoreDirtyFlags; /**< True when internal data has changed and core thread wasn't yet informed. */
 
 		static const Color DEFAULT_CLEAR_COLOR;
     };

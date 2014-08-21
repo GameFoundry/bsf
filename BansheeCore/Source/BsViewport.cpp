@@ -11,14 +11,14 @@ namespace BansheeEngine
 
 	Viewport::Viewport()
 		:mTarget(nullptr), mClearColor(DEFAULT_CLEAR_COLOR), mRequiresColorClear(true), mRequiresDepthClear(true), 
-		mRequiresStencilClear(false), mStencilClearValue(0), mDepthClearValue(1.0f)
+		mRequiresStencilClear(false), mStencilClearValue(0), mDepthClearValue(1.0f), mCoreDirtyFlags(0xFFFFFFFF)
 	{
 
 	}
 
     Viewport::Viewport(const RenderTargetPtr& target, float x, float y, float width, float height)
          :mTarget(target), mNormArea(x, y, width, height), mClearColor(DEFAULT_CLEAR_COLOR), mRequiresColorClear(true), 
-		 mRequiresDepthClear(true), mRequiresStencilClear(false), mStencilClearValue(0), mDepthClearValue(1.0f)
+		 mRequiresDepthClear(true), mRequiresStencilClear(false), mStencilClearValue(0), mDepthClearValue(1.0f), mCoreDirtyFlags(0xFFFFFFFF)
     {
 
     }
@@ -33,6 +33,8 @@ namespace BansheeEngine
         mNormArea.y = y;
         mNormArea.width = width;
         mNormArea.height = height;
+
+		markCoreDirty();
     }
 
 	RectI Viewport::getArea() const
@@ -54,6 +56,8 @@ namespace BansheeEngine
 		mRequiresColorClear = colorClear;
 		mRequiresDepthClear = depthClear;
 		mRequiresStencilClear = stencilClear;
+
+		markCoreDirty();
 	}
 
 	void Viewport::setClearValues(const Color& clearColor, float clearDepth, UINT16 clearStencil)
@@ -61,6 +65,8 @@ namespace BansheeEngine
 		mClearColor = clearColor;
 		mDepthClearValue = clearDepth;
 		mStencilClearValue = clearStencil;
+
+		markCoreDirty();
 	}
 
 	INT32 Viewport::getX() const 

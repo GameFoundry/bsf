@@ -48,6 +48,7 @@ namespace BansheeEngine
 	class GUIScrollBarHorz;
 	class GUIScrollArea;
 	class GUISkin;
+	class GUIRenderTexture;
 	struct GUIElementStyle;
 	class GUIMouseEvent;
 	class GUITextInputEvent;

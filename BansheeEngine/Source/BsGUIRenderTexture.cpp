@@ -14,21 +14,15 @@ namespace BansheeEngine
 	}
 
 	GUIRenderTexture::GUIRenderTexture(const String& styleName, const RenderTexturePtr& texture, const GUILayoutOptions& layoutOptions)
-		:GUITexture(styleName, HSpriteTexture(), GUIImageScaleMode::StretchToFit, layoutOptions), mSourceTexture(texture.get())
+		:GUITexture(styleName, HSpriteTexture(), GUIImageScaleMode::StretchToFit, layoutOptions)
 	{
-		if(mSourceTexture->requiresTextureFlipping())
-		{
-			mDesc.uvOffset = Vector2(0.0f, 1.0f);
-			mDesc.uvScale = Vector2(1.0f, -1.0f);
-		}
-
-		setTexture(SpriteTexture::create(texture->getBindableColorTexture()));
-		GUIManager::instance().setInputBridge(mSourceTexture, this);
+		setRenderTexture(texture);
 	}
 
 	GUIRenderTexture::~GUIRenderTexture()
 	{
-		GUIManager::instance().setInputBridge(mSourceTexture, nullptr);
+		if (mSourceTexture != nullptr)
+			GUIManager::instance().setInputBridge(mSourceTexture.get(), nullptr);
 	}
 
 	GUIRenderTexture* GUIRenderTexture::create(const RenderTexturePtr& texture, const String& styleName)
@@ -39,6 +33,33 @@ namespace BansheeEngine
 	GUIRenderTexture* GUIRenderTexture::create(const RenderTexturePtr& texture, const GUIOptions& layoutOptions, const String& styleName)
 	{
 		return new (bs_alloc<GUIRenderTexture, PoolAlloc>()) GUIRenderTexture(getStyleName<GUIRenderTexture>(styleName), texture, GUILayoutOptions::create(layoutOptions));
+	}
+
+	void GUIRenderTexture::setRenderTexture(const RenderTexturePtr& texture)
+	{
+		if (mSourceTexture != nullptr)
+			GUIManager::instance().setInputBridge(mSourceTexture.get(), nullptr);
+
+		mSourceTexture = texture;
+
+		if (mSourceTexture != nullptr)
+		{
+			if (mSourceTexture->requiresTextureFlipping())
+			{
+				mDesc.uvOffset = Vector2(0.0f, 1.0f);
+				mDesc.uvScale = Vector2(1.0f, -1.0f);
+			}
+
+			setTexture(SpriteTexture::create(texture->getBindableColorTexture()));
+
+			GUIManager::instance().setInputBridge(mSourceTexture.get(), this);
+		}
+		else
+		{
+			setTexture(SpriteTexture::create(HTexture()));
+		}
+
+		markContentAsDirty();
 	}
 
 	void GUIRenderTexture::updateRenderElementsInternal()

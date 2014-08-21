@@ -285,12 +285,12 @@ namespace BansheeEngine
 		 * @brief	Checks is the core dirty flag set. This is used by external systems 
 		 *			to know when internal data has changed and core thread potentially needs to be notified.
 		 */
-		bool _isCoreDirty() const { return mCoreDirtyFlags != 0; }
+		bool _isCoreDirty() const { return mCoreDirtyFlags != 0 || mViewport->_isCoreDirty(); }
 
 		/**
 		 * @brief	Marks the core dirty flag as clean.
 		 */
-		void _markCoreClean() { mCoreDirtyFlags = 0; }
+		void _markCoreClean() { mCoreDirtyFlags = 0; mViewport->_markCoreClean(); }
 
 		/**
 		 * @brief	Creates a new core proxy from the currently set options. Core proxies ensure

@@ -31,7 +31,7 @@ namespace BansheeEngine
 		if(!mThis.expired())
 		{
 			BS_EXCEPT(InternalErrorException, "Shared pointer to this object still has active references but " \
-				"the object is being deleted? You shouldn't delete CoreGpuObjects manually.");
+				"the object is being deleted? You shouldn't delete CoreObjects manually.");
 		}
 #endif
 

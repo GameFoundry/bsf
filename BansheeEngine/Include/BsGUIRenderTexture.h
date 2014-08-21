@@ -41,6 +41,11 @@ namespace BansheeEngine
 		 */
 		static GUIRenderTexture* create(const RenderTexturePtr& texture, const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
 
+		/**
+		 * @brief	Changes the active render texture whose contents to display in the GUI element.
+		 */
+		void setRenderTexture(const RenderTexturePtr& texture);
+
 	protected:
 		GUIRenderTexture(const String& styleName, const RenderTexturePtr& texture, const GUILayoutOptions& layoutOptions);
 		virtual ~GUIRenderTexture();
@@ -50,6 +55,6 @@ namespace BansheeEngine
 		 */
 		virtual void updateRenderElementsInternal();
 
-		const RenderTexture* mSourceTexture;
+		RenderTexturePtr mSourceTexture;
 	};
 }

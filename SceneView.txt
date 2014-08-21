@@ -1,9 +1,5 @@
-I get an error when serializing a material
- - I'm assuming its because one shader block is renderer manager and not created at the time of serialization
-
 Resizing SceneView requires a resize() method on RenderTexture
  - Add resize() method to RenderTexture and normal Texture
-Add a basic 3D model so SceneView actually displays something
 
 Think about how gizmos will be rendered
  - Both quad icon-like ones
@@ -17,3 +13,32 @@ Picking
  - Needs to support multi-select where I draw a rectangle on screen
  - NOTE: I will also need to render gizmos which I assume will all be within a single buffer. This might require special care since normally I can color each buffer with a different color, which won't work in this case.
      - Similar issue might happen with particles and other systems
+
+
+--------------------------
+
+RenderTarget (and in turn, Viewport) make data available to sim thread, even though that data can be arbitrarily modified from the core thread
+
+Stuff that needs to be synchronized:
+ mIsFullscreen
+ mWidth
+ mHeight
+ mHidden
+ mTop
+ mLeft
+ mHasFocus
+ (more? check)
+
+Core thread should have up to date access as it has now.
+Sim thread should only get updated data next frame.
+ - Ensure this happens before any RenderWindowManager events
+
+-------------
+
+Option:
+ - Keep two copies of data in RenderTarget/RenderTexture/RenderWindow
+ - Whenever stuff gets modified from core thread a notification is sent to RenderTargetManager which queues an update to refresh the sim thread data
+ - Core thread data is updated from sim thread as normal
+
+How will the external methods know which version of data to use?
+ - TODO
