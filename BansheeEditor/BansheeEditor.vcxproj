@@ -314,7 +314,6 @@
     <ClInclude Include="Include\BsProjectResourceMeta.h" />
     <ClInclude Include="Include\BsProjectResourceMetaRTTI.h" />
     <ClInclude Include="Include\BsGUIVector2Field.h" />
-    <ClInclude Include="Include\BsDebugCamera.h" />
     <ClInclude Include="Include\BsResourceImporter.h" />
     <ClInclude Include="Include\BsSceneCameraController.h" />
     <ClInclude Include="Include\BsSceneEditorWidget.h" />
@@ -371,7 +370,6 @@
     <ClCompile Include="Source\BsSceneCameraController.cpp" />
     <ClCompile Include="Source\BsSceneEditorWidget.cpp" />
     <ClCompile Include="Source\BsUndoRedo.cpp" />
-    <ClCompile Include="Source\BsDebugCamera.cpp" />
     <ClCompile Include="Source\BsEditorApplication.cpp" />
     <ClCompile Include="Source\BsTestTextSprite.cpp" />
     <ClCompile Include="Source\DbgEditorWidget1.cpp" />

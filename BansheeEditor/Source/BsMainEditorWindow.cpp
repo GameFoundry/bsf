@@ -16,7 +16,6 @@
 
 // DEBUG ONLY
 #include "BsTestTextSprite.h"
-#include "BsDebugCamera.h"
 #include "BsDrawHelper2D.h"
 #include "BsDrawHelper3D.h"
 #include "BsRectF.h"

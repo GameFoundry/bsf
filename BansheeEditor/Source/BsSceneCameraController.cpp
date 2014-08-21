@@ -7,6 +7,7 @@
 #include "BsCamera.h"
 #include "BsPlatform.h"
 #include "BsEditorApplication.h"
+#include "BsCursor.h"
 
 namespace BansheeEngine
 {
@@ -23,7 +24,18 @@ namespace BansheeEngine
 	const float SceneCameraController::TOP_SPEED = 130.0f;
 	const float SceneCameraController::ACCELERATION = 10.0f;
 	const float SceneCameraController::FAST_MODE_MULTIPLIER = 2.0f;
-	const float SceneCameraController::ROTATION_SPEED = 0.5f; // Degrees/pixel
+	const float SceneCameraController::ROTATION_SPEED = 360.0f; // Degrees/second
+
+	Degree wrapAngle(Degree angle)
+	{
+		if (angle.valueDegrees() < -360.0f)
+			angle += Degree(360.0f);
+
+		if (angle.valueDegrees() > 360.0f)
+			angle -= Degree(360.0f);
+
+		return angle;
+	}
 
 	SceneCameraController::SceneCameraController(const HSceneObject& parent)
 		:Component(parent), mPitch(0.0f), mYaw(0.0f), mLastButtonState(false)
@@ -38,12 +50,6 @@ namespace BansheeEngine
 		mRotate = VirtualButton(ROTATE_BTN);
 		mHorizontal = VirtualAxis(HORIZONTAL_AXIS);
 		mVertical = VirtualAxis(VERTICAL_AXIS);
-
-		mCamera = sceneObject()->getComponent<Camera>();
-		mCamera->setNearClipDistance(5);
-
-		sceneObject()->setPosition(Vector3(0, 0, 0));
-		sceneObject()->lookAt(Vector3(0, 0, -1));
 	}
 
 	void SceneCameraController::update()
@@ -61,11 +67,32 @@ namespace BansheeEngine
 		if (camRotating != mLastButtonState)
 		{
 			if (camRotating)
-				Platform::hideCursor();
+				Cursor::instance().hide();
 			else
-				Platform::showCursor();
+				Cursor::instance().show();
 
 			mLastButtonState = camRotating;
+		}
+
+		float frameDelta = gTime().getFrameDelta();
+		if (camRotating)
+		{
+			mYaw += Degree(gVirtualInput().getAxisValue(mHorizontal) * ROTATION_SPEED * frameDelta);
+			mPitch += Degree(gVirtualInput().getAxisValue(mVertical) * ROTATION_SPEED * frameDelta);
+
+			mYaw = wrapAngle(mYaw);
+			mPitch = wrapAngle(mPitch);
+
+			Quaternion yRot;
+			yRot.fromAxisAngle(Vector3::UNIT_Y, Radian(mYaw));
+
+			Quaternion xRot;
+			xRot.fromAxisAngle(Vector3::UNIT_X, Radian(mPitch));
+
+			Quaternion camRot = yRot * xRot;
+			camRot.normalize();
+
+			SO()->setRotation(camRot);
 		}
 
 		Vector3 direction = Vector3::ZERO;
@@ -82,7 +109,7 @@ namespace BansheeEngine
 			if (fastMove)
 				multiplier = FAST_MODE_MULTIPLIER;
 
-			mCurrentSpeed = Math::clamp(mCurrentSpeed + ACCELERATION * gTime().getFrameDelta(), START_SPEED, TOP_SPEED);
+			mCurrentSpeed = Math::clamp(mCurrentSpeed + ACCELERATION * frameDelta, START_SPEED, TOP_SPEED);
 			mCurrentSpeed *= multiplier;
 		}
 		else
@@ -94,23 +121,7 @@ namespace BansheeEngine
 		if (mCurrentSpeed > tooSmall)
 		{
 			Vector3 velocity = direction * mCurrentSpeed;
-			SO()->move(velocity * gTime().getFrameDelta());
-		}
-
-		if (camRotating)
-		{
-			mYaw += Degree(gVirtualInput().getAxisValue(mHorizontal) * ROTATION_SPEED);
-			mPitch += Degree(gVirtualInput().getAxisValue(mVertical) * ROTATION_SPEED);
-
-			Quaternion yRot;
-			yRot.fromAxisAngle(Vector3::UNIT_Y, Radian(mYaw));
-
-			Quaternion xRot;
-			xRot.fromAxisAngle(yRot.xAxis(), Radian(mPitch));
-
-			Quaternion camRot = xRot * yRot;
-
-			SO()->setRotation(camRot);
+			SO()->move(velocity * frameDelta);
 		}
 	}
 }

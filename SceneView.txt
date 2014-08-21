@@ -1,4 +1,13 @@
+I get an error when serializing a material
+ - I'm assuming its because one shader block is renderer manager and not created at the time of serialization
+
 Resizing SceneView requires a resize() method on RenderTexture
+ - Add resize() method to RenderTexture and normal Texture
+Add a basic 3D model so SceneView actually displays something
+
+Think about how gizmos will be rendered
+ - Both quad icon-like ones
+ - And ones for bounding boxes, camera frustum, etc.
 
 Picking
  - Create core thread class that accepts a screen coordinate and a camera and it determines object at its position

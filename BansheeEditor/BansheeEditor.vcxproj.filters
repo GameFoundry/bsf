@@ -180,9 +180,6 @@
     <ClInclude Include="Include\BsTestTextSprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsDebugCamera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsProjectResourceMeta.h">
       <Filter>Header Files\Editor</Filter>
     </ClInclude>
@@ -337,9 +334,6 @@
     </ClCompile>
     <ClCompile Include="Source\BsGUIFieldBase.cpp">
       <Filter>Source Files\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsDebugCamera.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsTestTextSprite.cpp">
       <Filter>Source Files</Filter>

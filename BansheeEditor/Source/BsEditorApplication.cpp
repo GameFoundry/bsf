@@ -36,6 +36,7 @@
 #include "BsGUIButton.h"
 #include "BsGUILayout.h"
 #include "BsEvent.h"
+#include "BsRenderer.h"
 
 namespace BansheeEngine
 {
@@ -161,8 +162,8 @@ namespace BansheeEngine
 		{
 		case RenderSystemPlugin::DX11:
 		{
-										 psLoc = L"C:\\Projects\\BansheeEngine\\Data\\hlsl11_ps.gpuprog";
-										 vsLoc = L"C:\\Projects\\BansheeEngine\\Data\\hlsl11_vs.gpuprog";
+										 psLoc = L"..\\..\\..\\..\\Data\\hlsl11_ps.gpuprog";
+										 vsLoc = L"..\\..\\..\\..\\Data\\hlsl11_vs.gpuprog";
 										 language = "hlsl";
 										 psProfile = GPP_PS_4_0;
 										 vsProfile = GPP_VS_4_0;
@@ -172,8 +173,8 @@ namespace BansheeEngine
 		}
 		case RenderSystemPlugin::DX9:
 		{
-										psLoc = L"C:\\Projects\\BansheeEngine\\Data\\hlsl9_ps.gpuprog";
-										vsLoc = L"C:\\Projects\\BansheeEngine\\Data\\hlsl9_vs.gpuprog";
+										psLoc = L"..\\..\\..\\..\\Data\\hlsl9_ps.gpuprog";
+										vsLoc = L"..\\..\\..\\..\\Data\\hlsl9_vs.gpuprog";
 										language = "hlsl";
 										psProfile = GPP_PS_2_0;
 										vsProfile = GPP_VS_2_0;
@@ -183,8 +184,8 @@ namespace BansheeEngine
 		}
 		case RenderSystemPlugin::OpenGL:
 		{
-										   psLoc = L"C:\\Projects\\BansheeEngine\\Data\\glsl_ps.gpuprog";
-										   vsLoc = L"C:\\Projects\\BansheeEngine\\Data\\glsl_vs.gpuprog";
+										   psLoc = L"..\\..\\..\\..\\Data\\glsl_ps.gpuprog";
+										   vsLoc = L"..\\..\\..\\..\\Data\\glsl_vs.gpuprog";
 										   language = "glsl";
 										   psProfile = GPP_PS_2_0;
 										   vsProfile = GPP_VS_2_0;
@@ -229,13 +230,13 @@ namespace BansheeEngine
 		mFragProgRef = gResources().load(L"C:\\fragProgCg.vprog");
 
 		mTestShader = Shader::create("TestShader");
-		mTestShader->addParameter("matViewProjection", "matViewProjection", GPDT_MATRIX_4X4);
-
-		if (mActiveRSPlugin == RenderSystemPlugin::DX11)
-			mTestShader->addParameter("input", "input", GPDT_STRUCT, 0, 2, 8);
+		mTestShader->addParameter("matWorldViewProj", "matWorldViewProj", GPDT_MATRIX_4X4, RPS_WorldViewProjTfrm);
 
 		mTestShader->addParameter("samp", "samp", GPOT_SAMPLER2D);
 		mTestShader->addParameter("tex", "tex", GPOT_TEXTURE2D);
+
+		mTestShader->setParamBlockAttribs("PerObject", true, GPBU_DYNAMIC, RBS_PerObject);
+
 		mNewTechniqueGL = mTestShader->addTechnique("GLRenderSystem", "BansheeRenderer");
 		mNewPassGL = mNewTechniqueGL->addPass();
 		mNewPassGL->setVertexProgram(mVertProgRef);
@@ -257,24 +258,8 @@ namespace BansheeEngine
 		mTestMaterial = Material::create();
 		mTestMaterial->setShader(mTestShader);
 
-		mTestMaterial->setMat4("matViewProjection", Matrix4::IDENTITY);
-
-		if (mActiveRSPlugin == RenderSystemPlugin::DX11)
-		{
-			float dbgMultipliers1[2];
-			dbgMultipliers1[0] = 0.0f;
-			dbgMultipliers1[1] = 0.0f;
-
-			float dbgMultipliers2[2];
-			dbgMultipliers2[0] = 1.0f;
-			dbgMultipliers2[1] = 1.0f;
-
-			mTestMaterial->setStructData("input", dbgMultipliers1, sizeof(dbgMultipliers1), 0);
-			mTestMaterial->setStructData("input", dbgMultipliers2, sizeof(dbgMultipliers2), 1);
-		}
-
-		mTestTexRef = static_resource_cast<Texture>(Importer::instance().import(L"C:\\ArenaTowerDFS.psd"));
-		mDbgMeshRef = static_resource_cast<Mesh>(Importer::instance().import(L"C:\\X_Arena_Tower.FBX"));
+		mTestTexRef = static_resource_cast<Texture>(Importer::instance().import(L"..\\..\\..\\..\\Data\\Examples\\Dragon.tga"));
+		mDbgMeshRef = static_resource_cast<Mesh>(Importer::instance().import(L"..\\..\\..\\..\\Data\\Examples\\Dragon.fbx"));
 
 		gResources().save(mTestTexRef, L"C:\\ExportTest.tex", true);
 		gResources().save(mDbgMeshRef, L"C:\\ExportMesh.mesh", true);

@@ -17,18 +17,19 @@ namespace BansheeEngine
 		class DockContainer
 		{
 		public:
-			DockContainer();
-			DockContainer(DockContainer* parent);
+			DockContainer(DockManager* manager);
+			DockContainer(DockManager* manager, DockContainer* parent);
 			~DockContainer();
 
 			void setArea(INT32 x, INT32 y, UINT32 width, UINT32 height);
 			void makeLeaf(GUIWidget* widgetParent, RenderWindow* parentWindow);
 			void makeLeaf(EditorWidgetContainer* existingContainer);
-			void splitContainer(GUIWidget* widgetParent, RenderWindow* parentWindow, bool horizontal, bool newChildIsFirst, float splitPosition = 0.5f);
-			void addLeft(GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidgetBase* widget);
-			void addRight(GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidgetBase* widget);
-			void addTop(GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidgetBase* widget);
-			void addBottom(GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidgetBase* widget);
+			void splitContainer(bool horizontal, bool newChildIsFirst, float splitPosition = 0.5f);
+			void makeSplit(GUIWidget* widgetParent, DockManager::DockContainer* first, DockManager::DockContainer* second, bool horizontal, float splitPosition);
+			void addLeft(EditorWidgetBase* widget);
+			void addRight(EditorWidgetBase* widget);
+			void addTop(EditorWidgetBase* widget);
+			void addBottom(EditorWidgetBase* widget);
 
 			void addWidget(EditorWidgetBase* widget);
 			void addWidget(const String& name);
@@ -51,6 +52,7 @@ namespace BansheeEngine
 			bool mIsLeaf;
 			DockContainer* mChildren[2];
 			DockContainer* mParent;
+			DockManager* mManager;
 			EditorWidgetContainer* mWidgets;
 			GUIDockSlider* mSlider;
 			RectI mArea;

@@ -134,6 +134,9 @@ namespace BansheeEngine
 			UINT32 sizeBytes = std::min(elementSizeBytes, (UINT32)sizeof(T)); // Truncate if it doesn't fit within parameter size
 			GpuParamBlockPtr paramBlock = getParamBlock(mParamDesc->paramBlockSlot);
 
+			if (paramBlock == nullptr)
+				return;
+
 			if (TransposePolicy<T>::transposeEnabled(getTransposeMatrices()))
 			{
 				T transposed = TransposePolicy<T>::transpose(value);
@@ -175,6 +178,9 @@ namespace BansheeEngine
 			UINT32 sizeBytes = std::min(elementSizeBytes, (UINT32)sizeof(T));
 			GpuParamBlockPtr paramBlock = getParamBlock(mParamDesc->paramBlockSlot);
 
+			if (paramBlock == nullptr)
+				return T();
+			
 			T value;
 			paramBlock->read((mParamDesc->cpuMemOffset + arrayIdx * mParamDesc->arrayElementStride) * sizeof(UINT32), &value, sizeBytes);
 

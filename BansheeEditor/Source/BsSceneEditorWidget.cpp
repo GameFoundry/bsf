@@ -21,21 +21,28 @@ namespace BansheeEngine
 		:EditorWidget<SceneEditorWidget>(HString(L"SceneEditorWidget"), parentContainer)
 	{
 		GUILayout& layout = mContent->getLayout();
+
+		UINT32 width = 200; // TODO - Use proper width/height once I have texture resize working. Have some mininum limit (e.g. 4x4)
+		UINT32 height = 200;
 		
-		mSceneRenderTarget = RenderTexture::create(TEX_TYPE_2D, getWidth(), getHeight());
+		mSceneRenderTarget = RenderTexture::create(TEX_TYPE_2D, width, height);
 		mSceneRenderTarget->setPriority(1);
 
-		HSceneObject sceneCameraGO = SceneObject::create("SceneCamera");
-		mCamera = sceneCameraGO->addComponent<Camera>(mSceneRenderTarget, 0.0f, 0.0f, 1.0f, 1.0f);
+		HSceneObject sceneCameraSO = SceneObject::create("SceneCamera");
+		mCamera = sceneCameraSO->addComponent<Camera>(mSceneRenderTarget, 0.0f, 0.0f, 1.0f, 1.0f);
 
-		sceneCameraGO->setPosition(Vector3(0, 0, 0));
-		sceneCameraGO->lookAt(Vector3(0, 0, -3));
+		sceneCameraSO->setPosition(Vector3(0, 0, 0));
+		sceneCameraSO->lookAt(Vector3(0, 0, -3));
+
+		// DEBUG ONLY
+		sceneCameraSO->setPosition(Vector3(-130.0f, 140.0f, 650.0f));
+		sceneCameraSO->lookAt(Vector3(0, 0, 0));
 
 		mCamera->setPriority(1);
 		mCamera->setNearClipDistance(5);
-		mCamera->setAspectRatio(getWidth() / (float)getHeight());
+		mCamera->setAspectRatio(width / (float)height);
 
-		sceneCameraGO->addComponent<SceneCameraController>();
+		sceneCameraSO->addComponent<SceneCameraController>();
 
 		layout.addElement(GUIRenderTexture::create(mSceneRenderTarget));
 	}
