@@ -36,6 +36,9 @@ namespace BansheeEngine
 
 	void EditorWidgetBase::_setPosition(INT32 x, INT32 y)
 	{
+		if (mX == x && mY == y)
+			return;
+
 		mX = x;
 		mY = y;
 
@@ -47,6 +50,9 @@ namespace BansheeEngine
 
 	void EditorWidgetBase::_setSize(UINT32 width, UINT32 height)
 	{
+		if (mWidth == width && mHeight == height)
+			return;
+
 		mWidth = width;
 		mHeight = height;
 

@@ -1,9 +1,25 @@
-Resizing SceneView requires a resize() method on RenderTexture
- - Add resize() method to RenderTexture and normal Texture
 
-Think about how gizmos will be rendered
- - Both quad icon-like ones
- - And ones for bounding boxes, camera frustum, etc.
+Weekend:
+ - Grid
+ - RenderTarget refactor
+ - Think about picking implementation and possibly Handles implementation
+
+TODO - Think about:
+ - How will I allow user from C# to draw gizmos and handles?
+ - Unity uses immediate mode
+ - I should probably focus more on implementing a nice C# drawing interface so I don't constantly have to go and use C++
+    - Although this might be overkill for this point - I think even Unitys handles/gizmos are C++ in the end
+
+----------------------------------------------------------------------
+Handles
+
+TODO - Think about this
+See for inspiration: http://docs.unity3d.com/ScriptReference/Handles.html
+
+----------------------------------------------------------------------
+Picking
+
+TODO - Think about this
 
 Picking
  - Create core thread class that accepts a screen coordinate and a camera and it determines object at its position
@@ -14,10 +30,76 @@ Picking
  - NOTE: I will also need to render gizmos which I assume will all be within a single buffer. This might require special care since normally I can color each buffer with a different color, which won't work in this case.
      - Similar issue might happen with particles and other systems
 
+----------------------------------------------------------------------
+Rendering selection
 
---------------------------
+Get the mesh from the selected Renderable
+Draw that same mesh again using a shader that grays out the original
+The second mesh will likely need to use depth bias (sloped depth bias too?)
 
+----------------------------------------------------------------------
+Grid
+
+Generate grid of X size around Y point
+Normally Y is (0, 0, 0) but we should be able to move it with camera
+There will be minor and major axes with slightly different color (and thickness?)
+Instead of pixel perfect lines draw 2D quads (Using DrawHelper which has thick line support)
+
+Mesh can be static, I can just move its origin by length of the major line (+ maybe have a fadeout in shader with 1 invisible major line so the movement is not noticeable)
+Material is retrieved from builtin materials list
+
+This can be drawn directly using the draw list and not a renderable
+
+----------------------------------------------------------------------
+Gizmos
+
+GizmoSetups
+ - Determines what to display for a certain component (or a SceneObject) itself
+
+GizmoManager
+ - Every frame goes through all game objects and create/removes their gizmos. It keeps a cached version of all gizmos
+ - It keeps a list of gizmo descriptors
+ - A "diff" of this list is sent to Core thread every frame
+
+GizmosRenderer
+ - Batches all gizmos into a single buffer and renders them with a single call
+ - It might be a bit problematic if custom textures are used for gizmos
+    - Just don't batch those?
+
+When picking GizmosRenderer can draw the gizmos as normal but using a special shader.
+
+--------
+
+Need to allow the user to specify custom gizmos.
+ - Have a set of methods like Gizmos.DrawSphere, DrawIcon, DrawLine, DrawCube, DrawFrustum, etc.
+ - Have a CustomGizmo attribute which you can attach to a method
+ - That method can then call above methods
+ - Additionally in the attribute you can specify when is the gizmo displayed: Active, Selected, NotSelected, SelectedOrChild
+ - And an option if gizmo can be picked or not
+ - These methods will somehow automatically be registered with the GizmoSetups
+
+-----------------------------------------------------------------------
 RenderTarget (and in turn, Viewport) make data available to sim thread, even though that data can be arbitrarily modified from the core thread
+
+Create a separate set of classes: RenderTargetCore, RenderTextureCore, RenderWindowCore.
+ - They would not be core objects but would be used exclusively on the core thread
+ - Majority of the current classes would go into those new classes
+
+Current RenderTarget/RenderTexture/RenderWindow would stay and be useable on sim thread but not meant for core thread use.
+ - Internally it would store the *Core versions of the objects
+
+Whenever a core object gets changed it should notify a RenderTargetManager, which will on beginning of every frame update
+non-core version with valid data.
+
+Viewport should return a ViewportProxy for use on core thread (instead of a clone as it has now)
+ - The proxy will reference the *Core version of render target
+
+IMPLEMENTATION:
+ - Create RenderTargetCore, RenderTextureCore, RenderWindowCore files
+ - Start copying (don't modify original files) code from original files and modify them for core use
+ - Find any references of render targets on the core thread and make sure it uses those core objects instead
+ - Add getCoreImplementation() that returns the core version from "normal" objects
+
 
 Stuff that needs to be synchronized:
  mIsFullscreen
@@ -28,17 +110,3 @@ Stuff that needs to be synchronized:
  mLeft
  mHasFocus
  (more? check)
-
-Core thread should have up to date access as it has now.
-Sim thread should only get updated data next frame.
- - Ensure this happens before any RenderWindowManager events
-
--------------
-
-Option:
- - Keep two copies of data in RenderTarget/RenderTexture/RenderWindow
- - Whenever stuff gets modified from core thread a notification is sent to RenderTargetManager which queues an update to refresh the sim thread data
- - Core thread data is updated from sim thread as normal
-
-How will the external methods know which version of data to use?
- - TODO
