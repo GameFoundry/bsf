@@ -528,6 +528,9 @@
     <ClInclude Include="Include\BsResourceMetaDataRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsRenderTargetManager.h">
+      <Filter>Header Files\RenderSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsCoreApplication.cpp">
@@ -826,6 +829,9 @@
     </ClCompile>
     <ClCompile Include="Source\BsResourceMetaData.cpp">
       <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsRenderTargetManager.cpp">
+      <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

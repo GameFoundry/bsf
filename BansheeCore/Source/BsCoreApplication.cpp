@@ -26,6 +26,7 @@
 #include "BsMaterialManager.h"
 #include "BsFontManager.h"
 #include "BsRenderWindowManager.h"
+#include "BsRenderTargetManager.h"
 #include "BsRenderer.h"
 #include "BsDeferredCallManager.h"
 #include "BsCoreThread.h"
@@ -66,6 +67,7 @@ namespace BansheeEngine
 		Platform::_startUp();
 		MemStack::beginThread();
 
+		RenderTargetManager::startUp();
 		UUIDGenerator::startUp();
 		ProfilerCPU::startUp();
 		ProfilingManager::startUp();
@@ -149,6 +151,7 @@ namespace BansheeEngine
 		ProfilingManager::shutDown();
 		ProfilerCPU::shutDown();
 		UUIDGenerator::shutDown();
+		RenderTargetManager::shutDown();
 
 		MemStack::endThread();
 		Platform::_shutDown();
@@ -163,6 +166,7 @@ namespace BansheeEngine
 			gProfilerCPU().beginThread("Sim");
 
 			gCoreThread().update();
+			RenderTargetManager::instance().update();
 			Platform::_update();
 			DeferredCallManager::instance()._update();
 			RenderWindowManager::instance()._update();
@@ -201,6 +205,7 @@ namespace BansheeEngine
 
 			gCoreThread().queueCommand(&Platform::_coreUpdate);
 			gCoreThread().submitAccessors();
+			gCoreThread().queueCommand(std::bind(&RenderTargetManager::updateCore, RenderTargetManager::instancePtr()));
 			gCoreThread().queueCommand(std::bind(&CoreApplication::endCoreProfiling, this));
 			gCoreThread().queueCommand(std::bind(&CoreApplication::frameRenderingFinishedCallback, this));
 

@@ -307,6 +307,7 @@
     <ClInclude Include="Include\BsPlatform.h" />
     <ClInclude Include="Include\BsProfilingManager.h" />
     <ClInclude Include="Include\BsQueryManager.h" />
+    <ClInclude Include="Include\BsRenderTargetManager.h" />
     <ClInclude Include="Include\BsResourceManifest.h" />
     <ClInclude Include="Include\BsResourceManifestRTTI.h" />
     <ClInclude Include="Include\BsResourceMetaData.h" />
@@ -471,6 +472,7 @@
     <ClCompile Include="Source\BsProfilingManager.cpp" />
     <ClCompile Include="Source\BsQueryManager.cpp" />
     <ClCompile Include="Source\BsRenderer.cpp" />
+    <ClCompile Include="Source\BsRenderTargetManager.cpp" />
     <ClCompile Include="Source\BsResourceManifest.cpp" />
     <ClCompile Include="Source\BsResourceMetaData.cpp" />
     <ClCompile Include="Source\BsTextureImportOptions.cpp" />

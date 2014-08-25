@@ -3,6 +3,7 @@
 #include "BsException.h"
 #include "BsRenderSystem.h"
 #include "BsCoreThread.h"
+#include "BsRenderTargetManager.h"
 
 namespace BansheeEngine 
 {
@@ -43,10 +44,6 @@ namespace BansheeEngine
 	{
 		THROW_IF_CORE_THREAD;
 
-		// DEBUG ONLY
-		if (mCore != nullptr)
-			*mProperties = *mCore->mProperties;
-
 		return *mProperties;
 	}
 
@@ -60,10 +57,14 @@ namespace BansheeEngine
 		CoreObject::initialize_internal();
 
 		mCore = createCore();
+
+		RenderTargetManager::instance().registerRenderTarget(this);
 	}
 
 	void RenderTarget::destroy_internal()
 	{
+		RenderTargetManager::instance().unregisterRenderTarget(this);
+
 		bs_delete(mCore);
 		mCore = nullptr;
 

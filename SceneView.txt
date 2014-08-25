@@ -95,7 +95,6 @@ RenderTarget (and in turn, Viewport) make data available to sim thread, even tho
 
 TODO:
  - Core thread gets stuck on shutdown when OpenGL is used...Somewhere in kernel
- - DX9 doesn't render anything in viewport (shader issue?)
  - getProperties on non-core should just make a copy of core for now to check if everything works
  - Remove the debug stuff in RenderTarget when done testing
 

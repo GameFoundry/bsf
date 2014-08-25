@@ -18,9 +18,9 @@ namespace BansheeEngine
 		RenderWindowManager();
 
 		/**
-		* @brief	Creates a new render window using the specified options. Optionally
-		*			makes the created window a child of another window.
-		*/
+		 * @brief	Creates a new render window using the specified options. Optionally
+		 *			makes the created window a child of another window.
+		 */
 		RenderWindowPtr create(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow);
 
 		/**

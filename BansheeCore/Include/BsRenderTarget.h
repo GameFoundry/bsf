@@ -269,6 +269,8 @@ namespace BansheeEngine
 		mutable Event<void()> onResized;
 
     protected:
+		friend class RenderTargetManager;
+
 		RenderTarget();
 
 		/**

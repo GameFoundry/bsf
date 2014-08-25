@@ -82,6 +82,7 @@ namespace BansheeEngine
 	class MultiRenderTexture;
     class RenderWindow;
 	class RenderWindowCore;
+	class RenderTargetProperties;
     struct RenderOpMesh;
     class StringInterface;
     class SamplerState;
