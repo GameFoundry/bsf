@@ -17,7 +17,7 @@ namespace BansheeEngine
 	{
 		RenderWindowPtr renderWindow = createImpl(desc, parentWindow);
 		renderWindow->_setThisPtr(renderWindow);
-		renderWindow->initialize();
+		renderWindow->initialize(desc);
 
 		{
 			BS_LOCK_MUTEX(mWindowMutex);
@@ -47,15 +47,15 @@ namespace BansheeEngine
 		}
 	}
 
-	void RenderWindowManager::windowFocusReceived(RenderWindow* window)
+	void RenderWindowManager::windowFocusReceived(RenderWindowCore* window)
 	{
 		window->_windowFocusReceived();
 
 		BS_LOCK_MUTEX(mWindowMutex);
-		mNewWindowInFocus = window;
+		mNewWindowInFocus = window->getNonCore();
 	}
 
-	void RenderWindowManager::windowFocusLost(RenderWindow* window)
+	void RenderWindowManager::windowFocusLost(RenderWindowCore* window)
 	{
 		window->_windowFocusLost();
 
@@ -63,13 +63,13 @@ namespace BansheeEngine
 		mNewWindowInFocus = nullptr;
 	}
 
-	void RenderWindowManager::windowMovedOrResized(RenderWindow* window)
+	void RenderWindowManager::windowMovedOrResized(RenderWindowCore* window)
 	{
 		bool isValidWindow = false;
 		{
 			BS_LOCK_MUTEX(mWindowMutex);
 
-			isValidWindow = std::find(begin(mCreatedWindows), end(mCreatedWindows), window) != mCreatedWindows.end();
+			isValidWindow = std::find(begin(mCreatedWindows), end(mCreatedWindows), window->getNonCore()) != mCreatedWindows.end();
 		}
 
 		if(!isValidWindow)
@@ -79,10 +79,10 @@ namespace BansheeEngine
 
 		BS_LOCK_MUTEX(mWindowMutex);
 
-		auto iterFind = std::find(begin(mMovedOrResizedWindows), end(mMovedOrResizedWindows), window);
+		auto iterFind = std::find(begin(mMovedOrResizedWindows), end(mMovedOrResizedWindows), window->getNonCore());
 
 		if(iterFind == end(mMovedOrResizedWindows))
-			mMovedOrResizedWindows.push_back(window);
+			mMovedOrResizedWindows.push_back(window->getNonCore());
 	}
 
 	void RenderWindowManager::_update()

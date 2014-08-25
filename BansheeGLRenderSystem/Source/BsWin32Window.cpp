@@ -19,26 +19,9 @@ namespace BansheeEngine
 {
 	#define _MAX_CLASS_NAME_ 128
 
-	Win32Window::Win32Window(const RENDER_WINDOW_DESC& desc, Win32GLSupport &glsupport)
-		:RenderWindow(desc), mGLSupport(glsupport), mContext(0), mWindowedStyle(0), mWindowedStyleEx(0)
-	{
-		mIsFullScreen = false;
-		mHWnd = 0;
-		mIsExternal = false;
-		mIsExternalGLControl = false;
-		mSizing = false;
-		mClosed = false;
-		mDisplayFrequency = 0;
-		mActive = false;
-		mDeviceName = NULL;
-	}
-
-	Win32Window::~Win32Window()
-	{
-
-	}
-
-	void Win32Window::initialize_internal()
+	Win32WindowCore::Win32WindowCore(Win32Window* parentWnd, RenderWindowProperties* properties, const RENDER_WINDOW_DESC& desc, Win32GLSupport& glsupport)
+		:RenderWindowCore(parentWnd, properties), mGLSupport(glsupport), mContext(0), mWindowedStyle(0), mWindowedStyleEx(0), mHWnd(0), mIsExternal(false),
+		mIsExternalGLControl(false), mDisplayFrequency(0), mDeviceName(nullptr)
 	{
 #ifdef BS_STATIC_LIB
 		HINSTANCE hInst = GetModuleHandle(NULL);
@@ -46,19 +29,20 @@ namespace BansheeEngine
 		HINSTANCE hInst = GetModuleHandle(MODULE_NAME.c_str());
 #endif
 
+		Win32RenderWindowProperties* props = static_cast<Win32RenderWindowProperties*>(mProperties);
+
 		mHWnd = 0;
-		mName = mDesc.title;
-		mIsFullScreen = mDesc.fullscreen;
-		mClosed = false;
+		props->mName = desc.title;
+		props->mIsFullScreen = desc.fullscreen;
 		mIsChild = false;
-		mDisplayFrequency = Math::roundToInt(mDesc.videoMode.getRefreshRate());
-		mColorDepth = 32;
+		mDisplayFrequency = Math::roundToInt(desc.videoMode.getRefreshRate());
+		props->mColorDepth = 32;
 		HWND parent = 0;
 
 		NameValuePairList::const_iterator opt;
-		NameValuePairList::const_iterator end = mDesc.platformSpecific.end();
+		NameValuePairList::const_iterator end = desc.platformSpecific.end();
 
-		if ((opt = mDesc.platformSpecific.find("externalWindowHandle")) != end)
+		if ((opt = desc.platformSpecific.find("externalWindowHandle")) != end)
 		{
 			mHWnd = (HWND)parseUnsignedInt(opt->second);
 			if (mHWnd)
@@ -66,22 +50,22 @@ namespace BansheeEngine
 				mIsExternal = true;
 			}
 
-			if ((opt = mDesc.platformSpecific.find("externalGLControl")) != end) {
+			if ((opt = desc.platformSpecific.find("externalGLControl")) != end) {
 				mIsExternalGLControl = parseBool(opt->second);
 			}
 		}
 
 		HGLRC glrc = 0;
-		if ((opt = mDesc.platformSpecific.find("externalGLContext")) != end)
+		if ((opt = desc.platformSpecific.find("externalGLContext")) != end)
 		{
 			glrc = (HGLRC)parseUnsignedLong(opt->second);
 		}
 
-		if ((opt = mDesc.platformSpecific.find("parentWindowHandle")) != end)
+		if ((opt = desc.platformSpecific.find("parentWindowHandle")) != end)
 		{
 			parent = (HWND)parseUnsignedInt(opt->second);
 			mIsChild = true;
-			mIsFullScreen = false;
+			props->mIsFullScreen = false;
 		}
 
 		HMONITOR hMonitor = NULL;
@@ -89,36 +73,36 @@ namespace BansheeEngine
 		UINT32 numOutputs = videoModeInfo.getNumOutputs();
 		if (numOutputs > 0)
 		{
-			UINT32 actualMonitorIdx = std::min(mDesc.videoMode.getOutputIdx(), numOutputs - 1);
+			UINT32 actualMonitorIdx = std::min(desc.videoMode.getOutputIdx(), numOutputs - 1);
 			const Win32VideoOutputInfo& outputInfo = static_cast<const Win32VideoOutputInfo&>(videoModeInfo.getOutputInfo(actualMonitorIdx));
 			hMonitor = outputInfo.getMonitorHandle();
 		}
 
-		if (!mIsFullScreen)
+		if (!props->mIsFullScreen)
 		{
 			// Make sure we don't exceed desktop color depth
-			if ((int)mColorDepth > GetDeviceCaps(GetDC(0), BITSPIXEL))
-				mColorDepth = GetDeviceCaps(GetDC(0), BITSPIXEL);
+			if ((int)props->mColorDepth > GetDeviceCaps(GetDC(0), BITSPIXEL))
+				props->mColorDepth = GetDeviceCaps(GetDC(0), BITSPIXEL);
 		}
 
 		mWindowedStyle = WS_VISIBLE | WS_CLIPCHILDREN;
 		mWindowedStyleEx = 0;
 
-		if (!mIsFullScreen)
+		if (!props->mIsFullScreen)
 		{
 			if (parent)
 			{
-				if (mDesc.toolWindow)
+				if (desc.toolWindow)
 					mWindowedStyleEx = WS_EX_TOOLWINDOW;
 				else
 					mWindowedStyle |= WS_CHILD;
 			}
 
-			if (!parent || mDesc.toolWindow)
+			if (!parent || desc.toolWindow)
 			{
-				if (mDesc.border == WindowBorder::None)
+				if (desc.border == WindowBorder::None)
 					mWindowedStyle |= WS_POPUP;
-				else if (mDesc.border == WindowBorder::Fixed)
+				else if (desc.border == WindowBorder::Fixed)
 					mWindowedStyle |= WS_OVERLAPPED | WS_BORDER | WS_CAPTION |
 					WS_SYSMENU | WS_MINIMIZEBOX;
 				else
@@ -136,8 +120,8 @@ namespace BansheeEngine
 				POINT windowAnchorPoint;
 
 				// Fill in anchor point.
-				windowAnchorPoint.x = mDesc.left;
-				windowAnchorPoint.y = mDesc.top;
+				windowAnchorPoint.x = desc.left;
+				windowAnchorPoint.y = desc.top;
 
 				// Get the nearest monitor to this window.
 				hMonitor = MonitorFromPoint(windowAnchorPoint, MONITOR_DEFAULTTONEAREST);
@@ -155,21 +139,21 @@ namespace BansheeEngine
 
 			strcpy_s(mDeviceName, devNameLen + 1, monitorInfoEx.szDevice);
 
-			UINT32 left = mDesc.left;
-			UINT32 top = mDesc.top;
+			UINT32 left = desc.left;
+			UINT32 top = desc.top;
 
 			// No specified top left -> Center the window in the middle of the monitor
 			if (left == -1 || top == -1)
-			{				
-				int screenw = monitorInfoEx.rcWork.right  - monitorInfoEx.rcWork.left;
+			{
+				int screenw = monitorInfoEx.rcWork.right - monitorInfoEx.rcWork.left;
 				int screenh = monitorInfoEx.rcWork.bottom - monitorInfoEx.rcWork.top;
 
 				unsigned int winWidth, winHeight;
-				getAdjustedWindowSize(mDesc.videoMode.getWidth(), mDesc.videoMode.getHeight(), &winWidth, &winHeight);
+				getAdjustedWindowSize(desc.videoMode.getWidth(), desc.videoMode.getHeight(), &winWidth, &winHeight);
 
 				// clamp window dimensions to screen size
-				int outerw = (int(winWidth) < screenw)? int(winWidth) : screenw;
-				int outerh = (int(winHeight) < screenh)? int(winHeight) : screenh;
+				int outerw = (int(winWidth) < screenw) ? int(winWidth) : screenw;
+				int outerh = (int(winHeight) < screenh) ? int(winHeight) : screenh;
 
 				if (left == -1)
 					left = monitorInfoEx.rcWork.left + (screenw - outerw) / 2;
@@ -187,49 +171,49 @@ namespace BansheeEngine
 				top += monitorInfoEx.rcWork.top;
 			}
 
-			mWidth = mDesc.videoMode.getWidth();
-			mHeight = mDesc.videoMode.getHeight();
-			mTop = top;
-			mLeft = left;
+			props->mWidth = desc.videoMode.getWidth();
+			props->mHeight = desc.videoMode.getHeight();
+			props->mTop = top;
+			props->mLeft = left;
 
 			DWORD dwStyle = 0;
 			DWORD dwStyleEx = 0;
-			if (mIsFullScreen)
+			if (props->mIsFullScreen)
 			{
 				dwStyle = WS_VISIBLE | WS_CLIPCHILDREN | WS_POPUP;
-				mTop = monitorInfoEx.rcMonitor.top;
-				mLeft = monitorInfoEx.rcMonitor.left;											
+				props->mTop = monitorInfoEx.rcMonitor.top;
+				props->mLeft = monitorInfoEx.rcMonitor.left;
 			}
 			else
-			{			
+			{
 				dwStyle = mWindowedStyle;
 				dwStyleEx = mWindowedStyleEx;
 
 				int screenw = GetSystemMetrics(SM_CXSCREEN);
 				int screenh = GetSystemMetrics(SM_CYSCREEN);
 
-				if (!mDesc.outerDimensions)
+				if (!desc.outerDimensions)
 				{
 					// Calculate window dimensions required
 					// to get the requested client area
-					SetRect(&rc, 0, 0, mWidth, mHeight);
+					SetRect(&rc, 0, 0, props->mWidth, props->mHeight);
 					AdjustWindowRect(&rc, dwStyle, false);
-					mWidth = rc.right - rc.left;
-					mHeight = rc.bottom - rc.top;
+					props->mWidth = rc.right - rc.left;
+					props->mHeight = rc.bottom - rc.top;
 
 					// Clamp window rect to the nearest display monitor.
-					if (mLeft < monitorInfoEx.rcWork.left)
-						mLeft = monitorInfoEx.rcWork.left;		
+					if (props->mLeft < monitorInfoEx.rcWork.left)
+						props->mLeft = monitorInfoEx.rcWork.left;
 
-					if (mTop < monitorInfoEx.rcWork.top)					
-						mTop = monitorInfoEx.rcWork.top;					
+					if (props->mTop < monitorInfoEx.rcWork.top)
+						props->mTop = monitorInfoEx.rcWork.top;
 
-					if ((int)mWidth > monitorInfoEx.rcWork.right - mLeft)					
-						mWidth = monitorInfoEx.rcWork.right - mLeft;	
+					if ((int)props->mWidth > monitorInfoEx.rcWork.right - props->mLeft)
+						props->mWidth = monitorInfoEx.rcWork.right - props->mLeft;
 
-					if ((int)mHeight > monitorInfoEx.rcWork.bottom - mTop)					
-						mHeight = monitorInfoEx.rcWork.bottom - mTop;		
-				}			
+					if ((int)props->mHeight > monitorInfoEx.rcWork.bottom - props->mTop)
+						props->mHeight = monitorInfoEx.rcWork.bottom - props->mTop;
+				}
 			}
 
 			// register class and create window
@@ -238,15 +222,15 @@ namespace BansheeEngine
 				(HBRUSH)GetStockObject(BLACK_BRUSH), NULL, "GLWindow" };
 			RegisterClass(&wc);
 
-			if (mIsFullScreen)
+			if (props->mIsFullScreen)
 			{
 				DEVMODE displayDeviceMode;
 
 				memset(&displayDeviceMode, 0, sizeof(displayDeviceMode));
 				displayDeviceMode.dmSize = sizeof(DEVMODE);
-				displayDeviceMode.dmBitsPerPel = mColorDepth;
-				displayDeviceMode.dmPelsWidth = mWidth;
-				displayDeviceMode.dmPelsHeight = mHeight;
+				displayDeviceMode.dmBitsPerPel = props->mColorDepth;
+				displayDeviceMode.dmPelsWidth = props->mWidth;
+				displayDeviceMode.dmPelsHeight = props->mHeight;
 				displayDeviceMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
 				if (mDisplayFrequency)
@@ -267,50 +251,50 @@ namespace BansheeEngine
 			}
 
 			// Pass pointer to self as WM_CREATE parameter
-			mHWnd = CreateWindowEx(dwStyleEx, "GLWindow", mDesc.title.c_str(),
-				dwStyle, mLeft, mTop, mWidth, mHeight, parent, 0, hInst, this);		
+			mHWnd = CreateWindowEx(dwStyleEx, "GLWindow", desc.title.c_str(),
+				dwStyle, props->mLeft, props->mTop, props->mWidth, props->mHeight, parent, 0, hInst, this);
 		}
 
 		RECT rc;
 
 		GetWindowRect(mHWnd, &rc);
-		mTop = rc.top;
-		mLeft = rc.left;
+		props->mTop = rc.top;
+		props->mLeft = rc.left;
 
 		GetClientRect(mHWnd, &rc);
-		mWidth = rc.right;
-		mHeight = rc.bottom;
+		props->mWidth = rc.right;
+		props->mHeight = rc.bottom;
 
 		mHDC = GetDC(mHWnd);
 
 		if (!mIsExternalGLControl)
 		{
-			int testMultisample = mMultisampleCount;
-			bool testHwGamma = mDesc.gamma;
-			bool formatOk = mGLSupport.selectPixelFormat(mHDC, mColorDepth, testMultisample, testHwGamma);
+			int testMultisample = props->mMultisampleCount;
+			bool testHwGamma = desc.gamma;
+			bool formatOk = mGLSupport.selectPixelFormat(mHDC, props->mColorDepth, testMultisample, testHwGamma);
 			if (!formatOk)
 			{
-				if (mMultisampleCount > 0)
+				if (props->mMultisampleCount > 0)
 				{
 					// Try without multisampling
 					testMultisample = 0;
-					formatOk = mGLSupport.selectPixelFormat(mHDC, mColorDepth, testMultisample, testHwGamma);
+					formatOk = mGLSupport.selectPixelFormat(mHDC, props->mColorDepth, testMultisample, testHwGamma);
 				}
 
-				if (!formatOk && mDesc.gamma)
+				if (!formatOk && desc.gamma)
 				{
 					// Try without sRGB
 					testHwGamma = false;
-					testMultisample = mMultisampleCount;
-					formatOk = mGLSupport.selectPixelFormat(mHDC, mColorDepth, testMultisample, testHwGamma);
+					testMultisample = props->mMultisampleCount;
+					formatOk = mGLSupport.selectPixelFormat(mHDC, props->mColorDepth, testMultisample, testHwGamma);
 				}
 
-				if (!formatOk && mDesc.gamma && (mMultisampleCount > 0))
+				if (!formatOk && desc.gamma && (props->mMultisampleCount > 0))
 				{
 					// Try without both
 					testHwGamma = false;
 					testMultisample = 0;
-					formatOk = mGLSupport.selectPixelFormat(mHDC, mColorDepth, testMultisample, testHwGamma);
+					formatOk = mGLSupport.selectPixelFormat(mHDC, props->mColorDepth, testMultisample, testHwGamma);
 				}
 
 				if (!formatOk)
@@ -320,27 +304,27 @@ namespace BansheeEngine
 
 			// Record what gamma option we used in the end
 			// this will control enabling of sRGB state flags when used
-			mHwGamma = testHwGamma;
-			mMultisampleCount = testMultisample;
+			props->mHwGamma = testHwGamma;
+			props->mMultisampleCount = testMultisample;
 		}
-		
-		mActive = true;
-		mContext = mGLSupport.createContext(mHDC, glrc);
 
-		RenderWindow::initialize_internal();
+		props->mActive = true;
+		mContext = mGLSupport.createContext(mHDC, glrc);
 	}
 
-	void Win32Window::destroy_internal()
+	Win32WindowCore::~Win32WindowCore()
 	{
 		if (!mHWnd)
 			return;
+
+		Win32RenderWindowProperties* props = static_cast<Win32RenderWindowProperties*>(mProperties);
 
 		// Unregister and destroy GLContext
 		bs_delete(mContext);
 
 		if (!mIsExternal)
 		{
-			if (mIsFullScreen)
+			if (props->mIsFullScreen)
 				ChangeDisplaySettingsEx(mDeviceName, NULL, NULL, 0, NULL);
 			DestroyWindow(mHWnd);
 		}
@@ -350,8 +334,7 @@ namespace BansheeEngine
 			ReleaseDC(mHWnd, mHDC);
 		}
 
-		mActive = false;
-		mClosed = true;
+		props->mActive = false;
 		mHDC = 0; // no release thanks to CS_OWNDC wndclass style
 		mHWnd = 0;
 
@@ -361,10 +344,10 @@ namespace BansheeEngine
 			mDeviceName = NULL;
 		}
 
-		RenderWindow::destroy_internal();
+		markCoreDirty();
 	}
 
-	void Win32Window::setFullscreen(UINT32 width, UINT32 height, float refreshRate, UINT32 monitorIdx)
+	void Win32WindowCore::setFullscreen(UINT32 width, UINT32 height, float refreshRate, UINT32 monitorIdx)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -376,19 +359,21 @@ namespace BansheeEngine
 		if (numOutputs == 0)
 			return;
 
+		Win32RenderWindowProperties* props = static_cast<Win32RenderWindowProperties*>(mProperties);
+
 		UINT32 actualMonitorIdx = std::min(monitorIdx, numOutputs - 1);
 		const Win32VideoOutputInfo& outputInfo = static_cast<const Win32VideoOutputInfo&>(videoModeInfo.getOutputInfo(actualMonitorIdx));
 
-		bool oldFullscreen = mIsFullScreen;
+		bool oldFullscreen = props->mIsFullScreen;
 
 		mDisplayFrequency = Math::roundToInt(refreshRate);
-		mIsFullScreen = true;
+		props->mIsFullScreen = true;
 
 		DEVMODE displayDeviceMode;
 
 		memset(&displayDeviceMode, 0, sizeof(displayDeviceMode));
 		displayDeviceMode.dmSize = sizeof(DEVMODE);
-		displayDeviceMode.dmBitsPerPel = mColorDepth;
+		displayDeviceMode.dmBitsPerPel = props->mColorDepth;
 		displayDeviceMode.dmPelsWidth = width;
 		displayDeviceMode.dmPelsHeight = height;
 		displayDeviceMode.dmDisplayFrequency = mDisplayFrequency;
@@ -406,38 +391,42 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "ChangeDisplaySettings failed");
 		}
 
-		mTop = monitorInfo.rcMonitor.top;
-		mLeft = monitorInfo.rcMonitor.left;
-		mWidth = width;
-		mHeight = height;
+		props->mTop = monitorInfo.rcMonitor.top;
+		props->mLeft = monitorInfo.rcMonitor.left;
+		props->mWidth = width;
+		props->mHeight = height;
 
-		SetWindowPos(mHWnd, HWND_TOP, mLeft, mTop, width, height, SWP_NOACTIVATE);
+		SetWindowPos(mHWnd, HWND_TOP, props->mLeft, props->mTop, width, height, SWP_NOACTIVATE);
+
+		markCoreDirty();
 	}
 
-	void Win32Window::setFullscreen(const VideoMode& mode)
+	void Win32WindowCore::setFullscreen(const VideoMode& mode)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		setFullscreen(mode.getWidth(), mode.getHeight(), mode.getRefreshRate(), mode.getOutputIdx());
 	}
 
-	void Win32Window::setWindowed(UINT32 width, UINT32 height)
+	void Win32WindowCore::setWindowed(UINT32 width, UINT32 height)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		if (!mIsFullScreen)
+		Win32RenderWindowProperties* props = static_cast<Win32RenderWindowProperties*>(mProperties);
+
+		if (!props->mIsFullScreen)
 			return;
 
-		mIsFullScreen = false;
-		mWidth = width;
-		mHeight = height;
+		props->mIsFullScreen = false;
+		props->mWidth = width;
+		props->mHeight = height;
 
 		// Drop out of fullscreen
 		ChangeDisplaySettingsEx(mDeviceName, NULL, NULL, 0, NULL);
 
 		// Calculate overall dimensions for requested client area
 		UINT32 winWidth, winHeight;
-		getAdjustedWindowSize(mWidth, mHeight, &winWidth, &winHeight);
+		getAdjustedWindowSize(props->mWidth, props->mHeight, &winWidth, &winHeight);
 
 		// Deal with centering when switching down to smaller resolution
 		HMONITOR hMonitor = MonitorFromWindow(mHWnd, MONITOR_DEFAULTTONEAREST);
@@ -458,48 +447,36 @@ namespace BansheeEngine
 			SWP_DRAWFRAME | SWP_FRAMECHANGED | SWP_NOACTIVATE);
 
 		_windowMovedOrResized();
+
+		markCoreDirty();
 	}
 
-	bool Win32Window::isActive(void) const
-	{
-		if (isFullScreen())
-			return isVisible();
-
-		return mActive && isVisible();
-	}
-
-	bool Win32Window::isVisible() const
-	{
-		return (mHWnd && !IsIconic(mHWnd));
-	}
-
-	bool Win32Window::isClosed() const
-	{
-		return mClosed;
-	}
-
-	void Win32Window::move(INT32 left, INT32 top)
+	void Win32WindowCore::move(INT32 left, INT32 top)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		if (mHWnd && !mIsFullScreen)
+		Win32RenderWindowProperties* props = static_cast<Win32RenderWindowProperties*>(mProperties);
+		if (mHWnd && !props->mIsFullScreen)
 		{
-			mLeft = left;
-			mTop = top;
+			props->mLeft = left;
+			props->mTop = top;
 
 			SetWindowPos(mHWnd, 0, left, top, 0, 0,
 				SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+
+			markCoreDirty();
 		}
 	}
 
-	void Win32Window::resize(UINT32 width, UINT32 height)
+	void Win32WindowCore::resize(UINT32 width, UINT32 height)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		if (mHWnd && !mIsFullScreen)
+		Win32RenderWindowProperties* props = static_cast<Win32RenderWindowProperties*>(mProperties);
+		if (mHWnd && !props->mIsFullScreen)
 		{
-			mWidth = width;
-			mHeight = height;
+			props->mWidth = width;
+			props->mHeight = height;
 
 			RECT rc = { 0, 0, width, height };
 			AdjustWindowRect(&rc, GetWindowLong(mHWnd, GWL_STYLE), false);
@@ -507,10 +484,12 @@ namespace BansheeEngine
 			height = rc.bottom - rc.top;
 			SetWindowPos(mHWnd, 0, 0, 0, width, height,
 				SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+
+			markCoreDirty();
 		}
 	}
 
-	void Win32Window::swapBuffers()
+	void Win32WindowCore::swapBuffers()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -519,12 +498,12 @@ namespace BansheeEngine
 		}
 	}
 
-	void Win32Window::copyToMemory(PixelData &dst, FrameBuffer buffer)
+	void Win32WindowCore::copyToMemory(PixelData &dst, FrameBuffer buffer)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		if ((dst.getLeft() < 0) || (dst.getRight() > mWidth) ||
-			(dst.getTop() < 0) || (dst.getBottom() > mHeight) ||
+		if ((dst.getLeft() < 0) || (dst.getRight() > getProperties().getWidth()) ||
+			(dst.getTop() < 0) || (dst.getBottom() > getProperties().getHeight()) ||
 			(dst.getFront() != 0) || (dst.getBack() != 1))
 		{
 			BS_EXCEPT(InvalidParametersException, "Invalid box.");
@@ -532,7 +511,7 @@ namespace BansheeEngine
 
 		if (buffer == FB_AUTO)
 		{
-			buffer = mIsFullScreen? FB_FRONT : FB_BACK;
+			buffer = getProperties().isFullScreen() ? FB_FRONT : FB_BACK;
 		}
 
 		GLenum format = BansheeEngine::GLPixelUtil::getGLOriginFormat(dst.getFormat());
@@ -573,27 +552,7 @@ namespace BansheeEngine
 		}
 	}
 
-	Vector2I Win32Window::screenToWindowPos(const Vector2I& screenPos) const
-	{
-		POINT pos;
-		pos.x = screenPos.x;
-		pos.y = screenPos.y;
-
-		ScreenToClient(mHWnd, &pos);
-		return Vector2I(pos.x, pos.y);
-	}
-
-	Vector2I Win32Window::windowToScreenPos(const Vector2I& windowPos) const
-	{
-		POINT pos;
-		pos.x = windowPos.x;
-		pos.y = windowPos.y;
-
-		ClientToScreen(mHWnd, &pos);
-		return Vector2I(pos.x, pos.y);
-	}	
-
-	void Win32Window::getCustomAttribute(const String& name, void* pData) const
+	void Win32WindowCore::getCustomAttribute(const String& name, void* pData) const
 	{
 		if(name == "GLCONTEXT") 
 		{
@@ -608,7 +567,7 @@ namespace BansheeEngine
 		} 
 	}
 
-	void Win32Window::setActive(bool state)
+	void Win32WindowCore::setActive(bool state)
 	{	
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -627,9 +586,10 @@ namespace BansheeEngine
 			}						
 		}
 		
-		mActive = state;
+		Win32RenderWindowProperties* props = static_cast<Win32RenderWindowProperties*>(mProperties);
+		props->mActive = state;
 
-		if( mIsFullScreen )
+		if(props->mIsFullScreen)
 		{
 			if( state == false )
 			{	//Restore Desktop
@@ -644,9 +604,9 @@ namespace BansheeEngine
 
 				memset(&displayDeviceMode, 0, sizeof(displayDeviceMode));
 				displayDeviceMode.dmSize = sizeof(DEVMODE);
-				displayDeviceMode.dmBitsPerPel = mColorDepth;
-				displayDeviceMode.dmPelsWidth = mWidth;
-				displayDeviceMode.dmPelsHeight = mHeight;
+				displayDeviceMode.dmBitsPerPel = props->mColorDepth;
+				displayDeviceMode.dmPelsWidth = props->mWidth;
+				displayDeviceMode.dmPelsHeight = props->mHeight;
 				displayDeviceMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 				if (mDisplayFrequency)
 				{
@@ -656,13 +616,16 @@ namespace BansheeEngine
 				ChangeDisplaySettingsEx(mDeviceName, &displayDeviceMode, NULL, CDS_FULLSCREEN, NULL);
 			}
 		}
+
+		markCoreDirty();
 	}
 
-	void Win32Window::setHidden(bool hidden)
+	void Win32WindowCore::setHidden(bool hidden)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		mHidden = hidden;
+		Win32RenderWindowProperties* props = static_cast<Win32RenderWindowProperties*>(mProperties);
+		props->mHidden = hidden;
 		if (!mIsExternal)
 		{
 			if (hidden)
@@ -670,27 +633,32 @@ namespace BansheeEngine
 			else
 				ShowWindow(mHWnd, SW_SHOWNORMAL);
 		}
+
+		markCoreDirty();
 	}
 
-	void Win32Window::_windowMovedOrResized()
+	void Win32WindowCore::_windowMovedOrResized()
 	{
 		if (!mHWnd || IsIconic(mHWnd))
 			return;
 
 		RECT rc;
 
+		Win32RenderWindowProperties* props = static_cast<Win32RenderWindowProperties*>(mProperties);
 		GetWindowRect(mHWnd, &rc);
-		mTop = rc.top;
-		mLeft = rc.left;
+		props->mTop = rc.top;
+		props->mLeft = rc.left;
 
 		GetClientRect(mHWnd, &rc);
-		mWidth = rc.right - rc.left;
-		mHeight = rc.bottom - rc.top;
+		props->mWidth = rc.right - rc.left;
+		props->mHeight = rc.bottom - rc.top;
 
-		RenderWindow::_windowMovedOrResized();
+		markCoreDirty();
+
+		RenderWindowCore::_windowMovedOrResized();
 	}
 
-	void Win32Window::getAdjustedWindowSize(UINT32 clientWidth, UINT32 clientHeight, UINT32* winWidth, UINT32* winHeight)
+	void Win32WindowCore::getAdjustedWindowSize(UINT32 clientWidth, UINT32 clientHeight, UINT32* winWidth, UINT32* winHeight)
 	{
 		RECT rc;
 		SetRect(&rc, 0, 0, clientWidth, clientHeight);
@@ -716,5 +684,67 @@ namespace BansheeEngine
 
 		if (*winHeight > (UINT32)maxH)
 			*winHeight = maxH;
+	}
+
+	Win32Window::Win32Window(Win32GLSupport &glsupport)
+		:mGLSupport(glsupport)
+	{
+
+	}
+
+	void Win32Window::getCustomAttribute(const String& name, void* pData) const
+	{
+		THROW_IF_CORE_THREAD;
+
+		if (name == "WINDOW")
+		{
+			HWND *pWnd = (HWND*)pData;
+			*pWnd = mHWnd;
+			return;
+		}
+
+		RenderWindow::getCustomAttribute(name, pData);
+	}
+
+	Vector2I Win32Window::screenToWindowPos(const Vector2I& screenPos) const
+	{
+		POINT pos;
+		pos.x = screenPos.x;
+		pos.y = screenPos.y;
+
+		ScreenToClient(mHWnd, &pos);
+		return Vector2I(pos.x, pos.y);
+	}
+
+	Vector2I Win32Window::windowToScreenPos(const Vector2I& windowPos) const
+	{
+		POINT pos;
+		pos.x = windowPos.x;
+		pos.y = windowPos.y;
+
+		ClientToScreen(mHWnd, &pos);
+		return Vector2I(pos.x, pos.y);
+	}
+
+	Win32WindowCore* Win32Window::getCore() const
+	{
+		return static_cast<Win32WindowCore*>(mCore);
+	}
+
+	void Win32Window::initialize_internal()
+	{
+		RenderWindow::initialize_internal();
+
+		mCore->getCustomAttribute("WINDOW", (void*)&mHWnd);
+	}
+
+	RenderTargetProperties* Win32Window::createProperties() const
+	{
+		return bs_new<RenderWindowProperties>();
+	}
+
+	RenderWindowCore* Win32Window::createCore(RenderWindowProperties* properties, const RENDER_WINDOW_DESC& desc)
+	{
+		return bs_new<Win32WindowCore>(this, properties, desc, mGLSupport);
 	}
 }

@@ -16,15 +16,69 @@ namespace BansheeEngine
 	};
 
 	/**
+	 * @brief	Contains various properties that describe a render texture.
+	 */
+	class BS_CORE_EXPORT RenderTextureProperties : public RenderTargetProperties
+	{
+	public:
+		virtual ~RenderTextureProperties() { }
+
+	private:
+		friend class RenderTextureCore;
+		friend class RenderTexture;
+	};
+
+	/**
+	 * @brief	Provides access to internal render texture implementation usable only from the core thread.
+	 *
+	 * @note	Core thread only.
+	 */
+	class BS_CORE_EXPORT RenderTextureCore : public RenderTargetCore
+	{
+	public:
+		RenderTextureCore(RenderTexture* parent, RenderTextureProperties* properties, const RENDER_SURFACE_DESC& colorSurfaceDesc,
+			const RENDER_SURFACE_DESC& depthStencilSurfaceDesc);
+		virtual ~RenderTextureCore();
+
+		/**
+		 * @copydoc	RenderTargetCore::copyToMemory
+		 */
+		virtual void copyToMemory(PixelData &dst, FrameBuffer buffer = FB_AUTO);
+
+		/**
+		 * @brief	Returns properties that describe the render texture.
+		 */
+		const RenderTextureProperties& getProperties() const { return *static_cast<RenderTextureProperties*>(mProperties); }
+
+		/**
+		 * @copydoc	RenderTargetCore::getNonCore
+		 */
+		RenderTexture* getNonCore() const;
+
+	private:
+		/**
+		 * @brief	Throws an exception of the color and depth/stencil buffers aren't compatible.
+		 */
+		void throwIfBuffersDontMatch() const;
+
+	protected:
+		friend class RenderTexture;
+
+		TextureViewPtr mColorSurface;
+		TextureViewPtr mDepthStencilSurface;
+	};
+
+	/**
 	 * @brief	Render target specialization that allows you to render into a texture you may
 	 *			later bind in further render operations.
 	 *
-	 * @note	Thread safe, except where noted otherwise.
+	 * @note	Sim thread only. Retrieve core implementation from getCore()
+	 *			for core thread only functionality.
 	 */
     class BS_CORE_EXPORT RenderTexture : public RenderTarget
     {
 	public:
-		virtual ~RenderTexture();
+		virtual ~RenderTexture() { }
 
 		/**
 		 * @brief	Creates a new render texture with color and optionally depth/stencil surfaces.
@@ -44,14 +98,9 @@ namespace BansheeEngine
 			const String& multisampleHint = "", bool createDepth = true, PixelFormat depthStencilFormat = PF_D24S8);
 
 		/**
-		 * @copydoc RenderTarget::isWindow.
+		 * @copydoc	RenderTexture::requiresTextureFlipping
 		 */
-		bool isWindow() const { return false; }
-
-		/**
-		 * @copydoc RenderTarget::requiresTextureFlipping.
-		 */
-		bool requiresTextureFlipping() const { return false; }
+		virtual bool requiresTextureFlipping() const { return false; }
 
 		/**
 		 * @brief	Returns a color surface texture you may bind as an input to an GPU program.
@@ -61,42 +110,52 @@ namespace BansheeEngine
 		const HTexture& getBindableColorTexture() const { return mBindableColorTex; }
 
 		/**
-		* @brief	Returns a depth/stencil surface texture you may bind as an input to an GPU program.
-		*
-		* @note		Be aware that you cannot bind a render texture for reading and writing at the same time.
-		*/
+		 * @brief	Returns a depth/stencil surface texture you may bind as an input to an GPU program.
+		 *
+		 * @note		Be aware that you cannot bind a render texture for reading and writing at the same time.
+		 */
 		const HTexture& getBindableDepthStencilTexture() const { return mBindableDepthStencilTex; }
+
+		/**
+		 * @brief	Returns properties that describe the render texture.
+		 */
+		const RenderTextureProperties& getProperties() const;
+
+		/**
+		 * @brief	Retrieves a core implementation of a render texture usable only from the
+		 *			core thread.
+		 *
+		 * @note	Core thread only.
+		 */
+		RenderTextureCore* getCore() const;
 
 	protected:
 		friend class TextureManager;
 
-		RenderTexture();
+		RenderTexture() { }
 
 		/**
 		 * @copydoc	RenderTarget::initialize
 		 */
-		void initialize(const RENDER_TEXTURE_DESC& desc);
+		virtual void initialize(const RENDER_TEXTURE_DESC& desc);
 
 		/**
-		 * @copydoc RenderTarget::destroy_internal()
+		 * @copydoc	RenderTexture::createCore
 		 */
-		virtual void destroy_internal();
-	private:
-		/**
-		 * @brief	Throws an exception of the color and depth/stencil buffers aren't compatible.
-		 */
-		void throwIfBuffersDontMatch() const;
+		virtual RenderTargetCore* createCore();
 
 		/**
-		 * @copydoc	RenderTarget::copyToMemory
+		 * @brief	Creates a core implementation of a render texture. This implementation
+		 *			is to be used on the core thread only.
 		 */
-		virtual void copyToMemory(PixelData &dst, FrameBuffer buffer = FB_AUTO);
+		virtual RenderTextureCore* createCore(RenderTextureProperties* properties, const RENDER_SURFACE_DESC& colorSurfaceDesc,
+			const RENDER_SURFACE_DESC& depthStencilSurfaceDesc) = 0;
 
 	protected:
-		TextureViewPtr mColorSurface;
-		TextureViewPtr mDepthStencilSurface;
-
 		HTexture mBindableColorTex;
 		HTexture mBindableDepthStencilTex;
+
+		RENDER_SURFACE_DESC mColorSurfaceDesc;
+		RENDER_SURFACE_DESC mDepthStencilSurfaceDesc;
 	};
 }

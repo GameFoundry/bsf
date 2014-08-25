@@ -172,11 +172,11 @@ namespace BansheeEngine
 		msD3D9RenderSystem = NULL;
 	}
 
-	void D3D9RenderSystem::registerWindow(RenderWindow& renderWindow)
+	void D3D9RenderSystem::registerWindow(RenderWindowCore& renderWindow)
 	{		
 		THROW_IF_NOT_CORE_THREAD;
 
-		D3D9RenderWindow* d3d9renderWindow = static_cast<D3D9RenderWindow*>(&renderWindow);
+		D3D9RenderWindowCore* d3d9renderWindow = static_cast<D3D9RenderWindowCore*>(&renderWindow);
 
 		String msg;
 
@@ -1025,18 +1025,18 @@ namespace BansheeEngine
 		HRESULT hr;
 
 		// Possibly change device if the target is a window
-		if (target->isWindow())
+		if (target->getCore()->getProperties().isWindow())
 		{
 			D3D9RenderWindow* window = static_cast<D3D9RenderWindow*>(target.get());
-			mDeviceManager->setActiveRenderTargetDevice(window->_getDevice());
-			window->_validateDevice();
+			mDeviceManager->setActiveRenderTargetDevice(window->getCore()->_getDevice());
+			window->getCore()->_validateDevice();
 		}
 
 		// Retrieve render surfaces
 		UINT32 maxRenderTargets = mCurrentCapabilities->getNumMultiRenderTargets();
 		IDirect3DSurface9** pBack = bs_newN<IDirect3DSurface9*, ScratchAlloc>(maxRenderTargets);
 		memset(pBack, 0, sizeof(IDirect3DSurface9*) * maxRenderTargets);
-		target->getCustomAttribute( "DDBACKBUFFER", pBack );
+		target->getCore()->getCustomAttribute("DDBACKBUFFER", pBack);
 		if (!pBack[0])
 		{
 			bs_deleteN<ScratchAlloc>(pBack, maxRenderTargets);
@@ -1046,7 +1046,7 @@ namespace BansheeEngine
 		IDirect3DSurface9* pDepth = NULL;
 
 		if (!pDepth)
-			target->getCustomAttribute( "D3DZBUFFER", &pDepth );
+			target->getCore()->getCustomAttribute("D3DZBUFFER", &pDepth);
 		
 		// Bind render targets
 		for(UINT32 x = 0; x < maxRenderTargets; ++x)
@@ -1083,22 +1083,24 @@ namespace BansheeEngine
 		RenderTargetPtr target = vp.getTarget();
 		setRenderTarget(target);
 
+		const RenderTargetProperties& rtProps = target->getCore()->getProperties();
+
 		setCullingMode( mCullingMode );
 
-		// set viewport dimensions
-		mViewportWidth = vp.getWidth();
-		mViewportHeight = vp.getHeight();
-		mViewportLeft = vp.getX();
-		mViewportTop = vp.getY();
+		// Set viewport dimensions
+		mViewportLeft = (UINT32)(rtProps.getWidth() * vp.getNormalizedX());
+		mViewportTop = (UINT32)(rtProps.getHeight() * vp.getNormalizedY());
+		mViewportWidth = (UINT32)(rtProps.getWidth() * vp.getNormalizedWidth());
+		mViewportHeight = (UINT32)(rtProps.getHeight() * vp.getNormalizedHeight());
 
-		d3dvp.X = vp.getX();
-		d3dvp.Y = vp.getY();
-		d3dvp.Width = vp.getWidth();
-		d3dvp.Height = vp.getHeight();
+		d3dvp.X = mViewportLeft;
+		d3dvp.Y = mViewportTop;
+		d3dvp.Width = mViewportWidth;
+		d3dvp.Height = mViewportHeight;
 		if (target->requiresTextureFlipping())
 		{
 			// Convert "top-left" to "bottom-left"
-			d3dvp.Y = target->getHeight() - d3dvp.Height - d3dvp.Y;
+			d3dvp.Y = rtProps.getHeight() - d3dvp.Height - d3dvp.Y;
 		}
 
 		// Z-values from 0.0 to 1.0 (TODO: standardise with OpenGL)
@@ -1109,7 +1111,7 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "Failed to set viewport.");
 
 		// Set sRGB write mode
-		setRenderState(D3DRS_SRGBWRITEENABLE, target->isHwGammaEnabled());
+		setRenderState(D3DRS_SRGBWRITEENABLE, rtProps.isHwGammaEnabled());
 	}
 
 	void D3D9RenderSystem::beginFrame()
@@ -1327,7 +1329,8 @@ namespace BansheeEngine
 		if(mActiveRenderTarget == nullptr)
 			return;
 
-		RectI clearRect(0, 0, mActiveRenderTarget->getWidth(), mActiveRenderTarget->getHeight());
+		const RenderTargetProperties& rtProps = mActiveRenderTarget->getCore()->getProperties();
+		RectI clearRect(0, 0, rtProps.getWidth(), rtProps.getHeight());
 
 		clearArea(buffers, color, depth, stencil, clearRect);
 	}
@@ -1362,17 +1365,19 @@ namespace BansheeEngine
 			flags |= D3DCLEAR_STENCIL;
 		}
 
+		const RenderTargetProperties& rtProps = mActiveRenderTarget->getCore()->getProperties();
+
 		bool clearEntireTarget = clearRect.width == 0 || clearRect.height == 0;
-		clearEntireTarget |= (clearRect.x == 0 && clearRect.y == 0 && clearRect.width == mActiveRenderTarget->getWidth() && clearRect.height == mActiveRenderTarget->getHeight());
+		clearEntireTarget |= (clearRect.x == 0 && clearRect.y == 0 && clearRect.width == rtProps.getWidth() && clearRect.height == rtProps.getHeight());
 
 		if(!clearEntireTarget)
 		{
 			D3DRECT clearD3DRect;
-			clearD3DRect.x1 = (LONG)Math::clamp(clearRect.x, 0, (INT32)mActiveRenderTarget->getWidth() - 1);
-			clearD3DRect.x2 = (LONG)Math::clamp((INT32)clearD3DRect.x1 + clearRect.width, 0, (INT32)mActiveRenderTarget->getWidth() - 1);
+			clearD3DRect.x1 = (LONG)Math::clamp(clearRect.x, 0, (INT32)rtProps.getWidth() - 1);
+			clearD3DRect.x2 = (LONG)Math::clamp((INT32)clearD3DRect.x1 + clearRect.width, 0, (INT32)rtProps.getWidth() - 1);
 
-			clearD3DRect.y1 = (LONG)Math::clamp(clearRect.y, 0, (INT32)mActiveRenderTarget->getHeight() - 1);
-			clearD3DRect.y2 = (LONG)Math::clamp((INT32)clearD3DRect.y1 + clearRect.height, 0, (INT32)mActiveRenderTarget->getHeight() - 1);
+			clearD3DRect.y1 = (LONG)Math::clamp(clearRect.y, 0, (INT32)rtProps.getHeight() - 1);
+			clearD3DRect.y2 = (LONG)Math::clamp((INT32)clearD3DRect.y1 + clearRect.height, 0, (INT32)rtProps.getHeight() - 1);
 
 			HRESULT hr;
 			if(FAILED(hr = getActiveD3D9Device()->Clear(1, &clearD3DRect, flags, color.getAsBGRA(), depth, stencil)))
@@ -1745,7 +1750,7 @@ namespace BansheeEngine
 			D3DFMT_A16B16G16R16F, D3DFMT_R32F, D3DFMT_G32R32F, 
 			D3DFMT_A32B32G32R32F};
 		IDirect3DSurface9* bbSurf;
-		renderWindow->getCustomAttribute("DDBACKBUFFER", &bbSurf);
+		renderWindow->getCore()->getCustomAttribute("DDBACKBUFFER", &bbSurf);
 		D3DSURFACE_DESC bbSurfDesc;
 		bbSurf->GetDesc(&bbSurfDesc);
 

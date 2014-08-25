@@ -449,7 +449,7 @@ namespace BansheeEngine
 	{
 		GUITreeView::_changeParentWidget(widget);
 
-		if (widget != nullptr && widget->getTarget()->getTarget()->isWindow())
+		if (widget != nullptr && widget->getTarget()->getTarget()->getProperties().isWindow())
 		{
 			RenderWindow* parentWindow = static_cast<RenderWindow*>(widget->getTarget()->getTarget().get());
 			setDropTarget(parentWindow, _getOffset().x, _getOffset().y, _getWidth(), _getHeight());

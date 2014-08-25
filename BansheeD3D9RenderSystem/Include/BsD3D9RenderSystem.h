@@ -219,7 +219,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Register a newly open window with the render system.
 		 */
-		void registerWindow(RenderWindow& renderWindow);
+		void registerWindow(RenderWindowCore& renderWindow);
 
 	private:
 		friend class D3D9Texture;

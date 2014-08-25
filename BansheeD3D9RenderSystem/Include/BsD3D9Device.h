@@ -35,12 +35,12 @@ namespace BansheeEngine
 		 * @brief	Attaches a new render window to this device. Caller must ensure
 		 *			the window is not attached to multiple devices.
 		 */
-		void attachRenderWindow(const D3D9RenderWindow* renderWindow);
+		void attachRenderWindow(const D3D9RenderWindowCore* renderWindow);
 
 		/**
 		 * @brief	Detaches the render window from this device.
 		 */
-		void detachRenderWindow(const D3D9RenderWindow* renderWindow);
+		void detachRenderWindow(const D3D9RenderWindowCore* renderWindow);
 	
 		/**
 		 * @brief	Acquires the device. This will cause a device reset in case present parameters changed.
@@ -106,37 +106,37 @@ namespace BansheeEngine
 		/**
 		 * @brief	Validates that the window is valid for this device. Will reset device if needed.
 		 */
-		bool validate(D3D9RenderWindow* renderWindow);
+		bool validate(D3D9RenderWindowCore* renderWindow);
 
 		/**
 		 * @brief	Invalidates the window so on the next call to validate, the device will be re-acquired.
 		 */
-		void invalidate(const D3D9RenderWindow* renderWindow);
+		void invalidate(const D3D9RenderWindowCore* renderWindow);
 
 		/**
 		 * @brief	Swap back and front buffers for the specified window.
 		 */
-		void present(const D3D9RenderWindow* renderWindow);
+		void present(const D3D9RenderWindowCore* renderWindow);
 		
 		/**
 		 * @brief	Returns internal DX9 represention of the depth/stencil buffer.
 		 */
-		IDirect3DSurface9* getDepthBuffer(const D3D9RenderWindow* renderWindow);
+		IDirect3DSurface9* getDepthBuffer(const D3D9RenderWindowCore* renderWindow);
 
 		/**
 		 * @brief	Returns internal DX9 represention of the backbuffer.
 		 */
-		IDirect3DSurface9* getBackBuffer(const D3D9RenderWindow* renderWindow);
+		IDirect3DSurface9* getBackBuffer(const D3D9RenderWindowCore* renderWindow);
 
 		/**
 		 * @brief	Sets adapter index for the specified window.
 		 */
-		void setAdapterOrdinalIndex(const D3D9RenderWindow* renderWindow, UINT32 adapterOrdinalInGroupIndex);
+		void setAdapterOrdinalIndex(const D3D9RenderWindowCore* renderWindow, UINT32 adapterOrdinalInGroupIndex);
 
 		/**
 		 * @brief	Copies contents of the back or depth/stencil buffer in to the provided object.
 		 */
-		void copyContentsToMemory(const D3D9RenderWindow* window, PixelData &dst, RenderTarget::FrameBuffer buffer);
+		void copyContentsToMemory(const D3D9RenderWindowCore* window, PixelData &dst, RenderTargetCore::FrameBuffer buffer);
 
 		/**
 		 * @brief	Resets bound pipeline states/streams to null.
@@ -147,18 +147,18 @@ namespace BansheeEngine
 		friend class D3D9DeviceManager;
 		friend class D3D9RenderSystem;
 
-		typedef Map<const D3D9RenderWindow*, RenderWindowResources*> RenderWindowToResorucesMap;
-		typedef RenderWindowToResorucesMap::iterator				 RenderWindowToResorucesIterator;
+		typedef Map<const D3D9RenderWindowCore*, RenderWindowResources*> RenderWindowToResorucesMap;
+		typedef RenderWindowToResorucesMap::iterator RenderWindowToResorucesIterator;
 
 		/**
 		 * @brief	Find iterator for the specified window in the render window resource list.
 		 */
-		RenderWindowToResorucesIterator getRenderWindowIterator(const D3D9RenderWindow* renderWindow);
+		RenderWindowToResorucesIterator getRenderWindowIterator(const D3D9RenderWindowCore* renderWindow);
 
 		/**
 		 * @brief	Acquires the device for the provided render window.
 		 */
-		bool acquire(const D3D9RenderWindow* renderWindow);
+		bool acquire(const D3D9RenderWindowCore* renderWindow);
 
 		/**
 		 * @brief	Forcibly reset the device.
@@ -209,27 +209,27 @@ namespace BansheeEngine
 		/**
 		 * @brief	Checks if back buffer size has changed and invalidates the window if it has.
 		 */
-		void validateBackBufferSize(const D3D9RenderWindow* renderWindow);
+		void validateBackBufferSize(const D3D9RenderWindowCore* renderWindow);
 
 		/**
 		 * @brief	Checks if window monitor changed and re-links the window if needed.
 		 */
-		bool validateDisplayMonitor(D3D9RenderWindow* renderWindow);
+		bool validateDisplayMonitor(D3D9RenderWindowCore* renderWindow);
 
 		/**
 		 * @brief	Checks if device has been lost or active window invalidated and acquires the device if needed.
 		 */
-		bool validateDeviceState(const D3D9RenderWindow* renderWindow);
+		bool validateDeviceState(const D3D9RenderWindowCore* renderWindow);
 
 		/**
 		 * @brief	Checks if the render window contains a custom swap chain.
 		 */
-		bool isSwapChainWindow(const D3D9RenderWindow* renderWindow);
+		bool isSwapChainWindow(const D3D9RenderWindowCore* renderWindow);
 
 		/**
 		 * @brief	Returns primary window for this device.
 		 */
-		const D3D9RenderWindow*	getPrimaryWindow();
+		const D3D9RenderWindowCore*	getPrimaryWindow();
 
 		/**
 		 * @brief	Sets the shared window handle.

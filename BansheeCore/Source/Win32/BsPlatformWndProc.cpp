@@ -16,12 +16,12 @@ namespace BansheeEngine
 		{	// Store pointer to Win32Window in user data area
 			SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)(((LPCREATESTRUCT)lParam)->lpCreateParams));
 
-			RenderWindow* newWindow = (RenderWindow*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
-			if(newWindow->isModal())
+			RenderWindowCore* newWindow = (RenderWindowCore*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+			if(newWindow->getProperties().isModal())
 			{
 				if(!mModalWindowStack.empty())
 				{
-					RenderWindow* curModalWindow = mModalWindowStack.top();
+					RenderWindowCore* curModalWindow = mModalWindowStack.top();
 
 					HWND curHwnd;
 					curModalWindow->getCustomAttribute("WINDOW", &curHwnd);
@@ -32,7 +32,7 @@ namespace BansheeEngine
 					Vector<RenderWindow*> renderWindows = RenderWindowManager::instance().getRenderWindows();
 					for(auto& renderWindow : renderWindows)
 					{
-						if(renderWindow == newWindow)
+						if(renderWindow->getCore() == newWindow)
 							continue;
 
 						HWND curHwnd;
@@ -49,7 +49,7 @@ namespace BansheeEngine
 
 		// look up window instance
 		// note: it is possible to get a WM_SIZE before WM_CREATE
-		RenderWindow* win = (RenderWindow*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+		RenderWindowCore* win = (RenderWindowCore*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
 		if (!win)
 			return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
@@ -74,11 +74,11 @@ namespace BansheeEngine
 					}
 					else // Possibly some other window was closed somehow, see if it was modal and remove from stack if it is
 					{
-						Stack<RenderWindow*> newStack;
+						Stack<RenderWindowCore*> newStack;
 
 						while(!mModalWindowStack.empty())
 						{
-							RenderWindow* curWindow = mModalWindowStack.top();
+							RenderWindowCore* curWindow = mModalWindowStack.top();
 							mModalWindowStack.pop();
 
 							if(curWindow == win)
@@ -92,7 +92,7 @@ namespace BansheeEngine
 
 					if(!mModalWindowStack.empty()) // Enable next modal window
 					{
-						RenderWindow* curModalWindow = mModalWindowStack.top();
+						RenderWindowCore* curModalWindow = mModalWindowStack.top();
 
 						HWND curHwnd;
 						curModalWindow->getCustomAttribute("WINDOW", &curHwnd);
@@ -117,14 +117,14 @@ namespace BansheeEngine
 			}
 		case WM_SETFOCUS:
 			{
-				if(!win->hasFocus())
+				if (!win->getProperties().hasFocus())
 					windowFocusReceived(win);
 
 				break;
 			}
 		case WM_KILLFOCUS:
 			{
-				if(win->hasFocus())
+				if (win->getProperties().hasFocus())
 					windowFocusLost(win);
 
 				break;

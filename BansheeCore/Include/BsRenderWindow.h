@@ -52,15 +52,66 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Render target specialization that allows you to render into window
-	 *			frame buffer(s).
-	 *
-	 * @note	Thread safe, except where noted otherwise.
+	 * @brief	Contains various properties that describe a render window.
 	 */
-    class BS_CORE_EXPORT RenderWindow : public RenderTarget
-    {
-    public:
-		virtual ~RenderWindow();
+	class BS_CORE_EXPORT RenderWindowProperties : public RenderTargetProperties
+	{
+	public:
+		virtual ~RenderWindowProperties() { }
+
+		/**
+		 * @brief	Gets the horizontal origin of the window in pixels.
+		 */
+		INT32 getLeft() const { return mLeft; }
+
+		/**
+		 * @brief	Gets the vertical origin of the window in pixels.
+		 */
+		INT32 getTop() const { return mTop; }
+
+		/**
+		 * @brief	Indicates whether the window currently has keyboard focus.
+		 */
+		bool hasFocus() const { return mHasFocus; }
+
+		/**
+		 * @brief	Returns true if window is running in fullscreen mode.
+		 */
+		bool isFullScreen() const { return mIsFullScreen; }
+
+		/**
+		 * @brief	Returns true if the window is modal (blocks interaction with
+		 *			any non-modal window until closed).
+		 */
+		bool isModal() const { return mIsModal; }
+
+		/**
+		 * @brief	Returns true if the window is hidden.
+		 */
+		bool isHidden() const { return mHidden; }
+
+	protected:
+		friend class RenderWindowCore;
+		friend class RenderWindow;
+
+		bool mIsFullScreen = false;
+		INT32 mLeft = 0;
+		INT32 mTop = 0;
+		bool mHasFocus = false;
+		bool mHidden = false;
+		bool mIsModal = false;
+	};
+
+	/**
+	 * @brief	Provides access to internal render window implementation usable only from the core thread.
+	 *
+	 * @note	Core thread only.
+	 */
+	class BS_CORE_EXPORT RenderWindowCore : public RenderTargetCore
+	{
+	public:
+		RenderWindowCore(RenderWindow* parent, RenderWindowProperties* properties);
+		virtual ~RenderWindowCore() { }
 
 		/** 
 		 * @brief	Switches the window to fullscreen mode. Child windows cannot go into fullscreen mode.
@@ -116,49 +167,62 @@ namespace BansheeEngine
         virtual void move(INT32 left, INT32 top) = 0;
 
 		/**
-		 * @copydoc RenderTarget::isWindow.
+		 * @brief	Returns properties that describe the render texture.
 		 */
-		bool isWindow() const { return true; }
-
-        /**
-         * @brief	Indicates whether the window is visible (not minimized or obscured).
-         */
-        virtual bool isVisible() const { return true; }
-
-        /** 
-        * @copydoc RenderTarget::isActive
-		*/
-        virtual bool isActive() const { return mActive && isVisible(); }
-
-        /** 
-        * @brief	Indicates whether the window has been closed by the user.
-		*/
-        virtual bool isClosed() const = 0;
-        
-        /** 
-        * @brief	Returns true if window is running in fullscreen mode.
-		*/
-        virtual bool isFullScreen() const;
+		const RenderWindowProperties& getProperties() const { return *static_cast<RenderWindowProperties*>(mProperties); }
 
 		/**
-		 * @brief	Returns true if the window is modal.
+		 * @copydoc	RenderTargetCore::getNonCore
 		 */
-		bool isModal() const { return mDesc.modal; }
+		RenderWindow* getNonCore() const;
+
+	protected:
+		friend class RenderWindow;
+		friend class RenderWindowManager;
 
 		/**
-		 * @brief	Gets the horizontal origin of the window in pixels.
+		 * @brief	Called when window is moved or resized.
+		 *
+		 * @note	Core thread.
 		 */
-		INT32 getLeft() const { return mLeft; }
+		virtual void _windowMovedOrResized();
 
 		/**
-		 * @brief	Gets the vertical origin of the window in pixels.
+		 * @brief	Called when window has received focus.
+		 *
+		 * @note	Core thread.
 		 */
-		INT32 getTop() const { return mTop; }
+		virtual void _windowFocusReceived();
 
 		/**
-		 * @brief	Indicates whether the window currently has keyboard focus.
+		 * @brief	Called when window has lost focus.
+		 *
+		 * @note	Core thread.
 		 */
-		bool hasFocus() const { return mHasFocus; }
+		virtual void _windowFocusLost();
+	};
+
+	/**
+	 * @brief	Render target specialization that allows you to render into window
+	 *			frame buffer(s).
+	 *
+	 * @note	Sim thread only. Retrieve core implementation from getCore()
+	 *			for core thread only functionality.
+	 */
+    class BS_CORE_EXPORT RenderWindow : public RenderTarget
+    {
+    public:
+		virtual ~RenderWindow() { }
+
+		/**
+		 * @copydoc	RenderTarget::initialize
+		 */
+		virtual void initialize(const RENDER_WINDOW_DESC& desc);
+
+		/**
+		 * @copydoc	RenderTarget::destroy
+		 */
+		virtual void destroy();	
 
 		/**
 		 * @brief	Converts screen position into window local position.
@@ -171,9 +235,17 @@ namespace BansheeEngine
 		virtual Vector2I windowToScreenPos(const Vector2I& windowPos) const = 0;
 
 		/**
-		 * @copydoc	RenderTarget::destroy
+		 * @brief	Returns properties that describe the render window.
 		 */
-		virtual void destroy();
+		const RenderWindowProperties& getProperties() const;
+
+		/**
+		 * @brief	Retrieves a core implementation of a render window usable only from the
+		 *			core thread.
+		 *
+		 * @note	Core thread only.
+		 */
+		RenderWindowCore* getCore() const;
 
 		/**
 		 * @brief	Creates a new render window using the specified options. Optionally
@@ -184,36 +256,20 @@ namespace BansheeEngine
     protected:
 		friend class RenderWindowManager;
 
-        RenderWindow(const RENDER_WINDOW_DESC& desc);
+		RenderWindow() { }
 
 		/**
-         * @brief	Called when window is moved or resized.
-		 *
-		 * @note	Core thread.
-         */
-        virtual void _windowMovedOrResized();
+		 * @copydoc	RenderWindow::createCore
+		 */
+		virtual RenderTargetCore* createCore();
 
 		/**
-         * @brief	Called when window has received focus.
-		 *
-		 * @note	Core thread.
-         */
-		virtual void _windowFocusReceived();
-
-		/**
-         * @brief	Called when window has lost focus.
-		 *
-		 * @note	Core thread.
-         */
-		virtual void _windowFocusLost();
+		 * @brief	Creates a core implementation of a render window. This implementation
+		 *			is to be used on the core thread only.
+		 */
+		virtual RenderWindowCore* createCore(RenderWindowProperties* properties, const RENDER_WINDOW_DESC& desc) = 0;
         
 	protected:
-		bool mIsFullScreen;
-		INT32 mLeft;
-		INT32 mTop;
-		bool mHasFocus;
-		bool mHidden;
-
 		RENDER_WINDOW_DESC mDesc;
     };
 }

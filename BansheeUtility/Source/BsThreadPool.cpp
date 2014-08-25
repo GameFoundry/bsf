@@ -89,18 +89,20 @@ namespace BansheeEngine
 			std::function<void()> worker = nullptr;
 
 			{
-				BS_LOCK_MUTEX_NAMED(mMutex, lock);
+				{
+					BS_LOCK_MUTEX_NAMED(mMutex, lock);
 
-				while(!mThreadReady)
-					BS_THREAD_WAIT(mReadyCond, mMutex, lock);
+					while (!mThreadReady)
+						BS_THREAD_WAIT(mReadyCond, mMutex, lock);
 
-				if(mWorkerMethod == nullptr)
+					worker = mWorkerMethod;
+				}
+
+				if (worker == nullptr)
 				{
 					onThreadEnded(mName);
 					return;
 				}
-
-				worker = mWorkerMethod;
 			}
 
 			worker();
@@ -120,6 +122,8 @@ namespace BansheeEngine
 
 	void PooledThread::destroy()
 	{
+		blockUntilComplete();
+
 		{
 			BS_LOCK_MUTEX(mMutex);
 			mWorkerMethod = nullptr;
@@ -129,6 +133,14 @@ namespace BansheeEngine
 		BS_THREAD_NOTIFY_ONE(mReadyCond);
 		BS_THREAD_JOIN((*mThread));
 		BS_THREAD_DESTROY(mThread);
+	}
+
+	void PooledThread::blockUntilComplete()
+	{
+		BS_LOCK_MUTEX_NAMED(mMutex, lock);
+
+		while (!mIdle)
+			BS_THREAD_WAIT(mWorkerEndedCond, mMutex, lock);
 	}
 
 	bool PooledThread::isIdle()

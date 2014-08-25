@@ -326,21 +326,21 @@ namespace BansheeEngine
 		 * 			
 		 * @note	Core thread only.
 		 */
-		static Event<void(RenderWindow*)> onWindowFocusReceived;
+		static Event<void(RenderWindowCore*)> onWindowFocusReceived;
 
 		/**
 		 * @brief	Triggered whenever a window loses focus.
 		 * 			
 		 * @note	Core thread only.
 		 */
-		static Event<void(RenderWindow*)> onWindowFocusLost;
+		static Event<void(RenderWindowCore*)> onWindowFocusLost;
 
 		/**
 		 * @brief	Triggered whenever a window gets moved or resized.
 		 * 			
 		 * @note	Core thread only.
 		 */
-		static Event<void(RenderWindow*)> onWindowMovedOrResized;
+		static Event<void(RenderWindowCore*)> onWindowMovedOrResized;
 
 		/**
 		 * @brief	Triggered whenever mouse capture state for the window is changed
@@ -353,11 +353,11 @@ namespace BansheeEngine
 		static bool mIsCursorHidden;
 		static NativeCursorData mCursor;
 		static bool mUsingCustomCursor;
-		static Map<const RenderWindow*, WindowNonClientAreaData> mNonClientAreas;
+		static Map<const RenderWindowCore*, WindowNonClientAreaData> mNonClientAreas;
 
 		static bool mIsTrackingMouse;
-		static Vector<RenderWindow*> mMouseLeftWindows;
-		static Stack<RenderWindow*> mModalWindowStack;
+		static Vector<RenderWindowCore*> mMouseLeftWindows;
+		static Stack<RenderWindowCore*> mModalWindowStack;
 
 		static NativeDropTargetData mDropTargets;
 
@@ -369,8 +369,8 @@ namespace BansheeEngine
 		static void win32ShowCursor();
 		static void win32HideCursor();
 
-		static void windowFocusReceived(RenderWindow* window);
-		static void windowFocusLost(RenderWindow* window);
-		static void windowMovedOrResized(RenderWindow* window);
+		static void windowFocusReceived(RenderWindowCore* window);
+		static void windowFocusLost(RenderWindowCore* window);
+		static void windowMovedOrResized(RenderWindowCore* window);
 	};
 }

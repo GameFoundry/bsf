@@ -116,7 +116,7 @@ namespace BansheeEngine
 		      
 		// Get the context from the window and finish initialization
 		GLContext *context = nullptr;
-		primaryWindow->getCustomAttribute("GLCONTEXT", &context);
+		primaryWindow->getCore()->getCustomAttribute("GLCONTEXT", &context);
 
 		// Set main and current context
 		mMainContext = context;
@@ -159,8 +159,6 @@ namespace BansheeEngine
 	{
 		RenderSystem::destroy_internal();
 
-		GLVertexArrayObjectManager::shutDown();
-
 		// Deleting the GLSL program factory
 		if (mGLSLProgramFactory)
 		{
@@ -190,6 +188,7 @@ namespace BansheeEngine
 		QueryManager::shutDown();
 		RenderWindowManager::shutDown();
 		RenderStateManager::shutDown();
+		GLVertexArrayObjectManager::shutDown(); // Note: Needs to be after QueryManager shutdown as some resources might be waiting for queries to complete
 
 		mGLInitialised = false;
 
@@ -530,16 +529,18 @@ namespace BansheeEngine
 		target = vp.getTarget();
 		setRenderTarget(target);
 
+		const RenderTargetProperties& rtProps = target->getCore()->getProperties();
+
 		// Calculate the "lower-left" corner of the viewport
-		mViewportWidth = vp.getWidth();
-		mViewportHeight = vp.getHeight();
-		mViewportLeft = vp.getX();
-		mViewportTop = vp.getY();
+		mViewportLeft = (UINT32)(rtProps.getWidth() * vp.getNormalizedX());
+		mViewportTop = (UINT32)(rtProps.getHeight() * vp.getNormalizedY());
+		mViewportWidth = (UINT32)(rtProps.getWidth() * vp.getNormalizedWidth());
+		mViewportHeight = (UINT32)(rtProps.getHeight() * vp.getNormalizedHeight());
 
 		if (!target->requiresTextureFlipping())
 		{
 			// Convert "upper-left" corner to "lower-left"
-			mViewportTop = target->getHeight() - mViewportHeight - mViewportTop;
+			mViewportTop = target->getCore()->getProperties().getHeight() - mViewportHeight - mViewportTop;
 		}
 
 		glViewport(mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight);
@@ -556,14 +557,14 @@ namespace BansheeEngine
 
 		// Switch context if different from current one
 		GLContext *newContext = 0;
-		target->getCustomAttribute("GLCONTEXT", &newContext);
+		target->getCore()->getCustomAttribute("GLCONTEXT", &newContext);
 		if(newContext && mCurrentContext != newContext) 
 		{
 			switchContext(newContext);
 		}
 
 		GLFrameBufferObject *fbo = 0;
-		target->getCustomAttribute("FBO", &fbo);
+		target->getCore()->getCustomAttribute("FBO", &fbo);
 		if(fbo)
 			fbo->bind();
 		else
@@ -573,7 +574,7 @@ namespace BansheeEngine
 		if (GLEW_EXT_framebuffer_sRGB)
 		{
 			// Enable / disable sRGB states
-			if (target->isHwGammaEnabled())
+			if (target->getCore()->getProperties().isHwGammaEnabled())
 			{
 				glEnable(GL_FRAMEBUFFER_SRGB_EXT);
 
@@ -667,8 +668,8 @@ namespace BansheeEngine
 
 		// Find the correct type to render
 		GLint primType = getGLDrawMode();
-		beginDraw();
 
+		beginDraw();
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 
 			static_cast<GLIndexBuffer*>(mBoundIndexBuffer.get())->getGLBufferId());
 
@@ -676,7 +677,6 @@ namespace BansheeEngine
 		glDrawElementsBaseVertex(primType, indexCount, indexType, (GLvoid*)(mBoundIndexBuffer->getIndexSize() * startIndex), vertexOffset);
 
 		endDraw();
-
 		UINT32 primCount = vertexCountToPrimCount(mCurrentDrawOperation, vertexCount);
 
 		BS_INC_RENDER_STAT(NumDrawCalls);
@@ -701,7 +701,8 @@ namespace BansheeEngine
 		if(mActiveRenderTarget == nullptr)
 			return;
 
-		RectI clearRect(0, 0, mActiveRenderTarget->getWidth(), mActiveRenderTarget->getHeight());
+		const RenderTargetProperties& rtProps = mActiveRenderTarget->getCore()->getProperties();
+		RectI clearRect(0, 0, rtProps.getWidth(), rtProps.getHeight());
 
 		clearArea(buffers, color, depth, stencil, clearRect);
 	}
@@ -766,8 +767,10 @@ namespace BansheeEngine
 			glDisable(GL_SCISSOR_TEST);
 		}
 
+		const RenderTargetProperties& rtProps = mActiveRenderTarget->getCore()->getProperties();
+
 		bool clearEntireTarget = clearRect.width == 0 || clearRect.height == 0;
-		clearEntireTarget |= (clearRect.x == 0 && clearRect.y == 0 && clearRect.width == mActiveRenderTarget->getWidth() && clearRect.height == mActiveRenderTarget->getHeight());
+		clearEntireTarget |= (clearRect.x == 0 && clearRect.y == 0 && clearRect.width == rtProps.getWidth() && clearRect.height == rtProps.getHeight());
 
 		if(!clearEntireTarget)
 		{
@@ -994,10 +997,12 @@ namespace BansheeEngine
 
 	void GLRenderSystem::setScissorTestEnable(bool enable)
 	{
+		const RenderTargetProperties& rtProps = mActiveRenderTarget->getCore()->getProperties();
+
 		// If request texture flipping, use "upper-left", otherwise use "lower-left"
 		bool flipping = mActiveRenderTarget->requiresTextureFlipping();
 		//  GL measures from the bottom, not the top
-		UINT32 targetHeight = mActiveRenderTarget->getHeight();
+		UINT32 targetHeight = rtProps.getHeight();
 		// Calculate the "lower-left" corner of the viewport
 		GLsizei x = 0, y = 0, w = 0, h = 0;
 

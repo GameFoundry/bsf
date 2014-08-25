@@ -20,7 +20,7 @@ namespace BansheeEngine
 			desc.platformSpecific["parentWindowHandle"] = toString((UINT64)hWnd);
 		}
 
-		D3D9RenderWindow* window = new (bs_alloc<D3D9RenderWindow, PoolAlloc>()) D3D9RenderWindow(desc, mRenderSystem->getInstanceHandle());
+		D3D9RenderWindow* window = new (bs_alloc<D3D9RenderWindow, PoolAlloc>()) D3D9RenderWindow(mRenderSystem->getInstanceHandle());
 
 		return RenderWindowPtr(window, &CoreObject::_deleteDelayed<D3D9RenderWindow, PoolAlloc>);
 	}

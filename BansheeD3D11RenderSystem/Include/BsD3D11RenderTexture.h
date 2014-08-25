@@ -6,27 +6,54 @@
 
 namespace BansheeEngine
 {
+	class D3D11RenderTexture;
+
 	/**
 	 * @brief	DirectX 11 implementation of a render texture.
+	 *
+	 * @note	Core thread only.
 	 */
-	class D3D11RenderTexture : public RenderTexture
+	class D3D11RenderTextureCore : public RenderTextureCore
 	{
 	public:
-		virtual ~D3D11RenderTexture();
+		D3D11RenderTextureCore(D3D11RenderTexture* parent, RenderTextureProperties* properties, const RENDER_SURFACE_DESC& colorSurfaceDesc,
+			const RENDER_SURFACE_DESC& depthStencilSurfaceDesc);
+
+		virtual ~D3D11RenderTextureCore() { }
 
 		/**
-		 * @copydoc	RenderTexture::requiresTextureFlipping
-		 */
-		bool requiresTextureFlipping() const { return false; }
-
-		/**
-		 * @copydoc	RenderTexture::getCustomAttribute
+		 * @copydoc	RenderTextureCore::getCustomAttribute
 		 */
 		void getCustomAttribute(const String& name, void* pData) const;
 
 	protected:
+		friend class D3D11RenderTexture;
+	};
+
+	/**
+	 * @brief	DirectX 11 implementation of a render texture.
+	 *
+	 * @note	Sim thread only.
+	 */
+	class D3D11RenderTexture : public RenderTexture
+	{
+	public:
+		virtual ~D3D11RenderTexture() { }
+
+	protected:
 		friend class D3D11TextureManager;
 
-		D3D11RenderTexture();
+		D3D11RenderTexture() { }
+
+		/**
+		 * @copydoc	RenderTexture::createProperties
+		 */
+		virtual RenderTargetProperties* createProperties() const;
+
+		/**
+		 * @copydoc	RenderTexture::createCore
+		 */
+		virtual RenderTextureCore* createCore(RenderTextureProperties* properties, const RENDER_SURFACE_DESC& colorSurfaceDesc,
+			const RENDER_SURFACE_DESC& depthStencilSurfaceDesc);
 	};
 }

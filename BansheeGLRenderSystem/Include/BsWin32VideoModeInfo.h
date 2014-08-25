@@ -24,7 +24,6 @@ namespace BansheeEngine
 	{
 	public:
 		Win32VideoOutputInfo(HMONITOR monitorHandle, UINT32 outputIdx);
-		~Win32VideoOutputInfo();
 
 		/**
 		 * @brief	Gets a Win32 handle to the monitor referenced by this object.

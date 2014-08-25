@@ -222,6 +222,8 @@ namespace BansheeEngine
 
 	TextureViewPtr Texture::requestView(TexturePtr texture, UINT32 mostDetailMip, UINT32 numMips, UINT32 firstArraySlice, UINT32 numArraySlices, GpuViewUsage usage)
 	{
+		THROW_IF_NOT_CORE_THREAD;
+
 		assert(texture != nullptr);
 
 		TEXTURE_VIEW_DESC key;
@@ -247,6 +249,8 @@ namespace BansheeEngine
 
 	void Texture::releaseView(TextureViewPtr view)
 	{
+		THROW_IF_NOT_CORE_THREAD;
+
 		assert(view != nullptr);
 
 		TexturePtr texture = view->getTexture();

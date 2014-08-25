@@ -1416,6 +1416,7 @@ namespace BansheeEngine
 		// so that mInputBridge map allows us to search through it - we don't access anything unless the target is bridged
 		// (in which case we know it is a RenderTexture)
 		const RenderTexture* renderTexture = static_cast<const RenderTexture*>(widget.getTarget()->getTarget().get());
+		const RenderTargetProperties& rtProps = renderTexture->getProperties();
 
 		auto iterFind = mInputBridge.find(renderTexture);
 		if(iterFind != mInputBridge.end()) // Widget input is bridged, which means we need to transform the coordinates
@@ -1431,8 +1432,8 @@ namespace BansheeEngine
 			float x = vecLocalPos.x - (float)bridgeBounds.x;
 			float y = vecLocalPos.y - (float)bridgeBounds.y;
 
-			float scaleX = renderTexture->getWidth() / (float)bridgeBounds.width;
-			float scaleY = renderTexture->getHeight() / (float)bridgeBounds.height;
+			float scaleX = rtProps.getWidth() / (float)bridgeBounds.width;
+			float scaleY = rtProps.getHeight() / (float)bridgeBounds.height;
 
 			return Vector2I(Math::roundToInt(x * scaleX), Math::roundToInt(y * scaleY));
 		}

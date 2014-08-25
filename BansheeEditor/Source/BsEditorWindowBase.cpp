@@ -91,21 +91,21 @@ namespace BansheeEngine
 
 	INT32 EditorWindowBase::getLeft() const
 	{
-		return mRenderWindow->getLeft();
+		return mRenderWindow->getProperties().getLeft();
 	}
 
 	INT32 EditorWindowBase::getTop() const
 	{
-		return mRenderWindow->getTop();
+		return mRenderWindow->getProperties().getTop();
 	}
 
 	UINT32 EditorWindowBase::getWidth() const
 	{
-		return (UINT32) mRenderWindow->getWidth();
+		return (UINT32)mRenderWindow->getProperties().getWidth();
 	}
 
 	UINT32 EditorWindowBase::getHeight() const
 	{
-		return (UINT32) mRenderWindow->getHeight();
+		return (UINT32)mRenderWindow->getProperties().getHeight();
 	}
 }

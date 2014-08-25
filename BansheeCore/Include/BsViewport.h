@@ -12,6 +12,8 @@ namespace BansheeEngine
 	 * @brief	Viewport provides you with a way to render to only a part of a 
 	 * 			RenderTarget. It also allows you to set up color/depth/stencil
 	 * 			clear values for that specific region.
+	 *
+	 * @note	Thread safe unless noted otherwise.
 	 */
 	class BS_CORE_EXPORT Viewport
     {
@@ -58,21 +60,29 @@ namespace BansheeEngine
 
         /**
          * @brief	Gets the actual x coordinate of the viewport in pixels, in [0, RenderTargetWidth] range.
+		 *
+		 * @note	Sim thread only.
          */
 		INT32 getX() const;
 
         /**
          * @brief	Gets the actual y coordinate of the viewport in pixels, in [0, RenderTargetHeight] range.
+		 *
+		 * @note	Sim thread only.
          */
 		INT32 getY() const;
 
 		/**
          * @brief	Gets the actual width coordinate of the viewport in pixels, in [0, RenderTargetWidth] range.
+		 *
+		 * @note	Sim thread only.
          */
 		INT32 getWidth() const;
 
 		/**
          * @brief	Gets the actual height coordinate of the viewport in pixels, in [0, RenderTargetHeight] range.
+		 *
+		 * @note	Sim thread only.
          */
 		INT32 getHeight() const;
                
@@ -85,6 +95,8 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Returns actual area of the viewport, in pixels.
+		 *
+		 * @note	Sim thread only.
 		 */
 		RectI getArea() const;
 

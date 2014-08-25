@@ -61,6 +61,10 @@ namespace BansheeEngine
 		if(mCPUIndexData != nullptr)
 			bs_free(mCPUIndexData);
 
+		mVertexData = nullptr;
+		mIndexBuffer = nullptr;
+		mVertexDesc = nullptr;
+
 		CoreObject::destroy_internal();
 	}
 

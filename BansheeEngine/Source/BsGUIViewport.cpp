@@ -84,11 +84,12 @@ namespace BansheeEngine
 
 		ViewportPtr viewport = mCamera->getViewport();
 		RenderTargetPtr renderTarget = viewport->getTarget();
+		const RenderTargetProperties& rtProps = renderTarget->getProperties();
 
-		float x = mOffset.x / (float)renderTarget->getWidth();
-		float y = mOffset.y / (float)renderTarget->getHeight();
-		float width = mWidth / (float)renderTarget->getWidth();
-		float height = mHeight / (float)renderTarget->getHeight();
+		float x = mOffset.x / (float)rtProps.getWidth();
+		float y = mOffset.y / (float)rtProps.getHeight();
+		float width = mWidth / (float)rtProps.getWidth();
+		float height = mHeight / (float)rtProps.getHeight();
 
 		viewport->setArea(x, y, width, height);
 	}

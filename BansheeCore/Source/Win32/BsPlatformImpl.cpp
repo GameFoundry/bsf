@@ -19,16 +19,16 @@ namespace BansheeEngine
 	Event<void(float)> Platform::onMouseWheelScrolled;
 	Event<void(UINT32)> Platform::onCharInput;
 
-	Event<void(RenderWindow*)> Platform::onWindowFocusReceived;
-	Event<void(RenderWindow*)> Platform::onWindowFocusLost;
-	Event<void(RenderWindow*)> Platform::onWindowMovedOrResized;
+	Event<void(RenderWindowCore*)> Platform::onWindowFocusReceived;
+	Event<void(RenderWindowCore*)> Platform::onWindowFocusLost;
+	Event<void(RenderWindowCore*)> Platform::onWindowMovedOrResized;
 	Event<void()> Platform::onMouseCaptureChanged;
 
-	Map<const RenderWindow*, WindowNonClientAreaData> Platform::mNonClientAreas;
+	Map<const RenderWindowCore*, WindowNonClientAreaData> Platform::mNonClientAreas;
 	bool Platform::mIsTrackingMouse = false;
-	Vector<RenderWindow*> Platform::mMouseLeftWindows;
+	Vector<RenderWindowCore*> Platform::mMouseLeftWindows;
 
-	Stack<RenderWindow*> Platform::mModalWindowStack;
+	Stack<RenderWindowCore*> Platform::mModalWindowStack;
 
 	NativeDropTargetData Platform::mDropTargets;
 
@@ -263,21 +263,21 @@ namespace BansheeEngine
 	{
 		BS_LOCK_MUTEX(mSync);
 
-		mNonClientAreas[&window].moveAreas = nonClientAreas;
+		mNonClientAreas[window.getCore()].moveAreas = nonClientAreas;
 	}
 
 	void Platform::setResizeNonClientAreas(const RenderWindow& window, const Vector<NonClientResizeArea>& nonClientAreas)
 	{
 		BS_LOCK_MUTEX(mSync);
 
-		mNonClientAreas[&window].resizeAreas = nonClientAreas;
+		mNonClientAreas[window.getCore()].resizeAreas = nonClientAreas;
 	}
 
 	void Platform::resetNonClientAreas(const RenderWindow& window)
 	{
 		BS_LOCK_MUTEX(mSync);
 
-		auto iterFind = mNonClientAreas.find(&window);
+		auto iterFind = mNonClientAreas.find(window.getCore());
 
 		if(iterFind != end(mNonClientAreas))
 			mNonClientAreas.erase(iterFind);
@@ -453,7 +453,7 @@ namespace BansheeEngine
 
 	void Platform::_update()
 	{
-		Vector<RenderWindow*> windowsCopy;
+		Vector<RenderWindowCore*> windowsCopy;
 		{
 			BS_LOCK_MUTEX(mSync);
 
@@ -464,7 +464,7 @@ namespace BansheeEngine
 		for(auto& window : windowsCopy)
 		{
 			if(!onMouseLeftWindow.empty())
-				onMouseLeftWindow(window);
+				onMouseLeftWindow(window->getNonCore());
 		}
 
 		for(auto& dropTarget : mDropTargets.data->dropTargetsPerWindow)
@@ -525,19 +525,19 @@ namespace BansheeEngine
 		mRequiresShutDown = true;
 	}
 
-	void Platform::windowFocusReceived(RenderWindow* window)
+	void Platform::windowFocusReceived(RenderWindowCore* window)
 	{
 		if(!onWindowFocusReceived.empty())
 			onWindowFocusReceived(window);
 	}
 
-	void Platform::windowFocusLost(RenderWindow* window)
+	void Platform::windowFocusLost(RenderWindowCore* window)
 	{
 		if(!onWindowFocusLost.empty())
 			onWindowFocusLost(window);
 	}
 	
-	void Platform::windowMovedOrResized(RenderWindow* window)
+	void Platform::windowMovedOrResized(RenderWindowCore* window)
 	{
 		if(!onWindowMovedOrResized.empty())
 			onWindowMovedOrResized(window);

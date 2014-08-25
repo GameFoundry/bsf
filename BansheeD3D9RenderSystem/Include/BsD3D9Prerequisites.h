@@ -28,6 +28,7 @@ namespace BansheeEngine
 	// Predefine classes
 	class D3D9RenderSystem;
 	class D3D9RenderWindow;
+	class D3D9RenderWindowCore;
 	class D3D9Texture;
 	class D3D9TextureManager;
 	class D3D9Driver;

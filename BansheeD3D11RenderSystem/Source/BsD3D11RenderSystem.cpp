@@ -320,16 +320,18 @@ namespace BansheeEngine
 		RenderTargetPtr target = vp.getTarget();
 		setRenderTarget(target);
 
+		const RenderTargetProperties& rtProps = target->getCore()->getProperties();
+
 		// Set viewport dimensions
-		mViewport.TopLeftX = (FLOAT)vp.getX();
-		mViewport.TopLeftY = (FLOAT)vp.getY();
-		mViewport.Width = (FLOAT)vp.getWidth();
-		mViewport.Height = (FLOAT)vp.getHeight();
+		mViewport.TopLeftX = (FLOAT)(rtProps.getWidth() * vp.getNormalizedX());
+		mViewport.TopLeftY = (FLOAT)(rtProps.getHeight() * vp.getNormalizedY());
+		mViewport.Width = (FLOAT)(rtProps.getWidth() * vp.getNormalizedWidth());
+		mViewport.Height = (FLOAT)(rtProps.getHeight() * vp.getNormalizedHeight());
 
 		if (target->requiresTextureFlipping())
 		{
 			// Convert "top-left" to "bottom-left"
-			mViewport.TopLeftY = target->getHeight() - mViewport.Height - mViewport.TopLeftY;
+			mViewport.TopLeftY = target->getCore()->getProperties().getHeight() - mViewport.Height - mViewport.TopLeftY;
 		}
 
 		mViewport.MinDepth = 0.0f;
@@ -617,10 +619,12 @@ namespace BansheeEngine
 		if(mActiveRenderTarget == nullptr)
 			return;
 
+		const RenderTargetProperties& rtProps = mActiveRenderTarget->getCore()->getProperties();
+
 		RectI clearArea((int)mViewport.TopLeftX, (int)mViewport.TopLeftY, (int)mViewport.Width, (int)mViewport.Height);
 
 		bool clearEntireTarget = clearArea.width == 0 || clearArea.height == 0;
-		clearEntireTarget |= (clearArea.x == 0 && clearArea.y == 0 && clearArea.width == mActiveRenderTarget->getWidth() && clearArea.height == mActiveRenderTarget->getHeight());
+		clearEntireTarget |= (clearArea.x == 0 && clearArea.y == 0 && clearArea.width == rtProps.getWidth() && clearArea.height == rtProps.getHeight());
 
 		if (!clearEntireTarget)
 		{
@@ -646,7 +650,7 @@ namespace BansheeEngine
 			ID3D11RenderTargetView** views = bs_newN<ID3D11RenderTargetView*, ScratchAlloc>(maxRenderTargets);
 			memset(views, 0, sizeof(ID3D11RenderTargetView*) * maxRenderTargets);
 
-			mActiveRenderTarget->getCustomAttribute("RTV", views);
+			mActiveRenderTarget->getCore()->getCustomAttribute("RTV", views);
 			if (!views[0])
 			{
 				bs_deleteN<ScratchAlloc>(views, maxRenderTargets);
@@ -672,7 +676,7 @@ namespace BansheeEngine
 		if((buffers & FBT_DEPTH) != 0 || (buffers & FBT_STENCIL) != 0)
 		{
 			ID3D11DepthStencilView* depthStencilView = nullptr;
-			mActiveRenderTarget->getCustomAttribute("DSV", &depthStencilView);
+			mActiveRenderTarget->getCore()->getCustomAttribute("DSV", &depthStencilView);
 
 			D3D11_CLEAR_FLAG clearFlag;
 
@@ -700,7 +704,7 @@ namespace BansheeEngine
 		UINT32 maxRenderTargets = mCurrentCapabilities->getNumMultiRenderTargets();
 		ID3D11RenderTargetView** views = bs_newN<ID3D11RenderTargetView*, ScratchAlloc>(maxRenderTargets);
 		memset(views, 0, sizeof(ID3D11RenderTargetView*) * maxRenderTargets);
-		target->getCustomAttribute("RTV", views);
+		target->getCore()->getCustomAttribute("RTV", views);
 		if (!views[0])
 		{
 			bs_deleteN<ScratchAlloc>(views, maxRenderTargets);
@@ -709,7 +713,7 @@ namespace BansheeEngine
 
 		// Retrieve depth stencil
 		ID3D11DepthStencilView* depthStencilView = nullptr;
-		target->getCustomAttribute("DSV", &depthStencilView);
+		target->getCore()->getCustomAttribute("DSV", &depthStencilView);
 
 		// Bind render targets
 		mDevice->getImmediateContext()->OMSetRenderTargets(maxRenderTargets, views, depthStencilView);

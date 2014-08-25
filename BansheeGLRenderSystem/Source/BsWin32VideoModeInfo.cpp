@@ -98,11 +98,6 @@ namespace BansheeEngine
 		mDesktopVideoMode = desktopVideoMode;
 	}
 
-	Win32VideoOutputInfo::~Win32VideoOutputInfo()
-	{
-		CloseHandle(mMonitorHandle);
-	}
-
 	Win32VideoMode::Win32VideoMode(UINT32 width, UINT32 height, float refreshRate, UINT32 outputIdx)
 		:VideoMode(width, height, refreshRate, outputIdx)
 	{ }

@@ -34,7 +34,7 @@ namespace BansheeEngine
 
 	}
 
-	D3D9Device::RenderWindowToResorucesIterator D3D9Device::getRenderWindowIterator(const D3D9RenderWindow* renderWindow)
+	D3D9Device::RenderWindowToResorucesIterator D3D9Device::getRenderWindowIterator(const D3D9RenderWindowCore* renderWindow)
 	{
 		RenderWindowToResorucesIterator it = mMapRenderWindowToResoruces.find(renderWindow);
 
@@ -44,7 +44,7 @@ namespace BansheeEngine
 		return it;
 	}
 
-	void D3D9Device::attachRenderWindow(const D3D9RenderWindow* renderWindow)
+	void D3D9Device::attachRenderWindow(const D3D9RenderWindowCore* renderWindow)
 	{
 		RenderWindowToResorucesIterator it = mMapRenderWindowToResoruces.find(renderWindow);
 
@@ -61,7 +61,7 @@ namespace BansheeEngine
 		updateRenderWindowsIndices();
 	}
 
-	void D3D9Device::detachRenderWindow(const D3D9RenderWindow* renderWindow)
+	void D3D9Device::detachRenderWindow(const D3D9RenderWindowCore* renderWindow)
 	{
 		RenderWindowToResorucesIterator it = mMapRenderWindowToResoruces.find(renderWindow);
 
@@ -175,7 +175,7 @@ namespace BansheeEngine
 		}				
 	}
 
-	bool D3D9Device::acquire(const D3D9RenderWindow* renderWindow)
+	bool D3D9Device::acquire(const D3D9RenderWindowCore* renderWindow)
 	{
 		RenderWindowToResorucesIterator it = getRenderWindowIterator(renderWindow);
 		
@@ -197,21 +197,21 @@ namespace BansheeEngine
 		renderSystem->notifyOnDeviceLost(this);
 	}	
 
-	IDirect3DSurface9* D3D9Device::getDepthBuffer(const D3D9RenderWindow* renderWindow)
+	IDirect3DSurface9* D3D9Device::getDepthBuffer(const D3D9RenderWindowCore* renderWindow)
 	{
 		RenderWindowToResorucesIterator it = getRenderWindowIterator(renderWindow);		
 
 		return it->second->depthBuffer;
 	}
 
-	IDirect3DSurface9* D3D9Device::getBackBuffer(const D3D9RenderWindow* renderWindow)
+	IDirect3DSurface9* D3D9Device::getBackBuffer(const D3D9RenderWindowCore* renderWindow)
 	{
 		RenderWindowToResorucesIterator it = getRenderWindowIterator(renderWindow);
 	
 		return it->second->backBuffer;		
 	}
 
-	void D3D9Device::setAdapterOrdinalIndex(const D3D9RenderWindow* renderWindow, UINT32 adapterOrdinalInGroupIndex)
+	void D3D9Device::setAdapterOrdinalIndex(const D3D9RenderWindowCore* renderWindow, UINT32 adapterOrdinalInGroupIndex)
 	{
 		RenderWindowToResorucesIterator it = getRenderWindowIterator(renderWindow);
 
@@ -426,18 +426,18 @@ namespace BansheeEngine
 
 			while (it != mMapRenderWindowToResoruces.end())
 			{
-				const D3D9RenderWindow* renderWindow = it->first;
+				const D3D9RenderWindowCore* renderWindow = it->first;
 				RenderWindowResources* renderWindowResources = it->second;
 
 				// Ask the render window to build it's own parameters.
 				renderWindow->_buildPresentParameters(&renderWindowResources->presentParameters);
 				
 				// Update shared focus window handle.
-				if (renderWindow->isFullScreen() && renderWindowResources->presentParametersIndex == 0 && msSharedFocusWindow == NULL)
+				if (renderWindow->getProperties().isFullScreen() && renderWindowResources->presentParametersIndex == 0 && msSharedFocusWindow == NULL)
 					setSharedWindowHandle(renderWindow->_getWindowHandle());					
 
 				// This is the primary window or a full screen window that is part of multi head device.
-				if (renderWindowResources->presentParametersIndex == 0 || renderWindow->isFullScreen())
+				if (renderWindowResources->presentParametersIndex == 0 || renderWindow->getProperties().isFullScreen())
 				{
 					mPresentationParams[renderWindowResources->presentParametersIndex] = renderWindowResources->presentParameters;
 					mPresentationParamsCount++;
@@ -473,7 +473,7 @@ namespace BansheeEngine
 		{
 			RenderWindowResources* renderWindowResources = resourceData.second;
 
-			if (renderWindowResources->adapterOrdinalInGroupIndex > 0 && resourceData.first->isFullScreen())
+			if (renderWindowResources->adapterOrdinalInGroupIndex > 0 && resourceData.first->getProperties().isFullScreen())
 				return true;
 		}
 
@@ -525,7 +525,7 @@ namespace BansheeEngine
 	void D3D9Device::createD3D9Device()
 	{		
 		// Update focus window.
-		const D3D9RenderWindow* primaryRenderWindow = getPrimaryWindow();
+		const D3D9RenderWindowCore* primaryRenderWindow = getPrimaryWindow();
 
 		// Case we have to share the same focus window.
 		if (msSharedFocusWindow != NULL)
@@ -655,14 +655,14 @@ namespace BansheeEngine
 		renderWindowResources->acquired = false;
 	}
 
-	void D3D9Device::invalidate(const D3D9RenderWindow* renderWindow)
+	void D3D9Device::invalidate(const D3D9RenderWindowCore* renderWindow)
 	{
 		RenderWindowToResorucesIterator it = getRenderWindowIterator(renderWindow);
 
 		it->second->acquired = false;		
 	}
 
-	bool D3D9Device::validate(D3D9RenderWindow* renderWindow)
+	bool D3D9Device::validate(D3D9RenderWindowCore* renderWindow)
 	{
 		// Validate that the render window should run on this device.
 		if (!validateDisplayMonitor(renderWindow))
@@ -698,7 +698,7 @@ namespace BansheeEngine
 		}
 	}
 
-	bool D3D9Device::validateDeviceState(const D3D9RenderWindow* renderWindow)
+	bool D3D9Device::validateDeviceState(const D3D9RenderWindowCore* renderWindow)
 	{
 		RenderWindowToResorucesIterator it = getRenderWindowIterator(renderWindow);		
 		RenderWindowResources* renderWindowResources =  it->second;
@@ -759,31 +759,33 @@ namespace BansheeEngine
 		return true;
 	}
 		
-	void D3D9Device::validateBackBufferSize(const D3D9RenderWindow* renderWindow)
+	void D3D9Device::validateBackBufferSize(const D3D9RenderWindowCore* renderWindow)
 	{
 		RenderWindowToResorucesIterator it = getRenderWindowIterator(renderWindow);
 		RenderWindowResources*	renderWindowResources = it->second;
 	
-		// Case size has been changed.
-		if (renderWindow->getWidth() != renderWindowResources->presentParameters.BackBufferWidth ||
-			renderWindow->getHeight() != renderWindowResources->presentParameters.BackBufferHeight)
-		{			
-			if (renderWindow->getWidth() > 0)
-				renderWindowResources->presentParameters.BackBufferWidth = renderWindow->getWidth();
+		const RenderWindowProperties& props = renderWindow->getProperties();
 
-			if (renderWindow->getHeight() > 0)
-				renderWindowResources->presentParameters.BackBufferHeight = renderWindow->getHeight();
+		// Case size has been changed.
+		if (props.getWidth() != renderWindowResources->presentParameters.BackBufferWidth ||
+			props.getHeight() != renderWindowResources->presentParameters.BackBufferHeight)
+		{			
+			if (props.getWidth() > 0)
+				renderWindowResources->presentParameters.BackBufferWidth = props.getWidth();
+
+			if (props.getHeight() > 0)
+				renderWindowResources->presentParameters.BackBufferHeight = props.getHeight();
 
 			invalidate(renderWindow);
 		}				
 	}
 
-	bool D3D9Device::validateDisplayMonitor(D3D9RenderWindow* renderWindow)
+	bool D3D9Device::validateDisplayMonitor(D3D9RenderWindowCore* renderWindow)
 	{
 		// Ignore full screen since it doesn't really move and it is possible 
 		// that it created using multi-head adapter so for a subordinate the
 		// native monitor handle and this device handle will be different.
-		if (renderWindow->isFullScreen())
+		if (renderWindow->getProperties().isFullScreen())
 			return true;
 
 		HMONITOR	hRenderWindowMonitor = NULL;
@@ -813,7 +815,7 @@ namespace BansheeEngine
 		return true;
 	}
 
-	void D3D9Device::present(const D3D9RenderWindow* renderWindow)
+	void D3D9Device::present(const D3D9RenderWindowCore* renderWindow)
 	{		
 		RenderWindowToResorucesIterator it = getRenderWindowIterator(renderWindow);
 		RenderWindowResources*	renderWindowResources = it->second;				
@@ -856,7 +858,7 @@ namespace BansheeEngine
 	void D3D9Device::acquireRenderWindowResources(RenderWindowToResorucesIterator it)
 	{
 		RenderWindowResources*	renderWindowResources = it->second;
-		const D3D9RenderWindow*	renderWindow = it->first;			
+		const D3D9RenderWindowCore*	renderWindow = it->first;
 		
 		releaseRenderWindowResources(renderWindowResources);
 
@@ -909,8 +911,8 @@ namespace BansheeEngine
 			}
 			else
 			{
-				UINT32 targetWidth  = renderWindow->getWidth();
-				UINT32 targetHeight = renderWindow->getHeight();
+				UINT32 targetWidth  = renderWindow->getProperties().getWidth();
+				UINT32 targetHeight = renderWindow->getProperties().getHeight();
 
 				if (targetWidth == 0)
 					targetWidth = 1;
@@ -942,17 +944,17 @@ namespace BansheeEngine
 		renderWindowResources->acquired = true; 
 	}
 
-	bool D3D9Device::isSwapChainWindow(const D3D9RenderWindow* renderWindow)
+	bool D3D9Device::isSwapChainWindow(const D3D9RenderWindowCore* renderWindow)
 	{
 		RenderWindowToResorucesIterator it = getRenderWindowIterator(renderWindow);
 		
-		if (it->second->presentParametersIndex == 0 || renderWindow->isFullScreen())			
+		if (it->second->presentParametersIndex == 0 || renderWindow->getProperties().isFullScreen())			
 			return false;
 			
 		return true;
 	}
 
-	const D3D9RenderWindow* D3D9Device::getPrimaryWindow()
+	const D3D9RenderWindowCore* D3D9Device::getPrimaryWindow()
 	{		
 		RenderWindowToResorucesIterator it = mMapRenderWindowToResoruces.begin();
 	
@@ -996,7 +998,7 @@ namespace BansheeEngine
 			UINT32 nextPresParamIndex = 0;
 
 			RenderWindowToResorucesIterator it;
-			const D3D9RenderWindow* deviceFocusWindow = NULL;
+			const D3D9RenderWindowCore* deviceFocusWindow = NULL;
 
 			// In case a d3d9 device exists - try to keep the present parameters order
 			// so that the window that the device is focused on will stay the same and we
@@ -1032,15 +1034,17 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D9Device::copyContentsToMemory(const D3D9RenderWindow* renderWindow, 
-		PixelData &dst, RenderTarget::FrameBuffer buffer)
+	void D3D9Device::copyContentsToMemory(const D3D9RenderWindowCore* renderWindow,
+		PixelData &dst, RenderTargetCore::FrameBuffer buffer)
 	{
+		const RenderWindowProperties& props = renderWindow->getProperties();
+
 		RenderWindowToResorucesIterator it = getRenderWindowIterator(renderWindow);
 		RenderWindowResources* resources = it->second;
 		bool swapChain = isSwapChainWindow(renderWindow);
 
-		if ((dst.getLeft() < 0) || (dst.getRight() > renderWindow->getWidth()) ||
-			(dst.getTop() < 0) || (dst.getBottom() > renderWindow->getHeight()) ||
+		if ((dst.getLeft() < 0) || (dst.getRight() > props.getWidth()) ||
+			(dst.getTop() < 0) || (dst.getBottom() > props.getHeight()) ||
 			(dst.getFront() != 0) || (dst.getBack() != 1))
 		{
 			BS_EXCEPT(InvalidParametersException, "Invalid box.");
@@ -1053,13 +1057,12 @@ namespace BansheeEngine
 		D3DLOCKED_RECT lockedRect;
 
 
-		if (buffer == RenderTarget::FB_AUTO)
+		if (buffer == RenderTargetCore::FB_AUTO)
 		{
-			//buffer = mIsFullScreen? FB_FRONT : FB_BACK;
-			buffer = RenderTarget::FB_FRONT;
+			buffer = RenderTargetCore::FB_FRONT;
 		}
 
-		if (buffer == RenderTarget::FB_FRONT)
+		if (buffer == RenderTargetCore::FB_FRONT)
 		{
 			D3DDISPLAYMODE dm;
 
@@ -1087,9 +1090,9 @@ namespace BansheeEngine
 				BS_EXCEPT(RenderingAPIException, "Can't get front buffer: TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
 			}
 
-			if(renderWindow->isFullScreen())
+			if (props.isFullScreen())
 			{
-				if ((dst.getLeft() == 0) && (dst.getRight() == renderWindow->getWidth()) && (dst.getTop() == 0) && (dst.getBottom() == renderWindow->getHeight()))
+				if ((dst.getLeft() == 0) && (dst.getRight() == props.getWidth()) && (dst.getTop() == 0) && (dst.getBottom() == props.getHeight()))
 				{
 					hr = pTempSurf->LockRect(&lockedRect, 0, D3DLOCK_READONLY | D3DLOCK_NOSYSLOCK);
 				}
@@ -1199,7 +1202,7 @@ namespace BansheeEngine
 				SAFE_RELEASE(pStretchSurf);
 			}
 
-			if ((dst.getLeft() == 0) && (dst.getRight() == renderWindow->getWidth()) && (dst.getTop() == 0) && (dst.getBottom() == renderWindow->getHeight()))
+			if ((dst.getLeft() == 0) && (dst.getRight() == props.getWidth()) && (dst.getTop() == 0) && (dst.getBottom() == props.getHeight()))
 			{
 				hr = pTempSurf->LockRect(&lockedRect, 0, D3DLOCK_READONLY | D3DLOCK_NOSYSLOCK);
 			}

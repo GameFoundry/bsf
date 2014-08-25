@@ -5,91 +5,89 @@
 
 namespace BansheeEngine
 {
+	class D3D11RenderWindow;
+
 	/**
-	 * @brief	Render window implementation for Windows and DirectX 11.
+	 * @brief	Contains various properties that describe a render window.
 	 */
-	class BS_D3D11_EXPORT D3D11RenderWindow : public RenderWindow
+	class BS_D3D11_EXPORT D3D11RenderWindowProperties : public RenderWindowProperties
 	{
 	public:
-		~D3D11RenderWindow();
+		virtual ~D3D11RenderWindowProperties() { }
+
+	private:
+		friend class D3D11RenderWindowCore;
+		friend class D3D11RenderWindow;
+	};
+
+	/**
+	 * @brief	Render window implementation for Windows and DirectX 11.
+	 *
+	 * @note	Core thread only.
+	 */
+	class BS_D3D11_EXPORT D3D11RenderWindowCore : public RenderWindowCore
+	{
+	public:
+		/**
+		 * @copydoc	RenderWindowCore::RenderWindowCore
+		 */
+		D3D11RenderWindowCore(D3D11RenderWindow* parent, RenderWindowProperties* properties, const RENDER_WINDOW_DESC& desc,
+			D3D11Device& device, IDXGIFactory* DXGIFactory);
+
+		~D3D11RenderWindowCore();
 
 		/**
-		 * @copydoc RenderWindow::move
+		 * @copydoc RenderWindowCore::move
 		 */
 		void move(INT32 left, INT32 top);
 
 		/**
-		 * @copydoc RenderWindow::resize
+		 * @copydoc RenderWindowCore::resize
 		 */
 		void resize(UINT32 width, UINT32 height);
 
 		/**
-		 * @copydoc RenderWindow::setHidden
+		 * @copydoc RenderWindowCore::setHidden
 		 */
 		void setHidden(bool hidden);
 
 		/**
-		 * @copydoc RenderWindow::setActive
+		 * @copydoc RenderWindowCore::setActive
 		 */
 		void setActive(bool state);
 
 		/**
-		 * @copydoc RenderWindow::setFullscreen(UINT32, UINT32, float, UINT32)
+		 * @copydoc RenderWindowCore::setFullscreen(UINT32, UINT32, float, UINT32)
 		 */
 		void setFullscreen(UINT32 width, UINT32 height, float refreshRate = 60.0f, UINT32 monitorIdx = 0);
 
 		/**
-		 * @copydoc RenderWindow::setFullscreen(const VideoMode&)
+		 * @copydoc RenderWindowCore::setFullscreen(const VideoMode&)
 		 */
 		void setFullscreen(const VideoMode& mode);
 
 		/**
-		* @copydoc RenderWindow::setWindowed
+		* @copydoc RenderWindowCore::setWindowed
 		*/
 		void setWindowed(UINT32 width, UINT32 height);
 
 		/**
-		 * @copydoc RenderWindow::copyContentsToMemory
+		 * @copydoc RenderWindowCore::copyContentsToMemory
 		 */
 		void copyToMemory(PixelData &dst, FrameBuffer buffer);
 
 		/**
-		 * @copydoc RenderWindow::swapBuffers
+		 * @copydoc RenderWindowCore::swapBuffers
 		 */
 		void swapBuffers();
 
 		/**
-		 * @copydoc RenderWindow::isClosed
-		 */
-		bool isClosed() const { return mClosed; }
-
-		/**
-		 * @copydoc RenderWindow::isHidden
-		 */
-		bool isHidden() const { return mHidden; }
-
-		/**
-		 * @copydoc RenderWindow::screenToWindowPos
-		 */
-		Vector2I screenToWindowPos(const Vector2I& screenPos) const;
-
-		/**
-		 * @copydoc RenderWindow::windowToScreenPos
-		 */
-		Vector2I windowToScreenPos(const Vector2I& windowPos) const;
-
-		/**
-		 * @copydoc RenderWindow::getCustomAttribute
+		 * @copydoc RenderWindowCore::getCustomAttribute
 		 */
 		void getCustomAttribute(const String& name, void* pData) const;
 
 		/**
-		 * @copydoc RenderWindow::requiresTextureFlipping
-		 */
-		bool requiresTextureFlipping() const { return false; }
-
-		/**
-		 * @copydoc	RenderWindow::_windowMovedOrResized
+		 * @copydoc	RenderWindowCore::_windowMovedOrResized
 		 */
 		void _windowMovedOrResized();
 
@@ -104,12 +102,7 @@ namespace BansheeEngine
 		HWND _getWindowHandle() const { return mHWnd; }
 
 	protected:
-		friend class D3D11RenderWindowManager;
-
-		/**
-		 * @copydoc	RenderWindow::RenderWindow
-		 */
-		D3D11RenderWindow(const RENDER_WINDOW_DESC& desc, D3D11Device& device, IDXGIFactory* DXGIFactory);
+		friend class D3D11RenderWindow;
 
 		/**
 		 * @brief	Creates internal resources dependent on window size.
@@ -135,27 +128,15 @@ namespace BansheeEngine
 		 * @brief	Resizes all buffers attached to the swap chain to the specified size.
 		 */
 		void resizeSwapChainBuffers(UINT32 width, UINT32 height);
-		
-		/**
-		 * @copydoc RenderWindow::initialize_internal
-		 */
-		void initialize_internal();
 
-		/**
-		 * @copydoc RenderWindow::destroy_internal
-		 */
-		void destroy_internal();
 	protected:
 		D3D11Device& mDevice;
 		IDXGIFactory* mDXGIFactory;
 		bool mIsExternal;
 		bool mSizing;
-		bool mClosed;
 		bool mIsChild;
 
 		DXGI_SAMPLE_DESC mMultisampleType;
-		bool mVSync;
-		UINT32 mVSyncInterval;
 		UINT32 mRefreshRateNumerator;
 		UINT32 mRefreshRateDenominator;
 
@@ -167,6 +148,62 @@ namespace BansheeEngine
 		IDXGISwapChain*	mSwapChain;
 		DXGI_SWAP_CHAIN_DESC mSwapChainDesc;
 
+		HWND mHWnd;
+	};
+
+	/**
+	 * @brief	Render window implementation for Windows and DirectX 11.
+	 *
+	 * @note	Sim thread only.
+	 */
+	class BS_D3D11_EXPORT D3D11RenderWindow : public RenderWindow
+	{
+	public:
+		~D3D11RenderWindow() { }
+
+		/**
+		 * @copydoc RenderWindow::requiresTextureFlipping
+		 */
+		bool requiresTextureFlipping() const { return false; }
+
+		/**
+		 * @copydoc RenderWindow::getCustomAttribute
+		 */
+		void getCustomAttribute(const String& name, void* pData) const;
+
+		/**
+		 * @copydoc RenderWindow::screenToWindowPos
+		 */
+		Vector2I screenToWindowPos(const Vector2I& screenPos) const;
+
+		/**
+		 * @copydoc RenderWindow::windowToScreenPos
+		 */
+		Vector2I windowToScreenPos(const Vector2I& windowPos) const;
+
+	protected:
+		friend class D3D11RenderWindowManager;
+
+		D3D11RenderWindow(D3D11Device& device, IDXGIFactory* DXGIFactory);
+
+		/**
+		 * @copydoc	RenderWindow::initialize_internal
+		 */
+		virtual void initialize_internal();
+
+		/**
+		 * @copydoc	RenderWindow::createProperties
+		 */
+		virtual RenderTargetProperties* createProperties() const;
+
+		/**
+		 * @copydoc	RenderWindow::createCore
+		 */
+		virtual RenderWindowCore* createCore(RenderWindowProperties* properties, const RENDER_WINDOW_DESC& desc);
+
+	private:
+		D3D11Device& mDevice;
+		IDXGIFactory* mDXGIFactory;
 		HWND mHWnd;
 	};
 }

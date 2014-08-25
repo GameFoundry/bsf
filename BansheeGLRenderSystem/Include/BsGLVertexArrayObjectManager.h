@@ -72,7 +72,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Called when a vertex buffer containing the provided VAO is destroyed.
 		 */
-		void notifyBufferDestroyed(const GLVertexArrayObject& vao);
+		void notifyBufferDestroyed(GLVertexArrayObject vao);
 	private:
 		typedef UnorderedSet<GLVertexArrayObject, GLVertexArrayObject::Hash, GLVertexArrayObject::Equal> VAOMap;
 

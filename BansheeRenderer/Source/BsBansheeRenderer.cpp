@@ -140,7 +140,8 @@ namespace BansheeEngine
 
 		// Sort everything based on priority
 		auto cameraComparer = [&](const CameraProxyPtr& a, const CameraProxyPtr& b) { return a->priority > b->priority; };
-		auto renderTargetInfoComparer = [&](const RenderTargetData& a, const RenderTargetData& b) { return a.target->getPriority() > b.target->getPriority(); };
+		auto renderTargetInfoComparer = [&](const RenderTargetData& a, const RenderTargetData& b) 
+		{ return a.target->getCore()->getProperties().getPriority() > b.target->getCore()->getProperties().getPriority(); };
 		std::sort(begin(mRenderTargets), end(mRenderTargets), renderTargetInfoComparer);
 
 		for (auto& camerasPerTarget : mRenderTargets)

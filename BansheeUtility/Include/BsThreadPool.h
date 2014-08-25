@@ -77,6 +77,12 @@ namespace BansheeEngine
 		UINT32 getId() const;
 
 		/**
+		 * @brief	Blocks the current thread until this thread completes.
+		 *			Returns immediately if the thread is idle.
+		 */
+		void blockUntilComplete();
+
+		/**
 		 * @brief	Called when the thread is first created.
 		 */
 		virtual void onThreadStarted(const String& name) = 0;

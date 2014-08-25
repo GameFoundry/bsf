@@ -9,17 +9,12 @@
 
 namespace BansheeEngine
 {
-	D3D11RenderTexture::D3D11RenderTexture()
-		:RenderTexture()
-	{
+	D3D11RenderTextureCore::D3D11RenderTextureCore(D3D11RenderTexture* parent, RenderTextureProperties* properties, const RENDER_SURFACE_DESC& colorSurfaceDesc,
+		const RENDER_SURFACE_DESC& depthStencilSurfaceDesc)
+		:RenderTextureCore(parent, properties, colorSurfaceDesc, depthStencilSurfaceDesc)
+	{ }
 
-	}
-
-	D3D11RenderTexture::~D3D11RenderTexture()
-	{
-	}
-
-	void D3D11RenderTexture::getCustomAttribute(const String& name, void* pData) const
+	void D3D11RenderTextureCore::getCustomAttribute(const String& name, void* pData) const
 	{
 		if(name == "RTV")
 		{
@@ -36,5 +31,16 @@ namespace BansheeEngine
 			*pDSV = depthStencilView->getDSV();
 			return;
 		}
+	}
+
+	RenderTargetProperties* D3D11RenderTexture::createProperties() const
+	{
+		return bs_new<RenderTextureProperties>();
+	}
+
+	RenderTextureCore* D3D11RenderTexture::createCore(RenderTextureProperties* properties, const RENDER_SURFACE_DESC& colorSurfaceDesc,
+		const RENDER_SURFACE_DESC& depthStencilSurfaceDesc)
+	{
+		return bs_new<D3D11RenderTextureCore>(this, properties, colorSurfaceDesc, depthStencilSurfaceDesc);
 	}
 }

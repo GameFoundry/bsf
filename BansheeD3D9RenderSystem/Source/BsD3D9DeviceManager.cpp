@@ -75,7 +75,7 @@ namespace BansheeEngine
 		return mRenderDevices[index];
 	}
 
-	void D3D9DeviceManager::linkRenderWindow(D3D9RenderWindow* renderWindow)
+	void D3D9DeviceManager::linkRenderWindow(D3D9RenderWindowCore* renderWindow)
 	{		
 		D3D9Device* renderDevice;
 
@@ -84,7 +84,7 @@ namespace BansheeEngine
 		if (renderDevice != nullptr)
 			renderDevice->detachRenderWindow(renderWindow);						
 
-		Vector<D3D9RenderWindow*> renderWindowsGroup;
+		Vector<D3D9RenderWindowCore*> renderWindowsGroup;
 
 		// Select new device for this window.		
 		renderDevice = selectDevice(renderWindow, renderWindowsGroup);
@@ -92,7 +92,7 @@ namespace BansheeEngine
 		// Link the windows group to the new device.
 		for (UINT32 i = 0; i < renderWindowsGroup.size(); ++i)
 		{
-			D3D9RenderWindow* currWindow = renderWindowsGroup[i];
+			D3D9RenderWindowCore* currWindow = renderWindowsGroup[i];
 
 			currWindow->_setDevice(renderDevice);
 			renderDevice->attachRenderWindow(currWindow);
@@ -104,7 +104,7 @@ namespace BansheeEngine
 			setActiveDevice(renderDevice);		
 	}
 
-	D3D9Device* D3D9DeviceManager::selectDevice(D3D9RenderWindow* renderWindow, Vector<D3D9RenderWindow*>& renderWindowsGroup)
+	D3D9Device* D3D9DeviceManager::selectDevice(D3D9RenderWindowCore* renderWindow, Vector<D3D9RenderWindowCore*>& renderWindowsGroup)
 	{
 		D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(BansheeEngine::RenderSystem::instancePtr());
 		D3D9Device*	renderDevice = nullptr;	
@@ -165,7 +165,7 @@ namespace BansheeEngine
 		return renderDevice;	
 	}
 
-	D3D9Driver* D3D9DeviceManager::findDriver(D3D9RenderWindow* renderWindow)
+	D3D9Driver* D3D9DeviceManager::findDriver(D3D9RenderWindowCore* renderWindow)
 	{
 		D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(BansheeEngine::RenderSystem::instancePtr());		
 		IDirect3D9*	direct3D9 = D3D9RenderSystem::getDirect3D9();				

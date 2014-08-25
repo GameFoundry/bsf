@@ -5,18 +5,19 @@
 
 namespace BansheeEngine
 {
-	D3D11MultiRenderTexture::D3D11MultiRenderTexture()
-		:MultiRenderTexture()
+	D3D11MultiRenderTextureCore::D3D11MultiRenderTextureCore(D3D11MultiRenderTexture* parent, 
+		MultiRenderTextureProperties* properties, const MULTI_RENDER_TEXTURE_DESC& desc)
+		:MultiRenderTextureCore(parent, properties, desc)
 	{
 
 	}
 
-	D3D11MultiRenderTexture::~D3D11MultiRenderTexture()
+	D3D11MultiRenderTextureCore::~D3D11MultiRenderTextureCore()
 	{
 
 	}
 
-	void D3D11MultiRenderTexture::getCustomAttribute(const String& name, void* pData) const
+	void D3D11MultiRenderTextureCore::getCustomAttribute(const String& name, void* pData) const
 	{
 		if(name == "RTV")
 		{
@@ -37,5 +38,15 @@ namespace BansheeEngine
 			*pDSV = depthStencilView->getDSV();
 			return;
 		}
+	}
+
+	RenderTargetProperties* D3D11MultiRenderTexture::createProperties() const
+	{
+		return bs_new<MultiRenderTextureProperties>();
+	}
+
+	MultiRenderTextureCore* D3D11MultiRenderTexture::createCore(MultiRenderTextureProperties* properties, const MULTI_RENDER_TEXTURE_DESC& desc)
+	{
+		return bs_new<D3D11MultiRenderTextureCore>(this, properties, desc);
 	}
 }

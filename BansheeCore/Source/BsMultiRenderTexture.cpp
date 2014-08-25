@@ -2,29 +2,22 @@
 #include "BsTexture.h"
 #include "BsException.h"
 #include "BsDebug.h"
+#include "BsCoreThread.h"
 
 namespace BansheeEngine
 {
-	MultiRenderTexture::MultiRenderTexture()
+	MultiRenderTextureCore::MultiRenderTextureCore(MultiRenderTexture* parent, MultiRenderTextureProperties* properties, const MULTI_RENDER_TEXTURE_DESC& desc)
+		:RenderTargetCore(parent, properties)
 	{
 		mColorSurfaces.resize(BS_MAX_MULTIPLE_RENDER_TARGETS);
-	}
 
-	MultiRenderTexture::~MultiRenderTexture()
-	{
-
-	}
-
-	void MultiRenderTexture::initialize(const MULTI_RENDER_TEXTURE_DESC& desc)
-	{
-		bool colorSurfacePropertiesSet = false;
-		for(size_t i = 0; i < desc.colorSurfaces.size(); i++)
+		for (size_t i = 0; i < desc.colorSurfaces.size(); i++)
 		{
-			if(desc.colorSurfaces[i].texture != nullptr)
+			if (desc.colorSurfaces[i].texture != nullptr)
 			{
-				if(i >= BS_MAX_MULTIPLE_RENDER_TARGETS)
+				if (i >= BS_MAX_MULTIPLE_RENDER_TARGETS)
 				{
-					LOGWRN("Render texture index is larger than the maximum number of supported render targets. Index: " + toString((int)i) + 
+					LOGWRN("Render texture index is larger than the maximum number of supported render targets. Index: " + toString((int)i) +
 						". Max. number of render targets: " + toString(BS_MAX_MULTIPLE_RENDER_TARGETS));
 
 					continue;
@@ -32,58 +25,41 @@ namespace BansheeEngine
 
 				TexturePtr texture = desc.colorSurfaces[i].texture;
 
-				if(texture->getUsage() != TU_RENDERTARGET)
+				if (texture->getUsage() != TU_RENDERTARGET)
 					BS_EXCEPT(InvalidParametersException, "Provided texture is not created with render target usage.");
 
-				mColorSurfaces[i] = Texture::requestView(texture, desc.colorSurfaces[i].mipLevel, 1, 
+				mColorSurfaces[i] = Texture::requestView(texture, desc.colorSurfaces[i].mipLevel, 1,
 					desc.colorSurfaces[i].face, desc.colorSurfaces[i].numFaces, GVU_RENDERTARGET);
-
-				if(!colorSurfacePropertiesSet)
-				{
-					mWidth = texture->getWidth();
-					mHeight = texture->getWidth();
-					mColorDepth = BansheeEngine::PixelUtil::getNumElemBits(texture->getFormat());
-					mActive = true;
-					mHwGamma = texture->isHardwareGammaEnabled();
-					mMultisampleCount = texture->getMultisampleCount();
-					mMultisampleHint = texture->getMultisampleHint();
-
-					colorSurfacePropertiesSet = true;
-				}
 			}
 		}
 
-		if(desc.depthStencilSurface.texture != nullptr)
+		if (desc.depthStencilSurface.texture != nullptr)
 		{
 			TexturePtr texture = desc.depthStencilSurface.texture;
 
-			if(texture->getUsage() != TU_DEPTHSTENCIL)
+			if (texture->getUsage() != TU_DEPTHSTENCIL)
 				BS_EXCEPT(InvalidParametersException, "Provided texture is not created with depth stencil usage.");
 
-			mDepthStencilSurface = Texture::requestView(texture, desc.depthStencilSurface.mipLevel, 1, 
+			mDepthStencilSurface = Texture::requestView(texture, desc.depthStencilSurface.mipLevel, 1,
 				desc.depthStencilSurface.face, desc.depthStencilSurface.numFaces, GVU_DEPTHSTENCIL);
 		}
 
 		throwIfBuffersDontMatch();
-
-		RenderTarget::initialize();
 	}
 
-	void MultiRenderTexture::destroy_internal()
+	MultiRenderTextureCore::~MultiRenderTextureCore()
 	{
-		for(auto iter = mColorSurfaces.begin(); iter != mColorSurfaces.end(); ++iter)
+		for (auto iter = mColorSurfaces.begin(); iter != mColorSurfaces.end(); ++iter)
 		{
-			if(*iter != nullptr)
+			if (*iter != nullptr)
 				Texture::releaseView(*iter);
 		}
 
-		if(mDepthStencilSurface != nullptr)
+		if (mDepthStencilSurface != nullptr)
 			Texture::releaseView(mDepthStencilSurface);
-
-		RenderTarget::destroy_internal();
 	}
 
-	void MultiRenderTexture::throwIfBuffersDontMatch() const
+	void MultiRenderTextureCore::throwIfBuffersDontMatch() const
 	{
 		TextureViewPtr firstSurfaceDesc = nullptr;
 		for(size_t i = 0; i < mColorSurfaces.size(); i++)
@@ -146,8 +122,64 @@ namespace BansheeEngine
 		}
 	}
 
-	void MultiRenderTexture::copyToMemory(PixelData &dst, FrameBuffer buffer)
+	void MultiRenderTextureCore::copyToMemory(PixelData &dst, FrameBuffer buffer)
 	{
 		throw std::exception("The method or operation is not implemented.");
+	}
+
+	MultiRenderTexture* MultiRenderTextureCore::getNonCore() const
+	{
+		return static_cast<MultiRenderTexture*>(mParent);
+	}
+
+	void MultiRenderTexture::initialize(const MULTI_RENDER_TEXTURE_DESC& desc)
+	{
+		mDesc = desc;
+
+		mProperties = createProperties();
+		MultiRenderTextureProperties* properties = static_cast<MultiRenderTextureProperties*>(mProperties);
+		for (size_t i = 0; i < desc.colorSurfaces.size(); i++)
+		{
+			TexturePtr texture = desc.colorSurfaces[i].texture;
+
+			if (texture != nullptr)
+			{
+				properties->mWidth = texture->getWidth();
+				properties->mHeight = texture->getWidth();
+				properties->mColorDepth = BansheeEngine::PixelUtil::getNumElemBits(texture->getFormat());
+				properties->mActive = true;
+				properties->mHwGamma = texture->isHardwareGammaEnabled();
+				properties->mMultisampleCount = texture->getMultisampleCount();
+				properties->mMultisampleHint = texture->getMultisampleHint();
+				properties->mIsWindow = false;
+				properties->mRequiresTextureFlipping = requiresTextureFlipping();
+
+				break;
+			}
+		}
+
+		RenderTarget::initialize();
+	}
+
+	const MultiRenderTextureProperties& MultiRenderTexture::getProperties() const
+	{
+		THROW_IF_CORE_THREAD;
+
+		return static_cast<const MultiRenderTextureProperties&>(RenderTarget::getProperties());
+	}
+
+	MultiRenderTextureCore* MultiRenderTexture::getCore() const
+	{
+		return static_cast<MultiRenderTextureCore*>(mCore);
+	}
+
+	RenderTargetCore* MultiRenderTexture::createCore()
+	{
+		MultiRenderTextureProperties* coreProperties = bs_new<MultiRenderTextureProperties>();
+		MultiRenderTextureProperties* myProperties = static_cast<MultiRenderTextureProperties*>(mProperties);
+
+		*coreProperties = *myProperties;
+
+		return createCore(coreProperties, mDesc);
 	}
 }

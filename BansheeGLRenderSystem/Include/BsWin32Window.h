@@ -5,68 +5,123 @@
 
 namespace BansheeEngine 
 {
+	class Win32Window;
+
+	/**
+	 * @brief	Contains various properties that describe a render window.
+	 */
+	class BS_RSGL_EXPORT Win32RenderWindowProperties : public RenderWindowProperties
+	{
+	public:
+		virtual ~Win32RenderWindowProperties() { }
+
+	private:
+		friend class Win32WindowCore;
+		friend class Win32Window;
+	};
+
 	/**
 	 * @brief	Render window implementation for Windows.
+	 *
+	 * @note	Core thread only.
 	 */
-    class BS_RSGL_EXPORT Win32Window : public RenderWindow
+    class BS_RSGL_EXPORT Win32WindowCore : public RenderWindowCore
     {
     public:
-        ~Win32Window();
+		Win32WindowCore(Win32Window* parent, RenderWindowProperties* properties, const RENDER_WINDOW_DESC& desc, Win32GLSupport &glsupport);
+		~Win32WindowCore();
 
 		/**
-		 * @copydoc RenderWindow::setFullscreen(UINT32, UINT32, float, UINT32)
+		 * @copydoc RenderWindowCore::setFullscreen(UINT32, UINT32, float, UINT32)
 		 */
 		void setFullscreen(UINT32 width, UINT32 height, float refreshRate = 60.0f, UINT32 monitorIdx = 0);
 
 		/**
-		 * @copydoc RenderWindow::setFullscreen(const VideoMode&)
+		 * @copydoc RenderWindowCore::setFullscreen(const VideoMode&)
 		 */
 		void setFullscreen(const VideoMode& mode);
 
 		/**
-		 * @copydoc RenderWindow::setWindowed
+		 * @copydoc RenderWindowCore::setWindowed
 		 */
 		void setWindowed(UINT32 width, UINT32 height);
 
 		/**
-		 * @copydoc RenderWindow::setHidden
+		 * @copydoc RenderWindowCore::setHidden
 		 */
 		void setHidden(bool hidden);
 
 		/**
-		 * @copydoc RenderWindow::isActive
-		 */
-		bool isActive() const;
-
-		/**
-		 * @copydoc RenderWindow::isVisible
-		 */
-		bool isVisible() const;
-
-		/**
-		 * @copydoc RenderWindow::isClosed
-		 */
-		bool isClosed() const;
-
-		/**
-		 * @copydoc RenderWindow::move
+		 * @copydoc RenderWindowCore::move
 		 */
 		void move(INT32 left, INT32 top);
 
 		/**
-		 * @copydoc RenderWindow::resize
+		 * @copydoc RenderWindowCore::resize
 		 */
 		void resize(UINT32 width, UINT32 height);
 
 		/**
-		 * @copydoc RenderWindow::copyContentsToMemory
+		 * @copydoc RenderWindowCore::copyContentsToMemory
 		 */
 		void copyToMemory(PixelData &dst, FrameBuffer buffer);
 
 		/**
-		 * @copydoc RenderWindow::swapBuffers
+		 * @copydoc RenderWindowCore::swapBuffers
 		 */
 		void swapBuffers();
+
+		/**
+		 * @copydoc RenderWindowCore::getCustomAttribute
+		 */
+		void getCustomAttribute(const String& name, void* pData) const;
+
+		/**
+		 * @copydoc RenderWindowCore::setActive
+		 */
+		virtual void setActive(bool state);
+
+		/**
+		 * @copydoc RenderWindowCore::_windowMovedOrResized
+		 */
+		void _windowMovedOrResized();
+
+		/**
+		 * @brief	Returns handle to device context associated with the window.
+		 */
+		HDC _getHDC() const { return mHDC; }
+
+	protected:
+		friend class Win32GLSupport;
+
+		/**
+		 * @brief	Calculates window size based on provided client area size and currently set window style. 
+		 */
+		void getAdjustedWindowSize(UINT32 clientWidth, UINT32 clientHeight, UINT32* winWidth, UINT32* winHeight);
+
+	protected:
+		Win32GLSupport &mGLSupport;
+		HWND mHWnd;
+		HDC	mHDC;
+		DWORD mWindowedStyle;
+		DWORD mWindowedStyleEx;
+		bool mIsExternal;
+		bool mIsChild;
+		char* mDeviceName;
+		bool mIsExternalGLControl;
+		int mDisplayFrequency;
+		Win32Context *mContext;
+    };
+
+	/**
+	 * @brief	Render window implementation for Windows.
+	 *
+	 * @note	Sim thread only.
+	 */
+	class BS_RSGL_EXPORT Win32Window : public RenderWindow
+	{
+	public:
+		~Win32Window() { }
 
 		/**
 		 * @copydoc RenderWindow::requiresTextureFlipping
@@ -89,54 +144,33 @@ namespace BansheeEngine
 		void getCustomAttribute(const String& name, void* pData) const;
 
 		/**
-		 * @copydoc RenderWindow::setActive
+		 * @copydoc	RenderWindow::getCore
 		 */
-		virtual void setActive(bool state);
-
-		/**
-		 * @copydoc RenderWindow::_windowMovedOrResized
-		 */
-		void _windowMovedOrResized();
-
-		/**
-		 * @brief	Returns handle to device context associated with the window.
-		 */
-		HDC _getHDC() const { return mHDC; }
+		Win32WindowCore* getCore() const;
 
 	protected:
 		friend class GLRenderWindowManager;
 		friend class Win32GLSupport;
 
-		Win32Window(const RENDER_WINDOW_DESC& desc, Win32GLSupport &glsupport);
+		Win32Window(Win32GLSupport& glsupport);
 
 		/**
-		 * @copydoc RenderWindow::initialize_internal().
+		 * @copydoc	RenderWindow::initialize_internal
 		 */
-		void initialize_internal();
+		virtual void initialize_internal();
 
 		/**
-		 * @copydoc RenderWindow::destroy_internal().
+		 * @copydoc	RenderWindow::createProperties
 		 */
-		void destroy_internal();
+		virtual RenderTargetProperties* createProperties() const;
 
 		/**
-		 * @brief	Calculates window size based on provided client area size and currently set window style. 
+		 * @copydoc	RenderWindow::createCore
 		 */
-		void getAdjustedWindowSize(UINT32 clientWidth, UINT32 clientHeight, UINT32* winWidth, UINT32* winHeight);
+		virtual RenderWindowCore* createCore(RenderWindowProperties* properties, const RENDER_WINDOW_DESC& desc);
 
-	protected:
-		Win32GLSupport &mGLSupport;
+	private:
+		Win32GLSupport& mGLSupport;
 		HWND mHWnd;
-		HDC	mHDC;
-		DWORD mWindowedStyle;
-		DWORD mWindowedStyleEx;
-		bool mIsExternal;
-		bool mIsChild;
-		char* mDeviceName;
-		bool mIsExternalGLControl;
-		bool mSizing;
-		bool mClosed;
-		int mDisplayFrequency;
-		Win32Context *mContext;
-    };
+	};
 }

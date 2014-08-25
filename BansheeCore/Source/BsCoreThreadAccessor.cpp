@@ -161,44 +161,93 @@ namespace BansheeEngine
 			resource, subresourceIdx, data, std::placeholders::_1));
 	}
 
-	void CoreThreadAccessorBase::resizeWindow(RenderWindowPtr& renderWindow, UINT32 width, UINT32 height)
+	void CoreThreadAccessorBase::resizeWindow(const RenderWindowPtr& renderWindow, UINT32 width, UINT32 height)
 	{
-		mCommandQueue->queue(std::bind(&RenderWindow::resize, renderWindow.get(), width, height));
+		std::function<void(RenderWindowPtr, UINT32, UINT32)> resizeFunc = 
+			[](RenderWindowPtr renderWindow, UINT32 width, UINT32 height)
+		{
+			renderWindow->getCore()->resize(width, height);
+		};
+
+		mCommandQueue->queue(std::bind(resizeFunc, renderWindow, width, height));
 	}
 
-	void CoreThreadAccessorBase::moveWindow(RenderWindowPtr& renderWindow, INT32 left, INT32 top)
+	void CoreThreadAccessorBase::moveWindow(const RenderWindowPtr& renderWindow, INT32 left, INT32 top)
 	{
-		mCommandQueue->queue(std::bind(&RenderWindow::move, renderWindow.get(), left, top));
+		std::function<void(RenderWindowPtr, INT32, INT32)> moveFunc =
+			[](RenderWindowPtr renderWindow, INT32 left, INT32 top)
+		{
+			renderWindow->getCore()->move(left, top);
+		};
+
+		mCommandQueue->queue(std::bind(moveFunc, renderWindow, left, top));
 	}
 
-	void CoreThreadAccessorBase::hideWindow(RenderWindowPtr& renderWindow)
+	void CoreThreadAccessorBase::hideWindow(const RenderWindowPtr& renderWindow)
 	{
-		mCommandQueue->queue(std::bind(&RenderWindow::setHidden, renderWindow.get(), true));
+		std::function<void(RenderWindowPtr)> hideFunc =
+			[](RenderWindowPtr renderWindow)
+		{
+			renderWindow->getCore()->setHidden(true);
+		};
+
+		mCommandQueue->queue(std::bind(hideFunc, renderWindow));
 	}
 
-	void CoreThreadAccessorBase::showWindow(RenderWindowPtr& renderWindow)
+	void CoreThreadAccessorBase::showWindow(const RenderWindowPtr& renderWindow)
 	{
-		mCommandQueue->queue(std::bind(&RenderWindow::setHidden, renderWindow.get(), false));
+		std::function<void(RenderWindowPtr)> showFunc =
+			[](RenderWindowPtr renderWindow)
+		{
+			renderWindow->getCore()->setHidden(false);
+		};
+
+		mCommandQueue->queue(std::bind(showFunc, renderWindow));
 	}
 
-	void CoreThreadAccessorBase::setFullscreen(RenderWindowPtr& renderWindow, UINT32 width, UINT32 height, 
+	void CoreThreadAccessorBase::setFullscreen(const RenderWindowPtr& renderWindow, UINT32 width, UINT32 height,
 		float refreshRate, UINT32 monitorIdx)
 	{
-		void(RenderWindow::*funcPtr)(UINT32, UINT32, float, UINT32) = &RenderWindow::setFullscreen;
+		std::function<void(RenderWindowPtr, UINT32, UINT32, float, UINT32)> fullscreenFunc =
+			[](RenderWindowPtr renderWindow, UINT32 width, UINT32 height, float refreshRate, UINT32 monitorIdx)
+		{
+			renderWindow->getCore()->setFullscreen(width, height, refreshRate, monitorIdx);
+		};
 
-		mCommandQueue->queue(std::bind(funcPtr, renderWindow.get(), width, height, refreshRate, monitorIdx));
+		mCommandQueue->queue(std::bind(fullscreenFunc, renderWindow, width, height, refreshRate, monitorIdx));
 	}
 
-	void CoreThreadAccessorBase::setFullscreen(RenderWindowPtr& renderWindow, const VideoMode& mode)
+	void CoreThreadAccessorBase::setFullscreen(const RenderWindowPtr& renderWindow, const VideoMode& mode)
 	{
-		void(RenderWindow::*funcPtr)(const VideoMode&) = &RenderWindow::setFullscreen;
+		std::function<void(RenderWindowPtr, const VideoMode&)> fullscreenFunc =
+			[](RenderWindowPtr renderWindow, const VideoMode& mode)
+		{
+			renderWindow->getCore()->setFullscreen(mode);
+		};
 
-		mCommandQueue->queue(std::bind(funcPtr, renderWindow.get(), std::cref(mode)));
+		mCommandQueue->queue(std::bind(fullscreenFunc, renderWindow, std::cref(mode)));
 	}
 
-	void CoreThreadAccessorBase::setWindowed(RenderWindowPtr& renderWindow, UINT32 width, UINT32 height)
+	void CoreThreadAccessorBase::setWindowed(const RenderWindowPtr& renderWindow, UINT32 width, UINT32 height)
 	{
-		mCommandQueue->queue(std::bind(&RenderWindow::setWindowed, renderWindow.get(), width, height));
+		std::function<void(RenderWindowPtr, UINT32, UINT32)> windowedFunc =
+			[](RenderWindowPtr renderWindow, UINT32 width, UINT32 height)
+		{
+			renderWindow->getCore()->setWindowed(width, height);
+		};
+
+		mCommandQueue->queue(std::bind(windowedFunc, renderWindow, width, height));
+	}
+
+	void CoreThreadAccessorBase::setPriority(const RenderTargetPtr& renderTarget, UINT32 priority)
+	{
+		std::function<void(RenderTargetPtr, UINT32)> windowedFunc =
+			[](RenderTargetPtr renderTarget, UINT32 priority)
+		{
+			renderTarget->getCore()->setPriority(priority);
+		};
+
+		mCommandQueue->queue(std::bind(windowedFunc, renderTarget, priority));
 	}
 
 	AsyncOp CoreThreadAccessorBase::queueReturnCommand(std::function<void(AsyncOp&)> commandCallback)

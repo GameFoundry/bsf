@@ -77,27 +77,39 @@ namespace BansheeEngine
 	const GLVertexArrayObject& GLVertexArrayObjectManager::getVAO(const GLSLGpuProgramPtr& vertexProgram,
 		const VertexDeclarationPtr& vertexDecl, const Vector<VertexBufferPtr>& boundBuffers)
 	{
+		UINT16 maxStreamIdx = 0;
+		const VertexDeclaration::VertexElementList& decl = vertexDecl->getElements();
+		for (auto& elem : decl)
+			maxStreamIdx = std::max(maxStreamIdx, elem.getStreamIdx());
+
+		UINT32 numStreams = maxStreamIdx + 1;
 		UINT32 numUsedBuffers = 0;
-		INT32* streamToSeqIdx = stackAllocN<INT32>((UINT32)boundBuffers.size());
+		INT32* streamToSeqIdx = stackAllocN<INT32>(numStreams);
 		GLVertexBuffer** usedBuffers = stackAllocN<GLVertexBuffer*>((UINT32)boundBuffers.size());
 		
-		const VertexDeclaration::VertexElementList& decl = vertexDecl->getElements();
+		memset(usedBuffers, 0, (UINT32)boundBuffers.size() * sizeof(GLVertexBuffer*));
+
+		for (UINT32 i = 0; i < numStreams; i++)
+			streamToSeqIdx[i] = -1;
+
 		for (auto& elem : decl)
 		{
 			UINT16 streamIdx = elem.getStreamIdx();
 			if (streamIdx >= (UINT32)boundBuffers.size())
-			{
-				streamToSeqIdx[streamIdx] = -1;
 				continue;
-			}
+
+			if (streamToSeqIdx[streamIdx] != -1) // Already visited
+				continue;
 
 			VertexBufferPtr vertexBuffer = boundBuffers[streamIdx];
-
-			if (vertexBuffer == nullptr)
-				continue; // Skip unbound elements
-
 			streamToSeqIdx[streamIdx] = (INT32)numUsedBuffers;
-			usedBuffers[numUsedBuffers++] = static_cast<GLVertexBuffer*>(vertexBuffer.get());
+
+			if (vertexBuffer != nullptr)
+				usedBuffers[numUsedBuffers] = static_cast<GLVertexBuffer*>(vertexBuffer.get()); 
+			else
+				usedBuffers[numUsedBuffers] = nullptr;
+
+			numUsedBuffers++;
 		}
 		
 		GLVertexArrayObject wantedVAO(0, vertexProgram->getInternalID(), usedBuffers, numUsedBuffers);
@@ -167,7 +179,7 @@ namespace BansheeEngine
 			glEnableVertexAttribArray(attribLocation);
 		}
 
-		wantedVAO.mAttachedBuffers = (GLVertexBuffer**)bs_alloc<GLVertexBuffer*>(numUsedBuffers);
+		wantedVAO.mAttachedBuffers = (GLVertexBuffer**)bs_alloc(numUsedBuffers * sizeof(GLVertexBuffer*));
 		for (UINT32 i = 0; i < numUsedBuffers; i++)
 		{
 			wantedVAO.mAttachedBuffers[i] = usedBuffers[i];
@@ -183,7 +195,8 @@ namespace BansheeEngine
 		return *iter.first;
 	}
 
-	void GLVertexArrayObjectManager::notifyBufferDestroyed(const GLVertexArrayObject& vao)
+	// Note: This must receieve a copy and not a ref because original will be destroyed
+	void GLVertexArrayObjectManager::notifyBufferDestroyed(GLVertexArrayObject vao)
 	{
 		mVAObjects.erase(vao);
 

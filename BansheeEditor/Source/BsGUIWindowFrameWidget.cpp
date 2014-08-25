@@ -47,7 +47,7 @@ namespace BansheeEngine
 
 	void WindowFrameWidget::ownerWindowFocusChanged()
 	{
-		mWindowFrame->setFocused(mParentWindow->hasFocus());
+		mWindowFrame->setFocused(mParentWindow->getProperties().hasFocus());
 
 		GUIWidget::ownerWindowFocusChanged();
 	}

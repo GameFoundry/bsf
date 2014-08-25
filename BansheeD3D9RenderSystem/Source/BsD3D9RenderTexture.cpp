@@ -6,25 +6,20 @@
 
 namespace BansheeEngine
 {
-	D3D9RenderTexture::D3D9RenderTexture()
-		:mDX9ColorSurface(nullptr), mDX9DepthStencilSurface(nullptr), mIsBindableToShader(false)
-	{
-
-	}
-
-	D3D9RenderTexture::~D3D9RenderTexture()
-	{
-
-	}
-
-	void D3D9RenderTexture::initialize_internal()
+	D3D9RenderTextureCore::D3D9RenderTextureCore(D3D9RenderTexture* parent, RenderTextureProperties* properties, const RENDER_SURFACE_DESC& colorSurfaceDesc,
+		const RENDER_SURFACE_DESC& depthStencilSurfaceDesc)
+		:RenderTextureCore(parent, properties, colorSurfaceDesc, depthStencilSurfaceDesc), mDX9ColorSurface(nullptr), 
+		mDX9DepthStencilSurface(nullptr), mIsBindableToShader(false)
 	{
 		initializeSurfaces();
-
-		RenderTexture::initialize_internal();
 	}
 
-	void D3D9RenderTexture::initializeSurfaces()
+	D3D9RenderTextureCore::~D3D9RenderTextureCore()
+	{
+
+	}
+
+	void D3D9RenderTextureCore::initializeSurfaces()
 	{
 		D3D9Texture* d3d9texture = static_cast<D3D9Texture*>(mColorSurface->getTexture().get());
 		D3D9PixelBuffer* pixelBuffer = static_cast<D3D9PixelBuffer*>(
@@ -37,14 +32,14 @@ namespace BansheeEngine
 		mDX9DepthStencilSurface = depthStencilBuffer->getSurface(D3D9RenderSystem::getActiveD3D9Device());
 	}
 
-	void D3D9RenderTexture::releaseSurfaces()
+	void D3D9RenderTextureCore::releaseSurfaces()
 	{
 		// All actual releasing happens in the color and depth textures.
 		mDX9ColorSurface = nullptr;
 		mDX9DepthStencilSurface = nullptr;
 	}
 
-	void D3D9RenderTexture::getCustomAttribute(const String& name, void* pData) const
+	void D3D9RenderTextureCore::getCustomAttribute(const String& name, void* pData) const
 	{
 		if(name == "DDBACKBUFFER")
 		{
@@ -66,23 +61,34 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D9RenderTexture::notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device)
+	void D3D9RenderTextureCore::notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device)
 	{
 		initializeSurfaces();
 	}
 
-	void D3D9RenderTexture::notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device)
+	void D3D9RenderTextureCore::notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device)
 	{
 		releaseSurfaces();
 	}
 
-	void D3D9RenderTexture::notifyOnDeviceLost(IDirect3DDevice9* d3d9Device)
+	void D3D9RenderTextureCore::notifyOnDeviceLost(IDirect3DDevice9* d3d9Device)
 	{
 		releaseSurfaces();
 	}
 
-	void D3D9RenderTexture::notifyOnDeviceReset(IDirect3DDevice9* d3d9Device)
+	void D3D9RenderTextureCore::notifyOnDeviceReset(IDirect3DDevice9* d3d9Device)
 	{
 		initializeSurfaces();
+	}
+
+	RenderTargetProperties* D3D9RenderTexture::createProperties() const
+	{
+		return bs_new<RenderTextureProperties>();
+	}
+
+	RenderTextureCore* D3D9RenderTexture::createCore(RenderTextureProperties* properties, const RENDER_SURFACE_DESC& colorSurfaceDesc,
+		const RENDER_SURFACE_DESC& depthStencilSurfaceDesc)
+	{
+		return bs_new<D3D9RenderTextureCore>(this, properties, colorSurfaceDesc, depthStencilSurfaceDesc);
 	}
 }

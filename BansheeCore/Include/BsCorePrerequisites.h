@@ -81,6 +81,7 @@ namespace BansheeEngine
     class RenderTexture;
 	class MultiRenderTexture;
     class RenderWindow;
+	class RenderWindowCore;
     struct RenderOpMesh;
     class StringInterface;
     class SamplerState;
@@ -134,6 +135,7 @@ namespace BansheeEngine
 	struct MaterialProxyPass;
 	struct MeshProxy;
 	struct ShaderProxy;
+	class ViewportProxy;
 	class DrawList;
 	// Asset import
 	class SpecificImporter;
@@ -235,6 +237,7 @@ namespace BansheeEngine
 	typedef std::shared_ptr<MaterialProxy> MaterialProxyPtr;
 	typedef std::shared_ptr<MeshProxy> MeshProxyPtr;
 	typedef std::shared_ptr<ShaderProxy> ShaderProxyPtr;
+	typedef std::shared_ptr<ViewportProxy> ViewportProxyPtr;
 	typedef std::shared_ptr<GpuParamDesc> GpuParamDescPtr;
 	typedef std::shared_ptr<ResourceMetaData> ResourceMetaDataPtr;
 }

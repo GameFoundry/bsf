@@ -4,24 +4,14 @@
 
 namespace BansheeEngine
 {
-	D3D9MultiRenderTexture::D3D9MultiRenderTexture()
-		:MultiRenderTexture(), mDX9DepthStencilSurface(nullptr)
-	{
-
-	}
-
-	D3D9MultiRenderTexture::~D3D9MultiRenderTexture()
-	{
-
-	}
-
-	void D3D9MultiRenderTexture::initialize_internal()
+	D3D9MultiRenderTextureCore::D3D9MultiRenderTextureCore(D3D9MultiRenderTexture* parent, MultiRenderTextureProperties* properties, const MULTI_RENDER_TEXTURE_DESC& desc)
+		:MultiRenderTextureCore(parent, properties, desc), mDX9DepthStencilSurface(nullptr)
 	{
 		mDX9ColorSurfaces.resize(mColorSurfaces.size());
 
-		for(size_t i = 0; i < mColorSurfaces.size(); i++)
+		for (size_t i = 0; i < mColorSurfaces.size(); i++)
 		{
-			if(mColorSurfaces[i] != nullptr)
+			if (mColorSurfaces[i] != nullptr)
 			{
 				D3D9Texture* d3d9texture = static_cast<D3D9Texture*>(mColorSurfaces[i]->getTexture().get());
 				D3D9PixelBuffer* pixelBuffer = static_cast<D3D9PixelBuffer*>(
@@ -34,7 +24,7 @@ namespace BansheeEngine
 			}
 		}
 
-		if(mDepthStencilSurface != nullptr)
+		if (mDepthStencilSurface != nullptr)
 		{
 			D3D9Texture* d3d9DepthStencil = static_cast<D3D9Texture*>(mDepthStencilSurface->getTexture().get());
 			D3D9PixelBuffer* pixelBuffer = static_cast<D3D9PixelBuffer*>(
@@ -45,11 +35,14 @@ namespace BansheeEngine
 		{
 			mDX9DepthStencilSurface = nullptr;
 		}
-
-		MultiRenderTexture::initialize_internal();
 	}
 
-	void D3D9MultiRenderTexture::getCustomAttribute(const String& name, void* pData) const
+	D3D9MultiRenderTextureCore::~D3D9MultiRenderTextureCore()
+	{
+
+	}
+
+	void D3D9MultiRenderTextureCore::getCustomAttribute(const String& name, void* pData) const
 	{
 		if(name == "DDBACKBUFFER")
 		{
@@ -72,5 +65,15 @@ namespace BansheeEngine
 			*pHwnd = NULL;
 			return;
 		}
+	}
+
+	RenderTargetProperties* D3D9MultiRenderTexture::createProperties() const
+	{
+		return bs_new<MultiRenderTextureProperties>();
+	}
+
+	MultiRenderTextureCore* D3D9MultiRenderTexture::createCore(MultiRenderTextureProperties* properties, const MULTI_RENDER_TEXTURE_DESC& desc)
+	{
+		return bs_new<D3D9MultiRenderTextureCore>(this, properties, desc);
 	}
 }

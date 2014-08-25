@@ -6,21 +6,23 @@
 
 namespace BansheeEngine
 {
+	class D3D9RenderTexture;
+
 	/**
 	 * @brief	DirectX 9 implementation of a render texture.
+	 *
+	 * @note	Core thread only.
 	 */
-	class BS_D3D9_EXPORT D3D9RenderTexture : public RenderTexture, public D3D9Resource
+	class BS_D3D9_EXPORT D3D9RenderTextureCore : public RenderTextureCore, public D3D9Resource
 	{
 	public:
-		virtual ~D3D9RenderTexture();
+		D3D9RenderTextureCore(D3D9RenderTexture* parent, RenderTextureProperties* properties, const RENDER_SURFACE_DESC& colorSurfaceDesc,
+			const RENDER_SURFACE_DESC& depthStencilSurfaceDesc);
+
+		virtual ~D3D9RenderTextureCore();
 
 		/**
-		 * @copydoc	RenderTexture::requiresTextureFlipping
-		 */
-		virtual bool requiresTextureFlipping() const { return false; }
-
-		/**
-		 * @copydoc	RenderTexture::getCustomAttribute
+		 * @copydoc	RenderTextureCore::getCustomAttribute
 		 */
 		virtual void getCustomAttribute(const String& name, void* pData) const;
 
@@ -45,14 +47,7 @@ namespace BansheeEngine
 		virtual void notifyOnDeviceReset(IDirect3DDevice9* d3d9Device);
 
 	protected:
-		friend class D3D9TextureManager;
-
-		D3D9RenderTexture();
-
-		/**
-		 * @copydoc RenderTexture::initialize_internal().
-		 */
-		void initialize_internal();
+		friend class D3D9RenderTexture;
 
 		/**
 		 * @brief	Initializes the internal color and depth surfaces.
@@ -68,5 +63,32 @@ namespace BansheeEngine
 		IDirect3DSurface9* mDX9ColorSurface;
 		IDirect3DSurface9* mDX9DepthStencilSurface;
 		bool mIsBindableToShader;
+	};
+
+	/**
+	* @brief	DirectX 9 implementation of a render texture.
+	*
+	* @note		Sim thread only.
+	*/
+	class BS_D3D9_EXPORT D3D9RenderTexture : public RenderTexture
+	{
+	public:
+		virtual ~D3D9RenderTexture() { }
+
+	protected:
+		friend class D3D9TextureManager;
+
+		D3D9RenderTexture() { }
+
+		/**
+		 * @copydoc	RenderTexture::createProperties
+		 */
+		virtual RenderTargetProperties* createProperties() const;
+
+		/**
+		 * @copydoc	RenderTexture::createCore
+		 */
+		virtual RenderTextureCore* createCore(RenderTextureProperties* properties, const RENDER_SURFACE_DESC& colorSurfaceDesc,
+			const RENDER_SURFACE_DESC& depthStencilSurfaceDesc);
 	};
 }

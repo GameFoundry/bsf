@@ -39,8 +39,8 @@ namespace BansheeEngine
 
 	RectI Viewport::getArea() const
 	{
-		float width = (float)mTarget->getWidth();
-		float height = (float)mTarget->getHeight();
+		float width = (float)mTarget->getProperties().getWidth();
+		float height = (float)mTarget->getProperties().getHeight();
 		
 		RectI area;
 		area.x = (int)(mNormArea.x * width);
@@ -71,22 +71,22 @@ namespace BansheeEngine
 
 	INT32 Viewport::getX() const 
 	{ 
-		return (INT32)(mNormArea.x * mTarget->getWidth());
+		return (INT32)(mNormArea.x * mTarget->getProperties().getWidth());
 	}
 
 	INT32 Viewport::getY() const 
 	{ 
-		return (INT32)(mNormArea.y * mTarget->getHeight());
+		return (INT32)(mNormArea.y * mTarget->getProperties().getHeight());
 	}
 
 	INT32 Viewport::getWidth() const 
 	{ 
-		return (INT32)(mNormArea.width * mTarget->getWidth());
+		return (INT32)(mNormArea.width * mTarget->getProperties().getWidth());
 	}
 
 	INT32 Viewport::getHeight() const 
 	{ 
-		return (INT32)(mNormArea.height * mTarget->getHeight());
+		return (INT32)(mNormArea.height * mTarget->getProperties().getHeight());
 	}
 
 	Viewport Viewport::clone()

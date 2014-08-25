@@ -259,11 +259,15 @@ namespace BansheeEngine
 		 * @brief	Requests a texture view for the specified mip and array ranges. Returns an existing view of one for
 		 *			the specified ranges already exists, otherwise creates a new one. You must release all views
 		 *			by calling "releaseView" when done.
+		 *
+		 * @note	Core thread only.
 		 */
 		static TextureViewPtr requestView(TexturePtr texture, UINT32 mostDetailMip, UINT32 numMips, UINT32 firstArraySlice, UINT32 numArraySlices, GpuViewUsage usage);
 
 		/**
 		 * @brief	Releases the view. View won't actually get destroyed until all references to it are released.
+		 *
+		 * @note	Core thread only.
 		 */
 		static void releaseView(TextureViewPtr view);
 

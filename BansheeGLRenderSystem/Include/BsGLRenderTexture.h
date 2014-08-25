@@ -9,13 +9,46 @@
 
 namespace BansheeEngine 
 {  
+	class GLRenderTexture;
+
 	/**
 	 * @brief	OpenGL implementation of a render texture.
+	 *
+	 * @note	Core thread only.
 	 */
-    class BS_RSGL_EXPORT GLRenderTexture: public RenderTexture
+    class BS_RSGL_EXPORT GLRenderTextureCore : public RenderTextureCore
     {
 	public:
-		virtual ~GLRenderTexture();
+		GLRenderTextureCore(GLRenderTexture* parent, RenderTextureProperties* properties, const RENDER_SURFACE_DESC& colorSurfaceDesc,
+			const RENDER_SURFACE_DESC& depthStencilSurfaceDesc);
+
+		virtual ~GLRenderTextureCore();
+
+		/**
+		 * @copydoc	RenderTextureCore::getCustomAttribute
+		 */
+		virtual void getCustomAttribute(const String& name, void* pData) const;
+
+	protected:
+		friend class GLRenderTexture;
+
+		GLFrameBufferObject* mFB;
+    };
+
+	/**
+	 * @brief	OpenGL implementation of a render texture.
+	 *
+	 * @note	Sim thread only.
+	 */
+	class BS_RSGL_EXPORT GLRenderTexture : public RenderTexture
+	{
+	public:
+		virtual ~GLRenderTexture() { }
+
+	protected:
+		friend class GLTextureManager;
+
+		GLRenderTexture() { }
 
 		/**
 		 * @copydoc	RenderTexture::requiresTextureFlipping
@@ -23,27 +56,16 @@ namespace BansheeEngine
 		bool requiresTextureFlipping() const { return true; }
 
 		/**
-		 * @copydoc	RenderTexture::getCustomAttribute
+		 * @copydoc	RenderTexture::createProperties
 		 */
-		virtual void getCustomAttribute(const String& name, void* pData) const;
-
-	protected:
-		friend class GLTextureManager;
-
-		GLRenderTexture();
+		virtual RenderTargetProperties* createProperties() const;
 
 		/**
-		 * @copydoc RenderTexture::initialize_internal
+		 * @copydoc	RenderTexture::createCore
 		 */
-		void initialize_internal();
-
-		/**
-		 * @copydoc RenderTexture::destroy_internal
-		 */
-		void destroy_internal();
-
-		GLFrameBufferObject* mFB;
-    };
+		virtual RenderTextureCore* createCore(RenderTextureProperties* properties, const RENDER_SURFACE_DESC& colorSurfaceDesc,
+			const RENDER_SURFACE_DESC& depthStencilSurfaceDesc);
+	};
 
     /**
      * @brief	Manager that handles valid render texture formats.

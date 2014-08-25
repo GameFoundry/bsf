@@ -12,6 +12,7 @@
 #include "BsSceneCameraController.h"
 #include "BsCamera.h"
 #include "BsGUIRenderTexture.h"
+#include "BsCoreThread.h"
 
 namespace BansheeEngine
 {
@@ -49,7 +50,7 @@ namespace BansheeEngine
 			mSceneRenderTarget->destroy();
 
 		mSceneRenderTarget = RenderTexture::create(TEX_TYPE_2D, width, height);
-		mSceneRenderTarget->setPriority(1);
+		gCoreAccessor().setPriority(mSceneRenderTarget, 1);
 
 		if (mCamera == nullptr)
 		{

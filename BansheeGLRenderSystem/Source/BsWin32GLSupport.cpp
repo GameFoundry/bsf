@@ -31,11 +31,11 @@ namespace BansheeEngine
 		if(parentWindow != nullptr)
 		{
 			HWND hWnd;
-			parentWindow->getCustomAttribute("WINDOW", &hWnd);
+			parentWindow->getCore()->getCustomAttribute("WINDOW", &hWnd);
 			desc.platformSpecific["parentWindowHandle"] = toString((UINT64)hWnd);
 		}
 
-		Win32Window* window = new (bs_alloc<Win32Window, PoolAlloc>()) Win32Window(desc, *this);
+		Win32Window* window = new (bs_alloc<Win32Window, PoolAlloc>()) Win32Window(*this);
 		
 		if(!mInitialWindow)
 			mInitialWindow = window;
@@ -65,7 +65,7 @@ namespace BansheeEngine
 		if(_wglGetExtensionsString == nullptr)
 			return;
 
-		const char *wgl_extensions = _wglGetExtensionsString(mInitialWindow->_getHDC());
+		const char *wgl_extensions = _wglGetExtensionsString(mInitialWindow->getCore()->_getHDC());
 
 		// Parse them, and add them to the main list
 		StringStream ext;

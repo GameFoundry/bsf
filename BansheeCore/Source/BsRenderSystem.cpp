@@ -271,7 +271,7 @@ namespace BansheeEngine {
 
 		if (target->isInitialized())
 		{
-			target->swapBuffers();
+			target->getCore()->swapBuffers();
 
 			BS_INC_RENDER_STAT(NumPresents);
 		}

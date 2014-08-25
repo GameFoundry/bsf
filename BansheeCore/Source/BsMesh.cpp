@@ -55,7 +55,7 @@ namespace BansheeEngine
 
 	Mesh::~Mesh()
 	{
-
+		
 	}
 
 	void Mesh::_writeSubresourceSim(UINT32 subresourceIdx, const GpuResourceData& data, bool discardEntireBuffer)
@@ -319,6 +319,11 @@ namespace BansheeEngine
 	void Mesh::destroy_internal()
 	{
 		THROW_IF_NOT_CORE_THREAD;
+
+		mVertexData = nullptr;
+		mIndexBuffer = nullptr;
+		mVertexDesc = nullptr;
+		mTempInitialMeshData = nullptr;
 
 		MeshBase::destroy_internal();
 	}

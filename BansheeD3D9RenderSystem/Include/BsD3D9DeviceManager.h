@@ -49,7 +49,7 @@ namespace BansheeEngine
 		 *			assigned an existing device if a match one can be found, otherwise
 		 *			a new device will be created.
 		 */
-		void linkRenderWindow(D3D9RenderWindow* renderWindow);
+		void linkRenderWindow(D3D9RenderWindowCore* renderWindow);
 
 		/**
 		 * @brief	Called by the devices when they're are being destroyed.
@@ -67,12 +67,12 @@ namespace BansheeEngine
 		 *			new device is created. Found/created device is returned, as well as a list of all render windows
 		 *			using that device.
 		 */
-		D3D9Device*	selectDevice(D3D9RenderWindow* renderWindow, Vector<D3D9RenderWindow*>& renderWindowsGroup);
+		D3D9Device*	selectDevice(D3D9RenderWindowCore* renderWindow, Vector<D3D9RenderWindowCore*>& renderWindowsGroup);
 
 		/**
 		 * @brief	Finds the driver the render window belongs to.
 		 */
-		D3D9Driver*	findDriver(D3D9RenderWindow* renderWindow);
+		D3D9Driver*	findDriver(D3D9RenderWindowCore* renderWindow);
 
 		Vector<D3D9Device*> mRenderDevices;
 		D3D9Device*	mActiveDevice;

@@ -13,6 +13,18 @@ TODO - Think about:
 ----------------------------------------------------------------------
 Handles
 
+ - Make a few different base handle types:
+   - Slider 1D (e.g. for movement using an arrow cap)
+   - Slider 2D (e.g. for movement in 2D using a plane render)
+   - Similar for scale/rotation handles  (see Unity for its implementations of those)
+
+Handles should have colliders which will be queries whenever user input is detected in scene view
+If any handle is hit the input will not proceed further (e.g. no picking will be done) and that handle control
+will become active.
+
+Base handle types should just be positioned in space and then return value every frame as user moves them.
+ - This way they can also easily be used from C# for custom user-made stuff
+
 TODO - Think about this
 See for inspiration: http://docs.unity3d.com/ScriptReference/Handles.html
 
@@ -81,32 +93,16 @@ Need to allow the user to specify custom gizmos.
 -----------------------------------------------------------------------
 RenderTarget (and in turn, Viewport) make data available to sim thread, even though that data can be arbitrarily modified from the core thread
 
-Create a separate set of classes: RenderTargetCore, RenderTextureCore, RenderWindowCore.
- - They would not be core objects but would be used exclusively on the core thread
- - Majority of the current classes would go into those new classes
+TODO:
+ - Fix invalid height
+ - Test DX9 and OpenGL
+ - getProperties on non-core should just make a copy of core for now to check if everything works
+ - Remove the debug stuff in RenderTarget when done testing
 
-Current RenderTarget/RenderTexture/RenderWindow would stay and be useable on sim thread but not meant for core thread use.
- - Internally it would store the *Core versions of the objects
 
 Whenever a core object gets changed it should notify a RenderTargetManager, which will on beginning of every frame update
 non-core version with valid data.
+ - Make sure core dirty properties are updated before render window manager events are triggered
 
 Viewport should return a ViewportProxy for use on core thread (instead of a clone as it has now)
  - The proxy will reference the *Core version of render target
-
-IMPLEMENTATION:
- - Create RenderTargetCore, RenderTextureCore, RenderWindowCore files
- - Start copying (don't modify original files) code from original files and modify them for core use
- - Find any references of render targets on the core thread and make sure it uses those core objects instead
- - Add getCoreImplementation() that returns the core version from "normal" objects
-
-
-Stuff that needs to be synchronized:
- mIsFullscreen
- mWidth
- mHeight
- mHidden
- mTop
- mLeft
- mHasFocus
- (more? check)

@@ -60,17 +60,17 @@ namespace BansheeEngine
 		/**
 		 * @brief	Called by the core thread when window receives focus.
 		 */
-		void windowFocusReceived(RenderWindow* window);
+		void windowFocusReceived(RenderWindowCore* window);
 
 		/**
 		 * @brief	Called by the core thread when window loses focus.
 		 */
-		void windowFocusLost(RenderWindow* window);
+		void windowFocusLost(RenderWindowCore* window);
 
 		/**
 		 * @brief	Called by the core thread when window is moved or resized.
 		 */
-		void windowMovedOrResized(RenderWindow* window);
+		void windowMovedOrResized(RenderWindowCore* window);
 
 	protected:
 		BS_MUTEX(mWindowMutex);
