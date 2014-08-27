@@ -161,6 +161,12 @@ namespace BansheeEngine
 		std::shared_ptr<IReflectable> complexTypeFromBuffer(RTTIReflectableFieldBase* field, UINT8* data, int* complexTypeSize);
 
 		/**
+		 * @brief	Helper method for encoding a data block to a buffer.
+		 */
+		UINT8* dataBlockToBuffer(UINT8* data, UINT32 size, UINT8* buffer, UINT32& bufferLength, int* bytesWritten, 
+			std::function<UINT8*(UINT8* buffer, int bytesWritten, UINT32& newBufferSize)> flushBufferCallback);
+
+		/**
 		 * @brief	Finds an existing, or creates a unique unique identifier for the specified object. 
 		 */
 		UINT32 findOrCreatePersistentId(IReflectable* object);
