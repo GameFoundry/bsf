@@ -138,7 +138,6 @@ namespace BansheeEngine
 		 */
 		static UINT32 getDynamicSize(const T& data)
 		{ 
-			assert(false); 
 			return sizeof(T);
 		}
 	};
@@ -159,7 +158,7 @@ namespace BansheeEngine
 	static UINT32 fromMemory(##type##& data, char* memory)	\
 	{ memcpy(&data, memory, sizeof(##type##)); return sizeof(##type##); }			\
 	static UINT32 getDynamicSize(const type& data)		\
-	{ assert(false); return sizeof(##type##); }				\
+	{ return sizeof(##type##); }				\
 	}; 
 
 	/**
