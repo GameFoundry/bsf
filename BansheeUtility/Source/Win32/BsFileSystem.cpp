@@ -292,6 +292,9 @@ namespace BansheeEngine
 	{
 		WString fullPathStr = fullPath.toWString();
 
+		if (!FileSystem::exists(fullPath))
+			return;
+
 		if (recursively)
 		{
 			Vector<Path> files;
@@ -356,8 +359,8 @@ namespace BansheeEngine
 
 		for (UINT32 i = parentPath.getNumDirectories(); i < fullPath.getNumDirectories(); i++)
 		{
-			win32_createDirectory(parentPath.toWString());
 			parentPath.append(fullPath[i]);
+			win32_createDirectory(parentPath.toWString());
 		}
 	}
 
@@ -399,6 +402,8 @@ namespace BansheeEngine
 
 			lastFailed = FindNextFileW(fileHandle, &findData) == FALSE;
 		} while (true);
+
+		FindClose(fileHandle);
 	}
 
 	std::time_t FileSystem::getLastModifiedTime(const Path& fullPath)
