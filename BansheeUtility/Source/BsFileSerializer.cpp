@@ -4,6 +4,7 @@
 #include "BsIReflectable.h"
 #include "BsBinarySerializer.h"
 #include "BsPath.h"
+#include "BsFileSystem.h"
 
 #include <numeric>
 
@@ -23,6 +24,10 @@ namespace BansheeEngine
 
 	void FileSerializer::encode(IReflectable* object, const Path& fileLocation)
 	{
+		Path parentDir = fileLocation.getDirectory();
+		if (!FileSystem::exists(parentDir))
+			FileSystem::createDir(parentDir);
+
 		mOutputStream.open(fileLocation.toString().c_str(), std::ios::out | std::ios::binary);
 
 		BinarySerializer bs;
