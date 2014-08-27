@@ -248,22 +248,27 @@ namespace BansheeEngine
 								else
 									typeSize = curField->getTypeSize();
 
-								if((*bytesWritten + typeSize) > bufferLength)
+								if ((*bytesWritten + typeSize) > bufferLength)
 								{
-									mTotalBytesWritten += *bytesWritten;
-									buffer = flushBufferCallback(buffer - *bytesWritten, *bytesWritten, bufferLength);
-									if(buffer == nullptr || bufferLength < typeSize)
+									UINT8* tempBuffer = (UINT8*)stackAlloc(typeSize);
+									curField->arrayElemToBuffer(object, arrIdx, tempBuffer);
+
+									buffer = dataBlockToBuffer(tempBuffer, typeSize, buffer, bufferLength, bytesWritten, flushBufferCallback);
+									if (buffer == nullptr || bufferLength == 0)
 									{
-										return nullptr;
+										stackDeallocLast(tempBuffer);
 										si->onSerializationEnded(object);
+										return nullptr;
 									}
 
-									*bytesWritten = 0;
+									stackDeallocLast(tempBuffer);
 								}
-
-								curField->arrayElemToBuffer(object, arrIdx, buffer);
-								buffer += typeSize;
-								*bytesWritten += typeSize;
+								else
+								{
+									curField->arrayElemToBuffer(object, arrIdx, buffer);
+									buffer += typeSize;
+									*bytesWritten += typeSize;
+								}
 							}
 
 							break;
@@ -312,22 +317,27 @@ namespace BansheeEngine
 							else
 								typeSize = curField->getTypeSize();
 
-							if((*bytesWritten + typeSize) > bufferLength)
+							if ((*bytesWritten + typeSize) > bufferLength)
 							{
-								mTotalBytesWritten += *bytesWritten;
-								buffer = flushBufferCallback(buffer - *bytesWritten, *bytesWritten, bufferLength);
-								if(buffer == nullptr || bufferLength < typeSize)
+								UINT8* tempBuffer = (UINT8*)stackAlloc(typeSize);
+								curField->toBuffer(object, tempBuffer);
+								
+								buffer = dataBlockToBuffer(tempBuffer, typeSize, buffer, bufferLength, bytesWritten, flushBufferCallback);
+								if (buffer == nullptr || bufferLength == 0)
 								{
+									stackDeallocLast(tempBuffer);
 									si->onSerializationEnded(object);
 									return nullptr;
 								}
-								*bytesWritten = 0;
+
+								stackDeallocLast(tempBuffer);
 							}
-
-
-							curField->toBuffer(object, buffer);
-							buffer += typeSize;
-							*bytesWritten += typeSize;
+							else
+							{
+								curField->toBuffer(object, buffer);
+								buffer += typeSize;
+								*bytesWritten += typeSize;
+							}
 
 							break;
 						}
@@ -342,33 +352,12 @@ namespace BansheeEngine
 
 							// Data block data
 							UINT8* dataToStore = value.getData();
-							UINT32 remainingSize = dataBlockSize;
-							while(remainingSize > 0)
-							{
-								UINT32 remainingSpaceInBuffer = bufferLength - *bytesWritten;
 
-								if(remainingSize <= remainingSpaceInBuffer)
-								{
-									COPY_TO_BUFFER(dataToStore, remainingSize);
-									remainingSize = 0;
-								}
-								else
-								{
-									memcpy(buffer, dataToStore, remainingSpaceInBuffer);
-									buffer += remainingSpaceInBuffer;
-									*bytesWritten += remainingSpaceInBuffer;
-									dataToStore += remainingSpaceInBuffer;
-									remainingSize -= remainingSpaceInBuffer;
-								
-									mTotalBytesWritten += *bytesWritten;
-									buffer = flushBufferCallback(buffer - *bytesWritten, *bytesWritten, bufferLength);
-									if(buffer == nullptr || bufferLength == 0) 
-									{
-										si->onSerializationEnded(object);
-										return nullptr;
-									}
-									*bytesWritten = 0;
-								}
+							buffer = dataBlockToBuffer(dataToStore, dataBlockSize, buffer, bufferLength, bytesWritten, flushBufferCallback);
+							if (buffer == nullptr || bufferLength == 0)
+							{
+								si->onSerializationEnded(object);
+								return nullptr;
 							}
 
 							break;
@@ -1058,6 +1047,39 @@ exit:
 		*complexTypeSize += COMPLEX_TYPE_FIELD_SIZE;
 
 		return emptyObject;
+	}
+
+	UINT8* BinarySerializer::dataBlockToBuffer(UINT8* data, UINT32 size, UINT8* buffer, UINT32& bufferLength, int* bytesWritten,
+		std::function<UINT8*(UINT8* buffer, int bytesWritten, UINT32& newBufferSize)> flushBufferCallback)
+	{
+		UINT32 remainingSize = size;
+		while (remainingSize > 0)
+		{
+			UINT32 remainingSpaceInBuffer = bufferLength - *bytesWritten;
+
+			if (remainingSize <= remainingSpaceInBuffer)
+			{
+				COPY_TO_BUFFER(data, remainingSize);
+				remainingSize = 0;
+			}
+			else
+			{
+				memcpy(buffer, data, remainingSpaceInBuffer);
+				buffer += remainingSpaceInBuffer;
+				*bytesWritten += remainingSpaceInBuffer;
+				data += remainingSpaceInBuffer;
+				remainingSize -= remainingSpaceInBuffer;
+
+				mTotalBytesWritten += *bytesWritten;
+				buffer = flushBufferCallback(buffer - *bytesWritten, *bytesWritten, bufferLength);
+				if (buffer == nullptr || bufferLength == 0)
+					return nullptr;
+
+				*bytesWritten = 0;
+			}
+		}
+
+		return buffer;
 	}
 
 	UINT32 BinarySerializer::findOrCreatePersistentId(IReflectable* object)

@@ -21,7 +21,7 @@ namespace BansheeEngine
 		BinarySerializer bs;
 
 		BufferPiece piece;
-		piece.buffer = (UINT8*)stackAlloc(WRITE_BUFFER_SIZE);
+		piece.buffer = (UINT8*)bs_alloc(WRITE_BUFFER_SIZE);
 		piece.size = 0;
 
 		mBufferPieces.push_back(piece);
@@ -46,7 +46,7 @@ namespace BansheeEngine
 
 		for(auto iter = mBufferPieces.rbegin(); iter != mBufferPieces.rend(); ++iter)
 		{
-			stackDeallocLast(iter->buffer);
+			bs_free(iter->buffer);
 		}
 
 		return resultBuffer;
@@ -65,7 +65,7 @@ namespace BansheeEngine
 		mBufferPieces.back().size = bytesWritten;
 
 		BufferPiece piece;
-		piece.buffer = (UINT8*)stackAlloc(WRITE_BUFFER_SIZE);
+		piece.buffer = (UINT8*)bs_alloc(WRITE_BUFFER_SIZE);
 		piece.size = 0;
 
 		mBufferPieces.push_back(piece);

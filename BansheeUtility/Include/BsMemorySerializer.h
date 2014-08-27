@@ -46,6 +46,6 @@ namespace BansheeEngine
 		/* 								CONSTANTS	                     		*/
 		/************************************************************************/
 	private:
-		static const UINT32 WRITE_BUFFER_SIZE = 2048;
+		static const UINT32 WRITE_BUFFER_SIZE = 16384;
 	};
 }
