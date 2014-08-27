@@ -8,7 +8,7 @@
 
 namespace BansheeEngine
 {
-	class BS_CORE_EXPORT FontDataRTTI : public RTTIType<FontData, Resource, FontDataRTTI>
+	class BS_CORE_EXPORT FontDataRTTI : public RTTIType<FontData, IReflectable, FontDataRTTI>
 	{
 	private:
 		UINT32& getSize(FontData* obj)
