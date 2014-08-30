@@ -35,7 +35,7 @@ namespace BansheeEngine
 				HResource loadedResource = gResources().loadFromUUID(resourceHandle->mData->mUUID);
 
 				if(loadedResource)
-					resourceHandle->_setHandleData(loadedResource.getInternalPtr(), resourceHandle->mData->mUUID);
+					resourceHandle->_setHandleData(loadedResource.getHandleData());
 			}
 		}
 

@@ -61,6 +61,11 @@ namespace BansheeEngine
 		}
 	}
 
+	void ResourceHandleBase::_setHandleData(const std::shared_ptr<ResourceHandleData>& data)
+	{
+		mData = data;
+	}
+
 	void ResourceHandleBase::throwIfNotLoaded() const
 	{
 		if(!isLoaded()) 

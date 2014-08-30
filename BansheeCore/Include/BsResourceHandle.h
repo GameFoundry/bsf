@@ -63,9 +63,19 @@ namespace BansheeEngine
 		 */
 		void _setHandleData(std::shared_ptr<Resource> ptr, const String& uuid);
 
+		/**
+		 * @brief	Sets the internal handle data to another previously created data.
+		 *
+		 * @note	Internal method.
+		 */
+		void _setHandleData(const std::shared_ptr<ResourceHandleData>& data);
+
 	protected:
 		ResourceHandleBase();
 
+		/** @note	All handles to the same source must share this same handle data. Otherwise things
+		 *			like counting number of references or replacing pointed to resource become impossible
+		 *			without additional logic. */
 		std::shared_ptr<ResourceHandleData> mData;
 
 	private:

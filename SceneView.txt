@@ -4,26 +4,12 @@ TODO:
 
 Weekend:
  - Set up grid material and hook it up to renderer (+ actually instantiate it in EditorApplication)
- - Figure out how to load scene grid material in EditorResources
-   - Figure out in general how to deal with built-in resources
-   - e.g. meshes, textures and shaders. I need to import them then at runtime I should just load the engine version directly
-     - When in debug mode probably always reimport as a form of unit testing
-	 - Have two separate folders Resources/EditorRaw and Resources/Editor (similar for Engine)
-	 - Store a BuiltinResources asset which contains last import dates of the files
-	 - When EditorResources get started up check that file and check if EditorRaw version of the resource exists
-	   - If it does and is newer when import it and save it to Editor folder
-	 - Rename BuiltinResources to EngineResources?
-	 - Merge GUI resources in Editor/EngineResources?
-	   - Editor/EngineGUI can then just reference them when creating GUI styles
-   - Fix up all GUI builtin resources to use this approach 
- - Rename EditorGUI to EditorBuildiNResources
+ 
+ - Fix up shader so I can reference two different gpu vars with a single shader var (e.g. DX11 sampler variables will have different names than DX9 or GL sampler variables)
  - You can create a resource handle to invalid resource type. Add a security feature to prevent that, at least in debug mode?
  - When unloading unused resources I should do it recursively so it unloads any new ones that might have been released during the first unload
  - Ensure that resource handles only have a single mData (and fix Resources::unloadAllUnused)
- - Add Scene grid shaders
- - Move dock overlay from engine to editor builtin resources
 
- - Grid
  - Think about picking implementation and possibly Handles implementation
 
 TODO - Think about:
