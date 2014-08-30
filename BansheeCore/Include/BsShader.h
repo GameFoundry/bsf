@@ -37,7 +37,7 @@ namespace BansheeEngine
 	struct BS_CORE_EXPORT SHADER_OBJECT_PARAM_DESC
 	{
 		String name;
-		String gpuVariableName;
+		Vector<String> gpuVariableNames;
 		UINT32 rendererSemantic;
 		GpuParamObjectType type;
 	};
@@ -168,6 +168,8 @@ namespace BansheeEngine
 		/**
 		 * @brief	Registers a new object (texture, sampler state, etc.) parameter you that you may then use 
 		 *			via Material by providing the parameter name. All parameters internally map to variables defined in GPU programs.
+		 *			Multiple GPU variables may be mapped to a single parameter in which case the first variable actually found in the program
+		 *			will be used while others will be ignored.
 		 *
 		 * @param	name		   	The name of the parameter. Name must be unique between all data and object parameters.
 		 * @param	gpuVariableName	Name of the GPU variable in the GpuProgram that the parameter corresponds with.
@@ -176,6 +178,9 @@ namespace BansheeEngine
 		 *							 depends on the current Renderer and its supported list of semantics. Elements with renderer semantics should not be updated
 		 *							 by the user, and will be updated by the renderer. These semantics will also be used to determine if a shader is compatible
 		 *							 with a specific renderer or not. Value of 0 signifies the parameter is not used by the renderer.
+		 *
+		 * @note	Mapping multiple GPU variables to a single parameter is useful when you are defining a shader that supports techniques across different render
+		 *			systems where GPU variable names for the same parameters might differ.
 		 */
 		void addParameter(const String& name, const String& gpuVariableName, GpuParamObjectType type, UINT32 rendererSemantic = 0);
 
@@ -237,7 +242,7 @@ namespace BansheeEngine
 		const Map<String, SHADER_DATA_PARAM_DESC>& _getDataParams() const { return mDataParams; }
 
 		/** 
-		 * @brief	Returns a map of all object parameters in the shader.
+		 * @brief	Returns a map of all object parameters in the shader. 
 		 * 			
 		 * @note	Internal method.
 		 */

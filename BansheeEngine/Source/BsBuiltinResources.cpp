@@ -840,10 +840,8 @@ namespace BansheeEngine
 		mShaderSpriteText->addParameter("invViewportWidth", "invViewportWidth", GPDT_FLOAT1);
 		mShaderSpriteText->addParameter("invViewportHeight", "invViewportHeight", GPDT_FLOAT1);
 
-		if (mRenderSystemPlugin == RenderSystemPlugin::DX11) // TODO: Find a way to avoid this
-			mShaderSpriteText->addParameter("mainTexSamp", "mainTexSamp", GPOT_SAMPLER2D);
-		else
-			mShaderSpriteText->addParameter("mainTexSamp", "mainTexture", GPOT_SAMPLER2D);
+		mShaderSpriteText->addParameter("mainTexSamp", "mainTexSamp", GPOT_SAMPLER2D);
+		mShaderSpriteText->addParameter("mainTexSamp", "mainTexture", GPOT_SAMPLER2D);
 
 		mShaderSpriteText->addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
 		mShaderSpriteText->addParameter("tint", "tint", GPDT_FLOAT4);
@@ -882,10 +880,8 @@ namespace BansheeEngine
 		mShaderSpriteImage->addParameter("invViewportWidth", "invViewportWidth", GPDT_FLOAT1);
 		mShaderSpriteImage->addParameter("invViewportHeight", "invViewportHeight", GPDT_FLOAT1);
 
-		if (mRenderSystemPlugin == RenderSystemPlugin::DX11) // TODO: Find a way to avoid this
-			mShaderSpriteImage->addParameter("mainTexSamp", "mainTexSamp", GPOT_SAMPLER2D);
-		else
-			mShaderSpriteImage->addParameter("mainTexSamp", "mainTexture", GPOT_SAMPLER2D);
+		mShaderSpriteImage->addParameter("mainTexSamp", "mainTexSamp", GPOT_SAMPLER2D);
+		mShaderSpriteImage->addParameter("mainTexSamp", "mainTexture", GPOT_SAMPLER2D);
 
 		mShaderSpriteImage->addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
 		mShaderSpriteImage->addParameter("tint", "tint", GPDT_FLOAT4);

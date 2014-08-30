@@ -105,13 +105,40 @@ namespace BansheeEngine
 
 	void Shader::addParameter(const String& name, const String& gpuVariableName, GpuParamObjectType type, UINT32 rendererSemantic)
 	{
-		SHADER_OBJECT_PARAM_DESC desc;
-		desc.name = name;
-		desc.gpuVariableName = gpuVariableName;
-		desc.type = type;
-		desc.rendererSemantic = rendererSemantic;
+		auto iterFind = mObjectParams.find(name);
 
-		mObjectParams[name] = desc;
+		if (iterFind == mObjectParams.end())
+		{
+			SHADER_OBJECT_PARAM_DESC desc;
+			desc.name = name;
+			desc.type = type;
+			desc.rendererSemantic = rendererSemantic;
+			desc.gpuVariableNames.push_back(gpuVariableName);
+
+			mObjectParams[name] = desc;
+		}
+		else
+		{
+			SHADER_OBJECT_PARAM_DESC& desc = iterFind->second;
+
+			if (desc.type != type || desc.rendererSemantic != rendererSemantic)
+				BS_EXCEPT(InvalidParametersException, "Shader parameter with the name \"" + name + "\" already exists with different properties.");
+
+			Vector<String>& gpuVariableNames = desc.gpuVariableNames;
+			bool found = false;
+			for (UINT32 i = 0; i < (UINT32)gpuVariableNames.size(); i++)
+			{
+				if (gpuVariableNames[i] == gpuVariableName)
+				{
+					found = true;
+					break;
+				}
+			}
+
+			if (!found)
+				gpuVariableNames.push_back(gpuVariableName);
+		}
+
 		mDataParams.erase(name);
 
 		markCoreDirty();

@@ -101,7 +101,7 @@ namespace BansheeEngine
 
 			// Fill out various helper structures
 			Map<String, const GpuParamDataDesc*> validDataParameters = determineValidDataParameters(allParamDescs);
-			Set<String> validObjectParameters = determineValidObjectParameters(allParamDescs);
+			Vector<const GpuParamObjectDesc*> validObjectParameters = determineValidObjectParameters(allParamDescs);
 
 			Set<String> validShareableParamBlocks = determineValidShareableParamBlocks(allParamDescs);
 			Map<String, String> paramToParamBlockMap = determineParameterToBlockMapping(allParamDescs);
@@ -181,13 +181,18 @@ namespace BansheeEngine
 			const Map<String, SHADER_OBJECT_PARAM_DESC>& objectParamDesc = mShader->_getObjectParams();
 			for(auto iter = objectParamDesc.begin(); iter != objectParamDesc.end(); ++iter)
 			{
-				auto findIter = validObjectParameters.find(iter->second.gpuVariableName);
-
-				// Not valid so we skip it
-				if(findIter == validObjectParameters.end())
-					continue;
-
-				mValidParams[iter->first] = iter->second.gpuVariableName;
+				const Vector<String>& gpuVariableNames = iter->second.gpuVariableNames;
+				for (auto iter2 = gpuVariableNames.begin(); iter2 != gpuVariableNames.end(); ++iter2)
+				{
+					for (auto iter3 = validObjectParameters.begin(); iter3 != validObjectParameters.end(); ++iter3)
+					{
+						if ((*iter3)->name == (*iter2) && (*iter3)->type == iter->second.type)
+						{
+							mValidParams[iter->first] = *iter2;
+							break;
+						}
+					}
+				}
 			}
 
 			for(UINT32 i = 0; i < mBestTechnique->getNumPasses(); i++)
@@ -305,9 +310,9 @@ namespace BansheeEngine
 		return foundDataParams;
 	}
 
-	Set<String> Material::determineValidObjectParameters(const Vector<GpuParamDescPtr>& paramDescs) const
+	Vector<const GpuParamObjectDesc*> Material::determineValidObjectParameters(const Vector<GpuParamDescPtr>& paramDescs) const
 	{
-		Set<String> validParams;
+		Vector<const GpuParamObjectDesc*> validParams;
 
 		for(auto iter = paramDescs.begin(); iter != paramDescs.end(); ++iter)
 		{
@@ -316,22 +321,19 @@ namespace BansheeEngine
 			// Check sampler params
 			for(auto iter2 = curDesc.samplers.begin(); iter2 != curDesc.samplers.end(); ++iter2)
 			{
-				if(validParams.find(iter2->first) == validParams.end())
-					validParams.insert(iter2->first);
+				validParams.push_back(&iter2->second);
 			}
 
 			// Check texture params
 			for(auto iter2 = curDesc.textures.begin(); iter2 != curDesc.textures.end(); ++iter2)
 			{
-				if(validParams.find(iter2->first) == validParams.end())
-					validParams.insert(iter2->first);
+				validParams.push_back(&iter2->second);
 			}
 
 			// Check buffer params
 			for(auto iter2 = curDesc.buffers.begin(); iter2 != curDesc.buffers.end(); ++iter2)
 			{
-				if(validParams.find(iter2->first) == validParams.end())
-					validParams.insert(iter2->first);
+				validParams.push_back(&iter2->second);
 			}
 		}
 

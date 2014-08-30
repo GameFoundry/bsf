@@ -74,7 +74,7 @@ namespace BansheeEngine
 			memory = rttiWriteElem(data.rendererSemantic, memory);
 			memory = rttiWriteElem(data.type, memory);
 			memory = rttiWriteElem(data.name, memory);
-			memory = rttiWriteElem(data.gpuVariableName, memory);
+			memory = rttiWriteElem(data.gpuVariableNames, memory);
 		}
 
 		static UINT32 fromMemory(SHADER_OBJECT_PARAM_DESC& data, char* memory)
@@ -86,7 +86,7 @@ namespace BansheeEngine
 			memory = rttiReadElem(data.rendererSemantic, memory);
 			memory = rttiReadElem(data.type, memory);
 			memory = rttiReadElem(data.name, memory);
-			memory = rttiReadElem(data.gpuVariableName, memory);
+			memory = rttiReadElem(data.gpuVariableNames, memory);
 
 			return size;
 		}
@@ -94,7 +94,7 @@ namespace BansheeEngine
 		static UINT32 getDynamicSize(const SHADER_OBJECT_PARAM_DESC& data)	
 		{ 
 			UINT64 dataSize = rttiGetElemSize(data.rendererSemantic) + rttiGetElemSize(data.type) +
-				rttiGetElemSize(data.name) + rttiGetElemSize(data.gpuVariableName) + sizeof(UINT32);
+				rttiGetElemSize(data.name) + rttiGetElemSize(data.gpuVariableNames) + sizeof(UINT32);
 
 #if BS_DEBUG_MODE
 			if(dataSize > std::numeric_limits<UINT32>::max())

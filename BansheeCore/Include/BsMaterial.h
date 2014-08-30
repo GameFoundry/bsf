@@ -521,7 +521,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Constructs a list containing all object parameter (e.g. texture, sampler state) names.
 		 */
-		Set<String> determineValidObjectParameters(const Vector<GpuParamDescPtr>& paramDescs) const;
+		Vector<const GpuParamObjectDesc*> determineValidObjectParameters(const Vector<GpuParamDescPtr>& paramDescs) const;
 
 		/**
 		 * @brief	Constructs a list containing all shareable parameter block names. Shareable blocks may be shared between

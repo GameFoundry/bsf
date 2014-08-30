@@ -6,9 +6,7 @@ Weekend:
  - Set up grid material and hook it up to renderer (+ actually instantiate it in EditorApplication)
  
  - Fix up shader so I can reference two different gpu vars with a single shader var (e.g. DX11 sampler variables will have different names than DX9 or GL sampler variables)
- - You can create a resource handle to invalid resource type. Add a security feature to prevent that, at least in debug mode?
  - When unloading unused resources I should do it recursively so it unloads any new ones that might have been released during the first unload
- - Ensure that resource handles only have a single mData (and fix Resources::unloadAllUnused)
 
  - Think about picking implementation and possibly Handles implementation
 
