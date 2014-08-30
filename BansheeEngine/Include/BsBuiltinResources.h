@@ -5,18 +5,19 @@
 #include "BsModule.h"
 #include "BsPath.h"
 #include "BsVector2I.h"
+#include "BsGUIMaterialInfo.h"
+#include "BsDebugDrawMaterialInfo.h"
+#include "BsApplication.h"
 
 namespace BansheeEngine
 {
-	// TODO - Currently this class will always import resources, but it would be better if it first
-	// checks for a pre-processed asset and only import it if that doesn't exist
 	/**
 	 * @brief	Holds references to built-in resources used by the core engine.
 	 */
 	class BS_EXPORT BuiltinResources : public BansheeEngine::Module<BuiltinResources>
 	{
 	public:
-		BuiltinResources();
+		BuiltinResources(RenderSystemPlugin activeRSPlugin);
 		~BuiltinResources();
 
 		/**
@@ -79,7 +80,45 @@ namespace BansheeEngine
 		 */
 		const PixelData& getCursorMoveLeftRight(Vector2I& hotSpot);
 
+		/**
+		 * @brief	Creates material used for textual sprite rendering (e.g. text in GUI).
+		 */
+		GUIMaterialInfo createSpriteTextMaterial() const;
+
+		/**
+		 * @brief	Creates material used for image sprite rendering (e.g. images in GUI).
+		 */
+		GUIMaterialInfo createSpriteImageMaterial() const;
+
+		/**
+		 * @brief	Creates a material used for debug drawing in clip space (e.g. 2D shapes that resize with the viewport).
+		 */
+		DebugDraw2DClipSpaceMatInfo createDebugDraw2DClipSpaceMaterial() const;
+
+		/**
+		 * @brief	Creates a material used for debug drawing in screen space (e.g. 2D shapes of fixed pixel size).
+		 */
+		DebugDraw2DScreenSpaceMatInfo createDebugDraw2DScreenSpaceMaterial() const;
+
+		/**
+		 * @brief	Creates a material used for debug drawing in 3D.
+		 */
+		DebugDraw3DMatInfo createDebugDraw3DMaterial() const;
+
+		/**
+		 * @brief	Creates a material used as a replacement when no other material is usable.
+		 */
+		HMaterial createDummyMaterial() const;
+
 	private:
+		/**
+		 * @brief	Imports all necessary resources and converts them to engine-ready format.
+		 *
+		 * @note	Normally you only want to use this during development phase and then ship
+		 *			with engine-ready format only.
+		 */
+		void preprocess();
+
 		/**
 		 * @brief	Loads a GUI skin texture with the specified filename.
 		 */
@@ -89,6 +128,57 @@ namespace BansheeEngine
 		 * @brief	Loads a cursor texture with the specified filename.
 		 */
 		static HTexture getCursorTexture(const WString& name);
+
+		/**
+		 * @brief	Loads a GPU program with the specified filename.
+		 */
+		HGpuProgram getGpuProgram(const WString& name);
+
+		/**
+		 * @brief	Imports a GUI skin texture with the specified filename.
+		 *			Saves the imported texture in engine-ready format in the corresponding
+		 *			output folder.
+		 */
+		static void importSkinTexture(const WString& name);
+
+		/**
+		 * @brief	Imports a cursor texture with the specified filename.
+		 *			Saves the imported texture in engine-ready format in the corresponding
+		 *			output folder.
+		 */
+		static void importCursorTexture(const WString& name);
+
+		/**
+		 * @brief	Loads an compiles a shader for text rendering.
+		 */
+		void initSpriteTextShader();
+
+		/**
+		 * @brief	Loads an compiles a shader for image sprite rendering.
+		 */
+		void initSpriteImageShader();
+
+		/**
+		 * @brief	Loads an compiles a shader for debug 2D clip space rendering.
+		 */
+		void initDebugDraw2DClipSpaceShader();
+
+		/**
+		 * @brief	Loads an compiles a shader for debug 2D screen space rendering.
+		 */
+		void initDebugDraw2DScreenSpaceShader();
+
+		/**
+		 * @brief	Loads an compiles a shader for debug 3D rendering.
+		 */
+		void initDebugDraw3DShader();
+
+		/**
+		 * @brief	Loads an compiles a simple shader to be used with no other is usable.
+		 */
+		void initDummyShader();
+
+		RenderSystemPlugin mRenderSystemPlugin;
 
 		GUISkin mSkin;
 
@@ -105,10 +195,29 @@ namespace BansheeEngine
 
 		HSpriteTexture mWhiteSpriteTexture;
 
+		ShaderPtr mShaderSpriteText;
+		ShaderPtr mShaderSpriteImage;
+		ShaderPtr mShaderDebugDraw2DClipSpace;
+		ShaderPtr mShaderDebugDraw2DScreenSpace;
+		ShaderPtr mShaderDebugDraw3D;
+		ShaderPtr mShaderDummy;
+
+		WString mActiveShaderSubFolder;
+		String mActiveRenderSystem;
+
+		static const Path DefaultSkinFolderRaw;
+		static const Path DefaultCursorFolderRaw;
+		static const Path DefaultShaderFolderRaw;
+
 		static const Path DefaultSkinFolder;
 		static const Path DefaultCursorFolder;
+		static const Path DefaultShaderFolder;
 
-		static const WString DefaultFontPath;
+		static const WString HLSL11ShaderSubFolder;
+		static const WString HLSL9ShaderSubFolder;
+		static const WString GLSLShaderSubFolder;
+
+		static const WString DefaultFontFilename;
 		static const UINT32 DefaultFontSize;
 
 		static const WString WhiteTex;
@@ -196,5 +305,20 @@ namespace BansheeEngine
 		static const Vector2I CursorSizeNSHotspot;
 		static const Vector2I CursorSizeNWSEHotspot;
 		static const Vector2I CursorSizeWEHotspot;
+
+		static const WString ShaderSpriteTextVSFile;
+		static const WString ShaderSpriteTextPSFile;
+		static const WString ShaderSpriteImageVSFile;
+		static const WString ShaderSpriteImagePSFile;
+		static const WString ShaderDebugDraw2DClipSpaceVSFile;
+		static const WString ShaderDebugDraw2DClipSpacePSFile;
+		static const WString ShaderDebugDraw2DScreenSpaceVSFile;
+		static const WString ShaderDebugDraw2DScreenSpacePSFile;
+		static const WString ShaderDebugDraw3DVSFile;
+		static const WString ShaderDebugDraw3DPSFile;
+		static const WString ShaderDockOverlayVSFile;
+		static const WString ShaderDockOverlayPSFile;
+		static const WString ShaderDummyVSFile;
+		static const WString ShaderDummyPSFile;
 	};
 }

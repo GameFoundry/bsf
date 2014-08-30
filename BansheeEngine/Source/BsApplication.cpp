@@ -4,10 +4,6 @@
 #include "BsOverlayManager.h"
 #include "BsDrawHelper2D.h"
 #include "BsDrawHelper3D.h"
-#include "BsBuiltinMaterialManager.h"
-#include "BsD3D9BuiltinMaterialFactory.h"
-#include "BsD3D11BuiltinMaterialFactory.h"
-#include "BsGLBuiltinMaterialFactory.h"
 #include "BsBuiltinResources.h"
 #include "BsScriptManager.h"
 #include "BsProfilingManager.h"
@@ -38,20 +34,14 @@ namespace BansheeEngine
 	{
 		VirtualInput::startUp();
 		ScriptManager::startUp();
+		BuiltinResources::startUp(renderSystem);
 		GUIManager::startUp();
 		GUIMaterialManager::startUp();
 		OverlayManager::startUp();
 
-		BuiltinMaterialManager::startUp();
-		BuiltinMaterialManager::instance().addFactory(bs_new<D3D9BuiltinMaterialFactory>());
-		BuiltinMaterialManager::instance().addFactory(bs_new<D3D11BuiltinMaterialFactory>());
-		BuiltinMaterialManager::instance().addFactory(bs_new<GLBuiltinMaterialFactory>());
-		BuiltinMaterialManager::instance().setActive(getLibNameForRenderSystem(renderSystem));
-
 		DrawHelper2D::startUp();
 		DrawHelper3D::startUp();
 
-		BuiltinResources::startUp();
 		Cursor::startUp();
 
 #if BS_VER == BS_VER_DEV
@@ -68,18 +58,16 @@ namespace BansheeEngine
 #endif
 
 		Cursor::shutDown();
-		BuiltinResources::shutDown();
 
 		DrawHelper3D::shutDown();
 		DrawHelper2D::shutDown();
 
 		GUIMaterialManager::instance().forceReleaseAllMaterials();
 
-		BuiltinMaterialManager::shutDown();
-
 		OverlayManager::shutDown();
 		GUIManager::shutDown();
 		GUIMaterialManager::shutDown();
+		BuiltinResources::shutDown();
 		ScriptManager::shutDown();
 		VirtualInput::shutDown();
 	}

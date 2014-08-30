@@ -1,7 +1,7 @@
 #include "BsRenderable.h"
 #include "BsRenderableRTTI.h"
 #include "BsSceneObject.h"
-#include "BsBuiltinMaterialManager.h"
+#include "BsBuiltinResources.h"
 #include "BsMesh.h"
 #include "BsMaterial.h"
 #include "BsRenderQueue.h"
@@ -146,7 +146,7 @@ namespace BansheeEngine
 				material = mMaterialData[0].material;
 
 			if (material == nullptr || !material.isLoaded())
-				material = BuiltinMaterialManager::instance().createDummyMaterial();
+				material = BuiltinResources::instance().createDummyMaterial();
 
 			if (material->_isCoreDirty(MaterialDirtyFlag::Proxy))
 			{

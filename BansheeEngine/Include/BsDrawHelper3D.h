@@ -40,7 +40,8 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	DrawHelperTemplate::line_AA
 		 */
-		void line_AA(const Vector3& a, const Vector3& b, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
+		void line_AA(const Vector3& a, const Vector3& b, const Vector3& up, float width, float borderWidth, const Color& color, 
+			const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		/**
 		 * @copydoc	DrawHelperTemplate::lineList_Pixel
@@ -50,7 +51,8 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	DrawHelperTemplate::lineList_AA
 		 */
-		void lineList_AA(const Vector<Vector3>& linePoints, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
+		void lineList_AA(const Vector<Vector3>& linePoints, const Vector3& up, float width, float borderWidth, 
+			const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		/**
 		 * @brief	Constructs a one-pixel wide line and draws it in the specified camera. 
@@ -69,12 +71,13 @@ namespace BansheeEngine
 		 * @param	camera		Camera to draw the line in.
 		 * @param	x			Starting position of the line. Coordinates must be normalized in [0, 1] range. Coordinate origin is top left of the camera viewport.
 		 * @param	y			End position of the line. Coordinates must be normalized in [0, 1] range. Coordinate origin is top left of the camera viewport.
+		 * @param	up			Up direction to which the line will run perpendicular to.
 		 * @param	width		Width of the line in pixels.
 		 * @param	borderWidth	Width of the antialiased border in pixels.
 		 * @param	color		Color of the line.
 		 * @param	timeout		Optional timeout on how long to display the line in seconds. If 0 the line will be displayed one frame.
 		 */
-		void drawLine_AA(const HCamera& camera, const Vector3& a, const Vector3& b, float width, float borderWidth, 
+		void drawLine_AA(const HCamera& camera, const Vector3& a, const Vector3& b, const Vector3& up, float width, float borderWidth, 
 			const Color& color = Color::White, float timeout = 0.0f);
 
 		/**
@@ -94,12 +97,13 @@ namespace BansheeEngine
 		 * @param	camera		Camera to draw the line list in.
 		 * @param	linePoints	List of line start and end points. This list must be a multiple of 2, where each start point is followed by and end point.
 		 *						Coordinates must be normalized in ([0, 1], [0, 1]) range. Coordinate origin is top left of the camera viewport.
+		 * @param	up			Up direction to which the line will run perpendicular to.
 		 * @param	width		Width of the line in pixels.
 		 * @param	borderWidth	Width of the antialiased border in pixels.
 		 * @param	color		Color of the line list.
 		 * @param	timeout		Optional timeout on how long to display the line list in seconds. If 0 the line list will be displayed one frame.
 		 */
-		void drawLineList_AA(const HCamera& camera, const Vector<Vector3>& linePoints, float width, float borderWidth, 
+		void drawLineList_AA(const HCamera& camera, const Vector<Vector3>& linePoints, const Vector3& up, float width, float borderWidth, 
 			const Color& color = Color::White, float timeout = 0.0f);
 
 		/**
@@ -114,15 +118,15 @@ namespace BansheeEngine
 
 	protected:
 		/**
-		 * @copydoc	DrawHelperTemplate::line_AA(const Vector2&, const Vector2&, float, float, const Color&, UINT8*, UINT8*, UINT32, UINT32, UINT32*, UINT32)
+		 * @copydoc	DrawHelperTemplate::line_AA(const Vector3&, const Vector3&, const Vector3&, float, float, const Color&, UINT8*, UINT8*, UINT32, UINT32, UINT32*, UINT32)
 		 */
-		void line_AA(const Vector3& a, const Vector3& b, float width, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
+		void line_AA(const Vector3& a, const Vector3& b, const Vector3& up, float width, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
 			UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset);
 
 		/**
-		 * @copydoc	DrawHelperTemplate::polygon_AA(const Vector<Vector2>&, float, const Color&, UINT8*, UINT8*, UINT32, UINT32, UINT32*, UINT32)
+		 * @copydoc	DrawHelperTemplate::polygon_AA(const Vector<Vector3>&, const Vector3&, float, const Color&, UINT8*, UINT8*, UINT32, UINT32, UINT32*, UINT32)
 		 */
-		void polygon_AA(const Vector<Vector3>& points, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
+		void polygon_AA(const Vector<Vector3>& points, const Vector3& up, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
 			UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset);
 
 		/**

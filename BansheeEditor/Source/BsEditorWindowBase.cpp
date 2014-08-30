@@ -7,7 +7,7 @@
 #include "BsEditorWindowManager.h"
 #include "BsCamera.h"
 #include "BsGUIWindowFrameWidget.h"
-#include "BsEditorGUI.h"
+#include "BsBuiltinEditorResources.h"
 
 namespace BansheeEngine
 {
@@ -71,9 +71,9 @@ namespace BansheeEngine
 		mGUI = mSceneObject->addComponent<GUIWidget>(mCamera->getViewport().get());
 		mGUI->setDepth(128);
 
-		mGUI->setSkin(EditorGUI::instance().getSkin());
+		mGUI->setSkin(BuiltinEditorResources::instance().getSkin());
 
-		mWindowFrame = mSceneObject->addComponent<WindowFrameWidget>(mCamera->getViewport().get(), renderWindow.get(), EditorGUI::instance().getSkin());
+		mWindowFrame = mSceneObject->addComponent<WindowFrameWidget>(mCamera->getViewport().get(), renderWindow.get(), BuiltinEditorResources::instance().getSkin());
 		mWindowFrame->setDepth(129);
 
 		mResizedConn = renderWindow->onResized.connect(std::bind(&EditorWindowBase::resized, this));

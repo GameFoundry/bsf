@@ -14,6 +14,7 @@ namespace BansheeEngine
 		GpuParamMat4 worldTransform;
 		GpuParamFloat invViewportWidth;
 		GpuParamFloat invViewportHeight;
+		GpuParamSampState mainTexSampler;
 		GpuParamTexture mainTexture;
 		GpuParamVec4 tint;
 	};

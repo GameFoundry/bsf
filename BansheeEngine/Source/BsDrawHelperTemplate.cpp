@@ -8,10 +8,13 @@
 #include "BsCoreApplication.h"
 #include "BsDrawList.h"
 #include "BsCamera.h"
-#include "BsBuiltinMaterialManager.h"
+#include "BsBuiltinResources.h"
 
 namespace BansheeEngine
 {
+	const UINT32 DrawHelperTemplateBase::NUM_VERTICES_AA_LINE = 8;
+	const UINT32 DrawHelperTemplateBase::NUM_INDICES_AA_LINE = 30;
+
 	void DrawHelperTemplateBase::render(const HCamera& camera, DrawList& drawList)
 	{
 		const Viewport* viewport = camera->getViewport().get();

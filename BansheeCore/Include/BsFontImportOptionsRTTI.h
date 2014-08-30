@@ -6,7 +6,7 @@
 
 namespace BansheeEngine
 {
-	class BS_CORE_EXPORT FontImportOptionsRTTI : public RTTIType<FontImportOptions, IReflectable, FontImportOptionsRTTI>
+	class BS_CORE_EXPORT FontImportOptionsRTTI : public RTTIType<FontImportOptions, ImportOptions, FontImportOptionsRTTI>
 	{
 	private:
 		Vector<UINT32>& getFontSizes(FontImportOptions* obj) { return obj->mFontSizes; }

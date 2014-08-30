@@ -394,7 +394,7 @@ namespace BansheeEngine
 				{
 					Path fullPath = dirPath;
 					if ((findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0)
-						directories.push_back(fullPath.append(tempName));
+						directories.push_back(fullPath.append(tempName + L"/"));
 					else
 						files.push_back(fullPath.append(tempName));
 				}

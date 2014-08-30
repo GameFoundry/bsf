@@ -11,7 +11,7 @@
 #include "BsGUISkin.h"
 #include "BsOverlayManager.h"
 #include "BsSpriteTexture.h"
-#include "BsEditorGUI.h"
+#include "BsBuiltinEditorResources.h"
 #include "BsGUITexture.h"
 #include "BsGUIRenderTexture.h"
 #include "BsGUIArea.h"
@@ -43,7 +43,7 @@ namespace BansheeEngine
 
 	void TestTextSprite::init(const HCamera& camera, const String& text, RenderTexturePtr sceneView)
 	{
-		setSkin(BansheeEngine::EditorGUI::instance().getSkin());
+		setSkin(BansheeEngine::BuiltinEditorResources::instance().getSkin());
 		setDepth(128);
 
 		SceneObject::create("FILLER_A");

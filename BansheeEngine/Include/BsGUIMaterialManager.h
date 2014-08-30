@@ -13,6 +13,8 @@ namespace BansheeEngine
 	class BS_EXPORT GUIMaterialManager : public Module<GUIMaterialManager>
 	{
 	public:
+		GUIMaterialManager();
+
 		/**
 		 * @brief	Creates a new material, or returns a reference to an existing one based on
 		 * 			the provided primary texture.
@@ -68,6 +70,8 @@ namespace BansheeEngine
 			GUIMaterialInfo handle;
 			UINT32 refCount;
 		};
+
+		HSamplerState mGUISamplerState;
 
 		mutable Vector<GUIMaterial> mTextMaterials;
 		mutable Vector<GUIMaterial> mImageMaterials;

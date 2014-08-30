@@ -50,6 +50,9 @@ namespace BansheeEngine
 	class BS_EXPORT DrawHelperTemplateBase
 	{
 	public:
+		static const UINT32 NUM_VERTICES_AA_LINE;
+		static const UINT32 NUM_INDICES_AA_LINE;
+
 		/**
 		 * @brief	Called by the renderer when it is ready to render objects into the provided camera.
 		 */
@@ -100,6 +103,7 @@ namespace BansheeEngine
 		 *
 		 * @param	a				Start point of the line.
 		 * @param	b				End point of the line.
+		 * @param	up				Up direction to which the line will run perpendicular to.
 		 * @param	width			Width of the line.
 		 * @param	borderWidth		Width of the anti-aliased border.
 		 * @param	color			Color of the line.
@@ -113,16 +117,16 @@ namespace BansheeEngine
 		 * 			  32bit index buffer
 		 *			  Enough space for 8 vertices and 30 indices
 		 */
-		void line_AA(const T& a, const T& b, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+		void line_AA(const T& a, const T& b, const T& up, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 		{
 			UINT32* indexData = meshData->getIndices32();
 			UINT8* positionData = meshData->getElementData(VES_POSITION);
 			UINT8* colorData = meshData->getElementData(VES_COLOR);
 
-			assert((vertexOffset + 8) <= meshData->getNumVertices());
-			assert((indexOffset + 30) <= meshData->getNumIndices());
+			assert((vertexOffset + NUM_VERTICES_AA_LINE) <= meshData->getNumVertices());
+			assert((indexOffset + NUM_INDICES_AA_LINE) <= meshData->getNumIndices());
 
-			line_AA(a, b, width, borderWidth, color, positionData, colorData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
+			line_AA(a, b, up, width, borderWidth, color, positionData, colorData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
 		}
 
 		/**
@@ -168,6 +172,7 @@ namespace BansheeEngine
 		 * @brief	Fills the mesh data with vertices representing anti-aliased lines of specific width. Antialiasing is done using alpha blending.
 		 *
 		 * @param	linePoints		A list of start and end points for the lines. Must be a multiple of 2.
+		 * @param	up				Up direction to which the line will run perpendicular to.
 		 * @param	width			Width of the line.
 		 * @param	borderWidth		Width of the anti-aliased border.
 		 * @param	color			Color of the line.
@@ -181,7 +186,7 @@ namespace BansheeEngine
 		 * 			  32bit index buffer
 		 *			  Enough space for (numLines * 8) vertices and (numLines * 30) indices
 		 */
-		void lineList_AA(const typename Vector<T>& linePoints, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+		void lineList_AA(const typename Vector<T>& linePoints, const T& up, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 		{
 			assert(linePoints.size() % 2 == 0);
 
@@ -198,10 +203,10 @@ namespace BansheeEngine
 			UINT32 numPoints = (UINT32)linePoints.size();
 			for(UINT32 i = 0; i < numPoints; i += 2)
 			{
-				line_AA(linePoints[i], linePoints[i + 1], width, borderWidth, color, positionData, colorData, curVertOffset, meshData->getVertexDesc()->getVertexStride(), indexData, curIdxOffset);
+				line_AA(linePoints[i], linePoints[i + 1], up, width, borderWidth, color, positionData, colorData, curVertOffset, meshData->getVertexDesc()->getVertexStride(), indexData, curIdxOffset);
 
-				curVertOffset += 8;
-				curIdxOffset += 30;
+				curVertOffset += NUM_VERTICES_AA_LINE;
+				curIdxOffset += NUM_INDICES_AA_LINE;
 			}
 		}
 
@@ -246,6 +251,7 @@ namespace BansheeEngine
 		 *
 		 * @param	a				Start point of the line.
 		 * @param	b				End point of the line.
+		 * @param	up				Up direction to which the line will run perpendicular to.
 		 * @param	width			Width of the line.
 		 * @param	borderWidth		Width of the anti-aliased border.
 		 * @param	color			Color of the line.
@@ -256,13 +262,14 @@ namespace BansheeEngine
 		 * @param	outIndices		Output buffer that will store the index data. Indices are 32bit.
 		 * @param	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
 		 */
-		virtual void line_AA(const T& a, const T& b, float width, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
+		virtual void line_AA(const T& a, const T& b, const T& up, float width, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
 			UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset) = 0;
 
 		/**
 		 * @brief	Fills the provided buffers with vertices representing an antialiased polygon.
 		 *
 		 * @param	points			Points defining the polygon. First point is assumed to be the start and end point.
+		 * @param	up				Up direction to which the polygon will run perpendicular to.
 		 * @param	borderWidth		Width of the anti-aliased border.
 		 * @param	color			Color of the polygon.
 		 * @param	outVertices		Output buffer that will store the vertex position data.
@@ -272,7 +279,7 @@ namespace BansheeEngine
 		 * @param	outIndices		Output buffer that will store the index data. Indices are 32bit.
 		 * @param	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
 		 */
-		virtual void polygon_AA(const typename Vector<T>& points, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
+		virtual void polygon_AA(const typename Vector<T>& points, const T& up, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors,
 			UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset) = 0;
 
 		/**

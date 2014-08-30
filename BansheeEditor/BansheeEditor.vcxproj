@@ -273,7 +273,7 @@
     <ClInclude Include="Include\BsDockManagerLayoutRTTI.h" />
     <ClInclude Include="Include\BsEditorApplication.h" />
     <ClInclude Include="Include\BsEditorCommand.h" />
-    <ClInclude Include="Include\BsEditorGUI.h" />
+    <ClInclude Include="Include\BsBuiltinEditorResources.h" />
     <ClInclude Include="Include\BsEditorTestSuite.h" />
     <ClInclude Include="Include\BsEditorWidgetLayout.h" />
     <ClInclude Include="Include\BsEditorWidgetLayoutRTTI.h" />
@@ -317,6 +317,7 @@
     <ClInclude Include="Include\BsResourceImporter.h" />
     <ClInclude Include="Include\BsSceneCameraController.h" />
     <ClInclude Include="Include\BsSceneEditorWidget.h" />
+    <ClInclude Include="Include\BsSceneGrid.h" />
     <ClInclude Include="Include\BsTestTextSprite.h" />
     <ClInclude Include="Include\DbgEditorWidget1.h" />
     <ClInclude Include="Include\DbgEditorWidget2.h" />
@@ -329,7 +330,7 @@
     <ClCompile Include="Source\BsDockManager.cpp" />
     <ClCompile Include="Source\BsDockManagerLayout.cpp" />
     <ClCompile Include="Source\BsEditorCommand.cpp" />
-    <ClCompile Include="Source\BsEditorGUI.cpp" />
+    <ClCompile Include="Source\BsBuiltinEditorResources.cpp" />
     <ClCompile Include="Source\BsEditorTestSuite.cpp" />
     <ClCompile Include="Source\BsEditorWidget.cpp" />
     <ClCompile Include="Source\BsEditorWidgetContainer.cpp" />
@@ -369,6 +370,7 @@
     <ClCompile Include="Source\BsResourceImporter.cpp" />
     <ClCompile Include="Source\BsSceneCameraController.cpp" />
     <ClCompile Include="Source\BsSceneEditorWidget.cpp" />
+    <ClCompile Include="Source\BsSceneGrid.cpp" />
     <ClCompile Include="Source\BsUndoRedo.cpp" />
     <ClCompile Include="Source\BsEditorApplication.cpp" />
     <ClCompile Include="Source\BsTestTextSprite.cpp" />

@@ -113,9 +113,60 @@ namespace BansheeEngine
 		// Add preprocessor extras and main source
 		if (!mSource.empty())
 		{
-			const char *source = mSource.c_str();
-			mGLHandle = glCreateShaderProgramv(shaderType, 1, &source);
+			Vector<GLchar*> lines;
+
+			UINT32 lineLength = 0;
+			for (UINT32 i = 0; i < mSource.size(); i++)
+			{
+				if (mSource[i] == '\n' || mSource[i] == '\r')
+				{
+					if (lineLength > 0)
+					{
+						assert(sizeof(mSource[i]) == sizeof(GLchar));
+
+						bool isDefine = mSource[i - lineLength] == '#';
+
+						GLchar* lineData = (GLchar*)stackAlloc(sizeof(GLchar) * (lineLength + 1 + (isDefine ? 1 : 0)));
+						memcpy(lineData, &mSource[i - lineLength], sizeof(GLchar) * lineLength);
+
+						if (isDefine) // Defines require a newline as well as a null terminator, otherwise it doesn't compile properly
+						{
+							lineData[lineLength] = '\n';
+							lineData[lineLength + 1] = '\0';
+						}
+						else
+							lineData[lineLength] = '\0';
+
+						lines.push_back(lineData);
+						lineLength = 0;
+					}
+				}
+				else
+				{
+					lineLength++;
+				}
+			}
+
+			if (lineLength > 0)
+			{
+				UINT32 end = (UINT32)mSource.size() - 1;
+				assert(sizeof(mSource[end]) == sizeof(GLchar));
+
+				GLchar* lineData = (GLchar*)stackAlloc(sizeof(GLchar) * (lineLength + 1));
+				memcpy(lineData, &mSource[mSource.size() - lineLength], sizeof(GLchar) * lineLength);
+				lineData[lineLength] = '\0';
+
+				lines.push_back(lineData);
+				lineLength = 0;
+			}
+
+			mGLHandle = glCreateShaderProgramv(shaderType, (GLsizei)lines.size(), (const GLchar**)lines.data());
 			
+			for (auto iter = lines.rbegin(); iter != lines.rend(); ++iter)
+			{
+				stackDeallocLast(*iter);
+			}
+
 			mCompileError = "";
 			mIsCompiled = !checkForGLSLError(mGLHandle, mCompileError);
 		}

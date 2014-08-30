@@ -59,25 +59,7 @@ namespace BansheeEngine
 
 	bool IReflectable::isDerivedFrom(RTTITypeBase* base)
 	{
-		assert(base != nullptr);
-
-		Stack<RTTITypeBase*> todo;
-		todo.push(base);
-
-		while (!todo.empty())
-		{
-			RTTITypeBase* currentType = todo.top();
-			todo.pop();
-
-			if(currentType->getRTTIId() == getRTTI()->getRTTIId())
-				return true;
-
-			Vector<RTTITypeBase*>& derivedClasses = currentType->getDerivedClasses();
-			for(auto iter = derivedClasses.begin(); iter != derivedClasses.end(); ++iter)
-				todo.push(*iter);
-		}
-
-		return false;
+		return getRTTI()->isDerivedFrom(base);
 	}
 
 	UINT32 IReflectable::getTypeId() const

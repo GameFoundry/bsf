@@ -125,15 +125,15 @@ namespace BansheeEngine
 
 	protected:
 		/**
-		 * @copydoc	DrawHelperTemplate::line_AA(const Vector2&, const Vector2&, float, float, const Color&, UINT8*, UINT8*, UINT32, UINT32, UINT32*, UINT32)
+		 * @copydoc	DrawHelperTemplate::line_AA(const Vector2&, const Vector2&, const Vector2&, float, float, const Color&, UINT8*, UINT8*, UINT32, UINT32, UINT32*, UINT32)
 		 */
-		void line_AA(const Vector2& a, const Vector2& b, float width, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
+		void line_AA(const Vector2& a, const Vector2& b, const Vector2& up, float width, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
 			UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset);
 
 		/**
-		 * @copydoc	DrawHelperTemplate::polygon_AA(const Vector<Vector2>&, float, const Color&, UINT8*, UINT8*, UINT32, UINT32, UINT32*, UINT32)
+		 * @copydoc	DrawHelperTemplate::polygon_AA(const Vector<Vector2>&, const Vector2&, float, const Color&, UINT8*, UINT8*, UINT32, UINT32, UINT32*, UINT32)
 		 */
-		void polygon_AA(const Vector<Vector2>& points, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
+		void polygon_AA(const Vector<Vector2>& points, const Vector2& up, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors,
 			UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset);
 
 	private:

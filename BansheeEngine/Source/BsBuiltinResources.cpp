@@ -10,19 +10,42 @@
 
 #include "BsFont.h"
 #include "BsFontImportOptions.h"
+#include "BsGpuProgramImportOptions.h"
 #include "BsImporter.h"
+#include "BsResources.h"
+#include "BsGpuProgram.h"
+#include "BsShader.h"
+#include "BsTechnique.h"
+#include "BsPass.h"
+#include "BsMaterial.h"
+#include "BsBlendState.h"
+#include "BsDepthStencilState.h"
 #include "BsRTTIType.h"
 #include "BsFileSystem.h"
 #include "BsCoreApplication.h"
 #include "BsCoreThread.h"
+#include "BsApplication.h"
 
 namespace BansheeEngine
 {
-	const WString BuiltinResources::DefaultFontPath = L"arial.ttf";
+	const WString BuiltinResources::DefaultFontFilename = L"arial.ttf";
 	const UINT32 BuiltinResources::DefaultFontSize = 10;
+
+	const Path BuiltinResources::DefaultSkinFolderRaw = L"..\\..\\..\\..\\Data\\Raw\\Engine\\Skin\\";
+	const Path BuiltinResources::DefaultCursorFolderRaw = L"..\\..\\..\\..\\Data\\Raw\\Engine\\Cursors\\";
+	const Path BuiltinResources::DefaultShaderFolderRaw = L"..\\..\\..\\..\\Data\\Raw\\Engine\\Shaders\\";
 
 	const Path BuiltinResources::DefaultSkinFolder = L"..\\..\\..\\..\\Data\\Engine\\Skin\\";
 	const Path BuiltinResources::DefaultCursorFolder = L"..\\..\\..\\..\\Data\\Engine\\Cursors\\";
+	const Path BuiltinResources::DefaultShaderFolder = L"..\\..\\..\\..\\Data\\Engine\\Shaders\\";
+
+	const WString BuiltinResources::HLSL11ShaderSubFolder = L"HLSL11/";
+	const WString BuiltinResources::HLSL9ShaderSubFolder = L"HLSL9/";
+	const WString BuiltinResources::GLSLShaderSubFolder = L"GLSL/";
+
+	/************************************************************************/
+	/* 								GUI TEXTURES                      		*/
+	/************************************************************************/
 
 	const WString BuiltinResources::WhiteTex = L"White.psd";
 
@@ -88,6 +111,10 @@ namespace BansheeEngine
 
 	const WString BuiltinResources::ScrollBarBgTex = L"ScrollBarBg.psd";
 
+	/************************************************************************/
+	/* 							CURSOR TEXTURES                      		*/
+	/************************************************************************/
+
 	const WString BuiltinResources::CursorArrowTex = L"Arrow.psd";
 	const WString BuiltinResources::CursorArrowDragTex = L"ArrowDrag.psd";
 	const WString BuiltinResources::CursorArrowLeftRightTex = L"ArrowLeftRight.psd";
@@ -110,6 +137,35 @@ namespace BansheeEngine
 	const Vector2I BuiltinResources::CursorSizeNWSEHotspot = Vector2I(15, 15);
 	const Vector2I BuiltinResources::CursorSizeWEHotspot = Vector2I(15, 15);
 
+	/************************************************************************/
+	/* 									SHADERS                      		*/
+	/************************************************************************/
+
+	struct GpuProgramImportData
+	{
+		WString filename;
+		String entryPoint;
+		GpuProgramType type;
+		GpuProgramProfile profile;
+		String language;
+		WString folder;
+	};
+
+	const WString BuiltinResources::ShaderSpriteTextVSFile = L"spriteTextVS.gpuprog";
+	const WString BuiltinResources::ShaderSpriteTextPSFile = L"spriteTextPS.gpuprog";
+	const WString BuiltinResources::ShaderSpriteImageVSFile = L"spriteImageVS.gpuprog";
+	const WString BuiltinResources::ShaderSpriteImagePSFile = L"spriteImagePS.gpuprog";
+	const WString BuiltinResources::ShaderDebugDraw2DClipSpaceVSFile = L"debugDraw2DClipSpaceVS.gpuprog";
+	const WString BuiltinResources::ShaderDebugDraw2DClipSpacePSFile = L"debugDraw2DClipSpacePS.gpuprog";
+	const WString BuiltinResources::ShaderDebugDraw2DScreenSpaceVSFile = L"debugDraw2DScreenSpaceVS.gpuprog";
+	const WString BuiltinResources::ShaderDebugDraw2DScreenSpacePSFile = L"debugDraw2DScreenSpacePS.gpuprog";
+	const WString BuiltinResources::ShaderDebugDraw3DVSFile = L"debugDraw3DVS.gpuprog";
+	const WString BuiltinResources::ShaderDebugDraw3DPSFile = L"debugDraw3DPS.gpuprog";
+	const WString BuiltinResources::ShaderDockOverlayVSFile = L"dockDropOverlayVS.gpuprog";
+	const WString BuiltinResources::ShaderDockOverlayPSFile = L"dockDropOverlayPS.gpuprog";
+	const WString BuiltinResources::ShaderDummyVSFile = L"dummyVS.gpuprog";
+	const WString BuiltinResources::ShaderDummyPSFile = L"dummyPS.gpuprog";
+
 	BuiltinResources::~BuiltinResources()
 	{
 		mCursorArrow = nullptr;
@@ -124,10 +180,34 @@ namespace BansheeEngine
 		mCursorSizeWE = nullptr;
 	}
 
-	BuiltinResources::BuiltinResources()
+	BuiltinResources::BuiltinResources(RenderSystemPlugin activeRSPlugin)
+		:mRenderSystemPlugin(activeRSPlugin)
 	{
-		// TODO - Normally I want to load this from some file
-		
+		switch (activeRSPlugin)
+		{
+		case RenderSystemPlugin::DX11:
+			mActiveShaderSubFolder = HLSL11ShaderSubFolder;
+			mActiveRenderSystem = RenderSystemDX11;
+			break;
+		case RenderSystemPlugin::DX9:
+			mActiveShaderSubFolder = HLSL9ShaderSubFolder;
+			mActiveRenderSystem = RenderSystemDX9;
+			break;
+		case RenderSystemPlugin::OpenGL:
+			mActiveShaderSubFolder = GLSLShaderSubFolder;
+			mActiveRenderSystem = RenderSystemOpenGL;
+			break;
+		}
+
+		preprocess();
+
+		initSpriteTextShader();
+		initSpriteImageShader();
+		initDebugDraw2DClipSpaceShader();
+		initDebugDraw2DScreenSpaceShader();
+		initDebugDraw3DShader();
+		initDummyShader();
+
 		mWhiteSpriteTexture = getSkinTexture(WhiteTex);
 
 		/************************************************************************/
@@ -177,28 +257,13 @@ namespace BansheeEngine
 
 		gCoreAccessor().submitToCoreThread(true);
 
+		Path fontPath = FileSystem::getWorkingDirectoryPath();
+		fontPath.append(DefaultSkinFolder);
+		fontPath.append(DefaultFontFilename + L".asset");
+
+		HFont font = Resources::instance().load<Font>(fontPath);
+
 		// Label
-		// TODO - Instead of importing font every time, try to save a resource and then just load it?
-		HFont font;
-
-		{
-			Path fontPath = DefaultSkinFolder;
-			fontPath.append(DefaultFontPath);
-
-			ImportOptionsPtr fontImportOptions = Importer::instance().createImportOptions(fontPath);
-			if(rtti_is_of_type<FontImportOptions>(fontImportOptions))
-			{
-				FontImportOptions* importOptions = static_cast<FontImportOptions*>(fontImportOptions.get());
-
-				Vector<BansheeEngine::UINT32> fontSizes;
-				fontSizes.push_back(DefaultFontSize);
-				importOptions->setFontSizes(fontSizes);
-				importOptions->setAntialiasing(false);
-			}
-
-			font = Importer::instance().import(fontPath, fontImportOptions);
-		}
-
 		GUIElementStyle labelStyle;
 		labelStyle.font = font;
 		labelStyle.fontSize = DefaultFontSize;
@@ -555,22 +620,397 @@ namespace BansheeEngine
 		mSkin.setStyle("ContextMenuSeparator", dropDownSeparatorStyle);
 	}
 
+	void BuiltinResources::preprocess()
+	{
+		static const WString GUI_TEXTURES[] = { WhiteTex, ButtonNormalTex, ButtonHoverTex, ButtonActiveTex, ToggleNormalTex,
+			ToggleHoverTex, ToggleActiveTex, ToggleNormalOnTex, ToggleHoverOnTex, ToggleActiveOnTex, InputBoxNormalTex,
+			InputBoxHoverTex, InputBoxFocusedTex, ScrollBarUpNormalTex, ScrollBarUpHoverTex, ScrollBarUpActiveTex,
+			ScrollBarDownNormalTex, ScrollBarDownHoverTex, ScrollBarDownActiveTex, ScrollBarLeftNormalTex,
+			ScrollBarLeftHoverTex, ScrollBarLeftActiveTex, ScrollBarRightNormalTex, ScrollBarRightHoverTex,
+			ScrollBarRightActiveTex, ScrollBarHandleHorzNormalTex, ScrollBarHandleHorzHoverTex, ScrollBarHandleHorzActiveTex,
+			ScrollBarHandleVertNormalTex, ScrollBarHandleVertHoverTex, ScrollBarHandleVertActiveTex, DropDownBtnNormalTex,
+			DropDownBtnHoverTex, DropDownBoxBgTex, DropDownBoxEntryNormalTex, DropDownBoxEntryHoverTex, DropDownBoxBtnUpNormalTex,
+			DropDownBoxBtnUpHoverTex, DropDownBoxBtnDownNormalTex, DropDownBoxBtnDownHoverTex, DropDownBoxEntryExpNormalTex, DropDownBoxEntryExpHoverTex,
+			DropDownSeparatorTex, DropDownBoxBtnUpArrowTex, DropDownBoxBtnDownArrowTex };
+
+		static const WString CURSOR_TEXTURES[] = { CursorArrowTex, CursorArrowDragTex, CursorArrowLeftRightTex, CursorIBeamTex,
+			CursorDenyTex, CursorWaitTex, CursorSizeNESWTex, CursorSizeNSTex, CursorSizeNWSETex, CursorSizeWETex };
+
+		static const GpuProgramImportData GPU_PROGRAM_IMPORT_DATA[] =
+		{
+			{ ShaderSpriteTextVSFile,				"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "hlsl", HLSL11ShaderSubFolder},
+			{ ShaderSpriteTextPSFile,				"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0, "hlsl", HLSL11ShaderSubFolder },
+			{ ShaderSpriteImageVSFile,				"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "hlsl", HLSL11ShaderSubFolder },
+			{ ShaderSpriteImagePSFile,				"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0, "hlsl", HLSL11ShaderSubFolder },
+			{ ShaderDebugDraw2DClipSpaceVSFile,		"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "hlsl", HLSL11ShaderSubFolder },
+			{ ShaderDebugDraw2DClipSpacePSFile,		"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0, "hlsl", HLSL11ShaderSubFolder },
+			{ ShaderDebugDraw2DScreenSpaceVSFile,	"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "hlsl", HLSL11ShaderSubFolder },
+			{ ShaderDebugDraw2DScreenSpacePSFile,	"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0, "hlsl", HLSL11ShaderSubFolder },
+			{ ShaderDebugDraw3DVSFile,				"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "hlsl", HLSL11ShaderSubFolder },
+			{ ShaderDebugDraw3DPSFile,				"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0, "hlsl", HLSL11ShaderSubFolder },
+			{ ShaderDummyVSFile,					"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "hlsl", HLSL11ShaderSubFolder },
+			{ ShaderDummyPSFile,					"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0, "hlsl", HLSL11ShaderSubFolder },
+			{ ShaderSpriteTextVSFile,				"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_2_0, "hlsl", HLSL9ShaderSubFolder },
+			{ ShaderSpriteTextPSFile,				"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_2_0, "hlsl", HLSL9ShaderSubFolder },
+			{ ShaderSpriteImageVSFile,				"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_2_0, "hlsl", HLSL9ShaderSubFolder },
+			{ ShaderSpriteImagePSFile,				"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_2_0, "hlsl", HLSL9ShaderSubFolder },
+			{ ShaderDebugDraw2DClipSpaceVSFile,		"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_2_0, "hlsl", HLSL9ShaderSubFolder },
+			{ ShaderDebugDraw2DClipSpacePSFile,		"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_2_0, "hlsl", HLSL9ShaderSubFolder },
+			{ ShaderDebugDraw2DScreenSpaceVSFile,	"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_2_0, "hlsl", HLSL9ShaderSubFolder },
+			{ ShaderDebugDraw2DScreenSpacePSFile,	"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_2_0, "hlsl", HLSL9ShaderSubFolder },
+			{ ShaderDebugDraw3DVSFile,				"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_2_0, "hlsl", HLSL9ShaderSubFolder },
+			{ ShaderDebugDraw3DPSFile,				"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_2_0, "hlsl", HLSL9ShaderSubFolder },
+			{ ShaderDummyVSFile,					"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_2_0, "hlsl", HLSL9ShaderSubFolder },
+			{ ShaderDummyPSFile,					"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_2_0, "hlsl", HLSL9ShaderSubFolder },
+			{ ShaderSpriteTextVSFile,				"main",			GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "glsl", GLSLShaderSubFolder },
+			{ ShaderSpriteTextPSFile,				"main",			GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0, "glsl", GLSLShaderSubFolder },
+			{ ShaderSpriteImageVSFile,				"main",			GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "glsl", GLSLShaderSubFolder },
+			{ ShaderSpriteImagePSFile,				"main",			GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0, "glsl", GLSLShaderSubFolder },
+			{ ShaderDebugDraw2DClipSpaceVSFile,		"main",			GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "glsl", GLSLShaderSubFolder },
+			{ ShaderDebugDraw2DClipSpacePSFile,		"main",			GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0, "glsl", GLSLShaderSubFolder },
+			{ ShaderDebugDraw2DScreenSpaceVSFile,	"main",			GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "glsl", GLSLShaderSubFolder },
+			{ ShaderDebugDraw2DScreenSpacePSFile,	"main",			GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0, "glsl", GLSLShaderSubFolder },
+			{ ShaderDebugDraw3DVSFile,				"main",			GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "glsl", GLSLShaderSubFolder },
+			{ ShaderDebugDraw3DPSFile,				"main",			GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0, "glsl", GLSLShaderSubFolder },
+			{ ShaderDummyVSFile,					"main",			GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "glsl", GLSLShaderSubFolder },
+			{ ShaderDummyPSFile,					"main",			GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0, "glsl", GLSLShaderSubFolder },
+		};
+
+		if (FileSystem::exists(DefaultCursorFolderRaw))
+		{
+			FileSystem::remove(DefaultCursorFolder);
+
+			for (auto& tex : CURSOR_TEXTURES)
+				importCursorTexture(tex);
+		}
+
+		if (FileSystem::exists(DefaultSkinFolderRaw))
+		{
+			FileSystem::remove(DefaultSkinFolder);
+
+			for (auto& tex : GUI_TEXTURES)
+				importSkinTexture(tex);
+
+			{
+				Path fontPath = FileSystem::getWorkingDirectoryPath();
+				fontPath.append(DefaultSkinFolderRaw);
+				fontPath.append(DefaultFontFilename);
+
+				ImportOptionsPtr fontImportOptions = Importer::instance().createImportOptions(fontPath);
+				if (rtti_is_of_type<FontImportOptions>(fontImportOptions))
+				{
+					FontImportOptions* importOptions = static_cast<FontImportOptions*>(fontImportOptions.get());
+
+					Vector<UINT32> fontSizes;
+					fontSizes.push_back(DefaultFontSize);
+					importOptions->setFontSizes(fontSizes);
+					importOptions->setAntialiasing(false);
+				}
+
+				HFont font = Importer::instance().import(fontPath, fontImportOptions);
+
+				Path outputPath = FileSystem::getWorkingDirectoryPath();
+				outputPath.append(DefaultSkinFolder);
+				outputPath.append(DefaultFontFilename + L".asset");
+
+				Resources::instance().save(font, outputPath, true);
+
+				// Save font texture pages as well. TODO - Later maybe figure out a more automatic way to do this
+				const FontData* fontData = font->getFontDataForSize(DefaultFontSize);
+
+				Path texPageOutputPath = FileSystem::getWorkingDirectoryPath();
+				texPageOutputPath.append(DefaultSkinFolder);
+
+				UINT32 pageIdx = 0;
+				for (auto tex : fontData->texturePages)
+				{
+					texPageOutputPath.setFilename(DefaultFontFilename + L"_texpage_" + toWString(pageIdx) + L".asset");
+					Resources::instance().save(tex, texPageOutputPath, true);
+				}
+			}
+		}
+
+		if (FileSystem::exists(DefaultShaderFolderRaw))
+		{
+			Path shaderFolder = DefaultShaderFolder;
+			shaderFolder.append(mActiveShaderSubFolder);
+
+			FileSystem::remove(shaderFolder);
+
+			for (auto& importData : GPU_PROGRAM_IMPORT_DATA)
+			{
+				if (importData.folder != mActiveShaderSubFolder)
+					continue;
+
+				Path gpuProgInputLoc = DefaultShaderFolderRaw;
+				gpuProgInputLoc.append(importData.folder);
+				gpuProgInputLoc.append(importData.filename);
+
+				Path gpuProgOutputLoc = DefaultShaderFolder;
+				gpuProgOutputLoc.append(importData.folder);
+				gpuProgOutputLoc.append(importData.filename + L".asset");
+
+				ImportOptionsPtr gpuProgImportOptions = Importer::instance().createImportOptions(gpuProgInputLoc);
+				if (rtti_is_of_type<GpuProgramImportOptions>(gpuProgImportOptions))
+				{
+					GpuProgramImportOptions* importOptions = static_cast<GpuProgramImportOptions*>(gpuProgImportOptions.get());
+
+					importOptions->setEntryPoint(importData.entryPoint);
+					importOptions->setLanguage(importData.language);
+					importOptions->setProfile(importData.profile);
+					importOptions->setType(importData.type);
+				}
+
+				HGpuProgram gpuProgram = Importer::instance().import(gpuProgInputLoc, gpuProgImportOptions);
+				Resources::instance().save(gpuProgram, gpuProgOutputLoc, true);
+			}
+		}
+
+		Resources::instance().unloadAllUnused();
+	}
+
 	HSpriteTexture BuiltinResources::getSkinTexture(const WString& name)
 	{
 		Path texturePath = FileSystem::getWorkingDirectoryPath();
 		texturePath.append(DefaultSkinFolder);
-		texturePath.append(name);
+		texturePath.append(L"sprite_" + name + L".asset");
 
-		return SpriteTexture::create(static_resource_cast<Texture>(Importer::instance().import(texturePath)));
+		return Resources::instance().load<SpriteTexture>(texturePath);
 	}
 
 	HTexture BuiltinResources::getCursorTexture(const WString& name)
 	{
 		Path cursorPath = FileSystem::getWorkingDirectoryPath();
 		cursorPath.append(DefaultCursorFolder);
-		cursorPath.append(name);
+		cursorPath.append(name + L".asset");
 
-		return static_resource_cast<Texture>(Importer::instance().import(cursorPath));
+		return Resources::instance().load<Texture>(cursorPath);
+	}
+
+	HGpuProgram BuiltinResources::getGpuProgram(const WString& name)
+	{
+		Path programPath = DefaultShaderFolder;
+		programPath.append(mActiveShaderSubFolder);
+		programPath.append(name + L".asset");
+
+		return gResources().load<GpuProgram>(programPath);
+	}
+
+	void BuiltinResources::importSkinTexture(const WString& name)
+	{
+		Path texturePath = FileSystem::getWorkingDirectoryPath();
+		texturePath.append(DefaultSkinFolderRaw);
+		texturePath.append(name);
+
+		Path texOutputPath = FileSystem::getWorkingDirectoryPath();
+		texOutputPath.append(DefaultSkinFolder);
+		Path spriteTexOutputPath = texOutputPath;
+		texOutputPath.append(name + L".asset");
+		spriteTexOutputPath.append(L"sprite_" + name + L".asset");
+
+		HTexture tex = Importer::instance().import<Texture>(texturePath);
+		Resources::instance().save(tex, texOutputPath, true);
+
+		HSpriteTexture spriteTex = SpriteTexture::create(tex);
+		Resources::instance().save(spriteTex, spriteTexOutputPath, true);
+	}
+
+	void BuiltinResources::importCursorTexture(const WString& name)
+	{
+		Path inputPath = FileSystem::getWorkingDirectoryPath();
+		inputPath.append(DefaultCursorFolderRaw);
+		inputPath.append(name);
+
+		Path ouputPath = FileSystem::getWorkingDirectoryPath();
+		ouputPath.append(DefaultCursorFolder);
+		ouputPath.append(name + L".asset");
+
+		HTexture tex = Importer::instance().import<Texture>(inputPath);
+		Resources::instance().save(tex, ouputPath, true);
+	}
+
+	void BuiltinResources::initSpriteTextShader()
+	{
+		HGpuProgram vsProgram = getGpuProgram(ShaderSpriteTextVSFile);
+		HGpuProgram psProgram = getGpuProgram(ShaderSpriteTextPSFile);
+
+		mShaderSpriteText = Shader::create("TextSpriteShader");
+
+		mShaderSpriteText->addParameter("worldTransform", "worldTransform", GPDT_MATRIX_4X4);
+		mShaderSpriteText->addParameter("invViewportWidth", "invViewportWidth", GPDT_FLOAT1);
+		mShaderSpriteText->addParameter("invViewportHeight", "invViewportHeight", GPDT_FLOAT1);
+
+		if (mRenderSystemPlugin == RenderSystemPlugin::DX11) // TODO: Find a way to avoid this
+			mShaderSpriteText->addParameter("mainTexSamp", "mainTexSamp", GPOT_SAMPLER2D);
+		else
+			mShaderSpriteText->addParameter("mainTexSamp", "mainTexture", GPOT_SAMPLER2D);
+
+		mShaderSpriteText->addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
+		mShaderSpriteText->addParameter("tint", "tint", GPDT_FLOAT4);
+
+		TechniquePtr newTechnique = mShaderSpriteText->addTechnique(mActiveRenderSystem, RendererInvariant);
+		PassPtr newPass = newTechnique->addPass();
+		newPass->setVertexProgram(vsProgram);
+		newPass->setFragmentProgram(psProgram);
+
+		BLEND_STATE_DESC desc;
+		desc.renderTargetDesc[0].blendEnable = true;
+		desc.renderTargetDesc[0].srcBlend = BF_SOURCE_ALPHA;
+		desc.renderTargetDesc[0].dstBlend = BF_INV_SOURCE_ALPHA;
+		desc.renderTargetDesc[0].blendOp = BO_ADD;
+		desc.renderTargetDesc[0].renderTargetWriteMask = 0x7; // Don't write to alpha
+
+		HBlendState blendState = BlendState::create(desc);
+		newPass->setBlendState(blendState);
+
+		DEPTH_STENCIL_STATE_DESC depthStateDesc;
+		depthStateDesc.depthReadEnable = false;
+		depthStateDesc.depthWriteEnable = false;
+
+		HDepthStencilState depthState = DepthStencilState::create(depthStateDesc);
+		newPass->setDepthStencilState(depthState);
+	}
+
+	void BuiltinResources::initSpriteImageShader()
+	{
+		HGpuProgram vsProgram = getGpuProgram(ShaderSpriteImageVSFile);
+		HGpuProgram psProgram = getGpuProgram(ShaderSpriteImagePSFile);
+
+		mShaderSpriteImage = Shader::create("ImageSpriteShader");
+
+		mShaderSpriteImage->addParameter("worldTransform", "worldTransform", GPDT_MATRIX_4X4);
+		mShaderSpriteImage->addParameter("invViewportWidth", "invViewportWidth", GPDT_FLOAT1);
+		mShaderSpriteImage->addParameter("invViewportHeight", "invViewportHeight", GPDT_FLOAT1);
+
+		if (mRenderSystemPlugin == RenderSystemPlugin::DX11) // TODO: Find a way to avoid this
+			mShaderSpriteImage->addParameter("mainTexSamp", "mainTexSamp", GPOT_SAMPLER2D);
+		else
+			mShaderSpriteImage->addParameter("mainTexSamp", "mainTexture", GPOT_SAMPLER2D);
+
+		mShaderSpriteImage->addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
+		mShaderSpriteImage->addParameter("tint", "tint", GPDT_FLOAT4);
+
+		TechniquePtr newTechnique = mShaderSpriteImage->addTechnique(mActiveRenderSystem, RendererInvariant);
+		PassPtr newPass = newTechnique->addPass();
+		newPass->setVertexProgram(vsProgram);
+		newPass->setFragmentProgram(psProgram);
+
+		BLEND_STATE_DESC desc;
+		desc.renderTargetDesc[0].blendEnable = true;
+		desc.renderTargetDesc[0].srcBlend = BF_SOURCE_ALPHA;
+		desc.renderTargetDesc[0].dstBlend = BF_INV_SOURCE_ALPHA;
+		desc.renderTargetDesc[0].blendOp = BO_ADD;
+		desc.renderTargetDesc[0].renderTargetWriteMask = 0x7; // Don't write to alpha
+
+		HBlendState blendState = BlendState::create(desc);
+		newPass->setBlendState(blendState);
+
+		DEPTH_STENCIL_STATE_DESC depthStateDesc;
+		depthStateDesc.depthReadEnable = false;
+		depthStateDesc.depthWriteEnable = false;
+
+		HDepthStencilState depthState = DepthStencilState::create(depthStateDesc);
+		newPass->setDepthStencilState(depthState);
+	}
+
+	void BuiltinResources::initDebugDraw2DClipSpaceShader()
+	{
+		HGpuProgram vsProgram = getGpuProgram(ShaderDebugDraw2DClipSpaceVSFile);
+		HGpuProgram psProgram = getGpuProgram(ShaderDebugDraw2DClipSpacePSFile);
+
+		mShaderDebugDraw2DClipSpace = Shader::create("DebugDraw2DClipSpaceShader");
+
+		TechniquePtr newTechnique = mShaderDebugDraw2DClipSpace->addTechnique(mActiveRenderSystem, RendererInvariant);
+		PassPtr newPass = newTechnique->addPass();
+		newPass->setVertexProgram(vsProgram);
+		newPass->setFragmentProgram(psProgram);
+
+		BLEND_STATE_DESC desc;
+		desc.renderTargetDesc[0].blendEnable = true;
+		desc.renderTargetDesc[0].srcBlend = BF_SOURCE_ALPHA;
+		desc.renderTargetDesc[0].dstBlend = BF_INV_SOURCE_ALPHA;
+		desc.renderTargetDesc[0].blendOp = BO_ADD;
+
+		HBlendState blendState = BlendState::create(desc);
+		newPass->setBlendState(blendState);
+
+		DEPTH_STENCIL_STATE_DESC depthStateDesc;
+		depthStateDesc.depthReadEnable = false;
+		depthStateDesc.depthWriteEnable = false;
+
+		HDepthStencilState depthState = DepthStencilState::create(depthStateDesc);
+		newPass->setDepthStencilState(depthState);
+	}
+
+	void BuiltinResources::initDebugDraw2DScreenSpaceShader()
+	{
+		HGpuProgram vsProgram = getGpuProgram(ShaderDebugDraw2DScreenSpaceVSFile);
+		HGpuProgram psProgram = getGpuProgram(ShaderDebugDraw2DScreenSpacePSFile);
+
+		mShaderDebugDraw2DScreenSpace = Shader::create("DebugDraw2DScreenSpaceShader");
+
+		mShaderDebugDraw2DScreenSpace->addParameter("invViewportWidth", "invViewportWidth", GPDT_FLOAT1);
+		mShaderDebugDraw2DScreenSpace->addParameter("invViewportHeight", "invViewportHeight", GPDT_FLOAT1);
+
+		TechniquePtr newTechnique = mShaderDebugDraw2DScreenSpace->addTechnique(mActiveRenderSystem, RendererInvariant);
+		PassPtr newPass = newTechnique->addPass();
+		newPass->setVertexProgram(vsProgram);
+		newPass->setFragmentProgram(psProgram);
+
+		BLEND_STATE_DESC desc;
+		desc.renderTargetDesc[0].blendEnable = true;
+		desc.renderTargetDesc[0].srcBlend = BF_SOURCE_ALPHA;
+		desc.renderTargetDesc[0].dstBlend = BF_INV_SOURCE_ALPHA;
+		desc.renderTargetDesc[0].blendOp = BO_ADD;
+
+		HBlendState blendState = BlendState::create(desc);
+		newPass->setBlendState(blendState);
+
+		DEPTH_STENCIL_STATE_DESC depthStateDesc;
+		depthStateDesc.depthReadEnable = false;
+		depthStateDesc.depthWriteEnable = false;
+
+		HDepthStencilState depthState = DepthStencilState::create(depthStateDesc);
+		newPass->setDepthStencilState(depthState);
+	}
+
+	void BuiltinResources::initDebugDraw3DShader()
+	{
+		HGpuProgram vsProgram = getGpuProgram(ShaderDebugDraw3DVSFile);
+		HGpuProgram psProgram = getGpuProgram(ShaderDebugDraw3DPSFile);
+
+		mShaderDebugDraw3D = Shader::create("DebugDraw3DShader");
+
+		mShaderDebugDraw3D->addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
+
+		TechniquePtr newTechnique = mShaderDebugDraw3D->addTechnique(mActiveRenderSystem, RendererInvariant);
+		PassPtr newPass = newTechnique->addPass();
+		newPass->setVertexProgram(vsProgram);
+		newPass->setFragmentProgram(psProgram);
+
+		BLEND_STATE_DESC desc;
+		desc.renderTargetDesc[0].blendEnable = true;
+		desc.renderTargetDesc[0].srcBlend = BF_SOURCE_ALPHA;
+		desc.renderTargetDesc[0].dstBlend = BF_INV_SOURCE_ALPHA;
+		desc.renderTargetDesc[0].blendOp = BO_ADD;
+
+		HBlendState blendState = BlendState::create(desc);
+		newPass->setBlendState(blendState);
+	}
+
+	void BuiltinResources::initDummyShader()
+	{
+		HGpuProgram vsProgram = getGpuProgram(ShaderDummyVSFile);
+		HGpuProgram psProgram = getGpuProgram(ShaderDummyPSFile);
+
+		mShaderDummy = Shader::create("DummyShader");
+
+		mShaderDummy->addParameter("matWorldViewProj", "matWorldViewProj", GPDT_MATRIX_4X4);
+
+		TechniquePtr newTechnique = mShaderDummy->addTechnique(mActiveRenderSystem, RendererInvariant);
+		PassPtr newPass = newTechnique->addPass();
+		newPass->setVertexProgram(vsProgram);
+		newPass->setFragmentProgram(psProgram);
 	}
 
 	const PixelData& BuiltinResources::getCursorArrow(Vector2I& hotSpot)
@@ -631,5 +1071,65 @@ namespace BansheeEngine
 	{
 		hotSpot = CursorArrowLeftRightHotspot;
 		return *mCursorArrowLeftRight.get();
+	}
+
+	GUIMaterialInfo BuiltinResources::createSpriteTextMaterial() const
+	{
+		GUIMaterialInfo info;
+		info.material = Material::create(mShaderSpriteText);
+		info.invViewportWidth = info.material->getParamFloat("invViewportWidth");
+		info.invViewportHeight = info.material->getParamFloat("invViewportHeight");
+		info.worldTransform = info.material->getParamMat4("worldTransform");
+		info.mainTexture = info.material->getParamTexture("mainTexture");
+		info.mainTexSampler = info.material->getParamSamplerState("mainTexSamp");
+		info.tint = info.material->getParamVec4("tint");
+
+		return info;
+	}
+
+	GUIMaterialInfo BuiltinResources::createSpriteImageMaterial() const
+	{
+		GUIMaterialInfo info;
+		info.material = Material::create(mShaderSpriteImage);
+		info.invViewportWidth = info.material->getParamFloat("invViewportWidth");
+		info.invViewportHeight = info.material->getParamFloat("invViewportHeight");
+		info.worldTransform = info.material->getParamMat4("worldTransform");
+		info.mainTexture = info.material->getParamTexture("mainTexture");
+		info.mainTexSampler = info.material->getParamSamplerState("mainTexSamp");
+		info.tint = info.material->getParamVec4("tint");
+
+		return info;
+	}
+
+	DebugDraw2DClipSpaceMatInfo BuiltinResources::createDebugDraw2DClipSpaceMaterial() const
+	{
+		DebugDraw2DClipSpaceMatInfo info;
+		info.material = Material::create(mShaderDebugDraw2DClipSpace);
+
+		return info;
+	}
+
+	DebugDraw2DScreenSpaceMatInfo BuiltinResources::createDebugDraw2DScreenSpaceMaterial() const
+	{
+		DebugDraw2DScreenSpaceMatInfo info;
+		info.material = Material::create(mShaderDebugDraw2DScreenSpace);
+		info.invViewportWidth = info.material->getParamFloat("invViewportWidth");
+		info.invViewportHeight = info.material->getParamFloat("invViewportHeight");
+
+		return info;
+	}
+
+	DebugDraw3DMatInfo BuiltinResources::createDebugDraw3DMaterial() const
+	{
+		DebugDraw3DMatInfo info;
+		info.material = Material::create(mShaderDebugDraw3D);
+		info.matViewProj = info.material->getParamMat4("matViewProj");
+
+		return info;
+	}
+
+	HMaterial BuiltinResources::createDummyMaterial() const
+	{
+		return Material::create(mShaderDummy);
 	}
 }

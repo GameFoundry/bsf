@@ -9,14 +9,14 @@
 #include "BsRenderQueue.h"
 #include "BsCamera.h"
 #include "BsCoreThreadAccessor.h"
-#include "BsBuiltinMaterialManager.h"
+#include "BsBuiltinResources.h"
 #include "BsVertexDataDesc.h"
 
 namespace BansheeEngine
 {
 	DrawHelper2D::DrawHelper2D()
 	{
-		mMaterial2DClipSpace = BuiltinMaterialManager::instance().createDebugDraw2DClipSpaceMaterial();
+		mMaterial2DClipSpace = BuiltinResources::instance().createDebugDraw2DClipSpaceMaterial();
 
 		mVertexDesc = bs_shared_ptr<VertexDataDesc>();
 		mVertexDesc->addVertElem(VET_FLOAT2, VES_POSITION);
@@ -47,7 +47,7 @@ namespace BansheeEngine
 
 	void DrawHelper2D::line_AA(const Vector2& a, const Vector2& b, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
-		DrawHelperTemplate<Vector2>::line_AA(a, b, width, borderWidth, color, meshData, vertexOffset, indexOffset);
+		DrawHelperTemplate<Vector2>::line_AA(a, b, Vector2::ZERO, width, borderWidth, color, meshData, vertexOffset, indexOffset);
 	}
 
 	void DrawHelper2D::lineList_Pixel(const Vector<Vector2>& linePoints, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
@@ -57,7 +57,7 @@ namespace BansheeEngine
 
 	void DrawHelper2D::lineList_AA(const Vector<Vector2>& linePoints, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
-		DrawHelperTemplate<Vector2>::lineList_AA(linePoints, width, borderWidth, color, meshData, vertexOffset, indexOffset);
+		DrawHelperTemplate<Vector2>::lineList_AA(linePoints, Vector2::ZERO, width, borderWidth, color, meshData, vertexOffset, indexOffset);
 	}
 
 	/************************************************************************/
@@ -110,7 +110,7 @@ namespace BansheeEngine
 		else
 		{
 			dbgCmd.type = DebugDrawType::ScreenSpace;
-			dbgCmd.matInfo2DScreenSpace = BuiltinMaterialManager::instance().createDebugDraw2DScreenSpaceMaterial();
+			dbgCmd.matInfo2DScreenSpace = BuiltinResources::instance().createDebugDraw2DScreenSpaceMaterial();
 		}
 	}
 
@@ -149,7 +149,7 @@ namespace BansheeEngine
 		else
 		{
 			dbgCmd.type = DebugDrawType::ScreenSpace;
-			dbgCmd.matInfo2DScreenSpace = BuiltinMaterialManager::instance().createDebugDraw2DScreenSpaceMaterial();
+			dbgCmd.matInfo2DScreenSpace = BuiltinResources::instance().createDebugDraw2DScreenSpaceMaterial();
 		}
 	}
 
@@ -188,7 +188,7 @@ namespace BansheeEngine
 		else
 		{
 			dbgCmd.type = DebugDrawType::ScreenSpace;
-			dbgCmd.matInfo2DScreenSpace = BuiltinMaterialManager::instance().createDebugDraw2DScreenSpaceMaterial();
+			dbgCmd.matInfo2DScreenSpace = BuiltinResources::instance().createDebugDraw2DScreenSpaceMaterial();
 		}
 	}
 
@@ -233,7 +233,7 @@ namespace BansheeEngine
 		else
 		{
 			dbgCmd.type = DebugDrawType::ScreenSpace;
-			dbgCmd.matInfo2DScreenSpace = BuiltinMaterialManager::instance().createDebugDraw2DScreenSpaceMaterial();
+			dbgCmd.matInfo2DScreenSpace = BuiltinResources::instance().createDebugDraw2DScreenSpaceMaterial();
 		}
 	}
 
@@ -277,11 +277,11 @@ namespace BansheeEngine
 		else
 		{
 			dbgCmd.type = DebugDrawType::ScreenSpace;
-			dbgCmd.matInfo2DScreenSpace = BuiltinMaterialManager::instance().createDebugDraw2DScreenSpaceMaterial();
+			dbgCmd.matInfo2DScreenSpace = BuiltinResources::instance().createDebugDraw2DScreenSpaceMaterial();
 		}
 	}
 
-	void DrawHelper2D::line_AA(const Vector2& a, const Vector2& b, float width, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
+	void DrawHelper2D::line_AA(const Vector2& a, const Vector2& b, const Vector2& up, float width, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors,
 		UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
 	{
 		Vector2 dir = b - a;
@@ -309,10 +309,10 @@ namespace BansheeEngine
 		points[2] = v2;
 		points[3] = v3;
 
-		polygon_AA(points, borderWidth, color, outVertices, outColors, vertexOffset, vertexStride, outIndices, indexOffset);
+		polygon_AA(points, up, borderWidth, color, outVertices, outColors, vertexOffset, vertexStride, outIndices, indexOffset);
 	}
 
-	void DrawHelper2D::polygon_AA(const Vector<Vector2>& points, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
+	void DrawHelper2D::polygon_AA(const Vector<Vector2>& points, const Vector2& up, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors,
 		UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
 	{
 		UINT32 numCoords = (UINT32)points.size();

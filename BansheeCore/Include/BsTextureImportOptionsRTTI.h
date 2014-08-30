@@ -6,7 +6,7 @@
 
 namespace BansheeEngine
 {
-	class BS_CORE_EXPORT TextureImportOptionsRTTI : public RTTIType<TextureImportOptions, IReflectable, TextureImportOptionsRTTI>
+	class BS_CORE_EXPORT TextureImportOptionsRTTI : public RTTIType<TextureImportOptions, ImportOptions, TextureImportOptionsRTTI>
 	{
 	private:
 		PixelFormat& getPixelFormat(TextureImportOptions* obj) { return obj->mFormat; }

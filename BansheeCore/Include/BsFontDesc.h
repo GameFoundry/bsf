@@ -121,16 +121,17 @@ namespace BansheeEngine
 
 		static void toMemory(const FONT_DESC& data, char* memory)
 		{ 
-			UINT32 size = getDynamicSize(data);
-
-			memcpy(memory, &size, sizeof(UINT32));
+			UINT32 size = sizeof(UINT32);
+			char* memoryStart = memory;
 			memory += sizeof(UINT32);
 			
-			RTTIPlainType<Map<UINT32, CHAR_DESC>>::toMemory(data.characters, memory);
-			rttiWriteElem(data.baselineOffset, memory);
-			rttiWriteElem(data.lineHeight, memory);
-			rttiWriteElem(data.missingGlyph, memory);
-			rttiWriteElem(data.spaceWidth, memory);
+			memory = rttiWriteElem(data.characters, memory, size);
+			memory = rttiWriteElem(data.baselineOffset, memory, size);
+			memory = rttiWriteElem(data.lineHeight, memory, size);
+			memory = rttiWriteElem(data.missingGlyph, memory, size);
+			memory = rttiWriteElem(data.spaceWidth, memory, size);
+
+			memcpy(memoryStart, &size, sizeof(UINT32));
 		}
 
 		static UINT32 fromMemory(FONT_DESC& data, char* memory)
@@ -139,11 +140,11 @@ namespace BansheeEngine
 			memcpy(&size, memory, sizeof(UINT32)); 
 			memory += sizeof(UINT32);
 
-			RTTIPlainType<Map<UINT32, CHAR_DESC>>::fromMemory(data.characters, memory);
-			rttiReadElem(data.baselineOffset, memory);
-			rttiReadElem(data.lineHeight, memory);
-			rttiReadElem(data.missingGlyph, memory);
-			rttiReadElem(data.spaceWidth, memory);
+			memory = rttiReadElem(data.characters, memory);
+			memory = rttiReadElem(data.baselineOffset, memory);
+			memory = rttiReadElem(data.lineHeight, memory);
+			memory = rttiReadElem(data.missingGlyph, memory);
+			memory = rttiReadElem(data.spaceWidth, memory);
 
 			return size;
 		}
@@ -151,7 +152,7 @@ namespace BansheeEngine
 		static UINT32 getDynamicSize(const FONT_DESC& data)	
 		{ 
 			UINT64 dataSize = sizeof(UINT32);
-			dataSize += RTTIPlainType<Map<UINT32, CHAR_DESC>>::getDynamicSize(data.characters);
+			dataSize += rttiGetElemSize(data.characters);
 			dataSize += rttiGetElemSize(data.baselineOffset);
 			dataSize += rttiGetElemSize(data.lineHeight);
 			dataSize += rttiGetElemSize(data.missingGlyph);

@@ -6,7 +6,7 @@
 
 namespace BansheeEngine
 {
-	class BS_CORE_EXPORT GpuProgramImportOptionsRTTI : public RTTIType<GpuProgramImportOptions, IReflectable, GpuProgramImportOptionsRTTI>
+	class BS_CORE_EXPORT GpuProgramImportOptionsRTTI : public RTTIType<GpuProgramImportOptions, ImportOptions, GpuProgramImportOptionsRTTI>
 	{
 	private:
 		String& getEntryPoint(GpuProgramImportOptions* obj) { return obj->mEntryPoint; }

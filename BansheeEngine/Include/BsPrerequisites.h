@@ -27,6 +27,7 @@ namespace BansheeEngine
 	static const String RenderSystemDX11 = "D3D11RenderSystem";
 	static const String RenderSystemOpenGL = "GLRenderSystem";
 	static const String RendererDefault = "BansheeRenderer";
+	static const String RendererInvariant = "CoreRenderer";
 
 	class VirtualButton;
 	class VirtualInput;

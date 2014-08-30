@@ -37,7 +37,7 @@ namespace BansheeEngine
 		 * @brief	Deletes a file or a folder at the specified path.
 		 *
 		 * @param	fullPath   	Full path to a file or a folder..
-		 * @param	recursively	(optional) If true, non-empty folders will have their contents
+		 * @param	recursively	(optional) If true, folders will have their contents
 		 * 						deleted as well. Otherwise an exception will be
 		 * 						thrown for non-empty folders.
 		 */

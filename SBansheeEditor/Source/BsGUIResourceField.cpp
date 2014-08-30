@@ -17,7 +17,7 @@
 #include "BsProjectLibrary.h"
 #include "BsProjectResourceMeta.h"
 #include "BsManagedResourceMetaData.h"
-#include "BsEditorGUI.h"
+#include "BsBuiltinEditorResources.h"
 
 using namespace std::placeholders;
 
@@ -33,12 +33,12 @@ namespace BansheeEngine
 
 		if (withLabel)
 		{
-			mLabel = GUILabel::create(labelContent, GUIOptions(GUIOption::fixedWidth(labelWidth)), getSubStyleName(EditorGUI::ObjectFieldLabelStyleName));
+			mLabel = GUILabel::create(labelContent, GUIOptions(GUIOption::fixedWidth(labelWidth)), getSubStyleName(BuiltinEditorResources::ObjectFieldLabelStyleName));
 			mLayout->addElement(mLabel);
 		}
 
-		mDropButton = GUIDropButton::create((UINT32)DragAndDropType::Resources, GUIOptions(GUIOption::flexibleWidth()), getSubStyleName(EditorGUI::ObjectFieldDropBtnStyleName));
-		mClearButton = GUIButton::create(HString(L""), getSubStyleName(EditorGUI::ObjectFieldClearBtnStyleName));
+		mDropButton = GUIDropButton::create((UINT32)DragAndDropType::Resources, GUIOptions(GUIOption::flexibleWidth()), getSubStyleName(BuiltinEditorResources::ObjectFieldDropBtnStyleName));
+		mClearButton = GUIButton::create(HString(L""), getSubStyleName(BuiltinEditorResources::ObjectFieldClearBtnStyleName));
 		mClearButton->onClick.connect(std::bind(&GUIResourceField::onClearButtonClicked, this));
 
 		mLayout->addElement(mDropButton);
@@ -57,7 +57,7 @@ namespace BansheeEngine
 	{
 		const String* curStyle = &style;
 		if (*curStyle == StringUtil::BLANK)
-			curStyle = &EditorGUI::ObjectFieldStyleName;
+			curStyle = &BuiltinEditorResources::ObjectFieldStyleName;
 
 		return bs_new<GUIResourceField>(PrivatelyConstruct(), typeNamespace, type, labelContent, labelWidth, *curStyle,
 			GUILayoutOptions::create(layoutOptions), true);
@@ -68,7 +68,7 @@ namespace BansheeEngine
 	{
 		const String* curStyle = &style;
 		if (*curStyle == StringUtil::BLANK)
-			curStyle = &EditorGUI::ObjectFieldStyleName;
+			curStyle = &BuiltinEditorResources::ObjectFieldStyleName;
 
 		return bs_new<GUIResourceField>(PrivatelyConstruct(), typeNamespace, type, labelContent, DEFAULT_LABEL_WIDTH, *curStyle,
 			GUILayoutOptions::create(layoutOptions), true);
@@ -79,7 +79,7 @@ namespace BansheeEngine
 	{
 		const String* curStyle = &style;
 		if (*curStyle == StringUtil::BLANK)
-			curStyle = &EditorGUI::ObjectFieldStyleName;
+			curStyle = &BuiltinEditorResources::ObjectFieldStyleName;
 
 		return bs_new<GUIResourceField>(PrivatelyConstruct(), typeNamespace, type, GUIContent(labelText), labelWidth, *curStyle,
 			GUILayoutOptions::create(layoutOptions), true);
@@ -90,7 +90,7 @@ namespace BansheeEngine
 	{
 		const String* curStyle = &style;
 		if (*curStyle == StringUtil::BLANK)
-			curStyle = &EditorGUI::ObjectFieldStyleName;
+			curStyle = &BuiltinEditorResources::ObjectFieldStyleName;
 
 		return bs_new<GUIResourceField>(PrivatelyConstruct(), typeNamespace, type, GUIContent(labelText), DEFAULT_LABEL_WIDTH, *curStyle,
 			GUILayoutOptions::create(layoutOptions), true);
@@ -100,7 +100,7 @@ namespace BansheeEngine
 	{
 		const String* curStyle = &style;
 		if (*curStyle == StringUtil::BLANK)
-			curStyle = &EditorGUI::ObjectFieldStyleName;
+			curStyle = &BuiltinEditorResources::ObjectFieldStyleName;
 
 		return bs_new<GUIResourceField>(PrivatelyConstruct(), typeNamespace, type, GUIContent(), 0, *curStyle,
 			GUILayoutOptions::create(layoutOptions), false);
@@ -111,7 +111,7 @@ namespace BansheeEngine
 	{
 		const String* curStyle = &style;
 		if (*curStyle == StringUtil::BLANK)
-			curStyle = &EditorGUI::ObjectFieldStyleName;
+			curStyle = &BuiltinEditorResources::ObjectFieldStyleName;
 
 		return bs_new<GUIResourceField>(PrivatelyConstruct(), typeNamespace, type, labelContent, labelWidth, *curStyle,
 			GUILayoutOptions::create(), true);
@@ -122,7 +122,7 @@ namespace BansheeEngine
 	{
 		const String* curStyle = &style;
 		if (*curStyle == StringUtil::BLANK)
-			curStyle = &EditorGUI::ObjectFieldStyleName;
+			curStyle = &BuiltinEditorResources::ObjectFieldStyleName;
 
 		return bs_new<GUIResourceField>(PrivatelyConstruct(), typeNamespace, type, labelContent, DEFAULT_LABEL_WIDTH, *curStyle,
 			GUILayoutOptions::create(), true);
@@ -133,7 +133,7 @@ namespace BansheeEngine
 	{
 		const String* curStyle = &style;
 		if (*curStyle == StringUtil::BLANK)
-			curStyle = &EditorGUI::ObjectFieldStyleName;
+			curStyle = &BuiltinEditorResources::ObjectFieldStyleName;
 
 		return bs_new<GUIResourceField>(PrivatelyConstruct(), typeNamespace, type, GUIContent(labelText), labelWidth, *curStyle,
 			GUILayoutOptions::create(), true);
@@ -144,7 +144,7 @@ namespace BansheeEngine
 	{
 		const String* curStyle = &style;
 		if (*curStyle == StringUtil::BLANK)
-			curStyle = &EditorGUI::ObjectFieldStyleName;
+			curStyle = &BuiltinEditorResources::ObjectFieldStyleName;
 
 		return bs_new<GUIResourceField>(PrivatelyConstruct(), typeNamespace, type, GUIContent(labelText), DEFAULT_LABEL_WIDTH, *curStyle,
 			GUILayoutOptions::create(), true);
@@ -154,7 +154,7 @@ namespace BansheeEngine
 	{
 		const String* curStyle = &style;
 		if (*curStyle == StringUtil::BLANK)
-			curStyle = &EditorGUI::ObjectFieldStyleName;
+			curStyle = &BuiltinEditorResources::ObjectFieldStyleName;
 
 		return bs_new<GUIResourceField>(PrivatelyConstruct(), typeNamespace, type, GUIContent(), 0, *curStyle,
 			GUILayoutOptions::create(), false);
@@ -264,10 +264,10 @@ namespace BansheeEngine
 	void GUIResourceField::styleUpdated()
 	{
 		if (mLabel != nullptr)
-			mLabel->setStyle(getSubStyleName(EditorGUI::ObjectFieldLabelStyleName));
+			mLabel->setStyle(getSubStyleName(BuiltinEditorResources::ObjectFieldLabelStyleName));
 
-		mDropButton->setStyle(getSubStyleName(EditorGUI::ObjectFieldDropBtnStyleName));
-		mClearButton->setStyle(getSubStyleName(EditorGUI::ObjectFieldClearBtnStyleName));
+		mDropButton->setStyle(getSubStyleName(BuiltinEditorResources::ObjectFieldDropBtnStyleName));
+		mClearButton->setStyle(getSubStyleName(BuiltinEditorResources::ObjectFieldClearBtnStyleName));
 	}
 
 	void GUIResourceField::onClearButtonClicked()

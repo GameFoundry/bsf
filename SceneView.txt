@@ -1,7 +1,29 @@
 
+TODO:
+ - Core thread gets stuck on shutdown when OpenGL is used...Somewhere in kernel
+
 Weekend:
+ - Set up grid material and hook it up to renderer (+ actually instantiate it in EditorApplication)
+ - Figure out how to load scene grid material in EditorResources
+   - Figure out in general how to deal with built-in resources
+   - e.g. meshes, textures and shaders. I need to import them then at runtime I should just load the engine version directly
+     - When in debug mode probably always reimport as a form of unit testing
+	 - Have two separate folders Resources/EditorRaw and Resources/Editor (similar for Engine)
+	 - Store a BuiltinResources asset which contains last import dates of the files
+	 - When EditorResources get started up check that file and check if EditorRaw version of the resource exists
+	   - If it does and is newer when import it and save it to Editor folder
+	 - Rename BuiltinResources to EngineResources?
+	 - Merge GUI resources in Editor/EngineResources?
+	   - Editor/EngineGUI can then just reference them when creating GUI styles
+   - Fix up all GUI builtin resources to use this approach 
+ - Rename EditorGUI to EditorBuildiNResources
+ - You can create a resource handle to invalid resource type. Add a security feature to prevent that, at least in debug mode?
+ - When unloading unused resources I should do it recursively so it unloads any new ones that might have been released during the first unload
+ - Ensure that resource handles only have a single mData (and fix Resources::unloadAllUnused)
+ - Add Scene grid shaders
+ - Move dock overlay from engine to editor builtin resources
+
  - Grid
- - RenderTarget refactor
  - Think about picking implementation and possibly Handles implementation
 
 TODO - Think about:
@@ -89,19 +111,3 @@ Need to allow the user to specify custom gizmos.
  - Additionally in the attribute you can specify when is the gizmo displayed: Active, Selected, NotSelected, SelectedOrChild
  - And an option if gizmo can be picked or not
  - These methods will somehow automatically be registered with the GizmoSetups
-
------------------------------------------------------------------------
-RenderTarget (and in turn, Viewport) make data available to sim thread, even though that data can be arbitrarily modified from the core thread
-
-TODO:
- - Core thread gets stuck on shutdown when OpenGL is used...Somewhere in kernel
- - getProperties on non-core should just make a copy of core for now to check if everything works
- - Remove the debug stuff in RenderTarget when done testing
-
-
-Whenever a core object gets changed it should notify a RenderTargetManager, which will on beginning of every frame update
-non-core version with valid data.
- - Make sure core dirty properties are updated before render window manager events are triggered
-
-Viewport should return a ViewportProxy for use on core thread (instead of a clone as it has now)
- - The proxy will reference the *Core version of render target

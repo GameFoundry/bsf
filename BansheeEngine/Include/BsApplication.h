@@ -48,6 +48,7 @@ namespace BansheeEngine
 		 * @note	e.g. player or game view.
 		 */
 		const ViewportPtr& getPrimaryViewport() const;
+
 	protected:
 		/**
 		 * @copydoc	Module::onStartUp

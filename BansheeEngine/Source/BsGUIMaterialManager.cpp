@@ -1,11 +1,21 @@
 #include "BsGUIMaterialManager.h"
 #include "BsMaterial.h"
+#include "BsSamplerState.h"
 #include "BsDebug.h"
-#include "BsBuiltinMaterialManager.h"
+#include "BsBuiltinResources.h"
 #include "BsColor.h"
 
 namespace BansheeEngine
 {
+	GUIMaterialManager::GUIMaterialManager()
+	{
+		SAMPLER_STATE_DESC ssDesc;
+		ssDesc.magFilter = FO_POINT;
+		ssDesc.minFilter = FO_POINT;
+		ssDesc.mipFilter = FO_POINT;
+		mGUISamplerState = SamplerState::create(ssDesc);
+	}
+
 	const GUIMaterialInfo& GUIMaterialManager::requestTextMaterial(const HTexture& texture, const Color& tint) const
 	{
 		Vector4 vecColor(tint.r, tint.g, tint.b, tint.a);
@@ -17,8 +27,9 @@ namespace BansheeEngine
 		mTextMaterials.push_back(GUIMaterial());
 
 		GUIMaterial& guiMat = mTextMaterials[mTextMaterials.size() - 1];
-		guiMat.handle = BuiltinMaterialManager::instance().createSpriteTextMaterial();
+		guiMat.handle = BuiltinResources::instance().createSpriteTextMaterial();
 
+		guiMat.handle.mainTexSampler.set(mGUISamplerState);
 		guiMat.handle.mainTexture.set(texture);
 		guiMat.handle.tint.set(vecColor);
 		guiMat.refCount = 1;		
@@ -37,8 +48,9 @@ namespace BansheeEngine
 		mImageMaterials.push_back(GUIMaterial());
 
 		GUIMaterial& guiMat = mImageMaterials[mImageMaterials.size() - 1];
-		guiMat.handle = BuiltinMaterialManager::instance().createSpriteImageMaterial();
+		guiMat.handle = BuiltinResources::instance().createSpriteImageMaterial();
 
+		guiMat.handle.mainTexSampler.set(mGUISamplerState);
 		guiMat.handle.mainTexture.set(texture);
 		guiMat.handle.tint.set(vecColor);
 		guiMat.refCount = 1;		

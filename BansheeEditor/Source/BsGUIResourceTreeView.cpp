@@ -142,7 +142,7 @@ namespace BansheeEngine
 	{
 		ResourceTreeElement* newChild = bs_new<ResourceTreeElement>();
 		newChild->mParent = parent;
-		newChild->mName = fullPath.getFilename();
+		newChild->mName = fullPath.getTail();
 		newChild->mFullPath = fullPath;
 		newChild->mSortedIdx = (UINT32)parent->mChildren.size();
 		newChild->mIsVisible = parent->mIsVisible && parent->mIsExpanded;

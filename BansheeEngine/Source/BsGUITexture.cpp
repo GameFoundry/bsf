@@ -123,7 +123,7 @@ namespace BansheeEngine
 
 		float optimalWidth = 0.0f;
 		float optimalHeight = 0.0f;
-		if(mActiveTexture != nullptr && mActiveTexture.isLoaded())
+		if (SpriteTexture::checkIsLoaded(mActiveTexture))
 		{
 			mDesc.texture = mActiveTexture.getInternalPtr();
 			optimalWidth = (float)mDesc.texture->getTexture()->getWidth();
@@ -193,7 +193,7 @@ namespace BansheeEngine
 			optimalSize.x = _getLayoutOptions().width;
 		else
 		{
-			if(mActiveTexture != nullptr && mActiveTexture.isLoaded())
+			if (SpriteTexture::checkIsLoaded(mActiveTexture))
 				optimalSize.x = mActiveTexture->getTexture()->getWidth();
 			else
 				optimalSize.x = _getLayoutOptions().maxWidth;
@@ -203,7 +203,7 @@ namespace BansheeEngine
 			optimalSize.y = _getLayoutOptions().height;
 		else
 		{
-			if(mActiveTexture != nullptr && mActiveTexture.isLoaded())
+			if (SpriteTexture::checkIsLoaded(mActiveTexture))
 				optimalSize.y = mActiveTexture->getTexture()->getHeight();
 			else
 				optimalSize.y = _getLayoutOptions().maxHeight;

@@ -3,7 +3,7 @@
 #include "BsEditorWidgetManager.h"
 #include "BsMainEditorWindow.h"
 #include "BsRenderWindow.h"
-#include "BsEditorGUI.h"
+#include "BsBuiltinEditorResources.h"
 #include "BsUndoRedo.h"
 #include "BsFileSerializer.h"
 #include "BsFileSystem.h"
@@ -57,7 +57,7 @@ namespace BansheeEngine
 		:Application(createRenderWindowDesc(), renderSystemPlugin, RendererPlugin::Default), 
 		mActiveRSPlugin(renderSystemPlugin)
 	{
-		EditorGUI::startUp();
+		BuiltinEditorResources::startUp(renderSystemPlugin);
 
 		{
 			auto inputConfig = VirtualInput::instance().getConfiguration();
@@ -122,7 +122,7 @@ namespace BansheeEngine
 		/************************************************************************/
 
 		ProjectLibrary::shutDown();
-		EditorGUI::shutDown();
+		BuiltinEditorResources::shutDown();
 	}
 
 	void EditorApplication::onStartUp()

@@ -13,7 +13,7 @@
 #include "BsRenderer.h"
 #include "BsSceneObject.h"
 #include "BsGUIManager.h"
-#include "BsBuiltinMaterialManager.h"
+#include "BsBuiltinEditorResources.h"
 #include "BsGUIWidget.h"
 #include "BsCamera.h"
 #include "BsDragAndDropManager.h"
@@ -416,7 +416,7 @@ namespace BansheeEngine
 		mLeftDropPolygon = bs_newN<Vector2>(4);
 		mRightDropPolygon = bs_newN<Vector2>(4);
 
-		mDropOverlayMat = BuiltinMaterialManager::instance().createDockDropOverlayMaterial();
+		mDropOverlayMat = BuiltinEditorResources::instance().createDockDropOverlayMaterial();
 	}
 
 	DockManager::~DockManager()

@@ -9,7 +9,7 @@
 #include "BsRenderQueue.h"
 #include "BsException.h"
 #include "BsCamera.h"
-#include "BsBuiltinMaterialManager.h"
+#include "BsBuiltinResources.h"
 #include "BsVertexDataDesc.h"
 
 namespace BansheeEngine
@@ -37,9 +37,10 @@ namespace BansheeEngine
 		DrawHelperTemplate<Vector3>::line_Pixel(a, b, color, meshData, vertexOffset, indexOffset);
 	}
 
-	void DrawHelper3D::line_AA(const Vector3& a, const Vector3& b, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+	void DrawHelper3D::line_AA(const Vector3& a, const Vector3& b, const Vector3& up, float width, float borderWidth, 
+		const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
-		DrawHelperTemplate<Vector3>::line_AA(a, b, width, borderWidth, color, meshData, vertexOffset, indexOffset);
+		DrawHelperTemplate<Vector3>::line_AA(a, b, up, width, borderWidth, color, meshData, vertexOffset, indexOffset);
 	}
 
 	void DrawHelper3D::lineList_Pixel(const Vector<Vector3>& linePoints, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
@@ -47,9 +48,10 @@ namespace BansheeEngine
 		DrawHelperTemplate<Vector3>::lineList_Pixel(linePoints, color, meshData, vertexOffset, indexOffset);
 	}
 
-	void DrawHelper3D::lineList_AA(const Vector<Vector3>& linePoints, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+	void DrawHelper3D::lineList_AA(const Vector<Vector3>& linePoints, const Vector3& up, float width, float borderWidth, 
+		const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
-		DrawHelperTemplate<Vector3>::lineList_AA(linePoints, width, borderWidth, color, meshData, vertexOffset, indexOffset);
+		DrawHelperTemplate<Vector3>::lineList_AA(linePoints, up, width, borderWidth, color, meshData, vertexOffset, indexOffset);
 	}
 
 	/************************************************************************/
@@ -77,10 +79,10 @@ namespace BansheeEngine
 
 		dbgCmd.mesh = mesh;
 		dbgCmd.type = DebugDrawType::WorldSpace;
-		dbgCmd.matInfo3D = BuiltinMaterialManager::instance().createDebugDraw3DMaterial();
+		dbgCmd.matInfo3D = BuiltinResources::instance().createDebugDraw3DMaterial();
 	}
 
-	void DrawHelper3D::drawLine_AA(const HCamera& camera, const Vector3& a, const Vector3& b, float width, float borderWidth, const Color& color, float timeout)
+	void DrawHelper3D::drawLine_AA(const HCamera& camera, const Vector3& a, const Vector3& b, const Vector3& up, float width, float borderWidth, const Color& color, float timeout)
 	{
 		const Viewport* viewport = camera->getViewport().get();
 
@@ -92,7 +94,7 @@ namespace BansheeEngine
 
 		MeshDataPtr meshData = bs_shared_ptr<MeshData, ScratchAlloc>(8, 30, mVertexDesc);
 
-		line_AA(a, b, width, borderWidth, color, meshData, 0, 0);
+		line_AA(a, b, up, width, borderWidth, color, meshData, 0, 0);
 
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
 		dbgCmd.worldCenter = calcCenter(positionData, meshData->getNumVertices(), mVertexDesc->getVertexStride());
@@ -101,7 +103,7 @@ namespace BansheeEngine
 
 		dbgCmd.mesh = mesh;
 		dbgCmd.type = DebugDrawType::WorldSpace;
-		dbgCmd.matInfo3D = BuiltinMaterialManager::instance().createDebugDraw3DMaterial();
+		dbgCmd.matInfo3D = BuiltinResources::instance().createDebugDraw3DMaterial();
 	}
 
 	void DrawHelper3D::drawLineList_Pixel(const HCamera& camera, const Vector<Vector3>& linePoints, const Color& color, float timeout)
@@ -126,10 +128,10 @@ namespace BansheeEngine
 
 		dbgCmd.mesh = mesh;
 		dbgCmd.type = DebugDrawType::WorldSpace;
-		dbgCmd.matInfo3D = BuiltinMaterialManager::instance().createDebugDraw3DMaterial();
+		dbgCmd.matInfo3D = BuiltinResources::instance().createDebugDraw3DMaterial();
 	}
 
-	void DrawHelper3D::drawLineList_AA(const HCamera& camera, const Vector<Vector3>& linePoints, float width, float borderWidth, 
+	void DrawHelper3D::drawLineList_AA(const HCamera& camera, const Vector<Vector3>& linePoints, const Vector3& up, float width, float borderWidth,
 		const Color& color, float timeout)
 	{
 		const Viewport* viewport = camera->getViewport().get();
@@ -142,7 +144,7 @@ namespace BansheeEngine
 
 		MeshDataPtr meshData = bs_shared_ptr<MeshData, ScratchAlloc>((UINT32)(linePoints.size() * 4), (UINT32)(linePoints.size() * 15), mVertexDesc);
 
-		lineList_AA(linePoints, width, borderWidth, color, meshData, 0, 0);	
+		lineList_AA(linePoints, up, width, borderWidth, color, meshData, 0, 0);	
 
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
 		dbgCmd.worldCenter = calcCenter(positionData, meshData->getNumVertices(), mVertexDesc->getVertexStride());
@@ -151,7 +153,7 @@ namespace BansheeEngine
 
 		dbgCmd.mesh = mesh;
 		dbgCmd.type = DebugDrawType::WorldSpace;
-		dbgCmd.matInfo3D = BuiltinMaterialManager::instance().createDebugDraw3DMaterial();
+		dbgCmd.matInfo3D = BuiltinResources::instance().createDebugDraw3DMaterial();
 	}
 
 	void DrawHelper3D::drawAABox(const HCamera& camera, const AABox& box, const Color& color, float timeout)
@@ -186,7 +188,7 @@ namespace BansheeEngine
 
 		dbgCmd.mesh = mesh;
 		dbgCmd.type = DebugDrawType::WorldSpace;
-		dbgCmd.matInfo3D = BuiltinMaterialManager::instance().createDebugDraw3DMaterial();
+		dbgCmd.matInfo3D = BuiltinResources::instance().createDebugDraw3DMaterial();
 	}
 
 	void DrawHelper3D::aabox(const AABox& box, UINT8* outVertices, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
@@ -299,15 +301,117 @@ namespace BansheeEngine
 		return center;
 	}
 
-	void DrawHelper3D::line_AA(const Vector3& a, const Vector3& b, float width, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
+	void DrawHelper3D::line_AA(const Vector3& a, const Vector3& b, const Vector3& up, float width, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors,
 		UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
 	{
-		BS_EXCEPT(NotImplementedException, "3D AA line drawing not implemented.");
+		Vector3 dir = b - a;
+		dir.normalize();
+
+		Vector3 right = dir.cross(up);
+		right.normalize();
+
+		Vector<Vector3> points(4);
+
+		float r = width * 0.5f;
+		dir = dir * r;
+		right = right * r;
+
+		Vector3 v0 = a - dir - right;
+		Vector3 v1 = a - dir + right;
+		Vector3 v2 = b + dir + right;
+		Vector3 v3 = b + dir - right;
+
+		points[0] = v0;
+		points[1] = v1;
+		points[2] = v2;
+		points[3] = v3;
+
+		polygon_AA(points, up, borderWidth, color, outVertices, outColors, vertexOffset, vertexStride, outIndices, indexOffset);
 	}
 
-	void DrawHelper3D::polygon_AA(const Vector<Vector3>& points, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
+	void DrawHelper3D::polygon_AA(const Vector<Vector3>& points, const Vector3& up, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors,
 		UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
 	{
-		BS_EXCEPT(NotImplementedException, "3D AA polygon drawing not implemented.");
+		UINT32 numCoords = (UINT32)points.size();
+
+		outVertices += vertexOffset * vertexStride;
+		Vector<Vector3> tempNormals(numCoords);
+
+		for (UINT32 i = 0, j = numCoords - 1; i < numCoords; j = i++)
+		{
+			const Vector3& v0 = points[j];
+			const Vector3& v1 = points[i];
+
+			Vector3 dir = v1 - v0;
+			Vector3 right = dir.cross(up);
+			right.normalize();
+
+			tempNormals[j] = right;
+
+			// Also start populating the vertex array
+			Vector3* vertices = (Vector3*)outVertices;
+			*vertices = v1;
+
+			UINT32* colors = (UINT32*)outColors;
+			*colors = color.getAsRGBA();
+
+			outVertices += vertexStride;
+			outColors += vertexStride;
+		}
+
+		Color transparentColor = color;
+		transparentColor.a = 0.0f;
+
+		for (UINT32 i = 0, j = numCoords - 1; i < numCoords; j = i++)
+		{
+			const Vector3& n0 = tempNormals[j];
+			const Vector3& n1 = tempNormals[i];
+
+			Vector3 avgNrm = (n0 + n1) * 0.5f;
+			float magSqrd = avgNrm.squaredLength();
+
+			if (magSqrd > 0.000001f)
+			{
+				float scale = 1.0f / magSqrd;
+				if (scale > 10.0f)
+					scale = 10.0f;
+
+				avgNrm = avgNrm * scale;
+			}
+
+			Vector3 tempCoord = points[i] + avgNrm * borderWidth;
+
+			// Move it to the vertex array
+			Vector3* vertices = (Vector3*)outVertices;
+			*vertices = tempCoord;
+
+			UINT32* colors = (UINT32*)outColors;
+			*colors = transparentColor.getAsRGBA();
+
+			outVertices += vertexStride;
+			outColors += vertexStride;
+		}
+
+		// Populate index buffer
+		outIndices += indexOffset;
+
+		UINT32 idxCnt = 0;
+		for (UINT32 i = 0, j = numCoords - 1; i < numCoords; j = i++)
+		{
+			outIndices[idxCnt++] = i;
+			outIndices[idxCnt++] = j;
+			outIndices[idxCnt++] = numCoords + j;
+
+			outIndices[idxCnt++] = numCoords + j;
+			outIndices[idxCnt++] = numCoords + i;
+			outIndices[idxCnt++] = i;
+		}
+
+		for (UINT32 i = 2; i < numCoords; ++i)
+		{
+			outIndices[idxCnt++] = 0;
+			outIndices[idxCnt++] = i - 1;
+			outIndices[idxCnt++] = i;
+		}
 	}
 }

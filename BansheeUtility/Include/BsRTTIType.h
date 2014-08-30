@@ -52,6 +52,12 @@ namespace BansheeEngine
 		virtual RTTITypeBase* getBaseClass() = 0;
 
 		/**
+		 * @brief	Returns true if current RTTI class is derived from "base".
+		 * 			(Or if it is the same type as base)
+		 */
+		virtual bool isDerivedFrom(RTTITypeBase* base) = 0;
+
+		/**
 		 * @brief	Internal method. Called by the RTTI system when a class is first found in
 		 *			order to form child/parent class hierarchy.
 		 */
@@ -582,6 +588,32 @@ namespace BansheeEngine
 		virtual RTTITypeBase* getBaseClass()
 		{
 			return GetRTTIType<BaseType>()();
+		}
+
+		/**
+		 * @copydoc	RTTITypeBase::isDerivedFrom
+		 */
+		bool RTTITypeBase::isDerivedFrom(RTTITypeBase* base)
+		{
+			assert(base != nullptr);
+
+			Stack<RTTITypeBase*> todo;
+			todo.push(base);
+
+			while (!todo.empty())
+			{
+				RTTITypeBase* currentType = todo.top();
+				todo.pop();
+
+				if (currentType->getRTTIId() == getRTTIId())
+					return true;
+
+				Vector<RTTITypeBase*>& derivedClasses = currentType->getDerivedClasses();
+				for (auto iter = derivedClasses.begin(); iter != derivedClasses.end(); ++iter)
+					todo.push(*iter);
+			}
+
+			return false;
 		}
 
 		/**
