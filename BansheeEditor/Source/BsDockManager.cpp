@@ -409,7 +409,7 @@ namespace BansheeEngine
 
 	DockManager::DockManager(RenderWindow* parentWindow, const GUILayoutOptions& layoutOptions)
 		:GUIElementContainer(layoutOptions), mParentWindow(parentWindow), mMouseOverContainer(nullptr), mHighlightedDropLoc(DockLocation::None),
-		mShowOverlay(false), mAddedRenderCallback(false), mRootContainer(this)
+		mShowOverlay(false), mRootContainer(this)
 	{
 		mTopDropPolygon = bs_newN<Vector2>(4);
 		mBotDropPolygon = bs_newN<Vector2>(4);
@@ -417,10 +417,14 @@ namespace BansheeEngine
 		mRightDropPolygon = bs_newN<Vector2>(4);
 
 		mDropOverlayMat = BuiltinEditorResources::instance().createDockDropOverlayMaterial();
+
+		mRenderCallback = RendererManager::instance().getActive()->onRenderViewport.connect(std::bind(&DockManager::render, this, _1, _2));
 	}
 
 	DockManager::~DockManager()
 	{
+		mRenderCallback.disconnect();
+
 		bs_deleteN(mTopDropPolygon, 4);
 		bs_deleteN(mBotDropPolygon, 4);
 		bs_deleteN(mLeftDropPolygon, 4);
@@ -445,6 +449,9 @@ namespace BansheeEngine
 
 	void DockManager::render(const Viewport* viewport, DrawList& drawList)
 	{
+		if (_getParentWidget() == nullptr || _getParentWidget()->getTarget() != viewport)
+			return;
+
 		if(!mShowOverlay)
 			return;
 
@@ -1008,24 +1015,6 @@ namespace BansheeEngine
 		return false;
 	}
 	
-	void DockManager::_changeParentWidget(GUIWidget* widget)
-	{
-		GUIElement::_changeParentWidget(widget);
-
-		if(widget != nullptr)
-		{
-			if(mAddedRenderCallback)
-			{
-				// Note: Adding support for this should be fairly simple though, I just didn't bother with it. You could
-				// remove the current render callback and register a new one. Will likely need to make other minor fixes.
-				BS_EXCEPT(InvalidStateException, "Attempting to change parent widget of a DockManager. This is not supported");
-			}
-
-			RendererManager::instance().getActive()->addRenderCallback(widget->getTarget(), std::bind(&DockManager::render, this, _1, _2));
-			mAddedRenderCallback = true;
-		}
-	}
-
 	// TODO - Move to a separate Polygon class?
 	bool DockManager::insidePolygon(Vector2* polyPoints, UINT32 numPoints, Vector2 point) const
 	{

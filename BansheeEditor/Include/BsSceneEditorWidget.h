@@ -22,6 +22,7 @@ namespace BansheeEngine
 		void doOnResized(UINT32 width, UINT32 height);
 
 		void updateRenderTexture(UINT32 width, UINT32 height);
+		void render(const Viewport* viewport, DrawList& drawList);
 
 	private:
 		static SceneEditorWidget* Instance;
@@ -29,5 +30,8 @@ namespace BansheeEngine
 		RenderTexturePtr mSceneRenderTarget;
 		GUIRenderTexture* mGUIRenderTexture;
 		HCamera mCamera;
+		SceneGrid* mSceneGrid;
+
+		HEvent mRenderCallback;
 	};
 }

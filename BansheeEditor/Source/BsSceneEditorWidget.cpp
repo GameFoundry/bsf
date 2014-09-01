@@ -13,6 +13,13 @@
 #include "BsCamera.h"
 #include "BsGUIRenderTexture.h"
 #include "BsCoreThread.h"
+#include "BsEditorWidgetContainer.h"
+#include "BsRendererManager.h"
+#include "BsRenderer.h"
+#include "BsGUIWidget.h"
+#include "BsSceneGrid.h"
+
+using namespace std::placeholders;
 
 namespace BansheeEngine
 {
@@ -22,11 +29,15 @@ namespace BansheeEngine
 		:EditorWidget<SceneEditorWidget>(HString(L"SceneEditorWidget"), parentContainer), mGUIRenderTexture(nullptr)
 	{
 		updateRenderTexture(getWidth(), getHeight());
+
+		mRenderCallback = RendererManager::instance().getActive()->onRenderViewport.connect(std::bind(&SceneEditorWidget::render, this, _1, _2));
+		mSceneGrid = bs_new<SceneGrid>();
 	}
 
 	SceneEditorWidget::~SceneEditorWidget()
 	{
-
+		bs_delete(mSceneGrid);
+		mRenderCallback.disconnect();
 	}
 
 	void SceneEditorWidget::_update()
@@ -39,6 +50,17 @@ namespace BansheeEngine
 		EditorWidget::doOnResized(width, height);
 
 		updateRenderTexture(width, height);
+	}
+
+	void SceneEditorWidget::render(const Viewport* viewport, DrawList& drawList)
+	{
+		if (mCamera == nullptr)
+			return;
+
+		if (mCamera->getViewport().get() != viewport)
+			return;
+
+		mSceneGrid->render(mCamera.getInternalPtr(), drawList);
 	}
 
 	void SceneEditorWidget::updateRenderTexture(UINT32 width, UINT32 height)
@@ -57,15 +79,12 @@ namespace BansheeEngine
 			HSceneObject sceneCameraSO = SceneObject::create("SceneCamera");
 			mCamera = sceneCameraSO->addComponent<Camera>(mSceneRenderTarget, 0.0f, 0.0f, 1.0f, 1.0f);
 
-			sceneCameraSO->setPosition(Vector3(0, 0, 0));
-			sceneCameraSO->lookAt(Vector3(0, 0, -3));
-
-			// DEBUG ONLY
-			sceneCameraSO->setPosition(Vector3(-130.0f, 140.0f, 650.0f));
+			sceneCameraSO->setPosition(Vector3(0, 0.5f, 1));
 			sceneCameraSO->lookAt(Vector3(0, 0, 0));
 
 			mCamera->setPriority(1);
-			mCamera->setNearClipDistance(5);
+			mCamera->setNearClipDistance(0.005f);
+			mCamera->setFarClipDistance(1000.0f);
 
 			sceneCameraSO->addComponent<SceneCameraController>();
 

@@ -3,6 +3,7 @@
 #include "BsEditorPrerequisites.h"
 #include "BsVector3.h"
 #include "BsColor.h"
+#include "BsMaterial.h"
 
 namespace BansheeEngine
 {
@@ -17,15 +18,18 @@ namespace BansheeEngine
 		void setMajorAxisSpacing(UINT32 spacing);
 		void setAxisMarkerSpacing(UINT32 spacing);
 
+		void render(const CameraPtr& camera, DrawList& drawList);
 	private:
 		void updateGridMesh();
 
 		HMesh mGridMesh;
+		HMaterial mGridMaterial;
+		GpuParamMat4 mViewProjParam;
 		VertexDataDescPtr mVertexDesc;
 
 		Vector3 mOrigin;
 		float mSpacing = 1.0f;
-		float mSize = 256.0f;
+		float mSize = 257.0f;
 		UINT32 mMajorAxisSpacing = 10;
 		UINT32 mAxisMarkerSpacing = 25;
 

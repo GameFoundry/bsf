@@ -20,9 +20,9 @@ namespace BansheeEngine
 	const String SceneCameraController::HORIZONTAL_AXIS = "SceneHorizontal";
 	const String SceneCameraController::VERTICAL_AXIS = "SceneVertical";
 
-	const float SceneCameraController::START_SPEED = 40.0f;
-	const float SceneCameraController::TOP_SPEED = 130.0f;
-	const float SceneCameraController::ACCELERATION = 10.0f;
+	const float SceneCameraController::START_SPEED = 4.0f;
+	const float SceneCameraController::TOP_SPEED = 12.0f;
+	const float SceneCameraController::ACCELERATION = 1.0f;
 	const float SceneCameraController::FAST_MODE_MULTIPLIER = 2.0f;
 	const float SceneCameraController::ROTATION_SPEED = 360.0f; // Degrees/second
 

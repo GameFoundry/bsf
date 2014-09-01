@@ -67,13 +67,8 @@ namespace BansheeEngine
 		virtual void renderAll() = 0;
 
 		/**
-		 * @brief	Allows you to register a callback for the specified viewport. The callback
-		 * 			will be called before rendering and you will be able to populate the
-		 * 			render queue with render commands that will be executed when rendering.
+		 * @brief	Callback that gets triggered before a viewport gets rendered.
 		 */
-		void addRenderCallback(const Viewport* viewport, std::function<void(const Viewport*, DrawList&)> callback);
-
-	protected:
-		UnorderedMap<const Viewport*, Vector<std::function<void(const Viewport*, DrawList&)>>> mRenderCallbacks;
+		Event<void(const Viewport*, DrawList&)> onRenderViewport;
 	};
 }

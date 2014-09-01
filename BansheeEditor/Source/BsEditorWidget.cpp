@@ -74,6 +74,11 @@ namespace BansheeEngine
 			onResized(width, height);
 	}
 
+	void EditorWidgetBase::doOnParentChanged()
+	{
+
+	}
+
 	// Note: Must not be virtual as parent container uses it in constructor
 	void EditorWidgetBase::_changeParent(EditorWidgetContainer* parent)
 	{
@@ -93,6 +98,8 @@ namespace BansheeEngine
 			}
 
 			mParent = parent;
+
+			doOnParentChanged();
 
 			if(!onParentChanged.empty())
 				onParentChanged(mParent);

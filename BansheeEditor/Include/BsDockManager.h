@@ -121,13 +121,12 @@ namespace BansheeEngine
 		Vector2* mBotDropPolygon;
 		Vector2* mLeftDropPolygon;
 		Vector2* mRightDropPolygon;
-		bool mAddedRenderCallback;
+
+		HEvent mRenderCallback;
 
 		void updateDropOverlay(INT32 x, INT32 y, UINT32 width, UINT32 height);
 
 		bool mouseEvent(const GUIMouseEvent& event);
 		bool insidePolygon(Vector2* polyPoints, UINT32 numPoints, Vector2 point) const;
-
-		void _changeParentWidget(GUIWidget* widget);
 	};
 }

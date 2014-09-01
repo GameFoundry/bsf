@@ -31,6 +31,7 @@
 #include "BsMaterial.h"
 #include "BsBlendState.h"
 #include "BsDepthStencilState.h"
+#include "BsRasterizerState.h"
 #include "BsGpuProgramImportOptions.h"
 #include "BsResources.h"
 #include "BsRTTIType.h"
@@ -1214,7 +1215,7 @@ namespace BansheeEngine
 		HGpuProgram vsProgram = getGpuProgram(SceneGridVSFile);
 		HGpuProgram psProgram = getGpuProgram(SceneGridPSFile);
 
-		mShaderSceneGrid = Shader::create("DebugDraw3DShader");
+		mShaderSceneGrid = Shader::create("SceneGridShader");
 
 		mShaderSceneGrid->addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
 
@@ -1223,14 +1224,21 @@ namespace BansheeEngine
 		newPass->setVertexProgram(vsProgram);
 		newPass->setFragmentProgram(psProgram);
 
-		BLEND_STATE_DESC desc;
-		desc.renderTargetDesc[0].blendEnable = true;
-		desc.renderTargetDesc[0].srcBlend = BF_SOURCE_ALPHA;
-		desc.renderTargetDesc[0].dstBlend = BF_INV_SOURCE_ALPHA;
-		desc.renderTargetDesc[0].blendOp = BO_ADD;
+		BLEND_STATE_DESC blendDesc;
+		blendDesc.renderTargetDesc[0].blendEnable = true;
+		blendDesc.renderTargetDesc[0].srcBlend = BF_SOURCE_ALPHA;
+		blendDesc.renderTargetDesc[0].dstBlend = BF_INV_SOURCE_ALPHA;
+		blendDesc.renderTargetDesc[0].blendOp = BO_ADD;
+		blendDesc.renderTargetDesc[0].renderTargetWriteMask = 0x7; // Don't write to alpha
 
-		HBlendState blendState = BlendState::create(desc);
+		HBlendState blendState = BlendState::create(blendDesc);
 		newPass->setBlendState(blendState);
+
+		RASTERIZER_STATE_DESC rasterizerDesc;
+		rasterizerDesc.cullMode = CULL_NONE;
+
+		HRasterizerState rasterizerState = RasterizerState::create(rasterizerDesc);
+		newPass->setRasterizerState(rasterizerState);
 	}
 
 	HMaterial BuiltinEditorResources::createDockDropOverlayMaterial() const

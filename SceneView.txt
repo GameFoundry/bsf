@@ -4,11 +4,6 @@ TODO:
 
 Weekend:
  - Set up grid material and hook it up to renderer (+ actually instantiate it in EditorApplication)
- 
- - Fix up shader so I can reference two different gpu vars with a single shader var (e.g. DX11 sampler variables will have different names than DX9 or GL sampler variables)
- - When unloading unused resources I should do it recursively so it unloads any new ones that might have been released during the first unload
-
- - Think about picking implementation and possibly Handles implementation
 
 TODO - Think about:
  - How will I allow user from C# to draw gizmos and handles?
@@ -37,16 +32,34 @@ See for inspiration: http://docs.unity3d.com/ScriptReference/Handles.html
 ----------------------------------------------------------------------
 Picking
 
-TODO - Think about this
+BsPicking
+ - HGameObject PickClosestGameObject(Camera cam, Vector2 position, Vector2 area)
+ - PickResult PickClosestObject(Camera cam, Vector2 position, Vector2 area)
+ - void PickGameObjects(Camera cam, Vector2 position, Vector2 area, Vector<HGameObject>& selection)
+ - void PickObjects(Camera cam, Vector2 position, Vector2 area, Vector<PickResults>& selection)
 
-Picking
- - Create core thread class that accepts a screen coordinate and a camera and it determines object at its position
- - System then renders all visible objects with diferent colors 
- - Image then needs to be read back to determine what was hit
- - Result is returned via async op
- - Needs to support multi-select where I draw a rectangle on screen
- - NOTE: I will also need to render gizmos which I assume will all be within a single buffer. This might require special care since normally I can color each buffer with a different color, which won't work in this case.
-     - Similar issue might happen with particles and other systems
+PickResult
+ Type (GameObject or Gizmo)
+ Data (Handle to GameObject or gizmo ID)
+
+Picking will internally:
+ - Be performed on the Scene render target just before actual rendering
+ - Use scissor rect to limit itself to the specified screen area
+    - TODO later - I could also limit the camera frustum to this area for additional culling
+
+ - Go through every scene object and find all renderables
+ - Perform culling over all renderables and generate a list of visible nodes
+ - Access GizmoManager and get a list of all gizmos and their IDs
+ - Generate unique colors for all renderables and gizmos
+ - Send meshes/colors/ids to core thread to be rendered with a special shader
+ - Wait until core thread completes and returns an AsyncOp with a list of selected IDs
+
+ - Ensure I can read-back from a render target on the core thread
+  - Check DX9, DX11 and OpenGL implementations for both render textures and render windows
+
+Also:
+ - I need to send the primary used texture so I properly determine transparent areas using alpha
+   - TODO - But I do not have a way of defining a primary texture in-engine. Add a renderer semantic?
 
 ----------------------------------------------------------------------
 Rendering selection
@@ -71,8 +84,39 @@ This can be drawn directly using the draw list and not a renderable
 ----------------------------------------------------------------------
 Gizmos
 
-GizmoSetups
- - Determines what to display for a certain component (or a SceneObject) itself
+Custom gizmos:
+ - Users can override the Gizmo class to create their own custom gizmos
+ - It contains various methods that can be used for constructing the gizmo
+   - DrawCube
+   - DrawSphere
+   - DrawWireCube
+   - DrawWireSphere
+   - DrawRay
+   - DrawLine
+   - DrawFrustum
+   - DrawIcon
+
+ - Any Gizmo is registered with GizmoTypes manager
+ 
+ - Components may associate themselves with a gizmo using [SetGizmo(Gizmo)] attribute
+  - It contains other properties, like when should gizmo be displayed (active, selected, not selected, parent selected) and whether
+    or not the gizmo is pickable
+
+ - When drawing an icon
+   - It should always face the camera
+   - It can be static size in screen space, or resizable with distance
+
+ - Need a way to notify the gizmo needs updating from component with the gizmo
+   - Gizmos.MarkDirty(GameObject)
+
+ - How do I assign a texture to DrawIcon? I'm assuming Gizmo class will not have an inspector.
+   - A special ManagedResource that allows you to assign textures to it?
+     - WIll need a Dictionary inspector?
+
+Gizmo rendering:
+GizmoTypes
+ - All gizmo types are registered here
+ - It contains prebuilt gizmo meshes and textures
 
 GizmoManager
  - Every frame goes through all game objects and create/removes their gizmos. It keeps a cached version of all gizmos
@@ -82,16 +126,6 @@ GizmoManager
 GizmosRenderer
  - Batches all gizmos into a single buffer and renders them with a single call
  - It might be a bit problematic if custom textures are used for gizmos
-    - Just don't batch those?
+    - Just don't batch those? Yep, probably not worth batching at this point.
 
 When picking GizmosRenderer can draw the gizmos as normal but using a special shader.
-
---------
-
-Need to allow the user to specify custom gizmos.
- - Have a set of methods like Gizmos.DrawSphere, DrawIcon, DrawLine, DrawCube, DrawFrustum, etc.
- - Have a CustomGizmo attribute which you can attach to a method
- - That method can then call above methods
- - Additionally in the attribute you can specify when is the gizmo displayed: Active, Selected, NotSelected, SelectedOrChild
- - And an option if gizmo can be picked or not
- - These methods will somehow automatically be registered with the GizmoSetups

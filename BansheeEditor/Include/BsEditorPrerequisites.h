@@ -55,6 +55,7 @@ namespace BansheeEngine
 	class GUITreeViewEditBox;
 	class EditorCommand;
 	class ProjectResourceMeta;
+	class SceneGrid;
 
 	typedef std::shared_ptr<ProjectResourceMeta> ProjectResourceMetaPtr;
 	typedef std::shared_ptr<DockManagerLayout> DockManagerLayoutPtr;

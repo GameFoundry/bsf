@@ -40,6 +40,7 @@ namespace BansheeEngine
 
 		virtual void doOnMoved(INT32 x, INT32 y);
 		virtual void doOnResized(UINT32 width, UINT32 height);
+		virtual void doOnParentChanged();
 
 		String mName;
 		HString mDisplayName;

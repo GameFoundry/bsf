@@ -325,10 +325,7 @@ namespace BansheeEngine
 
 			// Get any operations from hooked up callbacks
 			const Viewport* viewportRawPtr = camera->getViewport().get();
-			auto callbacksForViewport = mRenderCallbacks[viewportRawPtr];
-
-			for (auto& callback : callbacksForViewport)
-				callback(viewportRawPtr, *drawList);
+			onRenderViewport(viewportRawPtr, *drawList);
 
 			RenderQueuePtr renderQueue = bs_shared_ptr<RenderQueue>();
 			const Vector<DrawOperation>& drawOps = drawList->getDrawOperations();

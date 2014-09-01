@@ -40,6 +40,22 @@ namespace BansheeEngine
 				mDisconnectCallback(mConnection, mEvent);
 		}
 
+		struct Bool_struct
+		{
+			int _Member;
+		};
+
+		/**
+		* @brief	Allows direct conversion of a handle to bool.
+		*
+		* @note		This is needed because we can't directly convert to bool
+		*			since then we can assign pointer to bool and that's wrong.
+		*/
+		operator int Bool_struct::*() const
+		{
+			return ((mConnection != nullptr && mConnection->isValid) ? &Bool_struct::_Member : 0);
+		}
+
 	private:
 		void(*mDisconnectCallback) (const std::shared_ptr<BaseConnectionData>&, void*);
 		std::shared_ptr<BaseConnectionData> mConnection;

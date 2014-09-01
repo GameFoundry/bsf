@@ -335,6 +335,7 @@ namespace BansheeEngine
 		UINT32 numCoords = (UINT32)points.size();
 
 		outVertices += vertexOffset * vertexStride;
+		outColors += vertexOffset * vertexStride;
 		Vector<Vector3> tempNormals(numCoords);
 
 		for (UINT32 i = 0, j = numCoords - 1; i < numCoords; j = i++)
@@ -398,20 +399,20 @@ namespace BansheeEngine
 		UINT32 idxCnt = 0;
 		for (UINT32 i = 0, j = numCoords - 1; i < numCoords; j = i++)
 		{
-			outIndices[idxCnt++] = i;
-			outIndices[idxCnt++] = j;
-			outIndices[idxCnt++] = numCoords + j;
+			outIndices[idxCnt++] = vertexOffset + i;
+			outIndices[idxCnt++] = vertexOffset + j;
+			outIndices[idxCnt++] = vertexOffset + numCoords + j;
 
-			outIndices[idxCnt++] = numCoords + j;
-			outIndices[idxCnt++] = numCoords + i;
-			outIndices[idxCnt++] = i;
+			outIndices[idxCnt++] = vertexOffset + numCoords + j;
+			outIndices[idxCnt++] = vertexOffset + numCoords + i;
+			outIndices[idxCnt++] = vertexOffset + i;
 		}
 
 		for (UINT32 i = 2; i < numCoords; ++i)
 		{
-			outIndices[idxCnt++] = 0;
-			outIndices[idxCnt++] = i - 1;
-			outIndices[idxCnt++] = i;
+			outIndices[idxCnt++] = vertexOffset + 0;
+			outIndices[idxCnt++] = vertexOffset + i - 1;
+			outIndices[idxCnt++] = vertexOffset + i;
 		}
 	}
 }

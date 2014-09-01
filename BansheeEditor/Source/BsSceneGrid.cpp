@@ -2,7 +2,11 @@
 #include "BsMath.h"
 #include "BsDrawHelper3D.h"
 #include "BsVertexDataDesc.h"
+#include "BsMaterial.h"
 #include "BsMesh.h"
+#include "BsDrawList.h"
+#include "BsBuiltinEditorResources.h"
+#include "BsCamera.h"
 
 namespace BansheeEngine
 {
@@ -20,6 +24,11 @@ namespace BansheeEngine
 		mVertexDesc = bs_shared_ptr<VertexDataDesc>();
 		mVertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
 		mVertexDesc->addVertElem(VET_COLOR, VES_COLOR);
+
+		mGridMaterial = BuiltinEditorResources::instance().createSceneGridMaterial();
+		mViewProjParam = mGridMaterial->getParamMat4("matViewProj");
+
+		updateGridMesh();
 	}
 
 	void SceneGrid::setOrigin(const Vector3& origin)
@@ -52,9 +61,23 @@ namespace BansheeEngine
 		updateGridMesh();
 	}
 
+	void SceneGrid::render(const CameraPtr& camera, DrawList& drawList)
+	{
+		MaterialPtr mat = mGridMaterial.getInternalPtr();
+		MeshPtr mesh = mGridMesh.getInternalPtr();
+
+		Matrix4 projMatrix = camera->getProjectionMatrix();
+		Matrix4 viewMatrix = camera->getViewMatrix();
+
+		Matrix4 viewProjMatrix = projMatrix * viewMatrix;
+		mViewProjParam.set(viewProjMatrix);
+
+		drawList.add(mat, mesh, 0, Vector3::ZERO);
+	}
+
 	void SceneGrid::updateGridMesh()
 	{
-		UINT32 numLines = (UINT32)Math::roundToInt(mSize / mSpacing);
+		UINT32 numLines = (UINT32)Math::roundToInt(mSize / mSpacing) - 1;
 		if (numLines % 2 != 0)
 			numLines++;
 
@@ -70,14 +93,14 @@ namespace BansheeEngine
 		float maxX = (startX + numLines) * mSpacing;
 		float maxZ = (startZ + numLines) * mSpacing;
 
-		UINT32 totalNumVertices = DrawHelper3D::NUM_VERTICES_AA_LINE * numLines * 2;
-		UINT32 totalNumIndices = DrawHelper3D::NUM_INDICES_AA_LINE * numLines * 2;
+		UINT32 totalNumVertices = DrawHelper3D::NUM_VERTICES_AA_LINE * (numLines + 1) * 2;
+		UINT32 totalNumIndices = DrawHelper3D::NUM_INDICES_AA_LINE * (numLines + 1) * 2;
 
 		MeshDataPtr meshData = bs_shared_ptr<MeshData, PoolAlloc>(totalNumVertices, totalNumIndices, mVertexDesc);
 		UINT32 vertexOffset = 0;
 		UINT32 indexOffset = 0;
 
-		for (UINT32 i = 0; i < numLines; i++)
+		for (UINT32 i = 0; i <= numLines; i++)
 		{
 			INT32 x = startX + i;
 			float linePosX = x * mSpacing;
