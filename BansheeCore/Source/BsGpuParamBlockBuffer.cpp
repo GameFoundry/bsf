@@ -4,7 +4,7 @@
 namespace BansheeEngine
 {
 	GpuParamBlockBuffer::GpuParamBlockBuffer()
-		:mSize(0), mUsage(GPBU_DYNAMIC), mParamBlock(nullptr), mCoreParamBlock(nullptr)
+		:mSize(0), mUsage(GPBU_DYNAMIC)
 	{
 
 	}

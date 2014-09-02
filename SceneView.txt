@@ -3,13 +3,13 @@ TODO:
  - Core thread gets stuck on shutdown when OpenGL is used...Somewhere in kernel
 
 Weekend:
- - Set up grid material and hook it up to renderer (+ actually instantiate it in EditorApplication)
+ - SceneGrid is very ugly. Consider using default lines for now and come back with a better approach later.
 
-TODO - Think about:
- - How will I allow user from C# to draw gizmos and handles?
- - Unity uses immediate mode
- - I should probably focus more on implementing a nice C# drawing interface so I don't constantly have to go and use C++
-    - Although this might be overkill for this point - I think even Unitys handles/gizmos are C++ in the end
+Sending GPU parameters to core thread:
+ - MaterialProxy needs to be allocatable via frame alloc
+ - MeshProxy needs to be allocatable via frame alloc
+
+do _markAsClean on GpuParams even with transient stuff? If I update the buffer it should be safe
 
 ----------------------------------------------------------------------
 Handles

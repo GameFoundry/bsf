@@ -2,36 +2,38 @@
 #include "BsGpuParamDesc.h"
 #include "BsGpuParamBlockBuffer.h"
 #include "BsHardwareBufferManager.h"
+#include "BsFrameAlloc.h"
 #include "BsException.h"
 
 namespace BansheeEngine
 {
 	GpuParamBlock::GpuParamBlock(UINT32 size)
-		:mDirty(true), mData(nullptr), mSize(size)
+		:mDirty(true), mData(nullptr), mSize(size), mAlloc(nullptr)
 	{
 		if (mSize > 0)
-			mData = (UINT8*)bs_alloc<ScratchAlloc>(mSize);
+			mData = (UINT8*)bs_alloc(mSize);
 
 		memset(mData, 0, mSize);
 	}
 
-	GpuParamBlock::GpuParamBlock(GpuParamBlock* otherBlock)
+	GpuParamBlock::GpuParamBlock(FrameAlloc* alloc, UINT32 size)
+		:mDirty(true), mData(nullptr), mSize(size), mAlloc(alloc)
 	{
-		mSize = otherBlock->mSize;
-
 		if (mSize > 0)
-			mData = (UINT8*)bs_alloc<ScratchAlloc>(mSize);
-		else
-			mData = nullptr;
+			mData = alloc->alloc(mSize);
 
-		write(0, otherBlock->getData(), otherBlock->getSize());
-		mDirty = otherBlock->mDirty;
+		memset(mData, 0, mSize);
 	}
 
 	GpuParamBlock::~GpuParamBlock()
 	{
-		if(mData != nullptr)
-			bs_free<ScratchAlloc>(mData);
+		if (mData != nullptr)
+		{
+			if (mAlloc != nullptr)
+				mAlloc->dealloc(mData);
+			else
+				bs_free(mData);
+		}
 	}
 
 	void GpuParamBlock::write(UINT32 offset, const void* data, UINT32 size)

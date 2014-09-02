@@ -56,12 +56,23 @@ namespace BansheeEngine
 		 */
 		struct BS_CORE_EXPORT ParamsBindInfo
 		{
-			ParamsBindInfo(UINT32 paramsIdx, const GpuParamsPtr& params)
-				:paramsIdx(paramsIdx), params(params)
-			{ }
+			// Note: Manually allocated. Must not have a constructor/destructor.
 
 			UINT32 paramsIdx;
 			GpuParamsPtr params;
+		};
+
+		/**
+		 * @brief	Contains a set of GPU params that need updating on the core thread.
+		 */
+		struct BS_CORE_EXPORT DirtyParamsInfo
+		{
+			// Note: Manually allocated. Must not have a constructor/destructor.
+
+			ParamsBindInfo* entries;
+			UINT32 numEntries;
+
+			FrameAlloc* owner;
 		};
 
 		Vector<MaterialProxyPass> passes;

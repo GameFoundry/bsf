@@ -428,8 +428,11 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Returns updated GPU parameters since the last time the parameters were marked clean.
+		 *
+		 * @note	Returned data will be allocated with a frame allocator and must be released during the
+		 *			same frame it was allocated.
 		 */
-		Vector<MaterialProxy::ParamsBindInfo> _getDirtyProxyParams();
+		MaterialProxy::DirtyParamsInfo* _getDirtyProxyParams(FrameAlloc* frameAlloc);
 
 		/**
 		 * @brief	Creates a new core proxy from the currently set material data. Core proxies ensure

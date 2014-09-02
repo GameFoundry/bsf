@@ -131,7 +131,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Core thread only.
 		 */
-		void updateMaterialProxy(MaterialProxyPtr proxy, Vector<MaterialProxy::ParamsBindInfo> dirtyParams);
+		void updateMaterialProxy(MaterialProxyPtr proxy, MaterialProxy::DirtyParamsInfo* dirtyParams);
 
 		/**
 		 * @brief	Performs rendering over all camera proxies.
@@ -160,7 +160,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Core thread only.
 		 */
-		void setPass(const MaterialProxyPtr& material, UINT32 passIdx);
+		void setPass(const MaterialProxy& material, UINT32 passIdx);
 
 		/**
 		 * @brief	Draws the specified mesh proxy with last set pass.

@@ -29,6 +29,7 @@
 #include "BsShaderProxy.h"
 #include "BsBansheeLitTexRenderableHandler.h"
 #include "BsTime.h"
+#include "BsFrameAlloc.h"
 
 using namespace std::placeholders;
 
@@ -213,6 +214,7 @@ namespace BansheeEngine
 		Vector<HSceneObject> dirtySceneObjects;
 		Vector<HRenderable> dirtyRenderables;
 
+		FrameAlloc* frameAlloc = gCoreThread().getFrameAlloc();
 		for (auto& renderable : allRenderables)
 		{
 			bool addedNewProxy = false;
@@ -249,7 +251,8 @@ namespace BansheeEngine
 					HMaterial mat = renderable->getMaterial(i);
 					if (mat != nullptr && mat.isLoaded() && mat->_isCoreDirty(MaterialDirtyFlag::Params))
 					{
-						gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::updateMaterialProxy, this, proxy->renderableElements[i]->material, mat->_getDirtyProxyParams()));
+						gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::updateMaterialProxy, this, 
+							proxy->renderableElements[i]->material, mat->_getDirtyProxyParams(frameAlloc)));
 						mat->_markCoreClean(MaterialDirtyFlag::Params);
 					}
 				}
@@ -331,6 +334,9 @@ namespace BansheeEngine
 			const Vector<DrawOperation>& drawOps = drawList->getDrawOperations();
 			for (auto& drawOp : drawOps)
 			{
+				// TODO - Created proxies should be temporary and only last one frame, and should
+				// be allocated using the frame allocator
+
 				if (drawOp.material->_isCoreDirty(MaterialDirtyFlag::Proxy))
 				{
 					drawOp.material->_setActiveProxy(drawOp.material->_createProxy());
@@ -362,13 +368,27 @@ namespace BansheeEngine
 		cameraRenderQueue->add(*renderQueue);
 	}
 
-	void BansheeRenderer::updateMaterialProxy(MaterialProxyPtr proxy, Vector<MaterialProxy::ParamsBindInfo> dirtyParams)
+	void BansheeRenderer::updateMaterialProxy(MaterialProxyPtr proxy, MaterialProxy::DirtyParamsInfo* dirtyParams)
 	{
-		for (UINT32 i = 0; i < (UINT32)dirtyParams.size(); i++)
-			proxy->params[dirtyParams[i].paramsIdx] = dirtyParams[i].params;
+		for (UINT32 i = 0; i < (UINT32)dirtyParams->numEntries; i++)
+		{
+			UINT32 paramsIdx = dirtyParams->entries[i].paramsIdx;
 
+			if (proxy->params[paramsIdx] == nullptr) 
+			{
+				assert(false); // This shouldn't happen. New params can only be added due to shader 
+							   // change and that should trigger new material proxy creation
+				continue;
+			}
+
+			proxy->params[dirtyParams->entries[i].paramsIdx]->_updateFromCopy(dirtyParams->entries[i].params);
+		}
+
+		// Refresh buffers set by renderer in case any were changed
 		for (auto& rendererBuffer : proxy->rendererBuffers)
 			proxy->params[rendererBuffer.paramsIdx]->setParamBlockBuffer(rendererBuffer.slotIdx, rendererBuffer.buffer);
+
+		dirtyParams->owner->dealloc((UINT8*)dirtyParams);
 	}
 
 	void BansheeRenderer::renderAllCore(float time)
@@ -468,24 +488,24 @@ namespace BansheeEngine
 		{
 			MaterialProxyPtr materialProxy = iter->material;
 
-			setPass(materialProxy, iter->passIdx);
+			setPass(*materialProxy, iter->passIdx);
 			draw(*iter->mesh);
 		}
 
 		renderQueue->clear();
 	}
 
-	void BansheeRenderer::setPass(const MaterialProxyPtr& material, UINT32 passIdx)
+	void BansheeRenderer::setPass(const MaterialProxy& material, UINT32 passIdx)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		RenderSystem& rs = RenderSystem::instance();
 
-		const MaterialProxyPass& pass = material->passes[passIdx];
+		const MaterialProxyPass& pass = material.passes[passIdx];
 		if (pass.vertexProg)
 		{
 			rs.bindGpuProgram(pass.vertexProg);
-			rs.bindGpuParams(GPT_VERTEX_PROGRAM, material->params[pass.vertexProgParamsIdx]);
+			rs.bindGpuParams(GPT_VERTEX_PROGRAM, material.params[pass.vertexProgParamsIdx]);
 		}
 		else
 			rs.unbindGpuProgram(GPT_VERTEX_PROGRAM);
@@ -493,7 +513,7 @@ namespace BansheeEngine
 		if (pass.fragmentProg)
 		{
 			rs.bindGpuProgram(pass.fragmentProg);
-			rs.bindGpuParams(GPT_FRAGMENT_PROGRAM, material->params[pass.fragmentProgParamsIdx]);
+			rs.bindGpuParams(GPT_FRAGMENT_PROGRAM, material.params[pass.fragmentProgParamsIdx]);
 		}
 		else
 			rs.unbindGpuProgram(GPT_FRAGMENT_PROGRAM);
@@ -501,7 +521,7 @@ namespace BansheeEngine
 		if (pass.geometryProg)
 		{
 			rs.bindGpuProgram(pass.geometryProg);
-			rs.bindGpuParams(GPT_GEOMETRY_PROGRAM, material->params[pass.geometryProgParamsIdx]);
+			rs.bindGpuParams(GPT_GEOMETRY_PROGRAM, material.params[pass.geometryProgParamsIdx]);
 		}
 		else
 			rs.unbindGpuProgram(GPT_GEOMETRY_PROGRAM);
@@ -509,7 +529,7 @@ namespace BansheeEngine
 		if (pass.hullProg)
 		{
 			rs.bindGpuProgram(pass.hullProg);
-			rs.bindGpuParams(GPT_HULL_PROGRAM, material->params[pass.hullProgParamsIdx]);
+			rs.bindGpuParams(GPT_HULL_PROGRAM, material.params[pass.hullProgParamsIdx]);
 		}
 		else
 			rs.unbindGpuProgram(GPT_HULL_PROGRAM);
@@ -517,7 +537,7 @@ namespace BansheeEngine
 		if (pass.domainProg)
 		{
 			rs.bindGpuProgram(pass.domainProg);
-			rs.bindGpuParams(GPT_DOMAIN_PROGRAM, material->params[pass.domainProgParamsIdx]);
+			rs.bindGpuParams(GPT_DOMAIN_PROGRAM, material.params[pass.domainProgParamsIdx]);
 		}
 		else
 			rs.unbindGpuProgram(GPT_DOMAIN_PROGRAM);
@@ -525,7 +545,7 @@ namespace BansheeEngine
 		if (pass.computeProg)
 		{
 			rs.bindGpuProgram(pass.computeProg);
-			rs.bindGpuParams(GPT_COMPUTE_PROGRAM, material->params[pass.computeProgParamsIdx]);
+			rs.bindGpuParams(GPT_COMPUTE_PROGRAM, material.params[pass.computeProgParamsIdx]);
 		}
 		else
 			rs.unbindGpuProgram(GPT_COMPUTE_PROGRAM);

@@ -226,7 +226,34 @@ namespace BansheeEngine
 		}
 	}
 
-	GpuParamsPtr GpuParams::_cloneForCore(FrameAlloc* frameAlloc) const
+	void GpuParams::_updateFromCopy(const GpuParamsPtr& copy)
+	{
+		assert(copy->mInternalData->mNumParamBlocks == mInternalData->mNumParamBlocks);
+		assert(copy->mInternalData->mNumTextures == mInternalData->mNumTextures);
+		assert(copy->mInternalData->mNumSamplerStates == mInternalData->mNumSamplerStates);
+
+		for (UINT32 i = 0; i < mInternalData->mNumTextures; i++)
+		{
+			mInternalData->mTextures[i] = copy->mInternalData->mTextures[i];
+		}
+
+		for (UINT32 i = 0; i < mInternalData->mNumSamplerStates; i++)
+		{
+			mInternalData->mSamplerStates[i] = copy->mInternalData->mSamplerStates[i];
+		}
+
+		for (UINT32 i = 0; i < mInternalData->mNumParamBlocks; i++)
+		{
+			GpuParamBlockPtr destParamBlock = mInternalData->mParamBlocks[i];
+			GpuParamBlockPtr srcParamBlock = copy->mInternalData->mParamBlocks[i];
+			if (destParamBlock != nullptr && srcParamBlock != nullptr)
+			{
+				destParamBlock->write(0, srcParamBlock->getData(), srcParamBlock->getSize());
+			}
+		}
+	}
+
+	GpuParamsPtr GpuParams::_clone(FrameAlloc* frameAlloc, bool onlyDirtyBlocks) const
 	{
 		GpuParamsPtr myClone = nullptr;
 		
@@ -253,17 +280,21 @@ namespace BansheeEngine
 		for (UINT32 i = 0; i < mInternalData->mNumParamBlocks; i++)
 		{
 			GpuParamBlockBufferPtr buffer = mInternalData->mParamBlockBuffers[i];
-			if (buffer != nullptr)
+			if (buffer != nullptr && (!onlyDirtyBlocks || buffer->getParamBlock()->isDirty()))
 			{
-				if (buffer->getParamBlock()->isDirty())
+				GpuParamBlockPtr newBlock = nullptr;
+				if (frameAlloc != nullptr)
 				{
-					GpuParamBlockPtr newBlock = bs_shared_ptr<GpuParamBlock>(buffer->getSize());
-					memcpy(newBlock->getData(), buffer->getParamBlock()->getData(), buffer->getSize());
-					buffer->setCoreParamBlock(newBlock);
-					buffer->getParamBlock()->setDirty(false);
+					StdFrameAlloc<GpuParams> myAlloc(frameAlloc);
+					newBlock = std::allocate_shared<GpuParamBlock>(myAlloc, frameAlloc, buffer->getSize());
+				}
+				else
+				{
+					newBlock = bs_shared_ptr<GpuParamBlock>(buffer->getSize());;
 				}
 
-				myClone->mInternalData->mParamBlocks[i] = buffer->getCoreParamBlock();
+				newBlock->write(0, buffer->getParamBlock()->getData(), buffer->getSize());
+				myClone->mInternalData->mParamBlocks[i] = newBlock;
 			}
 			else
 				myClone->mInternalData->mParamBlocks[i] = nullptr;

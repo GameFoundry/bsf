@@ -13,8 +13,18 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT GpuParamBlock
 	{
 	public:
+		/**
+		 * @brief	Construct a new parameter block with internal data allocated using the
+		 *			standard allocator.
+		 */
 		GpuParamBlock(UINT32 size);
-		GpuParamBlock(GpuParamBlock* otherBlock);
+
+		/**
+		 * @brief	Construct a new parameter block with internal data allocated using the
+		 *			provided frame allocator. Such blocks must be released the same frame
+		 *			they were allocated on.
+		 */
+		GpuParamBlock(FrameAlloc* alloc, UINT32 size);
 
 		virtual ~GpuParamBlock();
 
@@ -69,5 +79,6 @@ namespace BansheeEngine
 		UINT8* mData;
 		UINT32 mSize;
 		bool mDirty;
+		FrameAlloc* mAlloc;
 	};
 }
