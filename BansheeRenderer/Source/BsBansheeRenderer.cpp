@@ -332,25 +332,50 @@ namespace BansheeEngine
 
 			RenderQueuePtr renderQueue = bs_shared_ptr<RenderQueue>();
 			const Vector<DrawOperation>& drawOps = drawList->getDrawOperations();
+
+			// Note: It is important that draw ops update happens after renderables are updated, so that
+			// renderable proxies properly update in case they both share the same material/mesh
 			for (auto& drawOp : drawOps)
 			{
-				// TODO - Created proxies should be temporary and only last one frame, and should
-				// be allocated using the frame allocator
+				// Note: It is assumed render operations queued in the draw list is going
+				// to change every frame so we create new proxies using frame allocator
+				// every frame. It /might/ be more efficient not to use frame allocator
+				// and only update when they actually change. That might also cause
+				// issue if material/mesh is used both in draw list and a Renderable
+
+				MaterialProxy::DirtyParamsInfo* dirtyParams = nullptr;
+				if (drawOp.material->_isCoreDirty(MaterialDirtyFlag::Params))
+				{
+					dirtyParams = drawOp.material->_getDirtyProxyParams(frameAlloc);
+				}
 
 				if (drawOp.material->_isCoreDirty(MaterialDirtyFlag::Proxy))
 				{
 					drawOp.material->_setActiveProxy(drawOp.material->_createProxy());
 					drawOp.material->_markCoreClean(MaterialDirtyFlag::Proxy);
+					drawOp.material->_markCoreClean(MaterialDirtyFlag::Material);
+				}
+				else
+				{
+					if (dirtyParams != nullptr)
+						drawOp.material->_markCoreClean(MaterialDirtyFlag::Params);
 				}
 
 				if (drawOp.mesh->_isCoreDirty(MeshDirtyFlag::Proxy))
 				{
 					drawOp.mesh->_setActiveProxy(drawOp.submeshIdx, drawOp.mesh->_createProxy(drawOp.submeshIdx));
 					drawOp.mesh->_markCoreClean(MeshDirtyFlag::Proxy);
+					drawOp.mesh->_markCoreClean(MeshDirtyFlag::Mesh);
 				}
 
 				MaterialProxyPtr materialProxy = drawOp.material->_getActiveProxy();
 				MeshProxyPtr meshProxy = drawOp.mesh->_getActiveProxy(drawOp.submeshIdx);
+
+				if (dirtyParams != nullptr)
+				{
+					gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::updateMaterialProxy, this,
+						materialProxy, dirtyParams));
+				}
 
 				float distanceToCamera = (camera->SO()->getPosition() - drawOp.worldPosition).length();
 				renderQueue->add(materialProxy, meshProxy, distanceToCamera);
@@ -388,7 +413,7 @@ namespace BansheeEngine
 		for (auto& rendererBuffer : proxy->rendererBuffers)
 			proxy->params[rendererBuffer.paramsIdx]->setParamBlockBuffer(rendererBuffer.slotIdx, rendererBuffer.buffer);
 
-		dirtyParams->owner->dealloc((UINT8*)dirtyParams);
+		MaterialProxy::DirtyParamsInfo::destroy(dirtyParams);
 	}
 
 	void BansheeRenderer::renderAllCore(float time)

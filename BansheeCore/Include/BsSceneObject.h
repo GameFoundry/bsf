@@ -346,7 +346,7 @@ namespace BansheeEngine
 
 			std::shared_ptr<T> gameObject(new (bs_alloc<T, PoolAlloc>()) T(mThisHandle,
 				std::forward<Args>(args)...),
-				&bs_delete<PoolAlloc, T>, StdAlloc<PoolAlloc>());
+				&bs_delete<PoolAlloc, T>, StdAlloc<T, PoolAlloc>());
 
 			GameObjectHandle<T> newComponent =
 				GameObjectHandle<T>(GameObjectManager::instance().registerObject(gameObject));
@@ -437,7 +437,7 @@ namespace BansheeEngine
 		{
 			static_assert((std::is_base_of<BansheeEngine::Component, T>::value), "Specified type is not a valid Component.");
 
-			std::shared_ptr<T> gameObject(new (bs_alloc<T, PoolAlloc>()) T(), &bs_delete<PoolAlloc, T>, StdAlloc<PoolAlloc>());
+			std::shared_ptr<T> gameObject(new (bs_alloc<T, PoolAlloc>()) T(), &bs_delete<PoolAlloc, T>, StdAlloc<T, PoolAlloc>());
 			GameObjectHandle<T>(GameObjectManager::instance().registerObject(gameObject));
 
 			return gameObject;

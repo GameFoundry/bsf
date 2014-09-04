@@ -11,6 +11,7 @@
 #include "BsAABox.h"
 #include "BsVertexDataDesc.h"
 #include "BsResources.h"
+#include "BsFrameAlloc.h"
 
 namespace BansheeEngine
 {

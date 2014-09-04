@@ -171,6 +171,8 @@ namespace BansheeEngine
 		 * @brief	Creates a new core proxy from the current mesh data. Core proxy contains a snapshot of 
 		 *			mesh data normally managed on the sim thread (e.g. bounds).
 		 *
+		 * @param	subMeshIdx	Index of the sub-mesh to create a proxy for.
+		 *
 		 * @note	Sim thread only. 
 		 *			You generally need to update the core thread with a new proxy whenever core 
 		 *			dirty flag is set.

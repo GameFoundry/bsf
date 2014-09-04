@@ -89,12 +89,15 @@ namespace BansheeEngine
                     BS_EXCEPT(InvalidParametersException, ss.str());
                 }
 
+				// Note: I'm attaching textures to FBO while renderbuffers might yield better performance if I
+				// don't need to read from them
+
 	            mColor[x].buffer->bindToFramebuffer(GL_COLOR_ATTACHMENT0_EXT + x, mColor[x].zoffset);
             }
             else
             {
                 // Detach
-                glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + x, GL_RENDERBUFFER_EXT, 0);
+                glFramebufferTextureEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + x, 0, 0);
             }
         }
 

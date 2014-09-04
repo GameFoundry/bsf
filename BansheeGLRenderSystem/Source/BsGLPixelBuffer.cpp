@@ -98,7 +98,7 @@ namespace BansheeEngine
 									 GLint face, GLint level, GpuBufferUsage usage, 
 									 bool writeGamma, UINT32 multisampleCount):
 		GLPixelBuffer(0, 0, 0, PF_UNKNOWN, usage),
-		mTarget(target), mFaceTarget(0), mTextureID(id), mFace(face), mLevel(level)
+		mTarget(target), mFaceTarget(0), mTextureID(id), mFace(face), mLevel(level), mMultisampleCount(multisampleCount)
 	{
 		GLint value = 0;
 	
@@ -148,6 +148,9 @@ namespace BansheeEngine
 	{
 		if((mUsage & TU_RENDERTARGET) != 0)
 			BS_EXCEPT(NotImplementedException, "Writing to render texture from CPU not supported.");
+
+		if ((mUsage & TU_DEPTHSTENCIL) != 0)
+			BS_EXCEPT(NotImplementedException, "Writing to depth stencil texture from CPU not supported.");
 
 		glBindTexture( mTarget, mTextureID );
 		if(PixelUtil::isCompressed(data.getFormat()))
@@ -274,12 +277,6 @@ namespace BansheeEngine
 
 	void GLTextureBuffer::download(const PixelData &data)
 	{
-		if((mUsage & TU_RENDERTARGET) != 0)
-			BS_EXCEPT(NotImplementedException, "Reading from render texture to CPU not supported."); // TODO: This needs to be implemented
-
-		if((mUsage & TU_DEPTHSTENCIL) != 0)
-			BS_EXCEPT(NotImplementedException, "Reading from depth stencil texture to CPU not supported."); // TODO: This needs to be implemented
-
 		if(data.getWidth() != getWidth() || data.getHeight() != getHeight() || data.getDepth() != getDepth())
 			BS_EXCEPT(InvalidParametersException, "only download of entire buffer is supported by GL");
 
@@ -368,7 +365,54 @@ namespace BansheeEngine
 
 	void GLTextureBuffer::blitFromTexture(GLTextureBuffer* src, const PixelVolume& srcBox, const PixelVolume& dstBox)
 	{
-		BS_EXCEPT(NotImplementedException, "Not implemented.");
+		if (src->mMultisampleCount > 0 && mMultisampleCount == 0) // Resolving MS texture
+		{
+			if (mTarget != GL_TEXTURE_2D || mTarget != GL_TEXTURE_2D_MULTISAMPLE)
+				BS_EXCEPT(InvalidParametersException, "Non-2D multisampled texture not supported.");
+
+			GLint currentFBO = 0;
+			glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFBO);
+
+			GLuint readFBO = GLRTTManager::instance().getBlitReadFBO();
+			GLuint drawFBO = GLRTTManager::instance().getBlitDrawFBO();
+
+			// Attach source texture
+			glBindFramebuffer(GL_FRAMEBUFFER, readFBO);
+			src->bindToFramebuffer(0, 0);
+
+			// Attach destination texture
+			glBindFramebuffer(GL_FRAMEBUFFER, drawFBO);
+			bindToFramebuffer(0, 0);
+
+			// Perform blit
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, readFBO);
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, drawFBO);
+
+			glReadBuffer(GL_COLOR_ATTACHMENT0);
+			glDrawBuffer(GL_COLOR_ATTACHMENT0);
+
+			glBlitFramebuffer(srcBox.left, srcBox.top, srcBox.right, srcBox.bottom, 
+				dstBox.left, dstBox.top, dstBox.right, dstBox.bottom, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+			// Restore the previously bound FBO
+			glBindFramebuffer(GL_FRAMEBUFFER, currentFBO);
+		}
+		else // Just plain copy
+		{
+			if (mMultisampleCount != src->mMultisampleCount)
+				BS_EXCEPT(InvalidParametersException, "When copying textures their multisample counts must match.");
+
+			if (mTarget == GL_TEXTURE_3D) // 3D textures can't have arrays so their Z coordinate is handled differently
+			{
+				glCopyImageSubData(src->mTextureID, src->mTarget, src->mLevel, srcBox.left, srcBox.top, srcBox.front,
+					mTextureID, mTarget, mLevel, dstBox.left, dstBox.top, dstBox.front, srcBox.getWidth(), srcBox.getHeight(), srcBox.getDepth());
+			}
+			else
+			{
+				glCopyImageSubData(src->mTextureID, src->mTarget, src->mLevel, srcBox.left, srcBox.top, src->mFace,
+					mTextureID, mTarget, mLevel, dstBox.left, dstBox.top, mFace, srcBox.getWidth(), srcBox.getHeight(), 1);
+			}
+		}		
 	}
 	
 	GLRenderBuffer::GLRenderBuffer(GLenum format, UINT32 width, UINT32 height, GLsizei numSamples):

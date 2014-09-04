@@ -165,7 +165,7 @@ namespace BansheeEngine
 		Texture::destroy_internal();
 	}
 
-    GLenum GLTexture::getGLTextureTarget(void) const
+    GLenum GLTexture::getGLTextureTarget() const
     {
         switch(mTextureType)
         {
@@ -194,6 +194,9 @@ namespace BansheeEngine
 
 	PixelData GLTexture::lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face)
 	{
+		if (mMultisampleCount > 0)
+			BS_EXCEPT(InvalidStateException, "Multisampled textures cannot be accessed from the CPU directly.");
+
 		if(mLockedBuffer != nullptr)
 			BS_EXCEPT(InternalErrorException, "Trying to lock a buffer that's already locked.");
 
@@ -221,42 +224,42 @@ namespace BansheeEngine
 
 	void GLTexture::readData(PixelData& dest, UINT32 mipLevel, UINT32 face)
 	{
+		if (mMultisampleCount > 0)
+			BS_EXCEPT(InvalidStateException, "Multisampled textures cannot be accessed from the CPU directly.");
+
 		getBuffer(face, mipLevel)->download(dest);
 	}
 
 	void GLTexture::writeData(const PixelData& src, UINT32 mipLevel, UINT32 face, bool discardWholeBuffer)
 	{
+		if (mMultisampleCount > 0)
+			BS_EXCEPT(InvalidStateException, "Multisampled textures cannot be accessed from the CPU directly.");
+
 		getBuffer(face, mipLevel)->upload(src, src.getExtents());
 	}
 
-	void GLTexture::copyImpl(TexturePtr& target)
+	void GLTexture::copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, TexturePtr& target)
 	{
 		size_t numMips = std::min(getNumMipmaps(), target->getNumMipmaps());
 
-		GLTexture* glTexture = static_cast<GLTexture*>(target.get());
-		for (UINT32 face = 0; face < getNumFaces(); face++)
-		{
-			for(UINT32 mip = 0; mip <= numMips; mip++)
-			{
-				GLTextureBuffer *src = static_cast<GLTextureBuffer*>(getBuffer(face, mip).get());
+		GLTexture* destTex = static_cast<GLTexture*>(target.get());
+		GLTextureBuffer *src = static_cast<GLTextureBuffer*>(getBuffer(srcFace, srcMipLevel).get());
 
-				glTexture->getBuffer(face, mip)->blitFromTexture(src);
-			}
-		}
+		destTex->getBuffer(destFace, destMipLevel)->blitFromTexture(src);
 	}
 
 	void GLTexture::createSurfaceList()
 	{
 		mSurfaceList.clear();
 		
-		for(UINT32 face=0; face<getNumFaces(); face++)
+		for(UINT32 face = 0; face < getNumFaces(); face++)
 		{
-			for(UINT32 mip=0; mip<=getNumMipmaps(); mip++)
+			for(UINT32 mip = 0; mip <= getNumMipmaps(); mip++)
 			{
                 GLPixelBuffer *buf = bs_new<GLTextureBuffer, PoolAlloc>(getGLTextureTarget(), mTextureID, face, mip,
 						static_cast<GpuBufferUsage>(mUsage), mHwGamma, mMultisampleCount);
+
 				mSurfaceList.push_back(bs_shared_ptr<GLPixelBuffer, PoolAlloc>(buf));
-                
                 if(buf->getWidth() == 0 || buf->getHeight() == 0 || buf->getDepth() == 0)
                 {
 					BS_EXCEPT(RenderingAPIException, 

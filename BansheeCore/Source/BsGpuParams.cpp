@@ -259,7 +259,7 @@ namespace BansheeEngine
 		
 		if (frameAlloc != nullptr)
 		{
-			StdFrameAlloc<GpuParams> myAlloc(frameAlloc);
+			StdFrameAlloc<std::shared_ptr<GpuParams>> myAlloc(frameAlloc);
 			myClone = std::allocate_shared<GpuParams>(myAlloc, mParamDesc, PrivatelyConstruct());
 			myClone->mInternalData = std::allocate_shared<GpuParamsInternalData>(myAlloc);
 		}

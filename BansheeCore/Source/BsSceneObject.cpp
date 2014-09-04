@@ -39,7 +39,7 @@ namespace BansheeEngine
 	HSceneObject SceneObject::createInternal(const String& name)
 	{
 		std::shared_ptr<SceneObject> sceneObjectPtr = std::shared_ptr<SceneObject>(new (bs_alloc<SceneObject, PoolAlloc>()) SceneObject(name), 
-			&bs_delete<PoolAlloc, SceneObject>, StdAlloc<PoolAlloc>());
+			&bs_delete<PoolAlloc, SceneObject>, StdAlloc<SceneObject, PoolAlloc>());
 		
 		HSceneObject sceneObject = GameObjectManager::instance().registerObject(sceneObjectPtr);
 		sceneObject->mThisHandle = sceneObject;

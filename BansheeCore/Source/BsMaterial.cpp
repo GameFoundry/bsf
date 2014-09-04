@@ -774,17 +774,8 @@ namespace BansheeEngine
 				numDirtyParams++;
 		}
 
-		UINT32 sizeRequired = sizeof(MaterialProxy::DirtyParamsInfo) + numDirtyParams * sizeof(MaterialProxy::ParamsBindInfo);
-		UINT8* buffer = (UINT8*)frameAlloc->alloc(sizeRequired);
-
-		MaterialProxy::DirtyParamsInfo* dirtyParamsInfo = (MaterialProxy::DirtyParamsInfo*)buffer;
-		dirtyParamsInfo->numEntries = numDirtyParams;
-		dirtyParamsInfo->owner = frameAlloc;
+		MaterialProxy::DirtyParamsInfo* dirtyParamsInfo = MaterialProxy::DirtyParamsInfo::create(frameAlloc, numDirtyParams);
 		
-		buffer += sizeof(MaterialProxy::DirtyParamsInfo);
-		MaterialProxy::ParamsBindInfo* paramsInfoArray = (MaterialProxy::ParamsBindInfo*)buffer;
-		dirtyParamsInfo->entries = paramsInfoArray;
-
 		UINT32 idx = 0;
 		for (UINT32 i = 0; i < numPasses; i++)
 		{
@@ -793,48 +784,48 @@ namespace BansheeEngine
 
 			if (pass->hasVertexProgram() && params->mVertParams->_isCoreDirty())
 			{
-				paramsInfoArray[idx].paramsIdx = idx;
-				paramsInfoArray[idx].params = params->mVertParams->_clone(frameAlloc);
+				dirtyParamsInfo->entries[idx].paramsIdx = idx;
+				dirtyParamsInfo->entries[idx].params = params->mVertParams->_clone(frameAlloc);
 
 				idx++;
 			}
 
 			if (pass->hasFragmentProgram() && params->mFragParams->_isCoreDirty())
 			{
-				paramsInfoArray[idx].paramsIdx = idx;
-				paramsInfoArray[idx].params = params->mFragParams->_clone(frameAlloc);
+				dirtyParamsInfo->entries[idx].paramsIdx = idx;
+				dirtyParamsInfo->entries[idx].params = params->mFragParams->_clone(frameAlloc);
 
 				idx++;
 			}
 
 			if (pass->hasGeometryProgram() && params->mGeomParams->_isCoreDirty())
 			{
-				paramsInfoArray[idx].paramsIdx = idx;
-				paramsInfoArray[idx].params = params->mGeomParams->_clone(frameAlloc);
+				dirtyParamsInfo->entries[idx].paramsIdx = idx;
+				dirtyParamsInfo->entries[idx].params = params->mGeomParams->_clone(frameAlloc);
 
 				idx++;
 			}
 
 			if (pass->hasHullProgram() && params->mHullParams->_isCoreDirty())
 			{
-				paramsInfoArray[idx].paramsIdx = idx;
-				paramsInfoArray[idx].params = params->mHullParams->_clone(frameAlloc);
+				dirtyParamsInfo->entries[idx].paramsIdx = idx;
+				dirtyParamsInfo->entries[idx].params = params->mHullParams->_clone(frameAlloc);
 
 				idx++;
 			}
 
 			if (pass->hasDomainProgram() && params->mDomainParams->_isCoreDirty())
 			{
-				paramsInfoArray[idx].paramsIdx = idx;
-				paramsInfoArray[idx].params = params->mDomainParams->_clone(frameAlloc);
+				dirtyParamsInfo->entries[idx].paramsIdx = idx;
+				dirtyParamsInfo->entries[idx].params = params->mDomainParams->_clone(frameAlloc);
 
 				idx++;
 			}
 
 			if (pass->hasComputeProgram() && params->mComputeParams->_isCoreDirty())
 			{
-				paramsInfoArray[idx].paramsIdx = idx;
-				paramsInfoArray[idx].params = params->mComputeParams->_clone(frameAlloc);
+				dirtyParamsInfo->entries[idx].paramsIdx = idx;
+				dirtyParamsInfo->entries[idx].params = params->mComputeParams->_clone(frameAlloc);
 
 				idx++;
 			}

@@ -67,6 +67,9 @@ namespace BansheeEngine
 
 	PixelData D3D9Texture::lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face)
 	{
+		if (mMultisampleCount > 0)
+			BS_EXCEPT(InvalidStateException, "Multisampled textures cannot be accessed from the CPU directly.");
+
 		if(mLockedBuffer != nullptr)
 			BS_EXCEPT(InternalErrorException, "Trying to lock a buffer that's already locked.");
 
@@ -96,6 +99,9 @@ namespace BansheeEngine
 
 	void D3D9Texture::readData(PixelData& dest, UINT32 mipLevel, UINT32 face)
 	{
+		if (mMultisampleCount > 0)
+			BS_EXCEPT(InvalidStateException, "Multisampled textures cannot be accessed from the CPU directly.");
+
 		PixelData myData = lock(GBL_READ_ONLY, mipLevel, face);
 
 #if BS_DEBUG_MODE
@@ -113,6 +119,9 @@ namespace BansheeEngine
 
 	void D3D9Texture::writeData(const PixelData& src, UINT32 mipLevel, UINT32 face, bool discardWholeBuffer)
 	{
+		if (mMultisampleCount > 0)
+			BS_EXCEPT(InvalidStateException, "Multisampled textures cannot be accessed from the CPU directly.");
+
 		if(mUsage == TU_DYNAMIC || mUsage == TU_STATIC)
 		{
 			PixelData myData = lock(discardWholeBuffer ? GBL_WRITE_ONLY_DISCARD : GBL_WRITE_ONLY, mipLevel, face);
@@ -125,90 +134,72 @@ namespace BansheeEngine
 		}
 	}
 	
-	void D3D9Texture::copyImpl(TexturePtr& target)
+	void D3D9Texture::copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, TexturePtr& target)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		if (target->getUsage() != getUsage() || target->getTextureType() != getTextureType())
-		{
-			BS_EXCEPT(InvalidParametersException, "Src. and dest. textures must be of same type and must have the same usage.");
-		}
+		if (getTextureType() == TEX_TYPE_1D || getTextureType() == TEX_TYPE_3D)
+			BS_EXCEPT(NotImplementedException, "Copy not implemented for 1D and 3D textures yet.");
 
         HRESULT hr;
 		D3D9Texture *other = static_cast<D3D9Texture*>(target.get());
-		RECT dstRC = { 0, 0, (LONG)(other->getWidth()), (LONG)(other->getHeight()) };
 
 		for (auto& resPair : mMapDeviceToTextureResources)
 		{
 			TextureResources* srcTextureResource = resPair.second;
 			TextureResources* dstTextureResource = other->getTextureResources(resPair.first);
 
-			// Plain copy for normal textures
-			if (getTextureType() == TEX_TYPE_2D && srcTextureResource->pNormTex != nullptr && 
-				dstTextureResource->pNormTex != nullptr)
+			IDirect3DSurface9 *sourceSurface = nullptr;
+			IDirect3DSurface9 *destSurface = nullptr;
+
+			if (getTextureType() == TEX_TYPE_2D && srcTextureResource->pNormTex != nullptr && dstTextureResource->pNormTex != nullptr)
 			{			
-				IDirect3DSurface9 *sourceSurface = 0;
-				if(FAILED(hr = srcTextureResource->pNormTex->GetSurfaceLevel(0, &sourceSurface)))
+				if(FAILED(hr = srcTextureResource->pNormTex->GetSurfaceLevel(srcMipLevel, &sourceSurface)))
 				{
 					String msg = DXGetErrorDescription(hr);
-					BS_EXCEPT(RenderingAPIException, "Couldn't blit: " + msg);
+					BS_EXCEPT(RenderingAPIException, "Cannot retrieve source surface for copy: " + msg);
 				}
 
-				IDirect3DSurface9 *destSurface = 0;			
-				if(FAILED(hr = dstTextureResource->pNormTex->GetSurfaceLevel(0, &destSurface)))
+				if(FAILED(hr = dstTextureResource->pNormTex->GetSurfaceLevel(destMipLevel, &destSurface)))
 				{
 					String msg = DXGetErrorDescription(hr);
-					SAFE_RELEASE(sourceSurface);
-					BS_EXCEPT(RenderingAPIException, "Couldn't blit: " + msg);
+					BS_EXCEPT(RenderingAPIException, "Cannot retrieve destination surface for copy: " + msg);
 				}
-
-				if (FAILED(hr = resPair.first->StretchRect(sourceSurface, NULL, destSurface, &dstRC, D3DTEXF_NONE)))
-				{
-					String msg = DXGetErrorDescription(hr);
-					SAFE_RELEASE(sourceSurface);
-					SAFE_RELEASE(destSurface);
-					BS_EXCEPT(RenderingAPIException, "Couldn't blit: " + msg);
-				}
-
-				SAFE_RELEASE(sourceSurface);
-				SAFE_RELEASE(destSurface);
 			}
-			else if (getTextureType() == TEX_TYPE_CUBE_MAP && srcTextureResource->pCubeTex != nullptr && 
-				dstTextureResource->pCubeTex != nullptr)
+			else if (getTextureType() == TEX_TYPE_CUBE_MAP && srcTextureResource->pCubeTex != nullptr && dstTextureResource->pCubeTex != nullptr)
 			{				
-				for (UINT32 face = 0; face < 6; face++)
+				IDirect3DSurface9 *sourceSurface = nullptr;
+				if (FAILED(hr = srcTextureResource->pCubeTex->GetCubeMapSurface((D3DCUBEMAP_FACES)srcFace, srcMipLevel, &sourceSurface)))
 				{
-					IDirect3DSurface9 *sourceSurface = 0;
-					if( FAILED(hr = srcTextureResource->pCubeTex->GetCubeMapSurface((D3DCUBEMAP_FACES)face, 0, &sourceSurface)))
-					{
-						String msg = DXGetErrorDescription(hr);
-						BS_EXCEPT(RenderingAPIException, "Couldn't blit: " + msg);
-					}
+					String msg = DXGetErrorDescription(hr);
+					BS_EXCEPT(RenderingAPIException, "Cannot retrieve source surface for copy: " + msg);
+				}
 
-					IDirect3DSurface9 *destSurface = 0;
-					if( FAILED(hr = dstTextureResource->pCubeTex->GetCubeMapSurface((D3DCUBEMAP_FACES)face, 0, &destSurface)))
-					{
-						String msg = DXGetErrorDescription(hr);
-						SAFE_RELEASE(sourceSurface);
-						BS_EXCEPT(RenderingAPIException, "Couldn't blit: " + msg);
-					}
-
-					if (FAILED(hr = resPair.first->StretchRect(sourceSurface, NULL, destSurface, &dstRC, D3DTEXF_NONE)))
-					{
-						String msg = DXGetErrorDescription(hr);
-						SAFE_RELEASE(sourceSurface);
-						SAFE_RELEASE(destSurface);
-						BS_EXCEPT(RenderingAPIException, "Couldn't blit: " + msg);
-					}
-
-					SAFE_RELEASE(sourceSurface);
-					SAFE_RELEASE(destSurface);
+				IDirect3DSurface9 *destSurface = nullptr;
+				if (FAILED(hr = dstTextureResource->pCubeTex->GetCubeMapSurface((D3DCUBEMAP_FACES)destFace, destMipLevel, &destSurface)))
+				{
+					String msg = DXGetErrorDescription(hr);
+					BS_EXCEPT(RenderingAPIException, "Cannot retrieve destination surface for copy: " + msg);
 				}
 			}
-			else
+
+			if (sourceSurface != nullptr && destSurface != nullptr)
 			{
-				BS_EXCEPT(NotImplementedException, "Copy to texture is implemented only for 2D and cube textures.");
+				if (sourceSurface->Pool != D3DPOOL_DEFAULT)
+					BS_EXCEPT(InvalidStateException, "Source surface must be in the default pool.");
+
+				if (destSurface->Pool != D3DPOOL_DEFAULT)
+					BS_EXCEPT(InvalidStateException, "Destination surface must be in the default pool.");
+
+				if (FAILED(hr = resPair.first->StretchRect(sourceSurface, NULL, destSurface, NULL, D3DTEXF_NONE)))
+				{
+					String msg = DXGetErrorDescription(hr);
+					BS_EXCEPT(RenderingAPIException, "StretchRect failed during copy: " + msg);
+				}
 			}
+
+			SAFE_RELEASE(sourceSurface);
+			SAFE_RELEASE(destSurface);
 		}		
 	}
 	
@@ -373,7 +364,7 @@ namespace BansheeEngine
 			// Create AA surface
 			HRESULT hr = d3d9Device->CreateRenderTarget(mWidth, mHeight, d3dPF, 
 				mMultisampleType, mMultisampleQuality,
-				TRUE, // TODO - Possible performance issues? Need to check
+				TRUE, // TODO - Possible performance issues? Need to check. Other option is to use GetRenderTargetData when reading RT from CPU
 				&textureResources->pMultisampleSurface, NULL);
 
 			if (FAILED(hr))
@@ -389,14 +380,14 @@ namespace BansheeEngine
 
 			setFinalAttributes(d3d9Device, textureResources, desc.Width, desc.Height, 1, D3D9Mappings::_getPF(desc.Format));
 
-			mIsBindableAsShaderResource = true; // Cannot bind AA surfaces
+			mIsBindableAsShaderResource = false; // Cannot bind AA surfaces
 		}
 		else if ((mUsage & TU_DEPTHSTENCIL) != 0 && (mMultisampleType != D3DMULTISAMPLE_NONE))
 		{
 			// Create AA depth stencil surface
 			HRESULT hr = d3d9Device->CreateDepthStencilSurface(mWidth, mHeight, d3dPF, 
 				mMultisampleType, mMultisampleQuality,
-				TRUE, // TODO - Possible performance issues? Need to check
+				TRUE, // TODO - Possible performance issues? Need to check. Other option is to use GetRenderTargetData when reading RT from CPU
 				&textureResources->pDepthStencilSurface, NULL);
 
 			if (FAILED(hr))
@@ -413,7 +404,7 @@ namespace BansheeEngine
 
 			setFinalAttributes(d3d9Device, textureResources, desc.Width, desc.Height, 1, D3D9Mappings::_getPF(desc.Format));
 
-			mIsBindableAsShaderResource = true; // Cannot bind AA depth buffer
+			mIsBindableAsShaderResource = false; // Cannot bind AA depth buffer
 		}
 		else
 		{

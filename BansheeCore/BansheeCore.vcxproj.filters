@@ -833,5 +833,8 @@
     <ClCompile Include="Source\BsRenderTargetManager.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
+    <ClCompile Include="Source\BsMaterialProxy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

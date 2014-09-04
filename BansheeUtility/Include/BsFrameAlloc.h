@@ -102,11 +102,13 @@ namespace BansheeEngine
 			:mFrameAlloc(frameAlloc)
 		{ }
 
-		StdFrameAlloc(const StdFrameAlloc&) throw()
+		StdFrameAlloc(const StdFrameAlloc& alloc) throw()
+			:mFrameAlloc(alloc.mFrameAlloc)
 		{ }
 
 		template <class U>
-		StdFrameAlloc(const StdFrameAlloc<U>&) throw()
+		StdFrameAlloc(const StdFrameAlloc<U>& alloc) throw()
+			:mFrameAlloc(alloc.mFrameAlloc)
 		{ }
 
 		~StdFrameAlloc() throw()
@@ -169,7 +171,6 @@ namespace BansheeEngine
 			mFrameAlloc->dealloc((UINT8*)p);
 		}
 
-	private:
 		FrameAlloc* mFrameAlloc;
 	};
 

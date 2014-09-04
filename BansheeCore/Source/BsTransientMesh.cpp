@@ -2,6 +2,7 @@
 #include "BsVertexData.h"
 #include "BsBounds.h"
 #include "BsMeshHeap.h"
+#include "BsFrameAlloc.h"
 
 namespace BansheeEngine
 {
@@ -57,7 +58,7 @@ namespace BansheeEngine
 
 	MeshProxyPtr TransientMesh::_createProxy(UINT32 subMeshIdx)
 	{
-		MeshProxyPtr coreProxy = bs_shared_ptr<MeshProxy>();
+		MeshProxyPtr coreProxy = bs_shared_ptr<MeshProxy>();		
 		coreProxy->mesh = std::static_pointer_cast<MeshBase>(getThisPtr());
 		coreProxy->subMesh = mSubMeshes[0];
 		coreProxy->submeshIdx = subMeshIdx;

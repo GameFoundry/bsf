@@ -148,6 +148,7 @@ namespace BansheeEngine
 		GLuint mTextureID;
 		GLint mFace;
 		GLint mLevel;
+		UINT32 mMultisampleCount;
     };
 
 	/**

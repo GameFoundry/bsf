@@ -205,12 +205,19 @@ namespace BansheeEngine
 		void unlock();
 
 		/**
-		 * @brief	Copies the contents of this texture to another texture. Texture format
-		 * 			and size must match.
+		 * @brief	Copies the contents a subresource in this texture to another texture. 
+		 *			Texture format and size of the subresource must match.
+		 *
+		 *			You are allowed to copy from a multisampled to non-multisampled
+		 *			surface, which will resolve the multisampled surface before copying.
+		 *
+		 * @param	srcSubresourceIdx	Index of the subresource to copy from.
+		 * @param	destSubresourceIdx	Index of the subresource to copy to.
+		 * @param	target				Texture that contains the destination subresource.
 		 * 			
 		 * @note	Core thread only.
 		 */
-		void copy(TexturePtr& target);
+		void copy(UINT32 srcSubresourceIdx, UINT32 destSubresourceIdx, TexturePtr& target);
 
 		/**
 		 * @brief	Reads data from the texture buffer into the provided buffer.
@@ -385,7 +392,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	copy
 		 */
-		virtual void copyImpl(TexturePtr& target) = 0;
+		virtual void copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, TexturePtr& target) = 0;
 
 		/**
 		 * @copydoc	Resource::calculateSize

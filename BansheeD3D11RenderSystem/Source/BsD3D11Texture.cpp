@@ -58,23 +58,37 @@ namespace BansheeEngine
 		Texture::destroy_internal();
 	}
 
-	void D3D11Texture::copyImpl(TexturePtr& target)
+	void D3D11Texture::copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, TexturePtr& target)
 	{
 		D3D11Texture* other = static_cast<D3D11Texture*>(target.get());
 
+		UINT32 srcResIdx = D3D11CalcSubresource(srcMipLevel, srcFace, getNumMipmaps() + 1);
+		UINT32 destResIdx = D3D11CalcSubresource(destMipLevel, destFace, target->getNumMipmaps() + 1);
+
 		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
-		device.getImmediateContext()->CopyResource(other->getDX11Resource(), mTex);
 
-		if (device.hasError())
+		if (getMultisampleCount() != target->getMultisampleCount()) // Resolving from MS to non-MS texture
 		{
-			String errorDescription = device.getErrorDescription();
-			BS_EXCEPT(RenderingAPIException, "D3D11 device cannot copy resource\nError Description:" + errorDescription);
+			device.getImmediateContext()->ResolveSubresource(other->getDX11Resource(), destResIdx, mTex, srcResIdx, mDXGIFormat);
+		}
+		else
+		{
+			device.getImmediateContext()->CopySubresourceRegion(other->getDX11Resource(), destResIdx, 0, 0, 0, mTex, srcResIdx, nullptr);
+
+			if (device.hasError())
+			{
+				String errorDescription = device.getErrorDescription();
+				BS_EXCEPT(RenderingAPIException, "D3D11 device cannot copy subresource\nError Description:" + errorDescription);
+			}
 		}
 	}
 
 	PixelData D3D11Texture::lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face)
 	{
+		if (mMultisampleCount > 0)
+			BS_EXCEPT(InvalidStateException, "Multisampled textures cannot be accessed from the CPU directly.");
+
 #if BS_PROFILING_ENABLED
 		if (options == GBL_READ_ONLY || options == GBL_READ_WRITE)
 		{
@@ -138,6 +152,9 @@ namespace BansheeEngine
 
 	void D3D11Texture::readData(PixelData& dest, UINT32 mipLevel, UINT32 face)
 	{
+		if (mMultisampleCount > 0)
+			BS_EXCEPT(InvalidStateException, "Multisampled textures cannot be accessed from the CPU directly.");
+
 		PixelData myData = lock(GBL_READ_ONLY, mipLevel, face);
 
 #if BS_DEBUG_MODE
@@ -155,6 +172,9 @@ namespace BansheeEngine
 
 	void D3D11Texture::writeData(const PixelData& src, UINT32 mipLevel, UINT32 face, bool discardWholeBuffer)
 	{
+		if (mMultisampleCount > 0)
+			BS_EXCEPT(InvalidStateException, "Multisampled textures cannot be accessed from the CPU directly.");
+
 		if(mUsage == TU_DYNAMIC)
 		{
 			PixelData myData = lock(discardWholeBuffer ? GBL_WRITE_ONLY_DISCARD : GBL_WRITE_ONLY, mipLevel, face);
@@ -267,6 +287,7 @@ namespace BansheeEngine
 				"Requested: " + toString(mNumMipmaps) + ". Got: " + toString(desc.MipLevels - 1) + ".");
 		}
 
+		mDXGIFormat = desc.Format;
 		mDimension = D3D11_SRV_DIMENSION_TEXTURE1D;
 
 		// Create texture view
@@ -529,6 +550,7 @@ namespace BansheeEngine
                "Requested: " + toString(mNumMipmaps) + ". Got: " + toString(desc.MipLevels - 1) + ".");
 		}
 
+		mDXGIFormat = desc.Format;
 		mDimension = D3D11_SRV_DIMENSION_TEXTURE3D;
 
 		if((mUsage & TU_DEPTHSTENCIL) == 0)
@@ -594,8 +616,12 @@ namespace BansheeEngine
 
 	void* D3D11Texture::mapstagingbuffer(D3D11_MAP flags, UINT32 mipLevel, UINT32 face, UINT32& rowPitch, UINT32& slicePitch)
 	{
+		// Note: I am creating and destroying a staging resource every time a texture is read. 
+		// Consider offering a flag on init that will keep this active all the time (at the cost of double memory).
+		// Reading is slow operation anyway so I don't believe doing it as we are now will influence it much.
+
 		if(!mStagingBuffer)
-			createStagingBuffer();
+			createStagingBuffer(); 
 
 		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
@@ -607,6 +633,7 @@ namespace BansheeEngine
 	void D3D11Texture::unmapstagingbuffer()
 	{
 		unmap(mStagingBuffer);
+		SAFE_RELEASE(mStagingBuffer);
 	}
 
 	void* D3D11Texture::mapstaticbuffer(PixelData lock, UINT32 mipLevel, UINT32 face)

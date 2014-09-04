@@ -91,6 +91,18 @@ namespace BansheeEngine
          * @note	Thread safe.
          */
         virtual PixelFormat getSupportedAlternative(PixelFormat format);
+
+		/**
+		 * @brief	Returns a persistent FBO that is used as a
+		 *			source buffer for blit operations.
+		 */
+		GLuint getBlitReadFBO() const { return mBlitReadFBO; }
+
+		/**
+		 * @brief	Returns a persistent FBO that is used as a 
+		 *			destination buffer for blit operations.
+		 */
+		GLuint getBlitDrawFBO() const { return mBlitWriteFBO; }
     private:
         /** 
 		 * Frame buffer object properties for a certain texture format.
@@ -110,9 +122,6 @@ namespace BansheeEngine
 			bool valid;
         };
 
-        FormatProperties mProps[PF_COUNT];
-        GLuint mTempFBO;
-        
 		/**
 		 * @brief	Detect which internal formats are allowed to be used on render target 
 		 *			color or depth/stencil surfaces.
@@ -129,5 +138,9 @@ namespace BansheeEngine
 		 *			in the render target.
 		 */
         bool _tryPackedFormat(GLenum packedFormat);
+
+		FormatProperties mProps[PF_COUNT];
+		GLuint mBlitReadFBO;
+		GLuint mBlitWriteFBO;
     };
 }

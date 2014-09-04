@@ -170,37 +170,52 @@ namespace BansheeEngine
 		unlockImpl();
 	}
 
-	void Texture::copy(TexturePtr& target)
+	void Texture::copy(UINT32 srcSubresourceIdx, UINT32 destSubresourceIdx, TexturePtr& target)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		if (target->getUsage() != this->getUsage() ||
-			target->getTextureType() != this->getTextureType())
-		{
+		if (target->getTextureType() != this->getTextureType())
 			BS_EXCEPT(InvalidParametersException, "Source and destination textures must be of same type and must have the same usage and type.");
-		}
 
-		if(getWidth() != target->getWidth() || getHeight() != target->getHeight() || getDepth() != target->getDepth())
-		{
-			BS_EXCEPT(InvalidParametersException, "Texture sizes don't match." \
-				" Width: " + toString(getWidth()) + "/" + toString(target->getWidth()) + 
-				" Height: " + toString(getHeight()) + "/" + toString(target->getHeight()) + 
-				" Depth: " + toString(getDepth()) + "/" + toString(target->getDepth()));
-		}
+		if (getFormat() != target->getFormat()) // Note: It might be okay to use different formats of the same size
+			BS_EXCEPT(InvalidParametersException, "Source and destination texture formats must match.");
 
-		if(getNumFaces() != target->getNumFaces())
-		{
-			BS_EXCEPT(InvalidParametersException, "Number of texture faces doesn't match." \
-				" Num faces: " + toString(getNumFaces()) + "/" + toString(target->getNumFaces()));
-		}
+		if (target->getMultisampleCount() > 0 && getMultisampleCount() != target->getMultisampleCount())
+			BS_EXCEPT(InvalidParametersException, "When copying to a multisampled texture, source texture must have the same number of samples.");
 
-		if(getNumMipmaps() != target->getNumMipmaps())
-		{
-			BS_EXCEPT(InvalidParametersException, "Number of mipmaps doesn't match." \
-				" Num mipmaps: " + toString(getNumMipmaps()) + "/" + toString(target->getNumMipmaps()));
-		}
+		UINT32 srcFace = 0;
+		UINT32 srcMipLevel = 0;
 
-		copyImpl(target);
+		UINT32 destFace = 0;
+		UINT32 destMipLevel = 0;
+
+		mapFromSubresourceIdx(srcSubresourceIdx, srcFace, srcMipLevel);
+		target->mapFromSubresourceIdx(destSubresourceIdx, destFace, destMipLevel);
+
+		if (destFace >= getNumFaces())
+			BS_EXCEPT(InvalidParametersException, "Invalid destination face index");
+
+		if (srcFace >= target->getNumFaces())
+			BS_EXCEPT(InvalidParametersException, "Invalid destination face index");
+
+		if (srcMipLevel > getNumMipmaps())
+			BS_EXCEPT(InvalidParametersException, "Source mip level out of range. Valid range is [0, " + toString(getNumMipmaps()) + "]");
+
+		if (destMipLevel > target->getNumMipmaps())
+			BS_EXCEPT(InvalidParametersException, "Destination mip level out of range. Valid range is [0, " + toString(target->getNumMipmaps()) + "]");
+
+		UINT32 srcMipWidth = mWidth >> srcMipLevel;
+		UINT32 srcMipHeight = mHeight >> srcMipLevel;
+		UINT32 srcMipDepth = mDepth >> srcMipLevel;
+
+		UINT32 dstMipWidth = target->getWidth() >> destMipLevel;
+		UINT32 dstMipHeight = target->getHeight() >> destMipLevel;
+		UINT32 dstMipDepth = target->getDepth() >> destMipLevel;
+
+		if (srcMipWidth != dstMipWidth || srcMipHeight != dstMipHeight || srcMipDepth != dstMipDepth)
+			BS_EXCEPT(InvalidParametersException, "Source and destination sizes must match");
+
+		copyImpl(srcFace, srcMipLevel, destFace, destMipLevel, target);
 	}
 
 	/************************************************************************/

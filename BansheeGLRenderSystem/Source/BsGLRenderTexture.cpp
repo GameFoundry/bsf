@@ -78,15 +78,18 @@ namespace BansheeEngine
 	}
 
 	GLRTTManager::GLRTTManager()
+		:mBlitReadFBO(0), mBlitWriteFBO(0)
     {
 		detectFBOFormats();
 		
-        glGenFramebuffersEXT(1, &mTempFBO);
+		glGenFramebuffersEXT(1, &mBlitReadFBO);
+		glGenFramebuffersEXT(1, &mBlitWriteFBO);
     }
 
 	GLRTTManager::~GLRTTManager()
 	{
-        glDeleteFramebuffersEXT(1, &mTempFBO);      
+		glDeleteFramebuffersEXT(1, &mBlitReadFBO);
+		glDeleteFramebuffersEXT(1, &mBlitWriteFBO);
 	}
 
 	bool GLRTTManager::_tryFormat(GLenum depthFormat, GLenum stencilFormat)

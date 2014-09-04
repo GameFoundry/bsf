@@ -5,11 +5,10 @@ TODO:
 Weekend:
  - SceneGrid is very ugly. Consider using default lines for now and come back with a better approach later.
 
-Sending GPU parameters to core thread:
- - MaterialProxy needs to be allocatable via frame alloc
- - MeshProxy needs to be allocatable via frame alloc
-
-do _markAsClean on GpuParams even with transient stuff? If I update the buffer it should be safe
+ I have no way of read data from window framebuffer. Will need special methods for it?
+  - Think about is this even needed? If I do post-processing I'm going to draw everything to render textures and then
+    just blit to back buffer. I think.
+ OpenGL texture read/write from render textures isn't hooked up at all
 
 ----------------------------------------------------------------------
 Handles

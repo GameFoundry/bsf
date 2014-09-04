@@ -424,6 +424,7 @@
     <ClCompile Include="Source\BsCameraProxy.cpp" />
     <ClCompile Include="Source\BsCoreThread.cpp" />
     <ClCompile Include="Source\BsDrawList.cpp" />
+    <ClCompile Include="Source\BsMaterialProxy.cpp" />
     <ClCompile Include="Source\BsProfilerCPU.cpp" />
     <ClCompile Include="Source\BsDeferredCallManager.cpp" />
     <ClCompile Include="Source\BsDrawOps.cpp" />

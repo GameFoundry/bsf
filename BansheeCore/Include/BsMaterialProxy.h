@@ -73,6 +73,17 @@ namespace BansheeEngine
 			UINT32 numEntries;
 
 			FrameAlloc* owner;
+
+			/**
+			 * @brief	Allocates and constructs a new object. You must release it
+			 *			manually using the same frame allocator.
+			 */
+			static DirtyParamsInfo* create(FrameAlloc* alloc, UINT32 numParams);
+
+			/**
+			 * @brief	Deallocates and destructs a previously allocated params info object.
+			 */
+			static void destroy(DirtyParamsInfo* paramsInfo);
 		};
 
 		Vector<MaterialProxyPass> passes;

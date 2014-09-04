@@ -140,7 +140,7 @@ namespace BansheeEngine
 	template<class Type, class AllocCategory, class... Args> 
 	std::shared_ptr<Type> bs_shared_ptr(Args &&... args) 
 	{
-		return std::allocate_shared<Type>(StdAlloc<AllocCategory>(), std::forward<Args>(args)...); 
+		return std::allocate_shared<Type>(StdAlloc<Type, AllocCategory>(), std::forward<Args>(args)...);
 	}
 
 	/**
@@ -149,7 +149,7 @@ namespace BansheeEngine
 	template<class Type, class... Args>
 	std::shared_ptr<Type> bs_shared_ptr(Args &&... args)
 	{
-		return std::allocate_shared<Type>(StdAlloc<GenAlloc>(), std::forward<Args>(args)...);
+		return std::allocate_shared<Type>(StdAlloc<Type, GenAlloc>(), std::forward<Args>(args)...);
 	}
 
 	/**
@@ -159,7 +159,7 @@ namespace BansheeEngine
 	template<class Type, class MainAlloc>
 	std::shared_ptr<Type> bs_shared_ptr(Type* data) 
 	{
-		return std::shared_ptr<Type>(data, &bs_delete<MainAlloc, Type>, StdAlloc<GenAlloc>());  
+		return std::shared_ptr<Type>(data, &bs_delete<MainAlloc, Type>, StdAlloc<Type, GenAlloc>());
 	}
 
 	/**
@@ -169,6 +169,6 @@ namespace BansheeEngine
 	template<class Type, class MainAlloc, class PtrDataAlloc>
 	std::shared_ptr<Type> bs_shared_ptr(Type* data) 
 	{
-		return std::shared_ptr<Type>(data, &bs_delete<MainAlloc, Type>, StdAlloc<PtrDataAlloc>());  
+		return std::shared_ptr<Type>(data, &bs_delete<MainAlloc, Type>, StdAlloc<Type, PtrDataAlloc>());
 	}
 }

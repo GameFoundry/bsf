@@ -56,7 +56,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc Texture::copyImpl
 		 */
-		void copyImpl(TexturePtr& target);
+		void copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, TexturePtr& target);
 
 		/**
 		 * @copydoc Texture::readData
