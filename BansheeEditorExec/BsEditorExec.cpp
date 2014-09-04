@@ -11,7 +11,7 @@ int CALLBACK WinMain(
 	_In_  int nCmdShow
 	)
 {
-	EditorApplication::startUp(RenderSystemPlugin::DX9);
+	EditorApplication::startUp(RenderSystemPlugin::OpenGL);
 	EditorApplication::instance().runMainLoop();
 	EditorApplication::shutDown();
 

@@ -408,6 +408,21 @@ namespace BansheeEngine
 		 */
 		void setScissorTestEnable(bool enable);
 
+		/**
+		 * @brief	Enables or disables multisample antialiasing.
+		 */
+		void setMultisamplingEnable(bool enable);
+
+		/**
+		 * @brief	Enables or disables depth clipping (i.e. near/fear plane clipping).
+		 */
+		void setDepthClipEnable(bool enable);
+
+		/**
+		 * @brief	Enables or disables antialiased line rendering.
+		 */
+		void setAntialiasedLineEnable(bool enable);
+
 		/************************************************************************/
 		/* 						Depth stencil state                      		*/
 		/************************************************************************/

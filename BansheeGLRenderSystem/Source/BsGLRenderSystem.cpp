@@ -492,6 +492,12 @@ namespace BansheeEngine
 
 		setScissorTestEnable(rasterizerState->getScissorEnable());
 
+		setMultisamplingEnable(rasterizerState->getMultisampleEnable());
+
+		setDepthClipEnable(rasterizerState->getDepthClipEnable());
+
+		setAntialiasedLineEnable(rasterizerState->getAntialiasedLineEnable());
+
 		BS_INC_RENDER_STAT(NumRasterizerStateChanges);
 	}
 
@@ -1034,6 +1040,31 @@ namespace BansheeEngine
 			glScissor(x, y, w, h);
 		}
 	}
+
+	void GLRenderSystem::setMultisamplingEnable(bool enable)
+	{
+		if (enable)
+			glEnable(GL_MULTISAMPLE);
+		else
+			glDisable(GL_MULTISAMPLE);
+	}
+
+	void GLRenderSystem::setDepthClipEnable(bool enable)
+	{
+		if (enable)
+			glEnable(GL_DEPTH_CLAMP);
+		else
+			glDisable(GL_DEPTH_CLAMP);
+	}
+
+	void GLRenderSystem::setAntialiasedLineEnable(bool enable)
+	{
+		if (enable)
+			glEnable(GL_LINE_SMOOTH);
+		else
+			glDisable(GL_LINE_SMOOTH);
+	}
+
 
 	void GLRenderSystem::setCullingMode(CullingMode mode)
 	{
@@ -1705,18 +1736,6 @@ namespace BansheeEngine
 			BS_EXCEPT(InternalErrorException, "Number of combined uniform block buffers less than the number of individual per-stage buffers!?");
 
 		TextureManager::startUp<GLTextureManager>(std::ref(*mGLSupport));
-
-		// Check for multisample support
-		// Enable the extension if it was enabled by the GLSupport
-		if (mGLSupport->checkExtension("GL_ARB_multisample"))
-		{
-			int multisampleActive = false;
-			glGetIntegerv(GL_SAMPLE_BUFFERS_ARB, (GLint*)&multisampleActive);
-			if (multisampleActive)
-			{
-				glEnable(GL_MULTISAMPLE_ARB);
-			}
-		}
 	}
 
 	void GLRenderSystem::switchContext(GLContext *context)
