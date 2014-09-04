@@ -8,51 +8,6 @@
 
 namespace BansheeEngine 
 {
-	void fromD3DLock(PixelData& rval, const D3DLOCKED_RECT& lrect)
-	{
-		UINT32 bpp = PixelUtil::getNumElemBytes(rval.getFormat());
-		if (bpp != 0)
-		{
-			rval.setRowPitch(lrect.Pitch / bpp);
-			rval.setSlicePitch(rval.getRowPitch() * rval.getHeight());
-			assert((lrect.Pitch % bpp) == 0);
-		}
-		else if (PixelUtil::isCompressed(rval.getFormat()))
-		{
-			rval.setRowPitch(rval.getWidth());
-			rval.setSlicePitch(rval.getWidth() * rval.getHeight());
-		}
-		else
-		{
-			BS_EXCEPT(InvalidParametersException, "Invalid pixel format.");
-		}
-
-		rval.setExternalBuffer((UINT8*)lrect.pBits);
-	}
-
-	void fromD3DLock(PixelData& rval, const D3DLOCKED_BOX& lbox)
-	{
-		UINT32 bpp = PixelUtil::getNumElemBytes(rval.getFormat());
-		if (bpp != 0)
-		{
-			rval.setRowPitch(lbox.RowPitch / bpp);
-			rval.setSlicePitch(lbox.SlicePitch / bpp);
-			assert((lbox.RowPitch % bpp) == 0);
-			assert((lbox.SlicePitch % bpp) == 0);
-		}
-		else if (PixelUtil::isCompressed(rval.getFormat()))
-		{
-			rval.setRowPitch(rval.getWidth());
-			rval.setSlicePitch(rval.getWidth() * rval.getHeight());
-		}
-		else
-		{
-			BS_EXCEPT(InvalidParametersException, "Invalid pixel format.");
-		}
-
-		rval.setExternalBuffer((UINT8*)lbox.pBits);
-	}
-
 	RECT toD3DRECT(const PixelVolume &lockBox)
 	{
 		RECT prect;
@@ -278,7 +233,7 @@ namespace BansheeEngine
 			if (FAILED(hr))		
 				BS_EXCEPT(RenderingAPIException, "Surface locking failed");
 
-			fromD3DLock(rval, lrect);
+			initPixelDataFromD3DLock(rval, lrect);
 		} 
 		else if(bufferResources->volume) 
 		{
@@ -288,7 +243,7 @@ namespace BansheeEngine
 			if(bufferResources->volume->LockBox(&lbox, &pbox, flags) != D3D_OK)
 				BS_EXCEPT(RenderingAPIException, "Volume locking failed");
 
-			fromD3DLock(rval, lbox);
+			initPixelDataFromD3DLock(rval, lbox);
 		}
 
 		return rval;
@@ -365,5 +320,50 @@ namespace BansheeEngine
 		}
 
 		return bufferResources->surface;
+	}
+
+	void D3D9PixelBuffer::initPixelDataFromD3DLock(PixelData& rval, const D3DLOCKED_RECT& lrect)
+	{
+		UINT32 bpp = PixelUtil::getNumElemBytes(rval.getFormat());
+		if (bpp != 0)
+		{
+			rval.setRowPitch(lrect.Pitch / bpp);
+			rval.setSlicePitch(rval.getRowPitch() * rval.getHeight());
+			assert((lrect.Pitch % bpp) == 0);
+		}
+		else if (PixelUtil::isCompressed(rval.getFormat()))
+		{
+			rval.setRowPitch(rval.getWidth());
+			rval.setSlicePitch(rval.getWidth() * rval.getHeight());
+		}
+		else
+		{
+			BS_EXCEPT(InvalidParametersException, "Invalid pixel format.");
+		}
+
+		rval.setExternalBuffer((UINT8*)lrect.pBits);
+	}
+
+	void D3D9PixelBuffer::initPixelDataFromD3DLock(PixelData& rval, const D3DLOCKED_BOX& lbox)
+	{
+		UINT32 bpp = PixelUtil::getNumElemBytes(rval.getFormat());
+		if (bpp != 0)
+		{
+			rval.setRowPitch(lbox.RowPitch / bpp);
+			rval.setSlicePitch(lbox.SlicePitch / bpp);
+			assert((lbox.RowPitch % bpp) == 0);
+			assert((lbox.SlicePitch % bpp) == 0);
+		}
+		else if (PixelUtil::isCompressed(rval.getFormat()))
+		{
+			rval.setRowPitch(rval.getWidth());
+			rval.setSlicePitch(rval.getWidth() * rval.getHeight());
+		}
+		else
+		{
+			BS_EXCEPT(InvalidParametersException, "Invalid pixel format.");
+		}
+
+		rval.setExternalBuffer((UINT8*)lbox.pBits);
 	}
 };

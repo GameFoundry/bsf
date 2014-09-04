@@ -83,6 +83,16 @@ namespace BansheeEngine
 		 */
 		static void unlockDeviceAccess();
 
+		/**
+		 * @brief	Initializes the provided pixel data buffer with information provided in the D3D9 locked rectangle.
+		 */
+		static void initPixelDataFromD3DLock(PixelData& pixelData, const D3DLOCKED_RECT& lrect);
+
+		/**
+		 * @brief	Initializes the provided pixel data buffer with information provided in the D3D9 locked box.
+		 */
+		static void initPixelDataFromD3DLock(PixelData& pixelData, const D3DLOCKED_BOX& lrect);
+
 	protected:
 		/**
 		 * @copydoc	PixelBuffer::lockImpl

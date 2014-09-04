@@ -26,7 +26,20 @@ namespace BansheeEngine
 		BS_SETGET_MEMBER(mMultisampleHint, String, Texture)
 		BS_SETGET_MEMBER(mTextureType, TextureType, Texture)
 		BS_SETGET_MEMBER(mFormat, PixelFormat, Texture)
-		BS_SETGET_MEMBER(mUsage, INT32, Texture)
+
+		INT32& getUsage(Texture* obj) { return obj->mUsage; }
+		void setUsage(Texture* obj, INT32& val) 
+		{ 
+			// Render target and depth stencil texture formats are for in-memory use only
+			// and don't make sense when serialized
+			if (val == TU_DEPTHSTENCIL || val == TU_RENDERTARGET)
+				obj->mUsage = TU_STATIC;
+			else
+				obj->mUsage = val; 
+		}
+
+#define BS_ADD_PLAINFIELD(name, id, parentType) \
+	addPlainField(#name, id##, &##parentType##::get##name, &##parentType##::Set##name);
 
 		PixelDataPtr getPixelData(Texture* obj, UINT32 idx)
 		{
@@ -79,7 +92,8 @@ namespace BansheeEngine
 			BS_ADD_PLAINFIELD(mMultisampleHint, 8, TextureRTTI)
 			BS_ADD_PLAINFIELD(mTextureType, 9, TextureRTTI)
 			BS_ADD_PLAINFIELD(mFormat, 10, TextureRTTI)
-			BS_ADD_PLAINFIELD(mUsage, 11, TextureRTTI)
+
+			addPlainField("mUsage", 11, &TextureRTTI::getUsage, &TextureRTTI::setUsage);
 
 			addReflectablePtrArrayField("mPixelData", 12, &TextureRTTI::getPixelData, &TextureRTTI::getPixelDataArraySize, 
 				&TextureRTTI::setPixelData, &TextureRTTI::setPixelDataArraySize);

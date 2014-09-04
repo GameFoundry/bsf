@@ -19,6 +19,14 @@
 #include "BsGUIWidget.h"
 #include "BsSceneGrid.h"
 
+// DEBUG ONLY
+#include "BsTime.h"
+#include "BsResources.h"
+#include "BsPath.h"
+#include "BsGUITexture.h"
+#include "BsSpriteTexture.h"
+#include "BsFileSystem.h"
+
 using namespace std::placeholders;
 
 namespace BansheeEngine
@@ -42,7 +50,20 @@ namespace BansheeEngine
 
 	void SceneEditorWidget::_update()
 	{
+		// DEBUG ONLY
+		if (gTime().getCurrentFrameNumber() == 100)
+		{
+			HTexture colorTex = mSceneRenderTarget->getBindableColorTexture();
+			gResources().save(colorTex, "C:\\SavedRenderTex.asset", true);
 
+			FileSystem::move("C:\\SavedRenderTex.asset", "C:\\SavedRenderTexNew.asset", true);
+
+			HTexture colorTexLoaded = gResources().load("C:\\SavedRenderTexNew.asset");
+			HSpriteTexture spriteTex = SpriteTexture::create(colorTexLoaded);
+
+			GUILayout& layout = mContent->getLayout();
+			layout.addElement(GUITexture::create(spriteTex));
+		}
 	}
 
 	void SceneEditorWidget::doOnResized(UINT32 width, UINT32 height)

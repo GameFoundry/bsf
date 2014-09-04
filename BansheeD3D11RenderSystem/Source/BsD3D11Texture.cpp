@@ -181,7 +181,7 @@ namespace BansheeEngine
 			PixelUtil::bulkPixelConversion(src, myData);
 			unlock();
 		}
-		else if(mUsage == TU_STATIC)
+		else if(mUsage == TU_STATIC || mUsage == TU_RENDERTARGET || mUsage == TU_DEPTHSTENCIL)
 		{
 			mipLevel = Math::clamp(mipLevel, (UINT32)mipLevel, getNumMipmaps());
 			face = Math::clamp(face, (UINT32)0, mDepth - 1);

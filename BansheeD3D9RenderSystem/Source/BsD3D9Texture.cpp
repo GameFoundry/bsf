@@ -102,19 +102,90 @@ namespace BansheeEngine
 		if (mMultisampleCount > 0)
 			BS_EXCEPT(InvalidStateException, "Multisampled textures cannot be accessed from the CPU directly.");
 
-		PixelData myData = lock(GBL_READ_ONLY, mipLevel, face);
+		if (mUsage == TU_DEPTHSTENCIL || mUsage == TU_RENDERTARGET) // Render targets cannot be locked normally
+		{
+			IDirect3DDevice9* device = D3D9RenderSystem::getActiveD3D9Device();
+
+			D3D9PixelBuffer* sourceBuffer = static_cast<D3D9PixelBuffer*>(getBuffer(face, mipLevel).get());
+			
+			UINT32 mipWidth = mWidth >> mipLevel;
+			UINT32 mipHeight = mHeight >> mipLevel;
+			D3DFORMAT format = chooseD3DFormat(device);
+
+			// Note: I'm allocating and releasing a texture every time we read.
+			// I might consider adding a flag to keep this texture permanent which would make reading
+			// faster but at the cost of double the memory.
+
+			IDirect3DTexture9* stagingTexture = nullptr; 
+			HRESULT hr = D3DXCreateTexture(device, (UINT)mipWidth, (UINT)mipHeight, 1,
+				0, format, D3DPOOL_SYSTEMMEM, &stagingTexture);
+
+			if (FAILED(hr))
+			{
+				String msg = DXGetErrorDescription(hr);
+				BS_EXCEPT(RenderingAPIException, "Failed to create a texture: " + msg);
+			}
+
+			IDirect3DSurface9* stagingSurface = nullptr;
+			hr = stagingTexture->GetSurfaceLevel(0, &stagingSurface);
+			if (FAILED(hr))
+			{
+				String msg = DXGetErrorDescription(hr);
+				BS_EXCEPT(RenderingAPIException, "Failed to retrieve a texture surface: " + msg);
+			}
+
+			hr = device->GetRenderTargetData(sourceBuffer->getSurface(device), stagingSurface);
+			if (FAILED(hr))
+			{
+				String msg = DXGetErrorDescription(hr);
+				BS_EXCEPT(RenderingAPIException, "Failed to retrieve render target data: " + msg);
+			}
+
+			PixelData myData(mipWidth, mipHeight, 1, mFormat);
+
+			D3DLOCKED_RECT lrect;
+			hr = stagingSurface->LockRect(&lrect, nullptr, D3DLOCK_READONLY);
+			if (FAILED(hr))
+			{
+				String msg = DXGetErrorDescription(hr);
+				BS_EXCEPT(RenderingAPIException, "Failed to lock surface: " + msg);
+			}
+
+			D3D9PixelBuffer::initPixelDataFromD3DLock(myData, lrect);
 
 #if BS_DEBUG_MODE
-		if(dest.getConsecutiveSize() != myData.getConsecutiveSize())
-		{
-			unlock();
-			BS_EXCEPT(InternalErrorException, "Buffer sizes don't match.");
-		}
+			if (dest.getConsecutiveSize() != myData.getConsecutiveSize())
+				BS_EXCEPT(InternalErrorException, "Buffer sizes don't match.");
 #endif
 
-		PixelUtil::bulkPixelConversion(myData, dest);
+			PixelUtil::bulkPixelConversion(myData, dest);
 
-		unlock();
+			hr = stagingSurface->UnlockRect();
+			if (FAILED(hr))
+			{
+				String msg = DXGetErrorDescription(hr);
+				BS_EXCEPT(RenderingAPIException, "Failed to unlock surface: " + msg);
+			}
+
+			SAFE_RELEASE(stagingSurface);
+			SAFE_RELEASE(stagingTexture);
+		}
+		else
+		{
+			PixelData myData = lock(GBL_READ_ONLY, mipLevel, face);
+
+#if BS_DEBUG_MODE
+			if (dest.getConsecutiveSize() != myData.getConsecutiveSize())
+			{
+				unlock();
+				BS_EXCEPT(InternalErrorException, "Buffer sizes don't match.");
+			}
+#endif
+
+			PixelUtil::bulkPixelConversion(myData, dest);
+
+			unlock();
+		}
 	}
 
 	void D3D9Texture::writeData(const PixelData& src, UINT32 mipLevel, UINT32 face, bool discardWholeBuffer)
@@ -364,7 +435,7 @@ namespace BansheeEngine
 			// Create AA surface
 			HRESULT hr = d3d9Device->CreateRenderTarget(mWidth, mHeight, d3dPF, 
 				mMultisampleType, mMultisampleQuality,
-				TRUE, // TODO - Possible performance issues? Need to check. Other option is to use GetRenderTargetData when reading RT from CPU
+				FALSE,
 				&textureResources->pMultisampleSurface, NULL);
 
 			if (FAILED(hr))
@@ -387,7 +458,7 @@ namespace BansheeEngine
 			// Create AA depth stencil surface
 			HRESULT hr = d3d9Device->CreateDepthStencilSurface(mWidth, mHeight, d3dPF, 
 				mMultisampleType, mMultisampleQuality,
-				TRUE, // TODO - Possible performance issues? Need to check. Other option is to use GetRenderTargetData when reading RT from CPU
+				FALSE, 
 				&textureResources->pDepthStencilSurface, NULL);
 
 			if (FAILED(hr))
