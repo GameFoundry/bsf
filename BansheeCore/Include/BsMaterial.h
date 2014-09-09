@@ -210,6 +210,13 @@ namespace BansheeEngine
 		float getFloat(const String& name, UINT32 arrayIdx = 0) const { return getParamFloat(name).get(arrayIdx); }
 
 		/**
+		 * @brief	Returns a color assigned with the parameter with the specified name.
+		 *
+		 *			Optionally if the parameter is an array you may provide an array index you which to retrieve.
+		 */
+		Color getColor(const String& name, UINT32 arrayIdx = 0) const { return getParamColor(name).get(arrayIdx); }
+
+		/**
 		 * @brief	Returns a 2D vector assigned with the parameter with the specified name.
 		 *
 		 *			Optionally if the parameter is an array you may provide an array index you which to retrieve.
@@ -263,6 +270,19 @@ namespace BansheeEngine
 		 *			If material shader changes this handle will be invalidated.
 		 */
 		GpuParamFloat getParamFloat(const String& name) const;
+
+		/**
+		 * @brief	Returns a color GPU parameter. This parameter may be used for
+		 * 			more efficiently getting/setting GPU parameter values than calling
+		 * 			Material::get* / Material::set* methods. 
+		 *
+		 * @note	Expected behavior is that you would retrieve this parameter when
+		 * 			initially constructing the material, and then use it throughout material
+		 * 			lifetime to assign and retrieve parameter values.
+		 * 			
+		 *			If material shader changes this handle will be invalidated.
+		 */
+		GpuParamColor getParamColor(const String& name) const;
 
 		/**
 		 * @brief	Returns a 2D vector GPU parameter. This parameter may be used for

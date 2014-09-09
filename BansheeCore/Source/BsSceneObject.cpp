@@ -12,8 +12,8 @@ namespace BansheeEngine
 	SceneObject::SceneObject(const String& name)
 		:GameObject(), mPosition(Vector3::ZERO), mRotation(Quaternion::IDENTITY), mScale(Vector3::ONE),
 		mWorldPosition(Vector3::ZERO), mWorldRotation(Quaternion::IDENTITY), mWorldScale(Vector3::ONE),
-		mCachedLocalTfrm(Matrix4::IDENTITY), mIsCachedLocalTfrmUpToDate(false),
-		mCachedWorldTfrm(Matrix4::IDENTITY), mIsCachedWorldTfrmUpToDate(false), mIsCoreDirtyFlags(0xFFFFFFFF)
+		mCachedLocalTfrm(Matrix4::IDENTITY), mDirtyFlags(0xFFFFFFFF), mCachedWorldTfrm(Matrix4::IDENTITY), 
+		mIsCoreDirtyFlags(0xFFFFFFFF), mActiveSelf(true), mActiveHierarchy(true)
 	{
 		setName(name);
 	}
@@ -31,7 +31,7 @@ namespace BansheeEngine
 	{
 		HSceneObject newObject = createInternal(name);
 
-		gSceneManager().registerNewSO(newObject);
+		gCoreSceneManager().registerNewSO(newObject);
 
 		return newObject;
 	}
@@ -69,7 +69,7 @@ namespace BansheeEngine
 
 		for(auto iter = mComponents.begin(); iter != mComponents.end(); ++iter)
 		{
-			gSceneManager().notifyComponentRemoved((*iter));
+			gCoreSceneManager().notifyComponentRemoved((*iter));
 			GameObjectManager::instance().unregisterObject(*iter);
 			(*iter).destroy();
 		}
@@ -145,7 +145,7 @@ namespace BansheeEngine
 
 	const Vector3& SceneObject::getWorldPosition() const
 	{ 
-		if(!mIsCachedWorldTfrmUpToDate)
+		if (!isCachedWorldTfrmUpToDate())
 			updateWorldTfrm();
 
 		return mWorldPosition; 
@@ -153,7 +153,7 @@ namespace BansheeEngine
 
 	const Quaternion& SceneObject::getWorldRotation() const 
 	{ 
-		if(!mIsCachedWorldTfrmUpToDate)
+		if (!isCachedWorldTfrmUpToDate())
 			updateWorldTfrm();
 
 		return mWorldRotation; 
@@ -161,7 +161,7 @@ namespace BansheeEngine
 
 	const Vector3& SceneObject::getWorldScale() const 
 	{ 
-		if(!mIsCachedWorldTfrmUpToDate)
+		if (!isCachedWorldTfrmUpToDate())
 			updateWorldTfrm();
 
 		return mWorldScale; 
@@ -180,7 +180,7 @@ namespace BansheeEngine
 
 	const Matrix4& SceneObject::getWorldTfrm() const
 	{
-		if(!mIsCachedWorldTfrmUpToDate)
+		if (!isCachedWorldTfrmUpToDate())
 			updateWorldTfrm();
 
 		return mCachedWorldTfrm;
@@ -188,7 +188,7 @@ namespace BansheeEngine
 
 	const Matrix4& SceneObject::getLocalTfrm() const
 	{
-		if(!mIsCachedLocalTfrmUpToDate)
+		if (!isCachedLocalTfrmUpToDate())
 			updateLocalTfrm();
 
 		return mCachedLocalTfrm;
@@ -272,17 +272,16 @@ namespace BansheeEngine
 
 	void SceneObject::updateTransformsIfDirty()
 	{
-		if (!mIsCachedLocalTfrmUpToDate)
+		if (!isCachedLocalTfrmUpToDate())
 			updateLocalTfrm();
 
-		if (!mIsCachedWorldTfrmUpToDate)
+		if (!isCachedWorldTfrmUpToDate())
 			updateWorldTfrm();
 	}
 
 	void SceneObject::markTfrmDirty() const
 	{
-		mIsCachedLocalTfrmUpToDate = false;
-		mIsCachedWorldTfrmUpToDate = false;
+		mDirtyFlags |= DirtyFlags::LocalTfrmDirty | DirtyFlags::WorldTfrmDirty;
 		mIsCoreDirtyFlags = 0xFFFFFFFF;
 
 		for(auto iter = mChildren.begin(); iter != mChildren.end(); ++iter)
@@ -322,14 +321,14 @@ namespace BansheeEngine
 			mWorldScale = mScale;
 		}
 
-		mIsCachedWorldTfrmUpToDate = true;
+		mDirtyFlags &= ~DirtyFlags::WorldTfrmDirty;
 	}
 
 	void SceneObject::updateLocalTfrm() const
 	{
 		mCachedLocalTfrm.setTRS(mPosition, mRotation, mScale);
 
-		mIsCachedLocalTfrmUpToDate = true;
+		mDirtyFlags &= ~DirtyFlags::LocalTfrmDirty;
 	}
 
 	/************************************************************************/
@@ -396,6 +395,32 @@ namespace BansheeEngine
 		}
 	}
 
+	void SceneObject::setActive(bool active)
+	{
+		mActiveSelf = active;
+		setActiveHierarchy(active);
+	}
+
+	void SceneObject::setActiveHierarchy(bool active) 
+	{ 
+		mActiveHierarchy = active && mActiveSelf; 
+
+		for (auto child : mChildren)
+		{
+			child->setActiveHierarchy(mActiveHierarchy);
+		}
+
+		mIsCoreDirtyFlags = 0xFFFFFFFF;
+	}
+
+	bool SceneObject::getActive(bool self)
+	{
+		if (self)
+			return mActiveSelf;
+		else
+			return mActiveHierarchy;
+	}
+
 	HSceneObject SceneObject::clone()
 	{
 		UINT32 bufferSize = 0;
@@ -433,7 +458,7 @@ namespace BansheeEngine
 
 		if(iter != mComponents.end())
 		{
-			gSceneManager().notifyComponentRemoved((*iter));
+			gCoreSceneManager().notifyComponentRemoved((*iter));
 			GameObjectManager::instance().unregisterObject(component);
 
 			(*iter)->onDestroyed();
@@ -467,7 +492,7 @@ namespace BansheeEngine
 		newComponent->mParent = mThisHandle;
 		mComponents.push_back(newComponent);
 
-		gSceneManager().notifyComponentAdded(newComponent);
+		gCoreSceneManager().notifyComponentAdded(newComponent);
 	}
 
 	RTTITypeBase* SceneObject::getRTTIStatic()

@@ -67,6 +67,23 @@ namespace BansheeEngine
 		virtual void renderAll() = 0;
 
 		/**
+		 * @brief	Activates the specified pass on the pipeline.
+		 *
+		 * @param	material	Parent material of the pass.
+		 * @param	passIdx		Index of the pass in the parent material.
+		 *
+		 * @note	Core thread only.
+		 */
+		static void setPass(const MaterialProxy& material, UINT32 passIdx);
+
+		/**
+		 * @brief	Draws the specified mesh proxy with last set pass.
+		 *
+		 * @note	Core thread only.
+		 */
+		static void draw(const MeshProxy& mesh);
+
+		/**
 		 * @brief	Callback that gets triggered before a viewport gets rendered.
 		 */
 		Event<void(const Viewport*, DrawList&)> onRenderViewport;

@@ -41,7 +41,7 @@ namespace BansheeEngine
 		return *this;
     }
 
-    bool Pass::isTransparent() const
+    bool Pass::hasBlending() const
     {
 		bool transparent = false;
 

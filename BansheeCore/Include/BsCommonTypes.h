@@ -97,9 +97,9 @@ namespace BansheeEngine
 	 */
     enum CullingMode
     {
-		CULL_NONE = 1, /**< Hardware performs no culling and renders both sides. */
-		CULL_CLOCKWISE = 2, /**< Hardware culls faces that have a clockwise vertex ordering. */
-        CULL_COUNTERCLOCKWISE = 3 /**< Hardware culls faces that have a counter-clockwise vertex ordering. */
+		CULL_NONE = 0, /**< Hardware performs no culling and renders both sides. */
+		CULL_CLOCKWISE = 1, /**< Hardware culls faces that have a clockwise vertex ordering. */
+        CULL_COUNTERCLOCKWISE = 2 /**< Hardware culls faces that have a counter-clockwise vertex ordering. */
     };
 
 	/**

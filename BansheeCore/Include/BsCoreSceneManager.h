@@ -60,5 +60,5 @@ namespace BansheeEngine
 	/**
 	 * @brief	Provides easy access to the scene manager.
 	 */
-	BS_CORE_EXPORT CoreSceneManager& gSceneManager();
+	BS_CORE_EXPORT CoreSceneManager& gCoreSceneManager();
 }

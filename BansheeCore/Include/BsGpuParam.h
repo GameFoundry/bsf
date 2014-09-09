@@ -5,8 +5,12 @@
 #include "BsGpuParamBlock.h"
 #include "BsDebug.h"
 #include "BsException.h"
+#include "BsVector2.h"
+#include "BsVector3.h"
+#include "BsVector4.h"
 #include "BsMatrix3.h"
 #include "BsMatrix4.h"
+#include "BsColor.h"
 
 namespace BansheeEngine
 {
@@ -197,11 +201,20 @@ namespace BansheeEngine
 	};
 
 	typedef TGpuDataParam<float> GpuParamFloat;
+	typedef TGpuDataParam<Color> GpuParamColor;
 	typedef TGpuDataParam<Vector2> GpuParamVec2;
 	typedef TGpuDataParam<Vector3> GpuParamVec3;
 	typedef TGpuDataParam<Vector4> GpuParamVec4;
 	typedef TGpuDataParam<Matrix3> GpuParamMat3;
 	typedef TGpuDataParam<Matrix4> GpuParamMat4;
+
+	template class TGpuDataParam<float>;
+	template class TGpuDataParam<Color>;
+	template class TGpuDataParam<Vector2>;
+	template class TGpuDataParam<Vector3>;
+	template class TGpuDataParam<Vector4>;
+	template class TGpuDataParam<Matrix3>;
+	template class TGpuDataParam<Matrix4>;
 
 	/**
 	 * @copydoc GpuDataParamBase

@@ -68,6 +68,11 @@ namespace BansheeEngine
 		UINT64 getLayer() const { return mLayer; }
 
 		/**
+		 * @brief	Returns the mesh used for rendering.
+		 */
+		HMesh getMesh() const { return mMeshData.mesh; }
+
+		/**
 		 * @brief	Returns the material used for rendering a sub-mesh with
 		 *			the specified index.
 		 */
@@ -87,6 +92,11 @@ namespace BansheeEngine
 		 * @brief	Marks the core dirty flag as clean.
 		 */
 		void _markCoreClean();
+
+		/**
+		 * @brief	Marks the core data as dirty.
+		 */
+		void _markCoreDirty() const { mCoreDirtyFlags = 0xFFFFFFFF; }
 
 		/**
 		 * @brief	Creates a new core proxy from the currently set Renderable data. Core proxies ensure
@@ -115,10 +125,6 @@ namespace BansheeEngine
 		 */
 		void updateResourceLoadStates() const;
 
-		/**
-		 * @brief	Marks the core data as dirty.
-		 */
-		void markCoreDirty() const { mCoreDirtyFlags = 0xFFFFFFFF; }
 	private:
 		MeshData mMeshData;
 		Vector<MaterialData> mMaterialData;

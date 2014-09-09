@@ -173,7 +173,7 @@ namespace BansheeEngine
 			gInput()._update();
 			gTime().update();
 
-			PROFILE_CALL(gSceneManager()._update(), "SceneManager");
+			PROFILE_CALL(gCoreSceneManager()._update(), "SceneManager");
 
 			gCoreThread().queueCommand(std::bind(&CoreApplication::beginCoreProfiling, this));
 			gCoreThread().queueCommand(std::bind(&QueryManager::_update, QueryManager::instancePtr()));

@@ -180,9 +180,16 @@ namespace BansheeEngine
 		virtual bool isCustomProjectionMatrixEnabled() const { return mCustomProjMatrix; }
 
 		/** 
-		 * @brief	Returns a convex volume representing the visible area of the camera.
+		 * @brief	Returns a convex volume representing the visible area of the camera,
+		 *			in local space.
          */
         virtual const ConvexVolume& getFrustum() const;
+
+		/** 
+		 * @brief	Returns a convex volume representing the visible area of the camera,
+		 *			in world space.
+         */
+        virtual ConvexVolume getWorldFrustum() const;
 
 		/**
 		 * @brief	Returns the bounding of the frustum.

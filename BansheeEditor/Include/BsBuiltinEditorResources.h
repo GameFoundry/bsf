@@ -25,6 +25,16 @@ namespace BansheeEngine
 		 */
 		HMaterial createSceneGridMaterial() const;
 
+		/**
+		 * @brief	Creates a material used for picking non-transparent objects in scene view.
+		 */
+		HMaterial createPicking(CullingMode cullMode) const;
+
+		/**
+		 * @brief	Creates a material used for picking transparent objects in scene view.
+		 */
+		HMaterial createPickingAlpha(CullingMode cullMode) const;
+
 		static const String ObjectFieldStyleName;
 		static const String ObjectFieldLabelStyleName;
 		static const String ObjectFieldDropBtnStyleName;
@@ -57,14 +67,24 @@ namespace BansheeEngine
 		static void importGUITexture(const WString& name);
 
 		/**
-		 * @brief	Loads an compiles a shader for dock overlay rendering.
+		 * @brief	Loads and compiles a shader for dock overlay rendering.
 		 */
 		void initDockDropOverlayShader();
 
 		/**
-		 * @brief	Loads an compiles a shader for scene grid rendering.
+		 * @brief	Loads and compiles a shader for scene grid rendering.
 		 */
 		void initSceneGridShader();
+
+		/**
+		 * @brief	Loads and compiles a shader used for scene picking (non alpha).
+		 */
+		void initPickingShader(CullingMode cullMode);
+
+		/**
+		 * @brief	Loads and compiles a shader used for scene picking (alpha).
+		 */
+		void initPickingAlphaShader(CullingMode cullMode);
 
 		RenderSystemPlugin mRenderSystemPlugin;
 		WString mActiveShaderSubFolder;
@@ -72,6 +92,8 @@ namespace BansheeEngine
 
 		ShaderPtr mShaderDockOverlay;
 		ShaderPtr mShaderSceneGrid;
+		ShaderPtr mShaderPicking[3];
+		ShaderPtr mShaderPickingAlpha[3];
 
 		GUISkin mSkin;
 
@@ -211,5 +233,9 @@ namespace BansheeEngine
 		static const WString ShaderDockOverlayPSFile;
 		static const WString SceneGridVSFile;
 		static const WString SceneGridPSFile;
+		static const WString PickingVSFile;
+		static const WString PickingPSFile;
+		static const WString PickingAlphaVSFile;
+		static const WString PickingAlphaPSFile;
 	};
 }

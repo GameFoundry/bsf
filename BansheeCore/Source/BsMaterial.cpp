@@ -541,6 +541,14 @@ namespace BansheeEngine
 		return gpuParam;
 	}
 
+	GpuParamColor Material::getParamColor(const String& name) const
+	{
+		TGpuDataParam<Color> gpuParam;
+		getParam(name, gpuParam);
+
+		return gpuParam;
+	}
+
 	GpuParamVec2 Material::getParamVec2(const String& name) const
 	{
 		TGpuDataParam<Vector2> gpuParam;

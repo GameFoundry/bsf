@@ -46,7 +46,7 @@ namespace BansheeEngine
 	void CoreSceneManager::notifyComponentAdded(const HComponent& component) { }
 	void CoreSceneManager::notifyComponentRemoved(const HComponent& component) { }
 
-	CoreSceneManager& gSceneManager()
+	CoreSceneManager& gCoreSceneManager()
 	{
 		return CoreSceneManager::instance();
 	}

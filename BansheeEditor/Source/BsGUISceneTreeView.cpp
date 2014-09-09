@@ -175,7 +175,7 @@ namespace BansheeEngine
 
 	void GUISceneTreeView::updateTreeElementHierarchy()
 	{
-		HSceneObject root = gSceneManager().getRootNode();
+		HSceneObject root = gCoreSceneManager().getRootNode();
 		mRootElement.mSceneObject = root;
 		mRootElement.mId = root->getInstanceId();
 		mRootElement.mSortedIdx = 0;

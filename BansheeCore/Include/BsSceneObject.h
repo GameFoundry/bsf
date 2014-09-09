@@ -17,6 +17,15 @@ namespace BansheeEngine
 	 */
 	class BS_CORE_EXPORT SceneObject : public GameObject
 	{
+		/**
+		 * @brief	Flags that signify which part of the SceneObject needs updating.
+		 */
+		enum DirtyFlags
+		{
+			LocalTfrmDirty = 0x01,
+			WorldTfrmDirty = 0x02
+		};
+
 		friend class CoreSceneManager;
 	public:
 		~SceneObject();
@@ -235,11 +244,9 @@ namespace BansheeEngine
 		mutable Vector3 mWorldScale;
 
 		mutable Matrix4 mCachedLocalTfrm;
-		mutable bool mIsCachedLocalTfrmUpToDate;
-
 		mutable Matrix4 mCachedWorldTfrm;
-		mutable bool mIsCachedWorldTfrmUpToDate;
 
+		mutable UINT32 mDirtyFlags;
 		mutable UINT32 mIsCoreDirtyFlags;
 
 		/**
@@ -261,6 +268,16 @@ namespace BansheeEngine
 		 * @note	If parent transforms are dirty they will be updated.
 		 */
 		void updateWorldTfrm() const;
+
+		/**
+		 * @brief	Checks if cached local transform needs updating.
+		 */
+		bool isCachedLocalTfrmUpToDate() const { return (mDirtyFlags & DirtyFlags::LocalTfrmDirty) != 0; }
+
+		/**
+		 * @brief	Checks if cached world transform needs updating.
+		 */
+		bool isCachedWorldTfrmUpToDate() const { return (mDirtyFlags & DirtyFlags::WorldTfrmDirty) != 0; }
 
 		/************************************************************************/
 		/* 								Hierarchy	                     		*/
@@ -306,6 +323,21 @@ namespace BansheeEngine
 		UINT32 getNumChildren() const { return (UINT32)mChildren.size(); }
 
 		/**
+		 * @brief	Enables or disables this object. Disabled objects also implicitly disable
+		 *			all their child objects. No components on the disabled object are updated.
+		 */
+		void setActive(bool active);
+
+		/**
+		 * @brief	Returns whether or not an object is active.
+		 *
+		 * @param	self	If true, the method will only check if this particular object was activated
+		 *					or deactivated directly via setActive. If false we we also check if any of
+		 *					the objects parents are inactive.
+		 */
+		bool getActive(bool self = false);
+
+		/**
 		 * @brief	Makes a deep copy of this object.
 		 */
 		HSceneObject clone();
@@ -313,6 +345,8 @@ namespace BansheeEngine
 	private:
 		HSceneObject mParent;
 		Vector<HSceneObject> mChildren;
+		bool mActiveSelf;
+		bool mActiveHierarchy;
 
 		/**
 		 * @brief	Adds a child to the child array. This method doesn't check for null or duplicate values.
@@ -329,6 +363,11 @@ namespace BansheeEngine
 		 * @throws INTERNAL_ERROR If the provided child isn't a child of the current object.
 		 */
 		void removeChild(const HSceneObject& object);
+
+		/**
+		 * @brief	Changes the object active in hierarchy state.
+		 */
+		void setActiveHierarchy(bool active);
 
 		/************************************************************************/
 		/* 								Component	                     		*/
@@ -353,7 +392,7 @@ namespace BansheeEngine
 
 			mComponents.push_back(newComponent);
 
-			gSceneManager().notifyComponentAdded(newComponent);	
+			gCoreSceneManager().notifyComponentAdded(newComponent);	
 
 			return newComponent;
 		}

@@ -290,6 +290,7 @@
     <ClInclude Include="Include\BsGUIToggleField.h" />
     <ClInclude Include="Include\BsGUIVector3Field.h" />
     <ClInclude Include="Include\BsGUIVector4Field.h" />
+    <ClInclude Include="Include\BsScenePicking.h" />
     <ClInclude Include="Include\BsProjectLibraryEntriesRTTI.h" />
     <ClInclude Include="Include\BsEditorPrerequisites.h" />
     <ClInclude Include="Include\BsEditorWidget.h" />
@@ -364,6 +365,7 @@
     <ClCompile Include="Source\BsGUIWindowFrameWidget.cpp" />
     <ClCompile Include="Source\BsGUIWindowDropArea.cpp" />
     <ClCompile Include="Source\BsMainEditorWindow.cpp" />
+    <ClCompile Include="Source\BsScenePicking.cpp" />
     <ClCompile Include="Source\BsProjectLibrary.cpp" />
     <ClCompile Include="Source\BsProjectLibraryEntries.cpp" />
     <ClCompile Include="Source\BsProjectResourceMeta.cpp" />

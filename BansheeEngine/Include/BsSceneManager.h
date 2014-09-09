@@ -31,6 +31,16 @@ namespace BansheeEngine
 		virtual void updateRenderableTransforms() = 0;
 
 		/**
+		 * @copydoc	CoreSceneManager::instance
+		 */
+		static SceneManager& instance();
+
+		/**
+		 * @copydoc	CoreSceneManager::instancePtr
+		 */
+		static SceneManager* instancePtr();
+
+		/**
 		 * @brief	Triggered whenever a renderable is removed from a SceneObject.
 		 */
 		Event<void(const HRenderable&)> onRenderableRemoved;
@@ -44,5 +54,5 @@ namespace BansheeEngine
 	/**
 	 * @copydoc	SceneManager
 	 */
-	BS_EXPORT SceneManager& gBsSceneManager();
+	BS_EXPORT SceneManager& gSceneManager();
 }

@@ -33,14 +33,14 @@ namespace BansheeEngine
 		mMeshData = mesh;
 		mMaterialData.resize(mesh->getNumSubMeshes());
 
-		markCoreDirty();
+		_markCoreDirty();
 	}
 
 	void Renderable::setMaterial(UINT32 idx, HMaterial material)
 	{
 		mMaterialData[idx] = material;
 
-		markCoreDirty();
+		_markCoreDirty();
 	}
 
 	void Renderable::setMaterial(HMaterial material)
@@ -64,7 +64,7 @@ namespace BansheeEngine
 			BS_EXCEPT(InvalidParametersException, "Invalid layer provided. Only one layer bit may be set.");
 
 		mLayer = layer;
-		markCoreDirty();
+		_markCoreDirty();
 	}
 
 	bool Renderable::_isCoreDirty() const
@@ -103,7 +103,7 @@ namespace BansheeEngine
 		{
 			mMeshData.isLoaded = true;
 
-			markCoreDirty();
+			_markCoreDirty();
 		}
 
 		for (auto& materialData : mMaterialData)
@@ -112,7 +112,7 @@ namespace BansheeEngine
 			{
 				materialData.isLoaded = true;
 
-				markCoreDirty();
+				_markCoreDirty();
 			}
 		}
 	}

@@ -37,8 +37,8 @@ namespace BansheeEngine
 {
 	BansheeRenderer::BansheeRenderer()
 	{
-		mRenderableRemovedConn = gBsSceneManager().onRenderableRemoved.connect(std::bind(&BansheeRenderer::renderableRemoved, this, _1));
-		mCameraRemovedConn = gBsSceneManager().onCameraRemoved.connect(std::bind(&BansheeRenderer::cameraRemoved, this, _1));
+		mRenderableRemovedConn = gSceneManager().onRenderableRemoved.connect(std::bind(&BansheeRenderer::renderableRemoved, this, _1));
+		mCameraRemovedConn = gSceneManager().onCameraRemoved.connect(std::bind(&BansheeRenderer::cameraRemoved, this, _1));
 	}
 
 	BansheeRenderer::~BansheeRenderer()
@@ -200,7 +200,7 @@ namespace BansheeEngine
 
 	void BansheeRenderer::renderAll() 
 	{
-		gBsSceneManager().updateRenderableTransforms();
+		gSceneManager().updateRenderableTransforms();
 
 		// Remove proxies from deleted Renderables
 		for (auto& proxy : mDeletedRenderableProxies)
@@ -210,7 +210,7 @@ namespace BansheeEngine
 		}
 
 		// Add or update Renderable proxies
-		const Vector<HRenderable>& allRenderables = gBsSceneManager().getAllRenderables();
+		const Vector<HRenderable>& allRenderables = gSceneManager().getAllRenderables();
 		Vector<HSceneObject> dirtySceneObjects;
 		Vector<HRenderable> dirtyRenderables;
 
@@ -220,41 +220,52 @@ namespace BansheeEngine
 			bool addedNewProxy = false;
 			RenderableProxyPtr proxy = renderable->_getActiveProxy();
 
-			if (renderable->_isCoreDirty())
+			if (renderable->SO()->getActive())
 			{
-				if (proxy != nullptr)
-					gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::removeRenderableProxy, this, proxy));
-
-				proxy = renderable->_createProxy();
-				renderable->_setActiveProxy(proxy);
-
-				if (proxy != nullptr)
-					gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::addRenderableProxy, this, proxy));
-
-				dirtyRenderables.push_back(renderable);
-				dirtySceneObjects.push_back(renderable->SO());
-				addedNewProxy = true;
-			}
-			else if (renderable->SO()->_isCoreDirty())
-			{
-				assert(proxy != nullptr);
-
-				gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::updateRenderableProxy, this, proxy, renderable->SO()->getWorldTfrm()));
-
-				dirtySceneObjects.push_back(renderable->SO());
-			}
-
-			if (!addedNewProxy && proxy != nullptr)
-			{
-				for (UINT32 i = 0; i < (UINT32)proxy->renderableElements.size(); i++)
+				if (renderable->_isCoreDirty())
 				{
-					HMaterial mat = renderable->getMaterial(i);
-					if (mat != nullptr && mat.isLoaded() && mat->_isCoreDirty(MaterialDirtyFlag::Params))
+					if (proxy != nullptr)
+						gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::removeRenderableProxy, this, proxy));
+
+					proxy = renderable->_createProxy();
+					renderable->_setActiveProxy(proxy);
+
+					if (proxy != nullptr)
+						gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::addRenderableProxy, this, proxy));
+
+					dirtyRenderables.push_back(renderable);
+					dirtySceneObjects.push_back(renderable->SO());
+					addedNewProxy = true;
+				}
+				else if (renderable->SO()->_isCoreDirty())
+				{
+					if (proxy != nullptr)
+						gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::updateRenderableProxy, this, proxy, renderable->SO()->getWorldTfrm()));
+
+					dirtySceneObjects.push_back(renderable->SO());
+				}
+
+				if (!addedNewProxy && proxy != nullptr)
+				{
+					for (UINT32 i = 0; i < (UINT32)proxy->renderableElements.size(); i++)
 					{
-						gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::updateMaterialProxy, this, 
-							proxy->renderableElements[i]->material, mat->_getDirtyProxyParams(frameAlloc)));
-						mat->_markCoreClean(MaterialDirtyFlag::Params);
+						HMaterial mat = renderable->getMaterial(i);
+						if (mat != nullptr && mat.isLoaded() && mat->_isCoreDirty(MaterialDirtyFlag::Params))
+						{
+							gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::updateMaterialProxy, this,
+								proxy->renderableElements[i]->material, mat->_getDirtyProxyParams(frameAlloc)));
+							mat->_markCoreClean(MaterialDirtyFlag::Params);
+						}
 					}
+				}
+			}
+			else // If inactive we remove the proxy until re-activated
+			{
+				if (proxy != nullptr)
+				{
+					gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::removeRenderableProxy, this, proxy));
+					renderable->_setActiveProxy(nullptr);
+					renderable->_markCoreDirty();
 				}
 			}
 		}
@@ -275,7 +286,7 @@ namespace BansheeEngine
 		}
 
 		// Add or update Camera proxies
-		const Vector<HCamera>& allCameras = gBsSceneManager().getAllCameras();
+		const Vector<HCamera>& allCameras = gSceneManager().getAllCameras();
 		for (auto& camera : allCameras)
 		{
 			if (camera->_isCoreDirty())
@@ -518,134 +529,5 @@ namespace BansheeEngine
 		}
 
 		renderQueue->clear();
-	}
-
-	void BansheeRenderer::setPass(const MaterialProxy& material, UINT32 passIdx)
-	{
-		THROW_IF_NOT_CORE_THREAD;
-
-		RenderSystem& rs = RenderSystem::instance();
-
-		const MaterialProxyPass& pass = material.passes[passIdx];
-		if (pass.vertexProg)
-		{
-			rs.bindGpuProgram(pass.vertexProg);
-			rs.bindGpuParams(GPT_VERTEX_PROGRAM, material.params[pass.vertexProgParamsIdx]);
-		}
-		else
-			rs.unbindGpuProgram(GPT_VERTEX_PROGRAM);
-
-		if (pass.fragmentProg)
-		{
-			rs.bindGpuProgram(pass.fragmentProg);
-			rs.bindGpuParams(GPT_FRAGMENT_PROGRAM, material.params[pass.fragmentProgParamsIdx]);
-		}
-		else
-			rs.unbindGpuProgram(GPT_FRAGMENT_PROGRAM);
-
-		if (pass.geometryProg)
-		{
-			rs.bindGpuProgram(pass.geometryProg);
-			rs.bindGpuParams(GPT_GEOMETRY_PROGRAM, material.params[pass.geometryProgParamsIdx]);
-		}
-		else
-			rs.unbindGpuProgram(GPT_GEOMETRY_PROGRAM);
-
-		if (pass.hullProg)
-		{
-			rs.bindGpuProgram(pass.hullProg);
-			rs.bindGpuParams(GPT_HULL_PROGRAM, material.params[pass.hullProgParamsIdx]);
-		}
-		else
-			rs.unbindGpuProgram(GPT_HULL_PROGRAM);
-
-		if (pass.domainProg)
-		{
-			rs.bindGpuProgram(pass.domainProg);
-			rs.bindGpuParams(GPT_DOMAIN_PROGRAM, material.params[pass.domainProgParamsIdx]);
-		}
-		else
-			rs.unbindGpuProgram(GPT_DOMAIN_PROGRAM);
-
-		if (pass.computeProg)
-		{
-			rs.bindGpuProgram(pass.computeProg);
-			rs.bindGpuParams(GPT_COMPUTE_PROGRAM, material.params[pass.computeProgParamsIdx]);
-		}
-		else
-			rs.unbindGpuProgram(GPT_COMPUTE_PROGRAM);
-
-		// TODO - Try to limit amount of state changes, if previous state is already the same
-
-		// Set up non-texture related pass settings
-		if (pass.blendState != nullptr)
-			rs.setBlendState(pass.blendState.getInternalPtr());
-		else
-			rs.setBlendState(BlendState::getDefault());
-
-		if (pass.depthStencilState != nullptr)
-			rs.setDepthStencilState(pass.depthStencilState.getInternalPtr(), pass.stencilRefValue);
-		else
-			rs.setDepthStencilState(DepthStencilState::getDefault(), pass.stencilRefValue);
-
-		if (pass.rasterizerState != nullptr)
-			rs.setRasterizerState(pass.rasterizerState.getInternalPtr());
-		else
-			rs.setRasterizerState(RasterizerState::getDefault());
-	}
-
-	void BansheeRenderer::draw(const MeshProxy& meshProxy)
-	{
-		THROW_IF_NOT_CORE_THREAD;
-
-		RenderSystem& rs = RenderSystem::instance();
-		MeshBasePtr mesh;
-
-		if (!meshProxy.mesh.expired())
-			mesh = meshProxy.mesh.lock(); 
-		else
-			return;
-
-		std::shared_ptr<VertexData> vertexData = mesh->_getVertexData();
-
-		rs.setVertexDeclaration(vertexData->vertexDeclaration);
-		auto vertexBuffers = vertexData->getBuffers();
-
-		if (vertexBuffers.size() > 0)
-		{
-			VertexBufferPtr buffers[MAX_BOUND_VERTEX_BUFFERS];
-
-			UINT32 endSlot = 0;
-			UINT32 startSlot = MAX_BOUND_VERTEX_BUFFERS;
-			for (auto iter = vertexBuffers.begin(); iter != vertexBuffers.end(); ++iter)
-			{
-				if (iter->first >= MAX_BOUND_VERTEX_BUFFERS)
-					BS_EXCEPT(InvalidParametersException, "Buffer index out of range");
-
-				startSlot = std::min(iter->first, startSlot);
-				endSlot = std::max(iter->first, endSlot);
-			}
-
-			for (auto iter = vertexBuffers.begin(); iter != vertexBuffers.end(); ++iter)
-			{
-				buffers[iter->first - startSlot] = iter->second;
-			}
-
-			rs.setVertexBuffers(startSlot, buffers, endSlot - startSlot + 1);
-		}
-
-		SubMesh subMesh = meshProxy.subMesh;
-		rs.setDrawOperation(subMesh.drawOp);
-
-		IndexBufferPtr indexBuffer = mesh->_getIndexBuffer();
-
-		UINT32 indexCount = subMesh.indexCount;
-		if (indexCount == 0)
-			indexCount = indexBuffer->getNumIndices();
-
-		rs.setIndexBuffer(indexBuffer);
-		rs.drawIndexed(subMesh.indexOffset + mesh->_getIndexOffset(), indexCount, mesh->_getVertexOffset(), vertexData->vertexCount);
-
-		mesh->_notifyUsedOnGPU();
 	}
 }

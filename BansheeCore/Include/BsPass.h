@@ -32,7 +32,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns true if this pass has some element of transparency.
 		 */
-		bool isTransparent() const;
+		bool hasBlending() const;
 
 		void setBlendState(HBlendState& blendState);
 		HBlendState getBlendState() const;

@@ -107,6 +107,22 @@ namespace BansheeEngine
 		return mFrustum;
 	}
 
+	ConvexVolume Camera::getWorldFrustum() const
+	{
+		const Vector<Plane>& frustumPlanes = getFrustum().getPlanes();
+		Matrix4 worldMatrix = SO()->getWorldTfrm();
+
+		Vector<Plane> worldPlanes(frustumPlanes.size());
+		UINT32 i = 0;
+		for (auto& plane : frustumPlanes)
+		{
+			worldPlanes[i] = worldMatrix.multiply3x4(plane);
+			i++;
+		}
+
+		return ConvexVolume(worldPlanes);
+	}
+
 	void Camera::calcProjectionParameters(float& left, float& right, float& bottom, float& top) const
 	{ 
 		if (mCustomProjMatrix)
