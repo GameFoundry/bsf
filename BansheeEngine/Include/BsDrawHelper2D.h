@@ -28,28 +28,30 @@ namespace BansheeEngine
 		 * 			  Vector2 VES_POSITION
 		 * 			  32bit index buffer
 		 * 			  Enough space for 4 vertices and 6 indices
+		 *
+		 *			Primitives are output in the form of a triangle list.
 		 */
-		void quad(const RectF& area, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
+		void solidQuad(const RectF& area, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		/**
-		 * @copydoc	DrawHelperTemplate::line_Pixel
+		 * @copydoc	DrawHelperTemplate::pixelLine
 		 */
-		void line_Pixel(const Vector2& a, const Vector2& b, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
+		void pixelLine(const Vector2& a, const Vector2& b, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		/**
-		 * @copydoc	DrawHelperTemplate::line_AA
+		 * @copydoc	DrawHelperTemplate::antialiasedLine
 		 */
-		void line_AA(const Vector2& a, const Vector2& b, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
+		void antialiasedLine(const Vector2& a, const Vector2& b, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		/**
-		 * @copydoc	DrawHelperTemplate::lineList_Pixel
+		 * @copydoc	DrawHelperTemplate::pixelLineList
 		 */
-		void lineList_Pixel(const Vector<Vector2>& linePoints, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
+		void pixelLineList(const Vector<Vector2>& linePoints, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		/**
-		 * @copydoc	DrawHelperTemplate::lineList_AA
+		 * @copydoc	DrawHelperTemplate::antialiasedLineList
 		 */
-		void lineList_AA(const Vector<Vector2>& linePoints, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
+		void antialiasedLineList(const Vector<Vector2>& linePoints, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		/**
 		 * @brief	Constructs a quad and draws it in the specified camera. 
@@ -61,7 +63,7 @@ namespace BansheeEngine
 		 *						the quad will stretch with the viewport so its normalized coordinates stay the same.
 		 * @param	timeout		Optional timeout on how long to display the quad in seconds. If 0 the quad will be displayed one frame.
 		 */
-		void drawQuad(const HCamera& camera, const RectF& area, const Color& color = Color::White, DebugDrawCoordType coordType = DebugDrawCoordType::Pixel, float timeout = 0.0f);
+		void drawSolidQuad(const HCamera& camera, const RectF& area, const Color& color = Color::White, DebugDrawCoordType coordType = DebugDrawCoordType::Pixel, float timeout = 0.0f);
 
 		/**
 		 * @brief	Constructs a pixel perfect line and draws it in the specified camera. 
@@ -74,7 +76,7 @@ namespace BansheeEngine
 		 *						the line will stretch with the viewport so its normalized coordinates stay the same.
 		 * @param	timeout		Optional timeout on how long to display the line in seconds. If 0 the line will be displayed one frame.
 		 */
-		void drawLine_Pixel(const HCamera& camera, const Vector2& a, const Vector2& b, const Color& color = Color::White, 
+		void drawPixelLine(const HCamera& camera, const Vector2& a, const Vector2& b, const Color& color = Color::White, 
 			DebugDrawCoordType coordType = DebugDrawCoordType::Pixel, float timeout = 0.0f);
 
 		/**
@@ -90,7 +92,7 @@ namespace BansheeEngine
 		 *						the line will stretch with the viewport so its normalized coordinates stay the same.
 		 * @param	timeout		Optional timeout on how long to display the line in seconds. If 0 the line will be displayed one frame.
 		 */
-		void drawLine_AA(const HCamera& camera, const Vector2& a, const Vector2& b, float width, float borderWidth, 
+		void drawAntialiasedLine(const HCamera& camera, const Vector2& a, const Vector2& b, float width, float borderWidth, 
 			const Color& color = Color::White, DebugDrawCoordType coordType = DebugDrawCoordType::Pixel, float timeout = 0.0f);
 
 		/**
@@ -104,7 +106,7 @@ namespace BansheeEngine
 		 *						the line list will stretch with the viewport so its normalized coordinates stay the same.
 		 * @param	timeout		Optional timeout on how long to display the line list in seconds. If 0 the line list will be displayed one frame.
 		 */
-		void drawLineList_Pixel(const HCamera& camera, const Vector<Vector2>& linePoints, const Color& color = Color::White, 
+		void drawPixelLineList(const HCamera& camera, const Vector<Vector2>& linePoints, const Color& color = Color::White, 
 			DebugDrawCoordType coordType = DebugDrawCoordType::Pixel, float timeout = 0.0f);
 
 		/**
@@ -120,20 +122,20 @@ namespace BansheeEngine
 		 *						the line list will stretch with the viewport so its normalized coordinates stay the same.
 		 * @param	timeout		Optional timeout on how long to display the line list in seconds. If 0 the line list will be displayed one frame.
 		 */
-		void drawLineList_AA(const HCamera& camera, const Vector<Vector2>& linePoints, float width, float borderWidth, 
+		void drawAntialiasedLineList(const HCamera& camera, const Vector<Vector2>& linePoints, float width, float borderWidth, 
 			const Color& color = Color::White, DebugDrawCoordType coordType = DebugDrawCoordType::Pixel, float timeout = 0.0f);
 
 	protected:
 		/**
-		 * @copydoc	DrawHelperTemplate::line_AA(const Vector2&, const Vector2&, const Vector2&, float, float, const Color&, UINT8*, UINT8*, UINT32, UINT32, UINT32*, UINT32)
+		 * @copydoc	DrawHelperTemplate::antialiasedLine(const Vector2&, const Vector2&, const Vector2&, float, float, const Color&, UINT8*, UINT8*, UINT32, UINT32, UINT32*, UINT32)
 		 */
-		void line_AA(const Vector2& a, const Vector2& b, const Vector2& up, float width, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
+		void antialiasedLine(const Vector2& a, const Vector2& b, const Vector2& up, float width, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
 			UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset);
 
 		/**
-		 * @copydoc	DrawHelperTemplate::polygon_AA(const Vector<Vector2>&, const Vector2&, float, const Color&, UINT8*, UINT8*, UINT32, UINT32, UINT32*, UINT32)
+		 * @copydoc	DrawHelperTemplate::antialiasedPolygon(const Vector<Vector2>&, const Vector2&, float, const Color&, UINT8*, UINT8*, UINT32, UINT32, UINT32*, UINT32)
 		 */
-		void polygon_AA(const Vector<Vector2>& points, const Vector2& up, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors,
+		void antialiasedPolygon(const Vector<Vector2>& points, const Vector2& up, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors,
 			UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset);
 
 	private:

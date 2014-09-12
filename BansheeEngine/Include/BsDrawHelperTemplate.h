@@ -85,8 +85,10 @@ namespace BansheeEngine
 		 * 			  UINT32  VES_COLOR
 		 * 			  32bit index buffer
 		 * 			  Enough space for 2 vertices and 2 indices
+		 *
+		 *			Primitives are output in the form of a line list.
 		 */
-		void line_Pixel(const T& a, const T& b, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+		void pixelLine(const T& a, const T& b, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 		{
 			UINT32* indexData = meshData->getIndices32();
 			UINT8* positionData = meshData->getElementData(VES_POSITION);
@@ -95,7 +97,7 @@ namespace BansheeEngine
 			assert((vertexOffset + 2) <= meshData->getNumVertices());
 			assert((indexOffset + 2) <= meshData->getNumIndices());
 
-			line_Pixel(a, b, color, positionData, colorData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
+			pixelLine(a, b, color, positionData, colorData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
 		}
 
 		/**
@@ -116,8 +118,10 @@ namespace BansheeEngine
 		 * 			  UINT32  VES_COLOR
 		 * 			  32bit index buffer
 		 *			  Enough space for 8 vertices and 30 indices
+		 *
+		 *			Primitives are output in the form of a triangle list.
 		 */
-		void line_AA(const T& a, const T& b, const T& up, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+		void antialiasedLine(const T& a, const T& b, const T& up, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 		{
 			UINT32* indexData = meshData->getIndices32();
 			UINT8* positionData = meshData->getElementData(VES_POSITION);
@@ -126,7 +130,7 @@ namespace BansheeEngine
 			assert((vertexOffset + NUM_VERTICES_AA_LINE) <= meshData->getNumVertices());
 			assert((indexOffset + NUM_INDICES_AA_LINE) <= meshData->getNumIndices());
 
-			line_AA(a, b, up, width, borderWidth, color, positionData, colorData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
+			antialiasedLine(a, b, up, width, borderWidth, color, positionData, colorData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
 		}
 
 		/**
@@ -143,8 +147,10 @@ namespace BansheeEngine
 		 * 			  UINT32  VES_COLOR
 		 * 			  32bit index buffer
 		 * 			  Enough space for (numLines * 2) vertices and (numLines * 2) indices
+		 *
+		 *			Primitives are output in the form of a line list.
 		 */
-		void lineList_Pixel(const typename Vector<T>& linePoints, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+		void pixelLineList(const typename Vector<T>& linePoints, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 		{
 			assert(linePoints.size() % 2 == 0);
 
@@ -161,7 +167,7 @@ namespace BansheeEngine
 			UINT32 numPoints = (UINT32)linePoints.size();
 			for(UINT32 i = 0; i < numPoints; i += 2)
 			{
-				line_Pixel(linePoints[i], linePoints[i + 1], color, positionData, colorData, curVertOffset, meshData->getVertexDesc()->getVertexStride(), indexData, curIdxOffset);
+				pixelLine(linePoints[i], linePoints[i + 1], color, positionData, colorData, curVertOffset, meshData->getVertexDesc()->getVertexStride(), indexData, curIdxOffset);
 
 				curVertOffset += 2;
 				curIdxOffset += 2;
@@ -185,8 +191,10 @@ namespace BansheeEngine
 		 * 			  UINT32  VES_COLOR
 		 * 			  32bit index buffer
 		 *			  Enough space for (numLines * 8) vertices and (numLines * 30) indices
+		 *
+		 *			Primitives are output in the form of a triangle list.
 		 */
-		void lineList_AA(const typename Vector<T>& linePoints, const T& up, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+		void antialiasedLineList(const typename Vector<T>& linePoints, const T& up, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 		{
 			assert(linePoints.size() % 2 == 0);
 
@@ -203,13 +211,14 @@ namespace BansheeEngine
 			UINT32 numPoints = (UINT32)linePoints.size();
 			for(UINT32 i = 0; i < numPoints; i += 2)
 			{
-				line_AA(linePoints[i], linePoints[i + 1], up, width, borderWidth, color, positionData, colorData, curVertOffset, meshData->getVertexDesc()->getVertexStride(), indexData, curIdxOffset);
+				antialiasedLine(linePoints[i], linePoints[i + 1], up, width, borderWidth, color, positionData, colorData, curVertOffset, meshData->getVertexDesc()->getVertexStride(), indexData, curIdxOffset);
 
 				curVertOffset += NUM_VERTICES_AA_LINE;
 				curIdxOffset += NUM_INDICES_AA_LINE;
 			}
 		}
 
+	protected:
 		/**
 		 * @brief	Fills the provided buffers with vertices representing a per-pixel line.
 		 *
@@ -223,7 +232,7 @@ namespace BansheeEngine
 		 * @param	outIndices		Output buffer that will store the index data. Indices are 32bit.
 		 * @param	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
 		 */
-		void line_Pixel(const T& a, const T& b, const Color& color, UINT8* outVertices, UINT8* outColors, 
+		void pixelLine(const T& a, const T& b, const Color& color, UINT8* outVertices, UINT8* outColors, 
 			UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
 		{
 			outVertices += (vertexOffset * vertexStride);
@@ -262,7 +271,7 @@ namespace BansheeEngine
 		 * @param	outIndices		Output buffer that will store the index data. Indices are 32bit.
 		 * @param	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
 		 */
-		virtual void line_AA(const T& a, const T& b, const T& up, float width, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
+		virtual void antialiasedLine(const T& a, const T& b, const T& up, float width, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
 			UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset) = 0;
 
 		/**
@@ -279,7 +288,7 @@ namespace BansheeEngine
 		 * @param	outIndices		Output buffer that will store the index data. Indices are 32bit.
 		 * @param	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
 		 */
-		virtual void polygon_AA(const typename Vector<T>& points, const T& up, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors,
+		virtual void antialiasedPolygon(const typename Vector<T>& points, const T& up, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors,
 			UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset) = 0;
 
 		/**
@@ -293,7 +302,7 @@ namespace BansheeEngine
 		 * @param	outIndices		Output buffer that will store the index data. Indices are 32bit.
 		 * @param	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
 		 */
-		void polygonFill_Pixel(const typename Vector<T>& points, UINT8* outVertices, 
+		void pixelSolidPolygon(const typename Vector<T>& points, UINT8* outVertices, 
 			UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
 		{
 			outVertices += (vertexOffset * vertexStride);
@@ -329,7 +338,7 @@ namespace BansheeEngine
 		 * @param	outIndices		Output buffer that will store the index data. Indices are 32bit.
 		 * @param	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
 		 */
-		void polygonBorder_Pixel(const typename Vector<T>& points, const Color& color, UINT8* outVertices, UINT8* outColors, 
+		void pixelWirePolygon(const typename Vector<T>& points, const Color& color, UINT8* outVertices, UINT8* outColors, 
 			UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
 		{
 			INT32 numPoints = (INT32)points.size();
@@ -337,7 +346,7 @@ namespace BansheeEngine
 			UINT32 curIdxOffset = indexOffset;
 			for(INT32 i = 0, j = numPoints - 1; i < numPoints; j = i++)
 			{
-				line_Pixel(points[j], points[i], color, outVertices, outColors, curVertOffset, vertexStride, outIndices, curIdxOffset);
+				pixelLine(points[j], points[i], color, outVertices, outColors, curVertOffset, vertexStride, outIndices, curIdxOffset);
 				curVertOffset += 2;
 				curIdxOffset += 2;
 			}

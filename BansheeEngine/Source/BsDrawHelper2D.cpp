@@ -23,7 +23,7 @@ namespace BansheeEngine
 		mVertexDesc->addVertElem(VET_COLOR, VES_COLOR);
 	}
 
-	void DrawHelper2D::quad(const RectF& area, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+	void DrawHelper2D::solidQuad(const RectF& area, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		UINT32* indexData = meshData->getIndices32();
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
@@ -37,34 +37,34 @@ namespace BansheeEngine
 		points.push_back(Vector2(area.x + area.width, area.y + area.height));
 		points.push_back(Vector2(area.x, area.y + area.height));	
 
-		polygonFill_Pixel(points, positionData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
+		pixelSolidPolygon(points, positionData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
 	}
 
-	void DrawHelper2D::line_Pixel(const Vector2& a, const Vector2& b, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+	void DrawHelper2D::pixelLine(const Vector2& a, const Vector2& b, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
-		DrawHelperTemplate<Vector2>::line_Pixel(a, b, color, meshData, vertexOffset, indexOffset);
+		DrawHelperTemplate<Vector2>::pixelLine(a, b, color, meshData, vertexOffset, indexOffset);
 	}
 
-	void DrawHelper2D::line_AA(const Vector2& a, const Vector2& b, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+	void DrawHelper2D::antialiasedLine(const Vector2& a, const Vector2& b, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
-		DrawHelperTemplate<Vector2>::line_AA(a, b, Vector2::ZERO, width, borderWidth, color, meshData, vertexOffset, indexOffset);
+		DrawHelperTemplate<Vector2>::antialiasedLine(a, b, Vector2::ZERO, width, borderWidth, color, meshData, vertexOffset, indexOffset);
 	}
 
-	void DrawHelper2D::lineList_Pixel(const Vector<Vector2>& linePoints, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+	void DrawHelper2D::pixelLineList(const Vector<Vector2>& linePoints, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
-		DrawHelperTemplate<Vector2>::lineList_Pixel(linePoints, color, meshData, vertexOffset, indexOffset);
+		DrawHelperTemplate<Vector2>::pixelLineList(linePoints, color, meshData, vertexOffset, indexOffset);
 	}
 
-	void DrawHelper2D::lineList_AA(const Vector<Vector2>& linePoints, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+	void DrawHelper2D::antialiasedLineList(const Vector<Vector2>& linePoints, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
-		DrawHelperTemplate<Vector2>::lineList_AA(linePoints, Vector2::ZERO, width, borderWidth, color, meshData, vertexOffset, indexOffset);
+		DrawHelperTemplate<Vector2>::antialiasedLineList(linePoints, Vector2::ZERO, width, borderWidth, color, meshData, vertexOffset, indexOffset);
 	}
 
 	/************************************************************************/
 	/* 								2D - DRAW	                     		*/
 	/************************************************************************/
 
-	void DrawHelper2D::drawQuad(const HCamera& camera, const RectF& area, const Color& color, DebugDrawCoordType coordType, float timeout)
+	void DrawHelper2D::drawSolidQuad(const HCamera& camera, const RectF& area, const Color& color, DebugDrawCoordType coordType, float timeout)
 	{
 		const Viewport* viewport = camera->getViewport().get();
 
@@ -80,7 +80,7 @@ namespace BansheeEngine
 		if(coordType == DebugDrawCoordType::Normalized)
 			actualArea = normalizedCoordToClipSpace(area);
 
-		quad(actualArea, meshData, 0, 0);
+		solidQuad(actualArea, meshData, 0, 0);
 
 		UINT32 vertexStride = mVertexDesc->getVertexStride();
 		UINT8* colorData = meshData->getElementData(VES_COLOR);
@@ -114,7 +114,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void DrawHelper2D::drawLine_Pixel(const HCamera& camera, const Vector2& a, const Vector2& b, const Color& color, DebugDrawCoordType coordType, float timeout)
+	void DrawHelper2D::drawPixelLine(const HCamera& camera, const Vector2& a, const Vector2& b, const Color& color, DebugDrawCoordType coordType, float timeout)
 	{
 		const Viewport* viewport = camera->getViewport().get();
 
@@ -134,7 +134,7 @@ namespace BansheeEngine
 			actualB = normalizedCoordToClipSpace(b);
 		}
 
-		line_Pixel(actualA, actualB, color, meshData, 0, 0);
+		pixelLine(actualA, actualB, color, meshData, 0, 0);
 
 		HMesh mesh = Mesh::create(meshData, MeshBufferType::Static, DOT_LINE_LIST);
 
@@ -153,7 +153,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void DrawHelper2D::drawLine_AA(const HCamera& camera, const Vector2& a, const Vector2& b, float width, float borderWidth, const Color& color, DebugDrawCoordType coordType, float timeout)
+	void DrawHelper2D::drawAntialiasedLine(const HCamera& camera, const Vector2& a, const Vector2& b, float width, float borderWidth, const Color& color, DebugDrawCoordType coordType, float timeout)
 	{
 		const Viewport* viewport = camera->getViewport().get();
 
@@ -173,7 +173,7 @@ namespace BansheeEngine
 			actualB = normalizedCoordToClipSpace(b);
 		}
 
-		line_AA(actualA, actualB, width, borderWidth, color, meshData, 0, 0);
+		antialiasedLine(actualA, actualB, width, borderWidth, color, meshData, 0, 0);
 
 		HMesh mesh = Mesh::create(meshData);
 
@@ -192,7 +192,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void DrawHelper2D::drawLineList_Pixel(const HCamera& camera, const Vector<Vector2>& linePoints, const Color& color, 
+	void DrawHelper2D::drawPixelLineList(const HCamera& camera, const Vector<Vector2>& linePoints, const Color& color, 
 		DebugDrawCoordType coordType, float timeout)
 	{
 		const Viewport* viewport = camera->getViewport().get();
@@ -213,11 +213,11 @@ namespace BansheeEngine
 			for(UINT32 i = 0; i < numPoints; i++)
 				points.push_back(normalizedCoordToClipSpace(linePoints[i]));
 
-			lineList_Pixel(points, color, meshData, 0, 0);
+			pixelLineList(points, color, meshData, 0, 0);
 		}
 		else
 		{
-			lineList_Pixel(linePoints, color, meshData, 0, 0);
+			pixelLineList(linePoints, color, meshData, 0, 0);
 		}		
 
 		HMesh mesh = Mesh::create(meshData, MeshBufferType::Static, DOT_LINE_LIST);
@@ -237,7 +237,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void DrawHelper2D::drawLineList_AA(const HCamera& camera, const Vector<Vector2>& linePoints, float width, float borderWidth, 
+	void DrawHelper2D::drawAntialiasedLineList(const HCamera& camera, const Vector<Vector2>& linePoints, float width, float borderWidth, 
 		const Color& color, DebugDrawCoordType coordType, float timeout)
 	{
 		const Viewport* viewport = camera->getViewport().get();
@@ -257,11 +257,11 @@ namespace BansheeEngine
 			for(UINT32 i = 0; i < numPoints; i++)
 				points.push_back(normalizedCoordToClipSpace(linePoints[i]));
 
-			lineList_AA(points, width, borderWidth, color, meshData, 0, 0);
+			antialiasedLineList(points, width, borderWidth, color, meshData, 0, 0);
 		}
 		else
 		{
-			lineList_AA(linePoints, width, borderWidth, color, meshData, 0, 0);
+			antialiasedLineList(linePoints, width, borderWidth, color, meshData, 0, 0);
 		}		
 
 		HMesh mesh = Mesh::create(meshData);
@@ -281,7 +281,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void DrawHelper2D::line_AA(const Vector2& a, const Vector2& b, const Vector2& up, float width, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors,
+	void DrawHelper2D::antialiasedLine(const Vector2& a, const Vector2& b, const Vector2& up, float width, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors,
 		UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
 	{
 		Vector2 dir = b - a;
@@ -309,10 +309,10 @@ namespace BansheeEngine
 		points[2] = v2;
 		points[3] = v3;
 
-		polygon_AA(points, up, borderWidth, color, outVertices, outColors, vertexOffset, vertexStride, outIndices, indexOffset);
+		antialiasedPolygon(points, up, borderWidth, color, outVertices, outColors, vertexOffset, vertexStride, outIndices, indexOffset);
 	}
 
-	void DrawHelper2D::polygon_AA(const Vector<Vector2>& points, const Vector2& up, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors,
+	void DrawHelper2D::antialiasedPolygon(const Vector<Vector2>& points, const Vector2& up, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors,
 		UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
 	{
 		UINT32 numCoords = (UINT32)points.size();
