@@ -75,29 +75,26 @@ namespace BansheeEngine
 		 *
 		 * @param	a				Start point of the line.
 		 * @param	b				End point of the line.
-		 * @param	color			Color of the line.
 		 * @param	meshData		Mesh data that will be populated.
 		 * @param	vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
 		 * @param	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
 		 * 							
 		 * @note	Provided MeshData must have some specific elements at least:
 		 * 			  T		  VES_POSITION
-		 * 			  UINT32  VES_COLOR
 		 * 			  32bit index buffer
 		 * 			  Enough space for 2 vertices and 2 indices
 		 *
 		 *			Primitives are output in the form of a line list.
 		 */
-		void pixelLine(const T& a, const T& b, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+		void pixelLine(const T& a, const T& b, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 		{
 			UINT32* indexData = meshData->getIndices32();
 			UINT8* positionData = meshData->getElementData(VES_POSITION);
-			UINT8* colorData = meshData->getElementData(VES_COLOR);
 
 			assert((vertexOffset + 2) <= meshData->getNumVertices());
 			assert((indexOffset + 2) <= meshData->getNumIndices());
 
-			pixelLine(a, b, color, positionData, colorData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
+			pixelLine(a, b, color, positionData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
 		}
 
 		/**
@@ -137,20 +134,18 @@ namespace BansheeEngine
 		 * @brief	Fills the mesh data with vertices representing per-pixel lines.
 		 *
 		 * @param	linePoints		A list of start and end points for the lines. Must be a multiple of 2.
-		 * @param	color			Color of the line.
 		 * @param	meshData		Mesh data that will be populated.
 		 * @param	vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
 		 * @param	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
 		 * 							
 		 * @note	Provided MeshData must have some specific elements at least:
 		 * 			  T		  VES_POSITION
-		 * 			  UINT32  VES_COLOR
 		 * 			  32bit index buffer
 		 * 			  Enough space for (numLines * 2) vertices and (numLines * 2) indices
 		 *
 		 *			Primitives are output in the form of a line list.
 		 */
-		void pixelLineList(const typename Vector<T>& linePoints, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+		void pixelLineList(const typename Vector<T>& linePoints, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 		{
 			assert(linePoints.size() % 2 == 0);
 
@@ -162,12 +157,11 @@ namespace BansheeEngine
 
 			UINT32* indexData = meshData->getIndices32();
 			UINT8* positionData = meshData->getElementData(VES_POSITION);
-			UINT8* colorData = meshData->getElementData(VES_COLOR);
 
 			UINT32 numPoints = (UINT32)linePoints.size();
 			for(UINT32 i = 0; i < numPoints; i += 2)
 			{
-				pixelLine(linePoints[i], linePoints[i + 1], color, positionData, colorData, curVertOffset, meshData->getVertexDesc()->getVertexStride(), indexData, curIdxOffset);
+				pixelLine(linePoints[i], linePoints[i + 1], color, positionData, curVertOffset, meshData->getVertexDesc()->getVertexStride(), indexData, curIdxOffset);
 
 				curVertOffset += 2;
 				curIdxOffset += 2;
@@ -224,15 +218,13 @@ namespace BansheeEngine
 		 *
 		 * @param	a				Start point of the line.
 		 * @param	b				End point of the line.
-		 * @param	color			Color of the line.
 		 * @param	outVertices		Output buffer that will store the vertex position data.
-		 * @param	outColors		Output buffer that will store the vertex color data.
 		 * @param	vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
 		 * @param	vertexStride	Size of a single vertex, in bytes. (Same for both position and color buffer)
 		 * @param	outIndices		Output buffer that will store the index data. Indices are 32bit.
 		 * @param	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
 		 */
-		void pixelLine(const T& a, const T& b, const Color& color, UINT8* outVertices, UINT8* outColors, 
+		void pixelLine(const T& a, const T& b, UINT8* outVertices,  
 			UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
 		{
 			outVertices += (vertexOffset * vertexStride);
@@ -243,12 +235,6 @@ namespace BansheeEngine
 
 			vertices = (T*)(outVertices + vertexStride);
 			(*vertices) = b;
-
-			UINT32* colors = (UINT32*)outColors;
-			(*colors) = color.getAsRGBA();
-
-			colors = (UINT32*)(outColors + vertexStride);
-			(*colors) = color.getAsRGBA();
 
 			outIndices += indexOffset;
 			outIndices[0] = vertexOffset + 0;

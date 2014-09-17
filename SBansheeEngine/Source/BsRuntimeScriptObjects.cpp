@@ -27,6 +27,15 @@ namespace BansheeEngine
 
 	}
 
+	Vector<String> RuntimeScriptObjects::getInitializedAssemblies() const
+	{
+		Vector<String> initializedAssemblies;
+		for (auto& assemblyPair : mAssemblyInfos)
+			initializedAssemblies.push_back(assemblyPair.first);
+
+		return initializedAssemblies;
+	}
+
 	void RuntimeScriptObjects::refreshScriptObjects(const String& assemblyName)
 	{
 		clearScriptObjects(assemblyName);
@@ -142,6 +151,8 @@ namespace BansheeEngine
 				base = base->getBaseClass();
 			}
 		}
+
+		onAssemblyRefreshed(curAssembly);
 	}
 
 	ManagedSerializableTypeInfoPtr RuntimeScriptObjects::determineType(MonoClass* monoClass)

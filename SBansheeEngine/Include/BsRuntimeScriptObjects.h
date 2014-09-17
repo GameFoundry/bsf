@@ -17,6 +17,8 @@ namespace BansheeEngine
 		bool getSerializableObjectInfo(const String& ns, const String& typeName, std::shared_ptr<ManagedSerializableObjectInfo>& outInfo);
 		bool hasSerializableObjectInfo(const String& ns, const String& typeName);
 
+		Vector<String> getInitializedAssemblies() const;
+
 		MonoClass* getSystemArrayClass() const { return mSystemArrayClass; }
 		MonoClass* getSystemGenericListClass() const { return mSystemGenericListClass; }
 		MonoClass* getSystemGenericDictionaryClass() const { return mSystemGenericDictionaryClass; }
@@ -27,6 +29,8 @@ namespace BansheeEngine
 		MonoClass* getSpriteTextureClass() const { return mSpriteTextureClass; }
 
 		ManagedSerializableTypeInfoPtr determineType(MonoClass* monoClass);
+
+		Event<void(MonoAssembly*)> onAssemblyRefreshed;
 	private:
 		UnorderedMap<String, std::shared_ptr<ManagedSerializableAssemblyInfo>> mAssemblyInfos;
 		bool mBaseTypesInitialized;

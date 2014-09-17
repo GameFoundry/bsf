@@ -4,10 +4,15 @@ TODO:
 
 IMMEDIATE:
  - SceneGrid is very ugly. Consider using default lines for now and come back with a better approach later.
+   - Potentially enable line AA?
  - In Picking code I don't set main texture when rendering with alpha
  - Picking code is completely untested and will likely need major fixing
  - Disable DX9 for editor as I will likely want to use geometry shaders for icon rendering, and possibly new AA line shader
    - Or just use MeshHeap and update the icon/lines every frame?
+ - Test all the new DrawHelper3D methods
+
+LATER:
+ - Need a way to render text for gizmos and handles, and in scene in general
 
 ----------------------------------------------------------------------
 Handles

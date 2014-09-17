@@ -30,7 +30,8 @@ namespace BansheeEngine
 	}
 
 	MonoClass::MonoClass(const String& ns, const String& type, ::MonoClass* monoClass, const MonoAssembly* parentAssembly)
-		:mNamespace(ns), mTypeName(type), mClass(monoClass), mParentAssembly(parentAssembly), mHasCachedFields(false)
+		:mNamespace(ns), mTypeName(type), mClass(monoClass), mParentAssembly(parentAssembly), mHasCachedFields(false),
+		mHasCachedMethods(false)
 	{
 		mFullName = ns + "." + type;
 	}
@@ -59,7 +60,7 @@ namespace BansheeEngine
 		mProperties.clear();
 	}
 
-	MonoMethod& MonoClass::getMethod(const String& name, UINT32 numParams)
+	MonoMethod& MonoClass::getMethod(const String& name, UINT32 numParams) const
 	{
 		MethodId mehodId(name, numParams);
 		auto iterFind = mMethods.find(mehodId);
@@ -79,7 +80,7 @@ namespace BansheeEngine
 		return *newMethod;
 	}
 
-	MonoMethod* MonoClass::getMethodExact(const String& name, const String& signature)
+	MonoMethod* MonoClass::getMethodExact(const String& name, const String& signature) const
 	{
 		MethodId mehodId(name + "(" + signature + ")", 0);
 		auto iterFind = mMethods.find(mehodId);
@@ -180,6 +181,32 @@ namespace BansheeEngine
 
 		mHasCachedFields = true;
 		return mCachedFieldList;
+	}
+
+	const Vector<MonoMethod*> MonoClass::getAllMethods() const
+	{
+		if (mHasCachedMethods)
+			return mCachedMethodList;
+
+		mCachedMethodList.clear();
+
+		void* iter = nullptr;
+		::MonoMethod* curClassMethod = mono_class_get_methods(mClass, &iter);
+		while (curClassMethod != nullptr)
+		{
+			MonoMethodSignature* sig = mono_method_signature(curClassMethod);
+			const char* sigDesc = mono_signature_get_desc(sig, true);
+			const char* methodName = mono_method_get_name(curClassMethod);
+
+			MonoMethod* curMethod = getMethodExact(methodName, sigDesc);
+
+			mCachedMethodList.push_back(curMethod);
+
+			curClassMethod = mono_class_get_methods(mClass, &iter);
+		}
+
+		mHasCachedMethods = true;
+		return mCachedMethodList;
 	}
 
 	MonoObject* MonoClass::invokeMethod(const String& name, MonoObject* instance, void** params, UINT32 numParams)

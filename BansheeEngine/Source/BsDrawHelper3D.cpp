@@ -57,8 +57,8 @@ namespace BansheeEngine
 		UINT32* indexData = meshData->getIndices32();
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
 
-		UINT32 requiredNumVertices = 3 * ((quality + 1) * 4);
-		UINT32 requiredNumIndices = 6 * ((quality + 1) * 4);
+		UINT32 requiredNumVertices, requiredNumIndices;
+		getNumElementsWireSphere(quality, requiredNumVertices, requiredNumIndices);
 
 		assert((vertexOffset + requiredNumVertices) <= meshData->getNumVertices());
 		assert((indexOffset + requiredNumIndices) <= meshData->getNumIndices());
@@ -82,8 +82,8 @@ namespace BansheeEngine
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
 		UINT8* normalData = meshData->getElementData(VES_NORMAL);
 
-		UINT32 requiredNumVertices = 20 * (4 * ((UINT32)std::pow(3, quality)));
-		UINT32 requiredNumIndices = requiredNumVertices;
+		UINT32 requiredNumVertices, requiredNumIndices;
+		getNumElementsSphere(quality, requiredNumVertices, requiredNumIndices);
 
 		assert((vertexOffset + requiredNumVertices) <= meshData->getNumVertices());
 		assert((indexOffset + requiredNumIndices) <= meshData->getNumIndices());
@@ -110,8 +110,8 @@ namespace BansheeEngine
 		UINT32* indexData = meshData->getIndices32();
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
 
-		UINT32 requiredNumVertices = (quality + 1) * 5;
-		UINT32 requiredNumIndices = ((quality + 1) * 5 - 1) * 2;
+		UINT32 requiredNumVertices, requiredNumIndices;
+		getNumElementsWireArc(quality, requiredNumVertices, requiredNumIndices);
 
 		assert((vertexOffset + requiredNumVertices) <= meshData->getNumVertices());
 		assert((indexOffset + requiredNumIndices) <= meshData->getNumIndices());
@@ -127,8 +127,8 @@ namespace BansheeEngine
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
 		UINT8* normalData = meshData->getElementData(VES_NORMAL);
 
-		UINT32 requiredNumVertices = (quality + 1) * 5 + 1;
-		UINT32 requiredNumIndices = ((quality + 1) * 5 - 1) * 3;
+		UINT32 requiredNumVertices, requiredNumIndices;
+		getNumElementsArc(quality, requiredNumVertices, requiredNumIndices);
 
 		assert((vertexOffset + requiredNumVertices) <= meshData->getNumVertices());
 		assert((indexOffset + requiredNumIndices) <= meshData->getNumIndices());
@@ -156,8 +156,8 @@ namespace BansheeEngine
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
 		UINT8* normalData = meshData->getElementData(VES_NORMAL);
 
-		UINT32 requiredNumVertices = ((quality + 1) * 4 + 1) * 2;
-		UINT32 requiredNumIndices = ((quality + 1) * 4 - 1) * 6;
+		UINT32 requiredNumVertices, requiredNumIndices;
+		getNumElementsCone(quality, requiredNumVertices, requiredNumIndices);
 
 		assert((vertexOffset + requiredNumVertices) <= meshData->getNumVertices());
 		assert((indexOffset + requiredNumIndices) <= meshData->getNumIndices());
@@ -166,9 +166,9 @@ namespace BansheeEngine
 			meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset, quality);
 	}
 
-	void DrawHelper3D::pixelLine(const Vector3& a, const Vector3& b, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+	void DrawHelper3D::pixelLine(const Vector3& a, const Vector3& b, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
-		DrawHelperTemplate<Vector3>::pixelLine(a, b, color, meshData, vertexOffset, indexOffset);
+		DrawHelperTemplate<Vector3>::pixelLine(a, b, meshData, vertexOffset, indexOffset);
 	}
 
 	void DrawHelper3D::antialiasedLine(const Vector3& a, const Vector3& b, const Vector3& up, float width, float borderWidth, 
@@ -177,15 +177,59 @@ namespace BansheeEngine
 		DrawHelperTemplate<Vector3>::antialiasedLine(a, b, up, width, borderWidth, color, meshData, vertexOffset, indexOffset);
 	}
 
-	void DrawHelper3D::pixelLineList(const Vector<Vector3>& linePoints, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+	void DrawHelper3D::pixelLineList(const Vector<Vector3>& linePoints, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
-		DrawHelperTemplate<Vector3>::pixelLineList(linePoints, color, meshData, vertexOffset, indexOffset);
+		DrawHelperTemplate<Vector3>::pixelLineList(linePoints, meshData, vertexOffset, indexOffset);
 	}
 
 	void DrawHelper3D::antialiasedLineList(const Vector<Vector3>& linePoints, const Vector3& up, float width, float borderWidth, 
 		const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		DrawHelperTemplate<Vector3>::antialiasedLineList(linePoints, up, width, borderWidth, color, meshData, vertexOffset, indexOffset);
+	}
+
+	/************************************************************************/
+	/* 								ELEMENT COUNT                      		*/
+	/************************************************************************/
+
+	void DrawHelper3D::getNumElementsSphere(UINT32 quality, UINT32& numVertices, UINT32& numIndices)
+	{
+		numVertices = 20 * (4 * ((UINT32)std::pow(3, quality)));
+		numIndices = numVertices;
+	}
+
+	void DrawHelper3D::getNumElementsWireSphere(UINT32 quality, UINT32& numVertices, UINT32& numIndices)
+	{
+		numVertices = 3 * ((quality + 1) * 4);
+		numIndices = 6 * ((quality + 1) * 4);
+	}
+
+	void DrawHelper3D::getNumElementsArc(UINT32 quality, UINT32& numVertices, UINT32& numIndices)
+	{
+		numVertices = (quality + 1) * 5 + 1;
+		numIndices = ((quality + 1) * 5 - 1) * 3;
+	}
+
+	void DrawHelper3D::getNumElementsWireArc(UINT32 quality, UINT32& numVertices, UINT32& numIndices)
+	{
+		numVertices = (quality + 1) * 5;
+		numIndices = ((quality + 1) * 5 - 1) * 2;
+	}
+
+	void DrawHelper3D::getNumElementsDisc(UINT32 quality, UINT32& numVertices, UINT32& numIndices)
+	{
+		getNumElementsArc(quality, numVertices, numIndices);
+	}
+
+	void DrawHelper3D::getNumElementsWireDisc(UINT32 quality, UINT32& numVertices, UINT32& numIndices)
+	{
+		getNumElementsWireArc(quality, numVertices, numIndices);
+	}
+
+	void DrawHelper3D::getNumElementsCone(UINT32 quality, UINT32& numVertices, UINT32& numIndices)
+	{
+		numVertices = ((quality + 1) * 4 + 1) * 2;
+		numIndices = ((quality + 1) * 4 - 1) * 6;
 	}
 
 	/************************************************************************/
@@ -204,7 +248,13 @@ namespace BansheeEngine
 
 		MeshDataPtr meshData = bs_shared_ptr<MeshData, ScratchAlloc>(2, 2, mVertexDesc);
 
-		pixelLine(a, b, color, meshData, 0, 0);
+		auto colorIter = meshData->getDWORDDataIter(VES_COLOR);
+		RGBA rgba = color.getAsRGBA();
+
+		colorIter.addValue(rgba);
+		colorIter.addValue(rgba);
+
+		pixelLine(a, b, meshData, 0, 0);
 
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
 		dbgCmd.worldCenter = calcCenter(positionData, meshData->getNumVertices(), mVertexDesc->getVertexStride());
@@ -253,7 +303,13 @@ namespace BansheeEngine
 		MeshDataPtr meshData = bs_shared_ptr<MeshData, ScratchAlloc>(
 			(UINT32)(linePoints.size() * 2), (UINT32)(linePoints.size() * 2), mVertexDesc);
 
-		pixelLineList(linePoints, color, meshData, 0, 0);
+		auto colorIter = meshData->getDWORDDataIter(VES_COLOR);
+		RGBA rgba = color.getAsRGBA();
+
+		for (UINT32 i = 0; i < (UINT32)linePoints.size(); i++)
+			colorIter.addValue(rgba);
+
+		pixelLineList(linePoints, meshData, 0, 0);
 
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
 		dbgCmd.worldCenter = calcCenter(positionData, meshData->getNumVertices(), mVertexDesc->getVertexStride());

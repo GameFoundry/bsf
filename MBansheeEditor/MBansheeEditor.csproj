@@ -81,6 +81,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="ProjectLibrary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scene\DrawGizmo.cs" />
+    <Compile Include="Scene\Gizmos.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MBansheeEngine\MBansheeEngine.csproj">

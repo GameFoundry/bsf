@@ -240,7 +240,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	DrawHelperTemplate::pixelLine
 		 */
-		void pixelLine(const Vector3& a, const Vector3& b, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
+		void pixelLine(const Vector3& a, const Vector3& b, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		/**
 		 * @copydoc	DrawHelperTemplate::antialiasedLine
@@ -251,13 +251,55 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	DrawHelperTemplate::pixelLineList
 		 */
-		void pixelLineList(const Vector<Vector3>& linePoints, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
+		void pixelLineList(const Vector<Vector3>& linePoints, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		/**
 		 * @copydoc	DrawHelperTemplate::antialiasedLineList
 		 */
 		void antialiasedLineList(const Vector<Vector3>& linePoints, const Vector3& up, float width, float borderWidth, 
 			const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
+
+		/**
+		 * @brief	Calculates number of vertices and indices required for geometry of a solid sphere
+		 *			of the specified quality.
+		 */
+		static void getNumElementsSphere(UINT32 quality, UINT32& numVertices, UINT32& numIndices);
+
+		/**
+		 * @brief	Calculates number of vertices and indices required for geometry of a wire sphere
+		 *			of the specified quality.
+		 */
+		static void getNumElementsWireSphere(UINT32 quality, UINT32& numVertices, UINT32& numIndices);
+
+		/**
+		 * @brief	Calculates number of vertices and indices required for geometry of a solid arc
+		 *			of the specified quality.
+		 */
+		static void getNumElementsArc(UINT32 quality, UINT32& numVertices, UINT32& numIndices);
+
+		/**
+		 * @brief	Calculates number of vertices and indices required for geometry of a wire arc
+		 *			of the specified quality.
+		 */
+		static void getNumElementsWireArc(UINT32 quality, UINT32& numVertices, UINT32& numIndices);
+
+		/**
+		 * @brief	Calculates number of vertices and indices required for geometry of a solid desc
+		 *			of the specified quality.
+		 */
+		static void getNumElementsDisc(UINT32 quality, UINT32& numVertices, UINT32& numIndices);
+
+		/**
+		 * @brief	Calculates number of vertices and indices required for geometry of a wire disc
+		 *			of the specified quality.
+		 */
+		static void getNumElementsWireDisc(UINT32 quality, UINT32& numVertices, UINT32& numIndices);
+
+		/**
+		 * @brief	Calculates number of vertices and indices required for geometry of a cone
+		 *			of the specified quality.
+		 */
+		static void getNumElementsCone(UINT32 quality, UINT32& numVertices, UINT32& numIndices);
 
 		/**
 		 * @brief	Constructs a one-pixel wide line and draws it in the specified camera. 

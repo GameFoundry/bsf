@@ -9,6 +9,7 @@ namespace BansheeEngine
 	{
 	public:
 		EditorScriptManager();
+		~EditorScriptManager();
 
 		void update();
 

@@ -282,6 +282,82 @@ namespace BansheeEngine
 		 */
 		void setLayers(UINT64 layers) { mLayers = layers; markCoreDirty(); }
 
+		/**
+		 * @brief	Converts a point in world space to screen coordinates (in pixels
+		 *			corresponding to the render target attached to the camera).
+		 */
+		Vector2I worldToScreenPoint(const Vector3& worldPoint) const;
+
+		/**
+		 * @brief	Converts a point in world space to normalized clip coordinates 
+		 *			(in [0, 1] range).
+		 */
+		Vector2 worldToClipPoint(const Vector3& worldPoint) const;
+
+		/**
+		 * @brief	Converts a point in world space to point relative to camera's
+		 *			coordinate system (view space).
+		 */
+		Vector3 worldToViewPoint(const Vector3& worldPoint) const;
+
+		/**
+		 * @brief	Converts a point in screen space (pixels corresponding to
+		 *			render target attached to the camera) to a point in world space.
+		 */
+		Vector3 screenToWorldPoint(const Vector2I& screenPoint) const;
+
+		/**
+		 * @brief	Converts a point in screen space (pixels corresponding to
+		 *			render target attached to the camera) to a point relative to
+		 *			camera's coordinate system (view space).
+		 */
+		Vector3 screenToViewPoint(const Vector2I& screenPoint) const;
+
+		/**
+		 * @brief	Converts a point in screen space (pixels corresponding to
+		 *			render target attached to the camera) to normalized clip 
+		 *			coordinates (in [0, 1] range).
+		 */
+		Vector2 screenToClipPoint(const Vector2I& screenPoint) const;
+
+		/**
+		 * @brief	Converts a point relative to camera's coordinate system (view space)
+		 *			into a point in world space.
+		 */
+		Vector3 viewToWorldPoint(const Vector3& viewPoint) const;
+
+		/**
+		 * @brief	Converts a point relative to camera's coordinate system (view space)
+		 *			into a point in screen space (pixels corresponding to render target 
+		 *			attached to the camera.
+		 */
+		Vector2I viewToScreenPoint(const Vector3& viewPoint) const;
+
+		/**
+		 * @brief	Converts a point relative to camera's coordinate system (view space)
+		 *			into normalized clip coordinates (in [0, 1] range).
+		 */
+		Vector2 viewToClipPoint(const Vector3& viewPoint) const;
+
+		/**
+		 * @brief	Converts a point in normalized clip coordinates ([0, 1] range) to
+		 *			a point in world space.
+		 */
+		Vector3 clipToWorldPoint(const Vector2& clipPoint) const;
+
+		/**
+		 * @brief	Converts a point in normalized clip coordinates ([0, 1] range) to
+		 *			a point relative to camera's coordinate system (view space).
+		 */
+		Vector3 clipToViewPoint(const Vector2& clipPoint) const;
+
+		/**
+		 * @brief	Converts a point in normalized clip coordinates ([0, 1] range) to
+		 *			a point in screen space (pixels corresponding to render target attached 
+		 *			to the camera)
+		 */
+		Vector2I clipToScreenPoint(const Vector2& clipPoint) const;
+
         static const float INFINITE_FAR_PLANE_ADJUST; /**< Small constant used to reduce far plane projection to avoid inaccuracies. */
 
 		/************************************************************************/

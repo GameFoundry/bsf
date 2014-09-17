@@ -366,12 +366,12 @@ namespace BansheeEngine
             return Quaternion.FromRotationMatrix(this);
         }
 
-        public void ToAxisAngle(out Vector3 axis, out float degAngle)
+        public void ToAxisAngle(out Vector3 axis, out Degree angle)
         {
             float trace = m00 + m11 + m22;
             float cos = 0.5f*(trace-1.0f);
-            float radians = MathEx.Acos(cos);  // In [0, PI]
-            degAngle = radians*MathEx.Rad2Deg;
+            Radian radians = MathEx.Acos(cos);  // In [0, PI]
+            angle = radians.GetDegrees();
 
             if (radians > 0.0f)
             {
@@ -475,12 +475,12 @@ namespace BansheeEngine
 		    return mats[l.a]*(mats[l.b]*mats[l.c]);
         }
 
-        public static Matrix3 FromAxisAngle(Vector3 axis, float degAngle)
+        public static Matrix3 FromAxisAngle(Vector3 axis, Degree angle)
         {
             Matrix3 mat;
 
-            float cos = MathEx.Cos(degAngle * MathEx.Deg2Rad);
-            float sin = MathEx.Sin(degAngle * MathEx.Deg2Rad);
+            float cos = MathEx.Cos(angle.GetRadians());
+            float sin = MathEx.Sin(angle.GetRadians());
             float oneMinusCos = 1.0f - cos;
             float x2 = axis.x * axis.x;
             float y2 = axis.y * axis.y;

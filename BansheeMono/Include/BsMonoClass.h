@@ -56,7 +56,7 @@ namespace BansheeEngine
 		 *			if method cannot be found.
 		 *			Does not query base class methods.
 		 */
-		MonoMethod& getMethod(const String& name, UINT32 numParams = 0);
+		MonoMethod& getMethod(const String& name, UINT32 numParams = 0) const;
 
 		/**
 		 * @brief	Returns an object referencing a field with the specified name.
@@ -89,7 +89,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Example: name = "CreateInstance", signature = "Vector2,int[]"
 		 */
-		MonoMethod* getMethodExact(const String& name, const String& signature);
+		MonoMethod* getMethodExact(const String& name, const String& signature) const;
 
 		/**
 		 * @brief	Returns all fields belonging to this class.
@@ -97,6 +97,13 @@ namespace BansheeEngine
 		 * @note	Be aware this will not include the fields of any base classes.
 		 */
 		const Vector<MonoField*> getAllFields() const;
+
+		/**
+		 * @brief	Returns all methods belonging to this class.
+		 *
+		 * @note	Be aware this will not include the methods of any base classes.
+		 */
+		const Vector<MonoMethod*> getAllMethods() const;
 
 		/**
 		 * @brief	Check if this class has an attribute of the type "monoClass".
@@ -192,11 +199,14 @@ namespace BansheeEngine
 		String mTypeName;
 		String mFullName;
 
-		UnorderedMap<MethodId, MonoMethod*, MethodId::Hash, MethodId::Equals> mMethods; 
+		mutable UnorderedMap<MethodId, MonoMethod*, MethodId::Hash, MethodId::Equals> mMethods; 
 		mutable UnorderedMap<String, MonoField*> mFields; 
 		UnorderedMap<String, MonoProperty*> mProperties;
 
 		mutable bool mHasCachedFields;
 		mutable Vector<MonoField*> mCachedFieldList;
+
+		mutable bool mHasCachedMethods;
+		mutable Vector<MonoMethod*> mCachedMethodList;
 	};
 }

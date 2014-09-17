@@ -14,7 +14,6 @@ namespace BansheeEngine
 	class BS_MONO_EXPORT MonoMethod
 	{
 	public:
-		
 		/**
 		 * @brief	Invokes the method on the provided object instance. 
 		 *			This does not respect polymorphism and will invoke the exact method
@@ -56,21 +55,54 @@ namespace BansheeEngine
 		 */
 		String getName() const;
 
-
 		/**
 		 * @brief	Returns the type of the return value. Returns null if method
 		 *			has no return value.
 		 */
-		MonoClass* getReturnType();
+		MonoClass* getReturnType() const;
+
+		/**
+		 * @brief	Returns the number of parameters the method expects.
+		 */
+		UINT32 getNumParameters() const;
+
+		/**
+		 * @brief	Returns the type of the method parameter at the specified index.
+		 */
+		MonoClass* getParameterType(UINT32 paramIdx) const;
+
+		/**
+		 * @brief	Returns true if the method doesn't require a class instance.
+		 */
+		bool isStatic() const;
+
+		/**
+		 * @brief	Checks if method has an attribute of the specified type.
+		 */
+		 bool hasAttribute(MonoClass* monoClass) const;
+
+		/**
+		 * @brief	Returns an instance of an attribute of the specified type. Returns null
+		 *			if the method doesn't have such an attribute.
+		 */
+		MonoObject* getAttribute(MonoClass* monoClass) const;
 
 	private:
 		friend class MonoClass;
 		friend class MonoProperty;
 
 		MonoMethod(::MonoMethod* method);
+		~MonoMethod();
+
+		void cacheSignature() const;
 
 		::MonoMethod* mMethod;
-		MonoClass* mReturnType;
 		void* mThunk;
+
+		mutable MonoClass* mCachedReturnType;
+		mutable MonoClass** mCachedParameters;
+		mutable UINT32 mCachedNumParameters;
+		mutable bool mIsStatic;
+		mutable bool mHasCachedSignature;
 	};
 }

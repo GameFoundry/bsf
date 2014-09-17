@@ -23,6 +23,6 @@ namespace BansheeEngine
 
 	extern "C" BS_SCR_BED_EXPORT void unloadPlugin()
 	{
-		EditorScriptManager::shutDown();
+		ScriptGizmoManager::shutDown();
 	}
 }

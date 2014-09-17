@@ -5,6 +5,7 @@
 #include "BsMonoClass.h"
 #include "BsMonoMethod.h"
 #include "BsRuntimeScriptObjects.h"
+#include "BsScriptGizmoManager.h"
 #include "BsTime.h"
 #include "BsMath.h"
 
@@ -24,6 +25,8 @@ namespace BansheeEngine
 
 		RuntimeScriptObjects::instance().refreshScriptObjects(BansheeEditorAssemblyName);
 
+		ScriptGizmoManager::startUp(RuntimeScriptObjects::instance());
+
 		mProgramEdClass = mEditorAssembly->getClass("BansheeEditor", "ProgramEd");
 		mUpdateMethod = &mProgramEdClass->getMethod("EditorUpdate");
 
@@ -32,6 +35,11 @@ namespace BansheeEngine
 		// Initial update
 		mLastUpdateTime = gTime().getTime();
 		mUpdateMethod->invoke(nullptr, nullptr);
+	}
+
+	EditorScriptManager::~EditorScriptManager()
+	{
+		ScriptGizmoManager::shutDown();
 	}
 
 	void EditorScriptManager::update()
@@ -46,5 +54,7 @@ namespace BansheeEngine
 			INT32 numUpdates = Math::floorToInt(diff / EDITOR_UPDATE_RATE);
 			mLastUpdateTime += numUpdates * EDITOR_UPDATE_RATE;
 		}
+
+		ScriptGizmoManager::instance().update();
 	}
 }

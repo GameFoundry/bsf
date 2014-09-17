@@ -40,9 +40,9 @@ namespace BansheeEngine
 		pixelSolidPolygon(points, positionData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
 	}
 
-	void DrawHelper2D::pixelLine(const Vector2& a, const Vector2& b, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+	void DrawHelper2D::pixelLine(const Vector2& a, const Vector2& b, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
-		DrawHelperTemplate<Vector2>::pixelLine(a, b, color, meshData, vertexOffset, indexOffset);
+		DrawHelperTemplate<Vector2>::pixelLine(a, b, meshData, vertexOffset, indexOffset);
 	}
 
 	void DrawHelper2D::antialiasedLine(const Vector2& a, const Vector2& b, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
@@ -50,9 +50,9 @@ namespace BansheeEngine
 		DrawHelperTemplate<Vector2>::antialiasedLine(a, b, Vector2::ZERO, width, borderWidth, color, meshData, vertexOffset, indexOffset);
 	}
 
-	void DrawHelper2D::pixelLineList(const Vector<Vector2>& linePoints, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+	void DrawHelper2D::pixelLineList(const Vector<Vector2>& linePoints, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
-		DrawHelperTemplate<Vector2>::pixelLineList(linePoints, color, meshData, vertexOffset, indexOffset);
+		DrawHelperTemplate<Vector2>::pixelLineList(linePoints, meshData, vertexOffset, indexOffset);
 	}
 
 	void DrawHelper2D::antialiasedLineList(const Vector<Vector2>& linePoints, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
@@ -134,7 +134,12 @@ namespace BansheeEngine
 			actualB = normalizedCoordToClipSpace(b);
 		}
 
-		pixelLine(actualA, actualB, color, meshData, 0, 0);
+		auto colorIter = meshData->getDWORDDataIter(VES_COLOR);
+		RGBA rgba = color.getAsRGBA();
+		colorIter.addValue(rgba);
+		colorIter.addValue(rgba);
+
+		pixelLine(actualA, actualB, meshData, 0, 0);
 
 		HMesh mesh = Mesh::create(meshData, MeshBufferType::Static, DOT_LINE_LIST);
 
@@ -206,6 +211,12 @@ namespace BansheeEngine
 		MeshDataPtr meshData = bs_shared_ptr<MeshData, ScratchAlloc>(
 			(UINT32)(linePoints.size() * 2), (UINT32)(linePoints.size() * 2), mVertexDesc);
 
+		auto colorIter = meshData->getDWORDDataIter(VES_COLOR);
+		RGBA rgba = color.getAsRGBA();
+
+		for (UINT32 i = 0; i < (UINT32)linePoints.size(); i++)
+			colorIter.addValue(rgba);
+
 		if(coordType == DebugDrawCoordType::Normalized)
 		{
 			Vector<Vector2> points;
@@ -213,11 +224,11 @@ namespace BansheeEngine
 			for(UINT32 i = 0; i < numPoints; i++)
 				points.push_back(normalizedCoordToClipSpace(linePoints[i]));
 
-			pixelLineList(points, color, meshData, 0, 0);
+			pixelLineList(points, meshData, 0, 0);
 		}
 		else
 		{
-			pixelLineList(linePoints, color, meshData, 0, 0);
+			pixelLineList(linePoints, meshData, 0, 0);
 		}		
 
 		HMesh mesh = Mesh::create(meshData, MeshBufferType::Static, DOT_LINE_LIST);

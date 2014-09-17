@@ -278,6 +278,7 @@
     <ClInclude Include="Include\BsEditorWidgetLayout.h" />
     <ClInclude Include="Include\BsEditorWidgetLayoutRTTI.h" />
     <ClInclude Include="Include\BsEditorWidgetManager.h" />
+    <ClInclude Include="Include\BsGizmoManager.h" />
     <ClInclude Include="Include\BsGUIColor.h" />
     <ClInclude Include="Include\BsGUIColorField.h" />
     <ClInclude Include="Include\BsGUIFieldBase.h" />
@@ -340,6 +341,7 @@
     <ClCompile Include="Source\BsEditorWindow.cpp" />
     <ClCompile Include="Source\BsEditorWindowBase.cpp" />
     <ClCompile Include="Source\BsEditorWindowManager.cpp" />
+    <ClCompile Include="Source\BsGizmoManager.cpp" />
     <ClCompile Include="Source\BsGUIColor.cpp" />
     <ClCompile Include="Source\BsGUIColorField.cpp" />
     <ClCompile Include="Source\BsGUIDockSlider.cpp" />

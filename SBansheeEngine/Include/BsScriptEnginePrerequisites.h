@@ -54,6 +54,7 @@ namespace BansheeEngine
 	class ManagedSerializableFieldInfo;
 	class ManagedResource;
 	class ManagedResourceMetaData;
+	class RuntimeScriptObjects;
 
 	typedef GameObjectHandle<ManagedComponent> HManagedComponent;
 	typedef ResourceHandle<ManagedResource> HManagedResource;

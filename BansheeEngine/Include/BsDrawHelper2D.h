@@ -36,7 +36,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	DrawHelperTemplate::pixelLine
 		 */
-		void pixelLine(const Vector2& a, const Vector2& b, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
+		void pixelLine(const Vector2& a, const Vector2& b, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		/**
 		 * @copydoc	DrawHelperTemplate::antialiasedLine
@@ -46,7 +46,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	DrawHelperTemplate::pixelLineList
 		 */
-		void pixelLineList(const Vector<Vector2>& linePoints, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
+		void pixelLineList(const Vector<Vector2>& linePoints, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		/**
 		 * @copydoc	DrawHelperTemplate::antialiasedLineList

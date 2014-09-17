@@ -75,6 +75,12 @@
     <ClInclude Include="Include\BsScriptGUIFoldout.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsScriptGizmos.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptGizmoManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsScriptEditorPlugin.cpp">
@@ -135,6 +141,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsScriptGUIFoldout.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptGizmos.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptGizmoManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

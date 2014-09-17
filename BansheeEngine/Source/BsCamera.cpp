@@ -489,6 +489,111 @@ namespace BansheeEngine
 		mRecalcFrustumPlanes = true;
     }
 
+	Vector2I Camera::worldToScreenPoint(const Vector3& worldPoint) const
+	{
+		Vector2 clipPoint = worldToClipPoint(worldPoint);
+		return clipToScreenPoint(clipPoint);
+	}
+
+	Vector2 Camera::worldToClipPoint(const Vector3& worldPoint) const
+	{
+		Vector3 viewPoint = worldToViewPoint(worldPoint);
+		return viewToClipPoint(viewPoint);
+	}
+
+	Vector3 Camera::worldToViewPoint(const Vector3& worldPoint) const
+	{
+		return getViewMatrix().multiply3x4(worldPoint);
+	}
+
+	Vector3 Camera::screenToWorldPoint(const Vector2I& screenPoint) const
+	{
+		Vector2 clipPoint = screenToClipPoint(screenPoint);
+		return clipToWorldPoint(clipPoint);
+	}
+
+	Vector3 Camera::screenToViewPoint(const Vector2I& screenPoint) const
+	{
+		Vector2 clipPoint = screenToClipPoint(screenPoint);
+		return clipToViewPoint(clipPoint);
+	}
+
+	Vector2 Camera::screenToClipPoint(const Vector2I& screenPoint) const
+	{
+		Vector2 clipPoint;
+		clipPoint.x = (float)(((screenPoint.x - mViewport->getX()) / mViewport->getWidth()) * 2.0f - 1.0f);
+		clipPoint.y = (float)(((screenPoint.y - mViewport->getY()) / mViewport->getHeight()) * 2.0f - 1.0f);
+
+		return clipPoint;
+	}
+
+	Vector3 Camera::viewToWorldPoint(const Vector3& viewPoint) const
+	{
+		return getViewMatrix().inverseAffine().multiply3x4(viewPoint);
+	}
+
+	Vector2I Camera::viewToScreenPoint(const Vector3& viewPoint) const
+	{
+		Vector2 clipPoint = viewToClipPoint(viewPoint);
+		return clipToScreenPoint(clipPoint);
+	}
+
+	Vector2 Camera::viewToClipPoint(const Vector3& viewPoint) const
+	{
+		Vector4 projPoint = getProjectionMatrix().multiply(Vector4(viewPoint.x, viewPoint.y, viewPoint.z, 1.0f));
+
+		if (projPoint.w > 1e-7f)
+		{
+			float invW = 1.0f / projPoint.w;
+			projPoint.x *= invW;
+			projPoint.y *= invW;
+		}
+		else
+		{
+			projPoint.x = 0.0f;
+			projPoint.y = 0.0f;
+		}
+
+		return Vector2(projPoint.x, projPoint.y);
+	}
+
+	Vector3 Camera::clipToWorldPoint(const Vector2& clipPoint) const
+	{
+		Vector2I screenPoint = clipToScreenPoint(clipPoint);
+		return screenToWorldPoint(screenPoint);
+	}
+
+	Vector3 Camera::clipToViewPoint(const Vector2& clipPoint) const
+	{
+		Vector4 unprojPoint(clipPoint.x, clipPoint.y, 0.5f, 1.0f); // 0.5f arbitrary depth
+		unprojPoint = getProjectionMatrix().inverse().multiply(unprojPoint);
+
+		if (unprojPoint.w > 1e-7f)
+		{
+			float invW = 1.0f / unprojPoint.w;
+			unprojPoint.x *= invW;
+			unprojPoint.y *= invW;
+			unprojPoint.z *= invW;
+		}
+		else
+		{
+			unprojPoint.x = 0.0f;
+			unprojPoint.y = 0.0f;
+			unprojPoint.z = 0.0f;
+		}
+
+		return Vector3(unprojPoint.x, unprojPoint.y, unprojPoint.z);
+	}
+
+	Vector2I Camera::clipToScreenPoint(const Vector2& clipPoint) const
+	{
+		Vector2I screenPoint;
+		screenPoint.x = mViewport->getX() + (clipPoint.x + 1.0f) * mViewport->getWidth() * 0.5f;
+		screenPoint.y = mViewport->getY() + (clipPoint.y + 1.0f) * mViewport->getHeight() * 0.5f;
+
+		return screenPoint;
+	}
+
 	CameraProxyPtr Camera::_createProxy() const
 	{
 		CameraProxyPtr proxy = bs_shared_ptr<CameraProxy>();

@@ -262,13 +262,13 @@ namespace BansheeEngine
             }
         }
 
-        public static Quaternion RotateTowards(Quaternion from, Quaternion to, float maxDegelta)
+        public static Quaternion RotateTowards(Quaternion from, Quaternion to, Degree maxDeg)
         {
-            float num = Angle(from, to);
+            Degree num = Angle(from, to);
             if (num == 0.0f)
                 return to;
 
-            float t = MathEx.Min(1f, maxDegelta / num);
+            float t = MathEx.Min(1f, (float)(maxDeg / num));
             return Slerp(from, to, t);
         }
 
@@ -280,20 +280,17 @@ namespace BansheeEngine
             return copy;
         }
 
-        /**
-         * @note Returns angle in degrees.
-         */
-        public static float Angle(Quaternion a, Quaternion b)
+        public static Degree Angle(Quaternion a, Quaternion b)
         {
             return (MathEx.Acos(MathEx.Min(MathEx.Abs(Dot(a, b)), 1.0f)) * 2.0f * MathEx.Rad2Deg);
         }
 
-        public void ToAxisAngle(out Vector3 axis, out float angleDeg)
+        public void ToAxisAngle(out Vector3 axis, out Degree angle)
         {
             float fSqrLength = x*x+y*y+z*z;
 		    if (fSqrLength > 0.0f)
 		    {
-                angleDeg = 2.0f * MathEx.Acos(w) * MathEx.Rad2Deg;
+                angle = 2.0f * MathEx.Acos(w) * MathEx.Rad2Deg;
 			    float fInvLength = MathEx.InvSqrt(fSqrLength);
 			    axis.x = x*fInvLength;
 			    axis.y = y*fInvLength;
@@ -302,7 +299,7 @@ namespace BansheeEngine
 		    else
 		    {
 			    // Angle is 0, so any axis will do
-                angleDeg = 0.0f;
+                angle = 0.0f;
 			    axis.x = 1.0f;
 			    axis.y = 0.0f;
 			    axis.z = 0.0f;
@@ -381,7 +378,7 @@ namespace BansheeEngine
             return rotation.ToEulerAngles(order);
         }
 
-        public static void ToAxisAngle(Quaternion rotation, out Vector3 axis, out float angleDeg)
+        public static void ToAxisAngle(Quaternion rotation, out Vector3 axis, out Degree angleDeg)
         {
             rotation.ToAxisAngle(out axis, out angleDeg);
         }
@@ -435,11 +432,11 @@ namespace BansheeEngine
             return quat;
         }
 
-        public static Quaternion FromAxisAngle(Vector3 axis, float angleDeg)
+        public static Quaternion FromAxisAngle(Vector3 axis, Degree angleDeg)
         {
             Quaternion quat;
 
-            float halfAngle = (0.5f*angleDeg*MathEx.Deg2Rad);
+            float halfAngle = (float)(0.5f*angleDeg*MathEx.Deg2Rad);
             float sin = MathEx.Sin(halfAngle);
             quat.w = MathEx.Cos(halfAngle);
             quat.x = sin * axis.x;

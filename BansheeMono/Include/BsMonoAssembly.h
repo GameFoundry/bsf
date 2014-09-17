@@ -40,6 +40,11 @@ namespace BansheeEngine
 		virtual ~MonoAssembly();
 
 		/**
+		 * @brief	Returns the name of this assembly.
+		 */
+		const String& getName() const { return mName; }
+
+		/**
 	     * @brief	Attempts to find a managed class with the specified namespace and name
 		 *			in this assembly. Returns null if one cannot be found.
 	     */

@@ -232,6 +232,8 @@
     <ClInclude Include="Include\BsGUIResourceField.h" />
     <ClInclude Include="Include\BsScriptEditorPrerequisites.h" />
     <ClInclude Include="Include\BsScriptEditorWindow.h" />
+    <ClInclude Include="Include\BsScriptGizmoManager.h" />
+    <ClInclude Include="Include\BsScriptGizmos.h" />
     <ClInclude Include="Include\BsScriptGUIColorField.h" />
     <ClInclude Include="Include\BsScriptGUIFloatField.h" />
     <ClInclude Include="Include\BsScriptGUIComponentFoldout.h" />
@@ -254,6 +256,8 @@
     <ClCompile Include="Source\BsGUIResourceField.cpp" />
     <ClCompile Include="Source\BsScriptEditorPlugin.cpp" />
     <ClCompile Include="Source\BsScriptEditorWindow.cpp" />
+    <ClCompile Include="Source\BsScriptGizmoManager.cpp" />
+    <ClCompile Include="Source\BsScriptGizmos.cpp" />
     <ClCompile Include="Source\BsScriptGUIColorField.cpp" />
     <ClCompile Include="Source\BsScriptGUIFloatField.cpp" />
     <ClCompile Include="Source\BsScriptGUIComponentFoldout.cpp" />
