@@ -420,6 +420,11 @@ namespace BansheeEngine
 		 */
 		void makeView(const Vector3& position, const Quaternion& orientation, const Matrix4* reflectMatrix = nullptr);
 
+		/**
+		 * @brief	Creates an ortographic projection matrix.
+		 */
+		void makeProjectionOrtho(float left, float right, float top, float bottom, float near, float far);
+
 		static const Matrix4 ZERO;
 		static const Matrix4 IDENTITY;
     };

@@ -91,6 +91,7 @@ namespace BansheeEngine
 		RenderSystem& rs = RenderSystem::instance();
 		MeshBasePtr mesh;
 
+		// TODO: Instead of this lock consider just storing all needed data in MeshProxy and not referencing Mesh at all?
 		if (!meshProxy.mesh.expired())
 			mesh = meshProxy.mesh.lock();
 		else

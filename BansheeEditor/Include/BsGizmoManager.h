@@ -75,14 +75,64 @@ namespace BansheeEngine
 			HSpriteTexture texture;
 		};
 
+		struct IconRenderData
+		{
+			UINT32 count;
+			HTexture texture;
+		};
+
+		struct SolidMaterialData
+		{
+			HMaterial material;
+			
+			// Core
+			MaterialProxyPtr proxy;
+			GpuParamMat4 mViewProj;
+			GpuParamMat4 mViewIT;
+		};
+
+		struct WireMaterialData
+		{
+			HMaterial material;
+
+			// Core
+			MaterialProxyPtr proxy;
+			GpuParamMat4 mViewProj;
+		};
+
+		struct IconMaterialData
+		{
+			HMaterial material;
+
+			// Core
+			MaterialProxyPtr proxy;
+			GpuParamMat4 mViewProj;
+			GpuParamTexture mTexture;
+		};
+
+		typedef Vector<IconRenderData> IconRenderDataVec;
+		typedef std::shared_ptr<IconRenderDataVec> IconRenderDataVecPtr;
+
 		void buildSolidMesh();
 		void buildWireMesh();
-		void buildIconMesh();
+		IconRenderDataVecPtr buildIconMesh();
+
+		void coreRenderSolidGizmos(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr mesh);
+		void coreRenderWireGizmos(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr mesh);
+		void coreRenderIconGizmos(RectI screenArea, MeshProxyPtr mesh, IconRenderDataVecPtr renderData);
+
+		void limitIconSize(UINT32& width, UINT32& height);
+		void calculateIconColors(const Color& tint, const Camera& camera, UINT32 iconHeight, bool fixedScale,
+			Color& normalColor, Color& fadedColor);
+
+		void initializeCore();
 
 		static const UINT32 VERTEX_BUFFER_GROWTH;
 		static const UINT32 INDEX_BUFFER_GROWTH;
 		static const UINT32 SPHERE_QUALITY;
 		static const float MAX_ICON_RANGE;
+		static const UINT32 OPTIMAL_ICON_SIZE;
+		static const float ICON_TEXEL_WORLD_SIZE;
 
 		typedef Set<IconData, std::function<bool(const IconData&, const IconData&)>> IconSet;
 
@@ -115,9 +165,14 @@ namespace BansheeEngine
 		TransientMeshPtr mWireMesh;
 		TransientMeshPtr mIconMesh;
 
+		// Immutable
 		VertexDataDescPtr mSolidVertexDesc;
 		VertexDataDescPtr mWireVertexDesc;
 		VertexDataDescPtr mIconVertexDesc;
+
+		SolidMaterialData mSolidMaterial;
+		WireMaterialData mWireMaterial;
+		IconMaterialData mIconMaterial;
 
 		// Transient
 		struct SortedIconData

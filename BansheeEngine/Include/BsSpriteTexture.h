@@ -31,6 +31,16 @@ namespace BansheeEngine
 		static const HSpriteTexture& dummy();
 
 		/**
+		 * @brief	Returns width of the sprite texture in pixels.
+		 */
+		UINT32 getWidth() const;
+
+		/**
+		 * @brief	Returns height of the sprite texture in pixels.
+		 */
+		UINT32 getHeight() const;
+
+		/**
 		 * @brief	Creates a new sprite texture that references the entire area of the provided
 		 *			texture.
 		 */

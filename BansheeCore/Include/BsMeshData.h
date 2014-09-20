@@ -35,7 +35,7 @@ namespace BansheeEngine
 		 * @brief	Adds a new value to the iterators current position and
 		 *			advances the iterator.
 		 */
-		void addValue(T& value)
+		void addValue(const T& value)
 		{
 			setValue(value);
 			moveNext();
@@ -44,7 +44,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Sets a new value at the iterators current position.
 		 */
-		void setValue(T& value)
+		void setValue(const T& value)
 		{
 			memcpy(mData, &value, sizeof(T));
 		}

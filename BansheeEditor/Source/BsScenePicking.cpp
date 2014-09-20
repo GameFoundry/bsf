@@ -252,6 +252,8 @@ namespace BansheeEngine
 				md.mParamPickingWVP.set(renderable.wvpTransform);
 				md.mParamPickingColor.set(color);
 			}
+
+			Renderer::draw(*renderable.mesh);
 		}
 		rs.endFrame();
 

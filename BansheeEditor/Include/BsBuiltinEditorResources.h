@@ -35,6 +35,21 @@ namespace BansheeEngine
 		 */
 		HMaterial createPickingAlpha(CullingMode cullMode) const;
 
+		/**
+		 * @brief	Creates a material used for rendering wireframe gizmos.
+		 */
+		HMaterial createWireGizmoMat() const;
+
+		/**
+		 * @brief	Creates a material used for rendering solid gizmos.
+		 */
+		HMaterial createSolidGizmoMat() const;
+
+		/**
+		 * @brief	Creates a material used for rendering icon gizmos.
+		 */
+		HMaterial createIconGizmoMat() const;
+
 		static const String ObjectFieldStyleName;
 		static const String ObjectFieldLabelStyleName;
 		static const String ObjectFieldDropBtnStyleName;
@@ -86,6 +101,21 @@ namespace BansheeEngine
 		 */
 		void initPickingAlphaShader(CullingMode cullMode);
 
+		/**
+		 * @brief	Loads and compiles a shader used for rendering wireframe gizmos.
+		 */
+		void initWireGizmoShader();
+
+		/**
+		 * @brief	Loads and compiles a shader used for rendering solid gizmos.
+		 */
+		void initSolidGizmoShader();
+
+		/**
+		 * @brief	Loads and compiles a shader used for rendering icon gizmos.
+		 */
+		void initIconGizmoShader();
+
 		RenderSystemPlugin mRenderSystemPlugin;
 		WString mActiveShaderSubFolder;
 		String mActiveRenderSystem;
@@ -94,6 +124,9 @@ namespace BansheeEngine
 		ShaderPtr mShaderSceneGrid;
 		ShaderPtr mShaderPicking[3];
 		ShaderPtr mShaderPickingAlpha[3];
+		ShaderPtr mShaderGizmoSolid;
+		ShaderPtr mShaderGizmoWire;
+		ShaderPtr mShaderGizmoIcon;
 
 		GUISkin mSkin;
 
@@ -237,5 +270,13 @@ namespace BansheeEngine
 		static const WString PickingPSFile;
 		static const WString PickingAlphaVSFile;
 		static const WString PickingAlphaPSFile;
+		static const WString ShaderWireGizmoVSFile;
+		static const WString ShaderWireGizmoPSFile;
+		static const WString ShaderSolidGizmoVSFile;
+		static const WString ShaderSolidGizmoPSFile;
+		static const WString ShaderIconGizmo0VSFile;
+		static const WString ShaderIconGizmo0PSFile;
+		static const WString ShaderIconGizmo1VSFile;
+		static const WString ShaderIconGizmo1PSFile;
 	};
 }

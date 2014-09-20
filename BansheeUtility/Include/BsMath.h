@@ -333,6 +333,17 @@ namespace BansheeEngine
 		 */
 		static float fastATan1(float val);
 
+		/**
+		 * @brief	Interpolates between min and max. Returned value is in
+		 *			[0, 1] range where min = 0, max = 1 and 0.5 is the average
+		 *			of min and max.
+		 */
+		template <typename T>
+		static float lerp01(T val, T min, T max)
+		{
+			return clamp01((val - min) / std::max(max - min, 0.0001F));
+		}
+
         static const float POS_INFINITY;
         static const float NEG_INFINITY;
         static const float PI;

@@ -47,14 +47,24 @@ namespace BansheeEngine
 		todo.push(rootSO);
 
 		bool isParentSelected = false;
+		UINT32 parentSelectedPopIdx = 0;
 		
 		while (!todo.empty())
 		{
+			if (isParentSelected && parentSelectedPopIdx == (UINT32)todo.size())
+			{
+				isParentSelected = false;
+			}
+
 			HSceneObject curSO = todo.top();
 			todo.pop();
 
 			bool isSelected = dummyIsSelected(curSO);
-			bool isParentSelected = false; // TODO - Currently ignoring this
+			if (isSelected && !isParentSelected)
+			{
+				isParentSelected = true;
+				parentSelectedPopIdx = (UINT32)todo.size();
+			}
 
 			const Vector<HComponent>& components = curSO->getComponents();
 			for (auto& component : components)
@@ -67,9 +77,6 @@ namespace BansheeEngine
 					if (iterFind != mGizmoDrawers.end())
 					{
 						UINT32 flags = iterFind->second.flags;
-
-						// TODO - Check if gizmo is to be drawn only when selected
-						// TODO - Set pickable if needed
 
 						bool drawGizmo = false;
 						if (((flags & (UINT32)DrawGizmoFlags::Selected) != 0) && isSelected)
@@ -86,11 +93,8 @@ namespace BansheeEngine
 							bool pickable = (flags & (UINT32)DrawGizmoFlags::Pickable) != 0;
 							GizmoManager::instance().setPickable(pickable);
 
-							if ((flags & (UINT32)DrawGizmoFlags::Pickable) != 0)
-							{
-								void* params[1] = { managedComponent->getManagedInstance() };
-								iterFind->second.drawGizmosMethod->invoke(nullptr, params);
-							}
+							void* params[1] = { managedComponent->getManagedInstance() };
+							iterFind->second.drawGizmosMethod->invoke(nullptr, params);
 						}
 					}
 				}

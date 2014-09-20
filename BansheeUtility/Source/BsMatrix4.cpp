@@ -245,4 +245,32 @@ namespace BansheeEngine
 			*this = (*this) * (*reflectMatrix);
 		}
 	}
+
+	void Matrix4::makeProjectionOrtho(float left, float right, float bottom,
+		float top, float near, float far)
+	{
+		float deltaX = right - left;
+		float deltaY = top - bottom;
+		float deltaZ = far - near;
+
+		m[0][0] = 2.0F / deltaX;
+		m[0][1] = 0.0f;
+		m[0][2] = 0.0f;
+		m[0][3] = -(right + left) / deltaX;
+
+		m[1][0] = 0.0f;
+		m[1][1] = 2.0F / deltaY;
+		m[1][2] = 0.0f;
+		m[1][3] = -(top + bottom) / deltaY;
+
+		m[2][0] = 0.0f;
+		m[2][1] = 0.0f;
+		m[2][2] = -2.0F / deltaZ;
+		m[2][3] = -(far + near) / deltaZ;
+
+		m[3][0] = 0.0f;
+		m[3][1] = 0.0f;
+		m[3][2] = 0.0f;
+		m[3][3] = 1.0f;
+	}
 }

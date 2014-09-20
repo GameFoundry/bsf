@@ -33,6 +33,16 @@ namespace BansheeEngine
 		return tex != nullptr && tex.isLoaded() && tex->getTexture() != nullptr && tex.isLoaded();
 	}
 
+	UINT32 SpriteTexture::getWidth() const
+	{
+		return Math::roundToInt(mAtlasTexture->getWidth() * mUVScale.x);
+	}
+
+	UINT32 SpriteTexture::getHeight() const
+	{
+		return Math::roundToInt(mAtlasTexture->getHeight() * mUVScale.y);
+	}
+
 	HSpriteTexture SpriteTexture::create(const HTexture& texture)
 	{
 		SpriteTexturePtr texturePtr = bs_core_ptr<SpriteTexture, PoolAlloc>
