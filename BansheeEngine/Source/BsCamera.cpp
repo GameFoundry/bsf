@@ -588,8 +588,8 @@ namespace BansheeEngine
 	Vector2I Camera::clipToScreenPoint(const Vector2& clipPoint) const
 	{
 		Vector2I screenPoint;
-		screenPoint.x = mViewport->getX() + (clipPoint.x + 1.0f) * mViewport->getWidth() * 0.5f;
-		screenPoint.y = mViewport->getY() + (clipPoint.y + 1.0f) * mViewport->getHeight() * 0.5f;
+		screenPoint.x = Math::roundToInt(mViewport->getX() + (clipPoint.x + 1.0f) * mViewport->getWidth() * 0.5f);
+		screenPoint.y = Math::roundToInt(mViewport->getY() + (clipPoint.y + 1.0f) * mViewport->getHeight() * 0.5f);
 
 		return screenPoint;
 	}

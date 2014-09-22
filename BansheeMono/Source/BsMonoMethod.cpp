@@ -9,7 +9,7 @@ namespace BansheeEngine
 		:mMethod(method), mCachedReturnType(nullptr), mCachedParameters(nullptr), 
 		mCachedNumParameters(0), mIsStatic(false), mHasCachedSignature(false)
 	{
-		mThunk = mono_method_get_unmanaged_thunk(mMethod);
+
 	}
 
 	MonoMethod::~MonoMethod()
@@ -40,7 +40,7 @@ namespace BansheeEngine
 
 	void* MonoMethod::getThunk() const
 	{
-		return mThunk;
+		return mono_method_get_unmanaged_thunk(mMethod);
 	}
 
 	String MonoMethod::getName() const

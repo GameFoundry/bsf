@@ -124,6 +124,18 @@ namespace BansheeEngine
             return a.value != b.value;
         }
 
+        public override bool Equals(object other)
+        {
+            if (!(other is Degree))
+                return false;
+
+            Degree degree = (Degree)other;
+            if (value.Equals(degree.value))
+                return true;
+
+            return false;
+        }
+
         public override int GetHashCode()
         {
             return value.GetHashCode();

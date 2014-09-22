@@ -5,6 +5,7 @@
 #include "BsColor.h"
 #include "BsVector2I.h"
 #include "BsMatrix4.h"
+#include "BsGpuParam.h"
 
 namespace BansheeEngine
 {

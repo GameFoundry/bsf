@@ -1099,14 +1099,14 @@ namespace BansheeEngine
 			{ PickingPSFile,			"main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"glsl", GLSLShaderSubFolder },
 			{ PickingAlphaVSFile,		"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
 			{ PickingAlphaPSFile,		"main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"glsl", GLSLShaderSubFolder },
-			{ ShaderWireGizmoVSFile,	"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", GLSLShaderSubFolder },
-			{ ShaderWireGizmoPSFile,	"main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"hlsl", GLSLShaderSubFolder },
-			{ ShaderSolidGizmoVSFile,	"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", GLSLShaderSubFolder },
-			{ ShaderSolidGizmoPSFile,	"main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"hlsl", GLSLShaderSubFolder },
-			{ ShaderIconGizmo0VSFile,	"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", GLSLShaderSubFolder },
-			{ ShaderIconGizmo0PSFile,	"main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"hlsl", GLSLShaderSubFolder },
-			{ ShaderIconGizmo1VSFile,	"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", GLSLShaderSubFolder },
-			{ ShaderIconGizmo1PSFile,	"main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"hlsl", GLSLShaderSubFolder },
+			{ ShaderWireGizmoVSFile,	"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
+			{ ShaderWireGizmoPSFile,	"main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"glsl", GLSLShaderSubFolder },
+			{ ShaderSolidGizmoVSFile,	"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
+			{ ShaderSolidGizmoPSFile,	"main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"glsl", GLSLShaderSubFolder },
+			{ ShaderIconGizmo0VSFile,	"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
+			{ ShaderIconGizmo0PSFile,	"main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"glsl", GLSLShaderSubFolder },
+			{ ShaderIconGizmo1VSFile,	"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
+			{ ShaderIconGizmo1PSFile,	"main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"glsl", GLSLShaderSubFolder },
 		};
 
 		if (FileSystem::exists(DefaultSkinFolderRaw))

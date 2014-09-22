@@ -124,6 +124,18 @@ namespace BansheeEngine
             return a.value != b.value;
         }
 
+        public override bool Equals(object other)
+        {
+            if (!(other is Radian))
+                return false;
+
+            Radian radian = (Radian)other;
+            if (value.Equals(radian.value))
+                return true;
+
+            return false;
+        }
+
         public override int GetHashCode()
         {
             return value.GetHashCode();

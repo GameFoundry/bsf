@@ -20,42 +20,42 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_DrawIcon", &ScriptGizmos::internal_DrawIcon);
 	}
 
-	void internal_SetColor(Color color)
+	void ScriptGizmos::internal_SetColor(Color color)
 	{
 		GizmoManager::instance().setColor(color);
 	}
 
-	void internal_SetTransform(Matrix4 transform)
+	void ScriptGizmos::internal_SetTransform(Matrix4 transform)
 	{
 		GizmoManager::instance().setTransform(transform);
 	}
 
-	void internal_DrawCube(Vector3 position, Vector3 extents)
+	void ScriptGizmos::internal_DrawCube(Vector3 position, Vector3 extents)
 	{
 		GizmoManager::instance().drawCube(position, extents);
 	}
 
-	void internal_DrawSphere(Vector3 position, float radius)
+	void ScriptGizmos::internal_DrawSphere(Vector3 position, float radius)
 	{
 		GizmoManager::instance().drawSphere(position, radius);
 	}
 
-	void internal_DrawWireCube(Vector3 position, Vector3 extents)
+	void ScriptGizmos::internal_DrawWireCube(Vector3 position, Vector3 extents)
 	{
 		GizmoManager::instance().drawWireCube(position, extents);
 	}
 
-	void internal_DrawWireSphere(Vector3 position, float radius)
+	void ScriptGizmos::internal_DrawWireSphere(Vector3 position, float radius)
 	{
 		GizmoManager::instance().drawWireSphere(position, radius);
 	}
 
-	void internal_DrawLine(Vector3 start, Vector3 end)
+	void ScriptGizmos::internal_DrawLine(Vector3 start, Vector3 end)
 	{
 		GizmoManager::instance().drawLine(start, end);
 	}
 
-	void internal_DrawFrustum(Vector3 position, float aspect, Degree FOV, float near, float far)
+	void ScriptGizmos::internal_DrawFrustum(Vector3 position, float aspect, Degree FOV, float near, float far)
 	{
 		GizmoManager::instance().drawFrustum(position, aspect, FOV, near, far);
 	}

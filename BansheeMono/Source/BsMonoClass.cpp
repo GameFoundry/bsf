@@ -7,6 +7,7 @@
 #include "BsUtil.h"
 #include "BsException.h"
 #include <mono/metadata/debug-helpers.h>
+#include "BsDebug.h"
 
 namespace BansheeEngine
 {
@@ -195,11 +196,11 @@ namespace BansheeEngine
 		while (curClassMethod != nullptr)
 		{
 			MonoMethodSignature* sig = mono_method_signature(curClassMethod);
-			const char* sigDesc = mono_signature_get_desc(sig, true);
+
+			const char* sigDesc = mono_signature_get_desc(sig, false);
 			const char* methodName = mono_method_get_name(curClassMethod);
 
 			MonoMethod* curMethod = getMethodExact(methodName, sigDesc);
-
 			mCachedMethodList.push_back(curMethod);
 
 			curClassMethod = mono_class_get_methods(mClass, &iter);

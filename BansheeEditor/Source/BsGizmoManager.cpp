@@ -539,7 +539,7 @@ namespace BansheeEngine
 			Color normalColor, fadedColor;
 			calculateIconColors(iconData.color, *mCamera.get(), iconHeight, iconData.fixedScale, normalColor, fadedColor);
 
-			Vector3 position(sortedIconData.screenPosition.x, sortedIconData.screenPosition.y, sortedIconData.distance);
+			Vector3 position((float)sortedIconData.screenPosition.x, (float)sortedIconData.screenPosition.y, sortedIconData.distance);
 			// TODO - Does the depth need to be corrected since it was taken from a projective camera (probably)?
 
 			float halfWidth = iconWidth * 0.5f;
@@ -602,8 +602,8 @@ namespace BansheeEngine
 		if (width <= OPTIMAL_ICON_SIZE && height <= OPTIMAL_ICON_SIZE)
 			return;
 
-		float relWidth = OPTIMAL_ICON_SIZE / width;
-		float relHeight = OPTIMAL_ICON_SIZE / height;
+		float relWidth = OPTIMAL_ICON_SIZE / (float)width;
+		float relHeight = OPTIMAL_ICON_SIZE / (float)height;
 
 		float scale = std::min(relWidth, relHeight);
 

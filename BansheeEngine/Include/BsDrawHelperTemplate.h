@@ -94,7 +94,7 @@ namespace BansheeEngine
 			assert((vertexOffset + 2) <= meshData->getNumVertices());
 			assert((indexOffset + 2) <= meshData->getNumIndices());
 
-			pixelLine(a, b, color, positionData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
+			pixelLine(a, b, positionData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
 		}
 
 		/**
@@ -161,7 +161,7 @@ namespace BansheeEngine
 			UINT32 numPoints = (UINT32)linePoints.size();
 			for(UINT32 i = 0; i < numPoints; i += 2)
 			{
-				pixelLine(linePoints[i], linePoints[i + 1], color, positionData, curVertOffset, meshData->getVertexDesc()->getVertexStride(), indexData, curIdxOffset);
+				pixelLine(linePoints[i], linePoints[i + 1], positionData, curVertOffset, meshData->getVertexDesc()->getVertexStride(), indexData, curIdxOffset);
 
 				curVertOffset += 2;
 				curIdxOffset += 2;
@@ -228,7 +228,6 @@ namespace BansheeEngine
 			UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
 		{
 			outVertices += (vertexOffset * vertexStride);
-			outColors += (vertexOffset * vertexStride);
 
 			T* vertices = (T*)outVertices;
 			(*vertices) = a;

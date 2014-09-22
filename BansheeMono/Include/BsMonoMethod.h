@@ -14,6 +14,8 @@ namespace BansheeEngine
 	class BS_MONO_EXPORT MonoMethod
 	{
 	public:
+		~MonoMethod();
+
 		/**
 		 * @brief	Invokes the method on the provided object instance. 
 		 *			This does not respect polymorphism and will invoke the exact method
@@ -92,12 +94,10 @@ namespace BansheeEngine
 		friend class MonoProperty;
 
 		MonoMethod(::MonoMethod* method);
-		~MonoMethod();
 
 		void cacheSignature() const;
 
 		::MonoMethod* mMethod;
-		void* mThunk;
 
 		mutable MonoClass* mCachedReturnType;
 		mutable MonoClass** mCachedParameters;
