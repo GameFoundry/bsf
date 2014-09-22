@@ -148,6 +148,8 @@ namespace BansheeEngine
 			Matrix4 worldTransform = so->getWorldTfrm();
 			worldBounds.transformAffine(worldTransform);
 
+			// TODO - I could limit the frustum to the visible area we're rendering for a speed boost
+			// but this is unlikely to be a performance bottleneck
 			const ConvexVolume& frustum = cam->getWorldFrustum();
 			if (frustum.intersects(worldBounds.getSphere()))
 			{
@@ -177,8 +179,22 @@ namespace BansheeEngine
 						else
 							meshProxy = mesh->_getActiveProxy(i);
 
+						HTexture mainTexture;
+						if (useAlphaShader)
+						{
+							const Map<String, SHADER_OBJECT_PARAM_DESC>& objectParams = originalMat->getShader()->_getObjectParams();
+							for (auto& objectParam : objectParams)
+							{
+								if (objectParam.second.rendererSemantic == RPS_MainTex)
+								{
+									mainTexture = originalMat->getTexture(objectParam.first);
+									break;
+								}
+							}
+						}
+
 						idxToRenderable[idx] = renderable;
-						pickData.insert({ meshProxy, idx, worldTransform, useAlphaShader, cullMode });
+						pickData.insert({ meshProxy, idx, worldTransform, useAlphaShader, cullMode, mainTexture });
 					}
 				}
 			}
@@ -245,7 +261,7 @@ namespace BansheeEngine
 			{
 				md.mParamPickingAlphaWVP.set(renderable.wvpTransform);
 				md.mParamPickingAlphaColor.set(color);
-				md.mParamPickingAlphaTexture.set(HTexture()); // TODO - Get main texture from original
+				md.mParamPickingAlphaTexture.set(renderable.mainTexture);
 			}
 			else
 			{

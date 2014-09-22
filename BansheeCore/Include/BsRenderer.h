@@ -28,7 +28,8 @@ namespace BansheeEngine
 		// 0 - Reserved
 		RPS_WorldViewProjTfrm = 1,
 		RPS_ViewProjTfrm = 2,
-		RPS_WorldTfrm = 3
+		RPS_WorldTfrm = 3,
+		RPS_MainTex = 4
 	};
 
 	/**

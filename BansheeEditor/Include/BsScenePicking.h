@@ -31,6 +31,7 @@ namespace BansheeEngine
 			Matrix4 wvpTransform;
 			bool alpha;
 			CullingMode cullMode;
+			HTexture mainTexture;
 		};
 
 		struct MaterialData
