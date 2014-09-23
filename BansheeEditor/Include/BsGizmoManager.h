@@ -31,6 +31,8 @@ namespace BansheeEngine
 		void drawIcon(Vector3 position, HSpriteTexture image, bool fixedScale);
 
 		void update();
+		void render();
+		void renderForPicking(std::function<Color(UINT32)> idxToColorCallback);
 		void clearGizmos();
 
 	private:
@@ -111,16 +113,40 @@ namespace BansheeEngine
 			GpuParamTexture mTexture;
 		};
 
+		struct PickingMaterialData
+		{
+			HMaterial material;
+
+			// Core
+			MaterialProxyPtr proxy;
+			GpuParamMat4 mViewProj;
+		};
+
+		struct AlphaPickingMaterialData
+		{
+			HMaterial material;
+
+			// Core
+			MaterialProxyPtr proxy;
+			GpuParamMat4 mViewProj;
+			GpuParamTexture mTexture;
+		};
+
 		typedef Vector<IconRenderData> IconRenderDataVec;
 		typedef std::shared_ptr<IconRenderDataVec> IconRenderDataVecPtr;
 
-		void buildSolidMesh();
-		void buildWireMesh();
-		IconRenderDataVecPtr buildIconMesh();
+		TransientMeshPtr buildSolidMesh(const Vector<CubeData>& cubeData, const Vector<SphereData>& sphereData,
+			UINT32 numVertices, UINT32 numIndices);
+		TransientMeshPtr buildWireMesh(const Vector<CubeData>& cubeData, const Vector<SphereData>& sphereData,
+			const Vector<LineData>& lineData, const Vector<FrustumData>& frustumData, UINT32 numVertices, UINT32 numIndices);
+		TransientMeshPtr buildIconMesh(const Vector<IconData>& iconData, bool pickingOnly, IconRenderDataVecPtr& renderData);
 
 		void coreRenderSolidGizmos(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr mesh);
 		void coreRenderWireGizmos(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr mesh);
 		void coreRenderIconGizmos(RectI screenArea, MeshProxyPtr mesh, IconRenderDataVecPtr renderData);
+
+		void coreRenderGizmosForPicking(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr mesh);
+		void coreRenderIconGizmosForPicking(RectI screenArea, MeshProxyPtr mesh, IconRenderDataVecPtr renderData);
 
 		void limitIconSize(UINT32& width, UINT32& height);
 		void calculateIconColors(const Color& tint, const Camera& camera, UINT32 iconHeight, bool fixedScale,
@@ -134,6 +160,7 @@ namespace BansheeEngine
 		static const float MAX_ICON_RANGE;
 		static const UINT32 OPTIMAL_ICON_SIZE;
 		static const float ICON_TEXEL_WORLD_SIZE;
+		static const float PICKING_ALPHA_CUTOFF;
 
 		typedef Set<IconData, std::function<bool(const IconData&, const IconData&)>> IconSet;
 
@@ -166,6 +193,8 @@ namespace BansheeEngine
 		TransientMeshPtr mWireMesh;
 		TransientMeshPtr mIconMesh;
 
+		IconRenderDataVecPtr mIconRenderData;
+
 		// Immutable
 		VertexDataDescPtr mSolidVertexDesc;
 		VertexDataDescPtr mWireVertexDesc;
@@ -174,6 +203,9 @@ namespace BansheeEngine
 		SolidMaterialData mSolidMaterial;
 		WireMaterialData mWireMaterial;
 		IconMaterialData mIconMaterial;
+
+		PickingMaterialData mPickingMaterial;
+		AlphaPickingMaterialData mAlphaPickingMaterial;
 
 		// Transient
 		struct SortedIconData

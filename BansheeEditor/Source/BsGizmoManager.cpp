@@ -23,6 +23,7 @@ namespace BansheeEngine
 	const float GizmoManager::MAX_ICON_RANGE = 500.0f;
 	const UINT32 GizmoManager::OPTIMAL_ICON_SIZE = 64;
 	const float GizmoManager::ICON_TEXEL_WORLD_SIZE = 0.05f;
+	const float GizmoManager::PICKING_ALPHA_CUTOFF = 0.5f;
 
 	GizmoManager::GizmoManager(const HCamera& camera)
 		:mTotalRequiredSolidIndices(0), mTotalRequiredSolidVertices(0),
@@ -50,10 +51,14 @@ namespace BansheeEngine
 		mSolidMaterial.material = BuiltinEditorResources::instance().createSolidGizmoMat();
 		mWireMaterial.material = BuiltinEditorResources::instance().createWireGizmoMat();
 		mIconMaterial.material = BuiltinEditorResources::instance().createIconGizmoMat();
+		mPickingMaterial.material = BuiltinEditorResources::instance().createGizmoPickingMat();
+		mAlphaPickingMaterial.material = BuiltinEditorResources::instance().createAlphaGizmoPickingMat();
 
 		mSolidMaterial.proxy = mSolidMaterial.material->_createProxy();
 		mWireMaterial.proxy = mWireMaterial.material->_createProxy();
 		mIconMaterial.proxy = mIconMaterial.material->_createProxy();
+		mPickingMaterial.proxy = mPickingMaterial.material->_createProxy();
+		mAlphaPickingMaterial.proxy = mAlphaPickingMaterial.material->_createProxy();
 
 		gCoreAccessor().queueCommand(std::bind(&GizmoManager::initializeCore, this));
 	}
@@ -99,6 +104,28 @@ namespace BansheeEngine
 			GpuParamsPtr fragParams = proxy->params[proxy->passes[0].fragmentProgParamsIdx];
 
 			fragParams->getTextureParam("mainTexture", mIconMaterial.mTexture);
+		}
+
+		{
+			MaterialProxyPtr proxy = mPickingMaterial.proxy;
+			GpuParamsPtr vertParams = proxy->params[proxy->passes[0].vertexProgParamsIdx];
+
+			vertParams->getParam("matViewProj", mPickingMaterial.mViewProj);
+		}
+
+		{
+			MaterialProxyPtr proxy = mAlphaPickingMaterial.proxy;
+			GpuParamsPtr vertParams = proxy->params[proxy->passes[0].vertexProgParamsIdx];
+
+			vertParams->getParam("matViewProj", mAlphaPickingMaterial.mViewProj);
+
+			GpuParamsPtr fragParams = proxy->params[proxy->passes[0].fragmentProgParamsIdx];
+
+			fragParams->getTextureParam("mainTexture", mAlphaPickingMaterial.mTexture);
+
+			GpuParamFloat alphaCutoffParam;
+			fragParams->getParam("alphaCutoff", alphaCutoffParam);
+			alphaCutoffParam.set(PICKING_ALPHA_CUTOFF);
 		}
 	}
 
@@ -243,11 +270,25 @@ namespace BansheeEngine
 
 	void GizmoManager::update()
 	{
-		buildSolidMesh();
-		buildWireMesh();
-		IconRenderDataVecPtr iconRenderData = buildIconMesh();
+		if (mSolidMesh != nullptr)
+			mSolidMeshHeap->dealloc(mSolidMesh);
 
-		// TODO - This must be rendered while Scene view is being rendered
+		if (mWireMesh != nullptr)
+			mWireMeshHeap->dealloc(mWireMesh);
+
+		if (mIconMesh != nullptr)
+			mIconMeshHeap->dealloc(mIconMesh);
+
+		mSolidMesh = buildSolidMesh(mSolidCubeData, mSolidSphereData, mTotalRequiredSolidVertices, mTotalRequiredSolidIndices);
+		mWireMesh = buildWireMesh(mWireCubeData, mWireSphereData, mLineData, mFrustumData, mTotalRequiredWireVertices, mTotalRequiredWireIndices);
+		mIconMesh = buildIconMesh(mIconData, false, mIconRenderData);
+
+		clearGizmos();
+	}
+
+	void GizmoManager::render()
+	{
+		// Note: This must be rendered while Scene view is being rendered
 		Matrix4 viewMat = mCamera->getViewMatrix();
 		Matrix4 projMat = mCamera->getProjectionMatrix();
 		ViewportPtr viewport = mCamera->getViewport();
@@ -261,7 +302,67 @@ namespace BansheeEngine
 		RectI screenArea = mCamera->getViewport()->getArea();
 
 		gCoreAccessor().queueCommand(std::bind(&GizmoManager::coreRenderIconGizmos, 
-			this, screenArea, mIconMesh->_createProxy(0), iconRenderData));
+			this, screenArea, mIconMesh->_createProxy(0), mIconRenderData));
+	}
+
+	void GizmoManager::renderForPicking(std::function<Color(UINT32)> idxToColorCallback)
+	{
+		Vector<CubeData> solidCubeData = mSolidCubeData;
+		Vector<CubeData> wireCubeData = mWireCubeData;
+		Vector<SphereData> solidSphereData = mSolidSphereData;
+		Vector<SphereData> wireSphereData = mWireSphereData;
+		Vector<LineData> lineData = mLineData;
+		Vector<FrustumData> frustumData = mFrustumData;
+		Vector<IconData> iconData = mIconData;
+		IconRenderDataVecPtr iconRenderData;
+
+		UINT32 gizmoIdx = 0; // TODO - Since I need to be able to quickly access gizmo data per ID i'll probably want to assign this when they're initially added and used an unordered map
+		for (auto& cubeDataEntry : solidCubeData)
+			cubeDataEntry.color = idxToColorCallback(gizmoIdx++);
+
+		for (auto& cubeDataEntry : wireCubeData)
+			cubeDataEntry.color = idxToColorCallback(gizmoIdx++);
+
+		for (auto& sphereDataEntry : solidSphereData)
+			sphereDataEntry.color = idxToColorCallback(gizmoIdx++);
+
+		for (auto& sphereDataEntry : wireSphereData)
+			sphereDataEntry.color = idxToColorCallback(gizmoIdx++);
+
+		for (auto& lineDataEntry : lineData)
+			lineDataEntry.color = idxToColorCallback(gizmoIdx++);
+
+		for (auto& iconDataEntry : iconData)
+			iconDataEntry.color = idxToColorCallback(gizmoIdx++);
+
+		TransientMeshPtr solidMesh = buildSolidMesh(solidCubeData, solidSphereData, mTotalRequiredSolidVertices, mTotalRequiredSolidIndices);
+		TransientMeshPtr wireMesh = buildWireMesh(wireCubeData, wireSphereData, lineData, frustumData, mTotalRequiredWireVertices, mTotalRequiredWireIndices);
+		TransientMeshPtr iconMesh = buildIconMesh(iconData, true, iconRenderData);
+
+		// Note: This must be rendered while Scene view is being rendered
+		Matrix4 viewMat = mCamera->getViewMatrix();
+		Matrix4 projMat = mCamera->getProjectionMatrix();
+		ViewportPtr viewport = mCamera->getViewport();
+
+		gCoreAccessor().queueCommand(std::bind(&GizmoManager::coreRenderGizmosForPicking,
+			this, viewMat, projMat, solidMesh->_createProxy(0)));
+
+		gCoreAccessor().queueCommand(std::bind(&GizmoManager::coreRenderGizmosForPicking,
+			this, viewMat, projMat, wireMesh->_createProxy(0)));
+
+		RectI screenArea = mCamera->getViewport()->getArea();
+
+		gCoreAccessor().queueCommand(std::bind(&GizmoManager::coreRenderIconGizmosForPicking,
+			this, screenArea, iconMesh->_createProxy(0), iconRenderData));
+
+		if (solidMesh != nullptr)
+			mSolidMeshHeap->dealloc(solidMesh);
+
+		if (wireMesh != nullptr)
+			mWireMeshHeap->dealloc(wireMesh);
+
+		if (iconMesh != nullptr)
+			mIconMeshHeap->dealloc(iconMesh);
 	}
 
 	void GizmoManager::clearGizmos()
@@ -280,9 +381,10 @@ namespace BansheeEngine
 		mTotalRequiredWireIndices = 0;
 	}
 
-	void GizmoManager::buildSolidMesh()
+	TransientMeshPtr GizmoManager::buildSolidMesh(const Vector<CubeData>& cubeData, const Vector<SphereData>& sphereData,
+		UINT32 numVertices, UINT32 numIndices)
 	{
-		MeshDataPtr meshData = bs_shared_ptr<MeshData>(mTotalRequiredSolidVertices, mTotalRequiredSolidIndices, mSolidVertexDesc);
+		MeshDataPtr meshData = bs_shared_ptr<MeshData>(numVertices, numIndices, mSolidVertexDesc);
 
 		UINT32 curVertexOffset = 0;
 		UINT32 curIndexOffet = 0;
@@ -291,7 +393,7 @@ namespace BansheeEngine
 		auto normalIter = meshData->getVec3DataIter(VES_NORMAL);
 		auto colorIter = meshData->getDWORDDataIter(VES_COLOR);
 
-		for (auto& cubeData : mSolidCubeData)
+		for (auto& cubeData : cubeData)
 		{
 			AABox box(cubeData.position - cubeData.extents, cubeData.position + cubeData.extents);
 			DrawHelper3D::instance().solidAABox(box, meshData, curVertexOffset, curIndexOffet); // TODO - These should be static methods
@@ -317,7 +419,7 @@ namespace BansheeEngine
 		UINT32 numSphereVertices, numSphereIndices;
 		DrawHelper3D::getNumElementsSphere(SPHERE_QUALITY, numSphereVertices, numSphereIndices);
 
-		for (auto& sphereData : mSolidSphereData)
+		for (auto& sphereData : sphereData)
 		{
 			Sphere sphere(sphereData.position, sphereData.radius);
 			DrawHelper3D::instance().solidSphere(sphere, meshData, curVertexOffset, curIndexOffet, SPHERE_QUALITY);
@@ -339,15 +441,13 @@ namespace BansheeEngine
 			curIndexOffet += numSphereIndices;
 		}
 
-		if (mSolidMesh != nullptr)
-			mSolidMeshHeap->dealloc(mSolidMesh);
-
-		mSolidMesh = mSolidMeshHeap->alloc(meshData, DOT_TRIANGLE_LIST);
+		return mSolidMeshHeap->alloc(meshData, DOT_TRIANGLE_LIST);
 	}
 
-	void GizmoManager::buildWireMesh()
+	TransientMeshPtr GizmoManager::buildWireMesh(const Vector<CubeData>& cubeData, const Vector<SphereData>& sphereData,
+		const Vector<LineData>& lineData, const Vector<FrustumData>& frustumData, UINT32 numVertices, UINT32 numIndices)
 	{
-		MeshDataPtr meshData = bs_shared_ptr<MeshData>(mTotalRequiredWireVertices, mTotalRequiredWireIndices, mWireVertexDesc);
+		MeshDataPtr meshData = bs_shared_ptr<MeshData>(numVertices, numIndices, mWireVertexDesc);
 
 		UINT32 curVertexOffset = 0;
 		UINT32 curIndexOffet = 0;
@@ -355,7 +455,7 @@ namespace BansheeEngine
 		auto positionIter = meshData->getVec3DataIter(VES_POSITION);
 		auto colorIter = meshData->getDWORDDataIter(VES_COLOR);
 
-		for (auto& cubeData : mWireCubeData)
+		for (auto& cubeData : cubeData)
 		{
 			AABox box(cubeData.position - cubeData.extents, cubeData.position + cubeData.extents);
 			DrawHelper3D::instance().wireAABox(box, meshData, curVertexOffset, curIndexOffet); // TODO - These should be static methods
@@ -378,7 +478,7 @@ namespace BansheeEngine
 		UINT32 numSphereVertices, numSphereIndices;
 		DrawHelper3D::getNumElementsWireSphere(SPHERE_QUALITY, numSphereVertices, numSphereIndices);
 
-		for (auto& sphereData : mWireSphereData)
+		for (auto& sphereData : sphereData)
 		{
 			Sphere sphere(sphereData.position, sphereData.radius);
 			DrawHelper3D::instance().wireSphere(sphere, meshData, curVertexOffset, curIndexOffet, SPHERE_QUALITY);
@@ -396,7 +496,7 @@ namespace BansheeEngine
 			curIndexOffet += numSphereIndices;
 		}
 
-		for (auto& lineData : mLineData)
+		for (auto& lineData : lineData)
 		{
 			DrawHelper3D::instance().pixelLine(lineData.start, lineData.end, meshData, curVertexOffset, curIndexOffet);
 
@@ -413,7 +513,7 @@ namespace BansheeEngine
 			curIndexOffet += 2;
 		}
 
-		for (auto& frustumData : mFrustumData)
+		for (auto& frustumData : frustumData)
 		{
 			DrawHelper3D::instance().wireFrustum(frustumData.aspect, frustumData.FOV, frustumData.near, 
 				frustumData.far, meshData, curVertexOffset, curIndexOffet);
@@ -431,18 +531,15 @@ namespace BansheeEngine
 			curIndexOffet += 24;
 		}
 
-		if (mWireMesh != nullptr)
-			mWireMeshHeap->dealloc(mWireMesh);
-
-		mWireMesh = mWireMeshHeap->alloc(meshData, DOT_LINE_LIST);
+		return mWireMeshHeap->alloc(meshData, DOT_LINE_LIST);
 	}
 
-	GizmoManager::IconRenderDataVecPtr GizmoManager::buildIconMesh()
+	TransientMeshPtr GizmoManager::buildIconMesh(const Vector<IconData>& iconData, bool pickingOnly, GizmoManager::IconRenderDataVecPtr& iconRenderData)
 	{
 		mSortedIconData.clear();
 		
-		if (mIconData.size() > mSortedIconData.size())
-			mSortedIconData.resize(mIconData.size());
+		if (iconData.size() > mSortedIconData.size())
+			mSortedIconData.resize(iconData.size());
 
 		UINT32 i = 0;
 		for (auto& iconData : mIconData)
@@ -457,6 +554,9 @@ namespace BansheeEngine
 				continue;
 
 			if (!iconData.texture) // Ignore missing texture
+				continue;
+
+			if (pickingOnly && !iconData.pickable)
 				continue;
 
 			SortedIconData& sortedIconData = mSortedIconData[i];
@@ -475,8 +575,8 @@ namespace BansheeEngine
 		{
 			if (a.distance == b.distance)
 			{
-				HSpriteTexture texA = mIconData[a.iconIdx].texture->getTexture();
-				HSpriteTexture texB = mIconData[b.iconIdx].texture->getTexture();
+				HSpriteTexture texA = iconData[a.iconIdx].texture->getTexture();
+				HSpriteTexture texB = iconData[b.iconIdx].texture->getTexture();
 
 				if (texA == texB)
 					return a.iconIdx < b.iconIdx;
@@ -505,7 +605,7 @@ namespace BansheeEngine
 			cameraScale = (mCamera->getViewport()->getHeight() * 0.5f) / vertFOV.valueRadians();
 		}
 
-		IconRenderDataVecPtr iconRenderData = bs_shared_ptr<IconRenderDataVec>();
+		iconRenderData = bs_shared_ptr<IconRenderDataVec>();
 		UINT32 lastTextureIdx = 0;
 		HTexture curTexture;
 
@@ -514,9 +614,9 @@ namespace BansheeEngine
 		for (i = 0; i < actualNumIcons; i++)
 		{
 			SortedIconData& sortedIconData = mSortedIconData[i];
-			IconData& iconData = mIconData[sortedIconData.iconIdx];
+			const IconData& curIconData = iconData[sortedIconData.iconIdx];
 
-			if (curTexture != iconData.texture)
+			if (curTexture != curIconData.texture)
 			{
 				UINT32 numIconsPerTexture = i - lastTextureIdx;
 				if (numIconsPerTexture > 0)
@@ -528,16 +628,16 @@ namespace BansheeEngine
 				}
 
 				lastTextureIdx = i;
-				curTexture = iconData.texture;
+				curTexture = curIconData.texture;
 			}
 
-			UINT32 iconWidth = iconData.texture->getWidth();
-			UINT32 iconHeight = iconData.texture->getHeight();
+			UINT32 iconWidth = curIconData.texture->getWidth();
+			UINT32 iconHeight = curIconData.texture->getHeight();
 
 			limitIconSize(iconWidth, iconHeight);
 
 			Color normalColor, fadedColor;
-			calculateIconColors(iconData.color, *mCamera.get(), iconHeight, iconData.fixedScale, normalColor, fadedColor);
+			calculateIconColors(curIconData.color, *mCamera.get(), iconHeight, curIconData.fixedScale, normalColor, fadedColor);
 
 			Vector3 position((float)sortedIconData.screenPosition.x, (float)sortedIconData.screenPosition.y, sortedIconData.distance);
 			// TODO - Does the depth need to be corrected since it was taken from a projective camera (probably)?
@@ -545,7 +645,7 @@ namespace BansheeEngine
 			float halfWidth = iconWidth * 0.5f;
 			float halfHeight = iconHeight * 0.5f;
 
-			if (!iconData.fixedScale)
+			if (!curIconData.fixedScale)
 			{
 				float iconScale = 1.0f;
 				if (mCamera->getProjectionType() == PT_ORTHOGRAPHIC)
@@ -564,10 +664,10 @@ namespace BansheeEngine
 			positions[3] = position + Vector3(halfWidth, halfHeight, 0.0f);
 
 			Vector2 uvs[4];
-			uvs[0] = iconData.texture->transformUV(Vector2(0.0f, 0.0f));
-			uvs[1] = iconData.texture->transformUV(Vector2(1.0f, 0.0f));
-			uvs[2] = iconData.texture->transformUV(Vector2(0.0f, 1.0f));
-			uvs[3] = iconData.texture->transformUV(Vector2(1.0f, 1.0f));
+			uvs[0] = curIconData.texture->transformUV(Vector2(0.0f, 0.0f));
+			uvs[1] = curIconData.texture->transformUV(Vector2(1.0f, 0.0f));
+			uvs[2] = curIconData.texture->transformUV(Vector2(0.0f, 1.0f));
+			uvs[3] = curIconData.texture->transformUV(Vector2(1.0f, 1.0f));
 
 			for (UINT32 j = 0; j < 4; j++)
 			{
@@ -589,12 +689,7 @@ namespace BansheeEngine
 			indices += 6;
 		}
 
-		if (mIconMesh != nullptr)
-			mIconMeshHeap->dealloc(mIconMesh);
-
-		mIconMesh = mIconMeshHeap->alloc(meshData, DOT_TRIANGLE_LIST);
-
-		return iconRenderData;
+		return mIconMeshHeap->alloc(meshData, DOT_TRIANGLE_LIST);
 	}
 
 	void GizmoManager::limitIconSize(UINT32& width, UINT32& height)
@@ -713,6 +808,70 @@ namespace BansheeEngine
 				curIndexOffset += curRenderData.count * 6;
 
 			}
+		}
+
+		mesh->_notifyUsedOnGPU();
+	}
+
+	void GizmoManager::coreRenderGizmosForPicking(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr meshProxy)
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		Matrix4 viewProjMat = projMatrix * viewMatrix;
+
+		mSolidMaterial.mViewProj.set(viewProjMat);
+
+		Renderer::setPass(*mPickingMaterial.proxy, 0);
+		Renderer::draw(*meshProxy);
+	}
+
+	void GizmoManager::coreRenderIconGizmosForPicking(RectI screenArea, MeshProxyPtr meshProxy, IconRenderDataVecPtr renderData)
+	{
+		RenderSystem& rs = RenderSystem::instance();
+		MeshBasePtr mesh;
+
+		// TODO: Instead of this lock consider just storing all needed data in MeshProxy and not referencing Mesh at all?
+		if (!meshProxy->mesh.expired())
+			mesh = meshProxy->mesh.lock();
+		else
+			return;
+
+		std::shared_ptr<VertexData> vertexData = mesh->_getVertexData();
+
+		rs.setVertexDeclaration(vertexData->vertexDeclaration);
+		auto vertexBuffers = vertexData->getBuffers();
+
+		VertexBufferPtr vertBuffers[1] = { vertexBuffers.begin()->second };
+		rs.setVertexBuffers(0, vertBuffers, 1);
+
+		IndexBufferPtr indexBuffer = mesh->_getIndexBuffer();
+		rs.setIndexBuffer(indexBuffer);
+
+		rs.setDrawOperation(DOT_TRIANGLE_LIST);
+
+		// Set up ortho matrix
+		Matrix4 projMat;
+
+		float left = screenArea.x + rs.getHorizontalTexelOffset();
+		float right = screenArea.x + screenArea.width + rs.getHorizontalTexelOffset();
+		float top = screenArea.y + rs.getVerticalTexelOffset();
+		float bottom = screenArea.y + screenArea.height + rs.getVerticalTexelOffset();
+		float near = rs.getMinimumDepthInputValue();
+		float far = rs.getMaximumDepthInputValue();
+
+		projMat.makeProjectionOrtho(left, right, top, bottom, near, far);
+		mAlphaPickingMaterial.mViewProj.set(projMat);
+
+		Renderer::setPass(*mAlphaPickingMaterial.proxy, 0);
+
+		UINT32 curIndexOffset = 0;
+		for (auto curRenderData : *renderData)
+		{
+			mAlphaPickingMaterial.mTexture.set(curRenderData.texture);
+
+			rs.drawIndexed(curIndexOffset, curRenderData.count * 6, 0, curRenderData.count * 4);
+			curIndexOffset += curRenderData.count * 6;
+
 		}
 
 		mesh->_notifyUsedOnGPU();

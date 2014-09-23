@@ -50,6 +50,16 @@ namespace BansheeEngine
 		 */
 		HMaterial createIconGizmoMat() const;
 
+		/**
+		 * @brief	Creates a material used for picking non-transparent gizmos.
+		 */
+		HMaterial createGizmoPickingMat() const;
+
+		/**
+		 * @brief	Creates a material used for picking transparent gizmos.
+		 */
+		HMaterial createAlphaGizmoPickingMat() const;
+
 		static const String ObjectFieldStyleName;
 		static const String ObjectFieldLabelStyleName;
 		static const String ObjectFieldDropBtnStyleName;
@@ -116,6 +126,16 @@ namespace BansheeEngine
 		 */
 		void initIconGizmoShader();
 
+		/**
+		 * @brief	Loads and compiles a shader used for scene picking of non-transparent gizmos.
+		 */
+		void initGizmoPickingShader();
+
+		/**
+		 * @brief	Loads and compiles a shader used for scene picking of possibly transparent gizmos.
+		 */
+		void initGizmoPickingAlphaShader();
+
 		RenderSystemPlugin mRenderSystemPlugin;
 		WString mActiveShaderSubFolder;
 		String mActiveRenderSystem;
@@ -127,6 +147,8 @@ namespace BansheeEngine
 		ShaderPtr mShaderGizmoSolid;
 		ShaderPtr mShaderGizmoWire;
 		ShaderPtr mShaderGizmoIcon;
+		ShaderPtr mShaderGizmoPicking;
+		ShaderPtr mShaderGizmoAlphaPicking;
 
 		GUISkin mSkin;
 
@@ -278,5 +300,9 @@ namespace BansheeEngine
 		static const WString ShaderIconGizmo0PSFile;
 		static const WString ShaderIconGizmo1VSFile;
 		static const WString ShaderIconGizmo1PSFile;
+		static const WString GizmoPickingVSFile;
+		static const WString GizmoPickingPSFile;
+		static const WString GizmoPickingAlphaVSFile;
+		static const WString GizmoPickingAlphaPSFile;
 	};
 }

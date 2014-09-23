@@ -205,6 +205,10 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::ShaderIconGizmo0PSFile = L"iconGizmo0PS.gpuprog";
 	const WString BuiltinEditorResources::ShaderIconGizmo1VSFile = L"iconGizmo1VS.gpuprog";
 	const WString BuiltinEditorResources::ShaderIconGizmo1PSFile = L"iconGizmo1PS.gpuprog";
+	const WString BuiltinEditorResources::GizmoPickingVSFile = L"pickingGizmoVS.gpuprog";
+	const WString BuiltinEditorResources::GizmoPickingPSFile = L"pickingGizmoPS.gpuprog";
+	const WString BuiltinEditorResources::GizmoPickingAlphaVSFile = L"pickingGizmoAlphaVS.gpuprog";
+	const WString BuiltinEditorResources::GizmoPickingAlphaPSFile = L"pickingGizmoAlphaPS.gpuprog";
 
 	BuiltinEditorResources::BuiltinEditorResources(RenderSystemPlugin activeRSPlugin)
 		:mRenderSystemPlugin(activeRSPlugin)
@@ -1075,6 +1079,10 @@ namespace BansheeEngine
 			{ ShaderIconGizmo0PSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"hlsl", HLSL11ShaderSubFolder },
 			{ ShaderIconGizmo1VSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL11ShaderSubFolder },
 			{ ShaderIconGizmo1PSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"hlsl", HLSL11ShaderSubFolder },
+			{ GizmoPickingVSFile,		"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL11ShaderSubFolder },
+			{ GizmoPickingPSFile,		"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"hlsl", HLSL11ShaderSubFolder },
+			{ GizmoPickingAlphaVSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL11ShaderSubFolder },
+			{ GizmoPickingAlphaPSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"hlsl", HLSL11ShaderSubFolder },
 			{ SceneGridVSFile,			"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_2_0,		"hlsl", HLSL9ShaderSubFolder },
 			{ SceneGridPSFile,			"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_PS_2_0,		"hlsl", HLSL9ShaderSubFolder },
 			{ ShaderDockOverlayVSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_2_0,		"hlsl", HLSL9ShaderSubFolder },
@@ -1091,6 +1099,10 @@ namespace BansheeEngine
 			{ ShaderIconGizmo0PSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"hlsl", HLSL9ShaderSubFolder },
 			{ ShaderIconGizmo1VSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL9ShaderSubFolder },
 			{ ShaderIconGizmo1PSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"hlsl", HLSL9ShaderSubFolder },
+			{ GizmoPickingVSFile,		"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL9ShaderSubFolder },
+			{ GizmoPickingPSFile,		"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"hlsl", HLSL9ShaderSubFolder },
+			{ GizmoPickingAlphaVSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL9ShaderSubFolder },
+			{ GizmoPickingAlphaPSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"hlsl", HLSL9ShaderSubFolder },
 			{ SceneGridVSFile,			"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
 			{ SceneGridPSFile,			"main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"glsl", GLSLShaderSubFolder },
 			{ ShaderDockOverlayVSFile,	"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
@@ -1107,6 +1119,10 @@ namespace BansheeEngine
 			{ ShaderIconGizmo0PSFile,	"main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"glsl", GLSLShaderSubFolder },
 			{ ShaderIconGizmo1VSFile,	"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
 			{ ShaderIconGizmo1PSFile,	"main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"glsl", GLSLShaderSubFolder },
+			{ GizmoPickingVSFile,		"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
+			{ GizmoPickingPSFile,		"main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"glsl", GLSLShaderSubFolder },
+			{ GizmoPickingAlphaVSFile,	"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
+			{ GizmoPickingAlphaPSFile,	"main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"glsl", GLSLShaderSubFolder },
 		};
 
 		if (FileSystem::exists(DefaultSkinFolderRaw))
@@ -1441,6 +1457,52 @@ namespace BansheeEngine
 		newPass1->setRasterizerState(rasterizerState);
 	}
 
+	void BuiltinEditorResources::initGizmoPickingShader()
+	{
+		HGpuProgram vsProgram = getGpuProgram(GizmoPickingVSFile);
+		HGpuProgram psProgram = getGpuProgram(GizmoPickingPSFile);
+
+		mShaderGizmoPicking = Shader::create("GizmoPickingShader");
+		mShaderGizmoPicking->addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
+
+		TechniquePtr newTechnique = mShaderGizmoPicking->addTechnique(mActiveRenderSystem, RendererInvariant);
+		PassPtr newPass = newTechnique->addPass();
+		newPass->setVertexProgram(vsProgram);
+		newPass->setFragmentProgram(psProgram);
+
+		RASTERIZER_STATE_DESC rasterizerDesc;
+		rasterizerDesc.scissorEnable = true;
+
+		HRasterizerState rasterizerState = RasterizerState::create(rasterizerDesc);
+		newPass->setRasterizerState(rasterizerState);
+	}
+
+	void BuiltinEditorResources::initGizmoPickingAlphaShader()
+	{
+		HGpuProgram vsProgram = getGpuProgram(GizmoPickingAlphaVSFile);
+		HGpuProgram psProgram = getGpuProgram(GizmoPickingAlphaPSFile);
+
+		mShaderGizmoAlphaPicking = Shader::create("GizmoPickingAlphaShader");
+
+		mShaderGizmoAlphaPicking->addParameter("mainTexSamp", "mainTexSamp", GPOT_SAMPLER2D);
+		mShaderGizmoAlphaPicking->addParameter("mainTexSamp", "mainTexture", GPOT_SAMPLER2D);
+
+		mShaderGizmoAlphaPicking->addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
+
+		mShaderGizmoAlphaPicking->addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
+
+		TechniquePtr newTechnique = mShaderGizmoAlphaPicking->addTechnique(mActiveRenderSystem, RendererInvariant);
+		PassPtr newPass = newTechnique->addPass();
+		newPass->setVertexProgram(vsProgram);
+		newPass->setFragmentProgram(psProgram);
+
+		RASTERIZER_STATE_DESC rasterizerDesc;
+		rasterizerDesc.scissorEnable = true;
+
+		HRasterizerState rasterizerState = RasterizerState::create(rasterizerDesc);
+		newPass->setRasterizerState(rasterizerState);
+	}
+
 	HMaterial BuiltinEditorResources::createDockDropOverlayMaterial() const
 	{
 		return Material::create(mShaderDockOverlay);
@@ -1478,5 +1540,15 @@ namespace BansheeEngine
 	HMaterial BuiltinEditorResources::createIconGizmoMat() const
 	{
 		return Material::create(mShaderGizmoIcon);
+	}
+
+	HMaterial BuiltinEditorResources::createGizmoPickingMat() const
+	{
+		return Material::create(mShaderGizmoPicking);
+	}
+
+	HMaterial BuiltinEditorResources::createAlphaGizmoPickingMat() const
+	{
+		return Material::create(mShaderGizmoAlphaPicking);
 	}
 }

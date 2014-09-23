@@ -15,6 +15,7 @@ IMMEDIATE:
   - IMPORTANT: Gizmo rendering happens in update() but it should happen whenever scene view is being rendered as the render target isn't set anywhere
   - Add a method that renders gizmos for picking
   - Figure out how to deal with builtin components like Camera and Renderable (e.g. how will they have gizmos since they're not managed components?)
+  - Don't forget to call clearGizmos every frame
 
 LATER:
  - Need a way to render text for gizmos and handles, and in scene in general
