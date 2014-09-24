@@ -483,6 +483,8 @@ namespace BansheeEngine
 
 	void GUIResourceTreeView::setSelection(const Vector<Path>& paths)
 	{
+		unselectAll();
+
 		ResourceTreeElement& root = mRootElement;
 
 		Stack<ResourceTreeElement*> todo;

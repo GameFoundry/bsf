@@ -4,13 +4,11 @@ TODO:
 
 CONCRETE TASK:
  - SceneView editor window: Add a way to detect exact mouse position on the render texture
- - Extend SceneTreeView and ResourceTreeView that have events that occurr when selection changes
-    - Events need to return SceneObject, Resource or Path (an array of any of those if needed)
- - Extend SceneTreeView and ResourceTreeView so that they have setSelection method accepting SceneObject/Resource-Path arrays
  - Similar to how I have onRenderViewport callback in Renderer have another one that gets triggered from core thread
    - Hook up gizmo rendering there
  - Hook up gizmo manager to ScenePicking so gizmos are considered when picking
    - I'll likely need to update GizmoManager so I can query gizmo SceneObject based on gizmo index
+ - Selection/ScenePicking/GizmoManager need to be started
 
 IMMEDIATE:
  - SceneGrid is very ugly. Consider using default lines for now and come back with a better approach later.

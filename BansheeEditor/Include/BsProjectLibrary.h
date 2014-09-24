@@ -59,6 +59,7 @@ namespace BansheeEngine
 		LibraryEntry* findEntry(const Path& fullPath) const;
 
 		ProjectResourceMetaPtr findResourceMeta(const String& uuid) const;
+		Path uuidToPath(const String& uuid) const;
 
 		void createEntry(const HResource& resource, const Path& path);
 		void moveEntry(const Path& oldPath, const Path& newPath);

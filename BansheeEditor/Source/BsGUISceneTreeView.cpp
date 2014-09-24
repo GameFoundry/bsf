@@ -280,6 +280,8 @@ namespace BansheeEngine
 
 	void GUISceneTreeView::setSelection(const Vector<HSceneObject>& objects)
 	{
+		unselectAll();
+
 		SceneTreeElement& root = mRootElement;
 
 		Stack<SceneTreeElement*> todo;

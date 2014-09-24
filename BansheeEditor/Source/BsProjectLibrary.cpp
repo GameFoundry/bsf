@@ -484,6 +484,18 @@ namespace BansheeEngine
 		return resEntry->meta;
 	}
 
+	Path ProjectLibrary::uuidToPath(const String& uuid) const
+	{
+		if (mResourceManifest == nullptr)
+			return Path();
+
+		Path filePath;
+		if (!mResourceManifest->uuidToFilePath(uuid, filePath))
+			return Path();
+
+		return filePath;
+	}
+
 	void ProjectLibrary::createEntry(const HResource& resource, const Path& path)
 	{
 		if (resource == nullptr)
