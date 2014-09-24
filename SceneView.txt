@@ -2,10 +2,19 @@
 TODO:
  - Core thread gets stuck on shutdown when OpenGL is used...Somewhere in kernel
 
+CONCRETE TASK:
+ - SceneView editor window: Add a way to detect exact mouse position on the render texture
+ - Extend SceneTreeView and ResourceTreeView that have events that occurr when selection changes
+    - Events need to return SceneObject, Resource or Path (an array of any of those if needed)
+ - Extend SceneTreeView and ResourceTreeView so that they have setSelection method accepting SceneObject/Resource-Path arrays
+ - Similar to how I have onRenderViewport callback in Renderer have another one that gets triggered from core thread
+   - Hook up gizmo rendering there
+ - Hook up gizmo manager to ScenePicking so gizmos are considered when picking
+   - I'll likely need to update GizmoManager so I can query gizmo SceneObject based on gizmo index
+
 IMMEDIATE:
  - SceneGrid is very ugly. Consider using default lines for now and come back with a better approach later.
    - Potentially enable line AA?
- - In Picking code I don't set main texture when rendering with alpha
  - Picking code is completely untested and will likely need major fixing
  - Disable DX9 for editor as I will likely want to use geometry shaders for icon rendering, and possibly new AA line shader
    - Or just use MeshHeap and update the icon/lines every frame?
@@ -13,9 +22,7 @@ IMMEDIATE:
 
  GIZMO TODO:
   - IMPORTANT: Gizmo rendering happens in update() but it should happen whenever scene view is being rendered as the render target isn't set anywhere
-  - Add a method that renders gizmos for picking
   - Figure out how to deal with builtin components like Camera and Renderable (e.g. how will they have gizmos since they're not managed components?)
-  - Don't forget to call clearGizmos every frame
 
 LATER:
  - Need a way to render text for gizmos and handles, and in scene in general
@@ -39,8 +46,38 @@ TODO - Think about this
 See for inspiration: http://docs.unity3d.com/ScriptReference/Handles.html
 
 ----------------------------------------------------------------------
-Rendering selection
+SelectionRenderer
 
-Get the mesh from the selected Renderable
-Draw that same mesh again using a shader that grays out the original
-The second mesh will likely need to use depth bias (sloped depth bias too?)
+Retrieve a list of selected objects from SelectionManager
+Find ones with Renderable components
+Retrieve Meshes, and world transforms from them
+Draw that same mesh with either a wireframe or a grayed out shader with a slight depth bias
+
+----------------------------------------------------------------------
+SceneView editor flow:
+  Hook up gizmo, handle and selection rendering methods to be executed after the scene is rendered
+  Calculate mouse coords manually relative to the window and to the render texture GUI element
+     - Don't use GUI events as we require more precise control (do we?)
+
+  Detect mouse clicks on the scene render target
+      Forward those mouse coordinates to HandleManager
+      It checks if screen ray intersects any handles and returns the handle if it does
+         If handle is found it is activated and method returns
+         Otherwise we mark the coordinates as selection start
+
+  Detect mouse drag on the scene render target
+    - If we have an active handle
+         Forward mouse coordinates to the active handle so it can do its thing
+         return
+    - Otherwise its assumed we are dragging a selection
+         Update selection endpoint and send it to ScenePicking
+         Use Selection to select picked objects if any
+         return
+
+  Detect mouse release on scene render target
+     If we have an active handle
+        Clear active handle
+        return
+     Otheriwse its assumed we are dragging a selection
+        Do nothing
+        return

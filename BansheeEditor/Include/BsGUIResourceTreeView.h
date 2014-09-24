@@ -44,6 +44,10 @@ namespace BansheeEngine
 			const String& editBoxStyle = StringUtil::BLANK, const String& dragHighlightStyle = StringUtil::BLANK, 
 			const String& dragSepHighlightStyle = StringUtil::BLANK);
 
+		Vector<Path> getSelection() const;
+		void setSelection(const Vector<Path>& paths);
+
+		Event<void()> onSelectionChanged;
 
 	protected:
 		virtual ~GUIResourceTreeView();
@@ -77,6 +81,7 @@ namespace BansheeEngine
 		virtual void dragAndDropEnded(TreeElement* overTreeElement);
 		virtual void dragAndDropFinalize();
 		virtual bool _acceptDragAndDrop(const Vector2I position, UINT32 typeId) const;
+		virtual void selectionChanged();
 
 		void updateFromProjectLibraryEntry(ResourceTreeElement* treeElement, const ProjectLibrary::LibraryEntry* libraryEntry);
 		ResourceTreeElement* addTreeElement(ResourceTreeElement* parent, const Path& fullPath);

@@ -463,6 +463,51 @@ namespace BansheeEngine
 		return typeId == (UINT32)DragAndDropType::Resources;
 	}
 
+	void GUIResourceTreeView::selectionChanged()
+	{
+		onSelectionChanged();
+	}
+
+	Vector<Path> GUIResourceTreeView::getSelection() const
+	{
+		Vector<Path> selectedPaths;
+		for (auto& selectedElem : mSelectedElements)
+		{
+			ResourceTreeElement* resTreeElement = static_cast<ResourceTreeElement*>(selectedElem.element);
+
+			selectedPaths.push_back(resTreeElement->mFullPath);
+		}
+
+		return selectedPaths;
+	}
+
+	void GUIResourceTreeView::setSelection(const Vector<Path>& paths)
+	{
+		ResourceTreeElement& root = mRootElement;
+
+		Stack<ResourceTreeElement*> todo;
+		todo.push(&mRootElement);
+
+		while (!todo.empty())
+		{
+			ResourceTreeElement* currentElem = todo.top();
+			todo.pop();
+
+			auto iterFind = std::find(paths.begin(), paths.end(), currentElem->mFullPath);
+			if (iterFind != paths.end())
+			{
+				expandToElement(currentElem);
+				selectElement(currentElem);
+			}
+
+			for (auto& child : currentElem->mChildren)
+			{
+				ResourceTreeElement* sceneChild = static_cast<ResourceTreeElement*>(child);
+				todo.push(sceneChild);
+			}
+		}
+	}
+
 	const String& GUIResourceTreeView::getGUITypeName()
 	{
 		static String typeName = "ResourceTreeView";

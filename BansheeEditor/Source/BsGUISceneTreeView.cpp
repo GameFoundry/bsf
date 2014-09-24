@@ -260,6 +260,51 @@ namespace BansheeEngine
 		return typeId == (UINT32)DragAndDropType::SceneObject;
 	}
 
+	void GUISceneTreeView::selectionChanged()
+	{
+		onSelectionChanged();
+	}
+
+	Vector<HSceneObject> GUISceneTreeView::getSelection() const
+	{
+		Vector<HSceneObject> selectedSOs;
+		for (auto& selectedElem : mSelectedElements)
+		{
+			SceneTreeElement* sceneTreeElement = static_cast<SceneTreeElement*>(selectedElem.element);
+
+			selectedSOs.push_back(sceneTreeElement->mSceneObject);
+		}
+
+		return selectedSOs;
+	}
+
+	void GUISceneTreeView::setSelection(const Vector<HSceneObject>& objects)
+	{
+		SceneTreeElement& root = mRootElement;
+
+		Stack<SceneTreeElement*> todo;
+		todo.push(&mRootElement);
+
+		while (!todo.empty())
+		{
+			SceneTreeElement* currentElem = todo.top();
+			todo.pop();
+
+			auto iterFind = std::find(objects.begin(), objects.end(), currentElem->mSceneObject);
+			if (iterFind != objects.end())
+			{
+				expandToElement(currentElem);
+				selectElement(currentElem);
+			}
+
+			for (auto& child : currentElem->mChildren)
+			{
+				SceneTreeElement* sceneChild = static_cast<SceneTreeElement*>(child);
+				todo.push(sceneChild);
+			}
+		}
+	}
+
 	const String& GUISceneTreeView::getGUITypeName()
 	{
 		static String typeName = "SceneTreeView";

@@ -503,6 +503,8 @@ namespace BansheeEngine
 
 			mSelectedElements.push_back(SelectedElement(element, background));
 			mIsElementSelected = true;
+
+			selectionChanged();
 		}
 	}
 
@@ -518,6 +520,8 @@ namespace BansheeEngine
 
 			mSelectedElements.erase(iterFind);
 			markContentAsDirty();
+
+			selectionChanged();
 		}
 
 		mIsElementSelected = mSelectedElements.size() > 0;
@@ -535,6 +539,33 @@ namespace BansheeEngine
 		mIsElementSelected = false;
 
 		markContentAsDirty();
+
+		selectionChanged();
+	}
+
+	void GUITreeView::expandToElement(TreeElement* element)
+	{
+		if (element->mIsVisible || element->mParent == nullptr)
+			return;
+
+		Stack<TreeElement*> todo;
+
+		TreeElement* parent = element->mParent;
+		while (parent != nullptr && !parent->mIsVisible)
+		{
+			if (!parent->mIsExpanded)
+				todo.push(parent);
+
+			parent = parent->mParent;
+		}
+
+		while (!todo.empty())
+		{
+			TreeElement* curElement = todo.top();
+			todo.pop();
+
+			expandElement(curElement);
+		}
 	}
 
 	void GUITreeView::expandElement(TreeElement* element)

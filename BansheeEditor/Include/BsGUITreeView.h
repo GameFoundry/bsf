@@ -147,12 +147,14 @@ namespace BansheeEngine
 		virtual void dragAndDropStart() = 0;
 		virtual void dragAndDropEnded(TreeElement* overTreeElement) = 0;
 		virtual void dragAndDropFinalize() = 0;
+		virtual void selectionChanged() { }
 
 		bool isSelectionActive() const;
 		void selectElement(TreeElement* element);
 		void unselectElement(TreeElement* element);
 		void unselectAll();
 
+		void expandToElement(TreeElement* element);
 		void expandElement(TreeElement* element);
 		void collapseElement(TreeElement* element);
 

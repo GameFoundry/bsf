@@ -42,7 +42,10 @@ namespace BansheeEngine
 			const String& editBoxStyle = StringUtil::BLANK, const String& dragHighlightStyle = StringUtil::BLANK, 
 			const String& dragSepHighlightStyle = StringUtil::BLANK);
 
+		Vector<HSceneObject> getSelection() const;
+		void setSelection(const Vector<HSceneObject>& objects);
 
+		Event<void()> onSelectionChanged;
 	protected:
 		virtual ~GUISceneTreeView();
 
@@ -65,6 +68,7 @@ namespace BansheeEngine
 		virtual void dragAndDropEnded(TreeElement* overTreeElement);
 		virtual void dragAndDropFinalize();
 		virtual bool _acceptDragAndDrop(const Vector2I position, UINT32 typeId) const;
+		virtual void selectionChanged();
 
 		void deleteTreeElementInternal(TreeElement* element);
 	};
