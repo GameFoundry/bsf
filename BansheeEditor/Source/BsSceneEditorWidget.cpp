@@ -18,6 +18,8 @@
 #include "BsRenderer.h"
 #include "BsGUIWidget.h"
 #include "BsSceneGrid.h"
+#include "BsInput.h"
+#include "BsGUILayoutUtility.h"
 
 // DEBUG ONLY
 #include "BsTime.h"
@@ -40,30 +42,74 @@ namespace BansheeEngine
 
 		mRenderCallback = RendererManager::instance().getActive()->onRenderViewport.connect(std::bind(&SceneEditorWidget::render, this, _1, _2));
 		mSceneGrid = bs_new<SceneGrid>();
+
+		mOnPointerMovedConn = gInput().onPointerMoved.connect(std::bind(&SceneEditorWidget::onPointerMoved, this, _1));
+		mOnPointerPressedConn = gInput().onPointerPressed.connect(std::bind(&SceneEditorWidget::onPointerPressed, this, _1));
+		mOnPointerReleasedConn = gInput().onPointerReleased.connect(std::bind(&SceneEditorWidget::onPointerReleased, this, _1));
+
+		determineParentWindow();
 	}
 
 	SceneEditorWidget::~SceneEditorWidget()
 	{
 		bs_delete(mSceneGrid);
 		mRenderCallback.disconnect();
+		mOnPointerMovedConn.disconnect();
+		mOnPointerPressedConn.disconnect();
+		mOnPointerReleasedConn.disconnect();
 	}
 
 	void SceneEditorWidget::_update()
 	{
-		// DEBUG ONLY
-		if (gTime().getCurrentFrameNumber() == 100)
+		//// DEBUG ONLY
+		//if (gTime().getCurrentFrameNumber() == 100)
+		//{
+		//	HTexture colorTex = mSceneRenderTarget->getBindableColorTexture();
+		//	gResources().save(colorTex, "C:\\SavedRenderTex.asset", true);
+
+		//	FileSystem::move("C:\\SavedRenderTex.asset", "C:\\SavedRenderTexNew.asset", true);
+
+		//	HTexture colorTexLoaded = gResources().load("C:\\SavedRenderTexNew.asset");
+		//	HSpriteTexture spriteTex = SpriteTexture::create(colorTexLoaded);
+
+		//	GUILayout& layout = mContent->getLayout();
+		//	layout.addElement(GUITexture::create(spriteTex));
+		//}
+	}
+
+	bool SceneEditorWidget::toSceneViewPos(const Vector2I& screenPos, Vector2I& scenePos)
+	{
+		Vector2I windowPos = mParentWindow->screenToWindowPos(screenPos);
+
+		RectI renderTextureBounds = GUILayoutUtility::calcBounds(mGUIRenderTexture);
+
+		if (renderTextureBounds.contains(windowPos))
 		{
-			HTexture colorTex = mSceneRenderTarget->getBindableColorTexture();
-			gResources().save(colorTex, "C:\\SavedRenderTex.asset", true);
+			scenePos.x = windowPos.x - renderTextureBounds.x;
+			scenePos.y = windowPos.y - renderTextureBounds.y;
 
-			FileSystem::move("C:\\SavedRenderTex.asset", "C:\\SavedRenderTexNew.asset", true);
-
-			HTexture colorTexLoaded = gResources().load("C:\\SavedRenderTexNew.asset");
-			HSpriteTexture spriteTex = SpriteTexture::create(colorTexLoaded);
-
-			GUILayout& layout = mContent->getLayout();
-			layout.addElement(GUITexture::create(spriteTex));
+			return true;
 		}
+
+		return false;
+	}
+
+	void SceneEditorWidget::onPointerMoved(const PointerEvent& event)
+	{
+
+		
+	}
+
+	void SceneEditorWidget::onPointerReleased(const PointerEvent& event)
+	{
+
+	}
+
+	void SceneEditorWidget::onPointerPressed(const PointerEvent& event)
+	{
+		Vector2I scenePos;
+		if (!toSceneViewPos(event.screenPos, scenePos))
+			return;
 	}
 
 	void SceneEditorWidget::doOnResized(UINT32 width, UINT32 height)
@@ -71,6 +117,26 @@ namespace BansheeEngine
 		EditorWidget::doOnResized(width, height);
 
 		updateRenderTexture(width, height);
+	}
+
+	void SceneEditorWidget::doOnParentChanged()
+	{
+		determineParentWindow();
+	}
+
+	void SceneEditorWidget::determineParentWindow()
+	{
+		GUIWidget& parentWidget = getParentWidget();
+		RenderTargetPtr parentTarget = parentWidget.getTarget()->getTarget();
+
+		if (!parentTarget->getProperties().isWindow())
+		{
+			mParentWindow = nullptr;
+			BS_EXCEPT(InvalidStateException, "Scene view parent render target is not a window. This is not supported.");
+			return;
+		}
+
+		mParentWindow = std::static_pointer_cast<RenderWindow>(parentTarget);
 	}
 
 	void SceneEditorWidget::render(const Viewport* viewport, DrawList& drawList)

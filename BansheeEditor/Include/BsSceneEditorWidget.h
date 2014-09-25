@@ -20,18 +20,40 @@ namespace BansheeEngine
 
 	protected:
 		void doOnResized(UINT32 width, UINT32 height);
+		void doOnParentChanged();
+		void determineParentWindow();
 
 		void updateRenderTexture(UINT32 width, UINT32 height);
 		void render(const Viewport* viewport, DrawList& drawList);
+		bool toSceneViewPos(const Vector2I& screenPos, Vector2I& scenePos);
+
+		/**
+		 * @brief	Called whenever a pointer (e.g. mouse cursor) is moved.
+		 */
+		void onPointerMoved(const PointerEvent& event);
+
+		/**
+		 * @brief	Called whenever a pointer button (e.g. mouse button) is released.
+		 */
+		void onPointerReleased(const PointerEvent& event);
+
+		/**
+		 * @brief	Called whenever a pointer button (e.g. mouse button) is pressed.
+		 */
+		void onPointerPressed(const PointerEvent& event);
 
 	private:
 		static SceneEditorWidget* Instance;
 
+		RenderWindowPtr mParentWindow;
 		RenderTexturePtr mSceneRenderTarget;
 		GUIRenderTexture* mGUIRenderTexture;
 		HCamera mCamera;
 		SceneGrid* mSceneGrid;
 
 		HEvent mRenderCallback;
+		HEvent mOnPointerMovedConn;
+		HEvent mOnPointerPressedConn;
+		HEvent mOnPointerReleasedConn;
 	};
 }
