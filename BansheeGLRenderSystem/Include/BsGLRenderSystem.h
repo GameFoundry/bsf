@@ -567,8 +567,8 @@ namespace BansheeEngine
 		IndexBufferPtr mBoundIndexBuffer;
 		DrawOperationType mCurrentDrawOperation;
 
-		GLContext *mMainContext;
-		GLContext *mCurrentContext;
+		GLContext* mMainContext;
+		GLContext* mCurrentContext;
 
 		bool mDrawCallInProgress;
 

@@ -86,7 +86,25 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Callback that gets triggered before a viewport gets rendered.
+		 *
+		 * @note	Sim thread only
 		 */
 		Event<void(const Viewport*, DrawList&)> onRenderViewport;
+
+		/**
+		 * @brief	Callback that gets triggered before main render queue items are rendered
+		 *			to the provided viewport, called from the core thread directly.
+		 *
+		 * @note	Core thread only.
+		 */
+		Event<void(const CameraProxy&)> onCorePreRenderViewport;
+
+		/**
+		 * @brief	Callback that gets triggered after main render queue items are rendered,
+		 *			to the provided viewport, called from the core thread directly.
+		 *
+		 * @note	Core thread only.
+		 */
+		Event<void(const CameraProxy&)> onCorePostRenderViewport;
 	};
 }

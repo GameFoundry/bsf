@@ -277,6 +277,14 @@ namespace BansheeEngine
             return false;
     }
 
+	bool Math::approxEquals(double a, double b, double tolerance)
+	{
+		if (fabs(b - a) <= tolerance)
+			return true;
+		else
+			return false;
+	}
+
 	Vector3 Math::calculateTriTangent(const Vector3& position1, const Vector3& position2, 
 		const Vector3& position3, float u1, float v1, float u2, float v2, float u3, float v3)
 	{

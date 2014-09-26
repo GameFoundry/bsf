@@ -101,6 +101,13 @@ namespace BansheeEngine
 		RectI getArea() const;
 
 		/**
+		 * @brief	Returns the normalized area of the viewport.
+		 *
+		 * @note	Viewport coordinates are normalized in [0, 1] range.
+		 */
+		RectF getNormArea() const { return mNormArea; }
+
+		/**
 		 * @brief	Activates or deactivates clears for color, depth or stencil buffers.
 		 *			Buffers will be cleared before rendering to this viewport is performed.
 		 */

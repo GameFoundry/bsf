@@ -126,12 +126,16 @@ namespace BansheeEngine
 
 	void SceneEditorWidget::determineParentWindow()
 	{
+		mParentWindow = nullptr;
+
+		if (mParent == nullptr)
+			return;
+
 		GUIWidget& parentWidget = getParentWidget();
 		RenderTargetPtr parentTarget = parentWidget.getTarget()->getTarget();
 
 		if (!parentTarget->getProperties().isWindow())
 		{
-			mParentWindow = nullptr;
 			BS_EXCEPT(InvalidStateException, "Scene view parent render target is not a window. This is not supported.");
 			return;
 		}

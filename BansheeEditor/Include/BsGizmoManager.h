@@ -31,7 +31,6 @@ namespace BansheeEngine
 		void drawIcon(Vector3 position, HSpriteTexture image, bool fixedScale);
 
 		void update();
-		void render();
 		void renderForPicking(std::function<Color(UINT32)> idxToColorCallback);
 		void clearGizmos();
 
@@ -141,12 +140,16 @@ namespace BansheeEngine
 			const Vector<LineData>& lineData, const Vector<FrustumData>& frustumData, UINT32 numVertices, UINT32 numIndices);
 		TransientMeshPtr buildIconMesh(const Vector<IconData>& iconData, bool pickingOnly, IconRenderDataVecPtr& renderData);
 
+		void coreRender(const CameraProxy& camera);
 		void coreRenderSolidGizmos(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr mesh);
 		void coreRenderWireGizmos(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr mesh);
 		void coreRenderIconGizmos(RectI screenArea, MeshProxyPtr mesh, IconRenderDataVecPtr renderData);
 
 		void coreRenderGizmosForPicking(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr mesh);
 		void coreRenderIconGizmosForPicking(RectI screenArea, MeshProxyPtr mesh, IconRenderDataVecPtr renderData);
+
+		void coreUpdateData(const MeshProxyPtr& solidMeshProxy, const MeshProxyPtr& wireMeshProxy,
+			const MeshProxyPtr& iconMeshProxy, const IconRenderDataVecPtr& iconRenderData);
 
 		void limitIconSize(UINT32& width, UINT32& height);
 		void calculateIconColors(const Color& tint, const Camera& camera, UINT32 iconHeight, bool fixedScale,
@@ -193,6 +196,10 @@ namespace BansheeEngine
 		TransientMeshPtr mWireMesh;
 		TransientMeshPtr mIconMesh;
 
+		// Core
+		MeshProxyPtr mSolidMeshProxy;
+		MeshProxyPtr mWireMeshProxy;
+		MeshProxyPtr mIconMeshProxy;
 		IconRenderDataVecPtr mIconRenderData;
 
 		// Immutable

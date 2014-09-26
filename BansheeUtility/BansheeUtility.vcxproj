@@ -259,6 +259,7 @@
     <ClCompile Include="Source\BsMemorySerializer.cpp" />
     <ClCompile Include="Source\BsPath.cpp" />
     <ClCompile Include="Source\BsRectF.cpp" />
+    <ClCompile Include="Source\BsTorus.cpp" />
     <ClCompile Include="Source\BsVector2I.cpp" />
     <ClCompile Include="Source\BsManagedDataBlock.cpp" />
     <ClCompile Include="Source\BsMemoryAllocator.cpp" />
@@ -295,6 +296,7 @@
     <ClInclude Include="Include\BsMemorySerializer.h" />
     <ClInclude Include="Include\BsRectF.h" />
     <ClInclude Include="Include\BsHString.h" />
+    <ClInclude Include="Include\BsTorus.h" />
     <ClInclude Include="Include\BsVector2I.h" />
     <ClInclude Include="Include\BsIReflectable.h" />
     <ClInclude Include="Include\BsLog.h" />

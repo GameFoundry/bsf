@@ -96,6 +96,11 @@ namespace BansheeEngine
         static bool approxEquals(float a, float b, float tolerance = std::numeric_limits<float>::epsilon());
 
         /**
+         * @brief	Compare 2 doubles, using tolerance for inaccuracies.
+         */
+		static bool approxEquals(double a, double b, double tolerance = std::numeric_limits<double>::epsilon());
+
+        /**
          * @brief	Calculates the tangent space vector for a given set of positions / texture coords.
          */
         static Vector3 calculateTriTangent(const Vector3& position1, const Vector3& position2, 
@@ -342,6 +347,245 @@ namespace BansheeEngine
 		static float lerp01(T val, T min, T max)
 		{
 			return clamp01((val - min) / std::max(max - min, 0.0001F));
+		}
+
+		/**
+		 * @brief	Solves the linear equation with the parameters A, B.
+		 *			Returns number of roots found and the roots themselves will
+		 *			be output in the "roots" array.
+		 *
+		 * @param	roots	Must be at least size of 1.
+		 *
+		 * @note	Only returns real roots.
+		 */
+		template <typename T>
+		static UINT32 solveLinear(T A, T B, T* roots)
+		{
+			if (!approxEquals(B, (T)0))
+			{
+				roots[0] = -A / B;
+				return 1;
+			}
+			else if (approxEquals(A, (T)0))
+			{
+				roots[0] = 0.0f;
+				return 1;
+			}
+
+			return 0;
+		}
+
+		/**
+		 * @brief	Solves the quadratic equation with the parameters A, B, C.
+		 *			Returns number of roots found and the roots themselves will
+		 *			be output in the "roots" array.
+		 *
+		 * @param	roots	Must be at least size of 2.
+		 *
+		 * @note	Only returns real roots.
+		 */
+		template <typename T>
+		static UINT32 solveQuadratic(T A, T B, T C, T* roots)
+		{
+			if (!approxEquals(C, (T)0))
+			{
+				T discr = B * B - 4 * A * C;
+				if (discr > std::numeric_limits<T>::epsilon())
+				{
+					float temp = ((T)0.5) / C;
+					discr = std::sqrt(discr);
+
+					roots[0] = temp * (-B - discr);
+					roots[1] = temp * (-B + discr);
+
+					return 2;
+				}
+				else if (discr < -std::numeric_limits<T>::epsilon())
+				{
+					return 0;
+				}
+				else
+				{
+					roots[0] = ((T)-0.5) * (B / C);
+					return 1;
+				}
+			}
+			else
+			{
+				return solveLinear(A, B, roots);
+			}
+		}
+
+		/**
+		 * @brief	Solves the cubic equation with the parameters A, B, C, D.
+		 *			Returns number of roots found and the roots themselves will
+		 *			be output in the "roots" array.
+		 *
+		 * @param	roots	Must be at least size of 3.
+		 *
+		 * @note	Only returns real roots.
+		 */
+		template <typename T>
+		static UINT32 solveCubic(T A, T B, T C, T D, T* roots)
+		{
+			static const T THIRD = (1 / (T)3);
+
+			if (!approxEquals(D, (T)0))
+			{
+				T invD = 1 / D;
+				T k0 = A * invD;
+				T k1 = B * invD;
+				T k2 = C * invD;
+
+				T offset = THIRD * k2;
+				T a = k1 - k2 * offset;
+				T b = k0 + k2 * (2 * k2 * k2 - 9 * k1) * (1 / (T)27);
+				T halfB = ((T)0.5) * b;
+
+				T discr = halfB * halfB + a * a * a * (1 / (T)27);
+				if (discr > std::numeric_limits<T>::epsilon())
+				{
+					discr = std::sqrt(discr);
+					T temp = -halfB + discr;
+					if (temp >= (T)0)
+						roots[0] = pow(temp, THIRD);
+					else
+						roots[0] = -pow(-temp, THIRD);
+
+					temp = -halfB - discr;
+					if (temp >= 0)
+						roots[0] += pow(temp, THIRD);
+					else
+						roots[0] -= -pow(-temp, THIRD);
+
+					roots[0] -= offset;
+					return 1;
+				}
+				else if (discr < -std::numeric_limits<T>::epsilon())
+				{
+					T sqrtThree = std::sqrt((T)3);
+					T dist = sqrt(-THIRD * a);
+					T angle = THIRD * atan2(std::sqrt(-discr), -halfB).valueRadians();
+					T angleCos = cos(angle);
+					T angleSin = sin(angle);
+
+					roots[0] = 2 * dist * angleCos - offset;
+					roots[1] = -dist * (angleCos + sqrtThree * angleSin) - offset;
+					roots[2] = -dist * (angleCos - sqrtThree * angleSin) - offset;
+
+					return 3;
+				}
+				else
+				{
+					T temp;
+					if (halfB >= (T)0)
+						temp = -pow(halfB, THIRD);
+					else
+						temp = pow(-halfB, THIRD);
+
+					roots[0] = 2 * temp - offset;
+					roots[1] = -temp - offset;
+					roots[2] = roots[1];
+
+					return 3;
+				}
+			}
+			else
+			{
+				return solveQuadratic(A, B, C, roots);
+			}
+		}
+
+		/**
+		 * @brief	Solves the quartic equation with the parameters A, B, C, D, E.
+		 *			Returns number of roots found and the roots themselves will
+		 *			be output in the "roots" array.
+		 *
+		 * @param	roots	Must be at least size of 4.
+		 *
+		 * @note	Only returns real roots.
+		 */
+		template <typename T>
+		static UINT32 solveQuartic(T A, T B, T C, T D, T E, T* roots)
+		{
+			if (!approxEquals(E, (T)0))
+			{
+				T invE = 1 / E;
+				T k0 = A * invE;
+				T k1 = B * invE;
+				T k2 = C * invE;
+				T k3 = D * invE;
+
+				T r0 = k0 * (4 * k2 - k3 * k3) - k1 * k1;
+				T r1 = k3 * k1 - 4 * k0;
+				T r2 = -k2;
+				solveCubic(r0, r1, r2, (T)1, roots);
+				T y = roots[0];
+
+				UINT32 numRoots = 0;
+				T discr = ((T)0.25) * k3 * k3 - k2 + y;
+				if (discr > std::numeric_limits<T>::epsilon())
+				{
+					T r = sqrt(discr);
+					T t1 = ((T)0.75) * k3 * k3 - r * r - 2*k2;
+					T t2 = (k3 * k2 - 2 * k1 - ((T)0.25) * k3 * k3 * k3) / r;
+
+					T tPlus = t1 + t2;
+					if (tPlus >= ((T)0))
+					{
+						T d = std::sqrt(tPlus);
+						roots[0] = ((T)-0.25) * k3 + ((T)0.5) * (r + d);
+						roots[1] = ((T)-0.25) * k3 + ((T)0.5) * (r - d);
+
+						numRoots += 2;
+					}
+
+					T tMinus = t1 - t2;
+					if (tMinus >= ((T)0))
+					{
+						T e = std::sqrt(tMinus);
+						roots[numRoots++] = ((T)-0.25) * k3 + ((T)0.5) * (e - r);
+						roots[numRoots++] = ((T)-0.25) * k3 - ((T)0.5) * (e + r);
+					}
+				}
+				else if (discr < -std::numeric_limits<T>::epsilon())
+				{
+					numRoots = 0;
+				}
+				else
+				{
+					T t2 = y * y - 4 * k0;
+					if (t2 >= ((T)0))
+					{
+						t2 = 2 * std::sqrt(t2);
+						T t1 = ((T)0.75) * k3 * k3 - 2 * k2;
+
+						T tPlus = t1 + t2;
+						if (tPlus >= ((T)0))
+						{
+							T d = std::sqrt(tPlus);
+							roots[0] = ((T)-0.25) * k3 + ((T)0.5) * d;
+							roots[1] = ((T)-0.25) * k3 + ((T)0.5) * d;
+
+							numRoots += 2;
+						}
+
+						T tMinus = t1 - t2;
+						if (tMinus >= ((T)0))
+						{
+							T e = std::sqrt(tMinus);
+							roots[numRoots++] = ((T)-0.25) * k3 + ((T)0.5) * e;
+							roots[numRoots++] = ((T)-0.25) * k3 - ((T)0.5) * e;
+						}
+					}
+				}
+
+				return numRoots;
+			}
+			else
+			{
+				return solveCubic(A, B, C, D, roots);
+			}
 		}
 
         static const float POS_INFINITY;

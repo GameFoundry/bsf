@@ -14,6 +14,9 @@
 #include "BsRenderSystem.h"
 #include "BsRenderer.h"
 #include "BsTransientMesh.h"
+#include "BsRendererManager.h"
+
+using namespace std::placeholders;
 
 namespace BansheeEngine
 {
@@ -127,6 +130,9 @@ namespace BansheeEngine
 			fragParams->getParam("alphaCutoff", alphaCutoffParam);
 			alphaCutoffParam.set(PICKING_ALPHA_CUTOFF);
 		}
+
+		RendererPtr activeRenderer = RendererManager::instance().getActive();
+		activeRenderer->onCorePostRenderViewport.connect(std::bind(&GizmoManager::coreRender, this, _1));
 	}
 
 	void GizmoManager::startGizmo(const HSceneObject& gizmoParent)
@@ -279,30 +285,19 @@ namespace BansheeEngine
 		if (mIconMesh != nullptr)
 			mIconMeshHeap->dealloc(mIconMesh);
 
+		IconRenderDataVecPtr iconRenderData;
+
 		mSolidMesh = buildSolidMesh(mSolidCubeData, mSolidSphereData, mTotalRequiredSolidVertices, mTotalRequiredSolidIndices);
 		mWireMesh = buildWireMesh(mWireCubeData, mWireSphereData, mLineData, mFrustumData, mTotalRequiredWireVertices, mTotalRequiredWireIndices);
-		mIconMesh = buildIconMesh(mIconData, false, mIconRenderData);
+		mIconMesh = buildIconMesh(mIconData, false, iconRenderData);
+
+		MeshProxyPtr solidMeshProxy = mSolidMesh->_createProxy(0);
+		MeshProxyPtr wireMeshProxy = mWireMesh->_createProxy(0);
+		MeshProxyPtr iconMeshProxy = mIconMesh->_createProxy(0);
+
+		gCoreAccessor().queueCommand(std::bind(&GizmoManager::coreUpdateData, this, solidMeshProxy, wireMeshProxy, iconMeshProxy, iconRenderData));
 
 		clearGizmos();
-	}
-
-	void GizmoManager::render()
-	{
-		// Note: This must be rendered while Scene view is being rendered
-		Matrix4 viewMat = mCamera->getViewMatrix();
-		Matrix4 projMat = mCamera->getProjectionMatrix();
-		ViewportPtr viewport = mCamera->getViewport();
-
-		gCoreAccessor().queueCommand(std::bind(&GizmoManager::coreRenderSolidGizmos, 
-			this, viewMat, projMat, mSolidMesh->_createProxy(0)));
-
-		gCoreAccessor().queueCommand(std::bind(&GizmoManager::coreRenderWireGizmos, 
-			this, viewMat, projMat, mWireMesh->_createProxy(0)));
-
-		RectI screenArea = mCamera->getViewport()->getArea();
-
-		gCoreAccessor().queueCommand(std::bind(&GizmoManager::coreRenderIconGizmos, 
-			this, screenArea, mIconMesh->_createProxy(0), mIconRenderData));
 	}
 
 	void GizmoManager::renderForPicking(std::function<Color(UINT32)> idxToColorCallback)
@@ -729,6 +724,37 @@ namespace BansheeEngine
 
 		fadedColor = normalColor;
 		fadedColor.a *= 0.2f;
+	}
+
+	void GizmoManager::coreUpdateData(const MeshProxyPtr& solidMeshProxy, const MeshProxyPtr& wireMeshProxy,
+		const MeshProxyPtr& iconMeshProxy, const IconRenderDataVecPtr& iconRenderData)
+	{
+		mSolidMeshProxy = solidMeshProxy;
+		mWireMeshProxy = wireMeshProxy;
+		mIconMeshProxy = iconMeshProxy;
+		mIconRenderData = iconRenderData;
+	}
+
+	void GizmoManager::coreRender(const CameraProxy& camera)
+	{
+		RenderTargetPtr sceneRenderTarget = mCamera->getViewport()->getTarget();
+		if (camera.viewport.getTarget() != sceneRenderTarget)
+			return;
+
+		float width = (float)sceneRenderTarget->getCore()->getProperties().getWidth();
+		float height = (float)sceneRenderTarget->getCore()->getProperties().getHeight();
+
+		RectF normArea = camera.viewport.getNormArea();
+
+		RectI screenArea;
+		screenArea.x = (int)(normArea.x * width);
+		screenArea.y = (int)(normArea.y * height);
+		screenArea.width = (int)(normArea.width * width);
+		screenArea.height = (int)(normArea.height * height);
+
+		coreRenderSolidGizmos(camera.viewMatrix, camera.projMatrix, mSolidMeshProxy);
+		coreRenderWireGizmos(camera.viewMatrix, camera.projMatrix, mWireMeshProxy);
+		coreRenderIconGizmos(screenArea, mIconMeshProxy, mIconRenderData);
 	}
 
 	void GizmoManager::coreRenderSolidGizmos(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr meshProxy)

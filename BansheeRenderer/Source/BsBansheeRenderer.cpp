@@ -479,6 +479,8 @@ namespace BansheeEngine
 
 		Matrix4 viewProjMatrix = projMatrixCstm * viewMatrixCstm;
 
+		onCorePreRenderViewport(cameraProxy);
+
 		if (!cameraProxy.ignoreSceneRenderables)
 		{
 			// Update per-object param buffers and queue render elements
@@ -529,5 +531,7 @@ namespace BansheeEngine
 		}
 
 		renderQueue->clear();
+
+		onCorePostRenderViewport(cameraProxy);
 	}
 }

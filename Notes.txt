@@ -69,6 +69,10 @@ Reminders:
   - Will also need GameObject::destroy and GameObject::destroyImmediate. So I can remove GameObjects that might still be referenced that same frame (destroy() would just queue for destruction)
   - When unloading unused resources I should do it recursively so it unloads any new ones that might have been released during the first unload. 
     (e.g. unloading a sprite texture will probably release its atlas texture as well)
+  - Make importer multithreaded. I can add a flag to SpecificImporter that tells me if a certain importer supports multiple threads or not, but even if it doesn't I can run 
+    different importers on different threads this way. And once I hook up progress dialog box, perhaps make it have multiple progress bars in a single window (per thread).
+  - Add FolderManager, extensible C# script that can be attached to a folder (can be in a folder .meta) file. Handles processing of assets in that folder. Can get notified 
+    whenever anything in the folder changes. But is that necessary if I can have asset post- and pre- processor that can filter by folder programatically?
 
 
 Potential optimizations:

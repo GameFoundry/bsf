@@ -3,7 +3,6 @@ TODO:
  - Core thread gets stuck on shutdown when OpenGL is used...Somewhere in kernel
 
 CONCRETE TASK:
- - SceneView editor window: Add a way to detect exact mouse position on the render texture
  - Similar to how I have onRenderViewport callback in Renderer have another one that gets triggered from core thread
    - Hook up gizmo rendering there
  - Hook up gizmo manager to ScenePicking so gizmos are considered when picking
@@ -28,19 +27,41 @@ LATER:
 ----------------------------------------------------------------------
 Handles
 
- - Make a few different base handle types:
-   - Slider 1D (e.g. for movement using an arrow cap)
-   - Slider 2D (e.g. for movement in 2D using a plane render)
-   - Similar for scale/rotation handles  (see Unity for its implementations of those)
+SliderLine - position, direction, length
+  - When initially activated it records position nearest so the line as the starting point
+  - Further mouse dragging also finds nearest position to the line
+  - Difference between those two results in a float value (how much to move along direction from position to reach new position)
+  - Slider line has a capsule + sphere collider size of which can be set manually
 
-Handles should have colliders which will be queries whenever user input is detected in scene view
-If any handle is hit the input will not proceed further (e.g. no picking will be done) and that handle control
-will become active.
+SliderPlane - position, normal, size
+  - Similar to line slider only the direction is determined dynamically as well as distance
+  - Outputs a Vector2 (direction * distance moved)
+  - A OOB is used as a collider
 
-Base handle types should just be positioned in space and then return value every frame as user moves them.
- - This way they can also easily be used from C# for custom user-made stuff
+SliderDisc - position, normal, radius
+  - When initially activated it records position nearest so the disc as the starting point
+  - Further movement calculates the dynamic direction from the starting point to the current point on the plane the disc lies on
+  - Distance along that direction is returned as amount of movement (similar to line slider)
+  - Outputs a single float
+  - A torus is used as a collider
 
-TODO - Think about this
+Handles are always the same size regardless of the distance from camera. (Use same code as from gizmo rendering?)
+These three types can be used for creating MoveHandle, RotationHandle, ScaleHandle
+  - I can potentially move the colliders out of the sliders and add them to the *Handle classes as well
+  - Handle classes will also handle the rendering (using the existing DrawHelper methods)
+
+CONCRETE TASKS:
+ - Need to add capsule, torus and OOB colliders
+    - They need ray intersection code
+ - Line, plane and disc need code for finding nearest point to a ray
+
+Think about C# implementation.
+Take into consideration local vs. global handles
+Free move/rotate/scale handles need to exist as well
+ - Scale is easy, just perform uniform scale. Use SliderPlane oriented towards camera
+ - Move also use SliderPlane oriented towards camera
+ - Rotation use SliderDisc oriented towards camera
+
 See for inspiration: http://docs.unity3d.com/ScriptReference/Handles.html
 
 ----------------------------------------------------------------------
