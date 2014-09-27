@@ -818,14 +818,14 @@ namespace BansheeEngine
 	void GUITreeView::updateClippedBounds()
 	{
 		Vector2I offset = _getOffset();
-		mClippedBounds = RectI(offset.x, offset.y, _getWidth(), _getHeight());
+		mClippedBounds = Rect2I(offset.x, offset.y, _getWidth(), _getHeight());
 
-		RectI localClipRect(mClipRect.x + mOffset.x, mClipRect.y + mOffset.y, mClipRect.width, mClipRect.height);
+		Rect2I localClipRect(mClipRect.x + mOffset.x, mClipRect.y + mOffset.y, mClipRect.width, mClipRect.height);
 		mClippedBounds.clip(localClipRect);
 	}
 
 	void GUITreeView::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-		RectI clipRect, UINT8 widgetDepth, UINT16 areaDepth)
+		Rect2I clipRect, UINT8 widgetDepth, UINT16 areaDepth)
 	{
 		struct UpdateTreeElement
 		{
@@ -863,8 +863,8 @@ namespace BansheeEngine
 				Vector2I elementSize = current->mElement->_getOptimalSize();
 				btnHeight = elementSize.y;
 
-				mVisibleElements.push_back(InteractableElement(current->mParent, current->mSortedIdx * 2 + 0, RectI(x, offset.y, width, ELEMENT_EXTRA_SPACING)));
-				mVisibleElements.push_back(InteractableElement(current->mParent, current->mSortedIdx * 2 + 1, RectI(x, offset.y + ELEMENT_EXTRA_SPACING, width, btnHeight)));
+				mVisibleElements.push_back(InteractableElement(current->mParent, current->mSortedIdx * 2 + 0, Rect2I(x, offset.y, width, ELEMENT_EXTRA_SPACING)));
+				mVisibleElements.push_back(InteractableElement(current->mParent, current->mSortedIdx * 2 + 1, Rect2I(x, offset.y + ELEMENT_EXTRA_SPACING, width, btnHeight)));
 
 				offset.x = x + INITIAL_INDENT_OFFSET + indent * INDENT_SIZE;
 				offset.y += ELEMENT_EXTRA_SPACING;
@@ -875,7 +875,7 @@ namespace BansheeEngine
 				current->mElement->_setAreaDepth(areaDepth);
 				current->mElement->_setWidgetDepth(widgetDepth);
 
-				RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
+				Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
 				current->mElement->_setClipRect(elemClipRect);
 
 				yOffset = btnHeight;
@@ -903,7 +903,7 @@ namespace BansheeEngine
 				current->mFoldoutBtn->_setAreaDepth(areaDepth);
 				current->mFoldoutBtn->_setWidgetDepth(widgetDepth);
 
-				RectI elemClipRect(clipRect.x - myOffset.x, clipRect.y - myOffset.y, clipRect.width, clipRect.height);
+				Rect2I elemClipRect(clipRect.x - myOffset.x, clipRect.y - myOffset.y, clipRect.width, clipRect.height);
 				current->mFoldoutBtn->_setClipRect(elemClipRect);
 			}
 
@@ -929,7 +929,7 @@ namespace BansheeEngine
 		UINT32 remainingHeight = (UINT32)std::max(0, (INT32)height - (offset.y - y));
 
 		if(remainingHeight > 0)
-			mVisibleElements.push_back(InteractableElement(&getRootElement(), (UINT32)getRootElement().mChildren.size() * 2, RectI(x, offset.y, width, remainingHeight)));
+			mVisibleElements.push_back(InteractableElement(&getRootElement(), (UINT32)getRootElement().mChildren.size() * 2, Rect2I(x, offset.y, width, remainingHeight)));
 
 		for(auto selectedElem : mSelectedElements)
 		{
@@ -944,7 +944,7 @@ namespace BansheeEngine
 			selectedElem.background->_setAreaDepth(areaDepth + 1);
 			selectedElem.background->_setWidgetDepth(widgetDepth);
 
-			RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
+			Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
 			selectedElem.background->_setClipRect(elemClipRect);
 		}
 
@@ -961,7 +961,7 @@ namespace BansheeEngine
 			mNameEditBox->_setAreaDepth(areaDepth);
 			mNameEditBox->_setWidgetDepth(widgetDepth);
 
-			RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
+			Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
 			mNameEditBox->_setClipRect(elemClipRect);
 
 		}
@@ -995,7 +995,7 @@ namespace BansheeEngine
 					mDragHighlight->_setAreaDepth(areaDepth + 1);
 					mDragHighlight->_setWidgetDepth(widgetDepth);
 
-					RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
+					Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
 					mDragHighlight->_setClipRect(elemClipRect);
 				}
 				else
@@ -1013,7 +1013,7 @@ namespace BansheeEngine
 					mDragSepHighlight->_setAreaDepth(areaDepth + 1);
 					mDragSepHighlight->_setWidgetDepth(widgetDepth);
 
-					RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
+					Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
 					mDragSepHighlight->_setClipRect(elemClipRect);
 				}
 			}
@@ -1178,7 +1178,7 @@ namespace BansheeEngine
 
 		if(center)
 		{
-			RectI myBounds = _getClippedBounds();
+			Rect2I myBounds = _getClippedBounds();
 			INT32 clipVertCenter = myBounds.y + (INT32)Math::roundToInt(myBounds.height * 0.5f);
 			INT32 elemVertCenter = element->mElement->_getOffset().y + (INT32)Math::roundToInt(element->mElement->_getHeight() * 0.5f);
 
@@ -1189,7 +1189,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			RectI myBounds = _getClippedBounds();
+			Rect2I myBounds = _getClippedBounds();
 			INT32 elemVertTop = element->mElement->_getOffset().y;
 			INT32 elemVertBottom = element->mElement->_getOffset().y + element->mElement->_getHeight();
 

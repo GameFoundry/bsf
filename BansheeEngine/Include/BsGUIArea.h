@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "BsRectI.h"
+#include "BsRect2I.h"
 
 namespace BansheeEngine
 {
@@ -137,12 +137,12 @@ namespace BansheeEngine
 		 * @param	clipRect	Rectangle in coordinates relative to the area. If width or height
 		 *						is zero, no clipping will be done.
 		 */
-		void setClipRect(const RectI& clipRect);
+		void setClipRect(const Rect2I& clipRect);
 
 		/**
 		 * @brief	Gets a rectangle that is used for clipping of the area contents.
 		 */
-		RectI getClipRect() const { return mClipRect; }
+		Rect2I getClipRect() const { return mClipRect; }
 
 		/**
 		 * @brief	Hides the area and any child elements.
@@ -218,7 +218,7 @@ namespace BansheeEngine
 		INT32 mLeft, mRight, mTop, mBottom;
 		UINT32 mWidth, mHeight;
 		UINT16 mDepth;
-		RectI mClipRect;
+		Rect2I mClipRect;
 		bool mResizeXWithWidget;
 		bool mResizeYWithWidget;
 		bool mIsDirty;

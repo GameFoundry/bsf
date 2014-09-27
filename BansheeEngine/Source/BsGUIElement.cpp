@@ -110,7 +110,7 @@ namespace BansheeEngine
 		mHeight = height;
 	}
 
-	void GUIElement::_setClipRect(const RectI& clipRect) 
+	void GUIElement::_setClipRect(const Rect2I& clipRect) 
 	{ 
 		if(mClipRect != clipRect)
 		{
@@ -198,9 +198,9 @@ namespace BansheeEngine
 		return Vector2I(optimalWidth, optimalHeight);
 	}
 
-	RectI GUIElement::_getCachedBounds() const
+	Rect2I GUIElement::_getCachedBounds() const
 	{
-		return RectI(mOffset.x, mOffset.y, mWidth, mHeight);
+		return Rect2I(mOffset.x, mOffset.y, mWidth, mHeight);
 	}
 
 	void GUIElement::setFocus(bool enabled)
@@ -216,9 +216,9 @@ namespace BansheeEngine
 		markContentAsDirty();
 	}
 
-	RectI GUIElement::getVisibleBounds() const
+	Rect2I GUIElement::getVisibleBounds() const
 	{
-		RectI bounds = _getClippedBounds();
+		Rect2I bounds = _getClippedBounds();
 		
 		bounds.x += mStyle->margins.left;
 		bounds.y += mStyle->margins.top;
@@ -228,9 +228,9 @@ namespace BansheeEngine
 		return bounds;
 	}
 
-	RectI GUIElement::getContentBounds() const
+	Rect2I GUIElement::getContentBounds() const
 	{
-		RectI bounds;
+		Rect2I bounds;
 
 		bounds.x = mOffset.x + mStyle->margins.left + mStyle->contentOffset.left;
 		bounds.y = mOffset.y + mStyle->margins.top + mStyle->contentOffset.top;
@@ -242,13 +242,13 @@ namespace BansheeEngine
 		return bounds;
 	}
 
-	RectI GUIElement::getContentClipRect() const
+	Rect2I GUIElement::getContentClipRect() const
 	{
-		RectI contentBounds = getContentBounds();
+		Rect2I contentBounds = getContentBounds();
 		
 		// Transform into element space so we can clip it using the element clip rectangle
 		Vector2I offsetDiff = Vector2I(contentBounds.x - mOffset.x, contentBounds.y - mOffset.y);
-		RectI contentClipRect(offsetDiff.x, offsetDiff.y, contentBounds.width, contentBounds.height);
+		Rect2I contentClipRect(offsetDiff.x, offsetDiff.y, contentBounds.width, contentBounds.height);
 		contentClipRect.clip(mClipRect);
 
 		// Transform into content sprite space
@@ -260,7 +260,7 @@ namespace BansheeEngine
 
 	bool GUIElement::_isInBounds(const Vector2I position) const
 	{
-		RectI contentBounds = getVisibleBounds();
+		Rect2I contentBounds = getVisibleBounds();
 
 		return contentBounds.contains(position);
 	}

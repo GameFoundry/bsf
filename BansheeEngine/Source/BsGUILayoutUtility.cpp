@@ -10,9 +10,9 @@ namespace BansheeEngine
 		return elem->_calculateOptimalLayoutSize();
 	}
 
-	RectI GUILayoutUtility::calcBounds(const GUIElementBase* elem)
+	Rect2I GUILayoutUtility::calcBounds(const GUIElementBase* elem)
 	{
-		RectI parentArea;
+		Rect2I parentArea;
 
 		GUIElementBase* parent = elem->_getParent();
 		if (parent != nullptr)
@@ -45,13 +45,13 @@ namespace BansheeEngine
 			optimalSizes.push_back(calcOptimalSize(elem));
 		}
 
-		RectI* elementAreas = nullptr;
+		Rect2I* elementAreas = nullptr;
 
 		if (numElements > 0)
-			elementAreas = stackConstructN<RectI>(numElements);
+			elementAreas = stackConstructN<Rect2I>(numElements);
 
 		parent->_getElementAreas(parentArea.x, parentArea.y, parentArea.width, parentArea.height, elementAreas, numElements, optimalSizes);
-		RectI myArea = elementAreas[myIndex];
+		Rect2I myArea = elementAreas[myIndex];
 
 		if (elementAreas != nullptr)
 			stackDeallocLast(elementAreas);

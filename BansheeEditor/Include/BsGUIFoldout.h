@@ -28,7 +28,7 @@ namespace BansheeEngine
 		void setContent(const GUIContent& content);
 
 		void _updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-			RectI clipRect, UINT8 widgetDepth, UINT16 areaDepth);
+			Rect2I clipRect, UINT8 widgetDepth, UINT16 areaDepth);
 
 		Vector2I _getOptimalSize() const;
 

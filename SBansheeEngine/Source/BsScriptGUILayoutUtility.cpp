@@ -24,7 +24,7 @@ namespace BansheeEngine
 		*output = GUILayoutUtility::calcOptimalSize(guiElement->getGUIElement());;
 	}
 
-	void ScriptGUILayoutUtility::internal_CalculateBounds(ScriptGUIElementBaseTBase* guiElement, RectI* output)
+	void ScriptGUILayoutUtility::internal_CalculateBounds(ScriptGUIElementBaseTBase* guiElement, Rect2I* output)
 	{
 		*output = GUILayoutUtility::calcBounds(guiElement->getGUIElement());
 	}

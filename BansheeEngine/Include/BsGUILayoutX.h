@@ -29,7 +29,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUILayout::_getElementAreas
 		 */
-		void _getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, RectI* elementAreas, UINT32 numElements, const Vector<Vector2I>& optimalSizes) const;
+		void _getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements, const Vector<Vector2I>& optimalSizes) const;
 	protected:
 		/**
 		 * @brief	Positions/size all child layout elements based on the provided settings and their (previously calculated) optimal sizes.
@@ -42,6 +42,6 @@ namespace BansheeEngine
 		 * @brief	widgetDepth	Depth of the parent widget. Determines depth at which child elements will be placed on. Takes priority over any other depth.
 		 * @brief	areaDepth	Depth of the parent area. Determines depth at which child elements will be placed on. Takes priority over element-specific depth.
 		 */
-		void _updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height, RectI clipRect, UINT8 widgetDepth, UINT16 areaDepth);
+		void _updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I clipRect, UINT8 widgetDepth, UINT16 areaDepth);
 	};
 }

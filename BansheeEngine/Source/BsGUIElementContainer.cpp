@@ -27,7 +27,7 @@ namespace BansheeEngine
 
 	void GUIElementContainer::updateClippedBounds()
 	{
-		mClippedBounds = RectI(0, 0, 0, 0); // We don't want any mouse input for this element. This is just a container.
+		mClippedBounds = Rect2I(0, 0, 0, 0); // We don't want any mouse input for this element. This is just a container.
 	}
 
 	void GUIElementContainer::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 

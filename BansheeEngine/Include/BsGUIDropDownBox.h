@@ -112,14 +112,14 @@ namespace BansheeEngine
 		 * 			of the provided bounds. Vertically system prefers placing the box at the bottom of the bounds, but may choose
 		 * 			to align it with the top of the bounds if it offers more space for the contents.
 		 */
-		static GUIDropDownAreaPlacement aroundBoundsVert(const RectI& bounds);
+		static GUIDropDownAreaPlacement aroundBoundsVert(const Rect2I& bounds);
 		
 		/**
 		 * @brief	Drop down box will be placed at the specified bounds. Box will be vertically aligned to the top
 		 * 			of the provided bounds. Horizontally system prefers placing the box at the right of the bounds, but may choose
 		 * 			to align it with the left of the bounds if it offers more space for the contents.
 		 */
-		static GUIDropDownAreaPlacement aroundBoundsHorz(const RectI& bounds);
+		static GUIDropDownAreaPlacement aroundBoundsHorz(const Rect2I& bounds);
 
 		/**
 		 * @brief	Returns drop down box positioning type.
@@ -130,7 +130,7 @@ namespace BansheeEngine
 		 * @brief	Returns bounds around which to position the drop down box
 		 *			if one of the bounds positioning types is used.
 		 */
-		const RectI& getBounds() const { return mBounds; }
+		const Rect2I& getBounds() const { return mBounds; }
 
 		/**
 		 * @brief	Returns position around which to position the drop down box
@@ -142,7 +142,7 @@ namespace BansheeEngine
 		GUIDropDownAreaPlacement() { }
 
 		Type mType;
-		RectI mBounds;
+		Rect2I mBounds;
 		Vector2I mPosition;
 	};
 
@@ -197,7 +197,7 @@ namespace BansheeEngine
 			 *							increase this value for each level of the sub-menu hierarchy.
 			 */
 			DropDownSubMenu(GUIDropDownBox* owner, const GUIDropDownAreaPlacement& placement, 
-				const RectI& availableBounds, const GUIDropDownData& dropDownData, GUIDropDownType type, UINT32 depthOffset);
+				const Rect2I& availableBounds, const GUIDropDownData& dropDownData, GUIDropDownType type, UINT32 depthOffset);
 			~DropDownSubMenu();
 
 			/**
@@ -238,7 +238,7 @@ namespace BansheeEngine
 			/**
 			 * @brief	Returns actual visible bounds of the sub-menu.
 			 */
-			RectI getVisibleBounds() const { return mVisibleBounds; }
+			Rect2I getVisibleBounds() const { return mVisibleBounds; }
 
 			/**
 			 * @brief	Get localized name of a menu item element with the specified index.
@@ -253,8 +253,8 @@ namespace BansheeEngine
 			UINT32 mPage;
 			INT32 x, y;
 			UINT32 width, height;
-			RectI mVisibleBounds;
-			RectI mAvailableBounds;
+			Rect2I mVisibleBounds;
+			Rect2I mAvailableBounds;
 			UINT32 mDepthOffset;
 			bool mOpenedUpward;
 

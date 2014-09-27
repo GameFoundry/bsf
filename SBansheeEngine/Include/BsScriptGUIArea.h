@@ -2,7 +2,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
-#include "BsRectI.h"
+#include "BsRect2I.h"
 
 namespace BansheeEngine
 {
@@ -28,7 +28,7 @@ namespace BansheeEngine
 		void destroy();
 
 		GUIArea* mGUIArea;
-		RectI mArea;
+		Rect2I mArea;
 		ScriptGUIPanel* mParentPanel;
 		bool mIsDestroyed;
 	};

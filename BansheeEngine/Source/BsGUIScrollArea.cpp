@@ -34,7 +34,7 @@ namespace BansheeEngine
 
 	void GUIScrollArea::updateClippedBounds()
 	{
-		RectI bounds(0, 0, mWidth, mHeight);
+		Rect2I bounds(0, 0, mWidth, mHeight);
 		bounds.clip(mClipRect);
 		bounds.x += mOffset.x;
 		bounds.y += mOffset.y;
@@ -43,7 +43,7 @@ namespace BansheeEngine
 	}
 
 	void GUIScrollArea::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-		RectI clipRect, UINT8 widgetDepth, UINT16 areaDepth)
+		Rect2I clipRect, UINT8 widgetDepth, UINT16 areaDepth)
 	{
 		// We want elements to use their optimal height, since scroll area
 		// technically provides "infinite" space
@@ -67,7 +67,7 @@ namespace BansheeEngine
 		mClippedContentWidth = width;
 		mClippedContentHeight = height;
 
-		RectI layoutClipRect = clipRect;
+		Rect2I layoutClipRect = clipRect;
 		bool addHorzScrollbar = (mHorzBarType == ScrollBarType::ShowIfDoesntFit && mContentWidth > mWidth) || 
 			mHorzBarType == ScrollBarType::AlwaysShow && mHorzBarType != ScrollBarType::NeverShow;
 
@@ -176,11 +176,11 @@ namespace BansheeEngine
 			mVertScroll->_setWidgetDepth(widgetDepth);
 
 			UINT32 clippedScrollbarWidth = std::min(width, ScrollBarWidth);
-			RectI elemClipRect(0, 0, clippedScrollbarWidth, clipRect.height);
+			Rect2I elemClipRect(0, 0, clippedScrollbarWidth, clipRect.height);
 			mVertScroll->_setClipRect(elemClipRect);
 
 			// This element is not a child of any layout so we treat it as a root element
-			RectI scrollBarLayoutClipRect(clipRect.x + scrollBarOffset, clipRect.y, clippedScrollbarWidth, clipRect.height);
+			Rect2I scrollBarLayoutClipRect(clipRect.x + scrollBarOffset, clipRect.y, clippedScrollbarWidth, clipRect.height);
 			mVertScroll->_updateLayout(offset.x, offset.y, ScrollBarWidth, scrollBarHeight, scrollBarLayoutClipRect, widgetDepth, areaDepth);
 
 			// Set new handle size and update position to match the new size
@@ -233,11 +233,11 @@ namespace BansheeEngine
 			mHorzScroll->_setWidgetDepth(widgetDepth);
 
 			UINT32 clippedScrollbarHeight = std::min(height, ScrollBarWidth);
-			RectI elemClipRect(0, 0, clipRect.width, clippedScrollbarHeight);
+			Rect2I elemClipRect(0, 0, clipRect.width, clippedScrollbarHeight);
 			mHorzScroll->_setClipRect(elemClipRect);
 
 			// This element is not a child of any layout so we treat it as a root element
-			RectI scrollBarLayoutClipRect(clipRect.x, clipRect.y + scrollBarOffset, clipRect.width, clippedScrollbarHeight);
+			Rect2I scrollBarLayoutClipRect(clipRect.x, clipRect.y + scrollBarOffset, clipRect.width, clippedScrollbarHeight);
 			mHorzScroll->_updateLayout(offset.x, offset.y, scrollBarWidth, ScrollBarWidth, scrollBarLayoutClipRect, widgetDepth, areaDepth);
 
 			// Set new handle size and update position to match the new size

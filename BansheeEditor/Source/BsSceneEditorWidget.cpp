@@ -81,7 +81,7 @@ namespace BansheeEngine
 	{
 		Vector2I windowPos = mParentWindow->screenToWindowPos(screenPos);
 
-		RectI renderTextureBounds = GUILayoutUtility::calcBounds(mGUIRenderTexture);
+		Rect2I renderTextureBounds = GUILayoutUtility::calcBounds(mGUIRenderTexture);
 
 		if (renderTextureBounds.contains(windowPos))
 		{

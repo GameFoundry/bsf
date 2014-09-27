@@ -70,8 +70,8 @@ namespace BansheeEngine
 
 	void ScriptGUIArea::updateArea()
 	{
-		RectI parentArea = mParentPanel->getClippedArea();
-		RectI myClippedArea = mArea;
+		Rect2I parentArea = mParentPanel->getClippedArea();
+		Rect2I myClippedArea = mArea;
 		myClippedArea.x += parentArea.x;
 		myClippedArea.y += parentArea.y;
 		myClippedArea.clip(parentArea);

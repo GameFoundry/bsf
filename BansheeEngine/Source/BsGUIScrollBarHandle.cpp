@@ -111,9 +111,9 @@ namespace BansheeEngine
 
 	void GUIScrollBarHandle::updateClippedBounds()
 	{
-		mClippedBounds = RectI(mOffset.x, mOffset.y, mWidth, mHeight);
+		mClippedBounds = Rect2I(mOffset.x, mOffset.y, mWidth, mHeight);
 
-		RectI localClipRect(mClipRect.x + mOffset.x, mClipRect.y + mOffset.y, mClipRect.width, mClipRect.height);
+		Rect2I localClipRect(mClipRect.x + mOffset.x, mClipRect.y + mOffset.y, mClipRect.width, mClipRect.height);
 		mClippedBounds.clip(localClipRect);
 	}
 
@@ -136,7 +136,7 @@ namespace BansheeEngine
 		else
 			offset.y += Math::floorToInt(mHandlePos);
 
-		RectI clipRect = mClipRect;
+		Rect2I clipRect = mClipRect;
 		if(mHorizontal)
 			clipRect.x -= Math::floorToInt(mHandlePos);
 		else

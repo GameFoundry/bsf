@@ -57,7 +57,7 @@ namespace BansheeEngine
 
 	void GUIViewport::updateClippedBounds()
 	{
-		RectI mBounds = RectI(0, 0, mWidth, mHeight);
+		Rect2I mBounds = Rect2I(0, 0, mWidth, mHeight);
 		mBounds.clip(mClipRect);
 		mBounds.x += mOffset.x;
 		mBounds.y += mOffset.y;

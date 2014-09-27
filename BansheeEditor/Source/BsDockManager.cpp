@@ -96,7 +96,7 @@ namespace BansheeEngine
 	{
 		if(!mIsLeaf && mChildren[0] != nullptr && mChildren[1] != nullptr)
 		{
-			RectI clipRect = mArea;
+			Rect2I clipRect = mArea;
 			if(mIsHorizontal)
 			{
 				UINT32 remainingSize = (UINT32)std::max(0, (INT32)mArea.height - (INT32)SLIDER_SIZE);
@@ -110,7 +110,7 @@ namespace BansheeEngine
 				mSlider->_setWidth(mArea.width);
 				mSlider->_setHeight(SLIDER_SIZE);
 
-				RectI elemClipRect(clipRect.x - mArea.x, clipRect.y - mArea.y, clipRect.width, clipRect.height);
+				Rect2I elemClipRect(clipRect.x - mArea.x, clipRect.y - mArea.y, clipRect.width, clipRect.height);
 				mSlider->_setClipRect(elemClipRect);
 			}
 			else
@@ -126,7 +126,7 @@ namespace BansheeEngine
 				mSlider->_setWidth(SLIDER_SIZE);
 				mSlider->_setHeight(mArea.height);
 
-				RectI elemClipRect(clipRect.x - mArea.x, clipRect.y - mArea.y, clipRect.width, clipRect.height);
+				Rect2I elemClipRect(clipRect.x - mArea.x, clipRect.y - mArea.y, clipRect.width, clipRect.height);
 				mSlider->_setClipRect(elemClipRect);
 			}
 		}
@@ -382,7 +382,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	RectI DockManager::DockContainer::getContentBounds() const
+	Rect2I DockManager::DockContainer::getContentBounds() const
 	{
 		if(!mIsLeaf || mWidgets == nullptr)
 			return mArea;
@@ -532,7 +532,7 @@ namespace BansheeEngine
 	void DockManager::setArea(INT32 x, INT32 y, UINT32 width, UINT32 height)
 	{
 		mRootContainer.setArea(x, y, width, height);
-		mArea = RectI(x, y, width, height);
+		mArea = Rect2I(x, y, width, height);
 
 		updateDropOverlay(x, y, width, height);
 	}
@@ -933,7 +933,7 @@ namespace BansheeEngine
 			if(mMouseOverContainer == nullptr)
 				mMouseOverContainer = &mRootContainer;
 
-			RectI overlayBounds;
+			Rect2I overlayBounds;
 			
 			if(mMouseOverContainer != nullptr)
 				overlayBounds = mMouseOverContainer->getContentBounds();
@@ -991,7 +991,7 @@ namespace BansheeEngine
 
 			if(mouseOverContainer == nullptr)
 			{
-				RectI overlayBounds = mRootContainer.getContentBounds();
+				Rect2I overlayBounds = mRootContainer.getContentBounds();
 				if(overlayBounds.contains(windowPos))
 				{
 					insert(nullptr, draggedWidget, DockLocation::None);

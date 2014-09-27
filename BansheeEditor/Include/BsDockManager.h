@@ -2,7 +2,7 @@
 
 #include "BsEditorPrerequisites.h"
 #include "BsGUIElementContainer.h"
-#include "BsRectI.h"
+#include "BsRect2I.h"
 
 namespace BansheeEngine
 {
@@ -47,7 +47,7 @@ namespace BansheeEngine
 			 */
 			DockContainer* findAtPos(const Vector2I& pos);
 
-			RectI getContentBounds() const;
+			Rect2I getContentBounds() const;
 
 			bool mIsLeaf;
 			DockContainer* mChildren[2];
@@ -55,7 +55,7 @@ namespace BansheeEngine
 			DockManager* mManager;
 			EditorWidgetContainer* mWidgets;
 			GUIDockSlider* mSlider;
-			RectI mArea;
+			Rect2I mArea;
 			float mSplitPosition;
 			bool mIsHorizontal;
 
@@ -108,11 +108,11 @@ namespace BansheeEngine
 
 		RenderWindow* mParentWindow;
 		DockContainer mRootContainer;
-		RectI mArea;
+		Rect2I mArea;
 
 		HMesh mDropOverlayMesh;
 		HMaterial mDropOverlayMat;
-		RectI mLastOverlayBounds;
+		Rect2I mLastOverlayBounds;
 
 		DockContainer* mMouseOverContainer;
 		DockLocation mHighlightedDropLoc;

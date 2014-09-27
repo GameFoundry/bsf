@@ -162,7 +162,7 @@ namespace BansheeEngine
 
 		// When text bounds are reduced the scroll needs to be adjusted so that
 		// input box isn't filled with mostly empty space.
-		clampScrollToBounds(mTextSprite->getBounds(mOffset, RectI()));
+		clampScrollToBounds(mTextSprite->getBounds(mOffset, Rect2I()));
 
 		GUIElement::updateRenderElementsInternal();
 	}
@@ -264,7 +264,7 @@ namespace BansheeEngine
 		return Vector2I();
 	}
 
-	RectI GUIInputBox::renderElemToClipRect(UINT32 renderElemIdx) const
+	Rect2I GUIInputBox::renderElemToClipRect(UINT32 renderElemIdx) const
 	{
 		UINT32 oldNumElements = 0;
 		UINT32 newNumElements = oldNumElements + mTextSprite->getNumRenderElements();
@@ -304,7 +304,7 @@ namespace BansheeEngine
 			}
 		}
 
-		return RectI();
+		return Rect2I();
 	}
 
 	Vector2I GUIInputBox::_getOptimalSize() const
@@ -331,9 +331,9 @@ namespace BansheeEngine
 		return mTextOffset;	
 	}
 
-	RectI GUIInputBox::_getTextInputRect() const
+	Rect2I GUIInputBox::_getTextInputRect() const
 	{
-		RectI textBounds = getContentBounds();
+		Rect2I textBounds = getContentBounds();
 		textBounds.x -= mOffset.x;
 		textBounds.y -= mOffset.y;
 
@@ -372,7 +372,7 @@ namespace BansheeEngine
 		UINT32 localRenderElementIdx;
 		Sprite* sprite = renderElemToSprite(renderElementIdx, localRenderElementIdx);
 		Vector2I offset = renderElemToOffset(renderElementIdx);
-		RectI clipRect = renderElemToClipRect(renderElementIdx);
+		Rect2I clipRect = renderElemToClipRect(renderElementIdx);
 
 		sprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, localRenderElementIdx, offset, clipRect);
 	}
@@ -924,7 +924,7 @@ namespace BansheeEngine
 		markContentAsDirty();
 	}
 
-	void GUIInputBox::clampScrollToBounds(RectI unclippedTextBounds)
+	void GUIInputBox::clampScrollToBounds(Rect2I unclippedTextBounds)
 	{
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
 
@@ -1032,14 +1032,14 @@ namespace BansheeEngine
 
 	Vector2I GUIInputBox::getTextOffset() const
 	{
-		RectI textBounds = getContentBounds();
+		Rect2I textBounds = getContentBounds();
 		return Vector2I(textBounds.x, textBounds.y) + mTextOffset;
 	}
 
-	RectI GUIInputBox::getTextClipRect() const
+	Rect2I GUIInputBox::getTextClipRect() const
 	{
-		RectI contentClipRect = getContentClipRect();
-		return RectI(contentClipRect.x - mTextOffset.x, contentClipRect.y - mTextOffset.y, contentClipRect.width, contentClipRect.height);
+		Rect2I contentClipRect = getContentClipRect();
+		return Rect2I(contentClipRect.x - mTextOffset.x, contentClipRect.y - mTextOffset.y, contentClipRect.width, contentClipRect.height);
 	}
 
 	TEXT_SPRITE_DESC GUIInputBox::getTextDesc() const
@@ -1049,7 +1049,7 @@ namespace BansheeEngine
 		textDesc.font = _getStyle()->font;
 		textDesc.fontSize = _getStyle()->fontSize;
 
-		RectI textBounds = getContentBounds();
+		Rect2I textBounds = getContentBounds();
 		textDesc.width = textBounds.width;
 		textDesc.height = textBounds.height;
 		textDesc.horzAlign = _getStyle()->textHorzAlign;

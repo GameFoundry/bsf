@@ -44,7 +44,7 @@ namespace BansheeEngine
 		 * @param	parentClipRect	Clip rectangle of the parent GUI element. Caret clip rectangle will additionally be
 		 *							clipped by this area. Relative to parent element.
 		 */
-		RectI getSpriteClipRect(const RectI& parentClipRect) const;
+		Rect2I getSpriteClipRect(const Rect2I& parentClipRect) const;
 
 		/**
 		 * @brief	Rebuilts internal caret sprite using current properties.

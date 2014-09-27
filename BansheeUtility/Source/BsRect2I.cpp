@@ -1,21 +1,21 @@
-#include "BsRectI.h"
+#include "BsRect2I.h"
 #include "BsVector2I.h"
 #include "BsMatrix4.h"
 #include "BsMath.h"
 
 namespace BansheeEngine
 {
-	const RectI RectI::EMPTY = RectI();
+	const Rect2I Rect2I::EMPTY = Rect2I();
 
-	RectI::RectI()
+	Rect2I::Rect2I()
 		:x(0), y(0), width(0), height(0)
 	{ }
 
-	RectI::RectI(int _x, int _y, int _width, int _height)
+	Rect2I::Rect2I(int _x, int _y, int _width, int _height)
 		:x(_x), y(_y), width(_width), height(_height)
 	{ }
 
-	bool RectI::contains(const Vector2I& point) const
+	bool Rect2I::contains(const Vector2I& point) const
 	{
 		if(point.x >= x && point.x < (x + width))
 		{
@@ -26,7 +26,7 @@ namespace BansheeEngine
 		return false;
 	}
 
-	bool RectI::overlaps(const RectI& other) const
+	bool Rect2I::overlaps(const Rect2I& other) const
 	{
 		INT32 otherRight = other.x + other.width;
 		INT32 myRight = x + width;
@@ -41,7 +41,7 @@ namespace BansheeEngine
 		return false;
 	}
 
-	void RectI::encapsulate(const RectI& other)
+	void Rect2I::encapsulate(const Rect2I& other)
 	{
 		int myRight = x + width;
 		int myBottom = y + height;
@@ -65,7 +65,7 @@ namespace BansheeEngine
 			height = myBottom - y;
 	}
 
-	void RectI::clip(const RectI& clipRect)
+	void Rect2I::clip(const Rect2I& clipRect)
 	{
 		int newLeft = std::max(x, clipRect.x);
 		int newTop = std::max(y, clipRect.y);
@@ -79,7 +79,7 @@ namespace BansheeEngine
 		height = std::max(0, newBottom - newTop);
 	}
 
-	void RectI::transform(const Matrix4& matrix)
+	void Rect2I::transform(const Matrix4& matrix)
 	{
 		Vector4 verts[4];
 		verts[0] = Vector4((float)x, (float)y, 0.0f, 1.0f);

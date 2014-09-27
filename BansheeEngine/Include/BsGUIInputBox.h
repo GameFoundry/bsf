@@ -173,7 +173,7 @@ namespace BansheeEngine
 		 * @brief	Returns rectangle in which the text can be displayed, in local
 		 *			coordinates (i.e. text will start at 0, 0).
 		 */
-		virtual RectI _getTextInputRect() const;
+		virtual Rect2I _getTextInputRect() const;
 
 		/**
 		 * @copydoc	GUIElement::_getRenderElementDepth
@@ -207,7 +207,7 @@ namespace BansheeEngine
 		 *			with the provided index. Rectangle is in local coordiantes relative to
 		 *			element origin.
 		 */
-		RectI renderElemToClipRect(UINT32 renderElemIdx) const;
+		Rect2I renderElemToClipRect(UINT32 renderElemIdx) const;
 
 		/**
 		 * @brief	Inserts a new string into the current text at the specified index.
@@ -266,7 +266,7 @@ namespace BansheeEngine
 		 * @brief	Clamps the text offset (scroll)	so that the text fits in the
 		 *			provided bounds nicely with minimal white space.
 		 */
-		void clampScrollToBounds(RectI unclippedTextBounds);
+		void clampScrollToBounds(Rect2I unclippedTextBounds);
 
 		/**
 		 * @brief	Returns offset at which to render the text. Relative to parent widget.
@@ -276,7 +276,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns rectangle used for clipping the text. Relative to element.
 		 */
-		RectI getTextClipRect() const;
+		Rect2I getTextClipRect() const;
 
 		/**
 		 * @brief	Returns text sprite descriptor determining how is text sprite created.

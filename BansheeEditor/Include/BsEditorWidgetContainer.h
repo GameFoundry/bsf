@@ -24,8 +24,8 @@ namespace BansheeEngine
 		GUIWidget& getParentWidget() const { return *mParent; }
 		EditorWindow* getParentWindow() const { return mParentWindow; }
 
-		RectI getContentBounds() const;
-		Vector<RectI> getDraggableAreas() const;
+		Rect2I getContentBounds() const;
+		Vector<Rect2I> getDraggableAreas() const;
 
 		void _update();
 

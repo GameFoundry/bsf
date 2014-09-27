@@ -29,7 +29,7 @@ namespace BansheeEngine
 	}
 
 	void GUIPanelContainer::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-		RectI clipRect, UINT8 widgetDepth, UINT16 areaDepth)
+		Rect2I clipRect, UINT8 widgetDepth, UINT16 areaDepth)
 	{
 		const Vector<ScriptGUIArea*> areas = mGUIPanel->getAreas();
 
@@ -43,7 +43,7 @@ namespace BansheeEngine
 			if (area->width() != width || area->height() != height)
 				area->setSize(width, height);
 
-			RectI areaClipRect(clipRect.x - x, clipRect.y - y, clipRect.width, clipRect.height);
+			Rect2I areaClipRect(clipRect.x - x, clipRect.y - y, clipRect.width, clipRect.height);
 			if (area->getClipRect() != areaClipRect)
 				area->setClipRect(areaClipRect);
 

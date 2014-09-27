@@ -143,10 +143,10 @@ namespace BansheeEngine
 		void coreRender(const CameraProxy& camera);
 		void coreRenderSolidGizmos(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr mesh);
 		void coreRenderWireGizmos(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr mesh);
-		void coreRenderIconGizmos(RectI screenArea, MeshProxyPtr mesh, IconRenderDataVecPtr renderData);
+		void coreRenderIconGizmos(Rect2I screenArea, MeshProxyPtr mesh, IconRenderDataVecPtr renderData);
 
 		void coreRenderGizmosForPicking(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr mesh);
-		void coreRenderIconGizmosForPicking(RectI screenArea, MeshProxyPtr mesh, IconRenderDataVecPtr renderData);
+		void coreRenderIconGizmosForPicking(Rect2I screenArea, MeshProxyPtr mesh, IconRenderDataVecPtr renderData);
 
 		void coreUpdateData(const MeshProxyPtr& solidMeshProxy, const MeshProxyPtr& wireMeshProxy,
 			const MeshProxyPtr& iconMeshProxy, const IconRenderDataVecPtr& iconRenderData);

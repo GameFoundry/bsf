@@ -23,14 +23,14 @@ namespace BansheeEngine
 		return getCaretPosition(getTextOffset());
 	}
 
-	RectI GUIInputCaret::getSpriteClipRect(const RectI& parentClipRect) const
+	Rect2I GUIInputCaret::getSpriteClipRect(const Rect2I& parentClipRect) const
 	{
 		Vector2I clipOffset = getSpriteOffset() - mElement->_getOffset() - 
 			Vector2I(mElement->_getTextInputRect().x, mElement->_getTextInputRect().y);
 
-		RectI clipRect(-clipOffset.x, -clipOffset.y, mTextDesc.width, mTextDesc.height);
+		Rect2I clipRect(-clipOffset.x, -clipOffset.y, mTextDesc.width, mTextDesc.height);
 
-		RectI localParentCliprect = parentClipRect;
+		Rect2I localParentCliprect = parentClipRect;
 
 		// Move parent rect to our space
 		localParentCliprect.x += mElement->_getTextInputOffset().x + clipRect.x;
@@ -133,7 +133,7 @@ namespace BansheeEngine
 
 		if(charIdx != -1)
 		{
-			RectI charRect = getCharRect(charIdx);
+			Rect2I charRect = getCharRect(charIdx);
 
 			float xCenter = charRect.x + charRect.width * 0.5f;
 			if(pos.x <= xCenter)
@@ -249,7 +249,7 @@ namespace BansheeEngine
 
 			charIdx = std::min((UINT32)(mTextDesc.text.size() - 1), charIdx);
 
-			RectI charRect = getCharRect(charIdx);
+			Rect2I charRect = getCharRect(charIdx);
 			UINT32 lineIdx = getLineForChar(charIdx);
 			UINT32 yOffset = getLineDesc(lineIdx).getLineYStart() + getTextOffset().y;
 

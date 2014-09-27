@@ -310,15 +310,15 @@ namespace BansheeEngine
 		// so force the update right away so we get correct element bounds
 		mMainArea->_update();
 
-		Vector<RectI> nonClientAreas;
+		Vector<Rect2I> nonClientAreas;
 		nonClientAreas.push_back(mLogoTexture->_getCachedBounds());
 
 		if(mChildMenus.size() > 0)
 		{
-			RectI lastButtonBounds = mChildMenus.back().button->_getCachedBounds();
-			RectI minButtonBounds = mMinBtn->_getCachedBounds();
+			Rect2I lastButtonBounds = mChildMenus.back().button->_getCachedBounds();
+			Rect2I minButtonBounds = mMinBtn->_getCachedBounds();
 
-			RectI emptyArea(lastButtonBounds.x + lastButtonBounds.width, mMainArea->y(), 
+			Rect2I emptyArea(lastButtonBounds.x + lastButtonBounds.width, mMainArea->y(), 
 				minButtonBounds.x - (lastButtonBounds.x + lastButtonBounds.width), mMainArea->height());
 
 			nonClientAreas.push_back(emptyArea);

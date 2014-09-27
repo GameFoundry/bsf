@@ -7,9 +7,9 @@ using System.Text;
 namespace BansheeEngine
 {
     [StructLayout(LayoutKind.Sequential)]
-    public class RectI
+    public class Rect2I
     {
-        public RectI(int x, int y, int width, int height)
+        public Rect2I(int x, int y, int width, int height)
         {
             this.x = x;
             this.y = y;
@@ -17,12 +17,12 @@ namespace BansheeEngine
             this.height = height;
         }
 
-		public static bool operator== (RectI lhs, RectI rhs)
+		public static bool operator== (Rect2I lhs, Rect2I rhs)
 		{
 			return lhs.x == rhs.x && lhs.y == rhs.y && lhs.width == rhs.width && lhs.height == rhs.height;
 		}
 
-		public static bool operator!= (RectI lhs, RectI rhs)
+		public static bool operator!= (Rect2I lhs, Rect2I rhs)
 		{
 			return !(lhs == rhs);
 		}
@@ -40,10 +40,10 @@ namespace BansheeEngine
 
         public override bool Equals(object other)
         {
-            if (!(other is RectI))
+            if (!(other is Rect2I))
                 return false;
 
-            RectI rect = (RectI)other;
+            Rect2I rect = (Rect2I)other;
             if (x.Equals(rect.x) && y.Equals(rect.y) && width.Equals(rect.width) && height.Equals(rect.height))
                 return true;
 

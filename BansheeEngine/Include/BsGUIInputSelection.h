@@ -34,7 +34,7 @@ namespace BansheeEngine
 		 * @param	parentClipRect	Clip rectangle of the parent GUI element. Selection clip rectangle will additionally be
 		 *							clipped by this area. Relative to parent element.
 		 */
-		RectI GUIInputSelection::getSelectionSpriteClipRect(UINT32 spriteIdx, const RectI& parentClipRect) const;
+		Rect2I GUIInputSelection::getSelectionSpriteClipRect(UINT32 spriteIdx, const Rect2I& parentClipRect) const;
 
 		/**
 		 * @brief	Recreates the selection clip sprites.
@@ -103,7 +103,7 @@ namespace BansheeEngine
 		 * @brief	Returns rectangles describing the currently selected areas. Rectangles
 		 *			are relative to parent GUI element.
 		 */
-		Vector<RectI> getSelectionRects() const;
+		Vector<Rect2I> getSelectionRects() const;
 
 	private:
 		UINT32 mSelectionStart;
@@ -111,7 +111,7 @@ namespace BansheeEngine
 		UINT32 mSelectionAnchor;
 		UINT32 mSelectionDragAnchor;
 
-		Vector<RectI> mSelectionRects;
+		Vector<Rect2I> mSelectionRects;
 		Vector<ImageSprite*> mSprites;
 	};
 }

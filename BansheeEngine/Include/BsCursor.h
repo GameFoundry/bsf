@@ -59,7 +59,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Limit cursor movement to specific area on the screen.
 		 */
-		void clipToRect(const RectI& screenRect);
+		void clipToRect(const Rect2I& screenRect);
 
 		/**
 		 * @brief	Disables cursor clipping that was set using any of the "clipTo*" methods.

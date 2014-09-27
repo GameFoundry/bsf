@@ -105,7 +105,7 @@ namespace BansheeEngine
 
 	void GUIColor::updateClippedBounds()
 	{
-		mClippedBounds = RectI(0, 0, mWidth, mHeight);
+		mClippedBounds = Rect2I(0, 0, mWidth, mHeight);
 
 		if(mClipRect.width > 0 && mClipRect.height > 0)
 			mClippedBounds.clip(mClipRect);
@@ -137,7 +137,7 @@ namespace BansheeEngine
 			UINT32 xOffset = (UINT32)(mWidth * ALPHA_SPLIT_POSITION);
 			alphaOffset.x += xOffset;
 
-			RectI alphaClipRect = mClipRect;
+			Rect2I alphaClipRect = mClipRect;
 			alphaClipRect.x -= xOffset;
 
 			mAlphaSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, 

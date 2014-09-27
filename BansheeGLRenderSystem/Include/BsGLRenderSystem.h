@@ -207,7 +207,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Clear a part of a render target.
 		 */
-		void clearArea(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0, const RectI& clearArea = RectI::EMPTY);
+		void clearArea(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0, const Rect2I& clearArea = Rect2I::EMPTY);
 
 		/**
 		 * @brief	Set up clip planes against which all geometry will get clipped.

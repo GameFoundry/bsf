@@ -182,18 +182,18 @@ namespace BansheeEngine
 			return;
 		}
 
-		RectI contentBounds = getContentBounds();
-		RectI contentClipRect = getContentClipRect();
-		RectI textBounds = mTextSprite->getBounds(Vector2I(), RectI());
+		Rect2I contentBounds = getContentBounds();
+		Rect2I contentClipRect = getContentClipRect();
+		Rect2I textBounds = mTextSprite->getBounds(Vector2I(), Rect2I());
 
 		Vector2I textOffset;
-		RectI textClipRect;
+		Rect2I textClipRect;
 
 		Vector2I imageOffset;
-		RectI imageClipRect;
+		Rect2I imageClipRect;
 		if(mContentImageSprite != nullptr)
 		{
-			RectI imageBounds = mContentImageSprite->getBounds(Vector2I(), RectI());
+			Rect2I imageBounds = mContentImageSprite->getBounds(Vector2I(), Rect2I());
 			UINT32 freeWidth = (UINT32)std::max(0, contentBounds.width - textBounds.width - imageBounds.width);
 			INT32 imageXOffset = (INT32)(freeWidth / 2);
 
@@ -291,7 +291,7 @@ namespace BansheeEngine
 		textDesc.font = _getStyle()->font;
 		textDesc.fontSize = _getStyle()->fontSize;
 
-		RectI textBounds = getContentBounds();
+		Rect2I textBounds = getContentBounds();
 
 		textDesc.width = textBounds.width;
 		textDesc.height = textBounds.height;

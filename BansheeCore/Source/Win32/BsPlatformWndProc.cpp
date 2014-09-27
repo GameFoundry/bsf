@@ -214,7 +214,7 @@ namespace BansheeEngine
 						return translateNonClientAreaType(area.type);
 				}
 
-				Vector<RectI>& moveAreasPerWindow = iterFind->second.moveAreas;
+				Vector<Rect2I>& moveAreasPerWindow = iterFind->second.moveAreas;
 				for(auto area : moveAreasPerWindow)
 				{
 					if(area.contains(mousePosInt))

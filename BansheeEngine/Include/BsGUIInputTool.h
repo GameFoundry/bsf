@@ -104,13 +104,13 @@ namespace BansheeEngine
 		 * @brief	Returns a rectangle containing position and size of the character with the provided
 		 *			index, relative to parent widget.
 		 */
-		RectI getCharRect(UINT32 charIdx) const;
+		Rect2I getCharRect(UINT32 charIdx) const;
 
 		/**
 		 * @brief	Returns a rectangle containing position and size of the character with the provided
 		 *			index, relative to parent element.
 		 */
-		RectI getLocalCharRect(UINT32 charIdx) const;
+		Rect2I getLocalCharRect(UINT32 charIdx) const;
 
 		/**
 		 * @brief	Returns character index nearest to the specified position. Position should be relative

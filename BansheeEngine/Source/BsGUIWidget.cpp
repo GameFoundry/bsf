@@ -257,7 +257,7 @@ namespace BansheeEngine
 
 		for(auto& elem : mElements)
 		{
-			RectI elemBounds = elem->_getClippedBounds();
+			Rect2I elemBounds = elem->_getClippedBounds();
 			mBounds.encapsulate(elemBounds);
 		}
 	}

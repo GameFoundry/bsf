@@ -1,21 +1,21 @@
-#include "BsRectF.h"
+#include "BsRect2.h"
 #include "BsVector2.h"
 #include "BsMatrix4.h"
 #include "BsMath.h"
 
 namespace BansheeEngine
 {
-	const RectF RectF::EMPTY = RectF();
+	const Rect2 Rect2::EMPTY = Rect2();
 
-	RectF::RectF()
+	Rect2::Rect2()
 		:x(0), y(0), width(0), height(0)
 	{ }
 
-	RectF::RectF(float _x, float _y, float _width, float _height)
+	Rect2::Rect2(float _x, float _y, float _width, float _height)
 		:x(_x), y(_y), width(_width), height(_height)
 	{ }
 
-	bool RectF::contains(const Vector2& point) const
+	bool Rect2::contains(const Vector2& point) const
 	{
 		if(point.x >= x && point.x <= (x + width))
 		{
@@ -26,7 +26,7 @@ namespace BansheeEngine
 		return false;
 	}
 
-	bool RectF::overlaps(const RectF& other) const
+	bool Rect2::overlaps(const Rect2& other) const
 	{
 		float otherRight = other.x + other.width;
 		float myRight = x + width;
@@ -41,7 +41,7 @@ namespace BansheeEngine
 		return false;
 	}
 
-	void RectF::encapsulate(const RectF& other)
+	void Rect2::encapsulate(const Rect2& other)
 	{
 		float myRight = x + width;
 		float myBottom = y + height;
@@ -65,7 +65,7 @@ namespace BansheeEngine
 			height = myBottom - y;
 	}
 
-	void RectF::clip(const RectF& clipRect)
+	void Rect2::clip(const Rect2& clipRect)
 	{
 		float newLeft = std::max(x, clipRect.x);
 		float newTop = std::max(y, clipRect.y);
@@ -79,7 +79,7 @@ namespace BansheeEngine
 		height = newBottom - newTop;
 	}
 
-	void RectF::transform(const Matrix4& matrix)
+	void Rect2::transform(const Matrix4& matrix)
 	{
 		Vector4 verts[4];
 		verts[0] = Vector4(x, y, 0.0f, 1.0f);

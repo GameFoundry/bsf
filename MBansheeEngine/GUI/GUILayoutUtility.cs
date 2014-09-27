@@ -15,9 +15,9 @@ namespace BansheeEngine
             return output;
         }
 
-        public static RectI CalculateBounds(GUIElement element)
+        public static Rect2I CalculateBounds(GUIElement element)
         {
-            RectI output;
+            Rect2I output;
             Internal_CalculateBounds(element.GetCachedPtr(), out output);
             return output;
         }
@@ -26,6 +26,6 @@ namespace BansheeEngine
         private static extern void Internal_CalculateOptimalSize(IntPtr element, out Vector2I output);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CalculateBounds(IntPtr element, out RectI output);
+        private static extern void Internal_CalculateBounds(IntPtr element, out Rect2I output);
     }
 }

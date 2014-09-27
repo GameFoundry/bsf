@@ -42,7 +42,7 @@ namespace BansheeEngine
 
 		struct InteractableElement
 		{
-			InteractableElement(TreeElement* parent, UINT32 index, const RectI& bounds)
+			InteractableElement(TreeElement* parent, UINT32 index, const Rect2I& bounds)
 				:parent(parent), index(index), bounds(bounds)
 			{ }
 
@@ -51,7 +51,7 @@ namespace BansheeEngine
 
 			TreeElement* parent;
 			UINT32 index;
-			RectI bounds;
+			Rect2I bounds;
 		};
 
 		struct SelectedElement
@@ -76,7 +76,7 @@ namespace BansheeEngine
 		void updateClippedBounds();
 
 		virtual void _updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-			RectI clipRect, UINT8 widgetDepth, UINT16 areaDepth);
+			Rect2I clipRect, UINT8 widgetDepth, UINT16 areaDepth);
 	protected:
 		static const UINT32 ELEMENT_EXTRA_SPACING;
 		static const UINT32 INDENT_SIZE;
@@ -110,8 +110,8 @@ namespace BansheeEngine
 		GUITexture* mDragHighlight;
 		GUITexture* mDragSepHighlight;
 
-		RectI mTopScrollBounds;
-		RectI mBottomScrollBounds;
+		Rect2I mTopScrollBounds;
+		Rect2I mBottomScrollBounds;
 		ScrollState mScrollState;
 		float mLastScrollTime;
 

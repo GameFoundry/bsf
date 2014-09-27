@@ -85,7 +85,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUILayoutX::_getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, RectI* elementAreas, UINT32 numElements, const Vector<Vector2I>& optimalSizes) const
+	void GUILayoutX::_getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements, const Vector<Vector2I>& optimalSizes) const
 	{
 		assert(mChildren.size() == numElements);
 
@@ -390,13 +390,13 @@ namespace BansheeEngine
 			stackDeallocLast(processedElements);
 	}
 
-	void GUILayoutX::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height, RectI clipRect, UINT8 widgetDepth, UINT16 areaDepth)
+	void GUILayoutX::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I clipRect, UINT8 widgetDepth, UINT16 areaDepth)
 	{
 		UINT32 numElements = (UINT32)mChildren.size();
-		RectI* elementAreas = nullptr;
+		Rect2I* elementAreas = nullptr;
 
 		if (numElements > 0)
-			elementAreas = stackConstructN<RectI>(numElements);
+			elementAreas = stackConstructN<Rect2I>(numElements);
 
 		_getElementAreas(x, y,width, height, elementAreas, numElements, mOptimalSizes);
 
@@ -407,7 +407,7 @@ namespace BansheeEngine
 		mActualHeight = 0;
 		for(auto& child : mChildren)
 		{
-			RectI childArea = elementAreas[childIdx];
+			Rect2I childArea = elementAreas[childIdx];
 
 			if(child->_getType() == GUIElementBase::Type::Element)
 			{
@@ -420,10 +420,10 @@ namespace BansheeEngine
 				element->_setWidgetDepth(widgetDepth);
 				element->_setAreaDepth(areaDepth);
 
-				RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
+				Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
 				element->_setClipRect(elemClipRect);
 
-				RectI newClipRect(offset.x, offset.y, childArea.width, childArea.height);
+				Rect2I newClipRect(offset.x, offset.y, childArea.width, childArea.height);
 				newClipRect.clip(clipRect);
 				element->_updateLayoutInternal(offset.x, offset.y, childArea.width, childArea.height, newClipRect, widgetDepth, areaDepth);
 
@@ -433,7 +433,7 @@ namespace BansheeEngine
 			{
 				GUILayout* layout = static_cast<GUILayout*>(child);
 
-				RectI newClipRect(childArea.x, childArea.y, childArea.width, height);
+				Rect2I newClipRect(childArea.x, childArea.y, childArea.width, height);
 				newClipRect.clip(clipRect);
 				layout->_updateLayoutInternal(childArea.x, childArea.y, childArea.width, height, newClipRect, widgetDepth, areaDepth);
 

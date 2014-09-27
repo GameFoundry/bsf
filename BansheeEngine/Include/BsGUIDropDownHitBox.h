@@ -40,12 +40,12 @@ namespace BansheeEngine
 		/**
 		 * Sets a single rectangle bounds in which the hitbox will capture mouse events.
 		 */
-		void setBounds(const RectI& bounds) { mBounds.clear(); mBounds.push_back(bounds); }
+		void setBounds(const Rect2I& bounds) { mBounds.clear(); mBounds.push_back(bounds); }
 
 		/**
 		 * Sets complex bounds consisting of multiple rectangles in which the hitbox will capture mouse events.
 		 */
-		void setBounds(const Vector<RectI>& bounds) { mBounds = bounds; }
+		void setBounds(const Vector<Rect2I>& bounds) { mBounds = bounds; }
 
 		/**
 		 * Triggered when hit box loses focus (e.g. user clicks outside of its bounds).
@@ -64,7 +64,7 @@ namespace BansheeEngine
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
 		virtual bool _isInBounds(const Vector2I position) const;
 
-		Vector<RectI> mBounds;
+		Vector<Rect2I> mBounds;
 		bool mCaptureMouse;
 	};
 }

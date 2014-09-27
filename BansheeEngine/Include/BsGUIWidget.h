@@ -2,7 +2,7 @@
 
 #include "BsPrerequisites.h"
 #include "BsComponent.h"
-#include "BsRectI.h"
+#include "BsRect2I.h"
 #include "BsVector3.h"
 #include "BsQuaternion.h"
 #include "BsEvent.h"
@@ -53,7 +53,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns bounds of the widget, relative to the parent window.
 		 */
-		const RectI& getBounds() const { return mBounds; }
+		const Rect2I& getBounds() const { return mBounds; }
 
 		/**
 		 * @brief	Return true if widget or any of its elements are dirty.
@@ -174,7 +174,7 @@ namespace BansheeEngine
 		HEvent mOwnerTargetResizedConn;
 
 		mutable bool mWidgetIsDirty;
-		mutable RectI mBounds;
+		mutable Rect2I mBounds;
 		mutable Vector<HMesh> mCachedMeshes;
 		mutable Vector<HMaterial> mCachedMaterials;
 

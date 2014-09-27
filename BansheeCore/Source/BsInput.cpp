@@ -1,7 +1,7 @@
 #include "BsInput.h"
 #include "BsTime.h"
 #include "BsMath.h"
-#include "BsRectI.h"
+#include "BsRect2I.h"
 #include "BsDebug.h"
 #include "BsRenderWindowManager.h"
 

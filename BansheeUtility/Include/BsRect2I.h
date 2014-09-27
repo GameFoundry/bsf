@@ -8,11 +8,11 @@ namespace BansheeEngine
 	 * @brief	Represents a 2D rectangle using integer values.
 	 * 			Rectangle is represented with an origin and size values.
 	 */
-	class BS_UTILITY_EXPORT RectI
+	class BS_UTILITY_EXPORT Rect2I
 	{
 	public:
-		RectI();
-		RectI(int _x, int _y, int _width, int _height);
+		Rect2I();
+		Rect2I(int _x, int _y, int _width, int _height);
 
 		int x, y, width, height;
 
@@ -26,19 +26,19 @@ namespace BansheeEngine
 		 * 			Also returns true if the rectangles are contained within each other completely
 		 * 			(no intersecting edges).
 		 */
-		bool overlaps(const RectI& other) const;
+		bool overlaps(const Rect2I& other) const;
 
 		/**
 		 * @brief	Extends this rectangle so that the provided rectangle is
 		 * 			completely contained within it.
 		 */
-		void encapsulate(const RectI& other);
+		void encapsulate(const Rect2I& other);
 
 		/**
 		 * @brief	Clips current rectangle so that it does not overlap
 		 * 			the provided rectangle.
 		 */
-		void clip(const RectI& clipRect);
+		void clip(const Rect2I& clipRect);
 
 		/**
 		 * @brief	Transforms the bounds by the given matrix.
@@ -49,16 +49,16 @@ namespace BansheeEngine
 		 */
 		void transform(const Matrix4& matrix);
 
-		inline bool operator== (const RectI& rhs) const
+		inline bool operator== (const Rect2I& rhs) const
 		{
 			return x == rhs.x && y == rhs.y && width == rhs.width && height == rhs.height;
 		}
 
-		inline bool operator!= (const RectI& rhs) const
+		inline bool operator!= (const Rect2I& rhs) const
 		{
 			return !(*this == rhs);
 		}
 
-		static const RectI EMPTY;
+		static const Rect2I EMPTY;
 	};
 }

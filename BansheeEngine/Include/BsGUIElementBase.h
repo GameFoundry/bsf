@@ -3,7 +3,7 @@
 #include "BsPrerequisites.h"
 #include "BsGUIMaterialInfo.h"
 #include "BsGUILayoutOptions.h"
-#include "BsRectI.h"
+#include "BsRect2I.h"
 #include "BsVector2I.h"
 #include "BsRectOffset.h"
 
@@ -60,7 +60,7 @@ namespace BansheeEngine
 		 * @note	Internal method.
 		 */
 		virtual void _updateLayout(INT32 x, INT32 y, UINT32 width, UINT32 height, 
-			RectI clipRect, UINT8 widgetDepth, UINT16 areaDepth);
+			Rect2I clipRect, UINT8 widgetDepth, UINT16 areaDepth);
 
 		/**
 		 * @brief	Calculates optimal sizes of all child elements, as determined by their style and layout options.
@@ -75,7 +75,7 @@ namespace BansheeEngine
 		 * @note	Internal method.
 		 */
 		virtual void _updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-			RectI clipRect, UINT8 widgetDepth, UINT16 areaDepth);
+			Rect2I clipRect, UINT8 widgetDepth, UINT16 areaDepth);
 
 		/**
 		 * @brief	Calculates positions & sizes of all elements in the layout. This method expects a pre-allocated array to store the data in.
@@ -88,7 +88,7 @@ namespace BansheeEngine
 		 * @param	numElements		Size of the element areas array.
 		 * @param	optimalSizes	Optimal sizes used by the elements. Array must be same size as elements array.
 		 */
-		virtual void _getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, RectI* elementAreas, UINT32 numElements, const Vector<Vector2I>& optimalSizes) const;
+		virtual void _getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements, const Vector<Vector2I>& optimalSizes) const;
 
 		/**
 		 * @brief	Sets a new parent for this element.

@@ -213,12 +213,6 @@
     <ClInclude Include="Include\BsRay.h">
       <Filter>Header Files\Math</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsRectF.h">
-      <Filter>Header Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsRectI.h">
-      <Filter>Header Files\Math</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsSphere.h">
       <Filter>Header Files\Math</Filter>
     </ClInclude>
@@ -253,6 +247,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsTorus.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsLineSegment3.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsRect3.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsRect2.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsRect2I.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsCapsule.h">
       <Filter>Header Files\Math</Filter>
     </ClInclude>
   </ItemGroup>
@@ -368,12 +377,6 @@
     <ClCompile Include="Source\BsRay.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsRectF.cpp">
-      <Filter>Source Files\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsRectI.cpp">
-      <Filter>Source Files\Math</Filter>
-    </ClCompile>
     <ClCompile Include="Source\BsSphere.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
@@ -405,6 +408,21 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsTorus.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsRect3.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsRect2.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsRect2I.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsLineSegment3.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsCapsule.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
   </ItemGroup>

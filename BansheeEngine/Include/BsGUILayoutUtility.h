@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "BsRectI.h"
+#include "BsRect2I.h"
 #include "BsVector2I.h"
 
 namespace BansheeEngine
@@ -26,6 +26,6 @@ namespace BansheeEngine
 		// other than just GUILayouts and base elements (e.g. a tree view) because for a lot
 		// of such custom container elements like tree view don't have method for calculating 
 		// element bounds implemented
-		static RectI calcBounds(const GUIElementBase* elem);
+		static Rect2I calcBounds(const GUIElementBase* elem);
 	};
 }

@@ -2,7 +2,7 @@
 
 #include "BsCorePrerequisites.h"
 #include "BsModule.h"
-#include "BsRectI.h"
+#include "BsRect2I.h"
 #include "BsOSInputHandler.h"
 #include "BsRawInputHandler.h"
 #include "BsInputFwd.h"

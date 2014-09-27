@@ -384,6 +384,22 @@ namespace BansheeEngine
         }
 
 		/**
+		 * @brief	Calculates two vectors orthonormal to the current vector, and
+		 *			normalizes the current vector if not already.
+		 */
+		void orthogonalComplement(Vector3& a, Vector3& b)
+		{
+			if (fabs(a.x) > fabs(a.y))
+				a = Vector3(-a.z, 0, a.x);
+			else
+				a = Vector3(0, a.z, -a.y);
+
+			b = cross(a);
+
+			orthonormalize(*this, a, b);
+		}
+
+		/**
 		 * @brief	Performs Gram-Schmidt orthonormalization
 		 */
 		static void orthonormalize(Vector3& vec0, Vector3& vec1, Vector3& vec2)

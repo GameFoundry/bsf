@@ -2,8 +2,8 @@
 
 #include "BsCorePrerequisites.h"
 #include "BsColor.h"
-#include "BsRectI.h"
-#include "BsRectF.h"
+#include "BsRect2I.h"
+#include "BsRect2.h"
 #include "BsEvent.h"
 
 namespace BansheeEngine 
@@ -98,14 +98,14 @@ namespace BansheeEngine
 		 *
 		 * @note	Sim thread only.
 		 */
-		RectI getArea() const;
+		Rect2I getArea() const;
 
 		/**
 		 * @brief	Returns the normalized area of the viewport.
 		 *
 		 * @note	Viewport coordinates are normalized in [0, 1] range.
 		 */
-		RectF getNormArea() const { return mNormArea; }
+		Rect2 getNormArea() const { return mNormArea; }
 
 		/**
 		 * @brief	Activates or deactivates clears for color, depth or stencil buffers.
@@ -172,7 +172,7 @@ namespace BansheeEngine
 
         RenderTargetPtr mTarget;
 
-		RectF mNormArea;
+		Rect2 mNormArea;
 
 		bool mRequiresColorClear;
 		bool mRequiresDepthClear;

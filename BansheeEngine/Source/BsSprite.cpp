@@ -14,9 +14,9 @@ namespace BansheeEngine
 		clearMesh();
 	}
 
-	RectI Sprite::getBounds(const Vector2I& offset, const RectI& clipRect) const 
+	Rect2I Sprite::getBounds(const Vector2I& offset, const Rect2I& clipRect) const 
 	{
-		RectI bounds = mBounds;
+		Rect2I bounds = mBounds;
 
 		if(clipRect.width > 0 && clipRect.height > 0)
 			bounds.clip(clipRect);
@@ -43,7 +43,7 @@ namespace BansheeEngine
 	}
 
 	UINT32 Sprite::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
-		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx, const Vector2I& offset, const RectI& clipRect, bool clip) const
+		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx, const Vector2I& offset, const Rect2I& clipRect, bool clip) const
 	{
 		auto renderElem = mCachedRenderElements.at(renderElementIdx);
 
@@ -219,7 +219,7 @@ namespace BansheeEngine
 
 		if(!foundStartingPoint)
 		{
-			mBounds = RectI(0, 0, 0, 0);
+			mBounds = Rect2I(0, 0, 0, 0);
 			return;
 		}
 
@@ -238,7 +238,7 @@ namespace BansheeEngine
 			}
 		}
 
-		mBounds = RectI((int)min.x, (int)min.y, (int)(max.x - min.x), (int)(max.y - min.y));
+		mBounds = Rect2I((int)min.x, (int)min.y, (int)(max.x - min.x), (int)(max.y - min.y));
 	}
 
 	void Sprite::clearMesh() const
@@ -270,7 +270,7 @@ namespace BansheeEngine
 	// This will only properly clip an array of quads
 	// Vertices in the quad must be in a specific order: top left, top right, bottom left, bottom right
 	// (0, 0) represents top left of the screen
-	void Sprite::clipToRect(UINT8* vertices, UINT8* uv, UINT32 numQuads, UINT32 vertStride, const RectI& clipRect)
+	void Sprite::clipToRect(UINT8* vertices, UINT8* uv, UINT32 numQuads, UINT32 vertStride, const Rect2I& clipRect)
 	{
 		float left = (float)clipRect.x;
 		float right = (float)clipRect.x + clipRect.width;

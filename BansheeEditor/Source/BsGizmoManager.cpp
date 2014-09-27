@@ -345,7 +345,7 @@ namespace BansheeEngine
 		gCoreAccessor().queueCommand(std::bind(&GizmoManager::coreRenderGizmosForPicking,
 			this, viewMat, projMat, wireMesh->_createProxy(0)));
 
-		RectI screenArea = mCamera->getViewport()->getArea();
+		Rect2I screenArea = mCamera->getViewport()->getArea();
 
 		gCoreAccessor().queueCommand(std::bind(&GizmoManager::coreRenderIconGizmosForPicking,
 			this, screenArea, iconMesh->_createProxy(0), iconRenderData));
@@ -744,9 +744,9 @@ namespace BansheeEngine
 		float width = (float)sceneRenderTarget->getCore()->getProperties().getWidth();
 		float height = (float)sceneRenderTarget->getCore()->getProperties().getHeight();
 
-		RectF normArea = camera.viewport.getNormArea();
+		Rect2 normArea = camera.viewport.getNormArea();
 
-		RectI screenArea;
+		Rect2I screenArea;
 		screenArea.x = (int)(normArea.x * width);
 		screenArea.y = (int)(normArea.y * height);
 		screenArea.width = (int)(normArea.width * width);
@@ -784,7 +784,7 @@ namespace BansheeEngine
 		Renderer::draw(*meshProxy);
 	}
 
-	void GizmoManager::coreRenderIconGizmos(RectI screenArea, MeshProxyPtr meshProxy, IconRenderDataVecPtr renderData)
+	void GizmoManager::coreRenderIconGizmos(Rect2I screenArea, MeshProxyPtr meshProxy, IconRenderDataVecPtr renderData)
 	{
 		RenderSystem& rs = RenderSystem::instance();
 		MeshBasePtr mesh;
@@ -851,7 +851,7 @@ namespace BansheeEngine
 		Renderer::draw(*meshProxy);
 	}
 
-	void GizmoManager::coreRenderIconGizmosForPicking(RectI screenArea, MeshProxyPtr meshProxy, IconRenderDataVecPtr renderData)
+	void GizmoManager::coreRenderIconGizmosForPicking(Rect2I screenArea, MeshProxyPtr meshProxy, IconRenderDataVecPtr renderData)
 	{
 		RenderSystem& rs = RenderSystem::instance();
 		MeshBasePtr mesh;

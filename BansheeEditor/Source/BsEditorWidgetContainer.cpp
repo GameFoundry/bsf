@@ -247,12 +247,12 @@ namespace BansheeEngine
 		}
 	}
 
-	RectI EditorWidgetContainer::getContentBounds() const
+	Rect2I EditorWidgetContainer::getContentBounds() const
 	{
-		return RectI(mX, mY + TitleBarHeight, mWidth, (UINT32)std::max(0, (INT32)mHeight - (INT32)TitleBarHeight));
+		return Rect2I(mX, mY + TitleBarHeight, mWidth, (UINT32)std::max(0, (INT32)mHeight - (INT32)TitleBarHeight));
 	}
 
-	Vector<RectI> EditorWidgetContainer::getDraggableAreas() const
+	Vector<Rect2I> EditorWidgetContainer::getDraggableAreas() const
 	{
 		return mTitleBar->calcDraggableAreas(mX, mY, mWidth, TitleBarHeight);
 	}

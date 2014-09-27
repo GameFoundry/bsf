@@ -37,12 +37,12 @@ namespace BansheeEngine
 		markCoreDirty();
     }
 
-	RectI Viewport::getArea() const
+	Rect2I Viewport::getArea() const
 	{
 		float width = (float)mTarget->getProperties().getWidth();
 		float height = (float)mTarget->getProperties().getHeight();
 		
-		RectI area;
+		Rect2I area;
 		area.x = (int)(mNormArea.x * width);
 		area.y = (int)(mNormArea.y * height);
 		area.width = (int)(mNormArea.width * width);

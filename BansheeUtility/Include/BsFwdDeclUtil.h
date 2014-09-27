@@ -33,8 +33,8 @@ namespace BansheeEngine
 	class Vector3;
 	class Vector4;
 	struct Vector2I;
-	class RectI;
-	class RectF;
+	class Rect2I;
+	class Rect2;
 	class Color;
 	class DynLib;
 	class DynLibManager;

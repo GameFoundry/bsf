@@ -82,7 +82,7 @@ namespace BansheeEngine
 	}
 
 	void GUIFoldout::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-		RectI clipRect, UINT8 widgetDepth, UINT16 areaDepth)
+		Rect2I clipRect, UINT8 widgetDepth, UINT16 areaDepth)
 	{
 		UINT32 toggleOffset = 0;
 
@@ -97,7 +97,7 @@ namespace BansheeEngine
 			mToggle->_setAreaDepth(areaDepth);
 			mToggle->_setWidgetDepth(widgetDepth);
 
-			RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
+			Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
 			mToggle->_setClipRect(elemClipRect);
 
 			toggleOffset = optimalSize.x;
@@ -114,7 +114,7 @@ namespace BansheeEngine
 			mLabel->_setAreaDepth(areaDepth);
 			mLabel->_setWidgetDepth(widgetDepth);
 
-			RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
+			Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
 			mLabel->_setClipRect(elemClipRect);
 		}
 	}

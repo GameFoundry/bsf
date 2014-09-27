@@ -621,7 +621,7 @@ namespace BansheeEngine
 
 		const RenderTargetProperties& rtProps = mActiveRenderTarget->getCore()->getProperties();
 
-		RectI clearArea((int)mViewport.TopLeftX, (int)mViewport.TopLeftY, (int)mViewport.Width, (int)mViewport.Height);
+		Rect2I clearArea((int)mViewport.TopLeftX, (int)mViewport.TopLeftY, (int)mViewport.Width, (int)mViewport.Height);
 
 		bool clearEntireTarget = clearArea.width == 0 || clearArea.height == 0;
 		clearEntireTarget |= (clearArea.x == 0 && clearArea.y == 0 && clearArea.width == rtProps.getWidth() && clearArea.height == rtProps.getHeight());

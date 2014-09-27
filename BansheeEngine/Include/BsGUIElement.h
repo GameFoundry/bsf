@@ -3,7 +3,7 @@
 #include "BsPrerequisites.h"
 #include "BsGUIElementBase.h"
 #include "BsGUIOptions.h"
-#include "BsRectI.h"
+#include "BsRect2I.h"
 #include "BsVector2I.h"
 
 namespace BansheeEngine
@@ -196,7 +196,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method.
 		 */
-		void _setClipRect(const RectI& clipRect);
+		void _setClipRect(const Rect2I& clipRect);
 
 		/**
 		 * @brief	Gets non-clipped bounds that were assigned to the element by the parent layout.
@@ -205,7 +205,7 @@ namespace BansheeEngine
 		 *			if parent element bounds changed since.
 		 *			Internal method:
 		 */
-		RectI _getCachedBounds() const;
+		Rect2I _getCachedBounds() const;
 
 		/**
 		 * @copydoc	GUIElementBase::_changeParentWidget
@@ -283,7 +283,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method.
 		 */
-		const RectI& _getClippedBounds() const { return mClippedBounds; }
+		const Rect2I& _getClippedBounds() const { return mClippedBounds; }
 
 		/**
 		 * @brief	Returns clip rect used for clipping the GUI element and related sprites
@@ -291,7 +291,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method.
 		 */
-		const RectI& _getClipRect() const { return mClipRect; }
+		const Rect2I& _getClipRect() const { return mClipRect; }
 
 		/**
 		 * @brief	Returns GUI element padding. Padding is modified by changing element style and determines
@@ -357,7 +357,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method.
 		 */
-		virtual RectI _getTextInputRect() const { return RectI(); }
+		virtual Rect2I _getTextInputRect() const { return Rect2I(); }
 
 		/**
 		 * @brief	Returns layout options that determine how is the element positioned within a GUILayout.
@@ -414,27 +414,27 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns clipped bounds excluding the margins. Relative to parent widget.
 		 */
-		RectI getVisibleBounds() const;
+		Rect2I getVisibleBounds() const;
 
 		/**
 		 * @brief	Returns bounds of the content contained within the GUI element. Relative to parent widget.
 		 */
-		RectI getContentBounds() const;
+		Rect2I getContentBounds() const;
 
 		/**
 		 * @brief	Returns a clip rectangle that can be used for clipping the contents of this
 		 *			GUI element. Clip rect is relative to GUI element origin.
 		 */
-		RectI getContentClipRect() const;
+		Rect2I getContentClipRect() const;
 
 		bool mIsDestroyed;
 		GUILayoutOptions mLayoutOptions;
-		RectI mClippedBounds;
+		Rect2I mClippedBounds;
 
 		UINT32 mDepth;
 		Vector2I mOffset;
 		UINT32 mWidth, mHeight;
-		RectI mClipRect;
+		Rect2I mClipRect;
 
 	private:
 		const GUIElementStyle* mStyle;

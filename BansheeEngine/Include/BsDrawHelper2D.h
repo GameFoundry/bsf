@@ -31,7 +31,7 @@ namespace BansheeEngine
 		 *
 		 *			Primitives are output in the form of a triangle list.
 		 */
-		void solidQuad(const RectF& area, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
+		void solidQuad(const Rect2& area, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		/**
 		 * @copydoc	DrawHelperTemplate::pixelLine
@@ -63,7 +63,7 @@ namespace BansheeEngine
 		 *						the quad will stretch with the viewport so its normalized coordinates stay the same.
 		 * @param	timeout		Optional timeout on how long to display the quad in seconds. If 0 the quad will be displayed one frame.
 		 */
-		void drawSolidQuad(const HCamera& camera, const RectF& area, const Color& color = Color::White, DebugDrawCoordType coordType = DebugDrawCoordType::Pixel, float timeout = 0.0f);
+		void drawSolidQuad(const HCamera& camera, const Rect2& area, const Color& color = Color::White, DebugDrawCoordType coordType = DebugDrawCoordType::Pixel, float timeout = 0.0f);
 
 		/**
 		 * @brief	Constructs a pixel perfect line and draws it in the specified camera. 
@@ -143,7 +143,7 @@ namespace BansheeEngine
 		 * @brief	Converts an area with normalized ([0, 1] range) coordinates and returns
 		 *			area in clip space coordinates.
 		 */
-		RectF normalizedCoordToClipSpace(const RectF& area) const;
+		Rect2 normalizedCoordToClipSpace(const Rect2& area) const;
 
 		/**
 		 * @brief	Converts a point with normalized ([0, 1] range) coordinates and returns

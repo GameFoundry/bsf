@@ -44,7 +44,7 @@ namespace BansheeEngine
 
 	bool GUIFloatField::_hasCustomCursor(const Vector2I position, CursorType& type) const
 	{
-		RectI draggableArea;
+		Rect2I draggableArea;
 
 		if(mLabel != nullptr)
 			draggableArea = mLabel->_getCachedBounds();
@@ -62,7 +62,7 @@ namespace BansheeEngine
 	{
 		GUIElementContainer::mouseEvent(event);
 
-		RectI draggableArea;
+		Rect2I draggableArea;
 
 		if(mLabel != nullptr)
 			draggableArea = mLabel->_getCachedBounds();
@@ -137,7 +137,7 @@ namespace BansheeEngine
 	void GUIFloatField::updateClippedBounds()
 	{
 		Vector2I offset = _getOffset();
-		mClippedBounds = RectI(offset.x, offset.y, _getWidth(), _getHeight());
+		mClippedBounds = Rect2I(offset.x, offset.y, _getWidth(), _getHeight());
 	}
 
 	const String& GUIFloatField::getGUITypeName()

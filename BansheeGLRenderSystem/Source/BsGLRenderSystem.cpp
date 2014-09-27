@@ -708,19 +708,19 @@ namespace BansheeEngine
 			return;
 
 		const RenderTargetProperties& rtProps = mActiveRenderTarget->getCore()->getProperties();
-		RectI clearRect(0, 0, rtProps.getWidth(), rtProps.getHeight());
+		Rect2I clearRect(0, 0, rtProps.getWidth(), rtProps.getHeight());
 
 		clearArea(buffers, color, depth, stencil, clearRect);
 	}
 
 	void GLRenderSystem::clearViewport(UINT32 buffers, const Color& color, float depth, UINT16 stencil)
 	{
-		RectI clearRect(mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight);
+		Rect2I clearRect(mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight);
 
 		clearArea(buffers, color, depth, stencil, clearRect);
 	}
 
-	void GLRenderSystem::clearArea(UINT32 buffers, const Color& color, float depth, UINT16 stencil, const RectI& clearRect)
+	void GLRenderSystem::clearArea(UINT32 buffers, const Color& color, float depth, UINT16 stencil, const Rect2I& clearRect)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 

@@ -71,9 +71,9 @@ namespace BansheeEngine
 		return mElement->_getOffset() + mElement->_getTextInputOffset() + Vector2I(mElement->_getTextInputRect().x, mElement->_getTextInputRect().y);
 	}
 
-	RectI GUIInputTool::getCharRect(UINT32 charIdx) const
+	Rect2I GUIInputTool::getCharRect(UINT32 charIdx) const
 	{
-		RectI charRect = getLocalCharRect(charIdx);
+		Rect2I charRect = getLocalCharRect(charIdx);
 		Vector2I textOffset = getTextOffset();
 
 		charRect.x += textOffset.x;
@@ -82,14 +82,14 @@ namespace BansheeEngine
 		return charRect;
 	}
 
-	RectI GUIInputTool::getLocalCharRect(UINT32 charIdx) const
+	Rect2I GUIInputTool::getLocalCharRect(UINT32 charIdx) const
 	{
 		UINT32 lineIdx = getLineForChar(charIdx);
 
 		// If char is newline we don't have any geometry to return
 		const GUIInputLineDesc& lineDesc = getLineDesc(lineIdx);
 		if(lineDesc.isNewline(charIdx))
-			return RectI();
+			return Rect2I();
 
 		UINT32 numNewlineChars = 0;
 		for(UINT32 i = 0; i < lineIdx; i++)
@@ -100,7 +100,7 @@ namespace BansheeEngine
 		{
 			UINT32 vertIdx = quadIdx * 4;
 
-			RectI charRect;
+			Rect2I charRect;
 			charRect.x = Math::roundToInt(mQuads[vertIdx + 0].x);
 			charRect.y = Math::roundToInt(mQuads[vertIdx + 0].y);
 			charRect.width = Math::roundToInt(mQuads[vertIdx + 3].x - charRect.x);

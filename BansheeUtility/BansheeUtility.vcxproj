@@ -246,7 +246,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsBounds.cpp" />
+    <ClCompile Include="Source\BsCapsule.cpp" />
     <ClCompile Include="Source\BsConvexVolume.cpp" />
+    <ClCompile Include="Source\BsLineSegment3.cpp" />
+    <ClCompile Include="Source\BsRect3.cpp" />
     <ClCompile Include="Source\BsTaskScheduler.cpp" />
     <ClCompile Include="Source\BsTestOutput.cpp" />
     <ClCompile Include="Source\BsTestSuite.cpp" />
@@ -258,7 +261,7 @@
     <ClCompile Include="Source\BsFrameAlloc.cpp" />
     <ClCompile Include="Source\BsMemorySerializer.cpp" />
     <ClCompile Include="Source\BsPath.cpp" />
-    <ClCompile Include="Source\BsRectF.cpp" />
+    <ClCompile Include="Source\BsRect2.cpp" />
     <ClCompile Include="Source\BsTorus.cpp" />
     <ClCompile Include="Source\BsVector2I.cpp" />
     <ClCompile Include="Source\BsManagedDataBlock.cpp" />
@@ -266,7 +269,7 @@
     <ClCompile Include="Source\BsMemStack.cpp" />
     <ClCompile Include="Source\BsRadian.cpp" />
     <ClCompile Include="Source\BsRay.cpp" />
-    <ClCompile Include="Source\BsRectI.cpp" />
+    <ClCompile Include="Source\BsRect2I.cpp" />
     <ClCompile Include="Source\BsSphere.cpp" />
     <ClCompile Include="Source\BsStringTable.cpp" />
     <ClCompile Include="Source\BsTexAtlasGenerator.cpp" />
@@ -274,8 +277,11 @@
     <ClCompile Include="Source\Win32\BsTimer.cpp" />
     <ClInclude Include="Include\BsAny.h" />
     <ClInclude Include="Include\BsBounds.h" />
+    <ClInclude Include="Include\BsCapsule.h" />
     <ClInclude Include="Include\BsConvexVolume.h" />
     <ClInclude Include="Include\BsEvent.h" />
+    <ClInclude Include="Include\BsLineSegment3.h" />
+    <ClInclude Include="Include\BsRect3.h" />
     <ClInclude Include="Include\BsSpinLock.h" />
     <ClInclude Include="Include\BsTaskScheduler.h" />
     <ClInclude Include="Include\BsTestOutput.h" />
@@ -294,7 +300,7 @@
     <ClInclude Include="Include\BsFileSystem.h" />
     <ClInclude Include="Include\BsFrameAlloc.h" />
     <ClInclude Include="Include\BsMemorySerializer.h" />
-    <ClInclude Include="Include\BsRectF.h" />
+    <ClInclude Include="Include\BsRect2.h" />
     <ClInclude Include="Include\BsHString.h" />
     <ClInclude Include="Include\BsTorus.h" />
     <ClInclude Include="Include\BsVector2I.h" />
@@ -306,7 +312,7 @@
     <ClInclude Include="Include\BsModule.h" />
     <ClInclude Include="Include\BsPath.h" />
     <ClInclude Include="Include\BsRadian.h" />
-    <ClInclude Include="Include\BsRectI.h" />
+    <ClInclude Include="Include\BsRect2I.h" />
     <ClInclude Include="Include\BsRTTIField.h" />
     <ClInclude Include="Include\BsRTTIManagedDataBlockField.h" />
     <ClInclude Include="Include\BsRTTIPlainField.h" />

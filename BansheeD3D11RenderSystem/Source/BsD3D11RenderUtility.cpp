@@ -2,7 +2,7 @@
 #include "BsD3D11Device.h"
 #include "BsVector3.h"
 #include "BsColor.h"
-#include "BsRectI.h"
+#include "BsRect2I.h"
 #include "BsD3D11BlendState.h"
 #include "BsD3D11RasterizerState.h"
 #include "BsD3D11DepthStencilState.h"

@@ -3,7 +3,7 @@
 #include "BsPrerequisites.h"
 #include "BsGUIMaterialInfo.h"
 #include "BsVector2I.h"
-#include "BsRectI.h"
+#include "BsRect2I.h"
 
 namespace BansheeEngine
 {
@@ -60,7 +60,7 @@ namespace BansheeEngine
 		 *
 		 * @returns	Clipped sprite bounds.
 		 */
-		RectI getBounds(const Vector2I& offset, const RectI& clipRect) const;
+		Rect2I getBounds(const Vector2I& offset, const Rect2I& clipRect) const;
 
 		/**
 		 * @brief	Returns the number of separate render elements in the sprite. Normally this is 1, but some sprites
@@ -111,7 +111,7 @@ namespace BansheeEngine
 		 * @see		getNumQuads()
 		 */
 		UINT32 fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
-			UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx, const Vector2I& offset, const RectI& clipRect, bool clip = true) const;
+			UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx, const Vector2I& offset, const Rect2I& clipRect, bool clip = true) const;
 
 	protected:
 		/**
@@ -124,7 +124,7 @@ namespace BansheeEngine
 		 *						and uv coordinates have the same stride (as they are likely pointing to the same buffer).
 		 * @param	clipRect	Rectangle to clip the geometry to.
 		 */
-		static void clipToRect(UINT8* vertices, UINT8* uv, UINT32 numQuads, UINT32 vertStride, const RectI& clipRect);
+		static void clipToRect(UINT8* vertices, UINT8* uv, UINT32 numQuads, UINT32 vertStride, const Rect2I& clipRect);
 
 		/**
 		 * @brief	Returns the offset needed to move the sprite in order for it to respect the provided anchor.
@@ -141,7 +141,7 @@ namespace BansheeEngine
 		 */
 		void clearMesh() const;
 
-		mutable RectI mBounds;
+		mutable Rect2I mBounds;
 		mutable Vector<SpriteRenderElement> mCachedRenderElements;
 	};
 }

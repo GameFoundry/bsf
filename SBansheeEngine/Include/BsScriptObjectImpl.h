@@ -2,7 +2,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
-#include "BsRectI.h"
+#include "BsRect2I.h"
 
 namespace BansheeEngine
 {

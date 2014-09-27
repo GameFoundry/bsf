@@ -129,10 +129,10 @@ namespace BansheeEngine
 	{
 		if(!mIsDisabled && isDirty() && (mWidget != nullptr))
 		{
-			RectI clipRect(mLeft, mTop, mWidth, mHeight);
+			Rect2I clipRect(mLeft, mTop, mWidth, mHeight);
 			if (mClipRect.width > 0 && mClipRect.height > 0)
 			{
-				RectI newClipRect = RectI(mLeft + mClipRect.x, mTop + mClipRect.y, mClipRect.width, mClipRect.height);
+				Rect2I newClipRect = Rect2I(mLeft + mClipRect.x, mTop + mClipRect.y, mClipRect.width, mClipRect.height);
 				newClipRect.clip(clipRect);
 				clipRect = newClipRect;
 			}
@@ -166,7 +166,7 @@ namespace BansheeEngine
 		mIsDirty = true;
 	}
 
-	void GUIArea::setClipRect(const RectI& clipRect)
+	void GUIArea::setClipRect(const Rect2I& clipRect)
 	{
 		mClipRect = clipRect;
 

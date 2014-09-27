@@ -518,7 +518,7 @@ namespace BansheeEngine
 		 * @param	stencil			(optional) The value to initialize the stencil buffer with, if enabled.
 		 * @param	clearArea		(optional) Area in pixels to clear.
 		 */
-		void clearArea(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0, const RectI& clearArea = RectI::EMPTY);
+		void clearArea(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0, const Rect2I& clearArea = Rect2I::EMPTY);
 
 		/**
 		 * @brief	Triggered when device has been lost.

@@ -4,7 +4,7 @@
 #include "BsScriptObject.h"
 #include "BsScriptGUIElement.h"
 #include "BsVector2I.h"
-#include "BsRectI.h"
+#include "BsRect2I.h"
 
 namespace BansheeEngine
 {
@@ -17,6 +17,6 @@ namespace BansheeEngine
 
 	private:
 		static void internal_CalculateOptimalSize(ScriptGUIElementBaseTBase* guiElement, Vector2I* output);
-		static void internal_CalculateBounds(ScriptGUIElementBaseTBase* guiElement, RectI* output);
+		static void internal_CalculateBounds(ScriptGUIElementBaseTBase* guiElement, Rect2I* output);
 	};
 }

@@ -1,5 +1,5 @@
 #include "BsDrawHelper3D.h"
-#include "BsRectF.h"
+#include "BsRect2.h"
 #include "BsMesh.h"
 #include "BsTime.h"
 #include "BsVector2.h"

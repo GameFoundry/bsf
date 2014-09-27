@@ -165,7 +165,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void Platform::clipCursorToRect(const RectI& screenRect)
+	void Platform::clipCursorToRect(const Rect2I& screenRect)
 	{
 		RECT clipWindowRect;
 		clipWindowRect.left = screenRect.x;
@@ -259,7 +259,7 @@ namespace BansheeEngine
 		PostMessage(hwnd, WM_SETCURSOR, WPARAM(hwnd), (LPARAM)MAKELONG(HTCLIENT, WM_MOUSEMOVE));
 	}
 
-	void Platform::setCaptionNonClientAreas(const RenderWindow& window, const Vector<RectI>& nonClientAreas)
+	void Platform::setCaptionNonClientAreas(const RenderWindow& window, const Vector<Rect2I>& nonClientAreas)
 	{
 		BS_LOCK_MUTEX(mSync);
 

@@ -37,7 +37,7 @@ namespace BansheeEngine
 		Platform::clipCursorToWindow(window);
 	}
 
-	void Cursor::clipToRect(const RectI& screenRect)
+	void Cursor::clipToRect(const Rect2I& screenRect)
 	{
 		Platform::clipCursorToRect(screenRect);
 	}

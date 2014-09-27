@@ -12,7 +12,7 @@
 #include "BsUtil.h"
 #include "BsRenderWindowManager.h"
 #include "BsPlatform.h"
-#include "BsRectI.h"
+#include "BsRect2I.h"
 #include "BsCoreApplication.h"
 #include "BsException.h"
 #include "BsInput.h"
@@ -57,7 +57,7 @@ namespace BansheeEngine
 		GUIMaterialInfo matInfo;
 		UINT32 numQuads;
 		UINT32 depth;
-		RectI bounds;
+		Rect2I bounds;
 		Vector<GUIGroupElement> elements;
 	};
 
@@ -411,7 +411,7 @@ namespace BansheeEngine
 				UINT32 renderElemIdx = elem.renderElement;
 				UINT32 elemDepth = guiElem->_getRenderElementDepth(renderElemIdx);
 
-				RectI tfrmedBounds = guiElem->_getClippedBounds();
+				Rect2I tfrmedBounds = guiElem->_getClippedBounds();
 				tfrmedBounds.transform(guiElem->_getParentWidget()->SO()->getWorldTfrm());
 
 				const GUIMaterialInfo& matInfo = guiElem->getMaterial(renderElemIdx);
@@ -455,7 +455,7 @@ namespace BansheeEngine
 						UINT32 startDepth = elemDepth;
 						UINT32 endDepth = group.depth;
 
-						RectI potentialGroupBounds = group.bounds;
+						Rect2I potentialGroupBounds = group.bounds;
 						potentialGroupBounds.encapsulate(tfrmedBounds);
 
 						bool foundOverlap = false;
@@ -1426,7 +1426,7 @@ namespace BansheeEngine
 			const Matrix4& worldTfrm = bridgeElement->_getParentWidget()->SO()->getWorldTfrm();
 
 			Vector4 vecLocalPos = worldTfrm.inverse().multiply3x4(Vector4((float)windowPos.x, (float)windowPos.y, 0.0f, 1.0f));
-			RectI bridgeBounds = bridgeElement->_getCachedBounds();
+			Rect2I bridgeBounds = bridgeElement->_getCachedBounds();
 
 			// Find coordinates relative to the bridge element
 			float x = vecLocalPos.x - (float)bridgeBounds.x;

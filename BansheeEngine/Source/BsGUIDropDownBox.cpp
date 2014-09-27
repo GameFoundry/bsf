@@ -53,7 +53,7 @@ namespace BansheeEngine
 		return instance;
 	}
 
-	GUIDropDownAreaPlacement GUIDropDownAreaPlacement::aroundBoundsVert(const RectI& bounds)
+	GUIDropDownAreaPlacement GUIDropDownAreaPlacement::aroundBoundsVert(const Rect2I& bounds)
 	{
 		GUIDropDownAreaPlacement instance;
 		instance.mType = Type::BoundsVert;
@@ -62,7 +62,7 @@ namespace BansheeEngine
 		return instance;
 	}
 		
-	GUIDropDownAreaPlacement GUIDropDownAreaPlacement::aroundBoundsHorz(const RectI& bounds)
+	GUIDropDownAreaPlacement GUIDropDownAreaPlacement::aroundBoundsHorz(const Rect2I& bounds)
 	{
 		GUIDropDownAreaPlacement instance;
 		instance.mType = Type::BoundsHorz;
@@ -112,12 +112,12 @@ namespace BansheeEngine
 		mHitBox->_changeParentWidget(this);
 
 		mCaptureHitBox = GUIDropDownHitBox::create(true);
-		mCaptureHitBox->setBounds(RectI(0, 0, target->getWidth(), target->getHeight()));
+		mCaptureHitBox->setBounds(Rect2I(0, 0, target->getWidth(), target->getHeight()));
 		mCaptureHitBox->_setWidgetDepth(0);
 		mCaptureHitBox->_setAreaDepth(200);
 		mCaptureHitBox->_changeParentWidget(this);
 
-		RectI availableBounds(target->getX(), target->getY(), target->getWidth(), target->getHeight());
+		Rect2I availableBounds(target->getX(), target->getY(), target->getWidth(), target->getHeight());
 		mRootMenu = bs_new<DropDownSubMenu>(this, placement, availableBounds, dropDownData, type, 0);
 	}
 
@@ -136,7 +136,7 @@ namespace BansheeEngine
 
 	void GUIDropDownBox::notifySubMenuOpened(DropDownSubMenu* subMenu)
 	{
-		Vector<RectI> bounds;
+		Vector<Rect2I> bounds;
 
 		while(subMenu != nullptr)
 		{
@@ -150,7 +150,7 @@ namespace BansheeEngine
 
 	void GUIDropDownBox::notifySubMenuClosed(DropDownSubMenu* subMenu)
 	{
-		Vector<RectI> bounds;
+		Vector<Rect2I> bounds;
 
 		while(subMenu != nullptr)
 		{
@@ -163,7 +163,7 @@ namespace BansheeEngine
 	}
 
 	GUIDropDownBox::DropDownSubMenu::DropDownSubMenu(GUIDropDownBox* owner, const GUIDropDownAreaPlacement& placement, 
-		const RectI& availableBounds, const GUIDropDownData& dropDownData, GUIDropDownType type, UINT32 depthOffset)
+		const Rect2I& availableBounds, const GUIDropDownData& dropDownData, GUIDropDownType type, UINT32 depthOffset)
 		:mOwner(owner), mPage(0), mBackgroundFrame(nullptr), mBackgroundArea(nullptr), mContentArea(nullptr), 
 		mContentLayout(nullptr), mScrollUpBtn(nullptr), mScrollDownBtn(nullptr), x(0), y(0), width(0), height(0), 
 		mType(type), mSubMenu(nullptr), mData(dropDownData), mOpenedUpward(false), mDepthOffset(depthOffset)
@@ -174,7 +174,7 @@ namespace BansheeEngine
 		const GUIElementStyle* scrollDownStyle = mOwner->getSkin().getStyle(mOwner->mScrollDownStyle);
 		const GUIElementStyle* backgroundStyle = mOwner->getSkin().getStyle(mOwner->mBackgroundStyle);
 
-		RectI dropDownListBounds = placement.getBounds();
+		Rect2I dropDownListBounds = placement.getBounds();
 		int potentialLeftStart = 0;
 		int potentialRightStart = 0;
 		int potentialTopStart = 0;
@@ -491,7 +491,7 @@ namespace BansheeEngine
 		mBackgroundArea->setSize(width, usedHeight);
 		mBackgroundArea->setPosition(x, actualY);
 
-		mVisibleBounds = RectI(x, actualY, width, usedHeight);
+		mVisibleBounds = Rect2I(x, actualY, width, usedHeight);
 
 		UINT32 contentWidth = (UINT32)std::max(0, (INT32)width - (INT32)backgroundStyle->margins.left - (INT32)backgroundStyle->margins.right);
 		UINT32 contentHeight = (UINT32)std::max(0, (INT32)usedHeight - (INT32)backgroundStyle->margins.top - (INT32)backgroundStyle->margins.bottom);

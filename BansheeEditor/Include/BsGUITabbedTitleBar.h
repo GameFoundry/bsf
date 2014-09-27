@@ -2,7 +2,7 @@
 
 #include "BsEditorPrerequisites.h"
 #include "BsGUIElementContainer.h"
-#include "BsRectI.h"
+#include "BsRect2I.h"
 #include "BsEvent.h"
 
 namespace BansheeEngine
@@ -27,7 +27,7 @@ namespace BansheeEngine
 		UINT32 getTabIdx(UINT32 position) const;
 		UINT32 getNumTabs() const { return (UINT32)mTabButtons.size(); }
 
-		Vector<RectI> calcDraggableAreas(INT32 x, INT32 y, UINT32 width, UINT32 height) const;
+		Vector<Rect2I> calcDraggableAreas(INT32 x, INT32 y, UINT32 width, UINT32 height) const;
 
 		Event<void(UINT32)> onTabActivated;
 		Event<void(UINT32)> onTabClosed;
@@ -40,7 +40,7 @@ namespace BansheeEngine
 		void updateClippedBounds();
 
 		void _updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-			RectI clipRect, UINT8 widgetDepth, UINT16 areaDepth);
+			Rect2I clipRect, UINT8 widgetDepth, UINT16 areaDepth);
 	protected:
 		static const UINT32 TAB_SPACING;
 		static const UINT32 OPTION_BTN_SPACING;

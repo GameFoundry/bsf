@@ -3,7 +3,7 @@
 #include "BsCorePrerequisites.h"
 #include "BsInputFwd.h"
 #include "BsVector2I.h"
-#include "BsRectI.h"
+#include "BsRect2I.h"
 #include "BsEvent.h"
 
 namespace BansheeEngine
@@ -40,7 +40,7 @@ namespace BansheeEngine
 	struct BS_CORE_EXPORT NonClientResizeArea
 	{
 		NonClientAreaBorderType type;
-		RectI area;
+		Rect2I area;
 	};
 
 	/**
@@ -49,7 +49,7 @@ namespace BansheeEngine
 	struct BS_CORE_EXPORT WindowNonClientAreaData
 	{
 		Vector<NonClientResizeArea> resizeAreas;
-		Vector<RectI> moveAreas;
+		Vector<Rect2I> moveAreas;
 	};
 
 	/**
@@ -105,7 +105,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Thread safe.
 		 */
-		static void clipCursorToRect(const RectI& screenRect);
+		static void clipCursorToRect(const Rect2I& screenRect);
 		/**
 		 * @brief	Disables cursor clipping.
 		 * 			
@@ -152,7 +152,7 @@ namespace BansheeEngine
 		 * 			All provided areas are relative to the specified window.
 		 * 			Mostly useful for frameless windows that don't have typical caption bar.
 		 */
-		static void setCaptionNonClientAreas(const RenderWindow& window, const Vector<RectI>& nonClientAreas);
+		static void setCaptionNonClientAreas(const RenderWindow& window, const Vector<Rect2I>& nonClientAreas);
 
 		/**
 		 * @brief	Sets custom non client areas for the specified window. Using custom client
