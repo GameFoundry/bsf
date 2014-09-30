@@ -235,10 +235,9 @@
     <ClCompile Include="Source\BsVirtualInput.cpp" />
     <ClInclude Include="Include\BsApplication.h" />
     <ClInclude Include="Include\BsCursor.h" />
-    <ClInclude Include="Include\BsDrawHelper3D.h" />
-    <ClInclude Include="Include\BsDrawHelperTemplate.h" />
+    <ClInclude Include="Include\BsShapeMeshes3D.h" />
     <ClInclude Include="Include\BsDragAndDropManager.h" />
-    <ClInclude Include="Include\BsDrawHelper2D.h" />
+    <ClInclude Include="Include\BsShapeMeshes2D.h" />
     <ClInclude Include="Include\BsBuiltinResources.h" />
     <ClInclude Include="Include\BsEnums.h" />
     <ClInclude Include="Include\BsGUIArea.h" />
@@ -315,9 +314,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsApplication.cpp" />
-    <ClCompile Include="Source\BsDrawHelper2D.cpp" />
-    <ClCompile Include="Source\BsDrawHelper3D.cpp" />
-    <ClCompile Include="Source\BsDrawHelperTemplate.cpp" />
+    <ClCompile Include="Source\BsShapeMeshes2D.cpp" />
+    <ClCompile Include="Source\BsShapeMeshes3D.cpp" />
     <ClCompile Include="Source\BsDragAndDropManager.cpp" />
     <ClCompile Include="Source\BsBuiltinResources.cpp" />
     <ClCompile Include="Source\BsGUIArea.cpp" />

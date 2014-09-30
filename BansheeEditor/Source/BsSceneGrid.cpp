@@ -1,6 +1,6 @@
 #include "BsSceneGrid.h"
 #include "BsMath.h"
-#include "BsDrawHelper3D.h"
+#include "BsShapeMeshes3D.h"
 #include "BsVertexDataDesc.h"
 #include "BsMaterial.h"
 #include "BsMesh.h"
@@ -93,8 +93,8 @@ namespace BansheeEngine
 		float maxX = (startX + numLines) * mSpacing;
 		float maxZ = (startZ + numLines) * mSpacing;
 
-		UINT32 totalNumVertices = DrawHelper3D::NUM_VERTICES_AA_LINE * (numLines + 1) * 2;
-		UINT32 totalNumIndices = DrawHelper3D::NUM_INDICES_AA_LINE * (numLines + 1) * 2;
+		UINT32 totalNumVertices = ShapeMeshes3D::NUM_VERTICES_AA_LINE * (numLines + 1) * 2;
+		UINT32 totalNumIndices = ShapeMeshes3D::NUM_INDICES_AA_LINE * (numLines + 1) * 2;
 
 		MeshDataPtr meshData = bs_shared_ptr<MeshData, PoolAlloc>(totalNumVertices, totalNumIndices, mVertexDesc);
 		UINT32 vertexOffset = 0;
@@ -110,22 +110,22 @@ namespace BansheeEngine
 
 			if (x % mAxisMarkerSpacing == 0)
 			{
-				DrawHelper3D::instance().antialiasedLine(lineStartX, lineEndX, Vector3::UNIT_Y, AXIS_MARKER_WIDTH, 
+				ShapeMeshes3D::antialiasedLine(lineStartX, lineEndX, Vector3::UNIT_Y, AXIS_MARKER_WIDTH, 
 					AXIS_MARKER_BORDER_WIDTH, AXIS_X_MARKER_COLOR, meshData, vertexOffset, indexOffset);
 			}
 			else if (x % mMajorAxisSpacing == 0)
 			{
-				DrawHelper3D::instance().antialiasedLine(lineStartX, lineEndX, Vector3::UNIT_Y, MAJOR_AXIS_WIDTH,
+				ShapeMeshes3D::antialiasedLine(lineStartX, lineEndX, Vector3::UNIT_Y, MAJOR_AXIS_WIDTH,
 					MAJOR_AXIS_BORDER_WIDTH, Color::White, meshData, vertexOffset, indexOffset);
 			}
 			else
 			{
-				DrawHelper3D::instance().antialiasedLine(lineStartX, lineEndX, Vector3::UNIT_Y, LINE_WIDTH,
+				ShapeMeshes3D::antialiasedLine(lineStartX, lineEndX, Vector3::UNIT_Y, LINE_WIDTH,
 					LINE_BORDER_WIDTH, Color::White, meshData, vertexOffset, indexOffset);
 			}
 
-			vertexOffset += DrawHelper3D::NUM_VERTICES_AA_LINE;
-			indexOffset += DrawHelper3D::NUM_INDICES_AA_LINE;
+			vertexOffset += ShapeMeshes3D::NUM_VERTICES_AA_LINE;
+			indexOffset += ShapeMeshes3D::NUM_INDICES_AA_LINE;
 
 			INT32 z = startZ + i;
 			float linePosZ = z * mSpacing;
@@ -135,22 +135,22 @@ namespace BansheeEngine
 
 			if (z % mAxisMarkerSpacing == 0)
 			{
-				DrawHelper3D::instance().antialiasedLine(lineStartZ, lineEndZ, Vector3::UNIT_Y, AXIS_MARKER_WIDTH,
+				ShapeMeshes3D::antialiasedLine(lineStartZ, lineEndZ, Vector3::UNIT_Y, AXIS_MARKER_WIDTH,
 					AXIS_MARKER_BORDER_WIDTH, AXIS_Z_MARKER_COLOR, meshData, vertexOffset, indexOffset);
 			}
 			else if (z % mMajorAxisSpacing == 0)
 			{
-				DrawHelper3D::instance().antialiasedLine(lineStartZ, lineEndZ, Vector3::UNIT_Y, MAJOR_AXIS_WIDTH,
+				ShapeMeshes3D::antialiasedLine(lineStartZ, lineEndZ, Vector3::UNIT_Y, MAJOR_AXIS_WIDTH,
 					MAJOR_AXIS_BORDER_WIDTH, Color::White, meshData, vertexOffset, indexOffset);
 			}
 			else
 			{
-				DrawHelper3D::instance().antialiasedLine(lineStartZ, lineEndZ, Vector3::UNIT_Y, LINE_WIDTH,
+				ShapeMeshes3D::antialiasedLine(lineStartZ, lineEndZ, Vector3::UNIT_Y, LINE_WIDTH,
 					LINE_BORDER_WIDTH, Color::White, meshData, vertexOffset, indexOffset);
 			}
 
-			vertexOffset += DrawHelper3D::NUM_VERTICES_AA_LINE;
-			indexOffset += DrawHelper3D::NUM_INDICES_AA_LINE;
+			vertexOffset += ShapeMeshes3D::NUM_VERTICES_AA_LINE;
+			indexOffset += ShapeMeshes3D::NUM_INDICES_AA_LINE;
 		}
 
 		mGridMesh = Mesh::create(meshData);

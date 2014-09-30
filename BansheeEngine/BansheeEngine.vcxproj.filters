@@ -174,15 +174,6 @@
     <ClInclude Include="Include\BsGUIViewport.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsDrawHelper2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsDrawHelperTemplate.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsDrawHelper3D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsGUIDropDownBox.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
@@ -272,6 +263,12 @@
     </ClInclude>
     <ClInclude Include="Include\BsGUILayoutUtility.h">
       <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsShapeMeshes2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsShapeMeshes3D.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -389,15 +386,6 @@
     <ClCompile Include="Source\BsGUIViewport.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsDrawHelperTemplate.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsDrawHelper2D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsDrawHelper3D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\BsGUIDropDownBox.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
@@ -469,6 +457,12 @@
     </ClCompile>
     <ClCompile Include="Source\BsGUILayoutUtility.cpp">
       <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsShapeMeshes2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsShapeMeshes3D.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

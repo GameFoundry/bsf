@@ -2,8 +2,8 @@
 #include "BsGUIMaterialManager.h"
 #include "BsGUIManager.h"
 #include "BsOverlayManager.h"
-#include "BsDrawHelper2D.h"
-#include "BsDrawHelper3D.h"
+#include "BsShapeMeshes2D.h"
+#include "BsShapeMeshes3D.h"
 #include "BsBuiltinResources.h"
 #include "BsScriptManager.h"
 #include "BsProfilingManager.h"
@@ -39,9 +39,6 @@ namespace BansheeEngine
 		GUIMaterialManager::startUp();
 		OverlayManager::startUp();
 
-		DrawHelper2D::startUp();
-		DrawHelper3D::startUp();
-
 		Cursor::startUp();
 
 #if BS_VER == BS_VER_DEV
@@ -58,9 +55,6 @@ namespace BansheeEngine
 #endif
 
 		Cursor::shutDown();
-
-		DrawHelper3D::shutDown();
-		DrawHelper2D::shutDown();
 
 		GUIMaterialManager::instance().forceReleaseAllMaterials();
 

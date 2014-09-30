@@ -3,7 +3,7 @@
 #include "BsAABox.h"
 #include "BsSphere.h"
 #include "BsVertexDataDesc.h"
-#include "BsDrawHelper3D.h"
+#include "BsShapeMeshes3D.h"
 #include "BsMeshHeap.h"
 #include "BsCamera.h"
 #include "BsSpriteTexture.h"
@@ -184,7 +184,7 @@ namespace BansheeEngine
 		sphereData.pickable = mPickable;
 
 		UINT32 numVertices, numIndices;
-		DrawHelper3D::getNumElementsSphere(SPHERE_QUALITY, numVertices, numIndices);
+		ShapeMeshes3D::getNumElementsSphere(SPHERE_QUALITY, numVertices, numIndices);
 
 		mTotalRequiredSolidVertices += numVertices;
 		mTotalRequiredSolidIndices += numIndices;
@@ -219,7 +219,7 @@ namespace BansheeEngine
 		sphereData.pickable = mPickable;
 
 		UINT32 numVertices, numIndices;
-		DrawHelper3D::getNumElementsWireSphere(SPHERE_QUALITY, numVertices, numIndices);
+		ShapeMeshes3D::getNumElementsWireSphere(SPHERE_QUALITY, numVertices, numIndices);
 
 		mTotalRequiredWireVertices += numVertices;
 		mTotalRequiredWireIndices += numIndices;
@@ -391,7 +391,7 @@ namespace BansheeEngine
 		for (auto& cubeData : cubeData)
 		{
 			AABox box(cubeData.position - cubeData.extents, cubeData.position + cubeData.extents);
-			DrawHelper3D::instance().solidAABox(box, meshData, curVertexOffset, curIndexOffet); // TODO - These should be static methods
+			ShapeMeshes3D::solidAABox(box, meshData, curVertexOffset, curIndexOffet);
 
 			Matrix4 transformIT = cubeData.transform.inverseAffine().transpose();
 			RGBA color = cubeData.color.getAsRGBA();
@@ -412,12 +412,12 @@ namespace BansheeEngine
 		}
 
 		UINT32 numSphereVertices, numSphereIndices;
-		DrawHelper3D::getNumElementsSphere(SPHERE_QUALITY, numSphereVertices, numSphereIndices);
+		ShapeMeshes3D::getNumElementsSphere(SPHERE_QUALITY, numSphereVertices, numSphereIndices);
 
 		for (auto& sphereData : sphereData)
 		{
 			Sphere sphere(sphereData.position, sphereData.radius);
-			DrawHelper3D::instance().solidSphere(sphere, meshData, curVertexOffset, curIndexOffet, SPHERE_QUALITY);
+			ShapeMeshes3D::solidSphere(sphere, meshData, curVertexOffset, curIndexOffet, SPHERE_QUALITY);
 
 			Matrix4 transformIT = sphereData.transform.inverseAffine().transpose();
 			RGBA color = sphereData.color.getAsRGBA();
@@ -453,7 +453,7 @@ namespace BansheeEngine
 		for (auto& cubeData : cubeData)
 		{
 			AABox box(cubeData.position - cubeData.extents, cubeData.position + cubeData.extents);
-			DrawHelper3D::instance().wireAABox(box, meshData, curVertexOffset, curIndexOffet); // TODO - These should be static methods
+			ShapeMeshes3D::wireAABox(box, meshData, curVertexOffset, curIndexOffet);
 
 			RGBA color = cubeData.color.getAsRGBA();
 
@@ -471,12 +471,12 @@ namespace BansheeEngine
 		}
 
 		UINT32 numSphereVertices, numSphereIndices;
-		DrawHelper3D::getNumElementsWireSphere(SPHERE_QUALITY, numSphereVertices, numSphereIndices);
+		ShapeMeshes3D::getNumElementsWireSphere(SPHERE_QUALITY, numSphereVertices, numSphereIndices);
 
 		for (auto& sphereData : sphereData)
 		{
 			Sphere sphere(sphereData.position, sphereData.radius);
-			DrawHelper3D::instance().wireSphere(sphere, meshData, curVertexOffset, curIndexOffet, SPHERE_QUALITY);
+			ShapeMeshes3D::wireSphere(sphere, meshData, curVertexOffset, curIndexOffet, SPHERE_QUALITY);
 
 			RGBA color = sphereData.color.getAsRGBA();
 			for (UINT32 i = 0; i < numSphereVertices; i++)
@@ -493,7 +493,7 @@ namespace BansheeEngine
 
 		for (auto& lineData : lineData)
 		{
-			DrawHelper3D::instance().pixelLine(lineData.start, lineData.end, meshData, curVertexOffset, curIndexOffet);
+			ShapeMeshes3D::pixelLine(lineData.start, lineData.end, meshData, curVertexOffset, curIndexOffet);
 
 			RGBA color = lineData.color.getAsRGBA();
 			for (UINT32 i = 0; i < 2; i++)
@@ -510,7 +510,7 @@ namespace BansheeEngine
 
 		for (auto& frustumData : frustumData)
 		{
-			DrawHelper3D::instance().wireFrustum(frustumData.aspect, frustumData.FOV, frustumData.near, 
+			ShapeMeshes3D::wireFrustum(frustumData.aspect, frustumData.FOV, frustumData.near, 
 				frustumData.far, meshData, curVertexOffset, curIndexOffet);
 
 			RGBA color = frustumData.color.getAsRGBA();

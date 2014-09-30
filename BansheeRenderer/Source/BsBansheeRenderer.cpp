@@ -14,8 +14,6 @@
 #include "BsRenderTarget.h"
 #include "BsRenderQueue.h"
 #include "BsOverlayManager.h"
-#include "BsDrawHelper2D.h"
-#include "BsDrawHelper3D.h"
 #include "BsGUIManager.h"
 #include "BsCoreThread.h"
 #include "BsGpuParams.h"
@@ -332,10 +330,6 @@ namespace BansheeEngine
 
 			// Get overlay render operations
 			OverlayManager::instance().render(camera->getViewport(), *drawList);
-
-			// Get debug render operations
-			DrawHelper3D::instance().render(camera, *drawList);
-			DrawHelper2D::instance().render(camera, *drawList);
 
 			// Get any operations from hooked up callbacks
 			const Viewport* viewportRawPtr = camera->getViewport().get();

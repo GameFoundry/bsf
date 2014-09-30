@@ -155,12 +155,6 @@ namespace BansheeEngine
 	const WString BuiltinResources::ShaderSpriteTextPSFile = L"spriteTextPS.gpuprog";
 	const WString BuiltinResources::ShaderSpriteImageVSFile = L"spriteImageVS.gpuprog";
 	const WString BuiltinResources::ShaderSpriteImagePSFile = L"spriteImagePS.gpuprog";
-	const WString BuiltinResources::ShaderDebugDraw2DClipSpaceVSFile = L"debugDraw2DClipSpaceVS.gpuprog";
-	const WString BuiltinResources::ShaderDebugDraw2DClipSpacePSFile = L"debugDraw2DClipSpacePS.gpuprog";
-	const WString BuiltinResources::ShaderDebugDraw2DScreenSpaceVSFile = L"debugDraw2DScreenSpaceVS.gpuprog";
-	const WString BuiltinResources::ShaderDebugDraw2DScreenSpacePSFile = L"debugDraw2DScreenSpacePS.gpuprog";
-	const WString BuiltinResources::ShaderDebugDraw3DVSFile = L"debugDraw3DVS.gpuprog";
-	const WString BuiltinResources::ShaderDebugDraw3DPSFile = L"debugDraw3DPS.gpuprog";
 	const WString BuiltinResources::ShaderDockOverlayVSFile = L"dockDropOverlayVS.gpuprog";
 	const WString BuiltinResources::ShaderDockOverlayPSFile = L"dockDropOverlayPS.gpuprog";
 	const WString BuiltinResources::ShaderDummyVSFile = L"dummyVS.gpuprog";
@@ -203,9 +197,6 @@ namespace BansheeEngine
 
 		initSpriteTextShader();
 		initSpriteImageShader();
-		initDebugDraw2DClipSpaceShader();
-		initDebugDraw2DScreenSpaceShader();
-		initDebugDraw3DShader();
 		initDummyShader();
 
 		mWhiteSpriteTexture = getSkinTexture(WhiteTex);
@@ -642,36 +633,18 @@ namespace BansheeEngine
 			{ ShaderSpriteTextPSFile,				"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0, "hlsl", HLSL11ShaderSubFolder },
 			{ ShaderSpriteImageVSFile,				"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "hlsl", HLSL11ShaderSubFolder },
 			{ ShaderSpriteImagePSFile,				"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0, "hlsl", HLSL11ShaderSubFolder },
-			{ ShaderDebugDraw2DClipSpaceVSFile,		"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "hlsl", HLSL11ShaderSubFolder },
-			{ ShaderDebugDraw2DClipSpacePSFile,		"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0, "hlsl", HLSL11ShaderSubFolder },
-			{ ShaderDebugDraw2DScreenSpaceVSFile,	"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "hlsl", HLSL11ShaderSubFolder },
-			{ ShaderDebugDraw2DScreenSpacePSFile,	"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0, "hlsl", HLSL11ShaderSubFolder },
-			{ ShaderDebugDraw3DVSFile,				"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "hlsl", HLSL11ShaderSubFolder },
-			{ ShaderDebugDraw3DPSFile,				"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0, "hlsl", HLSL11ShaderSubFolder },
 			{ ShaderDummyVSFile,					"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "hlsl", HLSL11ShaderSubFolder },
 			{ ShaderDummyPSFile,					"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0, "hlsl", HLSL11ShaderSubFolder },
 			{ ShaderSpriteTextVSFile,				"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_2_0, "hlsl", HLSL9ShaderSubFolder },
 			{ ShaderSpriteTextPSFile,				"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_2_0, "hlsl", HLSL9ShaderSubFolder },
 			{ ShaderSpriteImageVSFile,				"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_2_0, "hlsl", HLSL9ShaderSubFolder },
 			{ ShaderSpriteImagePSFile,				"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_2_0, "hlsl", HLSL9ShaderSubFolder },
-			{ ShaderDebugDraw2DClipSpaceVSFile,		"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_2_0, "hlsl", HLSL9ShaderSubFolder },
-			{ ShaderDebugDraw2DClipSpacePSFile,		"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_2_0, "hlsl", HLSL9ShaderSubFolder },
-			{ ShaderDebugDraw2DScreenSpaceVSFile,	"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_2_0, "hlsl", HLSL9ShaderSubFolder },
-			{ ShaderDebugDraw2DScreenSpacePSFile,	"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_2_0, "hlsl", HLSL9ShaderSubFolder },
-			{ ShaderDebugDraw3DVSFile,				"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_2_0, "hlsl", HLSL9ShaderSubFolder },
-			{ ShaderDebugDraw3DPSFile,				"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_2_0, "hlsl", HLSL9ShaderSubFolder },
 			{ ShaderDummyVSFile,					"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_2_0, "hlsl", HLSL9ShaderSubFolder },
 			{ ShaderDummyPSFile,					"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_2_0, "hlsl", HLSL9ShaderSubFolder },
 			{ ShaderSpriteTextVSFile,				"main",			GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "glsl", GLSLShaderSubFolder },
 			{ ShaderSpriteTextPSFile,				"main",			GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0, "glsl", GLSLShaderSubFolder },
 			{ ShaderSpriteImageVSFile,				"main",			GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "glsl", GLSLShaderSubFolder },
 			{ ShaderSpriteImagePSFile,				"main",			GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0, "glsl", GLSLShaderSubFolder },
-			{ ShaderDebugDraw2DClipSpaceVSFile,		"main",			GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "glsl", GLSLShaderSubFolder },
-			{ ShaderDebugDraw2DClipSpacePSFile,		"main",			GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0, "glsl", GLSLShaderSubFolder },
-			{ ShaderDebugDraw2DScreenSpaceVSFile,	"main",			GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "glsl", GLSLShaderSubFolder },
-			{ ShaderDebugDraw2DScreenSpacePSFile,	"main",			GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0, "glsl", GLSLShaderSubFolder },
-			{ ShaderDebugDraw3DVSFile,				"main",			GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "glsl", GLSLShaderSubFolder },
-			{ ShaderDebugDraw3DPSFile,				"main",			GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0, "glsl", GLSLShaderSubFolder },
 			{ ShaderDummyVSFile,					"main",			GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "glsl", GLSLShaderSubFolder },
 			{ ShaderDummyPSFile,					"main",			GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0, "glsl", GLSLShaderSubFolder },
 		};
@@ -909,91 +882,6 @@ namespace BansheeEngine
 		newPass->setDepthStencilState(depthState);
 	}
 
-	void BuiltinResources::initDebugDraw2DClipSpaceShader()
-	{
-		HGpuProgram vsProgram = getGpuProgram(ShaderDebugDraw2DClipSpaceVSFile);
-		HGpuProgram psProgram = getGpuProgram(ShaderDebugDraw2DClipSpacePSFile);
-
-		mShaderDebugDraw2DClipSpace = Shader::create("DebugDraw2DClipSpaceShader");
-
-		TechniquePtr newTechnique = mShaderDebugDraw2DClipSpace->addTechnique(mActiveRenderSystem, RendererInvariant);
-		PassPtr newPass = newTechnique->addPass();
-		newPass->setVertexProgram(vsProgram);
-		newPass->setFragmentProgram(psProgram);
-
-		BLEND_STATE_DESC desc;
-		desc.renderTargetDesc[0].blendEnable = true;
-		desc.renderTargetDesc[0].srcBlend = BF_SOURCE_ALPHA;
-		desc.renderTargetDesc[0].dstBlend = BF_INV_SOURCE_ALPHA;
-		desc.renderTargetDesc[0].blendOp = BO_ADD;
-
-		HBlendState blendState = BlendState::create(desc);
-		newPass->setBlendState(blendState);
-
-		DEPTH_STENCIL_STATE_DESC depthStateDesc;
-		depthStateDesc.depthReadEnable = false;
-		depthStateDesc.depthWriteEnable = false;
-
-		HDepthStencilState depthState = DepthStencilState::create(depthStateDesc);
-		newPass->setDepthStencilState(depthState);
-	}
-
-	void BuiltinResources::initDebugDraw2DScreenSpaceShader()
-	{
-		HGpuProgram vsProgram = getGpuProgram(ShaderDebugDraw2DScreenSpaceVSFile);
-		HGpuProgram psProgram = getGpuProgram(ShaderDebugDraw2DScreenSpacePSFile);
-
-		mShaderDebugDraw2DScreenSpace = Shader::create("DebugDraw2DScreenSpaceShader");
-
-		mShaderDebugDraw2DScreenSpace->addParameter("invViewportWidth", "invViewportWidth", GPDT_FLOAT1);
-		mShaderDebugDraw2DScreenSpace->addParameter("invViewportHeight", "invViewportHeight", GPDT_FLOAT1);
-
-		TechniquePtr newTechnique = mShaderDebugDraw2DScreenSpace->addTechnique(mActiveRenderSystem, RendererInvariant);
-		PassPtr newPass = newTechnique->addPass();
-		newPass->setVertexProgram(vsProgram);
-		newPass->setFragmentProgram(psProgram);
-
-		BLEND_STATE_DESC desc;
-		desc.renderTargetDesc[0].blendEnable = true;
-		desc.renderTargetDesc[0].srcBlend = BF_SOURCE_ALPHA;
-		desc.renderTargetDesc[0].dstBlend = BF_INV_SOURCE_ALPHA;
-		desc.renderTargetDesc[0].blendOp = BO_ADD;
-
-		HBlendState blendState = BlendState::create(desc);
-		newPass->setBlendState(blendState);
-
-		DEPTH_STENCIL_STATE_DESC depthStateDesc;
-		depthStateDesc.depthReadEnable = false;
-		depthStateDesc.depthWriteEnable = false;
-
-		HDepthStencilState depthState = DepthStencilState::create(depthStateDesc);
-		newPass->setDepthStencilState(depthState);
-	}
-
-	void BuiltinResources::initDebugDraw3DShader()
-	{
-		HGpuProgram vsProgram = getGpuProgram(ShaderDebugDraw3DVSFile);
-		HGpuProgram psProgram = getGpuProgram(ShaderDebugDraw3DPSFile);
-
-		mShaderDebugDraw3D = Shader::create("DebugDraw3DShader");
-
-		mShaderDebugDraw3D->addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
-
-		TechniquePtr newTechnique = mShaderDebugDraw3D->addTechnique(mActiveRenderSystem, RendererInvariant);
-		PassPtr newPass = newTechnique->addPass();
-		newPass->setVertexProgram(vsProgram);
-		newPass->setFragmentProgram(psProgram);
-
-		BLEND_STATE_DESC desc;
-		desc.renderTargetDesc[0].blendEnable = true;
-		desc.renderTargetDesc[0].srcBlend = BF_SOURCE_ALPHA;
-		desc.renderTargetDesc[0].dstBlend = BF_INV_SOURCE_ALPHA;
-		desc.renderTargetDesc[0].blendOp = BO_ADD;
-
-		HBlendState blendState = BlendState::create(desc);
-		newPass->setBlendState(blendState);
-	}
-
 	void BuiltinResources::initDummyShader()
 	{
 		HGpuProgram vsProgram = getGpuProgram(ShaderDummyVSFile);
@@ -1093,33 +981,6 @@ namespace BansheeEngine
 		info.mainTexture = info.material->getParamTexture("mainTexture");
 		info.mainTexSampler = info.material->getParamSamplerState("mainTexSamp");
 		info.tint = info.material->getParamVec4("tint");
-
-		return info;
-	}
-
-	DebugDraw2DClipSpaceMatInfo BuiltinResources::createDebugDraw2DClipSpaceMaterial() const
-	{
-		DebugDraw2DClipSpaceMatInfo info;
-		info.material = Material::create(mShaderDebugDraw2DClipSpace);
-
-		return info;
-	}
-
-	DebugDraw2DScreenSpaceMatInfo BuiltinResources::createDebugDraw2DScreenSpaceMaterial() const
-	{
-		DebugDraw2DScreenSpaceMatInfo info;
-		info.material = Material::create(mShaderDebugDraw2DScreenSpace);
-		info.invViewportWidth = info.material->getParamFloat("invViewportWidth");
-		info.invViewportHeight = info.material->getParamFloat("invViewportHeight");
-
-		return info;
-	}
-
-	DebugDraw3DMatInfo BuiltinResources::createDebugDraw3DMaterial() const
-	{
-		DebugDraw3DMatInfo info;
-		info.material = Material::create(mShaderDebugDraw3D);
-		info.matViewProj = info.material->getParamMat4("matViewProj");
 
 		return info;
 	}

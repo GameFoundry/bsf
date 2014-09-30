@@ -16,8 +16,8 @@
 
 // DEBUG ONLY
 #include "BsTestTextSprite.h"
-#include "BsDrawHelper2D.h"
-#include "BsDrawHelper3D.h"
+#include "BsShapeMeshes2D.h"
+#include "BsShapeMeshes3D.h"
 #include "BsRect2.h"
 #include "BsProfilerOverlay.h"
 #include "BsPlatform.h"

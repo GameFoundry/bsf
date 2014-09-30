@@ -91,21 +91,6 @@ namespace BansheeEngine
 		GUIMaterialInfo createSpriteImageMaterial() const;
 
 		/**
-		 * @brief	Creates a material used for debug drawing in clip space (e.g. 2D shapes that resize with the viewport).
-		 */
-		DebugDraw2DClipSpaceMatInfo createDebugDraw2DClipSpaceMaterial() const;
-
-		/**
-		 * @brief	Creates a material used for debug drawing in screen space (e.g. 2D shapes of fixed pixel size).
-		 */
-		DebugDraw2DScreenSpaceMatInfo createDebugDraw2DScreenSpaceMaterial() const;
-
-		/**
-		 * @brief	Creates a material used for debug drawing in 3D.
-		 */
-		DebugDraw3DMatInfo createDebugDraw3DMaterial() const;
-
-		/**
 		 * @brief	Creates a material used as a replacement when no other material is usable.
 		 */
 		HMaterial createDummyMaterial() const;
@@ -159,21 +144,6 @@ namespace BansheeEngine
 		void initSpriteImageShader();
 
 		/**
-		 * @brief	Loads an compiles a shader for debug 2D clip space rendering.
-		 */
-		void initDebugDraw2DClipSpaceShader();
-
-		/**
-		 * @brief	Loads an compiles a shader for debug 2D screen space rendering.
-		 */
-		void initDebugDraw2DScreenSpaceShader();
-
-		/**
-		 * @brief	Loads an compiles a shader for debug 3D rendering.
-		 */
-		void initDebugDraw3DShader();
-
-		/**
 		 * @brief	Loads an compiles a simple shader to be used with no other is usable.
 		 */
 		void initDummyShader();
@@ -197,9 +167,6 @@ namespace BansheeEngine
 
 		ShaderPtr mShaderSpriteText;
 		ShaderPtr mShaderSpriteImage;
-		ShaderPtr mShaderDebugDraw2DClipSpace;
-		ShaderPtr mShaderDebugDraw2DScreenSpace;
-		ShaderPtr mShaderDebugDraw3D;
 		ShaderPtr mShaderDummy;
 
 		WString mActiveShaderSubFolder;
@@ -310,12 +277,6 @@ namespace BansheeEngine
 		static const WString ShaderSpriteTextPSFile;
 		static const WString ShaderSpriteImageVSFile;
 		static const WString ShaderSpriteImagePSFile;
-		static const WString ShaderDebugDraw2DClipSpaceVSFile;
-		static const WString ShaderDebugDraw2DClipSpacePSFile;
-		static const WString ShaderDebugDraw2DScreenSpaceVSFile;
-		static const WString ShaderDebugDraw2DScreenSpacePSFile;
-		static const WString ShaderDebugDraw3DVSFile;
-		static const WString ShaderDebugDraw3DPSFile;
 		static const WString ShaderDockOverlayVSFile;
 		static const WString ShaderDockOverlayPSFile;
 		static const WString ShaderDummyVSFile;
