@@ -3,6 +3,10 @@
 
 namespace BansheeEngine
 {
+	Capsule::Capsule()
+		:mRadius(0.0f)
+	{ }
+
 	Capsule::Capsule(const LineSegment3& segment, float radius)
 		:mSegment(segment), mRadius(radius)
 	{ }

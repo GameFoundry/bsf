@@ -4,6 +4,10 @@
 
 namespace BansheeEngine
 {
+	Torus::Torus()
+		:outerRadius(0.0f), innerRadius(0.0f)
+	{ }
+
 	Torus::Torus(float outerRadius, float innerRadius)
 		:outerRadius(outerRadius), innerRadius(innerRadius)
 	{ }

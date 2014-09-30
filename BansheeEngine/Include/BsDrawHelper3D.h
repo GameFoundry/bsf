@@ -5,6 +5,7 @@
 #include "BsModule.h"
 #include "BsColor.h"
 #include "BsAABox.h"
+#include "BsRect3.h"
 
 namespace BansheeEngine
 {
@@ -236,6 +237,24 @@ namespace BansheeEngine
 		 */
 		void solidCone(const Vector3& base, const Vector3& normal, float height, float radius,
 			const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality = 10);
+
+		/**
+		 * @brief	Fills the mesh data with vertices representing a quad (2 triangles).
+		 *
+		 * @param	area			Area in which to draw the quad.
+		 * @param	meshData		Mesh data that will be populated.
+		 * @param	vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
+		 * @param	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
+		 * 							
+		 * @note	Provided MeshData must have some specific elements at least:
+		 * 			  Vector3 VES_POSITION
+		 *			  Vector3 VES_NORMAL
+		 * 			  32bit index buffer
+		 * 			  Enough space for 4 vertices and 6 indices
+		 *
+		 *			Primitives are output in the form of a triangle list.
+		 */
+		void solidQuad(const Rect3& area, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		/**
 		 * @copydoc	DrawHelperTemplate::pixelLine
@@ -491,6 +510,19 @@ namespace BansheeEngine
 		 */
 		void solidCone(const Vector3& base, const Vector3& normal, float height, float radius,
 			UINT8* outVertices, UINT8* outNormals, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset, UINT32 quality);
+
+		/**
+		 * @brief	Fills the provided buffers with position and index data representing a solid quad.
+		 *
+		 * @param	area			Area covered by the quad.
+		 * @param	outVertices		Output buffer that will store the vertex position data.
+		 * @param	outNormals		Output buffer that will store the vertex normal data.
+		 * @param	vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
+		 * @param	vertexStride	Size of a single vertex, in bytes. (Same for both position and normal buffer)
+		 * @param	outIndices		Output buffer that will store the index data. Indices are 32bit.
+		 * @param	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
+		 */
+		void solidQuad(const Rect3& area, UINT8* outVertices, UINT8* outNormals, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset);
 
 	private:
 		/**

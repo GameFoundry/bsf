@@ -12,6 +12,7 @@ namespace BansheeEngine
 	class BS_UTILITY_EXPORT LineSegment3
 	{
 	public:
+		LineSegment3();
 		LineSegment3(const Vector3& start, const Vector3& end);
 
 		/**

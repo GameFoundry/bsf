@@ -13,6 +13,7 @@ namespace BansheeEngine
 	class BS_UTILITY_EXPORT Capsule
 	{
 	public:
+		Capsule();
 		Capsule(const LineSegment3& segment, float radius);
 
 		/**

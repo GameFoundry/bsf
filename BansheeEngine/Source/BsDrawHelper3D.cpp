@@ -166,6 +166,19 @@ namespace BansheeEngine
 			meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset, quality);
 	}
 
+	void DrawHelper3D::solidQuad(const Rect3& area, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+	{
+		UINT32* indexData = meshData->getIndices32();
+		UINT8* positionData = meshData->getElementData(VES_POSITION);
+		UINT8* normalData = meshData->getElementData(VES_NORMAL);
+
+		assert((vertexOffset + 4) <= meshData->getNumVertices());
+		assert((indexOffset + 6) <= meshData->getNumIndices());
+
+		solidQuad(area, positionData, normalData, vertexOffset,
+			meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
+	}
+
 	void DrawHelper3D::pixelLine(const Vector3& a, const Vector3& b, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		DrawHelperTemplate<Vector3>::pixelLine(a, b, meshData, vertexOffset, indexOffset);
@@ -728,6 +741,38 @@ namespace BansheeEngine
 			outIndices[i * 3 + 1] = curVertOffset + i;
 			outIndices[i * 3 + 2] = curVertOffset + i + 1;
 		}
+	}
+
+	void DrawHelper3D::solidQuad(const Rect3& area, UINT8* outVertices, UINT8* outNormals, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
+	{
+		outVertices += (vertexOffset * vertexStride);
+
+		Vector3 topLeft = area.getCenter() - area.getAxisHorz() * area.getExtentHorz() + area.getAxisVert() * area.getExtentVertical();
+		Vector3 topRight = area.getCenter() + area.getAxisHorz() * area.getExtentHorz() + area.getAxisVert() * area.getExtentVertical();
+		Vector3 botRight = area.getCenter() + area.getAxisHorz() * area.getExtentHorz() - area.getAxisVert() * area.getExtentVertical();
+		Vector3 botLeft = area.getCenter() - area.getAxisHorz() * area.getExtentHorz() - area.getAxisVert() * area.getExtentVertical();
+
+		outVertices = writeVector3(outVertices, vertexStride, topLeft);
+		outVertices = writeVector3(outVertices, vertexStride, topRight);
+		outVertices = writeVector3(outVertices, vertexStride, botRight);
+		outVertices = writeVector3(outVertices, vertexStride, botLeft);
+
+		Vector3 normal = area.getAxisHorz().cross(area.getAxisVert());
+
+		outNormals += (vertexOffset + vertexStride);
+		outNormals = writeVector3(outNormals, vertexStride, normal);
+		outNormals = writeVector3(outNormals, vertexStride, normal);
+		outNormals = writeVector3(outNormals, vertexStride, normal);
+		outNormals = writeVector3(outNormals, vertexStride, normal);
+
+		outIndices += indexOffset;
+		outIndices[0] = vertexOffset;
+		outIndices[1] = vertexOffset + 1;
+		outIndices[2] = vertexOffset + 2;
+
+		outIndices[3] = vertexOffset;
+		outIndices[4] = vertexOffset + 2;
+		outIndices[5] = vertexOffset + 3;
 	}
 
 	Vector3 DrawHelper3D::calcCenter(UINT8* vertices, UINT32 numVertices, UINT32 vertexStride)

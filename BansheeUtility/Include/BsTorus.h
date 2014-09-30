@@ -13,6 +13,7 @@ namespace BansheeEngine
 	class BS_UTILITY_EXPORT Torus
 	{
 	public:
+		Torus();
 		Torus(float outerRadius, float innerRadius);
 
 		/**

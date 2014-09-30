@@ -4,6 +4,9 @@
 
 namespace BansheeEngine
 {
+	Rect3::Rect3()
+	{ }
+
 	Rect3::Rect3(const Vector3& center, const std::array<Vector3, 2>& axes,
 		const std::array<float, 2>& extents)
 		:mCenter(center), mAxes(axes), mExtents(extents)

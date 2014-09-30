@@ -3,6 +3,9 @@
 
 namespace BansheeEngine
 {
+	LineSegment3::LineSegment3()
+	{ }
+
 	LineSegment3::LineSegment3(const Vector3& start, const Vector3& end)
 		:mStart(start), mEnd(end)
 	{ 

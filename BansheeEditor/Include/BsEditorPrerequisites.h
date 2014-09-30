@@ -56,6 +56,7 @@ namespace BansheeEngine
 	class EditorCommand;
 	class ProjectResourceMeta;
 	class SceneGrid;
+	class HandleSlider;
 
 	typedef std::shared_ptr<ProjectResourceMeta> ProjectResourceMetaPtr;
 	typedef std::shared_ptr<DockManagerLayout> DockManagerLayoutPtr;
