@@ -15,16 +15,19 @@ namespace BansheeEngine
 		// TODO - Add a bunch of draw methods similar to GizmoManager
 		//      - And a similar render method
 
-		//void drawCube(const Vector3& position, const Vector3& extents);
-		//void drawSphere(const Vector3& position, float radius);
-		//void drawWireCube(const Vector3& position, const Vector3& extents);
-		//void drawWireSphere(const Vector3& position, float radius);
-		//void drawCone(const Vector3& base, const Vector3& normal, float height, float radius);
-		//void drawLine(const Vector3& start, const Vector3& end);
-		//void drawDisc(const Vector3& position, const Vector3& normal, float radius);
-		//void drawWireDisc(const Vector3& position, const Vector3& normal, float radius);
-		//void drawArc(const Vector3& position, const Vector3& normal, float radius, Degree startAngle, Degree amountAngle);
-		//void drawWireArc(const Vector3& position, const Vector3& normal, float radius, Degree startAngle, Degree amountAngle);
+		void setColor(const Color& color);
+		void setTransform(const Matrix4& transform);
+
+		void drawCube(const Vector3& position, const Vector3& extents);
+		void drawSphere(const Vector3& position, float radius);
+		void drawWireCube(const Vector3& position, const Vector3& extents);
+		void drawWireSphere(const Vector3& position, float radius);
+		void drawCone(const Vector3& base, const Vector3& normal, float height, float radius);
+		void drawLine(const Vector3& start, const Vector3& end);
+		void drawDisc(const Vector3& position, const Vector3& normal, float radius);
+		void drawWireDisc(const Vector3& position, const Vector3& normal, float radius);
+		void drawArc(const Vector3& position, const Vector3& normal, float radius, Degree startAngle, Degree amountAngle);
+		void drawWireArc(const Vector3& position, const Vector3& normal, float radius, Degree startAngle, Degree amountAngle);
 
 		// TODO - Add update method that handles mouse input
 

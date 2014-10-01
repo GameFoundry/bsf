@@ -134,10 +134,6 @@ namespace BansheeEngine
 		typedef Vector<IconRenderData> IconRenderDataVec;
 		typedef std::shared_ptr<IconRenderDataVec> IconRenderDataVecPtr;
 
-		TransientMeshPtr buildSolidMesh(const Vector<CubeData>& cubeData, const Vector<SphereData>& sphereData,
-			UINT32 numVertices, UINT32 numIndices);
-		TransientMeshPtr buildWireMesh(const Vector<CubeData>& cubeData, const Vector<SphereData>& sphereData,
-			const Vector<LineData>& lineData, const Vector<FrustumData>& frustumData, UINT32 numVertices, UINT32 numIndices);
 		TransientMeshPtr buildIconMesh(const Vector<IconData>& iconData, bool pickingOnly, IconRenderDataVecPtr& renderData);
 
 		void coreRender(const CameraProxy& camera);
@@ -160,6 +156,7 @@ namespace BansheeEngine
 		static const UINT32 VERTEX_BUFFER_GROWTH;
 		static const UINT32 INDEX_BUFFER_GROWTH;
 		static const UINT32 SPHERE_QUALITY;
+		static const UINT32 WIRE_SPHERE_QUALITY;
 		static const float MAX_ICON_RANGE;
 		static const UINT32 OPTIMAL_ICON_SIZE;
 		static const float ICON_TEXEL_WORLD_SIZE;
@@ -174,6 +171,9 @@ namespace BansheeEngine
 		HSceneObject mActiveSO;
 		bool mPickable;
 
+		DrawHelper* mDrawHelper;
+		DrawHelper* mPickingDrawHelper;
+
 		Vector<CubeData> mSolidCubeData;
 		Vector<CubeData> mWireCubeData;
 		Vector<SphereData> mSolidSphereData;
@@ -182,14 +182,6 @@ namespace BansheeEngine
 		Vector<FrustumData> mFrustumData;
 		Vector<IconData> mIconData;
 
-		UINT32 mTotalRequiredSolidVertices;
-		UINT32 mTotalRequiredSolidIndices;
-
-		UINT32 mTotalRequiredWireVertices;
-		UINT32 mTotalRequiredWireIndices;
-
-		MeshHeapPtr mSolidMeshHeap;
-		MeshHeapPtr mWireMeshHeap;
 		MeshHeapPtr mIconMeshHeap;
 
 		TransientMeshPtr mSolidMesh;
@@ -203,8 +195,6 @@ namespace BansheeEngine
 		IconRenderDataVecPtr mIconRenderData;
 
 		// Immutable
-		VertexDataDescPtr mSolidVertexDesc;
-		VertexDataDescPtr mWireVertexDesc;
 		VertexDataDescPtr mIconVertexDesc;
 
 		SolidMaterialData mSolidMaterial;

@@ -2,6 +2,12 @@
 TODO:
  - Core thread gets stuck on shutdown when OpenGL is used...Somewhere in kernel
 
+Add a DrawHelper class that handles drawing all of ShapeMeshes types.
+ -It should be called by both GizmoManager and HandleManager
+ - Internally it will have two buffers (wire and solid)
+ - You can add new objects to it similar to GizmoManager (using structs per object type)
+ - And you can build the mesh from those objects, or clear current data
+
 CONCRETE TASK:
  - Similar to how I have onRenderViewport callback in Renderer have another one that gets triggered from core thread
    - Hook up gizmo rendering there

@@ -15,6 +15,7 @@
 #include "BsRenderer.h"
 #include "BsTransientMesh.h"
 #include "BsRendererManager.h"
+#include "BsDrawHelper.h"
 
 using namespace std::placeholders;
 
@@ -23,23 +24,17 @@ namespace BansheeEngine
 	const UINT32 GizmoManager::VERTEX_BUFFER_GROWTH = 4096;
 	const UINT32 GizmoManager::INDEX_BUFFER_GROWTH = 4096 * 2;
 	const UINT32 GizmoManager::SPHERE_QUALITY = 1;
+	const UINT32 GizmoManager::WIRE_SPHERE_QUALITY = 10;
 	const float GizmoManager::MAX_ICON_RANGE = 500.0f;
 	const UINT32 GizmoManager::OPTIMAL_ICON_SIZE = 64;
 	const float GizmoManager::ICON_TEXEL_WORLD_SIZE = 0.05f;
 	const float GizmoManager::PICKING_ALPHA_CUTOFF = 0.5f;
 
 	GizmoManager::GizmoManager(const HCamera& camera)
-		:mTotalRequiredSolidIndices(0), mTotalRequiredSolidVertices(0),
-		mTotalRequiredWireVertices(0), mTotalRequiredWireIndices(0), mCamera(camera), mPickable(false)
+		:mCamera(camera), mPickable(false)
 	{
-		mSolidVertexDesc = bs_shared_ptr<VertexDataDesc>();
-		mSolidVertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
-		mSolidVertexDesc->addVertElem(VET_FLOAT3, VES_NORMAL);
-		mSolidVertexDesc->addVertElem(VET_COLOR, VES_COLOR);
-
-		mWireVertexDesc = bs_shared_ptr<VertexDataDesc>();
-		mWireVertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
-		mWireVertexDesc->addVertElem(VET_COLOR, VES_COLOR);
+		mDrawHelper = bs_new<DrawHelper>();
+		mPickingDrawHelper = bs_new<DrawHelper>();
 
 		mIconVertexDesc = bs_shared_ptr<VertexDataDesc>();
 		mIconVertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
@@ -47,8 +42,6 @@ namespace BansheeEngine
 		mIconVertexDesc->addVertElem(VET_COLOR, VES_COLOR, 0);
 		mIconVertexDesc->addVertElem(VET_COLOR, VES_COLOR, 1);
 
-		mSolidMeshHeap = MeshHeap::create(VERTEX_BUFFER_GROWTH, INDEX_BUFFER_GROWTH, mSolidVertexDesc);
-		mWireMeshHeap = MeshHeap::create(VERTEX_BUFFER_GROWTH, INDEX_BUFFER_GROWTH, mWireVertexDesc);
 		mIconMeshHeap = MeshHeap::create(VERTEX_BUFFER_GROWTH, INDEX_BUFFER_GROWTH, mIconVertexDesc);
 
 		mSolidMaterial.material = BuiltinEditorResources::instance().createSolidGizmoMat();
@@ -69,13 +62,16 @@ namespace BansheeEngine
 	GizmoManager::~GizmoManager()
 	{
 		if (mSolidMesh != nullptr)
-			mSolidMeshHeap->dealloc(mSolidMesh);
+			mDrawHelper->releaseSolidMesh(mSolidMesh);
 
 		if (mWireMesh != nullptr)
-			mWireMeshHeap->dealloc(mWireMesh);
+			mDrawHelper->releaseWireMesh(mWireMesh);
 
 		if (mIconMesh != nullptr)
 			mIconMeshHeap->dealloc(mIconMesh);
+
+		bs_delete(mDrawHelper);
+		bs_delete(mPickingDrawHelper);
 	}
 
 	void GizmoManager::initializeCore()
@@ -167,8 +163,7 @@ namespace BansheeEngine
 		cubeData.sceneObject = mActiveSO;
 		cubeData.pickable = mPickable;
 
-		mTotalRequiredSolidVertices += 24;
-		mTotalRequiredSolidIndices += 36;
+		mDrawHelper->cube(position, extents);
 	}
 
 	void GizmoManager::drawSphere(const Vector3& position, float radius)
@@ -183,11 +178,7 @@ namespace BansheeEngine
 		sphereData.sceneObject = mActiveSO;
 		sphereData.pickable = mPickable;
 
-		UINT32 numVertices, numIndices;
-		ShapeMeshes3D::getNumElementsSphere(SPHERE_QUALITY, numVertices, numIndices);
-
-		mTotalRequiredSolidVertices += numVertices;
-		mTotalRequiredSolidIndices += numIndices;
+		mDrawHelper->sphere(position, radius);
 	}
 
 	void GizmoManager::drawWireCube(const Vector3& position, const Vector3& extents)
@@ -202,8 +193,7 @@ namespace BansheeEngine
 		cubeData.sceneObject = mActiveSO;
 		cubeData.pickable = mPickable;
 
-		mTotalRequiredWireVertices += 8;
-		mTotalRequiredWireIndices += 24;
+		mDrawHelper->wireCube(position, extents);
 	}
 
 	void GizmoManager::drawWireSphere(const Vector3& position, float radius)
@@ -218,11 +208,7 @@ namespace BansheeEngine
 		sphereData.sceneObject = mActiveSO;
 		sphereData.pickable = mPickable;
 
-		UINT32 numVertices, numIndices;
-		ShapeMeshes3D::getNumElementsWireSphere(SPHERE_QUALITY, numVertices, numIndices);
-
-		mTotalRequiredWireVertices += numVertices;
-		mTotalRequiredWireIndices += numIndices;
+		mDrawHelper->wireSphere(position, radius);
 	}
 
 	void GizmoManager::drawLine(const Vector3& start, const Vector3& end)
@@ -237,8 +223,7 @@ namespace BansheeEngine
 		lineData.sceneObject = mActiveSO;
 		lineData.pickable = mPickable;
 
-		mTotalRequiredWireVertices += 2;
-		mTotalRequiredWireIndices += 2;
+		mDrawHelper->line(start, end);
 	}
 
 	void GizmoManager::drawFrustum(const Vector3& position, float aspect, Degree FOV, float near, float far)
@@ -256,8 +241,7 @@ namespace BansheeEngine
 		frustumData.sceneObject = mActiveSO;
 		frustumData.pickable = mPickable;
 
-		mTotalRequiredWireVertices += 8;
-		mTotalRequiredWireIndices += 36;
+		mDrawHelper->frustum(position, aspect, FOV, near, far);
 	}
 
 	void GizmoManager::drawIcon(Vector3 position, HSpriteTexture image, bool fixedScale)
@@ -277,18 +261,18 @@ namespace BansheeEngine
 	void GizmoManager::update()
 	{
 		if (mSolidMesh != nullptr)
-			mSolidMeshHeap->dealloc(mSolidMesh);
+			mDrawHelper->releaseSolidMesh(mSolidMesh);
 
 		if (mWireMesh != nullptr)
-			mWireMeshHeap->dealloc(mWireMesh);
+			mDrawHelper->releaseWireMesh(mWireMesh);
 
 		if (mIconMesh != nullptr)
 			mIconMeshHeap->dealloc(mIconMesh);
 
 		IconRenderDataVecPtr iconRenderData;
 
-		mSolidMesh = buildSolidMesh(mSolidCubeData, mSolidSphereData, mTotalRequiredSolidVertices, mTotalRequiredSolidIndices);
-		mWireMesh = buildWireMesh(mWireCubeData, mWireSphereData, mLineData, mFrustumData, mTotalRequiredWireVertices, mTotalRequiredWireIndices);
+		mSolidMesh = mDrawHelper->buildSolidMesh();
+		mWireMesh = mDrawHelper->buildWireMesh();
 		mIconMesh = buildIconMesh(mIconData, false, iconRenderData);
 
 		MeshProxyPtr solidMeshProxy = mSolidMesh->_createProxy(0);
@@ -302,36 +286,90 @@ namespace BansheeEngine
 
 	void GizmoManager::renderForPicking(std::function<Color(UINT32)> idxToColorCallback)
 	{
-		Vector<CubeData> solidCubeData = mSolidCubeData;
-		Vector<CubeData> wireCubeData = mWireCubeData;
-		Vector<SphereData> solidSphereData = mSolidSphereData;
-		Vector<SphereData> wireSphereData = mWireSphereData;
-		Vector<LineData> lineData = mLineData;
-		Vector<FrustumData> frustumData = mFrustumData;
-		Vector<IconData> iconData = mIconData;
+		Vector<IconData> iconData;
 		IconRenderDataVecPtr iconRenderData;
 
+		mPickingDrawHelper->clear();
+
 		UINT32 gizmoIdx = 0; // TODO - Since I need to be able to quickly access gizmo data per ID i'll probably want to assign this when they're initially added and used an unordered map
-		for (auto& cubeDataEntry : solidCubeData)
-			cubeDataEntry.color = idxToColorCallback(gizmoIdx++);
+		for (auto& cubeDataEntry : mSolidCubeData)
+		{
+			if (!cubeDataEntry.pickable)
+				continue;
 
-		for (auto& cubeDataEntry : wireCubeData)
-			cubeDataEntry.color = idxToColorCallback(gizmoIdx++);
+			mPickingDrawHelper->setColor(idxToColorCallback(gizmoIdx++));
+			mPickingDrawHelper->setTransform(cubeDataEntry.transform);
 
-		for (auto& sphereDataEntry : solidSphereData)
-			sphereDataEntry.color = idxToColorCallback(gizmoIdx++);
+			mPickingDrawHelper->cube(cubeDataEntry.position, cubeDataEntry.extents);
+		}
 
-		for (auto& sphereDataEntry : wireSphereData)
-			sphereDataEntry.color = idxToColorCallback(gizmoIdx++);
+		for (auto& cubeDataEntry : mWireCubeData)
+		{
+			if (!cubeDataEntry.pickable)
+				continue;
 
-		for (auto& lineDataEntry : lineData)
-			lineDataEntry.color = idxToColorCallback(gizmoIdx++);
+			mPickingDrawHelper->setColor(idxToColorCallback(gizmoIdx++));
+			mPickingDrawHelper->setTransform(cubeDataEntry.transform);
 
-		for (auto& iconDataEntry : iconData)
-			iconDataEntry.color = idxToColorCallback(gizmoIdx++);
+			mPickingDrawHelper->wireCube(cubeDataEntry.position, cubeDataEntry.extents);
+		}
 
-		TransientMeshPtr solidMesh = buildSolidMesh(solidCubeData, solidSphereData, mTotalRequiredSolidVertices, mTotalRequiredSolidIndices);
-		TransientMeshPtr wireMesh = buildWireMesh(wireCubeData, wireSphereData, lineData, frustumData, mTotalRequiredWireVertices, mTotalRequiredWireIndices);
+		for (auto& sphereDataEntry : mSolidSphereData)
+		{
+			if (!sphereDataEntry.pickable)
+				continue;
+
+			mPickingDrawHelper->setColor(idxToColorCallback(gizmoIdx++));
+			mPickingDrawHelper->setTransform(sphereDataEntry.transform);
+
+			mPickingDrawHelper->sphere(sphereDataEntry.position, sphereDataEntry.radius);
+		}
+
+		for (auto& sphereDataEntry : mWireSphereData)
+		{
+			if (!sphereDataEntry.pickable)
+				continue;
+
+			mPickingDrawHelper->setColor(idxToColorCallback(gizmoIdx++));
+			mPickingDrawHelper->setTransform(sphereDataEntry.transform);
+
+			mPickingDrawHelper->wireSphere(sphereDataEntry.position, sphereDataEntry.radius);
+		}
+
+		for (auto& lineDataEntry : mLineData)
+		{
+			if (!lineDataEntry.pickable)
+				continue;
+
+			mPickingDrawHelper->setColor(idxToColorCallback(gizmoIdx++));
+			mPickingDrawHelper->setTransform(lineDataEntry.transform);
+
+			mPickingDrawHelper->line(lineDataEntry.start, lineDataEntry.end);
+		}
+
+		for (auto& frustumDataEntry : mFrustumData)
+		{
+			if (!frustumDataEntry.pickable)
+				continue;
+
+			mPickingDrawHelper->setColor(idxToColorCallback(gizmoIdx++));
+			mPickingDrawHelper->setTransform(frustumDataEntry.transform);
+
+			mPickingDrawHelper->frustum(frustumDataEntry.position, frustumDataEntry.aspect, frustumDataEntry.FOV, 
+				frustumDataEntry.near, frustumDataEntry.far);
+		}
+
+		for (auto& iconDataEntry : mIconData)
+		{
+			if (!iconDataEntry.pickable)
+				continue;
+
+			iconData.push_back(iconDataEntry);
+			iconData.back().color = idxToColorCallback(gizmoIdx++);
+		}
+
+		TransientMeshPtr solidMesh = mPickingDrawHelper->buildSolidMesh();
+		TransientMeshPtr wireMesh = mPickingDrawHelper->buildWireMesh();
 		TransientMeshPtr iconMesh = buildIconMesh(iconData, true, iconRenderData);
 
 		// Note: This must be rendered while Scene view is being rendered
@@ -350,14 +388,9 @@ namespace BansheeEngine
 		gCoreAccessor().queueCommand(std::bind(&GizmoManager::coreRenderIconGizmosForPicking,
 			this, screenArea, iconMesh->_createProxy(0), iconRenderData));
 
-		if (solidMesh != nullptr)
-			mSolidMeshHeap->dealloc(solidMesh);
-
-		if (wireMesh != nullptr)
-			mWireMeshHeap->dealloc(wireMesh);
-
-		if (iconMesh != nullptr)
-			mIconMeshHeap->dealloc(iconMesh);
+		mPickingDrawHelper->releaseSolidMesh(solidMesh);
+		mPickingDrawHelper->releaseWireMesh(wireMesh);
+		mIconMeshHeap->dealloc(iconMesh);
 	}
 
 	void GizmoManager::clearGizmos()
@@ -370,163 +403,7 @@ namespace BansheeEngine
 		mFrustumData.clear();
 		mIconData.clear();
 
-		mTotalRequiredSolidVertices = 0;
-		mTotalRequiredSolidIndices = 0;
-		mTotalRequiredWireVertices = 0;
-		mTotalRequiredWireIndices = 0;
-	}
-
-	TransientMeshPtr GizmoManager::buildSolidMesh(const Vector<CubeData>& cubeData, const Vector<SphereData>& sphereData,
-		UINT32 numVertices, UINT32 numIndices)
-	{
-		MeshDataPtr meshData = bs_shared_ptr<MeshData>(numVertices, numIndices, mSolidVertexDesc);
-
-		UINT32 curVertexOffset = 0;
-		UINT32 curIndexOffet = 0;
-
-		auto positionIter = meshData->getVec3DataIter(VES_POSITION);
-		auto normalIter = meshData->getVec3DataIter(VES_NORMAL);
-		auto colorIter = meshData->getDWORDDataIter(VES_COLOR);
-
-		for (auto& cubeData : cubeData)
-		{
-			AABox box(cubeData.position - cubeData.extents, cubeData.position + cubeData.extents);
-			ShapeMeshes3D::solidAABox(box, meshData, curVertexOffset, curIndexOffet);
-
-			Matrix4 transformIT = cubeData.transform.inverseAffine().transpose();
-			RGBA color = cubeData.color.getAsRGBA();
-
-			UINT32 numVertices = 24;
-			for (UINT32 i = 0; i < numVertices; i++)
-			{
-				Vector3 worldPos = cubeData.transform.multiply3x4(positionIter.getValue());
-				Vector3 worldNormal = transformIT.multiply3x4(normalIter.getValue());
-				
-				positionIter.addValue(worldPos);
-				normalIter.addValue(worldNormal);
-				colorIter.addValue(color);
-			}
-
-			curVertexOffset += numVertices;
-			curIndexOffet += 36;
-		}
-
-		UINT32 numSphereVertices, numSphereIndices;
-		ShapeMeshes3D::getNumElementsSphere(SPHERE_QUALITY, numSphereVertices, numSphereIndices);
-
-		for (auto& sphereData : sphereData)
-		{
-			Sphere sphere(sphereData.position, sphereData.radius);
-			ShapeMeshes3D::solidSphere(sphere, meshData, curVertexOffset, curIndexOffet, SPHERE_QUALITY);
-
-			Matrix4 transformIT = sphereData.transform.inverseAffine().transpose();
-			RGBA color = sphereData.color.getAsRGBA();
-
-			for (UINT32 i = 0; i < numSphereVertices; i++)
-			{
-				Vector3 worldPos = sphereData.transform.multiply3x4(positionIter.getValue());
-				Vector3 worldNormal = transformIT.multiply3x4(normalIter.getValue());
-
-				positionIter.addValue(worldPos);
-				normalIter.addValue(worldNormal);
-				colorIter.addValue(color);
-			}
-
-			curVertexOffset += numSphereVertices;
-			curIndexOffet += numSphereIndices;
-		}
-
-		return mSolidMeshHeap->alloc(meshData, DOT_TRIANGLE_LIST);
-	}
-
-	TransientMeshPtr GizmoManager::buildWireMesh(const Vector<CubeData>& cubeData, const Vector<SphereData>& sphereData,
-		const Vector<LineData>& lineData, const Vector<FrustumData>& frustumData, UINT32 numVertices, UINT32 numIndices)
-	{
-		MeshDataPtr meshData = bs_shared_ptr<MeshData>(numVertices, numIndices, mWireVertexDesc);
-
-		UINT32 curVertexOffset = 0;
-		UINT32 curIndexOffet = 0;
-
-		auto positionIter = meshData->getVec3DataIter(VES_POSITION);
-		auto colorIter = meshData->getDWORDDataIter(VES_COLOR);
-
-		for (auto& cubeData : cubeData)
-		{
-			AABox box(cubeData.position - cubeData.extents, cubeData.position + cubeData.extents);
-			ShapeMeshes3D::wireAABox(box, meshData, curVertexOffset, curIndexOffet);
-
-			RGBA color = cubeData.color.getAsRGBA();
-
-			UINT32 numVertices = 8;
-			for (UINT32 i = 0; i < numVertices; i++)
-			{
-				Vector3 worldPos = cubeData.transform.multiply3x4(positionIter.getValue());
-
-				positionIter.addValue(worldPos);
-				colorIter.addValue(color);
-			}
-
-			curVertexOffset += numVertices;
-			curIndexOffet += 24;
-		}
-
-		UINT32 numSphereVertices, numSphereIndices;
-		ShapeMeshes3D::getNumElementsWireSphere(SPHERE_QUALITY, numSphereVertices, numSphereIndices);
-
-		for (auto& sphereData : sphereData)
-		{
-			Sphere sphere(sphereData.position, sphereData.radius);
-			ShapeMeshes3D::wireSphere(sphere, meshData, curVertexOffset, curIndexOffet, SPHERE_QUALITY);
-
-			RGBA color = sphereData.color.getAsRGBA();
-			for (UINT32 i = 0; i < numSphereVertices; i++)
-			{
-				Vector3 worldPos = sphereData.transform.multiply3x4(positionIter.getValue());
-
-				positionIter.addValue(worldPos);
-				colorIter.addValue(color);
-			}
-
-			curVertexOffset += numSphereVertices;
-			curIndexOffet += numSphereIndices;
-		}
-
-		for (auto& lineData : lineData)
-		{
-			ShapeMeshes3D::pixelLine(lineData.start, lineData.end, meshData, curVertexOffset, curIndexOffet);
-
-			RGBA color = lineData.color.getAsRGBA();
-			for (UINT32 i = 0; i < 2; i++)
-			{
-				Vector3 worldPos = lineData.transform.multiply3x4(positionIter.getValue());
-
-				positionIter.addValue(worldPos);
-				colorIter.addValue(color);
-			}
-
-			curVertexOffset += 2;
-			curIndexOffet += 2;
-		}
-
-		for (auto& frustumData : frustumData)
-		{
-			ShapeMeshes3D::wireFrustum(frustumData.aspect, frustumData.FOV, frustumData.near, 
-				frustumData.far, meshData, curVertexOffset, curIndexOffet);
-
-			RGBA color = frustumData.color.getAsRGBA();
-			for (UINT32 i = 0; i < 8; i++)
-			{
-				Vector3 worldPos = frustumData.transform.multiply3x4(positionIter.getValue());
-
-				positionIter.addValue(worldPos);
-				colorIter.addValue(color);
-			}
-
-			curVertexOffset += 8;
-			curIndexOffet += 24;
-		}
-
-		return mWireMeshHeap->alloc(meshData, DOT_LINE_LIST);
+		mDrawHelper->clear();
 	}
 
 	TransientMeshPtr GizmoManager::buildIconMesh(const Vector<IconData>& iconData, bool pickingOnly, GizmoManager::IconRenderDataVecPtr& iconRenderData)
