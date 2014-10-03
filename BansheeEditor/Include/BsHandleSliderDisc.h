@@ -13,7 +13,11 @@ namespace BansheeEngine
 
 		Quaternion updateDelta(const Quaternion& oldValue) const;
 
-		void setCustomTransform(const Matrix4& transform);
+		float getDelta() const { return 0.0f; /* TODO */ }
+		Vector3 getDeltaDirection() const { return Vector3::ZERO; /* TODO */ }
+		Quaternion getNewRotation() const { return mRotation; /* TODO */ }
+
+		virtual const Matrix4& getTransform() const;
 	protected:
 		static const float TORUS_RADIUS;
 

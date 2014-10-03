@@ -31,8 +31,10 @@ namespace BansheeEngine
 	const float GizmoManager::PICKING_ALPHA_CUTOFF = 0.5f;
 
 	GizmoManager::GizmoManager(const HCamera& camera)
-		:mCamera(camera), mPickable(false)
+		:mCamera(camera), mPickable(false), mDrawHelper(nullptr), mPickingDrawHelper(nullptr)
 	{
+		mSceneRenderTarget = mCamera->getViewport()->getTarget();
+
 		mDrawHelper = bs_new<DrawHelper>();
 		mPickingDrawHelper = bs_new<DrawHelper>();
 
@@ -614,12 +616,11 @@ namespace BansheeEngine
 
 	void GizmoManager::coreRender(const CameraProxy& camera)
 	{
-		RenderTargetPtr sceneRenderTarget = mCamera->getViewport()->getTarget();
-		if (camera.viewport.getTarget() != sceneRenderTarget)
+		if (camera.viewport.getTarget() != mSceneRenderTarget)
 			return;
 
-		float width = (float)sceneRenderTarget->getCore()->getProperties().getWidth();
-		float height = (float)sceneRenderTarget->getCore()->getProperties().getHeight();
+		float width = (float)mSceneRenderTarget->getCore()->getProperties().getWidth();
+		float height = (float)mSceneRenderTarget->getCore()->getProperties().getHeight();
 
 		Rect2 normArea = camera.viewport.getNormArea();
 

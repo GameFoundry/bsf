@@ -9,6 +9,11 @@ namespace BansheeEngine
         protected Component()
         { }
 
+        public SceneObject sceneObject
+        {
+            get { throw new NotImplementedException(); }
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern Component Internal_AddComponent(SceneObject parent, Type type);
 

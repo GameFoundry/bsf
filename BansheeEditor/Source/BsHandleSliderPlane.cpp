@@ -1,5 +1,6 @@
 #include "BsHandleSliderPlane.h"
 #include "BsHandleManager.h"
+#include "BsHandleSliderManager.h"
 #include "BsRect3.h"
 #include "BsVector3.h"
 
@@ -15,12 +16,15 @@ namespace BansheeEngine
 		std::array<float, 2> extents = { length, length };
 
 		Rect3 collider(Vector3::ZERO, axes, extents);
-		HandleManager::instance()._registerRectCollider(collider, this);
+
+		HandleSliderManager& sliderManager = HandleManager::instance().getSliderManager();
+		sliderManager._registerRectCollider(collider, this);
 	}
 
 	HandleSliderPlane::~HandleSliderPlane()
 	{
-		HandleManager::instance()._unregisterSlider(this);
+		HandleSliderManager& sliderManager = HandleManager::instance().getSliderManager();
+		sliderManager._unregisterSlider(this);
 	}
 
 	Vector3 HandleSliderPlane::updateDelta(const Vector3& oldValue) const

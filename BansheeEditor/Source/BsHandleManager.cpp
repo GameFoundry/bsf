@@ -1,45 +1,37 @@
 #include "BsHandleManager.h"
+#include "BsHandleDrawManager.h"
+#include "BsHandleSliderManager.h"
 
 namespace BansheeEngine
 {
-	void HandleManager::_registerCapsuleCollider(const Capsule& collider, HandleSlider* slider)
+	HandleManager::HandleManager()
+		:mSliderManager(nullptr), mDrawManager(nullptr)
 	{
-		if (mSliders.find(slider) == mSliders.end())
-			mSliders.insert(slider);
-
-		mCapsuleColliders[slider] = collider;
+		mSliderManager = bs_new<HandleSliderManager>();
+		mDrawManager = bs_new<HandleDrawManager>();
 	}
 
-	void HandleManager::_registerSphereCollider(const Sphere& collider, HandleSlider* slider)
+	HandleManager::~HandleManager()
 	{
-		if (mSliders.find(slider) == mSliders.end())
-			mSliders.insert(slider);
-
-		mSphereColliders[slider] = collider;
+		bs_delete(mSliderManager);
+		bs_delete(mDrawManager);
 	}
 
-	void HandleManager::_registerRectCollider(const Rect3& collider, HandleSlider* slider)
+	bool HandleManager::isHandleActive() const
 	{
-		if (mSliders.find(slider) == mSliders.end())
-			mSliders.insert(slider);
-
-		mRectColliders[slider] = collider;
+		return mSliderManager->isSliderActive();
 	}
 
-	void HandleManager::_registerTorusCollider(const Torus& collider, HandleSlider* slider)
+	void HandleManager::update(const Vector2I& inputPos, const Ray& inputRay, const Matrix4& viewMatrix, bool pressed)
 	{
-		if (mSliders.find(slider) == mSliders.end())
-			mSliders.insert(slider);
+		refreshHandles();
 
-		mTorusColliders[slider] = collider;
-	}
+		mSliderManager->update(inputPos, inputRay, viewMatrix, pressed);
 
-	void HandleManager::_unregisterSlider(HandleSlider* slider)
-	{
-		mCapsuleColliders.erase(slider);
-		mSphereColliders.erase(slider);
-		mRectColliders.erase(slider);
-		mTorusColliders.erase(slider);
-		mSliders.erase(slider);
+		triggerHandles();
+
+		queueDrawCommands();
+
+		mDrawManager->draw();
 	}
 }

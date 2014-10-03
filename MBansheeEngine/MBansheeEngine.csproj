@@ -77,6 +77,7 @@
     <Compile Include="HideInInspector.cs" />
     <Compile Include="LocString.cs" />
     <Compile Include="ManagedResource.cs" />
+    <Compile Include="Math\BsRect3.cs" />
     <Compile Include="Math\Degree.cs" />
     <Compile Include="Math\MathEx.cs" />
     <Compile Include="Math\Matrix3.cs" />

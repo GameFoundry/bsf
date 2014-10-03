@@ -219,9 +219,6 @@
     <ClInclude Include="Include\BsSelection.h">
       <Filter>Header Files\Editor</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsHandleManager.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsHandleSliderLine.h">
       <Filter>Header Files\Editor</Filter>
     </ClInclude>
@@ -232,6 +229,15 @@
       <Filter>Header Files\Editor</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsHandleSliderDisc.h">
+      <Filter>Header Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsHandleDrawManager.h">
+      <Filter>Header Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsHandleSliderManager.h">
+      <Filter>Header Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsHandleManager.h">
       <Filter>Header Files\Editor</Filter>
     </ClInclude>
   </ItemGroup>
@@ -401,9 +407,6 @@
     <ClCompile Include="Source\BsSelection.cpp">
       <Filter>Source Files\Editor</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsHandleManager.cpp">
-      <Filter>Source Files\Editor</Filter>
-    </ClCompile>
     <ClCompile Include="Source\BsHandleSlider.cpp">
       <Filter>Source Files\Editor</Filter>
     </ClCompile>
@@ -414,6 +417,15 @@
       <Filter>Source Files\Editor</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsHandleSliderDisc.cpp">
+      <Filter>Source Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsHandleDrawManager.cpp">
+      <Filter>Source Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsHandleSliderManager.cpp">
+      <Filter>Source Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsHandleManager.cpp">
       <Filter>Source Files\Editor</Filter>
     </ClCompile>
   </ItemGroup>

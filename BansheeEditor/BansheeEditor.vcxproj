@@ -291,7 +291,9 @@
     <ClInclude Include="Include\BsGUIToggleField.h" />
     <ClInclude Include="Include\BsGUIVector3Field.h" />
     <ClInclude Include="Include\BsGUIVector4Field.h" />
+    <ClInclude Include="Include\BsHandleDrawManager.h" />
     <ClInclude Include="Include\BsHandleManager.h" />
+    <ClInclude Include="Include\BsHandleSliderManager.h" />
     <ClInclude Include="Include\BsHandleSlider.h" />
     <ClInclude Include="Include\BsHandleSliderDisc.h" />
     <ClInclude Include="Include\BsHandleSliderLine.h" />
@@ -372,7 +374,9 @@
     <ClCompile Include="Source\BsGUIWindowFrame.cpp" />
     <ClCompile Include="Source\BsGUIWindowFrameWidget.cpp" />
     <ClCompile Include="Source\BsGUIWindowDropArea.cpp" />
+    <ClCompile Include="Source\BsHandleDrawManager.cpp" />
     <ClCompile Include="Source\BsHandleManager.cpp" />
+    <ClCompile Include="Source\BsHandleSliderManager.cpp" />
     <ClCompile Include="Source\BsHandleSlider.cpp" />
     <ClCompile Include="Source\BsHandleSliderDisc.cpp" />
     <ClCompile Include="Source\BsHandleSliderLine.cpp" />

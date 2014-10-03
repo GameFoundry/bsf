@@ -42,6 +42,7 @@
     <Compile Include="DbgCustomInspector.cs" />
     <Compile Include="DbgEditorWindow.cs" />
     <Compile Include="DbgResource.cs" />
+    <Compile Include="DebugCameraHandle.cs" />
     <Compile Include="Debug_Component1.cs" />
     <Compile Include="Debug_Component2.cs" />
     <Compile Include="EditorApplication.cs" />
@@ -81,8 +82,15 @@
     <Compile Include="Program.cs" />
     <Compile Include="ProjectLibrary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scene\CustomHandle.cs" />
     <Compile Include="Scene\DrawGizmo.cs" />
     <Compile Include="Scene\Gizmos.cs" />
+    <Compile Include="Scene\HandleDrawing.cs" />
+    <Compile Include="Scene\HandleSlider.cs" />
+    <Compile Include="Scene\HandleSliderDisc.cs" />
+    <Compile Include="Scene\HandleSliderLine.cs" />
+    <Compile Include="Scene\HandleSliderPlane.cs" />
+    <Compile Include="Scene\IHandle.cs" />
     <Compile Include="Selection.cs" />
   </ItemGroup>
   <ItemGroup>

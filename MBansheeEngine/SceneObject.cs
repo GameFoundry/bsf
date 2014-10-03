@@ -12,6 +12,36 @@ namespace BansheeEngine
             get { return Internal_GetParent(mCachedPtr); }
         }
 
+        public Vector3 position
+        {
+            set { throw new NotImplementedException(); }
+            get { throw new NotImplementedException(); }
+        }
+
+        public Vector3 localPosition
+        {
+            set { throw new NotImplementedException(); }
+            get { throw new NotImplementedException(); }
+        }
+
+        public Quaternion rotation
+        {
+            set { throw new NotImplementedException(); }
+            get { throw new NotImplementedException(); }
+        }
+
+        public Quaternion localRotation
+        {
+            set { throw new NotImplementedException(); }
+            get { throw new NotImplementedException(); }
+        }
+
+        public Vector3 scale
+        {
+            set { throw new NotImplementedException(); }
+            get { throw new NotImplementedException(); }
+        }
+
         // For internal use
         private SceneObject()
         {

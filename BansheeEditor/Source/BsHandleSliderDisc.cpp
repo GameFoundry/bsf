@@ -1,5 +1,6 @@
 #include "BsHandleSliderDisc.h"
 #include "BsHandleManager.h"
+#include "BsHandleSliderManager.h"
 #include "BsTorus.h"
 #include "BsVector3.h"
 #include "BsQuaternion.h"
@@ -17,12 +18,15 @@ namespace BansheeEngine
 		mTorusRotation = (Matrix4)Matrix3(x, mNormal, z); // Our Torus class doesn't allow us to specify a normal so we embed it here
 
 		Torus collider(radius, TORUS_RADIUS);
-		HandleManager::instance()._registerTorusCollider(collider, this);
+
+		HandleSliderManager& sliderManager = HandleManager::instance().getSliderManager();
+		sliderManager._registerTorusCollider(collider, this);
 	}
 
 	HandleSliderDisc::~HandleSliderDisc()
 	{
-		HandleManager::instance()._unregisterSlider(this);
+		HandleSliderManager& sliderManager = HandleManager::instance().getSliderManager();
+		sliderManager._unregisterSlider(this);
 	}
 
 	Quaternion HandleSliderDisc::updateDelta(const Quaternion& oldValue) const
@@ -33,8 +37,8 @@ namespace BansheeEngine
 		// - Both position and direction need to consider it
 	}
 
-	void HandleSliderDisc::setCustomTransform(const Matrix4& transform)
+	const Matrix4& HandleSliderDisc::getTransform() const
 	{
-		HandleSlider::setCustomTransform(transform * mTorusRotation);
+		return mTransform * mTorusRotation;
 	}
 }

@@ -165,6 +165,7 @@ namespace BansheeEngine
 		typedef Set<IconData, std::function<bool(const IconData&, const IconData&)>> IconSet;
 
 		HCamera mCamera;
+		RenderTargetPtr mSceneRenderTarget;
 
 		Color mColor;
 		Matrix4 mTransform;

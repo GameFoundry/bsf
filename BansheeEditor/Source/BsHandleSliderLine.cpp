@@ -1,5 +1,6 @@
 #include "BsHandleSliderLine.h"
 #include "BsHandleManager.h"
+#include "BsHandleSliderManager.h"
 #include "BsCapsule.h"
 #include "BsLineSegment3.h"
 #include "BsSphere.h"
@@ -19,13 +20,15 @@ namespace BansheeEngine
 
 		Vector3 sphereCenter = start + mDirection * std::max(0.0f, length - SPHERE_RADIUS * 2);
 
-		HandleManager::instance()._registerCapsuleCollider(Capsule(LineSegment3(start, end), CAPSULE_RADIUS), this);
-		HandleManager::instance()._registerSphereCollider(Sphere(sphereCenter, SPHERE_RADIUS), this);
+		HandleSliderManager& sliderManager = HandleManager::instance().getSliderManager();
+		sliderManager._registerCapsuleCollider(Capsule(LineSegment3(start, end), CAPSULE_RADIUS), this);
+		sliderManager._registerSphereCollider(Sphere(sphereCenter, SPHERE_RADIUS), this);
 	}
 
 	HandleSliderLine::~HandleSliderLine()
 	{
-		HandleManager::instance()._unregisterSlider(this);
+		HandleSliderManager& sliderManager = HandleManager::instance().getSliderManager();
+		sliderManager._unregisterSlider(this);
 	}
 
 	Vector3 HandleSliderLine::updateDelta(const Vector3& oldValue) const

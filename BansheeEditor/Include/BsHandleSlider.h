@@ -3,6 +3,7 @@
 #include "BsEditorPrerequisites.h"
 #include "BsVector2I.h"
 #include "BsMatrix4.h"
+#include "BsQuaternion.h"
 
 namespace BansheeEngine
 {
@@ -23,8 +24,15 @@ namespace BansheeEngine
 		bool getFixedScale() const { return mFixedScale; }
 		float getSnapValue() const { return mSnapValue; }
 
-		virtual void setCustomTransform(const Matrix4& transform) { mCustomTransform = transform; }
-		virtual const Matrix4& getCustomTransform() const { return mCustomTransform; }
+		void setPosition(const Vector3& position);
+		void setRotation(const Quaternion& rotation);
+		void setScale(const Vector3& scale);
+
+		const Vector3& getPosition() const { return mPosition; }
+		const Quaternion& getRotation() const { return mRotation; }
+		const Vector3& getScale() const { return mScale; }
+
+		virtual const Matrix4& getTransform() const { return mTransform; }
 
 	protected:
 		friend class HandleManager;
@@ -36,7 +44,12 @@ namespace BansheeEngine
 
 		bool mFixedScale;
 		float mSnapValue;
-		Matrix4 mCustomTransform;
+
+		Vector3 mPosition;
+		Quaternion mRotation;
+		Vector3 mScale;
+
+		Matrix4 mTransform;
 
 		Vector2I mLastPointerPos;
 		Vector2I mCurPointerPos;

@@ -2,15 +2,7 @@
 TODO:
  - Core thread gets stuck on shutdown when OpenGL is used...Somewhere in kernel
 
-Add a DrawHelper class that handles drawing all of ShapeMeshes types.
- -It should be called by both GizmoManager and HandleManager
- - Internally it will have two buffers (wire and solid)
- - You can add new objects to it similar to GizmoManager (using structs per object type)
- - And you can build the mesh from those objects, or clear current data
-
 CONCRETE TASK:
- - Similar to how I have onRenderViewport callback in Renderer have another one that gets triggered from core thread
-   - Hook up gizmo rendering there
  - Hook up gizmo manager to ScenePicking so gizmos are considered when picking
    - I'll likely need to update GizmoManager so I can query gizmo SceneObject based on gizmo index
  - Selection/ScenePicking/GizmoManager need to be started
@@ -19,12 +11,9 @@ IMMEDIATE:
  - SceneGrid is very ugly. Consider using default lines for now and come back with a better approach later.
    - Potentially enable line AA?
  - Picking code is completely untested and will likely need major fixing
- - Disable DX9 for editor as I will likely want to use geometry shaders for icon rendering, and possibly new AA line shader
-   - Or just use MeshHeap and update the icon/lines every frame?
  - Test all the new DrawHelper3D methods
 
  GIZMO TODO:
-  - IMPORTANT: Gizmo rendering happens in update() but it should happen whenever scene view is being rendered as the render target isn't set anywhere
   - Figure out how to deal with builtin components like Camera and Renderable (e.g. how will they have gizmos since they're not managed components?)
 
 LATER:
@@ -51,40 +40,37 @@ SliderDisc - position, normal, radius
   - Outputs a single float
   - A torus is used as a collider
 
-Handles are always the same size regardless of the distance from camera. (Use same code as from gizmo rendering?)
-These three types can be used for creating MoveHandle, RotationHandle, ScaleHandle
-
-In C# user can call Handles class for managing handles
- - It will allow you to draw various handle shapes, similar to gizmo drawing (unify that code? - probably not initially)
-   - e.g. DrawCone, DrawSphere, DrawWireDisc, etc.
- - Including more complex ones like DrawArrow and similar
- - Using the same class user can also set up Sliders which don't have a visible representation
- - AND finally user can also set up combined premade handles like FreeMove which sets up all sliders and draw methods needed automatically
-
-SliderLine, SliderPlane, SliderDisc will all be separate classes in C# and C++
- - They need to have a matrix and color property you can modify on the go 
- - As well a specific properties like length/size/radius (possibly others)
- - Since all of the above are just normal classes C++ can follow the same approach for default handles and custom user ones
-
-Certain classes are marked with [Handle] attribute. The attribute also accepts a type the handle is to be used on.
-Each such class must implement IHandle interface which requires you to implement an Update method
- - Update method receives the instance of the object currently being processed
- - Then you may call handle specific methods like "position = mySliderLine.Update(object.currentPosition)"
- - Drawing - Immediate mode in the Update method. You call Handle.DrawArrow, etc.
-   - Complex handles like FreeMoveHandle are also their own class, but  they have their own Update in which they call immediate mode drawing
- - TODO: Since this entire class essentially boils down to a single method it might be worth making handle sliders immediate mode as well
-   - ACTUALLY looking at Unity code I definitely don't want to do that. It's too clumsy and impossible to guarantee selection if the order of handles changes
-
-CONCRETE TASKS:
- - Need nearest point to disc/arc code
-
-Take into consideration local vs. global handles
 Free move/rotate/scale handles need to exist as well
  - Scale is easy, just perform uniform scale. Use SliderPlane oriented towards camera
  - Move also use SliderPlane oriented towards camera
  - Rotation use SliderDisc oriented towards camera
 
-See for inspiration: http://docs.unity3d.com/ScriptReference/Handles.html
+CONCRETE TODO:
+HandleSliderManager
+ - Detecting input and updating the sliders
+ - isHandleActive
+
+ScriptHandleManager
+ - Pretty much everything (in more detail in .cpp file)
+ - Needs to be started up somewhere
+
+C# Component needs "sceneObject" property
+C# SceneObject needs position/rot/scale (and local variants) properties
+
+SceneEditorWidget
+ - Need to glue everything together
+
+More complex handles (combinations of sliders + draw methods)
+ - In C#, called by ScriptHandleManager
+
+Nearest point to disc/arc code
+More complex types for drawing like DrawArrow in HandleDrawManager
+Handles that remain the same size regardless of distance from camera
+ - For both drawing and collision
+Consider local vs. global handle mode
+
+OPEN QUESTIONS:
+ - How to handle handles with multiple selection?
 
 EXAMPLE:
 
@@ -127,35 +113,6 @@ class CameraHandle : IHandle
            HandleDraw.Arrow(target.position, Vector3.up, 10.0f);
      }
 }
-
-
-------------
-
-What if I want a different handle per-object (e.g. object has some flag that makes different handles render)
- - SOLVED
-
-How I can easily access the current target object
- - Manually implement a generic getter?
-
-How will I implement this in C++ and use for default handles?
- - I'm still using classes in C# and C++ can use equivalents. Handle manager can do a special pass to draw default handles before calling the custom handle code.
-
-Do I want to unify gizmo and handle drawing?
- - Not at the moment. Too much to think about, I can always refactor and it will be easier.
-
-Handles can be mouse overed and selected. How will I handle that if I just use normal drawing methods???
- - This can be set in HandleSlider class itself with "isHovering", "isActive". And then its draw method can change appearance appropriately.
-
-Do I handle handle transforms via a matrix that is automatically set by the handle manager, or manually like unity does? 
-  - I shouldn't allow non-uniform scale.
-  - In both cases I need to set handle transform in its Update() method
-  - ALLOW custom matrix (or just custom offset and rotation?) but have handle manager set it normally
-    - custom matrix sounds better for easier control?
-
-How do I handle when an object with a custom handle is deleted?
- - How do I detect that and remove the handle.
-   - I SHOULDN'T HAVE TO
- - I should probably just instantiate he IHandle implementation class once object is selected, and destroy it after
 
 ----------------------------------------------------------------------
 SelectionRenderer
