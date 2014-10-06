@@ -18,7 +18,7 @@ namespace BansheeEngine
 	ScriptGizmoManager::ScriptGizmoManager(RuntimeScriptObjects& scriptObjectManager)
 		:mScriptObjectManager(scriptObjectManager), mDrawGizmoAttribute(nullptr), mNextAssemblyId(0), mFlagsField(nullptr)
 	{
-		mScriptObjectManager.onAssemblyRefreshed.connect(std::bind(&ScriptGizmoManager::reloadAssemblyMethods, this, _1));
+		mAssemblyRefreshedConn = mScriptObjectManager.onAssemblyRefreshed.connect(std::bind(&ScriptGizmoManager::reloadAssemblyMethods, this, _1));
 
 		Vector<String> initializedAssemblyNames = mScriptObjectManager.getInitializedAssemblies();
 		for (auto& assemblyName : initializedAssemblyNames)

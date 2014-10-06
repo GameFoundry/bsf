@@ -13,6 +13,11 @@ namespace BansheeEditor
 	        Hover
         };
 
+        public HandleSlider(Handle parentHandle)
+        {
+            parentHandle.RegisterSlider(this);
+        }
+
         public Vector3 Position
         {
             get
@@ -67,6 +72,14 @@ namespace BansheeEditor
                 return value;
             }
         }
+
+        internal void Destroy()
+        {
+            Internal_Destroy(mCachedPtr);
+        }
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_Destroy(IntPtr nativeInstance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetPosition(IntPtr nativeInstance, out Vector3 value);

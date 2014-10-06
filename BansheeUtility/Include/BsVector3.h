@@ -467,6 +467,7 @@ namespace BansheeEngine
 
         static const Vector3 ZERO;
 		static const Vector3 ONE;
+		static const Vector3 INF;
         static const Vector3 UNIT_X;
         static const Vector3 UNIT_Y;
         static const Vector3 UNIT_Z;

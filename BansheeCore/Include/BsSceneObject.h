@@ -432,7 +432,13 @@ namespace BansheeEngine
 			static_assert((std::is_base_of<BansheeEngine::Component, T>::value), 
 				"Specified type is not a valid Component.");
 
-			return hasComponent(T::getRTTIStatic()->getRTTIId());
+			for (auto iter = mComponents.begin(); iter != mComponents.end(); ++iter)
+			{
+				if ((*iter)->getRTTI()->getRTTIId() == T::getRTTIStatic()->getRTTIId())
+					return true;
+			}
+
+			return false;
 		}
 
 		/**

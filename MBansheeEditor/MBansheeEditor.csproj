@@ -46,6 +46,7 @@
     <Compile Include="Debug_Component1.cs" />
     <Compile Include="Debug_Component2.cs" />
     <Compile Include="EditorApplication.cs" />
+    <Compile Include="EditorUtility.cs" />
     <Compile Include="EditorWindow.cs" />
     <Compile Include="GUI\GUIFoldout.cs" />
     <Compile Include="GUI\GUIGameObjectField.cs" />
@@ -79,6 +80,9 @@
     <Compile Include="Inspector\InspectableVector4.cs" />
     <Compile Include="Inspector\Inspector.cs" />
     <Compile Include="Inspector\InspectorWindow.cs" />
+    <Compile Include="Scene\DefaultHandle.cs" />
+    <Compile Include="Scene\DefaultHandleManager.cs" />
+    <Compile Include="Scene\MoveHandle.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProjectLibrary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -90,7 +94,9 @@
     <Compile Include="Scene\HandleSliderDisc.cs" />
     <Compile Include="Scene\HandleSliderLine.cs" />
     <Compile Include="Scene\HandleSliderPlane.cs" />
-    <Compile Include="Scene\IHandle.cs" />
+    <Compile Include="Scene\Handle.cs" />
+    <Compile Include="Scene\RotateHandle.cs" />
+    <Compile Include="Scene\ScaleHandle.cs" />
     <Compile Include="Selection.cs" />
   </ItemGroup>
   <ItemGroup>

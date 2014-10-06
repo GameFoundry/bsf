@@ -42,6 +42,9 @@ namespace BansheeEngine
 		void setHover() { mState = State::Hover; }
 		void registerDrag(const Vector2I& pointerPos);
 
+		float calcDelta(const HCamera& camera, const Vector3& position, const Vector3& direction, 
+			const Vector2I& pointerStart, const Vector2I& pointerEnd);
+
 		bool mFixedScale;
 		float mSnapValue;
 

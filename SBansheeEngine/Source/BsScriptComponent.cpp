@@ -21,6 +21,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetComponent", &ScriptComponent::internal_getComponent);
 		metaData.scriptClass->addInternalCall("Internal_GetComponents", &ScriptComponent::internal_getComponents);
 		metaData.scriptClass->addInternalCall("Internal_RemoveComponent", &ScriptComponent::internal_removeComponent);
+		metaData.scriptClass->addInternalCall("Internal_GetSceneObject", &ScriptComponent::internal_getSceneObject);
 	}
 
 	MonoObject* ScriptComponent::internal_addComponent(MonoObject* parentSceneObject, MonoReflectionType* type)
@@ -124,6 +125,17 @@ namespace BansheeEngine
 		}
 
 		LOGWRN("Attempting to remove a component that doesn't exists on SceneObject \"" + so->getName() + "\"");
+	}
+
+	MonoObject* ScriptComponent::internal_getSceneObject(ScriptComponent* nativeInstance)
+	{
+		HSceneObject sceneObject = nativeInstance->mManagedComponent->sceneObject();
+
+		ScriptSceneObject* scriptSO = ScriptGameObjectManager::instance().getScriptSceneObject(sceneObject);
+		if (scriptSO == nullptr)
+			scriptSO = ScriptGameObjectManager::instance().createScriptSceneObject(sceneObject);
+
+		return scriptSO->getManagedInstance();
 	}
 
 	void ScriptComponent::_onManagedInstanceDeleted()

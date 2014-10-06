@@ -22,6 +22,7 @@ namespace BansheeEngine
 		static MonoObject* internal_getComponent(MonoObject* parentSceneObject, MonoReflectionType* type);
 		static MonoArray* internal_getComponents(MonoObject* parentSceneObject);
 		static void internal_removeComponent(MonoObject* parentSceneObject, MonoReflectionType* type);
+		static MonoObject* internal_getSceneObject(ScriptComponent* nativeInstance);
 
 		ScriptComponent(MonoObject* instance, const GameObjectHandle<ManagedComponent>& managedComponent);
 		~ScriptComponent() {}

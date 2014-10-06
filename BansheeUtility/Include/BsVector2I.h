@@ -183,5 +183,21 @@ namespace BansheeEngine
 
             return *this;
         }
+
+        /**
+         * @brief	Returns the square of the length(magnitude) of the vector.
+         */
+        INT32 squaredLength() const
+        {
+            return x * x + y * y;
+        }
+
+        /**
+         * @brief	Calculates the dot (scalar) product of this vector with another.
+         */
+		INT32 dot(const Vector2I& vec) const
+        {
+            return x * vec.x + y * vec.y;
+        }
 	};
 }

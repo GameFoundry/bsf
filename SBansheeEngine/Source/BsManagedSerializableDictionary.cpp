@@ -148,13 +148,13 @@ namespace BansheeEngine
 
 	void ManagedSerializableDictionary::initMonoObjects(MonoClass* dictionaryClass)
 	{
-		mAddMethod = &dictionaryClass->getMethod("Add", 2);
-		mGetEnumerator = &dictionaryClass->getMethod("GetEnumerator");
+		mAddMethod = dictionaryClass->getMethod("Add", 2);
+		mGetEnumerator = dictionaryClass->getMethod("GetEnumerator");
 
 		MonoClass* enumeratorClass = mGetEnumerator->getReturnType();
 		assert(enumeratorClass != nullptr);
 
-		mEnumMoveNext = &enumeratorClass->getMethod("MoveNext");
+		mEnumMoveNext = enumeratorClass->getMethod("MoveNext");
 		mEnumCurrentProp = &enumeratorClass->getProperty("Current");
 
 		MonoClass* keyValuePairClass = mEnumCurrentProp->getReturnType();

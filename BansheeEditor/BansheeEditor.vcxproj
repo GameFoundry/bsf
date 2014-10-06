@@ -275,6 +275,7 @@
     <ClInclude Include="Include\BsEditorCommand.h" />
     <ClInclude Include="Include\BsBuiltinEditorResources.h" />
     <ClInclude Include="Include\BsEditorTestSuite.h" />
+    <ClInclude Include="Include\BsEditorUtility.h" />
     <ClInclude Include="Include\BsEditorWidgetLayout.h" />
     <ClInclude Include="Include\BsEditorWidgetLayoutRTTI.h" />
     <ClInclude Include="Include\BsEditorWidgetManager.h" />
@@ -342,6 +343,7 @@
     <ClCompile Include="Source\BsEditorCommand.cpp" />
     <ClCompile Include="Source\BsBuiltinEditorResources.cpp" />
     <ClCompile Include="Source\BsEditorTestSuite.cpp" />
+    <ClCompile Include="Source\BsEditorUtility.cpp" />
     <ClCompile Include="Source\BsEditorWidget.cpp" />
     <ClCompile Include="Source\BsEditorWidgetContainer.cpp" />
     <ClCompile Include="Source\BsEditorWidgetLayout.cpp" />

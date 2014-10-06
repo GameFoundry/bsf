@@ -4,11 +4,11 @@
 
 namespace BansheeEngine
 {
-	HandleManager::HandleManager()
+	HandleManager::HandleManager(const HCamera& camera)
 		:mSliderManager(nullptr), mDrawManager(nullptr)
 	{
 		mSliderManager = bs_new<HandleSliderManager>();
-		mDrawManager = bs_new<HandleDrawManager>();
+		mDrawManager = bs_new<HandleDrawManager>(camera);
 	}
 
 	HandleManager::~HandleManager()

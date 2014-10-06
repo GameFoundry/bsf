@@ -78,6 +78,11 @@ namespace BansheeEngine
 		 */
 		HMaterial getMaterial(UINT32 idx) const;
 
+		/**
+		 * @brief	Gets world bounds of the mesh rendered by this object.
+		 */
+		Bounds getBounds() const;
+
 		/************************************************************************/
 		/* 								CORE PROXY                      		*/
 		/************************************************************************/

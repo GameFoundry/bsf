@@ -5,6 +5,7 @@
 #include "BsMesh.h"
 #include "BsMaterial.h"
 #include "BsRenderQueue.h"
+#include "BsBounds.h"
 
 namespace BansheeEngine
 {
@@ -54,6 +55,26 @@ namespace BansheeEngine
 			return mMaterialData[idx].material;
 		else
 			return mMaterialData[0].material;
+	}
+
+	Bounds Renderable::getBounds() const
+	{
+		if (mMeshData.mesh == nullptr || !mMeshData.mesh.isLoaded())
+		{
+			Vector3 pos = SO()->getWorldPosition();
+
+			AABox box(pos, pos);
+			Sphere sphere(pos, 0.0f);
+
+			return Bounds(box, sphere);
+		}
+		else
+		{
+			Bounds bounds = mMeshData.mesh->getBounds();
+			bounds.transformAffine(SO()->getWorldTfrm());
+
+			return bounds;
+		}
 	}
 
 	void Renderable::setLayer(UINT64 layer)

@@ -35,6 +35,7 @@ namespace BansheeEngine
 	struct Vector2I;
 	class Rect2I;
 	class Rect2;
+	class Rect3;
 	class Color;
 	class DynLib;
 	class DynLibManager;

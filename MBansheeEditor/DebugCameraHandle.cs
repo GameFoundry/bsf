@@ -4,7 +4,7 @@ using BansheeEngine;
 namespace BansheeEditor
 {
     [CustomHandle(typeof(Component))]
-    public class DebugCameraHandle : IHandle
+    public class DebugCameraHandle : Handle
     {
         private Component target;
         private HandleSliderLine xAxis;
@@ -13,15 +13,15 @@ namespace BansheeEditor
         {
             this.target = target;
 
-            xAxis = new HandleSliderLine(Vector3.xAxis, 5.0f);
+            xAxis = new HandleSliderLine(this, Vector3.xAxis, 5.0f);
         }
 
-        protected override void Update()
+        protected override void PreInput()
         {
             xAxis.Position = target.sceneObject.position;
         }
 
-        protected override void Response()
+        protected override void PostInput()
         {
             target.sceneObject.position = xAxis.NewPosition;
         }

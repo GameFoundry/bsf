@@ -127,7 +127,7 @@ namespace BansheeEngine
 	{
 		mItemProp = &listClass->getProperty("Item");
 		mCountProp = &listClass->getProperty("Count");
-		mAddMethod = &listClass->getMethod("Add", 1);
+		mAddMethod = listClass->getMethod("Add", 1);
 	}
 
 	RTTITypeBase* ManagedSerializableList::getRTTIStatic()

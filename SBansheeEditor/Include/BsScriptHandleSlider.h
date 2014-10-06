@@ -15,6 +15,11 @@ namespace BansheeEngine
 		virtual ~ScriptHandleSliderBase() {}
 
 		virtual HandleSlider* getSlider() const = 0;
+
+	protected:
+		friend class ScriptHandleSlider;
+
+		virtual void destroy() = 0;
 	};
 
 	class BS_SCR_BED_EXPORT ScriptHandleSlider : public ScriptObject <ScriptHandleSlider>
@@ -23,6 +28,7 @@ namespace BansheeEngine
 		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "HandleSlider")
 
 	private:
+		static void internal_Destroy(ScriptHandleSliderBase* nativeInstance);
 		static void internal_GetPosition(ScriptHandleSliderBase* nativeInstance, Vector3* value);
 		static void internal_SetPosition(ScriptHandleSliderBase* nativeInstance, Vector3 value);
 		static void internal_GetRotation(ScriptHandleSliderBase* nativeInstance, Quaternion* value);

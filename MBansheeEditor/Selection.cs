@@ -5,7 +5,7 @@ namespace BansheeEditor
 {
     public sealed class Selection
     {
-        public SceneObject[] sceneObjects
+        public static SceneObject[] sceneObjects
         {
             get
             {
@@ -19,7 +19,7 @@ namespace BansheeEditor
             }
         }
 
-        public string[] resourceUUIDs
+        public static string[] resourceUUIDs
         {
             get
             {
@@ -33,7 +33,7 @@ namespace BansheeEditor
             }
         }
 
-        public string[] resourcePaths
+        public static string[] resourcePaths
         {
             get
             {

@@ -4,9 +4,10 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
-    public class HandleSliderPlane : HandleSlider
+    public sealed class HandleSliderPlane : HandleSlider
     {
-        public HandleSliderPlane(Vector3 dir1, Vector3 dir2, float length, bool fixedScale = true, float snapValue = 0.0f)
+        public HandleSliderPlane(Handle parentHandle, Vector3 dir1, Vector3 dir2, float length, bool fixedScale = true, float snapValue = 0.0f)
+            :base(parentHandle)
         {
             Internal_CreateInstance(this, dir1, dir2, length, fixedScale, snapValue);
         }

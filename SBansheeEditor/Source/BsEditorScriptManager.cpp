@@ -28,7 +28,7 @@ namespace BansheeEngine
 		ScriptGizmoManager::startUp(RuntimeScriptObjects::instance());
 
 		mProgramEdClass = mEditorAssembly->getClass("BansheeEditor", "ProgramEd");
-		mUpdateMethod = &mProgramEdClass->getMethod("EditorUpdate");
+		mUpdateMethod = mProgramEdClass->getMethod("EditorUpdate");
 
 		mEditorAssembly->invoke(ASSEMBLY_ENTRY_POINT);
 		

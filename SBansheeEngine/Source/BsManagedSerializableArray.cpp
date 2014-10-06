@@ -179,10 +179,10 @@ namespace BansheeEngine
 	UINT32 ManagedSerializableArray::getLength(UINT32 dimension) const
 	{
 		MonoClass* systemArray = RuntimeScriptObjects::instance().getSystemArrayClass();
-		MonoMethod& getLength = systemArray->getMethod("GetLength", 1);
+		MonoMethod* getLength = systemArray->getMethod("GetLength", 1);
 
 		void* params[1] = { &dimension };
-		MonoObject* returnObj = getLength.invoke(mManagedInstance, params);
+		MonoObject* returnObj = getLength->invoke(mManagedInstance, params);
 
 		return *(UINT32*)mono_object_unbox(returnObj);
 	}

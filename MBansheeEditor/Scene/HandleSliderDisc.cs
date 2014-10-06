@@ -4,9 +4,10 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
-    public class HandleSliderDisc : HandleSlider
+    public sealed class HandleSliderDisc : HandleSlider
     {
-        public HandleSliderDisc(Vector3 normal, float radius, bool fixedScale = true, float snapValue = 0.0f)
+        public HandleSliderDisc(Handle parentHandle, Vector3 normal, float radius, bool fixedScale = true, float snapValue = 0.0f)
+            :base(parentHandle)
         {
             Internal_CreateInstance(this, normal, radius, fixedScale, snapValue);
         }

@@ -559,30 +559,13 @@ namespace BansheeEngine
 
 	Vector3 Camera::clipToWorldPoint(const Vector2& clipPoint) const
 	{
-		Vector2I screenPoint = clipToScreenPoint(clipPoint);
-		return screenToWorldPoint(screenPoint);
+		Vector3 viewPoint = clipToViewPoint(clipPoint);
+		return viewToWorldPoint(viewPoint);
 	}
 
 	Vector3 Camera::clipToViewPoint(const Vector2& clipPoint) const
 	{
-		Vector4 unprojPoint(clipPoint.x, clipPoint.y, 0.5f, 1.0f); // 0.5f arbitrary depth
-		unprojPoint = getProjectionMatrix().inverse().multiply(unprojPoint);
-
-		if (unprojPoint.w > 1e-7f)
-		{
-			float invW = 1.0f / unprojPoint.w;
-			unprojPoint.x *= invW;
-			unprojPoint.y *= invW;
-			unprojPoint.z *= invW;
-		}
-		else
-		{
-			unprojPoint.x = 0.0f;
-			unprojPoint.y = 0.0f;
-			unprojPoint.z = 0.0f;
-		}
-
-		return Vector3(unprojPoint.x, unprojPoint.y, unprojPoint.z);
+		return unprojectPoint(Vector3(clipPoint.x, clipPoint.y, 0.5f));
 	}
 
 	Vector2I Camera::clipToScreenPoint(const Vector2& clipPoint) const
@@ -592,6 +575,55 @@ namespace BansheeEngine
 		screenPoint.y = Math::roundToInt(mViewport->getY() + (clipPoint.y + 1.0f) * mViewport->getHeight() * 0.5f);
 
 		return screenPoint;
+	}
+
+	Ray Camera::screenPointToRay(const Vector2I& screenPoint) const
+	{
+		Vector2 clipPoint = screenToClipPoint(screenPoint);
+
+		Vector3 near = unprojectPoint(Vector3(clipPoint.x, clipPoint.y, mNearDist));
+		Vector3 far = unprojectPoint(Vector3(clipPoint.x, clipPoint.y, mNearDist + 1.0f));
+
+		return Ray(near, Vector3::normalize(far - near));
+	}
+
+	Vector3 Camera::unprojectPoint(const Vector3& point) const
+	{
+		Vector4 dir4(point.x, point.y, 0.95f, 1.0f); // 0.95f arbitrary
+		dir4 = getProjectionMatrix().inverse().multiply(dir4);
+
+		Vector3 dir;
+		dir.x = dir4.x;
+		dir.y = dir4.y;
+		dir.z = dir4.z;
+
+		if (dir4.w > 1e-7f)
+		{
+			float invW = 1.0f / dir4.w;
+			dir.x *= invW;
+			dir.y *= invW;
+			dir.z *= invW;
+
+			// Find a point along a ray from camera origin to point on near plane we just found, 
+			// at point.z distance from the origin
+
+			float distToPlane = dir.dot(-Vector3::UNIT_Z);
+			if (distToPlane >= 0.0f)
+			{
+				if (mProjType == PT_PERSPECTIVE)
+					dir *= point.z / distToPlane;
+				else
+					dir += Vector3::UNIT_Z * (distToPlane - point.z);
+			}
+		}
+		else
+		{
+			dir.x = 0.0f;
+			dir.y = 0.0f;
+			dir.z = 0.0f;
+		}
+
+		return Vector3(dir.x, dir.y, dir.z);
 	}
 
 	CameraProxyPtr Camera::_createProxy() const

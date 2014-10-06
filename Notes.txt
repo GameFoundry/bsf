@@ -73,6 +73,7 @@ Reminders:
     different importers on different threads this way. And once I hook up progress dialog box, perhaps make it have multiple progress bars in a single window (per thread).
   - Add FolderManager, extensible C# script that can be attached to a folder (can be in a folder .meta) file. Handles processing of assets in that folder. Can get notified 
     whenever anything in the folder changes. But is that necessary if I can have asset post- and pre- processor that can filter by folder programatically?
+  - Add option to optimize mesh for post-transform cache (triangles sharing vertices are sequential) on import (also pre-transform as well, order vertices by their first reference in IB, and so on)
 
 
 Potential optimizations:

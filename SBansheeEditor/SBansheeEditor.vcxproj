@@ -231,6 +231,7 @@
     <ClInclude Include="Include\BsGUIPanelContainer.h" />
     <ClInclude Include="Include\BsGUIResourceField.h" />
     <ClInclude Include="Include\BsScriptEditorPrerequisites.h" />
+    <ClInclude Include="Include\BsScriptEditorUtility.h" />
     <ClInclude Include="Include\BsScriptEditorWindow.h" />
     <ClInclude Include="Include\BsScriptGizmoManager.h" />
     <ClInclude Include="Include\BsScriptGizmos.h" />
@@ -262,6 +263,7 @@
     <ClCompile Include="Source\BsGUIPanelContainer.cpp" />
     <ClCompile Include="Source\BsGUIResourceField.cpp" />
     <ClCompile Include="Source\BsScriptEditorPlugin.cpp" />
+    <ClCompile Include="Source\BsScriptEditorUtility.cpp" />
     <ClCompile Include="Source\BsScriptEditorWindow.cpp" />
     <ClCompile Include="Source\BsScriptGizmoManager.cpp" />
     <ClCompile Include="Source\BsScriptGizmos.cpp" />

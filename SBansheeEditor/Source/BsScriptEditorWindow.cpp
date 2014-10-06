@@ -41,7 +41,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetWidth", &ScriptEditorWindow::internal_getWidth);
 		metaData.scriptClass->addInternalCall("Internal_GetHeight", &ScriptEditorWindow::internal_getHeight);
 
-		onResizedMethod = &metaData.scriptClass->getMethod("WindowResized", 2);
+		onResizedMethod = metaData.scriptClass->getMethod("WindowResized", 2);
 	}
 
 	MonoObject* ScriptEditorWindow::internal_createOrGetInstance(MonoString* ns, MonoString* typeName)

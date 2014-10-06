@@ -7,6 +7,7 @@
 #include "BsRenderer.h"
 #include "BsTransientMesh.h"
 #include "BsCamera.h"
+#include "BsHandleSlider.h"
 
 using namespace std::placeholders;
 
@@ -30,7 +31,13 @@ namespace BansheeEngine
 
 	bool HandleSliderManager::isSliderActive() const
 	{
-		// TODO - Return true if we are dragging any slider
+		for (auto& slider : mSliders)
+		{
+			if (slider->getState() == HandleSlider::State::Active)
+				return true;
+		}
+
+		return false;
 	}
 
 	void HandleSliderManager::_registerCapsuleCollider(const Capsule& collider, HandleSlider* slider)

@@ -52,11 +52,12 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Returns an object referencing a method with the specified name and number of parameters.
-		 *			If the method is overloaded then you should use "getMethodExact". Throws an exception
-		 *			if method cannot be found.
+		 *			
+		 * @note	If the method is overloaded then you should use "getMethodExact". 
 		 *			Does not query base class methods.
+		 *			Returns null if method cannot be found.
 		 */
-		MonoMethod& getMethod(const String& name, UINT32 numParams = 0) const;
+		MonoMethod* getMethod(const String& name, UINT32 numParams = 0) const;
 
 		/**
 		 * @brief	Returns an object referencing a field with the specified name.
@@ -85,9 +86,10 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Returns an object referencing a method, expects exact method name with parameters.
-		 *			Does not query base class methods.
-		 *
-		 * @note	Example: name = "CreateInstance", signature = "Vector2,int[]"
+		 *			
+		 * @note	Does not query base class methods.
+		 *			Returns null if method cannot be found.
+		 *			Example: name = "CreateInstance", signature = "Vector2,int[]"
 		 */
 		MonoMethod* getMethodExact(const String& name, const String& signature) const;
 

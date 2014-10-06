@@ -22,6 +22,19 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetParent", &ScriptSceneObject::internal_setParent);
 		metaData.scriptClass->addInternalCall("Internal_GetNumChildren", &ScriptSceneObject::internal_getNumChildren);
 		metaData.scriptClass->addInternalCall("Internal_GetChild", &ScriptSceneObject::internal_getChild);
+
+		metaData.scriptClass->addInternalCall("Internal_GetPosition", &ScriptSceneObject::internal_getPosition);
+		metaData.scriptClass->addInternalCall("Internal_GetLocalPosition", &ScriptSceneObject::internal_getLocalPosition);
+		metaData.scriptClass->addInternalCall("Internal_GetRotation", &ScriptSceneObject::internal_getRotation);
+		metaData.scriptClass->addInternalCall("Internal_GetLocalRotation", &ScriptSceneObject::internal_getLocalRotation);
+		metaData.scriptClass->addInternalCall("Internal_GetScale", &ScriptSceneObject::internal_getScale);
+		metaData.scriptClass->addInternalCall("Internal_GetLocalScale", &ScriptSceneObject::internal_getLocalScale);
+
+		metaData.scriptClass->addInternalCall("Internal_SetPosition", &ScriptSceneObject::internal_setPosition);
+		metaData.scriptClass->addInternalCall("Internal_SetLocalPosition", &ScriptSceneObject::internal_setLocalPosition);
+		metaData.scriptClass->addInternalCall("Internal_SetRotation", &ScriptSceneObject::internal_setRotation);
+		metaData.scriptClass->addInternalCall("Internal_SetLocalRotation", &ScriptSceneObject::internal_setLocalRotation);
+		metaData.scriptClass->addInternalCall("Internal_SetLocalScale", &ScriptSceneObject::internal_setLocalScale);
 	}
 
 	void ScriptSceneObject::internal_createInstance(MonoObject* instance, MonoString* name)
@@ -70,6 +83,61 @@ namespace BansheeEngine
 			childScriptSO = ScriptGameObjectManager::instance().createScriptSceneObject(childSO);
 
 		return childScriptSO->getManagedInstance();
+	}
+
+	void ScriptSceneObject::internal_getPosition(ScriptSceneObject* nativeInstance, Vector3* value)
+	{
+		*value = nativeInstance->mSceneObject->getWorldPosition();
+	}
+
+	void ScriptSceneObject::internal_getLocalPosition(ScriptSceneObject* nativeInstance, Vector3* value)
+	{
+		*value = nativeInstance->mSceneObject->getPosition();
+	}
+
+	void ScriptSceneObject::internal_getRotation(ScriptSceneObject* nativeInstance, Quaternion* value)
+	{
+		*value = nativeInstance->mSceneObject->getWorldRotation();
+	}
+
+	void ScriptSceneObject::internal_getLocalRotation(ScriptSceneObject* nativeInstance, Quaternion* value)
+	{
+		*value = nativeInstance->mSceneObject->getRotation();
+	}
+
+	void ScriptSceneObject::internal_getScale(ScriptSceneObject* nativeInstance, Vector3* value)
+	{
+		*value = nativeInstance->mSceneObject->getWorldScale();
+	}
+
+	void ScriptSceneObject::internal_getLocalScale(ScriptSceneObject* nativeInstance, Vector3* value)
+	{
+		*value = nativeInstance->mSceneObject->getWorldScale();
+	}
+
+	void ScriptSceneObject::internal_setPosition(ScriptSceneObject* nativeInstance, Vector3 value)
+	{
+		nativeInstance->mSceneObject->setWorldPosition(value);
+	}
+
+	void ScriptSceneObject::internal_setLocalPosition(ScriptSceneObject* nativeInstance, Vector3 value)
+	{
+		nativeInstance->mSceneObject->setPosition(value);
+	}
+
+	void ScriptSceneObject::internal_setRotation(ScriptSceneObject* nativeInstance, Quaternion value)
+	{
+		nativeInstance->mSceneObject->setWorldRotation(value);
+	}
+
+	void ScriptSceneObject::internal_setLocalRotation(ScriptSceneObject* nativeInstance, Quaternion value)
+	{
+		nativeInstance->mSceneObject->setRotation(value);
+	}
+
+	void ScriptSceneObject::internal_setLocalScale(ScriptSceneObject* nativeInstance, Vector3 value)
+	{
+		nativeInstance->mSceneObject->setScale(value);
 	}
 
 	void ScriptSceneObject::_onManagedInstanceDeleted()

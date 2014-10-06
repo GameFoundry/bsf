@@ -9,12 +9,21 @@ namespace BansheeEngine
 	ScriptHandleSliderDisc::ScriptHandleSliderDisc(MonoObject* instance, const Vector3& normal, float radius, bool fixedScale, float snapValue)
 		:ScriptObject(instance), mSlider(nullptr)
 	{
-		mSlider = bs_new<HandleSliderDisc>(normal, radius, fixedScale, snapValue);
+		mSlider = bs_new<HandleSliderDisc>(normal, radius, snapValue, fixedScale);
 	}
 
 	ScriptHandleSliderDisc::~ScriptHandleSliderDisc()
 	{
-		bs_delete(mSlider);
+		if (mSlider != nullptr)
+			bs_delete(mSlider);
+	}
+
+	void ScriptHandleSliderDisc::destroy()
+	{
+		if (mSlider != nullptr)
+			bs_delete(mSlider);
+
+		mSlider = nullptr;
 	}
 
 	void ScriptHandleSliderDisc::initRuntimeData()

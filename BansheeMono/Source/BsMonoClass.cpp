@@ -61,24 +61,21 @@ namespace BansheeEngine
 		mProperties.clear();
 	}
 
-	MonoMethod& MonoClass::getMethod(const String& name, UINT32 numParams) const
+	MonoMethod* MonoClass::getMethod(const String& name, UINT32 numParams) const
 	{
 		MethodId mehodId(name, numParams);
 		auto iterFind = mMethods.find(mehodId);
 		if(iterFind != mMethods.end())
-			return *iterFind->second;
+			return iterFind->second;
 
 		::MonoMethod* method = mono_class_get_method_from_name(mClass, name.c_str(), (int)numParams);
-		if(method == nullptr)
-		{
-			String fullMethodName = mFullName + "::" + name;
-			BS_EXCEPT(InvalidParametersException, "Cannot get Mono method: " + fullMethodName);
-		}
+		if (method == nullptr)
+			return nullptr;
 
 		MonoMethod* newMethod = new (bs_alloc<MonoMethod>()) MonoMethod(method);
 		mMethods[mehodId] = newMethod;
 
-		return *newMethod;
+		return newMethod;
 	}
 
 	MonoMethod* MonoClass::getMethodExact(const String& name, const String& signature) const
@@ -212,7 +209,7 @@ namespace BansheeEngine
 
 	MonoObject* MonoClass::invokeMethod(const String& name, MonoObject* instance, void** params, UINT32 numParams)
 	{
-		return getMethod(name, numParams).invoke(instance, params);
+		return getMethod(name, numParams)->invoke(instance, params);
 	}
 
 	void MonoClass::addInternalCall(const String& name, const void* method)
@@ -234,7 +231,7 @@ namespace BansheeEngine
 	MonoObject* MonoClass::createInstance(void** params, UINT32 numParams)
 	{
 		MonoObject* obj = mono_object_new(MonoManager::instance().getDomain(), mClass);
-		getMethod(".ctor", numParams).invoke(obj, params);
+		getMethod(".ctor", numParams)->invoke(obj, params);
 
 		return obj;
 	}

@@ -318,8 +318,8 @@ namespace BansheeEngine
 			{
 				std::shared_ptr<ManagedSerializableTypeInfoDictionary> typeInfo = bs_shared_ptr<ManagedSerializableTypeInfoDictionary>();
 
-				MonoMethod& getEnumerator = monoClass->getMethod("GetEnumerator");
-				MonoClass* enumClass = getEnumerator.getReturnType();
+				MonoMethod* getEnumerator = monoClass->getMethod("GetEnumerator");
+				MonoClass* enumClass = getEnumerator->getReturnType();
 
 				MonoProperty& currentProp = enumClass->getProperty("Current");
 				MonoClass* keyValuePair = currentProp.getReturnType();

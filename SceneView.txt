@@ -45,74 +45,29 @@ Free move/rotate/scale handles need to exist as well
  - Move also use SliderPlane oriented towards camera
  - Rotation use SliderDisc oriented towards camera
 
+----------------------------------------------------
+STAGE 1
+
 CONCRETE TODO:
 HandleSliderManager
  - Detecting input and updating the sliders
  - isHandleActive
 
 ScriptHandleManager
- - Pretty much everything (in more detail in .cpp file)
  - Needs to be started up somewhere
-
-C# Component needs "sceneObject" property
-C# SceneObject needs position/rot/scale (and local variants) properties
 
 SceneEditorWidget
  - Need to glue everything together
 
-More complex handles (combinations of sliders + draw methods)
- - In C#, called by ScriptHandleManager
-
-Nearest point to disc/arc code
-More complex types for drawing like DrawArrow in HandleDrawManager
+----------------------------------------------------
+STAGE 2
+Implement RotateHandle & ScaleHandle in C#
+ - Nearest point to disc/arc code
+Add free move, free rotate, free scale functionality
 Handles that remain the same size regardless of distance from camera
  - For both drawing and collision
-Consider local vs. global handle mode
 
-OPEN QUESTIONS:
- - How to handle handles with multiple selection?
-
-EXAMPLE:
-
-[CustomHandle(typeof(Camera))]
-class CameraHandle : IHandle
-{
-     SliderLine xAxis;
-     SliderLine yAxis;
-     
-     CameraHandle()
-     {
-         xAxis = new SliderLine(Vector3.right, 10.0f);
-         yAxis = new SliderLine(Vector3.up, 10.0f);
-
-         xAxis.onDragged += onXAxis();
-         yAxis.onDragged += onYAxis();
-     }
-
-     void onXAxis()
-     {
-          // Here I can decide whether or not I want to use handle data or not, per object instance
-          target.position = xAxis.getMove(target.position);
-     }
-
-     void onYAxis()
-     {
-          target.position = yAxis.getMove(target.position);
-     }
-
-     void Update()
-     {
-           // Resize handle, change matrix, etc.
-     }
-
-     void Draw()
-     {
-           xAxis.Draw();
-
-           HandleDraw.Arrow(target.position, Vector3.right, 10.0f);
-           HandleDraw.Arrow(target.position, Vector3.up, 10.0f);
-     }
-}
+ More complex types for drawing like DrawArrow in HandleDrawManager
 
 ----------------------------------------------------------------------
 SelectionRenderer

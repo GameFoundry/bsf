@@ -14,32 +14,87 @@ namespace BansheeEngine
 
         public Vector3 position
         {
-            set { throw new NotImplementedException(); }
-            get { throw new NotImplementedException(); }
+            get
+            {
+                Vector3 value;
+                Internal_GetPosition(mCachedPtr, out value);
+                return value;
+            }
+
+            set
+            {
+                Internal_SetPosition(mCachedPtr, value);
+            }
         }
 
         public Vector3 localPosition
         {
-            set { throw new NotImplementedException(); }
-            get { throw new NotImplementedException(); }
+            get
+            {
+                Vector3 value;
+                Internal_GetLocalPosition(mCachedPtr, out value);
+                return value;
+            }
+
+            set
+            {
+                Internal_SetLocalPosition(mCachedPtr, value);
+            }
         }
 
         public Quaternion rotation
         {
-            set { throw new NotImplementedException(); }
-            get { throw new NotImplementedException(); }
+            get
+            {
+                Quaternion value;
+                Internal_GetRotation(mCachedPtr, out value);
+                return value;
+            }
+
+            set
+            {
+                Internal_SetRotation(mCachedPtr, value);
+            }
         }
 
         public Quaternion localRotation
         {
-            set { throw new NotImplementedException(); }
-            get { throw new NotImplementedException(); }
+            get
+            {
+                Quaternion value;
+                Internal_GetLocalRotation(mCachedPtr, out value);
+                return value;
+            }
+
+            set
+            {
+                Internal_SetLocalRotation(mCachedPtr, value);
+            }
         }
 
         public Vector3 scale
         {
-            set { throw new NotImplementedException(); }
-            get { throw new NotImplementedException(); }
+            get
+            {
+                Vector3 value;
+                Internal_GetScale(mCachedPtr, out value);
+                return value;
+            }
+        }
+
+        public Vector3 localScale
+        {
+            get
+            {
+                Vector3 value;
+                Internal_GetLocalScale(mCachedPtr, out value);
+                return value;
+            }
+
+            set
+            {
+                Internal_SetLocalScale(mCachedPtr, value);
+            }
         }
 
         // For internal use
@@ -97,5 +152,38 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern SceneObject Internal_GetChild(IntPtr nativeInstance, int idx);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_GetPosition(IntPtr nativeInstance, out Vector3 value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_GetLocalPosition(IntPtr nativeInstance, out Vector3 value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_GetRotation(IntPtr nativeInstance, out Quaternion value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_GetLocalRotation(IntPtr nativeInstance, out Quaternion value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_GetScale(IntPtr nativeInstance, out Vector3 value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_GetLocalScale(IntPtr nativeInstance, out Vector3 value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetPosition(IntPtr nativeInstance, Vector3 value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetLocalPosition(IntPtr nativeInstance, Vector3 value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetRotation(IntPtr nativeInstance, Quaternion value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetLocalRotation(IntPtr nativeInstance, Quaternion value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetLocalScale(IntPtr nativeInstance, Vector3 value);
     }
 }

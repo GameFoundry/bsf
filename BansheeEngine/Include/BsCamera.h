@@ -358,6 +358,13 @@ namespace BansheeEngine
 		 */
 		Vector2I clipToScreenPoint(const Vector2& clipPoint) const;
 
+		/**
+		 * @brief	Converts a point in screen space (pixels corresponding to
+		 *			render target attached to the camera) to a ray in world space
+		 *			originating at the selected point on the camera near plane.
+		 */
+		Ray screenPointToRay(const Vector2I& screenPoint) const;
+
         static const float INFINITE_FAR_PLANE_ADJUST; /**< Small constant used to reduce far plane projection to avoid inaccuracies. */
 
 		/************************************************************************/
@@ -400,6 +407,11 @@ namespace BansheeEngine
 		 * @brief	Calculate projection parameters that are used when constructing the projection matrix.
 		 */
 		virtual void calcProjectionParameters(float& left, float& right, float& bottom, float& top) const;
+
+		/**
+		 * @brief	Un-projects a point in clip space to world space.
+		 */
+		Vector3 unprojectPoint(const Vector3& point) const;
 
 		/**
 		 * @brief	Recalculate frustum if dirty.

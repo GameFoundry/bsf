@@ -26,6 +26,19 @@ namespace BansheeEngine
 		static UINT32 internal_getNumChildren(ScriptSceneObject* nativeInstance);
 		static MonoObject* internal_getChild(ScriptSceneObject* nativeInstance, UINT32 idx);
 
+		static void internal_getPosition(ScriptSceneObject* nativeInstance, Vector3* value);
+		static void internal_getLocalPosition(ScriptSceneObject* nativeInstance, Vector3* value);
+		static void internal_getRotation(ScriptSceneObject* nativeInstance, Quaternion* value);
+		static void internal_getLocalRotation(ScriptSceneObject* nativeInstance, Quaternion* value);
+		static void internal_getScale(ScriptSceneObject* nativeInstance, Vector3* value);
+		static void internal_getLocalScale(ScriptSceneObject* nativeInstance, Vector3* value);
+
+		static void internal_setPosition(ScriptSceneObject* nativeInstance, Vector3 value);
+		static void internal_setLocalPosition(ScriptSceneObject* nativeInstance, Vector3 value);
+		static void internal_setRotation(ScriptSceneObject* nativeInstance, Quaternion value);
+		static void internal_setLocalRotation(ScriptSceneObject* nativeInstance, Quaternion value);
+		static void internal_setLocalScale(ScriptSceneObject* nativeInstance, Vector3 value);
+
 		ScriptSceneObject(MonoObject* instance, const HSceneObject& sceneObject);
 
 		void _onManagedInstanceDeleted();

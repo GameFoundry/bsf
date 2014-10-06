@@ -8,7 +8,7 @@ namespace BansheeEngine
 	class BS_ED_EXPORT HandleManager : public Module<HandleManager>
 	{
 	public:
-		HandleManager();
+		HandleManager(const HCamera& camera);
 		virtual ~HandleManager();
 
 		void update(const Vector2I& inputPos, const Ray& inputRay, const Matrix4& viewMatrix, bool pressed);

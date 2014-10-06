@@ -11,7 +11,7 @@ namespace BansheeEngine
 
         public SceneObject sceneObject
         {
-            get { throw new NotImplementedException(); }
+            get { return Internal_GetSceneObject(mCachedPtr); }
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -25,5 +25,8 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern Component Internal_RemoveComponent(SceneObject parent, Type type);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern SceneObject Internal_GetSceneObject(IntPtr nativeInstance);
     }
 }

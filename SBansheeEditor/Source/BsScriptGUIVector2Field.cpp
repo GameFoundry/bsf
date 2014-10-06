@@ -35,7 +35,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptGUIVector2Field::internal_setValue);
 		metaData.scriptClass->addInternalCall("Internal_HasInputFocus", &ScriptGUIVector2Field::internal_hasInputFocus);
 
-		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("DoOnChanged", 1).getThunk();
+		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("DoOnChanged", 1)->getThunk();
 	}
 
 	void ScriptGUIVector2Field::internal_createInstance(MonoObject* instance, MonoObject* title, UINT32 titleWidth,

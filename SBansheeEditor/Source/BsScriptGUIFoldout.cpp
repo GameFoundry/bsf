@@ -35,7 +35,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetExpanded", &ScriptGUIFoldout::internal_setExpanded);
 		metaData.scriptClass->addInternalCall("Internal_IsExpanded", &ScriptGUIFoldout::internal_getIsExpanded);
 
-		onToggledThunk = (OnToggledThunkDef)metaData.scriptClass->getMethod("DoOnToggled", 1).getThunk();
+		onToggledThunk = (OnToggledThunkDef)metaData.scriptClass->getMethod("DoOnToggled", 1)->getThunk();
 	}
 
 	void ScriptGUIFoldout::internal_createInstance(MonoObject* instance, MonoObject* content, MonoString* style, MonoArray* guiOptions)

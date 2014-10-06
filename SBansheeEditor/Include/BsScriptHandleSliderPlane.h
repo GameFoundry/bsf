@@ -15,6 +15,7 @@ namespace BansheeEngine
 
 	protected:
 		virtual HandleSlider* getSlider() const { return mSlider; }
+		virtual void destroy();
 
 	private:
 		static void internal_CreateInstance(MonoObject* instance, Vector3 dir1, Vector3 dir2, float length, bool fixedScale, float snapValue);
