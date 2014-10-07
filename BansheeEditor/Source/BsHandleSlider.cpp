@@ -4,35 +4,50 @@
 namespace BansheeEngine
 {
 	HandleSlider::HandleSlider(bool fixedScale, float snapValue)
-		:mFixedScale(fixedScale), mSnapValue(snapValue), mScale(Vector3::ONE)
+		:mFixedScale(fixedScale), mSnapValue(snapValue), mScale(Vector3::ONE), mTransformDirty(true)
 	{
-		mTransform.setTRS(mPosition, mRotation, mScale);
+
 	}
 
 	void HandleSlider::setPosition(const Vector3& position)
 	{
 		mPosition = position;
-		mTransform.setTRS(mPosition, mRotation, mScale);
+		mTransformDirty = true;
 	}
 
 	void HandleSlider::setRotation(const Quaternion& rotation)
 	{
 		mRotation = rotation;
-		mTransform.setTRS(mPosition, mRotation, mScale);
+		mTransformDirty = true;
 	}
 
 	void HandleSlider::setScale(const Vector3& scale)
 	{
 		mScale = scale;
-		mTransform.setTRS(mPosition, mRotation, mScale);
+		mTransformDirty = true;
 	}
 
-	void HandleSlider::registerDrag(const Vector2I& pointerPos)
+	const Matrix4& HandleSlider::getTransform() const
 	{
-		assert(getState() == State::Active);
+		if (mTransformDirty)
+			updateCachedTransform();
 
-		mLastPointerPos = mCurPointerPos;
-		mCurPointerPos = pointerPos;
+		return mTransform;
+	}
+
+	const Matrix4& HandleSlider::getTransformInv() const
+	{
+		if (mTransformDirty)
+			updateCachedTransform();
+
+		return mTransformInv;
+	}
+
+	void HandleSlider::updateCachedTransform() const
+	{
+		mTransform.setTRS(mPosition, mRotation, mScale);
+		mTransformInv = mTransform.inverseAffine();
+		mTransformDirty = false;
 	}
 
 	float HandleSlider::calcDelta(const HCamera& camera, const Vector3& position, const Vector3& direction,

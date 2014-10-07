@@ -5,6 +5,26 @@
 
 namespace BansheeEngine
 {
+	void Ray::transform(const Matrix4& matrix)
+	{
+		Vector3 end = getPoint(1.0f);
+
+		mOrigin = matrix.multiply(mOrigin);
+		end = matrix.multiply(end);
+
+		mDirection = Vector3::normalize(end - mOrigin);
+	}
+
+	void Ray::transformAffine(const Matrix4& matrix)
+	{
+		Vector3 end = getPoint(1.0f);
+
+		mOrigin = matrix.multiply3x4(mOrigin);
+		end = matrix.multiply3x4(end);
+
+		mDirection = Vector3::normalize(end - mOrigin);
+	}
+
 	std::pair<bool, float> Ray::intersects(const Plane& p) const
 	{
 		return p.intersects(*this);

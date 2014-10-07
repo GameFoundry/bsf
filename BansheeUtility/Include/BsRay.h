@@ -42,6 +42,18 @@ namespace BansheeEngine
 		}
 
 		/**
+		 * @brief	Transforms the ray by the given matrix.
+		 */
+		void transform(const Matrix4& matrix);
+
+		/**
+		 * @brief	Transforms the ray by the given matrix.
+		 *
+		 * @note	Provided matrix must be affine.
+		 */
+		void transformAffine(const Matrix4& matrix);
+
+		/**
 		 * @brief	Ray/plane intersection, returns boolean result and distance to intersection point.
 		 */
 		std::pair<bool, float> intersects(const Plane& p) const;

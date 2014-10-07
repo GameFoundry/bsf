@@ -4,6 +4,7 @@
 #include "BsCapsule.h"
 #include "BsLineSegment3.h"
 #include "BsSphere.h"
+#include "BsRay.h"
 
 namespace BansheeEngine
 {
@@ -11,7 +12,7 @@ namespace BansheeEngine
 	const float HandleSliderLine::SPHERE_RADIUS = 0.5f;
 
 	HandleSliderLine::HandleSliderLine(const Vector3& direction, float length, float snapValue, bool fixedScale)
-		:HandleSlider(fixedScale, snapValue), mLength(length)
+		:HandleSlider(fixedScale, snapValue), mLength(length), mDelta(0.0f)
 	{
 		mDirection = Vector3::normalize(direction);
 
@@ -20,9 +21,11 @@ namespace BansheeEngine
 
 		Vector3 sphereCenter = start + mDirection * std::max(0.0f, length - SPHERE_RADIUS * 2);
 
+		mCapsuleCollider = Capsule(LineSegment3(start, end), CAPSULE_RADIUS);
+		mSphereCollider = Sphere(sphereCenter, SPHERE_RADIUS);
+
 		HandleSliderManager& sliderManager = HandleManager::instance().getSliderManager();
-		sliderManager._registerCapsuleCollider(Capsule(LineSegment3(start, end), CAPSULE_RADIUS), this);
-		sliderManager._registerSphereCollider(Sphere(sphereCenter, SPHERE_RADIUS), this);
+		sliderManager._registerSlider(this);
 	}
 
 	HandleSliderLine::~HandleSliderLine()
@@ -31,11 +34,52 @@ namespace BansheeEngine
 		sliderManager._unregisterSlider(this);
 	}
 
-	Vector3 HandleSliderLine::updateDelta(const Vector3& oldValue) const
+	bool HandleSliderLine::intersects(const Ray& ray, float& t) const
 	{
-		return oldValue;
+		Ray localRay = ray;
+		localRay.transform(getTransformInv());
 
-		// TODO - Don't  forget to consider currently active transform (and also custom handle transform)
-		// - Both position and direction need to consider it
+		auto capsuleIntersect = mCapsuleCollider.intersects(ray);
+		auto sphereIntersect = mSphereCollider.intersects(ray);
+
+		t = std::numeric_limits<float>::max();
+		bool gotIntersect = false;
+
+		if (capsuleIntersect.first)
+		{
+			t = capsuleIntersect.second;
+			gotIntersect = true;
+		}
+
+		if (sphereIntersect.first)
+		{
+			if (sphereIntersect.second < t)
+			{
+				t = sphereIntersect.second;
+				gotIntersect = true;
+			}
+		}
+
+		return gotIntersect;
+	}
+
+	void HandleSliderLine::update(const HCamera& camera, const Vector2I& pointerPos, const Ray& ray)
+	{
+		assert(getState() == State::Active);
+
+		mLastPointerPos = mCurPointerPos;
+		mCurPointerPos = pointerPos;
+
+		mDelta = calcDelta(camera, getPosition(), mDirection, mLastPointerPos, mCurPointerPos);
+	}
+
+	void HandleSliderLine::reset()
+	{
+		mDelta = 0.0f;
+	}
+
+	Vector3 HandleSliderLine::getNewPosition() const
+	{
+		return getPosition() + mDirection * mDelta;
 	}
 }

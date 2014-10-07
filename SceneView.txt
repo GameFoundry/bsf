@@ -18,6 +18,7 @@ IMMEDIATE:
 
 LATER:
  - Need a way to render text for gizmos and handles, and in scene in general
+ - Add drag to select
 
 ----------------------------------------------------------------------
 Handles
@@ -49,9 +50,8 @@ Free move/rotate/scale handles need to exist as well
 STAGE 1
 
 CONCRETE TODO:
-HandleSliderManager
- - Detecting input and updating the sliders
- - isHandleActive
+HandleSliderPlane/HandleSliderDisc
+ - update() implementation
 
 ScriptHandleManager
  - Needs to be started up somewhere

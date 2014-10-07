@@ -11,7 +11,7 @@ namespace BansheeEngine
 		HandleManager(const HCamera& camera);
 		virtual ~HandleManager();
 
-		void update(const Vector2I& inputPos, const Ray& inputRay, const Matrix4& viewMatrix, bool pressed);
+		void update(const Vector2I& inputPos, const Ray& inputRay, bool pressed);
 
 		HandleSliderManager& getSliderManager() const { return *mSliderManager; }
 		HandleDrawManager& getDrawManager() const { return *mDrawManager; }
@@ -21,6 +21,7 @@ namespace BansheeEngine
 	protected:
 		HandleSliderManager* mSliderManager;
 		HandleDrawManager* mDrawManager;
+		HCamera mCamera;
 
 		virtual void refreshHandles() = 0;
 		virtual void triggerHandles() = 0;

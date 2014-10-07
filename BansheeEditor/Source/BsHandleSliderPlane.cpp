@@ -1,8 +1,8 @@
 #include "BsHandleSliderPlane.h"
 #include "BsHandleManager.h"
 #include "BsHandleSliderManager.h"
-#include "BsRect3.h"
 #include "BsVector3.h"
+#include "BsRay.h"
 
 namespace BansheeEngine
 {
@@ -15,10 +15,10 @@ namespace BansheeEngine
 		std::array<Vector3, 2> axes = { mDirection1, mDirection2 };
 		std::array<float, 2> extents = { length, length };
 
-		Rect3 collider(Vector3::ZERO, axes, extents);
+		mCollider = Rect3(Vector3::ZERO, axes, extents);
 
 		HandleSliderManager& sliderManager = HandleManager::instance().getSliderManager();
-		sliderManager._registerRectCollider(collider, this);
+		sliderManager._registerSlider(this);
 	}
 
 	HandleSliderPlane::~HandleSliderPlane()
@@ -27,11 +27,27 @@ namespace BansheeEngine
 		sliderManager._unregisterSlider(this);
 	}
 
-	Vector3 HandleSliderPlane::updateDelta(const Vector3& oldValue) const
-	{
-		return oldValue;
 
-		// TODO - Don't  forget to consider currently active transform (and also custom handle transform)
-		// - Both position and direction need to consider it
+	bool HandleSliderPlane::intersects(const Ray& ray, float& t) const
+	{
+		Ray localRay = ray;
+		localRay.transform(getTransformInv());
+
+		auto intersect = mCollider.intersects(ray);
+
+		if (intersect.first)
+			return intersect.second;
+
+		return false;
+	}
+
+	void HandleSliderPlane::update(const HCamera& camera, const Vector2I& pointerPos, const Ray& ray)
+	{
+		assert(getState() == State::Active);
+
+		mLastPointerPos = mCurPointerPos;
+		mCurPointerPos = pointerPos;
+
+		// TODO
 	}
 }

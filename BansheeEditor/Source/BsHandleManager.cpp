@@ -5,7 +5,7 @@
 namespace BansheeEngine
 {
 	HandleManager::HandleManager(const HCamera& camera)
-		:mSliderManager(nullptr), mDrawManager(nullptr)
+		:mSliderManager(nullptr), mDrawManager(nullptr), mCamera(camera)
 	{
 		mSliderManager = bs_new<HandleSliderManager>();
 		mDrawManager = bs_new<HandleDrawManager>(camera);
@@ -22,11 +22,11 @@ namespace BansheeEngine
 		return mSliderManager->isSliderActive();
 	}
 
-	void HandleManager::update(const Vector2I& inputPos, const Ray& inputRay, const Matrix4& viewMatrix, bool pressed)
+	void HandleManager::update(const Vector2I& inputPos, const Ray& inputRay, bool pressed)
 	{
 		refreshHandles();
 
-		mSliderManager->update(inputPos, inputRay, viewMatrix, pressed);
+		mSliderManager->update(mCamera, inputPos, inputRay, pressed);
 
 		triggerHandles();
 
