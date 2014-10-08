@@ -61,6 +61,11 @@ namespace BansheeEngine
 		 */
 		GpuParamBlockPtr getParamBlock() const { return mParamBlock; }
 
+		/**
+		 * @copydoc	HardwareBufferManager::createGpuParamBlockBuffer
+		 */
+		static GpuParamBlockBufferPtr create(UINT32 size, GpuParamBlockUsage usage = GPBU_DYNAMIC);
+
 	protected:
 		GpuParamBlockUsage mUsage;
 		UINT32 mSize;

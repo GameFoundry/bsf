@@ -1064,65 +1064,65 @@ namespace BansheeEngine
 		static const GpuProgramImportData GPU_PROGRAM_IMPORT_DATA[] = 
 		{
 			{ SceneGridVSFile,			"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL11ShaderSubFolder },
-			{ SceneGridPSFile,			"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"hlsl", HLSL11ShaderSubFolder },
+			{ SceneGridPSFile,			"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"hlsl", HLSL11ShaderSubFolder },
 			{ ShaderDockOverlayVSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL11ShaderSubFolder },
-			{ ShaderDockOverlayPSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"hlsl", HLSL11ShaderSubFolder },
+			{ ShaderDockOverlayPSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"hlsl", HLSL11ShaderSubFolder },
 			{ PickingVSFile,			"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL11ShaderSubFolder },
-			{ PickingPSFile,			"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"hlsl", HLSL11ShaderSubFolder },
+			{ PickingPSFile,			"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"hlsl", HLSL11ShaderSubFolder },
 			{ PickingAlphaVSFile,		"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL11ShaderSubFolder },
-			{ PickingAlphaPSFile,		"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"hlsl", HLSL11ShaderSubFolder },
+			{ PickingAlphaPSFile,		"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"hlsl", HLSL11ShaderSubFolder },
 			{ ShaderWireGizmoVSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL11ShaderSubFolder },
-			{ ShaderWireGizmoPSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"hlsl", HLSL11ShaderSubFolder },
+			{ ShaderWireGizmoPSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"hlsl", HLSL11ShaderSubFolder },
 			{ ShaderSolidGizmoVSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL11ShaderSubFolder },
-			{ ShaderSolidGizmoPSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"hlsl", HLSL11ShaderSubFolder },
+			{ ShaderSolidGizmoPSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"hlsl", HLSL11ShaderSubFolder },
 			{ ShaderIconGizmo0VSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL11ShaderSubFolder },
-			{ ShaderIconGizmo0PSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"hlsl", HLSL11ShaderSubFolder },
+			{ ShaderIconGizmo0PSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"hlsl", HLSL11ShaderSubFolder },
 			{ ShaderIconGizmo1VSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL11ShaderSubFolder },
-			{ ShaderIconGizmo1PSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"hlsl", HLSL11ShaderSubFolder },
+			{ ShaderIconGizmo1PSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"hlsl", HLSL11ShaderSubFolder },
 			{ GizmoPickingVSFile,		"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL11ShaderSubFolder },
-			{ GizmoPickingPSFile,		"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"hlsl", HLSL11ShaderSubFolder },
+			{ GizmoPickingPSFile,		"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"hlsl", HLSL11ShaderSubFolder },
 			{ GizmoPickingAlphaVSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL11ShaderSubFolder },
-			{ GizmoPickingAlphaPSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"hlsl", HLSL11ShaderSubFolder },
+			{ GizmoPickingAlphaPSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"hlsl", HLSL11ShaderSubFolder },
 			{ SceneGridVSFile,			"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_2_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ SceneGridPSFile,			"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_PS_2_0,		"hlsl", HLSL9ShaderSubFolder },
+			{ SceneGridPSFile,			"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_2_0,		"hlsl", HLSL9ShaderSubFolder },
 			{ ShaderDockOverlayVSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_2_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ ShaderDockOverlayPSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_PS_2_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ PickingVSFile,			"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_2_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ PickingPSFile,			"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_PS_2_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ PickingAlphaVSFile,		"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_2_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ PickingAlphaPSFile,		"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_PS_2_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ ShaderWireGizmoVSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ ShaderWireGizmoPSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ ShaderSolidGizmoVSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ ShaderSolidGizmoPSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ ShaderIconGizmo0VSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ ShaderIconGizmo0PSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ ShaderIconGizmo1VSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ ShaderIconGizmo1PSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ GizmoPickingVSFile,		"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ GizmoPickingPSFile,		"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ GizmoPickingAlphaVSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ GizmoPickingAlphaPSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"hlsl", HLSL9ShaderSubFolder },
+			{ ShaderDockOverlayPSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_2_0,		"hlsl", HLSL9ShaderSubFolder },
+			{ PickingVSFile,			"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_3_0,		"hlsl", HLSL9ShaderSubFolder },
+			{ PickingPSFile,			"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_3_0,		"hlsl", HLSL9ShaderSubFolder },
+			{ PickingAlphaVSFile,		"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_3_0,		"hlsl", HLSL9ShaderSubFolder },
+			{ PickingAlphaPSFile,		"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_3_0,		"hlsl", HLSL9ShaderSubFolder },
+			{ ShaderWireGizmoVSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_3_0,		"hlsl", HLSL9ShaderSubFolder },
+			{ ShaderWireGizmoPSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_3_0,		"hlsl", HLSL9ShaderSubFolder },
+			{ ShaderSolidGizmoVSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_3_0,		"hlsl", HLSL9ShaderSubFolder },
+			{ ShaderSolidGizmoPSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_3_0,		"hlsl", HLSL9ShaderSubFolder },
+			{ ShaderIconGizmo0VSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_3_0,		"hlsl", HLSL9ShaderSubFolder },
+			{ ShaderIconGizmo0PSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_3_0,		"hlsl", HLSL9ShaderSubFolder },
+			{ ShaderIconGizmo1VSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_3_0,		"hlsl", HLSL9ShaderSubFolder },
+			{ ShaderIconGizmo1PSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_3_0,		"hlsl", HLSL9ShaderSubFolder },
+			{ GizmoPickingVSFile,		"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_3_0,		"hlsl", HLSL9ShaderSubFolder },
+			{ GizmoPickingPSFile,		"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_3_0,		"hlsl", HLSL9ShaderSubFolder },
+			{ GizmoPickingAlphaVSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_3_0,		"hlsl", HLSL9ShaderSubFolder },
+			{ GizmoPickingAlphaPSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_3_0,		"hlsl", HLSL9ShaderSubFolder },
 			{ SceneGridVSFile,			"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
-			{ SceneGridPSFile,			"main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"glsl", GLSLShaderSubFolder },
+			{ SceneGridPSFile,			"main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"glsl", GLSLShaderSubFolder },
 			{ ShaderDockOverlayVSFile,	"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
-			{ ShaderDockOverlayPSFile,	"main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"glsl", GLSLShaderSubFolder },
+			{ ShaderDockOverlayPSFile,	"main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"glsl", GLSLShaderSubFolder },
 			{ PickingVSFile,			"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
-			{ PickingPSFile,			"main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"glsl", GLSLShaderSubFolder },
+			{ PickingPSFile,			"main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"glsl", GLSLShaderSubFolder },
 			{ PickingAlphaVSFile,		"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
-			{ PickingAlphaPSFile,		"main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"glsl", GLSLShaderSubFolder },
+			{ PickingAlphaPSFile,		"main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"glsl", GLSLShaderSubFolder },
 			{ ShaderWireGizmoVSFile,	"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
-			{ ShaderWireGizmoPSFile,	"main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"glsl", GLSLShaderSubFolder },
+			{ ShaderWireGizmoPSFile,	"main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"glsl", GLSLShaderSubFolder },
 			{ ShaderSolidGizmoVSFile,	"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
-			{ ShaderSolidGizmoPSFile,	"main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"glsl", GLSLShaderSubFolder },
+			{ ShaderSolidGizmoPSFile,	"main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"glsl", GLSLShaderSubFolder },
 			{ ShaderIconGizmo0VSFile,	"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
-			{ ShaderIconGizmo0PSFile,	"main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"glsl", GLSLShaderSubFolder },
+			{ ShaderIconGizmo0PSFile,	"main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"glsl", GLSLShaderSubFolder },
 			{ ShaderIconGizmo1VSFile,	"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
-			{ ShaderIconGizmo1PSFile,	"main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"glsl", GLSLShaderSubFolder },
+			{ ShaderIconGizmo1PSFile,	"main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"glsl", GLSLShaderSubFolder },
 			{ GizmoPickingVSFile,		"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
-			{ GizmoPickingPSFile,		"main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"glsl", GLSLShaderSubFolder },
+			{ GizmoPickingPSFile,		"main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"glsl", GLSLShaderSubFolder },
 			{ GizmoPickingAlphaVSFile,	"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
-			{ GizmoPickingAlphaPSFile,	"main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0,		"glsl", GLSLShaderSubFolder },
+			{ GizmoPickingAlphaPSFile,	"main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"glsl", GLSLShaderSubFolder },
 		};
 
 		if (FileSystem::exists(DefaultSkinFolderRaw))
@@ -1331,7 +1331,7 @@ namespace BansheeEngine
 		newPass->setFragmentProgram(psProgram);
 
 		RASTERIZER_STATE_DESC rasterizerDesc;
-		rasterizerDesc.scissorEnable = true;
+		rasterizerDesc.scissorEnable = false;
 		rasterizerDesc.cullMode = cullMode;
 
 		HRasterizerState rasterizerState = RasterizerState::create(rasterizerDesc);
@@ -1361,7 +1361,7 @@ namespace BansheeEngine
 		newPass->setFragmentProgram(psProgram);
 
 		RASTERIZER_STATE_DESC rasterizerDesc;
-		rasterizerDesc.scissorEnable = true;
+		rasterizerDesc.scissorEnable = false;
 		rasterizerDesc.cullMode = cullMode;
 
 		HRasterizerState rasterizerState = RasterizerState::create(rasterizerDesc);

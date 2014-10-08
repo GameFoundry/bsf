@@ -52,28 +52,27 @@ namespace BansheeEngine
 			{
 				// TODO - Make a better interface when dealing with parameters through proxies?
 				MaterialProxyPtr proxy = md.mMatPickingProxy;
-				GpuParamsPtr vertParams = proxy->params[proxy->passes[0].vertexProgParamsIdx];
 
-				vertParams->getParam("matWorldViewProj", md.mParamPickingWVP);
+				md.mParamPickingVertParams = proxy->params[proxy->passes[0].vertexProgParamsIdx];
+				md.mParamPickingVertParams->getParam("matWorldViewProj", md.mParamPickingWVP);
 
-				GpuParamsPtr fragParams = proxy->params[proxy->passes[0].fragmentProgParamsIdx];
-
-				fragParams->getParam("colorIndex", md.mParamPickingColor);
+				md.mParamPickingFragParams = proxy->params[proxy->passes[0].fragmentProgParamsIdx];
+				md.mParamPickingFragParams->getParam("colorIndex", md.mParamPickingColor);
 			}
 
 			{
 				MaterialProxyPtr proxy = md.mMatPickingAlphaProxy;
-				GpuParamsPtr vertParams = proxy->params[proxy->passes[0].vertexProgParamsIdx];
 
-				vertParams->getParam("matWorldViewProj", md.mParamPickingAlphaWVP);
+				md.mParamPickingAlphaVertParams = proxy->params[proxy->passes[0].vertexProgParamsIdx];
+				md.mParamPickingAlphaVertParams->getParam("matWorldViewProj", md.mParamPickingAlphaWVP);
 
-				GpuParamsPtr fragParams = proxy->params[proxy->passes[0].fragmentProgParamsIdx];
+				md.mParamPickingAlphaFragParams = proxy->params[proxy->passes[0].fragmentProgParamsIdx];
 
-				fragParams->getParam("colorIndex", md.mParamPickingAlphaColor);
-				fragParams->getTextureParam("mainTexture", md.mParamPickingAlphaTexture);
+				md.mParamPickingAlphaFragParams->getParam("colorIndex", md.mParamPickingAlphaColor);
+				md.mParamPickingAlphaFragParams->getTextureParam("mainTexture", md.mParamPickingAlphaTexture);
 
 				GpuParamFloat alphaCutoffParam;
-				fragParams->getParam("alphaCutoff", alphaCutoffParam);
+				md.mParamPickingAlphaFragParams->getParam("alphaCutoff", alphaCutoffParam);
 				alphaCutoffParam.set(ALPHA_CUTOFF);
 			}
 		}
@@ -129,6 +128,8 @@ namespace BansheeEngine
 				return (UINT32)a.alpha > (UINT32)b.alpha;
 		};
 
+		Matrix4 viewProjMatrix = cam->getProjectionMatrix() * cam->getViewMatrix();
+
 		const Vector<HRenderable>& renderables = SceneManager::instance().getAllRenderables();
 		RenderableSet pickData(comparePickElement);
 		Map<UINT32, HRenderable> idxToRenderable;
@@ -170,7 +171,14 @@ namespace BansheeEngine
 
 						firstPass = originalMat->getPass(0); // Note: We only ever check the first pass, problem?
 						bool useAlphaShader = firstPass->hasBlending();
-						CullingMode cullMode = firstPass->getRasterizerState()->getCullMode();
+						
+						RasterizerStatePtr rasterizerState;
+						if (firstPass->getRasterizerState() == nullptr)
+							rasterizerState = RasterizerState::getDefault();
+						else
+							rasterizerState = firstPass->getRasterizerState().getInternalPtr();
+
+						CullingMode cullMode = rasterizerState->getCullMode();
 
 						MeshProxyPtr meshProxy;
 
@@ -194,7 +202,9 @@ namespace BansheeEngine
 						}
 
 						idxToRenderable[idx] = renderable;
-						pickData.insert({ meshProxy, idx, worldTransform, useAlphaShader, cullMode, mainTexture });
+
+						Matrix4 wvpTransform = viewProjMatrix * worldTransform;
+						pickData.insert({ meshProxy, idx, wvpTransform, useAlphaShader, cullMode, mainTexture });
 					}
 				}
 			}
@@ -211,7 +221,10 @@ namespace BansheeEngine
 
 		for (auto& selectedObject : selectedObjects)
 		{
-			results.push_back({ idxToRenderable[selectedObject]->SO(), 0, PickResult::Type::SceneObject });
+			auto iterFind = idxToRenderable.find(selectedObject);
+
+			if (iterFind != idxToRenderable.end())
+				results.push_back({ iterFind->second->SO(), 0, PickResult::Type::SceneObject });
 		}
 
 		return results;
@@ -233,7 +246,7 @@ namespace BansheeEngine
 		TexturePtr outputTexture = rtt->getBindableColorTexture().getInternalPtr();
 
 		rs.setViewport(vp);
-		rs.clearRenderTarget(FBT_COLOR, Color::White);
+		rs.clearRenderTarget(FBT_COLOR | FBT_DEPTH | FBT_STENCIL, Color::White);
 		rs.setScissorRect(position.x, position.y, position.x + area.x, position.y + area.y);
 
 		Renderer::setPass(*mMaterialData[0].mMatPickingProxy, 0);
@@ -262,11 +275,17 @@ namespace BansheeEngine
 				md.mParamPickingAlphaWVP.set(renderable.wvpTransform);
 				md.mParamPickingAlphaColor.set(color);
 				md.mParamPickingAlphaTexture.set(renderable.mainTexture);
+
+				rs.bindGpuParams(GPT_VERTEX_PROGRAM, md.mParamPickingAlphaVertParams);
+				rs.bindGpuParams(GPT_FRAGMENT_PROGRAM, md.mParamPickingAlphaFragParams);
 			}
 			else
 			{
 				md.mParamPickingWVP.set(renderable.wvpTransform);
 				md.mParamPickingColor.set(color);
+
+				rs.bindGpuParams(GPT_VERTEX_PROGRAM, md.mParamPickingVertParams);
+				rs.bindGpuParams(GPT_FRAGMENT_PROGRAM, md.mParamPickingFragParams);
 			}
 
 			Renderer::draw(*renderable.mesh);
@@ -279,6 +298,7 @@ namespace BansheeEngine
 
 		rs.readSubresource(outputTexture, 0, outputData, unused);
 
+		// TODO - Only search scissor rect
 		Map<UINT32, UINT32> selectionScores;
 		UINT32 numPixels = outputPixelData->getWidth() * outputPixelData->getHeight();
 		for (UINT32 y = 0; y < outputPixelData->getHeight(); y++)
@@ -306,7 +326,7 @@ namespace BansheeEngine
 		UINT32 idx = 0;
 		for (auto& selectionScore : selectionScores)
 		{
-			selectedObjects[idx++] = { selectionScore.second, selectionScore.first };
+			selectedObjects[idx++] = { selectionScore.first, selectionScore.second };
 		}
 
 		std::sort(selectedObjects.begin(), selectedObjects.end(),
@@ -319,7 +339,7 @@ namespace BansheeEngine
 		for (auto& selectedObject : selectedObjects)
 			results.push_back(selectedObject.index);
 
-		asyncOp._completeOperation(selectedObjects);
+		asyncOp._completeOperation(results);
 	}
 
 	Color ScenePicking::encodeIndex(UINT32 index)

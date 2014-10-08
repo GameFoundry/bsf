@@ -1,7 +1,6 @@
 #pragma once
 
 #include "BsD3D9Prerequisites.h"
-#include "BsString.h"
 
 namespace BansheeEngine
 {

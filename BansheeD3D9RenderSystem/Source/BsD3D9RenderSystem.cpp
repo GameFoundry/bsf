@@ -2037,49 +2037,49 @@ namespace BansheeEngine
 			if (minor > 0)
 			{
 				rsc->addShaderProfile("ps_3_x");
-				rsc->addGpuProgramProfile(GPP_PS_3_x, "ps_3_x");
+				rsc->addGpuProgramProfile(GPP_FS_3_x, "ps_3_x");
 			}
 
 			rsc->addShaderProfile("ps_3_0");
-			rsc->addGpuProgramProfile(GPP_PS_3_0, "ps_3_0");
+			rsc->addGpuProgramProfile(GPP_FS_3_0, "ps_3_0");
 		case 2:
 			if (ps2x)
 			{
 				rsc->addShaderProfile("ps_2_x");
-				rsc->addGpuProgramProfile(GPP_PS_2_x, "ps_2_x");
+				rsc->addGpuProgramProfile(GPP_FS_2_x, "ps_2_x");
 			}
 			if (ps2a)
 			{
 				rsc->addShaderProfile("ps_2_a");
-				rsc->addGpuProgramProfile(GPP_PS_2_a, "ps_2_a");
+				rsc->addGpuProgramProfile(GPP_FS_2_a, "ps_2_a");
 			}
 			if (ps2b)
 			{
 				rsc->addShaderProfile("ps_2_b");
-				rsc->addGpuProgramProfile(GPP_PS_2_b, "ps_2_b");
+				rsc->addGpuProgramProfile(GPP_FS_2_b, "ps_2_b");
 			}
 
 			rsc->addShaderProfile("ps_2_0");
-			rsc->addGpuProgramProfile(GPP_PS_2_0, "ps_2_0");
+			rsc->addGpuProgramProfile(GPP_FS_2_0, "ps_2_0");
 		case 1:
 			if (major > 1 || minor >= 4)
 			{
 				rsc->addShaderProfile("ps_1_4");
-				rsc->addGpuProgramProfile(GPP_PS_1_4, "ps_1_4");
+				rsc->addGpuProgramProfile(GPP_FS_1_4, "ps_1_4");
 			}
 			if (major > 1 || minor >= 3)
 			{
 				rsc->addShaderProfile("ps_1_3");
-				rsc->addGpuProgramProfile(GPP_PS_1_3, "ps_1_3");
+				rsc->addGpuProgramProfile(GPP_FS_1_3, "ps_1_3");
 			}
 			if (major > 1 || minor >= 2)
 			{
 				rsc->addShaderProfile("ps_1_2");
-				rsc->addGpuProgramProfile(GPP_PS_1_2, "ps_1_2");
+				rsc->addGpuProgramProfile(GPP_FS_1_2, "ps_1_2");
 			}
 
 			rsc->addShaderProfile("ps_1_1");
-			rsc->addGpuProgramProfile(GPP_PS_1_1, "ps_1_1");
+			rsc->addGpuProgramProfile(GPP_FS_1_1, "ps_1_1");
 		}
 	}
 

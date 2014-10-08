@@ -199,7 +199,7 @@ namespace BansheeEngine
 			importOptions->setLanguage("hlsl");
 
 			// GPU program profile specifying what feature-set the shader code uses.
-			importOptions->setProfile(GPP_PS_4_0);
+			importOptions->setProfile(GPP_FS_4_0);
 
 			// Type of the shader.
 			importOptions->setType(GPT_FRAGMENT_PROGRAM);

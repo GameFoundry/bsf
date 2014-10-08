@@ -3,8 +3,6 @@
 
 #include <memory>
 
-#include "BsString.h"
-
 #include "BsSamplerState.h"
 #include "BsCommandQueue.h"
 #include "BsDrawOps.h"

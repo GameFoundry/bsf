@@ -20,6 +20,7 @@
 #include "BsSceneGrid.h"
 #include "BsInput.h"
 #include "BsGUILayoutUtility.h"
+#include "BsScenePicking.h"
 
 // DEBUG ONLY
 #include "BsTime.h"
@@ -110,6 +111,16 @@ namespace BansheeEngine
 		Vector2I scenePos;
 		if (!toSceneViewPos(event.screenPos, scenePos))
 			return;
+
+		HSceneObject pickedObject = ScenePicking::instance().pickClosestSceneObject(mCamera, scenePos, Vector2I(1, 1));
+		if (pickedObject)
+		{
+			LOGDBG("PICKED OBJECT: " + pickedObject->getName());
+		}
+		else
+		{
+			LOGDBG("PICKED NO OBJECT!");
+		}
 	}
 
 	void SceneEditorWidget::doOnResized(UINT32 width, UINT32 height)

@@ -102,9 +102,9 @@ namespace BansheeEngine
 
 			vertParams->getParam("matViewProj", mIconMaterial.mViewProj);
 
-			GpuParamsPtr fragParams = proxy->params[proxy->passes[0].fragmentProgParamsIdx];
+			mIconMaterial.mFragParams = proxy->params[proxy->passes[0].fragmentProgParamsIdx];
 
-			fragParams->getTextureParam("mainTexture", mIconMaterial.mTexture);
+			mIconMaterial.mFragParams->getTextureParam("mainTexture", mIconMaterial.mTexture);
 		}
 
 		{
@@ -120,12 +120,11 @@ namespace BansheeEngine
 
 			vertParams->getParam("matViewProj", mAlphaPickingMaterial.mViewProj);
 
-			GpuParamsPtr fragParams = proxy->params[proxy->passes[0].fragmentProgParamsIdx];
-
-			fragParams->getTextureParam("mainTexture", mAlphaPickingMaterial.mTexture);
+			mAlphaPickingMaterial.mFragParams = proxy->params[proxy->passes[0].fragmentProgParamsIdx];
+			mAlphaPickingMaterial.mFragParams->getTextureParam("mainTexture", mAlphaPickingMaterial.mTexture);
 
 			GpuParamFloat alphaCutoffParam;
-			fragParams->getParam("alphaCutoff", alphaCutoffParam);
+			mAlphaPickingMaterial.mFragParams->getParam("alphaCutoff", alphaCutoffParam);
 			alphaCutoffParam.set(PICKING_ALPHA_CUTOFF);
 		}
 
@@ -707,6 +706,7 @@ namespace BansheeEngine
 			for (auto curRenderData : *renderData)
 			{
 				mIconMaterial.mTexture.set(curRenderData.texture);
+				rs.bindGpuParams(GPT_FRAGMENT_PROGRAM, mIconMaterial.mFragParams);
 
 				rs.drawIndexed(curIndexOffset, curRenderData.count * 6, 0, curRenderData.count * 4);
 				curIndexOffset += curRenderData.count * 6;
@@ -772,6 +772,7 @@ namespace BansheeEngine
 		for (auto curRenderData : *renderData)
 		{
 			mAlphaPickingMaterial.mTexture.set(curRenderData.texture);
+			rs.bindGpuParams(GPT_FRAGMENT_PROGRAM, mAlphaPickingMaterial.mFragParams);
 
 			rs.drawIndexed(curIndexOffset, curRenderData.count * 6, 0, curRenderData.count * 4);
 			curIndexOffset += curRenderData.count * 6;

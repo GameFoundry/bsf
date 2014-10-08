@@ -21,6 +21,7 @@ namespace BansheeEngine
 
 	protected:
 		virtual void updateCachedTransform() const;
+		virtual void reset();
 
 		static const float TORUS_RADIUS;
 

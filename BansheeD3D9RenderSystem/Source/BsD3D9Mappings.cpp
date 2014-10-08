@@ -1,5 +1,4 @@
 #include "BsD3D9Mappings.h"
-#include "BsString.h"
 #include "BsException.h"
 #include "BsDebug.h"
 

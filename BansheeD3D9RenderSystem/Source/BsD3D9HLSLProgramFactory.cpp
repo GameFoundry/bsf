@@ -1,5 +1,4 @@
 #include "BsD3D9HLSLProgramFactory.h"
-#include "BsString.h"
 #include "BsD3D9GpuProgram.h"
 
 namespace BansheeEngine

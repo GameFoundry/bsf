@@ -39,6 +39,7 @@
 #include "BsTaskScheduler.h"
 #include "BsUUID.h"
 #include "BsRenderStats.h"
+#include "BsMessageHandler.h"
 
 #include "BsMaterial.h"
 #include "BsShader.h"
@@ -67,6 +68,7 @@ namespace BansheeEngine
 		Platform::_startUp();
 		MemStack::beginThread();
 
+		MessageHandler::startUp();
 		RenderTargetManager::startUp();
 		UUIDGenerator::startUp();
 		ProfilerCPU::startUp();
@@ -152,6 +154,7 @@ namespace BansheeEngine
 		ProfilerCPU::shutDown();
 		UUIDGenerator::shutDown();
 		RenderTargetManager::shutDown();
+		MessageHandler::shutDown();
 
 		MemStack::endThread();
 		Platform::_shutDown();

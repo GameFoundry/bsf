@@ -45,9 +45,18 @@ namespace BansheeEngine
 		auto intersect = mCollider.intersects(ray);
 
 		if (intersect.first)
-			return intersect.second;
+		{
+			t = intersect.second;
+
+			return true;
+		}
 
 		return false;
+	}
+
+	void HandleSliderDisc::reset()
+	{
+		// TODO - Clear delta
 	}
 
 	void HandleSliderDisc::update(const HCamera& camera, const Vector2I& pointerPos, const Ray& ray)

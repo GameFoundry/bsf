@@ -108,6 +108,7 @@ namespace BansheeEngine
 
 			// Core
 			MaterialProxyPtr proxy;
+			GpuParamsPtr mFragParams;
 			GpuParamMat4 mViewProj;
 			GpuParamTexture mTexture;
 		};
@@ -127,6 +128,7 @@ namespace BansheeEngine
 
 			// Core
 			MaterialProxyPtr proxy;
+			GpuParamsPtr mFragParams;
 			GpuParamMat4 mViewProj;
 			GpuParamTexture mTexture;
 		};

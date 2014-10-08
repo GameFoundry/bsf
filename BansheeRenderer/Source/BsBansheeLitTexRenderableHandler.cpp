@@ -305,7 +305,7 @@ namespace BansheeEngine
 			})";	
 
 			vsProgram = GpuProgram::create(vsCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
-			psProgram = GpuProgram::create(psCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_PS_4_0);
+			psProgram = GpuProgram::create(psCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_FS_4_0);
 		}
 		else if (rsName == RenderSystemDX9)
 		{
@@ -333,7 +333,7 @@ namespace BansheeEngine
 			})";
 
 			vsProgram = GpuProgram::create(vsCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
-			psProgram = GpuProgram::create(psCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
+			psProgram = GpuProgram::create(psCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_FS_2_0);
 		}
 		else if (rsName == RenderSystemOpenGL)
 		{
@@ -371,7 +371,7 @@ namespace BansheeEngine
 			})";
 
 			vsProgram = GpuProgram::create(vsCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
-			psProgram = GpuProgram::create(psCode, "main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_4_0);
+			psProgram = GpuProgram::create(psCode, "main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_FS_4_0);
 		}
 
 		vsProgram.synchronize();

@@ -767,7 +767,7 @@ namespace BansheeEngine
 			rsc->addShaderProfile("vs_4_0");
 			rsc->addShaderProfile("gs_4_0");
 
-			rsc->addGpuProgramProfile(GPP_PS_4_0, "ps_4_0");
+			rsc->addGpuProgramProfile(GPP_FS_4_0, "ps_4_0");
 			rsc->addGpuProgramProfile(GPP_VS_4_0, "vs_4_0");
 			rsc->addGpuProgramProfile(GPP_GS_4_0, "gs_4_0");
 
@@ -792,7 +792,7 @@ namespace BansheeEngine
 			rsc->addShaderProfile("vs_4_1");
 			rsc->addShaderProfile("gs_4_1");
 
-			rsc->addGpuProgramProfile(GPP_PS_4_1, "ps_4_1");
+			rsc->addGpuProgramProfile(GPP_FS_4_1, "ps_4_1");
 			rsc->addGpuProgramProfile(GPP_VS_4_1, "vs_4_1");
 			rsc->addGpuProgramProfile(GPP_GS_4_1, "gs_4_1");
 		}
@@ -806,7 +806,7 @@ namespace BansheeEngine
 			rsc->addShaderProfile("hs_5_0");
 			rsc->addShaderProfile("ds_5_0");
 
-			rsc->addGpuProgramProfile(GPP_PS_5_0, "ps_5_0");
+			rsc->addGpuProgramProfile(GPP_FS_5_0, "ps_5_0");
 			rsc->addGpuProgramProfile(GPP_VS_5_0, "vs_5_0");
 			rsc->addGpuProgramProfile(GPP_GS_5_0, "gs_5_0");
 			rsc->addGpuProgramProfile(GPP_CS_5_0, "cs_5_0");

@@ -175,6 +175,20 @@ namespace BansheeEngine
 		 * @copydoc	getParam(const String&, GpuDataParamBase<T>&)
 		 */
 		template<>
+		void getParam<Color>(const String& name, TGpuDataParam<Color>& output) const
+		{
+			auto iterFind = mParamDesc->params.find(name);
+
+			if (iterFind == mParamDesc->params.end() || iterFind->second.type != GPDT_FLOAT4)
+				BS_EXCEPT(InvalidParametersException, "Cannot find color parameter with the name '" + name + "'");
+
+			output = GpuParamColor(&iterFind->second, mInternalData);
+		}
+
+		/**
+		 * @copydoc	getParam(const String&, GpuDataParamBase<T>&)
+		 */
+		template<>
 		void getParam<Matrix3>(const String& name, TGpuDataParam<Matrix3>& output) const
 		{
 			auto iterFind = mParamDesc->params.find(name);

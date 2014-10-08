@@ -630,23 +630,23 @@ namespace BansheeEngine
 		static const GpuProgramImportData GPU_PROGRAM_IMPORT_DATA[] =
 		{
 			{ ShaderSpriteTextVSFile,				"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "hlsl", HLSL11ShaderSubFolder},
-			{ ShaderSpriteTextPSFile,				"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0, "hlsl", HLSL11ShaderSubFolder },
+			{ ShaderSpriteTextPSFile,				"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0, "hlsl", HLSL11ShaderSubFolder },
 			{ ShaderSpriteImageVSFile,				"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "hlsl", HLSL11ShaderSubFolder },
-			{ ShaderSpriteImagePSFile,				"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0, "hlsl", HLSL11ShaderSubFolder },
+			{ ShaderSpriteImagePSFile,				"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0, "hlsl", HLSL11ShaderSubFolder },
 			{ ShaderDummyVSFile,					"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "hlsl", HLSL11ShaderSubFolder },
-			{ ShaderDummyPSFile,					"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0, "hlsl", HLSL11ShaderSubFolder },
+			{ ShaderDummyPSFile,					"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0, "hlsl", HLSL11ShaderSubFolder },
 			{ ShaderSpriteTextVSFile,				"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_2_0, "hlsl", HLSL9ShaderSubFolder },
-			{ ShaderSpriteTextPSFile,				"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_2_0, "hlsl", HLSL9ShaderSubFolder },
+			{ ShaderSpriteTextPSFile,				"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_2_0, "hlsl", HLSL9ShaderSubFolder },
 			{ ShaderSpriteImageVSFile,				"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_2_0, "hlsl", HLSL9ShaderSubFolder },
-			{ ShaderSpriteImagePSFile,				"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_2_0, "hlsl", HLSL9ShaderSubFolder },
+			{ ShaderSpriteImagePSFile,				"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_2_0, "hlsl", HLSL9ShaderSubFolder },
 			{ ShaderDummyVSFile,					"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_2_0, "hlsl", HLSL9ShaderSubFolder },
-			{ ShaderDummyPSFile,					"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_PS_2_0, "hlsl", HLSL9ShaderSubFolder },
+			{ ShaderDummyPSFile,					"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_2_0, "hlsl", HLSL9ShaderSubFolder },
 			{ ShaderSpriteTextVSFile,				"main",			GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "glsl", GLSLShaderSubFolder },
-			{ ShaderSpriteTextPSFile,				"main",			GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0, "glsl", GLSLShaderSubFolder },
+			{ ShaderSpriteTextPSFile,				"main",			GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0, "glsl", GLSLShaderSubFolder },
 			{ ShaderSpriteImageVSFile,				"main",			GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "glsl", GLSLShaderSubFolder },
-			{ ShaderSpriteImagePSFile,				"main",			GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0, "glsl", GLSLShaderSubFolder },
+			{ ShaderSpriteImagePSFile,				"main",			GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0, "glsl", GLSLShaderSubFolder },
 			{ ShaderDummyVSFile,					"main",			GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "glsl", GLSLShaderSubFolder },
-			{ ShaderDummyPSFile,					"main",			GPT_FRAGMENT_PROGRAM,	GPP_PS_4_0, "glsl", GLSLShaderSubFolder },
+			{ ShaderDummyPSFile,					"main",			GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0, "glsl", GLSLShaderSubFolder },
 		};
 
 		if (FileSystem::exists(DefaultCursorFolderRaw))

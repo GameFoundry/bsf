@@ -24,4 +24,9 @@ namespace BansheeEngine
     {
 
     }
+
+	IndexBufferPtr IndexBuffer::create(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
+	{
+		return HardwareBufferManager::instance().createIndexBuffer(itype, numIndexes, usage);
+	}
 }

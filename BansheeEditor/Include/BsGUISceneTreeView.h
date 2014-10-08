@@ -3,6 +3,7 @@
 #include "BsEditorPrerequisites.h"
 #include "BsGUITreeView.h"
 #include "BsEvent.h"
+#include "BsServiceLocator.h"
 
 namespace BansheeEngine
 {
@@ -46,6 +47,7 @@ namespace BansheeEngine
 		void setSelection(const Vector<HSceneObject>& objects);
 
 		Event<void()> onSelectionChanged;
+		static const MessageId SELECTION_CHANGED_MSG;
 	protected:
 		virtual ~GUISceneTreeView();
 
@@ -72,4 +74,6 @@ namespace BansheeEngine
 
 		void deleteTreeElementInternal(TreeElement* element);
 	};
+
+	typedef ServiceLocator<GUISceneTreeView> SceneTreeViewLocator;
 }

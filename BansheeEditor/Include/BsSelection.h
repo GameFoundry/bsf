@@ -2,13 +2,14 @@
 
 #include "BsEditorPrerequisites.h"
 #include "BsModule.h"
+#include "BsPath.h"
 
 namespace BansheeEngine
 {
 	class BS_ED_EXPORT Selection : public Module<Selection>
 	{
 	public:
-		Selection(GUISceneTreeView* sceneTreeView, GUIResourceTreeView* resourceTreeView);
+		Selection();
 		~Selection();
 
 		const Vector<HSceneObject>& getSceneObjects() const;
@@ -24,13 +25,10 @@ namespace BansheeEngine
 		void sceneSelectionChanged();
 		void resourceSelectionChanged();
 
-		GUISceneTreeView* mSceneTreeView;
-		GUIResourceTreeView* mResourceTreeView;
-
 		Vector<HSceneObject> mSelectedSceneObjects;
 		Vector<Path> mSelectedResourcePaths;
 
-		HEvent mSceneSelectionChangedConn;
-		HEvent mResourceSelectionChangedConn;
+		HMessage mSceneSelectionChangedConn;
+		HMessage mResourceSelectionChangedConn;
 	};
 }

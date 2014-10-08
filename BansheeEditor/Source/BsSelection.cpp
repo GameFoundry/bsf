@@ -3,14 +3,17 @@
 #include "BsGUIResourceTreeView.h"
 #include "BsProjectLibrary.h"
 #include "BsProjectResourceMeta.h"
+#include "BsMessageHandler.h"
 
 namespace BansheeEngine
 {
-	Selection::Selection(GUISceneTreeView* sceneTreeView, GUIResourceTreeView* resourceTreeView)
-		:mSceneTreeView(sceneTreeView), mResourceTreeView(resourceTreeView)
+	Selection::Selection()
 	{
-		mSceneSelectionChangedConn = mSceneTreeView->onSelectionChanged.connect(std::bind(&Selection::sceneSelectionChanged, this));
-		mResourceSelectionChangedConn = mResourceTreeView->onSelectionChanged.connect(std::bind(&Selection::resourceSelectionChanged, this));
+		mSceneSelectionChangedConn = MessageHandler::instance().listen(
+			GUISceneTreeView::SELECTION_CHANGED_MSG, std::bind(&Selection::sceneSelectionChanged, this));
+
+		mResourceSelectionChangedConn = MessageHandler::instance().listen(
+			GUIResourceTreeView::SELECTION_CHANGED_MSG, std::bind(&Selection::resourceSelectionChanged, this));
 	}
 
 	Selection::~Selection()
@@ -27,7 +30,10 @@ namespace BansheeEngine
 	void Selection::setSceneObjects(const Vector<HSceneObject>& sceneObjects)
 	{
 		mSelectedSceneObjects = sceneObjects;
-		mResourceTreeView->setSelection(mSelectedResourcePaths);
+
+		GUISceneTreeView* sceneTreeView = SceneTreeViewLocator::instance();
+		if (sceneTreeView != nullptr)
+			sceneTreeView->setSelection(mSelectedSceneObjects);
 	}
 
 	const Vector<Path>& Selection::getResourcePaths() const
@@ -66,16 +72,22 @@ namespace BansheeEngine
 				mSelectedResourcePaths.push_back(path);
 		}
 
-		mResourceTreeView->setSelection(mSelectedResourcePaths);
+		GUIResourceTreeView* resourceTreeView = ResourceTreeViewLocator::instance();
+		if (resourceTreeView != nullptr)
+			resourceTreeView->setSelection(mSelectedResourcePaths);
 	}
 
 	void Selection::sceneSelectionChanged()
 	{
-		mSelectedSceneObjects = mSceneTreeView->getSelection();
+		GUISceneTreeView* sceneTreeView = SceneTreeViewLocator::instance();
+		if (sceneTreeView != nullptr)
+			mSelectedSceneObjects = sceneTreeView->getSelection();
 	}
 
 	void Selection::resourceSelectionChanged()
 	{
-		mSelectedResourcePaths = mResourceTreeView->getSelection();
+		GUIResourceTreeView* resourceTreeView = ResourceTreeViewLocator::instance();
+		if (resourceTreeView != nullptr)
+			mSelectedResourcePaths = resourceTreeView->getSelection();
 	}
 }

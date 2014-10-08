@@ -1,7 +1,6 @@
 #pragma once
 
 #include "BsPrerequisitesUtil.h"
-#include "BsString.h"
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 #    define DYNLIB_HANDLE hInstance

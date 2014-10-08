@@ -98,6 +98,11 @@ namespace BansheeEngine
 			const String& multisampleHint = "", bool createDepth = true, PixelFormat depthStencilFormat = PF_D24S8);
 
 		/**
+		 * @copydoc	TextureManager::createRenderTexture(const RENDER_TEXTURE_DESC&)
+		 */
+		static RenderTexturePtr create(const RENDER_TEXTURE_DESC& desc);
+
+		/**
 		 * @copydoc	RenderTexture::requiresTextureFlipping
 		 */
 		virtual bool requiresTextureFlipping() const { return false; }

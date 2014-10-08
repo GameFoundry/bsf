@@ -1,7 +1,6 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
-#include "BsString.h"
 #include "BsGpuProgram.h"
 
 #define CAPS_CATEGORY_SIZE 8i64

@@ -38,6 +38,11 @@ namespace BansheeEngine
 		 */
 		UINT32 getIndexSize() const { return mIndexSize; }
 
+		/**
+		 * @copydoc	HardwareBufferManager::createIndexBuffer
+		 */
+		static IndexBufferPtr create(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
+
 	protected:
 		IndexBuffer(IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage, bool useSystemMemory);
 

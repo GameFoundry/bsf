@@ -18,6 +18,8 @@ namespace BansheeEngine
 		bool isGameViewFocused() const;
 		bool isSceneViewFocused() const;
 		const Path& getActiveProjectPath() const;
+
+
 	private:
 		virtual void onStartUp();
 		virtual void update();

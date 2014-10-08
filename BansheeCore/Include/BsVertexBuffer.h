@@ -31,6 +31,11 @@ namespace BansheeEngine
 		 */
 		virtual bool vertexColorReqRGBFlip() { return false; }
 
+		/**
+		 * @copydoc	HardwareBufferManager::createVertexBuffer
+		 */
+		static VertexBufferPtr create(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false);
+
 		static const int MAX_SEMANTIC_IDX = 8;
 	protected:
 		VertexBuffer(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage, bool useSystemMemory);

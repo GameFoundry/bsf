@@ -20,6 +20,8 @@ namespace BansheeEngine
 		Vector3 getNewPosition() const { return mPosition; /* TODO */ }
 
 	protected:
+		void reset();
+
 		Vector3 mDirection1;
 		Vector3 mDirection2;
 		float mLength;

@@ -209,6 +209,11 @@ namespace BansheeEngine
 		return size;
 	}
 
+	VertexDeclarationPtr VertexDeclaration::createVertexDeclaration(const VertexDeclaration::VertexElementList& elements)
+	{
+		return HardwareBufferManager::instance().createVertexDeclaration(elements);
+	}
+
 	/************************************************************************/
 	/* 								SERIALIZATION                      		*/
 	/************************************************************************/

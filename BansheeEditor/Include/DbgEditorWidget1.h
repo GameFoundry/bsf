@@ -18,6 +18,9 @@ namespace BansheeEngine
 		static void close();
 		static const String& getTypeName();
 
+		GUISceneTreeView* getSceneTreeView() const { return mSceneTreeView; }
+		GUIResourceTreeView* getResourceTreeView() const { return mResourceTreeView; }
+
 	private:
 		static DbgEditorWidget1* Instance;
 		GUISceneTreeView* mSceneTreeView = nullptr;

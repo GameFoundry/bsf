@@ -1,6 +1,5 @@
 #include "BsRenderSystemCapabilities.h"
 #include "BsException.h"
-#include "BsString.h"
 
 namespace BansheeEngine 
 {

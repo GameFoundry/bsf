@@ -20,6 +20,9 @@ namespace BansheeEngine
 	{
 		StringStream stream;
 
+		GLint linkCompileSuccess = 0;
+		glGetProgramiv(programObj, GL_LINK_STATUS, &linkCompileSuccess);
+
 		GLenum glErr;
 		bool errorsFound = false;
 
@@ -40,7 +43,7 @@ namespace BansheeEngine
 			errorsFound = true;
 		}
 
-		if (errorsFound && programObj > 0)
+		if ((errorsFound || !linkCompileSuccess) && programObj > 0)
 		{
 			GLint infologLength = 0;
 			glGetProgramiv(programObj, GL_INFO_LOG_LENGTH, &infologLength);
@@ -62,7 +65,7 @@ namespace BansheeEngine
 
 		outErrorMsg = stream.str();
 
-		return errorsFound;
+		return errorsFound || !linkCompileSuccess;
 	}
 	
 	GLSLGpuProgram::GLSLGpuProgram(const String& source, const String& entryPoint, GpuProgramType gptype, 

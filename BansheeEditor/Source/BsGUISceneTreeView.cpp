@@ -5,9 +5,12 @@
 #include "BsCmdEditPlainFieldGO.h"
 #include "BsDragAndDropManager.h"
 #include "BsCmdReparentSO.h"
+#include "BsSelection.h"
 
 namespace BansheeEngine
 {
+	const MessageId GUISceneTreeView::SELECTION_CHANGED_MSG = MessageId("SceneTreeView_SelectionChanged");
+
 	DraggedSceneObjects::DraggedSceneObjects(UINT32 numObjects)
 		:numObjects(numObjects)
 	{
@@ -26,12 +29,12 @@ namespace BansheeEngine
 		:GUITreeView(backgroundStyle, elementBtnStyle, foldoutBtnStyle, selectionBackgroundStyle, editBoxStyle, dragHighlightStyle,
 		dragSepHighlightStyle, layoutOptions)
 	{
-		
+		SceneTreeViewLocator::_provide(this);
 	}
 
 	GUISceneTreeView::~GUISceneTreeView()
 	{
-		
+		SceneTreeViewLocator::_provide(nullptr);
 	}
 
 	GUISceneTreeView* GUISceneTreeView::create(const String& backgroundStyle, const String& elementBtnStyle, 
@@ -263,6 +266,7 @@ namespace BansheeEngine
 	void GUISceneTreeView::selectionChanged()
 	{
 		onSelectionChanged();
+		sendMessage(SELECTION_CHANGED_MSG);
 	}
 
 	Vector<HSceneObject> GUISceneTreeView::getSelection() const

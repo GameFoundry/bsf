@@ -11,11 +11,14 @@
 #include "BsRenderWindow.h"
 #include "BsPlatform.h"
 #include "BsPath.h"
+#include "BsSelection.h"
 
 using namespace std::placeholders;
 
 namespace BansheeEngine
 {
+	const MessageId GUIResourceTreeView::SELECTION_CHANGED_MSG = MessageId("ResourceTreeView_SelectionChanged");
+
 	GUIResourceTreeView::InternalDraggedResources::InternalDraggedResources(UINT32 numObjects)
 		:numObjects(numObjects)
 	{
@@ -34,6 +37,8 @@ namespace BansheeEngine
 		:GUITreeView(backgroundStyle, elementBtnStyle, foldoutBtnStyle, selectionBackgroundStyle, editBoxStyle, dragHighlightStyle,
 		dragSepHighlightStyle, layoutOptions), mDraggedResources(nullptr), mCurrentWindow(nullptr), mDropTarget(nullptr), mDropTargetDragActive(false)
 	{
+		ResourceTreeViewLocator::_provide(this);
+
 		ProjectLibrary::instance().onEntryAdded.connect(std::bind(&GUIResourceTreeView::entryAdded, this, _1));
 		ProjectLibrary::instance().onEntryRemoved.connect(std::bind(&GUIResourceTreeView::entryRemoved, this, _1));
 
@@ -50,6 +55,8 @@ namespace BansheeEngine
 	GUIResourceTreeView::~GUIResourceTreeView()
 	{
 		clearDropTarget();
+
+		ResourceTreeViewLocator::_provide(nullptr);
 	}
 
 	GUIResourceTreeView* GUIResourceTreeView::create(const String& backgroundStyle, const String& elementBtnStyle, 
@@ -466,6 +473,8 @@ namespace BansheeEngine
 	void GUIResourceTreeView::selectionChanged()
 	{
 		onSelectionChanged();
+
+		sendMessage(SELECTION_CHANGED_MSG);
 	}
 
 	Vector<Path> GUIResourceTreeView::getSelection() const

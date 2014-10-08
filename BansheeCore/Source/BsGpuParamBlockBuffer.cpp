@@ -1,5 +1,6 @@
 #include "BsGpuParamBlockBuffer.h"
 #include "BsGpuParamBlock.h"
+#include "BsHardwareBufferManager.h"
 
 namespace BansheeEngine
 {
@@ -56,5 +57,10 @@ namespace BansheeEngine
 			bs_free<ScratchAlloc>(mData);
 
 		GpuParamBlockBuffer::destroy_internal();
+	}
+
+	static GpuParamBlockBufferPtr create(UINT32 size, GpuParamBlockUsage usage)
+	{
+		return HardwareBufferManager::instance().createGpuParamBlockBuffer(size, usage);
 	}
 }

@@ -37,6 +37,8 @@
 #include "BsGUILayout.h"
 #include "BsEvent.h"
 #include "BsRenderer.h"
+#include "BsScenePicking.h"
+#include "BsSelection.h"
 
 namespace BansheeEngine
 {
@@ -79,10 +81,16 @@ namespace BansheeEngine
 		UndoRedo::startUp();
 		EditorWindowManager::startUp();
 		EditorWidgetManager::startUp();
+
+		ScenePicking::startUp();
+		Selection::startUp();
 	}
 
 	EditorApplication::~EditorApplication()
 	{
+		Selection::shutDown();
+		ScenePicking::shutDown();
+
 		saveWidgetLayout(EditorWidgetManager::instance().getLayout());
 
 		EditorWidgetManager::shutDown();
@@ -165,7 +173,7 @@ namespace BansheeEngine
 										 psLoc = L"..\\..\\..\\..\\Data\\hlsl11_ps.gpuprog";
 										 vsLoc = L"..\\..\\..\\..\\Data\\hlsl11_vs.gpuprog";
 										 language = "hlsl";
-										 psProfile = GPP_PS_4_0;
+										 psProfile = GPP_FS_4_0;
 										 vsProfile = GPP_VS_4_0;
 										 psEntry = "ps_main";
 										 vsEntry = "vs_main";
@@ -176,7 +184,7 @@ namespace BansheeEngine
 										psLoc = L"..\\..\\..\\..\\Data\\hlsl9_ps.gpuprog";
 										vsLoc = L"..\\..\\..\\..\\Data\\hlsl9_vs.gpuprog";
 										language = "hlsl";
-										psProfile = GPP_PS_2_0;
+										psProfile = GPP_FS_2_0;
 										vsProfile = GPP_VS_2_0;
 										psEntry = "ps_main";
 										vsEntry = "vs_main";
@@ -187,7 +195,7 @@ namespace BansheeEngine
 										   psLoc = L"..\\..\\..\\..\\Data\\glsl_ps.gpuprog";
 										   vsLoc = L"..\\..\\..\\..\\Data\\glsl_vs.gpuprog";
 										   language = "glsl";
-										   psProfile = GPP_PS_2_0;
+										   psProfile = GPP_FS_2_0;
 										   vsProfile = GPP_VS_2_0;
 										   psEntry = "main";
 										   vsEntry = "main";

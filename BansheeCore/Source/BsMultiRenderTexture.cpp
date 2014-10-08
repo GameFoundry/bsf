@@ -3,6 +3,7 @@
 #include "BsException.h"
 #include "BsDebug.h"
 #include "BsCoreThread.h"
+#include "BsTextureManager.h"
 
 namespace BansheeEngine
 {
@@ -181,5 +182,10 @@ namespace BansheeEngine
 		*coreProperties = *myProperties;
 
 		return createCore(coreProperties, mDesc);
+	}
+
+	MultiRenderTexturePtr MultiRenderTexture::create(const MULTI_RENDER_TEXTURE_DESC& desc)
+	{
+		return TextureManager::instance().createMultiRenderTexture(desc);
 	}
 }

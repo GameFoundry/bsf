@@ -1,7 +1,6 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "BsString.h"
 #include "BsMatrix4.h"
 #include "BsVector3.h"
 #include "BsVector2.h"

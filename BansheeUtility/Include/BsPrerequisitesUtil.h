@@ -61,3 +61,4 @@
 #include "BsRTTIPrerequisites.h"
 
 #include "BsString.h"
+#include "BsMessageHandlerFwd.h"

@@ -97,6 +97,11 @@ namespace BansheeEngine
 		 */
 		MultiRenderTextureCore* getCore() const;
 
+		/**
+		 * @copydoc	TextureManager::createMultiRenderTexture
+		 */
+		static MultiRenderTexturePtr create(const MULTI_RENDER_TEXTURE_DESC& desc);
+
 	protected:
 		MultiRenderTexture() { }
 

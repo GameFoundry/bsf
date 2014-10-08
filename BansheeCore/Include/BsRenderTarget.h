@@ -1,7 +1,6 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
-#include "BsString.h"
 #include "BsPixelUtil.h"
 #include "BsViewport.h"
 #include "BsCoreObject.h"

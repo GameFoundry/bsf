@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BsEditorPrerequisites.h"
+#include "BsServiceLocator.h"
 #include "BsGUITreeView.h"
 #include "BsProjectLibrary.h"
 #include "BsEvent.h"
@@ -48,6 +49,7 @@ namespace BansheeEngine
 		void setSelection(const Vector<Path>& paths);
 
 		Event<void()> onSelectionChanged;
+		static const MessageId SELECTION_CHANGED_MSG;
 
 	protected:
 		virtual ~GUIResourceTreeView();
@@ -104,4 +106,6 @@ namespace BansheeEngine
 
 		void _changeParentWidget(GUIWidget* widget);
 	};
+
+	typedef ServiceLocator<GUIResourceTreeView> ResourceTreeViewLocator;
 }

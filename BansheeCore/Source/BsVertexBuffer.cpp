@@ -12,4 +12,9 @@ namespace BansheeEngine
     {
         mSizeInBytes = mVertexSize * numVertices;
     }
+
+	VertexBufferPtr VertexBuffer::create(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
+	{
+		return HardwareBufferManager::instance().createVertexBuffer(vertexSize, numVerts, usage, streamOut);
+	}
 }

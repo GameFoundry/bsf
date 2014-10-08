@@ -102,6 +102,11 @@ namespace BansheeEngine
 			multisampleCount, multisampleHint, createDepth, depthStencilFormat);
 	}
 
+	RenderTexturePtr RenderTexture::create(const RENDER_TEXTURE_DESC& desc)
+	{
+		return TextureManager::instance().createRenderTexture(desc);
+	}
+
 	const RenderTextureProperties& RenderTexture::getProperties() const 
 	{ 
 		THROW_IF_CORE_THREAD;

@@ -2,7 +2,6 @@
 
 #include "BsCorePrerequisites.h"
 #include "BsMatrix4.h"
-#include "BsString.h"
 #include "BsPixelUtil.h"
 #include "BsTexture.h"
 #include "BsColor.h"

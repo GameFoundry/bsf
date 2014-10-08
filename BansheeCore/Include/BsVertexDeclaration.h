@@ -162,6 +162,11 @@ namespace BansheeEngine
 		 */
 		virtual UINT32 getVertexSize(UINT16 source);
 
+		/**
+		 * @copydoc		HardwareBufferManager::createVertexDeclaration
+		 */
+		static VertexDeclarationPtr createVertexDeclaration(const VertexDeclaration::VertexElementList& elements);
+
     protected:
 		friend class HardwareBufferManager;
 

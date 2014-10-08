@@ -249,6 +249,7 @@
     <ClCompile Include="Source\BsCapsule.cpp" />
     <ClCompile Include="Source\BsConvexVolume.cpp" />
     <ClCompile Include="Source\BsLineSegment3.cpp" />
+    <ClCompile Include="Source\BsMessageHandler.cpp" />
     <ClCompile Include="Source\BsRect3.cpp" />
     <ClCompile Include="Source\BsTaskScheduler.cpp" />
     <ClCompile Include="Source\BsTestOutput.cpp" />
@@ -281,7 +282,10 @@
     <ClInclude Include="Include\BsConvexVolume.h" />
     <ClInclude Include="Include\BsEvent.h" />
     <ClInclude Include="Include\BsLineSegment3.h" />
+    <ClInclude Include="Include\BsMessageHandler.h" />
+    <ClInclude Include="Include\BsMessageHandlerFwd.h" />
     <ClInclude Include="Include\BsRect3.h" />
+    <ClInclude Include="Include\BsServiceLocator.h" />
     <ClInclude Include="Include\BsSpinLock.h" />
     <ClInclude Include="Include\BsTaskScheduler.h" />
     <ClInclude Include="Include\BsTestOutput.h" />

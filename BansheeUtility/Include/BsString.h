@@ -1,7 +1,5 @@
 #pragma once
 
-#include "BsPrerequisitesUtil.h"
-
 namespace BansheeEngine 
 {
 	/**

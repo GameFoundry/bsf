@@ -1,4 +1,3 @@
-#include "BsString.h"
 #include "BsColor.h"
 #include "BsMath.h"
 #include "BsMatrix3.h"
