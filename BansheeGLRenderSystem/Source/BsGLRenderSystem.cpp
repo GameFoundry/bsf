@@ -545,10 +545,10 @@ namespace BansheeEngine
 		mViewportWidth = (UINT32)(rtProps.getWidth() * vp.getNormalizedWidth());
 		mViewportHeight = (UINT32)(rtProps.getHeight() * vp.getNormalizedHeight());
 
-		if (!target->requiresTextureFlipping())
+		if (target->requiresTextureFlipping())
 		{
 			// Convert "upper-left" corner to "lower-left"
-			mViewportTop = target->getCore()->getProperties().getHeight() - mViewportHeight - mViewportTop;
+			mViewportTop = target->getCore()->getProperties().getHeight() - (mViewportTop + mViewportHeight) - 1;
 		}
 
 		glViewport(mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight);
@@ -1019,25 +1019,26 @@ namespace BansheeEngine
 			glEnable(GL_SCISSOR_TEST);
 			// GL uses width / height rather than right / bottom
 			x = mScissorLeft;
+
 			if (flipping)
-				y = mScissorTop;
+				y = targetHeight - mScissorBottom - 1;
 			else
-				y = targetHeight - mScissorBottom;
+				y = mScissorTop;
+
 			w = mScissorRight - mScissorLeft;
 			h = mScissorBottom - mScissorTop;
+
 			glScissor(x, y, w, h);
 		}
 		else
 		{
 			glDisable(GL_SCISSOR_TEST);
+
 			// GL requires you to reset the scissor when disabling
 			w = mViewportWidth;
 			h = mViewportHeight;
 			x = mViewportLeft;
-			if (flipping)
-				y = mViewportTop;
-			else
-				y = targetHeight - mViewportTop - h;
+			y = mViewportTop; 
 
 			glScissor(x, y, w, h);
 		}

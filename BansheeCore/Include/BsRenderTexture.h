@@ -41,11 +41,6 @@ namespace BansheeEngine
 		virtual ~RenderTextureCore();
 
 		/**
-		 * @copydoc	RenderTargetCore::copyToMemory
-		 */
-		virtual void copyToMemory(PixelData &dst, FrameBuffer buffer = FB_AUTO);
-
-		/**
 		 * @brief	Returns properties that describe the render texture.
 		 */
 		const RenderTextureProperties& getProperties() const { return *static_cast<RenderTextureProperties*>(mProperties); }

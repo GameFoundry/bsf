@@ -311,21 +311,46 @@ namespace BansheeEngine
 		UINT32 maxWidth = std::min((UINT32)(position.x + area.x), outputPixelData->getWidth());
 		UINT32 maxHeight = std::min((UINT32)(position.y + area.y), outputPixelData->getHeight());
 
-		for (UINT32 y = (UINT32)position.y; y < maxHeight; y++)
+		if (rt->requiresTextureFlipping())
 		{
-			for (UINT32 x = (UINT32)position.x; x < maxWidth; x++)
+			UINT32 vertOffset = outputPixelData->getHeight() - 1;
+
+			for (UINT32 y = maxHeight; y > (UINT32)position.y; y--)
 			{
-				Color color = outputPixelData->getColorAt(x, y);
-				UINT32 index = decodeIndex(color);
+				for (UINT32 x = (UINT32)position.x; x < maxWidth; x++)
+				{
+					Color color = outputPixelData->getColorAt(x, vertOffset - y);
+					UINT32 index = decodeIndex(color);
 
-				if (index == 0x00FFFFFF) // Nothing selected
-					continue;
+					if (index == 0x00FFFFFF) // Nothing selected
+						continue;
 
-				auto iterFind = selectionScores.find(index);
-				if (iterFind == selectionScores.end())
-					selectionScores[index] = 1;
-				else
-					iterFind->second++;
+					auto iterFind = selectionScores.find(index);
+					if (iterFind == selectionScores.end())
+						selectionScores[index] = 1;
+					else
+						iterFind->second++;
+				}
+			}
+		}
+		else
+		{
+			for (UINT32 y = (UINT32)position.y; y < maxHeight; y++)
+			{
+				for (UINT32 x = (UINT32)position.x; x < maxWidth; x++)
+				{
+					Color color = outputPixelData->getColorAt(x, y);
+					UINT32 index = decodeIndex(color);
+
+					if (index == 0x00FFFFFF) // Nothing selected
+						continue;
+
+					auto iterFind = selectionScores.find(index);
+					if (iterFind == selectionScores.end())
+						selectionScores[index] = 1;
+					else
+						iterFind->second++;
+				}
 			}
 		}
 

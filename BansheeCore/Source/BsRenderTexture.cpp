@@ -84,11 +84,6 @@ namespace BansheeEngine
 		}
 	}
 
-	void RenderTextureCore::copyToMemory(PixelData &dst, FrameBuffer buffer)
-	{
-		throw std::exception("The method or operation is not implemented.");
-	}
-
 	RenderTexture* RenderTextureCore::getNonCore() const
 	{
 		return static_cast<RenderTexture*>(mParent);

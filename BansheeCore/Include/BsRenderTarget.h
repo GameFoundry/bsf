@@ -170,16 +170,6 @@ namespace BansheeEngine
 		virtual void swapBuffers() {};
 
 		/**
-		 * @brief	Copy data from the render target into the provided pixel buffer.
-		 *
-		 * @param	dst		Destination buffer to copy the data to. Caller must ensure the buffer is of adequate size.
-		 * @param	buffer	Which buffer is data taken from. This is irrelevant for single buffer render targets.
-		 *
-		 * @note	Core thread only.
-		 */
-		virtual void copyToMemory(PixelData &dst, FrameBuffer buffer = FB_AUTO) = 0;
-
-		/**
 		 * @brief	Queries the render target for a custom attribute. This may be anything and is
 		 *			implementation specific.
 		 *
