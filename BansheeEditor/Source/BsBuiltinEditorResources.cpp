@@ -1331,7 +1331,7 @@ namespace BansheeEngine
 		newPass->setFragmentProgram(psProgram);
 
 		RASTERIZER_STATE_DESC rasterizerDesc;
-		rasterizerDesc.scissorEnable = false;
+		rasterizerDesc.scissorEnable = true;
 		rasterizerDesc.cullMode = cullMode;
 
 		HRasterizerState rasterizerState = RasterizerState::create(rasterizerDesc);
@@ -1361,7 +1361,7 @@ namespace BansheeEngine
 		newPass->setFragmentProgram(psProgram);
 
 		RASTERIZER_STATE_DESC rasterizerDesc;
-		rasterizerDesc.scissorEnable = false;
+		rasterizerDesc.scissorEnable = true;
 		rasterizerDesc.cullMode = cullMode;
 
 		HRasterizerState rasterizerState = RasterizerState::create(rasterizerDesc);

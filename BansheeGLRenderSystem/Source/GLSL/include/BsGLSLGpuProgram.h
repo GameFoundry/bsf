@@ -41,6 +41,11 @@ namespace BansheeEngine
 		 */
 		const UINT32 getProgramID() const { return mProgramID; }
 
+		/**
+		 * @copydoc	GpuProgram::createParameters
+		 */
+		GpuParamsPtr createParameters();
+
 	private:
 		friend class GLSLProgramFactory;
 

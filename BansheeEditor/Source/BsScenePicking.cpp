@@ -245,6 +245,14 @@ namespace BansheeEngine
 		RenderTexturePtr rtt = std::static_pointer_cast<RenderTexture>(rt);
 		TexturePtr outputTexture = rtt->getBindableColorTexture().getInternalPtr();
 
+		if (position.x < 0 || position.x >= (INT32)outputTexture->getWidth() || 
+			position.y < 0 || position.y >= (INT32)outputTexture->getHeight())
+		{
+			asyncOp._completeOperation(Vector<UINT32>());
+			return;
+		}
+
+		rs.beginFrame();
 		rs.setViewport(vp);
 		rs.clearRenderTarget(FBT_COLOR | FBT_DEPTH | FBT_STENCIL, Color::White);
 		rs.setScissorRect(position.x, position.y, position.x + area.x, position.y + area.y);
@@ -253,7 +261,6 @@ namespace BansheeEngine
 		bool activeMaterialIsAlpha = false;
 		CullingMode activeMaterialCull = (CullingMode)0;
 
-		rs.beginFrame();
 		for (auto& renderable : renderables)
 		{
 			if (activeMaterialIsAlpha != renderable.alpha || activeMaterialCull != renderable.cullMode)
@@ -298,12 +305,15 @@ namespace BansheeEngine
 
 		rs.readSubresource(outputTexture, 0, outputData, unused);
 
-		// TODO - Only search scissor rect
 		Map<UINT32, UINT32> selectionScores;
 		UINT32 numPixels = outputPixelData->getWidth() * outputPixelData->getHeight();
-		for (UINT32 y = 0; y < outputPixelData->getHeight(); y++)
+
+		UINT32 maxWidth = std::min((UINT32)(position.x + area.x), outputPixelData->getWidth());
+		UINT32 maxHeight = std::min((UINT32)(position.y + area.y), outputPixelData->getHeight());
+
+		for (UINT32 y = (UINT32)position.y; y < maxHeight; y++)
 		{
-			for (UINT32 x = 0; x < outputPixelData->getWidth(); x++)
+			for (UINT32 x = (UINT32)position.x; x < maxWidth; x++)
 			{
 				Color color = outputPixelData->getColorAt(x, y);
 				UINT32 index = decodeIndex(color);

@@ -7,6 +7,7 @@
 #include "BsHardwareBufferManager.h"
 #include "BsGLSLGpuProgramRTTI.h"
 #include "BsRenderStats.h"
+#include "BsGpuParams.h"
 
 namespace BansheeEngine 
 {
@@ -216,6 +217,13 @@ namespace BansheeEngine
 		static const String language = "glsl";
 
 		return language;
+	}
+
+	GpuParamsPtr GLSLGpuProgram::createParameters()
+	{
+		GpuParamsPtr params = bs_shared_ptr<GpuParams, PoolAlloc>(std::ref(mParametersDesc), true);
+
+		return params;
 	}
 
 	/************************************************************************/

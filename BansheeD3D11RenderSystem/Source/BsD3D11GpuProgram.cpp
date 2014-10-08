@@ -17,7 +17,7 @@ namespace BansheeEngine
 	D3D11GpuProgram::D3D11GpuProgram(const String& source, const String& entryPoint, GpuProgramType gptype, 
 		GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool isAdjacencyInfoRequired)
 		: GpuProgram(source, entryPoint, gptype, profile, includes, isAdjacencyInfoRequired),
-		mColumnMajorMatrices(true), mEnableBackwardsCompatibility(false), mProgramId(0)
+		mColumnMajorMatrices(false), mEnableBackwardsCompatibility(false), mProgramId(0)
 	{
 
 	}

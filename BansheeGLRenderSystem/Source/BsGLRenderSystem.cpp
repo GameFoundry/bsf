@@ -317,6 +317,8 @@ namespace BansheeEngine
 			const UINT8* ptrData = uniformBufferData + paramDesc.cpuMemOffset * sizeof(UINT32);
 			hasBoundAtLeastOne = true;
 
+			// Note: We don't transpose matrices here even though we don't use column major format
+			// because they are assumed to be pre-transposed in the GpuParams buffer
 			switch(paramDesc.type)
 			{
 			case GPDT_FLOAT1:
@@ -336,15 +338,15 @@ namespace BansheeEngine
 					GL_FALSE, (GLfloat*)ptrData);
 				break;
 			case GPDT_MATRIX_2X3:
-				glProgramUniformMatrix2x3fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
+				glProgramUniformMatrix3x2fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
 					GL_FALSE, (GLfloat*)ptrData);
 				break;
 			case GPDT_MATRIX_2X4:
-				glProgramUniformMatrix2x4fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
+				glProgramUniformMatrix4x2fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
 					GL_FALSE, (GLfloat*)ptrData);
 				break;
 			case GPDT_MATRIX_3X2:
-				glProgramUniformMatrix3x2fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
+				glProgramUniformMatrix2x3fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
 					GL_FALSE, (GLfloat*)ptrData);
 				break;
 			case GPDT_MATRIX_3X3:
@@ -352,15 +354,15 @@ namespace BansheeEngine
 					GL_FALSE, (GLfloat*)ptrData);
 				break;
 			case GPDT_MATRIX_3X4:
-				glProgramUniformMatrix3x4fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
+				glProgramUniformMatrix4x3fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
 					GL_FALSE, (GLfloat*)ptrData);
 				break;
 			case GPDT_MATRIX_4X2:
-				glProgramUniformMatrix4x2fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
+				glProgramUniformMatrix2x4fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
 					GL_FALSE, (GLfloat*)ptrData);
 				break;
 			case GPDT_MATRIX_4X3:
-				glProgramUniformMatrix4x3fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
+				glProgramUniformMatrix3x4fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
 					GL_FALSE, (GLfloat*)ptrData);
 				break;
 			case GPDT_MATRIX_4X4:

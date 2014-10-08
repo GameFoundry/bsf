@@ -9,7 +9,6 @@ TESTING:
 Ensure all 3 render systems compile and run
  - Test selection on all 3 render systems
  - RE-ENABLE SCISSOR TEST FOR PICKING SHADERS!!
- - FIX SHUTDOWN AS IT BREAKS BECAUSE OF Selection (and potentially others)
  - Picking need to test something with alpha
  - Ensure that selecting an item in scene properly marks it in scene view
  - Ensure that selecting an item in scene or resource tree view properly updates Selection
