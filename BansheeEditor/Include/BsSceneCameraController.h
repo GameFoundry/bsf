@@ -28,8 +28,6 @@ namespace BansheeEngine
 		Degree mYaw;
 		bool mLastButtonState;
 
-		HCamera mCamera;
-
 		VirtualButton mMoveForward;
 		VirtualButton mMoveLeft;
 		VirtualButton mMoveRight;

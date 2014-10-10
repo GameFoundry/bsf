@@ -11,6 +11,9 @@
 #include "BsResourceImporter.h"
 #include "BsEditorWidgetLayout.h"
 #include "BsSceneEditorWidget.h"
+#include "BsScenePicking.h"
+#include "BsSelection.h"
+#include "BsGizmoManager.h"
 
 // DEBUG ONLY
 #include "DbgEditorWidget1.h"
@@ -37,8 +40,6 @@
 #include "BsGUILayout.h"
 #include "BsEvent.h"
 #include "BsRenderer.h"
-#include "BsScenePicking.h"
-#include "BsSelection.h"
 
 namespace BansheeEngine
 {
@@ -84,10 +85,12 @@ namespace BansheeEngine
 
 		ScenePicking::startUp();
 		Selection::startUp();
+		GizmoManager::startUp();
 	}
 
 	EditorApplication::~EditorApplication()
 	{
+		GizmoManager::shutDown();
 		Selection::shutDown();
 		ScenePicking::shutDown();
 
@@ -372,6 +375,7 @@ namespace BansheeEngine
 
 		ProjectLibrary::instance().update();
 		EditorWindowManager::instance().update();	
+		GizmoManager::instance().update();
 	}
 
 	bool EditorApplication::isProjectLoaded() const

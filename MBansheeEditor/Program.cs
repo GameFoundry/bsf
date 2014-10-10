@@ -19,6 +19,9 @@ namespace BansheeEditor
 
             window.SetObjectToInspect(newDbgObject);
 
+            SceneObject gizmoDbgObject = new SceneObject("GizmoDebug");
+            gizmoDbgObject.AddComponent<DbgGizmoComponent>();
+
             DbgResource testResource = new DbgResource();
             //ProjectLibrary.Create(testResource, @"D:\DummyBansheeProject\Resources\testResource");
 

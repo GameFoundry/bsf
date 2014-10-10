@@ -9,38 +9,23 @@ Optimization notes:
 
 A lot of stuff is still using GSyncedMainCA but it should be using gMainCA - Find and replace
 
-I still re-create GUIWidget mesh every frame instead of just updating it.
-
 I call waitUntilLoaded too many times. Sometimes 5-6 times in a single function. Each of those calls will be extremely slow.
-GUIWidget::updateMeshes leaks. If I leave the game running I can see memory continously going up
- - BansheeApplication should probably derive from Camlelot application. Right now user needs to know the difference between 
-   gApplication and gBansheeApp, which is non-intuitive (e.g. retrieving a window can be done on gApplication, but running main loop can happen on both
 
-IMMEDIATE:
- - Update debug camera so it uses callbacks
- 
+GUIWidget::updateMeshes leaks. If I leave the game running I can see memory continously going up
+
  - I have disabled linear filtering because it doesn't look good on scale9grid textures. (Add another material so it works with stretched textures?)
- - Enable alpha test so I don't render completely transparent pixels.
  - What happens when I don't set a texture for a state of a GUI element. Use a dummy white texture probably?
     - Make sure GUI system uses a dummy texture if one isn't available
 	- SpriteTexture keeps a static reference to DUmmyTexture which I need to release before shutdown
 
 - Hover colors of the scroll bar are wrong
 
-TextBox needed elements:
- - Get DebugCamera to ignore input if GUI has already processed it
-
  - LATER
   - TAB between input elements
   - Remove updateText calls from updateRenderElementsInternal and instead call it whenever offsets change
   - I might consider not rendering caret from within input sprite to avoid redrawing it while, and draw it directly from GUIManager
 
------------
-
 Maybe determine mesh front faces based on normals?
-
-Immediate TODO:
- - A way to update mesh buffers without recreating vertex/index buffers (Setting data currently does exactly that)
 
 ----------------------------------------------------------------------------------------------
 Other:
@@ -66,8 +51,6 @@ Medium priority:
 Low priority TODO
  - Remove template from RTTIType and move it to IReflectable? This way i can hopefully move GetRTTITypeStatic and GetRTTIType to IReflectable so I don't
    need to manually implement those for every method.
- - Viewport needs to be updated when I call RenderTarget::setFullscreen/finishSwitchingFullscreen/updateWindowRect/windowMovedOrResized. Currently it's not
- - CPU reading or writing to a render texture in OpenGL is not supported. (CmGLHardwarePixelBuffer::upload/download). 
  - When saving a resource, make sure resource is properly loaded before saving
    - Add doc to Resources::save that says it will block until render thread updates the resource
    - Add documentation that tells the user that reading a resource non-async will block the thread and execute all queued render commands first
@@ -99,13 +82,10 @@ Low priority TODO
  - I don't have a way to set Texture filtering or wrap modes, default ones are always set on initialization
 ----------------------------------------------------------------------------------------------
 Optional:
- - Need better handling for shader techniques. Some Materials are able to run on all renderers yet I can only specify one. This is problematic
-    for Materials for things like text and sprites, which should run on all renderers, even if user adds a new one
  - Add precompiled headers to all projects
  - Serializable callbacks can't be null otherwise compiler complains
  - FBX importer can be greatly sped up by implementing a better allocator
  - Extend texture copy so it accepts different subregions & subresources (currently only entire resource can be copied)
- - Need a way to convert MSAA render texture into a normal render texture
  - Vertex buffer start offset is not supported when calling Draw methods
  - When rendering Scale9Grid GUI elements the stretched center will cause linear interpolation to kick in and blend the edges with the border parts of the texture.
   - I should use point filtering for scale9grid, but that doesn't work in general case for stretched textures as they would look bad

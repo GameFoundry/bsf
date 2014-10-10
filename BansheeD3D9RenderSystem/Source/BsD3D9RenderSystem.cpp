@@ -435,7 +435,7 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		if(!tex->isBindableAsShaderResource())
+		if (tex != nullptr && !tex->isBindableAsShaderResource())
 			BS_EXCEPT(InvalidParametersException, "Texture you have specified cannot be bound to a shader.");
 
 		if(gptype != GPT_FRAGMENT_PROGRAM && gptype != GPT_VERTEX_PROGRAM)

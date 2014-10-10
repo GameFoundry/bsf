@@ -1,21 +1,19 @@
 
-TODO:
- - Core thread gets stuck on shutdown when OpenGL is used...Somewhere in kernel
-
  GIZMO TODO:
   - Figure out how to deal with builtin components like Camera and Renderable (e.g. how will they have gizmos since they're not managed components?)
+    - Make those two a non-component types. Anywhere they are used in the Renderer they should just be passed as pointers.
+	- Then make a Component wrapper around the non-component types, and also a C# wrapper around the same types
 
 TESTING:
 Ensure all 3 render systems compile and run
  - Test selection on all 3 render systems
- - RE-ENABLE SCISSOR TEST FOR PICKING SHADERS!!
  - Picking need to test something with alpha
  - Ensure that selecting an item in scene properly marks it in scene view
  - Ensure that selecting an item in scene or resource tree view properly updates Selection
 
 Test gizmos
  - START UP GIZMO MANAGER SOMEWHERE
- - Test rendering of basic 2D and 3D gizmos
+ - Test rendering of basic wire and solid gizmos
  - Test rendering of icon gizmos
  - Test them all from C#
  - HOOK UP GIZMO SELECTION and test it
@@ -29,6 +27,8 @@ IMPLEMENT SELECTION RENDERING
 
 IMPROVE SceneGrid LOOK AND ENSURE IT RENDERS FINE ON ALL APIS
  - LIKELY USE PIXEL SceneGrid WITH AA
+
+Need a way to drag and drop items from Scene tree view to Scene view
 
 LATER:
  - Need a way to render text for gizmos and handles, and in scene in general

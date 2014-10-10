@@ -39,6 +39,8 @@ namespace BansheeEngine
 	SceneEditorWidget::SceneEditorWidget(const ConstructPrivately& dummy, EditorWidgetContainer& parentContainer)
 		:EditorWidget<SceneEditorWidget>(HString(L"SceneEditorWidget"), parentContainer), mGUIRenderTexture(nullptr)
 	{
+		SceneViewLocator::_provide(this);
+
 		updateRenderTexture(getWidth(), getHeight());
 
 		mRenderCallback = RendererManager::instance().getActive()->onRenderViewport.connect(std::bind(&SceneEditorWidget::render, this, _1, _2));
@@ -58,10 +60,19 @@ namespace BansheeEngine
 		mOnPointerMovedConn.disconnect();
 		mOnPointerPressedConn.disconnect();
 		mOnPointerReleasedConn.disconnect();
+
+		SceneViewLocator::_provide(nullptr);
 	}
 
 	void SceneEditorWidget::_update()
 	{
+		if (mCameraController)
+		{
+			mCameraController->update();
+
+			LOGWRN(toString(mCameraController->sceneObject()->getWorldPosition()));
+		}
+
 		//// DEBUG ONLY
 		//if (gTime().getCurrentFrameNumber() == 100)
 		//{
@@ -188,7 +199,7 @@ namespace BansheeEngine
 			mCamera->setNearClipDistance(0.005f);
 			mCamera->setFarClipDistance(1000.0f);
 
-			sceneCameraSO->addComponent<SceneCameraController>();
+			mCameraController = sceneCameraSO->addComponent<SceneCameraController>();
 
 			GUILayout& layout = mContent->getLayout();
 

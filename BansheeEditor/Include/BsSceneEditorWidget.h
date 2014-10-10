@@ -2,6 +2,7 @@
 
 #include "BsEditorPrerequisites.h"
 #include "BsEditorWidget.h"
+#include "BsServiceLocator.h"
 
 namespace BansheeEngine
 {
@@ -17,6 +18,8 @@ namespace BansheeEngine
 		static SceneEditorWidget* open();
 		static void close();
 		static const String& getTypeName();
+
+		const HCamera& getSceneCamera() const { return mCamera; }
 
 	protected:
 		void doOnResized(UINT32 width, UINT32 height);
@@ -49,6 +52,7 @@ namespace BansheeEngine
 		RenderTexturePtr mSceneRenderTarget;
 		GUIRenderTexture* mGUIRenderTexture;
 		HCamera mCamera;
+		GameObjectHandle<SceneCameraController> mCameraController;
 		SceneGrid* mSceneGrid;
 
 		HEvent mRenderCallback;
@@ -56,4 +60,6 @@ namespace BansheeEngine
 		HEvent mOnPointerPressedConn;
 		HEvent mOnPointerReleasedConn;
 	};
+
+	typedef ServiceLocator<SceneEditorWidget> SceneViewLocator;
 }

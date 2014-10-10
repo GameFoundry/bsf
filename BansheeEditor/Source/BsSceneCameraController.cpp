@@ -9,6 +9,8 @@
 #include "BsEditorApplication.h"
 #include "BsCursor.h"
 
+#include "BsDebug.h"
+
 namespace BansheeEngine
 {
 	const String SceneCameraController::MOVE_FORWARD_BTN = "SceneForward";

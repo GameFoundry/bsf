@@ -399,7 +399,7 @@ namespace BansheeEngine
 			Vector3(-1, 0, 0)
 		};
 
-		outNormals += (vertexOffset + vertexStride);
+		outNormals += (vertexOffset * vertexStride);
 		for (UINT32 face = 0; face < 6; face++)
 		{
 			outNormals = writeVector3(outNormals, vertexStride, faceNormals[face]);
@@ -417,8 +417,8 @@ namespace BansheeEngine
 			indices[face * 6 + 1] = faceVertOffset + 1;
 			indices[face * 6 + 2] = faceVertOffset + 2;
 			indices[face * 6 + 3] = faceVertOffset + 2;
-			indices[face * 6 + 3] = faceVertOffset + 3;
-			indices[face * 6 + 3] = faceVertOffset + 0;
+			indices[face * 6 + 4] = faceVertOffset + 3;
+			indices[face * 6 + 5] = faceVertOffset + 0;
 		}
 	}
 
@@ -656,7 +656,7 @@ namespace BansheeEngine
 
 		Vector3 normal = area.getAxisHorz().cross(area.getAxisVert());
 
-		outNormals += (vertexOffset + vertexStride);
+		outNormals += (vertexOffset * vertexStride);
 		outNormals = writeVector3(outNormals, vertexStride, normal);
 		outNormals = writeVector3(outNormals, vertexStride, normal);
 		outNormals = writeVector3(outNormals, vertexStride, normal);

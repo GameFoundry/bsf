@@ -41,6 +41,8 @@
   <ItemGroup>
     <Compile Include="DbgCustomInspector.cs" />
     <Compile Include="DbgEditorWindow.cs" />
+    <Compile Include="DbgGizmo.cs" />
+    <Compile Include="DbgGizmoComponent.cs" />
     <Compile Include="DbgResource.cs" />
     <Compile Include="DebugCameraHandle.cs" />
     <Compile Include="Debug_Component1.cs" />

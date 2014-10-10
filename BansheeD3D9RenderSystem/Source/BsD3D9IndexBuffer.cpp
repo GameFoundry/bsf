@@ -269,7 +269,10 @@ namespace BansheeEngine
 		assert(bufferResources != nullptr);
 		assert(bufferResources->mBuffer != nullptr);
 		assert(bufferResources->mOutOfDate);
-			
+		
+		if (bufferResources->mLockLength == 0)
+			return true;
+
 		void* dstBytes;
 		HRESULT hr;
 	

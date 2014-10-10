@@ -15,6 +15,8 @@ namespace BansheeEngine
 		: mTotalRequiredSolidVertices(0), mTotalRequiredSolidIndices(0), 
 		mTotalRequiredWireVertices(0), mTotalRequiredWireIndices(0)
 	{
+		mTransform = Matrix4::IDENTITY;
+
 		mSolidVertexDesc = bs_shared_ptr<VertexDataDesc>();
 		mSolidVertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
 		mSolidVertexDesc->addVertElem(VET_FLOAT3, VES_NORMAL);

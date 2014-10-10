@@ -34,7 +34,7 @@ namespace BansheeEditor
                 HandleDrawing.SetColor(Color.white);
             else
                 HandleDrawing.SetColor(Color.green);
-            
+
             HandleDrawing.DrawLine(target.sceneObject.position, end);
         }
     }

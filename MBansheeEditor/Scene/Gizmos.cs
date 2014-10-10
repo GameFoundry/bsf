@@ -5,52 +5,52 @@ namespace BansheeEditor
 {
     public class Gizmos
     {
-        private Color _color;
-        private Matrix4 _transform;
+        private static Color _color;
+        private static Matrix4 _transform;
 
-        public Color color
+        public static Color color
         {
             get { return _color; }
             set { _color = value; Internal_SetColor(_color); }
         }
 
-        public Matrix4 transform
+        public static Matrix4 transform
         {
             get { return _transform; }
             set { _transform = value; Internal_SetTransform(_transform); }
         }
 
-        public void DrawCube(Vector3 position, Vector3 extents)
+        public static void DrawCube(Vector3 position, Vector3 extents)
         {
             Internal_DrawCube(position, extents);
         }
 
-        public void DrawSphere(Vector3 position, float radius)
+        public static void DrawSphere(Vector3 position, float radius)
         {
             Internal_DrawSphere(position, radius);
         }
 
-        public void DrawWireCube(Vector3 position, Vector3 extents)
+        public static void DrawWireCube(Vector3 position, Vector3 extents)
         {
             Internal_DrawWireCube(position, extents);
         }
 
-        public void DrawWireSphere(Vector3 position, float radius)
+        public static void DrawWireSphere(Vector3 position, float radius)
         {
             Internal_DrawWireSphere(position, radius);
         }
 
-        public void DrawLine(Vector3 start, Vector3 end)
+        public static void DrawLine(Vector3 start, Vector3 end)
         {
             Internal_DrawLine(start, end);
         }
 
-        public void DrawFrustum(Vector3 position, float aspect, Degree FOV, float near, float far)
+        public static void DrawFrustum(Vector3 position, float aspect, Degree FOV, float near, float far)
         {
             Internal_DrawFrustum(position, aspect, FOV, near, far);
         }
 
-        public void DrawIcon(Vector3 position, SpriteTexture image, bool fixedScale)
+        public static void DrawIcon(Vector3 position, SpriteTexture image, bool fixedScale)
         {
             Internal_DrawIcon(position, image, fixedScale);
         }

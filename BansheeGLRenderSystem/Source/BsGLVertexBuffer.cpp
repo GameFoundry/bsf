@@ -8,7 +8,7 @@ namespace BansheeEngine
 {
     GLVertexBuffer::GLVertexBuffer(UINT32 vertexSize, 
         UINT32 numVertices, GpuBufferUsage usage)
-        : VertexBuffer(vertexSize, numVertices, usage, false)
+		: VertexBuffer(vertexSize, numVertices, usage, false), mZeroLocked(false)
     {
     }
 
@@ -97,12 +97,21 @@ namespace BansheeEngine
 		else
 			access = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT;
 
-		void* buffer = glMapBufferRange(GL_ARRAY_BUFFER, offset, length, access);
+		void* buffer = nullptr;
 
-		if(buffer == nullptr)
+		if (length > 0)
 		{
-			BS_EXCEPT(InternalErrorException, "Cannot map vertex buffer.");
+			buffer = glMapBufferRange(GL_ARRAY_BUFFER, offset, length, access);
+
+			if (buffer == nullptr)
+			{
+				BS_EXCEPT(InternalErrorException, "Cannot map vertex buffer.");
+			}
+
+			mZeroLocked = false;
 		}
+		else
+			mZeroLocked = true;
 
 		void* retPtr = static_cast<void*>(static_cast<unsigned char*>(buffer));
 
@@ -110,13 +119,16 @@ namespace BansheeEngine
 		return retPtr;
     }
 
-	void GLVertexBuffer::unlockImpl(void)
+	void GLVertexBuffer::unlockImpl()
     {
 		glBindBuffer(GL_ARRAY_BUFFER, mBufferId);
 
-		if(!glUnmapBuffer(GL_ARRAY_BUFFER))
+		if (!mZeroLocked)
 		{
-			BS_EXCEPT(InternalErrorException, "Buffer data corrupted, please reload.");
+			if (!glUnmapBuffer(GL_ARRAY_BUFFER))
+			{
+				BS_EXCEPT(InternalErrorException, "Buffer data corrupted, please reload.");
+			}
 		}
 
         mIsLocked = false;

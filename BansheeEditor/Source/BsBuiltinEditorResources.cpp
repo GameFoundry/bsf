@@ -242,6 +242,8 @@ namespace BansheeEngine
 		initWireGizmoShader();
 		initSolidGizmoShader();
 		initIconGizmoShader();
+		initGizmoPickingShader();
+		initGizmoPickingAlphaShader();
 
 		Path fontPath = FileSystem::getWorkingDirectoryPath();
 		fontPath.append(DefaultSkinFolder);

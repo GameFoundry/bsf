@@ -16,6 +16,7 @@
 #include "BsTransientMesh.h"
 #include "BsRendererManager.h"
 #include "BsDrawHelper.h"
+#include "BsSceneEditorWidget.h"
 
 using namespace std::placeholders;
 
@@ -28,13 +29,10 @@ namespace BansheeEngine
 	const float GizmoManager::MAX_ICON_RANGE = 500.0f;
 	const UINT32 GizmoManager::OPTIMAL_ICON_SIZE = 64;
 	const float GizmoManager::ICON_TEXEL_WORLD_SIZE = 0.05f;
-	const float GizmoManager::PICKING_ALPHA_CUTOFF = 0.5f;
 
-	GizmoManager::GizmoManager(const HCamera& camera)
-		:mCamera(camera), mPickable(false), mDrawHelper(nullptr), mPickingDrawHelper(nullptr)
+	GizmoManager::GizmoManager()
+		:mPickable(false), mDrawHelper(nullptr), mPickingDrawHelper(nullptr), mCore(nullptr)
 	{
-		mSceneRenderTarget = mCamera->getViewport()->getTarget();
-
 		mDrawHelper = bs_new<DrawHelper>();
 		mPickingDrawHelper = bs_new<DrawHelper>();
 
@@ -46,19 +44,23 @@ namespace BansheeEngine
 
 		mIconMeshHeap = MeshHeap::create(VERTEX_BUFFER_GROWTH, INDEX_BUFFER_GROWTH, mIconVertexDesc);
 
-		mSolidMaterial.material = BuiltinEditorResources::instance().createSolidGizmoMat();
-		mWireMaterial.material = BuiltinEditorResources::instance().createWireGizmoMat();
-		mIconMaterial.material = BuiltinEditorResources::instance().createIconGizmoMat();
-		mPickingMaterial.material = BuiltinEditorResources::instance().createGizmoPickingMat();
-		mAlphaPickingMaterial.material = BuiltinEditorResources::instance().createAlphaGizmoPickingMat();
+		HMaterial solidMaterial = BuiltinEditorResources::instance().createSolidGizmoMat();
+		HMaterial wireMaterial = BuiltinEditorResources::instance().createWireGizmoMat();
+		HMaterial iconMaterial = BuiltinEditorResources::instance().createIconGizmoMat();
+		HMaterial pickingMaterial = BuiltinEditorResources::instance().createGizmoPickingMat();
+		HMaterial alphaPickingMaterial = BuiltinEditorResources::instance().createAlphaGizmoPickingMat();
 
-		mSolidMaterial.proxy = mSolidMaterial.material->_createProxy();
-		mWireMaterial.proxy = mWireMaterial.material->_createProxy();
-		mIconMaterial.proxy = mIconMaterial.material->_createProxy();
-		mPickingMaterial.proxy = mPickingMaterial.material->_createProxy();
-		mAlphaPickingMaterial.proxy = mAlphaPickingMaterial.material->_createProxy();
+		CoreInitData initData;
 
-		gCoreAccessor().queueCommand(std::bind(&GizmoManager::initializeCore, this));
+		initData.solidMatProxy = solidMaterial->_createProxy();
+		initData.wireMatProxy = wireMaterial->_createProxy();
+		initData.iconMatProxy = iconMaterial->_createProxy();
+		initData.pickingMatProxy = pickingMaterial->_createProxy();
+		initData.alphaPickingMatProxy = alphaPickingMaterial->_createProxy();
+
+		mCore = bs_new<GizmoManagerCore>(GizmoManagerCore::PrivatelyConstuct());
+
+		gCoreAccessor().queueCommand(std::bind(&GizmoManager::initializeCore, this, initData));
 	}
 
 	GizmoManager::~GizmoManager()
@@ -74,62 +76,18 @@ namespace BansheeEngine
 
 		bs_delete(mDrawHelper);
 		bs_delete(mPickingDrawHelper);
+
+		gCoreAccessor().queueCommand(std::bind(&GizmoManager::destroyCore, this, mCore));
 	}
 
-	void GizmoManager::initializeCore()
+	void GizmoManager::initializeCore(const CoreInitData& initData)
 	{
-		THROW_IF_NOT_CORE_THREAD;
+		mCore->initialize(initData);
+	}
 
-		// TODO - Make a better interface when dealing with parameters through proxies?
-		{
-			MaterialProxyPtr proxy = mWireMaterial.proxy;
-			GpuParamsPtr vertParams = proxy->params[proxy->passes[0].vertexProgParamsIdx];
-
-			vertParams->getParam("matViewProj", mWireMaterial.mViewProj);
-		}
-
-		{
-			MaterialProxyPtr proxy = mSolidMaterial.proxy;
-			GpuParamsPtr vertParams = proxy->params[proxy->passes[0].vertexProgParamsIdx];
-
-			vertParams->getParam("matViewProj", mSolidMaterial.mViewProj);
-			vertParams->getParam("matViewIT", mSolidMaterial.mViewIT);
-		}
-
-		{
-			MaterialProxyPtr proxy = mIconMaterial.proxy;
-			GpuParamsPtr vertParams = proxy->params[proxy->passes[0].vertexProgParamsIdx];
-
-			vertParams->getParam("matViewProj", mIconMaterial.mViewProj);
-
-			mIconMaterial.mFragParams = proxy->params[proxy->passes[0].fragmentProgParamsIdx];
-
-			mIconMaterial.mFragParams->getTextureParam("mainTexture", mIconMaterial.mTexture);
-		}
-
-		{
-			MaterialProxyPtr proxy = mPickingMaterial.proxy;
-			GpuParamsPtr vertParams = proxy->params[proxy->passes[0].vertexProgParamsIdx];
-
-			vertParams->getParam("matViewProj", mPickingMaterial.mViewProj);
-		}
-
-		{
-			MaterialProxyPtr proxy = mAlphaPickingMaterial.proxy;
-			GpuParamsPtr vertParams = proxy->params[proxy->passes[0].vertexProgParamsIdx];
-
-			vertParams->getParam("matViewProj", mAlphaPickingMaterial.mViewProj);
-
-			mAlphaPickingMaterial.mFragParams = proxy->params[proxy->passes[0].fragmentProgParamsIdx];
-			mAlphaPickingMaterial.mFragParams->getTextureParam("mainTexture", mAlphaPickingMaterial.mTexture);
-
-			GpuParamFloat alphaCutoffParam;
-			mAlphaPickingMaterial.mFragParams->getParam("alphaCutoff", alphaCutoffParam);
-			alphaCutoffParam.set(PICKING_ALPHA_CUTOFF);
-		}
-
-		RendererPtr activeRenderer = RendererManager::instance().getActive();
-		activeRenderer->onCorePostRenderViewport.connect(std::bind(&GizmoManager::coreRender, this, _1));
+	void GizmoManager::destroyCore(GizmoManagerCore* core)
+	{
+		bs_delete(core);
 	}
 
 	void GizmoManager::startGizmo(const HSceneObject& gizmoParent)
@@ -270,22 +228,40 @@ namespace BansheeEngine
 		if (mIconMesh != nullptr)
 			mIconMeshHeap->dealloc(mIconMesh);
 
-		IconRenderDataVecPtr iconRenderData;
+		HCamera sceneCamera;
+		RenderTargetPtr rt;
+		SceneEditorWidget* sceneView = SceneViewLocator::instance();
+		if (sceneView != nullptr)
+		{
+			sceneCamera = sceneView->getSceneCamera();
+			rt = sceneCamera->getViewport()->getTarget();
 
-		mSolidMesh = mDrawHelper->buildSolidMesh();
-		mWireMesh = mDrawHelper->buildWireMesh();
-		mIconMesh = buildIconMesh(mIconData, false, iconRenderData);
+			IconRenderDataVecPtr iconRenderData;
 
-		MeshProxyPtr solidMeshProxy = mSolidMesh->_createProxy(0);
-		MeshProxyPtr wireMeshProxy = mWireMesh->_createProxy(0);
-		MeshProxyPtr iconMeshProxy = mIconMesh->_createProxy(0);
+			mSolidMesh = mDrawHelper->buildSolidMesh();
+			mWireMesh = mDrawHelper->buildWireMesh();
+			mIconMesh = buildIconMesh(sceneCamera, mIconData, false, iconRenderData);
 
-		gCoreAccessor().queueCommand(std::bind(&GizmoManager::coreUpdateData, this, solidMeshProxy, wireMeshProxy, iconMeshProxy, iconRenderData));
+			MeshProxyPtr solidMeshProxy = mSolidMesh->_createProxy(0);
+			MeshProxyPtr wireMeshProxy = mWireMesh->_createProxy(0);
+			MeshProxyPtr iconMeshProxy = mIconMesh->_createProxy(0);
+
+			gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::updateData, mCore, rt, solidMeshProxy, wireMeshProxy, iconMeshProxy, iconRenderData));
+		}
+		else
+		{
+			mSolidMesh = nullptr;
+			mWireMesh = nullptr;
+			mIconMesh = nullptr;
+
+			IconRenderDataVecPtr iconRenderData = bs_shared_ptr<IconRenderDataVec>();
+			gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::updateData, mCore, nullptr, nullptr, nullptr, nullptr, iconRenderData));
+		}
 
 		clearGizmos();
 	}
 
-	void GizmoManager::renderForPicking(std::function<Color(UINT32)> idxToColorCallback)
+	void GizmoManager::renderForPicking(const HCamera& camera, std::function<Color(UINT32)> idxToColorCallback)
 	{
 		Vector<IconData> iconData;
 		IconRenderDataVecPtr iconRenderData;
@@ -371,23 +347,23 @@ namespace BansheeEngine
 
 		TransientMeshPtr solidMesh = mPickingDrawHelper->buildSolidMesh();
 		TransientMeshPtr wireMesh = mPickingDrawHelper->buildWireMesh();
-		TransientMeshPtr iconMesh = buildIconMesh(iconData, true, iconRenderData);
+		TransientMeshPtr iconMesh = buildIconMesh(camera, iconData, true, iconRenderData);
 
 		// Note: This must be rendered while Scene view is being rendered
-		Matrix4 viewMat = mCamera->getViewMatrix();
-		Matrix4 projMat = mCamera->getProjectionMatrix();
-		ViewportPtr viewport = mCamera->getViewport();
+		Matrix4 viewMat = camera->getViewMatrix();
+		Matrix4 projMat = camera->getProjectionMatrix();
+		ViewportPtr viewport = camera->getViewport();
 
-		gCoreAccessor().queueCommand(std::bind(&GizmoManager::coreRenderGizmosForPicking,
-			this, viewMat, projMat, solidMesh->_createProxy(0)));
+		gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::renderGizmosForPicking,
+			mCore, viewMat, projMat, solidMesh->_createProxy(0)));
 
-		gCoreAccessor().queueCommand(std::bind(&GizmoManager::coreRenderGizmosForPicking,
-			this, viewMat, projMat, wireMesh->_createProxy(0)));
+		gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::renderGizmosForPicking,
+			mCore, viewMat, projMat, wireMesh->_createProxy(0)));
 
-		Rect2I screenArea = mCamera->getViewport()->getArea();
+		Rect2I screenArea = camera->getViewport()->getArea();
 
-		gCoreAccessor().queueCommand(std::bind(&GizmoManager::coreRenderIconGizmosForPicking,
-			this, screenArea, iconMesh->_createProxy(0), iconRenderData));
+		gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::renderIconGizmosForPicking,
+			mCore, screenArea, iconMesh->_createProxy(0), iconRenderData));
 
 		mPickingDrawHelper->releaseSolidMesh(solidMesh);
 		mPickingDrawHelper->releaseWireMesh(wireMesh);
@@ -407,7 +383,8 @@ namespace BansheeEngine
 		mDrawHelper->clear();
 	}
 
-	TransientMeshPtr GizmoManager::buildIconMesh(const Vector<IconData>& iconData, bool pickingOnly, GizmoManager::IconRenderDataVecPtr& iconRenderData)
+	TransientMeshPtr GizmoManager::buildIconMesh(const HCamera& camera, const Vector<IconData>& iconData, 
+		bool pickingOnly, GizmoManager::IconRenderDataVecPtr& iconRenderData)
 	{
 		mSortedIconData.clear();
 		
@@ -417,10 +394,10 @@ namespace BansheeEngine
 		UINT32 i = 0;
 		for (auto& iconData : mIconData)
 		{
-			Vector3 viewPoint = mCamera->worldToViewPoint(iconData.position);
+			Vector3 viewPoint = camera->worldToViewPoint(iconData.position);
 
 			float distance = -viewPoint.z;
-			if (distance < mCamera->getNearClipDistance()) // Ignore behind clip plane
+			if (distance < camera->getNearClipDistance()) // Ignore behind clip plane
 				continue;
 
 			if (distance > MAX_ICON_RANGE) // Ignore too far away
@@ -435,7 +412,7 @@ namespace BansheeEngine
 			SortedIconData& sortedIconData = mSortedIconData[i];
 			sortedIconData.iconIdx = i;
 			sortedIconData.distance = distance;
-			sortedIconData.screenPosition = mCamera->viewToScreenPoint(viewPoint);
+			sortedIconData.screenPosition = camera->viewToScreenPoint(viewPoint);
 
 			i++;
 		}
@@ -470,12 +447,12 @@ namespace BansheeEngine
 		UINT32* indices = meshData->getIndices32();
 
 		float cameraScale = 1.0f;
-		if (mCamera->getProjectionType() == PT_ORTHOGRAPHIC)
-			cameraScale = mCamera->getViewport()->getHeight() / mCamera->getOrthoWindowHeight();
+		if (camera->getProjectionType() == PT_ORTHOGRAPHIC)
+			cameraScale = camera->getViewport()->getHeight() / camera->getOrthoWindowHeight();
 		else
 		{
-			Radian vertFOV(Math::tan(mCamera->getHorzFOV() * 0.5f));
-			cameraScale = (mCamera->getViewport()->getHeight() * 0.5f) / vertFOV.valueRadians();
+			Radian vertFOV(Math::tan(camera->getHorzFOV() * 0.5f));
+			cameraScale = (camera->getViewport()->getHeight() * 0.5f) / vertFOV.valueRadians();
 		}
 
 		iconRenderData = bs_shared_ptr<IconRenderDataVec>();
@@ -510,7 +487,7 @@ namespace BansheeEngine
 			limitIconSize(iconWidth, iconHeight);
 
 			Color normalColor, fadedColor;
-			calculateIconColors(curIconData.color, *mCamera.get(), iconHeight, curIconData.fixedScale, normalColor, fadedColor);
+			calculateIconColors(curIconData.color, *camera.get(), iconHeight, curIconData.fixedScale, normalColor, fadedColor);
 
 			Vector3 position((float)sortedIconData.screenPosition.x, (float)sortedIconData.screenPosition.y, sortedIconData.distance);
 			// TODO - Does the depth need to be corrected since it was taken from a projective camera (probably)?
@@ -521,7 +498,7 @@ namespace BansheeEngine
 			if (!curIconData.fixedScale)
 			{
 				float iconScale = 1.0f;
-				if (mCamera->getProjectionType() == PT_ORTHOGRAPHIC)
+				if (camera->getProjectionType() == PT_ORTHOGRAPHIC)
 					iconScale = cameraScale;
 				else
 					iconScale = cameraScale / sortedIconData.distance;
@@ -604,16 +581,85 @@ namespace BansheeEngine
 		fadedColor.a *= 0.2f;
 	}
 
-	void GizmoManager::coreUpdateData(const MeshProxyPtr& solidMeshProxy, const MeshProxyPtr& wireMeshProxy,
-		const MeshProxyPtr& iconMeshProxy, const IconRenderDataVecPtr& iconRenderData)
+	const float GizmoManagerCore::PICKING_ALPHA_CUTOFF = 0.5f;
+
+	GizmoManagerCore::GizmoManagerCore(const PrivatelyConstuct& dummy)
 	{
+	}
+
+	void GizmoManagerCore::initialize(const GizmoManager::CoreInitData& initData)
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		mSolidMaterial.proxy = initData.solidMatProxy;
+		mWireMaterial.proxy = initData.wireMatProxy;
+		mIconMaterial.proxy = initData.iconMatProxy;
+		mPickingMaterial.proxy = initData.pickingMatProxy;
+		mAlphaPickingMaterial.proxy = initData.alphaPickingMatProxy;
+
+		// TODO - Make a better interface when dealing with parameters through proxies?
+		{
+			MaterialProxyPtr proxy = mWireMaterial.proxy;
+			GpuParamsPtr vertParams = proxy->params[proxy->passes[0].vertexProgParamsIdx];
+
+			vertParams->getParam("matViewProj", mWireMaterial.mViewProj);
+		}
+
+		{
+			MaterialProxyPtr proxy = mSolidMaterial.proxy;
+			GpuParamsPtr vertParams = proxy->params[proxy->passes[0].vertexProgParamsIdx];
+
+			vertParams->getParam("matViewProj", mSolidMaterial.mViewProj);
+			vertParams->getParam("matViewIT", mSolidMaterial.mViewIT);
+		}
+
+		{
+			MaterialProxyPtr proxy = mIconMaterial.proxy;
+			GpuParamsPtr vertParams = proxy->params[proxy->passes[0].vertexProgParamsIdx];
+
+			vertParams->getParam("matViewProj", mIconMaterial.mViewProj);
+
+			mIconMaterial.mFragParams = proxy->params[proxy->passes[0].fragmentProgParamsIdx];
+
+			mIconMaterial.mFragParams->getTextureParam("mainTexture", mIconMaterial.mTexture);
+		}
+
+		{
+			MaterialProxyPtr proxy = mPickingMaterial.proxy;
+			GpuParamsPtr vertParams = proxy->params[proxy->passes[0].vertexProgParamsIdx];
+
+			vertParams->getParam("matViewProj", mPickingMaterial.mViewProj);
+		}
+
+		{
+			MaterialProxyPtr proxy = mAlphaPickingMaterial.proxy;
+			GpuParamsPtr vertParams = proxy->params[proxy->passes[0].vertexProgParamsIdx];
+
+			vertParams->getParam("matViewProj", mAlphaPickingMaterial.mViewProj);
+
+			mAlphaPickingMaterial.mFragParams = proxy->params[proxy->passes[0].fragmentProgParamsIdx];
+			mAlphaPickingMaterial.mFragParams->getTextureParam("mainTexture", mAlphaPickingMaterial.mTexture);
+
+			GpuParamFloat alphaCutoffParam;
+			mAlphaPickingMaterial.mFragParams->getParam("alphaCutoff", alphaCutoffParam);
+			alphaCutoffParam.set(PICKING_ALPHA_CUTOFF);
+		}
+
+		RendererPtr activeRenderer = RendererManager::instance().getActive();
+		activeRenderer->onCorePostRenderViewport.connect(std::bind(&GizmoManagerCore::render, this, _1));
+	}
+
+	void GizmoManagerCore::updateData(const RenderTargetPtr& rt, const MeshProxyPtr& solidMeshProxy, const MeshProxyPtr& wireMeshProxy,
+		const MeshProxyPtr& iconMeshProxy, const GizmoManager::IconRenderDataVecPtr& iconRenderData)
+	{
+		mSceneRenderTarget = rt;
 		mSolidMeshProxy = solidMeshProxy;
 		mWireMeshProxy = wireMeshProxy;
 		mIconMeshProxy = iconMeshProxy;
 		mIconRenderData = iconRenderData;
 	}
 
-	void GizmoManager::coreRender(const CameraProxy& camera)
+	void GizmoManagerCore::render(const CameraProxy& camera)
 	{
 		if (camera.viewport.getTarget() != mSceneRenderTarget)
 			return;
@@ -629,12 +675,17 @@ namespace BansheeEngine
 		screenArea.width = (int)(normArea.width * width);
 		screenArea.height = (int)(normArea.height * height);
 
-		coreRenderSolidGizmos(camera.viewMatrix, camera.projMatrix, mSolidMeshProxy);
-		coreRenderWireGizmos(camera.viewMatrix, camera.projMatrix, mWireMeshProxy);
-		coreRenderIconGizmos(screenArea, mIconMeshProxy, mIconRenderData);
+		if (mSolidMeshProxy != nullptr)
+			renderSolidGizmos(camera.viewMatrix, camera.projMatrix, mSolidMeshProxy);
+
+		if (mWireMeshProxy != nullptr)
+			renderWireGizmos(camera.viewMatrix, camera.projMatrix, mWireMeshProxy);
+
+		if (mIconMeshProxy != nullptr)
+			renderIconGizmos(screenArea, mIconMeshProxy, mIconRenderData);
 	}
 
-	void GizmoManager::coreRenderSolidGizmos(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr meshProxy)
+	void GizmoManagerCore::renderSolidGizmos(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr meshProxy)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -648,7 +699,7 @@ namespace BansheeEngine
 		Renderer::draw(*meshProxy);
 	}
 
-	void GizmoManager::coreRenderWireGizmos(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr meshProxy)
+	void GizmoManagerCore::renderWireGizmos(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr meshProxy)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -661,7 +712,7 @@ namespace BansheeEngine
 		Renderer::draw(*meshProxy);
 	}
 
-	void GizmoManager::coreRenderIconGizmos(Rect2I screenArea, MeshProxyPtr meshProxy, IconRenderDataVecPtr renderData)
+	void GizmoManagerCore::renderIconGizmos(Rect2I screenArea, MeshProxyPtr meshProxy, GizmoManager::IconRenderDataVecPtr renderData)
 	{
 		RenderSystem& rs = RenderSystem::instance();
 		MeshBasePtr mesh;
@@ -686,7 +737,7 @@ namespace BansheeEngine
 		rs.setDrawOperation(DOT_TRIANGLE_LIST);
 
 		// Set up ortho matrix
-		Matrix4 projMat; 
+		Matrix4 projMat;
 
 		float left = screenArea.x + rs.getHorizontalTexelOffset();
 		float right = screenArea.x + screenArea.width + rs.getHorizontalTexelOffset();
@@ -717,7 +768,7 @@ namespace BansheeEngine
 		mesh->_notifyUsedOnGPU();
 	}
 
-	void GizmoManager::coreRenderGizmosForPicking(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr meshProxy)
+	void GizmoManagerCore::renderGizmosForPicking(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr meshProxy)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -729,7 +780,7 @@ namespace BansheeEngine
 		Renderer::draw(*meshProxy);
 	}
 
-	void GizmoManager::coreRenderIconGizmosForPicking(Rect2I screenArea, MeshProxyPtr meshProxy, IconRenderDataVecPtr renderData)
+	void GizmoManagerCore::renderIconGizmosForPicking(Rect2I screenArea, MeshProxyPtr meshProxy, GizmoManager::IconRenderDataVecPtr renderData)
 	{
 		RenderSystem& rs = RenderSystem::instance();
 		MeshBasePtr mesh;

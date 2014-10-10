@@ -62,6 +62,7 @@ namespace BansheeEngine
 	class HandleSliderDisc;
 	class HandleSliderManager;
 	class HandleDrawManager;
+	class SceneCameraController;
 
 	typedef std::shared_ptr<ProjectResourceMeta> ProjectResourceMetaPtr;
 	typedef std::shared_ptr<DockManagerLayout> DockManagerLayoutPtr;

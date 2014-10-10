@@ -61,16 +61,9 @@ namespace BansheeEngine
 				d3delems[idx].Stream = i->getStreamIdx();
 				d3delems[idx].Type = D3D9Mappings::get(i->getType());
 				d3delems[idx].Usage = D3D9Mappings::get(i->getSemantic());
-
-				if (i->getSemantic() == VES_COLOR)
-				{
-					d3delems[idx].UsageIndex = 0;
-				}
-				else
-				{
-					d3delems[idx].UsageIndex = static_cast<BYTE>(i->getSemanticIdx());
-				}
+				d3delems[idx].UsageIndex = static_cast<BYTE>(i->getSemanticIdx());
 			}
+
 			// Add terminator
 			d3delems[idx].Stream = 0xff;
 			d3delems[idx].Offset = 0;

@@ -66,6 +66,7 @@ namespace BansheeEngine
 
 	private:
 		GLuint mBufferId;
+		bool mZeroLocked;
 
 		Vector<GLVertexArrayObject> mVAObjects;
     };

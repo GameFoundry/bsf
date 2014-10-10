@@ -272,12 +272,12 @@ namespace BansheeEngine
 		/**
 		 * @brief	Checks if cached local transform needs updating.
 		 */
-		bool isCachedLocalTfrmUpToDate() const { return (mDirtyFlags & DirtyFlags::LocalTfrmDirty) != 0; }
+		bool isCachedLocalTfrmUpToDate() const { return (mDirtyFlags & DirtyFlags::LocalTfrmDirty) == 0; }
 
 		/**
 		 * @brief	Checks if cached world transform needs updating.
 		 */
-		bool isCachedWorldTfrmUpToDate() const { return (mDirtyFlags & DirtyFlags::WorldTfrmDirty) != 0; }
+		bool isCachedWorldTfrmUpToDate() const { return (mDirtyFlags & DirtyFlags::WorldTfrmDirty) == 0; }
 
 		/************************************************************************/
 		/* 								Hierarchy	                     		*/

@@ -2097,6 +2097,9 @@ namespace BansheeEngine
 
 	void __stdcall openGlErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, GLvoid *userParam)
 	{
-		BS_EXCEPT(RenderingAPIException, "OpenGL error: " + String(message));
+		if (type != GL_DEBUG_TYPE_PERFORMANCE && type != GL_DEBUG_TYPE_OTHER)
+		{
+			BS_EXCEPT(RenderingAPIException, "OpenGL error: " + String(message));
+		}
 	}
 }

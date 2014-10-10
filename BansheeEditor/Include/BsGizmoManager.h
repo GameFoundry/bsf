@@ -9,10 +9,12 @@
 
 namespace BansheeEngine
 {
+	class GizmoManagerCore;
+
 	class BS_ED_EXPORT GizmoManager : public Module<GizmoManager>
 	{
 	public:
-		GizmoManager(const HCamera& camera);
+		GizmoManager();
 		~GizmoManager();
 
 		void startGizmo(const HSceneObject& gizmoParent);
@@ -31,10 +33,12 @@ namespace BansheeEngine
 		void drawIcon(Vector3 position, HSpriteTexture image, bool fixedScale);
 
 		void update();
-		void renderForPicking(std::function<Color(UINT32)> idxToColorCallback);
+		void renderForPicking(const HCamera& camera, std::function<Color(UINT32)> idxToColorCallback);
 		void clearGizmos();
 
 	private:
+		friend class GizmoManagerCore;
+
 		struct CommonData
 		{
 			Color color;
@@ -83,77 +87,26 @@ namespace BansheeEngine
 			HTexture texture;
 		};
 
-		struct SolidMaterialData
+		struct CoreInitData
 		{
-			HMaterial material;
-			
-			// Core
-			MaterialProxyPtr proxy;
-			GpuParamMat4 mViewProj;
-			GpuParamMat4 mViewIT;
-		};
-
-		struct WireMaterialData
-		{
-			HMaterial material;
-
-			// Core
-			MaterialProxyPtr proxy;
-			GpuParamMat4 mViewProj;
-		};
-
-		struct IconMaterialData
-		{
-			HMaterial material;
-
-			// Core
-			MaterialProxyPtr proxy;
-			GpuParamsPtr mFragParams;
-			GpuParamMat4 mViewProj;
-			GpuParamTexture mTexture;
-		};
-
-		struct PickingMaterialData
-		{
-			HMaterial material;
-
-			// Core
-			MaterialProxyPtr proxy;
-			GpuParamMat4 mViewProj;
-		};
-
-		struct AlphaPickingMaterialData
-		{
-			HMaterial material;
-
-			// Core
-			MaterialProxyPtr proxy;
-			GpuParamsPtr mFragParams;
-			GpuParamMat4 mViewProj;
-			GpuParamTexture mTexture;
+			MaterialProxyPtr solidMatProxy;
+			MaterialProxyPtr wireMatProxy;
+			MaterialProxyPtr iconMatProxy;
+			MaterialProxyPtr pickingMatProxy;
+			MaterialProxyPtr alphaPickingMatProxy;
 		};
 
 		typedef Vector<IconRenderData> IconRenderDataVec;
 		typedef std::shared_ptr<IconRenderDataVec> IconRenderDataVecPtr;
 
-		TransientMeshPtr buildIconMesh(const Vector<IconData>& iconData, bool pickingOnly, IconRenderDataVecPtr& renderData);
-
-		void coreRender(const CameraProxy& camera);
-		void coreRenderSolidGizmos(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr mesh);
-		void coreRenderWireGizmos(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr mesh);
-		void coreRenderIconGizmos(Rect2I screenArea, MeshProxyPtr mesh, IconRenderDataVecPtr renderData);
-
-		void coreRenderGizmosForPicking(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr mesh);
-		void coreRenderIconGizmosForPicking(Rect2I screenArea, MeshProxyPtr mesh, IconRenderDataVecPtr renderData);
-
-		void coreUpdateData(const MeshProxyPtr& solidMeshProxy, const MeshProxyPtr& wireMeshProxy,
-			const MeshProxyPtr& iconMeshProxy, const IconRenderDataVecPtr& iconRenderData);
+		TransientMeshPtr buildIconMesh(const HCamera& camera, const Vector<IconData>& iconData, bool pickingOnly, IconRenderDataVecPtr& renderData);
 
 		void limitIconSize(UINT32& width, UINT32& height);
 		void calculateIconColors(const Color& tint, const Camera& camera, UINT32 iconHeight, bool fixedScale,
 			Color& normalColor, Color& fadedColor);
 
-		void initializeCore();
+		void initializeCore(const CoreInitData& initData);
+		void destroyCore(GizmoManagerCore* core);
 
 		static const UINT32 VERTEX_BUFFER_GROWTH;
 		static const UINT32 INDEX_BUFFER_GROWTH;
@@ -162,12 +115,8 @@ namespace BansheeEngine
 		static const float MAX_ICON_RANGE;
 		static const UINT32 OPTIMAL_ICON_SIZE;
 		static const float ICON_TEXEL_WORLD_SIZE;
-		static const float PICKING_ALPHA_CUTOFF;
 
 		typedef Set<IconData, std::function<bool(const IconData&, const IconData&)>> IconSet;
-
-		HCamera mCamera;
-		RenderTargetPtr mSceneRenderTarget;
 
 		Color mColor;
 		Matrix4 mTransform;
@@ -191,21 +140,10 @@ namespace BansheeEngine
 		TransientMeshPtr mWireMesh;
 		TransientMeshPtr mIconMesh;
 
-		// Core
-		MeshProxyPtr mSolidMeshProxy;
-		MeshProxyPtr mWireMeshProxy;
-		MeshProxyPtr mIconMeshProxy;
-		IconRenderDataVecPtr mIconRenderData;
+		GizmoManagerCore* mCore;
 
 		// Immutable
 		VertexDataDescPtr mIconVertexDesc;
-
-		SolidMaterialData mSolidMaterial;
-		WireMaterialData mWireMaterial;
-		IconMaterialData mIconMaterial;
-
-		PickingMaterialData mPickingMaterial;
-		AlphaPickingMaterialData mAlphaPickingMaterial;
 
 		// Transient
 		struct SortedIconData
@@ -216,5 +154,81 @@ namespace BansheeEngine
 		};
 
 		Vector<SortedIconData> mSortedIconData;
+	};
+
+	class GizmoManagerCore
+	{
+		friend class GizmoManager;
+
+		struct SolidMaterialData
+		{
+			MaterialProxyPtr proxy;
+			GpuParamMat4 mViewProj;
+			GpuParamMat4 mViewIT;
+		};
+
+		struct WireMaterialData
+		{
+			MaterialProxyPtr proxy;
+			GpuParamMat4 mViewProj;
+		};
+
+		struct IconMaterialData
+		{
+			MaterialProxyPtr proxy;
+			GpuParamsPtr mFragParams;
+			GpuParamMat4 mViewProj;
+			GpuParamTexture mTexture;
+		};
+
+		struct PickingMaterialData
+		{
+			MaterialProxyPtr proxy;
+			GpuParamMat4 mViewProj;
+		};
+
+		struct AlphaPickingMaterialData
+		{
+			MaterialProxyPtr proxy;
+			GpuParamsPtr mFragParams;
+			GpuParamMat4 mViewProj;
+			GpuParamTexture mTexture;
+		};
+
+		struct PrivatelyConstuct { };
+
+	public:
+		GizmoManagerCore(const PrivatelyConstuct& dummy);
+
+	private:
+		void initialize(const GizmoManager::CoreInitData& initData);
+
+		void render(const CameraProxy& camera);
+		void renderSolidGizmos(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr mesh);
+		void renderWireGizmos(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr mesh);
+		void renderIconGizmos(Rect2I screenArea, MeshProxyPtr mesh, GizmoManager::IconRenderDataVecPtr renderData);
+
+		void renderGizmosForPicking(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr mesh);
+		void renderIconGizmosForPicking(Rect2I screenArea, MeshProxyPtr mesh, GizmoManager::IconRenderDataVecPtr renderData);
+
+		void updateData(const RenderTargetPtr& rt, const MeshProxyPtr& solidMeshProxy, const MeshProxyPtr& wireMeshProxy,
+			const MeshProxyPtr& iconMeshProxy, const GizmoManager::IconRenderDataVecPtr& iconRenderData);
+
+		static const float PICKING_ALPHA_CUTOFF;
+
+		RenderTargetPtr mSceneRenderTarget;
+
+		MeshProxyPtr mSolidMeshProxy;
+		MeshProxyPtr mWireMeshProxy;
+		MeshProxyPtr mIconMeshProxy;
+		GizmoManager::IconRenderDataVecPtr mIconRenderData;
+
+		// Immutable
+		SolidMaterialData mSolidMaterial;
+		WireMaterialData mWireMaterial;
+		IconMaterialData mIconMaterial;
+
+		PickingMaterialData mPickingMaterial;
+		AlphaPickingMaterialData mAlphaPickingMaterial;
 	};
 }

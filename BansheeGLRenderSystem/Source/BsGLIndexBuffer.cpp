@@ -6,7 +6,7 @@
 namespace BansheeEngine 
 {
     GLIndexBuffer::GLIndexBuffer(IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage)
-        : IndexBuffer(idxType, numIndexes, usage, false)
+		: IndexBuffer(idxType, numIndexes, usage, false), mZeroLocked(false)
     {  }
 
     GLIndexBuffer::~GLIndexBuffer()
@@ -76,12 +76,21 @@ namespace BansheeEngine
 		else
 			access = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT;
 
-		void* pBuffer = glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, offset, length, access);
-
-		if(pBuffer == 0)
+		void* pBuffer = nullptr;
+		
+		if (length > 0)
 		{
-			BS_EXCEPT(InternalErrorException, "Index Buffer: Out of memory");
+			pBuffer = glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, offset, length, access);
+
+			if (pBuffer == nullptr)
+			{
+				BS_EXCEPT(InternalErrorException, "Index Buffer: Out of memory");
+			}
+
+			mZeroLocked = false;
 		}
+		else
+			mZeroLocked = true;
 
 		void* retPtr = static_cast<void*>(static_cast<unsigned char*>(pBuffer));
 
@@ -93,9 +102,12 @@ namespace BansheeEngine
     {
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mBufferId);
 
-		if(!glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER))
+		if (!mZeroLocked)
 		{
-			BS_EXCEPT(InternalErrorException, "Buffer data corrupted, please reload");
+			if (!glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER))
+			{
+				BS_EXCEPT(InternalErrorException, "Buffer data corrupted, please reload");
+			}
 		}
 
 		mIsLocked = false;

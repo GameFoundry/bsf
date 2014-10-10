@@ -7,7 +7,7 @@
 namespace BansheeEngine
 {
 	ManagedComponent::ManagedComponent(const HSceneObject& parent, MonoReflectionType* runtimeType)
-		:mManagedInstance(nullptr), mRuntimeType(runtimeType)
+		:Component(parent), mManagedInstance(nullptr), mRuntimeType(runtimeType)
 	{
 		MonoType* monoType = mono_reflection_type_get_type(mRuntimeType);
 		::MonoClass* monoClass = mono_type_get_class(monoType);

@@ -57,5 +57,6 @@ namespace BansheeEngine
 
 	private:
 		GLuint mBufferId;
+		bool mZeroLocked;
     };
 }
