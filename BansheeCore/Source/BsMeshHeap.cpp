@@ -284,7 +284,7 @@ namespace BansheeEngine
 						continue;
 
 					UINT8* colorData = vertDest + mVertexDesc->getElementOffsetFromStream(VES_COLOR, semanticIdx, i);
-					for(UINT32 j = 0; j < mVertexData->vertexCount; j++)
+					for (UINT32 j = 0; j < meshData->getNumVertices(); j++)
 					{
 						UINT32* curColor = (UINT32*)colorData;
 

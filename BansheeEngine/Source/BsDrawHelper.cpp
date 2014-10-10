@@ -311,20 +311,20 @@ namespace BansheeEngine
 			curIndexOffet += 36;
 		}
 
-		for (auto& discData : mSolidSphereData)
+		for (auto& sphereData : mSolidSphereData)
 		{
 			UINT32 numVertices, numIndices;
-			ShapeMeshes3D::getNumElementsSphere(discData.quality, numVertices, numIndices);
+			ShapeMeshes3D::getNumElementsSphere(sphereData.quality, numVertices, numIndices);
 
-			Sphere sphere(discData.position, discData.radius);
-			ShapeMeshes3D::solidSphere(sphere, meshData, curVertexOffset, curIndexOffet, discData.quality);
+			Sphere sphere(sphereData.position, sphereData.radius);
+			ShapeMeshes3D::solidSphere(sphere, meshData, curVertexOffset, curIndexOffet, sphereData.quality);
 
-			Matrix4 transformIT = discData.transform.inverseAffine().transpose();
-			RGBA color = discData.color.getAsRGBA();
+			Matrix4 transformIT = sphereData.transform.inverseAffine().transpose();
+			RGBA color = sphereData.color.getAsRGBA();
 
 			for (UINT32 i = 0; i < numVertices; i++)
 			{
-				Vector3 worldPos = discData.transform.multiply3x4(positionIter.getValue());
+				Vector3 worldPos = sphereData.transform.multiply3x4(positionIter.getValue());
 				Vector3 worldNormal = transformIT.multiply3x4(normalIter.getValue());
 
 				positionIter.addValue(worldPos);
@@ -336,20 +336,20 @@ namespace BansheeEngine
 			curIndexOffet += numIndices;
 		}
 
-		for (auto& discData : mConeData)
+		for (auto& coneData : mConeData)
 		{
 			UINT32 numVertices, numIndices;
-			ShapeMeshes3D::getNumElementsCone(discData.quality, numVertices, numIndices);
+			ShapeMeshes3D::getNumElementsCone(coneData.quality, numVertices, numIndices);
 
-			ShapeMeshes3D::solidCone(discData.base, discData.normal, discData.height, discData.radius, 
-				meshData, curVertexOffset, curIndexOffet, discData.quality);
+			ShapeMeshes3D::solidCone(coneData.base, coneData.normal, coneData.height, coneData.radius,
+				meshData, curVertexOffset, curIndexOffet, coneData.quality);
 
-			Matrix4 transformIT = discData.transform.inverseAffine().transpose();
-			RGBA color = discData.color.getAsRGBA();
+			Matrix4 transformIT = coneData.transform.inverseAffine().transpose();
+			RGBA color = coneData.color.getAsRGBA();
 
 			for (UINT32 i = 0; i < numVertices; i++)
 			{
-				Vector3 worldPos = discData.transform.multiply3x4(positionIter.getValue());
+				Vector3 worldPos = coneData.transform.multiply3x4(positionIter.getValue());
 				Vector3 worldNormal = transformIT.multiply3x4(normalIter.getValue());
 
 				positionIter.addValue(worldPos);
@@ -506,7 +506,7 @@ namespace BansheeEngine
 
 		for (auto& frustumData : mFrustumData)
 		{
-			ShapeMeshes3D::wireFrustum(frustumData.aspect, frustumData.FOV, frustumData.near,
+			ShapeMeshes3D::wireFrustum(frustumData.position, frustumData.aspect, frustumData.FOV, frustumData.near,
 				frustumData.far, meshData, curVertexOffset, curIndexOffet);
 
 			RGBA color = frustumData.color.getAsRGBA();

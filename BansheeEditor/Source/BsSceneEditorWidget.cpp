@@ -69,8 +69,6 @@ namespace BansheeEngine
 		if (mCameraController)
 		{
 			mCameraController->update();
-
-			LOGWRN(toString(mCameraController->sceneObject()->getWorldPosition()));
 		}
 
 		//// DEBUG ONLY

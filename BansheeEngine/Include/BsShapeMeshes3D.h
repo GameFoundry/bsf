@@ -191,6 +191,7 @@ namespace BansheeEngine
 		 * @brief	Fills the mesh data with vertices representing an outline of an camera frustum. Frustum will
 		 *			be facing -z and be positioned at world origin.
 		 *
+		 * @param	position		Starting point for the frustum.
 		 * @param	aspect			Aspect ratio (width / height).
 		 * @param	FOV				Horizontal field of view angle.
 		 * @param	near			Distance to near clipping plane.
@@ -206,7 +207,7 @@ namespace BansheeEngine
 		 *
 		 *			Primitives are output in the form of a line list.
 		 */
-		static void wireFrustum(float aspect, Degree FOV, float near, float far,
+		static void wireFrustum(const Vector3& position, float aspect, Degree FOV, float near, float far,
 			const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		/**
@@ -541,6 +542,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Fills the provided buffers with position and index data representing an outline of an axis aligned box.
 		 *
+		 * @param	position		Starting point for the frustum.
 		 * @param	aspect			Aspect ratio (width / height).
 		 * @param	FOV				Horizontal field of view angle.
 		 * @param	near			Distance to near clipping plane.
@@ -551,7 +553,7 @@ namespace BansheeEngine
 		 * @param	outIndices		Output buffer that will store the index data. Indices are 32bit.
 		 * @param	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
 		 */
-		static void wireFrustum(float aspect, Degree FOV, float near, float far,
+		static void wireFrustum(const Vector3& position, float aspect, Degree FOV, float near, float far,
 			UINT8* outVertices, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset);
 
 		/**

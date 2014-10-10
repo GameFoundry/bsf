@@ -165,7 +165,7 @@ namespace BansheeEngine
 			}
 
 			mGLHandle = glCreateShaderProgramv(shaderType, (GLsizei)lines.size(), (const GLchar**)lines.data());
-			
+
 			for (auto iter = lines.rbegin(); iter != lines.rend(); ++iter)
 			{
 				stackDeallocLast(*iter);
@@ -185,6 +185,10 @@ namespace BansheeEngine
 				VertexDeclaration::VertexElementList elementList = paramParser.buildVertexDeclaration(mGLHandle);
 				mVertexDeclaration = HardwareBufferManager::instance().createVertexDeclaration(elementList);
 			}
+		}
+		else
+		{
+			LOGWRN("Shader compilation/linking failed: " + mCompileError);
 		}
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_GpuProgram);

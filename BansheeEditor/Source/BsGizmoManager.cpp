@@ -610,7 +610,6 @@ namespace BansheeEngine
 			GpuParamsPtr vertParams = proxy->params[proxy->passes[0].vertexProgParamsIdx];
 
 			vertParams->getParam("matViewProj", mSolidMaterial.mViewProj);
-			vertParams->getParam("matViewIT", mSolidMaterial.mViewIT);
 		}
 
 		{
@@ -690,10 +689,8 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		Matrix4 viewProjMat = projMatrix * viewMatrix;
-		Matrix4 viewIT = viewMatrix.inverse().transpose();
 
 		mSolidMaterial.mViewProj.set(viewProjMat);
-		mSolidMaterial.mViewIT.set(viewIT);
 
 		Renderer::setPass(*mSolidMaterial.proxy, 0);
 		Renderer::draw(*meshProxy);

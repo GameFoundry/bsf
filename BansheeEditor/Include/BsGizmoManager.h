@@ -164,7 +164,6 @@ namespace BansheeEngine
 		{
 			MaterialProxyPtr proxy;
 			GpuParamMat4 mViewProj;
-			GpuParamMat4 mViewIT;
 		};
 
 		struct WireMaterialData

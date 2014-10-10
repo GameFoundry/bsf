@@ -133,7 +133,7 @@ namespace BansheeEngine
 			meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset, quality);
 	}
 
-	void ShapeMeshes3D::wireFrustum(float aspect, Degree FOV, float near, float far,
+	void ShapeMeshes3D::wireFrustum(const Vector3& position, float aspect, Degree FOV, float near, float far,
 		const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		UINT32* indexData = meshData->getIndices32();
@@ -142,7 +142,7 @@ namespace BansheeEngine
 		assert((vertexOffset + 8) <= meshData->getNumVertices());
 		assert((indexOffset + 24) <= meshData->getNumIndices());
 
-		wireFrustum(aspect, FOV, near, far, positionData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
+		wireFrustum(position, aspect, FOV, near, far, positionData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
 	}
 
 	void ShapeMeshes3D::solidCone(const Vector3& base, const Vector3& normal, float height, float radius,
@@ -259,8 +259,9 @@ namespace BansheeEngine
 
 	void ShapeMeshes3D::getNumElementsWireSphere(UINT32 quality, UINT32& numVertices, UINT32& numIndices)
 	{
-		numVertices = 3 * ((quality + 1) * 4);
-		numIndices = 6 * ((quality + 1) * 4);
+		getNumElementsWireArc(quality, numVertices, numIndices);
+		numVertices *= 3;
+		numIndices *= 3;
 	}
 
 	void ShapeMeshes3D::getNumElementsArc(UINT32 quality, UINT32& numVertices, UINT32& numIndices)
@@ -384,19 +385,19 @@ namespace BansheeEngine
 		outVertices = writeVector3(outVertices, vertexStride, box.getCorner(AABox::FAR_RIGHT_TOP));
 
 		// Bottom face
-		outVertices = writeVector3(outVertices, vertexStride, box.getCorner(AABox::FAR_LEFT_TOP));
-		outVertices = writeVector3(outVertices, vertexStride, box.getCorner(AABox::NEAR_LEFT_TOP));
-		outVertices = writeVector3(outVertices, vertexStride, box.getCorner(AABox::NEAR_RIGHT_TOP));
-		outVertices = writeVector3(outVertices, vertexStride, box.getCorner(AABox::FAR_RIGHT_TOP));
+		outVertices = writeVector3(outVertices, vertexStride, box.getCorner(AABox::FAR_LEFT_BOTTOM));
+		outVertices = writeVector3(outVertices, vertexStride, box.getCorner(AABox::FAR_RIGHT_BOTTOM));
+		outVertices = writeVector3(outVertices, vertexStride, box.getCorner(AABox::NEAR_RIGHT_BOTTOM));
+		outVertices = writeVector3(outVertices, vertexStride, box.getCorner(AABox::NEAR_LEFT_BOTTOM));
 
 		static const Vector3 faceNormals[6] = 
 		{
 			Vector3(0, 0, 1),
 			Vector3(0, 0, -1),
-			Vector3(0, 1, 0),
-			Vector3(0, -1, 0),
+			Vector3(-1, 0, 0),
 			Vector3(1, 0, 0),
-			Vector3(-1, 0, 0)
+			Vector3(0, 1, 0),
+			Vector3(0, -1, 0)
 		};
 
 		outNormals += (vertexOffset * vertexStride);
@@ -413,12 +414,12 @@ namespace BansheeEngine
 		{
 			UINT32 faceVertOffset = vertexOffset + face * 4;
 
-			indices[face * 6 + 0] = faceVertOffset + 0;
+			indices[face * 6 + 0] = faceVertOffset + 2;
 			indices[face * 6 + 1] = faceVertOffset + 1;
-			indices[face * 6 + 2] = faceVertOffset + 2;
-			indices[face * 6 + 3] = faceVertOffset + 2;
+			indices[face * 6 + 2] = faceVertOffset + 0;
+			indices[face * 6 + 3] = faceVertOffset + 0;
 			indices[face * 6 + 4] = faceVertOffset + 3;
-			indices[face * 6 + 5] = faceVertOffset + 0;
+			indices[face * 6 + 5] = faceVertOffset + 2;
 		}
 	}
 
@@ -459,19 +460,19 @@ namespace BansheeEngine
 		for (int i = 0; i < 20; ++i) 
 		{
 			curVertOffset += subdivideTriangleOnSphere(sphere.getCenter(), sphere.getRadius(), quality,
-				vertices[triangles[i][0]], vertices[triangles[i][1]], vertices[triangles[i][2]],
+				vertices[triangles[i][2]], vertices[triangles[i][1]], vertices[triangles[i][0]],
 				outVertices, outNormals, curVertOffset, vertexStride);
 		}
 
 		// Create indices
 		outIndices += indexOffset;
 
-		UINT32 numTriangles = 20 * (3 * ((UINT32)std::pow(4L, (long)quality)));
-		for (UINT32 i = 0; i < numTriangles * 3; i += 3)
+		UINT32 numIndices = 20 * (3 * ((UINT32)std::pow(4L, (long)quality)));
+		for (UINT32 i = 0; i < numIndices; i += 3)
 		{
-			outIndices[i] = vertexOffset + i;
+			outIndices[i] = vertexOffset + i + 2;
 			outIndices[i + 1] = vertexOffset + i + 1;
-			outIndices[i + 2] = vertexOffset + i + 2;
+			outIndices[i + 2] = vertexOffset + i + 0;
 		}
 	}
 
@@ -519,10 +520,10 @@ namespace BansheeEngine
 		}
 	}
 
-	void ShapeMeshes3D::wireFrustum(float aspect, Degree FOV, float near, float far,
+	void ShapeMeshes3D::wireFrustum(const Vector3& position, float aspect, Degree FOV, float near, float far,
 		UINT8* outVertices, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
 	{
-		float fovTan = Math::tan(FOV);
+		float fovTan = Math::tan(FOV * 0.5f);
 
 		Vector3 nearPoint(0, 0, near);
 		Vector3 nearWidth(near * fovTan * aspect, 0, 0);
@@ -547,7 +548,7 @@ namespace BansheeEngine
 		outVertices += vertexOffset * vertexStride;
 
 		for (UINT32 i = 0; i < 8; i++)
-			outVertices = writeVector3(outVertices, vertexStride, points[i]);
+			outVertices = writeVector3(outVertices, vertexStride, position + points[i]);
 
 		outIndices += indexOffset;
 
@@ -872,16 +873,15 @@ namespace BansheeEngine
 			Vector3 sub3 = Vector3::normalize((c + a) * 0.5f);
 
 			numLevels--;
-			UINT32 curVertOffset = vertexOffset + numVertices;
 
 			numVertices += subdivideTriangleOnSphere(center, radius, numLevels, a, sub1, sub3, outVertices, 
-				outNormals, vertexOffset + numVertices, vertexStride);
+				outNormals, numVertices, vertexStride);
 			numVertices += subdivideTriangleOnSphere(center, radius, numLevels, sub1, b, sub2, outVertices, 
-				outNormals, vertexOffset + numVertices, vertexStride);
+				outNormals, numVertices, vertexStride);
 			numVertices += subdivideTriangleOnSphere(center, radius, numLevels, sub1, sub2, sub3, outVertices, 
-				outNormals, vertexOffset + numVertices, vertexStride);
+				outNormals, numVertices, vertexStride);
 			numVertices += subdivideTriangleOnSphere(center, radius, numLevels, sub3, sub2, c, outVertices, 
-				outNormals, vertexOffset + numVertices, vertexStride);
+				outNormals, numVertices, vertexStride);
 		}
 		else
 		{

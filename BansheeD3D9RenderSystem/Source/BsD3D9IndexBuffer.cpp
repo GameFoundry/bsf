@@ -270,33 +270,33 @@ namespace BansheeEngine
 		assert(bufferResources->mBuffer != nullptr);
 		assert(bufferResources->mOutOfDate);
 		
-		if (bufferResources->mLockLength == 0)
-			return true;
-
-		void* dstBytes;
-		HRESULT hr;
-	
-		// Lock the buffer.
-		hr = bufferResources->mBuffer->Lock(
-			static_cast<UINT>(bufferResources->mLockOffset), 
-			static_cast<UINT>(bufferResources->mLockLength), 
-			&dstBytes,
-			D3D9Mappings::get(bufferResources->mLockOptions, mUsage));
-
-		if (FAILED(hr))
+		if (bufferResources->mLockLength != 0)
 		{
-			String msg = DXGetErrorDescription(hr);
-			BS_EXCEPT(RenderingAPIException, "Cannot lock D3D9 vertex buffer: " + msg);
-		}
+			void* dstBytes;
+			HRESULT hr;
 
-		memcpy(dstBytes, systemMemoryBuffer + bufferResources->mLockOffset, bufferResources->mLockLength);
+			// Lock the buffer.
+			hr = bufferResources->mBuffer->Lock(
+				static_cast<UINT>(bufferResources->mLockOffset),
+				static_cast<UINT>(bufferResources->mLockLength),
+				&dstBytes,
+				D3D9Mappings::get(bufferResources->mLockOptions, mUsage));
 
-		// Unlock the buffer.
-		hr = bufferResources->mBuffer->Unlock();
-		if (FAILED(hr))
-		{
-			String msg = DXGetErrorDescription(hr);
-			BS_EXCEPT(RenderingAPIException, "Cannot unlock D3D9 vertex buffer: " + msg);
+			if (FAILED(hr))
+			{
+				String msg = DXGetErrorDescription(hr);
+				BS_EXCEPT(RenderingAPIException, "Cannot lock D3D9 vertex buffer: " + msg);
+			}
+
+			memcpy(dstBytes, systemMemoryBuffer + bufferResources->mLockOffset, bufferResources->mLockLength);
+
+			// Unlock the buffer.
+			hr = bufferResources->mBuffer->Unlock();
+			if (FAILED(hr))
+			{
+				String msg = DXGetErrorDescription(hr);
+				BS_EXCEPT(RenderingAPIException, "Cannot unlock D3D9 vertex buffer: " + msg);
+			}
 		}
 
 		bufferResources->mOutOfDate = false;

@@ -1393,7 +1393,6 @@ namespace BansheeEngine
 		mShaderGizmoSolid = Shader::create("GizmoSolid");
 
 		mShaderGizmoSolid->addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
-		mShaderGizmoSolid->addParameter("matViewIT", "matViewIT", GPDT_MATRIX_4X4);
 
 		TechniquePtr newTechnique = mShaderGizmoSolid->addTechnique(mActiveRenderSystem, RendererInvariant);
 		PassPtr newPass = newTechnique->addPass();

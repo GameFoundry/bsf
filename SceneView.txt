@@ -5,20 +5,18 @@
 	- Then make a Component wrapper around the non-component types, and also a C# wrapper around the same types
 
 TESTING:
-Ensure all 3 render systems compile and run
- - Test selection on all 3 render systems
- - Picking need to test something with alpha
+ - Depth rendering in scene view on OpenGL is all screwed up
+ - Test picking on an object with alpha
  - Ensure that selecting an item in scene properly marks it in scene view
  - Ensure that selecting an item in scene or resource tree view properly updates Selection
 
 Test gizmos
- - START UP GIZMO MANAGER SOMEWHERE
- - Test rendering of basic wire and solid gizmos
+ - Test all solid/wire gizmos shapes on all render systems
  - Test rendering of icon gizmos
- - Test them all from C#
  - HOOK UP GIZMO SELECTION and test it
 
 Test handles
+ - Handle rendering might require similar refactor to GizmoManager
  - Test basic move handle
  - Test a custom handle from C#
  - FINISH HANDLE IMPLEMENTATION AND GLUE EVERYTHING TOGHETHER
@@ -33,6 +31,7 @@ Need a way to drag and drop items from Scene tree view to Scene view
 LATER:
  - Need a way to render text for gizmos and handles, and in scene in general
  - Add drag to select
+ - Need a better system to catch broken shaders. DX11 just draws nothing with depth, DX9 draws all white.
 
 ----------------------------------------------------------------------
 Handles
