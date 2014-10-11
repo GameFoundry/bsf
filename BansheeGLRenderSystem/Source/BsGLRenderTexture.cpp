@@ -82,14 +82,14 @@ namespace BansheeEngine
     {
 		detectFBOFormats();
 		
-		glGenFramebuffersEXT(1, &mBlitReadFBO);
-		glGenFramebuffersEXT(1, &mBlitWriteFBO);
+		glGenFramebuffers(1, &mBlitReadFBO);
+		glGenFramebuffers(1, &mBlitWriteFBO);
     }
 
 	GLRTTManager::~GLRTTManager()
 	{
-		glDeleteFramebuffersEXT(1, &mBlitReadFBO);
-		glDeleteFramebuffersEXT(1, &mBlitWriteFBO);
+		glDeleteFramebuffers(1, &mBlitReadFBO);
+		glDeleteFramebuffers(1, &mBlitWriteFBO);
 	}
 
 	bool GLRTTManager::_tryFormat(GLenum depthFormat, GLenum stencilFormat)
@@ -100,57 +100,57 @@ namespace BansheeEngine
         if(depthFormat != GL_NONE)
         {
             // Generate depth renderbuffer
-            glGenRenderbuffersEXT(1, &depthRB);
+            glGenRenderbuffers(1, &depthRB);
 
             // Bind it to FBO
-            glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, depthRB);
+            glBindRenderbuffer(GL_RENDERBUFFER, depthRB);
             
             // Allocate storage for depth buffer
-            glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, depthFormat,
+            glRenderbufferStorage(GL_RENDERBUFFER, depthFormat,
                                 PROBE_SIZE, PROBE_SIZE);
             
             // Attach depth
-            glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
-                                    GL_RENDERBUFFER_EXT, depthRB);
+            glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+                                    GL_RENDERBUFFER, depthRB);
         }
 
         if(stencilFormat != GL_NONE)
         {
             // Generate stencil renderbuffer
-            glGenRenderbuffersEXT(1, &stencilRB);
+            glGenRenderbuffers(1, &stencilRB);
 
             // Bind it to FBO
-            glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, stencilRB);
+            glBindRenderbuffer(GL_RENDERBUFFER, stencilRB);
             glGetError(); 
 
             // Allocate storage for stencil buffer
-            glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, stencilFormat,
+            glRenderbufferStorage(GL_RENDERBUFFER, stencilFormat,
                                 PROBE_SIZE, PROBE_SIZE); 
 
             if(glGetError() != GL_NO_ERROR)
                 failed = true;
 
             // Attach stencil
-            glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT,
-                            GL_RENDERBUFFER_EXT, stencilRB);
+            glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT,
+                            GL_RENDERBUFFER, stencilRB);
 
             if(glGetError() != GL_NO_ERROR)
                 failed = true;
         }
         
-        status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+        status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
         // Detach and destroy
-        glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, 0);
-        glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, 0);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, 0);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, 0);
 
         if (depthRB)
-            glDeleteRenderbuffersEXT(1, &depthRB);
+            glDeleteRenderbuffers(1, &depthRB);
 
         if (stencilRB)
-            glDeleteRenderbuffersEXT(1, &stencilRB);
+            glDeleteRenderbuffers(1, &stencilRB);
         
-        return status == GL_FRAMEBUFFER_COMPLETE_EXT && !failed;
+        return status == GL_FRAMEBUFFER_COMPLETE && !failed;
     }
     
     bool GLRTTManager::_tryPackedFormat(GLenum packedFormat)
@@ -159,37 +159,37 @@ namespace BansheeEngine
         bool failed = false; // flag on GL errors
 
         // Generate renderbuffer
-        glGenRenderbuffersEXT(1, &packedRB);
+        glGenRenderbuffers(1, &packedRB);
 
         // Bind it to FBO
-        glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, packedRB);
+        glBindRenderbuffer(GL_RENDERBUFFER, packedRB);
 
         // Allocate storage for buffer
-        glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, packedFormat, PROBE_SIZE, PROBE_SIZE);
+        glRenderbufferStorage(GL_RENDERBUFFER, packedFormat, PROBE_SIZE, PROBE_SIZE);
         glGetError();
 
         // Attach depth
-        glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
-            GL_RENDERBUFFER_EXT, packedRB);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+            GL_RENDERBUFFER, packedRB);
 
         if(glGetError() != GL_NO_ERROR)
             failed = true;
 
         // Attach stencil
-        glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT,
-            GL_RENDERBUFFER_EXT, packedRB);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT,
+            GL_RENDERBUFFER, packedRB);
 
         if(glGetError() != GL_NO_ERROR)
             failed = true;
 
-        GLuint status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+        GLuint status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
         // Detach and destroy
-        glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, 0);
-        glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, 0);
-        glDeleteRenderbuffersEXT(1, &packedRB);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, 0);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, 0);
+        glDeleteRenderbuffers(1, &packedRB);
 
-        return status == GL_FRAMEBUFFER_COMPLETE_EXT && !failed;
+        return status == GL_FRAMEBUFFER_COMPLETE && !failed;
     }
 
     void GLRTTManager::detectFBOFormats()
@@ -216,8 +216,8 @@ namespace BansheeEngine
 				continue;
 
             // Create and attach framebuffer
-            glGenFramebuffersEXT(1, &fb);
-            glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fb);
+            glGenFramebuffers(1, &fb);
+            glBindFramebuffer(GL_FRAMEBUFFER, fb);
             if (fmt!=GL_NONE && !PixelUtil::isDepth((PixelFormat)x))
             {
 				// Create and attach texture
@@ -233,8 +233,7 @@ namespace BansheeEngine
                 glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
                             
 				glTexImage2D(target, 0, fmt, PROBE_SIZE, PROBE_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-				glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
-                                target, tid, 0);
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, target, tid, 0);
             }
 			else
 			{
@@ -244,19 +243,19 @@ namespace BansheeEngine
 			}
 
             // Check status
-            GLuint status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+            GLuint status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
 			// Ignore status in case of fmt==GL_NONE, because no implementation will accept
 			// a buffer without *any* attachment. Buffers with only stencil and depth attachment
 			// might still be supported, so we must continue probing.
-            if(fmt == GL_NONE || status == GL_FRAMEBUFFER_COMPLETE_EXT)
+            if(fmt == GL_NONE || status == GL_FRAMEBUFFER_COMPLETE)
             {
                 mProps[x].valid = true;
 
                 // For each depth/stencil formats
                 for (UINT32 depth = 0; depth < DEPTHFORMAT_COUNT; ++depth)
                 {
-                    if (depthFormats[depth] != GL_DEPTH24_STENCIL8_EXT && depthFormats[depth] != GL_DEPTH32F_STENCIL8)
+                    if (depthFormats[depth] != GL_DEPTH24_STENCIL8 && depthFormats[depth] != GL_DEPTH32F_STENCIL8)
                     {
                         if (_tryFormat(depthFormats[depth], GL_NONE))
                         {
@@ -283,22 +282,22 @@ namespace BansheeEngine
             }
 
             // Delete texture and framebuffer
-            glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-            glDeleteFramebuffersEXT(1, &fb);
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            glDeleteFramebuffers(1, &fb);
 			
 			glFinish();
 			
-            if (fmt!=GL_NONE)
+            if (fmt != GL_NONE)
                 glDeleteTextures(1, &tid);
         }
 
-        // It seems a bug in nVidia driver: glBindFramebufferEXT should restore
+        // It seems a bug in nVidia driver: glBindFramebuffer should restore
         // draw and read buffers, but in some unclear circumstances it won't.
         glDrawBuffer(old_drawbuffer);
         glReadBuffer(old_readbuffer);
 
 		String fmtstring = "";
-        for(size_t x=0; x<PF_COUNT; ++x)
+        for(size_t x = 0; x < PF_COUNT; ++x)
         {
             if(mProps[x].valid)
                 fmtstring += PixelUtil::getFormatName((PixelFormat)x)+" ";

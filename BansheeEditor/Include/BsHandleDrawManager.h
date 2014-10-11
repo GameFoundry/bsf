@@ -51,9 +51,6 @@ namespace BansheeEngine
 	{
 		struct SolidMaterialData
 		{
-			HMaterial material;
-
-			// Core
 			MaterialProxyPtr proxy;
 			GpuParamMat4 mViewProj;
 			GpuParamMat4 mViewIT;
@@ -61,9 +58,6 @@ namespace BansheeEngine
 
 		struct WireMaterialData
 		{
-			HMaterial material;
-
-			// Core
 			MaterialProxyPtr proxy;
 			GpuParamMat4 mViewProj;
 		};

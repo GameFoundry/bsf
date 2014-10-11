@@ -8,7 +8,7 @@ namespace BansheeEngine
 {
     GLFrameBufferObject::GLFrameBufferObject()
     {
-        glGenFramebuffersEXT(1, &mFB);
+        glGenFramebuffers(1, &mFB);
 
         for(UINT32 x = 0; x < BS_MAX_MULTIPLE_RENDER_TARGETS; ++x)
             mColor[x].buffer = nullptr;
@@ -18,7 +18,7 @@ namespace BansheeEngine
 
     GLFrameBufferObject::~GLFrameBufferObject()
     {
-        glDeleteFramebuffersEXT(1, &mFB);    
+        glDeleteFramebuffers(1, &mFB);    
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_FrameBufferObject);
     }
 
@@ -43,6 +43,9 @@ namespace BansheeEngine
 	void GLFrameBufferObject::bindDepthStencil(GLPixelBufferPtr depthStencilBuffer)
 	{
 		mDepthStencilBuffer = depthStencilBuffer;
+
+		if (mColor[0].buffer)
+			rebuild();
 	}
 
 	void GLFrameBufferObject::unbindDepthStencil()
@@ -64,7 +67,7 @@ namespace BansheeEngine
         UINT16 maxSupportedMRTs = BansheeEngine::RenderSystem::instancePtr()->getCapabilities()->getNumMultiRenderTargets();
 
 		// Bind simple buffer to add color attachments
-		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, mFB);
+		glBindFramebuffer(GL_FRAMEBUFFER, mFB);
 
         // Bind all attachment points to frame buffer
         for(UINT16 x = 0; x < maxSupportedMRTs; ++x)
@@ -92,12 +95,12 @@ namespace BansheeEngine
 				// Note: I'm attaching textures to FBO while renderbuffers might yield better performance if I
 				// don't need to read from them
 
-	            mColor[x].buffer->bindToFramebuffer(GL_COLOR_ATTACHMENT0_EXT + x, mColor[x].zoffset);
+	            mColor[x].buffer->bindToFramebuffer(GL_COLOR_ATTACHMENT0 + x, mColor[x].zoffset);
             }
             else
             {
                 // Detach
-                glFramebufferTextureEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + x, 0, 0);
+                glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + x, 0, 0);
             }
         }
 
@@ -106,13 +109,13 @@ namespace BansheeEngine
 
 		// Do glDrawBuffer calls
 		GLenum bufs[BS_MAX_MULTIPLE_RENDER_TARGETS];
-		GLsizei n=0;
-		for(UINT32 x=0; x<BS_MAX_MULTIPLE_RENDER_TARGETS; ++x)
+		GLsizei n = 0;
+		for(UINT32 x = 0; x < BS_MAX_MULTIPLE_RENDER_TARGETS; ++x)
 		{
 			// Fill attached colour buffers
 			if(mColor[x].buffer)
 			{
-				bufs[x] = GL_COLOR_ATTACHMENT0_EXT + x;
+				bufs[x] = GL_COLOR_ATTACHMENT0 + x;
 				// Keep highest used buffer + 1
 				n = x+1;
 			}
@@ -122,32 +125,23 @@ namespace BansheeEngine
 			}
 		}
 
-		if(glDrawBuffers)
-		{
-			// Drawbuffer extension supported, use it
-			glDrawBuffers(n, bufs);
-		}
-		else
-		{
-			// In this case, the capabilities will not show more than 1 simultaneaous render target.
-			glDrawBuffer(bufs[0]);
-		}
+		glDrawBuffers(n, bufs);
 
 		// No read buffer, by default, if we want to read anyway we must not forget to set this.
 		glReadBuffer(GL_NONE);
 
         // Check status
         GLuint status;
-        status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+        status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
         
         // Bind main buffer
-        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
         
         switch(status)
         {
-        case GL_FRAMEBUFFER_COMPLETE_EXT:
+        case GL_FRAMEBUFFER_COMPLETE:
             break;
-        case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
+        case GL_FRAMEBUFFER_UNSUPPORTED:
             BS_EXCEPT(InvalidParametersException, "All framebuffer formats with this texture internal format unsupported");
         default:
             BS_EXCEPT(InvalidParametersException, "Framebuffer incomplete or other FBO status error");
@@ -156,6 +150,6 @@ namespace BansheeEngine
 
     void GLFrameBufferObject::bind()
     {
-		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, mFB);
+		glBindFramebuffer(GL_FRAMEBUFFER, mFB);
     }
 }

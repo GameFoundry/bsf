@@ -326,20 +326,20 @@ namespace BansheeEngine
 		switch(mTarget)
 		{
 		case GL_TEXTURE_1D:
-			glFramebufferTexture1DEXT(GL_FRAMEBUFFER_EXT, attachment,
+			glFramebufferTexture1D(GL_FRAMEBUFFER, attachment,
 				mFaceTarget, mTextureID, mLevel);
 			break;
 		case GL_TEXTURE_2D:
 		case GL_TEXTURE_CUBE_MAP:
-			glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, attachment,
+			glFramebufferTexture2D(GL_FRAMEBUFFER, attachment,
 				mFaceTarget, mTextureID, mLevel);
 			break;
 		case GL_TEXTURE_2D_MULTISAMPLE:
-			glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, attachment,
+			glFramebufferTexture2D(GL_FRAMEBUFFER, attachment,
 				mFaceTarget, mTextureID, 0);
 			break;
 		case GL_TEXTURE_3D:
-			glFramebufferTexture3DEXT(GL_FRAMEBUFFER_EXT, attachment,
+			glFramebufferTexture3D(GL_FRAMEBUFFER, attachment,
 				mFaceTarget, mTextureID, mLevel, zoffset);
 			break;
 		}
@@ -420,31 +420,31 @@ namespace BansheeEngine
 		mRenderbufferID(0)
 	{
 		mGLInternalFormat = format;
-		glGenRenderbuffersEXT(1, &mRenderbufferID);
-		glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, mRenderbufferID);
+		glGenRenderbuffers(1, &mRenderbufferID);
+		glBindRenderbuffer(GL_RENDERBUFFER, mRenderbufferID);
     
 		/// Allocate storage for depth buffer
 		if (numSamples > 0)
 		{
-			glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, 
+			glRenderbufferStorageMultisample(GL_RENDERBUFFER, 
 				numSamples, format, width, height);
 		}
 		else
 		{
-			glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, format,
+			glRenderbufferStorage(GL_RENDERBUFFER, format,
 								width, height);
 		}
 	}
 
 	GLRenderBuffer::~GLRenderBuffer()
 	{
-		glDeleteRenderbuffersEXT(1, &mRenderbufferID);
+		glDeleteRenderbuffers(1, &mRenderbufferID);
 	}
 
 	void GLRenderBuffer::bindToFramebuffer(GLenum attachment, UINT32 zoffset)
 	{
 		assert(zoffset < mDepth);
-		glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, attachment,
-							GL_RENDERBUFFER_EXT, mRenderbufferID);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment,
+							GL_RENDERBUFFER, mRenderbufferID);
 	}
 };

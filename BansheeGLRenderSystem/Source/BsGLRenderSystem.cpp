@@ -808,7 +808,7 @@ namespace BansheeEngine
 		// Reset buffer write state
 		if (!mDepthWrite && (buffers & FBT_DEPTH))
 		{
-			glDepthMask( GL_FALSE );
+			glDepthMask(GL_FALSE);
 		}
 		if (colorMask && (buffers & FBT_COLOR))
 		{
@@ -1077,7 +1077,7 @@ namespace BansheeEngine
 		switch( mode )
 		{
 		case CULL_NONE:
-			glDisable( GL_CULL_FACE );
+			glDisable(GL_CULL_FACE);
 			return;
 		default:
 		case CULL_CLOCKWISE:
@@ -1088,8 +1088,8 @@ namespace BansheeEngine
 			break;
 		}
 
-		glEnable( GL_CULL_FACE );
-		glCullFace( cullMode );
+		glEnable(GL_CULL_FACE);
+		glCullFace(cullMode);
 	}
 
 	void GLRenderSystem::setDepthBufferCheckEnabled(bool enabled)
@@ -1108,8 +1108,8 @@ namespace BansheeEngine
 	void GLRenderSystem::setDepthBufferWriteEnabled(bool enabled)
 	{
 		GLboolean flag = enabled ? GL_TRUE : GL_FALSE;
-		glDepthMask( flag );  
-		// Store for reference in _beginFrame
+		glDepthMask(flag);  
+
 		mDepthWrite = enabled;
 	}
 
