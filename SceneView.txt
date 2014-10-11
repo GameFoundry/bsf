@@ -11,7 +11,6 @@ TESTING:
  - Ensure that selecting an item in scene or resource tree view properly updates Selection
 
 Test gizmos
- - Test all solid/wire gizmos shapes on all render systems
  - Test rendering of icon gizmos
  - HOOK UP GIZMO SELECTION and test it
 
@@ -23,7 +22,7 @@ Test handles
 
 IMPLEMENT SELECTION RENDERING
 
-IMPROVE SceneGrid LOOK AND ENSURE IT RENDERS FINE ON ALL APIS
+IMPROVE SceneGrid LOOK
  - LIKELY USE PIXEL SceneGrid WITH AA
 
 Need a way to drag and drop items from Scene tree view to Scene view
@@ -118,3 +117,27 @@ SceneView editor flow:
      Otheriwse its assumed we are dragging a selection
         Do nothing
         return
+
+---------------------------------------------------------------------
+Multi-resources
+
+ Importer::import
+  - Each SpecificImporter is responsible for importing all needed resources and registering them with Resources manager
+  - However only the main resource is returned from that method
+  - Rest of the resources are referenced by the UUID in ResourceMeta and can be retrieved there if needed
+
+ Resources::save
+  - Add to documentation that it will only save that exact resource and not any dependencies, you must call save() for them manually
+
+ Resources::load
+  - Will automatically load all dependencies, optionally add a boolean that allows you to load only the main asset
+
+ProjectLibrary
+ - Needs to be extended so it shows sub-resources in tree view
+ - Need to extend my mapping so one asset maps to multiple assets in library (need to remember how I do that currently, is it just by name or meta-file identifier?)
+
+---------------------
+
+With this approach I can:
+ - Reference and load the sub-resources directly
+ - Technically I can also delete sub-resources

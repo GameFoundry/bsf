@@ -29,7 +29,7 @@ namespace BansheeEngine
 		};
 
 	public:
-		ScriptHandleManager(const HCamera& camera, RuntimeScriptObjects& scriptObjectManager);
+		ScriptHandleManager(RuntimeScriptObjects& scriptObjectManager);
 		~ScriptHandleManager();
 
 		void update();

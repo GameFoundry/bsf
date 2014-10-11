@@ -8,7 +8,7 @@ namespace BansheeEngine
 	class BS_ED_EXPORT HandleManager : public Module<HandleManager>
 	{
 	public:
-		HandleManager(const HCamera& camera);
+		HandleManager();
 		virtual ~HandleManager();
 
 		void update(const Vector2I& inputPos, const Ray& inputRay, bool pressed);
@@ -21,7 +21,6 @@ namespace BansheeEngine
 	protected:
 		HandleSliderManager* mSliderManager;
 		HandleDrawManager* mDrawManager;
-		HCamera mCamera;
 
 		virtual void refreshHandles() = 0;
 		virtual void triggerHandles() = 0;

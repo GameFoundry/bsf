@@ -14,8 +14,8 @@ using namespace std::placeholders;
 
 namespace BansheeEngine
 {
-	ScriptHandleManager::ScriptHandleManager(const HCamera& camera, RuntimeScriptObjects& scriptObjectManager)
-		:HandleManager(camera), mScriptObjectManager(scriptObjectManager)
+	ScriptHandleManager::ScriptHandleManager(RuntimeScriptObjects& scriptObjectManager)
+		:mScriptObjectManager(scriptObjectManager)
 	{
 		mAssemblyRefreshedConn = mScriptObjectManager.onAssemblyRefreshed.connect(std::bind(&ScriptHandleManager::reloadAssembly, this, _1));
 

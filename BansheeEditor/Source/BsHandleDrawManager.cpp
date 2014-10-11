@@ -16,19 +16,20 @@ namespace BansheeEngine
 	const UINT32 HandleDrawManager::WIRE_SPHERE_QUALITY = 10;
 	const UINT32 HandleDrawManager::ARC_QUALITY = 10;
 
-	HandleDrawManager::HandleDrawManager(const HCamera& camera)
-		:mCamera(camera)
+	HandleDrawManager::HandleDrawManager()
+		:mCore(nullptr)
 	{
-		mSceneRenderTarget = mCamera->getViewport()->getTarget();
 		mDrawHelper = bs_new<DrawHelper>();
 
-		mSolidMaterial.material = BuiltinEditorResources::instance().createSolidGizmoMat();
-		mWireMaterial.material = BuiltinEditorResources::instance().createWireGizmoMat();
+		HMaterial solidMaterial = BuiltinEditorResources::instance().createSolidGizmoMat();
+		HMaterial wireMaterial = BuiltinEditorResources::instance().createWireGizmoMat();
 
-		mSolidMaterial.proxy = mSolidMaterial.material->_createProxy();
-		mWireMaterial.proxy = mWireMaterial.material->_createProxy();
+		MaterialProxyPtr solidMaterialProxy = solidMaterial->_createProxy();
+		MaterialProxyPtr wireMaterialProxy = wireMaterial->_createProxy();
 
-		gCoreAccessor().queueCommand(std::bind(&HandleDrawManager::initializeCore, this));
+		mCore = bs_new<HandleDrawManagerCore>(HandleDrawManagerCore::PrivatelyConstruct());
+
+		gCoreAccessor().queueCommand(std::bind(&HandleDrawManager::initializeCore, this, solidMaterialProxy, wireMaterialProxy));
 	}
 
 	HandleDrawManager::~HandleDrawManager()
@@ -40,30 +41,22 @@ namespace BansheeEngine
 
 		if (mWireMesh != nullptr)
 			mDrawHelper->releaseWireMesh(mWireMesh);
+
+		gCoreAccessor().queueCommand(std::bind(&HandleDrawManager::destroyCore, this, mCore));
 	}
 
-	void HandleDrawManager::initializeCore()
+	void HandleDrawManager::initializeCore(const MaterialProxyPtr& wireMatProxy, const MaterialProxyPtr& solidMatProxy)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		// TODO - Make a better interface when dealing with parameters through proxies?
-		{
-			MaterialProxyPtr proxy = mWireMaterial.proxy;
-			GpuParamsPtr vertParams = proxy->params[proxy->passes[0].vertexProgParamsIdx];
+		mCore->initialize(wireMatProxy, solidMatProxy);
+	}
 
-			vertParams->getParam("matViewProj", mWireMaterial.mViewProj);
-		}
+	void HandleDrawManager::destroyCore(HandleDrawManagerCore* core)
+	{
+		THROW_IF_NOT_CORE_THREAD;
 
-		{
-			MaterialProxyPtr proxy = mSolidMaterial.proxy;
-			GpuParamsPtr vertParams = proxy->params[proxy->passes[0].vertexProgParamsIdx];
-
-			vertParams->getParam("matViewProj", mSolidMaterial.mViewProj);
-			vertParams->getParam("matViewIT", mSolidMaterial.mViewIT);
-		}
-
-		RendererPtr activeRenderer = RendererManager::instance().getActive();
-		activeRenderer->onCorePostRenderViewport.connect(std::bind(&HandleDrawManager::coreRender, this, _1));
+		bs_delete(core);
 	}
 
 	void HandleDrawManager::setColor(const Color& color)
@@ -131,7 +124,7 @@ namespace BansheeEngine
 		mDrawHelper->rectangle(area);
 	}
 
-	void HandleDrawManager::draw()
+	void HandleDrawManager::draw(const HCamera& camera)
 	{
 		if (mSolidMesh != nullptr)
 			mDrawHelper->releaseSolidMesh(mSolidMesh);
@@ -145,18 +138,44 @@ namespace BansheeEngine
 		MeshProxyPtr solidMeshProxy = mSolidMesh->_createProxy(0);
 		MeshProxyPtr wireMeshProxy = mWireMesh->_createProxy(0);
 
-		gCoreAccessor().queueCommand(std::bind(&HandleDrawManager::coreUpdateData, this, solidMeshProxy, wireMeshProxy));
+		RenderTargetPtr sceneRenderTarget = camera->getViewport()->getTarget();
+
+		gCoreAccessor().queueCommand(std::bind(&HandleDrawManagerCore::updateData, mCore, 
+			sceneRenderTarget, solidMeshProxy, wireMeshProxy));
 
 		mDrawHelper->clear();
 	}
 
-	void HandleDrawManager::coreUpdateData(const MeshProxyPtr& solidMeshProxy, const MeshProxyPtr& wireMeshProxy)
+	void HandleDrawManagerCore::initialize(const MaterialProxyPtr& wireMatProxy, const MaterialProxyPtr& solidMatProxy)
 	{
+		// TODO - Make a better interface when dealing with parameters through proxies?
+		{
+			MaterialProxyPtr proxy = mWireMaterial.proxy;
+			GpuParamsPtr vertParams = proxy->params[proxy->passes[0].vertexProgParamsIdx];
+
+			vertParams->getParam("matViewProj", mWireMaterial.mViewProj);
+		}
+
+		{
+			MaterialProxyPtr proxy = mSolidMaterial.proxy;
+			GpuParamsPtr vertParams = proxy->params[proxy->passes[0].vertexProgParamsIdx];
+
+			vertParams->getParam("matViewProj", mSolidMaterial.mViewProj);
+			vertParams->getParam("matViewIT", mSolidMaterial.mViewIT);
+		}
+
+		RendererPtr activeRenderer = RendererManager::instance().getActive();
+		activeRenderer->onCorePostRenderViewport.connect(std::bind(&HandleDrawManagerCore::render, this, _1));
+	}
+
+	void HandleDrawManagerCore::updateData(const RenderTargetPtr& rt, const MeshProxyPtr& solidMeshProxy, const MeshProxyPtr& wireMeshProxy)
+	{
+		mSceneRenderTarget = rt;
 		mSolidMeshProxy = solidMeshProxy;
 		mWireMeshProxy = wireMeshProxy;
 	}
 
-	void HandleDrawManager::coreRender(const CameraProxy& camera)
+	void HandleDrawManagerCore::render(const CameraProxy& camera)
 	{
 		if (camera.viewport.getTarget() != mSceneRenderTarget)
 			return;
@@ -172,11 +191,11 @@ namespace BansheeEngine
 		screenArea.width = (int)(normArea.width * width);
 		screenArea.height = (int)(normArea.height * height);
 
-		coreRenderSolid(camera.viewMatrix, camera.projMatrix, mSolidMeshProxy);
-		coreRenderWire(camera.viewMatrix, camera.projMatrix, mWireMeshProxy);
+		renderSolid(camera.viewMatrix, camera.projMatrix, mSolidMeshProxy);
+		renderWire(camera.viewMatrix, camera.projMatrix, mWireMeshProxy);
 	}
 
-	void HandleDrawManager::coreRenderSolid(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr meshProxy)
+	void HandleDrawManagerCore::renderSolid(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr meshProxy)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -190,7 +209,7 @@ namespace BansheeEngine
 		Renderer::draw(*meshProxy);
 	}
 
-	void HandleDrawManager::coreRenderWire(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr meshProxy)
+	void HandleDrawManagerCore::renderWire(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr meshProxy)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 

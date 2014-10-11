@@ -1,14 +1,15 @@
 #include "BsHandleManager.h"
 #include "BsHandleDrawManager.h"
 #include "BsHandleSliderManager.h"
+#include "BsSceneEditorWidget.h"
 
 namespace BansheeEngine
 {
-	HandleManager::HandleManager(const HCamera& camera)
-		:mSliderManager(nullptr), mDrawManager(nullptr), mCamera(camera)
+	HandleManager::HandleManager()
+		:mSliderManager(nullptr), mDrawManager(nullptr)
 	{
 		mSliderManager = bs_new<HandleSliderManager>();
-		mDrawManager = bs_new<HandleDrawManager>(camera);
+		mDrawManager = bs_new<HandleDrawManager>();
 	}
 
 	HandleManager::~HandleManager()
@@ -24,14 +25,20 @@ namespace BansheeEngine
 
 	void HandleManager::update(const Vector2I& inputPos, const Ray& inputRay, bool pressed)
 	{
-		refreshHandles();
+		SceneEditorWidget* sceneView = SceneViewLocator::instance();
+		if (sceneView != nullptr)
+		{
+			HCamera sceneCamera = sceneView->getSceneCamera();
 
-		mSliderManager->update(mCamera, inputPos, inputRay, pressed);
+			refreshHandles();
 
-		triggerHandles();
+			mSliderManager->update(sceneCamera, inputPos, inputRay, pressed);
 
-		queueDrawCommands();
+			triggerHandles();
 
-		mDrawManager->draw();
+			queueDrawCommands();
+
+			mDrawManager->draw(sceneCamera);
+		}
 	}
 }
