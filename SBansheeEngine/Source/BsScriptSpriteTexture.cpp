@@ -32,6 +32,6 @@ namespace BansheeEngine
 
 	void ScriptSpriteTexture::setNativeHandle(const HResource& resource) 
 	{ 
-		mTexture = static_resource_cast<Resource>(mTexture); 
+		mTexture = static_resource_cast<SpriteTexture>(resource);
 	}
 }

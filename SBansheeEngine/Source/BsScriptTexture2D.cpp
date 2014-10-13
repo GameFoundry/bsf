@@ -53,6 +53,6 @@ namespace BansheeEngine
 
 	void ScriptTexture2D::setNativeHandle(const HResource& resource) 
 	{ 
-		mTexture = static_resource_cast<Resource>(mTexture); 
+		mTexture = static_resource_cast<Texture>(resource);
 	}
 }

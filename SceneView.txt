@@ -5,17 +5,16 @@
 	- Then make a Component wrapper around the non-component types, and also a C# wrapper around the same types
 
 TESTING:
- - Depth rendering in scene view on OpenGL is all screwed up
  - Test picking on an object with alpha
  - Ensure that selecting an item in scene properly marks it in scene view
  - Ensure that selecting an item in scene or resource tree view properly updates Selection
 
 Test gizmos
  - Test rendering of icon gizmos
+   - Need a way to load a texture from C# (Extend ProjectLibrary?)
  - HOOK UP GIZMO SELECTION and test it
 
 Test handles
- - Handle rendering might require similar refactor to GizmoManager
  - Test basic move handle
  - Test a custom handle from C#
  - FINISH HANDLE IMPLEMENTATION AND GLUE EVERYTHING TOGHETHER
@@ -24,6 +23,7 @@ IMPLEMENT SELECTION RENDERING
 
 IMPROVE SceneGrid LOOK
  - LIKELY USE PIXEL SceneGrid WITH AA
+ - OR (better) instead of drawing rows and columns of lines, just draw a plane with procedural texture
 
 Need a way to drag and drop items from Scene tree view to Scene view
 

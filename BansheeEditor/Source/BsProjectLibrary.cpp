@@ -501,10 +501,9 @@ namespace BansheeEngine
 		if (resource == nullptr)
 			return;
 
-		if (!mResourcesFolder.includes(path))
-			BS_EXCEPT(InvalidParametersException, "Provided path is not within the project library directory: " + path.toString());
+		Path assetPath = mResourcesFolder;
+		assetPath.append(path);
 
-		Path assetPath = path;
 		assetPath.setExtension(assetPath.getWExtension() + L"." + ResourceImporter::DEFAULT_EXTENSION);
 
 		LibraryEntry* existingEntry = findEntry(assetPath);

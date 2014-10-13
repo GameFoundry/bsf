@@ -36,6 +36,18 @@ namespace BansheeEngine
 		ScriptSpriteTexture* createScriptSpriteTexture(MonoObject* existingInstance, const HSpriteTexture& resourceHandle);
 
 		/**
+		 * @note Throws an exception if resource for the handle already exists.
+		 * 		 Creates a new managed instance of the object.
+		 */
+		ScriptFont* createScriptFont(const HFont& resourceHandle);
+
+		/**
+		 * @note Throws an exception if resource for the handle already exists.
+		 * 		 Initializes the ScriptResource with an existing managed instance.
+		 */
+		ScriptFont* createScriptFont(MonoObject* existingInstance, const HFont& resourceHandle);
+
+		/**
 		* @note  Throws an exception if resource for the handle already exists.
 		* 		 Initializes the ScriptResource with an existing managed instance.
 		*/
@@ -61,12 +73,18 @@ namespace BansheeEngine
 		 */
 		ScriptResourceBase* getScriptResource(const String& UUID);
 
+		/**
+		 * @note Returns nullptr if script resource doesn't exist.
+		 */
+		ScriptResourceBase* createScriptResource(const HResource& resource);
+
 		void destroyScriptResource(ScriptResourceBase* resource);
 
 	private:
 		UnorderedMap<String, ScriptResourceBase*> mScriptResources;
 		MonoClass* mTextureClass;
 		MonoClass* mSpriteTextureClass;
+		MonoClass* mFontClass;
 
 		void throwExceptionIfInvalidOrDuplicate(const String& uuid) const;
 	};

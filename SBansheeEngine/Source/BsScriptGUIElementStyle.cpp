@@ -36,7 +36,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIElementStyle::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_AddSubStyle", &ScriptGUIElementStyle::internal_addSubStyle);
 
-		BS_SCRIPT_SETGET_META(ScriptGUIElementStyle, Font);
+		metaData.scriptClass->addInternalCall("Internal_GetFont", &ScriptGUIElementStyle::internal_GetFont);
+		metaData.scriptClass->addInternalCall("Internal_SetFont", &ScriptGUIElementStyle::internal_SetFont);
 
 		BS_SCRIPT_SETGET_META(ScriptGUIElementStyle, FontSize);
 		BS_SCRIPT_SETGET_META(ScriptGUIElementStyle, TextHorzAlign);
@@ -92,5 +93,25 @@ namespace BansheeEngine
 		String styleNameStr = MonoUtil::monoToString(styleName);
 
 		nativeInstance->getInternalValue()->subStyles[guiTypeStr] = styleNameStr;
+	}
+
+	void ScriptGUIElementStyle::internal_GetFont(ScriptGUIElementStyle* nativeInstance, MonoObject** value)
+	{
+		throwIfInstancesDontMatch(nativeInstance->mFont, nativeInstance->mElementStyle->font.get());
+
+		if (nativeInstance->mFont != nullptr)
+		{
+			*value = nativeInstance->mFont->getManagedInstance();
+			return;
+		}
+
+		*value = nullptr;
+	}
+
+	void ScriptGUIElementStyle::internal_SetFont(ScriptGUIElementStyle* nativeInstance, MonoObject* value)
+	{
+		ScriptFont* nativeValue = ScriptFont::toNative(value);
+		nativeInstance->mElementStyle->font = nativeValue->getNativeHandle();
+		nativeInstance->mFont = nativeValue;
 	}
 }

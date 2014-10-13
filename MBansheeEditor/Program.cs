@@ -23,7 +23,7 @@ namespace BansheeEditor
             gizmoDbgObject.AddComponent<DbgGizmoComponent>();
 
             DbgResource testResource = new DbgResource();
-            //ProjectLibrary.Create(testResource, @"D:\DummyBansheeProject\Resources\testResource");
+            //ProjectLibrary.Create(testResource, @"testResource");
 
 
 

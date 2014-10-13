@@ -13,6 +13,7 @@ namespace BansheeEngine
 
 	private:
 		static void internal_Create(MonoObject* resource, MonoString* path);
+		static MonoObject* internal_Load(MonoString* path);
 
 		ScriptProjectLibrary(MonoObject* instance);
 	};

@@ -4,6 +4,7 @@
 #include "BsMonoClass.h"
 #include "BsScriptTexture2D.h"
 #include "BsScriptSpriteTexture.h"
+#include "BsScriptFont.h"
 #include "BsScriptManagedResource.h"
 
 namespace BansheeEngine
@@ -17,12 +18,16 @@ namespace BansheeEngine
 
 		mTextureClass = assembly->getClass("BansheeEngine", "Texture2D");
 		mSpriteTextureClass = assembly->getClass("BansheeEngine", "SpriteTexture");
+		mFontClass = assembly->getClass("BansheeEngine", "Font");
 
 		if(mTextureClass == nullptr)
 			BS_EXCEPT(InternalErrorException, "Cannot find managed Texture2D class.");
 
 		if(mSpriteTextureClass == nullptr)
 			BS_EXCEPT(InternalErrorException, "Cannot find managed SpriteTexture class.");
+
+		if (mFontClass == nullptr)
+			BS_EXCEPT(InternalErrorException, "Cannot find managed Font class.");
 	}
 
 	ScriptTexture2D* ScriptResourceManager::createScriptTexture(const HTexture& resourceHandle)
@@ -35,7 +40,9 @@ namespace BansheeEngine
 	ScriptTexture2D* ScriptResourceManager::createScriptTexture(MonoObject* instance, const HTexture& resourceHandle)
 	{
 		const String& uuid = resourceHandle.getUUID();
+#if BS_DEBUG_MODE
 		throwExceptionIfInvalidOrDuplicate(uuid);
+#endif
 
 		ScriptTexture2D* scriptResource = new (bs_alloc<ScriptTexture2D>()) ScriptTexture2D(instance, resourceHandle);
 		mScriptResources[uuid] = scriptResource;
@@ -53,9 +60,31 @@ namespace BansheeEngine
 	ScriptSpriteTexture* ScriptResourceManager::createScriptSpriteTexture(MonoObject* instance, const HSpriteTexture& resourceHandle)
 	{
 		const String& uuid = resourceHandle.getUUID();
+#if BS_DEBUG_MODE
 		throwExceptionIfInvalidOrDuplicate(uuid);
+#endif
 
 		ScriptSpriteTexture* scriptResource = new (bs_alloc<ScriptSpriteTexture>()) ScriptSpriteTexture(instance, resourceHandle);
+		mScriptResources[uuid] = scriptResource;
+
+		return scriptResource;
+	}
+
+	ScriptFont* ScriptResourceManager::createScriptFont(const HFont& resourceHandle)
+	{
+		MonoObject* monoInstance = mFontClass->createInstance();
+
+		return createScriptFont(monoInstance, resourceHandle);
+	}
+
+	ScriptFont* ScriptResourceManager::createScriptFont(MonoObject* instance, const HFont& resourceHandle)
+	{
+		const String& uuid = resourceHandle.getUUID();
+#if BS_DEBUG_MODE
+		throwExceptionIfInvalidOrDuplicate(uuid);
+#endif
+
+		ScriptFont* scriptResource = new (bs_alloc<ScriptFont>()) ScriptFont(instance, resourceHandle);
 		mScriptResources[uuid] = scriptResource;
 
 		return scriptResource;
@@ -97,6 +126,31 @@ namespace BansheeEngine
 			return findIter->second;
 
 		return nullptr;
+	}
+
+	ScriptResourceBase* ScriptResourceManager::createScriptResource(const HResource& resource)
+	{
+#if BS_DEBUG_MODE
+		throwExceptionIfInvalidOrDuplicate(resource.getUUID());
+#endif
+
+		UINT32 resTypeID = resource->getTypeId();
+
+		switch (resTypeID)
+		{
+		case TID_Texture:
+			return createScriptTexture(static_resource_cast<Texture>(resource));
+		case TID_SpriteTexture:
+			return createScriptSpriteTexture(static_resource_cast<SpriteTexture>(resource));
+		case TID_Font:
+			return createScriptFont(static_resource_cast<Font>(resource));
+		case TID_ManagedResource:
+			BS_EXCEPT(InternalErrorException, "Managed resources must have a managed instance by default, this call is invalid.")
+				break;
+		default:
+			BS_EXCEPT(NotImplementedException, "Attempting to load a resource type that is not supported. Type ID: " + toString(resTypeID));
+			break;
+		}
 	}
 
 	void ScriptResourceManager::destroyScriptResource(ScriptResourceBase* resource)

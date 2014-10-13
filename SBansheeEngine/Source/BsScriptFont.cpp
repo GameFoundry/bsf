@@ -4,6 +4,7 @@
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
 #include "BsSpriteTexture.h"
+#include "BsScriptResourceManager.h"
 
 namespace BansheeEngine
 {
@@ -13,18 +14,19 @@ namespace BansheeEngine
 
 	}
 
-	void* ScriptFont::getNativeRaw() const
-	{
-		return (void*)mFont.get();
-	}
-
 	void ScriptFont::initRuntimeData()
 	{
 
 	}
 
-	void ScriptFont::internal_createInstanceExternal(MonoObject* instance, const HFont& font)
+	void ScriptFont::_onManagedInstanceDeleted()
 	{
-		ScriptFont* nativeInstance = new (bs_alloc<ScriptFont>()) ScriptFont(instance, font);
+		mManagedInstance = nullptr;
+		ScriptResourceManager::instance().destroyScriptResource(this);
+	}
+
+	void ScriptFont::setNativeHandle(const HResource& resource)
+	{
+		mFont = static_resource_cast<Font>(resource);
 	}
 }
