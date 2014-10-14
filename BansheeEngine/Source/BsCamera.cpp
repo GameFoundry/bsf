@@ -540,19 +540,7 @@ namespace BansheeEngine
 
 	Vector2 Camera::viewToClipPoint(const Vector3& viewPoint) const
 	{
-		Vector4 projPoint = getProjectionMatrix().multiply(Vector4(viewPoint.x, viewPoint.y, viewPoint.z, 1.0f));
-
-		if (projPoint.w > 1e-7f)
-		{
-			float invW = 1.0f / projPoint.w;
-			projPoint.x *= invW;
-			projPoint.y *= invW;
-		}
-		else
-		{
-			projPoint.x = 0.0f;
-			projPoint.y = 0.0f;
-		}
+		Vector3 projPoint = projectPoint(viewPoint);
 
 		return Vector2(projPoint.x, projPoint.y);
 	}
@@ -585,6 +573,28 @@ namespace BansheeEngine
 		Vector3 far = unprojectPoint(Vector3(clipPoint.x, clipPoint.y, mNearDist + 1.0f));
 
 		return Ray(near, Vector3::normalize(far - near));
+	}
+
+	Vector3 Camera::projectPoint(const Vector3& point) const
+	{
+		Vector4 projPoint4(point.x, point.y, point.z, 1.0f);
+		projPoint4 = getProjectionMatrix().multiply(projPoint4);
+
+		if (projPoint4.w > 1e-7f)
+		{
+			float invW = 1.0f / projPoint4.w;
+			projPoint4.x *= invW;
+			projPoint4.y *= invW;
+			projPoint4.z *= invW;
+		}
+		else
+		{
+			projPoint4.x = 0.0f;
+			projPoint4.y = 0.0f;
+			projPoint4.z = 0.0f;
+		}
+
+		return Vector3(projPoint4.x, projPoint4.y, projPoint4.z);
 	}
 
 	Vector3 Camera::unprojectPoint(const Vector3& point) const

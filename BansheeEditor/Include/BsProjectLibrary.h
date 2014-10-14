@@ -65,6 +65,8 @@ namespace BansheeEngine
 		void moveEntry(const Path& oldPath, const Path& newPath);
 		void deleteEntry(const Path& path);
 
+		const Path& getResourcesFolder() const { return mResourcesFolder; }
+
 		Event<void(const Path&)> onEntryRemoved;
 		Event<void(const Path&)> onEntryAdded;
 	private:

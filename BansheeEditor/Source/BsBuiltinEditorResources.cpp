@@ -1430,13 +1430,13 @@ namespace BansheeEngine
 
 		DEPTH_STENCIL_STATE_DESC depthStencilState0Desc;
 		depthStencilState0Desc.depthWriteEnable = false;
-		depthStencilState0Desc.backStencilComparisonFunc = CMPF_LESS_EQUAL;
+		depthStencilState0Desc.depthComparisonFunc = CMPF_LESS_EQUAL;
 
 		HDepthStencilState depthStencilState0 = DepthStencilState::create(depthStencilState0Desc);
 
 		DEPTH_STENCIL_STATE_DESC depthStencilState1Desc;
 		depthStencilState1Desc.depthWriteEnable = false;
-		depthStencilState1Desc.backStencilComparisonFunc = CMPF_GREATER;
+		depthStencilState1Desc.depthComparisonFunc = CMPF_GREATER;
 
 		HDepthStencilState depthStencilState1 = DepthStencilState::create(depthStencilState1Desc);
 

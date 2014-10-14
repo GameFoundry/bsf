@@ -175,9 +175,9 @@ namespace BansheeEngine
 		struct IconMaterialData
 		{
 			MaterialProxyPtr proxy;
-			GpuParamsPtr mFragParams;
-			GpuParamMat4 mViewProj;
-			GpuParamTexture mTexture;
+			GpuParamsPtr mFragParams[2];
+			GpuParamMat4 mViewProj[2];
+			GpuParamTexture mTexture[2];
 		};
 
 		struct PickingMaterialData

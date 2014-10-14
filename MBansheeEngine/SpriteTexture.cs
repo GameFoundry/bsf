@@ -10,12 +10,18 @@ namespace BansheeEngine
             
         }
 
-        public SpriteTexture(int dummyParam)
+        public SpriteTexture(Texture2D texture)
         {
-            Internal_CreateInstance(this);
+            Internal_CreateInstance(this, texture, Vector2.zero, Vector2.one);
+        }
+
+        public SpriteTexture(Texture2D texture, Vector2 uvOffset, Vector2 uvScale)
+        {
+            Internal_CreateInstance(this, texture, uvOffset, uvScale);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(SpriteTexture instance);
+        private static extern void Internal_CreateInstance(SpriteTexture instance, 
+            Texture2D teture, Vector2 offset, Vector2 scale);
     }
 }

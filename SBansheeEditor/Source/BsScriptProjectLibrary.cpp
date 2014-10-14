@@ -38,7 +38,10 @@ namespace BansheeEngine
 	{
 		Path resourcePath = MonoUtil::monoToWString(path);
 
-		ProjectLibrary::LibraryEntry* entry = ProjectLibrary::instance().findEntry(resourcePath);
+		Path fullPath = ProjectLibrary::instance().getResourcesFolder();
+		fullPath.append(resourcePath);
+
+		ProjectLibrary::LibraryEntry* entry = ProjectLibrary::instance().findEntry(fullPath);
 
 		if (entry == nullptr || entry->type == ProjectLibrary::LibraryEntryType::Directory)
 			return nullptr;

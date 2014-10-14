@@ -5,6 +5,7 @@
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
 #include "BsSpriteTexture.h"
+#include "BsScriptTexture2D.h"
 
 namespace BansheeEngine
 {
@@ -19,9 +20,20 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptSpriteTexture::internal_createInstance);
 	}
 
-	void ScriptSpriteTexture::internal_createInstance(MonoObject* instance)
+	void ScriptSpriteTexture::internal_createInstance(MonoObject* instance, MonoObject* texture, Vector2 offset, Vector2 scale)
 	{
-		ScriptResourceManager::instance().createScriptSpriteTexture(instance, SpriteTexture::dummy()); // TODO - DUMMY CODE!
+		ScriptTexture2D* scriptTexture = ScriptTexture2D::toNative(texture);
+
+		if (scriptTexture == nullptr)
+		{
+			ScriptResourceManager::instance().createScriptSpriteTexture(instance, SpriteTexture::dummy());
+		}
+		else
+		{
+			HSpriteTexture spriteTexture = SpriteTexture::create(offset, scale, scriptTexture->getNativeHandle());
+
+			ScriptResourceManager::instance().createScriptSpriteTexture(instance, spriteTexture);
+		}
 	}
 
 	void ScriptSpriteTexture::_onManagedInstanceDeleted()

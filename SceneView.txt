@@ -4,6 +4,9 @@
     - Make those two a non-component types. Anywhere they are used in the Renderer they should just be passed as pointers.
 	- Then make a Component wrapper around the non-component types, and also a C# wrapper around the same types
 
+RESOURCES CAN BE INCORRECTLY CAST between each other. e.g. HSpriteTexture to HTexture will be cast implicitly.
+Second pass for Gizmo ICon rendering doesn't work - actually it doesn't seem to render at all even if I send normal depth compare function
+
 TESTING:
  - Test picking on an object with alpha
  - Ensure that selecting an item in scene properly marks it in scene view

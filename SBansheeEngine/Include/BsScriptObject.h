@@ -65,7 +65,7 @@ namespace BansheeEngine
 		{
 			Type* nativeInstance = nullptr;
 
-			if(metaData.thisPtrField != nullptr)
+			if (metaData.thisPtrField != nullptr && managedInstance != nullptr)
 				metaData.thisPtrField->getValue(managedInstance, &nativeInstance);
 
 			return nativeInstance;

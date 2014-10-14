@@ -456,7 +456,7 @@ namespace BansheeEngine
 		}
 
 		iconRenderData = bs_shared_ptr<IconRenderDataVec>();
-		UINT32 lastTextureIdx = 0;
+		UINT32 lastTextureIdx = std::numeric_limits<UINT32>::max();
 		HTexture curTexture;
 
 		// Note: This assumes the meshes will be rendered using the same camera
@@ -466,7 +466,9 @@ namespace BansheeEngine
 			SortedIconData& sortedIconData = mSortedIconData[i];
 			const IconData& curIconData = iconData[sortedIconData.iconIdx];
 
-			if (curTexture != curIconData.texture)
+			HTexture atlasTexture = curIconData.texture->getTexture();
+
+			if (curTexture != atlasTexture)
 			{
 				UINT32 numIconsPerTexture = i - lastTextureIdx;
 				if (numIconsPerTexture > 0)
@@ -474,11 +476,11 @@ namespace BansheeEngine
 					iconRenderData->push_back(IconRenderData());
 					IconRenderData& renderData = iconRenderData->back();
 					renderData.count = numIconsPerTexture;
-					renderData.texture = curTexture;
+					renderData.texture = atlasTexture;
 				}
 
 				lastTextureIdx = i;
-				curTexture = curIconData.texture;
+				curTexture = atlasTexture;
 			}
 
 			UINT32 iconWidth = curIconData.texture->getWidth();
@@ -486,11 +488,9 @@ namespace BansheeEngine
 
 			limitIconSize(iconWidth, iconHeight);
 
-			Color normalColor, fadedColor;
-			calculateIconColors(curIconData.color, *camera.get(), iconHeight, curIconData.fixedScale, normalColor, fadedColor);
-
-			Vector3 position((float)sortedIconData.screenPosition.x, (float)sortedIconData.screenPosition.y, sortedIconData.distance);
-			// TODO - Does the depth need to be corrected since it was taken from a projective camera (probably)?
+			Vector3 position((float)sortedIconData.screenPosition.x, (float)sortedIconData.screenPosition.y, -sortedIconData.distance);
+			Vector3 projPosition = camera->projectPoint(position);
+			position.z = -projPosition.z;
 
 			float halfWidth = iconWidth * 0.5f;
 			float halfHeight = iconHeight * 0.5f;
@@ -499,13 +499,16 @@ namespace BansheeEngine
 			{
 				float iconScale = 1.0f;
 				if (camera->getProjectionType() == PT_ORTHOGRAPHIC)
-					iconScale = cameraScale;
+					iconScale = cameraScale * ICON_TEXEL_WORLD_SIZE;
 				else
-					iconScale = cameraScale / sortedIconData.distance;
+					iconScale = (cameraScale * ICON_TEXEL_WORLD_SIZE) / sortedIconData.distance;
 
 				halfWidth *= iconScale;
 				halfHeight *= iconScale;
 			}
+
+			Color normalColor, fadedColor;
+			calculateIconColors(curIconData.color, *camera.get(), (UINT32)(halfHeight * 2.0f), curIconData.fixedScale, normalColor, fadedColor);
 
 			Vector3 positions[4];
 			positions[0] = position + Vector3(-halfWidth, -halfHeight, 0.0f);
@@ -614,13 +617,17 @@ namespace BansheeEngine
 
 		{
 			MaterialProxyPtr proxy = mIconMaterial.proxy;
-			GpuParamsPtr vertParams = proxy->params[proxy->passes[0].vertexProgParamsIdx];
+			GpuParamsPtr vertParams0 = proxy->params[proxy->passes[0].vertexProgParamsIdx];
+			GpuParamsPtr vertParams1 = proxy->params[proxy->passes[1].vertexProgParamsIdx];
 
-			vertParams->getParam("matViewProj", mIconMaterial.mViewProj);
+			vertParams0->getParam("matViewProj", mIconMaterial.mViewProj[0]);
+			vertParams1->getParam("matViewProj", mIconMaterial.mViewProj[1]);
 
-			mIconMaterial.mFragParams = proxy->params[proxy->passes[0].fragmentProgParamsIdx];
+			mIconMaterial.mFragParams[0] = proxy->params[proxy->passes[0].fragmentProgParamsIdx];
+			mIconMaterial.mFragParams[1] = proxy->params[proxy->passes[1].fragmentProgParamsIdx];
 
-			mIconMaterial.mFragParams->getTextureParam("mainTexture", mIconMaterial.mTexture);
+			mIconMaterial.mFragParams[0]->getTextureParam("mainTexture", mIconMaterial.mTexture[0]);
+			mIconMaterial.mFragParams[1]->getTextureParam("mainTexture", mIconMaterial.mTexture[1]);
 		}
 
 		{
@@ -744,7 +751,8 @@ namespace BansheeEngine
 		float far = rs.getMaximumDepthInputValue();
 
 		projMat.makeProjectionOrtho(left, right, top, bottom, near, far);
-		mIconMaterial.mViewProj.set(projMat);
+		mIconMaterial.mViewProj[0].set(projMat);
+		mIconMaterial.mViewProj[1].set(projMat);
 
 		for (UINT32 passIdx = 0; passIdx < 2; passIdx++)
 		{
@@ -753,8 +761,8 @@ namespace BansheeEngine
 			UINT32 curIndexOffset = 0;
 			for (auto curRenderData : *renderData)
 			{
-				mIconMaterial.mTexture.set(curRenderData.texture);
-				rs.bindGpuParams(GPT_FRAGMENT_PROGRAM, mIconMaterial.mFragParams);
+				mIconMaterial.mTexture[passIdx].set(curRenderData.texture);
+				rs.bindGpuParams(GPT_FRAGMENT_PROGRAM, mIconMaterial.mFragParams[passIdx]);
 
 				rs.drawIndexed(curIndexOffset, curRenderData.count * 6, 0, curRenderData.count * 4);
 				curIndexOffset += curRenderData.count * 6;

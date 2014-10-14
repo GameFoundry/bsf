@@ -19,7 +19,7 @@ namespace BansheeEngine
 	private:
 		friend class ScriptResourceManager;
 
-		static void internal_createInstance(MonoObject* instance);
+		static void internal_createInstance(MonoObject* instance, MonoObject* texture, Vector2 offset, Vector2 scale);
 
 		ScriptSpriteTexture(MonoObject* instance, const HSpriteTexture& texture);
 
