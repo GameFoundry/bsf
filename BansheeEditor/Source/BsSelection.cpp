@@ -33,7 +33,7 @@ namespace BansheeEngine
 
 		GUISceneTreeView* sceneTreeView = SceneTreeViewLocator::instance();
 		if (sceneTreeView != nullptr)
-			sceneTreeView->setSelection(mSelectedSceneObjects);
+			sceneTreeView->setSelection(sceneObjects);
 	}
 
 	const Vector<Path>& Selection::getResourcePaths() const

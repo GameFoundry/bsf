@@ -21,6 +21,8 @@
 #include "BsInput.h"
 #include "BsGUILayoutUtility.h"
 #include "BsScenePicking.h"
+#include "BsHandleManager.h"
+#include "BsSelection.h"
 
 // DEBUG ONLY
 #include "BsTime.h"
@@ -37,7 +39,7 @@ namespace BansheeEngine
 	SceneEditorWidget* SceneEditorWidget::Instance = nullptr;
 
 	SceneEditorWidget::SceneEditorWidget(const ConstructPrivately& dummy, EditorWidgetContainer& parentContainer)
-		:EditorWidget<SceneEditorWidget>(HString(L"SceneEditorWidget"), parentContainer), mGUIRenderTexture(nullptr)
+		:EditorWidget<SceneEditorWidget>(HString(L"SceneEditorWidget"), parentContainer), mGUIRenderTexture(nullptr), mLeftButtonPressed(false)
 	{
 		SceneViewLocator::_provide(this);
 
@@ -106,29 +108,76 @@ namespace BansheeEngine
 
 	void SceneEditorWidget::onPointerMoved(const PointerEvent& event)
 	{
-
-		
-	}
-
-	void SceneEditorWidget::onPointerReleased(const PointerEvent& event)
-	{
-
-	}
-
-	void SceneEditorWidget::onPointerPressed(const PointerEvent& event)
-	{
 		Vector2I scenePos;
 		if (!toSceneViewPos(event.screenPos, scenePos))
 			return;
 
-		HSceneObject pickedObject = ScenePicking::instance().pickClosestSceneObject(mCamera, scenePos, Vector2I(1, 1));
-		if (pickedObject)
+		if (mLeftButtonPressed)
 		{
-			LOGDBG("PICKED OBJECT: " + pickedObject->getName());
+			Ray inputRay = mCamera->screenPointToRay(scenePos);
+
+			HandleManager::instance().update(scenePos, inputRay, mLeftButtonPressed);
 		}
-		else
+	}
+
+	void SceneEditorWidget::onPointerReleased(const PointerEvent& event)
+	{
+		if (event.button != PointerEventButton::Left)
+			return;
+
+		Vector2I scenePos;
+		if (!toSceneViewPos(event.screenPos, scenePos))
+			return;
+
+		mLeftButtonPressed = false;
+		Ray inputRay = mCamera->screenPointToRay(scenePos);
+
+		HandleManager::instance().update(scenePos, inputRay, mLeftButtonPressed);
+	}
+
+	void SceneEditorWidget::onPointerPressed(const PointerEvent& event)
+	{
+		if (event.button != PointerEventButton::Left)
+			return;
+
+		Vector2I scenePos;
+		if (!toSceneViewPos(event.screenPos, scenePos))
+			return;
+
+		mLeftButtonPressed = true;
+		Ray inputRay = mCamera->screenPointToRay(scenePos);
+
+		HandleManager::instance().update(scenePos, inputRay, mLeftButtonPressed);
+
+		// If we didn't hit a handle, perform normal selection
+		if (!HandleManager::instance().isHandleActive())
 		{
-			LOGDBG("PICKED NO OBJECT!");
+			// TODO - Handle multi-selection (i.e. selection rectangle when dragging)
+			// TODO - Handle selecting gizmos (will likely require slight refactor of ScenePicking)
+			HSceneObject pickedObject = ScenePicking::instance().pickClosestSceneObject(mCamera, scenePos, Vector2I(1, 1));
+
+			if (pickedObject)
+			{
+				if (event.control) // Append to existing selection
+				{
+					Vector<HSceneObject> selectedSOs = Selection::instance().getSceneObjects();
+
+					auto iterFind = std::find_if(selectedSOs.begin(), selectedSOs.end(), 
+						[&](const HSceneObject& obj) { return obj == pickedObject; }
+					);
+
+					if (iterFind != selectedSOs.end())
+						selectedSOs.push_back(pickedObject);
+
+					Selection::instance().setSceneObjects(selectedSOs);
+				}
+				else
+				{
+					Vector<HSceneObject> selectedSOs = { pickedObject };
+
+					Selection::instance().setSceneObjects(selectedSOs);
+				}
+			}
 		}
 	}
 

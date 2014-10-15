@@ -410,9 +410,10 @@ namespace BansheeEngine
 			{
 				if(value)
 				{
-					ScriptTexture2D* scriptResource = ScriptResourceManager::instance().getScriptTexture(value);
+					HTexture texture = static_resource_cast<Texture>(value);
+					ScriptTexture2D* scriptResource = ScriptResourceManager::instance().getScriptTexture(texture);
 					if(scriptResource == nullptr)
-						scriptResource = ScriptResourceManager::instance().createScriptTexture(value);
+						scriptResource = ScriptResourceManager::instance().createScriptTexture(texture);
 
 					return scriptResource->getManagedInstance();
 				}
@@ -423,9 +424,10 @@ namespace BansheeEngine
 			{
 				if(value)
 				{
-					ScriptSpriteTexture* scriptResource = ScriptResourceManager::instance().getScriptSpriteTexture(value);
+					HSpriteTexture spriteTexture = static_resource_cast<SpriteTexture>(value);
+					ScriptSpriteTexture* scriptResource = ScriptResourceManager::instance().getScriptSpriteTexture(spriteTexture);
 					if(scriptResource == nullptr)
-						scriptResource = ScriptResourceManager::instance().createScriptSpriteTexture(value);
+						scriptResource = ScriptResourceManager::instance().createScriptSpriteTexture(spriteTexture);
 
 					if(scriptResource != nullptr)
 						return scriptResource->getManagedInstance();
@@ -437,7 +439,8 @@ namespace BansheeEngine
 			{
 				if (value)
 				{
-					ScriptManagedResource* scriptResource = ScriptResourceManager::instance().getScriptManagedResource(value);
+					HManagedResource managedResource = static_resource_cast<ManagedResource>(value);
+					ScriptManagedResource* scriptResource = ScriptResourceManager::instance().getScriptManagedResource(managedResource);
 					assert(scriptResource != nullptr); // Managed resource managed instance is created upon creation so it may never be null
 
 					return scriptResource->getManagedInstance();

@@ -1025,7 +1025,7 @@ namespace BansheeEngine
 
 	float D3D11RenderSystem::getMaximumDepthInputValue()
 	{
-		return -1.0f;
+		return 1.0f;
 	}
 
 	/************************************************************************/

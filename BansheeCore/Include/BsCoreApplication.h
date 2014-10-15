@@ -72,6 +72,14 @@ namespace BansheeEngine
 			 */
 			void unloadPlugin(DynLib* library);
 
+			/**
+			 * @brief	Calls the shutdown method on the plugin.
+			 *
+			 * @note	This is separate from "unload" method and should be called
+			 *			before unload.
+			 */
+			void shutdownPlugin(DynLib* library);
+
 	protected:
 		/**
 		 * @brief	Called for each iteration of the main loop.

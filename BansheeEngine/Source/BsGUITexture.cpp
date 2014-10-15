@@ -64,7 +64,7 @@ namespace BansheeEngine
 	GUITexture* GUITexture::create(GUIImageScaleMode scale, const GUIOptions& layoutOptions, const String& styleName)
 	{
 		return new (bs_alloc<GUITexture, PoolAlloc>()) GUITexture(getStyleName<GUITexture>(styleName), 
-			HTexture(), scale, GUILayoutOptions::create(layoutOptions));
+			HSpriteTexture(), scale, GUILayoutOptions::create(layoutOptions));
 	}
 
 	GUITexture* GUITexture::create(GUIImageScaleMode scale, const String& styleName)
@@ -76,13 +76,13 @@ namespace BansheeEngine
 	GUITexture* GUITexture::create(const GUIOptions& layoutOptions, const String& styleName)
 	{
 		return new (bs_alloc<GUITexture, PoolAlloc>()) GUITexture(getStyleName<GUITexture>(styleName), 
-			HTexture(), GUIImageScaleMode::StretchToFit, GUILayoutOptions::create(layoutOptions));
+			HSpriteTexture(), GUIImageScaleMode::StretchToFit, GUILayoutOptions::create(layoutOptions));
 	}
 
 	GUITexture* GUITexture::create(const String& styleName)
 	{
 		return new (bs_alloc<GUITexture, PoolAlloc>()) GUITexture(getStyleName<GUITexture>(styleName), 
-			HTexture(), GUIImageScaleMode::StretchToFit, GUILayoutOptions::create());
+			HSpriteTexture(), GUIImageScaleMode::StretchToFit, GUILayoutOptions::create());
 	}
 
 	void GUITexture::setTexture(const HSpriteTexture& texture)

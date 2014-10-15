@@ -680,7 +680,7 @@ namespace BansheeEngine
 					importOptions->setAntialiasing(false);
 				}
 
-				HFont font = Importer::instance().import(fontPath, fontImportOptions);
+				HFont font = Importer::instance().import<Font>(fontPath, fontImportOptions);
 
 				Path outputPath = FileSystem::getWorkingDirectoryPath();
 				outputPath.append(DefaultSkinFolder);
@@ -734,7 +734,7 @@ namespace BansheeEngine
 					importOptions->setType(importData.type);
 				}
 
-				HGpuProgram gpuProgram = Importer::instance().import(gpuProgInputLoc, gpuProgImportOptions);
+				HGpuProgram gpuProgram = Importer::instance().import<GpuProgram>(gpuProgInputLoc, gpuProgImportOptions);
 				Resources::instance().save(gpuProgram, gpuProgOutputLoc, true);
 			}
 		}

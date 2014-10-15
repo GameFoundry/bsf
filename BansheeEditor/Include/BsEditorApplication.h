@@ -22,6 +22,7 @@ namespace BansheeEngine
 
 	private:
 		virtual void onStartUp();
+		virtual void onShutDown();
 		virtual void update();
 
 		EditorWidgetLayoutPtr loadWidgetLayout();
@@ -32,6 +33,8 @@ namespace BansheeEngine
 	private:
 		static const Path WIDGET_LAYOUT_PATH;
 		RenderSystemPlugin mActiveRSPlugin;
+
+		DynLib* mSBansheeEditorPlugin;
 
 		// DEBUG ONLY
 

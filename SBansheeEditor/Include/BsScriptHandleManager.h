@@ -32,8 +32,6 @@ namespace BansheeEngine
 		ScriptHandleManager(RuntimeScriptObjects& scriptObjectManager);
 		~ScriptHandleManager();
 
-		void update();
-
 	protected:
 		void refreshHandles();
 		void triggerHandles();

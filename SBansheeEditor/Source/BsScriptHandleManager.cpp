@@ -36,8 +36,11 @@ namespace BansheeEngine
 			mono_gchandle_free(handle.gcHandle);
 		}
 
-		callDestroy(mDefaultHandleManager);
-		mono_gchandle_free(mDefaultHandleManagerGCHandle);
+		if (mDefaultHandleManager != nullptr)
+		{
+			callDestroy(mDefaultHandleManager);
+			mono_gchandle_free(mDefaultHandleManagerGCHandle);
+		}
 
 		mAssemblyRefreshedConn.disconnect();
 	}

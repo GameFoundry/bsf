@@ -259,7 +259,6 @@ namespace BansheeEngine
 				setTexture(gptype, iter->second.slot, true, texture.getInternalPtr());
 		}
 
-		UINT32 texUnit = 0;
 		for(auto iter = paramDesc.samplers.begin(); iter != paramDesc.samplers.end(); ++iter)
 		{
 			HSamplerState& samplerState = bindableParams->getSamplerState(iter->second.slot);
@@ -269,9 +268,7 @@ namespace BansheeEngine
 			else
 				setSamplerState(gptype, iter->second.slot, samplerState.getInternalPtr());
 
-			glProgramUniform1i(glProgram, iter->second.slot, getGLTextureUnit(gptype, texUnit));
-
-			texUnit++;
+			glProgramUniform1i(glProgram, iter->second.slot, getGLTextureUnit(gptype, iter->second.slot));
 		}
 
 		UINT8* uniformBufferData = nullptr;
@@ -1718,7 +1715,7 @@ namespace BansheeEngine
 		mNumTextureTypes = numCombinedTexUnits;
 		mTextureTypes = bs_newN<GLenum>(mNumTextureTypes);
 		for(UINT16 i = 0; i < numCombinedTexUnits; i++)
-			mTextureTypes[i] = 0;
+			mTextureTypes[i] = GL_TEXTURE_2D;
 
 		mVertexUBOffset = 0;
 		UINT32 totalNumUniformBlocks = caps->getNumGpuParamBlockBuffers(GPT_VERTEX_PROGRAM);

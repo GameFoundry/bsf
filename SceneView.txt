@@ -5,16 +5,11 @@
 	- Then make a Component wrapper around the non-component types, and also a C# wrapper around the same types
 
 RESOURCES CAN BE INCORRECTLY CAST between each other. e.g. HSpriteTexture to HTexture will be cast implicitly.
-Second pass for Gizmo ICon rendering doesn't work - actually it doesn't seem to render at all even if I send normal depth compare function
-
-TESTING:
- - Test picking on an object with alpha
- - Ensure that selecting an item in scene properly marks it in scene view
- - Ensure that selecting an item in scene or resource tree view properly updates Selection
+REFACTOR material getParams* and related classes. Those params should update all gpu program params that share that variable, not just the first found
+Icon appears faded even if it renders in front of a mesh (OpenGL). Likely wrong depth.
+Crash related to Handles when object is selected
 
 Test gizmos
- - Test rendering of icon gizmos
-   - Need a way to load a texture from C# (Extend ProjectLibrary?)
  - HOOK UP GIZMO SELECTION and test it
 
 Test handles
@@ -68,12 +63,6 @@ CONCRETE TODO:
 HandleSliderPlane/HandleSliderDisc
  - update() implementation
 
-ScriptHandleManager
- - Needs to be started up somewhere
-
-SceneEditorWidget
- - Need to glue everything together
-
 ----------------------------------------------------
 STAGE 2
 Implement RotateHandle & ScaleHandle in C#
@@ -91,35 +80,6 @@ Retrieve a list of selected objects from SelectionManager
 Find ones with Renderable components
 Retrieve Meshes, and world transforms from them
 Draw that same mesh with either a wireframe or a grayed out shader with a slight depth bias
-
-----------------------------------------------------------------------
-SceneView editor flow:
-  Hook up gizmo, handle and selection rendering methods to be executed after the scene is rendered
-  Calculate mouse coords manually relative to the window and to the render texture GUI element
-     - Don't use GUI events as we require more precise control (do we?)
-
-  Detect mouse clicks on the scene render target
-      Forward those mouse coordinates to HandleManager
-      It checks if screen ray intersects any handles and returns the handle if it does
-         If handle is found it is activated and method returns
-         Otherwise we mark the coordinates as selection start
-
-  Detect mouse drag on the scene render target
-    - If we have an active handle
-         Forward mouse coordinates to the active handle so it can do its thing
-         return
-    - Otherwise its assumed we are dragging a selection
-         Update selection endpoint and send it to ScenePicking
-         Use Selection to select picked objects if any
-         return
-
-  Detect mouse release on scene render target
-     If we have an active handle
-        Clear active handle
-        return
-     Otheriwse its assumed we are dragging a selection
-        Do nothing
-        return
 
 ---------------------------------------------------------------------
 Multi-resources

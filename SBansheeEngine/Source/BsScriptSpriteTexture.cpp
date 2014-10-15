@@ -30,7 +30,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			HSpriteTexture spriteTexture = SpriteTexture::create(offset, scale, scriptTexture->getNativeHandle());
+			HSpriteTexture spriteTexture = SpriteTexture::create(offset, scale, static_resource_cast<Texture>(scriptTexture->getNativeHandle()));
 
 			ScriptResourceManager::instance().createScriptSpriteTexture(instance, spriteTexture);
 		}

@@ -58,7 +58,7 @@ namespace BansheeEngine
 
 	EditorApplication::EditorApplication(RenderSystemPlugin renderSystemPlugin)
 		:Application(createRenderWindowDesc(), renderSystemPlugin, RendererPlugin::Default), 
-		mActiveRSPlugin(renderSystemPlugin)
+		mActiveRSPlugin(renderSystemPlugin), mSBansheeEditorPlugin(nullptr)
 	{
 		BuiltinEditorResources::startUp(renderSystemPlugin);
 
@@ -100,6 +100,10 @@ namespace BansheeEngine
 		EditorWindowManager::shutDown();
 		UndoRedo::shutDown();
 
+		// We purposely don't unload this plugin, it needs to be unloaded after
+		// all mono assemblies have been unloaded (since their finalizers will call
+		// into the plugin). So we leave it to be unloaded automatically on app exit
+		shutdownPlugin(mSBansheeEditorPlugin);
 
 		/************************************************************************/
 		/* 								DEBUG CODE                      		*/
@@ -141,7 +145,7 @@ namespace BansheeEngine
 		Application::onStartUp();
 
 		MainEditorWindow* mainWindow = MainEditorWindow::create(getPrimaryWindow());
-		loadPlugin("SBansheeEditor"); // Managed part of the editor
+		loadPlugin("SBansheeEditor", &mSBansheeEditorPlugin); // Managed part of the editor
 
 		EditorWidgetLayoutPtr layout = loadWidgetLayout();
 		if (layout != nullptr)
@@ -217,7 +221,7 @@ namespace BansheeEngine
 			importOptions->setType(GPT_FRAGMENT_PROGRAM);
 		}
 
-		mFragProgRef = Importer::instance().import(psLoc, gpuProgImportOptions);
+		mFragProgRef = Importer::instance().import<GpuProgram>(psLoc, gpuProgImportOptions);
 
 		gpuProgImportOptions = Importer::instance().createImportOptions(vsLoc);
 		if (rtti_is_of_type<GpuProgramImportOptions>(gpuProgImportOptions))
@@ -230,15 +234,15 @@ namespace BansheeEngine
 			importOptions->setType(GPT_VERTEX_PROGRAM);
 		}
 
-		mVertProgRef = Importer::instance().import(vsLoc, gpuProgImportOptions);
+		mVertProgRef = Importer::instance().import<GpuProgram>(vsLoc, gpuProgImportOptions);
 
 		gResources().save(mVertProgRef, L"C:\\vertProgCg.vprog", true);
 		gResources().unload(mVertProgRef);
-		mVertProgRef = gResources().load(L"C:\\vertProgCg.vprog");
+		mVertProgRef = gResources().load<GpuProgram>(L"C:\\vertProgCg.vprog");
 
 		gResources().save(mFragProgRef, L"C:\\fragProgCg.vprog", true);
 		gResources().unload(mFragProgRef);
-		mFragProgRef = gResources().load(L"C:\\fragProgCg.vprog");
+		mFragProgRef = gResources().load<GpuProgram>(L"C:\\fragProgCg.vprog");
 
 		mTestShader = Shader::create("TestShader");
 		mTestShader->addParameter("matWorldViewProj", "matWorldViewProj", GPDT_MATRIX_4X4, RPS_WorldViewProjTfrm);
@@ -289,7 +293,7 @@ namespace BansheeEngine
 
 		gResources().unload(mTestMaterial);
 
-		mTestMaterial = gResources().load(L"C:\\ExportMaterial.mat");
+		mTestMaterial = gResources().load<Material>(L"C:\\ExportMaterial.mat");
 
 		testRenderable->setMesh(mDbgMeshRef);
 		testRenderable->setMaterial(0, mTestMaterial);
@@ -356,6 +360,11 @@ namespace BansheeEngine
 
 		DbgEditorWidget1::open(); // DEBUG ONLY
 		DbgEditorWidget2::open(); // DEBUG ONLY
+	}
+
+	void EditorApplication::onShutDown()
+	{
+		Application::onShutDown();
 	}
 
 	void EditorApplication::startUp(RenderSystemPlugin renderSystemPlugin)

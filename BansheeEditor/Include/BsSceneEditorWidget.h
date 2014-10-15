@@ -54,6 +54,7 @@ namespace BansheeEngine
 		HCamera mCamera;
 		GameObjectHandle<SceneCameraController> mCameraController;
 		SceneGrid* mSceneGrid;
+		bool mLeftButtonPressed;
 
 		HEvent mRenderCallback;
 		HEvent mOnPointerMovedConn;

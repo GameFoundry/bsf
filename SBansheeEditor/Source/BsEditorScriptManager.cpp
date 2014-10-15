@@ -6,6 +6,7 @@
 #include "BsMonoMethod.h"
 #include "BsRuntimeScriptObjects.h"
 #include "BsScriptGizmoManager.h"
+#include "BsScriptHandleManager.h"
 #include "BsTime.h"
 #include "BsMath.h"
 
@@ -26,6 +27,7 @@ namespace BansheeEngine
 		RuntimeScriptObjects::instance().refreshScriptObjects(BansheeEditorAssemblyName);
 
 		ScriptGizmoManager::startUp(RuntimeScriptObjects::instance());
+		HandleManager::startUp<ScriptHandleManager>(RuntimeScriptObjects::instance());
 
 		mProgramEdClass = mEditorAssembly->getClass("BansheeEditor", "ProgramEd");
 		mUpdateMethod = mProgramEdClass->getMethod("EditorUpdate");
@@ -39,6 +41,7 @@ namespace BansheeEngine
 
 	EditorScriptManager::~EditorScriptManager()
 	{
+		HandleManager::shutDown();
 		ScriptGizmoManager::shutDown();
 	}
 

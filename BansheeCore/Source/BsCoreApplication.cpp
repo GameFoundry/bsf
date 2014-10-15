@@ -122,9 +122,11 @@ namespace BansheeEngine
 		MeshManager::shutDown();
 		ProfilerGPU::shutDown();
 
+		shutdownPlugin(mSceneManagerPlugin);
 		unloadPlugin(mSceneManagerPlugin);
 		
 		RendererManager::shutDown();
+		shutdownPlugin(mRendererPlugin);
 		unloadPlugin(mRendererPlugin);
 
 		Input::shutDown();
@@ -311,9 +313,19 @@ namespace BansheeEngine
 		if(unloadPluginFunc != nullptr)
 			unloadPluginFunc();
 
-		mPluginUpdateFunctions.erase(library);
-
 		gDynLibManager().unload(library);
+	}
+
+	void CoreApplication::shutdownPlugin(DynLib* library)
+	{
+		typedef void(*ShutdownPluginFunc)();
+
+		ShutdownPluginFunc shutdownPluginFunc = (ShutdownPluginFunc)library->getSymbol("shutdownPlugin");
+
+		if (shutdownPluginFunc != nullptr)
+			shutdownPluginFunc();
+
+		mPluginUpdateFunctions.erase(library);
 	}
 
 	CoreApplication& gCoreApplication()

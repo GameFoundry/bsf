@@ -126,8 +126,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Copy constructor.
 		 */
-		template <typename T1>
-		ResourceHandle(const ResourceHandle<T1>& ptr)
+		ResourceHandle(const ResourceHandle<T>& ptr)
 			:ResourceHandleBase()
 		{
 			mData = ptr.getHandleData();
@@ -136,9 +135,12 @@ namespace BansheeEngine
 		/**
 		 * @brief	Converts a specific handle to generic Resource handle.
 		 */
-		operator ResourceHandle<Resource>() 
+		operator ResourceHandle<Resource>() const
 		{
-			return ResourceHandle<Resource>(*this); 
+			ResourceHandle<Resource> handle;
+			handle._setHandleData(getHandleData());
+
+			return handle;
 		}
 
 		/**
@@ -239,7 +241,10 @@ namespace BansheeEngine
 	template<class _Ty1, class _Ty2>
 		ResourceHandle<_Ty1> static_resource_cast(const ResourceHandle<_Ty2>& other)
 	{	
-		return ResourceHandle<_Ty1>(other);
+		ResourceHandle<_Ty1> handle;
+		handle._setHandleData(other.getHandleData());
+
+		return handle;
 	}
 
 	/**

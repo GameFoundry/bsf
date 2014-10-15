@@ -425,8 +425,8 @@ namespace BansheeEngine
 		{
 			if (a.distance == b.distance)
 			{
-				HSpriteTexture texA = iconData[a.iconIdx].texture->getTexture();
-				HSpriteTexture texB = iconData[b.iconIdx].texture->getTexture();
+				HTexture texA = iconData[a.iconIdx].texture->getTexture();
+				HTexture texB = iconData[b.iconIdx].texture->getTexture();
 
 				if (texA == texB)
 					return a.iconIdx < b.iconIdx;
@@ -708,7 +708,6 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		Matrix4 viewProjMat = projMatrix * viewMatrix;
-		Matrix4 viewIT = viewMatrix.inverse().transpose();
 
 		mWireMaterial.mViewProj.set(viewProjMat);
 

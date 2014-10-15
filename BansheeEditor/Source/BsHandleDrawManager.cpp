@@ -34,13 +34,13 @@ namespace BansheeEngine
 
 	HandleDrawManager::~HandleDrawManager()
 	{
-		bs_delete(mDrawHelper);
-
 		if (mSolidMesh != nullptr)
 			mDrawHelper->releaseSolidMesh(mSolidMesh);
 
 		if (mWireMesh != nullptr)
 			mDrawHelper->releaseWireMesh(mWireMesh);
+
+		bs_delete(mDrawHelper);
 
 		gCoreAccessor().queueCommand(std::bind(&HandleDrawManager::destroyCore, this, mCore));
 	}
@@ -150,18 +150,17 @@ namespace BansheeEngine
 	{
 		// TODO - Make a better interface when dealing with parameters through proxies?
 		{
-			MaterialProxyPtr proxy = mWireMaterial.proxy;
-			GpuParamsPtr vertParams = proxy->params[proxy->passes[0].vertexProgParamsIdx];
+			mWireMaterial.proxy = wireMatProxy;
+			GpuParamsPtr vertParams = wireMatProxy->params[wireMatProxy->passes[0].vertexProgParamsIdx];
 
 			vertParams->getParam("matViewProj", mWireMaterial.mViewProj);
 		}
 
 		{
-			MaterialProxyPtr proxy = mSolidMaterial.proxy;
-			GpuParamsPtr vertParams = proxy->params[proxy->passes[0].vertexProgParamsIdx];
+			mSolidMaterial.proxy = solidMatProxy;
+			GpuParamsPtr vertParams = solidMatProxy->params[solidMatProxy->passes[0].vertexProgParamsIdx];
 
 			vertParams->getParam("matViewProj", mSolidMaterial.mViewProj);
-			vertParams->getParam("matViewIT", mSolidMaterial.mViewIT);
 		}
 
 		RendererPtr activeRenderer = RendererManager::instance().getActive();
@@ -200,10 +199,8 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		Matrix4 viewProjMat = projMatrix * viewMatrix;
-		Matrix4 viewIT = viewMatrix.inverse().transpose();
 
 		mSolidMaterial.mViewProj.set(viewProjMat);
-		mSolidMaterial.mViewIT.set(viewIT);
 
 		Renderer::setPass(*mSolidMaterial.proxy, 0);
 		Renderer::draw(*meshProxy);
@@ -214,7 +211,6 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		Matrix4 viewProjMat = projMatrix * viewMatrix;
-		Matrix4 viewIT = viewMatrix.inverse().transpose();
 
 		mWireMaterial.mViewProj.set(viewProjMat);
 

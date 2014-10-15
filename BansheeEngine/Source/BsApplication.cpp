@@ -50,7 +50,10 @@ namespace BansheeEngine
 	Application::~Application()
 	{
 #if BS_VER == BS_VER_DEV
+		shutdownPlugin(mSBansheeEnginePlugin);
 		unloadPlugin(mSBansheeEnginePlugin);
+
+		shutdownPlugin(mMonoPlugin);
 		unloadPlugin(mMonoPlugin);
 #endif
 

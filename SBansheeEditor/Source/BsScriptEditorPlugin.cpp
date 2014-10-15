@@ -21,8 +21,13 @@ namespace BansheeEngine
 		EditorScriptManager::instance().update();
 	}
 
-	extern "C" BS_SCR_BED_EXPORT void unloadPlugin()
+	extern "C" BS_SCR_BED_EXPORT void shutdownPlugin()
 	{
 		EditorScriptManager::shutDown();
+	}
+
+	extern "C" BS_SCR_BED_EXPORT void unloadPlugin()
+	{
+		
 	}
 }

@@ -1503,8 +1503,7 @@ namespace BansheeEngine
 	float D3D9RenderSystem::getMaximumDepthInputValue()
 	{
 		// Range [0.0f, 1.0f]
-		// D3D inverts even identity view matrices, so maximum INPUT is -1.0
-		return -1.0f;
+		return 1.0f;
 	}
 
 	VertexElementType D3D9RenderSystem::getColorVertexElementType() const

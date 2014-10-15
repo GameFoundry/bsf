@@ -557,7 +557,7 @@ namespace BansheeEngine
 		mSkin.setStyle("ListBox", dropDownListStyle);
 
 		// DropDown scroll up button arrow
-		HTexture dropDownBtnScrollUpArrow = getGUITexture(DropDownBoxBtnUpArrowTex);
+		HSpriteTexture dropDownBtnScrollUpArrow = getGUITexture(DropDownBoxBtnUpArrowTex);
 
 		GUIElementStyle dropDownScrollUpBtnArrowStyle;
 		dropDownScrollUpBtnArrowStyle.normal.texture = getGUITexture(DropDownBoxBtnUpArrowTex);
@@ -1150,7 +1150,7 @@ namespace BansheeEngine
 					importOptions->setAntialiasing(false);
 				}
 
-				HFont font = Importer::instance().import(fontPath, fontImportOptions);
+				HFont font = Importer::instance().import<Font>(fontPath, fontImportOptions);
 
 				Path outputPath = FileSystem::getWorkingDirectoryPath();
 				outputPath.append(DefaultSkinFolder);
@@ -1204,7 +1204,7 @@ namespace BansheeEngine
 					importOptions->setType(importData.type);
 				}
 
-				HGpuProgram gpuProgram = Importer::instance().import(gpuProgInputLoc, gpuProgImportOptions);
+				HGpuProgram gpuProgram = Importer::instance().import<GpuProgram>(gpuProgInputLoc, gpuProgImportOptions);
 				Resources::instance().save(gpuProgram, gpuProgOutputLoc, true);
 			}
 		}
@@ -1354,6 +1354,7 @@ namespace BansheeEngine
 
 		mShaderPickingAlpha[modeIdx]->addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
 
+		mShaderPickingAlpha[modeIdx]->addParameter("alphaCutoff", "alphaCutoff", GPDT_FLOAT1);
 		mShaderPickingAlpha[modeIdx]->addParameter("colorIndex", "colorIndex", GPDT_FLOAT4);
 		mShaderPickingAlpha[modeIdx]->addParameter("matWorldViewProj", "matWorldViewProj", GPDT_MATRIX_4X4);
 
