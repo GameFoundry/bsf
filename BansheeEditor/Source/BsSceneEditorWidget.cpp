@@ -154,7 +154,7 @@ namespace BansheeEngine
 		{
 			// TODO - Handle multi-selection (i.e. selection rectangle when dragging)
 			// TODO - Handle selecting gizmos (will likely require slight refactor of ScenePicking)
-			HSceneObject pickedObject = ScenePicking::instance().pickClosestSceneObject(mCamera, scenePos, Vector2I(1, 1));
+			HSceneObject pickedObject = ScenePicking::instance().pickClosestObject(mCamera, scenePos, Vector2I(1, 1));
 
 			if (pickedObject)
 			{

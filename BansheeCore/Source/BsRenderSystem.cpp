@@ -15,8 +15,8 @@
 
 using namespace std::placeholders;
 
-namespace BansheeEngine {
-
+namespace BansheeEngine 
+{
     static const TexturePtr sNullTexPtr;
 
     RenderSystem::RenderSystem()

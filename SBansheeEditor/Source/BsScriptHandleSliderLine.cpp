@@ -28,9 +28,9 @@ namespace BansheeEngine
 
 	void ScriptHandleSliderLine::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("internal_CreateInstance", &ScriptHandleSliderLine::internal_CreateInstance);
-		metaData.scriptClass->addInternalCall("internal_GetDelta", &ScriptHandleSliderLine::internal_GetDelta);
-		metaData.scriptClass->addInternalCall("internal_GetNewPosition", &ScriptHandleSliderLine::internal_GetNewPosition);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptHandleSliderLine::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_GetDelta", &ScriptHandleSliderLine::internal_GetDelta);
+		metaData.scriptClass->addInternalCall("Internal_GetNewPosition", &ScriptHandleSliderLine::internal_GetNewPosition);
 	}
 
 	void ScriptHandleSliderLine::internal_CreateInstance(MonoObject* instance, Vector3 direction, float length, bool fixedScale, float snapValue)

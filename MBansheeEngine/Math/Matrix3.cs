@@ -54,11 +54,11 @@ namespace BansheeEngine
         {
             get
             {
-                return this[row * 4 + column];
+                return this[row * 3 + column];
             }
             set
             {
-                this[row * 4 + column] = value;
+                this[row * 3 + column] = value;
             }
         }
 

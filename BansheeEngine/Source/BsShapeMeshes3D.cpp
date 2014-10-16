@@ -289,7 +289,7 @@ namespace BansheeEngine
 	void ShapeMeshes3D::getNumElementsCone(UINT32 quality, UINT32& numVertices, UINT32& numIndices)
 	{
 		numVertices = ((quality + 1) * 4 + 1) * 2;
-		numIndices = ((quality + 1) * 4 - 1) * 6;
+		numIndices = ((quality + 1) * 4) * 6;
 	}
 
 	void ShapeMeshes3D::wireAABox(const AABox& box, UINT8* outVertices, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
@@ -596,11 +596,18 @@ namespace BansheeEngine
 		}
 
 		UINT32 numTriangles = numArcVertices;
-		for (UINT32 i = 0; i < numTriangles; i++)
+		for (UINT32 i = 0; i < numTriangles - 1; i++)
 		{
 			outIndices[i * 3 + 0] = vertexOffset + baseIdx;
 			outIndices[i * 3 + 1] = vertexOffset + i;
 			outIndices[i * 3 + 2] = vertexOffset + i + 1;
+		}
+
+		{
+			UINT32 i = numTriangles - 1;
+			outIndices[i * 3 + 0] = vertexOffset + baseIdx;
+			outIndices[i * 3 + 1] = vertexOffset + i;
+			outIndices[i * 3 + 2] = vertexOffset + 0;
 		}
 
 		// Generate cone
@@ -629,15 +636,22 @@ namespace BansheeEngine
 
 		outVertices += numArcVertices * vertexStride;
 		outVertices = writeVector3(outVertices, vertexStride, topVertex); // Write top vertex
-		UINT32 topIdx = numArcVertices * 2 + 2;
+		UINT32 topIdx = numArcVertices;
 
 		outIndices += numTriangles * 3;
 		UINT32 curVertOffset = vertexOffset + numArcVertices + 1;
-		for (UINT32 i = 0; i < numTriangles; i++)
+		for (UINT32 i = 0; i < numTriangles - 1; i++)
 		{
 			outIndices[i * 3 + 0] = curVertOffset + topIdx;
 			outIndices[i * 3 + 1] = curVertOffset + i;
 			outIndices[i * 3 + 2] = curVertOffset + i + 1;
+		}
+
+		{
+			UINT32 i = numTriangles - 1;
+			outIndices[i * 3 + 0] = vertexOffset + topIdx;
+			outIndices[i * 3 + 1] = vertexOffset + i;
+			outIndices[i * 3 + 2] = vertexOffset + 0;
 		}
 	}
 

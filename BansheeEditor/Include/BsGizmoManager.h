@@ -36,11 +36,19 @@ namespace BansheeEngine
 		void renderForPicking(const HCamera& camera, std::function<Color(UINT32)> idxToColorCallback);
 		void clearGizmos();
 
+		HSceneObject getSceneObject(UINT32 gizmoIdx);
+
 	private:
 		friend class GizmoManagerCore;
 
+		enum class GizmoMaterial
+		{
+			Solid, Wire, Picking
+		};
+
 		struct CommonData
 		{
+			UINT32 idx;
 			Color color;
 			Matrix4 transform;
 			HSceneObject sceneObject;
@@ -99,7 +107,7 @@ namespace BansheeEngine
 		typedef Vector<IconRenderData> IconRenderDataVec;
 		typedef std::shared_ptr<IconRenderDataVec> IconRenderDataVecPtr;
 
-		TransientMeshPtr buildIconMesh(const HCamera& camera, const Vector<IconData>& iconData, bool pickingOnly, IconRenderDataVecPtr& renderData);
+		TransientMeshPtr buildIconMesh(const HCamera& camera, const Vector<IconData>& iconData, bool forPicking, IconRenderDataVecPtr& renderData);
 
 		void limitIconSize(UINT32& width, UINT32& height);
 		void calculateIconColors(const Color& tint, const Camera& camera, UINT32 iconHeight, bool fixedScale,
@@ -122,6 +130,7 @@ namespace BansheeEngine
 		Matrix4 mTransform;
 		HSceneObject mActiveSO;
 		bool mPickable;
+		UINT32 mCurrentIdx;
 
 		DrawHelper* mDrawHelper;
 		DrawHelper* mPickingDrawHelper;
@@ -133,6 +142,7 @@ namespace BansheeEngine
 		Vector<LineData> mLineData;
 		Vector<FrustumData> mFrustumData;
 		Vector<IconData> mIconData;
+		Map<UINT32, HSceneObject> mIdxToSceneObjectMap;
 
 		MeshHeapPtr mIconMeshHeap;
 
@@ -203,12 +213,8 @@ namespace BansheeEngine
 		void initialize(const GizmoManager::CoreInitData& initData);
 
 		void render(const CameraProxy& camera);
-		void renderSolidGizmos(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr mesh);
-		void renderWireGizmos(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr mesh);
-		void renderIconGizmos(Rect2I screenArea, MeshProxyPtr mesh, GizmoManager::IconRenderDataVecPtr renderData);
-
-		void renderGizmosForPicking(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr mesh);
-		void renderIconGizmosForPicking(Rect2I screenArea, MeshProxyPtr mesh, GizmoManager::IconRenderDataVecPtr renderData);
+		void renderGizmos(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr mesh, GizmoManager::GizmoMaterial material);
+		void renderIconGizmos(Rect2I screenArea, MeshProxyPtr mesh, GizmoManager::IconRenderDataVecPtr renderData, bool usePickingMaterial);
 
 		void updateData(const RenderTargetPtr& rt, const MeshProxyPtr& solidMeshProxy, const MeshProxyPtr& wireMeshProxy,
 			const MeshProxyPtr& iconMeshProxy, const GizmoManager::IconRenderDataVecPtr& iconRenderData);

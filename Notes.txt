@@ -74,7 +74,7 @@ Reminders:
   - Add FolderManager, extensible C# script that can be attached to a folder (can be in a folder .meta) file. Handles processing of assets in that folder. Can get notified 
     whenever anything in the folder changes. But is that necessary if I can have asset post- and pre- processor that can filter by folder programatically?
   - Add option to optimize mesh for post-transform cache (triangles sharing vertices are sequential) on import (also pre-transform as well, order vertices by their first reference in IB, and so on)
-
+  - It would be nice to have automated creation of glue code between C# and C++ instead of writing all of these Script classes
 
 Potential optimizations:
  - bulkPixelConversion is EXTREMELY poorly unoptimized. Each pixel it calls a separate method that does redudant operations every pixel.

@@ -12,9 +12,10 @@ namespace BansheeEngine
 	 * 			
 	 * @note	You are allowed (and meant to) to copy this by value.
 	 * 			
-	 *			You'll notice mIsCompleted isn't locked. This is safe on x86 architectures because all stores
-	 *			are executed in order. Loads may be executed out of order from stores but worst case scenario is that
-	 *			mIsCompleted reports false a few cycles too late, which is not relevant for practical use.
+	 *			You'll notice mIsCompleted isn't synchronized. This is because we're okay if 
+	 *			mIsCompleted reports true a few cycles too late, which is not relevant for practical use.
+	 *			And in cases where you need to ensure operation has completed you will usually use some kind
+	 *			of synchronization primitive that includes a memory barrier anyway.
 	 */
 	class BS_UTILITY_EXPORT AsyncOp
 	{
@@ -34,7 +35,9 @@ namespace BansheeEngine
 			:mData(bs_shared_ptr<AsyncOpData, ScratchAlloc>())
 		{
 #if BS_ARCH_TYPE != BS_ARCHITECTURE_x86_32 && BS_ARCH_TYPE != BS_ARCHITECTURE_x86_64
-			static_assert(false, "You will likely need to add locks for mIsCompleted on architectures other than x86.");
+			// On some architectures it is not guaranteed that stores are executed in order, which means
+			// return value could be stored after mIsCompleted is set
+			static_assert(false, "You will likely need to add a memory barrier for mIsCompleted on architectures other than x86.");
 #endif
 		}
 

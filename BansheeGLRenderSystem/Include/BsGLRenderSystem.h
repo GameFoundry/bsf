@@ -161,8 +161,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RenderSystem::convertProjectionMatrix()
 		 */
-        void convertProjectionMatrix(const Matrix4& matrix,
-            Matrix4& dest, bool forGpuProgram = false);
+        void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest);
 
 		/************************************************************************/
 		/* 				Internal use by OpenGL RenderSystem only                */

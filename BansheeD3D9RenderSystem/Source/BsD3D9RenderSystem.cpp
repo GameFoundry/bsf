@@ -1511,7 +1511,7 @@ namespace BansheeEngine
 		return VET_COLOR_ARGB;
 	}
 
-	void D3D9RenderSystem::convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest, bool forGpuProgram)
+	void D3D9RenderSystem::convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest)
 	{
 		dest = matrix;
 
@@ -1520,15 +1520,6 @@ namespace BansheeEngine
 		dest[2][1] = (dest[2][1] + dest[3][1]) / 2;
 		dest[2][2] = (dest[2][2] + dest[3][2]) / 2;
 		dest[2][3] = (dest[2][3] + dest[3][3]) / 2;
-
-		if (!forGpuProgram)
-		{
-			// Convert right-handed to left-handed
-			dest[0][2] = -dest[0][2];
-			dest[1][2] = -dest[1][2];
-			dest[2][2] = -dest[2][2];
-			dest[3][2] = -dest[3][2];
-		}
 	}
 
 	/************************************************************************/

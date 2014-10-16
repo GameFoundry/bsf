@@ -285,8 +285,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Thread safe.
 		 */
-		virtual void convertProjectionMatrix(const Matrix4& matrix,
-			Matrix4& dest, bool forGpuProgram = false) = 0;
+		virtual void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest) = 0;
 
 		/**
 		 * @brief	Gets horizontal texel offset used for mapping texels to pixels

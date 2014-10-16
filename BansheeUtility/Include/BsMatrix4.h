@@ -401,9 +401,7 @@ namespace BansheeEngine
         /**
          * @brief	Transform a 4D vector by this matrix.  
          *
-         * @note	After transformation all components are projected back so that w remains 1.
-         * 			
-		 *			If your matrix doesn't contain projection components use "multiply3x4" method as it is faster.
+         * @note	If your matrix doesn't contain projection components use "multiply3x4" method as it is faster.
          */
         Vector4 multiply(const Vector4& v) const
         {

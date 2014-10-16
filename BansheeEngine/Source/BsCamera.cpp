@@ -578,9 +578,9 @@ namespace BansheeEngine
 	Vector3 Camera::projectPoint(const Vector3& point) const
 	{
 		Vector4 projPoint4(point.x, point.y, point.z, 1.0f);
-		projPoint4 = getProjectionMatrix().multiply(projPoint4);
+		projPoint4 = getProjectionMatrixRS().multiply(projPoint4);
 
-		if (projPoint4.w > 1e-7f)
+		if (Math::abs(projPoint4.w) > 1e-7f)
 		{
 			float invW = 1.0f / projPoint4.w;
 			projPoint4.x *= invW;
@@ -600,14 +600,14 @@ namespace BansheeEngine
 	Vector3 Camera::unprojectPoint(const Vector3& point) const
 	{
 		Vector4 dir4(point.x, point.y, 0.95f, 1.0f); // 0.95f arbitrary
-		dir4 = getProjectionMatrix().inverse().multiply(dir4);
+		dir4 = getProjectionMatrixRS().inverse().multiply(dir4);
 
 		Vector3 dir;
 		dir.x = dir4.x;
 		dir.y = dir4.y;
 		dir.z = dir4.z;
 
-		if (dir4.w > 1e-7f)
+		if (Math::abs(dir4.w) > 1e-7f)
 		{
 			float invW = 1.0f / dir4.w;
 			dir.x *= invW;
@@ -641,7 +641,7 @@ namespace BansheeEngine
 		CameraProxyPtr proxy = bs_shared_ptr<CameraProxy>();
 		proxy->layer = mLayers;
 		proxy->priority = mPriority;
-		proxy->projMatrix = getProjectionMatrix();
+		proxy->projMatrix = getProjectionMatrixRS();
 		proxy->viewMatrix = getViewMatrix();
 		proxy->worldMatrix = SO()->getWorldTfrm();
 		proxy->viewport = mViewport->clone();

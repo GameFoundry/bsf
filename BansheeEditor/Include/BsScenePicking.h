@@ -7,21 +7,6 @@
 
 namespace BansheeEngine
 {
-	class PickResult
-	{
-	public:
-		enum class Type
-		{
-			SceneObject,
-			Gizmo,
-			None
-		};
-
-		HSceneObject sceneObject;
-		UINT32 gizmoId;
-		Type type;
-	};
-
 	class ScenePicking : public Module<ScenePicking>
 	{
 		struct RenderablePickData
@@ -59,10 +44,8 @@ namespace BansheeEngine
 	public:
 		ScenePicking();
 
-		HSceneObject pickClosestSceneObject(const HCamera& cam, const Vector2I& position, const Vector2I& area);
-		PickResult pickClosestObject(const HCamera& cam, const Vector2I& position, const Vector2I& area);
-		Vector<HSceneObject> pickSceneObjects(const HCamera& cam, const Vector2I& position, const Vector2I& area);
-		Vector<PickResult> pickObjects(const HCamera& cam, const Vector2I& position, const Vector2I& area);
+		HSceneObject pickClosestObject(const HCamera& cam, const Vector2I& position, const Vector2I& area);
+		Vector<HSceneObject> pickObjects(const HCamera& cam, const Vector2I& position, const Vector2I& area);
 
 	private:
 		typedef Set<RenderablePickData, std::function<bool(const RenderablePickData&, const RenderablePickData&)>> RenderableSet;
@@ -72,8 +55,8 @@ namespace BansheeEngine
 		Color encodeIndex(UINT32 index);
 		UINT32 decodeIndex(Color color);
 
-		void corePickObjects(const Viewport& viewport, const RenderableSet& renderables, const Vector2I& position,
-			const Vector2I& area, AsyncOp& asyncOp);
+		void corePickingBegin(const Viewport& viewport, const RenderableSet& renderables, const Vector2I& position, const Vector2I& area);
+		void corePickingEnd(const Viewport& viewport, const Vector2I& position, const Vector2I& area, AsyncOp& asyncOp);
 
 		static const float ALPHA_CUTOFF;
 

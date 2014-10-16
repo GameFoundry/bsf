@@ -66,7 +66,7 @@ namespace BansheeEngine
 		MaterialPtr mat = mGridMaterial.getInternalPtr();
 		MeshPtr mesh = mGridMesh.getInternalPtr();
 
-		Matrix4 projMatrix = camera->getProjectionMatrix();
+		Matrix4 projMatrix = camera->getProjectionMatrixRS();
 		Matrix4 viewMatrix = camera->getViewMatrix();
 
 		Matrix4 viewProjMatrix = projMatrix * viewMatrix;

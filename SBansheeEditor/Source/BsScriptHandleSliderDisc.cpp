@@ -28,10 +28,10 @@ namespace BansheeEngine
 
 	void ScriptHandleSliderDisc::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("internal_CreateInstance", &ScriptHandleSliderDisc::internal_CreateInstance);
-		metaData.scriptClass->addInternalCall("internal_GetDelta", &ScriptHandleSliderDisc::internal_GetDelta);
-		metaData.scriptClass->addInternalCall("internal_GetDeltaDirection", &ScriptHandleSliderDisc::internal_GetDeltaDirection);
-		metaData.scriptClass->addInternalCall("internal_GetNewRotation", &ScriptHandleSliderDisc::internal_GetNewRotation);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptHandleSliderDisc::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_GetDelta", &ScriptHandleSliderDisc::internal_GetDelta);
+		metaData.scriptClass->addInternalCall("Internal_GetDeltaDirection", &ScriptHandleSliderDisc::internal_GetDeltaDirection);
+		metaData.scriptClass->addInternalCall("Internal_GetNewRotation", &ScriptHandleSliderDisc::internal_GetNewRotation);
 	}
 
 	void ScriptHandleSliderDisc::internal_CreateInstance(MonoObject* instance, Vector3 normal, float radius, bool fixedScale, float snapValue)

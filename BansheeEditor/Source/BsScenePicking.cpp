@@ -22,6 +22,7 @@
 #include "BsBuiltinEditorResources.h"
 #include "BsShader.h"
 #include "BsRenderer.h"
+#include "BsGizmoManager.h"
 
 using namespace std::placeholders;
 
@@ -78,41 +79,16 @@ namespace BansheeEngine
 		}
 	}
 
-	HSceneObject ScenePicking::pickClosestSceneObject(const HCamera& cam, const Vector2I& position, const Vector2I& area)
+	HSceneObject ScenePicking::pickClosestObject(const HCamera& cam, const Vector2I& position, const Vector2I& area)
 	{
-		Vector<PickResult> selectedObjects = pickObjects(cam, position, area);
-		for (auto& object : selectedObjects)
-		{
-			if (object.type == PickResult::Type::SceneObject)
-				return object.sceneObject;
-		}
-
-		return HSceneObject();
-	}
-
-	PickResult ScenePicking::pickClosestObject(const HCamera& cam, const Vector2I& position, const Vector2I& area)
-	{
-		Vector<PickResult> selectedObjects = pickObjects(cam, position, area);
+		Vector<HSceneObject> selectedObjects = pickObjects(cam, position, area);
 		if (selectedObjects.size() == 0)
-			return { HSceneObject(), 0, PickResult::Type::None };
+			return HSceneObject();
 
 		return selectedObjects[0];
 	}
 
-	Vector<HSceneObject> ScenePicking::pickSceneObjects(const HCamera& cam, const Vector2I& position, const Vector2I& area)
-	{
-		Vector<HSceneObject> results;
-		Vector<PickResult> selectedObjects = pickObjects(cam, position, area);
-		for (auto& object : selectedObjects)
-		{
-			if (object.type == PickResult::Type::SceneObject)
-				results.push_back(object.sceneObject);
-		}
-
-		return results;
-	}
-
-	Vector<PickResult> ScenePicking::pickObjects(const HCamera& cam, const Vector2I& position, const Vector2I& area)
+	Vector<HSceneObject> ScenePicking::pickObjects(const HCamera& cam, const Vector2I& position, const Vector2I& area)
 	{
 		auto comparePickElement = [&] (const ScenePicking::RenderablePickData& a, const ScenePicking::RenderablePickData& b)
 		{
@@ -128,7 +104,7 @@ namespace BansheeEngine
 				return (UINT32)a.alpha > (UINT32)b.alpha;
 		};
 
-		Matrix4 viewProjMatrix = cam->getProjectionMatrix() * cam->getViewMatrix();
+		Matrix4 viewProjMatrix = cam->getProjectionMatrixRS() * cam->getViewMatrix();
 
 		const Vector<HRenderable>& renderables = SceneManager::instance().getAllRenderables();
 		RenderableSet pickData(comparePickElement);
@@ -210,50 +186,49 @@ namespace BansheeEngine
 			}
 		}
 
+		UINT32 firstGizmoIdx = (UINT32)pickData.size();
+
 		Viewport vp = cam->getViewport()->clone();
-		AsyncOp op = gCoreAccessor().queueReturnCommand(std::bind(&ScenePicking::corePickObjects, this, vp, std::cref(pickData), position, area, _1));
+		gCoreAccessor().queueCommand(std::bind(&ScenePicking::corePickingBegin, this, vp, std::cref(pickData), position, area));
+
+		GizmoManager::instance().renderForPicking(cam, [&](UINT32 inputIdx) { return encodeIndex(firstGizmoIdx + inputIdx); });
+
+		AsyncOp op = gCoreAccessor().queueReturnCommand(std::bind(&ScenePicking::corePickingEnd, this, vp, position, area, _1));
 		gCoreAccessor().submitToCoreThread(true);
 
 		assert(op.hasCompleted());
 
 		Vector<UINT32>& selectedObjects = op.getReturnValue<Vector<UINT32>>();
-		Vector<PickResult> results;
+		Vector<HSceneObject> results;
 
-		for (auto& selectedObject : selectedObjects)
+		for (auto& selectedObjectIdx : selectedObjects)
 		{
-			auto iterFind = idxToRenderable.find(selectedObject);
+			if (selectedObjectIdx < firstGizmoIdx)
+			{
+				auto iterFind = idxToRenderable.find(selectedObjectIdx);
 
-			if (iterFind != idxToRenderable.end())
-				results.push_back({ iterFind->second->SO(), 0, PickResult::Type::SceneObject });
+				if (iterFind != idxToRenderable.end())
+					results.push_back(iterFind->second->SO());
+			}
+			else
+			{
+				UINT32 gizmoIdx = selectedObjectIdx - firstGizmoIdx;
+
+				HSceneObject so = GizmoManager::instance().getSceneObject(gizmoIdx);
+				if (so)
+					results.push_back(so);
+			}
 		}
 
 		return results;
 	}
 
-	void ScenePicking::corePickObjects(const Viewport& vp, const RenderableSet& renderables, const Vector2I& position,
-		const Vector2I& area, AsyncOp& asyncOp)
+	void ScenePicking::corePickingBegin(const Viewport& viewport, const RenderableSet& renderables, const Vector2I& position, const Vector2I& area)
 	{
 		RenderSystem& rs = RenderSystem::instance();
 
-		RenderTargetPtr rt = vp.getTarget();
-		if (rt->getCore()->getProperties().isWindow())
-		{
-			// TODO: When I do implement this then I will likely want a method in RenderTarget that unifies both render window and render texture readback
-			BS_EXCEPT(NotImplementedException, "Picking is not supported on render windows as framebuffer readback methods aren't implemented");
-		}
-
-		RenderTexturePtr rtt = std::static_pointer_cast<RenderTexture>(rt);
-		TexturePtr outputTexture = rtt->getBindableColorTexture().getInternalPtr();
-
-		if (position.x < 0 || position.x >= (INT32)outputTexture->getWidth() || 
-			position.y < 0 || position.y >= (INT32)outputTexture->getHeight())
-		{
-			asyncOp._completeOperation(Vector<UINT32>());
-			return;
-		}
-
 		rs.beginFrame();
-		rs.setViewport(vp);
+		rs.setViewport(viewport);
 		rs.clearRenderTarget(FBT_COLOR | FBT_DEPTH | FBT_STENCIL, Color::White);
 		rs.setScissorRect(position.x, position.y, position.x + area.x, position.y + area.y);
 
@@ -273,7 +248,7 @@ namespace BansheeEngine
 				else
 					Renderer::setPass(*mMaterialData[(UINT32)activeMaterialCull].mMatPickingProxy, 0);
 			}
-			
+
 			Color color = encodeIndex(renderable.index);
 			MaterialData& md = mMaterialData[(UINT32)activeMaterialCull];
 
@@ -297,12 +272,34 @@ namespace BansheeEngine
 
 			Renderer::draw(*renderable.mesh);
 		}
-		rs.endFrame();
+	}
+
+	void ScenePicking::corePickingEnd(const Viewport& vp, const Vector2I& position, const Vector2I& area, AsyncOp& asyncOp)
+	{
+		RenderTargetPtr rt = vp.getTarget();
+		if (rt->getCore()->getProperties().isWindow())
+		{
+			// TODO: When I do implement this then I will likely want a method in RenderTarget that unifies both render window and render texture readback
+			BS_EXCEPT(NotImplementedException, "Picking is not supported on render windows as framebuffer readback methods aren't implemented");
+		}
+
+		RenderTexturePtr rtt = std::static_pointer_cast<RenderTexture>(rt);
+		TexturePtr outputTexture = rtt->getBindableColorTexture().getInternalPtr();
+
+		if (position.x < 0 || position.x >= (INT32)outputTexture->getWidth() ||
+			position.y < 0 || position.y >= (INT32)outputTexture->getHeight())
+		{
+			asyncOp._completeOperation(Vector<UINT32>());
+			return;
+		}
 
 		PixelDataPtr outputPixelData = outputTexture->allocateSubresourceBuffer(0);
 		GpuResourceDataPtr outputData = outputPixelData;
 		AsyncOp unused;
 
+		RenderSystem& rs = RenderSystem::instance();
+
+		rs.endFrame();
 		rs.readSubresource(outputTexture, 0, outputData, unused);
 
 		Map<UINT32, UINT32> selectionScores;

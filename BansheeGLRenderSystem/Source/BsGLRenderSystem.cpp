@@ -2087,7 +2087,7 @@ namespace BansheeEngine
 		return VET_COLOR_ABGR;
 	}
 
-	void GLRenderSystem::convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest, bool forGpuProgram)
+	void GLRenderSystem::convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest)
 	{
 		dest = matrix;
 	}

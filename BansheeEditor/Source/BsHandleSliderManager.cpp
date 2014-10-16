@@ -53,7 +53,9 @@ namespace BansheeEngine
 
 				if (mHoverSlider != overSlider)
 				{
-					mHoverSlider->setInactive();
+					if (mHoverSlider != nullptr)
+						mHoverSlider->setInactive();
+
 					mHoverSlider = overSlider;
 					overSlider->setHover();
 				}
@@ -68,7 +70,9 @@ namespace BansheeEngine
 
 				if (mActiveSlider != overSlider)
 				{
-					mActiveSlider->setInactive();
+					if (mActiveSlider != nullptr)
+						mActiveSlider->setInactive();
+
 					mActiveSlider = overSlider;
 					overSlider->setActive(inputPos);
 				}

@@ -4,10 +4,13 @@
     - Make those two a non-component types. Anywhere they are used in the Renderer they should just be passed as pointers.
 	- Then make a Component wrapper around the non-component types, and also a C# wrapper around the same types
 
-RESOURCES CAN BE INCORRECTLY CAST between each other. e.g. HSpriteTexture to HTexture will be cast implicitly.
 REFACTOR material getParams* and related classes. Those params should update all gpu program params that share that variable, not just the first found
-Icon appears faded even if it renders in front of a mesh (OpenGL). Likely wrong depth.
+Add a way to render GUI image without alpha
 Crash related to Handles when object is selected
+Exception related to handle manager on shutdown
+Cannot pick gizmo icon
+Cone handle doesn't render properly
+Line slider collider intersection doesn't work properly
 
 Test gizmos
  - HOOK UP GIZMO SELECTION and test it

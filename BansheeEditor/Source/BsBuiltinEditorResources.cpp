@@ -1420,7 +1420,6 @@ namespace BansheeEngine
 		blendDesc.renderTargetDesc[0].srcBlend = BF_SOURCE_ALPHA;
 		blendDesc.renderTargetDesc[0].dstBlend = BF_INV_SOURCE_ALPHA;
 		blendDesc.renderTargetDesc[0].blendOp = BO_ADD;
-		blendDesc.renderTargetDesc[0].renderTargetWriteMask = 0x7; // Don't write to alpha
 
 		HBlendState blendState = BlendState::create(blendDesc);
 
@@ -1491,6 +1490,7 @@ namespace BansheeEngine
 
 		mShaderGizmoAlphaPicking->addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
 
+		mShaderGizmoAlphaPicking->addParameter("alphaCutoff", "alphaCutoff", GPDT_FLOAT1);
 		mShaderGizmoAlphaPicking->addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
 
 		TechniquePtr newTechnique = mShaderGizmoAlphaPicking->addTechnique(mActiveRenderSystem, RendererInvariant);

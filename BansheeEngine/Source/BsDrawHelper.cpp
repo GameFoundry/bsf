@@ -156,8 +156,8 @@ namespace BansheeEngine
 		UINT32 numVertices, numIndices;
 		ShapeMeshes3D::getNumElementsCone(quality, numVertices, numIndices);
 
-		mTotalRequiredWireVertices += numVertices;
-		mTotalRequiredWireIndices += numIndices;
+		mTotalRequiredSolidVertices += numVertices;
+		mTotalRequiredSolidIndices += numIndices;
 	}
 
 	void DrawHelper::disc(const Vector3& position, const Vector3& normal, float radius, UINT32 quality)
@@ -175,8 +175,8 @@ namespace BansheeEngine
 		UINT32 numVertices, numIndices;
 		ShapeMeshes3D::getNumElementsDisc(quality, numVertices, numIndices);
 
-		mTotalRequiredWireVertices += numVertices;
-		mTotalRequiredWireIndices += numIndices;
+		mTotalRequiredSolidVertices += numVertices;
+		mTotalRequiredSolidIndices += numIndices;
 	}
 
 	void DrawHelper::wireDisc(const Vector3& position, const Vector3& normal, float radius, UINT32 quality)
@@ -216,8 +216,8 @@ namespace BansheeEngine
 		UINT32 numVertices, numIndices;
 		ShapeMeshes3D::getNumElementsArc(quality, numVertices, numIndices);
 
-		mTotalRequiredWireVertices += numVertices;
-		mTotalRequiredWireIndices += numIndices;
+		mTotalRequiredSolidVertices += numVertices;
+		mTotalRequiredSolidIndices += numIndices;
 	}
 
 	void DrawHelper::wireArc(const Vector3& position, const Vector3& normal, float radius, 
@@ -251,8 +251,8 @@ namespace BansheeEngine
 		rectData.color = mColor;
 		rectData.transform = mTransform;
 
-		mTotalRequiredWireVertices += 4;
-		mTotalRequiredWireIndices += 6;
+		mTotalRequiredSolidVertices += 4;
+		mTotalRequiredSolidIndices += 6;
 	}
 
 	void DrawHelper::clear()
@@ -269,6 +269,7 @@ namespace BansheeEngine
 		mWireDiscData.clear();
 		mArcData.clear();
 		mWireArcData.clear();
+		mConeData.clear();
 
 		mTotalRequiredSolidVertices = 0;
 		mTotalRequiredSolidIndices = 0;

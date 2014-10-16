@@ -10,6 +10,7 @@
 #include "BsComponent.h"
 #include "BsManagedComponent.h"
 #include "BsGizmoManager.h"
+#include "BsSelection.h"
 
 using namespace std::placeholders;
 
@@ -41,6 +42,8 @@ namespace BansheeEngine
 
 	void ScriptGizmoManager::update()
 	{
+		GizmoManager::instance().clearGizmos();
+
 		HSceneObject rootSO = SceneManager::instance().getRootNode();
 
 		Stack<HSceneObject> todo;
@@ -49,6 +52,8 @@ namespace BansheeEngine
 		bool isParentSelected = false;
 		UINT32 parentSelectedPopIdx = 0;
 		
+		Vector<HSceneObject> selectedObjects = Selection::instance().getSceneObjects();
+
 		while (!todo.empty())
 		{
 			if (isParentSelected && parentSelectedPopIdx == (UINT32)todo.size())
@@ -59,7 +64,7 @@ namespace BansheeEngine
 			HSceneObject curSO = todo.top();
 			todo.pop();
 
-			bool isSelected = dummyIsSelected(curSO);
+			bool isSelected = std::count(selectedObjects.begin(), selectedObjects.end(), curSO) > 0;
 			if (isSelected && !isParentSelected)
 			{
 				isParentSelected = true;
@@ -91,10 +96,13 @@ namespace BansheeEngine
 						if (drawGizmo)
 						{
 							bool pickable = (flags & (UINT32)DrawGizmoFlags::Pickable) != 0;
+							GizmoManager::instance().startGizmo(curSO);
 							GizmoManager::instance().setPickable(pickable);
 
 							void* params[1] = { managedComponent->getManagedInstance() };
 							iterFind->second.drawGizmosMethod->invoke(nullptr, params);
+
+							GizmoManager::instance().endGizmo();
 						}
 					}
 				}
