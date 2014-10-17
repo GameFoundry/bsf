@@ -1,13 +1,21 @@
 #include "BsScriptHandleSlider.h"
 #include "BsScriptMeta.h"
 #include "BsMonoClass.h"
+#include "BsScriptHandleSliderManager.h"
 
 namespace BansheeEngine
 {
 	ScriptHandleSliderBase::ScriptHandleSliderBase(MonoObject* managedInstance)
 		:ScriptObjectBase(managedInstance)
 	{
+		ScriptHandleSliderManager::instance().registerSlider(this);
+	}
 
+	void ScriptHandleSliderBase::destroy()
+	{
+		ScriptHandleSliderManager::instance().unregisterSlider(this);
+
+		destroyInternal();
 	}
 
 	ScriptHandleSlider::ScriptHandleSlider(MonoObject* instance)

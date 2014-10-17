@@ -12,14 +12,16 @@ namespace BansheeEngine
 	{
 	public:
 		ScriptHandleSliderBase(MonoObject* managedInstance);
-		virtual ~ScriptHandleSliderBase() {}
+		virtual ~ScriptHandleSliderBase() { }
 
 		virtual HandleSlider* getSlider() const = 0;
 
 	protected:
 		friend class ScriptHandleSlider;
+		friend class ScriptHandleSliderManager;
 
-		virtual void destroy() = 0;
+		void destroy();
+		virtual void destroyInternal() = 0;
 	};
 
 	class BS_SCR_BED_EXPORT ScriptHandleSlider : public ScriptObject <ScriptHandleSlider>

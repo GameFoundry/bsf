@@ -4,8 +4,8 @@ namespace BansheeEditor
 {
     public sealed class MoveHandle : DefaultHandle
     {
-        private const float CONE_HEIGHT = 0.05f;
-        private const float CONE_RADIUS = 0.05f;
+        private const float CONE_HEIGHT = 0.5f;
+        private const float CONE_RADIUS = 0.5f;
 
         private Vector3 delta;
 

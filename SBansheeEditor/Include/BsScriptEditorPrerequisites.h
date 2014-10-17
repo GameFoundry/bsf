@@ -24,6 +24,7 @@ namespace BansheeEngine
 	class ScriptEditorWindow;
 	class GUIGameObjectField;
 	class GUIResourceField;
+	class ScriptHandleSliderBase;
 
 	static const char* BansheeEditorAssemblyName = "MBansheeEditor";
 }

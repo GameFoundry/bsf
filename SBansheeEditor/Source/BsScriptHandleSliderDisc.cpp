@@ -18,7 +18,7 @@ namespace BansheeEngine
 			bs_delete(mSlider);
 	}
 
-	void ScriptHandleSliderDisc::destroy()
+	void ScriptHandleSliderDisc::destroyInternal()
 	{
 		if (mSlider != nullptr)
 			bs_delete(mSlider);

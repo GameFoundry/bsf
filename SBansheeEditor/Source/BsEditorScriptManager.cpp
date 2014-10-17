@@ -7,6 +7,7 @@
 #include "BsRuntimeScriptObjects.h"
 #include "BsScriptGizmoManager.h"
 #include "BsScriptHandleManager.h"
+#include "BsScriptHandleSliderManager.h"
 #include "BsTime.h"
 #include "BsMath.h"
 
@@ -26,6 +27,7 @@ namespace BansheeEngine
 
 		RuntimeScriptObjects::instance().refreshScriptObjects(BansheeEditorAssemblyName);
 
+		ScriptHandleSliderManager::startUp();
 		ScriptGizmoManager::startUp(RuntimeScriptObjects::instance());
 		HandleManager::startUp<ScriptHandleManager>(RuntimeScriptObjects::instance());
 
@@ -41,6 +43,7 @@ namespace BansheeEngine
 
 	EditorScriptManager::~EditorScriptManager()
 	{
+		ScriptHandleSliderManager::shutDown();
 		HandleManager::shutDown();
 		ScriptGizmoManager::shutDown();
 	}

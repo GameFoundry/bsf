@@ -6,11 +6,11 @@
 
 REFACTOR material getParams* and related classes. Those params should update all gpu program params that share that variable, not just the first found
 Add a way to render GUI image without alpha
-Crash related to Handles when object is selected
 Exception related to handle manager on shutdown
 Cannot pick gizmo icon
 Cone handle doesn't render properly
 Line slider collider intersection doesn't work properly
+Handles need to render in front of everything
 
 Test gizmos
  - HOOK UP GIZMO SELECTION and test it

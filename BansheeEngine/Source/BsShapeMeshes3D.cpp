@@ -643,15 +643,15 @@ namespace BansheeEngine
 		for (UINT32 i = 0; i < numTriangles - 1; i++)
 		{
 			outIndices[i * 3 + 0] = curVertOffset + topIdx;
-			outIndices[i * 3 + 1] = curVertOffset + i;
-			outIndices[i * 3 + 2] = curVertOffset + i + 1;
+			outIndices[i * 3 + 1] = curVertOffset + i + 1;
+			outIndices[i * 3 + 2] = curVertOffset + i;
 		}
 
 		{
 			UINT32 i = numTriangles - 1;
 			outIndices[i * 3 + 0] = vertexOffset + topIdx;
-			outIndices[i * 3 + 1] = vertexOffset + i;
-			outIndices[i * 3 + 2] = vertexOffset + 0;
+			outIndices[i * 3 + 1] = vertexOffset + 0;
+			outIndices[i * 3 + 2] = vertexOffset + i;
 		}
 	}
 

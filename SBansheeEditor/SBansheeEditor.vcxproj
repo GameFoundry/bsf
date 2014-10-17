@@ -253,6 +253,7 @@
     <ClInclude Include="Include\BsScriptHandleManager.h" />
     <ClInclude Include="Include\BsScriptHandleSlider.h" />
     <ClInclude Include="Include\BsScriptHandleSliderLine.h" />
+    <ClInclude Include="Include\BsScriptHandleSliderManager.h" />
     <ClInclude Include="Include\BsScriptHandleSliderPlane.h" />
     <ClInclude Include="Include\BsScriptProjectLibrary.h" />
     <ClInclude Include="Include\BsScriptSelection.h" />
@@ -285,6 +286,7 @@
     <ClCompile Include="Source\BsScriptHandleSlider.cpp" />
     <ClCompile Include="Source\BsScriptHandleSliderDisc.cpp" />
     <ClCompile Include="Source\BsScriptHandleSliderLine.cpp" />
+    <ClCompile Include="Source\BsScriptHandleSliderManager.cpp" />
     <ClCompile Include="Source\BsScriptHandleSliderPlane.cpp" />
     <ClCompile Include="Source\BsScriptProjectLibrary.cpp" />
     <ClCompile Include="Source\BsScriptSelection.cpp" />

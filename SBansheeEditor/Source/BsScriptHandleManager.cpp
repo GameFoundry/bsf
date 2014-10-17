@@ -154,7 +154,7 @@ namespace BansheeEngine
 			mPreInputMethod = mHandleBaseClass->getMethod("PreInput", 0);
 			mPostInputMethod = mHandleBaseClass->getMethod("PostInput", 0);
 			mDrawMethod = mHandleBaseClass->getMethod("Draw", 0);
-			mDestroyThunk = (DestroyThunkDef)mHandleBaseClass->getMethod("Destroy", 0);
+			mDestroyThunk = (DestroyThunkDef)mHandleBaseClass->getMethod("Destroy", 0)->getThunk();
 
 			mDefaultHandleManager = nullptr; // Freed on assembly unload, so not valid anymore
 			mDefaultHandleManagerGCHandle = 0;
