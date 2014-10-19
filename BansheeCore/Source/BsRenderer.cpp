@@ -131,8 +131,6 @@ namespace BansheeEngine
 		IndexBufferPtr indexBuffer = mesh->_getIndexBuffer();
 
 		UINT32 indexCount = subMesh.indexCount;
-		if (indexCount == 0)
-			indexCount = indexBuffer->getNumIndices();
 
 		rs.setIndexBuffer(indexBuffer);
 		rs.drawIndexed(subMesh.indexOffset + mesh->_getIndexOffset(), indexCount, mesh->_getVertexOffset(), vertexData->vertexCount);

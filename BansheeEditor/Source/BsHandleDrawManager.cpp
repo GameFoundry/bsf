@@ -29,7 +29,7 @@ namespace BansheeEngine
 
 		mCore = bs_new<HandleDrawManagerCore>(HandleDrawManagerCore::PrivatelyConstruct());
 
-		gCoreAccessor().queueCommand(std::bind(&HandleDrawManager::initializeCore, this, solidMaterialProxy, wireMaterialProxy));
+		gCoreAccessor().queueCommand(std::bind(&HandleDrawManager::initializeCore, this, wireMaterialProxy, solidMaterialProxy));
 	}
 
 	HandleDrawManager::~HandleDrawManager()
