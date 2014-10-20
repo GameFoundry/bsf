@@ -529,19 +529,22 @@ namespace BansheeEngine
 			calculateIconColors(curIconData.color, *camera.get(), (UINT32)(halfHeight * 2.0f), curIconData.fixedScale, normalColor, fadedColor);
 
 			if (forPicking)
+			{
 				normalColor = curIconData.color;
+				fadedColor = curIconData.color;
+			}
 
 			Vector3 positions[4];
 			positions[0] = position + Vector3(-halfWidth, -halfHeight, 0.0f);
 			positions[1] = position + Vector3(halfWidth, -halfHeight, 0.0f);
-			positions[2] = position + Vector3(-halfWidth, halfHeight, 0.0f);
-			positions[3] = position + Vector3(halfWidth, halfHeight, 0.0f);
+			positions[2] = position + Vector3(halfWidth, halfHeight, 0.0f);
+			positions[3] = position + Vector3(-halfWidth, halfHeight, 0.0f);
 
 			Vector2 uvs[4];
 			uvs[0] = curIconData.texture->transformUV(Vector2(0.0f, 0.0f));
 			uvs[1] = curIconData.texture->transformUV(Vector2(1.0f, 0.0f));
-			uvs[2] = curIconData.texture->transformUV(Vector2(0.0f, 1.0f));
-			uvs[3] = curIconData.texture->transformUV(Vector2(1.0f, 1.0f));
+			uvs[2] = curIconData.texture->transformUV(Vector2(1.0f, 1.0f));
+			uvs[3] = curIconData.texture->transformUV(Vector2(0.0f, 1.0f));
 
 			for (UINT32 j = 0; j < 4; j++)
 			{
@@ -554,8 +557,8 @@ namespace BansheeEngine
 			UINT32 vertOffset = i * 4;
 
 			indices[0] = vertOffset + 0;
-			indices[1] = vertOffset + 1;
-			indices[2] = vertOffset + 2;
+			indices[1] = vertOffset + 3;
+			indices[2] = vertOffset + 1;
 			indices[3] = vertOffset + 1;
 			indices[4] = vertOffset + 3;
 			indices[5] = vertOffset + 2;
@@ -792,13 +795,13 @@ namespace BansheeEngine
 			{
 				Renderer::setPass(*mIconMaterial.proxy, passIdx);
 
-				UINT32 curIndexOffset = 0;
+				UINT32 curIndexOffset = mesh->_getIndexOffset();
 				for (auto curRenderData : *renderData)
 				{
 					mIconMaterial.mTexture[passIdx].set(curRenderData.texture);
 					rs.bindGpuParams(GPT_FRAGMENT_PROGRAM, mIconMaterial.mFragParams[passIdx]);
 
-					rs.drawIndexed(curIndexOffset, curRenderData.count * 6, 0, curRenderData.count * 4);
+					rs.drawIndexed(curIndexOffset, curRenderData.count * 6, mesh->_getVertexOffset(), curRenderData.count * 4);
 					curIndexOffset += curRenderData.count * 6;
 				}
 			}
@@ -815,7 +818,7 @@ namespace BansheeEngine
 				mAlphaPickingMaterial.mTexture.set(curRenderData.texture);
 				rs.bindGpuParams(GPT_FRAGMENT_PROGRAM, mAlphaPickingMaterial.mFragParams);
 
-				rs.drawIndexed(curIndexOffset, curRenderData.count * 6, 0, curRenderData.count * 4);
+				rs.drawIndexed(curIndexOffset, curRenderData.count * 6, mesh->_getVertexOffset(), curRenderData.count * 4);
 				curIndexOffset += curRenderData.count * 6;
 
 			}

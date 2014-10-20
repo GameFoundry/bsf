@@ -1423,11 +1423,6 @@ namespace BansheeEngine
 
 		HBlendState blendState = BlendState::create(blendDesc);
 
-		RASTERIZER_STATE_DESC rasterizerDesc;
-		rasterizerDesc.cullMode = CULL_NONE;
-
-		HRasterizerState rasterizerState = RasterizerState::create(rasterizerDesc);
-
 		DEPTH_STENCIL_STATE_DESC depthStencilState0Desc;
 		depthStencilState0Desc.depthWriteEnable = false;
 		depthStencilState0Desc.depthComparisonFunc = CMPF_LESS_EQUAL;
@@ -1447,7 +1442,6 @@ namespace BansheeEngine
 
 		newPass0->setBlendState(blendState);
 		newPass0->setDepthStencilState(depthStencilState0);
-		newPass0->setRasterizerState(rasterizerState);
 
 		PassPtr newPass1 = newTechnique->addPass();
 		newPass1->setVertexProgram(vsProgram1);
@@ -1455,7 +1449,6 @@ namespace BansheeEngine
 
 		newPass1->setBlendState(blendState);
 		newPass1->setDepthStencilState(depthStencilState1);
-		newPass1->setRasterizerState(rasterizerState);
 	}
 
 	void BuiltinEditorResources::initGizmoPickingShader()

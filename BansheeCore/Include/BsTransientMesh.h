@@ -77,8 +77,8 @@ namespace BansheeEngine
 		 *
 		 * @see		MeshHeap::alloc
 		 */
-		TransientMesh(const MeshHeapPtr& parentHeap, UINT32 id, UINT32 numIndices, 
-			UINT32 numVertices, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
+		TransientMesh(const MeshHeapPtr& parentHeap, UINT32 id, UINT32 numVertices,
+			UINT32 numIndices, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
 
 		/**
 		 * @brief	Marks the mesh as destroyed so we know that we don't need to destroy it ourselves.

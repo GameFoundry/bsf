@@ -11,6 +11,7 @@
 #include "BsException.h"
 #include "BsRenderSystem.h"
 #include "BsSceneObject.h"
+#include "BsDebug.h"
 
 namespace BansheeEngine 
 {
@@ -521,8 +522,8 @@ namespace BansheeEngine
 	Vector2 Camera::screenToClipPoint(const Vector2I& screenPoint) const
 	{
 		Vector2 clipPoint;
-		clipPoint.x = (float)(((screenPoint.x - mViewport->getX()) / mViewport->getWidth()) * 2.0f - 1.0f);
-		clipPoint.y = (float)(((screenPoint.y - mViewport->getY()) / mViewport->getHeight()) * 2.0f - 1.0f);
+		clipPoint.x = (float)(((screenPoint.x - mViewport->getX()) / (float)mViewport->getWidth()) * 2.0f - 1.0f);
+		clipPoint.y = (float)(((screenPoint.y - mViewport->getY()) / (float)mViewport->getHeight()) * 2.0f - 1.0f);
 
 		return clipPoint;
 	}
@@ -568,11 +569,15 @@ namespace BansheeEngine
 	Ray Camera::screenPointToRay(const Vector2I& screenPoint) const
 	{
 		Vector2 clipPoint = screenToClipPoint(screenPoint);
+		LOGWRN(toString(clipPoint));
 
 		Vector3 near = unprojectPoint(Vector3(clipPoint.x, clipPoint.y, mNearDist));
 		Vector3 far = unprojectPoint(Vector3(clipPoint.x, clipPoint.y, mNearDist + 1.0f));
 
-		return Ray(near, Vector3::normalize(far - near));
+		Ray ray(near, Vector3::normalize(far - near));
+		ray.transformAffine(mViewMatrix.inverseAffine());
+
+		return ray;
 	}
 
 	Vector3 Camera::projectPoint(const Vector3& point) const

@@ -39,8 +39,8 @@ namespace BansheeEngine
 		Ray localRay = ray;
 		localRay.transform(getTransformInv());
 
-		auto capsuleIntersect = mCapsuleCollider.intersects(ray);
-		auto sphereIntersect = mSphereCollider.intersects(ray);
+		auto capsuleIntersect = mCapsuleCollider.intersects(localRay);
+		auto sphereIntersect = mSphereCollider.intersects(localRay);
 
 		t = std::numeric_limits<float>::max();
 		bool gotIntersect = false;
