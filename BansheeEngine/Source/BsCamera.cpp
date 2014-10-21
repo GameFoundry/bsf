@@ -16,8 +16,10 @@
 namespace BansheeEngine 
 {
 	Camera::Camera(const HSceneObject& parent, RenderTargetPtr target, float left, float top, float width, float height)
-		: Component(parent), mInternal(target, left, top, width, height), mLastUpdateHash(std::numeric_limits<UINT32>::max())
+		: Component(parent), mLastUpdateHash(std::numeric_limits<UINT32>::max())
     {
+		mInternal = bs_shared_ptr<CameraHandler>(target, left, top, width, height);
+
 		setName("Camera");
     }
 
@@ -46,8 +48,8 @@ namespace BansheeEngine
 		UINT32 curHash = SO()->getTransformHash();
 		if (curHash != mLastUpdateHash)
 		{
-			mInternal.setPosition(SO()->getWorldPosition());
-			mInternal.setRotation(SO()->getWorldRotation());
+			mInternal->setPosition(SO()->getWorldPosition());
+			mInternal->setRotation(SO()->getWorldRotation());
 
 			mLastUpdateHash = curHash;
 		}

@@ -305,7 +305,8 @@ namespace BansheeEngine
 		TID_EmulatedParamBlock = 1069,
 		TID_TextureImportOptions = 1070,
 		TID_ResourceMetaData = 1071,
-		TID_GpuProgramInclude = 1072
+		TID_GpuProgramInclude = 1072,
+		TID_Viewport = 1073
 	};
 }
 

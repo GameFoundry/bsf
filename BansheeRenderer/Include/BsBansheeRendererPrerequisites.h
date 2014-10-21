@@ -20,5 +20,5 @@
 
 namespace BansheeEngine
 {
-	class LitTexRenderableHandler;
+	class LitTexRenderableController;
 }

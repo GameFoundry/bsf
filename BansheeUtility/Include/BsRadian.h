@@ -55,4 +55,6 @@ namespace BansheeEngine
 		bool operator>= (const Radian& r) const { return mRad >= r.mRad; }
 		bool operator>  (const Radian& r) const { return mRad >  r.mRad; }
 	};
+
+	BS_ALLOW_MEMCPY_SERIALIZATION(Radian);
 }

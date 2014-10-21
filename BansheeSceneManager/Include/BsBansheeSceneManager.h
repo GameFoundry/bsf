@@ -20,12 +20,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	SceneManager::getAllCameras
 		 */
-		const Vector<HCamera>& getAllCameras() const { return mCachedCameras; }
+		const Vector<SceneCameraData>& getAllCameras() const { return mCachedCameras; }
 
 		/**
 		 * @copydoc	SceneManager::getAllRenderables
 		 */
-		const Vector<HRenderable>& getAllRenderables() const { return mRenderables; }
+		const Vector<SceneRenderableData>& getAllRenderables() const { return mRenderables; }
 
 		/**
 		 * @copydoc	SceneManager
@@ -43,7 +43,7 @@ namespace BansheeEngine
 		 */
 		void notifyComponentRemoved(const HComponent& component);
 
-		Vector<HCamera> mCachedCameras;
-		Vector<HRenderable> mRenderables;
+		Vector<SceneCameraData> mCachedCameras;
+		Vector<SceneRenderableData> mRenderables;
 	};
 }

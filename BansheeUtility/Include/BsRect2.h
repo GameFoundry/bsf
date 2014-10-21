@@ -61,4 +61,6 @@ namespace BansheeEngine
 
 		static const Rect2 EMPTY;
 	};
+
+	BS_ALLOW_MEMCPY_SERIALIZATION(Rect2);
 }

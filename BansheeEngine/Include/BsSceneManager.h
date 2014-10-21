@@ -6,6 +6,32 @@
 namespace BansheeEngine
 {
 	/**
+	 * @brief	Contains information about a camera managed by the scene manager.
+	 */
+	struct SceneCameraData
+	{
+		SceneCameraData(const CameraHandlerPtr& camera, const HSceneObject& sceneObject)
+			:camera(camera), sceneObject(sceneObject)
+		{ }
+
+		CameraHandlerPtr camera;
+		HSceneObject sceneObject;
+	};
+
+	/**
+	 * @brief	Contains information about a renderable managed by the scene manager.
+	 */
+	struct SceneRenderableData
+	{
+		SceneRenderableData(const RenderableHandlerPtr& renderable, const HSceneObject& sceneObject)
+			:renderable(renderable), sceneObject(sceneObject)
+		{ }
+
+		RenderableHandlerPtr renderable;
+		HSceneObject sceneObject;
+	};
+
+	/**
 	 * @brief	Manages active SceneObjects and provides ways for querying
 	 *			and updating them or their components.
 	 */
@@ -18,12 +44,12 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns all cameras in the scene.
 		 */
-		virtual const Vector<HCamera>& getAllCameras() const = 0;
+		virtual const Vector<SceneCameraData>& getAllCameras() const = 0;
 
 		/**
 		 * @brief	Returns all renderables in the scene.
 		 */
-		virtual const Vector<HRenderable>& getAllRenderables() const = 0;
+		virtual const Vector<SceneRenderableData>& getAllRenderables() const = 0;
 
 		/**
 		 * @brief	Updates dirty transforms on any scene objects with a Renderable component.
@@ -43,12 +69,12 @@ namespace BansheeEngine
 		/**
 		 * @brief	Triggered whenever a renderable is removed from a SceneObject.
 		 */
-		Event<void(const HRenderable&)> onRenderableRemoved;
+		Event<void(const RenderableHandlerPtr&)> onRenderableRemoved;
 
 		/**
 		 * @brief	Triggered whenever a camera is removed from a SceneObject.
 		 */
-		Event<void(const HCamera&)> onCameraRemoved;
+		Event<void(const CameraHandlerPtr&)> onCameraRemoved;
 	};
 
 	/**

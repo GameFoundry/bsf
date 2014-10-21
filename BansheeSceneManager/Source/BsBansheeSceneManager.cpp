@@ -17,7 +17,7 @@ namespace BansheeEngine
 
 		for(auto& iter : mRenderables)
 		{
-			iter->SO()->updateTransformsIfDirty();
+			iter.sceneObject->updateTransformsIfDirty();
 		}
 	}
 
@@ -26,19 +26,24 @@ namespace BansheeEngine
 		if(component->getTypeId() == TID_Camera)
 		{
 			HCamera camera = static_object_cast<Camera>(component);
-			auto findIter = std::find(mCachedCameras.begin(), mCachedCameras.end(), camera);
+			CameraHandlerPtr cameraHandler = camera->_getHandler();
+
+			auto findIter = std::find_if(mCachedCameras.begin(), mCachedCameras.end(), 
+				[&](const SceneCameraData& x) { return x.camera == cameraHandler; });
 
 			if(findIter != mCachedCameras.end())
 			{
 				BS_EXCEPT(InternalErrorException, "Trying to add an already existing camera!");
 			}
 
-			mCachedCameras.push_back(camera);
+			mCachedCameras.push_back(SceneCameraData(cameraHandler, component->SO()));
 		}
 		else if(component->getTypeId() == TID_Renderable)
 		{
 			HRenderable renderable = static_object_cast<Renderable>(component);
-			mRenderables.push_back(renderable);
+			RenderableHandlerPtr renderableHandler = renderable->_getHandler();
+
+			mRenderables.push_back(SceneRenderableData(renderableHandler, renderable->SO()));
 		}
 	}
 
@@ -47,7 +52,10 @@ namespace BansheeEngine
 		if(component->getTypeId() == TID_Camera)
 		{
 			HCamera camera = static_object_cast<Camera>(component);
-			auto findIter = std::find(mCachedCameras.begin(), mCachedCameras.end(), camera);
+			CameraHandlerPtr cameraHandler = camera->_getHandler();
+
+			auto findIter = std::find_if(mCachedCameras.begin(), mCachedCameras.end(),
+				[&](const SceneCameraData& x) { return x.camera == cameraHandler; });
 
 			if(findIter == mCachedCameras.end())
 			{
@@ -56,18 +64,21 @@ namespace BansheeEngine
 
 			mCachedCameras.erase(findIter);
 
-			onCameraRemoved(camera);
+			onCameraRemoved(cameraHandler);
 		}
 		else if(component->getTypeId() == TID_Renderable)
 		{
 			HRenderable renderable = static_object_cast<Renderable>(component);
+			RenderableHandlerPtr renderableHandler = renderable->_getHandler();
 
 			// TODO - I should probably use some for of a hash set because searching through possibly thousands of renderables will be slow
-			auto findIter = std::find(mRenderables.begin(), mRenderables.end(), renderable);
+			auto findIter = std::find_if(mRenderables.begin(), mRenderables.end(),
+				[&](const SceneRenderableData& x) { return x.renderable == renderableHandler; });
+
 			if(findIter != mRenderables.end())
 				mRenderables.erase(findIter);
 
-			onRenderableRemoved(renderable);
+			onRenderableRemoved(renderableHandler);
 		}
 	}
 }

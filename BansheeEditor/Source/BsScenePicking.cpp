@@ -106,13 +106,14 @@ namespace BansheeEngine
 
 		Matrix4 viewProjMatrix = cam->getProjectionMatrixRS() * cam->getViewMatrix();
 
-		const Vector<HRenderable>& renderables = SceneManager::instance().getAllRenderables();
+		const Vector<SceneRenderableData>& renderables = SceneManager::instance().getAllRenderables();
 		RenderableSet pickData(comparePickElement);
-		Map<UINT32, HRenderable> idxToRenderable;
+		Map<UINT32, HSceneObject> idxToRenderable;
 
-		for (auto& renderable : renderables)
+		for (auto& renderableData : renderables)
 		{
-			HSceneObject so = renderable->SO();
+			RenderableHandlerPtr renderable = renderableData.renderable;
+			HSceneObject so = renderableData.sceneObject;
 
 			if (!so->getActive())
 				continue;
@@ -177,7 +178,7 @@ namespace BansheeEngine
 							}
 						}
 
-						idxToRenderable[idx] = renderable;
+						idxToRenderable[idx] = so;
 
 						Matrix4 wvpTransform = viewProjMatrix * worldTransform;
 						pickData.insert({ meshProxy, idx, wvpTransform, useAlphaShader, cullMode, mainTexture });
@@ -208,7 +209,7 @@ namespace BansheeEngine
 				auto iterFind = idxToRenderable.find(selectedObjectIdx);
 
 				if (iterFind != idxToRenderable.end())
-					results.push_back(iterFind->second->SO());
+					results.push_back(iterFind->second);
 			}
 			else
 			{

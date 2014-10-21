@@ -25,7 +25,7 @@
 #include "BsGpuParamBlockBuffer.h"
 #include "BsShader.h"
 #include "BsShaderProxy.h"
-#include "BsBansheeLitTexRenderableHandler.h"
+#include "BsBansheeLitTexRenderableController.h"
 #include "BsTime.h"
 #include "BsFrameAlloc.h"
 
@@ -55,7 +55,7 @@ namespace BansheeEngine
 	{
 		Renderer::_onActivated();
 
-		mLitTexHandler = bs_new<LitTexRenderableHandler>();
+		mLitTexHandler = bs_new<LitTexRenderableController>();
 	}
 
 	void BansheeRenderer::_onDeactivated()
@@ -180,7 +180,7 @@ namespace BansheeEngine
 		proxy->calcWorldFrustum();
 	}
 
-	void BansheeRenderer::renderableRemoved(const HRenderable& renderable)
+	void BansheeRenderer::renderableRemoved(const RenderableHandlerPtr& renderable)
 	{
 		if (renderable->_getActiveProxy() != nullptr)
 		{
@@ -188,7 +188,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void BansheeRenderer::cameraRemoved(const HCamera& camera)
+	void BansheeRenderer::cameraRemoved(const CameraHandlerPtr& camera)
 	{
 		if (camera->_getActiveProxy() != nullptr)
 		{
@@ -208,39 +208,42 @@ namespace BansheeEngine
 		}
 
 		// Add or update Renderable proxies
-		const Vector<HRenderable>& allRenderables = gSceneManager().getAllRenderables();
+		const Vector<SceneRenderableData>& allRenderables = gSceneManager().getAllRenderables();
 		Vector<HSceneObject> dirtySceneObjects;
-		Vector<HRenderable> dirtyRenderables;
+		Vector<RenderableHandlerPtr> dirtyRenderables;
 
 		FrameAlloc* frameAlloc = gCoreThread().getFrameAlloc();
-		for (auto& renderable : allRenderables)
+		for (auto& renderableData : allRenderables)
 		{
+			RenderableHandlerPtr renderable = renderableData.renderable;
+			HSceneObject renderableSO = renderableData.sceneObject;
+
 			bool addedNewProxy = false;
 			RenderableProxyPtr proxy = renderable->_getActiveProxy();
 
-			if (renderable->SO()->getActive())
+			if (renderableSO->getActive())
 			{
 				if (renderable->_isCoreDirty())
 				{
 					if (proxy != nullptr)
 						gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::removeRenderableProxy, this, proxy));
 
-					proxy = renderable->_createProxy();
+					proxy = renderable->_createProxy(renderableSO->getWorldTfrm());
 					renderable->_setActiveProxy(proxy);
 
 					if (proxy != nullptr)
 						gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::addRenderableProxy, this, proxy));
 
 					dirtyRenderables.push_back(renderable);
-					dirtySceneObjects.push_back(renderable->SO());
+					dirtySceneObjects.push_back(renderableSO);
 					addedNewProxy = true;
 				}
-				else if (renderable->SO()->_isCoreDirty())
+				else if (renderableSO->_isCoreDirty())
 				{
 					if (proxy != nullptr)
-						gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::updateRenderableProxy, this, proxy, renderable->SO()->getWorldTfrm()));
+						gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::updateRenderableProxy, this, proxy, renderableSO->getWorldTfrm()));
 
-					dirtySceneObjects.push_back(renderable->SO());
+					dirtySceneObjects.push_back(renderableSO);
 				}
 
 				if (!addedNewProxy && proxy != nullptr)
@@ -284,9 +287,12 @@ namespace BansheeEngine
 		}
 
 		// Add or update Camera proxies
-		const Vector<HCamera>& allCameras = gSceneManager().getAllCameras();
-		for (auto& camera : allCameras)
+		const Vector<SceneCameraData>& allCameras = gSceneManager().getAllCameras();
+		for (auto& cameraData : allCameras)
 		{
+			CameraHandlerPtr camera = cameraData.camera;
+			HSceneObject cameraSO = cameraData.sceneObject;
+
 			if (camera->_isCoreDirty())
 			{
 				CameraProxyPtr proxy = camera->_getActiveProxy();
@@ -300,17 +306,17 @@ namespace BansheeEngine
 				gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::addCameraProxy, this, proxy));
 
 				camera->_markCoreClean();
-				dirtySceneObjects.push_back(camera->SO());
+				dirtySceneObjects.push_back(cameraSO);
 			}
-			else if (camera->SO()->_isCoreDirty())
+			else if (cameraSO->_isCoreDirty())
 			{
 				CameraProxyPtr proxy = camera->_getActiveProxy();
 				assert(proxy != nullptr);
 
 				gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::updateCameraProxy, this, 
-					proxy, camera->SO()->getWorldPosition(), camera->SO()->getWorldTfrm(), camera->getViewMatrix()));
+					proxy, cameraSO->getWorldPosition(), cameraSO->getWorldTfrm(), camera->getViewMatrix()));
 
-				dirtySceneObjects.push_back(camera->SO());
+				dirtySceneObjects.push_back(cameraSO);
 			}
 		}
 
@@ -321,8 +327,11 @@ namespace BansheeEngine
 		}
 
 		// Populate direct draw lists
-		for (auto& camera : allCameras)
+		for (auto& cameraData : allCameras)
 		{
+			CameraHandlerPtr camera = cameraData.camera;
+			HSceneObject cameraSO = cameraData.sceneObject;
+
 			DrawListPtr drawList = bs_shared_ptr<DrawList>();
 
 			// Get GUI render operations
@@ -382,7 +391,7 @@ namespace BansheeEngine
 						materialProxy, dirtyParams));
 				}
 
-				float distanceToCamera = (camera->SO()->getPosition() - drawOp.worldPosition).length();
+				float distanceToCamera = (cameraSO->getPosition() - drawOp.worldPosition).length();
 				renderQueue->add(materialProxy, meshProxy, distanceToCamera);
 			}
 

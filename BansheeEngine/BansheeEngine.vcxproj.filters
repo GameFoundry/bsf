@@ -255,9 +255,6 @@
     <ClInclude Include="Include\BsRenderQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsRenderableHandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsGUILayoutUtility.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
@@ -277,6 +274,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsCameraHandlerRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsRenderableController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsRenderableHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsRenderableHandlerRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
   </ItemGroup>
@@ -461,9 +467,6 @@
     <ClCompile Include="Source\BsRenderQueue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsRenderableHandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\BsGUILayoutUtility.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
@@ -477,6 +480,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsCameraHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsRenderableController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsRenderableHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

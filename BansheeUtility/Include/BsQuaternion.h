@@ -279,4 +279,6 @@ namespace BansheeEngine
 		private:
 			static const EulerAngleOrderData EA_LOOKUP[6];
     };
+
+	BS_ALLOW_MEMCPY_SERIALIZATION(Quaternion);
 }

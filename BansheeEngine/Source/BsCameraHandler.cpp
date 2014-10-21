@@ -148,7 +148,6 @@ namespace BansheeEngine
 				top = mTop;
 				bottom = mBottom;
 			}
-
 			else if (mProjType == PT_PERSPECTIVE)
 			{
 				Radian thetaY(mHorzFOV * 0.5f);

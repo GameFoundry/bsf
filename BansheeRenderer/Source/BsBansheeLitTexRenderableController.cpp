@@ -1,4 +1,4 @@
-#include "BsBansheeLitTexRenderableHandler.h"
+#include "BsBansheeLitTexRenderableController.h"
 #include "BsRenderableProxy.h"
 #include "BsShader.h"
 #include "BsShaderProxy.h"
@@ -12,7 +12,7 @@
 
 namespace BansheeEngine
 {
-	LitTexRenderableHandler::LitTexRenderableHandler()
+	LitTexRenderableController::LitTexRenderableController()
 	{
 		defaultShader = createDefaultShader();
 
@@ -123,7 +123,7 @@ namespace BansheeEngine
 		lightDirParam.set(Vector4(0.707f, 0.707f, 0.707f, 0.0f));
 	}
 
-	void LitTexRenderableHandler::initializeRenderElem(RenderableElement* element)
+	void LitTexRenderableController::initializeRenderElem(RenderableElement* element)
 	{
 		static auto paramsMatch = [](const GpuParamDataDesc& a, const GpuParamDataDesc& b)
 		{
@@ -233,7 +233,7 @@ namespace BansheeEngine
 		bindGlobalBuffers(element);
 	}
 
-	void LitTexRenderableHandler::bindPerObjectBuffers(const RenderableElement* element)
+	void LitTexRenderableController::bindPerObjectBuffers(const RenderableElement* element)
 	{
 		const PerObjectData* rendererData = any_cast_unsafe<PerObjectData>(&element->rendererData);
 		for (auto& perObjectBuffer : rendererData->perObjectBuffers)
@@ -244,7 +244,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void LitTexRenderableHandler::updateGlobalBuffers(float time)
+	void LitTexRenderableController::updateGlobalBuffers(float time)
 	{
 		timeParam.set(time);
 
@@ -252,7 +252,7 @@ namespace BansheeEngine
 		perFrameParams->updateHardwareBuffers();
 	}
 
-	void LitTexRenderableHandler::updatePerObjectBuffers(RenderableElement* element, const Matrix4& wvpMatrix)
+	void LitTexRenderableController::updatePerObjectBuffers(RenderableElement* element, const Matrix4& wvpMatrix)
 	{
 		PerObjectData* rendererData = any_cast_unsafe<PerObjectData>(&element->rendererData);
 
@@ -267,7 +267,7 @@ namespace BansheeEngine
 		}
 	}
 
-	ShaderPtr LitTexRenderableHandler::createDefaultShader()
+	ShaderPtr LitTexRenderableController::createDefaultShader()
 	{
 		String rsName = RenderSystem::instance().getName();
 

@@ -413,6 +413,7 @@
     <ClInclude Include="Include\BsBlendState.h" />
     <ClInclude Include="Include\BsVertexDeclarationRTTI.h" />
     <ClInclude Include="Include\BsTechnique.h" />
+    <ClInclude Include="Include\BsViewportRTTI.h" />
     <ClInclude Include="Include\Win32\BsPlatformImpl.h" />
     <ClInclude Include="Include\Win32\BsWin32Defs.h" />
     <ClInclude Include="Include\Win32\BsPlatformWndProc.h" />

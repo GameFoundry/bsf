@@ -57,7 +57,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Handler responsible for initializing and updating this element.
 		 */
-		RenderableHandler* handler;
+		RenderableController* handler;
 
 		/**
 		 * @brief	Type that determines which type of RenderableHandler to use for this element.

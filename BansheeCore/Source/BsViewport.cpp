@@ -1,5 +1,5 @@
 #include "BsViewport.h"
-
+#include "BsViewportRTTI.h"
 #include "BsException.h"
 #include "BsRenderTarget.h"
 #include "BsMath.h"
@@ -92,5 +92,15 @@ namespace BansheeEngine
 	Viewport Viewport::clone()
 	{
 		return *this;
+	}
+
+	RTTITypeBase* Viewport::getRTTIStatic()
+	{
+		return ViewportRTTI::instance();
+	}
+
+	RTTITypeBase* Viewport::getRTTI() const
+	{
+		return Viewport::getRTTIStatic();
 	}
 }

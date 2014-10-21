@@ -156,13 +156,13 @@ namespace BansheeEngine
 		 * @brief	Called by the scene manager whenever a Renderable component has been
 		 *			removed from the scene.
 		 */
-		void renderableRemoved(const HRenderable& renderable);
+		void renderableRemoved(const RenderableHandlerPtr& renderable);
 
 		/**
 		 * @brief	Called by the scene manager whenever a Camera component has been
 		 *			removed from the scene.
 		 */
-		void cameraRemoved(const HCamera& camera);
+		void cameraRemoved(const CameraHandlerPtr& camera);
 
 		Vector<RenderableProxyPtr> mDeletedRenderableProxies;
 		Vector<CameraProxyPtr> mDeletedCameraProxies;
@@ -174,7 +174,7 @@ namespace BansheeEngine
 		Vector<Matrix4> mWorldTransforms;
 		Vector<Bounds> mWorldBounds;
 
-		LitTexRenderableHandler* mLitTexHandler;
+		LitTexRenderableController* mLitTexHandler;
 
 		HEvent mRenderableRemovedConn;
 		HEvent mCameraRemovedConn;

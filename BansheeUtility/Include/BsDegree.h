@@ -55,4 +55,6 @@ namespace BansheeEngine
 		bool operator>= (const Degree& d) const { return mDeg >= d.mDeg; }
 		bool operator>  (const Degree& d) const { return mDeg >  d.mDeg; }
 	};
+
+	BS_ALLOW_MEMCPY_SERIALIZATION(Degree);
 }

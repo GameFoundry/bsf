@@ -233,13 +233,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Include\BsBansheeLitTexRenderableHandler.h" />
+    <ClInclude Include="Include\BsBansheeLitTexRenderableController.h" />
     <ClInclude Include="Include\BsBansheeRenderer.h" />
     <ClInclude Include="Include\BsBansheeRendererFactory.h" />
     <ClInclude Include="Include\BsBansheeRendererPrerequisites.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\BsBansheeLitTexRenderableHandler.cpp" />
+    <ClCompile Include="Source\BsBansheeLitTexRenderableController.cpp" />
     <ClCompile Include="Source\BsBansheeRenderer.cpp" />
     <ClCompile Include="Source\BsBansheeRendererFactory.cpp" />
     <ClCompile Include="Source\BsBansheeRendererPlugin.cpp" />

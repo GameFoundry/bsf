@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsBansheeRendererPrerequisites.h"
-#include "BsRenderableHandler.h"
+#include "BsRenderableController.h"
 #include "BsMaterialProxy.h"
 #include "BsGpuParamDesc.h"
 #include "BsGpuParam.h"
@@ -15,7 +15,7 @@ namespace BansheeEngine
 	 *
 	 * @note	This class is DEBUG ONLY. Until a better renderer is complete.
 	 */
-	class BS_BSRND_EXPORT LitTexRenderableHandler : public RenderableHandler
+	class BS_BSRND_EXPORT LitTexRenderableController : public RenderableController
 	{
 	public:
 		/**
@@ -31,7 +31,7 @@ namespace BansheeEngine
 			Vector<MaterialProxy::BufferBindInfo> perObjectBuffers;
 		};
 
-		LitTexRenderableHandler();
+		LitTexRenderableController();
 
 		/**
 		 * @copydoc	RenderableHandler::initializeRenderElem

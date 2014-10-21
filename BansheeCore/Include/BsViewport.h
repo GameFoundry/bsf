@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
+#include "BsIReflectable.h"
 #include "BsColor.h"
 #include "BsRect2I.h"
 #include "BsRect2.h"
@@ -15,7 +16,7 @@ namespace BansheeEngine
 	 *
 	 * @note	Thread safe unless noted otherwise.
 	 */
-	class BS_CORE_EXPORT Viewport
+	class BS_CORE_EXPORT Viewport : public IReflectable
     {
     public:       
 		Viewport();
@@ -185,5 +186,13 @@ namespace BansheeEngine
 		UINT32 mCoreDirtyFlags; /**< True when internal data has changed and core thread wasn't yet informed. */
 
 		static const Color DEFAULT_CLEAR_COLOR;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+	public:
+		friend class ViewportRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
     };
 }
