@@ -234,6 +234,14 @@ namespace BansheeEngine
 		 */
 		void _markCoreClean() { mIsCoreDirtyFlags = 0; }
 
+		/**
+		 * @brief	Returns a hash value that changes whenever a scene objects
+		 *			transform gets updated. It allows you to detect changes with
+		 *			the local or world transforms without directly comparing their
+		 *			values with some older state.
+		 */
+		UINT32 getTransformHash() const { return mDirtyHash; }
+
 	private:
 		Vector3 mPosition;
 		Quaternion mRotation;
@@ -248,6 +256,8 @@ namespace BansheeEngine
 
 		mutable UINT32 mDirtyFlags;
 		mutable UINT32 mIsCoreDirtyFlags;
+
+		mutable UINT32 mDirtyHash;
 
 		/**
 		 * @brief	Marks the transform as dirty so that we know to update

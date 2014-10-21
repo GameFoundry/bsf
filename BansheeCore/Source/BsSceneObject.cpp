@@ -13,7 +13,7 @@ namespace BansheeEngine
 		:GameObject(), mPosition(Vector3::ZERO), mRotation(Quaternion::IDENTITY), mScale(Vector3::ONE),
 		mWorldPosition(Vector3::ZERO), mWorldRotation(Quaternion::IDENTITY), mWorldScale(Vector3::ONE),
 		mCachedLocalTfrm(Matrix4::IDENTITY), mDirtyFlags(0xFFFFFFFF), mCachedWorldTfrm(Matrix4::IDENTITY), 
-		mIsCoreDirtyFlags(0xFFFFFFFF), mActiveSelf(true), mActiveHierarchy(true)
+		mIsCoreDirtyFlags(0xFFFFFFFF), mActiveSelf(true), mActiveHierarchy(true), mDirtyHash(0)
 	{
 		setName(name);
 	}
@@ -283,6 +283,7 @@ namespace BansheeEngine
 	{
 		mDirtyFlags |= DirtyFlags::LocalTfrmDirty | DirtyFlags::WorldTfrmDirty;
 		mIsCoreDirtyFlags = 0xFFFFFFFF;
+		mDirtyHash++;
 
 		for(auto iter = mChildren.begin(); iter != mChildren.end(); ++iter)
 		{

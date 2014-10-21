@@ -87,9 +87,6 @@
     <ClInclude Include="Include\BsOverlay.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsCamera.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsRenderable.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
@@ -272,6 +269,15 @@
     </ClInclude>
     <ClInclude Include="Include\BsDrawHelper.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsCamera.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsCameraHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsCameraHandlerRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -468,6 +474,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsDrawHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsCameraHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

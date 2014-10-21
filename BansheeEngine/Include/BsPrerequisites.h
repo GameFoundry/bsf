@@ -80,6 +80,7 @@ namespace BansheeEngine
 	class RenderableHandler;
 	class ProfilerOverlay;
 	class DrawHelper;
+	class CameraHandler;
 
 	// 2D
 	class TextSprite;
@@ -99,6 +100,7 @@ namespace BansheeEngine
 	typedef std::shared_ptr<Renderable> RenderablePtr;
 	typedef std::shared_ptr<GUIToggleGroup> GUIToggleGroupPtr;
 	typedef std::shared_ptr<RenderableProxy> RenderableProxyPtr;
+	typedef std::shared_ptr<CameraHandler> CameraHandlerPtr;
 
 	typedef GameObjectHandle<GUIWidget> HGUIWidget;
 	typedef GameObjectHandle<Camera> HCamera;
@@ -114,6 +116,7 @@ namespace BansheeEngine
 	{
 		TID_Camera = 30000,
 		TID_Renderable = 30001,
-		TID_SpriteTexture = 30002
+		TID_SpriteTexture = 30002,
+		TID_CameraHandler = 30003,
 	};
 }

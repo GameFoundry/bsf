@@ -226,6 +226,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\BsCameraHandler.cpp" />
     <ClCompile Include="Source\BsCursor.cpp" />
     <ClCompile Include="Source\BsDrawHelper.cpp" />
     <ClCompile Include="Source\BsGUILayoutUtility.cpp" />
@@ -235,6 +236,8 @@
     <ClCompile Include="Source\BsRenderQueue.cpp" />
     <ClCompile Include="Source\BsVirtualInput.cpp" />
     <ClInclude Include="Include\BsApplication.h" />
+    <ClInclude Include="Include\BsCameraHandler.h" />
+    <ClInclude Include="Include\BsCameraHandlerRTTI.h" />
     <ClInclude Include="Include\BsCursor.h" />
     <ClInclude Include="Include\BsDrawHelper.h" />
     <ClInclude Include="Include\BsShapeMeshes3D.h" />
