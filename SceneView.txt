@@ -1,8 +1,6 @@
 
  GIZMO TODO:
-  - Figure out how to deal with builtin components like Camera and Renderable (e.g. how will they have gizmos since they're not managed components?)
-    - Make those two a non-component types. Anywhere they are used in the Renderer they should just be passed as pointers.
-	- Then make a Component wrapper around the non-component types, and also a C# wrapper around the same types
+  - Make a C# wrapper for Camera and Renderable
 
 REFACTOR material getParams* and related classes. Those params should update all gpu program params that share that variable, not just the first found
 Add a way to render GUI image without alpha

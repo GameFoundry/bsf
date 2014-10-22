@@ -184,9 +184,6 @@ namespace BansheeEngine
 			return true;
 
 		// Otherwise we go by smaller id, as that task was queued earlier than the other
-		if(lhs->mTaskId < rhs->mTaskId)
-			return true;
-
-		BS_EXCEPT(InternalErrorException, "Found two identical tasks.");
+		return lhs->mTaskId < rhs->mTaskId;
 	}
 }

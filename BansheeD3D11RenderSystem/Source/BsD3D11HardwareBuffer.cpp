@@ -276,7 +276,25 @@ namespace BansheeEngine
 		}
 		else if(mDesc.Usage == D3D11_USAGE_DEFAULT)
 		{
-			mDevice.getImmediateContext()->UpdateSubresource(mD3DBuffer, 0, nullptr, pSource, offset, length);
+			if (mBufferType == BT_CONSTANT)
+			{
+				assert(offset == 0);
+
+				// Constant buffer cannot be updated partially using UpdateSubresource
+				mDevice.getImmediateContext()->UpdateSubresource(mD3DBuffer, 0, nullptr, pSource, 0, 0);
+			}
+			else
+			{
+				D3D11_BOX dstBox;
+				dstBox.left = (UINT)offset;
+				dstBox.right = (UINT)offset + length;
+				dstBox.top = 0;
+				dstBox.bottom = 1;
+				dstBox.front = 0;
+				dstBox.back = 1;
+
+				mDevice.getImmediateContext()->UpdateSubresource(mD3DBuffer, 0, &dstBox, pSource, 0, 0);
+			}
 		}
 		else
 		{
