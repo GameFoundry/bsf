@@ -557,11 +557,11 @@ namespace BansheeEngine
 			UINT32 vertOffset = i * 4;
 
 			indices[0] = vertOffset + 0;
-			indices[1] = vertOffset + 3;
-			indices[2] = vertOffset + 1;
-			indices[3] = vertOffset + 1;
-			indices[4] = vertOffset + 3;
-			indices[5] = vertOffset + 2;
+			indices[1] = vertOffset + 1;
+			indices[2] = vertOffset + 2;
+			indices[3] = vertOffset + 0;
+			indices[4] = vertOffset + 2;
+			indices[5] = vertOffset + 3;
 
 			indices += 6;
 		}
@@ -784,7 +784,11 @@ namespace BansheeEngine
 		float near = rs.getMinimumDepthInputValue();
 		float far = rs.getMaximumDepthInputValue();
 
-		projMat.makeProjectionOrtho(left, right, top, bottom, -near, -far); // Minus near/far because Z is flipped for normalized device coords
+		// Top/bottom have been swapped because we're moving from window coordinates (origin top left)
+		// to normalized device coordinates (origin bottom left)
+		// Negative near/far because Z is flipped for normalized device coordinates 
+		// (positive Z goes into screen as opposed to view space here we're looking along negative Z)
+		projMat.makeProjectionOrtho(left, right, top, bottom, -near, -far);
 
 		if (!usePickingMaterial)
 		{

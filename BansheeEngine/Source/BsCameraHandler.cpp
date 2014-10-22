@@ -531,7 +531,7 @@ namespace BansheeEngine
 	{
 		Vector2 clipPoint;
 		clipPoint.x = (float)(((screenPoint.x - mViewport->getX()) / (float)mViewport->getWidth()) * 2.0f - 1.0f);
-		clipPoint.y = (float)(((screenPoint.y - mViewport->getY()) / (float)mViewport->getHeight()) * 2.0f - 1.0f);
+		clipPoint.y = (float)((1.0f - ((screenPoint.y - mViewport->getY()) / (float)mViewport->getHeight())) * 2.0f - 1.0f);
 
 		return clipPoint;
 	}
@@ -568,8 +568,8 @@ namespace BansheeEngine
 	Vector2I CameraHandler::clipToScreenPoint(const Vector2& clipPoint) const
 	{
 		Vector2I screenPoint;
-		screenPoint.x = Math::roundToInt(mViewport->getX() + (clipPoint.x + 1.0f) * mViewport->getWidth() * 0.5f);
-		screenPoint.y = Math::roundToInt(mViewport->getY() + (clipPoint.y + 1.0f) * mViewport->getHeight() * 0.5f);
+		screenPoint.x = Math::roundToInt(mViewport->getX() + ((clipPoint.x + 1.0f) * 0.5f) * mViewport->getWidth());
+		screenPoint.y = Math::roundToInt(mViewport->getY() + (1.0f - (clipPoint.y + 1.0f) * 0.5f) * mViewport->getHeight());
 
 		return screenPoint;
 	}

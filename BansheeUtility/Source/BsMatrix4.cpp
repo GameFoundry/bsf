@@ -246,11 +246,16 @@ namespace BansheeEngine
 		}
 	}
 
-	void Matrix4::makeProjectionOrtho(float left, float right, float bottom,
-		float top, float near, float far)
+	void Matrix4::makeProjectionOrtho(float left, float right, float top,
+		float bottom, float near, float far)
 	{
+		// Create a matrix that transforms coordinate to normalized device coordinate in range:
+		// Left -1 - Right 1
+		// Bottom -1 - Top 1
+		// Near -1 - Far 1
+
 		float deltaX = right - left;
-		float deltaY = top - bottom;
+		float deltaY = bottom - top;
 		float deltaZ = far - near;
 
 		m[0][0] = 2.0F / deltaX;
@@ -259,9 +264,9 @@ namespace BansheeEngine
 		m[0][3] = -(right + left) / deltaX;
 
 		m[1][0] = 0.0f;
-		m[1][1] = 2.0F / deltaY;
+		m[1][1] = -2.0F / deltaY;
 		m[1][2] = 0.0f;
-		m[1][3] = -(top + bottom) / deltaY;
+		m[1][3] = (top + bottom) / deltaY;
 
 		m[2][0] = 0.0f;
 		m[2][1] = 0.0f;

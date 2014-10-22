@@ -3,7 +3,6 @@
   - Make a C# wrapper for Camera and Renderable
 
 REFACTOR material getParams* and related classes. Those params should update all gpu program params that share that variable, not just the first found
-Add a way to render GUI image without alpha
 Line slider collider intersection doesn't work properly
 Handles need to render in front of everything
 Clicking on empty space needs to deselect everything

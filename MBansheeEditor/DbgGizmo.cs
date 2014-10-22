@@ -28,7 +28,6 @@ namespace BansheeEditor
                 target.sceneObject.position + 8.5f * Vector3.xAxis);
             Gizmos.DrawFrustum(target.sceneObject.position + 10 * Vector3.xAxis, 1920.0f / 1080.0f, 90, 1.0f, 1000.0f);
 
-            Gizmos.color = Color.red;
             Gizmos.DrawIcon(target.sceneObject.position + new Vector3(0, 10, 0), iconTexture, false);
         }
     }
