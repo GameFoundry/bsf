@@ -197,6 +197,7 @@ namespace BansheeEngine
 
 		initSpriteTextShader();
 		initSpriteImageShader();
+		initSpriteNonAlphaImageShader();
 		initDummyShader();
 
 		mWhiteSpriteTexture = getSkinTexture(WhiteTex);
@@ -882,6 +883,36 @@ namespace BansheeEngine
 		newPass->setDepthStencilState(depthState);
 	}
 
+	void BuiltinResources::initSpriteNonAlphaImageShader()
+	{
+		HGpuProgram vsProgram = getGpuProgram(ShaderSpriteImageVSFile);
+		HGpuProgram psProgram = getGpuProgram(ShaderSpriteImagePSFile);
+
+		mShaderSpriteNonAlphaImage = Shader::create("NonAlphaImageSpriteShader");
+
+		mShaderSpriteNonAlphaImage->addParameter("worldTransform", "worldTransform", GPDT_MATRIX_4X4);
+		mShaderSpriteNonAlphaImage->addParameter("invViewportWidth", "invViewportWidth", GPDT_FLOAT1);
+		mShaderSpriteNonAlphaImage->addParameter("invViewportHeight", "invViewportHeight", GPDT_FLOAT1);
+
+		mShaderSpriteNonAlphaImage->addParameter("mainTexSamp", "mainTexSamp", GPOT_SAMPLER2D);
+		mShaderSpriteNonAlphaImage->addParameter("mainTexSamp", "mainTexture", GPOT_SAMPLER2D);
+
+		mShaderSpriteNonAlphaImage->addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
+		mShaderSpriteNonAlphaImage->addParameter("tint", "tint", GPDT_FLOAT4);
+
+		TechniquePtr newTechnique = mShaderSpriteNonAlphaImage->addTechnique(mActiveRenderSystem, RendererInvariant);
+		PassPtr newPass = newTechnique->addPass();
+		newPass->setVertexProgram(vsProgram);
+		newPass->setFragmentProgram(psProgram);
+
+		DEPTH_STENCIL_STATE_DESC depthStateDesc;
+		depthStateDesc.depthReadEnable = false;
+		depthStateDesc.depthWriteEnable = false;
+
+		HDepthStencilState depthState = DepthStencilState::create(depthStateDesc);
+		newPass->setDepthStencilState(depthState);
+	}
+
 	void BuiltinResources::initDummyShader()
 	{
 		HGpuProgram vsProgram = getGpuProgram(ShaderDummyVSFile);
@@ -975,6 +1006,20 @@ namespace BansheeEngine
 	{
 		GUIMaterialInfo info;
 		info.material = Material::create(mShaderSpriteImage);
+		info.invViewportWidth = info.material->getParamFloat("invViewportWidth");
+		info.invViewportHeight = info.material->getParamFloat("invViewportHeight");
+		info.worldTransform = info.material->getParamMat4("worldTransform");
+		info.mainTexture = info.material->getParamTexture("mainTexture");
+		info.mainTexSampler = info.material->getParamSamplerState("mainTexSamp");
+		info.tint = info.material->getParamVec4("tint");
+
+		return info;
+	}
+
+	GUIMaterialInfo BuiltinResources::createSpriteNonAlphaImageMaterial() const
+	{
+		GUIMaterialInfo info;
+		info.material = Material::create(mShaderSpriteNonAlphaImage);
 		info.invViewportWidth = info.material->getParamFloat("invViewportWidth");
 		info.invViewportHeight = info.material->getParamFloat("invViewportHeight");
 		info.worldTransform = info.material->getParamMat4("worldTransform");

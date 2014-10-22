@@ -15,8 +15,9 @@ namespace BansheeEngine
 	}
 
 	GUITexture::GUITexture(const String& styleName, const HSpriteTexture& texture, 
-		GUIImageScaleMode scale, const GUILayoutOptions& layoutOptions)
-		:GUIElement(styleName, layoutOptions), mScaleMode(scale), mUsingStyleTexture(false)
+		GUIImageScaleMode scale, bool transparent, const GUILayoutOptions& layoutOptions)
+		:GUIElement(styleName, layoutOptions), mScaleMode(scale), mUsingStyleTexture(false),
+		mTransparent(transparent)
 	{
 		mImageSprite = bs_new<ImageSprite, PoolAlloc>();
 
@@ -34,55 +35,69 @@ namespace BansheeEngine
 		bs_delete<PoolAlloc>(mImageSprite);
 	}
 
+	GUITexture* GUITexture::create(const HSpriteTexture& texture, GUIImageScaleMode scale, bool transparent,
+		const GUIOptions& layoutOptions, const String& styleName)
+	{
+		return new (bs_alloc<GUITexture, PoolAlloc>()) GUITexture(getStyleName<GUITexture>(styleName),
+			texture, scale, transparent, GUILayoutOptions::create(layoutOptions));
+	}
+
+	GUITexture* GUITexture::create(const HSpriteTexture& texture, GUIImageScaleMode scale, bool transparent,
+		const String& styleName)
+	{
+		return new (bs_alloc<GUITexture, PoolAlloc>()) GUITexture(getStyleName<GUITexture>(styleName),
+			texture, scale, transparent, GUILayoutOptions::create());
+	}
+
 	GUITexture* GUITexture::create(const HSpriteTexture& texture, GUIImageScaleMode scale, 
 		const GUIOptions& layoutOptions, const String& styleName)
 	{
 		return new (bs_alloc<GUITexture, PoolAlloc>()) GUITexture(getStyleName<GUITexture>(styleName), 
-			texture, scale, GUILayoutOptions::create(layoutOptions));
+			texture, scale, true, GUILayoutOptions::create(layoutOptions));
 	}
 
 	GUITexture* GUITexture::create(const HSpriteTexture& texture, GUIImageScaleMode scale, 
 		const String& styleName)
 	{
 		return new (bs_alloc<GUITexture, PoolAlloc>()) GUITexture(getStyleName<GUITexture>(styleName), 
-			texture, scale, GUILayoutOptions::create());
+			texture, scale, true, GUILayoutOptions::create());
 	}
 
 	GUITexture* GUITexture::create(const HSpriteTexture& texture, 
 		const GUIOptions& layoutOptions, const String& styleName)
 	{
 		return new (bs_alloc<GUITexture, PoolAlloc>()) GUITexture(getStyleName<GUITexture>(styleName), 
-			texture, GUIImageScaleMode::StretchToFit, GUILayoutOptions::create(layoutOptions));
+			texture, GUIImageScaleMode::StretchToFit, true, GUILayoutOptions::create(layoutOptions));
 	}
 
 	GUITexture* GUITexture::create(const HSpriteTexture& texture, const String& styleName)
 	{
 		return new (bs_alloc<GUITexture, PoolAlloc>()) GUITexture(getStyleName<GUITexture>(styleName),
-			texture, GUIImageScaleMode::StretchToFit, GUILayoutOptions::create());
+			texture, GUIImageScaleMode::StretchToFit, true, GUILayoutOptions::create());
 	}
 
 	GUITexture* GUITexture::create(GUIImageScaleMode scale, const GUIOptions& layoutOptions, const String& styleName)
 	{
 		return new (bs_alloc<GUITexture, PoolAlloc>()) GUITexture(getStyleName<GUITexture>(styleName), 
-			HSpriteTexture(), scale, GUILayoutOptions::create(layoutOptions));
+			HSpriteTexture(), scale, true, GUILayoutOptions::create(layoutOptions));
 	}
 
 	GUITexture* GUITexture::create(GUIImageScaleMode scale, const String& styleName)
 	{
 		return new (bs_alloc<GUITexture, PoolAlloc>()) GUITexture(getStyleName<GUITexture>(styleName), 
-			HSpriteTexture(), scale, GUILayoutOptions::create());
+			HSpriteTexture(), scale, true, GUILayoutOptions::create());
 	}
 
 	GUITexture* GUITexture::create(const GUIOptions& layoutOptions, const String& styleName)
 	{
 		return new (bs_alloc<GUITexture, PoolAlloc>()) GUITexture(getStyleName<GUITexture>(styleName), 
-			HSpriteTexture(), GUIImageScaleMode::StretchToFit, GUILayoutOptions::create(layoutOptions));
+			HSpriteTexture(), GUIImageScaleMode::StretchToFit, true, GUILayoutOptions::create(layoutOptions));
 	}
 
 	GUITexture* GUITexture::create(const String& styleName)
 	{
 		return new (bs_alloc<GUITexture, PoolAlloc>()) GUITexture(getStyleName<GUITexture>(styleName), 
-			HSpriteTexture(), GUIImageScaleMode::StretchToFit, GUILayoutOptions::create());
+			HSpriteTexture(), GUIImageScaleMode::StretchToFit, true, GUILayoutOptions::create());
 	}
 
 	void GUITexture::setTexture(const HSpriteTexture& texture)
@@ -117,6 +132,7 @@ namespace BansheeEngine
 		mDesc.borderRight = _getStyle()->border.right;
 		mDesc.borderTop = _getStyle()->border.top;
 		mDesc.borderBottom = _getStyle()->border.bottom;
+		mDesc.transparent = mTransparent;
 
 		if(mUsingStyleTexture)
 			mActiveTexture = _getStyle()->normal.texture;

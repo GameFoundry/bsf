@@ -14,7 +14,7 @@ namespace BansheeEngine
 	}
 
 	GUIRenderTexture::GUIRenderTexture(const String& styleName, const RenderTexturePtr& texture, const GUILayoutOptions& layoutOptions)
-		:GUITexture(styleName, HSpriteTexture(), GUIImageScaleMode::StretchToFit, layoutOptions)
+		:GUITexture(styleName, HSpriteTexture(), GUIImageScaleMode::StretchToFit, false, layoutOptions)
 	{
 		setRenderTexture(texture);
 	}
@@ -71,6 +71,7 @@ namespace BansheeEngine
 
 		mDesc.width = mWidth;
 		mDesc.height = mHeight;
+		mDesc.transparent = false;
 
 		mImageSprite->update(mDesc);
 

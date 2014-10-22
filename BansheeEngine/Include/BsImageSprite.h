@@ -14,7 +14,7 @@ namespace BansheeEngine
 	{
 		IMAGE_SPRITE_DESC()
 			:width(0), height(0), anchor(SA_TopLeft), borderLeft(0), borderRight(0), 
-			borderTop(0), borderBottom(0), uvScale(1.0f, 1.0f), uvOffset(0.0f, 0.0f)
+			borderTop(0), borderBottom(0), uvScale(1.0f, 1.0f), uvOffset(0.0f, 0.0f), transparent(true)
 		{ }
 
 		UINT32 width; /**< Width of the image in pixels. */
@@ -22,6 +22,7 @@ namespace BansheeEngine
 		SpriteAnchor anchor; /**< Determines where in the provided bounds will the sprite be placed. */
 		Vector2 uvScale; /**< Scale applied to UV width/height used for rendering the sprite. */
 		Vector2 uvOffset; /**< Offset applied to UV coordinates when rendering the sprite. */
+		bool transparent; /**< Should the sprite be rendered with transparency. */
 
 		SpriteTexturePtr texture; /**< Texture to overlay on the sprite. */
 		Color color; /**< Color tint to apply to the sprite. */

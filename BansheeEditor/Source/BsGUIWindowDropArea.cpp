@@ -16,7 +16,7 @@ namespace BansheeEngine
 	}
 
 	GUIWindowDropArea::GUIWindowDropArea(const String& styleName, const GUILayoutOptions& layoutOptions)
-		:GUITexture(styleName, HSpriteTexture(), GUIImageScaleMode::ScaleToFit, layoutOptions)
+		:GUITexture(styleName, HSpriteTexture(), GUIImageScaleMode::ScaleToFit, true, layoutOptions)
 	{ }
 
 	GUIWindowDropArea::~GUIWindowDropArea()

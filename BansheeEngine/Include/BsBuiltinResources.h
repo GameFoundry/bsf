@@ -91,6 +91,11 @@ namespace BansheeEngine
 		GUIMaterialInfo createSpriteImageMaterial() const;
 
 		/**
+		* @brief	Creates material used for non-transparent image sprite rendering (e.g. images in GUI).
+		*/
+		GUIMaterialInfo createSpriteNonAlphaImageMaterial() const;
+
+		/**
 		 * @brief	Creates a material used as a replacement when no other material is usable.
 		 */
 		HMaterial createDummyMaterial() const;
@@ -144,6 +149,11 @@ namespace BansheeEngine
 		void initSpriteImageShader();
 
 		/**
+		 * @brief	Loads an compiles a shader for non-transparent image sprite rendering.
+		 */
+		void initSpriteNonAlphaImageShader();
+
+		/**
 		 * @brief	Loads an compiles a simple shader to be used with no other is usable.
 		 */
 		void initDummyShader();
@@ -167,6 +177,7 @@ namespace BansheeEngine
 
 		ShaderPtr mShaderSpriteText;
 		ShaderPtr mShaderSpriteImage;
+		ShaderPtr mShaderSpriteNonAlphaImage;
 		ShaderPtr mShaderDummy;
 
 		WString mActiveShaderSubFolder;

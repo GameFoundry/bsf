@@ -7,7 +7,6 @@ Add a way to render GUI image without alpha
 Line slider collider intersection doesn't work properly
 Handles need to render in front of everything
 Clicking on empty space needs to deselect everything
-D3D11HardwareBuffer::writeData provides incorrect parameters to UpdateSubresource() (length & offset)
 
 Test gizmos
  - HOOK UP GIZMO SELECTION and test it

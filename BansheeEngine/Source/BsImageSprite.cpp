@@ -61,7 +61,13 @@ namespace BansheeEngine
 				getNewMaterial = true;
 			else
 			{
-				const GUIMaterialInfo* matInfo = GUIMaterialManager::instance().findExistingImageMaterial(tex, desc.color);
+				const GUIMaterialInfo* matInfo = nullptr;
+				
+				if (desc.transparent)
+					matInfo = GUIMaterialManager::instance().findExistingImageMaterial(tex, desc.color);
+				else
+					matInfo = GUIMaterialManager::instance().findExistingNonAlphaImageMaterial(tex, desc.color);
+
 				if(matInfo == nullptr)
 				{
 					getNewMaterial = true;
@@ -76,8 +82,13 @@ namespace BansheeEngine
 				}
 			}
 
-			if(getNewMaterial)
-				renderElem.matInfo = GUIMaterialManager::instance().requestImageMaterial(tex, desc.color);
+			if (getNewMaterial)
+			{
+				if (desc.transparent)
+					renderElem.matInfo = GUIMaterialManager::instance().requestImageMaterial(tex, desc.color);
+				else
+					renderElem.matInfo = GUIMaterialManager::instance().requestNonAlphaImageMaterial(tex, desc.color);
+			}
 
 			texPage++;
 		}

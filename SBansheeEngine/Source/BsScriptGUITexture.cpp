@@ -30,7 +30,7 @@ namespace BansheeEngine
 	}
 
 	void ScriptGUITexture::internal_createInstance(MonoObject* instance, MonoObject* texture, 
-		GUIImageScaleMode scale, MonoString* style, MonoArray* guiOptions)
+		GUIImageScaleMode scale, bool transparent, MonoString* style, MonoArray* guiOptions)
 	{
 		GUIOptions options;
 
@@ -42,7 +42,7 @@ namespace BansheeEngine
 		if(texture != nullptr)
 			nativeTexture = ScriptSpriteTexture::toNative(texture)->getInternalValue();
 
-		GUITexture* guiTexture = GUITexture::create(nativeTexture, scale, options, toString(MonoUtil::monoToWString(style)));
+		GUITexture* guiTexture = GUITexture::create(nativeTexture, scale, transparent, options, toString(MonoUtil::monoToWString(style)));
 
 		ScriptGUITexture* nativeInstance = new (bs_alloc<ScriptGUITexture>()) ScriptGUITexture(instance, guiTexture);
 	}
