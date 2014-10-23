@@ -146,8 +146,6 @@ namespace BansheeEngine
 
 		MeshHeapPtr mIconMeshHeap;
 
-		TransientMeshPtr mSolidMesh;
-		TransientMeshPtr mWireMesh;
 		TransientMeshPtr mIconMesh;
 
 		GizmoManagerCore* mCore;

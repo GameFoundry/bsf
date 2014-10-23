@@ -244,6 +244,8 @@ namespace BansheeEngine
 		initIconGizmoShader();
 		initGizmoPickingShader();
 		initGizmoPickingAlphaShader();
+		initWireHandleShader();
+		initSolidHandleShader();
 
 		Path fontPath = FileSystem::getWorkingDirectoryPath();
 		fontPath.append(DefaultSkinFolder);
@@ -1401,6 +1403,43 @@ namespace BansheeEngine
 		newPass->setFragmentProgram(psProgram);
 	}
 
+	void BuiltinEditorResources::initWireHandleShader()
+	{
+		HGpuProgram vsProgram = getGpuProgram(ShaderWireGizmoVSFile);
+		HGpuProgram psProgram = getGpuProgram(ShaderWireGizmoPSFile);
+
+		mShaderHandleWire = Shader::create("HandleWire");
+
+		mShaderHandleWire->addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
+
+		TechniquePtr newTechnique = mShaderHandleWire->addTechnique(mActiveRenderSystem, RendererInvariant);
+		PassPtr newPass = newTechnique->addPass();
+		newPass->setVertexProgram(vsProgram);
+		newPass->setFragmentProgram(psProgram);
+	}
+
+	void BuiltinEditorResources::initSolidHandleShader()
+	{
+		HGpuProgram vsProgram = getGpuProgram(ShaderSolidGizmoVSFile);
+		HGpuProgram psProgram = getGpuProgram(ShaderSolidGizmoPSFile);
+
+		mShaderHandleSolid = Shader::create("HandleSolid");
+
+		mShaderHandleSolid->addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
+
+		DEPTH_STENCIL_STATE_DESC depthStencilStateDesc;
+		depthStencilStateDesc.depthWriteEnable = false;
+		depthStencilStateDesc.depthReadEnable = false;
+
+		HDepthStencilState depthStencilState = DepthStencilState::create(depthStencilStateDesc);
+
+		TechniquePtr newTechnique = mShaderHandleSolid->addTechnique(mActiveRenderSystem, RendererInvariant);
+		PassPtr newPass = newTechnique->addPass();
+		newPass->setVertexProgram(vsProgram);
+		newPass->setFragmentProgram(psProgram);
+		newPass->setDepthStencilState(depthStencilState);
+	}
+
 	void BuiltinEditorResources::initIconGizmoShader()
 	{
 		HGpuProgram vsProgram0 = getGpuProgram(ShaderIconGizmo0VSFile);
@@ -1545,5 +1584,15 @@ namespace BansheeEngine
 	HMaterial BuiltinEditorResources::createAlphaGizmoPickingMat() const
 	{
 		return Material::create(mShaderGizmoAlphaPicking);
+	}
+
+	HMaterial BuiltinEditorResources::createWireHandleMat() const
+	{
+		return Material::create(mShaderHandleWire);
+	}
+
+	HMaterial BuiltinEditorResources::createSolidHandleMat() const
+	{
+		return Material::create(mShaderHandleSolid);
 	}
 }

@@ -14,6 +14,35 @@ namespace BansheeEngine
 	class BS_EXPORT DrawHelper
 	{
 	public:
+		/**
+		 * @brief	Controls in what order will elements be rendered,
+		 *			depending on some reference point
+		 */
+		enum class SortType
+		{
+			BackToFront,
+			FrontToBack,
+			None
+		};
+
+		/**
+		 * @brief	Type of meshes that are output by DrawHelper.
+		 */
+		enum class MeshType
+		{
+			Solid, Wire
+		};
+
+		/**
+		 * @brief	Container for mesh of a specific type output by
+		 *			the DrawHelper.
+		 */
+		struct ShapeMeshData
+		{
+			TransientMeshPtr mesh;
+			MeshType type;
+		};
+
 		DrawHelper();
 		~DrawHelper();
 
@@ -93,34 +122,35 @@ namespace BansheeEngine
 		void clear();
 
 		/**
-		 * @brief	Generates a mesh from all the recorded solid shapes.
+		 * @brief	Generates a set of meshes from all the recorded solid and wireframe shapes.
+		 *			The meshes can be accessed via "getMeshes" and released via "clearMeshes". 
+		 *			Any previously active meshes will be cleared when this method is called.
+		 *
+		 * @param	sorting		Determines how (and if) should elements be sorted
+		 *						based on their distance from the reference point.
+		 * @param	reference	Reference point to use for determining distance when
+		 *						sorting.
 		 *
 		 * @note	You must call releaseSolidMesh when done.
 		 */
-		TransientMeshPtr buildSolidMesh();
+		void buildMeshes(SortType sorting = SortType::None, const Vector3& reference = Vector3::ZERO);
 
 		/**
-		 * @brief	Generates a mesh from all the recorded wireframe shapes.
-		 *
-		 * @note	You must call releaseWireMesh when done.
+		 * @brief	Returns a set of meshes you have previously built using "buildMeshes".
 		 */
-		TransientMeshPtr buildWireMesh();
+		const Vector<ShapeMeshData>& getMeshes() const { return mMeshes; }
 
 		/**
-		 * @brief	Releases a previously allocated solid mesh once you are done with it.
+		 * @brief	Deallocates all active meshes.
 		 */
-		void releaseSolidMesh(const TransientMeshPtr& mesh);
-
-		/**
-		 * @brief	Releases a previously allocated wireframe mesh once you are done with it.
-		 */
-		void releaseWireMesh(const TransientMeshPtr& mesh);
+		void clearMeshes();
 
 	private:
 		struct CommonData
 		{
 			Color color;
 			Matrix4 transform;
+			Vector3 center;
 		};
 
 		struct CubeData : public CommonData
@@ -202,11 +232,7 @@ namespace BansheeEngine
 		Vector<ArcData> mArcData;
 		Vector<ArcData> mWireArcData;
 
-		UINT32 mTotalRequiredSolidVertices;
-		UINT32 mTotalRequiredSolidIndices;
-
-		UINT32 mTotalRequiredWireVertices;
-		UINT32 mTotalRequiredWireIndices;
+		Vector<ShapeMeshData> mMeshes;
 
 		MeshHeapPtr mSolidMeshHeap;
 		MeshHeapPtr mWireMeshHeap;

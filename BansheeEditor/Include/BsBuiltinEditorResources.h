@@ -60,6 +60,16 @@ namespace BansheeEngine
 		 */
 		HMaterial createAlphaGizmoPickingMat() const;
 
+		/**
+		 * @brief	Creates a material used for rendering wireframe handles.
+		 */
+		HMaterial createWireHandleMat() const;
+
+		/**
+		 * @brief	Creates a material used for rendering solid handles.
+		 */
+		HMaterial createSolidHandleMat() const;
+
 		static const String ObjectFieldStyleName;
 		static const String ObjectFieldLabelStyleName;
 		static const String ObjectFieldDropBtnStyleName;
@@ -136,6 +146,16 @@ namespace BansheeEngine
 		 */
 		void initGizmoPickingAlphaShader();
 
+		/**
+		 * @brief	Loads and compiles a shader used for rendering wireframe handles.
+		 */
+		void initWireHandleShader();
+
+		/**
+		 * @brief	Loads and compiles a shader used for rendering solid handles.
+		 */
+		void initSolidHandleShader();
+
 		RenderSystemPlugin mRenderSystemPlugin;
 		WString mActiveShaderSubFolder;
 		String mActiveRenderSystem;
@@ -149,6 +169,8 @@ namespace BansheeEngine
 		ShaderPtr mShaderGizmoIcon;
 		ShaderPtr mShaderGizmoPicking;
 		ShaderPtr mShaderGizmoAlphaPicking;
+		ShaderPtr mShaderHandleSolid;
+		ShaderPtr mShaderHandleWire;
 
 		GUISkin mSkin;
 

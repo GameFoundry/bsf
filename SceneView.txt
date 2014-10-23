@@ -3,12 +3,13 @@
   - Make a C# wrapper for Camera and Renderable
 
 REFACTOR material getParams* and related classes. Those params should update all gpu program params that share that variable, not just the first found
-Line slider collider intersection doesn't work properly
 Handles need to render in front of everything
+ - But I still need to respect depth between overlapping handles
+ - Just sort by distance?
 Clicking on empty space needs to deselect everything
-
-Test gizmos
- - HOOK UP GIZMO SELECTION and test it
+Dragging a slider doesn't move it properly (also need to fix colliders so not all handles overlap)
+Need a way to drag and drop items from Scene tree view to Scene view
+HandleManager::update is meant to be called every frame but it is called only when mouse input is received (and isn't even called on mouse movement it seems)
 
 Test handles
  - Test basic move handle
@@ -20,8 +21,6 @@ IMPLEMENT SELECTION RENDERING
 IMPROVE SceneGrid LOOK
  - LIKELY USE PIXEL SceneGrid WITH AA
  - OR (better) instead of drawing rows and columns of lines, just draw a plane with procedural texture
-
-Need a way to drag and drop items from Scene tree view to Scene view
 
 LATER:
  - Need a way to render text for gizmos and handles, and in scene in general

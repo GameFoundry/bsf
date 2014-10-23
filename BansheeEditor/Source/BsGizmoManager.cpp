@@ -66,12 +66,6 @@ namespace BansheeEngine
 
 	GizmoManager::~GizmoManager()
 	{
-		if (mSolidMesh != nullptr)
-			mDrawHelper->releaseSolidMesh(mSolidMesh);
-
-		if (mWireMesh != nullptr)
-			mDrawHelper->releaseWireMesh(mWireMesh);
-
 		if (mIconMesh != nullptr)
 			mIconMeshHeap->dealloc(mIconMesh);
 
@@ -237,11 +231,7 @@ namespace BansheeEngine
 
 	void GizmoManager::update()
 	{
-		if (mSolidMesh != nullptr)
-			mDrawHelper->releaseSolidMesh(mSolidMesh);
-
-		if (mWireMesh != nullptr)
-			mDrawHelper->releaseWireMesh(mWireMesh);
+		mDrawHelper->clearMeshes();
 
 		if (mIconMesh != nullptr)
 			mIconMeshHeap->dealloc(mIconMesh);
@@ -256,20 +246,37 @@ namespace BansheeEngine
 
 			IconRenderDataVecPtr iconRenderData;
 
-			mSolidMesh = mDrawHelper->buildSolidMesh();
-			mWireMesh = mDrawHelper->buildWireMesh();
-			mIconMesh = buildIconMesh(sceneCamera, mIconData, false, iconRenderData);
+			mDrawHelper->buildMeshes();
+			const Vector<DrawHelper::ShapeMeshData>& meshes = mDrawHelper->getMeshes();
 
-			MeshProxyPtr solidMeshProxy = mSolidMesh->_createProxy(0);
-			MeshProxyPtr wireMeshProxy = mWireMesh->_createProxy(0);
+			MeshProxyPtr solidMeshProxy = nullptr;
+			MeshProxyPtr wireMeshProxy = nullptr;
+			for (auto& meshData : meshes)
+			{
+				if (meshData.type == DrawHelper::MeshType::Solid)
+				{
+					if (solidMeshProxy == nullptr)
+						solidMeshProxy = meshData.mesh->_createProxy(0);
+				}
+				else // Wire
+				{
+					if (wireMeshProxy == nullptr)
+						wireMeshProxy = meshData.mesh->_createProxy(0);
+				}
+
+			}
+
+			// Since there is no sorting used with draw helper meshes we only expect up to two of them,
+			// one for solids, one for wireframe
+			assert(meshes.size() <= 2);
+
+			mIconMesh = buildIconMesh(sceneCamera, mIconData, false, iconRenderData);
 			MeshProxyPtr iconMeshProxy = mIconMesh->_createProxy(0);
 
 			gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::updateData, mCore, rt, solidMeshProxy, wireMeshProxy, iconMeshProxy, iconRenderData));
 		}
 		else
 		{
-			mSolidMesh = nullptr;
-			mWireMesh = nullptr;
 			mIconMesh = nullptr;
 
 			IconRenderDataVecPtr iconRenderData = bs_shared_ptr<IconRenderDataVec>();
@@ -360,8 +367,9 @@ namespace BansheeEngine
 			iconData.back().color = idxToColorCallback(iconDataEntry.idx);
 		}
 
-		TransientMeshPtr solidMesh = mPickingDrawHelper->buildSolidMesh();
-		TransientMeshPtr wireMesh = mPickingDrawHelper->buildWireMesh();
+		mPickingDrawHelper->buildMeshes();
+		const Vector<DrawHelper::ShapeMeshData>& meshes = mPickingDrawHelper->getMeshes();
+
 		TransientMeshPtr iconMesh = buildIconMesh(camera, iconData, true, iconRenderData);
 
 		// Note: This must be rendered while Scene view is being rendered
@@ -369,19 +377,26 @@ namespace BansheeEngine
 		Matrix4 projMat = camera->getProjectionMatrixRS();
 		ViewportPtr viewport = camera->getViewport();
 
-		gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::renderGizmos,
-			mCore, viewMat, projMat, solidMesh->_createProxy(0), GizmoMaterial::Picking));
-
-		gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::renderGizmos,
-			mCore, viewMat, projMat, wireMesh->_createProxy(0), GizmoMaterial::Picking));
+		for (auto& meshData : meshes)
+		{
+			if (meshData.type == DrawHelper::MeshType::Solid)
+			{
+				gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::renderGizmos,
+					mCore, viewMat, projMat, meshData.mesh->_createProxy(0), GizmoMaterial::Picking));
+			}
+			else // Wire
+			{
+				gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::renderGizmos,
+					mCore, viewMat, projMat, meshData.mesh->_createProxy(0), GizmoMaterial::Picking));
+			}
+		}
 
 		Rect2I screenArea = camera->getViewport()->getArea();
 
 		gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::renderIconGizmos,
 			mCore, screenArea, iconMesh->_createProxy(0), iconRenderData, true));
 
-		mPickingDrawHelper->releaseSolidMesh(solidMesh);
-		mPickingDrawHelper->releaseWireMesh(wireMesh);
+		mPickingDrawHelper->clearMeshes();
 		mIconMeshHeap->dealloc(iconMesh);
 	}
 

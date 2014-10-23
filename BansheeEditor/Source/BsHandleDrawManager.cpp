@@ -7,6 +7,7 @@
 #include "BsRenderer.h"
 #include "BsTransientMesh.h"
 #include "BsCamera.h"
+#include "BsSceneObject.h"
 
 using namespace std::placeholders;
 
@@ -21,8 +22,8 @@ namespace BansheeEngine
 	{
 		mDrawHelper = bs_new<DrawHelper>();
 
-		HMaterial solidMaterial = BuiltinEditorResources::instance().createSolidGizmoMat();
-		HMaterial wireMaterial = BuiltinEditorResources::instance().createWireGizmoMat();
+		HMaterial solidMaterial = BuiltinEditorResources::instance().createSolidHandleMat();
+		HMaterial wireMaterial = BuiltinEditorResources::instance().createWireHandleMat();
 
 		MaterialProxyPtr solidMaterialProxy = solidMaterial->_createProxy();
 		MaterialProxyPtr wireMaterialProxy = wireMaterial->_createProxy();
@@ -34,12 +35,6 @@ namespace BansheeEngine
 
 	HandleDrawManager::~HandleDrawManager()
 	{
-		if (mSolidMesh != nullptr)
-			mDrawHelper->releaseSolidMesh(mSolidMesh);
-
-		if (mWireMesh != nullptr)
-			mDrawHelper->releaseWireMesh(mWireMesh);
-
 		bs_delete(mDrawHelper);
 
 		gCoreAccessor().queueCommand(std::bind(&HandleDrawManager::destroyCore, this, mCore));
@@ -126,22 +121,30 @@ namespace BansheeEngine
 
 	void HandleDrawManager::draw(const HCamera& camera)
 	{
-		if (mSolidMesh != nullptr)
-			mDrawHelper->releaseSolidMesh(mSolidMesh);
+		mDrawHelper->clearMeshes();
+		mDrawHelper->buildMeshes(DrawHelper::SortType::BackToFront, camera->SO()->getWorldPosition());
 
-		if (mWireMesh != nullptr)
-			mDrawHelper->releaseWireMesh(mWireMesh);
-
-		mSolidMesh = mDrawHelper->buildSolidMesh();
-		mWireMesh = mDrawHelper->buildWireMesh();
-
-		MeshProxyPtr solidMeshProxy = mSolidMesh->_createProxy(0);
-		MeshProxyPtr wireMeshProxy = mWireMesh->_createProxy(0);
+		const Vector<DrawHelper::ShapeMeshData>& meshes = mDrawHelper->getMeshes();
+		
+		Vector<HandleDrawManagerCore::MeshProxyData> proxyData;
+		for (auto& meshData : meshes)
+		{
+			if (meshData.type == DrawHelper::MeshType::Solid)
+			{
+				MeshProxyPtr proxy = meshData.mesh->_createProxy(0);
+				proxyData.push_back(HandleDrawManagerCore::MeshProxyData(proxy, HandleDrawManagerCore::MeshType::Solid));
+			}
+			else // Wire
+			{
+				MeshProxyPtr proxy = meshData.mesh->_createProxy(0);
+				proxyData.push_back(HandleDrawManagerCore::MeshProxyData(proxy, HandleDrawManagerCore::MeshType::Wire));
+			}
+		}
 
 		RenderTargetPtr sceneRenderTarget = camera->getViewport()->getTarget();
 
 		gCoreAccessor().queueCommand(std::bind(&HandleDrawManagerCore::updateData, mCore, 
-			sceneRenderTarget, solidMeshProxy, wireMeshProxy));
+			sceneRenderTarget, proxyData));
 
 		mDrawHelper->clear();
 	}
@@ -167,15 +170,16 @@ namespace BansheeEngine
 		activeRenderer->onCorePostRenderViewport.connect(std::bind(&HandleDrawManagerCore::render, this, _1));
 	}
 
-	void HandleDrawManagerCore::updateData(const RenderTargetPtr& rt, const MeshProxyPtr& solidMeshProxy, const MeshProxyPtr& wireMeshProxy)
+	void HandleDrawManagerCore::updateData(const RenderTargetPtr& rt, const Vector<MeshProxyData>& proxies)
 	{
 		mSceneRenderTarget = rt;
-		mSolidMeshProxy = solidMeshProxy;
-		mWireMeshProxy = wireMeshProxy;
+		mProxies = proxies;
 	}
 
 	void HandleDrawManagerCore::render(const CameraProxy& camera)
 	{
+		THROW_IF_NOT_CORE_THREAD;
+
 		if (camera.viewport.getTarget() != mSceneRenderTarget)
 			return;
 
@@ -190,31 +194,34 @@ namespace BansheeEngine
 		screenArea.width = (int)(normArea.width * width);
 		screenArea.height = (int)(normArea.height * height);
 
-		renderSolid(camera.viewMatrix, camera.projMatrix, mSolidMeshProxy);
-		renderWire(camera.viewMatrix, camera.projMatrix, mWireMeshProxy);
-	}
-
-	void HandleDrawManagerCore::renderSolid(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr meshProxy)
-	{
-		THROW_IF_NOT_CORE_THREAD;
-
-		Matrix4 viewProjMat = projMatrix * viewMatrix;
-
+		Matrix4 viewProjMat = camera.projMatrix * camera.viewMatrix;
 		mSolidMaterial.mViewProj.set(viewProjMat);
-
-		Renderer::setPass(*mSolidMaterial.proxy, 0);
-		Renderer::draw(*meshProxy);
-	}
-
-	void HandleDrawManagerCore::renderWire(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr meshProxy)
-	{
-		THROW_IF_NOT_CORE_THREAD;
-
-		Matrix4 viewProjMat = projMatrix * viewMatrix;
-
 		mWireMaterial.mViewProj.set(viewProjMat);
 
-		Renderer::setPass(*mWireMaterial.proxy, 0);
-		Renderer::draw(*meshProxy);
+		MeshType currentType = MeshType::Solid;
+		if (mProxies.size() > 0)
+		{
+			currentType = mProxies[0].type;
+
+			if (currentType == MeshType::Solid)
+				Renderer::setPass(*mSolidMaterial.proxy, 0);
+			else
+				Renderer::setPass(*mWireMaterial.proxy, 0);
+		}
+
+		for (auto& proxyData : mProxies)
+		{
+			if (currentType != proxyData.type)
+			{
+				if (currentType == MeshType::Solid)
+					Renderer::setPass(*mSolidMaterial.proxy, 0);
+				else
+					Renderer::setPass(*mWireMaterial.proxy, 0);
+
+				currentType = proxyData.type;
+			}
+
+			Renderer::draw(*proxyData.proxy);
+		}
 	}
 }

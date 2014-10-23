@@ -42,9 +42,6 @@ namespace BansheeEngine
 
 		HandleDrawManagerCore* mCore;
 		DrawHelper* mDrawHelper;
-
-		TransientMeshPtr mSolidMesh;
-		TransientMeshPtr mWireMesh;
 	};
 
 	class BS_ED_EXPORT HandleDrawManagerCore
@@ -61,6 +58,21 @@ namespace BansheeEngine
 			GpuParamMat4 mViewProj;
 		};
 
+		enum class MeshType
+		{
+			Solid, Wire
+		};
+
+		struct MeshProxyData
+		{
+			MeshProxyData(const MeshProxyPtr& proxy, MeshType type)
+				:proxy(proxy), type(type)
+			{ }
+
+			MeshProxyPtr proxy;
+			MeshType type;
+		};
+
 		struct PrivatelyConstruct { };
 
 	public:
@@ -71,14 +83,11 @@ namespace BansheeEngine
 
 		void initialize(const MaterialProxyPtr& wireMatProxy, const MaterialProxyPtr& solidMatProxy);
 
-		void updateData(const RenderTargetPtr& rt, const MeshProxyPtr& solidMeshProxy, const MeshProxyPtr& wireMeshProxy);
+		void updateData(const RenderTargetPtr& rt, const Vector<MeshProxyData>& proxies);
 		void render(const CameraProxy& camera);
-		void renderSolid(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr mesh);
-		void renderWire(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr mesh);
 
 		RenderTargetPtr mSceneRenderTarget;
-		MeshProxyPtr mSolidMeshProxy;
-		MeshProxyPtr mWireMeshProxy;
+		Vector<MeshProxyData> mProxies;
 
 		// Immutable
 		SolidMaterialData mSolidMaterial;
