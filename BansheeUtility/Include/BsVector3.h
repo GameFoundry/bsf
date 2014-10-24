@@ -389,10 +389,10 @@ namespace BansheeEngine
 		 */
 		void orthogonalComplement(Vector3& a, Vector3& b)
 		{
-			if (fabs(a.x) > fabs(a.y))
-				a = Vector3(-a.z, 0, a.x);
+			if (fabs(x) > fabs(y))
+				a = Vector3(-z, 0, x);
 			else
-				a = Vector3(0, a.z, -a.y);
+				a = Vector3(0, z, -y);
 
 			b = cross(a);
 

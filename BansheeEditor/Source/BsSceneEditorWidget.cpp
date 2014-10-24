@@ -115,12 +115,9 @@ namespace BansheeEngine
 		if (!toSceneViewPos(event.screenPos, scenePos))
 			return;
 
-		if (mLeftButtonPressed)
-		{
-			Ray inputRay = mCamera->screenPointToRay(scenePos);
+		Ray inputRay = mCamera->screenPointToRay(scenePos);
 
-			HandleManager::instance().handleInput(scenePos, inputRay, mLeftButtonPressed);
-		}
+		HandleManager::instance().handleInput(scenePos, inputRay, mLeftButtonPressed);
 	}
 
 	void SceneEditorWidget::onPointerReleased(const PointerEvent& event)

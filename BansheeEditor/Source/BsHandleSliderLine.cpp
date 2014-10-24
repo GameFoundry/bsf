@@ -8,8 +8,8 @@
 
 namespace BansheeEngine
 {
-	const float HandleSliderLine::CAPSULE_RADIUS = 0.1f;
-	const float HandleSliderLine::SPHERE_RADIUS = 0.25f;
+	const float HandleSliderLine::CAPSULE_RADIUS = 0.05f;
+	const float HandleSliderLine::SPHERE_RADIUS = 0.2f;
 
 	HandleSliderLine::HandleSliderLine(const Vector3& direction, float length, float snapValue, bool fixedScale)
 		:HandleSlider(fixedScale, snapValue), mLength(length), mDelta(0.0f)
