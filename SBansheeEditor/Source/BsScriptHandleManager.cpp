@@ -122,7 +122,8 @@ namespace BansheeEngine
 
 	void ScriptHandleManager::queueDrawCommands()
 	{
-		callDraw(mDefaultHandleManager);
+		if (mDefaultHandleManager != nullptr)
+			callDraw(mDefaultHandleManager);
 
 		for (auto& handle : mActiveHandleData.handles)
 		{

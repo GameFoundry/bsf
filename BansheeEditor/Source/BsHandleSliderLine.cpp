@@ -8,8 +8,8 @@
 
 namespace BansheeEngine
 {
-	const float HandleSliderLine::CAPSULE_RADIUS = 0.2f;
-	const float HandleSliderLine::SPHERE_RADIUS = 0.5f;
+	const float HandleSliderLine::CAPSULE_RADIUS = 0.1f;
+	const float HandleSliderLine::SPHERE_RADIUS = 0.25f;
 
 	HandleSliderLine::HandleSliderLine(const Vector3& direction, float length, float snapValue, bool fixedScale)
 		:HandleSlider(fixedScale, snapValue), mLength(length), mDelta(0.0f)
@@ -19,7 +19,7 @@ namespace BansheeEngine
 		Vector3 start = Vector3::ZERO;
 		Vector3 end = start + mDirection * length;
 
-		Vector3 sphereCenter = start + mDirection * std::max(0.0f, length - SPHERE_RADIUS * 2);
+		Vector3 sphereCenter = start + mDirection * std::max(0.0f, length - SPHERE_RADIUS);
 
 		mCapsuleCollider = Capsule(LineSegment3(start, end), CAPSULE_RADIUS);
 		mSphereCollider = Sphere(sphereCenter, SPHERE_RADIUS);

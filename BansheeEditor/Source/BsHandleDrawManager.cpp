@@ -213,7 +213,7 @@ namespace BansheeEngine
 		{
 			if (currentType != proxyData.type)
 			{
-				if (currentType == MeshType::Solid)
+				if (proxyData.type == MeshType::Solid)
 					Renderer::setPass(*mSolidMaterial.proxy, 0);
 				else
 					Renderer::setPass(*mWireMaterial.proxy, 0);

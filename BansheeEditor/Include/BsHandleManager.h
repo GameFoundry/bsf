@@ -11,7 +11,8 @@ namespace BansheeEngine
 		HandleManager();
 		virtual ~HandleManager();
 
-		void update(const Vector2I& inputPos, const Ray& inputRay, bool pressed);
+		void handleInput(const Vector2I& inputPos, const Ray& inputRay, bool pressed);
+		void update();
 
 		HandleSliderManager& getSliderManager() const { return *mSliderManager; }
 		HandleDrawManager& getDrawManager() const { return *mDrawManager; }

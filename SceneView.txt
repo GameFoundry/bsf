@@ -3,13 +3,10 @@
   - Make a C# wrapper for Camera and Renderable
 
 REFACTOR material getParams* and related classes. Those params should update all gpu program params that share that variable, not just the first found
-Handles need to render in front of everything
- - But I still need to respect depth between overlapping handles
- - Just sort by distance?
 Clicking on empty space needs to deselect everything
 Dragging a slider doesn't move it properly (also need to fix colliders so not all handles overlap)
 Need a way to drag and drop items from Scene tree view to Scene view
-HandleManager::update is meant to be called every frame but it is called only when mouse input is received (and isn't even called on mouse movement it seems)
+Handle normals seem to break as the camera moves at a certain angle
 
 Test handles
  - Test basic move handle

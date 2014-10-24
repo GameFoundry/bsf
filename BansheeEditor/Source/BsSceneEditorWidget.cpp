@@ -39,7 +39,8 @@ namespace BansheeEngine
 	SceneEditorWidget* SceneEditorWidget::Instance = nullptr;
 
 	SceneEditorWidget::SceneEditorWidget(const ConstructPrivately& dummy, EditorWidgetContainer& parentContainer)
-		:EditorWidget<SceneEditorWidget>(HString(L"SceneEditorWidget"), parentContainer), mGUIRenderTexture(nullptr), mLeftButtonPressed(false)
+		:EditorWidget<SceneEditorWidget>(HString(L"SceneEditorWidget"), parentContainer), mGUIRenderTexture(nullptr), 
+		mLeftButtonPressed(false)
 	{
 		SceneViewLocator::_provide(this);
 
@@ -72,6 +73,8 @@ namespace BansheeEngine
 		{
 			mCameraController->update();
 		}
+
+		HandleManager::instance().update();
 
 		//// DEBUG ONLY
 		//if (gTime().getCurrentFrameNumber() == 100)
@@ -116,7 +119,7 @@ namespace BansheeEngine
 		{
 			Ray inputRay = mCamera->screenPointToRay(scenePos);
 
-			HandleManager::instance().update(scenePos, inputRay, mLeftButtonPressed);
+			HandleManager::instance().handleInput(scenePos, inputRay, mLeftButtonPressed);
 		}
 	}
 
@@ -132,7 +135,7 @@ namespace BansheeEngine
 		mLeftButtonPressed = false;
 		Ray inputRay = mCamera->screenPointToRay(scenePos);
 
-		HandleManager::instance().update(scenePos, inputRay, mLeftButtonPressed);
+		HandleManager::instance().handleInput(scenePos, inputRay, mLeftButtonPressed);
 	}
 
 	void SceneEditorWidget::onPointerPressed(const PointerEvent& event)
@@ -147,7 +150,7 @@ namespace BansheeEngine
 		mLeftButtonPressed = true;
 		Ray inputRay = mCamera->screenPointToRay(scenePos);
 
-		HandleManager::instance().update(scenePos, inputRay, mLeftButtonPressed);
+		HandleManager::instance().handleInput(scenePos, inputRay, mLeftButtonPressed);
 
 		// If we didn't hit a handle, perform normal selection
 		if (!HandleManager::instance().isHandleActive())
