@@ -30,5 +30,8 @@ namespace BansheeEngine
 		Matrix4 mTorusRotation;
 
 		Torus mCollider;
+
+		float mDelta;
+		bool mHasLastPos;
 	};
 }

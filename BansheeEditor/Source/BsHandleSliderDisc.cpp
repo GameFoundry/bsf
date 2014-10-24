@@ -10,7 +10,7 @@ namespace BansheeEngine
 	const float HandleSliderDisc::TORUS_RADIUS = 0.5f;
 
 	HandleSliderDisc::HandleSliderDisc(const Vector3& normal, float radius, float snapValue, bool fixedScale)
-		:HandleSlider(fixedScale, snapValue), mRadius(radius)
+		:HandleSlider(fixedScale, snapValue), mRadius(radius), mDelta(0.0f), mHasLastPos(false)
 	{
 		Vector3 x, z;
 		mNormal.orthogonalComplement(x, z);
@@ -56,7 +56,8 @@ namespace BansheeEngine
 
 	void HandleSliderDisc::reset()
 	{
-		// TODO - Clear delta
+		mDelta = 0.0f;
+		mHasLastPos = false;
 	}
 
 	void HandleSliderDisc::update(const HCamera& camera, const Vector2I& pointerPos, const Ray& ray)
@@ -66,6 +67,11 @@ namespace BansheeEngine
 		mLastPointerPos = mCurPointerPos;
 		mCurPointerPos = pointerPos;
 
-		// TODO
+		if (mHasLastPos)
+		{
+			// TODO
+		}
+		
+		mHasLastPos = false;
 	}
 }

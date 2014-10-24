@@ -12,7 +12,7 @@ namespace BansheeEngine
 	const float HandleSliderLine::SPHERE_RADIUS = 0.2f;
 
 	HandleSliderLine::HandleSliderLine(const Vector3& direction, float length, float snapValue, bool fixedScale)
-		:HandleSlider(fixedScale, snapValue), mLength(length), mDelta(0.0f)
+		:HandleSlider(fixedScale, snapValue), mLength(length), mDelta(0.0f), mHasLastPos(false)
 	{
 		mDirection = Vector3::normalize(direction);
 
@@ -70,12 +70,16 @@ namespace BansheeEngine
 		mLastPointerPos = mCurPointerPos;
 		mCurPointerPos = pointerPos;
 
-		mDelta = calcDelta(camera, getPosition(), mDirection, mLastPointerPos, mCurPointerPos);
+		if (mHasLastPos)
+			mDelta = calcDelta(camera, getPosition(), mDirection, mLastPointerPos, mCurPointerPos);
+
+		mHasLastPos = true;
 	}
 
 	void HandleSliderLine::reset()
 	{
 		mDelta = 0.0f;
+		mHasLastPos = false;
 	}
 
 	Vector3 HandleSliderLine::getNewPosition() const

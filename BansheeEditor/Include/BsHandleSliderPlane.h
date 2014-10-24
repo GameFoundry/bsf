@@ -27,5 +27,8 @@ namespace BansheeEngine
 		float mLength;
 
 		Rect3 mCollider;
+
+		float mDelta;
+		bool mHasLastPos;
 	};
 }

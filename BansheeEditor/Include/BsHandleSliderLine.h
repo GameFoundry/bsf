@@ -32,5 +32,6 @@ namespace BansheeEngine
 		Sphere mSphereCollider;
 
 		float mDelta;
+		bool mHasLastPos;
 	};
 }
