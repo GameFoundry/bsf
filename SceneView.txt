@@ -4,12 +4,11 @@
 
 REFACTOR material getParams* and related classes. Those params should update all gpu program params that share that variable, not just the first found
 Clicking on empty space needs to deselect everything
-Dragging a slider doesn't move it properly (also need to fix colliders so not all handles overlap)
 Need a way to drag and drop items from Scene tree view to Scene view
-Handle normals seem to break as the camera moves at a certain angle
+When dragging a handle make sure it works when cursor leaves the scene view
+Also make sure that handle manager receives mouse up event if its done outside of scene view
 
 Test handles
- - Test basic move handle
  - Test a custom handle from C#
  - FINISH HANDLE IMPLEMENTATION AND GLUE EVERYTHING TOGHETHER
 

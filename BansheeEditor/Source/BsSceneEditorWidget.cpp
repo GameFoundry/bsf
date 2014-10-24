@@ -161,7 +161,7 @@ namespace BansheeEngine
 				{
 					Vector<HSceneObject> selectedSOs = Selection::instance().getSceneObjects();
 
-					auto iterFind = std::find_if(selectedSOs.begin(), selectedSOs.end(), 
+					auto iterFind = std::find_if(selectedSOs.begin(), selectedSOs.end(),
 						[&](const HSceneObject& obj) { return obj == pickedObject; }
 					);
 
@@ -177,6 +177,8 @@ namespace BansheeEngine
 					Selection::instance().setSceneObjects(selectedSOs);
 				}
 			}
+			else
+				Selection::instance().clearSceneSelection();
 		}
 	}
 

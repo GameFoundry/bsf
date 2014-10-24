@@ -77,6 +77,16 @@ namespace BansheeEngine
 			resourceTreeView->setSelection(mSelectedResourcePaths);
 	}
 
+	void Selection::clearSceneSelection()
+	{
+		setSceneObjects({});
+	}
+
+	void Selection::clearResourceSelection()
+	{
+		setResourceUUIDs({});
+	}
+
 	void Selection::sceneSelectionChanged()
 	{
 		GUISceneTreeView* sceneTreeView = SceneTreeViewLocator::instance();

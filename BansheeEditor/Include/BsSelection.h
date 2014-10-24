@@ -21,6 +21,9 @@ namespace BansheeEngine
 		Vector<String> getResourceUUIDs() const;
 		void setResourceUUIDs(const Vector<String>& UUIDs);
 
+		void clearSceneSelection();
+		void clearResourceSelection();
+
 	private:
 		void sceneSelectionChanged();
 		void resourceSelectionChanged();
