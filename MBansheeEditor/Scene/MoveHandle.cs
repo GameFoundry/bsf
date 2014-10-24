@@ -4,8 +4,8 @@ namespace BansheeEditor
 {
     public sealed class MoveHandle : DefaultHandle
     {
-        private const float CONE_HEIGHT = 0.5f;
-        private const float CONE_RADIUS = 0.5f;
+        private const float CONE_HEIGHT = 0.25f;
+        private const float CONE_RADIUS = 0.175f;
 
         private Vector3 delta;
 
@@ -57,8 +57,8 @@ namespace BansheeEditor
                 HandleDrawing.SetColor(Color.red * 0.8f);
             else
                 HandleDrawing.SetColor(Color.red);
-            
-            HandleDrawing.DrawLine(center, xEnd);
+
+            HandleDrawing.DrawLine(center, xEnd - GetXDir() * CONE_HEIGHT);
             HandleDrawing.DrawCone(xEnd - GetXDir()*CONE_HEIGHT, GetXDir(), CONE_HEIGHT, CONE_RADIUS);
 
             if (yAxis.State == HandleSlider.StateType.Active)
@@ -68,7 +68,7 @@ namespace BansheeEditor
             else
                 HandleDrawing.SetColor(Color.green);
 
-            HandleDrawing.DrawLine(center, yEnd);
+            HandleDrawing.DrawLine(center, yEnd - GetYDir() * CONE_HEIGHT);
             HandleDrawing.DrawCone(yEnd - GetYDir() * CONE_HEIGHT, GetYDir(), CONE_HEIGHT, CONE_RADIUS);
 
             if (zAxis.State == HandleSlider.StateType.Active)
@@ -78,7 +78,7 @@ namespace BansheeEditor
             else
                 HandleDrawing.SetColor(Color.blue);
 
-            HandleDrawing.DrawLine(center, zEnd);
+            HandleDrawing.DrawLine(center, zEnd - GetZDir() * CONE_HEIGHT);
             HandleDrawing.DrawCone(zEnd - GetZDir() * CONE_HEIGHT, GetZDir(), CONE_HEIGHT, CONE_RADIUS);
         }
 
