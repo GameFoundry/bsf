@@ -3,7 +3,7 @@
   - Make a C# wrapper for Camera and Renderable
 
 REFACTOR material getParams* and related classes. Those params should update all gpu program params that share that variable, not just the first found
-Clicking on empty space needs to deselect everything
+Selecting/Deselecting/selecting an object makes the handles not draw on second select
 Need a way to drag and drop items from Scene tree view to Scene view
 When dragging a handle make sure it works when cursor leaves the scene view
 Also make sure that handle manager receives mouse up event if its done outside of scene view

@@ -12,7 +12,7 @@ namespace BansheeEditor
         {
             SceneObject[] selectedSceneObjects = Selection.sceneObjects;
 
-            if (activeHandleType != EditorApplication.ActiveSceneTool || selectedSceneObjects.Length == 0)
+            if (selectedSceneObjects.Length == 0)
             {
                 if (activeHandle != null)
                 {
@@ -20,29 +20,31 @@ namespace BansheeEditor
                     activeHandle = null;
                 }
             }
-
-            if (activeHandleType != EditorApplication.ActiveSceneTool && selectedSceneObjects.Length > 0)
+            else
             {
-                if (activeHandle != null)
+                if (activeHandleType != EditorApplication.ActiveSceneTool || activeHandle == null)
                 {
-                    activeHandle.Destroy();
-                    activeHandle = null;
-                }
+                    if (activeHandle != null)
+                    {
+                        activeHandle.Destroy();
+                        activeHandle = null;
+                    }
 
-                switch (EditorApplication.ActiveSceneTool)
-                {
-                    case SceneViewTool.Move:
-                        activeHandle = new MoveHandle();
-                        break;
-                    case SceneViewTool.Rotate:
-                        activeHandle = new RotateHandle();
-                        break;
-                    case SceneViewTool.Scale:
-                        activeHandle = new ScaleHandle();
-                        break;
-                }
+                    switch (EditorApplication.ActiveSceneTool)
+                    {
+                        case SceneViewTool.Move:
+                            activeHandle = new MoveHandle();
+                            break;
+                        case SceneViewTool.Rotate:
+                            activeHandle = new RotateHandle();
+                            break;
+                        case SceneViewTool.Scale:
+                            activeHandle = new ScaleHandle();
+                            break;
+                    }
 
-                activeHandleType = EditorApplication.ActiveSceneTool;
+                    activeHandleType = EditorApplication.ActiveSceneTool;
+                }
             }
 
             if (activeHandle != null)
