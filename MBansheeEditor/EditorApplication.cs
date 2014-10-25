@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using BansheeEngine;
 
 namespace BansheeEditor
 {
@@ -45,6 +46,11 @@ namespace BansheeEditor
         {
             get { return handleCoordinateMode; }
             set { handleCoordinateMode = value; } // TODO - Will likely need to update active GUI button when this changes
+        }
+
+        public static Camera sceneCamera
+        {
+            get { return null; } // TODO - Return actual scene camera
         }
     }
 }

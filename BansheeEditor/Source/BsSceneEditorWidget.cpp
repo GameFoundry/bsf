@@ -23,6 +23,8 @@
 #include "BsScenePicking.h"
 #include "BsHandleManager.h"
 #include "BsSelection.h"
+#include "BsEditorApplication.h"
+#include "BsProjectSettings.h"
 
 // DEBUG ONLY
 #include "BsTime.h"
@@ -69,12 +71,25 @@ namespace BansheeEngine
 
 	void SceneEditorWidget::_update()
 	{
+		ProjectSettingsPtr projSettings = gEditorApplication().getProjectSettings();
+
 		if (mCameraController)
 		{
 			mCameraController->update();
 		}
 
-		HandleManager::instance().update();
+		HandleManager& handleManager = HandleManager::instance();
+
+		handleManager.setDefaultHandleSize(projSettings->getHandleSize());
+		handleManager.setMoveHandleSnapAmount(projSettings->getMoveHandleSnap());
+		handleManager.setRotateHandleSnapAmount(projSettings->getRotationHandleSnap());
+		handleManager.setScaleHandleSnapAmount(projSettings->getScaleHandleSnap());
+		handleManager.update();
+
+		mSceneGrid->setSize(projSettings->getGridSize());
+		mSceneGrid->setSpacing(projSettings->getGridSpacing());
+		mSceneGrid->setMajorAxisSpacing(projSettings->getGridMajorAxisSpacing());
+		mSceneGrid->setAxisMarkerSpacing(projSettings->getGridAxisMarkerSpacing());
 
 		//// DEBUG ONLY
 		//if (gTime().getCurrentFrameNumber() == 100)

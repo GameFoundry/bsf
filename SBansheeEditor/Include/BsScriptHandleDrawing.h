@@ -18,16 +18,16 @@ namespace BansheeEngine
 		static void internal_SetColor(Color color);
 		static void internal_SetTransform(Matrix4 transform);
 
-		static void internal_DrawCube(Vector3 position, Vector3 extents);
-		static void internal_DrawSphere(Vector3 position, float radius);
-		static void internal_DrawWireCube(Vector3 position, Vector3 extents);
-		static void internal_DrawWireSphere(Vector3 position, float radius);
-		static void internal_DrawLine(Vector3 start, Vector3 end);
-		static void internal_DrawCone(Vector3 coneBase, Vector3 normal, float height, float radius);
-		static void internal_DrawDisc(Vector3 position, Vector3 normal, float radius);
-		static void internal_DrawWireDisc(Vector3 position, Vector3 normal, float radius);
-		static void internal_DrawArc(Vector3 position, Vector3 normal, float radius, Degree startAngle, Degree amountAngle);
-		static void internal_DrawWireArc(Vector3 position, Vector3 normal, float radius, Degree startAngle, Degree amountAngle);
-		static void internal_DrawRect(Rect3 area);
+		static void internal_DrawCube(Vector3 position, Vector3 extents, float size);
+		static void internal_DrawSphere(Vector3 position, float radius, float size);
+		static void internal_DrawWireCube(Vector3 position, Vector3 extents, float size);
+		static void internal_DrawWireSphere(Vector3 position, float radius, float size);
+		static void internal_DrawLine(Vector3 start, Vector3 end, float size);
+		static void internal_DrawCone(Vector3 coneBase, Vector3 normal, float height, float radius, float size);
+		static void internal_DrawDisc(Vector3 position, Vector3 normal, float radius, float size);
+		static void internal_DrawWireDisc(Vector3 position, Vector3 normal, float radius, float size);
+		static void internal_DrawArc(Vector3 position, Vector3 normal, float radius, Degree startAngle, Degree amountAngle, float size);
+		static void internal_DrawWireArc(Vector3 position, Vector3 normal, float radius, Degree startAngle, Degree amountAngle, float size);
+		static void internal_DrawRect(Rect3 area, float size);
 	};
 }

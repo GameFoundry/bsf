@@ -1,12 +1,20 @@
 #include "BsHandleSlider.h"
 #include "BsCamera.h"
+#include "BsHandleManager.h"
 
 namespace BansheeEngine
 {
-	HandleSlider::HandleSlider(bool fixedScale, float snapValue)
-		:mFixedScale(fixedScale), mSnapValue(snapValue), mScale(Vector3::ONE), mTransformDirty(true)
+	HandleSlider::HandleSlider(bool fixedScale)
+		:mFixedScale(fixedScale), mScale(Vector3::ONE), mTransformDirty(true),
+		mDistanceScale(1.0f), mDelta(0.0f), mHasLastPos(false)
 	{
 
+	}
+
+	void HandleSlider::update(const HCamera& camera)
+	{
+		if (mFixedScale)
+			mDistanceScale = HandleManager::instance().getHandleSize(camera, mPosition);
 	}
 
 	void HandleSlider::setPosition(const Vector3& position)
@@ -45,9 +53,24 @@ namespace BansheeEngine
 
 	void HandleSlider::updateCachedTransform() const
 	{
-		mTransform.setTRS(mPosition, mRotation, mScale);
+		if (mFixedScale)
+			mTransform.setTRS(mPosition, mRotation, mScale * mDistanceScale);
+		else
+			mTransform.setTRS(mPosition, mRotation, mScale);
+
 		mTransformInv = mTransform.inverseAffine();
 		mTransformDirty = false;
+	}
+
+	void HandleSlider::reset()
+	{
+		mDelta = 0.0f;
+		mHasLastPos = false;
+	}
+
+	float HandleSlider::getDelta() const
+	{
+		return mDelta;
 	}
 
 	float HandleSlider::calcDelta(const HCamera& camera, const Vector3& position, const Vector3& direction,

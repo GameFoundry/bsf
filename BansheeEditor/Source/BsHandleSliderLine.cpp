@@ -11,8 +11,8 @@ namespace BansheeEngine
 	const float HandleSliderLine::CAPSULE_RADIUS = 0.05f;
 	const float HandleSliderLine::SPHERE_RADIUS = 0.2f;
 
-	HandleSliderLine::HandleSliderLine(const Vector3& direction, float length, float snapValue, bool fixedScale)
-		:HandleSlider(fixedScale, snapValue), mLength(length), mDelta(0.0f), mHasLastPos(false)
+	HandleSliderLine::HandleSliderLine(const Vector3& direction, float length, bool fixedScale)
+		:HandleSlider(fixedScale), mLength(length)
 	{
 		mDirection = Vector3::normalize(direction);
 
@@ -63,7 +63,7 @@ namespace BansheeEngine
 		return gotIntersect;
 	}
 
-	void HandleSliderLine::update(const HCamera& camera, const Vector2I& pointerPos, const Ray& ray)
+	void HandleSliderLine::handleInput(const HCamera& camera, const Vector2I& pointerPos, const Ray& ray)
 	{
 		assert(getState() == State::Active);
 
@@ -76,14 +76,8 @@ namespace BansheeEngine
 		mHasLastPos = true;
 	}
 
-	void HandleSliderLine::reset()
-	{
-		mDelta = 0.0f;
-		mHasLastPos = false;
-	}
-
 	Vector3 HandleSliderLine::getNewPosition() const
 	{
-		return getPosition() + mDirection * mDelta;
+		return getPosition() + mDirection * getDelta();
 	}
 }

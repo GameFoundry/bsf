@@ -13,7 +13,7 @@ namespace BansheeEngine
 		SceneGrid();
 
 		void setOrigin(const Vector3& origin);
-		void setSize(float size);
+		void setSize(UINT32 size);
 		void setSpacing(float spacing);
 		void setMajorAxisSpacing(UINT32 spacing);
 		void setAxisMarkerSpacing(UINT32 spacing);
@@ -29,7 +29,7 @@ namespace BansheeEngine
 
 		Vector3 mOrigin;
 		float mSpacing = 1.0f;
-		float mSize = 257.0f;
+		UINT32 mSize = 256;
 		UINT32 mMajorAxisSpacing = 10;
 		UINT32 mAxisMarkerSpacing = 25;
 

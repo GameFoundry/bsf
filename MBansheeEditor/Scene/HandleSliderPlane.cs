@@ -6,10 +6,10 @@ namespace BansheeEditor
 {
     public sealed class HandleSliderPlane : HandleSlider
     {
-        public HandleSliderPlane(Handle parentHandle, Vector3 dir1, Vector3 dir2, float length, bool fixedScale = true, float snapValue = 0.0f)
+        public HandleSliderPlane(Handle parentHandle, Vector3 dir1, Vector3 dir2, float length, bool fixedScale = true)
             :base(parentHandle)
         {
-            Internal_CreateInstance(this, dir1, dir2, length, fixedScale, snapValue);
+            Internal_CreateInstance(this, dir1, dir2, length, fixedScale);
         }
 
         public float Delta
@@ -18,16 +18,6 @@ namespace BansheeEditor
             {
                 float value;
                 Internal_GetDelta(mCachedPtr, out value);
-                return value;
-            }
-        }
-
-        public Vector3 DeltaDirection
-        {
-            get
-            {
-                Vector3 value;
-                Internal_GetDeltaDirection(mCachedPtr, out value);
                 return value;
             }
         }
@@ -42,8 +32,18 @@ namespace BansheeEditor
             }
         }
 
+        public Vector3 DeltaDirection
+        {
+            get
+            {
+                Vector3 value;
+                Internal_GetDeltaDirection(mCachedPtr, out value);
+                return value;
+            }
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(HandleSliderPlane instance, Vector3 dir1, Vector3 dir2, float length, bool fixedScale, float snapValue);
+        private static extern void Internal_CreateInstance(HandleSliderPlane instance, Vector3 dir1, Vector3 dir2, float length, bool fixedScale);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetDelta(IntPtr nativeInstance, out float value);

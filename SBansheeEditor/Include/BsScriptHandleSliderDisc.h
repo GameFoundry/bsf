@@ -18,12 +18,12 @@ namespace BansheeEngine
 		virtual void destroyInternal();
 
 	private:
-		static void internal_CreateInstance(MonoObject* instance, Vector3 normal, float radius, bool fixedScale, float snapValue);
+		static void internal_CreateInstance(MonoObject* instance, Vector3 normal, float radius, bool fixedScale);
 		static void internal_GetDelta(ScriptHandleSliderDisc* nativeInstance, float* value);
 		static void internal_GetDeltaDirection(ScriptHandleSliderDisc* nativeInstance, Vector3* value);
 		static void internal_GetNewRotation(ScriptHandleSliderDisc* nativeInstance, Quaternion* value);
 
-		ScriptHandleSliderDisc(MonoObject* instance, const Vector3& normal, float radius, bool fixedScale, float snapValue);
+		ScriptHandleSliderDisc(MonoObject* instance, const Vector3& normal, float radius, bool fixedScale);
 		~ScriptHandleSliderDisc();
 
 		HandleSliderDisc* mSlider;

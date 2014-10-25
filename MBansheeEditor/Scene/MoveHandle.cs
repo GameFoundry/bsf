@@ -39,9 +39,19 @@ namespace BansheeEditor
         protected override void PostInput()
         {
             delta = Vector3.zero;
-            delta += xAxis.Delta * GetXDir();
-            delta += yAxis.Delta * GetYDir();
-            delta += zAxis.Delta * GetZDir();
+
+            if (Handles.MoveHandleSnapActive)
+            {
+                delta += Handles.SnapValue(xAxis.Delta, Handles.MoveSnapAmount) * GetXDir();
+                delta += Handles.SnapValue(yAxis.Delta, Handles.MoveSnapAmount) * GetYDir();
+                delta += Handles.SnapValue(zAxis.Delta, Handles.MoveSnapAmount) * GetZDir();
+            }
+            else
+            {
+                delta += xAxis.Delta * GetXDir();
+                delta += yAxis.Delta * GetYDir();
+                delta += zAxis.Delta * GetZDir();
+            }
         }
 
         protected override void Draw()
@@ -58,8 +68,10 @@ namespace BansheeEditor
             else
                 HandleDrawing.SetColor(Color.red);
 
-            HandleDrawing.DrawLine(center, xEnd - GetXDir() * CONE_HEIGHT);
-            HandleDrawing.DrawCone(xEnd - GetXDir()*CONE_HEIGHT, GetXDir(), CONE_HEIGHT, CONE_RADIUS);
+            float handleSize = Handles.GetHandleSize(EditorApplication.sceneCamera, position);
+
+            HandleDrawing.DrawLine(center, xEnd - GetXDir() * CONE_HEIGHT, handleSize);
+            HandleDrawing.DrawCone(xEnd - GetXDir() * CONE_HEIGHT, GetXDir(), CONE_HEIGHT, CONE_RADIUS, handleSize);
 
             if (yAxis.State == HandleSlider.StateType.Active)
                 HandleDrawing.SetColor(Color.white);
@@ -68,8 +80,8 @@ namespace BansheeEditor
             else
                 HandleDrawing.SetColor(Color.green);
 
-            HandleDrawing.DrawLine(center, yEnd - GetYDir() * CONE_HEIGHT);
-            HandleDrawing.DrawCone(yEnd - GetYDir() * CONE_HEIGHT, GetYDir(), CONE_HEIGHT, CONE_RADIUS);
+            HandleDrawing.DrawLine(center, yEnd - GetYDir() * CONE_HEIGHT, handleSize);
+            HandleDrawing.DrawCone(yEnd - GetYDir() * CONE_HEIGHT, GetYDir(), CONE_HEIGHT, CONE_RADIUS, handleSize);
 
             if (zAxis.State == HandleSlider.StateType.Active)
                 HandleDrawing.SetColor(Color.white);
@@ -78,8 +90,8 @@ namespace BansheeEditor
             else
                 HandleDrawing.SetColor(Color.blue);
 
-            HandleDrawing.DrawLine(center, zEnd - GetZDir() * CONE_HEIGHT);
-            HandleDrawing.DrawCone(zEnd - GetZDir() * CONE_HEIGHT, GetZDir(), CONE_HEIGHT, CONE_RADIUS);
+            HandleDrawing.DrawLine(center, zEnd - GetZDir() * CONE_HEIGHT, handleSize);
+            HandleDrawing.DrawCone(zEnd - GetZDir() * CONE_HEIGHT, GetZDir(), CONE_HEIGHT, CONE_RADIUS, handleSize);
         }
 
         private Vector3 GetXDir()

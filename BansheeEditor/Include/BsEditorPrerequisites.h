@@ -63,10 +63,12 @@ namespace BansheeEngine
 	class HandleSliderManager;
 	class HandleDrawManager;
 	class SceneCameraController;
+	class ProjectSettings;
 
 	typedef std::shared_ptr<ProjectResourceMeta> ProjectResourceMetaPtr;
 	typedef std::shared_ptr<DockManagerLayout> DockManagerLayoutPtr;
 	typedef std::shared_ptr<EditorWidgetLayout> EditorWidgetLayoutPtr;
+	typedef std::shared_ptr<ProjectSettings> ProjectSettingsPtr;
 
 	enum class DragAndDropType
 	{

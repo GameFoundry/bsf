@@ -299,6 +299,7 @@
     <ClInclude Include="Include\BsHandleSliderDisc.h" />
     <ClInclude Include="Include\BsHandleSliderLine.h" />
     <ClInclude Include="Include\BsHandleSliderPlane.h" />
+    <ClInclude Include="Include\BsProjectSettings.h" />
     <ClInclude Include="Include\BsScenePicking.h" />
     <ClInclude Include="Include\BsProjectLibraryEntriesRTTI.h" />
     <ClInclude Include="Include\BsEditorPrerequisites.h" />

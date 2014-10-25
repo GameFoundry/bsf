@@ -6,10 +6,10 @@
 
 namespace BansheeEngine
 {
-	ScriptHandleSliderDisc::ScriptHandleSliderDisc(MonoObject* instance, const Vector3& normal, float radius, bool fixedScale, float snapValue)
+	ScriptHandleSliderDisc::ScriptHandleSliderDisc(MonoObject* instance, const Vector3& normal, float radius, bool fixedScale)
 		:ScriptObject(instance), mSlider(nullptr)
 	{
-		mSlider = bs_new<HandleSliderDisc>(normal, radius, snapValue, fixedScale);
+		mSlider = bs_new<HandleSliderDisc>(normal, radius, fixedScale);
 	}
 
 	ScriptHandleSliderDisc::~ScriptHandleSliderDisc()
@@ -34,10 +34,10 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetNewRotation", &ScriptHandleSliderDisc::internal_GetNewRotation);
 	}
 
-	void ScriptHandleSliderDisc::internal_CreateInstance(MonoObject* instance, Vector3 normal, float radius, bool fixedScale, float snapValue)
+	void ScriptHandleSliderDisc::internal_CreateInstance(MonoObject* instance, Vector3 normal, float radius, bool fixedScale)
 	{
 		ScriptHandleSliderDisc* nativeInstance = new (bs_alloc<ScriptHandleSliderDisc>())
-			ScriptHandleSliderDisc(instance, normal, radius, fixedScale, snapValue);
+			ScriptHandleSliderDisc(instance, normal, radius, fixedScale);
 	}
 
 	void ScriptHandleSliderDisc::internal_GetDelta(ScriptHandleSliderDisc* nativeInstance, float* value)

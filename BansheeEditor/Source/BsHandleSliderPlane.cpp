@@ -6,8 +6,8 @@
 
 namespace BansheeEngine
 {
-	HandleSliderPlane::HandleSliderPlane(const Vector3& dir1, const Vector3& dir2, float length, float snapValue, bool fixedScale)
-		:HandleSlider(fixedScale, snapValue), mLength(length), mDelta(0.0f), mHasLastPos(false)
+	HandleSliderPlane::HandleSliderPlane(const Vector3& dir1, const Vector3& dir2, float length, bool fixedScale)
+		:HandleSlider(fixedScale), mLength(length)
 	{
 		mDirection1 = Vector3::normalize(dir1);
 		mDirection2 = Vector3::normalize(dir2);
@@ -45,13 +45,7 @@ namespace BansheeEngine
 		return false;
 	}
 
-	void HandleSliderPlane::reset()
-	{
-		mDelta = 0.0f;
-		mHasLastPos = false;
-	}
-
-	void HandleSliderPlane::update(const HCamera& camera, const Vector2I& pointerPos, const Ray& ray)
+	void HandleSliderPlane::handleInput(const HCamera& camera, const Vector2I& pointerPos, const Ray& ray)
 	{
 		assert(getState() == State::Active);
 

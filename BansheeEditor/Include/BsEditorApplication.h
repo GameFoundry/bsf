@@ -19,6 +19,7 @@ namespace BansheeEngine
 		bool isSceneViewFocused() const;
 		const Path& getActiveProjectPath() const;
 
+		ProjectSettingsPtr getProjectSettings() const { return mProjectSettings; }
 
 	private:
 		virtual void onStartUp();
@@ -33,6 +34,7 @@ namespace BansheeEngine
 	private:
 		static const Path WIDGET_LAYOUT_PATH;
 		RenderSystemPlugin mActiveRSPlugin;
+		ProjectSettingsPtr mProjectSettings;
 
 		DynLib* mSBansheeEditorPlugin;
 

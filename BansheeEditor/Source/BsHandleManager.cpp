@@ -2,6 +2,8 @@
 #include "BsHandleDrawManager.h"
 #include "BsHandleSliderManager.h"
 #include "BsSceneEditorWidget.h"
+#include "BsCamera.h"
+#include "BsSceneObject.h"
 
 namespace BansheeEngine
 {
@@ -43,8 +45,19 @@ namespace BansheeEngine
 			HCamera sceneCamera = sceneView->getSceneCamera();
 
 			refreshHandles();
-			mSliderManager->update(sceneCamera, inputPos, inputRay, pressed);
+			mSliderManager->handleInput(sceneCamera, inputPos, inputRay, pressed);
 			triggerHandles();
 		}
+	}
+
+	float HandleManager::getHandleSize(const HCamera& camera, const Vector3& handlePos) const
+	{
+		HSceneObject cameraSO = camera->SO();
+		Vector3 cameraPos = camera->SO()->getWorldPosition();
+
+		Vector3 diff = handlePos - cameraPos;
+		float distAlongViewDir = diff.dot(cameraSO->getForward());
+
+		return mDefaultHandleSize / std::max(distAlongViewDir, 0.0001f);
 	}
 }

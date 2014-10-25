@@ -3,10 +3,19 @@
   - Make a C# wrapper for Camera and Renderable
 
 REFACTOR material getParams* and related classes. Those params should update all gpu program params that share that variable, not just the first found
-Selecting/Deselecting/selecting an object makes the handles not draw on second select
 Need a way to drag and drop items from Scene tree view to Scene view
 When dragging a handle make sure it works when cursor leaves the scene view
 Also make sure that handle manager receives mouse up event if its done outside of scene view
+When selecting/deselecting stuff handle display is delayed
+
+Add C# methods for retrieving handle size and snap amounts
+Actually make use of snapping in MoveHandle
+Test if fixed size handles & snapping work
+
+-----------
+
+Start work on C# Camera, and C# EditorApplication.sceneCamera
+  - I'll need to replace all current uses of scene camera with CameraHandler?? Since this camera will have to be a ManagedComponent...
 
 Test handles
  - Test a custom handle from C#

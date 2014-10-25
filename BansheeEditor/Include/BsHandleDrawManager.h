@@ -16,17 +16,17 @@ namespace BansheeEngine
 		void setColor(const Color& color);
 		void setTransform(const Matrix4& transform);
 
-		void drawCube(const Vector3& position, const Vector3& extents);
-		void drawSphere(const Vector3& position, float radius);
-		void drawWireCube(const Vector3& position, const Vector3& extents);
-		void drawWireSphere(const Vector3& position, float radius);
-		void drawCone(const Vector3& base, const Vector3& normal, float height, float radius);
-		void drawLine(const Vector3& start, const Vector3& end);
-		void drawDisc(const Vector3& position, const Vector3& normal, float radius);
-		void drawWireDisc(const Vector3& position, const Vector3& normal, float radius);
-		void drawArc(const Vector3& position, const Vector3& normal, float radius, Degree startAngle, Degree amountAngle);
-		void drawWireArc(const Vector3& position, const Vector3& normal, float radius, Degree startAngle, Degree amountAngle);
-		void drawRect(const Rect3& area);
+		void drawCube(const Vector3& position, const Vector3& extents, float size = 1.0f);
+		void drawSphere(const Vector3& position, float radius, float size = 1.0f);
+		void drawWireCube(const Vector3& position, const Vector3& extents, float size = 1.0f);
+		void drawWireSphere(const Vector3& position, float radius, float size = 1.0f);
+		void drawCone(const Vector3& base, const Vector3& normal, float height, float radius, float size = 1.0f);
+		void drawLine(const Vector3& start, const Vector3& end, float size = 1.0f);
+		void drawDisc(const Vector3& position, const Vector3& normal, float radius, float size = 1.0f);
+		void drawWireDisc(const Vector3& position, const Vector3& normal, float radius, float size = 1.0f);
+		void drawArc(const Vector3& position, const Vector3& normal, float radius, Degree startAngle, Degree amountAngle, float size = 1.0f);
+		void drawWireArc(const Vector3& position, const Vector3& normal, float radius, Degree startAngle, Degree amountAngle, float size = 1.0f);
+		void drawRect(const Rect3& area, float size = 1.0f);
 
 		void draw(const HCamera& camera);
 
@@ -40,6 +40,7 @@ namespace BansheeEngine
 		static const UINT32 WIRE_SPHERE_QUALITY;
 		static const UINT32 ARC_QUALITY;
 
+		Matrix4 mTransform;
 		HandleDrawManagerCore* mCore;
 		DrawHelper* mDrawHelper;
 	};

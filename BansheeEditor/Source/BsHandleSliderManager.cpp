@@ -24,7 +24,13 @@ namespace BansheeEngine
 
 	}
 
-	void HandleSliderManager::update(const HCamera& camera, const Vector2I& inputPos, const Ray& inputRay, bool pressed)
+	void HandleSliderManager::update(const HCamera& camera)
+	{
+		for (auto& slider : mSliders)
+			slider->update(camera);
+	}
+
+	void HandleSliderManager::handleInput(const HCamera& camera, const Vector2I& inputPos, const Ray& inputRay, bool pressed)
 	{
 		if (!pressed)
 		{
@@ -88,7 +94,7 @@ namespace BansheeEngine
 
 			if (mActiveSlider != nullptr)
 			{
-				mActiveSlider->update(camera, inputPos, inputRay);
+				mActiveSlider->handleInput(camera, inputPos, inputRay);
 			}
 		}
 	}

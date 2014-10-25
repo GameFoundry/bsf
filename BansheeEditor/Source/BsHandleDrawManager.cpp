@@ -20,6 +20,7 @@ namespace BansheeEngine
 	HandleDrawManager::HandleDrawManager()
 		:mCore(nullptr)
 	{
+		mTransform = Matrix4::IDENTITY;
 		mDrawHelper = bs_new<DrawHelper>();
 
 		HMaterial solidMaterial = BuiltinEditorResources::instance().createSolidHandleMat();
@@ -61,61 +62,94 @@ namespace BansheeEngine
 
 	void HandleDrawManager::setTransform(const Matrix4& transform)
 	{
-		mDrawHelper->setTransform(transform);
+		mTransform = transform;
 	}
 
-	void HandleDrawManager::drawCube(const Vector3& position, const Vector3& extents)
+	void HandleDrawManager::drawCube(const Vector3& position, const Vector3& extents, float size)
 	{
+		Matrix4 scale(Vector3::ZERO, Quaternion::IDENTITY, Vector3(size, size, size));
+		mDrawHelper->setTransform(scale * mTransform);
+
 		mDrawHelper->cube(position, extents);
 	}
 
-	void HandleDrawManager::drawSphere(const Vector3& position, float radius)
+	void HandleDrawManager::drawSphere(const Vector3& position, float radius, float size)
 	{
+		Matrix4 scale(Vector3::ZERO, Quaternion::IDENTITY, Vector3(size, size, size));
+		mDrawHelper->setTransform(scale * mTransform);
+
 		mDrawHelper->sphere(position, radius);
 	}
 
-	void HandleDrawManager::drawWireCube(const Vector3& position, const Vector3& extents)
+	void HandleDrawManager::drawWireCube(const Vector3& position, const Vector3& extents, float size)
 	{
+		Matrix4 scale(Vector3::ZERO, Quaternion::IDENTITY, Vector3(size, size, size));
+		mDrawHelper->setTransform(scale * mTransform);
+
 		mDrawHelper->wireCube(position, extents);
 	}
 
-	void HandleDrawManager::drawWireSphere(const Vector3& position, float radius)
+	void HandleDrawManager::drawWireSphere(const Vector3& position, float radius, float size)
 	{
+		Matrix4 scale(Vector3::ZERO, Quaternion::IDENTITY, Vector3(size, size, size));
+		mDrawHelper->setTransform(scale * mTransform);
+
 		mDrawHelper->wireSphere(position, radius);
 	}
 
-	void HandleDrawManager::drawCone(const Vector3& base, const Vector3& normal, float height, float radius)
+	void HandleDrawManager::drawCone(const Vector3& base, const Vector3& normal, float height, float radius, float size)
 	{
+		Matrix4 scale(Vector3::ZERO, Quaternion::IDENTITY, Vector3(size, size, size));
+		mDrawHelper->setTransform(scale * mTransform);
+
 		mDrawHelper->cone(base, normal, height, radius);
 	}
 
-	void HandleDrawManager::drawLine(const Vector3& start, const Vector3& end)
+	void HandleDrawManager::drawLine(const Vector3& start, const Vector3& end, float size)
 	{
+		Matrix4 scale(Vector3::ZERO, Quaternion::IDENTITY, Vector3(size, size, size));
+		mDrawHelper->setTransform(scale * mTransform);
+
 		mDrawHelper->line(start, end);
 	}
 
-	void HandleDrawManager::drawDisc(const Vector3& position, const Vector3& normal, float radius)
+	void HandleDrawManager::drawDisc(const Vector3& position, const Vector3& normal, float radius, float size)
 	{
+		Matrix4 scale(Vector3::ZERO, Quaternion::IDENTITY, Vector3(size, size, size));
+		mDrawHelper->setTransform(scale * mTransform);
+
 		mDrawHelper->disc(position, normal, radius);
 	}
 
-	void HandleDrawManager::drawWireDisc(const Vector3& position, const Vector3& normal, float radius)
+	void HandleDrawManager::drawWireDisc(const Vector3& position, const Vector3& normal, float radius, float size)
 	{
+		Matrix4 scale(Vector3::ZERO, Quaternion::IDENTITY, Vector3(size, size, size));
+		mDrawHelper->setTransform(scale * mTransform);
+
 		mDrawHelper->wireDisc(position, normal, radius);
 	}
 
-	void HandleDrawManager::drawArc(const Vector3& position, const Vector3& normal, float radius, Degree startAngle, Degree amountAngle)
+	void HandleDrawManager::drawArc(const Vector3& position, const Vector3& normal, float radius, Degree startAngle, Degree amountAngle, float size)
 	{
+		Matrix4 scale(Vector3::ZERO, Quaternion::IDENTITY, Vector3(size, size, size));
+		mDrawHelper->setTransform(scale * mTransform);
+
 		mDrawHelper->arc(position, normal, radius, startAngle, amountAngle);
 	}
 
-	void HandleDrawManager::drawWireArc(const Vector3& position, const Vector3& normal, float radius, Degree startAngle, Degree amountAngle)
+	void HandleDrawManager::drawWireArc(const Vector3& position, const Vector3& normal, float radius, Degree startAngle, Degree amountAngle, float size)
 	{
+		Matrix4 scale(Vector3::ZERO, Quaternion::IDENTITY, Vector3(size, size, size));
+		mDrawHelper->setTransform(scale * mTransform);
+
 		mDrawHelper->wireArc(position, normal, radius, startAngle, amountAngle);
 	}
 
-	void HandleDrawManager::drawRect(const Rect3& area)
+	void HandleDrawManager::drawRect(const Rect3& area, float size)
 	{
+		Matrix4 scale(Vector3::ZERO, Quaternion::IDENTITY, Vector3(size, size, size));
+		mDrawHelper->setTransform(scale * mTransform);
+
 		mDrawHelper->rectangle(area);
 	}
 

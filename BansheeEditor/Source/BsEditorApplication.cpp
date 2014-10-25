@@ -40,6 +40,7 @@
 #include "BsGUILayout.h"
 #include "BsEvent.h"
 #include "BsRenderer.h"
+#include "BsProjectSettings.h"
 
 namespace BansheeEngine
 {
@@ -60,6 +61,9 @@ namespace BansheeEngine
 		:Application(createRenderWindowDesc(), renderSystemPlugin, RendererPlugin::Default), 
 		mActiveRSPlugin(renderSystemPlugin), mSBansheeEditorPlugin(nullptr)
 	{
+		// TODO - Load project settings
+		mProjectSettings = bs_shared_ptr<ProjectSettings>();
+
 		BuiltinEditorResources::startUp(renderSystemPlugin);
 
 		{
@@ -95,6 +99,7 @@ namespace BansheeEngine
 		ScenePicking::shutDown();
 
 		saveWidgetLayout(EditorWidgetManager::instance().getLayout());
+		// TODO - Save project settings
 
 		EditorWidgetManager::shutDown();
 		EditorWindowManager::shutDown();

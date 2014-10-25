@@ -35,58 +35,58 @@ namespace BansheeEngine
 		HandleManager::instance().getDrawManager().setTransform(transform);
 	}
 
-	void ScriptHandleDrawing::internal_DrawCube(Vector3 position, Vector3 extents)
+	void ScriptHandleDrawing::internal_DrawCube(Vector3 position, Vector3 extents, float size)
 	{
-		HandleManager::instance().getDrawManager().drawCube(position, extents);
+		HandleManager::instance().getDrawManager().drawCube(position, extents, size);
 	}
 
-	void ScriptHandleDrawing::internal_DrawSphere(Vector3 position, float radius)
+	void ScriptHandleDrawing::internal_DrawSphere(Vector3 position, float radius, float size)
 	{
-		HandleManager::instance().getDrawManager().drawSphere(position, radius);
+		HandleManager::instance().getDrawManager().drawSphere(position, radius, size);
 	}
 
-	void ScriptHandleDrawing::internal_DrawWireCube(Vector3 position, Vector3 extents)
+	void ScriptHandleDrawing::internal_DrawWireCube(Vector3 position, Vector3 extents, float size)
 	{
-		HandleManager::instance().getDrawManager().drawWireCube(position, extents);
+		HandleManager::instance().getDrawManager().drawWireCube(position, extents, size);
 	}
 
-	void ScriptHandleDrawing::internal_DrawWireSphere(Vector3 position, float radius)
+	void ScriptHandleDrawing::internal_DrawWireSphere(Vector3 position, float radius, float size)
 	{
-		HandleManager::instance().getDrawManager().drawWireSphere(position, radius);
+		HandleManager::instance().getDrawManager().drawWireSphere(position, radius, size);
 	}
 
-	void ScriptHandleDrawing::internal_DrawLine(Vector3 start, Vector3 end)
+	void ScriptHandleDrawing::internal_DrawLine(Vector3 start, Vector3 end, float size)
 	{
-		HandleManager::instance().getDrawManager().drawLine(start, end);
+		HandleManager::instance().getDrawManager().drawLine(start, end, size);
 	}
 
-	void ScriptHandleDrawing::internal_DrawCone(Vector3 coneBase, Vector3 normal, float height, float radius)
+	void ScriptHandleDrawing::internal_DrawCone(Vector3 coneBase, Vector3 normal, float height, float radius, float size)
 	{
-		HandleManager::instance().getDrawManager().drawCone(coneBase, normal, height, radius);
+		HandleManager::instance().getDrawManager().drawCone(coneBase, normal, height, radius, size);
 	}
 
-	void ScriptHandleDrawing::internal_DrawDisc(Vector3 position, Vector3 normal, float radius)
+	void ScriptHandleDrawing::internal_DrawDisc(Vector3 position, Vector3 normal, float radius, float size)
 	{
-		HandleManager::instance().getDrawManager().drawDisc(position, normal, radius);
+		HandleManager::instance().getDrawManager().drawDisc(position, normal, radius, size);
 	}
 
-	void ScriptHandleDrawing::internal_DrawWireDisc(Vector3 position, Vector3 normal, float radius)
+	void ScriptHandleDrawing::internal_DrawWireDisc(Vector3 position, Vector3 normal, float radius, float size)
 	{
-		HandleManager::instance().getDrawManager().drawWireDisc(position, normal, radius);
+		HandleManager::instance().getDrawManager().drawWireDisc(position, normal, radius, size);
 	}
 
-	void ScriptHandleDrawing::internal_DrawArc(Vector3 position, Vector3 normal, float radius, Degree startAngle, Degree amountAngle)
+	void ScriptHandleDrawing::internal_DrawArc(Vector3 position, Vector3 normal, float radius, Degree startAngle, Degree amountAngle, float size)
 	{
-		HandleManager::instance().getDrawManager().drawArc(position, normal, radius, startAngle, amountAngle);
+		HandleManager::instance().getDrawManager().drawArc(position, normal, radius, startAngle, amountAngle, size);
 	}
 
-	void ScriptHandleDrawing::internal_DrawWireArc(Vector3 position, Vector3 normal, float radius, Degree startAngle, Degree amountAngle)
+	void ScriptHandleDrawing::internal_DrawWireArc(Vector3 position, Vector3 normal, float radius, Degree startAngle, Degree amountAngle, float size)
 	{
-		HandleManager::instance().getDrawManager().drawWireArc(position, normal, radius, startAngle, amountAngle);
+		HandleManager::instance().getDrawManager().drawWireArc(position, normal, radius, startAngle, amountAngle, size);
 	}
 
-	void ScriptHandleDrawing::internal_DrawRect(Rect3 area)
+	void ScriptHandleDrawing::internal_DrawRect(Rect3 area, float size)
 	{
-		HandleManager::instance().getDrawManager().drawRect(area);
+		HandleManager::instance().getDrawManager().drawRect(area, size);
 	}
 }

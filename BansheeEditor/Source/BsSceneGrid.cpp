@@ -33,32 +33,47 @@ namespace BansheeEngine
 
 	void SceneGrid::setOrigin(const Vector3& origin)
 	{
-		mOrigin = origin;
-		updateGridMesh();
+		if (mOrigin != origin)
+		{
+			mOrigin = origin;
+			updateGridMesh();
+		}
 	}
 
-	void SceneGrid::setSize(float size)
+	void SceneGrid::setSize(UINT32 size)
 	{
-		mSize = size;
-		updateGridMesh();
+		if (mSize != size)
+		{
+			mSize = size;
+			updateGridMesh();
+		}
 	}
 
 	void SceneGrid::setSpacing(float spacing)
 	{
-		mSpacing = spacing;
-		updateGridMesh();
+		if (mSpacing != spacing)
+		{
+			mSpacing = spacing;
+			updateGridMesh();
+		}
 	}
 
 	void SceneGrid::setMajorAxisSpacing(UINT32 spacing)
 	{
-		mMajorAxisSpacing = spacing;
-		updateGridMesh();
+		if (mMajorAxisSpacing != spacing)
+		{
+			mMajorAxisSpacing = spacing;
+			updateGridMesh();
+		}
 	}
 
 	void SceneGrid::setAxisMarkerSpacing(UINT32 spacing)
 	{
-		mAxisMarkerSpacing = spacing;
-		updateGridMesh();
+		if (mAxisMarkerSpacing != spacing)
+		{
+			mAxisMarkerSpacing = spacing;
+			updateGridMesh();
+		}
 	}
 
 	void SceneGrid::render(const CameraPtr& camera, DrawList& drawList)
@@ -77,7 +92,7 @@ namespace BansheeEngine
 
 	void SceneGrid::updateGridMesh()
 	{
-		UINT32 numLines = (UINT32)Math::roundToInt(mSize / mSpacing) - 1;
+		UINT32 numLines = (UINT32)Math::roundToInt(mSize / mSpacing);
 		if (numLines % 2 != 0)
 			numLines++;
 
