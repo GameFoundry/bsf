@@ -87,6 +87,12 @@ namespace BansheeEngine
 		virtual void disableTextureUnit(GpuProgramType gptype, UINT16 texUnit);
 
 		/**
+		 * @brief	Binds a texture that can be used for random load/store operations from a GPU program.
+		 */
+		virtual void setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, bool enabled, 
+			const TexturePtr& texPtr, const TextureSurface& surface) = 0;
+
+		/**
 		 * @brief	Signals that rendering for a specific viewport has started. Any draw calls
 		 *			need to be called between beginFrame and endFrame. You may not switch render targets
 		 *			until you call endFrame.

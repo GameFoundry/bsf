@@ -71,9 +71,15 @@ namespace BansheeEngine
 		void setDrawOperation(DrawOperationType op);
 
 		/**
-		 * @copydoc RenderSystem::setSamplerState()
+		 * @copydoc RenderSystem::setTexture()
 		 */
 		void setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr &texPtr);
+
+		/**
+		 * @copydoc RenderSystem::setLoadStoreTexture()
+		 */
+		void setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr& texPtr,
+			const TextureSurface& surface);
 
 		/**
 		 * @copydoc RenderSystem::setSamplerState()

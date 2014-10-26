@@ -131,10 +131,42 @@ namespace BansheeEngine
 			BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
 
 		mInternalData->mTextures[mParamDesc->slot] = texture;
+		mInternalData->mTextureInfo[mParamDesc->slot].isLoadStore = false;
 		mInternalData->mCoreDirtyFlags = 0xFFFFFFFF;
 	}
 
 	HTexture GpuParamTexture::get()
+	{
+		if (mInternalData->mIsDestroyed)
+			BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
+
+		return mInternalData->mTextures[mParamDesc->slot];
+	}
+
+	/************************************************************************/
+	/* 							LOAD/STORE TEXTURE		                    */
+	/************************************************************************/
+
+	GpuParamLoadStoreTexture::GpuParamLoadStoreTexture()
+		:mParamDesc(nullptr)
+	{ }
+
+	GpuParamLoadStoreTexture::GpuParamLoadStoreTexture(GpuParamObjectDesc* paramDesc, const std::shared_ptr<GpuParamsInternalData>& internalData)
+		: mParamDesc(paramDesc), mInternalData(internalData)
+	{ }
+
+	void GpuParamLoadStoreTexture::set(const HTexture& texture, const TextureSurface& surface)
+	{
+		if (mInternalData->mIsDestroyed)
+			BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
+
+		mInternalData->mTextures[mParamDesc->slot] = texture;
+		mInternalData->mTextureInfo[mParamDesc->slot].isLoadStore = true;
+		mInternalData->mTextureInfo[mParamDesc->slot].surface = surface;
+		mInternalData->mCoreDirtyFlags = 0xFFFFFFFF;
+	}
+
+	HTexture GpuParamLoadStoreTexture::get()
 	{
 		if (mInternalData->mIsDestroyed)
 			BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");

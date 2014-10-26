@@ -261,13 +261,23 @@ namespace BansheeEngine
 			glGetActiveUniformsiv(glProgram, 1, &index, GL_UNIFORM_TYPE, &uniformType);
 
 			bool isSampler = false;
+			bool isImage = false;
 			switch (uniformType)
 			{
 			case GL_SAMPLER_1D:
 			case GL_SAMPLER_2D:
 			case GL_SAMPLER_3D:
+			case GL_SAMPLER_2D_MULTISAMPLE:
 			case GL_SAMPLER_CUBE:
 				isSampler = true;
+				break;
+			case GL_IMAGE_1D:
+			case GL_IMAGE_2D:
+			case GL_IMAGE_3D:
+			case GL_IMAGE_CUBE:
+			case GL_IMAGE_2D_MULTISAMPLE:
+				isImage = true;
+				break;
 			}
 
 			if (isSampler)
@@ -298,9 +308,34 @@ namespace BansheeEngine
 					samplerParam.type = GPOT_SAMPLERCUBE;
 					textureParam.type = GPOT_TEXTURECUBE;
 					break;
+				case GL_SAMPLER_2D_MULTISAMPLE:
+					samplerParam.type = GPOT_SAMPLER2DMS;
+					textureParam.type = GPOT_TEXTURE2DMS;
+					break;
 				}
 
 				returnParamDesc.samplers.insert(std::make_pair(paramName, samplerParam));
+				returnParamDesc.textures.insert(std::make_pair(paramName, textureParam));
+			}
+			else if (isImage)
+			{
+				GpuParamObjectDesc textureParam;
+				textureParam.name = paramName;
+				textureParam.slot = glGetUniformLocation(glProgram, uniformName);
+
+				switch (uniformType)
+				{
+				case GL_IMAGE_1D:
+					textureParam.type = GPOT_TEXTURE1D;
+					break;
+				case GL_IMAGE_2D:
+					textureParam.type = GPOT_TEXTURE2D;
+					break;
+				case GL_IMAGE_3D:
+					textureParam.type = GPOT_TEXTURE3D;
+					break;
+				}
+
 				returnParamDesc.textures.insert(std::make_pair(paramName, textureParam));
 			}
 			else

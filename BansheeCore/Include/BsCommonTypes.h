@@ -259,13 +259,12 @@ namespace BansheeEngine
 		GPOT_SAMPLER2D = 2,
 		GPOT_SAMPLER3D = 3,
 		GPOT_SAMPLERCUBE = 4,
+		GPOT_SAMPLER2DMS = 5,
 		GPOT_TEXTURE1D = 11,
 		GPOT_TEXTURE2D = 12,
 		GPOT_TEXTURE3D = 13,
 		GPOT_TEXTURECUBE = 14,
-		GPOT_RWTEXTURE1D = 21,
-		GPOT_RWTEXTURE2D = 22,
-		GPOT_RWTEXTURE3D = 23,
+		GPOT_TEXTURE2DMS = 15,
 		GPOT_BYTE_BUFFER = 32,
 		GPOT_STRUCTURED_BUFFER = 33,
 		GPOT_RWTYPED_BUFFER = 41,
@@ -332,12 +331,29 @@ namespace BansheeEngine
 	};
 
 	/**
-	* @brief Represents a MAC (ethernet) address.
-	*/
+	 * @brief Represents a MAC (ethernet) address.
+	 */
 	struct MACAddress
 	{
 		UINT8 value[6];
 	};
     
+	/**
+	 * @brief	References a subset of surfaces within a texture
+	 */
+	struct TextureSurface
+	{
+		TextureSurface(UINT32 mipLevel = 0, UINT32 numMipLevels = 1, 
+			UINT32 arraySlice = 0, UINT32 numArraySlices = 1)
+			:mipLevel(mipLevel), numMipLevels(numMipLevels), 
+			arraySlice(arraySlice), numArraySlices(numArraySlices)
+		{ }
+
+		UINT32 mipLevel;
+		UINT32 numMipLevels;
+		UINT32 arraySlice;
+		UINT32 numArraySlices;
+	};
+
 	typedef Map<String, String> NameValuePairList;
 }

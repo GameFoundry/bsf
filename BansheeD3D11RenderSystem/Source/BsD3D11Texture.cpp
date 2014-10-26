@@ -175,13 +175,13 @@ namespace BansheeEngine
 		if (mMultisampleCount > 0)
 			BS_EXCEPT(InvalidStateException, "Multisampled textures cannot be accessed from the CPU directly.");
 
-		if(mUsage == TU_DYNAMIC)
+		if((mUsage & TU_DYNAMIC) != 0)
 		{
 			PixelData myData = lock(discardWholeBuffer ? GBL_WRITE_ONLY_DISCARD : GBL_WRITE_ONLY, mipLevel, face);
 			PixelUtil::bulkPixelConversion(src, myData);
 			unlock();
 		}
-		else if(mUsage == TU_STATIC || mUsage == TU_RENDERTARGET || mUsage == TU_DEPTHSTENCIL)
+		else if ((mUsage & TU_DEPTHSTENCIL) == 0)
 		{
 			mipLevel = Math::clamp(mipLevel, (UINT32)mipLevel, getNumMipmaps());
 			face = Math::clamp(face, (UINT32)0, mDepth - 1);
@@ -256,6 +256,9 @@ namespace BansheeEngine
 			UINT32 numMips		= (mNumMipmaps == MIP_UNLIMITED || (1U << mNumMipmaps) > mWidth) ? 0 : mNumMipmaps + 1;
 			desc.MipLevels		= numMips;
 		}
+
+		if ((mUsage & TU_LOADSTORE) != 0)
+			desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
 
 		// Create the texture
 		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
@@ -383,6 +386,9 @@ namespace BansheeEngine
             desc.MiscFlags      |= D3D11_RESOURCE_MISC_TEXTURECUBE;
             desc.ArraySize       = 6;
         }
+
+		if ((mUsage & TU_LOADSTORE) != 0)
+			desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
 
 		// Create the texture
 		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
@@ -518,6 +524,9 @@ namespace BansheeEngine
 			UINT numMips = (mNumMipmaps == MIP_UNLIMITED || (1U << mNumMipmaps) > std::max(std::max(mWidth, mHeight), mDepth)) ? 0 : mNumMipmaps + 1;
 			desc.MipLevels		= numMips;
 		}
+
+		if ((mUsage & TU_LOADSTORE) != 0)
+			desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
 
 		// Create the texture
 		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());

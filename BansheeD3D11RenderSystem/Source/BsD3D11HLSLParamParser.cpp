@@ -120,6 +120,9 @@ namespace BansheeEngine
 					case D3D_SRV_DIMENSION_TEXTURECUBE:
 						memberDesc.type = GPOT_TEXTURECUBE;
 						break;
+					case D3D_SRV_DIMENSION_TEXTURE2DMS:
+						memberDesc.type = GPOT_TEXTURE2DMS;
+						break;
 					default:
 						LOGWRN("Skipping texture because it has unsupported dimension: " + toString(resourceDesc.Dimension));
 					}

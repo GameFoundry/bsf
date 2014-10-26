@@ -513,12 +513,6 @@ namespace BansheeEngine
 	{
 		assert(mWidth > 0 || mHeight > 0);
 
-		if (mUsage & TU_RENDERTARGET)
-			BS_EXCEPT(RenderingAPIException, "D3D9 Cube texture can not be created as render target !!");
-
-		if (mUsage & TU_DEPTHSTENCIL)
-			BS_EXCEPT(RenderingAPIException, "D3D9 Cube texture can not be created as a depth stencil target !!");
-
 		D3DFORMAT d3dPF = chooseD3DFormat(d3d9Device);
 		if(mFormat != D3D9Mappings::_getPF(d3dPF))
 		{
@@ -527,6 +521,8 @@ namespace BansheeEngine
 
 		// Use D3DX to help us create the texture, this way it can adjust any relevant sizes
 		DWORD usage = (mUsage & TU_RENDERTARGET) ? D3DUSAGE_RENDERTARGET : 0;
+		usage |= (mUsage & TU_DEPTHSTENCIL) ? D3DUSAGE_DEPTHSTENCIL : 0;
+
 		UINT numMips = (mNumMipmaps == MIP_UNLIMITED) ? D3DX_DEFAULT : mNumMipmaps + 1;
 
 		// Check dynamic textures

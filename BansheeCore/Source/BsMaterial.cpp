@@ -629,6 +629,26 @@ namespace BansheeEngine
 		return gpuParam;
 	}
 
+	GpuParamLoadStoreTexture Material::getParamLoadStoreTexture(const String& name) const
+	{
+		throwIfNotInitialized();
+
+		GpuParamLoadStoreTexture gpuParam;
+
+		auto iterFind = mValidParams.find(name);
+		if (iterFind == mValidParams.end())
+		{
+			LOGWRN("Material doesn't have a parameter named " + name);
+			return gpuParam;
+		}
+
+		const String& gpuVarName = iterFind->second;
+		GpuParamsPtr params = findTexWithName(gpuVarName);
+
+		params->getLoadStoreTextureParam(gpuVarName, gpuParam);
+		return gpuParam;
+	}
+
 	GpuParamSampState Material::getParamSamplerState(const String& name) const
 	{
 		throwIfNotInitialized();

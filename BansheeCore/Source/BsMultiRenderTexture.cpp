@@ -30,7 +30,7 @@ namespace BansheeEngine
 					BS_EXCEPT(InvalidParametersException, "Provided texture is not created with render target usage.");
 
 				mColorSurfaces[i] = Texture::requestView(texture, desc.colorSurfaces[i].mipLevel, 1,
-					desc.colorSurfaces[i].face, desc.colorSurfaces[i].numFaces, GVU_RENDERTARGET);
+					desc.colorSurfaces[i].face, 1, GVU_RENDERTARGET);
 			}
 		}
 
@@ -42,7 +42,7 @@ namespace BansheeEngine
 				BS_EXCEPT(InvalidParametersException, "Provided texture is not created with depth stencil usage.");
 
 			mDepthStencilSurface = Texture::requestView(texture, desc.depthStencilSurface.mipLevel, 1,
-				desc.depthStencilSurface.face, desc.depthStencilSurface.numFaces, GVU_DEPTHSTENCIL);
+				desc.depthStencilSurface.face, 1, GVU_DEPTHSTENCIL);
 		}
 
 		throwIfBuffersDontMatch();

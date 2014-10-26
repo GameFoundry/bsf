@@ -17,6 +17,7 @@ namespace BansheeEngine
 		TU_DYNAMIC = GBU_DYNAMIC, /**< A regular texture that is often updated by the CPU. */
 		TU_RENDERTARGET = 0x200, /**< Texture used for rendering by the GPU. */
 		TU_DEPTHSTENCIL = 0x400, /**< Texture used as a depth/stencil buffer by the GPU. */
+		TU_LOADSTORE = 0x800, /**< Texture that allows load/store operations from the GPU program. */
 		TU_DEFAULT = TU_STATIC
     };
 

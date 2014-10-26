@@ -56,12 +56,16 @@ namespace BansheeEngine
 			desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE1D;
 			break;
 		case TEX_TYPE_2D:
-			desc.Texture2D.MipLevels = numMips;
-			desc.Texture2D.MostDetailedMip = mostDetailMip;
-			if(texture->getMultisampleCount() > 0)
+			if (texture->getMultisampleCount() > 0)
+			{
 				desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DMS;
+			}
 			else
+			{
 				desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+				desc.Texture2D.MipLevels = numMips;
+				desc.Texture2D.MostDetailedMip = mostDetailMip;
+			}
 			break;
 		case TEX_TYPE_3D:
 			desc.Texture3D.MipLevels = numMips;
@@ -106,17 +110,27 @@ namespace BansheeEngine
 			desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE1D;
 			break;
 		case TEX_TYPE_2D:
-			desc.Texture2D.MipSlice = mipSlice;
-			if(texture->getMultisampleCount() > 0)
+			if (texture->getMultisampleCount() > 0)
+			{
 				desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
+			}
 			else
+			{
 				desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+				desc.Texture2D.MipSlice = mipSlice;
+			}
 			break;
 		case TEX_TYPE_3D:
 			desc.Texture3D.MipSlice = mipSlice;
 			desc.Texture3D.FirstWSlice = firstArraySlice;
 			desc.Texture3D.WSize = numArraySlices;
 			desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE3D;
+			break;
+		case TEX_TYPE_CUBE_MAP:
+			desc.Texture2DArray.FirstArraySlice = firstArraySlice;
+			desc.Texture2DArray.ArraySize = numArraySlices;
+			desc.Texture2DArray.MipSlice = mipSlice;
+			desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
 			break;
 		default:
 			BS_EXCEPT(InvalidParametersException, "Invalid texture type for this view type.");
@@ -160,6 +174,12 @@ namespace BansheeEngine
 			desc.Texture3D.WSize = numArraySlices;
 			desc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE3D;
 			break;
+		case TEX_TYPE_CUBE_MAP:
+			desc.Texture2DArray.FirstArraySlice = firstArraySlice;
+			desc.Texture2DArray.ArraySize = numArraySlices;
+			desc.Texture2DArray.MipSlice = mipSlice;
+			desc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2DARRAY;
+			break;
 		default:
 			BS_EXCEPT(InvalidParametersException, "Invalid texture type for this view type.");
 		}
@@ -193,11 +213,22 @@ namespace BansheeEngine
 			desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE1D;
 			break;
 		case TEX_TYPE_2D:
-			desc.Texture2D.MipSlice = mipSlice;
-			if(texture->getMultisampleCount() > 0)
+			if (texture->getMultisampleCount() > 0)
+			{
 				desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
+			}
 			else
+			{
+				desc.Texture2D.MipSlice = mipSlice;
 				desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+			}
+			break;
+		case TEX_TYPE_3D:
+		case TEX_TYPE_CUBE_MAP:
+			desc.Texture2DArray.FirstArraySlice = firstArraySlice;
+			desc.Texture2DArray.ArraySize = numArraySlices;
+			desc.Texture2DArray.MipSlice = mipSlice;
+			desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
 			break;
 		default:
 			BS_EXCEPT(InvalidParametersException, "Invalid texture type for this view type.");

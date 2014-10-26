@@ -160,6 +160,13 @@ namespace BansheeEngine
         virtual const Matrix4& getProjectionMatrixRS() const;
 
 		/** 
+		 * @brief	Returns the inverse of the render-system specific projection matrix.
+		 *
+		 * @see		getProjectionMatrixRS
+		 */
+        virtual const Matrix4& getProjectionMatrixRSInv() const;
+
+		/** 
 		 * @brief	Returns the standard projection matrix that determines how are 3D points
 		 *			projected to two dimensions. Returned matrix is standard following right-hand
 		 *			rules and depth range of [-1, 1]. 
@@ -170,9 +177,23 @@ namespace BansheeEngine
         virtual const Matrix4& getProjectionMatrix() const;
 
 		/** 
+		 * @brief	Returns the inverse of the projection matrix.
+		 *
+		 * @see		getProjectionMatrix
+		 */
+        virtual const Matrix4& getProjectionMatrixInv() const;
+
+		/** 
 		 * @brief	Gets the camera view matrix. Used for positioning/orienting the camera.
          */
         virtual const Matrix4& getViewMatrix() const;
+
+		/** 
+		 * @brief	Returns the inverse of the view matrix.
+		 *
+		 * @see		getViewMatrix
+		 */
+		virtual const Matrix4& getViewMatrixInv() const;
 
 		/** 
 		 * @brief	Sets whether the camera should use the custom view matrix.
@@ -498,6 +519,9 @@ namespace BansheeEngine
 		mutable Matrix4 mProjMatrixRS; /**< Cached render-system specific projection matrix. */
 		mutable Matrix4 mProjMatrix; /**< Cached projection matrix that determines how are 3D points projected to a 2D viewport. */
 		mutable Matrix4 mViewMatrix; /**< Cached view matrix that determines camera position/orientation. */
+		mutable Matrix4 mProjMatrixRSInv;
+		mutable Matrix4 mProjMatrixInv;
+		mutable Matrix4 mViewMatrixInv;
 
 		mutable ConvexVolume mFrustum; /**< Main clipping planes describing cameras visible area. */
 		mutable bool mRecalcFrustum; /**< Should frustum be recalculated. */

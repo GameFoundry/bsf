@@ -282,6 +282,35 @@ namespace BansheeEngine
 	/**
 	 * @copydoc GpuDataParamBase
 	 */
+	class BS_CORE_EXPORT GpuParamLoadStoreTexture
+	{
+	private:
+		friend class GpuParams;
+
+	public:
+		GpuParamLoadStoreTexture();
+
+		/**
+		 * @copydoc	GpuDataParamBase::set
+		 */
+		void set(const HTexture& texture, const TextureSurface& surface);
+
+		/**
+		 * @copydoc	GpuDataParamBase::get
+		 */
+		HTexture get();
+		
+	private:
+		GpuParamLoadStoreTexture(GpuParamObjectDesc* paramDesc, const std::shared_ptr<GpuParamsInternalData>& internalData);
+
+	private:
+		GpuParamObjectDesc* mParamDesc;
+		std::shared_ptr<GpuParamsInternalData> mInternalData;
+	};
+
+	/**
+	 * @copydoc GpuDataParamBase
+	 */
 	class BS_CORE_EXPORT GpuParamSampState
 	{
 	private:

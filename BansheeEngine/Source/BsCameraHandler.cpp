@@ -24,6 +24,9 @@ namespace BansheeEngine
 	{
 		mViewMatrix = Matrix4::ZERO;
 		mProjMatrixRS = Matrix4::ZERO;
+		mViewMatrixInv = Matrix4::ZERO;
+		mProjMatrixRSInv = Matrix4::ZERO;
+		mProjMatrixInv = Matrix4::ZERO;
 
 		invalidateFrustum();
 
@@ -83,6 +86,13 @@ namespace BansheeEngine
 		return mProjMatrix;
 	}
 
+	const Matrix4& CameraHandler::getProjectionMatrixInv() const
+	{
+		updateFrustum();
+
+		return mProjMatrixInv;
+	}
+
 	const Matrix4& CameraHandler::getProjectionMatrixRS() const
 	{
 		updateFrustum();
@@ -90,11 +100,25 @@ namespace BansheeEngine
 		return mProjMatrixRS;
 	}
 
+	const Matrix4& CameraHandler::getProjectionMatrixRSInv() const
+	{
+		updateFrustum();
+
+		return mProjMatrixRSInv;
+	}
+
 	const Matrix4& CameraHandler::getViewMatrix() const
 	{
 		updateView();
 
 		return mViewMatrix;
+	}
+
+	const Matrix4& CameraHandler::getViewMatrixInv() const
+	{
+		updateView();
+
+		return mViewMatrixInv;
 	}
 
 	const ConvexVolume& CameraHandler::getFrustum() const
@@ -261,6 +285,8 @@ namespace BansheeEngine
 
 			RenderSystem* renderSystem = BansheeEngine::RenderSystem::instancePtr();
 			renderSystem->convertProjectionMatrix(mProjMatrix, mProjMatrixRS);
+			mProjMatrixInv = mProjMatrix.inverse();
+			mProjMatrixRSInv = mProjMatrixRS.inverse();
 
 			// Calculate bounding box (local)
 			// Box is from 0, down -Z, max dimensions as determined from far plane
@@ -305,6 +331,7 @@ namespace BansheeEngine
 		if (!mCustomViewMatrix && mRecalcView)
 		{
 			mViewMatrix.makeView(mPosition, mRotation);
+			mViewMatrixInv = mViewMatrix.inverseAffine();
 			mRecalcView = false;
 		}
 	}
@@ -397,6 +424,7 @@ namespace BansheeEngine
 		{
 			assert(viewMatrix.isAffine());
 			mViewMatrix = viewMatrix;
+			mViewMatrixInv = mViewMatrix.inverseAffine();
 		}
 
 		markCoreDirty();

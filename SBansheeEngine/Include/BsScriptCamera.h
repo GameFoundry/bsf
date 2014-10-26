@@ -50,8 +50,8 @@ namespace BansheeEngine
 		static int internal_GetDepthClearValue(ScriptCamera* instance);
 		static void internal_SetDepthClearValue(ScriptCamera* instance, int value);
 
-		static UINT8 internal_GetStencilClearValue(ScriptCamera* instance);
-		static void internal_SetStencilClearValue(ScriptCamera* instance, UINT8 value);
+		static UINT16 internal_GetStencilClearValue(ScriptCamera* instance);
+		static void internal_SetStencilClearValue(ScriptCamera* instance, UINT16 value);
 
 		static UINT32 internal_GetClearFlags(ScriptCamera* instance);
 		static void internal_SetClearFlags(ScriptCamera* instance, UINT32 value);
@@ -90,6 +90,9 @@ namespace BansheeEngine
 		static Ray internal_ScreenToWorldRay(ScriptCamera* instance, Vector2I value);
 		static Vector3 internal_ProjectPoint(ScriptCamera* instance, Vector3 value);
 		static Vector3 internal_UnprojectPoint(ScriptCamera* instance, Vector3 value);
+
+		static MonoObject* internal_GetRenderTexture(ScriptCamera* instance);
+		static void internal_SetRenderTexture(ScriptCamera* instance, MonoObject* textureObj);
 
 		CameraHandler* mCameraHandler;
 	};

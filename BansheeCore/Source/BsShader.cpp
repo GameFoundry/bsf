@@ -220,6 +220,7 @@ namespace BansheeEngine
 			case GPOT_SAMPLER2D:
 			case GPOT_SAMPLER3D:
 			case GPOT_SAMPLERCUBE:
+			case GPOT_SAMPLER2DMS:
 				return true;
 		}
 
@@ -234,9 +235,7 @@ namespace BansheeEngine
 		case GPOT_TEXTURE2D:
 		case GPOT_TEXTURE3D:
 		case GPOT_TEXTURECUBE:
-		case GPOT_RWTEXTURE1D:
-		case GPOT_RWTEXTURE2D:
-		case GPOT_RWTEXTURE3D:
+		case GPOT_TEXTURE2DMS:
 			return true;
 		}
 

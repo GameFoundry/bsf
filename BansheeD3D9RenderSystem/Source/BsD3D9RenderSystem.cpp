@@ -287,6 +287,9 @@ namespace BansheeEngine
 
 		for(auto iter = paramDesc.textures.begin(); iter != paramDesc.textures.end(); ++iter)
 		{
+			if (bindableParams->isLoadStoreTexture(iter->second.slot))
+				continue; // Not supported by DX9
+
 			HTexture texture = bindableParams->getTexture(iter->second.slot);
 
 			if(!texture.isLoaded())
@@ -507,6 +510,14 @@ namespace BansheeEngine
 			mTexStageDesc[unit].coordIndex = 0;
 			mTexStageDesc[unit].texType = D3D9Mappings::D3D_TEX_TYPE_NORMAL;
 		}
+	}
+
+	void D3D9RenderSystem::setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr& texPtr,
+		const TextureSurface& surface)
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		LOGWRN("Texture random load/store not supported on DX9.");
 	}
 
 	void D3D9RenderSystem::setSamplerState(GpuProgramType gptype, UINT16 unit, const SamplerStatePtr& state)

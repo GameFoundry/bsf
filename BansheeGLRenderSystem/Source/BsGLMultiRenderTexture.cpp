@@ -16,13 +16,22 @@ namespace BansheeEngine
 			if (mColorSurfaces[i] != nullptr)
 			{
 				GLTexture* glColorSurface = static_cast<GLTexture*>(mColorSurfaces[i]->getTexture().get());
-				GLPixelBufferPtr colorBuffer =
-					glColorSurface->getBuffer(mColorSurfaces[i]->getDesc().firstArraySlice,
-					mColorSurfaces[i]->getDesc().mostDetailMip);
-
+				GLPixelBufferPtr colorBuffer = nullptr;
 				GLSurfaceDesc surfaceDesc;
+
+				if (glColorSurface->getTextureType() != TEX_TYPE_3D)
+				{
+					surfaceDesc.zoffset = 0;
+					colorBuffer = glColorSurface->getBuffer(mColorSurfaces[i]->getFirstArraySlice,
+						mColorSurfaces[i]->getMostDetailedMip);
+				}
+				else
+				{
+					surfaceDesc.zoffset = mColorSurfaces[i]->getFirstArraySlice;
+					colorBuffer = glColorSurface->getBuffer(0, mColorSurfaces[i]->getMostDetailedMip);
+				}
+				
 				surfaceDesc.numSamples = getProperties().getMultisampleCount();
-				surfaceDesc.zoffset = 0;
 				surfaceDesc.buffer = colorBuffer;
 
 				mFB->bindSurface((UINT32)i, surfaceDesc);
@@ -36,9 +45,13 @@ namespace BansheeEngine
 		if (mDepthStencilSurface != nullptr)
 		{
 			GLTexture* glDepthStencilSurface = static_cast<GLTexture*>(mDepthStencilSurface->getTexture().get());
-			GLPixelBufferPtr depthStencilBuffer =
-				glDepthStencilSurface->getBuffer(mDepthStencilSurface->getDesc().firstArraySlice,
-				mDepthStencilSurface->getDesc().mostDetailMip);
+			GLPixelBufferPtr depthStencilBuffer = nullptr;
+
+			if (glDepthStencilSurface->getTextureType() != TEX_TYPE_3D)
+			{
+				depthStencilBuffer = glDepthStencilSurface->getBuffer(mDepthStencilSurface->getDesc().firstArraySlice,
+					mDepthStencilSurface->getDesc().mostDetailMip);
+			}
 
 			mFB->bindDepthStencil(depthStencilBuffer);
 		}

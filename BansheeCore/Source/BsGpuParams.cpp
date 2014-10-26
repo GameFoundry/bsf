@@ -12,7 +12,7 @@ namespace BansheeEngine
 	GpuParamsInternalData::GpuParamsInternalData()
 		:mTransposeMatrices(false), mData(nullptr), mNumParamBlocks(0), mNumTextures(0), mNumSamplerStates(0), mFrameAlloc(nullptr),
 		mParamBlocks(nullptr), mParamBlockBuffers(nullptr), mTextures(nullptr), mSamplerStates(nullptr), mCoreDirtyFlags(0xFFFFFFFF),
-		mIsDestroyed(false)
+		mIsDestroyed(false), mTextureInfo(nullptr)
 	{ }
 
 	GpuParams::GpuParams(const GpuParamDescPtr& paramDesc, bool transposeMatrices)
@@ -61,6 +61,9 @@ namespace BansheeEngine
 
 		for (UINT32 i = 0; i < mInternalData->mNumTextures; i++)
 			mInternalData->mTextures[i].~ResourceHandle();
+
+		for (UINT32 i = 0; i < mInternalData->mNumTextures; i++)
+			mInternalData->mTextureInfo[i].~BoundTextureInfo();
 
 		for (UINT32 i = 0; i < mInternalData->mNumSamplerStates; i++)
 			mInternalData->mSamplerStates[i].~ResourceHandle();
@@ -162,6 +165,16 @@ namespace BansheeEngine
 		output = GpuParamTexture(&iterFind->second, mInternalData);
 	}
 
+	void GpuParams::getLoadStoreTextureParam(const String& name, GpuParamLoadStoreTexture& output) const
+	{
+		auto iterFind = mParamDesc->textures.find(name);
+
+		if (iterFind == mParamDesc->textures.end())
+			BS_EXCEPT(InvalidParametersException, "Cannot find texture parameter with the name '" + name + "'");
+
+		output = GpuParamLoadStoreTexture(&iterFind->second, mInternalData);
+	}
+
 	void GpuParams::getSamplerStateParam(const String& name, GpuParamSampState& output) const
 	{
 		auto iterFind = mParamDesc->samplers.find(name);
@@ -214,6 +227,28 @@ namespace BansheeEngine
 		return mInternalData->mSamplerStates[slot];
 	}
 
+	bool GpuParams::isLoadStoreTexture(UINT32 slot) const
+	{
+		if (slot < 0 || slot >= mInternalData->mNumTextures)
+		{
+			BS_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " +
+				toString(mInternalData->mNumTextures - 1) + ". Requested: " + toString(slot));
+		}
+
+		return mInternalData->mTextureInfo[slot].isLoadStore;
+	}
+
+	const TextureSurface& GpuParams::getLoadStoreSurface(UINT32 slot) const
+	{
+		if (slot < 0 || slot >= mInternalData->mNumTextures)
+		{
+			BS_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " +
+				toString(mInternalData->mNumTextures - 1) + ". Requested: " + toString(slot));
+		}
+
+		return mInternalData->mTextureInfo[slot].surface;
+	}
+
 	void GpuParams::updateHardwareBuffers()
 	{
 		for (UINT32 i = 0; i < mInternalData->mNumParamBlocks; i++)
@@ -235,6 +270,7 @@ namespace BansheeEngine
 		for (UINT32 i = 0; i < mInternalData->mNumTextures; i++)
 		{
 			mInternalData->mTextures[i] = copy->mInternalData->mTextures[i];
+			mInternalData->mTextureInfo[i] = copy->mInternalData->mTextureInfo[i];
 		}
 
 		for (UINT32 i = 0; i < mInternalData->mNumSamplerStates; i++)
@@ -305,6 +341,7 @@ namespace BansheeEngine
 		for (UINT32 i = 0; i < mInternalData->mNumTextures; i++)
 		{
 			myClone->mInternalData->mTextures[i] = mInternalData->mTextures[i];
+			myClone->mInternalData->mTextureInfo[i] = mInternalData->mTextureInfo[i];
 		}
 
 		for (UINT32 i = 0; i < mInternalData->mNumSamplerStates; i++)
@@ -323,17 +360,20 @@ namespace BansheeEngine
 		UINT32 paramBlockBufferOffset = 0;
 		UINT32 textureOffset = 0;
 		UINT32 samplerStateOffset = 0;
+		UINT32 textureInfoOffset = 0;
 
 		UINT32 paramBlockBufferSize = mInternalData->mNumParamBlocks * sizeof(GpuParamBlockPtr);
 		UINT32 paramBlockBuffersBufferSize = mInternalData->mNumParamBlocks * sizeof(GpuParamBlockBufferPtr);
 		UINT32 textureBufferSize = mInternalData->mNumTextures * sizeof(HTexture);
+		UINT32 textureInfoBufferSize = mInternalData->mNumTextures * sizeof(BoundTextureInfo);
 		UINT32 samplerStateBufferSize = mInternalData->mNumSamplerStates * sizeof(HSamplerState);
 
-		bufferSize = paramBlockBufferSize + paramBlockBuffersBufferSize + textureBufferSize + samplerStateBufferSize;
+		bufferSize = paramBlockBufferSize + paramBlockBuffersBufferSize + textureBufferSize + samplerStateBufferSize + textureInfoBufferSize;
 		paramBlockOffset = 0;
 		paramBlockBufferOffset = paramBlockOffset + paramBlockBufferSize;
 		textureOffset = paramBlockBufferOffset + paramBlockBuffersBufferSize;
 		samplerStateOffset = textureOffset + textureBufferSize;
+		textureInfoOffset = samplerStateOffset + textureInfoBufferSize;
 
 		if (frameAlloc != nullptr)
 		{
@@ -350,6 +390,7 @@ namespace BansheeEngine
 		mInternalData->mParamBlockBuffers = (GpuParamBlockBufferPtr*)(mInternalData->mData + paramBlockBufferOffset);
 		mInternalData->mTextures = (HTexture*)(mInternalData->mData + textureOffset);
 		mInternalData->mSamplerStates = (HSamplerState*)(mInternalData->mData + samplerStateOffset);
+		mInternalData->mTextureInfo = (BoundTextureInfo*)(mInternalData->mData + textureInfoOffset);
 
 		// Ensure everything is constructed
 		for (UINT32 i = 0; i < mInternalData->mNumParamBlocks; i++)
@@ -367,8 +408,15 @@ namespace BansheeEngine
 
 		for (UINT32 i = 0; i < mInternalData->mNumTextures; i++)
 		{
-			HTexture* ptrToIdx = (&mInternalData->mTextures[i]);
-			ptrToIdx = new (&mInternalData->mTextures[i]) HTexture();
+			{
+				HTexture* ptrToIdx = (&mInternalData->mTextures[i]);
+				ptrToIdx = new (&mInternalData->mTextures[i]) HTexture();
+			}
+
+			{
+				BoundTextureInfo* ptrToIdx = (&mInternalData->mTextureInfo[i]);
+				ptrToIdx = new (&mInternalData->mTextureInfo[i]) BoundTextureInfo();
+			}
 		}
 
 		for (UINT32 i = 0; i < mInternalData->mNumSamplerStates; i++)

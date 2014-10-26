@@ -25,6 +25,11 @@ namespace BansheeEngine
 		 * @brief	Returns internal OpenGL texture handle.
 		 */
         GLuint getGLID() const;
+
+		/**
+		 * @brief	Returns the internal OpenGL format used by the texture.
+		 */
+		GLenum getGLFormat() const { return mGLFormat; }
 		
 		/**
 		 * @brief	Returns a hardware pixel buffer for a certain face and level of the texture.
@@ -85,6 +90,7 @@ namespace BansheeEngine
 
     private:
         GLuint mTextureID;
+		GLenum mGLFormat;
         GLSupport& mGLSupport;
 		std::shared_ptr<GLPixelBuffer> mLockedBuffer;
 		

@@ -253,10 +253,22 @@ namespace BansheeEngine
 		{
 			HTexture texture = bindableParams->getTexture(iter->second.slot);
 
-			if(!texture.isLoaded())
-				setTexture(gptype, iter->second.slot, false, nullptr);
+			if (!bindableParams->isLoadStoreTexture(iter->second.slot))
+			{
+				if (!texture.isLoaded())
+					setTexture(gptype, iter->second.slot, false, nullptr);
+				else
+					setTexture(gptype, iter->second.slot, true, texture.getInternalPtr());
+			}
 			else
-				setTexture(gptype, iter->second.slot, true, texture.getInternalPtr());
+			{
+				const TextureSurface& surface = bindableParams->getLoadStoreSurface(iter->second.slot);
+
+				if (!texture.isLoaded())
+					setLoadStoreTexture(gptype, iter->second.slot, false, nullptr, surface);
+				else
+					setLoadStoreTexture(gptype, iter->second.slot, true, texture.getInternalPtr(), surface);
+			}
 		}
 
 		for(auto iter = paramDesc.samplers.begin(); iter != paramDesc.samplers.end(); ++iter)
@@ -422,6 +434,51 @@ namespace BansheeEngine
 		}
 
 		activateGLTextureUnit(0);
+
+		BS_INC_RENDER_STAT(NumTextureBinds);
+	}
+
+	void GLRenderSystem::setSamplerState(GpuProgramType gptype, UINT16 unit, const SamplerStatePtr& state)
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		unit = getGLTextureUnit(gptype, unit);
+
+		// Set texture layer filtering
+		setTextureFiltering(unit, FT_MIN, state->getTextureFiltering(FT_MIN));
+		setTextureFiltering(unit, FT_MAG, state->getTextureFiltering(FT_MAG));
+		setTextureFiltering(unit, FT_MIP, state->getTextureFiltering(FT_MIP));
+
+		// Set texture anisotropy
+		setTextureAnisotropy(unit, state->getTextureAnisotropy());
+
+		// Set mipmap biasing
+		setTextureMipmapBias(unit, state->getTextureMipmapBias());
+
+		// Texture addressing mode
+		const UVWAddressingMode& uvw = state->getTextureAddressingMode();
+		setTextureAddressingMode(unit, uvw);
+
+		// Set border color
+		setTextureBorderColor(unit, state->getBorderColor());
+
+		BS_INC_RENDER_STAT(NumSamplerBinds);
+	}
+
+	void GLRenderSystem::setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr& texPtr,
+		const TextureSurface& surface)
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		// TODO - OpenGL can't bind a certain subset of faces like DX11, only zero, one or all, so I'm ignoring numSlices parameter
+		if (texPtr != nullptr)
+		{
+			GLTexturePtr tex = std::static_pointer_cast<GLTexture>(texPtr);
+			glBindImageTexture(unit, tex->getGLID(), surface.mipLevel, surface.numArraySlices > 1, 
+				surface.arraySlice, tex->getGLFormat(), GL_READ_WRITE);
+		}
+		else
+			glBindImageTexture(unit, 0, 0, false, 0, 0, GL_READ_WRITE);
 
 		BS_INC_RENDER_STAT(NumTextureBinds);
 	}

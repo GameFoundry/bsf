@@ -18,6 +18,7 @@
 #include "BsD3D11RenderStateManager.h"
 #include "BsD3D11GpuParamBlockBuffer.h"
 #include "BsD3D11InputLayoutManager.h"
+#include "BsD3D11TextureView.h"
 #include "BsD3D11RenderUtility.h"
 #include "BsGpuParams.h"
 #include "BsCoreThread.h"
@@ -141,6 +142,12 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
+		for (auto& boundUAV : mBoundUAVs)
+		{
+			if (boundUAV.second != nullptr)
+				boundUAV.first->releaseView(boundUAV.second);
+		}
+
 		QueryManager::shutDown();
 		D3D11RenderUtility::shutDown();
 
@@ -255,7 +262,6 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		// TODO - Set up UAVs?
 		// TODO - I'm setting up views one by one, it might be more efficient to hold them in an array
 		//  and then set them all up at once before rendering? Needs testing
 
@@ -291,6 +297,54 @@ namespace BansheeEngine
 		default:
 			BS_EXCEPT(InvalidParametersException, "Unsupported gpu program type: " + toString(gptype));
 		}
+
+		BS_INC_RENDER_STAT(NumTextureBinds);
+	}
+
+	void D3D11RenderSystem::setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr& texPtr,
+		const TextureSurface& surface)
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		// TODO - This hasn't bee tested and might be incorrect. I might need to set UAVs together with render targets,
+		// especially considering DX11 expects number of UAVs to match number of render targets.
+
+		ID3D11UnorderedAccessView* viewArray[1];
+		if (texPtr != nullptr && enabled)
+		{
+			D3D11Texture* d3d11Texture = static_cast<D3D11Texture*>(texPtr.get());
+			TextureViewPtr texView = Texture::requestView(texPtr, surface.mipLevel, 1, 
+				surface.arraySlice, surface.numArraySlices, GVU_RANDOMWRITE);
+
+			D3D11TextureView* d3d11texView = static_cast<D3D11TextureView*>(texView.get());
+			viewArray[0] = d3d11texView->getUAV();
+
+			if (mBoundUAVs[unit].second != nullptr)
+				mBoundUAVs[unit].first->releaseView(mBoundUAVs[unit].second);
+
+			mBoundUAVs[unit] = std::make_pair(texPtr, texView);
+		}
+		else
+		{
+			viewArray[0] = nullptr;
+
+			if (mBoundUAVs[unit].second != nullptr)
+				mBoundUAVs[unit].first->releaseView(mBoundUAVs[unit].second);
+
+			mBoundUAVs[unit] = std::pair<TexturePtr, TextureViewPtr>();
+		}
+
+		if (gptype == GPT_FRAGMENT_PROGRAM)
+		{
+			mDevice->getImmediateContext()->OMSetRenderTargetsAndUnorderedAccessViews(
+				D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr, unit, 1, viewArray, nullptr);
+		}
+		else if (gptype == GPT_COMPUTE_PROGRAM)
+		{
+			mDevice->getImmediateContext()->CSSetUnorderedAccessViews(unit, 1, viewArray, nullptr);
+		}
+		else
+			BS_EXCEPT(InvalidParametersException, "Unsupported gpu program type: " + toString(gptype));
 
 		BS_INC_RENDER_STAT(NumTextureBinds);
 	}
@@ -509,10 +563,22 @@ namespace BansheeEngine
 		{
 			HTexture texture = bindableParams->getTexture(iter->second.slot);
 
-			if(!texture.isLoaded())
-				setTexture(gptype, iter->second.slot, false, nullptr);
+			if (!bindableParams->isLoadStoreTexture(iter->second.slot))
+			{
+				if (!texture.isLoaded())
+					setTexture(gptype, iter->second.slot, false, nullptr);
+				else
+					setTexture(gptype, iter->second.slot, true, texture.getInternalPtr());
+			}
 			else
-				setTexture(gptype, iter->second.slot, true, texture.getInternalPtr());
+			{
+				const TextureSurface& surface = bindableParams->getLoadStoreSurface(iter->second.slot);
+
+				if (!texture.isLoaded())
+					setLoadStoreTexture(gptype, iter->second.slot, false, nullptr, surface);
+				else
+					setLoadStoreTexture(gptype, iter->second.slot, true, texture.getInternalPtr(), surface);
+			}
 		}
 
 		// TODO - I assign constant buffers one by one but it might be more efficient to do them all at once?

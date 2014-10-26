@@ -6,11 +6,13 @@ using System.Text;
 
 namespace BansheeEngine
 {
+    // Don't reorder, used by native code
     public enum ProjectionType
     {
         Orthographic, Perspective
     }
 
+    // Don't reorder, used by native code
     [Flags]
     public enum ClearFlags
     {
@@ -203,9 +205,9 @@ namespace BansheeEngine
         private static extern void Internal_SetDepthClearValue(IntPtr instance, int value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern byte Internal_GetStencilClearValue(IntPtr instance);
+        private static extern UInt16 Internal_GetStencilClearValue(IntPtr instance);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetStencilClearValue(IntPtr instance, byte value);
+        private static extern void Internal_SetStencilClearValue(IntPtr instance, UInt16 value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern ClearFlags Internal_GetClearFlags(IntPtr instance);

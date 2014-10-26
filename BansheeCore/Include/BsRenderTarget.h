@@ -16,7 +16,6 @@ namespace BansheeEngine
 	{
 		TexturePtr texture;
 		UINT32 face;
-		UINT32 numFaces;
 		UINT32 mipLevel;
 	};
 

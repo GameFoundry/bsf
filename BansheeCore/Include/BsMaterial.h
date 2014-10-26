@@ -125,6 +125,15 @@ namespace BansheeEngine
 		/** @brief	Assigns a texture to the shader parameter with the specified name. */
 		void setTexture(const String& name, const HTexture& value) { return getParamTexture(name).set(value); }
 
+		/** 
+		 * @brief	Assigns a texture to be used for random load/store operations to the
+		 *			shader parameter with the specified name.
+		 */
+		void setLoadStoreTexture(const String& name, const HTexture& value, const TextureSurface& surface) 
+		{ 
+			return getParamLoadStoreTexture(name).set(value, surface); 
+		}
+
 		/** @brief	Assigns a sampler state to the shader parameter with the specified name. */
 		void setSamplerState(const String& name, const HSamplerState& value) { return getParamSamplerState(name).set(value); }
 
@@ -374,6 +383,19 @@ namespace BansheeEngine
 		 *			If material shader changes this handle will be invalidated.
 		 */
 		GpuParamTexture getParamTexture(const String& name) const;
+
+		/**
+		 * @brief	Returns a GPU parameter for binding a load/store texture. This parameter 
+		 *			may be used for more efficiently getting/setting GPU parameter values 
+		 *			than calling Material::get* / Material::set* methods. 
+		 *
+		 * @note	Expected behavior is that you would retrieve this parameter when
+		 * 			initially constructing the material, and then use it throughout material
+		 * 			lifetime to assign and retrieve parameter values.
+		 * 			
+		 *			If material shader changes this handle will be invalidated.
+		 */
+		GpuParamLoadStoreTexture getParamLoadStoreTexture(const String& name) const;
 
 		/**
 		 * @brief	Returns a sampler state GPU parameter. This parameter may be used for

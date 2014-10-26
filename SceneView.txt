@@ -23,7 +23,6 @@ AFTER I have scene widget in C#:
  - Implement free move handle and remaining handles
  - Test custom handles from C#
 
-
 IMPLEMENT SELECTION RENDERING
 
 IMPROVE SceneGrid LOOK
@@ -88,7 +87,6 @@ Draw that same mesh with either a wireframe or a grayed out shader with a slight
 
 ---------------------------------------------------------------------
 Render textures in C#:
- - Extend C++ code so I can render to a 2D texture, face of a cube map, slice of a volume texture or entry in a 2D texture array.
  - In C# have Texture2D, TextureCube, TextureVolume, Texture2DArray. They should have a common Texture base.
    - Each of those can be created with a Renderable flag
  - Render textures mirror what we have in C++

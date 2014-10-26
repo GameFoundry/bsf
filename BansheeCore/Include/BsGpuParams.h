@@ -8,6 +8,19 @@ namespace BansheeEngine
 	struct GpuParamsInternalData;
 
 	/**
+	 * @brief	Stores information needed for binding a texture to the pipeline.
+	 */
+	struct BoundTextureInfo
+	{
+		BoundTextureInfo()
+			:isLoadStore(false)
+		{ }
+
+		bool isLoadStore;
+		TextureSurface surface;
+	};
+
+	/**
 	 * @brief	Contains descriptions for all parameters in a GPU program and also
 	 *			allows you to write and read those parameters. All parameter values
 	 *			are stored internally on the CPU, and are only submitted to the GPU
@@ -20,6 +33,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT GpuParams
 	{
 		struct PrivatelyConstruct {};
+
 	public:
 		/**
 		 * @brief	Creates new GpuParams object using the specified parameter descriptions.
@@ -226,6 +240,11 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	getParam(const String&, GpuDataParamBase<T>&)
 		 */
+		void getLoadStoreTextureParam(const String& name, GpuParamLoadStoreTexture& output) const;
+
+		/**
+		 * @copydoc	getParam(const String&, GpuDataParamBase<T>&)
+		 */
 		void getSamplerStateParam(const String& name, GpuParamSampState& output) const;
 
 		/**
@@ -249,6 +268,18 @@ namespace BansheeEngine
 		 * @brief	Gets a sampler state bound to the specified slot.
 		 */
 		HSamplerState getSamplerState(UINT32 slot);
+
+		/**
+		 * @brief	Checks is the texture at the specified slot to be bound as
+		 *			random load/store texture instead of a normal sampled texture.
+		 */
+		bool isLoadStoreTexture(UINT32 slot) const;
+
+		/**
+		 * @brief	Returns information that determines which texture surfaces to bind
+		 *			as load/store parameters.
+		 */
+		const TextureSurface& getLoadStoreSurface(UINT32 slot) const;
 
 		/**
 		 * @brief	Updates all internal data from the provided copy. Copy must have the same
@@ -322,6 +353,7 @@ namespace BansheeEngine
 		GpuParamBlockPtr* mParamBlocks;
 		GpuParamBlockBufferPtr* mParamBlockBuffers;
 		HTexture* mTextures;
+		BoundTextureInfo* mTextureInfo;
 		HSamplerState* mSamplerStates;
 
 		bool mTransposeMatrices;
