@@ -8,18 +8,21 @@ When dragging a handle make sure it works when cursor leaves the scene view
 Also make sure that handle manager receives mouse up event if its done outside of scene view
 When selecting/deselecting stuff handle display is delayed
 
-Add C# methods for retrieving handle size and snap amounts
-Actually make use of snapping in MoveHandle
-Test if fixed size handles & snapping work
+Create the scene widget completely in C#?
+ - Port Camera/viewport, RenderTexture, SceneCameraController, Input, ProjectSettings, SceneGrid
+ - Will need to track when widget resizes so I can resize the render target
+ - Handle manager update will originate from the widget
+  - Actually it could still be done from C++
+ - How will scene grid rendering be handled? Currently it's done from a render() callback
+  - It's still going to have a C++ representation, just call the callback there
+ - I will still need a C++ version of scene widget (not in script code but in editor code) because handle/gizmo manager reference it
+ 
+AFTER I have scene widget in C#:
+ - Finish up C# Handles class so it returns proper values
+ - Ensure fixed handle size and handle snapping works
+ - Implement free move handle and remaining handles
+ - Test custom handles from C#
 
------------
-
-Start work on C# Camera, and C# EditorApplication.sceneCamera
-  - I'll need to replace all current uses of scene camera with CameraHandler?? Since this camera will have to be a ManagedComponent...
-
-Test handles
- - Test a custom handle from C#
- - FINISH HANDLE IMPLEMENTATION AND GLUE EVERYTHING TOGHETHER
 
 IMPLEMENT SELECTION RENDERING
 
@@ -82,6 +85,17 @@ Retrieve a list of selected objects from SelectionManager
 Find ones with Renderable components
 Retrieve Meshes, and world transforms from them
 Draw that same mesh with either a wireframe or a grayed out shader with a slight depth bias
+
+---------------------------------------------------------------------
+Render textures in C#:
+ - Extend C++ code so I can render to a 2D texture, face of a cube map, slice of a volume texture or entry in a 2D texture array.
+ - In C# have Texture2D, TextureCube, TextureVolume, Texture2DArray. They should have a common Texture base.
+   - Each of those can be created with a Renderable flag
+ - Render textures mirror what we have in C++
+   - RenderTexture and MultiRenderTexture (since we have these separate representation we don't need RenderBuffer that Unity has)
+   - You can provide an existing texture from types listed above, or create a new render target and
+      create a basic 2D texture (multiple constructors)
+ - Both RT types should have their color buffer (s) and depth buffer accessible as a texture to be used for rendering, or for reading
 
 ---------------------------------------------------------------------
 Multi-resources

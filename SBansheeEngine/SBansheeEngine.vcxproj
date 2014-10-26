@@ -243,6 +243,7 @@
     <ClInclude Include="Include\BsManagedSerializableListRTTI.h" />
     <ClInclude Include="Include\BsManagedSerializableObject.h" />
     <ClInclude Include="Include\BsRuntimeScriptObjects.h" />
+    <ClInclude Include="Include\BsScriptCamera.h" />
     <ClInclude Include="Include\BsScriptComponent.h" />
     <ClInclude Include="Include\BsScriptDebug.h" />
     <ClInclude Include="Include\BsScriptEnginePrerequisites.h" />
@@ -294,6 +295,7 @@
     <ClCompile Include="Source\BsManagedResourceManager.cpp" />
     <ClCompile Include="Source\BsManagedResourceMetaData.cpp" />
     <ClCompile Include="Source\BsRuntimeScriptObjects.cpp" />
+    <ClCompile Include="Source\BsScriptCamera.cpp" />
     <ClCompile Include="Source\BsScriptComponent.cpp" />
     <ClCompile Include="Source\BsScriptDebug.cpp" />
     <ClCompile Include="Source\BsScriptEnginePlugin.cpp" />

@@ -8,7 +8,7 @@ namespace BansheeEngine
 		Vector<Plane> worldPlanes;
 		for (auto& plane : frustumPlanes)
 		{
-			worldPlanes.push_back(worldMatrix.multiply3x4(plane));
+			worldPlanes.push_back(worldMatrix.multiplyAffine(plane));
 		}
 
 		worldFrustum = ConvexVolume(worldPlanes);

@@ -1404,7 +1404,7 @@ namespace BansheeEngine
 
 		const Matrix4& worldTfrm = widget.SO()->getWorldTfrm();
 
-		Vector4 vecLocalPos = worldTfrm.inverse().multiply3x4(Vector4((float)windowPos.x, (float)windowPos.y, 0.0f, 1.0f));
+		Vector4 vecLocalPos = worldTfrm.inverse().multiplyAffine(Vector4((float)windowPos.x, (float)windowPos.y, 0.0f, 1.0f));
 		Vector2I curLocalPos(Math::roundToInt(vecLocalPos.x), Math::roundToInt(vecLocalPos.y));
 
 		return curLocalPos;
@@ -1425,7 +1425,7 @@ namespace BansheeEngine
 
 			const Matrix4& worldTfrm = bridgeElement->_getParentWidget()->SO()->getWorldTfrm();
 
-			Vector4 vecLocalPos = worldTfrm.inverse().multiply3x4(Vector4((float)windowPos.x, (float)windowPos.y, 0.0f, 1.0f));
+			Vector4 vecLocalPos = worldTfrm.inverse().multiplyAffine(Vector4((float)windowPos.x, (float)windowPos.y, 0.0f, 1.0f));
 			Rect2I bridgeBounds = bridgeElement->_getCachedBounds();
 
 			// Find coordinates relative to the bridge element

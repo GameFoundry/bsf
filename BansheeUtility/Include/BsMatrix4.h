@@ -335,7 +335,7 @@ namespace BansheeEngine
          * 			
          * @note	Matrix must be affine, if it is not use "multiply" method.
          */
-        Vector3 multiply3x4(const Vector3& v) const
+        Vector3 multiplyAffine(const Vector3& v) const
         {
             return Vector3(
                     m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z + m[0][3], 
@@ -348,7 +348,7 @@ namespace BansheeEngine
          * 			
          * @note	Matrix must be affine, if it is not use "multiply" method.
          */
-        Vector4 multiply3x4(const Vector4& v) const
+        Vector4 multiplyAffine(const Vector4& v) const
         {
             return Vector4(
                 m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z + m[0][3] * v.w, 
@@ -362,15 +362,15 @@ namespace BansheeEngine
          * 			
          * @note	Matrix must be affine.
          */
-        Plane multiply3x4(const Plane& p) const
+        Plane multiplyAffine(const Plane& p) const
         {
 			Vector4 localNormal(p.normal.x, p.normal.y, p.normal.z, 0.0f);
 			Vector4 localPoint = localNormal * p.d;
 			localPoint.w = 1.0f;
 
 			Matrix4 itMat = inverse().transpose();
-			Vector4 worldNormal = itMat.multiply3x4(localNormal);
-			Vector4 worldPoint = multiply3x4(localPoint);
+			Vector4 worldNormal = itMat.multiplyAffine(localNormal);
+			Vector4 worldPoint = multiplyAffine(localPoint);
 
 			float d = worldNormal.dot(worldPoint);
 
@@ -383,7 +383,7 @@ namespace BansheeEngine
          * @note	w component of the vector is assumed to be 1. After transformation all components
          * 			are projected back so that w remains 1.
          * 			
-		 *			If your matrix doesn't contain projection components use "multiply3x4" method as it is faster.
+		 *			If your matrix doesn't contain projection components use "multiplyAffine" method as it is faster.
          */
         Vector3 multiply(const Vector3 &v) const
         {
@@ -401,7 +401,7 @@ namespace BansheeEngine
         /**
          * @brief	Transform a 4D vector by this matrix.  
          *
-         * @note	If your matrix doesn't contain projection components use "multiply3x4" method as it is faster.
+         * @note	If your matrix doesn't contain projection components use "multiplyAffine" method as it is faster.
          */
         Vector4 multiply(const Vector4& v) const
         {

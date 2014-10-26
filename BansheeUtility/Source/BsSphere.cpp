@@ -25,8 +25,8 @@ namespace BansheeEngine
 	void Sphere::transform(const Matrix4& matrix)
 	{
 		Vector3 edge = mCenter + Vector3::UNIT_X * mRadius;
-		mCenter = matrix.multiply3x4(mCenter);
-		edge = matrix.multiply3x4(edge);
+		mCenter = matrix.multiplyAffine(mCenter);
+		edge = matrix.multiplyAffine(edge);
 
 		mRadius = mCenter.distance(edge);
 	}

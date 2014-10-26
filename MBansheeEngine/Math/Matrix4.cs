@@ -388,7 +388,7 @@ namespace BansheeEngine
          * 			
          * @note	Matrix must be affine, if it is not use "Multiply" method.
          */
-        public Vector3 Multiply3x4(Vector3 v)
+        public Vector3 MultiplyAffine(Vector3 v)
         {
             return new Vector3(
                     m00 * v.x + m01 * v.y + m02 * v.z + m03, 
@@ -401,7 +401,7 @@ namespace BansheeEngine
          * 			
          * @note	Matrix must be affine, if it is not use "Multiply" method.
          */
-        public Vector4 Multiply3x4(Vector4 v)
+        public Vector4 MultiplyAffine(Vector4 v)
         {
             return new Vector4(
                 m00 * v.x + m01 * v.y + m02 * v.z + m03 * v.w, 
@@ -416,7 +416,7 @@ namespace BansheeEngine
          * @note	w component of the vector is assumed to be 1. After transformation all components
          * 			are projected back so that w remains 1.
          * 			
-		 *			If your matrix doesn't contain projection components use "Multiply3x4" method as it is faster.
+		 *			If your matrix doesn't contain projection components use "MultiplyAffine" method as it is faster.
          */
         public Vector3 Multiply(Vector3 v)
         {
@@ -436,7 +436,7 @@ namespace BansheeEngine
          *
          * @note	After transformation all components are projected back so that w remains 1.
          * 			
-		 *			If your matrix doesn't contain projection components use "Multiply3x4" method as it is faster.
+		 *			If your matrix doesn't contain projection components use "MultiplyAffine" method as it is faster.
          */
         public Vector4 Multiply(Vector4 v)
         {

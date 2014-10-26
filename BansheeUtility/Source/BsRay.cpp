@@ -19,8 +19,8 @@ namespace BansheeEngine
 	{
 		Vector3 end = getPoint(1.0f);
 
-		mOrigin = matrix.multiply3x4(mOrigin);
-		end = matrix.multiply3x4(end);
+		mOrigin = matrix.multiplyAffine(mOrigin);
+		end = matrix.multiplyAffine(end);
 
 		mDirection = Vector3::normalize(end - mOrigin);
 	}

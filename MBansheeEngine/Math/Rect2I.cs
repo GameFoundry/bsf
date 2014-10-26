@@ -27,17 +27,6 @@ namespace BansheeEngine
 			return !(lhs == rhs);
 		}
 
-        public override int GetHashCode()
-        {
-            int hash = 23;
-            hash = hash * 31 + x.GetHashCode();
-            hash = hash * 31 + y.GetHashCode();
-            hash = hash * 31 + width.GetHashCode();
-            hash = hash * 31 + height.GetHashCode();
-
-            return hash;
-        }
-
         public override bool Equals(object other)
         {
             if (!(other is Rect2I))
@@ -50,6 +39,11 @@ namespace BansheeEngine
             return false;
         }
 
-        int x, y, width, height;
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public int x, y, width, height;
     }
 }

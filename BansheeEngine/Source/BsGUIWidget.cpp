@@ -244,7 +244,7 @@ namespace BansheeEngine
 
 		const Matrix4& worldTfrm = SO()->getWorldTfrm();
 		Vector3 vecPos((float)position.x, (float)position.y, 0.0f);
-		vecPos = worldTfrm.inverse().multiply3x4(vecPos);
+		vecPos = worldTfrm.inverse().multiplyAffine(vecPos);
 
 		Vector2I localPos(Math::roundToInt(vecPos.x), Math::roundToInt(vecPos.y));
 		return mBounds.contains(localPos);

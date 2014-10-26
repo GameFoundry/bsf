@@ -36,7 +36,7 @@ namespace BansheeEngine
 		UINT32 i = 0;
 		for (auto& plane : frustumPlanes)
 		{
-			worldPlanes[i] = worldMatrix.multiply3x4(plane);
+			worldPlanes[i] = worldMatrix.multiplyAffine(plane);
 			i++;
 		}
 

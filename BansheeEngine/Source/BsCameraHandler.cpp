@@ -115,7 +115,7 @@ namespace BansheeEngine
 		UINT32 i = 0;
 		for (auto& plane : frustumPlanes)
 		{
-			worldPlanes[i] = worldMatrix.multiply3x4(plane);
+			worldPlanes[i] = worldMatrix.multiplyAffine(plane);
 			i++;
 		}
 
@@ -512,7 +512,7 @@ namespace BansheeEngine
 
 	Vector3 CameraHandler::worldToViewPoint(const Vector3& worldPoint) const
 	{
-		return getViewMatrix().multiply3x4(worldPoint);
+		return getViewMatrix().multiplyAffine(worldPoint);
 	}
 
 	Vector3 CameraHandler::screenToWorldPoint(const Vector2I& screenPoint) const
@@ -538,7 +538,7 @@ namespace BansheeEngine
 
 	Vector3 CameraHandler::viewToWorldPoint(const Vector3& viewPoint) const
 	{
-		return getViewMatrix().inverseAffine().multiply3x4(viewPoint);
+		return getViewMatrix().inverseAffine().multiplyAffine(viewPoint);
 	}
 
 	Vector2I CameraHandler::viewToScreenPoint(const Vector3& viewPoint) const

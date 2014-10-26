@@ -52,7 +52,7 @@ namespace BansheeEngine
 		cubeData.extents = extents;
 		cubeData.color = mColor;
 		cubeData.transform = mTransform;
-		cubeData.center = mTransform.multiply3x4(position);
+		cubeData.center = mTransform.multiplyAffine(position);
 	}
 
 	void DrawHelper::sphere(const Vector3& position, float radius, UINT32 quality)
@@ -65,7 +65,7 @@ namespace BansheeEngine
 		sphereData.quality = quality;
 		sphereData.color = mColor;
 		sphereData.transform = mTransform;
-		sphereData.center = mTransform.multiply3x4(position);
+		sphereData.center = mTransform.multiplyAffine(position);
 	}
 
 	void DrawHelper::wireCube(const Vector3& position, const Vector3& extents)
@@ -77,7 +77,7 @@ namespace BansheeEngine
 		cubeData.extents = extents;
 		cubeData.color = mColor;
 		cubeData.transform = mTransform;
-		cubeData.center = mTransform.multiply3x4(position);
+		cubeData.center = mTransform.multiplyAffine(position);
 	}
 
 	void DrawHelper::wireSphere(const Vector3& position, float radius, UINT32 quality)
@@ -90,7 +90,7 @@ namespace BansheeEngine
 		sphereData.quality = quality;
 		sphereData.color = mColor;
 		sphereData.transform = mTransform;
-		sphereData.center = mTransform.multiply3x4(position);
+		sphereData.center = mTransform.multiplyAffine(position);
 	}
 
 	void DrawHelper::line(const Vector3& start, const Vector3& end)
@@ -102,7 +102,7 @@ namespace BansheeEngine
 		lineData.end = end;
 		lineData.color = mColor;
 		lineData.transform = mTransform;
-		lineData.center = mTransform.multiply3x4((start + end) * 0.5f);
+		lineData.center = mTransform.multiplyAffine((start + end) * 0.5f);
 	}
 
 	void DrawHelper::frustum(const Vector3& position, float aspect, Degree FOV, float near, float far)
@@ -117,7 +117,7 @@ namespace BansheeEngine
 		frustumData.far = far;
 		frustumData.color = mColor;
 		frustumData.transform = mTransform;
-		frustumData.center = mTransform.multiply3x4(position);
+		frustumData.center = mTransform.multiplyAffine(position);
 	}
 
 	void DrawHelper::cone(const Vector3& base, const Vector3& normal, float height, float radius, UINT32 quality)
@@ -132,7 +132,7 @@ namespace BansheeEngine
 		coneData.quality = quality;
 		coneData.color = mColor;
 		coneData.transform = mTransform;
-		coneData.center = mTransform.multiply3x4(base + normal * height * 0.5f);
+		coneData.center = mTransform.multiplyAffine(base + normal * height * 0.5f);
 	}
 
 	void DrawHelper::disc(const Vector3& position, const Vector3& normal, float radius, UINT32 quality)
@@ -146,7 +146,7 @@ namespace BansheeEngine
 		discData.quality = quality;
 		discData.color = mColor;
 		discData.transform = mTransform;
-		discData.center = mTransform.multiply3x4(position);
+		discData.center = mTransform.multiplyAffine(position);
 	}
 
 	void DrawHelper::wireDisc(const Vector3& position, const Vector3& normal, float radius, UINT32 quality)
@@ -160,7 +160,7 @@ namespace BansheeEngine
 		discData.quality = quality;
 		discData.color = mColor;
 		discData.transform = mTransform;
-		discData.center = mTransform.multiply3x4(position);
+		discData.center = mTransform.multiplyAffine(position);
 	}
 
 	void DrawHelper::arc(const Vector3& position, const Vector3& normal, float radius, 
@@ -177,7 +177,7 @@ namespace BansheeEngine
 		arcData.quality = quality;
 		arcData.color = mColor;
 		arcData.transform = mTransform;
-		arcData.center = mTransform.multiply3x4(position);
+		arcData.center = mTransform.multiplyAffine(position);
 	}
 
 	void DrawHelper::wireArc(const Vector3& position, const Vector3& normal, float radius, 
@@ -194,7 +194,7 @@ namespace BansheeEngine
 		arcData.quality = quality;
 		arcData.color = mColor;
 		arcData.transform = mTransform;
-		arcData.center = mTransform.multiply3x4(position);
+		arcData.center = mTransform.multiplyAffine(position);
 	}
 
 	void DrawHelper::rectangle(const Rect3& area)
@@ -205,7 +205,7 @@ namespace BansheeEngine
 		rectData.area = area;
 		rectData.color = mColor;
 		rectData.transform = mTransform;
-		rectData.center = mTransform.multiply3x4(area.getCenter());
+		rectData.center = mTransform.multiplyAffine(area.getCenter());
 	}
 
 	void DrawHelper::clear()
@@ -599,8 +599,8 @@ namespace BansheeEngine
 					Matrix4 transformIT = transform->inverseAffine().transpose();
 					for (UINT32 i = 0; i < shapeData.numVertices; i++)
 					{
-						Vector3 worldPos = transform->multiply3x4(positionIter.getValue());
-						Vector3 worldNormal = transformIT.multiply3x4(normalIter.getValue());
+						Vector3 worldPos = transform->multiplyAffine(positionIter.getValue());
+						Vector3 worldNormal = transformIT.multiplyAffine(normalIter.getValue());
 
 						positionIter.addValue(worldPos);
 						normalIter.addValue(worldNormal);
@@ -705,7 +705,7 @@ namespace BansheeEngine
 
 					for (UINT32 i = 0; i < shapeData.numVertices; i++)
 					{
-						Vector3 worldPos = transform->multiply3x4(positionIter.getValue());
+						Vector3 worldPos = transform->multiplyAffine(positionIter.getValue());
 
 						positionIter.addValue(worldPos);
 						colorIter.addValue(color);

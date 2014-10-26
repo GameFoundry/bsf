@@ -111,35 +111,35 @@ namespace BansheeEngine
 		// First corner 
 		// min min min
 		currentCorner = oldMin;
-		merge(matrix.multiply3x4(currentCorner));
+		merge(matrix.multiplyAffine(currentCorner));
 
 		// min,min,max
 		currentCorner.z = oldMax.z;
-		merge(matrix.multiply3x4(currentCorner));
+		merge(matrix.multiplyAffine(currentCorner));
 
 		// min max max
 		currentCorner.y = oldMax.y;
-		merge(matrix.multiply3x4(currentCorner));
+		merge(matrix.multiplyAffine(currentCorner));
 
 		// min max min
 		currentCorner.z = oldMin.z;
-		merge(matrix.multiply3x4(currentCorner));
+		merge(matrix.multiplyAffine(currentCorner));
 
 		// max max min
 		currentCorner.x = oldMax.x;
-		merge(matrix.multiply3x4(currentCorner));
+		merge(matrix.multiplyAffine(currentCorner));
 
 		// max max max
 		currentCorner.z = oldMax.z;
-		merge(matrix.multiply3x4(currentCorner));
+		merge(matrix.multiplyAffine(currentCorner));
 
 		// max min max
 		currentCorner.y = oldMin.y;
-		merge(matrix.multiply3x4(currentCorner));
+		merge(matrix.multiplyAffine(currentCorner));
 
 		// max min min
 		currentCorner.z = oldMin.z;
-		merge(matrix.multiply3x4(currentCorner)); 
+		merge(matrix.multiplyAffine(currentCorner)); 
 	}
 
 	void AABox::transformAffine(const Matrix4& m)
@@ -149,7 +149,7 @@ namespace BansheeEngine
 		Vector3 centre = getCenter();
 		Vector3 halfSize = getHalfSize();
 
-		Vector3 newCentre = m.multiply3x4(centre);
+		Vector3 newCentre = m.multiplyAffine(centre);
 		Vector3 newHalfSize(
 			Math::abs(m[0][0]) * halfSize.x + Math::abs(m[0][1]) * halfSize.y + Math::abs(m[0][2]) * halfSize.z, 
 			Math::abs(m[1][0]) * halfSize.x + Math::abs(m[1][1]) * halfSize.y + Math::abs(m[1][2]) * halfSize.z,

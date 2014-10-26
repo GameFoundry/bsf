@@ -925,7 +925,7 @@ namespace BansheeEngine
 
 			const Matrix4& worldTfrm = _getParentWidget()->SO()->getWorldTfrm();
 
-			Vector4 tfrmdPos = worldTfrm.multiply3x4(Vector4((float)widgetRelPos.x, (float)widgetRelPos.y, 0.0f, 1.0f));
+			Vector4 tfrmdPos = worldTfrm.multiplyAffine(Vector4((float)widgetRelPos.x, (float)widgetRelPos.y, 0.0f, 1.0f));
 			Vector2 windowPosVec(tfrmdPos.x, tfrmdPos.y);
 			Vector2I windowPos(Math::roundToInt(windowPosVec.x), Math::roundToInt(windowPosVec.y));
 
@@ -983,7 +983,7 @@ namespace BansheeEngine
 			const Vector2I& widgetRelPos = event.getPosition();
 			const Matrix4& worldTfrm = _getParentWidget()->SO()->getWorldTfrm();
 
-			Vector4 tfrmdPos = worldTfrm.multiply3x4(Vector4((float)widgetRelPos.x, (float)widgetRelPos.y, 0.0f, 1.0f));
+			Vector4 tfrmdPos = worldTfrm.multiplyAffine(Vector4((float)widgetRelPos.x, (float)widgetRelPos.y, 0.0f, 1.0f));
 			Vector2 windowPosVec(tfrmdPos.x, tfrmdPos.y);
 			Vector2I windowPos(Math::roundToInt(windowPosVec.x), Math::roundToInt(windowPosVec.y));
 
