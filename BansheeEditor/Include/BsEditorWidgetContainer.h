@@ -8,7 +8,7 @@ namespace BansheeEngine
 	class BS_ED_EXPORT EditorWidgetContainer
 	{
 	public:
-		EditorWidgetContainer(GUIWidget* parent, RenderWindow* renderWindow, EditorWindow* parentEditorWindow);
+		EditorWidgetContainer(GUIWidget* parent, EditorWindowBase* parentEditorWindow);
 		virtual ~EditorWidgetContainer();
 
 		void add(EditorWidgetBase& widget);
@@ -23,7 +23,7 @@ namespace BansheeEngine
 		EditorWidgetBase* getWidget(UINT32 idx) const;
 		EditorWidgetBase* getActiveWidget() const;
 		GUIWidget& getParentWidget() const { return *mParent; }
-		EditorWindow* getParentWindow() const { return mParentWindow; }
+		EditorWindowBase* getParentWindow() const { return mParentWindow; }
 
 		Rect2I getContentBounds() const;
 		Vector<Rect2I> getDraggableAreas() const;
@@ -34,7 +34,7 @@ namespace BansheeEngine
 
 		Event<void()> onWidgetClosed;
 	private:
-		EditorWindow* mParentWindow;
+		EditorWindowBase* mParentWindow;
 		GUITabbedTitleBar* mTitleBar;
 		GUIArea* mTitleBarArea;
 		GUIWidget* mParent;

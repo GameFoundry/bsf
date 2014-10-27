@@ -66,7 +66,7 @@ namespace BansheeEngine
 
 	Vector2I EditorWidgetBase::screenToWidgetPos(const Vector2I& screenPos) const
 	{
-		EditorWindow* parentEditorWindow = mParent->getParentWindow();
+		EditorWindowBase* parentEditorWindow = mParent->getParentWindow();
 		RenderWindowPtr parentRenderWindow = parentEditorWindow->_getRenderWindow();
 
 		Vector2I windowPos = parentRenderWindow->screenToWindowPos(screenPos);
@@ -78,7 +78,7 @@ namespace BansheeEngine
 
 	Vector2I EditorWidgetBase::widgetToScreenPos(const Vector2I& widgetPos) const
 	{
-		EditorWindow* parentEditorWindow = mParent->getParentWindow();
+		EditorWindowBase* parentEditorWindow = mParent->getParentWindow();
 		RenderWindowPtr parentRenderWindow = parentEditorWindow->_getRenderWindow();
 
 		Vector2I windowPos = widgetPos;

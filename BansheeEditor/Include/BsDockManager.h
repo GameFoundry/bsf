@@ -22,7 +22,7 @@ namespace BansheeEngine
 			~DockContainer();
 
 			void setArea(INT32 x, INT32 y, UINT32 width, UINT32 height);
-			void makeLeaf(GUIWidget* widgetParent, RenderWindow* parentWindow);
+			void makeLeaf(GUIWidget* widgetParent, EditorWindowBase* parentWindow);
 			void makeLeaf(EditorWidgetContainer* existingContainer);
 			void splitContainer(bool horizontal, bool newChildIsFirst, float splitPosition = 0.5f);
 			void makeSplit(GUIWidget* widgetParent, DockManager::DockContainer* first, DockManager::DockContainer* second, bool horizontal, float splitPosition);
@@ -78,7 +78,7 @@ namespace BansheeEngine
 			None
 		};
 	public:
-		static DockManager* create(RenderWindow* parentWindow);
+		static DockManager* create(EditorWindowBase* parentWindow);
 
 		/**
 		 * @brief	Internal method. Called once every frame.
@@ -101,12 +101,12 @@ namespace BansheeEngine
 		void updateClippedBounds();
 
 	private:
-		DockManager(RenderWindow* parentWindow, const GUILayoutOptions& layoutOptions);
+		DockManager(EditorWindowBase* parentWindow, const GUILayoutOptions& layoutOptions);
 
 		static const Color TINT_COLOR;
 		static const Color HIGHLIGHT_COLOR;
 
-		RenderWindow* mParentWindow;
+		EditorWindowBase* mParentWindow;
 		DockContainer mRootContainer;
 		Rect2I mArea;
 

@@ -8,6 +8,13 @@
 
 namespace BansheeEngine
 {
+	void RenderTextureProperties::copyFrom(const RenderTargetProperties& other)
+	{
+		const RenderTextureProperties& windowProps = static_cast<const RenderTextureProperties&>(other);
+
+		*this = windowProps;
+	}
+
 	RenderTextureCore::RenderTextureCore(RenderTexture* parent, RenderTextureProperties* properties, const RENDER_SURFACE_DESC& colorSurfaceDesc,
 		const RENDER_SURFACE_DESC& depthStencilSurfaceDesc)
 		:RenderTargetCore(parent, properties), mColorSurface(nullptr), mDepthStencilSurface(nullptr)

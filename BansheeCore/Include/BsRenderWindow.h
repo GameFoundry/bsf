@@ -90,6 +90,11 @@ namespace BansheeEngine
 		 */
 		bool isHidden() const { return mHidden; }
 
+		/**
+		 * @copydoc	RenderTargetProperties::copyFrom
+		 */
+		virtual void copyFrom(const RenderTargetProperties& other);
+
 	protected:
 		friend class RenderWindowCore;
 		friend class RenderWindow;

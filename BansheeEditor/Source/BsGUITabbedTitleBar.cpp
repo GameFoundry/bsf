@@ -21,9 +21,9 @@ namespace BansheeEngine
 	const UINT32 GUITabbedTitleBar::TAB_SPACING = 20;
 	const UINT32 GUITabbedTitleBar::OPTION_BTN_SPACING = 3;
 
-	GUITabbedTitleBar::GUITabbedTitleBar(RenderWindow* parentWindow, const String& backgroundStyle, const String& tabBtnStyle, 
+	GUITabbedTitleBar::GUITabbedTitleBar(const String& backgroundStyle, const String& tabBtnStyle, 
 		const String& minBtnStyle, const String& closeBtnStyle, const GUILayoutOptions& layoutOptions)
-		:GUIElementContainer(layoutOptions), mParentWindow(parentWindow), mMinBtn(nullptr), 
+		:GUIElementContainer(layoutOptions), mMinBtn(nullptr), 
 		mCloseBtn(nullptr), mBackgroundImage(nullptr), mUniqueTabIdx(0), mActiveTabIdx(0),
 		mDragInProgress(false), mDraggedBtn(nullptr), mDragBtnOffset(0), mInitialDragOffset(0), mBackgroundStyle(backgroundStyle),
 		mTabBtnStyle(tabBtnStyle), mMinimizeBtnStyle(minBtnStyle), mCloseBtnStyle(closeBtnStyle), mTempDraggedWidget(nullptr),
@@ -60,17 +60,17 @@ namespace BansheeEngine
 
 	}
 
-	GUITabbedTitleBar* GUITabbedTitleBar::create(RenderWindow* parentWindow, const String& backgroundStyle, 
-		const String& tabBtnStyle, const String& minBtnStyle, const String& closeBtnStyle)
+	GUITabbedTitleBar* GUITabbedTitleBar::create(const String& backgroundStyle, const String& tabBtnStyle, 
+		const String& minBtnStyle, const String& closeBtnStyle)
 	{
-		return new (bs_alloc<GUITabbedTitleBar, PoolAlloc>()) GUITabbedTitleBar(parentWindow, backgroundStyle, tabBtnStyle, 
+		return new (bs_alloc<GUITabbedTitleBar, PoolAlloc>()) GUITabbedTitleBar(backgroundStyle, tabBtnStyle, 
 			minBtnStyle, closeBtnStyle, GUILayoutOptions::create());
 	}
 
-	GUITabbedTitleBar* GUITabbedTitleBar::create(RenderWindow* parentWindow, const GUILayoutOptions& layoutOptions, 
-		const String& backgroundStyle, const String& tabBtnStyle, const String& minBtnStyle, const String& closeBtnStyle)
+	GUITabbedTitleBar* GUITabbedTitleBar::create(const GUILayoutOptions& layoutOptions, const String& backgroundStyle, 
+		const String& tabBtnStyle, const String& minBtnStyle, const String& closeBtnStyle)
 	{
-		return new (bs_alloc<GUITabbedTitleBar, PoolAlloc>()) GUITabbedTitleBar(parentWindow, backgroundStyle, tabBtnStyle, 
+		return new (bs_alloc<GUITabbedTitleBar, PoolAlloc>()) GUITabbedTitleBar(backgroundStyle, tabBtnStyle, 
 			minBtnStyle, closeBtnStyle, layoutOptions);
 	}
 

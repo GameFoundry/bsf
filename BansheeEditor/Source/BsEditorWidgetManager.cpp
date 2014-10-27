@@ -152,8 +152,8 @@ namespace BansheeEngine
 
 			entry.widgetNames = GetWidgetNamesInContainer(widgetContainer);
 
-			EditorWindow* parentWindow = widgetContainer->getParentWindow();
-			entry.isDocked = parentWindow == nullptr;
+			EditorWindowBase* parentWindow = widgetContainer->getParentWindow();
+			entry.isDocked = parentWindow->isMain(); // Assumed widget is docked if part of main window
 			
 			if(!entry.isDocked)
 			{
@@ -218,14 +218,7 @@ namespace BansheeEngine
 		{
 			EditorWidgetBase* widget = widgetData.second;
 			EditorWidgetContainer* parentContainer = widget->_getParent();
-			EditorWindow* parentWindow = parentContainer->getParentWindow();
-
-			if (parentWindow == nullptr)
-			{
-				widget->_setHasFocus(false);
-				continue;
-			}
-
+			EditorWindowBase* parentWindow = parentContainer->getParentWindow();
 			RenderWindowPtr parentRenderWindow = parentWindow->_getRenderWindow();
 			const RenderWindowProperties& props = parentRenderWindow->getProperties();
 

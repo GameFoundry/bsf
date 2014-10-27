@@ -6,7 +6,7 @@
 namespace BansheeEngine
 {
 	EditorWindow::EditorWindow()
-		:EditorWindowBase(), mWidgets(bs_new<EditorWidgetContainer>(mGUI.get(), mRenderWindow.get(), this))
+		:EditorWindowBase(), mWidgets(bs_new<EditorWidgetContainer>(mGUI.get(), this))
 	{
 		updateSize();
 		

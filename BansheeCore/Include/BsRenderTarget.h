@@ -103,6 +103,11 @@ namespace BansheeEngine
 		 */
 		bool requiresTextureFlipping() const { return mRequiresTextureFlipping; }
 
+		/**
+		 * @brief	Copies all data from the provided object to this object.
+		 */
+		virtual void copyFrom(const RenderTargetProperties& other);
+
 	protected:
 		friend class RenderTargetCore;
 		friend class RenderTarget;

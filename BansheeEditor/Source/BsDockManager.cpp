@@ -22,6 +22,7 @@
 #include "BsGUISkin.h"
 #include "BsBuiltinResources.h"
 #include "BsDockManagerLayout.h"
+#include "BsEditorWindow.h"
 
 #include "BsGUISkin.h"
 #include "BsGUIButton.h"
@@ -132,10 +133,10 @@ namespace BansheeEngine
 		}
 	}
 
-	void DockManager::DockContainer::makeLeaf(GUIWidget* widgetParent, RenderWindow* parentWindow)
+	void DockManager::DockContainer::makeLeaf(GUIWidget* widgetParent, EditorWindowBase* parentWindow)
 	{
 		mIsLeaf = true;
-		mWidgets = bs_new<EditorWidgetContainer>(widgetParent, parentWindow, nullptr);
+		mWidgets = bs_new<EditorWidgetContainer>(widgetParent, parentWindow);
 
 		mWidgets->onWidgetClosed.connect(std::bind(&DockManager::DockContainer::widgetRemoved, this));
 
@@ -407,9 +408,9 @@ namespace BansheeEngine
 		}
 	}
 
-	DockManager::DockManager(RenderWindow* parentWindow, const GUILayoutOptions& layoutOptions)
-		:GUIElementContainer(layoutOptions), mParentWindow(parentWindow), mMouseOverContainer(nullptr), mHighlightedDropLoc(DockLocation::None),
-		mShowOverlay(false), mRootContainer(this)
+	DockManager::DockManager(EditorWindowBase* parentWindow, const GUILayoutOptions& layoutOptions)
+		:GUIElementContainer(layoutOptions), mMouseOverContainer(nullptr), mHighlightedDropLoc(DockLocation::None),
+		mShowOverlay(false), mRootContainer(this), mParentWindow(parentWindow)
 	{
 		mTopDropPolygon = bs_newN<Vector2>(4);
 		mBotDropPolygon = bs_newN<Vector2>(4);
@@ -431,7 +432,7 @@ namespace BansheeEngine
 		bs_deleteN(mRightDropPolygon, 4);
 	}
 
-	DockManager* DockManager::create(RenderWindow* parentWindow)
+	DockManager* DockManager::create(EditorWindowBase* parentWindow)
 	{
 		return new (bs_alloc<DockManager, PoolAlloc>()) DockManager(parentWindow, GUILayoutOptions::create());
 	}

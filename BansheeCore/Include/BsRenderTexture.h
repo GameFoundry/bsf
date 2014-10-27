@@ -23,6 +23,11 @@ namespace BansheeEngine
 	public:
 		virtual ~RenderTextureProperties() { }
 
+		/**
+		 * @copydoc	RenderTargetProperties::copyFrom
+		 */
+		virtual void copyFrom(const RenderTargetProperties& other);
+
 	private:
 		friend class RenderTextureCore;
 		friend class RenderTexture;

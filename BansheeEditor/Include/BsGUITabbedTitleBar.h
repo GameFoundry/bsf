@@ -12,11 +12,10 @@ namespace BansheeEngine
 	public:
 		static const String& getGUITypeName();
 
-		static GUITabbedTitleBar* create(RenderWindow* parentWindow,
-			const String& backgroundStyle = StringUtil::BLANK, const String& tabBtnStyle = StringUtil::BLANK, 
+		static GUITabbedTitleBar* create(const String& backgroundStyle = StringUtil::BLANK, const String& tabBtnStyle = StringUtil::BLANK, 
 			const String& minBtnStyle = StringUtil::BLANK, const String& closeBtnStyle = StringUtil::BLANK);
 
-		static GUITabbedTitleBar* create(RenderWindow* parentWindow, const GUILayoutOptions& layoutOptions, 
+		static GUITabbedTitleBar* create(const GUILayoutOptions& layoutOptions, 
 			const String& backgroundStyle = StringUtil::BLANK, const String& tabBtnStyle = StringUtil::BLANK, 
 			const String& minBtnStyle = StringUtil::BLANK, const String& closeBtnStyle = StringUtil::BLANK);
 
@@ -53,7 +52,6 @@ namespace BansheeEngine
 		GUIButton* mMinBtn;
 		GUIButton* mCloseBtn;
 		GUIToggleGroupPtr mTabToggleGroup;
-		RenderWindow* mParentWindow;
 
 		EditorWidgetBase* mTempDraggedWidget;
 		UINT32 mTempDraggedTabIdx;
@@ -68,7 +66,7 @@ namespace BansheeEngine
 		String mMinimizeBtnStyle;
 		String mTabBtnStyle;
 
-		GUITabbedTitleBar(RenderWindow* parentWindow, const String& backgroundStyle, const String& tabBtnStyle, 
+		GUITabbedTitleBar(const String& backgroundStyle, const String& tabBtnStyle, 
 			const String& minBtnStyle, const String& closeBtnStyle, const GUILayoutOptions& layoutOptions);
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);

@@ -23,6 +23,11 @@ namespace BansheeEngine
 		void hide();
 
 		/**
+		 * @brief	Return true if this is the main editor window.
+		 */
+		virtual bool isMain() const { return false; }
+
+		/**
 		 * @brief	Called once every frame. Internal method.
 		 */
 		virtual void update() { }

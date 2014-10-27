@@ -12,6 +12,11 @@ namespace BansheeEngine
 
 		void update();
 
+		/**
+		 * @copydoc	EditorWindowBase::isMain
+		 */
+		virtual bool isMain() const { return true; }
+
 		DockManager& getDockManager() const { return *mDockManager; }
 
 		static MainEditorWindow* create(const RenderWindowPtr& renderWindow);

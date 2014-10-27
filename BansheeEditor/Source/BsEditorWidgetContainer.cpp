@@ -16,13 +16,13 @@ namespace BansheeEngine
 {
 	const UINT32 EditorWidgetContainer::TitleBarHeight = 13;
 
-	EditorWidgetContainer::EditorWidgetContainer(GUIWidget* parent, RenderWindow* renderWindow, EditorWindow* parentEditorWindow)
+	EditorWidgetContainer::EditorWidgetContainer(GUIWidget* parent, EditorWindowBase* parentEditorWindow)
 		:mParent(parent), mX(0), mY(0), mWidth(0), mHeight(0), mTitleBar(nullptr), mActiveWidget(-1),
 		mTitleBarArea(nullptr), mParentWindow(parentEditorWindow)
 	{
 		mTitleBarArea = GUIArea::create(*parent, 0, 0, 0, 0, 9900);
 
-		mTitleBar = GUITabbedTitleBar::create(renderWindow);
+		mTitleBar = GUITabbedTitleBar::create();
 		mTitleBar->onTabActivated.connect(std::bind(&EditorWidgetContainer::tabActivated, this, _1));
 		mTitleBar->onTabClosed.connect(std::bind(&EditorWidgetContainer::tabClosed, this, _1));
 		mTitleBar->onTabDraggedOff.connect(std::bind(&EditorWidgetContainer::tabDraggedOff, this, _1));

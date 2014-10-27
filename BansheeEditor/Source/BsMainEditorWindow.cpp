@@ -33,7 +33,7 @@ namespace BansheeEngine
 		:EditorWindowBase(renderWindow), mDockManager(nullptr), 
 		mMenuBar(bs_new<GUIMenuBar>(mGUI.get(), mRenderWindow.get()))
 	{
-		mDockManager = DockManager::create(mRenderWindow.get());
+		mDockManager = DockManager::create(this);
 
 		GUIArea* dockArea = GUIArea::createStretchedXY(*mGUI.get(), 0, 0, 0, 0);
 		dockArea->getLayout().addElement(mDockManager);

@@ -1,6 +1,8 @@
 #include "BsRenderTargetManager.h"
 #include "BsRenderTarget.h"
 
+#include "BsRenderWindow.h"
+
 namespace BansheeEngine
 {
 	RenderTargetManager::~RenderTargetManager()
@@ -44,7 +46,7 @@ namespace BansheeEngine
 
 			if (rt->getCore()->_isCoreDirty())
 			{
-				*rtData.properties = rt->getCore()->getProperties();
+				rtData.properties->copyFrom(rt->getCore()->getProperties());
 				rtData.dirty = true;
 
 				rt->getCore()->_markCoreClean();
@@ -63,7 +65,7 @@ namespace BansheeEngine
 
 			if (rtData.dirty)
 			{
-				*rt->mProperties = *rtData.properties;
+				rt->mProperties->copyFrom(*rtData.properties);
 
 				rtData.dirty = false;
 			}

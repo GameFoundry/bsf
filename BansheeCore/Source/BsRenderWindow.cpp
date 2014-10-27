@@ -6,6 +6,13 @@
 
 namespace BansheeEngine 
 {
+	void RenderWindowProperties::copyFrom(const RenderTargetProperties& other)
+	{
+		const RenderWindowProperties& windowProps = static_cast<const RenderWindowProperties&>(other);
+
+		*this = windowProps;
+	}
+
 	RenderWindowCore::RenderWindowCore(RenderWindow* parent, RenderWindowProperties* properties)
 		:RenderTargetCore(parent, properties)
 	{

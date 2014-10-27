@@ -7,6 +7,11 @@
 
 namespace BansheeEngine 
 {
+	void RenderTargetProperties::copyFrom(const RenderTargetProperties& other)
+	{
+		*this = other;
+	}
+
 	RenderTargetCore::RenderTargetCore(RenderTarget* parent, RenderTargetProperties* properties)
 		:mProperties(properties), mParent(parent)
 	{
