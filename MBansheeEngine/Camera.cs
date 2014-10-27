@@ -74,13 +74,13 @@ namespace BansheeEngine
             set { Internal_SetClearColor(mCachedPtr, value); }
         }
 
-        public int clearDepth
+        public float clearDepth
         {
             get { return Internal_GetDepthClearValue(mCachedPtr); }
             set { Internal_SetDepthClearValue(mCachedPtr, value); }
         }
 
-        public byte clearStencil
+        public UInt16 clearStencil
         {
             get { return Internal_GetStencilClearValue(mCachedPtr); }
             set { Internal_SetStencilClearValue(mCachedPtr, value); }
@@ -200,9 +200,9 @@ namespace BansheeEngine
         private static extern void Internal_SetClearColor(IntPtr instance, Color value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern int Internal_GetDepthClearValue(IntPtr instance);
+        private static extern float Internal_GetDepthClearValue(IntPtr instance);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetDepthClearValue(IntPtr instance, int value);
+        private static extern void Internal_SetDepthClearValue(IntPtr instance, float value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern UInt16 Internal_GetStencilClearValue(IntPtr instance);

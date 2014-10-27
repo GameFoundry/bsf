@@ -47,8 +47,8 @@ namespace BansheeEngine
 		static Color internal_GetClearColor(ScriptCamera* instance);
 		static void internal_SetClearColor(ScriptCamera* instance, Color value);
 
-		static int internal_GetDepthClearValue(ScriptCamera* instance);
-		static void internal_SetDepthClearValue(ScriptCamera* instance, int value);
+		static float internal_GetDepthClearValue(ScriptCamera* instance);
+		static void internal_SetDepthClearValue(ScriptCamera* instance, float value);
 
 		static UINT16 internal_GetStencilClearValue(ScriptCamera* instance);
 		static void internal_SetStencilClearValue(ScriptCamera* instance, UINT16 value);

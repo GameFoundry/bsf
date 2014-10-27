@@ -184,12 +184,12 @@ namespace BansheeEngine
 		vp->setClearValues(value, vp->getClearDepthValue(), vp->getClearStencilValue());
 	}
 
-	int ScriptCamera::internal_GetDepthClearValue(ScriptCamera* instance)
+	float ScriptCamera::internal_GetDepthClearValue(ScriptCamera* instance)
 	{
 		return instance->mCameraHandler->getViewport()->getClearDepthValue();
 	}
 
-	void ScriptCamera::internal_SetDepthClearValue(ScriptCamera* instance, int value)
+	void ScriptCamera::internal_SetDepthClearValue(ScriptCamera* instance, float value)
 	{
 		ViewportPtr vp = instance->mCameraHandler->getViewport();
 		vp->setClearValues(vp->getClearColor(), value, vp->getClearStencilValue());

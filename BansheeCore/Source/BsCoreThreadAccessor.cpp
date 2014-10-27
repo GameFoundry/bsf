@@ -35,10 +35,10 @@ namespace BansheeEngine
 	}
 
 	void CoreThreadAccessorBase::setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr& texPtr,
-		UINT32 mipLevel, UINT32 arraySlice, UINT32 numSlices)
+		const TextureSurface& surface)
 	{
 		mCommandQueue->queue(std::bind(&RenderSystem::setLoadStoreTexture, RenderSystem::instancePtr(), gptype, unit, enabled, texPtr, 
-			mipLevel, arraySlice, numSlices));
+			surface));
 	}
 
 	void CoreThreadAccessorBase::setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SamplerStatePtr& samplerState)

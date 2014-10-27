@@ -28,7 +28,7 @@ namespace BansheeEngine
 
 		/** @copydoc RenderSystem::setLoadStoreTexture() */
 		void setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr& texPtr,
-			UINT32 mipLevel = 0, UINT32 arraySlice = 0, UINT32 numSlices = 1);
+			const TextureSurface& surface);
 
 		/** @copydoc RenderSystem::setSamplerState() */
 		void setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SamplerStatePtr& samplerState);

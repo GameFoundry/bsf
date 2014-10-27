@@ -24,13 +24,6 @@ namespace BansheeEngine
 		ID3D11ShaderResourceView* getSRV() const { return mShaderResourceView; }
 
 		/**
-		 * @brief	Returns unordered access view associated with the texture.
-		 *
-		 * @note	Used for random read/write operations from GPU programs.
-		 */
-		ID3D11UnorderedAccessView* getUAV() const { return mUnorderedAccessView; }
-
-		/**
 		 * @brief	Returns DXGI pixel format used by the texture.
 		 */
 		DXGI_FORMAT getDXGIFormat() const { return mDXGIFormat; }

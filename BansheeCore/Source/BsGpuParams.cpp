@@ -373,7 +373,7 @@ namespace BansheeEngine
 		paramBlockBufferOffset = paramBlockOffset + paramBlockBufferSize;
 		textureOffset = paramBlockBufferOffset + paramBlockBuffersBufferSize;
 		samplerStateOffset = textureOffset + textureBufferSize;
-		textureInfoOffset = samplerStateOffset + textureInfoBufferSize;
+		textureInfoOffset = samplerStateOffset + samplerStateBufferSize;
 
 		if (frameAlloc != nullptr)
 		{

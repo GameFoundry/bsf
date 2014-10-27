@@ -70,12 +70,10 @@ namespace BansheeEngine
 		desc.colorSurface.texture = texture;
 		desc.colorSurface.face = 0;
 		desc.colorSurface.mipLevel = 0;
-		desc.colorSurface.numFaces = 1;
 
 		desc.depthStencilSurface.texture = depthStencil;
 		desc.depthStencilSurface.face = 0;
 		desc.depthStencilSurface.mipLevel = 0;
-		desc.depthStencilSurface.numFaces = 1;
 
 		RenderTexturePtr newRT = createRenderTexture(desc);
 

@@ -483,33 +483,6 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumTextureBinds);
 	}
 
-	void GLRenderSystem::setSamplerState(GpuProgramType gptype, UINT16 unit, const SamplerStatePtr& state)
-	{
-		THROW_IF_NOT_CORE_THREAD;
-
-		unit = getGLTextureUnit(gptype, unit);
-
-		// Set texture layer filtering
-		setTextureFiltering(unit, FT_MIN, state->getTextureFiltering(FT_MIN));
-		setTextureFiltering(unit, FT_MAG, state->getTextureFiltering(FT_MAG));
-		setTextureFiltering(unit, FT_MIP, state->getTextureFiltering(FT_MIP));
-
-		// Set texture anisotropy
-		setTextureAnisotropy(unit, state->getTextureAnisotropy());
-
-		// Set mipmap biasing
-		setTextureMipmapBias(unit, state->getTextureMipmapBias());
-
-		// Texture addressing mode
-		const UVWAddressingMode& uvw = state->getTextureAddressingMode();
-		setTextureAddressingMode(unit, uvw);
-
-		// Set border color
-		setTextureBorderColor(unit, state->getBorderColor());
-
-		BS_INC_RENDER_STAT(NumSamplerBinds);
-	}
-
 	void GLRenderSystem::setBlendState(const BlendStatePtr& blendState)
 	{
 		THROW_IF_NOT_CORE_THREAD;
