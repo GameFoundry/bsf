@@ -75,6 +75,9 @@ Reminders:
     whenever anything in the folder changes. But is that necessary if I can have asset post- and pre- processor that can filter by folder programatically?
   - Add option to optimize mesh for post-transform cache (triangles sharing vertices are sequential) on import (also pre-transform as well, order vertices by their first reference in IB, and so on)
   - It would be nice to have automated creation of glue code between C# and C++ instead of writing all of these Script classes
+  - Think about removing C# GUIPanel. If I replace current EditorWidget's GUIArea with GUIWidget then panels aren't needed as those widgets can just
+    use areas directly. This means that the EditorWidgetContainer will also have a GUIWidget but it will be separate.
+	 - When doing this also consider refactoring how GUIArea anchoring works (currently it's limited and have ugly interface)
 
 Potential optimizations:
  - bulkPixelConversion is EXTREMELY poorly unoptimized. Each pixel it calls a separate method that does redudant operations every pixel.

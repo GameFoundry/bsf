@@ -11,7 +11,8 @@ namespace BansheeEngine
 		~HandleSliderManager();
 
 		void update(const HCamera& camera);
-		void handleInput(const HCamera& camera, const Vector2I& inputPos, const Ray& inputRay, bool pressed);
+		bool hasHitSlider(const HCamera& camera, const Vector2I& inputPos) const;
+		void handleInput(const HCamera& camera, const Vector2I& inputPos, bool pressed);
 		bool isSliderActive() const;
 
 		void _registerSlider(HandleSlider* slider);

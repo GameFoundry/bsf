@@ -25,29 +25,22 @@ namespace BansheeEngine
 		return mSliderManager->isSliderActive();
 	}
 
-	void HandleManager::update()
+	void HandleManager::update(const HCamera& camera)
 	{
-		SceneEditorWidget* sceneView = SceneViewLocator::instance();
-		if (sceneView != nullptr)
-		{
-			HCamera sceneCamera = sceneView->getSceneCamera();
-
-			queueDrawCommands();
-			mDrawManager->draw(sceneCamera);
-		}
+		queueDrawCommands();
+		mDrawManager->draw(camera);
 	}
 
-	void HandleManager::handleInput(const Vector2I& inputPos, const Ray& inputRay, bool pressed)
+	bool HandleManager::hasHitHandle(const HCamera& camera, const Vector2I& inputPos) const
 	{
-		SceneEditorWidget* sceneView = SceneViewLocator::instance();
-		if (sceneView != nullptr)
-		{
-			HCamera sceneCamera = sceneView->getSceneCamera();
+		return mSliderManager->hasHitSlider(camera, inputPos);
+	}
 
-			refreshHandles();
-			mSliderManager->handleInput(sceneCamera, inputPos, inputRay, pressed);
-			triggerHandles();
-		}
+	void HandleManager::handleInput(const HCamera& camera, const Vector2I& inputPos, bool pressed)
+	{
+		refreshHandles();
+		mSliderManager->handleInput(camera, inputPos, pressed);
+		triggerHandles();
 	}
 
 	float HandleManager::getHandleSize(const HCamera& camera, const Vector3& handlePos) const

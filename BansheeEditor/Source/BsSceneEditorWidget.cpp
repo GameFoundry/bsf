@@ -84,7 +84,7 @@ namespace BansheeEngine
 		handleManager.setMoveHandleSnapAmount(projSettings->getMoveHandleSnap());
 		handleManager.setRotateHandleSnapAmount(projSettings->getRotationHandleSnap());
 		handleManager.setScaleHandleSnapAmount(projSettings->getScaleHandleSnap());
-		handleManager.update();
+		handleManager.update(mCamera);
 
 		mSceneGrid->setSize(projSettings->getGridSize());
 		mSceneGrid->setSpacing(projSettings->getGridSpacing());
@@ -130,9 +130,7 @@ namespace BansheeEngine
 		if (!toSceneViewPos(event.screenPos, scenePos))
 			return;
 
-		Ray inputRay = mCamera->screenPointToRay(scenePos);
-
-		HandleManager::instance().handleInput(scenePos, inputRay, mLeftButtonPressed);
+		HandleManager::instance().handleInput(mCamera, scenePos, mLeftButtonPressed);
 	}
 
 	void SceneEditorWidget::onPointerReleased(const PointerEvent& event)
@@ -145,9 +143,7 @@ namespace BansheeEngine
 			return;
 
 		mLeftButtonPressed = false;
-		Ray inputRay = mCamera->screenPointToRay(scenePos);
-
-		HandleManager::instance().handleInput(scenePos, inputRay, mLeftButtonPressed);
+		HandleManager::instance().handleInput(mCamera, scenePos, mLeftButtonPressed);
 	}
 
 	void SceneEditorWidget::onPointerPressed(const PointerEvent& event)
@@ -160,12 +156,9 @@ namespace BansheeEngine
 			return;
 
 		mLeftButtonPressed = true;
-		Ray inputRay = mCamera->screenPointToRay(scenePos);
-
-		HandleManager::instance().handleInput(scenePos, inputRay, mLeftButtonPressed);
 
 		// If we didn't hit a handle, perform normal selection
-		if (!HandleManager::instance().isHandleActive())
+		if (!HandleManager::instance().hasHitHandle(mCamera, scenePos))
 		{
 			// TODO - Handle multi-selection (i.e. selection rectangle when dragging)
 			HSceneObject pickedObject = ScenePicking::instance().pickClosestObject(mCamera, scenePos, Vector2I(1, 1));
@@ -195,6 +188,10 @@ namespace BansheeEngine
 			else
 				Selection::instance().clearSceneSelection();
 		}
+
+		// This also causes handles to be created/removed, so perform this only after
+		// selection has been updated, otherwise we lag back a frame
+		HandleManager::instance().handleInput(mCamera, scenePos, mLeftButtonPressed);
 	}
 
 	void SceneEditorWidget::doOnResized(UINT32 width, UINT32 height)

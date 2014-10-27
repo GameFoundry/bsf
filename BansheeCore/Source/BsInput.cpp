@@ -82,8 +82,6 @@ namespace BansheeEngine
 		}
 		else
 			mOSInputHandler->_update();
-
-		// TODO - Perform smoothing
 	}
 
 	void Input::inputWindowChanged(RenderWindow& win)
