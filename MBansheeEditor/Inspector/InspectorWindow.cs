@@ -117,7 +117,7 @@ namespace BansheeEditor
                 if (!inspectorData[i].expanded)
                     inspectorHeight = 0;
 
-                inspectorData[i].inspector.SetArea(0, curPosition, width, inspectorHeight);
+                inspectorData[i].inspector.SetArea(0, curPosition, Width, inspectorHeight);
                 inspectorData[i].container.SetLayoutOptions(GUIOption.FixedHeight(inspectorHeight));
                 curPosition += inspectorHeight;
             } 

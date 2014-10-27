@@ -68,8 +68,25 @@ namespace BansheeEngine
 		static void preRegisterWidget(const String& name, std::function<EditorWidgetBase*(EditorWidgetContainer&)> createCallback);
 
 	private:
+		/**
+		 * @brief	Called whenever a pointer (e.g. mouse cursor) is moved.
+		 */
+		void onPointerMoved(const PointerEvent& event);
+
+		/**
+		 * @brief	Called whenever a pointer button (e.g. mouse button) is released.
+		 */
+		void onPointerReleased(const PointerEvent& event);
+
+		/**
+		 * @brief	Called whenever a pointer button (e.g. mouse button) is pressed.
+		 */
+		void onPointerPressed(const PointerEvent& event);
+
 		Map<String, EditorWidgetBase*> mActiveWidgets;
 		Map<String, std::function<EditorWidgetBase*(EditorWidgetContainer&)>> mCreateCallbacks;
+
+		HEvent mOnPointerPressedConn;
 
 		static Stack<std::pair<String, std::function<EditorWidgetBase*(EditorWidgetContainer&)>>> QueuedCreateCallbacks;
 	};

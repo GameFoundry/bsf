@@ -8,11 +8,13 @@
 #include "BsGUIArea.h"
 #include "BsEditorWidgetContainer.h"
 #include "BsEditorWidgetManager.h"
+#include "BsEditorWindow.h"
+#include "BsRenderWindow.h"
 
 namespace BansheeEngine
 {
 	EditorWidgetBase::EditorWidgetBase(const HString& displayName, const String& name, EditorWidgetContainer& parentContainer)
-		:mDisplayName(displayName), mName(name), mParent(nullptr), mContent(nullptr), mX(0), mY(0), mWidth(0), mHeight(0)
+		:mDisplayName(displayName), mName(name), mParent(nullptr), mContent(nullptr), mX(0), mY(0), mWidth(0), mHeight(0), mHasFocus(false)
 	{
 		parentContainer.add(*this);
 	}
@@ -60,6 +62,30 @@ namespace BansheeEngine
 			mContent->setSize(width, height);
 
 		doOnResized(width, height);
+	}
+
+	Vector2I EditorWidgetBase::screenToWidgetPos(const Vector2I& screenPos) const
+	{
+		EditorWindow* parentEditorWindow = mParent->getParentWindow();
+		RenderWindowPtr parentRenderWindow = parentEditorWindow->_getRenderWindow();
+
+		Vector2I windowPos = parentRenderWindow->screenToWindowPos(screenPos);
+		windowPos.x -= mX;
+		windowPos.y -= mY;
+
+		return windowPos;
+	}
+
+	Vector2I EditorWidgetBase::widgetToScreenPos(const Vector2I& widgetPos) const
+	{
+		EditorWindow* parentEditorWindow = mParent->getParentWindow();
+		RenderWindowPtr parentRenderWindow = parentEditorWindow->_getRenderWindow();
+
+		Vector2I windowPos = widgetPos;
+		windowPos.x += mX;
+		windowPos.y += mY;
+
+		return parentRenderWindow->windowToScreenPos(windowPos);
 	}
 
 	void EditorWidgetBase::doOnMoved(INT32 x, INT32 y)

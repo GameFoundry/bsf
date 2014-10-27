@@ -2,6 +2,8 @@
  GIZMO TODO:
   - Make a C# wrapper for Camera and Renderable
 
+The bounds I retrieve from GUIUtility are relative to the entire window, not just the current widget. Another reason to move editor widgets to their own GUIWidget.
+
 Set up Application::getPrimaryViewport so it returns a valid viewport otherwise C# Camera won't work properly
 
 REFACTOR material getParams* and related classes. Those params should update all gpu program params that share that variable, not just the first found

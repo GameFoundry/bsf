@@ -135,6 +135,19 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
+	EditorWidgetBase* EditorWidgetContainer::getActiveWidget() const
+	{
+		if (mActiveWidget >= 0)
+		{
+			auto iterFind = mWidgets.find(mActiveWidget);
+
+			if (iterFind != mWidgets.end())
+				return iterFind->second;
+		}
+
+		return nullptr;
+	}
+
 	void EditorWidgetContainer::setSize(UINT32 width, UINT32 height)
 	{
 		// TODO - Title bar is always TitleBarHeight size, so what happens when the container area is smaller than that?

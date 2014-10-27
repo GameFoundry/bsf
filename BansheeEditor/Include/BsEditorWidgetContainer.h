@@ -21,6 +21,7 @@ namespace BansheeEngine
 
 		UINT32 getNumWidgets() const { return (UINT32)mWidgets.size(); }
 		EditorWidgetBase* getWidget(UINT32 idx) const;
+		EditorWidgetBase* getActiveWidget() const;
 		GUIWidget& getParentWidget() const { return *mParent; }
 		EditorWindow* getParentWindow() const { return mParentWindow; }
 

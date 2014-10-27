@@ -6,8 +6,9 @@ namespace BansheeEditor
 {
     public class EditorWindow : ScriptObject
     {
-        internal int width { get { return Internal_GetWidth(mCachedPtr); } }
-        internal int height { get { return Internal_GetHeight(mCachedPtr); } }
+        public int Width { get { return Internal_GetWidth(mCachedPtr); } }
+        public int Height { get { return Internal_GetHeight(mCachedPtr); } }
+        public bool HasFocus { get { return Internal_HasFocus(mCachedPtr); } }
 
         protected GUIPanel GUI;
 
@@ -16,9 +17,19 @@ namespace BansheeEditor
             return (T)Internal_CreateOrGetInstance(typeof(T).Namespace, typeof(T).Name);
         }
 
+        public Vector2I ScreenToWindowPos(Vector2I screenPos)
+        {
+            return Internal_ScreenToWindowPos(mCachedPtr, screenPos);
+        }
+
+        public Vector2I WindowToScreenPos(Vector2I screenPos)
+        {
+            return Internal_WindowToScreenPos(mCachedPtr, screenPos);
+        }
+
         protected EditorWindow()
         {
-            GUI = CreatePanel(0, 0, width, height);
+            GUI = CreatePanel(0, 0, Width, Height);
         }
 
         protected virtual void WindowResized(int width, int height)
@@ -47,5 +58,14 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern int Internal_GetHeight(IntPtr nativeInstance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_HasFocus(IntPtr nativeInstance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern Vector2I Internal_ScreenToWindowPos(IntPtr nativeInstance, Vector2I position);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern Vector2I Internal_WindowToScreenPos(IntPtr nativeInstance, Vector2I position);
     }
 }

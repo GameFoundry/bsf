@@ -16,11 +16,16 @@ namespace BansheeEngine
 		INT32 getY() const { return mY; }
 		UINT32 getWidth() const { return mWidth; }
 		UINT32 getHeight() const { return mHeight; }
+		bool hasFocus() const { return mHasFocus; }
 
 		void _setSize(UINT32 width, UINT32 height);
 		void _setPosition(INT32 x, INT32 y);
 		void _changeParent(EditorWidgetContainer* parent);
+		void _setHasFocus(bool focus) { mHasFocus = focus; }
 		EditorWidgetContainer* _getParent() const { return mParent; }
+
+		Vector2I screenToWidgetPos(const Vector2I& screenPos) const;
+		Vector2I widgetToScreenPos(const Vector2I& widgetPos) const;
 
 		void _disable();
 		void _enable();
@@ -48,6 +53,7 @@ namespace BansheeEngine
 		INT32 mX, mY;
 		UINT32 mWidth, mHeight;
 		GUIArea* mContent;
+		bool mHasFocus;
 
 		GUIWidget& getParentWidget() const;
 

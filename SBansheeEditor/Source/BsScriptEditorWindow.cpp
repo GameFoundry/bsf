@@ -40,6 +40,9 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_InitializeGUIPanel", &ScriptEditorWindow::internal_initializeGUIPanel);
 		metaData.scriptClass->addInternalCall("Internal_GetWidth", &ScriptEditorWindow::internal_getWidth);
 		metaData.scriptClass->addInternalCall("Internal_GetHeight", &ScriptEditorWindow::internal_getHeight);
+		metaData.scriptClass->addInternalCall("Internal_HasFocus", &ScriptEditorWindow::internal_hasFocus);
+		metaData.scriptClass->addInternalCall("Internal_ScreenToWindowPos", &ScriptEditorWindow::internal_screenToWindowPos);
+		metaData.scriptClass->addInternalCall("Internal_WindowToScreenPos", &ScriptEditorWindow::internal_windowToScreenPos);
 
 		onResizedMethod = metaData.scriptClass->getMethod("WindowResized", 2);
 	}
@@ -68,6 +71,21 @@ namespace BansheeEngine
 		unregisterScriptEditorWindow(mName);
 
 		ScriptObject::_onManagedInstanceDeleted();
+	}
+
+	bool ScriptEditorWindow::internal_hasFocus(ScriptEditorWindow* thisPtr)
+	{
+		return thisPtr->getEditorWidget()->hasFocus();
+	}
+
+	Vector2I ScriptEditorWindow::internal_screenToWindowPos(ScriptEditorWindow* thisPtr, const Vector2I& screenPos)
+	{
+		return thisPtr->getEditorWidget()->screenToWidgetPos(screenPos);
+	}
+
+	Vector2I ScriptEditorWindow::internal_windowToScreenPos(ScriptEditorWindow* thisPtr, const Vector2I& windowPos)
+	{
+		return thisPtr->getEditorWidget()->widgetToScreenPos(windowPos);
 	}
 
 	UINT32 ScriptEditorWindow::internal_getWidth(ScriptEditorWindow* thisPtr)

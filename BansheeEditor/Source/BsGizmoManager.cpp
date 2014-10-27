@@ -263,7 +263,6 @@ namespace BansheeEngine
 					if (wireMeshProxy == nullptr)
 						wireMeshProxy = meshData.mesh->_createProxy(0);
 				}
-
 			}
 
 			// Since there is no sorting used with draw helper meshes we only expect up to two of them,

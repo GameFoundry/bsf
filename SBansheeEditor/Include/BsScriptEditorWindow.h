@@ -3,6 +3,7 @@
 #include "BsScriptEditorPrerequisites.h"
 #include "BsScriptObject.h"
 #include "BsEditorWidget.h"
+#include "BsVector2I.h"
 
 namespace BansheeEngine
 {
@@ -30,6 +31,9 @@ namespace BansheeEngine
 
 		static MonoObject* internal_createOrGetInstance(MonoString* ns, MonoString* typeName);
 
+		static bool internal_hasFocus(ScriptEditorWindow* thisPtr);
+		static Vector2I internal_screenToWindowPos(ScriptEditorWindow* thisPtr, const Vector2I& screenPos);
+		static Vector2I internal_windowToScreenPos(ScriptEditorWindow* thisPtr, const Vector2I& windowPos);
 		static UINT32 internal_getWidth(ScriptEditorWindow* thisPtr);
 		static UINT32 internal_getHeight(ScriptEditorWindow* thisPtr);
 

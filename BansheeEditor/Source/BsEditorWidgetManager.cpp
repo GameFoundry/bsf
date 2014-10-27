@@ -7,6 +7,11 @@
 #include "BsEditorWidgetLayout.h"
 #include "BsDockManager.h"
 #include "BsException.h"
+#include "BsInput.h"
+#include "BsRenderWindow.h"
+#include "BsVector2I.h"
+
+using namespace std::placeholders;
 
 namespace BansheeEngine
 {
@@ -21,10 +26,14 @@ namespace BansheeEngine
 
 			registerWidget(curElement.first, curElement.second);
 		}
+
+		mOnPointerPressedConn = gInput().onPointerPressed.connect(std::bind(&EditorWidgetManager::onPointerPressed, this, _1));
 	}
 
 	EditorWidgetManager::~EditorWidgetManager()
 	{
+		mOnPointerPressedConn.disconnect();
+
 		Map<String, EditorWidgetBase*> widgetsCopy = mActiveWidgets;
 
 		for (auto& widget : widgetsCopy)
@@ -200,6 +209,47 @@ namespace BansheeEngine
 		{
 			if(widget->_getParent() == nullptr)
 				widget->close();
+		}
+	}
+
+	void EditorWidgetManager::onPointerPressed(const PointerEvent& event)
+	{
+		for (auto& widgetData : mActiveWidgets)
+		{
+			EditorWidgetBase* widget = widgetData.second;
+			EditorWidgetContainer* parentContainer = widget->_getParent();
+			EditorWindow* parentWindow = parentContainer->getParentWindow();
+
+			if (parentWindow == nullptr)
+			{
+				widget->_setHasFocus(false);
+				continue;
+			}
+
+			RenderWindowPtr parentRenderWindow = parentWindow->_getRenderWindow();
+			const RenderWindowProperties& props = parentRenderWindow->getProperties();
+
+			if (!props.hasFocus())
+			{
+				widget->_setHasFocus(false);
+				continue;
+			}
+
+			if (parentContainer->getActiveWidget() != widget)
+			{
+				widget->_setHasFocus(false);
+				continue;
+			}
+
+			Vector2I widgetPos = widget->screenToWidgetPos(event.screenPos);
+			if (widgetPos.x >= 0 && widgetPos.y >= 0 
+				&& widgetPos.x < (INT32)widget->getWidth() 
+				&& widgetPos.y < (INT32)widget->getHeight())
+			{
+				widget->_setHasFocus(true);
+			}
+			else
+				widget->_setHasFocus(false);
 		}
 	}
 
