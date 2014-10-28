@@ -45,6 +45,9 @@ namespace BansheeEngine
 
 	void GpuParamStruct::set(const void* value, UINT32 sizeBytes, UINT32 arrayIdx)
 	{
+		if (mInternalData == nullptr)
+			return;
+
 		if (mInternalData->mIsDestroyed)
 			BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
 
@@ -81,6 +84,9 @@ namespace BansheeEngine
 
 	void GpuParamStruct::get(void* value, UINT32 sizeBytes, UINT32 arrayIdx)
 	{
+		if (mInternalData == nullptr)
+			return;
+
 		if (mInternalData->mIsDestroyed)
 			BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
 
@@ -107,6 +113,9 @@ namespace BansheeEngine
 
 	UINT32 GpuParamStruct::getElementSize() const
 	{
+		if (mInternalData == nullptr)
+			return 0;
+
 		if(mInternalData->mIsDestroyed)
 			BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
 
@@ -127,6 +136,9 @@ namespace BansheeEngine
 
 	void GpuParamTexture::set(const HTexture& texture)
 	{
+		if (mInternalData == nullptr)
+			return;
+
 		if (mInternalData->mIsDestroyed)
 			BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
 
@@ -137,6 +149,9 @@ namespace BansheeEngine
 
 	HTexture GpuParamTexture::get()
 	{
+		if (mInternalData == nullptr)
+			return HTexture();
+
 		if (mInternalData->mIsDestroyed)
 			BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
 
@@ -157,6 +172,9 @@ namespace BansheeEngine
 
 	void GpuParamLoadStoreTexture::set(const HTexture& texture, const TextureSurface& surface)
 	{
+		if (mInternalData == nullptr)
+			return;
+
 		if (mInternalData->mIsDestroyed)
 			BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
 
@@ -168,6 +186,9 @@ namespace BansheeEngine
 
 	HTexture GpuParamLoadStoreTexture::get()
 	{
+		if (mInternalData == nullptr)
+			return HTexture();
+
 		if (mInternalData->mIsDestroyed)
 			BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
 
@@ -188,6 +209,9 @@ namespace BansheeEngine
 
 	void GpuParamSampState::set(const HSamplerState& samplerState)
 	{
+		if (mInternalData == nullptr)
+			return;
+
 		if (mInternalData->mIsDestroyed)
 			BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
 
@@ -197,6 +221,9 @@ namespace BansheeEngine
 
 	HSamplerState GpuParamSampState::get()
 	{
+		if (mInternalData == nullptr)
+			return HSamplerState();
+
 		if (mInternalData->mIsDestroyed)
 			BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
 

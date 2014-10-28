@@ -138,9 +138,12 @@ namespace BansheeEngine
 			auto iterFind = mParamDesc->params.find(name);
 
 			if (iterFind == mParamDesc->params.end() || iterFind->second.type != GPDT_FLOAT1)
-				BS_EXCEPT(InvalidParametersException, "Cannot find float parameter with the name '" + name + "'");
-
-			output = GpuParamFloat(&iterFind->second, mInternalData);
+			{
+				output = GpuParamFloat(&iterFind->second, nullptr);
+				LOGWRN("Cannot find float parameter with the name '" + name + "'");
+			}
+			else
+				output = GpuParamFloat(&iterFind->second, mInternalData);
 		}
 
 		/**
@@ -152,9 +155,12 @@ namespace BansheeEngine
 			auto iterFind = mParamDesc->params.find(name);
 
 			if (iterFind == mParamDesc->params.end() || iterFind->second.type != GPDT_FLOAT2)
-				BS_EXCEPT(InvalidParametersException, "Cannot find vector (2) parameter with the name '" + name + "'");
-
-			output = GpuParamVec2(&iterFind->second, mInternalData);
+			{
+				output = GpuParamVec2(&iterFind->second, nullptr);
+				LOGWRN("Cannot find vector (2) parameter with the name '" + name + "'");
+			}
+			else
+				output = GpuParamVec2(&iterFind->second, mInternalData);
 		}
 
 		/**
@@ -166,9 +172,12 @@ namespace BansheeEngine
 			auto iterFind = mParamDesc->params.find(name);
 
 			if (iterFind == mParamDesc->params.end() || iterFind->second.type != GPDT_FLOAT3)
-				BS_EXCEPT(InvalidParametersException, "Cannot find vector (3) parameter with the name '" + name + "'");
-
-			output = GpuParamVec3(&iterFind->second, mInternalData);
+			{
+				output = GpuParamVec3(&iterFind->second, nullptr);
+				LOGWRN("Cannot find vector (3) parameter with the name '" + name + "'");
+			}
+			else
+				output = GpuParamVec3(&iterFind->second, mInternalData);
 		}
 
 		/**
@@ -180,9 +189,12 @@ namespace BansheeEngine
 			auto iterFind = mParamDesc->params.find(name);
 
 			if (iterFind == mParamDesc->params.end() || iterFind->second.type != GPDT_FLOAT4)
-				BS_EXCEPT(InvalidParametersException, "Cannot find vector (4) parameter with the name '" + name + "'");
-
-			output = GpuParamVec4(&iterFind->second, mInternalData);
+			{
+				output = GpuParamVec4(&iterFind->second, nullptr);
+				LOGWRN("Cannot find vector (4) parameter with the name '" + name + "'");
+			}
+			else
+				output = GpuParamVec4(&iterFind->second, mInternalData);
 		}
 
 		/**
@@ -194,9 +206,12 @@ namespace BansheeEngine
 			auto iterFind = mParamDesc->params.find(name);
 
 			if (iterFind == mParamDesc->params.end() || iterFind->second.type != GPDT_FLOAT4)
-				BS_EXCEPT(InvalidParametersException, "Cannot find color parameter with the name '" + name + "'");
-
-			output = GpuParamColor(&iterFind->second, mInternalData);
+			{
+				output = GpuParamColor(&iterFind->second, nullptr);
+				LOGWRN("Cannot find color parameter with the name '" + name + "'");
+			}
+			else
+				output = GpuParamColor(&iterFind->second, mInternalData);
 		}
 
 		/**
@@ -208,9 +223,12 @@ namespace BansheeEngine
 			auto iterFind = mParamDesc->params.find(name);
 
 			if (iterFind == mParamDesc->params.end() || iterFind->second.type != GPDT_MATRIX_3X3)
-				BS_EXCEPT(InvalidParametersException, "Cannot find matrix (3x3) parameter with the name '" + name + "'");
-
-			output = GpuParamMat3(&iterFind->second, mInternalData);
+			{
+				output = GpuParamMat3(&iterFind->second, nullptr);
+				LOGWRN("Cannot find matrix (3x3) parameter with the name '" + name + "'");
+			}
+			else
+				output = GpuParamMat3(&iterFind->second, mInternalData);
 		}
 
 		/**
@@ -222,9 +240,12 @@ namespace BansheeEngine
 			auto iterFind = mParamDesc->params.find(name);
 
 			if (iterFind == mParamDesc->params.end() || iterFind->second.type != GPDT_MATRIX_4X4)
-				BS_EXCEPT(InvalidParametersException, "Cannot find matrix (4x4) parameter with the name '" + name + "'");
-
-			output = GpuParamMat4(&iterFind->second, mInternalData);
+			{
+				output = GpuParamMat4(&iterFind->second, nullptr);
+				LOGWRN("Cannot find matrix (4x4) parameter with the name '" + name + "'");
+			}
+			else
+				output = GpuParamMat4(&iterFind->second, mInternalData);
 		}
 
 		/**

@@ -24,7 +24,7 @@ namespace BansheeEngine
 
 		HMesh mGridMesh;
 		HMaterial mGridMaterial;
-		GpuParamMat4 mViewProjParam;
+		MaterialParamMat4 mViewProjParam;
 		VertexDataDescPtr mVertexDesc;
 
 		Vector3 mOrigin;

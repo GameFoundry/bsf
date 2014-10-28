@@ -274,6 +274,7 @@
   <ItemGroup>
     <ClInclude Include="Include\BsCameraProxy.h" />
     <ClInclude Include="Include\BsDrawList.h" />
+    <ClInclude Include="Include\BsMaterialParam.h" />
     <ClInclude Include="Include\BsMaterialProxy.h" />
     <ClInclude Include="Include\BsMeshProxy.h" />
     <ClInclude Include="Include\BsRenderStats.h" />
@@ -425,6 +426,7 @@
     <ClCompile Include="Source\BsCameraProxy.cpp" />
     <ClCompile Include="Source\BsCoreThread.cpp" />
     <ClCompile Include="Source\BsDrawList.cpp" />
+    <ClCompile Include="Source\BsMaterialParam.cpp" />
     <ClCompile Include="Source\BsMaterialProxy.cpp" />
     <ClCompile Include="Source\BsProfilerCPU.cpp" />
     <ClCompile Include="Source\BsDeferredCallManager.cpp" />

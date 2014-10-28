@@ -150,9 +150,12 @@ namespace BansheeEngine
 		auto iterFind = mParamDesc->params.find(name);
 
 		if (iterFind == mParamDesc->params.end() || iterFind->second.type != GPDT_STRUCT)
-			BS_EXCEPT(InvalidParametersException, "Cannot find struct parameter with the name '" + name + "'");
-
-		output = GpuParamStruct(&iterFind->second, mInternalData);
+		{
+			output = GpuParamStruct(&iterFind->second, nullptr);
+			LOGWRN("Cannot find struct parameter with the name '" + name + "'");
+		}
+		else
+			output = GpuParamStruct(&iterFind->second, mInternalData);
 	}
 
 	void GpuParams::getTextureParam(const String& name, GpuParamTexture& output) const
@@ -160,9 +163,12 @@ namespace BansheeEngine
 		auto iterFind = mParamDesc->textures.find(name);
 
 		if (iterFind == mParamDesc->textures.end())
-			BS_EXCEPT(InvalidParametersException, "Cannot find texture parameter with the name '" + name + "'");
-
-		output = GpuParamTexture(&iterFind->second, mInternalData);
+		{
+			output = GpuParamTexture(&iterFind->second, nullptr);
+			LOGWRN("Cannot find texture parameter with the name '" + name + "'");
+		}
+		else
+			output = GpuParamTexture(&iterFind->second, mInternalData);
 	}
 
 	void GpuParams::getLoadStoreTextureParam(const String& name, GpuParamLoadStoreTexture& output) const
@@ -170,9 +176,12 @@ namespace BansheeEngine
 		auto iterFind = mParamDesc->textures.find(name);
 
 		if (iterFind == mParamDesc->textures.end())
-			BS_EXCEPT(InvalidParametersException, "Cannot find texture parameter with the name '" + name + "'");
-
-		output = GpuParamLoadStoreTexture(&iterFind->second, mInternalData);
+		{
+			output = GpuParamLoadStoreTexture(&iterFind->second, nullptr);
+			LOGWRN("Cannot find texture parameter with the name '" + name + "'");
+		}
+		else
+			output = GpuParamLoadStoreTexture(&iterFind->second, mInternalData);
 	}
 
 	void GpuParams::getSamplerStateParam(const String& name, GpuParamSampState& output) const
@@ -180,9 +189,12 @@ namespace BansheeEngine
 		auto iterFind = mParamDesc->samplers.find(name);
 
 		if (iterFind == mParamDesc->samplers.end())
-			BS_EXCEPT(InvalidParametersException, "Cannot find sampler state parameter with the name '" + name + "'");
-
-		output = GpuParamSampState(&iterFind->second, mInternalData);
+		{
+			output = GpuParamSampState(&iterFind->second, nullptr);
+			LOGWRN("Cannot find sampler state parameter with the name '" + name + "'");
+		}
+		else
+			output = GpuParamSampState(&iterFind->second, mInternalData);
 	}
 
 	GpuParamDataDesc* GpuParams::getParamDesc(const String& name) const

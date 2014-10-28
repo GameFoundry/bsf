@@ -38,6 +38,16 @@ LATER:
  - Add drag to select
  - Need a better system to catch broken shaders. DX11 just draws nothing with depth, DX9 draws all white.
 
+---------------------------------------------------------------------
+Render textures in C#:
+ - In C# have Texture2D, TextureCube, TextureVolume, Texture2DArray. They should have a common Texture base.
+   - Each of those can be created with a Renderable flag
+ - Render textures mirror what we have in C++
+   - RenderTexture and MultiRenderTexture (since we have these separate representation we don't need RenderBuffer that Unity has)
+   - You can provide an existing texture from types listed above, or create a new render target and
+      create a basic 2D texture (multiple constructors)
+ - Both RT types should have their color buffer (s) and depth buffer accessible as a texture to be used for rendering, or for reading
+
 ----------------------------------------------------------------------
 Handles
 
@@ -88,16 +98,6 @@ Retrieve a list of selected objects from SelectionManager
 Find ones with Renderable components
 Retrieve Meshes, and world transforms from them
 Draw that same mesh with either a wireframe or a grayed out shader with a slight depth bias
-
----------------------------------------------------------------------
-Render textures in C#:
- - In C# have Texture2D, TextureCube, TextureVolume, Texture2DArray. They should have a common Texture base.
-   - Each of those can be created with a Renderable flag
- - Render textures mirror what we have in C++
-   - RenderTexture and MultiRenderTexture (since we have these separate representation we don't need RenderBuffer that Unity has)
-   - You can provide an existing texture from types listed above, or create a new render target and
-      create a basic 2D texture (multiple constructors)
- - Both RT types should have their color buffer (s) and depth buffer accessible as a texture to be used for rendering, or for reading
 
 ---------------------------------------------------------------------
 Multi-resources

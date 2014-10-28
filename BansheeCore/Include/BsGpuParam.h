@@ -123,6 +123,9 @@ namespace BansheeEngine
 		 */
 		void set(const T& value, UINT32 arrayIdx = 0)
 		{
+			if (mInternalData == nullptr)
+				return;
+
 			if (isDestroyed())
 				BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
 
@@ -167,6 +170,9 @@ namespace BansheeEngine
 		 */
 		T get(UINT32 arrayIdx = 0)
 		{
+			if (mInternalData == nullptr)
+				return T();
+
 			if (isDestroyed())
 				BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
 
@@ -217,7 +223,7 @@ namespace BansheeEngine
 	template class TGpuDataParam<Matrix4>;
 
 	/**
-	 * @copydoc GpuDataParamBase
+	 * @copydoc TGpuDataParam
 	 */
 	class BS_CORE_EXPORT GpuParamStruct
 	{
@@ -228,12 +234,12 @@ namespace BansheeEngine
 		GpuParamStruct();
 
 		/**
-		 * @copydoc	GpuDataParamBase::set
+		 * @copydoc	TGpuDataParam::set
 		 */
 		void set(const void* value, UINT32 sizeBytes, UINT32 arrayIdx = 0);
 
 		/**
-		 * @copydoc	GpuDataParamBase::get
+		 * @copydoc	TGpuDataParam::get
 		 */
 		void get(void* value, UINT32 sizeBytes, UINT32 arrayIdx = 0);
 
@@ -251,7 +257,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @copydoc GpuDataParamBase
+	 * @copydoc TGpuDataParam
 	 */
 	class BS_CORE_EXPORT GpuParamTexture
 	{
@@ -262,12 +268,12 @@ namespace BansheeEngine
 		GpuParamTexture();
 
 		/**
-		 * @copydoc	GpuDataParamBase::set
+		 * @copydoc	TGpuDataParam::set
 		 */
 		void set(const HTexture& texture);
 
 		/**
-		 * @copydoc	GpuDataParamBase::get
+		 * @copydoc	TGpuDataParam::get
 		 */
 		HTexture get();
 		
@@ -280,7 +286,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @copydoc GpuDataParamBase
+	 * @copydoc TGpuDataParam
 	 */
 	class BS_CORE_EXPORT GpuParamLoadStoreTexture
 	{
@@ -291,12 +297,12 @@ namespace BansheeEngine
 		GpuParamLoadStoreTexture();
 
 		/**
-		 * @copydoc	GpuDataParamBase::set
+		 * @copydoc	TGpuDataParam::set
 		 */
 		void set(const HTexture& texture, const TextureSurface& surface);
 
 		/**
-		 * @copydoc	GpuDataParamBase::get
+		 * @copydoc	TGpuDataParam::get
 		 */
 		HTexture get();
 		
@@ -309,7 +315,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @copydoc GpuDataParamBase
+	 * @copydoc TGpuDataParam
 	 */
 	class BS_CORE_EXPORT GpuParamSampState
 	{
@@ -320,12 +326,12 @@ namespace BansheeEngine
 		GpuParamSampState();
 
 		/**
-		 * @copydoc	GpuDataParamBase::set
+		 * @copydoc	TGpuDataParam::set
 		 */
 		void set(const HSamplerState& texture);
 
 		/**
-		 * @copydoc	GpuDataParamBase::get
+		 * @copydoc	TGpuDataParam::get
 		 */
 		HSamplerState get();
 

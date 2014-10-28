@@ -534,6 +534,9 @@
     <ClInclude Include="Include\BsViewportRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsMaterialParam.h">
+      <Filter>Header Files\Material</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsCoreApplication.cpp">
@@ -838,6 +841,9 @@
     </ClCompile>
     <ClCompile Include="Source\BsMaterialProxy.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsMaterialParam.cpp">
+      <Filter>Source Files\Material</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

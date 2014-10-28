@@ -2,7 +2,7 @@
 
 #include "BsCorePrerequisites.h"
 #include "BsResource.h"
-#include "BsGpuParam.h"
+#include "BsMaterialParam.h"
 #include "BsMaterialProxy.h"
 #include "BsVector2.h"
 #include "BsVector3.h"
@@ -278,7 +278,7 @@ namespace BansheeEngine
 		 * 			
 		 *			If material shader changes this handle will be invalidated.
 		 */
-		GpuParamFloat getParamFloat(const String& name) const;
+		MaterialParamFloat getParamFloat(const String& name) const;
 
 		/**
 		 * @brief	Returns a color GPU parameter. This parameter may be used for
@@ -291,7 +291,7 @@ namespace BansheeEngine
 		 * 			
 		 *			If material shader changes this handle will be invalidated.
 		 */
-		GpuParamColor getParamColor(const String& name) const;
+		MaterialParamColor getParamColor(const String& name) const;
 
 		/**
 		 * @brief	Returns a 2D vector GPU parameter. This parameter may be used for
@@ -304,7 +304,7 @@ namespace BansheeEngine
 		 * 			
 		 *			If material shader changes this handle will be invalidated.
 		 */
-		GpuParamVec2 getParamVec2(const String& name) const;
+		MaterialParamVec2 getParamVec2(const String& name) const;
 
 		/**
 		 * @brief	Returns a 3D vector GPU parameter. This parameter may be used for
@@ -317,7 +317,7 @@ namespace BansheeEngine
 		 * 			
 		 *			If material shader changes this handle will be invalidated.
 		 */
-		GpuParamVec3 getParamVec3(const String& name) const;
+		MaterialParamVec3 getParamVec3(const String& name) const;
 
 		/**
 		 * @brief	Returns a 4D vector GPU parameter. This parameter may be used for
@@ -330,7 +330,7 @@ namespace BansheeEngine
 		 * 			
 		 *			If material shader changes this handle will be invalidated.
 		 */
-		GpuParamVec4 getParamVec4(const String& name) const;
+		MaterialParamVec4 getParamVec4(const String& name) const;
 
 		/**
 		 * @brief	Returns a 3x3 matrix GPU parameter. This parameter may be used for
@@ -343,7 +343,7 @@ namespace BansheeEngine
 		 * 			
 		 *			If material shader changes this handle will be invalidated.
 		 */
-		GpuParamMat3 getParamMat3(const String& name) const;
+		MaterialParamMat3 getParamMat3(const String& name) const;
 
 		/**
 		 * @brief	Returns a 4x4 matrix GPU parameter. This parameter may be used for
@@ -356,7 +356,7 @@ namespace BansheeEngine
 		 * 			
 		 *			If material shader changes this handle will be invalidated.
 		 */
-		GpuParamMat4 getParamMat4(const String& name) const;
+		MaterialParamMat4 getParamMat4(const String& name) const;
 
 		/**
 		 * @brief	Returns a structure GPU parameter. This parameter may be used for
@@ -369,7 +369,7 @@ namespace BansheeEngine
 		 * 			
 		 *			If material shader changes this handle will be invalidated.
 		 */
-		GpuParamStruct getParamStruct(const String& name) const;
+		MaterialParamStruct getParamStruct(const String& name) const;
 
 		/**
 		 * @brief	Returns a texture GPU parameter. This parameter may be used for
@@ -382,7 +382,7 @@ namespace BansheeEngine
 		 * 			
 		 *			If material shader changes this handle will be invalidated.
 		 */
-		GpuParamTexture getParamTexture(const String& name) const;
+		MaterialParamTexture getParamTexture(const String& name) const;
 
 		/**
 		 * @brief	Returns a GPU parameter for binding a load/store texture. This parameter 
@@ -395,7 +395,7 @@ namespace BansheeEngine
 		 * 			
 		 *			If material shader changes this handle will be invalidated.
 		 */
-		GpuParamLoadStoreTexture getParamLoadStoreTexture(const String& name) const;
+		MaterialParamLoadStoreTexture getParamLoadStoreTexture(const String& name) const;
 
 		/**
 		 * @brief	Returns a sampler state GPU parameter. This parameter may be used for
@@ -408,7 +408,7 @@ namespace BansheeEngine
 		 * 			
 		 *			If material shader changes this handle will be invalidated.
 		 */
-		GpuParamSampState getParamSamplerState(const String& name) const;
+		MaterialParamSampState getParamSamplerState(const String& name) const;
 
 		/**
 		 * @brief	Returns the number of passes that are used
@@ -501,7 +501,7 @@ namespace BansheeEngine
 		 * 			caller to keep track of that.
 		 */
 		template <typename T>
-		void getParam(const String& name, TGpuDataParam<T>& output) const
+		void getParam(const String& name, TMaterialDataParam<T>& output) const
 		{
 			throwIfNotInitialized();
 
@@ -513,9 +513,27 @@ namespace BansheeEngine
 			}
 
 			const String& gpuVarName = iterFind->second;
-			GpuParamsPtr params = findParamsWithName(gpuVarName);
+			Vector<TGpuDataParam<T>> gpuParams;
 
-			params->getParam<T>(gpuVarName, output);
+			for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
+			{
+				PassParametersPtr params = *iter;
+
+				for (UINT32 i = 0; i < params->getNumParams(); i++)
+				{
+					GpuParamsPtr& paramPtr = params->getParamByIdx(i);
+					if (paramPtr)
+					{
+						if (paramPtr->hasParam(gpuVarName))
+						{
+							gpuParams.push_back(TGpuDataParam<T>());
+							paramPtr->getParam<T>(gpuVarName, gpuParams.back());
+						}
+					}
+				}
+			}
+
+			output = TMaterialDataParam<T>(gpuParams);
 		}
 
 	private:
@@ -593,21 +611,6 @@ namespace BansheeEngine
 		 * @brief	Frees all parameter block buffers.
 		 */
 		void freeParamBuffers();
-
-		/**
-		 * @brief	Finds a set of GPU parameters containing a data (e.g. float, vector2) parameter with the provided name.
-		 */
-		GpuParamsPtr findParamsWithName(const String& name) const;
-
-		/**
-		 * @brief	Finds a set of GPU parameters containing a texture parameter with the provided name.
-		 */
-		GpuParamsPtr findTexWithName(const String& name) const;
-
-		/**
-		 * @brief	Finds a set of GPU parameters containing a sampler state parameter with the provided name.
-		 */
-		GpuParamsPtr findSamplerStateWithName(const String& name) const;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

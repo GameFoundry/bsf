@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "BsGpuParam.h"
+#include "BsMaterialParam.h"
 
 namespace BansheeEngine
 {
@@ -11,11 +11,11 @@ namespace BansheeEngine
 	struct GUIMaterialInfo
 	{
 		HMaterial material;
-		GpuParamMat4 worldTransform;
-		GpuParamFloat invViewportWidth;
-		GpuParamFloat invViewportHeight;
-		GpuParamSampState mainTexSampler;
-		GpuParamTexture mainTexture;
-		GpuParamVec4 tint;
+		MaterialParamMat4 worldTransform;
+		MaterialParamFloat invViewportWidth;
+		MaterialParamFloat invViewportHeight;
+		MaterialParamSampState mainTexSampler;
+		MaterialParamTexture mainTexture;
+		MaterialParamVec4 tint;
 	};
 }
