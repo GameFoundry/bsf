@@ -6,6 +6,8 @@
 #include "BsScriptGameObjectManager.h"
 #include "BsManagedResourceManager.h"
 #include "BsScriptManager.h"
+#include "BsScriptInput.h"
+#include "BsScriptVirtualInput.h"
 
 // DEBUG ONLY
 #include "BsScriptSceneObject.h"
@@ -45,6 +47,8 @@ namespace BansheeEngine
 		RuntimeScriptObjects::startUp();
 		ScriptResourceManager::startUp();
 		ScriptGameObjectManager::startUp();
+		ScriptInput::startUp();
+		ScriptVirtualInput::startUp();
 
 		RuntimeScriptObjects::instance().refreshScriptObjects(BansheeEngineAssemblyName);
 
@@ -55,6 +59,8 @@ namespace BansheeEngine
 
 	extern "C" BS_SCR_BE_EXPORT void unloadPlugin()
 	{
+		ScriptVirtualInput::shutDown();
+		ScriptInput::shutDown();
 		ManagedResourceManager::shutDown();
 		ScriptManager::instance().destroy();
 		ScriptGameObjectManager::shutDown();

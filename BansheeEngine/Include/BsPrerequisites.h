@@ -103,6 +103,7 @@ namespace BansheeEngine
 	typedef std::shared_ptr<RenderableProxy> RenderableProxyPtr;
 	typedef std::shared_ptr<CameraHandler> CameraHandlerPtr;
 	typedef std::shared_ptr<RenderableHandler> RenderableHandlerPtr;
+	typedef std::shared_ptr<InputConfiguration> InputConfigurationPtr;
 
 	typedef GameObjectHandle<GUIWidget> HGUIWidget;
 	typedef GameObjectHandle<Camera> HCamera;

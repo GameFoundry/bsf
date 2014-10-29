@@ -44,7 +44,7 @@ Reminders:
   - Perhaps add code generation functionality to the engine through Mono? I know Mono has support for it though its Embed interface
   - Add instancing to engine: All I really need to add are per-instance attributes in VertexData (and MeshData). And then RenderSystem::renderInstance method that also accepts an instance count.
   - Debug console
-    - Add ability to add colors tags like <color=#123>
+    - Add ability to add colors tags like <color=#123>. Possibly also reference custom styles using those same tags.
 	- When showing a debug message, also provide a (clickable?) reference to Component it was triggered on (if applicable)
 	  - It really helps when you get an error on a Component that hundreds of SceneObjects use
 	- When displaying an error with a callstack, make each line of the callstack clickable where it opens the external editor
@@ -78,10 +78,20 @@ Reminders:
   - Think about removing C# GUIPanel. If I replace current EditorWidget's GUIArea with GUIWidget then panels aren't needed as those widgets can just
     use areas directly. This means that the EditorWidgetContainer will also have a GUIWidget but it will be separate.
 	 - When doing this also consider refactoring how GUIArea anchoring works (currently it's limited and have ugly interface)
+  - Get rid of exceptions. I don't use any of their properties that I can't reproduce with a Debug::log and a manual stack trace. Also disable them in compiler to improve compile time.
+  - Improve compile time: Disable inlining in debug builds (Ob1 option), use precompiled headers
 
 Potential optimizations:
  - bulkPixelConversion is EXTREMELY poorly unoptimized. Each pixel it calls a separate method that does redudant operations every pixel.
  - UI shader resolution params for gui should be in a separate constant buffer
+
+Things that I need to automate:
+ - Automatic C++ RTTI generation by parsing the C++ class source
+ - Shader definitions - They should be specified in text field and parsed like shader code
+ - Shader cross compiling - Write shaders in one language and have them automatically compiled in others
+ - C++ <-> C# glue code. A lot of it relies on enums not changing IDs, structs not changing layouts and methods
+   not changing parameters between C++ and C# code. It makes it easy to modify one and forget the other.
+   Instead make a smarter system that parses a common file and outputs both C++ and C# glue code.
 
 ----------------------------------------------------------------------------------------------
 More detailed thought out system descriptions:

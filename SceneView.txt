@@ -3,6 +3,8 @@
   - Make a C# wrapper for Camera and Renderable
 
 The bounds I retrieve from GUIUtility are relative to the entire window, not just the current widget. Another reason to move editor widgets to their own GUIWidget.
+Hook up Input callbacks in ScriptInput
+Passing a Vector2I (and I'm assuming any script) through a thunk crashes the runtime
 
 Set up Application::getPrimaryViewport so it returns a valid viewport otherwise C# Camera won't work properly
 

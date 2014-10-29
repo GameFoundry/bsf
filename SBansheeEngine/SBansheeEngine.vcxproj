@@ -268,6 +268,8 @@
     <ClInclude Include="Include\BsScriptGUIToggle.h" />
     <ClInclude Include="Include\BsScriptGUIToggleGroup.h" />
     <ClInclude Include="Include\BsScriptHString.h" />
+    <ClInclude Include="Include\BsScriptInput.h" />
+    <ClInclude Include="Include\BsScriptInputConfiguration.h" />
     <ClInclude Include="Include\BsScriptMacros.h" />
     <ClInclude Include="Include\BsScriptManagedResource.h" />
     <ClInclude Include="Include\BsScriptObject.h" />
@@ -288,6 +290,7 @@
     <ClInclude Include="Include\BsScriptTexture2D.h" />
     <ClInclude Include="Include\BsScriptGUIContent.h" />
     <ClInclude Include="Include\BsManagedSerializableObjectInfo.h" />
+    <ClInclude Include="Include\BsScriptVirtualInput.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsManagedComponent.cpp" />
@@ -319,6 +322,8 @@
     <ClCompile Include="Source\BsScriptGUIToggleGroup.cpp" />
     <ClCompile Include="Source\BsScriptHString.cpp" />
     <ClCompile Include="Source\BsScriptGUIInputBox.cpp" />
+    <ClCompile Include="Source\BsScriptInput.cpp" />
+    <ClCompile Include="Source\BsScriptInputConfiguration.cpp" />
     <ClCompile Include="Source\BsScriptManagedResource.cpp" />
     <ClCompile Include="Source\BsScriptObject.cpp" />
     <ClCompile Include="Source\BsScriptObjectImpl.cpp" />
@@ -340,6 +345,7 @@
     <ClCompile Include="Source\BsScriptStringTable.cpp" />
     <ClCompile Include="Source\BsScriptTexture2D.cpp" />
     <ClCompile Include="Source\BsScriptGUIContent.cpp" />
+    <ClCompile Include="Source\BsScriptVirtualInput.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
