@@ -181,5 +181,10 @@ namespace BansheeEngine
             
             return false;
         }
+
+        public override string ToString()
+        {
+            return "(" + x + ", " + y + ")";
+        }
     }
 }

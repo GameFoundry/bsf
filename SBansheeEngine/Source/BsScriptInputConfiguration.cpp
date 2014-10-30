@@ -106,23 +106,6 @@ namespace BansheeEngine
 		ScriptInputConfigurations.erase(configId);
 	}
 
-	ScriptVirtualButton::ScriptVirtualButton(MonoObject* instance)
-		:ScriptObject(instance)
-	{ }
-
-	void ScriptVirtualButton::initRuntimeData()
-	{
-		metaData.scriptClass->addInternalCall("Internal_InitVirtualButton", &ScriptVirtualButton::internal_InitVirtualButton);
-	}
-
-	UINT32 ScriptVirtualButton::internal_InitVirtualButton(MonoString* name)
-	{
-		String nameStr = MonoUtil::monoToString(name);
-
-		VirtualButton vb(nameStr);
-		return vb.buttonIdentifier;
-	}
-
 	ScriptVirtualAxis::ScriptVirtualAxis(MonoObject* instance)
 		:ScriptObject(instance)
 	{ }

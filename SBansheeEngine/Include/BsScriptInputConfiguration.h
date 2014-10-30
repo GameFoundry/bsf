@@ -39,17 +39,6 @@ namespace BansheeEngine
 		static Map<UINT64, ScriptInputConfiguration*> ScriptInputConfigurations;
 	};
 
-	class BS_SCR_BE_EXPORT ScriptVirtualButton : public ScriptObject <ScriptVirtualButton>
-	{
-	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "VirtualButton")
-
-	private:
-		static UINT32 internal_InitVirtualButton(MonoString* name);
-
-		ScriptVirtualButton(MonoObject* instance);
-	};
-
 	class BS_SCR_BE_EXPORT ScriptVirtualAxis : public ScriptObject <ScriptVirtualAxis>
 	{
 	public:

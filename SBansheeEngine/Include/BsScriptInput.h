@@ -30,7 +30,8 @@ namespace BansheeEngine
 
 		typedef void(__stdcall *OnButtonEventThunkDef) (ButtonCode, UINT32, MonoException**);
 		typedef void(__stdcall *OnCharInputEventThunkDef) (UINT32, MonoException**);
-		typedef void(__stdcall *OnPointerEventThunkDef) (Vector2I, PointerEventButton, bool, bool, bool, float, MonoException**);
+		typedef void(__stdcall *OnPointerEventThunkDef) (MonoObject*, PointerEventButton, 
+			bool, bool, bool, float, MonoException**);
 
 		static OnButtonEventThunkDef OnButtonPressedThunk;
 		static OnButtonEventThunkDef OnButtonReleasedThunk;

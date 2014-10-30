@@ -1,9 +1,8 @@
 
  GIZMO TODO:
-  - Make a C# wrapper for Camera and Renderable
+  - Make a C# wrapper for Renderable
 
 The bounds I retrieve from GUIUtility are relative to the entire window, not just the current widget. Another reason to move editor widgets to their own GUIWidget.
-Hook up Input callbacks in ScriptInput
 Passing a Vector2I (and I'm assuming any script) through a thunk crashes the runtime
 
 Set up Application::getPrimaryViewport so it returns a valid viewport otherwise C# Camera won't work properly
@@ -15,7 +14,7 @@ Also make sure that handle manager receives mouse up event if its done outside o
 When selecting/deselecting stuff handle display is delayed
 
 Create the scene widget completely in C#?
- - Port Camera/viewport, RenderTexture, SceneCameraController, Input, ProjectSettings, SceneGrid
+ - Port RenderTexture, SceneCameraController, ProjectSettings, SceneGrid
  - Will need to track when widget resizes so I can resize the render target
  - Handle manager update will originate from the widget
   - Actually it could still be done from C++
@@ -42,7 +41,7 @@ LATER:
 
 ---------------------------------------------------------------------
 Render textures in C#:
- - In C# have Texture2D, TextureCube, TextureVolume, Texture2DArray. They should have a common Texture base.
+ - In C# have Texture2D, TextureCube, TextureVolume. They should have a common Texture base.
    - Each of those can be created with a Renderable flag
  - Render textures mirror what we have in C++
    - RenderTexture and MultiRenderTexture (since we have these separate representation we don't need RenderBuffer that Unity has)

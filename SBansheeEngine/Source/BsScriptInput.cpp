@@ -5,6 +5,7 @@
 #include "BsMonoUtil.h"
 #include "BsDebug.h"
 #include "BsInput.h"
+#include "BsScriptVector2I.h"
 
 namespace BansheeEngine
 {
@@ -95,7 +96,9 @@ namespace BansheeEngine
 	void ScriptInput::onPointerMoved(const PointerEvent& ev)
 	{
 		MonoException* exception = nullptr;
-		OnPointerMovedThunk(ev.screenPos, ev.button, ev.shift, ev.control, ev.alt, ev.mouseWheelScrollAmount, &exception);
+		MonoObject* screenPos = ScriptVector2I::box(ev.screenPos);
+
+		OnPointerMovedThunk(screenPos, ev.button, ev.shift, ev.control, ev.alt, ev.mouseWheelScrollAmount, &exception);
 
 		MonoUtil::throwIfException(exception);
 	}
@@ -103,7 +106,9 @@ namespace BansheeEngine
 	void ScriptInput::onPointerPressed(const PointerEvent& ev)
 	{
 		MonoException* exception = nullptr;
-		OnPointerPressedThunk(ev.screenPos, ev.button, ev.shift, ev.control, ev.alt, ev.mouseWheelScrollAmount, &exception);
+		MonoObject* screenPos = ScriptVector2I::box(ev.screenPos);
+
+		OnPointerPressedThunk(screenPos, ev.button, ev.shift, ev.control, ev.alt, ev.mouseWheelScrollAmount, &exception);
 
 		MonoUtil::throwIfException(exception);
 	}
@@ -111,7 +116,9 @@ namespace BansheeEngine
 	void ScriptInput::onPointerReleased(const PointerEvent& ev)
 	{
 		MonoException* exception = nullptr;
-		OnPointerReleasedThunk(ev.screenPos, ev.button, ev.shift, ev.control, ev.alt, ev.mouseWheelScrollAmount, &exception);
+		MonoObject* screenPos = ScriptVector2I::box(ev.screenPos);
+
+		OnPointerReleasedThunk(screenPos, ev.button, ev.shift, ev.control, ev.alt, ev.mouseWheelScrollAmount, &exception);
 
 		MonoUtil::throwIfException(exception);
 	}
@@ -119,7 +126,9 @@ namespace BansheeEngine
 	void ScriptInput::onPointerDoubleClick(const PointerEvent& ev)
 	{
 		MonoException* exception = nullptr;
-		OnPointerDoubleClickThunk(ev.screenPos, ev.button, ev.shift, ev.control, ev.alt, ev.mouseWheelScrollAmount, &exception);
+		MonoObject* screenPos = ScriptVector2I::box(ev.screenPos);
+
+		OnPointerDoubleClickThunk(screenPos, ev.button, ev.shift, ev.control, ev.alt, ev.mouseWheelScrollAmount, &exception);
 
 		MonoUtil::throwIfException(exception);
 	}

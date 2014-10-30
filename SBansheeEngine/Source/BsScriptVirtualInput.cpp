@@ -5,6 +5,7 @@
 #include "BsMonoUtil.h"
 #include "BsDebug.h"
 #include "BsVirtualInput.h"
+#include "BsScriptVirtualButton.h"
 #include "BsScriptInputConfiguration.h"
 
 namespace BansheeEngine
@@ -54,7 +55,8 @@ namespace BansheeEngine
 	void ScriptVirtualInput::onButtonDown(const VirtualButton& btn, UINT32 deviceIdx)
 	{
 		MonoException* exception = nullptr;
-		OnButtonDownThunk(btn, deviceIdx, &exception);
+		MonoObject* virtualButton = ScriptVirtualButton::box(btn);
+		OnButtonDownThunk(virtualButton, deviceIdx, &exception);
 
 		MonoUtil::throwIfException(exception);
 	}
@@ -62,7 +64,8 @@ namespace BansheeEngine
 	void ScriptVirtualInput::onButtonUp(const VirtualButton& btn, UINT32 deviceIdx)
 	{
 		MonoException* exception = nullptr;
-		OnButtonUpThunk(btn, deviceIdx, &exception);
+		MonoObject* virtualButton = ScriptVirtualButton::box(btn);
+		OnButtonUpThunk(virtualButton, deviceIdx, &exception);
 
 		MonoUtil::throwIfException(exception);
 	}
@@ -70,7 +73,8 @@ namespace BansheeEngine
 	void ScriptVirtualInput::onButtonHeld(const VirtualButton& btn, UINT32 deviceIdx)
 	{
 		MonoException* exception = nullptr;
-		OnButtonHeldThunk(btn, deviceIdx, &exception);
+		MonoObject* virtualButton = ScriptVirtualButton::box(btn);
+		OnButtonHeldThunk(virtualButton, deviceIdx, &exception);
 
 		MonoUtil::throwIfException(exception);
 	}

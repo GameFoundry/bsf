@@ -290,6 +290,8 @@
     <ClInclude Include="Include\BsScriptTexture2D.h" />
     <ClInclude Include="Include\BsScriptGUIContent.h" />
     <ClInclude Include="Include\BsManagedSerializableObjectInfo.h" />
+    <ClInclude Include="Include\BsScriptVector2I.h" />
+    <ClInclude Include="Include\BsScriptVirtualButton.h" />
     <ClInclude Include="Include\BsScriptVirtualInput.h" />
   </ItemGroup>
   <ItemGroup>
@@ -345,7 +347,9 @@
     <ClCompile Include="Source\BsScriptStringTable.cpp" />
     <ClCompile Include="Source\BsScriptTexture2D.cpp" />
     <ClCompile Include="Source\BsScriptGUIContent.cpp" />
+    <ClCompile Include="Source\BsScriptVector2I.cpp" />
     <ClCompile Include="Source\BsScriptVirtualInput.cpp" />
+    <ClCompile Include="Source\BsScriptVirtualButton.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

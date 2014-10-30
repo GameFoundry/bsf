@@ -25,7 +25,7 @@ namespace BansheeEngine
 		static bool internal_isButtonUp(VirtualButton btn, UINT32 deviceIdx);
 		static float internal_getAxisValue(VirtualAxis axis, UINT32 deviceIdx);
 
-		typedef void(__stdcall *OnButtonEventThunkDef) (VirtualButton, UINT32, MonoException**);
+		typedef void(__stdcall *OnButtonEventThunkDef) (MonoObject*, UINT32, MonoException**);
 
 		static OnButtonEventThunkDef OnButtonUpThunk;
 		static OnButtonEventThunkDef OnButtonDownThunk;
