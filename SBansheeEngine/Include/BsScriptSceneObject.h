@@ -39,6 +39,23 @@ namespace BansheeEngine
 		static void internal_setLocalRotation(ScriptSceneObject* nativeInstance, Quaternion value);
 		static void internal_setLocalScale(ScriptSceneObject* nativeInstance, Vector3 value);
 
+		static void internal_getLocalTransform(ScriptSceneObject* nativeInstance, Matrix4* value);
+		static void internal_getWorldTransform(ScriptSceneObject* nativeInstance, Matrix4* value);
+		static void internal_lookAt(ScriptSceneObject* nativeInstance, Vector3 direction, Vector3 up);
+		static void internal_move(ScriptSceneObject* nativeInstance, Vector3 value);
+		static void internal_moveLocal(ScriptSceneObject* nativeInstance, Vector3 value);
+		static void internal_rotate(ScriptSceneObject* nativeInstance, Quaternion value);
+		static void internal_roll(ScriptSceneObject* nativeInstance, Radian value);
+		static void internal_yaw(ScriptSceneObject* nativeInstance, Radian value);
+		static void internal_pitch(ScriptSceneObject* nativeInstance, Radian value);
+		static void internal_setForward(ScriptSceneObject* nativeInstance, Vector3 value);
+		static void internal_getForward(ScriptSceneObject* nativeInstance, Vector3* value);
+		static void internal_getUp(ScriptSceneObject* nativeInstance, Vector3* value);
+		static void internal_getRight(ScriptSceneObject* nativeInstance, Vector3* value);
+
+		static void internal_destroy(ScriptSceneObject* nativeInstance, bool immediate);
+		static bool checkIfDestroyed(ScriptSceneObject* nativeInstance);
+
 		ScriptSceneObject(MonoObject* instance, const HSceneObject& sceneObject);
 
 		void _onManagedInstanceDeleted();

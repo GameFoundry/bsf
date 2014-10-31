@@ -2,10 +2,6 @@
  GIZMO TODO:
   - Make a C# wrapper for Renderable
 
-Need to defer destruction of Components until all component updates have finished. Otherwise I risk destroying a component referenced by some
-other script since the order to Update() methods isn't clearly defined.
- - Add [ExecPriority] attribute for Update() method
- - Make sure Component update is called
  - Do I handle it gracefully if user tries to access destroyed component or scene object?
   - I don't, at least not with SceneObject. I will try to access HSceneObject handle even if its
     destroyed. Add a check.

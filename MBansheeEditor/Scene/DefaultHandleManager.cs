@@ -53,11 +53,11 @@ namespace BansheeEditor
                 if (EditorApplication.HandleCoordinateMode == HandleCoordinateMode.World)
                     rotation = Quaternion.identity;
                 else
-                    rotation = selectedSceneObjects[0].rotation; // We don't average rotation in case of multi-selection
+                    rotation = selectedSceneObjects[0].Rotation; // We don't average rotation in case of multi-selection
 
                 Vector3 position;
                 if (EditorApplication.HandlePositionMode == HandlePositionMode.Pivot)
-                    position = selectedSceneObjects[0].position; // Just take pivot from the first one, no averaging
+                    position = selectedSceneObjects[0].Position; // Just take pivot from the first one, no averaging
                 else
                 {
                     List<SceneObject> flatenedHierarchy = new List<SceneObject>();
@@ -91,7 +91,7 @@ namespace BansheeEditor
                             MoveHandle moveHandle = (MoveHandle)activeHandle;
 
                             foreach (var so in selectedSceneObjects)
-                                so.position += moveHandle.Delta;
+                                so.Position += moveHandle.Delta;
                         }
 
                         break;

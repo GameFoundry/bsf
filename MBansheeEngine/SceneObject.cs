@@ -3,16 +3,15 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
-    // TODO - Unfinished
     public sealed class SceneObject : GameObject
     {
-        public SceneObject parent
+        public SceneObject Parent
         {
             set { Internal_SetParent(mCachedPtr, value); }
             get { return Internal_GetParent(mCachedPtr); }
         }
 
-        public Vector3 position
+        public Vector3 Position
         {
             get
             {
@@ -27,7 +26,7 @@ namespace BansheeEngine
             }
         }
 
-        public Vector3 localPosition
+        public Vector3 LocalPosition
         {
             get
             {
@@ -42,7 +41,7 @@ namespace BansheeEngine
             }
         }
 
-        public Quaternion rotation
+        public Quaternion Rotation
         {
             get
             {
@@ -57,7 +56,7 @@ namespace BansheeEngine
             }
         }
 
-        public Quaternion localRotation
+        public Quaternion LocalRotation
         {
             get
             {
@@ -72,7 +71,7 @@ namespace BansheeEngine
             }
         }
 
-        public Vector3 scale
+        public Vector3 Scale
         {
             get
             {
@@ -82,7 +81,7 @@ namespace BansheeEngine
             }
         }
 
-        public Vector3 localScale
+        public Vector3 LocalScale
         {
             get
             {
@@ -94,6 +93,60 @@ namespace BansheeEngine
             set
             {
                 Internal_SetLocalScale(mCachedPtr, value);
+            }
+        }
+
+        public Matrix4 WorldTransform
+        {
+            get
+            {
+                Matrix4 value;
+                Internal_GetWorldTransform(mCachedPtr, out value);
+                return value;
+            }
+        }
+
+        public Matrix4 LocalTransform
+        {
+            get
+            {
+                Matrix4 value;
+                Internal_GetLocalTransform(mCachedPtr, out value);
+                return value;
+            }
+        }
+
+        public Vector3 Forward
+        {
+            get
+            {
+                Vector3 value;
+                Internal_GetForward(mCachedPtr, out value);
+                return value;
+            }
+            set
+            {
+                Internal_SetForward(mCachedPtr, value);
+            }
+        }
+
+        public Vector3 Right
+        {
+            get
+            {
+                Vector3 value;
+                Internal_GetRight(mCachedPtr, out value);
+                return value;
+            }
+        }
+
+        public Vector3 Up
+        {
+            get
+            {
+                Vector3 value;
+                Internal_GetUp(mCachedPtr, out value);
+                return value;
             }
         }
 
@@ -136,6 +189,46 @@ namespace BansheeEngine
         public SceneObject GetChild(int idx)
         {
             return Internal_GetChild(mCachedPtr, idx);
+        }
+
+        public void LookAt(Vector3 direction, Vector3 up)
+        {
+            Internal_LookAt(mCachedPtr, direction, up);
+        }
+
+        public void Move(Vector3 amount)
+        {
+            Internal_Move(mCachedPtr, amount);
+        }
+
+        public void MoveLocal(Vector3 amount)
+        {
+            Internal_MoveLocal(mCachedPtr, amount);
+        }
+
+        public void Rotate(Quaternion amount)
+        {
+            Internal_Rotate(mCachedPtr, amount);
+        }
+
+        public void Roll(Degree angle)
+        {
+            Internal_Roll(mCachedPtr, angle);
+        }
+
+        public void Yaw(Degree angle)
+        {
+            Internal_Yaw(mCachedPtr, angle);
+        }
+
+        public void Pitch(Degree angle)
+        {
+            Internal_Pitch(mCachedPtr, angle);
+        }
+
+        public void Destroy(bool immediate = false)
+        {
+            Internal_Destroy(mCachedPtr, immediate);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -185,5 +278,47 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetLocalScale(IntPtr nativeInstance, Vector3 value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_GetLocalTransform(IntPtr nativeInstance, out Matrix4 value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_GetWorldTransform(IntPtr nativeInstance, out Matrix4 value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_LookAt(IntPtr nativeInstance, Vector3 direction, Vector3 up);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_Move(IntPtr nativeInstance, Vector3 value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_MoveLocal(IntPtr nativeInstance, Vector3 value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_Rotate(IntPtr nativeInstance, Quaternion value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_Roll(IntPtr nativeInstance, Radian value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_Yaw(IntPtr nativeInstance, Radian value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_Pitch(IntPtr nativeInstance, Radian value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetForward(IntPtr nativeInstance, Vector3 value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_GetForward(IntPtr nativeInstance, out Vector3 value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_GetUp(IntPtr nativeInstance, out Vector3 value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_GetRight(IntPtr nativeInstance, out Vector3 value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_Destroy(IntPtr nativeInstance, bool immediate);
     }
 }

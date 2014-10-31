@@ -30,6 +30,9 @@ namespace BansheeEngine
 		ScriptSceneObject* scriptSO = ScriptSceneObject::toNative(parentSceneObject);
 		HSceneObject so = static_object_cast<SceneObject>(scriptSO->getNativeHandle());
 
+		if (checkIfDestroyed(so))
+			return nullptr;
+
 		// We only allow single component per type
 		const Vector<HComponent>& mComponents = so->getComponents();
 		for(auto& component : mComponents)
@@ -57,6 +60,9 @@ namespace BansheeEngine
 		ScriptSceneObject* scriptSO = ScriptSceneObject::toNative(parentSceneObject);
 		HSceneObject so = static_object_cast<SceneObject>(scriptSO->getNativeHandle());
 
+		if (checkIfDestroyed(so))
+			return nullptr;
+
 		const Vector<HComponent>& mComponents = so->getComponents();
 		for(auto& component : mComponents)
 		{
@@ -79,16 +85,19 @@ namespace BansheeEngine
 		ScriptSceneObject* scriptSO = ScriptSceneObject::toNative(parentSceneObject);
 		HSceneObject so = static_object_cast<SceneObject>(scriptSO->getNativeHandle());
 
-		const Vector<HComponent>& mComponents = so->getComponents();
 		Vector<MonoObject*> managedComponents;
 
-		for(auto& component : mComponents)
+		if (!checkIfDestroyed(so))
 		{
-			if(component->getTypeId() == TID_ManagedComponent)
+			const Vector<HComponent>& mComponents = so->getComponents();
+			for (auto& component : mComponents)
 			{
-				GameObjectHandle<ManagedComponent> managedComponent = static_object_cast<ManagedComponent>(component);
+				if (component->getTypeId() == TID_ManagedComponent)
+				{
+					GameObjectHandle<ManagedComponent> managedComponent = static_object_cast<ManagedComponent>(component);
 
-				managedComponents.push_back(managedComponent->getManagedInstance());
+					managedComponents.push_back(managedComponent->getManagedInstance());
+				}
 			}
 		}
 
@@ -108,6 +117,9 @@ namespace BansheeEngine
 	{
 		ScriptSceneObject* scriptSO = ScriptSceneObject::toNative(parentSceneObject);
 		HSceneObject so = static_object_cast<SceneObject>(scriptSO->getNativeHandle());
+
+		if (checkIfDestroyed(so))
+			return;
 
 		// We only allow single component per type
 		const Vector<HComponent>& mComponents = so->getComponents();
@@ -130,6 +142,9 @@ namespace BansheeEngine
 
 	MonoObject* ScriptComponent::internal_getSceneObject(ScriptComponent* nativeInstance)
 	{
+		if (checkIfDestroyed(nativeInstance->mManagedComponent))
+			return nullptr;
+
 		HSceneObject sceneObject = nativeInstance->mManagedComponent->sceneObject();
 
 		ScriptSceneObject* scriptSO = ScriptGameObjectManager::instance().getScriptSceneObject(sceneObject);
@@ -137,6 +152,17 @@ namespace BansheeEngine
 			scriptSO = ScriptGameObjectManager::instance().createScriptSceneObject(sceneObject);
 
 		return scriptSO->getManagedInstance();
+	}
+
+	bool ScriptComponent::checkIfDestroyed(const GameObjectHandleBase& handle)
+	{
+		if (handle.isDestroyed())
+		{
+			LOGWRN("Trying to access a destroyed GameObject with instance ID: " + handle.getInstanceId());
+			return true;
+		}
+
+		return false;
 	}
 
 	void ScriptComponent::_onManagedInstanceDeleted()

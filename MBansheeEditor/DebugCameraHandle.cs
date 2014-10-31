@@ -18,24 +18,24 @@ namespace BansheeEditor
 
         protected override void PreInput()
         {
-            xAxis.Position = target.sceneObject.position;
+            xAxis.Position = target.sceneObject.Position;
         }
 
         protected override void PostInput()
         {
-            target.sceneObject.position = xAxis.NewPosition;
+            target.sceneObject.Position = xAxis.NewPosition;
         }
 
         protected override void Draw()
         {
-            Vector3 end = target.sceneObject.position + Vector3.xAxis * 5;
+            Vector3 end = target.sceneObject.Position + Vector3.xAxis * 5;
 
             if (xAxis.State == HandleSlider.StateType.Active)
                 HandleDrawing.SetColor(Color.white);
             else
                 HandleDrawing.SetColor(Color.green);
 
-            HandleDrawing.DrawLine(target.sceneObject.position, end);
+            HandleDrawing.DrawLine(target.sceneObject.Position, end);
         }
     }
 }

@@ -35,6 +35,22 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetRotation", &ScriptSceneObject::internal_setRotation);
 		metaData.scriptClass->addInternalCall("Internal_SetLocalRotation", &ScriptSceneObject::internal_setLocalRotation);
 		metaData.scriptClass->addInternalCall("Internal_SetLocalScale", &ScriptSceneObject::internal_setLocalScale);
+
+		metaData.scriptClass->addInternalCall("Internal_GetLocalTransform", &ScriptSceneObject::internal_getLocalTransform);
+		metaData.scriptClass->addInternalCall("Internal_GetWorldTransform", &ScriptSceneObject::internal_getWorldTransform);
+		metaData.scriptClass->addInternalCall("Internal_LookAt", &ScriptSceneObject::internal_lookAt);
+		metaData.scriptClass->addInternalCall("Internal_Move", &ScriptSceneObject::internal_move);
+		metaData.scriptClass->addInternalCall("Internal_MoveLocal", &ScriptSceneObject::internal_moveLocal);
+		metaData.scriptClass->addInternalCall("Internal_Rotate", &ScriptSceneObject::internal_rotate);
+		metaData.scriptClass->addInternalCall("Internal_Roll", &ScriptSceneObject::internal_roll);
+		metaData.scriptClass->addInternalCall("Internal_Yaw", &ScriptSceneObject::internal_yaw);
+		metaData.scriptClass->addInternalCall("Internal_Pitch", &ScriptSceneObject::internal_pitch);
+		metaData.scriptClass->addInternalCall("Internal_SetForward", &ScriptSceneObject::internal_setForward);
+		metaData.scriptClass->addInternalCall("Internal_GetForward", &ScriptSceneObject::internal_getForward);
+		metaData.scriptClass->addInternalCall("Internal_GetUp", &ScriptSceneObject::internal_getUp);
+		metaData.scriptClass->addInternalCall("Internal_GetRight", &ScriptSceneObject::internal_getRight);
+
+		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptSceneObject::internal_destroy);
 	}
 
 	void ScriptSceneObject::internal_createInstance(MonoObject* instance, MonoString* name)
@@ -46,6 +62,9 @@ namespace BansheeEngine
 
 	void ScriptSceneObject::internal_setParent(ScriptSceneObject* nativeInstance, MonoObject* parent)
 	{
+		if (checkIfDestroyed(nativeInstance))
+			return;
+
 		ScriptSceneObject* parentScriptSO = ScriptSceneObject::toNative(parent);
 
 		nativeInstance->mSceneObject->setParent(parentScriptSO->mSceneObject);
@@ -53,6 +72,9 @@ namespace BansheeEngine
 
 	MonoObject* ScriptSceneObject::internal_getParent(ScriptSceneObject* nativeInstance)
 	{
+		if (checkIfDestroyed(nativeInstance))
+			return nullptr;
+
 		HSceneObject parent = nativeInstance->mSceneObject->getParent();
 
 		ScriptSceneObject* parentScriptSO = ScriptGameObjectManager::instance().getScriptSceneObject(parent);
@@ -64,11 +86,17 @@ namespace BansheeEngine
 
 	UINT32 ScriptSceneObject::internal_getNumChildren(ScriptSceneObject* nativeInstance)
 	{
-		return nativeInstance->mSceneObject->getNumChildren();
+		if (!checkIfDestroyed(nativeInstance))
+			return nativeInstance->mSceneObject->getNumChildren();
+		else
+			return 0;
 	}
 
 	MonoObject* ScriptSceneObject::internal_getChild(ScriptSceneObject* nativeInstance, UINT32 idx)
 	{
+		if (checkIfDestroyed(nativeInstance))
+			return nullptr;
+
 		UINT32 numChildren = nativeInstance->mSceneObject->getNumChildren();
 		if(idx >= numChildren)
 		{
@@ -87,57 +115,184 @@ namespace BansheeEngine
 
 	void ScriptSceneObject::internal_getPosition(ScriptSceneObject* nativeInstance, Vector3* value)
 	{
-		*value = nativeInstance->mSceneObject->getWorldPosition();
+		if (!checkIfDestroyed(nativeInstance))
+			*value = nativeInstance->mSceneObject->getWorldPosition();
+		else
+			*value = Vector3();
 	}
 
 	void ScriptSceneObject::internal_getLocalPosition(ScriptSceneObject* nativeInstance, Vector3* value)
 	{
-		*value = nativeInstance->mSceneObject->getPosition();
+		if (!checkIfDestroyed(nativeInstance))
+			*value = nativeInstance->mSceneObject->getPosition();
+		else
+			*value = Vector3();
 	}
 
 	void ScriptSceneObject::internal_getRotation(ScriptSceneObject* nativeInstance, Quaternion* value)
 	{
-		*value = nativeInstance->mSceneObject->getWorldRotation();
+		if (!checkIfDestroyed(nativeInstance))
+			*value = nativeInstance->mSceneObject->getWorldRotation();
+		else
+			*value = Quaternion();
 	}
 
 	void ScriptSceneObject::internal_getLocalRotation(ScriptSceneObject* nativeInstance, Quaternion* value)
 	{
-		*value = nativeInstance->mSceneObject->getRotation();
+		if (!checkIfDestroyed(nativeInstance))
+			*value = nativeInstance->mSceneObject->getRotation();
+		else
+			*value = Quaternion();
 	}
 
 	void ScriptSceneObject::internal_getScale(ScriptSceneObject* nativeInstance, Vector3* value)
 	{
-		*value = nativeInstance->mSceneObject->getWorldScale();
+		if (!checkIfDestroyed(nativeInstance))
+			*value = nativeInstance->mSceneObject->getWorldScale();
+		else
+			*value = Vector3();
 	}
 
 	void ScriptSceneObject::internal_getLocalScale(ScriptSceneObject* nativeInstance, Vector3* value)
 	{
-		*value = nativeInstance->mSceneObject->getWorldScale();
+		if (!checkIfDestroyed(nativeInstance))
+			*value = nativeInstance->mSceneObject->getWorldScale();
+		else
+			*value = Vector3();
 	}
 
 	void ScriptSceneObject::internal_setPosition(ScriptSceneObject* nativeInstance, Vector3 value)
 	{
-		nativeInstance->mSceneObject->setWorldPosition(value);
+		if (!checkIfDestroyed(nativeInstance))
+			nativeInstance->mSceneObject->setWorldPosition(value);
 	}
 
 	void ScriptSceneObject::internal_setLocalPosition(ScriptSceneObject* nativeInstance, Vector3 value)
 	{
-		nativeInstance->mSceneObject->setPosition(value);
+		if (!checkIfDestroyed(nativeInstance))
+			nativeInstance->mSceneObject->setPosition(value);
 	}
 
 	void ScriptSceneObject::internal_setRotation(ScriptSceneObject* nativeInstance, Quaternion value)
 	{
-		nativeInstance->mSceneObject->setWorldRotation(value);
+		if (!checkIfDestroyed(nativeInstance))
+			nativeInstance->mSceneObject->setWorldRotation(value);
 	}
 
 	void ScriptSceneObject::internal_setLocalRotation(ScriptSceneObject* nativeInstance, Quaternion value)
 	{
-		nativeInstance->mSceneObject->setRotation(value);
+		if (!checkIfDestroyed(nativeInstance))
+			nativeInstance->mSceneObject->setRotation(value);
 	}
 
 	void ScriptSceneObject::internal_setLocalScale(ScriptSceneObject* nativeInstance, Vector3 value)
 	{
-		nativeInstance->mSceneObject->setScale(value);
+		if (!checkIfDestroyed(nativeInstance))
+			nativeInstance->mSceneObject->setScale(value);
+	}
+
+	void ScriptSceneObject::internal_getLocalTransform(ScriptSceneObject* nativeInstance, Matrix4* value)
+	{
+		if (!checkIfDestroyed(nativeInstance))
+			*value = nativeInstance->mSceneObject->getLocalTfrm();
+		else
+			*value = Matrix4();
+	}
+
+	void ScriptSceneObject::internal_getWorldTransform(ScriptSceneObject* nativeInstance, Matrix4* value)
+	{
+		if (!checkIfDestroyed(nativeInstance))
+			*value = nativeInstance->mSceneObject->getWorldTfrm();
+		else
+			*value = Matrix4();
+	}
+
+	void ScriptSceneObject::internal_lookAt(ScriptSceneObject* nativeInstance, Vector3 direction, Vector3 up)
+	{
+
+	}
+
+	void ScriptSceneObject::internal_move(ScriptSceneObject* nativeInstance, Vector3 value)
+	{
+		if (!checkIfDestroyed(nativeInstance))
+			nativeInstance->mSceneObject->move(value);
+	}
+
+	void ScriptSceneObject::internal_moveLocal(ScriptSceneObject* nativeInstance, Vector3 value)
+	{
+		if (!checkIfDestroyed(nativeInstance))
+			nativeInstance->mSceneObject->moveRelative(value);
+	}
+
+	void ScriptSceneObject::internal_rotate(ScriptSceneObject* nativeInstance, Quaternion value)
+	{
+		if (!checkIfDestroyed(nativeInstance))
+			nativeInstance->mSceneObject->rotate(value);
+	}
+
+	void ScriptSceneObject::internal_roll(ScriptSceneObject* nativeInstance, Radian value)
+	{
+		if (!checkIfDestroyed(nativeInstance))
+			nativeInstance->mSceneObject->roll(value);
+	}
+
+	void ScriptSceneObject::internal_yaw(ScriptSceneObject* nativeInstance, Radian value)
+	{
+		if (!checkIfDestroyed(nativeInstance))
+			nativeInstance->mSceneObject->yaw(value);
+	}
+
+	void ScriptSceneObject::internal_pitch(ScriptSceneObject* nativeInstance, Radian value)
+	{
+		if (!checkIfDestroyed(nativeInstance))
+			nativeInstance->mSceneObject->pitch(value);
+	}
+
+	void ScriptSceneObject::internal_setForward(ScriptSceneObject* nativeInstance, Vector3 value)
+	{
+		if (!checkIfDestroyed(nativeInstance))
+			nativeInstance->mSceneObject->setForward(value);
+	}
+
+	void ScriptSceneObject::internal_getForward(ScriptSceneObject* nativeInstance, Vector3* value)
+	{
+		if (!checkIfDestroyed(nativeInstance))
+			*value = nativeInstance->mSceneObject->getForward();
+		else
+			*value = Vector3();
+	}
+
+	void ScriptSceneObject::internal_getUp(ScriptSceneObject* nativeInstance, Vector3* value)
+	{
+		if (!checkIfDestroyed(nativeInstance))
+			*value = nativeInstance->mSceneObject->getUp();
+		else
+			*value = Vector3();
+	}
+
+	void ScriptSceneObject::internal_getRight(ScriptSceneObject* nativeInstance, Vector3* value)
+	{
+		if (!checkIfDestroyed(nativeInstance))
+			*value = nativeInstance->mSceneObject->getRight();
+		else
+			*value = Vector3();
+	}
+
+	void ScriptSceneObject::internal_destroy(ScriptSceneObject* nativeInstance, bool immediate)
+	{
+		if (!checkIfDestroyed(nativeInstance))
+			nativeInstance->mSceneObject->destroy(immediate);
+	}
+
+	bool ScriptSceneObject::checkIfDestroyed(ScriptSceneObject* nativeInstance)
+	{
+		if (nativeInstance->mSceneObject.isDestroyed())
+		{
+			LOGWRN("Trying to access a destroyed SceneObject with instance ID: " + nativeInstance->mSceneObject.getInstanceId());
+			return true;
+		}
+
+		return false;
 	}
 
 	void ScriptSceneObject::_onManagedInstanceDeleted()
