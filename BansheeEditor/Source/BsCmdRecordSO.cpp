@@ -59,7 +59,7 @@ namespace BansheeEngine
 		GameObjectManager::instance().setDeserializationMode(GODM_RestoreExternal | GODM_UseNewIds);
 
 		if (!mSceneObject.isDestroyed())
-			mSceneObject->destroy();
+			mSceneObject->destroy(true);
 
 		MemorySerializer serializer;
 		std::shared_ptr<SceneObject> restored = std::static_pointer_cast<SceneObject>(serializer.decode(mSerializedObject, mSerializedObjectSize));

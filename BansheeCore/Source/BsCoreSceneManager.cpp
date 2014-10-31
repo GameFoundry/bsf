@@ -1,6 +1,7 @@
 #include "BsCoreSceneManager.h"
 #include "BsSceneObject.h"
 #include "BsComponent.h"
+#include "BsGameObjectManager.h"
 
 namespace BansheeEngine
 {
@@ -11,8 +12,14 @@ namespace BansheeEngine
 
 	CoreSceneManager::~CoreSceneManager()
 	{
-		if(mRootNode != nullptr)
-			mRootNode->destroy();
+		if (mRootNode != nullptr && !mRootNode.isDestroyed())
+			mRootNode->destroy(true);
+	}
+
+	void CoreSceneManager::clearScene()
+	{
+		GameObjectManager::instance().destroyQueuedObjects();
+		mRootNode->destroy(true);
 	}
 
 	void CoreSceneManager::_update()
@@ -35,6 +42,8 @@ namespace BansheeEngine
 			for(UINT32 i = 0; i < currentGO->getNumChildren(); i++)
 				todo.push(currentGO->getChild(i));
 		}
+
+		GameObjectManager::instance().destroyQueuedObjects();
 	}
 
 	void CoreSceneManager::registerNewSO(const HSceneObject& node) 

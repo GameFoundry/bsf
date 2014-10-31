@@ -154,6 +154,11 @@ namespace BansheeEngine
 		 * @copydoc	Component::update
 		 */
 		virtual void update();
+
+		/**
+		 * @copydoc	Component::onDestroyed
+		 */
+		virtual void onDestroyed();
 	private:
 		GUIWidget(const GUIWidget& other) { }
 

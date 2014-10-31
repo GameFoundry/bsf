@@ -38,8 +38,12 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Destroys this object and any of its held components.
+		 *
+		 * @param [in]	immediate	If true, the object will be deallocated and become unusable
+		 *							right away. Otherwise the deallocation will be delayed to the end of
+		 *							frame (preferred method).
 		 */
-		void destroy();
+		void destroy(bool immediate = false);
 
 		/**
 		 * @copydoc	GameObject::_setInstanceData
@@ -54,7 +58,17 @@ namespace BansheeEngine
 		SceneObject(const String& name);
 
 		static HSceneObject createInternal(const String& name);
-		void destroyInternal();
+
+		/**
+		 * @brief	Destroys this object and any of its held components.
+		 *
+		 * @param [in]	immediate	If true, the object will be deallocated and become unusable
+		 *							right away. Otherwise the deallocation will be delayed to the end of
+		 *							frame (preferred method).
+		 *
+		 * @note	Unlike "destroy", does not remove the object from its parent.
+		 */
+		void destroyInternal(bool immediate = false);
 
 	private:
 		HSceneObject mThisHandle;
@@ -468,15 +482,21 @@ namespace BansheeEngine
 		 * @brief	Removes the component from this object, and deallocates it.
 		 *
 		 * @param [in]	component	The component to destroy.
+		 * @param [in]	immediate	If true, the component will be deallocated and become unusable
+		 *							right away. Otherwise the deallocation will be delayed to the end of
+		 *							frame (preferred method).
 		 */
-		void destroyComponent(const HComponent& component);
+		void destroyComponent(const HComponent& component, bool immediate = false);
 
 		/**
 		 * @brief	Removes the component from this object, and deallocates it.
 		 *
 		 * @param [in]	component	The component to destroy.
+		 * @param [in]	immediate	If true, the component will be deallocated and become unusable
+		 *							right away. Otherwise the deallocation will be delayed to the end of
+		 *							frame (preferred method).
 		 */
-		void destroyComponent(Component* component);
+		void destroyComponent(Component* component, bool immediate = false);
 
 		/**
 		 * @brief	Returns all components on this object.

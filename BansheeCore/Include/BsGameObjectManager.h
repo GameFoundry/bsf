@@ -69,6 +69,16 @@ namespace BansheeEngine
 		 */
 		void remapId(UINT64 oldId, UINT64 newId);
 
+		/**
+		 * @brief	Queues the object to be destroyed at the end of a GameObject update cycle.
+		 */
+		void queueForDestroy(const GameObjectHandleBase& object);
+
+		/**
+		 * @brief	Destroys any GameObjects that were queued for destruction.
+		 */
+		void destroyQueuedObjects();
+
 		/************************************************************************/
 		/* 							DESERIALIZATION                      		*/
 		/************************************************************************/
@@ -123,6 +133,7 @@ namespace BansheeEngine
 	private:
 		UINT64 mNextAvailableID; // 0 is not a valid ID
 		Map<UINT64, GameObjectHandleBase> mObjects;
+		Map<UINT64, GameObjectHandleBase> mQueuedForDestroy;
 
 		GameObject* mActiveDeserializedObject;
 		bool mIsDeserializationActive;

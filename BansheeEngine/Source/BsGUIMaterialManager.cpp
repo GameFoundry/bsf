@@ -164,7 +164,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUIMaterialManager::forceReleaseAllMaterials()
+	void GUIMaterialManager::clearMaterials()
 	{
 		mTextMaterials.clear();
 		mImageMaterials.clear();

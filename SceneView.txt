@@ -2,26 +2,30 @@
  GIZMO TODO:
   - Make a C# wrapper for Renderable
 
-The bounds I retrieve from GUIUtility are relative to the entire window, not just the current widget. Another reason to move editor widgets to their own GUIWidget.
-Passing a Vector2I (and I'm assuming any script) through a thunk crashes the runtime
+Need to defer destruction of Components until all component updates have finished. Otherwise I risk destroying a component referenced by some
+other script since the order to Update() methods isn't clearly defined.
+ - Add [ExecPriority] attribute for Update() method
+ - Make sure Component update is called
+ - Do I handle it gracefully if user tries to access destroyed component or scene object?
+  - I don't, at least not with SceneObject. I will try to access HSceneObject handle even if its
+    destroyed. Add a check.
 
-Set up Application::getPrimaryViewport so it returns a valid viewport otherwise C# Camera won't work properly
-
-REFACTOR material getParams* and related classes. Those params should update all gpu program params that share that variable, not just the first found
+Refactor GizmoManager and HandleManager so they accept a CameraHandler
+Port SceneCameraController to C#
+ - Will need a C# Cursor and SceneObject C# interface will also likely need to be completed (SceneObject doesn't have Destroy() among other things)
+Port RenderTexture to C# and likely extend Texture2D so it accepts renderable flags. While at it add TextureCube and Texture3D as well.
+Ensure that EditorWindow resize callback works properly.
+ - Perhaps add OnResizeEnd callback that can be used for updating the render texture
+Create a C# wrapper around ProjectSettings
+Make a Script version of SceneEditorWindow
+ - This would replace SceneEditorWidget so it would initialize scene grid and call
+    update on handle manager and scene grid, as well as apply ProjectSettings to them.
+ 
+Move handle is buggy as hell - It moves in wrong direction sometimes, sometimes it skips, other times collision seems to be wrong
 Need a way to drag and drop items from Scene tree view to Scene view
 When dragging a handle make sure it works when cursor leaves the scene view
 Also make sure that handle manager receives mouse up event if its done outside of scene view
-When selecting/deselecting stuff handle display is delayed
 
-Create the scene widget completely in C#?
- - Port RenderTexture, SceneCameraController, ProjectSettings, SceneGrid
- - Will need to track when widget resizes so I can resize the render target
- - Handle manager update will originate from the widget
-  - Actually it could still be done from C++
- - How will scene grid rendering be handled? Currently it's done from a render() callback
-  - It's still going to have a C++ representation, just call the callback there
- - I will still need a C++ version of scene widget (not in script code but in editor code) because handle/gizmo manager reference it
- 
 AFTER I have scene widget in C#:
  - Finish up C# Handles class so it returns proper values
  - Ensure fixed handle size and handle snapping works
@@ -38,6 +42,8 @@ LATER:
  - Need a way to render text for gizmos and handles, and in scene in general
  - Add drag to select
  - Need a better system to catch broken shaders. DX11 just draws nothing with depth, DX9 draws all white.
+ - The bounds I retrieve from GUIUtility are relative to the entire window, not just the current widget. Another reason to move editor widgets to their own GUIWidget.
+ - Set up Application::getPrimaryViewport so it returns a valid viewport otherwise C# Camera won't work properly
 
 ---------------------------------------------------------------------
 Render textures in C#:

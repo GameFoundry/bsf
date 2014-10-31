@@ -91,7 +91,9 @@ namespace BansheeEngine
 
 			assert(componentHandle != nullptr); // It must exist as every component belongs to its parent SO
 
-			mc->construct(serializableObject->getManagedInstance(), runtimeType);
+			MonoClass* managedClass = MonoManager::instance().findClass(monoClass);
+
+			mc->construct(serializableObject->getManagedInstance(), runtimeType, managedClass);
 			ScriptComponent* nativeInstance = ScriptGameObjectManager::instance().createScriptComponent(componentHandle);
 		}
 

@@ -23,7 +23,7 @@ namespace BansheeEngine
 		if(!mThisHandle.isDestroyed())
 		{
 			LOGWRN("Object is being deleted without being destroyed first?");
-			destroyInternal();
+			destroyInternal(true);
 		}
 	}
 
@@ -47,7 +47,7 @@ namespace BansheeEngine
 		return sceneObject;
 	}
 
-	void SceneObject::destroy()
+	void SceneObject::destroy(bool immediate)
 	{
 		// Parent is our owner, so when his reference to us is removed, delete might be called.
 		// So make sure this is the last thing we do.
@@ -57,27 +57,39 @@ namespace BansheeEngine
 				mParent->removeChild(mThisHandle);
 		}
 
-		destroyInternal();
+		destroyInternal(immediate);
 	}
 
-	void SceneObject::destroyInternal()
+	void SceneObject::destroyInternal(bool immediate)
 	{
 		for(auto iter = mChildren.begin(); iter != mChildren.end(); ++iter)
-			(*iter)->destroyInternal();
+			(*iter)->destroyInternal(immediate);
 
 		mChildren.clear();
 
 		for(auto iter = mComponents.begin(); iter != mComponents.end(); ++iter)
 		{
 			gCoreSceneManager().notifyComponentRemoved((*iter));
-			GameObjectManager::instance().unregisterObject(*iter);
-			(*iter).destroy();
+			(*iter)->onDestroyed();
+
+			if (immediate)
+			{
+				GameObjectManager::instance().unregisterObject(*iter);
+				(*iter).destroy();
+			}
+			else
+				GameObjectManager::instance().queueForDestroy(*iter);
 		}
 
 		mComponents.clear();
 
-		GameObjectManager::instance().unregisterObject(mThisHandle);
-		mThisHandle.destroy();
+		if (immediate)
+		{
+			GameObjectManager::instance().unregisterObject(mThisHandle);
+			mThisHandle.destroy();
+		}
+		else
+			GameObjectManager::instance().queueForDestroy(mThisHandle);
 	}
 
 	void SceneObject::_setInstanceData(GameObjectInstanceDataPtr& other)
@@ -447,7 +459,7 @@ namespace BansheeEngine
 		return HComponent();
 	}
 
-	void SceneObject::destroyComponent(const HComponent& component)
+	void SceneObject::destroyComponent(const HComponent& component, bool immediate)
 	{
 		if(component == nullptr)
 		{
@@ -460,17 +472,25 @@ namespace BansheeEngine
 		if(iter != mComponents.end())
 		{
 			gCoreSceneManager().notifyComponentRemoved((*iter));
-			GameObjectManager::instance().unregisterObject(component);
-
 			(*iter)->onDestroyed();
-			(*iter).destroy();
+			
 			mComponents.erase(iter);
+
+			if (immediate)
+			{
+				GameObjectManager::instance().unregisterObject(component);
+				(*iter).destroy();
+			}
+			else
+			{
+				GameObjectManager::instance().queueForDestroy(component);
+			}
 		}
 		else
 			LOGDBG("Trying to remove a component that doesn't exist on this SceneObject.");
 	}
 
-	void SceneObject::destroyComponent(Component* component)
+	void SceneObject::destroyComponent(Component* component, bool immediate)
 	{
 		auto iterFind = std::find_if(mComponents.begin(), mComponents.end(), 
 			[component](const HComponent& x) 
@@ -483,7 +503,7 @@ namespace BansheeEngine
 
 		if(iterFind != mComponents.end())
 		{
-			destroyComponent(*iterFind);
+			destroyComponent(*iterFind, immediate);
 		}
 	}
 

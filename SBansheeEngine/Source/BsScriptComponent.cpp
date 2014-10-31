@@ -3,6 +3,7 @@
 #include "BsScriptMeta.h"
 #include "BsMonoField.h"
 #include "BsMonoClass.h"
+#include "BsMonoMethod.h"
 #include "BsMonoManager.h"
 #include "BsMonoUtil.h"
 #include "BsScriptSceneObject.h"

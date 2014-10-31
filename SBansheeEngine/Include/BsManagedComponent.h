@@ -17,6 +17,8 @@ namespace BansheeEngine
 		const String& getManagedFullTypeName() const { return mFullTypeName; }
 
 	private:
+		typedef void(__stdcall *UpdateThunkDef) (MonoObject*, MonoException**);
+
 		MonoObject* mManagedInstance;
 		MonoReflectionType* mRuntimeType;
 		uint32_t mManagedHandle;
@@ -24,6 +26,8 @@ namespace BansheeEngine
 		String mNamespace;
 		String mTypeName;
 		String mFullTypeName;
+
+		UpdateThunkDef mUpdateThunk;
 
 		/************************************************************************/
 		/* 							COMPONENT OVERRIDES                    		*/
@@ -35,12 +39,12 @@ namespace BansheeEngine
 		/** Standard constructor.
         */
 		ManagedComponent(const HSceneObject& parent, MonoReflectionType* runtimeType);
-		void construct(MonoObject* object, MonoReflectionType* runtimeType);
+		void construct(MonoObject* object, MonoReflectionType* runtimeType, MonoClass* monoClass);
 
 		void onDestroyed();
 
 	public:
-		virtual void update() {}
+		virtual void update();
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -51,6 +55,6 @@ namespace BansheeEngine
 		virtual RTTITypeBase* getRTTI() const;
 
 	protected:
-		ManagedComponent() {} // Serialization only
+		ManagedComponent(); // Serialization only
 	};
 }

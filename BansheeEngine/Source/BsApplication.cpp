@@ -8,6 +8,8 @@
 #include "BsScriptManager.h"
 #include "BsProfilingManager.h"
 #include "BsVirtualInput.h"
+#include "BsSceneManager.h"
+#include "BsSceneObject.h"
 #include "BsCursor.h"
 
 namespace BansheeEngine
@@ -49,6 +51,10 @@ namespace BansheeEngine
 
 	Application::~Application()
 	{
+		// Need to clear all objects before I unload any plugins, as they
+		// could have allocated parts or all of those objects.
+		SceneManager::instance().clearScene(); 
+
 #if BS_VER == BS_VER_DEV
 		shutdownPlugin(mSBansheeEnginePlugin);
 		unloadPlugin(mSBansheeEnginePlugin);
@@ -59,7 +65,7 @@ namespace BansheeEngine
 
 		Cursor::shutDown();
 
-		GUIMaterialManager::instance().forceReleaseAllMaterials();
+		GUIMaterialManager::instance().clearMaterials();
 
 		OverlayManager::shutDown();
 		GUIManager::shutDown();

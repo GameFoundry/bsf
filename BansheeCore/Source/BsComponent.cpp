@@ -15,9 +15,9 @@ namespace BansheeEngine
 
 	}
 
-	void Component::destroy()
+	void Component::destroy(bool immediate)
 	{
-		SO()->destroyComponent(this);
+		SO()->destroyComponent(this, immediate);
 	}
 
 	RTTITypeBase* Component::getRTTIStatic()

@@ -33,8 +33,11 @@ namespace BansheeEngine
 		 * @brief	Removes the component from parent SceneObject and deletes it. All
 		 * 			the references to this component will be marked as destroyed and you
 		 * 			will get an exception if you try to use them.
+		 *
+		 * @param	[in] immediate	If true the destruction will be performed immediately, otherwise
+		 *							it will be delayed until the end of the current frame (preferred option).
 		 */
-		void destroy();
+		void destroy(bool immediate = false);
 
 	protected:
 		friend class SceneObject;

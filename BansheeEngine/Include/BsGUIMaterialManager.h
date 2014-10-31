@@ -72,7 +72,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Releases all internal materials, whether they are used or not.
 		 */
-		void forceReleaseAllMaterials();
+		void clearMaterials();
 	private:
 		/**
 		 * @brief	Contains data about a GUI material and its usage count.

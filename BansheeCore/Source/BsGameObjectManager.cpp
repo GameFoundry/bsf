@@ -10,7 +10,9 @@ namespace BansheeEngine
 	}
 
 	GameObjectManager::~GameObjectManager()
-	{ }
+	{
+		destroyQueuedObjects();
+	}
 
 	GameObjectHandleBase GameObjectManager::getObject(UINT64 id) const 
 	{ 
@@ -47,6 +49,26 @@ namespace BansheeEngine
 
 		mObjects[newId] = mObjects[oldId];
 		mObjects.erase(oldId);
+	}
+
+	void GameObjectManager::queueForDestroy(const GameObjectHandleBase& object)
+	{
+		if (object.isDestroyed())
+			return;
+
+		UINT64 instanceId = object->getInstanceId();
+		mQueuedForDestroy[instanceId] = object;
+	}
+
+	void GameObjectManager::destroyQueuedObjects()
+	{
+		for (auto& objPair : mQueuedForDestroy)
+		{
+			unregisterObject(objPair.second);
+			objPair.second.destroy();
+		}
+
+		mQueuedForDestroy.clear();
 	}
 
 	GameObjectHandleBase GameObjectManager::registerObject(const std::shared_ptr<GameObject>& object)

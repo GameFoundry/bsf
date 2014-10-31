@@ -39,8 +39,11 @@ namespace BansheeEngine
 	}
 
 	GUIWidget::~GUIWidget()
+	{ }
+
+	void GUIWidget::onDestroyed()
 	{
-		if(mTarget != nullptr)
+		if (mTarget != nullptr)
 		{
 			GUIManager::instance().unregisterWidget(this);
 
@@ -50,12 +53,12 @@ namespace BansheeEngine
 		// Iterate over all elements in this way because each
 		// GUIElement::destroy call internally unregisters the element
 		// from the widget, and modifies the mElements array
-		while(mElements.size() > 0)
+		while (mElements.size() > 0)
 		{
 			GUIElement::destroy(mElements[0]);
 		}
 
-		for(auto& area : mAreas)
+		for (auto& area : mAreas)
 		{
 			GUIArea::destroyInternal(area);
 		}

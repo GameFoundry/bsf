@@ -24,6 +24,11 @@ namespace BansheeEngine
 		HSceneObject getRootNode() const { return mRootNode; }
 
 		/**
+		 * @brief	Destroys all scene objects in the scene.
+		 */
+		void clearScene();
+
+		/**
 		 * @brief	Called every frame.
 		 *
 		 * @note	Internal method.
