@@ -14,7 +14,7 @@ namespace BansheeEngine
 		~HandleSliderLine();
 
 		bool intersects(const Ray& ray, float& t) const;
-		void handleInput(const HCamera& camera, const Vector2I& pointerPos, const Ray& ray);
+		void handleInput(const CameraHandlerPtr& camera, const Vector2I& pointerPos, const Ray& ray);
 
 		Vector3 getNewPosition() const;
 

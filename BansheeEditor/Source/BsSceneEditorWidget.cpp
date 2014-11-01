@@ -25,6 +25,7 @@
 #include "BsSelection.h"
 #include "BsEditorApplication.h"
 #include "BsProjectSettings.h"
+#include "BsGizmoManager.h"
 
 // DEBUG ONLY
 #include "BsTime.h"
@@ -78,13 +79,16 @@ namespace BansheeEngine
 			mCameraController->update();
 		}
 
+		CameraHandlerPtr camera = mCamera->_getHandler();
+
+		GizmoManager::instance().update(camera);
 		HandleManager& handleManager = HandleManager::instance();
 
 		handleManager.setDefaultHandleSize(projSettings->getHandleSize());
 		handleManager.setMoveHandleSnapAmount(projSettings->getMoveHandleSnap());
 		handleManager.setRotateHandleSnapAmount(projSettings->getRotationHandleSnap());
 		handleManager.setScaleHandleSnapAmount(projSettings->getScaleHandleSnap());
-		handleManager.update(mCamera);
+		handleManager.update(camera);
 
 		mSceneGrid->setSize(projSettings->getGridSize());
 		mSceneGrid->setSpacing(projSettings->getGridSpacing());
@@ -130,7 +134,9 @@ namespace BansheeEngine
 		if (!toSceneViewPos(event.screenPos, scenePos))
 			return;
 
-		HandleManager::instance().handleInput(mCamera, scenePos, mLeftButtonPressed);
+		CameraHandlerPtr camera = mCamera->_getHandler();
+
+		HandleManager::instance().handleInput(camera, scenePos, mLeftButtonPressed);
 	}
 
 	void SceneEditorWidget::onPointerReleased(const PointerEvent& event)
@@ -142,8 +148,10 @@ namespace BansheeEngine
 		if (!toSceneViewPos(event.screenPos, scenePos))
 			return;
 
+		CameraHandlerPtr camera = mCamera->_getHandler();
+
 		mLeftButtonPressed = false;
-		HandleManager::instance().handleInput(mCamera, scenePos, mLeftButtonPressed);
+		HandleManager::instance().handleInput(camera, scenePos, mLeftButtonPressed);
 	}
 
 	void SceneEditorWidget::onPointerPressed(const PointerEvent& event)
@@ -157,11 +165,13 @@ namespace BansheeEngine
 
 		mLeftButtonPressed = true;
 
+		CameraHandlerPtr camera = mCamera->_getHandler();
+
 		// If we didn't hit a handle, perform normal selection
-		if (!HandleManager::instance().hasHitHandle(mCamera, scenePos))
+		if (!HandleManager::instance().hasHitHandle(camera, scenePos))
 		{
 			// TODO - Handle multi-selection (i.e. selection rectangle when dragging)
-			HSceneObject pickedObject = ScenePicking::instance().pickClosestObject(mCamera, scenePos, Vector2I(1, 1));
+			HSceneObject pickedObject = ScenePicking::instance().pickClosestObject(camera, scenePos, Vector2I(1, 1));
 
 			if (pickedObject)
 			{
@@ -191,7 +201,7 @@ namespace BansheeEngine
 
 		// This also causes handles to be created/removed, so perform this only after
 		// selection has been updated, otherwise we lag back a frame
-		HandleManager::instance().handleInput(mCamera, scenePos, mLeftButtonPressed);
+		HandleManager::instance().handleInput(camera, scenePos, mLeftButtonPressed);
 	}
 
 	void SceneEditorWidget::doOnResized(UINT32 width, UINT32 height)

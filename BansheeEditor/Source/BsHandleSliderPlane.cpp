@@ -45,7 +45,7 @@ namespace BansheeEngine
 		return false;
 	}
 
-	void HandleSliderPlane::handleInput(const HCamera& camera, const Vector2I& pointerPos, const Ray& ray)
+	void HandleSliderPlane::handleInput(const CameraHandlerPtr& camera, const Vector2I& pointerPos, const Ray& ray)
 	{
 		assert(getState() == State::Active);
 

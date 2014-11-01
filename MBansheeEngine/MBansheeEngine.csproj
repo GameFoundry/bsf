@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="BuiltinResources.cs" />
     <Compile Include="Camera.cs" />
+    <Compile Include="Cursor.cs" />
     <Compile Include="Debug.cs" />
     <Compile Include="Color.cs" />
     <Compile Include="Component.cs" />
@@ -91,6 +92,7 @@
     <Compile Include="Math\Rect2.cs" />
     <Compile Include="Math\Rect2I.cs" />
     <Compile Include="Math\Vector2I.cs" />
+    <Compile Include="PixelData.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Math\Quaternion.cs" />

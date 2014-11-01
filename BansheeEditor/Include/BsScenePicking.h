@@ -44,8 +44,8 @@ namespace BansheeEngine
 	public:
 		ScenePicking();
 
-		HSceneObject pickClosestObject(const HCamera& cam, const Vector2I& position, const Vector2I& area);
-		Vector<HSceneObject> pickObjects(const HCamera& cam, const Vector2I& position, const Vector2I& area);
+		HSceneObject pickClosestObject(const CameraHandlerPtr& cam, const Vector2I& position, const Vector2I& area);
+		Vector<HSceneObject> pickObjects(const CameraHandlerPtr& cam, const Vector2I& position, const Vector2I& area);
 
 	private:
 		typedef Set<RenderablePickData, std::function<bool(const RenderablePickData&, const RenderablePickData&)>> RenderableSet;

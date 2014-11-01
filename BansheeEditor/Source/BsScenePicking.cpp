@@ -79,7 +79,7 @@ namespace BansheeEngine
 		}
 	}
 
-	HSceneObject ScenePicking::pickClosestObject(const HCamera& cam, const Vector2I& position, const Vector2I& area)
+	HSceneObject ScenePicking::pickClosestObject(const CameraHandlerPtr& cam, const Vector2I& position, const Vector2I& area)
 	{
 		Vector<HSceneObject> selectedObjects = pickObjects(cam, position, area);
 		if (selectedObjects.size() == 0)
@@ -88,7 +88,7 @@ namespace BansheeEngine
 		return selectedObjects[0];
 	}
 
-	Vector<HSceneObject> ScenePicking::pickObjects(const HCamera& cam, const Vector2I& position, const Vector2I& area)
+	Vector<HSceneObject> ScenePicking::pickObjects(const CameraHandlerPtr& cam, const Vector2I& position, const Vector2I& area)
 	{
 		auto comparePickElement = [&] (const ScenePicking::RenderablePickData& a, const ScenePicking::RenderablePickData& b)
 		{

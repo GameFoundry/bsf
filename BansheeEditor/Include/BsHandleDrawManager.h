@@ -28,7 +28,7 @@ namespace BansheeEngine
 		void drawWireArc(const Vector3& position, const Vector3& normal, float radius, Degree startAngle, Degree amountAngle, float size = 1.0f);
 		void drawRect(const Rect3& area, float size = 1.0f);
 
-		void draw(const HCamera& camera);
+		void draw(const CameraHandlerPtr& camera);
 
 	private:
 		friend class HandleDrawManagerCore;

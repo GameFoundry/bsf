@@ -24,13 +24,13 @@ namespace BansheeEngine
 
 	}
 
-	void HandleSliderManager::update(const HCamera& camera)
+	void HandleSliderManager::update(const CameraHandlerPtr& camera)
 	{
 		for (auto& slider : mSliders)
 			slider->update(camera);
 	}
 
-	bool HandleSliderManager::hasHitSlider(const HCamera& camera, const Vector2I& inputPos) const
+	bool HandleSliderManager::hasHitSlider(const CameraHandlerPtr& camera, const Vector2I& inputPos) const
 	{
 		Ray inputRay = camera->screenPointToRay(inputPos);
 		for (auto& slider : mSliders)
@@ -43,7 +43,7 @@ namespace BansheeEngine
 		return false;
 	}
 
-	void HandleSliderManager::handleInput(const HCamera& camera, const Vector2I& inputPos, bool pressed)
+	void HandleSliderManager::handleInput(const CameraHandlerPtr& camera, const Vector2I& inputPos, bool pressed)
 	{
 		Ray inputRay = camera->screenPointToRay(inputPos);
 

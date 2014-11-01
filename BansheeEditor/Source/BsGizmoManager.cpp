@@ -229,20 +229,18 @@ namespace BansheeEngine
 		mIdxToSceneObjectMap[iconData.idx] = mActiveSO;
 	}
 
-	void GizmoManager::update()
+	void GizmoManager::update(const CameraHandlerPtr& camera)
 	{
 		mDrawHelper->clearMeshes();
 
 		if (mIconMesh != nullptr)
 			mIconMeshHeap->dealloc(mIconMesh);
 
-		HCamera sceneCamera;
 		RenderTargetPtr rt;
 		SceneEditorWidget* sceneView = SceneViewLocator::instance();
 		if (sceneView != nullptr)
 		{
-			sceneCamera = sceneView->getSceneCamera();
-			rt = sceneCamera->getViewport()->getTarget();
+			rt = camera->getViewport()->getTarget();
 
 			IconRenderDataVecPtr iconRenderData;
 
@@ -269,7 +267,7 @@ namespace BansheeEngine
 			// one for solids, one for wireframe
 			assert(meshes.size() <= 2);
 
-			mIconMesh = buildIconMesh(sceneCamera, mIconData, false, iconRenderData);
+			mIconMesh = buildIconMesh(camera, mIconData, false, iconRenderData);
 			MeshProxyPtr iconMeshProxy = mIconMesh->_createProxy(0);
 
 			gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::updateData, mCore, rt, solidMeshProxy, wireMeshProxy, iconMeshProxy, iconRenderData));
@@ -283,7 +281,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GizmoManager::renderForPicking(const HCamera& camera, std::function<Color(UINT32)> idxToColorCallback)
+	void GizmoManager::renderForPicking(const CameraHandlerPtr& camera, std::function<Color(UINT32)> idxToColorCallback)
 	{
 		Vector<IconData> iconData;
 		IconRenderDataVecPtr iconRenderData;
@@ -415,7 +413,7 @@ namespace BansheeEngine
 		mCurrentIdx = 0;
 	}
 
-	TransientMeshPtr GizmoManager::buildIconMesh(const HCamera& camera, const Vector<IconData>& iconData, 
+	TransientMeshPtr GizmoManager::buildIconMesh(const CameraHandlerPtr& camera, const Vector<IconData>& iconData,
 		bool forPicking, GizmoManager::IconRenderDataVecPtr& iconRenderData)
 	{
 		mSortedIconData.clear();
@@ -540,7 +538,7 @@ namespace BansheeEngine
 			}
 
 			Color normalColor, fadedColor;
-			calculateIconColors(curIconData.color, *camera.get(), (UINT32)(halfHeight * 2.0f), curIconData.fixedScale, normalColor, fadedColor);
+			calculateIconColors(curIconData.color, camera, (UINT32)(halfHeight * 2.0f), curIconData.fixedScale, normalColor, fadedColor);
 
 			if (forPicking)
 			{
@@ -597,14 +595,14 @@ namespace BansheeEngine
 		height = Math::roundToInt(height * scale);
 	}
 
-	void GizmoManager::calculateIconColors(const Color& tint, const Camera& camera,
+	void GizmoManager::calculateIconColors(const Color& tint, const CameraHandlerPtr& camera,
 		UINT32 iconHeight, bool fixedScale, Color& normalColor, Color& fadedColor)
 	{
 		normalColor = tint;
 
 		if (!fixedScale)
 		{
-			float iconToScreenRatio = iconHeight / (float)camera.getViewport()->getHeight();
+			float iconToScreenRatio = iconHeight / (float)camera->getViewport()->getHeight();
 
 			if (iconToScreenRatio > 0.3f)
 			{

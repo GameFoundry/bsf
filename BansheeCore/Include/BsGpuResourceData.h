@@ -64,6 +64,12 @@ namespace BansheeEngine
 		void setExternalBuffer(UINT8* data);
 
 		/**
+		 * @brief	Checks if the internal buffer is locked due to some other thread
+		 *			using it.
+		 */
+		bool isLocked() const { return mLocked; }
+
+		/**
 		 * @brief	Locks the data and makes it available only to the core thread. 
 		 *
 		 * @note	Internal method.

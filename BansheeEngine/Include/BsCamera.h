@@ -284,7 +284,7 @@ namespace BansheeEngine
 		 * @brief	Returns the internal camera handler that is used for
 		 *			majority of operations by this component.
 		 */
-		CameraHandlerPtr _getHandler() const { return mInternal; }
+		CameraHandlerPtr _getHandler() const { updateView(); return mInternal; }
 
 		/************************************************************************/
 		/* 								CORE PROXY                      		*/

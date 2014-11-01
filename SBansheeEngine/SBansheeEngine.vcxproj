@@ -244,7 +244,9 @@
     <ClInclude Include="Include\BsManagedSerializableObject.h" />
     <ClInclude Include="Include\BsRuntimeScriptObjects.h" />
     <ClInclude Include="Include\BsScriptCamera.h" />
+    <ClInclude Include="Include\BsScriptColor.h" />
     <ClInclude Include="Include\BsScriptComponent.h" />
+    <ClInclude Include="Include\BsScriptCursor.h" />
     <ClInclude Include="Include\BsScriptDebug.h" />
     <ClInclude Include="Include\BsScriptEnginePrerequisites.h" />
     <ClInclude Include="Include\BsScriptGameObject.h" />
@@ -274,6 +276,7 @@
     <ClInclude Include="Include\BsScriptManagedResource.h" />
     <ClInclude Include="Include\BsScriptObject.h" />
     <ClInclude Include="Include\BsScriptObjectImpl.h" />
+    <ClInclude Include="Include\BsScriptPixelData.h" />
     <ClInclude Include="Include\BsScriptResource.h" />
     <ClInclude Include="Include\BsScriptResourceManager.h" />
     <ClInclude Include="Include\BsScriptSceneObject.h" />
@@ -301,7 +304,9 @@
     <ClCompile Include="Source\BsManagedResourceMetaData.cpp" />
     <ClCompile Include="Source\BsRuntimeScriptObjects.cpp" />
     <ClCompile Include="Source\BsScriptCamera.cpp" />
+    <ClCompile Include="Source\BsScriptColor.cpp" />
     <ClCompile Include="Source\BsScriptComponent.cpp" />
+    <ClCompile Include="Source\BsScriptCursor.cpp" />
     <ClCompile Include="Source\BsScriptDebug.cpp" />
     <ClCompile Include="Source\BsScriptEnginePlugin.cpp" />
     <ClCompile Include="Source\BsScriptGameObjectManager.cpp" />
@@ -329,6 +334,7 @@
     <ClCompile Include="Source\BsScriptManagedResource.cpp" />
     <ClCompile Include="Source\BsScriptObject.cpp" />
     <ClCompile Include="Source\BsScriptObjectImpl.cpp" />
+    <ClCompile Include="Source\BsScriptPixelData.cpp" />
     <ClCompile Include="Source\BsScriptResourceManager.cpp" />
     <ClCompile Include="Source\BsScriptSceneObject.cpp" />
     <ClCompile Include="Source\BsManagedSerializableArray.cpp" />

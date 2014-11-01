@@ -63,7 +63,7 @@ namespace BansheeEngine
 		return gotIntersect;
 	}
 
-	void HandleSliderLine::handleInput(const HCamera& camera, const Vector2I& pointerPos, const Ray& ray)
+	void HandleSliderLine::handleInput(const CameraHandlerPtr& camera, const Vector2I& pointerPos, const Ray& ray)
 	{
 		assert(getState() == State::Active);
 

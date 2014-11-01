@@ -389,7 +389,6 @@ namespace BansheeEngine
 
 		ProjectLibrary::instance().update();
 		EditorWindowManager::instance().update();	
-		GizmoManager::instance().update();
 	}
 
 	bool EditorApplication::isProjectLoaded() const

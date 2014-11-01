@@ -21,8 +21,8 @@ namespace BansheeEngine
 		virtual ~HandleSlider() { }
 
 		virtual bool intersects(const Ray& ray, float& t) const = 0;
-		virtual void handleInput(const HCamera& camera, const Vector2I& pointerPos, const Ray& ray) = 0;
-		void update(const HCamera& camera);
+		virtual void handleInput(const CameraHandlerPtr& camera, const Vector2I& pointerPos, const Ray& ray) = 0;
+		void update(const CameraHandlerPtr& camera);
 
 		State getState() const { return mState; }
 		bool getFixedScale() const { return mFixedScale; }
@@ -50,7 +50,7 @@ namespace BansheeEngine
 
 		virtual void updateCachedTransform() const;
 
-		float calcDelta(const HCamera& camera, const Vector3& position, const Vector3& direction, 
+		float calcDelta(const CameraHandlerPtr& camera, const Vector3& position, const Vector3& direction,
 			const Vector2I& pointerStart, const Vector2I& pointerEnd);
 
 		bool mFixedScale;

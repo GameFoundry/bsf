@@ -11,7 +11,7 @@ namespace BansheeEngine
 
 	}
 
-	void HandleSlider::update(const HCamera& camera)
+	void HandleSlider::update(const CameraHandlerPtr& camera)
 	{
 		if (mFixedScale)
 			mDistanceScale = HandleManager::instance().getHandleSize(camera, mPosition);
@@ -73,7 +73,7 @@ namespace BansheeEngine
 		return mDelta;
 	}
 
-	float HandleSlider::calcDelta(const HCamera& camera, const Vector3& position, const Vector3& direction,
+	float HandleSlider::calcDelta(const CameraHandlerPtr& camera, const Vector3& position, const Vector3& direction,
 		const Vector2I& pointerStart, const Vector2I& pointerEnd)
 	{
 		Vector2I handleStart2D = camera->worldToScreenPoint(position);

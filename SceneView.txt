@@ -1,15 +1,54 @@
+2. Extend C++ Texture so it keeps a CPU cached copy if we want it (PixelData per face, per mip)
+  - Texture::readCPUData(face, mip). Return null if not supported by texture.
+3. Figure out how to port AsyncOp to C#
+4. Write a C# interface for Texture, Texture2D, Texture3D, TextureCube
+  - Port PixelFormat to C#: Only a subset of actual formats? Only IDs not meta-data.
+  - Texture: width, height, format, numMipmaps, usage, sRGB, sampleCount
+  - Texture2D: GetPixels(int mip), SetPixels(int mip), AsyncOp GetGPUPixels(int mip)
+  - Texture3D: depth, GetPixels(int mip), SetPixels(int mip), AsyncOp GetGPUPixels(int mip)
+  - TextureCube: GetPixels(CubeFace face, int mip), SetPixels(CubeFace face, int mip), AsyncOp GetGPUPixels(CubeFace face, int mip)
+
+-------------
+
+Get rid of multisample hint from Texture and move it to RenderTarget (RENDER_TEXTURE_DESC actually)
+ - Seems they only use it for some kind of qality hint
+ - Possibly replace it with an enum if I can't remove it?
+
+-------------
+
+Optionally port PixelUtility to compressing, converting, generating mipmaps, applying gamma to PixelData
+ - Also getMaxMimaps and other methods for retrieving pixel format information
+
+
+
+
+
+
+
+WEEKEND END
+-----------------------
 
  GIZMO TODO:
   - Make a C# wrapper for Renderable
 
- - Do I handle it gracefully if user tries to access destroyed component or scene object?
-  - I don't, at least not with SceneObject. I will try to access HSceneObject handle even if its
-    destroyed. Add a check.
-
 Refactor GizmoManager and HandleManager so they accept a CameraHandler
+ - I need to ensure scene CameraHandler has proper position/rotation before being passed to handle and gizmo manager
+ - Delete SceneViewLocator, I don't think it's used anywhere
+
+Tomorrow:
+ - Figure out how to deal with Textures, especially reading them
+ - Move handle/gizmo manager to CameraHandler
+ - Finish up Cursor
+
 Port SceneCameraController to C#
- - Will need a C# Cursor and SceneObject C# interface will also likely need to be completed (SceneObject doesn't have Destroy() among other things)
+ - Will need a C# Cursor
 Port RenderTexture to C# and likely extend Texture2D so it accepts renderable flags. While at it add TextureCube and Texture3D as well.
+ - Actually Texture2D doesn't seem to be implemented at all. Will also need to add PixelData wrapper.
+ - Will I need to add support for readable textures? e.g. what happens when you try to read a texture from C#?
+   - Almost certainly. It's very useful to be able to read textures.
+   - I can't sync the threads when reading, it would be too slow. Have an AsyncOp similar to c++ code? 
+   - Also DX11 already creates a temporary staging buffer when reading from a texture, so keeping yet another CPU
+     copy seems like a waste.
 Ensure that EditorWindow resize callback works properly.
  - Perhaps add OnResizeEnd callback that can be used for updating the render texture
 Create a C# wrapper around ProjectSettings
@@ -38,7 +77,7 @@ LATER:
  - Need a way to render text for gizmos and handles, and in scene in general
  - Add drag to select
  - Need a better system to catch broken shaders. DX11 just draws nothing with depth, DX9 draws all white.
- - The bounds I retrieve from GUIUtility are relative to the entire window, not just the current widget. Another reason to move editor widgets to their own GUIWidget.
+ - The bounds I retrieve from GUIUtility are relative to the entire window, not just the current widget.
  - Set up Application::getPrimaryViewport so it returns a valid viewport otherwise C# Camera won't work properly
 
 ---------------------------------------------------------------------

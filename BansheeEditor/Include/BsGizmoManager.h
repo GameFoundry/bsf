@@ -32,8 +32,8 @@ namespace BansheeEngine
 		void drawFrustum(const Vector3& position, float aspect, Degree FOV, float near, float far);
 		void drawIcon(Vector3 position, HSpriteTexture image, bool fixedScale);
 
-		void update();
-		void renderForPicking(const HCamera& camera, std::function<Color(UINT32)> idxToColorCallback);
+		void update(const CameraHandlerPtr& camera);
+		void renderForPicking(const CameraHandlerPtr& camera, std::function<Color(UINT32)> idxToColorCallback);
 		void clearGizmos();
 
 		HSceneObject getSceneObject(UINT32 gizmoIdx);
@@ -107,10 +107,10 @@ namespace BansheeEngine
 		typedef Vector<IconRenderData> IconRenderDataVec;
 		typedef std::shared_ptr<IconRenderDataVec> IconRenderDataVecPtr;
 
-		TransientMeshPtr buildIconMesh(const HCamera& camera, const Vector<IconData>& iconData, bool forPicking, IconRenderDataVecPtr& renderData);
+		TransientMeshPtr buildIconMesh(const CameraHandlerPtr& camera, const Vector<IconData>& iconData, bool forPicking, IconRenderDataVecPtr& renderData);
 
 		void limitIconSize(UINT32& width, UINT32& height);
-		void calculateIconColors(const Color& tint, const Camera& camera, UINT32 iconHeight, bool fixedScale,
+		void calculateIconColors(const Color& tint, const CameraHandlerPtr& camera, UINT32 iconHeight, bool fixedScale,
 			Color& normalColor, Color& fadedColor);
 
 		void initializeCore(const CoreInitData& initData);

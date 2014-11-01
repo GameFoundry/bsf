@@ -12,14 +12,14 @@ namespace BansheeEngine
 		HandleManager();
 		virtual ~HandleManager();
 
-		bool hasHitHandle(const HCamera& camera, const Vector2I& inputPos) const;
-		void handleInput(const HCamera& camera, const Vector2I& inputPos, bool pressed);
-		void update(const HCamera& camera);
+		bool hasHitHandle(const CameraHandlerPtr& camera, const Vector2I& inputPos) const;
+		void handleInput(const CameraHandlerPtr& camera, const Vector2I& inputPos, bool pressed);
+		void update(const CameraHandlerPtr& camera);
 
 		HandleSliderManager& getSliderManager() const { return *mSliderManager; }
 		HandleDrawManager& getDrawManager() const { return *mDrawManager; }
 
-		float getHandleSize(const HCamera& camera, const Vector3& handlePos) const;
+		float getHandleSize(const CameraHandlerPtr& camera, const Vector3& handlePos) const;
 
 		void setDefaultHandleSize(float value) { mDefaultHandleSize = value; }
 		void setMoveHandleSnapAmount(float value) { mMoveHandleSnapAmount = value; }

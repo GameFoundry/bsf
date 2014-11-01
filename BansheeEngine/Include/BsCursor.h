@@ -74,7 +74,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Sets a cursor icon. Uses one of the manually registered icons.
 		 * 			
-		 * @param	name		The name to identify the cursor, one set previously by calling "addCursorIcon".
+		 * @param	name		The name to identify the cursor, one set previously by calling "setCursorIcon".
 		 */
 		void setCursor(const String& name);
 

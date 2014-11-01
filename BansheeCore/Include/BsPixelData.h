@@ -303,6 +303,19 @@ namespace BansheeEngine
 		 */
         void setColorAt(Color const &cv, UINT32 x, UINT32 y, UINT32 z = 0);
 
+		/**
+		 * @brief	Converts all the internal data into an array of colors. 
+		 *			Array is mapped as such: arrayIdx = x + y * width + z * width * height.
+		 */
+		Vector<Color> getColors() const;
+
+		/**
+		 * @brief	Initializes the internal buffer with the provided set of colors.
+		 *			The array should be of width * height * depth size and mapped
+		 *			as such: arrayIdx = x + y * width + z * width * height.
+		 */
+		void setColors(const Vector<Color>& colors);
+
 	private:
 		/**
 		 * @brief	Set the rowPitch and slicePitch so that the buffer is laid out consecutive

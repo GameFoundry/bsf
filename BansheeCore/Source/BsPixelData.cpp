@@ -2,6 +2,7 @@
 #include "BsPixelUtil.h"
 #include "BsPixelDataRTTI.h"
 #include "BsColor.h"
+#include "BsDebug.h"
 
 namespace BansheeEngine
 {
@@ -85,6 +86,78 @@ namespace BansheeEngine
 		UINT32 pixelSize = PixelUtil::getNumElemBytes(mFormat);
 		UINT32 pixelOffset = pixelSize * (z * mSlicePitch + y * mRowPitch + x);
 		PixelUtil::packColor(cv, mFormat, (unsigned char *)getData() + pixelOffset);
+	}
+
+	Vector<Color> PixelData::getColors() const
+	{
+		UINT32 depth = mExtents.getDepth();
+		UINT32 height = mExtents.getHeight();
+		UINT32 width = mExtents.getWidth();
+
+		UINT32 pixelSize = PixelUtil::getNumElemBytes(mFormat);
+		UINT8* data = getData();
+
+		Vector<Color> colors(width * height * depth);
+		for (UINT32 z = 0; z < depth; z++)
+		{
+			UINT32 zArrayIdx = z * width * height;
+			UINT32 zDataIdx = z * mSlicePitch * pixelSize;
+
+			for (UINT32 y = 0; y < height; y++)
+			{
+				UINT32 yArrayIdx = y * width;
+				UINT32 yDataIdx = y * mRowPitch * pixelSize;
+
+				for (UINT32 x = 0; x < width; x++)
+				{
+					UINT32 arrayIdx = x + yArrayIdx + zArrayIdx;
+					UINT32 dataIdx = x * pixelSize + yDataIdx + zDataIdx;
+
+					UINT8* dest = data + dataIdx;
+					PixelUtil::unpackColor(&colors[arrayIdx], mFormat, dest);
+				}
+			}
+		}
+
+		return colors;
+	}
+
+	void PixelData::setColors(const Vector<Color>& colors)
+	{
+		UINT32 depth = mExtents.getDepth();
+		UINT32 height = mExtents.getHeight();
+		UINT32 width = mExtents.getWidth();
+
+		UINT32 totalNumElements = width * height * depth;
+		if (colors.size() != totalNumElements)
+		{
+			LOGERR("Unable to set colors, invalid array size.")
+			return;
+		}
+
+		UINT32 pixelSize = PixelUtil::getNumElemBytes(mFormat);
+		UINT8* data = getData();
+
+		for (UINT32 z = 0; z < depth; z++)
+		{
+			UINT32 zArrayIdx = z * width * height;
+			UINT32 zDataIdx = z * mSlicePitch * pixelSize;
+
+			for (UINT32 y = 0; y < height; y++)
+			{
+				UINT32 yArrayIdx = y * width;
+				UINT32 yDataIdx = y * mRowPitch * pixelSize;
+
+				for (UINT32 x = 0; x < width; x++)
+				{
+					UINT32 arrayIdx = x + yArrayIdx + zArrayIdx;
+					UINT32 dataIdx = x * pixelSize + yDataIdx + zDataIdx;
+
+					UINT8* dest = data + dataIdx;
+					PixelUtil::packColor(colors[arrayIdx], mFormat, dest);
+				}
+			}
+		}
 	}
 
 	UINT32 PixelData::getInternalBufferSize()
