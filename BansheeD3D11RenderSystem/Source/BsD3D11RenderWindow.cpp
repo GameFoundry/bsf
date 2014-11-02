@@ -619,7 +619,7 @@ namespace BansheeEngine
 		mSwapChainDesc.Windowed	= true;
 
 		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
-		rs->determineMultisampleSettings(getProperties().getMultisampleCount(), getProperties().getMultisampleHint(), format, &mMultisampleType);
+		rs->determineMultisampleSettings(getProperties().getMultisampleCount(), format, &mMultisampleType);
 		mSwapChainDesc.SampleDesc.Count = mMultisampleType.Count;
 		mSwapChainDesc.SampleDesc.Quality = mMultisampleType.Quality;
 		
@@ -672,7 +672,7 @@ namespace BansheeEngine
 
 		mDepthStencilBuffer = TextureManager::instance().createTexture(TEX_TYPE_2D, 
 			BBDesc.Width, BBDesc.Height, 0, PF_D24S8, TU_DEPTHSTENCIL, false, 
-			getProperties().getMultisampleCount(), getProperties().getMultisampleHint());
+			getProperties().getMultisampleCount());
 
 		if(mDepthStencilView != nullptr)
 		{

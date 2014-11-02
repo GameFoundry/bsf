@@ -403,7 +403,7 @@ namespace BansheeEngine
 		if ((mUsage & TU_RENDERTARGET) != 0 || (mUsage & TU_DEPTHSTENCIL) != 0)
 		{
 			D3D9RenderSystem* rsys = static_cast<D3D9RenderSystem*>(BansheeEngine::RenderSystem::instancePtr());
-			rsys->determineMultisampleSettings(d3d9Device, mMultisampleCount, mMultisampleHint, d3dPF, false, &mMultisampleType, &mMultisampleQuality);
+			rsys->determineMultisampleSettings(d3d9Device, mMultisampleCount, d3dPF, false, &mMultisampleType, &mMultisampleQuality);
 		}
 		else
 		{

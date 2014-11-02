@@ -576,7 +576,7 @@ namespace BansheeEngine
 		D3DMULTISAMPLE_TYPE multisampleType;
 		DWORD multisampleQuality;
 
-		rs->determineMultisampleSettings(mDevice->getD3D9Device(), getProperties().getMultisampleCount(), getProperties().getMultisampleHint(), 
+		rs->determineMultisampleSettings(mDevice->getD3D9Device(), getProperties().getMultisampleCount(), 
 			presentParams->BackBufferFormat, getProperties().isFullScreen(), &multisampleType, &multisampleQuality);
 
 		presentParams->MultiSampleType = multisampleType;

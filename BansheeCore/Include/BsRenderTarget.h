@@ -53,12 +53,6 @@ namespace BansheeEngine
 		UINT32 getMultisampleCount() const { return mMultisampleCount; }
 
 		/**
-		 * @brief	Get a render-system specific hint used for determining
-		 *			multisampling type.
-		 */
-		const String& getMultisampleHint() const { return mMultisampleHint; }
-
-		/**
 		 * @brief	Returns true if the render target will wait for vertical sync 
 		 *			before swapping buffers. This will eliminate tearing but may increase
 		 *			input latency.
@@ -128,7 +122,6 @@ namespace BansheeEngine
 		bool mIsWindow = false;
 
 		UINT32 mMultisampleCount = 0;
-		String mMultisampleHint;
 	};
 
 	/**

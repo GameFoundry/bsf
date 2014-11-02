@@ -184,11 +184,10 @@ namespace BansheeEngine
 		 * @brief	Determines DXGI multisample settings from the provided parameters.
 		 *
 		 * @param	multisampleCount	Number of requested samples.
-		 * @param	multisampleHint		String describing an optional hint to which multisample method to use.
 		 * @param	format				Pixel format used by the render target.
 		 * @param	outputSampleDesc	Output structure that will contain the requested multisample settings.
 		 */
-		void determineMultisampleSettings(UINT32 multisampleCount, const String& multisampleHint, DXGI_FORMAT format, DXGI_SAMPLE_DESC* outputSampleDesc);
+		void determineMultisampleSettings(UINT32 multisampleCount, DXGI_FORMAT format, DXGI_SAMPLE_DESC* outputSampleDesc);
 
 		/**
 		 * @brief	Returns the main DXGI factory object.

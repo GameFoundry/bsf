@@ -67,7 +67,6 @@ namespace BansheeEngine
 		properties->mVSync = desc.vsync;
 		properties->mVSyncInterval = desc.vsyncInterval;
 		properties->mMultisampleCount = desc.multisampleCount;
-		properties->mMultisampleHint = desc.multisampleHint;
 		properties->mLeft = desc.left;
 		properties->mTop = desc.top;
 		properties->mIsFullScreen = desc.fullscreen;

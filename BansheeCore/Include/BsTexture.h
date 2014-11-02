@@ -81,14 +81,6 @@ namespace BansheeEngine
 		 */
 		virtual UINT32 getMultisampleCount() const { return mMultisampleCount; }
 
-		/**
-		 * @brief	Get a render-system specific hint used for determining
-		 *			multisampling type.
-		 *
-		 * @note	Thread safe.
-		 */
-		virtual const String& getMultisampleHint() const { return mMultisampleHint; }
-
         /**
          * @brief	Returns the height of the texture.
          *
@@ -296,11 +288,10 @@ namespace BansheeEngine
 		 * @param	hwGammaCorrection	If true the texture data is assumed to have been gamma corrected and will be
 		 *								converted back to linear space when sampled on GPU.
 		 * @param	multisampleCount	If higher than 1, texture containing multiple samples per pixel is created.
-		 * @param	multisampleHint		Hint about what kind of multisampling to use. Render system specific.
 		 */
 		static HTexture create(TextureType texType, UINT32 width, UINT32 height, UINT32 depth,
 			int numMips, PixelFormat format, int usage = TU_DEFAULT,
-			bool hwGammaCorrection = false, UINT32 multisampleCount = 0, const String& multisampleHint = StringUtil::BLANK);
+			bool hwGammaCorrection = false, UINT32 multisampleCount = 0);
 
 
 		/**
@@ -315,29 +306,27 @@ namespace BansheeEngine
 		 * @param	hwGammaCorrection	If true the texture data is assumed to have been gamma corrected and will be
 		 *								converted back to linear space when sampled on GPU.
 		 * @param	multisampleCount	If higher than 1, texture containing multiple samples per pixel is created.
-		 * @param	multisampleHint		Hint about what kind of multisampling to use. Render system specific.
 		 */
 		static HTexture create(TextureType texType, UINT32 width, UINT32 height, int numMips,
 			PixelFormat format, int usage = TU_DEFAULT,
-			bool hwGammaCorrection = false, UINT32 multisampleCount = 0, const String& multisampleHint = StringUtil::BLANK);
+			bool hwGammaCorrection = false, UINT32 multisampleCount = 0);
 
 		/**
-		 * @copydoc	create(TextureType, UINT32, UINT32, UINT32, int, PixelFormat, int, bool, UINT32, const String&)
+		 * @copydoc	create(TextureType, UINT32, UINT32, UINT32, int, PixelFormat, int, bool, UINT32)
 		 *
 		 * @note	Internal method. Creates a texture pointer without a handle. Use "create" for normal usage.
 		 */
 		static TexturePtr _createPtr(TextureType texType, UINT32 width, UINT32 height, UINT32 depth,
 			int num_mips, PixelFormat format, int usage = TU_DEFAULT,
-			bool hwGammaCorrection = false, UINT32 multisampleCount = 0, const String& multisampleHint = StringUtil::BLANK);
+			bool hwGammaCorrection = false, UINT32 multisampleCount = 0);
 
 		/**
-		 * @copydoc	create(TextureType, UINT32, UINT32, int, PixelFormat, int, bool, UINT32, const String&)
+		 * @copydoc	create(TextureType, UINT32, UINT32, int, PixelFormat, int, bool, UINT32)
 		 *
 		 * @note	Internal method. Creates a texture pointer without a handle. Use "create" for normal usage.
 		 */
 		static TexturePtr _createPtr(TextureType texType, UINT32 width, UINT32 height, int num_mips,
-			PixelFormat format, int usage = TU_DEFAULT,
-			bool hwGammaCorrection = false, UINT32 multisampleCount = 0, const String& multisampleHint = StringUtil::BLANK);
+			PixelFormat format, int usage = TU_DEFAULT, bool hwGammaCorrection = false, UINT32 multisampleCount = 0);
 
 	protected:
 		/************************************************************************/
@@ -378,7 +367,7 @@ namespace BansheeEngine
 		 * @copydoc	GpuResource::initialize
 		 */
 		void initialize(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps, 
-			PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, const String& multisampleHint);
+			PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount);
 
 		/**
 		 * @copydoc	lock
@@ -408,7 +397,6 @@ namespace BansheeEngine
 		UINT32 mNumMipmaps; // Immutable
 		bool mHwGamma; // Immutable
 		UINT32 mMultisampleCount; // Immutable
-		String mMultisampleHint; // Immutable
 
 		TextureType mTextureType; // Immutable
 		PixelFormat mFormat; // Immutable

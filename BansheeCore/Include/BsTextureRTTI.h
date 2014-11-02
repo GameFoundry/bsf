@@ -23,7 +23,6 @@ namespace BansheeEngine
 		BS_SETGET_MEMBER(mNumMipmaps, UINT32, Texture)
 		BS_SETGET_MEMBER(mHwGamma, bool, Texture)
 		BS_SETGET_MEMBER(mMultisampleCount, UINT32, Texture)
-		BS_SETGET_MEMBER(mMultisampleHint, String, Texture)
 		BS_SETGET_MEMBER(mTextureType, TextureType, Texture)
 		BS_SETGET_MEMBER(mFormat, PixelFormat, Texture)
 
@@ -89,7 +88,6 @@ namespace BansheeEngine
 			BS_ADD_PLAINFIELD(mNumMipmaps, 5, TextureRTTI)
 			BS_ADD_PLAINFIELD(mHwGamma, 6, TextureRTTI)
 			BS_ADD_PLAINFIELD(mMultisampleCount, 7, TextureRTTI)
-			BS_ADD_PLAINFIELD(mMultisampleHint, 8, TextureRTTI)
 			BS_ADD_PLAINFIELD(mTextureType, 9, TextureRTTI)
 			BS_ADD_PLAINFIELD(mFormat, 10, TextureRTTI)
 
@@ -117,7 +115,7 @@ namespace BansheeEngine
 			// in mRTTIData.
 			texture->initialize(texture->getTextureType(), texture->getWidth(), texture->getHeight(), texture->getDepth(), 
 				texture->getNumMipmaps(), texture->getFormat(), texture->getUsage(), texture->isHardwareGammaEnabled(), 
-				texture->getMultisampleCount(), texture->getMultisampleHint());
+				texture->getMultisampleCount());
 
 			Vector<PixelDataPtr>* pixelData = any_cast<Vector<PixelDataPtr>*>(texture->mRTTIData);
 			for(size_t i = 0; i < pixelData->size(); i++)

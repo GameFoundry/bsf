@@ -25,17 +25,16 @@ namespace BansheeEngine
 		 */
         TexturePtr createTexture(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, 
 			int numMips, PixelFormat format, int usage = TU_DEFAULT, bool hwGammaCorrection = false, 
-			UINT32 multisampleCount = 0, const String& multisampleHint = StringUtil::BLANK);
+			UINT32 multisampleCount = 0);
 			
 		/**
 		 * @copydoc	Texture::create(TextureType, UINT32, UINT32, int, PixelFormat, int, bool, UINT32, const String&)
 		 */
 		TexturePtr createTexture(TextureType texType, UINT32 width, UINT32 height, int numMips,
-			PixelFormat format, int usage = TU_DEFAULT, bool hwGammaCorrection = false, UINT32 multisampleCount = 0,
-			const String& multisampleHint = StringUtil::BLANK)
+			PixelFormat format, int usage = TU_DEFAULT, bool hwGammaCorrection = false, UINT32 multisampleCount = 0)
 		{
 			return createTexture(texType, width, height, 1, 
-				numMips, format, usage, hwGammaCorrection, multisampleCount, multisampleHint);
+				numMips, format, usage, hwGammaCorrection, multisampleCount);
 		}
 
 		/**
@@ -64,7 +63,7 @@ namespace BansheeEngine
 		 */
 		virtual RenderTexturePtr createRenderTexture(TextureType textureType, UINT32 width, UINT32 height, 
 			PixelFormat format = PF_R8G8B8A8, bool hwGamma = false, UINT32 multisampleCount = 0, 
-			const String& multisampleHint = "", bool createDepth = true, PixelFormat depthStencilFormat = PF_D24S8);
+			bool createDepth = true, PixelFormat depthStencilFormat = PF_D24S8);
 
 		/**
 		 * @brief	Creates a RenderTexture using the description struct.

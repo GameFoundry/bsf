@@ -10,12 +10,6 @@
 
 -------------
 
-Get rid of multisample hint from Texture and move it to RenderTarget (RENDER_TEXTURE_DESC actually)
- - Seems they only use it for some kind of qality hint
- - Possibly replace it with an enum if I can't remove it?
-
--------------
-
 Optionally port PixelUtility to compressing, converting, generating mipmaps, applying gamma to PixelData
  - Also getMaxMimaps and other methods for retrieving pixel format information
 

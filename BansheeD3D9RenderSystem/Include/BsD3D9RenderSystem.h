@@ -212,13 +212,12 @@ namespace BansheeEngine
 		 *
 		 * @param	d3d9Device				Device to check for multisampling.
 		 * @param	multisampleCount		Number of requested samples.
-		 * @param	multisampleHint			String describing an optional hint to which multisample method to use.
 		 * @param	d3dPixelFormat			Pixel format used by the render target.
 		 * @param	fullscreen				Are we testing multisampling for a full-screen render target.
 		 * @param	outMultisampleType		Output parameter containing DirectX type representing valid multisample type.
 		 * @param	outMultisampleQuality	Output parameter containing multisample quality.
 		 */
-		void determineMultisampleSettings(IDirect3DDevice9* d3d9Device, UINT32 multisampleCount, const String& multisampleHint, D3DFORMAT d3dPixelFormat,
+		void determineMultisampleSettings(IDirect3DDevice9* d3d9Device, UINT32 multisampleCount, D3DFORMAT d3dPixelFormat,
 			bool fullScreen, D3DMULTISAMPLE_TYPE* outMultisampleType, DWORD* outMultisampleQuality) const;
 
 		/**

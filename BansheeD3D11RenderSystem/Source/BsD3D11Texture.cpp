@@ -340,7 +340,7 @@ namespace BansheeEngine
 
 			DXGI_SAMPLE_DESC sampleDesc;
 			D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
-			rs->determineMultisampleSettings(mMultisampleCount, mMultisampleHint, d3dPF, &sampleDesc);
+			rs->determineMultisampleSettings(mMultisampleCount, d3dPF, &sampleDesc);
 			desc.SampleDesc		= sampleDesc;
 
 			if(getTextureType() == TEX_TYPE_CUBE_MAP)
@@ -357,7 +357,7 @@ namespace BansheeEngine
 
 			DXGI_SAMPLE_DESC sampleDesc;
 			D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
-			rs->determineMultisampleSettings(mMultisampleCount, mMultisampleHint, d3dPF, &sampleDesc);
+			rs->determineMultisampleSettings(mMultisampleCount, d3dPF, &sampleDesc);
 			desc.SampleDesc		= sampleDesc;
 
 			if(getTextureType() == TEX_TYPE_CUBE_MAP)

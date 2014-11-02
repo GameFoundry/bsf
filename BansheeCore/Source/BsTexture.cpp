@@ -19,7 +19,7 @@ namespace BansheeEngine
     }
 
 	void Texture::initialize(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps, 
-		PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, const String& multisampleHint)
+		PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount)
 	{
 		mTextureType = textureType;
 		mWidth = width;
@@ -29,7 +29,6 @@ namespace BansheeEngine
 		mUsage = usage;
 		mHwGamma = hwGamma;
 		mMultisampleCount = multisampleCount;
-		mMultisampleHint = multisampleHint;
 
 		// Adjust format if required
 		mFormat = TextureManager::instance().getNativeFormat(mTextureType, format, mUsage, hwGamma);
@@ -306,35 +305,35 @@ namespace BansheeEngine
 	/* 								STATICS	                      			*/
 	/************************************************************************/
 	HTexture Texture::create(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, 
-		int num_mips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount, const String& multisampleHint)
+		int num_mips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount)
 	{
 		TexturePtr texturePtr = _createPtr(texType, 
-			width, height, depth, num_mips, format, usage, hwGammaCorrection, multisampleCount, multisampleHint);
+			width, height, depth, num_mips, format, usage, hwGammaCorrection, multisampleCount);
 
 		return static_resource_cast<Texture>(gResources()._createResourceHandle(texturePtr));
 	}
 	
 	HTexture Texture::create(TextureType texType, UINT32 width, UINT32 height, 
-		int num_mips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount, const String& multisampleHint)
+		int num_mips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount)
 	{
 		TexturePtr texturePtr = _createPtr(texType, 
-			width, height, num_mips, format, usage, hwGammaCorrection, multisampleCount, multisampleHint);
+			width, height, num_mips, format, usage, hwGammaCorrection, multisampleCount);
 
 		return static_resource_cast<Texture>(gResources()._createResourceHandle(texturePtr));
 	}
 
 	TexturePtr Texture::_createPtr(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, 
-		int num_mips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount, const String& multisampleHint)
+		int num_mips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount)
 	{
 		return TextureManager::instance().createTexture(texType, 
-			width, height, depth, num_mips, format, usage, hwGammaCorrection, multisampleCount, multisampleHint);
+			width, height, depth, num_mips, format, usage, hwGammaCorrection, multisampleCount);
 	}
 
 	TexturePtr Texture::_createPtr(TextureType texType, UINT32 width, UINT32 height, 
-		int num_mips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount, const String& multisampleHint)
+		int num_mips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount)
 	{
 		return TextureManager::instance().createTexture(texType, 
-			width, height, num_mips, format, usage, hwGammaCorrection, multisampleCount, multisampleHint);
+			width, height, num_mips, format, usage, hwGammaCorrection, multisampleCount);
 	}
 
 	const HTexture& Texture::dummy()

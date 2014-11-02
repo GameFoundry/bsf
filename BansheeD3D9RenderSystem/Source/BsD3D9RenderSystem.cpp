@@ -2126,13 +2126,12 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D9RenderSystem::determineMultisampleSettings(IDirect3DDevice9* d3d9Device,
-		UINT32 multisampleCount, const String& multisampleHint, D3DFORMAT d3dPixelFormat, 
+	void D3D9RenderSystem::determineMultisampleSettings(IDirect3DDevice9* d3d9Device, UINT32 multisampleCount, D3DFORMAT d3dPixelFormat, 
 		bool fullScreen, D3DMULTISAMPLE_TYPE *outMultisampleType, DWORD *outMultisampleQuality) const
 	{
-		bool ok = false;
-		bool qualityHint = multisampleHint.find("Quality") != String::npos;
-		UINT32 origCount = multisampleCount;
+		bool tryCSAA = false; // Note: Disabled for now, but leaving the code for later so it might be useful
+		enum CSAAMode { CSAA_Normal, CSAA_Quality };
+		CSAAMode csaaMode = CSAA_Normal;
 
 		D3D9DriverList* driverList = getDirect3DDrivers();
 		D3D9Driver* deviceDriver = mActiveD3DDriver;
@@ -2149,26 +2148,17 @@ namespace BansheeEngine
 			}
 		}
 
-		bool tryCSAA = false;
-		// NVIDIA, prefer CSAA if available for 8+
-		// it would be tempting to use getCapabilities()->getVendor() == GPU_NVIDIA but
-		// if this is the first window, caps will not be initialised yet
-		if (deviceDriver->getAdapterIdentifier().VendorId == 0x10DE && 
-			multisampleCount >= 8)
-		{
-			tryCSAA	 = true;
-		}
-
-		while (!ok)
+		UINT32 origNumSamples = multisampleCount;
+		bool foundValid = false;
+		while (!foundValid)
 		{
 			// Deal with special cases
 			if (tryCSAA)
 			{
-				// see http://developer.nvidia.com/object/coverage-sampled-aa.html
 				switch(multisampleCount)
 				{
 				case 8:
-					if (qualityHint)
+					if (csaaMode == CSAA_Quality)
 					{
 						*outMultisampleType = D3DMULTISAMPLE_8_SAMPLES;
 						*outMultisampleQuality = 0;
@@ -2180,7 +2170,7 @@ namespace BansheeEngine
 					}
 					break;
 				case 16:
-					if (qualityHint)
+					if (csaaMode == CSAA_Quality)
 					{
 						*outMultisampleType = D3DMULTISAMPLE_8_SAMPLES;
 						*outMultisampleQuality = 2;
@@ -2213,43 +2203,43 @@ namespace BansheeEngine
 			if (SUCCEEDED(hr) && 
 				(!tryCSAA || outQuality > *outMultisampleQuality))
 			{
-				ok = true;
+				foundValid = true;
 			}
 			else
 			{
-				// downgrade
+				// Downgrade
 				if (tryCSAA && multisampleCount == 8)
 				{
-					// for CSAA, we'll try downgrading with quality mode at all samples.
+					// For CSAA, we'll try downgrading with quality mode at all samples.
 					// then try without quality, then drop CSAA
-					if (qualityHint)
+					if (csaaMode == CSAA_Quality)
 					{
-						// drop quality first
-						qualityHint = false;
+						// Drop quality first
+						csaaMode = CSAA_Normal;
 					}
 					else
 					{
-						// drop CSAA entirely 
+						// Drop CSAA entirely 
 						tryCSAA = false;
 					}
-					// return to original requested samples
-					multisampleCount = origCount;
+
+					// Return to original requested samples
+					multisampleCount = origNumSamples;
 				}
 				else
 				{
-					// drop samples
-					--multisampleCount;
+					// Drop samples
+					multisampleCount--;
 
 					if (multisampleCount == 1)
 					{
-						// ran out of options, no multisampling
+						// Ran out of options, no multisampling
 						multisampleCount = 0;
-						ok = true;
+						foundValid = true;
 					}
 				}
 			}
-
-		} // while !ok
+		}
 	}
 
 	void D3D9RenderSystem::setClipPlanesImpl(const PlaneList& clipPlanes)

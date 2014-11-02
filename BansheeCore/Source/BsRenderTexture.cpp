@@ -79,13 +79,11 @@ namespace BansheeEngine
 
 		if (mColorSurface->getTexture()->getWidth() != mDepthStencilSurface->getTexture()->getWidth() ||
 			mColorSurface->getTexture()->getHeight() != mDepthStencilSurface->getTexture()->getHeight() ||
-			mColorSurface->getTexture()->getMultisampleCount() != mDepthStencilSurface->getTexture()->getMultisampleCount() ||
-			mColorSurface->getTexture()->getMultisampleHint() != mDepthStencilSurface->getTexture()->getMultisampleHint())
+			mColorSurface->getTexture()->getMultisampleCount() != mDepthStencilSurface->getTexture()->getMultisampleCount())
 		{
 			String errorInfo = "\nWidth: " + toString(mColorSurface->getTexture()->getWidth()) + "/" + toString(mDepthStencilSurface->getTexture()->getWidth());
 			errorInfo += "\nHeight: " + toString(mColorSurface->getTexture()->getHeight()) + "/" + toString(mDepthStencilSurface->getTexture()->getHeight());
 			errorInfo += "\nMultisample Count: " + toString(mColorSurface->getTexture()->getMultisampleCount()) + "/" + toString(mDepthStencilSurface->getTexture()->getMultisampleCount());
-			errorInfo += "\nMultisample Hint: " + mColorSurface->getTexture()->getMultisampleHint() + "/" + mDepthStencilSurface->getTexture()->getMultisampleHint();
 
 			BS_EXCEPT(InvalidParametersException, "Provided texture and depth stencil buffer don't match!" + errorInfo);
 		}
@@ -97,11 +95,11 @@ namespace BansheeEngine
 	}
 
 	RenderTexturePtr RenderTexture::create(TextureType textureType, UINT32 width, UINT32 height, 
-		PixelFormat format, bool hwGamma, UINT32 multisampleCount, const String& multisampleHint, 
+		PixelFormat format, bool hwGamma, UINT32 multisampleCount, 
 		bool createDepth, PixelFormat depthStencilFormat)
 	{
 		return TextureManager::instance().createRenderTexture(textureType, width, height, format, hwGamma, 
-			multisampleCount, multisampleHint, createDepth, depthStencilFormat);
+			multisampleCount, createDepth, depthStencilFormat);
 	}
 
 	RenderTexturePtr RenderTexture::create(const RENDER_TEXTURE_DESC& desc)
@@ -137,7 +135,6 @@ namespace BansheeEngine
 			properties->mColorDepth = BansheeEngine::PixelUtil::getNumElemBits(texture->getFormat());
 			properties->mHwGamma = texture->isHardwareGammaEnabled();
 			properties->mMultisampleCount = texture->getMultisampleCount();
-			properties->mMultisampleHint = texture->getMultisampleHint();
 		}
 
 		properties->mActive = true;

@@ -947,32 +947,23 @@ namespace BansheeEngine
 		return rsc;
 	}
 
-	void D3D11RenderSystem::determineMultisampleSettings(UINT32 multisampleCount, const String& multisampleHint, DXGI_FORMAT format, DXGI_SAMPLE_DESC* outputSampleDesc)
+	void D3D11RenderSystem::determineMultisampleSettings(UINT32 multisampleCount, DXGI_FORMAT format, DXGI_SAMPLE_DESC* outputSampleDesc)
 	{
-		bool ok = false;
-		bool qualityHint = multisampleHint.find("Quality") != String::npos;
-		size_t origCount = multisampleCount;
-		bool tryCSAA = false;
-		// NVIDIA, prefer CSAA if available for 8+
-		// it would be tempting to use getCapabilities()->getVendor() == GPU_NVIDIA but
-		// if this is the first window, caps will not be initialised yet
-		
-		if (mActiveD3DDriver->getAdapterIdentifier().VendorId == 0x10DE && 
-			multisampleCount >= 8)
-		{
-			tryCSAA	 = true;
-		}
+		bool tryCSAA = false; // Note: Disabled for now, but leaving the code for later so it might be useful
+		enum CSAAMode { CSAA_Normal, CSAA_Quality };
+		CSAAMode csaaMode = CSAA_Normal;
 
-		while (!ok)
+		bool foundValid = false;
+		size_t origNumSamples = multisampleCount;
+		while (!foundValid)
 		{
 			// Deal with special cases
 			if (tryCSAA)
 			{
-				// see http://developer.nvidia.com/object/coverage-sampled-aa.html
 				switch(multisampleCount)
 				{
 				case 8:
-					if (qualityHint)
+					if (csaaMode == CSAA_Quality)
 					{
 						outputSampleDesc->Count = 8;
 						outputSampleDesc->Quality = 8;
@@ -984,7 +975,7 @@ namespace BansheeEngine
 					}
 					break;
 				case 16:
-					if (qualityHint)
+					if (csaaMode == CSAA_Quality)
 					{
 						outputSampleDesc->Count = 8;
 						outputSampleDesc->Quality = 16;
@@ -1000,7 +991,7 @@ namespace BansheeEngine
 			else // !CSAA
 			{
 				outputSampleDesc->Count = multisampleCount == 0 ? 1 : multisampleCount;
-				outputSampleDesc->Quality = 0;
+				outputSampleDesc->Quality = D3D11_STANDARD_MULTISAMPLE_PATTERN;
 			}
 
 
@@ -1010,43 +1001,43 @@ namespace BansheeEngine
 
 			if (SUCCEEDED(hr) && (!tryCSAA || outQuality > outputSampleDesc->Quality))
 			{
-				ok = true;
+				foundValid = true;
 			}
 			else
 			{
-				// downgrade
+				// Downgrade
 				if (tryCSAA && multisampleCount == 8)
 				{
-					// for CSAA, we'll try downgrading with quality mode at all samples.
+					// For CSAA, we'll try downgrading with quality mode at all samples.
 					// then try without quality, then drop CSAA
-					if (qualityHint)
+					if (csaaMode == CSAA_Quality)
 					{
-						// drop quality first
-						qualityHint = false;
+						// Drop quality first
+						csaaMode = CSAA_Normal;
 					}
 					else
 					{
-						// drop CSAA entirely 
+						// Drop CSAA entirely 
 						tryCSAA = false;
 					}
-					// return to original requested samples
-					multisampleCount = static_cast<UINT32>(origCount);
+
+					// Return to original requested samples
+					multisampleCount = static_cast<UINT32>(origNumSamples);
 				}
 				else
 				{
-					// drop samples
-					--multisampleCount;
+					// Drop samples
+					multisampleCount--;
 
 					if (multisampleCount == 1)
 					{
-						// ran out of options, no multisampling
+						// Ran out of options, no multisampling
 						multisampleCount = 0;
-						ok = true;
+						foundValid = true;
 					}
 				}
 			}
-
-		} // while !ok
+		} 
 	}
 
 	VertexElementType D3D11RenderSystem::getColorVertexElementType() const
