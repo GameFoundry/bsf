@@ -7,6 +7,7 @@
 #include "BsCoreThread.h"
 #include "BsAsyncOp.h"
 #include "BsResources.h"
+#include "BsPixelUtil.h"
 
 namespace BansheeEngine 
 {
@@ -34,6 +35,10 @@ namespace BansheeEngine
 		mFormat = TextureManager::instance().getNativeFormat(mTextureType, format, mUsage, hwGamma);
 		mSize = getNumFaces() * PixelUtil::getMemorySize(mWidth, mHeight, mDepth, mFormat);
 
+		// Allocate CPU buffers if needed
+		if ((usage & TU_CPUCACHED) != 0)
+			createCPUBuffers();
+
 		Resource::initialize();
 	}
 
@@ -50,6 +55,49 @@ namespace BansheeEngine
 	UINT32 Texture::getNumFaces() const
 	{
 		return getTextureType() == TEX_TYPE_CUBE_MAP ? 6 : 1;
+	}
+
+	void Texture::_writeSubresourceSim(UINT32 subresourceIdx, const GpuResourceData& data, bool discardEntireBuffer)
+	{
+		if ((mUsage & TU_CPUCACHED) == 0)
+			return;
+
+		if (subresourceIdx >= (UINT32)mCPUSubresourceData.size())
+		{
+			LOGERR("Invalid subresource index: " + toString(subresourceIdx) + ". Supported range: 0 .. " + toString(mCPUSubresourceData.size()));
+			return;
+		}
+
+		if (data.getTypeId() != TID_PixelData)
+		{
+			LOGERR("Invalid GpuResourceData type. Only PixelData is supported.");
+			return;
+		}
+
+		const PixelData& pixelData = static_cast<const PixelData&>(data);
+
+		UINT32 mipLevel;
+		UINT32 face;
+		mapFromSubresourceIdx(subresourceIdx, face, mipLevel);
+
+		UINT32 mipWidth, mipHeight, mipDepth;
+		PixelUtil::getSizeForMipLevel(getWidth(), getHeight(), getDepth(),
+			mipLevel, mipWidth, mipHeight, mipDepth);
+
+		if (pixelData.getWidth() != mipWidth || pixelData.getHeight() != mipHeight ||
+			pixelData.getDepth() != mipDepth || pixelData.getFormat() != getFormat())
+		{
+			LOGERR("Provided buffer is not of valid dimensions or format in order to read from this texture.");
+			return;
+		}
+
+		if (mCPUSubresourceData[subresourceIdx]->getSize() != pixelData.getSize())
+			BS_EXCEPT(InternalErrorException, "Buffer sizes don't match.");
+
+		UINT8* dest = mCPUSubresourceData[subresourceIdx]->getData();
+		UINT8* src = pixelData.getData();
+
+		memcpy(dest, src, pixelData.getSize());
 	}
 
 	void Texture::writeSubresource(UINT32 subresourceIdx, const GpuResourceData& data, bool discardEntireBuffer)
@@ -92,17 +140,21 @@ namespace BansheeEngine
 		if(data.getTypeId() != TID_PixelData)
 			BS_EXCEPT(InvalidParametersException, "Invalid GpuResourceData type. Only PixelData is supported.");
 
-		PixelData& pixelData = static_cast<PixelData&>(data);
-
-		if(pixelData.getWidth() != getWidth() ||pixelData.getHeight() != getHeight() || 
-			pixelData.getDepth() != getDepth() || pixelData.getFormat() != getFormat())
-		{
-			BS_EXCEPT(RenderingAPIException, "Provided buffer is not of valid dimensions or format in order to read from this texture.");
-		}
-
 		UINT32 face = 0;
 		UINT32 mip = 0;
 		mapFromSubresourceIdx(subresourceIdx, face, mip);
+
+		PixelData& pixelData = static_cast<PixelData&>(data);
+
+		UINT32 mipWidth, mipHeight, mipDepth;
+		PixelUtil::getSizeForMipLevel(getWidth(), getHeight(), getDepth(),
+			mip, mipWidth, mipHeight, mipDepth);
+
+		if (pixelData.getWidth() != mipWidth || pixelData.getHeight() != mipHeight ||
+			pixelData.getDepth() != mipDepth || pixelData.getFormat() != getFormat())
+		{
+			BS_EXCEPT(RenderingAPIException, "Provided buffer is not of valid dimensions or format in order to read from this texture.");
+		}
 
 		readData(pixelData, mip, face);
 	}
@@ -147,6 +199,41 @@ namespace BansheeEngine
 	UINT32 Texture::mapToSubresourceIdx(UINT32 face, UINT32 mip) const
 	{
 		return face * (getNumMipmaps() + 1) + mip;
+	}
+
+	void Texture::readDataSim(PixelData& dest, UINT32 mipLevel, UINT32 face)
+	{
+		if ((mUsage & TU_CPUCACHED) == 0)
+		{
+			LOGERR("Attempting to read CPU data from a texture that is created without CPU caching.");
+			return;
+		}
+
+		UINT32 mipWidth, mipHeight, mipDepth;
+		PixelUtil::getSizeForMipLevel(getWidth(), getHeight(), getDepth(), 
+			mipLevel, mipWidth, mipHeight, mipDepth);
+
+		if (dest.getWidth() != mipWidth || dest.getHeight() != mipHeight ||
+			dest.getDepth() != mipDepth || dest.getFormat() != getFormat())
+		{
+			LOGERR("Provided buffer is not of valid dimensions or format in order to read from this texture.");
+			return;
+		}
+
+		UINT32 subresourceIdx = mapToSubresourceIdx(face, mipLevel);
+		if (subresourceIdx >= (UINT32)mCPUSubresourceData.size())
+		{
+			LOGERR("Invalid subresource index: " + toString(subresourceIdx) + ". Supported range: 0 .. " + toString(mCPUSubresourceData.size()));
+			return;
+		}
+
+		if (mCPUSubresourceData[subresourceIdx]->getSize() != dest.getSize())
+			BS_EXCEPT(InternalErrorException, "Buffer sizes don't match.");
+
+		UINT8* srcPtr = mCPUSubresourceData[subresourceIdx]->getData();
+		UINT8* destPtr = dest.getData();
+
+		memcpy(destPtr, srcPtr, dest.getSize());
 	}
 
 	PixelData Texture::lock(GpuLockOptions options, UINT32 mipLevel, UINT32 face)
@@ -284,6 +371,39 @@ namespace BansheeEngine
 			texture->mTextureViews.erase(iterFind);
 
 			bs_delete<PoolAlloc>(toRemove);
+		}
+	}
+
+	void Texture::createCPUBuffers()
+	{
+		UINT32 numFaces = getNumFaces();
+		UINT32 numMips = getNumMipmaps();
+
+		UINT32 numSubresources = numFaces * numMips;
+		mCPUSubresourceData.resize(numSubresources);
+
+		for (UINT32 i = 0; i < numFaces; i++)
+		{
+			UINT32 curWidth = mWidth;
+			UINT32 curHeight = mHeight;
+			UINT32 curDepth = mDepth;
+
+			for (UINT32 j = 0; j < mNumMipmaps; j++)
+			{
+				UINT32 subresourceIdx = mapToSubresourceIdx(i, j);
+
+				mCPUSubresourceData[subresourceIdx] = bs_shared_ptr<PixelData>(curWidth, curHeight, curDepth, mFormat);
+				mCPUSubresourceData[subresourceIdx]->allocateInternalBuffer();
+
+				if (curWidth > 1)
+					curWidth = curWidth / 2;
+
+				if (curHeight > 1)
+					curHeight = curHeight / 2;
+
+				if (curDepth > 1)
+					curDepth = curDepth / 2;
+			}
 		}
 	}
 

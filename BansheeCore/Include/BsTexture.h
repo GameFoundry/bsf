@@ -18,6 +18,7 @@ namespace BansheeEngine
 		TU_RENDERTARGET = 0x200, /**< Texture used for rendering by the GPU. */
 		TU_DEPTHSTENCIL = 0x400, /**< Texture used as a depth/stencil buffer by the GPU. */
 		TU_LOADSTORE = 0x800, /**< Texture that allows load/store operations from the GPU program. */
+		TU_CPUCACHED = 0x1000, /**< All texture data will also be cached in system memory. */
 		TU_DEFAULT = TU_STATIC
     };
 
@@ -131,6 +132,11 @@ namespace BansheeEngine
         virtual UINT32 getNumFaces() const;
 
 		/**
+		 * @copydoc GpuResource::_writeSubresourceSim
+		 */
+		virtual void _writeSubresourceSim(UINT32 subresourceIdx, const GpuResourceData& data, bool discardEntireBuffer);
+
+		/**
 		 * @copydoc GpuResource::writeSubresource
 		 */
 		virtual void writeSubresource(UINT32 subresourceIdx, const GpuResourceData& data, bool discardEntireBuffer);
@@ -211,6 +217,24 @@ namespace BansheeEngine
 		 * @note	Core thread only.
 		 */
 		void copy(UINT32 srcSubresourceIdx, UINT32 destSubresourceIdx, TexturePtr& target);
+
+		/**
+		 * @brief	Reads data from the cached system memory texture buffer into the provided buffer. 
+		 * 		  
+		 * @param	dest		Previously allocated buffer to read data into.
+		 * @param	mipLevel	(optional) Mipmap level to read from.
+		 * @param	face		(optional) Texture face to read from.
+		 *
+		 * @note	Sim thread only.
+		 *
+		 *			The data read is the cached texture data. Any data written to the texture from the GPU 
+		 *			or core thread will not be reflected in this data. Use "readData" if you require
+		 *			those changes.
+		 *
+		 *			The texture must have been created with TU_CPUCACHED usage otherwise this method
+		 *			will not return any data.
+		 */
+		virtual void readDataSim(PixelData& dest, UINT32 mipLevel = 0, UINT32 face = 0);
 
 		/**
 		 * @brief	Reads data from the texture buffer into the provided buffer.
@@ -389,6 +413,13 @@ namespace BansheeEngine
 		 */
 		UINT32 calculateSize() const;
 
+		/**
+		 * @brief	Creates buffers used for caching of CPU texture data.
+		 *
+		 * @note	Make sure to initialize all texture properties before calling this.
+		 */
+		void createCPUBuffers();
+
 	protected:
 		UINT32 mHeight; // Immutable
 		UINT32 mWidth; // Immutable
@@ -401,6 +432,8 @@ namespace BansheeEngine
 		TextureType mTextureType; // Immutable
 		PixelFormat mFormat; // Immutable
 		int mUsage; // Immutable
+
+		Vector<PixelDataPtr> mCPUSubresourceData;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

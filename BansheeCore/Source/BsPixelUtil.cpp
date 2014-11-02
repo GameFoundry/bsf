@@ -974,6 +974,21 @@ namespace BansheeEngine
 		}
 	}
 
+	void PixelUtil::getSizeForMipLevel(UINT32 width, UINT32 height, UINT32 depth, UINT32 mipLevel,
+		UINT32& mipWidth, UINT32& mipHeight, UINT32& mipDepth)
+	{
+		mipWidth = width;
+		mipHeight = height;
+		mipDepth = depth;
+
+		for (UINT32 i = 0; i < mipLevel; i++)
+		{
+			if (mipWidth != 1) mipWidth /= 2;
+			if (mipHeight != 1) mipHeight /= 2;
+			if (mipDepth != 1) mipDepth /= 2;
+		}
+	}
+
     UINT32 PixelUtil::getNumElemBits(PixelFormat format)
     {
         return getDescriptionFor(format).elemBytes * 8;

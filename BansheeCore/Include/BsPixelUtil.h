@@ -102,6 +102,12 @@ namespace BansheeEngine
 		static UINT32 getMemorySize(UINT32 width, UINT32 height, UINT32 depth, PixelFormat format);
 		
 		/**
+		 * @brief	Calculates the size of a mip level of a texture with the provided size.
+		 */
+		static void getSizeForMipLevel(UINT32 width, UINT32 height, UINT32 depth, UINT32 mipLevel, 
+			UINT32& mipWidth, UINT32& mipHeight, UINT32& mipDepth);
+
+		/**
 		 * @brief	Returns property flags for this pixel format.
 		 *
 		 * @see		PixelFormatFlags
