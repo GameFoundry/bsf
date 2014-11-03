@@ -5,23 +5,8 @@ VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Notes", "_Notes", "{1D081E5A-615A-4C06-B2DF-0D8D9390DE02}"
 	ProjectSection(SolutionItems) = preProject
-		CSharpWrap.txt = CSharpWrap.txt
-		DrawHelper.txt = DrawHelper.txt
-		EditorWindowDock.txt = EditorWindowDock.txt
-		GameGUI.txt = GameGUI.txt
-		GameObjectSerialization.txt = GameObjectSerialization.txt
-		Inspector.txt = Inspector.txt
 		Notes.txt = Notes.txt
-		Opts.txt = Opts.txt
-		Polish.txt = Polish.txt
-		ProjectLibrary.txt = ProjectLibrary.txt
-		ResourceBundles.txt = ResourceBundles.txt
 		SceneView.txt = SceneView.txt
-		SpriteTexture.txt = SpriteTexture.txt
-		TODO.txt = TODO.txt
-		TODODoc.txt = TODODoc.txt
-		TreeView.txt = TreeView.txt
-		UndoRedo.txt = UndoRedo.txt
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BansheeEngine", "BansheeEngine\BansheeEngine.vcxproj", "{07B0C186-5173-46F2-BE26-7E4148BD0CCA}"
@@ -183,6 +168,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Guides", "Guides", "{425968
 		Dependencies.txt = Dependencies.txt
 		Mono-3.2.3-IntegrationGuide.txt = Mono-3.2.3-IntegrationGuide.txt
 		Mono-3.4.0-IntegrationGuide.txt = Mono-3.4.0-IntegrationGuide.txt
+		NVTTCompilationGuide.txt = NVTTCompilationGuide.txt
 	EndProjectSection
 EndProject
 Global
