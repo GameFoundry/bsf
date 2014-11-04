@@ -413,7 +413,7 @@ namespace BansheeEngine
 					HTexture texture = static_resource_cast<Texture>(value);
 					ScriptTexture2D* scriptResource = ScriptResourceManager::instance().getScriptTexture(texture);
 					if(scriptResource == nullptr)
-						scriptResource = ScriptResourceManager::instance().createScriptTexture(texture);
+						scriptResource = ScriptResourceManager::instance().createScriptTexture2D(texture);
 
 					return scriptResource->getManagedInstance();
 				}

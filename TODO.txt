@@ -9,16 +9,6 @@
 Optionally port PixelUtility to compressing, converting, generating mipmaps, applying gamma to PixelData
  - Also getMaxMimaps and other methods for retrieving pixel format information
 
- C# AsyncOp
- - blockUntilComplete doesn't actually wait for this command, but instead waits until entire queue is empty
-  - Modify CoreThreadAccesor so it uses playbackWithNotify instead of playback
-  - Internally keep a mutex + condition variable that can be referenced by every AsyncOp (they should be in a shared_ptr so that if CoreThreadAccesor maybe gets destroyed, they still remain)
-  - Every AsyncOp gets assigned an unique ID on creation (use an atomic counter?)
-  - Notify method in CoreThreadAccesor triggers the condition variable whenever a variable completes
-  - When notified AsyncOp checks its isCompleted variable
-  - This means I probably need to synchronize isCompleted (use atomic?)
-
-
 
 
 

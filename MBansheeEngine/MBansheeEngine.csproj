@@ -110,8 +110,8 @@
     <Compile Include="SerializeField.cs" />
     <Compile Include="SpriteTexture.cs" />
     <Compile Include="StringTable.cs" />
+    <Compile Include="Texture.cs" />
     <Compile Include="Texture2D.cs" />
-    <Compile Include="TextureFormat.cs" />
     <Compile Include="Math\Vector2.cs" />
     <Compile Include="Math\Vector3.cs" />
     <Compile Include="Math\Vector4.cs" />

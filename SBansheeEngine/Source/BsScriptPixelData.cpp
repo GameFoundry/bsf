@@ -9,8 +9,8 @@
 
 namespace BansheeEngine
 {
-	ScriptPixelData::ScriptPixelData(MonoObject* managedInstance, const PixelDataPtr& pixelData)
-		:ScriptObject(managedInstance), mPixelData(pixelData)
+	ScriptPixelData::ScriptPixelData(MonoObject* managedInstance)
+		:ScriptObject(managedInstance)
 	{
 
 	}
@@ -37,12 +37,28 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetIsConsecutive", &ScriptPixelData::internal_getIsConsecutive);
 	}
 
+	void ScriptPixelData::initialize(const PixelDataPtr& pixelData)
+	{
+		mPixelData = pixelData;
+	}
+
+	MonoObject* ScriptPixelData::create(const PixelDataPtr& pixelData)
+	{
+		MonoObject* pixelDataObj = metaData.scriptClass->createInstance();
+
+		ScriptPixelData* scriptPixelData = ScriptPixelData::toNative(pixelDataObj);
+		scriptPixelData->initialize(pixelData);
+
+		return pixelDataObj;
+	}
+
 	void ScriptPixelData::internal_createInstance(MonoObject* instance, PixelVolume volume, PixelFormat format)
 	{
 		PixelDataPtr pixelData = bs_shared_ptr<PixelData>(volume, format);
 		pixelData->allocateInternalBuffer();
 
-		ScriptPixelData* scriptPixelData = new (bs_alloc<ScriptPixelData>()) ScriptPixelData(instance, pixelData);
+		ScriptPixelData* scriptPixelData = new (bs_alloc<ScriptPixelData>()) ScriptPixelData(instance);
+		scriptPixelData->initialize(pixelData);
 	}
 
 	void ScriptPixelData::internal_getPixel(ScriptPixelData* thisPtr, int x, int y, int z, Color* value)

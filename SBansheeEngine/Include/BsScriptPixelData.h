@@ -14,9 +14,13 @@ namespace BansheeEngine
 
 		PixelDataPtr getInternalValue() const { return mPixelData; }
 
+		static MonoObject* create(const PixelDataPtr& pixelData);
+
 	private:
-		ScriptPixelData(MonoObject* managedInstance, const PixelDataPtr& pixelData);
+		ScriptPixelData(MonoObject* managedInstance);
 		~ScriptPixelData();
+
+		void initialize(const PixelDataPtr& pixelData);
 
 		static void internal_createInstance(MonoObject* instance, PixelVolume volume, PixelFormat format);
 		static void internal_getPixel(ScriptPixelData* thisPtr, int x, int y, int z, Color* value);

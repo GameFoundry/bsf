@@ -122,6 +122,10 @@ namespace BansheeEngine
             }
         }
 
+        // Only for use by native code
+        private PixelData()
+        { }
+
         public PixelData(PixelVolume volume, PixelFormat format)
         {
             Internal_CreateInstance(this, volume, format);

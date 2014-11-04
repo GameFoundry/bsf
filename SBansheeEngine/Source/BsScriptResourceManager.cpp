@@ -30,14 +30,14 @@ namespace BansheeEngine
 			BS_EXCEPT(InternalErrorException, "Cannot find managed Font class.");
 	}
 
-	ScriptTexture2D* ScriptResourceManager::createScriptTexture(const HTexture& resourceHandle)
+	ScriptTexture2D* ScriptResourceManager::createScriptTexture2D(const HTexture& resourceHandle)
 	{
 		MonoObject* monoInstance = mTextureClass->createInstance();
 
-		return createScriptTexture(monoInstance, resourceHandle);
+		return createScriptTexture2D(monoInstance, resourceHandle);
 	}
 
-	ScriptTexture2D* ScriptResourceManager::createScriptTexture(MonoObject* instance, const HTexture& resourceHandle)
+	ScriptTexture2D* ScriptResourceManager::createScriptTexture2D(MonoObject* instance, const HTexture& resourceHandle)
 	{
 		const String& uuid = resourceHandle.getUUID();
 #if BS_DEBUG_MODE
@@ -139,7 +139,7 @@ namespace BansheeEngine
 		switch (resTypeID)
 		{
 		case TID_Texture:
-			return createScriptTexture(static_resource_cast<Texture>(resource));
+			return createScriptTexture2D(static_resource_cast<Texture>(resource));
 		case TID_SpriteTexture:
 			return createScriptSpriteTexture(static_resource_cast<SpriteTexture>(resource));
 		case TID_Font:
