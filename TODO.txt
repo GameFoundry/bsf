@@ -1,22 +1,22 @@
-3. Figure out how to port AsyncOp to C#
-4. Write a C# interface for Texture, Texture2D, Texture3D, TextureCube
+--------- ALL LONG TERM TASKS / FIXES BELONG TO GOOGLE DOCS: ImplementationTODO OR PossibleImprovements ----------
+
+ Write a C# interface for Texture, Texture2D, Texture3D, TextureCube
   - Texture: width, height, format, numMipmaps, usage, sRGB, sampleCount
   - Texture2D: GetPixels(int mip), SetPixels(int mip), AsyncOp GetGPUPixels(int mip)
   - Texture3D: depth, GetPixels(int mip), SetPixels(int mip), AsyncOp GetGPUPixels(int mip)
   - TextureCube: GetPixels(CubeFace face, int mip), SetPixels(CubeFace face, int mip), AsyncOp GetGPUPixels(CubeFace face, int mip)
 
--------------
-
 Optionally port PixelUtility to compressing, converting, generating mipmaps, applying gamma to PixelData
  - Also getMaxMimaps and other methods for retrieving pixel format information
 
  C# AsyncOp
- - Internally holds actual AsyncOp
- - Direct accessor to isComplete
- - Accessor to returnValue
-   - returns null or empty value if not complete
-   - C++ wrapper accepts a callback that knows how to convert returnType into a C# type
-    - it should also increase ref count so the object isn't destroyed (if it's such object)
+ - blockUntilComplete doesn't actually wait for this command, but instead waits until entire queue is empty
+  - Modify CoreThreadAccesor so it uses playbackWithNotify instead of playback
+  - Internally keep a mutex + condition variable that can be referenced by every AsyncOp (they should be in a shared_ptr so that if CoreThreadAccesor maybe gets destroyed, they still remain)
+  - Every AsyncOp gets assigned an unique ID on creation (use an atomic counter?)
+  - Notify method in CoreThreadAccesor triggers the condition variable whenever a variable completes
+  - When notified AsyncOp checks its isCompleted variable
+  - This means I probably need to synchronize isCompleted (use atomic?)
 
 
 

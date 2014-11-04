@@ -55,6 +55,7 @@ namespace BansheeEngine
 	class HThread;
 	class TestSuite;
 	class TestOutput;
+	class AsyncOpSyncData;
 	// Reflection
 	class IReflectable;
 	class RTTITypeBase;
@@ -72,6 +73,7 @@ namespace BansheeEngine
 	typedef std::shared_ptr<MemoryDataStream> MemoryDataStreamPtr;
 	typedef std::shared_ptr<Task> TaskPtr;
 	typedef std::shared_ptr<TestSuite> TestSuitePtr;
+	typedef std::shared_ptr<AsyncOpSyncData> AsyncOpSyncDataPtr;
 
 	typedef List<DataStreamPtr> DataStreamList;
 	typedef std::shared_ptr<DataStreamList> DataStreamListPtr;

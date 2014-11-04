@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AsyncOp.cs" />
     <Compile Include="BuiltinResources.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="Cursor.cs" />

@@ -64,36 +64,34 @@ namespace BansheeEngine
 	struct QueuedCommand
 	{
 #if BS_DEBUG_MODE
-		QueuedCommand(std::function<void(AsyncOp&)> _callback, UINT32 _debugId, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
-			:callbackWithReturnValue(_callback), debugId(_debugId), returnsValue(true), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId), asyncOp(bs_new<AsyncOp>()), ownsData(true)
+		QueuedCommand(std::function<void(AsyncOp&)> _callback, UINT32 _debugId, const AsyncOpSyncDataPtr& asyncOpSyncData,
+			bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
+			:callbackWithReturnValue(_callback), debugId(_debugId), returnsValue(true), 
+			notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId), asyncOp(asyncOpSyncData)
 		{ }
 
 		QueuedCommand(std::function<void()> _callback, UINT32 _debugId, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
-			:callback(_callback), debugId(_debugId), returnsValue(false), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId), asyncOp(nullptr), ownsData(true)
+			:callback(_callback), debugId(_debugId), returnsValue(false), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId), asyncOp(AsyncOpEmpty())
 		{ }
 
 		UINT32 debugId;
 #else
-		QueuedCommand(std::function<void(AsyncOp&)> _callback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
-			:callbackWithReturnValue(_callback), returnsValue(true), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId), asyncOp(bs_new<AsyncOp>()), ownsData(true)
+		QueuedCommand(std::function<void(AsyncOp&)> _callback, const AsyncOpSyncDataPtr& asyncOpSyncData, 
+			bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
+			:callbackWithReturnValue(_callback), returnsValue(true), notifyWhenComplete(_notifyWhenComplete), 
+			callbackId(_callbackId), asyncOp(asyncOpSyncData)
 		{ }
 
 		QueuedCommand(std::function<void()> _callback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
-			:callback(_callback), returnsValue(false), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId), asyncOp(nullptr), ownsData(true)
+			:callback(_callback), returnsValue(false), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId), asyncOp(AsyncOpEmpty())
 		{ }
 #endif
 
 		~QueuedCommand()
-		{
-			if(ownsData && asyncOp != nullptr)
-				bs_delete(asyncOp);
-		}
+		{ }
 
 		QueuedCommand(const QueuedCommand& source)
 		{
-			ownsData = true;
-			source.ownsData = false;
-
 			callback = source.callback;
 			callbackWithReturnValue = source.callbackWithReturnValue;
 			asyncOp = source.asyncOp;
@@ -104,9 +102,6 @@ namespace BansheeEngine
 
 		QueuedCommand& operator=(const QueuedCommand& rhs)
 		{
-			ownsData = true;
-			rhs.ownsData = false;
-
 			callback = rhs.callback;
 			callbackWithReturnValue = rhs.callbackWithReturnValue;
 			asyncOp = rhs.asyncOp;
@@ -119,12 +114,10 @@ namespace BansheeEngine
 
 		std::function<void()> callback;
 		std::function<void(AsyncOp&)> callbackWithReturnValue;
-		AsyncOp* asyncOp;
+		AsyncOp asyncOp;
 		bool returnsValue;
 		UINT32 callbackId;
 		bool notifyWhenComplete;
-
-		mutable bool ownsData;
 	};
 
 	/**
@@ -266,6 +259,7 @@ namespace BansheeEngine
 
 		UINT32 mMaxDebugIdx;
 		UINT32 mCommandQueueIdx;
+		AsyncOpSyncDataPtr mAsyncOpSyncData;
 
 		static UINT32 MaxCommandQueueIdx;
 		static UnorderedSet<QueueBreakpoint, QueueBreakpoint::HashFunction, QueueBreakpoint::EqualFunction> SetBreakpoints;
