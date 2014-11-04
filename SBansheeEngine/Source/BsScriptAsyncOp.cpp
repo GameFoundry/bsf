@@ -58,6 +58,12 @@ namespace BansheeEngine
 
 	void ScriptAsyncOp::internal_blockUntilComplete(ScriptAsyncOp* thisPtr)
 	{
-		thisPtr->mAsyncOp.blockUntilComplete();
+		if (!thisPtr->mAsyncOp.hasCompleted())
+		{
+			// Note: Assuming the AsyncOp was queued via accessor. This will deadlock
+			// if it wasn't.
+			gCoreThread().getAccessor()->submitToCoreThread();
+			thisPtr->mAsyncOp._blockUntilComplete();
+		}
 	}
 }

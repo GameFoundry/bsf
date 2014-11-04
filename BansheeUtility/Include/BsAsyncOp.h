@@ -87,10 +87,13 @@ namespace BansheeEngine
 		/**
 		 * @brief	Blocks the caller thread until the AsyncOp completes.
 		 *
-		 * @note	Do not call this on the thread that is completing the async op, as it
+		 * @note	Internal method.
+		 *			Do not call this on the thread that is completing the async op, as it
 		 *			will cause a deadlock.
+		 *			Make sure the command you are waiting for is actually queued for execution
+		 *			because a deadlock will occurr otherwise.
 		 */
-		void blockUntilComplete() const;
+		void _blockUntilComplete() const;
 
 		/**
 		 * @brief	Retrieves the value returned by the async operation. Only valid
