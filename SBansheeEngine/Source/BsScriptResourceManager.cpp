@@ -3,6 +3,8 @@
 #include "BsMonoAssembly.h"
 #include "BsMonoClass.h"
 #include "BsScriptTexture2D.h"
+#include "BsScriptTexture3D.h"
+#include "BsScriptTextureCube.h"
 #include "BsScriptSpriteTexture.h"
 #include "BsScriptFont.h"
 #include "BsScriptManagedResource.h"
@@ -37,6 +39,20 @@ namespace BansheeEngine
 		return createScriptTexture2D(monoInstance, resourceHandle);
 	}
 
+	ScriptTexture3D* ScriptResourceManager::createScriptTexture3D(const HTexture& resourceHandle)
+	{
+		MonoObject* monoInstance = mTextureClass->createInstance();
+
+		return createScriptTexture3D(monoInstance, resourceHandle);
+	}
+
+	ScriptTextureCube* ScriptResourceManager::createScriptTextureCube(const HTexture& resourceHandle)
+	{
+		MonoObject* monoInstance = mTextureClass->createInstance();
+
+		return createScriptTextureCube(monoInstance, resourceHandle);
+	}
+
 	ScriptTexture2D* ScriptResourceManager::createScriptTexture2D(MonoObject* instance, const HTexture& resourceHandle)
 	{
 		const String& uuid = resourceHandle.getUUID();
@@ -45,6 +61,32 @@ namespace BansheeEngine
 #endif
 
 		ScriptTexture2D* scriptResource = new (bs_alloc<ScriptTexture2D>()) ScriptTexture2D(instance, resourceHandle);
+		mScriptResources[uuid] = scriptResource;
+
+		return scriptResource;
+	}
+
+	ScriptTexture3D* ScriptResourceManager::createScriptTexture3D(MonoObject* instance, const HTexture& resourceHandle)
+	{
+		const String& uuid = resourceHandle.getUUID();
+#if BS_DEBUG_MODE
+		throwExceptionIfInvalidOrDuplicate(uuid);
+#endif
+
+		ScriptTexture3D* scriptResource = new (bs_alloc<ScriptTexture3D>()) ScriptTexture3D(instance, resourceHandle);
+		mScriptResources[uuid] = scriptResource;
+
+		return scriptResource;
+	}
+
+	ScriptTextureCube* ScriptResourceManager::createScriptTextureCube(MonoObject* instance, const HTexture& resourceHandle)
+	{
+		const String& uuid = resourceHandle.getUUID();
+#if BS_DEBUG_MODE
+		throwExceptionIfInvalidOrDuplicate(uuid);
+#endif
+
+		ScriptTextureCube* scriptResource = new (bs_alloc<ScriptTextureCube>()) ScriptTextureCube(instance, resourceHandle);
 		mScriptResources[uuid] = scriptResource;
 
 		return scriptResource;

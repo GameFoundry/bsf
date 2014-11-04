@@ -21,7 +21,6 @@ Refactor GizmoManager and HandleManager so they accept a CameraHandler
  - Delete SceneViewLocator, I don't think it's used anywhere
 
 Port SceneCameraController to C#
- - Will need a C# Cursor
 Port RenderTexture to C# and likely extend Texture2D so it accepts renderable flags. While at it add TextureCube and Texture3D as well.
  - Actually Texture2D doesn't seem to be implemented at all. Will also need to add PixelData wrapper.
  - Will I need to add support for readable textures? e.g. what happens when you try to read a texture from C#?

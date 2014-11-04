@@ -18,10 +18,34 @@ namespace BansheeEngine
 		ScriptTexture2D* createScriptTexture2D(const HTexture& resourceHandle);
 
 		/**
+		* @note Throws an exception if resource for the handle already exists.
+		* 		 Creates a new managed instance of the object.
+		*/
+		ScriptTexture3D* createScriptTexture3D(const HTexture& resourceHandle);
+
+		/**
+		 * @note Throws an exception if resource for the handle already exists.
+		 * 		 Creates a new managed instance of the object.
+		 */
+		ScriptTextureCube* createScriptTextureCube(const HTexture& resourceHandle);
+
+		/**
 		 * @note Throws an exception if resource for the handle already exists.
 		 * 		 Initializes the ScriptResource with an existing managed instance.
 		 */
 		ScriptTexture2D* createScriptTexture2D(MonoObject* existingInstance, const HTexture& resourceHandle);
+
+		/**
+		 * @note Throws an exception if resource for the handle already exists.
+		 * 		 Initializes the ScriptResource with an existing managed instance.
+		 */
+		ScriptTexture3D* createScriptTexture3D(MonoObject* existingInstance, const HTexture& resourceHandle);
+
+		/**
+		 * @note Throws an exception if resource for the handle already exists.
+		 * 		 Initializes the ScriptResource with an existing managed instance.
+		 */
+		ScriptTextureCube* createScriptTextureCube(MonoObject* existingInstance, const HTexture& resourceHandle);
 
 		/**
 		 * @note Throws an exception if resource for the handle already exists.
