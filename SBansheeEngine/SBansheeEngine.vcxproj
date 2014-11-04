@@ -278,6 +278,7 @@
     <ClInclude Include="Include\BsScriptObject.h" />
     <ClInclude Include="Include\BsScriptObjectImpl.h" />
     <ClInclude Include="Include\BsScriptPixelData.h" />
+    <ClInclude Include="Include\BsScriptPixelUtility.h" />
     <ClInclude Include="Include\BsScriptResource.h" />
     <ClInclude Include="Include\BsScriptResourceManager.h" />
     <ClInclude Include="Include\BsScriptSceneObject.h" />
@@ -340,6 +341,7 @@
     <ClCompile Include="Source\BsScriptObject.cpp" />
     <ClCompile Include="Source\BsScriptObjectImpl.cpp" />
     <ClCompile Include="Source\BsScriptPixelData.cpp" />
+    <ClCompile Include="Source\BsScriptPixelUtility.cpp" />
     <ClCompile Include="Source\BsScriptResourceManager.cpp" />
     <ClCompile Include="Source\BsScriptSceneObject.cpp" />
     <ClCompile Include="Source\BsManagedSerializableArray.cpp" />
