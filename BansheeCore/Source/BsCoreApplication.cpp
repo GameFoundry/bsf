@@ -189,6 +189,10 @@ namespace BansheeEngine
 
 			update();
 
+			// Sync all dirty sim thread CoreObject data to core thread
+			CoreObjectManager::instance().syncDownload(CoreObjectSync::Sim, gCoreThread().getFrameAlloc());
+			gCoreThread().queueCommand(std::bind(&CoreObjectManager::syncUpload, CoreObjectManager::instancePtr(), CoreObjectSync::Sim));
+
 			PROFILE_CALL(RendererManager::instance().getActive()->renderAll(), "Render");
 
 			// Core and sim thread run in lockstep. This will result in a larger input latency than if I was 
@@ -208,8 +212,16 @@ namespace BansheeEngine
 				mIsFrameRenderingFinished = false;
 			}
 
+			// Sync all dirty core thread CoreObject data to sim thread
+			// Note: This relies on core thread having finished the frame (ensured by the sync primitive above)
+			CoreObjectManager::instance().syncUpload(CoreObjectSync::Core);
+
+			// Active frame allocator now belongs to core thread, do not use it on sim thread anymore
 			gCoreThread().queueCommand(&Platform::_coreUpdate);
-			gCoreThread().submitAccessors();
+			gCoreThread().submitAccessors(); 
+
+			// This should be called after accessors are submitted to ensure we don't sync CoreObjects that are about to be destroyed (They're only ever destroyed from accessors)
+			gCoreThread().queueCommand(std::bind(&CoreObjectManager::syncDownload, CoreObjectManager::instancePtr(), CoreObjectSync::Core, gCoreThread().getFrameAlloc()));
 			gCoreThread().queueCommand(std::bind(&RenderTargetManager::updateCore, RenderTargetManager::instancePtr()));
 			gCoreThread().queueCommand(std::bind(&CoreApplication::endCoreProfiling, this));
 			gCoreThread().queueCommand(std::bind(&CoreApplication::frameRenderingFinishedCallback, this));

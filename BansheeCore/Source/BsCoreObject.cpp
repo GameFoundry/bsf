@@ -12,7 +12,7 @@ namespace BansheeEngine
 	BS_STATIC_MUTEX_CLASS_INSTANCE(mCoreGpuObjectLoadedMutex, CoreObject)
 
 	CoreObject::CoreObject(bool initializeOnRenderThread)
-		: mFlags(0), mInternalID(0)
+		: mFlags(0), mInternalID(0), mCoreDirtyFlags(0xFFFFFFFF), mCoreSpecific(nullptr)
 	{
 		mInternalID = CoreObjectManager::instance().registerObject(this);
 		mFlags = initializeOnRenderThread ? mFlags | CGO_INIT_ON_CORE_THREAD : mFlags;
@@ -34,6 +34,12 @@ namespace BansheeEngine
 				"the object is being deleted? You shouldn't delete CoreObjects manually.");
 		}
 #endif
+
+		if (mCoreSpecific != nullptr)
+		{
+			bs_delete(mCoreSpecific);
+			mCoreSpecific = nullptr;
+		}
 
 		CoreObjectManager::instance().unregisterObject(this);
 	}
@@ -62,6 +68,9 @@ namespace BansheeEngine
 			BS_EXCEPT(InternalErrorException, "Trying to destroy an object that is already destroyed (or it never was initialized).");
 #endif
 
+		if (mCoreSpecific != nullptr)
+			mCoreSpecific->destroy();
+
 		setIsInitialized(false);
 	}
 
@@ -71,6 +80,8 @@ namespace BansheeEngine
 		if(isInitialized() || isScheduledToBeInitialized())
 			BS_EXCEPT(InternalErrorException, "Trying to initialize an object that is already initialized.");
 #endif
+
+		mCoreSpecific = createCore();
 
 		if(requiresInitOnCoreThread())
 		{
@@ -89,6 +100,9 @@ namespace BansheeEngine
 
 	void CoreObject::initialize_internal()
 	{
+		if (mCoreSpecific != nullptr)
+			mCoreSpecific->initialize();
+
 		if(requiresInitOnCoreThread())
 		{
 			{

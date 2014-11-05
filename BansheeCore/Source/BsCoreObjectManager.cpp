@@ -1,5 +1,6 @@
 #include "BsCoreObjectManager.h"
 #include "BsCoreObject.h"
+#include "BsCoreObjectCore.h"
 #include "BsException.h"
 
 namespace BansheeEngine
@@ -44,6 +45,71 @@ namespace BansheeEngine
 
 		BS_LOCK_MUTEX(mObjectsMutex);
 
-		mObjects.erase(object->getInternalID());
+		UINT64 internalId = object->getInternalID();
+		mObjects.erase(internalId);
+		mSimSyncData.erase(internalId);
+		mCoreSyncData.erase(internalId);
+	}
+
+	void CoreObjectManager::syncDownload(CoreObjectSync type, FrameAlloc* allocator)
+	{
+		BS_LOCK_MUTEX(mObjectsMutex);
+
+		if (type == CoreObjectSync::Sim)
+		{
+			for (auto& objectData : mObjects)
+			{
+				CoreObject* object = objectData.second;
+				CoreObjectCore* objectCore = object->getCore();
+				if (objectCore != nullptr && object->isCoreDirty())
+				{
+					CoreSyncData syncData = object->syncToCore(allocator);
+					object->markCoreClean();
+
+					mCoreSyncData[object->getInternalID()] = CoreStoredSyncData(objectCore, syncData);
+				}
+			}
+		}
+		else
+		{
+			for (auto& objectData : mObjects)
+			{
+				CoreObject* object = objectData.second;
+				CoreObjectCore* objectCore = object->getCore();
+				if (objectCore != nullptr && objectCore->isCoreDirty())
+				{
+					CoreSyncData syncData = objectCore->syncFromCore(allocator);
+					objectCore->markCoreClean();
+
+					mSimSyncData[object->getInternalID()] = SimStoredSyncData(object, syncData);
+				}
+			}
+		}
+	}
+
+	void CoreObjectManager::syncUpload(CoreObjectSync type)
+	{
+		BS_LOCK_MUTEX(mObjectsMutex);
+
+		if (type == CoreObjectSync::Sim)
+		{
+			for (auto& objectData : mCoreSyncData)
+			{
+				const CoreStoredSyncData& syncData = objectData.second;
+				syncData.destinationObj->syncToCore(syncData.syncData);
+			}
+
+			mCoreSyncData.clear();
+		}
+		else
+		{
+			for (auto& objectData : mSimSyncData)
+			{
+				const SimStoredSyncData& syncData = objectData.second;
+				syncData.destinationObj->syncFromCore(syncData.syncData);
+			}
+
+			mSimSyncData.clear();
+		}
 	}
 }

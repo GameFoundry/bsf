@@ -1,20 +1,8 @@
 --------- ALL LONG TERM TASKS / FIXES BELONG TO GOOGLE DOCS: ImplementationTODO OR PossibleImprovements ----------
 
- Write a C# interface for Texture, Texture2D, Texture3D, TextureCube
-  - Texture: width, height, format, numMipmaps, usage, sRGB, sampleCount
-  - Texture2D: GetPixels(int mip), SetPixels(int mip), AsyncOp GetGPUPixels(int mip)
-  - Texture3D: depth, GetPixels(int mip), SetPixels(int mip), AsyncOp GetGPUPixels(int mip)
-  - TextureCube: GetPixels(CubeFace face, int mip), SetPixels(CubeFace face, int mip), AsyncOp GetGPUPixels(CubeFace face, int mip)
-
-Optionally port PixelUtility to compressing, converting, generating mipmaps, applying gamma to PixelData
- - Also getMaxMimaps and other methods for retrieving pixel format information
+Write documentation for the new CoreObject refactor
 
 
-
-
-
-WEEKEND END
------------------------
 
 Refactor GizmoManager and HandleManager so they accept a CameraHandler
  - I need to ensure scene CameraHandler has proper position/rotation before being passed to handle and gizmo manager

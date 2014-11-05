@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
+#include "BsCoreObjectCore.h"
 #include "BsAsyncOp.h"
 
 namespace BansheeEngine
@@ -40,7 +41,7 @@ namespace BansheeEngine
 		virtual ~CoreObject();
 
 		/**
-		 * @brief	Destroys all GPU resources of this object.
+		 * @brief	Frees all the data held by this object.
 		 * 			
 		 * @note	If is created with "CGO_INIT_ON_CORE_THREAD" flag destruction is not done immediately, 
 		 * 			and is instead just scheduled on the core thread. 
@@ -114,6 +115,14 @@ namespace BansheeEngine
 		 */
 		std::shared_ptr<CoreObject> getThisPtr() const { return mThis.lock(); }
 
+		/**
+		 * @brief	Returns an object that contains a core thread specific implementation
+		 *			of this CoreObject. 
+		 *
+		 * @note	Thread safe to retrieve, but its data is only valid on the core thread.
+		 */
+		CoreObjectCore* getCore() const { return mCoreSpecific; }
+
 	protected:
 		/**
 		 * @brief	Frees all of the objects dynamically allocated memory. All derived classes that have something to free
@@ -169,6 +178,8 @@ namespace BansheeEngine
 		friend class CoreObjectManager;
 
 		volatile UINT8 mFlags;
+		CoreObjectCore* mCoreSpecific;
+		UINT32 mCoreDirtyFlags;
 		UINT64 mInternalID; // ID == 0 is not a valid ID
 		std::weak_ptr<CoreObject> mThis;
 
@@ -199,6 +210,50 @@ namespace BansheeEngine
 		 * @brief	Helper wrapper method used for queuing commands with a return value on the core thread.
 		 */
 		static void executeReturnGpuCommand(std::shared_ptr<CoreObject> obj, std::function<void(AsyncOp&)> func, AsyncOp& op); 
+
+		/************************************************************************/
+		/* 							CORE OBJECT SYNC                      		*/
+		/************************************************************************/
+
+		/**
+		 * @brief	Creates an object that contains core thread specific data and methods
+		 *			for this CoreObject. Can be null if such object is not required.
+		 */
+		virtual CoreObjectCore* createCore() const { return nullptr; }
+
+		/**
+		 * @brief	Marks the core data as dirty. This causes the syncToCore()
+		 *			method to trigger the next time objects are synced between core and sim threads.
+		 *
+		 * @param	flags	Optional flags in case you want to signal that only part of the
+		 *					internal data is dirty. syncFromCore() will be called regardless
+		 *					and it's up to the implementation to read the flags value if needed.
+		 */
+		void markCoreDirty(UINT32 flags = 0xFFFFFFFF) { mCoreDirtyFlags = flags; }
+
+		/**
+		 * @brief	Marks the core data as clean. Normally called right after syncToCore()
+		 *			has been called.
+		 */
+		void markCoreClean() { mCoreDirtyFlags = 0; }
+
+		/**
+		 * @brief	Checks is the core dirty flag set. This is used by external systems 
+		 *			to know when internal data has changed and core thread potentially needs to be notified.
+		 */
+		bool isCoreDirty() const { return mCoreDirtyFlags != 0; }
+
+		/**
+		 * @brief	Copy internal dirty data to a memory buffer that will be used
+		 *			for updating core thread version of that data.
+		 */
+		virtual CoreSyncData syncToCore(FrameAlloc* allocator) { return CoreSyncData(); }
+
+		/**
+		 * @brief	Update internal data from provided memory buffer that
+		 *			was populated with data from the core thread.
+		 */
+		virtual void syncFromCore(const CoreSyncData& data) { }
 	};
 
 	/**

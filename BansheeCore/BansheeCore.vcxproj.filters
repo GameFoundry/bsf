@@ -537,6 +537,9 @@
     <ClInclude Include="Include\BsMaterialParam.h">
       <Filter>Header Files\Material</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsCoreObjectCore.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsCoreApplication.cpp">
@@ -844,6 +847,9 @@
     </ClCompile>
     <ClCompile Include="Source\BsMaterialParam.cpp">
       <Filter>Source Files\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsCoreObjectCore.cpp">
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
