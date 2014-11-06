@@ -2,11 +2,12 @@
 #include "BsCoreObject.h"
 #include "BsCoreObjectCore.h"
 #include "BsException.h"
+#include "BsFrameAlloc.h"
 
 namespace BansheeEngine
 {
 	CoreObjectManager::CoreObjectManager()
-		:mNextAvailableID(1)
+		:mNextAvailableID(1), mSimSyncDataAlloc(nullptr), mCoreSyncDataAlloc(nullptr)
 	{
 
 	} 
@@ -57,6 +58,7 @@ namespace BansheeEngine
 
 		if (type == CoreObjectSync::Sim)
 		{
+			mCoreSyncDataAlloc = allocator;
 			for (auto& objectData : mObjects)
 			{
 				CoreObject* object = objectData.second;
@@ -72,6 +74,7 @@ namespace BansheeEngine
 		}
 		else
 		{
+			mSimSyncDataAlloc = allocator;
 			for (auto& objectData : mObjects)
 			{
 				CoreObject* object = objectData.second;
@@ -97,6 +100,8 @@ namespace BansheeEngine
 			{
 				const CoreStoredSyncData& syncData = objectData.second;
 				syncData.destinationObj->syncToCore(syncData.syncData);
+
+				mCoreSyncDataAlloc->dealloc(syncData.syncData.getBuffer());
 			}
 
 			mCoreSyncData.clear();
@@ -107,6 +112,8 @@ namespace BansheeEngine
 			{
 				const SimStoredSyncData& syncData = objectData.second;
 				syncData.destinationObj->syncFromCore(syncData.syncData);
+
+				mSimSyncDataAlloc->dealloc(syncData.syncData.getBuffer());
 			}
 
 			mSimSyncData.clear();

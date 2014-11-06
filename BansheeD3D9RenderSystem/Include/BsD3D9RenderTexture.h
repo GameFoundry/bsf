@@ -50,6 +50,11 @@ namespace BansheeEngine
 		friend class D3D9RenderTexture;
 
 		/**
+		 * @copydoc	CoreObjectCore::initialize
+		 */
+		virtual void initialize();
+
+		/**
 		 * @brief	Initializes the internal color and depth surfaces.
 		 */
 		void initializeSurfaces();
@@ -88,7 +93,6 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	RenderTexture::createCore
 		 */
-		virtual RenderTextureCore* createCore(RenderTextureProperties* properties, const RENDER_SURFACE_DESC& colorSurfaceDesc,
-			const RENDER_SURFACE_DESC& depthStencilSurfaceDesc);
+		virtual CoreObjectCore* createCore() const;
 	};
 }

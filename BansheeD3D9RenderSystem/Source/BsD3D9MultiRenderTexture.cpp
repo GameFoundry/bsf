@@ -6,7 +6,15 @@ namespace BansheeEngine
 {
 	D3D9MultiRenderTextureCore::D3D9MultiRenderTextureCore(D3D9MultiRenderTexture* parent, MultiRenderTextureProperties* properties, const MULTI_RENDER_TEXTURE_DESC& desc)
 		:MultiRenderTextureCore(parent, properties, desc), mDX9DepthStencilSurface(nullptr)
+	{ }
+
+	D3D9MultiRenderTextureCore::~D3D9MultiRenderTextureCore()
+	{ }
+
+	void D3D9MultiRenderTextureCore::initialize()
 	{
+		MultiRenderTextureCore::initialize();
+
 		mDX9ColorSurfaces.resize(mColorSurfaces.size());
 
 		for (size_t i = 0; i < mColorSurfaces.size(); i++)
@@ -48,11 +56,6 @@ namespace BansheeEngine
 		}
 	}
 
-	D3D9MultiRenderTextureCore::~D3D9MultiRenderTextureCore()
-	{
-
-	}
-
 	void D3D9MultiRenderTextureCore::getCustomAttribute(const String& name, void* pData) const
 	{
 		if(name == "DDBACKBUFFER")
@@ -83,8 +86,14 @@ namespace BansheeEngine
 		return bs_new<MultiRenderTextureProperties>();
 	}
 
-	MultiRenderTextureCore* D3D9MultiRenderTexture::createCore(MultiRenderTextureProperties* properties, const MULTI_RENDER_TEXTURE_DESC& desc)
+	CoreObjectCore* D3D9MultiRenderTexture::createCore() const
 	{
-		return bs_new<D3D9MultiRenderTextureCore>(this, properties, desc);
+		MultiRenderTextureProperties* coreProperties = bs_new<MultiRenderTextureProperties>();
+		MultiRenderTextureProperties* myProperties = static_cast<MultiRenderTextureProperties*>(mProperties);
+
+		*coreProperties = *myProperties;
+
+		return bs_new<D3D9MultiRenderTextureCore>(const_cast<D3D9MultiRenderTexture*>(this),
+			coreProperties, mDesc);
 	}
 }

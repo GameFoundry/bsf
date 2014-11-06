@@ -28,11 +28,6 @@ namespace BansheeEngine
 		virtual ~RenderTargetProperties() { }
 
 		/**
-		 * @brief	Returns a name of the render target, used for easier identification.
-		 */
-        const String& getName() const { return mName; }
-
-		/**
 		 * @brief	Returns width of the render target, in pixels.
 		 * 
 		 * @note	Sim thread only.
@@ -97,16 +92,24 @@ namespace BansheeEngine
 		 */
 		bool requiresTextureFlipping() const { return mRequiresTextureFlipping; }
 
-		/**
-		 * @brief	Copies all data from the provided object to this object.
-		 */
-		virtual void copyFrom(const RenderTargetProperties& other);
-
 	protected:
 		friend class RenderTargetCore;
 		friend class RenderTarget;
 
-		String mName;
+		/**
+		 * @brief	Copies all internal data to the specified buffer.
+		 */
+		virtual void copyToBuffer(UINT8* buffer) const;
+
+		/**
+		 * @brief	Initializes all internal data from the specified buffer.
+		 */
+		virtual void copyFromBuffer(UINT8* buffer);
+
+		/**
+		 * @brief	Returns the size of the buffer needed to hold all internal data.
+		 */
+		virtual UINT32 getSize() const;
 
 		UINT32 mWidth = 0;
 		UINT32 mHeight = 0;
@@ -129,7 +132,7 @@ namespace BansheeEngine
 	 *
 	 * @note	Core thread only.
 	 */
-	class BS_CORE_EXPORT RenderTargetCore
+	class BS_CORE_EXPORT RenderTargetCore : public CoreObjectCore
 	{
 	public:
 		/**
@@ -184,30 +187,21 @@ namespace BansheeEngine
 		 */
 		RenderTarget* getNonCore() const { return mParent; }
 
-		/**
-		 * @brief	Returns true if this object was modified and the sim thread version requires an update.
-		 */
-		bool _isCoreDirty() const { return mCoreDirty; }
-
-		/**
-		 * @brief	Marks the object as clean. Usually called after the sim thread version was updated.
-		 */
-		void _markCoreClean() { mCoreDirty = false; }
-
 	protected:
 		friend class RenderTarget;
 
 		/**
-		 * @brief	Marks this object as modified. Signals the system that the sim thread verison
-		 *			of the object needs an update.
+		 * @copydoc	CoreObjectCore::syncFromCore
 		 */
-		void markCoreDirty() { mCoreDirty = true; }
+		virtual CoreSyncData syncFromCore(FrameAlloc* allocator);
+
+		/**
+		 * @copydoc	CoreObjectCore::syncToCore
+		 */
+		virtual void syncToCore(const CoreSyncData& data);
 
 		RenderTargetProperties* mProperties;
 		RenderTarget* mParent;
-
-	private:
-		bool mCoreDirty = true;
 	};
 
 	/**
@@ -255,8 +249,6 @@ namespace BansheeEngine
 		mutable Event<void()> onResized;
 
     protected:
-		friend class RenderTargetManager;
-
 		RenderTarget();
 
 		/**
@@ -266,22 +258,15 @@ namespace BansheeEngine
 		virtual RenderTargetProperties* createProperties() const = 0;
 
 		/**
-		 * @brief	Creates a core implementation of a render target. This implementation
-		 *			is to be used on the core thread only.
+		 * @copydoc	CoreObject::syncToCore
 		 */
-		virtual RenderTargetCore* createCore() = 0;
+		virtual CoreSyncData syncToCore(FrameAlloc* allocator);
 
 		/**
-		 * @copydoc	CoreObject::initialize_internal
+		 * @copydoc	CoreObject::syncFromCore
 		 */
-		virtual void initialize_internal();
+		virtual void syncFromCore(const CoreSyncData& data);
 
-		/**
-		 * @copydoc	CoreObject::destroy_internal
-		 */
-		virtual void destroy_internal();
-
-		RenderTargetCore* mCore;
 		RenderTargetProperties* mProperties;
     };
 }

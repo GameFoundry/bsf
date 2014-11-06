@@ -15,9 +15,31 @@ namespace BansheeEngine
 	public:
 		virtual ~Win32RenderWindowProperties() { }
 
+		/**
+		 * @brief	Retrieves the window handle.
+		 */
+		HWND getHWnd() const { return mHWnd; }
+
 	private:
 		friend class Win32WindowCore;
 		friend class Win32Window;
+
+		/**
+		 * @copydoc	RenderTargetProperties::copyToBuffer
+		 */
+		virtual void copyToBuffer(UINT8* buffer) const;
+
+		/**
+		 * @copydoc	RenderTargetProperties::copyFromBuffer
+		 */
+		virtual void copyFromBuffer(UINT8* buffer);
+
+		/**
+		 * @copydoc	RenderTargetProperties::getSize
+		 */
+		virtual UINT32 getSize() const;
+
+		HWND mHWnd = 0;
 	};
 
 	/**
@@ -95,13 +117,22 @@ namespace BansheeEngine
 		friend class Win32GLSupport;
 
 		/**
+		 * @copydoc	CoreObjectCore::initialize
+		 */
+		virtual void initialize();
+
+		/**
+		 * @copydoc	CoreObjectCore::destroy
+		 */
+		virtual void destroy();
+
+		/**
 		 * @brief	Calculates window size based on provided client area size and currently set window style. 
 		 */
 		void getAdjustedWindowSize(UINT32 clientWidth, UINT32 clientHeight, UINT32* winWidth, UINT32* winHeight);
 
 	protected:
 		Win32GLSupport &mGLSupport;
-		HWND mHWnd;
 		HDC	mHDC;
 		DWORD mWindowedStyle;
 		DWORD mWindowedStyleEx;
@@ -111,6 +142,7 @@ namespace BansheeEngine
 		bool mIsExternalGLControl;
 		int mDisplayFrequency;
 		Win32Context *mContext;
+		RENDER_WINDOW_DESC mDesc;
     };
 
 	/**
@@ -151,13 +183,9 @@ namespace BansheeEngine
 	protected:
 		friend class GLRenderWindowManager;
 		friend class Win32GLSupport;
+		friend class Win32WindowCore;
 
 		Win32Window(Win32GLSupport& glsupport);
-
-		/**
-		 * @copydoc	RenderWindow::initialize_internal
-		 */
-		virtual void initialize_internal();
 
 		/**
 		 * @copydoc	RenderWindow::createProperties
@@ -167,10 +195,9 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	RenderWindow::createCore
 		 */
-		virtual RenderWindowCore* createCore(RenderWindowProperties* properties, const RENDER_WINDOW_DESC& desc);
+		virtual CoreObjectCore* createCore() const;
 
 	private:
 		Win32GLSupport& mGLSupport;
-		HWND mHWnd;
 	};
 }

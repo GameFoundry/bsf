@@ -7,14 +7,37 @@
 
 namespace BansheeEngine
 {
-	MultiRenderTextureCore::MultiRenderTextureCore(MultiRenderTexture* parent, MultiRenderTextureProperties* properties, const MULTI_RENDER_TEXTURE_DESC& desc)
-		:RenderTargetCore(parent, properties)
+	void MultiRenderTextureProperties::copyToBuffer(UINT8* buffer) const
 	{
+		*(MultiRenderTextureProperties*)buffer = *this;
+	}
+
+	void MultiRenderTextureProperties::copyFromBuffer(UINT8* buffer)
+	{
+		*this = *(MultiRenderTextureProperties*)buffer;
+	}
+
+	UINT32 MultiRenderTextureProperties::getSize() const
+	{
+		return sizeof(MultiRenderTextureProperties);
+	}
+
+	MultiRenderTextureCore::MultiRenderTextureCore(MultiRenderTexture* parent, MultiRenderTextureProperties* properties, const MULTI_RENDER_TEXTURE_DESC& desc)
+		:RenderTargetCore(parent, properties), mDesc(desc)
+	{ }
+
+	MultiRenderTextureCore::~MultiRenderTextureCore()
+	{ }
+
+	void MultiRenderTextureCore::initialize()
+	{
+		RenderTargetCore::initialize();
+
 		mColorSurfaces.resize(BS_MAX_MULTIPLE_RENDER_TARGETS);
 
-		for (size_t i = 0; i < desc.colorSurfaces.size(); i++)
+		for (size_t i = 0; i < mDesc.colorSurfaces.size(); i++)
 		{
-			if (desc.colorSurfaces[i].texture != nullptr)
+			if (mDesc.colorSurfaces[i].texture != nullptr)
 			{
 				if (i >= BS_MAX_MULTIPLE_RENDER_TARGETS)
 				{
@@ -24,31 +47,31 @@ namespace BansheeEngine
 					continue;
 				}
 
-				TexturePtr texture = desc.colorSurfaces[i].texture;
+				TexturePtr texture = mDesc.colorSurfaces[i].texture;
 
 				if (texture->getUsage() != TU_RENDERTARGET)
 					BS_EXCEPT(InvalidParametersException, "Provided texture is not created with render target usage.");
 
-				mColorSurfaces[i] = Texture::requestView(texture, desc.colorSurfaces[i].mipLevel, 1,
-					desc.colorSurfaces[i].face, 1, GVU_RENDERTARGET);
+				mColorSurfaces[i] = Texture::requestView(texture, mDesc.colorSurfaces[i].mipLevel, 1,
+					mDesc.colorSurfaces[i].face, 1, GVU_RENDERTARGET);
 			}
 		}
 
-		if (desc.depthStencilSurface.texture != nullptr)
+		if (mDesc.depthStencilSurface.texture != nullptr)
 		{
-			TexturePtr texture = desc.depthStencilSurface.texture;
+			TexturePtr texture = mDesc.depthStencilSurface.texture;
 
 			if (texture->getUsage() != TU_DEPTHSTENCIL)
 				BS_EXCEPT(InvalidParametersException, "Provided texture is not created with depth stencil usage.");
 
-			mDepthStencilSurface = Texture::requestView(texture, desc.depthStencilSurface.mipLevel, 1,
-				desc.depthStencilSurface.face, 1, GVU_DEPTHSTENCIL);
+			mDepthStencilSurface = Texture::requestView(texture, mDesc.depthStencilSurface.mipLevel, 1,
+				mDesc.depthStencilSurface.face, 1, GVU_DEPTHSTENCIL);
 		}
 
 		throwIfBuffersDontMatch();
 	}
 
-	MultiRenderTextureCore::~MultiRenderTextureCore()
+	void MultiRenderTextureCore::destroy()
 	{
 		for (auto iter = mColorSurfaces.begin(); iter != mColorSurfaces.end(); ++iter)
 		{
@@ -58,6 +81,8 @@ namespace BansheeEngine
 
 		if (mDepthStencilSurface != nullptr)
 			Texture::releaseView(mDepthStencilSurface);
+
+		RenderTargetCore::destroy();
 	}
 
 	void MultiRenderTextureCore::throwIfBuffersDontMatch() const
@@ -166,17 +191,7 @@ namespace BansheeEngine
 
 	MultiRenderTextureCore* MultiRenderTexture::getCore() const
 	{
-		return static_cast<MultiRenderTextureCore*>(mCore);
-	}
-
-	RenderTargetCore* MultiRenderTexture::createCore()
-	{
-		MultiRenderTextureProperties* coreProperties = bs_new<MultiRenderTextureProperties>();
-		MultiRenderTextureProperties* myProperties = static_cast<MultiRenderTextureProperties*>(mProperties);
-
-		*coreProperties = *myProperties;
-
-		return createCore(coreProperties, mDesc);
+		return static_cast<MultiRenderTextureCore*>(mCoreSpecific);
 	}
 
 	MultiRenderTexturePtr MultiRenderTexture::create(const MULTI_RENDER_TEXTURE_DESC& desc)

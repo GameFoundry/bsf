@@ -6,38 +6,6 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Helper class for syncing dirty data from sim CoreObject to
-	 *			core CoreObject and other way around.
-	 */
-	class CoreSyncData
-	{
-	public:
-		CoreSyncData()
-			:data(nullptr), size(0)
-		{ }
-
-		CoreSyncData(UINT8* data, UINT32 size)
-			:data(data), size(size)
-		{ }
-
-		/**
-		 * @brief	Gets the internal data and checks the data is of
-		 *			valid size.
-		 */
-		template<class T>
-		const T& getData()
-		{
-			assert(sizeof(T) == size);
-
-			return *(T*)data;
-		}
-
-	private:
-		UINT8* data;
-		UINT32 size;
-	};
-
-	/**
 	 * @brief	Represents part of a CoreObject that is meant to be used specifically
 	 *			on the core thread. 
 	 *
@@ -50,6 +18,7 @@ namespace BansheeEngine
 	{
 	public:
 		CoreObjectCore();
+		virtual ~CoreObjectCore() {}
 
 	protected:
 		friend class CoreObjectManager;

@@ -26,7 +26,15 @@ namespace BansheeEngine
 	GLRenderTextureCore::GLRenderTextureCore(GLRenderTexture* parent, RenderTextureProperties* properties, const RENDER_SURFACE_DESC& colorSurfaceDesc,
 		const RENDER_SURFACE_DESC& depthStencilSurfaceDesc)
 		:RenderTextureCore(parent, properties, colorSurfaceDesc, depthStencilSurfaceDesc), mFB(nullptr)
+	{ }
+
+	GLRenderTextureCore::~GLRenderTextureCore()
+	{ }
+
+	void GLRenderTextureCore::initialize()
 	{
+		RenderTextureCore::initialize();
+
 		if (mFB != nullptr)
 			bs_delete<PoolAlloc>(mFB);
 
@@ -35,7 +43,7 @@ namespace BansheeEngine
 		GLTexture* glTexture = static_cast<GLTexture*>(mColorSurface->getTexture().get());
 
 		GLSurfaceDesc surfaceDesc;
-		surfaceDesc.numSamples = properties->getMultisampleCount();
+		surfaceDesc.numSamples = mProperties->getMultisampleCount();
 
 		if (glTexture->getTextureType() != TEX_TYPE_3D)
 		{
@@ -55,17 +63,19 @@ namespace BansheeEngine
 
 		if (glDepthStencilTexture->getTextureType() != TEX_TYPE_3D)
 		{
-			depthStencilBuffer = glDepthStencilTexture->getBuffer(mDepthStencilSurface->getFirstArraySlice(), 
+			depthStencilBuffer = glDepthStencilTexture->getBuffer(mDepthStencilSurface->getFirstArraySlice(),
 				mDepthStencilSurface->getMostDetailedMip());
 		}
 
 		mFB->bindDepthStencil(depthStencilBuffer);
 	}
 
-	GLRenderTextureCore::~GLRenderTextureCore()
+	void GLRenderTextureCore::destroy()
 	{
 		if (mFB != nullptr)
 			bs_delete<PoolAlloc>(mFB);
+
+		RenderTextureCore::destroy();
 	}
 
 	void GLRenderTextureCore::getCustomAttribute(const String& name, void* pData) const
@@ -85,10 +95,15 @@ namespace BansheeEngine
 		return bs_new<RenderTextureProperties>();
 	}
 
-	RenderTextureCore* GLRenderTexture::createCore(RenderTextureProperties* properties, const RENDER_SURFACE_DESC& colorSurfaceDesc,
-		const RENDER_SURFACE_DESC& depthStencilSurfaceDesc)
+	CoreObjectCore* GLRenderTexture::createCore() const
 	{
-		return bs_new<GLRenderTextureCore>(this, properties, colorSurfaceDesc, depthStencilSurfaceDesc);
+		RenderTextureProperties* coreProperties = bs_new<RenderTextureProperties>();
+		RenderTextureProperties* myProperties = static_cast<RenderTextureProperties*>(mProperties);
+
+		*coreProperties = *myProperties;
+
+		return bs_new<GLRenderTextureCore>(const_cast<GLRenderTexture*>(this),
+			coreProperties, mColorSurfaceDesc, mDepthStencilSurfaceDesc);
 	}
 
 	GLRTTManager::GLRTTManager()

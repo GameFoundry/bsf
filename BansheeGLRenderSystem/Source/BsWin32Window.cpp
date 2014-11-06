@@ -19,10 +19,33 @@ namespace BansheeEngine
 {
 	#define _MAX_CLASS_NAME_ 128
 
-	Win32WindowCore::Win32WindowCore(Win32Window* parentWnd, RenderWindowProperties* properties, const RENDER_WINDOW_DESC& desc, Win32GLSupport& glsupport)
-		:RenderWindowCore(parentWnd, properties), mGLSupport(glsupport), mContext(0), mWindowedStyle(0), mWindowedStyleEx(0), mHWnd(0), mIsExternal(false),
-		mIsExternalGLControl(false), mDisplayFrequency(0), mDeviceName(nullptr)
+	void Win32RenderWindowProperties::copyToBuffer(UINT8* buffer) const
 	{
+		*(Win32RenderWindowProperties*)buffer = *this;
+	}
+
+	void Win32RenderWindowProperties::copyFromBuffer(UINT8* buffer)
+	{
+		*this = *(Win32RenderWindowProperties*)buffer;
+	}
+
+	UINT32 Win32RenderWindowProperties::getSize() const
+	{
+		return sizeof(Win32RenderWindowProperties);
+	}
+
+	Win32WindowCore::Win32WindowCore(Win32Window* parentWnd, RenderWindowProperties* properties, const RENDER_WINDOW_DESC& desc, Win32GLSupport& glsupport)
+		:RenderWindowCore(parentWnd, properties), mGLSupport(glsupport), mContext(0), mWindowedStyle(0), mWindowedStyleEx(0), mIsExternal(false),
+		mIsExternalGLControl(false), mDisplayFrequency(0), mDeviceName(nullptr), mDesc(desc)
+	{ }
+
+	Win32WindowCore::~Win32WindowCore()
+	{ }
+
+	void Win32WindowCore::initialize()
+	{
+		RenderWindowCore::initialize();
+
 #ifdef BS_STATIC_LIB
 		HINSTANCE hInst = GetModuleHandle(NULL);
 #else
@@ -31,37 +54,35 @@ namespace BansheeEngine
 
 		Win32RenderWindowProperties* props = static_cast<Win32RenderWindowProperties*>(mProperties);
 
-		mHWnd = 0;
-		props->mName = desc.title;
-		props->mIsFullScreen = desc.fullscreen;
+		props->mIsFullScreen = mDesc.fullscreen;
 		mIsChild = false;
-		mDisplayFrequency = Math::roundToInt(desc.videoMode.getRefreshRate());
+		mDisplayFrequency = Math::roundToInt(mDesc.videoMode.getRefreshRate());
 		props->mColorDepth = 32;
 		HWND parent = 0;
 
 		NameValuePairList::const_iterator opt;
-		NameValuePairList::const_iterator end = desc.platformSpecific.end();
+		NameValuePairList::const_iterator end = mDesc.platformSpecific.end();
 
-		if ((opt = desc.platformSpecific.find("externalWindowHandle")) != end)
+		if ((opt = mDesc.platformSpecific.find("externalWindowHandle")) != end)
 		{
-			mHWnd = (HWND)parseUnsignedInt(opt->second);
-			if (mHWnd)
+			props->mHWnd = (HWND)parseUnsignedInt(opt->second);
+			if (props->mHWnd)
 			{
 				mIsExternal = true;
 			}
 
-			if ((opt = desc.platformSpecific.find("externalGLControl")) != end) {
+			if ((opt = mDesc.platformSpecific.find("externalGLControl")) != end) {
 				mIsExternalGLControl = parseBool(opt->second);
 			}
 		}
 
 		HGLRC glrc = 0;
-		if ((opt = desc.platformSpecific.find("externalGLContext")) != end)
+		if ((opt = mDesc.platformSpecific.find("externalGLContext")) != end)
 		{
 			glrc = (HGLRC)parseUnsignedLong(opt->second);
 		}
 
-		if ((opt = desc.platformSpecific.find("parentWindowHandle")) != end)
+		if ((opt = mDesc.platformSpecific.find("parentWindowHandle")) != end)
 		{
 			parent = (HWND)parseUnsignedInt(opt->second);
 			mIsChild = true;
@@ -73,7 +94,7 @@ namespace BansheeEngine
 		UINT32 numOutputs = videoModeInfo.getNumOutputs();
 		if (numOutputs > 0)
 		{
-			UINT32 actualMonitorIdx = std::min(desc.videoMode.getOutputIdx(), numOutputs - 1);
+			UINT32 actualMonitorIdx = std::min(mDesc.videoMode.getOutputIdx(), numOutputs - 1);
 			const Win32VideoOutputInfo& outputInfo = static_cast<const Win32VideoOutputInfo&>(videoModeInfo.getOutputInfo(actualMonitorIdx));
 			hMonitor = outputInfo.getMonitorHandle();
 		}
@@ -92,17 +113,17 @@ namespace BansheeEngine
 		{
 			if (parent)
 			{
-				if (desc.toolWindow)
+				if (mDesc.toolWindow)
 					mWindowedStyleEx = WS_EX_TOOLWINDOW;
 				else
 					mWindowedStyle |= WS_CHILD;
 			}
 
-			if (!parent || desc.toolWindow)
+			if (!parent || mDesc.toolWindow)
 			{
-				if (desc.border == WindowBorder::None)
+				if (mDesc.border == WindowBorder::None)
 					mWindowedStyle |= WS_POPUP;
-				else if (desc.border == WindowBorder::Fixed)
+				else if (mDesc.border == WindowBorder::Fixed)
 					mWindowedStyle |= WS_OVERLAPPED | WS_BORDER | WS_CAPTION |
 					WS_SYSMENU | WS_MINIMIZEBOX;
 				else
@@ -120,8 +141,8 @@ namespace BansheeEngine
 				POINT windowAnchorPoint;
 
 				// Fill in anchor point.
-				windowAnchorPoint.x = desc.left;
-				windowAnchorPoint.y = desc.top;
+				windowAnchorPoint.x = mDesc.left;
+				windowAnchorPoint.y = mDesc.top;
 
 				// Get the nearest monitor to this window.
 				hMonitor = MonitorFromPoint(windowAnchorPoint, MONITOR_DEFAULTTONEAREST);
@@ -139,8 +160,8 @@ namespace BansheeEngine
 
 			strcpy_s(mDeviceName, devNameLen + 1, monitorInfoEx.szDevice);
 
-			UINT32 left = desc.left;
-			UINT32 top = desc.top;
+			UINT32 left = mDesc.left;
+			UINT32 top = mDesc.top;
 
 			// No specified top left -> Center the window in the middle of the monitor
 			if (left == -1 || top == -1)
@@ -149,7 +170,7 @@ namespace BansheeEngine
 				int screenh = monitorInfoEx.rcWork.bottom - monitorInfoEx.rcWork.top;
 
 				unsigned int winWidth, winHeight;
-				getAdjustedWindowSize(desc.videoMode.getWidth(), desc.videoMode.getHeight(), &winWidth, &winHeight);
+				getAdjustedWindowSize(mDesc.videoMode.getWidth(), mDesc.videoMode.getHeight(), &winWidth, &winHeight);
 
 				// clamp window dimensions to screen size
 				int outerw = (int(winWidth) < screenw) ? int(winWidth) : screenw;
@@ -171,8 +192,8 @@ namespace BansheeEngine
 				top += monitorInfoEx.rcWork.top;
 			}
 
-			props->mWidth = desc.videoMode.getWidth();
-			props->mHeight = desc.videoMode.getHeight();
+			props->mWidth = mDesc.videoMode.getWidth();
+			props->mHeight = mDesc.videoMode.getHeight();
 			props->mTop = top;
 			props->mLeft = left;
 
@@ -192,7 +213,7 @@ namespace BansheeEngine
 				int screenw = GetSystemMetrics(SM_CXSCREEN);
 				int screenh = GetSystemMetrics(SM_CYSCREEN);
 
-				if (!desc.outerDimensions)
+				if (!mDesc.outerDimensions)
 				{
 					// Calculate window dimensions required
 					// to get the requested client area
@@ -251,26 +272,26 @@ namespace BansheeEngine
 			}
 
 			// Pass pointer to self as WM_CREATE parameter
-			mHWnd = CreateWindowEx(dwStyleEx, "GLWindow", desc.title.c_str(),
+			props->mHWnd = CreateWindowEx(dwStyleEx, "GLWindow", mDesc.title.c_str(),
 				dwStyle, props->mLeft, props->mTop, props->mWidth, props->mHeight, parent, 0, hInst, this);
 		}
 
 		RECT rc;
 
-		GetWindowRect(mHWnd, &rc);
+		GetWindowRect(props->mHWnd, &rc);
 		props->mTop = rc.top;
 		props->mLeft = rc.left;
 
-		GetClientRect(mHWnd, &rc);
+		GetClientRect(props->mHWnd, &rc);
 		props->mWidth = rc.right;
 		props->mHeight = rc.bottom;
 
-		mHDC = GetDC(mHWnd);
+		mHDC = GetDC(props->mHWnd);
 
 		if (!mIsExternalGLControl)
 		{
 			int testMultisample = props->mMultisampleCount;
-			bool testHwGamma = desc.gamma;
+			bool testHwGamma = mDesc.gamma;
 			bool formatOk = mGLSupport.selectPixelFormat(mHDC, props->mColorDepth, testMultisample, testHwGamma);
 			if (!formatOk)
 			{
@@ -281,7 +302,7 @@ namespace BansheeEngine
 					formatOk = mGLSupport.selectPixelFormat(mHDC, props->mColorDepth, testMultisample, testHwGamma);
 				}
 
-				if (!formatOk && desc.gamma)
+				if (!formatOk && mDesc.gamma)
 				{
 					// Try without sRGB
 					testHwGamma = false;
@@ -289,7 +310,7 @@ namespace BansheeEngine
 					formatOk = mGLSupport.selectPixelFormat(mHDC, props->mColorDepth, testMultisample, testHwGamma);
 				}
 
-				if (!formatOk && desc.gamma && (props->mMultisampleCount > 0))
+				if (!formatOk && mDesc.gamma && (props->mMultisampleCount > 0))
 				{
 					// Try without both
 					testHwGamma = false;
@@ -310,14 +331,19 @@ namespace BansheeEngine
 
 		props->mActive = true;
 		mContext = mGLSupport.createContext(mHDC, glrc);
+
+		// Sync HWnd to CoreObject immediately
+		Win32Window* parentWnd = static_cast<Win32Window*>(mParent);
+		Win32RenderWindowProperties* parentProps = static_cast<Win32RenderWindowProperties*>(parentWnd->mProperties);
+		parentProps->mHWnd = props->mHWnd;
 	}
 
-	Win32WindowCore::~Win32WindowCore()
+	void Win32WindowCore::destroy()
 	{
-		if (!mHWnd)
-			return;
-
 		Win32RenderWindowProperties* props = static_cast<Win32RenderWindowProperties*>(mProperties);
+
+		if (!props->mHWnd)
+			return;
 
 		// Unregister and destroy GLContext
 		bs_delete(mContext);
@@ -326,17 +352,17 @@ namespace BansheeEngine
 		{
 			if (props->mIsFullScreen)
 				ChangeDisplaySettingsEx(mDeviceName, NULL, NULL, 0, NULL);
-			DestroyWindow(mHWnd);
+			DestroyWindow(props->mHWnd);
 		}
 		else
 		{
 			// just release the DC
-			ReleaseDC(mHWnd, mHDC);
+			ReleaseDC(props->mHWnd, mHDC);
 		}
 
 		props->mActive = false;
 		mHDC = 0; // no release thanks to CS_OWNDC wndclass style
-		mHWnd = 0;
+		props->mHWnd = 0;
 
 		if (mDeviceName != NULL)
 		{
@@ -345,6 +371,8 @@ namespace BansheeEngine
 		}
 
 		markCoreDirty();
+
+		RenderWindowCore::destroy();
 	}
 
 	void Win32WindowCore::setFullscreen(UINT32 width, UINT32 height, float refreshRate, UINT32 monitorIdx)
@@ -396,7 +424,7 @@ namespace BansheeEngine
 		props->mWidth = width;
 		props->mHeight = height;
 
-		SetWindowPos(mHWnd, HWND_TOP, props->mLeft, props->mTop, width, height, SWP_NOACTIVATE);
+		SetWindowPos(props->mHWnd, HWND_TOP, props->mLeft, props->mTop, width, height, SWP_NOACTIVATE);
 
 		markCoreDirty();
 	}
@@ -429,7 +457,7 @@ namespace BansheeEngine
 		getAdjustedWindowSize(props->mWidth, props->mHeight, &winWidth, &winHeight);
 
 		// Deal with centering when switching down to smaller resolution
-		HMONITOR hMonitor = MonitorFromWindow(mHWnd, MONITOR_DEFAULTTONEAREST);
+		HMONITOR hMonitor = MonitorFromWindow(props->mHWnd, MONITOR_DEFAULTTONEAREST);
 		MONITORINFO monitorInfo;
 		memset(&monitorInfo, 0, sizeof(MONITORINFO));
 		monitorInfo.cbSize = sizeof(MONITORINFO);
@@ -441,9 +469,9 @@ namespace BansheeEngine
 		INT32 left = screenw > INT32(winWidth) ? ((screenw - INT32(winWidth)) / 2) : 0;
 		INT32 top = screenh > INT32(winHeight) ? ((screenh - INT32(winHeight)) / 2) : 0;
 
-		SetWindowLong(mHWnd, GWL_STYLE, mWindowedStyle);
-		SetWindowLong(mHWnd, GWL_EXSTYLE, mWindowedStyleEx);
-		SetWindowPos(mHWnd, HWND_NOTOPMOST, left, top, winWidth, winHeight,
+		SetWindowLong(props->mHWnd, GWL_STYLE, mWindowedStyle);
+		SetWindowLong(props->mHWnd, GWL_EXSTYLE, mWindowedStyleEx);
+		SetWindowPos(props->mHWnd, HWND_NOTOPMOST, left, top, winWidth, winHeight,
 			SWP_DRAWFRAME | SWP_FRAMECHANGED | SWP_NOACTIVATE);
 
 		_windowMovedOrResized();
@@ -456,12 +484,12 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		Win32RenderWindowProperties* props = static_cast<Win32RenderWindowProperties*>(mProperties);
-		if (mHWnd && !props->mIsFullScreen)
+		if (props->mHWnd && !props->mIsFullScreen)
 		{
 			props->mLeft = left;
 			props->mTop = top;
 
-			SetWindowPos(mHWnd, 0, left, top, 0, 0,
+			SetWindowPos(props->mHWnd, 0, left, top, 0, 0,
 				SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
 
 			markCoreDirty();
@@ -473,16 +501,16 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		Win32RenderWindowProperties* props = static_cast<Win32RenderWindowProperties*>(mProperties);
-		if (mHWnd && !props->mIsFullScreen)
+		if (props->mHWnd && !props->mIsFullScreen)
 		{
 			props->mWidth = width;
 			props->mHeight = height;
 
 			RECT rc = { 0, 0, width, height };
-			AdjustWindowRect(&rc, GetWindowLong(mHWnd, GWL_STYLE), false);
+			AdjustWindowRect(&rc, GetWindowLong(props->mHWnd, GWL_STYLE), false);
 			width = rc.right - rc.left;
 			height = rc.bottom - rc.top;
-			SetWindowPos(mHWnd, 0, 0, 0, width, height,
+			SetWindowPos(props->mHWnd, 0, 0, 0, width, height,
 				SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
 
 			markCoreDirty();
@@ -554,6 +582,8 @@ namespace BansheeEngine
 
 	void Win32WindowCore::getCustomAttribute(const String& name, void* pData) const
 	{
+		Win32RenderWindowProperties* props = static_cast<Win32RenderWindowProperties*>(mProperties);
+
 		if(name == "GLCONTEXT") 
 		{
 			*static_cast<GLContext**>(pData) = mContext;
@@ -562,7 +592,7 @@ namespace BansheeEngine
 		else if(name == "WINDOW")
 		{
 			HWND *pHwnd = (HWND*)pData;
-			*pHwnd = mHWnd;
+			*pHwnd = props->mHWnd;
 			return;
 		} 
 	}
@@ -571,13 +601,14 @@ namespace BansheeEngine
 	{	
 		THROW_IF_NOT_CORE_THREAD;
 
+		Win32RenderWindowProperties* props = static_cast<Win32RenderWindowProperties*>(mProperties);
 		if (mDeviceName != NULL && state == false)
 		{
 			HWND hActiveWindow = GetActiveWindow();
 			char classNameSrc[_MAX_CLASS_NAME_ + 1];
 			char classNameDst[_MAX_CLASS_NAME_ + 1];
 
-			GetClassName(mHWnd, classNameSrc, _MAX_CLASS_NAME_);
+			GetClassName(props->mHWnd, classNameSrc, _MAX_CLASS_NAME_);
 			GetClassName(hActiveWindow, classNameDst, _MAX_CLASS_NAME_);
 
 			if (strcmp(classNameDst, classNameSrc) == 0)
@@ -586,7 +617,6 @@ namespace BansheeEngine
 			}						
 		}
 		
-		Win32RenderWindowProperties* props = static_cast<Win32RenderWindowProperties*>(mProperties);
 		props->mActive = state;
 
 		if(props->mIsFullScreen)
@@ -594,11 +624,11 @@ namespace BansheeEngine
 			if( state == false )
 			{	//Restore Desktop
 				ChangeDisplaySettingsEx(mDeviceName, NULL, NULL, 0, NULL);
-				ShowWindow(mHWnd, SW_SHOWMINNOACTIVE);
+				ShowWindow(props->mHWnd, SW_SHOWMINNOACTIVE);
 			}
 			else
 			{	//Restore App
-				ShowWindow(mHWnd, SW_SHOWNORMAL);
+				ShowWindow(props->mHWnd, SW_SHOWNORMAL);
 
 				DEVMODE displayDeviceMode;
 
@@ -629,9 +659,9 @@ namespace BansheeEngine
 		if (!mIsExternal)
 		{
 			if (hidden)
-				ShowWindow(mHWnd, SW_HIDE);
+				ShowWindow(props->mHWnd, SW_HIDE);
 			else
-				ShowWindow(mHWnd, SW_SHOWNORMAL);
+				ShowWindow(props->mHWnd, SW_SHOWNORMAL);
 		}
 
 		markCoreDirty();
@@ -639,17 +669,17 @@ namespace BansheeEngine
 
 	void Win32WindowCore::_windowMovedOrResized()
 	{
-		if (!mHWnd || IsIconic(mHWnd))
+		Win32RenderWindowProperties* props = static_cast<Win32RenderWindowProperties*>(mProperties);
+
+		if (!props->mHWnd || IsIconic(props->mHWnd))
 			return;
 
 		RECT rc;
-
-		Win32RenderWindowProperties* props = static_cast<Win32RenderWindowProperties*>(mProperties);
-		GetWindowRect(mHWnd, &rc);
+		GetWindowRect(props->mHWnd, &rc);
 		props->mTop = rc.top;
 		props->mLeft = rc.left;
 
-		GetClientRect(mHWnd, &rc);
+		GetClientRect(props->mHWnd, &rc);
 		props->mWidth = rc.right - rc.left;
 		props->mHeight = rc.bottom - rc.top;
 
@@ -660,6 +690,8 @@ namespace BansheeEngine
 
 	void Win32WindowCore::getAdjustedWindowSize(UINT32 clientWidth, UINT32 clientHeight, UINT32* winWidth, UINT32* winHeight)
 	{
+		Win32RenderWindowProperties* props = static_cast<Win32RenderWindowProperties*>(mProperties);
+
 		RECT rc;
 		SetRect(&rc, 0, 0, clientWidth, clientHeight);
 		AdjustWindowRectEx(&rc, mWindowedStyle, false, mWindowedStyleEx);
@@ -667,7 +699,7 @@ namespace BansheeEngine
 		*winHeight = rc.bottom - rc.top;
 
 		// Adjust to monitor
-		HMONITOR hMonitor = MonitorFromWindow(mHWnd, MONITOR_DEFAULTTONEAREST);
+		HMONITOR hMonitor = MonitorFromWindow(props->mHWnd, MONITOR_DEFAULTTONEAREST);
 
 		// Get monitor info	
 		MONITORINFO monitorInfo;
@@ -696,10 +728,11 @@ namespace BansheeEngine
 	{
 		THROW_IF_CORE_THREAD;
 
+		Win32RenderWindowProperties* props = static_cast<Win32RenderWindowProperties*>(mProperties);
 		if (name == "WINDOW")
 		{
 			HWND *pWnd = (HWND*)pData;
-			*pWnd = mHWnd;
+			*pWnd = props->mHWnd;
 			return;
 		}
 
@@ -712,7 +745,8 @@ namespace BansheeEngine
 		pos.x = screenPos.x;
 		pos.y = screenPos.y;
 
-		ScreenToClient(mHWnd, &pos);
+		Win32RenderWindowProperties* props = static_cast<Win32RenderWindowProperties*>(mProperties);
+		ScreenToClient(props->mHWnd, &pos);
 		return Vector2I(pos.x, pos.y);
 	}
 
@@ -722,29 +756,27 @@ namespace BansheeEngine
 		pos.x = windowPos.x;
 		pos.y = windowPos.y;
 
-		ClientToScreen(mHWnd, &pos);
+		Win32RenderWindowProperties* props = static_cast<Win32RenderWindowProperties*>(mProperties);
+		ClientToScreen(props->mHWnd, &pos);
 		return Vector2I(pos.x, pos.y);
 	}
 
 	Win32WindowCore* Win32Window::getCore() const
 	{
-		return static_cast<Win32WindowCore*>(mCore);
-	}
-
-	void Win32Window::initialize_internal()
-	{
-		RenderWindow::initialize_internal();
-
-		mCore->getCustomAttribute("WINDOW", (void*)&mHWnd);
+		return static_cast<Win32WindowCore*>(mCoreSpecific);
 	}
 
 	RenderTargetProperties* Win32Window::createProperties() const
 	{
-		return bs_new<RenderWindowProperties>();
+		return bs_new<Win32RenderWindowProperties>();
 	}
 
-	RenderWindowCore* Win32Window::createCore(RenderWindowProperties* properties, const RENDER_WINDOW_DESC& desc)
+	CoreObjectCore* Win32Window::createCore() const
 	{
-		return bs_new<Win32WindowCore>(this, properties, desc, mGLSupport);
+		Win32RenderWindowProperties* coreProperties = bs_new<Win32RenderWindowProperties>();
+		Win32RenderWindowProperties* myProperties = static_cast<Win32RenderWindowProperties*>(mProperties);
+
+		*coreProperties = *myProperties;
+		return bs_new<Win32WindowCore>(const_cast<Win32Window*>(this), coreProperties, mDesc, mGLSupport);
 	}
 }

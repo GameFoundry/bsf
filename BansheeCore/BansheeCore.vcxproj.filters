@@ -528,9 +528,6 @@
     <ClInclude Include="Include\BsResourceMetaDataRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsRenderTargetManager.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsViewportRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
@@ -838,9 +835,6 @@
     </ClCompile>
     <ClCompile Include="Source\BsResourceMetaData.cpp">
       <Filter>Source Files\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsRenderTargetManager.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsMaterialProxy.cpp">
       <Filter>Source Files</Filter>

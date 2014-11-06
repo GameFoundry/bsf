@@ -6,11 +6,19 @@
 
 namespace BansheeEngine 
 {
-	void RenderWindowProperties::copyFrom(const RenderTargetProperties& other)
+	void RenderWindowProperties::copyToBuffer(UINT8* buffer) const
 	{
-		const RenderWindowProperties& windowProps = static_cast<const RenderWindowProperties&>(other);
+		*(RenderWindowProperties*)buffer = *this;
+	}
 
-		*this = windowProps;
+	void RenderWindowProperties::copyFromBuffer(UINT8* buffer)
+	{
+		*this = *(RenderWindowProperties*)buffer;
+	}
+
+	UINT32 RenderWindowProperties::getSize() const
+	{
+		return sizeof(RenderWindowProperties);
 	}
 
 	RenderWindowCore::RenderWindowCore(RenderWindow* parent, RenderWindowProperties* properties)
@@ -96,17 +104,7 @@ namespace BansheeEngine
 
 	RenderWindowCore* RenderWindow::getCore() const
 	{
-		return static_cast<RenderWindowCore*>(mCore);
-	}
-
-	RenderTargetCore* RenderWindow::createCore()
-	{
-		RenderWindowProperties* coreProperties = bs_new<RenderWindowProperties>();
-		RenderWindowProperties* myProperties = static_cast<RenderWindowProperties*>(mProperties);
-
-		*coreProperties = *myProperties;
-
-		return createCore(coreProperties, mDesc);
+		return static_cast<RenderWindowCore*>(mCoreSpecific);
 	}
 
 	RenderWindowPtr RenderWindow::create(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow)

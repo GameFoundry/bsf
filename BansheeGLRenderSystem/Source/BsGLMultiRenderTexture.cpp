@@ -5,7 +5,15 @@ namespace BansheeEngine
 {
 	GLMultiRenderTextureCore::GLMultiRenderTextureCore(GLMultiRenderTexture* parent, MultiRenderTextureProperties* properties, const MULTI_RENDER_TEXTURE_DESC& desc)
 		:MultiRenderTextureCore(parent, properties, desc), mFB(nullptr)
+	{ }
+
+	GLMultiRenderTextureCore::~GLMultiRenderTextureCore()
+	{ }
+
+	void GLMultiRenderTextureCore::initialize()
 	{
+		MultiRenderTextureCore::initialize();
+
 		if (mFB != nullptr)
 			bs_delete(mFB);
 
@@ -30,7 +38,7 @@ namespace BansheeEngine
 					surfaceDesc.zoffset = mColorSurfaces[i]->getFirstArraySlice();
 					colorBuffer = glColorSurface->getBuffer(0, mColorSurfaces[i]->getMostDetailedMip());
 				}
-				
+
 				surfaceDesc.numSamples = getProperties().getMultisampleCount();
 				surfaceDesc.buffer = colorBuffer;
 
@@ -59,12 +67,16 @@ namespace BansheeEngine
 		{
 			mFB->unbindDepthStencil();
 		}
+
+		MultiRenderTextureCore::initialize();
 	}
 
-	GLMultiRenderTextureCore::~GLMultiRenderTextureCore()
+	void GLMultiRenderTextureCore::destroy()
 	{
 		if (mFB != nullptr)
 			bs_delete(mFB);
+
+		MultiRenderTextureCore::destroy();
 	}
 
 	void GLMultiRenderTextureCore::getCustomAttribute(const String& name, void* pData) const
@@ -84,8 +96,14 @@ namespace BansheeEngine
 		return bs_new<MultiRenderTextureProperties>();
 	}
 
-	MultiRenderTextureCore* GLMultiRenderTexture::createCore(MultiRenderTextureProperties* properties, const MULTI_RENDER_TEXTURE_DESC& desc)
+	CoreObjectCore* GLMultiRenderTexture::createCore() const
 	{
-		return bs_new<GLMultiRenderTextureCore>(this, properties, desc);
+		MultiRenderTextureProperties* coreProperties = bs_new<MultiRenderTextureProperties>();
+		MultiRenderTextureProperties* myProperties = static_cast<MultiRenderTextureProperties*>(mProperties);
+
+		*coreProperties = *myProperties;
+
+		return bs_new<GLMultiRenderTextureCore>(const_cast<GLMultiRenderTexture*>(this),
+			coreProperties, mDesc);
 	}
 }

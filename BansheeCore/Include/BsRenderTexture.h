@@ -23,14 +23,24 @@ namespace BansheeEngine
 	public:
 		virtual ~RenderTextureProperties() { }
 
-		/**
-		 * @copydoc	RenderTargetProperties::copyFrom
-		 */
-		virtual void copyFrom(const RenderTargetProperties& other);
-
 	private:
 		friend class RenderTextureCore;
 		friend class RenderTexture;
+
+		/**
+		 * @copydoc	RenderTargetProperties::copyToBuffer
+		 */
+		virtual void copyToBuffer(UINT8* buffer) const;
+
+		/**
+		 * @copydoc	RenderTargetProperties::copyFromBuffer
+		 */
+		virtual void copyFromBuffer(UINT8* buffer);
+
+		/**
+		 * @copydoc	RenderTargetProperties::getSize
+		 */
+		virtual UINT32 getSize() const;
 	};
 
 	/**
@@ -64,8 +74,21 @@ namespace BansheeEngine
 	protected:
 		friend class RenderTexture;
 
+		/**
+		 * @copydoc	CoreObjectCore::initialize
+		 */
+		virtual void initialize();
+
+		/**
+		 * @copydoc	CoreObjectCore::destroy
+		 */
+		virtual void destroy();
+
 		TextureViewPtr mColorSurface;
 		TextureViewPtr mDepthStencilSurface;
+
+		RENDER_SURFACE_DESC mColorSurfaceDesc;
+		RENDER_SURFACE_DESC mDepthStencilSurfaceDesc;
 	};
 
 	/**
@@ -142,18 +165,6 @@ namespace BansheeEngine
 		 * @copydoc	RenderTarget::initialize
 		 */
 		virtual void initialize(const RENDER_TEXTURE_DESC& desc);
-
-		/**
-		 * @copydoc	RenderTexture::createCore
-		 */
-		virtual RenderTargetCore* createCore();
-
-		/**
-		 * @brief	Creates a core implementation of a render texture. This implementation
-		 *			is to be used on the core thread only.
-		 */
-		virtual RenderTextureCore* createCore(RenderTextureProperties* properties, const RENDER_SURFACE_DESC& colorSurfaceDesc,
-			const RENDER_SURFACE_DESC& depthStencilSurfaceDesc) = 0;
 
 	protected:
 		HTexture mBindableColorTex;

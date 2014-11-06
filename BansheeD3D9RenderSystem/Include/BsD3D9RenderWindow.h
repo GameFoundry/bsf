@@ -16,9 +16,31 @@ namespace BansheeEngine
 	public:
 		virtual ~D3D9RenderWindowProperties() { }
 
+		/**
+		 * @brief	Retrieves the window handle.
+		 */
+		HWND getHWnd() const { return mHWnd; }
+
 	private:
 		friend class D3D9RenderWindowCore;
 		friend class D3D9RenderWindow;
+
+		/**
+		 * @copydoc	RenderTargetProperties::copyToBuffer
+		 */
+		virtual void copyToBuffer(UINT8* buffer) const;
+
+		/**
+		 * @copydoc	RenderTargetProperties::copyFromBuffer
+		 */
+		virtual void copyFromBuffer(UINT8* buffer);
+
+		/**
+		 * @copydoc	RenderTargetProperties::getSize
+		 */
+		virtual UINT32 getSize() const;
+
+		HWND mHWnd = 0;
 	};
 
 	/**
@@ -85,7 +107,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Gets internal Win32 window handle.
 		 */
-		HWND _getWindowHandle() const { return mHWnd; }
+		HWND _getWindowHandle() const;
 
 		/**
 		 * @brief	Gets the DirectX 9 device object that manages this window.
@@ -126,6 +148,16 @@ namespace BansheeEngine
 		friend class D3D9RenderWindow;
 
 		/**
+		 * @copydoc	CoreObjectCore::initialize
+		 */
+		virtual void initialize();
+
+		/**
+		 * @copydoc	CoreObjectCore::destroy
+		 */
+		virtual void destroy();
+
+		/**
 		 * @brief	Updates window coordinates and size from actual values provided by Windows.
 		 */
 		void updateWindowRect();
@@ -140,7 +172,6 @@ namespace BansheeEngine
 		HINSTANCE mInstance;
 		D3D9Device* mDevice;
 		bool mDeviceValid;
-		HWND mHWnd;
 		bool mIsExternal;		
 		D3DMULTISAMPLE_TYPE	mMultisampleType;
 		DWORD mMultisampleQuality;
@@ -151,6 +182,7 @@ namespace BansheeEngine
 		DWORD mWindowedStyleEx;
 		bool mIsDepthBuffered;
 		bool mIsChild;
+		RENDER_WINDOW_DESC mDesc;
 	};
 
 	/**
@@ -190,13 +222,9 @@ namespace BansheeEngine
 
 	protected:
 		friend class D3D9RenderWindowManager;
+		friend class D3D9RenderWindowCore;
 
 		D3D9RenderWindow(HINSTANCE instance);
-
-		/**
-		 * @copydoc	RenderWindow::initialize_internal
-		 */
-		virtual void initialize_internal();
 
 		/**
 		 * @copydoc	RenderWindow::createProperties
@@ -206,10 +234,9 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	RenderWindow::createCore
 		 */
-		virtual RenderWindowCore* createCore(RenderWindowProperties* properties, const RENDER_WINDOW_DESC& desc);
+		virtual CoreObjectCore* createCore() const;
 
 	private:
 		HINSTANCE mInstance;
-		HWND mHWnd;
 	};
 }

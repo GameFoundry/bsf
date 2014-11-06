@@ -90,14 +90,24 @@ namespace BansheeEngine
 		 */
 		bool isHidden() const { return mHidden; }
 
-		/**
-		 * @copydoc	RenderTargetProperties::copyFrom
-		 */
-		virtual void copyFrom(const RenderTargetProperties& other);
-
 	protected:
 		friend class RenderWindowCore;
 		friend class RenderWindow;
+
+		/**
+		 * @copydoc	RenderTargetProperties::copyToBuffer
+		 */
+		virtual void copyToBuffer(UINT8* buffer) const;
+
+		/**
+		 * @copydoc	RenderTargetProperties::copyFromBuffer
+		 */
+		virtual void copyFromBuffer(UINT8* buffer);
+
+		/**
+		 * @copydoc	RenderTargetProperties::getSize
+		 */
+		virtual UINT32 getSize() const;
 
 		bool mIsFullScreen = false;
 		INT32 mLeft = 0;
@@ -263,17 +273,6 @@ namespace BansheeEngine
 
 		RenderWindow() { }
 
-		/**
-		 * @copydoc	RenderWindow::createCore
-		 */
-		virtual RenderTargetCore* createCore();
-
-		/**
-		 * @brief	Creates a core implementation of a render window. This implementation
-		 *			is to be used on the core thread only.
-		 */
-		virtual RenderWindowCore* createCore(RenderWindowProperties* properties, const RENDER_WINDOW_DESC& desc) = 0;
-        
 	protected:
 		RENDER_WINDOW_DESC mDesc;
     };

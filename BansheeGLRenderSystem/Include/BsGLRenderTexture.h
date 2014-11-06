@@ -32,6 +32,16 @@ namespace BansheeEngine
 	protected:
 		friend class GLRenderTexture;
 
+		/**
+		 * @copydoc	CoreObjectCore::initialize
+		 */
+		virtual void initialize();
+
+		/**
+		 * @copydoc	CoreObjectCore::destroy
+		 */
+		virtual void destroy();
+
 		GLFrameBufferObject* mFB;
     };
 
@@ -63,8 +73,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	RenderTexture::createCore
 		 */
-		virtual RenderTextureCore* createCore(RenderTextureProperties* properties, const RENDER_SURFACE_DESC& colorSurfaceDesc,
-			const RENDER_SURFACE_DESC& depthStencilSurfaceDesc);
+		virtual CoreObjectCore* createCore() const;
 	};
 
     /**

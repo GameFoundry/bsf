@@ -114,7 +114,11 @@ namespace BansheeEngine
 	private:
 		UINT64 mNextAvailableID;
 		Map<UINT64, CoreObject*> mObjects;
+
+		FrameAlloc* mSimSyncDataAlloc;
 		Map<UINT64, SimStoredSyncData> mSimSyncData;
+
+		FrameAlloc* mCoreSyncDataAlloc;
 		Map<UINT64, CoreStoredSyncData> mCoreSyncData;
 		BS_MUTEX(mObjectsMutex);
 	};

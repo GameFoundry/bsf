@@ -178,7 +178,6 @@ namespace BansheeEngine
 		friend class CoreObjectManager;
 
 		volatile UINT8 mFlags;
-		CoreObjectCore* mCoreSpecific;
 		UINT32 mCoreDirtyFlags;
 		UINT64 mInternalID; // ID == 0 is not a valid ID
 		std::weak_ptr<CoreObject> mThis;
@@ -254,6 +253,9 @@ namespace BansheeEngine
 		 *			was populated with data from the core thread.
 		 */
 		virtual void syncFromCore(const CoreSyncData& data) { }
+
+	protected:
+		CoreObjectCore* mCoreSpecific;
 	};
 
 	/**

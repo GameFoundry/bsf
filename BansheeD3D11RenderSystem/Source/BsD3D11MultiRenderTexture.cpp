@@ -45,8 +45,14 @@ namespace BansheeEngine
 		return bs_new<MultiRenderTextureProperties>();
 	}
 
-	MultiRenderTextureCore* D3D11MultiRenderTexture::createCore(MultiRenderTextureProperties* properties, const MULTI_RENDER_TEXTURE_DESC& desc)
+	CoreObjectCore* D3D11MultiRenderTexture::createCore() const
 	{
-		return bs_new<D3D11MultiRenderTextureCore>(this, properties, desc);
+		MultiRenderTextureProperties* coreProperties = bs_new<MultiRenderTextureProperties>();
+		MultiRenderTextureProperties* myProperties = static_cast<MultiRenderTextureProperties*>(mProperties);
+
+		*coreProperties = *myProperties;
+
+		return bs_new<D3D11MultiRenderTextureCore>(const_cast<D3D11MultiRenderTexture*>(this),
+			coreProperties, mDesc);
 	}
 }

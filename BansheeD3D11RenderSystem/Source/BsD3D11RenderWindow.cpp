@@ -15,11 +15,34 @@
 
 namespace BansheeEngine
 {
+	void D3D11RenderWindowProperties::copyToBuffer(UINT8* buffer) const
+	{
+		*(D3D11RenderWindowProperties*)buffer = *this;
+	}
+
+	void D3D11RenderWindowProperties::copyFromBuffer(UINT8* buffer)
+	{
+		*this = *(D3D11RenderWindowProperties*)buffer;
+	}
+
+	UINT32 D3D11RenderWindowProperties::getSize() const
+	{
+		return sizeof(D3D11RenderWindowProperties);
+	}
+
 	D3D11RenderWindowCore::D3D11RenderWindowCore(D3D11RenderWindow* parent, RenderWindowProperties* properties, const RENDER_WINDOW_DESC& desc, D3D11Device& device, IDXGIFactory* DXGIFactory)
 		: RenderWindowCore(parent, properties), mDevice(device), mDXGIFactory(DXGIFactory), mIsExternal(false), mSizing(false),
-		 mRenderTargetView(nullptr), mBackBuffer(nullptr), mSwapChain(nullptr), mHWnd(0), 
-		mDepthStencilView(nullptr), mIsChild(false), mRefreshRateNumerator(0), mRefreshRateDenominator(0)
+		 mRenderTargetView(nullptr), mBackBuffer(nullptr), mSwapChain(nullptr), mDepthStencilView(nullptr), mIsChild(false), 
+		 mRefreshRateNumerator(0), mRefreshRateDenominator(0), mDesc(desc)
+	{ }
+
+	D3D11RenderWindowCore::~D3D11RenderWindowCore()
+	{ }
+
+	void D3D11RenderWindowCore::initialize()
 	{
+		RenderWindowCore::initialize();
+
 		ZeroMemory(&mSwapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
 
 		D3D11RenderWindowProperties* props = static_cast<D3D11RenderWindowProperties*>(mProperties);
@@ -29,31 +52,29 @@ namespace BansheeEngine
 		HWND parentHWnd = 0;
 		HWND externalHandle = 0;
 
-
 		NameValuePairList::const_iterator opt;
-		opt = desc.platformSpecific.find("parentWindowHandle");
-		if (opt != desc.platformSpecific.end())
+		opt = mDesc.platformSpecific.find("parentWindowHandle");
+		if (opt != mDesc.platformSpecific.end())
 			parentHWnd = (HWND)parseUnsignedInt(opt->second);
 
-		opt = desc.platformSpecific.find("externalWindowHandle");
-		if (opt != desc.platformSpecific.end())
+		opt = mDesc.platformSpecific.find("externalWindowHandle");
+		if (opt != mDesc.platformSpecific.end())
 			externalHandle = (HWND)parseUnsignedInt(opt->second);
 
-		props->mName = desc.title;
 		mIsChild = parentHWnd != 0;
-		props->mIsFullScreen = desc.fullscreen && !mIsChild;
+		props->mIsFullScreen = mDesc.fullscreen && !mIsChild;
 		props->mColorDepth = 32;
 
 		props->mActive = true;
 
-		if (desc.videoMode.isCustom())
+		if (mDesc.videoMode.isCustom())
 		{
-			mRefreshRateNumerator = Math::roundToInt(desc.videoMode.getRefreshRate());
+			mRefreshRateNumerator = Math::roundToInt(mDesc.videoMode.getRefreshRate());
 			mRefreshRateDenominator = 1;
 		}
 		else
 		{
-			const D3D11VideoMode& d3d11videoMode = static_cast<const D3D11VideoMode&>(desc.videoMode);
+			const D3D11VideoMode& d3d11videoMode = static_cast<const D3D11VideoMode&>(mDesc.videoMode);
 			mRefreshRateNumerator = d3d11videoMode.getRefreshRateNumerator();
 			mRefreshRateDenominator = d3d11videoMode.getRefreshRateDenominator();
 		}
@@ -65,7 +86,7 @@ namespace BansheeEngine
 		UINT32 numOutputs = videoModeInfo.getNumOutputs();
 		if (numOutputs > 0)
 		{
-			UINT32 actualMonitorIdx = std::min(desc.videoMode.getOutputIdx(), numOutputs - 1);
+			UINT32 actualMonitorIdx = std::min(mDesc.videoMode.getOutputIdx(), numOutputs - 1);
 			outputInfo = static_cast<const D3D11VideoOutputInfo*>(&videoModeInfo.getOutputInfo(actualMonitorIdx));
 
 			DXGI_OUTPUT_DESC desc;
@@ -87,8 +108,8 @@ namespace BansheeEngine
 				POINT windowAnchorPoint;
 
 				// Fill in anchor point.
-				windowAnchorPoint.x = desc.left;
-				windowAnchorPoint.y = desc.top;
+				windowAnchorPoint.x = mDesc.left;
+				windowAnchorPoint.y = mDesc.top;
 
 				// Get the nearest monitor to this window.
 				hMonitor = MonitorFromPoint(windowAnchorPoint, MONITOR_DEFAULTTOPRIMARY);
@@ -100,11 +121,11 @@ namespace BansheeEngine
 			GetMonitorInfo(hMonitor, &monitorInfo);
 
 			unsigned int winWidth, winHeight;
-			winWidth = desc.videoMode.getWidth();
-			winHeight = desc.videoMode.getHeight();
+			winWidth = mDesc.videoMode.getWidth();
+			winHeight = mDesc.videoMode.getHeight();
 
-			UINT32 left = desc.left;
-			UINT32 top = desc.top;
+			UINT32 left = mDesc.left;
+			UINT32 top = mDesc.top;
 
 			// No specified top left -> Center the window in the middle of the monitor
 			if (left == -1 || top == -1)
@@ -132,33 +153,33 @@ namespace BansheeEngine
 				top += monitorInfo.rcWork.top;
 			}
 
-			props->mWidth = desc.videoMode.getWidth();
-			props->mHeight = desc.videoMode.getHeight();
+			props->mWidth = mDesc.videoMode.getWidth();
+			props->mHeight = mDesc.videoMode.getHeight();
 			props->mTop = top;
 			props->mLeft = left;
 
-			if (!desc.fullscreen)
+			if (!mDesc.fullscreen)
 			{
 				if (parentHWnd)
 				{
-					if (desc.toolWindow)
+					if (mDesc.toolWindow)
 						dwStyleEx = WS_EX_TOOLWINDOW;
 					else
 						dwStyle |= WS_CHILD;
 				}
 
-				if (!parentHWnd || desc.toolWindow)
+				if (!parentHWnd || mDesc.toolWindow)
 				{
-					if (desc.border == WindowBorder::None)
+					if (mDesc.border == WindowBorder::None)
 						dwStyle |= WS_POPUP;
-					else if (desc.border == WindowBorder::Fixed)
+					else if (mDesc.border == WindowBorder::Fixed)
 						dwStyle |= WS_OVERLAPPED | WS_BORDER | WS_CAPTION |
 						WS_SYSMENU | WS_MINIMIZEBOX;
 					else
 						dwStyle |= WS_OVERLAPPEDWINDOW;
 				}
 
-				if (!desc.outerDimensions)
+				if (!mDesc.outerDimensions)
 				{
 					// Calculate window dimensions required
 					// to get the requested client area
@@ -188,7 +209,7 @@ namespace BansheeEngine
 			}
 
 			UINT classStyle = 0;
-			if (desc.enableDoubleClick)
+			if (mDesc.enableDoubleClick)
 				classStyle |= CS_DBLCLKS;
 
 			HINSTANCE hInst = NULL;
@@ -204,21 +225,21 @@ namespace BansheeEngine
 			// Create our main window
 			// Pass pointer to self
 			mIsExternal = false;
-			mHWnd = CreateWindowEx(dwStyleEx, "D3D11Wnd", desc.title.c_str(), dwStyle,
+			props->mHWnd = CreateWindowEx(dwStyleEx, "D3D11Wnd", mDesc.title.c_str(), dwStyle,
 				props->mLeft, props->mTop, props->mWidth, props->mHeight, parentHWnd, 0, hInst, this);
 		}
 		else
 		{
-			mHWnd = externalHandle;
+			props->mHWnd = externalHandle;
 			mIsExternal = true;
 		}
 
 		RECT rc;
-		GetWindowRect(mHWnd, &rc);
+		GetWindowRect(props->mHWnd, &rc);
 		props->mTop = rc.top;
 		props->mLeft = rc.left;
 
-		GetClientRect(mHWnd, &rc);
+		GetClientRect(props->mHWnd, &rc);
 		props->mWidth = rc.right;
 		props->mHeight = rc.bottom;
 
@@ -233,23 +254,28 @@ namespace BansheeEngine
 		}
 
 		createSizeDependedD3DResources();
-		mDXGIFactory->MakeWindowAssociation(mHWnd, NULL);
+		mDXGIFactory->MakeWindowAssociation(props->mHWnd, NULL);
 		setHidden(getProperties().isHidden());
+
+		// Sync HWnd to CoreObject immediately
+		D3D11RenderWindow* parent = static_cast<D3D11RenderWindow*>(mParent);
+		D3D11RenderWindowProperties* parentProps = static_cast<D3D11RenderWindowProperties*>(parent->mProperties);
+		parentProps->mHWnd = props->mHWnd;
 	}
 
-	D3D11RenderWindowCore::~D3D11RenderWindowCore()
+	void D3D11RenderWindowCore::destroy()
 	{
-		D3D11RenderWindowProperties* properties = static_cast<D3D11RenderWindowProperties*>(mProperties);
+		D3D11RenderWindowProperties* props = static_cast<D3D11RenderWindowProperties*>(mProperties);
 
-		properties->mActive = false;
+		props->mActive = false;
 		markCoreDirty();
 
 		SAFE_RELEASE(mSwapChain);
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_SwapChain);
 
-		if (mHWnd && !mIsExternal)
+		if (props->mHWnd && !mIsExternal)
 		{
-			DestroyWindow(mHWnd);
+			DestroyWindow(props->mHWnd);
 		}
 
 		if (mDepthStencilView != nullptr)
@@ -258,9 +284,11 @@ namespace BansheeEngine
 			mDepthStencilView = nullptr;
 		}
 
-		mHWnd = nullptr;
+		props->mHWnd = 0;
 
 		destroySizeDependedD3DResources();
+
+		RenderWindowCore::destroy();
 	}
 
 	void D3D11RenderWindowCore::swapBuffers()
@@ -280,14 +308,14 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		D3D11RenderWindowProperties* properties = static_cast<D3D11RenderWindowProperties*>(mProperties);
+		D3D11RenderWindowProperties* props = static_cast<D3D11RenderWindowProperties*>(mProperties);
 
-		if (mHWnd && !properties->mIsFullScreen)
+		if (props->mHWnd && !props->mIsFullScreen)
 		{
-			properties->mTop = top;
-			properties->mLeft = left;
+			props->mTop = top;
+			props->mLeft = left;
 
-			SetWindowPos(mHWnd, 0, top, left, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+			SetWindowPos(props->mHWnd, 0, top, left, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
 			markCoreDirty();			
 		}
 	}
@@ -296,19 +324,19 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		D3D11RenderWindowProperties* properties = static_cast<D3D11RenderWindowProperties*>(mProperties);
+		D3D11RenderWindowProperties* props = static_cast<D3D11RenderWindowProperties*>(mProperties);
 
-		if (mHWnd && !properties->mIsFullScreen)
+		if (props->mHWnd && !props->mIsFullScreen)
 		{
-			properties->mWidth = width;
-			properties->mHeight = height;
+			props->mWidth = width;
+			props->mHeight = height;
 
 			RECT rc = { 0, 0, width, height };
-			AdjustWindowRect(&rc, GetWindowLong(mHWnd, GWL_STYLE), false);
+			AdjustWindowRect(&rc, GetWindowLong(props->mHWnd, GWL_STYLE), false);
 			width = rc.right - rc.left;
 			height = rc.bottom - rc.top;
 
-			SetWindowPos(mHWnd, 0, 0, 0, width, height, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+			SetWindowPos(props->mHWnd, 0, 0, 0, width, height, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
 			markCoreDirty();
 		}
 	}
@@ -317,18 +345,18 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		D3D11RenderWindowProperties* properties = static_cast<D3D11RenderWindowProperties*>(mProperties);
+		D3D11RenderWindowProperties* props = static_cast<D3D11RenderWindowProperties*>(mProperties);
 
-		if (mHWnd && mSwapChain)
+		if (props->mHWnd && mSwapChain)
 		{
 			if (state)
 			{
-				ShowWindow(mHWnd, SW_RESTORE);
-				mSwapChain->SetFullscreenState(properties->mIsFullScreen, nullptr);
+				ShowWindow(props->mHWnd, SW_RESTORE);
+				mSwapChain->SetFullscreenState(props->mIsFullScreen, nullptr);
 			}
 			else
 			{
-				ShowWindow(mHWnd, SW_SHOWMINIMIZED);
+				ShowWindow(props->mHWnd, SW_SHOWMINIMIZED);
 				mSwapChain->SetFullscreenState(FALSE, nullptr);
 			}
 		}
@@ -340,15 +368,15 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		D3D11RenderWindowProperties* properties = static_cast<D3D11RenderWindowProperties*>(mProperties);
+		D3D11RenderWindowProperties* props = static_cast<D3D11RenderWindowProperties*>(mProperties);
 
-		properties->mHidden = hidden;
+		props->mHidden = hidden;
 		if (!mIsExternal)
 		{
 			if (hidden)
-				ShowWindow(mHWnd, SW_HIDE);
+				ShowWindow(props->mHWnd, SW_HIDE);
 			else
-				ShowWindow(mHWnd, SW_SHOWNORMAL);
+				ShowWindow(props->mHWnd, SW_SHOWNORMAL);
 		}
 
 		markCoreDirty();
@@ -460,12 +488,20 @@ namespace BansheeEngine
 		markCoreDirty();
 	}
 
+	HWND D3D11RenderWindowCore::_getWindowHandle() const
+	{
+		D3D11RenderWindowProperties* props = static_cast<D3D11RenderWindowProperties*>(mProperties);
+		return props->mHWnd;
+	}
+
 	void D3D11RenderWindowCore::getCustomAttribute(const String& name, void* pData) const
 	{
+		D3D11RenderWindowProperties* props = static_cast<D3D11RenderWindowProperties*>(mProperties);
+
 		if(name == "WINDOW")
 		{
 			HWND *pWnd = (HWND*)pData;
-			*pWnd = mHWnd;
+			*pWnd = props->mHWnd;
 			return;
 		}
 
@@ -558,18 +594,20 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		if (!mHWnd || IsIconic(mHWnd))
+		D3D11RenderWindowProperties* props = static_cast<D3D11RenderWindowProperties*>(mProperties);
+
+		if (!props->mHWnd || IsIconic(props->mHWnd))
 			return;
 
 		RECT rc;
-		GetWindowRect(mHWnd, &rc);
+		GetWindowRect(props->mHWnd, &rc);
 
 		D3D11RenderWindowProperties* properties = static_cast<D3D11RenderWindowProperties*>(mProperties);
 		properties->mTop = rc.top;
 		properties->mLeft = rc.left;
 		markCoreDirty();
 
-		GetClientRect(mHWnd, &rc);
+		GetClientRect(props->mHWnd, &rc);
 		unsigned int width = rc.right - rc.left;
 		unsigned int height = rc.bottom - rc.top;
 
@@ -588,16 +626,17 @@ namespace BansheeEngine
 	{
 		ZeroMemory(&mSwapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
 
+		D3D11RenderWindowProperties* props = static_cast<D3D11RenderWindowProperties*>(mProperties);
 		IDXGIDevice* pDXGIDevice = queryDxgiDevice();
 
 		ZeroMemory(&mSwapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
 		DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		mSwapChainDesc.OutputWindow	= mHWnd;
-		mSwapChainDesc.BufferDesc.Width = getProperties().getWidth();
-		mSwapChainDesc.BufferDesc.Height = getProperties().getHeight();
+		mSwapChainDesc.OutputWindow	= props->mHWnd;
+		mSwapChainDesc.BufferDesc.Width = props->mWidth;
+		mSwapChainDesc.BufferDesc.Height = props->mHeight;
 		mSwapChainDesc.BufferDesc.Format = format;
 
-		if (getProperties().isFullScreen())
+		if (props->mIsFullScreen)
 		{
 			mSwapChainDesc.BufferDesc.RefreshRate.Numerator = mRefreshRateNumerator;
 			mSwapChainDesc.BufferDesc.RefreshRate.Denominator = mRefreshRateDenominator;
@@ -619,7 +658,7 @@ namespace BansheeEngine
 		mSwapChainDesc.Windowed	= true;
 
 		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
-		rs->determineMultisampleSettings(getProperties().getMultisampleCount(), format, &mMultisampleType);
+		rs->determineMultisampleSettings(props->mMultisampleCount, format, &mMultisampleType);
 		mSwapChainDesc.SampleDesc.Count = mMultisampleType.Count;
 		mSwapChainDesc.SampleDesc.Quality = mMultisampleType.Quality;
 		
@@ -730,7 +769,7 @@ namespace BansheeEngine
 	}
 
 	D3D11RenderWindow::D3D11RenderWindow(D3D11Device& device, IDXGIFactory* DXGIFactory)
-		:mDevice(device), mDXGIFactory(DXGIFactory), mHWnd(0)
+		:mDevice(device), mDXGIFactory(DXGIFactory)
 	{
 
 	}
@@ -739,10 +778,12 @@ namespace BansheeEngine
 	{
 		THROW_IF_CORE_THREAD;
 
+		D3D11RenderWindowProperties* props = static_cast<D3D11RenderWindowProperties*>(mProperties);
+
 		if (name == "WINDOW")
 		{
 			HWND *pWnd = (HWND*)pData;
-			*pWnd = mHWnd;
+			*pWnd = props->mHWnd;
 			return;
 		}
 
@@ -755,7 +796,8 @@ namespace BansheeEngine
 		pos.x = screenPos.x;
 		pos.y = screenPos.y;
 
-		ScreenToClient(mHWnd, &pos);
+		D3D11RenderWindowProperties* props = static_cast<D3D11RenderWindowProperties*>(mProperties);
+		ScreenToClient(props->mHWnd, &pos);
 		return Vector2I(pos.x, pos.y);
 	}
 
@@ -765,24 +807,23 @@ namespace BansheeEngine
 		pos.x = windowPos.x;
 		pos.y = windowPos.y;
 
-		ClientToScreen(mHWnd, &pos);
+		D3D11RenderWindowProperties* props = static_cast<D3D11RenderWindowProperties*>(mProperties);
+		ClientToScreen(props->mHWnd, &pos);
 		return Vector2I(pos.x, pos.y);
-	}
-
-	void D3D11RenderWindow::initialize_internal()
-	{
-		RenderWindow::initialize_internal();
-
-		mCore->getCustomAttribute("WINDOW", (void*)&mHWnd);
 	}
 
 	RenderTargetProperties* D3D11RenderWindow::createProperties() const
 	{
-		return bs_new<RenderWindowProperties>();
+		return bs_new<D3D11RenderWindowProperties>();
 	}
 
-	RenderWindowCore* D3D11RenderWindow::createCore(RenderWindowProperties* properties, const RENDER_WINDOW_DESC& desc)
+	CoreObjectCore* D3D11RenderWindow::createCore() const
 	{
-		return bs_new<D3D11RenderWindowCore>(this, properties, desc, mDevice, mDXGIFactory);
+		D3D11RenderWindowProperties* coreProperties = bs_new<D3D11RenderWindowProperties>();
+		D3D11RenderWindowProperties* myProperties = static_cast<D3D11RenderWindowProperties*>(mProperties);
+
+		*coreProperties = *myProperties;
+
+		return bs_new<D3D11RenderWindowCore>(const_cast<D3D11RenderWindow*>(this), coreProperties, mDesc, mDevice, mDXGIFactory);
 	}
 }

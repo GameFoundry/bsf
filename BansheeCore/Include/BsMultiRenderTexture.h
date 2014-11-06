@@ -24,9 +24,24 @@ namespace BansheeEngine
 	public:
 		virtual ~MultiRenderTextureProperties() { }
 
-	private:
+	protected:
 		friend class MultiRenderTextureCore;
 		friend class MultiRenderTexture;
+
+		/**
+		 * @copydoc	RenderTargetProperties::copyToBuffer
+		 */
+		virtual void copyToBuffer(UINT8* buffer) const;
+
+		/**
+		 * @copydoc	RenderTargetProperties::copyFromBuffer
+		 */
+		virtual void copyFromBuffer(UINT8* buffer);
+
+		/**
+		 * @copydoc	RenderTargetProperties::getSize
+		 */
+		virtual UINT32 getSize() const;
 	};
 
 	/**
@@ -48,6 +63,16 @@ namespace BansheeEngine
 		 */
 		MultiRenderTexture* getNonCore() const;
 
+		/**
+		 * @copydoc	CoreObjectCore::initialize
+		 */
+		virtual void initialize();
+
+		/**
+		 * @copydoc	CoreObjectCore::destroy
+		 */
+		virtual void destroy();
+
 	private:
 		/**
 		 * @brief	Checks that all render surfaces and depth/stencil surface match. If they do not match
@@ -61,6 +86,8 @@ namespace BansheeEngine
 	protected:
 		Vector<TextureViewPtr> mColorSurfaces;
 		TextureViewPtr mDepthStencilSurface;
+
+		MULTI_RENDER_TEXTURE_DESC mDesc;
 	};
 
 	/**
@@ -104,17 +131,6 @@ namespace BansheeEngine
 
 	protected:
 		MultiRenderTexture() { }
-
-		/**
-		 * @copydoc	RenderTexture::createCore
-		 */
-		virtual RenderTargetCore* createCore();
-
-		/**
-		 * @brief	Creates a core implementation of a render texture. This implementation
-		 *			is to be used on the core thread only.
-		 */
-		virtual MultiRenderTextureCore* createCore(MultiRenderTextureProperties* properties, const MULTI_RENDER_TEXTURE_DESC& desc) = 0;
 
 		MULTI_RENDER_TEXTURE_DESC mDesc;
 	};

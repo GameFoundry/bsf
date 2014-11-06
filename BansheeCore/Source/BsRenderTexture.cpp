@@ -8,37 +8,54 @@
 
 namespace BansheeEngine
 {
-	void RenderTextureProperties::copyFrom(const RenderTargetProperties& other)
+	void RenderTextureProperties::copyToBuffer(UINT8* buffer) const
 	{
-		const RenderTextureProperties& windowProps = static_cast<const RenderTextureProperties&>(other);
+		*(RenderTextureProperties*)buffer = *this;
+	}
 
-		*this = windowProps;
+	void RenderTextureProperties::copyFromBuffer(UINT8* buffer)
+	{
+		*this = *(RenderTextureProperties*)buffer;
+	}
+
+	UINT32 RenderTextureProperties::getSize() const
+	{
+		return sizeof(RenderTextureProperties);
 	}
 
 	RenderTextureCore::RenderTextureCore(RenderTexture* parent, RenderTextureProperties* properties, const RENDER_SURFACE_DESC& colorSurfaceDesc,
 		const RENDER_SURFACE_DESC& depthStencilSurfaceDesc)
-		:RenderTargetCore(parent, properties), mColorSurface(nullptr), mDepthStencilSurface(nullptr)
+		:RenderTargetCore(parent, properties), mColorSurface(nullptr), mDepthStencilSurface(nullptr), 
+		mColorSurfaceDesc(colorSurfaceDesc), mDepthStencilSurfaceDesc(depthStencilSurfaceDesc)
+	{ }
+
+	RenderTextureCore::~RenderTextureCore()
+	{ }
+
+	void RenderTextureCore::initialize()
 	{
-		if (colorSurfaceDesc.texture != nullptr)
+		RenderTargetCore::initialize();
+
+		if (mColorSurfaceDesc.texture != nullptr)
 		{
-			TexturePtr texture = colorSurfaceDesc.texture;
+			TexturePtr texture = mColorSurfaceDesc.texture;
 
 			if (texture->getUsage() != TU_RENDERTARGET)
 				BS_EXCEPT(InvalidParametersException, "Provided texture is not created with render target usage.");
 
-			mColorSurface = Texture::requestView(texture, colorSurfaceDesc.mipLevel, 1,
-				colorSurfaceDesc.face, 1, GVU_RENDERTARGET);
+			mColorSurface = Texture::requestView(texture, mColorSurfaceDesc.mipLevel, 1,
+				mColorSurfaceDesc.face, 1, GVU_RENDERTARGET);
 		}
 
-		if (depthStencilSurfaceDesc.texture != nullptr)
+		if (mDepthStencilSurfaceDesc.texture != nullptr)
 		{
-			TexturePtr texture = depthStencilSurfaceDesc.texture;
+			TexturePtr texture = mDepthStencilSurfaceDesc.texture;
 
 			if (texture->getUsage() != TU_DEPTHSTENCIL)
 				BS_EXCEPT(InvalidParametersException, "Provided texture is not created with depth stencil usage.");
 
-			mDepthStencilSurface = Texture::requestView(texture, depthStencilSurfaceDesc.mipLevel, 1,
-				depthStencilSurfaceDesc.face, 1, GVU_DEPTHSTENCIL);
+			mDepthStencilSurface = Texture::requestView(texture, mDepthStencilSurfaceDesc.mipLevel, 1,
+				mDepthStencilSurfaceDesc.face, 1, GVU_DEPTHSTENCIL);
 		}
 
 		throwIfBuffersDontMatch();
@@ -63,13 +80,15 @@ namespace BansheeEngine
 		}
 	}
 
-	RenderTextureCore::~RenderTextureCore()
+	void RenderTextureCore::destroy()
 	{
 		if (mColorSurface != nullptr)
 			Texture::releaseView(mColorSurface);
 
 		if (mDepthStencilSurface != nullptr)
 			Texture::releaseView(mDepthStencilSurface);
+
+		RenderTargetCore::destroy();
 	}
 
 	void RenderTextureCore::throwIfBuffersDontMatch() const
@@ -116,7 +135,7 @@ namespace BansheeEngine
 
 	RenderTextureCore* RenderTexture::getCore() const 
 	{ 
-		return static_cast<RenderTextureCore*>(mCore); 
+		return static_cast<RenderTextureCore*>(mCoreSpecific); 
 	}
 
 	void RenderTexture::initialize(const RENDER_TEXTURE_DESC& desc)
@@ -150,15 +169,5 @@ namespace BansheeEngine
 			mBindableDepthStencilTex = static_resource_cast<Texture>(gResources()._createResourceHandle(desc.depthStencilSurface.texture));
 
 		RenderTarget::initialize();
-	}
-
-	RenderTargetCore* RenderTexture::createCore()
-	{
-		RenderTextureProperties* coreProperties = bs_new<RenderTextureProperties>();
-		RenderTextureProperties* myProperties = static_cast<RenderTextureProperties*>(mProperties);
-
-		*coreProperties = *myProperties;
-
-		return createCore(coreProperties, mColorSurfaceDesc, mDepthStencilSurfaceDesc);
 	}
 }

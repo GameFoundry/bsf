@@ -47,8 +47,8 @@ namespace BansheeEngine
 		virtual RenderTargetProperties* createProperties() const;
 
 		/**
-		 * @copydoc	MultiRenderTexture::createCore
+		 * @copydoc	RenderTexture::createCore
 		 */
-		virtual MultiRenderTextureCore* createCore(MultiRenderTextureProperties* properties, const MULTI_RENDER_TEXTURE_DESC& desc);
+		virtual CoreObjectCore* createCore() const;
 	};
 }

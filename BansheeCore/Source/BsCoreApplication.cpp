@@ -26,7 +26,6 @@
 #include "BsMaterialManager.h"
 #include "BsFontManager.h"
 #include "BsRenderWindowManager.h"
-#include "BsRenderTargetManager.h"
 #include "BsRenderer.h"
 #include "BsDeferredCallManager.h"
 #include "BsCoreThread.h"
@@ -69,7 +68,6 @@ namespace BansheeEngine
 		MemStack::beginThread();
 
 		MessageHandler::startUp();
-		RenderTargetManager::startUp();
 		UUIDGenerator::startUp();
 		ProfilerCPU::startUp();
 		ProfilingManager::startUp();
@@ -155,7 +153,6 @@ namespace BansheeEngine
 		ProfilingManager::shutDown();
 		ProfilerCPU::shutDown();
 		UUIDGenerator::shutDown();
-		RenderTargetManager::shutDown();
 		MessageHandler::shutDown();
 
 		MemStack::endThread();
@@ -171,7 +168,6 @@ namespace BansheeEngine
 			gProfilerCPU().beginThread("Sim");
 
 			gCoreThread().update();
-			RenderTargetManager::instance().update();
 			Platform::_update();
 			DeferredCallManager::instance()._update();
 			RenderWindowManager::instance()._update();
@@ -222,7 +218,6 @@ namespace BansheeEngine
 
 			// This should be called after accessors are submitted to ensure we don't sync CoreObjects that are about to be destroyed (They're only ever destroyed from accessors)
 			gCoreThread().queueCommand(std::bind(&CoreObjectManager::syncDownload, CoreObjectManager::instancePtr(), CoreObjectSync::Core, gCoreThread().getFrameAlloc()));
-			gCoreThread().queueCommand(std::bind(&RenderTargetManager::updateCore, RenderTargetManager::instancePtr()));
 			gCoreThread().queueCommand(std::bind(&CoreApplication::endCoreProfiling, this));
 			gCoreThread().queueCommand(std::bind(&CoreApplication::frameRenderingFinishedCallback, this));
 

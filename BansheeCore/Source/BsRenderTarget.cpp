@@ -3,13 +3,23 @@
 #include "BsException.h"
 #include "BsRenderSystem.h"
 #include "BsCoreThread.h"
-#include "BsRenderTargetManager.h"
+#include "BsFrameAlloc.h"
 
-namespace BansheeEngine 
+namespace BansheeEngine
 {
-	void RenderTargetProperties::copyFrom(const RenderTargetProperties& other)
+	void RenderTargetProperties::copyToBuffer(UINT8* buffer) const
 	{
-		*this = other;
+		*(RenderTargetProperties*)buffer = *this;
+	}
+
+	void RenderTargetProperties::copyFromBuffer(UINT8* buffer)
+	{
+		*this = *(RenderTargetProperties*)buffer;
+	}
+
+	UINT32 RenderTargetProperties::getSize() const
+	{
+		return sizeof(RenderTargetProperties);
 	}
 
 	RenderTargetCore::RenderTargetCore(RenderTarget* parent, RenderTargetProperties* properties)
@@ -23,27 +33,47 @@ namespace BansheeEngine
 		bs_delete(mProperties);
 	}
 
+	CoreSyncData RenderTargetCore::syncFromCore(FrameAlloc* allocator)
+	{
+		UINT8* buffer = allocator->alloc(mProperties->getSize());
+		mProperties->copyToBuffer(buffer);
+
+		return CoreSyncData(buffer, mProperties->getSize());
+	}
+
+	void RenderTargetCore::syncToCore(const CoreSyncData& data)
+	{
+		assert(data.getBufferSize() == mProperties->getSize());
+
+		mProperties->copyFromBuffer(data.getBuffer());
+	}
+
 	void RenderTargetCore::getCustomAttribute(const String& name, void* pData) const
 	{
 		BS_EXCEPT(InvalidParametersException, "Attribute not found.");
 	}
 
-	const RenderTargetProperties& RenderTargetCore::getProperties() const 
-	{ 
+	const RenderTargetProperties& RenderTargetCore::getProperties() const
+	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		return *mProperties; 
+		return *mProperties;
 	}
 
-    RenderTarget::RenderTarget()
-		:mCore(nullptr), mProperties(nullptr)
-    {
-    }
+	RenderTargetCore* RenderTarget::getCore() const
+	{
+		return static_cast<RenderTargetCore*>(mCoreSpecific);
+	}
 
-    RenderTarget::~RenderTarget()
-    {
+	RenderTarget::RenderTarget()
+		:mProperties(nullptr)
+	{
+	}
+
+	RenderTarget::~RenderTarget()
+	{
 		bs_delete(mProperties);
-    }
+	}
 
 	const RenderTargetProperties& RenderTarget::getProperties() const
 	{
@@ -52,28 +82,19 @@ namespace BansheeEngine
 		return *mProperties;
 	}
 
-	RenderTargetCore* RenderTarget::getCore() const
+	CoreSyncData RenderTarget::syncToCore(FrameAlloc* allocator)
 	{
-		return mCore;
+		UINT8* buffer = allocator->alloc(mProperties->getSize());
+		mProperties->copyToBuffer(buffer);
+
+		return CoreSyncData(buffer, mProperties->getSize());
 	}
 
-	void RenderTarget::initialize_internal()
+	void RenderTarget::syncFromCore(const CoreSyncData& data)
 	{
-		CoreObject::initialize_internal();
+		assert(data.getBufferSize() == mProperties->getSize());
 
-		mCore = createCore();
-
-		RenderTargetManager::instance().registerRenderTarget(this);
-	}
-
-	void RenderTarget::destroy_internal()
-	{
-		RenderTargetManager::instance().unregisterRenderTarget(this);
-
-		bs_delete(mCore);
-		mCore = nullptr;
-
-		CoreObject::destroy_internal();
+		mProperties->copyFromBuffer(data.getBuffer());
 	}
 
 	void RenderTarget::getCustomAttribute(const String& name, void* pData) const

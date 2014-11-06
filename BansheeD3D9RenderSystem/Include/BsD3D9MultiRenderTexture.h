@@ -26,6 +26,11 @@ namespace BansheeEngine
 	protected:
 		friend class D3D9MultiRenderTexture;
 
+		/**
+		 * @copydoc	CoreObjectCore::initialize
+		 */
+		virtual void initialize();
+
 		Vector<IDirect3DSurface9*> mDX9ColorSurfaces;
 		IDirect3DSurface9* mDX9DepthStencilSurface;
 	};
@@ -51,8 +56,8 @@ namespace BansheeEngine
 		virtual RenderTargetProperties* createProperties() const;
 
 		/**
-		 * @copydoc	MultiRenderTexture::createCore
+		 * @copydoc	RenderTexture::createCore
 		 */
-		virtual MultiRenderTextureCore* createCore(MultiRenderTextureProperties* properties, const MULTI_RENDER_TEXTURE_DESC& desc);
+		virtual CoreObjectCore* createCore() const;
 	};
 }

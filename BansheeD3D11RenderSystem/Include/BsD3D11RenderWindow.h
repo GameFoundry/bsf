@@ -15,9 +15,31 @@ namespace BansheeEngine
 	public:
 		virtual ~D3D11RenderWindowProperties() { }
 
+		/**
+		 * @brief	Retrieves the window handle.
+		 */
+		HWND getHWnd() const { return mHWnd; }
+
 	private:
 		friend class D3D11RenderWindowCore;
 		friend class D3D11RenderWindow;
+
+		/**
+		 * @copydoc	RenderTargetProperties::copyToBuffer
+		 */
+		virtual void copyToBuffer(UINT8* buffer) const;
+
+		/**
+		 * @copydoc	RenderTargetProperties::copyFromBuffer
+		 */
+		virtual void copyFromBuffer(UINT8* buffer);
+
+		/**
+		 * @copydoc	RenderTargetProperties::getSize
+		 */
+		virtual UINT32 getSize() const;
+
+		HWND mHWnd = 0;
 	};
 
 	/**
@@ -99,10 +121,20 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns internal window handle.
 		 */
-		HWND _getWindowHandle() const { return mHWnd; }
+		HWND _getWindowHandle() const;
 
 	protected:
 		friend class D3D11RenderWindow;
+
+		/**
+		 * @copydoc	CoreObjectCore::initialize
+		 */
+		virtual void initialize();
+
+		/**
+		 * @copydoc	CoreObjectCore::destroy
+		 */
+		virtual void destroy();
 
 		/**
 		 * @brief	Creates internal resources dependent on window size.
@@ -148,7 +180,7 @@ namespace BansheeEngine
 		IDXGISwapChain*	mSwapChain;
 		DXGI_SWAP_CHAIN_DESC mSwapChainDesc;
 
-		HWND mHWnd;
+		RENDER_WINDOW_DESC mDesc;
 	};
 
 	/**
@@ -183,13 +215,9 @@ namespace BansheeEngine
 
 	protected:
 		friend class D3D11RenderWindowManager;
+		friend class D3D11RenderWindowCore;
 
 		D3D11RenderWindow(D3D11Device& device, IDXGIFactory* DXGIFactory);
-
-		/**
-		 * @copydoc	RenderWindow::initialize_internal
-		 */
-		virtual void initialize_internal();
 
 		/**
 		 * @copydoc	RenderWindow::createProperties
@@ -199,11 +227,10 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	RenderWindow::createCore
 		 */
-		virtual RenderWindowCore* createCore(RenderWindowProperties* properties, const RENDER_WINDOW_DESC& desc);
+		virtual CoreObjectCore* createCore() const;
 
 	private:
 		D3D11Device& mDevice;
 		IDXGIFactory* mDXGIFactory;
-		HWND mHWnd;
 	};
 }

@@ -38,9 +38,14 @@ namespace BansheeEngine
 		return bs_new<RenderTextureProperties>();
 	}
 
-	RenderTextureCore* D3D11RenderTexture::createCore(RenderTextureProperties* properties, const RENDER_SURFACE_DESC& colorSurfaceDesc,
-		const RENDER_SURFACE_DESC& depthStencilSurfaceDesc)
+	CoreObjectCore* D3D11RenderTexture::createCore() const
 	{
-		return bs_new<D3D11RenderTextureCore>(this, properties, colorSurfaceDesc, depthStencilSurfaceDesc);
+		RenderTextureProperties* coreProperties = bs_new<RenderTextureProperties>();
+		RenderTextureProperties* myProperties = static_cast<RenderTextureProperties*>(mProperties);
+
+		*coreProperties = *myProperties;
+
+		return bs_new<D3D11RenderTextureCore>(const_cast<D3D11RenderTexture*>(this), 
+			coreProperties, mColorSurfaceDesc, mDepthStencilSurfaceDesc);
 	}
 }
