@@ -249,12 +249,13 @@ namespace BansheeEngine
 
 		if (useIndices)
 		{
-			IndexBufferPtr indexBuffer = mesh->_getIndexBuffer();
+			IndexBufferCore* indexBuffer = mesh->_getIndexBuffer()->getCore();
+			const IndexBufferProperties& ibProps = indexBuffer->getProperties();
 
 			if(indexCount == 0)
-				indexCount = indexBuffer->getNumIndices();
+				indexCount = ibProps.getNumIndices();
 
-			setIndexBuffer(indexBuffer);
+			setIndexBuffer(mesh->_getIndexBuffer());
 			drawIndexed(indexOffset + mesh->_getIndexOffset(), indexCount, mesh->_getVertexOffset(), vertexData->vertexCount);
 		}
 		else

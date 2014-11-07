@@ -9,7 +9,7 @@ namespace BansheeEngine
 	/**
 	 * @brief	DirectX 9 implementation of an index buffer.
 	 */
-    class BS_D3D9_EXPORT D3D9IndexBuffer : public IndexBuffer, public D3D9Resource
+    class BS_D3D9_EXPORT D3D9IndexBufferCore : public IndexBufferCore, public D3D9Resource
     {
 	protected:
 		/**
@@ -25,15 +25,16 @@ namespace BansheeEngine
 		};
 
     public:
-        ~D3D9IndexBuffer();
+		D3D9IndexBufferCore(GpuBufferUsage usage, bool useSystemMemory, const IndexBufferProperties& properties);
+		~D3D9IndexBufferCore() { }
 
 		/**
-		 * @copydoc	IndexBuffer::readData
+		 * @copydoc	IndexBufferCore::readData
 		 */
         void readData(UINT32 offset, UINT32 length, void* dest);
 
 		/**
-		 * @copydoc	IndexBuffer::writeData
+		 * @copydoc	IndexBufferCore::writeData
 		 */
 		void writeData(UINT32 offset, UINT32 length, const void* source, BufferWriteType writeFlags = BufferWriteType::Normal);
 
@@ -68,17 +69,13 @@ namespace BansheeEngine
         IDirect3DIndexBuffer9* getD3DIndexBuffer();		
 
 	protected:
-		friend class D3D9HardwareBufferManager;
-
-		D3D9IndexBuffer(IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage, bool useSystemMem);
-		
 		/**
-		 * @copydoc	IndexBuffer::lockImpl
+		 * @copydoc	IndexBufferCore::lockImpl
 		 */
 		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
 
 		/**
-		 * @copydoc	IndexBuffer::unlockImpl
+		 * @copydoc	IndexBufferCore::unlockImpl
 		 */
 		void unlockImpl();
 
@@ -88,18 +85,37 @@ namespace BansheeEngine
 		bool updateBufferResources(const UINT8* systemMemoryBuffer, BufferResources* bufferResources);
 
 		/**
-		 * @copydoc IndexBuffer::initialize_internal
+		 * @copydoc IndexBufferCore::initialize
 		 */
-		void initialize_internal();	
+		void initialize();	
 		
 		/**
-		 * @copydoc IndexBuffer::destroy_internal
+		 * @copydoc IndexBufferCore::destroy
 		 */
-		void destroy_internal();
+		void destroy();
 
 	protected:		
 		Map<IDirect3DDevice9*, BufferResources*> mMapDeviceToBufferResources;
 		D3DINDEXBUFFER_DESC	mBufferDesc;	
 		UINT8* mSystemMemoryBuffer;
+    };
+
+	/**
+	 * @brief	DirectX 9 implementation of an index buffer.
+	 */
+    class BS_D3D9_EXPORT D3D9IndexBuffer : public IndexBuffer
+    {
+    public:
+		~D3D9IndexBuffer() { }
+
+	protected:
+		friend class D3D9HardwareBufferManager;
+
+		D3D9IndexBuffer(IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage, bool useSystemMem);
+
+		/**
+		 * @copydoc	CoreObject::createCore
+		 */
+		virtual CoreObjectCore* createCore() const;
     };
 }

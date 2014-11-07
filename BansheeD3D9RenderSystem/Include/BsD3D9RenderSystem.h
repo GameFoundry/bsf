@@ -171,6 +171,11 @@ namespace BansheeEngine
 		 */
 		VertexElementType getColorVertexElementType() const;
 
+		/**
+		 * @copydoc	RenderSystem::getColorVertexElementType
+		 */
+		bool getVertexColorFlipRequired() const { return true; }
+
 		/************************************************************************/
 		/* 				Internal use by DX9 RenderSystem only                   */
 		/************************************************************************/

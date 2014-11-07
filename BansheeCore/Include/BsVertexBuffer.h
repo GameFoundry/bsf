@@ -8,13 +8,11 @@
 namespace BansheeEngine 
 {
 	/**
-	 * @brief	Specialization of a hardware buffer used for holding vertex data.
+	 * @brief	Contains information about a vertex buffer buffer.
 	 */
-    class BS_CORE_EXPORT VertexBuffer : public HardwareBuffer, public CoreObject
-    {
+	class BS_CORE_EXPORT VertexBufferProperties
+	{
 	public:
-		virtual ~VertexBuffer() { }
-
 		/**
 		 * @brief	Gets the size in bytes of a single vertex in this buffer.
 		 */
@@ -25,11 +23,49 @@ namespace BansheeEngine
 		 */
         UINT32 getNumVertices() const { return mNumVertices; }
 
+	protected:
+		friend class VertexBuffer;
+		friend class VertexBufferCore;
+
+		UINT32 mNumVertices;
+		UINT32 mVertexSize;
+	};
+
+	/**
+	 * @brief	Core thread specific implementation of a vertex buffer.
+	 *
+	 * @see		VertexBuffer
+	 */
+	class BS_CORE_EXPORT VertexBufferCore : public CoreObjectCore, public HardwareBuffer
+	{
+	public:
+		VertexBufferCore(GpuBufferUsage usage, bool useSystemMemory, const VertexBufferProperties& properties);
+		virtual ~VertexBufferCore() { }
+
 		/**
-		 * @brief	Some render systems expect vertex color bits in an order different than
-		 * 			RGBA, in which case override this to flip the RGBA order.
+		 * @brief	Returns information about the vertex buffer.
 		 */
-		virtual bool vertexColorReqRGBFlip() { return false; }
+		const VertexBufferProperties& getProperties() const { return mProperties; }
+
+	protected:
+		VertexBufferProperties mProperties;
+	};
+
+	/**
+	 * @brief	Specialization of a hardware buffer used for holding vertex data.
+	 */
+    class BS_CORE_EXPORT VertexBuffer : public CoreObject
+    {
+	public:
+		virtual ~VertexBuffer() { }
+
+		/**
+		 * @brief	Retrieves a core implementation of a vertex buffer
+		 *			usable only from the core thread.
+		 *
+		 * @note	Core thread only.
+		 */
+		VertexBufferCore* getCore() const;
 
 		/**
 		 * @copydoc	HardwareBufferManager::createVertexBuffer
@@ -41,7 +77,8 @@ namespace BansheeEngine
 		VertexBuffer(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage, bool useSystemMemory);
 
 	protected:
-		UINT32 mNumVertices;
-		UINT32 mVertexSize;
+		VertexBufferProperties mProperties;
+		GpuBufferUsage mUsage;
+		bool mUseSystemMemory;
     };
 }

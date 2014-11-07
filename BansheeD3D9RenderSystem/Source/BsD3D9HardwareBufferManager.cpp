@@ -24,7 +24,7 @@ namespace BansheeEngine
 		return bs_core_ptr<D3D9VertexBuffer, PoolAlloc>(buffer);
     }
 
-	IndexBufferPtr D3D9HardwareBufferManager::createIndexBufferImpl(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
+	IndexBufferPtr D3D9HardwareBufferManager::createIndexBufferImpl(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
     {
 		assert (numIndexes > 0);
 

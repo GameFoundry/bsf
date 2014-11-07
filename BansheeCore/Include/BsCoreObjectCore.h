@@ -18,7 +18,7 @@ namespace BansheeEngine
 	{
 	public:
 		CoreObjectCore();
-		virtual ~CoreObjectCore() {}
+		virtual ~CoreObjectCore();
 
 	protected:
 		friend class CoreObjectManager;
@@ -32,7 +32,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Called on the core thread just before the object is destroyed.
 		 */
-		virtual void destroy() { }
+		virtual void destroy();
 
 		/**
 		 * @brief	Copy internal dirty data to a memory buffer that will be used
@@ -69,5 +69,6 @@ namespace BansheeEngine
 		bool isCoreDirty() const { return mCoreDirtyFlags != 0; }
 
 		UINT32 mCoreDirtyFlags;
+		bool mIsDestroyed;
 	};
 }

@@ -9,18 +9,19 @@ namespace BansheeEngine
 	/**
 	 * @brief	OpenGL implementation of a vertex buffer.
 	 */
-    class BS_RSGL_EXPORT GLVertexBuffer : public VertexBuffer 
+    class BS_RSGL_EXPORT GLVertexBufferCore : public VertexBufferCore
     {
     public:
-        ~GLVertexBuffer();
+		GLVertexBufferCore(GpuBufferUsage usage, bool useSystemMemory, const VertexBufferProperties& properties);
+		~GLVertexBufferCore() { }
 
 		/**
-		 * @copydoc	HardwareBuffer::readData
+		 * @copydoc	VertexBufferCore::readData
 		 */
         void readData(UINT32 offset, UINT32 length, void* pDest);
 
 		/**
-		* @copydoc	HardwareBuffer::writeData
+		* @copydoc	VertexBufferCore::writeData
 		*/
         void writeData(UINT32 offset, UINT32 length, const void* pSource, BufferWriteType writeFlags = BufferWriteType::Normal);
 
@@ -40,27 +41,23 @@ namespace BansheeEngine
 		void unregisterVAO(const GLVertexArrayObject& vao);
 
 	protected:
-		friend class GLHardwareBufferManager;
-
-		GLVertexBuffer(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage); 
-
 		/**
-		 * @copydoc VertexBuffer::initialize_internal()
+		 * @copydoc VertexBufferCore::initialize
 		 */
-		void initialize_internal();
+		void initialize();
 
 		/**
-		 * @copydoc VertexBuffer::destroy_internal()
+		 * @copydoc VertexBufferCore::destroy
 		 */
-		void destroy_internal();
+		void destroy();
 
 		/**
-		 * @copydoc	HardwareBuffer::lockImpl()
+		 * @copydoc	VertexBufferCore::lockImpl
 		 */
 		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
 
 		/**
-		 * @copydoc	HardwareBuffer::unlockImpl()
+		 * @copydoc	VertexBufferCore::unlockImpl
 		 */
 		void unlockImpl();
 
@@ -69,5 +66,24 @@ namespace BansheeEngine
 		bool mZeroLocked;
 
 		Vector<GLVertexArrayObject> mVAObjects;
+    };
+
+	/**
+	 * @brief	OpenGL implementation of a vertex buffer.
+	 */
+    class BS_RSGL_EXPORT GLVertexBuffer : public VertexBuffer 
+    {
+    public:
+		~GLVertexBuffer() { }
+
+	protected:
+		friend class GLHardwareBufferManager;
+
+		GLVertexBuffer(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage); 
+
+		/**
+		 * @copydoc	CoreObject::createCore
+		 */
+		virtual CoreObjectCore* createCore() const;
     };
 }

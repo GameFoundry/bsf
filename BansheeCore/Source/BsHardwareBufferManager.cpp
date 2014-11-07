@@ -32,7 +32,7 @@ namespace BansheeEngine
 		return vbuf;
 	}
 
-	IndexBufferPtr HardwareBufferManager::createIndexBuffer(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
+	IndexBufferPtr HardwareBufferManager::createIndexBuffer(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
 	{
 		assert (numIndexes > 0);
 

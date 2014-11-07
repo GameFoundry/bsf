@@ -91,7 +91,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns DirectX 9 index buffer type.
 		 */
-        static D3DFORMAT get(IndexBuffer::IndexType itype);
+        static D3DFORMAT get(IndexType itype);
 		
 		/**
 		 * @brief	Returns DirectX 9 vertex element type.

@@ -101,7 +101,10 @@ namespace BansheeEngine
 				const CoreStoredSyncData& syncData = objectData.second;
 				syncData.destinationObj->syncToCore(syncData.syncData);
 
-				mCoreSyncDataAlloc->dealloc(syncData.syncData.getBuffer());
+				UINT8* data = syncData.syncData.getBuffer();
+
+				if (data != nullptr)
+					mCoreSyncDataAlloc->dealloc(data);
 			}
 
 			mCoreSyncData.clear();
@@ -113,7 +116,10 @@ namespace BansheeEngine
 				const SimStoredSyncData& syncData = objectData.second;
 				syncData.destinationObj->syncFromCore(syncData.syncData);
 
-				mSimSyncDataAlloc->dealloc(syncData.syncData.getBuffer());
+				UINT8* data = syncData.syncData.getBuffer();
+
+				if (data != nullptr)
+					mSimSyncDataAlloc->dealloc(data);
 			}
 
 			mSimSyncData.clear();

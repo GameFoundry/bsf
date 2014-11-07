@@ -41,7 +41,7 @@ namespace BansheeEngine
 		 * @param	numIndexes	Number of indexes can buffer can hold.
 		 * @param	usage		Usage that tells the hardware how will be buffer be used. 
 		 */
-		virtual IndexBufferPtr createIndexBuffer(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
+		virtual IndexBufferPtr createIndexBuffer(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
 
 		/**
 		 * @brief	Creates an GPU parameter block that you can use for setting parameters for GPU programs.
@@ -85,7 +85,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	createIndexBuffer
 		 */
-		virtual IndexBufferPtr createIndexBufferImpl(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage) = 0;
+		virtual IndexBufferPtr createIndexBufferImpl(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage) = 0;
 
 		/**
 		 * @copydoc	createGpuParamBlockBuffer

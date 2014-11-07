@@ -9,14 +9,11 @@
 
 namespace BansheeEngine 
 {
-    D3D9IndexBuffer::D3D9IndexBuffer(IndexBuffer::IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage, bool useSystemMemory)
-        : IndexBuffer(idxType, numIndexes, usage, useSystemMemory)
-    { }
+	D3D9IndexBufferCore::D3D9IndexBufferCore(GpuBufferUsage usage, bool useSystemMemory, const IndexBufferProperties& properties)
+		: IndexBufferCore(usage, useSystemMemory, properties), mSystemMemoryBuffer(nullptr)
+	{ }
 
-    D3D9IndexBuffer::~D3D9IndexBuffer()
-    { }
-
-	void D3D9IndexBuffer::initialize_internal()
+	void D3D9IndexBufferCore::initialize()
 	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION;
 
@@ -39,10 +36,10 @@ namespace BansheeEngine
 		}	
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_IndexBuffer);
-		IndexBuffer::initialize_internal();
+		IndexBufferCore::initialize();
 	}
 
-	void D3D9IndexBuffer::destroy_internal()
+	void D3D9IndexBufferCore::destroy()
 	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION;
 
@@ -62,10 +59,10 @@ namespace BansheeEngine
 			bs_free(mSystemMemoryBuffer);
 
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_IndexBuffer);
-		IndexBuffer::destroy_internal();
+		IndexBufferCore::destroy();
 	}
 
-    void* D3D9IndexBuffer::lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options)
+	void* D3D9IndexBufferCore::lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options)
     {		
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -111,7 +108,7 @@ namespace BansheeEngine
 		return mSystemMemoryBuffer + offset;		
     }
 
-	void D3D9IndexBuffer::unlockImpl()
+	void D3D9IndexBufferCore::unlockImpl()
     {	
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -124,14 +121,14 @@ namespace BansheeEngine
 		}			
     }
 
-    void D3D9IndexBuffer::readData(UINT32 offset, UINT32 length, void* dest)
+	void D3D9IndexBufferCore::readData(UINT32 offset, UINT32 length, void* dest)
     {
         void* pSrc = this->lock(offset, length, GBL_READ_ONLY);
         memcpy(dest, pSrc, length);
         this->unlock();
     }
 
-    void D3D9IndexBuffer::writeData(UINT32 offset, UINT32 length,  const void* source, BufferWriteType writeFlags)
+	void D3D9IndexBufferCore::writeData(UINT32 offset, UINT32 length, const void* source, BufferWriteType writeFlags)
     {
 		GpuLockOptions lockOption = GBL_WRITE_ONLY;
 		if(writeFlags == BufferWriteType::Discard)
@@ -144,7 +141,7 @@ namespace BansheeEngine
         this->unlock();    
 	}
 
-	void D3D9IndexBuffer::notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device)
+	void D3D9IndexBufferCore::notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device)
 	{			
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -153,7 +150,7 @@ namespace BansheeEngine
 
 	}
 
-	void D3D9IndexBuffer::notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device)
+	void D3D9IndexBufferCore::notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device)
 	{		
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -169,7 +166,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D9IndexBuffer::notifyOnDeviceLost(IDirect3DDevice9* d3d9Device)
+	void D3D9IndexBufferCore::notifyOnDeviceLost(IDirect3DDevice9* d3d9Device)
 	{		
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -183,7 +180,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D9IndexBuffer::notifyOnDeviceReset(IDirect3DDevice9* d3d9Device)
+	void D3D9IndexBufferCore::notifyOnDeviceReset(IDirect3DDevice9* d3d9Device)
 	{		
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -194,7 +191,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D9IndexBuffer::createBuffer(IDirect3DDevice9* d3d9Device, D3DPOOL pool)
+	void D3D9IndexBufferCore::createBuffer(IDirect3DDevice9* d3d9Device, D3DPOOL pool)
 	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -224,7 +221,7 @@ namespace BansheeEngine
 		hr = d3d9Device->CreateIndexBuffer(
 			static_cast<UINT>(mSizeInBytes),
 			D3D9Mappings::get(mUsage),
-			D3D9Mappings::get(mIndexType),
+			D3D9Mappings::get(mProperties.getType()),
 			pool,
 			&bufferResources->mBuffer,
 			nullptr
@@ -244,7 +241,7 @@ namespace BansheeEngine
 		}		
 	}
 
-	IDirect3DIndexBuffer9* D3D9IndexBuffer::getD3DIndexBuffer()
+	IDirect3DIndexBuffer9* D3D9IndexBufferCore::getD3DIndexBuffer()
 	{		
 		IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getActiveD3D9Device();
 
@@ -264,7 +261,7 @@ namespace BansheeEngine
 		return iterFind->second->mBuffer;
 	}
 
-	bool D3D9IndexBuffer::updateBufferResources(const UINT8* systemMemoryBuffer, BufferResources* bufferResources)
+	bool D3D9IndexBufferCore::updateBufferResources(const UINT8* systemMemoryBuffer, BufferResources* bufferResources)
 	{
 		assert(bufferResources != nullptr);
 		assert(bufferResources->mBuffer != nullptr);
@@ -305,5 +302,14 @@ namespace BansheeEngine
 		bufferResources->mLockOptions = GBL_READ_WRITE;
 
 		return true;			
+	}
+
+	D3D9IndexBuffer::D3D9IndexBuffer(IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage, bool useSystemMemory)
+		: IndexBuffer(idxType, numIndexes, usage, useSystemMemory)
+	{ }
+
+	CoreObjectCore* D3D9IndexBuffer::createCore() const
+	{
+		return bs_new<D3D9IndexBufferCore>(mUsage, mUseSystemMemory, mProperties);
 	}
 }

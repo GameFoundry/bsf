@@ -5,21 +5,17 @@
 
 namespace BansheeEngine 
 {
-    GLIndexBuffer::GLIndexBuffer(IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage)
-		: IndexBuffer(idxType, numIndexes, usage, false), mZeroLocked(false)
-    {  }
+	GLIndexBufferCore::GLIndexBufferCore(GpuBufferUsage usage, bool useSystemMemory, const IndexBufferProperties& properties)
+		:IndexBufferCore(usage, useSystemMemory, properties), mZeroLocked(false)
+	{  }
 
-    GLIndexBuffer::~GLIndexBuffer()
-    {    }
-
-	void GLIndexBuffer::initialize_internal()
+	void GLIndexBufferCore::initialize()
 	{
 		glGenBuffers(1, &mBufferId );
 
 		if (!mBufferId)
 		{
-			BS_EXCEPT(InternalErrorException, 
-				"Cannot create GL index buffer");
+			BS_EXCEPT(InternalErrorException, "Cannot create GL index buffer");
 		}
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mBufferId);
@@ -28,18 +24,18 @@ namespace BansheeEngine
 			GLHardwareBufferManager::getGLUsage(mUsage));
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_IndexBuffer);
-		IndexBuffer::initialize_internal();
+		IndexBufferCore::initialize();
 	}
 
-	void GLIndexBuffer::destroy_internal()
+	void GLIndexBufferCore::destroy()
 	{
 		glDeleteBuffers(1, &mBufferId);
 
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_IndexBuffer);
-		IndexBuffer::destroy_internal();
+		IndexBufferCore::destroy();
 	}
 
-    void* GLIndexBuffer::lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options)
+	void* GLIndexBufferCore::lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options)
     {
         GLenum access = 0;
         if(mIsLocked)
@@ -98,7 +94,7 @@ namespace BansheeEngine
 		return retPtr;
     }
 
-	void GLIndexBuffer::unlockImpl()
+	void GLIndexBufferCore::unlockImpl()
     {
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mBufferId);
 
@@ -113,7 +109,7 @@ namespace BansheeEngine
 		mIsLocked = false;
     }
 
-    void GLIndexBuffer::readData(UINT32 offset, UINT32 length, 
+	void GLIndexBufferCore::readData(UINT32 offset, UINT32 length,
         void* pDest)
     {
 		void* bufferData = lock(offset, length, GBL_READ_ONLY);
@@ -121,7 +117,7 @@ namespace BansheeEngine
 		unlock();
     }
 
-    void GLIndexBuffer::writeData(UINT32 offset, UINT32 length, 
+    void GLIndexBufferCore::writeData(UINT32 offset, UINT32 length, 
 		const void* pSource, BufferWriteType writeFlags)
     {
 		GpuLockOptions lockOption = GBL_WRITE_ONLY;
@@ -134,4 +130,13 @@ namespace BansheeEngine
 		memcpy(bufferData, pSource, length);
 		unlock();
     }
+
+	GLIndexBuffer::GLIndexBuffer(IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage)
+		:IndexBuffer(idxType, numIndexes, usage, false)
+	{  }
+
+	CoreObjectCore* GLIndexBuffer::createCore() const
+	{
+		return bs_new<GLIndexBufferCore>(mUsage, mUseSystemMemory, mProperties);
+	}
 }

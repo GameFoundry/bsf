@@ -408,10 +408,12 @@ namespace BansheeEngine
 
 		for(UINT32 i = 0; i < numBuffers; i++)
 		{
-			D3D11VertexBuffer* vertexBuffer = static_cast<D3D11VertexBuffer*>(buffers[i].get());
+			D3D11VertexBufferCore* vertexBuffer = static_cast<D3D11VertexBufferCore*>(buffers[i]->getCore());
+			const VertexBufferProperties& vbProps = vertexBuffer->getProperties();
+
 			dx11buffers[i] = vertexBuffer->getD3DVertexBuffer();
 
-			strides[i] = buffers[i]->getVertexSize();
+			strides[i] = vbProps.getVertexSize();
 			offsets[i] = 0;
 		}
 
@@ -424,15 +426,15 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		D3D11IndexBuffer* indexBuffer = static_cast<D3D11IndexBuffer*>(buffer.get());
+		D3D11IndexBufferCore* indexBuffer = static_cast<D3D11IndexBufferCore*>(buffer->getCore());
 
 		DXGI_FORMAT indexFormat = DXGI_FORMAT_R16_UINT;
-		if(indexBuffer->getType() == IndexBuffer::IT_16BIT)
+		if(indexBuffer->getProperties().getType() == IT_16BIT)
 			indexFormat = DXGI_FORMAT_R16_UINT;
-		else if(indexBuffer->getType() == IndexBuffer::IT_32BIT)
+		else if (indexBuffer->getProperties().getType() == IT_32BIT)
 			indexFormat = DXGI_FORMAT_R32_UINT;
 		else
-			BS_EXCEPT(InternalErrorException, "Unsupported index format: " + toString(indexBuffer->getType()));
+			BS_EXCEPT(InternalErrorException, "Unsupported index format: " + toString(indexBuffer->getProperties().getType()));
 
 		mDevice->getImmediateContext()->IASetIndexBuffer(indexBuffer->getD3DIndexBuffer(), indexFormat, 0);
 

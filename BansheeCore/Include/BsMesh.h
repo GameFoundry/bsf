@@ -84,11 +84,11 @@ namespace BansheeEngine
 
 		Mesh(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
 			MeshBufferType bufferType = MeshBufferType::Static, DrawOperationType drawOp = DOT_TRIANGLE_LIST,
-			IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
+			IndexType indexType = IT_32BIT);
 
 		Mesh(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc,
 			const Vector<SubMesh>& subMeshes, MeshBufferType bufferType = MeshBufferType::Static,
-			IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
+			IndexType indexType = IT_32BIT);
 
 		Mesh(const MeshDataPtr& initialMeshData, MeshBufferType bufferType = MeshBufferType::Static, 
 			DrawOperationType drawOp = DOT_TRIANGLE_LIST);
@@ -101,7 +101,7 @@ namespace BansheeEngine
 		Bounds mBounds; // Core thread
 		VertexDataDescPtr mVertexDesc; // Immutable
 		MeshBufferType mBufferType; // Immutable
-		IndexBuffer::IndexType mIndexType; // Immutable
+		IndexType mIndexType; // Immutable
 
 		MeshDataPtr mTempInitialMeshData; // Immutable
 
@@ -161,7 +161,7 @@ namespace BansheeEngine
 		 *							the number of vertices limited by the size.
 		 */
 		static HMesh create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, MeshBufferType bufferType = MeshBufferType::Static,
-			DrawOperationType drawOp = DOT_TRIANGLE_LIST, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
+			DrawOperationType drawOp = DOT_TRIANGLE_LIST, IndexType indexType = IT_32BIT);
 
 		/**
 		 * @brief	Creates a new empty mesh. Created mesh will have specified sub-meshes you may render independently.
@@ -179,7 +179,7 @@ namespace BansheeEngine
 		 *							the number of vertices limited by the size.
 		 */
 		static HMesh create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, const Vector<SubMesh>& subMeshes,
-			MeshBufferType bufferType = MeshBufferType::Static, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
+			MeshBufferType bufferType = MeshBufferType::Static, IndexType indexType = IT_32BIT);
 
 		/**
 		 * @brief	Creates a new mesh from an existing mesh data. Created mesh will match the vertex and index buffers described
@@ -207,22 +207,22 @@ namespace BansheeEngine
 		static HMesh create(const MeshDataPtr& initialMeshData, const Vector<SubMesh>& subMeshes, MeshBufferType bufferType = MeshBufferType::Static);
 
 		/**
-		 * @copydoc	create(UINT32, UINT32, const VertexDataDescPtr&, MeshBufferType, DrawOperationType, IndexBuffer::IndexType)
+		 * @copydoc	create(UINT32, UINT32, const VertexDataDescPtr&, MeshBufferType, DrawOperationType, IndexType)
 		 *
 		 * @note	Internal method. Use "create" for normal use.
 		 */
 		static MeshPtr _createPtr(UINT32 numVertices, UINT32 numIndices, 
 			const VertexDataDescPtr& vertexDesc, MeshBufferType bufferType = MeshBufferType::Static,
-			DrawOperationType drawOp = DOT_TRIANGLE_LIST, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
+			DrawOperationType drawOp = DOT_TRIANGLE_LIST, IndexType indexType = IT_32BIT);
 
 		/**
-		 * @copydoc	create(UINT32, UINT32, const VertexDataDescPtr&, const Vector<SubMesh>&, MeshBufferType, IndexBuffer::IndexType)
+		 * @copydoc	create(UINT32, UINT32, const VertexDataDescPtr&, const Vector<SubMesh>&, MeshBufferType, IndexType)
 		 *
 		 * @note	Internal method. Use "create" for normal use.
 		 */
 		static MeshPtr _createPtr(UINT32 numVertices, UINT32 numIndices, 
 			const VertexDataDescPtr& vertexDesc, const Vector<SubMesh>& subMeshes,
-			MeshBufferType bufferType = MeshBufferType::Static, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
+			MeshBufferType bufferType = MeshBufferType::Static, IndexType indexType = IT_32BIT);
 
 		/**
 		 * @copydoc	create(const MeshDataPtr&, MeshBufferType, DrawOperationType)

@@ -8,18 +8,19 @@ namespace BansheeEngine
 	/**
 	 * @brief	OpenGL implementation of an index buffer.
 	 */
-    class BS_RSGL_EXPORT GLIndexBuffer : public IndexBuffer
+    class BS_RSGL_EXPORT GLIndexBufferCore : public IndexBufferCore
     {
     public:
-        ~GLIndexBuffer();
+		GLIndexBufferCore(GpuBufferUsage usage, bool useSystemMemory, const IndexBufferProperties& properties);
+		~GLIndexBufferCore() { }
 
 		/**
-		 * @copydoc IndexBuffer::readData
+		 * @copydoc IndexBufferCore::readData
 		 */
         void readData(UINT32 offset, UINT32 length, void* pDest);
 
 		/**
-		 * @copydoc IndexBuffer::writeData
+		 * @copydoc IndexBufferCore::writeData
 		 */
         void writeData(UINT32 offset, UINT32 length, const void* pSource, 
 			BufferWriteType writeFlags = BufferWriteType::Normal);
@@ -30,33 +31,47 @@ namespace BansheeEngine
         GLuint getGLBufferId() const { return mBufferId; }
 
 	protected:
-		friend class GLHardwareBufferManager;
-
-		GLIndexBuffer(IndexType idxType, UINT32 numIndexes, 
-			GpuBufferUsage usage); 
-
 		/**
-		 * @copydoc IndexBuffer::initialize_internal
+		 * @copydoc IndexBufferCore::initialize
 		 */
-		void initialize_internal();	
+		void initialize();	
 		
 		/**
-		 * @copydoc IndexBuffer::destroy_internal
+		 * @copydoc IndexBufferCore::destroy
 		 */
-		void destroy_internal();
+		void destroy();
 
 		/**
-		 * @copydoc IndexBuffer::lockImpl
+		 * @copydoc IndexBufferCore::lockImpl
 		 */
 		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
 
 		/**
-		 * @copydoc IndexBuffer::unlockImpl
+		 * @copydoc IndexBufferCore::unlockImpl
 		 */
 		void unlockImpl();
 
 	private:
 		GLuint mBufferId;
 		bool mZeroLocked;
+    };
+
+	/**
+	 * @brief	OpenGL implementation of an index buffer.
+	 */
+    class BS_RSGL_EXPORT GLIndexBuffer : public IndexBuffer
+    {
+    public:
+		~GLIndexBuffer() { }
+
+	protected:
+		friend class GLHardwareBufferManager;
+
+		GLIndexBuffer(IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage); 
+
+		/**
+		 * @copydoc	CoreObject::createCore
+		 */
+		virtual CoreObjectCore* createCore() const;
     };
 }

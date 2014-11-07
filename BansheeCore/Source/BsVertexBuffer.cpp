@@ -7,11 +7,23 @@
 
 namespace BansheeEngine 
 {
-    VertexBuffer::VertexBuffer(UINT32 vertexSize,  UINT32 numVertices, GpuBufferUsage usage, bool useSystemMemory) 
-        : HardwareBuffer(usage, useSystemMemory), mNumVertices(numVertices), mVertexSize(vertexSize)
+	VertexBufferCore::VertexBufferCore(GpuBufferUsage usage, bool useSystemMemory, const VertexBufferProperties& properties)
+		:HardwareBuffer(usage, useSystemMemory), mProperties(properties)
+	{
+		mSizeInBytes = mProperties.mVertexSize * mProperties.mNumVertices;
+	}
+
+    VertexBuffer::VertexBuffer(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage, bool useSystemMemory) 
+		: mUseSystemMemory(useSystemMemory), mUsage(usage)
     {
-        mSizeInBytes = mVertexSize * numVertices;
+		mProperties.mVertexSize = vertexSize;
+		mProperties.mNumVertices = numVertices;
     }
+
+	VertexBufferCore* VertexBuffer::getCore() const
+	{
+		return static_cast<VertexBufferCore*>(mCoreSpecific);
+	}
 
 	VertexBufferPtr VertexBuffer::create(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
 	{

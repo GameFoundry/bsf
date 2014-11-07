@@ -4,28 +4,35 @@
 
 namespace BansheeEngine 
 {
+	IndexBufferCore::IndexBufferCore(GpuBufferUsage usage, bool useSystemMemory, const IndexBufferProperties& properties)
+		:HardwareBuffer(usage, useSystemMemory), mProperties(properties)
+	{ 
+		mSizeInBytes = mProperties.mIndexSize * mProperties.mNumIndexes;
+	}
+
     IndexBuffer::IndexBuffer(IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage, bool useSystemMemory) 
-        : HardwareBuffer(usage, useSystemMemory), mIndexType(idxType), mNumIndexes(numIndexes)
+		:mUsage(usage), mUseSystemMemory(useSystemMemory)
     {
-        switch (mIndexType)
+		mProperties.mIndexType = idxType;
+		mProperties.mNumIndexes = numIndexes;
+
+		switch (mProperties.mIndexType)
         {
         case IT_16BIT:
-            mIndexSize = sizeof(unsigned short);
+			mProperties.mIndexSize = sizeof(unsigned short);
             break;
         case IT_32BIT:
-            mIndexSize = sizeof(unsigned int);
+			mProperties.mIndexSize = sizeof(unsigned int);
             break;
         }
-
-        mSizeInBytes = mIndexSize * mNumIndexes;
     }
 
-    IndexBuffer::~IndexBuffer()
-    {
+	IndexBufferCore* IndexBuffer::getCore() const
+	{
+		return static_cast<IndexBufferCore*>(mCoreSpecific);
+	}
 
-    }
-
-	IndexBufferPtr IndexBuffer::create(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
+	IndexBufferPtr IndexBuffer::create(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
 	{
 		return HardwareBufferManager::instance().createIndexBuffer(itype, numIndexes, usage);
 	}

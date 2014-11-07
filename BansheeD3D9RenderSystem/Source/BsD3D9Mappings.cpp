@@ -315,9 +315,9 @@ namespace BansheeEngine
         return ret;
     }
 
-    D3DFORMAT D3D9Mappings::get(IndexBuffer::IndexType itype)
+    D3DFORMAT D3D9Mappings::get(IndexType itype)
     {
-        if (itype == IndexBuffer::IT_32BIT)
+        if (itype == IT_32BIT)
         {
             return D3DFMT_INDEX32;
         }

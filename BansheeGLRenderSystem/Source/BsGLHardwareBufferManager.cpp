@@ -15,7 +15,7 @@ namespace BansheeEngine
 		return bs_core_ptr<GLVertexBuffer, PoolAlloc>(new (bs_alloc<GLVertexBuffer, PoolAlloc>()) GLVertexBuffer(vertexSize, numVerts, usage));
     }
 
-    IndexBufferPtr GLHardwareBufferManager::createIndexBufferImpl(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
+    IndexBufferPtr GLHardwareBufferManager::createIndexBufferImpl(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
     {
 		return bs_core_ptr<GLIndexBuffer, PoolAlloc>(new (bs_alloc<GLIndexBuffer, PoolAlloc>()) GLIndexBuffer(itype, numIndexes, usage));
     }

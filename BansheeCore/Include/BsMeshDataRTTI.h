@@ -8,7 +8,7 @@
 
 namespace BansheeEngine
 {
-	BS_ALLOW_MEMCPY_SERIALIZATION(IndexBuffer::IndexType);
+	BS_ALLOW_MEMCPY_SERIALIZATION(IndexType);
 
 	class BS_CORE_EXPORT MeshDataRTTI : public RTTIType<MeshData, GpuResourceData, MeshDataRTTI>
 	{
@@ -16,8 +16,8 @@ namespace BansheeEngine
 		VertexDataDescPtr getVertexData(MeshData* obj) { return obj->mVertexData; }
 		void setVertexData(MeshData* obj, VertexDataDescPtr value) { obj->mVertexData = value; }
 
-		IndexBuffer::IndexType& getIndexType(MeshData* obj) { return obj->mIndexType; }
-		void setIndexType(MeshData* obj, IndexBuffer::IndexType& value) { obj->mIndexType = value; }
+		IndexType& getIndexType(MeshData* obj) { return obj->mIndexType; }
+		void setIndexType(MeshData* obj, IndexType& value) { obj->mIndexType = value; }
 
 		UINT32& getNumVertices(MeshData* obj) { return obj->mNumVertices; }
 		void setNumVertices(MeshData* obj, UINT32& value) { obj->mNumVertices = value; }

@@ -6,17 +6,13 @@
 
 namespace BansheeEngine 
 {
-    GLVertexBuffer::GLVertexBuffer(UINT32 vertexSize, 
-        UINT32 numVertices, GpuBufferUsage usage)
-		: VertexBuffer(vertexSize, numVertices, usage, false), mZeroLocked(false)
+	GLVertexBufferCore::GLVertexBufferCore(GpuBufferUsage usage, bool useSystemMemory, const VertexBufferProperties& properties)
+		:VertexBufferCore(usage, useSystemMemory, properties), mZeroLocked(false)
     {
+
     }
 
-    GLVertexBuffer::~GLVertexBuffer()
-    {
-    }
-
-	void GLVertexBuffer::initialize_internal()
+	void GLVertexBufferCore::initialize()
 	{
 		glGenBuffers(1, &mBufferId);
 
@@ -32,10 +28,10 @@ namespace BansheeEngine
 			GLHardwareBufferManager::getGLUsage(mUsage));
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_VertexBuffer);
-		VertexBuffer::initialize_internal();
+		VertexBufferCore::initialize();
 	}
 
-	void GLVertexBuffer::destroy_internal()
+	void GLVertexBufferCore::destroy()
 	{
 		glDeleteBuffers(1, &mBufferId);
 
@@ -43,15 +39,15 @@ namespace BansheeEngine
 			GLVertexArrayObjectManager::instance().notifyBufferDestroyed(mVAObjects[0]);
 
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_VertexBuffer);
-		VertexBuffer::destroy_internal();
+		VertexBufferCore::destroy();
 	}
 
-	void GLVertexBuffer::registerVAO(const GLVertexArrayObject& vao)
+	void GLVertexBufferCore::registerVAO(const GLVertexArrayObject& vao)
 	{
 		mVAObjects.push_back(vao);
 	}
 
-	void GLVertexBuffer::unregisterVAO(const GLVertexArrayObject& vao)
+	void GLVertexBufferCore::unregisterVAO(const GLVertexArrayObject& vao)
 	{
 		auto iterFind = std::find(mVAObjects.begin(), mVAObjects.end(), vao);
 
@@ -59,7 +55,7 @@ namespace BansheeEngine
 			mVAObjects.erase(iterFind);
 	}
 
-    void* GLVertexBuffer::lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options)
+	void* GLVertexBufferCore::lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options)
     {
         GLenum access = 0;
 
@@ -119,7 +115,7 @@ namespace BansheeEngine
 		return retPtr;
     }
 
-	void GLVertexBuffer::unlockImpl()
+	void GLVertexBufferCore::unlockImpl()
     {
 		glBindBuffer(GL_ARRAY_BUFFER, mBufferId);
 
@@ -134,14 +130,14 @@ namespace BansheeEngine
         mIsLocked = false;
     }
 
-    void GLVertexBuffer::readData(UINT32 offset, UINT32 length, void* pDest)
+	void GLVertexBufferCore::readData(UINT32 offset, UINT32 length, void* pDest)
     {
 		void* bufferData = lock(offset, length, GBL_READ_ONLY);
 		memcpy(pDest, bufferData, length);
 		unlock();
     }
 
-    void GLVertexBuffer::writeData(UINT32 offset, UINT32 length, 
+	void GLVertexBufferCore::writeData(UINT32 offset, UINT32 length,
 		const void* pSource, BufferWriteType writeFlags)
     {
 		GpuLockOptions lockOption = GBL_WRITE_ONLY;
@@ -154,4 +150,14 @@ namespace BansheeEngine
 		memcpy(bufferData, pSource, length);
 		unlock();
     }
+
+	GLVertexBuffer::GLVertexBuffer(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage)
+		: VertexBuffer(vertexSize, numVertices, usage, false)
+	{
+	}
+
+	CoreObjectCore* GLVertexBuffer::createCore() const
+	{
+		return bs_new<GLVertexBufferCore>(mUsage, mUseSystemMemory, mProperties);
+	}
 }

@@ -32,7 +32,7 @@ namespace BansheeEngine
 		 * @copydoc HardwareBufferManager::createIndexBufferImpl
 		 */
         IndexBufferPtr createIndexBufferImpl(
-            IndexBuffer::IndexType itype, UINT32 numIndexes, 
+            IndexType itype, UINT32 numIndexes, 
             GpuBufferUsage usage);
 
 		/** @copydoc HardwareBufferManager::createGpuParamBlockBufferImpl */

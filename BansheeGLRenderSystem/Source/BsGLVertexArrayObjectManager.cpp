@@ -154,7 +154,9 @@ namespace BansheeEngine
 
 			// TODO - We might also want to check the size of input and buffer, and make sure they match? Or does OpenGL handle that internally?
 
-			GLVertexBuffer* vertexBuffer = usedBuffers[seqIdx];
+			GLVertexBufferCore* vertexBuffer = static_cast<GLVertexBufferCore*>(usedBuffers[seqIdx]->getCore());
+			const VertexBufferProperties& vbProps = vertexBuffer->getProperties();
+
 			glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer->getGLBufferId());
 			void* bufferData = VBO_BUFFER_OFFSET(elem.getOffset());
 
@@ -172,7 +174,7 @@ namespace BansheeEngine
 
 			UINT16 typeCount = VertexElement::getTypeCount(elem.getType());
 			GLenum glType = GLHardwareBufferManager::getGLType(elem.getType());
-			GLsizei vertexSize = static_cast<GLsizei>(vertexBuffer->getVertexSize());
+			GLsizei vertexSize = static_cast<GLsizei>(vbProps.getVertexSize());
 			glVertexAttribPointer(attribLocation, typeCount, glType, normalized,
 				vertexSize, bufferData);
 
@@ -183,7 +185,9 @@ namespace BansheeEngine
 		for (UINT32 i = 0; i < numUsedBuffers; i++)
 		{
 			wantedVAO.mAttachedBuffers[i] = usedBuffers[i];
-			wantedVAO.mAttachedBuffers[i]->registerVAO(wantedVAO);
+
+			GLVertexBufferCore* curVertexBuffer = static_cast<GLVertexBufferCore*>(usedBuffers[i]->getCore());
+			curVertexBuffer->registerVAO(wantedVAO);
 		}
 
 		stackDeallocLast(usedBuffers);
@@ -202,7 +206,8 @@ namespace BansheeEngine
 
 		for (UINT32 i = 0; i < vao.mNumBuffers; i++)
 		{
-			vao.mAttachedBuffers[i]->unregisterVAO(vao);
+			GLVertexBufferCore* curVertexBuffer = static_cast<GLVertexBufferCore*>(vao.mAttachedBuffers[i]->getCore());
+			curVertexBuffer->unregisterVAO(vao);
 		}
 
 		glDeleteVertexArrays(1, &vao.mHandle);

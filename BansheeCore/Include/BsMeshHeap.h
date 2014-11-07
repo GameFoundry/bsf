@@ -93,7 +93,7 @@ namespace BansheeEngine
 		 * @param	indexType	Type of the stored indices.
 		 */
 		static MeshHeapPtr create(UINT32 numVertices, UINT32 numIndices, 
-			const VertexDataDescPtr& vertexDesc, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
+			const VertexDataDescPtr& vertexDesc, IndexType indexType = IT_32BIT);
 
 	private:
 		friend class TransientMesh;
@@ -102,7 +102,7 @@ namespace BansheeEngine
 		 * @copydoc	create
 		 */
 		MeshHeap(UINT32 numVertices, UINT32 numIndices, 
-			const VertexDataDescPtr& vertexDesc, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
+			const VertexDataDescPtr& vertexDesc, IndexType indexType = IT_32BIT);
 
 		/**
 		 * @copydoc CoreObject::initialize_internal()
@@ -219,7 +219,7 @@ namespace BansheeEngine
 		Map<UINT32, AllocatedData> mMeshAllocData; // Core thread
 
 		VertexDataDescPtr mVertexDesc; // Immutable
-		IndexBuffer::IndexType mIndexType; // Immutable
+		IndexType mIndexType; // Immutable
 
 		Map<UINT32, TransientMeshPtr> mMeshes; // Sim thread
 		UINT32 mNextFreeId; // Sim thread

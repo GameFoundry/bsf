@@ -97,7 +97,7 @@ namespace BansheeEngine
 		 * @brief	Constructs a new object that can hold number of vertices described by the provided vertex data description. As well
 		 *			as a number of indices of the provided type.
 		 */
-		MeshData(UINT32 numVertices, UINT32 numIndexes, const VertexDataDescPtr& vertexData, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
+		MeshData(UINT32 numVertices, UINT32 numIndexes, const VertexDataDescPtr& vertexData, IndexType indexType = IT_32BIT);
 		~MeshData();
 
 		/**
@@ -171,7 +171,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns the type of an index element.
 		 */
-		IndexBuffer::IndexType getIndexType() const { return mIndexType; }
+		IndexType getIndexType() const { return mIndexType; }
 
 		/**
 		 * @brief	Returns the pointer to the first element of the specified type. If you want to
@@ -279,7 +279,7 @@ namespace BansheeEngine
 
 		UINT32 mNumVertices;
 		UINT32 mNumIndices;
-		IndexBuffer::IndexType mIndexType;
+		IndexType mIndexType;
 
 		VertexDataDescPtr mVertexData;
 

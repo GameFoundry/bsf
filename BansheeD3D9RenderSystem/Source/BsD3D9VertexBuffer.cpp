@@ -9,14 +9,11 @@
 
 namespace BansheeEngine 
 {
-    D3D9VertexBuffer::D3D9VertexBuffer(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage, bool useSystemMemory)
-		: VertexBuffer(vertexSize, numVertices, usage, useSystemMemory)
+	D3D9VertexBufferCore::D3D9VertexBufferCore(GpuBufferUsage usage, bool useSystemMemory, const VertexBufferProperties& properties)
+		: VertexBufferCore(usage, useSystemMemory, properties), mSystemMemoryBuffer(nullptr)
     { }
 
-    D3D9VertexBuffer::~D3D9VertexBuffer()
-    { }
-
-	void D3D9VertexBuffer::initialize_internal()
+	void D3D9VertexBufferCore::initialize()
 	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION;
 
@@ -39,10 +36,10 @@ namespace BansheeEngine
 		}
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_VertexBuffer);
-		VertexBuffer::initialize_internal();
+		VertexBufferCore::initialize();
 	}
 
-	void D3D9VertexBuffer::destroy_internal()
+	void D3D9VertexBufferCore::destroy()
 	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION;
 
@@ -62,10 +59,10 @@ namespace BansheeEngine
 			bs_free(mSystemMemoryBuffer);
 
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_VertexBuffer);
-		VertexBuffer::destroy_internal();
+		VertexBufferCore::destroy();
 	}
 
-    void* D3D9VertexBuffer::lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options)
+	void* D3D9VertexBufferCore::lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options)
     {		
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -111,7 +108,7 @@ namespace BansheeEngine
 		return mSystemMemoryBuffer + offset;		
     }
 
-	void D3D9VertexBuffer::unlockImpl()
+	void D3D9VertexBufferCore::unlockImpl()
     {
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -124,14 +121,14 @@ namespace BansheeEngine
 		}
     }
 
-    void D3D9VertexBuffer::readData(UINT32 offset, UINT32 length, void* dest)
+	void D3D9VertexBufferCore::readData(UINT32 offset, UINT32 length, void* dest)
     {
         void* pSrc = this->lock(offset, length, GBL_READ_ONLY);
         memcpy(dest, pSrc, length);
         this->unlock();
     }
 
-	void D3D9VertexBuffer::writeData(UINT32 offset, UINT32 length, const void* source, 
+	void D3D9VertexBufferCore::writeData(UINT32 offset, UINT32 length, const void* source,
 		BufferWriteType writeFlags)
 	{
 		GpuLockOptions lockOption = GBL_WRITE_ONLY;
@@ -145,7 +142,7 @@ namespace BansheeEngine
 		this->unlock();
 	}
 
-	void D3D9VertexBuffer::notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device)
+	void D3D9VertexBufferCore::notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device)
 	{			
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -153,7 +150,7 @@ namespace BansheeEngine
 			createBuffer(d3d9Device, mBufferDesc.Pool);
 	}
 
-	void D3D9VertexBuffer::notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device)
+	void D3D9VertexBufferCore::notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device)
 	{	
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -170,7 +167,7 @@ namespace BansheeEngine
 		}	
 	}
 
-	void D3D9VertexBuffer::notifyOnDeviceLost(IDirect3DDevice9* d3d9Device)
+	void D3D9VertexBufferCore::notifyOnDeviceLost(IDirect3DDevice9* d3d9Device)
 	{	
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -185,7 +182,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D9VertexBuffer::notifyOnDeviceReset(IDirect3DDevice9* d3d9Device)
+	void D3D9VertexBufferCore::notifyOnDeviceReset(IDirect3DDevice9* d3d9Device)
 	{		
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -193,7 +190,7 @@ namespace BansheeEngine
 			createBuffer(d3d9Device, mBufferDesc.Pool);
 	}
 
-	void D3D9VertexBuffer::createBuffer(IDirect3DDevice9* d3d9Device, D3DPOOL ePool)
+	void D3D9VertexBufferCore::createBuffer(IDirect3DDevice9* d3d9Device, D3DPOOL ePool)
 	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -242,7 +239,7 @@ namespace BansheeEngine
 		}		
 	}
 
-	IDirect3DVertexBuffer9* D3D9VertexBuffer::getD3D9VertexBuffer()
+	IDirect3DVertexBuffer9* D3D9VertexBufferCore::getD3D9VertexBuffer()
 	{
 		IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getActiveD3D9Device();
 		auto iterFind = mMapDeviceToBufferResources.find(d3d9Device);
@@ -260,7 +257,7 @@ namespace BansheeEngine
 		return iterFind->second->mBuffer;
 	}	
 
-	bool D3D9VertexBuffer::updateBufferResources(const UINT8* systemMemoryBuffer, BufferResources* bufferResources)
+	bool D3D9VertexBufferCore::updateBufferResources(const UINT8* systemMemoryBuffer, BufferResources* bufferResources)
 	{		
 		assert(bufferResources != nullptr);
 		assert(bufferResources->mBuffer != nullptr);
@@ -301,5 +298,14 @@ namespace BansheeEngine
 		bufferResources->mLockOptions = GBL_READ_WRITE;
 
 		return true;		
+	}
+
+	D3D9VertexBuffer::D3D9VertexBuffer(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage, bool useSystemMemory)
+		: VertexBuffer(vertexSize, numVertices, usage, useSystemMemory)
+	{ }
+
+	CoreObjectCore* D3D9VertexBuffer::createCore() const
+	{
+		return bs_new<D3D9VertexBufferCore>(mUsage, mUseSystemMemory, mProperties);
 	}
 }

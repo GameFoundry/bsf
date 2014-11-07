@@ -325,6 +325,13 @@ namespace BansheeEngine
 		 */
 		virtual float getMaximumDepthInputValue() = 0;
 
+		/**
+		 * @brief	Checks if vertex color needs to be flipped before sent to the shader.
+		 *
+		 * @note	Thread safe.
+		 */
+		virtual bool getVertexColorFlipRequired() const { return false; }
+
 		/************************************************************************/
 		/* 							INTERNAL METHODS				        	*/
 		/************************************************************************/

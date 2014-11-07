@@ -705,11 +705,13 @@ namespace BansheeEngine
 		GLint primType = getGLDrawMode();
 
 		beginDraw();
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 
-			static_cast<GLIndexBuffer*>(mBoundIndexBuffer.get())->getGLBufferId());
 
-		GLenum indexType = (mBoundIndexBuffer->getType() == IndexBuffer::IT_16BIT) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
-		glDrawElementsBaseVertex(primType, indexCount, indexType, (GLvoid*)(mBoundIndexBuffer->getIndexSize() * startIndex), vertexOffset);
+		GLIndexBufferCore* indexBuffer = static_cast<GLIndexBufferCore*>(mBoundIndexBuffer->getCore());
+		const IndexBufferProperties& ibProps = indexBuffer->getProperties();
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer->getGLBufferId());
+
+		GLenum indexType = (ibProps.getType() == IT_16BIT) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
+		glDrawElementsBaseVertex(primType, indexCount, indexType, (GLvoid*)(ibProps.getIndexSize() * startIndex), vertexOffset);
 
 		endDraw();
 		UINT32 primCount = vertexCountToPrimCount(mCurrentDrawOperation, vertexCount);

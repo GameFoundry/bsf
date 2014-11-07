@@ -11,14 +11,14 @@
 
 namespace BansheeEngine
 {
-	MeshData::MeshData(UINT32 numVertices, UINT32 numIndexes, const VertexDataDescPtr& vertexData, IndexBuffer::IndexType indexType)
+	MeshData::MeshData(UINT32 numVertices, UINT32 numIndexes, const VertexDataDescPtr& vertexData, IndexType indexType)
 	   :mNumVertices(numVertices), mNumIndices(numIndexes), mVertexData(vertexData), mIndexType(indexType)
 	{
 		allocateInternalBuffer();
 	}
 
 	MeshData::MeshData()
-		:mNumVertices(0), mNumIndices(0), mIndexType(IndexBuffer::IT_32BIT)
+		:mNumVertices(0), mNumIndices(0), mIndexType(IT_32BIT)
 	{ }
 
 	MeshData::~MeshData()
@@ -31,7 +31,7 @@ namespace BansheeEngine
 
 	UINT16* MeshData::getIndices16() const
 	{
-		if(mIndexType != IndexBuffer::IT_16BIT)
+		if(mIndexType != IT_16BIT)
 			BS_EXCEPT(InternalErrorException, "Attempting to get 16bit index buffer, but internally allocated buffer is 32 bit.");
 
 		UINT32 indexBufferOffset = getIndexBufferOffset();
@@ -41,7 +41,7 @@ namespace BansheeEngine
 
 	UINT32* MeshData::getIndices32() const
 	{
-		if(mIndexType != IndexBuffer::IT_32BIT)
+		if(mIndexType != IT_32BIT)
 			BS_EXCEPT(InternalErrorException, "Attempting to get 32bit index buffer, but internally allocated buffer is 16 bit.");
 
 		UINT32 indexBufferOffset = getIndexBufferOffset();
@@ -289,7 +289,7 @@ namespace BansheeEngine
 
 	UINT32 MeshData::getIndexElementSize() const
 	{
-		return mIndexType == IndexBuffer::IT_32BIT ? sizeof(UINT32) : sizeof(UINT16);
+		return mIndexType == IT_32BIT ? sizeof(UINT32) : sizeof(UINT16);
 	}
 
 	UINT32 MeshData::getElementOffset(VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx) const

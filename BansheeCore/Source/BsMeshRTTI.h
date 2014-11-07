@@ -14,8 +14,8 @@ namespace BansheeEngine
 		VertexDataDescPtr getVertexDesc(Mesh* obj) { return obj->mVertexDesc; }
 		void setVertexDesc(Mesh* obj, VertexDataDescPtr value) { obj->mVertexDesc = value; }
 
-		IndexBuffer::IndexType& getIndexType(Mesh* obj) { return obj->mIndexType; }
-		void setIndexType(Mesh* obj, IndexBuffer::IndexType& value) { obj->mIndexType = value; }
+		IndexType& getIndexType(Mesh* obj) { return obj->mIndexType; }
+		void setIndexType(Mesh* obj, IndexType& value) { obj->mIndexType = value; }
 
 		UINT32& getBufferType(Mesh* obj) { return (UINT32&)obj->mBufferType; }
 		void setBufferType(Mesh* obj, UINT32& value) { obj->mBufferType = (MeshBufferType)value; }

@@ -9,23 +9,26 @@ namespace BansheeEngine
 	/**
 	 * @brief	DirectX 11 implementation of an index buffer.
 	 */
-	class BS_D3D11_EXPORT D3D11IndexBuffer : public IndexBuffer
+	class BS_D3D11_EXPORT D3D11IndexBufferCore : public IndexBufferCore
 	{
 	public:
-		~D3D11IndexBuffer();
+		D3D11IndexBufferCore(D3D11Device& device, GpuBufferUsage usage, bool useSystemMemory,
+			const IndexBufferProperties& properties);
+
+		~D3D11IndexBufferCore() { }
 
 		/**
-		 * @copydoc HardwareBuffer::readData
+		 * @copydoc IndexBufferCore::readData
 		 */
 		void readData(UINT32 offset, UINT32 length, void* pDest);
 
 		/**
-		 * @copydoc HardwareBuffer::writeData
+		 * @copydoc IndexBufferCore::writeData
 		 */
 		void writeData(UINT32 offset, UINT32 length, const void* pSource, BufferWriteType writeFlags = BufferWriteType::Normal);
 
 		/**
-		 * @copydoc HardwareBuffer::copyData
+		 * @copydoc IndexBufferCore::copyData
 		 */
 		void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length, bool discardWholeBuffer = false);
 
@@ -33,6 +36,39 @@ namespace BansheeEngine
 		 * @brief	Gets the internal DX11 index buffer object.
 		 */
 		ID3D11Buffer* getD3DIndexBuffer() const { return mBuffer->getD3DBuffer(); }		
+
+	protected:
+		/**
+		 * @copydoc IndexBufferCore::lockImpl
+		 */
+		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
+
+		/**
+		 * @copydoc IndexBufferCore::unlockImpl
+		 */
+		void unlockImpl(void);
+
+		/**
+		 * @copydoc IndexBufferCore::initialize
+		 */
+		void initialize();	
+		
+		/**
+		 * @copydoc IndexBufferCore::destroy
+		 */
+		void destroy();
+
+		D3D11HardwareBuffer* mBuffer;
+		D3D11Device& mDevice;
+	};
+
+	/**
+	 * @brief	DirectX 11 implementation of an index buffer.
+	 */
+	class BS_D3D11_EXPORT D3D11IndexBuffer : public IndexBuffer
+	{
+	public:
+		~D3D11IndexBuffer() { }
 
 	protected:
 		friend class D3D11HardwareBufferManager;
@@ -44,26 +80,10 @@ namespace BansheeEngine
 			GpuBufferUsage usage, bool useSystemMem);
 
 		/**
-		 * @copydoc HardwareBuffer::lockImpl
+		 * @copydoc	CoreObject::createCore
 		 */
-		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
+		virtual CoreObjectCore* createCore() const;
 
-		/**
-		 * @copydoc HardwareBuffer::unlockImpl
-		 */
-		void unlockImpl(void);
-
-		/**
-		 * @copydoc IndexBuffer::initialize_internal()
-		 */
-		void initialize_internal();	
-		
-		/**
-		 * @copydoc IndexBuffer::destroy_internal()
-		 */
-		void destroy_internal();
-
-		D3D11HardwareBuffer* mBuffer;
 		D3D11Device& mDevice;
 	};
 }

@@ -1178,13 +1178,14 @@ namespace BansheeEngine
 		{
 			if(buffers[i] != nullptr)
 			{
-				D3D9VertexBuffer* d3d9buf = static_cast<D3D9VertexBuffer*>(buffers[i].get());
+				D3D9VertexBufferCore* d3d9buf = static_cast<D3D9VertexBufferCore*>(buffers[i]->getCore());
+				const VertexBufferProperties& vbProps = d3d9buf->getProperties();
 
 				hr = getActiveD3D9Device()->SetStreamSource(
 					static_cast<UINT>(index + i),
 					d3d9buf->getD3D9VertexBuffer(),
 					0,
-					static_cast<UINT>(d3d9buf->getVertexSize()) // stride
+					static_cast<UINT>(vbProps.getVertexSize()) // stride
 					);
 			}
 			else
@@ -1203,7 +1204,7 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		D3D9IndexBuffer* d3dIdxBuf = static_cast<D3D9IndexBuffer*>(buffer.get());
+		D3D9IndexBufferCore* d3dIdxBuf = static_cast<D3D9IndexBufferCore*>(buffer->getCore());
 
 		HRESULT hr = getActiveD3D9Device()->SetIndices( d3dIdxBuf->getD3DIndexBuffer() );
 		if (FAILED(hr))

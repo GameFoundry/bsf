@@ -13,7 +13,7 @@ namespace BansheeEngine
 	const float MeshHeap::GrowPercent = 1.5f;
 
 	MeshHeap::MeshHeap(UINT32 numVertices, UINT32 numIndices, 
-		const VertexDataDescPtr& vertexDesc, IndexBuffer::IndexType indexType)
+		const VertexDataDescPtr& vertexDesc, IndexType indexType)
 		:mNumVertices(numVertices), mNumIndices(numIndices), mNextFreeId(0), 
 		mIndexType(indexType), mVertexDesc(vertexDesc), mCPUIndexData(nullptr),
 		mNextQueryId(0)
@@ -30,7 +30,7 @@ namespace BansheeEngine
 	}
 
 	MeshHeapPtr MeshHeap::create(UINT32 numVertices, UINT32 numIndices, 
-		const VertexDataDescPtr& vertexDesc, IndexBuffer::IndexType indexType)
+		const VertexDataDescPtr& vertexDesc, IndexType indexType)
 	{
 		MeshHeap* meshHeap = new (bs_alloc<MeshHeap>()) MeshHeap(numVertices, numIndices, vertexDesc, indexType); 
 		MeshHeapPtr meshHeapPtr = bs_core_ptr<MeshHeap, GenAlloc>(meshHeap);
@@ -270,12 +270,13 @@ namespace BansheeEngine
 					toString(vertSize) + ". Got: " + toString(otherVertSize));
 			}
 
-			VertexBufferPtr vertexBuffer = mVertexData->getBuffer(i);
+			VertexBufferCore* vertexBuffer = mVertexData->getBuffer(i)->getCore();
+			const VertexBufferProperties& vbProps = vertexBuffer->getProperties();
 
 			UINT8* vertDest = mCPUVertexData[i] + vertChunkStart * vertSize;
 			memcpy(vertDest, meshData->getStreamData(i), meshData->getNumVertices() * vertSize);
 
-			if(vertexBuffer->vertexColorReqRGBFlip())
+			if (RenderSystem::instance().getVertexColorFlipRequired())
 			{
 				UINT32 vertexStride = mVertexDesc->getVertexStride(i);
 				for(INT32 semanticIdx = 0; semanticIdx < VertexBuffer::MAX_SEMANTIC_IDX; semanticIdx++)
@@ -298,7 +299,10 @@ namespace BansheeEngine
 			vertexBuffer->writeData(vertChunkStart * vertSize, meshData->getNumVertices() * vertSize, vertDest, BufferWriteType::NoOverwrite);
 		}
 
-		UINT32 idxSize = mIndexBuffer->getIndexSize();
+		IndexBufferCore* indexBuffer = mIndexBuffer->getCore();
+		const IndexBufferProperties& ibProps = indexBuffer->getProperties();
+
+		UINT32 idxSize = ibProps.getIndexSize();
 
 		// Ensure index sizes match
 		if(meshData->getIndexElementSize() != idxSize)
@@ -309,7 +313,7 @@ namespace BansheeEngine
 
 		UINT8* idxDest = mCPUIndexData + idxChunkStart * idxSize;
 		memcpy(idxDest, meshData->getIndexData(), meshData->getNumIndices() * idxSize);
-		mIndexBuffer->writeData(idxChunkStart * idxSize, meshData->getNumIndices() * idxSize, idxDest, BufferWriteType::NoOverwrite);
+		indexBuffer->writeData(idxChunkStart * idxSize, meshData->getNumIndices() * idxSize, idxDest, BufferWriteType::NoOverwrite);
 	}
 
 	void MeshHeap::deallocInternal(TransientMeshPtr mesh)
@@ -352,6 +356,7 @@ namespace BansheeEngine
 			VertexBufferPtr vertexBuffer = HardwareBufferManager::instance().createVertexBuffer(
 				vertSize, mVertexData->vertexCount, GBU_DYNAMIC);
 
+			VertexBufferCore* vertexBufferCore = vertexBuffer->getCore();
 			mVertexData->setBuffer(i, vertexBuffer);
 
 			// Copy all data to the new buffer
@@ -375,7 +380,7 @@ namespace BansheeEngine
 			}
 
 			if(destOffset > 0)
-				vertexBuffer->writeData(0, destOffset * vertSize, buffer, BufferWriteType::NoOverwrite);
+				vertexBufferCore->writeData(0, destOffset * vertSize, buffer, BufferWriteType::NoOverwrite);
 
 			mCPUVertexData[i] = buffer;
 		}
@@ -422,9 +427,11 @@ namespace BansheeEngine
 		mNumIndices = numIndices;
 
 		mIndexBuffer = HardwareBufferManager::instance().createIndexBuffer(mIndexType, mNumIndices, GBU_DYNAMIC);
+		IndexBufferCore* indexBuffer = mIndexBuffer->getCore();
+		const IndexBufferProperties& ibProps = indexBuffer->getProperties();
 
 		// Copy all data to the new buffer
-		UINT32 idxSize = mIndexBuffer->getIndexSize();
+		UINT32 idxSize = ibProps.getIndexSize();
 
 		UINT8* oldBuffer = mCPUIndexData;
 		UINT8* buffer = (UINT8*)bs_alloc(idxSize * numIndices);
@@ -446,7 +453,7 @@ namespace BansheeEngine
 		}
 
 		if(destOffset > 0)
-			mIndexBuffer->writeData(0, destOffset * idxSize, buffer, BufferWriteType::NoOverwrite);
+			indexBuffer->writeData(0, destOffset * idxSize, buffer, BufferWriteType::NoOverwrite);
 
 		mCPUIndexData = buffer;
 

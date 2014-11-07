@@ -24,7 +24,7 @@ namespace BansheeEngine
 		return bs_core_ptr<D3D11VertexBuffer, PoolAlloc>(buffer);
 	}
 
-	IndexBufferPtr D3D11HardwareBufferManager::createIndexBufferImpl(IndexBuffer::IndexType itype, 
+	IndexBufferPtr D3D11HardwareBufferManager::createIndexBufferImpl(IndexType itype, 
 		UINT32 numIndexes, GpuBufferUsage usage)
 	{
 		D3D11IndexBuffer* buffer = new (bs_alloc<D3D11IndexBuffer, PoolAlloc>()) D3D11IndexBuffer(mDevice, itype, numIndexes, usage, false);

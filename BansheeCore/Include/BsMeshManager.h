@@ -16,16 +16,16 @@ namespace BansheeEngine
 		~MeshManager();
 
 		/**
-		 * @copydoc	Mesh::create(UINT32, UINT32, const VertexDataDescPtr&, MeshBufferType, DrawOperationType, IndexBuffer::IndexType)
+		 * @copydoc	Mesh::create(UINT32, UINT32, const VertexDataDescPtr&, MeshBufferType, DrawOperationType, IndexType)
 		 */
 		MeshPtr create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, MeshBufferType bufferType = MeshBufferType::Static, 
-			DrawOperationType drawOp = DOT_TRIANGLE_LIST, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
+			DrawOperationType drawOp = DOT_TRIANGLE_LIST, IndexType indexType = IT_32BIT);
 
 		/**
-		 * @copydoc	Mesh::create(UINT32, UINT32, const VertexDataDescPtr&, const Vector<SubMesh>&, MeshBufferType, IndexBuffer::IndexType)
+		 * @copydoc	Mesh::create(UINT32, UINT32, const VertexDataDescPtr&, const Vector<SubMesh>&, MeshBufferType, IndexType)
 		 */
 		MeshPtr create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, const Vector<SubMesh>& subMeshes, 
-			MeshBufferType bufferType = MeshBufferType::Static, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
+			MeshBufferType bufferType = MeshBufferType::Static, IndexType indexType = IT_32BIT);
 
 		/**
 		 * @copyodc	Mesh::create(const MeshDataPtr&, MeshBufferType, DrawOperationType)

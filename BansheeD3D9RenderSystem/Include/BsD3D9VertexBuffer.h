@@ -9,7 +9,7 @@ namespace BansheeEngine
 	/**
 	 * @brief	DirectX 9 implementation of a vertex buffer.
 	 */
-    class BS_D3D9_EXPORT D3D9VertexBuffer : public VertexBuffer, public D3D9Resource
+    class BS_D3D9_EXPORT D3D9VertexBufferCore : public VertexBufferCore, public D3D9Resource
     {   
 	protected:
 		/**
@@ -25,15 +25,16 @@ namespace BansheeEngine
 		};
 
     public:
-        ~D3D9VertexBuffer();
+		D3D9VertexBufferCore(GpuBufferUsage usage, bool useSystemMemory, const VertexBufferProperties& properties);
+		~D3D9VertexBufferCore() { }
 
 		/**
-		 * @copydoc	VertexBuffer::readData
+		 * @copydoc	VertexBufferCore::readData
 		 */
         void readData(UINT32 offset, UINT32 length, void* dest);
 
 		/**
-		 * @copydoc	VertexBuffer::writeData
+		 * @copydoc	VertexBufferCore::writeData
 		 */
         void writeData(UINT32 offset, UINT32 length, const void* source, BufferWriteType writeFlags = BufferWriteType::Normal);
 	
@@ -67,33 +68,24 @@ namespace BansheeEngine
 		 */
         IDirect3DVertexBuffer9* getD3D9VertexBuffer();
 
-		/**
-		 * @copydoc	VertexBuffer::vertexColorReqRGBFlip
-		 */
-		virtual bool vertexColorReqRGBFlip() { return true; }
-
 	protected:	
-		friend class D3D9HardwareBufferManager;
-
-		D3D9VertexBuffer(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage, bool useSystemMem);
-	
 		/**
-		 * @copydoc VertexBuffer::initialize_internal
+		 * @copydoc VertexBufferCore::initialize
 		 */
-		void initialize_internal();	
+		void initialize();	
 		
 		/**
-		 * @copydoc VertexBuffer::destroy_internal
+		 * @copydoc VertexBufferCore::destroy
 		 */
-		void destroy_internal();
+		void destroy();
 
 		/**
-		 * @copydoc	VertexBuffer::lockImpl
+		 * @copydoc	VertexBufferCore::lockImpl
 		 */
 		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
 
 		/**
-		 * @copydoc	VertexBuffer::unlockImpl
+		 * @copydoc	VertexBufferCore::unlockImpl
 		 */
 		void unlockImpl();
 
@@ -106,5 +98,24 @@ namespace BansheeEngine
 		Map<IDirect3DDevice9*, BufferResources*> mMapDeviceToBufferResources;
 		D3DVERTEXBUFFER_DESC mBufferDesc;	
 		UINT8* mSystemMemoryBuffer;
+    };
+
+/**
+	 * @brief	DirectX 9 implementation of a vertex buffer.
+	 */
+    class BS_D3D9_EXPORT D3D9VertexBuffer : public VertexBuffer
+    {   
+    public:
+		~D3D9VertexBuffer() { }
+
+	protected:	
+		friend class D3D9HardwareBufferManager;
+
+		D3D9VertexBuffer(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage, bool useSystemMem);
+
+		/**
+		 * @copydoc	CoreObject::createCore
+		 */
+		virtual CoreObjectCore* createCore() const;
     };
 }
