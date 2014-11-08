@@ -156,8 +156,8 @@ namespace BansheeEngine
 	{
 	}
 
-	CoreObjectCore* GLVertexBuffer::createCore() const
+	SPtr<CoreObjectCore> GLVertexBuffer::createCore() const
 	{
-		return bs_new<GLVertexBufferCore>(mUsage, mUseSystemMemory, mProperties);
+		return bs_shared_ptr<GLVertexBufferCore>(mUsage, mUseSystemMemory, mProperties);
 	}
 }

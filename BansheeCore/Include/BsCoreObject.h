@@ -113,7 +113,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns a shared_ptr version of "this" pointer.
 		 */
-		std::shared_ptr<CoreObject> getThisPtr() const { return mThis.lock(); }
+		SPtr<CoreObject> getThisPtr() const { return mThis.lock(); }
 
 		/**
 		 * @brief	Returns an object that contains a core thread specific implementation
@@ -121,7 +121,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Thread safe to retrieve, but its data is only valid on the core thread.
 		 */
-		CoreObjectCore* getCore() const { return mCoreSpecific; }
+		SPtr<CoreObjectCore> getCore() const { return mCoreSpecific; }
 
 	protected:
 		/**
@@ -218,7 +218,7 @@ namespace BansheeEngine
 		 * @brief	Creates an object that contains core thread specific data and methods
 		 *			for this CoreObject. Can be null if such object is not required.
 		 */
-		virtual CoreObjectCore* createCore() const { return nullptr; }
+		virtual SPtr<CoreObjectCore> createCore() const { return nullptr; }
 
 		/**
 		 * @brief	Marks the core data as dirty. This causes the syncToCore()
@@ -255,7 +255,7 @@ namespace BansheeEngine
 		virtual void syncFromCore(const CoreSyncData& data) { }
 
 	protected:
-		CoreObjectCore* mCoreSpecific;
+		SPtr<CoreObjectCore> mCoreSpecific;
 	};
 
 	/**

@@ -178,7 +178,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	RenderWindow::getCore
 		 */
-		Win32WindowCore* getCore() const;
+		SPtr<Win32WindowCore> getCore() const;
 
 	protected:
 		friend class GLRenderWindowManager;
@@ -195,7 +195,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	RenderWindow::createCore
 		 */
-		virtual CoreObjectCore* createCore() const;
+		virtual SPtr<CoreObjectCore> createCore() const;
 
 	private:
 		Win32GLSupport& mGLSupport;

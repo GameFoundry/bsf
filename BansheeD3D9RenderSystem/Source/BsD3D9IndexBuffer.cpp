@@ -308,8 +308,8 @@ namespace BansheeEngine
 		: IndexBuffer(idxType, numIndexes, usage, useSystemMemory)
 	{ }
 
-	CoreObjectCore* D3D9IndexBuffer::createCore() const
+	SPtr<CoreObjectCore> D3D9IndexBuffer::createCore() const
 	{
-		return bs_new<D3D9IndexBufferCore>(mUsage, mUseSystemMemory, mProperties);
+		return bs_shared_ptr<D3D9IndexBufferCore>(mUsage, mUseSystemMemory, mProperties);
 	}
 }

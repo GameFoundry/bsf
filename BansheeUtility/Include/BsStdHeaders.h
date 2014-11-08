@@ -135,6 +135,9 @@ namespace BansheeEngine
 	template <typename K, typename V, typename H = std::hash<K>, typename C = std::equal_to<K>, typename A = StdAlloc<std::pair<const K, V>>> 
 	using UnorderedMultimap = std::unordered_multimap<K, V, H, C, A>;
 
+	template <typename T>
+	using SPtr = std::shared_ptr<T> ;
+
 	/**
 	 * @brief	Create a new shared pointer using a custom allocator category.
 	 */

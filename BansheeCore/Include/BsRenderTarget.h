@@ -239,7 +239,7 @@ namespace BansheeEngine
 		 * @brief	Retrieves a core implementation of a render target usable only from the
 		 *			core thread.
 		 */
-		RenderTargetCore* getCore() const;
+		SPtr<RenderTargetCore> getCore() const;
 
 		/**
 		 * @brief	Event that gets triggered whenever the render target is resized.

@@ -62,13 +62,13 @@ namespace BansheeEngine
 			for (auto& objectData : mObjects)
 			{
 				CoreObject* object = objectData.second;
-				CoreObjectCore* objectCore = object->getCore();
+				SPtr<CoreObjectCore> objectCore = object->getCore();
 				if (objectCore != nullptr && object->isCoreDirty())
 				{
 					CoreSyncData syncData = object->syncToCore(allocator);
 					object->markCoreClean();
 
-					mCoreSyncData[object->getInternalID()] = CoreStoredSyncData(objectCore, syncData);
+					mCoreSyncData[object->getInternalID()] = CoreStoredSyncData(objectCore.get(), syncData);
 				}
 			}
 		}
@@ -78,7 +78,7 @@ namespace BansheeEngine
 			for (auto& objectData : mObjects)
 			{
 				CoreObject* object = objectData.second;
-				CoreObjectCore* objectCore = object->getCore();
+				SPtr<CoreObjectCore> objectCore = object->getCore();
 				if (objectCore != nullptr && objectCore->isCoreDirty())
 				{
 					CoreSyncData syncData = objectCore->syncFromCore(allocator);

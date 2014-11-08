@@ -122,7 +122,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Core thread only.
 		 */
-		MultiRenderTextureCore* getCore() const;
+		SPtr<MultiRenderTextureCore> getCore() const;
 
 		/**
 		 * @copydoc	TextureManager::createMultiRenderTexture

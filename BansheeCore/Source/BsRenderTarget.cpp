@@ -60,9 +60,9 @@ namespace BansheeEngine
 		return *mProperties;
 	}
 
-	RenderTargetCore* RenderTarget::getCore() const
+	SPtr<RenderTargetCore> RenderTarget::getCore() const
 	{
-		return static_cast<RenderTargetCore*>(mCoreSpecific);
+		return std::static_pointer_cast<RenderTargetCore>(mCoreSpecific);
 	}
 
 	RenderTarget::RenderTarget()

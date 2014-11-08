@@ -92,7 +92,7 @@ namespace BansheeEngine
 		}
 
 		// Indices
-		IndexBufferCore* indexBuffer = mIndexBuffer->getCore();
+		SPtr<IndexBufferCore> indexBuffer = mIndexBuffer->getCore();
 		const IndexBufferProperties& ibProps = indexBuffer->getProperties();
 
 		UINT32 indicesSize = meshData.getIndexBufferSize();
@@ -127,7 +127,7 @@ namespace BansheeEngine
 					toString(myVertSize) + ". Got: " + toString(otherVertSize));
 			}
 
-			VertexBufferCore* vertexBuffer = mVertexData->getBuffer(i)->getCore();
+			SPtr<VertexBufferCore> vertexBuffer = mVertexData->getBuffer(i)->getCore();
 			const VertexBufferProperties& vbProps = vertexBuffer->getProperties();
 
 			UINT32 bufferSize = meshData.getStreamSize(i);
@@ -176,7 +176,7 @@ namespace BansheeEngine
 		if(data.getTypeId() != TID_MeshData)
 			BS_EXCEPT(InvalidParametersException, "Invalid GpuResourceData type. Only MeshData is supported.");
 
-		IndexBufferCore* indexBuffer = mIndexBuffer->getCore();
+		SPtr<IndexBufferCore> indexBuffer = mIndexBuffer->getCore();
 
 		IndexType indexType = IT_32BIT;
 		if (indexBuffer)
@@ -225,7 +225,7 @@ namespace BansheeEngine
 				if(!meshData.getVertexDesc()->hasStream(streamIdx))
 					continue;
 
-				VertexBufferCore* vertexBuffer = iter->second->getCore();
+				SPtr<VertexBufferCore> vertexBuffer = iter->second->getCore();
 				const VertexBufferProperties& vbProps = vertexBuffer->getProperties();
 
 				// Ensure both have the same sized vertices
@@ -257,7 +257,7 @@ namespace BansheeEngine
 
 	MeshDataPtr Mesh::allocateSubresourceBuffer(UINT32 subresourceIdx) const
 	{
-		IndexBufferCore* indexBuffer = mIndexBuffer->getCore();
+		SPtr<IndexBufferCore> indexBuffer = mIndexBuffer->getCore();
 
 		IndexType indexType = IT_32BIT;
 		if(mIndexBuffer)

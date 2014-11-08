@@ -740,9 +740,9 @@ namespace BansheeEngine
 		return Vector2I(pos.x, pos.y);
 	}
 
-	D3D9RenderWindowCore* D3D9RenderWindow::getCore() const
+	SPtr<D3D9RenderWindowCore> D3D9RenderWindow::getCore() const
 	{
-		return static_cast<D3D9RenderWindowCore*>(mCoreSpecific);
+		return std::static_pointer_cast<D3D9RenderWindowCore>(mCoreSpecific);
 	}
 
 	RenderTargetProperties* D3D9RenderWindow::createProperties() const
@@ -750,12 +750,12 @@ namespace BansheeEngine
 		return bs_new<D3D9RenderWindowProperties>();
 	}
 
-	CoreObjectCore* D3D9RenderWindow::createCore() const
+	SPtr<CoreObjectCore> D3D9RenderWindow::createCore() const
 	{
 		D3D9RenderWindowProperties* coreProperties = bs_new<D3D9RenderWindowProperties>();
 		D3D9RenderWindowProperties* myProperties = static_cast<D3D9RenderWindowProperties*>(mProperties);
 
 		*coreProperties = *myProperties;
-		return bs_new<D3D9RenderWindowCore>(const_cast<D3D9RenderWindow*>(this), coreProperties, mDesc, mInstance);
+		return bs_shared_ptr<D3D9RenderWindowCore>(const_cast<D3D9RenderWindow*>(this), coreProperties, mDesc, mInstance);
 	}
 }

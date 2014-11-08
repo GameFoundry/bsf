@@ -65,7 +65,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Core thread only.
 		 */
-		VertexBufferCore* getCore() const;
+		SPtr<VertexBufferCore> getCore() const;
 
 		/**
 		 * @copydoc	HardwareBufferManager::createVertexBuffer

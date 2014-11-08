@@ -227,7 +227,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	RenderWindow::createCore
 		 */
-		virtual CoreObjectCore* createCore() const;
+		virtual SPtr<CoreObjectCore> createCore() const;
 
 	private:
 		D3D11Device& mDevice;

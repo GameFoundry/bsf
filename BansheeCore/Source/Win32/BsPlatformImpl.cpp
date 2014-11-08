@@ -263,21 +263,21 @@ namespace BansheeEngine
 	{
 		BS_LOCK_MUTEX(mSync);
 
-		mNonClientAreas[window.getCore()].moveAreas = nonClientAreas;
+		mNonClientAreas[window.getCore().get()].moveAreas = nonClientAreas;
 	}
 
 	void Platform::setResizeNonClientAreas(const RenderWindow& window, const Vector<NonClientResizeArea>& nonClientAreas)
 	{
 		BS_LOCK_MUTEX(mSync);
 
-		mNonClientAreas[window.getCore()].resizeAreas = nonClientAreas;
+		mNonClientAreas[window.getCore().get()].resizeAreas = nonClientAreas;
 	}
 
 	void Platform::resetNonClientAreas(const RenderWindow& window)
 	{
 		BS_LOCK_MUTEX(mSync);
 
-		auto iterFind = mNonClientAreas.find(window.getCore());
+		auto iterFind = mNonClientAreas.find(window.getCore().get());
 
 		if(iterFind != end(mNonClientAreas))
 			mNonClientAreas.erase(iterFind);

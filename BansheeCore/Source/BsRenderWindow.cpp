@@ -102,9 +102,9 @@ namespace BansheeEngine
 		return static_cast<const RenderWindowProperties&>(RenderTarget::getProperties());
 	}
 
-	RenderWindowCore* RenderWindow::getCore() const
+	SPtr<RenderWindowCore> RenderWindow::getCore() const
 	{
-		return static_cast<RenderWindowCore*>(mCoreSpecific);
+		return std::static_pointer_cast<RenderWindowCore>(mCoreSpecific);
 	}
 
 	RenderWindowPtr RenderWindow::create(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow)

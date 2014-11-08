@@ -304,8 +304,8 @@ namespace BansheeEngine
 		: VertexBuffer(vertexSize, numVertices, usage, useSystemMemory)
 	{ }
 
-	CoreObjectCore* D3D9VertexBuffer::createCore() const
+	SPtr<CoreObjectCore> D3D9VertexBuffer::createCore() const
 	{
-		return bs_new<D3D9VertexBufferCore>(mUsage, mUseSystemMemory, mProperties);
+		return bs_shared_ptr<D3D9VertexBufferCore>(mUsage, mUseSystemMemory, mProperties);
 	}
 }

@@ -260,7 +260,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Core thread only.
 		 */
-		RenderWindowCore* getCore() const;
+		SPtr<RenderWindowCore> getCore() const;
 
 		/**
 		 * @brief	Creates a new render window using the specified options. Optionally

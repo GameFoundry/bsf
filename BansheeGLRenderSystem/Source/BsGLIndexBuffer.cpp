@@ -135,8 +135,8 @@ namespace BansheeEngine
 		:IndexBuffer(idxType, numIndexes, usage, false)
 	{  }
 
-	CoreObjectCore* GLIndexBuffer::createCore() const
+	SPtr<CoreObjectCore> GLIndexBuffer::createCore() const
 	{
-		return bs_new<GLIndexBufferCore>(mUsage, mUseSystemMemory, mProperties);
+		return bs_shared_ptr<GLIndexBufferCore>(mUsage, mUseSystemMemory, mProperties);
 	}
 }

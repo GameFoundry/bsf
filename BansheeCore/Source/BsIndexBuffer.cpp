@@ -27,9 +27,9 @@ namespace BansheeEngine
         }
     }
 
-	IndexBufferCore* IndexBuffer::getCore() const
+	SPtr<IndexBufferCore> IndexBuffer::getCore() const
 	{
-		return static_cast<IndexBufferCore*>(mCoreSpecific);
+		return std::static_pointer_cast<IndexBufferCore>(mCoreSpecific);
 	}
 
 	IndexBufferPtr IndexBuffer::create(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)

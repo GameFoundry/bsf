@@ -154,7 +154,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Core thread only.
 		 */
-		RenderTextureCore* getCore() const;
+		SPtr<RenderTextureCore> getCore() const;
 
 	protected:
 		friend class TextureManager;

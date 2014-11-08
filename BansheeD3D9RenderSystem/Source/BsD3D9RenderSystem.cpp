@@ -1178,7 +1178,7 @@ namespace BansheeEngine
 		{
 			if(buffers[i] != nullptr)
 			{
-				D3D9VertexBufferCore* d3d9buf = static_cast<D3D9VertexBufferCore*>(buffers[i]->getCore());
+				SPtr<D3D9VertexBufferCore> d3d9buf = std::static_pointer_cast<D3D9VertexBufferCore>(buffers[i]->getCore());
 				const VertexBufferProperties& vbProps = d3d9buf->getProperties();
 
 				hr = getActiveD3D9Device()->SetStreamSource(
@@ -1204,7 +1204,7 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		D3D9IndexBufferCore* d3dIdxBuf = static_cast<D3D9IndexBufferCore*>(buffer->getCore());
+		SPtr<D3D9IndexBufferCore> d3dIdxBuf = std::static_pointer_cast<D3D9IndexBufferCore>(buffer->getCore());
 
 		HRESULT hr = getActiveD3D9Device()->SetIndices( d3dIdxBuf->getD3DIndexBuffer() );
 		if (FAILED(hr))

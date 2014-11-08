@@ -72,8 +72,8 @@ namespace BansheeEngine
 		:VertexBuffer(vertexSize, numVertices, usage, useSystemMem), mDevice(device), mStreamOut(streamOut)
 	{ }
 
-	CoreObjectCore* D3D11VertexBuffer::createCore() const
+	SPtr<CoreObjectCore> D3D11VertexBuffer::createCore() const
 	{
-		return bs_new<D3D11VertexBufferCore>(mDevice, mStreamOut, mUsage, mUseSystemMemory, mProperties);
+		return bs_shared_ptr<D3D11VertexBufferCore>(mDevice, mStreamOut, mUsage, mUseSystemMemory, mProperties);
 	}
 }

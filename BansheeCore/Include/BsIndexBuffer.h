@@ -84,7 +84,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Core thread only.
 		 */
-		IndexBufferCore* getCore() const;
+		SPtr<IndexBufferCore> getCore() const;
 
 		/**
 		 * @copydoc	HardwareBufferManager::createIndexBuffer

@@ -78,8 +78,8 @@ namespace BansheeEngine
 
 	}
 
-	CoreObjectCore* D3D11IndexBuffer::createCore() const
+	SPtr<CoreObjectCore> D3D11IndexBuffer::createCore() const
 	{
-		return bs_new<D3D11IndexBufferCore>(mDevice, mUsage, mUseSystemMemory, mProperties);
+		return bs_shared_ptr<D3D11IndexBufferCore>(mDevice, mUsage, mUseSystemMemory, mProperties);
 	}
 }

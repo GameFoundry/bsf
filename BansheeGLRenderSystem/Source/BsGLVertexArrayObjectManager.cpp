@@ -154,7 +154,7 @@ namespace BansheeEngine
 
 			// TODO - We might also want to check the size of input and buffer, and make sure they match? Or does OpenGL handle that internally?
 
-			GLVertexBufferCore* vertexBuffer = static_cast<GLVertexBufferCore*>(usedBuffers[seqIdx]->getCore());
+			SPtr<GLVertexBufferCore> vertexBuffer = std::static_pointer_cast<GLVertexBufferCore>(usedBuffers[seqIdx]->getCore());
 			const VertexBufferProperties& vbProps = vertexBuffer->getProperties();
 
 			glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer->getGLBufferId());
@@ -186,7 +186,7 @@ namespace BansheeEngine
 		{
 			wantedVAO.mAttachedBuffers[i] = usedBuffers[i];
 
-			GLVertexBufferCore* curVertexBuffer = static_cast<GLVertexBufferCore*>(usedBuffers[i]->getCore());
+			SPtr<GLVertexBufferCore> curVertexBuffer = std::static_pointer_cast<GLVertexBufferCore>(usedBuffers[i]->getCore());
 			curVertexBuffer->registerVAO(wantedVAO);
 		}
 
@@ -206,7 +206,7 @@ namespace BansheeEngine
 
 		for (UINT32 i = 0; i < vao.mNumBuffers; i++)
 		{
-			GLVertexBufferCore* curVertexBuffer = static_cast<GLVertexBufferCore*>(vao.mAttachedBuffers[i]->getCore());
+			SPtr<GLVertexBufferCore> curVertexBuffer = std::static_pointer_cast<GLVertexBufferCore>(vao.mAttachedBuffers[i]->getCore());
 			curVertexBuffer->unregisterVAO(vao);
 		}
 

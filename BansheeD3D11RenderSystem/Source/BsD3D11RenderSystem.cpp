@@ -408,7 +408,7 @@ namespace BansheeEngine
 
 		for(UINT32 i = 0; i < numBuffers; i++)
 		{
-			D3D11VertexBufferCore* vertexBuffer = static_cast<D3D11VertexBufferCore*>(buffers[i]->getCore());
+			SPtr<D3D11VertexBufferCore> vertexBuffer = std::static_pointer_cast<D3D11VertexBufferCore>(buffers[i]->getCore());
 			const VertexBufferProperties& vbProps = vertexBuffer->getProperties();
 
 			dx11buffers[i] = vertexBuffer->getD3DVertexBuffer();
@@ -426,7 +426,7 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		D3D11IndexBufferCore* indexBuffer = static_cast<D3D11IndexBufferCore*>(buffer->getCore());
+		SPtr<D3D11IndexBufferCore> indexBuffer = std::static_pointer_cast<D3D11IndexBufferCore>(buffer->getCore());
 
 		DXGI_FORMAT indexFormat = DXGI_FORMAT_R16_UINT;
 		if(indexBuffer->getProperties().getType() == IT_16BIT)

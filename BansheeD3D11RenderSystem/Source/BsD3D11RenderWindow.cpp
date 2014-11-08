@@ -817,13 +817,13 @@ namespace BansheeEngine
 		return bs_new<D3D11RenderWindowProperties>();
 	}
 
-	CoreObjectCore* D3D11RenderWindow::createCore() const
+	SPtr<CoreObjectCore> D3D11RenderWindow::createCore() const
 	{
 		D3D11RenderWindowProperties* coreProperties = bs_new<D3D11RenderWindowProperties>();
 		D3D11RenderWindowProperties* myProperties = static_cast<D3D11RenderWindowProperties*>(mProperties);
 
 		*coreProperties = *myProperties;
 
-		return bs_new<D3D11RenderWindowCore>(const_cast<D3D11RenderWindow*>(this), coreProperties, mDesc, mDevice, mDXGIFactory);
+		return bs_shared_ptr<D3D11RenderWindowCore>(const_cast<D3D11RenderWindow*>(this), coreProperties, mDesc, mDevice, mDXGIFactory);
 	}
 }

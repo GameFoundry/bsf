@@ -96,14 +96,14 @@ namespace BansheeEngine
 		return bs_new<MultiRenderTextureProperties>();
 	}
 
-	CoreObjectCore* GLMultiRenderTexture::createCore() const
+	SPtr<CoreObjectCore> GLMultiRenderTexture::createCore() const
 	{
 		MultiRenderTextureProperties* coreProperties = bs_new<MultiRenderTextureProperties>();
 		MultiRenderTextureProperties* myProperties = static_cast<MultiRenderTextureProperties*>(mProperties);
 
 		*coreProperties = *myProperties;
 
-		return bs_new<GLMultiRenderTextureCore>(const_cast<GLMultiRenderTexture*>(this),
+		return bs_shared_ptr<GLMultiRenderTextureCore>(const_cast<GLMultiRenderTexture*>(this),
 			coreProperties, mDesc);
 	}
 }

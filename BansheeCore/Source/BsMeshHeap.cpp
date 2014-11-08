@@ -270,7 +270,7 @@ namespace BansheeEngine
 					toString(vertSize) + ". Got: " + toString(otherVertSize));
 			}
 
-			VertexBufferCore* vertexBuffer = mVertexData->getBuffer(i)->getCore();
+			SPtr<VertexBufferCore> vertexBuffer = mVertexData->getBuffer(i)->getCore();
 			const VertexBufferProperties& vbProps = vertexBuffer->getProperties();
 
 			UINT8* vertDest = mCPUVertexData[i] + vertChunkStart * vertSize;
@@ -299,7 +299,7 @@ namespace BansheeEngine
 			vertexBuffer->writeData(vertChunkStart * vertSize, meshData->getNumVertices() * vertSize, vertDest, BufferWriteType::NoOverwrite);
 		}
 
-		IndexBufferCore* indexBuffer = mIndexBuffer->getCore();
+		SPtr<IndexBufferCore> indexBuffer = mIndexBuffer->getCore();
 		const IndexBufferProperties& ibProps = indexBuffer->getProperties();
 
 		UINT32 idxSize = ibProps.getIndexSize();
@@ -356,7 +356,7 @@ namespace BansheeEngine
 			VertexBufferPtr vertexBuffer = HardwareBufferManager::instance().createVertexBuffer(
 				vertSize, mVertexData->vertexCount, GBU_DYNAMIC);
 
-			VertexBufferCore* vertexBufferCore = vertexBuffer->getCore();
+			SPtr<VertexBufferCore> vertexBufferCore = vertexBuffer->getCore();
 			mVertexData->setBuffer(i, vertexBuffer);
 
 			// Copy all data to the new buffer
@@ -427,7 +427,7 @@ namespace BansheeEngine
 		mNumIndices = numIndices;
 
 		mIndexBuffer = HardwareBufferManager::instance().createIndexBuffer(mIndexType, mNumIndices, GBU_DYNAMIC);
-		IndexBufferCore* indexBuffer = mIndexBuffer->getCore();
+		SPtr<IndexBufferCore> indexBuffer = mIndexBuffer->getCore();
 		const IndexBufferProperties& ibProps = indexBuffer->getProperties();
 
 		// Copy all data to the new buffer

@@ -1,8 +1,6 @@
 --------- ALL LONG TERM TASKS / FIXES BELONG TO GOOGLE DOCS: ImplementationTODO OR PossibleImprovements ----------
 
 TODO - CoreObject refactor:
-IndexBuffer
-VertexBuffer
 Resource
  - RasterizerState
  - DepthStencilState
@@ -23,14 +21,15 @@ VertexDeclaration
 GpuBuffer
 GpuParamBlockBuffer
 
-Go through stuff that doesn't require syncing first, e.g. IndexBuffer
-  - Rename IndexBuffer to IndexBufferCore, and make it inheir from CoreObjectCore
-  - Add a new class IndexBuffer and use that on sim thread (if it's even used on sim thread)
-  - IndexBuffer should then only need to create an IndexBufferCore and needs no other functionality
-  - Potentially I'll want to move common immutable data (buffer size, type, etc.) into IndexBufferProperties, similar to RenderTarget
-    and have it accessible from both IndexBuffer and IndexBufferCore. This saves me from having to duplicate all methods on both types.
+Disallow CoreObject creation from core thread
+ - Add asserts in CoreObject::destroy and CoreObject::initialize
+ - Possibly also add asserts to CoreThread::queueCommand and CoreThread::queueReturnCommand
 
-Possibly also disallow CoreObject creation from core thread. Instead force them to create CoreObjectCore versions.
+Make mCoreSpecific a shared ptr
+ - Where needed, add create() methods to CoreObjectCore for use from the core thread
+
+Refactor RenderSystem, Mesh, MeshHeap so they use only core versions of Index and VertexBuffer
+ - This should also apply to any newly refactored classes, non-core stuff should be removed from core
 
 -----------------
 

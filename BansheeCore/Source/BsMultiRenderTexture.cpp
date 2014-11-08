@@ -189,9 +189,9 @@ namespace BansheeEngine
 		return static_cast<const MultiRenderTextureProperties&>(RenderTarget::getProperties());
 	}
 
-	MultiRenderTextureCore* MultiRenderTexture::getCore() const
+	SPtr<MultiRenderTextureCore> MultiRenderTexture::getCore() const
 	{
-		return static_cast<MultiRenderTextureCore*>(mCoreSpecific);
+		return std::static_pointer_cast<MultiRenderTextureCore>(mCoreSpecific);
 	}
 
 	MultiRenderTexturePtr MultiRenderTexture::create(const MULTI_RENDER_TEXTURE_DESC& desc)

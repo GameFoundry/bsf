@@ -20,9 +20,9 @@ namespace BansheeEngine
 		mProperties.mNumVertices = numVertices;
     }
 
-	VertexBufferCore* VertexBuffer::getCore() const
+	SPtr<VertexBufferCore> VertexBuffer::getCore() const
 	{
-		return static_cast<VertexBufferCore*>(mCoreSpecific);
+		return std::static_pointer_cast<VertexBufferCore>(mCoreSpecific);
 	}
 
 	VertexBufferPtr VertexBuffer::create(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)

@@ -89,14 +89,14 @@ namespace BansheeEngine
 		return bs_new<RenderTextureProperties>();
 	}
 
-	CoreObjectCore* D3D9RenderTexture::createCore() const
+	SPtr<CoreObjectCore> D3D9RenderTexture::createCore() const
 	{
 		RenderTextureProperties* coreProperties = bs_new<RenderTextureProperties>();
 		RenderTextureProperties* myProperties = static_cast<RenderTextureProperties*>(mProperties);
 
 		*coreProperties = *myProperties;
 
-		return bs_new<D3D9RenderTextureCore>(const_cast<D3D9RenderTexture*>(this),
+		return bs_shared_ptr<D3D9RenderTextureCore>(const_cast<D3D9RenderTexture*>(this),
 			coreProperties, mColorSurfaceDesc, mDepthStencilSurfaceDesc);
 	}
 }

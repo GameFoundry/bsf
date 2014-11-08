@@ -32,7 +32,7 @@ namespace BansheeEngine
 					Vector<RenderWindow*> renderWindows = RenderWindowManager::instance().getRenderWindows();
 					for(auto& renderWindow : renderWindows)
 					{
-						if(renderWindow->getCore() == newWindow)
+						if(renderWindow->getCore().get() == newWindow)
 							continue;
 
 						HWND curHwnd;

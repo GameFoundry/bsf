@@ -12,7 +12,7 @@ namespace BansheeEngine
 	BS_STATIC_MUTEX_CLASS_INSTANCE(mCoreGpuObjectLoadedMutex, CoreObject)
 
 	CoreObject::CoreObject(bool initializeOnRenderThread)
-		: mFlags(0), mInternalID(0), mCoreDirtyFlags(0xFFFFFFFF), mCoreSpecific(nullptr)
+		: mFlags(0), mInternalID(0), mCoreDirtyFlags(0xFFFFFFFF)
 	{
 		mInternalID = CoreObjectManager::instance().registerObject(this);
 		mFlags = initializeOnRenderThread ? mFlags | CGO_INIT_ON_CORE_THREAD : mFlags;
@@ -34,12 +34,6 @@ namespace BansheeEngine
 				"the object is being deleted? You shouldn't delete CoreObjects manually.");
 		}
 #endif
-
-		if (mCoreSpecific != nullptr)
-		{
-			bs_delete(mCoreSpecific);
-			mCoreSpecific = nullptr;
-		}
 
 		CoreObjectManager::instance().unregisterObject(this);
 	}

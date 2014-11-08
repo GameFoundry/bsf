@@ -218,7 +218,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	RenderWindow::getCore
 		 */
-		D3D9RenderWindowCore* getCore() const;
+		SPtr<D3D9RenderWindowCore> getCore() const;
 
 	protected:
 		friend class D3D9RenderWindowManager;
@@ -234,7 +234,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	RenderWindow::createCore
 		 */
-		virtual CoreObjectCore* createCore() const;
+		virtual SPtr<CoreObjectCore> createCore() const;
 
 	private:
 		HINSTANCE mInstance;

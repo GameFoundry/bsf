@@ -133,9 +133,9 @@ namespace BansheeEngine
 		return static_cast<const RenderTextureProperties&>(RenderTarget::getProperties()); 
 	}
 
-	RenderTextureCore* RenderTexture::getCore() const 
+	SPtr<RenderTextureCore> RenderTexture::getCore() const 
 	{ 
-		return static_cast<RenderTextureCore*>(mCoreSpecific); 
+		return std::static_pointer_cast<RenderTextureCore>(mCoreSpecific); 
 	}
 
 	void RenderTexture::initialize(const RENDER_TEXTURE_DESC& desc)

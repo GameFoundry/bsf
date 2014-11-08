@@ -761,9 +761,9 @@ namespace BansheeEngine
 		return Vector2I(pos.x, pos.y);
 	}
 
-	Win32WindowCore* Win32Window::getCore() const
+	SPtr<Win32WindowCore> Win32Window::getCore() const
 	{
-		return static_cast<Win32WindowCore*>(mCoreSpecific);
+		return std::static_pointer_cast<Win32WindowCore>(mCoreSpecific);
 	}
 
 	RenderTargetProperties* Win32Window::createProperties() const
@@ -771,12 +771,12 @@ namespace BansheeEngine
 		return bs_new<Win32RenderWindowProperties>();
 	}
 
-	CoreObjectCore* Win32Window::createCore() const
+	SPtr<CoreObjectCore> Win32Window::createCore() const
 	{
 		Win32RenderWindowProperties* coreProperties = bs_new<Win32RenderWindowProperties>();
 		Win32RenderWindowProperties* myProperties = static_cast<Win32RenderWindowProperties*>(mProperties);
 
 		*coreProperties = *myProperties;
-		return bs_new<Win32WindowCore>(const_cast<Win32Window*>(this), coreProperties, mDesc, mGLSupport);
+		return bs_shared_ptr<Win32WindowCore>(const_cast<Win32Window*>(this), coreProperties, mDesc, mGLSupport);
 	}
 }

@@ -706,7 +706,7 @@ namespace BansheeEngine
 
 		beginDraw();
 
-		GLIndexBufferCore* indexBuffer = static_cast<GLIndexBufferCore*>(mBoundIndexBuffer->getCore());
+		SPtr<GLIndexBufferCore> indexBuffer = std::static_pointer_cast<GLIndexBufferCore>(mBoundIndexBuffer->getCore());
 		const IndexBufferProperties& ibProps = indexBuffer->getProperties();
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer->getGLBufferId());
 

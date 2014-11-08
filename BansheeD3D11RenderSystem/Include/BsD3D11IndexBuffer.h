@@ -82,7 +82,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObject::createCore
 		 */
-		virtual CoreObjectCore* createCore() const;
+		virtual SPtr<CoreObjectCore> createCore() const;
 
 		D3D11Device& mDevice;
 	};

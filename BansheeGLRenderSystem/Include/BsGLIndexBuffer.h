@@ -72,6 +72,6 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObject::createCore
 		 */
-		virtual CoreObjectCore* createCore() const;
+		virtual SPtr<CoreObjectCore> createCore() const;
     };
 }

@@ -249,7 +249,7 @@ namespace BansheeEngine
 
 		if (useIndices)
 		{
-			IndexBufferCore* indexBuffer = mesh->_getIndexBuffer()->getCore();
+			SPtr<IndexBufferCore> indexBuffer = mesh->_getIndexBuffer()->getCore();
 			const IndexBufferProperties& ibProps = indexBuffer->getProperties();
 
 			if(indexCount == 0)
