@@ -97,14 +97,14 @@ namespace BansheeEngine
 		 *  
 		 * @note	Core thread only. Internal method.
 		 */
-		virtual SPtr<VertexData> _getVertexData() const = 0;
+		virtual SPtr<VertexData> getVertexData() const = 0;
 
 		/**
 		 * @brief	Get index data used for rendering.
 		 *  
 		 * @note	Core thread only. Internal method.
 		 */
-		virtual SPtr<IndexBufferCore> _getIndexBuffer() const = 0;
+		virtual SPtr<IndexBufferCore> getIndexBuffer() const = 0;
 
 		/**
 		 * @brief	Returns an offset into the vertex buffers that is returned
@@ -115,7 +115,7 @@ namespace BansheeEngine
 		 * 			
 		 *			Core thread only. Internal method.
 		 */
-		virtual UINT32 _getVertexOffset() const { return 0; }
+		virtual UINT32 getVertexOffset() const { return 0; }
 
 		/**
 		 * @brief	Returns an offset into the index buffer that is returned
@@ -126,7 +126,7 @@ namespace BansheeEngine
 		 * 			
 		 *			Core thread only. Internal method.
 		 */
-		virtual UINT32 _getIndexOffset() const { return 0; }
+		virtual UINT32 getIndexOffset() const { return 0; }
 
 		/**
 		 * @brief	Called whenever this mesh starts being used on the GPU.

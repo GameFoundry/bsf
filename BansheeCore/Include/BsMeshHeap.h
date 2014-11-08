@@ -167,12 +167,12 @@ namespace BansheeEngine
 		/**
 		 * @brief	Gets internal vertex data for all the meshes.
 		 */
-		SPtr<VertexData> _getVertexData() const;
+		SPtr<VertexData> getVertexData() const;
 
 		/**
 		 * @brief	Gets internal index data for all the meshes.
 		 */
-		SPtr<IndexBufferCore> _getIndexBuffer() const;
+		SPtr<IndexBufferCore> getIndexBuffer() const;
 
 		/**
 		 * @brief	Returns the offset in vertices from the start of the buffer

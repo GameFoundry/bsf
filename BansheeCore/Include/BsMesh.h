@@ -58,12 +58,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc MeshBase::getVertexData
 		 */
-		virtual SPtr<VertexData> _getVertexData() const;
+		virtual SPtr<VertexData> getVertexData() const;
 
 		/**
-		 * @copydoc MeshBase::getIndexData
+		 * @copydoc MeshBase::getIndexBuffer
 		 */
-		virtual SPtr<IndexBufferCore> _getIndexBuffer() const;
+		virtual SPtr<IndexBufferCore> getIndexBuffer() const;
 
 		/**
 		 * @brief	Returns a dummy mesh, containing just one triangle. Don't modify the returned mesh.

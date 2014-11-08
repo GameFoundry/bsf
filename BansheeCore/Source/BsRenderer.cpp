@@ -97,7 +97,7 @@ namespace BansheeEngine
 		else
 			return;
 
-		std::shared_ptr<VertexData> vertexData = mesh->_getVertexData();
+		std::shared_ptr<VertexData> vertexData = mesh->getVertexData();
 
 		rs.setVertexDeclaration(vertexData->vertexDeclaration);
 		auto vertexBuffers = vertexData->getBuffers();
@@ -128,12 +128,12 @@ namespace BansheeEngine
 		SubMesh subMesh = meshProxy.subMesh;
 		rs.setDrawOperation(subMesh.drawOp);
 
-		SPtr<IndexBufferCore> indexBuffer = mesh->_getIndexBuffer();
+		SPtr<IndexBufferCore> indexBuffer = mesh->getIndexBuffer();
 
 		UINT32 indexCount = subMesh.indexCount;
 
 		rs.setIndexBuffer(indexBuffer);
-		rs.drawIndexed(subMesh.indexOffset + mesh->_getIndexOffset(), indexCount, mesh->_getVertexOffset(), vertexData->vertexCount);
+		rs.drawIndexed(subMesh.indexOffset + mesh->getIndexOffset(), indexCount, mesh->getVertexOffset(), vertexData->vertexCount);
 
 		mesh->_notifyUsedOnGPU();
 	}

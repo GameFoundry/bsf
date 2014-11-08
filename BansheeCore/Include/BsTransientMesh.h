@@ -48,12 +48,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc MeshBase::getVertexOffset
 		 */
-		virtual UINT32 _getVertexOffset() const;
+		virtual UINT32 getVertexOffset() const;
 
 		 /**
 		 * @copydoc MeshBase::getIndexOffset
 		 */
-		virtual UINT32 _getIndexOffset() const;
+		virtual UINT32 getIndexOffset() const;
 
 		 /**
 		 * @copydoc MeshBase::notifyUsedOnGPU

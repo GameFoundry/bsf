@@ -263,14 +263,14 @@ namespace BansheeEngine
 		return meshData;
 	}
 
-	std::shared_ptr<VertexData> Mesh::_getVertexData() const
+	std::shared_ptr<VertexData> Mesh::getVertexData() const
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		return mVertexData;
 	}
 
-	SPtr<IndexBufferCore> Mesh::_getIndexBuffer() const
+	SPtr<IndexBufferCore> Mesh::getIndexBuffer() const
 	{
 		THROW_IF_NOT_CORE_THREAD;
 

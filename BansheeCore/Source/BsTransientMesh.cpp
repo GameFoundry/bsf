@@ -33,20 +33,20 @@ namespace BansheeEngine
 
 	SPtr<VertexData> TransientMesh::_getVertexData() const
 	{
-		return mParentHeap->_getVertexData();
+		return mParentHeap->getVertexData();
 	}
 
 	SPtr<IndexBufferCore> TransientMesh::_getIndexBuffer() const
 	{
-		return mParentHeap->_getIndexBuffer();
+		return mParentHeap->getIndexBuffer();
 	}
 
-	UINT32 TransientMesh::_getVertexOffset() const
+	UINT32 TransientMesh::getVertexOffset() const
 	{
 		return mParentHeap->getVertexOffset(mId);
 	}
 
-	UINT32 TransientMesh::_getIndexOffset() const
+	UINT32 TransientMesh::getIndexOffset() const
 	{
 		return mParentHeap->getIndexOffset(mId);
 	}

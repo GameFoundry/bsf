@@ -773,7 +773,7 @@ namespace BansheeEngine
 		else
 			return;
 
-		std::shared_ptr<VertexData> vertexData = mesh->_getVertexData();
+		std::shared_ptr<VertexData> vertexData = mesh->getVertexData();
 
 		rs.setVertexDeclaration(vertexData->vertexDeclaration);
 		auto vertexBuffers = vertexData->getBuffers();
@@ -781,7 +781,7 @@ namespace BansheeEngine
 		SPtr<VertexBufferCore> vertBuffers[1] = { vertexBuffers.begin()->second };
 		rs.setVertexBuffers(0, vertBuffers, 1);
 
-		SPtr<IndexBufferCore> indexBuffer = mesh->_getIndexBuffer();
+		SPtr<IndexBufferCore> indexBuffer = mesh->getIndexBuffer();
 		rs.setIndexBuffer(indexBuffer);
 
 		rs.setDrawOperation(DOT_TRIANGLE_LIST);
@@ -811,13 +811,13 @@ namespace BansheeEngine
 			{
 				Renderer::setPass(*mIconMaterial.proxy, passIdx);
 
-				UINT32 curIndexOffset = mesh->_getIndexOffset();
+				UINT32 curIndexOffset = mesh->getIndexOffset();
 				for (auto curRenderData : *renderData)
 				{
 					mIconMaterial.mTexture[passIdx].set(curRenderData.texture);
 					rs.bindGpuParams(GPT_FRAGMENT_PROGRAM, mIconMaterial.mFragParams[passIdx]);
 
-					rs.drawIndexed(curIndexOffset, curRenderData.count * 6, mesh->_getVertexOffset(), curRenderData.count * 4);
+					rs.drawIndexed(curIndexOffset, curRenderData.count * 6, mesh->getVertexOffset(), curRenderData.count * 4);
 					curIndexOffset += curRenderData.count * 6;
 				}
 			}
@@ -834,7 +834,7 @@ namespace BansheeEngine
 				mAlphaPickingMaterial.mTexture.set(curRenderData.texture);
 				rs.bindGpuParams(GPT_FRAGMENT_PROGRAM, mAlphaPickingMaterial.mFragParams);
 
-				rs.drawIndexed(curIndexOffset, curRenderData.count * 6, mesh->_getVertexOffset(), curRenderData.count * 4);
+				rs.drawIndexed(curIndexOffset, curRenderData.count * 6, mesh->getVertexOffset(), curRenderData.count * 4);
 				curIndexOffset += curRenderData.count * 6;
 
 			}

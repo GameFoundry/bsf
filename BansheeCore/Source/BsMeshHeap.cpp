@@ -531,12 +531,12 @@ namespace BansheeEngine
 		mFreeEventQueries.push(idx);
 	}
 
-	SPtr<VertexData> MeshHeap::_getVertexData() const
+	SPtr<VertexData> MeshHeap::getVertexData() const
 	{
 		return mVertexData;
 	}
 
-	SPtr<IndexBufferCore> MeshHeap::_getIndexBuffer() const
+	SPtr<IndexBufferCore> MeshHeap::getIndexBuffer() const
 	{
 		return mIndexBuffer;
 	}
