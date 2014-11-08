@@ -167,12 +167,12 @@ namespace BansheeEngine
 		/**
 		 * @brief	Gets internal vertex data for all the meshes.
 		 */
-		std::shared_ptr<VertexData> _getVertexData() const;
+		SPtr<VertexData> _getVertexData() const;
 
 		/**
 		 * @brief	Gets internal index data for all the meshes.
 		 */
-		IndexBufferPtr _getIndexBuffer() const;
+		SPtr<IndexBufferCore> _getIndexBuffer() const;
 
 		/**
 		 * @brief	Returns the offset in vertices from the start of the buffer
@@ -213,8 +213,8 @@ namespace BansheeEngine
 		Vector<UINT8*> mCPUVertexData; // Core thread
 		UINT8* mCPUIndexData; // Core thread
 
-		std::shared_ptr<VertexData> mVertexData; // Core thread
-		IndexBufferPtr mIndexBuffer; // Core thread
+		SPtr<VertexData> mVertexData; // Core thread
+		SPtr<IndexBufferCore> mIndexBuffer; // Core thread
 
 		Map<UINT32, AllocatedData> mMeshAllocData; // Core thread
 

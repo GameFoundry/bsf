@@ -114,14 +114,14 @@ namespace BansheeEngine
 		 * @brief	Sets the provided vertex buffers starting at the specified source index.
 		 *			Set buffer to nullptr to clear the buffer at the specified index.
 		 */
-		virtual void setVertexBuffers(UINT32 index, VertexBufferPtr* buffers, UINT32 numBuffers) = 0;
+		virtual void setVertexBuffers(UINT32 index, SPtr<VertexBufferCore>* buffers, UINT32 numBuffers) = 0;
 
 		/**
 		 * @brief	Sets an index buffer to use when drawing. Indices in an index buffer
 		 * 			reference vertices in the vertex buffer, which increases cache coherency
 		 * 			and reduces the size of vertex buffers by eliminating duplicate data.
 		 */
-		virtual void setIndexBuffer(const IndexBufferPtr& buffer) = 0;
+		virtual void setIndexBuffer(const SPtr<IndexBufferCore>& buffer) = 0;
 
 		/**
 		 * @brief	Sets the vertex declaration to use when drawing. Vertex declaration
@@ -134,19 +134,6 @@ namespace BansheeEngine
 		 * 			of the index or vertex buffers.
 		 */
 		virtual void setDrawOperation(DrawOperationType op) = 0;
-
-		/**
-		 * @brief	A helper method that provides a simple way of rendering a single object. It will
-		 * 			automatically set up vertex declaration, draw operation, vertex and index buffers and
-		 * 			draw them.
-		 *
-		 * @param	mesh	   	The mesh.
-		 * @param	indexOffset	(optional) Offset into the mesh buffer to start drawing from.
-		 * @param	indexCount 	(optional) Number of indexes to draw, starting at the offset. Ignored if "drawIndexed" is false. If 0 all indices in the mesh will be drawn.
-		 * @param	useIndices	(optional) If true, drawing is done using the index buffer on the mesh and the provided offset and size, otherwise all mesh vertices are drawn sequentially.
-		 * @param	drawOp	   	(optional) Draw operation to use when rendering.
-		 */
-		virtual void render(const MeshBasePtr& mesh, UINT32 indexOffset = 0, UINT32 indexCount = 0, bool useIndices = true, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
 
 		/**
 		 * @brief	Draw an object based on currently bound GPU programs, vertex declaration and vertex buffers.

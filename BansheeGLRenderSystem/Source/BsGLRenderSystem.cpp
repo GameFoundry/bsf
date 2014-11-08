@@ -169,6 +169,7 @@ namespace BansheeEngine
 		}
 
 		// Deleting the hardware buffer manager.  Has to be done before the mGLSupport->stop().
+		HardwareBufferCoreManager::shutDown();
 		HardwareBufferManager::shutDown();
 		GLRTTManager::shutDown();
 
@@ -642,7 +643,7 @@ namespace BansheeEngine
 		glDisable(GL_SCISSOR_TEST);
 	}
 
-	void GLRenderSystem::setVertexBuffers(UINT32 index, VertexBufferPtr* buffers, UINT32 numBuffers)
+	void GLRenderSystem::setVertexBuffers(UINT32 index, SPtr<VertexBufferCore>* buffers, UINT32 numBuffers)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -669,7 +670,7 @@ namespace BansheeEngine
 		mCurrentDrawOperation = op;
 	}
 
-	void GLRenderSystem::setIndexBuffer(const IndexBufferPtr& buffer)
+	void GLRenderSystem::setIndexBuffer(const SPtr<IndexBufferCore>& buffer)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -706,7 +707,7 @@ namespace BansheeEngine
 
 		beginDraw();
 
-		SPtr<GLIndexBufferCore> indexBuffer = std::static_pointer_cast<GLIndexBufferCore>(mBoundIndexBuffer->getCore());
+		SPtr<GLIndexBufferCore> indexBuffer = std::static_pointer_cast<GLIndexBufferCore>(mBoundIndexBuffer);
 		const IndexBufferProperties& ibProps = indexBuffer->getProperties();
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer->getGLBufferId());
 
@@ -1706,6 +1707,7 @@ namespace BansheeEngine
 #endif
 
 		HardwareBufferManager::startUp<GLHardwareBufferManager>();
+		HardwareBufferCoreManager::startUp<GLHardwareBufferCoreManager>();
 
 		// GPU Program Manager setup
 		if(caps->isShaderProfileSupported("glsl"))

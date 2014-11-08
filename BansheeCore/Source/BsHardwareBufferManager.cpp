@@ -26,7 +26,7 @@ namespace BansheeEngine
 	{
 		assert (numVerts > 0);
 
-		VertexBufferPtr vbuf = createVertexBufferImpl(vertexSize, numVerts, usage, streamOut);
+		VertexBufferPtr vbuf = bs_core_ptr<VertexBuffer, GenAlloc>(new (bs_alloc<VertexBuffer>()) VertexBuffer(vertexSize, numVerts, usage, streamOut));
 		vbuf->_setThisPtr(vbuf);
 		vbuf->initialize();
 		return vbuf;
@@ -36,7 +36,7 @@ namespace BansheeEngine
 	{
 		assert (numIndexes > 0);
 
-		IndexBufferPtr ibuf = createIndexBufferImpl(itype, numIndexes, usage);
+		IndexBufferPtr ibuf = bs_core_ptr<IndexBuffer, GenAlloc>(new (bs_alloc<IndexBuffer>()) IndexBuffer(itype, numIndexes, usage));
 		ibuf->_setThisPtr(ibuf);
 		ibuf->initialize();
 		return ibuf;
@@ -64,5 +64,24 @@ namespace BansheeEngine
 	VertexDeclarationPtr HardwareBufferManager::createVertexDeclarationImpl(const VertexDeclaration::VertexElementList& elements)
 	{
 		return bs_core_ptr<VertexDeclaration, PoolAlloc>(new (bs_alloc<VertexDeclaration, PoolAlloc>()) VertexDeclaration(elements));
+	}
+
+	SPtr<IndexBufferCore> HardwareBufferCoreManager::createIndexBuffer(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
+	{
+		assert(numIndexes > 0);
+
+		SPtr<IndexBufferCore> ibuf = createIndexBufferImpl(itype, numIndexes, usage);
+		ibuf->initialize();
+		return ibuf;
+
+	}
+
+	SPtr<VertexBufferCore> HardwareBufferCoreManager::createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
+	{
+		assert(numVerts > 0);
+
+		SPtr<VertexBufferCore> vbuf = createVertexBufferImpl(vertexSize, numVerts, usage, streamOut);
+		vbuf->initialize();
+		return vbuf;
 	}
 }

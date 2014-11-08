@@ -11,7 +11,7 @@ namespace BansheeEngine
     class BS_RSGL_EXPORT GLIndexBufferCore : public IndexBufferCore
     {
     public:
-		GLIndexBufferCore(GpuBufferUsage usage, bool useSystemMemory, const IndexBufferProperties& properties);
+		GLIndexBufferCore(IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage);
 		~GLIndexBufferCore() { }
 
 		/**
@@ -54,24 +54,5 @@ namespace BansheeEngine
 	private:
 		GLuint mBufferId;
 		bool mZeroLocked;
-    };
-
-	/**
-	 * @brief	OpenGL implementation of an index buffer.
-	 */
-    class BS_RSGL_EXPORT GLIndexBuffer : public IndexBuffer
-    {
-    public:
-		~GLIndexBuffer() { }
-
-	protected:
-		friend class GLHardwareBufferManager;
-
-		GLIndexBuffer(IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage); 
-
-		/**
-		 * @copydoc	CoreObject::createCore
-		 */
-		virtual SPtr<CoreObjectCore> createCore() const;
     };
 }

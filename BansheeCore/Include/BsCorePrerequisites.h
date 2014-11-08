@@ -63,8 +63,10 @@ namespace BansheeEngine
     class GpuProgram;
     class GpuProgramManager;
     class IndexBuffer;
+	class IndexBufferCore;
     class OcclusionQuery;
     class VertexBuffer;
+	class VertexBufferCore;
 	class PixelBuffer;
 	class GpuBuffer;
 	class HighLevelGpuProgram;
@@ -78,8 +80,11 @@ namespace BansheeEngine
     class RenderSystem;
     class RenderSystemCapabilities;
     class RenderTarget;
+	class RenderTargetCore;
     class RenderTexture;
+	class RenderTextureCore;
 	class MultiRenderTexture;
+	class MultiRenderTextureCore;
     class RenderWindow;
 	class RenderWindowCore;
 	class RenderTargetProperties;

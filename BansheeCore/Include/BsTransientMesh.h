@@ -33,12 +33,12 @@ namespace BansheeEngine
 		 /**
 		 * @copydoc MeshBase::getVertexData
 		 */
-		std::shared_ptr<VertexData> _getVertexData() const;
+		SPtr<VertexData> _getVertexData() const;
 
 		 /**
 		 * @copydoc MeshBase::getIndexData
 		 */
-		IndexBufferPtr _getIndexBuffer() const;
+		SPtr<IndexBufferCore> _getIndexBuffer() const;
 
 		/**
 		 * @brief	Returns the ID that uniquely identifies this mesh in the parent heap.

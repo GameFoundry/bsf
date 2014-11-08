@@ -10,6 +10,22 @@ namespace BansheeEngine
 	 */
     class BS_RSGL_EXPORT GLHardwareBufferManager : public HardwareBufferManager
     {
+	protected:
+		/** @copydoc HardwareBufferManager::createGpuParamBlockBufferImpl */
+		GpuParamBlockBufferPtr createGpuParamBlockBufferImpl();
+
+		/**
+		 * @copydoc HardwareBufferManager::createGenericBufferImpl
+		 */
+		GpuBufferPtr createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, 
+			GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
+    };
+
+	/**
+	 * @brief	Handles creation of OpenGL specific hardware buffers.
+	 */
+    class BS_RSGL_EXPORT GLHardwareBufferCoreManager : public HardwareBufferCoreManager
+    {
     public:
 		/**
 		 * @brief	Converts engine buffer usage flags into OpenGL specific flags.
@@ -23,25 +39,14 @@ namespace BansheeEngine
 
 	protected:
 		/**
-		 * @copydoc HardwareBufferManager::createVertexBufferImpl
+		 * @copydoc HardwareBufferCoreManager::createVertexBufferImpl
 		 */
-        VertexBufferPtr createVertexBufferImpl(UINT32 vertexSize, 
+        SPtr<VertexBufferCore> createVertexBufferImpl(UINT32 vertexSize, 
             UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false);
 
 		/**
-		 * @copydoc HardwareBufferManager::createIndexBufferImpl
+		 * @copydoc HardwareBufferCoreManager::createIndexBufferImpl
 		 */
-        IndexBufferPtr createIndexBufferImpl(
-            IndexType itype, UINT32 numIndexes, 
-            GpuBufferUsage usage);
-
-		/** @copydoc HardwareBufferManager::createGpuParamBlockBufferImpl */
-		GpuParamBlockBufferPtr createGpuParamBlockBufferImpl();
-
-		/**
-		 * @copydoc HardwareBufferManager::createGenericBufferImpl
-		 */
-		GpuBufferPtr createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, 
-			GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
+        SPtr<IndexBufferCore> createIndexBufferImpl(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
     };
 }

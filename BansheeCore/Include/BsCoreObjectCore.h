@@ -20,10 +20,6 @@ namespace BansheeEngine
 		CoreObjectCore();
 		virtual ~CoreObjectCore();
 
-	protected:
-		friend class CoreObjectManager;
-		friend class CoreObject;
-
 		/**
 		 * @brief	Called on the core thread when the object is first created.
 		 */
@@ -33,6 +29,10 @@ namespace BansheeEngine
 		 * @brief	Called on the core thread just before the object is destroyed.
 		 */
 		virtual void destroy();
+
+	protected:
+		friend class CoreObjectManager;
+		friend class CoreObject;
 
 		/**
 		 * @brief	Copy internal dirty data to a memory buffer that will be used

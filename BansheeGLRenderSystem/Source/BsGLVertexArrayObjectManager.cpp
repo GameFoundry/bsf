@@ -15,7 +15,7 @@ namespace BansheeEngine
 	{ }
 
 	GLVertexArrayObject::GLVertexArrayObject(GLuint handle, UINT64 vertexProgramId, 
-		GLVertexBuffer** attachedBuffers, UINT32 numBuffers)
+		GLVertexBufferCore** attachedBuffers, UINT32 numBuffers)
 		:mHandle(handle), mVertProgId(vertexProgramId), mAttachedBuffers(attachedBuffers), mNumBuffers(numBuffers)
 	{ }
 
@@ -25,7 +25,7 @@ namespace BansheeEngine
 		hash_combine(seed, vao.mVertProgId);
 
 		for (UINT32 i = 0; i < vao.mNumBuffers; i++)
-			hash_combine(seed, vao.mAttachedBuffers[i]->getInternalID());
+			hash_combine(seed, vao.mAttachedBuffers[i]->getGLBufferId());
 
 		return seed;
 	}
@@ -40,7 +40,7 @@ namespace BansheeEngine
 
 		for (UINT32 i = 0; i < a.mNumBuffers; i++)
 		{
-			if (a.mAttachedBuffers[i]->getInternalID() != b.mAttachedBuffers[i]->getInternalID())
+			if (a.mAttachedBuffers[i]->getGLBufferId() != b.mAttachedBuffers[i]->getGLBufferId())
 				return false;
 		}
 
@@ -57,7 +57,7 @@ namespace BansheeEngine
 
 		for (UINT32 i = 0; i < mNumBuffers; i++)
 		{
-			if (mAttachedBuffers[i]->getInternalID() != obj.mAttachedBuffers[i]->getInternalID())
+			if (mAttachedBuffers[i]->getGLBufferId() != obj.mAttachedBuffers[i]->getGLBufferId())
 				return false;
 		}
 
@@ -75,7 +75,7 @@ namespace BansheeEngine
 	}
 
 	const GLVertexArrayObject& GLVertexArrayObjectManager::getVAO(const GLSLGpuProgramPtr& vertexProgram,
-		const VertexDeclarationPtr& vertexDecl, const Vector<VertexBufferPtr>& boundBuffers)
+		const VertexDeclarationPtr& vertexDecl, const Vector<SPtr<VertexBufferCore>>& boundBuffers)
 	{
 		UINT16 maxStreamIdx = 0;
 		const VertexDeclaration::VertexElementList& decl = vertexDecl->getElements();
@@ -85,7 +85,7 @@ namespace BansheeEngine
 		UINT32 numStreams = maxStreamIdx + 1;
 		UINT32 numUsedBuffers = 0;
 		INT32* streamToSeqIdx = stackAllocN<INT32>(numStreams);
-		GLVertexBuffer** usedBuffers = stackAllocN<GLVertexBuffer*>((UINT32)boundBuffers.size());
+		GLVertexBufferCore** usedBuffers = stackAllocN<GLVertexBufferCore*>((UINT32)boundBuffers.size());
 		
 		memset(usedBuffers, 0, (UINT32)boundBuffers.size() * sizeof(GLVertexBuffer*));
 
@@ -101,11 +101,11 @@ namespace BansheeEngine
 			if (streamToSeqIdx[streamIdx] != -1) // Already visited
 				continue;
 
-			VertexBufferPtr vertexBuffer = boundBuffers[streamIdx];
+			SPtr<VertexBufferCore> vertexBuffer = boundBuffers[streamIdx];
 			streamToSeqIdx[streamIdx] = (INT32)numUsedBuffers;
 
 			if (vertexBuffer != nullptr)
-				usedBuffers[numUsedBuffers] = static_cast<GLVertexBuffer*>(vertexBuffer.get()); 
+				usedBuffers[numUsedBuffers] = static_cast<GLVertexBufferCore*>(vertexBuffer.get()); 
 			else
 				usedBuffers[numUsedBuffers] = nullptr;
 
@@ -154,7 +154,7 @@ namespace BansheeEngine
 
 			// TODO - We might also want to check the size of input and buffer, and make sure they match? Or does OpenGL handle that internally?
 
-			SPtr<GLVertexBufferCore> vertexBuffer = std::static_pointer_cast<GLVertexBufferCore>(usedBuffers[seqIdx]->getCore());
+			GLVertexBufferCore* vertexBuffer = usedBuffers[seqIdx];
 			const VertexBufferProperties& vbProps = vertexBuffer->getProperties();
 
 			glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer->getGLBufferId());
@@ -173,7 +173,7 @@ namespace BansheeEngine
 			};
 
 			UINT16 typeCount = VertexElement::getTypeCount(elem.getType());
-			GLenum glType = GLHardwareBufferManager::getGLType(elem.getType());
+			GLenum glType = GLHardwareBufferCoreManager::getGLType(elem.getType());
 			GLsizei vertexSize = static_cast<GLsizei>(vbProps.getVertexSize());
 			glVertexAttribPointer(attribLocation, typeCount, glType, normalized,
 				vertexSize, bufferData);
@@ -181,13 +181,11 @@ namespace BansheeEngine
 			glEnableVertexAttribArray(attribLocation);
 		}
 
-		wantedVAO.mAttachedBuffers = (GLVertexBuffer**)bs_alloc(numUsedBuffers * sizeof(GLVertexBuffer*));
+		wantedVAO.mAttachedBuffers = (GLVertexBufferCore**)bs_alloc(numUsedBuffers * sizeof(GLVertexBufferCore*));
 		for (UINT32 i = 0; i < numUsedBuffers; i++)
 		{
 			wantedVAO.mAttachedBuffers[i] = usedBuffers[i];
-
-			SPtr<GLVertexBufferCore> curVertexBuffer = std::static_pointer_cast<GLVertexBufferCore>(usedBuffers[i]->getCore());
-			curVertexBuffer->registerVAO(wantedVAO);
+			usedBuffers[i]->registerVAO(wantedVAO);
 		}
 
 		stackDeallocLast(usedBuffers);
@@ -206,8 +204,7 @@ namespace BansheeEngine
 
 		for (UINT32 i = 0; i < vao.mNumBuffers; i++)
 		{
-			SPtr<GLVertexBufferCore> curVertexBuffer = std::static_pointer_cast<GLVertexBufferCore>(vao.mAttachedBuffers[i]->getCore());
-			curVertexBuffer->unregisterVAO(vao);
+			vao.mAttachedBuffers[i]->unregisterVAO(vao);
 		}
 
 		glDeleteVertexArrays(1, &vao.mHandle);

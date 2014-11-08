@@ -61,6 +61,18 @@ namespace BansheeEngine
 		if(mCPUIndexData != nullptr)
 			bs_free(mCPUIndexData);
 
+		if (mVertexData != nullptr)
+		{
+			for (UINT32 i = 0; i < mVertexData->getBufferCount(); i++)
+			{
+				if (mVertexData->getBuffer(i) != nullptr)
+					mVertexData->getBuffer(i)->destroy();
+			}
+		}
+
+		if (mIndexBuffer != nullptr)
+			mIndexBuffer->destroy();
+
 		mVertexData = nullptr;
 		mIndexBuffer = nullptr;
 		mVertexDesc = nullptr;
@@ -270,7 +282,7 @@ namespace BansheeEngine
 					toString(vertSize) + ". Got: " + toString(otherVertSize));
 			}
 
-			SPtr<VertexBufferCore> vertexBuffer = mVertexData->getBuffer(i)->getCore();
+			SPtr<VertexBufferCore> vertexBuffer = mVertexData->getBuffer(i);
 			const VertexBufferProperties& vbProps = vertexBuffer->getProperties();
 
 			UINT8* vertDest = mCPUVertexData[i] + vertChunkStart * vertSize;
@@ -299,8 +311,7 @@ namespace BansheeEngine
 			vertexBuffer->writeData(vertChunkStart * vertSize, meshData->getNumVertices() * vertSize, vertDest, BufferWriteType::NoOverwrite);
 		}
 
-		SPtr<IndexBufferCore> indexBuffer = mIndexBuffer->getCore();
-		const IndexBufferProperties& ibProps = indexBuffer->getProperties();
+		const IndexBufferProperties& ibProps = mIndexBuffer->getProperties();
 
 		UINT32 idxSize = ibProps.getIndexSize();
 
@@ -313,7 +324,7 @@ namespace BansheeEngine
 
 		UINT8* idxDest = mCPUIndexData + idxChunkStart * idxSize;
 		memcpy(idxDest, meshData->getIndexData(), meshData->getNumIndices() * idxSize);
-		indexBuffer->writeData(idxChunkStart * idxSize, meshData->getNumIndices() * idxSize, idxDest, BufferWriteType::NoOverwrite);
+		mIndexBuffer->writeData(idxChunkStart * idxSize, meshData->getNumIndices() * idxSize, idxDest, BufferWriteType::NoOverwrite);
 	}
 
 	void MeshHeap::deallocInternal(TransientMeshPtr mesh)
@@ -353,10 +364,9 @@ namespace BansheeEngine
 				continue;
 
 			UINT32 vertSize = mVertexData->vertexDeclaration->getVertexSize(i);
-			VertexBufferPtr vertexBuffer = HardwareBufferManager::instance().createVertexBuffer(
+			SPtr<VertexBufferCore> vertexBuffer = HardwareBufferCoreManager::instance().createVertexBuffer(
 				vertSize, mVertexData->vertexCount, GBU_DYNAMIC);
 
-			SPtr<VertexBufferCore> vertexBufferCore = vertexBuffer->getCore();
 			mVertexData->setBuffer(i, vertexBuffer);
 
 			// Copy all data to the new buffer
@@ -380,7 +390,7 @@ namespace BansheeEngine
 			}
 
 			if(destOffset > 0)
-				vertexBufferCore->writeData(0, destOffset * vertSize, buffer, BufferWriteType::NoOverwrite);
+				vertexBuffer->writeData(0, destOffset * vertSize, buffer, BufferWriteType::NoOverwrite);
 
 			mCPUVertexData[i] = buffer;
 		}
@@ -426,9 +436,8 @@ namespace BansheeEngine
 	{
 		mNumIndices = numIndices;
 
-		mIndexBuffer = HardwareBufferManager::instance().createIndexBuffer(mIndexType, mNumIndices, GBU_DYNAMIC);
-		SPtr<IndexBufferCore> indexBuffer = mIndexBuffer->getCore();
-		const IndexBufferProperties& ibProps = indexBuffer->getProperties();
+		mIndexBuffer = HardwareBufferCoreManager::instance().createIndexBuffer(mIndexType, mNumIndices, GBU_DYNAMIC);
+		const IndexBufferProperties& ibProps = mIndexBuffer->getProperties();
 
 		// Copy all data to the new buffer
 		UINT32 idxSize = ibProps.getIndexSize();
@@ -453,7 +462,7 @@ namespace BansheeEngine
 		}
 
 		if(destOffset > 0)
-			indexBuffer->writeData(0, destOffset * idxSize, buffer, BufferWriteType::NoOverwrite);
+			mIndexBuffer->writeData(0, destOffset * idxSize, buffer, BufferWriteType::NoOverwrite);
 
 		mCPUIndexData = buffer;
 
@@ -522,12 +531,12 @@ namespace BansheeEngine
 		mFreeEventQueries.push(idx);
 	}
 
-	std::shared_ptr<VertexData> MeshHeap::_getVertexData() const
+	SPtr<VertexData> MeshHeap::_getVertexData() const
 	{
 		return mVertexData;
 	}
 
-	IndexBufferPtr MeshHeap::_getIndexBuffer() const
+	SPtr<IndexBufferCore> MeshHeap::_getIndexBuffer() const
 	{
 		return mIndexBuffer;
 	}

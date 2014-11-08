@@ -17,14 +17,14 @@ namespace BansheeEngine
 	{
 	}
 
-	void VertexData::setBuffer(UINT32 index, VertexBufferPtr buffer)
+	void VertexData::setBuffer(UINT32 index, SPtr<VertexBufferCore> buffer)
 	{
 		mVertexBuffers[index] = buffer;
 
 		recalculateMaxIndex();
 	}
 
-	VertexBufferPtr VertexData::getBuffer(UINT32 index) const
+	SPtr<VertexBufferCore> VertexData::getBuffer(UINT32 index) const
 	{
 		auto iterFind = mVertexBuffers.find(index);
 		if(iterFind != mVertexBuffers.end())

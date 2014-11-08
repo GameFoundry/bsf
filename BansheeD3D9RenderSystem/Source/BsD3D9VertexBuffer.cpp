@@ -9,8 +9,8 @@
 
 namespace BansheeEngine 
 {
-	D3D9VertexBufferCore::D3D9VertexBufferCore(GpuBufferUsage usage, bool useSystemMemory, const VertexBufferProperties& properties)
-		: VertexBufferCore(usage, useSystemMemory, properties), mSystemMemoryBuffer(nullptr)
+	D3D9VertexBufferCore::D3D9VertexBufferCore(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage, bool streamOut)
+		: VertexBufferCore(vertexSize, numVertices, usage, streamOut), mSystemMemoryBuffer(nullptr)
     { }
 
 	void D3D9VertexBufferCore::initialize()
@@ -298,14 +298,5 @@ namespace BansheeEngine
 		bufferResources->mLockOptions = GBL_READ_WRITE;
 
 		return true;		
-	}
-
-	D3D9VertexBuffer::D3D9VertexBuffer(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage, bool useSystemMemory)
-		: VertexBuffer(vertexSize, numVertices, usage, useSystemMemory)
-	{ }
-
-	SPtr<CoreObjectCore> D3D9VertexBuffer::createCore() const
-	{
-		return bs_shared_ptr<D3D9VertexBufferCore>(mUsage, mUseSystemMemory, mProperties);
 	}
 }

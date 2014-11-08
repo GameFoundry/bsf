@@ -9,17 +9,6 @@
 
 namespace BansheeEngine 
 {
-    VertexBufferPtr GLHardwareBufferManager::createVertexBufferImpl(
-        UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
-    {
-		return bs_core_ptr<GLVertexBuffer, PoolAlloc>(new (bs_alloc<GLVertexBuffer, PoolAlloc>()) GLVertexBuffer(vertexSize, numVerts, usage));
-    }
-
-    IndexBufferPtr GLHardwareBufferManager::createIndexBufferImpl(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
-    {
-		return bs_core_ptr<GLIndexBuffer, PoolAlloc>(new (bs_alloc<GLIndexBuffer, PoolAlloc>()) GLIndexBuffer(itype, numIndexes, usage));
-    }
-
 	GpuParamBlockBufferPtr GLHardwareBufferManager::createGpuParamBlockBufferImpl()
 	{
 		return bs_core_ptr<GLGpuParamBlockBuffer, PoolAlloc>(new (bs_alloc<GLGpuParamBlockBuffer, PoolAlloc>()) GLGpuParamBlockBuffer());
@@ -31,7 +20,17 @@ namespace BansheeEngine
 		return bs_core_ptr<GLGpuBuffer, PoolAlloc>(new (bs_alloc<GLGpuBuffer, PoolAlloc>()) GLGpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter));
 	}
 
-    GLenum GLHardwareBufferManager::getGLUsage(GpuBufferUsage usage)
+	SPtr<VertexBufferCore> GLHardwareBufferCoreManager::createVertexBufferImpl(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
+	{
+		return bs_shared_ptr<GLVertexBufferCore>(vertexSize, numVerts, usage, streamOut);
+	}
+
+	SPtr<IndexBufferCore> GLHardwareBufferCoreManager::createIndexBufferImpl(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
+	{
+		return bs_shared_ptr<GLIndexBufferCore>(itype, numIndexes, usage);
+	}
+
+    GLenum GLHardwareBufferCoreManager::getGLUsage(GpuBufferUsage usage)
     {
         switch(usage)
         {
@@ -44,7 +43,7 @@ namespace BansheeEngine
         };
     }
 
-    GLenum GLHardwareBufferManager::getGLType(VertexElementType type)
+    GLenum GLHardwareBufferCoreManager::getGLType(VertexElementType type)
     {
         switch(type)
         {

@@ -58,12 +58,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc MeshBase::getVertexData
 		 */
-		virtual std::shared_ptr<VertexData> _getVertexData() const;
+		virtual SPtr<VertexData> _getVertexData() const;
 
 		/**
 		 * @copydoc MeshBase::getIndexData
 		 */
-		virtual IndexBufferPtr _getIndexBuffer() const;
+		virtual SPtr<IndexBufferCore> _getIndexBuffer() const;
 
 		/**
 		 * @brief	Returns a dummy mesh, containing just one triangle. Don't modify the returned mesh.
@@ -96,7 +96,7 @@ namespace BansheeEngine
 		Mesh(const MeshDataPtr& initialMeshData, const Vector<SubMesh>& subMeshes, MeshBufferType bufferType = MeshBufferType::Static);
 
 		std::shared_ptr<VertexData> mVertexData; // Core thread
-		IndexBufferPtr mIndexBuffer; // Core thread
+		SPtr<IndexBufferCore> mIndexBuffer; // Core thread
 
 		Bounds mBounds; // Core thread
 		VertexDataDescPtr mVertexDesc; // Immutable

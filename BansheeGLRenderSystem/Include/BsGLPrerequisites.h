@@ -10,6 +10,7 @@ namespace BansheeEngine
     class GLRenderSystem;
     class GLTexture;
 	class GLVertexBuffer;
+	class GLVertexBufferCore;
     class GLTextureManager;
     class GLSLGpuProgram;
     class GLContext;

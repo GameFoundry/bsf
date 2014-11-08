@@ -778,10 +778,10 @@ namespace BansheeEngine
 		rs.setVertexDeclaration(vertexData->vertexDeclaration);
 		auto vertexBuffers = vertexData->getBuffers();
 
-		VertexBufferPtr vertBuffers[1] = { vertexBuffers.begin()->second };
+		SPtr<VertexBufferCore> vertBuffers[1] = { vertexBuffers.begin()->second };
 		rs.setVertexBuffers(0, vertBuffers, 1);
 
-		IndexBufferPtr indexBuffer = mesh->_getIndexBuffer();
+		SPtr<IndexBufferCore> indexBuffer = mesh->_getIndexBuffer();
 		rs.setIndexBuffer(indexBuffer);
 
 		rs.setDrawOperation(DOT_TRIANGLE_LIST);

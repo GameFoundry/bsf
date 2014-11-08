@@ -36,12 +36,12 @@ namespace BansheeEngine
         /**
 		 * @copydoc RenderSystem::setVertexBuffers()
 		 */
-		void setVertexBuffers(UINT32 index, VertexBufferPtr* buffers, UINT32 numBuffers);
+		void setVertexBuffers(UINT32 index, SPtr<VertexBufferCore>* buffers, UINT32 numBuffers);
 
 		/**
 		 * @copydoc RenderSystem::setIndexBuffer()
 		 */
-		void setIndexBuffer(const IndexBufferPtr& buffer);
+		void setIndexBuffer(const SPtr<IndexBufferCore>& buffer);
 
 		/**
 		 * @copydoc RenderSystem::setVertexDeclaration()
@@ -567,9 +567,9 @@ namespace BansheeEngine
 		UINT32 mDomainUBOffset;
 		UINT32 mComputeUBOffset;
 
-		Vector<VertexBufferPtr> mBoundVertexBuffers;
+		Vector<SPtr<VertexBufferCore>> mBoundVertexBuffers;
 		VertexDeclarationPtr mBoundVertexDeclaration;
-		IndexBufferPtr mBoundIndexBuffer;
+		SPtr<IndexBufferCore> mBoundIndexBuffer;
 		DrawOperationType mCurrentDrawOperation;
 
 		GLContext* mMainContext;

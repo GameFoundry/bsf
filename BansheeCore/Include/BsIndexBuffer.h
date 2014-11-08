@@ -21,6 +21,8 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT IndexBufferProperties
 	{
 	public:
+		IndexBufferProperties(IndexType idxType, UINT32 numIndexes);
+
 		/**
 		 * @brief	Returns the type of indices stored.
 		 */
@@ -53,7 +55,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT IndexBufferCore : public CoreObjectCore, public HardwareBuffer
 	{
 	public:
-		IndexBufferCore(GpuBufferUsage usage, bool useSystemMemory, const IndexBufferProperties& properties);
+		IndexBufferCore(IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage);
 		virtual ~IndexBufferCore() { }
 
 		/**
@@ -92,10 +94,16 @@ namespace BansheeEngine
 		static IndexBufferPtr create(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
 
 	protected:
-		IndexBuffer(IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage, bool useSystemMemory);
+		friend class HardwareBufferManager;
+
+		IndexBuffer(IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage);
+
+		/**
+		 * @copydoc	CoreObject::createCore
+		 */
+		virtual SPtr<CoreObjectCore> createCore() const;
 
 		IndexBufferProperties mProperties;
 		GpuBufferUsage mUsage;
-		bool mUseSystemMemory;
     };
 }

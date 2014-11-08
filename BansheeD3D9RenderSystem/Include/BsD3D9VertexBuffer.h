@@ -25,7 +25,7 @@ namespace BansheeEngine
 		};
 
     public:
-		D3D9VertexBufferCore(GpuBufferUsage usage, bool useSystemMemory, const VertexBufferProperties& properties);
+		D3D9VertexBufferCore(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage, bool streamOut);
 		~D3D9VertexBufferCore() { }
 
 		/**
@@ -98,24 +98,5 @@ namespace BansheeEngine
 		Map<IDirect3DDevice9*, BufferResources*> mMapDeviceToBufferResources;
 		D3DVERTEXBUFFER_DESC mBufferDesc;	
 		UINT8* mSystemMemoryBuffer;
-    };
-
-/**
-	 * @brief	DirectX 9 implementation of a vertex buffer.
-	 */
-    class BS_D3D9_EXPORT D3D9VertexBuffer : public VertexBuffer
-    {   
-    public:
-		~D3D9VertexBuffer() { }
-
-	protected:	
-		friend class D3D9HardwareBufferManager;
-
-		D3D9VertexBuffer(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage, bool useSystemMem);
-
-		/**
-		 * @copydoc	CoreObject::createCore
-		 */
-		virtual SPtr<CoreObjectCore> createCore() const;
     };
 }

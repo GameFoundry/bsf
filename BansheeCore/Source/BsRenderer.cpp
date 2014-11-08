@@ -104,7 +104,7 @@ namespace BansheeEngine
 
 		if (vertexBuffers.size() > 0)
 		{
-			VertexBufferPtr buffers[MAX_BOUND_VERTEX_BUFFERS];
+			SPtr<VertexBufferCore> buffers[MAX_BOUND_VERTEX_BUFFERS];
 
 			UINT32 endSlot = 0;
 			UINT32 startSlot = MAX_BOUND_VERTEX_BUFFERS;
@@ -128,7 +128,7 @@ namespace BansheeEngine
 		SubMesh subMesh = meshProxy.subMesh;
 		rs.setDrawOperation(subMesh.drawOp);
 
-		IndexBufferPtr indexBuffer = mesh->_getIndexBuffer();
+		SPtr<IndexBufferCore> indexBuffer = mesh->_getIndexBuffer();
 
 		UINT32 indexCount = subMesh.indexCount;
 

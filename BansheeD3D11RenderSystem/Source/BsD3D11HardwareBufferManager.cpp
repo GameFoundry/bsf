@@ -11,27 +11,6 @@ namespace BansheeEngine
 		: mDevice(device)
 	{ }
 
-	D3D11HardwareBufferManager::~D3D11HardwareBufferManager()
-	{
-
-	}
-
-	VertexBufferPtr D3D11HardwareBufferManager::createVertexBufferImpl(UINT32 vertexSize, 
-		UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
-	{
-		D3D11VertexBuffer* buffer = new (bs_alloc<D3D11VertexBuffer, PoolAlloc>()) D3D11VertexBuffer(mDevice, vertexSize, numVerts, usage, false, streamOut);
-
-		return bs_core_ptr<D3D11VertexBuffer, PoolAlloc>(buffer);
-	}
-
-	IndexBufferPtr D3D11HardwareBufferManager::createIndexBufferImpl(IndexType itype, 
-		UINT32 numIndexes, GpuBufferUsage usage)
-	{
-		D3D11IndexBuffer* buffer = new (bs_alloc<D3D11IndexBuffer, PoolAlloc>()) D3D11IndexBuffer(mDevice, itype, numIndexes, usage, false);
-
-		return bs_core_ptr<D3D11IndexBuffer, PoolAlloc>(buffer);
-	}
-
 	GpuParamBlockBufferPtr D3D11HardwareBufferManager::createGpuParamBlockBufferImpl()
 	{
 		D3D11GpuParamBlockBuffer* paramBlockBuffer = new (bs_alloc<D3D11GpuParamBlockBuffer, PoolAlloc>()) D3D11GpuParamBlockBuffer();
@@ -46,4 +25,21 @@ namespace BansheeEngine
 
 		return bs_core_ptr<D3D11GpuBuffer, PoolAlloc>(buffer);
 	}
+
+	D3D11HardwareBufferCoreManager::D3D11HardwareBufferCoreManager(D3D11Device& device)
+		: mDevice(device)
+	{ }
+
+	SPtr<VertexBufferCore> D3D11HardwareBufferCoreManager::createVertexBufferImpl(UINT32 vertexSize,
+		UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
+	{
+		return bs_shared_ptr<D3D11VertexBufferCore>(mDevice, vertexSize, numVerts, usage, streamOut);
+	}
+
+	SPtr<IndexBufferCore> D3D11HardwareBufferCoreManager::createIndexBufferImpl(IndexType itype,
+		UINT32 numIndexes, GpuBufferUsage usage)
+	{
+		return bs_shared_ptr<D3D11IndexBufferCore>(mDevice, itype, numIndexes, usage);
+	}
+
 }

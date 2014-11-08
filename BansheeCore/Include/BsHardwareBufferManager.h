@@ -12,7 +12,7 @@ namespace BansheeEngine
 	/**
 	 * @brief	Handles creation of various hardware buffers.
 	 *
-	 * @note	Thread safe.
+	 * @note	Sim thread only.
 	 */
 	class BS_CORE_EXPORT HardwareBufferManager : public Module<HardwareBufferManager>
 	{
@@ -78,16 +78,6 @@ namespace BansheeEngine
 
 	protected:
 		/**
-		 * @copydoc	createVertexBuffer
-		 */
-		virtual VertexBufferPtr createVertexBufferImpl(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false) = 0;
-
-		/**
-		 * @copydoc	createIndexBuffer
-		 */
-		virtual IndexBufferPtr createIndexBufferImpl(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage) = 0;
-
-		/**
 		 * @copydoc	createGpuParamBlockBuffer
 		 */
 		virtual GpuParamBlockBufferPtr createGpuParamBlockBufferImpl() = 0;
@@ -102,6 +92,38 @@ namespace BansheeEngine
 		 * @copydoc	createVertexDeclaration
 		 */
 		virtual VertexDeclarationPtr createVertexDeclarationImpl(const VertexDeclaration::VertexElementList& elements);
+	};
+
+	/**
+	 * @brief	Handles creation of various hardware buffers.
+	 *
+	 * @note	Core thread only.
+	 */
+	class BS_CORE_EXPORT HardwareBufferCoreManager : public Module<HardwareBufferCoreManager>
+	{
+    public:
+		virtual ~HardwareBufferCoreManager() { }
+
+		/**
+		 * @copydoc	HardwareBufferManager::createVertexBuffer
+		 */
+		virtual SPtr<VertexBufferCore> createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false);
+
+		/**
+		 * @copydoc	HardwareBufferManager::createIndexBuffer
+		 */
+		virtual SPtr<IndexBufferCore> createIndexBuffer(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
+
+	protected:
+		/**
+		 * @copydoc	createVertexBuffer
+		 */
+		virtual SPtr<VertexBufferCore> createVertexBufferImpl(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false) = 0;
+
+		/**
+		 * @copydoc	createIndexBuffer
+		 */
+		virtual SPtr<IndexBufferCore> createIndexBufferImpl(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage) = 0;
 	};
 }
 

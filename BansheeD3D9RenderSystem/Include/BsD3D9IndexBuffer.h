@@ -25,7 +25,7 @@ namespace BansheeEngine
 		};
 
     public:
-		D3D9IndexBufferCore(GpuBufferUsage usage, bool useSystemMemory, const IndexBufferProperties& properties);
+		D3D9IndexBufferCore(IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage);
 		~D3D9IndexBufferCore() { }
 
 		/**
@@ -98,24 +98,5 @@ namespace BansheeEngine
 		Map<IDirect3DDevice9*, BufferResources*> mMapDeviceToBufferResources;
 		D3DINDEXBUFFER_DESC	mBufferDesc;	
 		UINT8* mSystemMemoryBuffer;
-    };
-
-	/**
-	 * @brief	DirectX 9 implementation of an index buffer.
-	 */
-    class BS_D3D9_EXPORT D3D9IndexBuffer : public IndexBuffer
-    {
-    public:
-		~D3D9IndexBuffer() { }
-
-	protected:
-		friend class D3D9HardwareBufferManager;
-
-		D3D9IndexBuffer(IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage, bool useSystemMem);
-
-		/**
-		 * @copydoc	CoreObject::createCore
-		 */
-		virtual SPtr<CoreObjectCore> createCore() const;
     };
 }

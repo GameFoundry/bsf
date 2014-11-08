@@ -4,9 +4,8 @@
 
 namespace BansheeEngine
 {
-	D3D11IndexBufferCore::D3D11IndexBufferCore(D3D11Device& device, GpuBufferUsage usage, bool useSystemMemory, 
-		const IndexBufferProperties& properties)
-		:IndexBufferCore(usage, useSystemMemory, properties), mDevice(device), mBuffer(nullptr)
+	D3D11IndexBufferCore::D3D11IndexBufferCore(D3D11Device& device, IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage)
+		:IndexBufferCore(idxType, numIndexes, usage), mDevice(device), mBuffer(nullptr)
 	{
 
 	}
@@ -69,17 +68,5 @@ namespace BansheeEngine
 		UINT32 dstOffset, UINT32 length, bool discardWholeBuffer)
 	{
 		mBuffer->copyData(srcBuffer, srcOffset, dstOffset, length, discardWholeBuffer);
-	}
-
-	D3D11IndexBuffer::D3D11IndexBuffer(D3D11Device& device, IndexType idxType, UINT32 numIndexes,
-		GpuBufferUsage usage, bool useSystemMem)
-		:IndexBuffer(idxType, numIndexes, usage, useSystemMem), mDevice(device)
-	{
-
-	}
-
-	SPtr<CoreObjectCore> D3D11IndexBuffer::createCore() const
-	{
-		return bs_shared_ptr<D3D11IndexBufferCore>(mDevice, mUsage, mUseSystemMemory, mProperties);
 	}
 }

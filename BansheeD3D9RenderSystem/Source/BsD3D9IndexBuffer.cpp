@@ -9,8 +9,8 @@
 
 namespace BansheeEngine 
 {
-	D3D9IndexBufferCore::D3D9IndexBufferCore(GpuBufferUsage usage, bool useSystemMemory, const IndexBufferProperties& properties)
-		: IndexBufferCore(usage, useSystemMemory, properties), mSystemMemoryBuffer(nullptr)
+	D3D9IndexBufferCore::D3D9IndexBufferCore(IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage)
+		: IndexBufferCore(idxType, numIndexes, usage), mSystemMemoryBuffer(nullptr)
 	{ }
 
 	void D3D9IndexBufferCore::initialize()
@@ -302,14 +302,5 @@ namespace BansheeEngine
 		bufferResources->mLockOptions = GBL_READ_WRITE;
 
 		return true;			
-	}
-
-	D3D9IndexBuffer::D3D9IndexBuffer(IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage, bool useSystemMemory)
-		: IndexBuffer(idxType, numIndexes, usage, useSystemMemory)
-	{ }
-
-	SPtr<CoreObjectCore> D3D9IndexBuffer::createCore() const
-	{
-		return bs_shared_ptr<D3D9IndexBufferCore>(mUsage, mUseSystemMemory, mProperties);
 	}
 }

@@ -12,7 +12,7 @@ namespace BansheeEngine
     class BS_RSGL_EXPORT GLVertexBufferCore : public VertexBufferCore
     {
     public:
-		GLVertexBufferCore(GpuBufferUsage usage, bool useSystemMemory, const VertexBufferProperties& properties);
+		GLVertexBufferCore(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage, bool streamOut);
 		~GLVertexBufferCore() { }
 
 		/**
@@ -66,24 +66,5 @@ namespace BansheeEngine
 		bool mZeroLocked;
 
 		Vector<GLVertexArrayObject> mVAObjects;
-    };
-
-	/**
-	 * @brief	OpenGL implementation of a vertex buffer.
-	 */
-    class BS_RSGL_EXPORT GLVertexBuffer : public VertexBuffer 
-    {
-    public:
-		~GLVertexBuffer() { }
-
-	protected:
-		friend class GLHardwareBufferManager;
-
-		GLVertexBuffer(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage); 
-
-		/**
-		 * @copydoc	CoreObject::createCore
-		 */
-		virtual SPtr<CoreObjectCore> createCore() const;
     };
 }

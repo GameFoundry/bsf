@@ -5,8 +5,8 @@
 
 namespace BansheeEngine 
 {
-	GLIndexBufferCore::GLIndexBufferCore(GpuBufferUsage usage, bool useSystemMemory, const IndexBufferProperties& properties)
-		:IndexBufferCore(usage, useSystemMemory, properties), mZeroLocked(false)
+	GLIndexBufferCore::GLIndexBufferCore(IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage)
+		:IndexBufferCore(idxType, numIndexes, usage), mZeroLocked(false)
 	{  }
 
 	void GLIndexBufferCore::initialize()
@@ -21,7 +21,7 @@ namespace BansheeEngine
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mBufferId);
 
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, mSizeInBytes, NULL, 
-			GLHardwareBufferManager::getGLUsage(mUsage));
+			GLHardwareBufferCoreManager::getGLUsage(mUsage));
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_IndexBuffer);
 		IndexBufferCore::initialize();
@@ -130,13 +130,4 @@ namespace BansheeEngine
 		memcpy(bufferData, pSource, length);
 		unlock();
     }
-
-	GLIndexBuffer::GLIndexBuffer(IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage)
-		:IndexBuffer(idxType, numIndexes, usage, false)
-	{  }
-
-	SPtr<CoreObjectCore> GLIndexBuffer::createCore() const
-	{
-		return bs_shared_ptr<GLIndexBufferCore>(mUsage, mUseSystemMemory, mProperties);
-	}
 }

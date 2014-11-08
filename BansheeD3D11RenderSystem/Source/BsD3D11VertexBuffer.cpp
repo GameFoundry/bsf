@@ -4,9 +4,8 @@
 
 namespace BansheeEngine
 {
-	D3D11VertexBufferCore::D3D11VertexBufferCore(D3D11Device& device, bool streamOut, GpuBufferUsage usage,
-		bool useSystemMemory, const VertexBufferProperties& properties)
-		:VertexBufferCore(usage, useSystemMemory, properties), mDevice(device), mStreamOut(streamOut), mBuffer(nullptr)
+	D3D11VertexBufferCore::D3D11VertexBufferCore(D3D11Device& device, UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage, bool streamOut)
+		:VertexBufferCore(vertexSize, numVertices, usage, streamOut), mDevice(device), mStreamOut(streamOut), mBuffer(nullptr)
 	{ }
 
 	void* D3D11VertexBufferCore::lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options)
@@ -65,15 +64,5 @@ namespace BansheeEngine
 
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_VertexBuffer);
 		VertexBufferCore::destroy();
-	}
-
-	D3D11VertexBuffer::D3D11VertexBuffer(D3D11Device& device, UINT32 vertexSize, UINT32 numVertices,
-		GpuBufferUsage usage, bool useSystemMem, bool streamOut)
-		:VertexBuffer(vertexSize, numVertices, usage, useSystemMem), mDevice(device), mStreamOut(streamOut)
-	{ }
-
-	SPtr<CoreObjectCore> D3D11VertexBuffer::createCore() const
-	{
-		return bs_shared_ptr<D3D11VertexBufferCore>(mDevice, mStreamOut, mUsage, mUseSystemMemory, mProperties);
 	}
 }

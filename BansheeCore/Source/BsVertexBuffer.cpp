@@ -7,18 +7,29 @@
 
 namespace BansheeEngine 
 {
-	VertexBufferCore::VertexBufferCore(GpuBufferUsage usage, bool useSystemMemory, const VertexBufferProperties& properties)
-		:HardwareBuffer(usage, useSystemMemory), mProperties(properties)
+	VertexBufferProperties::VertexBufferProperties(UINT32 numVertices, UINT32 vertexSize)
+		:mNumVertices(numVertices), mVertexSize(vertexSize)
+	{
+
+	}
+
+	VertexBufferCore::VertexBufferCore(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage, bool streamOut)
+		:HardwareBuffer(usage, false), mProperties(numVertices, vertexSize)
 	{
 		mSizeInBytes = mProperties.mVertexSize * mProperties.mNumVertices;
 	}
 
-    VertexBuffer::VertexBuffer(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage, bool useSystemMemory) 
-		: mUseSystemMemory(useSystemMemory), mUsage(usage)
+	VertexBuffer::VertexBuffer(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage, bool streamOut)
+		: mProperties(numVertices, vertexSize), mUsage(usage), mStreamOut(streamOut)
     {
-		mProperties.mVertexSize = vertexSize;
-		mProperties.mNumVertices = numVertices;
+
     }
+
+	SPtr<CoreObjectCore> VertexBuffer::createCore() const
+	{
+		return HardwareBufferCoreManager::instance().createVertexBuffer(mProperties.mVertexSize, 
+			mProperties.mNumVertices, mUsage, mStreamOut);
+	}
 
 	SPtr<VertexBufferCore> VertexBuffer::getCore() const
 	{

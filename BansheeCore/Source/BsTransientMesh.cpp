@@ -31,12 +31,12 @@ namespace BansheeEngine
 		BS_EXCEPT(InvalidStateException, "Reading is not supported on a transient mesh.");
 	}
 
-	std::shared_ptr<VertexData> TransientMesh::_getVertexData() const
+	SPtr<VertexData> TransientMesh::_getVertexData() const
 	{
 		return mParentHeap->_getVertexData();
 	}
 
-	IndexBufferPtr TransientMesh::_getIndexBuffer() const
+	SPtr<IndexBufferCore> TransientMesh::_getIndexBuffer() const
 	{
 		return mParentHeap->_getIndexBuffer();
 	}

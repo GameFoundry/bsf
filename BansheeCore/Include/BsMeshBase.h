@@ -97,14 +97,14 @@ namespace BansheeEngine
 		 *  
 		 * @note	Core thread only. Internal method.
 		 */
-		virtual std::shared_ptr<VertexData> _getVertexData() const = 0;
+		virtual SPtr<VertexData> _getVertexData() const = 0;
 
 		/**
 		 * @brief	Get index data used for rendering.
 		 *  
 		 * @note	Core thread only. Internal method.
 		 */
-		virtual IndexBufferPtr _getIndexBuffer() const = 0;
+		virtual SPtr<IndexBufferCore> _getIndexBuffer() const = 0;
 
 		/**
 		 * @brief	Returns an offset into the vertex buffers that is returned

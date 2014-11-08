@@ -205,67 +205,6 @@ namespace BansheeEngine
         return false;
 	}
 
-	void RenderSystem::render(const MeshBasePtr& mesh, UINT32 indexOffset, UINT32 indexCount, bool useIndices, DrawOperationType drawOp)
-	{
-		THROW_IF_NOT_CORE_THREAD;
-
-		gProfilerCPU().beginSample("render");
-
-		if (mClipPlanesDirty)
-		{
-			setClipPlanesImpl(mClipPlanes);
-			mClipPlanesDirty = false;
-		}
-
-		std::shared_ptr<VertexData> vertexData = mesh->_getVertexData();
-
-		setVertexDeclaration(vertexData->vertexDeclaration);
-		auto vertexBuffers = vertexData->getBuffers();
-
-		if(vertexBuffers.size() > 0)
-		{
-			VertexBufferPtr buffers[MAX_BOUND_VERTEX_BUFFERS];
-
-			UINT32 endSlot = 0;
-			UINT32 startSlot = MAX_BOUND_VERTEX_BUFFERS;
-			for(auto iter = vertexBuffers.begin(); iter != vertexBuffers.end() ; ++iter)
-			{
-				if(iter->first >= MAX_BOUND_VERTEX_BUFFERS)
-					BS_EXCEPT(InvalidParametersException, "Buffer index out of range");
-
-				startSlot = std::min(iter->first, startSlot);
-				endSlot = std::max(iter->first, endSlot);
-			}
-
-			for(auto iter = vertexBuffers.begin(); iter != vertexBuffers.end() ; ++iter)
-			{
-				buffers[iter->first - startSlot] = iter->second;
-			}
-
-			setVertexBuffers(startSlot, buffers, endSlot - startSlot + 1);
-		}
-
-		setDrawOperation(drawOp);
-
-		if (useIndices)
-		{
-			SPtr<IndexBufferCore> indexBuffer = mesh->_getIndexBuffer()->getCore();
-			const IndexBufferProperties& ibProps = indexBuffer->getProperties();
-
-			if(indexCount == 0)
-				indexCount = ibProps.getNumIndices();
-
-			setIndexBuffer(mesh->_getIndexBuffer());
-			drawIndexed(indexOffset + mesh->_getIndexOffset(), indexCount, mesh->_getVertexOffset(), vertexData->vertexCount);
-		}
-		else
-			draw(mesh->_getVertexOffset(), vertexData->vertexCount);
-
-		mesh->_notifyUsedOnGPU();
-
-		gProfilerCPU().endSample("render");
-	}
-
 	void RenderSystem::swapBuffers(RenderTargetPtr target)
 	{
 		THROW_IF_NOT_CORE_THREAD;

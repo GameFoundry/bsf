@@ -43,11 +43,11 @@ namespace BansheeEngine
 		friend class GLVertexArrayObjectManager;
 
 		GLVertexArrayObject();
-		GLVertexArrayObject(GLuint handle, UINT64 vertexProgramId, GLVertexBuffer** attachedBuffers, UINT32 numBuffers);
+		GLVertexArrayObject(GLuint handle, UINT64 vertexProgramId, GLVertexBufferCore** attachedBuffers, UINT32 numBuffers);
 
 		GLuint mHandle;
 		UINT64 mVertProgId;
-		GLVertexBuffer** mAttachedBuffers;
+		GLVertexBufferCore** mAttachedBuffers;
 		UINT32 mNumBuffers;
 	};
 
@@ -67,7 +67,7 @@ namespace BansheeEngine
 		 *			Lifetime of returned VAO is managed by the vertex buffers that it binds.
 		 */
 		const GLVertexArrayObject& getVAO(const GLSLGpuProgramPtr& vertexProgram, 
-			const VertexDeclarationPtr& vertexDecl, const Vector<VertexBufferPtr>& boundBuffers);
+			const VertexDeclarationPtr& vertexDecl, const Vector<SPtr<VertexBufferCore>>& boundBuffers);
 
 		/**
 		 * @brief	Called when a vertex buffer containing the provided VAO is destroyed.

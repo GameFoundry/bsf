@@ -12,8 +12,8 @@ namespace BansheeEngine
 	class BS_D3D11_EXPORT D3D11VertexBufferCore : public VertexBufferCore
 	{
 	public:
-		D3D11VertexBufferCore(D3D11Device& device, bool streamOut, GpuBufferUsage usage, 
-			bool useSystemMemory, const VertexBufferProperties& properties);
+		D3D11VertexBufferCore(D3D11Device& device, UINT32 vertexSize, UINT32 numVertices, 
+			GpuBufferUsage usage, bool streamOut);
 
 		~D3D11VertexBufferCore() { }
 
@@ -61,32 +61,6 @@ namespace BansheeEngine
 		void destroy();
 
 		D3D11HardwareBuffer* mBuffer;
-		D3D11Device& mDevice;
-		bool mStreamOut;
-	};
-
-	/**
-	 * @brief	DirectX 11 implementation of a vertex buffer.
-	 */
-	class BS_D3D11_EXPORT D3D11VertexBuffer : public VertexBuffer
-	{
-	public:
-		~D3D11VertexBuffer() { }
-
-	protected: 
-		friend class D3D11HardwareBufferManager;
-
-		/**
-		 * @copydoc	VertexBuffer::VertexBuffer
-		 */
-		D3D11VertexBuffer(D3D11Device& device, UINT32 vertexSize, UINT32 numVertices, 
-			GpuBufferUsage usage, bool useSystemMem, bool streamOut);
-
-		/**
-		 * @copydoc	CoreObject::createCore
-		 */
-		virtual SPtr<CoreObjectCore> createCore() const;
-
 		D3D11Device& mDevice;
 		bool mStreamOut;
 	};

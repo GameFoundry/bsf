@@ -98,6 +98,7 @@ namespace BansheeEngine
 
 		// Also create hardware buffer manager		
 		HardwareBufferManager::startUp<D3D9HardwareBufferManager>();
+		HardwareBufferCoreManager::startUp<D3D9HardwareBufferCoreManager>();
 
 		// Create & register HLSL factory		
 		mHLSLProgramFactory = bs_new<D3D9HLSLProgramFactory>();
@@ -149,6 +150,7 @@ namespace BansheeEngine
 
 		QueryManager::shutDown();
 		TextureManager::shutDown();
+		HardwareBufferCoreManager::shutDown();
 		HardwareBufferManager::shutDown();
 		RenderWindowManager::shutDown();
 		RenderStateManager::shutDown();
@@ -1164,7 +1166,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D9RenderSystem::setVertexBuffers(UINT32 index, VertexBufferPtr* buffers, UINT32 numBuffers)
+	void D3D9RenderSystem::setVertexBuffers(UINT32 index, SPtr<VertexBufferCore>* buffers, UINT32 numBuffers)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -1178,7 +1180,7 @@ namespace BansheeEngine
 		{
 			if(buffers[i] != nullptr)
 			{
-				SPtr<D3D9VertexBufferCore> d3d9buf = std::static_pointer_cast<D3D9VertexBufferCore>(buffers[i]->getCore());
+				SPtr<D3D9VertexBufferCore> d3d9buf = std::static_pointer_cast<D3D9VertexBufferCore>(buffers[i]);
 				const VertexBufferProperties& vbProps = d3d9buf->getProperties();
 
 				hr = getActiveD3D9Device()->SetStreamSource(
@@ -1200,11 +1202,11 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D9RenderSystem::setIndexBuffer(const IndexBufferPtr& buffer)
+	void D3D9RenderSystem::setIndexBuffer(const SPtr<IndexBufferCore>& buffer)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		SPtr<D3D9IndexBufferCore> d3dIdxBuf = std::static_pointer_cast<D3D9IndexBufferCore>(buffer->getCore());
+		SPtr<D3D9IndexBufferCore> d3dIdxBuf = std::static_pointer_cast<D3D9IndexBufferCore>(buffer);
 
 		HRESULT hr = getActiveD3D9Device()->SetIndices( d3dIdxBuf->getD3DIndexBuffer() );
 		if (FAILED(hr))

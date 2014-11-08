@@ -31,17 +31,17 @@ namespace BansheeEngine
 		/**
 		 * @brief	Assigns a new vertex buffer to the specified index.
 		 */
-		void setBuffer(UINT32 index, VertexBufferPtr buffer);
+		void setBuffer(UINT32 index, SPtr<VertexBufferCore> buffer);
 
 		/**
 		 * @brief	Retrieves a vertex buffer from the specified index.
 		 */
-		VertexBufferPtr getBuffer(UINT32 index) const;
+		SPtr<VertexBufferCore> getBuffer(UINT32 index) const;
 
 		/**
 		 * @brief	Returns a list of all bound vertex buffers.
 		 */
-		const UnorderedMap<UINT32, VertexBufferPtr>& getBuffers() const { return mVertexBuffers; }
+		const UnorderedMap<UINT32, SPtr<VertexBufferCore>>& getBuffers() const { return mVertexBuffers; }
 
 		/**
 		 * @brief	Checks if there is a buffer at the specified index.
@@ -62,7 +62,7 @@ namespace BansheeEngine
 		void recalculateMaxIndex();
 
     private:
-		UnorderedMap<UINT32, VertexBufferPtr> mVertexBuffers;
+		UnorderedMap<UINT32, SPtr<VertexBufferCore>> mVertexBuffers;
 
 		UINT32 mMaxBufferIdx = 0;
 	};

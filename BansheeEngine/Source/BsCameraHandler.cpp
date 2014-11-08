@@ -5,8 +5,6 @@
 #include "BsVector2.h"
 #include "BsAABox.h"
 #include "BsSphere.h"
-#include "BsVertexBuffer.h"
-#include "BsIndexBuffer.h"
 #include "BsException.h"
 #include "BsRenderSystem.h"
 #include "BsSceneObject.h"

@@ -13,6 +13,8 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT VertexBufferProperties
 	{
 	public:
+		VertexBufferProperties(UINT32 numVertices, UINT32 vertexSize);
+
 		/**
 		 * @brief	Gets the size in bytes of a single vertex in this buffer.
 		 */
@@ -39,7 +41,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT VertexBufferCore : public CoreObjectCore, public HardwareBuffer
 	{
 	public:
-		VertexBufferCore(GpuBufferUsage usage, bool useSystemMemory, const VertexBufferProperties& properties);
+		VertexBufferCore(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage, bool streamOut);
 		virtual ~VertexBufferCore() { }
 
 		/**
@@ -74,11 +76,18 @@ namespace BansheeEngine
 
 		static const int MAX_SEMANTIC_IDX = 8;
 	protected:
-		VertexBuffer(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage, bool useSystemMemory);
+		friend class HardwareBufferManager;
+
+		VertexBuffer(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage, bool streamOut = false);
+
+		/**
+		 * @copydoc	CoreObject::createCore
+		 */
+		virtual SPtr<CoreObjectCore> createCore() const;
 
 	protected:
 		VertexBufferProperties mProperties;
 		GpuBufferUsage mUsage;
-		bool mUseSystemMemory;
+		bool mStreamOut;
     };
 }

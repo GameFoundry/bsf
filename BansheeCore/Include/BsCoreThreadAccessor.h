@@ -42,6 +42,15 @@ namespace BansheeEngine
 		/** @copydoc RenderSystem::setRasterizerState() */
 		void setDepthStencilState(const DepthStencilStatePtr& depthStencilState, UINT32 stencilRefValue);
 
+		/** @copydoc RenderSystem::setVertexBuffers() */
+		void setVertexBuffers(UINT32 index, const Vector<VertexBufferPtr>& buffers);
+
+		/** @copydoc RenderSystem::setIndexBuffer() */
+		void setIndexBuffer(const IndexBufferPtr& buffer);
+
+		/** @copydoc RenderSystem::setVertexDeclaration() */
+		void setVertexDeclaration(const VertexDeclarationPtr& vertexDeclaration);
+
 		/** @copydoc RenderSystem::setViewport() */
 		void setViewport(Viewport vp);
 
@@ -86,9 +95,6 @@ namespace BansheeEngine
 
 		/** @copydoc RenderSystem::swapBuffers() */
 		void swapBuffers(RenderTargetPtr target);
-
-		/** @copydoc RenderSystem::render() */
-		void render(const MeshBasePtr& mesh, UINT32 indexOffset = 0, UINT32 indexCount = 0, bool useIndices = true, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
 
 		/** @copydoc RenderSystem::draw() */
 		void draw(UINT32 vertexOffset, UINT32 vertexCount);

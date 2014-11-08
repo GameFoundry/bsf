@@ -108,8 +108,9 @@ namespace BansheeEngine
 		// Create the texture manager for use by others		
 		TextureManager::startUp<D3D11TextureManager>();
 
-		// Also create hardware buffer manager		
+		// Create hardware buffer manager		
 		HardwareBufferManager::startUp<D3D11HardwareBufferManager>(std::ref(*mDevice));
+		HardwareBufferCoreManager::startUp<D3D11HardwareBufferCoreManager>(std::ref(*mDevice));
 
 		// Create render window manager
 		RenderWindowManager::startUp<D3D11RenderWindowManager>(this);
@@ -168,6 +169,7 @@ namespace BansheeEngine
 
 		RenderStateManager::shutDown();
 		RenderWindowManager::shutDown();
+		HardwareBufferCoreManager::shutDown();
 		HardwareBufferManager::shutDown();
 		TextureManager::shutDown();
 
@@ -394,7 +396,7 @@ namespace BansheeEngine
 		mDevice->getImmediateContext()->RSSetViewports(1, &mViewport);
 	}
 
-	void D3D11RenderSystem::setVertexBuffers(UINT32 index, VertexBufferPtr* buffers, UINT32 numBuffers)
+	void D3D11RenderSystem::setVertexBuffers(UINT32 index, SPtr<VertexBufferCore>* buffers, UINT32 numBuffers)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -408,7 +410,7 @@ namespace BansheeEngine
 
 		for(UINT32 i = 0; i < numBuffers; i++)
 		{
-			SPtr<D3D11VertexBufferCore> vertexBuffer = std::static_pointer_cast<D3D11VertexBufferCore>(buffers[i]->getCore());
+			SPtr<D3D11VertexBufferCore> vertexBuffer = std::static_pointer_cast<D3D11VertexBufferCore>(buffers[i]);
 			const VertexBufferProperties& vbProps = vertexBuffer->getProperties();
 
 			dx11buffers[i] = vertexBuffer->getD3DVertexBuffer();
@@ -422,11 +424,11 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumVertexBufferBinds);
 	}
 
-	void D3D11RenderSystem::setIndexBuffer(const IndexBufferPtr& buffer)
+	void D3D11RenderSystem::setIndexBuffer(const SPtr<IndexBufferCore>& buffer)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		SPtr<D3D11IndexBufferCore> indexBuffer = std::static_pointer_cast<D3D11IndexBufferCore>(buffer->getCore());
+		SPtr<D3D11IndexBufferCore> indexBuffer = std::static_pointer_cast<D3D11IndexBufferCore>(buffer);
 
 		DXGI_FORMAT indexFormat = DXGI_FORMAT_R16_UINT;
 		if(indexBuffer->getProperties().getType() == IT_16BIT)

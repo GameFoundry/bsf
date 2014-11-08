@@ -12,8 +12,7 @@ namespace BansheeEngine
 	class BS_D3D11_EXPORT D3D11IndexBufferCore : public IndexBufferCore
 	{
 	public:
-		D3D11IndexBufferCore(D3D11Device& device, GpuBufferUsage usage, bool useSystemMemory,
-			const IndexBufferProperties& properties);
+		D3D11IndexBufferCore(D3D11Device& device, IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage);
 
 		~D3D11IndexBufferCore() { }
 
@@ -46,7 +45,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc IndexBufferCore::unlockImpl
 		 */
-		void unlockImpl(void);
+		void unlockImpl();
 
 		/**
 		 * @copydoc IndexBufferCore::initialize
@@ -59,31 +58,6 @@ namespace BansheeEngine
 		void destroy();
 
 		D3D11HardwareBuffer* mBuffer;
-		D3D11Device& mDevice;
-	};
-
-	/**
-	 * @brief	DirectX 11 implementation of an index buffer.
-	 */
-	class BS_D3D11_EXPORT D3D11IndexBuffer : public IndexBuffer
-	{
-	public:
-		~D3D11IndexBuffer() { }
-
-	protected:
-		friend class D3D11HardwareBufferManager;
-
-		/**
-		 * @copydoc	IndexBuffer::IndexBuffer.
-		 */
-		D3D11IndexBuffer(D3D11Device& device, IndexType idxType, UINT32 numIndexes, 
-			GpuBufferUsage usage, bool useSystemMem);
-
-		/**
-		 * @copydoc	CoreObject::createCore
-		 */
-		virtual SPtr<CoreObjectCore> createCore() const;
-
 		D3D11Device& mDevice;
 	};
 }

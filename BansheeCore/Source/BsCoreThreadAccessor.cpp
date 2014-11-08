@@ -5,6 +5,8 @@
 #include "BsRasterizerState.h"
 #include "BsDepthStencilState.h"
 #include "BsGpuResourceData.h"
+#include "BsIndexBuffer.h"
+#include "BsVertexBuffer.h"
 #include "BsVideoModeInfo.h"
 #include "BsGpuParams.h"
 #include "BsPass.h"
@@ -59,6 +61,31 @@ namespace BansheeEngine
 	void CoreThreadAccessorBase::setDepthStencilState(const DepthStencilStatePtr& depthStencilState, UINT32 stencilRefValue)
 	{
 		mCommandQueue->queue(std::bind(&RenderSystem::setDepthStencilState, RenderSystem::instancePtr(), depthStencilState, stencilRefValue));
+	}
+
+	void CoreThreadAccessorBase::setVertexBuffers(UINT32 index, const Vector<VertexBufferPtr>& buffers)
+	{
+		Vector<SPtr<VertexBufferCore>> coreBuffers(buffers.size());
+		for (UINT32 i = 0; i < (UINT32)buffers.size(); i++)
+			coreBuffers[i] = buffers[i] != nullptr ? buffers[i]->getCore() : nullptr;
+
+		std::function<void(RenderSystem*, UINT32, const Vector<SPtr<VertexBufferCore>>&)> resizeFunc =
+			[](RenderSystem* rs, UINT32 idx, const Vector<SPtr<VertexBufferCore>>& _buffers)
+		{
+			rs->setVertexBuffers(idx, (SPtr<VertexBufferCore>*)_buffers.data(), (UINT32)_buffers.size());
+		};
+
+		mCommandQueue->queue(std::bind(resizeFunc, RenderSystem::instancePtr(), index, coreBuffers));
+	}
+
+	void CoreThreadAccessorBase::setIndexBuffer(const IndexBufferPtr& buffer)
+	{
+		mCommandQueue->queue(std::bind(&RenderSystem::setIndexBuffer, RenderSystem::instancePtr(), buffer->getCore()));
+	}
+
+	void CoreThreadAccessorBase::setVertexDeclaration(const VertexDeclarationPtr& vertexDeclaration)
+	{
+		mCommandQueue->queue(std::bind(&RenderSystem::setVertexDeclaration, RenderSystem::instancePtr(), vertexDeclaration));
 	}
 
 	void CoreThreadAccessorBase::setViewport(Viewport vp)
@@ -134,11 +161,6 @@ namespace BansheeEngine
 	void CoreThreadAccessorBase::swapBuffers(RenderTargetPtr target)
 	{
 		mCommandQueue->queue(std::bind(&RenderSystem::swapBuffers, RenderSystem::instancePtr(), target));
-	}
-
-	void CoreThreadAccessorBase::render(const MeshBasePtr& mesh, UINT32 indexOffset, UINT32 indexCount, bool useIndices, DrawOperationType drawOp)
-	{
-		mCommandQueue->queue(std::bind(&RenderSystem::render, RenderSystem::instancePtr(), mesh, indexOffset, indexCount, useIndices, drawOp));
 	}
 
 	void CoreThreadAccessorBase::draw(UINT32 vertexOffset, UINT32 vertexCount)

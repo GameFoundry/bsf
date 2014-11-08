@@ -6,8 +6,8 @@
 
 namespace BansheeEngine 
 {
-	GLVertexBufferCore::GLVertexBufferCore(GpuBufferUsage usage, bool useSystemMemory, const VertexBufferProperties& properties)
-		:VertexBufferCore(usage, useSystemMemory, properties), mZeroLocked(false)
+	GLVertexBufferCore::GLVertexBufferCore(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage, bool streamOut)
+		:VertexBufferCore(vertexSize, numVertices, usage, streamOut), mZeroLocked(false)
     {
 
     }
@@ -25,7 +25,7 @@ namespace BansheeEngine
 		glBindBuffer(GL_ARRAY_BUFFER, mBufferId);
 
 		glBufferData(GL_ARRAY_BUFFER, mSizeInBytes, NULL,
-			GLHardwareBufferManager::getGLUsage(mUsage));
+			GLHardwareBufferCoreManager::getGLUsage(mUsage));
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_VertexBuffer);
 		VertexBufferCore::initialize();
@@ -150,14 +150,4 @@ namespace BansheeEngine
 		memcpy(bufferData, pSource, length);
 		unlock();
     }
-
-	GLVertexBuffer::GLVertexBuffer(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage)
-		: VertexBuffer(vertexSize, numVertices, usage, false)
-	{
-	}
-
-	SPtr<CoreObjectCore> GLVertexBuffer::createCore() const
-	{
-		return bs_shared_ptr<GLVertexBufferCore>(mUsage, mUseSystemMemory, mProperties);
-	}
 }
