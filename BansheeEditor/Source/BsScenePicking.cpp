@@ -189,12 +189,14 @@ namespace BansheeEngine
 
 		UINT32 firstGizmoIdx = (UINT32)pickData.size();
 
-		Viewport vp = cam->getViewport()->clone();
-		gCoreAccessor().queueCommand(std::bind(&ScenePicking::corePickingBegin, this, vp, std::cref(pickData), position, area));
+		SPtr<RenderTargetCore> target = cam->getViewport()->getTarget()->getCore();
+		gCoreAccessor().queueCommand(std::bind(&ScenePicking::corePickingBegin, this, target, 
+			cam->getViewport()->getNormArea(), std::cref(pickData), position, area));
 
 		GizmoManager::instance().renderForPicking(cam, [&](UINT32 inputIdx) { return encodeIndex(firstGizmoIdx + inputIdx); });
 
-		AsyncOp op = gCoreAccessor().queueReturnCommand(std::bind(&ScenePicking::corePickingEnd, this, vp, position, area, _1));
+		AsyncOp op = gCoreAccessor().queueReturnCommand(std::bind(&ScenePicking::corePickingEnd, this, target, 
+			cam->getViewport()->getNormArea(), position, area, _1));
 		gCoreAccessor().submitToCoreThread(true);
 
 		assert(op.hasCompleted());
@@ -224,12 +226,14 @@ namespace BansheeEngine
 		return results;
 	}
 
-	void ScenePicking::corePickingBegin(const Viewport& viewport, const RenderableSet& renderables, const Vector2I& position, const Vector2I& area)
+	void ScenePicking::corePickingBegin(const SPtr<RenderTargetCore>& target, const Rect2& viewportArea, 
+		const RenderableSet& renderables, const Vector2I& position, const Vector2I& area)
 	{
 		RenderSystem& rs = RenderSystem::instance();
 
 		rs.beginFrame();
-		rs.setViewport(viewport);
+		rs.setRenderTarget(target);
+		rs.setViewport(viewportArea);
 		rs.clearRenderTarget(FBT_COLOR | FBT_DEPTH | FBT_STENCIL, Color::White);
 		rs.setScissorRect(position.x, position.y, position.x + area.x, position.y + area.y);
 
@@ -275,17 +279,19 @@ namespace BansheeEngine
 		}
 	}
 
-	void ScenePicking::corePickingEnd(const Viewport& vp, const Vector2I& position, const Vector2I& area, AsyncOp& asyncOp)
+	void ScenePicking::corePickingEnd(const SPtr<RenderTargetCore>& target, const Rect2& viewportArea, const Vector2I& position, 
+		const Vector2I& area, AsyncOp& asyncOp)
 	{
-		RenderTargetPtr rt = vp.getTarget();
-		if (rt->getCore()->getProperties().isWindow())
+		const RenderTargetProperties& rtProps = target->getProperties();
+
+		if (rtProps.isWindow())
 		{
 			// TODO: When I do implement this then I will likely want a method in RenderTarget that unifies both render window and render texture readback
 			BS_EXCEPT(NotImplementedException, "Picking is not supported on render windows as framebuffer readback methods aren't implemented");
 		}
 
-		RenderTexturePtr rtt = std::static_pointer_cast<RenderTexture>(rt);
-		TexturePtr outputTexture = rtt->getBindableColorTexture().getInternalPtr();
+		SPtr<RenderTextureCore> rtt = std::static_pointer_cast<RenderTextureCore>(target);
+		TexturePtr outputTexture = rtt->getBindableColorTexture();
 
 		if (position.x < 0 || position.x >= (INT32)outputTexture->getWidth() ||
 			position.y < 0 || position.y >= (INT32)outputTexture->getHeight())
@@ -309,7 +315,7 @@ namespace BansheeEngine
 		UINT32 maxWidth = std::min((UINT32)(position.x + area.x), outputPixelData->getWidth());
 		UINT32 maxHeight = std::min((UINT32)(position.y + area.y), outputPixelData->getHeight());
 
-		if (rt->requiresTextureFlipping())
+		if (rtProps.requiresTextureFlipping())
 		{
 			UINT32 vertOffset = outputPixelData->getHeight() - 1;
 

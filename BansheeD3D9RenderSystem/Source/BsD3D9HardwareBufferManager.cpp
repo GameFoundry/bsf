@@ -27,14 +27,14 @@ namespace BansheeEngine
 		return bs_core_ptr<D3D9VertexDeclaration, PoolAlloc>(decl);
     }
 
-	SPtr<VertexBufferCore> D3D9HardwareBufferCoreManager::createVertexBufferImpl(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
+	SPtr<VertexBufferCore> D3D9HardwareBufferCoreManager::createVertexBufferInternal(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
 	{
 		assert(numVerts > 0);
 
 		return bs_shared_ptr<D3D9VertexBufferCore>(vertexSize, numVerts, usage, streamOut);
 	}
 
-	SPtr<IndexBufferCore> D3D9HardwareBufferCoreManager::createIndexBufferImpl(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
+	SPtr<IndexBufferCore> D3D9HardwareBufferCoreManager::createIndexBufferInternal(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
 	{
 		assert(numIndexes > 0);
 

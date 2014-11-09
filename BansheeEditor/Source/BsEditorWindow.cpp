@@ -2,6 +2,7 @@
 #include "BsEditorWidgetContainer.h"
 #include "BsEditorWindowManager.h"
 #include "BsDragAndDropManager.h"
+#include "BsRenderWindow.h"
 
 namespace BansheeEngine
 {
@@ -39,7 +40,7 @@ namespace BansheeEngine
 
 		mWidgets->setSize(widgetWidth, widgetHeight);
 
-		Platform::setCaptionNonClientAreas(*mRenderWindow.get(), mWidgets->getDraggableAreas());
+		Platform::setCaptionNonClientAreas(*mRenderWindow->getCore().get(), mWidgets->getDraggableAreas());
 	}
 
 	void EditorWindow::widgetRemoved()

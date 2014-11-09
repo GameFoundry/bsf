@@ -57,6 +57,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT RenderWindowProperties : public RenderTargetProperties
 	{
 	public:
+		RenderWindowProperties(const RENDER_WINDOW_DESC& desc);
 		virtual ~RenderWindowProperties() { }
 
 		/**
@@ -94,21 +95,6 @@ namespace BansheeEngine
 		friend class RenderWindowCore;
 		friend class RenderWindow;
 
-		/**
-		 * @copydoc	RenderTargetProperties::copyToBuffer
-		 */
-		virtual void copyToBuffer(UINT8* buffer) const;
-
-		/**
-		 * @copydoc	RenderTargetProperties::copyFromBuffer
-		 */
-		virtual void copyFromBuffer(UINT8* buffer);
-
-		/**
-		 * @copydoc	RenderTargetProperties::getSize
-		 */
-		virtual UINT32 getSize() const;
-
 		bool mIsFullScreen = false;
 		INT32 mLeft = 0;
 		INT32 mTop = 0;
@@ -125,8 +111,13 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT RenderWindowCore : public RenderTargetCore
 	{
 	public:
-		RenderWindowCore(RenderWindow* parent, RenderWindowProperties* properties);
+		RenderWindowCore(const RENDER_WINDOW_DESC& desc);
 		virtual ~RenderWindowCore() { }
+
+		/**
+		 * @copydoc	RenderTargetCore::destroy
+		 */
+		virtual void destroy();
 
 		/** 
 		 * @brief	Switches the window to fullscreen mode. Child windows cannot go into fullscreen mode.
@@ -136,8 +127,7 @@ namespace BansheeEngine
 		 * @param	refreshRate	Refresh rate of the window in Hertz.
 		 * @param	monitorIdx	Index of the monitor to go fullscreen on.
 		 *
-		 * @note	Core thread.
-		 *			If the exact provided mode isn't available, closest one is used instead.
+		 * @note	If the exact provided mode isn't available, closest one is used instead.
 		 */
 		virtual void setFullscreen(UINT32 width, UINT32 height, float refreshRate = 60.0f, UINT32 monitorIdx = 0) { }
 
@@ -145,8 +135,6 @@ namespace BansheeEngine
 		* @brief	Switches the window to fullscreen mode. Child windows cannot go into fullscreen mode.
 		*
 		* @param	videoMode	Mode retrieved from VideoModeInfo in RenderSystem.
-		*
-		* @note		Core thread.
 		*/
 		virtual void setFullscreen(const VideoMode& mode) { }
 
@@ -155,41 +143,28 @@ namespace BansheeEngine
 		 *
 		 * @param	Window width in pixels.
 		 * @param	Window height in pixels.
-		 *
-		 * @note	Core thread.
 		 */
 		virtual void setWindowed(UINT32 width, UINT32 height) { }
 
         /**
          * @brief	Hide or show the window.
-		 *
-		 * @note	Core thread.
          */
         virtual void setHidden(bool hidden);
 
         /**
          * @brief	Change the size of the window.
-		 *
-		 * @note	Core thread.
          */
         virtual void resize(UINT32 width, UINT32 height) = 0;
 
         /**
          * @brief	Reposition the window.
-		 *
-		 * @note	Core thread.
          */
         virtual void move(INT32 left, INT32 top) = 0;
 
 		/**
-		 * @brief	Returns properties that describe the render texture.
+		 * @brief	Returns properties that describe the render window.
 		 */
-		const RenderWindowProperties& getProperties() const { return *static_cast<RenderWindowProperties*>(mProperties); }
-
-		/**
-		 * @copydoc	RenderTargetCore::getNonCore
-		 */
-		RenderWindow* getNonCore() const;
+		const RenderWindowProperties& getProperties() const;
 
 	protected:
 		friend class RenderWindow;
@@ -215,6 +190,18 @@ namespace BansheeEngine
 		 * @note	Core thread.
 		 */
 		virtual void _windowFocusLost();
+
+		/**
+		 * @copydoc	CoreObjectCore::syncFromCore
+		 */
+		virtual CoreSyncData syncFromCore(FrameAlloc* allocator);
+
+		/**
+		 * @copydoc	CoreObjectCore::syncToCore
+		 */
+		virtual void syncToCore(const CoreSyncData& data);
+
+		RENDER_WINDOW_DESC mDesc;
 	};
 
 	/**
@@ -228,11 +215,6 @@ namespace BansheeEngine
     {
     public:
 		virtual ~RenderWindow() { }
-
-		/**
-		 * @copydoc	RenderTarget::initialize
-		 */
-		virtual void initialize(const RENDER_WINDOW_DESC& desc);
 
 		/**
 		 * @copydoc	RenderTarget::destroy
@@ -250,17 +232,15 @@ namespace BansheeEngine
 		virtual Vector2I windowToScreenPos(const Vector2I& windowPos) const = 0;
 
 		/**
+		 * @brief	Retrieves a core implementation of a render window usable only from the
+		 *			core thread.
+		 */
+		SPtr<RenderWindowCore> getCore() const;
+
+		/**
 		 * @brief	Returns properties that describe the render window.
 		 */
 		const RenderWindowProperties& getProperties() const;
-
-		/**
-		 * @brief	Retrieves a core implementation of a render window usable only from the
-		 *			core thread.
-		 *
-		 * @note	Core thread only.
-		 */
-		SPtr<RenderWindowCore> getCore() const;
 
 		/**
 		 * @brief	Creates a new render window using the specified options. Optionally
@@ -271,7 +251,22 @@ namespace BansheeEngine
     protected:
 		friend class RenderWindowManager;
 
-		RenderWindow() { }
+		RenderWindow(const RENDER_WINDOW_DESC& desc);
+
+		/**
+		 * @copydoc	RenderTarget::createCore
+		 */
+		SPtr<CoreObjectCore> createCore() const;
+
+		/**
+		 * @copydoc	CoreObjectCore::syncToCore
+		 */
+		virtual CoreSyncData syncToCore(FrameAlloc* allocator);
+
+		/**
+		 * @copydoc	CoreObjectCore::syncFromCore
+		 */
+		virtual void syncFromCore(const CoreSyncData& data);
 
 	protected:
 		RENDER_WINDOW_DESC mDesc;

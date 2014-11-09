@@ -6,9 +6,8 @@
 
 namespace BansheeEngine
 {
-	D3D9RenderTextureCore::D3D9RenderTextureCore(D3D9RenderTexture* parent, RenderTextureProperties* properties, const RENDER_SURFACE_DESC& colorSurfaceDesc,
-		const RENDER_SURFACE_DESC& depthStencilSurfaceDesc)
-		:RenderTextureCore(parent, properties, colorSurfaceDesc, depthStencilSurfaceDesc), mDX9ColorSurface(nullptr), 
+	D3D9RenderTextureCore::D3D9RenderTextureCore(const RENDER_TEXTURE_DESC& desc)
+		:RenderTextureCore(desc), mProperties(desc, false), mDX9ColorSurface(nullptr),
 		mDX9DepthStencilSurface(nullptr), mIsBindableToShader(false)
 	{ }
 
@@ -84,19 +83,9 @@ namespace BansheeEngine
 		initializeSurfaces();
 	}
 
-	RenderTargetProperties* D3D9RenderTexture::createProperties() const
+	D3D9RenderTexture::D3D9RenderTexture(const RENDER_TEXTURE_DESC& desc)
+		:RenderTexture(desc), mProperties(desc, false)
 	{
-		return bs_new<RenderTextureProperties>();
-	}
 
-	SPtr<CoreObjectCore> D3D9RenderTexture::createCore() const
-	{
-		RenderTextureProperties* coreProperties = bs_new<RenderTextureProperties>();
-		RenderTextureProperties* myProperties = static_cast<RenderTextureProperties*>(mProperties);
-
-		*coreProperties = *myProperties;
-
-		return bs_shared_ptr<D3D9RenderTextureCore>(const_cast<D3D9RenderTexture*>(this),
-			coreProperties, mColorSurfaceDesc, mDepthStencilSurfaceDesc);
 	}
 }

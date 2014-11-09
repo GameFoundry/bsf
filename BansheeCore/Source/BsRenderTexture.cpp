@@ -5,28 +5,30 @@
 #include "BsTextureManager.h"
 #include "BsResources.h"
 #include "BsCoreThread.h"
+#include "BsFrameAlloc.h"
 
 namespace BansheeEngine
 {
-	void RenderTextureProperties::copyToBuffer(UINT8* buffer) const
+	RenderTextureProperties::RenderTextureProperties(const RENDER_TEXTURE_DESC& desc, bool requiresFlipping)
 	{
-		*(RenderTextureProperties*)buffer = *this;
+		TexturePtr texture = desc.colorSurface.texture;
+
+		if (texture != nullptr)
+		{
+			mWidth = texture->getWidth();
+			mHeight = texture->getHeight();
+			mColorDepth = BansheeEngine::PixelUtil::getNumElemBits(texture->getFormat());
+			mHwGamma = texture->isHardwareGammaEnabled();
+			mMultisampleCount = texture->getMultisampleCount();
+		}
+
+		mActive = true;
+		mIsWindow = false;
+		mRequiresTextureFlipping = requiresFlipping;
 	}
 
-	void RenderTextureProperties::copyFromBuffer(UINT8* buffer)
-	{
-		*this = *(RenderTextureProperties*)buffer;
-	}
-
-	UINT32 RenderTextureProperties::getSize() const
-	{
-		return sizeof(RenderTextureProperties);
-	}
-
-	RenderTextureCore::RenderTextureCore(RenderTexture* parent, RenderTextureProperties* properties, const RENDER_SURFACE_DESC& colorSurfaceDesc,
-		const RENDER_SURFACE_DESC& depthStencilSurfaceDesc)
-		:RenderTargetCore(parent, properties), mColorSurface(nullptr), mDepthStencilSurface(nullptr), 
-		mColorSurfaceDesc(colorSurfaceDesc), mDepthStencilSurfaceDesc(depthStencilSurfaceDesc)
+	RenderTextureCore::RenderTextureCore(const RENDER_TEXTURE_DESC& desc)
+		:mColorSurface(nullptr), mDepthStencilSurface(nullptr), mDesc(desc)
 	{ }
 
 	RenderTextureCore::~RenderTextureCore()
@@ -36,26 +38,28 @@ namespace BansheeEngine
 	{
 		RenderTargetCore::initialize();
 
-		if (mColorSurfaceDesc.texture != nullptr)
+		const RENDER_SURFACE_DESC& colorSurface = mDesc.colorSurface;
+		if (colorSurface.texture != nullptr)
 		{
-			TexturePtr texture = mColorSurfaceDesc.texture;
+			TexturePtr texture = colorSurface.texture;
 
 			if (texture->getUsage() != TU_RENDERTARGET)
 				BS_EXCEPT(InvalidParametersException, "Provided texture is not created with render target usage.");
 
-			mColorSurface = Texture::requestView(texture, mColorSurfaceDesc.mipLevel, 1,
-				mColorSurfaceDesc.face, 1, GVU_RENDERTARGET);
+			mColorSurface = Texture::requestView(texture, colorSurface.mipLevel, 1,
+				colorSurface.face, 1, GVU_RENDERTARGET);
 		}
 
-		if (mDepthStencilSurfaceDesc.texture != nullptr)
+		const RENDER_SURFACE_DESC& depthStencilSurface = mDesc.depthStencilSurface;
+		if (depthStencilSurface.texture != nullptr)
 		{
-			TexturePtr texture = mDepthStencilSurfaceDesc.texture;
+			TexturePtr texture = depthStencilSurface.texture;
 
 			if (texture->getUsage() != TU_DEPTHSTENCIL)
 				BS_EXCEPT(InvalidParametersException, "Provided texture is not created with depth stencil usage.");
 
-			mDepthStencilSurface = Texture::requestView(texture, mDepthStencilSurfaceDesc.mipLevel, 1,
-				mDepthStencilSurfaceDesc.face, 1, GVU_DEPTHSTENCIL);
+			mDepthStencilSurface = Texture::requestView(texture, depthStencilSurface.mipLevel, 1,
+				depthStencilSurface.face, 1, GVU_DEPTHSTENCIL);
 		}
 
 		throwIfBuffersDontMatch();
@@ -91,6 +95,28 @@ namespace BansheeEngine
 		RenderTargetCore::destroy();
 	}
 
+	CoreSyncData RenderTextureCore::syncFromCore(FrameAlloc* allocator)
+	{
+		UINT32 size = sizeof(RenderTextureProperties);
+		UINT8* buffer = allocator->alloc(size);
+
+		RenderTextureProperties& props = const_cast<RenderTextureProperties&>(getProperties());
+
+		memcpy(buffer, &props, size);
+		return CoreSyncData(buffer, size);
+	}
+
+	void RenderTextureCore::syncToCore(const CoreSyncData& data)
+	{
+		RenderTextureProperties& props = const_cast<RenderTextureProperties&>(getProperties());
+		props = data.getData<RenderTextureProperties>();
+	}
+
+	const RenderTextureProperties& RenderTextureCore::getProperties() const
+	{
+		return static_cast<const RenderTextureProperties&>(getPropertiesInternal());
+	}
+
 	void RenderTextureCore::throwIfBuffersDontMatch() const
 	{
 		if (mColorSurface == nullptr || mDepthStencilSurface == nullptr)
@@ -108,11 +134,6 @@ namespace BansheeEngine
 		}
 	}
 
-	RenderTexture* RenderTextureCore::getNonCore() const
-	{
-		return static_cast<RenderTexture*>(mParent);
-	}
-
 	RenderTexturePtr RenderTexture::create(TextureType textureType, UINT32 width, UINT32 height, 
 		PixelFormat format, bool hwGamma, UINT32 multisampleCount, 
 		bool createDepth, PixelFormat depthStencilFormat)
@@ -126,39 +147,14 @@ namespace BansheeEngine
 		return TextureManager::instance().createRenderTexture(desc);
 	}
 
-	const RenderTextureProperties& RenderTexture::getProperties() const 
-	{ 
-		THROW_IF_CORE_THREAD;
-
-		return static_cast<const RenderTextureProperties&>(RenderTarget::getProperties()); 
-	}
-
 	SPtr<RenderTextureCore> RenderTexture::getCore() const 
 	{ 
 		return std::static_pointer_cast<RenderTextureCore>(mCoreSpecific); 
 	}
 
-	void RenderTexture::initialize(const RENDER_TEXTURE_DESC& desc)
+	RenderTexture::RenderTexture(const RENDER_TEXTURE_DESC& desc)
 	{
-		mColorSurfaceDesc = desc.colorSurface;
-		mDepthStencilSurfaceDesc = desc.depthStencilSurface;
-
-		TexturePtr texture = desc.colorSurface.texture;
-
-		mProperties = createProperties();
-		RenderTextureProperties* properties = static_cast<RenderTextureProperties*>(mProperties);
-		if (texture != nullptr)
-		{
-			properties->mWidth = texture->getWidth();
-			properties->mHeight = texture->getHeight();
-			properties->mColorDepth = BansheeEngine::PixelUtil::getNumElemBits(texture->getFormat());
-			properties->mHwGamma = texture->isHardwareGammaEnabled();
-			properties->mMultisampleCount = texture->getMultisampleCount();
-		}
-
-		properties->mActive = true;
-		properties->mIsWindow = false;
-		properties->mRequiresTextureFlipping = requiresTextureFlipping();
+		mDesc = desc;
 
 		// Create non-persistent resource handles for the used textures (we only need them because a lot of the code accepts only handles,
 		// since they're non persistent they don't really have any benefit over shared pointers)
@@ -167,7 +163,32 @@ namespace BansheeEngine
 
 		if (desc.depthStencilSurface.texture != nullptr)
 			mBindableDepthStencilTex = static_resource_cast<Texture>(gResources()._createResourceHandle(desc.depthStencilSurface.texture));
+	}
 
-		RenderTarget::initialize();
+	SPtr<CoreObjectCore> RenderTexture::createCore() const
+	{
+		return TextureCoreManager::instance().createRenderTextureInternal(mDesc);
+	}
+
+	CoreSyncData RenderTexture::syncToCore(FrameAlloc* allocator)
+	{
+		UINT32 size = sizeof(RenderTextureProperties);
+		UINT8* buffer = allocator->alloc(size);
+
+		RenderTextureProperties& props = const_cast<RenderTextureProperties&>(getProperties());
+
+		memcpy(buffer, &props, size);
+		return CoreSyncData(buffer, size);
+	}
+
+	void RenderTexture::syncFromCore(const CoreSyncData& data)
+	{
+		RenderTextureProperties& props = const_cast<RenderTextureProperties&>(getProperties());
+		props = data.getData<RenderTextureProperties>();
+	}
+
+	const RenderTextureProperties& RenderTexture::getProperties() const
+	{
+		return static_cast<const RenderTextureProperties&>(getPropertiesInternal());
 	}
 }

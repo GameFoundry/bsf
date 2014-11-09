@@ -15,15 +15,23 @@ namespace BansheeEngine
 	class BS_D3D11_EXPORT D3D11MultiRenderTextureCore : public MultiRenderTextureCore
 	{
 	public:
-		D3D11MultiRenderTextureCore(D3D11MultiRenderTexture* parent, MultiRenderTextureProperties* properties, const MULTI_RENDER_TEXTURE_DESC& desc);
+		D3D11MultiRenderTextureCore(const MULTI_RENDER_TEXTURE_DESC& desc);
 		virtual ~D3D11MultiRenderTextureCore();
 		
 		/**
 		 * @copydoc	MultiRenderTextureCore::getCustomAttribute
 		 */
 		void getCustomAttribute(const String& name, void* pData) const;
+
 	protected:
 		friend class D3D11MultiRenderTexture;
+
+		/**
+		 * @copydoc	MultiRenderTextureCore::getProperties
+		 */
+		const RenderTargetProperties& getPropertiesInternal() const { return mProperties; }
+
+		MultiRenderTextureProperties mProperties;
 	};
 
 	/**
@@ -39,16 +47,13 @@ namespace BansheeEngine
 	protected:
 		friend class D3D11TextureManager;
 
-		D3D11MultiRenderTexture() { }
+		D3D11MultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC& desc);
 
 		/**
-		 * @copydoc	MultiRenderTexture::createProperties
+		 * @copydoc	MultiRenderTexture::getProperties
 		 */
-		virtual RenderTargetProperties* createProperties() const;
+		const RenderTargetProperties& getPropertiesInternal() const { return mProperties; }
 
-		/**
-		 * @copydoc	RenderTexture::createCore
-		 */
-		virtual SPtr<CoreObjectCore> createCore() const;
+		MultiRenderTextureProperties mProperties;
 	};
 }

@@ -16,8 +16,7 @@ namespace BansheeEngine
 	class BS_D3D9_EXPORT D3D9RenderTextureCore : public RenderTextureCore, public D3D9Resource
 	{
 	public:
-		D3D9RenderTextureCore(D3D9RenderTexture* parent, RenderTextureProperties* properties, const RENDER_SURFACE_DESC& colorSurfaceDesc,
-			const RENDER_SURFACE_DESC& depthStencilSurfaceDesc);
+		D3D9RenderTextureCore(const RENDER_TEXTURE_DESC& desc);
 
 		virtual ~D3D9RenderTextureCore();
 
@@ -64,18 +63,24 @@ namespace BansheeEngine
 		 */
 		void releaseSurfaces();
 
+		/**
+		 * @copydoc	RenderTextureCore::getProperties
+		 */
+		const RenderTargetProperties& getPropertiesInternal() const { return mProperties; }
+
 	protected:
 		IDirect3DSurface9* mDX9ColorSurface;
 		IDirect3DSurface9* mDX9DepthStencilSurface;
 		bool mIsBindableToShader;
+		RenderTextureProperties mProperties;
 	};
 
 	/**
-	* @brief	DirectX 9 implementation of a render texture.
-	*
-	* @note		Sim thread only.
-	*/
-	class BS_D3D9_EXPORT D3D9RenderTexture : public RenderTexture
+	 * @brief	DirectX 9 implementation of a render texture.
+	 *
+	 * @note	Sim thread only.
+	 */
+	class D3D9RenderTexture : public RenderTexture
 	{
 	public:
 		virtual ~D3D9RenderTexture() { }
@@ -83,16 +88,13 @@ namespace BansheeEngine
 	protected:
 		friend class D3D9TextureManager;
 
-		D3D9RenderTexture() { }
+		D3D9RenderTexture(const RENDER_TEXTURE_DESC& desc);
 
 		/**
-		 * @copydoc	RenderTexture::createProperties
+		 * @copydoc	RenderTexture::getProperties
 		 */
-		virtual RenderTargetProperties* createProperties() const;
+		const RenderTargetProperties& getPropertiesInternal() const { return mProperties; }
 
-		/**
-		 * @copydoc	RenderTexture::createCore
-		 */
-		virtual SPtr<CoreObjectCore> createCore() const;
+		RenderTextureProperties mProperties;
 	};
 }

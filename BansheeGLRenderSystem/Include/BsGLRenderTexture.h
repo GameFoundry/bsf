@@ -19,9 +19,7 @@ namespace BansheeEngine
     class BS_RSGL_EXPORT GLRenderTextureCore : public RenderTextureCore
     {
 	public:
-		GLRenderTextureCore(GLRenderTexture* parent, RenderTextureProperties* properties, const RENDER_SURFACE_DESC& colorSurfaceDesc,
-			const RENDER_SURFACE_DESC& depthStencilSurfaceDesc);
-
+		GLRenderTextureCore(const RENDER_TEXTURE_DESC& desc);
 		virtual ~GLRenderTextureCore();
 
 		/**
@@ -33,48 +31,23 @@ namespace BansheeEngine
 		friend class GLRenderTexture;
 
 		/**
-		 * @copydoc	CoreObjectCore::initialize
+		 * @copydoc	RenderTextureCore::initialize
 		 */
 		virtual void initialize();
 
 		/**
-		 * @copydoc	CoreObjectCore::destroy
+		 * @copydoc	RenderTextureCore::destroy
 		 */
 		virtual void destroy();
 
+		/**
+		 * @copydoc	RenderTextureCore::getProperties
+		 */
+		const RenderTargetProperties& getPropertiesInternal() const { return mProperties; }
+
+		RenderTextureProperties mProperties;
 		GLFrameBufferObject* mFB;
     };
-
-	/**
-	 * @brief	OpenGL implementation of a render texture.
-	 *
-	 * @note	Sim thread only.
-	 */
-	class BS_RSGL_EXPORT GLRenderTexture : public RenderTexture
-	{
-	public:
-		virtual ~GLRenderTexture() { }
-
-	protected:
-		friend class GLTextureManager;
-
-		GLRenderTexture() { }
-
-		/**
-		 * @copydoc	RenderTexture::requiresTextureFlipping
-		 */
-		bool requiresTextureFlipping() const { return true; }
-
-		/**
-		 * @copydoc	RenderTexture::createProperties
-		 */
-		virtual RenderTargetProperties* createProperties() const;
-
-		/**
-		 * @copydoc	RenderTexture::createCore
-		 */
-		virtual SPtr<CoreObjectCore> createCore() const;
-	};
 
     /**
      * @brief	Manager that handles valid render texture formats.
@@ -152,4 +125,27 @@ namespace BansheeEngine
 		GLuint mBlitReadFBO;
 		GLuint mBlitWriteFBO;
     };
+
+	/**
+	 * @brief	DirectX 9 implementation of a render texture.
+	 *
+	 * @note	Sim thread only.
+	 */
+	class GLRenderTexture : public RenderTexture
+	{
+	public:
+		virtual ~GLRenderTexture() { }
+
+	protected:
+		friend class GLTextureManager;
+
+		GLRenderTexture(const RENDER_TEXTURE_DESC& desc);
+
+		/**
+		 * @copydoc	RenderTexture::getProperties
+		 */
+		const RenderTargetProperties& getPropertiesInternal() const { return mProperties; }
+
+		RenderTextureProperties mProperties;
+	};
 }

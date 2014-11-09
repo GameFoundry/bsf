@@ -3,8 +3,8 @@
 
 namespace BansheeEngine
 {
-	GLMultiRenderTextureCore::GLMultiRenderTextureCore(GLMultiRenderTexture* parent, MultiRenderTextureProperties* properties, const MULTI_RENDER_TEXTURE_DESC& desc)
-		:MultiRenderTextureCore(parent, properties, desc), mFB(nullptr)
+	GLMultiRenderTextureCore::GLMultiRenderTextureCore(const MULTI_RENDER_TEXTURE_DESC& desc)
+		:MultiRenderTextureCore(desc), mProperties(desc), mFB(nullptr)
 	{ }
 
 	GLMultiRenderTextureCore::~GLMultiRenderTextureCore()
@@ -91,19 +91,7 @@ namespace BansheeEngine
 		}
 	}
 
-	RenderTargetProperties* GLMultiRenderTexture::createProperties() const
-	{
-		return bs_new<MultiRenderTextureProperties>();
-	}
-
-	SPtr<CoreObjectCore> GLMultiRenderTexture::createCore() const
-	{
-		MultiRenderTextureProperties* coreProperties = bs_new<MultiRenderTextureProperties>();
-		MultiRenderTextureProperties* myProperties = static_cast<MultiRenderTextureProperties*>(mProperties);
-
-		*coreProperties = *myProperties;
-
-		return bs_shared_ptr<GLMultiRenderTextureCore>(const_cast<GLMultiRenderTexture*>(this),
-			coreProperties, mDesc);
-	}
+	GLMultiRenderTexture::GLMultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC& desc)
+		:MultiRenderTexture(desc), mProperties(desc)
+	{ }
 }

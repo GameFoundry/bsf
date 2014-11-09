@@ -12,13 +12,12 @@ namespace BansheeEngine
      * @brief	Defines interface for creation of textures. Render systems
 	 *			provide their own implementations.
 	 *
-	 * @note	Thread safe.
+	 * @note	Sim thread only.
      */
     class BS_CORE_EXPORT TextureManager : public Module<TextureManager>
     {
     public:
-        TextureManager();
-        virtual ~TextureManager();
+		virtual ~TextureManager() { }
 
 		/**
 		 * @copydoc	Texture::create(TextureType, UINT32, UINT32, UINT32, int, PixelFormat, int, bool, UINT32, const String&)
@@ -84,11 +83,6 @@ namespace BansheeEngine
 		 */
 		virtual PixelFormat getNativeFormat(TextureType ttype, PixelFormat format, int usage, bool hwGamma) = 0;
 
-		/**
-		 * @brief	Returns tiny dummy texture for use when no other is available.
-		 */
-		const HTexture& getDummyTexture() const { return mDummyTexture; }
-
 	protected:
 		/**
 		 * @brief	Creates an empty and uninitialized texture of a specific type. This is to be implemented
@@ -100,13 +94,54 @@ namespace BansheeEngine
 		 * @brief	Creates an empty and uninitialized render texture of a specific type. This 
 		 *			is to be implemented by render systems with their own implementations.
 		 */
-		virtual RenderTexturePtr createRenderTextureImpl() = 0;
+		virtual RenderTexturePtr createRenderTextureImpl(const RENDER_TEXTURE_DESC& desc) = 0;
 
 		/**
 		 * @brief	Creates an empty and uninitialized multi render texture of a specific type. This is 
 		 *			to be implemented by render systems with their own implementations.
 		 */
-		virtual MultiRenderTexturePtr createMultiRenderTextureImpl() = 0;
+		virtual MultiRenderTexturePtr createMultiRenderTextureImpl(const MULTI_RENDER_TEXTURE_DESC& desc) = 0;
+    };
+
+/**
+     * @brief	Defines interface for creation of textures. Render systems
+	 *			provide their own implementations.
+	 *
+	 * @note	Core thread only.
+     */
+    class BS_CORE_EXPORT TextureCoreManager : public Module<TextureCoreManager>
+    {
+    public:
+		virtual ~TextureCoreManager() { }
+
+		/**
+		 * @copydoc	TextureManager::createRenderTexture(const RENDER_TEXTURE_DESC&)
+		 */
+		SPtr<RenderTextureCore> createRenderTexture(const RENDER_TEXTURE_DESC& desc);
+
+		/**
+		 * @copydoc	TextureManager::createMultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC&)
+		 */
+		SPtr<MultiRenderTextureCore> createMultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC& desc);
+
+		/**
+		 * @brief	Returns tiny dummy texture for use when no other is available.
+		 */
+		const HTexture& getDummyTexture() const { return mDummyTexture; }
+
+	protected:
+		friend class RenderTexture;
+		friend class MultiRenderTexture;
+
+		/**
+		 * @copydoc	TextureManager::createRenderTextureImpl
+		 */
+		virtual SPtr<RenderTextureCore> createRenderTextureInternal(const RENDER_TEXTURE_DESC& desc) = 0;
+
+		/**
+		 * @copydoc	TextureManager::createMultiRenderTextureImpl
+		 */
+		virtual SPtr<MultiRenderTextureCore> createMultiRenderTextureInternal(const MULTI_RENDER_TEXTURE_DESC& desc) = 0;
 
 		/**
 		 * @copydoc	Module::onStartUp

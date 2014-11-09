@@ -7,13 +7,6 @@
 
 namespace BansheeEngine
 {
-	D3D11TextureManager::D3D11TextureManager() 
-		:TextureManager()
-	{ }
-
-	D3D11TextureManager::~D3D11TextureManager()
-	{ }
-
 	TexturePtr D3D11TextureManager::createTextureImpl()
 	{
 		D3D11Texture* tex = new (bs_alloc<D3D11Texture, PoolAlloc>()) D3D11Texture(); 
@@ -21,16 +14,16 @@ namespace BansheeEngine
 		return bs_core_ptr<D3D11Texture, PoolAlloc>(tex);
 	}
 
-	RenderTexturePtr D3D11TextureManager::createRenderTextureImpl()
+	RenderTexturePtr D3D11TextureManager::createRenderTextureImpl(const RENDER_TEXTURE_DESC& desc)
 	{
-		D3D11RenderTexture* tex = new (bs_alloc<D3D11RenderTexture, PoolAlloc>()) D3D11RenderTexture();
+		D3D11RenderTexture* tex = new (bs_alloc<D3D11RenderTexture, PoolAlloc>()) D3D11RenderTexture(desc);
 
 		return bs_core_ptr<D3D11RenderTexture, PoolAlloc>(tex);
 	}
 
-	MultiRenderTexturePtr D3D11TextureManager::createMultiRenderTextureImpl()
+	MultiRenderTexturePtr D3D11TextureManager::createMultiRenderTextureImpl(const MULTI_RENDER_TEXTURE_DESC& desc)
 	{
-		D3D11MultiRenderTexture* tex = new (bs_alloc<D3D11MultiRenderTexture, PoolAlloc>()) D3D11MultiRenderTexture();
+		D3D11MultiRenderTexture* tex = new (bs_alloc<D3D11MultiRenderTexture, PoolAlloc>()) D3D11MultiRenderTexture(desc);
 
 		return bs_core_ptr<D3D11MultiRenderTexture, PoolAlloc>(tex);
 	}
@@ -41,5 +34,15 @@ namespace BansheeEngine
 		DXGI_FORMAT d3dPF = D3D11Mappings::getPF(D3D11Mappings::getClosestSupportedPF(format, hwGamma), hwGamma);
 
 		return D3D11Mappings::getPF(d3dPF);
+	}
+
+	SPtr<RenderTextureCore> D3D11TextureCoreManager::createRenderTextureInternal(const RENDER_TEXTURE_DESC& desc)
+	{
+		return bs_shared_ptr<D3D11RenderTextureCore>(desc);
+	}
+
+	SPtr<MultiRenderTextureCore> D3D11TextureCoreManager::createMultiRenderTextureInternal(const MULTI_RENDER_TEXTURE_DESC& desc)
+	{
+		return bs_shared_ptr<D3D11MultiRenderTextureCore>(desc);
 	}
 }

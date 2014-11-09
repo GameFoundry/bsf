@@ -14,33 +14,12 @@ namespace BansheeEngine
 	class BS_D3D9_EXPORT D3D9RenderWindowProperties : public RenderWindowProperties
 	{
 	public:
+		D3D9RenderWindowProperties(const RENDER_WINDOW_DESC& desc);
 		virtual ~D3D9RenderWindowProperties() { }
-
-		/**
-		 * @brief	Retrieves the window handle.
-		 */
-		HWND getHWnd() const { return mHWnd; }
 
 	private:
 		friend class D3D9RenderWindowCore;
 		friend class D3D9RenderWindow;
-
-		/**
-		 * @copydoc	RenderTargetProperties::copyToBuffer
-		 */
-		virtual void copyToBuffer(UINT8* buffer) const;
-
-		/**
-		 * @copydoc	RenderTargetProperties::copyFromBuffer
-		 */
-		virtual void copyFromBuffer(UINT8* buffer);
-
-		/**
-		 * @copydoc	RenderTargetProperties::getSize
-		 */
-		virtual UINT32 getSize() const;
-
-		HWND mHWnd = 0;
 	};
 
 	/**
@@ -51,7 +30,7 @@ namespace BansheeEngine
 	class BS_D3D9_EXPORT D3D9RenderWindowCore : public RenderWindowCore
 	{
 	public:
-		D3D9RenderWindowCore(D3D9RenderWindow* parent, RenderWindowProperties* properties, const RENDER_WINDOW_DESC& desc, HINSTANCE instance);
+		D3D9RenderWindowCore(const RENDER_WINDOW_DESC& desc, HINSTANCE instance);
 		~D3D9RenderWindowCore();
 		
 		/**
@@ -168,6 +147,11 @@ namespace BansheeEngine
 		void getAdjustedWindowSize(UINT32 clientWidth, UINT32 clientHeight,
 			DWORD style, UINT32* winWidth, UINT32* winHeight);
 
+		/**
+		 * @copydoc	RenderWindowCore::getProperties
+		 */
+		const RenderTargetProperties& getPropertiesInternal() const { return mProperties; }
+
 	protected:
 		HINSTANCE mInstance;
 		D3D9Device* mDevice;
@@ -182,7 +166,9 @@ namespace BansheeEngine
 		DWORD mWindowedStyleEx;
 		bool mIsDepthBuffered;
 		bool mIsChild;
-		RENDER_WINDOW_DESC mDesc;
+		HWND mHWnd;
+
+		D3D9RenderWindowProperties mProperties;
 	};
 
 	/**
@@ -198,22 +184,17 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RenderWindow::screenToWindowPos
 		 */
+		void getCustomAttribute(const String& name, void* pData) const;
+
+		/**
+		 * @copydoc RenderWindow::screenToWindowPos
+		 */
 		Vector2I screenToWindowPos(const Vector2I& screenPos) const;
 
 		/**
 		 * @copydoc RenderWindow::windowToScreenPos
 		 */
 		Vector2I windowToScreenPos(const Vector2I& windowPos) const;
-
-		/**
-		 * @copydoc RenderWindow::requiresTextureFlipping
-		 */
-		bool requiresTextureFlipping() const { return false; }
-
-		/**
-		 * @copydoc RenderWindow::getCustomAttribute
-		 */
-		void getCustomAttribute(const String& name, void* pData) const;
 
 		/**
 		 * @copydoc	RenderWindow::getCore
@@ -224,19 +205,20 @@ namespace BansheeEngine
 		friend class D3D9RenderWindowManager;
 		friend class D3D9RenderWindowCore;
 
-		D3D9RenderWindow(HINSTANCE instance);
+		D3D9RenderWindow(const RENDER_WINDOW_DESC& desc, HINSTANCE instance);
 
 		/**
-		 * @copydoc	RenderWindow::createProperties
+		 * @copydoc	RenderWindowCore::getProperties
 		 */
-		virtual RenderTargetProperties* createProperties() const;
+		const RenderTargetProperties& getPropertiesInternal() const { return mProperties; }
 
 		/**
-		 * @copydoc	RenderWindow::createCore
+		 * @brief	Retrieves internal window handle.
 		 */
-		virtual SPtr<CoreObjectCore> createCore() const;
+		HWND getHWnd() const;
 
 	private:
 		HINSTANCE mInstance;
+		D3D9RenderWindowProperties mProperties;
 	};
 }

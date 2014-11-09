@@ -214,11 +214,12 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		if (camera.viewport.getTarget() != mSceneRenderTarget)
+		SPtr<RenderTargetCore> sceneRenderTarget = mSceneRenderTarget->getCore();
+		if (camera.renderTarget != sceneRenderTarget)
 			return;
 
-		float width = (float)mSceneRenderTarget->getCore()->getProperties().getWidth();
-		float height = (float)mSceneRenderTarget->getCore()->getProperties().getHeight();
+		float width = (float)sceneRenderTarget->getProperties().getWidth();
+		float height = (float)sceneRenderTarget->getProperties().getHeight();
 
 		Rect2 normArea = camera.viewport.getNormArea();
 

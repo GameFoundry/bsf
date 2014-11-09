@@ -31,7 +31,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RenderSystem::setRenderTarget()
 		 */
-        void setRenderTarget(RenderTargetPtr target);
+		void setRenderTarget(const SPtr<RenderTargetCore>& target);
 
         /**
 		 * @copydoc RenderSystem::setVertexBuffers()
@@ -92,7 +92,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RenderSystem::setViewport()
 		 */
-		void setViewport(Viewport vp);
+		void setViewport(const Rect2& area);
 
 		/**
 		 * @copydoc RenderSystem::bindGpuProgram()
@@ -498,6 +498,13 @@ namespace BansheeEngine
 		/************************************************************************/
 
 		/**
+		 * @brief	Recalculates actual viewport dimensions based on currently 
+		 *			set viewport normalized dimensions and render target and applies
+		 *			them for further rendering.
+		 */
+		void applyViewport();
+
+		/**
 		 * @brief	Converts the provided matrix m into a representation usable by OpenGL.
 		 */
 		void makeGLMatrix(GLfloat gl_matrix[16], const Matrix4& m);
@@ -519,6 +526,7 @@ namespace BansheeEngine
 		bool checkForErrors() const;
 
 	private:
+		Rect2 mViewportNorm;
 		UINT32 mScissorTop, mScissorBottom, mScissorLeft, mScissorRight;
 		UINT32 mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight;
 

@@ -458,6 +458,6 @@ namespace BansheeEngine
 
 	const HTexture& Texture::dummy()
 	{
-		return TextureManager::instance().getDummyTexture();
+		return TextureCoreManager::instance().getDummyTexture();
 	}
 }

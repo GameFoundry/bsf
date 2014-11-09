@@ -16,9 +16,7 @@ namespace BansheeEngine
 	class D3D11RenderTextureCore : public RenderTextureCore
 	{
 	public:
-		D3D11RenderTextureCore(D3D11RenderTexture* parent, RenderTextureProperties* properties, const RENDER_SURFACE_DESC& colorSurfaceDesc,
-			const RENDER_SURFACE_DESC& depthStencilSurfaceDesc);
-
+		D3D11RenderTextureCore(const RENDER_TEXTURE_DESC& desc);
 		virtual ~D3D11RenderTextureCore() { }
 
 		/**
@@ -27,7 +25,12 @@ namespace BansheeEngine
 		void getCustomAttribute(const String& name, void* pData) const;
 
 	protected:
-		friend class D3D11RenderTexture;
+		/**
+		 * @copydoc	RenderTextureCore::getProperties
+		 */
+		const RenderTargetProperties& getPropertiesInternal() const { return mProperties; }
+
+		RenderTextureProperties mProperties;
 	};
 
 	/**
@@ -43,16 +46,13 @@ namespace BansheeEngine
 	protected:
 		friend class D3D11TextureManager;
 
-		D3D11RenderTexture() { }
+		D3D11RenderTexture(const RENDER_TEXTURE_DESC& desc);
 
 		/**
-		 * @copydoc	RenderTexture::createProperties
+		 * @copydoc	RenderTexture::getProperties
 		 */
-		virtual RenderTargetProperties* createProperties() const;
+		const RenderTargetProperties& getPropertiesInternal() const { return mProperties; }
 
-		/**
-		 * @copydoc	RenderTexture::createCore
-		 */
-		virtual SPtr<CoreObjectCore> createCore() const;
+		RenderTextureProperties mProperties;
 	};
 }

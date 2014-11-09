@@ -33,7 +33,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RenderSystem::setRenderTarget()
 		 */
-		void setRenderTarget(RenderTargetPtr target);
+		void setRenderTarget(const SPtr<RenderTargetCore>& target);
 
 		/**
 		 * @copydoc RenderSystem::bindGpuProgram()
@@ -104,7 +104,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RenderSystem::setViewport()
 		 */
-		void setViewport(Viewport vp);
+		void setViewport(const Rect2& vp);
 
 		/**
 		 * @copydoc RenderSystem::beginFrame()
@@ -235,8 +235,10 @@ namespace BansheeEngine
 		friend class D3D9RenderWindow;
 		friend class D3D9Device;
 		friend class D3D9TextureManager;
+		friend class D3D9TextureCoreManager;
 		friend class D3D9DeviceManager;
 		friend class D3D9RenderWindowManager;
+		friend class D3D9RenderWindowCoreManager;
 
 		/**
 		 * @copydoc	RenderSystem::initialize_internal
@@ -287,7 +289,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Also performs an initialization step when called the first time.
 		 */
-		RenderSystemCapabilities* updateRenderSystemCapabilities(D3D9RenderWindow* renderWindow);
+		RenderSystemCapabilities* updateRenderSystemCapabilities(D3D9RenderWindowCore* renderWindow);
 
 		/**
 		 * @brief	Updates render system capabilities with vertex shader related data.
@@ -530,6 +532,13 @@ namespace BansheeEngine
 		void clearArea(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0, const Rect2I& clearArea = Rect2I::EMPTY);
 
 		/**
+		 * @brief	Recalculates actual viewport dimensions based on currently 
+		 *			set viewport normalized dimensions and render target and applies
+		 *			them for further rendering.
+		 */
+		void applyViewport();
+
+		/**
 		 * @brief	Triggered when device has been lost.
 		 */
 		void notifyOnDeviceLost(D3D9Device* device);
@@ -569,6 +578,7 @@ namespace BansheeEngine
 
 		HINSTANCE mhInstance;
 
+		Rect2 mViewportNorm;
 		UINT32 mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight;
 		RECT mScissorRect;
 

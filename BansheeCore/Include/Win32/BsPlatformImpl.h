@@ -152,7 +152,7 @@ namespace BansheeEngine
 		 * 			All provided areas are relative to the specified window.
 		 * 			Mostly useful for frameless windows that don't have typical caption bar.
 		 */
-		static void setCaptionNonClientAreas(const RenderWindow& window, const Vector<Rect2I>& nonClientAreas);
+		static void setCaptionNonClientAreas(const RenderWindowCore& window, const Vector<Rect2I>& nonClientAreas);
 
 		/**
 		 * @brief	Sets custom non client areas for the specified window. Using custom client
@@ -163,7 +163,7 @@ namespace BansheeEngine
 		 * 			All provided areas are relative to the specified window.
 		 * 			Mostly useful for frameless windows that don't have typical border.
 		 */
-		static void setResizeNonClientAreas(const RenderWindow& window, const Vector<NonClientResizeArea>& nonClientAreas);
+		static void setResizeNonClientAreas(const RenderWindowCore& window, const Vector<NonClientResizeArea>& nonClientAreas);
 
 		/**
 		 * @brief	Resets the non client areas for the specified windows and allows 
@@ -171,7 +171,7 @@ namespace BansheeEngine
 		 * 			
 		 * @note	Thread safe.
 		 */
-		static void resetNonClientAreas(const RenderWindow& window);
+		static void resetNonClientAreas(const RenderWindowCore& window);
 
 		/**
 		 * @brief	Adds a string to the clipboard.
@@ -270,7 +270,7 @@ namespace BansheeEngine
 		 * 			
 		 * @note	Sim thread only.
 		 */
-		static Event<void(RenderWindow*)> onMouseLeftWindow;
+		static Event<void(RenderWindowCore*)> onMouseLeftWindow;
 
 		/**
 		 * @brief	Triggered whenever the pointer moves.
@@ -356,7 +356,6 @@ namespace BansheeEngine
 		static Map<const RenderWindowCore*, WindowNonClientAreaData> mNonClientAreas;
 
 		static bool mIsTrackingMouse;
-		static Vector<RenderWindowCore*> mMouseLeftWindows;
 		static Stack<RenderWindowCore*> mModalWindowStack;
 
 		static NativeDropTargetData mDropTargets;

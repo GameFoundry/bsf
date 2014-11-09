@@ -25,11 +25,17 @@ Disallow CoreObject creation from core thread
  - Add asserts in CoreObject::destroy and CoreObject::initialize
  - Possibly also add asserts to CoreThread::queueCommand and CoreThread::queueReturnCommand
 
-Make mCoreSpecific a shared ptr
- - Where needed, add create() methods to CoreObjectCore for use from the core thread
+RENDER TARGET REFACTOR:
+Need RenderWindow::create that works from core thread used for creating the primary window
+ - RenderSystem then needs to wrap the returned RenderWindowCore into a proper RenderWindow for use by the sim thread
 
-Refactor RenderSystem, Mesh, MeshHeap so they use only core versions of Index and VertexBuffer
- - This should also apply to any newly refactored classes, non-core stuff should be removed from core
+Move CoreAccessor methods relating to render target, to the render targets themselves
+
+Find remaining uses of getCore and try to replace them:
+ - Check Win32GLSupport
+ - When creating a window, parent window gets sent as a RenderWindow
+ - PlatfromWndProc accesses a list of non-core windows
+ - Various callbacks in PlatformImpl as well
 
 -----------------
 

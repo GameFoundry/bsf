@@ -682,6 +682,7 @@ namespace BansheeEngine
 		proxy->projMatrix = getProjectionMatrixRS();
 		proxy->viewMatrix = getViewMatrix();
 		proxy->worldMatrix.setTRS(mPosition, mRotation, Vector3::ONE);
+		proxy->renderTarget = mViewport->getTarget()->getCore();
 		proxy->viewport = mViewport->clone();
 		proxy->frustum = getFrustum();
 		proxy->ignoreSceneRenderables = mIgnoreSceneRenderables;

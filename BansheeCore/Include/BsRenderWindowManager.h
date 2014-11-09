@@ -10,7 +10,7 @@ namespace BansheeEngine
 	/**
 	 * @brief	Handles creation and internal updates relating to render windows.
 	 *
-	 * @note	Sim thread.
+	 * @note	Sim thread only.
 	 */
 	class BS_CORE_EXPORT RenderWindowManager : public Module<RenderWindowManager>
 	{
@@ -44,13 +44,13 @@ namespace BansheeEngine
 		 * @brief	Event that is triggered when a window loses focus.
 		 */
 		Event<void(RenderWindow&)> onFocusLost;
-	protected:
-		friend class RenderWindow;
 
 		/**
-		 * @copydoc	create
+		 * @brief	Event that is triggered when mouse leaves a window.
 		 */
-		virtual RenderWindowPtr createImpl(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow) = 0;
+		Event<void(RenderWindow&)> onMouseLeftWindow;
+	protected:
+		friend class RenderWindow;
 
 		/**
 		 * @brief	Called by the core thread when window is destroyed.
@@ -72,12 +72,70 @@ namespace BansheeEngine
 		 */
 		void windowMovedOrResized(RenderWindowCore* window);
 
+		/**
+		 * @brief	Called by the core thread when mouse leaves a window.
+		 */
+		void windowMouseLeft(RenderWindowCore* window);
+
+		/**
+		 * @brief	Finds a sim thread equivalent of the provided core thread window implementation.
+		 */
+		RenderWindow* getNonCore(const RenderWindowCore* window) const;
+
+		/**
+		 * @copydoc	create
+		 */
+		virtual RenderWindowPtr createImpl(RENDER_WINDOW_DESC& desc, const RenderWindowPtr& parentWindow) = 0;
+
 	protected:
 		BS_MUTEX(mWindowMutex);
 		Vector<RenderWindow*> mCreatedWindows;
+		Map<const RenderWindowCore*, RenderWindow*> mCoreToNonCoreMap;
 
 		RenderWindow* mWindowInFocus;
 		RenderWindow* mNewWindowInFocus;
 		Vector<RenderWindow*> mMovedOrResizedWindows;
+		Vector<RenderWindow*> mMouseLeftWindows;
+	};
+
+	/**
+	 * @brief	Handles creation and internal updates relating to render windows.
+	 *
+	 * @note	Core thread only.
+	 */
+	class BS_CORE_EXPORT RenderWindowCoreManager : public Module<RenderWindowCoreManager>
+	{
+	public:
+		/**
+		 * @copydoc	RenderWindowCoreManager::create
+		 */
+		SPtr<RenderWindowCore> create(RENDER_WINDOW_DESC& desc);
+
+		/**
+		 * @brief	Returns a list of all open render windows.
+		 */
+		Vector<RenderWindowCore*> getRenderWindows() const;
+
+	protected:
+		friend class RenderWindowCore;
+		friend class RenderWindow;
+
+		/**
+		 * @copydoc	create
+		 */
+		virtual SPtr<RenderWindowCore> createInternal(RENDER_WINDOW_DESC& desc) = 0;
+
+		/**
+		 * @brief	Called whenever a window is created.
+		 */
+		void windowCreated(RenderWindowCore* window);
+
+		/**
+		 * @brief	Called by the core thread when window is destroyed.
+		 */
+		void windowDestroyed(RenderWindowCore* window);
+
+		BS_MUTEX(mWindowMutex);
+		Vector<RenderWindowCore*> mCreatedWindows;
 	};
 }

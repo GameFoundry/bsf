@@ -40,12 +40,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc HardwareBufferCoreManager::createVertexBufferImpl
 		 */
-		SPtr<VertexBufferCore> createVertexBufferImpl(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false);
+		SPtr<VertexBufferCore> createVertexBufferInternal(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false);
 
 		/**
 		 * @copydoc HardwareBufferCoreManager::createIndexBufferImpl
 		 */
-		SPtr<IndexBufferCore> createIndexBufferImpl(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
+		SPtr<IndexBufferCore> createIndexBufferInternal(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
 
 		D3D11Device& mDevice;
 	};

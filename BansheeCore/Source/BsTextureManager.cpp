@@ -6,36 +6,6 @@
 
 namespace BansheeEngine 
 {
-    TextureManager::TextureManager()
-    {
-        // Subclasses should register (when this is fully constructed)
-    }
-
-    TextureManager::~TextureManager()
-    {
-        // subclasses should unregister with resource group manager
-    }
-
-	void TextureManager::onStartUp()
-	{
-		// Internally this will call our createTextureImpl virtual method. But since this is guaranteed
-		// to be the last class in the hierarchy, we can call a virtual method from constructor.
-		mDummyTexture = Texture::create(TEX_TYPE_2D, 2, 2, 0, PF_R8G8B8A8);
-
-		UINT32 subresourceIdx = mDummyTexture->mapToSubresourceIdx(0, 0);
-		PixelDataPtr data = mDummyTexture->allocateSubresourceBuffer(subresourceIdx);
-
-		data->setColorAt(Color::Red, 0, 0);
-		data->setColorAt(Color::Red, 0, 1);
-		data->setColorAt(Color::Red, 1, 0);
-		data->setColorAt(Color::Red, 1, 1);
-
-		AsyncOp op;
-
-		data->_lock();
-		RenderSystem::instance().writeSubresource(mDummyTexture.getInternalPtr(), mDummyTexture->mapToSubresourceIdx(0, 0), data, false, op);
-	}
-
     TexturePtr TextureManager::createTexture(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, int numMipmaps,
         PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount)
     {
@@ -82,19 +52,55 @@ namespace BansheeEngine
 
 	RenderTexturePtr TextureManager::createRenderTexture(const RENDER_TEXTURE_DESC& desc)
 	{
-		RenderTexturePtr newRT = createRenderTextureImpl();
+		RenderTexturePtr newRT = createRenderTextureImpl(desc);
 		newRT->_setThisPtr(newRT);
-		newRT->initialize(desc);
+		newRT->initialize();
 
 		return newRT;
 	}
 
 	MultiRenderTexturePtr TextureManager::createMultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC& desc)
 	{
-		MultiRenderTexturePtr newRT = createMultiRenderTextureImpl();
+		MultiRenderTexturePtr newRT = createMultiRenderTextureImpl(desc);
 		newRT->_setThisPtr(newRT);
-		newRT->initialize(desc);
+		newRT->initialize();
 
 		return newRT;
+	}
+
+	SPtr<RenderTextureCore> TextureCoreManager::createRenderTexture(const RENDER_TEXTURE_DESC& desc)
+	{
+		SPtr<RenderTextureCore> newRT = createRenderTextureInternal(desc);
+		newRT->initialize();
+
+		return newRT;
+	}
+
+	SPtr<MultiRenderTextureCore> TextureCoreManager::createMultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC& desc)
+	{
+		SPtr<MultiRenderTextureCore> newRT = createMultiRenderTextureInternal(desc);
+		newRT->initialize();
+
+		return newRT;
+	}
+
+	void TextureCoreManager::onStartUp()
+	{
+		// Internally this will call our createTextureImpl virtual method. But since this is guaranteed
+		// to be the last class in the hierarchy, we can call a virtual method from constructor.
+		mDummyTexture = Texture::create(TEX_TYPE_2D, 2, 2, 0, PF_R8G8B8A8);
+
+		UINT32 subresourceIdx = mDummyTexture->mapToSubresourceIdx(0, 0);
+		PixelDataPtr data = mDummyTexture->allocateSubresourceBuffer(subresourceIdx);
+
+		data->setColorAt(Color::Red, 0, 0);
+		data->setColorAt(Color::Red, 0, 1);
+		data->setColorAt(Color::Red, 1, 0);
+		data->setColorAt(Color::Red, 1, 1);
+
+		AsyncOp op;
+
+		data->_lock();
+		RenderSystem::instance().writeSubresource(mDummyTexture.getInternalPtr(), mDummyTexture->mapToSubresourceIdx(0, 0), data, false, op);
 	}
 }

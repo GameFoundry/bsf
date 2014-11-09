@@ -15,7 +15,7 @@ namespace BansheeEngine
 	class BS_D3D9_EXPORT D3D9MultiRenderTextureCore : public MultiRenderTextureCore
 	{
 	public:
-		D3D9MultiRenderTextureCore(D3D9MultiRenderTexture* parent, MultiRenderTextureProperties* properties, const MULTI_RENDER_TEXTURE_DESC& desc);
+		D3D9MultiRenderTextureCore(const MULTI_RENDER_TEXTURE_DESC& desc);
 		virtual ~D3D9MultiRenderTextureCore();
 		
 		/**
@@ -31,8 +31,15 @@ namespace BansheeEngine
 		 */
 		virtual void initialize();
 
+		/**
+		 * @copydoc	MultiRenderTextureCore::getProperties
+		 */
+		const RenderTargetProperties& getPropertiesInternal() const { return mProperties; }
+
 		Vector<IDirect3DSurface9*> mDX9ColorSurfaces;
 		IDirect3DSurface9* mDX9DepthStencilSurface;
+
+		MultiRenderTextureProperties mProperties;
 	};
 
 	/**
@@ -48,16 +55,13 @@ namespace BansheeEngine
 	protected:
 		friend class D3D9TextureManager;
 
-		D3D9MultiRenderTexture() { }
+		D3D9MultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC& desc);
 
 		/**
-		 * @copydoc	MultiRenderTexture::createProperties
+		 * @copydoc	MultiRenderTexture::getProperties
 		 */
-		virtual RenderTargetProperties* createProperties() const;
+		const RenderTargetProperties& getPropertiesInternal() const { return mProperties; }
 
-		/**
-		 * @copydoc	RenderTexture::createCore
-		 */
-		virtual SPtr<CoreObjectCore> createCore() const;
+		MultiRenderTextureProperties mProperties;
 	};
 }

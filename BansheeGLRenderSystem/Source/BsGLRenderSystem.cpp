@@ -60,7 +60,8 @@ namespace BansheeEngine
 		mDomainUBOffset(0),
 		mComputeUBOffset(0),
 		mDrawCallInProgress(false),
-		mCurrentDrawOperation(DOT_TRIANGLE_LIST)
+		mCurrentDrawOperation(DOT_TRIANGLE_LIST),
+		mViewportNorm(0.0f, 0.0f, 1.0f, 1.0f)
 	{
 		// Get our GLSupport
 		mGLSupport = BansheeEngine::getGLSupport();
@@ -106,6 +107,7 @@ namespace BansheeEngine
 		mVideoModeInfo = mGLSupport->getVideoModeInfo();
 
 		RenderWindowManager::startUp<GLRenderWindowManager>(this);
+		RenderWindowCoreManager::startUp<GLRenderWindowCoreManager>(this);
 
 		RenderStateManager::startUp();
 
@@ -185,8 +187,10 @@ namespace BansheeEngine
 
 		mGLSupport->stop();
 
+		TextureCoreManager::shutDown();
 		TextureManager::shutDown();
 		QueryManager::shutDown();
+		RenderWindowCoreManager::shutDown();
 		RenderWindowManager::shutDown();
 		RenderStateManager::shutDown();
 		GLVertexArrayObjectManager::shutDown(); // Note: Needs to be after QueryManager shutdown as some resources might be waiting for queries to complete
@@ -557,35 +561,15 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumDepthStencilStateChanges);
 	}
 
-	void GLRenderSystem::setViewport(Viewport vp)
+	void GLRenderSystem::setViewport(const Rect2& area)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		RenderTargetPtr target;
-		target = vp.getTarget();
-		setRenderTarget(target);
-
-		const RenderTargetProperties& rtProps = target->getCore()->getProperties();
-
-		// Calculate the "lower-left" corner of the viewport
-		mViewportLeft = (UINT32)(rtProps.getWidth() * vp.getNormalizedX());
-		mViewportTop = (UINT32)(rtProps.getHeight() * vp.getNormalizedY());
-		mViewportWidth = (UINT32)(rtProps.getWidth() * vp.getNormalizedWidth());
-		mViewportHeight = (UINT32)(rtProps.getHeight() * vp.getNormalizedHeight());
-
-		if (target->requiresTextureFlipping())
-		{
-			// Convert "upper-left" corner to "lower-left"
-			mViewportTop = target->getCore()->getProperties().getHeight() - (mViewportTop + mViewportHeight) - 1;
-		}
-
-		glViewport(mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight);
-
-		// Configure the viewport clipping
-		glScissor(mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight);
+		mViewportNorm = area;
+		applyViewport();
 	}
 
-	void GLRenderSystem::setRenderTarget(RenderTargetPtr target)
+	void GLRenderSystem::setRenderTarget(const SPtr<RenderTargetCore>& target)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -593,14 +577,14 @@ namespace BansheeEngine
 
 		// Switch context if different from current one
 		GLContext *newContext = 0;
-		target->getCore()->getCustomAttribute("GLCONTEXT", &newContext);
+		target->getCustomAttribute("GLCONTEXT", &newContext);
 		if(newContext && mCurrentContext != newContext) 
 		{
 			switchContext(newContext);
 		}
 
 		GLFrameBufferObject *fbo = 0;
-		target->getCore()->getCustomAttribute("FBO", &fbo);
+		target->getCustomAttribute("FBO", &fbo);
 		if(fbo)
 			fbo->bind();
 		else
@@ -610,7 +594,7 @@ namespace BansheeEngine
 		if (GLEW_EXT_framebuffer_sRGB)
 		{
 			// Enable / disable sRGB states
-			if (target->getCore()->getProperties().isHwGammaEnabled())
+			if (target->getProperties().isHwGammaEnabled())
 			{
 				glEnable(GL_FRAMEBUFFER_SRGB_EXT);
 
@@ -623,6 +607,8 @@ namespace BansheeEngine
 				glDisable(GL_FRAMEBUFFER_SRGB_EXT);
 			}
 		}
+
+		applyViewport();
 
 		BS_INC_RENDER_STAT(NumRenderTargetChanges);
 	}
@@ -739,7 +725,7 @@ namespace BansheeEngine
 		if(mActiveRenderTarget == nullptr)
 			return;
 
-		const RenderTargetProperties& rtProps = mActiveRenderTarget->getCore()->getProperties();
+		const RenderTargetProperties& rtProps = mActiveRenderTarget->getProperties();
 		Rect2I clearRect(0, 0, rtProps.getWidth(), rtProps.getHeight());
 
 		clearArea(buffers, color, depth, stencil, clearRect);
@@ -805,7 +791,7 @@ namespace BansheeEngine
 			glDisable(GL_SCISSOR_TEST);
 		}
 
-		const RenderTargetProperties& rtProps = mActiveRenderTarget->getCore()->getProperties();
+		const RenderTargetProperties& rtProps = mActiveRenderTarget->getProperties();
 
 		bool clearEntireTarget = clearRect.width == 0 || clearRect.height == 0;
 		clearEntireTarget |= (clearRect.x == 0 && clearRect.y == 0 && clearRect.width == rtProps.getWidth() && clearRect.height == rtProps.getHeight());
@@ -1035,10 +1021,10 @@ namespace BansheeEngine
 
 	void GLRenderSystem::setScissorTestEnable(bool enable)
 	{
-		const RenderTargetProperties& rtProps = mActiveRenderTarget->getCore()->getProperties();
+		const RenderTargetProperties& rtProps = mActiveRenderTarget->getProperties();
 
 		// If request texture flipping, use "upper-left", otherwise use "lower-left"
-		bool flipping = mActiveRenderTarget->requiresTextureFlipping();
+		bool flipping = rtProps.requiresTextureFlipping();
 		//  GL measures from the bottom, not the top
 		UINT32 targetHeight = rtProps.getHeight();
 		// Calculate the "lower-left" corner of the viewport
@@ -1770,6 +1756,7 @@ namespace BansheeEngine
 			BS_EXCEPT(InternalErrorException, "Number of combined uniform block buffers less than the number of individual per-stage buffers!?");
 
 		TextureManager::startUp<GLTextureManager>(std::ref(*mGLSupport));
+		TextureCoreManager::startUp<GLTextureCoreManager>(std::ref(*mGLSupport));
 	}
 
 	void GLRenderSystem::switchContext(GLContext *context)
@@ -2091,6 +2078,31 @@ namespace BansheeEngine
 				x++;
 			}
 		}
+	}
+
+	void GLRenderSystem::applyViewport()
+	{
+		if (mActiveRenderTarget == nullptr)
+			return;
+
+		const RenderTargetProperties& rtProps = mActiveRenderTarget->getProperties();
+
+		// Calculate the "lower-left" corner of the viewport
+		mViewportLeft = (UINT32)(rtProps.getWidth() * mViewportNorm.x);
+		mViewportTop = (UINT32)(rtProps.getHeight() * mViewportNorm.y);
+		mViewportWidth = (UINT32)(rtProps.getWidth() * mViewportNorm.width);
+		mViewportHeight = (UINT32)(rtProps.getHeight() * mViewportNorm.height);
+
+		if (rtProps.requiresTextureFlipping())
+		{
+			// Convert "upper-left" corner to "lower-left"
+			mViewportTop = rtProps.getHeight() - (mViewportTop + mViewportHeight) - 1;
+		}
+
+		glViewport(mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight);
+
+		// Configure the viewport clipping
+		glScissor(mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight);
 	}
 
 	/************************************************************************/

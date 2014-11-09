@@ -324,6 +324,6 @@ namespace BansheeEngine
 			nonClientAreas.push_back(emptyArea);
 		}
 
-		Platform::setCaptionNonClientAreas(*mParentWindow, nonClientAreas);
+		Platform::setCaptionNonClientAreas(*mParentWindow->getCore(), nonClientAreas);
 	}
 }

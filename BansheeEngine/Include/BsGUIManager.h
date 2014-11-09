@@ -272,7 +272,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Called when the mouse leaves the specified window.
 		 */
-		void onMouseLeftWindow(RenderWindow* win);
+		void onMouseLeftWindow(RenderWindow& win);
 
 		/**
 		 * @brief	Converts pointer buttons to mouse buttons.

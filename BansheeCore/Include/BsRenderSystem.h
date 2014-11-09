@@ -106,9 +106,10 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Sets the active viewport that will be used for all render operations.
-		 *			Viewport will change active render target if needed.
+		 *
+		 * @param	area	Area of the viewport, in normalized ([0,1] range) coordinates.
 		 */
-		virtual void setViewport(Viewport vp) = 0;
+		virtual void setViewport(const Rect2& area) = 0;
 
 		/**
 		 * @brief	Sets the provided vertex buffers starting at the specified source index.
@@ -151,7 +152,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Swap the front and back buffer of the specified render target.
 		 */
-		virtual void swapBuffers(RenderTargetPtr target);
+		virtual void swapBuffers(const SPtr<RenderTargetCore>& target);
 
 		/**
 		 * @brief	Gets the capabilities of the render system.
@@ -236,7 +237,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Change the render target into which we want to draw.
 		 */
-        virtual void setRenderTarget(RenderTargetPtr target) = 0;
+        virtual void setRenderTarget(const SPtr<RenderTargetCore>& target) = 0;
 
 		/**
 		 * @brief	Updates the resource with the specified data.
@@ -362,7 +363,7 @@ namespace BansheeEngine
 	protected:
 		friend class RenderSystemManager;
 
-		RenderTargetPtr mActiveRenderTarget;
+		SPtr<RenderTargetCore> mActiveRenderTarget;
 
 		DriverVersion mDriverVersion;
 		CullingMode mCullingMode;

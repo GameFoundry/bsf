@@ -115,15 +115,18 @@ namespace BansheeEngine
 		virtual SPtr<IndexBufferCore> createIndexBuffer(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
 
 	protected:
+		friend class IndexBuffer;
+		friend class VertexBuffer;
+
 		/**
 		 * @copydoc	createVertexBuffer
 		 */
-		virtual SPtr<VertexBufferCore> createVertexBufferImpl(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false) = 0;
+		virtual SPtr<VertexBufferCore> createVertexBufferInternal(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false) = 0;
 
 		/**
 		 * @copydoc	createIndexBuffer
 		 */
-		virtual SPtr<IndexBufferCore> createIndexBufferImpl(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage) = 0;
+		virtual SPtr<IndexBufferCore> createIndexBufferInternal(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage) = 0;
 	};
 }
 

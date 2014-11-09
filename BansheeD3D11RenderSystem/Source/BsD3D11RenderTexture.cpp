@@ -9,9 +9,8 @@
 
 namespace BansheeEngine
 {
-	D3D11RenderTextureCore::D3D11RenderTextureCore(D3D11RenderTexture* parent, RenderTextureProperties* properties, const RENDER_SURFACE_DESC& colorSurfaceDesc,
-		const RENDER_SURFACE_DESC& depthStencilSurfaceDesc)
-		:RenderTextureCore(parent, properties, colorSurfaceDesc, depthStencilSurfaceDesc)
+	D3D11RenderTextureCore::D3D11RenderTextureCore(const RENDER_TEXTURE_DESC& desc)
+		:RenderTextureCore(desc), mProperties(desc, false)
 	{ }
 
 	void D3D11RenderTextureCore::getCustomAttribute(const String& name, void* pData) const
@@ -33,19 +32,9 @@ namespace BansheeEngine
 		}
 	}
 
-	RenderTargetProperties* D3D11RenderTexture::createProperties() const
-	{
-		return bs_new<RenderTextureProperties>();
-	}
+	D3D11RenderTexture::D3D11RenderTexture(const RENDER_TEXTURE_DESC& desc)
+		:RenderTexture(desc), mProperties(desc, false)
+	{ 
 
-	SPtr<CoreObjectCore> D3D11RenderTexture::createCore() const
-	{
-		RenderTextureProperties* coreProperties = bs_new<RenderTextureProperties>();
-		RenderTextureProperties* myProperties = static_cast<RenderTextureProperties*>(mProperties);
-
-		*coreProperties = *myProperties;
-
-		return bs_shared_ptr<D3D11RenderTextureCore>(const_cast<D3D11RenderTexture*>(this), 
-			coreProperties, mColorSurfaceDesc, mDepthStencilSurfaceDesc);
 	}
 }

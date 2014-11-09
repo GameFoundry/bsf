@@ -22,16 +22,16 @@ namespace BansheeEngine
 		return bs_core_ptr<D3D9Texture, PoolAlloc>(tex);
     }
 
-	RenderTexturePtr D3D9TextureManager::createRenderTextureImpl()
+	RenderTexturePtr D3D9TextureManager::createRenderTextureImpl(const RENDER_TEXTURE_DESC& desc)
 	{
-		D3D9RenderTexture* tex = new (bs_alloc<D3D9RenderTexture, PoolAlloc>()) D3D9RenderTexture();
+		D3D9RenderTexture* tex = new (bs_alloc<D3D9RenderTexture, PoolAlloc>()) D3D9RenderTexture(desc);
 
 		return bs_core_ptr<D3D9RenderTexture, PoolAlloc>(tex);
 	}
 
-	MultiRenderTexturePtr D3D9TextureManager::createMultiRenderTextureImpl()
+	MultiRenderTexturePtr D3D9TextureManager::createMultiRenderTextureImpl(const MULTI_RENDER_TEXTURE_DESC& desc)
 	{
-		D3D9MultiRenderTexture* tex = new (bs_alloc<D3D9MultiRenderTexture, PoolAlloc>()) D3D9MultiRenderTexture();
+		D3D9MultiRenderTexture* tex = new (bs_alloc<D3D9MultiRenderTexture, PoolAlloc>()) D3D9MultiRenderTexture(desc);
 
 		return bs_core_ptr<D3D9MultiRenderTexture, PoolAlloc>(tex);
 	}
@@ -51,5 +51,15 @@ namespace BansheeEngine
 			// Basic filtering
 			return D3D9Mappings::_getClosestSupportedPF(format);
 		}
+	}
+
+	SPtr<RenderTextureCore> D3D9TextureCoreManager::createRenderTextureInternal(const RENDER_TEXTURE_DESC& desc)
+	{
+		return bs_shared_ptr<D3D9RenderTextureCore>(desc);
+	}
+
+	SPtr<MultiRenderTextureCore> D3D9TextureCoreManager::createMultiRenderTextureInternal(const MULTI_RENDER_TEXTURE_DESC& desc)
+	{
+		return bs_shared_ptr<D3D9MultiRenderTextureCore>(desc);
 	}
 }

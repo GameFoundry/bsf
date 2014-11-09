@@ -101,6 +101,6 @@ namespace BansheeEngine
 		nonClientAreas[7].area = Rect2I(x + width - RESIZE_BORDER_WIDTH, y + height - RESIZE_BORDER_WIDTH, 
 			RESIZE_BORDER_WIDTH, RESIZE_BORDER_WIDTH);
 
-		Platform::setResizeNonClientAreas(*mParentWindow, nonClientAreas);
+		Platform::setResizeNonClientAreas(*mParentWindow->getCore(), nonClientAreas);
 	}
 }

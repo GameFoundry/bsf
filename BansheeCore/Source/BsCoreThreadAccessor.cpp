@@ -88,7 +88,7 @@ namespace BansheeEngine
 		mCommandQueue->queue(std::bind(&RenderSystem::setVertexDeclaration, RenderSystem::instancePtr(), vertexDeclaration));
 	}
 
-	void CoreThreadAccessorBase::setViewport(Viewport vp)
+	void CoreThreadAccessorBase::setViewport(const Rect2& vp)
 	{
 		mCommandQueue->queue(std::bind(&RenderSystem::setViewport, RenderSystem::instancePtr(), vp));
 	}
@@ -120,7 +120,7 @@ namespace BansheeEngine
 
 	void CoreThreadAccessorBase::setRenderTarget(RenderTargetPtr target)
 	{
-		mCommandQueue->queue(std::bind(&RenderSystem::setRenderTarget, RenderSystem::instancePtr(), target));
+		mCommandQueue->queue(std::bind(&RenderSystem::setRenderTarget, RenderSystem::instancePtr(), target->getCore()));
 	}
 
 	void CoreThreadAccessorBase::bindGpuProgram(HGpuProgram prg)
@@ -160,7 +160,7 @@ namespace BansheeEngine
 
 	void CoreThreadAccessorBase::swapBuffers(RenderTargetPtr target)
 	{
-		mCommandQueue->queue(std::bind(&RenderSystem::swapBuffers, RenderSystem::instancePtr(), target));
+		mCommandQueue->queue(std::bind(&RenderSystem::swapBuffers, RenderSystem::instancePtr(), target->getCore()));
 	}
 
 	void CoreThreadAccessorBase::draw(UINT32 vertexOffset, UINT32 vertexCount)

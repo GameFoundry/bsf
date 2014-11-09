@@ -22,26 +22,12 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT MultiRenderTextureProperties : public RenderTargetProperties
 	{
 	public:
+		MultiRenderTextureProperties(const MULTI_RENDER_TEXTURE_DESC& desc);
 		virtual ~MultiRenderTextureProperties() { }
 
 	protected:
 		friend class MultiRenderTextureCore;
 		friend class MultiRenderTexture;
-
-		/**
-		 * @copydoc	RenderTargetProperties::copyToBuffer
-		 */
-		virtual void copyToBuffer(UINT8* buffer) const;
-
-		/**
-		 * @copydoc	RenderTargetProperties::copyFromBuffer
-		 */
-		virtual void copyFromBuffer(UINT8* buffer);
-
-		/**
-		 * @copydoc	RenderTargetProperties::getSize
-		 */
-		virtual UINT32 getSize() const;
 	};
 
 	/**
@@ -55,14 +41,6 @@ namespace BansheeEngine
 	public:
 		virtual ~MultiRenderTextureCore();
 
-	protected:
-		MultiRenderTextureCore(MultiRenderTexture* parent, MultiRenderTextureProperties* properties, const MULTI_RENDER_TEXTURE_DESC& desc);
-
-		/**
-		 * @copydoc	RenderTargetCore::getNonCore
-		 */
-		MultiRenderTexture* getNonCore() const;
-
 		/**
 		 * @copydoc	CoreObjectCore::initialize
 		 */
@@ -72,6 +50,24 @@ namespace BansheeEngine
 		 * @copydoc	CoreObjectCore::destroy
 		 */
 		virtual void destroy();
+
+		/**
+		 * @brief	Returns properties that describe the render texture.
+		 */
+		const MultiRenderTextureProperties& getProperties() const;
+
+	protected:
+		MultiRenderTextureCore(const MULTI_RENDER_TEXTURE_DESC& desc);
+
+		/**
+		 * @copydoc	CoreObjectCore::syncFromCore
+		 */
+		virtual CoreSyncData syncFromCore(FrameAlloc* allocator);
+
+		/**
+		 * @copydoc	CoreObjectCore::syncToCore
+		 */
+		virtual void syncToCore(const CoreSyncData& data);
 
 	private:
 		/**
@@ -102,25 +98,8 @@ namespace BansheeEngine
 		virtual ~MultiRenderTexture() { }
 
 		/**
-		 * @copydoc	RenderTarget::initialize
-		 */
-		void initialize(const MULTI_RENDER_TEXTURE_DESC& desc);
-
-		/**
-		 * @copydoc	RenderTexture::requiresTextureFlipping
-		 */
-		virtual bool requiresTextureFlipping() const { return false; }
-
-		/**
-		 * @brief	Returns properties that describe the render texture.
-		 */
-		const MultiRenderTextureProperties& getProperties() const;
-
-		/**
 		 * @brief	Retrieves a core implementation of a render texture usable only from the
 		 *			core thread.
-		 *
-		 * @note	Core thread only.
 		 */
 		SPtr<MultiRenderTextureCore> getCore() const;
 
@@ -129,8 +108,28 @@ namespace BansheeEngine
 		 */
 		static MultiRenderTexturePtr create(const MULTI_RENDER_TEXTURE_DESC& desc);
 
+		/**
+		 * @brief	Returns properties that describe the render texture.
+		 */
+		const MultiRenderTextureProperties& getProperties() const;
+
 	protected:
-		MultiRenderTexture() { }
+		MultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC& desc);
+
+		/**
+		 * @copydoc	RenderTarget::createCore
+		 */
+		SPtr<CoreObjectCore> createCore() const;
+
+		/**
+		 * @copydoc	CoreObjectCore::syncToCore
+		 */
+		virtual CoreSyncData syncToCore(FrameAlloc* allocator);
+
+		/**
+		 * @copydoc	CoreObjectCore::syncFromCore
+		 */
+		virtual void syncFromCore(const CoreSyncData& data);
 
 		MULTI_RENDER_TEXTURE_DESC mDesc;
 	};

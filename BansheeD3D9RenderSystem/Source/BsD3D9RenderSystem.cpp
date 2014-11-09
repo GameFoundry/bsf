@@ -39,7 +39,7 @@ namespace BansheeEngine
 		mViewportLeft(0), mViewportTop(0), mViewportWidth(0), mViewportHeight(0),
 		mIsFrameInProgress(false), mRestoreFrameOnReset(false), mhInstance(hInstance),
 		mpD3D(nullptr), mDriverList(nullptr), mActiveD3DDriver(nullptr), mHLSLProgramFactory(nullptr),
-		mDeviceManager(nullptr), mResourceManager(nullptr)
+		mDeviceManager(nullptr), mResourceManager(nullptr), mViewportNorm(0.0f, 0.0f, 1.0f, 1.0f)
 	{
 		msD3D9RenderSystem = this;
 
@@ -105,17 +105,19 @@ namespace BansheeEngine
 
 		// Create render window manager
 		RenderWindowManager::startUp<D3D9RenderWindowManager>(this);
+		RenderWindowCoreManager::startUp<D3D9RenderWindowCoreManager>(this);
 
 		// Create render state manager
 		RenderStateManager::startUp();
 
 		// Create primary window and finalize initialization
 		RenderWindowPtr primaryWindow = RenderWindow::create(mPrimaryWindowDesc);
-		D3D9RenderWindow* d3d9renderWindow = static_cast<D3D9RenderWindow*>(primaryWindow.get());
+		D3D9RenderWindowCore* d3d9renderWindow = static_cast<D3D9RenderWindowCore*>(primaryWindow->getCore().get());
 		updateRenderSystemCapabilities(d3d9renderWindow);
 
 		// Create the texture manager for use by others		
 		TextureManager::startUp<D3D9TextureManager>();
+		TextureCoreManager::startUp<D3D9TextureCoreManager>();
 
 		QueryManager::startUp<D3D9QueryManager>();
 
@@ -149,9 +151,11 @@ namespace BansheeEngine
 		mActiveD3DDriver = NULL;	
 
 		QueryManager::shutDown();
+		TextureCoreManager::shutDown();
 		TextureManager::shutDown();
 		HardwareBufferCoreManager::shutDown();
 		HardwareBufferManager::shutDown();
+		RenderWindowCoreManager::shutDown();
 		RenderWindowManager::shutDown();
 		RenderStateManager::shutDown();
 
@@ -1029,27 +1033,28 @@ namespace BansheeEngine
 			setSamplerState( static_cast<DWORD>(unit), D3DSAMP_MAXANISOTROPY, maxAnisotropy );
 	}
 
-	void D3D9RenderSystem::setRenderTarget(RenderTargetPtr target)
+	void D3D9RenderSystem::setRenderTarget(const SPtr<RenderTargetCore>& target)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		mActiveRenderTarget = target;
+		const RenderTargetProperties& rtProps = target->getProperties();
 
 		HRESULT hr;
 
 		// Possibly change device if the target is a window
-		if (target->getCore()->getProperties().isWindow())
+		if (rtProps.isWindow())
 		{
-			D3D9RenderWindow* window = static_cast<D3D9RenderWindow*>(target.get());
-			mDeviceManager->setActiveRenderTargetDevice(window->getCore()->_getDevice());
-			window->getCore()->_validateDevice();
+			D3D9RenderWindowCore* window = static_cast<D3D9RenderWindowCore*>(target.get());
+			mDeviceManager->setActiveRenderTargetDevice(window->_getDevice());
+			window->_validateDevice();
 		}
 
 		// Retrieve render surfaces
 		UINT32 maxRenderTargets = mCurrentCapabilities->getNumMultiRenderTargets();
 		IDirect3DSurface9** pBack = bs_newN<IDirect3DSurface9*, ScratchAlloc>(maxRenderTargets);
 		memset(pBack, 0, sizeof(IDirect3DSurface9*) * maxRenderTargets);
-		target->getCore()->getCustomAttribute("DDBACKBUFFER", pBack);
+		target->getCustomAttribute("DDBACKBUFFER", pBack);
 		if (!pBack[0])
 		{
 			bs_deleteN<ScratchAlloc>(pBack, maxRenderTargets);
@@ -1059,7 +1064,7 @@ namespace BansheeEngine
 		IDirect3DSurface9* pDepth = NULL;
 
 		if (!pDepth)
-			target->getCore()->getCustomAttribute("D3DZBUFFER", &pDepth);
+			target->getCustomAttribute("D3DZBUFFER", &pDepth);
 		
 		// Bind render targets
 		for(UINT32 x = 0; x < maxRenderTargets; ++x)
@@ -1081,50 +1086,19 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "Failed to setDepthStencil : " + msg);
 		}
 
+		// Set sRGB write mode
+		setRenderState(D3DRS_SRGBWRITEENABLE, rtProps.isHwGammaEnabled());
+		applyViewport();
+
 		BS_INC_RENDER_STAT(NumRenderTargetChanges);
 	}
 
-	void D3D9RenderSystem::setViewport(Viewport vp)
+	void D3D9RenderSystem::setViewport(const Rect2& vp)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		// ok, it's different, time to set render target and viewport params
-		D3DVIEWPORT9 d3dvp;
-		HRESULT hr;
-
-		// Set render target
-		RenderTargetPtr target = vp.getTarget();
-		setRenderTarget(target);
-
-		const RenderTargetProperties& rtProps = target->getCore()->getProperties();
-
-		setCullingMode( mCullingMode );
-
-		// Set viewport dimensions
-		mViewportLeft = (UINT32)(rtProps.getWidth() * vp.getNormalizedX());
-		mViewportTop = (UINT32)(rtProps.getHeight() * vp.getNormalizedY());
-		mViewportWidth = (UINT32)(rtProps.getWidth() * vp.getNormalizedWidth());
-		mViewportHeight = (UINT32)(rtProps.getHeight() * vp.getNormalizedHeight());
-
-		d3dvp.X = mViewportLeft;
-		d3dvp.Y = mViewportTop;
-		d3dvp.Width = mViewportWidth;
-		d3dvp.Height = mViewportHeight;
-		if (target->requiresTextureFlipping())
-		{
-			// Convert "top-left" to "bottom-left"
-			d3dvp.Y = rtProps.getHeight() - d3dvp.Height - d3dvp.Y;
-		}
-
-		// Z-values from 0.0 to 1.0 (TODO: standardise with OpenGL)
-		d3dvp.MinZ = 0.0f;
-		d3dvp.MaxZ = 1.0f;
-
-		if( FAILED( hr = getActiveD3D9Device()->SetViewport( &d3dvp ) ) )
-			BS_EXCEPT(RenderingAPIException, "Failed to set viewport.");
-
-		// Set sRGB write mode
-		setRenderState(D3DRS_SRGBWRITEENABLE, rtProps.isHwGammaEnabled());
+		mViewportNorm = vp;
+		applyViewport();
 	}
 
 	void D3D9RenderSystem::beginFrame()
@@ -1343,7 +1317,7 @@ namespace BansheeEngine
 		if(mActiveRenderTarget == nullptr)
 			return;
 
-		const RenderTargetProperties& rtProps = mActiveRenderTarget->getCore()->getProperties();
+		const RenderTargetProperties& rtProps = mActiveRenderTarget->getProperties();
 		Rect2I clearRect(0, 0, rtProps.getWidth(), rtProps.getHeight());
 
 		clearArea(buffers, color, depth, stencil, clearRect);
@@ -1379,7 +1353,7 @@ namespace BansheeEngine
 			flags |= D3DCLEAR_STENCIL;
 		}
 
-		const RenderTargetProperties& rtProps = mActiveRenderTarget->getCore()->getProperties();
+		const RenderTargetProperties& rtProps = mActiveRenderTarget->getProperties();
 
 		bool clearEntireTarget = clearRect.width == 0 || clearRect.height == 0;
 		clearEntireTarget |= (clearRect.x == 0 && clearRect.y == 0 && clearRect.width == rtProps.getWidth() && clearRect.height == rtProps.getHeight());
@@ -1569,7 +1543,7 @@ namespace BansheeEngine
 		return D3DPT_TRIANGLELIST;
 	}
 
-	RenderSystemCapabilities* D3D9RenderSystem::updateRenderSystemCapabilities(D3D9RenderWindow* renderWindow)
+	RenderSystemCapabilities* D3D9RenderSystem::updateRenderSystemCapabilities(D3D9RenderWindowCore* renderWindow)
 	{			
 		RenderSystemCapabilities* rsc = mCurrentCapabilities;
 		if (rsc == nullptr)
@@ -1754,7 +1728,7 @@ namespace BansheeEngine
 			D3DFMT_A16B16G16R16F, D3DFMT_R32F, D3DFMT_G32R32F, 
 			D3DFMT_A32B32G32R32F};
 		IDirect3DSurface9* bbSurf;
-		renderWindow->getCore()->getCustomAttribute("DDBACKBUFFER", &bbSurf);
+		renderWindow->getCustomAttribute("DDBACKBUFFER", &bbSurf);
 		D3DSURFACE_DESC bbSurfDesc;
 		bbSurf->GetDesc(&bbSurfDesc);
 
@@ -2304,5 +2278,40 @@ namespace BansheeEngine
 		DWORD oldVal;
 		getActiveD3D9Device()->GetSamplerState(static_cast<DWORD>(unit), D3DSAMP_MAXANISOTROPY, &oldVal);
 		return oldVal;
+	}
+
+	void D3D9RenderSystem::applyViewport()
+	{
+		if (mActiveRenderTarget == nullptr)
+			return;
+
+		const RenderTargetProperties& rtProps = mActiveRenderTarget->getProperties();
+		D3DVIEWPORT9 d3dvp;
+		HRESULT hr;
+
+		setCullingMode(mCullingMode);
+
+		// Set viewport dimensions
+		mViewportLeft = (UINT32)(rtProps.getWidth() * mViewportNorm.x);
+		mViewportTop = (UINT32)(rtProps.getHeight() * mViewportNorm.y);
+		mViewportWidth = (UINT32)(rtProps.getWidth() * mViewportNorm.width);
+		mViewportHeight = (UINT32)(rtProps.getHeight() * mViewportNorm.height);
+
+		d3dvp.X = mViewportLeft;
+		d3dvp.Y = mViewportTop;
+		d3dvp.Width = mViewportWidth;
+		d3dvp.Height = mViewportHeight;
+		if (rtProps.requiresTextureFlipping())
+		{
+			// Convert "top-left" to "bottom-left"
+			d3dvp.Y = rtProps.getHeight() - d3dvp.Height - d3dvp.Y;
+		}
+
+		// Z-values from 0.0 to 1.0 (TODO: standardise with OpenGL)
+		d3dvp.MinZ = 0.0f;
+		d3dvp.MaxZ = 1.0f;
+
+		if (FAILED(hr = getActiveD3D9Device()->SetViewport(&d3dvp)))
+			BS_EXCEPT(RenderingAPIException, "Failed to set viewport.");
 	}
 }

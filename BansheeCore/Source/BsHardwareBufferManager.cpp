@@ -70,7 +70,7 @@ namespace BansheeEngine
 	{
 		assert(numIndexes > 0);
 
-		SPtr<IndexBufferCore> ibuf = createIndexBufferImpl(itype, numIndexes, usage);
+		SPtr<IndexBufferCore> ibuf = createIndexBufferInternal(itype, numIndexes, usage);
 		ibuf->initialize();
 		return ibuf;
 
@@ -80,7 +80,7 @@ namespace BansheeEngine
 	{
 		assert(numVerts > 0);
 
-		SPtr<VertexBufferCore> vbuf = createVertexBufferImpl(vertexSize, numVerts, usage, streamOut);
+		SPtr<VertexBufferCore> vbuf = createVertexBufferInternal(vertexSize, numVerts, usage, streamOut);
 		vbuf->initialize();
 		return vbuf;
 	}

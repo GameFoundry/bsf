@@ -81,8 +81,7 @@ namespace BansheeEngine
 
 		mWindowGainedFocusConn = RenderWindowManager::instance().onFocusGained.connect(std::bind(&GUIManager::onWindowFocusGained, this, _1));
 		mWindowLostFocusConn = RenderWindowManager::instance().onFocusLost.connect(std::bind(&GUIManager::onWindowFocusLost, this, _1));
-
-		mMouseLeftWindowConn = Platform::onMouseLeftWindow.connect(std::bind(&GUIManager::onMouseLeftWindow, this, _1));
+		mMouseLeftWindowConn = RenderWindowManager::instance().onMouseLeftWindow.connect(std::bind(&GUIManager::onMouseLeftWindow, this, _1));
 
 		mInputCaret = bs_new<GUIInputCaret, PoolAlloc>();
 		mInputSelection = bs_new<GUIInputSelection, PoolAlloc>();
@@ -1300,7 +1299,7 @@ namespace BansheeEngine
 
 	// We stop getting mouse move events once it leaves the window, so make sure
 	// nothing stays in hover state
-	void GUIManager::onMouseLeftWindow(RenderWindow* win)
+	void GUIManager::onMouseLeftWindow(RenderWindow& win)
 	{
 		bool buttonStates[3];
 		buttonStates[0] = false;
@@ -1314,7 +1313,7 @@ namespace BansheeEngine
 			GUIElement* element = elementInfo.element;
 			GUIWidget* widget = elementInfo.widget;
 
-			if(widget->getTarget()->getTarget().get() != win)
+			if(widget->getTarget()->getTarget().get() != &win)
 			{
 				mNewElementsUnderPointer.push_back(elementInfo);
 				continue;

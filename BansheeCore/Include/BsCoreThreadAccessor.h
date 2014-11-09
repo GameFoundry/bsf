@@ -52,7 +52,7 @@ namespace BansheeEngine
 		void setVertexDeclaration(const VertexDeclarationPtr& vertexDeclaration);
 
 		/** @copydoc RenderSystem::setViewport() */
-		void setViewport(Viewport vp);
+		void setViewport(const Rect2& vp);
 
 		/** @copydoc RenderSystem::setDrawOperation() */
 		void setDrawOperation(DrawOperationType op);

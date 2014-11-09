@@ -375,7 +375,7 @@ namespace BansheeEngine
 		 *			valid size.
 		 */
 		template<class T>
-		const T& getData()
+		const T& getData() const
 		{
 			assert(sizeof(T) == size);
 

@@ -7,45 +7,30 @@
 
 namespace BansheeEngine
 {
-	void RenderTargetProperties::copyToBuffer(UINT8* buffer) const
-	{
-		*(RenderTargetProperties*)buffer = *this;
-	}
-
-	void RenderTargetProperties::copyFromBuffer(UINT8* buffer)
-	{
-		*this = *(RenderTargetProperties*)buffer;
-	}
-
-	UINT32 RenderTargetProperties::getSize() const
-	{
-		return sizeof(RenderTargetProperties);
-	}
-
-	RenderTargetCore::RenderTargetCore(RenderTarget* parent, RenderTargetProperties* properties)
-		:mProperties(properties), mParent(parent)
+	RenderTargetCore::RenderTargetCore()
 	{
 
 	}
 
-	RenderTargetCore::~RenderTargetCore()
-	{
-		bs_delete(mProperties);
+	void RenderTargetCore::setActive(bool state)
+	{ 
+		RenderTargetProperties& props = const_cast<RenderTargetProperties&>(getProperties());
+
+		props.mActive = state;
+		markCoreDirty();
 	}
 
-	CoreSyncData RenderTargetCore::syncFromCore(FrameAlloc* allocator)
-	{
-		UINT8* buffer = allocator->alloc(mProperties->getSize());
-		mProperties->copyToBuffer(buffer);
+	void RenderTargetCore::setPriority(INT32 priority) 
+	{ 
+		RenderTargetProperties& props = const_cast<RenderTargetProperties&>(getProperties());
 
-		return CoreSyncData(buffer, mProperties->getSize());
+		props.mPriority = priority;
+		markCoreDirty();
 	}
 
-	void RenderTargetCore::syncToCore(const CoreSyncData& data)
-	{
-		assert(data.getBufferSize() == mProperties->getSize());
-
-		mProperties->copyFromBuffer(data.getBuffer());
+	const RenderTargetProperties& RenderTargetCore::getProperties() const
+	{ 
+		return getPropertiesInternal(); 
 	}
 
 	void RenderTargetCore::getCustomAttribute(const String& name, void* pData) const
@@ -53,52 +38,21 @@ namespace BansheeEngine
 		BS_EXCEPT(InvalidParametersException, "Attribute not found.");
 	}
 
-	const RenderTargetProperties& RenderTargetCore::getProperties() const
-	{
-		THROW_IF_NOT_CORE_THREAD;
-
-		return *mProperties;
-	}
-
 	SPtr<RenderTargetCore> RenderTarget::getCore() const
 	{
 		return std::static_pointer_cast<RenderTargetCore>(mCoreSpecific);
-	}
-
-	RenderTarget::RenderTarget()
-		:mProperties(nullptr)
-	{
-	}
-
-	RenderTarget::~RenderTarget()
-	{
-		bs_delete(mProperties);
 	}
 
 	const RenderTargetProperties& RenderTarget::getProperties() const
 	{
 		THROW_IF_CORE_THREAD;
 
-		return *mProperties;
-	}
-
-	CoreSyncData RenderTarget::syncToCore(FrameAlloc* allocator)
-	{
-		UINT8* buffer = allocator->alloc(mProperties->getSize());
-		mProperties->copyToBuffer(buffer);
-
-		return CoreSyncData(buffer, mProperties->getSize());
-	}
-
-	void RenderTarget::syncFromCore(const CoreSyncData& data)
-	{
-		assert(data.getBufferSize() == mProperties->getSize());
-
-		mProperties->copyFromBuffer(data.getBuffer());
+		return getPropertiesInternal();
 	}
 
 	void RenderTarget::getCustomAttribute(const String& name, void* pData) const
 	{
 		BS_EXCEPT(InvalidParametersException, "Attribute not found.");
 	}
+
 }        

@@ -5,9 +5,8 @@
 
 namespace BansheeEngine
 {
-	D3D11MultiRenderTextureCore::D3D11MultiRenderTextureCore(D3D11MultiRenderTexture* parent, 
-		MultiRenderTextureProperties* properties, const MULTI_RENDER_TEXTURE_DESC& desc)
-		:MultiRenderTextureCore(parent, properties, desc)
+	D3D11MultiRenderTextureCore::D3D11MultiRenderTextureCore(const MULTI_RENDER_TEXTURE_DESC& desc)
+		:MultiRenderTextureCore(desc), mProperties(desc)
 	{
 
 	}
@@ -40,19 +39,7 @@ namespace BansheeEngine
 		}
 	}
 
-	RenderTargetProperties* D3D11MultiRenderTexture::createProperties() const
-	{
-		return bs_new<MultiRenderTextureProperties>();
-	}
-
-	SPtr<CoreObjectCore> D3D11MultiRenderTexture::createCore() const
-	{
-		MultiRenderTextureProperties* coreProperties = bs_new<MultiRenderTextureProperties>();
-		MultiRenderTextureProperties* myProperties = static_cast<MultiRenderTextureProperties*>(mProperties);
-
-		*coreProperties = *myProperties;
-
-		return bs_shared_ptr<D3D11MultiRenderTextureCore>(const_cast<D3D11MultiRenderTexture*>(this),
-			coreProperties, mDesc);
-	}
+	D3D11MultiRenderTexture::D3D11MultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC& desc)
+		:MultiRenderTexture(desc), mProperties(desc)
+	{ }
 }

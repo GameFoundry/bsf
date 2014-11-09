@@ -9,8 +9,6 @@
 
 namespace BansheeEngine
 {
-	Event<void(RenderWindow*)> Platform::onMouseLeftWindow;
-
 	Event<void(const Vector2I&, OSPointerButtonStates)> Platform::onCursorMoved;
 	Event<void(const Vector2I&, OSMouseButton button, OSPointerButtonStates)> Platform::onCursorButtonPressed;
 	Event<void(const Vector2I&, OSMouseButton button, OSPointerButtonStates)> Platform::onCursorButtonReleased;
@@ -22,11 +20,11 @@ namespace BansheeEngine
 	Event<void(RenderWindowCore*)> Platform::onWindowFocusReceived;
 	Event<void(RenderWindowCore*)> Platform::onWindowFocusLost;
 	Event<void(RenderWindowCore*)> Platform::onWindowMovedOrResized;
+	Event<void(RenderWindowCore*)> Platform::onMouseLeftWindow;
 	Event<void()> Platform::onMouseCaptureChanged;
 
 	Map<const RenderWindowCore*, WindowNonClientAreaData> Platform::mNonClientAreas;
 	bool Platform::mIsTrackingMouse = false;
-	Vector<RenderWindowCore*> Platform::mMouseLeftWindows;
 
 	Stack<RenderWindowCore*> Platform::mModalWindowStack;
 
@@ -259,25 +257,25 @@ namespace BansheeEngine
 		PostMessage(hwnd, WM_SETCURSOR, WPARAM(hwnd), (LPARAM)MAKELONG(HTCLIENT, WM_MOUSEMOVE));
 	}
 
-	void Platform::setCaptionNonClientAreas(const RenderWindow& window, const Vector<Rect2I>& nonClientAreas)
+	void Platform::setCaptionNonClientAreas(const RenderWindowCore& window, const Vector<Rect2I>& nonClientAreas)
 	{
 		BS_LOCK_MUTEX(mSync);
 
-		mNonClientAreas[window.getCore().get()].moveAreas = nonClientAreas;
+		mNonClientAreas[&window].moveAreas = nonClientAreas;
 	}
 
-	void Platform::setResizeNonClientAreas(const RenderWindow& window, const Vector<NonClientResizeArea>& nonClientAreas)
+	void Platform::setResizeNonClientAreas(const RenderWindowCore& window, const Vector<NonClientResizeArea>& nonClientAreas)
 	{
 		BS_LOCK_MUTEX(mSync);
 
-		mNonClientAreas[window.getCore().get()].resizeAreas = nonClientAreas;
+		mNonClientAreas[&window].resizeAreas = nonClientAreas;
 	}
 
-	void Platform::resetNonClientAreas(const RenderWindow& window)
+	void Platform::resetNonClientAreas(const RenderWindowCore& window)
 	{
 		BS_LOCK_MUTEX(mSync);
 
-		auto iterFind = mNonClientAreas.find(window.getCore().get());
+		auto iterFind = mNonClientAreas.find(&window);
 
 		if(iterFind != end(mNonClientAreas))
 			mNonClientAreas.erase(iterFind);
@@ -453,20 +451,6 @@ namespace BansheeEngine
 
 	void Platform::_update()
 	{
-		Vector<RenderWindowCore*> windowsCopy;
-		{
-			BS_LOCK_MUTEX(mSync);
-
-			windowsCopy = mMouseLeftWindows;
-			mMouseLeftWindows.clear();
-		}
-		
-		for(auto& window : windowsCopy)
-		{
-			if(!onMouseLeftWindow.empty())
-				onMouseLeftWindow(window->getNonCore());
-		}
-
 		for(auto& dropTarget : mDropTargets.data->dropTargetsPerWindow)
 		{
 			dropTarget.second->update();

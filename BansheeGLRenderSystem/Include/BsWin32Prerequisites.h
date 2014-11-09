@@ -8,6 +8,7 @@ namespace BansheeEngine
     class Win32GLSupport;
     class Win32Window;
     class Win32Context;
+	class Win32WindowCore;
 
 	/**
 	 * @brief	Retrieves last Windows API error and returns a description of it.

@@ -20,7 +20,7 @@ namespace BansheeEngine
 	}
 
 	Win32GLSupport::Win32GLSupport()
-        : mInitialWindow(0), mHasPixelFormatARB(false), mHasMultisample(false), 
+        : mInitialWindow(nullptr), mHasPixelFormatARB(false), mHasMultisample(false), 
 		mHasHardwareGamma(false), mHasAdvancedContext(false)
     {
 		initialiseWGL();
@@ -31,16 +31,22 @@ namespace BansheeEngine
 		if(parentWindow != nullptr)
 		{
 			HWND hWnd;
-			parentWindow->getCore()->getCustomAttribute("WINDOW", &hWnd);
+			parentWindow->getCustomAttribute("WINDOW", &hWnd);
 			desc.platformSpecific["parentWindowHandle"] = toString((UINT64)hWnd);
 		}
 
-		Win32Window* window = new (bs_alloc<Win32Window, PoolAlloc>()) Win32Window(*this);
-		
-		if(!mInitialWindow)
+		Win32Window* window = new (bs_alloc<Win32Window, PoolAlloc>()) Win32Window(desc, *this);
+		return RenderWindowPtr(window, &CoreObject::_deleteDelayed<Win32Window, PoolAlloc>);
+	}
+
+	SPtr<RenderWindowCore> Win32GLSupport::newWindowCore(RENDER_WINDOW_DESC& desc)
+	{
+		Win32WindowCore* window = new (bs_alloc<Win32WindowCore, GenAlloc>()) Win32WindowCore(desc, *this);
+
+		if (!mInitialWindow)
 			mInitialWindow = window;
 
-		return RenderWindowPtr(window, &CoreObject::_deleteDelayed<Win32Window, PoolAlloc>);
+		return bs_shared_ptr<Win32WindowCore, GenAlloc>(window);
 	}
 
 	void Win32GLSupport::start()
@@ -65,7 +71,7 @@ namespace BansheeEngine
 		if(_wglGetExtensionsString == nullptr)
 			return;
 
-		const char *wgl_extensions = _wglGetExtensionsString(mInitialWindow->getCore()->_getHDC());
+		const char *wgl_extensions = _wglGetExtensionsString(mInitialWindow->_getHDC());
 
 		// Parse them, and add them to the main list
 		StringStream ext;

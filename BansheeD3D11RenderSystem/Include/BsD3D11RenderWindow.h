@@ -13,33 +13,12 @@ namespace BansheeEngine
 	class BS_D3D11_EXPORT D3D11RenderWindowProperties : public RenderWindowProperties
 	{
 	public:
+		D3D11RenderWindowProperties(const RENDER_WINDOW_DESC& desc);
 		virtual ~D3D11RenderWindowProperties() { }
-
-		/**
-		 * @brief	Retrieves the window handle.
-		 */
-		HWND getHWnd() const { return mHWnd; }
 
 	private:
 		friend class D3D11RenderWindowCore;
 		friend class D3D11RenderWindow;
-
-		/**
-		 * @copydoc	RenderTargetProperties::copyToBuffer
-		 */
-		virtual void copyToBuffer(UINT8* buffer) const;
-
-		/**
-		 * @copydoc	RenderTargetProperties::copyFromBuffer
-		 */
-		virtual void copyFromBuffer(UINT8* buffer);
-
-		/**
-		 * @copydoc	RenderTargetProperties::getSize
-		 */
-		virtual UINT32 getSize() const;
-
-		HWND mHWnd = 0;
 	};
 
 	/**
@@ -53,7 +32,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	RenderWindowCore::RenderWindowCore
 		 */
-		D3D11RenderWindowCore(D3D11RenderWindow* parent, RenderWindowProperties* properties, const RENDER_WINDOW_DESC& desc,
+		D3D11RenderWindowCore(const RENDER_WINDOW_DESC& desc,
 			D3D11Device& device, IDXGIFactory* DXGIFactory);
 
 		~D3D11RenderWindowCore();
@@ -161,6 +140,11 @@ namespace BansheeEngine
 		 */
 		void resizeSwapChainBuffers(UINT32 width, UINT32 height);
 
+		/**
+		 * @copydoc	RenderWindowCore::getProperties
+		 */
+		const RenderTargetProperties& getPropertiesInternal() const { return mProperties; }
+
 	protected:
 		D3D11Device& mDevice;
 		IDXGIFactory* mDXGIFactory;
@@ -179,8 +163,9 @@ namespace BansheeEngine
 
 		IDXGISwapChain*	mSwapChain;
 		DXGI_SWAP_CHAIN_DESC mSwapChainDesc;
+		HWND mHWnd;
 
-		RENDER_WINDOW_DESC mDesc;
+		D3D11RenderWindowProperties mProperties;
 	};
 
 	/**
@@ -194,12 +179,7 @@ namespace BansheeEngine
 		~D3D11RenderWindow() { }
 
 		/**
-		 * @copydoc RenderWindow::requiresTextureFlipping
-		 */
-		bool requiresTextureFlipping() const { return false; }
-
-		/**
-		 * @copydoc RenderWindow::getCustomAttribute
+		 * @copydoc RenderWindow::screenToWindowPos
 		 */
 		void getCustomAttribute(const String& name, void* pData) const;
 
@@ -213,24 +193,30 @@ namespace BansheeEngine
 		 */
 		Vector2I windowToScreenPos(const Vector2I& windowPos) const;
 
+		/**
+		 * @copydoc	RenderWindow::getCore
+		 */
+		SPtr<D3D11RenderWindowCore> getCore() const;
+
 	protected:
 		friend class D3D11RenderWindowManager;
 		friend class D3D11RenderWindowCore;
 
-		D3D11RenderWindow(D3D11Device& device, IDXGIFactory* DXGIFactory);
+		D3D11RenderWindow(const RENDER_WINDOW_DESC& desc, D3D11Device& device, IDXGIFactory* DXGIFactory);
 
 		/**
-		 * @copydoc	RenderWindow::createProperties
+		 * @copydoc	RenderWindowCore::getProperties
 		 */
-		virtual RenderTargetProperties* createProperties() const;
+		const RenderTargetProperties& getPropertiesInternal() const { return mProperties; }
 
 		/**
-		 * @copydoc	RenderWindow::createCore
+		 * @brief	Retrieves internal window handle.
 		 */
-		virtual SPtr<CoreObjectCore> createCore() const;
+		HWND getHWnd() const;
 
 	private:
 		D3D11Device& mDevice;
 		IDXGIFactory* mDXGIFactory;
+		D3D11RenderWindowProperties mProperties;
 	};
 }

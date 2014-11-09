@@ -16,7 +16,7 @@ namespace BansheeEngine
 	class BS_RSGL_EXPORT GLMultiRenderTextureCore : public MultiRenderTextureCore
 	{
 	public:
-		GLMultiRenderTextureCore(GLMultiRenderTexture* parent, MultiRenderTextureProperties* properties, const MULTI_RENDER_TEXTURE_DESC& desc);
+		GLMultiRenderTextureCore(const MULTI_RENDER_TEXTURE_DESC& desc);
 		virtual ~GLMultiRenderTextureCore();
 
 		/**
@@ -38,36 +38,35 @@ namespace BansheeEngine
 
 	private:
 		GLFrameBufferObject* mFB;
+
+		/**
+		 * @copydoc	MultiRenderTextureCore::getProperties
+		 */
+		const RenderTargetProperties& getPropertiesInternal() const { return mProperties; }
+
+		MultiRenderTextureProperties mProperties;
 	};
 
 	/**
-	 * @brief	OpenGL implementation of a render texture with multiple color surfaces.
-	 *
-	 * @note	Sim thread only.
-	 */
+	* @brief	OpenGL implementation of a render texture with multiple color surfaces.
+	*
+	* @note	Sim thread only.
+	*/
 	class BS_RSGL_EXPORT GLMultiRenderTexture : public MultiRenderTexture
 	{
 	public:
 		virtual ~GLMultiRenderTexture() { }
 
-		/**
-		 * @copydoc	MultiRenderTexture::requiresTextureFlipping
-		 */
-		bool requiresTextureFlipping() const { return true; }
-
 	protected:
 		friend class GLTextureManager;
 
-		GLMultiRenderTexture() { }
+		GLMultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC& desc);
 
 		/**
-		 * @copydoc	MultiRenderTexture::createProperties
+		 * @copydoc	MultiRenderTexture::getProperties
 		 */
-		virtual RenderTargetProperties* createProperties() const;
+		const RenderTargetProperties& getPropertiesInternal() const { return mProperties; }
 
-		/**
-		 * @copydoc	RenderTexture::createCore
-		 */
-		virtual SPtr<CoreObjectCore> createCore() const;
+		MultiRenderTextureProperties mProperties;
 	};
 }

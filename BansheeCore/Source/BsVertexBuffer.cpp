@@ -27,7 +27,7 @@ namespace BansheeEngine
 
 	SPtr<CoreObjectCore> VertexBuffer::createCore() const
 	{
-		return HardwareBufferCoreManager::instance().createVertexBuffer(mProperties.mVertexSize, 
+		return HardwareBufferCoreManager::instance().createVertexBufferInternal(mProperties.mVertexSize, 
 			mProperties.mNumVertices, mUsage, mStreamOut);
 	}
 

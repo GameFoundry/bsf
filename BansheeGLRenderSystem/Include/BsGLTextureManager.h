@@ -31,13 +31,35 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	TextureManager::createRenderTextureImpl
 		 */
-		RenderTexturePtr createRenderTextureImpl();
+		RenderTexturePtr createRenderTextureImpl(const RENDER_TEXTURE_DESC& desc);
 
 		/**
 		 * @copydoc	TextureManager::createMultiRenderTextureImpl
 		 */
-		MultiRenderTexturePtr createMultiRenderTextureImpl();
+		MultiRenderTexturePtr createMultiRenderTextureImpl(const MULTI_RENDER_TEXTURE_DESC& desc);
 
         GLSupport& mGLSupport;
     };
+
+	/**
+	 * @brief	Handles creation of OpenGL textures.
+	 */
+	class BS_RSGL_EXPORT GLTextureCoreManager : public TextureCoreManager
+	{
+	public:
+		GLTextureCoreManager(GLSupport& support);
+
+	protected:		
+		/**
+		 * @copydoc	TextureCoreManager::createRenderTextureInternal
+		 */
+		SPtr<RenderTextureCore> createRenderTextureInternal(const RENDER_TEXTURE_DESC& desc);
+
+		/**
+		 * @copydoc	TextureCoreManager::createMultiRenderTextureInternal
+		 */
+		SPtr<MultiRenderTextureCore> createMultiRenderTextureInternal(const MULTI_RENDER_TEXTURE_DESC& desc);
+
+		GLSupport& mGLSupport;
+	};
 }

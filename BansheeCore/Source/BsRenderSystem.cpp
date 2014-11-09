@@ -205,16 +205,13 @@ namespace BansheeEngine
         return false;
 	}
 
-	void RenderSystem::swapBuffers(RenderTargetPtr target)
+	void RenderSystem::swapBuffers(const SPtr<RenderTargetCore>& target)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		if (target->isInitialized())
-		{
-			target->getCore()->swapBuffers();
+		target->swapBuffers();
 
-			BS_INC_RENDER_STAT(NumPresents);
-		}
+		BS_INC_RENDER_STAT(NumPresents);
 	}
 
 	void RenderSystem::writeSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceDataPtr& data, bool discardEntireBuffer, AsyncOp& asyncOp)

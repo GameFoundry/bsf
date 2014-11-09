@@ -34,6 +34,7 @@ namespace BansheeEngine
 		, mActiveD3DDriver(nullptr), mFeatureLevel(D3D_FEATURE_LEVEL_11_0)
 		, mHLSLFactory(nullptr), mIAManager(nullptr)
 		, mStencilRef(0), mActiveDrawOp(DOT_TRIANGLE_LIST)
+		, mViewportNorm(0.0f, 0.0f, 1.0f, 1.0f)
 	{
 		mClipPlanesDirty = false; // DX11 handles clip planes through shaders
 	}
@@ -107,6 +108,7 @@ namespace BansheeEngine
 
 		// Create the texture manager for use by others		
 		TextureManager::startUp<D3D11TextureManager>();
+		TextureCoreManager::startUp<D3D11TextureCoreManager>();
 
 		// Create hardware buffer manager		
 		HardwareBufferManager::startUp<D3D11HardwareBufferManager>(std::ref(*mDevice));
@@ -114,6 +116,7 @@ namespace BansheeEngine
 
 		// Create render window manager
 		RenderWindowManager::startUp<D3D11RenderWindowManager>(this);
+		RenderWindowCoreManager::startUp<D3D11RenderWindowCoreManager>(this);
 
 		// Create & register HLSL factory		
 		mHLSLFactory = bs_new<D3D11HLSLProgramFactory>();
@@ -168,9 +171,11 @@ namespace BansheeEngine
 		mActiveVertexShader = nullptr;
 
 		RenderStateManager::shutDown();
+		RenderWindowCoreManager::shutDown();
 		RenderWindowManager::shutDown();
 		HardwareBufferCoreManager::shutDown();
 		HardwareBufferManager::shutDown();
+		TextureCoreManager::shutDown();
 		TextureManager::shutDown();
 
 		SAFE_RELEASE(mDXGIFactory);
@@ -368,26 +373,31 @@ namespace BansheeEngine
 		// Not used
 	}
 
-	void D3D11RenderSystem::setViewport(Viewport vp)
+	void D3D11RenderSystem::setViewport(const Rect2& vp)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		// Set render target
-		RenderTargetPtr target = vp.getTarget();
-		setRenderTarget(target);
+		mViewportNorm = vp;
+		applyViewport();
+	}
 
-		const RenderTargetProperties& rtProps = target->getCore()->getProperties();
+	void D3D11RenderSystem::applyViewport()
+	{
+		if (mActiveRenderTarget == nullptr)
+			return;
+
+		const RenderTargetProperties& rtProps = mActiveRenderTarget->getProperties();
 
 		// Set viewport dimensions
-		mViewport.TopLeftX = (FLOAT)(rtProps.getWidth() * vp.getNormalizedX());
-		mViewport.TopLeftY = (FLOAT)(rtProps.getHeight() * vp.getNormalizedY());
-		mViewport.Width = (FLOAT)(rtProps.getWidth() * vp.getNormalizedWidth());
-		mViewport.Height = (FLOAT)(rtProps.getHeight() * vp.getNormalizedHeight());
+		mViewport.TopLeftX = (FLOAT)(rtProps.getWidth() * mViewportNorm.x);
+		mViewport.TopLeftY = (FLOAT)(rtProps.getHeight() * mViewportNorm.y);
+		mViewport.Width = (FLOAT)(rtProps.getWidth() * mViewportNorm.width);
+		mViewport.Height = (FLOAT)(rtProps.getHeight() * mViewportNorm.height);
 
-		if (target->requiresTextureFlipping())
+		if (rtProps.requiresTextureFlipping())
 		{
 			// Convert "top-left" to "bottom-left"
-			mViewport.TopLeftY = target->getCore()->getProperties().getHeight() - mViewport.Height - mViewport.TopLeftY;
+			mViewport.TopLeftY = rtProps.getHeight() - mViewport.Height - mViewport.TopLeftY;
 		}
 
 		mViewport.MinDepth = 0.0f;
@@ -689,7 +699,7 @@ namespace BansheeEngine
 		if(mActiveRenderTarget == nullptr)
 			return;
 
-		const RenderTargetProperties& rtProps = mActiveRenderTarget->getCore()->getProperties();
+		const RenderTargetProperties& rtProps = mActiveRenderTarget->getProperties();
 
 		Rect2I clearArea((int)mViewport.TopLeftX, (int)mViewport.TopLeftY, (int)mViewport.Width, (int)mViewport.Height);
 
@@ -720,7 +730,7 @@ namespace BansheeEngine
 			ID3D11RenderTargetView** views = bs_newN<ID3D11RenderTargetView*, ScratchAlloc>(maxRenderTargets);
 			memset(views, 0, sizeof(ID3D11RenderTargetView*) * maxRenderTargets);
 
-			mActiveRenderTarget->getCore()->getCustomAttribute("RTV", views);
+			mActiveRenderTarget->getCustomAttribute("RTV", views);
 			if (!views[0])
 			{
 				bs_deleteN<ScratchAlloc>(views, maxRenderTargets);
@@ -746,7 +756,7 @@ namespace BansheeEngine
 		if((buffers & FBT_DEPTH) != 0 || (buffers & FBT_STENCIL) != 0)
 		{
 			ID3D11DepthStencilView* depthStencilView = nullptr;
-			mActiveRenderTarget->getCore()->getCustomAttribute("DSV", &depthStencilView);
+			mActiveRenderTarget->getCustomAttribute("DSV", &depthStencilView);
 
 			D3D11_CLEAR_FLAG clearFlag;
 
@@ -764,7 +774,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumClears);
 	}
 
-	void D3D11RenderSystem::setRenderTarget(RenderTargetPtr target)
+	void D3D11RenderSystem::setRenderTarget(const SPtr<RenderTargetCore>& target)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -774,7 +784,7 @@ namespace BansheeEngine
 		UINT32 maxRenderTargets = mCurrentCapabilities->getNumMultiRenderTargets();
 		ID3D11RenderTargetView** views = bs_newN<ID3D11RenderTargetView*, ScratchAlloc>(maxRenderTargets);
 		memset(views, 0, sizeof(ID3D11RenderTargetView*) * maxRenderTargets);
-		target->getCore()->getCustomAttribute("RTV", views);
+		target->getCustomAttribute("RTV", views);
 		if (!views[0])
 		{
 			bs_deleteN<ScratchAlloc>(views, maxRenderTargets);
@@ -783,7 +793,7 @@ namespace BansheeEngine
 
 		// Retrieve depth stencil
 		ID3D11DepthStencilView* depthStencilView = nullptr;
-		target->getCore()->getCustomAttribute("DSV", &depthStencilView);
+		target->getCustomAttribute("DSV", &depthStencilView);
 
 		// Bind render targets
 		mDevice->getImmediateContext()->OMSetRenderTargets(maxRenderTargets, views, depthStencilView);
@@ -791,6 +801,7 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "Failed to setRenderTarget : " + mDevice->getErrorDescription());
 
 		bs_deleteN<ScratchAlloc>(views, maxRenderTargets);
+		applyViewport();
 
 		BS_INC_RENDER_STAT(NumRenderTargetChanges);
 	}

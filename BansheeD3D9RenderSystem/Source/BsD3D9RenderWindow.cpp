@@ -12,23 +12,14 @@
 
 namespace BansheeEngine
 {
-	void D3D9RenderWindowProperties::copyToBuffer(UINT8* buffer) const
+	D3D9RenderWindowProperties::D3D9RenderWindowProperties(const RENDER_WINDOW_DESC& desc)
+		:RenderWindowProperties(desc)
 	{
-		*(D3D9RenderWindowProperties*)buffer = *this;
+
 	}
 
-	void D3D9RenderWindowProperties::copyFromBuffer(UINT8* buffer)
-	{
-		*this = *(D3D9RenderWindowProperties*)buffer;
-	}
-
-	UINT32 D3D9RenderWindowProperties::getSize() const
-	{
-		return sizeof(D3D9RenderWindowProperties);
-	}
-
-	D3D9RenderWindowCore::D3D9RenderWindowCore(D3D9RenderWindow* parent, RenderWindowProperties* properties, const RENDER_WINDOW_DESC& desc, HINSTANCE instance)
-		: RenderWindowCore(parent, properties), mInstance(instance), mIsDepthBuffered(true), mIsChild(false), mDesc(desc),
+	D3D9RenderWindowCore::D3D9RenderWindowCore(const RENDER_WINDOW_DESC& desc, HINSTANCE instance)
+		: RenderWindowCore(desc), mInstance(instance), mProperties(desc), mIsDepthBuffered(true), mIsChild(false), mHWnd(0),
 		mStyle(0), mWindowedStyle(0), mWindowedStyleEx(0), mDevice(nullptr), mIsExternal(false), mDisplayFrequency(0), mDeviceValid(false)
 	{ }
 
@@ -84,7 +75,7 @@ namespace BansheeEngine
 			}
 		}
 
-		D3D9RenderWindowProperties* props = static_cast<D3D9RenderWindowProperties*>(mProperties);
+		D3D9RenderWindowProperties& props = mProperties;
 		if (!externalHandle)
 		{
 			MONITORINFO monitorInfo;
@@ -151,18 +142,18 @@ namespace BansheeEngine
 				top += monitorInfo.rcWork.top;
 			}
 
-			props->mWidth = mDesc.videoMode.getWidth();
-			props->mHeight = mDesc.videoMode.getHeight();
-			props->mTop = top;
-			props->mLeft = left;
+			props.mWidth = mDesc.videoMode.getWidth();
+			props.mHeight = mDesc.videoMode.getHeight();
+			props.mTop = top;
+			props.mLeft = left;
 
 			DWORD dwStyle = 0;
 			DWORD dwStyleEx = 0;
 			if (mDesc.fullscreen && !mIsChild)
 			{
 				dwStyle = WS_VISIBLE | WS_CLIPCHILDREN | WS_POPUP;
-				props->mTop = monitorInfo.rcMonitor.top;
-				props->mLeft = monitorInfo.rcMonitor.left;
+				props.mTop = monitorInfo.rcMonitor.top;
+				props.mLeft = monitorInfo.rcMonitor.left;
 			}
 			else
 			{
@@ -175,23 +166,23 @@ namespace BansheeEngine
 				{
 					// Calculate window dimensions required
 					// to get the requested client area
-					SetRect(&rc, 0, 0, props->mWidth, props->mHeight);
+					SetRect(&rc, 0, 0, props.mWidth, props.mHeight);
 					AdjustWindowRect(&rc, dwStyle, false);
-					props->mWidth = rc.right - rc.left;
-					props->mHeight = rc.bottom - rc.top;
+					props.mWidth = rc.right - rc.left;
+					props.mHeight = rc.bottom - rc.top;
 
 					// Clamp window rect to the nearest display monitor.
-					if (props->mLeft < monitorInfo.rcWork.left)
-						props->mLeft = monitorInfo.rcWork.left;
+					if (props.mLeft < monitorInfo.rcWork.left)
+						props.mLeft = monitorInfo.rcWork.left;
 
-					if (props->mTop < monitorInfo.rcWork.top)
-						props->mTop = monitorInfo.rcWork.top;
+					if (props.mTop < monitorInfo.rcWork.top)
+						props.mTop = monitorInfo.rcWork.top;
 
-					if (static_cast<int>(winWidth) > monitorInfo.rcWork.right - props->mLeft)
-						winWidth = monitorInfo.rcWork.right - props->mLeft;
+					if (static_cast<int>(winWidth) > monitorInfo.rcWork.right - props.mLeft)
+						winWidth = monitorInfo.rcWork.right - props.mLeft;
 
-					if (static_cast<int>(winHeight) > monitorInfo.rcWork.bottom - props->mTop)
-						winHeight = monitorInfo.rcWork.bottom - props->mTop;
+					if (static_cast<int>(winHeight) > monitorInfo.rcWork.bottom - props.mTop)
+						winHeight = monitorInfo.rcWork.bottom - props.mTop;
 				}
 			}
 
@@ -205,37 +196,32 @@ namespace BansheeEngine
 			// Create our main window
 			// Pass pointer to self
 			mIsExternal = false;
-			props->mHWnd = CreateWindowEx(dwStyleEx, "D3D9Wnd", mDesc.title.c_str(), dwStyle,
-				props->mLeft, props->mTop, winWidth, winHeight, parentHWnd, 0, hInst, this);
+			mHWnd = CreateWindowEx(dwStyleEx, "D3D9Wnd", mDesc.title.c_str(), dwStyle,
+				props.mLeft, props.mTop, winWidth, winHeight, parentHWnd, 0, hInst, this);
 			mStyle = dwStyle;
 		}
 		else
 		{
-			props->mHWnd = externalHandle;
+			mHWnd = externalHandle;
 			mIsExternal = true;
 		}
 
 		RECT rc;
-		GetWindowRect(props->mHWnd, &rc);
-		props->mTop = rc.top;
-		props->mLeft = rc.left;
+		GetWindowRect(mHWnd, &rc);
+		props.mTop = rc.top;
+		props.mLeft = rc.left;
 
-		GetClientRect(props->mHWnd, &rc);
-		props->mWidth = rc.right;
-		props->mHeight = rc.bottom;
+		GetClientRect(mHWnd, &rc);
+		props.mWidth = rc.right;
+		props.mHeight = rc.bottom;
 
 		mIsDepthBuffered = mDesc.depthBuffer;
-		props->mIsFullScreen = mDesc.fullscreen && !mIsChild;
-		props->mColorDepth = 32;
-		props->mActive = true;
+		props.mIsFullScreen = mDesc.fullscreen && !mIsChild;
+		props.mColorDepth = 32;
+		props.mActive = true;
 
 		D3D9RenderSystem* rs = static_cast<D3D9RenderSystem*>(RenderSystem::instancePtr());
 		rs->registerWindow(*this);
-
-		// Sync HWnd to CoreObject immediately
-		D3D9RenderWindow* parent = static_cast<D3D9RenderWindow*>(mParent);
-		D3D9RenderWindowProperties* parentProps = static_cast<D3D9RenderWindowProperties*>(parent->mProperties);
-		parentProps->mHWnd = props->mHWnd;
 	}
 
 	void D3D9RenderWindowCore::destroy()
@@ -246,14 +232,13 @@ namespace BansheeEngine
 			mDevice = nullptr;
 		}
 
-		D3D9RenderWindowProperties* props = static_cast<D3D9RenderWindowProperties*>(mProperties);
-		if (props->mHWnd && !mIsExternal)
+		if (mHWnd && !mIsExternal)
 		{
-			DestroyWindow(props->mHWnd);
+			DestroyWindow(mHWnd);
 		}
 
-		props->mHWnd = 0;
-		props->mActive = false;
+		mHWnd = 0;
+		mProperties.mActive = false;
 
 		markCoreDirty();
 
@@ -275,14 +260,14 @@ namespace BansheeEngine
 		UINT32 actualMonitorIdx = std::min(monitorIdx, numOutputs - 1);
 		const D3D9VideoOutputInfo& outputInfo = static_cast<const D3D9VideoOutputInfo&>(videoModeInfo.getOutputInfo(actualMonitorIdx));
 
-		D3D9RenderWindowProperties* props = static_cast<D3D9RenderWindowProperties*>(mProperties);
-		bool oldFullscreen = props->mIsFullScreen;
+		D3D9RenderWindowProperties& props = mProperties;
+		bool oldFullscreen = props.mIsFullScreen;
 
-		props->mWidth = width;
-		props->mHeight = height;
+		props.mWidth = width;
+		props.mHeight = height;
 		mDisplayFrequency = Math::roundToInt(refreshRate);
 
-		props->mIsFullScreen = true;
+		props.mIsFullScreen = true;
 
 		HMONITOR hMonitor = outputInfo.getMonitorHandle();
 		MONITORINFO monitorInfo;
@@ -291,8 +276,8 @@ namespace BansheeEngine
 		monitorInfo.cbSize = sizeof(MONITORINFO);
 		GetMonitorInfo(hMonitor, &monitorInfo);
 
-		props->mTop = monitorInfo.rcMonitor.top;
-		props->mLeft = monitorInfo.rcMonitor.left;
+		props.mTop = monitorInfo.rcMonitor.top;
+		props.mLeft = monitorInfo.rcMonitor.left;
 
 		// Invalidate device, which resets it
 		mDevice->invalidate(this);
@@ -312,21 +297,21 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		D3D9RenderWindowProperties* props = static_cast<D3D9RenderWindowProperties*>(mProperties);
+		D3D9RenderWindowProperties& props = mProperties;
 
-		if (!props->mIsFullScreen)
+		if (!props.mIsFullScreen)
 			return;
 
-		props->mIsFullScreen = false;
+		props.mIsFullScreen = false;
 		mStyle = mWindowedStyle;
-		props->mWidth = width;
-		props->mHeight = height;
+		props.mWidth = width;
+		props.mHeight = height;
 
 		unsigned int winWidth, winHeight;
-		getAdjustedWindowSize(props->mWidth, props->mHeight, mStyle, &winWidth, &winHeight);
+		getAdjustedWindowSize(props.mWidth, props.mHeight, mStyle, &winWidth, &winHeight);
 
 		// Deal with centering when switching down to smaller resolution
-		HMONITOR hMonitor = MonitorFromWindow(props->mHWnd, MONITOR_DEFAULTTONEAREST);
+		HMONITOR hMonitor = MonitorFromWindow(mHWnd, MONITOR_DEFAULTTONEAREST);
 		MONITORINFO monitorInfo;
 		memset(&monitorInfo, 0, sizeof(MONITORINFO));
 		monitorInfo.cbSize = sizeof(MONITORINFO);
@@ -338,9 +323,9 @@ namespace BansheeEngine
 		int left = screenw > int(winWidth) ? ((screenw - int(winWidth)) / 2) : 0;
 		int top = screenh > int(winHeight) ? ((screenh - int(winHeight)) / 2) : 0;
 
-		SetWindowLong(props->mHWnd, GWL_STYLE, mStyle);
-		SetWindowLong(props->mHWnd, GWL_EXSTYLE, mWindowedStyleEx);
-		SetWindowPos(props->mHWnd, HWND_NOTOPMOST, left, top, winWidth, winHeight,
+		SetWindowLong(mHWnd, GWL_STYLE, mStyle);
+		SetWindowLong(mHWnd, GWL_EXSTYLE, mWindowedStyleEx);
+		SetWindowPos(mHWnd, HWND_NOTOPMOST, left, top, winWidth, winHeight,
 			SWP_DRAWFRAME | SWP_FRAMECHANGED | SWP_NOACTIVATE);
 
 		mDevice->invalidate(this);
@@ -353,15 +338,15 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		D3D9RenderWindowProperties* props = static_cast<D3D9RenderWindowProperties*>(mProperties);
+		D3D9RenderWindowProperties& props = mProperties;
 
-		props->mHidden = hidden;
+		props.mHidden = hidden;
 		if (!mIsExternal)
 		{
 			if (hidden)
-				ShowWindow(props->mHWnd, SW_HIDE);
+				ShowWindow(mHWnd, SW_HIDE);
 			else
-				ShowWindow(props->mHWnd, SW_SHOWNORMAL);
+				ShowWindow(mHWnd, SW_SHOWNORMAL);
 		}
 
 		markCoreDirty();
@@ -371,14 +356,14 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		D3D9RenderWindowProperties* props = static_cast<D3D9RenderWindowProperties*>(mProperties);
+		D3D9RenderWindowProperties& props = mProperties;
 
-		if (props->mHWnd && !props->mIsFullScreen)
+		if (mHWnd && !props.mIsFullScreen)
 		{
-			props->mLeft = left;
-			props->mTop = top;
+			props.mLeft = left;
+			props.mTop = top;
 
-			SetWindowPos(props->mHWnd, 0, top, left, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+			SetWindowPos(mHWnd, 0, top, left, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
 			markCoreDirty();
 		}
 	}
@@ -387,17 +372,17 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		D3D9RenderWindowProperties* props = static_cast<D3D9RenderWindowProperties*>(mProperties);
+		D3D9RenderWindowProperties& props = mProperties;
 
-		if (props->mHWnd && !props->mIsFullScreen)
+		if (mHWnd && !props.mIsFullScreen)
 		{
-			props->mWidth = width;
-			props->mHeight = height;
+			props.mWidth = width;
+			props.mHeight = height;
 
 			unsigned int winWidth, winHeight;
 			getAdjustedWindowSize(width, height, mStyle, &winWidth, &winHeight);
 
-			SetWindowPos(props->mHWnd, 0, 0, 0, winWidth, winHeight,
+			SetWindowPos(mHWnd, 0, 0, 0, winWidth, winHeight,
 				SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
 
 			markCoreDirty();
@@ -468,9 +453,9 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		D3D9RenderWindowProperties* props = static_cast<D3D9RenderWindowProperties*>(mProperties);
+		D3D9RenderWindowProperties& props = mProperties;
 
-		if (!props->mHWnd || IsIconic(props->mHWnd))
+		if (!mHWnd || IsIconic(mHWnd))
 			return;
 	
 		updateWindowRect();
@@ -485,7 +470,7 @@ namespace BansheeEngine
 	void D3D9RenderWindowCore::getAdjustedWindowSize(UINT32 clientWidth, UINT32 clientHeight,
 		DWORD style, UINT32* winWidth, UINT32* winHeight)
 	{
-		D3D9RenderWindowProperties* props = static_cast<D3D9RenderWindowProperties*>(mProperties);
+		D3D9RenderWindowProperties& props = mProperties;
 
 		RECT rc;
 		SetRect(&rc, 0, 0, clientWidth, clientHeight);
@@ -493,7 +478,7 @@ namespace BansheeEngine
 		*winWidth = rc.right - rc.left;
 		*winHeight = rc.bottom - rc.top;
 
-		HMONITOR hMonitor = MonitorFromWindow(props->mHWnd, MONITOR_DEFAULTTONEAREST);
+		HMONITOR hMonitor = MonitorFromWindow(mHWnd, MONITOR_DEFAULTTONEAREST);
 
 		MONITORINFO monitorInfo;
 
@@ -512,7 +497,7 @@ namespace BansheeEngine
 	
 	void D3D9RenderWindowCore::_buildPresentParameters(D3DPRESENT_PARAMETERS* presentParams) const
 	{	
-		D3D9RenderWindowProperties* props = static_cast<D3D9RenderWindowProperties*>(mProperties);
+		const D3D9RenderWindowProperties& props = mProperties;
 		IDirect3D9* pD3D = D3D9RenderSystem::getDirect3D9();
 		D3DDEVTYPE devType = D3DDEVTYPE_HAL;
 
@@ -520,14 +505,14 @@ namespace BansheeEngine
 			devType = mDevice->getDeviceType();		
 	
 		ZeroMemory( presentParams, sizeof(D3DPRESENT_PARAMETERS) );
-		presentParams->Windowed = !props->mIsFullScreen;
+		presentParams->Windowed = !props.mIsFullScreen;
 		presentParams->SwapEffect = D3DSWAPEFFECT_DISCARD;
 		presentParams->BackBufferCount = 1;
 		presentParams->EnableAutoDepthStencil = mIsDepthBuffered;
-		presentParams->hDeviceWindow = props->mHWnd;
-		presentParams->BackBufferWidth = props->mWidth;
-		presentParams->BackBufferHeight = props->mHeight;
-		presentParams->FullScreen_RefreshRateInHz = props->mIsFullScreen ? mDisplayFrequency : 0;
+		presentParams->hDeviceWindow = mHWnd;
+		presentParams->BackBufferWidth = props.mWidth;
+		presentParams->BackBufferHeight = props.mHeight;
+		presentParams->FullScreen_RefreshRateInHz = props.mIsFullScreen ? mDisplayFrequency : 0;
 		
 		if (presentParams->BackBufferWidth == 0)		
 			presentParams->BackBufferWidth = 1;					
@@ -535,9 +520,9 @@ namespace BansheeEngine
 		if (presentParams->BackBufferHeight == 0)	
 			presentParams->BackBufferHeight = 1;					
 
-		if (getProperties().getVSync())
+		if (props.getVSync())
 		{
-			if (getProperties().isFullScreen())
+			if (props.isFullScreen())
 			{
 				switch(mVSyncInterval)
 				{
@@ -609,8 +594,8 @@ namespace BansheeEngine
 		D3DMULTISAMPLE_TYPE multisampleType;
 		DWORD multisampleQuality;
 
-		rs->determineMultisampleSettings(mDevice->getD3D9Device(), getProperties().getMultisampleCount(), 
-			presentParams->BackBufferFormat, getProperties().isFullScreen(), &multisampleType, &multisampleQuality);
+		rs->determineMultisampleSettings(mDevice->getD3D9Device(), props.getMultisampleCount(),
+			presentParams->BackBufferFormat, props.isFullScreen(), &multisampleType, &multisampleQuality);
 
 		presentParams->MultiSampleType = multisampleType;
 		presentParams->MultiSampleQuality = (multisampleQuality == 0) ? 0 : multisampleQuality;
@@ -618,9 +603,7 @@ namespace BansheeEngine
 
 	HWND D3D9RenderWindowCore::_getWindowHandle() const
 	{
-		D3D9RenderWindowProperties* props = static_cast<D3D9RenderWindowProperties*>(mProperties);
-
-		return props->getHWnd();
+		return mHWnd;
 	}
 
 	IDirect3DDevice9* D3D9RenderWindowCore::_getD3D9Device() const
@@ -654,39 +637,39 @@ namespace BansheeEngine
 		RECT rc;
 		BOOL result;
 
-		D3D9RenderWindowProperties* props = static_cast<D3D9RenderWindowProperties*>(mProperties);
+		D3D9RenderWindowProperties& props = mProperties;
 
 		// Update top left parameters
 		result = GetWindowRect(_getWindowHandle(), &rc);
 		if (result == FALSE)
 		{
-			props->mTop = 0;
-			props->mLeft = 0;
-			props->mWidth = 0;
-			props->mHeight = 0;
+			props.mTop = 0;
+			props.mLeft = 0;
+			props.mWidth = 0;
+			props.mHeight = 0;
 
 			markCoreDirty();
 			return;
 		}
 		
-		props->mTop = rc.top;
-		props->mLeft = rc.left;
+		props.mTop = rc.top;
+		props.mLeft = rc.left;
 
 		// Width and height represent drawable area only
 		result = GetClientRect(_getWindowHandle(), &rc);
 		if (result == FALSE)
 		{
-			props->mTop = 0;
-			props->mLeft = 0;
-			props->mWidth = 0;
-			props->mHeight = 0;
+			props.mTop = 0;
+			props.mLeft = 0;
+			props.mWidth = 0;
+			props.mHeight = 0;
 
 			markCoreDirty();
 			return;
 		}
 
-		props->mWidth = rc.right - rc.left;
-		props->mHeight = rc.bottom - rc.top;
+		props.mWidth = rc.right - rc.left;
+		props.mHeight = rc.bottom - rc.top;
 
 		markCoreDirty();
 	}
@@ -697,25 +680,20 @@ namespace BansheeEngine
 		return mDeviceValid;
 	}
 
-	D3D9RenderWindow::D3D9RenderWindow(HINSTANCE instance)
-		:mInstance(instance)
+	D3D9RenderWindow::D3D9RenderWindow(const RENDER_WINDOW_DESC& desc, HINSTANCE instance)
+		:RenderWindow(desc), mInstance(instance), mProperties(desc)
 	{
 
 	}
 
 	void D3D9RenderWindow::getCustomAttribute(const String& name, void* pData) const
 	{
-		THROW_IF_CORE_THREAD;
-
-		D3D9RenderWindowProperties* props = static_cast<D3D9RenderWindowProperties*>(mProperties);
 		if (name == "WINDOW")
 		{
-			HWND *pWnd = (HWND*)pData;
-			*pWnd = props->getHWnd();
+			HWND *pHwnd = (HWND*)pData;
+			*pHwnd = getHWnd();
 			return;
 		}
-
-		RenderWindow::getCustomAttribute(name, pData);
 	}
 
 	Vector2I D3D9RenderWindow::screenToWindowPos(const Vector2I& screenPos) const
@@ -724,8 +702,7 @@ namespace BansheeEngine
 		pos.x = screenPos.x;
 		pos.y = screenPos.y;
 
-		D3D9RenderWindowProperties* props = static_cast<D3D9RenderWindowProperties*>(mProperties);
-		ScreenToClient(props->getHWnd(), &pos);
+		ScreenToClient(getHWnd(), &pos);
 		return Vector2I(pos.x, pos.y);
 	}
 
@@ -735,27 +712,19 @@ namespace BansheeEngine
 		pos.x = windowPos.x;
 		pos.y = windowPos.y;
 
-		D3D9RenderWindowProperties* props = static_cast<D3D9RenderWindowProperties*>(mProperties);
-		ClientToScreen(props->getHWnd(), &pos);
+		ClientToScreen(getHWnd(), &pos);
 		return Vector2I(pos.x, pos.y);
+	}
+
+	HWND D3D9RenderWindow::getHWnd() const
+	{
+		// HACK: I'm accessing core method from sim thread, which means an invalid handle
+		// could be returned here if requested too soon after initialization.
+		return getCore()->_getWindowHandle();
 	}
 
 	SPtr<D3D9RenderWindowCore> D3D9RenderWindow::getCore() const
 	{
 		return std::static_pointer_cast<D3D9RenderWindowCore>(mCoreSpecific);
-	}
-
-	RenderTargetProperties* D3D9RenderWindow::createProperties() const
-	{
-		return bs_new<D3D9RenderWindowProperties>();
-	}
-
-	SPtr<CoreObjectCore> D3D9RenderWindow::createCore() const
-	{
-		D3D9RenderWindowProperties* coreProperties = bs_new<D3D9RenderWindowProperties>();
-		D3D9RenderWindowProperties* myProperties = static_cast<D3D9RenderWindowProperties*>(mProperties);
-
-		*coreProperties = *myProperties;
-		return bs_shared_ptr<D3D9RenderWindowCore>(const_cast<D3D9RenderWindow*>(this), coreProperties, mDesc, mInstance);
 	}
 }

@@ -3,33 +3,62 @@
 #include "BsRenderWindowManager.h"
 #include "BsViewport.h"
 #include "BsPlatform.h"
+#include "BsFrameAlloc.h"
 
 namespace BansheeEngine 
 {
-	void RenderWindowProperties::copyToBuffer(UINT8* buffer) const
+	RenderWindowProperties::RenderWindowProperties(const RENDER_WINDOW_DESC& desc)
 	{
-		*(RenderWindowProperties*)buffer = *this;
+		mWidth = desc.videoMode.getWidth();
+		mHeight = desc.videoMode.getHeight();
+		mHwGamma = desc.gamma;
+		mVSync = desc.vsync;
+		mVSyncInterval = desc.vsyncInterval;
+		mMultisampleCount = desc.multisampleCount;
+		mLeft = desc.left;
+		mTop = desc.top;
+		mIsFullScreen = desc.fullscreen;
+		mHidden = desc.hidden;
+		mIsModal = desc.modal;
+		mIsWindow = true;
+		mRequiresTextureFlipping = false;
 	}
 
-	void RenderWindowProperties::copyFromBuffer(UINT8* buffer)
+	RenderWindowCore::RenderWindowCore(const RENDER_WINDOW_DESC& desc)
+		:mDesc(desc)
 	{
-		*this = *(RenderWindowProperties*)buffer;
+
 	}
 
-	UINT32 RenderWindowProperties::getSize() const
+	void RenderWindowCore::destroy()
 	{
-		return sizeof(RenderWindowProperties);
-	}
+		Platform::resetNonClientAreas(*this);
 
-	RenderWindowCore::RenderWindowCore(RenderWindow* parent, RenderWindowProperties* properties)
-		:RenderTargetCore(parent, properties)
-	{
+		RenderWindowCoreManager::instance().windowDestroyed(this);
 
+		RenderTargetCore::destroy();
 	}
 
 	void RenderWindowCore::setHidden(bool hidden)
 	{
 		THROW_IF_NOT_CORE_THREAD;
+	}
+
+	CoreSyncData RenderWindowCore::syncFromCore(FrameAlloc* allocator)
+	{
+		UINT32 size = sizeof(RenderWindowProperties);
+		UINT8* buffer = allocator->alloc(size);
+
+		RenderWindowProperties& props = const_cast<RenderWindowProperties&>(getProperties());
+
+		memcpy(buffer, &props, size);
+		return CoreSyncData(buffer, size);
+	}
+
+	void RenderWindowCore::syncToCore(const CoreSyncData& data)
+	{
+		RenderWindowProperties& props = const_cast<RenderWindowProperties&>(getProperties());
+		props = data.getData<RenderWindowProperties>();
 	}
 
 	void RenderWindowCore::_windowMovedOrResized()
@@ -41,8 +70,8 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		RenderWindowProperties* properties = static_cast<RenderWindowProperties*>(mProperties);
-		properties->mHasFocus = true;
+		RenderWindowProperties& properties = const_cast<RenderWindowProperties&>(getProperties());
+		properties.mHasFocus = true;
 
 		markCoreDirty();
 	}
@@ -51,55 +80,28 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		RenderWindowProperties* properties = static_cast<RenderWindowProperties*>(mProperties);
-		properties->mHasFocus = false;
+		RenderWindowProperties& properties = const_cast<RenderWindowProperties&>(getProperties());
+		properties.mHasFocus = false;
 
 		markCoreDirty();
 	}
 
-	RenderWindow* RenderWindowCore::getNonCore() const 
-	{ 
-		return static_cast<RenderWindow*>(mParent); 
-	}
-
-	void RenderWindow::initialize(const RENDER_WINDOW_DESC& desc)
+	const RenderWindowProperties& RenderWindowCore::getProperties() const
 	{
-		mDesc = desc;
-
-		mProperties = createProperties();
-		RenderWindowProperties* properties = static_cast<RenderWindowProperties*>(mProperties);
-
-		properties->mWidth = desc.videoMode.getWidth();
-		properties->mHeight = desc.videoMode.getHeight();
-		properties->mHwGamma = desc.gamma;
-		properties->mVSync = desc.vsync;
-		properties->mVSyncInterval = desc.vsyncInterval;
-		properties->mMultisampleCount = desc.multisampleCount;
-		properties->mLeft = desc.left;
-		properties->mTop = desc.top;
-		properties->mIsFullScreen = desc.fullscreen;
-		properties->mHidden = desc.hidden;
-		properties->mIsModal = desc.modal;
-		properties->mIsWindow = true;
-		properties->mRequiresTextureFlipping = requiresTextureFlipping();
-
-		RenderTarget::initialize();
+		return static_cast<const RenderWindowProperties&>(getPropertiesInternal());
 	}
 
 	void RenderWindow::destroy()
 	{
-		Platform::resetNonClientAreas(*this);
-
 		RenderWindowManager::instance().windowDestroyed(this);
 
 		RenderTarget::destroy();
 	}
 
-	const RenderWindowProperties& RenderWindow::getProperties() const
+	RenderWindow::RenderWindow(const RENDER_WINDOW_DESC& desc)
+		:mDesc(desc)
 	{
-		THROW_IF_CORE_THREAD;
 
-		return static_cast<const RenderWindowProperties&>(RenderTarget::getProperties());
 	}
 
 	SPtr<RenderWindowCore> RenderWindow::getCore() const
@@ -107,8 +109,36 @@ namespace BansheeEngine
 		return std::static_pointer_cast<RenderWindowCore>(mCoreSpecific);
 	}
 
+	SPtr<CoreObjectCore> RenderWindow::createCore() const
+	{
+		RENDER_WINDOW_DESC desc = mDesc;
+		return RenderWindowCoreManager::instance().createInternal(desc);
+	}
+
 	RenderWindowPtr RenderWindow::create(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow)
 	{
 		return RenderWindowManager::instance().create(desc, parentWindow);
+	}
+
+	CoreSyncData RenderWindow::syncToCore(FrameAlloc* allocator)
+	{
+		UINT32 size = sizeof(RenderWindowProperties);
+		UINT8* buffer = allocator->alloc(size);
+
+		RenderWindowProperties& props = const_cast<RenderWindowProperties&>(getProperties());
+
+		memcpy(buffer, &props, size);
+		return CoreSyncData(buffer, size);
+	}
+
+	void RenderWindow::syncFromCore(const CoreSyncData& data)
+	{
+		RenderWindowProperties& props = const_cast<RenderWindowProperties&>(getProperties());
+		props = data.getData<RenderWindowProperties>();
+	}
+
+	const RenderWindowProperties& RenderWindow::getProperties() const
+	{
+		return static_cast<const RenderWindowProperties&>(getPropertiesInternal());
 	}
 }

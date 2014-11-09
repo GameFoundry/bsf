@@ -118,7 +118,7 @@ namespace BansheeEngine
 
 	void BansheeRenderer::addCameraProxy(CameraProxyPtr proxy)
 	{
-		RenderTargetPtr renderTarget = proxy->viewport.getTarget();
+		SPtr<RenderTargetCore> renderTarget = proxy->renderTarget;
 		auto findIter = std::find_if(mRenderTargets.begin(), mRenderTargets.end(), [&](const RenderTargetData& x) { return x.target == renderTarget; });
 
 		if (findIter != mRenderTargets.end())
@@ -140,7 +140,7 @@ namespace BansheeEngine
 		// Sort everything based on priority
 		auto cameraComparer = [&](const CameraProxyPtr& a, const CameraProxyPtr& b) { return a->priority > b->priority; };
 		auto renderTargetInfoComparer = [&](const RenderTargetData& a, const RenderTargetData& b) 
-		{ return a.target->getCore()->getProperties().getPriority() > b.target->getCore()->getProperties().getPriority(); };
+		{ return a.target->getProperties().getPriority() > b.target->getProperties().getPriority(); };
 		std::sort(begin(mRenderTargets), end(mRenderTargets), renderTargetInfoComparer);
 
 		for (auto& camerasPerTarget : mRenderTargets)
@@ -155,7 +155,7 @@ namespace BansheeEngine
 
 	void BansheeRenderer::removeCameraProxy(CameraProxyPtr proxy)
 	{
-		RenderTargetPtr renderTarget = proxy->viewport.getTarget();
+		SPtr<RenderTargetCore> renderTarget = proxy->renderTarget;
 		auto findIter = std::find_if(mRenderTargets.begin(), mRenderTargets.end(), [&](const RenderTargetData& x) { return x.target == renderTarget; });
 
 		if (findIter != mRenderTargets.end())
@@ -440,15 +440,16 @@ namespace BansheeEngine
 		// Render everything, target by target
 		for (auto& renderTargetData : mRenderTargets)
 		{
-			RenderTargetPtr target = renderTargetData.target;
+			SPtr<RenderTargetCore> target = renderTargetData.target;
 			Vector<CameraProxyPtr>& cameras = renderTargetData.cameras;
 
 			RenderSystem::instance().beginFrame();
 
 			for(auto& camera : cameras)
 			{
-				Viewport& viewport = camera->viewport;
-				RenderSystem::instance().setViewport(viewport);
+				Viewport viewport = camera->viewport;
+				RenderSystem::instance().setRenderTarget(target);
+				RenderSystem::instance().setViewport(viewport.getNormArea());
 
 				UINT32 clearBuffers = 0;
 				if(viewport.getRequiresColorClear())

@@ -13,33 +13,12 @@ namespace BansheeEngine
 	class BS_RSGL_EXPORT Win32RenderWindowProperties : public RenderWindowProperties
 	{
 	public:
+		Win32RenderWindowProperties(const RENDER_WINDOW_DESC& desc);
 		virtual ~Win32RenderWindowProperties() { }
-
-		/**
-		 * @brief	Retrieves the window handle.
-		 */
-		HWND getHWnd() const { return mHWnd; }
 
 	private:
 		friend class Win32WindowCore;
 		friend class Win32Window;
-
-		/**
-		 * @copydoc	RenderTargetProperties::copyToBuffer
-		 */
-		virtual void copyToBuffer(UINT8* buffer) const;
-
-		/**
-		 * @copydoc	RenderTargetProperties::copyFromBuffer
-		 */
-		virtual void copyFromBuffer(UINT8* buffer);
-
-		/**
-		 * @copydoc	RenderTargetProperties::getSize
-		 */
-		virtual UINT32 getSize() const;
-
-		HWND mHWnd = 0;
 	};
 
 	/**
@@ -50,7 +29,7 @@ namespace BansheeEngine
     class BS_RSGL_EXPORT Win32WindowCore : public RenderWindowCore
     {
     public:
-		Win32WindowCore(Win32Window* parent, RenderWindowProperties* properties, const RENDER_WINDOW_DESC& desc, Win32GLSupport &glsupport);
+		Win32WindowCore(const RENDER_WINDOW_DESC& desc, Win32GLSupport &glsupport);
 		~Win32WindowCore();
 
 		/**
@@ -113,6 +92,11 @@ namespace BansheeEngine
 		 */
 		HDC _getHDC() const { return mHDC; }
 
+		/**
+		 * @brief	Returns internal window handle.
+		 */
+		HWND _getHWnd() const { return mHWnd; }
+
 	protected:
 		friend class Win32GLSupport;
 
@@ -131,6 +115,11 @@ namespace BansheeEngine
 		 */
 		void getAdjustedWindowSize(UINT32 clientWidth, UINT32 clientHeight, UINT32* winWidth, UINT32* winHeight);
 
+		/**
+		 * @copydoc	RenderWindowCore::getProperties
+		 */
+		const RenderTargetProperties& getPropertiesInternal() const { return mProperties; }
+
 	protected:
 		Win32GLSupport &mGLSupport;
 		HDC	mHDC;
@@ -141,8 +130,9 @@ namespace BansheeEngine
 		char* mDeviceName;
 		bool mIsExternalGLControl;
 		int mDisplayFrequency;
+		HWND mHWnd;
 		Win32Context *mContext;
-		RENDER_WINDOW_DESC mDesc;
+		Win32RenderWindowProperties mProperties;
     };
 
 	/**
@@ -156,9 +146,9 @@ namespace BansheeEngine
 		~Win32Window() { }
 
 		/**
-		 * @copydoc RenderWindow::requiresTextureFlipping
+		 * @copydoc RenderWindow::screenToWindowPos
 		 */
-		bool requiresTextureFlipping() const { return false; }
+		void getCustomAttribute(const String& name, void* pData) const;
 
 		/**
 		 * @copydoc RenderWindow::screenToWindowPos
@@ -171,11 +161,6 @@ namespace BansheeEngine
 		Vector2I windowToScreenPos(const Vector2I& windowPos) const;
 
 		/**
-		 * @copydoc RenderWindow::getCustomAttribute
-		 */
-		void getCustomAttribute(const String& name, void* pData) const;
-
-		/**
 		 * @copydoc	RenderWindow::getCore
 		 */
 		SPtr<Win32WindowCore> getCore() const;
@@ -185,19 +170,20 @@ namespace BansheeEngine
 		friend class Win32GLSupport;
 		friend class Win32WindowCore;
 
-		Win32Window(Win32GLSupport& glsupport);
+		Win32Window(const RENDER_WINDOW_DESC& desc, Win32GLSupport& glsupport);
 
 		/**
-		 * @copydoc	RenderWindow::createProperties
+		 * @copydoc	RenderWindowCore::getProperties
 		 */
-		virtual RenderTargetProperties* createProperties() const;
+		const RenderTargetProperties& getPropertiesInternal() const { return mProperties; }
 
 		/**
-		 * @copydoc	RenderWindow::createCore
+		 * @brief	Retrieves internal window handle.
 		 */
-		virtual SPtr<CoreObjectCore> createCore() const;
+		HWND getHWnd() const;
 
 	private:
 		Win32GLSupport& mGLSupport;
+		Win32RenderWindowProperties mProperties;
 	};
 }

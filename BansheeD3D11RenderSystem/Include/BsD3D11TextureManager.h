@@ -11,9 +11,6 @@ namespace BansheeEngine
 	class BS_D3D11_EXPORT D3D11TextureManager : public TextureManager
 	{
 	public:
-		D3D11TextureManager();
-		~D3D11TextureManager();
-
 		/**
 		 * @copydoc	TextureManager::getNativeFormat
 		 */
@@ -28,11 +25,28 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	TextureManager::createRenderTextureImpl
 		 */
-		RenderTexturePtr createRenderTextureImpl();
+		RenderTexturePtr createRenderTextureImpl(const RENDER_TEXTURE_DESC& desc);
 
 		/**
 		 * @copydoc	TextureManager::createMultiRenderTextureImpl
 		 */
-		MultiRenderTexturePtr createMultiRenderTextureImpl();
+		MultiRenderTexturePtr createMultiRenderTextureImpl(const MULTI_RENDER_TEXTURE_DESC& desc);
+	};
+
+	/**
+	 * @brief	Handles creation of DirectX 11 textures.
+	 */
+	class BS_D3D11_EXPORT D3D11TextureCoreManager : public TextureCoreManager
+	{
+	protected:		
+		/**
+		 * @copydoc	TextureCoreManager::createRenderTextureInternal
+		 */
+		SPtr<RenderTextureCore> createRenderTextureInternal(const RENDER_TEXTURE_DESC& desc);
+
+		/**
+		 * @copydoc	TextureCoreManager::createMultiRenderTextureInternal
+		 */
+		SPtr<MultiRenderTextureCore> createMultiRenderTextureInternal(const MULTI_RENDER_TEXTURE_DESC& desc);
 	};
 }

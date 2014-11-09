@@ -21,6 +21,11 @@ namespace BansheeEngine
 		virtual RenderWindowPtr newWindow(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow);
 
 		/**
+		 * @copydoc	GLSupport::newWindowCore
+		 */
+		virtual SPtr<RenderWindowCore> newWindowCore(RENDER_WINDOW_DESC& desc);
+
+		/**
 		 * @copydoc	GLSupport::start
 		 */
 		void start();
@@ -80,7 +85,7 @@ namespace BansheeEngine
 		static LRESULT CALLBACK dummyWndProc(HWND hwnd, UINT umsg, WPARAM wp, LPARAM lp);
 
 		Vector<DEVMODE> mDevModes;
-		Win32Window *mInitialWindow;
+		Win32WindowCore *mInitialWindow;
 		Vector<int> mMultisampleLevels;
 		bool mHasPixelFormatARB;
         bool mHasMultisample;

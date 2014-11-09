@@ -29,10 +29,10 @@ namespace BansheeEngine
 				}
 				else
 				{
-					Vector<RenderWindow*> renderWindows = RenderWindowManager::instance().getRenderWindows();
+					Vector<RenderWindowCore*> renderWindows = RenderWindowCoreManager::instance().getRenderWindows();
 					for(auto& renderWindow : renderWindows)
 					{
-						if(renderWindow->getCore().get() == newWindow)
+						if(renderWindow == newWindow)
 							continue;
 
 						HWND curHwnd;
@@ -104,7 +104,7 @@ namespace BansheeEngine
 
 				if(reenableWindows)
 				{
-					Vector<RenderWindow*> renderWindows = RenderWindowManager::instance().getRenderWindows();
+					Vector<RenderWindowCore*> renderWindows = RenderWindowCoreManager::instance().getRenderWindows();
 					for(auto& renderWindow : renderWindows)
 					{
 						HWND curHwnd;
@@ -231,7 +231,8 @@ namespace BansheeEngine
 
 				BS_LOCK_MUTEX(mSync);
 
-				mMouseLeftWindows.push_back(win);
+				if (!onMouseLeftWindow.empty())
+					onMouseLeftWindow(win);
 			}
 			break;
 		case WM_LBUTTONUP:

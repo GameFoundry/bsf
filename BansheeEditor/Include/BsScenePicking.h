@@ -55,8 +55,10 @@ namespace BansheeEngine
 		Color encodeIndex(UINT32 index);
 		UINT32 decodeIndex(Color color);
 
-		void corePickingBegin(const Viewport& viewport, const RenderableSet& renderables, const Vector2I& position, const Vector2I& area);
-		void corePickingEnd(const Viewport& viewport, const Vector2I& position, const Vector2I& area, AsyncOp& asyncOp);
+		void corePickingBegin(const SPtr<RenderTargetCore>& target, const Rect2& viewportArea, const RenderableSet& renderables, 
+			const Vector2I& position, const Vector2I& area);
+		void corePickingEnd(const SPtr<RenderTargetCore>& target, const Rect2& viewportArea, const Vector2I& position, 
+			const Vector2I& area, AsyncOp& asyncOp);
 
 		static const float ALPHA_CUTOFF;
 

@@ -23,9 +23,8 @@ namespace BansheeEngine
 
 #define DEPTHFORMAT_COUNT (sizeof(depthFormats)/sizeof(GLenum))
 
-	GLRenderTextureCore::GLRenderTextureCore(GLRenderTexture* parent, RenderTextureProperties* properties, const RENDER_SURFACE_DESC& colorSurfaceDesc,
-		const RENDER_SURFACE_DESC& depthStencilSurfaceDesc)
-		:RenderTextureCore(parent, properties, colorSurfaceDesc, depthStencilSurfaceDesc), mFB(nullptr)
+	GLRenderTextureCore::GLRenderTextureCore(const RENDER_TEXTURE_DESC& desc)
+		:RenderTextureCore(desc), mProperties(desc, true), mFB(nullptr)
 	{ }
 
 	GLRenderTextureCore::~GLRenderTextureCore()
@@ -43,7 +42,7 @@ namespace BansheeEngine
 		GLTexture* glTexture = static_cast<GLTexture*>(mColorSurface->getTexture().get());
 
 		GLSurfaceDesc surfaceDesc;
-		surfaceDesc.numSamples = mProperties->getMultisampleCount();
+		surfaceDesc.numSamples = getProperties().getMultisampleCount();
 
 		if (glTexture->getTextureType() != TEX_TYPE_3D)
 		{
@@ -88,22 +87,6 @@ namespace BansheeEngine
 		{
 			*static_cast<GLuint*>(pData) = mFB->getGLFBOID();
 		}
-	}
-
-	RenderTargetProperties* GLRenderTexture::createProperties() const
-	{
-		return bs_new<RenderTextureProperties>();
-	}
-
-	SPtr<CoreObjectCore> GLRenderTexture::createCore() const
-	{
-		RenderTextureProperties* coreProperties = bs_new<RenderTextureProperties>();
-		RenderTextureProperties* myProperties = static_cast<RenderTextureProperties*>(mProperties);
-
-		*coreProperties = *myProperties;
-
-		return bs_shared_ptr<GLRenderTextureCore>(const_cast<GLRenderTexture*>(this),
-			coreProperties, mColorSurfaceDesc, mDepthStencilSurfaceDesc);
 	}
 
 	GLRTTManager::GLRTTManager()
@@ -354,5 +337,11 @@ namespace BansheeEngine
         // If none at all, return to default
         return PF_A8R8G8B8;
     }
+
+	GLRenderTexture::GLRenderTexture(const RENDER_TEXTURE_DESC& desc)
+		:RenderTexture(desc), mProperties(desc, true)
+	{
+
+	}
 }
 

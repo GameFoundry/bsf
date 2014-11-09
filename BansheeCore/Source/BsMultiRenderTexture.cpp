@@ -4,26 +4,34 @@
 #include "BsDebug.h"
 #include "BsCoreThread.h"
 #include "BsTextureManager.h"
+#include "BsFrameAlloc.h"
 
 namespace BansheeEngine
 {
-	void MultiRenderTextureProperties::copyToBuffer(UINT8* buffer) const
+	MultiRenderTextureProperties::MultiRenderTextureProperties(const MULTI_RENDER_TEXTURE_DESC& desc)
 	{
-		*(MultiRenderTextureProperties*)buffer = *this;
+		for (size_t i = 0; i < desc.colorSurfaces.size(); i++)
+		{
+			TexturePtr texture = desc.colorSurfaces[i].texture;
+
+			if (texture != nullptr)
+			{
+				mWidth = texture->getWidth();
+				mHeight = texture->getWidth();
+				mColorDepth = BansheeEngine::PixelUtil::getNumElemBits(texture->getFormat());
+				mActive = true;
+				mHwGamma = texture->isHardwareGammaEnabled();
+				mMultisampleCount = texture->getMultisampleCount();
+				mIsWindow = false;
+				mRequiresTextureFlipping = requiresTextureFlipping();
+
+				break;
+			}
+		}
 	}
 
-	void MultiRenderTextureProperties::copyFromBuffer(UINT8* buffer)
-	{
-		*this = *(MultiRenderTextureProperties*)buffer;
-	}
-
-	UINT32 MultiRenderTextureProperties::getSize() const
-	{
-		return sizeof(MultiRenderTextureProperties);
-	}
-
-	MultiRenderTextureCore::MultiRenderTextureCore(MultiRenderTexture* parent, MultiRenderTextureProperties* properties, const MULTI_RENDER_TEXTURE_DESC& desc)
-		:RenderTargetCore(parent, properties), mDesc(desc)
+	MultiRenderTextureCore::MultiRenderTextureCore(const MULTI_RENDER_TEXTURE_DESC& desc)
+		:mDesc(desc)
 	{ }
 
 	MultiRenderTextureCore::~MultiRenderTextureCore()
@@ -83,6 +91,28 @@ namespace BansheeEngine
 			Texture::releaseView(mDepthStencilSurface);
 
 		RenderTargetCore::destroy();
+	}
+
+	CoreSyncData MultiRenderTextureCore::syncFromCore(FrameAlloc* allocator)
+	{
+		UINT32 size = sizeof(MultiRenderTextureProperties);
+		UINT8* buffer = allocator->alloc(size);
+
+		MultiRenderTextureProperties& props = const_cast<MultiRenderTextureProperties&>(getProperties());
+
+		memcpy(buffer, &props, size);
+		return CoreSyncData(buffer, size);
+	}
+
+	void MultiRenderTextureCore::syncToCore(const CoreSyncData& data)
+	{
+		MultiRenderTextureProperties& props = const_cast<MultiRenderTextureProperties&>(getProperties());
+		props = data.getData<MultiRenderTextureProperties>();
+	}
+
+	const MultiRenderTextureProperties& MultiRenderTextureCore::getProperties() const
+	{
+		return static_cast<const MultiRenderTextureProperties&>(getPropertiesInternal());
 	}
 
 	void MultiRenderTextureCore::throwIfBuffersDontMatch() const
@@ -149,44 +179,15 @@ namespace BansheeEngine
 		throw std::exception("The method or operation is not implemented.");
 	}
 
-	MultiRenderTexture* MultiRenderTextureCore::getNonCore() const
+	MultiRenderTexture::MultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC& desc)
+		:mDesc(desc)
 	{
-		return static_cast<MultiRenderTexture*>(mParent);
+
 	}
 
-	void MultiRenderTexture::initialize(const MULTI_RENDER_TEXTURE_DESC& desc)
+	SPtr<CoreObjectCore> MultiRenderTexture::createCore() const
 	{
-		mDesc = desc;
-
-		mProperties = createProperties();
-		MultiRenderTextureProperties* properties = static_cast<MultiRenderTextureProperties*>(mProperties);
-		for (size_t i = 0; i < desc.colorSurfaces.size(); i++)
-		{
-			TexturePtr texture = desc.colorSurfaces[i].texture;
-
-			if (texture != nullptr)
-			{
-				properties->mWidth = texture->getWidth();
-				properties->mHeight = texture->getWidth();
-				properties->mColorDepth = BansheeEngine::PixelUtil::getNumElemBits(texture->getFormat());
-				properties->mActive = true;
-				properties->mHwGamma = texture->isHardwareGammaEnabled();
-				properties->mMultisampleCount = texture->getMultisampleCount();
-				properties->mIsWindow = false;
-				properties->mRequiresTextureFlipping = requiresTextureFlipping();
-
-				break;
-			}
-		}
-
-		RenderTarget::initialize();
-	}
-
-	const MultiRenderTextureProperties& MultiRenderTexture::getProperties() const
-	{
-		THROW_IF_CORE_THREAD;
-
-		return static_cast<const MultiRenderTextureProperties&>(RenderTarget::getProperties());
+		return TextureCoreManager::instance().createMultiRenderTextureInternal(mDesc);
 	}
 
 	SPtr<MultiRenderTextureCore> MultiRenderTexture::getCore() const
@@ -197,5 +198,27 @@ namespace BansheeEngine
 	MultiRenderTexturePtr MultiRenderTexture::create(const MULTI_RENDER_TEXTURE_DESC& desc)
 	{
 		return TextureManager::instance().createMultiRenderTexture(desc);
+	}
+
+	CoreSyncData MultiRenderTexture::syncToCore(FrameAlloc* allocator)
+	{
+		UINT32 size = sizeof(MultiRenderTextureProperties);
+		UINT8* buffer = allocator->alloc(size);
+
+		MultiRenderTextureProperties& props = const_cast<MultiRenderTextureProperties&>(getProperties());
+
+		memcpy(buffer, &props, size);
+		return CoreSyncData(buffer, size);
+	}
+
+	void MultiRenderTexture::syncFromCore(const CoreSyncData& data)
+	{
+		MultiRenderTextureProperties& props = const_cast<MultiRenderTextureProperties&>(getProperties());
+		props = data.getData<MultiRenderTextureProperties>();
+	}
+
+	const MultiRenderTextureProperties& MultiRenderTexture::getProperties() const
+	{
+		return static_cast<const MultiRenderTextureProperties&>(getPropertiesInternal());
 	}
 }

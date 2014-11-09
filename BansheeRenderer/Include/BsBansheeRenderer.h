@@ -30,7 +30,7 @@ namespace BansheeEngine
 		 */
 		struct RenderTargetData
 		{
-			RenderTargetPtr target;
+			SPtr<RenderTargetCore> target;
 			Vector<CameraProxyPtr> cameras;
 		};
 

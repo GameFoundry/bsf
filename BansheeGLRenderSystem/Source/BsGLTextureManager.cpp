@@ -24,16 +24,16 @@ namespace BansheeEngine
 		return bs_core_ptr<GLTexture, PoolAlloc>(tex);
     }
 
-	RenderTexturePtr GLTextureManager::createRenderTextureImpl()
+	RenderTexturePtr GLTextureManager::createRenderTextureImpl(const RENDER_TEXTURE_DESC& desc)
 	{
-		GLRenderTexture* tex = new (bs_alloc<GLRenderTexture, PoolAlloc>()) GLRenderTexture();
+		GLRenderTexture* tex = new (bs_alloc<GLRenderTexture, PoolAlloc>()) GLRenderTexture(desc);
 
 		return bs_core_ptr<GLRenderTexture, PoolAlloc>(tex);
 	}
 
-	MultiRenderTexturePtr GLTextureManager::createMultiRenderTextureImpl()
+	MultiRenderTexturePtr GLTextureManager::createMultiRenderTextureImpl(const MULTI_RENDER_TEXTURE_DESC& desc)
 	{
-		GLMultiRenderTexture* tex = new (bs_alloc<GLMultiRenderTexture, PoolAlloc>()) GLMultiRenderTexture();
+		GLMultiRenderTexture* tex = new (bs_alloc<GLMultiRenderTexture, PoolAlloc>()) GLMultiRenderTexture(desc);
 
 		return bs_core_ptr<GLMultiRenderTexture, PoolAlloc>(tex);
 	}
@@ -65,5 +65,19 @@ namespace BansheeEngine
         }
 
 		return GLPixelUtil::getClosestValidFormat(format);
+	}
+
+	GLTextureCoreManager::GLTextureCoreManager(GLSupport& support)
+		:mGLSupport(support)
+	{ }
+
+	SPtr<RenderTextureCore> GLTextureCoreManager::createRenderTextureInternal(const RENDER_TEXTURE_DESC& desc)
+	{
+		return bs_shared_ptr<GLRenderTextureCore>(desc);
+	}
+
+	SPtr<MultiRenderTextureCore> GLTextureCoreManager::createMultiRenderTextureInternal(const MULTI_RENDER_TEXTURE_DESC& desc)
+	{
+		return bs_shared_ptr<GLMultiRenderTextureCore>(desc);
 	}
 }

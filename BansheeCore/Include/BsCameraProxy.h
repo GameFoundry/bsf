@@ -15,6 +15,7 @@ namespace BansheeEngine
 	public:
 		void calcWorldFrustum();
 
+		SPtr<RenderTargetCore> renderTarget;
 		Viewport viewport;
 		Matrix4 viewMatrix;
 		Matrix4 projMatrix;

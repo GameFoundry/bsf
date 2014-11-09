@@ -84,12 +84,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	RenderSystem::setRenderTarget
 		 */
-		void setRenderTarget(RenderTargetPtr target);
+		void setRenderTarget(const SPtr<RenderTargetCore>& target);
 
 		/**
 		 * @copydoc	RenderSystem::setViewport
 		 */
-		void setViewport(Viewport vp);
+		void setViewport(const Rect2& vp);
 
 		/**
 		 * @copydoc	RenderSystem::setScissorRect
@@ -226,6 +226,13 @@ namespace BansheeEngine
 		void applyInputLayout();
 
 		/**
+		 * @brief	Recalculates actual viewport dimensions based on currently 
+		 *			set viewport normalized dimensions and render target and applies
+		 *			them for further rendering.
+		 */
+		void applyViewport();
+
+		/**
 		 * @brief	Creates and populates a set of render system capabilities describing which functionality
 		 *			is available.
 		 */
@@ -246,6 +253,7 @@ namespace BansheeEngine
 		std::pair<TexturePtr, TextureViewPtr> mBoundUAVs[D3D11_PS_CS_UAV_REGISTER_COUNT];
 
 		UINT32 mStencilRef;
+		Rect2 mViewportNorm;
 		D3D11_VIEWPORT mViewport;
 		D3D11_RECT mScissorRect;
 

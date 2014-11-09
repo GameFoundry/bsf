@@ -37,7 +37,7 @@ namespace BansheeEngine
 
 	SPtr<CoreObjectCore> IndexBuffer::createCore() const
 	{
-		return HardwareBufferCoreManager::instance().createIndexBuffer(mProperties.mIndexType, mProperties.mNumIndexes, mUsage);
+		return HardwareBufferCoreManager::instance().createIndexBufferInternal(mProperties.mIndexType, mProperties.mNumIndexes, mUsage);
 	}
 
 	IndexBufferPtr IndexBuffer::create(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)

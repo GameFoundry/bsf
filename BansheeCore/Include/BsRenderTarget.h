@@ -96,21 +96,6 @@ namespace BansheeEngine
 		friend class RenderTargetCore;
 		friend class RenderTarget;
 
-		/**
-		 * @brief	Copies all internal data to the specified buffer.
-		 */
-		virtual void copyToBuffer(UINT8* buffer) const;
-
-		/**
-		 * @brief	Initializes all internal data from the specified buffer.
-		 */
-		virtual void copyFromBuffer(UINT8* buffer);
-
-		/**
-		 * @brief	Returns the size of the buffer needed to hold all internal data.
-		 */
-		virtual UINT32 getSize() const;
-
 		UINT32 mWidth = 0;
 		UINT32 mHeight = 0;
 		UINT32 mColorDepth = 32;
@@ -145,35 +130,29 @@ namespace BansheeEngine
 			FB_AUTO
 		};
 
-		RenderTargetCore(RenderTarget* parent, RenderTargetProperties* properties);
-		virtual ~RenderTargetCore();
+		RenderTargetCore();
+		virtual ~RenderTargetCore() { }
 
 		/**
 		 * @brief	Makes the render target active or inactive. (e.g. for a window, it will hide or restore the window).
-		 *
-		 * @note	Core thread only.
 		 */
-		virtual void setActive(bool state) { mProperties->mActive = state; markCoreDirty(); }
+		virtual void setActive(bool state);
 
 		/**
 		 * @brief	Sets a priority that determines in which orders the render targets the processed.
 		 * 			
 		 * @param	priority	The priority. Higher value means the target will be rendered sooner.
 		 */
-		void setPriority(INT32 priority) { mProperties->mPriority = priority; markCoreDirty(); }
+		void setPriority(INT32 priority);
 
 		/**
 		 * @brief	Swaps the frame buffers to display the next frame.
-		 *
-		 * @note	Core thread only.
 		 */
 		virtual void swapBuffers() {};
 
 		/**
 		 * @brief	Queries the render target for a custom attribute. This may be anything and is
 		 *			implementation specific.
-		 *
-		 * @note	Core thread only.
 		 */
 		virtual void getCustomAttribute(const String& name, void* pData) const;
 
@@ -182,26 +161,13 @@ namespace BansheeEngine
 		 */
 		const RenderTargetProperties& getProperties() const;
 
-		/**
-		 * @brief	Returns the non core version of the render target.
-		 */
-		RenderTarget* getNonCore() const { return mParent; }
-
 	protected:
 		friend class RenderTarget;
 
 		/**
-		 * @copydoc	CoreObjectCore::syncFromCore
+		 * @brief	Returns properties that describe the render target.
 		 */
-		virtual CoreSyncData syncFromCore(FrameAlloc* allocator);
-
-		/**
-		 * @copydoc	CoreObjectCore::syncToCore
-		 */
-		virtual void syncToCore(const CoreSyncData& data);
-
-		RenderTargetProperties* mProperties;
-		RenderTarget* mParent;
+		virtual const RenderTargetProperties& getPropertiesInternal() const = 0;
 	};
 
 	/**
@@ -214,13 +180,7 @@ namespace BansheeEngine
     class BS_CORE_EXPORT RenderTarget : public CoreObject
     {
     public:
-        virtual ~RenderTarget();
-
-		/**
-		 * @brief	Does the texture need to be vertically flipped because of different screen space coordinate systems.
-		 *			(i.e. is origin top left or bottom left. Engine default is top left.)
-		 */
-		virtual bool requiresTextureFlipping() const = 0;
+		virtual ~RenderTarget() { }
 
 		/**
 		 * @brief	Queries the render target for a custom attribute. This may be anything and is
@@ -249,24 +209,11 @@ namespace BansheeEngine
 		mutable Event<void()> onResized;
 
     protected:
-		RenderTarget();
+		friend class RenderTargetCore;
 
 		/**
-		 * @brief	Creates a new instance of render target properties used for storing
-		 *			render target data and providing easy access to it.
+		 * @brief	Returns properties that describe the render target.
 		 */
-		virtual RenderTargetProperties* createProperties() const = 0;
-
-		/**
-		 * @copydoc	CoreObject::syncToCore
-		 */
-		virtual CoreSyncData syncToCore(FrameAlloc* allocator);
-
-		/**
-		 * @copydoc	CoreObject::syncFromCore
-		 */
-		virtual void syncFromCore(const CoreSyncData& data);
-
-		RenderTargetProperties* mProperties;
+		virtual const RenderTargetProperties& getPropertiesInternal() const = 0;
     };
 }

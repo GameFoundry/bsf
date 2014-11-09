@@ -29,11 +29,28 @@ namespace BansheeEngine
 		/**
 		 * @copydoc TextureManager::createRenderTextureImpl
 		 */
-		RenderTexturePtr createRenderTextureImpl();
+		RenderTexturePtr createRenderTextureImpl(const RENDER_TEXTURE_DESC& desc);
 
 		/**
 		 * @copydoc TextureManager::createMultiRenderTextureImpl
 		 */
-		MultiRenderTexturePtr createMultiRenderTextureImpl();
+		MultiRenderTexturePtr createMultiRenderTextureImpl(const MULTI_RENDER_TEXTURE_DESC& desc);
+	};
+
+	/**
+	 * @brief	Handles creation of DirectX 9 textures.
+	 */
+	class BS_D3D9_EXPORT D3D9TextureCoreManager : public TextureCoreManager
+	{
+	protected:		
+		/**
+		 * @copydoc	TextureCoreManager::createRenderTextureInternal
+		 */
+		SPtr<RenderTextureCore> createRenderTextureInternal(const RENDER_TEXTURE_DESC& desc);
+
+		/**
+		 * @copydoc	TextureCoreManager::createMultiRenderTextureInternal
+		 */
+		SPtr<MultiRenderTextureCore> createMultiRenderTextureInternal(const MULTI_RENDER_TEXTURE_DESC& desc);
 	};
 }
