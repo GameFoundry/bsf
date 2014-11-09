@@ -99,7 +99,7 @@ namespace BansheeEngine
 		return strName;
 	}
 
-	void GLRenderSystem::initialize_internal(AsyncOp& asyncOp)
+	void GLRenderSystem::initializePrepare()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -113,12 +113,14 @@ namespace BansheeEngine
 
 		QueryManager::startUp<GLQueryManager>();
 
-		// Initialize a window so we have something to create a GL context with
-		RenderWindowPtr primaryWindow = RenderWindow::create(mPrimaryWindowDesc);
-		      
+		RenderSystem::initializePrepare();
+	}
+
+	void GLRenderSystem::initializeFinalize(const SPtr<RenderWindowCore>& primaryWindow)
+	{
 		// Get the context from the window and finish initialization
 		GLContext *context = nullptr;
-		primaryWindow->getCore()->getCustomAttribute("GLCONTEXT", &context);
+		primaryWindow->getCustomAttribute("GLCONTEXT", &context);
 
 		// Set main and current context
 		mMainContext = context;
@@ -142,19 +144,17 @@ namespace BansheeEngine
 			if (tokens.size() > 1)
 				mDriverVersion.minor = parseInt(tokens[1]);
 			if (tokens.size() > 2)
-				mDriverVersion.release = parseInt(tokens[2]); 
+				mDriverVersion.release = parseInt(tokens[2]);
 		}
 		mDriverVersion.build = 0;
 
 		mCurrentCapabilities = createRenderSystemCapabilities();
 		initFromCaps(mCurrentCapabilities);
 		GLVertexArrayObjectManager::startUp();
-		
-		mGLInitialised = true;
-		
-		RenderSystem::initialize_internal(asyncOp);
 
-		asyncOp._completeOperation(primaryWindow);
+		mGLInitialised = true;
+
+		RenderSystem::initializeFinalize(primaryWindow);
 	}
 
 	void GLRenderSystem::destroy_internal()

@@ -190,9 +190,14 @@ namespace BansheeEngine
 
 	protected:
 		/**
-		 * @copydoc	RenderSystem::initialize_internal().
+		 * @copydoc	RenderSystem::initializePrepare
 		 */
-		void initialize_internal(AsyncOp& asyncOp);
+		void initializePrepare();
+
+		/**
+		 * @copydoc	RenderSystem::initializeFinalize
+		 */
+		void initializeFinalize(const SPtr<RenderWindowCore>& primaryWindow);
 
 		/**
 		 * @copydoc	RenderSystem::destroy_internal().

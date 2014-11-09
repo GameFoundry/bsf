@@ -66,7 +66,7 @@ namespace BansheeEngine
 		return strName;
 	}
 
-	void D3D9RenderSystem::initialize_internal(AsyncOp& asyncOp)
+	void D3D9RenderSystem::initializePrepare()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -74,15 +74,13 @@ namespace BansheeEngine
 		mResourceManager = bs_new<D3D9ResourceManager>();
 
 		// Create our Direct3D object
-		if( NULL == (mpD3D = Direct3DCreate9(D3D_SDK_VERSION)) )
+		if((mpD3D = Direct3DCreate9(D3D_SDK_VERSION)) == nullptr)
 			BS_EXCEPT(InternalErrorException, "Failed to create Direct3D9 object");
-
-		RenderWindow* autoWindow = NULL;
 
 		// Init using current settings
 		mActiveD3DDriver = getDirect3DDrivers()->item(0); // TODO - We always use the first driver
 
-		if( !mActiveD3DDriver )
+		if(mActiveD3DDriver == nullptr)
 			BS_EXCEPT(InvalidParametersException, "Problems finding requested Direct3D driver!" );
 
 		// get driver version
@@ -110,10 +108,13 @@ namespace BansheeEngine
 		// Create render state manager
 		RenderStateManager::startUp();
 
-		// Create primary window and finalize initialization
-		RenderWindowPtr primaryWindow = RenderWindow::create(mPrimaryWindowDesc);
-		D3D9RenderWindowCore* d3d9renderWindow = static_cast<D3D9RenderWindowCore*>(primaryWindow->getCore().get());
-		updateRenderSystemCapabilities(d3d9renderWindow);
+		RenderSystem::initializePrepare();
+	}
+
+	void D3D9RenderSystem::initializeFinalize(const SPtr<RenderWindowCore>& primaryWindow)
+	{
+		D3D9RenderWindowCore* d3d9window = static_cast<D3D9RenderWindowCore*>(primaryWindow.get());
+		updateRenderSystemCapabilities(d3d9window);
 
 		// Create the texture manager for use by others		
 		TextureManager::startUp<D3D9TextureManager>();
@@ -121,10 +122,7 @@ namespace BansheeEngine
 
 		QueryManager::startUp<D3D9QueryManager>();
 
-		// call superclass method
-		RenderSystem::initialize_internal(asyncOp);
-
-		asyncOp._completeOperation(primaryWindow);
+		RenderSystem::initializeFinalize(primaryWindow);
 	}
 
 	void D3D9RenderSystem::destroy_internal()

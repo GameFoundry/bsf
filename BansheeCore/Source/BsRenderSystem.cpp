@@ -43,14 +43,22 @@ namespace BansheeEngine
 
 	RenderWindowPtr RenderSystem::initialize(const RENDER_WINDOW_DESC& primaryWindowDesc)
 	{
-		mPrimaryWindowDesc = primaryWindowDesc;
+		gCoreThread().queueCommand(std::bind(&RenderSystem::initializePrepare, this), true);
 
-		AsyncOp op = gCoreThread().queueReturnCommand(std::bind(&RenderSystem::initialize_internal, this, _1), true);
+		RENDER_WINDOW_DESC windowDesc = primaryWindowDesc;
+		RenderWindowPtr renderWindow = RenderWindow::create(windowDesc, nullptr);
 
-		return op.getReturnValue<RenderWindowPtr>();
+		gCoreThread().queueCommand(std::bind(&RenderSystem::initializeFinalize, this, renderWindow->getCore()), true);
+
+		return renderWindow;
 	}
 
-	void RenderSystem::initialize_internal(AsyncOp& asyncOp)
+	void RenderSystem::initializePrepare()
+	{
+		// Do nothing
+	}
+
+	void RenderSystem::initializeFinalize(const SPtr<RenderWindowCore>& primaryWindow)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 

@@ -56,7 +56,7 @@ namespace BansheeEngine
 		return strName;
 	}
 
-	void D3D11RenderSystem::initialize_internal(AsyncOp& asyncOp)
+	void D3D11RenderSystem::initializePrepare()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -130,16 +130,16 @@ namespace BansheeEngine
 		GpuProgramManager::instance().addFactory(mHLSLFactory);
 
 		mIAManager = bs_new<D3D11InputLayoutManager>();
+		RenderSystem::initializePrepare();
+	}
 
-		RenderWindowPtr primaryWindow = RenderWindow::create(mPrimaryWindowDesc);
-
+	void D3D11RenderSystem::initializeFinalize(const SPtr<RenderWindowCore>& primaryWindow)
+	{
 		D3D11RenderUtility::startUp(mDevice);
 
 		QueryManager::startUp<D3D11QueryManager>();
 
-		RenderSystem::initialize_internal(asyncOp);
-
-		asyncOp._completeOperation(primaryWindow);
+		RenderSystem::initializeFinalize(primaryWindow);
 	}
 
     void D3D11RenderSystem::destroy_internal()

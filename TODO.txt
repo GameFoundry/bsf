@@ -31,12 +31,6 @@ Need RenderWindow::create that works from core thread used for creating the prim
 
 Move CoreAccessor methods relating to render target, to the render targets themselves
 
-Find remaining uses of getCore and try to replace them:
- - Check Win32GLSupport
- - When creating a window, parent window gets sent as a RenderWindow
- - PlatfromWndProc accesses a list of non-core windows
- - Various callbacks in PlatformImpl as well
-
 -----------------
 
 

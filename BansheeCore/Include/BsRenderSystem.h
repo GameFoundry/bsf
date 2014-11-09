@@ -335,10 +335,16 @@ namespace BansheeEngine
 		RenderWindowPtr initialize(const RENDER_WINDOW_DESC& primaryWindowDesc);
 
 		/**
-		 * @brief	Performs second part of the initialization (on Core thread), first part
-		 *			being in initialize().
+		 * @brief	Prepares the initialization of the render system on the core thread. After
+		 *			the system is prepared a render window can be created and initialization finalized.
 		 */
-		virtual void initialize_internal(AsyncOp& asyncOp);
+		virtual void initializePrepare();
+
+		/**
+		 * @brief	Finalized the initialization of the render system on the core thread. 
+		 *			Should be called after the primary render window is created.
+		 */
+		virtual void initializeFinalize(const SPtr<RenderWindowCore>& primaryWindow);
 
 		/**
 		 * @brief	Shuts down the render system and cleans up all resources.
@@ -381,8 +387,5 @@ namespace BansheeEngine
 
 		RenderSystemCapabilities* mCurrentCapabilities;
 		VideoModeInfoPtr mVideoModeInfo;
-
-		// TODO - Only used between initialize and initialize_internal. Handle it better?
-		RENDER_WINDOW_DESC mPrimaryWindowDesc;
 	};
 }
