@@ -104,6 +104,84 @@ namespace BansheeEngine
 
 	}
 
+	void RenderWindow::resize(CoreAccessor& accessor, UINT32 width, UINT32 height)
+	{
+		std::function<void(SPtr<RenderWindowCore>, UINT32, UINT32)> resizeFunc =
+			[](SPtr<RenderWindowCore> renderWindow, UINT32 width, UINT32 height)
+		{
+			renderWindow->resize(width, height);
+		};
+
+		accessor.queueCommand(std::bind(resizeFunc, getCore(), width, height));
+	}
+
+	void RenderWindow::move(CoreAccessor& accessor, INT32 left, INT32 top)
+	{
+		std::function<void(SPtr<RenderWindowCore>, INT32, INT32)> moveFunc =
+			[](SPtr<RenderWindowCore> renderWindow, INT32 left, INT32 top)
+		{
+			renderWindow->move(left, top);
+		};
+
+		accessor.queueCommand(std::bind(moveFunc, getCore(), left, top));
+	}
+
+	void RenderWindow::hide(CoreAccessor& accessor)
+	{
+		std::function<void(SPtr<RenderWindowCore>)> hideFunc =
+			[](SPtr<RenderWindowCore> renderWindow)
+		{
+			renderWindow->setHidden(true);
+		};
+
+		accessor.queueCommand(std::bind(hideFunc, getCore()));
+	}
+
+	void RenderWindow::show(CoreAccessor& accessor)
+	{
+		std::function<void(SPtr<RenderWindowCore>)> showFunc =
+			[](SPtr<RenderWindowCore> renderWindow)
+		{
+			renderWindow->setHidden(false);
+		};
+
+		accessor.queueCommand(std::bind(showFunc, getCore()));
+	}
+
+	void RenderWindow::setFullscreen(CoreAccessor& accessor, UINT32 width, UINT32 height,
+		float refreshRate, UINT32 monitorIdx)
+	{
+		std::function<void(SPtr<RenderWindowCore>, UINT32, UINT32, float, UINT32)> fullscreenFunc =
+			[](SPtr<RenderWindowCore> renderWindow, UINT32 width, UINT32 height, float refreshRate, UINT32 monitorIdx)
+		{
+			renderWindow->setFullscreen(width, height, refreshRate, monitorIdx);
+		};
+
+		accessor.queueCommand(std::bind(fullscreenFunc, getCore(), width, height, refreshRate, monitorIdx));
+	}
+
+	void RenderWindow::setFullscreen(CoreAccessor& accessor, const VideoMode& mode)
+	{
+		std::function<void(SPtr<RenderWindowCore>, const VideoMode&)> fullscreenFunc =
+			[](SPtr<RenderWindowCore> renderWindow, const VideoMode& mode)
+		{
+			renderWindow->setFullscreen(mode);
+		};
+
+		accessor.queueCommand(std::bind(fullscreenFunc, getCore(), std::cref(mode)));
+	}
+
+	void RenderWindow::setWindowed(CoreAccessor& accessor, UINT32 width, UINT32 height)
+	{
+		std::function<void(SPtr<RenderWindowCore>, UINT32, UINT32)> windowedFunc =
+			[](SPtr<RenderWindowCore> renderWindow, UINT32 width, UINT32 height)
+		{
+			renderWindow->setWindowed(width, height);
+		};
+
+		accessor.queueCommand(std::bind(windowedFunc, getCore(), width, height));
+	}
+
 	SPtr<RenderWindowCore> RenderWindow::getCore() const
 	{
 		return std::static_pointer_cast<RenderWindowCore>(mCoreSpecific);

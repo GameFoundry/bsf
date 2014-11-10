@@ -38,6 +38,17 @@ namespace BansheeEngine
 		BS_EXCEPT(InvalidParametersException, "Attribute not found.");
 	}
 
+	void RenderTarget::setPriority(CoreAccessor& accessor, UINT32 priority)
+	{
+		std::function<void(SPtr<RenderTargetCore>, UINT32)> windowedFunc =
+			[](SPtr<RenderTargetCore> renderTarget, UINT32 priority)
+		{
+			renderTarget->setPriority(priority);
+		};
+
+		accessor.queueCommand(std::bind(windowedFunc, getCore(), priority));
+	}
+
 	SPtr<RenderTargetCore> RenderTarget::getCore() const
 	{
 		return std::static_pointer_cast<RenderTargetCore>(mCoreSpecific);

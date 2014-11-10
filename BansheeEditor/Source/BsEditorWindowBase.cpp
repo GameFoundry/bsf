@@ -55,7 +55,7 @@ namespace BansheeEngine
 
 	void EditorWindowBase::hide()
 	{
-		gCoreAccessor().hideWindow(mRenderWindow);
+		mRenderWindow->hide(gCoreAccessor());
 	}
 
 	void EditorWindowBase::construct(const RenderWindowPtr& renderWindow)
@@ -81,12 +81,12 @@ namespace BansheeEngine
 
 	void EditorWindowBase::setPosition(INT32 x, INT32 y)
 	{
-		gCoreAccessor().moveWindow(mRenderWindow, x, y);
+		mRenderWindow->move(gCoreAccessor(), x, y);
 	}
 
 	void EditorWindowBase::setSize(UINT32 width, UINT32 height)
 	{
-		gCoreAccessor().resizeWindow(mRenderWindow, width, height);
+		mRenderWindow->resize(gCoreAccessor(), width, height);
 	}
 
 	INT32 EditorWindowBase::getLeft() const

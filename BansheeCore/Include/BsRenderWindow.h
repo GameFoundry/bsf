@@ -232,6 +232,41 @@ namespace BansheeEngine
 		virtual Vector2I windowToScreenPos(const Vector2I& windowPos) const = 0;
 
 		/**
+		 * @brief	Resize the window to specified width and height in pixels.
+		 */
+		void resize(CoreAccessor& accessor, UINT32 width, UINT32 height);
+
+		/**
+		 * @brief	Move the window to specified screen coordinates.
+		 */
+		void move(CoreAccessor& accessor, INT32 left, INT32 top);
+
+		/**
+		 * @brief	Hide the window. (Does not destroy it, just hides it).
+		 */
+		void hide(CoreAccessor& accessor);
+
+		/**
+		 * @brief	Shows a previously hidden window.
+		 */
+		void show(CoreAccessor& accessor);
+
+		/**
+		 * @copydoc RenderWindowCore::setFullscreen(UINT32, UINT32, float, UINT32)
+		 */
+		void setFullscreen(CoreAccessor& accessor, UINT32 width, UINT32 height, float refreshRate = 60.0f, UINT32 monitorIdx = 0);
+
+		/**
+		 * @copydoc RenderWindowCore::setFullscreen(const VideoMode&)
+		 */
+		void setFullscreen(CoreAccessor& accessor, const VideoMode& mode);
+
+		/**
+		 * @copydoc RenderWindowCore::setWindowed
+		 */
+		void setWindowed(CoreAccessor& accessor, UINT32 width, UINT32 height);
+
+		/**
 		 * @brief	Retrieves a core implementation of a render window usable only from the
 		 *			core thread.
 		 */

@@ -189,6 +189,11 @@ namespace BansheeEngine
 		virtual void getCustomAttribute(const String& name, void* pData) const;
 
 		/**
+		 * @copydoc RenderTargetCore::setPriority
+		 */
+		void setPriority(CoreAccessor& accessor, UINT32 priority);
+
+		/**
 		 * @brief	Returns properties that describe the render target.
 		 *
 		 * @note	Sim thread only.

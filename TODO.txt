@@ -25,10 +25,6 @@ Disallow CoreObject creation from core thread
  - Add asserts in CoreObject::destroy and CoreObject::initialize
  - Possibly also add asserts to CoreThread::queueCommand and CoreThread::queueReturnCommand
 
-RENDER TARGET REFACTOR:
-Need RenderWindow::create that works from core thread used for creating the primary window
- - RenderSystem then needs to wrap the returned RenderWindowCore into a proper RenderWindow for use by the sim thread
-
 Move CoreAccessor methods relating to render target, to the render targets themselves
 
 -----------------

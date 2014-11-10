@@ -28,14 +28,14 @@ namespace BansheeEngine
 
 	void toggleFullscreen()
 	{
+		RenderWindowPtr window = gCoreApplication().getPrimaryWindow();
 		if (bs_dbg_fullscreen)
 		{
-			gCoreAccessor().setWindowed(gCoreApplication().getPrimaryWindow(), 1280, 720);
+			window->setWindowed(gCoreAccessor(), 1280, 720);
 		}
 		else
 		{
-			//gCoreAccessor().setFullscreen(window, *videoMode);
-			gCoreAccessor().setFullscreen(gCoreApplication().getPrimaryWindow(), 1920, 1200, 60, 0);
+			window->setFullscreen(gCoreAccessor(), 1920, 1200, 60, 0);
 		}
 
 		bs_dbg_fullscreen = !bs_dbg_fullscreen;

@@ -127,46 +127,6 @@ namespace BansheeEngine
 		AsyncOp readSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceDataPtr& data);
 
 		/**
-		 * @brief	Resize the provided window to specified width and height in pixels.
-		 */
-		void resizeWindow(const RenderWindowPtr& renderWindow, UINT32 width, UINT32 height);
-
-		/**
-		 * @brief	Move the provided window to specified screen coordinates.
-		 */
-		void moveWindow(const RenderWindowPtr& renderWindow, INT32 left, INT32 top);
-
-		/**
-		 * @brief	Hide the provided window. (Does not destroy it, just hides it).
-		 */
-		void hideWindow(const RenderWindowPtr& renderWindow);
-
-		/**
-		 * @brief	Shows a previously hidden window.
-		 */
-		void showWindow(const RenderWindowPtr& renderWindow);
-
-		/**
-		 * @copydoc RenderWindow::setFullscreen(UINT32, UINT32, float, UINT32)
-		 */
-		void setFullscreen(const RenderWindowPtr& renderWindow, UINT32 width, UINT32 height, float refreshRate = 60.0f, UINT32 monitorIdx = 0);
-
-		/**
-		 * @copydoc RenderWindow::setFullscreen(const VideoMode&)
-		 */
-		void setFullscreen(const RenderWindowPtr& renderWindow, const VideoMode& mode);
-
-		/**
-		 * @copydoc RenderWindow::setWindowed
-		 */
-		void setWindowed(const RenderWindowPtr& renderWindow, UINT32 width, UINT32 height);
-
-		/**
-		 * @copydoc RenderTargetcore::setPriority
-		 */
-		void setPriority(const RenderTargetPtr& renderTarget, UINT32 priority);
-
-		/**
 		* @brief	Queues a new generic command that will be added to the command queue.
 		*/
 		AsyncOp queueReturnCommand(std::function<void(AsyncOp&)> commandCallback);

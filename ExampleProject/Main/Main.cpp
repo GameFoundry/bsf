@@ -498,11 +498,11 @@ namespace BansheeEngine
 		// call something from the wrong thread.
 		if (fullscreen)
 		{
-			gCoreAccessor().setWindowed(window, windowResWidth, windowResHeight);
+			window->setWindowed(gCoreAccessor(), windowResWidth, windowResHeight);
 		}
 		else
 		{
-			gCoreAccessor().setFullscreen(window, *selectedVideoMode);
+			window->setFullscreen(gCoreAccessor(), *selectedVideoMode);
 		}
 
 		fullscreen = !fullscreen;
@@ -511,14 +511,15 @@ namespace BansheeEngine
 	void renderWindowResized()
 	{
 		RenderWindowPtr window = gApplication().getPrimaryWindow();
+		const RenderWindowProperties& rwProps = window->getProperties();
 
 		if (!fullscreen)
 		{
-			windowResWidth = window->getWidth();
-			windowResHeight = window->getHeight();
+			windowResWidth = rwProps.getWidth();
+			windowResHeight = rwProps.getHeight();
 		}
 
-		sceneCamera->setAspectRatio(window->getWidth() / (float)window->getHeight());
+		sceneCamera->setAspectRatio(rwProps.getWidth() / (float)rwProps.getHeight());
 	}
 
 	void videoModeChanged(UINT32 idx)
@@ -528,7 +529,7 @@ namespace BansheeEngine
 		if (fullscreen)
 		{
 			RenderWindowPtr window = gApplication().getPrimaryWindow();
-			gCoreAccessor().setFullscreen(window, *selectedVideoMode);
+			window->setFullscreen(gCoreAccessor(), *selectedVideoMode);
 		}
 	}
 

@@ -255,7 +255,7 @@ namespace BansheeEngine
 			mSceneRenderTarget->destroy();
 
 		mSceneRenderTarget = RenderTexture::create(TEX_TYPE_2D, width, height);
-		gCoreAccessor().setPriority(mSceneRenderTarget, 1);
+		mSceneRenderTarget->setPriority(gCoreAccessor(), 1);
 
 		if (mCamera == nullptr)
 		{
