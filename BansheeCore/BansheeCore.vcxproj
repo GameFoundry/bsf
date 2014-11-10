@@ -277,7 +277,6 @@
     <ClInclude Include="Include\BsDrawList.h" />
     <ClInclude Include="Include\BsMaterialParam.h" />
     <ClInclude Include="Include\BsMaterialProxy.h" />
-    <ClInclude Include="Include\BsMeshProxy.h" />
     <ClInclude Include="Include\BsRenderStats.h" />
     <ClInclude Include="Include\BsCoreThread.h" />
     <ClInclude Include="Include\BsProfilerCPU.h" />

@@ -37,12 +37,18 @@ namespace BansheeEngine
 		/**
 		 * @brief	Copy internal dirty data to a memory buffer that will be used
 		 *			for updating sim thread version of that data.
+		 *
+		 * @note	This generally happens at the end of a core thread frame. Data is then passed
+		 *			to the sim thread and will be available on the next sim thread frame.
 		 */
 		virtual CoreSyncData syncFromCore(FrameAlloc* allocator) { return CoreSyncData(); }
 
 		/**
 		 * @brief	Update internal data from provided memory buffer that
 		 *			was populated with data from the sim thread.
+		 *
+		 * @note	This generally happens at the start of a core thread frame. Data used was
+		 *			recorded on the previous sim thread frame.
 		 */
 		virtual void syncToCore(const CoreSyncData& data) { }
 

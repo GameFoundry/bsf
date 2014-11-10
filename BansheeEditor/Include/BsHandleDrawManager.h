@@ -64,13 +64,13 @@ namespace BansheeEngine
 			Solid, Wire
 		};
 
-		struct MeshProxyData
+		struct MeshData
 		{
-			MeshProxyData(const MeshProxyPtr& proxy, MeshType type)
-				:proxy(proxy), type(type)
+			MeshData(const SPtr<MeshCoreBase>& mesh, MeshType type)
+				:mesh(mesh), type(type)
 			{ }
 
-			MeshProxyPtr proxy;
+			SPtr<MeshCoreBase> mesh;
 			MeshType type;
 		};
 
@@ -84,11 +84,11 @@ namespace BansheeEngine
 
 		void initialize(const MaterialProxyPtr& wireMatProxy, const MaterialProxyPtr& solidMatProxy);
 
-		void updateData(const RenderTargetPtr& rt, const Vector<MeshProxyData>& proxies);
+		void updateData(const RenderTargetPtr& rt, const Vector<MeshData>& meshes);
 		void render(const CameraProxy& camera);
 
 		RenderTargetPtr mSceneRenderTarget;
-		Vector<MeshProxyData> mProxies;
+		Vector<MeshData> mMeshes;
 
 		// Immutable
 		SolidMaterialData mSolidMaterial;

@@ -9,7 +9,6 @@ Resource
  - SamplerState
  - Font
  - Texture
- - Mesh
  - GpuProgram
  - Material
  - Shader
@@ -25,7 +24,10 @@ Disallow CoreObject creation from core thread
  - Add asserts in CoreObject::destroy and CoreObject::initialize
  - Possibly also add asserts to CoreThread::queueCommand and CoreThread::queueReturnCommand
 
-Move CoreAccessor methods relating to render target, to the render targets themselves
+After I refactor Texture remove write/read subresource from core accessor
+ - Also get rid of GpuResource class
+
+Since Mesh refactor when I select/deselect a gizmo the entire render texture flashes white for one frame (might be related to RT refactor instead)
 
 -----------------
 

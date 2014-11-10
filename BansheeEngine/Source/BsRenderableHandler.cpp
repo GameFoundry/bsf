@@ -30,7 +30,7 @@ namespace BansheeEngine
 	void RenderableHandler::setMesh(HMesh mesh)
 	{
 		mMeshData = mesh;
-		mMaterialData.resize(mesh->getNumSubMeshes());
+		mMaterialData.resize(mesh->getProperties().getNumSubMeshes());
 
 		_markCoreDirty();
 	}
@@ -76,9 +76,6 @@ namespace BansheeEngine
 				return true;
 		}
 
-		if (mMeshData.mesh != nullptr && mMeshData.mesh.isLoaded() && mMeshData.mesh->_isCoreDirty(MeshDirtyFlag::Mesh))
-			return true;
-
 		return mCoreDirtyFlags != 0;
 	}
 
@@ -89,9 +86,6 @@ namespace BansheeEngine
 			if (materialData.material != nullptr && materialData.material.isLoaded())
 				materialData.material->_markCoreClean(MaterialDirtyFlag::Material);
 		}
-
-		if (mMeshData.mesh != nullptr && mMeshData.mesh.isLoaded())
-			mMeshData.mesh->_markCoreClean(MeshDirtyFlag::Mesh);
 
 		mCoreDirtyFlags = 0;
 	}
@@ -123,20 +117,13 @@ namespace BansheeEngine
 
 		RenderableProxyPtr proxy = bs_shared_ptr<RenderableProxy>();
 
-		bool markMeshProxyClean = false;
-		for (UINT32 i = 0; i < mMeshData.mesh->getNumSubMeshes(); i++)
+		for (UINT32 i = 0; i < mMeshData.mesh->getProperties().getNumSubMeshes(); i++)
 		{
 			RenderableElement* renElement = bs_new<RenderableElement>();
 			renElement->layer = mLayer;
 			renElement->worldTransform = worldTransform;
-
-			if (mMeshData.mesh->_isCoreDirty(MeshDirtyFlag::Proxy))
-			{
-				mMeshData.mesh->_setActiveProxy(i, mMeshData.mesh->_createProxy(i));
-				markMeshProxyClean = true;
-			}
-
-			renElement->mesh = mMeshData.mesh->_getActiveProxy(i);
+			renElement->mesh = mMeshData.mesh->getCore();
+			renElement->subMesh = mMeshData.mesh->getProperties().getSubMesh(i);
 
 			HMaterial material;
 			if (mMaterialData[i].material != nullptr)
@@ -156,11 +143,6 @@ namespace BansheeEngine
 			renElement->material = material->_getActiveProxy();
 
 			proxy->renderableElements.push_back(renElement);
-		}
-
-		if (markMeshProxyClean)
-		{
-			mMeshData.mesh->_markCoreClean(MeshDirtyFlag::Proxy);
 		}
 
 		proxy->renderableType = RenType_LitTextured;

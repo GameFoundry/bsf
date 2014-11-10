@@ -72,7 +72,9 @@ namespace BansheeEngine
 		const VertexElement& getElement(UINT32 idx) const { return mVertexElements[idx]; }
 	private:
 		friend class Mesh;
+		friend class MeshCore;
 		friend class MeshHeap;
+		friend class MeshHeapCore;
 
 		/**
 		 * @brief	Returns the largest stream index of all the stored vertex elements.

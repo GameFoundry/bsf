@@ -82,7 +82,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Core thread only.
 		 */
-		static void draw(const MeshProxy& mesh);
+		static void draw(const SPtr<MeshCoreBase>& mesh, const SubMesh& subMesh);
 
 		/**
 		 * @brief	Callback that gets triggered before a viewport gets rendered.

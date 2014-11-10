@@ -160,18 +160,18 @@ namespace BansheeEngine
 
 		const Vector<DrawHelper::ShapeMeshData>& meshes = mDrawHelper->getMeshes();
 		
-		Vector<HandleDrawManagerCore::MeshProxyData> proxyData;
+		Vector<HandleDrawManagerCore::MeshData> proxyData;
 		for (auto& meshData : meshes)
 		{
 			if (meshData.type == DrawHelper::MeshType::Solid)
 			{
-				MeshProxyPtr proxy = meshData.mesh->_createProxy(0);
-				proxyData.push_back(HandleDrawManagerCore::MeshProxyData(proxy, HandleDrawManagerCore::MeshType::Solid));
+				proxyData.push_back(HandleDrawManagerCore::MeshData(
+					meshData.mesh->getCore(), HandleDrawManagerCore::MeshType::Solid));
 			}
 			else // Wire
 			{
-				MeshProxyPtr proxy = meshData.mesh->_createProxy(0);
-				proxyData.push_back(HandleDrawManagerCore::MeshProxyData(proxy, HandleDrawManagerCore::MeshType::Wire));
+				proxyData.push_back(HandleDrawManagerCore::MeshData(
+					meshData.mesh->getCore(), HandleDrawManagerCore::MeshType::Wire));
 			}
 		}
 
@@ -204,10 +204,10 @@ namespace BansheeEngine
 		activeRenderer->onCorePostRenderViewport.connect(std::bind(&HandleDrawManagerCore::render, this, _1));
 	}
 
-	void HandleDrawManagerCore::updateData(const RenderTargetPtr& rt, const Vector<MeshProxyData>& proxies)
+	void HandleDrawManagerCore::updateData(const RenderTargetPtr& rt, const Vector<MeshData>& meshes)
 	{
 		mSceneRenderTarget = rt;
-		mProxies = proxies;
+		mMeshes = meshes;
 	}
 
 	void HandleDrawManagerCore::render(const CameraProxy& camera)
@@ -234,9 +234,9 @@ namespace BansheeEngine
 		mWireMaterial.mViewProj.set(viewProjMat);
 
 		MeshType currentType = MeshType::Solid;
-		if (mProxies.size() > 0)
+		if (mMeshes.size() > 0)
 		{
-			currentType = mProxies[0].type;
+			currentType = mMeshes[0].type;
 
 			if (currentType == MeshType::Solid)
 				Renderer::setPass(*mSolidMaterial.proxy, 0);
@@ -244,19 +244,19 @@ namespace BansheeEngine
 				Renderer::setPass(*mWireMaterial.proxy, 0);
 		}
 
-		for (auto& proxyData : mProxies)
+		for (auto& meshData : mMeshes)
 		{
-			if (currentType != proxyData.type)
+			if (currentType != meshData.type)
 			{
-				if (proxyData.type == MeshType::Solid)
+				if (meshData.type == MeshType::Solid)
 					Renderer::setPass(*mSolidMaterial.proxy, 0);
 				else
 					Renderer::setPass(*mWireMaterial.proxy, 0);
 
-				currentType = proxyData.type;
+				currentType = meshData.type;
 			}
 
-			Renderer::draw(*proxyData.proxy);
+			Renderer::draw(meshData.mesh, meshData.mesh->getProperties().getSubMesh(0));
 		}
 	}
 }

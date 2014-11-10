@@ -6,38 +6,26 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Represents a single mesh entry in the MeshHeap. This can be used as a normal mesh
-	 *			but due to the nature of the mesh-heap it is not the type of mesh you should use
-	 *			for storing static data.
+	 * @brief	Core thread portion of a transient mesh.
 	 *
-	 *			Transient meshes don't keep internal index/vertex buffers but instead use the ones
-	 *			provided by their parent mesh heap.
+	 * @see		Transient mesh
 	 *
-	 * @see		MeshHeap
+	 * @note	Core thread.
 	 */
-	class BS_CORE_EXPORT TransientMesh : public MeshBase
+	class BS_CORE_EXPORT TransientMeshCore : public MeshCoreBase
 	{
 	public:
-		virtual ~TransientMesh();
+		TransientMeshCore(const MeshHeapPtr& parentHeap, UINT32 id, UINT32 numVertices,
+			UINT32 numIndices, const Vector<SubMesh>& subMeshes);
 
 		/**
-		 * @copydoc GpuResource::writeSubresource
-		 */
-		virtual void writeSubresource(UINT32 subresourceIdx, const GpuResourceData& data, bool discardEntireBuffer);
-
-		/**
-		 * @copydoc GpuResource::readSubresource
-		 */
-		virtual void readSubresource(UINT32 subresourceIdx, GpuResourceData& data);
-
-		 /**
 		 * @copydoc MeshBase::getVertexData
 		 */
 		SPtr<VertexData> getVertexData() const;
 
 		 /**
-		 * @copydoc MeshBase::getIndexData
-		 */
+		  * @copydoc MeshBase::getIndexData
+		  */
 		SPtr<IndexBufferCore> getIndexBuffer() const;
 
 		/**
@@ -60,14 +48,35 @@ namespace BansheeEngine
 		 */
 		virtual void _notifyUsedOnGPU();
 
-		/************************************************************************/
-		/* 								CORE PROXY                      		*/
-		/************************************************************************/
+	protected:
+		friend class TransientMesh;
+
+		MeshHeapPtr mParentHeap;
+		UINT32 mId;
+	};
+
+	/**
+	 * @brief	Represents a single mesh entry in the MeshHeap. This can be used as a normal mesh
+	 *			but due to the nature of the mesh-heap it is not the type of mesh you should use
+	 *			for storing static data.
+	 *
+	 *			Transient meshes don't keep internal index/vertex buffers but instead use the ones
+	 *			provided by their parent mesh heap.
+	 *
+	 * @see		MeshHeap
+	 *
+	 * @note	Sim thread.
+	 */
+	class BS_CORE_EXPORT TransientMesh : public MeshBase
+	{
+	public:
+		virtual ~TransientMesh();
 
 		/**
-		 * @copydoc	MeshBase::_createProxy
+		 * @brief	Retrieves a core implementation of a mesh usable only from the
+		 *			core thread.
 		 */
-		MeshProxyPtr _createProxy(UINT32 subMeshIdx);
+		SPtr<TransientMeshCore> getCore() const;
 
 	protected:
 		friend class MeshHeap;
@@ -84,6 +93,11 @@ namespace BansheeEngine
 		 * @brief	Marks the mesh as destroyed so we know that we don't need to destroy it ourselves.
 		 */
 		void markAsDestroyed() { mIsDestroyed = true; }
+
+		/**
+		 * @copydoc	RenderTarget::createCore
+		 */
+		SPtr<CoreObjectCore> createCore() const;
 
 	protected:
 		bool mIsDestroyed;

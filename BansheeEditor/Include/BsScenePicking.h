@@ -11,7 +11,7 @@ namespace BansheeEngine
 	{
 		struct RenderablePickData
 		{
-			MeshProxyPtr mesh;
+			SPtr<MeshCore> mesh;
 			UINT32 index;
 			Matrix4 wvpTransform;
 			bool alpha;

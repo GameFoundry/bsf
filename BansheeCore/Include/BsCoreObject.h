@@ -210,6 +210,7 @@ namespace BansheeEngine
 		 */
 		static void executeReturnGpuCommand(std::shared_ptr<CoreObject> obj, std::function<void(AsyncOp&)> func, AsyncOp& op); 
 
+	protected:
 		/************************************************************************/
 		/* 							CORE OBJECT SYNC                      		*/
 		/************************************************************************/
@@ -245,12 +246,18 @@ namespace BansheeEngine
 		/**
 		 * @brief	Copy internal dirty data to a memory buffer that will be used
 		 *			for updating core thread version of that data.
+		 *
+		 * @note	This generally happens at the end of every sim thread frame. Synced data becomes
+		 *			available to the core thread the start of the next core thread frame.
 		 */
 		virtual CoreSyncData syncToCore(FrameAlloc* allocator) { return CoreSyncData(); }
 
 		/**
 		 * @brief	Update internal data from provided memory buffer that
 		 *			was populated with data from the core thread.
+		 *
+		 * @note	This generally happens at the start of every sim thread frame. Provided data
+		 *			is from a previous core thread frame.
 		 */
 		virtual void syncFromCore(const CoreSyncData& data) { }
 

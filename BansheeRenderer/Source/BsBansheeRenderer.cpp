@@ -375,15 +375,9 @@ namespace BansheeEngine
 						drawOp.material->_markCoreClean(MaterialDirtyFlag::Params);
 				}
 
-				if (drawOp.mesh->_isCoreDirty(MeshDirtyFlag::Proxy))
-				{
-					drawOp.mesh->_setActiveProxy(drawOp.submeshIdx, drawOp.mesh->_createProxy(drawOp.submeshIdx));
-					drawOp.mesh->_markCoreClean(MeshDirtyFlag::Proxy);
-					drawOp.mesh->_markCoreClean(MeshDirtyFlag::Mesh);
-				}
-
 				MaterialProxyPtr materialProxy = drawOp.material->_getActiveProxy();
-				MeshProxyPtr meshProxy = drawOp.mesh->_getActiveProxy(drawOp.submeshIdx);
+				SPtr<MeshCoreBase> meshCore = drawOp.mesh->getCore();
+				SubMesh subMesh = meshCore->getProperties().getSubMesh(drawOp.submeshIdx);
 
 				if (dirtyParams != nullptr)
 				{
@@ -392,7 +386,7 @@ namespace BansheeEngine
 				}
 
 				float distanceToCamera = (cameraSO->getPosition() - drawOp.worldPosition).length();
-				renderQueue->add(materialProxy, meshProxy, distanceToCamera);
+				renderQueue->add(materialProxy, meshCore, subMesh, distanceToCamera);
 			}
 
 			gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::addToRenderQueue, this, camera->_getActiveProxy(), renderQueue));
@@ -531,7 +525,7 @@ namespace BansheeEngine
 			MaterialProxyPtr materialProxy = iter->material;
 
 			setPass(*materialProxy, iter->passIdx);
-			draw(*iter->mesh);
+			draw(iter->mesh, iter->subMesh);
 		}
 
 		renderQueue->clear();

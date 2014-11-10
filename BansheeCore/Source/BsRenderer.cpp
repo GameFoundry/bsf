@@ -2,7 +2,6 @@
 #include "BsCoreThread.h"
 #include "BsRenderSystem.h"
 #include "BsMaterialProxy.h"
-#include "BsMeshProxy.h"
 #include "BsMesh.h"
 #include "BsBlendState.h"
 #include "BsDepthStencilState.h"
@@ -84,19 +83,12 @@ namespace BansheeEngine
 			rs.setRasterizerState(RasterizerState::getDefault());
 	}
 
-	void Renderer::draw(const MeshProxy& meshProxy)
+	void Renderer::draw(const SPtr<MeshCoreBase>& mesh, const SubMesh& subMesh)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		RenderSystem& rs = RenderSystem::instance();
-		MeshBasePtr mesh;
-
-		// TODO: Instead of this lock consider just storing all needed data in MeshProxy and not referencing Mesh at all?
-		if (!meshProxy.mesh.expired())
-			mesh = meshProxy.mesh.lock();
-		else
-			return;
-
+		const MeshProperties& meshProps = mesh->getProperties();
 		std::shared_ptr<VertexData> vertexData = mesh->getVertexData();
 
 		rs.setVertexDeclaration(vertexData->vertexDeclaration);
@@ -125,7 +117,6 @@ namespace BansheeEngine
 			rs.setVertexBuffers(startSlot, buffers, endSlot - startSlot + 1);
 		}
 
-		SubMesh subMesh = meshProxy.subMesh;
 		rs.setDrawOperation(subMesh.drawOp);
 
 		SPtr<IndexBufferCore> indexBuffer = mesh->getIndexBuffer();

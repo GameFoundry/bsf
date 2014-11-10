@@ -312,6 +312,62 @@ namespace BansheeEngine
 		return mVertexData->getVertexStride() * mNumVertices;
 	}
 
+	Bounds MeshData::calculateBounds() const
+	{
+		Bounds bounds;
+
+		VertexDataDescPtr vertexDesc = getVertexDesc();
+		for (UINT32 i = 0; i < vertexDesc->getNumElements(); i++)
+		{
+			const VertexElement& curElement = vertexDesc->getElement(i);
+
+			if (curElement.getSemantic() != VES_POSITION || (curElement.getType() != VET_FLOAT3 && curElement.getType() != VET_FLOAT4))
+				continue;
+
+			UINT8* data = getElementData(curElement.getSemantic(), curElement.getSemanticIdx(), curElement.getStreamIdx());
+			UINT32 stride = vertexDesc->getVertexStride(curElement.getStreamIdx());
+
+			if (getNumVertices() > 0)
+			{
+				Vector3 accum;
+				Vector3 min;
+				Vector3 max;
+
+				Vector3 curPosition = *(Vector3*)data;
+				accum = curPosition;
+				min = curPosition;
+				max = curPosition;
+
+				for (UINT32 i = 1; i < getNumVertices(); i++)
+				{
+					curPosition = *(Vector3*)(data + stride * i);
+					accum += curPosition;
+					min = Vector3::min(min, curPosition);
+					max = Vector3::max(max, curPosition);
+				}
+
+				Vector3 center = accum / (float)getNumVertices();
+				float radiusSqrd = 0.0f;
+
+				for (UINT32 i = 0; i < getNumVertices(); i++)
+				{
+					curPosition = *(Vector3*)(data + stride * i);
+					float dist = center.squaredDistance(curPosition);
+
+					if (dist > radiusSqrd)
+						radiusSqrd = dist;
+				}
+
+				float radius = Math::sqrt(radiusSqrd);
+
+				bounds = Bounds(AABox(min, max), Sphere(center, radius));
+				break;
+			}
+		}
+
+		return bounds;
+	}
+
 	/************************************************************************/
 	/* 								SERIALIZATION                      		*/
 	/************************************************************************/

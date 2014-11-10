@@ -2,9 +2,9 @@
 
 #include "BsPrerequisites.h"
 #include "BsMaterialProxy.h"
-#include "BsMeshProxy.h"
 #include "BsBounds.h"
 #include "BsMatrix4.h"
+#include "BsSubMesh.h"
 
 namespace BansheeEngine
 {
@@ -34,9 +34,14 @@ namespace BansheeEngine
 		Matrix4 worldTransform;
 
 		/**
-		 * @brief	Proxy of the sub-mesh to render.
+		 * @brief	Reference to the mesh to render.
 		 */
-		MeshProxyPtr mesh;
+		SPtr<MeshCore> mesh;
+
+		/**
+		 * @brief	Portion of the mesh to render.
+		 */
+		SubMesh subMesh;
 
 		/**
 		 * @brief	Proxy of the material to render the mesh with.

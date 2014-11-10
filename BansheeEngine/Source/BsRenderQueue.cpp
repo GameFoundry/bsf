@@ -1,8 +1,9 @@
 #include "BsRenderQueue.h"
 #include "BsMaterialProxy.h"
-#include "BsMeshProxy.h"
 #include "BsShaderProxy.h"
 #include "BsRenderableProxy.h"
+#include "BsSubMesh.h"
+#include "BsMesh.h"
 
 namespace BansheeEngine
 {
@@ -26,6 +27,7 @@ namespace BansheeEngine
 		renderOp.renderElem = element;
 		renderOp.material = element->material;
 		renderOp.mesh = element->mesh;
+		renderOp.subMesh = element->subMesh;
 
 		sortData.distFromCamera = distFromCamera;
 		sortData.priority = element->material->shader->queuePriority;
@@ -36,7 +38,7 @@ namespace BansheeEngine
 		mRenderElements.insert(sortData);
 	}
 
-	void RenderQueue::add(const MaterialProxyPtr& material, const MeshProxyPtr& mesh, float distFromCamera)
+	void RenderQueue::add(const MaterialProxyPtr& material, const SPtr<MeshCoreBase>& mesh, const SubMesh& subMesh, float distFromCamera)
 	{
 		SortData sortData;
 
@@ -44,6 +46,7 @@ namespace BansheeEngine
 		renderOp.renderElem = nullptr;
 		renderOp.material = material;
 		renderOp.mesh = mesh;
+		renderOp.subMesh = subMesh;
 
 		sortData.distFromCamera = distFromCamera;
 		sortData.priority = material->shader->queuePriority;
@@ -61,7 +64,7 @@ namespace BansheeEngine
 			if (elem.element.renderElem != nullptr)
 				add(elem.element.renderElem, elem.distFromCamera);
 			else
-				add(elem.element.material, elem.element.mesh, elem.distFromCamera);
+				add(elem.element.material, elem.element.mesh, elem.element.subMesh, elem.distFromCamera);
 		}
 	}
 
@@ -80,6 +83,7 @@ namespace BansheeEngine
 				sortedElem.renderElem = renderElem.renderElem;
 				sortedElem.material = renderElem.material;
 				sortedElem.mesh = renderElem.mesh;
+				sortedElem.subMesh = renderElem.subMesh;
 				sortedElem.passIdx = i;
 			}
 		}

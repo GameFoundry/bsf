@@ -507,9 +507,6 @@
     <ClInclude Include="Include\BsDrawList.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsMeshProxy.h">
-      <Filter>Header Files\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsMaterialProxy.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>

@@ -12,16 +12,16 @@ namespace BansheeEngine
 
 	class MeshBaseRTTI : public RTTIType<MeshBase, GpuResource, MeshBaseRTTI>
 	{
-		SubMesh& getSubMesh(MeshBase* obj, UINT32 arrayIdx) { return obj->mSubMeshes[arrayIdx]; }
-		void setSubMesh(MeshBase* obj, UINT32 arrayIdx, SubMesh& value) { obj->mSubMeshes[arrayIdx] = value; }
-		UINT32 getNumSubmeshes(MeshBase* obj) { return (UINT32)obj->mSubMeshes.size(); }
-		void setNumSubmeshes(MeshBase* obj, UINT32 numElements) { obj->mSubMeshes.resize(numElements); obj->mActiveProxies.resize(numElements); }
+		SubMesh& getSubMesh(MeshBase* obj, UINT32 arrayIdx) { return obj->mProperties.mSubMeshes[arrayIdx]; }
+		void setSubMesh(MeshBase* obj, UINT32 arrayIdx, SubMesh& value) { obj->mProperties.mSubMeshes[arrayIdx] = value; }
+		UINT32 getNumSubmeshes(MeshBase* obj) { return (UINT32)obj->mProperties.mSubMeshes.size(); }
+		void setNumSubmeshes(MeshBase* obj, UINT32 numElements) { obj->mProperties.mSubMeshes.resize(numElements); }
 
-		UINT32& getNumVertices(MeshBase* obj) { return obj->mNumVertices; }
-		void setNumVertices(MeshBase* obj, UINT32& value) { obj->mNumVertices = value; }
+		UINT32& getNumVertices(MeshBase* obj) { return obj->mProperties.mNumVertices; }
+		void setNumVertices(MeshBase* obj, UINT32& value) { obj->mProperties.mNumVertices = value; }
 
-		UINT32& getNumIndices(MeshBase* obj) { return obj->mNumIndices; }
-		void setNumIndices(MeshBase* obj, UINT32& value) { obj->mNumIndices = value; }
+		UINT32& getNumIndices(MeshBase* obj) { return obj->mProperties.mNumIndices; }
+		void setNumIndices(MeshBase* obj, UINT32& value) { obj->mProperties.mNumIndices = value; }
 
 	public:
 		MeshBaseRTTI()

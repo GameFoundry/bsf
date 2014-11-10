@@ -93,7 +93,7 @@ namespace BansheeEngine
 
 		mMeshes[meshIdx] = transientMeshPtr;
 
-		queueGpuCommand(getThisPtr(), std::bind(&MeshHeap::allocInternal, this, transientMeshPtr, meshData));
+		queueGpuCommand(getThisPtr(), std::bind(&MeshHeap::allocInternal, this, transientMeshPtr->getCore(), meshData));
 
 		return transientMeshPtr;
 	}
@@ -107,10 +107,10 @@ namespace BansheeEngine
 		mesh->markAsDestroyed();
 		mMeshes.erase(iterFind);
 
-		queueGpuCommand(getThisPtr(), std::bind(&MeshHeap::deallocInternal, this, mesh));
+		queueGpuCommand(getThisPtr(), std::bind(&MeshHeap::deallocInternal, this, mesh->getCore()));
 	}
 
-	void MeshHeap::allocInternal(TransientMeshPtr mesh, const MeshDataPtr& meshData)
+	void MeshHeap::allocInternal(SPtr<TransientMeshCore> mesh, const MeshDataPtr& meshData)
 	{
 		// Find free vertex chunk and grow if needed
 		UINT32 smallestVertFit = 0;
@@ -327,7 +327,7 @@ namespace BansheeEngine
 		mIndexBuffer->writeData(idxChunkStart * idxSize, meshData->getNumIndices() * idxSize, idxDest, BufferWriteType::NoOverwrite);
 	}
 
-	void MeshHeap::deallocInternal(TransientMeshPtr mesh)
+	void MeshHeap::deallocInternal(SPtr<TransientMeshCore> mesh)
 	{
 		auto findIter = mMeshAllocData.find(mesh->getMeshHeapId());
 		assert(findIter != mMeshAllocData.end());

@@ -247,19 +247,19 @@ namespace BansheeEngine
 			mDrawHelper->buildMeshes();
 			const Vector<DrawHelper::ShapeMeshData>& meshes = mDrawHelper->getMeshes();
 
-			MeshProxyPtr solidMeshProxy = nullptr;
-			MeshProxyPtr wireMeshProxy = nullptr;
+			SPtr<MeshCoreBase> solidMesh = nullptr;
+			SPtr<MeshCoreBase> wireMesh = nullptr;
 			for (auto& meshData : meshes)
 			{
 				if (meshData.type == DrawHelper::MeshType::Solid)
 				{
-					if (solidMeshProxy == nullptr)
-						solidMeshProxy = meshData.mesh->_createProxy(0);
+					if (solidMesh == nullptr)
+						solidMesh = meshData.mesh->getCore();
 				}
 				else // Wire
 				{
-					if (wireMeshProxy == nullptr)
-						wireMeshProxy = meshData.mesh->_createProxy(0);
+					if (wireMesh == nullptr)
+						wireMesh = meshData.mesh->getCore();
 				}
 			}
 
@@ -268,9 +268,9 @@ namespace BansheeEngine
 			assert(meshes.size() <= 2);
 
 			mIconMesh = buildIconMesh(camera, mIconData, false, iconRenderData);
-			MeshProxyPtr iconMeshProxy = mIconMesh->_createProxy(0);
+			SPtr<MeshCoreBase> iconMesh = mIconMesh->getCore();
 
-			gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::updateData, mCore, rt, solidMeshProxy, wireMeshProxy, iconMeshProxy, iconRenderData));
+			gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::updateData, mCore, rt, solidMesh, wireMesh, iconMesh, iconRenderData));
 		}
 		else
 		{
@@ -379,19 +379,19 @@ namespace BansheeEngine
 			if (meshData.type == DrawHelper::MeshType::Solid)
 			{
 				gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::renderGizmos,
-					mCore, viewMat, projMat, meshData.mesh->_createProxy(0), GizmoMaterial::Picking));
+					mCore, viewMat, projMat, meshData.mesh->getCore(), GizmoMaterial::Picking));
 			}
 			else // Wire
 			{
 				gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::renderGizmos,
-					mCore, viewMat, projMat, meshData.mesh->_createProxy(0), GizmoMaterial::Picking));
+					mCore, viewMat, projMat, meshData.mesh->getCore(), GizmoMaterial::Picking));
 			}
 		}
 
 		Rect2I screenArea = camera->getViewport()->getArea();
 
 		gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::renderIconGizmos,
-			mCore, screenArea, iconMesh->_createProxy(0), iconRenderData, true));
+			mCore, screenArea, iconMesh->getCore(), iconRenderData, true));
 
 		mPickingDrawHelper->clearMeshes();
 		mIconMeshHeap->dealloc(iconMesh);
@@ -701,13 +701,13 @@ namespace BansheeEngine
 		activeRenderer->onCorePostRenderViewport.connect(std::bind(&GizmoManagerCore::render, this, _1));
 	}
 
-	void GizmoManagerCore::updateData(const RenderTargetPtr& rt, const MeshProxyPtr& solidMeshProxy, const MeshProxyPtr& wireMeshProxy,
-		const MeshProxyPtr& iconMeshProxy, const GizmoManager::IconRenderDataVecPtr& iconRenderData)
+	void GizmoManagerCore::updateData(const RenderTargetPtr& rt, const SPtr<MeshCoreBase>& solidMesh, const SPtr<MeshCoreBase>& wireMesh,
+		const SPtr<MeshCoreBase>& iconMesh, const GizmoManager::IconRenderDataVecPtr& iconRenderData)
 	{
 		mSceneRenderTarget = rt;
-		mSolidMeshProxy = solidMeshProxy;
-		mWireMeshProxy = wireMeshProxy;
-		mIconMeshProxy = iconMeshProxy;
+		mSolidMesh = solidMesh;
+		mWireMesh = wireMesh;
+		mIconMesh = iconMesh;
 		mIconRenderData = iconRenderData;
 	}
 
@@ -729,17 +729,17 @@ namespace BansheeEngine
 		screenArea.width = (int)(normArea.width * width);
 		screenArea.height = (int)(normArea.height * height);
 
-		if (mSolidMeshProxy != nullptr)
-			renderGizmos(camera.viewMatrix, camera.projMatrix, mSolidMeshProxy, GizmoManager::GizmoMaterial::Solid);
+		if (mSolidMesh != nullptr)
+			renderGizmos(camera.viewMatrix, camera.projMatrix, mSolidMesh, GizmoManager::GizmoMaterial::Solid);
 
-		if (mWireMeshProxy != nullptr)
-			renderGizmos(camera.viewMatrix, camera.projMatrix, mWireMeshProxy, GizmoManager::GizmoMaterial::Wire);
+		if (mWireMesh != nullptr)
+			renderGizmos(camera.viewMatrix, camera.projMatrix, mWireMesh, GizmoManager::GizmoMaterial::Wire);
 
-		if (mIconMeshProxy != nullptr)
-			renderIconGizmos(screenArea, mIconMeshProxy, mIconRenderData, false);
+		if (mIconMesh != nullptr)
+			renderIconGizmos(screenArea, mIconMesh, mIconRenderData, false);
 	}
 
-	void GizmoManagerCore::renderGizmos(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr meshProxy, GizmoManager::GizmoMaterial material)
+	void GizmoManagerCore::renderGizmos(Matrix4 viewMatrix, Matrix4 projMatrix, SPtr<MeshCoreBase> mesh, GizmoManager::GizmoMaterial material)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -761,19 +761,13 @@ namespace BansheeEngine
 			break;
 		}
 		
-		Renderer::draw(*meshProxy);
+		Renderer::draw(mesh, mesh->getProperties().getSubMesh(0));
 	}
 
-	void GizmoManagerCore::renderIconGizmos(Rect2I screenArea, MeshProxyPtr meshProxy, GizmoManager::IconRenderDataVecPtr renderData, bool usePickingMaterial)
+	void GizmoManagerCore::renderIconGizmos(Rect2I screenArea, SPtr<MeshCoreBase> mesh, GizmoManager::IconRenderDataVecPtr renderData, bool usePickingMaterial)
 	{
 		RenderSystem& rs = RenderSystem::instance();
-		MeshBasePtr mesh;
-
-		// TODO: Instead of this lock consider just storing all needed data in MeshProxy and not referencing Mesh at all?
-		if (!meshProxy->mesh.expired())
-			mesh = meshProxy->mesh.lock();
-		else
-			return;
+		const MeshProperties& meshProps = mesh->getProperties();
 
 		std::shared_ptr<VertexData> vertexData = mesh->getVertexData();
 

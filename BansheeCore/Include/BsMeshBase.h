@@ -5,7 +5,6 @@
 #include "BsBounds.h"
 #include "BsDrawOps.h"
 #include "BsSubMesh.h"
-#include "BsMeshProxy.h"
 
 namespace BansheeEngine
 {
@@ -31,13 +30,135 @@ namespace BansheeEngine
 	};
 
 	/**
+	 * @brief	Contains various properties describing a mesh.
+	 */
+	class BS_CORE_EXPORT MeshProperties
+	{
+	public:
+		MeshProperties();
+		MeshProperties(UINT32 numVertices, UINT32 numIndices, DrawOperationType drawOp);
+		MeshProperties(UINT32 numVertices, UINT32 numIndices, const Vector<SubMesh>& subMeshes);
+
+		/**
+		 * @brief	Retrieves a sub-mesh containing data used for rendering a
+		 * 			certain portion of this mesh. If no sub-meshes are specified manually
+		 *			a special sub-mesh containing all indices is returned.
+		 */
+		const SubMesh& getSubMesh(UINT32 subMeshIdx = 0) const;
+
+		/**
+		 * @brief	Retrieves a total number of sub-meshes in this mesh.
+		 */
+		UINT32 getNumSubMeshes() const;
+
+		/**
+		 * @brief	Returns maximum number of vertices the mesh may store.
+		 */
+		UINT32 getNumVertices() const { return mNumVertices; }
+
+		/**
+		 * @brief	Returns maximum number of indices the mesh may store.
+		 */
+		UINT32 getNumIndices() const { return mNumIndices; }
+
+		/**
+		 * @brief	Returns bounds of the geometry contained in the vertex buffers for all sub-meshes.
+		 */
+		const Bounds& getBounds() const { return mBounds; }
+
+	protected:
+		friend class MeshBase;
+		friend class MeshCoreBase;
+		friend class Mesh;
+		friend class MeshCore;
+		friend class TransientMesh;
+		friend class TransientMeshCore;
+		friend class MeshBaseRTTI;
+
+		Vector<SubMesh> mSubMeshes;
+		UINT32 mNumVertices;
+		UINT32 mNumIndices;
+		Bounds mBounds;
+	};
+
+	/**
+	 * @brief	Core version of a class used as a basis for all implemenations of meshes.
+	 *
+	 * @see		MeshBase
+	 *
+	 * @note	Core thread.
+	 */
+	class BS_CORE_EXPORT MeshCoreBase : public CoreObjectCore
+	{
+	public:
+		MeshCoreBase(UINT32 numVertices, UINT32 numIndices, const Vector<SubMesh>& subMeshes);
+		virtual ~MeshCoreBase() { }
+
+		/**
+		 * @brief	Get vertex data used for rendering.
+		 */
+		virtual SPtr<VertexData> getVertexData() const = 0;
+
+		/**
+		 * @brief	Get index data used for rendering.
+		 */
+		virtual SPtr<IndexBufferCore> getIndexBuffer() const = 0;
+
+		/**
+		 * @brief	Returns an offset into the vertex buffers that is returned
+		 * 			by getVertexData that signifies where this meshes vertices
+		 * 			begin.
+		 * 			
+		 * @note	Used when multiple meshes share the same buffers.
+		 */
+		virtual UINT32 getVertexOffset() const { return 0; }
+
+		/**
+		 * @brief	Returns an offset into the index buffer that is returned
+		 * 			by getIndexData that signifies where this meshes indices
+		 * 			begin.
+		 * 			
+		 * @note	Used when multiple meshes share the same buffers.
+		 */
+		virtual UINT32 getIndexOffset() const { return 0; }
+
+		/**
+		 * @brief	Called whenever this mesh starts being used on the GPU.
+		 * 			
+		 * @note	Needs to be called after all commands referencing this 
+		 * 			mesh have been sent to the GPU.
+		 * 			
+		 *			Internal method.
+		 */
+		virtual void _notifyUsedOnGPU() { }
+
+		/**
+		 * @brief	Returns properties that contain information about the mesh.
+		 */
+		const MeshProperties& getProperties() const { return mProperties; }
+
+	protected:
+		/**
+		 * @copydoc	CoreObjectCore::syncFromCore
+		 */
+		virtual CoreSyncData syncFromCore(FrameAlloc* allocator);
+
+		/**
+		 * @copydoc	CoreObjectCore::syncToCore
+		 */
+		virtual void syncToCore(const CoreSyncData& data);
+
+		MeshProperties mProperties;
+	};
+
+	/**
 	 * @brief	Base class all mesh implementations derive from. Meshes hold geometry information,
-	 *			normally in the form of one or serveral index or vertex buffers. Different mesh implementations
+	 *			normally in the form of one or several index or vertex buffers. Different mesh implementations
 	 *			might choose to manage those buffers differently.
 	 *
-	 * @note	Core thread only unless noted otherwise.
+	 * @note	Sim thread.
 	 */
-	class BS_CORE_EXPORT MeshBase : public GpuResource
+	class BS_CORE_EXPORT MeshBase : public Resource
 	{
 	public:
 		/**
@@ -63,141 +184,34 @@ namespace BansheeEngine
 		virtual ~MeshBase();
 
 		/**
-		 * @brief	Retrieves a sub-mesh containing data used for rendering a
-		 * 			certain portion of this mesh. If no sub-meshes are specified manually
-		 *			a special sub-mesh containing all indices is returned.
-		 *
-		 * @note	Thread safe.
+		 * @brief	Returns properties that contain information about the mesh.
 		 */
-		const SubMesh& getSubMesh(UINT32 subMeshIdx = 0) const;
+		const MeshProperties& getProperties() const { return mProperties; }
 
 		/**
-		 * @brief	Retrieves a total number of sub-meshes in this mesh.
-		 *
-		 * @note	Thread safe.
+		 * @brief	Retrieves a core implementation of a mesh usable only from the
+		 *			core thread.
 		 */
-		UINT32 getNumSubMeshes() const;
-
-		/**
-		 * @brief	Returns maximum number of vertices the mesh may store.
-		 *
-		 * @note	Thread safe.
-		 */
-		UINT32 getNumVertices() const { return mNumVertices; }
-
-		/**
-		 * @brief	Returns maximum number of indices the mesh may store.
-		 *
-		 * @note	Thread safe.
-		 */
-		UINT32 getNumIndices() const { return mNumIndices; }
-
-		/**
-		 * @brief	Get vertex data used for rendering.
-		 *  
-		 * @note	Core thread only. Internal method.
-		 */
-		virtual SPtr<VertexData> getVertexData() const = 0;
-
-		/**
-		 * @brief	Get index data used for rendering.
-		 *  
-		 * @note	Core thread only. Internal method.
-		 */
-		virtual SPtr<IndexBufferCore> getIndexBuffer() const = 0;
-
-		/**
-		 * @brief	Returns an offset into the vertex buffers that is returned
-		 * 			by getVertexData that signifies where this meshes vertices
-		 * 			begin.
-		 * 			
-		 * @note	Used when multiple meshes share the same buffers.
-		 * 			
-		 *			Core thread only. Internal method.
-		 */
-		virtual UINT32 getVertexOffset() const { return 0; }
-
-		/**
-		 * @brief	Returns an offset into the index buffer that is returned
-		 * 			by getIndexData that signifies where this meshes indices
-		 * 			begin.
-		 * 			
-		 * @note	Used when multiple meshes share the same buffers.
-		 * 			
-		 *			Core thread only. Internal method.
-		 */
-		virtual UINT32 getIndexOffset() const { return 0; }
-
-		/**
-		 * @brief	Called whenever this mesh starts being used on the GPU.
-		 * 			
-		 * @note	Needs to be called after all commands referencing this 
-		 * 			mesh have been sent to the GPU.
-		 * 			
-		 *			Core thread only. Internal method.
-		 */
-		virtual void _notifyUsedOnGPU() { }
-
-		/************************************************************************/
-		/* 								CORE PROXY                      		*/
-		/************************************************************************/
-
-		/**
-		 * @brief	Checks is the core dirty flag set. This is used by external systems 
-		 *			to know when internal data has changed and core thread potentially needs to be notified.
-		 *
-		 * @note	Sim thread only.
-		 */
-		bool _isCoreDirty(MeshDirtyFlag flag) const { return (mCoreDirtyFlags & (UINT32)flag) != 0; }
-
-		/**
-		 * @brief	Marks the core dirty flag as clean.
-		 *
-		 * @note	Sim thread only.
-		 */
-		void _markCoreClean(MeshDirtyFlag flag) { mCoreDirtyFlags &= ~(UINT32)flag; }
-
-		/**
-		 * @brief	Gets the currently active proxy of this material.
-		 */
-		MeshProxyPtr _getActiveProxy(UINT32 i) const { return mActiveProxies[i]; }
-
-		/**
-		 * @brief	Sets an active proxy for this material.
-		 */
-		void _setActiveProxy(UINT32 i, const MeshProxyPtr& proxy) { mActiveProxies[i] = proxy; }
-
-		/**
-		 * @brief	Creates a new core proxy from the current mesh data. Core proxy contains a snapshot of 
-		 *			mesh data normally managed on the sim thread (e.g. bounds).
-		 *
-		 * @param	subMeshIdx	Index of the sub-mesh to create a proxy for.
-		 *
-		 * @note	Sim thread only. 
-		 *			You generally need to update the core thread with a new proxy whenever core 
-		 *			dirty flag is set.
-		 */
-		virtual MeshProxyPtr _createProxy(UINT32 subMeshIdx) = 0;
+		SPtr<MeshCoreBase> getCore() const;
 
 	protected:
 		/**
-		 * @brief	Marks the core data as dirty.
+		 * @copydoc	CoreObject::syncToCore
 		 */
-		void markCoreDirty() { mCoreDirtyFlags = 0xFFFFFFFF; }
+		virtual CoreSyncData syncToCore(FrameAlloc* allocator);
 
-	protected:
-		Vector<SubMesh> mSubMeshes; // Immutable
-		UINT32 mNumVertices; // Immutable
-		UINT32 mNumIndices; // Immutable
-		Vector<MeshProxyPtr> mActiveProxies;
+		/**
+		 * @copydoc	CoreObject::syncFromCore
+		 */
+		virtual void syncFromCore(const CoreSyncData& data);
 
-		UINT32 mCoreDirtyFlags;
+		MeshProperties mProperties;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/
 		/************************************************************************/
 	private:
-		MeshBase(); // Serialization only
+		MeshBase() { } // Serialization only
 
 	public:
 		friend class MeshBaseRTTI;

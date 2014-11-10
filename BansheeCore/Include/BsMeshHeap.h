@@ -54,7 +54,7 @@ namespace BansheeEngine
 
 			UseFlags useFlags;
 			UINT32 eventQueryIdx;
-			TransientMeshPtr mesh;
+			SPtr<TransientMeshCore> mesh;
 		};
 
 		/**
@@ -97,6 +97,7 @@ namespace BansheeEngine
 
 	private:
 		friend class TransientMesh;
+		friend class TransientMeshCore;
 
 		/**
 		 * @copydoc	create
@@ -122,7 +123,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Core thread.
 		 */
-		void allocInternal(TransientMeshPtr mesh, const MeshDataPtr& meshData);
+		void allocInternal(SPtr<TransientMeshCore> mesh, const MeshDataPtr& meshData);
 
 		/**
 		 * @brief	Deallocates the provided mesh Freed memory
@@ -130,7 +131,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Core thread.
 		 */
-		void deallocInternal(TransientMeshPtr mesh);
+		void deallocInternal(SPtr<TransientMeshCore> mesh);
 
 		/**
 		 * @brief	Resizes the vertex buffers so they max contain the provided

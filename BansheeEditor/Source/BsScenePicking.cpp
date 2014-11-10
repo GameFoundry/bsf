@@ -122,7 +122,7 @@ namespace BansheeEngine
 			if (!mesh)
 				continue;
 
-			Bounds worldBounds = mesh->getBounds();
+			Bounds worldBounds = mesh->getProperties().getBounds();
 			Matrix4 worldTransform = so->getWorldTfrm();
 			worldBounds.transformAffine(worldTransform);
 
@@ -134,7 +134,7 @@ namespace BansheeEngine
 				// More precise with the box
 				if (frustum.intersects(worldBounds.getBox()))
 				{
-					for (UINT32 i = 0; i < mesh->getNumSubMeshes(); i++)
+					for (UINT32 i = 0; i < mesh->getProperties().getNumSubMeshes(); i++)
 					{
 						UINT32 idx = (UINT32)pickData.size();
 
@@ -157,13 +157,6 @@ namespace BansheeEngine
 
 						CullingMode cullMode = rasterizerState->getCullMode();
 
-						MeshProxyPtr meshProxy;
-
-						if (mesh->_isCoreDirty(MeshDirtyFlag::Proxy))
-							meshProxy = mesh->_createProxy(i);
-						else
-							meshProxy = mesh->_getActiveProxy(i);
-
 						HTexture mainTexture;
 						if (useAlphaShader)
 						{
@@ -181,7 +174,7 @@ namespace BansheeEngine
 						idxToRenderable[idx] = so;
 
 						Matrix4 wvpTransform = viewProjMatrix * worldTransform;
-						pickData.insert({ meshProxy, idx, wvpTransform, useAlphaShader, cullMode, mainTexture });
+						pickData.insert({ mesh->getCore(), idx, wvpTransform, useAlphaShader, cullMode, mainTexture });
 					}
 				}
 			}
@@ -275,7 +268,7 @@ namespace BansheeEngine
 				rs.bindGpuParams(GPT_FRAGMENT_PROGRAM, md.mParamPickingFragParams);
 			}
 
-			Renderer::draw(*renderable.mesh);
+			Renderer::draw(renderable.mesh, renderable.mesh->getProperties().getSubMesh(0));
 		}
 	}
 

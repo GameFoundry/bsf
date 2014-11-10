@@ -48,8 +48,32 @@ namespace BansheeEngine
 
 		UINT64 internalId = object->getInternalID();
 		mObjects.erase(internalId);
-		mSimSyncData.erase(internalId);
-		mCoreSyncData.erase(internalId);
+
+		{
+			auto iterFind = mSimSyncData.find(internalId);
+			if (iterFind != mSimSyncData.end())
+			{
+				UINT8* data = iterFind->second.syncData.getBuffer();
+
+				if (data != nullptr && mSimSyncDataAlloc != nullptr)
+					mSimSyncDataAlloc->dealloc(data);
+
+				mSimSyncData.erase(iterFind);
+			}
+		}
+
+		{
+			auto iterFind = mCoreSyncData.find(internalId);
+			if (iterFind != mCoreSyncData.end())
+			{
+				UINT8* data = iterFind->second.syncData.getBuffer();
+
+				if (data != nullptr && mCoreSyncDataAlloc != nullptr)
+					mCoreSyncDataAlloc->dealloc(data);
+
+				mCoreSyncData.erase(iterFind);
+			}
+		}
 	}
 
 	void CoreObjectManager::syncDownload(CoreObjectSync type, FrameAlloc* allocator)

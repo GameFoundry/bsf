@@ -2,6 +2,7 @@
 
 #include "BsPrerequisites.h"
 #include "BsVector3.h"
+#include "BsSubMesh.h"
 
 namespace BansheeEngine 
 {
@@ -16,7 +17,8 @@ namespace BansheeEngine
 
 		RenderableElement* renderElem;
 		MaterialProxyPtr material;
-		MeshProxyPtr mesh;
+		SPtr<MeshCoreBase> mesh;
+		SubMesh subMesh;
 		UINT32 passIdx;
 	};
 
@@ -55,9 +57,10 @@ namespace BansheeEngine
 		 *
 		 * @param	material		Material that will be used for rendering the object.
 		 * @param	mesh			Mesh representing the geometry of the object.
+		 * @param	subMesh			Portion of the mesh to draw.
 		 * @param	distFromCamera	Distance of this object from the camera. Used for distance sorting.
 		 */
-		void add(const MaterialProxyPtr& material, const MeshProxyPtr& mesh, float distFromCamera);
+		void add(const MaterialProxyPtr& material, const SPtr<MeshCoreBase>& mesh, const SubMesh& subMesh, float distFromCamera);
 
 		/**
 		 * @brief	Adds new entries from the provided render queue to this queue.

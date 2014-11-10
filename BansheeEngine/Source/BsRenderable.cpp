@@ -32,7 +32,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			Bounds bounds = mesh->getBounds();
+			Bounds bounds = mesh->getProperties().getBounds();
 			bounds.transformAffine(SO()->getWorldTfrm());
 
 			return bounds;

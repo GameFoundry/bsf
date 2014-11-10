@@ -23,11 +23,9 @@ namespace BansheeEngine
 		MeshDataPtr getMeshData(Mesh* obj) 
 		{ 
 			MeshDataPtr meshData = obj->allocateSubresourceBuffer(0);
-			GpuResourcePtr sharedMeshPtr = std::static_pointer_cast<GpuResource>(obj->getThisPtr());
 
-			meshData->_lock();
-			gCoreThread().queueReturnCommand(std::bind(&RenderSystem::readSubresource, RenderSystem::instancePtr(), 
-				sharedMeshPtr, 0, std::static_pointer_cast<GpuResourceData>(meshData), std::placeholders::_1), true);
+			obj->readSubresource(gCoreAccessor(), 0, meshData);
+			gCoreAccessor().submitToCoreThread(true);
 
 			return meshData;
 		}

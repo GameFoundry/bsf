@@ -211,19 +211,19 @@ namespace BansheeEngine
 		void initialize(const GizmoManager::CoreInitData& initData);
 
 		void render(const CameraProxy& camera);
-		void renderGizmos(Matrix4 viewMatrix, Matrix4 projMatrix, MeshProxyPtr mesh, GizmoManager::GizmoMaterial material);
-		void renderIconGizmos(Rect2I screenArea, MeshProxyPtr mesh, GizmoManager::IconRenderDataVecPtr renderData, bool usePickingMaterial);
+		void renderGizmos(Matrix4 viewMatrix, Matrix4 projMatrix, SPtr<MeshCoreBase> mesh, GizmoManager::GizmoMaterial material);
+		void renderIconGizmos(Rect2I screenArea, SPtr<MeshCoreBase> mesh, GizmoManager::IconRenderDataVecPtr renderData, bool usePickingMaterial);
 
-		void updateData(const RenderTargetPtr& rt, const MeshProxyPtr& solidMeshProxy, const MeshProxyPtr& wireMeshProxy,
-			const MeshProxyPtr& iconMeshProxy, const GizmoManager::IconRenderDataVecPtr& iconRenderData);
+		void updateData(const RenderTargetPtr& rt, const SPtr<MeshCoreBase>& solidMesh, const SPtr<MeshCoreBase>& wireMesh,
+			const SPtr<MeshCoreBase>& iconMesh, const GizmoManager::IconRenderDataVecPtr& iconRenderData);
 
 		static const float PICKING_ALPHA_CUTOFF;
 
 		RenderTargetPtr mSceneRenderTarget;
 
-		MeshProxyPtr mSolidMeshProxy;
-		MeshProxyPtr mWireMeshProxy;
-		MeshProxyPtr mIconMeshProxy;
+		SPtr<MeshCoreBase> mSolidMesh;
+		SPtr<MeshCoreBase> mWireMesh;
+		SPtr<MeshCoreBase> mIconMesh;
 		GizmoManager::IconRenderDataVecPtr mIconRenderData;
 
 		// Immutable

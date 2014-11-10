@@ -11,9 +11,84 @@
 namespace BansheeEngine
 {
 	/**
+	 * @brief	Core thread portion of a Mesh.
+	 *
+	 * @see		Mesh.
+	 *
+	 * @note	Core thread.
+	 */
+	class BS_CORE_EXPORT MeshCore : public MeshCoreBase
+	{
+	public:
+		MeshCore(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc,
+			const Vector<SubMesh>& subMeshes, MeshBufferType bufferType, IndexType indexType,
+			MeshDataPtr initialMeshData);
+
+		/**
+		 * @brief	CoreObjectCore::initialize
+		 */
+		virtual void initialize();
+
+		/**
+		 * @brief	CoreObjectCore::destroy
+		 */
+		virtual void destroy();
+
+		/**
+		 * @copydoc MeshCoreBase::getVertexData
+		 */
+		virtual SPtr<VertexData> getVertexData() const;
+
+		/**
+		 * @copydoc MeshCoreBase::getIndexBuffer
+		 */
+		virtual SPtr<IndexBufferCore> getIndexBuffer() const;
+
+		/**
+		 * @brief	Updates a part of the current mesh with the provided data.
+		 *
+		 * @param	subresourceIdx		Index of the subresource to update, if the mesh has more than one.
+		 * @param	data				Data to update the mesh with.
+		 * @param	discardEntireBuffer When true the existing contents of the resource you are updating will be discarded. This can make the
+		 * 								operation faster. Resources with certain buffer types might require this flag to be in a specific state
+		 * 								otherwise the operation will fail.
+		 * @param	updateBounds		If true the internal bounds of the mesh will be recalculated based on the provided data.
+		 */
+		virtual void writeSubresource(UINT32 subresourceIdx, const MeshData& data, bool discardEntireBuffer, bool updateBounds = true);
+
+		/**
+		 * @brief	Reads a part of the current resource into the provided "data" parameter.
+		 * 			Data buffer needs to be pre-allocated.
+		 *
+		 * @param	subresourceIdx		Index of the subresource to update, if the mesh has more than one.
+		 * @param	data				Buffer that will receive the data. Should be allocated with "allocateSubresourceBuffer"
+		 *								to ensure it is of valid type and size.
+		 */
+		virtual void readSubresource(UINT32 subresourceIdx, MeshData& data);
+
+	protected:
+		friend class Mesh;
+
+		/**
+		 * @brief	Updates bounds by calculating them from the vertices in the provided mesh data object.
+		 */
+		void updateBounds(const MeshData& meshData);
+
+		std::shared_ptr<VertexData> mVertexData;
+		SPtr<IndexBufferCore> mIndexBuffer;
+
+		VertexDataDescPtr mVertexDesc;
+		MeshBufferType mBufferType;
+		IndexType mIndexType;
+		MeshDataPtr mTempInitialMeshData;
+	};
+
+	/**
 	 * @brief	Primary class for holding geometry. Stores data in the form of a vertex 
 	 *			buffers and optionally index buffer, which may be bound to the pipeline for drawing.
 	 *			May contain multiple sub-meshes.
+	 *
+	 * @note	Sim thread.
 	 */
 	class BS_CORE_EXPORT Mesh : public MeshBase
 	{
@@ -26,19 +101,29 @@ namespace BansheeEngine
 		virtual void initialize();
 
 		/**
-		 * @copydoc GpuResource::_writeSubresourceSim
+		 * @brief	Updates the mesh with new data. The actual write will be queued for later execution on the core thread.
+		 *			Provided data buffer will be locked until the operation completes.
+		 *
+		 * @param	accessor			Accessor to queue the operation on.
+		 * 
+		 * @return	Async operation object you can use to track operation completion.
+		 *
+		 * @see		MeshCore::writeSubresource
 		 */
-		virtual void _writeSubresourceSim(UINT32 subresourceIdx, const GpuResourceData& data, bool discardEntireBuffer);
+		AsyncOp writeSubresource(CoreAccessor& accessor, UINT32 subresourceIdx, const MeshDataPtr& data, bool discardEntireBuffer);
 
 		/**
-		 * @copydoc GpuResource::writeSubresource
+		 * @brief	Reads internal mesh data to the provided previously allocated buffer. The read is queued for execution
+		 *			on the core thread and not executed immediately. Provided data buffer will be locked until the
+		 *			operation completes.
+		 *
+		 * @param	accessor			Accessor to queue the operation on.
+		 *
+		 * @return	Async operation object you can use to track operation completion.
+		 *
+		 * @see		MeshCore::readSubresource
 		 */
-		virtual void writeSubresource(UINT32 subresourceIdx, const GpuResourceData& data, bool discardEntireBuffer);
-
-		/**
-		 * @copydoc GpuResource::readSubresource
-		 */
-		virtual void readSubresource(UINT32 subresourceIdx, GpuResourceData& data);
+		AsyncOp readSubresource(CoreAccessor& accessor, UINT32 subresourceIdx, const MeshDataPtr& data);
 
 		/**
 		 * @brief	Allocates a buffer you may use for storage when reading a subresource. You
@@ -46,38 +131,20 @@ namespace BansheeEngine
 		 * 			
 		 * @param	subresourceIdx	Only 0 is supported. You can only update entire mesh at once.
 		 *
-		 * @note	This method is thread safe.
+		 * @note	Thread safe.
 		 */
 		MeshDataPtr allocateSubresourceBuffer(UINT32 subresourceIdx) const;
 
 		/**
-		 * @brief	Returns bounds of the geometry contained in the vertex buffers for all sub-meshes.
+		 * @brief	Retrieves a core implementation of a mesh usable only from the
+		 *			core thread.
 		 */
-		const Bounds& getBounds() const { return mBounds; }
-
-		/**
-		 * @copydoc MeshBase::getVertexData
-		 */
-		virtual SPtr<VertexData> getVertexData() const;
-
-		/**
-		 * @copydoc MeshBase::getIndexBuffer
-		 */
-		virtual SPtr<IndexBufferCore> getIndexBuffer() const;
+		SPtr<MeshCore> getCore() const;
 
 		/**
 		 * @brief	Returns a dummy mesh, containing just one triangle. Don't modify the returned mesh.
 		 */
 		static HMesh dummy();
-
-		/************************************************************************/
-		/* 								CORE PROXY                      		*/
-		/************************************************************************/
-
-		/**
-		 * @copydoc	MeshBase::_createProxy
-		 */
-		MeshProxyPtr _createProxy(UINT32 subMeshIdx);
 
 	protected:
 		friend class MeshManager;
@@ -95,39 +162,21 @@ namespace BansheeEngine
 
 		Mesh(const MeshDataPtr& initialMeshData, const Vector<SubMesh>& subMeshes, MeshBufferType bufferType = MeshBufferType::Static);
 
-		std::shared_ptr<VertexData> mVertexData; // Core thread
-		SPtr<IndexBufferCore> mIndexBuffer; // Core thread
-
-		Bounds mBounds; // Core thread
-		VertexDataDescPtr mVertexDesc; // Immutable
-		MeshBufferType mBufferType; // Immutable
-		IndexType mIndexType; // Immutable
-
-		MeshDataPtr mTempInitialMeshData; // Immutable
-
-		/**
-		 * @copydoc Resource::initialize_internal()
-		 */
-		virtual void initialize_internal();
-
-		/**
-		 * @copydoc Resource::destroy_internal()
-		 */
-		virtual void destroy_internal();
-
 		/**
 		 * @brief	Updates bounds by calculating them from the vertices in the provided mesh data object.
 		 */
 		void updateBounds(const MeshData& meshData);
 
 		/**
-		 * @brief	Calculates bounds surrounding the vertices in the provided buffer.
-		 *
-		 * @param	verticesPtr	Pointer to the buffer containing the positions of vertices to calculate bounds for.
-		 * @param	numVertices	Number of vertices in the provided buffer.
-		 * @param	stride		How many bytes are needed to advance from one vertex to another.
+		 * @copydoc	RenderTarget::createCore
 		 */
-		Bounds calculateBounds(UINT8* verticesPtr, UINT32 numVertices, UINT32 stride) const;
+		SPtr<CoreObjectCore> createCore() const;
+
+		mutable MeshDataPtr mTempInitialMeshData;
+
+		VertexDataDescPtr mVertexDesc;
+		MeshBufferType mBufferType;
+		IndexType mIndexType;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

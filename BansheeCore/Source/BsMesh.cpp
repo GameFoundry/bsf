@@ -15,64 +15,89 @@
 
 namespace BansheeEngine
 {
-	Mesh::Mesh(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
-		MeshBufferType bufferType, DrawOperationType drawOp, IndexType indexType)
-		:MeshBase(numVertices, numIndices, drawOp), mVertexData(nullptr), mIndexBuffer(nullptr),
-		mVertexDesc(vertexDesc), mBufferType(bufferType), mIndexType(indexType)
-	{
+	MeshCore::MeshCore(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc,
+		const Vector<SubMesh>& subMeshes, MeshBufferType bufferType, IndexType indexType, MeshDataPtr initialMeshData)
+		:MeshCoreBase(numVertices, numIndices, subMeshes), mVertexData(nullptr), mIndexBuffer(nullptr), 
+		mVertexDesc(vertexDesc), mBufferType(bufferType), mIndexType(indexType), mTempInitialMeshData(initialMeshData)
+	{ }
 
-	}
-
-	Mesh::Mesh(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc,
-		const Vector<SubMesh>& subMeshes, MeshBufferType bufferType, IndexType indexType)
-		:MeshBase(numVertices, numIndices, subMeshes), mVertexData(nullptr), mIndexBuffer(nullptr),
-		mVertexDesc(vertexDesc), mBufferType(bufferType), mIndexType(indexType)
-	{
-
-	}
-
-	Mesh::Mesh(const MeshDataPtr& initialMeshData, MeshBufferType bufferType, DrawOperationType drawOp)
-		:MeshBase(initialMeshData->getNumVertices(), initialMeshData->getNumIndices(), drawOp), 
-		mVertexData(nullptr), mIndexBuffer(nullptr), mIndexType(initialMeshData->getIndexType()),
-		mVertexDesc(initialMeshData->getVertexDesc()), mTempInitialMeshData(initialMeshData)
-	{
-
-	}
-
-	Mesh::Mesh(const MeshDataPtr& initialMeshData, const Vector<SubMesh>& subMeshes, MeshBufferType bufferType)
-		:MeshBase(initialMeshData->getNumVertices(), initialMeshData->getNumIndices(), subMeshes),
-		mVertexData(nullptr), mIndexBuffer(nullptr), mIndexType(initialMeshData->getIndexType()),
-		mVertexDesc(initialMeshData->getVertexDesc()), mTempInitialMeshData(initialMeshData)
-	{
-
-	}
-
-	Mesh::Mesh()
-		:MeshBase(0, 0, DOT_TRIANGLE_LIST), mVertexData(nullptr), mIndexBuffer(nullptr), 
-		mBufferType(MeshBufferType::Static), mIndexType(IT_32BIT)
-	{
-
-	}
-
-	Mesh::~Mesh()
-	{
-		
-	}
-
-	void Mesh::_writeSubresourceSim(UINT32 subresourceIdx, const GpuResourceData& data, bool discardEntireBuffer)
-	{
-		const MeshData& meshData = static_cast<const MeshData&>(data);
-		updateBounds(meshData);
-	}
-
-	void Mesh::writeSubresource(UINT32 subresourceIdx, const GpuResourceData& data, bool discardEntireBuffer)
+	void MeshCore::initialize()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		if(data.getTypeId() != TID_MeshData)
-			BS_EXCEPT(InvalidParametersException, "Invalid GpuResourceData type. Only MeshData is supported.");
+		mIndexBuffer = HardwareBufferCoreManager::instance().createIndexBuffer(mIndexType,
+			mProperties.mNumIndices, mBufferType == MeshBufferType::Dynamic ? GBU_DYNAMIC : GBU_STATIC);
 
-		const MeshData& meshData = static_cast<const MeshData&>(data);
+		mVertexData = std::shared_ptr<VertexData>(bs_new<VertexData, PoolAlloc>());
+
+		mVertexData->vertexCount = mProperties.mNumVertices;
+		mVertexData->vertexDeclaration = mVertexDesc->createDeclaration();
+
+		for (UINT32 i = 0; i <= mVertexDesc->getMaxStreamIdx(); i++)
+		{
+			if (!mVertexDesc->hasStream(i))
+				continue;
+
+			SPtr<VertexBufferCore> vertexBuffer = HardwareBufferCoreManager::instance().createVertexBuffer(
+				mVertexData->vertexDeclaration->getVertexSize(i),
+				mVertexData->vertexCount,
+				mBufferType == MeshBufferType::Dynamic ? GBU_DYNAMIC : GBU_STATIC);
+
+			mVertexData->setBuffer(i, vertexBuffer);
+		}
+
+		// TODO Low priority - DX11 (and maybe OpenGL)? allow an optimization that allows you to set
+		// buffer data upon buffer construction, instead of setting it in a second step like I do here
+		if (mTempInitialMeshData != nullptr)
+		{
+			writeSubresource(0, *mTempInitialMeshData, mBufferType == MeshBufferType::Dynamic);
+			mTempInitialMeshData = nullptr;
+		}
+
+		MeshCoreBase::initialize();
+	}
+
+	void MeshCore::destroy()
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		if (mVertexData != nullptr)
+		{
+			for (UINT32 i = 0; i < mVertexData->getBufferCount(); i++)
+			{
+				if (mVertexData->getBuffer(i) != nullptr)
+					mVertexData->getBuffer(i)->destroy();
+			}
+		}
+
+		if (mIndexBuffer != nullptr)
+			mIndexBuffer->destroy();
+
+		mVertexData = nullptr;
+		mIndexBuffer = nullptr;
+		mVertexDesc = nullptr;
+		mTempInitialMeshData = nullptr;
+
+		MeshCoreBase::destroy();
+	}
+
+	std::shared_ptr<VertexData> MeshCore::getVertexData() const
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		return mVertexData;
+	}
+
+	SPtr<IndexBufferCore> MeshCore::getIndexBuffer() const
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		return mIndexBuffer;
+	}
+
+	void MeshCore::writeSubresource(UINT32 subresourceIdx, const MeshData& meshData, bool discardEntireBuffer, bool performUpdateBounds)
+	{
+		THROW_IF_NOT_CORE_THREAD;
 
 		if (discardEntireBuffer)
 		{
@@ -166,28 +191,26 @@ namespace BansheeEngine
 				vertexBuffer->writeData(0, bufferSize, srcVertBufferData, discardEntireBuffer ? BufferWriteType::Discard : BufferWriteType::Normal);
 			}
 		}
+
+		if (performUpdateBounds)
+			updateBounds(meshData);
 	}
 
-	void Mesh::readSubresource(UINT32 subresourceIdx, GpuResourceData& data)
+	void MeshCore::readSubresource(UINT32 subresourceIdx, MeshData& meshData)
 	{
 		THROW_IF_NOT_CORE_THREAD;
-
-		if(data.getTypeId() != TID_MeshData)
-			BS_EXCEPT(InvalidParametersException, "Invalid GpuResourceData type. Only MeshData is supported.");
 
 		IndexType indexType = IT_32BIT;
 		if (mIndexBuffer)
 			indexType = mIndexBuffer->getProperties().getType();
 
-		MeshData& meshData = static_cast<MeshData&>(data);
-
-		if(mIndexBuffer)
+		if (mIndexBuffer)
 		{
 			const IndexBufferProperties& ibProps = mIndexBuffer->getProperties();
 
 			if (meshData.getIndexElementSize() != ibProps.getIndexSize())
 			{
-				BS_EXCEPT(InvalidParametersException, "Provided index size doesn't match meshes index size. Needed: " + 
+				BS_EXCEPT(InvalidParametersException, "Provided index size doesn't match meshes index size. Needed: " +
 					toString(ibProps.getIndexSize()) + ". Got: " + toString(meshData.getIndexElementSize()));
 			}
 
@@ -196,15 +219,15 @@ namespace BansheeEngine
 
 			UINT8* indices = nullptr;
 
-			if(indexType == IT_16BIT)
+			if (indexType == IT_16BIT)
 				indices = (UINT8*)meshData.getIndices16();
 			else
 				indices = (UINT8*)meshData.getIndices32();
 
-			UINT32 numIndicesToCopy = std::min(mNumIndices, meshData.getNumIndices());
+			UINT32 numIndicesToCopy = std::min(mProperties.mNumIndices, meshData.getNumIndices());
 
 			UINT32 indicesSize = numIndicesToCopy * idxElemSize;
-			if(indicesSize > meshData.getIndexBufferSize())
+			if (indicesSize > meshData.getIndexBufferSize())
 				BS_EXCEPT(InvalidParametersException, "Provided buffer doesn't have enough space to store mesh indices.");
 
 			memcpy(indices, idxData, numIndicesToCopy * idxElemSize);
@@ -212,14 +235,14 @@ namespace BansheeEngine
 			mIndexBuffer->unlock();
 		}
 
-		if(mVertexData)
+		if (mVertexData)
 		{
 			auto vertexBuffers = mVertexData->getBuffers();
-			
+
 			UINT32 streamIdx = 0;
-			for(auto iter = vertexBuffers.begin(); iter != vertexBuffers.end() ; ++iter)
+			for (auto iter = vertexBuffers.begin(); iter != vertexBuffers.end(); ++iter)
 			{
-				if(!meshData.getVertexDesc()->hasStream(streamIdx))
+				if (!meshData.getVertexDesc()->hasStream(streamIdx))
 					continue;
 
 				SPtr<VertexBufferCore> vertexBuffer = iter->second;
@@ -228,16 +251,16 @@ namespace BansheeEngine
 				// Ensure both have the same sized vertices
 				UINT32 myVertSize = mVertexDesc->getVertexStride(streamIdx);
 				UINT32 otherVertSize = meshData.getVertexDesc()->getVertexStride(streamIdx);
-				if(myVertSize != otherVertSize)
+				if (myVertSize != otherVertSize)
 				{
-					BS_EXCEPT(InvalidParametersException, "Provided vertex size for stream " + toString(streamIdx) + " doesn't match meshes vertex size. Needed: " + 
+					BS_EXCEPT(InvalidParametersException, "Provided vertex size for stream " + toString(streamIdx) + " doesn't match meshes vertex size. Needed: " +
 						toString(myVertSize) + ". Got: " + toString(otherVertSize));
 				}
 
 				UINT32 numVerticesToCopy = meshData.getNumVertices();
 				UINT32 bufferSize = vbProps.getVertexSize() * numVerticesToCopy;
-				
-				if(bufferSize > vertexBuffer->getSizeInBytes())
+
+				if (bufferSize > vertexBuffer->getSizeInBytes())
 					BS_EXCEPT(InvalidParametersException, "Vertex buffer values for stream \"" + toString(streamIdx) + "\" are being read out of valid range.");
 
 				UINT8* vertDataPtr = static_cast<UINT8*>(vertexBuffer->lock(GBL_READ_ONLY));
@@ -252,29 +275,98 @@ namespace BansheeEngine
 		}
 	}
 
+	void MeshCore::updateBounds(const MeshData& meshData)
+	{
+		mProperties.mBounds = meshData.calculateBounds();
+		markCoreDirty();
+	}
+
+	Mesh::Mesh(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
+		MeshBufferType bufferType, DrawOperationType drawOp, IndexType indexType)
+		:MeshBase(numVertices, numIndices, drawOp), mVertexDesc(vertexDesc), mBufferType(bufferType), 
+		mIndexType(indexType)
+	{
+
+	}
+
+	Mesh::Mesh(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc,
+		const Vector<SubMesh>& subMeshes, MeshBufferType bufferType, IndexType indexType)
+		:MeshBase(numVertices, numIndices, subMeshes), mVertexDesc(vertexDesc), mBufferType(bufferType), 
+		mIndexType(indexType)
+	{
+
+	}
+
+	Mesh::Mesh(const MeshDataPtr& initialMeshData, MeshBufferType bufferType, DrawOperationType drawOp)
+		:MeshBase(initialMeshData->getNumVertices(), initialMeshData->getNumIndices(), drawOp), 
+		mIndexType(initialMeshData->getIndexType()), mVertexDesc(initialMeshData->getVertexDesc()), 
+		mTempInitialMeshData(initialMeshData)
+	{
+
+	}
+
+	Mesh::Mesh(const MeshDataPtr& initialMeshData, const Vector<SubMesh>& subMeshes, MeshBufferType bufferType)
+		:MeshBase(initialMeshData->getNumVertices(), initialMeshData->getNumIndices(), subMeshes),
+		mIndexType(initialMeshData->getIndexType()), mVertexDesc(initialMeshData->getVertexDesc()), 
+		mTempInitialMeshData(initialMeshData)
+	{
+
+	}
+
+	Mesh::Mesh()
+		:MeshBase(0, 0, DOT_TRIANGLE_LIST), mBufferType(MeshBufferType::Static), mIndexType(IT_32BIT)
+	{
+
+	}
+
+	Mesh::~Mesh()
+	{
+		
+	}
+
+	AsyncOp Mesh::writeSubresource(CoreAccessor& accessor, UINT32 subresourceIdx, const MeshDataPtr& data, bool discardEntireBuffer)
+	{
+		updateBounds(*data);
+
+		data->_lock();
+
+		std::function<void(const SPtr<MeshCore>&, UINT32, const MeshDataPtr&, bool, AsyncOp&)> func =
+			[&](const SPtr<MeshCore>& mesh, UINT32 _subresourceIdx, const MeshDataPtr& _meshData, bool _discardEntireBuffer, AsyncOp& asyncOp)
+		{
+			mesh->writeSubresource(_subresourceIdx, *_meshData, _discardEntireBuffer, false);
+			_meshData->_unlock();
+			asyncOp._completeOperation();
+
+		};
+
+		return accessor.queueReturnCommand(std::bind(func, getCore(), subresourceIdx,
+			 data, discardEntireBuffer, std::placeholders::_1));
+	}
+
+	AsyncOp Mesh::readSubresource(CoreAccessor& accessor, UINT32 subresourceIdx, const MeshDataPtr& data)
+	{
+		updateBounds(*data);
+
+		data->_lock();
+
+		std::function<void(const SPtr<MeshCore>&, UINT32, const MeshDataPtr&, AsyncOp&)> func =
+			[&](const SPtr<MeshCore>& mesh, UINT32 _subresourceIdx, const MeshDataPtr& _meshData, AsyncOp& asyncOp)
+		{
+			mesh->readSubresource(_subresourceIdx, *_meshData);
+			_meshData->_unlock();
+			asyncOp._completeOperation();
+
+		};
+
+		return accessor.queueReturnCommand(std::bind(func, getCore(), subresourceIdx,
+			data, std::placeholders::_1));
+	}
+
 	MeshDataPtr Mesh::allocateSubresourceBuffer(UINT32 subresourceIdx) const
 	{
-		IndexType indexType = IT_32BIT;
-		if(mIndexBuffer)
-			indexType = mIndexBuffer->getProperties().getType();
-
-		MeshDataPtr meshData = bs_shared_ptr<MeshData>(mVertexData->vertexCount, mNumIndices, mVertexDesc, indexType);
+		MeshDataPtr meshData = bs_shared_ptr<MeshData>(mProperties.mNumVertices, mProperties.mNumIndices, mVertexDesc, mIndexType);
 
 		return meshData;
-	}
-
-	std::shared_ptr<VertexData> Mesh::getVertexData() const
-	{
-		THROW_IF_NOT_CORE_THREAD;
-
-		return mVertexData;
-	}
-
-	SPtr<IndexBufferCore> Mesh::getIndexBuffer() const
-	{
-		THROW_IF_NOT_CORE_THREAD;
-
-		return mIndexBuffer;
 	}
 
 	void Mesh::initialize()
@@ -287,138 +379,26 @@ namespace BansheeEngine
 		MeshBase::initialize();
 	}
 
-	void Mesh::initialize_internal()
-	{
-		THROW_IF_NOT_CORE_THREAD;
-		
-		mIndexBuffer = HardwareBufferCoreManager::instance().createIndexBuffer(mIndexType,
-			mNumIndices, mBufferType == MeshBufferType::Dynamic ? GBU_DYNAMIC : GBU_STATIC);
-
-		mVertexData = std::shared_ptr<VertexData>(bs_new<VertexData, PoolAlloc>());
-
-		mVertexData->vertexCount = mNumVertices;
-		mVertexData->vertexDeclaration = mVertexDesc->createDeclaration();
-
-		for(UINT32 i = 0; i <= mVertexDesc->getMaxStreamIdx(); i++)
-		{
-			if(!mVertexDesc->hasStream(i))
-				continue;
-
-			SPtr<VertexBufferCore> vertexBuffer = HardwareBufferCoreManager::instance().createVertexBuffer(
-				mVertexData->vertexDeclaration->getVertexSize(i),
-				mVertexData->vertexCount,
-				mBufferType == MeshBufferType::Dynamic ? GBU_DYNAMIC : GBU_STATIC);
-
-			mVertexData->setBuffer(i, vertexBuffer);
-		}
-
-		// TODO Low priority - DX11 (and maybe OpenGL)? allow an optimization that allows you to set
-		// buffer data upon buffer construction, instead of setting it in a second step like I do here
-		if(mTempInitialMeshData != nullptr)
-		{
-			writeSubresource(0, *mTempInitialMeshData, mBufferType == MeshBufferType::Dynamic);
-			mTempInitialMeshData = nullptr;
-		}
-
-		MeshBase::initialize_internal();
-	}
-
-	void Mesh::destroy_internal()
-	{
-		THROW_IF_NOT_CORE_THREAD;
-
-		if (mVertexData != nullptr)
-		{
-			for (UINT32 i = 0; i < mVertexData->getBufferCount(); i++)
-			{
-				if (mVertexData->getBuffer(i) != nullptr)
-					mVertexData->getBuffer(i)->destroy();
-			}
-		}
-
-		if (mIndexBuffer != nullptr)
-			mIndexBuffer->destroy();
-
-		mVertexData = nullptr;
-		mIndexBuffer = nullptr;
-		mVertexDesc = nullptr;
-		mTempInitialMeshData = nullptr;
-
-		MeshBase::destroy_internal();
-	}
-
 	void Mesh::updateBounds(const MeshData& meshData)
 	{
-		VertexDataDescPtr vertexDesc = meshData.getVertexDesc();
-		for (UINT32 i = 0; i < vertexDesc->getNumElements(); i++)
-		{
-			const VertexElement& curElement = vertexDesc->getElement(i);
-
-			if (curElement.getSemantic() != VES_POSITION || (curElement.getType() != VET_FLOAT3 && curElement.getType() != VET_FLOAT4))
-				continue;
-
-			UINT8* data = meshData.getElementData(curElement.getSemantic(), curElement.getSemanticIdx(), curElement.getStreamIdx());
-			UINT32 stride = vertexDesc->getVertexStride(curElement.getStreamIdx());
-
-			mBounds = calculateBounds((UINT8*)data, mTempInitialMeshData->getNumVertices(), stride);
-			markCoreDirty();
-
-			break;
-		}
+		mProperties.mBounds = meshData.calculateBounds();
+		markCoreDirty();
 	}
 
-	Bounds Mesh::calculateBounds(UINT8* verticesPtr, UINT32 numVertices, UINT32 stride) const
+	SPtr<MeshCore> Mesh::getCore() const
 	{
-		Bounds bounds;
-
-		if (mNumVertices > 0)
-		{
-			Vector3 accum;
-			Vector3 min;
-			Vector3 max;
-
-			Vector3 curPosition = *(Vector3*)verticesPtr;
-			accum = curPosition;
-			min = curPosition;
-			max = curPosition;
-
-			for (UINT32 i = 1; i < mNumVertices; i++)
-			{
-				curPosition = *(Vector3*)(verticesPtr + stride * i);
-				accum += curPosition;
-				min = Vector3::min(min, curPosition);
-				max = Vector3::max(max, curPosition);
-			}
-
-			Vector3 center = accum / (float)mNumVertices;
-			float radiusSqrd = 0.0f;
-
-			for (UINT32 i = 0; i < mNumVertices; i++)
-			{
-				curPosition = *(Vector3*)(verticesPtr + stride * i);
-				float dist = center.squaredDistance(curPosition);
-
-				if (dist > radiusSqrd)
-					radiusSqrd = dist;
-			}
-
-			float radius = Math::sqrt(radiusSqrd);
-
-			bounds = Bounds(AABox(min, max), Sphere(center, radius));
-		}
-
-		return bounds;
+		return std::static_pointer_cast<MeshCore>(mCoreSpecific);
 	}
 
-	MeshProxyPtr Mesh::_createProxy(UINT32 subMeshIdx)
+	SPtr<CoreObjectCore> Mesh::createCore() const
 	{
-		MeshProxyPtr coreProxy = bs_shared_ptr<MeshProxy>();
-		coreProxy->mesh = std::static_pointer_cast<MeshBase>(getThisPtr());
-		coreProxy->bounds = mBounds;
-		coreProxy->subMesh = getSubMesh(subMeshIdx);
-		coreProxy->submeshIdx = subMeshIdx;
+		MeshCore* obj = new (bs_alloc<MeshCore>()) MeshCore(mProperties.mNumVertices, mProperties.mNumIndices, 
+			mVertexDesc, mProperties.mSubMeshes, mBufferType, mIndexType, mTempInitialMeshData);
 
-		return coreProxy;
+		SPtr<CoreObjectCore> meshCore = bs_shared_ptr<MeshCore, GenAlloc>(obj);
+		mTempInitialMeshData = nullptr;
+
+		return meshCore;
 	}
 
 	HMesh Mesh::dummy()

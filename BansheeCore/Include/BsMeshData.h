@@ -202,6 +202,11 @@ namespace BansheeEngine
 		const VertexDataDescPtr& getVertexDesc() const { return mVertexData; }
 
 		/**
+		 * @brief	Calculates the bounds of all vertices stored in the internal buffer.
+		 */
+		Bounds calculateBounds() const;
+
+		/**
 		 * @brief	Combines a number of submeshes and their mesh data into one large mesh data buffer.
 		 *
 		 * @param	elements	Data containing vertices and indices referenced by the submeshes. Number of elements
@@ -273,7 +278,9 @@ namespace BansheeEngine
 
 	private:
 		friend class Mesh;
+		friend class MeshCore;
 		friend class MeshHeap;
+		friend class MeshHeapCore;
 
 		UINT32 mDescBuilding;
 

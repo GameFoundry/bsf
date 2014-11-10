@@ -6,6 +6,37 @@
 
 namespace BansheeEngine
 {
+	TransientMeshCore::TransientMeshCore(const MeshHeapPtr& parentHeap, UINT32 id, UINT32 numVertices, UINT32 numIndices, const Vector<SubMesh>& subMeshes)
+		:MeshCoreBase(numVertices, numIndices, subMeshes), mParentHeap(parentHeap), mId(id)
+	{
+
+	}
+
+	SPtr<VertexData> TransientMeshCore::getVertexData() const
+	{
+		return mParentHeap->getVertexData();
+	}
+
+	SPtr<IndexBufferCore> TransientMeshCore::getIndexBuffer() const
+	{
+		return mParentHeap->getIndexBuffer();
+	}
+
+	UINT32 TransientMeshCore::getVertexOffset() const
+	{
+		return mParentHeap->getVertexOffset(mId);
+	}
+
+	UINT32 TransientMeshCore::getIndexOffset() const
+	{
+		return mParentHeap->getIndexOffset(mId);
+	}
+
+	void TransientMeshCore::_notifyUsedOnGPU()
+	{
+		mParentHeap->notifyUsedOnGPU(mId);
+	}
+
 	TransientMesh::TransientMesh(const MeshHeapPtr& parentHeap, UINT32 id, UINT32 numVertices, UINT32 numIndices, DrawOperationType drawOp)
 		:MeshBase(numVertices, numIndices, drawOp), mParentHeap(parentHeap), mId(id), mIsDestroyed(false)
 	{
@@ -21,52 +52,17 @@ namespace BansheeEngine
 		}
 	}
 
-	void TransientMesh::writeSubresource(UINT32 subresourceIdx, const GpuResourceData& data, bool discardEntireBuffer)
+	SPtr<TransientMeshCore> TransientMesh::getCore() const
 	{
-		BS_EXCEPT(InvalidStateException, "Updating is not supported on a transient mesh.");
+		return std::static_pointer_cast<TransientMeshCore>(mCoreSpecific);
 	}
 
-	void TransientMesh::readSubresource(UINT32 subresourceIdx, GpuResourceData& data)
+	SPtr<CoreObjectCore> TransientMesh::createCore() const
 	{
-		BS_EXCEPT(InvalidStateException, "Reading is not supported on a transient mesh.");
-	}
+		TransientMeshCore* core = new (bs_alloc<TransientMeshCore>()) TransientMeshCore(
+			mParentHeap, mId, mProperties.mNumVertices, mProperties.mNumIndices, mProperties.mSubMeshes);
 
-	SPtr<VertexData> TransientMesh::getVertexData() const
-	{
-		return mParentHeap->getVertexData();
-	}
-
-	SPtr<IndexBufferCore> TransientMesh::getIndexBuffer() const
-	{
-		return mParentHeap->getIndexBuffer();
-	}
-
-	UINT32 TransientMesh::getVertexOffset() const
-	{
-		return mParentHeap->getVertexOffset(mId);
-	}
-
-	UINT32 TransientMesh::getIndexOffset() const
-	{
-		return mParentHeap->getIndexOffset(mId);
-	}
-
-	void TransientMesh::_notifyUsedOnGPU()
-	{
-		mParentHeap->notifyUsedOnGPU(mId);
-	}
-
-	MeshProxyPtr TransientMesh::_createProxy(UINT32 subMeshIdx)
-	{
-		MeshProxyPtr coreProxy = bs_shared_ptr<MeshProxy>();		
-		coreProxy->mesh = std::static_pointer_cast<MeshBase>(getThisPtr());
-		coreProxy->subMesh = mSubMeshes[0];
-		coreProxy->submeshIdx = subMeshIdx;
-
-		// Note: Not calculating bounds for transient meshes yet
-		// (No particular reason, I just didn't bother)
-		coreProxy->bounds = Bounds(); 
-		
-		return coreProxy;
+		SPtr<CoreObjectCore> meshCore = bs_shared_ptr<TransientMeshCore, GenAlloc>(core);
+		return meshCore;
 	}
 }
