@@ -12,7 +12,7 @@ namespace BansheeEngine
 	/**
 	 * @brief	DirectX 9 implementation of a texture.
 	 */
-	class BS_D3D9_EXPORT D3D9Texture : public Texture, public D3D9Resource
+	class BS_D3D9_EXPORT D3D9TextureCore : public TextureCore, public D3D9Resource
 	{
 	protected:
 		/**
@@ -29,7 +29,7 @@ namespace BansheeEngine
 		};
 
 	public:
-		~D3D9Texture();
+		~D3D9TextureCore();
 
 		/**
 		 * @copydoc Texture::isBindableAsShaderResource
@@ -54,7 +54,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Indicates whether the hardware gamma is enabled and supported.
 		 */
-		bool isHardwareGammaReadToBeUsed() const { return mHwGamma && mHwGammaReadSupported; }
+		bool isHardwareGammaReadToBeUsed() const { return mProperties.isHardwareGammaEnabled() && mHwGammaReadSupported; }
 					
 		/**
 		 * @brief	Returns a hardware pixel buffer for a certain face and level of the texture.
@@ -88,43 +88,44 @@ namespace BansheeEngine
 		virtual void notifyOnDeviceReset(IDirect3DDevice9* d3d9Device);
 
 	protected:	
-		friend class D3D9TextureManager;
+		friend class D3D9TextureCoreManager;
 		friend class D3D9PixelBuffer;
 
-		D3D9Texture();
+		D3D9TextureCore(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps,
+			PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount);
 
 		/**
-		 * @copydoc Texture::initialize_internal()
+		 * @copydoc TextureCore::initialize
 		 */
-		void initialize_internal();	
+		void initialize();
 		
 		/**
-		 * @copydoc Texture::destroy_internal()
+		 * @copydoc TextureCore::destroy
 		 */
-		void destroy_internal();
+		void destroy();
 
 		/**
-		 * @copydoc Texture::lock
+		 * @copydoc TextureCore::lock
 		 */
 		PixelData lockImpl(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0);
 
 		/**
-		 * @copydoc Texture::unlock
+		 * @copydoc TextureCore::unlock
 		 */
 		void unlockImpl();
 
 		/**
-		 * @copydoc Texture::copy
+		 * @copydoc TextureCore::copy
 		 */
-		void copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, TexturePtr& target);
+		void copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, const SPtr<TextureCore>& target);
 
 		/**
-		 * @copydoc Texture::readData
+		 * @copydoc TextureCore::readData
 		 */
 		void readData(PixelData& dest, UINT32 mipLevel = 0, UINT32 face = 0);
 
 		/**
-		 * @copydoc Texture::writeData
+		 * @copydoc TextureCore::writeData
 		 */
 		void writeData(const PixelData& src, UINT32 mipLevel = 0, UINT32 face = 0, bool discardWholeBuffer = false);
 

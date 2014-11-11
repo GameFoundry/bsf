@@ -263,7 +263,7 @@ namespace BansheeEngine
 				if (!texture.isLoaded())
 					setTexture(gptype, iter->second.slot, false, nullptr);
 				else
-					setTexture(gptype, iter->second.slot, true, texture.getInternalPtr());
+					setTexture(gptype, iter->second.slot, true, texture->getCore());
 			}
 			else
 			{
@@ -272,7 +272,7 @@ namespace BansheeEngine
 				if (!texture.isLoaded())
 					setLoadStoreTexture(gptype, iter->second.slot, false, nullptr, surface);
 				else
-					setLoadStoreTexture(gptype, iter->second.slot, true, texture.getInternalPtr(), surface);
+					setLoadStoreTexture(gptype, iter->second.slot, true, texture->getCore(), surface);
 			}
 		}
 
@@ -412,13 +412,13 @@ namespace BansheeEngine
 		}
 	}
 
-	void GLRenderSystem::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr &texPtr)
+	void GLRenderSystem::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& texPtr)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		unit = getGLTextureUnit(gptype, unit);
 
-		GLTexturePtr tex = std::static_pointer_cast<GLTexture>(texPtr);
+		SPtr<GLTextureCore> tex = std::static_pointer_cast<GLTextureCore>(texPtr);
 
 		GLenum lastTextureType = mTextureTypes[unit];
 
@@ -470,7 +470,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumSamplerBinds);
 	}
 
-	void GLRenderSystem::setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr& texPtr,
+	void GLRenderSystem::setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& texPtr,
 		const TextureSurface& surface)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -478,7 +478,7 @@ namespace BansheeEngine
 		// TODO - OpenGL can't bind a certain subset of faces like DX11, only zero, one or all, so I'm ignoring numSlices parameter
 		if (texPtr != nullptr)
 		{
-			GLTexturePtr tex = std::static_pointer_cast<GLTexture>(texPtr);
+			SPtr<GLTextureCore> tex = std::static_pointer_cast<GLTextureCore>(texPtr);
 			glBindImageTexture(unit, tex->getGLID(), surface.mipLevel, surface.numArraySlices > 1, 
 				surface.arraySlice, tex->getGLFormat(), GL_READ_WRITE);
 		}

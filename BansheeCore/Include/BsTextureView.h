@@ -104,19 +104,19 @@ namespace BansheeEngine
 		/**
 		 * @brief	Gets the owner texture the view is referencing.
 		 */
-		TexturePtr getTexture() const { return mOwnerTexture; }
+		SPtr<TextureCore> getTexture() const { return mOwnerTexture; }
 
 	protected:
 		/**
 		 * @brief	Initializes the texture view. This must be called right after construction.
 		 */
-		virtual void initialize(TexturePtr texture, TEXTURE_VIEW_DESC& _desc);
+		virtual void initialize(const SPtr<TextureCore>& texture, TEXTURE_VIEW_DESC& _desc);
 
 	protected:
-		friend class Texture;
+		friend class TextureCore;
 
 		TEXTURE_VIEW_DESC mDesc;
-		TexturePtr mOwnerTexture;
+		SPtr<TextureCore> mOwnerTexture;
 
 		TextureView();
 	};

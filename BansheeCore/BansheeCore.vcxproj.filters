@@ -183,9 +183,6 @@
     <ClInclude Include="Include\BsGpuResourceDataRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsGpuResourceRTTI.h">
-      <Filter>Header Files\RTTI</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsImportOptionsRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
@@ -280,9 +277,6 @@
       <Filter>Header Files\Resources</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsGpuResourceData.h">
-      <Filter>Header Files\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGpuResource.h">
       <Filter>Header Files\Resources</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsGpuProgInclude.h">
@@ -597,9 +591,6 @@
       <Filter>Source Files\RTTI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGpuProgInclude.cpp">
-      <Filter>Source Files\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGpuResource.cpp">
       <Filter>Source Files\Resources</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGpuResourceData.cpp">

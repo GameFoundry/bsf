@@ -36,7 +36,7 @@ namespace BansheeEngine
 		ID3D11DepthStencilView*	getDSV() const { return mDSV; }
 
 	protected:
-		friend class D3D11Texture;
+		friend class D3D11TextureCore;
 
 		D3D11TextureView();
 
@@ -65,7 +65,7 @@ namespace BansheeEngine
 		 *							array elements for 1D and 2D array textures, number of slices for 3D textures,
 		 *							and number of cubes for cube textures.
 		 */
-		ID3D11ShaderResourceView* createSRV(D3D11Texture* texture, 
+		ID3D11ShaderResourceView* createSRV(D3D11TextureCore* texture, 
 			UINT32 mostDetailMip, UINT32 numMips, UINT32 firstArraySlice, UINT32 numArraySlices);
 
 		/**
@@ -81,7 +81,7 @@ namespace BansheeEngine
 		 *							array elements for 1D and 2D array textures, number of slices for 3D textures,
 		 *							and number of cubes for cube textures.
 		 */
-		ID3D11RenderTargetView* createRTV(D3D11Texture* texture, 
+		ID3D11RenderTargetView* createRTV(D3D11TextureCore* texture, 
 			UINT32 mipSlice, UINT32 firstArraySlice, UINT32 numArraySlices);
 
 		/**
@@ -97,7 +97,7 @@ namespace BansheeEngine
 		 *							array elements for 1D and 2D array textures, number of slices for 3D textures,
 		 *							and number of cubes for cube textures.
 		 */
-		ID3D11UnorderedAccessView* createUAV(D3D11Texture* texture, 
+		ID3D11UnorderedAccessView* createUAV(D3D11TextureCore* texture, 
 			UINT32 mipSlice, UINT32 firstArraySlice, UINT32 numArraySlices);
 
 		/**
@@ -113,7 +113,7 @@ namespace BansheeEngine
 		 *							array elements for 1D and 2D array textures, number of slices for 3D textures,
 		 *							and number of cubes for cube textures.
 		 */
-		ID3D11DepthStencilView* createDSV(D3D11Texture* texture, 
+		ID3D11DepthStencilView* createDSV(D3D11TextureCore* texture, 
 			UINT32 mipSlice, UINT32 firstArraySlice, UINT32 numArraySlices);
 
 		ID3D11ShaderResourceView* mSRV;

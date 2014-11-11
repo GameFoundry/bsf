@@ -122,8 +122,8 @@ namespace BansheeEngine
 		{
 			IMAGE_SPRITE_DESC contentImgDesc;
 			contentImgDesc.texture = mContent.getImage().getInternalPtr();
-			contentImgDesc.width = mContent.getImage()->getTexture()->getWidth();
-			contentImgDesc.height = mContent.getImage()->getTexture()->getHeight();
+			contentImgDesc.width = mContent.getImage()->getWidth();
+			contentImgDesc.height = mContent.getImage()->getHeight();
 
 			mContentImageSprite->update(contentImgDesc);
 		}
@@ -144,8 +144,8 @@ namespace BansheeEngine
 		const HSpriteTexture& activeTex = getActiveTexture();
 		if(SpriteTexture::checkIsLoaded(activeTex))
 		{
-			imageWidth = activeTex->getTexture()->getWidth();
-			imageHeight = activeTex->getTexture()->getHeight();
+			imageWidth = activeTex->getWidth();
+			imageHeight = activeTex->getHeight();
 		}
 
 		Vector2I contentSize = GUIHelper::calcOptimalContentsSize(mContent, *_getStyle(), _getLayoutOptions());

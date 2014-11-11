@@ -24,10 +24,9 @@ Disallow CoreObject creation from core thread
  - Add asserts in CoreObject::destroy and CoreObject::initialize
  - Possibly also add asserts to CoreThread::queueCommand and CoreThread::queueReturnCommand
 
-After I refactor Texture remove write/read subresource from core accessor
- - Also get rid of GpuResource class
-
 Since Mesh refactor when I select/deselect a gizmo the entire render texture flashes white for one frame (might be related to RT refactor instead)
+
+There seems to be a threading issue with frame alloc freeing due to CoreObject syncing. Sometimes I get crashes in frame alloc relating to unfreed memory
 
 -----------------
 

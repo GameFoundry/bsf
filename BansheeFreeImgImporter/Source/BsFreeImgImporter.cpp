@@ -161,13 +161,12 @@ namespace BansheeEngine
 		newTexture->synchronize(); // TODO - Required due to a bug in allocateSubresourceBuffer
 		for (UINT32 mip = 0; mip < (UINT32)mipLevels.size(); ++mip)
 		{
-			UINT32 subresourceIdx = newTexture->mapToSubresourceIdx(0, mip);
+			UINT32 subresourceIdx = newTexture->getProperties().mapToSubresourceIdx(0, mip);
 			PixelDataPtr dst = newTexture->allocateSubresourceBuffer(subresourceIdx);
 
 			PixelUtil::bulkPixelConversion(*mipLevels[mip], *dst);
 
-			dst->_lock();
-			gCoreThread().queueReturnCommand(std::bind(&RenderSystem::writeSubresource, RenderSystem::instancePtr(), newTexture, subresourceIdx, dst, false, _1));
+			newTexture->writeSubresource(gCoreAccessor(), subresourceIdx, dst, false);
 		}
 
 		fileData->close();

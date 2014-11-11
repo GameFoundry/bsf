@@ -299,7 +299,7 @@ namespace BansheeEngine
 			if(!texture.isLoaded())
 				setTexture(gptype, iter->second.slot, false, nullptr);
 			else
-				setTexture(gptype, iter->second.slot, true, texture.getInternalPtr());
+				setTexture(gptype, iter->second.slot, true, texture->getCore());
 		}
 
 		// Read all the buffer data so we can assign it. Not the most efficient way of accessing data
@@ -438,7 +438,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumGpuParamBufferBinds);
 	}
 
-	void D3D9RenderSystem::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr& tex)
+	void D3D9RenderSystem::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& tex)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -457,7 +457,7 @@ namespace BansheeEngine
 		}
 
 		HRESULT hr;
-		D3D9TexturePtr dt = std::static_pointer_cast<D3D9Texture>(tex);
+		SPtr<D3D9TextureCore> dt = std::static_pointer_cast<D3D9TextureCore>(tex);
 		if (enabled && (dt != nullptr))
 		{
 			IDirect3DBaseTexture9 *pTex = dt->getTexture_internal();
@@ -472,7 +472,7 @@ namespace BansheeEngine
 
 				// set stage desc.
 				mTexStageDesc[unit].pTex = pTex;
-				mTexStageDesc[unit].texType = D3D9Mappings::get(dt->getTextureType());
+				mTexStageDesc[unit].texType = D3D9Mappings::get(dt->getProperties().getTextureType());
 
 				// Set gamma now too
 				if (dt->isHardwareGammaReadToBeUsed())
@@ -516,7 +516,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D9RenderSystem::setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr& texPtr,
+	void D3D9RenderSystem::setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& texPtr,
 		const TextureSurface& surface)
 	{
 		THROW_IF_NOT_CORE_THREAD;

@@ -26,42 +26,42 @@ namespace BansheeEngine
 	void ScriptTexture::internal_getPixelFormat(ScriptTexture* thisPtr, PixelFormat* value)
 	{
 		HTexture texture = static_resource_cast<Texture>(thisPtr->getNativeHandle());
-		*value = texture->getFormat();
+		*value = texture->getProperties().getFormat();
 	}
 
 	void ScriptTexture::internal_getUsage(ScriptTexture* thisPtr, TextureUsage* value)
 	{
 		HTexture texture = static_resource_cast<Texture>(thisPtr->getNativeHandle());
-		*value = (TextureUsage)texture->getUsage();
+		*value = (TextureUsage)texture->getProperties().getUsage();
 	}
 
 	void ScriptTexture::internal_getWidth(ScriptTexture* thisPtr, int* value)
 	{
 		HTexture texture = static_resource_cast<Texture>(thisPtr->getNativeHandle());
-		*value = (TextureUsage)texture->getWidth();
+		*value = (TextureUsage)texture->getProperties().getWidth();
 	}
 
 	void ScriptTexture::internal_getHeight(ScriptTexture* thisPtr, int* value)
 	{
 		HTexture texture = static_resource_cast<Texture>(thisPtr->getNativeHandle());
-		*value = (TextureUsage)texture->getHeight();
+		*value = (TextureUsage)texture->getProperties().getHeight();
 	}
 
 	void ScriptTexture::internal_getGammaCorrection(ScriptTexture* thisPtr, bool* value)
 	{
 		HTexture texture = static_resource_cast<Texture>(thisPtr->getNativeHandle());
-		*value = (TextureUsage)texture->isHardwareGammaEnabled();
+		*value = (TextureUsage)texture->getProperties().isHardwareGammaEnabled();
 	}
 
 	void ScriptTexture::internal_getSampleCount(ScriptTexture* thisPtr, int* value)
 	{
 		HTexture texture = static_resource_cast<Texture>(thisPtr->getNativeHandle());
-		*value = (TextureUsage)texture->getMultisampleCount();
+		*value = (TextureUsage)texture->getProperties().getMultisampleCount();
 	}
 
 	void ScriptTexture::internal_getMipmapCount(ScriptTexture* thisPtr, int* value)
 	{
 		HTexture texture = static_resource_cast<Texture>(thisPtr->getNativeHandle());
-		*value = (TextureUsage)texture->getNumMipmaps();
+		*value = (TextureUsage)texture->getProperties().getNumMipmaps();
 	}
 }

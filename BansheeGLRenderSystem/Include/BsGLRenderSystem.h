@@ -61,12 +61,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RenderSystem::setTexture()
 		 */
-        void setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr &tex);
+		void setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& tex);
 
 		/**
 		 * @copydoc	RenderSystem::setLoadStoreTexture
 		 */
-		void setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr& texPtr,
+		void setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& texPtr,
 			const TextureSurface& surface);
         
 		/**

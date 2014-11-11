@@ -603,12 +603,11 @@ namespace BansheeEngine
 		}
 
 		const HTexture& tex = mCaretTexture->getTexture();
-		UINT32 subresourceIdx = tex->mapToSubresourceIdx(0, 0);
+		UINT32 subresourceIdx = tex->getProperties().mapToSubresourceIdx(0, 0);
 		PixelDataPtr data = tex->allocateSubresourceBuffer(subresourceIdx);
 
 		data->setColorAt(mCaretColor, 0, 0);
-
-		gCoreAccessor().writeSubresource(tex.getInternalPtr(), tex->mapToSubresourceIdx(0, 0), data);
+		tex->writeSubresource(gCoreAccessor(), subresourceIdx, data, false);
 	}
 
 	void GUIManager::updateTextSelectionTexture()
@@ -621,12 +620,12 @@ namespace BansheeEngine
 		}
 
 		const HTexture& tex = mTextSelectionTexture->getTexture();
-		UINT32 subresourceIdx = tex->mapToSubresourceIdx(0, 0);
+		UINT32 subresourceIdx = tex->getProperties().mapToSubresourceIdx(0, 0);
 		PixelDataPtr data = tex->allocateSubresourceBuffer(subresourceIdx);
 
 		data->setColorAt(mTextSelectionColor, 0, 0);
 
-		gCoreAccessor().writeSubresource(tex.getInternalPtr(), tex->mapToSubresourceIdx(0, 0), data);
+		tex->writeSubresource(gCoreAccessor(), subresourceIdx, data, false);
 	}
 
 	void GUIManager::onMouseDragEnded(const PointerEvent& event, DragCallbackInfo& dragInfo)

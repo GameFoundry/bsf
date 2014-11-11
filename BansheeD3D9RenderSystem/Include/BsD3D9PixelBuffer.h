@@ -25,7 +25,7 @@ namespace BansheeEngine
 		};
 
 	public:
-		D3D9PixelBuffer(GpuBufferUsage usage, D3D9Texture* ownerTexture);
+		D3D9PixelBuffer(GpuBufferUsage usage, D3D9TextureCore* ownerTexture);
 		~D3D9PixelBuffer();
 
 		/**
@@ -137,7 +137,7 @@ namespace BansheeEngine
 		bool mDoMipmapGen;
 		bool mHWMipmaps;
 
-		D3D9Texture* mOwnerTexture;
+		D3D9TextureCore* mOwnerTexture;
 		DWORD mLockFlags;
 	};
 };

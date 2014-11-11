@@ -35,12 +35,12 @@ namespace BansheeEngine
 
 	UINT32 SpriteTexture::getWidth() const
 	{
-		return Math::roundToInt(mAtlasTexture->getWidth() * mUVScale.x);
+		return Math::roundToInt(mAtlasTexture->getProperties().getWidth() * mUVScale.x);
 	}
 
 	UINT32 SpriteTexture::getHeight() const
 	{
-		return Math::roundToInt(mAtlasTexture->getHeight() * mUVScale.y);
+		return Math::roundToInt(mAtlasTexture->getProperties().getHeight() * mUVScale.y);
 	}
 
 	HSpriteTexture SpriteTexture::create(const HTexture& texture)

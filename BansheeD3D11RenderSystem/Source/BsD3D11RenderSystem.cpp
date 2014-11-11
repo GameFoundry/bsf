@@ -265,7 +265,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumDepthStencilStateChanges);
 	}
 
-	void D3D11RenderSystem::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr &texPtr)
+	void D3D11RenderSystem::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& texPtr)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -275,7 +275,7 @@ namespace BansheeEngine
 		ID3D11ShaderResourceView* viewArray[1];
 		if(texPtr != nullptr && enabled)
 		{
-			D3D11Texture* d3d11Texture = static_cast<D3D11Texture*>(texPtr.get());
+			D3D11TextureCore* d3d11Texture = static_cast<D3D11TextureCore*>(texPtr.get());
 			viewArray[0] = d3d11Texture->getSRV();
 		}
 		else
@@ -308,7 +308,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumTextureBinds);
 	}
 
-	void D3D11RenderSystem::setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr& texPtr,
+	void D3D11RenderSystem::setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& texPtr,
 		const TextureSurface& surface)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -319,8 +319,8 @@ namespace BansheeEngine
 		ID3D11UnorderedAccessView* viewArray[1];
 		if (texPtr != nullptr && enabled)
 		{
-			D3D11Texture* d3d11Texture = static_cast<D3D11Texture*>(texPtr.get());
-			TextureViewPtr texView = Texture::requestView(texPtr, surface.mipLevel, 1, 
+			D3D11TextureCore* d3d11Texture = static_cast<D3D11TextureCore*>(texPtr.get());
+			TextureViewPtr texView = TextureCore::requestView(texPtr, surface.mipLevel, 1, 
 				surface.arraySlice, surface.numArraySlices, GVU_RANDOMWRITE);
 
 			D3D11TextureView* d3d11texView = static_cast<D3D11TextureView*>(texView.get());
@@ -338,7 +338,7 @@ namespace BansheeEngine
 			if (mBoundUAVs[unit].second != nullptr)
 				mBoundUAVs[unit].first->releaseView(mBoundUAVs[unit].second);
 
-			mBoundUAVs[unit] = std::pair<TexturePtr, TextureViewPtr>();
+			mBoundUAVs[unit] = std::pair<SPtr<TextureCore>, TextureViewPtr>();
 		}
 
 		if (gptype == GPT_FRAGMENT_PROGRAM)
@@ -582,7 +582,7 @@ namespace BansheeEngine
 				if (!texture.isLoaded())
 					setTexture(gptype, iter->second.slot, false, nullptr);
 				else
-					setTexture(gptype, iter->second.slot, true, texture.getInternalPtr());
+					setTexture(gptype, iter->second.slot, true, texture->getCore());
 			}
 			else
 			{
@@ -591,7 +591,7 @@ namespace BansheeEngine
 				if (!texture.isLoaded())
 					setLoadStoreTexture(gptype, iter->second.slot, false, nullptr, surface);
 				else
-					setLoadStoreTexture(gptype, iter->second.slot, true, texture.getInternalPtr(), surface);
+					setLoadStoreTexture(gptype, iter->second.slot, true, texture->getCore(), surface);
 			}
 		}
 

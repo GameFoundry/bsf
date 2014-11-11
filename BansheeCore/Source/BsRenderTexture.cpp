@@ -15,11 +15,13 @@ namespace BansheeEngine
 
 		if (texture != nullptr)
 		{
-			mWidth = texture->getWidth();
-			mHeight = texture->getHeight();
-			mColorDepth = BansheeEngine::PixelUtil::getNumElemBits(texture->getFormat());
-			mHwGamma = texture->isHardwareGammaEnabled();
-			mMultisampleCount = texture->getMultisampleCount();
+			const TextureProperties& props = texture->getProperties();
+
+			mWidth = props.getWidth();
+			mHeight = props.getHeight();
+			mColorDepth = BansheeEngine::PixelUtil::getNumElemBits(props.getFormat());
+			mHwGamma = props.isHardwareGammaEnabled();
+			mMultisampleCount = props.getMultisampleCount();
 		}
 
 		mActive = true;
@@ -41,24 +43,24 @@ namespace BansheeEngine
 		const RENDER_SURFACE_DESC& colorSurface = mDesc.colorSurface;
 		if (colorSurface.texture != nullptr)
 		{
-			TexturePtr texture = colorSurface.texture;
+			SPtr<TextureCore> texture = colorSurface.texture->getCore();
 
-			if (texture->getUsage() != TU_RENDERTARGET)
+			if (texture->getProperties().getUsage() != TU_RENDERTARGET)
 				BS_EXCEPT(InvalidParametersException, "Provided texture is not created with render target usage.");
 
-			mColorSurface = Texture::requestView(texture, colorSurface.mipLevel, 1,
+			mColorSurface = TextureCore::requestView(texture, colorSurface.mipLevel, 1,
 				colorSurface.face, 1, GVU_RENDERTARGET);
 		}
 
 		const RENDER_SURFACE_DESC& depthStencilSurface = mDesc.depthStencilSurface;
 		if (depthStencilSurface.texture != nullptr)
 		{
-			TexturePtr texture = depthStencilSurface.texture;
+			SPtr<TextureCore> texture = depthStencilSurface.texture->getCore();
 
-			if (texture->getUsage() != TU_DEPTHSTENCIL)
+			if (texture->getProperties().getUsage() != TU_DEPTHSTENCIL)
 				BS_EXCEPT(InvalidParametersException, "Provided texture is not created with depth stencil usage.");
 
-			mDepthStencilSurface = Texture::requestView(texture, depthStencilSurface.mipLevel, 1,
+			mDepthStencilSurface = TextureCore::requestView(texture, depthStencilSurface.mipLevel, 1,
 				depthStencilSurface.face, 1, GVU_DEPTHSTENCIL);
 		}
 
@@ -67,30 +69,30 @@ namespace BansheeEngine
 		assert(mColorSurface != nullptr);
 		assert(mColorSurface->getTexture() != nullptr);
 
-		if (mColorSurface->getTexture()->getTextureType() != TEX_TYPE_2D)
-			BS_EXCEPT(NotImplementedException, "Render textures are currently only implemented for 2D surfaces.");
+		SPtr<TextureCore> colorTexture = mColorSurface->getTexture();
+		const TextureProperties& texProps = colorTexture->getProperties();
 
-		if ((mColorSurface->getFirstArraySlice() + mColorSurface->getNumArraySlices()) > mColorSurface->getTexture()->getNumFaces())
+		if ((mColorSurface->getFirstArraySlice() + mColorSurface->getNumArraySlices()) > texProps.getNumFaces())
 		{
 			BS_EXCEPT(InvalidParametersException, "Provided number of faces is out of range. Face: " +
 				toString(mColorSurface->getFirstArraySlice() + mColorSurface->getNumArraySlices()) +
-				". Max num faces: " + toString(mColorSurface->getTexture()->getNumFaces()));
+				". Max num faces: " + toString(texProps.getNumFaces()));
 		}
 
-		if (mColorSurface->getMostDetailedMip() > mColorSurface->getTexture()->getNumMipmaps())
+		if (mColorSurface->getMostDetailedMip() > texProps.getNumMipmaps())
 		{
 			BS_EXCEPT(InvalidParametersException, "Provided number of mip maps is out of range. Mip level: " +
-				toString(mColorSurface->getMostDetailedMip()) + ". Max num mipmaps: " + toString(mColorSurface->getTexture()->getNumMipmaps()));
+				toString(mColorSurface->getMostDetailedMip()) + ". Max num mipmaps: " + toString(texProps.getNumMipmaps()));
 		}
 	}
 
 	void RenderTextureCore::destroy()
 	{
 		if (mColorSurface != nullptr)
-			Texture::releaseView(mColorSurface);
+			TextureCore::releaseView(mColorSurface);
 
 		if (mDepthStencilSurface != nullptr)
-			Texture::releaseView(mDepthStencilSurface);
+			TextureCore::releaseView(mDepthStencilSurface);
 
 		RenderTargetCore::destroy();
 	}
@@ -122,13 +124,16 @@ namespace BansheeEngine
 		if (mColorSurface == nullptr || mDepthStencilSurface == nullptr)
 			return;
 
-		if (mColorSurface->getTexture()->getWidth() != mDepthStencilSurface->getTexture()->getWidth() ||
-			mColorSurface->getTexture()->getHeight() != mDepthStencilSurface->getTexture()->getHeight() ||
-			mColorSurface->getTexture()->getMultisampleCount() != mDepthStencilSurface->getTexture()->getMultisampleCount())
+		const TextureProperties& colorProps = mColorSurface->getTexture()->getProperties();
+		const TextureProperties& depthProps = mDepthStencilSurface->getTexture()->getProperties();
+
+		if (colorProps.getWidth() != depthProps.getWidth() ||
+			colorProps.getHeight() != depthProps.getHeight() ||
+			colorProps.getMultisampleCount() != depthProps.getMultisampleCount())
 		{
-			String errorInfo = "\nWidth: " + toString(mColorSurface->getTexture()->getWidth()) + "/" + toString(mDepthStencilSurface->getTexture()->getWidth());
-			errorInfo += "\nHeight: " + toString(mColorSurface->getTexture()->getHeight()) + "/" + toString(mDepthStencilSurface->getTexture()->getHeight());
-			errorInfo += "\nMultisample Count: " + toString(mColorSurface->getTexture()->getMultisampleCount()) + "/" + toString(mDepthStencilSurface->getTexture()->getMultisampleCount());
+			String errorInfo = "\nWidth: " + toString(colorProps.getWidth()) + "/" + toString(depthProps.getWidth());
+			errorInfo += "\nHeight: " + toString(colorProps.getHeight()) + "/" + toString(depthProps.getHeight());
+			errorInfo += "\nMultisample Count: " + toString(colorProps.getMultisampleCount()) + "/" + toString(depthProps.getMultisampleCount());
 
 			BS_EXCEPT(InvalidParametersException, "Provided texture and depth stencil buffer don't match!" + errorInfo);
 		}

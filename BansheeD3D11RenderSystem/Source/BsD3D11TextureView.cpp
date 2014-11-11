@@ -16,7 +16,7 @@ namespace BansheeEngine
 
 	void D3D11TextureView::initialize_internal()
 	{
-		D3D11Texture* d3d11Texture = static_cast<D3D11Texture*>(mOwnerTexture.get());
+		D3D11TextureCore* d3d11Texture = static_cast<D3D11TextureCore*>(mOwnerTexture.get());
 
 		if((mDesc.usage & GVU_RANDOMWRITE) != 0)
 			mUAV = createUAV(d3d11Texture, mDesc.mostDetailMip, mDesc.firstArraySlice, mDesc.numArraySlices);
@@ -42,13 +42,14 @@ namespace BansheeEngine
 		TextureView::destroy_internal();
 	}
 
-	ID3D11ShaderResourceView* D3D11TextureView::createSRV(D3D11Texture* texture, 
+	ID3D11ShaderResourceView* D3D11TextureView::createSRV(D3D11TextureCore* texture, 
 		UINT32 mostDetailMip, UINT32 numMips, UINT32 firstArraySlice, UINT32 numArraySlices)
 	{
 		D3D11_SHADER_RESOURCE_VIEW_DESC desc;
 		ZeroMemory(&desc, sizeof(desc));
 
-		switch(texture->getTextureType())
+		const TextureProperties& texProps = texture->getProperties();
+		switch (texProps.getTextureType())
 		{
 		case TEX_TYPE_1D:
 			desc.Texture1D.MipLevels = numMips;
@@ -56,7 +57,7 @@ namespace BansheeEngine
 			desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE1D;
 			break;
 		case TEX_TYPE_2D:
-			if (texture->getMultisampleCount() > 0)
+			if (texProps.getMultisampleCount() > 0)
 			{
 				desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DMS;
 			}
@@ -97,20 +98,21 @@ namespace BansheeEngine
 		return srv;
 	}
 
-	ID3D11RenderTargetView* D3D11TextureView::createRTV(D3D11Texture* texture, 
+	ID3D11RenderTargetView* D3D11TextureView::createRTV(D3D11TextureCore* texture,
 		UINT32 mipSlice, UINT32 firstArraySlice, UINT32 numArraySlices)
 	{
 		D3D11_RENDER_TARGET_VIEW_DESC desc;
 		ZeroMemory(&desc, sizeof(desc));
 
-		switch(texture->getTextureType())
+		const TextureProperties& texProps = texture->getProperties();
+		switch (texProps.getTextureType())
 		{
 		case TEX_TYPE_1D:
 			desc.Texture1D.MipSlice = mipSlice;
 			desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE1D;
 			break;
 		case TEX_TYPE_2D:
-			if (texture->getMultisampleCount() > 0)
+			if (texProps.getMultisampleCount() > 0)
 			{
 				desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
 			}
@@ -152,13 +154,13 @@ namespace BansheeEngine
 		return rtv;
 	}
 
-	ID3D11UnorderedAccessView* D3D11TextureView::createUAV(D3D11Texture* texture,
+	ID3D11UnorderedAccessView* D3D11TextureView::createUAV(D3D11TextureCore* texture,
 		UINT32 mipSlice, UINT32 firstArraySlice, UINT32 numArraySlices)
 	{
 		D3D11_UNORDERED_ACCESS_VIEW_DESC desc;
 		ZeroMemory(&desc, sizeof(desc));
 
-		switch(texture->getTextureType())
+		switch(texture->getProperties().getTextureType())
 		{
 		case TEX_TYPE_1D:
 			desc.Texture1D.MipSlice = mipSlice;
@@ -200,20 +202,21 @@ namespace BansheeEngine
 		return uav;
 	}
 
-	ID3D11DepthStencilView* D3D11TextureView::createDSV(D3D11Texture* texture, 
+	ID3D11DepthStencilView* D3D11TextureView::createDSV(D3D11TextureCore* texture,
 		UINT32 mipSlice, UINT32 firstArraySlice, UINT32 numArraySlices)
 	{
 		D3D11_DEPTH_STENCIL_VIEW_DESC desc;
 		ZeroMemory(&desc, sizeof(desc));
 
-		switch(texture->getTextureType())
+		const TextureProperties& texProps = texture->getProperties();
+		switch (texProps.getTextureType())
 		{
 		case TEX_TYPE_1D:
 			desc.Texture1D.MipSlice = mipSlice;
 			desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE1D;
 			break;
 		case TEX_TYPE_2D:
-			if (texture->getMultisampleCount() > 0)
+			if (texProps.getMultisampleCount() > 0)
 			{
 				desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
 			}

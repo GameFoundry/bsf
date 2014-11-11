@@ -22,8 +22,8 @@ namespace BansheeEngine
 		UINT32 contentHeight = style.margins.top + style.margins.bottom + style.contentOffset.top + style.contentOffset.bottom;
 		if(content.getImage() != nullptr)
 		{
-			contentWidth += content.getImage()->getTexture()->getWidth();
-			contentHeight += content.getImage()->getTexture()->getHeight();
+			contentWidth += content.getImage()->getWidth();
+			contentHeight += content.getImage()->getHeight();
 		}
 
 		return Vector2I(std::max((UINT32)textContentBounds.x, contentWidth), std::max((UINT32)textContentBounds.y, contentHeight));

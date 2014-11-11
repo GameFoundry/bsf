@@ -21,8 +21,8 @@ namespace BansheeEngine
 		{
 			if (mColorSurfaces[i] != nullptr)
 			{
-				D3D9Texture* d3d9texture = static_cast<D3D9Texture*>(mColorSurfaces[i]->getTexture().get());
-				if (d3d9texture->getTextureType() != TEX_TYPE_3D)
+				D3D9TextureCore* d3d9texture = static_cast<D3D9TextureCore*>(mColorSurfaces[i]->getTexture().get());
+				if (d3d9texture->getProperties().getTextureType() != TEX_TYPE_3D)
 				{
 					D3D9PixelBuffer* pixelBuffer = static_cast<D3D9PixelBuffer*>(
 						d3d9texture->getBuffer(mColorSurfaces[i]->getDesc().firstArraySlice, mColorSurfaces[i]->getDesc().mostDetailMip).get());
@@ -39,9 +39,9 @@ namespace BansheeEngine
 
 		if (mDepthStencilSurface != nullptr)
 		{
-			D3D9Texture* d3d9DepthStencil = static_cast<D3D9Texture*>(mDepthStencilSurface->getTexture().get());
+			D3D9TextureCore* d3d9DepthStencil = static_cast<D3D9TextureCore*>(mDepthStencilSurface->getTexture().get());
 
-			if (d3d9DepthStencil->getTextureType() != TEX_TYPE_3D)
+			if (d3d9DepthStencil->getProperties().getTextureType() != TEX_TYPE_3D)
 			{
 				D3D9PixelBuffer* pixelBuffer = static_cast<D3D9PixelBuffer*>(
 					d3d9DepthStencil->getBuffer(mDepthStencilSurface->getDesc().firstArraySlice, mDepthStencilSurface->getDesc().mostDetailMip).get());

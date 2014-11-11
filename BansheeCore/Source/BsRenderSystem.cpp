@@ -7,7 +7,7 @@
 #include "BsRenderWindow.h"
 #include "BsPixelBuffer.h"
 #include "BsOcclusionQuery.h"
-#include "BsGpuResource.h"
+#include "BsResource.h"
 #include "BsCoreThread.h"
 #include "BsMesh.h"
 #include "BsProfilerCPU.h"
@@ -17,7 +17,7 @@ using namespace std::placeholders;
 
 namespace BansheeEngine 
 {
-    static const TexturePtr sNullTexPtr;
+    static const SPtr<TextureCore> sNullTexPtr;
 
     RenderSystem::RenderSystem()
         : mCullingMode(CULL_COUNTERCLOCKWISE)
@@ -220,36 +220,5 @@ namespace BansheeEngine
 		target->swapBuffers();
 
 		BS_INC_RENDER_STAT(NumPresents);
-	}
-
-	void RenderSystem::writeSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceDataPtr& data, bool discardEntireBuffer, AsyncOp& asyncOp)
-	{
-		THROW_IF_NOT_CORE_THREAD;
-
-		gProfilerCPU().beginSample("writeSubresource");
-
-		resource->writeSubresource(subresourceIdx, *data, discardEntireBuffer);
-
-		gProfilerCPU().endSample("writeSubresource");
-
-		gProfilerCPU().beginSample("writeSubresourceB");
-
-		data->_unlock();
-		asyncOp._completeOperation();
-
-		gProfilerCPU().endSample("writeSubresourceB");
-	}
-
-	void RenderSystem::readSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, GpuResourceDataPtr& data, AsyncOp& asyncOp)
-	{
-		THROW_IF_NOT_CORE_THREAD;
-
-		gProfilerCPU().beginSample("readSubresource");
-
-		resource->readSubresource(subresourceIdx, *data);
-		data->_unlock();
-		asyncOp._completeOperation();
-
-		gProfilerCPU().endSample("readSubresource");
 	}
 }

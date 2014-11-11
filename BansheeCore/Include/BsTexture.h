@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
-#include "BsGpuResource.h"
+#include "BsResource.h"
 #include "BsHardwareBuffer.h"
 #include "BsPixelUtil.h"
 #include "BsTextureView.h"
@@ -42,119 +42,72 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Abstract class representing a texture. Specific render systems have their
-	 *			own Texture implementations. Internally represented as one or more surfaces
-	 *			with pixels in a certain number of dimensions, backed by a hardware buffer.
-	 *
-	 * @note	Core thread unless specified otherwise.
+	 * @brief	Contains various information about a texture
 	 */
-    class BS_CORE_EXPORT Texture : public GpuResource
-    {
-    public:
-        /**
+	class BS_CORE_EXPORT TextureProperties
+	{
+	public:
+		TextureProperties();
+		TextureProperties(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps,
+			PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount);
+
+		/**
          * @brief	Gets the type of texture.
-         * 			
-		 * @note	Thread safe.
          */
-        virtual TextureType getTextureType() const { return mTextureType; }
+        TextureType getTextureType() const { return mTextureType; }
 
         /**
 		 * @brief	Gets the number of mipmaps to be used for this texture. This number excludes the top level  
 		 *			map (which is always assumed to be present).
-         *
-         * @note	Thread safe.
          */
-        virtual UINT32 getNumMipmaps() const {return mNumMipmaps;}
+        UINT32 getNumMipmaps() const {return mNumMipmaps;}
 
 		/**
 		 * @brief	Gets whether this texture will be set up so that on sampling it,
 		 *			hardware gamma correction is applied.
-		 *
-		 * @note	Thread safe.
 		 */
-		virtual bool isHardwareGammaEnabled() const { return mHwGamma; }
+		bool isHardwareGammaEnabled() const { return mHwGamma; }
 
 		/**
 		 * @brief	Gets the number of samples used for multisampling.
 		 *			(0 if multisampling is not used).
-		 *
-		 * @note	Thread safe.
 		 */
-		virtual UINT32 getMultisampleCount() const { return mMultisampleCount; }
+		UINT32 getMultisampleCount() const { return mMultisampleCount; }
 
         /**
          * @brief	Returns the height of the texture.
-         *
-         * @note	Thread safe.
          */
-        virtual UINT32 getHeight() const { return mHeight; }
+        UINT32 getHeight() const { return mHeight; }
 
         /**
          * @brief	Returns the width of the texture.
-         *
-         * @note	Thread safe.
          */
-        virtual UINT32 getWidth() const { return mWidth; }
+        UINT32 getWidth() const { return mWidth; }
 
         /**
          * @brief	Returns the depth of the texture (only applicable for 3D textures).
-         *
-         * @note	Thread safe.
          */
-        virtual UINT32 getDepth() const { return mDepth; }
+        UINT32 getDepth() const { return mDepth; }
 
         /**
          * @brief	Returns texture usage (TextureUsage) of this texture.
-         *
-         * @note	Thread safe.
          */
-        virtual int getUsage() const { return mUsage; }
+        int getUsage() const { return mUsage; }
 
 		/**
 		 * @brief	Returns the pixel format for the texture surface.
-		 *
-		 * @note	Thread safe.
 		 */
-		virtual PixelFormat getFormat() const { return mFormat; }
+		PixelFormat getFormat() const { return mFormat; }
 
         /**
          * @brief	Returns true if the texture has an alpha layer.
-         *
-         * @note	Thread safe.
          */
-        virtual bool hasAlpha() const;
+        bool hasAlpha() const;
 
         /**
          * @brief	Return the number of faces this texture has.
-         *
-         * @note	Thread safe.
          */
-        virtual UINT32 getNumFaces() const;
-
-		/**
-		 * @copydoc GpuResource::_writeSubresourceSim
-		 */
-		virtual void _writeSubresourceSim(UINT32 subresourceIdx, const GpuResourceData& data, bool discardEntireBuffer);
-
-		/**
-		 * @copydoc GpuResource::writeSubresource
-		 */
-		virtual void writeSubresource(UINT32 subresourceIdx, const GpuResourceData& data, bool discardEntireBuffer);
-
-		/**
-		 * @copydoc GpuResource::readSubresource
-		 */
-		virtual void readSubresource(UINT32 subresourceIdx, GpuResourceData& data);
-
-		/**
-		 * @brief	Allocates a buffer you may use for storage when reading or writing a sub-resource. You
-		 * 			need to allocate such a buffer if you are calling "readSubresource".
-		 *
-		 *			You can retrieve a sub-resource index by calling "mapToSubresourceIdx".
-		 * 			
-		 * @note	Thread safe.
-		 */
-		PixelDataPtr allocateSubresourceBuffer(UINT32 subresourceIdx) const;
+        UINT32 getNumFaces() const;
 
 		/**
 		 * @brief	Maps a sub-resource index to an exact face and mip level. Sub-resource indexes
@@ -163,8 +116,6 @@ namespace BansheeEngine
 		 * @note	Sub-resource index is only valid for the instance it was created on. You cannot use a sub-resource
 		 * 			index from a different texture and expect to get valid result. Modifying the resource so the number
 		 * 			of sub-resources changes invalidates all sub-resource indexes.
-		 * 			
-		 *			Thread safe.
 		 */
 		void mapFromSubresourceIdx(UINT32 subresourceIdx, UINT32& face, UINT32& mip) const;
 
@@ -174,10 +125,59 @@ namespace BansheeEngine
 		 * 			
 		 * @note	Generated sub-resource index is only valid for the instance it was created on. Modifying the resource so the number
 		 * 			of sub-resources changes, invalidates all sub-resource indexes.
-		 * 			
-		 *			Thread safe.
 		 */
 		UINT32 mapToSubresourceIdx(UINT32 face, UINT32 mip) const;
+
+	protected:
+		friend class TextureRTTI;
+
+		UINT32 mHeight;
+		UINT32 mWidth;
+		UINT32 mDepth;
+
+		UINT32 mNumMipmaps;
+		bool mHwGamma;
+		UINT32 mMultisampleCount;
+
+		TextureType mTextureType;
+		PixelFormat mFormat;
+		int mUsage;
+	};
+
+	/**
+	 * @brief	Core thread version of a Texture.
+	 *
+	 * @see		Texture
+	 *
+	 * @note	Core thread.
+	 */
+	class BS_CORE_EXPORT TextureCore : public CoreObjectCore
+	{
+	public:
+		TextureCore(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps,
+			PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount);
+		virtual ~TextureCore() {}
+
+		/**
+		 * @brief	Updates a part of the texture with the provided data.
+		 *
+		 * @param	subresourceIdx		Index of the subresource to update, if the texture has more than one.
+		 * @param	data				Data to update the texture with.
+		 * @param	discardEntireBuffer When true the existing contents of the resource you are updating will be discarded. This can make the
+		 * 								operation faster. Resources with certain buffer types might require this flag to be in a specific state
+		 * 								otherwise the operation will fail.
+		 */
+		virtual void writeSubresource(UINT32 subresourceIdx, const PixelData& data, bool discardEntireBuffer);
+
+		/**
+		 * @brief	Reads a part of the current resource into the provided "data" parameter.
+		 * 			Data buffer needs to be pre-allocated.
+		 *
+		 * @param	subresourceIdx		Index of the subresource to update, if the texture has more than one.
+		 * @param	data				Buffer that will receive the data. Should be allocated with "allocateSubresourceBuffer"
+		 *								to ensure it is of valid type and size.
+		 */
+		virtual void readSubresource(UINT32 subresourceIdx, PixelData& data);
 
 		/**
 		 * @brief	Locks the buffer for reading or writing.
@@ -190,16 +190,12 @@ namespace BansheeEngine
 		 * 			
 		 * @note	If you are just reading or writing one block of data use
 		 * 			readData/writeData methods as they can be much faster in certain situations.
-		 * 			
-		 *			Core thread only.
 		 */
 		PixelData lock(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0);
 
 		/**
 		 * @brief	Unlocks a previously locked buffer. After the buffer is unlocked,
 		 * 			any data returned by lock becomes invalid.
-		 * 			
-		 * @note	Core thread only.
 		 */
 		void unlock();
 
@@ -213,28 +209,8 @@ namespace BansheeEngine
 		 * @param	srcSubresourceIdx	Index of the subresource to copy from.
 		 * @param	destSubresourceIdx	Index of the subresource to copy to.
 		 * @param	target				Texture that contains the destination subresource.
-		 * 			
-		 * @note	Core thread only.
 		 */
-		void copy(UINT32 srcSubresourceIdx, UINT32 destSubresourceIdx, TexturePtr& target);
-
-		/**
-		 * @brief	Reads data from the cached system memory texture buffer into the provided buffer. 
-		 * 		  
-		 * @param	dest		Previously allocated buffer to read data into.
-		 * @param	mipLevel	(optional) Mipmap level to read from.
-		 * @param	face		(optional) Texture face to read from.
-		 *
-		 * @note	Sim thread only.
-		 *
-		 *			The data read is the cached texture data. Any data written to the texture from the GPU 
-		 *			or core thread will not be reflected in this data. Use "readData" if you require
-		 *			those changes.
-		 *
-		 *			The texture must have been created with TU_CPUCACHED usage otherwise this method
-		 *			will not return any data.
-		 */
-		virtual void readDataSim(PixelData& dest, UINT32 mipLevel = 0, UINT32 face = 0);
+		void copy(UINT32 srcSubresourceIdx, UINT32 destSubresourceIdx, const SPtr<TextureCore>& target);
 
 		/**
 		 * @brief	Reads data from the texture buffer into the provided buffer.
@@ -242,8 +218,6 @@ namespace BansheeEngine
 		 * @param	dest	Previously allocated buffer to read data into.
 		 * @param	mipLevel	(optional) Mipmap level to read from.
 		 * @param	face		(optional) Texture face to read from.
-		 *
-		 * @note	Core thread only.
 		 */
 		virtual void readData(PixelData& dest, UINT32 mipLevel = 0, UINT32 face = 0) = 0;
 
@@ -255,17 +229,8 @@ namespace BansheeEngine
 		 * @param	face		(optional) Texture face to write into.
 		 * @param	discardWholeBuffer (optional) If true any existing texture data will be discard. This can
 		 *							    improve performance of the write operation.
-		 *
-		 * @note	Core thread only.
 		 */
 		virtual void writeData(const PixelData& src, UINT32 mipLevel = 0, UINT32 face = 0, bool discardWholeBuffer = false) = 0;
-
-		/**
-		 * @brief	Returns a dummy 2x2 texture. Don't modify the returned texture.
-		 * 			
-		 * @note	Thread safe.
-		 */
-		static const HTexture& dummy();
 
 		/**
 		 * @brief	Returns true if the texture can be bound to a shader.
@@ -274,6 +239,11 @@ namespace BansheeEngine
 		 *			Internal method.
 		 */
 		virtual bool isBindableAsShaderResource() const { return true; }
+
+		/**
+		 * @brief	Returns properties that contain information about the texture.
+		 */
+		const TextureProperties& getProperties() const { return mProperties; }
 
 		/************************************************************************/
 		/* 								TEXTURE VIEW                      		*/
@@ -286,14 +256,141 @@ namespace BansheeEngine
 		 *
 		 * @note	Core thread only.
 		 */
-		static TextureViewPtr requestView(TexturePtr texture, UINT32 mostDetailMip, UINT32 numMips, UINT32 firstArraySlice, UINT32 numArraySlices, GpuViewUsage usage);
+		static TextureViewPtr requestView(const SPtr<TextureCore>& texture, UINT32 mostDetailMip, UINT32 numMips, 
+			UINT32 firstArraySlice, UINT32 numArraySlices, GpuViewUsage usage);
 
 		/**
 		 * @brief	Releases the view. View won't actually get destroyed until all references to it are released.
 		 *
 		 * @note	Core thread only.
 		 */
-		static void releaseView(TextureViewPtr view);
+		static void releaseView(const TextureViewPtr& view);
+
+	protected:
+		/**
+		 * @copydoc	lock
+		 */
+		virtual PixelData lockImpl(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0) = 0;
+
+		/**
+		 * @copydoc	unlock
+		 */
+		virtual void unlockImpl() = 0;
+
+		/**
+		 * @copydoc	copy
+		 */
+		virtual void copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, const SPtr<TextureCore>& target) = 0;
+
+		/************************************************************************/
+		/* 								TEXTURE VIEW                      		*/
+		/************************************************************************/
+
+		/**
+		 * @brief	Creates a new empty/undefined texture view.
+		 */
+		virtual TextureViewPtr createView();
+
+		/**
+		 * @brief	Releases all internal texture view references. Views won't get destroyed if there are external references still held.
+		 */
+		void clearBufferViews();
+
+		/**
+		 * @brief	Holds a single texture view with a usage reference count.
+		 */
+		struct TextureViewReference
+		{
+			TextureViewReference(TextureViewPtr _view)
+				:view(_view), refCount(0)
+			{ }
+
+			TextureViewPtr view;
+			UINT32 refCount;
+		};
+
+		UnorderedMap<TEXTURE_VIEW_DESC, TextureViewReference*, TextureView::HashFunction, TextureView::EqualFunction> mTextureViews;
+		TextureProperties mProperties;
+	};
+
+	/**
+	 * @brief	Abstract class representing a texture. Specific render systems have their
+	 *			own Texture implementations. Internally represented as one or more surfaces
+	 *			with pixels in a certain number of dimensions, backed by a hardware buffer.
+	 *
+	 * @note	Sim thread.
+	 */
+    class BS_CORE_EXPORT Texture : public Resource
+    {
+    public:
+		/**
+		 * @brief	Updates the texture with new data. The actual write will be queued for later execution on the core thread.
+		 *			Provided data buffer will be locked until the operation completes.
+		 *
+		 * @param	accessor			Accessor to queue the operation on.
+		 * 
+		 * @return	Async operation object you can use to track operation completion.
+		 *
+		 * @see		TextureCore::writeSubresource
+		 */
+		AsyncOp writeSubresource(CoreAccessor& accessor, UINT32 subresourceIdx, const PixelDataPtr& data, bool discardEntireBuffer);
+
+		/**
+		 * @brief	Reads internal texture data to the provided previously allocated buffer. The read is queued for execution
+		 *			on the core thread and not executed immediately. Provided data buffer will be locked until the
+		 *			operation completes.
+		 *
+		 * @param	accessor			Accessor to queue the operation on.
+		 *
+		 * @return	Async operation object you can use to track operation completion.
+		 *
+		 * @see		TextureCore::readSubresource
+		 */
+		AsyncOp readSubresource(CoreAccessor& accessor, UINT32 subresourceIdx, const PixelDataPtr& data);
+
+		/**
+		 * @brief	Allocates a buffer you may use for storage when reading or writing a sub-resource. You
+		 * 			need to allocate such a buffer if you are calling "readSubresource".
+		 *
+		 *			You can retrieve a sub-resource index by calling "mapToSubresourceIdx".
+		 * 			
+		 * @note	Thread safe.
+		 */
+		PixelDataPtr allocateSubresourceBuffer(UINT32 subresourceIdx) const;
+
+		/**
+		 * @brief	Reads data from the cached system memory texture buffer into the provided buffer. 
+		 * 		  
+		 * @param	dest		Previously allocated buffer to read data into.
+		 * @param	mipLevel	(optional) Mipmap level to read from.
+		 * @param	face		(optional) Texture face to read from.
+		 *
+		 * @note	The data read is the cached texture data. Any data written to the texture from the GPU 
+		 *			or core thread will not be reflected in this data. Use "readSubresource" if you require
+		 *			those changes.
+		 *
+		 *			The texture must have been created with TU_CPUCACHED usage otherwise this method
+		 *			will not return any data.
+		 */
+		void readData(PixelData& dest, UINT32 mipLevel = 0, UINT32 face = 0);
+
+		/**
+		 * @brief	Returns properties that contain information about the texture.
+		 */
+		const TextureProperties& getProperties() const { return mProperties; }
+
+		/**
+		 * @brief	Retrieves a core implementation of a texture usable only from the
+		 *			core thread.
+		 */
+		SPtr<TextureCore> getCore() const;
+
+		/**
+		 * @brief	Returns a dummy 2x2 texture. Don't modify the returned texture.
+		 * 			
+		 * @note	Thread safe.
+		 */
+		static const HTexture& dummy();
 
 		/************************************************************************/
 		/* 								STATICS		                     		*/
@@ -352,61 +449,21 @@ namespace BansheeEngine
 		static TexturePtr _createPtr(TextureType texType, UINT32 width, UINT32 height, int num_mips,
 			PixelFormat format, int usage = TU_DEFAULT, bool hwGammaCorrection = false, UINT32 multisampleCount = 0);
 
-	protected:
-		/************************************************************************/
-		/* 								TEXTURE VIEW                      		*/
-		/************************************************************************/
-
-		/**
-		 * @brief	Creates a new empty/undefined texture view.
-		 */
-		virtual TextureViewPtr createView();
-
-		/**
-		 * @brief	Releases all internal texture view references. Views won't get destroyed if there are external references still held.
-		 */
-		void clearBufferViews();
-
-		/**
-		 * @brief	Holds a single texture view with a usage reference count.
-		 */
-		struct TextureViewReference
-		{
-			TextureViewReference(TextureViewPtr _view)
-				:view(_view), refCount(0)
-			{ }
-
-			TextureViewPtr view;
-			UINT32 refCount;
-		};
-
-		UnorderedMap<TEXTURE_VIEW_DESC, TextureViewReference*, TextureView::HashFunction, TextureView::EqualFunction> mTextureViews;
-
     protected:
 		friend class TextureManager;
 
-		Texture();
-
-		/**
-		 * @copydoc	GpuResource::initialize
-		 */
-		void initialize(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps, 
+		Texture(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps,
 			PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount);
 
 		/**
-		 * @copydoc	lock
+		 * @copydoc	Resource::initialize
 		 */
-		virtual PixelData lockImpl(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0) = 0;
+		void initialize();
 
 		/**
-		 * @copydoc	unlock
+		 * @copydoc	CoreObject::createCore
 		 */
-		virtual void unlockImpl() = 0;
-
-		/**
-		 * @copydoc	copy
-		 */
-		virtual void copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, TexturePtr& target) = 0;
+		SPtr<CoreObjectCore> createCore() const;
 
 		/**
 		 * @copydoc	Resource::calculateSize
@@ -420,25 +477,21 @@ namespace BansheeEngine
 		 */
 		void createCPUBuffers();
 
+		/**
+		 * @brief	Updates the cached CPU buffers with new data.
+		 */
+		void updateCPUBuffers(UINT32 subresourceIdx, const PixelData& data);
+
 	protected:
-		UINT32 mHeight; // Immutable
-		UINT32 mWidth; // Immutable
-		UINT32 mDepth; // Immutable
-
-		UINT32 mNumMipmaps; // Immutable
-		bool mHwGamma; // Immutable
-		UINT32 mMultisampleCount; // Immutable
-
-		TextureType mTextureType; // Immutable
-		PixelFormat mFormat; // Immutable
-		int mUsage; // Immutable
-
 		Vector<PixelDataPtr> mCPUSubresourceData;
+		TextureProperties mProperties;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/
 		/************************************************************************/
 	public:
+		Texture(); // Serialization only
+
 		friend class TextureRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const;

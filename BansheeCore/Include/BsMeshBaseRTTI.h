@@ -10,7 +10,7 @@ namespace BansheeEngine
 {
 	BS_ALLOW_MEMCPY_SERIALIZATION(SubMesh);
 
-	class MeshBaseRTTI : public RTTIType<MeshBase, GpuResource, MeshBaseRTTI>
+	class MeshBaseRTTI : public RTTIType<MeshBase, Resource, MeshBaseRTTI>
 	{
 		SubMesh& getSubMesh(MeshBase* obj, UINT32 arrayIdx) { return obj->mProperties.mSubMeshes[arrayIdx]; }
 		void setSubMesh(MeshBase* obj, UINT32 arrayIdx, SubMesh& value) { obj->mProperties.mSubMeshes[arrayIdx] = value; }

@@ -6,7 +6,7 @@
 
 namespace BansheeEngine
 {
-    GLTextureManager::GLTextureManager( GLSupport& support)
+    GLTextureManager::GLTextureManager(GLSupport& support)
         :TextureManager(), mGLSupport(support)
     {
 
@@ -15,13 +15,6 @@ namespace BansheeEngine
     GLTextureManager::~GLTextureManager()
     {
 
-    }
-
-    TexturePtr GLTextureManager::createTextureImpl()
-    {
-        GLTexture* tex = new (bs_alloc<GLTexture, PoolAlloc>()) GLTexture(mGLSupport);
-
-		return bs_core_ptr<GLTexture, PoolAlloc>(tex);
     }
 
 	RenderTexturePtr GLTextureManager::createRenderTextureImpl(const RENDER_TEXTURE_DESC& desc)
@@ -70,6 +63,15 @@ namespace BansheeEngine
 	GLTextureCoreManager::GLTextureCoreManager(GLSupport& support)
 		:mGLSupport(support)
 	{ }
+
+	SPtr<TextureCore> GLTextureCoreManager::createTextureInternal(TextureType texType, UINT32 width, UINT32 height, UINT32 depth,
+		int numMips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount)
+	{
+		GLTextureCore* tex = new (bs_alloc<GLTextureCore>()) GLTextureCore(mGLSupport, texType,
+			width, height, depth, numMips, format, usage, hwGammaCorrection, multisampleCount);
+
+		return bs_shared_ptr<GLTextureCore, GenAlloc>(tex);
+	}
 
 	SPtr<RenderTextureCore> GLTextureCoreManager::createRenderTextureInternal(const RENDER_TEXTURE_DESC& desc)
 	{

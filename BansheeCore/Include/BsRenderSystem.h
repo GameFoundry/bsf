@@ -79,7 +79,7 @@ namespace BansheeEngine
 		 *			If the slot matches the one configured in the GPU program the program will be able to access
 		 *			this texture on the GPU.
 		 */
-		virtual void setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr& texPtr) = 0;
+		virtual void setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& texPtr) = 0;
 
 		/**
 		* @brief	Turns off a texture unit.
@@ -90,7 +90,7 @@ namespace BansheeEngine
 		 * @brief	Binds a texture that can be used for random load/store operations from a GPU program.
 		 */
 		virtual void setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, bool enabled, 
-			const TexturePtr& texPtr, const TextureSurface& surface) = 0;
+			const SPtr<TextureCore>& texPtr, const TextureSurface& surface) = 0;
 
 		/**
 		 * @brief	Signals that rendering for a specific viewport has started. Any draw calls
@@ -238,22 +238,6 @@ namespace BansheeEngine
 		 * @brief	Change the render target into which we want to draw.
 		 */
         virtual void setRenderTarget(const SPtr<RenderTargetCore>& target) = 0;
-
-		/**
-		 * @brief	Updates the resource with the specified data.
-		 *
-		 * @note	It is assumed GpuResourceData has been locked before being passed here. Data will be unlocked
-		 *			when this method finishes.
-		 */
-		void writeSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceDataPtr& data, bool discardEntireBuffer, AsyncOp& asyncOp);
-
-		/**
-		 * @brief	Reads data from a resource into a pre-allocated GpuResourceData instance.
-		 *
-		 * @note	It is assumed GpuResourceData has been locked before being passed here. Data will be unlocked
-		 *			when this method finishes.
-		 */
-		void readSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, GpuResourceDataPtr& data, AsyncOp& asyncOp);
 
 		/**
 		 * @brief	Returns information about available output devices and their video modes.

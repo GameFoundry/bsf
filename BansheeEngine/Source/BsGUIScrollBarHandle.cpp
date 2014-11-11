@@ -122,7 +122,7 @@ namespace BansheeEngine
 		HSpriteTexture activeTex = getActiveTexture();
 
 		if(SpriteTexture::checkIsLoaded(activeTex))
-			return Vector2I(activeTex->getTexture()->getWidth(), activeTex->getTexture()->getHeight());
+			return Vector2I(activeTex->getWidth(), activeTex->getHeight());
 
 		return Vector2I();
 	}

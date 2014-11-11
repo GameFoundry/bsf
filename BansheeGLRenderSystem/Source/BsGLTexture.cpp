@@ -11,33 +11,43 @@
 
 namespace BansheeEngine 
 {
-    GLTexture::GLTexture(GLSupport& support) 
-		: Texture(), mTextureID(0), mGLSupport(support), mGLFormat(0)
+	GLTextureCore::GLTextureCore(GLSupport& support, TextureType textureType, UINT32 width, UINT32 height, 
+		UINT32 depth, UINT32 numMipmaps, PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount)
+		: TextureCore(textureType, width, height, depth, numMipmaps, format, usage, hwGamma, multisampleCount),
+		mTextureID(0), mGLSupport(support), mGLFormat(0)
     { }
 
-    GLTexture::~GLTexture()
+	GLTextureCore::~GLTextureCore()
     { }
 
-	void GLTexture::initialize_internal()
+	void GLTextureCore::initialize()
 	{
+		UINT32 width = mProperties.getWidth();
+		UINT32 height = mProperties.getHeight();
+		UINT32 depth = mProperties.getDepth();
+		TextureType texType = mProperties.getTextureType();
+		PixelFormat pixFormat = mProperties.getFormat();
+		int usage = mProperties.getUsage();
+		UINT32 numMips = mProperties.getNumMipmaps();
+
 		// Check requested number of mipmaps
-		UINT32 maxMips = PixelUtil::getMaxMipmaps(mWidth, mHeight, mDepth, mFormat);
-		if(mNumMipmaps > maxMips)
+		UINT32 maxMips = PixelUtil::getMaxMipmaps(width, height, depth, mProperties.getFormat());
+		if (numMips > maxMips)
 			BS_EXCEPT(InvalidParametersException, "Invalid number of mipmaps. Maximum allowed is: " + toString(maxMips));
 
-		if((mUsage & TU_RENDERTARGET) != 0)
+		if ((usage & TU_RENDERTARGET) != 0)
 		{
-			if(mTextureType != TEX_TYPE_2D)
+			if (texType != TEX_TYPE_2D)
 				BS_EXCEPT(NotImplementedException, "Only 2D render targets are supported at the moment");
 		}
 
-		if((mUsage & TU_DEPTHSTENCIL) != 0)
+		if ((usage & TU_DEPTHSTENCIL) != 0)
 		{
-			if(mTextureType != TEX_TYPE_2D)
+			if (texType != TEX_TYPE_2D)
 				BS_EXCEPT(NotImplementedException, "Only 2D depth stencil targets are supported at the moment");
 
-			if(!PixelUtil::isDepth(mFormat))
-				BS_EXCEPT(NotImplementedException, "Supplied format is not a depth stencil format. Format: " + toString(mFormat));
+			if (!PixelUtil::isDepth(pixFormat))
+				BS_EXCEPT(NotImplementedException, "Supplied format is not a depth stencil format. Format: " + toString(pixFormat));
 		}
 
 		// Generate texture handle
@@ -47,37 +57,35 @@ namespace BansheeEngine
 		glBindTexture(getGLTextureTarget(), mTextureID);
 
 		// This needs to be set otherwise the texture doesn't get rendered
-		glTexParameteri(getGLTextureTarget(), GL_TEXTURE_MAX_LEVEL, mNumMipmaps);
+		glTexParameteri(getGLTextureTarget(), GL_TEXTURE_MAX_LEVEL, numMips);
 
 		// Allocate internal buffer so that glTexSubImageXD can be used
-		mGLFormat = GLPixelUtil::getClosestGLInternalFormat(mFormat, mHwGamma);
-		UINT32 width = mWidth;
-		UINT32 height = mHeight;
-		UINT32 depth = mDepth;
+		mGLFormat = GLPixelUtil::getClosestGLInternalFormat(pixFormat, mProperties.isHardwareGammaEnabled());
 
-		if(PixelUtil::isCompressed(mFormat))
+		if (PixelUtil::isCompressed(pixFormat))
 		{
-			if((mUsage & TU_RENDERTARGET) != 0)
+			if((usage & TU_RENDERTARGET) != 0)
 				BS_EXCEPT(InvalidParametersException, "Cannot use a compressed format for a render target.");
 
-			if((mUsage & TU_DEPTHSTENCIL) != 0)
+			if ((usage & TU_DEPTHSTENCIL) != 0)
 				BS_EXCEPT(InvalidParametersException, "Cannot use a compressed format for a depth stencil target.");
 		}
 
-		if((mUsage & TU_RENDERTARGET) != 0 && mTextureType == TEX_TYPE_2D && mMultisampleCount > 0)
+		UINT32 sampleCount = mProperties.getMultisampleCount();
+		if ((usage & TU_RENDERTARGET) != 0 && mProperties.getTextureType() == TEX_TYPE_2D && sampleCount > 0)
 		{
-			glTexImage2DMultisample(GL_TEXTURE_2D, mMultisampleCount, mGLFormat, width, height, GL_FALSE);
+			glTexImage2DMultisample(GL_TEXTURE_2D, sampleCount, mGLFormat, width, height, GL_FALSE);
 		}
-		else if((mUsage & TU_DEPTHSTENCIL) != 0)
+		else if ((usage & TU_DEPTHSTENCIL) != 0)
 		{
-			if(mMultisampleCount > 0)
+			if (sampleCount > 0)
 			{
-				glTexImage2DMultisample(GL_TEXTURE_2D, mMultisampleCount, mGLFormat,
+				glTexImage2DMultisample(GL_TEXTURE_2D, sampleCount, mGLFormat,
 					width, height, GL_FALSE);
 			}
 			else
 			{
-				GLenum depthStencilFormat = GLPixelUtil::getDepthStencilTypeFromFormat(mFormat);
+				GLenum depthStencilFormat = GLPixelUtil::getDepthStencilTypeFromFormat(pixFormat);
 
 				glTexImage2D(GL_TEXTURE_2D, 0, mGLFormat,
 					width, height, 0, 
@@ -86,13 +94,13 @@ namespace BansheeEngine
 		}
 		else
 		{
-			GLenum baseFormat = GLPixelUtil::getGLOriginFormat(mFormat);
-			GLenum baseDataType = GLPixelUtil::getGLOriginDataType(mFormat);
+			GLenum baseFormat = GLPixelUtil::getGLOriginFormat(pixFormat);
+			GLenum baseDataType = GLPixelUtil::getGLOriginDataType(pixFormat);
 
 			// Run through this process to pre-generate mipmap pyramid
-			for(UINT32 mip = 0; mip <= mNumMipmaps; mip++)
+			for (UINT32 mip = 0; mip <= numMips; mip++)
 			{
-				switch(mTextureType)
+				switch (texType)
 				{
 				case TEX_TYPE_1D:
 					glTexImage1D(GL_TEXTURE_1D, mip, mGLFormat, width, 0,
@@ -134,18 +142,18 @@ namespace BansheeEngine
 #if BS_DEBUG_MODE
 		if(buffer != nullptr)
 		{
-			if(mFormat != buffer->getFormat())
+			if(pixFormat != buffer->getFormat())
 			{
-				BS_EXCEPT(InternalErrorException, "Could not create a texture buffer with wanted format: " + toString(mFormat));
+				BS_EXCEPT(InternalErrorException, "Could not create a texture buffer with wanted format: " + toString(pixFormat));
 			}
 		}
 #endif
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_Texture);
-		Texture::initialize_internal();
+		TextureCore::initialize();
 	}
 
-	void GLTexture::destroy_internal()
+	void GLTextureCore::destroy()
 	{
 		mSurfaceList.clear();
 		glDeleteTextures(1, &mTextureID);
@@ -153,17 +161,17 @@ namespace BansheeEngine
 		clearBufferViews();
 
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Texture);
-		Texture::destroy_internal();
+		TextureCore::destroy();
 	}
 
-    GLenum GLTexture::getGLTextureTarget() const
+    GLenum GLTextureCore::getGLTextureTarget() const
     {
-        switch(mTextureType)
+		switch (mProperties.getTextureType())
         {
             case TEX_TYPE_1D:
                 return GL_TEXTURE_1D;
             case TEX_TYPE_2D:
-				if(mMultisampleCount > 0)
+				if (mProperties.getMultisampleCount() > 0)
 					return GL_TEXTURE_2D_MULTISAMPLE;
 				else
 					return GL_TEXTURE_2D;
@@ -176,26 +184,26 @@ namespace BansheeEngine
         };
     }
 
-	GLuint GLTexture::getGLID() const
+	GLuint GLTextureCore::getGLID() const
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		return mTextureID;
 	}
 
-	PixelData GLTexture::lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face)
+	PixelData GLTextureCore::lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face)
 	{
-		if (mMultisampleCount > 0)
+		if (mProperties.getMultisampleCount() > 0)
 			BS_EXCEPT(InvalidStateException, "Multisampled textures cannot be accessed from the CPU directly.");
 
 		if(mLockedBuffer != nullptr)
 			BS_EXCEPT(InternalErrorException, "Trying to lock a buffer that's already locked.");
 
-		UINT32 mipWidth = mWidth >> mipLevel;
-		UINT32 mipHeight = mHeight >> mipLevel;
-		UINT32 mipDepth = mDepth >> mipLevel;
+		UINT32 mipWidth = mProperties.getWidth() >> mipLevel;
+		UINT32 mipHeight = mProperties.getHeight() >> mipLevel;
+		UINT32 mipDepth = mProperties.getDepth() >> mipLevel;
 
-		PixelData lockedArea(mipWidth, mipHeight, mipDepth, mFormat);
+		PixelData lockedArea(mipWidth, mipHeight, mipDepth, mProperties.getFormat());
 
 		mLockedBuffer = getBuffer(face, mipLevel);
 		lockedArea.setExternalBuffer((UINT8*)mLockedBuffer->lock(options));
@@ -203,7 +211,7 @@ namespace BansheeEngine
 		return lockedArea;
 	}
 
-	void GLTexture::unlockImpl()
+	void GLTextureCore::unlockImpl()
 	{
 		if(mLockedBuffer == nullptr)
 			BS_EXCEPT(InternalErrorException, "Trying to unlock a buffer that's not locked.");
@@ -213,42 +221,43 @@ namespace BansheeEngine
 	}
 
 
-	void GLTexture::readData(PixelData& dest, UINT32 mipLevel, UINT32 face)
+	void GLTextureCore::readData(PixelData& dest, UINT32 mipLevel, UINT32 face)
 	{
-		if (mMultisampleCount > 0)
+		if (mProperties.getMultisampleCount() > 0)
 			BS_EXCEPT(InvalidStateException, "Multisampled textures cannot be accessed from the CPU directly.");
 
 		getBuffer(face, mipLevel)->download(dest);
 	}
 
-	void GLTexture::writeData(const PixelData& src, UINT32 mipLevel, UINT32 face, bool discardWholeBuffer)
+	void GLTextureCore::writeData(const PixelData& src, UINT32 mipLevel, UINT32 face, bool discardWholeBuffer)
 	{
-		if (mMultisampleCount > 0)
+		if (mProperties.getMultisampleCount() > 0)
 			BS_EXCEPT(InvalidStateException, "Multisampled textures cannot be accessed from the CPU directly.");
 
 		getBuffer(face, mipLevel)->upload(src, src.getExtents());
 	}
 
-	void GLTexture::copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, TexturePtr& target)
+	void GLTextureCore::copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, const SPtr<TextureCore>& target)
 	{
-		size_t numMips = std::min(getNumMipmaps(), target->getNumMipmaps());
+		size_t numMips = std::min(mProperties.getNumMipmaps(), target->getProperties().getNumMipmaps());
 
-		GLTexture* destTex = static_cast<GLTexture*>(target.get());
+		GLTextureCore* destTex = static_cast<GLTextureCore*>(target.get());
 		GLTextureBuffer *src = static_cast<GLTextureBuffer*>(getBuffer(srcFace, srcMipLevel).get());
 
 		destTex->getBuffer(destFace, destMipLevel)->blitFromTexture(src);
 	}
 
-	void GLTexture::createSurfaceList()
+	void GLTextureCore::createSurfaceList()
 	{
 		mSurfaceList.clear();
 		
-		for(UINT32 face = 0; face < getNumFaces(); face++)
+		for (UINT32 face = 0; face < mProperties.getNumFaces(); face++)
 		{
-			for(UINT32 mip = 0; mip <= getNumMipmaps(); mip++)
+			for (UINT32 mip = 0; mip <= mProperties.getNumMipmaps(); mip++)
 			{
                 GLPixelBuffer *buf = bs_new<GLTextureBuffer, PoolAlloc>(getGLTextureTarget(), mTextureID, face, mip,
-						static_cast<GpuBufferUsage>(mUsage), mHwGamma, mMultisampleCount);
+					static_cast<GpuBufferUsage>(mProperties.getUsage()), 
+					mProperties.isHardwareGammaEnabled(), mProperties.getMultisampleCount());
 
 				mSurfaceList.push_back(bs_shared_ptr<GLPixelBuffer, PoolAlloc>(buf));
                 if(buf->getWidth() == 0 || buf->getHeight() == 0 || buf->getDepth() == 0)
@@ -263,17 +272,17 @@ namespace BansheeEngine
 		}
 	}
 	
-	std::shared_ptr<GLPixelBuffer> GLTexture::getBuffer(UINT32 face, UINT32 mipmap)
+	std::shared_ptr<GLPixelBuffer> GLTextureCore::getBuffer(UINT32 face, UINT32 mipmap)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		if(face >= getNumFaces())
+		if(face >= mProperties.getNumFaces())
 			BS_EXCEPT(InvalidParametersException, "Face index out of range");
 
-		if(mipmap > mNumMipmaps)
+		if (mipmap > mProperties.getNumMipmaps())
 			BS_EXCEPT(InvalidParametersException, "Mipmap index out of range");
 
-		unsigned int idx = face*(mNumMipmaps+1) + mipmap;
+		unsigned int idx = face * (mProperties.getNumMipmaps() + 1) + mipmap;
 		assert(idx < mSurfaceList.size());
 		return mSurfaceList[idx];
 	}

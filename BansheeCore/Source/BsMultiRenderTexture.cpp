@@ -16,12 +16,14 @@ namespace BansheeEngine
 
 			if (texture != nullptr)
 			{
-				mWidth = texture->getWidth();
-				mHeight = texture->getWidth();
-				mColorDepth = BansheeEngine::PixelUtil::getNumElemBits(texture->getFormat());
+				const TextureProperties& texProps = texture->getProperties();
+
+				mWidth = texProps.getWidth();
+				mHeight = texProps.getWidth();
+				mColorDepth = BansheeEngine::PixelUtil::getNumElemBits(texProps.getFormat());
 				mActive = true;
-				mHwGamma = texture->isHardwareGammaEnabled();
-				mMultisampleCount = texture->getMultisampleCount();
+				mHwGamma = texProps.isHardwareGammaEnabled();
+				mMultisampleCount = texProps.getMultisampleCount();
 				mIsWindow = false;
 				mRequiresTextureFlipping = requiresTextureFlipping();
 
@@ -55,24 +57,24 @@ namespace BansheeEngine
 					continue;
 				}
 
-				TexturePtr texture = mDesc.colorSurfaces[i].texture;
+				SPtr<TextureCore> texture = mDesc.colorSurfaces[i].texture->getCore();
 
-				if (texture->getUsage() != TU_RENDERTARGET)
+				if (texture->getProperties().getUsage() != TU_RENDERTARGET)
 					BS_EXCEPT(InvalidParametersException, "Provided texture is not created with render target usage.");
 
-				mColorSurfaces[i] = Texture::requestView(texture, mDesc.colorSurfaces[i].mipLevel, 1,
+				mColorSurfaces[i] = TextureCore::requestView(texture, mDesc.colorSurfaces[i].mipLevel, 1,
 					mDesc.colorSurfaces[i].face, 1, GVU_RENDERTARGET);
 			}
 		}
 
 		if (mDesc.depthStencilSurface.texture != nullptr)
 		{
-			TexturePtr texture = mDesc.depthStencilSurface.texture;
+			SPtr<TextureCore> texture = mDesc.depthStencilSurface.texture->getCore();
 
-			if (texture->getUsage() != TU_DEPTHSTENCIL)
+			if (texture->getProperties().getUsage() != TU_DEPTHSTENCIL)
 				BS_EXCEPT(InvalidParametersException, "Provided texture is not created with depth stencil usage.");
 
-			mDepthStencilSurface = Texture::requestView(texture, mDesc.depthStencilSurface.mipLevel, 1,
+			mDepthStencilSurface = TextureCore::requestView(texture, mDesc.depthStencilSurface.mipLevel, 1,
 				mDesc.depthStencilSurface.face, 1, GVU_DEPTHSTENCIL);
 		}
 
@@ -84,11 +86,11 @@ namespace BansheeEngine
 		for (auto iter = mColorSurfaces.begin(); iter != mColorSurfaces.end(); ++iter)
 		{
 			if (*iter != nullptr)
-				Texture::releaseView(*iter);
+				TextureCore::releaseView(*iter);
 		}
 
 		if (mDepthStencilSurface != nullptr)
-			Texture::releaseView(mDepthStencilSurface);
+			TextureCore::releaseView(mDepthStencilSurface);
 
 		RenderTargetCore::destroy();
 	}
@@ -129,48 +131,54 @@ namespace BansheeEngine
 				continue;
 			}
 
-			if(mColorSurfaces[i]->getTexture()->getWidth() != firstSurfaceDesc->getTexture()->getWidth() ||
-				mColorSurfaces[i]->getTexture()->getHeight() != firstSurfaceDesc->getTexture()->getHeight() ||
-				mColorSurfaces[i]->getTexture()->getMultisampleCount() != firstSurfaceDesc->getTexture()->getMultisampleCount())
+			const TextureProperties& curTexProps = mColorSurfaces[i]->getTexture()->getProperties();
+			const TextureProperties& firstTexProps = firstSurfaceDesc->getTexture()->getProperties();
+
+			if (curTexProps.getWidth() != firstTexProps.getWidth() ||
+				curTexProps.getHeight() != firstTexProps.getHeight() ||
+				curTexProps.getMultisampleCount() != firstTexProps.getMultisampleCount())
 			{
-				String errorInfo = "\nWidth: " + toString(mColorSurfaces[i]->getTexture()->getWidth()) + "/" + toString(firstSurfaceDesc->getTexture()->getWidth());
-				errorInfo += "\nHeight: " + toString(mColorSurfaces[i]->getTexture()->getHeight()) + "/" + toString(firstSurfaceDesc->getTexture()->getHeight());
-				errorInfo += "\nMultisample Count: " + toString(mColorSurfaces[i]->getTexture()->getMultisampleCount()) + "/" + toString(firstSurfaceDesc->getTexture()->getMultisampleCount());
+				String errorInfo = "\nWidth: " + toString(curTexProps.getWidth()) + "/" + toString(firstTexProps.getWidth());
+				errorInfo += "\nHeight: " + toString(curTexProps.getHeight()) + "/" + toString(firstTexProps.getHeight());
+				errorInfo += "\nMultisample Count: " + toString(curTexProps.getMultisampleCount()) + "/" + toString(firstTexProps.getMultisampleCount());
 
 				BS_EXCEPT(InvalidParametersException, "Provided texture and depth stencil buffer don't match!" + errorInfo);
 			}
 		}
 
-		if(firstSurfaceDesc == nullptr)
-			return;
-
-		if(firstSurfaceDesc->getTexture()->getTextureType() != TEX_TYPE_2D)
-			BS_EXCEPT(NotImplementedException, "Render textures are currently only implemented for 2D surfaces.");
-
-		if((firstSurfaceDesc->getFirstArraySlice() + firstSurfaceDesc->getNumArraySlices()) >= firstSurfaceDesc->getTexture()->getNumFaces())
+		if (firstSurfaceDesc != nullptr)
 		{
-			BS_EXCEPT(InvalidParametersException, "Provided number of faces is out of range. Face: " + 
-				toString(firstSurfaceDesc->getFirstArraySlice() + firstSurfaceDesc->getNumArraySlices()) + ". Max num faces: " + toString(firstSurfaceDesc->getTexture()->getNumFaces()));
-		}
+			const TextureProperties& firstTexProps = firstSurfaceDesc->getTexture()->getProperties();
 
-		if(firstSurfaceDesc->getMostDetailedMip() >= firstSurfaceDesc->getTexture()->getNumMipmaps())
-		{
-			BS_EXCEPT(InvalidParametersException, "Provided number of mip maps is out of range. Mip level: " + 
-				toString(firstSurfaceDesc->getMostDetailedMip()) + ". Max num mipmaps: " + toString(firstSurfaceDesc->getTexture()->getNumMipmaps()));
-		}
+			if (firstTexProps.getTextureType() != TEX_TYPE_2D)
+				BS_EXCEPT(NotImplementedException, "Render textures are currently only implemented for 2D surfaces.");
 
-		if(mDepthStencilSurface == nullptr)
-			return;
+			if ((firstSurfaceDesc->getFirstArraySlice() + firstSurfaceDesc->getNumArraySlices()) >= firstTexProps.getNumFaces())
+			{
+				BS_EXCEPT(InvalidParametersException, "Provided number of faces is out of range. Face: " +
+					toString(firstSurfaceDesc->getFirstArraySlice() + firstSurfaceDesc->getNumArraySlices()) + ". Max num faces: " + toString(firstTexProps.getNumFaces()));
+			}
 
-		if(mDepthStencilSurface->getTexture()->getWidth() != firstSurfaceDesc->getTexture()->getWidth() ||
-			mDepthStencilSurface->getTexture()->getHeight() != firstSurfaceDesc->getTexture()->getHeight() ||
-			mDepthStencilSurface->getTexture()->getMultisampleCount() != firstSurfaceDesc->getTexture()->getMultisampleCount())
-		{
-			String errorInfo = "\nWidth: " + toString(mDepthStencilSurface->getTexture()->getWidth()) + "/" + toString(firstSurfaceDesc->getTexture()->getWidth());
-			errorInfo += "\nHeight: " + toString(mDepthStencilSurface->getTexture()->getHeight()) + "/" + toString(firstSurfaceDesc->getTexture()->getHeight());
-			errorInfo += "\nMultisample Count: " + toString(mDepthStencilSurface->getTexture()->getMultisampleCount()) + "/" + toString(firstSurfaceDesc->getTexture()->getMultisampleCount());
+			if (firstSurfaceDesc->getMostDetailedMip() >= firstTexProps.getNumMipmaps())
+			{
+				BS_EXCEPT(InvalidParametersException, "Provided number of mip maps is out of range. Mip level: " +
+					toString(firstSurfaceDesc->getMostDetailedMip()) + ". Max num mipmaps: " + toString(firstTexProps.getNumMipmaps()));
+			}
 
-			BS_EXCEPT(InvalidParametersException, "Provided texture and depth stencil buffer don't match!" + errorInfo);
+			if (mDepthStencilSurface == nullptr)
+				return;
+
+			const TextureProperties& depthTexProps = mDepthStencilSurface->getTexture()->getProperties();
+			if (depthTexProps.getWidth() != firstTexProps.getWidth() ||
+				depthTexProps.getHeight() != firstTexProps.getHeight() ||
+				depthTexProps.getMultisampleCount() != firstTexProps.getMultisampleCount())
+			{
+				String errorInfo = "\nWidth: " + toString(depthTexProps.getWidth()) + "/" + toString(firstTexProps.getWidth());
+				errorInfo += "\nHeight: " + toString(depthTexProps.getHeight()) + "/" + toString(firstTexProps.getHeight());
+				errorInfo += "\nMultisample Count: " + toString(depthTexProps.getMultisampleCount()) + "/" + toString(firstTexProps.getMultisampleCount());
+
+				BS_EXCEPT(InvalidParametersException, "Provided texture and depth stencil buffer don't match!" + errorInfo);
+			}
 		}
 	}
 

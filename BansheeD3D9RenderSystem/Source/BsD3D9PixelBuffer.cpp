@@ -34,7 +34,7 @@ namespace BansheeEngine
 		return pbox;
 	}
 
-	D3D9PixelBuffer::D3D9PixelBuffer(GpuBufferUsage usage, D3D9Texture* ownerTexture)
+	D3D9PixelBuffer::D3D9PixelBuffer(GpuBufferUsage usage, D3D9TextureCore* ownerTexture)
 		:PixelBuffer(0, 0, 0, PF_UNKNOWN, usage, false),
 		 mDoMipmapGen(0), mHWMipmaps(0), mOwnerTexture(ownerTexture)
 	{ }

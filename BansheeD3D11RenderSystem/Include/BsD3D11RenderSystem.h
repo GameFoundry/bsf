@@ -48,12 +48,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	RenderSystem::setTexture
 		 */
-		void setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr &texPtr);
+		void setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& texPtr);
 
 		/**
 		 * @copydoc	RenderSystem::setLoadStoreTexture
 		 */
-		void setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr& texPtr,
+		void setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& texPtr,
 			const TextureSurface& surface);
 
 		/**
@@ -255,7 +255,7 @@ namespace BansheeEngine
 		D3D11HLSLProgramFactory* mHLSLFactory;
 		D3D11InputLayoutManager* mIAManager;
 
-		std::pair<TexturePtr, TextureViewPtr> mBoundUAVs[D3D11_PS_CS_UAV_REGISTER_COUNT];
+		std::pair<SPtr<TextureCore>, TextureViewPtr> mBoundUAVs[D3D11_PS_CS_UAV_REGISTER_COUNT];
 
 		UINT32 mStencilRef;
 		Rect2 mViewportNorm;

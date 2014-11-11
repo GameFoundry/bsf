@@ -8,10 +8,10 @@ namespace BansheeEngine
 	/**
 	 * @brief	DirectX 11 implementation of a texture.
 	 */
-	class D3D11Texture : public Texture
+	class D3D11TextureCore : public TextureCore
 	{
 	public:
-		~D3D11Texture();
+		~D3D11TextureCore();
 
 		/**
 		 * @brief	Returns internal DX11 texture resource object.
@@ -29,19 +29,20 @@ namespace BansheeEngine
 		DXGI_FORMAT getDXGIFormat() const { return mDXGIFormat; }
 
 	protected:
-		friend class D3D11TextureManager;
+		friend class D3D11TextureCoreManager;
 
-		D3D11Texture();
-
-		/**
-		* @copydoc	Texture::initialize_internal()
-		*/
-		void initialize_internal();
+		D3D11TextureCore(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps,
+			PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount);
 
 		/**
-		* @copydoc Texture::destroy_internal()
+		* @copydoc	CoreObjectCore::initialize()
 		*/
-		void destroy_internal();
+		void initialize();
+
+		/**
+		* @copydoc CoreObjectCore::destroy()
+		*/
+		void destroy();
 
 		/**
 		 * @copydoc Texture::lockImpl
@@ -56,7 +57,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc Texture::copyImpl
 		 */
-		void copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, TexturePtr& target);
+		void copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, const SPtr<TextureCore>& target);
 
 		/**
 		 * @copydoc Texture::readData

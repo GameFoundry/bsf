@@ -18,11 +18,6 @@ namespace BansheeEngine
 
 	protected:		
 		/**
-		 * @copydoc	TextureManager::createTextureImpl
-		 */
-		TexturePtr createTextureImpl();
-
-		/**
 		 * @copydoc	TextureManager::createRenderTextureImpl
 		 */
 		RenderTexturePtr createRenderTextureImpl(const RENDER_TEXTURE_DESC& desc);
@@ -38,7 +33,14 @@ namespace BansheeEngine
 	 */
 	class BS_D3D11_EXPORT D3D11TextureCoreManager : public TextureCoreManager
 	{
-	protected:		
+	protected:
+		/**
+		 * @copydoc	TextureCoreManager::createTextureInternal
+		 */
+		SPtr<TextureCore> createTextureInternal(TextureType texType, UINT32 width, UINT32 height, UINT32 depth,
+			int numMips, PixelFormat format, int usage = TU_DEFAULT, bool hwGammaCorrection = false,
+			UINT32 multisampleCount = 0);
+
 		/**
 		 * @copydoc	TextureCoreManager::createRenderTextureInternal
 		 */

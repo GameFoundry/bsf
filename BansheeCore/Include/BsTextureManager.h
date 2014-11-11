@@ -20,14 +20,14 @@ namespace BansheeEngine
 		virtual ~TextureManager() { }
 
 		/**
-		 * @copydoc	Texture::create(TextureType, UINT32, UINT32, UINT32, int, PixelFormat, int, bool, UINT32, const String&)
+		 * @copydoc	Texture::create(TextureType, UINT32, UINT32, UINT32, int, PixelFormat, int, bool, UINT32)
 		 */
         TexturePtr createTexture(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, 
 			int numMips, PixelFormat format, int usage = TU_DEFAULT, bool hwGammaCorrection = false, 
 			UINT32 multisampleCount = 0);
 			
 		/**
-		 * @copydoc	Texture::create(TextureType, UINT32, UINT32, int, PixelFormat, int, bool, UINT32, const String&)
+		 * @copydoc	Texture::create(TextureType, UINT32, UINT32, int, PixelFormat, int, bool, UINT32)
 		 */
 		TexturePtr createTexture(TextureType texType, UINT32 width, UINT32 height, int numMips,
 			PixelFormat format, int usage = TU_DEFAULT, bool hwGammaCorrection = false, UINT32 multisampleCount = 0)
@@ -85,12 +85,6 @@ namespace BansheeEngine
 
 	protected:
 		/**
-		 * @brief	Creates an empty and uninitialized texture of a specific type. This is to be implemented
-		 *			by render systems with their own implementations.
-		 */
-		virtual TexturePtr createTextureImpl() = 0;
-
-		/**
 		 * @brief	Creates an empty and uninitialized render texture of a specific type. This 
 		 *			is to be implemented by render systems with their own implementations.
 		 */
@@ -115,6 +109,13 @@ namespace BansheeEngine
 		virtual ~TextureCoreManager() { }
 
 		/**
+		 * @copydoc	TextureManager::createTexture(TextureType, UINT32, UINT32, UINT32, int, PixelFormat, int, bool, UINT32)
+		 */
+		SPtr<TextureCore> createTexture(TextureType texType, UINT32 width, UINT32 height, UINT32 depth,
+			int numMips, PixelFormat format, int usage = TU_DEFAULT, bool hwGammaCorrection = false, 
+			UINT32 multisampleCount = 0);
+
+		/**
 		 * @copydoc	TextureManager::createRenderTexture(const RENDER_TEXTURE_DESC&)
 		 */
 		SPtr<RenderTextureCore> createRenderTexture(const RENDER_TEXTURE_DESC& desc);
@@ -124,14 +125,18 @@ namespace BansheeEngine
 		 */
 		SPtr<MultiRenderTextureCore> createMultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC& desc);
 
-		/**
-		 * @brief	Returns tiny dummy texture for use when no other is available.
-		 */
-		const HTexture& getDummyTexture() const { return mDummyTexture; }
-
 	protected:
+		friend class Texture;
 		friend class RenderTexture;
 		friend class MultiRenderTexture;
+
+		/**
+		 * @brief	Creates an empty and uninitialized texture of a specific type. This is to be implemented
+		 *			by render systems with their own implementations.
+		 */
+		virtual SPtr<TextureCore> createTextureInternal(TextureType texType, UINT32 width, UINT32 height, UINT32 depth,
+			int numMips, PixelFormat format, int usage = TU_DEFAULT, bool hwGammaCorrection = false,
+			UINT32 multisampleCount = 0) = 0;
 
 		/**
 		 * @copydoc	TextureManager::createRenderTextureImpl
@@ -142,13 +147,5 @@ namespace BansheeEngine
 		 * @copydoc	TextureManager::createMultiRenderTextureImpl
 		 */
 		virtual SPtr<MultiRenderTextureCore> createMultiRenderTextureInternal(const MULTI_RENDER_TEXTURE_DESC& desc) = 0;
-
-		/**
-		 * @copydoc	Module::onStartUp
-		 */
-		virtual void onStartUp();
-
-	protected:
-		HTexture mDummyTexture;
     };
 }

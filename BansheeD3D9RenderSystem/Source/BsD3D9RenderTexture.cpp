@@ -23,12 +23,12 @@ namespace BansheeEngine
 
 	void D3D9RenderTextureCore::initializeSurfaces()
 	{
-		D3D9Texture* d3d9texture = static_cast<D3D9Texture*>(mColorSurface->getTexture().get());
+		D3D9TextureCore* d3d9texture = static_cast<D3D9TextureCore*>(mColorSurface->getTexture().get());
 		D3D9PixelBuffer* pixelBuffer = static_cast<D3D9PixelBuffer*>(
 			d3d9texture->getBuffer(mColorSurface->getFirstArraySlice(), mColorSurface->getMostDetailedMip()).get());
 		mDX9ColorSurface = pixelBuffer->getSurface(D3D9RenderSystem::getActiveD3D9Device());
 
-		D3D9Texture* d3d9DepthStencil = static_cast<D3D9Texture*>(mDepthStencilSurface->getTexture().get());
+		D3D9TextureCore* d3d9DepthStencil = static_cast<D3D9TextureCore*>(mDepthStencilSurface->getTexture().get());
 		D3D9PixelBuffer* depthStencilBuffer = static_cast<D3D9PixelBuffer*>(
 			d3d9DepthStencil->getBuffer(mDepthStencilSurface->getFirstArraySlice(), mDepthStencilSurface->getMostDetailedMip()).get());
 		mDX9DepthStencilSurface = depthStencilBuffer->getSurface(D3D9RenderSystem::getActiveD3D9Device());

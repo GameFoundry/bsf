@@ -11,10 +11,10 @@ namespace BansheeEngine
 	/**
 	 * @brief	OpenGL implementation of a texture.
 	 */
-    class BS_RSGL_EXPORT GLTexture : public Texture
+    class BS_RSGL_EXPORT GLTextureCore : public TextureCore
     {
     public:
-        virtual ~GLTexture();      
+		virtual ~GLTextureCore();
 
 		/**
 		 * @brief	Returns OpenGL texture target type
@@ -43,42 +43,43 @@ namespace BansheeEngine
 		std::shared_ptr<GLPixelBuffer> getBuffer(UINT32 face, UINT32 mipmap);
 
     protected:
-		friend class GLTextureManager;
+		friend class GLTextureCoreManager;
 
-		GLTexture(GLSupport& support);
+		GLTextureCore(GLSupport& support, TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps,
+			PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount);
 
 		/**
-		 * @copydoc Texture::initialize_internal
+		 * @copydoc TextureCore::initialize
 		 */
-		void initialize_internal();
+		void initialize();
 
 		/**
-		 * @copydoc Texture::destroy_internal
+		 * @copydoc TextureCore::destroy
 		 */
-		void destroy_internal();
+		void destroy();
 
 		/**
-		 * @copydoc Texture::lock
+		 * @copydoc TextureCore::lock
 		 */
 		PixelData lockImpl(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0);
 
 		/**
-		 * @copydoc Texture::unlock
+		 * @copydoc TextureCore::unlock
 		 */
 		void unlockImpl();
 
 		/**
-		 * @copydoc Texture::copy
+		 * @copydoc TextureCore::copy
 		 */
-		void copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, TexturePtr& target);
+		void copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, const SPtr<TextureCore>& target);
 
 		/**
-		 * @copydoc Texture::readData
+		 * @copydoc TextureCore::readData
 		 */
 		void readData(PixelData& dest, UINT32 mipLevel = 0, UINT32 face = 0);
 
 		/**
-		 * @copydoc Texture::writeData
+		 * @copydoc TextureCore::writeData
 		 */
 		void writeData(const PixelData& src, UINT32 mipLevel = 0, UINT32 face = 0, bool discardWholeBuffer = false);
 
@@ -96,6 +97,4 @@ namespace BansheeEngine
 		
 		Vector<std::shared_ptr<GLPixelBuffer>>mSurfaceList;
     };
-
-	typedef std::shared_ptr<GLTexture> GLTexturePtr;
 }

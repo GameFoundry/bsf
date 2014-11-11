@@ -142,8 +142,8 @@ namespace BansheeEngine
 		if (SpriteTexture::checkIsLoaded(mActiveTexture))
 		{
 			mDesc.texture = mActiveTexture.getInternalPtr();
-			optimalWidth = (float)mDesc.texture->getTexture()->getWidth();
-			optimalHeight = (float)mDesc.texture->getTexture()->getHeight();
+			optimalWidth = (float)mDesc.texture->getWidth();
+			optimalHeight = (float)mDesc.texture->getHeight();
 		}
 
 		switch (mScaleMode)
@@ -210,7 +210,7 @@ namespace BansheeEngine
 		else
 		{
 			if (SpriteTexture::checkIsLoaded(mActiveTexture))
-				optimalSize.x = mActiveTexture->getTexture()->getWidth();
+				optimalSize.x = mActiveTexture->getWidth();
 			else
 				optimalSize.x = _getLayoutOptions().maxWidth;
 		}
@@ -220,7 +220,7 @@ namespace BansheeEngine
 		else
 		{
 			if (SpriteTexture::checkIsLoaded(mActiveTexture))
-				optimalSize.y = mActiveTexture->getTexture()->getHeight();
+				optimalSize.y = mActiveTexture->getHeight();
 			else
 				optimalSize.y = _getLayoutOptions().maxHeight;
 		}

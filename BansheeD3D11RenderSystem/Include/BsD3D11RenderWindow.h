@@ -159,7 +159,7 @@ namespace BansheeEngine
 		ID3D11Texture2D* mBackBuffer;
 		ID3D11RenderTargetView*	mRenderTargetView;
 		TextureViewPtr mDepthStencilView;
-		TexturePtr mDepthStencilBuffer;
+		SPtr<TextureCore> mDepthStencilBuffer;
 
 		IDXGISwapChain*	mSwapChain;
 		DXGI_SWAP_CHAIN_DESC mSwapChainDesc;

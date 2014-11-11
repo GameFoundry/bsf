@@ -15,13 +15,6 @@ namespace BansheeEngine
 	D3D9TextureManager::~D3D9TextureManager()
 	{ }
 
-    TexturePtr D3D9TextureManager::createTextureImpl()
-    {
-		D3D9Texture* tex = new (bs_alloc<D3D9Texture, PoolAlloc>()) D3D9Texture();
-
-		return bs_core_ptr<D3D9Texture, PoolAlloc>(tex);
-    }
-
 	RenderTexturePtr D3D9TextureManager::createRenderTextureImpl(const RENDER_TEXTURE_DESC& desc)
 	{
 		D3D9RenderTexture* tex = new (bs_alloc<D3D9RenderTexture, PoolAlloc>()) D3D9RenderTexture(desc);
@@ -51,6 +44,15 @@ namespace BansheeEngine
 			// Basic filtering
 			return D3D9Mappings::_getClosestSupportedPF(format);
 		}
+	}
+
+	SPtr<TextureCore> D3D9TextureCoreManager::createTextureInternal(TextureType texType, UINT32 width, UINT32 height, UINT32 depth,
+		int numMips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount)
+	{
+		D3D9TextureCore* tex = new (bs_alloc<D3D9TextureCore>()) D3D9TextureCore(texType,
+			width, height, depth, numMips, format, usage, hwGammaCorrection, multisampleCount);
+
+		return bs_shared_ptr<D3D9TextureCore, GenAlloc>(tex);
 	}
 
 	SPtr<RenderTextureCore> D3D9TextureCoreManager::createRenderTextureInternal(const RENDER_TEXTURE_DESC& desc)

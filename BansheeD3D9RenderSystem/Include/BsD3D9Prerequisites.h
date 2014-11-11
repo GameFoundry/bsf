@@ -29,7 +29,7 @@ namespace BansheeEngine
 	class D3D9RenderSystem;
 	class D3D9RenderWindow;
 	class D3D9RenderWindowCore;
-	class D3D9Texture;
+	class D3D9TextureCore;
 	class D3D9TextureManager;
 	class D3D9Driver;
 	class D3D9DriverList;
@@ -48,7 +48,6 @@ namespace BansheeEngine
 	class D3D9Resource;
 
 	typedef std::shared_ptr<D3D9RenderWindow> D3D9RenderWindowPtr;
-	typedef std::shared_ptr<D3D9Texture> D3D9TexturePtr;
 
 	/**
 	 * @brief	Type IDs used for RTTI.

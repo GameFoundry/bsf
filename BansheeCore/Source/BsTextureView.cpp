@@ -29,7 +29,7 @@ namespace BansheeEngine
 	TextureView::~TextureView()
 	{ }
 
-	void TextureView::initialize(TexturePtr texture, TEXTURE_VIEW_DESC& _desc)
+	void TextureView::initialize(const SPtr<TextureCore>& texture, TEXTURE_VIEW_DESC& _desc)
 	{
 		mOwnerTexture = texture;
 		mDesc = _desc;

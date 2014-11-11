@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
-#include "BsGpuResource.h"
+#include "BsResource.h"
 #include "BsBounds.h"
 #include "BsDrawOps.h"
 #include "BsSubMesh.h"

@@ -122,7 +122,6 @@ namespace BansheeEngine
 	class ImportOptions;
 	struct FontData;
 	class GameObject;
-	class GpuResource;
 	class GpuResourceData;
 	struct RenderOperation;
 	class RenderQueue;
@@ -147,6 +146,7 @@ namespace BansheeEngine
 	class DrawList;
 	struct SubMesh;
 	class TransientMeshCore;
+	class TextureCore;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -230,7 +230,6 @@ namespace BansheeEngine
 	typedef std::shared_ptr<ImportOptions> ImportOptionsPtr;
 	typedef std::shared_ptr<const ImportOptions> ConstImportOptionsPtr;
 	typedef std::shared_ptr<Font> FontPtr;
-	typedef std::shared_ptr<GpuResource> GpuResourcePtr;
 	typedef std::shared_ptr<VertexDataDesc> VertexDataDescPtr;
 	typedef CoreThreadAccessor<CommandQueueNoSync> CoreAccessor;
 	typedef CoreThreadAccessor<CommandQueueSync> SyncedCoreAccessor;
@@ -302,7 +301,6 @@ namespace BansheeEngine
 		TID_FontData = 1057,
 		TID_SceneObject = 1059,
 		TID_GameObject = 1060,
-		TID_GpuResource = 1061,
 		TID_PixelData = 1062,
 		TID_GpuResourceData = 1063,
 		TID_VertexDataDesc = 1064,

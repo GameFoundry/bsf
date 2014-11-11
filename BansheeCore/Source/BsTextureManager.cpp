@@ -9,16 +9,19 @@ namespace BansheeEngine
     TexturePtr TextureManager::createTexture(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, int numMipmaps,
         PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount)
     {
-        TexturePtr ret = createTextureImpl();
+		Texture* tex = new (bs_alloc<Texture>()) Texture(texType, width, height, depth, numMipmaps, format, usage, hwGamma, multisampleCount);
+		TexturePtr ret = bs_core_ptr<Texture, GenAlloc>(tex);
+
 		ret->_setThisPtr(ret);
-		ret->initialize(texType, width, height, depth, static_cast<size_t>(numMipmaps), format, usage, hwGamma, multisampleCount);
+		ret->initialize();
 
 		return ret;
     }
 
 	TexturePtr TextureManager::_createEmpty()
 	{
-		TexturePtr texture = createTextureImpl();
+		Texture* tex = new (bs_alloc<Texture>()) Texture();
+		TexturePtr texture = bs_core_ptr<Texture, GenAlloc>(tex);
 		texture->_setThisPtr(texture);
 
 		return texture;
@@ -68,6 +71,15 @@ namespace BansheeEngine
 		return newRT;
 	}
 
+	SPtr<TextureCore> TextureCoreManager::createTexture(TextureType texType, UINT32 width, UINT32 height, UINT32 depth,
+		int numMips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount)
+	{
+		SPtr<TextureCore> newRT = createTextureInternal(texType, width, height, depth, numMips, format, usage, hwGammaCorrection, multisampleCount);
+		newRT->initialize();
+
+		return newRT;
+	}
+
 	SPtr<RenderTextureCore> TextureCoreManager::createRenderTexture(const RENDER_TEXTURE_DESC& desc)
 	{
 		SPtr<RenderTextureCore> newRT = createRenderTextureInternal(desc);
@@ -82,25 +94,5 @@ namespace BansheeEngine
 		newRT->initialize();
 
 		return newRT;
-	}
-
-	void TextureCoreManager::onStartUp()
-	{
-		// Internally this will call our createTextureImpl virtual method. But since this is guaranteed
-		// to be the last class in the hierarchy, we can call a virtual method from constructor.
-		mDummyTexture = Texture::create(TEX_TYPE_2D, 2, 2, 0, PF_R8G8B8A8);
-
-		UINT32 subresourceIdx = mDummyTexture->mapToSubresourceIdx(0, 0);
-		PixelDataPtr data = mDummyTexture->allocateSubresourceBuffer(subresourceIdx);
-
-		data->setColorAt(Color::Red, 0, 0);
-		data->setColorAt(Color::Red, 0, 1);
-		data->setColorAt(Color::Red, 1, 0);
-		data->setColorAt(Color::Red, 1, 1);
-
-		AsyncOp op;
-
-		data->_lock();
-		RenderSystem::instance().writeSubresource(mDummyTexture.getInternalPtr(), mDummyTexture->mapToSubresourceIdx(0, 0), data, false, op);
 	}
 }

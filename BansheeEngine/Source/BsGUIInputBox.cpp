@@ -315,8 +315,8 @@ namespace BansheeEngine
 		const HSpriteTexture& activeTex = getActiveTexture();
 		if(SpriteTexture::checkIsLoaded(activeTex))
 		{
-			imageWidth = activeTex->getTexture()->getWidth();
-			imageHeight = activeTex->getTexture()->getHeight();
+			imageWidth = activeTex->getWidth();
+			imageHeight = activeTex->getHeight();
 		}
 
 		Vector2I contentSize = GUIHelper::calcOptimalContentsSize(mText, *_getStyle(), _getLayoutOptions());

@@ -11,20 +11,22 @@
 
 namespace BansheeEngine
 {
-	D3D11Texture::D3D11Texture()
-		: Texture(), m1DTex(nullptr), m2DTex(nullptr), m3DTex(nullptr), 
+	D3D11TextureCore::D3D11TextureCore(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps,
+		PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount)
+		: TextureCore(textureType, width, height, depth, numMipmaps, format, usage, hwGamma, multisampleCount),
+		m1DTex(nullptr), m2DTex(nullptr), m3DTex(nullptr), 
 		mTex(nullptr), mShaderResourceView(nullptr), mStagingBuffer(nullptr), 
 		mLockedSubresourceIdx(-1), mLockedForReading(false), mStaticBuffer(nullptr)
 	{ }
 
-	D3D11Texture::~D3D11Texture()
+	D3D11TextureCore::~D3D11TextureCore()
 	{ }
 
-	void D3D11Texture::initialize_internal()
+	void D3D11TextureCore::initialize()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		switch (getTextureType())
+		switch (mProperties.getTextureType())
 		{
 		case TEX_TYPE_1D:
 			create1DTex();
@@ -37,15 +39,14 @@ namespace BansheeEngine
 			create3DTex();
 			break;
 		default:
-			destroy_internal();
 			BS_EXCEPT(RenderingAPIException, "Unknown texture type");
 		}
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_Texture);
-		Texture::initialize_internal();
+		TextureCore::initialize();
 	}
 
-	void D3D11Texture::destroy_internal()
+	void D3D11TextureCore::destroy()
 	{
 		SAFE_RELEASE(mTex);
 		SAFE_RELEASE(mShaderResourceView);
@@ -55,20 +56,20 @@ namespace BansheeEngine
 		SAFE_RELEASE(mStagingBuffer);
 
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Texture);
-		Texture::destroy_internal();
+		TextureCore::destroy();
 	}
 
-	void D3D11Texture::copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, TexturePtr& target)
+	void D3D11TextureCore::copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, const SPtr<TextureCore>& target)
 	{
-		D3D11Texture* other = static_cast<D3D11Texture*>(target.get());
+		D3D11TextureCore* other = static_cast<D3D11TextureCore*>(target.get());
 
-		UINT32 srcResIdx = D3D11CalcSubresource(srcMipLevel, srcFace, getNumMipmaps() + 1);
-		UINT32 destResIdx = D3D11CalcSubresource(destMipLevel, destFace, target->getNumMipmaps() + 1);
+		UINT32 srcResIdx = D3D11CalcSubresource(srcMipLevel, srcFace, mProperties.getNumMipmaps() + 1);
+		UINT32 destResIdx = D3D11CalcSubresource(destMipLevel, destFace, target->getProperties().getNumMipmaps() + 1);
 
 		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
 
-		if (getMultisampleCount() != target->getMultisampleCount()) // Resolving from MS to non-MS texture
+		if (mProperties.getMultisampleCount() != target->getProperties().getMultisampleCount()) // Resolving from MS to non-MS texture
 		{
 			device.getImmediateContext()->ResolveSubresource(other->getDX11Resource(), destResIdx, mTex, srcResIdx, mDXGIFormat);
 		}
@@ -84,9 +85,9 @@ namespace BansheeEngine
 		}
 	}
 
-	PixelData D3D11Texture::lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face)
+	PixelData D3D11TextureCore::lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face)
 	{
-		if (mMultisampleCount > 0)
+		if (mProperties.getMultisampleCount() > 0)
 			BS_EXCEPT(InvalidStateException, "Multisampled textures cannot be accessed from the CPU directly.");
 
 #if BS_PROFILING_ENABLED
@@ -101,11 +102,11 @@ namespace BansheeEngine
 		}
 #endif
 
-		UINT32 mipWidth = mWidth >> mipLevel;
-		UINT32 mipHeight = mHeight >> mipLevel;
-		UINT32 mipDepth = mDepth >> mipLevel;
+		UINT32 mipWidth = mProperties.getWidth() >> mipLevel;
+		UINT32 mipHeight = mProperties.getHeight() >> mipLevel;
+		UINT32 mipDepth = mProperties.getDepth() >> mipLevel;
 
-		PixelData lockedArea(mipWidth, mipHeight, mipDepth, mFormat);
+		PixelData lockedArea(mipWidth, mipHeight, mipDepth, mProperties.getFormat());
 
 		D3D11_MAP flags = D3D11Mappings::getLockOptions(options);
 
@@ -121,7 +122,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			if(mUsage == TU_DYNAMIC)
+			if (mProperties.getUsage() == TU_DYNAMIC)
 			{
 				UINT8* data = (UINT8*)map(mTex, flags, face, mipLevel, rowPitch, slicePitch);
 				lockedArea.setExternalBuffer(data);
@@ -137,22 +138,22 @@ namespace BansheeEngine
 		return lockedArea;
 	}
 
-	void D3D11Texture::unlockImpl()
+	void D3D11TextureCore::unlockImpl()
 	{
 		if(mLockedForReading)
 			unmapstagingbuffer();
 		else
 		{
-			if(mUsage == TU_DYNAMIC)
+			if (mProperties.getUsage() == TU_DYNAMIC)
 				unmap(mTex);
 			else
 				unmapstaticbuffer();
 		}
 	}
 
-	void D3D11Texture::readData(PixelData& dest, UINT32 mipLevel, UINT32 face)
+	void D3D11TextureCore::readData(PixelData& dest, UINT32 mipLevel, UINT32 face)
 	{
-		if (mMultisampleCount > 0)
+		if (mProperties.getMultisampleCount() > 0)
 			BS_EXCEPT(InvalidStateException, "Multisampled textures cannot be accessed from the CPU directly.");
 
 		PixelData myData = lock(GBL_READ_ONLY, mipLevel, face);
@@ -170,31 +171,33 @@ namespace BansheeEngine
 		unlock();
 	}
 
-	void D3D11Texture::writeData(const PixelData& src, UINT32 mipLevel, UINT32 face, bool discardWholeBuffer)
+	void D3D11TextureCore::writeData(const PixelData& src, UINT32 mipLevel, UINT32 face, bool discardWholeBuffer)
 	{
-		if (mMultisampleCount > 0)
+		PixelFormat format = mProperties.getFormat();
+
+		if (mProperties.getMultisampleCount() > 0)
 			BS_EXCEPT(InvalidStateException, "Multisampled textures cannot be accessed from the CPU directly.");
 
-		if((mUsage & TU_DYNAMIC) != 0)
+		if ((mProperties.getUsage() & TU_DYNAMIC) != 0)
 		{
 			PixelData myData = lock(discardWholeBuffer ? GBL_WRITE_ONLY_DISCARD : GBL_WRITE_ONLY, mipLevel, face);
 			PixelUtil::bulkPixelConversion(src, myData);
 			unlock();
 		}
-		else if ((mUsage & TU_DEPTHSTENCIL) == 0)
+		else if ((mProperties.getUsage() & TU_DEPTHSTENCIL) == 0)
 		{
-			mipLevel = Math::clamp(mipLevel, (UINT32)mipLevel, getNumMipmaps());
-			face = Math::clamp(face, (UINT32)0, mDepth - 1);
+			mipLevel = Math::clamp(mipLevel, (UINT32)mipLevel, mProperties.getNumMipmaps());
+			face = Math::clamp(face, (UINT32)0, mProperties.getDepth() - 1);
 
-			if(getTextureType() == TEX_TYPE_3D)
+			if(mProperties.getTextureType() == TEX_TYPE_3D)
 				face = 0;
 
 			D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
 			D3D11Device& device = rs->getPrimaryDevice();
 
-			UINT subresourceIdx = D3D11CalcSubresource(mipLevel, face, getNumMipmaps()+1);
-			UINT32 rowWidth = D3D11Mappings::getSizeInBytes(mFormat, src.getWidth());
-			UINT32 sliceWidth = D3D11Mappings::getSizeInBytes(mFormat, src.getWidth(), src.getHeight());
+			UINT subresourceIdx = D3D11CalcSubresource(mipLevel, face, mProperties.getNumMipmaps() + 1);
+			UINT32 rowWidth = D3D11Mappings::getSizeInBytes(format, src.getWidth());
+			UINT32 sliceWidth = D3D11Mappings::getSizeInBytes(format, src.getWidth(), src.getHeight());
 
 			device.getImmediateContext()->UpdateSubresource(mTex, subresourceIdx, nullptr, src.getData(), rowWidth, sliceWidth);
 
@@ -208,38 +211,45 @@ namespace BansheeEngine
 		}
 		else
 		{
-			BS_EXCEPT(RenderingAPIException, "Trying to write into a buffer with unsupported usage: " + toString(mUsage));
+			BS_EXCEPT(RenderingAPIException, "Trying to write into a buffer with unsupported usage: " + toString(mProperties.getUsage()));
 		}
 	}
 
-	void D3D11Texture::create1DTex()
+	void D3D11TextureCore::create1DTex()
 	{
+		UINT32 width = mProperties.getWidth();
+		int usage = mProperties.getUsage();
+		UINT32 numMips = mProperties.getNumMipmaps();
+		PixelFormat format = mProperties.getFormat();
+		bool hwGamma = mProperties.isHardwareGammaEnabled();
+		TextureType texType = mProperties.getTextureType();
+
 		// We must have those defined here
-		assert(mWidth > 0);
+		assert(width > 0);
 
 		// Determine which D3D11 pixel format we'll use
 		HRESULT hr;
-		DXGI_FORMAT d3dPF = D3D11Mappings::getPF(D3D11Mappings::getClosestSupportedPF(mFormat, mHwGamma), mHwGamma);
+		DXGI_FORMAT d3dPF = D3D11Mappings::getPF(D3D11Mappings::getClosestSupportedPF(format, hwGamma), hwGamma);
 
-		if (mFormat != D3D11Mappings::getPF(d3dPF))
+		if (format != D3D11Mappings::getPF(d3dPF))
 		{
-			BS_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(mFormat));
+			BS_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(format));
 		}
 
 		D3D11_TEXTURE1D_DESC desc;
-		desc.Width			= static_cast<UINT32>(mWidth);
+		desc.Width = static_cast<UINT32>(width);
 		desc.ArraySize		= 1;
 		desc.Format			= d3dPF;
 		desc.MiscFlags		= 0;
 
-		if((mUsage & TU_RENDERTARGET) != 0)
+		if((usage & TU_RENDERTARGET) != 0)
 		{
 			desc.Usage			= D3D11_USAGE_DEFAULT;
 			desc.BindFlags		= D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
 			desc.CPUAccessFlags = 0;
 			desc.MipLevels		= 1;
 		}
-		else if((mUsage & TU_DEPTHSTENCIL) != 0)
+		else if ((usage & TU_DEPTHSTENCIL) != 0)
 		{
 			desc.Usage			= D3D11_USAGE_DEFAULT;
 			desc.BindFlags		= D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
@@ -248,16 +258,15 @@ namespace BansheeEngine
 		}
 		else
 		{
-			desc.Usage			= D3D11Mappings::getUsage((GpuBufferUsage)mUsage);
+			desc.Usage			= D3D11Mappings::getUsage((GpuBufferUsage)usage);
 			desc.BindFlags		= D3D11_BIND_SHADER_RESOURCE;
-			desc.CPUAccessFlags = D3D11Mappings::getAccessFlags((GpuBufferUsage)mUsage);
+			desc.CPUAccessFlags = D3D11Mappings::getAccessFlags((GpuBufferUsage)usage);
 
 			// Determine total number of mipmaps including main one (d3d11 convention)
-			UINT32 numMips		= (mNumMipmaps == MIP_UNLIMITED || (1U << mNumMipmaps) > mWidth) ? 0 : mNumMipmaps + 1;
-			desc.MipLevels		= numMips;
+			desc.MipLevels = (numMips == MIP_UNLIMITED || (1U << numMips) > width) ? 0 : numMips + 1;
 		}
 
-		if ((mUsage & TU_LOADSTORE) != 0)
+		if ((usage & TU_LOADSTORE) != 0)
 			desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
 
 		// Create the texture
@@ -268,7 +277,6 @@ namespace BansheeEngine
 		// Check result and except if failed
 		if (FAILED(hr) || device.hasError())
 		{
-			destroy_internal();
 			String errorDescription = device.getErrorDescription();
 			BS_EXCEPT(RenderingAPIException, "Error creating texture\nError Description:" + errorDescription);
 		}
@@ -277,24 +285,23 @@ namespace BansheeEngine
 
 		if(FAILED(hr) || device.hasError())
 		{
-			destroy_internal();
 			String errorDescription = device.getErrorDescription();
 			BS_EXCEPT(RenderingAPIException, "Can't get base texture\nError Description:" + errorDescription);
 		}
 
 		m1DTex->GetDesc(&desc);
 
-		if(mNumMipmaps != (desc.MipLevels - 1))
+		if(numMips != (desc.MipLevels - 1))
 		{
 			BS_EXCEPT(RenderingAPIException, "Driver returned different number of mip maps than requested. " \
-				"Requested: " + toString(mNumMipmaps) + ". Got: " + toString(desc.MipLevels - 1) + ".");
+				"Requested: " + toString(numMips) + ". Got: " + toString(desc.MipLevels - 1) + ".");
 		}
 
 		mDXGIFormat = desc.Format;
 		mDimension = D3D11_SRV_DIMENSION_TEXTURE1D;
 
 		// Create texture view
-		if((mUsage & TU_DEPTHSTENCIL) == 0)
+		if ((usage & TU_DEPTHSTENCIL) == 0)
 		{
 			ZeroMemory(&mSRVDesc, sizeof(mSRVDesc));
 			mSRVDesc.Format = desc.Format;
@@ -310,28 +317,37 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D11Texture::create2DTex()
+	void D3D11TextureCore::create2DTex()
 	{
+		UINT32 width = mProperties.getWidth();
+		UINT32 height = mProperties.getHeight();
+		int usage = mProperties.getUsage();
+		UINT32 numMips = mProperties.getNumMipmaps();
+		PixelFormat format = mProperties.getFormat();
+		bool hwGamma = mProperties.isHardwareGammaEnabled();
+		UINT32 sampleCount = mProperties.getMultisampleCount();
+		TextureType texType = mProperties.getTextureType();
+
 		// We must have those defined here
-		assert(mWidth > 0 || mHeight > 0);
+		assert(width > 0 || height > 0);
 
 		// Determine which D3D11 pixel format we'll use
 		HRESULT hr;
-		DXGI_FORMAT d3dPF = D3D11Mappings::getPF(D3D11Mappings::getClosestSupportedPF(mFormat, mHwGamma), mHwGamma);
+		DXGI_FORMAT d3dPF = D3D11Mappings::getPF(D3D11Mappings::getClosestSupportedPF(format, hwGamma), hwGamma);
 
-		if (mFormat != D3D11Mappings::getPF(d3dPF))
+		if (format != D3D11Mappings::getPF(d3dPF))
 		{
-			BS_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(mFormat));
+			BS_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(format));
 		}
 
 		D3D11_TEXTURE2D_DESC desc;
-		desc.Width			= static_cast<UINT32>(mWidth);
-		desc.Height			= static_cast<UINT32>(mHeight);
+		desc.Width			= static_cast<UINT32>(width);
+		desc.Height			= static_cast<UINT32>(height);
 		desc.ArraySize		= 1;
 		desc.Format			= d3dPF;
 		desc.MiscFlags		= 0;
 
-		if((mUsage & TU_RENDERTARGET) != 0)
+		if((usage & TU_RENDERTARGET) != 0)
 		{
 			desc.Usage			= D3D11_USAGE_DEFAULT;
 			desc.BindFlags		= D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
@@ -340,15 +356,15 @@ namespace BansheeEngine
 
 			DXGI_SAMPLE_DESC sampleDesc;
 			D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
-			rs->determineMultisampleSettings(mMultisampleCount, d3dPF, &sampleDesc);
+			rs->determineMultisampleSettings(sampleCount, d3dPF, &sampleDesc);
 			desc.SampleDesc		= sampleDesc;
 
-			if(getTextureType() == TEX_TYPE_CUBE_MAP)
+			if (texType == TEX_TYPE_CUBE_MAP)
 			{
 				BS_EXCEPT(NotImplementedException, "Cube map not yet supported as a render target."); // TODO: Will be once I add proper texture array support
 			}
 		}
-		else if((mUsage & TU_DEPTHSTENCIL) != 0)
+		else if((usage & TU_DEPTHSTENCIL) != 0)
 		{
 			desc.Usage			= D3D11_USAGE_DEFAULT;
 			desc.BindFlags		= D3D11_BIND_DEPTH_STENCIL;
@@ -357,23 +373,22 @@ namespace BansheeEngine
 
 			DXGI_SAMPLE_DESC sampleDesc;
 			D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
-			rs->determineMultisampleSettings(mMultisampleCount, d3dPF, &sampleDesc);
+			rs->determineMultisampleSettings(sampleCount, d3dPF, &sampleDesc);
 			desc.SampleDesc		= sampleDesc;
 
-			if(getTextureType() == TEX_TYPE_CUBE_MAP)
+			if (texType == TEX_TYPE_CUBE_MAP)
 			{
 				BS_EXCEPT(NotImplementedException, "Cube map not yet supported as a depth stencil target."); // TODO: Will be once I add proper texture array support
 			}
 		}
 		else
 		{
-			desc.Usage			= D3D11Mappings::getUsage((GpuBufferUsage)mUsage);
+			desc.Usage = D3D11Mappings::getUsage((GpuBufferUsage)usage);
 			desc.BindFlags		= D3D11_BIND_SHADER_RESOURCE;
-			desc.CPUAccessFlags = D3D11Mappings::getAccessFlags((GpuBufferUsage)mUsage);
+			desc.CPUAccessFlags = D3D11Mappings::getAccessFlags((GpuBufferUsage)usage);
 
 			// Determine total number of mipmaps including main one (d3d11 convention)
-			UINT32 numMips = (mNumMipmaps == MIP_UNLIMITED || (1U << mNumMipmaps) > mWidth) ? 0 : mNumMipmaps + 1;
-			desc.MipLevels		= numMips;
+			desc.MipLevels		= (numMips == MIP_UNLIMITED || (1U << numMips) > width) ? 0 : numMips + 1;
 
 			DXGI_SAMPLE_DESC sampleDesc;
 			sampleDesc.Count	= 1;
@@ -381,13 +396,13 @@ namespace BansheeEngine
 			desc.SampleDesc		= sampleDesc;
 		}
 
-        if (getTextureType() == TEX_TYPE_CUBE_MAP)
+		if (texType == TEX_TYPE_CUBE_MAP)
         {
             desc.MiscFlags      |= D3D11_RESOURCE_MISC_TEXTURECUBE;
             desc.ArraySize       = 6;
         }
 
-		if ((mUsage & TU_LOADSTORE) != 0)
+		if ((usage & TU_LOADSTORE) != 0)
 			desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
 
 		// Create the texture
@@ -398,7 +413,6 @@ namespace BansheeEngine
 		// Check result and except if failed
 		if (FAILED(hr) || device.hasError())
 		{
-			destroy_internal();
 			String errorDescription = device.getErrorDescription();
 			BS_EXCEPT(RenderingAPIException, "Error creating texture\nError Description:" + errorDescription);
 		}
@@ -407,30 +421,29 @@ namespace BansheeEngine
 
 		if(FAILED(hr) || device.hasError())
 		{
-			destroy_internal();
 			String errorDescription = device.getErrorDescription();
 			BS_EXCEPT(RenderingAPIException, "Can't get base texture\nError Description:" + errorDescription);
 		}
 
 		m2DTex->GetDesc(&desc);
 
-		if(mNumMipmaps != (desc.MipLevels - 1))
+		if(numMips != (desc.MipLevels - 1))
 		{
 			BS_EXCEPT(RenderingAPIException, "Driver returned different number of mip maps than requested. " \
-				"Requested: " + toString(mNumMipmaps) + ". Got: " + toString(desc.MipLevels - 1) + ".");
+				"Requested: " + toString(numMips) + ". Got: " + toString(desc.MipLevels - 1) + ".");
 		}
 
 		mDXGIFormat = desc.Format;
 
 		// Create shader texture view
-		if((mUsage & TU_DEPTHSTENCIL) == 0)
+		if((usage & TU_DEPTHSTENCIL) == 0)
 		{
 			ZeroMemory(&mSRVDesc, sizeof(mSRVDesc));
 			mSRVDesc.Format = desc.Format;
 
-			if((mUsage & TU_RENDERTARGET) != 0)
+			if((usage & TU_RENDERTARGET) != 0)
 			{
-				if(mMultisampleCount > 0)
+				if (sampleCount > 0)
 				{
 					mSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DMS;
 					mSRVDesc.Texture2D.MostDetailedMip = 0;
@@ -445,7 +458,7 @@ namespace BansheeEngine
 			}
 			else
 			{
-				switch(getTextureType())
+				switch (texType)
 				{
 				case TEX_TYPE_CUBE_MAP:
 					mSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
@@ -472,42 +485,51 @@ namespace BansheeEngine
 		}
 		else
 		{
-			if(mMultisampleCount > 0)
+			if (sampleCount > 0)
 				mDimension = D3D11_SRV_DIMENSION_TEXTURE2DMS;
 			else
 				mDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 		}
 	}
 
-	void D3D11Texture::create3DTex()
+	void D3D11TextureCore::create3DTex()
 	{
+		UINT32 width = mProperties.getWidth();
+		UINT32 height = mProperties.getHeight();
+		UINT32 depth = mProperties.getDepth();
+		int usage = mProperties.getUsage();
+		UINT32 numMips = mProperties.getNumMipmaps();
+		PixelFormat format = mProperties.getFormat();
+		bool hwGamma = mProperties.isHardwareGammaEnabled();
+
 		// We must have those defined here
-		assert(mWidth > 0 && mHeight > 0 && mDepth > 0);
+		assert(width > 0 && height > 0 && depth > 0);
 
 		// Determine which D3D11 pixel format we'll use
 		HRESULT hr;
-		DXGI_FORMAT d3dPF = D3D11Mappings::getPF(D3D11Mappings::getClosestSupportedPF(mFormat, mHwGamma), mHwGamma);
+		DXGI_FORMAT d3dPF = D3D11Mappings::getPF(
+			D3D11Mappings::getClosestSupportedPF(format, hwGamma), hwGamma);
 		
-		if (mFormat != D3D11Mappings::getPF(d3dPF))
+		if (format != D3D11Mappings::getPF(d3dPF))
 		{
-			BS_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(mFormat));
+			BS_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(format));
 		}
 
 		D3D11_TEXTURE3D_DESC desc;
-		desc.Width			= static_cast<UINT32>(mWidth);
-		desc.Height			= static_cast<UINT32>(mHeight);
-		desc.Depth			= static_cast<UINT32>(mDepth);
+		desc.Width = static_cast<UINT32>(width);
+		desc.Height = static_cast<UINT32>(height);
+		desc.Depth = static_cast<UINT32>(depth);
 		desc.Format			= d3dPF;
 		desc.MiscFlags		= 0;
 
-		if((mUsage & TU_RENDERTARGET) != 0)
+		if ((mProperties.getUsage() & TU_RENDERTARGET) != 0)
 		{
 			desc.Usage			= D3D11_USAGE_DEFAULT;
 			desc.BindFlags		= D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
 			desc.CPUAccessFlags = 0;
 			desc.MipLevels		= 1;
 		}
-		else if((mUsage & TU_DEPTHSTENCIL) != 0)
+		else if ((mProperties.getUsage() & TU_DEPTHSTENCIL) != 0)
 		{
 			desc.Usage			= D3D11_USAGE_DEFAULT;
 			desc.BindFlags		= D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
@@ -516,16 +538,16 @@ namespace BansheeEngine
 		}
 		else
 		{
-			desc.Usage			= D3D11Mappings::getUsage((GpuBufferUsage)mUsage);
+			desc.Usage			= D3D11Mappings::getUsage((GpuBufferUsage)usage);
 			desc.BindFlags		= D3D11_BIND_SHADER_RESOURCE;
-			desc.CPUAccessFlags = D3D11Mappings::getAccessFlags((GpuBufferUsage)mUsage);
+			desc.CPUAccessFlags = D3D11Mappings::getAccessFlags((GpuBufferUsage)usage);
 
 			// Determine total number of mipmaps including main one (d3d11 convention)
-			UINT numMips = (mNumMipmaps == MIP_UNLIMITED || (1U << mNumMipmaps) > std::max(std::max(mWidth, mHeight), mDepth)) ? 0 : mNumMipmaps + 1;
-			desc.MipLevels		= numMips;
+			desc.MipLevels		= (numMips == MIP_UNLIMITED || (1U << numMips)
+				> std::max(std::max(width, height), depth)) ? 0 : numMips + 1;
 		}
 
-		if ((mUsage & TU_LOADSTORE) != 0)
+		if ((usage & TU_LOADSTORE) != 0)
 			desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
 
 		// Create the texture
@@ -536,7 +558,6 @@ namespace BansheeEngine
 		// Check result and except if failed
 		if (FAILED(hr) || device.hasError())
 		{
-			destroy_internal();
 			String errorDescription = device.getErrorDescription();
 			BS_EXCEPT(RenderingAPIException, "Error creating texture\nError Description:" + errorDescription);
 		}
@@ -545,7 +566,6 @@ namespace BansheeEngine
 
 		if(FAILED(hr) || device.hasError())
 		{
-			destroy_internal();
 			String errorDescription = device.getErrorDescription();
 			BS_EXCEPT(RenderingAPIException, "Can't get base texture\nError Description:" + errorDescription);
 		}
@@ -553,16 +573,16 @@ namespace BansheeEngine
 		// Create texture view
 		m3DTex->GetDesc(&desc);
 
-		if(mNumMipmaps != (desc.MipLevels - 1))
+		if (mProperties.getNumMipmaps() != (desc.MipLevels - 1))
 		{
 			BS_EXCEPT(RenderingAPIException, "Driver returned different number of mip maps than requested. " \
-               "Requested: " + toString(mNumMipmaps) + ". Got: " + toString(desc.MipLevels - 1) + ".");
+				"Requested: " + toString(mProperties.getNumMipmaps()) + ". Got: " + toString(desc.MipLevels - 1) + ".");
 		}
 
 		mDXGIFormat = desc.Format;
 		mDimension = D3D11_SRV_DIMENSION_TEXTURE3D;
 
-		if((mUsage & TU_DEPTHSTENCIL) == 0)
+		if ((usage & TU_DEPTHSTENCIL) == 0)
 		{
 			ZeroMemory(&mSRVDesc, sizeof(mSRVDesc));
 			mSRVDesc.Format = desc.Format;
@@ -580,21 +600,21 @@ namespace BansheeEngine
 		}
 	}
 
-	void* D3D11Texture::map(ID3D11Resource* res, D3D11_MAP flags, UINT32 mipLevel, UINT32 face, UINT32& rowPitch, UINT32& slicePitch)
+	void* D3D11TextureCore::map(ID3D11Resource* res, D3D11_MAP flags, UINT32 mipLevel, UINT32 face, UINT32& rowPitch, UINT32& slicePitch)
 	{
 		D3D11_MAPPED_SUBRESOURCE pMappedResource;
 		pMappedResource.pData = nullptr;
 
-		mipLevel = Math::clamp(mipLevel, (UINT32)mipLevel, getNumMipmaps());
-		face = Math::clamp(face, (UINT32)0, mDepth - 1);
+		mipLevel = Math::clamp(mipLevel, (UINT32)mipLevel, mProperties.getNumMipmaps());
+		face = Math::clamp(face, (UINT32)0, mProperties.getDepth() - 1);
 
-		if(getTextureType() == TEX_TYPE_3D)
+		if (mProperties.getTextureType() == TEX_TYPE_3D)
 			face = 0;
 
 		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
 
-		mLockedSubresourceIdx = D3D11CalcSubresource(mipLevel, face, getNumMipmaps()+1);
+		mLockedSubresourceIdx = D3D11CalcSubresource(mipLevel, face, mProperties.getNumMipmaps() + 1);
 		device.getImmediateContext()->Map(res, mLockedSubresourceIdx, flags, 0, &pMappedResource);
 
 		if (device.hasError())
@@ -603,14 +623,14 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "D3D11 device cannot map texture\nError Description:" + errorDescription);
 		}
 
-		UINT32 bytesPerPixel = PixelUtil::getNumElemBytes(getFormat());
+		UINT32 bytesPerPixel = PixelUtil::getNumElemBytes(mProperties.getFormat());
 		rowPitch = pMappedResource.RowPitch / bytesPerPixel;
 		slicePitch = pMappedResource.DepthPitch / bytesPerPixel;
 
 		return pMappedResource.pData;
 	}
 
-	void D3D11Texture::unmap(ID3D11Resource* res)
+	void D3D11TextureCore::unmap(ID3D11Resource* res)
 	{
 		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
@@ -623,7 +643,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void* D3D11Texture::mapstagingbuffer(D3D11_MAP flags, UINT32 mipLevel, UINT32 face, UINT32& rowPitch, UINT32& slicePitch)
+	void* D3D11TextureCore::mapstagingbuffer(D3D11_MAP flags, UINT32 mipLevel, UINT32 face, UINT32& rowPitch, UINT32& slicePitch)
 	{
 		// Note: I am creating and destroying a staging resource every time a texture is read. 
 		// Consider offering a flag on init that will keep this active all the time (at the cost of double memory).
@@ -639,16 +659,16 @@ namespace BansheeEngine
 		return map(mStagingBuffer, flags, face, mipLevel, rowPitch, slicePitch);
 	}
 
-	void D3D11Texture::unmapstagingbuffer()
+	void D3D11TextureCore::unmapstagingbuffer()
 	{
 		unmap(mStagingBuffer);
 		SAFE_RELEASE(mStagingBuffer);
 	}
 
-	void* D3D11Texture::mapstaticbuffer(PixelData lock, UINT32 mipLevel, UINT32 face)
+	void* D3D11TextureCore::mapstaticbuffer(PixelData lock, UINT32 mipLevel, UINT32 face)
 	{
 		UINT32 sizeOfImage = lock.getConsecutiveSize();
-		mLockedSubresourceIdx = D3D11CalcSubresource(mipLevel, face, getNumMipmaps()+1);
+		mLockedSubresourceIdx = D3D11CalcSubresource(mipLevel, face, mProperties.getNumMipmaps()+1);
 
 		mStaticBuffer = bs_new<PixelData, PoolAlloc>(lock.getWidth(), lock.getHeight(), lock.getDepth(), lock.getFormat());
 		mStaticBuffer->allocateInternalBuffer();
@@ -656,7 +676,7 @@ namespace BansheeEngine
 		return mStaticBuffer->getData();
 	}
 
-	void D3D11Texture::unmapstaticbuffer()
+	void D3D11TextureCore::unmapstaticbuffer()
 	{
 		UINT32 rowWidth = D3D11Mappings::getSizeInBytes(mStaticBuffer->getFormat(), mStaticBuffer->getWidth());
 		UINT32 sliceWidth = D3D11Mappings::getSizeInBytes(mStaticBuffer->getFormat(), mStaticBuffer->getWidth(), mStaticBuffer->getHeight());
@@ -675,11 +695,11 @@ namespace BansheeEngine
 			bs_delete<PoolAlloc>(mStaticBuffer);
 	}
 
-	void D3D11Texture::createStagingBuffer()
+	void D3D11TextureCore::createStagingBuffer()
 	{
 		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
-		switch (getTextureType())
+		switch (mProperties.getTextureType())
 		{
 		case TEX_TYPE_1D:
 			{
@@ -724,7 +744,7 @@ namespace BansheeEngine
 		}
 	}
 
-	TextureViewPtr D3D11Texture::createView()
+	TextureViewPtr D3D11TextureCore::createView()
 	{
 		TextureViewPtr viewPtr = bs_core_ptr<D3D11TextureView, PoolAlloc>(new (bs_alloc<D3D11TextureView, PoolAlloc>()) D3D11TextureView());
 		viewPtr->_setThisPtr(viewPtr);

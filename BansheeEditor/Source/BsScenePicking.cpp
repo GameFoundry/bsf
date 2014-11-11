@@ -286,21 +286,20 @@ namespace BansheeEngine
 		SPtr<RenderTextureCore> rtt = std::static_pointer_cast<RenderTextureCore>(target);
 		TexturePtr outputTexture = rtt->getBindableColorTexture();
 
-		if (position.x < 0 || position.x >= (INT32)outputTexture->getWidth() ||
-			position.y < 0 || position.y >= (INT32)outputTexture->getHeight())
+		if (position.x < 0 || position.x >= (INT32)outputTexture->getProperties().getWidth() ||
+			position.y < 0 || position.y >= (INT32)outputTexture->getProperties().getHeight())
 		{
 			asyncOp._completeOperation(Vector<UINT32>());
 			return;
 		}
 
 		PixelDataPtr outputPixelData = outputTexture->allocateSubresourceBuffer(0);
-		GpuResourceDataPtr outputData = outputPixelData;
 		AsyncOp unused;
 
 		RenderSystem& rs = RenderSystem::instance();
 
 		rs.endFrame();
-		rs.readSubresource(outputTexture, 0, outputData, unused);
+		outputTexture->getCore()->readSubresource(0, *outputPixelData);
 
 		Map<UINT32, UINT32> selectionScores;
 		UINT32 numPixels = outputPixelData->getWidth() * outputPixelData->getHeight();

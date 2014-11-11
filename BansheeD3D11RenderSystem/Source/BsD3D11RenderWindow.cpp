@@ -264,7 +264,7 @@ namespace BansheeEngine
 
 		if (mDepthStencilView != nullptr)
 		{
-			Texture::releaseView(mDepthStencilView);
+			TextureCore::releaseView(mDepthStencilView);
 			mDepthStencilView = nullptr;
 		}
 
@@ -686,17 +686,17 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "Unable to create rendertagert view\nError Description:" + errorDescription);
 		}
 
-		mDepthStencilBuffer = TextureManager::instance().createTexture(TEX_TYPE_2D, 
-			BBDesc.Width, BBDesc.Height, 0, PF_D24S8, TU_DEPTHSTENCIL, false, 
+		mDepthStencilBuffer = TextureCoreManager::instance().createTexture(TEX_TYPE_2D, 
+			BBDesc.Width, BBDesc.Height, 0, 0, PF_D24S8, TU_DEPTHSTENCIL, false, 
 			getProperties().getMultisampleCount());
 
 		if(mDepthStencilView != nullptr)
 		{
-			Texture::releaseView(mDepthStencilView);
+			TextureCore::releaseView(mDepthStencilView);
 			mDepthStencilView = nullptr;
 		}
 
-		mDepthStencilView = Texture::requestView(mDepthStencilBuffer, 0, 1, 0, 1, GVU_DEPTHSTENCIL);
+		mDepthStencilView = TextureCore::requestView(mDepthStencilBuffer, 0, 1, 0, 1, GVU_DEPTHSTENCIL);
 	}
 
 	void D3D11RenderWindowCore::destroySizeDependedD3DResources()

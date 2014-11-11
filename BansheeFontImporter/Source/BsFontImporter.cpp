@@ -275,23 +275,19 @@ namespace BansheeEngine
 				HTexture newTex = Texture::create(TEX_TYPE_2D, pageIter->width, pageIter->height, 0, PF_R8G8);
 				newTex.synchronize(); // TODO - Required due to a bug in allocateSubresourceBuffer
 
-				UINT32 subresourceIdx = newTex->mapToSubresourceIdx(0, 0);
+				UINT32 subresourceIdx = newTex->getProperties().mapToSubresourceIdx(0, 0);
 
 				// It's possible the formats no longer match
-				if(newTex->getFormat() != pixelData->getFormat())
+				if (newTex->getProperties().getFormat() != pixelData->getFormat())
 				{
 					PixelDataPtr temp = newTex->allocateSubresourceBuffer(subresourceIdx);
 					PixelUtil::bulkPixelConversion(*pixelData, *temp);
 
-					temp->_lock();
-					gCoreThread().queueReturnCommand(std::bind(&RenderSystem::writeSubresource, 
-						RenderSystem::instancePtr(), newTex.getInternalPtr(), subresourceIdx, temp, false, _1));
+					newTex->writeSubresource(gCoreAccessor(), subresourceIdx, temp, false);
 				}
 				else
 				{
-					pixelData->_lock();
-					gCoreThread().queueReturnCommand(std::bind(&RenderSystem::writeSubresource, 
-						RenderSystem::instancePtr(), newTex.getInternalPtr(), subresourceIdx, pixelData, false, _1));
+					newTex->writeSubresource(gCoreAccessor(), subresourceIdx, pixelData, false);
 				}
 
 				newTex->setName(L"FontPage" + toWString((UINT32)fontData.texturePages.size()));

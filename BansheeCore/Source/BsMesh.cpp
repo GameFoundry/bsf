@@ -345,8 +345,6 @@ namespace BansheeEngine
 
 	AsyncOp Mesh::readSubresource(CoreAccessor& accessor, UINT32 subresourceIdx, const MeshDataPtr& data)
 	{
-		updateBounds(*data);
-
 		data->_lock();
 
 		std::function<void(const SPtr<MeshCore>&, UINT32, const MeshDataPtr&, AsyncOp&)> func =

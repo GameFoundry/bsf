@@ -33,13 +33,13 @@ namespace BansheeEngine
 
 	void CoreThreadAccessorBase::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr &texPtr)
 	{
-		mCommandQueue->queue(std::bind(&RenderSystem::setTexture, RenderSystem::instancePtr(), gptype, unit, enabled, texPtr));
+		mCommandQueue->queue(std::bind(&RenderSystem::setTexture, RenderSystem::instancePtr(), gptype, unit, enabled, texPtr->getCore()));
 	}
 
 	void CoreThreadAccessorBase::setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr& texPtr,
 		const TextureSurface& surface)
 	{
-		mCommandQueue->queue(std::bind(&RenderSystem::setLoadStoreTexture, RenderSystem::instancePtr(), gptype, unit, enabled, texPtr, 
+		mCommandQueue->queue(std::bind(&RenderSystem::setLoadStoreTexture, RenderSystem::instancePtr(), gptype, unit, enabled, texPtr->getCore(), 
 			surface));
 	}
 
@@ -171,23 +171,6 @@ namespace BansheeEngine
 	void CoreThreadAccessorBase::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount)
 	{
 		mCommandQueue->queue(std::bind(&RenderSystem::drawIndexed, RenderSystem::instancePtr(), startIndex, indexCount, vertexOffset, vertexCount));
-	}
-
-	AsyncOp CoreThreadAccessorBase::writeSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceDataPtr& data, bool discardEntireBuffer)
-	{
-		data->_lock();
-
-		resource->_writeSubresourceSim(subresourceIdx, *data, discardEntireBuffer);
-		return mCommandQueue->queueReturn(std::bind(&RenderSystem::writeSubresource, RenderSystem::instancePtr(), resource, 
-			subresourceIdx, data, discardEntireBuffer, std::placeholders::_1));
-	}
-
-	AsyncOp CoreThreadAccessorBase::readSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceDataPtr& data)
-	{
-		data->_lock();
-
-		return mCommandQueue->queueReturn(std::bind(&RenderSystem::readSubresource, RenderSystem::instancePtr(), 
-			resource, subresourceIdx, data, std::placeholders::_1));
 	}
 
 	AsyncOp CoreThreadAccessorBase::queueReturnCommand(std::function<void(AsyncOp&)> commandCallback)
