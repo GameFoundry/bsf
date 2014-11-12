@@ -38,7 +38,7 @@ namespace BansheeEngine
 	UINT8* FrameAlloc::alloc(UINT32 amount)
 	{
 #if BS_DEBUG_MODE
-		amount += sizeof(UINT32);
+		amount += sizeof(UINT32) * 2;
 #endif
 
 		UINT32 freeMem = mFreeBlock->mSize - mFreeBlock->mFreePtr;
@@ -53,7 +53,13 @@ namespace BansheeEngine
 		UINT32* storedSize = reinterpret_cast<UINT32*>(data);
 		*storedSize = amount;
 
-		return data + sizeof(UINT32);
+		UINT32* storedId = reinterpret_cast<UINT32*>(data + sizeof(UINT32));
+		*storedId = mAllocId;
+
+		mActiveAllocs.insert(mAllocId);
+		mAllocId++;
+
+		return data + sizeof(UINT32) * 2;
 #else
 		return data;
 #endif
@@ -65,9 +71,11 @@ namespace BansheeEngine
 		// happens in "clear"
 			
 #if BS_DEBUG_MODE
-		data -= sizeof(UINT32);
+		data -= sizeof(UINT32) * 2;
 		UINT32* storedSize = reinterpret_cast<UINT32*>(data);
+		UINT32* storedId = reinterpret_cast<UINT32*>(data + sizeof(UINT32));
 		mTotalAllocBytes -= *storedSize;
+		mActiveAllocs.erase(*storedId);
 #endif
 	}
 
@@ -76,6 +84,9 @@ namespace BansheeEngine
 #if BS_DEBUG_MODE
 		if(mTotalAllocBytes.load() > 0)
 			BS_EXCEPT(InvalidStateException, "Not all frame allocated bytes were properly released.");
+
+		mAllocId = 0;
+		mActiveAllocs.clear();
 #endif
 
 		// Merge all blocks into one

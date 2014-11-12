@@ -28,15 +28,15 @@ namespace BansheeEngine
 	{
 		/**
 		 * @brief	Stores dirty data that is to be transferred from core 
-		 *			thread to sim thread part of a CoreObject.
+		 *			thread to sim thread part of a CoreObject, for a single object.
 		 */
-		struct SimStoredSyncData
+		struct SimStoredSyncObjData
 		{
-			SimStoredSyncData()
+			SimStoredSyncObjData()
 				:destinationObj(nullptr)
 			{ }
 
-			SimStoredSyncData(CoreObject* destObj, const CoreSyncData& syncData)
+			SimStoredSyncObjData(CoreObject* destObj, const CoreSyncData& syncData)
 				:destinationObj(destObj), syncData(syncData)
 			{ }
 
@@ -46,20 +46,42 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Stores dirty data that is to be transferred from sim 
-		 *			thread to core thread part of a CoreObject.
+		 *			thread to core thread part of a CoreObject, for a single object.
 		 */
-		struct CoreStoredSyncData
+		struct CoreStoredSyncObjData
 		{
-			CoreStoredSyncData()
+			CoreStoredSyncObjData()
 				:destinationObj(nullptr)
 			{ }
 
-			CoreStoredSyncData(CoreObjectCore* destObj, const CoreSyncData& syncData)
+			CoreStoredSyncObjData(CoreObjectCore* destObj, const CoreSyncData& syncData)
 				:destinationObj(destObj), syncData(syncData)
 			{ }
 
 			CoreObjectCore* destinationObj;
 			CoreSyncData syncData;
+		};
+
+		/**
+		 * @brief	Stores dirty data that is to be transferred from core 
+		 *			thread to sim thread part of a CoreObject, for all dirty 
+		 *			objects in one frame.
+		 */
+		struct SimStoredSyncData
+		{
+			FrameAlloc* alloc = nullptr;
+			Map<UINT64, SimStoredSyncObjData> entries;
+		};
+
+		/**
+		 * @brief	Stores dirty data that is to be transferred from sim 
+		 *			thread to core thread part of a CoreObject, for all dirty
+		 *			objects in one frame.
+		 */
+		struct CoreStoredSyncData
+		{
+			FrameAlloc* alloc = nullptr;
+			Map<UINT64, CoreStoredSyncObjData> entries;
 		};
 
 	public:
@@ -115,11 +137,14 @@ namespace BansheeEngine
 		UINT64 mNextAvailableID;
 		Map<UINT64, CoreObject*> mObjects;
 
-		FrameAlloc* mSimSyncDataAlloc;
-		Map<UINT64, SimStoredSyncData> mSimSyncData;
+		Vector<SimStoredSyncData> mSimSyncData;
+		UINT32 mSimSyncIdx;
+		UINT32 mSimSyncCount;
 
-		FrameAlloc* mCoreSyncDataAlloc;
-		Map<UINT64, CoreStoredSyncData> mCoreSyncData;
+		Vector<CoreStoredSyncData> mCoreSyncData;
+		UINT32 mCoreSyncIdx;
+		UINT32 mCoreSyncCount;
+
 		BS_MUTEX(mObjectsMutex);
 	};
 }

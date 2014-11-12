@@ -35,16 +35,12 @@ namespace BansheeEngine
 	};
 
 	/**
-	* @brief	Class representing the state of a texture sampler.
-	*	
-	* @note		Sampler units are used for retrieving and filtering data from
-	*			textures set in a GPU program.
-	*			Sampler states are immutable. Thread safe.
-	*/
-	class BS_CORE_EXPORT SamplerState : public Resource
-    {
-    public:
-		virtual ~SamplerState() {}
+	 * @brief	Information about a sampler state.
+	 */
+	class BS_CORE_EXPORT SamplerProperties
+	{
+	public:
+		SamplerProperties(const SAMPLER_STATE_DESC& desc);
 
 		/**
 		 * @brief	Returns texture addressing mode for each possible texture coordinate. Addressing
@@ -91,6 +87,62 @@ namespace BansheeEngine
 		 */
 		const Color& getBorderColor() const;
 
+	protected:
+		friend class SamplerState;
+		friend class SamplerStateRTTI;
+
+		SAMPLER_STATE_DESC mData;
+	};
+
+	/**
+	 * @brief	Core thread version of a sampler state.
+	 *
+	 * @see		SamplerState
+	 *
+	 * @note	Core thread.
+	 */
+	class BS_CORE_EXPORT SamplerStateCore : public CoreObjectCore
+	{
+	public:
+		virtual ~SamplerStateCore() {}
+
+		/**
+		 * @brief	Returns information about the sampler state.
+		 */
+		const SamplerProperties& getProperties() const;
+
+	protected:
+		friend class RenderStateCoreManager;
+
+		SamplerStateCore(const SAMPLER_STATE_DESC& desc);
+
+		SamplerProperties mProperties;
+	};
+
+	/**
+	 * @brief	Class representing the state of a texture sampler.
+	 *	
+	 * @note	Sampler units are used for retrieving and filtering data from
+	 *			textures set in a GPU program. Sampler states are immutable.
+	 *
+	 *			Sim thread.
+	 */
+	class BS_CORE_EXPORT SamplerState : public Resource
+    {
+    public:
+		virtual ~SamplerState() {}
+
+		/**
+		 * @brief	Returns information about the sampler state.
+		 */
+		const SamplerProperties& getProperties() const;
+
+		/**
+		 * @brief	Retrieves a core implementation of the sampler state usable only from the
+		 *			core thread.
+		 */
+		SPtr<SamplerStateCore> getCore() const;
+
 		/**
 		 * @brief	Creates a new sampler state using the provided descriptor structure.
 		 */
@@ -102,14 +154,16 @@ namespace BansheeEngine
 		static const SamplerStatePtr& getDefault();
 
 	protected:
-		friend class RenderStateManager;
+		SamplerState(const SAMPLER_STATE_DESC& desc);
 
 		/**
-		* @brief	Initializes the sampler state. Must be called right after construction.
-		*/
-		virtual void initialize(const SAMPLER_STATE_DESC& desc);
+		 * @copydoc	CoreObjectCore::createCore
+		 */
+		SPtr<CoreObjectCore> createCore() const;
 
-        SAMPLER_STATE_DESC mData;
+		SamplerProperties mProperties;
+
+		friend class RenderStateManager;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

@@ -12,11 +12,8 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT RasterizerStateRTTI : public RTTIType<RasterizerState, IReflectable, RasterizerStateRTTI>
 	{
 	private:
-		RASTERIZER_STATE_DESC& getData(RasterizerState* obj) { return obj->mData; }
-		void setData(RasterizerState* obj, RASTERIZER_STATE_DESC& val) 
-		{ 
-			obj->mRTTIData = val;
-		} 
+		RASTERIZER_STATE_DESC& getData(RasterizerState* obj) { return obj->mProperties.mData; }
+		void setData(RasterizerState* obj, RASTERIZER_STATE_DESC& val) { obj->mProperties.mData = val; } 
 
 	public:
 		RasterizerStateRTTI()
@@ -27,12 +24,7 @@ namespace BansheeEngine
 		virtual void onDeserializationEnded(IReflectable* obj)
 		{
 			RasterizerState* rasterizerState = static_cast<RasterizerState*>(obj);
-			if(!rasterizerState->mRTTIData.empty())
-			{
-				RASTERIZER_STATE_DESC desc = any_cast<RASTERIZER_STATE_DESC>(rasterizerState->mRTTIData);
-
-				rasterizerState->initialize(desc);
-			}
+			rasterizerState->initialize();
 		}
 
 		virtual const String& getRTTIName()

@@ -5,28 +5,28 @@ Resource
  - RasterizerState
  - DepthStencilState
  - BlendState
- - GpuProgInclude
  - SamplerState
- - Font
- - Texture
  - GpuProgram
- - Material
- - Shader
- - SpriteTexture
- - ManagedResource
+ - Material -> Remove MaterialProxy
+ - Shader -> Remove ShaderProxy
 MeshHeap
 TextureView
 VertexDeclaration
 GpuBuffer
 GpuParamBlockBuffer
 
+Also:
+ - Make CameraHandler a Coreobject and remove CameraProxy
+ - Make RenderableHandler a CoreObject and remove CameraProxy
+ - Rename CoreObject initialize_internal and destroy_internal to initializeCore/destroyCore and make them private
+
 Disallow CoreObject creation from core thread
  - Add asserts in CoreObject::destroy and CoreObject::initialize
  - Possibly also add asserts to CoreThread::queueCommand and CoreThread::queueReturnCommand
 
-Since Mesh refactor when I select/deselect a gizmo the entire render texture flashes white for one frame (might be related to RT refactor instead)
-
-There seems to be a threading issue with frame alloc freeing due to CoreObject syncing. Sometimes I get crashes in frame alloc relating to unfreed memory
+ New issues:
+  - Since Mesh refactor when I select/deselect a gizmo the entire render texture flashes white for one frame (might be related to RT refactor instead)
+  - There seems to be a threading issue with frame alloc freeing due to CoreObject syncing. Sometimes I get crashes in frame alloc relating to unfreed memory
 
 -----------------
 

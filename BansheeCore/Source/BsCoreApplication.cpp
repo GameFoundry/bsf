@@ -187,7 +187,7 @@ namespace BansheeEngine
 
 			// Sync all dirty sim thread CoreObject data to core thread
 			CoreObjectManager::instance().syncDownload(CoreObjectSync::Sim, gCoreThread().getFrameAlloc());
-			gCoreThread().queueCommand(std::bind(&CoreObjectManager::syncUpload, CoreObjectManager::instancePtr(), CoreObjectSync::Sim));
+			gCoreAccessor().queueCommand(std::bind(&CoreObjectManager::syncUpload, CoreObjectManager::instancePtr(), CoreObjectSync::Sim));
 
 			PROFILE_CALL(RendererManager::instance().getActive()->renderAll(), "Render");
 

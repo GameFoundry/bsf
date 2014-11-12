@@ -51,16 +51,12 @@ namespace BansheeEngine
 	BS_ALLOW_MEMCPY_SERIALIZATION(DEPTH_STENCIL_STATE_DESC);
 
 	/**
-	* @brief	Render system pipeline state that allows you to modify how an object is rendered.
-	* 			More exactly this state allows to you to control how are depth and stencil buffers
-	*			modified upon rendering.
-	*
-	* @note		Depth stencil states are immutable. Thread safe.
-	*/
-	class BS_CORE_EXPORT DepthStencilState : public Resource
+	 * @brief	Information about a depth stencil state.
+	 */
+	class BS_CORE_EXPORT DepthStencilProperties
 	{
 	public:
-		virtual ~DepthStencilState() {}
+		DepthStencilProperties(const DEPTH_STENCIL_STATE_DESC& desc);
 
 		/**
 		 * @brief	If enabled, any pixel about to be written will be tested against the depth value
@@ -143,6 +139,61 @@ namespace BansheeEngine
 		*/
 		CompareFunction getStencilBackCompFunc() const { return mData.backStencilComparisonFunc; }
 
+	protected:
+		friend class DepthStencilState;
+		friend class DepthStencilStateRTTI;
+
+		DEPTH_STENCIL_STATE_DESC mData;
+	};
+
+	/**
+	 * @brief	Core thread version of the depth stencil state.
+	 *
+	 * @see		DepthStencilState
+	 *
+	 * @note	Core thread.
+	 */
+	class BS_CORE_EXPORT DepthStencilStateCore : public CoreObjectCore
+	{
+	public:
+		virtual ~DepthStencilStateCore() {}
+
+		/**
+		 * @brief	Returns information about the depth stencil state.
+		 */
+		const DepthStencilProperties& getProperties() const;
+
+	protected:
+		friend class RenderStateCoreManager;
+
+		DepthStencilStateCore(const DEPTH_STENCIL_STATE_DESC& desc);
+
+		DepthStencilProperties mProperties;
+	};
+
+	/**
+	 * @brief	Render system pipeline state that allows you to modify how an object is rendered.
+	 * 			More exactly this state allows to you to control how are depth and stencil buffers
+	 *			modified upon rendering.
+	 *
+	 * @note	Depth stencil states are immutable. Sim thread only.
+	 */
+	class BS_CORE_EXPORT DepthStencilState : public Resource
+	{
+	public:
+		virtual ~DepthStencilState() {}
+
+		/**
+		 * @brief	Returns information about the depth stencil state.
+		 */
+		const DepthStencilProperties& getProperties() const;
+
+		/**
+		 * @brief	Retrieves a core implementation of a sampler state usable only from the
+		 *			core thread.
+		 */
+		SPtr<DepthStencilStateCore> getCore() const;
+
 		/**
 		 * @brief	Creates a new depth stencil state using the specified depth stencil state description structure.
 		 */
@@ -155,9 +206,14 @@ namespace BansheeEngine
 	protected:
 		friend class RenderStateManager;
 
-		virtual void initialize(const DEPTH_STENCIL_STATE_DESC& desc);
+		DepthStencilState(const DEPTH_STENCIL_STATE_DESC& desc);
 
-		DEPTH_STENCIL_STATE_DESC mData;
+		/**
+		 * @copydoc	CoreObjectCore::createCore
+		 */
+		SPtr<CoreObjectCore> createCore() const;
+
+		DepthStencilProperties mProperties;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

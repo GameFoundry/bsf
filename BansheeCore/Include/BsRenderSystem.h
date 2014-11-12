@@ -51,28 +51,28 @@ namespace BansheeEngine
 		 *
 		 * @see		SamplerState
 		 */
-		virtual void setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SamplerStatePtr& samplerState) = 0;
+		virtual void setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SPtr<SamplerStateCore>& samplerState) = 0;
 
 		/**
 		 * @brief	Sets a blend state used for all active render targets.
 		 *
 		 * @see		BlendState
 		 */
-		virtual void setBlendState(const BlendStatePtr& blendState) = 0;
+		virtual void setBlendState(const SPtr<BlendStateCore>& blendState) = 0;
 
 		/**
 		 * @brief	Sets a state that controls various rasterizer options. 
 		 *
 		 * @see		RasterizerState
 		 */
-		virtual void setRasterizerState(const RasterizerStatePtr& rasterizerState) = 0;
+		virtual void setRasterizerState(const SPtr<RasterizerStateCore>& rasterizerState) = 0;
 
 		/**
 		 * @brief	Sets a state that controls depth & stencil buffer options.
 		 *
 		 * @see		DepthStencilState
 		 */
-		virtual void setDepthStencilState(const DepthStencilStatePtr& depthStencilState, UINT32 stencilRefValue) = 0;
+		virtual void setDepthStencilState(const SPtr<DepthStencilStateCore>& depthStencilState, UINT32 stencilRefValue) = 0;
 
 		/**
 		 * @brief	Binds a texture to the pipeline for the specified GPU program type at the specified slot.

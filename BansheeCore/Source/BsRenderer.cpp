@@ -68,19 +68,19 @@ namespace BansheeEngine
 
 		// Set up non-texture related pass settings
 		if (pass.blendState != nullptr)
-			rs.setBlendState(pass.blendState.getInternalPtr());
+			rs.setBlendState(pass.blendState->getCore());
 		else
-			rs.setBlendState(BlendState::getDefault());
+			rs.setBlendState(BlendState::getDefault()->getCore());
 
 		if (pass.depthStencilState != nullptr)
-			rs.setDepthStencilState(pass.depthStencilState.getInternalPtr(), pass.stencilRefValue);
+			rs.setDepthStencilState(pass.depthStencilState->getCore(), pass.stencilRefValue);
 		else
-			rs.setDepthStencilState(DepthStencilState::getDefault(), pass.stencilRefValue);
+			rs.setDepthStencilState(DepthStencilState::getDefault()->getCore(), pass.stencilRefValue);
 
 		if (pass.rasterizerState != nullptr)
-			rs.setRasterizerState(pass.rasterizerState.getInternalPtr());
+			rs.setRasterizerState(pass.rasterizerState->getCore());
 		else
-			rs.setRasterizerState(RasterizerState::getDefault());
+			rs.setRasterizerState(RasterizerState::getDefault()->getCore());
 	}
 
 	void Renderer::draw(const SPtr<MeshCoreBase>& mesh, const SubMesh& subMesh)

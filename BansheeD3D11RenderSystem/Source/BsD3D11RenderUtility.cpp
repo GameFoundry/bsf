@@ -6,6 +6,7 @@
 #include "BsD3D11BlendState.h"
 #include "BsD3D11RasterizerState.h"
 #include "BsD3D11DepthStencilState.h"
+#include "BsRenderStateManager.h"
 
 namespace BansheeEngine
 {
@@ -36,28 +37,28 @@ namespace BansheeEngine
 		// Set states
 		if((clearBuffers & FBT_COLOR) != 0)
 		{
-			D3D11BlendState* d3d11BlendState = static_cast<D3D11BlendState*>(const_cast<BlendState*>(mClearQuadBlendStateYesC.get()));
+			D3D11BlendStateCore* d3d11BlendState = static_cast<D3D11BlendStateCore*>(const_cast<BlendStateCore*>(mClearQuadBlendStateYesC.get()));
 			mDevice->getImmediateContext()->OMSetBlendState(d3d11BlendState->getInternal(), nullptr, 0xFFFFFFFF);
 		}
 		else
 		{
-			D3D11BlendState* d3d11BlendState = static_cast<D3D11BlendState*>(const_cast<BlendState*>(mClearQuadBlendStateNoC.get()));
+			D3D11BlendStateCore* d3d11BlendState = static_cast<D3D11BlendStateCore*>(const_cast<BlendStateCore*>(mClearQuadBlendStateNoC.get()));
 			mDevice->getImmediateContext()->OMSetBlendState(d3d11BlendState->getInternal(), nullptr, 0xFFFFFFFF);
 		}
 
-		D3D11RasterizerState* d3d11RasterizerState = static_cast<D3D11RasterizerState*>(const_cast<RasterizerState*>(mClearQuadRasterizerState.get()));
+		D3D11RasterizerStateCore* d3d11RasterizerState = static_cast<D3D11RasterizerStateCore*>(const_cast<RasterizerStateCore*>(mClearQuadRasterizerState.get()));
 		mDevice->getImmediateContext()->RSSetState(d3d11RasterizerState->getInternal());
 
 		if((clearBuffers & FBT_DEPTH) != 0)
 		{
 			if((clearBuffers & FBT_STENCIL) != 0)
 			{
-				D3D11DepthStencilState* d3d11RasterizerState = static_cast<D3D11DepthStencilState*>(const_cast<DepthStencilState*>(mClearQuadDSStateYesD_YesS.get()));
+				D3D11DepthStencilStateCore* d3d11RasterizerState = static_cast<D3D11DepthStencilStateCore*>(const_cast<DepthStencilStateCore*>(mClearQuadDSStateYesD_YesS.get()));
 				mDevice->getImmediateContext()->OMSetDepthStencilState(d3d11RasterizerState->getInternal(), stencil);
 			}
 			else
 			{
-				D3D11DepthStencilState* d3d11RasterizerState = static_cast<D3D11DepthStencilState*>(const_cast<DepthStencilState*>(mClearQuadDSStateYesD_NoS.get()));
+				D3D11DepthStencilStateCore* d3d11RasterizerState = static_cast<D3D11DepthStencilStateCore*>(const_cast<DepthStencilStateCore*>(mClearQuadDSStateYesD_NoS.get()));
 				mDevice->getImmediateContext()->OMSetDepthStencilState(d3d11RasterizerState->getInternal(), stencil);
 			}
 		}
@@ -65,12 +66,12 @@ namespace BansheeEngine
 		{
 			if((clearBuffers & FBT_STENCIL) != 0)
 			{
-				D3D11DepthStencilState* d3d11RasterizerState = static_cast<D3D11DepthStencilState*>(const_cast<DepthStencilState*>(mClearQuadDSStateNoD_YesS.get()));
+				D3D11DepthStencilStateCore* d3d11RasterizerState = static_cast<D3D11DepthStencilStateCore*>(const_cast<DepthStencilStateCore*>(mClearQuadDSStateNoD_YesS.get()));
 				mDevice->getImmediateContext()->OMSetDepthStencilState(d3d11RasterizerState->getInternal(), stencil);
 			}
 			else
 			{
-				D3D11DepthStencilState* d3d11RasterizerState = static_cast<D3D11DepthStencilState*>(const_cast<DepthStencilState*>(mClearQuadDSStateNoD_NoS.get()));
+				D3D11DepthStencilStateCore* d3d11RasterizerState = static_cast<D3D11DepthStencilStateCore*>(const_cast<DepthStencilStateCore*>(mClearQuadDSStateNoD_NoS.get()));
 				mDevice->getImmediateContext()->OMSetDepthStencilState(d3d11RasterizerState->getInternal(), stencil);
 			}
 		}
@@ -109,25 +110,25 @@ namespace BansheeEngine
 	void D3D11RenderUtility::initClearQuadResources()
 	{
 		BLEND_STATE_DESC blendStateDescYesC;
-		mClearQuadBlendStateYesC = BlendState::create(blendStateDescYesC);
+		mClearQuadBlendStateYesC = RenderStateCoreManager::instance().createBlendState(blendStateDescYesC);
 
 		BLEND_STATE_DESC blendStateDescNoC;
 		for(int i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
 			blendStateDescNoC.renderTargetDesc[i].renderTargetWriteMask = 0;
 
-		mClearQuadBlendStateNoC = BlendState::create(blendStateDescNoC);
+		mClearQuadBlendStateNoC = RenderStateCoreManager::instance().createBlendState(blendStateDescNoC);
 
 		DEPTH_STENCIL_STATE_DESC depthStateDescNoD_NoS;
 		depthStateDescNoD_NoS.depthReadEnable = false;
 		depthStateDescNoD_NoS.depthWriteEnable = false;
 		depthStateDescNoD_NoS.depthComparisonFunc = CMPF_ALWAYS_PASS;
-		mClearQuadDSStateNoD_NoS = DepthStencilState::create(depthStateDescNoD_NoS);
+		mClearQuadDSStateNoD_NoS = RenderStateCoreManager::instance().createDepthStencilState(depthStateDescNoD_NoS);
 
 		DEPTH_STENCIL_STATE_DESC depthStateDescYesD_NoS;
 		depthStateDescYesD_NoS.depthReadEnable = false;
 		depthStateDescYesD_NoS.depthWriteEnable = false; // TODO - Set to true
 		//depthStateDescYesD_NoS.depthComparisonFunc = CMPF_ALWAYS_PASS;
-		mClearQuadDSStateYesD_NoS = DepthStencilState::create(depthStateDescYesD_NoS);
+		mClearQuadDSStateYesD_NoS = RenderStateCoreManager::instance().createDepthStencilState(depthStateDescYesD_NoS);
 
 		DEPTH_STENCIL_STATE_DESC depthStateDescYesD_YesS;
 		depthStateDescYesD_YesS.depthReadEnable = false;
@@ -136,7 +137,7 @@ namespace BansheeEngine
 		depthStateDescYesD_YesS.stencilEnable = true;
 		depthStateDescYesD_YesS.frontStencilComparisonFunc = CMPF_ALWAYS_PASS;
 		depthStateDescYesD_YesS.frontStencilPassOp = SOP_REPLACE;
-		mClearQuadDSStateYesD_YesS = DepthStencilState::create(depthStateDescYesD_YesS);
+		mClearQuadDSStateYesD_YesS = RenderStateCoreManager::instance().createDepthStencilState(depthStateDescYesD_YesS);
 
 		DEPTH_STENCIL_STATE_DESC depthStateDescNoD_YesS;
 		depthStateDescNoD_YesS.depthReadEnable = false;
@@ -144,10 +145,10 @@ namespace BansheeEngine
 		depthStateDescNoD_YesS.depthComparisonFunc = CMPF_ALWAYS_PASS;
 		depthStateDescNoD_YesS.stencilEnable = true;
 		depthStateDescNoD_YesS.frontStencilComparisonFunc = CMPF_ALWAYS_PASS;
-		mClearQuadDSStateNoD_YesS = DepthStencilState::create(depthStateDescNoD_YesS);
+		mClearQuadDSStateNoD_YesS = RenderStateCoreManager::instance().createDepthStencilState(depthStateDescNoD_YesS);
 
 		RASTERIZER_STATE_DESC rasterizerStateDesc;
-		mClearQuadRasterizerState = RasterizerState::create(rasterizerStateDesc);
+		mClearQuadRasterizerState = RenderStateCoreManager::instance().createRasterizerState(rasterizerStateDesc);
 
 		String vsShaderCode = "										\
 						void main(									\

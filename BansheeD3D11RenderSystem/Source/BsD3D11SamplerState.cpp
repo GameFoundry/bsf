@@ -6,39 +6,41 @@
 
 namespace BansheeEngine
 {
-	D3D11SamplerState::D3D11SamplerState()
-		:mSamplerState(nullptr)
+	D3D11SamplerStateCore::D3D11SamplerStateCore(const SAMPLER_STATE_DESC& desc)
+		:SamplerStateCore(desc), mSamplerState(nullptr)
 	{ }
 
-	D3D11SamplerState::~D3D11SamplerState()
+	D3D11SamplerStateCore::~D3D11SamplerStateCore()
 	{
 	}
 
-	void D3D11SamplerState::initialize_internal()
+	void D3D11SamplerStateCore::initialize()
 	{
 		D3D11_SAMPLER_DESC samplerState;
 		ZeroMemory(&samplerState, sizeof(D3D11_SAMPLER_DESC));
 
-		samplerState.AddressU = D3D11Mappings::get(mData.addressMode.u);
-		samplerState.AddressV = D3D11Mappings::get(mData.addressMode.v);
-		samplerState.AddressW = D3D11Mappings::get(mData.addressMode.w);
-		samplerState.BorderColor[0] = mData.borderColor[0];
-		samplerState.BorderColor[1] = mData.borderColor[1];
-		samplerState.BorderColor[2] = mData.borderColor[2];
-		samplerState.BorderColor[3] = mData.borderColor[3];
-		samplerState.ComparisonFunc = D3D11Mappings::get(mData.comparisonFunc);
-		samplerState.MaxAnisotropy = mData.maxAniso;
-		samplerState.MaxLOD = mData.mipMax;
-		samplerState.MinLOD = mData.mipMin;
-		samplerState.MipLODBias =mData.mipmapBias;
+		samplerState.AddressU = D3D11Mappings::get(mProperties.getTextureAddressingMode().u);
+		samplerState.AddressV = D3D11Mappings::get(mProperties.getTextureAddressingMode().v);
+		samplerState.AddressW = D3D11Mappings::get(mProperties.getTextureAddressingMode().w);
+		samplerState.BorderColor[0] = mProperties.getBorderColor()[0];
+		samplerState.BorderColor[1] = mProperties.getBorderColor()[1];
+		samplerState.BorderColor[2] = mProperties.getBorderColor()[2];
+		samplerState.BorderColor[3] = mProperties.getBorderColor()[3];
+		samplerState.ComparisonFunc = D3D11Mappings::get(mProperties.getComparisonFunction());
+		samplerState.MaxAnisotropy = mProperties.getTextureAnisotropy();
+		samplerState.MaxLOD = mProperties.getMaximumMip();
+		samplerState.MinLOD = mProperties.getMinimumMip();
+		samplerState.MipLODBias = mProperties.getTextureMipmapBias();
 
-		bool isComparison = ((mData.minFilter & FO_USE_COMPARISON) & (mData.magFilter & FO_USE_COMPARISON) & (mData.mipFilter & FO_USE_COMPARISON)) != 0;
+		bool isComparison = ((mProperties.getTextureFiltering(FT_MIN) & FO_USE_COMPARISON) & 
+			(mProperties.getTextureFiltering(FT_MAG) & FO_USE_COMPARISON) &
+			(mProperties.getTextureFiltering(FT_MIP) & FO_USE_COMPARISON)) != 0;
 
-		FilterOptions minFilter = (FilterOptions)(mData.minFilter & ~FO_USE_COMPARISON);
-		FilterOptions magFilter = (FilterOptions)(mData.magFilter & ~FO_USE_COMPARISON);
-		FilterOptions mipFilter = (FilterOptions)(mData.mipFilter & ~FO_USE_COMPARISON);
+		FilterOptions minFilter = (FilterOptions)(mProperties.getTextureFiltering(FT_MIN) & ~FO_USE_COMPARISON);
+		FilterOptions magFilter = (FilterOptions)(mProperties.getTextureFiltering(FT_MAG) & ~FO_USE_COMPARISON);
+		FilterOptions mipFilter = (FilterOptions)(mProperties.getTextureFiltering(FT_MIP) & ~FO_USE_COMPARISON);
 
-		if(minFilter == FO_ANISOTROPIC && mData.magFilter == FO_ANISOTROPIC && mData.mipFilter == FO_ANISOTROPIC)
+		if (minFilter == FO_ANISOTROPIC && magFilter == FO_ANISOTROPIC && mipFilter == FO_ANISOTROPIC)
 		{
 			samplerState.Filter = D3D11_FILTER_ANISOTROPIC;
 		}
@@ -99,15 +101,15 @@ namespace BansheeEngine
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_SamplerState);
 
-		SamplerState::initialize_internal();
+		SamplerStateCore::initialize();
 	}
 
-	void D3D11SamplerState::destroy_internal()
+	void D3D11SamplerStateCore::destroy()
 	{
 		SAFE_RELEASE(mSamplerState);
 
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_SamplerState);
 
-		SamplerState::destroy_internal();
+		SamplerStateCore::destroy();
 	}
 }

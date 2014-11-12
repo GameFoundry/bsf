@@ -50,11 +50,11 @@ namespace BansheeEngine
 			for(UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
 			{
 				// Transparent if destination color is taken into account
-				if (mBlendState->getDstBlend(i) != BF_ZERO ||
-					mBlendState->getSrcBlend(i) == BF_DEST_COLOR ||
-					mBlendState->getSrcBlend(i) == BF_INV_DEST_COLOR ||
-					mBlendState->getSrcBlend(i) == BF_DEST_ALPHA ||
-					mBlendState->getSrcBlend(i) == BF_INV_DEST_ALPHA)
+				if (mBlendState->getProperties().getDstBlend(i) != BF_ZERO ||
+					mBlendState->getProperties().getSrcBlend(i) == BF_DEST_COLOR ||
+					mBlendState->getProperties().getSrcBlend(i) == BF_INV_DEST_COLOR ||
+					mBlendState->getProperties().getSrcBlend(i) == BF_DEST_ALPHA ||
+					mBlendState->getProperties().getSrcBlend(i) == BF_INV_DEST_ALPHA)
 				{
 					transparent = true;
 				}

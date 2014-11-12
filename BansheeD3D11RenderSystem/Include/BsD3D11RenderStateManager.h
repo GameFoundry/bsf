@@ -8,27 +8,27 @@ namespace BansheeEngine
 	/**
 	 * @brief	Handles creation of DirectX 11 pipeline states.
 	 */
-	class BS_D3D11_EXPORT D3D11RenderStateManager : public RenderStateManager
+	class BS_D3D11_EXPORT D3D11RenderStateCoreManager : public RenderStateCoreManager
 	{
 	protected:
 		/**
-		 * @copydoc	RenderStateManager::createSamplerStateImpl
+		 * @copydoc	RenderStateCoreManager::createSamplerStateInternal
 		 */
-		virtual SamplerStatePtr createSamplerStateImpl() const;
+		virtual SPtr<SamplerStateCore> createSamplerStateInternal(const SAMPLER_STATE_DESC& desc) const;
 
 		/**
-		 * @copydoc	RenderStateManager::createBlendStateImpl
+		 * @copydoc	RenderStateCoreManager::createBlendStateInternal
 		 */
-		virtual BlendStatePtr createBlendStateImpl() const;
+		virtual SPtr<BlendStateCore> createBlendStateInternal(const BLEND_STATE_DESC& desc) const;
 
 		/**
-		 * @copydoc	RenderStateManager::createRasterizerStateImpl
+		 * @copydoc	RenderStateCoreManager::createRasterizerStateInternal
 		 */
-		virtual RasterizerStatePtr createRasterizerStateImpl() const;
+		virtual SPtr<RasterizerStateCore> createRasterizerStateInternal(const RASTERIZER_STATE_DESC& desc) const;
 
 		/**
-		 * @copydoc	RenderStateManager::createDepthStencilStateImpl
+		 * @copydoc	RenderStateCoreManager::createDepthStencilStateInternal
 		 */
-		virtual DepthStencilStatePtr createDepthStencilStateImpl() const;
+		virtual SPtr<DepthStencilStateCore> createDepthStencilStateInternal(const DEPTH_STENCIL_STATE_DESC& desc) const;
 	};
 }

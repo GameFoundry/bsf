@@ -45,22 +45,22 @@ namespace BansheeEngine
 
 	void CoreThreadAccessorBase::setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SamplerStatePtr& samplerState)
 	{
-		mCommandQueue->queue(std::bind(&RenderSystem::setSamplerState, RenderSystem::instancePtr(), gptype, texUnit, samplerState));
+		mCommandQueue->queue(std::bind(&RenderSystem::setSamplerState, RenderSystem::instancePtr(), gptype, texUnit, samplerState->getCore()));
 	}
 
 	void CoreThreadAccessorBase::setBlendState(const BlendStatePtr& blendState)
 	{
-		mCommandQueue->queue(std::bind(&RenderSystem::setBlendState, RenderSystem::instancePtr(), blendState));
+		mCommandQueue->queue(std::bind(&RenderSystem::setBlendState, RenderSystem::instancePtr(), blendState->getCore()));
 	}
 
 	void CoreThreadAccessorBase::setRasterizerState(const RasterizerStatePtr& rasterizerState)
 	{
-		mCommandQueue->queue(std::bind(&RenderSystem::setRasterizerState, RenderSystem::instancePtr(), rasterizerState));
+		mCommandQueue->queue(std::bind(&RenderSystem::setRasterizerState, RenderSystem::instancePtr(), rasterizerState->getCore()));
 	}
 
 	void CoreThreadAccessorBase::setDepthStencilState(const DepthStencilStatePtr& depthStencilState, UINT32 stencilRefValue)
 	{
-		mCommandQueue->queue(std::bind(&RenderSystem::setDepthStencilState, RenderSystem::instancePtr(), depthStencilState, stencilRefValue));
+		mCommandQueue->queue(std::bind(&RenderSystem::setDepthStencilState, RenderSystem::instancePtr(), depthStencilState->getCore(), stencilRefValue));
 	}
 
 	void CoreThreadAccessorBase::setVertexBuffers(UINT32 index, const Vector<VertexBufferPtr>& buffers)

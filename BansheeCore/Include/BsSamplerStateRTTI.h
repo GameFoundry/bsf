@@ -12,11 +12,8 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT SamplerStateRTTI : public RTTIType<SamplerState, IReflectable, SamplerStateRTTI>
 	{
 	private:
-		SAMPLER_STATE_DESC& getData(SamplerState* obj) { return obj->mData; }
-		void setData(SamplerState* obj, SAMPLER_STATE_DESC& val) 
-		{ 
-			obj->mRTTIData = val;
-		} 
+		SAMPLER_STATE_DESC& getData(SamplerState* obj) { return obj->mProperties.mData; }
+		void setData(SamplerState* obj, SAMPLER_STATE_DESC& val) { obj->mProperties.mData = val; } 
 
 	public:
 		SamplerStateRTTI()
@@ -27,13 +24,7 @@ namespace BansheeEngine
 		virtual void onDeserializationEnded(IReflectable* obj)
 		{
 			SamplerState* samplerState = static_cast<SamplerState*>(obj);
-			if(!samplerState->mRTTIData.empty())
-			{
-				SAMPLER_STATE_DESC desc = any_cast<SAMPLER_STATE_DESC>(samplerState->mRTTIData);
-
-				samplerState->initialize(desc);
-			}
-
+			samplerState->initialize();
 		}
 
 		virtual const String& getRTTIName()

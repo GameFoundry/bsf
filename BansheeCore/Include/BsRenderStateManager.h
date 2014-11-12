@@ -8,7 +8,7 @@ namespace BansheeEngine
 	/**
 	 * @brief	Handles creation of various render states.
 	 */
-	class BS_CORE_EXPORT RenderStateManager : public Module<RenderStateManager>
+	class BS_CORE_EXPORT RenderStateManager : public Module <RenderStateManager>
 	{
 	public:
 		/**
@@ -63,7 +63,7 @@ namespace BansheeEngine
 		 * @brief	Gets a sampler state initialized with default options.
 		 */
 		const SamplerStatePtr& getDefaultSamplerState() const;
-		
+
 		/**
 		 * @brief	Gets a blend state initialized with default options.
 		 */
@@ -79,31 +79,63 @@ namespace BansheeEngine
 		 */
 		const DepthStencilStatePtr& getDefaultDepthStencilState() const;
 
-	protected:
-		/**
-		 * @copydoc	createSamplerState
-		 */
-		virtual SamplerStatePtr createSamplerStateImpl() const;
-
-		/**
-		 * @copydoc	createBlendState
-		 */
-		virtual BlendStatePtr createBlendStateImpl() const;
-
-		/**
-		 * @copydoc	createRasterizerState
-		 */
-		virtual RasterizerStatePtr createRasterizerStateImpl() const;
-
-		/**
-		 * @copydoc	createDepthStencilState
-		 */
-		virtual DepthStencilStatePtr createDepthStencilStateImpl() const;
-
 	private:
 		mutable SamplerStatePtr mDefaultSamplerState;
 		mutable BlendStatePtr mDefaultBlendState;
 		mutable RasterizerStatePtr mDefaultRasterizerState;
 		mutable DepthStencilStatePtr mDefaultDepthStencilState;
+	};
+
+	/**
+	 * @brief	Handles creation of various render states.
+	 */
+	class BS_CORE_EXPORT RenderStateCoreManager : public Module<RenderStateCoreManager>
+	{
+	public:
+		/**
+		 * @copydoc	RenderStateManager::createSamplerState
+		 */
+		SPtr<SamplerStateCore> createSamplerState(const SAMPLER_STATE_DESC& desc) const;
+
+		/**
+		 * @copydoc	RenderStateManager::createDepthStencilState
+		 */
+		SPtr<DepthStencilStateCore> createDepthStencilState(const DEPTH_STENCIL_STATE_DESC& desc) const;
+
+		/**
+		 * @copydoc	RenderStateManager::createRasterizerState
+		 */
+		SPtr<RasterizerStateCore> createRasterizerState(const RASTERIZER_STATE_DESC& desc) const;
+
+		/**
+		 * @copydoc	RenderStateManager::createBlendState
+		 */
+		SPtr<BlendStateCore> createBlendState(const BLEND_STATE_DESC& desc) const;
+
+	protected:
+		friend class SamplerState;
+		friend class BlendState;
+		friend class RasterizerState;
+		friend class DepthStencilState;
+
+		/**
+		 * @copydoc	createSamplerState
+		 */
+		virtual SPtr<SamplerStateCore> createSamplerStateInternal(const SAMPLER_STATE_DESC& desc) const;
+
+		/**
+		 * @copydoc	createBlendState
+		 */
+		virtual SPtr<BlendStateCore> createBlendStateInternal(const BLEND_STATE_DESC& desc) const;
+
+		/**
+		 * @copydoc	createRasterizerState
+		 */
+		virtual SPtr<RasterizerStateCore> createRasterizerStateInternal(const RASTERIZER_STATE_DESC& desc) const;
+
+		/**
+		 * @copydoc	createDepthStencilState
+		 */
+		virtual SPtr<DepthStencilStateCore> createDepthStencilStateInternal(const DEPTH_STENCIL_STATE_DESC& desc) const;
 	};
 }

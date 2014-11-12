@@ -28,22 +28,22 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	RenderSystem::setBlendState
 		 */
-		void setBlendState(const BlendStatePtr& blendState);
+		void setBlendState(const SPtr<BlendStateCore>& blendState);
 
 		/**
 		 * @copydoc	RenderSystem::setRasterizerState
 		 */
-		void setRasterizerState(const RasterizerStatePtr& rasterizerState);
+		void setRasterizerState(const SPtr<RasterizerStateCore>& rasterizerState);
 
 		/**
 		 * @copydoc	RenderSystem::setDepthStencilState
 		 */
-		void setDepthStencilState(const DepthStencilStatePtr& depthStencilState, UINT32 stencilRefValue);
+		void setDepthStencilState(const SPtr<DepthStencilStateCore>& depthStencilState, UINT32 stencilRefValue);
 
 		/**
 		 * @copydoc	RenderSystem::setSamplerState
 		 */
-		void setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SamplerStatePtr& samplerState);
+		void setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SPtr<SamplerStateCore>& samplerState);
 
 		/**
 		 * @copydoc	RenderSystem::setTexture

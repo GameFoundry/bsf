@@ -107,6 +107,7 @@ namespace BansheeEngine
 
 		// Create render state manager
 		RenderStateManager::startUp();
+		RenderStateCoreManager::startUp();
 
 		RenderSystem::initializePrepare();
 	}
@@ -155,6 +156,7 @@ namespace BansheeEngine
 		HardwareBufferManager::shutDown();
 		RenderWindowCoreManager::shutDown();
 		RenderWindowManager::shutDown();
+		RenderStateCoreManager::shutDown();
 		RenderStateManager::shutDown();
 
 		// Deleting the HLSL program factory
@@ -284,9 +286,9 @@ namespace BansheeEngine
 			HSamplerState& samplerState = bindableParams->getSamplerState(iter->second.slot);
 
 			if(samplerState == nullptr)
-				setSamplerState(gptype, iter->second.slot, SamplerState::getDefault());
+				setSamplerState(gptype, iter->second.slot, SamplerState::getDefault()->getCore());
 			else
-				setSamplerState(gptype, iter->second.slot, samplerState.getInternalPtr());
+				setSamplerState(gptype, iter->second.slot, samplerState->getCore());
 		}
 
 		for(auto iter = paramDesc.textures.begin(); iter != paramDesc.textures.end(); ++iter)
@@ -524,7 +526,7 @@ namespace BansheeEngine
 		LOGWRN("Texture random load/store not supported on DX9.");
 	}
 
-	void D3D9RenderSystem::setSamplerState(GpuProgramType gptype, UINT16 unit, const SamplerStatePtr& state)
+	void D3D9RenderSystem::setSamplerState(GpuProgramType gptype, UINT16 unit, const SPtr<SamplerStateCore>& state)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -539,41 +541,45 @@ namespace BansheeEngine
 			unit = D3DVERTEXTEXTURESAMPLER0 + unit; // Vertex stage uses special samplers
 		}
 
-		// Set texture layer filtering
-		setTextureFiltering(unit, FT_MIN, state->getTextureFiltering(FT_MIN));
-		setTextureFiltering(unit, FT_MAG, state->getTextureFiltering(FT_MAG));
-		setTextureFiltering(unit, FT_MIP, state->getTextureFiltering(FT_MIP));
+		const SamplerProperties& sampProps = state->getProperties();
 
 		// Set texture layer filtering
-		if (state->getTextureAnisotropy() > 0)
-			setTextureAnisotropy(unit, state->getTextureAnisotropy());
+		setTextureFiltering(unit, FT_MIN, sampProps.getTextureFiltering(FT_MIN));
+		setTextureFiltering(unit, FT_MAG, sampProps.getTextureFiltering(FT_MAG));
+		setTextureFiltering(unit, FT_MIP, sampProps.getTextureFiltering(FT_MIP));
+
+		// Set texture layer filtering
+		if (sampProps.getTextureAnisotropy() > 0)
+			setTextureAnisotropy(unit, sampProps.getTextureAnisotropy());
 
 		// Set mipmap biasing
-		setTextureMipmapBias(unit, state->getTextureMipmapBias());
+		setTextureMipmapBias(unit, sampProps.getTextureMipmapBias());
 
 		// Texture addressing mode
-		const UVWAddressingMode& uvw = state->getTextureAddressingMode();
+		const UVWAddressingMode& uvw = sampProps.getTextureAddressingMode();
 		setTextureAddressingMode(unit, uvw);
 
 		// Set border color
-		setTextureBorderColor(unit, state->getBorderColor());
+		setTextureBorderColor(unit, sampProps.getBorderColor());
 
 		BS_INC_RENDER_STAT(NumSamplerBinds);
 	}
 
-	void D3D9RenderSystem::setBlendState(const BlendStatePtr& blendState)
+	void D3D9RenderSystem::setBlendState(const SPtr<BlendStateCore>& blendState)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
+		const BlendProperties& stateProps = blendState->getProperties();
+
 		// Alpha to coverage
-		setAlphaToCoverage(blendState->getAlphaToCoverageEnabled());
+		setAlphaToCoverage(stateProps.getAlphaToCoverageEnabled());
 
 		// Blend states
 		// DirectX 9 doesn't allow us to specify blend state per render target, so we just use the first one.
-		if(blendState->getBlendEnabled(0))
+		if (stateProps.getBlendEnabled(0))
 		{
-			setSceneBlending(blendState->getSrcBlend(0), blendState->getDstBlend(0), blendState->getAlphaSrcBlend(0), blendState->getAlphaDstBlend(0)
-				, blendState->getBlendOperation(0), blendState->getAlphaBlendOperation(0));
+			setSceneBlending(stateProps.getSrcBlend(0), stateProps.getDstBlend(0), stateProps.getAlphaSrcBlend(0), stateProps.getAlphaDstBlend(0)
+				, stateProps.getBlendOperation(0), stateProps.getAlphaBlendOperation(0));
 		}
 		else
 		{
@@ -581,51 +587,55 @@ namespace BansheeEngine
 		}
 
 		// Color write mask
-		UINT8 writeMask = blendState->getRenderTargetWriteMask(0);
+		UINT8 writeMask = stateProps.getRenderTargetWriteMask(0);
 		setColorBufferWriteEnabled((writeMask & 0x1) != 0, (writeMask & 0x2) != 0, (writeMask & 0x4) != 0, (writeMask & 0x8) != 0);
 
 		BS_INC_RENDER_STAT(NumBlendStateChanges);
 	}
 
-	void D3D9RenderSystem::setRasterizerState(const RasterizerStatePtr& rasterizerState)
+	void D3D9RenderSystem::setRasterizerState(const SPtr<RasterizerStateCore>& rasterizerState)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		setDepthBias((float)rasterizerState->getDepthBias(), rasterizerState->getSlopeScaledDepthBias());
+		const RasterizerProperties& stateProps = rasterizerState->getProperties();
 
-		setCullingMode(rasterizerState->getCullMode());
+		setDepthBias((float)stateProps.getDepthBias(), stateProps.getSlopeScaledDepthBias());
 
-		setPolygonMode(rasterizerState->getPolygonMode());
+		setCullingMode(stateProps.getCullMode());
 
-		setScissorTestEnable(rasterizerState->getScissorEnable());
+		setPolygonMode(stateProps.getPolygonMode());
 
-		setMultisampleAntialiasEnable(rasterizerState->getMultisampleEnable());
+		setScissorTestEnable(stateProps.getScissorEnable());
 
-		setAntialiasedLineEnable(rasterizerState->getAntialiasedLineEnable());
+		setMultisampleAntialiasEnable(stateProps.getMultisampleEnable());
+
+		setAntialiasedLineEnable(stateProps.getAntialiasedLineEnable());
 
 		BS_INC_RENDER_STAT(NumRasterizerStateChanges);
 	}
 
-	void D3D9RenderSystem::setDepthStencilState(const DepthStencilStatePtr& depthStencilState, UINT32 stencilRefValue)
+	void D3D9RenderSystem::setDepthStencilState(const SPtr<DepthStencilStateCore>& depthStencilState, UINT32 stencilRefValue)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
+		const DepthStencilProperties& stateProps = depthStencilState->getProperties();
+
 		// Set stencil buffer options
-		setStencilCheckEnabled(depthStencilState->getStencilEnable());
+		setStencilCheckEnabled(stateProps.getStencilEnable());
 
-		setStencilBufferOperations(depthStencilState->getStencilFrontFailOp(), depthStencilState->getStencilFrontZFailOp(), depthStencilState->getStencilFrontPassOp(), true);
-		setStencilBufferFunc(depthStencilState->getStencilFrontCompFunc(), true);
+		setStencilBufferOperations(stateProps.getStencilFrontFailOp(), stateProps.getStencilFrontZFailOp(), stateProps.getStencilFrontPassOp(), true);
+		setStencilBufferFunc(stateProps.getStencilFrontCompFunc(), true);
 
-		setStencilBufferOperations(depthStencilState->getStencilBackFailOp(), depthStencilState->getStencilBackZFailOp(), depthStencilState->getStencilBackPassOp(), false);
-		setStencilBufferFunc(depthStencilState->getStencilBackCompFunc(), false);
+		setStencilBufferOperations(stateProps.getStencilBackFailOp(), stateProps.getStencilBackZFailOp(), stateProps.getStencilBackPassOp(), false);
+		setStencilBufferFunc(stateProps.getStencilBackCompFunc(), false);
 
-		setStencilBufferReadMask(depthStencilState->getStencilReadMask());
-		setStencilBufferWriteMask(depthStencilState->getStencilWriteMask());
+		setStencilBufferReadMask(stateProps.getStencilReadMask());
+		setStencilBufferWriteMask(stateProps.getStencilWriteMask());
 
 		// Set depth buffer options
-		setDepthBufferCheckEnabled(depthStencilState->getDepthReadEnable());
-		setDepthBufferWriteEnabled(depthStencilState->getDepthWriteEnable());
-		setDepthBufferFunction(depthStencilState->getDepthComparisonFunc());		
+		setDepthBufferCheckEnabled(stateProps.getDepthReadEnable());
+		setDepthBufferWriteEnabled(stateProps.getDepthWriteEnable());
+		setDepthBufferFunction(stateProps.getDepthComparisonFunc());
 
 		// Set stencil ref value
 		setStencilRefValue(stencilRefValue);

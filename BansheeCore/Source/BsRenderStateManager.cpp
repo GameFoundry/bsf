@@ -8,43 +8,44 @@ namespace BansheeEngine
 {
 	SamplerStatePtr RenderStateManager::createSamplerState(const SAMPLER_STATE_DESC& desc) const
 	{
-		SamplerStatePtr samplerState = createSamplerStateImpl();
+		SamplerStatePtr samplerState = bs_core_ptr<SamplerState, GenAlloc>(new (bs_alloc<SamplerState>()) SamplerState(desc));
 		samplerState->_setThisPtr(samplerState);
-		samplerState->initialize(desc);
+		samplerState->initialize();
 
 		return samplerState;
 	}
 
 	DepthStencilStatePtr RenderStateManager::createDepthStencilState(const DEPTH_STENCIL_STATE_DESC& desc) const
 	{
-		DepthStencilStatePtr depthStencilState = createDepthStencilStateImpl();
+		DepthStencilStatePtr depthStencilState = bs_core_ptr<DepthStencilState, GenAlloc>(new (bs_alloc<DepthStencilState>()) DepthStencilState(desc));
 		depthStencilState->_setThisPtr(depthStencilState);
-		depthStencilState->initialize(desc);
+		depthStencilState->initialize();
 
 		return depthStencilState;
 	}
 
 	RasterizerStatePtr RenderStateManager::createRasterizerState(const RASTERIZER_STATE_DESC& desc) const
 	{
-		RasterizerStatePtr rasterizerState = createRasterizerStateImpl();
+		RasterizerStatePtr rasterizerState = bs_core_ptr<RasterizerState, GenAlloc>(new (bs_alloc<RasterizerState>()) RasterizerState(desc));
 		rasterizerState->_setThisPtr(rasterizerState);
-		rasterizerState->initialize(desc);
+		rasterizerState->initialize();
 
 		return rasterizerState;
 	}
 
 	BlendStatePtr RenderStateManager::createBlendState(const BLEND_STATE_DESC& desc) const
 	{
-		BlendStatePtr blendState = createBlendStateImpl();
+		BlendStatePtr blendState = bs_core_ptr<BlendState, GenAlloc>(new (bs_alloc<BlendState>()) BlendState(desc));
 		blendState->_setThisPtr(blendState);
-		blendState->initialize(desc);
+		blendState->initialize();
 
 		return blendState;
 	}
 
 	SamplerStatePtr RenderStateManager::createEmptySamplerState() const
 	{
-		SamplerStatePtr samplerState = createSamplerStateImpl();
+		SamplerStatePtr samplerState = bs_core_ptr<SamplerState, GenAlloc>(
+			new (bs_alloc<SamplerState>()) SamplerState(SAMPLER_STATE_DESC()));
 		samplerState->_setThisPtr(samplerState);
 
 		return samplerState;
@@ -52,7 +53,8 @@ namespace BansheeEngine
 
 	DepthStencilStatePtr RenderStateManager::createEmptyDepthStencilState() const
 	{
-		DepthStencilStatePtr depthStencilState = createDepthStencilStateImpl();
+		DepthStencilStatePtr depthStencilState = bs_core_ptr<DepthStencilState, GenAlloc>(
+			new (bs_alloc<DepthStencilState>()) DepthStencilState(DEPTH_STENCIL_STATE_DESC()));
 		depthStencilState->_setThisPtr(depthStencilState);
 
 		return depthStencilState;
@@ -60,7 +62,8 @@ namespace BansheeEngine
 
 	RasterizerStatePtr RenderStateManager::createEmptyRasterizerState() const
 	{
-		RasterizerStatePtr rasterizerState = createRasterizerStateImpl();
+		RasterizerStatePtr rasterizerState = bs_core_ptr<RasterizerState, GenAlloc>(
+			new (bs_alloc<RasterizerState>()) RasterizerState(RASTERIZER_STATE_DESC()));
 		rasterizerState->_setThisPtr(rasterizerState);
 
 		return rasterizerState;
@@ -68,7 +71,8 @@ namespace BansheeEngine
 
 	BlendStatePtr RenderStateManager::createEmptyBlendState() const
 	{
-		BlendStatePtr blendState = createBlendStateImpl();
+		BlendStatePtr blendState = bs_core_ptr<BlendState, GenAlloc>(
+			new (bs_alloc<BlendState>()) BlendState(BLEND_STATE_DESC()));
 		blendState->_setThisPtr(blendState);
 
 		return blendState;
@@ -106,23 +110,63 @@ namespace BansheeEngine
 		return mDefaultDepthStencilState; 
 	}
 
-	SamplerStatePtr RenderStateManager::createSamplerStateImpl() const
+	SPtr<SamplerStateCore> RenderStateCoreManager::createSamplerState(const SAMPLER_STATE_DESC& desc) const
 	{
-		return bs_core_ptr<SamplerState, PoolAlloc>();
+		SPtr<SamplerStateCore> samplerState = createSamplerStateInternal(desc);
+		samplerState->initialize();
+
+		return samplerState;
 	}
 
-	BlendStatePtr RenderStateManager::createBlendStateImpl() const
+	SPtr<DepthStencilStateCore> RenderStateCoreManager::createDepthStencilState(const DEPTH_STENCIL_STATE_DESC& desc) const
 	{
-		return bs_core_ptr<BlendState, PoolAlloc>();
+		SPtr<DepthStencilStateCore> depthStencilState = createDepthStencilStateInternal(desc);
+		depthStencilState->initialize();
+
+		return depthStencilState;
 	}
 
-	RasterizerStatePtr RenderStateManager::createRasterizerStateImpl() const
+	SPtr<RasterizerStateCore> RenderStateCoreManager::createRasterizerState(const RASTERIZER_STATE_DESC& desc) const
 	{
-		return bs_core_ptr<RasterizerState, PoolAlloc>();
+		SPtr<RasterizerStateCore> rasterizerState = createRasterizerStateInternal(desc);
+		rasterizerState->initialize();
+
+		return rasterizerState;
 	}
 
-	DepthStencilStatePtr RenderStateManager::createDepthStencilStateImpl() const
+	SPtr<BlendStateCore> RenderStateCoreManager::createBlendState(const BLEND_STATE_DESC& desc) const
 	{
-		return bs_core_ptr<DepthStencilState, PoolAlloc>();
+		SPtr<BlendStateCore> blendState = createBlendStateInternal(desc);
+		blendState->initialize();
+
+		return blendState;
+	}
+
+	SPtr<SamplerStateCore> RenderStateCoreManager::createSamplerStateInternal(const SAMPLER_STATE_DESC& desc) const
+	{
+		SPtr<SamplerStateCore> samplerState = bs_shared_ptr<SamplerStateCore, GenAlloc>(new (bs_alloc<SamplerStateCore>()) SamplerStateCore(desc));
+
+		return samplerState;
+	}
+
+	SPtr<DepthStencilStateCore> RenderStateCoreManager::createDepthStencilStateInternal(const DEPTH_STENCIL_STATE_DESC& desc) const
+	{
+		SPtr<DepthStencilStateCore> depthStencilState = bs_shared_ptr<DepthStencilStateCore, GenAlloc>(new (bs_alloc<DepthStencilStateCore>()) DepthStencilStateCore(desc));
+
+		return depthStencilState;
+	}
+
+	SPtr<RasterizerStateCore> RenderStateCoreManager::createRasterizerStateInternal(const RASTERIZER_STATE_DESC& desc) const
+	{
+		SPtr<RasterizerStateCore> rasterizerState = bs_shared_ptr<RasterizerStateCore, GenAlloc>(new (bs_alloc<RasterizerStateCore>()) RasterizerStateCore(desc));
+
+		return rasterizerState;
+	}
+
+	SPtr<BlendStateCore> RenderStateCoreManager::createBlendStateInternal(const BLEND_STATE_DESC& desc) const
+	{
+		SPtr<BlendStateCore> blendState = bs_shared_ptr<BlendStateCore, GenAlloc>(new (bs_alloc<BlendStateCore>()) BlendStateCore(desc));
+
+		return blendState;
 	}
 }

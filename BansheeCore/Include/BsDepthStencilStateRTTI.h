@@ -10,11 +10,8 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT DepthStencilStateRTTI : public RTTIType<DepthStencilState, IReflectable, DepthStencilStateRTTI>
 	{
 	private:
-		DEPTH_STENCIL_STATE_DESC& getData(DepthStencilState* obj) { return obj->mData; }
-		void setData(DepthStencilState* obj, DEPTH_STENCIL_STATE_DESC& val) 
-		{ 
-			obj->mRTTIData = val;
-		} 
+		DEPTH_STENCIL_STATE_DESC& getData(DepthStencilState* obj) { return obj->mProperties.mData; }
+		void setData(DepthStencilState* obj, DEPTH_STENCIL_STATE_DESC& val) { obj->mProperties.mData = val; } 
 
 	public:
 		DepthStencilStateRTTI()
@@ -25,12 +22,7 @@ namespace BansheeEngine
 		virtual void onDeserializationEnded(IReflectable* obj)
 		{
 			DepthStencilState* depthStencilState = static_cast<DepthStencilState*>(obj);
-			if(!depthStencilState->mRTTIData.empty())
-			{
-				DEPTH_STENCIL_STATE_DESC desc = any_cast<DEPTH_STENCIL_STATE_DESC>(depthStencilState->mRTTIData);
-
-				depthStencilState->initialize(desc);
-			}
+			depthStencilState->initialize();
 		}
 
 		virtual const String& getRTTIName()

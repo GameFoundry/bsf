@@ -7,7 +7,8 @@
 namespace BansheeEngine
 {
 	CoreObjectManager::CoreObjectManager()
-		:mNextAvailableID(1), mSimSyncDataAlloc(nullptr), mCoreSyncDataAlloc(nullptr)
+		:mNextAvailableID(1), mSimSyncIdx(0), mSimSyncCount(0),
+		mCoreSyncIdx(0), mCoreSyncCount(0)
 	{
 
 	} 
@@ -50,28 +51,40 @@ namespace BansheeEngine
 		mObjects.erase(internalId);
 
 		{
-			auto iterFind = mSimSyncData.find(internalId);
-			if (iterFind != mSimSyncData.end())
+			for (UINT32 i = 0; i < mSimSyncCount; i++)
 			{
-				UINT8* data = iterFind->second.syncData.getBuffer();
+				UINT32 idx = (mSimSyncIdx + i - mSimSyncCount - 1) % mSimSyncCount;
 
-				if (data != nullptr && mSimSyncDataAlloc != nullptr)
-					mSimSyncDataAlloc->dealloc(data);
+				SimStoredSyncData& syncData = mSimSyncData[idx];
+				auto iterFind = syncData.entries.find(internalId);
+				if (iterFind != syncData.entries.end())
+				{
+					UINT8* data = iterFind->second.syncData.getBuffer();
 
-				mSimSyncData.erase(iterFind);
+					if (data != nullptr && syncData.alloc != nullptr)
+						syncData.alloc->dealloc(data);
+
+					syncData.entries.erase(iterFind);
+				}
 			}
 		}
 
 		{
-			auto iterFind = mCoreSyncData.find(internalId);
-			if (iterFind != mCoreSyncData.end())
+			for (UINT32 i = 0; i < mCoreSyncCount; i++)
 			{
-				UINT8* data = iterFind->second.syncData.getBuffer();
+				UINT32 idx = (mCoreSyncIdx + i - mCoreSyncCount - 1) % mCoreSyncCount;
 
-				if (data != nullptr && mCoreSyncDataAlloc != nullptr)
-					mCoreSyncDataAlloc->dealloc(data);
+				CoreStoredSyncData& syncData = mCoreSyncData[idx];
+				auto iterFind = syncData.entries.find(internalId);
+				if (iterFind != syncData.entries.end())
+				{
+					UINT8* data = iterFind->second.syncData.getBuffer();
 
-				mCoreSyncData.erase(iterFind);
+					if (data != nullptr && syncData.alloc != nullptr)
+						syncData.alloc->dealloc(data);
+
+					syncData.entries.erase(iterFind);
+				}
 			}
 		}
 	}
@@ -82,33 +95,47 @@ namespace BansheeEngine
 
 		if (type == CoreObjectSync::Sim)
 		{
-			mCoreSyncDataAlloc = allocator;
+			mCoreSyncCount++;
+			if (mCoreSyncCount > (UINT32)mCoreSyncData.size())
+				mCoreSyncData.push_back(CoreStoredSyncData());
+
+			mCoreSyncIdx = (mCoreSyncIdx + 1) % mCoreSyncCount;
+			CoreStoredSyncData& syncData = mCoreSyncData[mCoreSyncIdx];
+
+			syncData.alloc = allocator;
 			for (auto& objectData : mObjects)
 			{
 				CoreObject* object = objectData.second;
 				SPtr<CoreObjectCore> objectCore = object->getCore();
 				if (objectCore != nullptr && object->isCoreDirty())
 				{
-					CoreSyncData syncData = object->syncToCore(allocator);
+					CoreSyncData objSyncData = object->syncToCore(allocator);
 					object->markCoreClean();
 
-					mCoreSyncData[object->getInternalID()] = CoreStoredSyncData(objectCore.get(), syncData);
+					syncData.entries[object->getInternalID()] = CoreStoredSyncObjData(objectCore.get(), objSyncData);
 				}
 			}
 		}
 		else
 		{
-			mSimSyncDataAlloc = allocator;
+			mSimSyncCount++;
+			if (mSimSyncCount > (UINT32)mSimSyncData.size())
+				mSimSyncData.push_back(SimStoredSyncData());
+
+			mSimSyncIdx = (mSimSyncIdx + 1) % mSimSyncCount;
+			SimStoredSyncData& syncData = mSimSyncData[mSimSyncIdx];
+
+			syncData.alloc = allocator;
 			for (auto& objectData : mObjects)
 			{
 				CoreObject* object = objectData.second;
 				SPtr<CoreObjectCore> objectCore = object->getCore();
 				if (objectCore != nullptr && objectCore->isCoreDirty())
 				{
-					CoreSyncData syncData = objectCore->syncFromCore(allocator);
+					CoreSyncData objSyncData = objectCore->syncFromCore(allocator);
 					objectCore->markCoreClean();
 
-					mSimSyncData[object->getInternalID()] = SimStoredSyncData(object, syncData);
+					syncData.entries[object->getInternalID()] = SimStoredSyncObjData(object, objSyncData);
 				}
 			}
 		}
@@ -120,33 +147,47 @@ namespace BansheeEngine
 
 		if (type == CoreObjectSync::Sim)
 		{
-			for (auto& objectData : mCoreSyncData)
-			{
-				const CoreStoredSyncData& syncData = objectData.second;
-				syncData.destinationObj->syncToCore(syncData.syncData);
+			if (mCoreSyncCount == 0)
+				return;
 
-				UINT8* data = syncData.syncData.getBuffer();
+			mCoreSyncCount--;
+			UINT32 idx = mCoreSyncIdx - mCoreSyncCount;
+
+			CoreStoredSyncData& syncData = mCoreSyncData[idx];
+			for (auto& objectData : syncData.entries)
+			{
+				const CoreStoredSyncObjData& objSyncData = objectData.second;
+				objSyncData.destinationObj->syncToCore(objSyncData.syncData);
+
+				UINT8* data = objSyncData.syncData.getBuffer();
 
 				if (data != nullptr)
-					mCoreSyncDataAlloc->dealloc(data);
+					syncData.alloc->dealloc(data);
 			}
 
-			mCoreSyncData.clear();
+			syncData.entries.clear();
 		}
 		else
 		{
-			for (auto& objectData : mSimSyncData)
-			{
-				const SimStoredSyncData& syncData = objectData.second;
-				syncData.destinationObj->syncFromCore(syncData.syncData);
+			if (mSimSyncCount == 0)
+				return;
 
-				UINT8* data = syncData.syncData.getBuffer();
+			mSimSyncCount--;
+			UINT32 idx = mSimSyncIdx - mSimSyncCount;
+
+			SimStoredSyncData& syncData = mSimSyncData[idx];
+			for (auto& objectData : syncData.entries)
+			{
+				const SimStoredSyncObjData& objSyncData = objectData.second;
+				objSyncData.destinationObj->syncFromCore(objSyncData.syncData);
+
+				UINT8* data = objSyncData.syncData.getBuffer();
 
 				if (data != nullptr)
-					mSimSyncDataAlloc->dealloc(data);
+					syncData.alloc->dealloc(data);
 			}
 
-			mSimSyncData.clear();
+			syncData.entries.clear();
 		}
 	}
 }

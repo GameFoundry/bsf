@@ -91,6 +91,7 @@ namespace BansheeEngine
     struct RenderOpMesh;
     class StringInterface;
     class SamplerState;
+	class SamplerStateCore;
     class TextureManager;
     class Viewport;
     class VertexData;
@@ -105,9 +106,12 @@ namespace BansheeEngine
 	class HardwareBufferManager;
 	class FontManager;
 	class DepthStencilState;
+	class DepthStencilStateCore;
 	class RenderStateManager;
 	class RasterizerState;
+	class RasterizerStateCore;
 	class BlendState;
+	class BlendStateCore;
 	class GpuParamBlock;
 	class GpuParamBlockBuffer;
 	class GpuParams;

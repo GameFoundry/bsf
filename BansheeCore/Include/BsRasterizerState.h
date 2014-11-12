@@ -39,15 +39,12 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Render system pipeline state that allows you to modify how an object is rasterized.
-	 *			i.e. how are polygons converted to pixels.
-	 *
-	 * @note	Rasterizer states are immutable. Thread safe.
+	 * @brief	Information about a rasterizer state.
 	 */
-	class BS_CORE_EXPORT RasterizerState : public Resource
+	class BS_CORE_EXPORT RasterizerProperties
 	{
 	public:
-		virtual ~RasterizerState() {}
+		RasterizerProperties(const RASTERIZER_STATE_DESC& desc);
 
 		/**
 		 * @brief	Polygon mode allows you to draw polygons as solid objects or as wireframe by
@@ -117,6 +114,60 @@ namespace BansheeEngine
 		 */
 		bool getAntialiasedLineEnable() const { return mData.antialiasedLineEnable; }
 
+	protected:
+		friend class RasterizerState;
+		friend class RasterizerStateRTTI;
+
+		RASTERIZER_STATE_DESC mData;
+	};
+
+	/**
+	 * @brief	Core thread version of a rasterizer state.
+	 *
+	 * @see		RasterizerState
+	 *
+	 * @note	Core thread.
+	 */
+	class BS_CORE_EXPORT RasterizerStateCore : public CoreObjectCore
+	{
+	public:
+		virtual ~RasterizerStateCore() {}
+
+		/**
+		 * @brief	Returns information about the rasterizer state.
+		 */
+		const RasterizerProperties& getProperties() const;
+
+	protected:
+		friend class RenderStateCoreManager;
+
+		RasterizerStateCore(const RASTERIZER_STATE_DESC& desc);
+
+		RasterizerProperties mProperties;
+	};
+
+	/**
+	 * @brief	Render system pipeline state that allows you to modify how an object is rasterized.
+	 *			i.e. how are polygons converted to pixels.
+	 *
+	 * @note	Rasterizer states are immutable. Sim thread only.
+	 */
+	class BS_CORE_EXPORT RasterizerState : public Resource
+	{
+	public:
+		virtual ~RasterizerState() {}
+
+		/**
+		 * @brief	Returns information about the rasterizer state.
+		 */
+		const RasterizerProperties& getProperties() const;
+
+		/**
+		 * @brief	Retrieves a core implementation of the rasterizer state usable only from the
+		 *			core thread.
+		 */
+		SPtr<RasterizerStateCore> getCore() const;
+
 		/**
 		 * @brief	Creates a new rasterizer state using the specified rasterizer state descriptor structure.
 		 */
@@ -130,11 +181,14 @@ namespace BansheeEngine
 	protected:
 		friend class RenderStateManager;
 
+		RasterizerState(const RASTERIZER_STATE_DESC& desc);
+		
 		/**
-		* @brief	Initializes the rasterizer state. Must be called right after construction.
-		*/
-		virtual void initialize(const RASTERIZER_STATE_DESC& desc);
-		RASTERIZER_STATE_DESC mData;
+		 * @copydoc	CoreObjectCore::createCore
+		 */
+		SPtr<CoreObjectCore> createCore() const;
+
+		RasterizerProperties mProperties;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

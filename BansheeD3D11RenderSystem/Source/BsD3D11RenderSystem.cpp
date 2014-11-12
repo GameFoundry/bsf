@@ -122,7 +122,8 @@ namespace BansheeEngine
 		mHLSLFactory = bs_new<D3D11HLSLProgramFactory>();
 
 		// Create render state manager
-		RenderStateManager::startUp<D3D11RenderStateManager>();
+		RenderStateManager::startUp();
+		RenderStateCoreManager::startUp<D3D11RenderStateCoreManager>();
 
 		mCurrentCapabilities = createRenderSystemCapabilities();
 
@@ -170,6 +171,7 @@ namespace BansheeEngine
 		mActiveVertexDeclaration = nullptr;
 		mActiveVertexShader = nullptr;
 
+		RenderStateCoreManager::shutDown();
 		RenderStateManager::shutDown();
 		RenderWindowCoreManager::shutDown();
 		RenderWindowManager::shutDown();
@@ -197,7 +199,7 @@ namespace BansheeEngine
 		RenderSystem::destroy_internal();
 	}
 
-	void D3D11RenderSystem::setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SamplerStatePtr& samplerState)
+	void D3D11RenderSystem::setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SPtr<SamplerStateCore>& samplerState)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -205,7 +207,7 @@ namespace BansheeEngine
 		//  and then set them all up at once before rendering? Needs testing
 
 		ID3D11SamplerState* samplerArray[1];
-		D3D11SamplerState* d3d11SamplerState = static_cast<D3D11SamplerState*>(const_cast<SamplerState*>(samplerState.get()));
+		D3D11SamplerStateCore* d3d11SamplerState = static_cast<D3D11SamplerStateCore*>(const_cast<SamplerStateCore*>(samplerState.get()));
 		samplerArray[0] = d3d11SamplerState->getInternal();
 
 		switch(gptype)
@@ -235,31 +237,31 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumSamplerBinds);
 	}
 
-	void D3D11RenderSystem::setBlendState(const BlendStatePtr& blendState)
+	void D3D11RenderSystem::setBlendState(const SPtr<BlendStateCore>& blendState)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		D3D11BlendState* d3d11BlendState = static_cast<D3D11BlendState*>(const_cast<BlendState*>(blendState.get()));
+		D3D11BlendStateCore* d3d11BlendState = static_cast<D3D11BlendStateCore*>(const_cast<BlendStateCore*>(blendState.get()));
 		mDevice->getImmediateContext()->OMSetBlendState(d3d11BlendState->getInternal(), nullptr, 0xFFFFFFFF);
 
 		BS_INC_RENDER_STAT(NumBlendStateChanges);
 	}
 
-	void D3D11RenderSystem::setRasterizerState(const RasterizerStatePtr& rasterizerState)
+	void D3D11RenderSystem::setRasterizerState(const SPtr<RasterizerStateCore>& rasterizerState)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		D3D11RasterizerState* d3d11RasterizerState = static_cast<D3D11RasterizerState*>(const_cast<RasterizerState*>(rasterizerState.get()));
+		D3D11RasterizerStateCore* d3d11RasterizerState = static_cast<D3D11RasterizerStateCore*>(const_cast<RasterizerStateCore*>(rasterizerState.get()));
 		mDevice->getImmediateContext()->RSSetState(d3d11RasterizerState->getInternal());
 
 		BS_INC_RENDER_STAT(NumRasterizerStateChanges);
 	}
 
-	void D3D11RenderSystem::setDepthStencilState(const DepthStencilStatePtr& depthStencilState, UINT32 stencilRefValue)
+	void D3D11RenderSystem::setDepthStencilState(const SPtr<DepthStencilStateCore>& depthStencilState, UINT32 stencilRefValue)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		D3D11DepthStencilState* d3d11RasterizerState = static_cast<D3D11DepthStencilState*>(const_cast<DepthStencilState*>(depthStencilState.get()));
+		D3D11DepthStencilStateCore* d3d11RasterizerState = static_cast<D3D11DepthStencilStateCore*>(const_cast<DepthStencilStateCore*>(depthStencilState.get()));
 		mDevice->getImmediateContext()->OMSetDepthStencilState(d3d11RasterizerState->getInternal(), stencilRefValue);
 
 		BS_INC_RENDER_STAT(NumDepthStencilStateChanges);
@@ -568,9 +570,9 @@ namespace BansheeEngine
 			HSamplerState& samplerState = bindableParams->getSamplerState(iter->second.slot);
 
 			if(samplerState == nullptr)
-				setSamplerState(gptype, iter->second.slot, SamplerState::getDefault());
+				setSamplerState(gptype, iter->second.slot, SamplerState::getDefault()->getCore());
 			else
-				setSamplerState(gptype, iter->second.slot, samplerState.getInternalPtr());
+				setSamplerState(gptype, iter->second.slot, samplerState->getCore());
 		}
 
 		for(auto iter = paramDesc.textures.begin(); iter != paramDesc.textures.end(); ++iter)

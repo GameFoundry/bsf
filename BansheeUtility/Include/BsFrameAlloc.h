@@ -64,6 +64,11 @@ namespace BansheeEngine
 		MemBlock* mFreeBlock;
 		std::atomic<UINT32> mTotalAllocBytes;
 
+#if BS_DEBUG_MODE
+		UINT32 mAllocId;
+		Set<UINT32> mActiveAllocs;
+#endif
+
 		MemBlock* allocBlock(UINT32 wantedSize);
 		void deallocBlock(MemBlock* block);
 	};

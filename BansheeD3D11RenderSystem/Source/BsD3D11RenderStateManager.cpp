@@ -6,27 +6,23 @@
 
 namespace BansheeEngine
 {
-	SamplerStatePtr D3D11RenderStateManager::createSamplerStateImpl() const
+	SPtr<SamplerStateCore> D3D11RenderStateCoreManager::createSamplerStateInternal(const SAMPLER_STATE_DESC& desc) const
 	{
-		SamplerStatePtr samplerState = bs_core_ptr<D3D11SamplerState, PoolAlloc>(new (bs_alloc<D3D11SamplerState, PoolAlloc>()) D3D11SamplerState());
-		return samplerState;
+		return bs_shared_ptr<D3D11SamplerStateCore, GenAlloc>(new (bs_alloc<D3D11SamplerStateCore>()) D3D11SamplerStateCore(desc));
 	}
 
-	BlendStatePtr D3D11RenderStateManager::createBlendStateImpl() const
+	SPtr<BlendStateCore> D3D11RenderStateCoreManager::createBlendStateInternal(const BLEND_STATE_DESC& desc) const
 	{
-		BlendStatePtr blendState = bs_core_ptr<D3D11BlendState, PoolAlloc>(new (bs_alloc<D3D11BlendState, PoolAlloc>()) D3D11BlendState());
-		return blendState;
+		return bs_shared_ptr<D3D11BlendStateCore, GenAlloc>(new (bs_alloc<D3D11BlendStateCore>()) D3D11BlendStateCore(desc));
 	}
 
-	RasterizerStatePtr D3D11RenderStateManager::createRasterizerStateImpl() const
+	SPtr<RasterizerStateCore> D3D11RenderStateCoreManager::createRasterizerStateInternal(const RASTERIZER_STATE_DESC& desc) const
 	{
-		RasterizerStatePtr rasterizerState = bs_core_ptr<D3D11RasterizerState, PoolAlloc>(new (bs_alloc<D3D11RasterizerState, PoolAlloc>()) D3D11RasterizerState());
-		return rasterizerState;
+		return bs_shared_ptr<D3D11RasterizerStateCore, GenAlloc>(new (bs_alloc<D3D11RasterizerStateCore>()) D3D11RasterizerStateCore(desc));
 	}
 
-	DepthStencilStatePtr D3D11RenderStateManager::createDepthStencilStateImpl() const
+	SPtr<DepthStencilStateCore> D3D11RenderStateCoreManager::createDepthStencilStateInternal(const DEPTH_STENCIL_STATE_DESC& desc) const
 	{
-		DepthStencilStatePtr depthStencilState = bs_core_ptr<D3D11DepthStencilState, PoolAlloc>(new (bs_alloc<D3D11DepthStencilState, PoolAlloc>()) D3D11DepthStencilState());
-		return depthStencilState;
+		return bs_shared_ptr<D3D11DepthStencilStateCore, GenAlloc>(new (bs_alloc<D3D11DepthStencilStateCore>()) D3D11DepthStencilStateCore(desc));
 	}
 }

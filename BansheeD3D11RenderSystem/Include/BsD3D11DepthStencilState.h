@@ -9,10 +9,10 @@ namespace BansheeEngine
 	 * @brief	DirectX 11 implementation of a depth stencil state. 
 	 *			Corresponds directly with a DX11 depth stencil state object.
 	 */
-	class BS_D3D11_EXPORT D3D11DepthStencilState : public DepthStencilState
+	class BS_D3D11_EXPORT D3D11DepthStencilStateCore : public DepthStencilStateCore
 	{
 	public:
-		~D3D11DepthStencilState();
+		~D3D11DepthStencilStateCore();
 
 		/**
 		 * @brief	Returns the internal DX11 depth stencil state object.
@@ -20,19 +20,19 @@ namespace BansheeEngine
 		ID3D11DepthStencilState* getInternal() const { return mDepthStencilState; }
 
 	protected:
-		friend class D3D11RenderStateManager;
+		friend class D3D11RenderStateCoreManager;
 
-		D3D11DepthStencilState();
-
-		/**
-		 * @copydoc DepthStencilState::initialize_internal().
-		 */
-		void initialize_internal();
+		D3D11DepthStencilStateCore(const DEPTH_STENCIL_STATE_DESC& desc);
 
 		/**
-		 * @copydoc DepthStencilState::destroy_internal().
+		 * @copydoc DepthStencilStateCore::initialize()
 		 */
-		void destroy_internal();
+		void initialize();
+
+		/**
+		 * @copydoc DepthStencilStateCore::destroy()
+		 */
+		void destroy();
 
 		ID3D11DepthStencilState* mDepthStencilState;
 	};

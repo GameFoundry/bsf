@@ -6,28 +6,28 @@
 
 namespace BansheeEngine
 {
-	D3D11RasterizerState::D3D11RasterizerState()
-		:mRasterizerState(nullptr)
+	D3D11RasterizerStateCore::D3D11RasterizerStateCore(const RASTERIZER_STATE_DESC& desc)
+		:RasterizerStateCore(desc), mRasterizerState(nullptr)
 	{ }
 
-	D3D11RasterizerState::~D3D11RasterizerState()
+	D3D11RasterizerStateCore::~D3D11RasterizerStateCore()
 	{
 	}
 
-	void D3D11RasterizerState::initialize_internal()
+	void D3D11RasterizerStateCore::initialize()
 	{
 		D3D11_RASTERIZER_DESC rasterizerStateDesc;
 		ZeroMemory(&rasterizerStateDesc, sizeof(D3D11_RASTERIZER_DESC));
 
-		rasterizerStateDesc.AntialiasedLineEnable = mData.antialiasedLineEnable;
-		rasterizerStateDesc.CullMode = D3D11Mappings::get(mData.cullMode);
-		rasterizerStateDesc.DepthBias = mData.depthBias;
-		rasterizerStateDesc.DepthBiasClamp = mData.depthBiasClamp;
-		rasterizerStateDesc.DepthClipEnable = mData.depthClipEnable;
-		rasterizerStateDesc.FillMode = D3D11Mappings::get(mData.polygonMode);
-		rasterizerStateDesc.MultisampleEnable = mData.multisampleEnable;
-		rasterizerStateDesc.ScissorEnable = mData.scissorEnable;
-		rasterizerStateDesc.SlopeScaledDepthBias = mData.slopeScaledDepthBias;
+		rasterizerStateDesc.AntialiasedLineEnable = mProperties.getAntialiasedLineEnable();
+		rasterizerStateDesc.CullMode = D3D11Mappings::get(mProperties.getCullMode());
+		rasterizerStateDesc.DepthBias = mProperties.getDepthBias();
+		rasterizerStateDesc.DepthBiasClamp = mProperties.getDepthBiasClamp();
+		rasterizerStateDesc.DepthClipEnable = mProperties.getDepthClipEnable();
+		rasterizerStateDesc.FillMode = D3D11Mappings::get(mProperties.getPolygonMode());
+		rasterizerStateDesc.MultisampleEnable = mProperties.getMultisampleEnable();
+		rasterizerStateDesc.ScissorEnable = mProperties.getScissorEnable();
+		rasterizerStateDesc.SlopeScaledDepthBias = mProperties.getSlopeScaledDepthBias();
 		rasterizerStateDesc.FrontCounterClockwise = false;
 
 		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
@@ -41,14 +41,14 @@ namespace BansheeEngine
 		}
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_RasterizerState);
-		RasterizerState::initialize_internal();
+		RasterizerStateCore::initialize();
 	}
 
-	void D3D11RasterizerState::destroy_internal()
+	void D3D11RasterizerStateCore::destroy()
 	{
 		SAFE_RELEASE(mRasterizerState);
 
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_RasterizerState);
-		RasterizerState::destroy_internal();
+		RasterizerStateCore::destroy();
 	}
 }

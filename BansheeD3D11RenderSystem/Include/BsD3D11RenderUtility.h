@@ -41,12 +41,12 @@ namespace BansheeEngine
 		ID3D11VertexShader* mClearQuadVS;
 		ID3D11PixelShader* mClearQuadPS;
 
-		HBlendState mClearQuadBlendStateYesC;
-		HBlendState mClearQuadBlendStateNoC;
-		HRasterizerState mClearQuadRasterizerState;
-		HDepthStencilState mClearQuadDSStateNoD_NoS;
-		HDepthStencilState mClearQuadDSStateYesD_NoS;
-		HDepthStencilState mClearQuadDSStateYesD_YesS;
-		HDepthStencilState mClearQuadDSStateNoD_YesS;
+		SPtr<BlendStateCore> mClearQuadBlendStateYesC;
+		SPtr<BlendStateCore> mClearQuadBlendStateNoC;
+		SPtr<RasterizerStateCore> mClearQuadRasterizerState;
+		SPtr<DepthStencilStateCore> mClearQuadDSStateNoD_NoS;
+		SPtr<DepthStencilStateCore> mClearQuadDSStateYesD_NoS;
+		SPtr<DepthStencilStateCore> mClearQuadDSStateYesD_YesS;
+		SPtr<DepthStencilStateCore> mClearQuadDSStateNoD_YesS;
 	};
 }

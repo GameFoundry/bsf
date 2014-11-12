@@ -6,32 +6,32 @@
 
 namespace BansheeEngine
 {
-	D3D11BlendState::D3D11BlendState()
-		:mBlendState(nullptr)
+	D3D11BlendStateCore::D3D11BlendStateCore(const BLEND_STATE_DESC& desc)
+		:BlendStateCore(desc), mBlendState(nullptr)
 	{ }
 
-	D3D11BlendState::~D3D11BlendState()
+	D3D11BlendStateCore::~D3D11BlendStateCore()
 	{
 	}
 
-	void D3D11BlendState::initialize_internal()
+	void D3D11BlendStateCore::initialize()
 	{
 		D3D11_BLEND_DESC blendStateDesc;
 		ZeroMemory(&blendStateDesc, sizeof(D3D11_BLEND_DESC));
 
-		blendStateDesc.AlphaToCoverageEnable = mData.alphaToCoverageEnable;
-		blendStateDesc.IndependentBlendEnable = mData.independantBlendEnable;
+		blendStateDesc.AlphaToCoverageEnable = mProperties.getAlphaToCoverageEnabled();
+		blendStateDesc.IndependentBlendEnable = mProperties.getIndependantBlendEnable();
 		
 		for(UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
 		{
-			blendStateDesc.RenderTarget[i].BlendEnable = mData.renderTargetDesc[i].blendEnable;
-			blendStateDesc.RenderTarget[i].BlendOp = D3D11Mappings::get(mData.renderTargetDesc[i].blendOp);
-			blendStateDesc.RenderTarget[i].BlendOpAlpha = D3D11Mappings::get(mData.renderTargetDesc[i].blendOpAlpha);
-			blendStateDesc.RenderTarget[i].DestBlend = D3D11Mappings::get(mData.renderTargetDesc[i].dstBlend);
-			blendStateDesc.RenderTarget[i].DestBlendAlpha = D3D11Mappings::get(mData.renderTargetDesc[i].dstBlendAlpha);
-			blendStateDesc.RenderTarget[i].RenderTargetWriteMask = 0xf & mData.renderTargetDesc[i].renderTargetWriteMask; // Mask out all but last 4 bits
-			blendStateDesc.RenderTarget[i].SrcBlend = D3D11Mappings::get(mData.renderTargetDesc[i].srcBlend);
-			blendStateDesc.RenderTarget[i].SrcBlendAlpha = D3D11Mappings::get(mData.renderTargetDesc[i].srcBlendAlpha);
+			blendStateDesc.RenderTarget[i].BlendEnable = mProperties.getBlendEnabled(i);
+			blendStateDesc.RenderTarget[i].BlendOp = D3D11Mappings::get(mProperties.getBlendOperation(i));
+			blendStateDesc.RenderTarget[i].BlendOpAlpha = D3D11Mappings::get(mProperties.getAlphaBlendOperation(i));
+			blendStateDesc.RenderTarget[i].DestBlend = D3D11Mappings::get(mProperties.getDstBlend(i));
+			blendStateDesc.RenderTarget[i].DestBlendAlpha = D3D11Mappings::get(mProperties.getAlphaDstBlend(i));
+			blendStateDesc.RenderTarget[i].RenderTargetWriteMask = 0xf & (mProperties.getRenderTargetWriteMask(i)); // Mask out all but last 4 bits
+			blendStateDesc.RenderTarget[i].SrcBlend = D3D11Mappings::get(mProperties.getSrcBlend(i));
+			blendStateDesc.RenderTarget[i].SrcBlendAlpha = D3D11Mappings::get(mProperties.getAlphaSrcBlend(i));
 		}
 
 		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
@@ -46,15 +46,15 @@ namespace BansheeEngine
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_BlendState);
 
-		BlendState::initialize_internal();
+		BlendStateCore::initialize();
 	}
 
-	void D3D11BlendState::destroy_internal()
+	void D3D11BlendStateCore::destroy()
 	{
 		SAFE_RELEASE(mBlendState);
 
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_BlendState);
 
-		BlendState::destroy_internal();
+		BlendStateCore::destroy();
 	}
 }

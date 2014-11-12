@@ -55,16 +55,12 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Render system pipeline state that allows you to modify how an object is rendered. 
-	 * 			More exactly this state allows to you to control how is a rendered
-	 * 			object blended with any previously renderer objects.
-	 * 			
-	 * @note	Blend states are immutable. Thread safe.
+	 * @brief	Information about a blend state.
 	 */
-	class BS_CORE_EXPORT BlendState : public Resource
+	class BS_CORE_EXPORT BlendProperties
 	{
 	public:
-		virtual ~BlendState() {}
+		BlendProperties(const BLEND_STATE_DESC& desc);
 
 		/**
 		 * @brief	Alpha to coverage allows you to perform blending without needing to worry about order of
@@ -137,6 +133,61 @@ namespace BansheeEngine
 		 */
 		UINT8 getRenderTargetWriteMask(UINT32 renderTargetIdx) const;
 
+	protected:
+		friend class BlendState;
+		friend class BlendStateRTTI;
+
+		BLEND_STATE_DESC mData;
+	};
+
+/**
+	 * @brief	Core thread version of a blend state.
+	 *
+	 * @see		BlendState
+	 *
+	 * @note	Core thread.
+	 */
+	class BS_CORE_EXPORT BlendStateCore : public CoreObjectCore
+	{
+	public:
+		virtual ~BlendStateCore() {}
+
+		/**
+		 * @brief	Returns information about the blend state.
+		 */
+		const BlendProperties& getProperties() const;
+
+	protected:
+		friend class RenderStateCoreManager;
+
+		BlendStateCore(const BLEND_STATE_DESC& desc);
+
+		BlendProperties mProperties;
+	};
+
+	/**
+	 * @brief	Render system pipeline state that allows you to modify how an object is rendered. 
+	 * 			More exactly this state allows to you to control how is a rendered
+	 * 			object blended with any previously renderer objects.
+	 * 			
+	 * @note	Blend states are immutable. Sim thread only.
+	 */
+	class BS_CORE_EXPORT BlendState : public Resource
+	{
+	public:
+		virtual ~BlendState() {}
+
+		/**
+		 * @brief	Returns information about a blend state.
+		 */
+		const BlendProperties& getProperties() const;
+
+		/**
+		 * @brief	Retrieves a core implementation of the sampler state usable only from the
+		 *			core thread.
+		 */
+		SPtr<BlendStateCore> getCore() const;
+
 		/**
 		 * @brief	Creates a new blend state using the specified blend state description structure.
 		 */
@@ -151,12 +202,14 @@ namespace BansheeEngine
 	protected:
 		friend class RenderStateManager;
 
-		/**
-		 * @brief	Initializes the blend state. Must be called right after construction.
-		 */
-		virtual void initialize(const BLEND_STATE_DESC& desc);
+		BlendState(const BLEND_STATE_DESC& desc);
 
-		BLEND_STATE_DESC mData;
+		/**
+		 * @copydoc	CoreObjectCore::createCore
+		 */
+		SPtr<CoreObjectCore> createCore() const;
+
+		BlendProperties mProperties;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

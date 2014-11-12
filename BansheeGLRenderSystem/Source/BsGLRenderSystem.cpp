@@ -110,6 +110,7 @@ namespace BansheeEngine
 		RenderWindowCoreManager::startUp<GLRenderWindowCoreManager>(this);
 
 		RenderStateManager::startUp();
+		RenderStateCoreManager::startUp();
 
 		QueryManager::startUp<GLQueryManager>();
 
@@ -192,6 +193,7 @@ namespace BansheeEngine
 		QueryManager::shutDown();
 		RenderWindowCoreManager::shutDown();
 		RenderWindowManager::shutDown();
+		RenderStateCoreManager::shutDown();
 		RenderStateManager::shutDown();
 		GLVertexArrayObjectManager::shutDown(); // Note: Needs to be after QueryManager shutdown as some resources might be waiting for queries to complete
 
@@ -281,9 +283,9 @@ namespace BansheeEngine
 			HSamplerState& samplerState = bindableParams->getSamplerState(iter->second.slot);
 
 			if(samplerState == nullptr)
-				setSamplerState(gptype, iter->second.slot, SamplerState::getDefault());
+				setSamplerState(gptype, iter->second.slot, SamplerState::getDefault()->getCore());
 			else
-				setSamplerState(gptype, iter->second.slot, samplerState.getInternalPtr());
+				setSamplerState(gptype, iter->second.slot, samplerState->getCore());
 
 			glProgramUniform1i(glProgram, iter->second.slot, getGLTextureUnit(gptype, iter->second.slot));
 		}
@@ -443,29 +445,31 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumTextureBinds);
 	}
 
-	void GLRenderSystem::setSamplerState(GpuProgramType gptype, UINT16 unit, const SamplerStatePtr& state)
+	void GLRenderSystem::setSamplerState(GpuProgramType gptype, UINT16 unit, const SPtr<SamplerStateCore>& state)
 	{
 		THROW_IF_NOT_CORE_THREAD;
+
+		const SamplerProperties& stateProps = state->getProperties();
 
 		unit = getGLTextureUnit(gptype, unit);
 
 		// Set texture layer filtering
-		setTextureFiltering(unit, FT_MIN, state->getTextureFiltering(FT_MIN));
-		setTextureFiltering(unit, FT_MAG, state->getTextureFiltering(FT_MAG));
-		setTextureFiltering(unit, FT_MIP, state->getTextureFiltering(FT_MIP));
+		setTextureFiltering(unit, FT_MIN, stateProps.getTextureFiltering(FT_MIN));
+		setTextureFiltering(unit, FT_MAG, stateProps.getTextureFiltering(FT_MAG));
+		setTextureFiltering(unit, FT_MIP, stateProps.getTextureFiltering(FT_MIP));
 
 		// Set texture anisotropy
-		setTextureAnisotropy(unit, state->getTextureAnisotropy());
+		setTextureAnisotropy(unit, stateProps.getTextureAnisotropy());
 
 		// Set mipmap biasing
-		setTextureMipmapBias(unit, state->getTextureMipmapBias());
+		setTextureMipmapBias(unit, stateProps.getTextureMipmapBias());
 
 		// Texture addressing mode
-		const UVWAddressingMode& uvw = state->getTextureAddressingMode();
+		const UVWAddressingMode& uvw = stateProps.getTextureAddressingMode();
 		setTextureAddressingMode(unit, uvw);
 
 		// Set border color
-		setTextureBorderColor(unit, state->getBorderColor());
+		setTextureBorderColor(unit, stateProps.getBorderColor());
 
 		BS_INC_RENDER_STAT(NumSamplerBinds);
 	}
@@ -488,19 +492,21 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumTextureBinds);
 	}
 
-	void GLRenderSystem::setBlendState(const BlendStatePtr& blendState)
+	void GLRenderSystem::setBlendState(const SPtr<BlendStateCore>& blendState)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
+		const BlendProperties& stateProps = blendState->getProperties();
+
 		// Alpha to coverage
-		setAlphaToCoverage(blendState->getAlphaToCoverageEnabled());
+		setAlphaToCoverage(stateProps.getAlphaToCoverageEnabled());
 
 		// Blend states
 		// OpenGL doesn't allow us to specify blend state per render target, so we just use the first one.
-		if(blendState->getBlendEnabled(0))
+		if (stateProps.getBlendEnabled(0))
 		{
-			setSceneBlending(blendState->getSrcBlend(0), blendState->getDstBlend(0), blendState->getAlphaSrcBlend(0), 
-				blendState->getAlphaDstBlend(0), blendState->getBlendOperation(0), blendState->getAlphaBlendOperation(0));
+			setSceneBlending(stateProps.getSrcBlend(0), stateProps.getDstBlend(0), stateProps.getAlphaSrcBlend(0),
+				stateProps.getAlphaDstBlend(0), stateProps.getBlendOperation(0), stateProps.getAlphaBlendOperation(0));
 		}
 		else
 		{
@@ -508,52 +514,56 @@ namespace BansheeEngine
 		}
 
 		// Color write mask
-		UINT8 writeMask = blendState->getRenderTargetWriteMask(0);
+		UINT8 writeMask = stateProps.getRenderTargetWriteMask(0);
 		setColorBufferWriteEnabled((writeMask & 0x1) != 0, (writeMask & 0x2) != 0, (writeMask & 0x4) != 0, (writeMask & 0x8) != 0);
 
 		BS_INC_RENDER_STAT(NumBlendStateChanges);
 	}
 
-	void GLRenderSystem::setRasterizerState(const RasterizerStatePtr& rasterizerState)
+	void GLRenderSystem::setRasterizerState(const SPtr<RasterizerStateCore>& rasterizerState)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		setDepthBias((float)rasterizerState->getDepthBias(), rasterizerState->getSlopeScaledDepthBias());
+		const RasterizerProperties& stateProps = rasterizerState->getProperties();
 
-		setCullingMode(rasterizerState->getCullMode());
+		setDepthBias((float)stateProps.getDepthBias(), stateProps.getSlopeScaledDepthBias());
 
-		setPolygonMode(rasterizerState->getPolygonMode());
+		setCullingMode(stateProps.getCullMode());
 
-		setScissorTestEnable(rasterizerState->getScissorEnable());
+		setPolygonMode(stateProps.getPolygonMode());
 
-		setMultisamplingEnable(rasterizerState->getMultisampleEnable());
+		setScissorTestEnable(stateProps.getScissorEnable());
 
-		setDepthClipEnable(rasterizerState->getDepthClipEnable());
+		setMultisamplingEnable(stateProps.getMultisampleEnable());
 
-		setAntialiasedLineEnable(rasterizerState->getAntialiasedLineEnable());
+		setDepthClipEnable(stateProps.getDepthClipEnable());
+
+		setAntialiasedLineEnable(stateProps.getAntialiasedLineEnable());
 
 		BS_INC_RENDER_STAT(NumRasterizerStateChanges);
 	}
 
-	void GLRenderSystem::setDepthStencilState(const DepthStencilStatePtr& depthStencilState, UINT32 stencilRefValue)
+	void GLRenderSystem::setDepthStencilState(const SPtr<DepthStencilStateCore>& depthStencilState, UINT32 stencilRefValue)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
+		const DepthStencilProperties& stateProps = depthStencilState->getProperties();
+
 		// Set stencil buffer options
-		setStencilCheckEnabled(depthStencilState->getStencilEnable());
+		setStencilCheckEnabled(stateProps.getStencilEnable());
 
-		setStencilBufferOperations(depthStencilState->getStencilFrontFailOp(), depthStencilState->getStencilFrontZFailOp(), depthStencilState->getStencilFrontPassOp(), true);
-		setStencilBufferFunc(depthStencilState->getStencilFrontCompFunc(), depthStencilState->getStencilReadMask(), true);
+		setStencilBufferOperations(stateProps.getStencilFrontFailOp(), stateProps.getStencilFrontZFailOp(), stateProps.getStencilFrontPassOp(), true);
+		setStencilBufferFunc(stateProps.getStencilFrontCompFunc(), stateProps.getStencilReadMask(), true);
 
-		setStencilBufferOperations(depthStencilState->getStencilBackFailOp(), depthStencilState->getStencilBackZFailOp(), depthStencilState->getStencilBackPassOp(), false);
-		setStencilBufferFunc(depthStencilState->getStencilBackCompFunc(), depthStencilState->getStencilReadMask(), false);
+		setStencilBufferOperations(stateProps.getStencilBackFailOp(), stateProps.getStencilBackZFailOp(), stateProps.getStencilBackPassOp(), false);
+		setStencilBufferFunc(stateProps.getStencilBackCompFunc(), stateProps.getStencilReadMask(), false);
 
-		setStencilBufferWriteMask(depthStencilState->getStencilWriteMask());
+		setStencilBufferWriteMask(stateProps.getStencilWriteMask());
 
 		// Set depth buffer options
-		setDepthBufferCheckEnabled(depthStencilState->getDepthReadEnable());
-		setDepthBufferWriteEnabled(depthStencilState->getDepthWriteEnable());
-		setDepthBufferFunction(depthStencilState->getDepthComparisonFunc());	
+		setDepthBufferCheckEnabled(stateProps.getDepthReadEnable());
+		setDepthBufferWriteEnabled(stateProps.getDepthWriteEnable());
+		setDepthBufferFunction(stateProps.getDepthComparisonFunc());
 
 		// Set stencil ref value
 		setStencilRefValue(stencilRefValue);

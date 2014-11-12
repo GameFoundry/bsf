@@ -62,9 +62,9 @@ namespace BansheeEngine
 		ManagedResourceManager::instance().registerManagedResource(mMyHandle);
 	}
 
-	void ManagedResource::destroy_internal()
+	void ManagedResource::destroy()
 	{
-		Resource::destroy_internal();
+		Resource::destroy();
 
 		if (mManagedInstance != nullptr)
 		{

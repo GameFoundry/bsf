@@ -6,11 +6,40 @@
 
 namespace BansheeEngine
 {
-	void RasterizerState::initialize(const RASTERIZER_STATE_DESC& desc)
-	{
-		mData = desc;
+	RasterizerProperties::RasterizerProperties(const RASTERIZER_STATE_DESC& desc)
+		:mData(desc)
+	{ }
 
-		Resource::initialize();
+	RasterizerStateCore::RasterizerStateCore(const RASTERIZER_STATE_DESC& desc)
+		: mProperties(desc)
+	{
+
+	}
+
+	const RasterizerProperties& RasterizerStateCore::getProperties() const
+	{
+		return mProperties;
+	}
+
+	RasterizerState::RasterizerState(const RASTERIZER_STATE_DESC& desc)
+		: mProperties(desc)
+	{
+
+	}
+
+	SPtr<RasterizerStateCore> RasterizerState::getCore() const
+	{
+		return std::static_pointer_cast<RasterizerStateCore>(mCoreSpecific);
+	}
+
+	SPtr<CoreObjectCore> RasterizerState::createCore() const
+	{
+		return RenderStateCoreManager::instance().createRasterizerStateInternal(mProperties.mData);
+	}
+
+	const RasterizerProperties& RasterizerState::getProperties() const
+	{
+		return mProperties;
 	}
 
 	const RasterizerStatePtr& RasterizerState::getDefault()

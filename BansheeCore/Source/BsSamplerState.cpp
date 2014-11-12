@@ -7,36 +7,55 @@
 
 namespace BansheeEngine 
 {
-	void SamplerState::initialize(const SAMPLER_STATE_DESC& desc)
-	{
-		mData = desc;
+	SamplerProperties::SamplerProperties(const SAMPLER_STATE_DESC& desc)
+		:mData(desc)
+	{ }
 
-		Resource::initialize();
-	}
-
-	const SamplerStatePtr& SamplerState::getDefault()
+	FilterOptions SamplerProperties::getTextureFiltering(FilterType ft) const
 	{
-		return RenderStateManager::instance().getDefaultSamplerState();
-	}
-
-	FilterOptions SamplerState::getTextureFiltering(FilterType ft) const
-	{
-        switch (ft)
-        {
-        case FT_MIN:
-            return mData.minFilter;
-        case FT_MAG:
-            return mData.magFilter;
-        case FT_MIP:
-            return mData.mipFilter;
-        }
+		switch (ft)
+		{
+		case FT_MIN:
+			return mData.minFilter;
+		case FT_MAG:
+			return mData.magFilter;
+		case FT_MIP:
+			return mData.mipFilter;
+		}
 
 		return mData.minFilter;
 	}
 
-	const Color& SamplerState::getBorderColor() const
+	const Color& SamplerProperties::getBorderColor() const
 	{
 		return mData.borderColor;
+	}
+
+	SamplerStateCore::SamplerStateCore(const SAMPLER_STATE_DESC& desc)
+		:mProperties(desc)
+	{
+
+	}
+
+	const SamplerProperties& SamplerStateCore::getProperties() const
+	{
+		return mProperties;
+	}
+
+	SamplerState::SamplerState(const SAMPLER_STATE_DESC& desc)
+		:mProperties(desc)
+	{
+
+	}
+
+	SPtr<SamplerStateCore> SamplerState::getCore() const
+	{
+		return std::static_pointer_cast<SamplerStateCore>(mCoreSpecific);
+	}
+
+	SPtr<CoreObjectCore> SamplerState::createCore() const
+	{
+		return RenderStateCoreManager::instance().createSamplerStateInternal(mProperties.mData);
 	}
 
 	HSamplerState SamplerState::create(const SAMPLER_STATE_DESC& desc)
@@ -44,6 +63,16 @@ namespace BansheeEngine
 		SamplerStatePtr samplerPtr = RenderStateManager::instance().createSamplerState(desc);
 
 		return static_resource_cast<SamplerState>(gResources()._createResourceHandle(samplerPtr));
+	}
+
+	const SamplerStatePtr& SamplerState::getDefault()
+	{
+		return RenderStateManager::instance().getDefaultSamplerState();
+	}
+
+	const SamplerProperties& SamplerState::getProperties() const
+	{
+		return mProperties;
 	}
 
 	/************************************************************************/

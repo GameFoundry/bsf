@@ -51,11 +51,8 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT BlendStateRTTI : public RTTIType<BlendState, IReflectable, BlendStateRTTI>
 	{
 	private:
-		BLEND_STATE_DESC& getData(BlendState* obj) { return obj->mData; }
-		void setData(BlendState* obj, BLEND_STATE_DESC& val) 
-		{ 
-			obj->mRTTIData = val;
-		} 
+		BLEND_STATE_DESC& getData(BlendState* obj) { return obj->mProperties.mData; }
+		void setData(BlendState* obj, BLEND_STATE_DESC& val) { obj->mProperties.mData = val; } 
 
 	public:
 		BlendStateRTTI()
@@ -66,13 +63,7 @@ namespace BansheeEngine
 		virtual void onDeserializationEnded(IReflectable* obj)
 		{
 			BlendState* blendState = static_cast<BlendState*>(obj);
-			if(!blendState->mRTTIData.empty())
-			{
-				BLEND_STATE_DESC desc = any_cast<BLEND_STATE_DESC>(blendState->mRTTIData);
-
-				blendState->initialize(desc);
-			}
-
+			blendState->initialize();
 		}
 
 		virtual const String& getRTTIName()

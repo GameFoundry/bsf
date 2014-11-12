@@ -155,7 +155,7 @@ namespace BansheeEngine
 						else
 							rasterizerState = firstPass->getRasterizerState().getInternalPtr();
 
-						CullingMode cullMode = rasterizerState->getCullMode();
+						CullingMode cullMode = rasterizerState->getProperties().getCullMode();
 
 						HTexture mainTexture;
 						if (useAlphaShader)

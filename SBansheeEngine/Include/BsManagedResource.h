@@ -21,7 +21,7 @@ namespace BansheeEngine
 		friend class ScriptManagedResource;
 
 		ManagedResource(MonoObject* managedInstance);
-		void destroy_internal();
+		void destroy();
 
 		MonoObject* mManagedInstance;
 		uint32_t mManagedHandle;
