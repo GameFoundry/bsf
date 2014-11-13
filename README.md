@@ -125,10 +125,10 @@ Easiest way to get started with Banshee is to check out the `ExampleProject` inc
 
 # License
 
-Banshee is offered completely free for personal or commercial use. Only requirement is that you include Banshee Logo in your application when using any part of Banshee. Read `BansheeLicense.rtf` included with the project for more details. 
+Banshee is offered completely free for personal or commercial use. Only requirement is that you include Banshee Logo in your application when using any part of Banshee. Read `BansheeLicense.rm` included with the project for more details. 
 
 # Author
 
-Banshee is developed by Marko Pintera. I built the entire project from in my free time out of personal interest in game engine development, never having had the chance to do it professionally. As time went by it evolved into something more and it's now hard to believe how far the project has progressed since I started. With time (especially if community joins in) I hope we can build something that can rival true AAA projects.
+Banshee is developed by Marko Pintera. I've been a professional game developer for the last five years working on various mid-sized titles. My interests lie in engine and graphics development which I spend most of my free time on.
 
-I'd love to hear input from other developers, especially if it's positive! Contact me at marko.pintera@com.gmail (antispam: flip gmail/com). 
+Contact me at marko.pintera@com.gmail (antispam: flip gmail/com). 
