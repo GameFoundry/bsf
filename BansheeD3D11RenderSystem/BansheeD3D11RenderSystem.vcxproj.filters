@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\RTTI">
-      <UniqueIdentifier>{13c33212-5974-4214-8658-e58e12142f4b}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\BsD3D11VideoModeInfo.h">
@@ -125,9 +122,6 @@
     </ClInclude>
     <ClInclude Include="Include\BsD3D11BlendState.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsD3D11GpuProgramRTTI.h">
-      <Filter>Header Files\RTTI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

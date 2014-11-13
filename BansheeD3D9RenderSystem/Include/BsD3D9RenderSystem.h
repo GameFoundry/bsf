@@ -38,7 +38,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RenderSystem::bindGpuProgram()
 		 */
-		void bindGpuProgram(HGpuProgram prg);
+		void bindGpuProgram(const SPtr<GpuProgramCore>& prg);
 
 		/**
 		 * @copydoc RenderSystem::unbindGpuProgram()

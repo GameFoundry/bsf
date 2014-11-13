@@ -172,7 +172,7 @@ namespace BansheeEngine
 		 *
 		 * @note	You need to bind at least a vertex and a fragment program in order to draw something.
 		 */
-		virtual void bindGpuProgram(HGpuProgram prg);
+		virtual void bindGpuProgram(const SPtr<GpuProgramCore>& prg);
 
 		/**
 		 * @brief	Binds GPU program parameters. Caller must ensure these match the previously

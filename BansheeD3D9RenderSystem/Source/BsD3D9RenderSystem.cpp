@@ -162,7 +162,7 @@ namespace BansheeEngine
 		// Deleting the HLSL program factory
 		if (mHLSLProgramFactory)
 		{
-			GpuProgramManager::instance().removeFactory(mHLSLProgramFactory);
+			GpuProgramCoreManager::instance().removeFactory(mHLSLProgramFactory);
 			bs_delete(mHLSLProgramFactory);
 			mHLSLProgramFactory = 0;
 		}
@@ -204,21 +204,16 @@ namespace BansheeEngine
 		mResourceManager->unlockDeviceAccess();
 	}	
 
-	void D3D9RenderSystem::bindGpuProgram(HGpuProgram prg)
+	void D3D9RenderSystem::bindGpuProgram(const SPtr<GpuProgramCore>& prg)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		if(!prg.isLoaded())
-			return;
-
-		GpuProgramPtr bindingPrg = std::static_pointer_cast<GpuProgram>(prg->getThisPtr());
-
 		HRESULT hr;
-		switch (bindingPrg->getType())
+		switch (prg->getProperties().getType())
 		{
 		case GPT_VERTEX_PROGRAM:
 			hr = getActiveD3D9Device()->SetVertexShader(
-				static_cast<D3D9GpuVertexProgram*>(bindingPrg.get())->getVertexShader());
+				static_cast<D3D9GpuVertexProgramCore*>(prg.get())->getVertexShader());
 			if (FAILED(hr))
 			{
 				BS_EXCEPT(RenderingAPIException, "Error calling SetVertexShader");
@@ -226,7 +221,7 @@ namespace BansheeEngine
 			break;
 		case GPT_FRAGMENT_PROGRAM:
 			hr = getActiveD3D9Device()->SetPixelShader(
-				static_cast<D3D9GpuFragmentProgram*>(bindingPrg.get())->getPixelShader());
+				static_cast<D3D9GpuFragmentProgramCore*>(prg.get())->getPixelShader());
 			if (FAILED(hr))
 			{
 				BS_EXCEPT(RenderingAPIException, "Error calling SetPixelShader");
@@ -1797,7 +1792,7 @@ namespace BansheeEngine
 			mCurrentCapabilities->addShaderProfile("cg");
 
 			if (mCurrentCapabilities->isShaderProfileSupported("hlsl"))
-				GpuProgramManager::instance().addFactory(mHLSLProgramFactory);
+				GpuProgramCoreManager::instance().addFactory(mHLSLProgramFactory);
 
 			mNumTexStages = mCurrentCapabilities->getNumCombinedTextureUnits();
 			mTexStageDesc = bs_newN<sD3DTextureStageDesc>(mNumTexStages);

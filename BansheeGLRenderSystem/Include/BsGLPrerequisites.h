@@ -12,27 +12,17 @@ namespace BansheeEngine
 	class GLVertexBuffer;
 	class GLVertexBufferCore;
     class GLTextureManager;
-    class GLSLGpuProgram;
     class GLContext;
     class GLRTTManager;
     class GLPixelBuffer;
 	class GLGpuParamBlock;
-	class GLSLGpuProgram;
+	class GLSLGpuProgramCore;
 	class GLVertexArrayObject;
 	struct GLSLProgramPipeline;
 	class GLSLProgramPipelineManager;
 
 	typedef std::shared_ptr<GLPixelBuffer> GLPixelBufferPtr;
 	typedef std::shared_ptr<GLGpuParamBlock> GLGpuParamBlockPtr;
-	typedef std::shared_ptr<GLSLGpuProgram> GLSLGpuProgramPtr;
-
-	/**
-	 * @brief	Type IDs used for RTTI.
-	 */
-	enum TypeID_D3D9
-	{
-		TID_GL_GLSLGpuProgram = 11000
-	};
 
 	/**
 	 * @brief	OpenGL specific types to track resource statistics for.

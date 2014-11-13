@@ -2,10 +2,6 @@
 
 TODO - CoreObject refactor:
 Resource
- - RasterizerState
- - DepthStencilState
- - BlendState
- - SamplerState
  - GpuProgram
  - Material -> Remove MaterialProxy
  - Shader -> Remove ShaderProxy
@@ -26,7 +22,6 @@ Disallow CoreObject creation from core thread
 
  New issues:
   - Since Mesh refactor when I select/deselect a gizmo the entire render texture flashes white for one frame (might be related to RT refactor instead)
-  - There seems to be a threading issue with frame alloc freeing due to CoreObject syncing. Sometimes I get crashes in frame alloc relating to unfreed memory
 
 -----------------
 

@@ -9,24 +9,37 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT GpuProgramRTTI : public RTTIType<GpuProgram, Resource, GpuProgramRTTI>
 	{
 	private:
-		BS_SETGET_MEMBER(mSize, UINT32, GpuProgram)
+		UINT32& getSize(GpuProgram* obj) { return obj->mSize; }
+		void setSize(GpuProgram* obj, UINT32& val) { obj->mSize = val; }
 
-		BS_SETGET_MEMBER(mType, GpuProgramType, GpuProgram);
-		BS_SETGET_MEMBER(mNeedsAdjacencyInfo, bool, GpuProgram);
-		BS_SETGET_MEMBER(mEntryPoint, String, GpuProgram);
-		BS_SETGET_MEMBER(mProfile, GpuProgramProfile, GpuProgram);
-		BS_SETGET_MEMBER(mSource, String, GpuProgram);
+		GpuProgramType& getType(GpuProgram* obj) { return obj->mProperties.mType; }
+		void setType(GpuProgram* obj, GpuProgramType& val) { obj->mProperties.mType = val; }
+
+		bool& getNeedsAjdInfo(GpuProgram* obj) { return obj->mNeedsAdjacencyInfo; }
+		void setNeedsAjdInfo(GpuProgram* obj, bool& val) { obj->mNeedsAdjacencyInfo = val; }
+
+		String& getEntryPoint(GpuProgram* obj) { return obj->mProperties.mEntryPoint; }
+		void setEntryPoint(GpuProgram* obj, String& val) { obj->mProperties.mEntryPoint = val; }
+
+		GpuProgramProfile& getProfile(GpuProgram* obj) { return obj->mProperties.mProfile; }
+		void setProfile(GpuProgram* obj, GpuProgramProfile& val) { obj->mProperties.mProfile = val; }
+
+		String& getSource(GpuProgram* obj) { return obj->mProperties.mSource; }
+		void setSource(GpuProgram* obj, String& val) { obj->mProperties.mSource = val; }
+
+		String& getLanguage(GpuProgram* obj) { return obj->mLanguage; }
+		void setLanguage(GpuProgram* obj, String& val) { obj->mLanguage = val; }
 
 	public:
 		GpuProgramRTTI()
 		{
-			BS_ADD_PLAINFIELD(mSize, 0, GpuProgramRTTI)
-
-			BS_ADD_PLAINFIELD(mType, 2, GpuProgramRTTI)
-			BS_ADD_PLAINFIELD(mNeedsAdjacencyInfo, 3, GpuProgramRTTI)
-			BS_ADD_PLAINFIELD(mEntryPoint, 4, GpuProgramRTTI)
-			BS_ADD_PLAINFIELD(mProfile, 5, GpuProgramRTTI)
-			BS_ADD_PLAINFIELD(mSource, 6, GpuProgramRTTI)
+			addPlainField("mSize", 0, &GpuProgramRTTI::getSize, &GpuProgramRTTI::setSize);
+			addPlainField("mType", 2, &GpuProgramRTTI::getType, &GpuProgramRTTI::setType);
+			addPlainField("mNeedsAdjacencyInfo", 3, &GpuProgramRTTI::getNeedsAjdInfo, &GpuProgramRTTI::setNeedsAjdInfo);
+			addPlainField("mEntryPoint", 4, &GpuProgramRTTI::getEntryPoint, &GpuProgramRTTI::setEntryPoint);
+			addPlainField("mProfile", 5, &GpuProgramRTTI::getProfile, &GpuProgramRTTI::setProfile);
+			addPlainField("mSource", 6, &GpuProgramRTTI::getSource, &GpuProgramRTTI::setSource);
+			addPlainField("mLanguage", 7, &GpuProgramRTTI::getLanguage, &GpuProgramRTTI::setLanguage);
 		}
 
 		virtual void onDeserializationEnded(IReflectable* obj)
@@ -48,7 +61,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			BS_EXCEPT(InternalErrorException, "Cannot instantiate abstract class!"); // TODO - Need to initialize this properly
+			return GpuProgramManager::instance().createEmpty("", GPT_VERTEX_PROGRAM); // Params don't matter, they'll get overwritten
 		}
 	};
 }

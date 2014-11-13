@@ -7,39 +7,38 @@
 #include "BsGpuProgramManager.h"
 #include "BsHardwareBufferManager.h"
 #include "BsD3D11HLSLParamParser.h"
-#include "BsD3D11GpuProgramRTTI.h"
 #include "BsRenderStats.h"
 
 namespace BansheeEngine
 {
-	UINT32 D3D11GpuProgram::GlobalProgramId = 0;
+	UINT32 D3D11GpuProgramCore::GlobalProgramId = 0;
 
-	D3D11GpuProgram::D3D11GpuProgram(const String& source, const String& entryPoint, GpuProgramType gptype, 
-		GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool isAdjacencyInfoRequired)
-		: GpuProgram(source, entryPoint, gptype, profile, includes, isAdjacencyInfoRequired),
+	D3D11GpuProgramCore::D3D11GpuProgramCore(const String& source, const String& entryPoint, GpuProgramType gptype,
+		GpuProgramProfile profile, bool isAdjacencyInfoRequired)
+		: GpuProgramCore(source, entryPoint, gptype, profile, isAdjacencyInfoRequired),
 		mColumnMajorMatrices(false), mEnableBackwardsCompatibility(false), mProgramId(0)
 	{
 
 	}
 
-	D3D11GpuProgram::~D3D11GpuProgram()
+	D3D11GpuProgramCore::~D3D11GpuProgramCore()
 	{
 
 	}
 
-	void D3D11GpuProgram::initialize_internal()
+	void D3D11GpuProgramCore::initialize()
 	{
 		if (!isSupported())
 		{
 			mIsCompiled = false;
 			mCompileError = "Specified program is not supported by the current render system.";
 
-			GpuProgram::initialize_internal();
+			GpuProgramCore::initialize();
 			return;
 		}
 
 		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
-		String hlslProfile = rs->getCapabilities()->gpuProgProfileToRSSpecificProfile(mProfile);
+		String hlslProfile = rs->getCapabilities()->gpuProgProfileToRSSpecificProfile(mProperties.getProfile());
 
 		ID3DBlob* microcode = compileMicrocode(hlslProfile);
 
@@ -58,20 +57,20 @@ namespace BansheeEngine
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_GpuProgram);
 
-		GpuProgram::initialize_internal();
+		GpuProgramCore::initialize();
 	}
 
-	void D3D11GpuProgram::destroy_internal()
+	void D3D11GpuProgramCore::destroy()
 	{
 		mMicrocode.clear();
 		mInputDeclaration = nullptr;
 
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_GpuProgram);
 
-		GpuProgram::destroy_internal();
+		GpuProgramCore::destroy();
 	}
 
-	ID3DBlob* D3D11GpuProgram::compileMicrocode(const String& profile)
+	ID3DBlob* D3D11GpuProgramCore::compileMicrocode(const String& profile)
 	{
 		// TODO - Preprocessor defines aren't supported
 
@@ -92,13 +91,16 @@ namespace BansheeEngine
 		ID3DBlob* microCode = nullptr;
 		ID3DBlob* errors = nullptr;
 
+		const String& source = mProperties.getSource();
+		const String& entryPoint = mProperties.getEntryPoint();
+
 		HRESULT hr = D3DCompile(
-			mSource.c_str(),	// [in] Pointer to the shader in memory. 
-			mSource.size(),		// [in] Size of the shader in memory.  
+			source.c_str(),		// [in] Pointer to the shader in memory. 
+			source.size(),		// [in] Size of the shader in memory.  
 			nullptr,			// [in] The name of the file that contains the shader code. 
 			nullptr,			// [in] Optional. Pointer to a NULL-terminated array of macro definitions. See D3D_SHADER_MACRO. If not used, set this to NULL. 
 			nullptr,			// [in] Optional. Pointer to an ID3DInclude Interface interface for handling include files. Setting this to NULL will cause a compile error if a shader contains a #include. 
-			mEntryPoint.c_str(),// [in] Name of the shader-entrypoint function where shader execution begins. 
+			entryPoint.c_str(),	// [in] Name of the shader-entrypoint function where shader execution begins. 
 			profile.c_str(),// [in] A string that specifies the shader model; can be any profile in shader model 4 or higher. 
 			compileFlags,		// [in] Effect compile flags - no D3DCOMPILE_ENABLE_BACKWARDS_COMPATIBILITY at the first try...
 			0,					// [in] Effect compile flags
@@ -126,12 +128,12 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D11GpuProgram::populateParametersAndConstants(ID3DBlob* microcode)
+	void D3D11GpuProgramCore::populateParametersAndConstants(ID3DBlob* microcode)
 	{
 		assert(microcode != nullptr);
 
 		D3D11HLSLParamParser parser;
-		if (mType == GPT_VERTEX_PROGRAM)
+		if (mProperties.getType() == GPT_VERTEX_PROGRAM)
 		{
 			VertexDeclaration::VertexElementList inputParams;
 			parser.parse(microcode, *mParametersDesc, &inputParams);
@@ -144,42 +146,22 @@ namespace BansheeEngine
 		}
 	}
 
-	GpuParamsPtr D3D11GpuProgram::createParameters()
+	GpuParamsPtr D3D11GpuProgramCore::createParameters()
 	{
 		GpuParamsPtr params = bs_shared_ptr<GpuParams, PoolAlloc>(mParametersDesc, mColumnMajorMatrices);
 		return params;
 	}
 
-	const String& D3D11GpuProgram::getLanguage() const
-	{
-		static String name = "hlsl";
-
-		return name;
-	}
-
-	/************************************************************************/
-	/* 								SERIALIZATION                      		*/
-	/************************************************************************/
-	RTTITypeBase* D3D11GpuProgram::getRTTIStatic()
-	{
-		return D3D11GpuProgramRTTI::instance();
-	}
-
-	RTTITypeBase* D3D11GpuProgram::getRTTI() const
-	{
-		return D3D11GpuProgram::getRTTIStatic();
-	}
-
-	D3D11GpuVertexProgram::D3D11GpuVertexProgram(const String& source, const String& entryPoint,
-		GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes)
-		: D3D11GpuProgram(source, entryPoint, GPT_VERTEX_PROGRAM, profile, includes, false)
+	D3D11GpuVertexProgramCore::D3D11GpuVertexProgramCore(const String& source, const String& entryPoint,
+		GpuProgramProfile profile)
+		: D3D11GpuProgramCore(source, entryPoint, GPT_VERTEX_PROGRAM, profile, false)
 		, mVertexShader(nullptr)
 	{ }
 
-	D3D11GpuVertexProgram::~D3D11GpuVertexProgram()
+	D3D11GpuVertexProgramCore::~D3D11GpuVertexProgramCore()
 	{ }
 
-	void D3D11GpuVertexProgram::loadFromMicrocode(D3D11Device& device, ID3D10Blob*  microcode)
+	void D3D11GpuVertexProgramCore::loadFromMicrocode(D3D11Device& device, ID3D10Blob*  microcode)
 	{
 		HRESULT hr = device.getD3D11Device()->CreateVertexShader( 
 			static_cast<DWORD*>(microcode->GetBufferPointer()), microcode->GetBufferSize(),
@@ -194,41 +176,28 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D11GpuVertexProgram::destroy_internal()
+	void D3D11GpuVertexProgramCore::destroy()
 	{
 		SAFE_RELEASE(mVertexShader);
 
-		D3D11GpuProgram::destroy_internal();
+		D3D11GpuProgramCore::destroy();
 	}
 
-	ID3D11VertexShader * D3D11GpuVertexProgram::getVertexShader() const
+	ID3D11VertexShader * D3D11GpuVertexProgramCore::getVertexShader() const
 	{
 		return mVertexShader;
 	}
 
-	/************************************************************************/
-	/* 								SERIALIZATION                      		*/
-	/************************************************************************/
-	RTTITypeBase* D3D11GpuVertexProgram::getRTTIStatic()
-	{
-		return D3D11GpuVertexProgramRTTI::instance();
-	}
-
-	RTTITypeBase* D3D11GpuVertexProgram::getRTTI() const
-	{
-		return D3D11GpuVertexProgram::getRTTIStatic();
-	}
-
-	D3D11GpuFragmentProgram::D3D11GpuFragmentProgram(const String& source, const String& entryPoint,
-		GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes)
-		: D3D11GpuProgram(source, entryPoint, GPT_FRAGMENT_PROGRAM, profile, includes, false)
+	D3D11GpuFragmentProgramCore::D3D11GpuFragmentProgramCore(const String& source, const String& entryPoint,
+		GpuProgramProfile profile)
+		: D3D11GpuProgramCore(source, entryPoint, GPT_FRAGMENT_PROGRAM, profile, false)
 		, mPixelShader(nullptr)
 	{ }
 
-	D3D11GpuFragmentProgram::~D3D11GpuFragmentProgram()
+	D3D11GpuFragmentProgramCore::~D3D11GpuFragmentProgramCore()
 	{ }
 
-	void D3D11GpuFragmentProgram::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
+	void D3D11GpuFragmentProgramCore::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
 	{
 		HRESULT hr = device.getD3D11Device()->CreatePixelShader(
 			static_cast<DWORD*>(microcode->GetBufferPointer()), microcode->GetBufferSize(),
@@ -242,41 +211,29 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D11GpuFragmentProgram::destroy_internal()
+	void D3D11GpuFragmentProgramCore::destroy()
 	{
 		SAFE_RELEASE(mPixelShader);
 
-		D3D11GpuProgram::destroy_internal();
+		D3D11GpuProgramCore::destroy();
 	}
 
-	ID3D11PixelShader * D3D11GpuFragmentProgram::getPixelShader() const
+	ID3D11PixelShader * D3D11GpuFragmentProgramCore::getPixelShader() const
 	{
 		return mPixelShader;
 	}
 
-	/************************************************************************/
-	/* 								SERIALIZATION                      		*/
-	/************************************************************************/
-	RTTITypeBase* D3D11GpuFragmentProgram::getRTTIStatic()
-	{
-		return D3D11GpuFragmentProgramRTTI::instance();
-	}
 
-	RTTITypeBase* D3D11GpuFragmentProgram::getRTTI() const
-	{
-		return D3D11GpuFragmentProgram::getRTTIStatic();
-	}
-
-	D3D11GpuGeometryProgram::D3D11GpuGeometryProgram(const String& source, const String& entryPoint,
-		GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool isAdjacencyInfoRequired)
-		: D3D11GpuProgram(source, entryPoint, GPT_GEOMETRY_PROGRAM, profile, includes, isAdjacencyInfoRequired)
+	D3D11GpuGeometryProgramCore::D3D11GpuGeometryProgramCore(const String& source, const String& entryPoint,
+		GpuProgramProfile profile, bool isAdjacencyInfoRequired)
+		: D3D11GpuProgramCore(source, entryPoint, GPT_GEOMETRY_PROGRAM, profile, isAdjacencyInfoRequired)
 		, mGeometryShader(nullptr)
 	{ }
 
-	D3D11GpuGeometryProgram::~D3D11GpuGeometryProgram()
+	D3D11GpuGeometryProgramCore::~D3D11GpuGeometryProgramCore()
 	{ }
 
-	void D3D11GpuGeometryProgram::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
+	void D3D11GpuGeometryProgramCore::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
 	{
 		HRESULT hr = device.getD3D11Device()->CreateGeometryShader(
 			static_cast<DWORD*>(microcode->GetBufferPointer()), microcode->GetBufferSize(),
@@ -290,41 +247,28 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D11GpuGeometryProgram::destroy_internal()
+	void D3D11GpuGeometryProgramCore::destroy()
 	{
 		SAFE_RELEASE(mGeometryShader);
 
-		D3D11GpuProgram::destroy_internal();
+		D3D11GpuProgramCore::destroy();
 	}
 
-	ID3D11GeometryShader * D3D11GpuGeometryProgram::getGeometryShader() const
+	ID3D11GeometryShader * D3D11GpuGeometryProgramCore::getGeometryShader() const
 	{
 		return mGeometryShader;
 	}
 
-	/************************************************************************/
-	/* 								SERIALIZATION                      		*/
-	/************************************************************************/
-	RTTITypeBase* D3D11GpuGeometryProgram::getRTTIStatic()
-	{
-		return D3D11GpuGeometryProgramRTTI::instance();
-	}
-
-	RTTITypeBase* D3D11GpuGeometryProgram::getRTTI() const
-	{
-		return D3D11GpuGeometryProgram::getRTTIStatic();
-	}
-
-	D3D11GpuDomainProgram::D3D11GpuDomainProgram(const String& source, const String& entryPoint,
-		GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes)
-		: D3D11GpuProgram(source, entryPoint, GPT_DOMAIN_PROGRAM, profile, includes, false)
+	D3D11GpuDomainProgramCore::D3D11GpuDomainProgramCore(const String& source, const String& entryPoint,
+		GpuProgramProfile profile)
+		: D3D11GpuProgramCore(source, entryPoint, GPT_DOMAIN_PROGRAM, profile, false)
 		, mDomainShader(nullptr)
 	{ }
 
-	D3D11GpuDomainProgram::~D3D11GpuDomainProgram()
+	D3D11GpuDomainProgramCore::~D3D11GpuDomainProgramCore()
 	{ }
 
-	void D3D11GpuDomainProgram::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
+	void D3D11GpuDomainProgramCore::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
 	{
 		HRESULT hr = device.getD3D11Device()->CreateDomainShader(
 			static_cast<DWORD*>(microcode->GetBufferPointer()), microcode->GetBufferSize(),
@@ -338,41 +282,28 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D11GpuDomainProgram::destroy_internal()
+	void D3D11GpuDomainProgramCore::destroy()
 	{
 		SAFE_RELEASE(mDomainShader);
 
-		D3D11GpuProgram::destroy_internal();
+		D3D11GpuProgramCore::destroy();
 	}
 
-	ID3D11DomainShader * D3D11GpuDomainProgram::getDomainShader() const
+	ID3D11DomainShader * D3D11GpuDomainProgramCore::getDomainShader() const
 	{
 		return mDomainShader;
 	}
 
-	/************************************************************************/
-	/* 								SERIALIZATION                      		*/
-	/************************************************************************/
-	RTTITypeBase* D3D11GpuDomainProgram::getRTTIStatic()
-	{
-		return D3D11GpuDomainProgramRTTI::instance();
-	}
-
-	RTTITypeBase* D3D11GpuDomainProgram::getRTTI() const
-	{
-		return D3D11GpuDomainProgram::getRTTIStatic();
-	}
-
-	D3D11GpuHullProgram::D3D11GpuHullProgram(const String& source, const String& entryPoint,
-		GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes)
-		: D3D11GpuProgram(source, entryPoint, GPT_HULL_PROGRAM, profile, includes, false)
+	D3D11GpuHullProgramCore::D3D11GpuHullProgramCore(const String& source, const String& entryPoint,
+		GpuProgramProfile profile)
+		: D3D11GpuProgramCore(source, entryPoint, GPT_HULL_PROGRAM, profile, false)
 		, mHullShader(nullptr)
 	{ }
 
-	D3D11GpuHullProgram::~D3D11GpuHullProgram()
+	D3D11GpuHullProgramCore::~D3D11GpuHullProgramCore()
 	{ }
 
-	void D3D11GpuHullProgram::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
+	void D3D11GpuHullProgramCore::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
 	{
 		// Create the shader
 		HRESULT hr = device.getD3D11Device()->CreateHullShader(
@@ -387,41 +318,29 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D11GpuHullProgram::destroy_internal()
+	void D3D11GpuHullProgramCore::destroy()
 	{
 		SAFE_RELEASE(mHullShader);
 
-		D3D11GpuProgram::destroy_internal();
+		D3D11GpuProgramCore::destroy();
 	}
 
-	ID3D11HullShader* D3D11GpuHullProgram::getHullShader() const
+	ID3D11HullShader* D3D11GpuHullProgramCore::getHullShader() const
 	{
 		return mHullShader;
 	}
 
-	/************************************************************************/
-	/* 								SERIALIZATION                      		*/
-	/************************************************************************/
-	RTTITypeBase* D3D11GpuHullProgram::getRTTIStatic()
-	{
-		return D3D11GpuHullProgramRTTI::instance();
-	}
 
-	RTTITypeBase* D3D11GpuHullProgram::getRTTI() const
-	{
-		return D3D11GpuHullProgram::getRTTIStatic();
-	}
-
-	D3D11GpuComputeProgram::D3D11GpuComputeProgram(const String& source, const String& entryPoint,
-		GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes)
-		: D3D11GpuProgram(source, entryPoint, GPT_COMPUTE_PROGRAM, profile, includes, false)
+	D3D11GpuComputeProgramCore::D3D11GpuComputeProgramCore(const String& source, const String& entryPoint,
+		GpuProgramProfile profile)
+		: D3D11GpuProgramCore(source, entryPoint, GPT_COMPUTE_PROGRAM, profile, false)
 		, mComputeShader(nullptr)
 	{ }
 
-	D3D11GpuComputeProgram::~D3D11GpuComputeProgram()
+	D3D11GpuComputeProgramCore::~D3D11GpuComputeProgramCore()
 	{ }
 
-	void D3D11GpuComputeProgram::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
+	void D3D11GpuComputeProgramCore::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
 	{
 		HRESULT hr = device.getD3D11Device()->CreateComputeShader(
 			static_cast<DWORD*>(microcode->GetBufferPointer()), microcode->GetBufferSize(),
@@ -435,28 +354,15 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D11GpuComputeProgram::destroy_internal()
+	void D3D11GpuComputeProgramCore::destroy()
 	{
 		SAFE_RELEASE(mComputeShader);
 
-		D3D11GpuProgram::destroy_internal();
+		D3D11GpuProgramCore::destroy();
 	}
 
-	ID3D11ComputeShader* D3D11GpuComputeProgram::getComputeShader() const
+	ID3D11ComputeShader* D3D11GpuComputeProgramCore::getComputeShader() const
 	{
 		return mComputeShader;
-	}
-
-	/************************************************************************/
-	/* 								SERIALIZATION                      		*/
-	/************************************************************************/
-	RTTITypeBase* D3D11GpuComputeProgram::getRTTIStatic()
-	{
-		return D3D11GpuComputeProgramRTTI::instance();
-	}
-
-	RTTITypeBase* D3D11GpuComputeProgram::getRTTI() const
-	{
-		return D3D11GpuComputeProgram::getRTTIStatic();
 	}
 }

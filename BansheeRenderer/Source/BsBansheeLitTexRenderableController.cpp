@@ -19,7 +19,6 @@ namespace BansheeEngine
 		TechniquePtr defaultTechnique = defaultShader->getBestTechnique();
 		PassPtr defaultPass = defaultTechnique->getPass(0);
 
-		bool matrixTranspose = defaultPass->getVertexProgram()->requiresMatrixTranspose(); // Only need this from first vertex program as this is a static setting across all GPU programs
 		GpuParamDescPtr vertParamDesc = defaultPass->getVertexProgram()->getParamDesc();
 		GpuParamDescPtr fragParamDesc = defaultPass->getFragmentProgram()->getParamDesc();
 
@@ -108,8 +107,8 @@ namespace BansheeEngine
 			BS_EXCEPT(InternalErrorException, "Invalid default shader.");
 
 		// Create global GPU param buffers and get parameter handles
-		staticParams = bs_shared_ptr<GpuParams>(staticParamsDesc, matrixTranspose);
-		perFrameParams = bs_shared_ptr<GpuParams>(perFrameParamsDesc, matrixTranspose);
+		staticParams = bs_shared_ptr<GpuParams>(staticParamsDesc, false);
+		perFrameParams = bs_shared_ptr<GpuParams>(perFrameParamsDesc, false);
 
 		staticParamBuffer = HardwareBufferManager::instance().createGpuParamBlockBuffer(staticParamBlockDesc.blockSize * sizeof(UINT32));
 		perFrameParamBuffer = HardwareBufferManager::instance().createGpuParamBlockBuffer(perFrameParamBlockDesc.blockSize * sizeof(UINT32));

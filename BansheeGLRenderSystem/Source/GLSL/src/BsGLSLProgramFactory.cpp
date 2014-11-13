@@ -10,18 +10,18 @@ namespace BansheeEngine
         return LANGUAGE_NAME;
     }
 
-    GpuProgramPtr GLSLProgramFactory::create(const String& source, const String& entryPoint, 
-		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool requireAdjacency)
+	SPtr<GpuProgramCore> GLSLProgramFactory::create(const String& source, const String& entryPoint,
+		GpuProgramType gptype, GpuProgramProfile profile, bool requireAdjacency)
     {
-		GLSLGpuProgram* prog = new (bs_alloc<GLSLGpuProgram, PoolAlloc>()) GLSLGpuProgram(source, entryPoint, gptype, profile, includes, requireAdjacency);
+		GLSLGpuProgramCore* prog = new (bs_alloc<GLSLGpuProgramCore, GenAlloc>()) GLSLGpuProgramCore(source, entryPoint, gptype, profile, requireAdjacency);
 
-		return bs_core_ptr<GLSLGpuProgram, PoolAlloc>(prog);
+		return bs_shared_ptr<GLSLGpuProgramCore, GenAlloc>(prog);
     }
 
-	GpuProgramPtr GLSLProgramFactory::create(GpuProgramType type)
+	SPtr<GpuProgramCore> GLSLProgramFactory::create(GpuProgramType type)
 	{
-		GLSLGpuProgram* prog = new (bs_alloc<GLSLGpuProgram, PoolAlloc>()) GLSLGpuProgram("", "", type, GPP_NONE, nullptr, false);
+		GLSLGpuProgramCore* prog = new (bs_alloc<GLSLGpuProgramCore, GenAlloc>()) GLSLGpuProgramCore("", "", type, GPP_NONE, false);
 
-		return bs_core_ptr<GLSLGpuProgram, PoolAlloc>(prog);
+		return bs_shared_ptr<GLSLGpuProgramCore, GenAlloc>(prog);
 	}
 }

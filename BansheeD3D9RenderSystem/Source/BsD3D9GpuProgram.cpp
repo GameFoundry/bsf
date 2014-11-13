@@ -8,28 +8,27 @@
 #include "BsAsyncOp.h"
 #include "BsGpuProgramManager.h"
 #include "BsD3D9HLSLParamParser.h"
-#include "BsD3D9GpuProgramRTTI.h"
 #include "BsRenderStats.h"
 
 namespace BansheeEngine 
 {
-    D3D9GpuProgram::D3D9GpuProgram(const String& source, const String& entryPoint, 
-		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes)
-		: GpuProgram(source, entryPoint, gptype, profile, includes, false),
+    D3D9GpuProgramCore::D3D9GpuProgramCore(const String& source, const String& entryPoint, 
+		GpuProgramType gptype, GpuProgramProfile profile)
+		: GpuProgramCore(source, entryPoint, gptype, profile, false),
 		mMicrocode(nullptr), mColumnMajorMatrices(false), mOptimisationLevel(OPT_DEFAULT)
     { }
 
-	D3D9GpuProgram::~D3D9GpuProgram()
+	D3D9GpuProgramCore::~D3D9GpuProgramCore()
 	{ }
 
-	void D3D9GpuProgram::initialize_internal()
+	void D3D9GpuProgramCore::initialize()
 	{
 		if (!isSupported())
 		{
 			mIsCompiled = false;
 			mCompileError = "Specified program is not supported by the current render system.";
 
-			GpuProgram::initialize_internal();
+			GpuProgramCore::initialize();
 			return;
 		}
 
@@ -146,9 +145,9 @@ namespace BansheeEngine
 		// include handler
 		LPD3DXCONSTANTTABLE constTable;
 
-		String hlslProfile = D3D9RenderSystem::instance().getCapabilities()->gpuProgProfileToRSSpecificProfile(mProfile);
+		String hlslProfile = D3D9RenderSystem::instance().getCapabilities()->gpuProgProfileToRSSpecificProfile(getProperties().getProfile());
 
-		String parsedSource = D3D9EmulatedParamBlockParser::parse(mSource, mBlocks);
+		String parsedSource = D3D9EmulatedParamBlockParser::parse(getProperties().getSource(), mBlocks);
 
 		// Compile & assemble into microcode
 		HRESULT hr = D3DXCompileShader(
@@ -156,7 +155,7 @@ namespace BansheeEngine
 			static_cast<UINT>(parsedSource.length()),
 			pDefines,
 			nullptr,
-			mEntryPoint.c_str(),
+			getProperties().getEntryPoint().c_str(),
 			hlslProfile.c_str(),
 			compileFlags,
 			&mMicrocode,
@@ -197,56 +196,36 @@ namespace BansheeEngine
 		}
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_GpuProgram);
-		GpuProgram::initialize_internal();
+		GpuProgramCore::initialize();
 	}
 
-	void D3D9GpuProgram::destroy_internal()
+	void D3D9GpuProgramCore::destroy()
 	{
 		SAFE_RELEASE(mMicrocode);
 
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_GpuProgram);
-		GpuProgram::destroy_internal();
+		GpuProgramCore::destroy();
 	}
 
-	GpuParamsPtr D3D9GpuProgram::createParameters()
+	GpuParamsPtr D3D9GpuProgramCore::createParameters()
 	{
 		GpuParamsPtr params = bs_shared_ptr<GpuParams, PoolAlloc>(std::ref(mParametersDesc), mColumnMajorMatrices);
 
 		return params;
 	}
 
-	const String& D3D9GpuProgram::getLanguage() const
-	{
-		static const String language = "hlsl";
-
-		return language;
-	}
-
-	/************************************************************************/
-	/* 								SERIALIZATION                      		*/
-	/************************************************************************/
-	RTTITypeBase* D3D9GpuProgram::getRTTIStatic()
-	{
-		return D3D9GpuProgramRTTI::instance();
-	}
-
-	RTTITypeBase* D3D9GpuProgram::getRTTI() const
-	{
-		return D3D9GpuProgram::getRTTIStatic();
-	}
-
-	D3D9GpuVertexProgram::D3D9GpuVertexProgram(const String& source, const String& entryPoint, 
-		GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes)
-		: D3D9GpuProgram(source, entryPoint, GPT_VERTEX_PROGRAM, profile, includes)
+	D3D9GpuVertexProgramCore::D3D9GpuVertexProgramCore(const String& source, const String& entryPoint,
+		GpuProgramProfile profile)
+		: D3D9GpuProgramCore(source, entryPoint, GPT_VERTEX_PROGRAM, profile)
     {
 
     }
 
-	D3D9GpuVertexProgram::~D3D9GpuVertexProgram()
+	D3D9GpuVertexProgramCore::~D3D9GpuVertexProgramCore()
 	{	
 	}
 
-	void D3D9GpuVertexProgram::destroy_internal(void)
+	void D3D9GpuVertexProgramCore::destroy()
 	{
 		auto it = mMapDeviceToVertexShader.begin();
 
@@ -257,10 +236,10 @@ namespace BansheeEngine
 		}
 		mMapDeviceToVertexShader.clear();	
 
-		D3D9GpuProgram::destroy_internal();
+		D3D9GpuProgramCore::destroy();
 	}
 
-    void D3D9GpuVertexProgram::loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode)
+    void D3D9GpuVertexProgramCore::loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode)
     {		 
 		auto it = mMapDeviceToVertexShader.find(d3d9Device);
 
@@ -283,12 +262,12 @@ namespace BansheeEngine
 		mMapDeviceToVertexShader[d3d9Device] = pVertexShader;
     }
 
-	void D3D9GpuVertexProgram::notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device)
+	void D3D9GpuVertexProgramCore::notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device)
 	{
 		
 	}
 
-	void D3D9GpuVertexProgram::notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device)
+	void D3D9GpuVertexProgramCore::notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device)
 	{
 		auto it = mMapDeviceToVertexShader.find(d3d9Device);
 
@@ -300,7 +279,7 @@ namespace BansheeEngine
 		}
 	}
 
-	IDirect3DVertexShader9* D3D9GpuVertexProgram::getVertexShader()
+	IDirect3DVertexShader9* D3D9GpuVertexProgramCore::getVertexShader()
 	{
 		if (!isCompiled())
 			return nullptr;
@@ -318,31 +297,18 @@ namespace BansheeEngine
 		return it->second;
 	}
 
-	/************************************************************************/
-	/* 								SERIALIZATION                      		*/
-	/************************************************************************/
-	RTTITypeBase* D3D9GpuVertexProgram::getRTTIStatic()
-	{
-		return D3D9GpuVertexProgramRTTI::instance();
-	}
-
-	RTTITypeBase* D3D9GpuVertexProgram::getRTTI() const
-	{
-		return D3D9GpuVertexProgram::getRTTIStatic();
-	}
-
-    D3D9GpuFragmentProgram::D3D9GpuFragmentProgram(const String& source, const String& entryPoint, 
-		GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes)
-		: D3D9GpuProgram(source, entryPoint, GPT_FRAGMENT_PROGRAM, profile, includes)
+	D3D9GpuFragmentProgramCore::D3D9GpuFragmentProgramCore(const String& source, const String& entryPoint,
+		GpuProgramProfile profile)
+		: D3D9GpuProgramCore(source, entryPoint, GPT_FRAGMENT_PROGRAM, profile)
     {
 
     }
 
-	D3D9GpuFragmentProgram::~D3D9GpuFragmentProgram()
+	D3D9GpuFragmentProgramCore::~D3D9GpuFragmentProgramCore()
 	{
 	}
 
-	void D3D9GpuFragmentProgram::destroy_internal()
+	void D3D9GpuFragmentProgramCore::destroy()
 	{
 		auto it = mMapDeviceToPixelShader.begin();
 
@@ -353,10 +319,10 @@ namespace BansheeEngine
 		}
 		mMapDeviceToPixelShader.clear();	
 
-		D3D9GpuProgram::destroy_internal();
+		D3D9GpuProgramCore::destroy();
 	}
 
-    void D3D9GpuFragmentProgram::loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode)
+	void D3D9GpuFragmentProgramCore::loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode)
     {
 		auto it = mMapDeviceToPixelShader.find(d3d9Device);
 
@@ -375,12 +341,12 @@ namespace BansheeEngine
 		mMapDeviceToPixelShader[d3d9Device] = pPixelShader;
     }
 
-	void D3D9GpuFragmentProgram::notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device)
+	void D3D9GpuFragmentProgramCore::notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device)
 	{
 		
 	}
 
-	void D3D9GpuFragmentProgram::notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device)
+	void D3D9GpuFragmentProgramCore::notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device)
 	{
 		auto it = mMapDeviceToPixelShader.find(d3d9Device);
 
@@ -392,7 +358,7 @@ namespace BansheeEngine
 		}
 	}
 
-	IDirect3DPixelShader9* D3D9GpuFragmentProgram::getPixelShader()
+	IDirect3DPixelShader9* D3D9GpuFragmentProgramCore::getPixelShader()
 	{
 		if (!isCompiled())
 			return nullptr;
@@ -408,19 +374,6 @@ namespace BansheeEngine
 		}
 
 		return it->second;
-	}
-
-	/************************************************************************/
-	/* 								SERIALIZATION                      		*/
-	/************************************************************************/
-	RTTITypeBase* D3D9GpuFragmentProgram::getRTTIStatic()
-	{
-		return D3D9GpuFragmentProgramRTTI::instance();
-	}
-
-	RTTITypeBase* D3D9GpuFragmentProgram::getRTTI() const
-	{
-		return D3D9GpuFragmentProgram::getRTTIStatic();
 	}
 }
 

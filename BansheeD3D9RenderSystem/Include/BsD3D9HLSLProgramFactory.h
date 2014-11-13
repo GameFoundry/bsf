@@ -21,15 +21,15 @@ namespace BansheeEngine
 
 		/**
 		 * @copydoc	GpuProgramFactory::getLanguage(const String&, const String&, GpuProgramType,
-		 *			GpuProgramProfile, const Vector<HGpuProgInclude>*, bool)
+		 *			GpuProgramProfile, bool)
 		 */
-        GpuProgramPtr create(const String& source, const String& entryPoint, GpuProgramType gptype, 
-			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool requiresAdjacency);
+        SPtr<GpuProgramCore> create(const String& source, const String& entryPoint, GpuProgramType gptype, 
+			GpuProgramProfile profile, bool requiresAdjacency);
 
 		/**
 		 * @copydoc	GpuProgramFactory::create(GpuProgramType)
 		 */
-		GpuProgramPtr create(GpuProgramType type);
+		SPtr<GpuProgramCore> create(GpuProgramType type);
 
 	protected:
 		static String LANGUAGE_NAME;

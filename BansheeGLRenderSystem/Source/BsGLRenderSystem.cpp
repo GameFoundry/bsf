@@ -166,7 +166,7 @@ namespace BansheeEngine
 		if (mGLSLProgramFactory)
 		{
 			// Remove from manager safely
-			GpuProgramManager::instance().removeFactory(mGLSLProgramFactory);
+			GpuProgramCoreManager::instance().removeFactory(mGLSLProgramFactory);
 			bs_delete(mGLSLProgramFactory);
 			mGLSLProgramFactory = nullptr;
 		}
@@ -209,18 +209,17 @@ namespace BansheeEngine
 			bs_deleteN(mTextureTypes, mNumTextureTypes);
 	}
 
-	void GLRenderSystem::bindGpuProgram(HGpuProgram prg)
+	void GLRenderSystem::bindGpuProgram(const SPtr<GpuProgramCore>& prg)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		GLSLGpuProgramPtr glprg = std::static_pointer_cast<GLSLGpuProgram>(prg->getThisPtr());
+		SPtr<GLSLGpuProgramCore> glprg = std::static_pointer_cast<GLSLGpuProgramCore>(prg);
 
-		switch (glprg->getType())
+		switch (glprg->getProperties().getType())
 		{
 		case GPT_VERTEX_PROGRAM:
 			mCurrentVertexProgram = glprg;
 			break;
-
 		case GPT_FRAGMENT_PROGRAM:
 			mCurrentFragmentProgram = glprg;
 			break;
@@ -253,7 +252,7 @@ namespace BansheeEngine
 
 		bindableParams->updateHardwareBuffers();
 		const GpuParamDesc& paramDesc = bindableParams->getParamDesc();
-		GLSLGpuProgramPtr activeProgram = getActiveProgram(gptype);
+		SPtr<GLSLGpuProgramCore> activeProgram = getActiveProgram(gptype);
 		GLuint glProgram = activeProgram->getGLHandle();
 
 		for(auto iter = paramDesc.textures.begin(); iter != paramDesc.textures.end(); ++iter)
@@ -1640,7 +1639,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GLRenderSystem::setActiveProgram(GpuProgramType gptype, GLSLGpuProgramPtr program)
+	void GLRenderSystem::setActiveProgram(GpuProgramType gptype, const SPtr<GLSLGpuProgramCore>& program)
 	{
 		switch (gptype)
 		{
@@ -1662,7 +1661,7 @@ namespace BansheeEngine
 		}
 	}
 
-	GLSLGpuProgramPtr GLRenderSystem::getActiveProgram(GpuProgramType gptype) const
+	SPtr<GLSLGpuProgramCore> GLRenderSystem::getActiveProgram(GpuProgramType gptype) const
 	{
 		switch (gptype)
 		{
@@ -1709,7 +1708,7 @@ namespace BansheeEngine
 		if(caps->isShaderProfileSupported("glsl"))
 		{
 			mGLSLProgramFactory = bs_new<GLSLProgramFactory>();
-			GpuProgramManager::instance().addFactory(mGLSLProgramFactory);
+			GpuProgramCoreManager::instance().addFactory(mGLSLProgramFactory);
 		}
 
 		// Check for framebuffer object extension

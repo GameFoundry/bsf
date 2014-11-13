@@ -16,49 +16,49 @@ namespace BansheeEngine
 		RenderSystem& rs = RenderSystem::instance();
 
 		const MaterialProxyPass& pass = material.passes[passIdx];
-		if (pass.vertexProg)
+		if (pass.vertexProg && pass.vertexProg.isLoaded())
 		{
-			rs.bindGpuProgram(pass.vertexProg);
+			rs.bindGpuProgram(pass.vertexProg->getCore());
 			rs.bindGpuParams(GPT_VERTEX_PROGRAM, material.params[pass.vertexProgParamsIdx]);
 		}
 		else
 			rs.unbindGpuProgram(GPT_VERTEX_PROGRAM);
 
-		if (pass.fragmentProg)
+		if (pass.fragmentProg && pass.fragmentProg.isLoaded())
 		{
-			rs.bindGpuProgram(pass.fragmentProg);
+			rs.bindGpuProgram(pass.fragmentProg->getCore());
 			rs.bindGpuParams(GPT_FRAGMENT_PROGRAM, material.params[pass.fragmentProgParamsIdx]);
 		}
 		else
 			rs.unbindGpuProgram(GPT_FRAGMENT_PROGRAM);
 
-		if (pass.geometryProg)
+		if (pass.geometryProg && pass.geometryProg.isLoaded())
 		{
-			rs.bindGpuProgram(pass.geometryProg);
+			rs.bindGpuProgram(pass.geometryProg->getCore());
 			rs.bindGpuParams(GPT_GEOMETRY_PROGRAM, material.params[pass.geometryProgParamsIdx]);
 		}
 		else
 			rs.unbindGpuProgram(GPT_GEOMETRY_PROGRAM);
 
-		if (pass.hullProg)
+		if (pass.hullProg && pass.hullProg.isLoaded())
 		{
-			rs.bindGpuProgram(pass.hullProg);
+			rs.bindGpuProgram(pass.hullProg->getCore());
 			rs.bindGpuParams(GPT_HULL_PROGRAM, material.params[pass.hullProgParamsIdx]);
 		}
 		else
 			rs.unbindGpuProgram(GPT_HULL_PROGRAM);
 
-		if (pass.domainProg)
+		if (pass.domainProg && pass.domainProg.isLoaded())
 		{
-			rs.bindGpuProgram(pass.domainProg);
+			rs.bindGpuProgram(pass.domainProg->getCore());
 			rs.bindGpuParams(GPT_DOMAIN_PROGRAM, material.params[pass.domainProgParamsIdx]);
 		}
 		else
 			rs.unbindGpuProgram(GPT_DOMAIN_PROGRAM);
 
-		if (pass.computeProg)
+		if (pass.computeProg && pass.computeProg.isLoaded())
 		{
-			rs.bindGpuProgram(pass.computeProg);
+			rs.bindGpuProgram(pass.computeProg->getCore());
 			rs.bindGpuParams(GPT_COMPUTE_PROGRAM, material.params[pass.computeProgParamsIdx]);
 		}
 		else

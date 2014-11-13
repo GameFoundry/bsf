@@ -64,13 +64,15 @@ namespace BansheeEngine
 		 *
 		 * @note	Error will be thrown if the vertex buffer doesn't provide all the necessary data that the shader expects.
 		 */
-		ID3D11InputLayout* retrieveInputLayout(VertexDeclarationPtr vertexShaderDecl, VertexDeclarationPtr vertexBufferDecl, D3D11GpuProgram& vertexProgram);
+		ID3D11InputLayout* retrieveInputLayout(VertexDeclarationPtr vertexShaderDecl, 
+			VertexDeclarationPtr vertexBufferDecl, D3D11GpuProgramCore& vertexProgram);
 
 	private:
 		/**
 		 * @brief	Creates a new input layout using the specified parameters and stores it in the input layout map.
 		 */
-		void addNewInputLayout(VertexDeclarationPtr vertexShaderDecl, VertexDeclarationPtr vertexBufferDecl, D3D11GpuProgram& vertexProgram);
+		void addNewInputLayout(VertexDeclarationPtr vertexShaderDecl, VertexDeclarationPtr vertexBufferDecl, 
+			D3D11GpuProgramCore& vertexProgram);
 
 		/**
 		 * @brief	Destroys least used input layout.

@@ -8,20 +8,15 @@ namespace BansheeEngine
 	/**
 	 * @brief	GPU program compiled from GLSL and usable by OpenGL.
 	 */
-    class BS_RSGL_EXPORT GLSLGpuProgram : public GpuProgram
+    class BS_RSGL_EXPORT GLSLGpuProgramCore : public GpuProgramCore
     {
 	public:
-		~GLSLGpuProgram();
+		~GLSLGpuProgramCore();
 
 		/**
-		 * @copydoc	GpuProgram::isSupported
+		 * @copydoc	GpuProgramCore::isSupported
 		 */
 		bool isSupported() const;
-
-		/**
-		 * @copydoc	GpuProgram::getLanguage
-		 */
-		const String& getLanguage() const;
 
 		/**
 		 * @brief	Gets vertex declaration that determines which input attributes does the GPU
@@ -42,25 +37,25 @@ namespace BansheeEngine
 		const UINT32 getProgramID() const { return mProgramID; }
 
 		/**
-		 * @copydoc	GpuProgram::createParameters
+		 * @copydoc	GpuProgramCore::createParameters
 		 */
 		GpuParamsPtr createParameters();
 
 	private:
 		friend class GLSLProgramFactory;
 
-		GLSLGpuProgram(const String& source, const String& entryPoint, GpuProgramType gptype, 
-			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool isAdjacencyInfoRequired);
+		GLSLGpuProgramCore(const String& source, const String& entryPoint, GpuProgramType gptype, 
+			GpuProgramProfile profile, bool isAdjacencyInfoRequired);
 
 		/**
-		 * @copydoc GpuProgram::initialize_internal()
+		 * @copydoc GpuProgramCore::initialize
 		 */
-		void initialize_internal();
+		void initialize();
 
 		/**
-		 * @copydoc GpuProgram::destroy_internal()
+		 * @copydoc GpuProgramCore::destroy
 		 */
-		void destroy_internal();
+		void destroy();
 
 	private:
 		UINT32 mProgramID;
@@ -73,13 +68,5 @@ namespace BansheeEngine
 		static UINT32 mGeometryShaderCount;
 		static UINT32 mHullShaderCount;
 		static UINT32 mDomainShaderCount;
-
-		/************************************************************************/
-		/* 								SERIALIZATION                      		*/
-		/************************************************************************/
-	public:
-		friend class GLSLGpuProgramRTTI;
-		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
     };
 }

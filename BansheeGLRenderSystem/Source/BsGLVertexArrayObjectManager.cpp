@@ -74,7 +74,7 @@ namespace BansheeEngine
 		assert(mVAObjects.size() == 0 && "VertexArrayObjectManager getting shut down but not all VA objects were released.");
 	}
 
-	const GLVertexArrayObject& GLVertexArrayObjectManager::getVAO(const GLSLGpuProgramPtr& vertexProgram,
+	const GLVertexArrayObject& GLVertexArrayObjectManager::getVAO(const SPtr<GLSLGpuProgramCore>& vertexProgram,
 		const VertexDeclarationPtr& vertexDecl, const Vector<SPtr<VertexBufferCore>>& boundBuffers)
 	{
 		UINT16 maxStreamIdx = 0;
@@ -112,7 +112,7 @@ namespace BansheeEngine
 			numUsedBuffers++;
 		}
 		
-		GLVertexArrayObject wantedVAO(0, vertexProgram->getInternalID(), usedBuffers, numUsedBuffers);
+		GLVertexArrayObject wantedVAO(0, vertexProgram->getGLHandle(), usedBuffers, numUsedBuffers);
 
 		auto findIter = mVAObjects.find(wantedVAO);
 		if (findIter != mVAObjects.end())

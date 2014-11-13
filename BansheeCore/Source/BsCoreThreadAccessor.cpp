@@ -123,9 +123,9 @@ namespace BansheeEngine
 		mCommandQueue->queue(std::bind(&RenderSystem::setRenderTarget, RenderSystem::instancePtr(), target->getCore()));
 	}
 
-	void CoreThreadAccessorBase::bindGpuProgram(HGpuProgram prg)
+	void CoreThreadAccessorBase::bindGpuProgram(const GpuProgramPtr& prg)
 	{
-		mCommandQueue->queue(std::bind(&RenderSystem::bindGpuProgram, RenderSystem::instancePtr(), prg));
+		mCommandQueue->queue(std::bind(&RenderSystem::bindGpuProgram, RenderSystem::instancePtr(), prg->getCore()));
 	}
 
 	void CoreThreadAccessorBase::unbindGpuProgram(GpuProgramType gptype)

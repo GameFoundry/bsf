@@ -128,7 +128,7 @@ namespace BansheeEngine
 		mCurrentCapabilities = createRenderSystemCapabilities();
 
 		mCurrentCapabilities->addShaderProfile("hlsl");
-		GpuProgramManager::instance().addFactory(mHLSLFactory);
+		GpuProgramCoreManager::instance().addFactory(mHLSLFactory);
 
 		mIAManager = bs_new<D3D11InputLayoutManager>();
 		RenderSystem::initializePrepare();
@@ -469,54 +469,51 @@ namespace BansheeEngine
 		mDevice->getImmediateContext()->IASetPrimitiveTopology(D3D11Mappings::getPrimitiveType(op));
 	}
 
-	void D3D11RenderSystem::bindGpuProgram(HGpuProgram prg)
+	void D3D11RenderSystem::bindGpuProgram(const SPtr<GpuProgramCore>& prg)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		if(!prg.isLoaded())
-			return;
-
-		switch(prg->getType())
+		switch(prg->getProperties().getType())
 		{
 		case GPT_VERTEX_PROGRAM:
 			{
-				D3D11GpuVertexProgram* d3d11GpuProgram = static_cast<D3D11GpuVertexProgram*>(prg.get());
+				D3D11GpuVertexProgramCore* d3d11GpuProgram = static_cast<D3D11GpuVertexProgramCore*>(prg.get());
 				mDevice->getImmediateContext()->VSSetShader(d3d11GpuProgram->getVertexShader(), nullptr, 0);
-				mActiveVertexShader = std::static_pointer_cast<D3D11GpuProgram>(prg.getInternalPtr());
+				mActiveVertexShader = std::static_pointer_cast<D3D11GpuProgramCore>(prg);
 				break;
 			}
 		case GPT_FRAGMENT_PROGRAM:
 			{
-				D3D11GpuFragmentProgram* d3d11GpuProgram = static_cast<D3D11GpuFragmentProgram*>(prg.get());
+				D3D11GpuFragmentProgramCore* d3d11GpuProgram = static_cast<D3D11GpuFragmentProgramCore*>(prg.get());
 				mDevice->getImmediateContext()->PSSetShader(d3d11GpuProgram->getPixelShader(), nullptr, 0);
 				break;
 			}
 		case GPT_GEOMETRY_PROGRAM:
 			{
-				D3D11GpuGeometryProgram* d3d11GpuProgram = static_cast<D3D11GpuGeometryProgram*>(prg.get());
+				D3D11GpuGeometryProgramCore* d3d11GpuProgram = static_cast<D3D11GpuGeometryProgramCore*>(prg.get());
 				mDevice->getImmediateContext()->GSSetShader(d3d11GpuProgram->getGeometryShader(), nullptr, 0);
 				break;
 			}
 		case GPT_DOMAIN_PROGRAM:
 			{
-				D3D11GpuDomainProgram* d3d11GpuProgram = static_cast<D3D11GpuDomainProgram*>(prg.get());
+				D3D11GpuDomainProgramCore* d3d11GpuProgram = static_cast<D3D11GpuDomainProgramCore*>(prg.get());
 				mDevice->getImmediateContext()->DSSetShader(d3d11GpuProgram->getDomainShader(), nullptr, 0);
 				break;
 			}
 		case GPT_HULL_PROGRAM:
 			{
-				D3D11GpuHullProgram* d3d11GpuProgram = static_cast<D3D11GpuHullProgram*>(prg.get());
+				D3D11GpuHullProgramCore* d3d11GpuProgram = static_cast<D3D11GpuHullProgramCore*>(prg.get());
 				mDevice->getImmediateContext()->HSSetShader(d3d11GpuProgram->getHullShader(), nullptr, 0);
 				break;
 			}
 		case GPT_COMPUTE_PROGRAM:
 			{
-				D3D11GpuComputeProgram* d3d11GpuProgram = static_cast<D3D11GpuComputeProgram*>(prg.get());
+				D3D11GpuComputeProgramCore* d3d11GpuProgram = static_cast<D3D11GpuComputeProgramCore*>(prg.get());
 				mDevice->getImmediateContext()->CSSetShader(d3d11GpuProgram->getComputeShader(), nullptr, 0);
 				break;
 			}
 		default:
-			BS_EXCEPT(InvalidParametersException, "Unsupported gpu program type: " + toString(prg->getType()));
+			BS_EXCEPT(InvalidParametersException, "Unsupported gpu program type: " + toString(prg->getProperties().getType()));
 		}
 
 		if (mDevice->hasError())

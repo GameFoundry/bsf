@@ -29,8 +29,8 @@ namespace BansheeEngine
 		 * @brief	Creates or returns an existing pipeline that uses the provided combination of GPU programs. Provide
 		 *			null for unused programs.
 		 */
-		const GLSLProgramPipeline* getPipeline(GLSLGpuProgram* vertexProgram, GLSLGpuProgram* fragmentProgram, 
-			GLSLGpuProgram* geometryProgram, GLSLGpuProgram* hullProgram, GLSLGpuProgram* domainProgram);
+		const GLSLProgramPipeline* getPipeline(GLSLGpuProgramCore* vertexProgram, GLSLGpuProgramCore* fragmentProgram,
+			GLSLGpuProgramCore* geometryProgram, GLSLGpuProgramCore* hullProgram, GLSLGpuProgramCore* domainProgram);
 
 	private:
 		/**

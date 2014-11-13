@@ -53,7 +53,7 @@ namespace BansheeEngine
 		}
 	}
 
-	ID3D11InputLayout* D3D11InputLayoutManager::retrieveInputLayout(VertexDeclarationPtr vertexShaderDecl, VertexDeclarationPtr vertexBufferDecl, D3D11GpuProgram& vertexProgram)
+	ID3D11InputLayout* D3D11InputLayoutManager::retrieveInputLayout(VertexDeclarationPtr vertexShaderDecl, VertexDeclarationPtr vertexBufferDecl, D3D11GpuProgramCore& vertexProgram)
 	{
 		VertexDeclarationKey pair;
 		pair.vertxDeclId = vertexBufferDecl->getInternalID();
@@ -77,7 +77,7 @@ namespace BansheeEngine
 		return iterFind->second->inputLayout;
 	}
 
-	void D3D11InputLayoutManager::addNewInputLayout(VertexDeclarationPtr vertexShaderDecl, VertexDeclarationPtr vertexBufferDecl, D3D11GpuProgram& vertexProgram)
+	void D3D11InputLayoutManager::addNewInputLayout(VertexDeclarationPtr vertexShaderDecl, VertexDeclarationPtr vertexBufferDecl, D3D11GpuProgramCore& vertexProgram)
 	{
 		if(!areCompatible(vertexShaderDecl, vertexBufferDecl))
 			return; // Error was already reported, so just quit here

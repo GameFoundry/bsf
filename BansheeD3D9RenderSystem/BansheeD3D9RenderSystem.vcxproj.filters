@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\RTTI">
-      <UniqueIdentifier>{975ebce1-e98b-4380-bb4c-080103baa245}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\BsD3D9VideoModeInfo.h">
@@ -107,9 +104,6 @@
     </ClInclude>
     <ClInclude Include="Include\BsD3D9Device.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsD3D9GpuProgramRTTI.h">
-      <Filter>Header Files\RTTI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsD3D9EmulatedParamBlocks.h">
       <Filter>Header Files</Filter>

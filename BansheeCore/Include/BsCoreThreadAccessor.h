@@ -73,7 +73,7 @@ namespace BansheeEngine
 		void setRenderTarget(RenderTargetPtr target);
 
 		/** @copydoc RenderSystem::bindGpuProgram() */
-		void bindGpuProgram(HGpuProgram prg);
+		void bindGpuProgram(const GpuProgramPtr& prg);
 
 		/** @copydoc RenderSystem::unbindGpuProgram() */
 		void unbindGpuProgram(GpuProgramType gptype);

@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\RTTI">
-      <UniqueIdentifier>{f65cdae4-61c9-4f4f-a4af-9fc39a49704d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\GLSL">
       <UniqueIdentifier>{4a04e68e-bddd-41da-a32c-b50d628cd689}</UniqueIdentifier>
     </Filter>
@@ -113,9 +110,6 @@
     </ClInclude>
     <ClInclude Include="Include\BsWin32Context.h">
       <Filter>Header Files\Win32</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGLSLGpuProgramRTTI.h">
-      <Filter>Header Files\RTTI</Filter>
     </ClInclude>
     <ClInclude Include="Source\GLSL\include\BsGLSLProgramPipelineManager.h">
       <Filter>Header Files\GLSL</Filter>

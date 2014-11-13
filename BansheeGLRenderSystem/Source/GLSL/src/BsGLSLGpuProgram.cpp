@@ -5,17 +5,16 @@
 #include "BsException.h"
 #include "BsGLSLParamParser.h"
 #include "BsHardwareBufferManager.h"
-#include "BsGLSLGpuProgramRTTI.h"
 #include "BsRenderStats.h"
 #include "BsGpuParams.h"
 
 namespace BansheeEngine 
 {
-	UINT32 GLSLGpuProgram::mVertexShaderCount = 0;
-	UINT32 GLSLGpuProgram::mFragmentShaderCount = 0;
-	UINT32 GLSLGpuProgram::mGeometryShaderCount = 0;
-	UINT32 GLSLGpuProgram::mDomainShaderCount = 0;
-	UINT32 GLSLGpuProgram::mHullShaderCount = 0;
+	UINT32 GLSLGpuProgramCore::mVertexShaderCount = 0;
+	UINT32 GLSLGpuProgramCore::mFragmentShaderCount = 0;
+	UINT32 GLSLGpuProgramCore::mGeometryShaderCount = 0;
+	UINT32 GLSLGpuProgramCore::mDomainShaderCount = 0;
+	UINT32 GLSLGpuProgramCore::mHullShaderCount = 0;
 
 	bool checkForGLSLError(const GLuint programObj, String& outErrorMsg)
 	{
@@ -69,28 +68,28 @@ namespace BansheeEngine
 		return errorsFound || !linkCompileSuccess;
 	}
 	
-	GLSLGpuProgram::GLSLGpuProgram(const String& source, const String& entryPoint, GpuProgramType gptype, 
-		GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool isAdjacencyInfoRequired)
-		:GpuProgram(source, entryPoint, gptype, profile, includes, isAdjacencyInfoRequired),
+	GLSLGpuProgramCore::GLSLGpuProgramCore(const String& source, const String& entryPoint, GpuProgramType gptype,
+		GpuProgramProfile profile, bool isAdjacencyInfoRequired)
+		:GpuProgramCore(source, entryPoint, gptype, profile, isAdjacencyInfoRequired),
 		mProgramID(0), mGLHandle(0)
     { }
 
-    GLSLGpuProgram::~GLSLGpuProgram()
+	GLSLGpuProgramCore::~GLSLGpuProgramCore()
     { }
 
-	void GLSLGpuProgram::initialize_internal()
+	void GLSLGpuProgramCore::initialize()
 	{
 		if (!isSupported())
 		{
 			mIsCompiled = false;
 			mCompileError = "Specified program is not supported by the current render system.";
 
-			GpuProgram::initialize_internal();
+			GpuProgramCore::initialize();
 			return;
 		}
 
 		GLenum shaderType = 0x0000;
-		switch (mType)
+		switch (mProperties.getType())
 		{
 		case GPT_VERTEX_PROGRAM:
 			shaderType = GL_VERTEX_SHADER;
@@ -115,23 +114,24 @@ namespace BansheeEngine
 		}
 
 		// Add preprocessor extras and main source
-		if (!mSource.empty())
+		const String& source = mProperties.getSource();
+		if (!source.empty())
 		{
 			Vector<GLchar*> lines;
 
 			UINT32 lineLength = 0;
-			for (UINT32 i = 0; i < mSource.size(); i++)
+			for (UINT32 i = 0; i < source.size(); i++)
 			{
-				if (mSource[i] == '\n' || mSource[i] == '\r')
+				if (source[i] == '\n' || source[i] == '\r')
 				{
 					if (lineLength > 0)
 					{
-						assert(sizeof(mSource[i]) == sizeof(GLchar));
+						assert(sizeof(source[i]) == sizeof(GLchar));
 
-						bool isDefine = mSource[i - lineLength] == '#';
+						bool isDefine = source[i - lineLength] == '#';
 
 						GLchar* lineData = (GLchar*)stackAlloc(sizeof(GLchar) * (lineLength + 1 + (isDefine ? 1 : 0)));
-						memcpy(lineData, &mSource[i - lineLength], sizeof(GLchar) * lineLength);
+						memcpy(lineData, &source[i - lineLength], sizeof(GLchar) * lineLength);
 
 						if (isDefine) // Defines require a newline as well as a null terminator, otherwise it doesn't compile properly
 						{
@@ -153,11 +153,11 @@ namespace BansheeEngine
 
 			if (lineLength > 0)
 			{
-				UINT32 end = (UINT32)mSource.size() - 1;
-				assert(sizeof(mSource[end]) == sizeof(GLchar));
+				UINT32 end = (UINT32)source.size() - 1;
+				assert(sizeof(source[end]) == sizeof(GLchar));
 
 				GLchar* lineData = (GLchar*)stackAlloc(sizeof(GLchar) * (lineLength + 1));
-				memcpy(lineData, &mSource[mSource.size() - lineLength], sizeof(GLchar) * lineLength);
+				memcpy(lineData, &source[source.size() - lineLength], sizeof(GLchar) * lineLength);
 				lineData[lineLength] = '\0';
 
 				lines.push_back(lineData);
@@ -180,7 +180,7 @@ namespace BansheeEngine
 			GLSLParamParser paramParser;
 			paramParser.buildUniformDescriptions(mGLHandle, *mParametersDesc);
 
-			if (mType == GPT_VERTEX_PROGRAM)
+			if (mProperties.getType() == GPT_VERTEX_PROGRAM)
 			{
 				VertexDeclaration::VertexElementList elementList = paramParser.buildVertexDeclaration(mGLHandle);
 				mVertexDeclaration = HardwareBufferManager::instance().createVertexDeclaration(elementList);
@@ -192,10 +192,10 @@ namespace BansheeEngine
 		}
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_GpuProgram);
-		GpuProgram::initialize_internal();
+		GpuProgramCore::initialize();
 	}
 
-	void GLSLGpuProgram::destroy_internal()
+	void GLSLGpuProgramCore::destroy()
 	{
 		if (mIsCompiled && mGLHandle != 0)
 		{
@@ -204,10 +204,10 @@ namespace BansheeEngine
 		}
 
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_GpuProgram);
-		GpuProgram::destroy_internal();
+		GpuProgramCore::destroy();
 	}
 
-	bool GLSLGpuProgram::isSupported() const
+	bool GLSLGpuProgramCore::isSupported() const
 	{
 		if (!isRequiredCapabilitiesSupported())
 			return false;
@@ -216,31 +216,11 @@ namespace BansheeEngine
 		return rs->getCapabilities()->isShaderProfileSupported("glsl");
 	}
 
-	const String& GLSLGpuProgram::getLanguage() const
-	{
-		static const String language = "glsl";
-
-		return language;
-	}
-
-	GpuParamsPtr GLSLGpuProgram::createParameters()
+	GpuParamsPtr GLSLGpuProgramCore::createParameters()
 	{
 		GpuParamsPtr params = bs_shared_ptr<GpuParams, PoolAlloc>(std::ref(mParametersDesc), true);
 
 		return params;
-	}
-
-	/************************************************************************/
-	/* 								SERIALIZATION                      		*/
-	/************************************************************************/
-	RTTITypeBase* GLSLGpuProgram::getRTTIStatic()
-	{
-		return GLSLGpuProgramRTTI::instance();
-	}
-
-	RTTITypeBase* GLSLGpuProgram::getRTTI() const
-	{
-		return GLSLGpuProgram::getRTTIStatic();
 	}
 }
 

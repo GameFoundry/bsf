@@ -8,25 +8,15 @@ namespace BansheeEngine
 	/**
 	 * @brief	Abstraction of a DirectX 11 shader object.
 	 */
-	class BS_D3D11_EXPORT D3D11GpuProgram : public GpuProgram
+	class BS_D3D11_EXPORT D3D11GpuProgramCore : public GpuProgramCore
 	{
 	public:
-		virtual ~D3D11GpuProgram();
+		virtual ~D3D11GpuProgramCore();
 
 		/**
-		 * @copydoc	GpuProgram::getLanguage
-		 */
-		const String& getLanguage() const;
-
-		/**
-		 * @copydoc	GpuProgram::createParameters
+		 * @copydoc	GpuProgramCore::createParameters
 		 */
 		GpuParamsPtr createParameters();
-
-		/**
-		 * @copydoc	GpuProgram::requiresMatrixTranspose
-		 */
-		virtual bool requiresMatrixTranspose() const { return mColumnMajorMatrices; }
 
 		/**
 		 * @brief	Returns compiled shader microcode.
@@ -45,20 +35,20 @@ namespace BansheeEngine
 
 	protected:
 		/**
-		 * @copydoc	GpuProgram::GpuProgram
+		 * @copydoc	GpuProgramCore::GpuProgramCore
 		 */
-		D3D11GpuProgram(const String& source, const String& entryPoint, GpuProgramType gptype, 
-			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool isAdjacencyInfoRequired);
+		D3D11GpuProgramCore(const String& source, const String& entryPoint, GpuProgramType gptype,
+			GpuProgramProfile profile, bool isAdjacencyInfoRequired);
 
 		/**
-		 * @copydoc GpuProgram::initialize_internal
+		 * @copydoc GpuProgramCore::initialize
 		 */
-		void initialize_internal();
+		void initialize();
 
 		/**
-		 * @copydoc GpuProgram::destroy_internal
+		 * @copydoc GpuProgramCore::destroy
 		 */
-		void destroy_internal();
+		void destroy();
 
 		/**
 		 * @brief	Loads the shader from microcode.
@@ -85,23 +75,15 @@ namespace BansheeEngine
 
 		HLSLMicroCode mMicrocode;
 		VertexDeclarationPtr mInputDeclaration;
-
-		/************************************************************************/
-		/* 								SERIALIZATION                      		*/
-		/************************************************************************/
-	public:
-		friend class D3D11GpuProgramRTTI;
-		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
 	};
 
 	/**
 	 * @brief	Implementation of a DX11 vertex shader.
 	 */
-	class BS_D3D11_EXPORT D3D11GpuVertexProgram : public D3D11GpuProgram
+	class BS_D3D11_EXPORT D3D11GpuVertexProgramCore : public D3D11GpuProgramCore
 	{
 	public:
-		~D3D11GpuVertexProgram();
+		~D3D11GpuVertexProgramCore();
 
 		/**
 		 * @brief	Returns internal DX11 vertex shader object.
@@ -112,40 +94,32 @@ namespace BansheeEngine
 		friend class D3D11HLSLProgramFactory;
 
 		/**
-		 * @copydoc	GpuProgram::GpuProgram
+		 * @copydoc	GpuProgramCore::GpuProgramCore
 		 */
-		D3D11GpuVertexProgram(const String& source, const String& entryPoint,
-			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes);
+		D3D11GpuVertexProgramCore(const String& source, const String& entryPoint,
+			GpuProgramProfile profile);
 
 		/**
-		 * @copydoc GpuProgram::destroy_internal().
+		 * @copydoc GpuProgramCore::destroy
 		 */
-		void destroy_internal();
+		void destroy();
 
 		/**
-		 * @copydoc	D3D11GpuProgram::loadFromMicrocode
+		 * @copydoc	D3D11GpuProgramCore::loadFromMicrocode
 		 */
 		void loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode);
 
 	protected:
 		ID3D11VertexShader* mVertexShader;
-
-		/************************************************************************/
-		/* 								SERIALIZATION                      		*/
-		/************************************************************************/
-	public:
-		friend class D3D11GpuVertexProgramRTTI;
-		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
 	};
 
 	/**
 	 * @brief	Implementation of a DX11 pixel shader.
 	 */
-	class BS_D3D11_EXPORT D3D11GpuFragmentProgram : public D3D11GpuProgram
+	class BS_D3D11_EXPORT D3D11GpuFragmentProgramCore : public D3D11GpuProgramCore
 	{
 	public:
-		~D3D11GpuFragmentProgram();
+		~D3D11GpuFragmentProgramCore();
 
 		/**
 		 * @brief	Returns internal DX11 pixel shader object.
@@ -156,40 +130,32 @@ namespace BansheeEngine
 		friend class D3D11HLSLProgramFactory;
 
 		/**
-		 * @copydoc	GpuProgram::GpuProgram
+		 * @copydoc	GpuProgramCore::GpuProgramCore
 		 */
-		D3D11GpuFragmentProgram(const String& source, const String& entryPoint,
-			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes);
+		D3D11GpuFragmentProgramCore(const String& source, const String& entryPoint,
+			GpuProgramProfile profile);
 
 		/**
-		 * @copydoc GpuProgram::destroy_internal().
+		 * @copydoc GpuProgramCore::destroy
 		 */
-		void destroy_internal();
+		void destroy();
 
 		/**
-		 * @copydoc	D3D11GpuProgram::loadFromMicrocode
+		 * @copydoc	D3D11GpuProgramCore::loadFromMicrocode
 		 */
 		void loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode);
 
 	protected:
 		ID3D11PixelShader* mPixelShader;
-
-		/************************************************************************/
-		/* 								SERIALIZATION                      		*/
-		/************************************************************************/
-	public:
-		friend class D3D11GpuFragmentProgramRTTI;
-		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
 	};
 
 	/**
 	 * @brief	Implementation of a DX11 domain shader.
 	 */
-	class BS_D3D11_EXPORT D3D11GpuDomainProgram : public D3D11GpuProgram
+	class BS_D3D11_EXPORT D3D11GpuDomainProgramCore : public D3D11GpuProgramCore
 	{
 	public:
-		~D3D11GpuDomainProgram();
+		~D3D11GpuDomainProgramCore();
 
 		/**
 		 * @brief	Returns internal DX11 domain shader object.
@@ -200,40 +166,32 @@ namespace BansheeEngine
 		friend class D3D11HLSLProgramFactory;
 
 		/**
-		 * @copydoc	GpuProgram::GpuProgram
+		 * @copydoc	GpuProgramCore::GpuProgramCore
 		 */
-		D3D11GpuDomainProgram(const String& source, const String& entryPoint,
-			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes);
+		D3D11GpuDomainProgramCore(const String& source, const String& entryPoint,
+			GpuProgramProfile profile);
 
 		/**
-		 * @copydoc GpuProgram::destroy_internal().
+		 * @copydoc GpuProgramCore::destroy
 		 */
-		void destroy_internal();
+		void destroy();
 
 		/**
-		 * @copydoc	D3D11GpuProgram::loadFromMicrocode
+		 * @copydoc	D3D11GpuProgramCore::loadFromMicrocode
 		 */
 		void loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode);
 
 	protected:
 		ID3D11DomainShader* mDomainShader;
-
-		/************************************************************************/
-		/* 								SERIALIZATION                      		*/
-		/************************************************************************/
-	public:
-		friend class D3D11GpuDomainProgramRTTI;
-		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
 	};
 
 	/**
 	 * @brief	Implementation of a DX11 hull shader.
 	 */
-	class BS_D3D11_EXPORT D3D11GpuHullProgram : public D3D11GpuProgram
+	class BS_D3D11_EXPORT D3D11GpuHullProgramCore : public D3D11GpuProgramCore
 	{
 	public:
-		~D3D11GpuHullProgram();
+		~D3D11GpuHullProgramCore();
 
 		/**
 		 * @brief	Returns internal DX11 hull shader object.
@@ -244,40 +202,32 @@ namespace BansheeEngine
 		friend class D3D11HLSLProgramFactory;
 
 		/**
-		 * @copydoc	GpuProgram::GpuProgram
+		 * @copydoc	GpuProgramCore::GpuProgramCore
 		 */
-		D3D11GpuHullProgram(const String& source, const String& entryPoint,
-			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes);
+		D3D11GpuHullProgramCore(const String& source, const String& entryPoint,
+			GpuProgramProfile profile);
 
 		/**
-		 * @copydoc GpuProgram::destroy_internal
+		 * @copydoc GpuProgramCore::destroy
 		 */
-		void destroy_internal();
+		void destroy();
 
 		/**
-		 * @copydoc	D3D11GpuProgram::loadFromMicrocode
+		 * @copydoc	D3D11GpuProgramCore::loadFromMicrocode
 		 */
 		void loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode);
 
 	protected:
 		ID3D11HullShader* mHullShader;
-
-		/************************************************************************/
-		/* 								SERIALIZATION                      		*/
-		/************************************************************************/
-	public:
-		friend class D3D11GpuHullProgramRTTI;
-		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
 	};
 
 	/**
 	 * @brief	Implementation of a DX11 geometry shader.
 	 */
-	class BS_D3D11_EXPORT D3D11GpuGeometryProgram : public D3D11GpuProgram
+	class BS_D3D11_EXPORT D3D11GpuGeometryProgramCore : public D3D11GpuProgramCore
 	{
 	public:
-		~D3D11GpuGeometryProgram();
+		~D3D11GpuGeometryProgramCore();
 
 		/**
 		 * @brief	Returns internal DX11 geometry shader object.
@@ -288,41 +238,32 @@ namespace BansheeEngine
 		friend class D3D11HLSLProgramFactory;
 
 		/**
-		 * @copydoc	GpuProgram::GpuProgram
+		 * @copydoc	GpuProgramCore::GpuProgramCore
 		 */
-		D3D11GpuGeometryProgram(const String& source, const String& entryPoint,
-			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes,
-			bool isAdjacencyInfoRequired);
+		D3D11GpuGeometryProgramCore(const String& source, const String& entryPoint,
+			GpuProgramProfile profile, bool isAdjacencyInfoRequired);
 
 		/**
-		 * @copydoc GpuProgram::destroy_internal
+		 * @copydoc GpuProgramCore::destroy
 		 */
-		void destroy_internal();
+		void destroy();
 
 		/**
-		 * @copydoc	D3D11GpuProgram::loadFromMicrocode
+		 * @copydoc	D3D11GpuProgramCore::loadFromMicrocode
 		 */
 		void loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode);
 
 	protected:
 		ID3D11GeometryShader* mGeometryShader;
-
-		/************************************************************************/
-		/* 								SERIALIZATION                      		*/
-		/************************************************************************/
-	public:
-		friend class D3D11GpuGeometryProgramRTTI;
-		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
 	};
 
 	/**
 	 * @brief	Implementation of a DX11 compute shader.
 	 */
-	class BS_D3D11_EXPORT D3D11GpuComputeProgram : public D3D11GpuProgram
+	class BS_D3D11_EXPORT D3D11GpuComputeProgramCore : public D3D11GpuProgramCore
 	{
 	public:
-		~D3D11GpuComputeProgram();
+		~D3D11GpuComputeProgramCore();
 
 		/**
 		 * @brief	Returns internal DX11 compute shader object.
@@ -333,30 +274,22 @@ namespace BansheeEngine
 		friend class D3D11HLSLProgramFactory;
 
 		/**
-		 * @copydoc	GpuProgram::GpuProgram
+		 * @copydoc	GpuProgramCore::GpuProgramCore
 		 */
-		D3D11GpuComputeProgram(const String& source, const String& entryPoint,
-			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes);
+		D3D11GpuComputeProgramCore(const String& source, const String& entryPoint,
+			GpuProgramProfile profile);
 
 		/**
-		 * @copydoc GpuProgram::destroy_internal
+		 * @copydoc GpuProgramCore::destroy
 		 */
-		void destroy_internal();
+		void destroy();
 
 		/**
-		 * @copydoc	D3D11GpuProgram::loadFromMicrocode
+		 * @copydoc	D3D11GpuProgramCore::loadFromMicrocode
 		 */
 		void loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode);
 
 	protected:
 		ID3D11ComputeShader* mComputeShader;
-
-		/************************************************************************/
-		/* 								SERIALIZATION                      		*/
-		/************************************************************************/
-	public:
-		friend class D3D11GpuComputeProgramRTTI;
-		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
 	};
 }

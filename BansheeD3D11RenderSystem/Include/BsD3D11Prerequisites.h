@@ -28,7 +28,6 @@ namespace BansheeEngine
 	class D3D11DriverList;
 	class D3D11VideoMode;
 	class D3D11VideoModeList;
-	class D3D11GpuProgram;
 	class D3D11GpuProgramManager;
 	class D3D11HardwareBufferManager;
 	class D3D11IndexBuffer;
@@ -50,20 +49,7 @@ namespace BansheeEngine
 	class D3D11InputLayoutManager;
 	class D3D11GpuBuffer;
 	class D3D11RenderUtility;
-
-	/**
-	 * @brief	Type IDs used for RTTI.
-	 */
-	enum TypeID_D3D11
-	{
-		TID_D3D11_GpuProgram = 12000,
-		TID_D3D11_GpuVertexProgram = 12001,
-		TID_D3D11_GpuFragmentProgram = 12002,
-		TID_D3D11_GpuGeometryProgram = 12003,
-		TID_D3D11_GpuHullProgram = 12004,
-		TID_D3D11_GpuDomainProgram = 12005,
-		TID_D3D11_GpuComputeProgram = 12006
-	};
+	class D3D11GpuProgramCore;
 
 	/**
 	 * @brief	DirectX 11 specific types to track resource statistics for.
@@ -91,7 +77,6 @@ namespace BansheeEngine
 	typedef std::shared_ptr<D3D11SamplerState> D3D11SamplerStatePtr;
 	typedef std::shared_ptr<D3D11DepthStencilState> D3D11DepthStencilStatePtr;
 	typedef std::shared_ptr<D3D11RenderWindow> D3D11RenderWindowPtr;
-	typedef std::shared_ptr<D3D11GpuProgram> D3D11GpuProgramPtr;
 
 #if (BS_PLATFORM == BS_PLATFORM_WIN32) && !defined(BS_STATIC_LIB)
 #	ifdef BS_RSD3D11_EXPORTS

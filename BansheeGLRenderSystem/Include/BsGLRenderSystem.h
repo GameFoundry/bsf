@@ -97,7 +97,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RenderSystem::bindGpuProgram()
 		 */
-		void bindGpuProgram(HGpuProgram prg);
+		void bindGpuProgram(const SPtr<GpuProgramCore>& prg);
 
 		/**
 		 * @copydoc RenderSystem::unbindGpuProgram()
@@ -248,12 +248,12 @@ namespace BansheeEngine
 		/**
 		 * @brief	Changes the active GPU program.
 		 */
-		void setActiveProgram(GpuProgramType gptype, GLSLGpuProgramPtr program);
+		void setActiveProgram(GpuProgramType gptype, const SPtr<GLSLGpuProgramCore>& program);
 
 		/**
 		 * @brief	Retrieves the active GPU program of the specified type.
 		 */
-		GLSLGpuProgramPtr getActiveProgram(GpuProgramType gptype) const;
+		SPtr<GLSLGpuProgramCore> getActiveProgram(GpuProgramType gptype) const;
 
 		/**
 		 * @brief	Converts Banshee blend mode to OpenGL blend mode.
@@ -561,11 +561,11 @@ namespace BansheeEngine
 		GLSLProgramFactory* mGLSLProgramFactory;
 		GLSLProgramPipelineManager* mProgramPipelineManager;
 
-		GLSLGpuProgramPtr mCurrentVertexProgram;
-		GLSLGpuProgramPtr mCurrentFragmentProgram;
-		GLSLGpuProgramPtr mCurrentGeometryProgram;
-		GLSLGpuProgramPtr mCurrentHullProgram;
-		GLSLGpuProgramPtr mCurrentDomainProgram;
+		SPtr<GLSLGpuProgramCore> mCurrentVertexProgram;
+		SPtr<GLSLGpuProgramCore> mCurrentFragmentProgram;
+		SPtr<GLSLGpuProgramCore> mCurrentGeometryProgram;
+		SPtr<GLSLGpuProgramCore> mCurrentHullProgram;
+		SPtr<GLSLGpuProgramCore> mCurrentDomainProgram;
 
 		const GLSLProgramPipeline* mActivePipeline;
 

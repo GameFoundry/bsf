@@ -129,7 +129,7 @@ namespace BansheeEngine
 		/** 
 		 * @copydoc RenderSystem::bindGpuProgram
 		 */
-		void bindGpuProgram(HGpuProgram prg);
+		void bindGpuProgram(const SPtr<GpuProgramCore>& prg);
 
 		/** 
 		 * @copydoc RenderSystem::unbindGpuProgram
@@ -263,7 +263,7 @@ namespace BansheeEngine
 		D3D11_RECT mScissorRect;
 
 		VertexDeclarationPtr mActiveVertexDeclaration;
-		D3D11GpuProgramPtr mActiveVertexShader;
+		SPtr<D3D11GpuProgramCore> mActiveVertexShader;
 
 		DrawOperationType mActiveDrawOp;
 	};

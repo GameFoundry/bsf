@@ -130,11 +130,11 @@ namespace BansheeEngine
 		}
 	}
 
-	void RenderSystem::bindGpuProgram(HGpuProgram prg)
+	void RenderSystem::bindGpuProgram(const SPtr<GpuProgramCore>& prg)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		switch(prg->getType())
+		switch(prg->getProperties().getType())
 		{
 		case GPT_VERTEX_PROGRAM:
 			if (!mVertexProgramBound && !mClipPlanes.empty())

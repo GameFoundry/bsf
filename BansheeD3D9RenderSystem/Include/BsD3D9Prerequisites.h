@@ -43,21 +43,11 @@ namespace BansheeEngine
     class D3D9HardwareBufferManager;
     class D3D9IndexBuffer;
     class D3D9HLSLProgramFactory;
-    class D3D9HLSLProgram;
+    class D3D9HLSLProgramCore;
     class D3D9VertexDeclaration;
 	class D3D9Resource;
 
 	typedef std::shared_ptr<D3D9RenderWindow> D3D9RenderWindowPtr;
-
-	/**
-	 * @brief	Type IDs used for RTTI.
-	 */
-	enum TypeID_D3D9
-	{
-		TID_D3D9_GpuProgram = 10000,
-		TID_D3D9_GpuVertexProgram = 10001,
-		TID_D3D9_GpuFragmentProgram = 10002
-	};
 
 	/**
 	 * @brief	DirectX 9 specific types to track resource statistics for.

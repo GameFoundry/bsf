@@ -84,6 +84,7 @@ namespace BansheeEngine
 		GameObjectManager::startUp();
 		Resources::startUp();
 		GpuProgramManager::startUp();
+		GpuProgramCoreManager::startUp();
 		RenderSystemManager::startUp();
 
 		mPrimaryWindow = RenderSystemManager::instance().initialize(desc.renderSystem, desc.primaryWindowDesc);
@@ -138,6 +139,7 @@ namespace BansheeEngine
 		gCoreThread().submitAccessors(true);
 
 		RenderSystemManager::shutDown();
+		GpuProgramCoreManager::shutDown();
 		GpuProgramManager::shutDown();
 
 		CoreObjectManager::shutDown(); // Must shut down before DynLibManager to ensure all objects are destroyed before unloading their libraries
