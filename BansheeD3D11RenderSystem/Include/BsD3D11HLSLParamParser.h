@@ -20,7 +20,7 @@ namespace BansheeEngine
 		 * @param	inputParams	Output object that will contain a set of program input parameters. Can be null if not required.
 		 *						Only relevant for vertex programs.
 		 */
-		void parse(ID3DBlob* microcode, GpuParamDesc& desc, VertexDeclaration::VertexElementList* inputParams);
+		void parse(ID3DBlob* microcode, GpuParamDesc& desc, List<VertexElement>* inputParams);
 
 	private:
 		/**

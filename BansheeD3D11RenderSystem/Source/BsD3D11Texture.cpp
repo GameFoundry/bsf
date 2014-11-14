@@ -744,11 +744,8 @@ namespace BansheeEngine
 		}
 	}
 
-	TextureViewPtr D3D11TextureCore::createView()
+	TextureViewPtr D3D11TextureCore::createView(const SPtr<TextureCore>& texture, const TEXTURE_VIEW_DESC& desc)
 	{
-		TextureViewPtr viewPtr = bs_core_ptr<D3D11TextureView, PoolAlloc>(new (bs_alloc<D3D11TextureView, PoolAlloc>()) D3D11TextureView());
-		viewPtr->_setThisPtr(viewPtr);
-
-		return viewPtr;
+		return bs_shared_ptr<D3D11TextureView, PoolAlloc>(new (bs_alloc<D3D11TextureView, PoolAlloc>()) D3D11TextureView(texture, desc));
 	}
 }

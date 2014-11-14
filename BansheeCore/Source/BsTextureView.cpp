@@ -23,17 +23,12 @@ namespace BansheeEngine
 			&& a.firstArraySlice == b.firstArraySlice && a.numArraySlices == b.numArraySlices && a.usage == b.usage;
 	}
 
-	TextureView::TextureView()
-	{ }
-
 	TextureView::~TextureView()
 	{ }
 
-	void TextureView::initialize(const SPtr<TextureCore>& texture, TEXTURE_VIEW_DESC& _desc)
+	TextureView::TextureView(const SPtr<TextureCore>& texture, const TEXTURE_VIEW_DESC& desc)
+		:mOwnerTexture(texture), mDesc(desc)
 	{
-		mOwnerTexture = texture;
-		mDesc = _desc;
 
-		CoreObject::initialize();
 	}
 }

@@ -85,7 +85,7 @@ namespace BansheeEngine
 
 	void CoreThreadAccessorBase::setVertexDeclaration(const VertexDeclarationPtr& vertexDeclaration)
 	{
-		mCommandQueue->queue(std::bind(&RenderSystem::setVertexDeclaration, RenderSystem::instancePtr(), vertexDeclaration));
+		mCommandQueue->queue(std::bind(&RenderSystem::setVertexDeclaration, RenderSystem::instancePtr(), vertexDeclaration->getCore()));
 	}
 
 	void CoreThreadAccessorBase::setViewport(const Rect2& vp)

@@ -21,12 +21,6 @@ namespace BansheeEngine
 		return bs_core_ptr<D3D9GpuBuffer, PoolAlloc>(buffer);
 	}
 
-	VertexDeclarationPtr D3D9HardwareBufferManager::createVertexDeclarationImpl(const VertexDeclaration::VertexElementList& elements)
-    {
-		D3D9VertexDeclaration* decl = new (bs_alloc<D3D9VertexDeclaration, PoolAlloc>()) D3D9VertexDeclaration(elements);
-		return bs_core_ptr<D3D9VertexDeclaration, PoolAlloc>(decl);
-    }
-
 	SPtr<VertexBufferCore> D3D9HardwareBufferCoreManager::createVertexBufferInternal(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
 	{
 		assert(numVerts > 0);
@@ -45,5 +39,15 @@ namespace BansheeEngine
 		ret->_setThisPtr(ret);
 
 		return ret;
+	}
+
+	SPtr<VertexDeclarationCore> D3D9HardwareBufferCoreManager::createVertexDeclarationInternal(const List<VertexElement>& elements)
+	{
+		D3D9VertexDeclarationCore* decl = new (bs_alloc<D3D9VertexDeclarationCore, GenAlloc>()) D3D9VertexDeclarationCore(elements);
+		
+		SPtr<D3D9VertexDeclarationCore> declPtr = bs_shared_ptr<D3D9VertexDeclarationCore, GenAlloc>(decl);
+		declPtr->_setThisPtr(declPtr);
+
+		return declPtr;
 	}
 }

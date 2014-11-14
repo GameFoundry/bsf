@@ -256,7 +256,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Core thread only.
 		 */
-		static TextureViewPtr requestView(const SPtr<TextureCore>& texture, UINT32 mostDetailMip, UINT32 numMips, 
+		static TextureViewPtr requestView(const SPtr<TextureCore>& texture, UINT32 mostDetailMip, UINT32 numMips,
 			UINT32 firstArraySlice, UINT32 numArraySlices, GpuViewUsage usage);
 
 		/**
@@ -289,7 +289,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates a new empty/undefined texture view.
 		 */
-		virtual TextureViewPtr createView();
+		virtual TextureViewPtr createView(const SPtr<TextureCore>& texture, const TEXTURE_VIEW_DESC& desc);
 
 		/**
 		 * @brief	Releases all internal texture view references. Views won't get destroyed if there are external references still held.

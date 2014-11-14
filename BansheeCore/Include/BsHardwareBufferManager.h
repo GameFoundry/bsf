@@ -74,7 +74,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates a new vertex declaration from a list of vertex elements.
 		 */
-		virtual VertexDeclarationPtr createVertexDeclaration(const VertexDeclaration::VertexElementList& elements);
+		virtual VertexDeclarationPtr createVertexDeclaration(const List<VertexElement>& elements);
 
 	protected:
 		/**
@@ -87,11 +87,6 @@ namespace BansheeEngine
 		 */
 		virtual GpuBufferPtr createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, GpuBufferUsage usage, 
 			bool randomGpuWrite = false, bool useCounter = false) = 0;
-
-		/**
-		 * @copydoc	createVertexDeclaration
-		 */
-		virtual VertexDeclarationPtr createVertexDeclarationImpl(const VertexDeclaration::VertexElementList& elements);
 	};
 
 	/**
@@ -114,9 +109,15 @@ namespace BansheeEngine
 		 */
 		virtual SPtr<IndexBufferCore> createIndexBuffer(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
 
+		/**
+		 * @copydoc	HardwareBufferManager::createVertexDeclaration
+		 */
+		virtual SPtr<VertexDeclarationCore> createVertexDeclaration(const List<VertexElement>& elements);
+
 	protected:
 		friend class IndexBuffer;
 		friend class VertexBuffer;
+		friend class VertexDeclaration;
 
 		/**
 		 * @copydoc	createVertexBuffer
@@ -127,6 +128,11 @@ namespace BansheeEngine
 		 * @copydoc	createIndexBuffer
 		 */
 		virtual SPtr<IndexBufferCore> createIndexBufferInternal(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage) = 0;
+
+		/**
+		 * @copydoc	createVertexDeclaration
+		 */
+		virtual SPtr<VertexDeclarationCore> createVertexDeclarationInternal(const List<VertexElement>& elements);
 	};
 }
 

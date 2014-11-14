@@ -128,7 +128,7 @@ namespace BansheeEngine
 		 * @brief	Sets the vertex declaration to use when drawing. Vertex declaration
 		 * 			is used to decode contents of a single vertex in a vertex buffer.
 		 */
-		virtual void setVertexDeclaration(VertexDeclarationPtr vertexDeclaration) = 0;
+		virtual void setVertexDeclaration(const SPtr<VertexDeclarationCore>& vertexDeclaration) = 0;
 
 		/**
 		 * @brief	Sets the draw operation that determines how to interpret the elements

@@ -7,27 +7,27 @@
 
 namespace BansheeEngine 
 {
-	D3D9VertexDeclaration::D3D9VertexDeclaration(const VertexDeclaration::VertexElementList& elements)
-		:VertexDeclaration(elements)
+	D3D9VertexDeclarationCore::D3D9VertexDeclarationCore(const List<VertexElement>& elements)
+		:VertexDeclarationCore(elements)
     { }
 
-    D3D9VertexDeclaration::~D3D9VertexDeclaration()
+	D3D9VertexDeclarationCore::~D3D9VertexDeclarationCore()
     {    }
 
-	void D3D9VertexDeclaration::destroy_internal()
+	void D3D9VertexDeclarationCore::destroy()
 	{
 		releaseDeclaration();
 
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_VertexDeclaration);
-		VertexDeclaration::destroy_internal();
+		VertexDeclarationCore::destroy();
 	}
 
-	void D3D9VertexDeclaration::notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device)
+	void D3D9VertexDeclarationCore::notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device)
 	{
 		
 	}
 
-	void D3D9VertexDeclaration::notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device)
+	void D3D9VertexDeclarationCore::notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device)
 	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -40,21 +40,23 @@ namespace BansheeEngine
 		}
 	}
 
-    IDirect3DVertexDeclaration9* D3D9VertexDeclaration::getD3DVertexDeclaration()
+	IDirect3DVertexDeclaration9* D3D9VertexDeclarationCore::getD3DVertexDeclaration()
     {
 		IDirect3DDevice9* pCurDevice   = D3D9RenderSystem::getActiveD3D9Device();
 		auto it = mMapDeviceToDeclaration.find(pCurDevice);
 		IDirect3DVertexDeclaration9* lpVertDecl = NULL;
 
+		const List<VertexElement>& elementList = getProperties().getElements();
+
 		// Case we have to create the declaration for this device.
 		if (it == mMapDeviceToDeclaration.end() || it->second == NULL)
 		{
-			D3DVERTEXELEMENT9* d3delems = bs_newN<D3DVERTEXELEMENT9, PoolAlloc>((UINT32)(mElementList.size() + 1));
+			D3DVERTEXELEMENT9* d3delems = bs_newN<D3DVERTEXELEMENT9, PoolAlloc>((UINT32)( getProperties().getElements().size() + 1));
 
-			VertexElementList::const_iterator i, iend;
 			unsigned int idx;
-			iend = mElementList.end();
-			for (idx = 0, i = mElementList.begin(); i != iend; ++i, ++idx)
+			auto iend = elementList.end();
+			auto i = elementList.begin();
+			for (idx = 0, i = elementList.begin(); i != iend; ++i, ++idx)
 			{
 				d3delems[idx].Method = D3DDECLMETHOD_DEFAULT;
 				d3delems[idx].Offset = static_cast<WORD>(i->getOffset());
@@ -80,7 +82,7 @@ namespace BansheeEngine
 				BS_EXCEPT(InternalErrorException, "Cannot create D3D9 vertex declaration: ");
 			}
 
-			bs_deleteN<PoolAlloc>(d3delems, (UINT32)(mElementList.size() + 1));
+			bs_deleteN<PoolAlloc>(d3delems, (UINT32)(elementList.size() + 1));
 
 			mMapDeviceToDeclaration[pCurDevice] = lpVertDecl;
 
@@ -96,7 +98,7 @@ namespace BansheeEngine
         return lpVertDecl;
     }
 
-	void D3D9VertexDeclaration::releaseDeclaration()
+	void D3D9VertexDeclarationCore::releaseDeclaration()
 	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 

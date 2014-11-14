@@ -246,7 +246,7 @@ namespace BansheeEngine
 			const VertexDataDescPtr& vertexDesc, IndexType indexType = IT_32BIT);
 
 		/**
-		 * @copydoc	RenderTarget::createCore
+		 * @copydoc	CoreObject::createCore
 		 */
 		SPtr<CoreObjectCore> createCore() const;
 

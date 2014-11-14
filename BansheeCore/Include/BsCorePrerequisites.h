@@ -152,6 +152,7 @@ namespace BansheeEngine
 	class TransientMeshCore;
 	class TextureCore;
 	class MeshHeapCore;
+	class VertexDeclarationCore;
 	// Asset import
 	class SpecificImporter;
 	class Importer;

@@ -21,7 +21,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Declaration used for the contained vertex buffers.
 		 */
-		VertexDeclarationPtr vertexDeclaration;
+		SPtr<VertexDeclarationCore> vertexDeclaration;
 
 		/**
 		 * @brief	Number of vertices to use.

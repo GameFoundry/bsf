@@ -651,7 +651,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GLRenderSystem::setVertexDeclaration(VertexDeclarationPtr vertexDeclaration)
+	void GLRenderSystem::setVertexDeclaration(const SPtr<VertexDeclarationCore>& vertexDeclaration)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 

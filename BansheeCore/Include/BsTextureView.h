@@ -49,11 +49,8 @@ namespace BansheeEngine
 	 *
 	 *			They also allow you to re-purpose a texture. (e.g. make a render target 
 	 *			a bindable texture).
-	 *
-	 * @note	Right now texture views are only used for very specific internal purposes, 
-	 *			but a more general use might come in the future.
 	 */
-	class BS_CORE_EXPORT TextureView : public CoreObject
+	class BS_CORE_EXPORT TextureView
 	{
 	public:
 		class HashFunction
@@ -107,17 +104,12 @@ namespace BansheeEngine
 		SPtr<TextureCore> getTexture() const { return mOwnerTexture; }
 
 	protected:
-		/**
-		 * @brief	Initializes the texture view. This must be called right after construction.
-		 */
-		virtual void initialize(const SPtr<TextureCore>& texture, TEXTURE_VIEW_DESC& _desc);
+		TextureView(const SPtr<TextureCore>& texture, const TEXTURE_VIEW_DESC& _desc);
 
 	protected:
 		friend class TextureCore;
 
 		TEXTURE_VIEW_DESC mDesc;
 		SPtr<TextureCore> mOwnerTexture;
-
-		TextureView();
 	};
 }

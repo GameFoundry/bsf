@@ -12,7 +12,9 @@ namespace BansheeEngine
 	private:
 		VertexElement& getElement(VertexDeclaration* obj, UINT32 idx)
 		{
-			auto iter = obj->mElementList.begin();
+			List<VertexElement>& elemList = obj->mProperties.mElementList;
+
+			auto iter = elemList.begin();
 			for(UINT32 i = 0; i < idx; i++)
 				++iter;
 
@@ -21,7 +23,9 @@ namespace BansheeEngine
 
 		void setElement(VertexDeclaration* obj, UINT32 idx, VertexElement& data)
 		{
-			auto iter = obj->mElementList.begin();
+			List<VertexElement>& elemList = obj->mProperties.mElementList;
+
+			auto iter = elemList.begin();
 			for(UINT32 i = 0; i < idx; i++)
 				++iter;
 
@@ -30,13 +34,17 @@ namespace BansheeEngine
 
 		UINT32 getElementArraySize(VertexDeclaration* obj)
 		{
-			return (UINT32)obj->mElementList.size();
+			List<VertexElement>& elemList = obj->mProperties.mElementList;
+
+			return (UINT32)elemList.size();
 		}
 
 		void setElementArraySize(VertexDeclaration* obj, UINT32 size)
 		{
-			for(size_t i = obj->mElementList.size(); i < size; i++)
-				obj->mElementList.push_back(VertexElement());
+			List<VertexElement>& elemList = obj->mProperties.mElementList;
+
+			for (size_t i = elemList.size(); i < size; i++)
+				elemList.push_back(VertexElement());
 		}
 
 	public:
@@ -48,7 +56,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{
-			return HardwareBufferManager::instance().createVertexDeclaration(VertexDeclaration::VertexElementList());
+			return HardwareBufferManager::instance().createVertexDeclaration(List<VertexElement>());
 		}
 
 		virtual const String& getRTTIName() 

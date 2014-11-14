@@ -44,7 +44,7 @@ namespace BansheeEngine
     class D3D9IndexBuffer;
     class D3D9HLSLProgramFactory;
     class D3D9HLSLProgramCore;
-    class D3D9VertexDeclaration;
+    class D3D9VertexDeclarationCore;
 	class D3D9Resource;
 
 	typedef std::shared_ptr<D3D9RenderWindow> D3D9RenderWindowPtr;

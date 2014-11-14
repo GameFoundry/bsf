@@ -11,11 +11,6 @@ namespace BansheeEngine
     class BS_D3D9_EXPORT D3D9HardwareBufferManager : public HardwareBufferManager
     {
 	protected:     
-		/**
-		 * @copydoc	HardwareBufferManager::createVertexDeclarationImpl
-		 */
-		VertexDeclarationPtr createVertexDeclarationImpl(const VertexDeclaration::VertexElementList& elements);
-
 		/** @copydoc HardwareBufferManager::createGpuParamBlockBufferImpl */
 		GpuParamBlockBufferPtr createGpuParamBlockBufferImpl();
 
@@ -33,13 +28,19 @@ namespace BansheeEngine
     {
 	protected:     
 		/**
-		 * @copydoc HardwareBufferCoreManager::createVertexBufferImpl
+		 * @copydoc HardwareBufferCoreManager::createVertexBufferInternal
 		 */
 		SPtr<VertexBufferCore> createVertexBufferInternal(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false);
 
 		/**
-		 * @copydoc HardwareBufferCoreManager::createIndexBufferImpl
+		 * @copydoc HardwareBufferCoreManager::createIndexBufferInternal
 		 */
 		SPtr<IndexBufferCore> createIndexBufferInternal(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
+
+		/**
+		 * @copydoc	HardwareBufferCoreManager::createVertexDeclarationInternal
+		 */
+		SPtr<VertexDeclarationCore> createVertexDeclarationInternal(const List<VertexElement>& elements);
+
     };
 }

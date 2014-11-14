@@ -109,7 +109,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	RenderSystem::setVertexDeclaration
 		 */
-		void setVertexDeclaration(VertexDeclarationPtr vertexDeclaration);
+		void setVertexDeclaration(const SPtr<VertexDeclarationCore>& vertexDeclaration);
 
 		/**
 		 * @copydoc	RenderSystem::setDrawOperation
@@ -262,7 +262,7 @@ namespace BansheeEngine
 		D3D11_VIEWPORT mViewport;
 		D3D11_RECT mScissorRect;
 
-		VertexDeclarationPtr mActiveVertexDeclaration;
+		SPtr<VertexDeclarationCore> mActiveVertexDeclaration;
 		SPtr<D3D11GpuProgramCore> mActiveVertexShader;
 
 		DrawOperationType mActiveDrawOp;

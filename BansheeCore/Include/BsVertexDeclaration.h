@@ -117,63 +117,132 @@ namespace BansheeEngine
 	BS_ALLOW_MEMCPY_SERIALIZATION(VertexElement);
 
 	/**
-	 * @brief	Describes a set of vertex elements, used for describing contents of
-	 *			a vertex buffer or inputs to a vertex GPU program.
+	 * @brief	Contains information about a vertex declaration.
 	 */
-	class BS_CORE_EXPORT VertexDeclaration : public IReflectable, public CoreObject
-    {
-    public:
-        typedef List<VertexElement> VertexElementList;
-
+	class BS_CORE_EXPORT VertexDeclarationProperties
+	{
 	public:
-        virtual ~VertexDeclaration();
+		VertexDeclarationProperties(const List<VertexElement>& elements);
 
-		bool operator== (const VertexDeclaration& rhs) const;
-		bool operator!= (const VertexDeclaration& rhs) const;
+		bool operator== (const VertexDeclarationProperties& rhs) const;
+		bool operator!= (const VertexDeclarationProperties& rhs) const;
 
 		/**
 		 * @brief	Get the number of elements in the declaration.
 		 */
-        UINT32 getElementCount() { return (UINT32)mElementList.size(); }
+        UINT32 getElementCount() const { return (UINT32)mElementList.size(); }
         
 		/**
 		 * @brief	Returns a list of vertex elements in the declaration.
 		 */
-		const VertexElementList& getElements() const { return mElementList; }
+		const List<VertexElement>& getElements() const { return mElementList; }
 
 		/**
 		 * @brief	Returns a single vertex element at the specified index.
 		 */
-        const VertexElement* getElement(UINT16 index);
+		const VertexElement* getElement(UINT16 index) const;
 
 		/**
 		 * @brief	Attempts to find an element by the given semantic and semantic index. If no element
 		 *			can be found null is returned.
 		 */
-		virtual const VertexElement* findElementBySemantic(VertexElementSemantic sem, UINT16 index = 0);
+		virtual const VertexElement* findElementBySemantic(VertexElementSemantic sem, UINT16 index = 0) const;
 
 		/**
 		 * @brief	Returns a list of all elements that use the provided source index.
 		 */
-		virtual VertexElementList findElementsBySource(UINT16 source);
+		virtual List<VertexElement> findElementsBySource(UINT16 source) const;
 
 		/**
 		 * @brief	Returns the total size of all vertex elements using the provided source index.
 		 */
-		virtual UINT32 getVertexSize(UINT16 source);
+		virtual UINT32 getVertexSize(UINT16 source) const;
+
+	protected:
+		friend class VertexDeclaration;
+		friend class VertexDeclarationRTTI;
+
+		List<VertexElement> mElementList;
+	};
+
+	/**
+	 * @brief	Core thread portion of a VertexDeclaration.
+	 *
+	 * @see		VertexDeclaration.
+	 *
+	 * @note	Core thread.
+	 */
+	class BS_CORE_EXPORT VertexDeclarationCore : public CoreObjectCore
+    {
+	public:
+		virtual ~VertexDeclarationCore() { }
+
+		/**
+		 * @copydoc	CoreObjectCore::initialize
+		 */
+		void initialize();
+
+		/**
+		 * @brief	Returns properties describing the vertex declaration.
+		 */
+		const VertexDeclarationProperties& getProperties() const { return mProperties; }
+
+		/**
+		 * @brief	Returns an ID unique to this declaration.
+		 */
+		UINT32 getId() const { return mId; }
+
+    protected:
+		friend class HardwareBufferCoreManager;
+
+		VertexDeclarationCore(const List<VertexElement>& elements);
+
+	protected:
+		VertexDeclarationProperties mProperties;
+		UINT32 mId;
+
+		static UINT32 NextFreeId;
+    };
+
+	/**
+	 * @brief	Describes a set of vertex elements, used for describing contents of
+	 *			a vertex buffer or inputs to a vertex GPU program.
+	 *
+	 * @note	Sim thread.
+	 */
+	class BS_CORE_EXPORT VertexDeclaration : public IReflectable, public CoreObject
+    {
+	public:
+		virtual ~VertexDeclaration() { }
+
+		/**
+		 * @brief	Returns properties describing the vertex declaration.
+		 */
+		const VertexDeclarationProperties& getProperties() const { return mProperties; }
+
+		/**
+		 * @brief	Retrieves a core implementation of a vertex declaration usable only from the
+		 *			core thread.
+		 */
+		SPtr<VertexDeclarationCore> getCore() const;
 
 		/**
 		 * @copydoc		HardwareBufferManager::createVertexDeclaration
 		 */
-		static VertexDeclarationPtr createVertexDeclaration(const VertexDeclaration::VertexElementList& elements);
+		static VertexDeclarationPtr createVertexDeclaration(const List<VertexElement>& elements);
 
     protected:
 		friend class HardwareBufferManager;
 
-		VertexDeclaration(const VertexElementList& elements);
+		VertexDeclaration(const List<VertexElement>& elements);
+
+		/**
+		 * @copydoc	CoreObject::createCore
+		 */
+		SPtr<CoreObjectCore> createCore() const;
 
 	protected:
-		VertexElementList mElementList;
+		VertexDeclarationProperties mProperties;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

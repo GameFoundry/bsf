@@ -226,7 +226,7 @@ namespace BansheeEngine
 				continue;
 
 			// Ensure vertex sizes match
-			UINT32 vertSize = mVertexData->vertexDeclaration->getVertexSize(i);
+			UINT32 vertSize = mVertexData->vertexDeclaration->getProperties().getVertexSize(i);
 			UINT32 otherVertSize = meshData->getVertexDesc()->getVertexStride(i);
 			if (otherVertSize != vertSize)
 			{
@@ -307,7 +307,9 @@ namespace BansheeEngine
 		mVertexData = std::shared_ptr<VertexData>(bs_new<VertexData, PoolAlloc>());
 
 		mVertexData->vertexCount = mNumVertices;
-		mVertexData->vertexDeclaration = mVertexDesc->createDeclaration();
+		List<VertexElement> elements = mVertexDesc->createElements();
+
+		mVertexData->vertexDeclaration = HardwareBufferCoreManager::instance().createVertexDeclaration(elements);
 
 		// Create buffers and copy data
 		for (UINT32 i = 0; i <= mVertexDesc->getMaxStreamIdx(); i++)
@@ -315,7 +317,7 @@ namespace BansheeEngine
 			if (!mVertexDesc->hasStream(i))
 				continue;
 
-			UINT32 vertSize = mVertexData->vertexDeclaration->getVertexSize(i);
+			UINT32 vertSize = mVertexData->vertexDeclaration->getProperties().getVertexSize(i);
 			SPtr<VertexBufferCore> vertexBuffer = HardwareBufferCoreManager::instance().createVertexBuffer(
 				vertSize, mVertexData->vertexCount, GBU_DYNAMIC);
 

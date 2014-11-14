@@ -6,7 +6,7 @@
 
 namespace BansheeEngine
 {
-	void D3D11HLSLParamParser::parse(ID3DBlob* microcode, GpuParamDesc& desc, VertexDeclaration::VertexElementList* inputParams)
+	void D3D11HLSLParamParser::parse(ID3DBlob* microcode, GpuParamDesc& desc, List<VertexElement>* inputParams)
 	{
 		const char* commentString = nullptr;
 		ID3DBlob* pIDisassembly = nullptr;

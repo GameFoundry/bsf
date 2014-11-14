@@ -32,11 +32,6 @@ namespace BansheeEngine
 		bool hasElement(VertexElementSemantic semantic, UINT32 semanticIdx = 0, UINT32 streamIdx = 0) const;
 
 		/**
-		 * @brief	Creates a new vertex declaration based on currently set vertex elements.
-		 */
-		VertexDeclarationPtr createDeclaration() const;
-
-		/**
 		 * @brief	Returns the size in bytes of the vertex element with the specified semantic.
 		 */
 		UINT32 getElementSize(VertexElementSemantic semantic, UINT32 semanticIdx = 0, UINT32 streamIdx = 0) const;
@@ -70,6 +65,11 @@ namespace BansheeEngine
 		 * @brief	Returns the vertex element at the specified index.
 		 */
 		const VertexElement& getElement(UINT32 idx) const { return mVertexElements[idx]; }
+
+		/**
+		 * @brief	Creates a list of vertex elements from internal data.
+		 */
+		List<VertexElement> createElements() const;
 	private:
 		friend class Mesh;
 		friend class MeshCore;

@@ -16,7 +16,7 @@ namespace BansheeEngine
 		return -1;
 	}
 
-	VertexDeclaration::VertexElementList GLSLParamParser::buildVertexDeclaration(GLuint glProgram)
+	List<VertexElement> GLSLParamParser::buildVertexDeclaration(GLuint glProgram)
 	{
 		GLint numAttributes = 0;
 		glGetProgramiv(glProgram, GL_ACTIVE_ATTRIBUTES, &numAttributes);
@@ -26,7 +26,7 @@ namespace BansheeEngine
 
 		GLchar* attributeName = (GLchar*)bs_alloc<ScratchAlloc>(sizeof(GLchar)* maxNameSize);
 
-		VertexDeclaration::VertexElementList elementList;
+		List<VertexElement> elementList;
 		for (GLint i = 0; i < numAttributes; i++)
 		{
 			GLint attribSize = 0;

@@ -27,17 +27,17 @@ namespace BansheeEngine
 		mVertexElements.insert(mVertexElements.begin() + insertToIndex, newElement);
 	}
 
-	VertexDeclarationPtr VertexDataDesc::createDeclaration() const
+	List<VertexElement> VertexDataDesc::createElements() const
 	{
 		UINT32 maxStreamIdx = getMaxStreamIdx();
 
 		UINT32 numStreams = maxStreamIdx + 1;
 		UINT32* streamOffsets = bs_newN<UINT32, ScratchAlloc>(numStreams);
-		for(UINT32 i = 0; i < numStreams; i++)
+		for (UINT32 i = 0; i < numStreams; i++)
 			streamOffsets[i] = 0;
 
-		VertexDeclaration::VertexElementList declarationElements;
-		for(auto& vertElem : mVertexElements)
+		List<VertexElement> declarationElements;
+		for (auto& vertElem : mVertexElements)
 		{
 			UINT32 streamIdx = vertElem.getStreamIdx();
 
@@ -49,8 +49,7 @@ namespace BansheeEngine
 
 		bs_deleteN<ScratchAlloc>(streamOffsets, numStreams);
 
-		VertexDeclarationPtr declaration = HardwareBufferManager::instance().createVertexDeclaration(declarationElements);
-		return declaration;
+		return declarationElements;
 	}
 
 	UINT32 VertexDataDesc::getMaxStreamIdx() const

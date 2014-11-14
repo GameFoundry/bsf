@@ -455,7 +455,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumIndexBufferBinds);
 	}
 
-	void D3D11RenderSystem::setVertexDeclaration(VertexDeclarationPtr vertexDeclaration)
+	void D3D11RenderSystem::setVertexDeclaration(const SPtr<VertexDeclarationCore>& vertexDeclaration)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 

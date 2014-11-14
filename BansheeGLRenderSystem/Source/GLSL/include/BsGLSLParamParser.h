@@ -62,7 +62,7 @@ namespace BansheeEngine
 		 *
 		 * @param	glProgram	OpenGL handle to the GPU program.
 		 */
-		VertexDeclaration::VertexElementList buildVertexDeclaration(GLuint glProgram);
+		List<VertexElement> buildVertexDeclaration(GLuint glProgram);
 
 	private:
 		/**

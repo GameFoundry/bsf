@@ -135,10 +135,10 @@ namespace BansheeEngine
 		D3D11HLSLParamParser parser;
 		if (mProperties.getType() == GPT_VERTEX_PROGRAM)
 		{
-			VertexDeclaration::VertexElementList inputParams;
+			List<VertexElement> inputParams;
 			parser.parse(microcode, *mParametersDesc, &inputParams);
 
-			mInputDeclaration = HardwareBufferManager::instance().createVertexDeclaration(inputParams);
+			mInputDeclaration = HardwareBufferCoreManager::instance().createVertexDeclaration(inputParams);
 		}
 		else
 		{

@@ -115,7 +115,7 @@ namespace BansheeEngine
 		return !(*this == rhs);
 	}
 
-	VertexDeclaration::VertexDeclaration(const VertexElementList& elements)
+	VertexDeclarationProperties::VertexDeclarationProperties(const List<VertexElement>& elements)
 	{
 		for (auto& elem : elements)
 		{
@@ -128,11 +128,7 @@ namespace BansheeEngine
 		}
 	}
 
-	VertexDeclaration::~VertexDeclaration()
-	{
-	}
-
-	bool VertexDeclaration::operator== (const VertexDeclaration& rhs) const
+	bool VertexDeclarationProperties::operator== (const VertexDeclarationProperties& rhs) const
 	{
 		if (mElementList.size() != rhs.mElementList.size())
 			return false;
@@ -149,12 +145,12 @@ namespace BansheeEngine
 		return true;
 	}
 
-	bool VertexDeclaration::operator!= (const VertexDeclaration& rhs) const
+	bool VertexDeclarationProperties::operator!= (const VertexDeclarationProperties& rhs) const
 	{
 		return !(*this == rhs);
 	}
 
-	const VertexElement* VertexDeclaration::getElement(UINT16 index)
+	const VertexElement* VertexDeclarationProperties::getElement(UINT16 index) const
 	{
 		assert(index < mElementList.size() && "Index out of bounds");
 
@@ -166,7 +162,7 @@ namespace BansheeEngine
 
 	}
 	
-	const VertexElement* VertexDeclaration::findElementBySemantic(VertexElementSemantic sem, UINT16 index)
+	const VertexElement* VertexDeclarationProperties::findElementBySemantic(VertexElementSemantic sem, UINT16 index) const
 	{
 		for (auto& elem : mElementList)
 		{
@@ -179,9 +175,9 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	VertexDeclaration::VertexElementList VertexDeclaration::findElementsBySource(UINT16 source)
+	List<VertexElement> VertexDeclarationProperties::findElementsBySource(UINT16 source) const
 	{
-		VertexElementList retList;
+		List<VertexElement> retList;
 
 		for (auto& elem : mElementList)
 		{
@@ -194,7 +190,7 @@ namespace BansheeEngine
 		return retList;
 	}
 
-	UINT32 VertexDeclaration::getVertexSize(UINT16 source)
+	UINT32 VertexDeclarationProperties::getVertexSize(UINT16 source) const
 	{
 		UINT32 size = 0;
 
@@ -209,7 +205,37 @@ namespace BansheeEngine
 		return size;
 	}
 
-	VertexDeclarationPtr VertexDeclaration::createVertexDeclaration(const VertexDeclaration::VertexElementList& elements)
+	UINT32 VertexDeclarationCore::NextFreeId = 0;
+
+	VertexDeclarationCore::VertexDeclarationCore(const List<VertexElement>& elements)
+		:mProperties(elements)
+	{
+		
+	}
+
+	void VertexDeclarationCore::initialize()
+	{
+		mId = NextFreeId++;
+		CoreObjectCore::initialize();
+	}
+
+	VertexDeclaration::VertexDeclaration(const List<VertexElement>& elements)
+		:mProperties(elements)
+	{
+
+	}
+
+	SPtr<VertexDeclarationCore> VertexDeclaration::getCore() const
+	{
+		return std::static_pointer_cast<VertexDeclarationCore>(mCoreSpecific);
+	}
+
+	SPtr<CoreObjectCore> VertexDeclaration::createCore() const
+	{
+		return HardwareBufferCoreManager::instance().createVertexDeclarationInternal(mProperties.mElementList);
+	}
+
+	VertexDeclarationPtr VertexDeclaration::createVertexDeclaration(const List<VertexElement>& elements)
 	{
 		return HardwareBufferManager::instance().createVertexDeclaration(elements);
 	}

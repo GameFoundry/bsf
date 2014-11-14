@@ -31,7 +31,9 @@ namespace BansheeEngine
 		mVertexData = std::shared_ptr<VertexData>(bs_new<VertexData, PoolAlloc>());
 
 		mVertexData->vertexCount = mProperties.mNumVertices;
-		mVertexData->vertexDeclaration = mVertexDesc->createDeclaration();
+
+		List<VertexElement> elements = mVertexDesc->createElements();
+		mVertexData->vertexDeclaration = HardwareBufferCoreManager::instance().createVertexDeclaration(elements);
 
 		for (UINT32 i = 0; i <= mVertexDesc->getMaxStreamIdx(); i++)
 		{
@@ -39,7 +41,7 @@ namespace BansheeEngine
 				continue;
 
 			SPtr<VertexBufferCore> vertexBuffer = HardwareBufferCoreManager::instance().createVertexBuffer(
-				mVertexData->vertexDeclaration->getVertexSize(i),
+				mVertexData->vertexDeclaration->getProperties().getVertexSize(i),
 				mVertexData->vertexCount,
 				mBufferType == MeshBufferType::Dynamic ? GBU_DYNAMIC : GBU_STATIC);
 

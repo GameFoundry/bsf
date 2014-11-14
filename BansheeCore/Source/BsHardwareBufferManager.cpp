@@ -14,12 +14,15 @@ namespace BansheeEngine
     {
     }
 
-	VertexDeclarationPtr HardwareBufferManager::createVertexDeclaration(const VertexDeclaration::VertexElementList& elements)
+	VertexDeclarationPtr HardwareBufferManager::createVertexDeclaration(const List<VertexElement>& elements)
     {
-        VertexDeclarationPtr decl = createVertexDeclarationImpl(elements);
-		decl->_setThisPtr(decl);
-		decl->initialize();
-        return decl;
+		VertexDeclaration* decl = new (bs_alloc<VertexDeclaration, GenAlloc>()) VertexDeclaration(elements);
+
+		VertexDeclarationPtr declPtr = bs_core_ptr<VertexDeclaration, GenAlloc>(decl);
+		declPtr->_setThisPtr(declPtr);
+		declPtr->initialize();
+
+		return declPtr;
     }
 
 	VertexBufferPtr HardwareBufferManager::createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
@@ -61,11 +64,6 @@ namespace BansheeEngine
 		return gbuf;
 	}
 
-	VertexDeclarationPtr HardwareBufferManager::createVertexDeclarationImpl(const VertexDeclaration::VertexElementList& elements)
-	{
-		return bs_core_ptr<VertexDeclaration, PoolAlloc>(new (bs_alloc<VertexDeclaration, PoolAlloc>()) VertexDeclaration(elements));
-	}
-
 	SPtr<IndexBufferCore> HardwareBufferCoreManager::createIndexBuffer(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
 	{
 		assert(numIndexes > 0);
@@ -83,5 +81,23 @@ namespace BansheeEngine
 		SPtr<VertexBufferCore> vbuf = createVertexBufferInternal(vertexSize, numVerts, usage, streamOut);
 		vbuf->initialize();
 		return vbuf;
+	}
+
+	SPtr<VertexDeclarationCore> HardwareBufferCoreManager::createVertexDeclaration(const List<VertexElement>& elements)
+	{
+		SPtr<VertexDeclarationCore> declPtr = createVertexDeclarationInternal(elements);
+		declPtr->initialize();
+
+		return declPtr;
+	}
+
+	SPtr<VertexDeclarationCore> HardwareBufferCoreManager::createVertexDeclarationInternal(const List<VertexElement>& elements)
+	{
+		VertexDeclarationCore* decl = new (bs_alloc<VertexDeclarationCore, GenAlloc>()) VertexDeclarationCore(elements);
+
+		SPtr<VertexDeclarationCore> ret = bs_shared_ptr<VertexDeclarationCore, GenAlloc>(decl);
+		ret->_setThisPtr(ret);
+
+		return ret;
 	}
 }

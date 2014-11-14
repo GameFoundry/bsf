@@ -75,10 +75,10 @@ namespace BansheeEngine
 	}
 
 	const GLVertexArrayObject& GLVertexArrayObjectManager::getVAO(const SPtr<GLSLGpuProgramCore>& vertexProgram,
-		const VertexDeclarationPtr& vertexDecl, const Vector<SPtr<VertexBufferCore>>& boundBuffers)
+		const SPtr<VertexDeclarationCore>& vertexDecl, const Vector<SPtr<VertexBufferCore>>& boundBuffers)
 	{
 		UINT16 maxStreamIdx = 0;
-		const VertexDeclaration::VertexElementList& decl = vertexDecl->getElements();
+		const List<VertexElement>& decl = vertexDecl->getProperties().getElements();
 		for (auto& elem : decl)
 			maxStreamIdx = std::max(maxStreamIdx, elem.getStreamIdx());
 
@@ -124,7 +124,7 @@ namespace BansheeEngine
 		}
 
 		// Need to create new VAO
-		const VertexDeclaration::VertexElementList& inputAttributes = vertexProgram->getInputAttributes().getElements();
+		const List<VertexElement>& inputAttributes = vertexProgram->getInputAttributes().getProperties().getElements();
 
 		glGenVertexArrays(1, &wantedVAO.mHandle);
 		glBindVertexArray(wantedVAO.mHandle);

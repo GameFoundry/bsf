@@ -8,38 +8,27 @@
 
 namespace BansheeEngine
 {
-	D3D11TextureView::D3D11TextureView()
-		:TextureView(), mSRV(nullptr), mUAV(nullptr), mDSV(nullptr), mRTV(nullptr)
-	{
-
-	}
-
-	void D3D11TextureView::initialize_internal()
+	D3D11TextureView::D3D11TextureView(const SPtr<TextureCore>& texture, const TEXTURE_VIEW_DESC& desc)
+		:TextureView(texture, desc), mSRV(nullptr), mUAV(nullptr), mDSV(nullptr), mRTV(nullptr)
 	{
 		D3D11TextureCore* d3d11Texture = static_cast<D3D11TextureCore*>(mOwnerTexture.get());
 
-		if((mDesc.usage & GVU_RANDOMWRITE) != 0)
+		if ((mDesc.usage & GVU_RANDOMWRITE) != 0)
 			mUAV = createUAV(d3d11Texture, mDesc.mostDetailMip, mDesc.firstArraySlice, mDesc.numArraySlices);
-		else if((mDesc.usage & GVU_RENDERTARGET) != 0)
+		else if ((mDesc.usage & GVU_RENDERTARGET) != 0)
 			mRTV = createRTV(d3d11Texture, mDesc.mostDetailMip, mDesc.firstArraySlice, mDesc.numArraySlices);
-		else if((mDesc.usage & GVU_DEPTHSTENCIL) != 0)
+		else if ((mDesc.usage & GVU_DEPTHSTENCIL) != 0)
 			mDSV = createDSV(d3d11Texture, mDesc.mostDetailMip, mDesc.firstArraySlice, mDesc.numArraySlices);
 		else
 			mSRV = createSRV(d3d11Texture, mDesc.mostDetailMip, mDesc.numMips, mDesc.firstArraySlice, mDesc.numArraySlices);
-
-		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_ResourceView);
-		TextureView::initialize_internal();
 	}
 
-	void D3D11TextureView::destroy_internal()
+	D3D11TextureView::~D3D11TextureView()
 	{
 		SAFE_RELEASE(mSRV);
 		SAFE_RELEASE(mUAV);
 		SAFE_RELEASE(mDSV);
 		SAFE_RELEASE(mRTV);
-
-		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_ResourceView);
-		TextureView::destroy_internal();
 	}
 
 	ID3D11ShaderResourceView* D3D11TextureView::createSRV(D3D11TextureCore* texture, 

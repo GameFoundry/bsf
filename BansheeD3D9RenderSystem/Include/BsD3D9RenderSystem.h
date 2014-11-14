@@ -63,7 +63,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RenderSystem::setVertexDeclaration()
 		 */
-		void setVertexDeclaration(VertexDeclarationPtr vertexDeclaration);
+		void setVertexDeclaration(const SPtr<VertexDeclarationCore>& vertexDeclaration);
 
 		/**
 		 * @copydoc RenderSystem::setDrawOperation()

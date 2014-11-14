@@ -179,12 +179,9 @@ namespace BansheeEngine
 	/* 								TEXTURE VIEW                      		*/
 	/************************************************************************/
 
-	TextureViewPtr TextureCore::createView()
+	TextureViewPtr TextureCore::createView(const SPtr<TextureCore>& texture, const TEXTURE_VIEW_DESC& desc)
 	{
-		TextureViewPtr viewPtr = bs_core_ptr<TextureView, PoolAlloc>(new (bs_alloc<TextureView, PoolAlloc>()) TextureView());
-		viewPtr->_setThisPtr(viewPtr);
-
-		return viewPtr;
+		return bs_shared_ptr<TextureView, PoolAlloc>(new (bs_alloc<TextureView, PoolAlloc>()) TextureView(texture, desc));
 	}
 
 	void TextureCore::clearBufferViews()
@@ -208,8 +205,7 @@ namespace BansheeEngine
 		auto iterFind = texture->mTextureViews.find(key);
 		if (iterFind == texture->mTextureViews.end())
 		{
-			TextureViewPtr newView = texture->createView();
-			newView->initialize(texture, key);
+			TextureViewPtr newView = texture->createView(texture, key);
 			texture->mTextureViews[key] = new (bs_alloc<TextureViewReference, PoolAlloc>()) TextureViewReference(newView);
 
 			iterFind = texture->mTextureViews.find(key);

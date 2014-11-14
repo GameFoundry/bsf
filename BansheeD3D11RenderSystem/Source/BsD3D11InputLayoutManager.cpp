@@ -53,10 +53,10 @@ namespace BansheeEngine
 		}
 	}
 
-	ID3D11InputLayout* D3D11InputLayoutManager::retrieveInputLayout(VertexDeclarationPtr vertexShaderDecl, VertexDeclarationPtr vertexBufferDecl, D3D11GpuProgramCore& vertexProgram)
+	ID3D11InputLayout* D3D11InputLayoutManager::retrieveInputLayout(const SPtr<VertexDeclarationCore>& vertexShaderDecl, const SPtr<VertexDeclarationCore>& vertexBufferDecl, D3D11GpuProgramCore& vertexProgram)
 	{
 		VertexDeclarationKey pair;
-		pair.vertxDeclId = vertexBufferDecl->getInternalID();
+		pair.vertxDeclId = vertexBufferDecl->getId();
 		pair.vertexProgramId = vertexProgram.getProgramId();
 
 		auto iterFind = mInputLayoutMap.find(pair);
@@ -77,17 +77,19 @@ namespace BansheeEngine
 		return iterFind->second->inputLayout;
 	}
 
-	void D3D11InputLayoutManager::addNewInputLayout(VertexDeclarationPtr vertexShaderDecl, VertexDeclarationPtr vertexBufferDecl, D3D11GpuProgramCore& vertexProgram)
+	void D3D11InputLayoutManager::addNewInputLayout(const SPtr<VertexDeclarationCore>& vertexShaderDecl, const SPtr<VertexDeclarationCore>& vertexBufferDecl, D3D11GpuProgramCore& vertexProgram)
 	{
 		if(!areCompatible(vertexShaderDecl, vertexBufferDecl))
 			return; // Error was already reported, so just quit here
 
-		UINT32 numElements = vertexBufferDecl->getElementCount();
+		const VertexDeclarationProperties& declProps = vertexBufferDecl->getProperties();
+
+		UINT32 numElements = declProps.getElementCount();
 		D3D11_INPUT_ELEMENT_DESC* declElements = bs_newN<D3D11_INPUT_ELEMENT_DESC, ScratchAlloc>(numElements);
 		ZeroMemory(declElements, sizeof(D3D11_INPUT_ELEMENT_DESC) * numElements);
 
 		unsigned int idx = 0;
-		for(auto iter = vertexBufferDecl->getElements().begin(); iter != vertexBufferDecl->getElements().end(); ++iter)
+		for (auto iter = declProps.getElements().begin(); iter != declProps.getElements().end(); ++iter)
 		{
 			declElements[idx].SemanticName			= D3D11Mappings::get(iter->getSemantic());
 			declElements[idx].SemanticIndex			= iter->getSemanticIdx();
@@ -122,7 +124,7 @@ namespace BansheeEngine
 
 		// Create key and add to the layout map
 		VertexDeclarationKey pair;
-		pair.vertxDeclId = vertexBufferDecl->getInternalID();
+		pair.vertxDeclId = vertexBufferDecl->getId();
 		pair.vertexProgramId = vertexProgram.getProgramId();
 
 		mInputLayoutMap[pair] = newEntry;
@@ -162,12 +164,15 @@ namespace BansheeEngine
 		}
 	}
 
-	bool D3D11InputLayoutManager::areCompatible(VertexDeclarationPtr vertexShaderDecl, VertexDeclarationPtr vertexBufferDecl)
+	bool D3D11InputLayoutManager::areCompatible(const SPtr<VertexDeclarationCore>& vertexShaderDecl, const SPtr<VertexDeclarationCore>& vertexBufferDecl)
 	{
-		for(auto shaderIter = vertexShaderDecl->getElements().begin(); shaderIter != vertexShaderDecl->getElements().end(); ++shaderIter)
+		const List<VertexElement>& shaderElems = vertexShaderDecl->getProperties().getElements();
+		const List<VertexElement>& bufferElems = vertexBufferDecl->getProperties().getElements();
+
+		for (auto shaderIter = shaderElems.begin(); shaderIter != shaderElems.end(); ++shaderIter)
 		{
 			const VertexElement* foundElement = nullptr;
-			for(auto bufferIter = vertexBufferDecl->getElements().begin(); bufferIter != vertexBufferDecl->getElements().end(); ++bufferIter)
+			for (auto bufferIter = bufferElems.begin(); bufferIter != bufferElems.end(); ++bufferIter)
 			{
 				if(shaderIter->getSemantic() == bufferIter->getSemantic() && shaderIter->getSemanticIdx() == bufferIter->getSemanticIdx())
 				{

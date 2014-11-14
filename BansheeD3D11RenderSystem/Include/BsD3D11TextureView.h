@@ -11,6 +11,8 @@ namespace BansheeEngine
 	class BS_D3D11_EXPORT D3D11TextureView : public TextureView
 	{
 	public:
+		~D3D11TextureView();
+
 		/**
 		 * @brief	Returns a shader resource view. Caller must take care this texture view
 		 *			actually contains a shader resource view, otherwise it returns null.
@@ -38,18 +40,7 @@ namespace BansheeEngine
 	protected:
 		friend class D3D11TextureCore;
 
-		D3D11TextureView();
-
-		/**
-		 * @copydoc	TextureView::initialize_internal
-		 */
-		void initialize_internal();
-
-		/**
-		 * @copydoc	TextureView::destroy_internal
-		 */
-		void destroy_internal();
-
+		D3D11TextureView(const SPtr<TextureCore>& texture, const TEXTURE_VIEW_DESC& desc);
 	private:
 		/**
 		 * @brief	Creates a shader resource view that allows the provided surfaces 

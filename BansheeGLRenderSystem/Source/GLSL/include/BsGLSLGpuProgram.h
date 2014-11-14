@@ -23,7 +23,7 @@ namespace BansheeEngine
 		 *			program expect (and which attributes will it retrieve from the bound vertex buffer). 
 		 *			Only valid for vertex programs.
 		 */
-		const VertexDeclaration& getInputAttributes() const { return *mVertexDeclaration; }
+		const VertexDeclarationCore& getInputAttributes() const { return *mVertexDeclaration; }
 
 		/**
 		 * @brief	Gets internal OpenGL handle to the program.
@@ -61,7 +61,7 @@ namespace BansheeEngine
 		UINT32 mProgramID;
 		GLuint mGLHandle;
 
-		VertexDeclarationPtr mVertexDeclaration;
+		SPtr<VertexDeclarationCore> mVertexDeclaration;
 		
 		static UINT32 mVertexShaderCount;
 		static UINT32 mFragmentShaderCount;

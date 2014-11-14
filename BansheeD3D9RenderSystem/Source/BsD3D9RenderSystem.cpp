@@ -1130,11 +1130,11 @@ namespace BansheeEngine
 		mIsFrameInProgress = false;
 	}
 
-	void D3D9RenderSystem::setVertexDeclaration(VertexDeclarationPtr decl)
+	void D3D9RenderSystem::setVertexDeclaration(const SPtr<VertexDeclarationCore>& decl)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		std::shared_ptr<D3D9VertexDeclaration> d3ddecl = std::static_pointer_cast<D3D9VertexDeclaration>(decl);
+		std::shared_ptr<D3D9VertexDeclarationCore> d3ddecl = std::static_pointer_cast<D3D9VertexDeclarationCore>(decl);
 
 		HRESULT hr;
 		if (FAILED(hr = getActiveD3D9Device()->SetVertexDeclaration(d3ddecl->getD3DVertexDeclaration())))
