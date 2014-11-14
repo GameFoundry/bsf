@@ -8,21 +8,33 @@ namespace BansheeEngine
 {
 	SPtr<SamplerStateCore> D3D11RenderStateCoreManager::createSamplerStateInternal(const SAMPLER_STATE_DESC& desc) const
 	{
-		return bs_shared_ptr<D3D11SamplerStateCore, GenAlloc>(new (bs_alloc<D3D11SamplerStateCore>()) D3D11SamplerStateCore(desc));
+		SPtr<SamplerStateCore> ret = bs_shared_ptr<D3D11SamplerStateCore, GenAlloc>(new (bs_alloc<D3D11SamplerStateCore>()) D3D11SamplerStateCore(desc));
+		ret->_setThisPtr(ret);
+
+		return ret;
 	}
 
 	SPtr<BlendStateCore> D3D11RenderStateCoreManager::createBlendStateInternal(const BLEND_STATE_DESC& desc) const
 	{
-		return bs_shared_ptr<D3D11BlendStateCore, GenAlloc>(new (bs_alloc<D3D11BlendStateCore>()) D3D11BlendStateCore(desc));
+		SPtr<BlendStateCore> ret = bs_shared_ptr<D3D11BlendStateCore, GenAlloc>(new (bs_alloc<D3D11BlendStateCore>()) D3D11BlendStateCore(desc));
+		ret->_setThisPtr(ret);
+
+		return ret;
 	}
 
 	SPtr<RasterizerStateCore> D3D11RenderStateCoreManager::createRasterizerStateInternal(const RASTERIZER_STATE_DESC& desc) const
 	{
-		return bs_shared_ptr<D3D11RasterizerStateCore, GenAlloc>(new (bs_alloc<D3D11RasterizerStateCore>()) D3D11RasterizerStateCore(desc));
+		SPtr<RasterizerStateCore> ret = bs_shared_ptr<D3D11RasterizerStateCore, GenAlloc>(new (bs_alloc<D3D11RasterizerStateCore>()) D3D11RasterizerStateCore(desc));
+		ret->_setThisPtr(ret);
+
+		return ret;
 	}
 
 	SPtr<DepthStencilStateCore> D3D11RenderStateCoreManager::createDepthStencilStateInternal(const DEPTH_STENCIL_STATE_DESC& desc) const
 	{
-		return bs_shared_ptr<D3D11DepthStencilStateCore, GenAlloc>(new (bs_alloc<D3D11DepthStencilStateCore>()) D3D11DepthStencilStateCore(desc));
+		SPtr<DepthStencilStateCore> ret = bs_shared_ptr<D3D11DepthStencilStateCore, GenAlloc>(new (bs_alloc<D3D11DepthStencilStateCore>()) D3D11DepthStencilStateCore(desc));
+		ret->_setThisPtr(ret);
+
+		return ret;
 	}
 }

@@ -8,22 +8,13 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Mesh heap allows you to quickly allocate and deallocate a large amounts of temporary 
-	 *			meshes without the large overhead of normal Mesh creation.
-	 * 			Only requirement is that meshes share the same vertex description and index type.
-	 * 			
-	 * @note	This class should be considered as a replacement for a normal Mesh if you are constantly 
-	 * 			updating the mesh (e.g. every frame) and you are not able to discard entire mesh contents 
-	 * 			on each update. Not using discard flag on normal meshes may introduce GPU-CPU sync points
-	 * 			which may severely limit performance. Primary purpose of this class is to avoid
-	 * 			those sync points by not forcing you to discard contents.
-	 * 			
-	 *			Downside is that this class may allocate 2-3x (or more) memory than it is actually needed
-	 *			for your data.
-	 *			
-	 *			Sim thread except where noted otherwise.
+	 * @brief	Core thread version of MeshHeap.
+	 *
+	 * @see		MeshHeap
+	 *
+	 * @note	Core thread only.
 	 */
-	class BS_CORE_EXPORT MeshHeap : public CoreObject
+	class BS_CORE_EXPORT MeshHeapCore : public CoreObjectCore
 	{
 		/**
 		 * @brief	Signifies how is a data chunk used.
@@ -66,102 +57,59 @@ namespace BansheeEngine
 			UINT32 queryId;
 		};
 
-	public:
-		~MeshHeap();
-
-		/**
-		 * @brief	Allocates a new mesh in the heap, expanding the heap if needed. Mesh will be initialized
-		 *			with the provided meshData. You may use the returned transient mesh for drawing.
-		 *
-		 * @note	Offsets provided by MeshData are ignored. MeshHeap will determine
-		 * 			where the data will be written internally.
-		 */
-		TransientMeshPtr alloc(const MeshDataPtr& meshData, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
-
-		/**
-		 * @brief	Deallocates the provided mesh and makes that room on the heap re-usable as soon as the GPU
-		 *			is also done with the mesh.
-		 */
-		void dealloc(const TransientMeshPtr& mesh);
-
-		/**
-		 * @brief	Creates a new mesh heap.
-		 *
-		 * @param	numVertices	Initial number of vertices the heap may store. This will grow automatically if needed.
-		 * @param	numIndices	Initial number of indices the heap may store. This will grow automatically if needed.
-		 * @param	vertexDesc	Description of the stored vertices.
-		 * @param	indexType	Type of the stored indices.
-		 */
-		static MeshHeapPtr create(UINT32 numVertices, UINT32 numIndices, 
-			const VertexDataDescPtr& vertexDesc, IndexType indexType = IT_32BIT);
-
 	private:
+		friend class MeshHeap;
 		friend class TransientMesh;
 		friend class TransientMeshCore;
 
-		/**
-		 * @copydoc	create
-		 */
-		MeshHeap(UINT32 numVertices, UINT32 numIndices, 
+		MeshHeapCore(UINT32 numVertices, UINT32 numIndices, 
 			const VertexDataDescPtr& vertexDesc, IndexType indexType = IT_32BIT);
 
 		/**
-		 * @copydoc CoreObject::initialize_internal()
+		 * @copydoc CoreObjectCore::initialize()
 		 */
-		virtual void initialize_internal();
+		virtual void initialize();
 
 		/**
-		 * @copydoc CoreObject::destroy_internal()
+		 * @copydoc CoreObjectCore::destroy()
 		 */
-		virtual void destroy_internal();
+		virtual void destroy();
 
 		/**
 		 * @brief	Allocates a new mesh in the heap, expanding the heap if needed. 
 		 *
 		 * @param	meshId		Mesh for which we are allocating the data.
 		 * @param	meshData	Data to initialize the new mesh with.
-		 *
-		 * @note	Core thread.
 		 */
-		void allocInternal(SPtr<TransientMeshCore> mesh, const MeshDataPtr& meshData);
+		void alloc(SPtr<TransientMeshCore> mesh, const MeshDataPtr& meshData);
 
 		/**
 		 * @brief	Deallocates the provided mesh Freed memory
 		 *			will be re-used as soon as the GPU is done with the mesh
-		 *
-		 * @note	Core thread.
 		 */
-		void deallocInternal(SPtr<TransientMeshCore> mesh);
+		void dealloc(SPtr<TransientMeshCore> mesh);
 
 		/**
 		 * @brief	Resizes the vertex buffers so they max contain the provided
 		 *			number of vertices.
-		 *
-		 * @note	Core thread.
 		 */
 		void growVertexBuffer(UINT32 numVertices);
 
 		/**
 		 * @brief	Resizes the index buffer so they max contain the provided
 		 *			number of indices.
-		 *
-		 * @note	Core thread.
 		 */
 		void growIndexBuffer(UINT32 numIndices);
 
 		/**
 		 * @brief	Creates a new event query or returns an existing one from the pool
 		 *			if available. Returned value is an index into mEventQueries array.
-		 *
-		 * @note	Core thread.
 		 */
 		UINT32 createEventQuery();
 
 		/**
 		 * @brief	Frees the event query with the specified index and returns it to the
 		 *			pool so it may be reused later.
-		 *
-		 * @note	Core thread.
 		 */
 		void freeEventQuery(UINT32 idx);
 
@@ -196,7 +144,7 @@ namespace BansheeEngine
 		 * @brief	Called by an GPU event query when GPU processes the query. Normally
 		 *			signals the heap that the GPU is done with the mesh.
 		 */
-		static void queryTriggered(MeshHeapPtr thisPtr, UINT32 meshId, UINT32 queryId);
+		static void queryTriggered(SPtr<MeshHeapCore> thisPtr, UINT32 meshId, UINT32 queryId);
 
 		/**
 		 * @brief	Attempts to reorganize the vertex and index buffer chunks in order to 
@@ -208,37 +156,108 @@ namespace BansheeEngine
 		void mergeWithNearbyChunks(UINT32 chunkVertIdx, UINT32 chunkIdxIdx);
 
 	private:
-		UINT32 mNumVertices; // Core thread
-		UINT32 mNumIndices; // Core thread
+		UINT32 mNumVertices;
+		UINT32 mNumIndices;
 
-		Vector<UINT8*> mCPUVertexData; // Core thread
-		UINT8* mCPUIndexData; // Core thread
+		Vector<UINT8*> mCPUVertexData;
+		UINT8* mCPUIndexData;
 
-		SPtr<VertexData> mVertexData; // Core thread
-		SPtr<IndexBufferCore> mIndexBuffer; // Core thread
+		SPtr<VertexData> mVertexData;
+		SPtr<IndexBufferCore> mIndexBuffer;
 
-		Map<UINT32, AllocatedData> mMeshAllocData; // Core thread
+		Map<UINT32, AllocatedData> mMeshAllocData;
 
-		VertexDataDescPtr mVertexDesc; // Immutable
-		IndexType mIndexType; // Immutable
+		VertexDataDescPtr mVertexDesc;
+		IndexType mIndexType;
 
-		Map<UINT32, TransientMeshPtr> mMeshes; // Sim thread
-		UINT32 mNextFreeId; // Sim thread
+		Vector<ChunkData> mVertChunks;
+		Vector<ChunkData> mIdxChunks;
 
-		Vector<ChunkData> mVertChunks; // Core thread
-		Vector<ChunkData> mIdxChunks; // Core thread
+		Stack<UINT32> mEmptyVertChunks;
+		Stack<UINT32> mEmptyIdxChunks;
 
-		Stack<UINT32> mEmptyVertChunks; // Core thread
-		Stack<UINT32> mEmptyIdxChunks; // Core thread
+		List<UINT32> mFreeVertChunks;
+		List<UINT32> mFreeIdxChunks;
 
-		List<UINT32> mFreeVertChunks; // Core thread
-		List<UINT32> mFreeIdxChunks; // Core thread
-
-		Vector<QueryData> mEventQueries; // Core thread
-		Stack<UINT32> mFreeEventQueries; // Core thread
+		Vector<QueryData> mEventQueries; 
+		Stack<UINT32> mFreeEventQueries;
 
 		UINT32 mNextQueryId;
 
 		static const float GrowPercent;
+	};
+
+	/**
+	 * @brief	Mesh heap allows you to quickly allocate and deallocate a large amounts of temporary 
+	 *			meshes without the large overhead of normal Mesh creation.
+	 * 			Only requirement is that meshes share the same vertex description and index type.
+	 * 			
+	 * @note	This class should be considered as a replacement for a normal Mesh if you are constantly 
+	 * 			updating the mesh (e.g. every frame) and you are not able to discard entire mesh contents 
+	 * 			on each update. Not using discard flag on normal meshes may introduce GPU-CPU sync points
+	 * 			which may severely limit performance. Primary purpose of this class is to avoid
+	 * 			those sync points by not forcing you to discard contents.
+	 * 			
+	 *			Downside is that this class may allocate 2-3x (or more) memory than it is actually needed
+	 *			for your data.
+	 *			
+	 *			Sim thread only
+	 */
+	class BS_CORE_EXPORT MeshHeap : public CoreObject
+	{
+	public:
+		/**
+		 * @brief	Allocates a new mesh in the heap, expanding the heap if needed. Mesh will be initialized
+		 *			with the provided meshData. You may use the returned transient mesh for drawing.
+		 *
+		 * @note	Offsets provided by MeshData are ignored. MeshHeap will determine
+		 * 			where the data will be written internally.
+		 */
+		TransientMeshPtr alloc(const MeshDataPtr& meshData, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
+
+		/**
+		 * @brief	Deallocates the provided mesh and makes that room on the heap re-usable as soon as the GPU
+		 *			is also done with the mesh.
+		 */
+		void dealloc(const TransientMeshPtr& mesh);
+
+		/**
+		 * @brief	Retrieves a core implementation of a mesh heap usable only from the
+		 *			core thread.
+		 */
+		SPtr<MeshHeapCore> getCore() const;
+
+		/**
+		 * @brief	Creates a new mesh heap.
+		 *
+		 * @param	numVertices	Initial number of vertices the heap may store. This will grow automatically if needed.
+		 * @param	numIndices	Initial number of indices the heap may store. This will grow automatically if needed.
+		 * @param	vertexDesc	Description of the stored vertices.
+		 * @param	indexType	Type of the stored indices.
+		 */
+		static MeshHeapPtr create(UINT32 numVertices, UINT32 numIndices, 
+			const VertexDataDescPtr& vertexDesc, IndexType indexType = IT_32BIT);
+
+	private:
+		/**
+		 * @copydoc	create
+		 */
+		MeshHeap(UINT32 numVertices, UINT32 numIndices, 
+			const VertexDataDescPtr& vertexDesc, IndexType indexType = IT_32BIT);
+
+		/**
+		 * @copydoc	RenderTarget::createCore
+		 */
+		SPtr<CoreObjectCore> createCore() const;
+
+	private:
+		UINT32 mNumVertices;
+		UINT32 mNumIndices;
+
+		VertexDataDescPtr mVertexDesc;
+		IndexType mIndexType;
+
+		Map<UINT32, TransientMeshPtr> mMeshes;
+		UINT32 mNextFreeId;
 	};
 }

@@ -151,6 +151,7 @@ namespace BansheeEngine
 	struct SubMesh;
 	class TransientMeshCore;
 	class TextureCore;
+	class MeshHeapCore;
 	// Asset import
 	class SpecificImporter;
 	class Importer;

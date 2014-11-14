@@ -44,12 +44,18 @@ namespace BansheeEngine
 		SPtr<GpuProgramCore> create(const String& source, const String& entryPoint, GpuProgramType gptype, 
 			GpuProgramProfile profile, bool requiresAdjacencyInformation)
 		{
-			return bs_shared_ptr<NullProgramCore>();
+			SPtr<NullProgramCore> ret = bs_shared_ptr<NullProgramCore>();
+			ret->_setThisPtr(ret);
+
+			return ret;
 		}
 
 		SPtr<GpuProgramCore> create(GpuProgramType type)
 		{
-			return bs_shared_ptr<NullProgramCore>();
+			SPtr<NullProgramCore> ret = bs_shared_ptr<NullProgramCore>();
+			ret->_setThisPtr(ret);
+
+			return ret;
 		}
 	};
 

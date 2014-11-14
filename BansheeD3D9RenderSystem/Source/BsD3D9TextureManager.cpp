@@ -52,16 +52,25 @@ namespace BansheeEngine
 		D3D9TextureCore* tex = new (bs_alloc<D3D9TextureCore>()) D3D9TextureCore(texType,
 			width, height, depth, numMips, format, usage, hwGammaCorrection, multisampleCount);
 
-		return bs_shared_ptr<D3D9TextureCore, GenAlloc>(tex);
+		SPtr<D3D9TextureCore> texPtr = bs_shared_ptr<D3D9TextureCore, GenAlloc>(tex);
+		texPtr->_setThisPtr(texPtr);
+
+		return texPtr;
 	}
 
 	SPtr<RenderTextureCore> D3D9TextureCoreManager::createRenderTextureInternal(const RENDER_TEXTURE_DESC& desc)
 	{
-		return bs_shared_ptr<D3D9RenderTextureCore>(desc);
+		SPtr<D3D9RenderTextureCore> texPtr = bs_shared_ptr<D3D9RenderTextureCore>(desc);
+		texPtr->_setThisPtr(texPtr);
+
+		return texPtr;
 	}
 
 	SPtr<MultiRenderTextureCore> D3D9TextureCoreManager::createMultiRenderTextureInternal(const MULTI_RENDER_TEXTURE_DESC& desc)
 	{
-		return bs_shared_ptr<D3D9MultiRenderTextureCore>(desc);
+		SPtr<D3D9MultiRenderTextureCore> texPtr = bs_shared_ptr<D3D9MultiRenderTextureCore>(desc);
+		texPtr->_setThisPtr(texPtr);
+
+		return texPtr;
 	}
 }

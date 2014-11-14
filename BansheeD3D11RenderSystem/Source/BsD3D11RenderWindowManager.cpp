@@ -41,8 +41,12 @@ namespace BansheeEngine
 
 		// Create the window
 		D3D11RenderWindowCore* renderWindow = new (bs_alloc<D3D11RenderWindowCore, GenAlloc>()) D3D11RenderWindowCore(desc, d3d11rs->getPrimaryDevice(), d3d11rs->getDXGIFactory());
+
+		SPtr<D3D11RenderWindowCore> renderWindowPtr = bs_shared_ptr<D3D11RenderWindowCore, GenAlloc>(renderWindow);
+		renderWindowPtr->_setThisPtr(renderWindowPtr);
+
 		windowCreated(renderWindow);
 
-		return bs_shared_ptr<D3D11RenderWindowCore, GenAlloc>(renderWindow);
+		return renderWindowPtr;
 	}
 }

@@ -31,6 +31,8 @@ namespace BansheeEngine
 
 		// Create the window
 		SPtr<RenderWindowCore> window = glSupport->newWindowCore(desc);
+		window->_setThisPtr(window);
+
 		windowCreated(window.get());
 
 		return window;

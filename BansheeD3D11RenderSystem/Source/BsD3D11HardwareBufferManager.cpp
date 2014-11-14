@@ -33,13 +33,19 @@ namespace BansheeEngine
 	SPtr<VertexBufferCore> D3D11HardwareBufferCoreManager::createVertexBufferInternal(UINT32 vertexSize,
 		UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
 	{
-		return bs_shared_ptr<D3D11VertexBufferCore>(mDevice, vertexSize, numVerts, usage, streamOut);
+		SPtr<D3D11VertexBufferCore> ret = bs_shared_ptr<D3D11VertexBufferCore>(mDevice, vertexSize, numVerts, usage, streamOut);
+		ret->_setThisPtr(ret);
+
+		return ret;
 	}
 
 	SPtr<IndexBufferCore> D3D11HardwareBufferCoreManager::createIndexBufferInternal(IndexType itype,
 		UINT32 numIndexes, GpuBufferUsage usage)
 	{
-		return bs_shared_ptr<D3D11IndexBufferCore>(mDevice, itype, numIndexes, usage);
+		SPtr<D3D11IndexBufferCore> ret = bs_shared_ptr<D3D11IndexBufferCore>(mDevice, itype, numIndexes, usage);
+		ret->_setThisPtr(ret);
+
+		return ret;
 	}
 
 }

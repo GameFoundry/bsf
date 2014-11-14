@@ -15,7 +15,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT TransientMeshCore : public MeshCoreBase
 	{
 	public:
-		TransientMeshCore(const MeshHeapPtr& parentHeap, UINT32 id, UINT32 numVertices,
+		TransientMeshCore(const SPtr<MeshHeapCore>& parentHeap, UINT32 id, UINT32 numVertices,
 			UINT32 numIndices, const Vector<SubMesh>& subMeshes);
 
 		/**
@@ -51,7 +51,7 @@ namespace BansheeEngine
 	protected:
 		friend class TransientMesh;
 
-		MeshHeapPtr mParentHeap;
+		SPtr<MeshHeapCore> mParentHeap;
 		UINT32 mId;
 	};
 

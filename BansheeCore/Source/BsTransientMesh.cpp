@@ -6,7 +6,8 @@
 
 namespace BansheeEngine
 {
-	TransientMeshCore::TransientMeshCore(const MeshHeapPtr& parentHeap, UINT32 id, UINT32 numVertices, UINT32 numIndices, const Vector<SubMesh>& subMeshes)
+	TransientMeshCore::TransientMeshCore(const SPtr<MeshHeapCore>& parentHeap, UINT32 id, 
+		UINT32 numVertices, UINT32 numIndices, const Vector<SubMesh>& subMeshes)
 		:MeshCoreBase(numVertices, numIndices, subMeshes), mParentHeap(parentHeap), mId(id)
 	{
 
@@ -60,9 +61,11 @@ namespace BansheeEngine
 	SPtr<CoreObjectCore> TransientMesh::createCore() const
 	{
 		TransientMeshCore* core = new (bs_alloc<TransientMeshCore>()) TransientMeshCore(
-			mParentHeap, mId, mProperties.mNumVertices, mProperties.mNumIndices, mProperties.mSubMeshes);
+			mParentHeap->getCore(), mId, mProperties.mNumVertices, mProperties.mNumIndices, mProperties.mSubMeshes);
 
 		SPtr<CoreObjectCore> meshCore = bs_shared_ptr<TransientMeshCore, GenAlloc>(core);
+		meshCore->_setThisPtr(meshCore);
+
 		return meshCore;
 	}
 }

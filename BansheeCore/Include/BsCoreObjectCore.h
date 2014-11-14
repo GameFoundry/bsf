@@ -30,6 +30,18 @@ namespace BansheeEngine
 		 */
 		virtual void destroy();
 
+		/**
+		 * @brief	Internal method. Sets a shared this pointer to this object. This MUST be called immediately after construction.
+		 *
+		 * @note	Called automatically by the factory creation methods so user should not call this manually.
+		 */
+		void _setThisPtr(std::shared_ptr<CoreObjectCore> ptrThis);
+
+		/**
+		 * @brief	Returns a shared_ptr version of "this" pointer.
+		 */
+		SPtr<CoreObjectCore> getThisPtr() const { return mThis.lock(); }
+
 	protected:
 		friend class CoreObjectManager;
 		friend class CoreObject;
@@ -76,5 +88,6 @@ namespace BansheeEngine
 
 		UINT32 mCoreDirtyFlags;
 		bool mIsDestroyed;
+		std::weak_ptr<CoreObjectCore> mThis;
 	};
 }

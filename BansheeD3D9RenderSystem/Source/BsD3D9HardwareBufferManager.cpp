@@ -31,13 +31,19 @@ namespace BansheeEngine
 	{
 		assert(numVerts > 0);
 
-		return bs_shared_ptr<D3D9VertexBufferCore>(vertexSize, numVerts, usage, streamOut);
+		SPtr<D3D9VertexBufferCore> ret = bs_shared_ptr<D3D9VertexBufferCore>(vertexSize, numVerts, usage, streamOut);
+		ret->_setThisPtr(ret);
+
+		return ret;
 	}
 
 	SPtr<IndexBufferCore> D3D9HardwareBufferCoreManager::createIndexBufferInternal(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
 	{
 		assert(numIndexes > 0);
 
-		return bs_shared_ptr<D3D9IndexBufferCore>(itype, numIndexes, usage);
+		SPtr<D3D9IndexBufferCore> ret = bs_shared_ptr<D3D9IndexBufferCore>(itype, numIndexes, usage);
+		ret->_setThisPtr(ret);
+
+		return ret;
 	}
 }

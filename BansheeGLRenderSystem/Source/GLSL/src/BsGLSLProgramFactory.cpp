@@ -15,13 +15,19 @@ namespace BansheeEngine
     {
 		GLSLGpuProgramCore* prog = new (bs_alloc<GLSLGpuProgramCore, GenAlloc>()) GLSLGpuProgramCore(source, entryPoint, gptype, profile, requireAdjacency);
 
-		return bs_shared_ptr<GLSLGpuProgramCore, GenAlloc>(prog);
+		SPtr<GLSLGpuProgramCore> gpuProg = bs_shared_ptr<GLSLGpuProgramCore, GenAlloc>(prog);
+		gpuProg->_setThisPtr(gpuProg);
+
+		return gpuProg;
     }
 
 	SPtr<GpuProgramCore> GLSLProgramFactory::create(GpuProgramType type)
 	{
 		GLSLGpuProgramCore* prog = new (bs_alloc<GLSLGpuProgramCore, GenAlloc>()) GLSLGpuProgramCore("", "", type, GPP_NONE, false);
 
-		return bs_shared_ptr<GLSLGpuProgramCore, GenAlloc>(prog);
+		SPtr<GLSLGpuProgramCore> gpuProg = bs_shared_ptr<GLSLGpuProgramCore, GenAlloc>(prog);
+		gpuProg->_setThisPtr(gpuProg);
+
+		return gpuProg;
 	}
 }

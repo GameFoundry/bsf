@@ -22,4 +22,9 @@ namespace BansheeEngine
 
 		mIsDestroyed = true;
 	}
+
+	void CoreObjectCore::_setThisPtr(std::shared_ptr<CoreObjectCore> ptrThis)
+	{
+		mThis = ptrThis;
+	}
 }

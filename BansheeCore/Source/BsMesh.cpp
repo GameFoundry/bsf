@@ -394,6 +394,8 @@ namespace BansheeEngine
 			mVertexDesc, mProperties.mSubMeshes, mBufferType, mIndexType, mTempInitialMeshData);
 
 		SPtr<CoreObjectCore> meshCore = bs_shared_ptr<MeshCore, GenAlloc>(obj);
+		meshCore->_setThisPtr(meshCore);
+
 		mTempInitialMeshData = nullptr;
 
 		return meshCore;

@@ -34,8 +34,12 @@ namespace BansheeEngine
 	SPtr<RenderWindowCore> D3D9RenderWindowCoreManager::createInternal(RENDER_WINDOW_DESC& desc)
 	{
 		D3D9RenderWindowCore* window = new (bs_alloc<D3D9RenderWindowCore, GenAlloc>()) D3D9RenderWindowCore(desc, mRenderSystem->getInstanceHandle());
+
+		SPtr<D3D9RenderWindowCore> renderWindowPtr = bs_shared_ptr<D3D9RenderWindowCore, GenAlloc>(window);
+		renderWindowPtr->_setThisPtr(renderWindowPtr);
+
 		windowCreated(window);
 
-		return bs_shared_ptr<D3D9RenderWindowCore, GenAlloc>(window);
+		return renderWindowPtr;
 	}
 }

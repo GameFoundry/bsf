@@ -2,7 +2,6 @@
 
 TODO - CoreObject refactor:
 Resource
- - GpuProgram
  - Material -> Remove MaterialProxy
  - Shader -> Remove ShaderProxy
 MeshHeap

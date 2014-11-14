@@ -70,16 +70,25 @@ namespace BansheeEngine
 		GLTextureCore* tex = new (bs_alloc<GLTextureCore>()) GLTextureCore(mGLSupport, texType,
 			width, height, depth, numMips, format, usage, hwGammaCorrection, multisampleCount);
 
-		return bs_shared_ptr<GLTextureCore, GenAlloc>(tex);
+		SPtr<GLTextureCore> texPtr = bs_shared_ptr<GLTextureCore, GenAlloc>(tex);
+		texPtr->_setThisPtr(texPtr);
+
+		return texPtr;
 	}
 
 	SPtr<RenderTextureCore> GLTextureCoreManager::createRenderTextureInternal(const RENDER_TEXTURE_DESC& desc)
 	{
-		return bs_shared_ptr<GLRenderTextureCore>(desc);
+		SPtr<GLRenderTextureCore> texPtr = bs_shared_ptr<GLRenderTextureCore>(desc);
+		texPtr->_setThisPtr(texPtr);
+
+		return texPtr;
 	}
 
 	SPtr<MultiRenderTextureCore> GLTextureCoreManager::createMultiRenderTextureInternal(const MULTI_RENDER_TEXTURE_DESC& desc)
 	{
-		return bs_shared_ptr<GLMultiRenderTextureCore>(desc);
+		SPtr<GLMultiRenderTextureCore> texPtr = bs_shared_ptr<GLMultiRenderTextureCore>(desc);
+		texPtr->_setThisPtr(texPtr);
+
+		return texPtr;
 	}
 }

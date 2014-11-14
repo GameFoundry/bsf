@@ -22,12 +22,18 @@ namespace BansheeEngine
 
 	SPtr<VertexBufferCore> GLHardwareBufferCoreManager::createVertexBufferInternal(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
 	{
-		return bs_shared_ptr<GLVertexBufferCore>(vertexSize, numVerts, usage, streamOut);
+		SPtr<GLVertexBufferCore> ret = bs_shared_ptr<GLVertexBufferCore>(vertexSize, numVerts, usage, streamOut);
+		ret->_setThisPtr(ret);
+
+		return ret;
 	}
 
 	SPtr<IndexBufferCore> GLHardwareBufferCoreManager::createIndexBufferInternal(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
 	{
-		return bs_shared_ptr<GLIndexBufferCore>(itype, numIndexes, usage);
+		SPtr<GLIndexBufferCore> ret = bs_shared_ptr<GLIndexBufferCore>(itype, numIndexes, usage);
+		ret->_setThisPtr(ret);
+
+		return ret;
 	}
 
     GLenum GLHardwareBufferCoreManager::getGLUsage(GpuBufferUsage usage)
