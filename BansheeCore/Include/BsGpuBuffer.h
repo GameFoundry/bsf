@@ -7,26 +7,65 @@
 namespace BansheeEngine 
 {
 	/**
-	 * @brief	Handles a generic GPU buffer that you may use for storing any kind of data you wish to be accessible
-	 *			to the GPU. These buffers may be bounds to GPU program binding slots and accessed from a GPU program,
-	 *			or may be used by fixed pipeline in some way.
+	 * @brief	Information about a GPU buffer.
+	 */
+	class BS_CORE_EXPORT GpuBufferProperties
+	{
+	public:
+		GpuBufferProperties(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, 
+			GpuBufferUsage usage, bool randomGpuWrite, bool useCounter);
+
+		/**
+		 * @brief	Returns the type of the GPU buffer. Type determines which kind of views (if any) can be created
+		 *			for the buffer, and how is data read or modified in it.
+		 */
+		GpuBufferType getType() const { return mType; }
+
+		/**
+		 * @brief	Returns buffer usage which determines how are planning on updating the buffer contents.
+		 */
+		GpuBufferUsage getUsage() const { return mUsage; }
+
+		/**
+		 * @brief	Return whether the buffer supports random reads and writes within the GPU programs.
+		 */
+		bool getRandomGpuWrite() const { return mRandomGpuWrite; }
+
+		/**
+		 * @brief	Returns whether the buffer supports counter use within GPU programs.
+		 */
+		bool getUseCounter() const { return mUseCounter; }
+
+		/**
+		 * @brief	Returns number of elements in the buffer.
+		 */
+		UINT32 getElementCount() const { return mElementCount; }
+
+		/**
+		 * @brief	Returns size of a single element in the buffer in bytes.
+		 */
+		UINT32 getElementSize() const { return mElementSize; }
+
+	protected:
+		GpuBufferType mType;
+		GpuBufferUsage mUsage;
+		bool mRandomGpuWrite;
+		bool mUseCounter;
+		UINT32 mElementCount;
+		UINT32 mElementSize;
+	};
+
+	/**
+	 * @brief	Core thread version of a GpuBuffer.
 	 *
-	 *			Buffer types:
-	 *			  - Raw buffers containing a block of bytes that are up to the GPU program to interpret.
-	 *			  - Structured buffer containing an array of structures compliant to a certain layout. Similar to raw
-	 *				buffer but easier to interpret the data.
-	 *			  - Random read/write buffers that allow you to write to random parts of the buffer from within
-	 *				the GPU program, and then read it later. These can only be bound to pixel and compute stages.
-	 *			  - Append/Consume buffers also allow you to write to them, but in a stack-like fashion, usually where one set
-	 *				of programs produces data while other set consumes it from the same buffer. Append/Consume buffers are structured
-	 *				by default.
+	 * @see		GpuBuffer
 	 *
 	 * @note	Core thread only.
 	 */
-	class BS_CORE_EXPORT GpuBuffer : public CoreObject
-    {
-    public:
-        virtual ~GpuBuffer();
+	class BS_CORE_EXPORT GpuBufferCore : public CoreObjectCore
+	{
+	public:
+		virtual ~GpuBufferCore();
 
 		/**
 		 * @brief	Locks the buffer returning a pointer to the internal buffer data that you may then
@@ -74,8 +113,13 @@ namespace BansheeEngine
 		 * @param	discardWholeBuffer	If true, the contents of the current buffer will be entirely discarded. This can improve
 		 *								performance if you know you wont be needing that data any more.
 		 */
-		virtual void copyData(GpuBuffer& srcBuffer, UINT32 srcOffset, 
+		virtual void copyData(GpuBufferCore& srcBuffer, UINT32 srcOffset,
 			UINT32 dstOffset, UINT32 length, bool discardWholeBuffer = false) = 0;
+
+		/**
+		 * @brief	Returns properties describing the buffer.
+		 */
+		const GpuBufferProperties& getProperties() const { return mProperties; }
 
 		/**
 		 * @brief	Creates a buffer view that may be used for binding a buffer to a slot in the pipeline. Views allow you to specify
@@ -94,7 +138,7 @@ namespace BansheeEngine
 		 *			TODO Low Priority: Perhaps reflect this limitation by having an enum with only
 		 *			those two options?
 		 */
-		static GpuBufferView* requestView(GpuBufferPtr buffer, UINT32 firstElement, UINT32 elementWidth, UINT32 numElements, bool useCounter, GpuViewUsage usage);
+		static GpuBufferView* requestView(const SPtr<GpuBufferCore>& buffer, UINT32 firstElement, UINT32 elementWidth, UINT32 numElements, bool useCounter, GpuViewUsage usage);
 
 		/**
 		 * @brief	Releases a view created with requestView. 
@@ -103,39 +147,9 @@ namespace BansheeEngine
 		 */
 		static void releaseView(GpuBufferView* view);
 
-		/**
-		 * @brief	Returns the type of the GPU buffer. Type determines which kind of views (if any) can be created
-		 *			for the buffer, and how is data read or modified in it.
-		 */
-		GpuBufferType getType() const { return mType; }
-
-		/**
-		 * @brief	Returns buffer usage which determines how are planning on updating the buffer contents.
-		 */
-		GpuBufferUsage getUsage() const { return mUsage; }
-
-		/**
-		 * @brief	Return whether the buffer supports random reads and writes within the GPU programs.
-		 */
-		bool getRandomGpuWrite() const { return mRandomGpuWrite; }
-
-		/**
-		 * @brief	Returns whether the buffer supports counter use within GPU programs.
-		 */
-		bool getUseCounter() const { return mUseCounter; }
-
-		/**
-		 * @brief	Returns number of elements in the buffer.
-		 */
-		UINT32 getElementCount() const { return mElementCount; }
-
-		/**
-		 * @brief	Returns size of a single element in the buffer in bytes.
-		 */
-		UINT32 getElementSize() const { return mElementSize; }
-
 	protected:
-		GpuBuffer(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
+		GpuBufferCore(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, 
+			GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
 
 		/**
 		 * @brief	Creates an empty view for the current buffer.
@@ -154,9 +168,9 @@ namespace BansheeEngine
 		void clearBufferViews();
 
 		/**
-		 * @copydoc CoreObject::destroy_internal()
+		 * @copydoc CoreObject::destroy()
 		 */
-		virtual void destroy_internal();
+		virtual void destroy();
 
 		/**
 		 * @brief	Helper class to help with reference counting for GPU buffer views.
@@ -172,13 +186,58 @@ namespace BansheeEngine
 		};
 
 		UnorderedMap<GPU_BUFFER_DESC, GpuBufferReference*, GpuBufferView::HashFunction, GpuBufferView::EqualFunction> mBufferViews;
+		GpuBufferProperties mProperties;
+	};
+
+	/**
+	 * @brief	Handles a generic GPU buffer that you may use for storing any kind of data you wish to be accessible
+	 *			to the GPU. These buffers may be bounds to GPU program binding slots and accessed from a GPU program,
+	 *			or may be used by fixed pipeline in some way.
+	 *
+	 *			Buffer types:
+	 *			  - Raw buffers containing a block of bytes that are up to the GPU program to interpret.
+	 *			  - Structured buffer containing an array of structures compliant to a certain layout. Similar to raw
+	 *				buffer but easier to interpret the data.
+	 *			  - Random read/write buffers that allow you to write to random parts of the buffer from within
+	 *				the GPU program, and then read it later. These can only be bound to pixel and compute stages.
+	 *			  - Append/Consume buffers also allow you to write to them, but in a stack-like fashion, usually where one set
+	 *				of programs produces data while other set consumes it from the same buffer. Append/Consume buffers are structured
+	 *				by default.
+	 *
+	 * @note	Sim thread only.
+	 */
+	class BS_CORE_EXPORT GpuBuffer : public CoreObject
+    {
+    public:
+		virtual ~GpuBuffer() { }
+
+		/**
+		 * @brief	Returns properties describing the buffer.
+		 */
+		const GpuBufferProperties& getProperties() const { return mProperties; }
+
+		/**
+		 * @brief	Retrieves a core implementation of a GPU buffer usable only from the
+		 *			core thread.
+		 */
+		SPtr<GpuBufferCore> getCore() const;
 
 	protected:
-		GpuBufferType mType;
-		GpuBufferUsage mUsage;
-		bool mRandomGpuWrite;
-		bool mUseCounter;
-		UINT32 mElementCount;
-		UINT32 mElementSize;
+		friend class HardwareBufferManager;
+
+		GpuBuffer(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, GpuBufferUsage usage, 
+			bool randomGpuWrite = false, bool useCounter = false);
+
+		/**
+		 * @copydoc	CoreObject::createCore
+		 */
+		SPtr<CoreObjectCore> createCore() const;
+
+		/**
+		 * @copydoc	HardwareBufferManager::createGpuParamBlockBuffer
+		 */
+		static GpuParamBlockBufferPtr create(UINT32 size, GpuParamBlockUsage usage = GPBU_DYNAMIC);
+
+		GpuBufferProperties mProperties;
     };
 }

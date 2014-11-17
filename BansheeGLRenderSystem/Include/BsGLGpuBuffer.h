@@ -9,60 +9,61 @@ namespace BansheeEngine
 	 * @brief	OpenGL implementation of a generic GPU buffer.
 	 */
 	// TODO - Not implemented, just a dummy class for now
-	class BS_RSGL_EXPORT GLGpuBuffer : public GpuBuffer
+	class BS_RSGL_EXPORT GLGpuBufferCore : public GpuBufferCore
 	{
 	public:
-        ~GLGpuBuffer();
+		~GLGpuBufferCore();
 
 		/**
-		 * @copydoc GpuBuffer::lockImpl
+		 * @copydoc GpuBufferCore::lock
 		 */
 		virtual void* lock(UINT32 offset, UINT32 length, GpuLockOptions options);
 
 		/**
-		 * @copydoc GpuBuffer::unlockImpl
+		 * @copydoc GpuBufferCore::unlock
 		 */
 		virtual void unlock();
 
 		/**
-		 * @copydoc GpuBuffer::readData
+		 * @copydoc GpuBufferCore::readData
 		 */
         virtual void readData(UINT32 offset, UINT32 length, void* pDest);
 
 		/**
-		 * @copydoc GpuBuffer::writeData
+		 * @copydoc GpuBufferCore::writeData
 		 */
         virtual void writeData(UINT32 offset, UINT32 length, const void* pSource,
 				BufferWriteType writeFlags = BufferWriteType::Normal);
 
 		/**
-		 * @copydoc GpuBuffer::copyData
+		 * @copydoc GpuBufferCore::copyData
 		 */
-		void copyData(GpuBuffer& srcBuffer, UINT32 srcOffset, 
+		void copyData(GpuBufferCore& srcBuffer, UINT32 srcOffset,
 			UINT32 dstOffset, UINT32 length, bool discardWholeBuffer = false);
 
 	protected:
-		friend class GLHardwareBufferManager;
+		friend class GLHardwareBufferCoreManager;
 
-		GLGpuBuffer(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
+		GLGpuBufferCore(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, 
+			GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
 
 		/**
-		 * @copydoc GpuBuffer::initialize_internal
+		 * @copydoc GpuBufferCore::initialize
 		 */
-		void initialize_internal();	
+		void initialize();	
 
 		/**
-		 * @copydoc GpuBuffer::destroy_internal
+		 * @copydoc GpuBufferCore::destroy
 		 */
-		void destroy_internal();	
+		void destroy();	
 
 		/**
-		 * @copydoc GpuBuffer::createView
+		 * @copydoc GpuBufferCore::createView
 		 */
 		virtual GpuBufferView* createView();
 
 		/**
-		 * @copydoc GpuBuffer::destroyView
+		 * @copydoc GpuBufferCore::destroyView
 		 */
 		virtual void destroyView(GpuBufferView* view);
 	};

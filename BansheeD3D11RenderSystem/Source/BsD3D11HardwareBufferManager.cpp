@@ -7,25 +7,6 @@
 
 namespace BansheeEngine
 {
-	D3D11HardwareBufferManager::D3D11HardwareBufferManager(D3D11Device& device)
-		: mDevice(device)
-	{ }
-
-	GpuParamBlockBufferPtr D3D11HardwareBufferManager::createGpuParamBlockBufferImpl()
-	{
-		D3D11GpuParamBlockBuffer* paramBlockBuffer = new (bs_alloc<D3D11GpuParamBlockBuffer, PoolAlloc>()) D3D11GpuParamBlockBuffer();
-
-		return bs_core_ptr<D3D11GpuParamBlockBuffer, PoolAlloc>(paramBlockBuffer);
-	}
-
-	GpuBufferPtr D3D11HardwareBufferManager::createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, 
-		GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
-	{
-		D3D11GpuBuffer* buffer = new (bs_alloc<D3D11GpuBuffer, PoolAlloc>()) D3D11GpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter);
-
-		return bs_core_ptr<D3D11GpuBuffer, PoolAlloc>(buffer);
-	}
-
 	D3D11HardwareBufferCoreManager::D3D11HardwareBufferCoreManager(D3D11Device& device)
 		: mDevice(device)
 	{ }
@@ -48,4 +29,24 @@ namespace BansheeEngine
 		return ret;
 	}
 
+	SPtr<GpuParamBlockBufferCore> D3D11HardwareBufferCoreManager::createGpuParamBlockBufferInternal(UINT32 size, GpuParamBlockUsage usage)
+	{
+		D3D11GpuParamBlockBufferCore* paramBlockBuffer = new (bs_alloc<D3D11GpuParamBlockBufferCore, GenAlloc>()) D3D11GpuParamBlockBufferCore(size, usage);
+
+		SPtr<GpuParamBlockBufferCore> paramBlockBufferPtr = bs_shared_ptr<D3D11GpuParamBlockBufferCore, GenAlloc>(paramBlockBuffer);
+		paramBlockBufferPtr->_setThisPtr(paramBlockBufferPtr);
+
+		return paramBlockBufferPtr;
+	}
+
+	SPtr<GpuBufferCore> D3D11HardwareBufferCoreManager::createGpuBufferInternal(UINT32 elementCount, UINT32 elementSize,
+		GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
+	{
+		D3D11GpuBufferCore* buffer = new (bs_alloc<D3D11GpuBufferCore, GenAlloc>()) D3D11GpuBufferCore(elementCount, elementSize, type, usage, randomGpuWrite, useCounter);
+
+		SPtr<D3D11GpuBufferCore> bufferPtr = bs_shared_ptr<D3D11GpuBufferCore, GenAlloc>(buffer);
+		bufferPtr->_setThisPtr(bufferPtr);
+
+		return bufferPtr;
+	}
 }

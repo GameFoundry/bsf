@@ -51,7 +51,7 @@ namespace BansheeEngine
 		 *			a set of parameters describing the view to create.
 		 *			Must be called right after construction.
 		 */
-		virtual void initialize(GpuBufferPtr buffer, GPU_BUFFER_DESC& desc);
+		virtual void initialize(const SPtr<GpuBufferCore>& buffer, GPU_BUFFER_DESC& desc);
 
 		/**
 		 * @brief	Returns a descriptor structure used for creating the view.
@@ -61,7 +61,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns the buffer this view was created for.
 		 */
-		GpuBufferPtr getBuffer() const { return mBuffer; }
+		SPtr<GpuBufferCore> getBuffer() const { return mBuffer; }
 
 		/**
 		 * @brief	Returns index of first element in the buffer that this view
@@ -94,6 +94,6 @@ namespace BansheeEngine
 
 	protected:
 		GPU_BUFFER_DESC mDesc;
-		GpuBufferPtr mBuffer;
+		SPtr<GpuBufferCore> mBuffer;
 	};
 }

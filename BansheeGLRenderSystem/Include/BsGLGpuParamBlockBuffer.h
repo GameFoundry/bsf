@@ -8,18 +8,18 @@ namespace BansheeEngine
 	/**
 	 * @brief	OpenGL implementation of a GPU parameter buffer (Uniform buffer).
 	 */
-	class BS_RSGL_EXPORT GLGpuParamBlockBuffer : public GpuParamBlockBuffer
+	class BS_RSGL_EXPORT GLGpuParamBlockBufferCore : public GpuParamBlockBufferCore
 	{
 	public:
-		GLGpuParamBlockBuffer();
+		GLGpuParamBlockBufferCore(UINT32 size, GpuParamBlockUsage usage);
 
 		/**
-		 * @copydoc GpuParamBlockBuffer::writeAll.
+		 * @copydoc GpuParamBlockBufferCore::writeData
 		 */
 		void writeData(const UINT8* data);
 
 		/**
-		 * @copydoc GpuParamBlockBuffer::readAll.
+		 * @copydoc GpuParamBlockBufferCore::readData
 		 */
 		void readData(UINT8* data) const;
 
@@ -29,14 +29,14 @@ namespace BansheeEngine
 		GLuint getGLHandle() const { return mGLHandle; }
 	protected:
 		/**
-		 * @copydoc CoreGpuObject::initialize_internal.
+		 * @copydoc GpuParamBlockBufferCore::initialize
 		 */
-		virtual void initialize_internal();
+		virtual void initialize();
 
 		/**
-		 * @copydoc CoreGpuObject::destroy_internal.
+		 * @copydoc GpuParamBlockBufferCore::destroy
 		 */
-		virtual void destroy_internal();
+		virtual void destroy();
 
 	private:
 		GLuint mGLHandle;

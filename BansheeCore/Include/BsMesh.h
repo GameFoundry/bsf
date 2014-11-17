@@ -168,7 +168,7 @@ namespace BansheeEngine
 		void updateBounds(const MeshData& meshData);
 
 		/**
-		 * @copydoc	RenderTarget::createCore
+		 * @copydoc	CoreObject::createCore
 		 */
 		SPtr<CoreObjectCore> createCore() const;
 

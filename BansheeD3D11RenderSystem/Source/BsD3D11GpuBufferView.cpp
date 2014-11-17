@@ -22,11 +22,11 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_ResourceView);
 	}
 
-	void D3D11GpuBufferView::initialize(GpuBufferPtr buffer, GPU_BUFFER_DESC& desc)
+	void D3D11GpuBufferView::initialize(const SPtr<GpuBufferCore>& buffer, GPU_BUFFER_DESC& desc)
 	{
 		GpuBufferView::initialize(buffer, desc);
 
-		D3D11GpuBuffer* d3d11GpuBuffer = static_cast<D3D11GpuBuffer*>(buffer.get());
+		D3D11GpuBufferCore* d3d11GpuBuffer = static_cast<D3D11GpuBufferCore*>(buffer.get());
 
 		if((desc.usage & GVU_RANDOMWRITE) != 0)
 			mUAV = createUAV(d3d11GpuBuffer, desc.firstElement, desc.numElements, desc.useCounter);
@@ -40,22 +40,24 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_ResourceView);
 	}
 
-	ID3D11ShaderResourceView* D3D11GpuBufferView::createSRV(D3D11GpuBuffer* buffer, UINT32 firstElement, UINT32 elementWidth, UINT32 numElements)
+	ID3D11ShaderResourceView* D3D11GpuBufferView::createSRV(D3D11GpuBufferCore* buffer, UINT32 firstElement, UINT32 elementWidth, UINT32 numElements)
 	{
-		if(buffer->getType() == GBT_APPENDCONSUME)
+		const GpuBufferProperties& props = buffer->getProperties();
+
+		if (props.getType() == GBT_APPENDCONSUME)
 			BS_EXCEPT(InvalidParametersException, "Cannot create ShaderResourceView for an append/consume buffer.");
 
 		D3D11_SHADER_RESOURCE_VIEW_DESC desc;
 		ZeroMemory(&desc, sizeof(desc));
 
-		if(buffer->getType() == GBT_STRUCTURED)
+		if (props.getType() == GBT_STRUCTURED)
 		{
 			desc.Format = DXGI_FORMAT_UNKNOWN;
 			desc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
 			desc.Buffer.ElementOffset = firstElement * elementWidth;
 			desc.Buffer.ElementWidth = elementWidth;
 		}
-		else if(buffer->getType() == GBT_RAW)
+		else if (props.getType() == GBT_RAW)
 		{
 			desc.Format = DXGI_FORMAT_R32_TYPELESS;
 			desc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX;
@@ -63,7 +65,7 @@ namespace BansheeEngine
 			desc.BufferEx.FirstElement = firstElement;
 			desc.BufferEx.NumElements = numElements;
 		}
-		else if(buffer->getType() == GBT_INDIRECTARGUMENT)
+		else if (props.getType() == GBT_INDIRECTARGUMENT)
 		{
 			desc.Format = DXGI_FORMAT_R32_UINT;
 			desc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
@@ -85,14 +87,16 @@ namespace BansheeEngine
 		return srv;
 	}
 
-	ID3D11UnorderedAccessView* D3D11GpuBufferView::createUAV(D3D11GpuBuffer* buffer, UINT32 firstElement, UINT32 numElements, bool useCounter)
+	ID3D11UnorderedAccessView* D3D11GpuBufferView::createUAV(D3D11GpuBufferCore* buffer, UINT32 firstElement, UINT32 numElements, bool useCounter)
 	{
+		const GpuBufferProperties& props = buffer->getProperties();
+
 		D3D11_UNORDERED_ACCESS_VIEW_DESC desc;
 		ZeroMemory(&desc, sizeof(desc));
 
 		desc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
 
-		if(buffer->getType() == GBT_STRUCTURED)
+		if (props.getType() == GBT_STRUCTURED)
 		{
 			desc.Format = DXGI_FORMAT_UNKNOWN;
 			desc.Buffer.FirstElement = firstElement;
@@ -103,21 +107,21 @@ namespace BansheeEngine
 			else
 				desc.Buffer.Flags = 0;
 		}
-		else if(buffer->getType() == GBT_RAW)
+		else if (props.getType() == GBT_RAW)
 		{
 			desc.Format = DXGI_FORMAT_R32_TYPELESS;
 			desc.Buffer.Flags = D3D11_BUFFER_UAV_FLAG_RAW;
 			desc.Buffer.FirstElement = firstElement;
 			desc.Buffer.NumElements = numElements;
 		}
-		else if(buffer->getType() == GBT_INDIRECTARGUMENT)
+		else if (props.getType() == GBT_INDIRECTARGUMENT)
 		{
 			desc.Format = DXGI_FORMAT_R32_UINT;
 			desc.Buffer.Flags = 0;
 			desc.Buffer.FirstElement = firstElement;
 			desc.Buffer.NumElements = numElements;
 		}
-		else if(buffer->getType() == GBT_APPENDCONSUME)
+		else if (props.getType() == GBT_APPENDCONSUME)
 		{
 			desc.Format = DXGI_FORMAT_UNKNOWN;
 			desc.Buffer.Flags = D3D11_BUFFER_UAV_FLAG_APPEND;

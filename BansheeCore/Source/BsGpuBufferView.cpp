@@ -32,7 +32,7 @@ namespace BansheeEngine
 
 	}
 
-	void GpuBufferView::initialize(GpuBufferPtr buffer, GPU_BUFFER_DESC& desc)
+	void GpuBufferView::initialize(const SPtr<GpuBufferCore>& buffer, GPU_BUFFER_DESC& desc)
 	{
 		mBuffer = buffer;
 		mDesc = desc;

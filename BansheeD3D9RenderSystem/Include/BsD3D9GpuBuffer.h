@@ -10,56 +10,57 @@ namespace BansheeEngine
 	 *			is just a dummy in order to conform to the interface
 	 *			as DX9 supports no such buffers.
 	 */
-	class BS_D3D9_EXPORT D3D9GpuBuffer : public GpuBuffer
+	class BS_D3D9_EXPORT D3D9GpuBufferCore : public GpuBufferCore
 	{
 	public:
-        ~D3D9GpuBuffer();
+		~D3D9GpuBufferCore();
 
 		/**
-		 * @copydoc GenericBuffer::lockImpl
+		 * @copydoc GpuBufferCore::lock
 		 */
 		virtual void* lock(UINT32 offset, UINT32 length, GpuLockOptions options);
 
 		/**
-		 * @copydoc GenericBuffer::unlockImpl
+		 * @copydoc GpuBufferCore::unlock
 		 */
 		virtual void unlock();
 
 		/**
-		* @copydoc GenericBuffer::readData
-		*/
+		 * @copydoc GpuBufferCore::readData
+		 */
         virtual void readData(UINT32 offset, UINT32 length, void* pDest);
 
 		/**
-		* @copydoc GenericBuffer::writeData
-		*/
+		 * @copydoc GpuBufferCore::writeData
+		 */
         virtual void writeData(UINT32 offset, UINT32 length, const void* pSource,
 				BufferWriteType writeFlags = BufferWriteType::Normal);
 
 		/**
-		* @copydoc GenericBuffer::copyData
-		*/
-		void copyData(GpuBuffer& srcBuffer, UINT32 srcOffset, 
+		 * @copydoc GpuBufferCore::copyData
+		 */
+		void copyData(GpuBufferCore& srcBuffer, UINT32 srcOffset,
 			UINT32 dstOffset, UINT32 length, bool discardWholeBuffer = false);
 
 	protected:
-		friend class D3D9HardwareBufferManager;
+		friend class D3D9HardwareBufferCoreManager;
 
-		D3D9GpuBuffer(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
+		D3D9GpuBufferCore(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, GpuBufferUsage usage,
+			bool randomGpuWrite = false, bool useCounter = false);
 
 		/**
-		 * @copydoc	GpuBuffer::createView
+		 * @copydoc	GpuBufferCore::createView
 		 */
 		virtual GpuBufferView* createView();
 
 		/**
-		 * @copydoc	GpuBuffer::destroyView
+		 * @copydoc	GpuBufferCore::destroyView
 		 */
 		virtual void destroyView(GpuBufferView* view);
 
 		/**
-		 * @copydoc GpuBuffer::initialize_internal()
+		 * @copydoc GpuBufferCore::initialize
 		 */
-		void initialize_internal();	
+		void initialize();	
 	};
 }

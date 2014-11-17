@@ -48,19 +48,19 @@ namespace BansheeEngine
 
 	GpuParamBlockBufferPtr HardwareBufferManager::createGpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage)
 	{
-		GpuParamBlockBufferPtr paramBlockPtr = createGpuParamBlockBufferImpl();
+		GpuParamBlockBufferPtr paramBlockPtr = bs_core_ptr<GpuParamBlockBuffer, GenAlloc>(new (bs_alloc<GpuParamBlockBuffer>()) GpuParamBlockBuffer(size, usage));
 		paramBlockPtr->_setThisPtr(paramBlockPtr);
-		paramBlockPtr->initialize(size, usage);
-
+		paramBlockPtr->initialize();
 		return paramBlockPtr;
 	}
 
 	GpuBufferPtr HardwareBufferManager::createGpuBuffer(UINT32 elementCount, UINT32 elementSize, 
 		GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
 	{
-		GpuBufferPtr gbuf = createGpuBufferImpl(elementCount, elementSize, type, usage, randomGpuWrite, useCounter);
+		GpuBufferPtr gbuf = bs_core_ptr<GpuBuffer, GenAlloc>(new (bs_alloc<GpuBuffer>()) GpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter));
 		gbuf->_setThisPtr(gbuf);
 		gbuf->initialize();
+
 		return gbuf;
 	}
 
@@ -89,6 +89,23 @@ namespace BansheeEngine
 		declPtr->initialize();
 
 		return declPtr;
+	}
+
+	SPtr<GpuParamBlockBufferCore> HardwareBufferCoreManager::createGpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage)
+	{
+		SPtr<GpuParamBlockBufferCore> paramBlockPtr = createGpuParamBlockBufferInternal(size, usage);
+		paramBlockPtr->initialize();
+
+		return paramBlockPtr;
+	}
+
+	SPtr<GpuBufferCore> HardwareBufferCoreManager::createGpuBuffer(UINT32 elementCount, UINT32 elementSize,
+		GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
+	{
+		SPtr<GpuBufferCore> gbuf = createGpuBufferInternal(elementCount, elementSize, type, usage, randomGpuWrite, useCounter);
+		gbuf->initialize();
+
+		return gbuf;
 	}
 
 	SPtr<VertexDeclarationCore> HardwareBufferCoreManager::createVertexDeclarationInternal(const List<VertexElement>& elements)

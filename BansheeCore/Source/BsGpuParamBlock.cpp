@@ -84,7 +84,7 @@ namespace BansheeEngine
 
 	void GpuParamBlock::uploadToBuffer(const GpuParamBlockBufferPtr& buffer)
 	{
-		buffer->writeData(mData);
+		buffer->getCore()->writeData(mData);
 		mDirty = false;
 	}
 }

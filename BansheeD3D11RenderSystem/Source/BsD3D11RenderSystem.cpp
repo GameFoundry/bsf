@@ -111,7 +111,7 @@ namespace BansheeEngine
 		TextureCoreManager::startUp<D3D11TextureCoreManager>();
 
 		// Create hardware buffer manager		
-		HardwareBufferManager::startUp<D3D11HardwareBufferManager>(std::ref(*mDevice));
+		HardwareBufferManager::startUp();
 		HardwareBufferCoreManager::startUp<D3D11HardwareBufferCoreManager>(std::ref(*mDevice));
 
 		// Create render window manager
@@ -604,7 +604,8 @@ namespace BansheeEngine
 
 			if(currentBlockBuffer != nullptr)
 			{
-				const D3D11GpuParamBlockBuffer* d3d11paramBlockBuffer = static_cast<const D3D11GpuParamBlockBuffer*>(currentBlockBuffer.get());
+				const D3D11GpuParamBlockBufferCore* d3d11paramBlockBuffer = 
+					static_cast<const D3D11GpuParamBlockBufferCore*>(currentBlockBuffer->getCore().get());
 				bufferArray[0] = d3d11paramBlockBuffer->getD3D11Buffer();
 			}
 			else

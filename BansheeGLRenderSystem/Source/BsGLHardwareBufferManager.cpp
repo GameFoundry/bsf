@@ -9,17 +9,6 @@
 
 namespace BansheeEngine 
 {
-	GpuParamBlockBufferPtr GLHardwareBufferManager::createGpuParamBlockBufferImpl()
-	{
-		return bs_core_ptr<GLGpuParamBlockBuffer, PoolAlloc>(new (bs_alloc<GLGpuParamBlockBuffer, PoolAlloc>()) GLGpuParamBlockBuffer());
-	}
-
-	GpuBufferPtr GLHardwareBufferManager::createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, 
-		GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
-	{
-		return bs_core_ptr<GLGpuBuffer, PoolAlloc>(new (bs_alloc<GLGpuBuffer, PoolAlloc>()) GLGpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter));
-	}
-
 	SPtr<VertexBufferCore> GLHardwareBufferCoreManager::createVertexBufferInternal(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
 	{
 		SPtr<GLVertexBufferCore> ret = bs_shared_ptr<GLVertexBufferCore>(vertexSize, numVerts, usage, streamOut);
@@ -34,6 +23,27 @@ namespace BansheeEngine
 		ret->_setThisPtr(ret);
 
 		return ret;
+	}
+
+	SPtr<GpuParamBlockBufferCore> GLHardwareBufferCoreManager::createGpuParamBlockBufferInternal(UINT32 size, GpuParamBlockUsage usage)
+	{
+		GLGpuParamBlockBufferCore* paramBlockBuffer = new (bs_alloc<GLGpuParamBlockBufferCore, GenAlloc>()) GLGpuParamBlockBufferCore(size, usage);
+
+		SPtr<GpuParamBlockBufferCore> paramBlockBufferPtr = bs_shared_ptr<GLGpuParamBlockBufferCore, GenAlloc>(paramBlockBuffer);
+		paramBlockBufferPtr->_setThisPtr(paramBlockBufferPtr);
+
+		return paramBlockBufferPtr;
+	}
+
+	SPtr<GpuBufferCore> GLHardwareBufferCoreManager::createGpuBufferInternal(UINT32 elementCount, UINT32 elementSize,
+		GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
+	{
+		GLGpuBufferCore* buffer = new (bs_alloc<GLGpuBufferCore, GenAlloc>()) GLGpuBufferCore(elementCount, elementSize, type, usage, randomGpuWrite, useCounter);
+
+		SPtr<GpuBufferCore> bufferPtr = bs_shared_ptr<GLGpuBufferCore, GenAlloc>(buffer);
+		bufferPtr->_setThisPtr(bufferPtr);
+
+		return bufferPtr;
 	}
 
     GLenum GLHardwareBufferCoreManager::getGLUsage(GpuBufferUsage usage)

@@ -153,6 +153,8 @@ namespace BansheeEngine
 	class TextureCore;
 	class MeshHeapCore;
 	class VertexDeclarationCore;
+	class GpuBufferCore;
+	class GpuParamBlockBufferCore;
 	// Asset import
 	class SpecificImporter;
 	class Importer;

@@ -4,7 +4,6 @@ TODO - CoreObject refactor:
 Resource
  - Material -> Remove MaterialProxy
  - Shader -> Remove ShaderProxy
-VertexDeclaration
 GpuBuffer
 GpuParamBlockBuffer
 

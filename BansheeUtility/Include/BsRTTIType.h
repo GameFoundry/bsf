@@ -1042,4 +1042,21 @@ namespace BansheeEngine
 
 		return object->getTypeId() == T::getRTTIStatic()->getRTTIId();
 	}
+
+	/**
+	 * @brief	Creates a new object just from its type ID.
+	 */
+	std::shared_ptr<IReflectable> rtti_create(UINT32 rttiId);
+
+	/**
+	 * @brief	Checks is the current object a subclass of some type.
+	 */
+	template<class T>
+	bool rtti_is_subclass(IReflectable* object)
+	{
+		static_assert((std::is_base_of<BansheeEngine::IReflectable, T>::value),
+			"Invalid data type for type checking. It needs to derive from BansheeEngine::IReflectable.");
+
+		return object->isDerivedFrom(T::getRTTIStatic());
+	}
 }

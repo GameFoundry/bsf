@@ -95,7 +95,7 @@ namespace BansheeEngine
 		mDeviceManager = bs_new<D3D9DeviceManager>();
 
 		// Also create hardware buffer manager		
-		HardwareBufferManager::startUp<D3D9HardwareBufferManager>();
+		HardwareBufferManager::startUp();
 		HardwareBufferCoreManager::startUp<D3D9HardwareBufferCoreManager>();
 
 		// Create & register HLSL factory		
@@ -313,7 +313,7 @@ namespace BansheeEngine
 				GpuParamBlockBufferPtr paramBlock = bindableParams->getParamBlockBuffer(paramBlockSlot);
 
 				UINT8* data = (UINT8*)bs_alloc<ScratchAlloc>(paramBlock->getSize());
-				paramBlock->readData(data);
+				paramBlock->getCore()->readData(data);
 
 				bufferData[paramBlockSlot] = data;
 			}

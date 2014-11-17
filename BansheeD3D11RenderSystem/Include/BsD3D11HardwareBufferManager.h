@@ -8,29 +8,6 @@ namespace BansheeEngine
 	/**
 	 * @brief	Handles creation of DirectX 11 hardware buffers.
 	 */
-	class BS_D3D11_EXPORT D3D11HardwareBufferManager : public HardwareBufferManager
-	{
-	public:
-		D3D11HardwareBufferManager(D3D11Device& device);
-
-	protected:     
-		/** 
-		 * @copydoc HardwareBufferManager::createGpuParamBlockBufferImpl 
-		 */
-		GpuParamBlockBufferPtr createGpuParamBlockBufferImpl();
-
-		/**
-		 * @copydoc HardwareBufferManager::createGenericBufferImpl
-		 */
-		GpuBufferPtr createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, 
-			GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
-
-		D3D11Device& mDevice;
-	};
-
-	/**
-	 * @brief	Handles creation of DirectX 11 hardware buffers.
-	 */
 	class BS_D3D11_EXPORT D3D11HardwareBufferCoreManager : public HardwareBufferCoreManager
 	{
 	public:
@@ -46,6 +23,17 @@ namespace BansheeEngine
 		 * @copydoc HardwareBufferCoreManager::createIndexBufferImpl
 		 */
 		SPtr<IndexBufferCore> createIndexBufferInternal(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
+
+		/** 
+		 * @copydoc HardwareBufferCoreManager::createGpuParamBlockBufferInternal 
+		 */
+		SPtr<GpuParamBlockBufferCore> createGpuParamBlockBufferInternal(UINT32 size, GpuParamBlockUsage usage = GPBU_DYNAMIC);
+
+		/**
+		 * @copydoc HardwareBufferCoreManager::createGpuBufferInternal
+		 */
+		SPtr<GpuBufferCore> createGpuBufferInternal(UINT32 elementCount, UINT32 elementSize,
+			GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
 
 		D3D11Device& mDevice;
 	};

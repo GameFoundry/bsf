@@ -8,22 +8,6 @@ namespace BansheeEngine
 	/**
 	 * @brief	Manages creation of DX9 hardware buffers.
 	 */
-    class BS_D3D9_EXPORT D3D9HardwareBufferManager : public HardwareBufferManager
-    {
-	protected:     
-		/** @copydoc HardwareBufferManager::createGpuParamBlockBufferImpl */
-		GpuParamBlockBufferPtr createGpuParamBlockBufferImpl();
-
-		/**
-		 * @copydoc HardwareBufferManager::createGenericBufferImpl
-		 */
-		GpuBufferPtr createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, 
-			GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
-    };
-
-	/**
-	 * @brief	Manages creation of DX9 hardware buffers.
-	 */
     class BS_D3D9_EXPORT D3D9HardwareBufferCoreManager : public HardwareBufferCoreManager
     {
 	protected:     
@@ -42,5 +26,15 @@ namespace BansheeEngine
 		 */
 		SPtr<VertexDeclarationCore> createVertexDeclarationInternal(const List<VertexElement>& elements);
 
+		/** 
+		 * @copydoc HardwareBufferCoreManager::createGpuParamBlockBufferInternal 
+		 */
+		SPtr<GpuParamBlockBufferCore> createGpuParamBlockBufferInternal(UINT32 size, GpuParamBlockUsage usage = GPBU_DYNAMIC);
+
+		/**
+		 * @copydoc HardwareBufferCoreManager::createGenericBufferInternal
+		 */
+		SPtr<GpuBufferCore> createGpuBufferInternal(UINT32 elementCount, UINT32 elementSize, 
+			GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
     };
 }

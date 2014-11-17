@@ -75,18 +75,6 @@ namespace BansheeEngine
 		 * @brief	Creates a new vertex declaration from a list of vertex elements.
 		 */
 		virtual VertexDeclarationPtr createVertexDeclaration(const List<VertexElement>& elements);
-
-	protected:
-		/**
-		 * @copydoc	createGpuParamBlockBuffer
-		 */
-		virtual GpuParamBlockBufferPtr createGpuParamBlockBufferImpl() = 0;
-
-		/**
-		 * @copydoc	createGpuBuffer
-		 */
-		virtual GpuBufferPtr createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, GpuBufferUsage usage, 
-			bool randomGpuWrite = false, bool useCounter = false) = 0;
 	};
 
 	/**
@@ -114,10 +102,23 @@ namespace BansheeEngine
 		 */
 		virtual SPtr<VertexDeclarationCore> createVertexDeclaration(const List<VertexElement>& elements);
 
+		/**
+		 * @copydoc	HardwareBufferManager::createGpuParamBlockBuffer
+		 */
+		virtual SPtr<GpuParamBlockBufferCore> createGpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage = GPBU_DYNAMIC);
+
+		/**
+		 * @copydoc	HardwareBufferManager::createGpuBuffer
+		 */
+		virtual SPtr<GpuBufferCore> createGpuBuffer(UINT32 elementCount, UINT32 elementSize, 
+			GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
+
 	protected:
 		friend class IndexBuffer;
 		friend class VertexBuffer;
 		friend class VertexDeclaration;
+		friend class GpuParamBlockBuffer;
+		friend class GpuBuffer;
 
 		/**
 		 * @copydoc	createVertexBuffer
@@ -128,6 +129,17 @@ namespace BansheeEngine
 		 * @copydoc	createIndexBuffer
 		 */
 		virtual SPtr<IndexBufferCore> createIndexBufferInternal(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage) = 0;
+
+		/**
+		 * @copydoc	createGpuParamBlockBuffer
+		 */
+		virtual SPtr<GpuParamBlockBufferCore> createGpuParamBlockBufferInternal(UINT32 size, GpuParamBlockUsage usage = GPBU_DYNAMIC) = 0;
+
+		/**
+		 * @copydoc	createGpuBuffer
+		 */
+		virtual SPtr<GpuBufferCore> createGpuBufferInternal(UINT32 elementCount, UINT32 elementSize,
+			GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false) = 0;
 
 		/**
 		 * @copydoc	createVertexDeclaration

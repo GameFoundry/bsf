@@ -38,8 +38,6 @@ namespace BansheeEngine
 		ID3D11Buffer* getD3DVertexBuffer() const { return mBuffer->getD3DBuffer(); }		
 
 	protected: 
-		friend class D3D11HardwareBufferManager;
-
 		/**
 		* @copydoc VertexBufferCore::lockImpl
 		 */

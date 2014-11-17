@@ -6,30 +6,17 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Represents a GPU parameter block buffer. Parameter block buffers
-	 *			are bound to GPU programs which then fetch parameters from those buffers.
+	 * @brief	Core thread version of a GPU param block buffer.
 	 *
-	 *			Writing or reading from this buffer will translate directly to API calls
-	 *			that update the GPU.
-	 * 			
+	 * @see		GpuParamBlockBuffer
+	 *
 	 * @note	Core thread only.
 	 */
-	class BS_CORE_EXPORT GpuParamBlockBuffer : public CoreObject
+	class BS_CORE_EXPORT GpuParamBlockBufferCore : public CoreObjectCore
 	{
 	public:
-		GpuParamBlockBuffer();
-		virtual ~GpuParamBlockBuffer();
-
-		/**
-		 * @brief	Initializes a buffer with the specified size in bytes and usage.
-		 *			Specify dynamic usage if you plan on modifying the buffer often,
-		 *			otherwise specify static usage.
-		 *
-		 * @see		CoreObject::initialize
-		 * 
-		 * @note	Must be called right after construction.
-		 */
-		void initialize(UINT32 size, GpuParamBlockUsage usage);
+		GpuParamBlockBufferCore(UINT32 size, GpuParamBlockUsage usage);
+		virtual ~GpuParamBlockBufferCore() { }
 
 		/**
 		 * @brief	Writes all of the specified data to the buffer.
@@ -52,6 +39,31 @@ namespace BansheeEngine
 		 */
 		UINT32 getSize() const { return mSize; }
 
+	protected:
+		GpuParamBlockUsage mUsage;
+		UINT32 mSize;
+	};
+
+	/**
+	 * @brief	Represents a GPU parameter block buffer. Parameter block buffers
+	 *			are bound to GPU programs which then fetch parameters from those buffers.
+	 *
+	 *			Writing or reading from this buffer will translate directly to API calls
+	 *			that update the GPU.
+	 * 			
+	 * @note	Sim thread only.
+	 */
+	class BS_CORE_EXPORT GpuParamBlockBuffer : public CoreObject
+	{
+	public:
+		GpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage);
+		virtual ~GpuParamBlockBuffer() { }
+
+		/**
+		 * @brief	Returns the size of the buffer in bytes.
+		 */
+		UINT32 getSize() const { return mSize; }
+
 		/**
 		 * @brief	Returns	a parameter block buffer which is used for caching 
 		 *			the parameter information. Essentially a CPU copy of the GPU buffer.
@@ -62,11 +74,22 @@ namespace BansheeEngine
 		GpuParamBlockPtr getParamBlock() const { return mParamBlock; }
 
 		/**
+		 * @brief	Retrieves a core implementation of a GPU param block buffer usable only from the
+		 *			core thread.
+		 */
+		SPtr<GpuParamBlockBufferCore> getCore() const;
+
+		/**
 		 * @copydoc	HardwareBufferManager::createGpuParamBlockBuffer
 		 */
 		static GpuParamBlockBufferPtr create(UINT32 size, GpuParamBlockUsage usage = GPBU_DYNAMIC);
 
 	protected:
+		/**
+		 * @copydoc	CoreObject::createCore
+		 */
+		SPtr<CoreObjectCore> createCore() const;
+
 		GpuParamBlockUsage mUsage;
 		UINT32 mSize;
 
@@ -77,18 +100,18 @@ namespace BansheeEngine
 	 * @brief	Implementation of a GpuParamBlock buffer that doesn't use a GPU buffer
 	 *			for storage. Used with APIs that do not support GPU parameter buffers.
 	 */
-	class BS_CORE_EXPORT GenericGpuParamBlockBuffer : public GpuParamBlockBuffer
+	class BS_CORE_EXPORT GenericGpuParamBlockBufferCore : public GpuParamBlockBufferCore
 	{
 	public:
-		GenericGpuParamBlockBuffer();
+		GenericGpuParamBlockBufferCore(UINT32 size, GpuParamBlockUsage usage);
 
 		/**
-		 * @copydoc	GpuParamBlockBuffer::writeData
+		 * @copydoc	GpuParamBlockBufferCore::writeData
 		 */
 		void writeData(const UINT8* data);
 
 		/**
-		 * @copydoc GpuParamBlockBuffer::readData.
+		 * @copydoc GpuParamBlockBufferCore::readData.
 		 */
 		void readData(UINT8* data) const;
 
@@ -96,13 +119,13 @@ namespace BansheeEngine
 		UINT8* mData;
 
 		/**
-		 * @copydoc CoreObject::initialize_internal.
+		 * @copydoc CoreObjectCore::initialize
 		 */
-		virtual void initialize_internal();
+		virtual void initialize();
 
 		/**
-		 * @copydoc CoreObject::destroy_internal.
+		 * @copydoc CoreObjectCore::destroy
 		 */
-		virtual void destroy_internal();
+		virtual void destroy();
 	};
 }

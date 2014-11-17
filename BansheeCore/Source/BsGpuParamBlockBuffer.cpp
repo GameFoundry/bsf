@@ -4,42 +4,42 @@
 
 namespace BansheeEngine
 {
-	GpuParamBlockBuffer::GpuParamBlockBuffer()
-		:mSize(0), mUsage(GPBU_DYNAMIC)
+	GpuParamBlockBufferCore::GpuParamBlockBufferCore(UINT32 size, GpuParamBlockUsage usage)
+		:mSize(size), mUsage(usage)
 	{
-
 	}
 
-	GpuParamBlockBuffer::~GpuParamBlockBuffer()
+	GpuParamBlockBuffer::GpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage)
+		:mSize(size), mUsage(usage)
 	{
-
-	}
-
-	void GpuParamBlockBuffer::initialize(UINT32 size, GpuParamBlockUsage usage)
-	{
-		mSize = size;
-		mUsage = usage;
-
 		mParamBlock = bs_shared_ptr<GpuParamBlock>(size);
-
-		CoreObject::initialize();
 	}
 
-	GenericGpuParamBlockBuffer::GenericGpuParamBlockBuffer()
-		:mData(nullptr)
+	SPtr<GpuParamBlockBufferCore> GpuParamBlockBuffer::getCore() const
+	{
+		return std::static_pointer_cast<GpuParamBlockBufferCore>(mCoreSpecific);
+	}
+
+	SPtr<CoreObjectCore> GpuParamBlockBuffer::createCore() const
+	{
+		return HardwareBufferCoreManager::instance().createGpuParamBlockBufferInternal(mSize, mUsage);
+	}
+
+	GenericGpuParamBlockBufferCore::GenericGpuParamBlockBufferCore(UINT32 size, GpuParamBlockUsage usage)
+		:GpuParamBlockBufferCore(size, usage), mData(nullptr)
 	{ }
 
-	void GenericGpuParamBlockBuffer::writeData(const UINT8* data)
+	void GenericGpuParamBlockBufferCore::writeData(const UINT8* data)
 	{
 		memcpy(mData, data, mSize);
 	}
 
-	void GenericGpuParamBlockBuffer::readData(UINT8* data) const
+	void GenericGpuParamBlockBufferCore::readData(UINT8* data) const
 	{
 		memcpy(data, mData, mSize);
 	}
 
-	void GenericGpuParamBlockBuffer::initialize_internal()
+	void GenericGpuParamBlockBufferCore::initialize()
 	{
 		if (mSize > 0)
 			mData = (UINT8*)bs_alloc<ScratchAlloc>(mSize);
@@ -48,15 +48,15 @@ namespace BansheeEngine
 
 		memset(mData, 0, mSize);
 
-		GpuParamBlockBuffer::initialize_internal();
+		GpuParamBlockBufferCore::initialize();
 	}
 
-	void GenericGpuParamBlockBuffer::destroy_internal()
+	void GenericGpuParamBlockBufferCore::destroy()
 	{
 		if(mData != nullptr)
 			bs_free<ScratchAlloc>(mData);
 
-		GpuParamBlockBuffer::destroy_internal();
+		GpuParamBlockBufferCore::destroy();
 	}
 
 	static GpuParamBlockBufferPtr create(UINT32 size, GpuParamBlockUsage usage)

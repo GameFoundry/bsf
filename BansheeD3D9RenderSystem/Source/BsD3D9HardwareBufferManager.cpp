@@ -8,19 +8,6 @@
 
 namespace BansheeEngine 
 {
-	GpuParamBlockBufferPtr D3D9HardwareBufferManager::createGpuParamBlockBufferImpl()
-	{
-		GpuParamBlockBuffer* paramBlockBuffer = new (bs_alloc<GenericGpuParamBlockBuffer, PoolAlloc>()) GenericGpuParamBlockBuffer();
-		return bs_core_ptr<GpuParamBlockBuffer, PoolAlloc>(paramBlockBuffer);
-	}
-
-	GpuBufferPtr D3D9HardwareBufferManager::createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, 
-		GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
-	{
-		D3D9GpuBuffer* buffer = new (bs_alloc<D3D9GpuBuffer, PoolAlloc>()) D3D9GpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter);
-		return bs_core_ptr<D3D9GpuBuffer, PoolAlloc>(buffer);
-	}
-
 	SPtr<VertexBufferCore> D3D9HardwareBufferCoreManager::createVertexBufferInternal(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
 	{
 		assert(numVerts > 0);
@@ -49,5 +36,26 @@ namespace BansheeEngine
 		declPtr->_setThisPtr(declPtr);
 
 		return declPtr;
+	}
+
+	SPtr<GpuParamBlockBufferCore> D3D9HardwareBufferCoreManager::createGpuParamBlockBufferInternal(UINT32 size, GpuParamBlockUsage usage)
+	{
+		GenericGpuParamBlockBufferCore* paramBlockBuffer = new (bs_alloc<GenericGpuParamBlockBufferCore, GenAlloc>()) GenericGpuParamBlockBufferCore(size, usage);
+
+		SPtr<GpuParamBlockBufferCore> paramBlockBufferPtr = bs_shared_ptr<GenericGpuParamBlockBufferCore, GenAlloc>(paramBlockBuffer);
+		paramBlockBufferPtr->_setThisPtr(paramBlockBufferPtr);
+
+		return paramBlockBufferPtr;
+	}
+
+	SPtr<GpuBufferCore> D3D9HardwareBufferCoreManager::createGpuBufferInternal(UINT32 elementCount, UINT32 elementSize,
+		GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
+	{
+		D3D9GpuBufferCore* buffer = new (bs_alloc<D3D9GpuBufferCore, GenAlloc>()) D3D9GpuBufferCore(elementCount, elementSize, type, usage, randomGpuWrite, useCounter);
+
+		SPtr<GpuBufferCore> bufferPtr = bs_shared_ptr<D3D9GpuBufferCore, GenAlloc>(buffer);
+		bufferPtr->_setThisPtr(bufferPtr);
+
+		return bufferPtr;
 	}
 }

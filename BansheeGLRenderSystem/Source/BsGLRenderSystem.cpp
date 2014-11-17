@@ -298,19 +298,20 @@ namespace BansheeEngine
 			if(paramBlockBuffer == nullptr)
 				continue;
 
+			SPtr<GpuParamBlockBufferCore> paramBlockBufferCore = paramBlockBuffer->getCore();
 			if(iter->second.slot == 0)
 			{
 				// 0 means uniforms are not in block, in which case we handle it specially
 				if (uniformBufferData == nullptr && paramBlockBuffer->getSize() > 0)
 				{
 					uniformBufferData = (UINT8*)bs_alloc<ScratchAlloc>(paramBlockBuffer->getSize());
-					paramBlockBuffer->readData(uniformBufferData);
+					paramBlockBufferCore->readData(uniformBufferData);
 				}
 
 				continue;
 			}
 
-			const GLGpuParamBlockBuffer* glParamBlockBuffer = static_cast<const GLGpuParamBlockBuffer*>(paramBlockBuffer.get());
+			const GLGpuParamBlockBufferCore* glParamBlockBuffer = static_cast<const GLGpuParamBlockBufferCore*>(paramBlockBufferCore.get());
 
 			UINT32 globalBlockBinding = getGLUniformBlockBinding(gptype, blockBinding);
 			glUniformBlockBinding(glProgram, iter->second.slot - 1, globalBlockBinding);
@@ -1701,7 +1702,7 @@ namespace BansheeEngine
 		}
 #endif
 
-		HardwareBufferManager::startUp<GLHardwareBufferManager>();
+		HardwareBufferManager::startUp();
 		HardwareBufferCoreManager::startUp<GLHardwareBufferCoreManager>();
 
 		// GPU Program Manager setup
