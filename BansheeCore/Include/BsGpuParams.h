@@ -550,6 +550,11 @@ namespace BansheeEngine
 		 * @copydoc	GpuParamsBase::GpuParamsBase
 		 */
 		GpuParamsCore(const GpuParamDescPtr& paramDesc, bool transposeMatrices);
+
+		/**
+		 * @copydoc	CoreObjectCore::syncToCore
+		 */
+		void syncToCore(const CoreSyncData& data);
 	};
 
 	/**
@@ -595,5 +600,10 @@ namespace BansheeEngine
 		 * @copydoc	CoreObject::createCore
 		 */
 		SPtr<CoreObjectCore> createCore() const;
+
+		/**
+		 * @copydoc	CoreObject::syncToCore
+		 */
+		CoreSyncData syncToCore(FrameAlloc* allocator);
 	};
 }

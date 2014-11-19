@@ -55,15 +55,25 @@ namespace BansheeEngine
 	{
 		Renderer::_onActivated();
 
-		mLitTexHandler = bs_new<LitTexRenderableController>();
+		gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::createController, this));
 	}
 
 	void BansheeRenderer::_onDeactivated()
 	{
 		Renderer::_onDeactivated();
 
-		if (mLitTexHandler != nullptr)
-			bs_delete(mLitTexHandler);
+		gCoreAccessor().queueCommand(std::bind(&destroyController, mLitTexHandler));
+	}
+
+	void BansheeRenderer::createController()
+	{
+		mLitTexHandler = bs_new<LitTexRenderableController>();
+	}
+
+	void BansheeRenderer::destroyController(LitTexRenderableController* controller)
+	{
+		if (controller != nullptr)
+			bs_delete(controller);
 	}
 
 	void BansheeRenderer::addRenderableProxy(RenderableProxyPtr proxy)

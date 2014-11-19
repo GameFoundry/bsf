@@ -23,10 +23,18 @@ namespace BansheeEngine
 	}
 
 	/**
+	 * @brief	Called by the engine when the plugin should be shut down and all of its resources should be released.
+	 */
+	extern "C" BS_SM_EXPORT void shutdownPlugin()
+	{
+		SceneManager::shutDown();
+	}
+
+	/**
 	 * @brief	Exit point of the plugin. Called by the engine just before the plugin is unloaded.
 	 */
 	extern "C" BS_SM_EXPORT void unloadPlugin()
 	{
-		SceneManager::shutDown();
+
 	}
 }

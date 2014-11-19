@@ -122,12 +122,10 @@ namespace BansheeEngine
 		ProfilerGPU::shutDown();
 
 		shutdownPlugin(mSceneManagerPlugin);
-		unloadPlugin(mSceneManagerPlugin);
-		
+
 		RendererManager::shutDown();
 		shutdownPlugin(mRendererPlugin);
-		unloadPlugin(mRendererPlugin);
-
+		
 		Input::shutDown();
 
 		Resources::shutDown();
@@ -137,6 +135,9 @@ namespace BansheeEngine
 		// we need to wait for those objects to get destroyed before continuing.
 		gCoreThread().update();
 		gCoreThread().submitAccessors(true);
+
+		unloadPlugin(mSceneManagerPlugin);
+		unloadPlugin(mRendererPlugin);
 
 		RenderSystemManager::shutDown();
 		GpuProgramCoreManager::shutDown();

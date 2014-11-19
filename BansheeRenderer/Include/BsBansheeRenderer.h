@@ -153,6 +153,16 @@ namespace BansheeEngine
 		 */
 		void cameraRemoved(const CameraHandlerPtr& camera);
 
+		/**
+		 * @brief	Creates a controller used for rendering.
+		 */
+		void createController();
+
+		/**
+		 * @brief	Destroys a controller used for rendering.
+		 */
+		static void destroyController(LitTexRenderableController* controller);
+
 		Vector<RenderableProxyPtr> mDeletedRenderableProxies;
 		Vector<CameraProxyPtr> mDeletedCameraProxies;
 
