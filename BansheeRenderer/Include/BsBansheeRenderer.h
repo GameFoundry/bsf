@@ -123,17 +123,6 @@ namespace BansheeEngine
 		void addToRenderQueue(CameraProxyPtr proxy, RenderQueuePtr renderQueue);
 
 		/**
-		 * @brief	Updates a material proxy with new parameter data. Usually called when parameters are manually
-		 *			updated from the sim thread.
-		 *
-		 * @param	proxy		Material proxy to update.
-		 * @param	dirtyParams	A list of parameter buffers that need updating.
-		 *
-		 * @note	Core thread only.
-		 */
-		void updateMaterialProxy(MaterialProxyPtr proxy, MaterialProxy::DirtyParamsInfo* dirtyParams);
-
-		/**
 		 * @brief	Performs rendering over all camera proxies.
 		 *
 		 * @param	time	Current frame time in milliseconds.

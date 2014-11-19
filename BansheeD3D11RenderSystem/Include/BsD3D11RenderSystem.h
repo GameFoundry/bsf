@@ -139,7 +139,7 @@ namespace BansheeEngine
 		/** 
 		 * @copydoc RenderSystem::bindGpuParams
 		 */
-		void bindGpuParams(GpuProgramType gptype, GpuParamsPtr params);
+		void bindGpuParams(GpuProgramType gptype, const SPtr<GpuParamsCore>& params);
 		
 		/**
 		 * @copydoc	RenderSystem::setClipPlanesImpl

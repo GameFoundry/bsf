@@ -335,7 +335,6 @@
     <ClInclude Include="Include\BsFontRTTI.h" />
     <ClInclude Include="Include\BsGpuBuffer.h" />
     <ClInclude Include="Include\BsGpuBufferView.h" />
-    <ClInclude Include="Include\BsGpuParamBlock.h" />
     <ClInclude Include="Include\BsGpuParamDesc.h" />
     <ClInclude Include="Include\BsGpuParams.h" />
     <ClInclude Include="Include\BsGpuProgInclude.h" />
@@ -451,7 +450,6 @@
     <ClCompile Include="Source\BsGameObjectManager.cpp" />
     <ClCompile Include="Source\BsGpuBuffer.cpp" />
     <ClCompile Include="Source\BsGpuBufferView.cpp" />
-    <ClCompile Include="Source\BsGpuParamBlock.cpp" />
     <ClCompile Include="Source\BsGpuParamBlockBuffer.cpp" />
     <ClCompile Include="Source\BsGpuParams.cpp" />
     <ClCompile Include="Source\BsProfilerGPU.cpp" />

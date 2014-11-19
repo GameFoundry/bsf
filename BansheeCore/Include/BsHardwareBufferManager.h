@@ -5,7 +5,6 @@
 #include "BsVertexBuffer.h"
 #include "BsIndexBuffer.h"
 #include "BsVertexDeclaration.h"
-#include "BsGpuParamBlock.h"
 
 namespace BansheeEngine 
 {

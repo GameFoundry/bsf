@@ -44,14 +44,14 @@ namespace BansheeEngine
 		return mBuffer->getD3DBuffer();
 	}
 
-	void D3D11GpuParamBlockBufferCore::writeData(const UINT8* data)
+	void D3D11GpuParamBlockBufferCore::writeToGPU(const UINT8* data)
 	{
 		mBuffer->writeData(0, mSize, data, BufferWriteType::Discard);
 
 		BS_INC_RENDER_STAT_CAT(ResWrite, RenderStatObject_GpuParamBuffer);
 	}
 
-	void D3D11GpuParamBlockBufferCore::readData(UINT8* data) const
+	void D3D11GpuParamBlockBufferCore::readFromGPU(UINT8* data) const
 	{
 		mBuffer->readData(0, mSize, data);
 

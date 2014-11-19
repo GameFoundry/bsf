@@ -72,7 +72,7 @@ namespace BansheeEngine
 				md.mParamPickingAlphaFragParams->getParam("colorIndex", md.mParamPickingAlphaColor);
 				md.mParamPickingAlphaFragParams->getTextureParam("mainTexture", md.mParamPickingAlphaTexture);
 
-				GpuParamFloat alphaCutoffParam;
+				GpuParamFloatCore alphaCutoffParam;
 				md.mParamPickingAlphaFragParams->getParam("alphaCutoff", alphaCutoffParam);
 				alphaCutoffParam.set(ALPHA_CUTOFF);
 			}
@@ -254,7 +254,7 @@ namespace BansheeEngine
 			{
 				md.mParamPickingAlphaWVP.set(renderable.wvpTransform);
 				md.mParamPickingAlphaColor.set(color);
-				md.mParamPickingAlphaTexture.set(renderable.mainTexture);
+				md.mParamPickingAlphaTexture.set(renderable.mainTexture->getCore());
 
 				rs.bindGpuParams(GPT_VERTEX_PROGRAM, md.mParamPickingAlphaVertParams);
 				rs.bindGpuParams(GPT_FRAGMENT_PROGRAM, md.mParamPickingAlphaFragParams);

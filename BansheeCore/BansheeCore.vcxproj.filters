@@ -375,9 +375,6 @@
     <ClInclude Include="Include\BsGpuParamBlockBuffer.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsGpuParamBlock.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsGpuParam.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
@@ -651,9 +648,6 @@
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGpuParam.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGpuParamBlock.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGpuParamBlockBuffer.cpp">

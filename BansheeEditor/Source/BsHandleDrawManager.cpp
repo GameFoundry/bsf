@@ -188,14 +188,14 @@ namespace BansheeEngine
 		// TODO - Make a better interface when dealing with parameters through proxies?
 		{
 			mWireMaterial.proxy = wireMatProxy;
-			GpuParamsPtr vertParams = wireMatProxy->params[wireMatProxy->passes[0].vertexProgParamsIdx];
+			SPtr<GpuParamsCore> vertParams = wireMatProxy->params[wireMatProxy->passes[0].vertexProgParamsIdx];
 
 			vertParams->getParam("matViewProj", mWireMaterial.mViewProj);
 		}
 
 		{
 			mSolidMaterial.proxy = solidMatProxy;
-			GpuParamsPtr vertParams = solidMatProxy->params[solidMatProxy->passes[0].vertexProgParamsIdx];
+			SPtr<GpuParamsCore> vertParams = solidMatProxy->params[solidMatProxy->passes[0].vertexProgParamsIdx];
 
 			vertParams->getParam("matViewProj", mSolidMaterial.mViewProj);
 		}

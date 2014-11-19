@@ -245,20 +245,6 @@ namespace BansheeEngine
 
 					dirtySceneObjects.push_back(renderableSO);
 				}
-
-				if (!addedNewProxy && proxy != nullptr)
-				{
-					for (UINT32 i = 0; i < (UINT32)proxy->renderableElements.size(); i++)
-					{
-						HMaterial mat = renderable->getMaterial(i);
-						if (mat != nullptr && mat.isLoaded() && mat->_isCoreDirty(MaterialDirtyFlag::Params))
-						{
-							gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::updateMaterialProxy, this,
-								proxy->renderableElements[i]->material, mat->_getDirtyProxyParams(frameAlloc)));
-							mat->_markCoreClean(MaterialDirtyFlag::Params);
-						}
-					}
-				}
 			}
 			else // If inactive we remove the proxy until re-activated
 			{
@@ -357,33 +343,16 @@ namespace BansheeEngine
 				// and only update when they actually change. That might also cause
 				// issue if material/mesh is used both in draw list and a Renderable
 
-				MaterialProxy::DirtyParamsInfo* dirtyParams = nullptr;
-				if (drawOp.material->_isCoreDirty(MaterialDirtyFlag::Params))
-				{
-					dirtyParams = drawOp.material->_getDirtyProxyParams(frameAlloc);
-				}
-
 				if (drawOp.material->_isCoreDirty(MaterialDirtyFlag::Proxy))
 				{
 					drawOp.material->_setActiveProxy(drawOp.material->_createProxy());
 					drawOp.material->_markCoreClean(MaterialDirtyFlag::Proxy);
 					drawOp.material->_markCoreClean(MaterialDirtyFlag::Material);
 				}
-				else
-				{
-					if (dirtyParams != nullptr)
-						drawOp.material->_markCoreClean(MaterialDirtyFlag::Params);
-				}
 
 				MaterialProxyPtr materialProxy = drawOp.material->_getActiveProxy();
 				SPtr<MeshCoreBase> meshCore = drawOp.mesh->getCore();
 				SubMesh subMesh = meshCore->getProperties().getSubMesh(drawOp.submeshIdx);
-
-				if (dirtyParams != nullptr)
-				{
-					gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::updateMaterialProxy, this,
-						materialProxy, dirtyParams));
-				}
 
 				float distanceToCamera = (cameraSO->getPosition() - drawOp.worldPosition).length();
 				renderQueue->add(materialProxy, meshCore, subMesh, distanceToCamera);
@@ -399,29 +368,6 @@ namespace BansheeEngine
 	{
 		RenderQueuePtr cameraRenderQueue = proxy->renderQueue;
 		cameraRenderQueue->add(*renderQueue);
-	}
-
-	void BansheeRenderer::updateMaterialProxy(MaterialProxyPtr proxy, MaterialProxy::DirtyParamsInfo* dirtyParams)
-	{
-		for (UINT32 i = 0; i < (UINT32)dirtyParams->numEntries; i++)
-		{
-			UINT32 paramsIdx = dirtyParams->entries[i].paramsIdx;
-
-			if (proxy->params[paramsIdx] == nullptr) 
-			{
-				assert(false); // This shouldn't happen. New params can only be added due to shader 
-							   // change and that should trigger new material proxy creation
-				continue;
-			}
-
-			proxy->params[dirtyParams->entries[i].paramsIdx]->_updateFromCopy(dirtyParams->entries[i].params);
-		}
-
-		// Refresh buffers set by renderer in case any were changed
-		for (auto& rendererBuffer : proxy->rendererBuffers)
-			proxy->params[rendererBuffer.paramsIdx]->setParamBlockBuffer(rendererBuffer.slotIdx, rendererBuffer.buffer);
-
-		MaterialProxy::DirtyParamsInfo::destroy(dirtyParams);
 	}
 
 	void BansheeRenderer::renderAllCore(float time)

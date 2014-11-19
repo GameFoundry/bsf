@@ -215,12 +215,5 @@ namespace BansheeEngine
 		RenderSystem* rs = BansheeEngine::RenderSystem::instancePtr();
 		return rs->getCapabilities()->isShaderProfileSupported("glsl");
 	}
-
-	GpuParamsPtr GLSLGpuProgramCore::createParameters()
-	{
-		GpuParamsPtr params = bs_shared_ptr<GpuParams, PoolAlloc>(std::ref(mParametersDesc), true);
-
-		return params;
-	}
 }
 

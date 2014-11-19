@@ -50,13 +50,13 @@ namespace BansheeEngine
 		struct SolidMaterialData
 		{
 			MaterialProxyPtr proxy;
-			GpuParamMat4 mViewProj;
+			GpuParamMat4Core mViewProj;
 		};
 
 		struct WireMaterialData
 		{
 			MaterialProxyPtr proxy;
-			GpuParamMat4 mViewProj;
+			GpuParamMat4Core mViewProj;
 		};
 
 		enum class MeshType

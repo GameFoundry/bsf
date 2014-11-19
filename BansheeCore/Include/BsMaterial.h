@@ -18,8 +18,7 @@ namespace BansheeEngine
 	enum class MaterialDirtyFlag
 	{
 		Material = 0x01, /**< Internal material data is dirty. */
-		Proxy = 0x02, /**< Active proxy needs to be updated. */
-		Params = 0x04 /**< Parameters are dirty. */
+		Proxy = 0x02 /**< Active proxy needs to be updated. */
 	};
 
 	/**
@@ -469,14 +468,6 @@ namespace BansheeEngine
 		void _setActiveProxy(const MaterialProxyPtr& proxy) { mActiveProxy = proxy; }
 
 		/**
-		 * @brief	Returns updated GPU parameters since the last time the parameters were marked clean.
-		 *
-		 * @note	Returned data will be allocated with a frame allocator and must be released during the
-		 *			same frame it was allocated.
-		 */
-		MaterialProxy::DirtyParamsInfo* _getDirtyProxyParams(FrameAlloc* frameAlloc);
-
-		/**
 		 * @brief	Creates a new core proxy from the currently set material data. Core proxies ensure
 		 *			that the core thread has all the necessary material data, while avoiding the need
 		 *			to manage Material itself on the core thread.
@@ -501,7 +492,7 @@ namespace BansheeEngine
 		 * 			caller to keep track of that.
 		 */
 		template <typename T>
-		void getParam(const String& name, TMaterialDataParam<T>& output) const
+		void getParam(const String& name, TMaterialDataParam<T, false>& output) const
 		{
 			throwIfNotInitialized();
 
@@ -513,7 +504,7 @@ namespace BansheeEngine
 			}
 
 			const String& gpuVarName = iterFind->second;
-			Vector<TGpuDataParam<T>> gpuParams;
+			Vector<TGpuDataParam<T, false>> gpuParams;
 
 			for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
 			{
@@ -526,14 +517,14 @@ namespace BansheeEngine
 					{
 						if (paramPtr->hasParam(gpuVarName))
 						{
-							gpuParams.push_back(TGpuDataParam<T>());
+							gpuParams.push_back(TGpuDataParam<T, false>());
 							paramPtr->getParam<T>(gpuVarName, gpuParams.back());
 						}
 					}
 				}
 			}
 
-			output = TMaterialDataParam<T>(gpuParams);
+			output = TMaterialDataParam<T, false>(gpuParams);
 		}
 
 	private:

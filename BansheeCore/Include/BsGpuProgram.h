@@ -140,9 +140,14 @@ namespace BansheeEngine
 		virtual bool isAdjacencyInfoRequired() const { return mNeedsAdjacencyInfo; }
 
 		/**
+		 * @brief	Checks whether the program expects matrices in column major format.
+		 */
+		virtual bool hasColumnMajorMatrices() const { return false; }
+
+		/**
 		 * @copydoc	GpuProgram::createParameters
 		 */
-		virtual GpuParamsPtr createParameters();
+		virtual SPtr<GpuParamsCore> createParameters();
 
 		/**
 		 * @copydoc	GpuProgram::getParamDesc

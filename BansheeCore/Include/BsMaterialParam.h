@@ -11,7 +11,7 @@ namespace BansheeEngine
 	 *
 	 * @see		TGpuDataParam
 	 */
-	template<class T>
+	template<class T, bool Core>
 	class BS_CORE_EXPORT TMaterialDataParam
 	{
 	public:
@@ -40,20 +40,28 @@ namespace BansheeEngine
 	private:
 		friend class Material;
 
-		TMaterialDataParam(const Vector<TGpuDataParam<T>>& params)
+		TMaterialDataParam(const Vector<TGpuDataParam<T, Core>>& params)
 			:mParams(params)
 		{ }
 	protected:
-		Vector<TGpuDataParam<T>> mParams;
+		Vector<TGpuDataParam<T, Core>> mParams;
 	};
 
-	typedef TMaterialDataParam<float> MaterialParamFloat;
-	typedef TMaterialDataParam<Color> MaterialParamColor;
-	typedef TMaterialDataParam<Vector2> MaterialParamVec2;
-	typedef TMaterialDataParam<Vector3> MaterialParamVec3;
-	typedef TMaterialDataParam<Vector4> MaterialParamVec4;
-	typedef TMaterialDataParam<Matrix3> MaterialParamMat3;
-	typedef TMaterialDataParam<Matrix4> MaterialParamMat4;
+	typedef TMaterialDataParam<float, false> MaterialParamFloat;
+	typedef TMaterialDataParam<Color, false> MaterialParamColor;
+	typedef TMaterialDataParam<Vector2, false> MaterialParamVec2;
+	typedef TMaterialDataParam<Vector3, false> MaterialParamVec3;
+	typedef TMaterialDataParam<Vector4, false> MaterialParamVec4;
+	typedef TMaterialDataParam<Matrix3, false> MaterialParamMat3;
+	typedef TMaterialDataParam<Matrix4, false> MaterialParamMat4;
+
+	typedef TMaterialDataParam<float, true> MaterialParamFloatCore;
+	typedef TMaterialDataParam<Color, true> MaterialParamColorCore;
+	typedef TMaterialDataParam<Vector2, true> MaterialParamVec2Core;
+	typedef TMaterialDataParam<Vector3, true> MaterialParamVec3Core;
+	typedef TMaterialDataParam<Vector4, true> MaterialParamVec4Core;
+	typedef TMaterialDataParam<Matrix3, true> MaterialParamMat3Core;
+	typedef TMaterialDataParam<Matrix4, true> MaterialParamMat4Core;
 
 	/**
 	 * @copydoc	TMaterialDataParam

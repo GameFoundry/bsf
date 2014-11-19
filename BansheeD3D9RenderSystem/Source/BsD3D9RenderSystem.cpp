@@ -269,7 +269,7 @@ namespace BansheeEngine
 		RenderSystem::unbindGpuProgram(gptype);
 	}
 
-	void D3D9RenderSystem::bindGpuParams(GpuProgramType gptype, GpuParamsPtr bindableParams)
+	void D3D9RenderSystem::bindGpuParams(GpuProgramType gptype, const SPtr<GpuParamsCore>& bindableParams)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -278,12 +278,11 @@ namespace BansheeEngine
 
 		for(auto iter = paramDesc.samplers.begin(); iter != paramDesc.samplers.end(); ++iter)
 		{
-			HSamplerState& samplerState = bindableParams->getSamplerState(iter->second.slot);
-
+			SPtr<SamplerStateCore> samplerState = bindableParams->getSamplerState(iter->second.slot);
 			if(samplerState == nullptr)
 				setSamplerState(gptype, iter->second.slot, SamplerState::getDefault()->getCore());
 			else
-				setSamplerState(gptype, iter->second.slot, samplerState->getCore());
+				setSamplerState(gptype, iter->second.slot, samplerState);
 		}
 
 		for(auto iter = paramDesc.textures.begin(); iter != paramDesc.textures.end(); ++iter)
@@ -291,12 +290,11 @@ namespace BansheeEngine
 			if (bindableParams->isLoadStoreTexture(iter->second.slot))
 				continue; // Not supported by DX9
 
-			HTexture texture = bindableParams->getTexture(iter->second.slot);
-
-			if(!texture.isLoaded())
+			SPtr<TextureCore> texture = bindableParams->getTexture(iter->second.slot);
+			if(texture == nullptr)
 				setTexture(gptype, iter->second.slot, false, nullptr);
 			else
-				setTexture(gptype, iter->second.slot, true, texture->getCore());
+				setTexture(gptype, iter->second.slot, true, texture);
 		}
 
 		// Read all the buffer data so we can assign it. Not the most efficient way of accessing data
@@ -310,10 +308,10 @@ namespace BansheeEngine
 
 			if(iterFind == bufferData.end())
 			{
-				GpuParamBlockBufferPtr paramBlock = bindableParams->getParamBlockBuffer(paramBlockSlot);
+				SPtr<GpuParamBlockBufferCore> paramBlock = bindableParams->getParamBlockBuffer(paramBlockSlot);
 
 				UINT8* data = (UINT8*)bs_alloc<ScratchAlloc>(paramBlock->getSize());
-				paramBlock->getCore()->readData(data);
+				paramBlock->readFromGPU(data);
 
 				bufferData[paramBlockSlot] = data;
 			}

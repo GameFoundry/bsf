@@ -155,6 +155,7 @@ namespace BansheeEngine
 	class VertexDeclarationCore;
 	class GpuBufferCore;
 	class GpuParamBlockBufferCore;
+	class GpuParamsCore;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -229,7 +230,6 @@ namespace BansheeEngine
 	typedef std::shared_ptr<RenderTarget> RenderTargetPtr;
 	typedef std::shared_ptr<RenderTexture> RenderTexturePtr;
 	typedef std::shared_ptr<MultiRenderTexture> MultiRenderTexturePtr;
-	typedef std::shared_ptr<GpuParamBlock> GpuParamBlockPtr;
 	typedef std::shared_ptr<GpuParamBlockBuffer> GpuParamBlockBufferPtr;
 	typedef std::shared_ptr<GpuParams> GpuParamsPtr;
 	typedef std::shared_ptr<TextureView> TextureViewPtr;

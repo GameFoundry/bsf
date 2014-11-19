@@ -178,7 +178,7 @@ namespace BansheeEngine
 		 * @brief	Binds GPU program parameters. Caller must ensure these match the previously
 		 *			bound GPU program.
 		 */
-		virtual void bindGpuParams(GpuProgramType gptype, GpuParamsPtr params) = 0;
+		virtual void bindGpuParams(GpuProgramType gptype, const SPtr<GpuParamsCore>& params) = 0;
 
 		/**
 		 * @brief	Unbinds a program of a given type. 

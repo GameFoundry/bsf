@@ -107,11 +107,11 @@ namespace BansheeEngine
 			BS_EXCEPT(InternalErrorException, "Invalid default shader.");
 
 		// Create global GPU param buffers and get parameter handles
-		staticParams = bs_shared_ptr<GpuParams>(staticParamsDesc, false);
-		perFrameParams = bs_shared_ptr<GpuParams>(perFrameParamsDesc, false);
+		staticParams = GpuParamsCore::create(staticParamsDesc, false);
+		perFrameParams = GpuParamsCore::create(perFrameParamsDesc, false);
 
-		staticParamBuffer = HardwareBufferManager::instance().createGpuParamBlockBuffer(staticParamBlockDesc.blockSize * sizeof(UINT32));
-		perFrameParamBuffer = HardwareBufferManager::instance().createGpuParamBlockBuffer(perFrameParamBlockDesc.blockSize * sizeof(UINT32));
+		staticParamBuffer = HardwareBufferCoreManager::instance().createGpuParamBlockBuffer(staticParamBlockDesc.blockSize * sizeof(UINT32));
+		perFrameParamBuffer = HardwareBufferCoreManager::instance().createGpuParamBlockBuffer(perFrameParamBlockDesc.blockSize * sizeof(UINT32));
 
 		staticParams->setParamBlockBuffer(staticParamBlockDesc.slot, staticParamBuffer);
 		perFrameParams->setParamBlockBuffer(perFrameParamBlockDesc.slot, perFrameParamBuffer);
@@ -206,7 +206,7 @@ namespace BansheeEngine
 					if (findIter->second.blockSize == perObjectParamBlockDesc.blockSize)
 					{
 						if (rendererData->perObjectParamBuffer == nullptr)
-							rendererData->perObjectParamBuffer = HardwareBufferManager::instance().createGpuParamBlockBuffer(perObjectParamBlockDesc.blockSize * sizeof(UINT32));
+							rendererData->perObjectParamBuffer = HardwareBufferCoreManager::instance().createGpuParamBlockBuffer(perObjectParamBlockDesc.blockSize * sizeof(UINT32));
 
 						rendererData->perObjectBuffers.push_back(MaterialProxy::BufferBindInfo(idx, findIter->second.slot, rendererData->perObjectParamBuffer));
 
@@ -237,7 +237,7 @@ namespace BansheeEngine
 		const PerObjectData* rendererData = any_cast_unsafe<PerObjectData>(&element->rendererData);
 		for (auto& perObjectBuffer : rendererData->perObjectBuffers)
 		{
-			GpuParamsPtr params = element->material->params[perObjectBuffer.paramsIdx];
+			SPtr<GpuParamsCore> params = element->material->params[perObjectBuffer.paramsIdx];
 
 			params->setParamBlockBuffer(perObjectBuffer.slotIdx, rendererData->perObjectParamBuffer);
 		}
@@ -259,11 +259,7 @@ namespace BansheeEngine
 			rendererData->wvpParam.set(wvpMatrix);
 
 		if (rendererData->perObjectParamBuffer != nullptr)
-		{
-			GpuParamBlockPtr paramBlock = rendererData->perObjectParamBuffer->getParamBlock();
-			if (paramBlock->isDirty())
-				paramBlock->uploadToBuffer(rendererData->perObjectParamBuffer);
-		}
+			rendererData->perObjectParamBuffer->flushToGPU();
 	}
 
 	ShaderPtr LitTexRenderableController::createDefaultShader()

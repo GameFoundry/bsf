@@ -16,13 +16,13 @@ namespace BansheeEngine
 	{
 	public:
 		GpuParamBlockBufferCore(UINT32 size, GpuParamBlockUsage usage);
-		virtual ~GpuParamBlockBufferCore() { }
+		virtual ~GpuParamBlockBufferCore();
 
 		/**
 		 * @brief	Writes all of the specified data to the buffer.
 		 * 			Data size must be the same size as the buffer;
 		 */
-		virtual void writeData(const UINT8* data) = 0;
+		virtual void writeToGPU(const UINT8* data) = 0;
 
 		/**
 		 * @brief	Copies data from the internal buffer to a pre-allocated array. 
@@ -32,7 +32,37 @@ namespace BansheeEngine
 		 * @param [in,out]	data	Array where the data will be written to. Must be of
 		 * 							"getSize()" bytes.
 		 */
-		virtual void readData(UINT8* data) const = 0;
+		virtual void readFromGPU(UINT8* data) const = 0;
+
+		/**
+		 * @brief	Flushes any cached data into the actual GPU buffer.
+		 */
+		void flushToGPU();
+
+		/**
+		 * @brief	Write some data to the specified offset in the buffer. 
+		 *
+		 * @note	All values are in bytes.
+		 *			Actual hardware buffer update is delayed until rendering.
+		 */
+		void write(UINT32 offset, const void* data, UINT32 size);
+
+		/**
+		 * @brief	Read some data from the specified offset in the buffer.
+		 *			
+		 * @note	All values are in bytes.
+		 *			This reads from the cached CPU buffer. Actual hardware buffer can be read
+		 *			from the core thread.
+		 */
+		void read(UINT32 offset, void* data, UINT32 size);
+
+		/**
+		 * @brief	Clear specified section of the buffer to zero.
+		 *
+		 * @note	All values are in bytes.
+		 *			Actual hardware buffer update is delayed until rendering.
+		 */
+		void zeroOut(UINT32 offset, UINT32 size);
 
 		/**
 		 * @brief	Returns the size of the buffer in bytes.
@@ -40,8 +70,16 @@ namespace BansheeEngine
 		UINT32 getSize() const { return mSize; }
 
 	protected:
+		/**
+		 * @copydoc	CoreObjectCore::syncToCore
+		 */
+		virtual void syncToCore(const CoreSyncData& data);
+
 		GpuParamBlockUsage mUsage;
 		UINT32 mSize;
+
+		UINT8* mCachedData;
+		bool mGPUBufferDirty;
 	};
 
 	/**
@@ -57,21 +95,42 @@ namespace BansheeEngine
 	{
 	public:
 		GpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage);
-		virtual ~GpuParamBlockBuffer() { }
+		virtual ~GpuParamBlockBuffer();
+
+		/**
+		 * @brief	Write some data to the specified offset in the buffer. 
+		 *
+		 * @note	All values are in bytes.
+		 *			Actual hardware buffer update is delayed until rendering.
+		 */
+		void write(UINT32 offset, const void* data, UINT32 size);
+
+		/**
+		 * @brief	Read some data from the specified offset in the buffer.
+		 *			
+		 * @note	All values are in bytes.
+		 *			This reads from the cached CPU buffer. Actual hardware buffer can be read
+		 *			from the core thread.
+		 */
+		void read(UINT32 offset, void* data, UINT32 size);
+
+		/**
+		 * @brief	Clear specified section of the buffer to zero.
+		 *
+		 * @note	All values are in bytes.
+		 *			Actual hardware buffer update is delayed until rendering.
+		 */
+		void zeroOut(UINT32 offset, UINT32 size);
+
+		/**
+		 * @brief	Returns internal cached data of the buffer.
+		 */
+		const UINT8* getCachedData() const { return mCachedData; }
 
 		/**
 		 * @brief	Returns the size of the buffer in bytes.
 		 */
 		UINT32 getSize() const { return mSize; }
-
-		/**
-		 * @brief	Returns	a parameter block buffer which is used for caching 
-		 *			the parameter information. Essentially a CPU copy of the GPU buffer.
-		 *
-		 * @note	Thread safe but it's up to the caller to ensure this is only called from
-		 *			one thread.
-		 */
-		GpuParamBlockPtr getParamBlock() const { return mParamBlock; }
 
 		/**
 		 * @brief	Retrieves a core implementation of a GPU param block buffer usable only from the
@@ -90,10 +149,14 @@ namespace BansheeEngine
 		 */
 		SPtr<CoreObjectCore> createCore() const;
 
+		/**
+		 * @copydoc	CoreObject::syncToCore
+		 */
+		virtual CoreSyncData syncToCore(FrameAlloc* allocator);
+
 		GpuParamBlockUsage mUsage;
 		UINT32 mSize;
-
-		GpuParamBlockPtr mParamBlock;
+		UINT8* mCachedData;
 	};
 
 	/**
@@ -108,12 +171,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GpuParamBlockBufferCore::writeData
 		 */
-		void writeData(const UINT8* data);
+		void writeToGPU(const UINT8* data);
 
 		/**
 		 * @copydoc GpuParamBlockBufferCore::readData.
 		 */
-		void readData(UINT8* data) const;
+		void readFromGPU(UINT8* data) const;
 
 	protected:
 		UINT8* mData;

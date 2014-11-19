@@ -218,8 +218,10 @@ namespace BansheeEngine
 			gCoreThread().queueCommand(&Platform::_coreUpdate);
 			gCoreThread().submitAccessors(); 
 
-			// This should be called after accessors are submitted to ensure we don't sync CoreObjects that are about to be destroyed (They're only ever destroyed from accessors)
-			gCoreThread().queueCommand(std::bind(&CoreObjectManager::syncDownload, CoreObjectManager::instancePtr(), CoreObjectSync::Core, gCoreThread().getFrameAlloc()));
+			// This should be called after accessors are submitted to ensure we don't sync CoreObjects that are 
+			// about to be destroyed (They're only ever destroyed from accessors)
+			gCoreThread().queueCommand(std::bind(&CoreObjectManager::syncDownload, CoreObjectManager::instancePtr(), 
+				CoreObjectSync::Core, gCoreThread().getFrameAlloc()));
 			gCoreThread().queueCommand(std::bind(&CoreApplication::endCoreProfiling, this));
 			gCoreThread().queueCommand(std::bind(&CoreApplication::frameRenderingFinishedCallback, this));
 

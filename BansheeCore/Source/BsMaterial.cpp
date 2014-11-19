@@ -535,7 +535,7 @@ namespace BansheeEngine
 
 	MaterialParamFloat Material::getParamFloat(const String& name) const
 	{
-		TMaterialDataParam<float> gpuParam;
+		TMaterialDataParam<float, false> gpuParam;
 		getParam(name, gpuParam);
 
 		return gpuParam;
@@ -543,7 +543,7 @@ namespace BansheeEngine
 
 	MaterialParamColor Material::getParamColor(const String& name) const
 	{
-		TMaterialDataParam<Color> gpuParam;
+		TMaterialDataParam<Color, false> gpuParam;
 		getParam(name, gpuParam);
 
 		return gpuParam;
@@ -551,7 +551,7 @@ namespace BansheeEngine
 
 	MaterialParamVec2 Material::getParamVec2(const String& name) const
 	{
-		TMaterialDataParam<Vector2> gpuParam;
+		TMaterialDataParam<Vector2, false> gpuParam;
 		getParam(name, gpuParam);
 
 		return gpuParam;
@@ -559,7 +559,7 @@ namespace BansheeEngine
 
 	MaterialParamVec3 Material::getParamVec3(const String& name) const
 	{
-		TMaterialDataParam<Vector3> gpuParam;
+		TMaterialDataParam<Vector3, false> gpuParam;
 		getParam(name, gpuParam);
 
 		return gpuParam;
@@ -567,7 +567,7 @@ namespace BansheeEngine
 
 	MaterialParamVec4 Material::getParamVec4(const String& name) const
 	{
-		TMaterialDataParam<Vector4> gpuParam;
+		TMaterialDataParam<Vector4, false> gpuParam;
 		getParam(name, gpuParam);
 
 		return gpuParam;
@@ -575,7 +575,7 @@ namespace BansheeEngine
 
 	MaterialParamMat3 Material::getParamMat3(const String& name) const
 	{
-		TMaterialDataParam<Matrix3> gpuParam;
+		TMaterialDataParam<Matrix3, false> gpuParam;
 		getParam(name, gpuParam);
 
 		return gpuParam;
@@ -583,7 +583,7 @@ namespace BansheeEngine
 
 	MaterialParamMat4 Material::getParamMat4(const String& name) const
 	{
-		TMaterialDataParam<Matrix4> gpuParam;
+		TMaterialDataParam<Matrix4, false> gpuParam;
 		getParam(name, gpuParam);
 
 		return gpuParam;
@@ -730,22 +730,7 @@ namespace BansheeEngine
 
 	bool Material::_isCoreDirty(MaterialDirtyFlag flag) const
 	{ 
-		if (flag == MaterialDirtyFlag::Params)
-		{
-			for (auto& paramsPerPass : mParametersPerPass)
-			{
-				for (UINT32 i = 0; i < paramsPerPass->getNumParams(); i++)
-				{
-					GpuParamsPtr params = paramsPerPass->getParamByIdx(i);
-					if (params != nullptr && params->_isCoreDirty())
-						return true;
-				}
-			}
-
-			return false;
-		}
-		else
-			return (mCoreDirtyFlags & (UINT32)flag) != 0 || (mShader != nullptr && mShader->_isCoreDirty(ShaderDirtyFlag::Shader));
+		return (mCoreDirtyFlags & (UINT32)flag) != 0 || (mShader != nullptr && mShader->_isCoreDirty(ShaderDirtyFlag::Shader));
 	}
 
 	void Material::_markCoreClean(MaterialDirtyFlag flag)
@@ -757,108 +742,6 @@ namespace BansheeEngine
 			if (mShader != nullptr)
 				mShader->_markCoreClean(ShaderDirtyFlag::Shader);
 		}
-		
-		if (flag == MaterialDirtyFlag::Material || flag == MaterialDirtyFlag::Params)
-		{
-			for (auto& paramsPerPass : mParametersPerPass)
-			{
-				for (UINT32 i = 0; i < paramsPerPass->getNumParams(); i++)
-				{
-					GpuParamsPtr params = paramsPerPass->getParamByIdx(i);
-
-					if (params != nullptr)
-						params->_markCoreClean();
-				}
-			}
-		}
-	}
-
-	MaterialProxy::DirtyParamsInfo* Material::_getDirtyProxyParams(FrameAlloc* frameAlloc)
-	{
-		UINT32 numDirtyParams = 0;
-		UINT32 numPasses = mShader->getBestTechnique()->getNumPasses();
-		for (UINT32 i = 0; i < numPasses; i++)
-		{
-			PassParametersPtr params = mParametersPerPass[i];
-			PassPtr pass = mShader->getBestTechnique()->getPass(i);
-
-			if (pass->hasVertexProgram() && params->mVertParams->_isCoreDirty())
-				numDirtyParams++;
-
-			if (pass->hasFragmentProgram() && params->mFragParams->_isCoreDirty())
-				numDirtyParams++;
-
-			if (pass->hasGeometryProgram() && params->mGeomParams->_isCoreDirty())
-				numDirtyParams++;
-
-			if (pass->hasHullProgram() && params->mHullParams->_isCoreDirty())
-				numDirtyParams++;
-
-			if (pass->hasDomainProgram() && params->mDomainParams->_isCoreDirty())
-				numDirtyParams++;
-
-			if (pass->hasComputeProgram() && params->mComputeParams->_isCoreDirty())
-				numDirtyParams++;
-		}
-
-		MaterialProxy::DirtyParamsInfo* dirtyParamsInfo = MaterialProxy::DirtyParamsInfo::create(frameAlloc, numDirtyParams);
-		
-		UINT32 idx = 0;
-		for (UINT32 i = 0; i < numPasses; i++)
-		{
-			PassParametersPtr params = mParametersPerPass[i];
-			PassPtr pass = mShader->getBestTechnique()->getPass(i);
-
-			if (pass->hasVertexProgram() && params->mVertParams->_isCoreDirty())
-			{
-				dirtyParamsInfo->entries[idx].paramsIdx = idx;
-				dirtyParamsInfo->entries[idx].params = params->mVertParams->_clone(frameAlloc);
-
-				idx++;
-			}
-
-			if (pass->hasFragmentProgram() && params->mFragParams->_isCoreDirty())
-			{
-				dirtyParamsInfo->entries[idx].paramsIdx = idx;
-				dirtyParamsInfo->entries[idx].params = params->mFragParams->_clone(frameAlloc);
-
-				idx++;
-			}
-
-			if (pass->hasGeometryProgram() && params->mGeomParams->_isCoreDirty())
-			{
-				dirtyParamsInfo->entries[idx].paramsIdx = idx;
-				dirtyParamsInfo->entries[idx].params = params->mGeomParams->_clone(frameAlloc);
-
-				idx++;
-			}
-
-			if (pass->hasHullProgram() && params->mHullParams->_isCoreDirty())
-			{
-				dirtyParamsInfo->entries[idx].paramsIdx = idx;
-				dirtyParamsInfo->entries[idx].params = params->mHullParams->_clone(frameAlloc);
-
-				idx++;
-			}
-
-			if (pass->hasDomainProgram() && params->mDomainParams->_isCoreDirty())
-			{
-				dirtyParamsInfo->entries[idx].paramsIdx = idx;
-				dirtyParamsInfo->entries[idx].params = params->mDomainParams->_clone(frameAlloc);
-
-				idx++;
-			}
-
-			if (pass->hasComputeProgram() && params->mComputeParams->_isCoreDirty())
-			{
-				dirtyParamsInfo->entries[idx].paramsIdx = idx;
-				dirtyParamsInfo->entries[idx].params = params->mComputeParams->_clone(frameAlloc);
-
-				idx++;
-			}
-		}
-
-		return dirtyParamsInfo;
 	}
 
 	MaterialProxyPtr Material::_createProxy()
@@ -880,7 +763,7 @@ namespace BansheeEngine
 			{
 				passData.vertexProg = pass->getVertexProgram();
 				passData.vertexProgParamsIdx = (UINT32)proxy->params.size();
-				proxy->params.push_back(params->mVertParams->_clone());
+				proxy->params.push_back(params->mVertParams->getCore());
 			}
 			else
 				passData.vertexProgParamsIdx = 0;
@@ -889,7 +772,7 @@ namespace BansheeEngine
 			{
 				passData.fragmentProg = pass->getFragmentProgram();
 				passData.fragmentProgParamsIdx = (UINT32)proxy->params.size();
-				proxy->params.push_back(params->mFragParams->_clone());
+				proxy->params.push_back(params->mFragParams->getCore());
 			}
 			else
 				passData.fragmentProgParamsIdx = 0;
@@ -898,7 +781,7 @@ namespace BansheeEngine
 			{
 				passData.geometryProg = pass->getGeometryProgram();
 				passData.geometryProgParamsIdx = (UINT32)proxy->params.size();
-				proxy->params.push_back(params->mGeomParams->_clone());
+				proxy->params.push_back(params->mGeomParams->getCore());
 			}
 			else
 				passData.geometryProgParamsIdx = 0;
@@ -907,7 +790,7 @@ namespace BansheeEngine
 			{
 				passData.hullProg = pass->getHullProgram();
 				passData.hullProgParamsIdx = (UINT32)proxy->params.size();
-				proxy->params.push_back(params->mHullParams->_clone());
+				proxy->params.push_back(params->mHullParams->getCore());
 			}
 			else
 				passData.hullProgParamsIdx = 0;
@@ -916,7 +799,7 @@ namespace BansheeEngine
 			{
 				passData.domainProg = pass->getDomainProgram();
 				passData.domainProgParamsIdx = (UINT32)proxy->params.size();
-				proxy->params.push_back(params->mDomainParams->_clone());
+				proxy->params.push_back(params->mDomainParams->getCore());
 			}
 			else
 				passData.domainProgParamsIdx = 0;
@@ -925,7 +808,7 @@ namespace BansheeEngine
 			{
 				passData.computeProg = pass->getComputeProgram();
 				passData.computeProgParamsIdx = (UINT32)proxy->params.size();
-				proxy->params.push_back(params->mComputeParams->_clone());
+				proxy->params.push_back(params->mComputeParams->getCore());
 			}
 			else
 				passData.computeProgParamsIdx = 0;

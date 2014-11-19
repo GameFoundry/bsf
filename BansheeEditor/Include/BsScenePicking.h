@@ -29,16 +29,16 @@ namespace BansheeEngine
 			MaterialProxyPtr mMatPickingProxy;
 			MaterialProxyPtr mMatPickingAlphaProxy;
 
-			GpuParamsPtr mParamPickingVertParams;
-			GpuParamsPtr mParamPickingFragParams;
-			GpuParamsPtr mParamPickingAlphaVertParams;
-			GpuParamsPtr mParamPickingAlphaFragParams;
+			SPtr<GpuParamsCore> mParamPickingVertParams;
+			SPtr<GpuParamsCore> mParamPickingFragParams;
+			SPtr<GpuParamsCore> mParamPickingAlphaVertParams;
+			SPtr<GpuParamsCore> mParamPickingAlphaFragParams;
 
-			GpuParamMat4 mParamPickingWVP;
-			GpuParamMat4 mParamPickingAlphaWVP;
-			GpuParamColor mParamPickingColor;
-			GpuParamColor mParamPickingAlphaColor;
-			GpuParamTexture mParamPickingAlphaTexture;
+			GpuParamMat4Core mParamPickingWVP;
+			GpuParamMat4Core mParamPickingAlphaWVP;
+			GpuParamColorCore mParamPickingColor;
+			GpuParamColorCore mParamPickingAlphaColor;
+			GpuParamTextureCore mParamPickingAlphaTexture;
 		};
 
 	public:

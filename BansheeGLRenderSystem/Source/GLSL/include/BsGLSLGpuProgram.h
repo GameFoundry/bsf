@@ -37,9 +37,9 @@ namespace BansheeEngine
 		const UINT32 getProgramID() const { return mProgramID; }
 
 		/**
-		 * @copydoc	GpuProgramCore::createParameters
+		 * @copydoc	GpuProgramCore::hasColumnMajorMatrices
 		 */
-		GpuParamsPtr createParameters();
+		bool hasColumnMajorMatrices() const { return true; }
 
 	private:
 		friend class GLSLProgramFactory;

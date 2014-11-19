@@ -16,12 +16,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc GpuParamBlockBufferCore::writeData.
 		 */
-		void writeData(const UINT8* data);
+		void writeToGPU(const UINT8* data);
 
 		/**
 		 * @copydoc GpuParamBlockBufferCore::readData.
 		 */
-		void readData(UINT8* data) const;
+		void readFromGPU(UINT8* data) const;
 
 		/**
 		 * @brief	Returns internal DX11 buffer object.

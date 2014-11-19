@@ -4,13 +4,36 @@ TODO - CoreObject refactor:
 Resource
  - Material -> Remove MaterialProxy
  - Shader -> Remove ShaderProxy
-GpuBuffer
-GpuParamBlockBuffer
 
 Also:
  - Make CameraHandler a Coreobject and remove CameraProxy
  - Make RenderableHandler a CoreObject and remove CameraProxy
  - Rename CoreObject initialize_internal and destroy_internal to initializeCore/destroyCore and make them private
+
+GpuParams refactor:
+
+Missing:
+ GpuParams::createCore
+ GpuParams::getCore
+
+ GpuParam versions for Core objects
+ Sync methods
+
+I need to ensure renderer buffers get set properly after GpuParams are synced
+ - This used to up in updateMaterialProxy along with updating dirty params but since syncing
+   is now internal to GpuParams I need to figure out a better way of doing it.
+   (In case user overrides Renderer buffers)
+    - Likely just an extra field on GPuParamsCore
+
+
+- Other:
+ - PerObjectData should store core version of GpuParamBlockBuffer
+
+Should I force CoreObject sync whenever submitCoreAccessors is called?
+ - This way I ensure the data is up to date. e.g. if user updates GpuParams and immediately performs
+   some rendering use CoreAccessor that update will not register.
+ - Also I can properly handle cases where sim thread needs to access core thread data immediately (e.g. RenderWindow HWND)
+ - I'd have to remove submit() calls from CoreAccessors themselves and leave just the one on CoreThread
 
 Disallow CoreObject creation from core thread
  - Add asserts in CoreObject::destroy and CoreObject::initialize

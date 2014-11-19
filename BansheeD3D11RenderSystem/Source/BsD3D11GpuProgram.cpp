@@ -146,12 +146,6 @@ namespace BansheeEngine
 		}
 	}
 
-	GpuParamsPtr D3D11GpuProgramCore::createParameters()
-	{
-		GpuParamsPtr params = bs_shared_ptr<GpuParams, PoolAlloc>(mParametersDesc, mColumnMajorMatrices);
-		return params;
-	}
-
 	D3D11GpuVertexProgramCore::D3D11GpuVertexProgramCore(const String& source, const String& entryPoint,
 		GpuProgramProfile profile)
 		: D3D11GpuProgramCore(source, entryPoint, GPT_VERTEX_PROGRAM, profile, false)

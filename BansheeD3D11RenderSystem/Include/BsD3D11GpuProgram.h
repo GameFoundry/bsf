@@ -14,9 +14,9 @@ namespace BansheeEngine
 		virtual ~D3D11GpuProgramCore();
 
 		/**
-		 * @copydoc	GpuProgramCore::createParameters
+		 * @copydoc	GpuProgramCore::hasColumnMajorMatrices
 		 */
-		GpuParamsPtr createParameters();
+		bool hasColumnMajorMatrices() const { return mColumnMajorMatrices; }
 
 		/**
 		 * @brief	Returns compiled shader microcode.

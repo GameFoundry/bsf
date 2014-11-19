@@ -39,9 +39,9 @@ namespace BansheeEngine
 		void setOptimizationLevel(OptimizationLevel opt) { mOptimisationLevel = opt; }
 
 		/**
-		 * @copydoc	GpuProgramCore::createParameters
+		 * @copydoc	GpuProgramCore::hasColumnMajorMatrices
 		 */
-		GpuParamsPtr createParameters();
+		bool hasColumnMajorMatrices() const { return mColumnMajorMatrices; }
 
     protected:
 		friend class D3D9HLSLProgramFactory;

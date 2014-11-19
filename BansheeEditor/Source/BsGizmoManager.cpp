@@ -506,7 +506,7 @@ namespace BansheeEngine
 					iconRenderData->push_back(IconRenderData());
 					IconRenderData& renderData = iconRenderData->back();
 					renderData.count = numIconsPerTexture;
-					renderData.texture = atlasTexture;
+					renderData.texture = atlasTexture->getCore();
 				}
 
 				lastTextureIdx = i;
@@ -649,22 +649,22 @@ namespace BansheeEngine
 		// TODO - Make a better interface when dealing with parameters through proxies?
 		{
 			MaterialProxyPtr proxy = mWireMaterial.proxy;
-			GpuParamsPtr vertParams = proxy->params[proxy->passes[0].vertexProgParamsIdx];
+			SPtr<GpuParamsCore> vertParams = proxy->params[proxy->passes[0].vertexProgParamsIdx];
 
 			vertParams->getParam("matViewProj", mWireMaterial.mViewProj);
 		}
 
 		{
 			MaterialProxyPtr proxy = mSolidMaterial.proxy;
-			GpuParamsPtr vertParams = proxy->params[proxy->passes[0].vertexProgParamsIdx];
+			SPtr<GpuParamsCore> vertParams = proxy->params[proxy->passes[0].vertexProgParamsIdx];
 
 			vertParams->getParam("matViewProj", mSolidMaterial.mViewProj);
 		}
 
 		{
 			MaterialProxyPtr proxy = mIconMaterial.proxy;
-			GpuParamsPtr vertParams0 = proxy->params[proxy->passes[0].vertexProgParamsIdx];
-			GpuParamsPtr vertParams1 = proxy->params[proxy->passes[1].vertexProgParamsIdx];
+			SPtr<GpuParamsCore> vertParams0 = proxy->params[proxy->passes[0].vertexProgParamsIdx];
+			SPtr<GpuParamsCore> vertParams1 = proxy->params[proxy->passes[1].vertexProgParamsIdx];
 
 			vertParams0->getParam("matViewProj", mIconMaterial.mViewProj[0]);
 			vertParams1->getParam("matViewProj", mIconMaterial.mViewProj[1]);
@@ -678,21 +678,21 @@ namespace BansheeEngine
 
 		{
 			MaterialProxyPtr proxy = mPickingMaterial.proxy;
-			GpuParamsPtr vertParams = proxy->params[proxy->passes[0].vertexProgParamsIdx];
+			SPtr<GpuParamsCore> vertParams = proxy->params[proxy->passes[0].vertexProgParamsIdx];
 
 			vertParams->getParam("matViewProj", mPickingMaterial.mViewProj);
 		}
 
 		{
 			MaterialProxyPtr proxy = mAlphaPickingMaterial.proxy;
-			GpuParamsPtr vertParams = proxy->params[proxy->passes[0].vertexProgParamsIdx];
+			SPtr<GpuParamsCore> vertParams = proxy->params[proxy->passes[0].vertexProgParamsIdx];
 
 			vertParams->getParam("matViewProj", mAlphaPickingMaterial.mViewProj);
 
 			mAlphaPickingMaterial.mFragParams = proxy->params[proxy->passes[0].fragmentProgParamsIdx];
 			mAlphaPickingMaterial.mFragParams->getTextureParam("mainTexture", mAlphaPickingMaterial.mTexture);
 
-			GpuParamFloat alphaCutoffParam;
+			GpuParamFloatCore alphaCutoffParam;
 			mAlphaPickingMaterial.mFragParams->getParam("alphaCutoff", alphaCutoffParam);
 			alphaCutoffParam.set(PICKING_ALPHA_CUTOFF);
 		}

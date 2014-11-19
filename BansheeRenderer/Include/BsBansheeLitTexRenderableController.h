@@ -23,10 +23,10 @@ namespace BansheeEngine
 		 */
 		struct PerObjectData
 		{
-			GpuParamBlockBufferPtr perObjectParamBuffer;
+			SPtr<GpuParamBlockBufferCore> perObjectParamBuffer;
 
 			bool hasWVPParam = false;
-			GpuParamMat4 wvpParam;
+			GpuParamMat4Core wvpParam;
 
 			Vector<MaterialProxy::BufferBindInfo> perObjectBuffers;
 		};
@@ -73,13 +73,13 @@ namespace BansheeEngine
 		GpuParamDataDesc lightDirParamDesc;
 		GpuParamDataDesc wvpParamDesc;
 
-		GpuParamBlockBufferPtr staticParamBuffer;
-		GpuParamBlockBufferPtr perFrameParamBuffer;
+		SPtr<GpuParamBlockBufferCore> staticParamBuffer;
+		SPtr<GpuParamBlockBufferCore> perFrameParamBuffer;
 
-		GpuParamsPtr staticParams;
-		GpuParamsPtr perFrameParams;
+		SPtr<GpuParamsCore> staticParams;
+		SPtr<GpuParamsCore> perFrameParams;
 
-		GpuParamVec4 lightDirParam;
-		GpuParamFloat timeParam;
+		GpuParamVec4Core lightDirParam;
+		GpuParamFloatCore timeParam;
 	};
 }

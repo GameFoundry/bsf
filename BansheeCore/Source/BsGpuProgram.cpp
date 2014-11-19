@@ -42,9 +42,9 @@ namespace BansheeEngine
 		return true;
 	}
 
-	GpuParamsPtr GpuProgramCore::createParameters()
+	SPtr<GpuParamsCore> GpuProgramCore::createParameters()
 	{
-		return bs_shared_ptr<GpuParams, PoolAlloc>(mParametersDesc, false);
+		return GpuParamsCore::create(mParametersDesc, false);
 	}
 
 	GpuProgram::GpuProgram(const String& source, const String& entryPoint, const String& language,
@@ -67,7 +67,7 @@ namespace BansheeEngine
 
 	GpuParamsPtr GpuProgram::createParameters()
 	{
-		return getCore()->createParameters();
+		return GpuParams::create(getCore()->getParamDesc(), getCore()->hasColumnMajorMatrices());
 	}
 
 	GpuParamDescPtr GpuProgram::getParamDesc() const

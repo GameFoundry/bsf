@@ -554,7 +554,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumGpuProgramBinds);
 	}
 
-	void D3D11RenderSystem::bindGpuParams(GpuProgramType gptype, GpuParamsPtr bindableParams)
+	void D3D11RenderSystem::bindGpuParams(GpuProgramType gptype, const SPtr<GpuParamsCore>& bindableParams)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -564,33 +564,33 @@ namespace BansheeEngine
 		
 		for(auto iter = paramDesc.samplers.begin(); iter != paramDesc.samplers.end(); ++iter)
 		{
-			HSamplerState& samplerState = bindableParams->getSamplerState(iter->second.slot);
+			SPtr<SamplerStateCore>& samplerState = bindableParams->getSamplerState(iter->second.slot);
 
 			if(samplerState == nullptr)
 				setSamplerState(gptype, iter->second.slot, SamplerState::getDefault()->getCore());
 			else
-				setSamplerState(gptype, iter->second.slot, samplerState->getCore());
+				setSamplerState(gptype, iter->second.slot, samplerState);
 		}
 
 		for(auto iter = paramDesc.textures.begin(); iter != paramDesc.textures.end(); ++iter)
 		{
-			HTexture texture = bindableParams->getTexture(iter->second.slot);
+			SPtr<TextureCore> texture = bindableParams->getTexture(iter->second.slot);
 
 			if (!bindableParams->isLoadStoreTexture(iter->second.slot))
 			{
-				if (!texture.isLoaded())
+				if (texture == nullptr)
 					setTexture(gptype, iter->second.slot, false, nullptr);
 				else
-					setTexture(gptype, iter->second.slot, true, texture->getCore());
+					setTexture(gptype, iter->second.slot, true, texture);
 			}
 			else
 			{
 				const TextureSurface& surface = bindableParams->getLoadStoreSurface(iter->second.slot);
 
-				if (!texture.isLoaded())
+				if (texture == nullptr)
 					setLoadStoreTexture(gptype, iter->second.slot, false, nullptr, surface);
 				else
-					setLoadStoreTexture(gptype, iter->second.slot, true, texture->getCore(), surface);
+					setLoadStoreTexture(gptype, iter->second.slot, true, texture, surface);
 			}
 		}
 
@@ -600,12 +600,12 @@ namespace BansheeEngine
 
 		for(auto iter = paramDesc.paramBlocks.begin(); iter != paramDesc.paramBlocks.end(); ++iter)
 		{
-			GpuParamBlockBufferPtr currentBlockBuffer = bindableParams->getParamBlockBuffer(iter->second.slot);
+			SPtr<GpuParamBlockBufferCore> currentBlockBuffer = bindableParams->getParamBlockBuffer(iter->second.slot);
 
 			if(currentBlockBuffer != nullptr)
 			{
 				const D3D11GpuParamBlockBufferCore* d3d11paramBlockBuffer = 
-					static_cast<const D3D11GpuParamBlockBufferCore*>(currentBlockBuffer->getCore().get());
+					static_cast<const D3D11GpuParamBlockBufferCore*>(currentBlockBuffer.get());
 				bufferArray[0] = d3d11paramBlockBuffer->getD3D11Buffer();
 			}
 			else

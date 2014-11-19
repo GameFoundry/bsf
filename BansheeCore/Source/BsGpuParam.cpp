@@ -1,232 +1,214 @@
 #include "BsGpuParam.h"
 #include "BsGpuParams.h"
+#include "BsGpuParamBlockBuffer.h"
 
 namespace BansheeEngine
 {
+	/************************************************************************/
+	/* 							GPU PARAMS BASE                      		*/
+	/************************************************************************/
+
+	GpuParamBase::GpuParamBase()
+	{ }
+
+	GpuParamBase::GpuParamBase(const SPtr<GpuParams>& parent)
+		:mParent(parent)
+	{ }
+
+	void GpuParamBase::markCoreDirty()
+	{
+		mParent->_markCoreDirty();
+	}
+
+	/************************************************************************/
+	/* 							GPU DATA PARAMS BASE                      	*/
+	/************************************************************************/
+
 	GpuDataParamBase::GpuDataParamBase()
-		:mParamDesc(nullptr)
+		: GpuParamBase(), mParamDesc(nullptr)
 	{ }
 
-	GpuDataParamBase::GpuDataParamBase(GpuParamDataDesc* paramDesc, const std::shared_ptr<GpuParamsInternalData>& internalData)
-		:mParamDesc(paramDesc), mInternalData(internalData)
+	GpuDataParamBase::GpuDataParamBase(GpuParamDataDesc* paramDesc, const SPtr<GpuParams>& parent)
+		: GpuParamBase(parent), mParamDesc(paramDesc)
 	{ }
-
-	bool GpuDataParamBase::isDestroyed() const
-	{
-		return mInternalData->mIsDestroyed;
-	}
-
-	GpuParamBlockPtr GpuDataParamBase::getParamBlock(UINT32 slotIdx) const
-	{
-		return mInternalData->mParamBlocks[slotIdx];
-	}
 
 	bool GpuDataParamBase::getTransposeMatrices() const
 	{
-		return mInternalData->mTransposeMatrices;
+		return mParent->getTransposeMatrices();
 	}
 
-	void GpuDataParamBase::markCoreDirty() 
-	{ 
-		mInternalData->mCoreDirtyFlags = 0xFFFFFFFF; 
-	}
-
-	/************************************************************************/
-	/* 									STRUCT	                     		*/
-	/************************************************************************/
-
-	GpuParamStruct::GpuParamStruct()
-		:mParamDesc(nullptr)
-	{ }
-
-	GpuParamStruct::GpuParamStruct(GpuParamDataDesc* paramDesc, const std::shared_ptr<GpuParamsInternalData>& internalData)
-		:mParamDesc(paramDesc), mInternalData(internalData)
-	{ }
-
-	void GpuParamStruct::set(const void* value, UINT32 sizeBytes, UINT32 arrayIdx)
+	bool GpuDataParamBase::write(UINT32 offset, const void* data, UINT32 size)
 	{
-		if (mInternalData == nullptr)
+		GpuParamBlockBufferPtr paramBlock = mParent->getParamBlockBuffer(mParamDesc->paramBlockSlot);
+		if (paramBlock == nullptr)
+			return false;
+
+		paramBlock->write(offset, data, size);
+		return true;
+	}
+
+	bool GpuDataParamBase::read(UINT32 offset, void* data, UINT32 size)
+	{
+		GpuParamBlockBufferPtr paramBlock = mParent->getParamBlockBuffer(mParamDesc->paramBlockSlot);
+		if (paramBlock == nullptr)
+			return false;
+
+		paramBlock->read(offset, data, size);
+		return true;
+	}
+
+	void GpuDataParamBase::zeroOut(UINT32 offset, UINT32 size)
+	{
+		GpuParamBlockBufferPtr paramBlock = mParent->getParamBlockBuffer(mParamDesc->paramBlockSlot);
+		if (paramBlock == nullptr)
 			return;
 
-		if (mInternalData->mIsDestroyed)
-			BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
-
-		UINT32 elementSizeBytes = mParamDesc->elementSize * sizeof(UINT32);
-
-#if BS_DEBUG_MODE
-		if(sizeBytes > elementSizeBytes)
-		{
-			LOGWRN("Provided element size larger than maximum element size. Maximum size: " + 
-				toString(elementSizeBytes) + ". Supplied size: " + toString(sizeBytes));
-		}
-
-		if (arrayIdx >= mParamDesc->arraySize)
-		{
-			BS_EXCEPT(InvalidParametersException, "Array index out of range. Array size: " + 
-				toString(mParamDesc->arraySize) + ". Requested size: " + toString(arrayIdx));
-		}
-#endif
-
-		sizeBytes = std::min(elementSizeBytes, sizeBytes);
-
-		GpuParamBlockPtr paramBlock = mInternalData->mParamBlocks[mParamDesc->paramBlockSlot];
-		paramBlock->write((mParamDesc->cpuMemOffset + arrayIdx * mParamDesc->arrayElementStride) * sizeof(UINT32), value, sizeBytes);
-
-		// Set unused bytes to 0
-		if(sizeBytes < elementSizeBytes)
-		{
-			UINT32 diffSize = elementSizeBytes - sizeBytes;
-			paramBlock->zeroOut((mParamDesc->cpuMemOffset + arrayIdx * mParamDesc->arrayElementStride)  * sizeof(UINT32)+sizeBytes, diffSize);
-		}
-
-		mInternalData->mCoreDirtyFlags = 0xFFFFFFFF;
+		paramBlock->zeroOut(offset, size);
 	}
 
-	void GpuParamStruct::get(void* value, UINT32 sizeBytes, UINT32 arrayIdx)
+	/************************************************************************/
+	/* 						GPU OBJECT PARAMS BASE                      	*/
+	/************************************************************************/
+
+	GpuObjectParamBase::GpuObjectParamBase()
+		: GpuParamBase(), mParamDesc(nullptr)
+	{ }
+
+	GpuObjectParamBase::GpuObjectParamBase(GpuParamObjectDesc* paramDesc, const SPtr<GpuParams>& parent)
+		: GpuParamBase(parent), mParamDesc(paramDesc)
+	{ }
+
+	HTexture GpuObjectParamBase::getTexture(UINT32 slot)
 	{
-		if (mInternalData == nullptr)
+		return mParent->getTexture(slot);
+	}
+
+	HSamplerState GpuObjectParamBase::getSamplerState(UINT32 slot)
+	{
+		return mParent->getSamplerState(slot);
+	}
+
+	void GpuObjectParamBase::setTexture(UINT32 slot, const HTexture& texture)
+	{
+		mParent->setTexture(slot, texture);
+	}
+
+	void GpuObjectParamBase::setSamplerState(UINT32 slot, const HSamplerState& sampler)
+	{
+		mParent->setSamplerState(slot, sampler);
+	}
+
+	void GpuObjectParamBase::setLoadStoreSurface(UINT32 slot, const TextureSurface& surface) const
+	{
+		mParent->setLoadStoreSurface(slot, surface);
+	}
+
+	void GpuObjectParamBase::setIsLoadStoreTexture(UINT32 slot, bool isLoadStore)
+	{
+		mParent->setIsLoadStoreTexture(slot, isLoadStore);
+	}
+
+	/************************************************************************/
+	/* 							GPU PARAMS CORE BASE                      	*/
+	/************************************************************************/
+
+	GpuParamCoreBase::GpuParamCoreBase()
+	{ }
+
+	GpuParamCoreBase::GpuParamCoreBase(const SPtr<GpuParamsCore>& parent)
+		:mParent(parent)
+	{ }
+
+	void GpuParamCoreBase::markCoreDirty()
+	{
+		mParent->_markCoreDirty();
+	}
+
+	/************************************************************************/
+	/* 						GPU DATA PARAMS CORE BASE                      	*/
+	/************************************************************************/
+
+	GpuDataParamCoreBase::GpuDataParamCoreBase()
+		: GpuParamCoreBase(), mParamDesc(nullptr)
+	{ }
+
+	GpuDataParamCoreBase::GpuDataParamCoreBase(GpuParamDataDesc* paramDesc, const SPtr<GpuParamsCore>& parent)
+		: GpuParamCoreBase(parent), mParamDesc(paramDesc)
+	{ }
+
+	bool GpuDataParamCoreBase::getTransposeMatrices() const
+	{
+		return mParent->getTransposeMatrices();
+	}
+
+	bool GpuDataParamCoreBase::write(UINT32 offset, const void* data, UINT32 size)
+	{
+		SPtr<GpuParamBlockBufferCore> paramBlock = mParent->getParamBlockBuffer(mParamDesc->paramBlockSlot);
+		if (paramBlock == nullptr)
+			return false;
+
+		paramBlock->write(offset, data, size);
+		return true;
+	}
+
+	bool GpuDataParamCoreBase::read(UINT32 offset, void* data, UINT32 size)
+	{
+		SPtr<GpuParamBlockBufferCore> paramBlock = mParent->getParamBlockBuffer(mParamDesc->paramBlockSlot);
+		if (paramBlock == nullptr)
+			return false;
+
+		paramBlock->read(offset, data, size);
+		return true;
+	}
+
+	void GpuDataParamCoreBase::zeroOut(UINT32 offset, UINT32 size)
+	{
+		SPtr<GpuParamBlockBufferCore> paramBlock = mParent->getParamBlockBuffer(mParamDesc->paramBlockSlot);
+		if (paramBlock == nullptr)
 			return;
 
-		if (mInternalData->mIsDestroyed)
-			BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
-
-		UINT32 elementSizeBytes = mParamDesc->elementSize * sizeof(UINT32);
-
-#if BS_DEBUG_MODE
-		if(sizeBytes > elementSizeBytes)
-		{
-			LOGWRN("Provided element size larger than maximum element size. Maximum size: " + 
-				toString(elementSizeBytes) + ". Supplied size: " + toString(sizeBytes));
-		}
-
-		if (arrayIdx >= mParamDesc->arraySize)
-		{
-			BS_EXCEPT(InvalidParametersException, "Array index out of range. Array size: " + 
-				toString(mParamDesc->arraySize) + ". Requested size: " + toString(arrayIdx));
-		}
-#endif
-		sizeBytes = std::min(elementSizeBytes, sizeBytes);
-
-		GpuParamBlockPtr paramBlock = mInternalData->mParamBlocks[mParamDesc->paramBlockSlot];
-		paramBlock->read((mParamDesc->cpuMemOffset + arrayIdx * mParamDesc->arrayElementStride) * sizeof(UINT32), value, sizeBytes);
-	}
-
-	UINT32 GpuParamStruct::getElementSize() const
-	{
-		if (mInternalData == nullptr)
-			return 0;
-
-		if(mInternalData->mIsDestroyed)
-			BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
-
-		return mParamDesc->elementSize * sizeof(UINT32);
+		paramBlock->zeroOut(offset, size);
 	}
 
 	/************************************************************************/
-	/* 								TEXTURE		                     		*/
+	/* 						GPU OBJECT PARAMS CORE BASE                    	*/
 	/************************************************************************/
 
-	GpuParamTexture::GpuParamTexture()
-		:mParamDesc(nullptr)
+	GpuObjectParamCoreBase::GpuObjectParamCoreBase()
+		: GpuParamCoreBase(), mParamDesc(nullptr)
 	{ }
 
-	GpuParamTexture::GpuParamTexture(GpuParamObjectDesc* paramDesc, const std::shared_ptr<GpuParamsInternalData>& internalData)
-		: mParamDesc(paramDesc), mInternalData(internalData)
+	GpuObjectParamCoreBase::GpuObjectParamCoreBase(GpuParamObjectDesc* paramDesc, const SPtr<GpuParamsCore>& parent)
+		: GpuParamCoreBase(parent), mParamDesc(paramDesc)
 	{ }
 
-	void GpuParamTexture::set(const HTexture& texture)
+	SPtr<TextureCore> GpuObjectParamCoreBase::getTexture(UINT32 slot)
 	{
-		if (mInternalData == nullptr)
-			return;
-
-		if (mInternalData->mIsDestroyed)
-			BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
-
-		mInternalData->mTextures[mParamDesc->slot] = texture;
-		mInternalData->mTextureInfo[mParamDesc->slot].isLoadStore = false;
-		mInternalData->mCoreDirtyFlags = 0xFFFFFFFF;
+		return mParent->getTexture(slot);
 	}
 
-	HTexture GpuParamTexture::get()
+	SPtr<SamplerStateCore> GpuObjectParamCoreBase::getSamplerState(UINT32 slot)
 	{
-		if (mInternalData == nullptr)
-			return HTexture();
-
-		if (mInternalData->mIsDestroyed)
-			BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
-
-		return mInternalData->mTextures[mParamDesc->slot];
+		return mParent->getSamplerState(slot);
 	}
 
-	/************************************************************************/
-	/* 							LOAD/STORE TEXTURE		                    */
-	/************************************************************************/
-
-	GpuParamLoadStoreTexture::GpuParamLoadStoreTexture()
-		:mParamDesc(nullptr)
-	{ }
-
-	GpuParamLoadStoreTexture::GpuParamLoadStoreTexture(GpuParamObjectDesc* paramDesc, const std::shared_ptr<GpuParamsInternalData>& internalData)
-		: mParamDesc(paramDesc), mInternalData(internalData)
-	{ }
-
-	void GpuParamLoadStoreTexture::set(const HTexture& texture, const TextureSurface& surface)
+	void GpuObjectParamCoreBase::setTexture(UINT32 slot, const SPtr<TextureCore>& texture)
 	{
-		if (mInternalData == nullptr)
-			return;
-
-		if (mInternalData->mIsDestroyed)
-			BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
-
-		mInternalData->mTextures[mParamDesc->slot] = texture;
-		mInternalData->mTextureInfo[mParamDesc->slot].isLoadStore = true;
-		mInternalData->mTextureInfo[mParamDesc->slot].surface = surface;
-		mInternalData->mCoreDirtyFlags = 0xFFFFFFFF;
+		mParent->setTexture(slot, texture);
 	}
 
-	HTexture GpuParamLoadStoreTexture::get()
+	void GpuObjectParamCoreBase::setSamplerState(UINT32 slot, const SPtr<SamplerStateCore>& sampler)
 	{
-		if (mInternalData == nullptr)
-			return HTexture();
-
-		if (mInternalData->mIsDestroyed)
-			BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
-
-		return mInternalData->mTextures[mParamDesc->slot];
+		mParent->setSamplerState(slot, sampler);
 	}
 
-	/************************************************************************/
-	/* 								SAMPLER STATE                      		*/
-	/************************************************************************/
-
-	GpuParamSampState::GpuParamSampState()
-		:mParamDesc(nullptr)
-	{ }
-
-	GpuParamSampState::GpuParamSampState(GpuParamObjectDesc* paramDesc, const std::shared_ptr<GpuParamsInternalData>& internalData)
-		: mParamDesc(paramDesc), mInternalData(internalData)
-	{ }
-
-	void GpuParamSampState::set(const HSamplerState& samplerState)
+	void GpuObjectParamCoreBase::setLoadStoreSurface(UINT32 slot, const TextureSurface& surface) const
 	{
-		if (mInternalData == nullptr)
-			return;
-
-		if (mInternalData->mIsDestroyed)
-			BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
-
-		mInternalData->mSamplerStates[mParamDesc->slot] = samplerState;
-		mInternalData->mCoreDirtyFlags = 0xFFFFFFFF;
+		mParent->setLoadStoreSurface(slot, surface);
 	}
 
-	HSamplerState GpuParamSampState::get()
+	void GpuObjectParamCoreBase::setIsLoadStoreTexture(UINT32 slot, bool isLoadStore)
 	{
-		if (mInternalData == nullptr)
-			return HSamplerState();
-
-		if (mInternalData->mIsDestroyed)
-			BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
-
-		return mInternalData->mSamplerStates[mParamDesc->slot];
+		mParent->setIsLoadStoreTexture(slot, isLoadStore);
 	}
 }

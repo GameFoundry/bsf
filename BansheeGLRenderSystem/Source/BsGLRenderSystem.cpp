@@ -246,7 +246,7 @@ namespace BansheeEngine
 		RenderSystem::unbindGpuProgram(gptype);
 	}
 
-	void GLRenderSystem::bindGpuParams(GpuProgramType gptype, GpuParamsPtr bindableParams)
+	void GLRenderSystem::bindGpuParams(GpuProgramType gptype, const SPtr<GpuParamsCore>& bindableParams)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -257,34 +257,34 @@ namespace BansheeEngine
 
 		for(auto iter = paramDesc.textures.begin(); iter != paramDesc.textures.end(); ++iter)
 		{
-			HTexture texture = bindableParams->getTexture(iter->second.slot);
+			SPtr<TextureCore> texture = bindableParams->getTexture(iter->second.slot);
 
 			if (!bindableParams->isLoadStoreTexture(iter->second.slot))
 			{
-				if (!texture.isLoaded())
+				if (texture == nullptr)
 					setTexture(gptype, iter->second.slot, false, nullptr);
 				else
-					setTexture(gptype, iter->second.slot, true, texture->getCore());
+					setTexture(gptype, iter->second.slot, true, texture);
 			}
 			else
 			{
 				const TextureSurface& surface = bindableParams->getLoadStoreSurface(iter->second.slot);
 
-				if (!texture.isLoaded())
+				if (texture == nullptr)
 					setLoadStoreTexture(gptype, iter->second.slot, false, nullptr, surface);
 				else
-					setLoadStoreTexture(gptype, iter->second.slot, true, texture->getCore(), surface);
+					setLoadStoreTexture(gptype, iter->second.slot, true, texture, surface);
 			}
 		}
 
 		for(auto iter = paramDesc.samplers.begin(); iter != paramDesc.samplers.end(); ++iter)
 		{
-			HSamplerState& samplerState = bindableParams->getSamplerState(iter->second.slot);
+			SPtr<SamplerStateCore>& samplerState = bindableParams->getSamplerState(iter->second.slot);
 
 			if(samplerState == nullptr)
 				setSamplerState(gptype, iter->second.slot, SamplerState::getDefault()->getCore());
 			else
-				setSamplerState(gptype, iter->second.slot, samplerState->getCore());
+				setSamplerState(gptype, iter->second.slot, samplerState);
 
 			glProgramUniform1i(glProgram, iter->second.slot, getGLTextureUnit(gptype, iter->second.slot));
 		}
@@ -294,24 +294,23 @@ namespace BansheeEngine
 		UINT32 blockBinding = 0;
 		for(auto iter = paramDesc.paramBlocks.begin(); iter != paramDesc.paramBlocks.end(); ++iter)
 		{
-			GpuParamBlockBufferPtr paramBlockBuffer = bindableParams->getParamBlockBuffer(iter->second.slot);
+			SPtr<GpuParamBlockBufferCore> paramBlockBuffer = bindableParams->getParamBlockBuffer(iter->second.slot);
 			if(paramBlockBuffer == nullptr)
 				continue;
 
-			SPtr<GpuParamBlockBufferCore> paramBlockBufferCore = paramBlockBuffer->getCore();
 			if(iter->second.slot == 0)
 			{
 				// 0 means uniforms are not in block, in which case we handle it specially
 				if (uniformBufferData == nullptr && paramBlockBuffer->getSize() > 0)
 				{
 					uniformBufferData = (UINT8*)bs_alloc<ScratchAlloc>(paramBlockBuffer->getSize());
-					paramBlockBufferCore->readData(uniformBufferData);
+					paramBlockBuffer->readFromGPU(uniformBufferData);
 				}
 
 				continue;
 			}
 
-			const GLGpuParamBlockBufferCore* glParamBlockBuffer = static_cast<const GLGpuParamBlockBufferCore*>(paramBlockBufferCore.get());
+			const GLGpuParamBlockBufferCore* glParamBlockBuffer = static_cast<const GLGpuParamBlockBufferCore*>(paramBlockBuffer.get());
 
 			UINT32 globalBlockBinding = getGLUniformBlockBinding(gptype, blockBinding);
 			glUniformBlockBinding(glProgram, iter->second.slot - 1, globalBlockBinding);

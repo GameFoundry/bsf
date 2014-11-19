@@ -92,7 +92,7 @@ namespace BansheeEngine
 		struct IconRenderData
 		{
 			UINT32 count;
-			HTexture texture;
+			SPtr<TextureCore> texture;
 		};
 
 		struct CoreInitData
@@ -171,35 +171,35 @@ namespace BansheeEngine
 		struct SolidMaterialData
 		{
 			MaterialProxyPtr proxy;
-			GpuParamMat4 mViewProj;
+			GpuParamMat4Core mViewProj;
 		};
 
 		struct WireMaterialData
 		{
 			MaterialProxyPtr proxy;
-			GpuParamMat4 mViewProj;
+			GpuParamMat4Core mViewProj;
 		};
 
 		struct IconMaterialData
 		{
 			MaterialProxyPtr proxy;
-			GpuParamsPtr mFragParams[2];
-			GpuParamMat4 mViewProj[2];
-			GpuParamTexture mTexture[2];
+			SPtr<GpuParamsCore> mFragParams[2];
+			GpuParamMat4Core mViewProj[2];
+			GpuParamTextureCore mTexture[2];
 		};
 
 		struct PickingMaterialData
 		{
 			MaterialProxyPtr proxy;
-			GpuParamMat4 mViewProj;
+			GpuParamMat4Core mViewProj;
 		};
 
 		struct AlphaPickingMaterialData
 		{
 			MaterialProxyPtr proxy;
-			GpuParamsPtr mFragParams;
-			GpuParamMat4 mViewProj;
-			GpuParamTexture mTexture;
+			SPtr<GpuParamsCore> mFragParams;
+			GpuParamMat4Core mViewProj;
+			GpuParamTextureCore mTexture;
 		};
 
 		struct PrivatelyConstuct { };
