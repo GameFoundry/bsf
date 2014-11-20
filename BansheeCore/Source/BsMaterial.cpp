@@ -109,7 +109,7 @@ namespace BansheeEngine
 			Map<String, GpuParamBlockBufferPtr> paramBlockBuffers;
 
 			// Create param blocks
-			const Map<String, SHADER_PARAM_BLOCK_DESC>& shaderDesc = mShader->_getParamBlocks();
+			const Map<String, SHADER_PARAM_BLOCK_DESC>& shaderDesc = mShader->getParamBlocks();
 			for(auto iter = validShareableParamBlocks.begin(); iter != validShareableParamBlocks.end(); ++iter)
 			{
 				bool createBlockBuffer = true;
@@ -146,7 +146,7 @@ namespace BansheeEngine
 			}
 
 			// Create data param mappings
-			const Map<String, SHADER_DATA_PARAM_DESC>& dataParamDesc = mShader->_getDataParams();
+			const Map<String, SHADER_DATA_PARAM_DESC>& dataParamDesc = mShader->getDataParams();
 			for(auto iter = dataParamDesc.begin(); iter != dataParamDesc.end(); ++iter)
 			{
 				auto findIter = validDataParameters.find(iter->second.gpuVariableName);
@@ -179,7 +179,7 @@ namespace BansheeEngine
 			}
 
 			// Create object param mappings
-			const Map<String, SHADER_OBJECT_PARAM_DESC>& objectParamDesc = mShader->_getObjectParams();
+			const Map<String, SHADER_OBJECT_PARAM_DESC>& objectParamDesc = mShader->getObjectParams();
 			for(auto iter = objectParamDesc.begin(); iter != objectParamDesc.end(); ++iter)
 			{
 				const Vector<String>& gpuVariableNames = iter->second.gpuVariableNames;
@@ -730,18 +730,12 @@ namespace BansheeEngine
 
 	bool Material::_isCoreDirty(MaterialDirtyFlag flag) const
 	{ 
-		return (mCoreDirtyFlags & (UINT32)flag) != 0 || (mShader != nullptr && mShader->_isCoreDirty(ShaderDirtyFlag::Shader));
+		return (mCoreDirtyFlags & (UINT32)flag) != 0;
 	}
 
 	void Material::_markCoreClean(MaterialDirtyFlag flag)
 	{ 
 		mCoreDirtyFlags &= ~(UINT32)flag;
-
-		if (flag == MaterialDirtyFlag::Material)
-		{
-			if (mShader != nullptr)
-				mShader->_markCoreClean(ShaderDirtyFlag::Shader);
-		}
 	}
 
 	MaterialProxyPtr Material::_createProxy()
@@ -819,13 +813,7 @@ namespace BansheeEngine
 			passData.stencilRefValue = pass->getStencilRefValue();
 		}
 
-		if (mShader->_isCoreDirty(ShaderDirtyFlag::Proxy))
-		{
-			mShader->_setActiveProxy(mShader->_createProxy());
-			mShader->_markCoreClean(ShaderDirtyFlag::Proxy);
-		}
-
-		proxy->shader = mShader->_getActiveProxy();
+		proxy->shader = mShader->getCore();
 
 		return proxy;
 	}

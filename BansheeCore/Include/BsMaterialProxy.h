@@ -54,7 +54,7 @@ namespace BansheeEngine
 		Vector<MaterialProxyPass> passes;
 		Vector<SPtr<GpuParamsCore>> params;
 
-		ShaderProxyPtr shader;
+		SPtr<ShaderCore> shader;
 
 		Vector<BufferBindInfo> rendererBuffers;
 	};

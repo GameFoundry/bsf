@@ -353,7 +353,6 @@
     <ClInclude Include="Include\BsOcclusionQuery.h" />
     <ClInclude Include="Include\BsPixelBuffer.h" />
     <ClInclude Include="Include\BsGpuProgIncludeImporter.h" />
-    <ClInclude Include="Include\BsShaderProxy.h" />
     <ClInclude Include="Include\BsSubMesh.h" />
     <ClInclude Include="Include\BsTextureImportOptions.h" />
     <ClInclude Include="Include\BsTextureImportOptionsRTTI.h" />

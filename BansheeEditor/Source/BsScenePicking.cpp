@@ -160,7 +160,7 @@ namespace BansheeEngine
 						HTexture mainTexture;
 						if (useAlphaShader)
 						{
-							const Map<String, SHADER_OBJECT_PARAM_DESC>& objectParams = originalMat->getShader()->_getObjectParams();
+							const Map<String, SHADER_OBJECT_PARAM_DESC>& objectParams = originalMat->getShader()->getObjectParams();
 							for (auto& objectParam : objectParams)
 							{
 								if (objectParam.second.rendererSemantic == RPS_MainTex)

@@ -62,9 +62,11 @@ namespace BansheeEngine
 	 *			system, render manager and other properties. So make sure to add most important techniques
 	 *			first so you make sure they are used if they are supported.
 	 */
-	class BS_CORE_EXPORT Shader : public Resource
+	class BS_CORE_EXPORT ShaderBase
 	{
 	public:
+		virtual ~ShaderBase() { }
+
 		/**
 		 * @brief	Adds a new technique that supports the provided render system
 		 *			and renderer to the shader. It's up to the caller to populate the
@@ -236,93 +238,102 @@ namespace BansheeEngine
 
 		/** 
 		 * @brief	Returns a map of all data parameters in the shader.
-		 * 			
-		 * @note	Internal method.
 		 */
-		const Map<String, SHADER_DATA_PARAM_DESC>& _getDataParams() const { return mDataParams; }
+		const Map<String, SHADER_DATA_PARAM_DESC>& getDataParams() const { return mDataParams; }
 
 		/** 
 		 * @brief	Returns a map of all object parameters in the shader. 
-		 * 			
-		 * @note	Internal method.
 		 */
-		const Map<String, SHADER_OBJECT_PARAM_DESC>& _getObjectParams() const { return mObjectParams; }
+		const Map<String, SHADER_OBJECT_PARAM_DESC>& getObjectParams() const { return mObjectParams; }
 
 		/** 
 		 * @brief	Returns a map of all parameter blocks.
-		 * 			
-		 * @note	Internal method.
 		 */
-		const Map<String, SHADER_PARAM_BLOCK_DESC>& _getParamBlocks() const { return mParamBlocks; }
+		const Map<String, SHADER_PARAM_BLOCK_DESC>& getParamBlocks() const { return mParamBlocks; }
+
+	protected:
+		ShaderBase(const String& name);
+
+		/**
+		 * @copydoc	CoreObject::markCoreDirty
+		 */
+		virtual void _markCoreDirty() { }
+
+		QueueSortType mQueueSortType;
+		UINT32 mQueuePriority;
+		bool mSeparablePasses;
+		
+		Map<String, SHADER_DATA_PARAM_DESC> mDataParams;
+		Map<String, SHADER_OBJECT_PARAM_DESC> mObjectParams;
+		Map<String, SHADER_PARAM_BLOCK_DESC> mParamBlocks;
+
+		Vector<TechniquePtr> mTechniques;
+		String mName;
+	};
+
+	/**
+	 * @copydoc	ShaderBase
+	 */
+	class BS_CORE_EXPORT ShaderCore : public CoreObjectCore, public ShaderBase
+	{
+	public:
+		/**
+		 * @copydoc	Shader::create
+		 */
+		static SPtr<ShaderCore> create(const String& name);
+
+	protected:
+		friend class Shader;
+
+		ShaderCore(const String& name);
+
+		/**
+		 * @copydoc	CoreObjectCore::syncToCore
+		 */
+		void syncToCore(const CoreSyncData& data);
+	};
+
+	/**
+	 * @copydoc	ShaderBase
+	 */
+	class BS_CORE_EXPORT Shader : public Resource, public ShaderBase
+	{
+	public:
+		/**
+		 * @brief	Retrieves an implementation of a shader usable only from the
+		 *			core thread.
+		 */
+		SPtr<ShaderCore> getCore() const;
 
 		static bool isSampler(GpuParamObjectType type);
 		static bool isTexture(GpuParamObjectType type);
 		static bool isBuffer(GpuParamObjectType type);
 
-		/** 
+		/**
 		 * @brief	Returns an empty shader object with the specified name. Caller must register
 		 *			techniques with the shader before using it in a Material.
 		 */
 		static ShaderPtr create(const String& name);
 
-		/************************************************************************/
-		/* 								CORE PROXY                      		*/
-		/************************************************************************/
-
-		/**
-		 * @brief	Checks is the core dirty flag set. This is used by external systems 
-		 *			to know when internal data has changed and core thread potentially needs to be notified.
-		 */
-		bool _isCoreDirty(ShaderDirtyFlag flag) const { return (mCoreDirtyFlags & (UINT32)flag) != 0; }
-
-		/**
-		 * @brief	Marks the core dirty flag as clean.
-		 */
-		void _markCoreClean(ShaderDirtyFlag flag) { mCoreDirtyFlags &= ~(UINT32)flag; }
-
-		/**
-		 * @brief	Gets the currently active proxy of this material.
-		 */
-		ShaderProxyPtr _getActiveProxy() const { return mActiveProxy; }
-
-		/**
-		 * @brief	Sets an active proxy for this material.
-		 */
-		void _setActiveProxy(const ShaderProxyPtr& proxy) { mActiveProxy = proxy; }
-
-		/**
-		 * @brief	Creates a new core proxy from the currently set shader data. Core proxies ensure
-		 *			that the core thread has all the necessary data, while avoiding the need
-		 *			to manage Shader itself on the core thread.
-		 *
-		 * @note	Sim thread only. 
-		 *			You generally need to update the core thread with a new proxy whenever core 
-		 *			dirty flag is set.
-		 */
-		ShaderProxyPtr _createProxy();
-
 	private:
 		Shader(const String& name);
 
 		/**
-		 * @brief	Marks the core data as dirty.
+		 * @copydoc	CoreObject::createCore
 		 */
-		void markCoreDirty() { mCoreDirtyFlags = 0xFFFFFFFF; }
+		SPtr<CoreObjectCore> createCore() const;
+
+		/**
+		 * @copydoc	CoreObject::markCoreDirty
+		 */
+		void _markCoreDirty();
+
+		/**
+		 * @copydoc	CoreObject::syncToCore
+		 */
+		CoreSyncData syncToCore(FrameAlloc* allocator);
 
 	private:
-		String mName;
-		QueueSortType mQueueSortType;
-		UINT32 mQueuePriority;
-		bool mSeparablePasses;
-		Vector<TechniquePtr> mTechniques;
-		UINT32 mCoreDirtyFlags;
-
-		Map<String, SHADER_DATA_PARAM_DESC> mDataParams;
-		Map<String, SHADER_OBJECT_PARAM_DESC> mObjectParams;
-		Map<String, SHADER_PARAM_BLOCK_DESC> mParamBlocks;
-
-		ShaderProxyPtr mActiveProxy;
-
 		/************************************************************************/
 		/* 								RTTI		                     		*/
 		/************************************************************************/

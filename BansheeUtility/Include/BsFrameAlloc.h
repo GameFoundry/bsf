@@ -20,7 +20,7 @@ namespace BansheeEngine
 			MemBlock(UINT32 size);
 			~MemBlock();
 
-			UINT8* alloc(UINT8 amount);
+			UINT8* alloc(UINT32 amount);
 			void clear();
 
 			UINT8* mData;

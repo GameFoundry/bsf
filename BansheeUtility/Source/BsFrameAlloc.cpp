@@ -10,7 +10,7 @@ namespace BansheeEngine
 	FrameAlloc::MemBlock::~MemBlock()
 	{ }
 
-	UINT8* FrameAlloc::MemBlock::alloc(UINT8 amount)
+	UINT8* FrameAlloc::MemBlock::alloc(UINT32 amount)
 	{
 		UINT8* freePtr = &mData[mFreePtr];
 		mFreePtr += amount;

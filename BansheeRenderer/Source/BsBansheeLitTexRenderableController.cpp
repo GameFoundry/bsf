@@ -1,7 +1,6 @@
 #include "BsBansheeLitTexRenderableController.h"
 #include "BsRenderableProxy.h"
 #include "BsShader.h"
-#include "BsShaderProxy.h"
 #include "BsGpuParams.h"
 #include "BsBansheeRenderer.h"
 #include "BsHardwareBufferManager.h"
@@ -33,7 +32,7 @@ namespace BansheeEngine
 		bool foundPerFrame = false;
 		bool foundPerObject = false;
 
-		const Map<String, SHADER_DATA_PARAM_DESC>& dataParams = defaultShader->_getDataParams();
+		const Map<String, SHADER_DATA_PARAM_DESC>& dataParams = defaultShader->getDataParams();
 		for (auto& param : dataParams)
 		{
 			if (!foundLightDir && param.second.rendererSemantic == RPS_LightDir)
@@ -68,7 +67,7 @@ namespace BansheeEngine
 			}
 		}
 
-		const Map<String, SHADER_PARAM_BLOCK_DESC>& paramBlocks = defaultShader->_getParamBlocks();
+		const Map<String, SHADER_PARAM_BLOCK_DESC>& paramBlocks = defaultShader->getParamBlocks();
 		for (auto& block : paramBlocks)
 		{
 			if (!foundStatic && block.second.rendererSemantic == RBS_Static)
@@ -133,10 +132,10 @@ namespace BansheeEngine
 		element->rendererData = PerObjectData();
 		PerObjectData* rendererData = any_cast_unsafe<PerObjectData>(&element->rendererData);
 
-		ShaderProxyPtr shader = element->material->shader;
+		SPtr<ShaderCore> shader = element->material->shader;
 
-		const Map<String, SHADER_PARAM_BLOCK_DESC>& paramBlockDescs = shader->paramBlocks;
-		const Map<String, SHADER_DATA_PARAM_DESC>& dataParamDescs = shader->dataParams;
+		const Map<String, SHADER_PARAM_BLOCK_DESC>& paramBlockDescs = shader->getParamBlocks();
+		const Map<String, SHADER_DATA_PARAM_DESC>& dataParamDescs = shader->getDataParams();
 		String staticBlockName;
 		String perFrameBlockName;
 		String perObjectBlockName;
@@ -262,7 +261,7 @@ namespace BansheeEngine
 			rendererData->perObjectParamBuffer->flushToGPU();
 	}
 
-	ShaderPtr LitTexRenderableController::createDefaultShader()
+	SPtr<ShaderCore> LitTexRenderableController::createDefaultShader()
 	{
 		String rsName = RenderSystem::instance().getName();
 
@@ -372,7 +371,7 @@ namespace BansheeEngine
 		vsProgram.synchronize();
 		psProgram.synchronize();
 
-		ShaderPtr defaultShader = Shader::create("LitTexDefault");
+		SPtr<ShaderCore> defaultShader = ShaderCore::create("LitTexDefault");
 		defaultShader->setParamBlockAttribs("Static", true, GPBU_DYNAMIC, RBS_Static);
 		defaultShader->setParamBlockAttribs("PerFrame", true, GPBU_DYNAMIC, RBS_PerFrame);
 		defaultShader->setParamBlockAttribs("PerObject", true, GPBU_DYNAMIC, RBS_PerObject);

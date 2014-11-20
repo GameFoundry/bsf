@@ -61,9 +61,9 @@ namespace BansheeEngine
 		 *			It is used for matching custom shaders and determining if they
 		 *			comply with lit textured renderable requirements.
 		 */
-		ShaderPtr createDefaultShader();
+		SPtr<ShaderCore> createDefaultShader();
 
-		ShaderPtr defaultShader;
+		SPtr<ShaderCore> defaultShader;
 
 		GpuParamBlockDesc staticParamBlockDesc;
 		GpuParamBlockDesc perFrameParamBlockDesc;

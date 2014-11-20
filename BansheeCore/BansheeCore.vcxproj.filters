@@ -501,9 +501,6 @@
     <ClInclude Include="Include\BsMaterialProxy.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsShaderProxy.h">
-      <Filter>Header Files\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsTextureImportOptions.h">
       <Filter>Header Files\Importer</Filter>
     </ClInclude>

@@ -145,7 +145,6 @@ namespace BansheeEngine
 	struct MaterialProxyPass;
 	class MeshCoreBase;
 	class MeshCore;
-	struct ShaderProxy;
 	class ViewportProxy;
 	class DrawList;
 	struct SubMesh;
@@ -156,6 +155,7 @@ namespace BansheeEngine
 	class GpuBufferCore;
 	class GpuParamBlockBufferCore;
 	class GpuParamsCore;
+	class ShaderCore;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -252,7 +252,6 @@ namespace BansheeEngine
 	typedef std::shared_ptr<RenderQueue> RenderQueuePtr;
 	typedef std::shared_ptr<CameraProxy> CameraProxyPtr;
 	typedef std::shared_ptr<MaterialProxy> MaterialProxyPtr;
-	typedef std::shared_ptr<ShaderProxy> ShaderProxyPtr;
 	typedef std::shared_ptr<ViewportProxy> ViewportProxyPtr;
 	typedef std::shared_ptr<GpuParamDesc> GpuParamDescPtr;
 	typedef std::shared_ptr<ResourceMetaData> ResourceMetaDataPtr;

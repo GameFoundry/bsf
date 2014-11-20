@@ -1,8 +1,8 @@
 #include "BsRenderQueue.h"
 #include "BsMaterialProxy.h"
-#include "BsShaderProxy.h"
 #include "BsRenderableProxy.h"
 #include "BsSubMesh.h"
+#include "BsShader.h"
 #include "BsMesh.h"
 
 namespace BansheeEngine
@@ -30,8 +30,8 @@ namespace BansheeEngine
 		renderOp.subMesh = element->subMesh;
 
 		sortData.distFromCamera = distFromCamera;
-		sortData.priority = element->material->shader->queuePriority;
-		sortData.sortType = element->material->shader->queueSortType;
+		sortData.priority = element->material->shader->getQueuePriority();
+		sortData.sortType = element->material->shader->getQueueSortType();
 		sortData.seqIdx = (UINT32)mRenderElements.size();
 
 		// TODO - Make sure elements are cached so we dont allocate memory for them every frame
@@ -49,8 +49,8 @@ namespace BansheeEngine
 		renderOp.subMesh = subMesh;
 
 		sortData.distFromCamera = distFromCamera;
-		sortData.priority = material->shader->queuePriority;
-		sortData.sortType = material->shader->queueSortType;
+		sortData.priority = material->shader->getQueuePriority();
+		sortData.sortType = material->shader->getQueueSortType();
 		sortData.seqIdx = (UINT32)mRenderElements.size();
 
 		// TODO - Make sure elements are cached so we dont allocate memory for them every frame
