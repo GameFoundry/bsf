@@ -8,7 +8,10 @@ namespace BansheeEngine
 	{ }
 
 	GLMultiRenderTextureCore::~GLMultiRenderTextureCore()
-	{ }
+	{ 
+		if (mFB != nullptr)
+			bs_delete(mFB);
+	}
 
 	void GLMultiRenderTextureCore::initialize()
 	{
@@ -69,14 +72,6 @@ namespace BansheeEngine
 		}
 
 		MultiRenderTextureCore::initialize();
-	}
-
-	void GLMultiRenderTextureCore::destroy()
-	{
-		if (mFB != nullptr)
-			bs_delete(mFB);
-
-		MultiRenderTextureCore::destroy();
 	}
 
 	void GLMultiRenderTextureCore::getCustomAttribute(const String& name, void* pData) const

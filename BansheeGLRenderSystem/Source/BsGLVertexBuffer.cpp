@@ -12,6 +12,16 @@ namespace BansheeEngine
 
     }
 
+	GLVertexBufferCore::~GLVertexBufferCore()
+	{
+		glDeleteBuffers(1, &mBufferId);
+
+		while (mVAObjects.size() > 0)
+			GLVertexArrayObjectManager::instance().notifyBufferDestroyed(mVAObjects[0]);
+
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_VertexBuffer);
+	}
+
 	void GLVertexBufferCore::initialize()
 	{
 		glGenBuffers(1, &mBufferId);
@@ -29,17 +39,6 @@ namespace BansheeEngine
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_VertexBuffer);
 		VertexBufferCore::initialize();
-	}
-
-	void GLVertexBufferCore::destroy()
-	{
-		glDeleteBuffers(1, &mBufferId);
-
-		while (mVAObjects.size() > 0)
-			GLVertexArrayObjectManager::instance().notifyBufferDestroyed(mVAObjects[0]);
-
-		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_VertexBuffer);
-		VertexBufferCore::destroy();
 	}
 
 	void GLVertexBufferCore::registerVAO(const GLVertexArrayObject& vao)

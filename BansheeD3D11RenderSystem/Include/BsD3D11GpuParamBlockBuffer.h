@@ -12,6 +12,7 @@ namespace BansheeEngine
 	{
 	public:
 		D3D11GpuParamBlockBufferCore(UINT32 size, GpuParamBlockUsage usage);
+		~D3D11GpuParamBlockBufferCore();
 
 		/**
 		 * @copydoc GpuParamBlockBufferCore::writeData.
@@ -32,11 +33,6 @@ namespace BansheeEngine
 		 * @copydoc GpuParamBlockBufferCore::initialize
 		 */
 		virtual void initialize();
-
-		/**
-		 * @copydoc GpuParamBlockBufferCore::destroy
-		 */
-		virtual void destroy();
 
 	private:
 		D3D11HardwareBuffer* mBuffer;

@@ -12,6 +12,14 @@ namespace BansheeEngine
 
 	}
 
+	D3D11GpuParamBlockBufferCore::~D3D11GpuParamBlockBufferCore()
+	{
+		if (mBuffer != nullptr)
+			bs_delete<PoolAlloc>(mBuffer);
+
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_GpuParamBuffer);
+	}
+
 	void D3D11GpuParamBlockBufferCore::initialize()
 	{
 		D3D11RenderSystem* d3d11rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
@@ -29,15 +37,6 @@ namespace BansheeEngine
 		GpuParamBlockBufferCore::initialize();
 	}
 
-	void D3D11GpuParamBlockBufferCore::destroy()
-	{
-		if(mBuffer != nullptr)
-			bs_delete<PoolAlloc>(mBuffer);
-
-		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_GpuParamBuffer);
-
-		GpuParamBlockBufferCore::destroy();
-	}
 
 	ID3D11Buffer* D3D11GpuParamBlockBufferCore::getD3D11Buffer() const
 	{

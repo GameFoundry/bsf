@@ -53,11 +53,6 @@ namespace BansheeEngine
 		 * @copydoc GpuProgramCore::initialize
 		 */
 		void initialize();
-
-		/**
-		 * @copydoc GpuProgramCore::destroy
-		 */
-		void destroy();
       
 		/**
 		 * @brief	Loads the GPU program from compiled microcode.
@@ -101,11 +96,6 @@ namespace BansheeEngine
 		D3D9GpuVertexProgramCore(const String& source, const String& entryPoint, GpuProgramProfile profile);
 
 		/**
-		 * @copydoc D3D9GpuProgramCore::destroy.
-		 */
-		void destroy();
-
-		/**
 		 * @copydoc	D3D9GpuProgramCore::loadFromMicrocode
 		 */
         void loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode);
@@ -139,11 +129,6 @@ namespace BansheeEngine
 		friend class D3D9HLSLProgramFactory;
 
 		D3D9GpuFragmentProgramCore(const String& source, const String& entryPoint, GpuProgramProfile profile);
-
-		/**
-		 * @copydoc D3D9GpuProgramCore::destroy
-		 */
-		void destroy();
 
 		/**
 		 * @copydoc	D3D9GpuProgramCore::loadFromMicrocode

@@ -26,7 +26,7 @@ namespace BansheeEngine
 
     public:
 		D3D9IndexBufferCore(IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage);
-		~D3D9IndexBufferCore() { }
+		~D3D9IndexBufferCore();
 
 		/**
 		 * @copydoc	IndexBufferCore::readData
@@ -89,11 +89,6 @@ namespace BansheeEngine
 		 */
 		void initialize();	
 		
-		/**
-		 * @copydoc IndexBufferCore::destroy
-		 */
-		void destroy();
-
 	protected:		
 		Map<IDirect3DDevice9*, BufferResources*> mMapDeviceToBufferResources;
 		D3DINDEXBUFFER_DESC	mBufferDesc;	

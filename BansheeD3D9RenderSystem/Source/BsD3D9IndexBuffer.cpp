@@ -13,6 +13,28 @@ namespace BansheeEngine
 		: IndexBufferCore(idxType, numIndexes, usage), mSystemMemoryBuffer(nullptr)
 	{ }
 
+	D3D9IndexBufferCore::~D3D9IndexBufferCore()
+	{
+		D3D9_DEVICE_ACCESS_CRITICAL_SECTION;
+
+		for (auto& bufferResourcesPair : mMapDeviceToBufferResources)
+		{
+			BufferResources* bufferResources = bufferResourcesPair.second;
+
+			SAFE_RELEASE(bufferResources->mBuffer);
+
+			if (bufferResources != nullptr)
+				bs_delete(bufferResources);
+		}
+
+		mMapDeviceToBufferResources.clear();
+
+		if (mSystemMemoryBuffer != nullptr)
+			bs_free(mSystemMemoryBuffer);
+
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_IndexBuffer);
+	}
+
 	void D3D9IndexBufferCore::initialize()
 	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION;
@@ -37,29 +59,6 @@ namespace BansheeEngine
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_IndexBuffer);
 		IndexBufferCore::initialize();
-	}
-
-	void D3D9IndexBufferCore::destroy()
-	{
-		D3D9_DEVICE_ACCESS_CRITICAL_SECTION;
-
-		for (auto& bufferResourcesPair : mMapDeviceToBufferResources)
-		{
-			BufferResources* bufferResources = bufferResourcesPair.second;
-
-			SAFE_RELEASE(bufferResources->mBuffer);
-
-			if (bufferResources != nullptr)
-				bs_delete(bufferResources);
-		}
-
-		mMapDeviceToBufferResources.clear();   
-
-		if(mSystemMemoryBuffer != nullptr)
-			bs_free(mSystemMemoryBuffer);
-
-		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_IndexBuffer);
-		IndexBufferCore::destroy();
 	}
 
 	void* D3D9IndexBufferCore::lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options)

@@ -24,7 +24,23 @@ namespace BansheeEngine
 	{ }
 
 	D3D9RenderWindowCore::~D3D9RenderWindowCore()
-	{ }
+	{ 
+		if (mDevice != nullptr)
+		{
+			mDevice->detachRenderWindow(this);
+			mDevice = nullptr;
+		}
+
+		if (mHWnd && !mIsExternal)
+		{
+			DestroyWindow(mHWnd);
+		}
+
+		mHWnd = 0;
+		mProperties.mActive = false;
+
+		markCoreDirty();
+	}
 
 	void D3D9RenderWindowCore::initialize()
 	{
@@ -222,27 +238,6 @@ namespace BansheeEngine
 
 		D3D9RenderSystem* rs = static_cast<D3D9RenderSystem*>(RenderSystem::instancePtr());
 		rs->registerWindow(*this);
-	}
-
-	void D3D9RenderWindowCore::destroy()
-	{
-		if (mDevice != nullptr)
-		{
-			mDevice->detachRenderWindow(this);
-			mDevice = nullptr;
-		}
-
-		if (mHWnd && !mIsExternal)
-		{
-			DestroyWindow(mHWnd);
-		}
-
-		mHWnd = 0;
-		mProperties.mActive = false;
-
-		markCoreDirty();
-
-		RenderWindowCore::destroy();
 	}
 
 	void D3D9RenderWindowCore::setFullscreen(UINT32 width, UINT32 height, float refreshRate, UINT32 monitorIdx)

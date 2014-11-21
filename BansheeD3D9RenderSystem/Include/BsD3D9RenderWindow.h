@@ -132,11 +132,6 @@ namespace BansheeEngine
 		virtual void initialize();
 
 		/**
-		 * @copydoc	CoreObjectCore::destroy
-		 */
-		virtual void destroy();
-
-		/**
 		 * @brief	Updates window coordinates and size from actual values provided by Windows.
 		 */
 		void updateWindowRect();

@@ -39,11 +39,6 @@ namespace BansheeEngine
 		 */
 		void releaseDeclaration();
 
-		/**
-		 * @copydoc	VertexDeclarationCore::destroy
-		 */
-		void destroy();
-
 	protected:        
 		Map<IDirect3DDevice9*, IDirect3DVertexDeclaration9*> mMapDeviceToDeclaration;
     };

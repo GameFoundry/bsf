@@ -168,11 +168,6 @@ namespace BansheeEngine
 		void clearBufferViews();
 
 		/**
-		 * @copydoc CoreObject::destroy()
-		 */
-		virtual void destroy();
-
-		/**
 		 * @brief	Helper class to help with reference counting for GPU buffer views.
 		 */
 		struct GpuBufferReference

@@ -100,11 +100,6 @@ namespace BansheeEngine
 		void initialize();
 		
 		/**
-		 * @copydoc TextureCore::destroy
-		 */
-		void destroy();
-
-		/**
 		 * @copydoc TextureCore::lock
 		 */
 		PixelData lockImpl(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0);

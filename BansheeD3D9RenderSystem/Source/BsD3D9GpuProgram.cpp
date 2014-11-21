@@ -19,7 +19,11 @@ namespace BansheeEngine
     { }
 
 	D3D9GpuProgramCore::~D3D9GpuProgramCore()
-	{ }
+	{ 
+		SAFE_RELEASE(mMicrocode);
+
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_GpuProgram);
+	}
 
 	void D3D9GpuProgramCore::initialize()
 	{
@@ -199,14 +203,6 @@ namespace BansheeEngine
 		GpuProgramCore::initialize();
 	}
 
-	void D3D9GpuProgramCore::destroy()
-	{
-		SAFE_RELEASE(mMicrocode);
-
-		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_GpuProgram);
-		GpuProgramCore::destroy();
-	}
-
 	D3D9GpuVertexProgramCore::D3D9GpuVertexProgramCore(const String& source, const String& entryPoint,
 		GpuProgramProfile profile)
 		: D3D9GpuProgramCore(source, entryPoint, GPT_VERTEX_PROGRAM, profile)
@@ -216,10 +212,6 @@ namespace BansheeEngine
 
 	D3D9GpuVertexProgramCore::~D3D9GpuVertexProgramCore()
 	{	
-	}
-
-	void D3D9GpuVertexProgramCore::destroy()
-	{
 		auto it = mMapDeviceToVertexShader.begin();
 
 		while (it != mMapDeviceToVertexShader.end())
@@ -227,9 +219,7 @@ namespace BansheeEngine
 			SAFE_RELEASE(it->second);
 			++it;
 		}
-		mMapDeviceToVertexShader.clear();	
-
-		D3D9GpuProgramCore::destroy();
+		mMapDeviceToVertexShader.clear();
 	}
 
     void D3D9GpuVertexProgramCore::loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode)
@@ -299,10 +289,6 @@ namespace BansheeEngine
 
 	D3D9GpuFragmentProgramCore::~D3D9GpuFragmentProgramCore()
 	{
-	}
-
-	void D3D9GpuFragmentProgramCore::destroy()
-	{
 		auto it = mMapDeviceToPixelShader.begin();
 
 		while (it != mMapDeviceToPixelShader.end())
@@ -310,9 +296,7 @@ namespace BansheeEngine
 			SAFE_RELEASE(it->second);
 			++it;
 		}
-		mMapDeviceToPixelShader.clear();	
-
-		D3D9GpuProgramCore::destroy();
+		mMapDeviceToPixelShader.clear();
 	}
 
 	void D3D9GpuFragmentProgramCore::loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode)

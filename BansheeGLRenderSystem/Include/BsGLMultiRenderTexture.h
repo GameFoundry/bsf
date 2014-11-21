@@ -31,11 +31,6 @@ namespace BansheeEngine
 		 */
 		virtual void initialize();
 
-		/**
-		 * @copydoc	CoreObjectCore::destroy
-		 */
-		virtual void destroy();
-
 	private:
 		GLFrameBufferObject* mFB;
 

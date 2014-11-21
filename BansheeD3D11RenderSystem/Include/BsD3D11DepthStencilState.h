@@ -29,11 +29,6 @@ namespace BansheeEngine
 		 */
 		void initialize();
 
-		/**
-		 * @copydoc DepthStencilStateCore::destroy()
-		 */
-		void destroy();
-
 		ID3D11DepthStencilState* mDepthStencilState;
 	};
 }

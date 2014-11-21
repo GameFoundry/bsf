@@ -75,7 +75,15 @@ namespace BansheeEngine
     { }
 
 	GLSLGpuProgramCore::~GLSLGpuProgramCore()
-    { }
+    { 
+		if (mIsCompiled && mGLHandle != 0)
+		{
+			glDeleteProgram(mGLHandle);
+			mGLHandle = 0;
+		}
+
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_GpuProgram);
+	}
 
 	void GLSLGpuProgramCore::initialize()
 	{
@@ -193,18 +201,6 @@ namespace BansheeEngine
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_GpuProgram);
 		GpuProgramCore::initialize();
-	}
-
-	void GLSLGpuProgramCore::destroy()
-	{
-		if (mIsCompiled && mGLHandle != 0)
-		{
-			glDeleteProgram(mGLHandle);
-			mGLHandle = 0;
-		}
-
-		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_GpuProgram);
-		GpuProgramCore::destroy();
 	}
 
 	bool GLSLGpuProgramCore::isSupported() const

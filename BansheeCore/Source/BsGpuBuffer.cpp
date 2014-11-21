@@ -24,13 +24,6 @@ namespace BansheeEngine
 		// I can't call it here since it needs a virtual method call
 	}
 
-	void GpuBufferCore::destroy()
-	{
-		clearBufferViews();
-
-		CoreObjectCore::destroy();
-	}
-
 	void GpuBufferCore::clearBufferViews()
 	{
 		for (auto iter = mBufferViews.begin(); iter != mBufferViews.end(); ++iter)

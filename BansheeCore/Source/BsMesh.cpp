@@ -21,6 +21,16 @@ namespace BansheeEngine
 		mVertexDesc(vertexDesc), mBufferType(bufferType), mIndexType(indexType), mTempInitialMeshData(initialMeshData)
 	{ }
 
+	MeshCore::~MeshCore()
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		mVertexData = nullptr;
+		mIndexBuffer = nullptr;
+		mVertexDesc = nullptr;
+		mTempInitialMeshData = nullptr;
+	}
+
 	void MeshCore::initialize()
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -57,30 +67,6 @@ namespace BansheeEngine
 		}
 
 		MeshCoreBase::initialize();
-	}
-
-	void MeshCore::destroy()
-	{
-		THROW_IF_NOT_CORE_THREAD;
-
-		if (mVertexData != nullptr)
-		{
-			for (UINT32 i = 0; i < mVertexData->getBufferCount(); i++)
-			{
-				if (mVertexData->getBuffer(i) != nullptr)
-					mVertexData->getBuffer(i)->destroy();
-			}
-		}
-
-		if (mIndexBuffer != nullptr)
-			mIndexBuffer->destroy();
-
-		mVertexData = nullptr;
-		mIndexBuffer = nullptr;
-		mVertexDesc = nullptr;
-		mTempInitialMeshData = nullptr;
-
-		MeshCoreBase::destroy();
 	}
 
 	std::shared_ptr<VertexData> MeshCore::getVertexData() const

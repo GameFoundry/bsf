@@ -160,6 +160,12 @@ namespace BansheeEngine
 		:GpuParamBlockBufferCore(size, usage), mData(nullptr)
 	{ }
 
+	GenericGpuParamBlockBufferCore::~GenericGpuParamBlockBufferCore()
+	{
+		if (mData != nullptr)
+			bs_free<ScratchAlloc>(mData);
+	}
+
 	void GenericGpuParamBlockBufferCore::writeToGPU(const UINT8* data)
 	{
 		memcpy(mData, data, mSize);
@@ -180,14 +186,6 @@ namespace BansheeEngine
 		memset(mData, 0, mSize);
 
 		GpuParamBlockBufferCore::initialize();
-	}
-
-	void GenericGpuParamBlockBufferCore::destroy()
-	{
-		if(mData != nullptr)
-			bs_free<ScratchAlloc>(mData);
-
-		GpuParamBlockBufferCore::destroy();
 	}
 
 	static GpuParamBlockBufferPtr create(UINT32 size, GpuParamBlockUsage usage)

@@ -29,11 +29,6 @@ namespace BansheeEngine
 		 */
 		void initialize();
 
-		/**
-		 * @copydoc BlendStateCore::destroy
-		 */
-		void destroy();
-
 		ID3D11BlendState* mBlendState;
 	};
 }

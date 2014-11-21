@@ -26,7 +26,7 @@ namespace BansheeEngine
 
     public:
 		D3D9VertexBufferCore(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage, bool streamOut);
-		~D3D9VertexBufferCore() { }
+		~D3D9VertexBufferCore();
 
 		/**
 		 * @copydoc	VertexBufferCore::readData
@@ -74,11 +74,6 @@ namespace BansheeEngine
 		 */
 		void initialize();	
 		
-		/**
-		 * @copydoc VertexBufferCore::destroy
-		 */
-		void destroy();
-
 		/**
 		 * @copydoc	VertexBufferCore::lockImpl
 		 */

@@ -20,7 +20,16 @@ namespace BansheeEngine
 	{ }
 
 	D3D11TextureCore::~D3D11TextureCore()
-	{ }
+	{ 
+		SAFE_RELEASE(mTex);
+		SAFE_RELEASE(mShaderResourceView);
+		SAFE_RELEASE(m1DTex);
+		SAFE_RELEASE(m2DTex);
+		SAFE_RELEASE(m3DTex);
+		SAFE_RELEASE(mStagingBuffer);
+
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Texture);
+	}
 
 	void D3D11TextureCore::initialize()
 	{
@@ -44,19 +53,6 @@ namespace BansheeEngine
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_Texture);
 		TextureCore::initialize();
-	}
-
-	void D3D11TextureCore::destroy()
-	{
-		SAFE_RELEASE(mTex);
-		SAFE_RELEASE(mShaderResourceView);
-		SAFE_RELEASE(m1DTex);
-		SAFE_RELEASE(m2DTex);
-		SAFE_RELEASE(m3DTex);
-		SAFE_RELEASE(mStagingBuffer);
-
-		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Texture);
-		TextureCore::destroy();
 	}
 
 	void D3D11TextureCore::copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, const SPtr<TextureCore>& target)

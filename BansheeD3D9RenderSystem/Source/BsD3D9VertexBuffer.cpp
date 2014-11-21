@@ -13,6 +13,28 @@ namespace BansheeEngine
 		: VertexBufferCore(vertexSize, numVertices, usage, streamOut), mSystemMemoryBuffer(nullptr)
     { }
 
+	D3D9VertexBufferCore::~D3D9VertexBufferCore()
+	{
+		D3D9_DEVICE_ACCESS_CRITICAL_SECTION;
+
+		for (auto& bufferResourcesPair : mMapDeviceToBufferResources)
+		{
+			BufferResources* bufferResources = bufferResourcesPair.second;
+
+			SAFE_RELEASE(bufferResources->mBuffer);
+
+			if (bufferResources != nullptr)
+				bs_delete(bufferResources);
+		}
+
+		mMapDeviceToBufferResources.clear();
+
+		if (mSystemMemoryBuffer != nullptr)
+			bs_free(mSystemMemoryBuffer);
+
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_VertexBuffer);
+	}
+
 	void D3D9VertexBufferCore::initialize()
 	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION;
@@ -37,29 +59,6 @@ namespace BansheeEngine
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_VertexBuffer);
 		VertexBufferCore::initialize();
-	}
-
-	void D3D9VertexBufferCore::destroy()
-	{
-		D3D9_DEVICE_ACCESS_CRITICAL_SECTION;
-
-		for (auto& bufferResourcesPair : mMapDeviceToBufferResources)
-		{
-			BufferResources* bufferResources = bufferResourcesPair.second;
-
-			SAFE_RELEASE(bufferResources->mBuffer);
-
-			if (bufferResources != nullptr)
-				bs_delete(bufferResources);
-		}
-
-		mMapDeviceToBufferResources.clear();
-
-		if (mSystemMemoryBuffer != nullptr)
-			bs_free(mSystemMemoryBuffer);
-
-		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_VertexBuffer);
-		VertexBufferCore::destroy();
 	}
 
 	void* D3D9VertexBufferCore::lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options)

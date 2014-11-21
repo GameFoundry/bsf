@@ -12,14 +12,10 @@ namespace BansheeEngine
     { }
 
 	D3D9VertexDeclarationCore::~D3D9VertexDeclarationCore()
-    {    }
-
-	void D3D9VertexDeclarationCore::destroy()
-	{
+    {    
 		releaseDeclaration();
 
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_VertexDeclaration);
-		VertexDeclarationCore::destroy();
 	}
 
 	void D3D9VertexDeclarationCore::notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device)

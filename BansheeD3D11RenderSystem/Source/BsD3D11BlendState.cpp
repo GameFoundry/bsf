@@ -12,6 +12,9 @@ namespace BansheeEngine
 
 	D3D11BlendStateCore::~D3D11BlendStateCore()
 	{
+		SAFE_RELEASE(mBlendState);
+
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_BlendState);
 	}
 
 	void D3D11BlendStateCore::initialize()
@@ -47,14 +50,5 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_BlendState);
 
 		BlendStateCore::initialize();
-	}
-
-	void D3D11BlendStateCore::destroy()
-	{
-		SAFE_RELEASE(mBlendState);
-
-		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_BlendState);
-
-		BlendStateCore::destroy();
 	}
 }

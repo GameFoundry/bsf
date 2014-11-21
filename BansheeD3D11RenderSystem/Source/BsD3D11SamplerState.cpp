@@ -12,6 +12,9 @@ namespace BansheeEngine
 
 	D3D11SamplerStateCore::~D3D11SamplerStateCore()
 	{
+		SAFE_RELEASE(mSamplerState);
+
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_SamplerState);
 	}
 
 	void D3D11SamplerStateCore::initialize()
@@ -102,14 +105,5 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_SamplerState);
 
 		SamplerStateCore::initialize();
-	}
-
-	void D3D11SamplerStateCore::destroy()
-	{
-		SAFE_RELEASE(mSamplerState);
-
-		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_SamplerState);
-
-		SamplerStateCore::destroy();
 	}
 }

@@ -52,11 +52,6 @@ namespace BansheeEngine
 		 */
 		void initialize();
 
-		/**
-		 * @copydoc GpuProgramCore::destroy
-		 */
-		void destroy();
-
 	private:
 		UINT32 mProgramID;
 		GLuint mGLHandle;

@@ -25,11 +25,6 @@ namespace BansheeEngine
 		 */
 		void initialize();
 
-		/**
-		 * @copydoc RasterizerStateCore::destroy
-		 */
-		void destroy();
-
 		ID3D11RasterizerState* mRasterizerState;
 	};
 }

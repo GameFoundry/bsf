@@ -23,7 +23,10 @@ namespace BansheeEngine
 
 	D3D11GpuProgramCore::~D3D11GpuProgramCore()
 	{
+		mMicrocode.clear();
+		mInputDeclaration = nullptr;
 
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_GpuProgram);
 	}
 
 	void D3D11GpuProgramCore::initialize()
@@ -58,16 +61,6 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_GpuProgram);
 
 		GpuProgramCore::initialize();
-	}
-
-	void D3D11GpuProgramCore::destroy()
-	{
-		mMicrocode.clear();
-		mInputDeclaration = nullptr;
-
-		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_GpuProgram);
-
-		GpuProgramCore::destroy();
 	}
 
 	ID3DBlob* D3D11GpuProgramCore::compileMicrocode(const String& profile)
@@ -153,7 +146,9 @@ namespace BansheeEngine
 	{ }
 
 	D3D11GpuVertexProgramCore::~D3D11GpuVertexProgramCore()
-	{ }
+	{
+		SAFE_RELEASE(mVertexShader);
+	}
 
 	void D3D11GpuVertexProgramCore::loadFromMicrocode(D3D11Device& device, ID3D10Blob*  microcode)
 	{
@@ -170,13 +165,6 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D11GpuVertexProgramCore::destroy()
-	{
-		SAFE_RELEASE(mVertexShader);
-
-		D3D11GpuProgramCore::destroy();
-	}
-
 	ID3D11VertexShader * D3D11GpuVertexProgramCore::getVertexShader() const
 	{
 		return mVertexShader;
@@ -189,7 +177,9 @@ namespace BansheeEngine
 	{ }
 
 	D3D11GpuFragmentProgramCore::~D3D11GpuFragmentProgramCore()
-	{ }
+	{
+		SAFE_RELEASE(mPixelShader);
+	}
 
 	void D3D11GpuFragmentProgramCore::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
 	{
@@ -205,13 +195,6 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D11GpuFragmentProgramCore::destroy()
-	{
-		SAFE_RELEASE(mPixelShader);
-
-		D3D11GpuProgramCore::destroy();
-	}
-
 	ID3D11PixelShader * D3D11GpuFragmentProgramCore::getPixelShader() const
 	{
 		return mPixelShader;
@@ -225,7 +208,9 @@ namespace BansheeEngine
 	{ }
 
 	D3D11GpuGeometryProgramCore::~D3D11GpuGeometryProgramCore()
-	{ }
+	{ 
+		SAFE_RELEASE(mGeometryShader);
+	}
 
 	void D3D11GpuGeometryProgramCore::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
 	{
@@ -241,13 +226,6 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D11GpuGeometryProgramCore::destroy()
-	{
-		SAFE_RELEASE(mGeometryShader);
-
-		D3D11GpuProgramCore::destroy();
-	}
-
 	ID3D11GeometryShader * D3D11GpuGeometryProgramCore::getGeometryShader() const
 	{
 		return mGeometryShader;
@@ -260,7 +238,9 @@ namespace BansheeEngine
 	{ }
 
 	D3D11GpuDomainProgramCore::~D3D11GpuDomainProgramCore()
-	{ }
+	{ 
+		SAFE_RELEASE(mDomainShader);
+	}
 
 	void D3D11GpuDomainProgramCore::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
 	{
@@ -276,13 +256,6 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D11GpuDomainProgramCore::destroy()
-	{
-		SAFE_RELEASE(mDomainShader);
-
-		D3D11GpuProgramCore::destroy();
-	}
-
 	ID3D11DomainShader * D3D11GpuDomainProgramCore::getDomainShader() const
 	{
 		return mDomainShader;
@@ -295,7 +268,9 @@ namespace BansheeEngine
 	{ }
 
 	D3D11GpuHullProgramCore::~D3D11GpuHullProgramCore()
-	{ }
+	{ 
+		SAFE_RELEASE(mHullShader);
+	}
 
 	void D3D11GpuHullProgramCore::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
 	{
@@ -312,13 +287,6 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D11GpuHullProgramCore::destroy()
-	{
-		SAFE_RELEASE(mHullShader);
-
-		D3D11GpuProgramCore::destroy();
-	}
-
 	ID3D11HullShader* D3D11GpuHullProgramCore::getHullShader() const
 	{
 		return mHullShader;
@@ -332,7 +300,9 @@ namespace BansheeEngine
 	{ }
 
 	D3D11GpuComputeProgramCore::~D3D11GpuComputeProgramCore()
-	{ }
+	{
+		SAFE_RELEASE(mComputeShader);
+	}
 
 	void D3D11GpuComputeProgramCore::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
 	{
@@ -348,12 +318,6 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D11GpuComputeProgramCore::destroy()
-	{
-		SAFE_RELEASE(mComputeShader);
-
-		D3D11GpuProgramCore::destroy();
-	}
 
 	ID3D11ComputeShader* D3D11GpuComputeProgramCore::getComputeShader() const
 	{

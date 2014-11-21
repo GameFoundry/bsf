@@ -12,6 +12,9 @@ namespace BansheeEngine
 
 	D3D11RasterizerStateCore::~D3D11RasterizerStateCore()
 	{
+		SAFE_RELEASE(mRasterizerState);
+
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_RasterizerState);
 	}
 
 	void D3D11RasterizerStateCore::initialize()
@@ -42,13 +45,5 @@ namespace BansheeEngine
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_RasterizerState);
 		RasterizerStateCore::initialize();
-	}
-
-	void D3D11RasterizerStateCore::destroy()
-	{
-		SAFE_RELEASE(mRasterizerState);
-
-		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_RasterizerState);
-		RasterizerStateCore::destroy();
 	}
 }

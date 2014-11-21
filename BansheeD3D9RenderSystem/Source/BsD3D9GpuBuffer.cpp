@@ -10,7 +10,9 @@ namespace BansheeEngine
 	}
 
 	D3D9GpuBufferCore::~D3D9GpuBufferCore()
-	{ }
+	{ 
+		clearBufferViews();
+	}
 
 	void D3D9GpuBufferCore::initialize()
 	{

@@ -22,25 +22,6 @@ namespace BansheeEngine
 	
 	D3D9TextureCore::~D3D9TextureCore()
 	{	
-	}
-
-	void D3D9TextureCore::initialize()
-	{
-		THROW_IF_NOT_CORE_THREAD;
-
-		for (UINT32 i = 0; i < D3D9RenderSystem::getResourceCreationDeviceCount(); ++i)
-		{
-			IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getResourceCreationDevice(i);
-
-			createInternalResources(d3d9Device);
-		}
-
-		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_Texture);
-		TextureCore::initialize();
-	}
-
-	void D3D9TextureCore::destroy()
-	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		for (auto& resPair : mMapDeviceToTextureResources)
@@ -62,7 +43,21 @@ namespace BansheeEngine
 		mSurfaceList.clear();
 
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Texture);
-		TextureCore::destroy();
+	}
+
+	void D3D9TextureCore::initialize()
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		for (UINT32 i = 0; i < D3D9RenderSystem::getResourceCreationDeviceCount(); ++i)
+		{
+			IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getResourceCreationDevice(i);
+
+			createInternalResources(d3d9Device);
+		}
+
+		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_Texture);
+		TextureCore::initialize();
 	}
 
 	PixelData D3D9TextureCore::lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face)

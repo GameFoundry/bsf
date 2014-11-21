@@ -13,7 +13,7 @@ namespace BansheeEngine
     {
     public:
 		GLVertexBufferCore(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage, bool streamOut);
-		~GLVertexBufferCore() { }
+		~GLVertexBufferCore();
 
 		/**
 		 * @copydoc	VertexBufferCore::readData
@@ -45,11 +45,6 @@ namespace BansheeEngine
 		 * @copydoc VertexBufferCore::initialize
 		 */
 		void initialize();
-
-		/**
-		 * @copydoc VertexBufferCore::destroy
-		 */
-		void destroy();
 
 		/**
 		 * @copydoc	VertexBufferCore::lockImpl

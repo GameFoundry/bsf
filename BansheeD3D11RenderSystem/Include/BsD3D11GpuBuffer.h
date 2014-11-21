@@ -68,11 +68,6 @@ namespace BansheeEngine
 		 * @copydoc GpuBufferCore::initialize
 		 */
 		void initialize();	
-		
-		/**
-		 * @copydoc GpuBufferCore::destroy
-		 */
-		void destroy();
 
 	private:
 		D3D11HardwareBuffer* mBuffer;

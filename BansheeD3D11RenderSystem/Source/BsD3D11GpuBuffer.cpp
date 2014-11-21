@@ -15,7 +15,11 @@ namespace BansheeEngine
 	{ }
 
 	D3D11GpuBufferCore::~D3D11GpuBufferCore()
-	{ }
+	{ 
+		bs_delete<PoolAlloc>(mBuffer);
+		clearBufferViews();
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_GpuBuffer);
+	}
 
 	void D3D11GpuBufferCore::initialize()
 	{
@@ -48,15 +52,6 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_GpuBuffer);
 
 		GpuBufferCore::initialize();
-	}
-
-	void D3D11GpuBufferCore::destroy()
-	{
-		bs_delete<PoolAlloc>(mBuffer);
-
-		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_GpuBuffer);
-
-		GpuBufferCore::destroy();
 	}
 
 	void* D3D11GpuBufferCore::lock(UINT32 offset, UINT32 length, GpuLockOptions options)

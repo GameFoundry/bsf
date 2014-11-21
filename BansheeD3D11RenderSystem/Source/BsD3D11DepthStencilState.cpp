@@ -12,7 +12,9 @@ namespace BansheeEngine
 
 	D3D11DepthStencilStateCore::~D3D11DepthStencilStateCore()
 	{
+		SAFE_RELEASE(mDepthStencilState);
 
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_DepthStencilState);
 	}
 
 	void D3D11DepthStencilStateCore::initialize()
@@ -48,14 +50,5 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_DepthStencilState);
 
 		DepthStencilStateCore::initialize();
-	}
-
-	void D3D11DepthStencilStateCore::destroy()
-	{
-		SAFE_RELEASE(mDepthStencilState);
-
-		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_DepthStencilState);
-
-		DepthStencilStateCore::destroy();
 	}
 }

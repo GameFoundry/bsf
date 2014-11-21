@@ -37,7 +37,16 @@ namespace BansheeEngine
 	{ }
 
 	MultiRenderTextureCore::~MultiRenderTextureCore()
-	{ }
+	{
+		for (auto iter = mColorSurfaces.begin(); iter != mColorSurfaces.end(); ++iter)
+		{
+			if (*iter != nullptr)
+				TextureCore::releaseView(*iter);
+		}
+
+		if (mDepthStencilSurface != nullptr)
+			TextureCore::releaseView(mDepthStencilSurface);
+	}
 
 	void MultiRenderTextureCore::initialize()
 	{
@@ -79,20 +88,6 @@ namespace BansheeEngine
 		}
 
 		throwIfBuffersDontMatch();
-	}
-
-	void MultiRenderTextureCore::destroy()
-	{
-		for (auto iter = mColorSurfaces.begin(); iter != mColorSurfaces.end(); ++iter)
-		{
-			if (*iter != nullptr)
-				TextureCore::releaseView(*iter);
-		}
-
-		if (mDepthStencilSurface != nullptr)
-			TextureCore::releaseView(mDepthStencilSurface);
-
-		RenderTargetCore::destroy();
 	}
 
 	CoreSyncData MultiRenderTextureCore::syncFromCore(FrameAlloc* allocator)

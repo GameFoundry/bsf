@@ -24,15 +24,12 @@ namespace BansheeEngine
 			const Vector<SubMesh>& subMeshes, MeshBufferType bufferType, IndexType indexType,
 			MeshDataPtr initialMeshData);
 
+		~MeshCore();
+
 		/**
 		 * @brief	CoreObjectCore::initialize
 		 */
 		virtual void initialize();
-
-		/**
-		 * @brief	CoreObjectCore::destroy
-		 */
-		virtual void destroy();
 
 		/**
 		 * @copydoc MeshCoreBase::getVertexData

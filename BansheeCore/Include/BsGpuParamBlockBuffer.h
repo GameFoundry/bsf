@@ -167,6 +167,7 @@ namespace BansheeEngine
 	{
 	public:
 		GenericGpuParamBlockBufferCore(UINT32 size, GpuParamBlockUsage usage);
+		~GenericGpuParamBlockBufferCore();
 
 		/**
 		 * @copydoc	GpuParamBlockBufferCore::writeData
@@ -185,10 +186,5 @@ namespace BansheeEngine
 		 * @copydoc CoreObjectCore::initialize
 		 */
 		virtual void initialize();
-
-		/**
-		 * @copydoc CoreObjectCore::destroy
-		 */
-		virtual void destroy();
 	};
 }

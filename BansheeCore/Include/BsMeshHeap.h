@@ -57,6 +57,9 @@ namespace BansheeEngine
 			UINT32 queryId;
 		};
 
+	public:
+		~MeshHeapCore();
+
 	private:
 		friend class MeshHeap;
 		friend class TransientMesh;
@@ -69,11 +72,6 @@ namespace BansheeEngine
 		 * @copydoc CoreObjectCore::initialize()
 		 */
 		virtual void initialize();
-
-		/**
-		 * @copydoc CoreObjectCore::destroy()
-		 */
-		virtual void destroy();
 
 		/**
 		 * @brief	Allocates a new mesh in the heap, expanding the heap if needed. 

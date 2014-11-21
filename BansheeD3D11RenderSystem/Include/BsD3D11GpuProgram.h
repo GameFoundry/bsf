@@ -46,11 +46,6 @@ namespace BansheeEngine
 		void initialize();
 
 		/**
-		 * @copydoc GpuProgramCore::destroy
-		 */
-		void destroy();
-
-		/**
 		 * @brief	Loads the shader from microcode.
 		 */
 		virtual void loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode) = 0;
@@ -100,11 +95,6 @@ namespace BansheeEngine
 			GpuProgramProfile profile);
 
 		/**
-		 * @copydoc GpuProgramCore::destroy
-		 */
-		void destroy();
-
-		/**
 		 * @copydoc	D3D11GpuProgramCore::loadFromMicrocode
 		 */
 		void loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode);
@@ -134,11 +124,6 @@ namespace BansheeEngine
 		 */
 		D3D11GpuFragmentProgramCore(const String& source, const String& entryPoint,
 			GpuProgramProfile profile);
-
-		/**
-		 * @copydoc GpuProgramCore::destroy
-		 */
-		void destroy();
 
 		/**
 		 * @copydoc	D3D11GpuProgramCore::loadFromMicrocode
@@ -172,11 +157,6 @@ namespace BansheeEngine
 			GpuProgramProfile profile);
 
 		/**
-		 * @copydoc GpuProgramCore::destroy
-		 */
-		void destroy();
-
-		/**
 		 * @copydoc	D3D11GpuProgramCore::loadFromMicrocode
 		 */
 		void loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode);
@@ -206,11 +186,6 @@ namespace BansheeEngine
 		 */
 		D3D11GpuHullProgramCore(const String& source, const String& entryPoint,
 			GpuProgramProfile profile);
-
-		/**
-		 * @copydoc GpuProgramCore::destroy
-		 */
-		void destroy();
 
 		/**
 		 * @copydoc	D3D11GpuProgramCore::loadFromMicrocode
@@ -244,11 +219,6 @@ namespace BansheeEngine
 			GpuProgramProfile profile, bool isAdjacencyInfoRequired);
 
 		/**
-		 * @copydoc GpuProgramCore::destroy
-		 */
-		void destroy();
-
-		/**
 		 * @copydoc	D3D11GpuProgramCore::loadFromMicrocode
 		 */
 		void loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode);
@@ -278,11 +248,6 @@ namespace BansheeEngine
 		 */
 		D3D11GpuComputeProgramCore(const String& source, const String& entryPoint,
 			GpuProgramProfile profile);
-
-		/**
-		 * @copydoc GpuProgramCore::destroy
-		 */
-		void destroy();
 
 		/**
 		 * @copydoc	D3D11GpuProgramCore::loadFromMicrocode

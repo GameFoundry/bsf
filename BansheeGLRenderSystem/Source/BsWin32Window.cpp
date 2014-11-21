@@ -29,7 +29,39 @@ namespace BansheeEngine
 	{ }
 
 	Win32WindowCore::~Win32WindowCore()
-	{ }
+	{ 
+		Win32RenderWindowProperties& props = mProperties;
+
+		if (!mHWnd)
+			return;
+
+		// Unregister and destroy GLContext
+		bs_delete(mContext);
+
+		if (!mIsExternal)
+		{
+			if (props.mIsFullScreen)
+				ChangeDisplaySettingsEx(mDeviceName, NULL, NULL, 0, NULL);
+			DestroyWindow(mHWnd);
+		}
+		else
+		{
+			// just release the DC
+			ReleaseDC(mHWnd, mHDC);
+		}
+
+		props.mActive = false;
+		mHDC = 0; // no release thanks to CS_OWNDC wndclass style
+		mHWnd = 0;
+
+		if (mDeviceName != NULL)
+		{
+			bs_free<ScratchAlloc>(mDeviceName);
+			mDeviceName = NULL;
+		}
+
+		markCoreDirty();
+	}
 
 	void Win32WindowCore::initialize()
 	{
@@ -320,43 +352,6 @@ namespace BansheeEngine
 
 		props.mActive = true;
 		mContext = mGLSupport.createContext(mHDC, glrc);
-	}
-
-	void Win32WindowCore::destroy()
-	{
-		Win32RenderWindowProperties& props = mProperties;
-
-		if (!mHWnd)
-			return;
-
-		// Unregister and destroy GLContext
-		bs_delete(mContext);
-
-		if (!mIsExternal)
-		{
-			if (props.mIsFullScreen)
-				ChangeDisplaySettingsEx(mDeviceName, NULL, NULL, 0, NULL);
-			DestroyWindow(mHWnd);
-		}
-		else
-		{
-			// just release the DC
-			ReleaseDC(mHWnd, mHDC);
-		}
-
-		props.mActive = false;
-		mHDC = 0; // no release thanks to CS_OWNDC wndclass style
-		mHWnd = 0;
-
-		if (mDeviceName != NULL)
-		{
-			bs_free<ScratchAlloc>(mDeviceName);
-			mDeviceName = NULL;
-		}
-
-		markCoreDirty();
-
-		RenderWindowCore::destroy();
 	}
 
 	void Win32WindowCore::setFullscreen(UINT32 width, UINT32 height, float refreshRate, UINT32 monitorIdx)

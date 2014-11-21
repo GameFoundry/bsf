@@ -47,11 +47,6 @@ namespace BansheeEngine
 		virtual void initialize();
 
 		/**
-		 * @copydoc	CoreObjectCore::destroy
-		 */
-		virtual void destroy();
-
-		/**
 		 * @brief	Returns properties that describe the render texture.
 		 */
 		const MultiRenderTextureProperties& getProperties() const;

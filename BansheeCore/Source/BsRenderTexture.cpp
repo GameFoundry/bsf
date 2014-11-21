@@ -34,7 +34,13 @@ namespace BansheeEngine
 	{ }
 
 	RenderTextureCore::~RenderTextureCore()
-	{ }
+	{ 
+		if (mColorSurface != nullptr)
+			TextureCore::releaseView(mColorSurface);
+
+		if (mDepthStencilSurface != nullptr)
+			TextureCore::releaseView(mDepthStencilSurface);
+	}
 
 	void RenderTextureCore::initialize()
 	{
@@ -84,17 +90,6 @@ namespace BansheeEngine
 			BS_EXCEPT(InvalidParametersException, "Provided number of mip maps is out of range. Mip level: " +
 				toString(mColorSurface->getMostDetailedMip()) + ". Max num mipmaps: " + toString(texProps.getNumMipmaps()));
 		}
-	}
-
-	void RenderTextureCore::destroy()
-	{
-		if (mColorSurface != nullptr)
-			TextureCore::releaseView(mColorSurface);
-
-		if (mDepthStencilSurface != nullptr)
-			TextureCore::releaseView(mDepthStencilSurface);
-
-		RenderTargetCore::destroy();
 	}
 
 	CoreSyncData RenderTextureCore::syncFromCore(FrameAlloc* allocator)

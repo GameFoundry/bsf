@@ -10,22 +10,20 @@ namespace BansheeEngine
 
 	}
 
+	D3D11IndexBufferCore::~D3D11IndexBufferCore()
+	{
+		if (mBuffer != nullptr)
+			bs_delete<PoolAlloc>(mBuffer);
+
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_IndexBuffer);
+	}
+
 	void D3D11IndexBufferCore::initialize()
 	{
 		mBuffer = bs_new<D3D11HardwareBuffer, PoolAlloc>(D3D11HardwareBuffer::BT_INDEX, mUsage, 1, mSizeInBytes, std::ref(mDevice), mSystemMemory);
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_IndexBuffer);
 		IndexBufferCore::initialize();
-	}
-
-	void D3D11IndexBufferCore::destroy()
-	{
-		if(mBuffer != nullptr)
-			bs_delete<PoolAlloc>(mBuffer) ;
-
-		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_IndexBuffer);
-
-		IndexBufferCore::destroy();
 	}
 
 	void* D3D11IndexBufferCore::lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options)

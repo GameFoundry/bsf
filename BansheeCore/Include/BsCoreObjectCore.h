@@ -26,11 +26,6 @@ namespace BansheeEngine
 		virtual void initialize() { }
 
 		/**
-		 * @brief	Called on the core thread just before the object is destroyed.
-		 */
-		virtual void destroy();
-
-		/**
 		 * @brief	Internal method. Sets a shared this pointer to this object. This MUST be called immediately after construction.
 		 *
 		 * @note	Called automatically by the factory creation methods so user should not call this manually.

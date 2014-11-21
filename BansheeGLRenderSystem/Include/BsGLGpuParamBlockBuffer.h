@@ -12,6 +12,7 @@ namespace BansheeEngine
 	{
 	public:
 		GLGpuParamBlockBufferCore(UINT32 size, GpuParamBlockUsage usage);
+		~GLGpuParamBlockBufferCore();
 
 		/**
 		 * @copydoc GpuParamBlockBufferCore::writeData
@@ -32,11 +33,6 @@ namespace BansheeEngine
 		 * @copydoc GpuParamBlockBufferCore::initialize
 		 */
 		virtual void initialize();
-
-		/**
-		 * @copydoc GpuParamBlockBufferCore::destroy
-		 */
-		virtual void destroy();
 
 	private:
 		GLuint mGLHandle;

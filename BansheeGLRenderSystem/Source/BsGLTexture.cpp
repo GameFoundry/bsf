@@ -18,7 +18,14 @@ namespace BansheeEngine
     { }
 
 	GLTextureCore::~GLTextureCore()
-    { }
+    { 
+		mSurfaceList.clear();
+		glDeleteTextures(1, &mTextureID);
+
+		clearBufferViews();
+
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Texture);
+	}
 
 	void GLTextureCore::initialize()
 	{
@@ -151,17 +158,6 @@ namespace BansheeEngine
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_Texture);
 		TextureCore::initialize();
-	}
-
-	void GLTextureCore::destroy()
-	{
-		mSurfaceList.clear();
-		glDeleteTextures(1, &mTextureID);
-
-		clearBufferViews();
-
-		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Texture);
-		TextureCore::destroy();
 	}
 
     GLenum GLTextureCore::getGLTextureTarget() const

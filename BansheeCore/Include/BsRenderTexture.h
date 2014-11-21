@@ -46,11 +46,6 @@ namespace BansheeEngine
 		virtual void initialize();
 
 		/**
-		 * @copydoc	CoreObjectCore::destroy
-		 */
-		virtual void destroy();
-
-		/**
 		 * @brief	Returns a color surface texture you may bind as an input to an GPU program.
 		 *
 		 * @note	Be aware that you cannot bind a render texture for reading and writing at the same time.

@@ -12,7 +12,7 @@ namespace BansheeEngine
     {
     public:
 		GLIndexBufferCore(IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage);
-		~GLIndexBufferCore() { }
+		~GLIndexBufferCore();
 
 		/**
 		 * @copydoc IndexBufferCore::readData
@@ -35,11 +35,6 @@ namespace BansheeEngine
 		 * @copydoc IndexBufferCore::initialize
 		 */
 		void initialize();	
-		
-		/**
-		 * @copydoc IndexBufferCore::destroy
-		 */
-		void destroy();
 
 		/**
 		 * @copydoc IndexBufferCore::lockImpl

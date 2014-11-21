@@ -14,7 +14,7 @@ namespace BansheeEngine
 	public:
 		D3D11IndexBufferCore(D3D11Device& device, IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage);
 
-		~D3D11IndexBufferCore() { }
+		~D3D11IndexBufferCore();
 
 		/**
 		 * @copydoc IndexBufferCore::readData
@@ -51,11 +51,6 @@ namespace BansheeEngine
 		 * @copydoc IndexBufferCore::initialize
 		 */
 		void initialize();	
-		
-		/**
-		 * @copydoc IndexBufferCore::destroy
-		 */
-		void destroy();
 
 		D3D11HardwareBuffer* mBuffer;
 		D3D11Device& mDevice;

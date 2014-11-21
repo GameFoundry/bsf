@@ -25,11 +25,6 @@ namespace BansheeEngine
 		 */
 		void initialize();
 
-		/**
-		 * @copydoc SamplerStateCore::destroy
-		 */
-		void destroy();
-
 		ID3D11SamplerState* mSamplerState;
 	};
 }

@@ -15,7 +15,7 @@ namespace BansheeEngine
 		D3D11VertexBufferCore(D3D11Device& device, UINT32 vertexSize, UINT32 numVertices, 
 			GpuBufferUsage usage, bool streamOut);
 
-		~D3D11VertexBufferCore() { }
+		~D3D11VertexBufferCore();
 
 		/**
 		 * @copydoc VertexBufferCore::readData
@@ -51,12 +51,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc VertexBufferCore::initialize
 		 */
-		void initialize();	
-		
-		/**
-		 * @copydoc VertexBufferCore::destroy
-		 */
-		void destroy();
+		void initialize();
 
 		D3D11HardwareBuffer* mBuffer;
 		D3D11Device& mDevice;

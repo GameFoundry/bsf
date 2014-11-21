@@ -8,6 +8,14 @@ namespace BansheeEngine
 		:VertexBufferCore(vertexSize, numVertices, usage, streamOut), mDevice(device), mStreamOut(streamOut), mBuffer(nullptr)
 	{ }
 
+	D3D11VertexBufferCore::~D3D11VertexBufferCore()
+	{
+		if (mBuffer != nullptr)
+			bs_delete<PoolAlloc>(mBuffer);
+
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_VertexBuffer);
+	}
+
 	void* D3D11VertexBufferCore::lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options)
 	{
 #if BS_PROFILING_ENABLED
@@ -55,14 +63,5 @@ namespace BansheeEngine
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_VertexBuffer);
 		VertexBufferCore::initialize();
-	}
-
-	void D3D11VertexBufferCore::destroy()
-	{
-		if(mBuffer != nullptr)
-			bs_delete<PoolAlloc>(mBuffer);
-
-		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_VertexBuffer);
-		VertexBufferCore::destroy();
 	}
 }

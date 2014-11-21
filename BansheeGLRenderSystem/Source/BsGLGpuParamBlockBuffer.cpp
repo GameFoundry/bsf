@@ -9,6 +9,13 @@ namespace BansheeEngine
 	{
 	}
 
+	GLGpuParamBlockBufferCore::~GLGpuParamBlockBufferCore()
+	{
+		glDeleteBuffers(1, &mGLHandle);
+
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_GpuParamBuffer);
+	}
+
 	void GLGpuParamBlockBufferCore::initialize()
 	{
 		glGenBuffers(1, &mGLHandle);
@@ -24,14 +31,6 @@ namespace BansheeEngine
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_GpuParamBuffer);
 		GpuParamBlockBufferCore::initialize();
-	}
-
-	void GLGpuParamBlockBufferCore::destroy()
-	{
-		glDeleteBuffers(1, &mGLHandle);
-
-		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_GpuParamBuffer);
-		GpuParamBlockBufferCore::destroy();
 	}
 
 	void GLGpuParamBlockBufferCore::writeToGPU(const UINT8* data)

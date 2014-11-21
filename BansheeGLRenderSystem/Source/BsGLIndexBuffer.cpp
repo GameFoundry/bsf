@@ -9,6 +9,13 @@ namespace BansheeEngine
 		:IndexBufferCore(idxType, numIndexes, usage), mZeroLocked(false)
 	{  }
 
+	GLIndexBufferCore::~GLIndexBufferCore()
+	{
+		glDeleteBuffers(1, &mBufferId);
+
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_IndexBuffer);
+	}
+
 	void GLIndexBufferCore::initialize()
 	{
 		glGenBuffers(1, &mBufferId );
@@ -25,14 +32,6 @@ namespace BansheeEngine
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_IndexBuffer);
 		IndexBufferCore::initialize();
-	}
-
-	void GLIndexBufferCore::destroy()
-	{
-		glDeleteBuffers(1, &mBufferId);
-
-		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_IndexBuffer);
-		IndexBufferCore::destroy();
 	}
 
 	void* GLIndexBufferCore::lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options)

@@ -11,6 +11,8 @@ namespace BansheeEngine
 
 	GLGpuBufferCore::~GLGpuBufferCore()
 	{
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_GpuBuffer);
+		clearBufferViews();
 	}
 
 	void GLGpuBufferCore::initialize()
@@ -19,12 +21,6 @@ namespace BansheeEngine
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_GpuBuffer);
 		GpuBufferCore::initialize();
-	}
-
-	void GLGpuBufferCore::destroy()
-	{
-		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_GpuBuffer);
-		GpuBufferCore::destroy();
 	}
 
 	void* GLGpuBufferCore::lock(UINT32 offset, UINT32 length, GpuLockOptions options)

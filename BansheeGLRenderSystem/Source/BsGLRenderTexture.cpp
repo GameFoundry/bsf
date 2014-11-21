@@ -28,7 +28,10 @@ namespace BansheeEngine
 	{ }
 
 	GLRenderTextureCore::~GLRenderTextureCore()
-	{ }
+	{ 
+		if (mFB != nullptr)
+			bs_delete<PoolAlloc>(mFB);
+	}
 
 	void GLRenderTextureCore::initialize()
 	{
@@ -67,14 +70,6 @@ namespace BansheeEngine
 		}
 
 		mFB->bindDepthStencil(depthStencilBuffer);
-	}
-
-	void GLRenderTextureCore::destroy()
-	{
-		if (mFB != nullptr)
-			bs_delete<PoolAlloc>(mFB);
-
-		RenderTextureCore::destroy();
 	}
 
 	void GLRenderTextureCore::getCustomAttribute(const String& name, void* pData) const

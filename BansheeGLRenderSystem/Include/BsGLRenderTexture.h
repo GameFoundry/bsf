@@ -36,11 +36,6 @@ namespace BansheeEngine
 		virtual void initialize();
 
 		/**
-		 * @copydoc	RenderTextureCore::destroy
-		 */
-		virtual void destroy();
-
-		/**
 		 * @copydoc	RenderTextureCore::getProperties
 		 */
 		const RenderTargetProperties& getPropertiesInternal() const { return mProperties; }

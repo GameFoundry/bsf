@@ -23,6 +23,21 @@ namespace BansheeEngine
 		}
 	}
 
+	MeshHeapCore::~MeshHeapCore()
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		for (auto& cpuVertBuffer : mCPUVertexData)
+			bs_free(cpuVertBuffer);
+
+		if (mCPUIndexData != nullptr)
+			bs_free(mCPUIndexData);
+
+		mVertexData = nullptr;
+		mIndexBuffer = nullptr;
+		mVertexDesc = nullptr;
+	}
+
 	void MeshHeapCore::initialize()
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -31,35 +46,6 @@ namespace BansheeEngine
 		growIndexBuffer(mNumIndices);
 
 		CoreObjectCore::initialize();
-	}
-
-	void MeshHeapCore::destroy()
-	{
-		THROW_IF_NOT_CORE_THREAD;
-
-		for(auto& cpuVertBuffer : mCPUVertexData)
-			bs_free(cpuVertBuffer);
-
-		if(mCPUIndexData != nullptr)
-			bs_free(mCPUIndexData);
-
-		if (mVertexData != nullptr)
-		{
-			for (UINT32 i = 0; i < mVertexData->getBufferCount(); i++)
-			{
-				if (mVertexData->getBuffer(i) != nullptr)
-					mVertexData->getBuffer(i)->destroy();
-			}
-		}
-
-		if (mIndexBuffer != nullptr)
-			mIndexBuffer->destroy();
-
-		mVertexData = nullptr;
-		mIndexBuffer = nullptr;
-		mVertexDesc = nullptr;
-
-		CoreObjectCore::destroy();
 	}
 
 	void MeshHeapCore::alloc(SPtr<TransientMeshCore> mesh, const MeshDataPtr& meshData)
