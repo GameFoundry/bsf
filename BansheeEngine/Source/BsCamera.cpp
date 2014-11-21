@@ -18,13 +18,14 @@ namespace BansheeEngine
 	Camera::Camera(const HSceneObject& parent, RenderTargetPtr target, float left, float top, float width, float height)
 		: Component(parent), mLastUpdateHash(std::numeric_limits<UINT32>::max())
     {
-		mInternal = bs_shared_ptr<CameraHandler>(target, left, top, width, height);
+		mInternal = CameraHandler::create(target, left, top, width, height);
 
 		setName("Camera");
     }
 
     Camera::~Camera()
     {
+		mInternal->destroy();
     }
 
 	ConvexVolume Camera::getWorldFrustum() const
@@ -53,6 +54,11 @@ namespace BansheeEngine
 
 			mLastUpdateHash = curHash;
 		}
+	}
+
+	void Camera::update() 
+	{
+		updateView();
 	}
 
 	RTTITypeBase* Camera::getRTTIStatic()

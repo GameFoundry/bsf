@@ -68,6 +68,22 @@ namespace BansheeEngine
 		virtual void renderAll() = 0;
 
 		/**
+		 * @brief	Called whenever a new camera is created.
+		 *
+		 * @note	Core thread.
+		 *			Internal method.
+		 */
+		virtual void _notifyCameraAdded(const CameraHandlerCore* camera) { }
+
+		/**
+		 * @brief	Called whenever a camera is destroyed.
+		 *
+		 * @note	Core thread.
+		 *			Internal method.
+		 */
+		virtual void _notifyCameraRemoved(const CameraHandlerCore* camera) { }
+
+		/**
 		 * @brief	Activates the specified pass on the pipeline.
 		 *
 		 * @param	material	Parent material of the pass.
@@ -97,7 +113,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Core thread only.
 		 */
-		Event<void(const CameraProxy&)> onCorePreRenderViewport;
+		Event<void(const CameraHandlerCore&)> onCorePreRenderViewport;
 
 		/**
 		 * @brief	Callback that gets triggered after main render queue items are rendered,
@@ -105,6 +121,6 @@ namespace BansheeEngine
 		 *
 		 * @note	Core thread only.
 		 */
-		Event<void(const CameraProxy&)> onCorePostRenderViewport;
+		Event<void(const CameraHandlerCore&)> onCorePostRenderViewport;
 	};
 }

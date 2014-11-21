@@ -63,8 +63,6 @@ namespace BansheeEngine
 			}
 
 			mCachedCameras.erase(findIter);
-
-			onCameraRemoved(cameraHandler);
 		}
 		else if(component->getTypeId() == TID_Renderable)
 		{

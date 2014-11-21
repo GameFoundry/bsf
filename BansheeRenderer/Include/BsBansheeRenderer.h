@@ -31,7 +31,15 @@ namespace BansheeEngine
 		struct RenderTargetData
 		{
 			SPtr<RenderTargetCore> target;
-			Vector<CameraProxyPtr> cameras;
+			Vector<const CameraHandlerCore*> cameras;
+		};
+
+		/**
+		 * @brief	Various data used by a single camera.
+		 */
+		struct CameraData
+		{
+			RenderQueuePtr renderQueue;
 		};
 
 	public:
@@ -60,6 +68,16 @@ namespace BansheeEngine
 
 	private:
 		/**
+		 * @copydoc	Renderer::_notifyCameraAdded
+		 */
+		virtual void _notifyCameraAdded(const CameraHandlerCore* camera);
+
+		/**
+		 * @copydoc	Renderer::_notifyCameraRemoved
+		 */
+		virtual void _notifyCameraRemoved(const CameraHandlerCore* camera);
+
+		/**
 		 * @brief	Adds a new renderable proxy which will be considered for rendering next frame.
 		 *
 		 * @note	Core thread only.
@@ -86,33 +104,6 @@ namespace BansheeEngine
 		void updateRenderableProxy(RenderableProxyPtr proxy, Matrix4 localToWorld);
 
 		/**
-		 * @brief	Adds a new camera proxy will be used for rendering renderable proxy objects.
-		 *
-		 * @note	Core thread only.
-		 */
-		void addCameraProxy(CameraProxyPtr proxy);
-
-		/**
-		 * @brief	Removes an existing camera proxy, meaning the camera will no longer be rendered from.
-		 * 
-		 * @note	Core thread only.
-		 */
-		void removeCameraProxy(CameraProxyPtr proxy);
-
-		/**
-		 * @brief	Updates an existing camera proxy with new data. This includes data that changes
-		 *			often. For other data it is best to remove old proxy and add new one.
-		 *
-		 * @param	proxy			Proxy to update.
-		 * @param	worldPosition	World position of the camera.
-		 * @param	worldMatrix		World transform matrix of the camera.
-		 * @param	viewMatrix		View transform matrix of the camera.
-		 *
-		 * @note	Core thread only.
-		 */
-		void updateCameraProxy(CameraProxyPtr proxy, Vector3 worldPosition, Matrix4 worldMatrix, Matrix4 viewMatrix);
-
-		/**
 		 * @brief	Adds a new set of objects to the cameras render queue.
 		 *
 		 * @param	proxy			Proxy of the render queues camera to add the objects to.
@@ -120,7 +111,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Core thread only.
 		 */
-		void addToRenderQueue(CameraProxyPtr proxy, RenderQueuePtr renderQueue);
+		void addToRenderQueue(const SPtr<CameraHandlerCore>& proxy, RenderQueuePtr renderQueue);
 
 		/**
 		 * @brief	Performs rendering over all camera proxies.
@@ -134,12 +125,12 @@ namespace BansheeEngine
 		/**
 		 * @brief	Renders all objects visible by the provided camera.
 		 *
-		 * @param	cameraProxy		Camera used for determining destination render target and visibility.
+		 * @param	camera			Camera used for determining destination render target and visibility.
 		 * @param	renderQueue		Optionally non-empty queue of manually added objects to render.
 		 *
 		 * @note	Core thread only.
 		 */
-		virtual void render(const CameraProxy& cameraProxy, const RenderQueuePtr& renderQueue);
+		virtual void render(const CameraHandlerCore& camera, const RenderQueuePtr& renderQueue);
 
 		/**
 		 * @brief	Called by the scene manager whenever a Renderable component has been
@@ -148,26 +139,19 @@ namespace BansheeEngine
 		void renderableRemoved(const RenderableHandlerPtr& renderable);
 
 		/**
-		 * @brief	Called by the scene manager whenever a Camera component has been
-		 *			removed from the scene.
+		 * @brief	Creates data used by the renderer on the core thread.
 		 */
-		void cameraRemoved(const CameraHandlerPtr& camera);
+		void initializeCore();
 
 		/**
-		 * @brief	Creates a controller used for rendering.
+		 * @brief	Destroys data used by the renderer on the core thread.
 		 */
-		void createController();
-
-		/**
-		 * @brief	Destroys a controller used for rendering.
-		 */
-		static void destroyController(LitTexRenderableController* controller);
+		void destroyCore();
 
 		Vector<RenderableProxyPtr> mDeletedRenderableProxies;
-		Vector<CameraProxyPtr> mDeletedCameraProxies;
 
-		UnorderedMap<UINT64, CameraProxyPtr> mCameraProxies;
-		Vector<RenderTargetData> mRenderTargets;
+		Vector<RenderTargetData> mRenderTargets; // Core thread
+		UnorderedMap<const CameraHandlerCore*, CameraData> mCameraData; // Core thread
 
 		Vector<RenderableElement*> mRenderableElements;
 		Vector<Matrix4> mWorldTransforms;
@@ -176,6 +160,5 @@ namespace BansheeEngine
 		LitTexRenderableController* mLitTexHandler;
 
 		HEvent mRenderableRemovedConn;
-		HEvent mCameraRemovedConn;
 	};
 }

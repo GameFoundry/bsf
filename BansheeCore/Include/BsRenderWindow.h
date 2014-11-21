@@ -112,12 +112,7 @@ namespace BansheeEngine
 	{
 	public:
 		RenderWindowCore(const RENDER_WINDOW_DESC& desc);
-		virtual ~RenderWindowCore() { }
-
-		/**
-		 * @copydoc	RenderTargetCore::destroy
-		 */
-		virtual void destroy();
+		virtual ~RenderWindowCore();
 
 		/** 
 		 * @brief	Switches the window to fullscreen mode. Child windows cannot go into fullscreen mode.

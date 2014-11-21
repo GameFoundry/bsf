@@ -26,7 +26,30 @@ namespace BansheeEngine
 	{ }
 
 	D3D11RenderWindowCore::~D3D11RenderWindowCore()
-	{ }
+	{ 
+		D3D11RenderWindowProperties& props = mProperties;
+
+		props.mActive = false;
+		markCoreDirty();
+
+		SAFE_RELEASE(mSwapChain);
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_SwapChain);
+
+		if (mHWnd && !mIsExternal)
+		{
+			DestroyWindow(mHWnd);
+		}
+
+		if (mDepthStencilView != nullptr)
+		{
+			TextureCore::releaseView(mDepthStencilView);
+			mDepthStencilView = nullptr;
+		}
+
+		mHWnd = 0;
+
+		destroySizeDependedD3DResources();
+	}
 
 	void D3D11RenderWindowCore::initialize()
 	{
@@ -245,34 +268,6 @@ namespace BansheeEngine
 		createSizeDependedD3DResources();
 		mDXGIFactory->MakeWindowAssociation(mHWnd, NULL);
 		setHidden(props.isHidden());
-	}
-
-	void D3D11RenderWindowCore::destroy()
-	{
-		D3D11RenderWindowProperties& props = mProperties;
-
-		props.mActive = false;
-		markCoreDirty();
-
-		SAFE_RELEASE(mSwapChain);
-		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_SwapChain);
-
-		if (mHWnd && !mIsExternal)
-		{
-			DestroyWindow(mHWnd);
-		}
-
-		if (mDepthStencilView != nullptr)
-		{
-			TextureCore::releaseView(mDepthStencilView);
-			mDepthStencilView = nullptr;
-		}
-
-		mHWnd = 0;
-
-		destroySizeDependedD3DResources();
-
-		RenderWindowCore::destroy();
 	}
 
 	void D3D11RenderWindowCore::swapBuffers()

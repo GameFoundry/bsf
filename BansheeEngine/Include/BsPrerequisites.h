@@ -82,6 +82,7 @@ namespace BansheeEngine
 	class DrawHelper;
 	class CameraHandler;
 	class RenderableHandler;
+	class CameraHandlerCore;
 
 	// 2D
 	class TextSprite;

@@ -14,12 +14,12 @@ namespace BansheeEngine
 	{ 
 		ViewportPtr primaryViewport = gApplication().getPrimaryViewport();
 
-		mCameraHandler = bs_new<CameraHandler>(primaryViewport->getTarget());
+		mCameraHandler = CameraHandler::create(primaryViewport->getTarget());
 	}
 
 	ScriptCamera::~ScriptCamera()
 	{
-		bs_delete(mCameraHandler);
+
 	}
 
 	void ScriptCamera::initRuntimeData()

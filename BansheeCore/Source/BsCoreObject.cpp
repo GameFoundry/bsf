@@ -62,8 +62,7 @@ namespace BansheeEngine
 			BS_EXCEPT(InternalErrorException, "Trying to destroy an object that is already destroyed (or it never was initialized).");
 #endif
 
-		if (mCoreSpecific != nullptr)
-			mCoreSpecific->destroy();
+		mCoreSpecific = nullptr;
 
 		setIsInitialized(false);
 	}

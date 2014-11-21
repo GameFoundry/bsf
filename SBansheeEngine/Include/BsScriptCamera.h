@@ -94,6 +94,6 @@ namespace BansheeEngine
 		static MonoObject* internal_GetRenderTexture(ScriptCamera* instance);
 		static void internal_SetRenderTexture(ScriptCamera* instance, MonoObject* textureObj);
 
-		CameraHandler* mCameraHandler;
+		SPtr<CameraHandler> mCameraHandler;
 	};
 }

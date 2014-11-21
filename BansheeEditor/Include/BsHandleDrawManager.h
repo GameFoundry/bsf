@@ -85,7 +85,7 @@ namespace BansheeEngine
 		void initialize(const MaterialProxyPtr& wireMatProxy, const MaterialProxyPtr& solidMatProxy);
 
 		void updateData(const RenderTargetPtr& rt, const Vector<MeshData>& meshes);
-		void render(const CameraProxy& camera);
+		void render(const CameraHandlerCore& camera);
 
 		RenderTargetPtr mSceneRenderTarget;
 		Vector<MeshData> mMeshes;

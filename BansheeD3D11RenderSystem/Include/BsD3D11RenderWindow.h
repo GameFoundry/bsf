@@ -111,11 +111,6 @@ namespace BansheeEngine
 		virtual void initialize();
 
 		/**
-		 * @copydoc	CoreObjectCore::destroy
-		 */
-		virtual void destroy();
-
-		/**
 		 * @brief	Creates internal resources dependent on window size.
 		 */
 		void createSizeDependedD3DResources();

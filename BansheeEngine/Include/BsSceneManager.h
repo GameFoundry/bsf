@@ -70,11 +70,6 @@ namespace BansheeEngine
 		 * @brief	Triggered whenever a renderable is removed from a SceneObject.
 		 */
 		Event<void(const RenderableHandlerPtr&)> onRenderableRemoved;
-
-		/**
-		 * @brief	Triggered whenever a camera is removed from a SceneObject.
-		 */
-		Event<void(const CameraHandlerPtr&)> onCameraRemoved;
 	};
 
 	/**

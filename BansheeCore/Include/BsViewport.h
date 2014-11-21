@@ -2,6 +2,7 @@
 
 #include "BsCorePrerequisites.h"
 #include "BsIReflectable.h"
+#include "BsCoreObject.h"
 #include "BsColor.h"
 #include "BsRect2I.h"
 #include "BsRect2.h"
@@ -13,31 +14,11 @@ namespace BansheeEngine
 	 * @brief	Viewport provides you with a way to render to only a part of a 
 	 * 			RenderTarget. It also allows you to set up color/depth/stencil
 	 * 			clear values for that specific region.
-	 *
-	 * @note	Thread safe unless noted otherwise.
 	 */
-	class BS_CORE_EXPORT Viewport : public IReflectable
+	class BS_CORE_EXPORT ViewportBase
     {
     public:       
-		Viewport();
-        
-        /**
-         * @brief	Constructs a new viewport.
-         *
-         * @note	Viewport coordinates are normalized in [0, 1] range.
-         */
-        Viewport(const RenderTargetPtr& target, float x = 0.0f, float y = 0.0f, float width = 1.0f, float height = 1.0f);
-        virtual ~Viewport();
-
-        /**
-         * @brief	Returns the render target the viewport is associated with.
-         */
-        RenderTargetPtr getTarget() const { return mTarget; }
-
-		/**
-		 * @brief	Sets the render target the viewport will be associated with.
-		 */
-		void setTarget(const RenderTargetPtr& target) { mTarget = target; markCoreDirty(); }
+		virtual ~ViewportBase() { }
 
         /**
          * @brief	Gets the normalized x coordinate of the viewport, in [0, 1] range.
@@ -61,29 +42,21 @@ namespace BansheeEngine
 
         /**
          * @brief	Gets the actual x coordinate of the viewport in pixels, in [0, RenderTargetWidth] range.
-		 *
-		 * @note	Sim thread only.
          */
 		INT32 getX() const;
 
         /**
          * @brief	Gets the actual y coordinate of the viewport in pixels, in [0, RenderTargetHeight] range.
-		 *
-		 * @note	Sim thread only.
          */
 		INT32 getY() const;
 
 		/**
          * @brief	Gets the actual width coordinate of the viewport in pixels, in [0, RenderTargetWidth] range.
-		 *
-		 * @note	Sim thread only.
          */
 		INT32 getWidth() const;
 
 		/**
          * @brief	Gets the actual height coordinate of the viewport in pixels, in [0, RenderTargetHeight] range.
-		 *
-		 * @note	Sim thread only.
          */
 		INT32 getHeight() const;
                
@@ -96,8 +69,6 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Returns actual area of the viewport, in pixels.
-		 *
-		 * @note	Sim thread only.
 		 */
 		Rect2I getArea() const;
 
@@ -129,7 +100,6 @@ namespace BansheeEngine
 		 */
 		float getClearDepthValue() const { return mDepthClearValue; }
 
-
 		/**
 		 * @brief	Returns the value to clear the viewport stencil buffer to.
 		 */
@@ -150,28 +120,28 @@ namespace BansheeEngine
 		 */
 		bool getRequiresStencilClear() const { return mRequiresStencilClear; }
 
-		/**
-		 * @brief	Makes an exact copy of this viewport.
-		 */
-		Viewport clone();
-
-		/**
-		 * @brief	Checks is the core dirty flag set. This is used by external systems 
-		 *			to know when internal data has changed and core thread potentially needs to be notified.
-		 */
-		bool _isCoreDirty() const { return mCoreDirtyFlags != 0; }
-
-		/**
-		 * @brief	Marks the core dirty flag as clean.
-		 */
-		void _markCoreClean() { mCoreDirtyFlags = 0; }
     protected:
-		/**
-		 * @brief	Marks the core data as dirty, signaling that the core thread needs an updated version.
-		 */
-		void markCoreDirty() { mCoreDirtyFlags = 0xFFFFFFFF; }
+        /**
+         * @brief	Constructs a new viewport.
+         *
+         * @note	Viewport coordinates are normalized in [0, 1] range.
+         */
+		ViewportBase(float x = 0.0f, float y = 0.0f, float width = 1.0f, float height = 1.0f);
 
-        RenderTargetPtr mTarget;
+		/**
+		 * @copydoc	CoreObject::markCoreDirty
+		 */
+		virtual void _markCoreDirty() { }
+
+		/**
+		 * @brief	Gets the render target width.
+		 */
+		virtual UINT32 getTargetWidth() const = 0;
+
+		/**
+		 * @brief	Gets the render target width.
+		 */
+		virtual UINT32 getTargetHeight() const = 0;
 
 		Rect2 mNormArea;
 
@@ -183,13 +153,126 @@ namespace BansheeEngine
 		float mDepthClearValue;
 		UINT16 mStencilClearValue;
 
-		UINT32 mCoreDirtyFlags; /**< True when internal data has changed and core thread wasn't yet informed. */
-
 		static const Color DEFAULT_CLEAR_COLOR;
+    };
+
+	/**
+	 * @copydoc	ViewportBase
+	 */
+	class BS_CORE_EXPORT ViewportCore : public CoreObjectCore, public ViewportBase
+    {
+    public:       
+        /**
+         * @brief	Returns the render target the viewport is associated with.
+         */
+		SPtr<RenderTargetCore> getTarget() const { return mTarget; }
+
+		/**
+		 * @brief	Sets the render target the viewport will be associated with.
+		 */
+		void setTarget(const SPtr<RenderTargetCore>& target) { mTarget = target; }
+
+		/**
+		 * @copydoc	ViewportBase::ViewportBase
+		 */
+		static SPtr<ViewportCore> create(const SPtr<RenderTargetCore>& target, float x = 0.0f, float y = 0.0f, float width = 1.0f, float height = 1.0f);
+
+    protected:
+		friend class Viewport;
+
+		/**
+		 * @copydoc	ViewportBase::ViewportBase
+		 */
+		ViewportCore(const SPtr<RenderTargetCore>& target, float x = 0.0f, float y = 0.0f, float width = 1.0f, float height = 1.0f);
+
+		/**
+		 * @copydoc	CoreObject::getTargetWidth
+		 */
+		UINT32 getTargetWidth() const;
+
+		/**
+		 * @copydoc	CoreObject::getTargetHeight
+		 */
+		UINT32 getTargetHeight() const;
+
+		/**
+		 * @copydoc	CoreObject::syncToCore
+		 */
+		void syncToCore(const CoreSyncData& data);
+
+		SPtr<RenderTargetCore> mTarget;
+    };
+
+	/**
+	 * @copydoc	ViewportBase
+	 */
+	class BS_CORE_EXPORT Viewport : public IReflectable, public CoreObject, public ViewportBase
+    {
+    public:       
+        /**
+         * @brief	Returns the render target the viewport is associated with.
+         */
+        RenderTargetPtr getTarget() const { return mTarget; }
+
+		/**
+		 * @brief	Sets the render target the viewport will be associated with.
+		 */
+		void setTarget(const RenderTargetPtr& target) { mTarget = target; _markCoreDirty(); }
+
+		/**
+		 * @brief	Retrieves a core implementation of a viewport usable only from the
+		 *			core thread.
+		 */
+		SPtr<ViewportCore> getCore() const;
+
+		/**
+		 * @copydoc	ViewportBase::ViewportBase
+		 */
+		static ViewportPtr create(const RenderTargetPtr& target, float x = 0.0f, float y = 0.0f, 
+			float width = 1.0f, float height = 1.0f);
+
+    protected:
+		/**
+		 * @copydoc	ViewportBase::ViewportBase
+		 */
+        Viewport(const RenderTargetPtr& target, float x = 0.0f, float y = 0.0f, float width = 1.0f, float height = 1.0f);
+
+		/**
+		 * @copydoc	CoreObject::markCoreDirty
+		 */
+		void _markCoreDirty();
+
+		/**
+		 * @copydoc	CoreObject::getTargetWidth
+		 */
+		UINT32 getTargetWidth() const;
+
+		/**
+		 * @copydoc	CoreObject::getTargetHeight
+		 */
+		UINT32 getTargetHeight() const;
+
+		/**
+		 * @copydoc	CoreObject::syncToCore
+		 */
+		CoreSyncData syncToCore(FrameAlloc* allocator);
+
+		/**
+		 * @copydoc	CoreObject::createCore
+		 */
+		SPtr<CoreObjectCore> createCore() const;
+
+        RenderTargetPtr mTarget;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
 		/************************************************************************/
+		Viewport();
+
+		/**
+		 * @brief	Creates an empty viewport for serialization purposes.
+		 */
+		static ViewportPtr createEmpty();
 	public:
 		friend class ViewportRTTI;
 		static RTTITypeBase* getRTTIStatic();

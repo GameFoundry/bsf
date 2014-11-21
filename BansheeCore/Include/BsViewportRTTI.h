@@ -43,6 +43,12 @@ namespace BansheeEngine
 			addPlainField("mStencilClearValue", 6, &ViewportRTTI::getStencilClearValue, &ViewportRTTI::setStencilClearValue);
 		}
 
+		virtual void onDeserializationEnded(IReflectable* obj)
+		{
+			Viewport* viewport = static_cast<Viewport*>(obj);
+			viewport->initialize();
+		}
+
 		virtual const String& getRTTIName()
 		{
 			static String name = "Viewport";
@@ -56,7 +62,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return bs_shared_ptr<Viewport>();
+			return Viewport::createEmpty();
 		}
 	};
 }

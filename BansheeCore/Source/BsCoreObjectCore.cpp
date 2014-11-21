@@ -13,7 +13,7 @@ namespace BansheeEngine
 		// If you are not sure this will get called by the core thread, make sure 
 		// to destroy() the object manually before it goes out of scope.
 		if (!mIsDestroyed)
-			destroy();
+			destroy(); //assert(false && "Destructing an object that has not been destroyed previously. This is not allowed.");
 	}
 
 	void CoreObjectCore::destroy() 

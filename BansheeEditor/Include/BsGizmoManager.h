@@ -210,7 +210,7 @@ namespace BansheeEngine
 	private:
 		void initialize(const GizmoManager::CoreInitData& initData);
 
-		void render(const CameraProxy& camera);
+		void render(const CameraHandlerCore& camera);
 		void renderGizmos(Matrix4 viewMatrix, Matrix4 projMatrix, SPtr<MeshCoreBase> mesh, GizmoManager::GizmoMaterial material);
 		void renderIconGizmos(Rect2I screenArea, SPtr<MeshCoreBase> mesh, GizmoManager::IconRenderDataVecPtr renderData, bool usePickingMaterial);
 

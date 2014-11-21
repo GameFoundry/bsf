@@ -115,7 +115,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return bs_shared_ptr<CameraHandler>();
+			return CameraHandler::create();
 		}
 	};
 }

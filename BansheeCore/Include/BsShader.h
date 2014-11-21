@@ -6,15 +6,6 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Type of shader dirty flags
-	 */
-	enum class ShaderDirtyFlag
-	{
-		Shader = 0x01, /**< Internal shader data is dirty. */
-		Proxy = 0x02 /**< Active proxy needs to be updated. */
-	};
-
-	/**
 	 * @brief Describes a single data (int, Vector2, etc.) shader parameter.
 	 *
 	 * @see	Shader::addParameter.

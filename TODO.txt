@@ -3,10 +3,8 @@
 TODO - CoreObject refactor:
 Resource
  - Material -> Remove MaterialProxy
- - Shader -> Remove ShaderProxy
 
 Also:
- - Make CameraHandler a Coreobject and remove CameraProxy
  - Make RenderableHandler a CoreObject and remove CameraProxy
  - Rename CoreObject initialize_internal and destroy_internal to initializeCore/destroyCore and make them private
 

@@ -286,35 +286,6 @@ namespace BansheeEngine
 		 */
 		CameraHandlerPtr _getHandler() const { updateView(); return mInternal; }
 
-		/************************************************************************/
-		/* 								CORE PROXY                      		*/
-		/************************************************************************/
-
-		/**
-		 * @copydoc	CameraHandler::_isCoreDirty
-		 */
-		bool _isCoreDirty() const { return mInternal->_isCoreDirty(); }
-
-		/**
-		 * @copydoc	CameraHandler::_markCoreClean
-		 */
-		void _markCoreClean() { mInternal->_markCoreClean(); }
-
-		/**
-		 * @copydoc	CameraHandler::_createProxy
-		 */
-		CameraProxyPtr _createProxy() const { updateView(); return mInternal->_createProxy(); }
-
-		/**
-		 * @copydoc	CameraHandler::_getActiveProxy
-		 */
-		CameraProxyPtr _getActiveProxy() const { return mInternal->_getActiveProxy(); }
-
-		/**
-		 * @copydoc	CameraHandler::_setActiveProxy
-		 */
-		void _setActiveProxy(const CameraProxyPtr& proxy) { mInternal->_setActiveProxy(proxy); }
-
     protected:
 		/**
 		 * @brief	Checks if the world transform of the camera changed, and if needed updates
@@ -335,7 +306,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	Component::update
 		 */
-		virtual void update() {}
+		virtual void update();
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

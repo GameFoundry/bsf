@@ -9,7 +9,7 @@
 #include "BsAABox.h"
 #include "BsQuaternion.h"
 #include "BsRay.h"
-#include "BsCameraProxy.h"
+#include "BsCoreObject.h"
 #include "BsConvexVolume.h"
 
 namespace BansheeEngine 
@@ -40,21 +40,11 @@ namespace BansheeEngine
 	 * @brief	Camera determines how is world geometry projected onto a 2D surface. You may
 	 *			position and orient it in space, set options like aspect ratio and field or view
 	 *			and it outputs view and projection matrices required for rendering.
-	 *
-	 * @note	Sim thread only.
 	 */
-    class BS_EXPORT CameraHandler : public IReflectable
+	class BS_EXPORT CameraHandlerBase
     {
     public:
-		CameraHandler(RenderTargetPtr target = nullptr,
-			float left = 0.0f, float top = 0.0f, float width = 1.0f, float height = 1.0f);
-
-		virtual ~CameraHandler();
-
-		/**
-		 * @brief	Returns the viewport used by the camera.
-		 */	
-		ViewportPtr getViewport() const { return mViewport; }
+		virtual ~CameraHandlerBase() { }
 
 		/**
 		 * @brief	Sets the camera horizontal field of view. This determines how wide the camera
@@ -293,7 +283,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	This option tells the renderer that this camera should ignore any renderable components.
 		 */
-		void setIgnoreSceneRenderables(bool value) { mIgnoreSceneRenderables = true; markCoreDirty(); }
+		void setIgnoreSceneRenderables(bool value) { mIgnoreSceneRenderables = true; _markCoreDirty(); }
 
 		/**
 		 * @brief	This option tells the renderer that this camera should ignore any renderable components.
@@ -312,7 +302,7 @@ namespace BansheeEngine
 		 *
 		 * @param	priority	The priority. Higher value means the camera will be rendered sooner.
 		 */
-		void setPriority(INT32 priority) { mPriority = priority; markCoreDirty(); }
+		void setPriority(INT32 priority) { mPriority = priority; _markCoreDirty(); }
 
 		/**
 		 * @brief	Retrieves layer bitfield that is used when determining which object should the camera render.
@@ -322,7 +312,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Sets layer bitfield that is used when determining which object should the camera render.
 		 */
-		void setLayers(UINT64 layers) { mLayers = layers; markCoreDirty(); }
+		void setLayers(UINT64 layers) { mLayers = layers; _markCoreDirty(); }
 
 		/**
 		 * @brief	Converts a point in world space to screen coordinates (in pixels
@@ -419,42 +409,10 @@ namespace BansheeEngine
 
         static const float INFINITE_FAR_PLANE_ADJUST; /**< Small constant used to reduce far plane projection to avoid inaccuracies. */
 
-		/************************************************************************/
-		/* 								CORE PROXY                      		*/
-		/************************************************************************/
-
-		/**
-		 * @brief	Checks is the core dirty flag set. This is used by external systems 
-		 *			to know when internal data has changed and core thread potentially needs to be notified.
-		 */
-		bool _isCoreDirty() const { return mCoreDirtyFlags != 0 || mViewport->_isCoreDirty(); }
-
-		/**
-		 * @brief	Marks the core dirty flag as clean.
-		 */
-		void _markCoreClean() { mCoreDirtyFlags = 0; mViewport->_markCoreClean(); }
-
-		/**
-		 * @brief	Creates a new core proxy from the currently set options. Core proxies ensure
-		 *			that the core thread has all the necessary data, while avoiding the need
-		 *			to manage Camera itself on the core thread.
-		 *
-		 * @note	You generally need to update the core thread with a new proxy whenever core 
-		 *			dirty flag is set.
-		 */
-		CameraProxyPtr _createProxy() const;
-
-		/**
-		 * @brief	Returns the currently active proxy object, if any.
-		 */
-		CameraProxyPtr _getActiveProxy() const { return mActiveProxy; }
-
-		/**
-		 * @brief	Changes the currently active proxy object. 
-		 */
-		void _setActiveProxy(const CameraProxyPtr& proxy) { mActiveProxy = proxy; }
-
 	protected:
+		CameraHandlerBase(RenderTargetPtr target = nullptr,
+			float left = 0.0f, float top = 0.0f, float width = 1.0f, float height = 1.0f);
+
 		/**
 		 * @brief	Calculate projection parameters that are used when constructing the projection matrix.
 		 */
@@ -488,12 +446,16 @@ namespace BansheeEngine
 		virtual void invalidateFrustum() const;
 
 		/**
-		 * @brief	Marks the core data as dirty.
+		 * @brief	Returns a rectangle that defines the viewport position and size, in pixels.
 		 */
-		void markCoreDirty() { mCoreDirtyFlags = 0xFFFFFFFF; }
+		virtual Rect2I getViewportRect() const = 0;
+
+		/**
+		 * @copydoc	CoreObject::markCoreDirty
+		 */
+		virtual void _markCoreDirty() { }
 
     protected:
-		ViewportPtr mViewport; /**< Viewport that describes 2D rendering surface. */
 		UINT64 mLayers; /**< Bitfield that can be used for filtering what objects the camera sees. */
 
 		Vector3 mPosition; /**< World space position. */
@@ -513,9 +475,6 @@ namespace BansheeEngine
 		bool mFrustumExtentsManuallySet; /**< Are frustum extents manually set. */
 		bool mIgnoreSceneRenderables; /**< Should the camera ignore renderable components. */
 
-		UINT32 mCoreDirtyFlags; /**< True when internal data has changed and core thread wasn't yet informed. */
-		CameraProxyPtr mActiveProxy; /**< Active core proxy if any. */
-
 		mutable Matrix4 mProjMatrixRS; /**< Cached render-system specific projection matrix. */
 		mutable Matrix4 mProjMatrix; /**< Cached projection matrix that determines how are 3D points projected to a 2D viewport. */
 		mutable Matrix4 mViewMatrix; /**< Cached view matrix that determines camera position/orientation. */
@@ -529,6 +488,93 @@ namespace BansheeEngine
 		mutable bool mRecalcView; /**< Should view matrix be recalculated. */
 		mutable float mLeft, mRight, mTop, mBottom; /**< Frustum extents. */
 		mutable AABox mBoundingBox; /**< Frustum bounding box. */
+     };
+
+	/**
+	 * @copydoc	CameraHandlerBase
+	 */
+	class BS_EXPORT CameraHandlerCore : public CoreObjectCore, public CameraHandlerBase
+	{
+	public:
+		~CameraHandlerCore();
+
+		/**
+		 * @brief	Returns the viewport used by the camera.
+		 */	
+		SPtr<ViewportCore> getViewport() const { return mViewport; }
+
+	protected:
+		friend class CameraHandler;
+
+		CameraHandlerCore(SPtr<RenderTargetCore> target = nullptr,
+			float left = 0.0f, float top = 0.0f, float width = 1.0f, float height = 1.0f);
+
+		/**
+		 * @copydoc	CoreObjectCore::initialize
+		 */
+		void initialize();
+
+		/**
+		 * @copydoc	CameraHandlerBase
+		 */
+		virtual Rect2I getViewportRect() const;
+
+		/**
+		 * @copydoc	CoreObject::syncToCore
+		 */
+		void syncToCore(const CoreSyncData& data);
+
+		SPtr<ViewportCore> mViewport;
+	};
+
+	/**
+	 * @copydoc	CameraHandlerBase
+	 */
+	class BS_EXPORT CameraHandler : public IReflectable, public CoreObject, public CameraHandlerBase
+    {
+    public:
+		/**
+		 * @brief	Returns the viewport used by the camera.
+		 */	
+		ViewportPtr getViewport() const { return mViewport; }
+
+		/**
+		 * @brief	Retrieves an implementation of a shader usable only from the
+		 *			core thread.
+		 */
+		SPtr<CameraHandlerCore> getCore() const;
+
+		/**
+		 * @brief	Creates a new camera that renders to the specified portion of the provided render target.
+		 */
+		static CameraHandlerPtr create(RenderTargetPtr target = nullptr,
+			float left = 0.0f, float top = 0.0f, float width = 1.0f, float height = 1.0f);
+
+	protected:
+		CameraHandler(RenderTargetPtr target = nullptr,
+			float left = 0.0f, float top = 0.0f, float width = 1.0f, float height = 1.0f);
+
+		/**
+		 * @copydoc	CameraHandlerBase
+		 */
+		virtual Rect2I getViewportRect() const;
+
+		/**
+		 * @copydoc	CoreObject::createCore
+		 */
+		SPtr<CoreObjectCore> createCore() const;
+
+		/**
+		 * @copydoc	CoreObject::markCoreDirty
+		 */
+		void _markCoreDirty();
+
+		/**
+		 * @copydoc	CoreObject::syncToCore
+		 */
+		CoreSyncData syncToCore(FrameAlloc* allocator);
+
+		ViewportPtr mViewport; /**< Viewport that describes 2D rendering surface. */
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

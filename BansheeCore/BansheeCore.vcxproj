@@ -278,7 +278,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Include\BsCameraProxy.h" />
     <ClInclude Include="Include\BsCoreObjectCore.h" />
     <ClInclude Include="Include\BsDrawList.h" />
     <ClInclude Include="Include\BsMaterialParam.h" />
@@ -424,7 +423,6 @@
     <ClInclude Include="Source\BsMeshRTTI.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\BsCameraProxy.cpp" />
     <ClCompile Include="Source\BsCoreObjectCore.cpp" />
     <ClCompile Include="Source\BsCoreThread.cpp" />
     <ClCompile Include="Source\BsDrawList.cpp" />

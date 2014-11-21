@@ -137,13 +137,8 @@ namespace BansheeEngine
 		UINT64 mNextAvailableID;
 		Map<UINT64, CoreObject*> mObjects;
 
-		Vector<SimStoredSyncData> mSimSyncData;
-		UINT32 mSimSyncIdx;
-		UINT32 mSimSyncCount;
-
-		Vector<CoreStoredSyncData> mCoreSyncData;
-		UINT32 mCoreSyncIdx;
-		UINT32 mCoreSyncCount;
+		List<SimStoredSyncData> mSimSyncData;
+		List<CoreStoredSyncData> mCoreSyncData;
 
 		BS_MUTEX(mObjectsMutex);
 	};

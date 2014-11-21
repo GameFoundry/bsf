@@ -30,13 +30,11 @@ namespace BansheeEngine
 
 	}
 
-	void RenderWindowCore::destroy()
+	RenderWindowCore::~RenderWindowCore()
 	{
 		Platform::resetNonClientAreas(*this);
 
 		RenderWindowCoreManager::instance().windowDestroyed(this);
-
-		RenderTargetCore::destroy();
 	}
 
 	void RenderWindowCore::setHidden(bool hidden)

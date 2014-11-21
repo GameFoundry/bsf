@@ -2,13 +2,13 @@
 #include "BsCoreObject.h"
 #include "BsCoreObjectCore.h"
 #include "BsException.h"
+#include "BsMath.h"
 #include "BsFrameAlloc.h"
 
 namespace BansheeEngine
 {
 	CoreObjectManager::CoreObjectManager()
-		:mNextAvailableID(1), mSimSyncIdx(0), mSimSyncCount(0),
-		mCoreSyncIdx(0), mCoreSyncCount(0)
+		:mNextAvailableID(1)
 	{
 
 	} 
@@ -51,11 +51,8 @@ namespace BansheeEngine
 		mObjects.erase(internalId);
 
 		{
-			for (UINT32 i = 0; i < mSimSyncCount; i++)
+			for (auto& syncData : mSimSyncData)
 			{
-				UINT32 idx = (mSimSyncIdx + i - mSimSyncCount - 1) % mSimSyncCount;
-
-				SimStoredSyncData& syncData = mSimSyncData[idx];
 				auto iterFind = syncData.entries.find(internalId);
 				if (iterFind != syncData.entries.end())
 				{
@@ -70,11 +67,8 @@ namespace BansheeEngine
 		}
 
 		{
-			for (UINT32 i = 0; i < mCoreSyncCount; i++)
+			for (auto& syncData : mCoreSyncData)
 			{
-				UINT32 idx = (mCoreSyncIdx + i - mCoreSyncCount - 1) % mCoreSyncCount;
-
-				CoreStoredSyncData& syncData = mCoreSyncData[idx];
 				auto iterFind = syncData.entries.find(internalId);
 				if (iterFind != syncData.entries.end())
 				{
@@ -95,12 +89,8 @@ namespace BansheeEngine
 
 		if (type == CoreObjectSync::Sim)
 		{
-			mCoreSyncCount++;
-			if (mCoreSyncCount > (UINT32)mCoreSyncData.size())
-				mCoreSyncData.push_back(CoreStoredSyncData());
-
-			mCoreSyncIdx = (mCoreSyncIdx + 1) % mCoreSyncCount;
-			CoreStoredSyncData& syncData = mCoreSyncData[mCoreSyncIdx];
+			mCoreSyncData.push_back(CoreStoredSyncData());
+			CoreStoredSyncData& syncData = mCoreSyncData.back();
 
 			syncData.alloc = allocator;
 			for (auto& objectData : mObjects)
@@ -118,12 +108,8 @@ namespace BansheeEngine
 		}
 		else
 		{
-			mSimSyncCount++;
-			if (mSimSyncCount > (UINT32)mSimSyncData.size())
-				mSimSyncData.push_back(SimStoredSyncData());
-
-			mSimSyncIdx = (mSimSyncIdx + 1) % mSimSyncCount;
-			SimStoredSyncData& syncData = mSimSyncData[mSimSyncIdx];
+			mSimSyncData.push_back(SimStoredSyncData());
+			SimStoredSyncData& syncData = mSimSyncData.back();
 
 			syncData.alloc = allocator;
 			for (auto& objectData : mObjects)
@@ -147,13 +133,11 @@ namespace BansheeEngine
 
 		if (type == CoreObjectSync::Sim)
 		{
-			if (mCoreSyncCount == 0)
+			if (mCoreSyncData.size() == 0)
 				return;
 
-			mCoreSyncCount--;
-			UINT32 idx = mCoreSyncIdx - mCoreSyncCount;
+			CoreStoredSyncData& syncData = mCoreSyncData.front();
 
-			CoreStoredSyncData& syncData = mCoreSyncData[idx];
 			for (auto& objectData : syncData.entries)
 			{
 				const CoreStoredSyncObjData& objSyncData = objectData.second;
@@ -166,16 +150,15 @@ namespace BansheeEngine
 			}
 
 			syncData.entries.clear();
+			mCoreSyncData.pop_front();
 		}
 		else
 		{
-			if (mSimSyncCount == 0)
+			if (mSimSyncData.size() == 0)
 				return;
 
-			mSimSyncCount--;
-			UINT32 idx = mSimSyncIdx - mSimSyncCount;
+			SimStoredSyncData& syncData = mSimSyncData.front();
 
-			SimStoredSyncData& syncData = mSimSyncData[idx];
 			for (auto& objectData : syncData.entries)
 			{
 				const SimStoredSyncObjData& objSyncData = objectData.second;
@@ -188,6 +171,7 @@ namespace BansheeEngine
 			}
 
 			syncData.entries.clear();
+			mSimSyncData.pop_front();
 		}
 	}
 }
