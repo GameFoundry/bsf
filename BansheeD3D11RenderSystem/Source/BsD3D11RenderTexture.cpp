@@ -11,7 +11,9 @@ namespace BansheeEngine
 {
 	D3D11RenderTextureCore::D3D11RenderTextureCore(const RENDER_TEXTURE_DESC& desc)
 		:RenderTextureCore(desc), mProperties(desc, false)
-	{ }
+	{ 
+
+	}
 
 	void D3D11RenderTextureCore::getCustomAttribute(const String& name, void* pData) const
 	{

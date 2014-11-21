@@ -82,7 +82,6 @@ namespace BansheeEngine
 		bool isCoreDirty() const { return mCoreDirtyFlags != 0; }
 
 		UINT32 mCoreDirtyFlags;
-		bool mIsDestroyed;
 		std::weak_ptr<CoreObjectCore> mThis;
 	};
 }

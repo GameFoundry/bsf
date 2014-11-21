@@ -505,6 +505,7 @@ namespace BansheeEngine
 		mPosition = position;
 
 		mRecalcView = true;
+		_markCoreDirty();
 	}
 
 	void CameraHandlerBase::setRotation(const Quaternion& rotation)
@@ -512,6 +513,7 @@ namespace BansheeEngine
 		mRotation = rotation;
 
 		mRecalcView = true;
+		_markCoreDirty();
 	}
 
 	void CameraHandlerBase::invalidateFrustum() const
@@ -684,6 +686,11 @@ namespace BansheeEngine
 		mViewport = ViewportCore::create(target, left, top, width, height);
 	}
 
+	CameraHandlerCore::CameraHandlerCore(const SPtr<ViewportCore>& viewport)
+	{
+		mViewport = viewport;
+	}
+
 	void CameraHandlerCore::initialize()
 	{
 		RendererManager::instance().getActive()->_notifyCameraAdded(this);
@@ -745,8 +752,7 @@ namespace BansheeEngine
 	{
 		Rect2 normArea = mViewport->getNormArea();
 
-		CameraHandlerCore* handler = new (bs_alloc<CameraHandlerCore>()) 
-			CameraHandlerCore(mViewport->getTarget()->getCore(), normArea.x, normArea.y, normArea.width, normArea.height);
+		CameraHandlerCore* handler = new (bs_alloc<CameraHandlerCore>()) CameraHandlerCore(mViewport->getCore());
 		SPtr<CameraHandlerCore> handlerPtr = bs_shared_ptr<CameraHandlerCore, GenAlloc>(handler);
 		handlerPtr->_setThisPtr(handlerPtr);
 

@@ -509,6 +509,8 @@ namespace BansheeEngine
 		CameraHandlerCore(SPtr<RenderTargetCore> target = nullptr,
 			float left = 0.0f, float top = 0.0f, float width = 1.0f, float height = 1.0f);
 
+		CameraHandlerCore(const SPtr<ViewportCore>& viewport);
+
 		/**
 		 * @copydoc	CoreObjectCore::initialize
 		 */
