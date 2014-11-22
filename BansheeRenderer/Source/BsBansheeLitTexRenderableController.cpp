@@ -15,8 +15,8 @@ namespace BansheeEngine
 	{
 		defaultShader = createDefaultShader();
 
-		TechniquePtr defaultTechnique = defaultShader->getBestTechnique();
-		PassPtr defaultPass = defaultTechnique->getPass(0);
+		SPtr<TechniqueCore> defaultTechnique = defaultShader->getBestTechnique();
+		SPtr<PassCore> defaultPass = defaultTechnique->getPass(0);
 
 		GpuParamDescPtr vertParamDesc = defaultPass->getVertexProgram()->getParamDesc();
 		GpuParamDescPtr fragParamDesc = defaultPass->getFragmentProgram()->getParamDesc();
@@ -265,8 +265,8 @@ namespace BansheeEngine
 	{
 		String rsName = RenderSystem::instance().getName();
 
-		HGpuProgram vsProgram;
-		HGpuProgram psProgram;
+		SPtr<GpuProgramCore> vsProgram;
+		SPtr<GpuProgramCore> psProgram;
 
 		if (rsName == RenderSystemDX11)
 		{
@@ -298,8 +298,8 @@ namespace BansheeEngine
 				return dot(lightDir, float4(0.5f, 0.5f, 0.5f, 0.5f));
 			})";	
 
-			vsProgram = GpuProgram::create(vsCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
-			psProgram = GpuProgram::create(psCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_FS_4_0);
+			vsProgram = GpuProgramCore::create(vsCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
+			psProgram = GpuProgramCore::create(psCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_FS_4_0);
 		}
 		else if (rsName == RenderSystemDX9)
 		{
@@ -326,8 +326,8 @@ namespace BansheeEngine
 				return dot(lightDir, float4(0.5f, 0.5f, 0.5f, 0.5f));
 			})";
 
-			vsProgram = GpuProgram::create(vsCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
-			psProgram = GpuProgram::create(psCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_FS_2_0);
+			vsProgram = GpuProgramCore::create(vsCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
+			psProgram = GpuProgramCore::create(psCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_FS_2_0);
 		}
 		else if (rsName == RenderSystemOpenGL)
 		{
@@ -364,12 +364,9 @@ namespace BansheeEngine
 				fragColor = lightDir * vec4(0.5f, 0.5f, 0.5f, 0.5f);
 			})";
 
-			vsProgram = GpuProgram::create(vsCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
-			psProgram = GpuProgram::create(psCode, "main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_FS_4_0);
+			vsProgram = GpuProgramCore::create(vsCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
+			psProgram = GpuProgramCore::create(psCode, "main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_FS_4_0);
 		}
-
-		vsProgram.synchronize();
-		psProgram.synchronize();
 
 		SPtr<ShaderCore> defaultShader = ShaderCore::create("LitTexDefault");
 		defaultShader->setParamBlockAttribs("Static", true, GPBU_DYNAMIC, RBS_Static);
@@ -380,8 +377,8 @@ namespace BansheeEngine
 		defaultShader->addParameter("time", "time", GPDT_FLOAT1, RPS_Time);
 		defaultShader->addParameter("matWorldViewProj", "matWorldViewProj", GPDT_MATRIX_4X4, RPS_WorldViewProjTfrm);
 
-		TechniquePtr newTechnique = defaultShader->addTechnique(rsName, RendererDefault);
-		PassPtr newPass = newTechnique->addPass();
+		SPtr<TechniqueCore> newTechnique = defaultShader->addTechnique(rsName, RendererDefault);
+		SPtr<PassCore> newPass = newTechnique->addPass();
 		newPass->setVertexProgram(vsProgram);
 		newPass->setFragmentProgram(psProgram);
 

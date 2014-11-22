@@ -159,6 +159,12 @@ namespace BansheeEngine
 		 */
 		const GpuProgramProperties& getProperties() const { return mProperties; }
 
+		/**
+		 * @copydoc	GpuProgram::create
+		 */
+		static SPtr<GpuProgramCore> create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype,
+			GpuProgramProfile profile, bool requiresAdjacency = false);
+
 	protected:
 		GpuProgramCore(const String& source, const String& entryPoint,
 			GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired = false);

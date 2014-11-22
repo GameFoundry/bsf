@@ -14,53 +14,20 @@ namespace BansheeEngine
 
 	}
 
-	TechniquePtr ShaderBase::addTechnique(const String& renderSystem, const String& renderer)
+	bool ShaderBase::isTechniqueSupported(const SPtr<Technique> technique) const
 	{
-		TechniquePtr technique = bs_shared_ptr<Technique, PoolAlloc>(renderSystem, renderer);
-		mTechniques.push_back(technique);
-
-		return technique;
+		return technique->isSupported();
 	}
 
-	void ShaderBase::removeTechnique(UINT32 idx)
+	bool ShaderBase::isTechniqueSupported(const SPtr<TechniqueCore> technique) const
 	{
-		if (idx < 0 || idx >= mTechniques.size())
+		return technique->isSupported();
+	}
+
+	void ShaderBase::checkBounds(UINT32 idx, UINT32 bound) const
+	{
+		if (idx < 0 || idx >= bound)
 			BS_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx));
-
-		int count = 0;
-		auto iter = mTechniques.begin();
-		while (count != idx)
-		{
-			++count;
-			++iter;
-		}
-
-		mTechniques.erase(iter);
-	}
-
-	void ShaderBase::removeTechnique(TechniquePtr technique)
-	{
-		auto iterFind = std::find(mTechniques.begin(), mTechniques.end(), technique);
-
-		if (iterFind == mTechniques.end())
-			BS_EXCEPT(InvalidParametersException, "Cannot remove specified technique because it wasn't found in this shader.");
-
-		mTechniques.erase(iterFind);
-	}
-
-	TechniquePtr ShaderBase::getBestTechnique() const
-	{
-		for (auto iter = mTechniques.begin(); iter != mTechniques.end(); ++iter)
-		{
-			if ((*iter)->isSupported())
-			{
-				return *iter;
-			}
-		}
-
-		return nullptr;
-
-		// TODO - Low priority. Instead of returning null use an extremely simple technique that will be supported almost everywhere as a fallback.
 	}
 
 	void ShaderBase::setQueueSortType(QueueSortType sortType) 
@@ -215,9 +182,19 @@ namespace BansheeEngine
 	}
 
 	ShaderCore::ShaderCore(const String& name)
-		:ShaderBase(name)
+		:TShader(name)
 	{
 
+	}
+
+	SPtr<TechniqueCore> ShaderCore::addTechnique(const String& renderSystem, const String& renderer)
+	{
+		SPtr<TechniqueCore> technique = TechniqueCore::create(renderSystem, renderer);
+
+		mTechniques.push_back(technique);
+		_markCoreDirty();
+
+		return technique;
 	}
 
 	void ShaderCore::syncToCore(const CoreSyncData& data)
@@ -247,9 +224,19 @@ namespace BansheeEngine
 	}
 
 	Shader::Shader(const String& name)
-		:ShaderBase(name)
+		:TShader(name)
 	{
 
+	}
+
+	SPtr<Technique> Shader::addTechnique(const String& renderSystem, const String& renderer)
+	{
+		SPtr<Technique> technique = Technique::create(renderSystem, renderer);
+
+		mTechniques.push_back(technique);
+		_markCoreDirty();
+
+		return technique;
 	}
 
 	void Shader::_markCoreDirty()

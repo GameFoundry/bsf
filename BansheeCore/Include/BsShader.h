@@ -59,34 +59,6 @@ namespace BansheeEngine
 		virtual ~ShaderBase() { }
 
 		/**
-		 * @brief	Adds a new technique that supports the provided render system
-		 *			and renderer to the shader. It's up to the caller to populate the
-		 *			returned object with valid data.
-		 */
-		TechniquePtr addTechnique(const String& renderSystem, const String& renderer);
-		
-		/**
-		 * @brief	Removes a technique at the specified index.
-		 */
-		void removeTechnique(UINT32 idx);
-
-		/**
-		 * @brief	Removes the specified technique.
-		 */
-		void removeTechnique(TechniquePtr technique);
-
-		/**
-		 * @brief	Returns the total number of techniques in this shader.
-		 */
-		UINT32 getNumTechniques() const { return (UINT32)mTechniques.size(); }
-
-		/**
-		 * @brief	Gets the best supported technique based on current render and other systems.
-		 * 			Returns null if not a single technique is supported.
-		 */
-		TechniquePtr getBestTechnique() const;
-
-		/**
 		 * @brief	Sets sorting type to use when performing sort in the render queue. Default value is sort front to back
 		 *			which causes least overdraw and is preferable. Transparent objects need to be sorted back to front.
 		 *			You may also specify no sorting and the elements will be rendered in the order they were added to the
@@ -250,6 +222,21 @@ namespace BansheeEngine
 		 */
 		virtual void _markCoreDirty() { }
 
+		/**
+		 * @copydoc	Technique::isSupported
+		 */
+		bool isTechniqueSupported(const SPtr<Technique> technique) const;
+
+		/**
+		 * @copydoc	Technique::isSupported
+		 */
+		bool isTechniqueSupported(const SPtr<TechniqueCore> technique) const;
+
+		/**
+		 * @brief	Checks is the index between 0 and provided bound and throws an exception if its not.
+		 */
+		void checkBounds(UINT32 idx, UINT32 bound) const;
+
 		QueueSortType mQueueSortType;
 		UINT32 mQueuePriority;
 		bool mSeparablePasses;
@@ -258,16 +245,116 @@ namespace BansheeEngine
 		Map<String, SHADER_OBJECT_PARAM_DESC> mObjectParams;
 		Map<String, SHADER_PARAM_BLOCK_DESC> mParamBlocks;
 
-		Vector<TechniquePtr> mTechniques;
 		String mName;
+	};
+
+	template<bool Core>
+	struct TTechniqueType {};
+
+	template<>
+	struct TTechniqueType<false>
+	{
+		typedef Technique Type;
+	};
+
+	template<>
+	struct TTechniqueType<true>
+	{
+		typedef TechniqueCore Type;
+	};
+
+	/**
+	 * @copydoc	ShaderBase
+	 *
+	 * @note	Templated version of Shader used for implementing both 
+	 *			sim and core thread variants.
+	 */
+	template<bool Core>
+	class TShader : public ShaderBase
+	{
+	public:
+		typedef typename TTechniqueType<Core>::Type TTechniqueType;
+
+		TShader(const String& name)
+			:ShaderBase(name)
+		{ }
+
+		virtual ~TShader() { }
+	
+		/**
+		 * @brief	Removes a technique at the specified index.
+		 */
+		void removeTechnique(UINT32 idx)
+		{
+			checkBounds(idx, (UINT32)mTechniques.size());
+
+			int count = 0;
+			auto iter = mTechniques.begin();
+			while (count != idx)
+			{
+				++count;
+				++iter;
+			}
+
+			mTechniques.erase(iter);
+			_markCoreDirty();
+		}
+
+		/**
+		 * @brief	Removes the specified technique.
+		 */
+		void removeTechnique(SPtr<TTechniqueType> technique)
+		{
+			auto iterFind = std::find(mTechniques.begin(), mTechniques.end(), technique);
+
+			if (iterFind != mTechniques.end())
+			{
+				mTechniques.erase(iterFind);
+				_markCoreDirty();
+			}
+		}
+
+		/**
+		 * @brief	Returns the total number of techniques in this shader.
+		 */
+		UINT32 getNumTechniques() const { return (UINT32)mTechniques.size(); }
+
+		/**
+		 * @brief	Gets the best supported technique based on current render and other systems.
+		 * 			Returns null if not a single technique is supported.
+		 */
+		SPtr<TTechniqueType> getBestTechnique() const
+		{
+			for (auto iter = mTechniques.begin(); iter != mTechniques.end(); ++iter)
+			{
+				if (isTechniqueSupported(*iter))
+				{
+					return *iter;
+				}
+			}
+
+			return nullptr;
+
+			// TODO - Low priority. Instead of returning null use an extremely simple technique that will be supported almost everywhere as a fallback.
+		}
+
+	protected:
+		Vector<SPtr<TTechniqueType>> mTechniques;
 	};
 
 	/**
 	 * @copydoc	ShaderBase
 	 */
-	class BS_CORE_EXPORT ShaderCore : public CoreObjectCore, public ShaderBase
+	class BS_CORE_EXPORT ShaderCore : public CoreObjectCore, public TShader<true>
 	{
 	public:
+		/**
+		 * @brief	Adds a new technique that supports the provided render system
+		 *			and renderer to the shader. It's up to the caller to populate the
+		 *			returned object with valid data.
+		 */
+		SPtr<TechniqueCore> addTechnique(const String& renderSystem, const String& renderer);
+
 		/**
 		 * @copydoc	Shader::create
 		 */
@@ -287,7 +374,7 @@ namespace BansheeEngine
 	/**
 	 * @copydoc	ShaderBase
 	 */
-	class BS_CORE_EXPORT Shader : public Resource, public ShaderBase
+	class BS_CORE_EXPORT Shader : public Resource, public TShader<false>
 	{
 	public:
 		/**
@@ -295,6 +382,13 @@ namespace BansheeEngine
 		 *			core thread.
 		 */
 		SPtr<ShaderCore> getCore() const;
+
+		/**
+		 * @brief	Adds a new technique that supports the provided render system
+		 *			and renderer to the shader. It's up to the caller to populate the
+		 *			returned object with valid data.
+		 */
+		SPtr<Technique> addTechnique(const String& renderSystem, const String& renderer);
 
 		static bool isSampler(GpuParamObjectType type);
 		static bool isTexture(GpuParamObjectType type);

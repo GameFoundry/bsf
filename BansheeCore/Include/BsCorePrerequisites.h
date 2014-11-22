@@ -156,6 +156,8 @@ namespace BansheeEngine
 	class GpuParamsCore;
 	class ShaderCore;
 	class ViewportCore;
+	class PassCore;
+	class TechniqueCore;
 	// Asset import
 	class SpecificImporter;
 	class Importer;

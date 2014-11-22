@@ -47,6 +47,12 @@ namespace BansheeEngine
 		return GpuParamsCore::create(mParametersDesc, false);
 	}
 
+	SPtr<GpuProgramCore> GpuProgramCore::create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype,
+		GpuProgramProfile profile, bool requiresAdjacency)
+	{
+		return GpuProgramCoreManager::instance().create(source, entryPoint, language, gptype, profile, requiresAdjacency);
+	}
+
 	GpuProgram::GpuProgram(const String& source, const String& entryPoint, const String& language,
 		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool isAdjacencyInfoRequired) 
 		: mProperties(mergeWithIncludes(source, includes), entryPoint, gptype, profile), mLanguage(language),

@@ -2,6 +2,7 @@
 
 #include "BsCorePrerequisites.h"
 #include "BsIReflectable.h"
+#include "BsCoreObject.h"
 
 namespace BansheeEngine
 {
@@ -14,7 +15,143 @@ namespace BansheeEngine
 	 *			want to have two techniques, one using HLSL based GPU programs, other using GLSL. Those
 	 *			techniques should try to mirror each others end results.
 	 */
-	class BS_CORE_EXPORT Technique : public IReflectable
+	class BS_CORE_EXPORT TechniqueBase
+	{
+	public:
+		TechniqueBase(const String& renderSystem, const String& renderer);
+		virtual ~TechniqueBase() { }
+
+		/**
+		 * @brief	Checks if this technique is supported based on current
+		 *			render and other systems.
+		 */
+		bool isSupported() const;
+
+	protected:
+		/**
+		 * @brief	Checks is the index between 0 and provided bound and throws an exception if its not.
+		 */
+		void checkBounds(UINT32 idx, UINT32 bound) const;
+
+		/**
+		 * @copydoc	CoreObject::markCoreDirty
+		 */
+		virtual void _markCoreDirty() { }
+
+		String mRenderSystem;
+		String mRenderer;
+	};
+
+	template<bool Core>
+	struct TPassType
+	{ };
+
+	template<>
+	struct TPassType<false>
+	{
+		typedef Pass Type;
+	};
+
+	template<>
+	struct TPassType <true>
+	{
+		typedef PassCore Type;
+	};
+
+	/**
+	 * @copydoc	TechniqueBase
+	 *
+	 * @note	Templated version that is used for implementing 
+	 *			both sim and core versions of Technique.
+	 */
+	template<bool Core>
+	class TTechnique : public TechniqueBase
+	{
+	public:
+		typedef typename TPassType<Core>::Type PassType;
+		
+		TTechnique(const String& renderSystem, const String& renderer)
+			:TechniqueBase(renderSystem, renderer)
+		{ }
+
+		virtual ~TTechnique() { }
+
+		/**
+		 * @brief	Removes a pass with the specified index.
+		 */
+		void removePass(UINT32 idx)
+		{
+			checkBounds(idx, (UINT32)mPasses.size());
+
+			int count = 0;
+			auto iter = mPasses.begin();
+			while (count != idx)
+			{
+				++count;
+				++iter;
+			}
+
+			mPasses.erase(iter);
+			_markCoreDirty();
+		}
+
+		/**
+		 * @brief	Returns a pass with the specified index.
+		 */
+		SPtr<PassType> getPass(UINT32 idx) const
+		{
+			checkBounds(idx, (UINT32)mPasses.size());
+
+			return mPasses[idx];
+		}
+
+		/**
+		 * @brief	Returns total number of passes.
+		 */
+		UINT32 getNumPasses() const { return (UINT32)mPasses.size(); }
+
+	protected:
+		Vector<SPtr<PassType>> mPasses;
+	};
+
+	/**
+	 * @copydoc	TechniqueBase
+	 *
+	 * @note	Core thread.
+	 */
+	class BS_CORE_EXPORT TechniqueCore : public CoreObjectCore, public TTechnique<true>
+	{
+	public:
+		TechniqueCore(const String& renderSystem, const String& renderer);
+
+		/**
+		 * @brief	Registers a new pass with the technique. It's up to the caller
+		 *			to register GPU programs in the returned pass.
+		 *
+		 * @note	Passes added first will be executed first when rendering.
+		 */
+		SPtr<PassCore> addPass();
+
+		/**
+		 * @brief	Creates a new technique.
+		 */
+		static SPtr<TechniqueCore> create(const String& renderSystem, const String& renderer);
+
+	protected:
+		friend class ShaderCore;
+
+		/**
+		 * @copydoc	CoreObjectCore::syncToCore
+		 */
+		void syncToCore(const CoreSyncData& data);
+	};
+
+	/**
+	 * @copydoc	TechniqueBase
+	 *
+	 * @note	Sim thread.
+	 */
+	class BS_CORE_EXPORT Technique : public IReflectable, public CoreObject, public TTechnique<false>
 	{
 	public:
 		Technique(const String& renderSystem, const String& renderer);
@@ -25,35 +162,41 @@ namespace BansheeEngine
 		 *
 		 * @note	Passes added first will be executed first when rendering.
 		 */
-		PassPtr addPass();
+		SPtr<Pass> addPass();
 
 		/**
-		 * @brief	Removes a pass with the specified index.
+		 * @brief	Retrieves an implementation of a technique usable only from the
+		 *			core thread.
 		 */
-		void removePass(UINT32 idx);
+		SPtr<TechniqueCore> getCore() const;
 
 		/**
-		 * @brief	Returns a pass with the specified index.
+		 * @brief	Creates a new technique.
 		 */
-		PassPtr getPass(UINT32 idx) const;
+		static TechniquePtr create(const String& renderSystem, const String& renderer);
+
+	protected:
+		/**
+		 * @copydoc	CoreObject::createCore
+		 */
+		SPtr<CoreObjectCore> createCore() const;
 
 		/**
-		 * @brief	Returns total number of passes.
+		 * @copydoc	CoreObject::markCoreDirty
 		 */
-		UINT32 getNumPasses() const { return (UINT32)mPasses.size(); }
+		void _markCoreDirty();
 
 		/**
-		 * @brief	Checks if this technique is supported based on current
-		 *			render and other systems.
+		 * @copydoc	CoreObject::syncToCore
 		 */
-		bool isSupported() const;
+		CoreSyncData syncToCore(FrameAlloc* allocator);
+
+		/**
+		 * @brief	Creates a new technique but doesn't initialize it.
+		 */
+		static TechniquePtr createEmpty();
 
 	private:
-		String mRenderSystem;
-		String mRenderer;
-
-		Vector<PassPtr> mPasses;
-
 		/************************************************************************/
 		/* 								RTTI		                     		*/
 		/************************************************************************/
@@ -61,7 +204,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Serialization only constructor.
 		 */
-		Technique() {}
+		Technique();
 
 	public:
 		friend class TechniqueRTTI;

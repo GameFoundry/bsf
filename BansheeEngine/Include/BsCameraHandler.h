@@ -541,7 +541,7 @@ namespace BansheeEngine
 		ViewportPtr getViewport() const { return mViewport; }
 
 		/**
-		 * @brief	Retrieves an implementation of a shader usable only from the
+		 * @brief	Retrieves an implementation of a camera handler usable only from the
 		 *			core thread.
 		 */
 		SPtr<CameraHandlerCore> getCore() const;

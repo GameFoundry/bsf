@@ -44,6 +44,12 @@ namespace BansheeEngine
 			addReflectablePtrArrayField("mPasses", 2, &TechniqueRTTI::getPass, &TechniqueRTTI::getPassArraySize, &TechniqueRTTI::setPass, &TechniqueRTTI::setPassArraySize);
 		}
 
+		virtual void onDeserializationEnded(IReflectable* obj)
+		{
+			Technique* technique = static_cast<Technique*>(obj);
+			technique->initialize();
+		}
+
 		virtual const String& getRTTIName()
 		{
 			static String name = "Technique";
@@ -57,7 +63,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return bs_shared_ptr<Technique, PoolAlloc>(new (bs_alloc<Technique, PoolAlloc>()) Technique());
+			return Technique::createEmpty();
 		}
 	};
 }

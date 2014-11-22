@@ -582,8 +582,6 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		mActiveRenderTarget = target;
-
 		// Switch context if different from current one
 		GLContext *newContext = 0;
 		target->getCustomAttribute("GLCONTEXT", &newContext);
@@ -591,6 +589,9 @@ namespace BansheeEngine
 		{
 			switchContext(newContext);
 		}
+
+		// This must happen after context switch to ensure previous context is still alive
+		mActiveRenderTarget = target;
 
 		GLFrameBufferObject *fbo = 0;
 		target->getCustomAttribute("FBO", &fbo);
