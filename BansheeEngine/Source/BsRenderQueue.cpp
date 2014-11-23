@@ -1,9 +1,9 @@
 #include "BsRenderQueue.h"
-#include "BsMaterialProxy.h"
 #include "BsRenderableProxy.h"
 #include "BsSubMesh.h"
 #include "BsShader.h"
 #include "BsMesh.h"
+#include "BsMaterial.h"
 
 namespace BansheeEngine
 {
@@ -30,15 +30,15 @@ namespace BansheeEngine
 		renderOp.subMesh = element->subMesh;
 
 		sortData.distFromCamera = distFromCamera;
-		sortData.priority = element->material->shader->getQueuePriority();
-		sortData.sortType = element->material->shader->getQueueSortType();
+		sortData.priority = element->material->getShader()->getQueuePriority();
+		sortData.sortType = element->material->getShader()->getQueueSortType();
 		sortData.seqIdx = (UINT32)mRenderElements.size();
 
 		// TODO - Make sure elements are cached so we dont allocate memory for them every frame
 		mRenderElements.insert(sortData);
 	}
 
-	void RenderQueue::add(const MaterialProxyPtr& material, const SPtr<MeshCoreBase>& mesh, const SubMesh& subMesh, float distFromCamera)
+	void RenderQueue::add(const SPtr<MaterialCore>& material, const SPtr<MeshCoreBase>& mesh, const SubMesh& subMesh, float distFromCamera)
 	{
 		SortData sortData;
 
@@ -49,8 +49,8 @@ namespace BansheeEngine
 		renderOp.subMesh = subMesh;
 
 		sortData.distFromCamera = distFromCamera;
-		sortData.priority = material->shader->getQueuePriority();
-		sortData.sortType = material->shader->getQueueSortType();
+		sortData.priority = material->getShader()->getQueuePriority();
+		sortData.sortType = material->getShader()->getQueueSortType();
 		sortData.seqIdx = (UINT32)mRenderElements.size();
 
 		// TODO - Make sure elements are cached so we dont allocate memory for them every frame
@@ -74,7 +74,7 @@ namespace BansheeEngine
 		for (auto& sortData : mRenderElements)
 		{
 			const RenderQueueElement& renderElem = sortData.element;
-			UINT32 numPasses = (UINT32)renderElem.material->passes.size();
+			UINT32 numPasses = (UINT32)renderElem.material->getNumPasses();
 			for (UINT32 i = 0; i < numPasses; i++)
 			{
 				mSortedRenderElements.push_back(RenderQueueElement());

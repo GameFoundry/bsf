@@ -218,53 +218,25 @@ namespace BansheeEngine
 		GpuParamObjectDesc* mParamDesc;
 	};
 
-	template<bool Core>
-	struct TGpuParamsPtrType
-	{ };
+	template<bool Core> struct TGpuParamsPtrType { };
+	template<> struct TGpuParamsPtrType<false> { typedef SPtr<GpuParams> Type; };
+	template<> struct TGpuParamsPtrType<true> { typedef SPtr<GpuParamsCore> Type; };
 
-	template<>
-	struct TGpuParamsPtrType<false>
-	{
-		typedef SPtr<GpuParams> Type;
-	};
+	template<bool Core> struct TGpuDataParamBaseType { };
+	template<> struct TGpuDataParamBaseType<false> { typedef GpuDataParamBase Type; };
+	template<> struct TGpuDataParamBaseType<true> { typedef GpuDataParamCoreBase Type;	};
 
-	template<>
-	struct TGpuParamsPtrType<true>
-	{
-		typedef SPtr<GpuParamsCore> Type;
-	};
+	template<bool Core> struct TGpuObjectParamBaseType { };
+	template<> struct TGpuObjectParamBaseType<false> { typedef GpuObjectParamBase Type; };
+	template<> struct TGpuObjectParamBaseType<true> { typedef GpuObjectParamCoreBase Type; };
 
-	template<bool Core>
-	struct TGpuDataParamBaseType
-	{ };
+	template<bool Core> struct TGpuParamTextureType { };
+	template<> struct TGpuParamTextureType < false > { typedef HTexture Type; };
+	template<> struct TGpuParamTextureType < true > { typedef SPtr<TextureCore> Type; };
 
-	template<>
-	struct TGpuDataParamBaseType<false>
-	{ 
-		typedef GpuDataParamBase Type;
-	};
-
-	template<>
-	struct TGpuDataParamBaseType<true>
-	{ 
-		typedef GpuDataParamCoreBase Type;
-	};
-
-	template<bool Core>
-	struct TGpuObjectParamBaseType
-	{ };
-
-	template<>
-	struct TGpuObjectParamBaseType<false>
-	{ 
-		typedef GpuObjectParamBase Type;
-	};
-
-	template<>
-	struct TGpuObjectParamBaseType<true>
-	{ 
-		typedef GpuObjectParamCoreBase Type;
-	};
+	template<bool Core> struct TGpuParamSamplerStateType { };
+	template<> struct TGpuParamSamplerStateType < false > { typedef HSamplerState Type; };
+	template<> struct TGpuParamSamplerStateType < true > { typedef SPtr<SamplerStateCore> Type; };
 
 	/**
 	 * @brief	A handle that allows you to set a GpuProgram parameter. Internally keeps a reference to the 
@@ -531,22 +503,6 @@ namespace BansheeEngine
 	template class TGpuParamStruct<false>;
 	template class TGpuParamStruct<true>;
 
-	template<bool Core>
-	struct GpuParamTextureType
-	{ };
-
-	template<>
-	struct GpuParamTextureType<false>
-	{ 
-		typedef HTexture Type;
-	};
-
-	template<>
-	struct GpuParamTextureType<true>
-	{
-		typedef SPtr<TextureCore> Type;
-	};
-
 	/**
 	 * @copydoc TGpuObjectParam
 	 */
@@ -568,7 +524,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	TGpuDataParam::set
 		 */
-		void set(const typename GpuParamTextureType<Core>::Type& texture)
+		void set(const typename TGpuParamTextureType<Core>::Type& texture)
 		{
 			if (mParent == nullptr)
 				return;
@@ -582,10 +538,10 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	TGpuDataParam::get
 		 */
-		typename GpuParamTextureType<Core>::Type get()
+		typename TGpuParamTextureType<Core>::Type get()
 		{
 			if (mParent == nullptr)
-				return GpuParamTextureType<Core>::Type();
+				return TGpuParamTextureType<Core>::Type();
 
 			return getTexture(mParamDesc->slot);
 		}
@@ -618,7 +574,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	TGpuDataParam::set
 		 */
-		void set(const typename GpuParamTextureType<Core>::Type& texture, const TextureSurface& surface)
+		void set(const typename TGpuParamTextureType<Core>::Type& texture, const TextureSurface& surface)
 		{
 			if (mParent == nullptr)
 				return;
@@ -633,10 +589,10 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	TGpuDataParam::get
 		 */
-		typename GpuParamTextureType<Core>::Type get()
+		typename TGpuParamTextureType<Core>::Type get()
 		{
 			if (mParent == nullptr)
-				return GpuParamTextureType<Core>::Type();
+				return TGpuParamTextureType<Core>::Type();
 
 			return getTexture(mParamDesc->slot);
 		}
@@ -647,22 +603,6 @@ namespace BansheeEngine
 
 	template class TGpuParamLoadStoreTexture<false>;
 	template class TGpuParamLoadStoreTexture<true>;
-
-	template<bool Core>
-	struct GpuParamSamplerStateType
-	{ };
-
-	template<>
-	struct GpuParamSamplerStateType<false>
-	{
-		typedef HSamplerState Type;
-	};
-
-	template<>
-	struct GpuParamSamplerStateType<true>
-	{
-		typedef SPtr<SamplerStateCore> Type;
-	};
 
 	/**
 	 * @copydoc TGpuObjectParam
@@ -685,7 +625,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	TGpuDataParam::set
 		 */
-		void set(const typename GpuParamSamplerStateType<Core>::Type& samplerState)
+		void set(const typename TGpuParamSamplerStateType<Core>::Type& samplerState)
 		{
 			if (mParent == nullptr)
 				return;
@@ -698,10 +638,10 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	TGpuDataParam::get
 		 */
-		typename GpuParamSamplerStateType<Core>::Type get()
+		typename TGpuParamSamplerStateType<Core>::Type get()
 		{
 			if (mParent == nullptr)
-				return GpuParamSamplerStateType<Core>::Type();
+				return TGpuParamSamplerStateType<Core>::Type();
 
 			return getSamplerState(mParamDesc->slot);
 		}

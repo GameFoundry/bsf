@@ -1,12 +1,13 @@
 --------- ALL LONG TERM TASKS / FIXES BELONG TO GOOGLE DOCS: ImplementationTODO OR PossibleImprovements ----------
 
-TODO - CoreObject refactor:
-Resource
- - Material -> Remove MaterialProxy
- - BansheeRenderer::mDeletedRenderableProxies is holding references to core objects
-Also:
  - Make RenderableHandler a CoreObject and remove RenderableProxy
+   - BansheeRenderer::mDeletedRenderableProxies is holding references to core objects
  - Rename CoreObject initialize_internal and destroy_internal to initializeCore/destroyCore and make them private
+
+Add getCore/createCore and MaterialCore for Material
+Try compiling and see if that works. Then begin on template refactor:
+ - Refactor Material/GpuParams/MaterialParam/GpuParam/Technique/Shader so they use explicit tempalate instantiation and move their implementations to the source file
+Dont forget material sync methods
 
 GpuParams refactor:
 
@@ -31,11 +32,6 @@ Disallow CoreObject creation from core thread
   - Since Mesh refactor when I select/deselect a gizmo the entire render texture flashes white for one frame (might be related to RT refactor instead)
 
 -----------------
-
-
-Refactor GizmoManager and HandleManager so they accept a CameraHandler
- - I need to ensure scene CameraHandler has proper position/rotation before being passed to handle and gizmo manager
- - Delete SceneViewLocator, I don't think it's used anywhere
 
 Port SceneCameraController to C#
 Port RenderTexture to C# and likely extend Texture2D so it accepts renderable flags. While at it add TextureCube and Texture3D as well.

@@ -2,9 +2,9 @@
 
 #include "BsBansheeRendererPrerequisites.h"
 #include "BsRenderableController.h"
-#include "BsMaterialProxy.h"
 #include "BsGpuParamDesc.h"
 #include "BsGpuParam.h"
+#include "BsRenderableProxy.h"
 
 namespace BansheeEngine
 {
@@ -28,7 +28,7 @@ namespace BansheeEngine
 			bool hasWVPParam = false;
 			GpuParamMat4Core wvpParam;
 
-			Vector<MaterialProxy::BufferBindInfo> perObjectBuffers;
+			Vector<RenderableElement::BufferBindInfo> perObjectBuffers;
 		};
 
 		LitTexRenderableController();

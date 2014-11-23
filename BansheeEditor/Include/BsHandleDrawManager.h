@@ -33,7 +33,7 @@ namespace BansheeEngine
 	private:
 		friend class HandleDrawManagerCore;
 
-		void initializeCore(const MaterialProxyPtr& wireMatProxy, const MaterialProxyPtr& solidMatProxy);
+		void initializeCore(const SPtr<MaterialCore>& wireMat, const SPtr<MaterialCore>& solidMat);
 		void destroyCore(HandleDrawManagerCore* core);
 
 		static const UINT32 SPHERE_QUALITY;
@@ -49,13 +49,13 @@ namespace BansheeEngine
 	{
 		struct SolidMaterialData
 		{
-			MaterialProxyPtr proxy;
+			SPtr<MaterialCore> mat;
 			GpuParamMat4Core mViewProj;
 		};
 
 		struct WireMaterialData
 		{
-			MaterialProxyPtr proxy;
+			SPtr<MaterialCore> mat;
 			GpuParamMat4Core mViewProj;
 		};
 
@@ -82,7 +82,7 @@ namespace BansheeEngine
 	private:
 		friend class HandleDrawManager;
 
-		void initialize(const MaterialProxyPtr& wireMatProxy, const MaterialProxyPtr& solidMatProxy);
+		void initialize(const SPtr<MaterialCore>& wireMat, const SPtr<MaterialCore>& solidMat);
 
 		void updateData(const RenderTargetPtr& rt, const Vector<MeshData>& meshes);
 		void render(const CameraHandlerCore& camera);

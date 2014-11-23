@@ -91,7 +91,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Core thread only.
 		 */
-		static void setPass(const MaterialProxy& material, UINT32 passIdx);
+		static void setPass(const SPtr<MaterialCore>& material, UINT32 passIdx);
 
 		/**
 		 * @brief	Draws the specified mesh proxy with last set pass.

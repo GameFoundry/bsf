@@ -70,23 +70,11 @@ namespace BansheeEngine
 	{
 		updateResourceLoadStates();
 
-		for (auto& materialData : mMaterialData)
-		{
-			if (materialData.material != nullptr && materialData.material.isLoaded() && materialData.material->_isCoreDirty(MaterialDirtyFlag::Material))
-				return true;
-		}
-
 		return mCoreDirtyFlags != 0;
 	}
 
 	void RenderableHandler::_markCoreClean()
 	{
-		for (auto& materialData : mMaterialData)
-		{
-			if (materialData.material != nullptr && materialData.material.isLoaded())
-				materialData.material->_markCoreClean(MaterialDirtyFlag::Material);
-		}
-
 		mCoreDirtyFlags = 0;
 	}
 
@@ -134,13 +122,7 @@ namespace BansheeEngine
 			if (material == nullptr || !material.isLoaded())
 				material = BuiltinResources::instance().createDummyMaterial();
 
-			if (material->_isCoreDirty(MaterialDirtyFlag::Proxy))
-			{
-				material->_setActiveProxy(material->_createProxy());
-				material->_markCoreClean(MaterialDirtyFlag::Proxy);
-			}
-
-			renElement->material = material->_getActiveProxy();
+			renElement->material = material->getCore();
 
 			proxy->renderableElements.push_back(renElement);
 		}

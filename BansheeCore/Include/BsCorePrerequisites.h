@@ -101,7 +101,6 @@ namespace BansheeEngine
 	class RawInputHandler;
 	class Renderer;
 	class RendererFactory;
-	class PassParameters;
 	class AsyncOp;
 	class HardwareBufferManager;
 	class FontManager;
@@ -141,8 +140,6 @@ namespace BansheeEngine
 	class VideoModeInfo;
 	class RenderableElement;
 	class CameraHandlerCore;
-	struct MaterialProxy;
-	struct MaterialProxyPass;
 	class MeshCoreBase;
 	class MeshCore;
 	class DrawList;
@@ -158,6 +155,7 @@ namespace BansheeEngine
 	class ViewportCore;
 	class PassCore;
 	class TechniqueCore;
+	class MaterialCore;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -220,7 +218,6 @@ namespace BansheeEngine
 	typedef std::shared_ptr<Material> MaterialPtr;
 	typedef std::shared_ptr<Renderer> RendererPtr;
 	typedef std::shared_ptr<RendererFactory> RendererFactoryPtr;
-	typedef std::shared_ptr<PassParameters> PassParametersPtr;
 	typedef std::shared_ptr<Component> ComponentPtr;
 	typedef std::shared_ptr<GameObject> GameObjectPtr;
 	typedef std::shared_ptr<SceneObject> SceneObjectPtr;
@@ -252,7 +249,6 @@ namespace BansheeEngine
 	typedef std::shared_ptr<VideoModeInfo> VideoModeInfoPtr;
 	typedef std::shared_ptr<DrawList> DrawListPtr;
 	typedef std::shared_ptr<RenderQueue> RenderQueuePtr;
-	typedef std::shared_ptr<MaterialProxy> MaterialProxyPtr;
 	typedef std::shared_ptr<GpuParamDesc> GpuParamDescPtr;
 	typedef std::shared_ptr<ResourceMetaData> ResourceMetaDataPtr;
 }

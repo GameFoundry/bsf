@@ -26,8 +26,8 @@ namespace BansheeEngine
 		HMaterial solidMaterial = BuiltinEditorResources::instance().createSolidHandleMat();
 		HMaterial wireMaterial = BuiltinEditorResources::instance().createWireHandleMat();
 
-		MaterialProxyPtr solidMaterialProxy = solidMaterial->_createProxy();
-		MaterialProxyPtr wireMaterialProxy = wireMaterial->_createProxy();
+		SPtr<MaterialCore> solidMaterialProxy = solidMaterial->getCore();
+		SPtr<MaterialCore> wireMaterialProxy = wireMaterial->getCore();
 
 		mCore = bs_new<HandleDrawManagerCore>(HandleDrawManagerCore::PrivatelyConstruct());
 
@@ -41,11 +41,11 @@ namespace BansheeEngine
 		gCoreAccessor().queueCommand(std::bind(&HandleDrawManager::destroyCore, this, mCore));
 	}
 
-	void HandleDrawManager::initializeCore(const MaterialProxyPtr& wireMatProxy, const MaterialProxyPtr& solidMatProxy)
+	void HandleDrawManager::initializeCore(const SPtr<MaterialCore>& wireMat, const SPtr<MaterialCore>& solidMat)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		mCore->initialize(wireMatProxy, solidMatProxy);
+		mCore->initialize(wireMat, solidMat);
 	}
 
 	void HandleDrawManager::destroyCore(HandleDrawManagerCore* core)
@@ -183,19 +183,19 @@ namespace BansheeEngine
 		mDrawHelper->clear();
 	}
 
-	void HandleDrawManagerCore::initialize(const MaterialProxyPtr& wireMatProxy, const MaterialProxyPtr& solidMatProxy)
+	void HandleDrawManagerCore::initialize(const SPtr<MaterialCore>& wireMat, const SPtr<MaterialCore>& solidMat)
 	{
 		// TODO - Make a better interface when dealing with parameters through proxies?
 		{
-			mWireMaterial.proxy = wireMatProxy;
-			SPtr<GpuParamsCore> vertParams = wireMatProxy->params[wireMatProxy->passes[0].vertexProgParamsIdx];
+			mWireMaterial.mat = wireMat;
+			SPtr<GpuParamsCore> vertParams = wireMat->getPassParameters(0)->mVertParams;
 
 			vertParams->getParam("matViewProj", mWireMaterial.mViewProj);
 		}
 
 		{
-			mSolidMaterial.proxy = solidMatProxy;
-			SPtr<GpuParamsCore> vertParams = solidMatProxy->params[solidMatProxy->passes[0].vertexProgParamsIdx];
+			mSolidMaterial.mat = solidMat;
+			SPtr<GpuParamsCore> vertParams = solidMat->getPassParameters(0)->mVertParams;
 
 			vertParams->getParam("matViewProj", mSolidMaterial.mViewProj);
 		}
@@ -239,9 +239,9 @@ namespace BansheeEngine
 			currentType = mMeshes[0].type;
 
 			if (currentType == MeshType::Solid)
-				Renderer::setPass(*mSolidMaterial.proxy, 0);
+				Renderer::setPass(mSolidMaterial.mat, 0);
 			else
-				Renderer::setPass(*mWireMaterial.proxy, 0);
+				Renderer::setPass(mWireMaterial.mat, 0);
 		}
 
 		for (auto& meshData : mMeshes)
@@ -249,9 +249,9 @@ namespace BansheeEngine
 			if (currentType != meshData.type)
 			{
 				if (meshData.type == MeshType::Solid)
-					Renderer::setPass(*mSolidMaterial.proxy, 0);
+					Renderer::setPass(mSolidMaterial.mat, 0);
 				else
-					Renderer::setPass(*mWireMaterial.proxy, 0);
+					Renderer::setPass(mWireMaterial.mat, 0);
 
 				currentType = meshData.type;
 			}

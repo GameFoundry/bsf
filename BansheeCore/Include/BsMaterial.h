@@ -3,46 +3,46 @@
 #include "BsCorePrerequisites.h"
 #include "BsResource.h"
 #include "BsMaterialParam.h"
-#include "BsMaterialProxy.h"
 #include "BsVector2.h"
 #include "BsVector3.h"
 #include "BsVector4.h"
 #include "BsMatrix3.h"
 #include "BsMatrix4.h"
 
+// TOOD REMOVE THIS
+#include "BsShader.h"
+#include "BsGpuParams.h"
+#include "BsTechnique.h"
+#include "BsPass.h"
+#include "BsHardwareBufferManager.h"
+
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Type of material dirty flags
-	 */
-	enum class MaterialDirtyFlag
-	{
-		Material = 0x01, /**< Internal material data is dirty. */
-		Proxy = 0x02 /**< Active proxy needs to be updated. */
-	};
-
 	/**
 	 * @brief	Helper class containing parameters for all types
 	 * 			of GPU programs used in a pass.
 	 */
-	class BS_CORE_EXPORT PassParameters
+	template<bool Core>
+	class TPassParameters
 	{
 	public:
-		GpuParamsPtr mVertParams;
-		GpuParamsPtr mFragParams;
-		GpuParamsPtr mGeomParams;
-		GpuParamsPtr mHullParams;
-		GpuParamsPtr mDomainParams;
-		GpuParamsPtr mComputeParams;
+		typedef typename TGpuParamsPtrType<Core>::Type GpuParamsType;
+
+		GpuParamsType mVertParams;
+		GpuParamsType mFragParams;
+		GpuParamsType mGeomParams;
+		GpuParamsType mHullParams;
+		GpuParamsType mDomainParams;
+		GpuParamsType mComputeParams;
 
 		/**
 		 * @brief	Returns a set of GPU parameters based on an index.
 		 *
 		 * @note	Useful when needing to iterate over all sets of GPU parameters.
 		 */
-		GpuParamsPtr& getParamByIdx(UINT32 idx)
+		GpuParamsType& getParamByIdx(UINT32 idx)
 		{
-			GpuParamsPtr* paramArray[] = {&mVertParams, &mFragParams, &mGeomParams, &mHullParams, &mDomainParams, &mComputeParams};
+			GpuParamsType* paramArray[] = { &mVertParams, &mFragParams, &mGeomParams, &mHullParams, &mDomainParams, &mComputeParams };
 
 			return *paramArray[idx];
 		}
@@ -52,9 +52,9 @@ namespace BansheeEngine
 		 *
 		 * @note	Useful when needing to iterate over all sets of GPU parameters.
 		 */
-		void setParamByIdx(UINT32 idx, const GpuParamsPtr& params)
+		void setParamByIdx(UINT32 idx, const GpuParamsType& params)
 		{
-			GpuParamsPtr* paramArray[] = {&mVertParams, &mFragParams, &mGeomParams, &mHullParams, &mDomainParams, &mComputeParams};
+			GpuParamsType* paramArray[] = { &mVertParams, &mFragParams, &mGeomParams, &mHullParams, &mDomainParams, &mComputeParams };
 
 			(*paramArray[idx]) = params;
 		}
@@ -66,12 +66,23 @@ namespace BansheeEngine
 		UINT32 getNumParams() const { return 6; }
 	};
 
+	template<bool Core> struct TGpuParamBlockBufferPtrType { };
+	template<> struct TGpuParamBlockBufferPtrType<false> { typedef SPtr<GpuParamBlockBuffer> Type; };
+	template<> struct TGpuParamBlockBufferPtrType<true> { typedef SPtr<GpuParamBlockBufferCore> Type; };
+
+	template<bool Core> struct TGpuProgramType { };
+	template<> struct TGpuProgramType<false> { typedef HGpuProgram Type; };
+	template<> struct TGpuProgramType<true> { typedef SPtr<GpuProgramCore> Type; };
+
+	typedef TPassParameters<false> PassParameters;
+	typedef TPassParameters<true> PassParametersCore;
+
 	/**
 	 * @brief	Material represents a shader and parameters used to set up
 	 * 			that shader. It provides a simple interface for manipulating the
 	 * 			parameters.
 	 */
-	class BS_CORE_EXPORT Material : public Resource
+	class BS_CORE_EXPORT MaterialBase
 	{
 	public:
 		/**
@@ -102,7 +113,62 @@ namespace BansheeEngine
 			UINT32 size;
 		};
 
-		~Material();
+		virtual ~MaterialBase() { }
+
+	protected:
+		/**
+		 * @brief	Retrieves a list of all shader GPU parameters, and the GPU program variable names they map to.
+		 */
+		const Map<String, String>& getValidParamNames() const { return mValidParams; }
+
+		/**
+		 * @copydoc	CoreObject::markCoreDirty
+		 */
+		virtual void _markCoreDirty() { }
+
+		/**
+		 * @brief	Returns all GPU parameter descriptions in the specified technique.
+		 */
+		static Vector<GpuParamDescPtr> getAllParamDescs(const SPtr<Technique>& technique);
+
+		/**
+		 * @brief	Returns all GPU parameter descriptions in the specified technique.
+		 */
+		static Vector<GpuParamDescPtr> getAllParamDescs(const SPtr<TechniqueCore>& technique);
+
+		Set<String> mValidShareableParamBlocks;
+		Map<String, String> mValidParams; // Also maps Shader param name -> gpu variable name
+	};
+
+	template<bool Core>
+	class BS_CORE_EXPORT TMaterial : public MaterialBase
+	{
+	public:
+		template<bool Core> struct TPassType {};
+		template<> struct TPassType < false > { typedef SPtr<Pass> Type; };
+		template<> struct TPassType < true > { typedef SPtr<PassCore> Type; };
+
+		template<bool Core> struct TTechniqueType {};
+		template<> struct TTechniqueType < false > { typedef SPtr<Technique> Type; };
+		template<> struct TTechniqueType < true > { typedef SPtr<TechniqueCore> Type; };
+
+		template<bool Core> struct TShaderType {};
+		template<> struct TShaderType < false > { typedef SPtr<Shader> Type; };
+		template<> struct TShaderType < true > { typedef SPtr<ShaderCore> Type; };
+
+		template<bool Core> struct TGpuParamBlockBufferType {};
+		template<> struct TGpuParamBlockBufferType < false > { typedef GpuParamBlockBuffer Type; };
+		template<> struct TGpuParamBlockBufferType < true > { typedef GpuParamBlockBufferCore Type; };
+
+		typedef typename TGpuParamsPtrType<Core>::Type GpuParamsType;
+		typedef typename TGpuParamTextureType<Core>::Type TextureType;
+		typedef typename TGpuParamSamplerStateType<Core>::Type SamplerStateType;
+		typedef typename TGpuParamBlockBufferPtrType<Core>::Type ParamBlockPtrType;
+		typedef typename TGpuParamBlockBufferType<Core>::Type ParamBlockType;
+		typedef typename TGpuProgramType<Core>::Type GpuProgramType;
+		typedef typename TPassType<Core>::Type PassType;
+		typedef typename TTechniqueType<Core>::Type TechniqueType;
+		typedef typename TShaderType<Core>::Type ShaderType;
 
 		/**
 		 * @brief	Sets a shader that will be used by the material. Best technique within the
@@ -114,27 +180,40 @@ namespace BansheeEngine
 		 * 			dependent upon (render system, renderer, etc), you will need to call this 
 		 * 			method again on all your Materials to make sure technique used is updated.
 		 */
-		void setShader(ShaderPtr shader);
+		void setShader(ShaderType shader)
+		{
+			mShader = shader;
+
+			initBestTechnique();
+			_markCoreDirty();
+		}
 
 		/**
 		 * @brief	Returns the currently active shader.
 		 */
-		ShaderPtr getShader() const { return mShader; }
+		ShaderType getShader() const { return mShader; }
 
-		/** @brief	Assigns a texture to the shader parameter with the specified name. */
-		void setTexture(const String& name, const HTexture& value) { return getParamTexture(name).set(value); }
-
-		/** 
-		 * @brief	Assigns a texture to be used for random load/store operations to the
-		 *			shader parameter with the specified name.
+		/**
+		 * @brief	Returns the number of passes that are used
+		 * 			by the shader used in the material.
 		 */
-		void setLoadStoreTexture(const String& name, const HTexture& value, const TextureSurface& surface) 
-		{ 
-			return getParamLoadStoreTexture(name).set(value, surface); 
+		UINT32 getNumPasses() const
+		{
+			throwIfNotInitialized();
+
+			return mShader->getBestTechnique()->getNumPasses();
 		}
 
-		/** @brief	Assigns a sampler state to the shader parameter with the specified name. */
-		void setSamplerState(const String& name, const HSamplerState& value) { return getParamSamplerState(name).set(value); }
+		/**
+		 * @brief	Retrieves a specific shader pass.
+		 */
+		PassType getPass(UINT32 passIdx) const
+		{
+			if (passIdx < 0 || passIdx >= mShader->getBestTechnique()->getNumPasses())
+				BS_EXCEPT(InvalidParametersException, "Invalid pass index.");
+
+			return mShader->getBestTechnique()->getPass(passIdx);
+		}
 
 		/**   
 		 *  @brief	Assigns a float value to the shader parameter with the specified name. 
@@ -148,7 +227,10 @@ namespace BansheeEngine
 		 *
 		 *			Optionally if the parameter is an array you may provide an array index to assign the value to.
 		 */
-		void setColor(const String& name, const Color& value, UINT32 arrayIdx = 0);
+		void setColor(const String& name, const Color& value, UINT32 arrayIdx = 0)
+		{
+			return getParamVec4(name).set(Vector4(value.r, value.g, value.b, value.a), arrayIdx);
+		}
 
 		/**   
 		 *  @brief	Assigns a 2D vector to the shader parameter with the specified name. 
@@ -195,20 +277,20 @@ namespace BansheeEngine
 		 */
 		void setStructData(const String& name, void* value, UINT32 size, UINT32 arrayIdx = 0) { return getParamStruct(name).set(value, size, arrayIdx); }
 
-		/**
-		 * @brief	Assign a parameter block buffer with the specified name.
-		 *
-		 * @note	Parameter block buffers can be used as quick way of setting multiple parameters on a material at once, or
-		 * 			potentially sharing parameters between multiple materials. This reduces driver overhead as the parameters
-		 * 			in the buffers need only be set once and then reused multiple times.
+		/** @brief	Assigns a texture to the shader parameter with the specified name. */
+		void setTexture(const String& name, const TextureType& value) { return getParamTexture(name).set(value); }
+
+		/** 
+		 * @brief	Assigns a texture to be used for random load/store operations to the
+		 *			shader parameter with the specified name.
 		 */
-		void setParamBlockBuffer(const String& name, const GpuParamBlockBufferPtr& paramBlock);
+		void setLoadStoreTexture(const String& name, const TextureType& value, const TextureSurface& surface)
+		{ 
+			return getParamLoadStoreTexture(name).set(value, surface); 
+		}
 
-		/** @brief	Returns a texture assigned with the parameter with the specified name. */
-		HTexture getTexture(const String& name) const { return getParamTexture(name).get(); }
-
-		/** @brief	Returns a sampler state assigned with the parameter with the specified name. */
-		HSamplerState getSamplerState(const String& name) const	{ return getParamSamplerState(name).get(); }
+		/** @brief	Assigns a sampler state to the shader parameter with the specified name. */
+		void setSamplerState(const String& name, const SamplerStateType& value) { return getParamSamplerState(name).set(value); }
 
 		/**
 		 * @brief	Returns a float value assigned with the parameter with the specified name.
@@ -259,12 +341,26 @@ namespace BansheeEngine
 		 */
 		Matrix4 getMat4(const String& name, UINT32 arrayIdx = 0) const { return getParamMat4(name).get(arrayIdx); }
 
+		/** @brief	Returns a texture assigned with the parameter with the specified name. */
+		TextureType getTexture(const String& name) const { return getParamTexture(name).get(); }
+
+		/** @brief	Returns a sampler state assigned with the parameter with the specified name. */
+		SamplerStateType getSamplerState(const String& name) const	{ return getParamSamplerState(name).get(); }
+
 		/**
 		 * @brief	Returns a buffer representing a structure assigned to the parameter with the specified name.
 		 *
 		 *			Optionally if the parameter is an array you may provide an array index you which to retrieve.
 		 */
-		StructData getStructData(const String& name, UINT32 arrayIdx = 0) const;
+		MaterialBase::StructData getStructData(const String& name, UINT32 arrayIdx = 0) const
+		{
+			TMaterialParamStruct<Core> structParam = getParamStruct(name);
+
+			MaterialBase::StructData data(structParam.getElementSize());
+			structParam.get(data.data.get(), structParam.getElementSize(), arrayIdx);
+
+			return data;
+		}
 
 		/**
 		 * @brief	Returns a float GPU parameter. This parameter may be used for
@@ -277,7 +373,13 @@ namespace BansheeEngine
 		 * 			
 		 *			If material shader changes this handle will be invalidated.
 		 */
-		MaterialParamFloat getParamFloat(const String& name) const;
+		TMaterialDataParam<float, Core> getParamFloat(const String& name) const
+		{
+			TMaterialDataParam<float, Core> gpuParam;
+			getParam(name, gpuParam);
+
+			return gpuParam;
+		}
 
 		/**
 		 * @brief	Returns a color GPU parameter. This parameter may be used for
@@ -290,7 +392,13 @@ namespace BansheeEngine
 		 * 			
 		 *			If material shader changes this handle will be invalidated.
 		 */
-		MaterialParamColor getParamColor(const String& name) const;
+		TMaterialDataParam<Color, Core> getParamColor(const String& name) const
+		{
+			TMaterialDataParam<Color, Core> gpuParam;
+			getParam(name, gpuParam);
+
+			return gpuParam;
+		}
 
 		/**
 		 * @brief	Returns a 2D vector GPU parameter. This parameter may be used for
@@ -303,7 +411,13 @@ namespace BansheeEngine
 		 * 			
 		 *			If material shader changes this handle will be invalidated.
 		 */
-		MaterialParamVec2 getParamVec2(const String& name) const;
+		TMaterialDataParam<Vector2, Core> getParamVec2(const String& name) const
+		{
+			TMaterialDataParam<Vector2, Core> gpuParam;
+			getParam(name, gpuParam);
+
+			return gpuParam;
+		}
 
 		/**
 		 * @brief	Returns a 3D vector GPU parameter. This parameter may be used for
@@ -316,7 +430,13 @@ namespace BansheeEngine
 		 * 			
 		 *			If material shader changes this handle will be invalidated.
 		 */
-		MaterialParamVec3 getParamVec3(const String& name) const;
+		TMaterialDataParam<Vector3, Core> getParamVec3(const String& name) const
+		{
+			TMaterialDataParam<Vector3, Core> gpuParam;
+			getParam(name, gpuParam);
+
+			return gpuParam;
+		}
 
 		/**
 		 * @brief	Returns a 4D vector GPU parameter. This parameter may be used for
@@ -329,7 +449,13 @@ namespace BansheeEngine
 		 * 			
 		 *			If material shader changes this handle will be invalidated.
 		 */
-		MaterialParamVec4 getParamVec4(const String& name) const;
+		TMaterialDataParam<Vector4, Core> getParamVec4(const String& name) const
+		{
+			TMaterialDataParam<Vector4, Core> gpuParam;
+			getParam(name, gpuParam);
+
+			return gpuParam;
+		}
 
 		/**
 		 * @brief	Returns a 3x3 matrix GPU parameter. This parameter may be used for
@@ -342,7 +468,13 @@ namespace BansheeEngine
 		 * 			
 		 *			If material shader changes this handle will be invalidated.
 		 */
-		MaterialParamMat3 getParamMat3(const String& name) const;
+		TMaterialDataParam<Matrix3, Core> getParamMat3(const String& name) const
+		{
+			TMaterialDataParam<Matrix3, Core> gpuParam;
+			getParam(name, gpuParam);
+
+			return gpuParam;
+		}
 
 		/**
 		 * @brief	Returns a 4x4 matrix GPU parameter. This parameter may be used for
@@ -355,7 +487,13 @@ namespace BansheeEngine
 		 * 			
 		 *			If material shader changes this handle will be invalidated.
 		 */
-		MaterialParamMat4 getParamMat4(const String& name) const;
+		TMaterialDataParam<Matrix4, Core> getParamMat4(const String& name) const
+		{
+			TMaterialDataParam<Matrix4, Core> gpuParam;
+			getParam(name, gpuParam);
+
+			return gpuParam;
+		}
 
 		/**
 		 * @brief	Returns a structure GPU parameter. This parameter may be used for
@@ -368,7 +506,40 @@ namespace BansheeEngine
 		 * 			
 		 *			If material shader changes this handle will be invalidated.
 		 */
-		MaterialParamStruct getParamStruct(const String& name) const;
+		TMaterialParamStruct<Core> getParamStruct(const String& name) const
+		{
+			throwIfNotInitialized();
+
+			auto iterFind = mValidParams.find(name);
+			if (iterFind == mValidParams.end())
+			{
+				LOGWRN("Material doesn't have a parameter named " + name);
+				return TMaterialParamStruct<Core>();
+			}
+
+			const String& gpuVarName = iterFind->second;
+			Vector<TGpuParamStruct<Core>> gpuParams;
+
+			for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
+			{
+				SPtr<TPassParameters<Core>> params = *iter;
+
+				for (UINT32 i = 0; i < params->getNumParams(); i++)
+				{
+					GpuParamsType& paramPtr = params->getParamByIdx(i);
+					if (paramPtr)
+					{
+						if (paramPtr->hasParam(gpuVarName))
+						{
+							gpuParams.push_back(TGpuParamStruct<Core>());
+							paramPtr->getStructParam(gpuVarName, gpuParams.back());
+						}
+					}
+				}
+			}
+
+			return TMaterialParamStruct<Core>(gpuParams);
+		}
 
 		/**
 		 * @brief	Returns a texture GPU parameter. This parameter may be used for
@@ -381,7 +552,40 @@ namespace BansheeEngine
 		 * 			
 		 *			If material shader changes this handle will be invalidated.
 		 */
-		MaterialParamTexture getParamTexture(const String& name) const;
+		TMaterialParamTexture<Core> getParamTexture(const String& name) const
+		{
+			throwIfNotInitialized();
+
+			auto iterFind = mValidParams.find(name);
+			if (iterFind == mValidParams.end())
+			{
+				LOGWRN("Material doesn't have a parameter named " + name);
+				return TMaterialParamTexture<Core>();
+			}
+
+			const String& gpuVarName = iterFind->second;
+			Vector<TGpuParamTexture<Core>> gpuParams;
+
+			for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
+			{
+				SPtr<TPassParameters<Core>> params = *iter;
+
+				for (UINT32 i = 0; i < params->getNumParams(); i++)
+				{
+					GpuParamsType& paramPtr = params->getParamByIdx(i);
+					if (paramPtr)
+					{
+						if (paramPtr->hasTexture(gpuVarName))
+						{
+							gpuParams.push_back(TGpuParamTexture<Core>());
+							paramPtr->getTextureParam(gpuVarName, gpuParams.back());
+						}
+					}
+				}
+			}
+
+			return TMaterialParamTexture<Core>(gpuParams);
+		}
 
 		/**
 		 * @brief	Returns a GPU parameter for binding a load/store texture. This parameter 
@@ -394,7 +598,40 @@ namespace BansheeEngine
 		 * 			
 		 *			If material shader changes this handle will be invalidated.
 		 */
-		MaterialParamLoadStoreTexture getParamLoadStoreTexture(const String& name) const;
+		TMaterialParamLoadStoreTexture<Core> getParamLoadStoreTexture(const String& name) const
+		{
+			throwIfNotInitialized();
+
+			auto iterFind = mValidParams.find(name);
+			if (iterFind == mValidParams.end())
+			{
+				LOGWRN("Material doesn't have a parameter named " + name);
+				return TMaterialParamLoadStoreTexture<Core>();
+			}
+
+			const String& gpuVarName = iterFind->second;
+			Vector<TGpuParamLoadStoreTexture<Core>> gpuParams;
+
+			for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
+			{
+				SPtr<TPassParameters<Core>> params = *iter;
+
+				for (UINT32 i = 0; i < params->getNumParams(); i++)
+				{
+					GpuParamsType& paramPtr = params->getParamByIdx(i);
+					if (paramPtr)
+					{
+						if (paramPtr->hasTexture(gpuVarName))
+						{
+							gpuParams.push_back(TGpuParamLoadStoreTexture<Core>());
+							paramPtr->getLoadStoreTextureParam(gpuVarName, gpuParams.back());
+						}
+					}
+				}
+			}
+
+			return TMaterialParamLoadStoreTexture<Core>(gpuParams);
+		}
 
 		/**
 		 * @brief	Returns a sampler state GPU parameter. This parameter may be used for
@@ -407,24 +644,178 @@ namespace BansheeEngine
 		 * 			
 		 *			If material shader changes this handle will be invalidated.
 		 */
-		MaterialParamSampState getParamSamplerState(const String& name) const;
+		TMaterialParamSampState<Core> getParamSamplerState(const String& name) const
+		{
+			throwIfNotInitialized();
 
-		/**
-		 * @brief	Returns the number of passes that are used
-		 * 			by the shader contained in the material.
-		 */
-		UINT32 getNumPasses() const;
+			auto iterFind = mValidParams.find(name);
+			if (iterFind == mValidParams.end())
+			{
+				LOGWRN("Material doesn't have a parameter named " + name);
+				return TMaterialParamSampState<Core>();
+			}
 
-		/**
-		 * @brief	Retrieves a specific shader pass.
-		 */
-		PassPtr getPass(UINT32 passIdx) const;
+			const String& gpuVarName = iterFind->second;
+			Vector<TGpuParamSampState<Core>> gpuParams;
+			for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
+			{
+				SPtr<TPassParameters<Core>> params = *iter;
+
+				for (UINT32 i = 0; i < params->getNumParams(); i++)
+				{
+					GpuParamsType& paramPtr = params->getParamByIdx(i);
+					if (paramPtr)
+					{
+						if (paramPtr->hasSamplerState(gpuVarName))
+						{
+							gpuParams.push_back(TGpuParamSampState<Core>());
+							paramPtr->getSamplerStateParam(gpuVarName, gpuParams.back());
+						}
+					}
+				}
+			}
+
+			return TMaterialParamSampState<Core>(gpuParams);
+		}
 
 		/**
 		 * @brief	Returns a set of parameters for all GPU programs
 		 * 			in the specified shader pass.
 		 */
-		PassParametersPtr getPassParameters(UINT32 passIdx) const;
+		SPtr<TPassParameters<Core>> getPassParameters(UINT32 passIdx) const { return mParametersPerPass[passIdx]; }
+
+		/**
+		 * @brief	Assign a parameter block buffer with the specified name.
+		 *
+		 * @note	Parameter block buffers can be used as quick way of setting multiple parameters on a material at once, or
+		 * 			potentially sharing parameters between multiple materials. This reduces driver overhead as the parameters
+		 * 			in the buffers need only be set once and then reused multiple times.
+		 */
+		void setParamBlockBuffer(const String& name, const ParamBlockPtrType& paramBlock)
+		{
+			auto iterFind = mValidShareableParamBlocks.find(name);
+			if (iterFind == mValidShareableParamBlocks.end())
+			{
+				LOGWRN("Material doesn't have a parameter block named " + name);
+				return;
+			}
+
+			for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
+			{
+				SPtr<TPassParameters<Core>> params = *iter;
+
+				for (UINT32 i = 0; i < params->getNumParams(); i++)
+				{
+					GpuParamsType& paramPtr = params->getParamByIdx(i);
+					if (paramPtr)
+					{
+						if (paramPtr->hasParamBlock(name))
+							paramPtr->setParamBlockBuffer(name, paramBlock);
+					}
+				}
+			}
+		}
+
+	protected:
+		/**
+		 * @brief	Allows you to retrieve a handle to a parameter that you can then use for quickly
+		 * 			setting and retrieving parameter data. This allows you to set/get parameter data
+		 * 			without all the cost of extra lookups otherwise required.
+		 * 			
+		 * @note	All of these handles will be invalidated if material shader ever changes. It is up to the
+		 * 			caller to keep track of that.
+		 */
+		template <typename T>
+		void getParam(const String& name, TMaterialDataParam<T, Core>& output) const
+		{
+			throwIfNotInitialized();
+
+			auto iterFind = mValidParams.find(name);
+			if(iterFind == mValidParams.end())
+			{
+				LOGWRN("Material doesn't have a parameter named " + name);
+				return;
+			}
+
+			const String& gpuVarName = iterFind->second;
+			Vector<TGpuDataParam<T, Core>> gpuParams;
+
+			for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
+			{
+				SPtr<TPassParameters<Core>> params = *iter;
+
+				for (UINT32 i = 0; i < params->getNumParams(); i++)
+				{
+					GpuParamsType& paramPtr = params->getParamByIdx(i);
+					if (paramPtr)
+					{
+						if (paramPtr->hasParam(gpuVarName))
+						{
+							gpuParams.push_back(TGpuDataParam<T, Core>());
+							paramPtr->getParam<T>(gpuVarName, gpuParams.back());
+						}
+					}
+				}
+			}
+
+			output = TMaterialDataParam<T, Core>(gpuParams);
+		}
+
+		/**
+		 * @brief	Initializes the material by using the best technique from the currently set shader. Shader
+		 * 			must contain the technique that matches the current renderer and render system.
+		 */
+		void initBestTechnique();
+
+		/**
+		 * @brief	Throw an exception if no shader is set, or no acceptable
+		 * 			technique was found.
+		 */
+		void throwIfNotInitialized() const
+		{
+			if (mShader == nullptr)
+			{
+				BS_EXCEPT(InternalErrorException, "Material does not have shader set.");
+			}
+
+			if (mBestTechnique == nullptr)
+			{
+				BS_EXCEPT(InternalErrorException, "Shader does not contain a supported technique.");
+			}
+		}
+
+		Vector<SPtr<TPassParameters<Core>>> mParametersPerPass;
+		ShaderType mShader;
+		TechniqueType mBestTechnique;
+	};
+
+	/**
+	 * @copydoc	MaterialBase
+	 */
+	class BS_CORE_EXPORT MaterialCore : public CoreObjectCore, public TMaterial<true>
+	{
+	public:
+		~MaterialCore() { }
+
+	private:
+		friend class Material;
+
+		MaterialCore() { }
+	};
+
+	/**
+	 * @copydoc	MaterialBase
+	 */
+	class BS_CORE_EXPORT Material : public Resource, public TMaterial<false>
+	{
+	public:
+		~Material();
+
+		/**
+		 * @brief	Retrieves an implementation of a material usable only from the
+		 *			core thread.
+		 */
+		SPtr<MaterialCore> getCore() const;
 
 		/**
 		 * @brief	Creates a new empty material.
@@ -438,170 +829,20 @@ namespace BansheeEngine
 		 */
 		static HMaterial create(ShaderPtr shader);
 
-		/************************************************************************/
-		/* 								CORE PROXY                      		*/
-		/************************************************************************/
-
-		/**
-		 * @brief	Checks is the core dirty flag set. This is used by external systems 
-		 *			to know when internal data has changed and core thread potentially needs to be notified.
-		 *
-		 * @note	Sim thread only.
-		 */
-		bool _isCoreDirty(MaterialDirtyFlag flag) const;
-
-		/**
-		 * @brief	Marks the core dirty flag as clean.
-		 *
-		 * @note	Sim thread only.
-		 */
-		void _markCoreClean(MaterialDirtyFlag flag);
-
-		/**
-		 * @brief	Gets the currently active proxy of this material.
-		 */
-		MaterialProxyPtr _getActiveProxy() const { return mActiveProxy; }
-
-		/**
-		 * @brief	Sets an active proxy for this material.
-		 */
-		void _setActiveProxy(const MaterialProxyPtr& proxy) { mActiveProxy = proxy; }
-
-		/**
-		 * @brief	Creates a new core proxy from the currently set material data. Core proxies ensure
-		 *			that the core thread has all the necessary material data, while avoiding the need
-		 *			to manage Material itself on the core thread.
-		 *
-		 * @note	Sim thread only. 
-		 *			You generally need to update the core thread with a new proxy whenever core 
-		 *			dirty flag is set.
-		 */
-		MaterialProxyPtr _createProxy();
-	protected:
-		/**
-		 * @copydoc	Resource::destroy_internal
-		 */
-		void destroy_internal();
-
-		/**
-		 * @brief	Allows you to retrieve a handle to a parameter that you can then use for quickly
-		 * 			setting and retrieving parameter data. This allows you to set/get parameter data
-		 * 			without all the cost of extra lookups otherwise required.
-		 * 			
-		 * @note	All of these handles will be invalidated if material shader ever changes. It is up to the
-		 * 			caller to keep track of that.
-		 */
-		template <typename T>
-		void getParam(const String& name, TMaterialDataParam<T, false>& output) const
-		{
-			throwIfNotInitialized();
-
-			auto iterFind = mValidParams.find(name);
-			if(iterFind == mValidParams.end())
-			{
-				LOGWRN("Material doesn't have a parameter named " + name);
-				return;
-			}
-
-			const String& gpuVarName = iterFind->second;
-			Vector<TGpuDataParam<T, false>> gpuParams;
-
-			for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
-			{
-				PassParametersPtr params = *iter;
-
-				for (UINT32 i = 0; i < params->getNumParams(); i++)
-				{
-					GpuParamsPtr& paramPtr = params->getParamByIdx(i);
-					if (paramPtr)
-					{
-						if (paramPtr->hasParam(gpuVarName))
-						{
-							gpuParams.push_back(TGpuDataParam<T, false>());
-							paramPtr->getParam<T>(gpuVarName, gpuParams.back());
-						}
-					}
-				}
-			}
-
-			output = TMaterialDataParam<T, false>(gpuParams);
-		}
-
 	private:
 		friend class MaterialManager;
-
-		ShaderPtr mShader;
-		TechniquePtr mBestTechnique;
-		INT32 mCoreDirtyFlags;
-
-		Set<String> mValidShareableParamBlocks;
-		Map<String, String> mValidParams; // Also maps Shader param name -> gpu variable name
-
-		Vector<PassParametersPtr> mParametersPerPass;
-		Vector<GpuParamBlockBufferPtr> mParamBuffers;
-
-		MaterialProxyPtr mActiveProxy;
 
 		Material();
 
 		/**
-		 * @brief	Throw an exception if no shader is set, or no acceptable
-		 * 			technique was found.
+		 * @copydoc	CoreObject::createCore
 		 */
-		void throwIfNotInitialized() const;
+		SPtr<CoreObjectCore> createCore() const;
 
 		/**
-		 * @brief	Marks the core data as dirty.
+		 * @copydoc	CoreObject::markCoreDirty
 		 */
-		void markCoreDirty() { mCoreDirtyFlags = 0xFFFFFFFF; }
-
-		/**
-		 * @brief	Retrieves a list of all shader GPU parameters, and the GPU program variable names they map to.
-		 */
-		const Map<String, String>& getValidParamNames() const { return mValidParams; }
-
-		/**
-		 * @brief	Initializes the material by using the best technique from the currently set shader. Shader
-		 * 			must contain the technique that matches the current renderer and render system.
-		 */
-		void initBestTechnique();
-
-		/**
-		 * @brief	Constructs a map containing all data parameters (e.g. float, vector3, color).
-		 * 			Map contains parameter names and descriptions.
-		 */
-		Map<String, const GpuParamDataDesc*> determineValidDataParameters(const Vector<GpuParamDescPtr>& paramDescs) const;
-
-		/**
-		 * @brief	Constructs a list containing all object parameter (e.g. texture, sampler state) names.
-		 */
-		Vector<const GpuParamObjectDesc*> determineValidObjectParameters(const Vector<GpuParamDescPtr>& paramDescs) const;
-
-		/**
-		 * @brief	Constructs a list containing all shareable parameter block names. Shareable blocks may be shared between
-		 * 			different GPU programs, passes or even materials. 
-		 */
-		Set<String> determineValidShareableParamBlocks(const Vector<GpuParamDescPtr>& paramDescs) const;
-
-		/**
-		 * @brief	Constructs a map that maps parameter names to a parameter block.
-		 */
-		Map<String, String> determineParameterToBlockMapping(const Vector<GpuParamDescPtr>& paramDescs);
-
-		/**
-		 * @brief	Checks are the specified two parameters equal
-		 *
-		 * @param	paramA			   	The parameter a to compare.
-		 * @param	paramB			   	The parameter b to compare.
-		 * @param	ignoreBufferOffsets	(optional) If true, parameter offsets into the parameter buffer will be ignored
-		 * 								when comparing.
-		 */
-		bool areParamsEqual(const GpuParamDataDesc& paramA, const GpuParamDataDesc& paramB, bool ignoreBufferOffsets = false) const;
-
-		/**
-		 * @brief	Frees all parameter block buffers.
-		 */
-		void freeParamBuffers();
+		void _markCoreDirty();
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

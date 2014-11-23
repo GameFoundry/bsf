@@ -33,6 +33,9 @@ namespace BansheeEngine
 			BS_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx));
 	}
 
+	template class TTechnique < false > ;
+	template class TTechnique < true >;
+
 	TechniqueCore::TechniqueCore(const String& renderSystem, const String& renderer)
 		:TTechnique(renderSystem, renderer)
 	{ }

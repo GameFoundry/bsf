@@ -7,6 +7,7 @@
 #include "BsGpuParamBlockBuffer.h"
 #include "BsTechnique.h"
 #include "BsPass.h"
+#include "BsMaterial.h"
 #include "BsRenderSystem.h"
 
 namespace BansheeEngine
@@ -132,7 +133,7 @@ namespace BansheeEngine
 		element->rendererData = PerObjectData();
 		PerObjectData* rendererData = any_cast_unsafe<PerObjectData>(&element->rendererData);
 
-		SPtr<ShaderCore> shader = element->material->shader;
+		SPtr<ShaderCore> shader = element->material->getShader();
 
 		const Map<String, SHADER_PARAM_BLOCK_DESC>& paramBlockDescs = shader->getParamBlocks();
 		const Map<String, SHADER_DATA_PARAM_DESC>& dataParamDescs = shader->getDataParams();
@@ -164,68 +165,75 @@ namespace BansheeEngine
 				wvpParamName = paramDesc.second.gpuVariableName;
 		}
 
-		UINT32 idx = 0;
-		for (auto& gpuParams : element->material->params)
+		UINT32 numPasses = element->material->getNumPasses();
+		for (UINT32 i = 0; i < numPasses; i++)
 		{
-			const GpuParamDesc& paramsDesc = gpuParams->getParamDesc();
+			SPtr<PassParametersCore> passParams = element->material->getPassParameters(i);
 
-			if (staticBlockName != "")
+			for (UINT32 j = 0; j < passParams->getNumParams(); j++)
 			{
-				auto findIter = paramsDesc.paramBlocks.find(staticBlockName);
-				if (findIter != paramsDesc.paramBlocks.end())
+				SPtr<GpuParamsCore> gpuParams = passParams->getParamByIdx(j);
+				if (gpuParams == nullptr)
+					continue;
+
+				const GpuParamDesc& paramsDesc = gpuParams->getParamDesc();
+
+				if (staticBlockName != "")
 				{
-					// TODO - We only compare block sizes but not actual contents. Should I check them too?
-					//        Probably shouldn't concern myself with that here, instead check that on a higher level.
-					if (findIter->second.blockSize == staticParamBlockDesc.blockSize)
+					auto findIter = paramsDesc.paramBlocks.find(staticBlockName);
+					if (findIter != paramsDesc.paramBlocks.end())
 					{
-						UINT32 slotIdx = findIter->second.slot;
-						element->material->rendererBuffers.push_back(MaterialProxy::BufferBindInfo(idx, slotIdx, staticParamBuffer));
-					}
-				}
-			}
-
-			if (perFrameBlockName != "")
-			{
-				auto findIter = paramsDesc.paramBlocks.find(perFrameBlockName);
-				if (findIter != paramsDesc.paramBlocks.end())
-				{
-					if (findIter->second.blockSize == perFrameParamBlockDesc.blockSize)
-					{
-						UINT32 slotIdx = findIter->second.slot;
-						element->material->rendererBuffers.push_back(MaterialProxy::BufferBindInfo(idx, slotIdx, perFrameParamBuffer));
-					}
-				}
-			}
-
-			if (perObjectBlockName != "")
-			{
-				auto findIter = paramsDesc.paramBlocks.find(perObjectBlockName);
-				if (findIter != paramsDesc.paramBlocks.end())
-				{
-					if (findIter->second.blockSize == perObjectParamBlockDesc.blockSize)
-					{
-						if (rendererData->perObjectParamBuffer == nullptr)
-							rendererData->perObjectParamBuffer = HardwareBufferCoreManager::instance().createGpuParamBlockBuffer(perObjectParamBlockDesc.blockSize * sizeof(UINT32));
-
-						rendererData->perObjectBuffers.push_back(MaterialProxy::BufferBindInfo(idx, findIter->second.slot, rendererData->perObjectParamBuffer));
-
-						if (!rendererData->hasWVPParam && wvpParamName != "")
+						// TODO - We only compare block sizes but not actual contents. Should I check them too?
+						//        Probably shouldn't concern myself with that here, instead check that on a higher level.
+						if (findIter->second.blockSize == staticParamBlockDesc.blockSize)
 						{
-							auto findIter2 = paramsDesc.params.find(wvpParamName);
-							if (findIter2 != paramsDesc.params.end())
+							UINT32 slotIdx = findIter->second.slot;
+							element->rendererBuffers.push_back(RenderableElement::BufferBindInfo(i, j, slotIdx, staticParamBuffer));
+						}
+					}
+				}
+
+				if (perFrameBlockName != "")
+				{
+					auto findIter = paramsDesc.paramBlocks.find(perFrameBlockName);
+					if (findIter != paramsDesc.paramBlocks.end())
+					{
+						if (findIter->second.blockSize == perFrameParamBlockDesc.blockSize)
+						{
+							UINT32 slotIdx = findIter->second.slot;
+							element->rendererBuffers.push_back(RenderableElement::BufferBindInfo(i, j, slotIdx, perFrameParamBuffer));
+						}
+					}
+				}
+
+				if (perObjectBlockName != "")
+				{
+					auto findIter = paramsDesc.paramBlocks.find(perObjectBlockName);
+					if (findIter != paramsDesc.paramBlocks.end())
+					{
+						if (findIter->second.blockSize == perObjectParamBlockDesc.blockSize)
+						{
+							if (rendererData->perObjectParamBuffer == nullptr)
+								rendererData->perObjectParamBuffer = HardwareBufferCoreManager::instance().createGpuParamBlockBuffer(perObjectParamBlockDesc.blockSize * sizeof(UINT32));
+
+							rendererData->perObjectBuffers.push_back(RenderableElement::BufferBindInfo(i, j, findIter->second.slot, rendererData->perObjectParamBuffer));
+
+							if (!rendererData->hasWVPParam && wvpParamName != "")
 							{
-								if (paramsMatch(findIter2->second, wvpParamDesc))
+								auto findIter2 = paramsDesc.params.find(wvpParamName);
+								if (findIter2 != paramsDesc.params.end())
 								{
-									gpuParams->getParam(wvpParamName, rendererData->wvpParam);
-									rendererData->hasWVPParam = true;
+									if (paramsMatch(findIter2->second, wvpParamDesc))
+									{
+										gpuParams->getParam(wvpParamName, rendererData->wvpParam);
+										rendererData->hasWVPParam = true;
+									}
 								}
 							}
 						}
 					}
 				}
 			}
-
-			idx++;
 		}
 
 		bindGlobalBuffers(element);
@@ -236,7 +244,7 @@ namespace BansheeEngine
 		const PerObjectData* rendererData = any_cast_unsafe<PerObjectData>(&element->rendererData);
 		for (auto& perObjectBuffer : rendererData->perObjectBuffers)
 		{
-			SPtr<GpuParamsCore> params = element->material->params[perObjectBuffer.paramsIdx];
+			SPtr<GpuParamsCore> params = element->material->getPassParameters(perObjectBuffer.passIdx)->getParamByIdx(perObjectBuffer.paramsIdx);
 
 			params->setParamBlockBuffer(perObjectBuffer.slotIdx, rendererData->perObjectParamBuffer);
 		}

@@ -495,9 +495,6 @@
     <ClInclude Include="Include\BsDrawList.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsMaterialProxy.h">
-      <Filter>Header Files\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsTextureImportOptions.h">
       <Filter>Header Files\Importer</Filter>
     </ClInclude>
@@ -808,9 +805,6 @@
     </ClCompile>
     <ClCompile Include="Source\BsResourceMetaData.cpp">
       <Filter>Source Files\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsMaterialProxy.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsMaterialParam.cpp">
       <Filter>Source Files\Material</Filter>

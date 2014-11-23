@@ -69,6 +69,11 @@ namespace BansheeEngine
 		 */
 		UINT32 getSize() const { return mSize; }
 
+		/**
+		 * @copydoc	HardwareBufferCoreManager::createGpuParamBlockBuffer
+		 */
+		static SPtr<GpuParamBlockBufferCore> create(UINT32 size, GpuParamBlockUsage usage = GPBU_DYNAMIC);
+
 	protected:
 		/**
 		 * @copydoc	CoreObjectCore::syncToCore

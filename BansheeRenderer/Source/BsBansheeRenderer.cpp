@@ -243,29 +243,14 @@ namespace BansheeEngine
 			RenderQueuePtr renderQueue = bs_shared_ptr<RenderQueue>();
 			const Vector<DrawOperation>& drawOps = drawList->getDrawOperations();
 
-			// Note: It is important that draw ops update happens after renderables are updated, so that
-			// renderable proxies properly update in case they both share the same material/mesh
 			for (auto& drawOp : drawOps)
 			{
-				// Note: It is assumed render operations queued in the draw list is going
-				// to change every frame so we create new proxies using frame allocator
-				// every frame. It /might/ be more efficient not to use frame allocator
-				// and only update when they actually change. That might also cause
-				// issue if material/mesh is used both in draw list and a Renderable
-
-				if (drawOp.material->_isCoreDirty(MaterialDirtyFlag::Proxy))
-				{
-					drawOp.material->_setActiveProxy(drawOp.material->_createProxy());
-					drawOp.material->_markCoreClean(MaterialDirtyFlag::Proxy);
-					drawOp.material->_markCoreClean(MaterialDirtyFlag::Material);
-				}
-
-				MaterialProxyPtr materialProxy = drawOp.material->_getActiveProxy();
+				SPtr<MaterialCore> materialCore = drawOp.material->getCore();
 				SPtr<MeshCoreBase> meshCore = drawOp.mesh->getCore();
 				SubMesh subMesh = meshCore->getProperties().getSubMesh(drawOp.submeshIdx);
 
 				float distanceToCamera = (cameraSO->getPosition() - drawOp.worldPosition).length();
-				renderQueue->add(materialProxy, meshCore, subMesh, distanceToCamera);
+				renderQueue->add(materialCore, meshCore, subMesh, distanceToCamera);
 			}
 
 			gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::addToRenderQueue, this, camera->getCore(), renderQueue));
@@ -387,9 +372,17 @@ namespace BansheeEngine
 					mLitTexHandler->updatePerObjectBuffers(renderElem, worldViewProjMatrix);
 				}
 
-				for (auto& param : renderElem->material->params)
+				UINT32 numPasses = renderElem->material->getNumPasses();
+				for (UINT32 i = 0; i < numPasses; i++)
 				{
-					param->updateHardwareBuffers();
+					SPtr<PassParametersCore> passParams = renderElem->material->getPassParameters(i);
+
+					for (UINT32 j = 0; j < passParams->getNumParams(); j++)
+					{
+						SPtr<GpuParamsCore> params = passParams->getParamByIdx(j);
+						if (params != nullptr)
+							params->updateHardwareBuffers();
+					}
 				}
 
 				// Do frustum culling
@@ -416,9 +409,9 @@ namespace BansheeEngine
 
 		for(auto iter = sortedRenderElements.begin(); iter != sortedRenderElements.end(); ++iter)
 		{
-			MaterialProxyPtr materialProxy = iter->material;
+			SPtr<MaterialCore> material = iter->material;
 
-			setPass(*materialProxy, iter->passIdx);
+			setPass(material, iter->passIdx);
 			draw(iter->mesh, iter->subMesh);
 		}
 

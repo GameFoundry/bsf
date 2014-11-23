@@ -2,7 +2,6 @@
 
 #include "BsBansheeRendererPrerequisites.h"
 #include "BsRenderer.h"
-#include "BsMaterialProxy.h"
 #include "BsBounds.h"
 
 namespace BansheeEngine

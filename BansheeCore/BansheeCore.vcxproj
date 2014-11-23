@@ -281,7 +281,6 @@
     <ClInclude Include="Include\BsCoreObjectCore.h" />
     <ClInclude Include="Include\BsDrawList.h" />
     <ClInclude Include="Include\BsMaterialParam.h" />
-    <ClInclude Include="Include\BsMaterialProxy.h" />
     <ClInclude Include="Include\BsRenderStats.h" />
     <ClInclude Include="Include\BsCoreThread.h" />
     <ClInclude Include="Include\BsProfilerCPU.h" />
@@ -427,7 +426,6 @@
     <ClCompile Include="Source\BsCoreThread.cpp" />
     <ClCompile Include="Source\BsDrawList.cpp" />
     <ClCompile Include="Source\BsMaterialParam.cpp" />
-    <ClCompile Include="Source\BsMaterialProxy.cpp" />
     <ClCompile Include="Source\BsProfilerCPU.cpp" />
     <ClCompile Include="Source\BsDeferredCallManager.cpp" />
     <ClCompile Include="Source\BsDrawOps.cpp" />

@@ -26,8 +26,8 @@ namespace BansheeEngine
 			HMaterial mMatPickingAlpha;
 
 			// Core thread
-			MaterialProxyPtr mMatPickingProxy;
-			MaterialProxyPtr mMatPickingAlphaProxy;
+			SPtr<MaterialCore> mMatPickingCore;
+			SPtr<MaterialCore> mMatPickingAlphaCore;
 
 			SPtr<GpuParamsCore> mParamPickingVertParams;
 			SPtr<GpuParamsCore> mParamPickingFragParams;

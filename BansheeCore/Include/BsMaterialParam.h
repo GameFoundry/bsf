@@ -15,6 +15,10 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT TMaterialDataParam
 	{
 	public:
+		TMaterialDataParam(const Vector<TGpuDataParam<T, Core>>& params)
+			:mParams(params)
+		{ }
+
 		TMaterialDataParam() { }
 		
 		/**
@@ -37,12 +41,6 @@ namespace BansheeEngine
 			return mParams[0].get(arrayIdx); // They should all have the same value
 		}
 
-	private:
-		friend class Material;
-
-		TMaterialDataParam(const Vector<TGpuDataParam<T, Core>>& params)
-			:mParams(params)
-		{ }
 	protected:
 		Vector<TGpuDataParam<T, Core>> mParams;
 	};
@@ -66,110 +64,180 @@ namespace BansheeEngine
 	/**
 	 * @copydoc	TMaterialDataParam
 	 */
-	class BS_CORE_EXPORT MaterialParamStruct
+	template<bool Core>
+	class BS_CORE_EXPORT TMaterialParamStruct
 	{
 	public:
-		MaterialParamStruct() { }
+		TMaterialParamStruct(const Vector<TGpuParamStruct<Core>>& params)
+			:mParams(params)
+		{ }
+
+		TMaterialParamStruct() { }
 
 		/**
-		 * @copydoc	GpuParamStruct::set
+		 * @copydoc	TGpuParamStruct::set
 		 */
-		void set(const void* value, UINT32 sizeBytes, UINT32 arrayIdx = 0);
+		void set(const void* value, UINT32 sizeBytes, UINT32 arrayIdx = 0)
+		{
+			for (auto& param : mParams)
+				param.set(value, sizeBytes, arrayIdx);
+		}
 
 		/**
-		 * @copydoc	GpuParamStruct::get
+		 * @copydoc	TGpuParamStruct::get
 		 */
-		void get(void* value, UINT32 sizeBytes, UINT32 arrayIdx = 0);
+		void get(void* value, UINT32 sizeBytes, UINT32 arrayIdx = 0)
+		{
+			if (mParams.size() == 0)
+			{
+				value = nullptr;
+				return;
+			}
+
+			return mParams[0].get(value, sizeBytes, arrayIdx); // They should all have the same value
+		}
 
 		/**
-		 * @copydoc	GpuParamStruct::getElementSize
+		 * @copydoc	TGpuParamStruct::getElementSize
 		 */
-		UINT32 getElementSize() const;
+		UINT32 getElementSize() const
+		{
+			if (mParams.size() == 0)
+				return 0;
 
-	private:
-		friend class Material;
+			return mParams[0].getElementSize();
+		}
 
-		MaterialParamStruct(const Vector<GpuParamStruct>& params);
 	protected:
-		Vector<GpuParamStruct> mParams;
+		Vector<TGpuParamStruct<Core>> mParams;
 	};
+
+	typedef TMaterialParamStruct<false> MaterialParamStruct;
+	typedef TMaterialParamStruct<true> MaterialParamStructCore;
 
 	/**
 	 * @copydoc	TMaterialDataParam
 	 */
-	class BS_CORE_EXPORT MaterialParamTexture
+	template<bool Core>
+	class BS_CORE_EXPORT TMaterialParamTexture
 	{
 	public:
-		MaterialParamTexture() { }
+		typedef typename TGpuParamTextureType<Core>::Type TextureType;
+
+		TMaterialParamTexture(const Vector<TGpuParamTexture<Core>>& params)
+			:mParams(params)
+		{ }
+
+		TMaterialParamTexture() { }
 
 		/**
 		 * @copydoc	GpuParamTexture::set
 		 */
-		void set(const HTexture& texture);
+		void set(const TextureType& texture)
+		{
+			for (auto& param : mParams)
+				param.set(texture);
+		}
 
 		/**
 		 * @copydoc	GpuParamTexture::get
 		 */
-		HTexture get();
+		TextureType get()
+		{
+			if (mParams.size() == 0)
+				return TextureType();
 
-	private:
-		friend class Material;
-
-		MaterialParamTexture(const Vector<GpuParamTexture>& params);
+			return mParams[0].get(); // They should all have the same value
+		}
 
 	protected:
-		Vector<GpuParamTexture> mParams;
+		Vector<TGpuParamTexture<Core>> mParams;
 	};
+
+	typedef TMaterialParamTexture<false> MaterialParamTexture;
+	typedef TMaterialParamTexture<true> MaterialParamTextureCore;
 
 	/**
 	 * @copydoc	TMaterialDataParam
 	 */
-	class BS_CORE_EXPORT MaterialParamLoadStoreTexture
+	template<bool Core>
+	class BS_CORE_EXPORT TMaterialParamLoadStoreTexture
 	{
 	public:
-		MaterialParamLoadStoreTexture() { }
+		typedef typename TGpuParamTextureType<Core>::Type TextureType;
+
+		TMaterialParamLoadStoreTexture(const Vector<TGpuParamLoadStoreTexture<Core>>& params)
+			:mParams(params)
+		{ }
+
+		TMaterialParamLoadStoreTexture() { }
 
 		/**
 		 * @copydoc	GpuParamLoadStoreTexture::set
 		 */
-		void set(const HTexture& texture, const TextureSurface& surface);
+		void set(const TextureType& texture, const TextureSurface& surface)
+		{
+			for (auto& param : mParams)
+				param.set(texture, surface);
+		}
 
 		/**
 		 * @copydoc	GpuParamLoadStoreTexture::get
 		 */
-		HTexture get();
+		TextureType get()
+		{
+			if (mParams.size() == 0)
+				return TextureType();
 
-	private:
-		friend class Material;
+			return mParams[0].get(); // They should all have the same value
+		}
 
-		MaterialParamLoadStoreTexture(const Vector<GpuParamLoadStoreTexture>& params);
 	protected:
-		Vector<GpuParamLoadStoreTexture> mParams;
+		Vector<TGpuParamLoadStoreTexture<Core>> mParams;
 	};
+
+	typedef TMaterialParamLoadStoreTexture<false> MaterialParamLoadStoreTexture;
+	typedef TMaterialParamLoadStoreTexture<true> MaterialParamLoadStoreTextureCore;
 
 	/**
 	 * @copydoc	TMaterialDataParam
 	 */
-	class BS_CORE_EXPORT MaterialParamSampState
+	template<bool Core>
+	class BS_CORE_EXPORT TMaterialParamSampState
 	{
 	public:
-		MaterialParamSampState() { }
+		typedef typename TGpuParamSamplerStateType<Core>::Type SamplerType;
+
+		TMaterialParamSampState(const Vector<TGpuParamSampState<Core>>& params)
+			:mParams(params)
+		{ }
+
+		TMaterialParamSampState() { }
 
 		/**
 		 * @copydoc	GpuParamSampState::set
 		 */
-		void set(const HSamplerState& sampState);
+		void set(const SamplerType& sampState)
+		{
+			for (auto& param : mParams)
+				param.set(sampState);
+		}
 
 		/**
 		 * @copydoc	GpuParamSampState::get
 		 */
-		HSamplerState get();
+		SamplerType get()
+		{
+			if (mParams.size() == 0)
+				return SamplerType();
 
-	private:
-		friend class Material;
+			return mParams[0].get(); // They should all have the same value
+		}
 
-		MaterialParamSampState(const Vector<GpuParamSampState>& params);
 	protected:
-		Vector<GpuParamSampState> mParams;
+		Vector<TGpuParamSampState<Core>> mParams;
 	};
+
+	typedef TMaterialParamSampState<false> MaterialParamSampState;
+	typedef TMaterialParamSampState<true> MaterialParamSampStateCore;
 }

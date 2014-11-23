@@ -97,11 +97,11 @@ namespace BansheeEngine
 
 		struct CoreInitData
 		{
-			MaterialProxyPtr solidMatProxy;
-			MaterialProxyPtr wireMatProxy;
-			MaterialProxyPtr iconMatProxy;
-			MaterialProxyPtr pickingMatProxy;
-			MaterialProxyPtr alphaPickingMatProxy;
+			SPtr<MaterialCore> solidMat;
+			SPtr<MaterialCore> wireMat;
+			SPtr<MaterialCore> iconMat;
+			SPtr<MaterialCore> pickingMat;
+			SPtr<MaterialCore> alphaPickingMat;
 		};
 
 		typedef Vector<IconRenderData> IconRenderDataVec;
@@ -170,19 +170,19 @@ namespace BansheeEngine
 
 		struct SolidMaterialData
 		{
-			MaterialProxyPtr proxy;
+			SPtr<MaterialCore> mat;
 			GpuParamMat4Core mViewProj;
 		};
 
 		struct WireMaterialData
 		{
-			MaterialProxyPtr proxy;
+			SPtr<MaterialCore> mat;
 			GpuParamMat4Core mViewProj;
 		};
 
 		struct IconMaterialData
 		{
-			MaterialProxyPtr proxy;
+			SPtr<MaterialCore> mat;
 			SPtr<GpuParamsCore> mFragParams[2];
 			GpuParamMat4Core mViewProj[2];
 			GpuParamTextureCore mTexture[2];
@@ -190,13 +190,13 @@ namespace BansheeEngine
 
 		struct PickingMaterialData
 		{
-			MaterialProxyPtr proxy;
+			SPtr<MaterialCore> mat;
 			GpuParamMat4Core mViewProj;
 		};
 
 		struct AlphaPickingMaterialData
 		{
-			MaterialProxyPtr proxy;
+			SPtr<MaterialCore> mat;
 			SPtr<GpuParamsCore> mFragParams;
 			GpuParamMat4Core mViewProj;
 			GpuParamTextureCore mTexture;

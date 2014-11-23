@@ -248,21 +248,6 @@ namespace BansheeEngine
 		String mName;
 	};
 
-	template<bool Core>
-	struct TTechniqueType {};
-
-	template<>
-	struct TTechniqueType<false>
-	{
-		typedef Technique Type;
-	};
-
-	template<>
-	struct TTechniqueType<true>
-	{
-		typedef TechniqueCore Type;
-	};
-
 	/**
 	 * @copydoc	ShaderBase
 	 *
@@ -273,7 +258,11 @@ namespace BansheeEngine
 	class TShader : public ShaderBase
 	{
 	public:
-		typedef typename TTechniqueType<Core>::Type TTechniqueType;
+		template<bool Core> struct TTechniqueType {};
+		template<> struct TTechniqueType < false > { typedef Technique Type; };
+		template<> struct TTechniqueType < true > { typedef TechniqueCore Type; };
+
+		typedef typename TTechniqueType<Core>::Type TechniqueType;
 
 		TShader(const String& name)
 			:ShaderBase(name)
@@ -303,7 +292,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Removes the specified technique.
 		 */
-		void removeTechnique(SPtr<TTechniqueType> technique)
+		void removeTechnique(SPtr<TechniqueType> technique)
 		{
 			auto iterFind = std::find(mTechniques.begin(), mTechniques.end(), technique);
 
@@ -323,7 +312,7 @@ namespace BansheeEngine
 		 * @brief	Gets the best supported technique based on current render and other systems.
 		 * 			Returns null if not a single technique is supported.
 		 */
-		SPtr<TTechniqueType> getBestTechnique() const
+		SPtr<TechniqueType> getBestTechnique() const
 		{
 			for (auto iter = mTechniques.begin(); iter != mTechniques.end(); ++iter)
 			{
@@ -339,7 +328,7 @@ namespace BansheeEngine
 		}
 
 	protected:
-		Vector<SPtr<TTechniqueType>> mTechniques;
+		Vector<SPtr<TechniqueType>> mTechniques;
 	};
 
 	/**

@@ -79,6 +79,11 @@ namespace BansheeEngine
 		write(0, data.getBuffer(), data.getBufferSize());
 	}
 
+	SPtr<GpuParamBlockBufferCore> GpuParamBlockBufferCore::create(UINT32 size, GpuParamBlockUsage usage)
+	{
+		return HardwareBufferCoreManager::instance().createGpuParamBlockBuffer(size, usage);
+	}
+
 	GpuParamBlockBuffer::GpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage)
 		:mSize(size), mUsage(usage), mCachedData(nullptr)
 	{
@@ -156,6 +161,11 @@ namespace BansheeEngine
 		return CoreSyncData(buffer, mSize);
 	}
 
+	GpuParamBlockBufferPtr GpuParamBlockBuffer::create(UINT32 size, GpuParamBlockUsage usage)
+	{
+		return HardwareBufferManager::instance().createGpuParamBlockBuffer(size, usage);
+	}
+
 	GenericGpuParamBlockBufferCore::GenericGpuParamBlockBufferCore(UINT32 size, GpuParamBlockUsage usage)
 		:GpuParamBlockBufferCore(size, usage), mData(nullptr)
 	{ }
@@ -186,10 +196,5 @@ namespace BansheeEngine
 		memset(mData, 0, mSize);
 
 		GpuParamBlockBufferCore::initialize();
-	}
-
-	static GpuParamBlockBufferPtr create(UINT32 size, GpuParamBlockUsage usage)
-	{
-		return HardwareBufferManager::instance().createGpuParamBlockBuffer(size, usage);
 	}
 }

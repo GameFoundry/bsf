@@ -1,7 +1,6 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "BsMaterialProxy.h"
 #include "BsBounds.h"
 #include "BsMatrix4.h"
 #include "BsSubMesh.h"
@@ -15,6 +14,22 @@ namespace BansheeEngine
 	class BS_EXPORT RenderableElement
 	{
 	public:
+		/**
+		 * @brief	Contains a hardware GPU parameter buffer and index of the parameters and the slot
+		 *			it binds to in a material proxy.
+		 */
+		struct BS_CORE_EXPORT BufferBindInfo
+		{
+			BufferBindInfo(UINT32 passIdx, UINT32 paramsIdx, UINT32 slotIdx, const SPtr<GpuParamBlockBufferCore>& buffer)
+				:passIdx(passIdx), paramsIdx(paramsIdx), slotIdx(slotIdx), buffer(buffer)
+			{ }
+
+			UINT32 passIdx;
+			UINT32 paramsIdx;
+			UINT32 slotIdx;
+			SPtr<GpuParamBlockBufferCore> buffer;
+		};
+
 		RenderableElement();
 
 		/**
@@ -46,7 +61,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Proxy of the material to render the mesh with.
 		 */
-		MaterialProxyPtr material;
+		SPtr<MaterialCore> material;
 
 		/**
 		 * @brief	Optional layer that may be used for the camera for culling
@@ -69,6 +84,7 @@ namespace BansheeEngine
 		 */
 		RenderableType renderableType;
 
+		Vector<BufferBindInfo> rendererBuffers;
 	private:
 		bool mBoundsDirty;
 	};

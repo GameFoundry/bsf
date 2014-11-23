@@ -131,37 +131,13 @@ namespace BansheeEngine
 		bool mTransposeMatrices;
 	};
 
-	template<bool Core>
-	struct TGpuParamsBaseType
-	{ };
+	template<bool Core> struct TGpuParamsBaseType { };
+	template<> struct TGpuParamsBaseType<true> { typedef CoreObjectCore Type; };
+	template<> struct TGpuParamsBaseType<false> { typedef CoreObject Type; };
 
-	template<>
-	struct TGpuParamsBaseType<true>
-	{ 
-		typedef CoreObjectCore Type;
-	};
-
-	template<>
-	struct TGpuParamsBaseType<false>
-	{
-		typedef CoreObject Type;
-	};
-
-	template<bool Core>
-	struct TGpuParamsType
-	{ };
-
-	template<>
-	struct TGpuParamsType<false>
-	{
-		typedef GpuParams Type;
-	};
-
-	template<>
-	struct TGpuParamsType<true>
-	{
-		typedef GpuParamsCore Type;
-	};
+	template<bool Core> struct TGpuParamsType { };
+	template<> struct TGpuParamsType<false> { typedef GpuParams Type; };
+	template<> struct TGpuParamsType<true>{ typedef GpuParamsCore Type; };
 
 	/**
 	 * @brief	Templated version of GpuParams that contains functionality for both

@@ -37,8 +37,8 @@ namespace BansheeEngine
 			mMaterialData[i].mMatPicking = BuiltinEditorResources::instance().createPicking((CullingMode)i);
 			mMaterialData[i].mMatPickingAlpha = BuiltinEditorResources::instance().createPickingAlpha((CullingMode)i);
 
-			mMaterialData[i].mMatPickingProxy = mMaterialData[i].mMatPicking->_createProxy();
-			mMaterialData[i].mMatPickingAlphaProxy = mMaterialData[i].mMatPickingAlpha->_createProxy();
+			mMaterialData[i].mMatPickingCore = mMaterialData[i].mMatPicking->getCore();
+			mMaterialData[i].mMatPickingAlphaCore = mMaterialData[i].mMatPickingAlpha->getCore();
 		}
 
 		gCoreAccessor().queueCommand(std::bind(&ScenePicking::initializeCore, this));
@@ -51,23 +51,22 @@ namespace BansheeEngine
 			MaterialData& md = mMaterialData[i];
 
 			{
-				// TODO - Make a better interface when dealing with parameters through proxies?
-				MaterialProxyPtr proxy = md.mMatPickingProxy;
+				SPtr<PassParametersCore> passParams = md.mMatPickingCore->getPassParameters(0);
 
-				md.mParamPickingVertParams = proxy->params[proxy->passes[0].vertexProgParamsIdx];
+				md.mParamPickingVertParams = passParams->mVertParams;
 				md.mParamPickingVertParams->getParam("matWorldViewProj", md.mParamPickingWVP);
 
-				md.mParamPickingFragParams = proxy->params[proxy->passes[0].fragmentProgParamsIdx];
+				md.mParamPickingFragParams = passParams->mFragParams;
 				md.mParamPickingFragParams->getParam("colorIndex", md.mParamPickingColor);
 			}
 
 			{
-				MaterialProxyPtr proxy = md.mMatPickingAlphaProxy;
+				SPtr<PassParametersCore> passParams = md.mMatPickingAlphaCore->getPassParameters(0);
 
-				md.mParamPickingAlphaVertParams = proxy->params[proxy->passes[0].vertexProgParamsIdx];
+				md.mParamPickingAlphaVertParams = passParams->mVertParams;
 				md.mParamPickingAlphaVertParams->getParam("matWorldViewProj", md.mParamPickingAlphaWVP);
 
-				md.mParamPickingAlphaFragParams = proxy->params[proxy->passes[0].fragmentProgParamsIdx];
+				md.mParamPickingAlphaFragParams = passParams->mFragParams;
 
 				md.mParamPickingAlphaFragParams->getParam("colorIndex", md.mParamPickingAlphaColor);
 				md.mParamPickingAlphaFragParams->getTextureParam("mainTexture", md.mParamPickingAlphaTexture);
@@ -230,7 +229,7 @@ namespace BansheeEngine
 		rs.clearRenderTarget(FBT_COLOR | FBT_DEPTH | FBT_STENCIL, Color::White);
 		rs.setScissorRect(position.x, position.y, position.x + area.x, position.y + area.y);
 
-		Renderer::setPass(*mMaterialData[0].mMatPickingProxy, 0);
+		Renderer::setPass(mMaterialData[0].mMatPickingCore, 0);
 		bool activeMaterialIsAlpha = false;
 		CullingMode activeMaterialCull = (CullingMode)0;
 
@@ -242,9 +241,9 @@ namespace BansheeEngine
 				activeMaterialCull = renderable.cullMode;
 
 				if (activeMaterialIsAlpha)
-					Renderer::setPass(*mMaterialData[(UINT32)activeMaterialCull].mMatPickingAlphaProxy, 0);
+					Renderer::setPass(mMaterialData[(UINT32)activeMaterialCull].mMatPickingAlphaCore, 0);
 				else
-					Renderer::setPass(*mMaterialData[(UINT32)activeMaterialCull].mMatPickingProxy, 0);
+					Renderer::setPass(mMaterialData[(UINT32)activeMaterialCull].mMatPickingCore, 0);
 			}
 
 			Color color = encodeIndex(renderable.index);
