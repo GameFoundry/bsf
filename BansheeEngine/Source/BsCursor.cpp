@@ -2,6 +2,7 @@
 #include "BsPlatform.h"
 #include "BsException.h"
 #include "BsBuiltinResources.h"
+#include "BsDebug.h"
 
 namespace BansheeEngine
 {

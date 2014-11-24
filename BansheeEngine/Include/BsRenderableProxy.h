@@ -18,7 +18,7 @@ namespace BansheeEngine
 		 * @brief	Contains a hardware GPU parameter buffer and index of the parameters and the slot
 		 *			it binds to in a material proxy.
 		 */
-		struct BS_CORE_EXPORT BufferBindInfo
+		struct BS_EXPORT BufferBindInfo
 		{
 			BufferBindInfo(UINT32 passIdx, UINT32 paramsIdx, UINT32 slotIdx, const SPtr<GpuParamBlockBufferCore>& buffer)
 				:passIdx(passIdx), paramsIdx(paramsIdx), slotIdx(slotIdx), buffer(buffer)

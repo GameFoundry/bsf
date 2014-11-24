@@ -29,11 +29,6 @@ namespace BansheeEngine
 
 	protected:
 		/**
-		 * @brief	Checks is the index between 0 and provided bound and throws an exception if its not.
-		 */
-		void checkBounds(UINT32 idx, UINT32 bound) const;
-
-		/**
 		 * @copydoc	CoreObject::markCoreDirty
 		 */
 		virtual void _markCoreDirty() { }
@@ -58,40 +53,18 @@ namespace BansheeEngine
 
 		typedef typename TPassType<Core>::Type PassType;
 		
-		TTechnique(const String& renderSystem, const String& renderer)
-			:TechniqueBase(renderSystem, renderer)
-		{ }
-
+		TTechnique(const String& renderSystem, const String& renderer);
 		virtual ~TTechnique() { }
 
 		/**
 		 * @brief	Removes a pass with the specified index.
 		 */
-		void removePass(UINT32 idx)
-		{
-			checkBounds(idx, (UINT32)mPasses.size());
-
-			int count = 0;
-			auto iter = mPasses.begin();
-			while (count != idx)
-			{
-				++count;
-				++iter;
-			}
-
-			mPasses.erase(iter);
-			_markCoreDirty();
-		}
+		void removePass(UINT32 idx);
 
 		/**
 		 * @brief	Returns a pass with the specified index.
 		 */
-		SPtr<PassType> getPass(UINT32 idx) const
-		{
-			checkBounds(idx, (UINT32)mPasses.size());
-
-			return mPasses[idx];
-		}
+		SPtr<PassType> getPass(UINT32 idx) const;
 
 		/**
 		 * @brief	Returns total number of passes.

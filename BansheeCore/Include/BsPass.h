@@ -1,7 +1,6 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
-#include "BsCoreThreadAccessor.h"
 #include "BsColor.h"
 #include "BsIReflectable.h"
 #include "BsCoreObject.h"
@@ -75,16 +74,6 @@ namespace BansheeEngine
 		 * @copydoc	CoreObject::markCoreDirty
 		 */
 		virtual void _markCoreDirty() { }
-
-		/**
-		 * @brief	Returns true if the provided blend state has some element of transparency.
-		 */
-		static bool hasBlending(const HBlendState& blendState);
-
-		/**
-		 * @brief	Returns true if the provided blend state has some element of transparency.
-		 */
-		static bool hasBlending(const SPtr<BlendStateCore>& blendState);
 	};
 
 	/**
@@ -93,7 +82,7 @@ namespace BansheeEngine
 	 * @note	Templated so it can be used for both core and non-core versions of a pass.
 	 */
 	template<bool Core>
-	class TPass : public PassBase
+	class BS_CORE_EXPORT TPass : public PassBase
     {
     public:
 		typedef typename PassData<Core>::BlendStateType BlendStateType;
@@ -113,7 +102,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns true if this pass has some element of transparency.
 		 */
-		bool hasBlending() const { return PassBase::hasBlending(mData.mBlendState); }
+		bool hasBlending() const;
 
 		void setBlendState(const BlendStateType& blendState) { mData.mBlendState = blendState; _markCoreDirty(); }
 		BlendStateType getBlendState() const { return mData.mBlendState; }
@@ -155,10 +144,7 @@ namespace BansheeEngine
 		const GpuProgramType& getComputeProgram(void) const { return mData.mComputeProgram; }
 
 	protected:
-		TPass()
-		{
-			mData.mStencilRefValue = 0;
-		}
+		TPass();
 
 		PassData<Core> mData;
     };

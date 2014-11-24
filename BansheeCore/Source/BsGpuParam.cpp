@@ -1,214 +1,298 @@
 #include "BsGpuParam.h"
 #include "BsGpuParams.h"
 #include "BsGpuParamBlockBuffer.h"
+#include "BsGpuParamDesc.h"
+#include "BsDebug.h"
+#include "BsException.h"
 
 namespace BansheeEngine
 {
-	/************************************************************************/
-	/* 							GPU PARAMS BASE                      		*/
-	/************************************************************************/
-
-	GpuParamBase::GpuParamBase()
+	template<class T, bool Core>
+	TGpuDataParam<T, Core>::TGpuDataParam()
+		:mParamDesc(nullptr)
 	{ }
 
-	GpuParamBase::GpuParamBase(const SPtr<GpuParams>& parent)
-		:mParent(parent)
+	template<class T, bool Core>
+	TGpuDataParam<T, Core>::TGpuDataParam(GpuParamDataDesc* paramDesc, const GpuParamsType& parent)
+		:mParamDesc(paramDesc), mParent(parent)
 	{ }
 
-	void GpuParamBase::markCoreDirty()
+	template<class T, bool Core>
+	void TGpuDataParam<T, Core>::set(const T& value, UINT32 arrayIdx)
 	{
-		mParent->_markCoreDirty();
-	}
+		if (mParent == nullptr)
+			return;
 
-	/************************************************************************/
-	/* 							GPU DATA PARAMS BASE                      	*/
-	/************************************************************************/
-
-	GpuDataParamBase::GpuDataParamBase()
-		: GpuParamBase(), mParamDesc(nullptr)
-	{ }
-
-	GpuDataParamBase::GpuDataParamBase(GpuParamDataDesc* paramDesc, const SPtr<GpuParams>& parent)
-		: GpuParamBase(parent), mParamDesc(paramDesc)
-	{ }
-
-	bool GpuDataParamBase::getTransposeMatrices() const
-	{
-		return mParent->getTransposeMatrices();
-	}
-
-	bool GpuDataParamBase::write(UINT32 offset, const void* data, UINT32 size)
-	{
-		GpuParamBlockBufferPtr paramBlock = mParent->getParamBlockBuffer(mParamDesc->paramBlockSlot);
-		if (paramBlock == nullptr)
-			return false;
-
-		paramBlock->write(offset, data, size);
-		return true;
-	}
-
-	bool GpuDataParamBase::read(UINT32 offset, void* data, UINT32 size)
-	{
-		GpuParamBlockBufferPtr paramBlock = mParent->getParamBlockBuffer(mParamDesc->paramBlockSlot);
-		if (paramBlock == nullptr)
-			return false;
-
-		paramBlock->read(offset, data, size);
-		return true;
-	}
-
-	void GpuDataParamBase::zeroOut(UINT32 offset, UINT32 size)
-	{
-		GpuParamBlockBufferPtr paramBlock = mParent->getParamBlockBuffer(mParamDesc->paramBlockSlot);
+		GpuParamBufferType paramBlock = mParent->getParamBlockBuffer(mParamDesc->paramBlockSlot);
 		if (paramBlock == nullptr)
 			return;
 
-		paramBlock->zeroOut(offset, size);
-	}
+#if BS_DEBUG_MODE
+		if (arrayIdx >= mParamDesc->arraySize)
+		{
+			BS_EXCEPT(InvalidParametersException, "Array index out of range. Array size: " +
+				toString(mParamDesc->arraySize) + ". Requested size: " + toString(arrayIdx));
+		}
+#endif
 
-	/************************************************************************/
-	/* 						GPU OBJECT PARAMS BASE                      	*/
-	/************************************************************************/
+		UINT32 elementSizeBytes = mParamDesc->elementSize * sizeof(UINT32);
+		UINT32 sizeBytes = std::min(elementSizeBytes, (UINT32)sizeof(T)); // Truncate if it doesn't fit within parameter size
 
-	GpuObjectParamBase::GpuObjectParamBase()
-		: GpuParamBase(), mParamDesc(nullptr)
-	{ }
+		if (TransposePolicy<T>::transposeEnabled(mParent->getTransposeMatrices()))
+		{
+			T transposed = TransposePolicy<T>::transpose(value);
+			paramBlock->write((mParamDesc->cpuMemOffset + arrayIdx * mParamDesc->arrayElementStride) * sizeof(UINT32), &transposed, sizeBytes);
+		}
+		else
+			paramBlock->write((mParamDesc->cpuMemOffset + arrayIdx * mParamDesc->arrayElementStride) * sizeof(UINT32), &value, sizeBytes);
 
-	GpuObjectParamBase::GpuObjectParamBase(GpuParamObjectDesc* paramDesc, const SPtr<GpuParams>& parent)
-		: GpuParamBase(parent), mParamDesc(paramDesc)
-	{ }
+		// Set unused bytes to 0
+		if (sizeBytes < elementSizeBytes)
+		{
+			UINT32 diffSize = elementSizeBytes - sizeBytes;
+			paramBlock->zeroOut((mParamDesc->cpuMemOffset + arrayIdx * mParamDesc->arrayElementStride)  * sizeof(UINT32) + sizeBytes, diffSize);
+		}
 
-	HTexture GpuObjectParamBase::getTexture(UINT32 slot)
-	{
-		return mParent->getTexture(slot);
-	}
-
-	HSamplerState GpuObjectParamBase::getSamplerState(UINT32 slot)
-	{
-		return mParent->getSamplerState(slot);
-	}
-
-	void GpuObjectParamBase::setTexture(UINT32 slot, const HTexture& texture)
-	{
-		mParent->setTexture(slot, texture);
-	}
-
-	void GpuObjectParamBase::setSamplerState(UINT32 slot, const HSamplerState& sampler)
-	{
-		mParent->setSamplerState(slot, sampler);
-	}
-
-	void GpuObjectParamBase::setLoadStoreSurface(UINT32 slot, const TextureSurface& surface) const
-	{
-		mParent->setLoadStoreSurface(slot, surface);
-	}
-
-	void GpuObjectParamBase::setIsLoadStoreTexture(UINT32 slot, bool isLoadStore)
-	{
-		mParent->setIsLoadStoreTexture(slot, isLoadStore);
-	}
-
-	/************************************************************************/
-	/* 							GPU PARAMS CORE BASE                      	*/
-	/************************************************************************/
-
-	GpuParamCoreBase::GpuParamCoreBase()
-	{ }
-
-	GpuParamCoreBase::GpuParamCoreBase(const SPtr<GpuParamsCore>& parent)
-		:mParent(parent)
-	{ }
-
-	void GpuParamCoreBase::markCoreDirty()
-	{
 		mParent->_markCoreDirty();
 	}
 
-	/************************************************************************/
-	/* 						GPU DATA PARAMS CORE BASE                      	*/
-	/************************************************************************/
+	template<class T, bool Core>
+	T TGpuDataParam<T, Core>::get(UINT32 arrayIdx)
+	{
+		if (mParent == nullptr)
+			return T();
 
-	GpuDataParamCoreBase::GpuDataParamCoreBase()
-		: GpuParamCoreBase(), mParamDesc(nullptr)
+		GpuParamBufferType paramBlock = mParent->getParamBlockBuffer(mParamDesc->paramBlockSlot);
+		if (paramBlock == nullptr)
+			return T();
+
+#if BS_DEBUG_MODE
+		if (arrayIdx >= mParamDesc->arraySize)
+		{
+			BS_EXCEPT(InvalidParametersException, "Array index out of range. Array size: " +
+				toString(mParamDesc->arraySize) + ". Requested size: " + toString(arrayIdx));
+		}
+#endif
+
+		UINT32 elementSizeBytes = mParamDesc->elementSize * sizeof(UINT32);
+		UINT32 sizeBytes = std::min(elementSizeBytes, (UINT32)sizeof(T));
+
+		T value;
+		paramBlock->read((mParamDesc->cpuMemOffset + arrayIdx * mParamDesc->arrayElementStride) * sizeof(UINT32), &value, sizeBytes);
+
+		if (TransposePolicy<T>::transposeEnabled(mParent->getTransposeMatrices()))
+			return TransposePolicy<T>::transpose(value);
+		else
+			return value;
+	}
+
+	template<bool Core>
+	TGpuParamStruct<Core>::TGpuParamStruct()
+		:mParamDesc(nullptr)
 	{ }
 
-	GpuDataParamCoreBase::GpuDataParamCoreBase(GpuParamDataDesc* paramDesc, const SPtr<GpuParamsCore>& parent)
-		: GpuParamCoreBase(parent), mParamDesc(paramDesc)
+	template<bool Core>
+	TGpuParamStruct<Core>::TGpuParamStruct(GpuParamDataDesc* paramDesc, const GpuParamsType& parent)
+		:mParamDesc(paramDesc), mParent(parent)
 	{ }
 
-	bool GpuDataParamCoreBase::getTransposeMatrices() const
+	template<bool Core>
+	void TGpuParamStruct<Core>::set(const void* value, UINT32 sizeBytes, UINT32 arrayIdx)
 	{
-		return mParent->getTransposeMatrices();
-	}
+		if (mParent == nullptr)
+			return;
 
-	bool GpuDataParamCoreBase::write(UINT32 offset, const void* data, UINT32 size)
-	{
-		SPtr<GpuParamBlockBufferCore> paramBlock = mParent->getParamBlockBuffer(mParamDesc->paramBlockSlot);
-		if (paramBlock == nullptr)
-			return false;
-
-		paramBlock->write(offset, data, size);
-		return true;
-	}
-
-	bool GpuDataParamCoreBase::read(UINT32 offset, void* data, UINT32 size)
-	{
-		SPtr<GpuParamBlockBufferCore> paramBlock = mParent->getParamBlockBuffer(mParamDesc->paramBlockSlot);
-		if (paramBlock == nullptr)
-			return false;
-
-		paramBlock->read(offset, data, size);
-		return true;
-	}
-
-	void GpuDataParamCoreBase::zeroOut(UINT32 offset, UINT32 size)
-	{
-		SPtr<GpuParamBlockBufferCore> paramBlock = mParent->getParamBlockBuffer(mParamDesc->paramBlockSlot);
+		GpuParamBufferType paramBlock = mParent->getParamBlockBuffer(mParamDesc->paramBlockSlot);
 		if (paramBlock == nullptr)
 			return;
 
-		paramBlock->zeroOut(offset, size);
+		UINT32 elementSizeBytes = mParamDesc->elementSize * sizeof(UINT32);
+
+#if BS_DEBUG_MODE
+		if (sizeBytes > elementSizeBytes)
+		{
+			LOGWRN("Provided element size larger than maximum element size. Maximum size: " +
+				toString(elementSizeBytes) + ". Supplied size: " + toString(sizeBytes));
+		}
+
+		if (arrayIdx >= mParamDesc->arraySize)
+		{
+			BS_EXCEPT(InvalidParametersException, "Array index out of range. Array size: " +
+				toString(mParamDesc->arraySize) + ". Requested size: " + toString(arrayIdx));
+		}
+#endif
+
+		sizeBytes = std::min(elementSizeBytes, sizeBytes);
+
+		paramBlock->write((mParamDesc->cpuMemOffset + arrayIdx * mParamDesc->arrayElementStride) * sizeof(UINT32), value, sizeBytes);
+
+		// Set unused bytes to 0
+		if (sizeBytes < elementSizeBytes)
+		{
+			UINT32 diffSize = elementSizeBytes - sizeBytes;
+			paramBlock->zeroOut((mParamDesc->cpuMemOffset + arrayIdx * mParamDesc->arrayElementStride)  * sizeof(UINT32) + sizeBytes, diffSize);
+		}
+
+		mParent->_markCoreDirty();
 	}
 
-	/************************************************************************/
-	/* 						GPU OBJECT PARAMS CORE BASE                    	*/
-	/************************************************************************/
+	template<bool Core>
+	void TGpuParamStruct<Core>::get(void* value, UINT32 sizeBytes, UINT32 arrayIdx)
+	{
+		if (mParent == nullptr)
+			return;
 
-	GpuObjectParamCoreBase::GpuObjectParamCoreBase()
-		: GpuParamCoreBase(), mParamDesc(nullptr)
+		GpuParamBufferType paramBlock = mParent->getParamBlockBuffer(mParamDesc->paramBlockSlot);
+		if (paramBlock == nullptr)
+			return;
+
+		UINT32 elementSizeBytes = mParamDesc->elementSize * sizeof(UINT32);
+
+#if BS_DEBUG_MODE
+		if (sizeBytes > elementSizeBytes)
+		{
+			LOGWRN("Provided element size larger than maximum element size. Maximum size: " +
+				toString(elementSizeBytes) + ". Supplied size: " + toString(sizeBytes));
+		}
+
+		if (arrayIdx >= mParamDesc->arraySize)
+		{
+			BS_EXCEPT(InvalidParametersException, "Array index out of range. Array size: " +
+				toString(mParamDesc->arraySize) + ". Requested size: " + toString(arrayIdx));
+		}
+#endif
+		sizeBytes = std::min(elementSizeBytes, sizeBytes);
+
+		paramBlock->read((mParamDesc->cpuMemOffset + arrayIdx * mParamDesc->arrayElementStride) * sizeof(UINT32), value, sizeBytes);
+	}
+
+	template<bool Core>
+	UINT32 TGpuParamStruct<Core>::getElementSize() const
+	{
+		if (mParent == nullptr)
+			return 0;
+
+		return mParamDesc->elementSize * sizeof(UINT32);
+	}
+
+	template<bool Core>
+	TGpuParamTexture<Core>::TGpuParamTexture()
+		:mParamDesc(nullptr)
 	{ }
 
-	GpuObjectParamCoreBase::GpuObjectParamCoreBase(GpuParamObjectDesc* paramDesc, const SPtr<GpuParamsCore>& parent)
-		: GpuParamCoreBase(parent), mParamDesc(paramDesc)
+	template<bool Core>
+	TGpuParamTexture<Core>::TGpuParamTexture(GpuParamObjectDesc* paramDesc, const GpuParamsType& parent)
+		:mParamDesc(paramDesc), mParent(parent)
 	{ }
 
-	SPtr<TextureCore> GpuObjectParamCoreBase::getTexture(UINT32 slot)
+	template<bool Core>
+	void TGpuParamTexture<Core>::set(const TextureType& texture)
 	{
-		return mParent->getTexture(slot);
+		if (mParent == nullptr)
+			return;
+
+		mParent->setTexture(mParamDesc->slot, texture);
+		mParent->setIsLoadStoreTexture(mParamDesc->slot, false);
+
+		mParent->_markCoreDirty();
 	}
 
-	SPtr<SamplerStateCore> GpuObjectParamCoreBase::getSamplerState(UINT32 slot)
+	template<bool Core>
+	typename TGpuParamTexture<Core>::TextureType TGpuParamTexture<Core>::get()
 	{
-		return mParent->getSamplerState(slot);
+		if (mParent == nullptr)
+			return TextureType();
+
+		return mParent->getTexture(mParamDesc->slot);
 	}
 
-	void GpuObjectParamCoreBase::setTexture(UINT32 slot, const SPtr<TextureCore>& texture)
+	template<bool Core>
+	TGpuParamLoadStoreTexture<Core>::TGpuParamLoadStoreTexture()
+		:mParamDesc(nullptr)
+	{ }
+
+	template<bool Core>
+	TGpuParamLoadStoreTexture<Core>::TGpuParamLoadStoreTexture(GpuParamObjectDesc* paramDesc, const GpuParamsType& parent)
+		:mParamDesc(paramDesc), mParent(parent)
+	{ }
+
+	template<bool Core>
+	void TGpuParamLoadStoreTexture<Core>::set(const TextureType& texture, const TextureSurface& surface)
 	{
-		mParent->setTexture(slot, texture);
+		if (mParent == nullptr)
+			return;
+
+		mParent->setTexture(mParamDesc->slot, texture);
+		mParent->setIsLoadStoreTexture(mParamDesc->slot, true);
+		mParent->setLoadStoreSurface(mParamDesc->slot, surface);
+
+		mParent->_markCoreDirty();
 	}
 
-	void GpuObjectParamCoreBase::setSamplerState(UINT32 slot, const SPtr<SamplerStateCore>& sampler)
+	template<bool Core>
+	typename TGpuParamLoadStoreTexture<Core>::TextureType TGpuParamLoadStoreTexture<Core>::get()
 	{
-		mParent->setSamplerState(slot, sampler);
+		if (mParent == nullptr)
+			return TextureType();
+
+		return mParent->getTexture(mParamDesc->slot);
 	}
 
-	void GpuObjectParamCoreBase::setLoadStoreSurface(UINT32 slot, const TextureSurface& surface) const
+	template<bool Core>
+	TGpuParamSampState<Core>::TGpuParamSampState()
+		:mParamDesc(nullptr)
+	{ }
+
+	template<bool Core>
+	TGpuParamSampState<Core>::TGpuParamSampState(GpuParamObjectDesc* paramDesc, const GpuParamsType& parent)
+		:mParamDesc(paramDesc), mParent(parent)
+	{ }
+
+	template<bool Core>
+	void TGpuParamSampState<Core>::set(const SamplerStateType& samplerState)
 	{
-		mParent->setLoadStoreSurface(slot, surface);
+		if (mParent == nullptr)
+			return;
+
+		mParent->setSamplerState(mParamDesc->slot, samplerState);
+
+		mParent->_markCoreDirty();
 	}
 
-	void GpuObjectParamCoreBase::setIsLoadStoreTexture(UINT32 slot, bool isLoadStore)
+	template<bool Core>
+	typename TGpuParamSampState<Core>::SamplerStateType TGpuParamSampState<Core>::get()
 	{
-		mParent->setIsLoadStoreTexture(slot, isLoadStore);
+		if (mParent == nullptr)
+			return SamplerStateType();
+
+		return mParent->getSamplerState(mParamDesc->slot);
 	}
+
+	template class TGpuDataParam < float, false > ;
+	template class TGpuDataParam < Color, false > ;
+	template class TGpuDataParam < Vector2, false > ;
+	template class TGpuDataParam < Vector3, false > ;
+	template class TGpuDataParam < Vector4, false > ;
+	template class TGpuDataParam < Matrix3, false > ;
+	template class TGpuDataParam < Matrix4, false > ;
+
+	template class TGpuDataParam < float, true > ;
+	template class TGpuDataParam < Color, true > ;
+	template class TGpuDataParam < Vector2, true > ;
+	template class TGpuDataParam < Vector3, true > ;
+	template class TGpuDataParam < Vector4, true > ;
+	template class TGpuDataParam < Matrix3, true > ;
+	template class TGpuDataParam < Matrix4, true > ;
+
+	template class TGpuParamStruct < false > ;
+	template class TGpuParamStruct < true > ;
+
+	template class TGpuParamTexture < false > ;
+	template class TGpuParamTexture < true > ;
+
+	template class TGpuParamSampState < false > ;
+	template class TGpuParamSampState < true > ;
+
+	template class TGpuParamLoadStoreTexture < false > ;
+	template class TGpuParamLoadStoreTexture < true > ;
 }

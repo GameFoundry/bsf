@@ -6,14 +6,23 @@
 #include "BsMaterial.h"
 #include "BsGpuParams.h"
 #include "BsFrameAlloc.h"
+#include "BsGpuProgram.h"
 #include "BsException.h"
 
 namespace BansheeEngine
 {
-	bool propertiesHaveBlending(const BlendProperties& bsProps)
+	template<bool Core>
+	TPass<Core>::TPass()
 	{
+		mData.mStencilRefValue = 0;
+	}
+
+	template<bool Core>
+	bool TPass<Core>::hasBlending() const 
+	{ 
 		bool transparent = false;
 
+		const BlendProperties& bsProps = mData.mBlendState->getProperties();
 		for (UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
 		{
 			// Transparent if destination color is taken into account
@@ -30,21 +39,8 @@ namespace BansheeEngine
 		return transparent;
 	}
 
-	bool PassBase::hasBlending(const HBlendState& blendState)
-	{
-		if (blendState != nullptr)
-			return propertiesHaveBlending(blendState->getProperties());
-
-		return false;
-	}
-
-	bool PassBase::hasBlending(const SPtr<BlendStateCore>& blendState)
-	{
-		if (blendState != nullptr)
-			return propertiesHaveBlending(blendState->getProperties());
-
-		return false;
-	}
+	template class TPass < false > ;
+	template class TPass < true >;
 
 	void PassCore::syncToCore(const CoreSyncData& data)
 	{

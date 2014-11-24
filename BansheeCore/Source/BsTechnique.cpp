@@ -27,10 +27,36 @@ namespace BansheeEngine
 		return false;
 	}
 
-	void TechniqueBase::checkBounds(UINT32 idx, UINT32 bound) const
+	template<bool Core>
+	TTechnique<Core>::TTechnique(const String& renderSystem, const String& renderer)
+		:TechniqueBase(renderSystem, renderer)
+	{ }
+
+	template<bool Core>
+	void TTechnique<Core>::removePass(UINT32 idx)
 	{
-		if (idx < 0 || idx >= bound)
+		if (idx < 0 || idx >= (UINT32)mPasses.size())
 			BS_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx));
+
+		int count = 0;
+		auto iter = mPasses.begin();
+		while (count != idx)
+		{
+			++count;
+			++iter;
+		}
+
+		mPasses.erase(iter);
+		_markCoreDirty();
+	}
+
+	template<bool Core>
+	SPtr<typename TTechnique<Core>::PassType> TTechnique<Core>::getPass(UINT32 idx) const
+	{
+		if (idx < 0 || idx >= (UINT32)mPasses.size())
+			BS_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx));
+
+		return mPasses[idx];
 	}
 
 	template class TTechnique < false > ;

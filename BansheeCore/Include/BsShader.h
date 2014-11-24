@@ -222,21 +222,6 @@ namespace BansheeEngine
 		 */
 		virtual void _markCoreDirty() { }
 
-		/**
-		 * @copydoc	Technique::isSupported
-		 */
-		bool isTechniqueSupported(const SPtr<Technique> technique) const;
-
-		/**
-		 * @copydoc	Technique::isSupported
-		 */
-		bool isTechniqueSupported(const SPtr<TechniqueCore> technique) const;
-
-		/**
-		 * @brief	Checks is the index between 0 and provided bound and throws an exception if its not.
-		 */
-		void checkBounds(UINT32 idx, UINT32 bound) const;
-
 		QueueSortType mQueueSortType;
 		UINT32 mQueuePriority;
 		bool mSeparablePasses;
@@ -255,7 +240,7 @@ namespace BansheeEngine
 	 *			sim and core thread variants.
 	 */
 	template<bool Core>
-	class TShader : public ShaderBase
+	class BS_CORE_EXPORT TShader : public ShaderBase
 	{
 	public:
 		template<bool Core> struct TTechniqueType {};
@@ -264,44 +249,18 @@ namespace BansheeEngine
 
 		typedef typename TTechniqueType<Core>::Type TechniqueType;
 
-		TShader(const String& name)
-			:ShaderBase(name)
-		{ }
-
-		virtual ~TShader() { }
+		TShader(const String& name);
+		virtual ~TShader();
 	
 		/**
 		 * @brief	Removes a technique at the specified index.
 		 */
-		void removeTechnique(UINT32 idx)
-		{
-			checkBounds(idx, (UINT32)mTechniques.size());
-
-			int count = 0;
-			auto iter = mTechniques.begin();
-			while (count != idx)
-			{
-				++count;
-				++iter;
-			}
-
-			mTechniques.erase(iter);
-			_markCoreDirty();
-		}
+		void removeTechnique(UINT32 idx);
 
 		/**
 		 * @brief	Removes the specified technique.
 		 */
-		void removeTechnique(SPtr<TechniqueType> technique)
-		{
-			auto iterFind = std::find(mTechniques.begin(), mTechniques.end(), technique);
-
-			if (iterFind != mTechniques.end())
-			{
-				mTechniques.erase(iterFind);
-				_markCoreDirty();
-			}
-		}
+		void removeTechnique(SPtr<TechniqueType> technique);
 
 		/**
 		 * @brief	Returns the total number of techniques in this shader.
@@ -312,20 +271,7 @@ namespace BansheeEngine
 		 * @brief	Gets the best supported technique based on current render and other systems.
 		 * 			Returns null if not a single technique is supported.
 		 */
-		SPtr<TechniqueType> getBestTechnique() const
-		{
-			for (auto iter = mTechniques.begin(); iter != mTechniques.end(); ++iter)
-			{
-				if (isTechniqueSupported(*iter))
-				{
-					return *iter;
-				}
-			}
-
-			return nullptr;
-
-			// TODO - Low priority. Instead of returning null use an extremely simple technique that will be supported almost everywhere as a fallback.
-		}
+		SPtr<TechniqueType> getBestTechnique() const;
 
 	protected:
 		Vector<SPtr<TechniqueType>> mTechniques;

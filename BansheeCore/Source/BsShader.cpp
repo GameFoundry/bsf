@@ -14,22 +14,6 @@ namespace BansheeEngine
 
 	}
 
-	bool ShaderBase::isTechniqueSupported(const SPtr<Technique> technique) const
-	{
-		return technique->isSupported();
-	}
-
-	bool ShaderBase::isTechniqueSupported(const SPtr<TechniqueCore> technique) const
-	{
-		return technique->isSupported();
-	}
-
-	void ShaderBase::checkBounds(UINT32 idx, UINT32 bound) const
-	{
-		if (idx < 0 || idx >= bound)
-			BS_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx));
-	}
-
 	void ShaderBase::setQueueSortType(QueueSortType sortType) 
 	{ 
 		mQueueSortType = sortType;
@@ -180,6 +164,64 @@ namespace BansheeEngine
 
 		_markCoreDirty();
 	}
+
+	template<bool Core>
+	TShader<Core>::TShader(const String& name)
+		:ShaderBase(name)
+	{ }
+
+	template<bool Core>
+	TShader<Core>::~TShader() 
+	{ }
+
+	template<bool Core>
+	void TShader<Core>::removeTechnique(UINT32 idx)
+	{
+		if (idx < 0 || idx >= (UINT32)mTechniques.size())
+			BS_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx));
+
+		int count = 0;
+		auto iter = mTechniques.begin();
+		while (count != idx)
+		{
+			++count;
+			++iter;
+		}
+
+		mTechniques.erase(iter);
+		_markCoreDirty();
+	}
+
+	template<bool Core>
+	void TShader<Core>::removeTechnique(SPtr<TechniqueType> technique)
+	{
+		auto iterFind = std::find(mTechniques.begin(), mTechniques.end(), technique);
+
+		if (iterFind != mTechniques.end())
+		{
+			mTechniques.erase(iterFind);
+			_markCoreDirty();
+		}
+	}
+
+	template<bool Core>
+	SPtr<typename TShader<Core>::TechniqueType> TShader<Core>::getBestTechnique() const
+	{
+		for (auto iter = mTechniques.begin(); iter != mTechniques.end(); ++iter)
+		{
+			if ((*iter)->isSupported())
+			{
+				return *iter;
+			}
+		}
+
+		return nullptr;
+
+		// TODO - Low priority. Instead of returning null use an extremely simple technique that will be supported almost everywhere as a fallback.
+	}
+
+	template class TShader < false > ;
+	template class TShader < true >;
 
 	ShaderCore::ShaderCore(const String& name)
 		:TShader(name)

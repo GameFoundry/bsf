@@ -399,6 +399,201 @@ namespace BansheeEngine
 	}
 
 	template<bool Core>
+	void TMaterial<Core>::setShader(ShaderType shader)
+	{
+		mShader = shader;
+
+		initBestTechnique();
+		_markCoreDirty();
+	}
+
+	template<bool Core>
+	UINT32 TMaterial<Core>::getNumPasses() const
+	{
+		throwIfNotInitialized();
+
+		return mShader->getBestTechnique()->getNumPasses();
+	}
+
+	template<bool Core>
+	typename TMaterial<Core>::PassType TMaterial<Core>::getPass(UINT32 passIdx) const
+	{
+		if (passIdx < 0 || passIdx >= mShader->getBestTechnique()->getNumPasses())
+			BS_EXCEPT(InvalidParametersException, "Invalid pass index.");
+
+		return mShader->getBestTechnique()->getPass(passIdx);
+	}
+
+	template<bool Core>
+	TMaterialParamStruct<Core> TMaterial<Core>::getParamStruct(const String& name) const
+	{
+		throwIfNotInitialized();
+
+		auto iterFind = mValidParams.find(name);
+		if (iterFind == mValidParams.end())
+		{
+			LOGWRN("Material doesn't have a parameter named " + name);
+			return TMaterialParamStruct<Core>();
+		}
+
+		const String& gpuVarName = iterFind->second;
+		Vector<TGpuParamStruct<Core>> gpuParams;
+
+		for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
+		{
+			SPtr<TPassParameters<Core>> params = *iter;
+
+			for (UINT32 i = 0; i < params->getNumParams(); i++)
+			{
+				GpuParamsType& paramPtr = params->getParamByIdx(i);
+				if (paramPtr)
+				{
+					if (paramPtr->hasParam(gpuVarName))
+					{
+						gpuParams.push_back(TGpuParamStruct<Core>());
+						paramPtr->getStructParam(gpuVarName, gpuParams.back());
+					}
+				}
+			}
+		}
+
+		return TMaterialParamStruct<Core>(gpuParams);
+	}
+
+	template<bool Core>
+	TMaterialParamTexture<Core> TMaterial<Core>::getParamTexture(const String& name) const
+	{
+		throwIfNotInitialized();
+
+		auto iterFind = mValidParams.find(name);
+		if (iterFind == mValidParams.end())
+		{
+			LOGWRN("Material doesn't have a parameter named " + name);
+			return TMaterialParamTexture<Core>();
+		}
+
+		const String& gpuVarName = iterFind->second;
+		Vector<TGpuParamTexture<Core>> gpuParams;
+
+		for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
+		{
+			SPtr<TPassParameters<Core>> params = *iter;
+
+			for (UINT32 i = 0; i < params->getNumParams(); i++)
+			{
+				GpuParamsType& paramPtr = params->getParamByIdx(i);
+				if (paramPtr)
+				{
+					if (paramPtr->hasTexture(gpuVarName))
+					{
+						gpuParams.push_back(TGpuParamTexture<Core>());
+						paramPtr->getTextureParam(gpuVarName, gpuParams.back());
+					}
+				}
+			}
+		}
+
+		return TMaterialParamTexture<Core>(gpuParams);
+	}
+
+	template<bool Core>
+	TMaterialParamLoadStoreTexture<Core> TMaterial<Core>::getParamLoadStoreTexture(const String& name) const
+	{
+		throwIfNotInitialized();
+
+		auto iterFind = mValidParams.find(name);
+		if (iterFind == mValidParams.end())
+		{
+			LOGWRN("Material doesn't have a parameter named " + name);
+			return TMaterialParamLoadStoreTexture<Core>();
+		}
+
+		const String& gpuVarName = iterFind->second;
+		Vector<TGpuParamLoadStoreTexture<Core>> gpuParams;
+
+		for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
+		{
+			SPtr<TPassParameters<Core>> params = *iter;
+
+			for (UINT32 i = 0; i < params->getNumParams(); i++)
+			{
+				GpuParamsType& paramPtr = params->getParamByIdx(i);
+				if (paramPtr)
+				{
+					if (paramPtr->hasTexture(gpuVarName))
+					{
+						gpuParams.push_back(TGpuParamLoadStoreTexture<Core>());
+						paramPtr->getLoadStoreTextureParam(gpuVarName, gpuParams.back());
+					}
+				}
+			}
+		}
+
+		return TMaterialParamLoadStoreTexture<Core>(gpuParams);
+	}
+
+	template<bool Core>
+	TMaterialParamSampState<Core> TMaterial<Core>::getParamSamplerState(const String& name) const
+	{
+		throwIfNotInitialized();
+
+		auto iterFind = mValidParams.find(name);
+		if (iterFind == mValidParams.end())
+		{
+			LOGWRN("Material doesn't have a parameter named " + name);
+			return TMaterialParamSampState<Core>();
+		}
+
+		const String& gpuVarName = iterFind->second;
+		Vector<TGpuParamSampState<Core>> gpuParams;
+		for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
+		{
+			SPtr<TPassParameters<Core>> params = *iter;
+
+			for (UINT32 i = 0; i < params->getNumParams(); i++)
+			{
+				GpuParamsType& paramPtr = params->getParamByIdx(i);
+				if (paramPtr)
+				{
+					if (paramPtr->hasSamplerState(gpuVarName))
+					{
+						gpuParams.push_back(TGpuParamSampState<Core>());
+						paramPtr->getSamplerStateParam(gpuVarName, gpuParams.back());
+					}
+				}
+			}
+		}
+
+		return TMaterialParamSampState<Core>(gpuParams);
+	}
+
+	template<bool Core>
+	void TMaterial<Core>::setParamBlockBuffer(const String& name, const ParamBlockPtrType& paramBlock)
+	{
+		auto iterFind = mValidShareableParamBlocks.find(name);
+		if (iterFind == mValidShareableParamBlocks.end())
+		{
+			LOGWRN("Material doesn't have a parameter block named " + name);
+			return;
+		}
+
+		for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
+		{
+			SPtr<TPassParameters<Core>> params = *iter;
+
+			for (UINT32 i = 0; i < params->getNumParams(); i++)
+			{
+				GpuParamsType& paramPtr = params->getParamByIdx(i);
+				if (paramPtr)
+				{
+					if (paramPtr->hasParamBlock(name))
+						paramPtr->setParamBlockBuffer(name, paramBlock);
+				}
+			}
+		}
+	}
+
+	template<bool Core>
 	void TMaterial<Core>::initBestTechnique()
 	{
 		mBestTechnique = nullptr;
@@ -506,18 +701,75 @@ namespace BansheeEngine
 		}
 	}
 
+	template <bool Core>
+	template <typename T>
+	void TMaterial<Core>::getParam(const String& name, TMaterialDataParam<T, Core>& output) const
+	{
+		throwIfNotInitialized();
+
+		auto iterFind = mValidParams.find(name);
+		if (iterFind == mValidParams.end())
+		{
+			LOGWRN("Material doesn't have a parameter named " + name);
+			return;
+		}
+
+		const String& gpuVarName = iterFind->second;
+		Vector<TGpuDataParam<T, Core>> gpuParams;
+
+		for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
+		{
+			SPtr<TPassParameters<Core>> params = *iter;
+
+			for (UINT32 i = 0; i < params->getNumParams(); i++)
+			{
+				GpuParamsType& paramPtr = params->getParamByIdx(i);
+				if (paramPtr)
+				{
+					if (paramPtr->hasParam(gpuVarName))
+					{
+						gpuParams.push_back(TGpuDataParam<T, Core>());
+						paramPtr->getParam<T>(gpuVarName, gpuParams.back());
+					}
+				}
+			}
+		}
+
+		output = TMaterialDataParam<T, Core>(gpuParams);
+	}
+
+	template<bool Core>
+	void TMaterial<Core>::throwIfNotInitialized() const
+	{
+		if (mShader == nullptr)
+		{
+			BS_EXCEPT(InternalErrorException, "Material does not have shader set.");
+		}
+
+		if (mBestTechnique == nullptr)
+		{
+			BS_EXCEPT(InternalErrorException, "Shader does not contain a supported technique.");
+		}
+	}
+
 	template class TMaterial < false > ;
 	template class TMaterial < true > ;
 
-	Material::Material()
-	{
+	template BS_CORE_EXPORT void TMaterial<false>::getParam(const String&, TMaterialDataParam<float, false>&) const;
+	template BS_CORE_EXPORT void TMaterial<false>::getParam(const String&, TMaterialDataParam<Color, false>&) const;
+	template BS_CORE_EXPORT void TMaterial<false>::getParam(const String&, TMaterialDataParam<Vector2, false>&) const;
+	template BS_CORE_EXPORT void TMaterial<false>::getParam(const String&, TMaterialDataParam<Vector3, false>&) const;
+	template BS_CORE_EXPORT void TMaterial<false>::getParam(const String&, TMaterialDataParam<Vector4, false>&) const;
+	template BS_CORE_EXPORT void TMaterial<false>::getParam(const String&, TMaterialDataParam<Matrix3, false>&) const;
+	template BS_CORE_EXPORT void TMaterial<false>::getParam(const String&, TMaterialDataParam<Matrix4, false>&) const;
 
-	}
-
-	Material::~Material()
-	{
-
-	}
+	template BS_CORE_EXPORT void TMaterial<true>::getParam(const String&, TMaterialDataParam<float, true>&) const;
+	template BS_CORE_EXPORT void TMaterial<true>::getParam(const String&, TMaterialDataParam<Color, true>&) const;
+	template BS_CORE_EXPORT void TMaterial<true>::getParam(const String&, TMaterialDataParam<Vector2, true>&) const;
+	template BS_CORE_EXPORT void TMaterial<true>::getParam(const String&, TMaterialDataParam<Vector3, true>&) const;
+	template BS_CORE_EXPORT void TMaterial<true>::getParam(const String&, TMaterialDataParam<Vector4, true>&) const;
+	template BS_CORE_EXPORT void TMaterial<true>::getParam(const String&, TMaterialDataParam<Matrix3, true>&) const;
+	template BS_CORE_EXPORT void TMaterial<true>::getParam(const String&, TMaterialDataParam<Matrix4, true>&) const;
 
 	void Material::_markCoreDirty()
 	{
@@ -536,11 +788,6 @@ namespace BansheeEngine
 		materialPtr->_setThisPtr(materialPtr);
 
 		return materialPtr;
-	}
-
-	void Material::_markCoreDirty()
-	{
-		markCoreDirty();
 	}
 
 	HMaterial Material::create()

@@ -4,10 +4,10 @@
 #include "BsGpuParam.h"
 #include "BsCoreObject.h"
 
+#include "BsDebug.h"
+
 namespace BansheeEngine
 {
-	struct GpuParamsInternalData;
-
 	/**
 	 * @brief	Stores information needed for binding a texture to the pipeline.
 	 */
@@ -131,40 +131,43 @@ namespace BansheeEngine
 		bool mTransposeMatrices;
 	};
 
-	template<bool Core> struct TGpuParamsBaseType { };
-	template<> struct TGpuParamsBaseType<true> { typedef CoreObjectCore Type; };
-	template<> struct TGpuParamsBaseType<false> { typedef CoreObject Type; };
-
-	template<bool Core> struct TGpuParamsType { };
-	template<> struct TGpuParamsType<false> { typedef GpuParams Type; };
-	template<> struct TGpuParamsType<true>{ typedef GpuParamsCore Type; };
-
 	/**
 	 * @brief	Templated version of GpuParams that contains functionality for both
 	 *			sim and core thread versions of stored data.
 	 */
-	template <class TParamsBuffer, class TTexture, class TSampler, bool Core>
-	class TGpuParams : public TGpuParamsBaseType<Core>::Type, public GpuParamsBase
+	template <bool Core>
+	class BS_CORE_EXPORT TGpuParams : public GpuParamsBase
 	{
 	public:
+		template<bool Core> struct TTypes { };
+
+		template<> struct TTypes < false > 
+		{ 
+			typedef GpuParams GpuParamsType; 
+			typedef HTexture TextureType;
+			typedef HSamplerState SamplerType;
+			typedef SPtr<GpuParamBlockBuffer> ParamsBufferType;
+		};
+
+		template<> struct TTypes < true > 
+		{ 
+			typedef GpuParamsCore GpuParamsType;
+			typedef SPtr<TextureCore> TextureType;
+			typedef SPtr<SamplerStateCore> SamplerType;
+			typedef SPtr<GpuParamBlockBufferCore> ParamsBufferType;
+		};
+
+		typedef typename TTypes<Core>::GpuParamsType GpuParamsType;
+		typedef typename TTypes<Core>::TextureType TextureType;
+		typedef typename TTypes<Core>::SamplerType SamplerType;
+		typedef typename TTypes<Core>::ParamsBufferType ParamsBufferType;
+
 		/**
 		 * @copydoc	GpuParamsBase::GpuParamsBase(const GpuParamDescPtr&, bool)
 		 */
-		TGpuParams(const GpuParamDescPtr& paramDesc, bool transposeMatrices)
-			:GpuParamsBase(paramDesc, transposeMatrices), mParamBlockBuffers(nullptr), mTextures(nullptr), 
-			mSamplerStates(nullptr)
-		{
-			mParamBlockBuffers = bs_newN<TParamsBuffer>(mNumParamBlocks);
-			mTextures = bs_newN<TTexture>(mNumTextures);
-			mSamplerStates = bs_newN<TSampler>(mNumSamplerStates);
-		}
+		TGpuParams(const GpuParamDescPtr& paramDesc, bool transposeMatrices);
 
-		virtual ~TGpuParams()
-		{
-			bs_deleteN(mParamBlockBuffers, mNumParamBlocks);
-			bs_deleteN(mTextures, mNumTextures);
-			bs_deleteN(mSamplerStates, mNumSamplerStates);
-		}
+		virtual ~TGpuParams();
 
 		/**
 		 * @brief	Binds a new parameter buffer to the specified slot. Any following parameter reads or
@@ -176,18 +179,7 @@ namespace BansheeEngine
 		 *			It is up to the caller to guarantee the provided buffer matches parameter block
 		 *			descriptor for this slot.
 		 */
-		void setParamBlockBuffer(UINT32 slot, const TParamsBuffer& paramBlockBuffer)
-		{
-			if (slot < 0 || slot >= mNumParamBlocks)
-			{
-				BS_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " +
-					toString(mNumParamBlocks - 1) + ". Requested: " + toString(slot));
-			}
-
-			mParamBlockBuffers[slot] = paramBlockBuffer;
-
-			_markCoreDirty();
-		}
+		void setParamBlockBuffer(UINT32 slot, const ParamsBufferType& paramBlockBuffer);
 
 		/**
 		 * @brief	Replaces the parameter buffer with the specified name. Any following parameter reads or
@@ -199,20 +191,7 @@ namespace BansheeEngine
 		 *			It is up to the caller to guarantee the provided buffer matches parameter block
 		 *			descriptor for this slot.
 		 */
-		void setParamBlockBuffer(const String& name, const TParamsBuffer& paramBlockBuffer)
-		{
-			auto iterFind = mParamDesc->paramBlocks.find(name);
-
-			if (iterFind == mParamDesc->paramBlocks.end())
-			{
-				LOGWRN("Cannot find parameter block with the name: " + name);
-				return;
-			}
-
-			mParamBlockBuffers[iterFind->second.slot] = paramBlockBuffer;
-
-			_markCoreDirty();
-		}
+		void setParamBlockBuffer(const String& name, const ParamsBufferType& paramBlockBuffer);
 
 		/**
 		* @brief	Returns a handle for the parameter with the specified name.
@@ -223,278 +202,62 @@ namespace BansheeEngine
 		*
 		*			Parameter handles will be invalidated when their parent GpuParams object changes.
 		*/
-		template<class T> void getParam(const String& name, TGpuDataParam<T, Core>& output) const
-		{
-			BS_EXCEPT(InvalidParametersException, "Unsupported parameter type");
-		}
-
-		/**
-		* @copydoc	getParam(const String&, TGpuDataParam<T, Core>&)
-		*/
-		template<>
-		void getParam<float>(const String& name, TGpuDataParam<float, Core>& output) const
-		{
-			auto iterFind = mParamDesc->params.find(name);
-
-			if (iterFind == mParamDesc->params.end() || iterFind->second.type != GPDT_FLOAT1)
-			{
-				output = TGpuDataParam<float, Core>(&iterFind->second, nullptr);
-				LOGWRN("Cannot find float parameter with the name '" + name + "'");
-			}
-			else
-				output = TGpuDataParam<float, Core>(&iterFind->second, _getThisPtr());
-		}
-
-		/**
-		* @copydoc	getParam(const String&, TGpuDataParam<T, Core>&)
-		*/
-		template<>
-		void getParam<Vector2>(const String& name, TGpuDataParam<Vector2, Core>& output) const
-		{
-			auto iterFind = mParamDesc->params.find(name);
-
-			if (iterFind == mParamDesc->params.end() || iterFind->second.type != GPDT_FLOAT2)
-			{
-				output = TGpuDataParam<Vector2, Core>(&iterFind->second, nullptr);
-				LOGWRN("Cannot find vector (2) parameter with the name '" + name + "'");
-			}
-			else
-				output = TGpuDataParam<Vector2, Core>(&iterFind->second, _getThisPtr());
-		}
-
-		/**
-		* @copydoc	getParam(const String&, TGpuDataParam<T, Core>&)
-		*/
-		template<>
-		void getParam<Vector3>(const String& name, TGpuDataParam<Vector3, Core>& output) const
-		{
-			auto iterFind = mParamDesc->params.find(name);
-
-			if (iterFind == mParamDesc->params.end() || iterFind->second.type != GPDT_FLOAT3)
-			{
-				output = TGpuDataParam<Vector3, Core>(&iterFind->second, nullptr);
-				LOGWRN("Cannot find vector (3) parameter with the name '" + name + "'");
-			}
-			else
-				output = TGpuDataParam<Vector3, Core>(&iterFind->second, _getThisPtr());
-		}
-
-		/**
-		* @copydoc	getParam(const String&, TGpuDataParam<T, Core>&)
-		*/
-		template<>
-		void getParam<Vector4>(const String& name, TGpuDataParam<Vector4, Core>& output) const
-		{
-			auto iterFind = mParamDesc->params.find(name);
-
-			if (iterFind == mParamDesc->params.end() || iterFind->second.type != GPDT_FLOAT4)
-			{
-				output = TGpuDataParam<Vector4, Core>(&iterFind->second, nullptr);
-				LOGWRN("Cannot find vector (4) parameter with the name '" + name + "'");
-			}
-			else
-				output = TGpuDataParam<Vector4, Core>(&iterFind->second, _getThisPtr());
-		}
-
-		/**
-		* @copydoc	getParam(const String&, TGpuDataParam<T, Core>&)
-		*/
-		template<>
-		void getParam<Color>(const String& name, TGpuDataParam<Color, Core>& output) const
-		{
-			auto iterFind = mParamDesc->params.find(name);
-
-			if (iterFind == mParamDesc->params.end() || iterFind->second.type != GPDT_FLOAT4)
-			{
-				output = TGpuDataParam<Color, Core>(&iterFind->second, nullptr);
-				LOGWRN("Cannot find color parameter with the name '" + name + "'");
-			}
-			else
-				output = TGpuDataParam<Color, Core>(&iterFind->second, _getThisPtr());
-		}
-
-		/**
-		* @copydoc	getParam(const String&, TGpuDataParam<T, Core>&)
-		*/
-		template<>
-		void getParam<Matrix3>(const String& name, TGpuDataParam<Matrix3, Core>& output) const
-		{
-			auto iterFind = mParamDesc->params.find(name);
-
-			if (iterFind == mParamDesc->params.end() || iterFind->second.type != GPDT_MATRIX_3X3)
-			{
-				output = TGpuDataParam<Matrix3, Core>(&iterFind->second, nullptr);
-				LOGWRN("Cannot find matrix (3x3) parameter with the name '" + name + "'");
-			}
-			else
-				output = TGpuDataParam<Matrix3, Core>(&iterFind->second, _getThisPtr());
-		}
-
-		/**
-		* @copydoc	getParam(const String&, TGpuDataParam<T, Core>&)
-		*/
-		template<>
-		void getParam<Matrix4>(const String& name, TGpuDataParam<Matrix4, Core>& output) const
-		{
-			auto iterFind = mParamDesc->params.find(name);
-
-			if (iterFind == mParamDesc->params.end() || iterFind->second.type != GPDT_MATRIX_4X4)
-			{
-				output = TGpuDataParam<Matrix4, Core>(&iterFind->second, nullptr);
-				LOGWRN("Cannot find matrix (4x4) parameter with the name '" + name + "'");
-			}
-			else
-				output = TGpuDataParam<Matrix4, Core>(&iterFind->second, _getThisPtr());
-		}
+		template<class T> void getParam(const String& name, TGpuDataParam<T, Core>& output) const;
 
 		/**
 		 * @copydoc	getParam(const String&, TGpuDataParam<T, Core>&)
 		 */
-		void getStructParam(const String& name, TGpuParamStruct<Core>& output) const
-		{
-			auto iterFind = mParamDesc->params.find(name);
-
-			if (iterFind == mParamDesc->params.end() || iterFind->second.type != GPDT_STRUCT)
-			{
-				output = TGpuParamStruct<Core>(&iterFind->second, nullptr);
-				LOGWRN("Cannot find struct parameter with the name '" + name + "'");
-			}
-			else
-				output = TGpuParamStruct<Core>(&iterFind->second, _getThisPtr());
-		}
+		void getStructParam(const String& name, TGpuParamStruct<Core>& output) const;
 
 		/**
 		 * @copydoc	getParam(const String&, TGpuDataParam<T, Core>&)
 		 */
-		void getTextureParam(const String& name, TGpuParamTexture<Core>& output) const
-		{
-			auto iterFind = mParamDesc->textures.find(name);
-
-			if (iterFind == mParamDesc->textures.end())
-			{
-				output = TGpuParamTexture<Core>(&iterFind->second, nullptr);
-				LOGWRN("Cannot find texture parameter with the name '" + name + "'");
-			}
-			else
-				output = TGpuParamTexture<Core>(&iterFind->second, _getThisPtr());
-		}
+		void getTextureParam(const String& name, TGpuParamTexture<Core>& output) const;
 
 		/**
 		 * @copydoc	getParam(const String&, TGpuDataParam<T, Core>&)
 		 */
-		void getLoadStoreTextureParam(const String& name, TGpuParamLoadStoreTexture<Core>& output) const
-		{
-			auto iterFind = mParamDesc->textures.find(name);
-
-			if (iterFind == mParamDesc->textures.end())
-			{
-				output = TGpuParamLoadStoreTexture<Core>(&iterFind->second, nullptr);
-				LOGWRN("Cannot find texture parameter with the name '" + name + "'");
-			}
-			else
-				output = TGpuParamLoadStoreTexture<Core>(&iterFind->second, _getThisPtr());
-		}
+		void getLoadStoreTextureParam(const String& name, TGpuParamLoadStoreTexture<Core>& output) const;
 
 		/**
 		 * @copydoc	getParam(const String&, TGpuDataParam<T, Core>&)
 		 */
-		void getSamplerStateParam(const String& name, TGpuParamSampState<Core>& output) const
-		{
-			auto iterFind = mParamDesc->samplers.find(name);
-
-			if (iterFind == mParamDesc->samplers.end())
-			{
-				output = TGpuParamSampState<Core>(&iterFind->second, nullptr);
-				LOGWRN("Cannot find sampler state parameter with the name '" + name + "'");
-			}
-			else
-				output = TGpuParamSampState<Core>(&iterFind->second, _getThisPtr());
-		}
+		void getSamplerStateParam(const String& name, TGpuParamSampState<Core>& output) const;
 
 		/**
 		 * @brief	Gets a parameter block buffer from the specified slot.
 		 */
-		TParamsBuffer getParamBlockBuffer(UINT32 slot) const
-		{
-			if (slot < 0 || slot >= mNumParamBlocks)
-			{
-				BS_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " +
-					toString(mNumParamBlocks - 1) + ". Requested: " + toString(slot));
-			}
-
-			return mParamBlockBuffers[slot];
-		}
+		ParamsBufferType getParamBlockBuffer(UINT32 slot) const;
 
 		/**
 		 * @brief	Gets a texture bound to the specified slot.
 		 */
-		TTexture getTexture(UINT32 slot)
-		{
-			if (slot < 0 || slot >= mNumTextures)
-			{
-				BS_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " +
-					toString(mNumTextures - 1) + ". Requested: " + toString(slot));
-			}
-
-			return mTextures[slot];
-		}
+		TextureType getTexture(UINT32 slot);
 
 		/**
 		 * @brief	Gets a sampler state bound to the specified slot.
 		 */
-		TSampler getSamplerState(UINT32 slot)
-		{
-			if (slot < 0 || slot >= mNumSamplerStates)
-			{
-				BS_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " +
-					toString(mNumSamplerStates - 1) + ". Requested: " + toString(slot));
-			}
-
-			return mSamplerStates[slot];
-		}
+		SamplerType getSamplerState(UINT32 slot);
 
 		/**
 		 * @brief	Sets a texture at the specified slot.
 		 */
-		void setTexture(UINT32 slot, const TTexture& texture)
-		{
-			if (slot < 0 || slot >= mNumTextures)
-			{
-				BS_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " +
-					toString(mNumTextures - 1) + ". Requested: " + toString(slot));
-			}
-
-			mTextures[slot] = texture;
-			_markCoreDirty();
-		}
+		void setTexture(UINT32 slot, const TextureType& texture);
 
 		/**
 		 * @brief	Sets a sampler state at the specified slot.
 		 */
-		void setSamplerState(UINT32 slot, const TSampler& sampler)
-		{
-			if (slot < 0 || slot >= mNumSamplerStates)
-			{
-				BS_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " +
-					toString(mNumSamplerStates - 1) + ". Requested: " + toString(slot));
-			}
-
-			mSamplerStates[slot] = sampler;
-			_markCoreDirty();
-		}
+		void setSamplerState(UINT32 slot, const SamplerType& sampler);
 
 	protected:
 		/**
 		 * @copydoc	CoreObject::getThisPtr
 		 */
-		SPtr<typename TGpuParamsType<Core>::Type> _getThisPtr() const
-		{
-			return std::static_pointer_cast<typename TGpuParamsType<Core>::Type>(getThisPtr());
-		}
+		virtual SPtr<GpuParamsType> _getThisPtr() const = 0;
 
-		TParamsBuffer* mParamBlockBuffers;
-		TTexture* mTextures;
-		TSampler* mSamplerStates;
+		ParamsBufferType* mParamBlockBuffers;
+		TextureType* mTextures;
+		SamplerType* mSamplerStates;
 	};
 
 	/**
@@ -504,7 +267,7 @@ namespace BansheeEngine
 	 *
 	 * @note	Core thread only.
 	 */
-	class BS_CORE_EXPORT GpuParamsCore : public TGpuParams<SPtr<GpuParamBlockBufferCore>, SPtr<TextureCore>, SPtr<SamplerStateCore>, true>
+	class BS_CORE_EXPORT GpuParamsCore : public CoreObjectCore, public TGpuParams<true>
 	{
 	public:
 		~GpuParamsCore() { }
@@ -528,6 +291,11 @@ namespace BansheeEngine
 		GpuParamsCore(const GpuParamDescPtr& paramDesc, bool transposeMatrices);
 
 		/**
+		 * @copydoc	CoreObject::getThisPtr
+		 */
+		SPtr<GpuParamsCore> _getThisPtr() const;
+
+		/**
 		 * @copydoc	CoreObjectCore::syncToCore
 		 */
 		void syncToCore(const CoreSyncData& data);
@@ -543,7 +311,7 @@ namespace BansheeEngine
 	 *
 	 * @note	Sim thread only.
 	 */
-	class BS_CORE_EXPORT GpuParams : public TGpuParams<GpuParamBlockBufferPtr, HTexture, HSamplerState, false>
+	class BS_CORE_EXPORT GpuParams : public CoreObject, public TGpuParams<false>
 	{
 	public:
 		~GpuParams() { }
@@ -571,6 +339,11 @@ namespace BansheeEngine
 		 * @copydoc	GpuParamsBase::GpuParamsBase
 		 */
 		GpuParams(const GpuParamDescPtr& paramDesc, bool transposeMatrices);
+
+		/**
+		 * @copydoc	CoreObject::getThisPtr
+		 */
+		SPtr<GpuParams> _getThisPtr() const;
 
 		/**
 		 * @copydoc	CoreObject::createCore
