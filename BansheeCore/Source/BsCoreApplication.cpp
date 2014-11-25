@@ -170,7 +170,6 @@ namespace BansheeEngine
 		{
 			gProfilerCPU().beginThread("Sim");
 
-			gCoreThread().update();
 			Platform::_update();
 			DeferredCallManager::instance()._update();
 			RenderWindowManager::instance()._update();
@@ -215,14 +214,16 @@ namespace BansheeEngine
 			// Note: This relies on core thread having finished the frame (ensured by the sync primitive above)
 			CoreObjectManager::instance().syncUpload(CoreObjectSync::Core);
 
-			// Active frame allocator now belongs to core thread, do not use it on sim thread anymore
 			gCoreThread().queueCommand(&Platform::_coreUpdate);
+
+			FrameAlloc* coreFrameAlloc = gCoreThread().getFrameAlloc();
+			gCoreThread().update(); // Active frame allocator now belongs to core thread, do not use it on sim thread anymore
 			gCoreThread().submitAccessors(); 
 
 			// This should be called after accessors are submitted to ensure we don't sync CoreObjects that are 
 			// about to be destroyed (They're only ever destroyed from accessors)
 			gCoreThread().queueCommand(std::bind(&CoreObjectManager::syncDownload, CoreObjectManager::instancePtr(), 
-				CoreObjectSync::Core, gCoreThread().getFrameAlloc()));
+				CoreObjectSync::Core, coreFrameAlloc));
 			gCoreThread().queueCommand(std::bind(&CoreApplication::endCoreProfiling, this));
 			gCoreThread().queueCommand(std::bind(&CoreApplication::frameRenderingFinishedCallback, this));
 

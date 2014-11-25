@@ -86,6 +86,7 @@ namespace BansheeEngine
 		TID_Vector = 53,
 		TID_Map = 54,
 		TID_UnorderedMap = 55,
-		TID_Pair = 56
+		TID_Pair = 56,
+		TID_Set = 57,
 	};
 }

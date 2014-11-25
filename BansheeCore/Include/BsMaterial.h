@@ -579,6 +579,12 @@ namespace BansheeEngine
 		friend class Material;
 
 		MaterialCore() { }
+		MaterialCore(const SPtr<ShaderCore>& shader);
+
+		/**
+		 * @copydoc	CoreObjectCore::syncToCore
+		 */
+		void syncToCore(const CoreSyncData& data);
 	};
 
 	/**
@@ -611,11 +617,17 @@ namespace BansheeEngine
 		friend class MaterialManager;
 
 		Material() { }
+		Material(const ShaderPtr& shader);
 
 		/**
 		 * @copydoc	CoreObject::createCore
 		 */
 		SPtr<CoreObjectCore> createCore() const;
+
+		/**
+		 * @copydoc	CoreObject::syncToCore
+		 */
+		CoreSyncData syncToCore(FrameAlloc* allocator);
 
 		/**
 		 * @copydoc	CoreObject::markCoreDirty

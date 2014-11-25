@@ -7,35 +7,7 @@
 
 namespace BansheeEngine
 {
-	ShaderBase::ShaderBase(const String& name)
-		:mName(name), mQueueSortType(QueueSortType::FrontToBack), mQueuePriority((UINT32)QueuePriority::Opaque),
-		mSeparablePasses(true)
-	{
-
-	}
-
-	void ShaderBase::setQueueSortType(QueueSortType sortType) 
-	{ 
-		mQueueSortType = sortType;
-
-		_markCoreDirty();
-	}
-
-	void ShaderBase::setQueuePriority(UINT32 priority) 
-	{ 
-		mQueuePriority = priority;
-
-		_markCoreDirty();
-	}
-
-	void ShaderBase::setAllowSeparablePasses(bool enable) 
-	{ 
-		mSeparablePasses = enable;
-
-		_markCoreDirty();
-	}
-
-	void ShaderBase::addParameter(const String& name, const String& gpuVariableName, GpuParamDataType type, UINT32 rendererSemantic, UINT32 arraySize, UINT32 elementSize)
+	void SHADER_DESC::addParameter(const String& name, const String& gpuVariableName, GpuParamDataType type, UINT32 rendererSemantic, UINT32 arraySize, UINT32 elementSize)
 	{
 		if(type == GPDT_STRUCT && elementSize <= 0)
 			BS_EXCEPT(InvalidParametersException, "You need to provide a non-zero element size for a struct parameter.")
@@ -48,17 +20,15 @@ namespace BansheeEngine
 		desc.rendererSemantic = rendererSemantic;
 		desc.elementSize = elementSize;
 
-		mDataParams[name] = desc;
-		mObjectParams.erase(name);
-
-		_markCoreDirty();
+		dataParams[name] = desc;
+		objectParams.erase(name);
 	}
 
-	void ShaderBase::addParameter(const String& name, const String& gpuVariableName, GpuParamObjectType type, UINT32 rendererSemantic)
+	void SHADER_DESC::addParameter(const String& name, const String& gpuVariableName, GpuParamObjectType type, UINT32 rendererSemantic)
 	{
-		auto iterFind = mObjectParams.find(name);
+		auto iterFind = objectParams.find(name);
 
-		if (iterFind == mObjectParams.end())
+		if (iterFind == objectParams.end())
 		{
 			SHADER_OBJECT_PARAM_DESC desc;
 			desc.name = name;
@@ -66,7 +36,7 @@ namespace BansheeEngine
 			desc.rendererSemantic = rendererSemantic;
 			desc.gpuVariableNames.push_back(gpuVariableName);
 
-			mObjectParams[name] = desc;
+			objectParams[name] = desc;
 		}
 		else
 		{
@@ -90,69 +60,10 @@ namespace BansheeEngine
 				gpuVariableNames.push_back(gpuVariableName);
 		}
 
-		mDataParams.erase(name);
-
-		_markCoreDirty();
+		dataParams.erase(name);
 	}
 
-	GpuParamType ShaderBase::getParamType(const String& name) const
-	{
-		auto findIterData = mDataParams.find(name);
-		if(findIterData != mDataParams.end())
-			return GPT_DATA;
-
-		auto findIterObject = mObjectParams.find(name);
-		if(findIterObject != mObjectParams.end())
-			return GPT_OBJECT;
-
-		BS_EXCEPT(InternalErrorException, "Cannot find the parameter with the name: " + name);
-	}
-
-	const SHADER_DATA_PARAM_DESC& ShaderBase::getDataParamDesc(const String& name) const
-	{
-		auto findIterData = mDataParams.find(name);
-		if(findIterData != mDataParams.end())
-			return findIterData->second;
-
-		BS_EXCEPT(InternalErrorException, "Cannot find the parameter with the name: " + name);
-	}
-
-	const SHADER_OBJECT_PARAM_DESC& ShaderBase::getObjectParamDesc(const String& name) const
-	{
-		auto findIterObject = mObjectParams.find(name);
-		if(findIterObject != mObjectParams.end())
-			return findIterObject->second;
-
-		BS_EXCEPT(InternalErrorException, "Cannot find the parameter with the name: " + name);
-	}
-
-	bool ShaderBase::hasDataParam(const String& name) const
-	{
-		auto findIterData = mDataParams.find(name);
-		if(findIterData != mDataParams.end())
-			return true;
-
-		return false;
-	}
-
-	bool ShaderBase::hasObjectParam(const String& name) const
-	{
-		auto findIterObject = mObjectParams.find(name);
-		if(findIterObject != mObjectParams.end())
-			return true;
-
-		return false;
-	}
-
-	void ShaderBase::removeParameter(const String& name)
-	{
-		mDataParams.erase(name);
-		mObjectParams.erase(name);
-
-		_markCoreDirty();
-	}
-
-	void ShaderBase::setParamBlockAttribs(const String& name, bool shared, GpuParamBlockUsage usage, UINT32 rendererSemantic)
+	void SHADER_DESC::setParamBlockAttribs(const String& name, bool shared, GpuParamBlockUsage usage, UINT32 rendererSemantic)
 	{
 		SHADER_PARAM_BLOCK_DESC desc;
 		desc.name = name;
@@ -160,49 +71,72 @@ namespace BansheeEngine
 		desc.usage = usage;
 		desc.rendererSemantic = rendererSemantic;
 
-		mParamBlocks[name] = desc;
+		paramBlocks[name] = desc;
+	}
 
-		_markCoreDirty();
+	ShaderBase::ShaderBase(const String& name, const SHADER_DESC& desc)
+		:mName(name), mDesc(desc)
+	{
+
+	}
+
+	GpuParamType ShaderBase::getParamType(const String& name) const
+	{
+		auto findIterData = mDesc.dataParams.find(name);
+		if (findIterData != mDesc.dataParams.end())
+			return GPT_DATA;
+
+		auto findIterObject = mDesc.objectParams.find(name);
+		if (findIterObject != mDesc.objectParams.end())
+			return GPT_OBJECT;
+
+		BS_EXCEPT(InternalErrorException, "Cannot find the parameter with the name: " + name);
+	}
+
+	const SHADER_DATA_PARAM_DESC& ShaderBase::getDataParamDesc(const String& name) const
+	{
+		auto findIterData = mDesc.dataParams.find(name);
+		if (findIterData != mDesc.dataParams.end())
+			return findIterData->second;
+
+		BS_EXCEPT(InternalErrorException, "Cannot find the parameter with the name: " + name);
+	}
+
+	const SHADER_OBJECT_PARAM_DESC& ShaderBase::getObjectParamDesc(const String& name) const
+	{
+		auto findIterObject = mDesc.objectParams.find(name);
+		if (findIterObject != mDesc.objectParams.end())
+			return findIterObject->second;
+
+		BS_EXCEPT(InternalErrorException, "Cannot find the parameter with the name: " + name);
+	}
+
+	bool ShaderBase::hasDataParam(const String& name) const
+	{
+		auto findIterData = mDesc.dataParams.find(name);
+		if (findIterData != mDesc.dataParams.end())
+			return true;
+
+		return false;
+	}
+
+	bool ShaderBase::hasObjectParam(const String& name) const
+	{
+		auto findIterObject = mDesc.objectParams.find(name);
+		if (findIterObject != mDesc.objectParams.end())
+			return true;
+
+		return false;
 	}
 
 	template<bool Core>
-	TShader<Core>::TShader(const String& name)
-		:ShaderBase(name)
+	TShader<Core>::TShader(const String& name, const SHADER_DESC& desc, const Vector<SPtr<TechniqueType>>& techniques)
+		:ShaderBase(name, desc), mTechniques(techniques)
 	{ }
 
 	template<bool Core>
 	TShader<Core>::~TShader() 
 	{ }
-
-	template<bool Core>
-	void TShader<Core>::removeTechnique(UINT32 idx)
-	{
-		if (idx < 0 || idx >= (UINT32)mTechniques.size())
-			BS_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx));
-
-		int count = 0;
-		auto iter = mTechniques.begin();
-		while (count != idx)
-		{
-			++count;
-			++iter;
-		}
-
-		mTechniques.erase(iter);
-		_markCoreDirty();
-	}
-
-	template<bool Core>
-	void TShader<Core>::removeTechnique(SPtr<TechniqueType> technique)
-	{
-		auto iterFind = std::find(mTechniques.begin(), mTechniques.end(), technique);
-
-		if (iterFind != mTechniques.end())
-		{
-			mTechniques.erase(iterFind);
-			_markCoreDirty();
-		}
-	}
 
 	template<bool Core>
 	SPtr<typename TShader<Core>::TechniqueType> TShader<Core>::getBestTechnique() const
@@ -223,41 +157,15 @@ namespace BansheeEngine
 	template class TShader < false > ;
 	template class TShader < true >;
 
-	ShaderCore::ShaderCore(const String& name)
-		:TShader(name)
+	ShaderCore::ShaderCore(const String& name, const SHADER_DESC& desc, const Vector<SPtr<TechniqueCore>>& techniques)
+		:TShader(name, desc, techniques)
 	{
 
 	}
 
-	SPtr<TechniqueCore> ShaderCore::addTechnique(const String& renderSystem, const String& renderer)
+	SPtr<ShaderCore> ShaderCore::create(const String& name, const SHADER_DESC& desc, const Vector<SPtr<TechniqueCore>>& techniques)
 	{
-		SPtr<TechniqueCore> technique = TechniqueCore::create(renderSystem, renderer);
-
-		mTechniques.push_back(technique);
-		_markCoreDirty();
-
-		return technique;
-	}
-
-	void ShaderCore::syncToCore(const CoreSyncData& data)
-	{
-		char* buffer = (char*)data.getBuffer();
-
-		mDataParams.clear();
-		mObjectParams.clear();
-		mParamBlocks.clear();
-
-		buffer = rttiReadElem(mQueueSortType, buffer);
-		buffer = rttiReadElem(mQueuePriority, buffer);
-		buffer = rttiReadElem(mSeparablePasses, buffer);
-		buffer = rttiReadElem(mDataParams, buffer);
-		buffer = rttiReadElem(mObjectParams, buffer);
-		buffer = rttiReadElem(mParamBlocks, buffer);
-	}
-
-	SPtr<ShaderCore> ShaderCore::create(const String& name)
-	{
-		ShaderCore* shaderCore = new (bs_alloc<ShaderCore>()) ShaderCore(name);
+		ShaderCore* shaderCore = new (bs_alloc<ShaderCore>()) ShaderCore(name, desc, techniques);
 		SPtr<ShaderCore> shaderCorePtr = bs_shared_ptr<ShaderCore, GenAlloc>(shaderCore);
 		shaderCorePtr->_setThisPtr(shaderCorePtr);
 		shaderCorePtr->initialize();
@@ -265,48 +173,10 @@ namespace BansheeEngine
 		return shaderCorePtr;
 	}
 
-	Shader::Shader(const String& name)
-		:TShader(name)
+	Shader::Shader(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques)
+		:TShader(name, desc, techniques)
 	{
 
-	}
-
-	SPtr<Technique> Shader::addTechnique(const String& renderSystem, const String& renderer)
-	{
-		SPtr<Technique> technique = Technique::create(renderSystem, renderer);
-
-		mTechniques.push_back(technique);
-		_markCoreDirty();
-
-		return technique;
-	}
-
-	void Shader::_markCoreDirty()
-	{
-		markCoreDirty();
-	}
-
-	CoreSyncData Shader::syncToCore(FrameAlloc* allocator)
-	{
-		UINT32 size = 0;
-		size += rttiGetElemSize(mQueueSortType);
-		size += rttiGetElemSize(mQueuePriority);
-		size += rttiGetElemSize(mSeparablePasses);
-		size += rttiGetElemSize(mDataParams);
-		size += rttiGetElemSize(mObjectParams);
-		size += rttiGetElemSize(mParamBlocks);
-
-		UINT8* buffer = allocator->alloc(size);
-
-		char* dataPtr = (char*)buffer;
-		dataPtr = rttiWriteElem(mQueueSortType, dataPtr);
-		dataPtr = rttiWriteElem(mQueuePriority, dataPtr);
-		dataPtr = rttiWriteElem(mSeparablePasses, dataPtr);
-		dataPtr = rttiWriteElem(mDataParams, dataPtr);
-		dataPtr = rttiWriteElem(mObjectParams, dataPtr);
-		dataPtr = rttiWriteElem(mParamBlocks, dataPtr);
-
-		return CoreSyncData((UINT8*)buffer, size);
 	}
 
 	SPtr<ShaderCore> Shader::getCore() const
@@ -316,7 +186,11 @@ namespace BansheeEngine
 
 	SPtr<CoreObjectCore> Shader::createCore() const
 	{
-		ShaderCore* shaderCore = new (bs_alloc<ShaderCore>()) ShaderCore(mName);
+		Vector<SPtr<TechniqueCore>> techniques;
+		for (auto& technique : mTechniques)
+			techniques.push_back(technique->getCore());
+
+		ShaderCore* shaderCore = new (bs_alloc<ShaderCore>()) ShaderCore(mName, mDesc, techniques);
 		SPtr<ShaderCore> shaderCorePtr = bs_shared_ptr<ShaderCore, GenAlloc>(shaderCore);
 		shaderCorePtr->_setThisPtr(shaderCorePtr);
 
@@ -371,11 +245,19 @@ namespace BansheeEngine
 		return false;
 	}
 
-	ShaderPtr Shader::create(const String& name)
+	ShaderPtr Shader::create(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques)
 	{
-		ShaderPtr newShader = bs_core_ptr<Shader, PoolAlloc>(new (bs_alloc<Shader, PoolAlloc>()) Shader(name));
+		ShaderPtr newShader = bs_core_ptr<Shader, PoolAlloc>(new (bs_alloc<Shader, PoolAlloc>()) Shader(name, desc, techniques));
 		newShader->_setThisPtr(newShader);
 		newShader->initialize();
+
+		return newShader;
+	}
+
+	ShaderPtr Shader::createEmpty()
+	{
+		ShaderPtr newShader = bs_core_ptr<Shader, PoolAlloc>(new (bs_alloc<Shader, PoolAlloc>()) Shader());
+		newShader->_setThisPtr(newShader);
 
 		return newShader;
 	}

@@ -203,6 +203,8 @@ namespace BansheeEngine
 	void MaterialRTTI::onDeserializationEnded(IReflectable* obj)
 	{
 		Material* material = static_cast<Material*>(obj);
+		material->initialize();
+
 		if(material->mRTTIData.empty())
 			return;
 
@@ -336,6 +338,6 @@ namespace BansheeEngine
 
 	std::shared_ptr<IReflectable> MaterialRTTI::newRTTIObject()
 	{
-		return MaterialManager::instance().create();
+		return MaterialManager::instance().createEmpty();
 	}
 }

@@ -771,6 +771,51 @@ namespace BansheeEngine
 	template BS_CORE_EXPORT void TMaterial<true>::getParam(const String&, TMaterialDataParam<Matrix3, true>&) const;
 	template BS_CORE_EXPORT void TMaterial<true>::getParam(const String&, TMaterialDataParam<Matrix4, true>&) const;
 
+	MaterialCore::MaterialCore(const SPtr<ShaderCore>& shader)
+	{
+		setShader(shader);
+	}
+
+	void MaterialCore::syncToCore(const CoreSyncData& data)
+	{
+		char* dataPtr = (char*)data.getBuffer();
+
+		mValidShareableParamBlocks.clear();
+		mValidParams.clear();
+		mParametersPerPass.clear();
+
+		UINT32 numPasses = 0;
+
+		dataPtr = rttiReadElem(mValidShareableParamBlocks, dataPtr);
+		dataPtr = rttiReadElem(mValidParams, dataPtr);
+		dataPtr = rttiReadElem(numPasses, dataPtr);
+
+		for (UINT32 i = 0; i < numPasses; i++)
+		{
+			SPtr<PassParametersCore>* passParameters = (SPtr<PassParametersCore>*)dataPtr;
+
+			mParametersPerPass.push_back(*passParameters);
+
+			passParameters->~SPtr<PassParametersCore>();
+			dataPtr += sizeof(SPtr<PassParametersCore>);
+		}
+
+		SPtr<ShaderCore>* shader = (SPtr<ShaderCore>*)dataPtr;
+		mShader = *shader;
+		shader->~SPtr<ShaderCore>();
+		dataPtr += sizeof(SPtr<ShaderCore>);
+
+		SPtr<TechniqueCore>* technique = (SPtr<TechniqueCore>*)dataPtr;
+		mBestTechnique = *technique;
+		technique->~SPtr<TechniqueCore>();
+		dataPtr += sizeof(SPtr<TechniqueCore>);
+	}
+
+	Material::Material(const ShaderPtr& shader)
+	{
+		setShader(shader);
+	}
+
 	void Material::_markCoreDirty()
 	{
 		markCoreDirty();
@@ -783,11 +828,86 @@ namespace BansheeEngine
 
 	SPtr<CoreObjectCore> Material::createCore() const
 	{
-		MaterialCore* material = new (bs_alloc<MaterialCore>()) MaterialCore();
+		SPtr<ShaderCore> shader;
+		if (mShader != nullptr)
+			shader = mShader->getCore();
+
+		MaterialCore* material = new (bs_alloc<MaterialCore>()) MaterialCore(shader);
 		SPtr<MaterialCore> materialPtr = bs_shared_ptr<MaterialCore, GenAlloc>(material);
 		materialPtr->_setThisPtr(materialPtr);
 
 		return materialPtr;
+	}
+
+	CoreSyncData Material::syncToCore(FrameAlloc* allocator)
+	{
+		UINT32 numPasses = (UINT32)mParametersPerPass.size();
+
+		UINT32 size = sizeof(UINT32) + numPasses * sizeof(SPtr<PassParametersCore>)
+			+ sizeof(SPtr<ShaderCore>) + sizeof(SPtr<TechniqueCore>) + rttiGetElemSize(mValidShareableParamBlocks)
+			+ rttiGetElemSize(mValidParams);
+
+		UINT8* buffer = allocator->alloc(size);
+		char* dataPtr = (char*)buffer;
+		dataPtr = rttiWriteElem(mValidShareableParamBlocks, dataPtr);
+		dataPtr = rttiWriteElem(mValidParams, dataPtr);
+		dataPtr = rttiWriteElem(numPasses, dataPtr);
+
+		for (UINT32 i = 0; i < numPasses; i++)
+		{
+			SPtr<PassParametersCore>* passParameters = new (dataPtr) SPtr<PassParametersCore>();
+			*passParameters = bs_shared_ptr<PassParametersCore>();
+
+			if (mParametersPerPass[i]->mVertParams != nullptr)
+				(*passParameters)->mVertParams = mParametersPerPass[i]->mVertParams->getCore();
+			else
+				(*passParameters)->mVertParams = nullptr;
+			
+			if (mParametersPerPass[i]->mFragParams != nullptr)
+				(*passParameters)->mFragParams = mParametersPerPass[i]->mFragParams->getCore();
+			else
+				(*passParameters)->mFragParams = nullptr;
+
+			if (mParametersPerPass[i]->mGeomParams != nullptr)
+				(*passParameters)->mGeomParams = mParametersPerPass[i]->mGeomParams->getCore();
+			else
+				(*passParameters)->mGeomParams = nullptr;
+
+			if (mParametersPerPass[i]->mHullParams != nullptr)
+				(*passParameters)->mHullParams = mParametersPerPass[i]->mHullParams->getCore();
+			else
+				(*passParameters)->mHullParams = nullptr;
+
+			if (mParametersPerPass[i]->mDomainParams != nullptr)
+				(*passParameters)->mDomainParams = mParametersPerPass[i]->mDomainParams->getCore();
+			else
+				(*passParameters)->mDomainParams = nullptr;
+
+			if (mParametersPerPass[i]->mComputeParams != nullptr)
+				(*passParameters)->mComputeParams = mParametersPerPass[i]->mComputeParams->getCore();
+			else
+				(*passParameters)->mComputeParams = nullptr;
+
+			dataPtr += sizeof(SPtr<PassParametersCore>);
+		}
+
+		SPtr<ShaderCore>* shader = new (dataPtr)SPtr<ShaderCore>();
+		if (mShader != nullptr)
+			*shader = mShader->getCore();
+		else
+			*shader = nullptr;
+
+		dataPtr += sizeof(SPtr<ShaderCore>);
+
+		SPtr<TechniqueCore>* technique = new (dataPtr)SPtr<TechniqueCore>();
+		if (mBestTechnique != nullptr)
+			*technique = mBestTechnique->getCore();
+		else
+			*technique = nullptr;
+
+		dataPtr += sizeof(SPtr<TechniqueCore>);
+
+		return CoreSyncData(buffer, size);
 	}
 
 	HMaterial Material::create()

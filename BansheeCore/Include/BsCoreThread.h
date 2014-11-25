@@ -105,11 +105,13 @@ public:
 	 */
 	BS_CORE_EXPORT FrameAlloc* getFrameAlloc() const;
 private:
+	static const int NUM_FRAME_ALLOCS = 2;
+
 	/**
 	 * @brief	Double buffered frame allocators. Means sim thread cannot be more than 1 frame ahead of core thread
 	 *			(If that changes you should be able to easily add more).
 	 */
-	FrameAlloc* mFrameAllocs[2]; 
+	FrameAlloc* mFrameAllocs[NUM_FRAME_ALLOCS];
 	UINT32 mActiveFrameAlloc;
 
 	static BS_THREADLOCAL AccessorContainer* mAccessor;

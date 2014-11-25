@@ -28,27 +28,14 @@ namespace BansheeEngine
 	}
 
 	template<bool Core>
-	TTechnique<Core>::TTechnique(const String& renderSystem, const String& renderer)
-		:TechniqueBase(renderSystem, renderer)
+	TTechnique<Core>::TTechnique(const String& renderSystem, const String& renderer, const Vector<SPtr<PassType>>& passes)
+		: TechniqueBase(renderSystem, renderer), mPasses(passes)
 	{ }
 
 	template<bool Core>
-	void TTechnique<Core>::removePass(UINT32 idx)
-	{
-		if (idx < 0 || idx >= (UINT32)mPasses.size())
-			BS_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx));
-
-		int count = 0;
-		auto iter = mPasses.begin();
-		while (count != idx)
-		{
-			++count;
-			++iter;
-		}
-
-		mPasses.erase(iter);
-		_markCoreDirty();
-	}
+	TTechnique<Core>::TTechnique()
+		: TechniqueBase("", "")
+	{ }
 
 	template<bool Core>
 	SPtr<typename TTechnique<Core>::PassType> TTechnique<Core>::getPass(UINT32 idx) const
@@ -62,43 +49,13 @@ namespace BansheeEngine
 	template class TTechnique < false > ;
 	template class TTechnique < true >;
 
-	TechniqueCore::TechniqueCore(const String& renderSystem, const String& renderer)
-		:TTechnique(renderSystem, renderer)
+	TechniqueCore::TechniqueCore(const String& renderSystem, const String& renderer, const Vector<SPtr<PassCore>>& passes)
+		:TTechnique(renderSystem, renderer, passes)
 	{ }
 
-	SPtr<PassCore> TechniqueCore::addPass()
+	SPtr<TechniqueCore> TechniqueCore::create(const String& renderSystem, const String& renderer, const Vector<SPtr<PassCore>>& passes)
 	{
-		SPtr<PassCore> newPass = PassCore::create();
-
-		mPasses.push_back(newPass);
-		_markCoreDirty();
-
-		return newPass;
-	}
-
-	void TechniqueCore::syncToCore(const CoreSyncData& data)
-	{
-		UINT8* buffer = data.getBuffer();
-
-		UINT32 numElements = 0;
-		memcpy(&numElements, buffer, sizeof(UINT32));
-		buffer += sizeof(UINT32);
-
-		mPasses.clear();
-		for (UINT32 i = 0; i < numElements; i++)
-		{
-			SPtr<PassCore>* pass = (SPtr<PassCore>*)buffer;
-
-			mPasses.push_back(*pass);
-			buffer += sizeof(SPtr<PassCore>);
-
-			pass->~SPtr<PassCore>();
-		}
-	}
-
-	SPtr<TechniqueCore> TechniqueCore::create(const String& renderSystem, const String& renderer)
-	{
-		TechniqueCore* technique = new (bs_alloc<TechniqueCore>()) TechniqueCore(renderSystem, renderer);
+		TechniqueCore* technique = new (bs_alloc<TechniqueCore>()) TechniqueCore(renderSystem, renderer, passes);
 		SPtr<TechniqueCore> techniquePtr = bs_shared_ptr<TechniqueCore, GenAlloc>(technique);
 		techniquePtr->_setThisPtr(techniquePtr);
 		techniquePtr->initialize();
@@ -106,23 +63,13 @@ namespace BansheeEngine
 		return techniquePtr;
 	}
 
-	Technique::Technique(const String& renderSystem, const String& renderer)
-		:TTechnique(renderSystem, renderer)
+	Technique::Technique(const String& renderSystem, const String& renderer, const Vector<SPtr<Pass>>& passes)
+		:TTechnique(renderSystem, renderer, passes)
 	{ }
 
 	Technique::Technique()
-		: TTechnique("", "")
+		: TTechnique()
 	{ }
-
-	SPtr<Pass> Technique::addPass()
-	{
-		SPtr<Pass> newPass = Pass::create();
-
-		mPasses.push_back(newPass);
-		_markCoreDirty();
-
-		return newPass;
-	}
 
 	SPtr<TechniqueCore> Technique::getCore() const
 	{
@@ -131,47 +78,20 @@ namespace BansheeEngine
 
 	SPtr<CoreObjectCore> Technique::createCore() const
 	{
-		TechniqueCore* technique = new (bs_alloc<TechniqueCore>()) TechniqueCore(mRenderSystem, mRenderer);
+		Vector<SPtr<PassCore>> passes;
+		for (auto& pass : mPasses)
+			passes.push_back(pass->getCore());
+
+		TechniqueCore* technique = new (bs_alloc<TechniqueCore>()) TechniqueCore(mRenderSystem, mRenderer, passes);
 		SPtr<TechniqueCore> techniquePtr = bs_shared_ptr<TechniqueCore, GenAlloc>(technique);
 		techniquePtr->_setThisPtr(techniquePtr);
 
 		return techniquePtr;
 	}
 
-	void Technique::_markCoreDirty()
+	TechniquePtr Technique::create(const String& renderSystem, const String& renderer, const Vector<SPtr<Pass>>& passes)
 	{
-		markCoreDirty();
-	}
-
-	CoreSyncData Technique::syncToCore(FrameAlloc* alloc)
-	{
-		UINT32 numElements = (UINT32)mPasses.size();
-
-		UINT32 size = sizeof(UINT32) + sizeof(SPtr<PassCore>) * numElements;
-		UINT8* data = alloc->alloc(size);
-
-		UINT8* dataPtr = data;
-		memcpy(dataPtr, &numElements, sizeof(UINT32));
-		dataPtr += sizeof(UINT32);
-
-		for (UINT32 i = 0; i < numElements; i++)
-		{
-			SPtr<PassCore>* passPtr = new (dataPtr)SPtr<PassCore>();
-
-			if (mPasses[i] != nullptr)
-				*passPtr = mPasses[i]->getCore();
-			else
-				*passPtr = nullptr;
-
-			dataPtr += sizeof(SPtr<PassCore>);
-		}
-
-		return CoreSyncData(data, size);
-	}
-
-	TechniquePtr Technique::create(const String& renderSystem, const String& renderer)
-	{
-		Technique* technique = new (bs_alloc<Technique>()) Technique(renderSystem, renderer);
+		Technique* technique = new (bs_alloc<Technique>()) Technique(renderSystem, renderer, passes);
 		TechniquePtr techniquePtr = bs_core_ptr<Technique, GenAlloc>(technique);
 		techniquePtr->_setThisPtr(techniquePtr);
 		techniquePtr->initialize();

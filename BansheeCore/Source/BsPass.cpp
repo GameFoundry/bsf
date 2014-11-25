@@ -14,15 +14,25 @@ namespace BansheeEngine
 	template<bool Core>
 	TPass<Core>::TPass()
 	{
-		mData.mStencilRefValue = 0;
+		mData.stencilRefValue = 0;
+	}
+
+	template<bool Core>
+	TPass<Core>::TPass(const PassDescType& data)
+		:mData(data)
+	{
+
 	}
 
 	template<bool Core>
 	bool TPass<Core>::hasBlending() const 
 	{ 
+		if (!mData.blendState)
+			return false;
+
 		bool transparent = false;
 
-		const BlendProperties& bsProps = mData.mBlendState->getProperties();
+		const BlendProperties& bsProps = mData.blendState->getProperties();
 		for (UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
 		{
 			// Transparent if destination color is taken into account
@@ -42,50 +52,23 @@ namespace BansheeEngine
 	template class TPass < false > ;
 	template class TPass < true >;
 
-	void PassCore::syncToCore(const CoreSyncData& data)
+	PassCore::PassCore(const PASS_DESC_CORE& desc)
+		:TPass(desc)
+	{ }
+
+	SPtr<PassCore> PassCore::create(const PASS_DESC_CORE& desc)
 	{
-		UINT8* buffer = data.getBuffer();
-
-		SPtr<BlendStateCore>* blendState = (SPtr<BlendStateCore>*)buffer;
-		mData.mBlendState = *blendState;
-		blendState->~SPtr<BlendStateCore>();
-		buffer += sizeof(SPtr<BlendStateCore>);
-
-		SPtr<RasterizerStateCore>* rasterizerState = (SPtr<RasterizerStateCore>*)buffer;
-		mData.mRasterizerState = *rasterizerState;
-		rasterizerState->~SPtr<RasterizerStateCore>();
-		buffer += sizeof(SPtr<RasterizerStateCore>);
-
-		SPtr<DepthStencilStateCore>* depthStencilState = (SPtr<DepthStencilStateCore>*)buffer;
-		mData.mDepthStencilState = *depthStencilState;
-		depthStencilState->~SPtr<DepthStencilStateCore>();
-		buffer += sizeof(SPtr<DepthStencilStateCore>);
-
-		memcpy(&mData.mStencilRefValue, buffer, sizeof(UINT32));
-		buffer += sizeof(UINT32);
-
-		SPtr<GpuProgramCore>* allPrograms[6] = { &mData.mVertexProgram, &mData.mFragmentProgram, &mData.mGeometryProgram,
-			&mData.mHullProgram, &mData.mDomainProgram, &mData.mComputeProgram };
-
-		UINT32 numPrograms = sizeof(allPrograms) / sizeof(HGpuProgram*);
-		for (UINT32 i = 0; i < numPrograms; i++)
-		{
-			SPtr<GpuProgramCore>* gpuProgram = (SPtr<GpuProgramCore>*)buffer;
-			*allPrograms[i] = *gpuProgram;
-			gpuProgram->~SPtr<GpuProgramCore>();
-			buffer += sizeof(SPtr<GpuProgramCore>);
-		}
-	}
-
-	SPtr<PassCore> PassCore::create()
-	{
-		PassCore* newPass = new (bs_alloc<PassCore>()) PassCore();
+		PassCore* newPass = new (bs_alloc<PassCore>()) PassCore(desc);
 		SPtr<PassCore> newPassPtr = bs_shared_ptr<PassCore, GenAlloc>(newPass);
 		newPassPtr->_setThisPtr(newPassPtr);
 		newPassPtr->initialize();
 
 		return newPassPtr;
 	}
+
+	Pass::Pass(const PASS_DESC& desc)
+		:TPass(desc)
+	{ }
 
 	SPtr<PassCore> Pass::getCore() const
 	{
@@ -94,77 +77,33 @@ namespace BansheeEngine
 
 	SPtr<CoreObjectCore> Pass::createCore() const
 	{
-		PassCore* pass = new (bs_alloc<PassCore>()) PassCore();
+		PASS_DESC_CORE desc;
+		desc.blendState = mData.blendState.isLoaded() ? mData.blendState->getCore() : nullptr;
+		desc.rasterizerState = mData.rasterizerState.isLoaded() ? mData.rasterizerState->getCore() : nullptr;
+		desc.depthStencilState = mData.depthStencilState.isLoaded() ? mData.depthStencilState->getCore() : nullptr;
+		desc.stencilRefValue = mData.stencilRefValue;
+		desc.vertexProgram = mData.vertexProgram != nullptr ? mData.vertexProgram->getCore() : nullptr;
+		desc.fragmentProgram = mData.fragmentProgram != nullptr ? mData.fragmentProgram->getCore() : nullptr;
+		desc.geometryProgram = mData.geometryProgram != nullptr ? mData.geometryProgram->getCore() : nullptr;
+		desc.hullProgram = mData.hullProgram != nullptr ? mData.hullProgram->getCore() : nullptr;
+		desc.domainProgram = mData.domainProgram != nullptr ? mData.domainProgram->getCore() : nullptr;
+		desc.hullProgram = mData.hullProgram != nullptr ? mData.hullProgram->getCore() : nullptr;
+
+		PassCore* pass = new (bs_alloc<PassCore>()) PassCore(desc);
 		SPtr<PassCore> passPtr = bs_shared_ptr<PassCore, GenAlloc>(pass);
 		passPtr->_setThisPtr(passPtr);
 
 		return passPtr;
 	}
 
-	void Pass::_markCoreDirty()
+	PassPtr Pass::create(const PASS_DESC& desc)
 	{
-		markCoreDirty();
-	}
+		Pass* newPass = new (bs_alloc<Pass>()) Pass(desc);
+		PassPtr newPassPtr = bs_core_ptr<Pass, GenAlloc>(newPass);
+		newPassPtr->_setThisPtr(newPassPtr);
+		newPassPtr->initialize();
 
-	CoreSyncData Pass::syncToCore(FrameAlloc* alloc)
-	{
-		UINT32 size = sizeof(SPtr<BlendStateCore>) + sizeof(SPtr<RasterizerStateCore>) + 
-			sizeof(SPtr<DepthStencilStateCore>) + sizeof(SPtr<GpuProgramCore>) * 6 + sizeof(UINT32);
-
-		UINT8* data = alloc->alloc(size);
-		UINT8* dataPtr = data;
-
-		SPtr<BlendStateCore>* blendState = new (dataPtr)SPtr<BlendStateCore>();
-		dataPtr += sizeof(SPtr<BlendStateCore>);
-
-		if (mData.mBlendState != nullptr)
-			*blendState = mData.mBlendState->getCore();
-		else
-			*blendState = nullptr;
-
-		SPtr<RasterizerStateCore>* rasterizerState = new (dataPtr)SPtr<RasterizerStateCore>();
-		dataPtr += sizeof(SPtr<RasterizerStateCore>);
-
-		if (mData.mRasterizerState != nullptr)
-			*rasterizerState = mData.mRasterizerState->getCore();
-		else
-			*rasterizerState = nullptr;
-
-		SPtr<DepthStencilStateCore>* depthStencilState = new (dataPtr)SPtr<DepthStencilStateCore>();
-		dataPtr += sizeof(SPtr<DepthStencilStateCore>);
-
-		if (mData.mDepthStencilState != nullptr)
-			*depthStencilState = mData.mDepthStencilState->getCore();
-		else
-			*depthStencilState = nullptr;
-
-		memcpy(dataPtr, &mData.mStencilRefValue, sizeof(UINT32));
-		dataPtr += sizeof(UINT32);
-
-		HGpuProgram* allPrograms[6] = { &mData.mVertexProgram, &mData.mFragmentProgram, &mData.mGeometryProgram,
-			&mData.mHullProgram, &mData.mDomainProgram, &mData.mComputeProgram };
-
-		UINT32 numPrograms = sizeof(allPrograms) / sizeof(HGpuProgram*);
-		for (UINT32 i = 0; i < numPrograms; i++)
-		{
-			SPtr<GpuProgramCore>* gpuProgram = new (dataPtr)SPtr<GpuProgramCore>();
-			dataPtr += sizeof(SPtr<GpuProgramCore>);
-
-			if (*allPrograms[i] != nullptr)
-				*gpuProgram = (*allPrograms[i])->getCore();
-			else
-				*gpuProgram = nullptr;
-		}
-
-		return CoreSyncData(data, size);
-	}
-
-	PassPtr Pass::create()
-	{
-		PassPtr newPass = createEmpty();
-		newPass->initialize();
-
-		return newPass;
+		return newPassPtr;
 	}
 
 	PassPtr Pass::createEmpty()

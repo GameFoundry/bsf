@@ -16,8 +16,11 @@ namespace BansheeEngine
 		, mSyncedCoreAccessor(nullptr)
 		, mActiveFrameAlloc(0)
 	{
-		mFrameAllocs[0] = bs_new<FrameAlloc>();
-		mFrameAllocs[1] = bs_new<FrameAlloc>();
+		for (UINT32 i = 0; i < NUM_FRAME_ALLOCS; i++)
+		{
+			mFrameAllocs[i] = bs_new<FrameAlloc>();
+			mFrameAllocs[i]->setOwnerThread(BS_THREAD_CURRENT_ID); // Sim thread
+		}
 
 		mCoreThreadId = BS_THREAD_CURRENT_ID;
 		mCommandQueue = bs_new<CommandQueue<CommandQueueSync>>(BS_THREAD_CURRENT_ID);
@@ -47,8 +50,11 @@ namespace BansheeEngine
 			mCommandQueue = nullptr;
 		}
 
-		bs_delete(mFrameAllocs[0]);
-		bs_delete(mFrameAllocs[1]);
+		for (UINT32 i = 0; i < NUM_FRAME_ALLOCS; i++)
+		{
+			mFrameAllocs[i]->setOwnerThread(BS_THREAD_CURRENT_ID); // Sim thread
+			bs_delete(mFrameAllocs[i]);
+		}
 	}
 
 	void CoreThread::initCoreThread()
@@ -214,7 +220,11 @@ namespace BansheeEngine
 
 	void CoreThread::update()
 	{
+		for (UINT32 i = 0; i < NUM_FRAME_ALLOCS; i++)
+			mFrameAllocs[i]->setOwnerThread(mCoreThreadId);
+
 		mActiveFrameAlloc = (mActiveFrameAlloc + 1) % 2;
+		mFrameAllocs[mActiveFrameAlloc]->setOwnerThread(BS_THREAD_CURRENT_ID); // Sim thread
 		mFrameAllocs[mActiveFrameAlloc]->clear();
 	}
 

@@ -28,10 +28,6 @@ namespace BansheeEngine
 		bool isSupported() const;
 
 	protected:
-		/**
-		 * @copydoc	CoreObject::markCoreDirty
-		 */
-		virtual void _markCoreDirty() { }
 
 		String mRenderSystem;
 		String mRenderer;
@@ -53,13 +49,9 @@ namespace BansheeEngine
 
 		typedef typename TPassType<Core>::Type PassType;
 		
-		TTechnique(const String& renderSystem, const String& renderer);
+		TTechnique();
+		TTechnique(const String& renderSystem, const String& renderer, const Vector<SPtr<PassType>>& passes);
 		virtual ~TTechnique() { }
-
-		/**
-		 * @brief	Removes a pass with the specified index.
-		 */
-		void removePass(UINT32 idx);
 
 		/**
 		 * @brief	Returns a pass with the specified index.
@@ -83,28 +75,12 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT TechniqueCore : public CoreObjectCore, public TTechnique<true>
 	{
 	public:
-		TechniqueCore(const String& renderSystem, const String& renderer);
-
-		/**
-		 * @brief	Registers a new pass with the technique. It's up to the caller
-		 *			to register GPU programs in the returned pass.
-		 *
-		 * @note	Passes added first will be executed first when rendering.
-		 */
-		SPtr<PassCore> addPass();
+		TechniqueCore(const String& renderSystem, const String& renderer, const Vector<SPtr<PassCore>>& passes);
 
 		/**
 		 * @brief	Creates a new technique.
 		 */
-		static SPtr<TechniqueCore> create(const String& renderSystem, const String& renderer);
-
-	protected:
-		friend class ShaderCore;
-
-		/**
-		 * @copydoc	CoreObjectCore::syncToCore
-		 */
-		void syncToCore(const CoreSyncData& data);
+		static SPtr<TechniqueCore> create(const String& renderSystem, const String& renderer, const Vector<SPtr<PassCore>>& passes);
 	};
 
 	/**
@@ -115,15 +91,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT Technique : public IReflectable, public CoreObject, public TTechnique<false>
 	{
 	public:
-		Technique(const String& renderSystem, const String& renderer);
-
-		/**
-		 * @brief	Registers a new pass with the technique. It's up to the caller
-		 *			to register GPU programs in the returned pass.
-		 *
-		 * @note	Passes added first will be executed first when rendering.
-		 */
-		SPtr<Pass> addPass();
+		Technique(const String& renderSystem, const String& renderer, const Vector<SPtr<Pass>>& passes);
 
 		/**
 		 * @brief	Retrieves an implementation of a technique usable only from the
@@ -134,23 +102,13 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates a new technique.
 		 */
-		static TechniquePtr create(const String& renderSystem, const String& renderer);
+		static TechniquePtr create(const String& renderSystem, const String& renderer, const Vector<SPtr<Pass>>& passes);
 
 	protected:
 		/**
 		 * @copydoc	CoreObject::createCore
 		 */
 		SPtr<CoreObjectCore> createCore() const;
-
-		/**
-		 * @copydoc	CoreObject::markCoreDirty
-		 */
-		void _markCoreDirty();
-
-		/**
-		 * @copydoc	CoreObject::syncToCore
-		 */
-		CoreSyncData syncToCore(FrameAlloc* allocator);
 
 		/**
 		 * @brief	Creates a new technique but doesn't initialize it.

@@ -1,7 +1,9 @@
 #include "BsCoreObject.h"
+#include "BsCoreObjectCore.h"
 #include "BsCoreThread.h"
 #include "BsCoreObjectManager.h"
 #include "BsCoreThreadAccessor.h"
+#include "BsFrameAlloc.h"
 #include "BsDebug.h"
 
 using namespace std::placeholders;
@@ -45,17 +47,17 @@ namespace BansheeEngine
 			setScheduledToBeDeleted(true);
 
 			if(BS_THREAD_CURRENT_ID == CoreThread::instance().getCoreThreadId())
-				mThis.lock()->destroy_internal();
+				mThis.lock()->destroyCore();
 			else
 				queueDestroyGpuCommand(mThis.lock());
 		}
 		else
 		{
-			destroy_internal();
+			destroyCore();
 		}
 	}
 
-	void CoreObject::destroy_internal()
+	void CoreObject::destroyCore()
 	{
 #if BS_DEBUG_MODE
 		if(!isInitialized())
@@ -81,17 +83,17 @@ namespace BansheeEngine
 			setScheduledToBeInitialized(true);
 
 			if(BS_THREAD_CURRENT_ID == CoreThread::instance().getCoreThreadId())
-				mThis.lock()->initialize_internal();
+				mThis.lock()->initializeCore();
 			else
 				queueInitializeGpuCommand(mThis.lock());
 		}
 		else
 		{
-			initialize_internal();
+			initializeCore();
 		}
 	}
 
-	void CoreObject::initialize_internal()
+	void CoreObject::initializeCore()
 	{
 		if (mCoreSpecific != nullptr)
 			mCoreSpecific->initialize();
@@ -140,6 +142,43 @@ namespace BansheeEngine
 		}
 	}
 
+	void CoreObject::syncToCore(CoreAccessor& accessor)
+	{
+		if (!isCoreDirty())
+			return;
+
+		SPtr<CoreObjectCore> destObj = getCore();
+		if (destObj == nullptr)
+			return;
+
+		struct IndividualCoreSyncData
+		{
+			SPtr<CoreObjectCore> destination;
+			CoreSyncData syncData;
+			FrameAlloc* allocator;
+		};
+
+		IndividualCoreSyncData data;
+		data.allocator = gCoreThread().getFrameAlloc();
+		data.destination = destObj;
+		data.syncData = syncToCore(data.allocator);
+
+		std::function<void(const IndividualCoreSyncData&)> callback =
+			[](const IndividualCoreSyncData& data)
+		{
+			data.destination->syncToCore(data.syncData);
+
+			UINT8* dataPtr = data.syncData.getBuffer();
+
+			if (dataPtr != nullptr)
+				data.allocator->dealloc(dataPtr);
+		};
+
+		accessor.queueCommand(std::bind(callback, data));
+
+		markCoreClean();
+	}
+
 	void CoreObject::_setThisPtr(std::shared_ptr<CoreObject> ptrThis)
 	{
 		mThis = ptrThis;
@@ -184,14 +223,14 @@ namespace BansheeEngine
 
 	void CoreObject::queueInitializeGpuCommand(std::shared_ptr<CoreObject>& obj)
 	{
-		std::function<void()> func = std::bind(&CoreObject::initialize_internal, obj.get());
+		std::function<void()> func = std::bind(&CoreObject::initializeCore, obj.get());
 
 		CoreThread::instance().queueCommand(std::bind(&CoreObject::executeGpuCommand, obj, func));
 	}
 
 	void CoreObject::queueDestroyGpuCommand(std::shared_ptr<CoreObject>& obj)
 	{
-		std::function<void()> func = std::bind(&CoreObject::destroy_internal, obj.get());
+		std::function<void()> func = std::bind(&CoreObject::destroyCore, obj.get());
 
 		gCoreAccessor().queueCommand(std::bind(&CoreObject::executeGpuCommand, obj, func));
 	}

@@ -249,34 +249,33 @@ namespace BansheeEngine
 		gResources().unload(mFragProgRef);
 		mFragProgRef = gResources().load<GpuProgram>(L"C:\\fragProgCg.vprog");
 
-		mTestShader = Shader::create("TestShader");
-		mTestShader->addParameter("matWorldViewProj", "matWorldViewProj", GPDT_MATRIX_4X4, RPS_WorldViewProjTfrm);
+		PASS_DESC passDesc;
+		passDesc.vertexProgram = mVertProgRef;
+		passDesc.fragmentProgram = mFragProgRef;
 
-		mTestShader->addParameter("samp", "samp", GPOT_SAMPLER2D);
-		mTestShader->addParameter("tex", "tex", GPOT_TEXTURE2D);
-
-		mTestShader->setParamBlockAttribs("PerObject", true, GPBU_DYNAMIC, RBS_PerObject);
-
-		mNewTechniqueGL = mTestShader->addTechnique("GLRenderSystem", "BansheeRenderer");
-		mNewPassGL = mNewTechniqueGL->addPass();
-		mNewPassGL->setVertexProgram(mVertProgRef);
-		mNewPassGL->setFragmentProgram(mFragProgRef);
+		mNewPassGL = Pass::create(passDesc);
+		mNewTechniqueGL = Technique::create("GLRenderSystem", "BansheeRenderer", { mNewPassGL });
 
 		// TODO - I need to create different techniques for different render systems (and renderers, if there were any),
 		// which is redundant as some techniques can be reused. I should add a functionality that supports multiple
 		// render systems/renderers per technique
-		mNewTechniqueDX = mTestShader->addTechnique("D3D9RenderSystem", "BansheeRenderer");
-		mNewPassDX = mNewTechniqueDX->addPass();
-		mNewPassDX->setVertexProgram(mVertProgRef);
-		mNewPassDX->setFragmentProgram(mFragProgRef);
+		mNewPassDX = Pass::create(passDesc);
+		mNewTechniqueDX = Technique::create("D3D9RenderSystem", "BansheeRenderer", { mNewPassDX });
 
-		mNewTechniqueDX11 = mTestShader->addTechnique("D3D11RenderSystem", "BansheeRenderer");
-		mNewPassDX11 = mNewTechniqueDX11->addPass();
-		mNewPassDX11->setVertexProgram(mVertProgRef);
-		mNewPassDX11->setFragmentProgram(mFragProgRef);
+		mNewPassDX11 = Pass::create(passDesc);
+		mNewTechniqueDX11 = Technique::create("D3D11RenderSystem", "BansheeRenderer", { mNewPassDX11 });
 
-		mTestMaterial = Material::create();
-		mTestMaterial->setShader(mTestShader);
+		SHADER_DESC shaderDesc;
+		shaderDesc.addParameter("matWorldViewProj", "matWorldViewProj", GPDT_MATRIX_4X4, RPS_WorldViewProjTfrm);
+
+		shaderDesc.addParameter("samp", "samp", GPOT_SAMPLER2D);
+		shaderDesc.addParameter("tex", "tex", GPOT_TEXTURE2D);
+
+		shaderDesc.setParamBlockAttribs("PerObject", true, GPBU_DYNAMIC, RBS_PerObject);
+
+		mTestShader = Shader::create("TestShader", shaderDesc, { mNewTechniqueGL, mNewTechniqueDX, mNewTechniqueDX11 });
+
+		mTestMaterial = Material::create(mTestShader);
 
 		mTestTexRef = static_resource_cast<Texture>(Importer::instance().import(L"..\\..\\..\\..\\Data\\Examples\\Dragon.tga"));
 		mDbgMeshRef = static_resource_cast<Mesh>(Importer::instance().import(L"..\\..\\..\\..\\Data\\Examples\\Dragon.fbx"));

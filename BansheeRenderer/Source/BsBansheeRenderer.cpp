@@ -162,7 +162,6 @@ namespace BansheeEngine
 		Vector<HSceneObject> dirtySceneObjects;
 		Vector<RenderableHandlerPtr> dirtyRenderables;
 
-		FrameAlloc* frameAlloc = gCoreThread().getFrameAlloc();
 		for (auto& renderableData : allRenderables)
 		{
 			RenderableHandlerPtr renderable = renderableData.renderable;

@@ -808,23 +808,6 @@ namespace BansheeEngine
 		HGpuProgram vsProgram = getGpuProgram(ShaderSpriteTextVSFile);
 		HGpuProgram psProgram = getGpuProgram(ShaderSpriteTextPSFile);
 
-		mShaderSpriteText = Shader::create("TextSpriteShader");
-
-		mShaderSpriteText->addParameter("worldTransform", "worldTransform", GPDT_MATRIX_4X4);
-		mShaderSpriteText->addParameter("invViewportWidth", "invViewportWidth", GPDT_FLOAT1);
-		mShaderSpriteText->addParameter("invViewportHeight", "invViewportHeight", GPDT_FLOAT1);
-
-		mShaderSpriteText->addParameter("mainTexSamp", "mainTexSamp", GPOT_SAMPLER2D);
-		mShaderSpriteText->addParameter("mainTexSamp", "mainTexture", GPOT_SAMPLER2D);
-
-		mShaderSpriteText->addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
-		mShaderSpriteText->addParameter("tint", "tint", GPDT_FLOAT4);
-
-		TechniquePtr newTechnique = mShaderSpriteText->addTechnique(mActiveRenderSystem, RendererInvariant);
-		PassPtr newPass = newTechnique->addPass();
-		newPass->setVertexProgram(vsProgram);
-		newPass->setFragmentProgram(psProgram);
-
 		BLEND_STATE_DESC desc;
 		desc.renderTargetDesc[0].blendEnable = true;
 		desc.renderTargetDesc[0].srcBlend = BF_SOURCE_ALPHA;
@@ -833,14 +816,34 @@ namespace BansheeEngine
 		desc.renderTargetDesc[0].renderTargetWriteMask = 0x7; // Don't write to alpha
 
 		HBlendState blendState = BlendState::create(desc);
-		newPass->setBlendState(blendState);
-
+		
 		DEPTH_STENCIL_STATE_DESC depthStateDesc;
 		depthStateDesc.depthReadEnable = false;
 		depthStateDesc.depthWriteEnable = false;
 
 		HDepthStencilState depthState = DepthStencilState::create(depthStateDesc);
-		newPass->setDepthStencilState(depthState);
+		
+		PASS_DESC passDesc;
+		passDesc.vertexProgram = vsProgram;
+		passDesc.fragmentProgram = psProgram;
+		passDesc.blendState = blendState;
+		passDesc.depthStencilState = depthState;
+
+		PassPtr newPass = Pass::create(passDesc);
+		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass });
+
+		SHADER_DESC shaderDesc;
+		shaderDesc.addParameter("worldTransform", "worldTransform", GPDT_MATRIX_4X4);
+		shaderDesc.addParameter("invViewportWidth", "invViewportWidth", GPDT_FLOAT1);
+		shaderDesc.addParameter("invViewportHeight", "invViewportHeight", GPDT_FLOAT1);
+
+		shaderDesc.addParameter("mainTexSamp", "mainTexSamp", GPOT_SAMPLER2D);
+		shaderDesc.addParameter("mainTexSamp", "mainTexture", GPOT_SAMPLER2D);
+
+		shaderDesc.addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
+		shaderDesc.addParameter("tint", "tint", GPDT_FLOAT4);
+
+		mShaderSpriteText = Shader::create("TextSpriteShader", shaderDesc, { newTechnique });
 	}
 
 	void BuiltinResources::initSpriteImageShader()
@@ -848,23 +851,6 @@ namespace BansheeEngine
 		HGpuProgram vsProgram = getGpuProgram(ShaderSpriteImageVSFile);
 		HGpuProgram psProgram = getGpuProgram(ShaderSpriteImagePSFile);
 
-		mShaderSpriteImage = Shader::create("ImageSpriteShader");
-
-		mShaderSpriteImage->addParameter("worldTransform", "worldTransform", GPDT_MATRIX_4X4);
-		mShaderSpriteImage->addParameter("invViewportWidth", "invViewportWidth", GPDT_FLOAT1);
-		mShaderSpriteImage->addParameter("invViewportHeight", "invViewportHeight", GPDT_FLOAT1);
-
-		mShaderSpriteImage->addParameter("mainTexSamp", "mainTexSamp", GPOT_SAMPLER2D);
-		mShaderSpriteImage->addParameter("mainTexSamp", "mainTexture", GPOT_SAMPLER2D);
-
-		mShaderSpriteImage->addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
-		mShaderSpriteImage->addParameter("tint", "tint", GPDT_FLOAT4);
-
-		TechniquePtr newTechnique = mShaderSpriteImage->addTechnique(mActiveRenderSystem, RendererInvariant);
-		PassPtr newPass = newTechnique->addPass();
-		newPass->setVertexProgram(vsProgram);
-		newPass->setFragmentProgram(psProgram);
-
 		BLEND_STATE_DESC desc;
 		desc.renderTargetDesc[0].blendEnable = true;
 		desc.renderTargetDesc[0].srcBlend = BF_SOURCE_ALPHA;
@@ -873,14 +859,34 @@ namespace BansheeEngine
 		desc.renderTargetDesc[0].renderTargetWriteMask = 0x7; // Don't write to alpha
 
 		HBlendState blendState = BlendState::create(desc);
-		newPass->setBlendState(blendState);
 
 		DEPTH_STENCIL_STATE_DESC depthStateDesc;
 		depthStateDesc.depthReadEnable = false;
 		depthStateDesc.depthWriteEnable = false;
 
 		HDepthStencilState depthState = DepthStencilState::create(depthStateDesc);
-		newPass->setDepthStencilState(depthState);
+
+		PASS_DESC passDesc;
+		passDesc.vertexProgram = vsProgram;
+		passDesc.fragmentProgram = psProgram;
+		passDesc.blendState = blendState;
+		passDesc.depthStencilState = depthState;
+
+		PassPtr newPass = Pass::create(passDesc);
+		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass });
+
+		SHADER_DESC shaderDesc;
+		shaderDesc.addParameter("worldTransform", "worldTransform", GPDT_MATRIX_4X4);
+		shaderDesc.addParameter("invViewportWidth", "invViewportWidth", GPDT_FLOAT1);
+		shaderDesc.addParameter("invViewportHeight", "invViewportHeight", GPDT_FLOAT1);
+
+		shaderDesc.addParameter("mainTexSamp", "mainTexSamp", GPOT_SAMPLER2D);
+		shaderDesc.addParameter("mainTexSamp", "mainTexture", GPOT_SAMPLER2D);
+
+		shaderDesc.addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
+		shaderDesc.addParameter("tint", "tint", GPDT_FLOAT4);
+
+		mShaderSpriteImage = Shader::create("ImageSpriteShader", shaderDesc, { newTechnique });
 	}
 
 	void BuiltinResources::initSpriteNonAlphaImageShader()
@@ -888,29 +894,32 @@ namespace BansheeEngine
 		HGpuProgram vsProgram = getGpuProgram(ShaderSpriteImageVSFile);
 		HGpuProgram psProgram = getGpuProgram(ShaderSpriteImagePSFile);
 
-		mShaderSpriteNonAlphaImage = Shader::create("NonAlphaImageSpriteShader");
-
-		mShaderSpriteNonAlphaImage->addParameter("worldTransform", "worldTransform", GPDT_MATRIX_4X4);
-		mShaderSpriteNonAlphaImage->addParameter("invViewportWidth", "invViewportWidth", GPDT_FLOAT1);
-		mShaderSpriteNonAlphaImage->addParameter("invViewportHeight", "invViewportHeight", GPDT_FLOAT1);
-
-		mShaderSpriteNonAlphaImage->addParameter("mainTexSamp", "mainTexSamp", GPOT_SAMPLER2D);
-		mShaderSpriteNonAlphaImage->addParameter("mainTexSamp", "mainTexture", GPOT_SAMPLER2D);
-
-		mShaderSpriteNonAlphaImage->addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
-		mShaderSpriteNonAlphaImage->addParameter("tint", "tint", GPDT_FLOAT4);
-
-		TechniquePtr newTechnique = mShaderSpriteNonAlphaImage->addTechnique(mActiveRenderSystem, RendererInvariant);
-		PassPtr newPass = newTechnique->addPass();
-		newPass->setVertexProgram(vsProgram);
-		newPass->setFragmentProgram(psProgram);
-
 		DEPTH_STENCIL_STATE_DESC depthStateDesc;
 		depthStateDesc.depthReadEnable = false;
 		depthStateDesc.depthWriteEnable = false;
 
 		HDepthStencilState depthState = DepthStencilState::create(depthStateDesc);
-		newPass->setDepthStencilState(depthState);
+		
+		PASS_DESC passDesc;
+		passDesc.vertexProgram = vsProgram;
+		passDesc.fragmentProgram = psProgram;
+		passDesc.depthStencilState = depthState;
+
+		PassPtr newPass = Pass::create(passDesc);
+		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass });
+
+		SHADER_DESC shaderDesc;
+		shaderDesc.addParameter("worldTransform", "worldTransform", GPDT_MATRIX_4X4);
+		shaderDesc.addParameter("invViewportWidth", "invViewportWidth", GPDT_FLOAT1);
+		shaderDesc.addParameter("invViewportHeight", "invViewportHeight", GPDT_FLOAT1);
+
+		shaderDesc.addParameter("mainTexSamp", "mainTexSamp", GPOT_SAMPLER2D);
+		shaderDesc.addParameter("mainTexSamp", "mainTexture", GPOT_SAMPLER2D);
+
+		shaderDesc.addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
+		shaderDesc.addParameter("tint", "tint", GPDT_FLOAT4);
+
+		mShaderSpriteNonAlphaImage = Shader::create("NonAlphaImageSpriteShader", shaderDesc, { newTechnique });
 	}
 
 	void BuiltinResources::initDummyShader()
@@ -918,14 +927,17 @@ namespace BansheeEngine
 		HGpuProgram vsProgram = getGpuProgram(ShaderDummyVSFile);
 		HGpuProgram psProgram = getGpuProgram(ShaderDummyPSFile);
 
-		mShaderDummy = Shader::create("DummyShader");
+		PASS_DESC passDesc;
+		passDesc.vertexProgram = vsProgram;
+		passDesc.fragmentProgram = psProgram;
 
-		mShaderDummy->addParameter("matWorldViewProj", "matWorldViewProj", GPDT_MATRIX_4X4);
+		PassPtr newPass = Pass::create(passDesc);
+		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass });
 
-		TechniquePtr newTechnique = mShaderDummy->addTechnique(mActiveRenderSystem, RendererInvariant);
-		PassPtr newPass = newTechnique->addPass();
-		newPass->setVertexProgram(vsProgram);
-		newPass->setFragmentProgram(psProgram);
+		SHADER_DESC shaderDesc;
+		shaderDesc.addParameter("matWorldViewProj", "matWorldViewProj", GPDT_MATRIX_4X4);
+
+		mShaderDummy = Shader::create("DummyShader", shaderDesc, { newTechnique });
 	}
 
 	const PixelData& BuiltinResources::getCursorArrow(Vector2I& hotSpot)

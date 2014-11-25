@@ -10,7 +10,7 @@ namespace BansheeEngine
 	 *
 	 * @see	Shader::addParameter.
 	 */
-	struct BS_CORE_EXPORT SHADER_DATA_PARAM_DESC
+	struct SHADER_DATA_PARAM_DESC
 	{
 		String name;
 		String gpuVariableName;
@@ -25,7 +25,7 @@ namespace BansheeEngine
 	 *
 	 * @see	Shader::addParameter.
 	 */
-	struct BS_CORE_EXPORT SHADER_OBJECT_PARAM_DESC
+	struct SHADER_OBJECT_PARAM_DESC
 	{
 		String name;
 		Vector<String> gpuVariableNames;
@@ -36,7 +36,7 @@ namespace BansheeEngine
 	/**
 	 * @brief Describes a shader parameter block.
 	 */
-	struct BS_CORE_EXPORT SHADER_PARAM_BLOCK_DESC
+	struct SHADER_PARAM_BLOCK_DESC
 	{
 		String name;
 		bool shared;
@@ -45,72 +45,10 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Shader represents a collection of techniques. They are used in Materials,
-	 * 			which can be considered as instances of a Shader. Multiple materials
-	 * 			may share the same shader but provide different parameters to it.
-	 * 			
-	 *			Shader will always choose the first supported technique based on the current render
-	 *			system, render manager and other properties. So make sure to add most important techniques
-	 *			first so you make sure they are used if they are supported.
+	 * @brief Structure used for initializing a shader.
 	 */
-	class BS_CORE_EXPORT ShaderBase
+	struct BS_CORE_EXPORT SHADER_DESC
 	{
-	public:
-		virtual ~ShaderBase() { }
-
-		/**
-		 * @brief	Sets sorting type to use when performing sort in the render queue. Default value is sort front to back
-		 *			which causes least overdraw and is preferable. Transparent objects need to be sorted back to front.
-		 *			You may also specify no sorting and the elements will be rendered in the order they were added to the
-		 *			render queue.
-		 */
-		void setQueueSortType(QueueSortType sortType);
-
-		/**
-		 * @brief	Sets a priority that allows you to control in what order are your shaders rendered.
-		 *			See "QueuePriority" for a list of initial values. Shaders with higher priority will be
-		 *			rendered before shaders with lower priority, and additionally render queue will only sort
-		 *			elements within the same priority group.
-		 *
-		 * @note	This is useful when you want all your opaque objects to be rendered before you start
-		 *			drawing your transparent ones. Or to render your overlays after everything else. Values
-		 *			provided in "QueuePriority" are just for general guidance and feel free to increase them
-		 *			or decrease them for finer tuning. (e.g. "QueuePriority::Opaque + 1").
-		 */
-		void setQueuePriority(UINT32 priority);
-
-		/**
-		 * @brief	Enables or disables separable passes. When separable passes are disabled
-		 *			all shader passes will be executed in a sequence one after another. If it is disabled
-		 *			the renderer is free to mix and match passes from different objects to achieve best
-		 *			performance. (They will still be executed in sequence, but some other object may
-		 *			be rendered in-between passes)
-		 *
-		 * @note	Shaders with transparency generally can't be separable, while opaque can.
-		 */
-		void setAllowSeparablePasses(bool enable);
-
-		/**
-		 * @brief	Returns currently active queue sort type.
-		 *
-		 * @see		setQueueSortType
-		 */
-		QueueSortType getQueueSortType() const { return mQueueSortType; }
-
-		/**
-		 * @brief	Returns currently active queue priority.
-		 *
-		 * @see		setQueuePriority
-		 */
-		UINT32 getQueuePriority() const { return mQueuePriority; }
-
-		/**
-		 * @brief	Returns if separable passes are allowed.
-		 *
-		 * @see		setAllowSeparablePasses
-		 */
-		bool getAllowSeparablePasses() const { return mSeparablePasses; }
-
 		/**
 		 * @brief	Registers a new data (int, Vector2, etc.) parameter you that you may then use 
 		 *			via Material by providing the parameter name. All parameters internally map to 
@@ -150,11 +88,6 @@ namespace BansheeEngine
 		void addParameter(const String& name, const String& gpuVariableName, GpuParamObjectType type, UINT32 rendererSemantic = 0);
 
 		/**
-		 * @brief	Unregister a parameter with the specified name.
-		 */
-		void removeParameter(const String& name);
-
-		/**
 		 * @brief	Changes parameters of a parameter block with the specified name.
 		 *
 		 * @param	name	Name of the parameter block. This should correspond with the name specified in the GPU program code.
@@ -170,6 +103,78 @@ namespace BansheeEngine
 		 *							 Value of 0 signifies the parameter block is not used by the renderer.
 		 */
 		void setParamBlockAttribs(const String& name, bool shared, GpuParamBlockUsage usage, UINT32 rendererSemantic = 0);
+
+		/**
+		 * @brief	sorting type to use when performing sort in the render queue. Default value is sort front to back
+		 *			which causes least overdraw and is preferable. Transparent objects need to be sorted back to front.
+		 *			You may also specify no sorting and the elements will be rendered in the order they were added to the
+		 *			render queue.
+		 */
+		QueueSortType queueSortType;
+
+		/**
+		 * @brief	Priority that allows you to control in what order are your shaders rendered.
+		 *			See "QueuePriority" for a list of initial values. Shaders with higher priority will be
+		 *			rendered before shaders with lower priority, and additionally render queue will only sort
+		 *			elements within the same priority group.
+		 *
+		 * @note	This is useful when you want all your opaque objects to be rendered before you start
+		 *			drawing your transparent ones. Or to render your overlays after everything else. Values
+		 *			provided in "QueuePriority" are just for general guidance and feel free to increase them
+		 *			or decrease them for finer tuning. (e.g. "QueuePriority::Opaque + 1").
+		 */
+		UINT32 queuePriority;
+
+		/**
+		 * @brief	Enables or disables separable passes. When separable passes are disabled
+		 *			all shader passes will be executed in a sequence one after another. If it is disabled
+		 *			the renderer is free to mix and match passes from different objects to achieve best
+		 *			performance. (They will still be executed in sequence, but some other object may
+		 *			be rendered in-between passes)
+		 *
+		 * @note	Shaders with transparency generally can't be separable, while opaque can.
+		 */
+		bool separablePasses;
+
+		Map<String, SHADER_DATA_PARAM_DESC> dataParams;
+		Map<String, SHADER_OBJECT_PARAM_DESC> objectParams;
+		Map<String, SHADER_PARAM_BLOCK_DESC> paramBlocks;
+	};
+
+	/**
+	 * @brief	Shader represents a collection of techniques. They are used in Materials,
+	 * 			which can be considered as instances of a Shader. Multiple materials
+	 * 			may share the same shader but provide different parameters to it.
+	 * 			
+	 *			Shader will always choose the first supported technique based on the current render
+	 *			system, render manager and other properties. So make sure to add most important techniques
+	 *			first so you make sure they are used if they are supported.
+	 */
+	class BS_CORE_EXPORT ShaderBase
+	{
+	public:
+		virtual ~ShaderBase() { }
+
+		/**
+		 * @brief	Returns currently active queue sort type.
+		 *
+		 * @see		SHADER_DESC::queueSortType
+		 */
+		QueueSortType getQueueSortType() const { return mDesc.queueSortType; }
+
+		/**
+		 * @brief	Returns currently active queue priority.
+		 *
+		 * @see		SHADER_DESC::queuePriority
+		 */
+		UINT32 getQueuePriority() const { return mDesc.queuePriority; }
+
+		/**
+		 * @brief	Returns if separable passes are allowed.
+		 *
+		 * @see		SHADER_DESC::separablePasses
+		 */
+		bool getAllowSeparablePasses() const { return mDesc.separablePasses; }
 
 		/**
 		 * @brief	Returns type of the parameter with the specified name. Throws exception if
@@ -202,35 +207,24 @@ namespace BansheeEngine
 		/** 
 		 * @brief	Returns a map of all data parameters in the shader.
 		 */
-		const Map<String, SHADER_DATA_PARAM_DESC>& getDataParams() const { return mDataParams; }
+		const Map<String, SHADER_DATA_PARAM_DESC>& getDataParams() const { return mDesc.dataParams; }
 
 		/** 
 		 * @brief	Returns a map of all object parameters in the shader. 
 		 */
-		const Map<String, SHADER_OBJECT_PARAM_DESC>& getObjectParams() const { return mObjectParams; }
+		const Map<String, SHADER_OBJECT_PARAM_DESC>& getObjectParams() const { return mDesc.objectParams; }
 
 		/** 
 		 * @brief	Returns a map of all parameter blocks.
 		 */
-		const Map<String, SHADER_PARAM_BLOCK_DESC>& getParamBlocks() const { return mParamBlocks; }
+		const Map<String, SHADER_PARAM_BLOCK_DESC>& getParamBlocks() const { return mDesc.paramBlocks; }
 
 	protected:
-		ShaderBase(const String& name);
-
-		/**
-		 * @copydoc	CoreObject::markCoreDirty
-		 */
-		virtual void _markCoreDirty() { }
-
-		QueueSortType mQueueSortType;
-		UINT32 mQueuePriority;
-		bool mSeparablePasses;
-		
-		Map<String, SHADER_DATA_PARAM_DESC> mDataParams;
-		Map<String, SHADER_OBJECT_PARAM_DESC> mObjectParams;
-		Map<String, SHADER_PARAM_BLOCK_DESC> mParamBlocks;
+		ShaderBase() { }
+		ShaderBase(const String& name, const SHADER_DESC& desc);
 
 		String mName;
+		SHADER_DESC mDesc;
 	};
 
 	/**
@@ -249,19 +243,10 @@ namespace BansheeEngine
 
 		typedef typename TTechniqueType<Core>::Type TechniqueType;
 
-		TShader(const String& name);
+		TShader() { }
+		TShader(const String& name, const SHADER_DESC& desc, const Vector<SPtr<TechniqueType>>& techniques);
 		virtual ~TShader();
 	
-		/**
-		 * @brief	Removes a technique at the specified index.
-		 */
-		void removeTechnique(UINT32 idx);
-
-		/**
-		 * @brief	Removes the specified technique.
-		 */
-		void removeTechnique(SPtr<TechniqueType> technique);
-
 		/**
 		 * @brief	Returns the total number of techniques in this shader.
 		 */
@@ -284,26 +269,14 @@ namespace BansheeEngine
 	{
 	public:
 		/**
-		 * @brief	Adds a new technique that supports the provided render system
-		 *			and renderer to the shader. It's up to the caller to populate the
-		 *			returned object with valid data.
-		 */
-		SPtr<TechniqueCore> addTechnique(const String& renderSystem, const String& renderer);
-
-		/**
 		 * @copydoc	Shader::create
 		 */
-		static SPtr<ShaderCore> create(const String& name);
+		static SPtr<ShaderCore> create(const String& name, const SHADER_DESC& desc, const Vector<SPtr<TechniqueCore>>& techniques);
 
 	protected:
 		friend class Shader;
 
-		ShaderCore(const String& name);
-
-		/**
-		 * @copydoc	CoreObjectCore::syncToCore
-		 */
-		void syncToCore(const CoreSyncData& data);
+		ShaderCore(const String& name, const SHADER_DESC& desc, const Vector<SPtr<TechniqueCore>>& techniques);
 	};
 
 	/**
@@ -318,13 +291,6 @@ namespace BansheeEngine
 		 */
 		SPtr<ShaderCore> getCore() const;
 
-		/**
-		 * @brief	Adds a new technique that supports the provided render system
-		 *			and renderer to the shader. It's up to the caller to populate the
-		 *			returned object with valid data.
-		 */
-		SPtr<Technique> addTechnique(const String& renderSystem, const String& renderer);
-
 		static bool isSampler(GpuParamObjectType type);
 		static bool isTexture(GpuParamObjectType type);
 		static bool isBuffer(GpuParamObjectType type);
@@ -333,31 +299,27 @@ namespace BansheeEngine
 		 * @brief	Returns an empty shader object with the specified name. Caller must register
 		 *			techniques with the shader before using it in a Material.
 		 */
-		static ShaderPtr create(const String& name);
+		static ShaderPtr create(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques);
+
+		/**
+		 * @brief	Returns a shader object but doesn't initialize it.
+		 */
+		static ShaderPtr createEmpty();
 
 	private:
-		Shader(const String& name);
+		Shader(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques);
 
 		/**
 		 * @copydoc	CoreObject::createCore
 		 */
 		SPtr<CoreObjectCore> createCore() const;
 
-		/**
-		 * @copydoc	CoreObject::markCoreDirty
-		 */
-		void _markCoreDirty();
-
-		/**
-		 * @copydoc	CoreObject::syncToCore
-		 */
-		CoreSyncData syncToCore(FrameAlloc* allocator);
-
 	private:
 		/************************************************************************/
 		/* 								RTTI		                     		*/
 		/************************************************************************/
-		
+		Shader() { }
+
 	public:
 		friend class ShaderRTTI;
 		static RTTITypeBase* getRTTIStatic();

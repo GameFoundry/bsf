@@ -168,48 +168,48 @@ namespace BansheeEngine
 
 		SHADER_DATA_PARAM_DESC& getDataParam(Shader* obj, UINT32 idx) 
 		{ 
-			auto iter = obj->mDataParams.begin();
+			auto iter = obj->mDesc.dataParams.begin();
 			for(UINT32 i = 0; i < idx; i++) ++iter;
 
 			return iter->second; 
 		}
 
-		void setDataParam(Shader* obj, UINT32 idx, SHADER_DATA_PARAM_DESC& val) { obj->mDataParams[val.name] = val; }
-		UINT32 getDataParamsArraySize(Shader* obj) { return (UINT32)obj->mDataParams.size(); }
+		void setDataParam(Shader* obj, UINT32 idx, SHADER_DATA_PARAM_DESC& val) { obj->mDesc.dataParams[val.name] = val; }
+		UINT32 getDataParamsArraySize(Shader* obj) { return (UINT32)obj->mDesc.dataParams.size(); }
 		void setDataParamsArraySize(Shader* obj, UINT32 size) {  } // Do nothing
 
 		SHADER_OBJECT_PARAM_DESC& getObjectParam(Shader* obj, UINT32 idx) 
 		{ 
-			auto iter = obj->mObjectParams.begin();
+			auto iter = obj->mDesc.objectParams.begin();
 			for(UINT32 i = 0; i < idx; i++) ++iter;
 
 			return iter->second; 
 		}
 
-		void setObjectParam(Shader* obj, UINT32 idx, SHADER_OBJECT_PARAM_DESC& val) { obj->mObjectParams[val.name] = val; }
-		UINT32 getObjectParamsArraySize(Shader* obj) { return (UINT32)obj->mObjectParams.size(); }
+		void setObjectParam(Shader* obj, UINT32 idx, SHADER_OBJECT_PARAM_DESC& val) { obj->mDesc.objectParams[val.name] = val; }
+		UINT32 getObjectParamsArraySize(Shader* obj) { return (UINT32)obj->mDesc.objectParams.size(); }
 		void setObjectParamsArraySize(Shader* obj, UINT32 size) {  } // Do nothing
 
 		SHADER_PARAM_BLOCK_DESC& getParamBlock(Shader* obj, UINT32 idx) 
 		{ 
-			auto iter = obj->mParamBlocks.begin();
+			auto iter = obj->mDesc.paramBlocks.begin();
 			for(UINT32 i = 0; i < idx; i++) ++iter;
 
 			return iter->second; 
 		}
 
-		void setParamBlock(Shader* obj, UINT32 idx, SHADER_PARAM_BLOCK_DESC& val) { obj->mParamBlocks[val.name] = val; }
-		UINT32 getParamBlocksArraySize(Shader* obj) { return (UINT32)obj->mParamBlocks.size(); }
+		void setParamBlock(Shader* obj, UINT32 idx, SHADER_PARAM_BLOCK_DESC& val) { obj->mDesc.paramBlocks[val.name] = val; }
+		UINT32 getParamBlocksArraySize(Shader* obj) { return (UINT32)obj->mDesc.paramBlocks.size(); }
 		void setParamBlocksArraySize(Shader* obj, UINT32 size) {  } // Do nothing
 
-		UINT32& getQueueSortType(Shader* obj) { return (UINT32&)obj->mQueueSortType; }
-		void setQueueSortType(Shader* obj, UINT32& value) { obj->mQueueSortType = (QueueSortType)value; }
+		UINT32& getQueueSortType(Shader* obj) { return (UINT32&)obj->mDesc.queueSortType; }
+		void setQueueSortType(Shader* obj, UINT32& value) { obj->mDesc.queueSortType = (QueueSortType)value; }
 
-		UINT32& getQueuePriority(Shader* obj) { return obj->mQueuePriority; }
-		void setQueuePriority(Shader* obj, UINT32& value) { obj->mQueuePriority = value; }
+		UINT32& getQueuePriority(Shader* obj) { return obj->mDesc.queuePriority; }
+		void setQueuePriority(Shader* obj, UINT32& value) { obj->mDesc.queuePriority = value; }
 
-		bool& getAllowSeparablePasses(Shader* obj) { return obj->mSeparablePasses; }
-		void setAllowSeparablePasses(Shader* obj, bool& value) { obj->mSeparablePasses = value; }
+		bool& getAllowSeparablePasses(Shader* obj) { return obj->mDesc.separablePasses; }
+		void setAllowSeparablePasses(Shader* obj, bool& value) { obj->mDesc.separablePasses = value; }
 
 
 	public:
@@ -231,6 +231,12 @@ namespace BansheeEngine
 			addPlainField("mSeparablePasses", 7, &ShaderRTTI::getAllowSeparablePasses, &ShaderRTTI::setAllowSeparablePasses);
 		}
 
+		virtual void onDeserializationEnded(IReflectable* obj)
+		{
+			Shader* shader = static_cast<Shader*>(obj);
+			shader->initialize();
+		}
+
 		virtual const String& getRTTIName()
 		{
 			static String name = "Shader";
@@ -244,7 +250,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return Shader::create("");
+			return Shader::createEmpty();
 		}
 	};
 }

@@ -8,53 +8,68 @@
 namespace BansheeEngine
 {
 	/**
+	 * @brief	Descriptor structure used for initializing a shader pass.
+	 */
+	struct PASS_DESC
+	{
+		HBlendState blendState;
+		HRasterizerState rasterizerState;
+		HDepthStencilState depthStencilState;
+		UINT32 stencilRefValue;
+
+		HGpuProgram vertexProgram;
+		HGpuProgram fragmentProgram;
+		HGpuProgram geometryProgram;
+		HGpuProgram hullProgram;
+		HGpuProgram domainProgram;
+		HGpuProgram computeProgram;
+	};
+
+	/**
+	 * @brief	Descriptor structure used for initializing a core thread
+	 *			variant of a shader pass.
+	 */
+	struct PASS_DESC_CORE
+	{
+		SPtr<BlendStateCore> blendState;
+		SPtr<RasterizerStateCore> rasterizerState;
+		SPtr<DepthStencilStateCore> depthStencilState;
+		UINT32 stencilRefValue;
+
+		SPtr<GpuProgramCore> vertexProgram;
+		SPtr<GpuProgramCore> fragmentProgram;
+		SPtr<GpuProgramCore> geometryProgram;
+		SPtr<GpuProgramCore> hullProgram;
+		SPtr<GpuProgramCore> domainProgram;
+		SPtr<GpuProgramCore> computeProgram;
+	};
+
+	/**
 	 * @brief	Contains all data used by a pass, templated
 	 *			so it may contain both core and sim thread data.
 	 */
 	template<bool Core>
-	struct PassData
+	struct TPassTypes
 	{ };
 
 	template<>
-	struct PassData < false >
+	struct TPassTypes < false >
 	{
 		typedef HBlendState BlendStateType;
 		typedef HRasterizerState RasterizerStateType;
 		typedef HDepthStencilState DepthStencilStateType;
 		typedef HGpuProgram GpuProgramType;
-
-		BlendStateType mBlendState;
-		RasterizerStateType mRasterizerState;
-		DepthStencilStateType mDepthStencilState;
-		UINT32 mStencilRefValue;
-
-		GpuProgramType mVertexProgram;
-		GpuProgramType mFragmentProgram;
-		GpuProgramType mGeometryProgram;
-		GpuProgramType mHullProgram;
-		GpuProgramType mDomainProgram;
-		GpuProgramType mComputeProgram;
+		typedef PASS_DESC PassDescType;
 	};
 
 	template<>
-	struct PassData < true >
+	struct TPassTypes < true >
 	{
 		typedef SPtr<BlendStateCore> BlendStateType;
 		typedef SPtr<RasterizerStateCore> RasterizerStateType;
 		typedef SPtr<DepthStencilStateCore> DepthStencilStateType;
 		typedef SPtr<GpuProgramCore> GpuProgramType;
-
-		BlendStateType mBlendState;
-		RasterizerStateType mRasterizerState;
-		DepthStencilStateType mDepthStencilState;
-		UINT32 mStencilRefValue;
-
-		GpuProgramType mVertexProgram;
-		GpuProgramType mFragmentProgram;
-		GpuProgramType mGeometryProgram;
-		GpuProgramType mHullProgram;
-		GpuProgramType mDomainProgram;
-		GpuProgramType mComputeProgram;
+		typedef PASS_DESC_CORE PassDescType;
 	};
 
 	/**
@@ -63,90 +78,55 @@ namespace BansheeEngine
 	 *
 	 *			Pass may contain multiple GPU programs (vertex, fragment, geometry, etc.), and
 	 *			a set of pipeline states (blend, rasterizer, etc.).
-	 */
-	class BS_CORE_EXPORT PassBase
-	{
-	public:
-		virtual ~PassBase() { }
-
-	protected:
-		/**
-		 * @copydoc	CoreObject::markCoreDirty
-		 */
-		virtual void _markCoreDirty() { }
-	};
-
-	/**
-	 *  @see	PassBase
 	 *
 	 * @note	Templated so it can be used for both core and non-core versions of a pass.
 	 */
 	template<bool Core>
-	class BS_CORE_EXPORT TPass : public PassBase
+	class BS_CORE_EXPORT TPass
     {
     public:
-		typedef typename PassData<Core>::BlendStateType BlendStateType;
-		typedef typename PassData<Core>::RasterizerStateType RasterizerStateType;
-		typedef typename PassData<Core>::DepthStencilStateType DepthStencilStateType;
-		typedef typename PassData<Core>::GpuProgramType GpuProgramType;
+		typedef typename TPassTypes<Core>::BlendStateType BlendStateType;
+		typedef typename TPassTypes<Core>::RasterizerStateType RasterizerStateType;
+		typedef typename TPassTypes<Core>::DepthStencilStateType DepthStencilStateType;
+		typedef typename TPassTypes<Core>::GpuProgramType GpuProgramType;
+		typedef typename TPassTypes<Core>::PassDescType PassDescType;
 
 		virtual ~TPass() { }
 
-        bool hasVertexProgram() const { return mData.mVertexProgram != nullptr; }
-		bool hasFragmentProgram() const { return mData.mFragmentProgram != nullptr; }
-		bool hasGeometryProgram() const { return mData.mGeometryProgram != nullptr; }
-		bool hasHullProgram() const { return mData.mHullProgram != nullptr; }
-		bool hasDomainProgram() const { return mData.mDomainProgram != nullptr; }
-		bool hasComputeProgram() const { return mData.mComputeProgram != nullptr; }
+        bool hasVertexProgram() const { return mData.vertexProgram != nullptr; }
+		bool hasFragmentProgram() const { return mData.fragmentProgram != nullptr; }
+		bool hasGeometryProgram() const { return mData.geometryProgram != nullptr; }
+		bool hasHullProgram() const { return mData.hullProgram != nullptr; }
+		bool hasDomainProgram() const { return mData.domainProgram != nullptr; }
+		bool hasComputeProgram() const { return mData.computeProgram != nullptr; }
 
 		/**
 		 * @brief	Returns true if this pass has some element of transparency.
 		 */
 		bool hasBlending() const;
 
-		void setBlendState(const BlendStateType& blendState) { mData.mBlendState = blendState; _markCoreDirty(); }
-		BlendStateType getBlendState() const { return mData.mBlendState; }
-
-		void setRasterizerState(const RasterizerStateType& rasterizerState) { mData.mRasterizerState = rasterizerState; _markCoreDirty(); }
-		RasterizerStateType getRasterizerState() const { return mData.mRasterizerState; }
-
-		void setDepthStencilState(const DepthStencilStateType& depthStencilState) { mData.mDepthStencilState = depthStencilState; _markCoreDirty(); }
-		DepthStencilStateType getDepthStencilState() const { return mData.mDepthStencilState; }
-
-		/**
-		 * @brief	Sets the stencil reference value that is used when performing operations using the
-		 * 			stencil buffer.
-		 */
-		void setStencilRefValue(UINT32 refValue) { mData.mStencilRefValue = refValue; _markCoreDirty(); }
+		BlendStateType getBlendState() const { return mData.blendState; }
+		RasterizerStateType getRasterizerState() const { return mData.rasterizerState; }
+		DepthStencilStateType getDepthStencilState() const { return mData.depthStencilState; }
 
 		/**
 		 * @brief	Gets the stencil reference value that is used when performing operations using the
 		 * 			stencil buffer.
 		 */
-		UINT32 getStencilRefValue() const { return mData.mStencilRefValue; }
+		UINT32 getStencilRefValue() const { return mData.stencilRefValue; }
 
-		void setVertexProgram(const GpuProgramType& gpuProgram) { mData.mVertexProgram = gpuProgram; _markCoreDirty(); }
-		const GpuProgramType& getVertexProgram() const { return mData.mVertexProgram; }
-
-		void setFragmentProgram(const GpuProgramType& gpuProgram) { mData.mFragmentProgram = gpuProgram; _markCoreDirty(); }
-		const GpuProgramType& getFragmentProgram() const { return mData.mFragmentProgram; }
-
-		void setGeometryProgram(const GpuProgramType& gpuProgram) { mData.mGeometryProgram = gpuProgram; _markCoreDirty(); }
-		const GpuProgramType& getGeometryProgram() const { return mData.mGeometryProgram; }
-
-		void setHullProgram(const GpuProgramType& gpuProgram) { mData.mHullProgram = gpuProgram; _markCoreDirty(); }
-		const GpuProgramType& getHullProgram(void) const { return mData.mHullProgram; }
-
-		void setDomainProgram(const GpuProgramType& gpuProgram) { mData.mDomainProgram = gpuProgram; _markCoreDirty(); }
-		const GpuProgramType& getDomainProgram(void) const { return mData.mDomainProgram; }
-
-		void setComputeProgram(const GpuProgramType& gpuProgram) { mData.mComputeProgram = gpuProgram; _markCoreDirty(); }
-		const GpuProgramType& getComputeProgram(void) const { return mData.mComputeProgram; }
+		const GpuProgramType& getVertexProgram() const { return mData.vertexProgram; }
+		const GpuProgramType& getFragmentProgram() const { return mData.fragmentProgram; }
+		const GpuProgramType& getGeometryProgram() const { return mData.geometryProgram; }
+		const GpuProgramType& getHullProgram(void) const { return mData.hullProgram; }
+		const GpuProgramType& getDomainProgram(void) const { return mData.domainProgram; }
+		const GpuProgramType& getComputeProgram(void) const { return mData.computeProgram; }
 
 	protected:
 		TPass();
+		TPass(const PassDescType& desc);
 
-		PassData<Core> mData;
+		PassDescType mData;
     };
 
 	/**
@@ -162,18 +142,14 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates a new empty pass.
 		 */
-		static SPtr<PassCore> create();
+		static SPtr<PassCore> create(const PASS_DESC_CORE& desc);
 
 	protected:
 		friend class Pass;
 		friend class TechniqueCore;
 
 		PassCore() { }
-
-		/**
-		 * @copydoc	CoreObjectCore::syncToCore
-		 */
-		void syncToCore(const CoreSyncData& data);
+		PassCore(const PASS_DESC_CORE& desc);
     };
 
 	/**
@@ -195,27 +171,18 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates a new empty pass.
 		 */
-		static PassPtr create();
+		static PassPtr create(const PASS_DESC& desc);
 
 	protected:
 		friend class Technique;
 
 		Pass() { }
+		Pass(const PASS_DESC& desc);
 
 		/**
 		 * @copydoc	CoreObject::createCore
 		 */
 		SPtr<CoreObjectCore> createCore() const;
-
-		/**
-		 * @copydoc	CoreObject::markCoreDirty
-		 */
-		void _markCoreDirty();
-
-		/**
-		 * @copydoc	CoreObject::syncToCore
-		 */
-		CoreSyncData syncToCore(FrameAlloc* allocator);
 
 		/**
 		 * @brief	Creates a new empty pass but doesn't initialize it.

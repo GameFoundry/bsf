@@ -9,32 +9,32 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT PassRTTI : public RTTIType<Pass, IReflectable, PassRTTI>
 	{
 	private:
-		HBlendState& getBlendState(Pass* obj) { return obj->mData.mBlendState; }
-		void setBlendState(Pass* obj, HBlendState& val) { obj->mData.mBlendState = val; }
+		HBlendState& getBlendState(Pass* obj) { return obj->mData.blendState; }
+		void setBlendState(Pass* obj, HBlendState& val) { obj->mData.blendState = val; }
 
-		HRasterizerState& getRasterizerState(Pass* obj) { return obj->mData.mRasterizerState; }
-		void setRasterizerState(Pass* obj, HRasterizerState& val) { obj->mData.mRasterizerState = val; }
+		HRasterizerState& getRasterizerState(Pass* obj) { return obj->mData.rasterizerState; }
+		void setRasterizerState(Pass* obj, HRasterizerState& val) { obj->mData.rasterizerState = val; }
 
-		HDepthStencilState& getDepthStencilState(Pass* obj) { return obj->mData.mDepthStencilState; }
-		void setDepthStencilState(Pass* obj, HDepthStencilState& val) { obj->mData.mDepthStencilState = val; }
+		HDepthStencilState& getDepthStencilState(Pass* obj) { return obj->mData.depthStencilState; }
+		void setDepthStencilState(Pass* obj, HDepthStencilState& val) { obj->mData.depthStencilState = val; }
 
-		HGpuProgram& getVertexProgram(Pass* obj) { return obj->mData.mVertexProgram; }
-		void setVertexProgram(Pass* obj, HGpuProgram& val) { obj->mData.mVertexProgram = val; }
+		HGpuProgram& getVertexProgram(Pass* obj) { return obj->mData.vertexProgram; }
+		void setVertexProgram(Pass* obj, HGpuProgram& val) { obj->mData.vertexProgram = val; }
 
-		HGpuProgram& getFragmentProgram(Pass* obj) { return obj->mData.mFragmentProgram; }
-		void setFragmentProgram(Pass* obj, HGpuProgram& val) { obj->mData.mFragmentProgram = val; }
+		HGpuProgram& getFragmentProgram(Pass* obj) { return obj->mData.fragmentProgram; }
+		void setFragmentProgram(Pass* obj, HGpuProgram& val) { obj->mData.fragmentProgram = val; }
 
-		HGpuProgram& getGeometryProgram(Pass* obj) { return obj->mData.mGeometryProgram; }
-		void setGeometryProgram(Pass* obj, HGpuProgram& val) { obj->mData.mGeometryProgram = val; }
+		HGpuProgram& getGeometryProgram(Pass* obj) { return obj->mData.geometryProgram; }
+		void setGeometryProgram(Pass* obj, HGpuProgram& val) { obj->mData.geometryProgram = val; }
 
-		HGpuProgram& getHullProgram(Pass* obj) { return obj->mData.mHullProgram; }
-		void setHullProgram(Pass* obj, HGpuProgram& val) { obj->mData.mHullProgram = val; }
+		HGpuProgram& getHullProgram(Pass* obj) { return obj->mData.hullProgram; }
+		void setHullProgram(Pass* obj, HGpuProgram& val) { obj->mData.hullProgram = val; }
 
-		HGpuProgram& getDomainProgram(Pass* obj) { return obj->mData.mDomainProgram; }
-		void setDomainProgram(Pass* obj, HGpuProgram& val) { obj->mData.mDomainProgram = val; }
+		HGpuProgram& getDomainProgram(Pass* obj) { return obj->mData.domainProgram; }
+		void setDomainProgram(Pass* obj, HGpuProgram& val) { obj->mData.domainProgram = val; }
 
-		HGpuProgram& getComputeProgram(Pass* obj) { return obj->mData.mComputeProgram; }
-		void setComputeProgram(Pass* obj, HGpuProgram& val) { obj->mData.mComputeProgram = val; }
+		HGpuProgram& getComputeProgram(Pass* obj) { return obj->mData.computeProgram; }
+		void setComputeProgram(Pass* obj, HGpuProgram& val) { obj->mData.computeProgram = val; }
 	public:
 		PassRTTI()
 		{

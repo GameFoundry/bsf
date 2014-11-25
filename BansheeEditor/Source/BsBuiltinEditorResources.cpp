@@ -1256,20 +1256,6 @@ namespace BansheeEngine
 		HGpuProgram vsProgram = getGpuProgram(ShaderDockOverlayVSFile);
 		HGpuProgram psProgram = getGpuProgram(ShaderDockOverlayPSFile);
 
-		mShaderDockOverlay = Shader::create("DockDropOverlayShader");
-
-		mShaderDockOverlay->addParameter("invViewportWidth", "invViewportWidth", GPDT_FLOAT1);
-		mShaderDockOverlay->addParameter("invViewportHeight", "invViewportHeight", GPDT_FLOAT1);
-
-		mShaderDockOverlay->addParameter("tintColor", "tintColor", GPDT_FLOAT4);
-		mShaderDockOverlay->addParameter("highlightColor", "highlightColor", GPDT_FLOAT4);
-		mShaderDockOverlay->addParameter("highlightActive", "highlightActive", GPDT_FLOAT4);
-
-		TechniquePtr newTechnique = mShaderDockOverlay->addTechnique(mActiveRenderSystem, RendererInvariant);
-		PassPtr newPass = newTechnique->addPass();
-		newPass->setVertexProgram(vsProgram);
-		newPass->setFragmentProgram(psProgram);
-
 		BLEND_STATE_DESC desc;
 		desc.renderTargetDesc[0].blendEnable = true;
 		desc.renderTargetDesc[0].srcBlend = BF_SOURCE_ALPHA;
@@ -1277,29 +1263,37 @@ namespace BansheeEngine
 		desc.renderTargetDesc[0].blendOp = BO_ADD;
 
 		HBlendState blendState = BlendState::create(desc);
-		newPass->setBlendState(blendState);
 
 		DEPTH_STENCIL_STATE_DESC depthStateDesc;
 		depthStateDesc.depthReadEnable = false;
 		depthStateDesc.depthWriteEnable = false;
 
 		HDepthStencilState depthState = DepthStencilState::create(depthStateDesc);
-		newPass->setDepthStencilState(depthState);
+
+		PASS_DESC passDesc;
+		passDesc.vertexProgram = vsProgram;
+		passDesc.fragmentProgram = psProgram;
+		passDesc.blendState = blendState;
+		passDesc.depthStencilState = depthState;
+
+		PassPtr newPass = Pass::create(passDesc);
+		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass });
+
+		SHADER_DESC shaderDesc;
+		shaderDesc.addParameter("invViewportWidth", "invViewportWidth", GPDT_FLOAT1);
+		shaderDesc.addParameter("invViewportHeight", "invViewportHeight", GPDT_FLOAT1);
+
+		shaderDesc.addParameter("tintColor", "tintColor", GPDT_FLOAT4);
+		shaderDesc.addParameter("highlightColor", "highlightColor", GPDT_FLOAT4);
+		shaderDesc.addParameter("highlightActive", "highlightActive", GPDT_FLOAT4);
+
+		mShaderDockOverlay = Shader::create("DockDropOverlayShader", shaderDesc, { newTechnique });
 	}
 
 	void BuiltinEditorResources::initSceneGridShader()
 	{
 		HGpuProgram vsProgram = getGpuProgram(SceneGridVSFile);
 		HGpuProgram psProgram = getGpuProgram(SceneGridPSFile);
-
-		mShaderSceneGrid = Shader::create("SceneGridShader");
-
-		mShaderSceneGrid->addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
-
-		TechniquePtr newTechnique = mShaderSceneGrid->addTechnique(mActiveRenderSystem, RendererInvariant);
-		PassPtr newPass = newTechnique->addPass();
-		newPass->setVertexProgram(vsProgram);
-		newPass->setFragmentProgram(psProgram);
 
 		BLEND_STATE_DESC blendDesc;
 		blendDesc.renderTargetDesc[0].blendEnable = true;
@@ -1309,13 +1303,25 @@ namespace BansheeEngine
 		blendDesc.renderTargetDesc[0].renderTargetWriteMask = 0x7; // Don't write to alpha
 
 		HBlendState blendState = BlendState::create(blendDesc);
-		newPass->setBlendState(blendState);
 
 		RASTERIZER_STATE_DESC rasterizerDesc;
 		rasterizerDesc.cullMode = CULL_NONE;
 
 		HRasterizerState rasterizerState = RasterizerState::create(rasterizerDesc);
-		newPass->setRasterizerState(rasterizerState);
+
+		PASS_DESC passDesc;
+		passDesc.vertexProgram = vsProgram;
+		passDesc.fragmentProgram = psProgram;
+		passDesc.blendState = blendState;
+		passDesc.rasterizerState = rasterizerState;
+
+		PassPtr newPass = Pass::create(passDesc);
+		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass });
+
+		SHADER_DESC shaderDesc;
+		shaderDesc.addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
+
+		mShaderSceneGrid = Shader::create("SceneGridShader", shaderDesc, { newTechnique });
 	}
 
 	void BuiltinEditorResources::initPickingShader(CullingMode cullMode)
@@ -1325,21 +1331,26 @@ namespace BansheeEngine
 		HGpuProgram vsProgram = getGpuProgram(PickingVSFile);
 		HGpuProgram psProgram = getGpuProgram(PickingPSFile);
 
-		mShaderPicking[modeIdx] = Shader::create("PickingShader");
-		mShaderPicking[modeIdx]->addParameter("colorIndex", "colorIndex", GPDT_FLOAT4);
-		mShaderPicking[modeIdx]->addParameter("matWorldViewProj", "matWorldViewProj", GPDT_MATRIX_4X4);
-
-		TechniquePtr newTechnique = mShaderPicking[modeIdx]->addTechnique(mActiveRenderSystem, RendererInvariant);
-		PassPtr newPass = newTechnique->addPass();
-		newPass->setVertexProgram(vsProgram);
-		newPass->setFragmentProgram(psProgram);
-
 		RASTERIZER_STATE_DESC rasterizerDesc;
 		rasterizerDesc.scissorEnable = true;
 		rasterizerDesc.cullMode = cullMode;
 
 		HRasterizerState rasterizerState = RasterizerState::create(rasterizerDesc);
-		newPass->setRasterizerState(rasterizerState);
+
+		PASS_DESC passDesc;
+		passDesc.vertexProgram = vsProgram;
+		passDesc.fragmentProgram = psProgram;
+		passDesc.rasterizerState = rasterizerState;
+
+		PassPtr newPass = Pass::create(passDesc);
+
+		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass });
+
+		SHADER_DESC shaderDesc;
+		shaderDesc.addParameter("colorIndex", "colorIndex", GPDT_FLOAT4);
+		shaderDesc.addParameter("matWorldViewProj", "matWorldViewProj", GPDT_MATRIX_4X4);
+
+		mShaderPicking[modeIdx] = Shader::create("PickingShader", shaderDesc, { newTechnique });
 	}
 
 	void BuiltinEditorResources::initPickingAlphaShader(CullingMode cullMode)
@@ -1349,28 +1360,31 @@ namespace BansheeEngine
 		HGpuProgram vsProgram = getGpuProgram(PickingAlphaVSFile);
 		HGpuProgram psProgram = getGpuProgram(PickingAlphaPSFile);
 
-		mShaderPickingAlpha[modeIdx] = Shader::create("PickingAlphaShader");
-
-		mShaderPickingAlpha[modeIdx]->addParameter("mainTexSamp", "mainTexSamp", GPOT_SAMPLER2D);
-		mShaderPickingAlpha[modeIdx]->addParameter("mainTexSamp", "mainTexture", GPOT_SAMPLER2D);
-
-		mShaderPickingAlpha[modeIdx]->addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
-
-		mShaderPickingAlpha[modeIdx]->addParameter("alphaCutoff", "alphaCutoff", GPDT_FLOAT1);
-		mShaderPickingAlpha[modeIdx]->addParameter("colorIndex", "colorIndex", GPDT_FLOAT4);
-		mShaderPickingAlpha[modeIdx]->addParameter("matWorldViewProj", "matWorldViewProj", GPDT_MATRIX_4X4);
-
-		TechniquePtr newTechnique = mShaderPickingAlpha[modeIdx]->addTechnique(mActiveRenderSystem, RendererInvariant);
-		PassPtr newPass = newTechnique->addPass();
-		newPass->setVertexProgram(vsProgram);
-		newPass->setFragmentProgram(psProgram);
-
 		RASTERIZER_STATE_DESC rasterizerDesc;
 		rasterizerDesc.scissorEnable = true;
 		rasterizerDesc.cullMode = cullMode;
 
 		HRasterizerState rasterizerState = RasterizerState::create(rasterizerDesc);
-		newPass->setRasterizerState(rasterizerState);
+
+		PASS_DESC passDesc;
+		passDesc.vertexProgram = vsProgram;
+		passDesc.fragmentProgram = psProgram;
+		passDesc.rasterizerState = rasterizerState;
+
+		PassPtr newPass = Pass::create(passDesc);
+		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass });
+
+		SHADER_DESC shaderDesc;
+		shaderDesc.addParameter("mainTexSamp", "mainTexSamp", GPOT_SAMPLER2D);
+		shaderDesc.addParameter("mainTexSamp", "mainTexture", GPOT_SAMPLER2D);
+
+		shaderDesc.addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
+
+		shaderDesc.addParameter("alphaCutoff", "alphaCutoff", GPDT_FLOAT1);
+		shaderDesc.addParameter("colorIndex", "colorIndex", GPDT_FLOAT4);
+		shaderDesc.addParameter("matWorldViewProj", "matWorldViewProj", GPDT_MATRIX_4X4);
+
+		mShaderPickingAlpha[modeIdx] = Shader::create("PickingAlphaShader", shaderDesc, { newTechnique });
 	}
 
 	void BuiltinEditorResources::initWireGizmoShader()
@@ -1378,14 +1392,17 @@ namespace BansheeEngine
 		HGpuProgram vsProgram = getGpuProgram(ShaderWireGizmoVSFile);
 		HGpuProgram psProgram = getGpuProgram(ShaderWireGizmoPSFile);
 
-		mShaderGizmoWire = Shader::create("GizmoWire");
+		PASS_DESC passDesc;
+		passDesc.vertexProgram = vsProgram;
+		passDesc.fragmentProgram = psProgram;
 
-		mShaderGizmoWire->addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
+		PassPtr newPass = Pass::create(passDesc);
+		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass });
 
-		TechniquePtr newTechnique = mShaderGizmoWire->addTechnique(mActiveRenderSystem, RendererInvariant);
-		PassPtr newPass = newTechnique->addPass();
-		newPass->setVertexProgram(vsProgram);
-		newPass->setFragmentProgram(psProgram);
+		SHADER_DESC shaderDesc;
+		shaderDesc.addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
+
+		mShaderGizmoWire = Shader::create("GizmoWire", shaderDesc, { newTechnique });
 	}
 
 	void BuiltinEditorResources::initSolidGizmoShader()
@@ -1393,14 +1410,17 @@ namespace BansheeEngine
 		HGpuProgram vsProgram = getGpuProgram(ShaderSolidGizmoVSFile);
 		HGpuProgram psProgram = getGpuProgram(ShaderSolidGizmoPSFile);
 
-		mShaderGizmoSolid = Shader::create("GizmoSolid");
+		PASS_DESC passDesc;
+		passDesc.vertexProgram = vsProgram;
+		passDesc.fragmentProgram = psProgram;
 
-		mShaderGizmoSolid->addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
+		PassPtr newPass = Pass::create(passDesc);
+		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass });
 
-		TechniquePtr newTechnique = mShaderGizmoSolid->addTechnique(mActiveRenderSystem, RendererInvariant);
-		PassPtr newPass = newTechnique->addPass();
-		newPass->setVertexProgram(vsProgram);
-		newPass->setFragmentProgram(psProgram);
+		SHADER_DESC shaderDesc;
+		shaderDesc.addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
+
+		mShaderGizmoSolid = Shader::create("GizmoSolid", shaderDesc, { newTechnique });
 	}
 
 	void BuiltinEditorResources::initWireHandleShader()
@@ -1408,14 +1428,17 @@ namespace BansheeEngine
 		HGpuProgram vsProgram = getGpuProgram(ShaderWireGizmoVSFile);
 		HGpuProgram psProgram = getGpuProgram(ShaderWireGizmoPSFile);
 
-		mShaderHandleWire = Shader::create("HandleWire");
+		PASS_DESC passDesc;
+		passDesc.vertexProgram = vsProgram;
+		passDesc.fragmentProgram = psProgram;
 
-		mShaderHandleWire->addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
+		PassPtr newPass = Pass::create(passDesc);
+		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass });
 
-		TechniquePtr newTechnique = mShaderHandleWire->addTechnique(mActiveRenderSystem, RendererInvariant);
-		PassPtr newPass = newTechnique->addPass();
-		newPass->setVertexProgram(vsProgram);
-		newPass->setFragmentProgram(psProgram);
+		SHADER_DESC shaderDesc;
+		shaderDesc.addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
+
+		mShaderHandleWire = Shader::create("HandleWire", shaderDesc, { newTechnique });
 	}
 
 	void BuiltinEditorResources::initSolidHandleShader()
@@ -1423,21 +1446,24 @@ namespace BansheeEngine
 		HGpuProgram vsProgram = getGpuProgram(ShaderSolidGizmoVSFile);
 		HGpuProgram psProgram = getGpuProgram(ShaderSolidGizmoPSFile);
 
-		mShaderHandleSolid = Shader::create("HandleSolid");
-
-		mShaderHandleSolid->addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
-
 		DEPTH_STENCIL_STATE_DESC depthStencilStateDesc;
 		depthStencilStateDesc.depthWriteEnable = false;
 		depthStencilStateDesc.depthReadEnable = false;
 
 		HDepthStencilState depthStencilState = DepthStencilState::create(depthStencilStateDesc);
 
-		TechniquePtr newTechnique = mShaderHandleSolid->addTechnique(mActiveRenderSystem, RendererInvariant);
-		PassPtr newPass = newTechnique->addPass();
-		newPass->setVertexProgram(vsProgram);
-		newPass->setFragmentProgram(psProgram);
-		newPass->setDepthStencilState(depthStencilState);
+		PASS_DESC passDesc;
+		passDesc.vertexProgram = vsProgram;
+		passDesc.fragmentProgram = psProgram;
+		passDesc.depthStencilState = depthStencilState;
+
+		PassPtr newPass = Pass::create(passDesc);
+		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass });
+
+		SHADER_DESC shaderDesc;
+		shaderDesc.addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
+
+		mShaderHandleSolid = Shader::create("HandleSolid", shaderDesc, { newTechnique });
 	}
 
 	void BuiltinEditorResources::initIconGizmoShader()
@@ -1446,13 +1472,6 @@ namespace BansheeEngine
 		HGpuProgram psProgram0 = getGpuProgram(ShaderIconGizmo0PSFile);
 		HGpuProgram vsProgram1 = getGpuProgram(ShaderIconGizmo1VSFile);
 		HGpuProgram psProgram1 = getGpuProgram(ShaderIconGizmo1PSFile);
-
-		mShaderGizmoIcon = Shader::create("GizmoIcon");
-
-		mShaderGizmoIcon->addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
-		mShaderGizmoIcon->addParameter("mainTexSamp", "mainTexSamp", GPOT_SAMPLER2D);
-		mShaderGizmoIcon->addParameter("mainTexSamp", "mainTexture", GPOT_SAMPLER2D);
-		mShaderGizmoIcon->addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
 
 		BLEND_STATE_DESC blendDesc;
 		blendDesc.renderTargetDesc[0].blendEnable = true;
@@ -1474,20 +1493,31 @@ namespace BansheeEngine
 
 		HDepthStencilState depthStencilState1 = DepthStencilState::create(depthStencilState1Desc);
 
-		TechniquePtr newTechnique = mShaderGizmoIcon->addTechnique(mActiveRenderSystem, RendererInvariant);
-		PassPtr newPass0 = newTechnique->addPass();
-		newPass0->setVertexProgram(vsProgram0);
-		newPass0->setFragmentProgram(psProgram0);
+		PASS_DESC pass0Desc;
+		pass0Desc.vertexProgram = vsProgram0;
+		pass0Desc.fragmentProgram = psProgram0;
+		pass0Desc.blendState = blendState;
+		pass0Desc.depthStencilState = depthStencilState0;
 
-		newPass0->setBlendState(blendState);
-		newPass0->setDepthStencilState(depthStencilState0);
+		PassPtr newPass0 = Pass::create(pass0Desc);
 
-		PassPtr newPass1 = newTechnique->addPass();
-		newPass1->setVertexProgram(vsProgram1);
-		newPass1->setFragmentProgram(psProgram1);
+		PASS_DESC pass1Desc;
+		pass1Desc.vertexProgram = vsProgram1;
+		pass1Desc.fragmentProgram = psProgram1;
+		pass1Desc.blendState = blendState;
+		pass1Desc.depthStencilState = depthStencilState1;
 
-		newPass1->setBlendState(blendState);
-		newPass1->setDepthStencilState(depthStencilState1);
+		PassPtr newPass1 = Pass::create(pass1Desc);
+
+		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass0, newPass1 });
+
+		SHADER_DESC shaderDesc;
+		shaderDesc.addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
+		shaderDesc.addParameter("mainTexSamp", "mainTexSamp", GPOT_SAMPLER2D);
+		shaderDesc.addParameter("mainTexSamp", "mainTexture", GPOT_SAMPLER2D);
+		shaderDesc.addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
+
+		mShaderGizmoIcon = Shader::create("GizmoIcon", shaderDesc, { newTechnique });
 	}
 
 	void BuiltinEditorResources::initGizmoPickingShader()
@@ -1495,19 +1525,23 @@ namespace BansheeEngine
 		HGpuProgram vsProgram = getGpuProgram(GizmoPickingVSFile);
 		HGpuProgram psProgram = getGpuProgram(GizmoPickingPSFile);
 
-		mShaderGizmoPicking = Shader::create("GizmoPickingShader");
-		mShaderGizmoPicking->addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
-
-		TechniquePtr newTechnique = mShaderGizmoPicking->addTechnique(mActiveRenderSystem, RendererInvariant);
-		PassPtr newPass = newTechnique->addPass();
-		newPass->setVertexProgram(vsProgram);
-		newPass->setFragmentProgram(psProgram);
-
 		RASTERIZER_STATE_DESC rasterizerDesc;
 		rasterizerDesc.scissorEnable = true;
 
 		HRasterizerState rasterizerState = RasterizerState::create(rasterizerDesc);
-		newPass->setRasterizerState(rasterizerState);
+
+		PASS_DESC passDesc;
+		passDesc.vertexProgram = vsProgram;
+		passDesc.fragmentProgram = psProgram;
+		passDesc.rasterizerState = rasterizerState;
+
+		PassPtr newPass = Pass::create(passDesc);
+		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass });
+
+		SHADER_DESC shaderDesc;
+		shaderDesc.addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
+
+		mShaderGizmoPicking = Shader::create("GizmoPickingShader", shaderDesc, { newTechnique });
 	}
 
 	void BuiltinEditorResources::initGizmoPickingAlphaShader()
@@ -1515,26 +1549,29 @@ namespace BansheeEngine
 		HGpuProgram vsProgram = getGpuProgram(GizmoPickingAlphaVSFile);
 		HGpuProgram psProgram = getGpuProgram(GizmoPickingAlphaPSFile);
 
-		mShaderGizmoAlphaPicking = Shader::create("GizmoPickingAlphaShader");
-
-		mShaderGizmoAlphaPicking->addParameter("mainTexSamp", "mainTexSamp", GPOT_SAMPLER2D);
-		mShaderGizmoAlphaPicking->addParameter("mainTexSamp", "mainTexture", GPOT_SAMPLER2D);
-
-		mShaderGizmoAlphaPicking->addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
-
-		mShaderGizmoAlphaPicking->addParameter("alphaCutoff", "alphaCutoff", GPDT_FLOAT1);
-		mShaderGizmoAlphaPicking->addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
-
-		TechniquePtr newTechnique = mShaderGizmoAlphaPicking->addTechnique(mActiveRenderSystem, RendererInvariant);
-		PassPtr newPass = newTechnique->addPass();
-		newPass->setVertexProgram(vsProgram);
-		newPass->setFragmentProgram(psProgram);
-
 		RASTERIZER_STATE_DESC rasterizerDesc;
 		rasterizerDesc.scissorEnable = true;
 
 		HRasterizerState rasterizerState = RasterizerState::create(rasterizerDesc);
-		newPass->setRasterizerState(rasterizerState);
+		
+		PASS_DESC passDesc;
+		passDesc.vertexProgram = vsProgram;
+		passDesc.fragmentProgram = psProgram;
+		passDesc.rasterizerState = rasterizerState;
+
+		PassPtr newPass = Pass::create(passDesc);
+		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass });
+
+		SHADER_DESC shaderDesc;
+		shaderDesc.addParameter("mainTexSamp", "mainTexSamp", GPOT_SAMPLER2D);
+		shaderDesc.addParameter("mainTexSamp", "mainTexture", GPOT_SAMPLER2D);
+
+		shaderDesc.addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
+
+		shaderDesc.addParameter("alphaCutoff", "alphaCutoff", GPDT_FLOAT1);
+		shaderDesc.addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
+
+		mShaderGizmoAlphaPicking = Shader::create("GizmoPickingAlphaShader", shaderDesc, { newTechnique });
 	}
 
 	HMaterial BuiltinEditorResources::createDockDropOverlayMaterial() const

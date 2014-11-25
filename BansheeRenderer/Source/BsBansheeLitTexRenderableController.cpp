@@ -376,19 +376,23 @@ namespace BansheeEngine
 			psProgram = GpuProgramCore::create(psCode, "main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_FS_4_0);
 		}
 
-		SPtr<ShaderCore> defaultShader = ShaderCore::create("LitTexDefault");
-		defaultShader->setParamBlockAttribs("Static", true, GPBU_DYNAMIC, RBS_Static);
-		defaultShader->setParamBlockAttribs("PerFrame", true, GPBU_DYNAMIC, RBS_PerFrame);
-		defaultShader->setParamBlockAttribs("PerObject", true, GPBU_DYNAMIC, RBS_PerObject);
+		PASS_DESC_CORE passDesc;
+		passDesc.vertexProgram = vsProgram;
+		passDesc.fragmentProgram = psProgram;
 
-		defaultShader->addParameter("lightDir", "lightDir", GPDT_FLOAT4, RPS_LightDir);
-		defaultShader->addParameter("time", "time", GPDT_FLOAT1, RPS_Time);
-		defaultShader->addParameter("matWorldViewProj", "matWorldViewProj", GPDT_MATRIX_4X4, RPS_WorldViewProjTfrm);
+		SPtr<PassCore> newPass = PassCore::create(passDesc);
+		SPtr<TechniqueCore> newTechnique = TechniqueCore::create(rsName, RendererDefault, { newPass });
 
-		SPtr<TechniqueCore> newTechnique = defaultShader->addTechnique(rsName, RendererDefault);
-		SPtr<PassCore> newPass = newTechnique->addPass();
-		newPass->setVertexProgram(vsProgram);
-		newPass->setFragmentProgram(psProgram);
+		SHADER_DESC shaderDesc;
+		shaderDesc.setParamBlockAttribs("Static", true, GPBU_DYNAMIC, RBS_Static);
+		shaderDesc.setParamBlockAttribs("PerFrame", true, GPBU_DYNAMIC, RBS_PerFrame);
+		shaderDesc.setParamBlockAttribs("PerObject", true, GPBU_DYNAMIC, RBS_PerObject);
+
+		shaderDesc.addParameter("lightDir", "lightDir", GPDT_FLOAT4, RPS_LightDir);
+		shaderDesc.addParameter("time", "time", GPDT_FLOAT1, RPS_Time);
+		shaderDesc.addParameter("matWorldViewProj", "matWorldViewProj", GPDT_MATRIX_4X4, RPS_WorldViewProjTfrm);
+
+		SPtr<ShaderCore> defaultShader = ShaderCore::create("LitTexDefault", shaderDesc, { newTechnique });
 
 		return defaultShader;
 	}

@@ -22,5 +22,12 @@ namespace BansheeEngine
 		 * @brief	Creates a new material with the specified shader.
 		 */
 		MaterialPtr create(ShaderPtr shader) const;
+
+		/**
+		 * @brief	Creates a new empty material without initializing it.
+		 *
+		 * @note	You must manually call initialize() after creation.
+		 */
+		MaterialPtr createEmpty() const;
 	};
 }

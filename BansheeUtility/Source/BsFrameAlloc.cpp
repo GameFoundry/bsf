@@ -38,6 +38,8 @@ namespace BansheeEngine
 	UINT8* FrameAlloc::alloc(UINT32 amount)
 	{
 #if BS_DEBUG_MODE
+		assert(mOwnerThread == BS_THREAD_CURRENT_ID && "Frame allocator called from invalid thread.");
+
 		amount += sizeof(UINT32) * 2;
 #endif
 
@@ -82,6 +84,8 @@ namespace BansheeEngine
 	void FrameAlloc::clear()
 	{
 #if BS_DEBUG_MODE
+		assert(mOwnerThread == BS_THREAD_CURRENT_ID && "Frame allocator called from invalid thread.");
+
 		if(mTotalAllocBytes.load() > 0)
 			BS_EXCEPT(InvalidStateException, "Not all frame allocated bytes were properly released.");
 

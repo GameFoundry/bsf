@@ -123,15 +123,23 @@ namespace BansheeEngine
 		 */
 		SPtr<CoreObjectCore> getCore() const { return mCoreSpecific; }
 
+		/**
+		 * @brief	Ensures all dirty syncable data is send to the core thread variant of this object.
+		 *
+		 * @note	Call this if you have modified the object and need to make sure core thread has an up
+		 *			to date version. Normally this is done automatically at the end of a frame.
+		 */
+		void syncToCore(CoreAccessor& accessor);
+
 	protected:
 		/**
-		 * @brief	Frees all of the objects dynamically allocated memory. All derived classes that have something to free
+		 * @brief	Frees all of the internal resources. All derived classes that have something to free
 		 * 			should do it here instead of their destructor. All derived classes need to call this base method when they're done.
 		 * 			
 		 * @note	For objects with "CGO_INIT_ON_CORE_THREAD" flag this is scheduled to be executed on the core thread, 
 		 * 			so normally you want to destroy all GPU specific resources here.
 		 */
-		virtual void destroy_internal();
+		virtual void destroyCore();
 
 		/**
 		 * @brief	Initializes all the internal resources of this object. Needs to be called before doing
@@ -140,7 +148,7 @@ namespace BansheeEngine
 		 * @note	For objects with "CGO_INIT_ON_CORE_THREAD" flag this is scheduled to be executed on the core thread, 
 		 * 			so normally you want to initialize all GPU specific resources here.
 		 */
-		virtual void initialize_internal();
+		virtual void initializeCore();
 
 		/**
 		 * @brief	Performs some internal checks when an object is being deleted.

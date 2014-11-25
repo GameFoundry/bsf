@@ -58,6 +58,12 @@ namespace BansheeEngine
 		 */
 		void clear();
 
+		/**
+		 * @brief	Changes the frame allocator owner thread. After the owner
+		 *			thread has changed only allocations from that thread can be made.
+		 */
+		void setOwnerThread(BS_THREAD_ID_TYPE thread) { mOwnerThread = thread; }
+
 	private:
 		UINT32 mBlockSize;
 		Vector<MemBlock*> mBlocks;
@@ -67,6 +73,7 @@ namespace BansheeEngine
 #if BS_DEBUG_MODE
 		UINT32 mAllocId;
 		Set<UINT32> mActiveAllocs;
+		BS_THREAD_ID_TYPE mOwnerThread;
 #endif
 
 		MemBlock* allocBlock(UINT32 wantedSize);
