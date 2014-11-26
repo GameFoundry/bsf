@@ -7,6 +7,8 @@
 
 namespace BansheeEngine
 {
+	class ScenePickingCore;
+
 	class ScenePicking : public Module<ScenePicking>
 	{
 		struct RenderablePickData
@@ -19,13 +21,28 @@ namespace BansheeEngine
 			HTexture mainTexture;
 		};
 
+	public:
+		ScenePicking();
+		~ScenePicking();
+
+		HSceneObject pickClosestObject(const CameraHandlerPtr& cam, const Vector2I& position, const Vector2I& area);
+		Vector<HSceneObject> pickObjects(const CameraHandlerPtr& cam, const Vector2I& position, const Vector2I& area);
+
+	private:
+		friend class ScenePickingCore;
+
+		typedef Set<RenderablePickData, std::function<bool(const RenderablePickData&, const RenderablePickData&)>> RenderableSet;
+
+		static Color encodeIndex(UINT32 index);
+		static UINT32 decodeIndex(Color color);
+
+		ScenePickingCore* mCore;
+	};
+
+	class ScenePickingCore
+	{
 		struct MaterialData
 		{
-			// Sim thread
-			HMaterial mMatPicking;
-			HMaterial mMatPickingAlpha;
-
-			// Core thread
 			SPtr<MaterialCore> mMatPickingCore;
 			SPtr<MaterialCore> mMatPickingAlphaCore;
 
@@ -42,23 +59,16 @@ namespace BansheeEngine
 		};
 
 	public:
-		ScenePicking();
+		void initialize();
+		void destroy();
 
-		HSceneObject pickClosestObject(const CameraHandlerPtr& cam, const Vector2I& position, const Vector2I& area);
-		Vector<HSceneObject> pickObjects(const CameraHandlerPtr& cam, const Vector2I& position, const Vector2I& area);
+		void corePickingBegin(const SPtr<RenderTargetCore>& target, const Rect2& viewportArea, const ScenePicking::RenderableSet& renderables,
+			const Vector2I& position, const Vector2I& area);
+		void corePickingEnd(const SPtr<RenderTargetCore>& target, const Rect2& viewportArea, const Vector2I& position,
+			const Vector2I& area, AsyncOp& asyncOp);
 
 	private:
-		typedef Set<RenderablePickData, std::function<bool(const RenderablePickData&, const RenderablePickData&)>> RenderableSet;
-
-		void initializeCore();
-
-		Color encodeIndex(UINT32 index);
-		UINT32 decodeIndex(Color color);
-
-		void corePickingBegin(const SPtr<RenderTargetCore>& target, const Rect2& viewportArea, const RenderableSet& renderables, 
-			const Vector2I& position, const Vector2I& area);
-		void corePickingEnd(const SPtr<RenderTargetCore>& target, const Rect2& viewportArea, const Vector2I& position, 
-			const Vector2I& area, AsyncOp& asyncOp);
+		friend class ScenePicking;
 
 		static const float ALPHA_CUTOFF;
 

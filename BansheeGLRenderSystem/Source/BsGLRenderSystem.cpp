@@ -120,7 +120,7 @@ namespace BansheeEngine
 	void GLRenderSystem::initializeFinalize(const SPtr<RenderWindowCore>& primaryWindow)
 	{
 		// Get the context from the window and finish initialization
-		GLContext *context = nullptr;
+		SPtr<GLContext> context;
 		primaryWindow->getCustomAttribute("GLCONTEXT", &context);
 
 		// Set main and current context
@@ -583,7 +583,7 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		// Switch context if different from current one
-		GLContext *newContext = 0;
+		SPtr<GLContext> newContext;
 		target->getCustomAttribute("GLCONTEXT", &newContext);
 		if(newContext && mCurrentContext != newContext) 
 		{
@@ -1769,7 +1769,7 @@ namespace BansheeEngine
 		TextureCoreManager::startUp<GLTextureCoreManager>(std::ref(*mGLSupport));
 	}
 
-	void GLRenderSystem::switchContext(GLContext *context)
+	void GLRenderSystem::switchContext(const SPtr<GLContext>& context)
 	{
 		// Unbind GPU programs and rebind to new context later, because
 		// scene manager treat render system as ONE 'context' ONLY, and it

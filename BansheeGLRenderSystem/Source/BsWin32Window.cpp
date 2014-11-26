@@ -35,9 +35,6 @@ namespace BansheeEngine
 		if (!mHWnd)
 			return;
 
-		// Unregister and destroy GLContext
-		bs_delete(mContext);
-
 		if (!mIsExternal)
 		{
 			if (props.mIsFullScreen)
@@ -563,7 +560,8 @@ namespace BansheeEngine
 	{
 		if(name == "GLCONTEXT") 
 		{
-			*static_cast<GLContext**>(pData) = mContext;
+			SPtr<GLContext>* contextPtr = static_cast<SPtr<GLContext>*>(pData);
+			*contextPtr = mContext;
 			return;
 		} 
 		else if(name == "WINDOW")

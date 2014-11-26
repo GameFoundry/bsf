@@ -126,7 +126,7 @@ namespace BansheeEngine
 		bool mIsExternalGLControl;
 		int mDisplayFrequency;
 		HWND mHWnd;
-		Win32Context *mContext;
+		SPtr<Win32Context> mContext;
 		Win32RenderWindowProperties mProperties;
     };
 

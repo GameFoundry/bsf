@@ -28,54 +28,27 @@ using namespace std::placeholders;
 
 namespace BansheeEngine
 {
-	const float ScenePicking::ALPHA_CUTOFF = 0.5f;
+	const float ScenePickingCore::ALPHA_CUTOFF = 0.5f;
 
 	ScenePicking::ScenePicking()
 	{
+		mCore = bs_new<ScenePickingCore>();
+
 		for (UINT32 i = 0; i < 3; i++)
 		{
-			mMaterialData[i].mMatPicking = BuiltinEditorResources::instance().createPicking((CullingMode)i);
-			mMaterialData[i].mMatPickingAlpha = BuiltinEditorResources::instance().createPickingAlpha((CullingMode)i);
+			HMaterial matPicking = BuiltinEditorResources::instance().createPicking((CullingMode)i);
+			HMaterial matPickingAlpha = BuiltinEditorResources::instance().createPickingAlpha((CullingMode)i);
 
-			mMaterialData[i].mMatPickingCore = mMaterialData[i].mMatPicking->getCore();
-			mMaterialData[i].mMatPickingAlphaCore = mMaterialData[i].mMatPickingAlpha->getCore();
+			mCore->mMaterialData[i].mMatPickingCore = matPicking->getCore();
+			mCore->mMaterialData[i].mMatPickingAlphaCore = matPickingAlpha->getCore();
 		}
 
-		gCoreAccessor().queueCommand(std::bind(&ScenePicking::initializeCore, this));
+		gCoreAccessor().queueCommand(std::bind(&ScenePickingCore::initialize, mCore));
 	}
 
-	void ScenePicking::initializeCore()
+	ScenePicking::~ScenePicking()
 	{
-		for (UINT32 i = 0; i < 3; i++)
-		{
-			MaterialData& md = mMaterialData[i];
-
-			{
-				SPtr<PassParametersCore> passParams = md.mMatPickingCore->getPassParameters(0);
-
-				md.mParamPickingVertParams = passParams->mVertParams;
-				md.mParamPickingVertParams->getParam("matWorldViewProj", md.mParamPickingWVP);
-
-				md.mParamPickingFragParams = passParams->mFragParams;
-				md.mParamPickingFragParams->getParam("colorIndex", md.mParamPickingColor);
-			}
-
-			{
-				SPtr<PassParametersCore> passParams = md.mMatPickingAlphaCore->getPassParameters(0);
-
-				md.mParamPickingAlphaVertParams = passParams->mVertParams;
-				md.mParamPickingAlphaVertParams->getParam("matWorldViewProj", md.mParamPickingAlphaWVP);
-
-				md.mParamPickingAlphaFragParams = passParams->mFragParams;
-
-				md.mParamPickingAlphaFragParams->getParam("colorIndex", md.mParamPickingAlphaColor);
-				md.mParamPickingAlphaFragParams->getTextureParam("mainTexture", md.mParamPickingAlphaTexture);
-
-				GpuParamFloatCore alphaCutoffParam;
-				md.mParamPickingAlphaFragParams->getParam("alphaCutoff", alphaCutoffParam);
-				alphaCutoffParam.set(ALPHA_CUTOFF);
-			}
-		}
+		gCoreAccessor().queueCommand(std::bind(&ScenePickingCore::destroy, mCore));
 	}
 
 	HSceneObject ScenePicking::pickClosestObject(const CameraHandlerPtr& cam, const Vector2I& position, const Vector2I& area)
@@ -182,12 +155,12 @@ namespace BansheeEngine
 		UINT32 firstGizmoIdx = (UINT32)pickData.size();
 
 		SPtr<RenderTargetCore> target = cam->getViewport()->getTarget()->getCore();
-		gCoreAccessor().queueCommand(std::bind(&ScenePicking::corePickingBegin, this, target, 
+		gCoreAccessor().queueCommand(std::bind(&ScenePickingCore::corePickingBegin, mCore, target,
 			cam->getViewport()->getNormArea(), std::cref(pickData), position, area));
 
 		GizmoManager::instance().renderForPicking(cam, [&](UINT32 inputIdx) { return encodeIndex(firstGizmoIdx + inputIdx); });
 
-		AsyncOp op = gCoreAccessor().queueReturnCommand(std::bind(&ScenePicking::corePickingEnd, this, target, 
+		AsyncOp op = gCoreAccessor().queueReturnCommand(std::bind(&ScenePickingCore::corePickingEnd, mCore, target, 
 			cam->getViewport()->getNormArea(), position, area, _1));
 		gCoreAccessor().submitToCoreThread(true);
 
@@ -218,8 +191,70 @@ namespace BansheeEngine
 		return results;
 	}
 
-	void ScenePicking::corePickingBegin(const SPtr<RenderTargetCore>& target, const Rect2& viewportArea, 
-		const RenderableSet& renderables, const Vector2I& position, const Vector2I& area)
+	Color ScenePicking::encodeIndex(UINT32 index)
+	{
+		Color encoded;
+		encoded.r = (index & 0xFF) / 255.0f;
+		encoded.g = ((index >> 8) & 0xFF) / 255.0f;
+		encoded.b = ((index >> 16) & 0xFF) / 255.0f;
+		encoded.a = 1.0f;
+
+		if (((index >> 24) & 0xFF))
+			LOGERR("Index when picking out of valid range.");
+
+		return encoded;
+	}
+
+	UINT32 ScenePicking::decodeIndex(Color color)
+	{
+		UINT32 r = Math::roundToInt(color.r * 255.0f);
+		UINT32 g = Math::roundToInt(color.g * 255.0f);
+		UINT32 b = Math::roundToInt(color.b * 255.0f);
+
+		return (r & 0xFF) | ((g & 0xFF) << 8) | ((b & 0xFF) << 16);
+	}
+
+	void ScenePickingCore::initialize()
+	{
+		for (UINT32 i = 0; i < 3; i++)
+		{
+			MaterialData& md = mMaterialData[i];
+
+			{
+				SPtr<PassParametersCore> passParams = md.mMatPickingCore->getPassParameters(0);
+
+				md.mParamPickingVertParams = passParams->mVertParams;
+				md.mParamPickingVertParams->getParam("matWorldViewProj", md.mParamPickingWVP);
+
+				md.mParamPickingFragParams = passParams->mFragParams;
+				md.mParamPickingFragParams->getParam("colorIndex", md.mParamPickingColor);
+			}
+
+			{
+				SPtr<PassParametersCore> passParams = md.mMatPickingAlphaCore->getPassParameters(0);
+
+				md.mParamPickingAlphaVertParams = passParams->mVertParams;
+				md.mParamPickingAlphaVertParams->getParam("matWorldViewProj", md.mParamPickingAlphaWVP);
+
+				md.mParamPickingAlphaFragParams = passParams->mFragParams;
+
+				md.mParamPickingAlphaFragParams->getParam("colorIndex", md.mParamPickingAlphaColor);
+				md.mParamPickingAlphaFragParams->getTextureParam("mainTexture", md.mParamPickingAlphaTexture);
+
+				GpuParamFloatCore alphaCutoffParam;
+				md.mParamPickingAlphaFragParams->getParam("alphaCutoff", alphaCutoffParam);
+				alphaCutoffParam.set(ALPHA_CUTOFF);
+			}
+		}
+	}
+
+	void ScenePickingCore::destroy()
+	{
+		bs_delete(this);
+	}
+
+	void ScenePickingCore::corePickingBegin(const SPtr<RenderTargetCore>& target, const Rect2& viewportArea,
+		const ScenePicking::RenderableSet& renderables, const Vector2I& position, const Vector2I& area)
 	{
 		RenderSystem& rs = RenderSystem::instance();
 
@@ -246,7 +281,7 @@ namespace BansheeEngine
 					Renderer::setPass(mMaterialData[(UINT32)activeMaterialCull].mMatPickingCore, 0);
 			}
 
-			Color color = encodeIndex(renderable.index);
+			Color color = ScenePicking::encodeIndex(renderable.index);
 			MaterialData& md = mMaterialData[(UINT32)activeMaterialCull];
 
 			if (activeMaterialIsAlpha)
@@ -271,7 +306,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void ScenePicking::corePickingEnd(const SPtr<RenderTargetCore>& target, const Rect2& viewportArea, const Vector2I& position, 
+	void ScenePickingCore::corePickingEnd(const SPtr<RenderTargetCore>& target, const Rect2& viewportArea, const Vector2I& position,
 		const Vector2I& area, AsyncOp& asyncOp)
 	{
 		const RenderTargetProperties& rtProps = target->getProperties();
@@ -315,7 +350,7 @@ namespace BansheeEngine
 				for (UINT32 x = (UINT32)position.x; x < maxWidth; x++)
 				{
 					Color color = outputPixelData->getColorAt(x, vertOffset - y);
-					UINT32 index = decodeIndex(color);
+					UINT32 index = ScenePicking::decodeIndex(color);
 
 					if (index == 0x00FFFFFF) // Nothing selected
 						continue;
@@ -335,7 +370,7 @@ namespace BansheeEngine
 				for (UINT32 x = (UINT32)position.x; x < maxWidth; x++)
 				{
 					Color color = outputPixelData->getColorAt(x, y);
-					UINT32 index = decodeIndex(color);
+					UINT32 index = ScenePicking::decodeIndex(color);
 
 					if (index == 0x00FFFFFF) // Nothing selected
 						continue;
@@ -370,28 +405,5 @@ namespace BansheeEngine
 			results.push_back(selectedObject.index);
 
 		asyncOp._completeOperation(results);
-	}
-
-	Color ScenePicking::encodeIndex(UINT32 index)
-	{
-		Color encoded;
-		encoded.r = (index & 0xFF) / 255.0f;
-		encoded.g = ((index >> 8) & 0xFF) / 255.0f;
-		encoded.b = ((index >> 16) & 0xFF) / 255.0f;
-		encoded.a = 1.0f;
-
-		if (((index >> 24) & 0xFF))
-			LOGERR("Index when picking out of valid range.");
-
-		return encoded;
-	}
-
-	UINT32 ScenePicking::decodeIndex(Color color)
-	{
-		UINT32 r = Math::roundToInt(color.r * 255.0f);
-		UINT32 g = Math::roundToInt(color.g * 255.0f);
-		UINT32 b = Math::roundToInt(color.b * 255.0f);
-
-		return (r & 0xFF) | ((g & 0xFF) << 8) | ((b & 0xFF) << 16);
 	}
 }

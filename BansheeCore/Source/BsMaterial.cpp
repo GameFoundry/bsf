@@ -24,6 +24,43 @@ namespace BansheeEngine
 		bool create;
 	};
 
+	SPtr<PassParametersCore> convertParamsToCore(const SPtr<PassParameters>& passParams)
+	{
+		SPtr<PassParametersCore> passParameters = bs_shared_ptr<PassParametersCore>();
+
+		if (passParams->mVertParams != nullptr)
+			passParameters->mVertParams = passParams->mVertParams->getCore();
+		else
+			passParameters->mVertParams = nullptr;
+
+		if (passParams->mFragParams != nullptr)
+			passParameters->mFragParams = passParams->mFragParams->getCore();
+		else
+			passParameters->mFragParams = nullptr;
+
+		if (passParams->mGeomParams != nullptr)
+			passParameters->mGeomParams = passParams->mGeomParams->getCore();
+		else
+			passParameters->mGeomParams = nullptr;
+
+		if (passParams->mHullParams != nullptr)
+			passParameters->mHullParams = passParams->mHullParams->getCore();
+		else
+			passParameters->mHullParams = nullptr;
+
+		if (passParams->mDomainParams != nullptr)
+			passParameters->mDomainParams = passParams->mDomainParams->getCore();
+		else
+			passParameters->mDomainParams = nullptr;
+
+		if (passParams->mComputeParams != nullptr)
+			passParameters->mComputeParams = passParams->mComputeParams->getCore();
+		else
+			passParameters->mComputeParams = nullptr;
+
+		return passParameters;
+	}
+
 	bool areParamsEqual(const GpuParamDataDesc& paramA, const GpuParamDataDesc& paramB, bool ignoreBufferOffsets)
 	{
 		bool equal = paramA.arraySize == paramB.arraySize && paramA.elementSize == paramB.elementSize
@@ -776,6 +813,17 @@ namespace BansheeEngine
 		setShader(shader);
 	}
 
+	MaterialCore::MaterialCore(const SPtr<ShaderCore>& shader, const SPtr<TechniqueCore>& bestTechnique,
+		const Set<String>& validShareableParamBlocks, const Map<String, String>& validParams,
+		const Vector<SPtr<PassParametersCore>>& passParams)
+	{
+		mShader = shader;
+		mBestTechnique = bestTechnique;
+		mValidShareableParamBlocks = validShareableParamBlocks;
+		mValidParams = validParams;
+		mParametersPerPass = passParams;
+	}
+
 	void MaterialCore::syncToCore(const CoreSyncData& data)
 	{
 		char* dataPtr = (char*)data.getBuffer();
@@ -828,11 +876,28 @@ namespace BansheeEngine
 
 	SPtr<CoreObjectCore> Material::createCore() const
 	{
+		MaterialCore* material = nullptr;
+
 		SPtr<ShaderCore> shader;
 		if (mShader != nullptr)
+		{
 			shader = mShader->getCore();
 
-		MaterialCore* material = new (bs_alloc<MaterialCore>()) MaterialCore(shader);
+			if (mBestTechnique != nullptr)
+			{
+				SPtr<TechniqueCore> technique = mBestTechnique->getCore();
+
+				Vector<SPtr<PassParametersCore>> passParams;
+				for (auto& passParam : mParametersPerPass)
+					passParams.push_back(convertParamsToCore(passParam));
+
+				material = new (bs_alloc<MaterialCore>()) MaterialCore(shader, technique, mValidShareableParamBlocks, mValidParams, passParams);
+			}
+		}
+		
+		if (material == nullptr)
+			material = new (bs_alloc<MaterialCore>()) MaterialCore(shader);
+
 		SPtr<MaterialCore> materialPtr = bs_shared_ptr<MaterialCore, GenAlloc>(material);
 		materialPtr->_setThisPtr(materialPtr);
 
@@ -856,37 +921,7 @@ namespace BansheeEngine
 		for (UINT32 i = 0; i < numPasses; i++)
 		{
 			SPtr<PassParametersCore>* passParameters = new (dataPtr) SPtr<PassParametersCore>();
-			*passParameters = bs_shared_ptr<PassParametersCore>();
-
-			if (mParametersPerPass[i]->mVertParams != nullptr)
-				(*passParameters)->mVertParams = mParametersPerPass[i]->mVertParams->getCore();
-			else
-				(*passParameters)->mVertParams = nullptr;
-			
-			if (mParametersPerPass[i]->mFragParams != nullptr)
-				(*passParameters)->mFragParams = mParametersPerPass[i]->mFragParams->getCore();
-			else
-				(*passParameters)->mFragParams = nullptr;
-
-			if (mParametersPerPass[i]->mGeomParams != nullptr)
-				(*passParameters)->mGeomParams = mParametersPerPass[i]->mGeomParams->getCore();
-			else
-				(*passParameters)->mGeomParams = nullptr;
-
-			if (mParametersPerPass[i]->mHullParams != nullptr)
-				(*passParameters)->mHullParams = mParametersPerPass[i]->mHullParams->getCore();
-			else
-				(*passParameters)->mHullParams = nullptr;
-
-			if (mParametersPerPass[i]->mDomainParams != nullptr)
-				(*passParameters)->mDomainParams = mParametersPerPass[i]->mDomainParams->getCore();
-			else
-				(*passParameters)->mDomainParams = nullptr;
-
-			if (mParametersPerPass[i]->mComputeParams != nullptr)
-				(*passParameters)->mComputeParams = mParametersPerPass[i]->mComputeParams->getCore();
-			else
-				(*passParameters)->mComputeParams = nullptr;
+			*passParameters = convertParamsToCore(mParametersPerPass[i]);
 
 			dataPtr += sizeof(SPtr<PassParametersCore>);
 		}

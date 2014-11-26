@@ -194,11 +194,11 @@ namespace BansheeEngine
 		void setParamBlockBuffer(const String& name, const ParamsBufferType& paramBlockBuffer);
 
 		/**
-		* @brief	Returns a handle for the parameter with the specified name.
-		*			Handle may then be stored and used for quickly setting or retrieving
-		*			values to/from that parameter.
-		*
-		*			Throws exception if parameter with that name and type doesn't exist.
+		 * @brief	Returns a handle for the parameter with the specified name.
+		 *			Handle may then be stored and used for quickly setting or retrieving
+		 *			values to/from that parameter.
+		 *
+		 *			Throws exception if parameter with that name and type doesn't exist.
 		*
 		*			Parameter handles will be invalidated when their parent GpuParams object changes.
 		*/

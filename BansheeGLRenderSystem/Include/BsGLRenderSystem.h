@@ -181,7 +181,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns main context. Caller must ensure the context has been initialized.
 		 */
-		GLContext* getMainContext() const { return mMainContext; } 
+		SPtr<GLContext> getMainContext() const { return mMainContext; } 
 
 		/**
 		 * @brief	Returns a support object you may use for creating
@@ -307,7 +307,7 @@ namespace BansheeEngine
 		 * @brief	Switch the currently used OpenGL context. You will need to re-bind
 		 *			any previously bound values manually. (e.g. textures, gpu programs and such)
 		 */
-		void switchContext(GLContext* context);
+		void switchContext(const SPtr<GLContext>& context);
 
 		/************************************************************************/
 		/* 								Sampler states                     		*/
@@ -585,8 +585,8 @@ namespace BansheeEngine
 		SPtr<IndexBufferCore> mBoundIndexBuffer;
 		DrawOperationType mCurrentDrawOperation;
 
-		GLContext* mMainContext;
-		GLContext* mCurrentContext;
+		SPtr<GLContext> mMainContext;
+		SPtr<GLContext> mCurrentContext;
 
 		bool mDrawCallInProgress;
 

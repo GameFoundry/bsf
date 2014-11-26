@@ -2,12 +2,6 @@
 
  - Make RenderableHandler a CoreObject and remove RenderableProxy
    - BansheeRenderer::mDeletedRenderableProxies is holding references to core objects
- - Rename CoreObject initialize_internal and destroy_internal to initializeCore/destroyCore and make them private
-
-Add getCore/createCore and MaterialCore for Material
-Try compiling and see if that works. Then begin on template refactor:
- - Refactor Material/GpuParams/MaterialParam/GpuParam/Technique/Shader so they use explicit tempalate instantiation and move their implementations to the source file
-Dont forget material sync methods
 
 GpuParams refactor:
 
@@ -17,16 +11,11 @@ I need to ensure renderer buffers get set properly after GpuParams are synced
    (In case user overrides Renderer buffers)
     - Likely just an extra field on GPuParamsCore
 
-
-Should I force CoreObject sync whenever submitCoreAccessors is called?
- - This way I ensure the data is up to date. e.g. if user updates GpuParams and immediately performs
-   some rendering use CoreAccessor that update will not register.
- - Also I can properly handle cases where sim thread needs to access core thread data immediately (e.g. RenderWindow HWND)
- - I'd have to remove submit() calls from CoreAccessors themselves and leave just the one on CoreThread
-
 Disallow CoreObject creation from core thread
  - Add asserts in CoreObject::destroy and CoreObject::initialize
  - Possibly also add asserts to CoreThread::queueCommand and CoreThread::queueReturnCommand
+
+Refactor RenderSystem and CoreThreadAccessor methods (move them to RenderSystem and make current RenderSystem a RenderSystemCore)
 
  New issues:
   - Since Mesh refactor when I select/deselect a gizmo the entire render texture flashes white for one frame (might be related to RT refactor instead)

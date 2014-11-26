@@ -54,7 +54,7 @@ namespace BansheeEngine
 		 *
 		 * @returns	Newly created GLContext class referencing the created or external context handle.
 		 */
-		Win32Context* createContext(HDC hdc, HGLRC externalGlrc = 0);
+		SPtr<Win32Context> createContext(HDC hdc, HGLRC externalGlrc = 0);
 
 		/**
 		 * @brief	Selects and sets an appropriate pixel format based on the provided parameters.

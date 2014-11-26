@@ -580,6 +580,9 @@ namespace BansheeEngine
 
 		MaterialCore() { }
 		MaterialCore(const SPtr<ShaderCore>& shader);
+		MaterialCore(const SPtr<ShaderCore>& shader, const SPtr<TechniqueCore>& bestTechnique, 
+			const Set<String>& validShareableParamBlocks, const Map<String, String>& validParams, 
+			const Vector<SPtr<PassParametersCore>>& passParams);
 
 		/**
 		 * @copydoc	CoreObjectCore::syncToCore

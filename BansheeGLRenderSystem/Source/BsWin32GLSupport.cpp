@@ -83,7 +83,7 @@ namespace BansheeEngine
         }
 	}
 
-	Win32Context* Win32GLSupport::createContext(HDC hdc, HGLRC externalGlrc)
+	SPtr<Win32Context> Win32GLSupport::createContext(HDC hdc, HGLRC externalGlrc)
 	{
 		GLRenderSystem* rs = static_cast<GLRenderSystem*>(RenderSystem::instancePtr());
 
@@ -129,7 +129,7 @@ namespace BansheeEngine
 			glrc = wglGetCurrentContext();
 		}
 
-		return bs_new<Win32Context>(hdc, glrc, createdNew);
+		return bs_shared_ptr<Win32Context>(hdc, glrc, createdNew);
 	}
 
 	void* Win32GLSupport::getProcAddress(const String& procname)
