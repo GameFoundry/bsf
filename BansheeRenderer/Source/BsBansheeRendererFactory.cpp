@@ -4,7 +4,7 @@
 
 namespace BansheeEngine
 {
-	RendererPtr BansheeRendererFactory::create()
+	CoreRendererPtr BansheeRendererFactory::create()
 	{
 		return bs_shared_ptr<BansheeRenderer>();
 	}

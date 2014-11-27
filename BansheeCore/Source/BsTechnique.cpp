@@ -3,7 +3,7 @@
 #include "BsRenderSystem.h"
 #include "BsRendererManager.h"
 #include "BsPass.h"
-#include "BsRenderer.h"
+#include "BsCoreRenderer.h"
 #include "BsFrameAlloc.h"
 #include "BsTechniqueRTTI.h"
 

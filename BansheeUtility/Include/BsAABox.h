@@ -136,4 +136,6 @@ namespace BansheeEngine
 		Vector3 mMinimum;
 		Vector3 mMaximum;
 	};
+
+	BS_ALLOW_MEMCPY_SERIALIZATION(AABox);
 }

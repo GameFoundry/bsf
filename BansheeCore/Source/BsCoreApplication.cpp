@@ -26,7 +26,7 @@
 #include "BsMaterialManager.h"
 #include "BsFontManager.h"
 #include "BsRenderWindowManager.h"
-#include "BsRenderer.h"
+#include "BsCoreRenderer.h"
 #include "BsDeferredCallManager.h"
 #include "BsCoreThread.h"
 #include "BsStringTable.h"

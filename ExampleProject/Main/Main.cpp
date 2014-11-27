@@ -28,7 +28,7 @@
 #include "BsSceneObject.h"
 #include "BsCoreThread.h"
 #include "BsProfilerOverlay.h"
-#include "BsRenderer.h"
+#include "BsCoreRenderer.h"
 #include "BsResources.h"
 
 #include "CameraFlyer.h"

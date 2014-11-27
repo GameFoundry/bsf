@@ -17,7 +17,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	RendererFactory::create
 		 */
-		virtual RendererPtr create();
+		virtual CoreRendererPtr create();
 
 		/**
 		 * @copydoc	RendererFactory::name

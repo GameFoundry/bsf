@@ -2,66 +2,86 @@
 
 #include "BsPrerequisites.h"
 #include "BsIReflectable.h"
-#include "BsRenderableProxy.h"
+#include "BsCoreObject.h"
+#include "BsBounds.h"
 #include "BsAABox.h"
-#include "BsGpuParam.h"
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Signals which portion of a RenderableHandler is dirty.
+	 */
+	enum class RenderableDirtyFlag
+	{
+		Transform = 0x01,
+		Everything = 0x02
+	};
+
 	/**
 	 * @brief	Renderable represents any visible object in the scene. It has a mesh,
 	 *			bounds and a set of materials. Renderer will render any Renderable objects
 	 *			visible by the camera.
 	 */
-	class BS_EXPORT RenderableHandler : public IReflectable
+	template<bool Core>
+	class BS_EXPORT TRenderableHandler
 	{
-		struct MeshData
-		{
-			MeshData() {}
-			MeshData(const HMesh& mesh);
+		template<bool Core> struct TMeshType {};
+		template<> struct TMeshType < false > { typedef HMesh Type; };
+		template<> struct TMeshType < true > { typedef SPtr<MeshCore> Type; };
 
-			HMesh mesh;
-			mutable bool isLoaded;
-		};
+		template<bool Core> struct TMaterialType {};
+		template<> struct TMaterialType < false > { typedef HMaterial Type; };
+		template<> struct TMaterialType < true > { typedef SPtr<MaterialCore> Type; };
 
-		struct MaterialData
-		{
-			MaterialData() {}
-			MaterialData(const HMaterial& material);
-
-			HMaterial material;
-			mutable bool isLoaded;
-		};
+		typedef typename TMeshType<Core>::Type MeshType;
+		typedef typename TMaterialType<Core>::Type MaterialType;
 
 	public:
-		RenderableHandler();
+		TRenderableHandler();
+		virtual ~TRenderableHandler() { }
 
 		/**
 		 * @brief	Sets the mesh to render. All sub-meshes of the mesh will be rendered,
 		 *			and you may set individual materials for each sub-mesh.
 		 */
-		void setMesh(HMesh mesh);
+		void setMesh(const MeshType& mesh);
 
 		/**
 		 * @brief	Sets a material that will be used for rendering a sub-mesh with
 		 *			the specified index. If a sub-mesh doesn't have a specific material set
 		 *			then the primary material will be used.
 		 */
-		void setMaterial(UINT32 idx, HMaterial material);
+		void setMaterial(UINT32 idx, const MaterialType& material);
 
 		/**
-		 * @brief	Sets the primary material to use for rendering. Any sub-mesh that 
+		 * @brief	Sets the primary material to use for rendering. Any sub-mesh that
 		 *			doesn't have an explicit material set will use this material.
 		 *
 		 * @note	This is equivalent to calling setMaterial(0, material).
 		 */
-		void setMaterial(HMaterial material);
+		void setMaterial(const MaterialType& material);
 
 		/**
 		 * @brief	Sets the layer bitfield. Renderable layer must match camera layer
 		 *			in order for the camera to render the component.
 		 */
 		void setLayer(UINT64 layer);
+
+		/**
+		 * @brief	Sets the transform matrix that is applied to the object
+		 *			when its being rendered.
+		 */
+		void setTransform(const Matrix4& transform);
+
+		/**
+		 * @brief	Sets the world position of the renderable.
+		 */
+		void setPosition(const Vector3& position);
+
+		/**
+		 * @brief	Sets whether the object should be rendered or not.
+		 */
+		void setIsActive(bool active);
 
 		/**
 		 * @brief	Gets the layer bitfield. Renderable layer must match camera layer
@@ -72,69 +92,135 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns the mesh used for rendering.
 		 */
-		HMesh getMesh() const { return mMeshData.mesh; }
+		MeshType getMesh() const { return mMesh; }
 
 		/**
 		 * @brief	Returns the material used for rendering a sub-mesh with
 		 *			the specified index.
 		 */
-		HMaterial getMaterial(UINT32 idx) const;
-
-		/************************************************************************/
-		/* 								CORE PROXY                      		*/
-		/************************************************************************/
+		MaterialType getMaterial(UINT32 idx) const { return mMaterials[idx]; }
 
 		/**
-		 * @brief	Checks is the core dirty flag set. This is used by external systems 
-		 *			to know when internal data has changed and core thread potentially needs to be notified.
+		 * @brief	Returns the transform matrix that is applied to the object
+		 *			when its being rendered.
 		 */
-		bool _isCoreDirty() const;
+		Matrix4 getTransform() const { return mTransform; }
 
 		/**
-		 * @brief	Marks the core dirty flag as clean.
+		 * @brief	Gets whether the object should be rendered or not.
 		 */
-		void _markCoreClean();
+		bool getIsActive() const { return mIsActive; }
 
 		/**
-		 * @brief	Marks the core data as dirty.
+		 * @brief	Retrieves the world position of the renderable.
 		 */
-		void _markCoreDirty() const { mCoreDirtyFlags = 0xFFFFFFFF; }
+		Vector3 getPosition() const { return mPosition; }
 
+	protected:
 		/**
-		 * @brief	Creates a new core proxy from the currently set Renderable data. Core proxies ensure
-		 *			that the core thread has all the necessary Renderable data, while avoiding the need
-		 *			to manage Renderable itself on the core thread.
-		 *
-		 * @note	You generally need to update the core thread with a new proxy whenever core 
-		 *			dirty flag is set.
+		 * @copydoc	CoreObject::markCoreDirty
 		 */
-		RenderableProxyPtr _createProxy(const Matrix4& worldTransform) const;
+		virtual void _markCoreDirty(RenderableDirtyFlag flag = RenderableDirtyFlag::Everything) { }
 
-		/**
-		 * @brief	Returns the currently active proxy object, if any.
-		 */
-		RenderableProxyPtr _getActiveProxy() const { return mActiveProxy; }
-
-		/**
-		 * @brief	Changes the currently active proxy object. 
-		 */
-		void _setActiveProxy(const RenderableProxyPtr& proxy) { mActiveProxy = proxy; }
-
-	private:
-		/**
-		 * @brief	Checks if any resources were loaded since last time. Marks the core data as dirty
-		 *			if they have (does nothing if all resources are already loaded).
-		 */
-		void updateResourceLoadStates() const;
-
-	private:
-		MeshData mMeshData;
-		Vector<MaterialData> mMaterialData;
+		MeshType mMesh;
+		Vector<MaterialType> mMaterials;
 		UINT64 mLayer;
 		Vector<AABox> mWorldBounds;
+		Vector3 mPosition;
+		Matrix4 mTransform;
+		bool mIsActive;
+	};
 
-		RenderableProxyPtr mActiveProxy;
-		mutable UINT32 mCoreDirtyFlags;
+	/**
+	 * @copydoc	TRenderableHandler
+	 */
+	class BS_EXPORT RenderableHandlerCore : public CoreObjectCore, public TRenderableHandler<true>
+	{
+	public:
+		~RenderableHandlerCore();
+
+		/**
+		 * @brief	Gets world bounds of the mesh rendered by this object.
+		 */
+		Bounds getBounds() const;
+
+		/**
+		 * @brief	Returns the type that controls how is this object rendered.
+		 */
+		RenderableType getRenderableType() const { return RenType_LitTextured; }
+
+		/**
+		 * @brief	Sets an ID that can be used for uniquely identifying this handler by the renderer.
+		 */
+		void setRendererId(UINT32 id) { mRendererId = id; }
+
+		/**
+		 * @brief	Retrieves an ID that can be used for uniquely identifying this handler by the renderer.
+		 */
+		UINT32 getRendererId() const { return mRendererId; }
+
+	protected:
+		friend class RenderableHandler;
+
+		RenderableHandlerCore();
+
+		/**
+		 * @copydoc	RenderableHandlerCore::initialize
+		 */
+		void initialize();
+
+		/**
+		 * @copydoc	CoreObject::syncToCore
+		 */
+		void syncToCore(const CoreSyncData& data);
+
+		UINT32 mRendererId;
+	};
+
+	/**
+	 * @copydoc	TRenderableHandler
+	 */
+	class BS_EXPORT RenderableHandler : public IReflectable, public CoreObject, public TRenderableHandler<false>
+	{
+	public:
+		/**
+		 * @brief	Gets world bounds of the mesh rendered by this object.
+		 */
+		Bounds getBounds() const;
+
+		/**
+		 * @brief	Retrieves an implementation of a renderable handler usable only from the
+		 *			core thread.
+		 */
+		SPtr<RenderableHandlerCore> getCore() const;
+
+		/**
+		 * @brief	Creates a new renderable handler instance.
+		 */
+		static RenderableHandlerPtr create();
+
+	protected:
+		RenderableHandler() { }
+
+		/**
+		 * @copydoc	CoreObject::createCore
+		 */
+		SPtr<CoreObjectCore> createCore() const;
+
+		/**
+		 * @copydoc	CoreObject::markCoreDirty
+		 */
+		void _markCoreDirty(RenderableDirtyFlag flag = RenderableDirtyFlag::Everything);
+
+		/**
+		 * @copydoc	CoreObject::syncToCore
+		 */
+		CoreSyncData syncToCore(FrameAlloc* allocator);
+
+		/**
+		 * @brief	Creates a new renderable handler instance without initializing it.
+		 */
+		static RenderableHandlerPtr createEmpty();
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

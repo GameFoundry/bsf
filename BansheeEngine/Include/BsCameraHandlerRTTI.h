@@ -102,6 +102,12 @@ namespace BansheeEngine
 			addPlainField("mBottom", 21, &CameraHandlerRTTI::getBottom, &CameraHandlerRTTI::setBottom);
 		}
 
+		virtual void onDeserializationEnded(IReflectable* obj)
+		{
+			CameraHandler* cameraHandler = static_cast<CameraHandler*>(obj);
+			cameraHandler->initialize();
+		}
+
 		virtual const String& getRTTIName()
 		{
 			static String name = "CameraHandler";
@@ -115,7 +121,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return CameraHandler::create();
+			return CameraHandler::createEmpty();
 		}
 	};
 }

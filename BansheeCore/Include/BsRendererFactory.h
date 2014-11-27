@@ -19,7 +19,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates a new instance of the renderer.
 		 */
-		virtual RendererPtr create() = 0;
+		virtual CoreRendererPtr create() = 0;
 
 		/**
 		 * @brief	Returns the name of the renderer this factory creates.

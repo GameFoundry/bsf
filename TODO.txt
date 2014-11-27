@@ -1,15 +1,14 @@
 --------- ALL LONG TERM TASKS / FIXES BELONG TO GOOGLE DOCS: ImplementationTODO OR PossibleImprovements ----------
 
- - Make RenderableHandler a CoreObject and remove RenderableProxy
-   - BansheeRenderer::mDeletedRenderableProxies is holding references to core objects
+Renderable TODO:
 
-GpuParams refactor:
-
-I need to ensure renderer buffers get set properly after GpuParams are synced
- - This used to up in updateMaterialProxy along with updating dirty params but since syncing
-   is now internal to GpuParams I need to figure out a better way of doing it.
-   (In case user overrides Renderer buffers)
-    - Likely just an extra field on GPuParamsCore
+ - Restore RenderableElement (it was in RenderableProxy files)
+ - I need to update Renderable with world transform
+   - I've removed SceneObject dirty flags so that is no longer done anywhere
+   - RenderableHandler should keep track of world transform
+     - Also I should keep track of SceneObject active state to hide/show the object as needed
+   - Make sure to call gSceneManager().updateRenderableTransforms(); BEFORE syncing
+     and not like now when it's called in renderAll after sync
 
 Disallow CoreObject creation from core thread
  - Add asserts in CoreObject::destroy and CoreObject::initialize
@@ -19,6 +18,28 @@ Refactor RenderSystem and CoreThreadAccessor methods (move them to RenderSystem 
 
  New issues:
   - Since Mesh refactor when I select/deselect a gizmo the entire render texture flashes white for one frame (might be related to RT refactor instead)
+
+HANDLE RESOURCE LOADING AND CORE OBJECT SYNC:
+How to handle RenderableHandler (and other types) that reference resource handles? What if the handle is invalid and in the process 
+of being loaded? The core thread needs to be notified when loading is complete so it retrieves the proper Core object.
+ - Add getResourceDependencies() and markDependenciesDirty() to CoreObject
+   - CoreObjectManager then keeps track of all resource handles and receives notifications from 
+     Resources when a resource finishes loading or gets modified due to reimport
+   - When such notification is issued CoreObjectManager performs a lookup among its resource handles to find 
+     CoreObject (store CoreObject as a raw pointer or an ID, but make sure to handle deletion of CoreObject properly in either case)
+   - That object then receives notifyResourceUpdated(const HResource& resource) which by default makes the object dirty
+ - This can then be used for resource hot-swap functionality as well
+
+BETTER SYNC IN GENERAL:
+ - Extend CoreObject with getDependencies() that returns all child CoreObjects
+ - Then when performing syncToCore I can iterate through all dependencies and sync them all
+   - e.g. Material references GpuParams which reference GpuParamBlockBuffer, all of which require syncing
+ - Add a method similar to syncToCore that just appends CoreSyncData to a larger object, so many objects
+   can be synced at once.
+ - Get rid of syncUpload/syncDownload methods and replace them with:
+   - Custom sync in BansheeRenderer that iterates over all Renderable and Camera objects and syncs the dirty ones
+     - Will likely want to remove core->sim sync with mesh bounds and other similar core->sync transfers
+   - Custom sync for RenderTargets that happens both ways, likely handled by RenderableTargetManager
 
 -----------------
 

@@ -67,7 +67,7 @@ namespace BansheeEngine
 		 *					internal data is dirty. syncFromCore() will be called regardless
 		 *					and it's up to the implementation to read the flags value if needed.
 		 */
-		void markCoreDirty(UINT32 flags = 0xFFFFFFFF) { mCoreDirtyFlags = flags; }
+		void markCoreDirty(UINT32 flags = 0xFFFFFFFF) { mCoreDirtyFlags |= flags; }
 
 		/**
 		 * @brief	Marks the core data as clean. Normally called right after syncFromCore()

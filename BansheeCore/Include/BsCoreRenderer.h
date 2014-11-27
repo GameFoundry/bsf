@@ -39,9 +39,11 @@ namespace BansheeEngine
 	 * @note	Normally you would iterate over all cameras, find visible objects for each camera and render
 	 *			those objects in some way.
 	 */
-	class BS_CORE_EXPORT Renderer
+	class BS_CORE_EXPORT CoreRenderer
 	{
 	public:
+		virtual ~CoreRenderer() { }
+
 		/**
 		 * @brief	Called after the renderer has been activated.
 		 *

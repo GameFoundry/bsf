@@ -21,7 +21,7 @@
 #include "BsGpuParams.h"
 #include "BsBuiltinEditorResources.h"
 #include "BsShader.h"
-#include "BsRenderer.h"
+#include "BsCoreRenderer.h"
 #include "BsGizmoManager.h"
 
 using namespace std::placeholders;
@@ -264,7 +264,7 @@ namespace BansheeEngine
 		rs.clearRenderTarget(FBT_COLOR | FBT_DEPTH | FBT_STENCIL, Color::White);
 		rs.setScissorRect(position.x, position.y, position.x + area.x, position.y + area.y);
 
-		Renderer::setPass(mMaterialData[0].mMatPickingCore, 0);
+		CoreRenderer::setPass(mMaterialData[0].mMatPickingCore, 0);
 		bool activeMaterialIsAlpha = false;
 		CullingMode activeMaterialCull = (CullingMode)0;
 
@@ -276,9 +276,9 @@ namespace BansheeEngine
 				activeMaterialCull = renderable.cullMode;
 
 				if (activeMaterialIsAlpha)
-					Renderer::setPass(mMaterialData[(UINT32)activeMaterialCull].mMatPickingAlphaCore, 0);
+					CoreRenderer::setPass(mMaterialData[(UINT32)activeMaterialCull].mMatPickingAlphaCore, 0);
 				else
-					Renderer::setPass(mMaterialData[(UINT32)activeMaterialCull].mMatPickingCore, 0);
+					CoreRenderer::setPass(mMaterialData[(UINT32)activeMaterialCull].mMatPickingCore, 0);
 			}
 
 			Color color = ScenePicking::encodeIndex(renderable.index);
@@ -302,7 +302,7 @@ namespace BansheeEngine
 				rs.bindGpuParams(GPT_FRAGMENT_PROGRAM, md.mParamPickingFragParams);
 			}
 
-			Renderer::draw(renderable.mesh, renderable.mesh->getProperties().getSubMesh(0));
+			CoreRenderer::draw(renderable.mesh, renderable.mesh->getProperties().getSubMesh(0));
 		}
 	}
 

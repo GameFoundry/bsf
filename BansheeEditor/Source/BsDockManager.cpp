@@ -10,7 +10,7 @@
 #include "BsDrawList.h"
 #include "BsCoreApplication.h"
 #include "BsRendererManager.h"
-#include "BsRenderer.h"
+#include "BsCoreRenderer.h"
 #include "BsSceneObject.h"
 #include "BsGUIManager.h"
 #include "BsBuiltinEditorResources.h"

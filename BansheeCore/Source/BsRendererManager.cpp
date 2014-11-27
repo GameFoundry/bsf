@@ -1,5 +1,5 @@
 #include "BsRendererManager.h"
-#include "BsRenderer.h"
+#include "BsCoreRenderer.h"
 #include "BsException.h"
 
 namespace BansheeEngine
@@ -16,7 +16,7 @@ namespace BansheeEngine
 		{
 			if((*iter)->name() == name)
 			{
-				RendererPtr newRenderer = (*iter)->create();
+				CoreRendererPtr newRenderer = (*iter)->create();
 				if(newRenderer != nullptr)
 				{
 					if (mActiveRenderer != nullptr)

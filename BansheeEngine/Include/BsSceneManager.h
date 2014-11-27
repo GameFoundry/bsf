@@ -52,11 +52,6 @@ namespace BansheeEngine
 		virtual const Vector<SceneRenderableData>& getAllRenderables() const = 0;
 
 		/**
-		 * @brief	Updates dirty transforms on any scene objects with a Renderable component.
-		 */
-		virtual void updateRenderableTransforms() = 0;
-
-		/**
 		 * @copydoc	CoreSceneManager::instance
 		 */
 		static SceneManager& instance();

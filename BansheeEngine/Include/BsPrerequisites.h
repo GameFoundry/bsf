@@ -75,14 +75,15 @@ namespace BansheeEngine
 	class GUIContent;
 	class GUIContextMenu;
 	class GUIDropDownHitBox;
+	class RenderableElement;
 
-	class RenderableProxy;
 	class RenderableController;
 	class ProfilerOverlay;
 	class DrawHelper;
 	class CameraHandler;
 	class RenderableHandler;
 	class CameraHandlerCore;
+	class RenderableHandlerCore;
 
 	// 2D
 	class TextSprite;
@@ -101,7 +102,6 @@ namespace BansheeEngine
 	typedef std::shared_ptr<Camera> CameraPtr;
 	typedef std::shared_ptr<Renderable> RenderablePtr;
 	typedef std::shared_ptr<GUIToggleGroup> GUIToggleGroupPtr;
-	typedef std::shared_ptr<RenderableProxy> RenderableProxyPtr;
 	typedef std::shared_ptr<CameraHandler> CameraHandlerPtr;
 	typedef std::shared_ptr<RenderableHandler> RenderableHandlerPtr;
 	typedef std::shared_ptr<InputConfiguration> InputConfigurationPtr;

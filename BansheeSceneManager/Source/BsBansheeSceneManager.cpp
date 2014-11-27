@@ -7,20 +7,6 @@
 
 namespace BansheeEngine
 {
-	void BansheeSceneManager::updateRenderableTransforms()
-	{
-		// TODO - Consider a way to make the update faster. Either do it concurrently or
-		// consider organizing renderable matrices in an array for quicker updates
-		//   - I could keep everything in a sequential array but deal with dynamic elements
-		//     but putting them in a slow, normal array. Once the number of dynamic elements
-		//	   goes over some number the hierarchy is re-optimized.
-
-		for(auto& iter : mRenderables)
-		{
-			iter.sceneObject->updateTransformsIfDirty();
-		}
-	}
-
 	void BansheeSceneManager::notifyComponentAdded(const HComponent& component)
 	{
 		if(component->getTypeId() == TID_Camera)

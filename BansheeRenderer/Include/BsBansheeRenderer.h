@@ -3,6 +3,7 @@
 #include "BsBansheeRendererPrerequisites.h"
 #include "BsRenderer.h"
 #include "BsBounds.h"
+#include "BsRenderableElement.h"
 
 namespace BansheeEngine
 {
@@ -34,16 +35,26 @@ namespace BansheeEngine
 		};
 
 		/**
-		 * @brief	Various data used by a single camera.
+		 * @brief	Data used by the renderer for a camera.
 		 */
 		struct CameraData
 		{
 			RenderQueuePtr renderQueue;
 		};
 
+		/**
+		 * @brief	Data used by the renderer when rendering renderable handlers.
+		 */
+		struct RenderableData
+		{
+			RenderableHandlerCore* renderable;
+			Vector<RenderableElement> elements;
+			RenderableController* controller;
+		};
+
 	public:
-		BansheeRenderer();
-		~BansheeRenderer();
+		BansheeRenderer() { }
+		~BansheeRenderer() { }
 
 		/**
 		 * @copydoc	Renderer::getName
@@ -69,38 +80,27 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	Renderer::_notifyCameraAdded
 		 */
-		virtual void _notifyCameraAdded(const CameraHandlerCore* camera);
+		void _notifyCameraAdded(const CameraHandlerCore* camera);
 
 		/**
 		 * @copydoc	Renderer::_notifyCameraRemoved
 		 */
-		virtual void _notifyCameraRemoved(const CameraHandlerCore* camera);
+		void _notifyCameraRemoved(const CameraHandlerCore* camera);
 
 		/**
-		 * @brief	Adds a new renderable proxy which will be considered for rendering next frame.
-		 *
-		 * @note	Core thread only.
+		 * @copydoc	Renderer::_notifyRenderableAdded
 		 */
-		void addRenderableProxy(RenderableProxyPtr proxy);
+		void _notifyRenderableAdded(RenderableHandlerCore* renderable);
 
 		/**
-		 * @brief	Removes a previously existing renderable proxy so it will no longer be considered
-		 *			for rendering.
-		 *
-		 * @note	Core thread only.
+		 * @copydoc	Renderer::_notifyRenderableUpdated
 		 */
-		void removeRenderableProxy(RenderableProxyPtr proxy);
+		void _notifyRenderableUpdated(RenderableHandlerCore* renderable);
 
 		/**
-		 * @brief	Updates an existing renderable proxy with new data. This includes data that changes
-		 *			often. For other data it is best to remove old proxy and add new one.
-		 *
-		 * @param	proxy			Proxy to update.
-		 * @param	localToWorld	Local to world transform of the parent Renderable.
-		 *
-		 * @note	Core thread only.
+		 * @copydoc	Renderer::_notifyRenderableRemoved
 		 */
-		void updateRenderableProxy(RenderableProxyPtr proxy, Matrix4 localToWorld);
+		void _notifyRenderableRemoved(RenderableHandlerCore* renderable);
 
 		/**
 		 * @brief	Adds a new set of objects to the cameras render queue.
@@ -132,12 +132,6 @@ namespace BansheeEngine
 		virtual void render(const CameraHandlerCore& camera, const RenderQueuePtr& renderQueue);
 
 		/**
-		 * @brief	Called by the scene manager whenever a Renderable component has been
-		 *			removed from the scene.
-		 */
-		void renderableRemoved(const RenderableHandlerPtr& renderable);
-
-		/**
 		 * @brief	Creates data used by the renderer on the core thread.
 		 */
 		void initializeCore();
@@ -147,17 +141,20 @@ namespace BansheeEngine
 		 */
 		void destroyCore();
 
-		Vector<RenderableProxyPtr> mDeletedRenderableProxies;
+		/**
+		 * @brief	Creates a dummy shader to be used when no other is available.
+		 */
+		SPtr<ShaderCore> createDefaultShader();
 
 		Vector<RenderTargetData> mRenderTargets; // Core thread
 		UnorderedMap<const CameraHandlerCore*, CameraData> mCameraData; // Core thread
 
-		Vector<RenderableElement*> mRenderableElements;
-		Vector<Matrix4> mWorldTransforms;
-		Vector<Bounds> mWorldBounds;
+		SPtr<MaterialCore> mDummyMaterial; // Core thread
+
+		Vector<RenderableData> mRenderables; // Core thread
+		Vector<Matrix4> mWorldTransforms; // Core thread
+		Vector<Bounds> mWorldBounds; // Core thread
 
 		LitTexRenderableController* mLitTexHandler;
-
-		HEvent mRenderableRemovedConn;
 	};
 }

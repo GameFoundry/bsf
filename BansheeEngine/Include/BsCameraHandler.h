@@ -576,6 +576,11 @@ namespace BansheeEngine
 		 */
 		CoreSyncData syncToCore(FrameAlloc* allocator);
 
+		/**
+		 * @brief	Creates a new camera without initializing it.
+		 */
+		static CameraHandlerPtr createEmpty();
+
 		ViewportPtr mViewport; /**< Viewport that describes 2D rendering surface. */
 
 		/************************************************************************/

@@ -26,17 +26,17 @@ namespace BansheeEngine
 		 *			to be used. Caller must ensure the renderable element actually
 		 *			supports this handler.
 		 */
-		virtual void initializeRenderElem(RenderableElement* element) = 0;
+		virtual void initializeRenderElem(RenderableElement& element) = 0;
 
 		/**
 		 * @brief	Binds per object GPU parameter buffers to the provided element.
 		 */
-		virtual void bindPerObjectBuffers(const RenderableElement* element) = 0;
+		virtual void bindPerObjectBuffers(const RenderableElement& element) = 0;
 
 		/**
 		 * @brief	Binds global GPU parameter buffers used for this Renderable 
 		 *			type to the provided element.
 		 */
-		virtual void bindGlobalBuffers(const RenderableElement* element);
+		virtual void bindGlobalBuffers(const RenderableElement& element);
 	};
 }

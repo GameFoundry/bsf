@@ -1,5 +1,4 @@
 #include "BsBansheeLitTexRenderableController.h"
-#include "BsRenderableProxy.h"
 #include "BsShader.h"
 #include "BsGpuParams.h"
 #include "BsBansheeRenderer.h"
@@ -122,7 +121,7 @@ namespace BansheeEngine
 		lightDirParam.set(Vector4(0.707f, 0.707f, 0.707f, 0.0f));
 	}
 
-	void LitTexRenderableController::initializeRenderElem(RenderableElement* element)
+	void LitTexRenderableController::initializeRenderElem(RenderableElement& element)
 	{
 		static auto paramsMatch = [](const GpuParamDataDesc& a, const GpuParamDataDesc& b)
 		{
@@ -130,10 +129,10 @@ namespace BansheeEngine
 				a.arraySize == b.arraySize && a.arrayElementStride == b.arrayElementStride;
 		};
 
-		element->rendererData = PerObjectData();
-		PerObjectData* rendererData = any_cast_unsafe<PerObjectData>(&element->rendererData);
+		element.rendererData = PerObjectData();
+		PerObjectData* rendererData = any_cast_unsafe<PerObjectData>(&element.rendererData);
 
-		SPtr<ShaderCore> shader = element->material->getShader();
+		SPtr<ShaderCore> shader = element.material->getShader();
 
 		const Map<String, SHADER_PARAM_BLOCK_DESC>& paramBlockDescs = shader->getParamBlocks();
 		const Map<String, SHADER_DATA_PARAM_DESC>& dataParamDescs = shader->getDataParams();
@@ -165,10 +164,10 @@ namespace BansheeEngine
 				wvpParamName = paramDesc.second.gpuVariableName;
 		}
 
-		UINT32 numPasses = element->material->getNumPasses();
+		UINT32 numPasses = element.material->getNumPasses();
 		for (UINT32 i = 0; i < numPasses; i++)
 		{
-			SPtr<PassParametersCore> passParams = element->material->getPassParameters(i);
+			SPtr<PassParametersCore> passParams = element.material->getPassParameters(i);
 
 			for (UINT32 j = 0; j < passParams->getNumParams(); j++)
 			{
@@ -188,7 +187,7 @@ namespace BansheeEngine
 						if (findIter->second.blockSize == staticParamBlockDesc.blockSize)
 						{
 							UINT32 slotIdx = findIter->second.slot;
-							element->rendererBuffers.push_back(RenderableElement::BufferBindInfo(i, j, slotIdx, staticParamBuffer));
+							element.rendererBuffers.push_back(RenderableElement::BufferBindInfo(i, j, slotIdx, staticParamBuffer));
 						}
 					}
 				}
@@ -201,7 +200,7 @@ namespace BansheeEngine
 						if (findIter->second.blockSize == perFrameParamBlockDesc.blockSize)
 						{
 							UINT32 slotIdx = findIter->second.slot;
-							element->rendererBuffers.push_back(RenderableElement::BufferBindInfo(i, j, slotIdx, perFrameParamBuffer));
+							element.rendererBuffers.push_back(RenderableElement::BufferBindInfo(i, j, slotIdx, perFrameParamBuffer));
 						}
 					}
 				}
@@ -239,12 +238,12 @@ namespace BansheeEngine
 		bindGlobalBuffers(element);
 	}
 
-	void LitTexRenderableController::bindPerObjectBuffers(const RenderableElement* element)
+	void LitTexRenderableController::bindPerObjectBuffers(const RenderableElement& element)
 	{
-		const PerObjectData* rendererData = any_cast_unsafe<PerObjectData>(&element->rendererData);
+		const PerObjectData* rendererData = any_cast_unsafe<PerObjectData>(&element.rendererData);
 		for (auto& perObjectBuffer : rendererData->perObjectBuffers)
 		{
-			SPtr<GpuParamsCore> params = element->material->getPassParameters(perObjectBuffer.passIdx)->getParamByIdx(perObjectBuffer.paramsIdx);
+			SPtr<GpuParamsCore> params = element.material->getPassParameters(perObjectBuffer.passIdx)->getParamByIdx(perObjectBuffer.paramsIdx);
 
 			params->setParamBlockBuffer(perObjectBuffer.slotIdx, rendererData->perObjectParamBuffer);
 		}
@@ -258,9 +257,9 @@ namespace BansheeEngine
 		perFrameParams->updateHardwareBuffers();
 	}
 
-	void LitTexRenderableController::updatePerObjectBuffers(RenderableElement* element, const Matrix4& wvpMatrix)
+	void LitTexRenderableController::updatePerObjectBuffers(RenderableElement& element, const Matrix4& wvpMatrix)
 	{
-		PerObjectData* rendererData = any_cast_unsafe<PerObjectData>(&element->rendererData);
+		PerObjectData* rendererData = any_cast_unsafe<PerObjectData>(&element.rendererData);
 
 		if (rendererData->hasWVPParam)
 			rendererData->wvpParam.set(wvpMatrix);

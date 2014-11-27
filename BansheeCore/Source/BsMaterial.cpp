@@ -859,6 +859,16 @@ namespace BansheeEngine
 		dataPtr += sizeof(SPtr<TechniqueCore>);
 	}
 
+	SPtr<MaterialCore> MaterialCore::create(const SPtr<ShaderCore>& shader)
+	{
+		MaterialCore* material = new (bs_alloc<MaterialCore>()) MaterialCore(shader);
+		SPtr<MaterialCore> materialPtr = bs_shared_ptr<MaterialCore, GenAlloc>(material);
+		materialPtr->_setThisPtr(materialPtr);
+		materialPtr->initialize();
+
+		return materialPtr;
+	}
+
 	Material::Material(const ShaderPtr& shader)
 	{
 		setShader(shader);

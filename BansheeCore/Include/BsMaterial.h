@@ -575,6 +575,11 @@ namespace BansheeEngine
 	public:
 		~MaterialCore() { }
 
+		/**
+		 * @brief	Creates a new material with the specified shader.
+		 */
+		static SPtr<MaterialCore> create(const SPtr<ShaderCore>& shader);
+
 	private:
 		friend class Material;
 

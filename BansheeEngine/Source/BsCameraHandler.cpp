@@ -10,7 +10,7 @@
 #include "BsSceneObject.h"
 #include "BsDebug.h"
 #include "BsRendererManager.h"
-#include "BsRenderer.h"
+#include "BsCoreRenderer.h"
 #include "BsFrameAlloc.h"
 
 namespace BansheeEngine
@@ -744,6 +744,15 @@ namespace BansheeEngine
 		CameraHandlerPtr handlerPtr = bs_core_ptr<CameraHandler, GenAlloc>(handler);
 		handlerPtr->_setThisPtr(handlerPtr);
 		handlerPtr->initialize();
+
+		return handlerPtr;
+	}
+
+	CameraHandlerPtr CameraHandler::createEmpty()
+	{
+		CameraHandler* handler = new (bs_alloc<CameraHandler>()) CameraHandler();
+		CameraHandlerPtr handlerPtr = bs_core_ptr<CameraHandler, GenAlloc>(handler);
+		handlerPtr->_setThisPtr(handlerPtr);
 
 		return handlerPtr;
 	}

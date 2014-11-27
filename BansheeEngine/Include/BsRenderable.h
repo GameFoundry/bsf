@@ -2,6 +2,7 @@
 
 #include "BsPrerequisites.h"
 #include "BsRenderableHandler.h"
+#include "BsBounds.h"
 #include "BsComponent.h"
 
 namespace BansheeEngine
@@ -58,42 +59,14 @@ namespace BansheeEngine
 		 */
 		RenderableHandlerPtr _getHandler() const { return mInternal; }
 
-		/************************************************************************/
-		/* 								CORE PROXY                      		*/
-		/************************************************************************/
-
-		/**
-		 * @copydoc	RenderableHandler::_isCoreDirty
-		 */
-		bool _isCoreDirty() const { return mInternal->_isCoreDirty(); }
-
-		/**
-		 * @copydoc	RenderableHandler::_markCoreClean
-		 */
-		void _markCoreClean() { mInternal->_markCoreClean(); }
-
-		/**
-		 * @copydoc	RenderableHandler::_markCoreDirty
-		 */
-		void _markCoreDirty() const { mInternal->_markCoreDirty(); }
-
-		/**
-		 * @copydoc	RenderableHandler::_createProxy
-		 */
-		RenderableProxyPtr _createProxy() const;
-
-		/**
-		 * @copydoc	RenderableHandler::_getActiveProxy
-		 */
-		RenderableProxyPtr _getActiveProxy() const { return mInternal->_getActiveProxy();; }
-
-		/**
-		 * @copydoc	RenderableHandler::_setActiveProxy
-		 */
-		void _setActiveProxy(const RenderableProxyPtr& proxy) { mInternal->_setActiveProxy(proxy); }
-
 	private:
-		RenderableHandlerPtr mInternal;
+		/**
+		 * @brief	Updates the world transform if the SceneObject transform changed.
+		 */
+		void updateTransform() const;
+
+		mutable RenderableHandlerPtr mInternal;
+		mutable UINT32 mLastUpdateHash;
 
 		/************************************************************************/
 		/* 							COMPONENT OVERRIDES                    		*/
@@ -108,7 +81,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	Component::update
 		 */
-		virtual void update() {}
+		virtual void update();
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

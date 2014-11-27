@@ -39,7 +39,7 @@
 #include "BsGUIButton.h"
 #include "BsGUILayout.h"
 #include "BsEvent.h"
-#include "BsRenderer.h"
+#include "BsCoreRenderer.h"
 #include "BsProjectSettings.h"
 
 namespace BansheeEngine

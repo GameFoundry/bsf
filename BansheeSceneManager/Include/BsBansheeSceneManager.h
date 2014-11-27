@@ -27,11 +27,6 @@ namespace BansheeEngine
 		 */
 		const Vector<SceneRenderableData>& getAllRenderables() const { return mRenderables; }
 
-		/**
-		 * @copydoc	SceneManager
-		 */
-		void updateRenderableTransforms();
-
 	private:
 		/**
 		 * @brief	Called by scene objects whenever a new component is added to the scene.

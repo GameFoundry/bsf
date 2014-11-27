@@ -375,7 +375,7 @@
     <ClInclude Include="Include\BsCorePrerequisites.h" />
     <ClInclude Include="Include\BsRasterizerState.h" />
     <ClInclude Include="Include\BsRasterizerStateRTTI.h" />
-    <ClInclude Include="Include\BsRenderer.h" />
+    <ClInclude Include="Include\BsCoreRenderer.h" />
     <ClInclude Include="Include\BsRendererFactory.h" />
     <ClInclude Include="Include\BsRendererManager.h" />
     <ClInclude Include="Include\BsRenderStateManager.h" />
@@ -471,7 +471,7 @@
     <ClCompile Include="Source\BsPlatform.cpp" />
     <ClCompile Include="Source\BsProfilingManager.cpp" />
     <ClCompile Include="Source\BsQueryManager.cpp" />
-    <ClCompile Include="Source\BsRenderer.cpp" />
+    <ClCompile Include="Source\BsCoreRenderer.cpp" />
     <ClCompile Include="Source\BsResourceManifest.cpp" />
     <ClCompile Include="Source\BsResourceMetaData.cpp" />
     <ClCompile Include="Source\BsTextureImportOptions.cpp" />

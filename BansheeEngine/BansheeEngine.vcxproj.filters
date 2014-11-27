@@ -249,9 +249,6 @@
     <ClInclude Include="Include\BsRectOffset.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsRenderableProxy.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsRenderQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -284,6 +281,12 @@
     </ClInclude>
     <ClInclude Include="Include\BsRenderableHandlerRTTI.h">
       <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsRenderableElement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsRenderer.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -461,9 +464,6 @@
     <ClCompile Include="Source\BsBuiltinResources.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsRenderableProxy.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\BsRenderQueue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -486,6 +486,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsRenderableHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

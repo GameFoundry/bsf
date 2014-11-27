@@ -12,7 +12,7 @@
 #include "BsMaterial.h"
 #include "BsGpuParams.h"
 #include "BsRenderSystem.h"
-#include "BsRenderer.h"
+#include "BsCoreRenderer.h"
 #include "BsTransientMesh.h"
 #include "BsRendererManager.h"
 #include "BsDrawHelper.h"
@@ -700,7 +700,7 @@ namespace BansheeEngine
 			alphaCutoffParam.set(PICKING_ALPHA_CUTOFF);
 		}
 
-		RendererPtr activeRenderer = RendererManager::instance().getActive();
+		CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
 		activeRenderer->onCorePostRenderViewport.connect(std::bind(&GizmoManagerCore::render, this, _1));
 	}
 
@@ -752,19 +752,19 @@ namespace BansheeEngine
 		{
 		case GizmoManager::GizmoMaterial::Solid:
 			mSolidMaterial.mViewProj.set(viewProjMat);
-			Renderer::setPass(mSolidMaterial.mat, 0);
+			CoreRenderer::setPass(mSolidMaterial.mat, 0);
 			break;
 		case GizmoManager::GizmoMaterial::Wire:
 			mWireMaterial.mViewProj.set(viewProjMat);
-			Renderer::setPass(mWireMaterial.mat, 0);
+			CoreRenderer::setPass(mWireMaterial.mat, 0);
 			break;
 		case GizmoManager::GizmoMaterial::Picking:
 			mPickingMaterial.mViewProj.set(viewProjMat);
-			Renderer::setPass(mPickingMaterial.mat, 0);
+			CoreRenderer::setPass(mPickingMaterial.mat, 0);
 			break;
 		}
 		
-		Renderer::draw(mesh, mesh->getProperties().getSubMesh(0));
+		CoreRenderer::draw(mesh, mesh->getProperties().getSubMesh(0));
 	}
 
 	void GizmoManagerCore::renderIconGizmos(Rect2I screenArea, SPtr<MeshCoreBase> mesh, GizmoManager::IconRenderDataVecPtr renderData, bool usePickingMaterial)
@@ -808,7 +808,7 @@ namespace BansheeEngine
 
 			for (UINT32 passIdx = 0; passIdx < 2; passIdx++)
 			{
-				Renderer::setPass(mIconMaterial.mat, passIdx);
+				CoreRenderer::setPass(mIconMaterial.mat, passIdx);
 
 				UINT32 curIndexOffset = mesh->getIndexOffset();
 				for (auto curRenderData : *renderData)
@@ -825,7 +825,7 @@ namespace BansheeEngine
 		{
 			mAlphaPickingMaterial.mViewProj.set(projMat);
 
-			Renderer::setPass(mAlphaPickingMaterial.mat, 0);
+			CoreRenderer::setPass(mAlphaPickingMaterial.mat, 0);
 
 			UINT32 curIndexOffset = 0;
 			for (auto curRenderData : *renderData)

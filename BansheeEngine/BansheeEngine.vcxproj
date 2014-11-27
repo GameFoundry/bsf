@@ -239,7 +239,7 @@
     <ClCompile Include="Source\BsInputConfiguration.cpp" />
     <ClCompile Include="Source\BsRenderableController.cpp" />
     <ClCompile Include="Source\BsRenderableHandler.cpp" />
-    <ClCompile Include="Source\BsRenderableProxy.cpp" />
+    <ClCompile Include="Source\BsRenderer.cpp" />
     <ClCompile Include="Source\BsRenderQueue.cpp" />
     <ClCompile Include="Source\BsVirtualInput.cpp" />
     <ClInclude Include="Include\BsApplication.h" />
@@ -247,8 +247,10 @@
     <ClInclude Include="Include\BsCameraHandlerRTTI.h" />
     <ClInclude Include="Include\BsCursor.h" />
     <ClInclude Include="Include\BsDrawHelper.h" />
+    <ClInclude Include="Include\BsRenderableElement.h" />
     <ClInclude Include="Include\BsRenderableHandler.h" />
     <ClInclude Include="Include\BsRenderableHandlerRTTI.h" />
+    <ClInclude Include="Include\BsRenderer.h" />
     <ClInclude Include="Include\BsShapeMeshes3D.h" />
     <ClInclude Include="Include\BsDragAndDropManager.h" />
     <ClInclude Include="Include\BsShapeMeshes2D.h" />
@@ -306,7 +308,6 @@
     <ClInclude Include="Include\BsProfilerOverlay.h" />
     <ClInclude Include="Include\BsRectOffset.h" />
     <ClInclude Include="Include\BsRenderableController.h" />
-    <ClInclude Include="Include\BsRenderableProxy.h" />
     <ClInclude Include="Include\BsRenderQueue.h" />
     <ClInclude Include="Include\BsSceneManager.h" />
     <ClInclude Include="Include\BsGUIScrollArea.h" />

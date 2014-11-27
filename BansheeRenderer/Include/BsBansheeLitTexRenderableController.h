@@ -4,7 +4,7 @@
 #include "BsRenderableController.h"
 #include "BsGpuParamDesc.h"
 #include "BsGpuParam.h"
-#include "BsRenderableProxy.h"
+#include "BsRenderableElement.h"
 
 namespace BansheeEngine
 {
@@ -36,12 +36,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	RenderableHandler::initializeRenderElem
 		 */
-		void initializeRenderElem(RenderableElement* element);
+		void initializeRenderElem(RenderableElement& element);
 
 		/**
 		 * @copydoc	RenderableHandler::bindPerObjectBuffers
 		 */
-		void bindPerObjectBuffers(const RenderableElement* element);
+		void bindPerObjectBuffers(const RenderableElement& element);
 
 		/**
 		 * @brief	Updates global parameter buffers with new values. 
@@ -53,7 +53,7 @@ namespace BansheeEngine
 		 * @brief	Updates object specific parameter buffers with new values.
 		 *			To be called whenever object specific values change.
 		 */
-		void updatePerObjectBuffers(RenderableElement* element, const Matrix4& wvpMatrix);
+		void updatePerObjectBuffers(RenderableElement& element, const Matrix4& wvpMatrix);
 
 	protected:
 		/**

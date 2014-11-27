@@ -238,17 +238,6 @@ namespace BansheeEngine
 		void updateTransformsIfDirty();
 
 		/**
-		 * @brief	Checks is the core dirty flag set. This is used by external systems 
-		 *			to know when internal data has changed and core thread potentially needs to be notified.
-		 */
-		bool _isCoreDirty() const { return mIsCoreDirtyFlags != 0; }
-
-		/**
-		 * @brief	Marks the core dirty flag as clean.
-		 */
-		void _markCoreClean() { mIsCoreDirtyFlags = 0; }
-
-		/**
 		 * @brief	Returns a hash value that changes whenever a scene objects
 		 *			transform gets updated. It allows you to detect changes with
 		 *			the local or world transforms without directly comparing their
@@ -269,8 +258,6 @@ namespace BansheeEngine
 		mutable Matrix4 mCachedWorldTfrm;
 
 		mutable UINT32 mDirtyFlags;
-		mutable UINT32 mIsCoreDirtyFlags;
-
 		mutable UINT32 mDirtyHash;
 
 		/**

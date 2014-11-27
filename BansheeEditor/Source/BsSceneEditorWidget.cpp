@@ -15,7 +15,7 @@
 #include "BsCoreThread.h"
 #include "BsEditorWidgetContainer.h"
 #include "BsRendererManager.h"
-#include "BsRenderer.h"
+#include "BsCoreRenderer.h"
 #include "BsGUIWidget.h"
 #include "BsSceneGrid.h"
 #include "BsInput.h"

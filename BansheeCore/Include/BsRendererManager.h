@@ -26,7 +26,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns the currently active renderer. Null if no renderer is active.
 		 */
-		RendererPtr getActive() { return mActiveRenderer; }
+		CoreRendererPtr getActive() { return mActiveRenderer; }
 
 		/**
 		 * @brief	Core renderer represents a set of shared features within all renderers.
@@ -51,7 +51,7 @@ namespace BansheeEngine
 	private:
 		Vector<RendererFactoryPtr> mAvailableFactories;
 
-		RendererPtr mActiveRenderer;
+		CoreRendererPtr mActiveRenderer;
 	};
 }
 

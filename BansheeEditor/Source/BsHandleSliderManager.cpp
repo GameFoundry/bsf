@@ -4,7 +4,7 @@
 #include "BsBuiltinEditorResources.h"
 #include "BsCoreThread.h"
 #include "BsRendererManager.h"
-#include "BsRenderer.h"
+#include "BsCoreRenderer.h"
 #include "BsTransientMesh.h"
 #include "BsCamera.h"
 #include "BsHandleSlider.h"

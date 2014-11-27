@@ -4,7 +4,7 @@
 #include "BsBuiltinEditorResources.h"
 #include "BsCoreThread.h"
 #include "BsRendererManager.h"
-#include "BsRenderer.h"
+#include "BsCoreRenderer.h"
 #include "BsTransientMesh.h"
 #include "BsCameraHandler.h"
 #include "BsSceneObject.h"
@@ -200,7 +200,7 @@ namespace BansheeEngine
 			vertParams->getParam("matViewProj", mSolidMaterial.mViewProj);
 		}
 
-		RendererPtr activeRenderer = RendererManager::instance().getActive();
+		CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
 		activeRenderer->onCorePostRenderViewport.connect(std::bind(&HandleDrawManagerCore::render, this, _1));
 	}
 
@@ -239,9 +239,9 @@ namespace BansheeEngine
 			currentType = mMeshes[0].type;
 
 			if (currentType == MeshType::Solid)
-				Renderer::setPass(mSolidMaterial.mat, 0);
+				CoreRenderer::setPass(mSolidMaterial.mat, 0);
 			else
-				Renderer::setPass(mWireMaterial.mat, 0);
+				CoreRenderer::setPass(mWireMaterial.mat, 0);
 		}
 
 		for (auto& meshData : mMeshes)
@@ -249,14 +249,14 @@ namespace BansheeEngine
 			if (currentType != meshData.type)
 			{
 				if (meshData.type == MeshType::Solid)
-					Renderer::setPass(mSolidMaterial.mat, 0);
+					CoreRenderer::setPass(mSolidMaterial.mat, 0);
 				else
-					Renderer::setPass(mWireMaterial.mat, 0);
+					CoreRenderer::setPass(mWireMaterial.mat, 0);
 
 				currentType = meshData.type;
 			}
 
-			Renderer::draw(meshData.mesh, meshData.mesh->getProperties().getSubMesh(0));
+			CoreRenderer::draw(meshData.mesh, meshData.mesh->getProperties().getSubMesh(0));
 		}
 	}
 }

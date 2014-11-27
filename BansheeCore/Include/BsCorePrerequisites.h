@@ -99,7 +99,7 @@ namespace BansheeEngine
 	class Input;
 	struct PointerEvent;
 	class RawInputHandler;
-	class Renderer;
+	class CoreRenderer;
 	class RendererFactory;
 	class AsyncOp;
 	class HardwareBufferManager;
@@ -217,7 +217,7 @@ namespace BansheeEngine
 	typedef std::shared_ptr<Pass> PassPtr;
 	typedef std::shared_ptr<Shader> ShaderPtr;
 	typedef std::shared_ptr<Material> MaterialPtr;
-	typedef std::shared_ptr<Renderer> RendererPtr;
+	typedef std::shared_ptr<CoreRenderer> CoreRendererPtr;
 	typedef std::shared_ptr<RendererFactory> RendererFactoryPtr;
 	typedef std::shared_ptr<Component> ComponentPtr;
 	typedef std::shared_ptr<GameObject> GameObjectPtr;

@@ -10,38 +10,39 @@
 namespace BansheeEngine
 {
 	Renderable::Renderable(const HSceneObject& parent)
-		:Component(parent)
+		:Component(parent), mLastUpdateHash(0)
 	{
 		setName("Renderable");
 
-		mInternal = bs_shared_ptr<RenderableHandler>();
+		mInternal = RenderableHandler::create();
 	}
 
 	Bounds Renderable::getBounds() const
 	{
-		HMesh mesh = mInternal->getMesh();
+		updateTransform();
 
-		if (mesh == nullptr || !mesh.isLoaded())
+		return mInternal->getBounds();
+	}
+
+	void Renderable::updateTransform() const
+	{
+		UINT32 curHash = SO()->getTransformHash();
+		if (curHash != mLastUpdateHash)
 		{
-			Vector3 pos = SO()->getWorldPosition();
+			mInternal->setTransform(SO()->getWorldTfrm());
 
-			AABox box(pos, pos);
-			Sphere sphere(pos, 0.0f);
-
-			return Bounds(box, sphere);
-		}
-		else
-		{
-			Bounds bounds = mesh->getProperties().getBounds();
-			bounds.transformAffine(SO()->getWorldTfrm());
-
-			return bounds;
+			mLastUpdateHash = curHash;
 		}
 	}
 
-	RenderableProxyPtr Renderable::_createProxy() const 
-	{ 
-		return mInternal->_createProxy(SO()->getWorldTfrm()); 
+	void Renderable::update()
+	{
+		updateTransform();
+
+		if (SO()->getActive() != mInternal->getIsActive())
+		{
+			mInternal->setIsActive(SO()->getActive());
+		}
 	}
 
 	RTTITypeBase* Renderable::getRTTIStatic()

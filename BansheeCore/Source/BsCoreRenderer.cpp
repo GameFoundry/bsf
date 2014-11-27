@@ -1,4 +1,4 @@
-#include "BsRenderer.h"
+#include "BsCoreRenderer.h"
 #include "BsCoreThread.h"
 #include "BsRenderSystem.h"
 #include "BsMesh.h"
@@ -10,7 +10,7 @@
 
 namespace BansheeEngine
 {
-	void Renderer::setPass(const SPtr<MaterialCore>& material, UINT32 passIdx)
+	void CoreRenderer::setPass(const SPtr<MaterialCore>& material, UINT32 passIdx)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -86,7 +86,7 @@ namespace BansheeEngine
 			rs.setRasterizerState(RasterizerState::getDefault()->getCore());
 	}
 
-	void Renderer::draw(const SPtr<MeshCoreBase>& mesh, const SubMesh& subMesh)
+	void CoreRenderer::draw(const SPtr<MeshCoreBase>& mesh, const SubMesh& subMesh)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 

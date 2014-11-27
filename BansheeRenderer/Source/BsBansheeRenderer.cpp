@@ -26,22 +26,13 @@
 #include "BsShader.h"
 #include "BsBansheeLitTexRenderableController.h"
 #include "BsTime.h"
+#include "BsRenderableElement.h"
 #include "BsFrameAlloc.h"
 
 using namespace std::placeholders;
 
 namespace BansheeEngine
 {
-	BansheeRenderer::BansheeRenderer()
-	{
-		mRenderableRemovedConn = gSceneManager().onRenderableRemoved.connect(std::bind(&BansheeRenderer::renderableRemoved, this, _1));
-	}
-
-	BansheeRenderer::~BansheeRenderer()
-	{
-		mRenderableRemovedConn.disconnect();
-	}
-
 	const String& BansheeRenderer::getName() const
 	{
 		static String name = "BansheeRenderer";
@@ -50,14 +41,14 @@ namespace BansheeEngine
 
 	void BansheeRenderer::_onActivated()
 	{
-		Renderer::_onActivated();
+		CoreRenderer::_onActivated();
 
 		gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::initializeCore, this));
 	}
 
 	void BansheeRenderer::_onDeactivated()
 	{
-		Renderer::_onDeactivated();
+		CoreRenderer::_onDeactivated();
 
 		gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::destroyCore, this));
 		gCoreAccessor().submitToCoreThread(true);
@@ -66,6 +57,9 @@ namespace BansheeEngine
 	void BansheeRenderer::initializeCore()
 	{
 		mLitTexHandler = bs_new<LitTexRenderableController>();
+
+		SPtr<ShaderCore> shader = createDefaultShader();
+		mDummyMaterial = MaterialCore::create(shader);
 	}
 
 	void BansheeRenderer::destroyCore()
@@ -75,56 +69,82 @@ namespace BansheeEngine
 
 		mRenderTargets.clear();
 		mCameraData.clear();
+		mRenderables.clear();
+
+		mDummyMaterial = nullptr;
 	}
 
-	void BansheeRenderer::addRenderableProxy(RenderableProxyPtr proxy)
+	void BansheeRenderer::_notifyRenderableAdded(RenderableHandlerCore* renderable)
 	{
-		for (auto& element : proxy->renderableElements)
+		UINT32 renderableId = (UINT32)mRenderables.size();
+
+		renderable->setRendererId(renderableId);
+
+		mRenderables.push_back(RenderableData());
+		mWorldTransforms.push_back(renderable->getTransform());
+		mWorldBounds.push_back(renderable->getBounds());
+
+		RenderableData& renderableData = mRenderables.back();
+		renderableData.renderable = renderable;
+
+		if (renderable->getRenderableType() == RenType_LitTextured)
+			renderableData.controller = mLitTexHandler;
+		else
+			renderableData.controller = nullptr;
+
+		SPtr<MeshCore> mesh = renderable->getMesh();
+		if (mesh != nullptr)
 		{
-			mRenderableElements.push_back(element);
-			mWorldTransforms.push_back(element->worldTransform);
-			mWorldBounds.push_back(element->calculateWorldBounds());
-
-			element->renderableType = proxy->renderableType;
-			if (proxy->renderableType == RenType_LitTextured)
-				element->handler = mLitTexHandler;
-			else
-				element->handler = nullptr;
-
-			if (element->handler != nullptr)
-				element->handler->initializeRenderElem(element);
-
-			element->id = (UINT32)(mRenderableElements.size() - 1);
-		}
-	}
-
-	void BansheeRenderer::removeRenderableProxy(RenderableProxyPtr proxy)
-	{
-		for (auto& element : proxy->renderableElements)
-		{
-			assert(mRenderableElements.size() > element->id && element->id >= 0);
-
-			if (mRenderableElements.size() == 0)
-				mRenderableElements.erase(mRenderableElements.begin());
-			else
+			const MeshProperties& meshProps = mesh->getProperties();
+			for (UINT32 i = 0; i < meshProps.getNumSubMeshes(); i++)
 			{
-				std::swap(mRenderableElements[element->id], mRenderableElements.back());
-				mRenderableElements.erase(mRenderableElements.end() - 1);
+				renderableData.elements.push_back(RenderableElement());
+				RenderableElement& renElement = renderableData.elements.back();
 
-				mRenderableElements[element->id]->id = element->id;
+				renElement.mesh = mesh;
+				renElement.subMesh = meshProps.getSubMesh(i);
+
+				renElement.material = renderable->getMaterial(i);
+				if (renElement.material == nullptr)
+					renElement.material = renderable->getMaterial(0);
+
+				if (renElement.material == nullptr)
+					renElement.material = mDummyMaterial;
+
+				if (renderableData.controller != nullptr)
+					renderableData.controller->initializeRenderElem(renElement);
 			}
 		}
 	}
 
-	void BansheeRenderer::updateRenderableProxy(RenderableProxyPtr proxy, Matrix4 localToWorld)
+	void BansheeRenderer::_notifyRenderableRemoved(RenderableHandlerCore* renderable)
 	{
-		for (auto& element : proxy->renderableElements)
-		{
-			element->worldTransform = localToWorld;
+		UINT32 renderableId = renderable->getRendererId();
+		RenderableHandlerCore* lastRenerable = mRenderables.back().renderable;
+		UINT32 lastRenderableId = lastRenerable->getRendererId();
 
-			mWorldTransforms[element->id] = localToWorld;
-			mWorldBounds[element->id] = element->calculateWorldBounds();
+		if (renderableId != lastRenderableId)
+		{
+			// Swap current last element with the one we want to erase
+			std::swap(mRenderables[renderableId], mRenderables[lastRenderableId]);
+			std::swap(mWorldBounds[renderableId], mWorldBounds[lastRenderableId]);
+			std::swap(mWorldTransforms[renderableId], mWorldTransforms[lastRenderableId]);
+
+			lastRenerable->setRendererId(renderableId);
 		}
+
+		// Last element is the one we want to erase
+		mRenderables.erase(mRenderables.end() - 1);
+		mWorldBounds.erase(mWorldBounds.end() - 1);
+		mWorldTransforms.erase(mWorldTransforms.end() - 1);
+	}
+
+	void BansheeRenderer::_notifyRenderableUpdated(RenderableHandlerCore* renderable)
+	{
+		UINT32 renderableId = renderable->getRendererId();
+
+		mWorldTransforms[renderableId] = renderable->getTransform();
+		mWorldBounds[renderableId] = renderable->getBounds();
 	}
 
 	void BansheeRenderer::_notifyCameraAdded(const CameraHandlerCore* camera)
@@ -138,88 +158,8 @@ namespace BansheeEngine
 		mCameraData.erase(camera);
 	}
 
-	void BansheeRenderer::renderableRemoved(const RenderableHandlerPtr& renderable)
-	{
-		if (renderable->_getActiveProxy() != nullptr)
-		{
-			mDeletedRenderableProxies.push_back(renderable->_getActiveProxy());
-		}
-	}
-
 	void BansheeRenderer::renderAll() 
 	{
-		gSceneManager().updateRenderableTransforms();
-
-		// Remove proxies from deleted Renderables
-		for (auto& camera : mDeletedRenderableProxies)
-		{
-			if (camera != nullptr)
-				gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::removeRenderableProxy, this, camera));
-		}
-
-		// Add or update Renderable proxies
-		const Vector<SceneRenderableData>& allRenderables = gSceneManager().getAllRenderables();
-		Vector<HSceneObject> dirtySceneObjects;
-		Vector<RenderableHandlerPtr> dirtyRenderables;
-
-		for (auto& renderableData : allRenderables)
-		{
-			RenderableHandlerPtr renderable = renderableData.renderable;
-			HSceneObject renderableSO = renderableData.sceneObject;
-
-			bool addedNewProxy = false;
-			RenderableProxyPtr proxy = renderable->_getActiveProxy();
-
-			if (renderableSO->getActive())
-			{
-				if (renderable->_isCoreDirty())
-				{
-					if (proxy != nullptr)
-						gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::removeRenderableProxy, this, proxy));
-
-					proxy = renderable->_createProxy(renderableSO->getWorldTfrm());
-					renderable->_setActiveProxy(proxy);
-
-					if (proxy != nullptr)
-						gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::addRenderableProxy, this, proxy));
-
-					dirtyRenderables.push_back(renderable);
-					dirtySceneObjects.push_back(renderableSO);
-					addedNewProxy = true;
-				}
-				else if (renderableSO->_isCoreDirty())
-				{
-					if (proxy != nullptr)
-						gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::updateRenderableProxy, this, proxy, renderableSO->getWorldTfrm()));
-
-					dirtySceneObjects.push_back(renderableSO);
-				}
-			}
-			else // If inactive we remove the proxy until re-activated
-			{
-				if (proxy != nullptr)
-				{
-					gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::removeRenderableProxy, this, proxy));
-					renderable->_setActiveProxy(nullptr);
-					renderable->_markCoreDirty();
-				}
-			}
-		}
-
-		// Mark all renderables as clean (needs to be done after all proxies are updated as
-		// this will also clean materials & meshes which may be shared, so we don't want to clean them
-		// too early.
-		for (auto& renderable : dirtyRenderables)
-		{
-			renderable->_markCoreClean();
-		}
-
-		// Mark scene objects clean
-		for (auto& dirtySO : dirtySceneObjects)
-		{
-			dirtySO->_markCoreClean();
-		}
-
 		// Populate direct draw lists
 		const Vector<SceneCameraData>& allCameras = gSceneManager().getAllCameras();
 		for (auto& cameraData : allCameras)
@@ -360,44 +300,54 @@ namespace BansheeEngine
 			ConvexVolume worldFrustum = camera.getWorldFrustum();
 
 			// Update per-object param buffers and queue render elements
-			for (auto& renderElem : mRenderableElements)
+			for (auto& renderableData : mRenderables)
 			{
-				if (renderElem->handler != nullptr)
-					renderElem->handler->bindPerObjectBuffers(renderElem);
+				RenderableHandlerCore* renderable = renderableData.renderable;
+				RenderableController* controller = renderableData.controller;
+				UINT32 renderableType = renderable->getRenderableType();
+				UINT32 rendererId = renderable->getRendererId();
 
-				if (renderElem->renderableType == RenType_LitTextured)
+				// Update buffers
+				for (auto& renderElem : renderableData.elements)
 				{
-					Matrix4 worldViewProjMatrix = viewProjMatrix * mWorldTransforms[renderElem->id];;
-					mLitTexHandler->updatePerObjectBuffers(renderElem, worldViewProjMatrix);
-				}
+					if (controller != nullptr)
+						controller->bindPerObjectBuffers(renderElem);
 
-				UINT32 numPasses = renderElem->material->getNumPasses();
-				for (UINT32 i = 0; i < numPasses; i++)
-				{
-					SPtr<PassParametersCore> passParams = renderElem->material->getPassParameters(i);
-
-					for (UINT32 j = 0; j < passParams->getNumParams(); j++)
+					if (renderableType == RenType_LitTextured)
 					{
-						SPtr<GpuParamsCore> params = passParams->getParamByIdx(j);
-						if (params != nullptr)
-							params->updateHardwareBuffers();
+						Matrix4 worldViewProjMatrix = viewProjMatrix * mWorldTransforms[rendererId];
+						mLitTexHandler->updatePerObjectBuffers(renderElem, worldViewProjMatrix);
+					}
+
+					UINT32 numPasses = renderElem.material->getNumPasses();
+					for (UINT32 i = 0; i < numPasses; i++)
+					{
+						SPtr<PassParametersCore> passParams = renderElem.material->getPassParameters(i);
+
+						for (UINT32 j = 0; j < passParams->getNumParams(); j++)
+						{
+							SPtr<GpuParamsCore> params = passParams->getParamByIdx(j);
+							if (params != nullptr)
+								params->updateHardwareBuffers();
+						}
 					}
 				}
 
 				// Do frustum culling
 				// TODO - This is bound to be a bottleneck at some point. When it is ensure that intersect
 				// methods use vector operations, as it is trivial to update them.
-				const Sphere& boundingSphere = mWorldBounds[renderElem->id].getSphere();
+				const Sphere& boundingSphere = mWorldBounds[rendererId].getSphere();
 				if (worldFrustum.intersects(boundingSphere))
 				{
 					// More precise with the box
-					const AABox& boundingBox = mWorldBounds[renderElem->id].getBox();
+					const AABox& boundingBox = mWorldBounds[rendererId].getBox();
 
 					if (worldFrustum.intersects(boundingBox))
 					{
 						float distanceToCamera = (camera.getPosition() - boundingBox.getCenter()).length();
 
-						renderQueue->add(renderElem, distanceToCamera);
+						for (auto& renderElem : renderableData.elements)
+							renderQueue->add(&renderElem, distanceToCamera);
 					}
 				}
 			}
@@ -417,5 +367,101 @@ namespace BansheeEngine
 		renderQueue->clear();
 
 		onCorePostRenderViewport(camera);
+	}
+
+	SPtr<ShaderCore> BansheeRenderer::createDefaultShader()
+	{
+		String rsName = RenderSystem::instance().getName();
+
+		SPtr<GpuProgramCore> vsProgram;
+		SPtr<GpuProgramCore> psProgram;
+
+		if (rsName == RenderSystemDX11)
+		{
+			String vsCode = R"(
+				cbuffer PerObject
+				{
+					float4x4 matWorldViewProj;
+				}
+
+				void vs_main(
+				in float3 inPos : POSITION,
+				out float4 oPosition : SV_Position)
+				{
+					oPosition = mul(matWorldViewProj, float4(inPos.xyz, 1));
+				})";
+
+			String psCode = R"(
+				float4 ps_main() : SV_Target
+				{
+					return float4(0.3f, 0.9f, 0.3f, 1.0f);
+				})";
+
+			vsProgram = GpuProgramCore::create(vsCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
+			psProgram = GpuProgramCore::create(psCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_FS_4_0);
+		}
+		else if (rsName == RenderSystemDX9)
+		{
+			String vsCode = R"(
+				 BS_PARAM_BLOCK PerObject { matWorldViewProj }
+				 float4x4 matWorldViewProj;
+
+				 void vs_main(
+				 in float3 inPos : POSITION,
+				 out float4 oPosition : POSITION)
+				 {
+					 oPosition = mul(matWorldViewProj, float4(inPos.xyz, 1));
+				 })";
+
+			String psCode = R"(
+				float4 ps_main() : COLOR0
+				{
+					return float4(0.3f, 0.9f, 0.3f, 1.0f);
+				})";
+
+			vsProgram = GpuProgramCore::create(vsCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
+			psProgram = GpuProgramCore::create(psCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_FS_2_0);
+		}
+		else if (rsName == RenderSystemOpenGL)
+		{
+			String vsCode = R"(#version 400
+				uniform PerObject
+				{
+					mat4 matWorldViewProj;
+				};
+
+				in vec3 bs_position;
+
+				void main()
+				{
+					gl_Position = matWorldViewProj * vec4(bs_position.xyz, 1);
+				})";
+
+			String psCode = R"(#version 400
+				out vec4 fragColor;
+
+				void main()
+				{
+					fragColor = vec4(0.3f, 0.9f, 0.3f, 1.0f);
+				})";
+
+			vsProgram = GpuProgramCore::create(vsCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
+			psProgram = GpuProgramCore::create(psCode, "main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_FS_4_0);
+		}
+
+		PASS_DESC_CORE passDesc;
+		passDesc.vertexProgram = vsProgram;
+		passDesc.fragmentProgram = psProgram;
+
+		SPtr<PassCore> newPass = PassCore::create(passDesc);
+		SPtr<TechniqueCore> newTechnique = TechniqueCore::create(rsName, RendererDefault, { newPass });
+
+		SHADER_DESC shaderDesc;
+		shaderDesc.setParamBlockAttribs("PerObject", true, GPBU_DYNAMIC, RBS_PerObject);
+		shaderDesc.addParameter("matWorldViewProj", "matWorldViewProj", GPDT_MATRIX_4X4, RPS_WorldViewProjTfrm);
+
+		SPtr<ShaderCore> defaultShader = ShaderCore::create("DummyShader", shaderDesc, { newTechnique });
+
+		return defaultShader;
 	}
 }

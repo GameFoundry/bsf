@@ -1,9 +1,9 @@
 #include "BsRenderQueue.h"
-#include "BsRenderableProxy.h"
 #include "BsSubMesh.h"
 #include "BsShader.h"
 #include "BsMesh.h"
 #include "BsMaterial.h"
+#include "BsRenderableElement.h"
 
 namespace BansheeEngine
 {
