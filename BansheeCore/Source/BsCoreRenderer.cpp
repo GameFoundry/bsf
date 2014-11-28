@@ -73,17 +73,17 @@ namespace BansheeEngine
 		if (pass->getBlendState() != nullptr)
 			rs.setBlendState(pass->getBlendState());
 		else
-			rs.setBlendState(BlendState::getDefault()->getCore());
+			rs.setBlendState(BlendStateCore::getDefault());
 
 		if (pass->getDepthStencilState() != nullptr)
 			rs.setDepthStencilState(pass->getDepthStencilState(), pass->getStencilRefValue());
 		else
-			rs.setDepthStencilState(DepthStencilState::getDefault()->getCore(), pass->getStencilRefValue());
+			rs.setDepthStencilState(DepthStencilStateCore::getDefault(), pass->getStencilRefValue());
 
 		if (pass->getRasterizerState() != nullptr)
 			rs.setRasterizerState(pass->getRasterizerState());
 		else
-			rs.setRasterizerState(RasterizerState::getDefault()->getCore());
+			rs.setRasterizerState(RasterizerStateCore::getDefault());
 	}
 
 	void CoreRenderer::draw(const SPtr<MeshCoreBase>& mesh, const SubMesh& subMesh)

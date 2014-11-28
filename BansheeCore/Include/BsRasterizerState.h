@@ -138,6 +138,11 @@ namespace BansheeEngine
 		 */
 		const RasterizerProperties& getProperties() const;
 
+		/**
+		 * @brief	Returns the default rasterizer state.
+		 */
+		static const SPtr<RasterizerStateCore>& getDefault();
+
 	protected:
 		friend class RenderStateCoreManager;
 

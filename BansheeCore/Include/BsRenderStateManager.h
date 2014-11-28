@@ -112,6 +112,32 @@ namespace BansheeEngine
 		 */
 		SPtr<BlendStateCore> createBlendState(const BLEND_STATE_DESC& desc) const;
 
+		/**
+		 * @brief	Gets a sampler state initialized with default options.
+		 */
+		const SPtr<SamplerStateCore>& getDefaultSamplerState() const;
+
+		/**
+		 * @brief	Gets a blend state initialized with default options.
+		 */
+		const SPtr<BlendStateCore>& getDefaultBlendState() const;
+
+		/**
+		 * @brief	Gets a rasterizer state initialized with default options.
+		 */
+		const SPtr<RasterizerStateCore>& getDefaultRasterizerState() const;
+
+		/**
+		 * @brief	Gets a depth stencil state initialized with default options.
+		 */
+		const SPtr<DepthStencilStateCore>& getDefaultDepthStencilState() const;
+
+	private:
+		mutable SPtr<SamplerStateCore> mDefaultSamplerState;
+		mutable SPtr<BlendStateCore> mDefaultBlendState;
+		mutable SPtr<RasterizerStateCore> mDefaultRasterizerState;
+		mutable SPtr<DepthStencilStateCore> mDefaultDepthStencilState;
+
 	protected:
 		friend class SamplerState;
 		friend class BlendState;

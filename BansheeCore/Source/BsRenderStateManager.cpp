@@ -142,6 +142,38 @@ namespace BansheeEngine
 		return blendState;
 	}
 
+	const SPtr<SamplerStateCore>& RenderStateCoreManager::getDefaultSamplerState() const
+	{
+		if (mDefaultSamplerState == nullptr)
+			mDefaultSamplerState = createSamplerState(SAMPLER_STATE_DESC());
+
+		return mDefaultSamplerState;
+	}
+
+	const SPtr<BlendStateCore>& RenderStateCoreManager::getDefaultBlendState() const
+	{
+		if (mDefaultBlendState == nullptr)
+			mDefaultBlendState = createBlendState(BLEND_STATE_DESC());
+
+		return mDefaultBlendState;
+	}
+
+	const SPtr<RasterizerStateCore>& RenderStateCoreManager::getDefaultRasterizerState() const
+	{
+		if (mDefaultRasterizerState == nullptr)
+			mDefaultRasterizerState = createRasterizerState(RASTERIZER_STATE_DESC());
+
+		return mDefaultRasterizerState;
+	}
+
+	const SPtr<DepthStencilStateCore>& RenderStateCoreManager::getDefaultDepthStencilState() const
+	{
+		if (mDefaultDepthStencilState == nullptr)
+			mDefaultDepthStencilState = createDepthStencilState(DEPTH_STENCIL_STATE_DESC());
+
+		return mDefaultDepthStencilState;
+	}
+
 	SPtr<SamplerStateCore> RenderStateCoreManager::createSamplerStateInternal(const SAMPLER_STATE_DESC& desc) const
 	{
 		SPtr<SamplerStateCore> samplerState = bs_shared_ptr<SamplerStateCore, GenAlloc>(new (bs_alloc<SamplerStateCore>()) SamplerStateCore(desc));

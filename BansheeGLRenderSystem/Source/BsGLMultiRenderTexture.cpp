@@ -70,8 +70,6 @@ namespace BansheeEngine
 		{
 			mFB->unbindDepthStencil();
 		}
-
-		MultiRenderTextureCore::initialize();
 	}
 
 	void GLMultiRenderTextureCore::getCustomAttribute(const String& name, void* pData) const

@@ -77,6 +77,11 @@ namespace BansheeEngine
 		return mProperties;
 	}
 
+	const SPtr<BlendStateCore>& BlendStateCore::getDefault()
+	{
+		return RenderStateCoreManager::instance().getDefaultBlendState();
+	}
+
 	BlendState::BlendState(const BLEND_STATE_DESC& desc)
 		:mProperties(desc)
 	{ }

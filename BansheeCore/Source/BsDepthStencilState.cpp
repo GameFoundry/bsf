@@ -24,6 +24,11 @@ namespace BansheeEngine
 		return mProperties;
 	}
 
+	const SPtr<DepthStencilStateCore>& DepthStencilStateCore::getDefault()
+	{
+		return RenderStateCoreManager::instance().getDefaultDepthStencilState();
+	}
+
 	DepthStencilState::DepthStencilState(const DEPTH_STENCIL_STATE_DESC& desc)
 		:mProperties(desc)
 	{

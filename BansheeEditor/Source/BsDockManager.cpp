@@ -459,10 +459,10 @@ namespace BansheeEngine
 		float invViewportWidth = 1.0f / (viewport->getWidth() * 0.5f);
 		float invViewportHeight = 1.0f / (viewport->getHeight() * 0.5f);
 
-		if(mDropOverlayMesh == nullptr || !mDropOverlayMesh.isLoaded() || !mDropOverlayMesh->isInitialized())
+		if(!mDropOverlayMesh.isLoaded())
 			return;
 
-		if(mDropOverlayMat == nullptr || !mDropOverlayMat.isLoaded() || !mDropOverlayMat->isInitialized())
+		if(!mDropOverlayMat.isLoaded())
 			return;
 
 		mDropOverlayMat->setFloat("invViewportWidth", invViewportWidth);

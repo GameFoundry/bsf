@@ -660,7 +660,7 @@ namespace BansheeEngine
 
 		mMeshes[meshIdx] = transientMeshPtr;
 
-		queueGpuCommand(getThisPtr(), std::bind(&MeshHeapCore::alloc, getCore().get(), transientMeshPtr->getCore(), meshData));
+		queueGpuCommand(getCore(), std::bind(&MeshHeapCore::alloc, getCore().get(), transientMeshPtr->getCore(), meshData));
 
 		return transientMeshPtr;
 	}
@@ -674,7 +674,7 @@ namespace BansheeEngine
 		mesh->markAsDestroyed();
 		mMeshes.erase(iterFind);
 
-		queueGpuCommand(getThisPtr(), std::bind(&MeshHeapCore::dealloc, getCore().get(), mesh->getCore()));
+		queueGpuCommand(getCore(), std::bind(&MeshHeapCore::dealloc, getCore().get(), mesh->getCore()));
 	}
 
 	SPtr<MeshHeapCore> MeshHeap::getCore() const

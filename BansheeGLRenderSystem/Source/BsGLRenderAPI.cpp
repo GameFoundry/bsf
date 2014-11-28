@@ -281,7 +281,7 @@ namespace BansheeEngine
 			SPtr<SamplerStateCore>& samplerState = bindableParams->getSamplerState(iter->second.slot);
 
 			if(samplerState == nullptr)
-				setSamplerState(gptype, iter->second.slot, SamplerState::getDefault()->getCore());
+				setSamplerState(gptype, iter->second.slot, SamplerStateCore::getDefault());
 			else
 				setSamplerState(gptype, iter->second.slot, samplerState);
 

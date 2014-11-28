@@ -16,6 +16,16 @@ namespace BansheeEngine
 	 */
 	class BS_CORE_EXPORT CoreObjectCore
 	{
+	protected:
+		/**
+		 * @brief	Values that represent current state of the object
+		 */
+		enum Flags
+		{
+			CGCO_INITIALIZED = 0x01, /**< Object has been initialized and can be used. */
+			CGCO_SCHEDULED_FOR_INIT = 0x02 /**< Object has been scheduled for initialization but core thread has not completed it yet. */
+		};
+
 	public:
 		CoreObjectCore();
 		virtual ~CoreObjectCore();
@@ -23,7 +33,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Called on the core thread when the object is first created.
 		 */
-		virtual void initialize() { }
+		virtual void initialize();
 
 		/**
 		 * @brief	Internal method. Sets a shared this pointer to this object. This MUST be called immediately after construction.
@@ -81,7 +91,29 @@ namespace BansheeEngine
 		 */
 		bool isCoreDirty() const { return mCoreDirtyFlags != 0; }
 
+		/**
+		 * @brief	Blocks the current thread until the resource is fully initialized.
+		 * 			
+		 * @note	If you call this without calling initialize first a deadlock will occur.
+		 * 			You should not call this from core thread.
+		 */
+		void synchronize();
+
+		/**
+		 * @brief	Returns true if the object has been properly initialized. You are not
+		 * 			allowed to call any methods on the object until it is initialized.
+		 */
+		bool isInitialized() const { return (mFlags & CGCO_INITIALIZED) != 0; }
+		bool isScheduledToBeInitialized() const { return (mFlags & CGCO_SCHEDULED_FOR_INIT) != 0; }
+
+		void setIsInitialized(bool initialized) { mFlags = initialized ? mFlags | CGCO_INITIALIZED : mFlags & ~CGCO_INITIALIZED; }
+		void setScheduledToBeInitialized(bool scheduled) { mFlags = scheduled ? mFlags | CGCO_SCHEDULED_FOR_INIT : mFlags & ~CGCO_SCHEDULED_FOR_INIT; }
+
 		UINT32 mCoreDirtyFlags;
+		volatile UINT8 mFlags;
 		std::weak_ptr<CoreObjectCore> mThis;
+
+		BS_STATIC_THREAD_SYNCHRONISER(mCoreGpuObjectLoadedCondition)
+		BS_STATIC_MUTEX(mCoreGpuObjectLoadedMutex)
 	};
 }

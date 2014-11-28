@@ -2,19 +2,9 @@
 
 Renderable TODO:
 
- - Restore RenderableElement (it was in RenderableProxy files)
- - I need to update Renderable with world transform
-   - I've removed SceneObject dirty flags so that is no longer done anywhere
-   - RenderableHandler should keep track of world transform
-     - Also I should keep track of SceneObject active state to hide/show the object as needed
-   - Make sure to call gSceneManager().updateRenderableTransforms(); BEFORE syncing
-     and not like now when it's called in renderAll after sync
-
 Disallow CoreObject creation from core thread
  - Add asserts in CoreObject::destroy and CoreObject::initialize
  - Possibly also add asserts to CoreThread::queueCommand and CoreThread::queueReturnCommand
-
-Refactor RenderSystem and CoreThreadAccessor methods (move them to RenderSystem and make current RenderSystem a RenderSystemCore)
 
  New issues:
   - Since Mesh refactor when I select/deselect a gizmo the entire render texture flashes white for one frame (might be related to RT refactor instead)

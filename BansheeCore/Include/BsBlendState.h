@@ -157,6 +157,12 @@ namespace BansheeEngine
 		 */
 		const BlendProperties& getProperties() const;
 
+		/**
+		 * @brief	Returns the default blend state that you may use
+		 * 			when no other is available.
+		 */
+		static const SPtr<BlendStateCore>& getDefault();
+
 	protected:
 		friend class RenderStateCoreManager;
 

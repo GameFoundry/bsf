@@ -111,6 +111,11 @@ namespace BansheeEngine
 		 */
 		const SamplerProperties& getProperties() const;
 
+		/**
+		 * @brief	Returns the default sampler state.
+		 */
+		static const SPtr<SamplerStateCore>& getDefault();
+
 	protected:
 		friend class RenderStateCoreManager;
 

@@ -36,7 +36,7 @@ namespace BansheeEngine
 		}
 
 		Win32Window* window = new (bs_alloc<Win32Window, PoolAlloc>()) Win32Window(desc, *this);
-		return RenderWindowPtr(window, &CoreObject::_deleteDelayed<Win32Window, PoolAlloc>);
+		return RenderWindowPtr(window, &CoreObject::_delete<Win32Window, PoolAlloc>);
 	}
 
 	SPtr<RenderWindowCore> Win32GLSupport::newWindowCore(RENDER_WINDOW_DESC& desc)

@@ -163,6 +163,11 @@ namespace BansheeEngine
 		 */
 		const DepthStencilProperties& getProperties() const;
 
+		/**
+		 * @brief	Returns the default depth stencil state that you may use when no other is available.
+		 */
+		static const SPtr<DepthStencilStateCore>& getDefault();
+
 	protected:
 		friend class RenderStateCoreManager;
 

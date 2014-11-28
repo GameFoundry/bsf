@@ -162,14 +162,9 @@ namespace BansheeEngine
 
 	AsyncOp CoreThread::queueReturnCommand(std::function<void(AsyncOp&)> commandCallback, bool blockUntilComplete)
 	{
+		assert(BS_THREAD_CURRENT_ID != getCoreThreadId() && "Cannot queue commands on the core thread for the core thread");
+
 		AsyncOp op;
-
-		if(BS_THREAD_CURRENT_ID == getCoreThreadId())
-		{
-			commandCallback(op); // Execute immediately
-			return op;
-		}
-
 		UINT32 commandId = -1;
 		{
 			BS_LOCK_MUTEX(mCommandQueueMutex);
@@ -193,11 +188,7 @@ namespace BansheeEngine
 
 	void CoreThread::queueCommand(std::function<void()> commandCallback, bool blockUntilComplete)
 	{
-		if(BS_THREAD_CURRENT_ID == getCoreThreadId())
-		{
-			commandCallback(); // Execute immediately
-			return;
-		}
+		assert(BS_THREAD_CURRENT_ID != getCoreThreadId() && "Cannot queue commands on the core thread for the core thread");
 
 		UINT32 commandId = -1;
 		{

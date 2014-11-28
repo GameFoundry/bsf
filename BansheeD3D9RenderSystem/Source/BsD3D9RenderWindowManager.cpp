@@ -22,7 +22,7 @@ namespace BansheeEngine
 
 		D3D9RenderWindow* window = new (bs_alloc<D3D9RenderWindow, PoolAlloc>()) D3D9RenderWindow(desc, mRenderSystem->getInstanceHandle());
 
-		return RenderWindowPtr(window, &CoreObject::_deleteDelayed<D3D9RenderWindow, PoolAlloc>);
+		return RenderWindowPtr(window, &CoreObject::_delete<D3D9RenderWindow, PoolAlloc>);
 	}
 
 	D3D9RenderWindowCoreManager::D3D9RenderWindowCoreManager(D3D9RenderAPI* renderSystem)
