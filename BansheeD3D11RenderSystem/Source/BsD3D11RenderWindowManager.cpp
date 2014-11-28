@@ -1,11 +1,11 @@
 #include "BsD3D11RenderWindowManager.h"
-#include "BsD3D11RenderSystem.h"
+#include "BsD3D11RenderAPI.h"
 #include "BsD3D11RenderWindow.h"
 #include "BsAsyncOp.h"
 
 namespace BansheeEngine
 {
-	D3D11RenderWindowManager::D3D11RenderWindowManager(D3D11RenderSystem* renderSystem)
+	D3D11RenderWindowManager::D3D11RenderWindowManager(D3D11RenderAPI* renderSystem)
 		:mRenderSystem(renderSystem)
 	{
 		assert(mRenderSystem != nullptr);
@@ -13,8 +13,8 @@ namespace BansheeEngine
 
 	RenderWindowPtr D3D11RenderWindowManager::createImpl(RENDER_WINDOW_DESC& desc, const RenderWindowPtr& parentWindow)
 	{
-		RenderSystem* rs = RenderSystem::instancePtr();
-		D3D11RenderSystem* d3d11rs = static_cast<D3D11RenderSystem*>(rs);
+		RenderAPICore* rs = RenderAPICore::instancePtr();
+		D3D11RenderAPI* d3d11rs = static_cast<D3D11RenderAPI*>(rs);
 
 		if(parentWindow != nullptr)
 		{
@@ -28,7 +28,7 @@ namespace BansheeEngine
 		return bs_core_ptr<D3D11RenderWindow, PoolAlloc>(renderWindow);
 	}
 
-	D3D11RenderWindowCoreManager::D3D11RenderWindowCoreManager(D3D11RenderSystem* renderSystem)
+	D3D11RenderWindowCoreManager::D3D11RenderWindowCoreManager(D3D11RenderAPI* renderSystem)
 		:mRenderSystem(renderSystem)
 	{
 		assert(mRenderSystem != nullptr);
@@ -36,8 +36,8 @@ namespace BansheeEngine
 
 	SPtr<RenderWindowCore> D3D11RenderWindowCoreManager::createInternal(RENDER_WINDOW_DESC& desc)
 	{
-		RenderSystem* rs = RenderSystem::instancePtr();
-		D3D11RenderSystem* d3d11rs = static_cast<D3D11RenderSystem*>(rs);
+		RenderAPICore* rs = RenderAPICore::instancePtr();
+		D3D11RenderAPI* d3d11rs = static_cast<D3D11RenderAPI*>(rs);
 
 		// Create the window
 		D3D11RenderWindowCore* renderWindow = new (bs_alloc<D3D11RenderWindowCore, GenAlloc>()) D3D11RenderWindowCore(desc, d3d11rs->getPrimaryDevice(), d3d11rs->getDXGIFactory());

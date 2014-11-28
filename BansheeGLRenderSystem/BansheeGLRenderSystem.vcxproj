@@ -256,8 +256,8 @@
     <ClInclude Include="Include\BsGLMultiRenderTexture.h" />
     <ClInclude Include="Include\BsGLPixelFormat.h" />
     <ClInclude Include="Include\BsGLPrerequisites.h" />
-    <ClInclude Include="Include\BsGLRenderSystem.h" />
-    <ClInclude Include="Include\BsGLRenderSystemFactory.h" />
+    <ClInclude Include="Include\BsGLRenderAPI.h" />
+    <ClInclude Include="Include\BsGLRenderAPIFactory.h" />
     <ClInclude Include="Include\BsGLRenderTexture.h" />
     <ClInclude Include="Include\BsGLRenderWindowManager.h" />
     <ClInclude Include="Include\BsGLSupport.h" />
@@ -292,8 +292,8 @@
     <ClCompile Include="Source\BsGLVertexBuffer.cpp" />
     <ClCompile Include="Source\BsGLMultiRenderTexture.cpp" />
     <ClCompile Include="Source\BsGLPixelFormat.cpp" />
-    <ClCompile Include="Source\BsGLRenderSystem.cpp" />
-    <ClCompile Include="Source\BsGLRenderSystemFactory.cpp" />
+    <ClCompile Include="Source\BsGLRenderAPI.cpp" />
+    <ClCompile Include="Source\BsGLRenderAPIFactory.cpp" />
     <ClCompile Include="Source\BsGLRenderTexture.cpp" />
     <ClCompile Include="Source\BsGLRenderWindowManager.cpp" />
     <ClCompile Include="Source\BsGLSupport.cpp" />

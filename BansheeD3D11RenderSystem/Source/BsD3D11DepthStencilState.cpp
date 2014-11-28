@@ -1,6 +1,6 @@
 #include "BsD3D11DepthStencilState.h"
 #include "BsD3D11Device.h"
-#include "BsD3D11RenderSystem.h"
+#include "BsD3D11RenderAPI.h"
 #include "BsD3D11Mappings.h"
 #include "BsRenderStats.h"
 
@@ -37,7 +37,7 @@ namespace BansheeEngine
 		depthStencilState.StencilReadMask = mProperties.getStencilReadMask();
 		depthStencilState.StencilWriteMask = mProperties.getStencilWriteMask();
 
-		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
 		HRESULT hr = device.getD3D11Device()->CreateDepthStencilState(&depthStencilState, &mDepthStencilState);
 

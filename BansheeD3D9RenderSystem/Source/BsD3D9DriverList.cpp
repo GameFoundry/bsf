@@ -1,13 +1,13 @@
 #include "BsD3D9DriverList.h"
 #include "BsD3D9VideoModeInfo.h"
 #include "BsException.h"
-#include "BsD3D9RenderSystem.h"
+#include "BsD3D9RenderAPI.h"
 
 namespace BansheeEngine 
 {
 	D3D9DriverList::D3D9DriverList()
 	{
-		IDirect3D9* lpD3D9 = D3D9RenderSystem::getDirect3D9();
+		IDirect3D9* lpD3D9 = D3D9RenderAPI::getDirect3D9();
 
 		for (UINT32 i = 0; i < lpD3D9->GetAdapterCount(); i++)
 		{

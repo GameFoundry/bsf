@@ -1,6 +1,6 @@
 #include "BsBlendState.h"
 #include "BsRenderStateManager.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 #include "BsBlendStateRTTI.h"
 #include "BsResources.h"
 

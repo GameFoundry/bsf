@@ -1,11 +1,11 @@
-#include "BsRenderSystemCapabilities.h"
+#include "BsRenderAPICapabilities.h"
 #include "BsException.h"
 
 namespace BansheeEngine 
 {
-	Vector<BansheeEngine::String> RenderSystemCapabilities::msGPUVendorStrings;
+	Vector<BansheeEngine::String> RenderAPICapabilities::msGPUVendorStrings;
 
-	RenderSystemCapabilities::RenderSystemCapabilities()
+	RenderAPICapabilities::RenderAPICapabilities()
 	{
 		for(int i = 0; i < CAPS_CATEGORY_COUNT; i++)
 		{
@@ -27,11 +27,11 @@ namespace BansheeEngine
 		mNumGpuParamBlocksPerStage[GPT_COMPUTE_PROGRAM] = 0;
 	}
 
-	RenderSystemCapabilities::~RenderSystemCapabilities()
+	RenderAPICapabilities::~RenderAPICapabilities()
 	{
 	}
 
-	GPUVendor RenderSystemCapabilities::vendorFromString(const String& vendorString)
+	GPUVendor RenderAPICapabilities::vendorFromString(const String& vendorString)
 	{
 		initVendorStrings();
 		GPUVendor ret = GPU_UNKNOWN;
@@ -50,13 +50,13 @@ namespace BansheeEngine
 		return ret;
 	}
 
-	String RenderSystemCapabilities::vendorToString(GPUVendor v)
+	String RenderAPICapabilities::vendorToString(GPUVendor v)
 	{
 		initVendorStrings();
 		return msGPUVendorStrings[v];
 	}
 
-	void RenderSystemCapabilities::initVendorStrings()
+	void RenderAPICapabilities::initVendorStrings()
 	{
 		if (msGPUVendorStrings.empty())
 		{

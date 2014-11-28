@@ -6,7 +6,7 @@
 #include "BsAABox.h"
 #include "BsSphere.h"
 #include "BsException.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 #include "BsSceneObject.h"
 #include "BsDebug.h"
 #include "BsRendererManager.h"
@@ -277,7 +277,7 @@ namespace BansheeEngine
 				}
 			}
 
-			RenderSystem* renderSystem = BansheeEngine::RenderSystem::instancePtr();
+			RenderAPICore* renderSystem = BansheeEngine::RenderAPICore::instancePtr();
 			renderSystem->convertProjectionMatrix(mProjMatrix, mProjMatrixRS);
 			mProjMatrixInv = mProjMatrix.inverse();
 			mProjMatrixRSInv = mProjMatrixRS.inverse();

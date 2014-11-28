@@ -1,6 +1,6 @@
 #include "BsDepthStencilState.h"
 #include "BsRenderStateManager.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 #include "BsDepthStencilStateRTTI.h"
 #include "BsException.h"
 #include "BsResources.h"

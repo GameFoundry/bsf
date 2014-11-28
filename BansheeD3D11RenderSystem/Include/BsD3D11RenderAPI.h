@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsD3D11Prerequisites.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 
 namespace BansheeEngine
 {
@@ -9,170 +9,170 @@ namespace BansheeEngine
 	 * @brief	Implementation of a render system using DirectX 11. Provides abstracted
 	 *			access to various low level DX11 methods.
 	 */
-	class BS_D3D11_EXPORT D3D11RenderSystem : public RenderSystem
+	class BS_D3D11_EXPORT D3D11RenderAPI : public RenderAPICore
 	{
 	public:
-		D3D11RenderSystem();
-		~D3D11RenderSystem();
+		D3D11RenderAPI();
+		~D3D11RenderAPI();
 
 		/**
-		 * @copydoc RenderSystem::getName
+		 * @copydoc RenderAPICore::getName
 		 */
 		const String& getName() const;
 		
 		/**
-		 * @copydoc RenderSystem::getShadingLanguageName
+		 * @copydoc RenderAPICore::getShadingLanguageName
 		 */
 		const String& getShadingLanguageName() const;
 
 		/**
-		 * @copydoc	RenderSystem::setBlendState
+		 * @copydoc	RenderAPICore::setBlendState
 		 */
 		void setBlendState(const SPtr<BlendStateCore>& blendState);
 
 		/**
-		 * @copydoc	RenderSystem::setRasterizerState
+		 * @copydoc	RenderAPICore::setRasterizerState
 		 */
 		void setRasterizerState(const SPtr<RasterizerStateCore>& rasterizerState);
 
 		/**
-		 * @copydoc	RenderSystem::setDepthStencilState
+		 * @copydoc	RenderAPICore::setDepthStencilState
 		 */
 		void setDepthStencilState(const SPtr<DepthStencilStateCore>& depthStencilState, UINT32 stencilRefValue);
 
 		/**
-		 * @copydoc	RenderSystem::setSamplerState
+		 * @copydoc	RenderAPICore::setSamplerState
 		 */
 		void setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SPtr<SamplerStateCore>& samplerState);
 
 		/**
-		 * @copydoc	RenderSystem::setTexture
+		 * @copydoc	RenderAPICore::setTexture
 		 */
 		void setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& texPtr);
 
 		/**
-		 * @copydoc	RenderSystem::setLoadStoreTexture
+		 * @copydoc	RenderAPICore::setLoadStoreTexture
 		 */
 		void setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& texPtr,
 			const TextureSurface& surface);
 
 		/**
-		 * @copydoc	RenderSystem::disableTextureUnit
+		 * @copydoc	RenderAPICore::disableTextureUnit
 		 */
 		void disableTextureUnit(GpuProgramType gptype, UINT16 texUnit);
 
 		/**
-		 * @copydoc	RenderSystem::beginFrame
+		 * @copydoc	RenderAPICore::beginFrame
 		 */
 		void beginFrame();
 
 		/**
-		 * @copydoc	RenderSystem::endFrame
+		 * @copydoc	RenderAPICore::endFrame
 		 */
 		void endFrame();
 
 		/**
-		 * @copydoc RenderSystem::clearRenderTarget
+		 * @copydoc RenderAPICore::clearRenderTarget
 		 */
 		void clearRenderTarget(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0);
 
 		/**
-		 * @copydoc RenderSystem::clearViewport
+		 * @copydoc RenderAPICore::clearViewport
 		 */
 		void clearViewport(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0);
 
 		/**
-		 * @copydoc	RenderSystem::setRenderTarget
+		 * @copydoc	RenderAPICore::setRenderTarget
 		 */
 		void setRenderTarget(const SPtr<RenderTargetCore>& target);
 
 		/**
-		 * @copydoc	RenderSystem::setViewport
+		 * @copydoc	RenderAPICore::setViewport
 		 */
 		void setViewport(const Rect2& vp);
 
 		/**
-		 * @copydoc	RenderSystem::setScissorRect
+		 * @copydoc	RenderAPICore::setScissorRect
 		 */
 		void setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom);
 
 		/**
-		 * @copydoc	RenderSystem::setVertexBuffers
+		 * @copydoc	RenderAPICore::setVertexBuffers
 		 */
 		void setVertexBuffers(UINT32 index, SPtr<VertexBufferCore>* buffers, UINT32 numBuffers);
 
 		/**
-		 * @copydoc	RenderSystem::setIndexBuffer
+		 * @copydoc	RenderAPICore::setIndexBuffer
 		 */
 		void setIndexBuffer(const SPtr<IndexBufferCore>& buffer);
 
 		/**
-		 * @copydoc	RenderSystem::setVertexDeclaration
+		 * @copydoc	RenderAPICore::setVertexDeclaration
 		 */
 		void setVertexDeclaration(const SPtr<VertexDeclarationCore>& vertexDeclaration);
 
 		/**
-		 * @copydoc	RenderSystem::setDrawOperation
+		 * @copydoc	RenderAPICore::setDrawOperation
 		 */
 		void setDrawOperation(DrawOperationType op);
 
 		/**
-		 * @copydoc	RenderSystem::draw
+		 * @copydoc	RenderAPICore::draw
 		 */
 		void draw(UINT32 vertexOffset, UINT32 vertexCount);
 
 		/**
-		 * @copydoc	RenderSystem::drawIndexed
+		 * @copydoc	RenderAPICore::drawIndexed
 		 */
 		void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount);
 
 		/** 
-		 * @copydoc RenderSystem::bindGpuProgram
+		 * @copydoc RenderAPICore::bindGpuProgram
 		 */
 		void bindGpuProgram(const SPtr<GpuProgramCore>& prg);
 
 		/** 
-		 * @copydoc RenderSystem::unbindGpuProgram
+		 * @copydoc RenderAPICore::unbindGpuProgram
 		 */
 		void unbindGpuProgram(GpuProgramType gptype);
 
 		/** 
-		 * @copydoc RenderSystem::bindGpuParams
+		 * @copydoc RenderAPICore::bindGpuParams
 		 */
 		void bindGpuParams(GpuProgramType gptype, const SPtr<GpuParamsCore>& params);
 		
 		/**
-		 * @copydoc	RenderSystem::setClipPlanesImpl
+		 * @copydoc	RenderAPICore::setClipPlanesImpl
 		 */
 		void setClipPlanesImpl(const PlaneList& clipPlanes);
 
 		/**
-		 * @copydoc	RenderSystem::convertProjectionMatrix
+		 * @copydoc	RenderAPICore::convertProjectionMatrix
 		 */
 		void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest);
 
 		/**
-		 * @copydoc	RenderSystem::getColorVertexElementType
+		 * @copydoc	RenderAPICore::getColorVertexElementType
 		 */
 		VertexElementType getColorVertexElementType() const;
 
 		/**
-		 * @copydoc	RenderSystem::getHorizontalTexelOffset
+		 * @copydoc	RenderAPICore::getHorizontalTexelOffset
 		 */
 		float getHorizontalTexelOffset();
 
 		/**
-		 * @copydoc	RenderSystem::getVerticalTexelOffset
+		 * @copydoc	RenderAPICore::getVerticalTexelOffset
 		 */
 		float getVerticalTexelOffset();
 
 		/**
-		 * @copydoc	RenderSystem::getMinimumDepthInputValue
+		 * @copydoc	RenderAPICore::getMinimumDepthInputValue
 		 */
 		float getMinimumDepthInputValue();
 
 		/**
-		 * @copydoc	RenderSystem::getMaximumDepthInputValue
+		 * @copydoc	RenderAPICore::getMaximumDepthInputValue
 		 */
 		float getMaximumDepthInputValue();
 
@@ -205,22 +205,22 @@ namespace BansheeEngine
 		D3D11DriverList* getDriverList() const { return mDriverList; }
 
 	protected:
-		friend class D3D11RenderSystemFactory;
+		friend class D3D11RenderAPIFactory;
 
 		/**
-		 * @copydoc	RenderSystem::initializePrepare
+		 * @copydoc	RenderAPICore::initializePrepare
 		 */
 		void initializePrepare();
 
 		/**
-		 * @copydoc	RenderSystem::initializeFinalize
+		 * @copydoc	RenderAPICore::initializeFinalize
 		 */
 		void initializeFinalize(const SPtr<RenderWindowCore>& primaryWindow);
 
 		/**
-		 * @copydoc	RenderSystem::destroy_internal
+		 * @copydoc	RenderAPICore::destroy_internal
 		 */
-        void destroy_internal();
+        void destroyCore();
 
 		/**
 		 * @brief	Creates or retrieves a proper input layout depending on the currently set vertex shader
@@ -241,7 +241,7 @@ namespace BansheeEngine
 		 * @brief	Creates and populates a set of render system capabilities describing which functionality
 		 *			is available.
 		 */
-		RenderSystemCapabilities* createRenderSystemCapabilities() const;
+		RenderAPICapabilities* createRenderSystemCapabilities() const;
 
 	private:
 		IDXGIFactory* mDXGIFactory;

@@ -1,5 +1,5 @@
 #include "BsD3D9VideoModeInfo.h"
-#include "BsD3D9RenderSystem.h"
+#include "BsD3D9RenderAPI.h"
 #include "BsException.h"
 
 namespace BansheeEngine
@@ -21,7 +21,7 @@ namespace BansheeEngine
 	D3D9VideoOutputInfo::D3D9VideoOutputInfo(IDirect3D9* d3d9device, UINT32 adapterIdx)
 		:mMonitorHandle(0)
 	{
-		IDirect3D9* pD3D = D3D9RenderSystem::getDirect3D9();
+		IDirect3D9* pD3D = D3D9RenderAPI::getDirect3D9();
 
 		D3DADAPTER_IDENTIFIER9 adapterIdentifier;
 		pD3D->GetAdapterIdentifier(adapterIdx, 0, &adapterIdentifier);

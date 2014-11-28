@@ -1,6 +1,6 @@
 #include "BsD3D11GpuBufferView.h"
 #include "BsD3D11GpuBuffer.h"
-#include "BsD3D11RenderSystem.h"
+#include "BsD3D11RenderAPI.h"
 #include "BsD3D11Device.h"
 #include "BsUtil.h"
 #include "BsRenderStats.h"
@@ -75,7 +75,7 @@ namespace BansheeEngine
 
 		ID3D11ShaderResourceView* srv = nullptr;
 
-		D3D11RenderSystem* d3d11rs = static_cast<D3D11RenderSystem*>(D3D11RenderSystem::instancePtr());
+		D3D11RenderAPI* d3d11rs = static_cast<D3D11RenderAPI*>(D3D11RenderAPI::instancePtr());
 		HRESULT hr = d3d11rs->getPrimaryDevice().getD3D11Device()->CreateShaderResourceView(buffer->getDX11Buffer(), &desc, &srv);
 
 		if (FAILED(hr) || d3d11rs->getPrimaryDevice().hasError())
@@ -131,7 +131,7 @@ namespace BansheeEngine
 
 		ID3D11UnorderedAccessView* uav = nullptr;
 
-		D3D11RenderSystem* d3d11rs = static_cast<D3D11RenderSystem*>(D3D11RenderSystem::instancePtr());
+		D3D11RenderAPI* d3d11rs = static_cast<D3D11RenderAPI*>(D3D11RenderAPI::instancePtr());
 		HRESULT hr = d3d11rs->getPrimaryDevice().getD3D11Device()->CreateUnorderedAccessView(buffer->getDX11Buffer(), &desc, &uav);
 
 		if (FAILED(hr) || d3d11rs->getPrimaryDevice().hasError())

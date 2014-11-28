@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsD3D9Prerequisites.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 #include "BsHardwareBuffer.h"
 #include "BsIndexBuffer.h"
 

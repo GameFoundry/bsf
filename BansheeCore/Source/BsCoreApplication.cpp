@@ -1,7 +1,7 @@
 #include "BsCoreApplication.h"
 
-#include "BsRenderSystem.h"
-#include "BsRenderSystemManager.h"
+#include "BsRenderAPI.h"
+#include "BsRenderAPIManager.h"
 
 #include "BsPlatform.h"
 #include "BsHardwareBufferManager.h"
@@ -85,9 +85,9 @@ namespace BansheeEngine
 		Resources::startUp();
 		GpuProgramManager::startUp();
 		GpuProgramCoreManager::startUp();
-		RenderSystemManager::startUp();
+		RenderAPIManager::startUp();
 
-		mPrimaryWindow = RenderSystemManager::instance().initialize(desc.renderSystem, desc.primaryWindowDesc);
+		mPrimaryWindow = RenderAPIManager::instance().initialize(desc.renderSystem, desc.primaryWindowDesc);
 
 		Input::startUp();
 		RendererManager::startUp();
@@ -139,7 +139,7 @@ namespace BansheeEngine
 		unloadPlugin(mSceneManagerPlugin);
 		unloadPlugin(mRendererPlugin);
 
-		RenderSystemManager::shutDown();
+		RenderAPIManager::shutDown();
 		GpuProgramCoreManager::shutDown();
 		GpuProgramManager::shutDown();
 

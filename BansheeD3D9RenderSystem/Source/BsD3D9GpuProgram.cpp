@@ -2,7 +2,7 @@
 #include "BsMatrix4.h"
 #include "BsException.h"
 #include "BsD3D9Mappings.h"
-#include "BsD3D9RenderSystem.h"
+#include "BsD3D9RenderAPI.h"
 #include "BsD3D9ResourceManager.h"
 #include "BsGpuParams.h"
 #include "BsAsyncOp.h"
@@ -149,7 +149,7 @@ namespace BansheeEngine
 		// include handler
 		LPD3DXCONSTANTTABLE constTable;
 
-		String hlslProfile = D3D9RenderSystem::instance().getCapabilities()->gpuProgProfileToRSSpecificProfile(getProperties().getProfile());
+		String hlslProfile = D3D9RenderAPI::instance().getCapabilities()->gpuProgProfileToRSSpecificProfile(getProperties().getProfile());
 
 		String parsedSource = D3D9EmulatedParamBlockParser::parse(getProperties().getSource(), mBlocks);
 
@@ -184,9 +184,9 @@ namespace BansheeEngine
 		}
 		else
 		{
-			for (UINT32 i = 0; i < D3D9RenderSystem::getResourceCreationDeviceCount(); ++i)
+			for (UINT32 i = 0; i < D3D9RenderAPI::getResourceCreationDeviceCount(); ++i)
 			{
-				IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getResourceCreationDevice(i);
+				IDirect3DDevice9* d3d9Device = D3D9RenderAPI::getResourceCreationDevice(i);
 				loadFromMicrocode(d3d9Device, mMicrocode);
 			}
 
@@ -267,7 +267,7 @@ namespace BansheeEngine
 		if (!isCompiled())
 			return nullptr;
 
-		IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getActiveD3D9Device();
+		IDirect3DDevice9* d3d9Device = D3D9RenderAPI::getActiveD3D9Device();
 		auto it = mMapDeviceToVertexShader.find(d3d9Device);
 
 		// Shader was not found -> load it.
@@ -340,7 +340,7 @@ namespace BansheeEngine
 		if (!isCompiled())
 			return nullptr;
 
-		IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getActiveD3D9Device();
+		IDirect3DDevice9* d3d9Device = D3D9RenderAPI::getActiveD3D9Device();
 		auto it = mMapDeviceToPixelShader.find(d3d9Device);
 
 		// Shader was not found -> load it.

@@ -1,5 +1,5 @@
 #include "BsD3D9EventQuery.h"
-#include "BsD3D9RenderSystem.h"
+#include "BsD3D9RenderAPI.h"
 #include "BsD3D9ResourceManager.h"
 #include "BsD3D9Device.h"
 #include "BsRenderStats.h"
@@ -20,7 +20,7 @@ namespace BansheeEngine
 
 	void D3D9EventQuery::createQuery()
 	{
-		mDevice = D3D9RenderSystem::getActiveD3D9Device();
+		mDevice = D3D9RenderAPI::getActiveD3D9Device();
 
 		HRESULT hr = mDevice->CreateQuery(D3DQUERYTYPE_EVENT, &mQuery);
 		if (hr != S_OK)

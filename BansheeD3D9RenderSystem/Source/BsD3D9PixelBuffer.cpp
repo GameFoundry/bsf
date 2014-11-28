@@ -3,7 +3,7 @@
 #include "BsD3D9Mappings.h"
 #include "BsException.h"
 #include "BsBitwise.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 #include "BsRenderStats.h"
 
 namespace BansheeEngine 

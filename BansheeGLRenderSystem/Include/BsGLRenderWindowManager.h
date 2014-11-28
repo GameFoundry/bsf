@@ -11,7 +11,7 @@ namespace BansheeEngine
 	class BS_RSGL_EXPORT GLRenderWindowManager : public RenderWindowManager
 	{
 	public:
-		GLRenderWindowManager(GLRenderSystem* renderSystem);
+		GLRenderWindowManager(GLRenderAPI* renderSystem);
 
 	protected:
 		/**
@@ -20,7 +20,7 @@ namespace BansheeEngine
 		RenderWindowPtr createImpl(RENDER_WINDOW_DESC& desc, const RenderWindowPtr& parentWindow);
 
 	private:
-		GLRenderSystem* mRenderSystem;
+		GLRenderAPI* mRenderSystem;
 	};
 
 	/**
@@ -29,7 +29,7 @@ namespace BansheeEngine
 	class BS_RSGL_EXPORT GLRenderWindowCoreManager : public RenderWindowCoreManager
 	{
 	public:
-		GLRenderWindowCoreManager(GLRenderSystem* renderSystem);
+		GLRenderWindowCoreManager(GLRenderAPI* renderSystem);
 
 	protected:
 		/**
@@ -38,6 +38,6 @@ namespace BansheeEngine
 		SPtr<RenderWindowCore> createInternal(RENDER_WINDOW_DESC& desc);
 
 	private:
-		GLRenderSystem* mRenderSystem;
+		GLRenderAPI* mRenderSystem;
 	};
 }

@@ -259,8 +259,8 @@
     <ClInclude Include="Include\BsD3D9Mappings.h" />
     <ClInclude Include="Include\BsD3D9MultiRenderTexture.h" />
     <ClInclude Include="Include\BsD3D9Prerequisites.h" />
-    <ClInclude Include="Include\BsD3D9RenderSystem.h" />
-    <ClInclude Include="Include\BsD3D9RenderSystemFactory.h" />
+    <ClInclude Include="Include\BsD3D9RenderAPI.h" />
+    <ClInclude Include="Include\BsD3D9RenderAPIFactory.h" />
     <ClInclude Include="Include\BsD3D9RenderTexture.h" />
     <ClInclude Include="Include\BsD3D9RenderWindow.h" />
     <ClInclude Include="Include\BsD3D9RenderWindowManager.h" />
@@ -291,8 +291,8 @@
     <ClCompile Include="Source\BsD3D9HLSLProgramFactory.cpp" />
     <ClCompile Include="Source\BsD3D9Mappings.cpp" />
     <ClCompile Include="Source\BsD3D9MultiRenderTexture.cpp" />
-    <ClCompile Include="Source\BsD3D9RenderSystem.cpp" />
-    <ClCompile Include="Source\BsD3D9RenderSystemFactory.cpp" />
+    <ClCompile Include="Source\BsD3D9RenderAPI.cpp" />
+    <ClCompile Include="Source\BsD3D9RenderAPIFactory.cpp" />
     <ClCompile Include="Source\BsD3D9RenderTexture.cpp" />
     <ClCompile Include="Source\BsD3D9RenderWindow.cpp" />
     <ClCompile Include="Source\BsD3D9RenderWindowManager.cpp" />

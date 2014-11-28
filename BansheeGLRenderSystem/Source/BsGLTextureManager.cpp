@@ -1,5 +1,5 @@
 #include "BsGLTextureManager.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 #include "BsGLRenderTexture.h"
 #include "BsGLMultiRenderTexture.h"
 #include "BsGLPixelFormat.h"
@@ -34,7 +34,7 @@ namespace BansheeEngine
 	PixelFormat GLTextureManager::getNativeFormat(TextureType ttype, PixelFormat format, int usage, bool hwGamma)
 	{
 		// Adjust requested parameters to capabilities
-        const RenderSystemCapabilities *caps = RenderSystem::instancePtr()->getCapabilities();
+        const RenderAPICapabilities *caps = RenderAPICore::instancePtr()->getCapabilities();
 
 		// Check compressed texture support
 		// If a compressed format not supported, revert to PF_A8R8G8B8

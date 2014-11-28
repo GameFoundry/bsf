@@ -1,5 +1,5 @@
 #include "BsD3D11RenderTexture.h"
-#include "BsD3D11RenderSystem.h"
+#include "BsD3D11RenderAPI.h"
 #include "BsD3D11Device.h"
 #include "BsD3D11Texture.h"
 #include "BsD3D11Mappings.h"

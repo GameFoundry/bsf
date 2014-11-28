@@ -7,7 +7,7 @@
 #include "BsMath.h"
 #include "BsCoreApplication.h"
 #include "BsCoreThread.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 #include "BsTextureManager.h"
 #include "BsPixelData.h"
 

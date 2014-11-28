@@ -1,6 +1,6 @@
 #include "BsIndexBuffer.h"
 #include "BsHardwareBufferManager.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 
 namespace BansheeEngine 
 {

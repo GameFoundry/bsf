@@ -1,5 +1,5 @@
 #include "BsD3D11Prerequisites.h"
-#include "BsD3D11RenderSystemFactory.h"
+#include "BsD3D11RenderAPIFactory.h"
 
 namespace BansheeEngine
 {

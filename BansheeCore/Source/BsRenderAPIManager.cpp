@@ -1,25 +1,25 @@
-#include "BsRenderSystemManager.h"
+#include "BsRenderAPIManager.h"
 #include "BsException.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 #include "BsDynLib.h"
 #include "BsDynLibManager.h"
 
 namespace BansheeEngine
 {
-	RenderSystemManager::RenderSystemManager()
+	RenderAPIManager::RenderAPIManager()
 		:mRenderSystemInitialized(false)
 	{ }
 
-	RenderSystemManager::~RenderSystemManager()
+	RenderAPIManager::~RenderAPIManager()
 	{
 		if(mRenderSystemInitialized)
 		{
-			RenderSystem::instance().destroy();
-			RenderSystem::shutDown();
+			RenderAPICore::instance().destroy();
+			RenderAPICore::shutDown();
 		}
 	}
 
-	RenderWindowPtr RenderSystemManager::initialize(const String& pluginFilename, RENDER_WINDOW_DESC& primaryWindowDesc)
+	RenderWindowPtr RenderAPIManager::initialize(const String& pluginFilename, RENDER_WINDOW_DESC& primaryWindowDesc)
 	{
 		if(mRenderSystemInitialized)
 			return nullptr;
@@ -41,14 +41,14 @@ namespace BansheeEngine
 			{
 				(*iter)->create();		
 				mRenderSystemInitialized = true;
-				return RenderSystem::instance().initialize(primaryWindowDesc);
+				return RenderAPICore::instance().initialize(primaryWindowDesc);
 			}
 		}
 
 		return nullptr;
 	}
 
-	void RenderSystemManager::registerRenderSystemFactory(RenderSystemFactoryPtr factory)
+	void RenderAPIManager::registerFactory(RenderAPIFactoryPtr factory)
 	{
 		assert(factory != nullptr);
 

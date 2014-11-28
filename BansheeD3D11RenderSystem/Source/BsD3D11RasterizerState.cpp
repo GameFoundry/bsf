@@ -1,5 +1,5 @@
 #include "BsD3D11RasterizerState.h"
-#include "BsD3D11RenderSystem.h"
+#include "BsD3D11RenderAPI.h"
 #include "BsD3D11Device.h"
 #include "BsD3D11Mappings.h"
 #include "BsRenderStats.h"
@@ -33,7 +33,7 @@ namespace BansheeEngine
 		rasterizerStateDesc.SlopeScaledDepthBias = mProperties.getSlopeScaledDepthBias();
 		rasterizerStateDesc.FrontCounterClockwise = false;
 
-		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
 		HRESULT hr = device.getD3D11Device()->CreateRasterizerState(&rasterizerStateDesc, &mRasterizerState);
 

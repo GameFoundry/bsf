@@ -1,6 +1,6 @@
 #include "BsRasterizerState.h"
 #include "BsRenderStateManager.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 #include "BsRasterizerStateRTTI.h"
 #include "BsResources.h"
 

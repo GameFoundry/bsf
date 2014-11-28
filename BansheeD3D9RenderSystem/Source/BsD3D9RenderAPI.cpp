@@ -1,4 +1,4 @@
-#include "BsD3D9RenderSystem.h"
+#include "BsD3D9RenderAPI.h"
 #include "BsD3D9Prerequisites.h"
 #include "BsD3D9DriverList.h"
 #include "BsD3D9Driver.h"
@@ -32,9 +32,9 @@
 
 namespace BansheeEngine 
 {
-	D3D9RenderSystem* D3D9RenderSystem::msD3D9RenderSystem = nullptr;
+	D3D9RenderAPI* D3D9RenderAPI::msD3D9RenderSystem = nullptr;
 
-	D3D9RenderSystem::D3D9RenderSystem(HINSTANCE hInstance)
+	D3D9RenderAPI::D3D9RenderAPI(HINSTANCE hInstance)
 		: mTexStageDesc(nullptr), mNumTexStages(0), mCurrentDrawOperation(DOT_TRIANGLE_LIST), 
 		mViewportLeft(0), mViewportTop(0), mViewportWidth(0), mViewportHeight(0),
 		mIsFrameInProgress(false), mRestoreFrameOnReset(false), mhInstance(hInstance),
@@ -49,24 +49,24 @@ namespace BansheeEngine
 		mScissorRect.bottom = 720;
 	}
 
-	D3D9RenderSystem::~D3D9RenderSystem()
+	D3D9RenderAPI::~D3D9RenderAPI()
 	{
 
 	}
 
-	const String& D3D9RenderSystem::getName() const
+	const String& D3D9RenderAPI::getName() const
 	{
-		static String strName( "D3D9RenderSystem");
+		static String strName( "D3D9RenderAPI");
 		return strName;
 	}
 
-	const String& D3D9RenderSystem::getShadingLanguageName() const
+	const String& D3D9RenderAPI::getShadingLanguageName() const
 	{
 		static String strName("hlsl");
 		return strName;
 	}
 
-	void D3D9RenderSystem::initializePrepare()
+	void D3D9RenderAPI::initializePrepare()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -109,10 +109,10 @@ namespace BansheeEngine
 		RenderStateManager::startUp();
 		RenderStateCoreManager::startUp();
 
-		RenderSystem::initializePrepare();
+		RenderAPICore::initializePrepare();
 	}
 
-	void D3D9RenderSystem::initializeFinalize(const SPtr<RenderWindowCore>& primaryWindow)
+	void D3D9RenderAPI::initializeFinalize(const SPtr<RenderWindowCore>& primaryWindow)
 	{
 		D3D9RenderWindowCore* d3d9window = static_cast<D3D9RenderWindowCore*>(primaryWindow.get());
 		updateRenderSystemCapabilities(d3d9window);
@@ -123,10 +123,10 @@ namespace BansheeEngine
 
 		QueryManager::startUp<D3D9QueryManager>();
 
-		RenderSystem::initializeFinalize(primaryWindow);
+		RenderAPICore::initializeFinalize(primaryWindow);
 	}
 
-	void D3D9RenderSystem::destroy_internal()
+	void D3D9RenderAPI::destroyCore()
 	{
 		if(mTexStageDesc != nullptr)
 		{
@@ -134,7 +134,7 @@ namespace BansheeEngine
 			mTexStageDesc = nullptr;
 		}
 
-		RenderSystem::destroy_internal();
+		RenderAPICore::destroyCore();
 
 		if(mDeviceManager != nullptr)
 		{
@@ -178,7 +178,7 @@ namespace BansheeEngine
 		msD3D9RenderSystem = NULL;
 	}
 
-	void D3D9RenderSystem::registerWindow(RenderWindowCore& renderWindow)
+	void D3D9RenderAPI::registerWindow(RenderWindowCore& renderWindow)
 	{		
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -204,7 +204,7 @@ namespace BansheeEngine
 		mResourceManager->unlockDeviceAccess();
 	}	
 
-	void D3D9RenderSystem::bindGpuProgram(const SPtr<GpuProgramCore>& prg)
+	void D3D9RenderAPI::bindGpuProgram(const SPtr<GpuProgramCore>& prg)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -238,10 +238,10 @@ namespace BansheeEngine
 
 		BS_INC_RENDER_STAT(NumGpuProgramBinds);
 
-		RenderSystem::bindGpuProgram(prg);
+		RenderAPICore::bindGpuProgram(prg);
 	}
 
-	void D3D9RenderSystem::unbindGpuProgram(GpuProgramType gptype)
+	void D3D9RenderAPI::unbindGpuProgram(GpuProgramType gptype)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -266,10 +266,10 @@ namespace BansheeEngine
 
 		BS_INC_RENDER_STAT(NumGpuProgramBinds);
 
-		RenderSystem::unbindGpuProgram(gptype);
+		RenderAPICore::unbindGpuProgram(gptype);
 	}
 
-	void D3D9RenderSystem::bindGpuParams(GpuProgramType gptype, const SPtr<GpuParamsCore>& bindableParams)
+	void D3D9RenderAPI::bindGpuParams(GpuProgramType gptype, const SPtr<GpuParamsCore>& bindableParams)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -433,7 +433,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumGpuParamBufferBinds);
 	}
 
-	void D3D9RenderSystem::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& tex)
+	void D3D9RenderAPI::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& tex)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -511,7 +511,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D9RenderSystem::setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& texPtr,
+	void D3D9RenderAPI::setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& texPtr,
 		const TextureSurface& surface)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -519,7 +519,7 @@ namespace BansheeEngine
 		LOGWRN("Texture random load/store not supported on DX9.");
 	}
 
-	void D3D9RenderSystem::setSamplerState(GpuProgramType gptype, UINT16 unit, const SPtr<SamplerStateCore>& state)
+	void D3D9RenderAPI::setSamplerState(GpuProgramType gptype, UINT16 unit, const SPtr<SamplerStateCore>& state)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -558,7 +558,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumSamplerBinds);
 	}
 
-	void D3D9RenderSystem::setBlendState(const SPtr<BlendStateCore>& blendState)
+	void D3D9RenderAPI::setBlendState(const SPtr<BlendStateCore>& blendState)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -586,7 +586,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumBlendStateChanges);
 	}
 
-	void D3D9RenderSystem::setRasterizerState(const SPtr<RasterizerStateCore>& rasterizerState)
+	void D3D9RenderAPI::setRasterizerState(const SPtr<RasterizerStateCore>& rasterizerState)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -607,7 +607,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumRasterizerStateChanges);
 	}
 
-	void D3D9RenderSystem::setDepthStencilState(const SPtr<DepthStencilStateCore>& depthStencilState, UINT32 stencilRefValue)
+	void D3D9RenderAPI::setDepthStencilState(const SPtr<DepthStencilStateCore>& depthStencilState, UINT32 stencilRefValue)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -636,7 +636,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumDepthStencilStateChanges);
 	}
 
-	void D3D9RenderSystem::setTextureMipmapBias(UINT16 unit, float bias)
+	void D3D9RenderAPI::setTextureMipmapBias(UINT16 unit, float bias)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -650,7 +650,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D9RenderSystem::setTextureAddressingMode( UINT16 stage, 
+	void D3D9RenderAPI::setTextureAddressingMode( UINT16 stage, 
 		const UVWAddressingMode& uvw )
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -664,7 +664,7 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "Failed to set texture addressing mode for W");
 	}
 
-	void D3D9RenderSystem::setTextureBorderColor(UINT16 stage, const Color& colour)
+	void D3D9RenderAPI::setTextureBorderColor(UINT16 stage, const Color& colour)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -673,7 +673,7 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "Failed to set texture border colour");
 	}
 
-	void D3D9RenderSystem::setSceneBlending( BlendFactor sourceFactor, BlendFactor destFactor, BlendOperation op )
+	void D3D9RenderAPI::setSceneBlending( BlendFactor sourceFactor, BlendFactor destFactor, BlendOperation op )
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -701,7 +701,7 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "Failed to set scene blending operation option");
 	}
 
-	void D3D9RenderSystem::setSceneBlending( BlendFactor sourceFactor, BlendFactor destFactor, BlendFactor sourceFactorAlpha, 
+	void D3D9RenderAPI::setSceneBlending( BlendFactor sourceFactor, BlendFactor destFactor, BlendFactor sourceFactorAlpha, 
 		BlendFactor destFactorAlpha, BlendOperation op, BlendOperation alphaOp )
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -735,7 +735,7 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "Failed to set alpha scene blending operation option");
 	}
 
-	void D3D9RenderSystem::setAlphaTest(CompareFunction func, unsigned char value)
+	void D3D9RenderAPI::setAlphaTest(CompareFunction func, unsigned char value)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -758,7 +758,7 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "Failed to set render state D3DRS_ALPHAREF");
 	}
 
-	void D3D9RenderSystem::setAlphaToCoverage(bool enable)
+	void D3D9RenderAPI::setAlphaToCoverage(bool enable)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -802,7 +802,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D9RenderSystem::setCullingMode(CullingMode mode)
+	void D3D9RenderAPI::setCullingMode(CullingMode mode)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -814,7 +814,7 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "Failed to set culling mode");
 	}
 
-	void D3D9RenderSystem::setDepthBufferCheckEnabled(bool enabled)
+	void D3D9RenderAPI::setDepthBufferCheckEnabled(bool enabled)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -829,7 +829,7 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "Error setting depth buffer test state");
 	}
 
-	void D3D9RenderSystem::setDepthBufferWriteEnabled(bool enabled)
+	void D3D9RenderAPI::setDepthBufferWriteEnabled(bool enabled)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -839,7 +839,7 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "Error setting depth buffer write state");
 	}
 
-	void D3D9RenderSystem::setDepthBufferFunction(CompareFunction func)
+	void D3D9RenderAPI::setDepthBufferFunction(CompareFunction func)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -848,7 +848,7 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "Error setting depth buffer test function");
 	}
 
-	void D3D9RenderSystem::setDepthBias(float constantBias, float slopeScaleBias)
+	void D3D9RenderAPI::setDepthBias(float constantBias, float slopeScaleBias)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -875,7 +875,7 @@ namespace BansheeEngine
 
 	}
 
-	void D3D9RenderSystem::setColorBufferWriteEnabled(bool red, bool green, bool blue, bool alpha)
+	void D3D9RenderAPI::setColorBufferWriteEnabled(bool red, bool green, bool blue, bool alpha)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -894,7 +894,7 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "Error setting colour write enable flags");
 	}
 
-	void D3D9RenderSystem::setPolygonMode(PolygonMode level)
+	void D3D9RenderAPI::setPolygonMode(PolygonMode level)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -903,7 +903,7 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "Error setting polygon mode.");
 	}
 
-	void D3D9RenderSystem::setStencilCheckEnabled(bool enabled)
+	void D3D9RenderAPI::setStencilCheckEnabled(bool enabled)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -928,7 +928,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D9RenderSystem::setStencilBufferOperations(StencilOperation stencilFailOp, StencilOperation depthFailOp, StencilOperation passOp, bool ccw)
+	void D3D9RenderAPI::setStencilBufferOperations(StencilOperation stencilFailOp, StencilOperation depthFailOp, StencilOperation passOp, bool ccw)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -971,7 +971,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D9RenderSystem::setStencilBufferFunc(CompareFunction func, bool ccw)
+	void D3D9RenderAPI::setStencilBufferFunc(CompareFunction func, bool ccw)
 	{
 		HRESULT hr;
 		
@@ -984,7 +984,7 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "Error setting stencil buffer test function.");
 	}
 
-	void D3D9RenderSystem::setStencilBufferReadMask(UINT32 mask)
+	void D3D9RenderAPI::setStencilBufferReadMask(UINT32 mask)
 	{
 		HRESULT hr = setRenderState(D3DRS_STENCILMASK, mask);
 
@@ -992,7 +992,7 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "Error setting stencil buffer mask.");
 	}
 
-	void D3D9RenderSystem::setStencilBufferWriteMask(UINT32 mask)
+	void D3D9RenderAPI::setStencilBufferWriteMask(UINT32 mask)
 	{
 		HRESULT hr = setRenderState(D3DRS_STENCILWRITEMASK, mask);
 
@@ -1000,7 +1000,7 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "Error setting stencil buffer write mask.");
 	}
 
-	void D3D9RenderSystem::setStencilRefValue(UINT32 refValue)
+	void D3D9RenderAPI::setStencilRefValue(UINT32 refValue)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -1009,7 +1009,7 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "Error setting stencil buffer reference value.");
 	}
 
-	void D3D9RenderSystem::setTextureFiltering(UINT16 unit, FilterType ftype, FilterOptions filter)
+	void D3D9RenderAPI::setTextureFiltering(UINT16 unit, FilterType ftype, FilterOptions filter)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -1023,7 +1023,7 @@ namespace BansheeEngine
 	}
 
 
-	void D3D9RenderSystem::setTextureAnisotropy(UINT16 unit, unsigned int maxAnisotropy)
+	void D3D9RenderAPI::setTextureAnisotropy(UINT16 unit, unsigned int maxAnisotropy)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -1034,7 +1034,7 @@ namespace BansheeEngine
 			setSamplerState( static_cast<DWORD>(unit), D3DSAMP_MAXANISOTROPY, maxAnisotropy );
 	}
 
-	void D3D9RenderSystem::setRenderTarget(const SPtr<RenderTargetCore>& target)
+	void D3D9RenderAPI::setRenderTarget(const SPtr<RenderTargetCore>& target)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -1094,7 +1094,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumRenderTargetChanges);
 	}
 
-	void D3D9RenderSystem::setViewport(const Rect2& vp)
+	void D3D9RenderAPI::setViewport(const Rect2& vp)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -1102,7 +1102,7 @@ namespace BansheeEngine
 		applyViewport();
 	}
 
-	void D3D9RenderSystem::beginFrame()
+	void D3D9RenderAPI::beginFrame()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -1117,7 +1117,7 @@ namespace BansheeEngine
 		mIsFrameInProgress = true;
 	}
 
-	void D3D9RenderSystem::endFrame()
+	void D3D9RenderAPI::endFrame()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -1128,7 +1128,7 @@ namespace BansheeEngine
 		mIsFrameInProgress = false;
 	}
 
-	void D3D9RenderSystem::setVertexDeclaration(const SPtr<VertexDeclarationCore>& decl)
+	void D3D9RenderAPI::setVertexDeclaration(const SPtr<VertexDeclarationCore>& decl)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -1141,7 +1141,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D9RenderSystem::setVertexBuffers(UINT32 index, SPtr<VertexBufferCore>* buffers, UINT32 numBuffers)
+	void D3D9RenderAPI::setVertexBuffers(UINT32 index, SPtr<VertexBufferCore>* buffers, UINT32 numBuffers)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -1177,7 +1177,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D9RenderSystem::setIndexBuffer(const SPtr<IndexBufferCore>& buffer)
+	void D3D9RenderAPI::setIndexBuffer(const SPtr<IndexBufferCore>& buffer)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -1190,14 +1190,14 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumIndexBufferBinds);
 	}
 
-	void D3D9RenderSystem::setDrawOperation(DrawOperationType op)
+	void D3D9RenderAPI::setDrawOperation(DrawOperationType op)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		mCurrentDrawOperation = op;
 	}
 
-	void D3D9RenderSystem::draw(UINT32 vertexOffset, UINT32 vertexCount)
+	void D3D9RenderAPI::draw(UINT32 vertexOffset, UINT32 vertexCount)
 	{
 		UINT32 primCount = vertexCountToPrimCount(mCurrentDrawOperation, vertexCount);
 
@@ -1214,7 +1214,7 @@ namespace BansheeEngine
 		BS_ADD_RENDER_STAT(NumPrimitives, primCount);
 	}
 
-	void D3D9RenderSystem::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount)
+	void D3D9RenderAPI::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount)
 	{
 		UINT32 primCount = vertexCountToPrimCount(mCurrentDrawOperation, indexCount);
 
@@ -1239,7 +1239,7 @@ namespace BansheeEngine
 		BS_ADD_RENDER_STAT(NumPrimitives, primCount);
 	}
 
-	void D3D9RenderSystem::setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
+	void D3D9RenderAPI::setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -1249,7 +1249,7 @@ namespace BansheeEngine
 		mScissorRect.right = static_cast<LONG>(right);
 	}
 
-	void D3D9RenderSystem::setScissorTestEnable(bool enable)
+	void D3D9RenderAPI::setScissorTestEnable(bool enable)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -1275,7 +1275,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D9RenderSystem::setMultisampleAntialiasEnable(bool enable)
+	void D3D9RenderAPI::setMultisampleAntialiasEnable(bool enable)
 	{
 		HRESULT hr;
 		if(enable)
@@ -1294,7 +1294,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D9RenderSystem::setAntialiasedLineEnable(bool enable)
+	void D3D9RenderAPI::setAntialiasedLineEnable(bool enable)
 	{
 		HRESULT hr;
 		if(enable)
@@ -1313,7 +1313,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D9RenderSystem::clearRenderTarget(UINT32 buffers, const Color& color, float depth, UINT16 stencil)
+	void D3D9RenderAPI::clearRenderTarget(UINT32 buffers, const Color& color, float depth, UINT16 stencil)
 	{
 		if(mActiveRenderTarget == nullptr)
 			return;
@@ -1324,14 +1324,14 @@ namespace BansheeEngine
 		clearArea(buffers, color, depth, stencil, clearRect);
 	}
 
-	void D3D9RenderSystem::clearViewport(UINT32 buffers, const Color& color, float depth, UINT16 stencil)
+	void D3D9RenderAPI::clearViewport(UINT32 buffers, const Color& color, float depth, UINT16 stencil)
 	{
 		Rect2I clearRect(mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight);
 
 		clearArea(buffers, color, depth, stencil, clearRect);
 	}
 
-	void D3D9RenderSystem::clearArea(UINT32 buffers, const Color& color, float depth, UINT16 stencil, const Rect2I& clearRect)
+	void D3D9RenderAPI::clearArea(UINT32 buffers, const Color& color, float depth, UINT16 stencil, const Rect2I& clearRect)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -1388,14 +1388,14 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumClears);
 	}
 
-	IDirect3D9*	D3D9RenderSystem::getDirect3D9()
+	IDirect3D9*	D3D9RenderAPI::getDirect3D9()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		return msD3D9RenderSystem->mpD3D;
 	}
 
-	UINT D3D9RenderSystem::getResourceCreationDeviceCount()
+	UINT D3D9RenderAPI::getResourceCreationDeviceCount()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -1415,7 +1415,7 @@ namespace BansheeEngine
 		return 0;
 	}
 
-	IDirect3DDevice9* D3D9RenderSystem::getResourceCreationDevice(UINT index)
+	IDirect3DDevice9* D3D9RenderAPI::getResourceCreationDevice(UINT index)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -1438,7 +1438,7 @@ namespace BansheeEngine
 		return d3d9Device;
 	}
 
-	IDirect3DDevice9* D3D9RenderSystem::getActiveD3D9Device()
+	IDirect3DDevice9* D3D9RenderAPI::getActiveD3D9Device()
 	{	
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -1453,14 +1453,14 @@ namespace BansheeEngine
 		return d3d9Device;
 	}	
 
-	D3D9ResourceManager* D3D9RenderSystem::getResourceManager()
+	D3D9ResourceManager* D3D9RenderAPI::getResourceManager()
 	{
 		// No need to check if we're on core thread as this is synced up internally
 
 		return msD3D9RenderSystem->mResourceManager;
 	}
 
-	D3D9DeviceManager* D3D9RenderSystem::getDeviceManager()
+	D3D9DeviceManager* D3D9RenderAPI::getDeviceManager()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -1471,36 +1471,36 @@ namespace BansheeEngine
 	/* 								UTILITY METHODS                    		*/
 	/************************************************************************/
 
-	float D3D9RenderSystem::getHorizontalTexelOffset()
+	float D3D9RenderAPI::getHorizontalTexelOffset()
 	{
 		// D3D considers the origin to be in the center of a pixel
 		return -0.5f;
 	}
 
-	float D3D9RenderSystem::getVerticalTexelOffset()
+	float D3D9RenderAPI::getVerticalTexelOffset()
 	{
 		// D3D considers the origin to be in the center of a pixel
 		return -0.5f;
 	}
 
-	float D3D9RenderSystem::getMinimumDepthInputValue()
+	float D3D9RenderAPI::getMinimumDepthInputValue()
 	{
 		// Range [0.0f, 1.0f]
 		return 0.0f;
 	}
 
-	float D3D9RenderSystem::getMaximumDepthInputValue()
+	float D3D9RenderAPI::getMaximumDepthInputValue()
 	{
 		// Range [0.0f, 1.0f]
 		return 1.0f;
 	}
 
-	VertexElementType D3D9RenderSystem::getColorVertexElementType() const
+	VertexElementType D3D9RenderAPI::getColorVertexElementType() const
 	{
 		return VET_COLOR_ARGB;
 	}
 
-	void D3D9RenderSystem::convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest)
+	void D3D9RenderAPI::convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest)
 	{
 		dest = matrix;
 
@@ -1515,7 +1515,7 @@ namespace BansheeEngine
 	/* 								PRIVATE		                     		*/
 	/************************************************************************/
 
-	D3D9DriverList* D3D9RenderSystem::getDirect3DDrivers() const
+	D3D9DriverList* D3D9RenderAPI::getDirect3DDrivers() const
 	{
 		if( !mDriverList )
 			mDriverList = bs_new<D3D9DriverList>();
@@ -1523,7 +1523,7 @@ namespace BansheeEngine
 		return mDriverList;
 	}
 
-	D3DPRIMITIVETYPE D3D9RenderSystem::getD3D9PrimitiveType() const
+	D3DPRIMITIVETYPE D3D9RenderAPI::getD3D9PrimitiveType() const
 	{
 		switch(mCurrentDrawOperation)
 		{
@@ -1544,11 +1544,11 @@ namespace BansheeEngine
 		return D3DPT_TRIANGLELIST;
 	}
 
-	RenderSystemCapabilities* D3D9RenderSystem::updateRenderSystemCapabilities(D3D9RenderWindowCore* renderWindow)
+	RenderAPICapabilities* D3D9RenderAPI::updateRenderSystemCapabilities(D3D9RenderWindowCore* renderWindow)
 	{			
-		RenderSystemCapabilities* rsc = mCurrentCapabilities;
+		RenderAPICapabilities* rsc = mCurrentCapabilities;
 		if (rsc == nullptr)
-			rsc = bs_new<RenderSystemCapabilities>();
+			rsc = bs_new<RenderAPICapabilities>();
 
 		rsc->setDriverVersion(mDriverVersion);
 		rsc->setDeviceName(mActiveD3DDriver->getDriverDescription());
@@ -1808,7 +1808,7 @@ namespace BansheeEngine
 		return rsc;
 	}
 
-	void D3D9RenderSystem::updateVertexShaderCaps(RenderSystemCapabilities* rsc) const
+	void D3D9RenderAPI::updateVertexShaderCaps(RenderAPICapabilities* rsc) const
 	{
 		UINT16 major = 0xFF;
 		UINT16 minor = 0xFF;
@@ -1924,7 +1924,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D9RenderSystem::updatePixelShaderCaps(RenderSystemCapabilities* rsc) const
+	void D3D9RenderAPI::updatePixelShaderCaps(RenderAPICapabilities* rsc) const
 	{
 		UINT16 major = 0xFF;
 		UINT16 minor = 0xFF;
@@ -2062,19 +2062,19 @@ namespace BansheeEngine
 		}
 	}
 
-	String D3D9RenderSystem::getErrorDescription(long errorNumber) const
+	String D3D9RenderAPI::getErrorDescription(long errorNumber) const
 	{
 		const String errMsg = DXGetErrorDescription(errorNumber);
 		return errMsg;
 	}
 
-	void D3D9RenderSystem::setClipPlane (UINT16 index, float A, float B, float C, float D)
+	void D3D9RenderAPI::setClipPlane (UINT16 index, float A, float B, float C, float D)
 	{
 		float plane[4] = { A, B, C, D };
 		getActiveD3D9Device()->SetClipPlane (index, plane);
 	}
 
-	void D3D9RenderSystem::enableClipPlane (UINT16 index, bool enable)
+	void D3D9RenderAPI::enableClipPlane (UINT16 index, bool enable)
 	{
 		DWORD prev;
 		getActiveD3D9Device()->GetRenderState(D3DRS_CLIPPLANEENABLE, &prev);
@@ -2082,7 +2082,7 @@ namespace BansheeEngine
 			(prev | (1 << index)) : (prev & ~(1 << index)));
 	}
 
-	void D3D9RenderSystem::notifyOnDeviceLost(D3D9Device* device)
+	void D3D9RenderAPI::notifyOnDeviceLost(D3D9Device* device)
 	{	
 		if (mIsFrameInProgress)
 		{
@@ -2091,7 +2091,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D9RenderSystem::notifyOnDeviceReset(D3D9Device* device)
+	void D3D9RenderAPI::notifyOnDeviceReset(D3D9Device* device)
 	{		
 		// Reset state attributes.	
 		mVertexProgramBound = false;
@@ -2104,7 +2104,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D9RenderSystem::determineMultisampleSettings(IDirect3DDevice9* d3d9Device, UINT32 multisampleCount, D3DFORMAT d3dPixelFormat, 
+	void D3D9RenderAPI::determineMultisampleSettings(IDirect3DDevice9* d3d9Device, UINT32 multisampleCount, D3DFORMAT d3dPixelFormat, 
 		bool fullScreen, D3DMULTISAMPLE_TYPE *outMultisampleType, DWORD *outMultisampleQuality) const
 	{
 		bool tryCSAA = false; // Note: Disabled for now, but leaving the code for later so it might be useful
@@ -2220,7 +2220,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D9RenderSystem::setClipPlanesImpl(const PlaneList& clipPlanes)
+	void D3D9RenderAPI::setClipPlanesImpl(const PlaneList& clipPlanes)
 	{
 		size_t i;
 		size_t numClipPlanes;
@@ -2256,17 +2256,17 @@ namespace BansheeEngine
 		}
 	}
 
-	HRESULT D3D9RenderSystem::setRenderState(D3DRENDERSTATETYPE state, DWORD value)
+	HRESULT D3D9RenderAPI::setRenderState(D3DRENDERSTATETYPE state, DWORD value)
 	{
 		return getActiveD3D9Device()->SetRenderState(state, value);
 	}
 
-	HRESULT D3D9RenderSystem::setSamplerState(DWORD sampler, D3DSAMPLERSTATETYPE type, DWORD value)
+	HRESULT D3D9RenderAPI::setSamplerState(DWORD sampler, D3DSAMPLERSTATETYPE type, DWORD value)
 	{
 		return getActiveD3D9Device()->SetSamplerState(sampler, type, value);
 	}
 
-	HRESULT D3D9RenderSystem::setTextureStageState(DWORD stage, D3DTEXTURESTAGESTATETYPE type, DWORD value)
+	HRESULT D3D9RenderAPI::setTextureStageState(DWORD stage, D3DTEXTURESTAGESTATETYPE type, DWORD value)
 	{
 		if (stage < 8)
 			return getActiveD3D9Device()->SetTextureStageState(stage, type, value);
@@ -2274,14 +2274,14 @@ namespace BansheeEngine
 			return D3D_OK;
 	}
 
-	DWORD D3D9RenderSystem::getCurrentAnisotropy(UINT32 unit)
+	DWORD D3D9RenderAPI::getCurrentAnisotropy(UINT32 unit)
 	{
 		DWORD oldVal;
 		getActiveD3D9Device()->GetSamplerState(static_cast<DWORD>(unit), D3DSAMP_MAXANISOTROPY, &oldVal);
 		return oldVal;
 	}
 
-	void D3D9RenderSystem::applyViewport()
+	void D3D9RenderAPI::applyViewport()
 	{
 		if (mActiveRenderTarget == nullptr)
 			return;

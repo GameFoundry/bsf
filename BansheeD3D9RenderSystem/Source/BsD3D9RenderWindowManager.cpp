@@ -1,11 +1,11 @@
 #include "BsD3D9RenderWindowManager.h"
-#include "BsD3D9RenderSystem.h"
+#include "BsD3D9RenderAPI.h"
 #include "BsD3D9RenderWindow.h"
 #include "BsAsyncOp.h"
 
 namespace BansheeEngine
 {
-	D3D9RenderWindowManager::D3D9RenderWindowManager(D3D9RenderSystem* renderSystem)
+	D3D9RenderWindowManager::D3D9RenderWindowManager(D3D9RenderAPI* renderSystem)
 		:mRenderSystem(renderSystem)
 	{
 		assert(mRenderSystem != nullptr);
@@ -25,7 +25,7 @@ namespace BansheeEngine
 		return RenderWindowPtr(window, &CoreObject::_deleteDelayed<D3D9RenderWindow, PoolAlloc>);
 	}
 
-	D3D9RenderWindowCoreManager::D3D9RenderWindowCoreManager(D3D9RenderSystem* renderSystem)
+	D3D9RenderWindowCoreManager::D3D9RenderWindowCoreManager(D3D9RenderAPI* renderSystem)
 		:mRenderSystem(renderSystem)
 	{
 		assert(mRenderSystem != nullptr);

@@ -9,7 +9,7 @@
 #include "BsVertexBuffer.h"
 #include "BsIndexBuffer.h"
 #include "BsException.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 #include "BsSceneObject.h"
 #include "BsDebug.h"
 

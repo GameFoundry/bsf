@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsGLSLGpuProgram.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 #include "BsException.h"
 #include "BsGLSLParamParser.h"
 #include "BsHardwareBufferManager.h"
@@ -208,7 +208,7 @@ namespace BansheeEngine
 		if (!isRequiredCapabilitiesSupported())
 			return false;
 
-		RenderSystem* rs = BansheeEngine::RenderSystem::instancePtr();
+		RenderAPICore* rs = BansheeEngine::RenderAPICore::instancePtr();
 		return rs->getCapabilities()->isShaderProfileSupported("glsl");
 	}
 }

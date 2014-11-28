@@ -1,7 +1,7 @@
 #include "BsD3D9Device.h"
 #include "BsD3D9DeviceManager.h"
 #include "BsD3D9Driver.h"
-#include "BsD3D9RenderSystem.h"
+#include "BsD3D9RenderAPI.h"
 #include "BsD3D9ResourceManager.h"
 #include "BsD3D9RenderWindow.h"
 #include "BsHardwareBufferManager.h"
@@ -159,7 +159,7 @@ namespace BansheeEngine
 	{
 		if (mpDevice != nullptr)
 		{
-			D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(BansheeEngine::RenderSystem::instancePtr());
+			D3D9RenderAPI* renderSystem = static_cast<D3D9RenderAPI*>(BansheeEngine::RenderAPICore::instancePtr());
 
 			RenderWindowToResorucesIterator it = mMapRenderWindowToResoruces.begin();
 
@@ -193,7 +193,7 @@ namespace BansheeEngine
 		// Case we just moved from valid state to lost state.
 		mDeviceLost = true;	
 
-		D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(BansheeEngine::RenderSystem::instancePtr());
+		D3D9RenderAPI* renderSystem = static_cast<D3D9RenderAPI*>(BansheeEngine::RenderAPICore::instancePtr());
 		renderSystem->notifyOnDeviceLost(this);
 	}	
 
@@ -223,7 +223,7 @@ namespace BansheeEngine
 	void D3D9Device::destroy()
 	{	
 		// Lock access to rendering device.
-		D3D9RenderSystem::getResourceManager()->lockDeviceAccess();
+		D3D9RenderAPI::getResourceManager()->lockDeviceAccess();
 		
 		release();
 		
@@ -254,7 +254,7 @@ namespace BansheeEngine
 		mpDeviceManager->notifyOnDeviceDestroy(this);
 
 		// UnLock access to rendering device.
-		D3D9RenderSystem::getResourceManager()->unlockDeviceAccess();
+		D3D9RenderAPI::getResourceManager()->unlockDeviceAccess();
 	}	
 
 	bool D3D9Device::isDeviceLost()
@@ -285,12 +285,12 @@ namespace BansheeEngine
 		}
 
 		// Lock access to rendering device.
-		D3D9RenderSystem::getResourceManager()->lockDeviceAccess();
+		D3D9RenderAPI::getResourceManager()->lockDeviceAccess();
 					
-		D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(BansheeEngine::RenderSystem::instancePtr());
+		D3D9RenderAPI* renderSystem = static_cast<D3D9RenderAPI*>(BansheeEngine::RenderAPICore::instancePtr());
 
 		// Inform all resources that device lost.
-		D3D9RenderSystem::getResourceManager()->notifyOnDeviceLost(mpDevice);
+		D3D9RenderAPI::getResourceManager()->notifyOnDeviceLost(mpDevice);
 
 		// Notify all listener before device is rested
 		renderSystem->notifyOnDeviceLost(this);
@@ -315,7 +315,7 @@ namespace BansheeEngine
 		if (hr == D3DERR_DEVICELOST)
 		{
 			// UnLock access to rendering device.
-			D3D9RenderSystem::getResourceManager()->unlockDeviceAccess();
+			D3D9RenderAPI::getResourceManager()->unlockDeviceAccess();
 
 			// Don't continue
 			return false;
@@ -341,14 +341,14 @@ namespace BansheeEngine
 		mpDeviceManager->setActiveDevice(this);
 
 		// Inform all resources that device has been reset.
-		D3D9RenderSystem::getResourceManager()->notifyOnDeviceReset(mpDevice);
+		D3D9RenderAPI::getResourceManager()->notifyOnDeviceReset(mpDevice);
 
 		mpDeviceManager->setActiveDevice(pCurActiveDevice);
 		
 		renderSystem->notifyOnDeviceReset(this);
 
 		// UnLock access to rendering device.
-		D3D9RenderSystem::getResourceManager()->unlockDeviceAccess();
+		D3D9RenderAPI::getResourceManager()->unlockDeviceAccess();
 	
 		return true;
 	}
@@ -482,7 +482,7 @@ namespace BansheeEngine
 
 	void D3D9Device::clearDeviceStreams()
 	{
-		D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(BansheeEngine::RenderSystem::instancePtr());
+		D3D9RenderAPI* renderSystem = static_cast<D3D9RenderAPI*>(BansheeEngine::RenderAPICore::instancePtr());
 
 		// Set all texture units to nothing to release texture surfaces
 		for (DWORD stage = 0; stage < mD3D9DeviceCaps.MaxSimultaneousTextures; ++stage)
@@ -533,7 +533,7 @@ namespace BansheeEngine
 		else
 			mFocusWindow = primaryRenderWindow->_getWindowHandle();		
 
-		IDirect3D9* pD3D9 = D3D9RenderSystem::getDirect3D9();
+		IDirect3D9* pD3D9 = D3D9RenderAPI::getDirect3D9();
 		HRESULT hr;
 
 		if (isMultihead())
@@ -608,19 +608,19 @@ namespace BansheeEngine
 		mD3D9DeviceCapsValid = true;
 
 		// Lock access to rendering device.
-		D3D9RenderSystem::getResourceManager()->lockDeviceAccess();
+		D3D9RenderAPI::getResourceManager()->lockDeviceAccess();
 
 		D3D9Device* pCurActiveDevice = mpDeviceManager->getActiveDevice();
 
 		mpDeviceManager->setActiveDevice(this);
 
 		// Inform all resources that new device created.
-		D3D9RenderSystem::getResourceManager()->notifyOnDeviceCreate(mpDevice);
+		D3D9RenderAPI::getResourceManager()->notifyOnDeviceCreate(mpDevice);
 
 		mpDeviceManager->setActiveDevice(pCurActiveDevice);
 
 		// UnLock access to rendering device.
-		D3D9RenderSystem::getResourceManager()->unlockDeviceAccess();
+		D3D9RenderAPI::getResourceManager()->unlockDeviceAccess();
 	}
 
 	void D3D9Device::releaseD3D9Device()
@@ -628,14 +628,14 @@ namespace BansheeEngine
 		if (mpDevice != nullptr)
 		{
 			// Lock access to rendering device.
-			D3D9RenderSystem::getResourceManager()->lockDeviceAccess();
+			D3D9RenderAPI::getResourceManager()->lockDeviceAccess();
 
 			D3D9Device* pCurActiveDevice = mpDeviceManager->getActiveDevice();
 
 			mpDeviceManager->setActiveDevice(this);
 
 			// Inform all resources that device is going to be destroyed.
-			D3D9RenderSystem::getResourceManager()->notifyOnDeviceDestroy(mpDevice);
+			D3D9RenderAPI::getResourceManager()->notifyOnDeviceDestroy(mpDevice);
 
 			mpDeviceManager->setActiveDevice(pCurActiveDevice);
 			
@@ -643,7 +643,7 @@ namespace BansheeEngine
 			SAFE_RELEASE(mpDevice);	
 			
 			// UnLock access to rendering device.
-			D3D9RenderSystem::getResourceManager()->unlockDeviceAccess();
+			D3D9RenderAPI::getResourceManager()->unlockDeviceAccess();
 		}
 	}
 
@@ -688,13 +688,13 @@ namespace BansheeEngine
 			(msSharedFocusWindow == NULL && mCreationParams.hFocusWindow != getPrimaryWindow()->_getWindowHandle()))
 		{
 			// Lock access to rendering device.
-			D3D9RenderSystem::getResourceManager()->lockDeviceAccess();
+			D3D9RenderAPI::getResourceManager()->lockDeviceAccess();
 
 			release();
 			acquire();
 
 			// UnLock access to rendering device.
-			D3D9RenderSystem::getResourceManager()->unlockDeviceAccess();
+			D3D9RenderAPI::getResourceManager()->unlockDeviceAccess();
 		}
 	}
 
@@ -802,12 +802,12 @@ namespace BansheeEngine
 		if (hRenderWindowMonitor != mMonitor)
 		{	
 			// Lock access to rendering device.
-			D3D9RenderSystem::getResourceManager()->lockDeviceAccess();
+			D3D9RenderAPI::getResourceManager()->lockDeviceAccess();
 
 			mpDeviceManager->linkRenderWindow(renderWindow);
 
 			// UnLock access to rendering device.
-			D3D9RenderSystem::getResourceManager()->unlockDeviceAccess();
+			D3D9RenderAPI::getResourceManager()->unlockDeviceAccess();
 
 			return false;
 		}

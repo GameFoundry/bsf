@@ -3,8 +3,8 @@
 #include "BsCoreThread.h"
 #include "BsViewport.h"
 #include "BsException.h"
-#include "BsD3D9RenderSystem.h"
-#include "BsRenderSystem.h"
+#include "BsD3D9RenderAPI.h"
+#include "BsRenderAPI.h"
 #include "BsBitwise.h"
 #include "Win32/BsPlatformWndProc.h"
 #include "BsD3D9VideoModeInfo.h"
@@ -98,7 +98,7 @@ namespace BansheeEngine
 			RECT rc;
 
 			HMONITOR hMonitor = NULL;
-			const D3D9VideoModeInfo& videoModeInfo = static_cast<const D3D9VideoModeInfo&>(RenderSystem::instance().getVideoModeInfo());
+			const D3D9VideoModeInfo& videoModeInfo = static_cast<const D3D9VideoModeInfo&>(RenderAPICore::instance().getVideoModeInfo());
 			UINT32 numOutputs = videoModeInfo.getNumOutputs();
 			if (numOutputs > 0)
 			{
@@ -236,7 +236,7 @@ namespace BansheeEngine
 		props.mColorDepth = 32;
 		props.mActive = true;
 
-		D3D9RenderSystem* rs = static_cast<D3D9RenderSystem*>(RenderSystem::instancePtr());
+		D3D9RenderAPI* rs = static_cast<D3D9RenderAPI*>(RenderAPICore::instancePtr());
 		rs->registerWindow(*this);
 	}
 
@@ -247,7 +247,7 @@ namespace BansheeEngine
 		if (mIsChild)
 			return;
 
-		const D3D9VideoModeInfo& videoModeInfo = static_cast<const D3D9VideoModeInfo&>(RenderSystem::instance().getVideoModeInfo());
+		const D3D9VideoModeInfo& videoModeInfo = static_cast<const D3D9VideoModeInfo&>(RenderAPICore::instance().getVideoModeInfo());
 		UINT32 numOutputs = videoModeInfo.getNumOutputs();
 		if (numOutputs == 0)
 			return;
@@ -493,7 +493,7 @@ namespace BansheeEngine
 	void D3D9RenderWindowCore::_buildPresentParameters(D3DPRESENT_PARAMETERS* presentParams) const
 	{	
 		const D3D9RenderWindowProperties& props = mProperties;
-		IDirect3D9* pD3D = D3D9RenderSystem::getDirect3D9();
+		IDirect3D9* pD3D = D3D9RenderAPI::getDirect3D9();
 		D3DDEVTYPE devType = D3DDEVTYPE_HAL;
 
 		if (mDevice != NULL)		
@@ -584,7 +584,7 @@ namespace BansheeEngine
 			}
 		}
 
-		D3D9RenderSystem* rs = static_cast<D3D9RenderSystem*>(BansheeEngine::RenderSystem::instancePtr());
+		D3D9RenderAPI* rs = static_cast<D3D9RenderAPI*>(BansheeEngine::RenderAPICore::instancePtr());
 
 		D3DMULTISAMPLE_TYPE multisampleType;
 		DWORD multisampleQuality;

@@ -19,7 +19,7 @@
 
 namespace BansheeEngine
 {
-	class D3D11RenderSystem;
+	class D3D11RenderAPI;
 	class D3D11RenderWindow;
 	class D3D11Texture;
 	class D3D11TextureManager;

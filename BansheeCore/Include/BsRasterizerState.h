@@ -92,7 +92,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Scissor rectangle allows you to cull all pixels outside of the scissor rectangle.
 		 *			
-		 * @see		RenderSystem::setScissorRect
+		 * @see		RenderAPICore::setScissorRect
 		 */
 		bool getScissorEnable() const { return mData.scissorEnable; }
 

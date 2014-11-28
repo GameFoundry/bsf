@@ -217,15 +217,15 @@ namespace BansheeEngine
 		{
 		case RenderSystemPlugin::DX11:
 			mActiveShaderSubFolder = HLSL11ShaderSubFolder;
-			mActiveRenderSystem = RenderSystemDX11;
+			mActiveRenderSystem = RenderAPIDX11;
 			break;
 		case RenderSystemPlugin::DX9:
 			mActiveShaderSubFolder = HLSL9ShaderSubFolder;
-			mActiveRenderSystem = RenderSystemDX9;
+			mActiveRenderSystem = RenderAPIDX9;
 			break;
 		case RenderSystemPlugin::OpenGL:
 			mActiveShaderSubFolder = GLSLShaderSubFolder;
-			mActiveRenderSystem = RenderSystemOpenGL;
+			mActiveRenderSystem = RenderAPIOpenGL;
 			break;
 		}
 

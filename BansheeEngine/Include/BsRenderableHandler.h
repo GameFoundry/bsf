@@ -38,7 +38,7 @@ namespace BansheeEngine
 
 	public:
 		TRenderableHandler();
-		virtual ~TRenderableHandler() { }
+		virtual ~TRenderableHandler();
 
 		/**
 		 * @brief	Sets the mesh to render. All sub-meshes of the mesh will be rendered,

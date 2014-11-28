@@ -1,5 +1,5 @@
 #include "BsD3D11TimerQuery.h"
-#include "BsD3D11RenderSystem.h"
+#include "BsD3D11RenderAPI.h"
 #include "BsD3D11Device.h"
 #include "BsRenderStats.h"
 #include "BsDebug.h"
@@ -10,7 +10,7 @@ namespace BansheeEngine
 		:mFinalized(false), mContext(nullptr), mBeginQuery(nullptr), 
 		mEndQuery(nullptr), mDisjointQuery(nullptr), mTimeDelta(0.0f), mQueryEndCalled(false)
 	{
-		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
 
 		D3D11_QUERY_DESC queryDesc;

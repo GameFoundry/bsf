@@ -1,6 +1,6 @@
 #include "BsD3D9DeviceManager.h"
 #include "BsD3D9Device.h"
-#include "BsD3D9RenderSystem.h"
+#include "BsD3D9RenderAPI.h"
 #include "BsD3D9RenderWindow.h"
 #include "BsD3D9Driver.h"
 #include "BsD3D9DriverList.h"
@@ -29,7 +29,7 @@ namespace BansheeEngine
 		{
 			mActiveDevice = device;
 
-			D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(BansheeEngine::RenderSystem::instancePtr());
+			D3D9RenderAPI* renderSystem = static_cast<D3D9RenderAPI*>(BansheeEngine::RenderAPICore::instancePtr());
 			D3D9DriverList*	driverList = renderSystem->getDirect3DDrivers();
 
 			// Update the active driver member.
@@ -106,9 +106,9 @@ namespace BansheeEngine
 
 	D3D9Device* D3D9DeviceManager::selectDevice(D3D9RenderWindowCore* renderWindow, Vector<D3D9RenderWindowCore*>& renderWindowsGroup)
 	{
-		D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(BansheeEngine::RenderSystem::instancePtr());
+		D3D9RenderAPI* renderSystem = static_cast<D3D9RenderAPI*>(BansheeEngine::RenderAPICore::instancePtr());
 		D3D9Device*	renderDevice = nullptr;	
-		IDirect3D9*	direct3D9 = D3D9RenderSystem::getDirect3D9();
+		IDirect3D9*	direct3D9 = D3D9RenderAPI::getDirect3D9();
 		UINT adapterOrdinal = D3DADAPTER_DEFAULT;
 		D3DDEVTYPE devType = D3DDEVTYPE_HAL;						
 		DWORD extraFlags = 0;					
@@ -167,8 +167,8 @@ namespace BansheeEngine
 
 	D3D9Driver* D3D9DeviceManager::findDriver(D3D9RenderWindowCore* renderWindow)
 	{
-		D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(BansheeEngine::RenderSystem::instancePtr());		
-		IDirect3D9*	direct3D9 = D3D9RenderSystem::getDirect3D9();				
+		D3D9RenderAPI* renderSystem = static_cast<D3D9RenderAPI*>(BansheeEngine::RenderAPICore::instancePtr());		
+		IDirect3D9*	direct3D9 = D3D9RenderAPI::getDirect3D9();				
 		HMONITOR renderWindowMonitor = NULL;			
 		D3D9DriverList* driverList = renderSystem->getDirect3DDrivers();
 

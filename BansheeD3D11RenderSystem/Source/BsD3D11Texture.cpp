@@ -1,7 +1,7 @@
 #include "BsD3D11Texture.h"
 #include "BsD3D11Mappings.h"
 #include "BsD3D11Device.h"
-#include "BsD3D11RenderSystem.h"
+#include "BsD3D11RenderAPI.h"
 #include "BsD3D11TextureView.h"
 #include "BsCoreThread.h"
 #include "BsException.h"
@@ -62,7 +62,7 @@ namespace BansheeEngine
 		UINT32 srcResIdx = D3D11CalcSubresource(srcMipLevel, srcFace, mProperties.getNumMipmaps() + 1);
 		UINT32 destResIdx = D3D11CalcSubresource(destMipLevel, destFace, target->getProperties().getNumMipmaps() + 1);
 
-		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
 
 		if (mProperties.getMultisampleCount() != target->getProperties().getMultisampleCount()) // Resolving from MS to non-MS texture
@@ -188,7 +188,7 @@ namespace BansheeEngine
 			if(mProperties.getTextureType() == TEX_TYPE_3D)
 				face = 0;
 
-			D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+			D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
 			D3D11Device& device = rs->getPrimaryDevice();
 
 			UINT subresourceIdx = D3D11CalcSubresource(mipLevel, face, mProperties.getNumMipmaps() + 1);
@@ -266,7 +266,7 @@ namespace BansheeEngine
 			desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
 
 		// Create the texture
-		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
 		hr = device.getD3D11Device()->CreateTexture1D(&desc, nullptr, &m1DTex);
 
@@ -351,7 +351,7 @@ namespace BansheeEngine
 			desc.MipLevels		= 1;
 
 			DXGI_SAMPLE_DESC sampleDesc;
-			D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+			D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
 			rs->determineMultisampleSettings(sampleCount, d3dPF, &sampleDesc);
 			desc.SampleDesc		= sampleDesc;
 
@@ -368,7 +368,7 @@ namespace BansheeEngine
 			desc.MipLevels		= 1;
 
 			DXGI_SAMPLE_DESC sampleDesc;
-			D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+			D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
 			rs->determineMultisampleSettings(sampleCount, d3dPF, &sampleDesc);
 			desc.SampleDesc		= sampleDesc;
 
@@ -402,7 +402,7 @@ namespace BansheeEngine
 			desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
 
 		// Create the texture
-		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
 		hr = device.getD3D11Device()->CreateTexture2D(&desc, nullptr, &m2DTex);
 
@@ -547,7 +547,7 @@ namespace BansheeEngine
 			desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
 
 		// Create the texture
-		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
 		hr = device.getD3D11Device()->CreateTexture3D(&desc, nullptr, &m3DTex);
 
@@ -607,7 +607,7 @@ namespace BansheeEngine
 		if (mProperties.getTextureType() == TEX_TYPE_3D)
 			face = 0;
 
-		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
 
 		mLockedSubresourceIdx = D3D11CalcSubresource(mipLevel, face, mProperties.getNumMipmaps() + 1);
@@ -628,7 +628,7 @@ namespace BansheeEngine
 
 	void D3D11TextureCore::unmap(ID3D11Resource* res)
 	{
-		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
 		device.getImmediateContext()->Unmap(res, mLockedSubresourceIdx);
 
@@ -648,7 +648,7 @@ namespace BansheeEngine
 		if(!mStagingBuffer)
 			createStagingBuffer(); 
 
-		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
 		device.getImmediateContext()->CopyResource(mStagingBuffer, mTex);
 
@@ -677,7 +677,7 @@ namespace BansheeEngine
 		UINT32 rowWidth = D3D11Mappings::getSizeInBytes(mStaticBuffer->getFormat(), mStaticBuffer->getWidth());
 		UINT32 sliceWidth = D3D11Mappings::getSizeInBytes(mStaticBuffer->getFormat(), mStaticBuffer->getWidth(), mStaticBuffer->getHeight());
 
-		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
 		device.getImmediateContext()->UpdateSubresource(mTex, mLockedSubresourceIdx, nullptr, mStaticBuffer->getData(), rowWidth, sliceWidth);
 
@@ -693,7 +693,7 @@ namespace BansheeEngine
 
 	void D3D11TextureCore::createStagingBuffer()
 	{
-		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
 		switch (mProperties.getTextureType())
 		{

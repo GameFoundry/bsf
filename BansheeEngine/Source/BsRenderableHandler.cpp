@@ -19,6 +19,12 @@ namespace BansheeEngine
 	}
 
 	template<bool Core>
+	TRenderableHandler<Core>::~TRenderableHandler()
+	{
+		int a = 5;
+	}
+
+	template<bool Core>
 	void TRenderableHandler<Core>::setMesh(const MeshType& mesh)
 	{
 		mMesh = mesh;

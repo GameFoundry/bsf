@@ -7,7 +7,7 @@ namespace BansheeEngine
 	extern String MODULE_NAME;
 
     class GLSupport;
-    class GLRenderSystem;
+    class GLRenderAPI;
     class GLTextureCore;
 	class GLVertexBuffer;
 	class GLVertexBufferCore;

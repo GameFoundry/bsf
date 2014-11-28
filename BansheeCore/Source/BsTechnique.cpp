@@ -1,6 +1,6 @@
 #include "BsTechnique.h"
 #include "BsException.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 #include "BsRendererManager.h"
 #include "BsPass.h"
 #include "BsCoreRenderer.h"
@@ -17,7 +17,7 @@ namespace BansheeEngine
 
 	bool TechniqueBase::isSupported() const
 	{
-		if (RenderSystem::instancePtr()->getName() == mRenderSystem &&
+		if (RenderAPICore::instancePtr()->getName() == mRenderSystem &&
 			(RendererManager::instance().getActive()->getName() == mRenderer ||
 			RendererManager::getCoreRendererName() == mRenderer))
 		{

@@ -77,8 +77,8 @@ namespace BansheeEngine
 	class Technique;
 	class Shader;
 	class Material;
-    class RenderSystem;
-    class RenderSystemCapabilities;
+    class RenderAPICore;
+    class RenderAPICapabilities;
     class RenderTarget;
 	class RenderTargetCore;
     class RenderTexture;
@@ -200,7 +200,7 @@ namespace BansheeEngine
 
 namespace BansheeEngine
 {
-	typedef std::shared_ptr<RenderSystem> RenderSystemPtr;
+	typedef std::shared_ptr<RenderAPICore> RenderSystemPtr;
 	typedef std::shared_ptr<GpuProgram> GpuProgramPtr;
 	typedef std::shared_ptr<PixelBuffer> PixelBufferPtr;
 	typedef std::shared_ptr<VertexBuffer> VertexBufferPtr;

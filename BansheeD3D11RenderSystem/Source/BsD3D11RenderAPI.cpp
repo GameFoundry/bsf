@@ -1,4 +1,4 @@
-#include "BsD3D11RenderSystem.h"
+#include "BsD3D11RenderAPI.h"
 #include "BsD3D11DriverList.h"
 #include "BsD3D11Driver.h"
 #include "BsD3D11Device.h"
@@ -29,7 +29,7 @@
 
 namespace BansheeEngine
 {
-	D3D11RenderSystem::D3D11RenderSystem()
+	D3D11RenderAPI::D3D11RenderAPI()
 		: mDXGIFactory(nullptr), mDevice(nullptr), mDriverList(nullptr)
 		, mActiveD3DDriver(nullptr), mFeatureLevel(D3D_FEATURE_LEVEL_11_0)
 		, mHLSLFactory(nullptr), mIAManager(nullptr)
@@ -39,24 +39,24 @@ namespace BansheeEngine
 		mClipPlanesDirty = false; // DX11 handles clip planes through shaders
 	}
 
-	D3D11RenderSystem::~D3D11RenderSystem()
+	D3D11RenderAPI::~D3D11RenderAPI()
 	{
 
 	}
 
-	const String& D3D11RenderSystem::getName() const
+	const String& D3D11RenderAPI::getName() const
 	{
-		static String strName("D3D11RenderSystem");
+		static String strName("D3D11RenderAPI");
 		return strName;
 	}
 
-	const String& D3D11RenderSystem::getShadingLanguageName() const
+	const String& D3D11RenderAPI::getShadingLanguageName() const
 	{
 		static String strName("hlsl");
 		return strName;
 	}
 
-	void D3D11RenderSystem::initializePrepare()
+	void D3D11RenderAPI::initializePrepare()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -131,19 +131,19 @@ namespace BansheeEngine
 		GpuProgramCoreManager::instance().addFactory(mHLSLFactory);
 
 		mIAManager = bs_new<D3D11InputLayoutManager>();
-		RenderSystem::initializePrepare();
+		RenderAPICore::initializePrepare();
 	}
 
-	void D3D11RenderSystem::initializeFinalize(const SPtr<RenderWindowCore>& primaryWindow)
+	void D3D11RenderAPI::initializeFinalize(const SPtr<RenderWindowCore>& primaryWindow)
 	{
 		D3D11RenderUtility::startUp(mDevice);
 
 		QueryManager::startUp<D3D11QueryManager>();
 
-		RenderSystem::initializeFinalize(primaryWindow);
+		RenderAPICore::initializeFinalize(primaryWindow);
 	}
 
-    void D3D11RenderSystem::destroy_internal()
+    void D3D11RenderAPI::destroyCore()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -196,10 +196,10 @@ namespace BansheeEngine
 
 		mActiveD3DDriver = nullptr;
 
-		RenderSystem::destroy_internal();
+		RenderAPICore::destroyCore();
 	}
 
-	void D3D11RenderSystem::setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SPtr<SamplerStateCore>& samplerState)
+	void D3D11RenderAPI::setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SPtr<SamplerStateCore>& samplerState)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -237,7 +237,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumSamplerBinds);
 	}
 
-	void D3D11RenderSystem::setBlendState(const SPtr<BlendStateCore>& blendState)
+	void D3D11RenderAPI::setBlendState(const SPtr<BlendStateCore>& blendState)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -247,7 +247,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumBlendStateChanges);
 	}
 
-	void D3D11RenderSystem::setRasterizerState(const SPtr<RasterizerStateCore>& rasterizerState)
+	void D3D11RenderAPI::setRasterizerState(const SPtr<RasterizerStateCore>& rasterizerState)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -257,7 +257,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumRasterizerStateChanges);
 	}
 
-	void D3D11RenderSystem::setDepthStencilState(const SPtr<DepthStencilStateCore>& depthStencilState, UINT32 stencilRefValue)
+	void D3D11RenderAPI::setDepthStencilState(const SPtr<DepthStencilStateCore>& depthStencilState, UINT32 stencilRefValue)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -267,7 +267,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumDepthStencilStateChanges);
 	}
 
-	void D3D11RenderSystem::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& texPtr)
+	void D3D11RenderAPI::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& texPtr)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -310,7 +310,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumTextureBinds);
 	}
 
-	void D3D11RenderSystem::setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& texPtr,
+	void D3D11RenderAPI::setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& texPtr,
 		const TextureSurface& surface)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -358,24 +358,24 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumTextureBinds);
 	}
 
-	void D3D11RenderSystem::disableTextureUnit(GpuProgramType gptype, UINT16 texUnit)
+	void D3D11RenderAPI::disableTextureUnit(GpuProgramType gptype, UINT16 texUnit)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		setTexture(gptype, texUnit, false, nullptr);
 	}
 
-	void D3D11RenderSystem::beginFrame()
+	void D3D11RenderAPI::beginFrame()
 	{
 		// Not used
 	}
 
-	void D3D11RenderSystem::endFrame()
+	void D3D11RenderAPI::endFrame()
 	{
 		// Not used
 	}
 
-	void D3D11RenderSystem::setViewport(const Rect2& vp)
+	void D3D11RenderAPI::setViewport(const Rect2& vp)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -383,7 +383,7 @@ namespace BansheeEngine
 		applyViewport();
 	}
 
-	void D3D11RenderSystem::applyViewport()
+	void D3D11RenderAPI::applyViewport()
 	{
 		if (mActiveRenderTarget == nullptr)
 			return;
@@ -408,7 +408,7 @@ namespace BansheeEngine
 		mDevice->getImmediateContext()->RSSetViewports(1, &mViewport);
 	}
 
-	void D3D11RenderSystem::setVertexBuffers(UINT32 index, SPtr<VertexBufferCore>* buffers, UINT32 numBuffers)
+	void D3D11RenderAPI::setVertexBuffers(UINT32 index, SPtr<VertexBufferCore>* buffers, UINT32 numBuffers)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -436,7 +436,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumVertexBufferBinds);
 	}
 
-	void D3D11RenderSystem::setIndexBuffer(const SPtr<IndexBufferCore>& buffer)
+	void D3D11RenderAPI::setIndexBuffer(const SPtr<IndexBufferCore>& buffer)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -455,21 +455,21 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumIndexBufferBinds);
 	}
 
-	void D3D11RenderSystem::setVertexDeclaration(const SPtr<VertexDeclarationCore>& vertexDeclaration)
+	void D3D11RenderAPI::setVertexDeclaration(const SPtr<VertexDeclarationCore>& vertexDeclaration)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		mActiveVertexDeclaration = vertexDeclaration;
 	}
 
-	void D3D11RenderSystem::setDrawOperation(DrawOperationType op)
+	void D3D11RenderAPI::setDrawOperation(DrawOperationType op)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		mDevice->getImmediateContext()->IASetPrimitiveTopology(D3D11Mappings::getPrimitiveType(op));
 	}
 
-	void D3D11RenderSystem::bindGpuProgram(const SPtr<GpuProgramCore>& prg)
+	void D3D11RenderAPI::bindGpuProgram(const SPtr<GpuProgramCore>& prg)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -522,7 +522,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumGpuProgramBinds);
 	}
 
-	void D3D11RenderSystem::unbindGpuProgram(GpuProgramType gptype)
+	void D3D11RenderAPI::unbindGpuProgram(GpuProgramType gptype)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -554,7 +554,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumGpuProgramBinds);
 	}
 
-	void D3D11RenderSystem::bindGpuParams(GpuProgramType gptype, const SPtr<GpuParamsCore>& bindableParams)
+	void D3D11RenderAPI::bindGpuParams(GpuProgramType gptype, const SPtr<GpuParamsCore>& bindableParams)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -640,7 +640,7 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "Failed to bindGpuParams : " + mDevice->getErrorDescription());
 	}
 
-	void D3D11RenderSystem::draw(UINT32 vertexOffset, UINT32 vertexCount)
+	void D3D11RenderAPI::draw(UINT32 vertexOffset, UINT32 vertexCount)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -660,7 +660,7 @@ namespace BansheeEngine
 		BS_ADD_RENDER_STAT(NumPrimitives, primCount);
 	}
 
-	void D3D11RenderSystem::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount)
+	void D3D11RenderAPI::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -680,7 +680,7 @@ namespace BansheeEngine
 		BS_ADD_RENDER_STAT(NumPrimitives, primCount);
 	}
 
-	void D3D11RenderSystem::setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
+	void D3D11RenderAPI::setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -692,7 +692,7 @@ namespace BansheeEngine
 		mDevice->getImmediateContext()->RSSetScissorRects(1, &mScissorRect);
 	}
 
-	void D3D11RenderSystem::clearViewport(UINT32 buffers, const Color& color, float depth, UINT16 stencil)
+	void D3D11RenderAPI::clearViewport(UINT32 buffers, const Color& color, float depth, UINT16 stencil)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -715,7 +715,7 @@ namespace BansheeEngine
 			clearRenderTarget(buffers, color, depth, stencil);
 	}
 
-	void D3D11RenderSystem::clearRenderTarget(UINT32 buffers, const Color& color, float depth, UINT16 stencil)
+	void D3D11RenderAPI::clearRenderTarget(UINT32 buffers, const Color& color, float depth, UINT16 stencil)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -774,7 +774,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumClears);
 	}
 
-	void D3D11RenderSystem::setRenderTarget(const SPtr<RenderTargetCore>& target)
+	void D3D11RenderAPI::setRenderTarget(const SPtr<RenderTargetCore>& target)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -806,16 +806,16 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumRenderTargetChanges);
 	}
 
-	void D3D11RenderSystem::setClipPlanesImpl(const PlaneList& clipPlanes)
+	void D3D11RenderAPI::setClipPlanesImpl(const PlaneList& clipPlanes)
 	{
 		LOGWRN("This call will be ignored. DX11 uses shaders for setting clip planes.");
 	}
 
-	RenderSystemCapabilities* D3D11RenderSystem::createRenderSystemCapabilities() const
+	RenderAPICapabilities* D3D11RenderAPI::createRenderSystemCapabilities() const
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		RenderSystemCapabilities* rsc = bs_new<RenderSystemCapabilities>();
+		RenderAPICapabilities* rsc = bs_new<RenderAPICapabilities>();
 
 		rsc->setDriverVersion(mDriverVersion);
 		rsc->setDeviceName(mActiveD3DDriver->getDriverDescription());
@@ -962,7 +962,7 @@ namespace BansheeEngine
 		return rsc;
 	}
 
-	void D3D11RenderSystem::determineMultisampleSettings(UINT32 multisampleCount, DXGI_FORMAT format, DXGI_SAMPLE_DESC* outputSampleDesc)
+	void D3D11RenderAPI::determineMultisampleSettings(UINT32 multisampleCount, DXGI_FORMAT format, DXGI_SAMPLE_DESC* outputSampleDesc)
 	{
 		bool tryCSAA = false; // Note: Disabled for now, but leaving the code for later so it might be useful
 		enum CSAAMode { CSAA_Normal, CSAA_Quality };
@@ -1055,12 +1055,12 @@ namespace BansheeEngine
 		} 
 	}
 
-	VertexElementType D3D11RenderSystem::getColorVertexElementType() const
+	VertexElementType D3D11RenderAPI::getColorVertexElementType() const
 	{
 		return VET_COLOR_ABGR;
 	}
 
-	void D3D11RenderSystem::convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest)
+	void D3D11RenderAPI::convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest)
 	{
 		dest = matrix;
 
@@ -1071,22 +1071,22 @@ namespace BansheeEngine
 		dest[2][3] = (dest[2][3] + dest[3][3]) / 2;
 	}
 
-	float D3D11RenderSystem::getHorizontalTexelOffset()
+	float D3D11RenderAPI::getHorizontalTexelOffset()
 	{
 		return 0.0f;
 	}
 
-	float D3D11RenderSystem::getVerticalTexelOffset()
+	float D3D11RenderAPI::getVerticalTexelOffset()
 	{
 		return 0.0f;
 	}
 
-	float D3D11RenderSystem::getMinimumDepthInputValue()
+	float D3D11RenderAPI::getMinimumDepthInputValue()
 	{
 		return 0.0f;
 	}
 
-	float D3D11RenderSystem::getMaximumDepthInputValue()
+	float D3D11RenderAPI::getMaximumDepthInputValue()
 	{
 		return 1.0f;
 	}
@@ -1095,7 +1095,7 @@ namespace BansheeEngine
 	/* 								PRIVATE		                     		*/
 	/************************************************************************/
 
-	void D3D11RenderSystem::applyInputLayout()
+	void D3D11RenderAPI::applyInputLayout()
 	{
 		if(mActiveVertexDeclaration == nullptr)
 		{

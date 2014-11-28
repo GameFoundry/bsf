@@ -4,7 +4,7 @@
 #include "BsException.h"
 #include "BsBitwise.h"
 #include "BsD3D9Mappings.h"
-#include "BsD3D9RenderSystem.h"
+#include "BsD3D9RenderAPI.h"
 #include "BsD3D9TextureManager.h"
 #include "BsD3D9Device.h"
 #include "BsD3D9DeviceManager.h"
@@ -49,9 +49,9 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		for (UINT32 i = 0; i < D3D9RenderSystem::getResourceCreationDeviceCount(); ++i)
+		for (UINT32 i = 0; i < D3D9RenderAPI::getResourceCreationDeviceCount(); ++i)
 		{
-			IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getResourceCreationDevice(i);
+			IDirect3DDevice9* d3d9Device = D3D9RenderAPI::getResourceCreationDevice(i);
 
 			createInternalResources(d3d9Device);
 		}
@@ -99,7 +99,7 @@ namespace BansheeEngine
 
 		if (mProperties.getUsage() == TU_DEPTHSTENCIL || mProperties.getUsage() == TU_RENDERTARGET) // Render targets cannot be locked normally
 		{
-			IDirect3DDevice9* device = D3D9RenderSystem::getActiveD3D9Device();
+			IDirect3DDevice9* device = D3D9RenderAPI::getActiveD3D9Device();
 
 			D3D9PixelBuffer* sourceBuffer = static_cast<D3D9PixelBuffer*>(getBuffer(face, mipLevel).get());
 			
@@ -408,7 +408,7 @@ namespace BansheeEngine
 		// Check multisample level
 		if ((texUsage & TU_RENDERTARGET) != 0 || (texUsage & TU_DEPTHSTENCIL) != 0)
 		{
-			D3D9RenderSystem* rsys = static_cast<D3D9RenderSystem*>(BansheeEngine::RenderSystem::instancePtr());
+			D3D9RenderAPI* rsys = static_cast<D3D9RenderAPI*>(BansheeEngine::RenderAPICore::instancePtr());
 			rsys->determineMultisampleSettings(d3d9Device, sampleCount, d3dPF, false, &mMultisampleType, &mMultisampleQuality);
 		}
 		else
@@ -417,7 +417,7 @@ namespace BansheeEngine
 			mMultisampleQuality = 0;
 		}
 
-		D3D9Device* device = D3D9RenderSystem::getDeviceManager()->getDeviceFromD3D9Device(d3d9Device);
+		D3D9Device* device = D3D9RenderAPI::getDeviceManager()->getDeviceFromD3D9Device(d3d9Device);
 		const D3DCAPS9& rkCurCaps = device->getD3D9DeviceCaps();			
 
 		// Check if mip maps are supported on hardware
@@ -559,7 +559,7 @@ namespace BansheeEngine
 		mMultisampleType = D3DMULTISAMPLE_NONE;
 		mMultisampleQuality = 0;
 
-		D3D9Device* device = D3D9RenderSystem::getDeviceManager()->getDeviceFromD3D9Device(d3d9Device);
+		D3D9Device* device = D3D9RenderAPI::getDeviceManager()->getDeviceFromD3D9Device(d3d9Device);
 		const D3DCAPS9& deviceCaps = device->getD3D9DeviceCaps();			
 		
 		// Check if mip map cube textures are supported
@@ -654,7 +654,7 @@ namespace BansheeEngine
 				mHwGammaWriteSupported = canUseHardwareGammaCorrection(d3d9Device, usage, D3DRTYPE_VOLUMETEXTURE, d3dPF, true);
 		}
 
-		D3D9Device* device = D3D9RenderSystem::getDeviceManager()->getDeviceFromD3D9Device(d3d9Device);
+		D3D9Device* device = D3D9RenderAPI::getDeviceManager()->getDeviceFromD3D9Device(d3d9Device);
 		const D3DCAPS9& rkCurCaps = device->getD3D9DeviceCaps();			
 
 		// Check if mip map volume textures are supported
@@ -721,7 +721,7 @@ namespace BansheeEngine
 	
 	D3DTEXTUREFILTERTYPE D3D9TextureCore::getBestFilterMethod(IDirect3DDevice9* d3d9Device)
 	{
-		D3D9Device* device = D3D9RenderSystem::getDeviceManager()->getDeviceFromD3D9Device(d3d9Device);
+		D3D9Device* device = D3D9RenderAPI::getDeviceManager()->getDeviceFromD3D9Device(d3d9Device);
 		const D3DCAPS9& deviceCaps = device->getD3D9DeviceCaps();			
 		
 		DWORD filterCaps = 0;
@@ -771,7 +771,7 @@ namespace BansheeEngine
 		if (pD3D != nullptr)
 			pD3D->Release();
 	
-		D3D9Device* device = D3D9RenderSystem::getDeviceManager()->getDeviceFromD3D9Device(d3d9Device);
+		D3D9Device* device = D3D9RenderAPI::getDeviceManager()->getDeviceFromD3D9Device(d3d9Device);
 		const D3DCAPS9& deviceCaps = device->getD3D9DeviceCaps();						
 		D3DFORMAT backBufferFormat = device->getBackBufferFormat();
 
@@ -795,7 +795,7 @@ namespace BansheeEngine
 		if (pD3D != nullptr)
 			pD3D->Release();
 
-		D3D9Device* device = D3D9RenderSystem::getDeviceManager()->getDeviceFromD3D9Device(d3d9Device);
+		D3D9Device* device = D3D9RenderAPI::getDeviceManager()->getDeviceFromD3D9Device(d3d9Device);
 		const D3DCAPS9& deviceCaps = device->getD3D9DeviceCaps();						
 		D3DFORMAT backBufferFormat = device->getBackBufferFormat();
 
@@ -823,7 +823,7 @@ namespace BansheeEngine
 		if (pD3D != nullptr)
 			pD3D->Release();
 
-		D3D9Device* device = D3D9RenderSystem::getDeviceManager()->getDeviceFromD3D9Device(d3d9Device);
+		D3D9Device* device = D3D9RenderAPI::getDeviceManager()->getDeviceFromD3D9Device(d3d9Device);
 		const D3DCAPS9& deviceCaps = device->getD3D9DeviceCaps();						
 		D3DFORMAT backBufferFormat = device->getBackBufferFormat();
 
@@ -843,7 +843,7 @@ namespace BansheeEngine
 		// Choose frame buffer pixel format in case PF_UNKNOWN was requested
 		if(mProperties.getFormat() == PF_UNKNOWN)
 		{	
-			D3D9Device* device = D3D9RenderSystem::getDeviceManager()->getDeviceFromD3D9Device(d3d9Device);
+			D3D9Device* device = D3D9RenderAPI::getDeviceManager()->getDeviceFromD3D9Device(d3d9Device);
 			
 			if((mProperties.getUsage() & TU_DEPTHSTENCIL) != 0)
 				return device->getDepthStencilFormat();
@@ -996,7 +996,7 @@ namespace BansheeEngine
 
 		UINT32 idx = face*(mProperties.getNumMipmaps() + 1) + mipmap;
 
-		IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getActiveD3D9Device();
+		IDirect3DDevice9* d3d9Device = D3D9RenderAPI::getActiveD3D9Device();
 		TextureResources* textureResources = getTextureResources(d3d9Device);
 		if (textureResources == nullptr || textureResources->pBaseTex == nullptr)
 		{				
@@ -1019,7 +1019,7 @@ namespace BansheeEngine
 	{		
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
-		if (D3D9RenderSystem::getResourceManager()->getCreationPolicy() == RCP_CREATE_ON_ALL_DEVICES)
+		if (D3D9RenderAPI::getResourceManager()->getCreationPolicy() == RCP_CREATE_ON_ALL_DEVICES)
 			createInternalResources(d3d9Device);
 	}
 
@@ -1080,7 +1080,7 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		TextureResources* textureResources;			
-		IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getActiveD3D9Device();
+		IDirect3DDevice9* d3d9Device = D3D9RenderAPI::getActiveD3D9Device();
 			
 		textureResources = getTextureResources(d3d9Device);		
 		if (textureResources == nullptr || textureResources->pBaseTex == nullptr)
@@ -1100,7 +1100,7 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		TextureResources* textureResources;
-		IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getActiveD3D9Device();
+		IDirect3DDevice9* d3d9Device = D3D9RenderAPI::getActiveD3D9Device();
 		
 		textureResources = getTextureResources(d3d9Device);		
 		if (textureResources == nullptr || textureResources->pNormTex == nullptr)
@@ -1119,7 +1119,7 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		TextureResources* textureResources;
-		IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getActiveD3D9Device();
+		IDirect3DDevice9* d3d9Device = D3D9RenderAPI::getActiveD3D9Device();
 		
 		textureResources = getTextureResources(d3d9Device);		
 		if (textureResources == nullptr || textureResources->pCubeTex)

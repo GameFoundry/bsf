@@ -1,9 +1,9 @@
 #pragma once
 
 #include <string>
-#include "BsRenderSystemFactory.h"
-#include "BsRenderSystemManager.h"
-#include "BsGLRenderSystem.h"
+#include "BsRenderAPIFactory.h"
+#include "BsRenderAPIManager.h"
+#include "BsGLRenderAPI.h"
 
 namespace BansheeEngine
 {
@@ -12,7 +12,7 @@ namespace BansheeEngine
 	/**
 	 * @brief Handles creation of the OpenGL render system.
 	 */
-	class GLRenderSystemFactory : public RenderSystemFactory
+	class GLRenderAPIFactory : public RenderAPIFactory
 	{
 	public:
 		/**
@@ -34,11 +34,11 @@ namespace BansheeEngine
 		public:
 			InitOnStart() 
 			{ 
-				static RenderSystemFactoryPtr newFactory;
+				static RenderAPIFactoryPtr newFactory;
 				if(newFactory == nullptr)
 				{
-					newFactory = bs_shared_ptr<GLRenderSystemFactory>();
-					RenderSystemManager::instance().registerRenderSystemFactory(newFactory);
+					newFactory = bs_shared_ptr<GLRenderAPIFactory>();
+					RenderAPIManager::instance().registerFactory(newFactory);
 				}
 			}
 		};

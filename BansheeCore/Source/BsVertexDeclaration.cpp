@@ -1,7 +1,7 @@
 #include "BsVertexDeclaration.h"
 #include "BsVertexDeclarationRTTI.h"
 #include "BsHardwareBufferManager.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 #include "BsUtil.h"
 
 namespace BansheeEngine
@@ -82,9 +82,9 @@ namespace BansheeEngine
 	VertexElementType VertexElement::getBestColorVertexElementType()
 	{
 		// Use the current render system to determine if possible
-		if (BansheeEngine::RenderSystem::instancePtr())
+		if (BansheeEngine::RenderAPICore::instancePtr())
 		{
-			return BansheeEngine::RenderSystem::instancePtr()->getColorVertexElementType();
+			return BansheeEngine::RenderAPICore::instancePtr()->getColorVertexElementType();
 		}
 		else
 		{

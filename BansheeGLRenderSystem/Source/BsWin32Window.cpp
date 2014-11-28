@@ -4,7 +4,7 @@
 
 #include "BsWin32Window.h"
 #include "BsInput.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 #include "BsCoreThread.h"
 #include "BsException.h"
 #include "BsWin32GLSupport.h"
@@ -108,7 +108,7 @@ namespace BansheeEngine
 		}
 
 		HMONITOR hMonitor = NULL;
-		const Win32VideoModeInfo& videoModeInfo = static_cast<const Win32VideoModeInfo&>(RenderSystem::instance().getVideoModeInfo());
+		const Win32VideoModeInfo& videoModeInfo = static_cast<const Win32VideoModeInfo&>(RenderAPICore::instance().getVideoModeInfo());
 		UINT32 numOutputs = videoModeInfo.getNumOutputs();
 		if (numOutputs > 0)
 		{
@@ -358,7 +358,7 @@ namespace BansheeEngine
 		if (mIsChild)
 			return;
 
-		const Win32VideoModeInfo& videoModeInfo = static_cast<const Win32VideoModeInfo&>(RenderSystem::instance().getVideoModeInfo());
+		const Win32VideoModeInfo& videoModeInfo = static_cast<const Win32VideoModeInfo&>(RenderAPICore::instance().getVideoModeInfo());
 		UINT32 numOutputs = videoModeInfo.getNumOutputs();
 		if (numOutputs == 0)
 			return;

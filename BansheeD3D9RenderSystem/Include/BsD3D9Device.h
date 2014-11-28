@@ -145,7 +145,7 @@ namespace BansheeEngine
 	
 	protected:
 		friend class D3D9DeviceManager;
-		friend class D3D9RenderSystem;
+		friend class D3D9RenderAPI;
 
 		typedef Map<const D3D9RenderWindowCore*, RenderWindowResources*> RenderWindowToResorucesMap;
 		typedef RenderWindowToResorucesMap::iterator RenderWindowToResorucesIterator;

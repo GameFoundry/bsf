@@ -1,5 +1,5 @@
 #include "BsGpuProgramManager.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 
 namespace BansheeEngine 
 {

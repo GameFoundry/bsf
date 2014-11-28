@@ -8,7 +8,7 @@ namespace BansheeEngine
 	 * @brief	Factory class that you may specialize in order to start up
 	 *			a specific render system.
 	 */
-	class RenderSystemFactory
+	class RenderAPIFactory
 	{
 	public:
 		/**

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsGLPrerequisites.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 #include "BsGLHardwareBufferManager.h"
 #include "BsGLSLProgramFactory.h"
 #include "BsVector4.h"
@@ -12,160 +12,160 @@ namespace BansheeEngine
 	 * @brief	Implementation of a render system using OpenGL. Provides abstracted
 	 *			access to various low level OpenGL methods.
 	 */
-    class BS_RSGL_EXPORT GLRenderSystem : public RenderSystem
+    class BS_RSGL_EXPORT GLRenderAPI : public RenderAPICore
     {
     public:
-        GLRenderSystem();
-        ~GLRenderSystem();
+        GLRenderAPI();
+        ~GLRenderAPI();
 
 		/**
-		 * @copydoc RenderSystem::getName()
+		 * @copydoc RenderAPICore::getName()
 		 */
         const String& getName() const;
 
 		/**
-		 * @copydoc RenderSystem::getShadingLanguageName()
+		 * @copydoc RenderAPICore::getShadingLanguageName()
 		 */
 		const String& getShadingLanguageName() const;
 
 		/**
-		 * @copydoc RenderSystem::setRenderTarget()
+		 * @copydoc RenderAPICore::setRenderTarget()
 		 */
 		void setRenderTarget(const SPtr<RenderTargetCore>& target);
 
         /**
-		 * @copydoc RenderSystem::setVertexBuffers()
+		 * @copydoc RenderAPICore::setVertexBuffers()
 		 */
 		void setVertexBuffers(UINT32 index, SPtr<VertexBufferCore>* buffers, UINT32 numBuffers);
 
 		/**
-		 * @copydoc RenderSystem::setIndexBuffer()
+		 * @copydoc RenderAPICore::setIndexBuffer()
 		 */
 		void setIndexBuffer(const SPtr<IndexBufferCore>& buffer);
 
 		/**
-		 * @copydoc RenderSystem::setVertexDeclaration()
+		 * @copydoc RenderAPICore::setVertexDeclaration()
 		 */
 		void setVertexDeclaration(const SPtr<VertexDeclarationCore>& vertexDeclaration);
 
 		/**
-		 * @copydoc RenderSystem::setDrawOperation()
+		 * @copydoc RenderAPICore::setDrawOperation()
 		 */
 		void setDrawOperation(DrawOperationType op);
 
         /**
-		 * @copydoc RenderSystem::setScissorRect()
+		 * @copydoc RenderAPICore::setScissorRect()
 		 */
         void setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom);
 
 		/**
-		 * @copydoc RenderSystem::setTexture()
+		 * @copydoc RenderAPICore::setTexture()
 		 */
 		void setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& tex);
 
 		/**
-		 * @copydoc	RenderSystem::setLoadStoreTexture
+		 * @copydoc	RenderAPICore::setLoadStoreTexture
 		 */
 		void setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& texPtr,
 			const TextureSurface& surface);
         
 		/**
-		 * @copydoc RenderSystem::setSamplerState()
+		 * @copydoc RenderAPICore::setSamplerState()
 		 */
 		void setSamplerState(GpuProgramType gptype, UINT16 unit, const SPtr<SamplerStateCore>& state);
 
 		/**
-		 * @copydoc RenderSystem::setBlendState()
+		 * @copydoc RenderAPICore::setBlendState()
 		 */
 		void setBlendState(const SPtr<BlendStateCore>& blendState);
 
 		/**
-		 * @copydoc RenderSystem::setRasterizerState()
+		 * @copydoc RenderAPICore::setRasterizerState()
 		 */
 		void setRasterizerState(const SPtr<RasterizerStateCore>& rasterizerState);
 
 		/**
-		 * @copydoc RenderSystem::setDepthStencilState()
+		 * @copydoc RenderAPICore::setDepthStencilState()
 		 */
 		void setDepthStencilState(const SPtr<DepthStencilStateCore>& depthStencilState, UINT32 stencilRefValue);
 
 		/**
-		 * @copydoc RenderSystem::setViewport()
+		 * @copydoc RenderAPICore::setViewport()
 		 */
 		void setViewport(const Rect2& area);
 
 		/**
-		 * @copydoc RenderSystem::bindGpuProgram()
+		 * @copydoc RenderAPICore::bindGpuProgram()
 		 */
 		void bindGpuProgram(const SPtr<GpuProgramCore>& prg);
 
 		/**
-		 * @copydoc RenderSystem::unbindGpuProgram()
+		 * @copydoc RenderAPICore::unbindGpuProgram()
 		 */
 		void unbindGpuProgram(GpuProgramType gptype);
 
 		/**
-		 * @copydoc RenderSystem::bindGpuParams()
+		 * @copydoc RenderAPICore::bindGpuParams()
 		 */
 		void bindGpuParams(GpuProgramType gptype, const SPtr<GpuParamsCore>& params);
 
 		/**
-		 * @copydoc RenderSystem::beginFrame()
+		 * @copydoc RenderAPICore::beginFrame()
 		 */
         void beginFrame(void);
 
 		/**
-		 * @copydoc RenderSystem::endFrame()
+		 * @copydoc RenderAPICore::endFrame()
 		 */
         void endFrame(void);
 
 		/**
-		 * @copydoc RenderSystem::draw()
+		 * @copydoc RenderAPICore::draw()
 		 */
 		void draw(UINT32 vertexOffset, UINT32 vertexCount);
 
 		/**
-		 * @copydoc RenderSystem::drawIndexed()
+		 * @copydoc RenderAPICore::drawIndexed()
 		 */
 		void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount);
 
 		/**
-		 * @copydoc RenderSystem::clearRenderTarget()
+		 * @copydoc RenderAPICore::clearRenderTarget()
 		 */
 		void clearRenderTarget(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0);
 
 		/**
-		 * @copydoc RenderSystem::clearViewport()
+		 * @copydoc RenderAPICore::clearViewport()
 		 */
 		void clearViewport(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0);
 
         /**
-		 * @copydoc RenderSystem::getColorVertexElementType()
+		 * @copydoc RenderAPICore::getColorVertexElementType()
 		 */
         VertexElementType getColorVertexElementType() const;
 
 		/**
-		 * @copydoc RenderSystem::getHorizontalTexelOffset()
+		 * @copydoc RenderAPICore::getHorizontalTexelOffset()
 		 */
         float getHorizontalTexelOffset();
 
 		/**
-		 * @copydoc RenderSystem::getVerticalTexelOffset()
+		 * @copydoc RenderAPICore::getVerticalTexelOffset()
 		 */
         float getVerticalTexelOffset();
 
 		/**
-		 * @copydoc RenderSystem::getMinimumDepthInputValue()
+		 * @copydoc RenderAPICore::getMinimumDepthInputValue()
 		 */
         float getMinimumDepthInputValue();
 
 		 /**
-		 * @copydoc RenderSystem::getMaximumDepthInputValue()
+		 * @copydoc RenderAPICore::getMaximumDepthInputValue()
 		 */
         float getMaximumDepthInputValue();
 
 		/**
-		 * @copydoc RenderSystem::convertProjectionMatrix()
+		 * @copydoc RenderAPICore::convertProjectionMatrix()
 		 */
         void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest);
 
@@ -190,19 +190,19 @@ namespace BansheeEngine
 
 	protected:
 		/**
-		 * @copydoc	RenderSystem::initializePrepare
+		 * @copydoc	RenderAPICore::initializePrepare
 		 */
 		void initializePrepare();
 
 		/**
-		 * @copydoc	RenderSystem::initializeFinalize
+		 * @copydoc	RenderAPICore::initializeFinalize
 		 */
 		void initializeFinalize(const SPtr<RenderWindowCore>& primaryWindow);
 
 		/**
-		 * @copydoc	RenderSystem::destroy_internal().
+		 * @copydoc	RenderAPICore::destroy_internal().
 		 */
-        void destroy_internal(void);
+        void destroyCore(void);
 
 		/**
 		* @brief	Call before doing a draw operation, this method sets everything up.
@@ -295,13 +295,13 @@ namespace BansheeEngine
 		 * @brief	Creates render system capabilities that specify which features are
 		 *			or aren't supported.
 		 */
-		RenderSystemCapabilities* createRenderSystemCapabilities() const;
+		RenderAPICapabilities* createRenderSystemCapabilities() const;
 
 		/**
 		 * @brief	Finish initialization by setting up any systems dependant on render system
 		 *			capabilities.
 		 */
-		void initFromCaps(RenderSystemCapabilities* caps);
+		void initFromCaps(RenderAPICapabilities* caps);
 
 		/**
 		 * @brief	Switch the currently used OpenGL context. You will need to re-bind

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsGLPrerequisites.h"
-#include "BsGLRenderSystem.h"
+#include "BsGLRenderAPI.h"
 #include "BsRenderWindow.h"
 
 namespace BansheeEngine

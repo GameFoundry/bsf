@@ -265,8 +265,8 @@
     <ClInclude Include="Include\BsD3D11VertexBuffer.h" />
     <ClInclude Include="Include\BsD3D11RasterizerState.h" />
     <ClInclude Include="Include\BsD3D11RenderStateManager.h" />
-    <ClInclude Include="Include\BsD3D11RenderSystem.h" />
-    <ClInclude Include="Include\BsD3D11RenderSystemFactory.h" />
+    <ClInclude Include="Include\BsD3D11RenderAPI.h" />
+    <ClInclude Include="Include\BsD3D11RenderAPIFactory.h" />
     <ClInclude Include="Include\BsD3D11RenderTexture.h" />
     <ClInclude Include="Include\BsD3D11RenderWindow.h" />
     <ClInclude Include="Include\BsD3D11RenderWindowManager.h" />
@@ -304,8 +304,8 @@
     <ClCompile Include="Source\BsD3D11MultiRenderTexture.cpp" />
     <ClCompile Include="Source\BsD3D11RasterizerState.cpp" />
     <ClCompile Include="Source\BsD3D11RenderStateManager.cpp" />
-    <ClCompile Include="Source\BsD3D11RenderSystem.cpp" />
-    <ClCompile Include="Source\BsD3D11RenderSystemFactory.cpp" />
+    <ClCompile Include="Source\BsD3D11RenderAPI.cpp" />
+    <ClCompile Include="Source\BsD3D11RenderAPIFactory.cpp" />
     <ClCompile Include="Source\BsD3D11RenderTexture.cpp" />
     <ClCompile Include="Source\BsD3D11RenderWindow.cpp" />
     <ClCompile Include="Source\BsD3D11RenderWindowManager.cpp" />

@@ -3,7 +3,7 @@
 #include "BsResources.h"
 #include "BsUUID.h"
 #include "BsResourceMetaData.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 
 namespace BansheeEngine
 {

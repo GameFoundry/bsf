@@ -1,7 +1,7 @@
 #include "BsWin32GLSupport.h"
 #include "BsGLTexture.h"
 #include "BsWin32Window.h"
-#include "BsGLRenderSystem.h"
+#include "BsGLRenderAPI.h"
 #include "BsWin32Context.h"
 #include "BsWin32VideoModeInfo.h"
 #include "BsException.h"
@@ -85,7 +85,7 @@ namespace BansheeEngine
 
 	SPtr<Win32Context> Win32GLSupport::createContext(HDC hdc, HGLRC externalGlrc)
 	{
-		GLRenderSystem* rs = static_cast<GLRenderSystem*>(RenderSystem::instancePtr());
+		GLRenderAPI* rs = static_cast<GLRenderAPI*>(RenderAPICore::instancePtr());
 
 		// If RenderSystem has initialized a context use that, otherwise we create our own
 		HGLRC glrc = externalGlrc;

@@ -1,7 +1,7 @@
 #include "BsD3D9VertexDeclaration.h"
 #include "BsD3D9Mappings.h"
 #include "BsException.h"
-#include "BsD3D9RenderSystem.h"
+#include "BsD3D9RenderAPI.h"
 #include "BsD3D9ResourceManager.h"
 #include "BsRenderStats.h"
 
@@ -38,7 +38,7 @@ namespace BansheeEngine
 
 	IDirect3DVertexDeclaration9* D3D9VertexDeclarationCore::getD3DVertexDeclaration()
     {
-		IDirect3DDevice9* pCurDevice   = D3D9RenderSystem::getActiveD3D9Device();
+		IDirect3DDevice9* pCurDevice   = D3D9RenderAPI::getActiveD3D9Device();
 		auto it = mMapDeviceToDeclaration.find(pCurDevice);
 		IDirect3DVertexDeclaration9* lpVertDecl = NULL;
 

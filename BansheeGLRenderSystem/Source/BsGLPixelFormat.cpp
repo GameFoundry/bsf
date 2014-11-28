@@ -1,5 +1,5 @@
 #include "BsGLPixelFormat.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 #include "BsBitwise.h"
 #include "BsDebug.h"
 

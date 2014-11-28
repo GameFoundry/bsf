@@ -2,7 +2,7 @@
 #include "BsException.h"
 #include "BsPixelUtil.h"
 #include "BsMultiRenderTexture.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 
 namespace BansheeEngine 
 {

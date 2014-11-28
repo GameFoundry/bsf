@@ -1,6 +1,6 @@
 #include "BsD3D11GpuBuffer.h"
 #include "BsD3D11GpuBufferView.h"
-#include "BsD3D11RenderSystem.h"
+#include "BsD3D11RenderAPI.h"
 #include "BsD3D11HardwareBuffer.h"
 #include "BsD3D11Device.h"
 #include "BsD3D11Mappings.h"
@@ -24,7 +24,7 @@ namespace BansheeEngine
 	void D3D11GpuBufferCore::initialize()
 	{
 		D3D11HardwareBuffer::BufferType bufferType;
-		D3D11RenderSystem* d3d11rs = static_cast<D3D11RenderSystem*>(D3D11RenderSystem::instancePtr());
+		D3D11RenderAPI* d3d11rs = static_cast<D3D11RenderAPI*>(D3D11RenderAPI::instancePtr());
 
 		const GpuBufferProperties& props = getProperties();
 

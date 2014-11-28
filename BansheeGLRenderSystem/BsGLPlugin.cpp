@@ -1,5 +1,5 @@
 #include "BsGLPrerequisites.h"
-#include "BsGLRenderSystemFactory.h"
+#include "BsGLRenderAPIFactory.h"
 
 namespace BansheeEngine
 {

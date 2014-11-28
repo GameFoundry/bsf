@@ -1,6 +1,6 @@
 #include "BsD3D11InputLayoutManager.h"
 #include "BsD3D11Mappings.h"
-#include "BsD3D11RenderSystem.h"
+#include "BsD3D11RenderAPI.h"
 #include "BsD3D11Device.h"
 #include "BsD3D11GpuProgram.h"
 #include "BsHardwareBufferManager.h"
@@ -102,7 +102,7 @@ namespace BansheeEngine
 			idx++;
 		}
 
-		D3D11RenderSystem* d3d11rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+		D3D11RenderAPI* d3d11rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
 		D3D11Device& device = d3d11rs->getPrimaryDevice();
 
 		const HLSLMicroCode& microcode = vertexProgram.getMicroCode();

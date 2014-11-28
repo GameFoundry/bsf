@@ -1,6 +1,6 @@
 #include "BsCoreRenderer.h"
 #include "BsCoreThread.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 #include "BsMesh.h"
 #include "BsMaterial.h"
 #include "BsPass.h"
@@ -14,7 +14,7 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		RenderSystem& rs = RenderSystem::instance();
+		RenderAPICore& rs = RenderAPICore::instance();
 
 		SPtr<PassCore> pass = material->getPass(passIdx);
 		SPtr<PassParametersCore> passParams = material->getPassParameters(passIdx);
@@ -90,7 +90,7 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		RenderSystem& rs = RenderSystem::instance();
+		RenderAPICore& rs = RenderAPICore::instance();
 		const MeshProperties& meshProps = mesh->getProperties();
 		std::shared_ptr<VertexData> vertexData = mesh->getVertexData();
 

@@ -1,9 +1,9 @@
 #include "BsGpuProgram.h"
 #include "BsVector3.h"
 #include "BsVector4.h"
-#include "BsRenderSystemCapabilities.h"
+#include "BsRenderAPICapabilities.h"
 #include "BsException.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 #include "BsAsyncOp.h"
 #include "BsGpuParams.h"
 #include "BsGpuProgInclude.h"
@@ -31,7 +31,7 @@ namespace BansheeEngine
 		if (!isRequiredCapabilitiesSupported())
 			return false;
 
-		RenderSystem* rs = BansheeEngine::RenderSystem::instancePtr();
+		RenderAPICore* rs = BansheeEngine::RenderAPICore::instancePtr();
 		String profile = rs->getCapabilities()->gpuProgProfileToRSSpecificProfile(getProperties().getProfile());
 
 		return rs->getCapabilities()->isShaderProfileSupported(profile);

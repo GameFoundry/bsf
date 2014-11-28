@@ -1,9 +1,9 @@
 #pragma once
 
 #include <string>
-#include "BsRenderSystemFactory.h"
-#include "BsRenderSystemManager.h"
-#include "BsD3D9RenderSystem.h"
+#include "BsRenderAPIFactory.h"
+#include "BsRenderAPIManager.h"
+#include "BsD3D9RenderAPI.h"
 
 namespace BansheeEngine
 {
@@ -12,7 +12,7 @@ namespace BansheeEngine
 	/**
 	 * @brief	Handles creation of the DX9 render system.
 	 */
-	class D3D9RenderSystemFactory : public RenderSystemFactory
+	class D3D9RenderAPIFactory : public RenderAPIFactory
 	{
 	public:
 		/**
@@ -35,11 +35,11 @@ namespace BansheeEngine
 			public:
 				InitOnStart() 
 				{ 
-					static RenderSystemFactoryPtr newFactory;
+					static RenderAPIFactoryPtr newFactory;
 					if(newFactory == nullptr)
 					{
-						newFactory = bs_shared_ptr<D3D9RenderSystemFactory>();
-						RenderSystemManager::instance().registerRenderSystemFactory(newFactory);
+						newFactory = bs_shared_ptr<D3D9RenderAPIFactory>();
+						RenderAPIManager::instance().registerFactory(newFactory);
 					}
 				}
 		};

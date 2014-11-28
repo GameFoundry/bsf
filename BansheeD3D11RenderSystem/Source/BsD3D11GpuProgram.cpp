@@ -3,7 +3,7 @@
 #include "BsException.h"
 #include "BsDebug.h"
 #include "BsGpuParams.h"
-#include "BsD3D11RenderSystem.h"
+#include "BsD3D11RenderAPI.h"
 #include "BsGpuProgramManager.h"
 #include "BsHardwareBufferManager.h"
 #include "BsD3D11HLSLParamParser.h"
@@ -40,7 +40,7 @@ namespace BansheeEngine
 			return;
 		}
 
-		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
 		String hlslProfile = rs->getCapabilities()->gpuProgProfileToRSSpecificProfile(mProperties.getProfile());
 
 		ID3DBlob* microcode = compileMicrocode(hlslProfile);

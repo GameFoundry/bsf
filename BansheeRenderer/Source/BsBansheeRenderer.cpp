@@ -251,13 +251,13 @@ namespace BansheeEngine
 			SPtr<RenderTargetCore> target = renderTargetData.target;
 			Vector<const CameraHandlerCore*>& cameras = renderTargetData.cameras;
 
-			RenderSystem::instance().beginFrame();
+			RenderAPICore::instance().beginFrame();
 
 			for(auto& camera : cameras)
 			{
 				SPtr<ViewportCore> viewport = camera->getViewport();
-				RenderSystem::instance().setRenderTarget(target);
-				RenderSystem::instance().setViewport(viewport->getNormArea());
+				RenderAPICore::instance().setRenderTarget(target);
+				RenderAPICore::instance().setViewport(viewport->getNormArea());
 
 				UINT32 clearBuffers = 0;
 				if(viewport->getRequiresColorClear())
@@ -270,13 +270,13 @@ namespace BansheeEngine
 					clearBuffers |= FBT_STENCIL;
 
 				if(clearBuffers != 0)
-					RenderSystem::instance().clearViewport(clearBuffers, viewport->getClearColor(), viewport->getClearDepthValue(), viewport->getClearStencilValue());
+					RenderAPICore::instance().clearViewport(clearBuffers, viewport->getClearColor(), viewport->getClearDepthValue(), viewport->getClearStencilValue());
 
 				render(*camera, mCameraData[camera].renderQueue);
 			}
 
-			RenderSystem::instance().endFrame();
-			RenderSystem::instance().swapBuffers(target);
+			RenderAPICore::instance().endFrame();
+			RenderAPICore::instance().swapBuffers(target);
 		}
 
 		mRenderTargets.clear();
@@ -286,7 +286,7 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		RenderSystem& rs = RenderSystem::instance();
+		RenderAPICore& rs = RenderAPICore::instance();
 
 		Matrix4 projMatrixCstm = camera.getProjectionMatrixRS();
 		Matrix4 viewMatrixCstm = camera.getViewMatrix();
@@ -371,12 +371,12 @@ namespace BansheeEngine
 
 	SPtr<ShaderCore> BansheeRenderer::createDefaultShader()
 	{
-		String rsName = RenderSystem::instance().getName();
+		String rsName = RenderAPICore::instance().getName();
 
 		SPtr<GpuProgramCore> vsProgram;
 		SPtr<GpuProgramCore> psProgram;
 
-		if (rsName == RenderSystemDX11)
+		if (rsName == RenderAPIDX11)
 		{
 			String vsCode = R"(
 				cbuffer PerObject
@@ -400,7 +400,7 @@ namespace BansheeEngine
 			vsProgram = GpuProgramCore::create(vsCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
 			psProgram = GpuProgramCore::create(psCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_FS_4_0);
 		}
-		else if (rsName == RenderSystemDX9)
+		else if (rsName == RenderAPIDX9)
 		{
 			String vsCode = R"(
 				 BS_PARAM_BLOCK PerObject { matWorldViewProj }
@@ -422,7 +422,7 @@ namespace BansheeEngine
 			vsProgram = GpuProgramCore::create(vsCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
 			psProgram = GpuProgramCore::create(psCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_FS_2_0);
 		}
-		else if (rsName == RenderSystemOpenGL)
+		else if (rsName == RenderAPIOpenGL)
 		{
 			String vsCode = R"(#version 400
 				uniform PerObject

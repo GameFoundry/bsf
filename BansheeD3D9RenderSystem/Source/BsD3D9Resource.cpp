@@ -1,6 +1,6 @@
 #include "BsD3D9Resource.h"
 #include "BsD3D9ResourceManager.h"
-#include "BsD3D9RenderSystem.h"
+#include "BsD3D9RenderAPI.h"
 
 namespace BansheeEngine
 {
@@ -8,12 +8,12 @@ namespace BansheeEngine
 
 	D3D9Resource::D3D9Resource()
 	{				
-		D3D9RenderSystem::getResourceManager()->_notifyResourceCreated(static_cast<D3D9Resource*>(this));		
+		D3D9RenderAPI::getResourceManager()->_notifyResourceCreated(static_cast<D3D9Resource*>(this));		
 	}
 
 	D3D9Resource::~D3D9Resource()
 	{		
-		D3D9RenderSystem::getResourceManager()->_notifyResourceDestroyed(static_cast<D3D9Resource*>(this));	
+		D3D9RenderAPI::getResourceManager()->_notifyResourceDestroyed(static_cast<D3D9Resource*>(this));	
 	}
 	
 	void D3D9Resource::lockDeviceAccess()

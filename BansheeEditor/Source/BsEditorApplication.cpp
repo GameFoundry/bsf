@@ -162,7 +162,7 @@ namespace BansheeEngine
 		/* 								DEBUG CODE                      		*/
 		/************************************************************************/
 
-		RenderSystem* renderSystem = RenderSystem::instancePtr();
+		RenderAPICore* renderSystem = RenderAPICore::instancePtr();
 
 		HSceneObject testModelGO = SceneObject::create("TestMesh");
 		HRenderable testRenderable = testModelGO->addComponent<Renderable>();
@@ -254,16 +254,16 @@ namespace BansheeEngine
 		passDesc.fragmentProgram = mFragProgRef;
 
 		mNewPassGL = Pass::create(passDesc);
-		mNewTechniqueGL = Technique::create("GLRenderSystem", "BansheeRenderer", { mNewPassGL });
+		mNewTechniqueGL = Technique::create(RenderAPIOpenGL, "BansheeRenderer", { mNewPassGL });
 
 		// TODO - I need to create different techniques for different render systems (and renderers, if there were any),
 		// which is redundant as some techniques can be reused. I should add a functionality that supports multiple
 		// render systems/renderers per technique
 		mNewPassDX = Pass::create(passDesc);
-		mNewTechniqueDX = Technique::create("D3D9RenderSystem", "BansheeRenderer", { mNewPassDX });
+		mNewTechniqueDX = Technique::create(RenderAPIDX9, "BansheeRenderer", { mNewPassDX });
 
 		mNewPassDX11 = Pass::create(passDesc);
-		mNewTechniqueDX11 = Technique::create("D3D11RenderSystem", "BansheeRenderer", { mNewPassDX11 });
+		mNewTechniqueDX11 = Technique::create(RenderAPIDX11, "BansheeRenderer", { mNewPassDX11 });
 
 		SHADER_DESC shaderDesc;
 		shaderDesc.addParameter("matWorldViewProj", "matWorldViewProj", GPDT_MATRIX_4X4, RPS_WorldViewProjTfrm);

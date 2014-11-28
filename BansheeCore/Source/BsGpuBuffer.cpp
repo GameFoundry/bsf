@@ -1,6 +1,6 @@
 #include "BsGpuBuffer.h"
 #include "BsException.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 #include "BsHardwareBufferManager.h"
 
 namespace BansheeEngine

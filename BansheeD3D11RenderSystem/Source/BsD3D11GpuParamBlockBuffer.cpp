@@ -1,6 +1,6 @@
 #include "BsD3D11GpuParamBlockBuffer.h"
 #include "BsD3D11HardwareBuffer.h"
-#include "BsD3D11RenderSystem.h"
+#include "BsD3D11RenderAPI.h"
 #include "BsD3D11Device.h"
 #include "BsRenderStats.h"
 
@@ -22,7 +22,7 @@ namespace BansheeEngine
 
 	void D3D11GpuParamBlockBufferCore::initialize()
 	{
-		D3D11RenderSystem* d3d11rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+		D3D11RenderAPI* d3d11rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
 		D3D11Device& device = d3d11rs->getPrimaryDevice();
 
 		if(mUsage == GPBU_STATIC)

@@ -23,9 +23,9 @@
 
 namespace BansheeEngine
 {
-	static const String RenderSystemDX9 = "D3D9RenderSystem";
-	static const String RenderSystemDX11 = "D3D11RenderSystem";
-	static const String RenderSystemOpenGL = "GLRenderSystem";
+	static const String RenderAPIDX9 = "D3D9RenderAPI";
+	static const String RenderAPIDX11 = "D3D11RenderAPI";
+	static const String RenderAPIOpenGL = "GLRenderAPI";
 	static const String RendererDefault = "BansheeRenderer";
 	static const String RendererInvariant = "CoreRenderer";
 

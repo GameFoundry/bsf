@@ -6,7 +6,7 @@
 #include "BsSamplerState.h"
 #include "BsCommandQueue.h"
 #include "BsDrawOps.h"
-#include "BsRenderSystemCapabilities.h"
+#include "BsRenderAPICapabilities.h"
 #include "BsRenderTarget.h"
 #include "BsRenderTexture.h"
 #include "BsRenderWindow.h"
@@ -19,17 +19,136 @@
 namespace BansheeEngine
 {
 	/**
+	 * @brief	Version of the render API interface usable from the sim thread. All the commands
+	 *			get queued on the accessor provided to each method and will be executed on
+	 *			the core thread later.
+	 *
+	 * @see		RenderAPICore
+	 *
+	 * @note	Sim thread only.
+	 */
+	class BS_CORE_EXPORT RenderAPI
+	{
+	public:
+		/** @copydoc RenderAPICore::disableTextureUnit() */
+		static void disableTextureUnit(CoreAccessor& accessor, GpuProgramType gptype, UINT16 texUnit);
+
+		/** @copydoc RenderAPICore::setTexture() */
+		static void setTexture(CoreAccessor& accessor, GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr &texPtr);
+
+		/** @copydoc RenderAPICore::setLoadStoreTexture() */
+		static void setLoadStoreTexture(CoreAccessor& accessor, GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr& texPtr,
+			const TextureSurface& surface);
+
+		/** @copydoc RenderAPICore::setSamplerState() */
+		static void setSamplerState(CoreAccessor& accessor, GpuProgramType gptype, UINT16 texUnit, const SamplerStatePtr& samplerState);
+
+		/** @copydoc RenderAPICore::setBlendState() */
+		static void setBlendState(CoreAccessor& accessor, const BlendStatePtr& blendState);
+
+		/** @copydoc RenderAPICore::setRasterizerState() */
+		static void setRasterizerState(CoreAccessor& accessor, const RasterizerStatePtr& rasterizerState);
+
+		/** @copydoc RenderAPICore::setRasterizerState() */
+		static void setDepthStencilState(CoreAccessor& accessor, const DepthStencilStatePtr& depthStencilState, UINT32 stencilRefValue);
+
+		/** @copydoc RenderAPICore::setVertexBuffers() */
+		static void setVertexBuffers(CoreAccessor& accessor, UINT32 index, const Vector<VertexBufferPtr>& buffers);
+
+		/** @copydoc RenderAPICore::setIndexBuffer() */
+		static void setIndexBuffer(CoreAccessor& accessor, const IndexBufferPtr& buffer);
+
+		/** @copydoc RenderAPICore::setVertexDeclaration() */
+		static void setVertexDeclaration(CoreAccessor& accessor, const VertexDeclarationPtr& vertexDeclaration);
+
+		/** @copydoc RenderAPICore::setViewport() */
+		static void setViewport(CoreAccessor& accessor, const Rect2& vp);
+
+		/** @copydoc RenderAPICore::setDrawOperation() */
+		static void setDrawOperation(CoreAccessor& accessor, DrawOperationType op);
+
+		/** @copydoc RenderAPICore::setClipPlanes() */
+		static void setClipPlanes(CoreAccessor& accessor, const PlaneList& clipPlanes);
+
+		/** @copydoc RenderAPICore::addClipPlane(const Plane&) */
+		static void addClipPlane(CoreAccessor& accessor, const Plane& p);
+
+		/** @copydoc RenderAPICore::resetClipPlanes() */
+		static void resetClipPlanes(CoreAccessor& accessor);
+
+		/** @copydoc RenderAPICore::setScissorTest() */
+		static void setScissorTest(CoreAccessor& accessor, UINT32 left = 0, UINT32 top = 0, UINT32 right = 800, UINT32 bottom = 600);
+
+		/** @copydoc RenderAPICore::setRenderTarget() */
+		static void setRenderTarget(CoreAccessor& accessor, const RenderTargetPtr& target);
+
+		/** @copydoc RenderAPICore::bindGpuProgram() */
+		static void bindGpuProgram(CoreAccessor& accessor, const GpuProgramPtr& prg);
+
+		/** @copydoc RenderAPICore::unbindGpuProgram() */
+		static void unbindGpuProgram(CoreAccessor& accessor, GpuProgramType gptype);
+
+		/** @copydoc RenderAPICore::bindGpuParams() */
+		static void bindGpuParams(CoreAccessor& accessor, GpuProgramType gptype, const GpuParamsPtr& params);
+
+		/** @copydoc RenderAPICore::beginFrame() */
+		static void beginRender(CoreAccessor& accessor);
+
+		/** @copydoc RenderAPICore::endFrame() */
+		static void endRender(CoreAccessor& accessor);
+
+		/** @copydoc RenderAPICore::clearRenderTarget() */
+		static void clearRenderTarget(CoreAccessor& accessor, UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0);
+
+		/** @copydoc RenderAPICore::clearViewport() */
+		static void clearViewport(CoreAccessor& accessor, UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0);
+
+		/** @copydoc RenderAPICore::swapBuffers() */
+		static void swapBuffers(CoreAccessor& accessor, const RenderTargetPtr& target);
+
+		/** @copydoc RenderAPICore::draw() */
+		static void draw(CoreAccessor& accessor, UINT32 vertexOffset, UINT32 vertexCount);
+
+		/** @copydoc RenderAPICore::drawIndexed() */
+		static void drawIndexed(CoreAccessor& accessor, UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount);
+
+		/** @copydoc RenderAPICore::getVideoModeInfo */
+		static const VideoModeInfo& getVideoModeInfo();
+
+		/** @copydoc RenderAPICore::getColorVertexElementType */
+		static VertexElementType getColorVertexElementType();
+
+		/** @copydoc RenderAPICore::convertProjectionMatrix */
+		static void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest);
+
+		/** @copydoc RenderAPICore::getHorizontalTexelOffset */
+		static float getHorizontalTexelOffset();
+
+		/** @copydoc RenderAPICore::getVerticalTexelOffset */
+		static float getVerticalTexelOffset();
+
+		/** @copydoc RenderAPICore::getMinimumDepthInputValue */
+		static float getMinimumDepthInputValue();
+
+		/** @copydoc RenderAPICore::getMaximumDepthInputValue */
+		static float getMaximumDepthInputValue();
+
+		/** @copydoc RenderAPICore::getVertexColorFlipRequired */
+		static bool getVertexColorFlipRequired();
+	};
+
+	/**
 	 * @brief	Render system provides base functionality for a rendering API like
 	 *			DirectX or OpenGL. Most of the class is abstract and specific
 	 *			subclass for each rendering API needs to be implemented.
 	 *
 	 * @note	Core thread only unless specifically noted otherwise on per-method basis.
 	 */
-	class BS_CORE_EXPORT RenderSystem : public Module<RenderSystem>
+	class BS_CORE_EXPORT RenderAPICore : public Module<RenderAPICore>
 	{
 	public:
-		RenderSystem();
-		virtual ~RenderSystem();
+		RenderAPICore();
+		virtual ~RenderAPICore();
 
 		/**
 		 * @brief	Returns the name of the rendering system. 
@@ -159,7 +278,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Thread safe.
 		 */
-		const RenderSystemCapabilities* getCapabilities() const;
+		const RenderAPICapabilities* getCapabilities() const;
 
 		/**
 		 * @brief	Returns information about the driver version.
@@ -309,7 +428,7 @@ namespace BansheeEngine
 		/************************************************************************/
 	protected:
 		/**
-		 * @brief	Initializes the render system and creates a primary render window.
+		 * @brief	Initializes the render API system and creates a primary render window.
 		 *
 		 * @note		Although I'd like otherwise, due to the nature of some render system implementations,
 		 * 			you cannot initialize the render system without a window.
@@ -319,28 +438,28 @@ namespace BansheeEngine
 		RenderWindowPtr initialize(const RENDER_WINDOW_DESC& primaryWindowDesc);
 
 		/**
-		 * @brief	Prepares the initialization of the render system on the core thread. After
+		 * @brief	Prepares the initialization of the render API system on the core thread. After
 		 *			the system is prepared a render window can be created and initialization finalized.
 		 */
 		virtual void initializePrepare();
 
 		/**
-		 * @brief	Finalized the initialization of the render system on the core thread. 
+		 * @brief	Finalizes the initialization of the render API system on the core thread. 
 		 *			Should be called after the primary render window is created.
 		 */
 		virtual void initializeFinalize(const SPtr<RenderWindowCore>& primaryWindow);
 
 		/**
-		 * @brief	Shuts down the render system and cleans up all resources.
+		 * @brief	Shuts down the render API system and cleans up all resources.
 		 *
 		 * @note	Sim thread.
 		 */
 		void destroy();
 
 		/**
-		 * @brief	Performs second part of render system shutdown on the core thread.
+		 * @brief	Performs render API system shutdown on the core thread.
 		 */
-		virtual void destroy_internal();
+		virtual void destroyCore();
 
 		/**
 		 * @copydoc	setClipPlanes.
@@ -351,7 +470,7 @@ namespace BansheeEngine
 		/* 								INTERNAL DATA					       	*/
 		/************************************************************************/
 	protected:
-		friend class RenderSystemManager;
+		friend class RenderAPIManager;
 
 		SPtr<RenderTargetCore> mActiveRenderTarget;
 
@@ -369,7 +488,7 @@ namespace BansheeEngine
 		PlaneList mClipPlanes;
 		bool mClipPlanesDirty;
 
-		RenderSystemCapabilities* mCurrentCapabilities;
+		RenderAPICapabilities* mCurrentCapabilities;
 		VideoModeInfoPtr mVideoModeInfo;
 	};
 }

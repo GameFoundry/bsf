@@ -2,23 +2,23 @@
 
 #include "BsCorePrerequisites.h"
 #include "BsModule.h"
-#include "BsRenderSystemFactory.h"
+#include "BsRenderAPIFactory.h"
 
 namespace BansheeEngine
 {
-	typedef std::shared_ptr<RenderSystemFactory> RenderSystemFactoryPtr;
+	typedef std::shared_ptr<RenderAPIFactory> RenderAPIFactoryPtr;
 
 	/**
 	 * @brief	Manager that handles render system start up.
 	 */
-	class BS_CORE_EXPORT RenderSystemManager : public Module<RenderSystemManager>
+	class BS_CORE_EXPORT RenderAPIManager : public Module<RenderAPIManager>
 	{
 	public:
-		RenderSystemManager();
-		~RenderSystemManager();
+		RenderAPIManager();
+		~RenderAPIManager();
 
 		/**
-		 * @brief	Starts the render system with the provided name and creates the primary render window.
+		 * @brief	Starts the render API with the provided name and creates the primary render window.
 		 *
 		 * @param	name				Name of the render system to start. Factory for this render system must be previously
 		 *								registered.
@@ -29,11 +29,11 @@ namespace BansheeEngine
 		RenderWindowPtr initialize(const String& name, RENDER_WINDOW_DESC& primaryWindowDesc);
 
 		/**
-		 * @brief	Registers a new render system factory responsible for creating a specific render system type.
+		 * @brief	Registers a new render API factory responsible for creating a specific render system type.
 		 */
-		void registerRenderSystemFactory(RenderSystemFactoryPtr factory);
+		void registerFactory(RenderAPIFactoryPtr factory);
 	private:
-		Vector<RenderSystemFactoryPtr> mAvailableFactories;
+		Vector<RenderAPIFactoryPtr> mAvailableFactories;
 		bool mRenderSystemInitialized;
 	};
 }

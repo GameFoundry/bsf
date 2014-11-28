@@ -11,7 +11,7 @@
 #include "BsBuiltinEditorResources.h"
 #include "BsMaterial.h"
 #include "BsGpuParams.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 #include "BsCoreRenderer.h"
 #include "BsTransientMesh.h"
 #include "BsRendererManager.h"
@@ -769,7 +769,7 @@ namespace BansheeEngine
 
 	void GizmoManagerCore::renderIconGizmos(Rect2I screenArea, SPtr<MeshCoreBase> mesh, GizmoManager::IconRenderDataVecPtr renderData, bool usePickingMaterial)
 	{
-		RenderSystem& rs = RenderSystem::instance();
+		RenderAPICore& rs = RenderAPICore::instance();
 		const MeshProperties& meshProps = mesh->getProperties();
 
 		std::shared_ptr<VertexData> vertexData = mesh->getVertexData();

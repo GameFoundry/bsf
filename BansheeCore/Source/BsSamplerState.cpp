@@ -1,7 +1,7 @@
 #include "BsSamplerState.h"
 #include "BsSamplerStateRTTI.h"
 #include "BsRenderStateManager.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 #include "BsException.h"
 #include "BsResources.h"
 

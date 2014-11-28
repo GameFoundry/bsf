@@ -1,7 +1,7 @@
 #include "BsRenderTarget.h"
 #include "BsViewport.h"
 #include "BsException.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 #include "BsCoreThread.h"
 #include "BsFrameAlloc.h"
 

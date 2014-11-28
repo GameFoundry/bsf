@@ -10,7 +10,7 @@
 #include "BsConvexVolume.h"
 #include "BsCamera.h"
 #include "BsCoreThread.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 #include "BsMaterial.h"
 #include "BsPass.h"
 #include "BsBlendState.h"
@@ -256,7 +256,7 @@ namespace BansheeEngine
 	void ScenePickingCore::corePickingBegin(const SPtr<RenderTargetCore>& target, const Rect2& viewportArea,
 		const ScenePicking::RenderableSet& renderables, const Vector2I& position, const Vector2I& area)
 	{
-		RenderSystem& rs = RenderSystem::instance();
+		RenderAPICore& rs = RenderAPICore::instance();
 
 		rs.beginFrame();
 		rs.setRenderTarget(target);
@@ -330,7 +330,7 @@ namespace BansheeEngine
 		PixelDataPtr outputPixelData = outputTexture->allocateSubresourceBuffer(0);
 		AsyncOp unused;
 
-		RenderSystem& rs = RenderSystem::instance();
+		RenderAPICore& rs = RenderAPICore::instance();
 
 		rs.endFrame();
 		outputTexture->getCore()->readSubresource(0, *outputPixelData);

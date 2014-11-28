@@ -1,5 +1,5 @@
 #include "BsD3D9OcclusionQuery.h"
-#include "BsD3D9RenderSystem.h"
+#include "BsD3D9RenderAPI.h"
 #include "BsRenderStats.h"
 #include "BsMath.h"
 
@@ -19,7 +19,7 @@ namespace BansheeEngine
 
 	void D3D9OcclusionQuery::createQuery()
 	{
-		mDevice = D3D9RenderSystem::getActiveD3D9Device();
+		mDevice = D3D9RenderAPI::getActiveD3D9Device();
 
 		HRESULT hr = mDevice->CreateQuery(D3DQUERYTYPE_OCCLUSION, &mQuery);
 		if (hr != S_OK)

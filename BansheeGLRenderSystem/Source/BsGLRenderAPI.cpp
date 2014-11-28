@@ -1,5 +1,5 @@
-#include "BsGLRenderSystem.h"
-#include "BsRenderSystem.h"
+#include "BsGLRenderAPI.h"
+#include "BsRenderAPI.h"
 #include "BsGLTextureManager.h"
 #include "BsGLVertexBuffer.h"
 #include "BsGLIndexBuffer.h"
@@ -35,7 +35,7 @@ namespace BansheeEngine
 	/* 								PUBLIC INTERFACE                   		*/
 	/************************************************************************/
 
-	GLRenderSystem::GLRenderSystem()
+	GLRenderAPI::GLRenderAPI()
 		: mDepthWrite(true),
 		mGLSLProgramFactory(nullptr),
 		mProgramPipelineManager(nullptr),
@@ -81,25 +81,24 @@ namespace BansheeEngine
 		mProgramPipelineManager = bs_new<GLSLProgramPipelineManager>();
 	}
 
-	GLRenderSystem::~GLRenderSystem()
+	GLRenderAPI::~GLRenderAPI()
 	{
 
 	}
 
-	const String& GLRenderSystem::getName() const
+	const String& GLRenderAPI::getName() const
 	{
-		static String strName("GLRenderSystem");
+		static String strName("GLRenderAPI");
 		return strName;
 	}
 
-
-	const String& GLRenderSystem::getShadingLanguageName() const
+	const String& GLRenderAPI::getShadingLanguageName() const
 	{
 		static String strName("glsl");
 		return strName;
 	}
 
-	void GLRenderSystem::initializePrepare()
+	void GLRenderAPI::initializePrepare()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -114,10 +113,10 @@ namespace BansheeEngine
 
 		QueryManager::startUp<GLQueryManager>();
 
-		RenderSystem::initializePrepare();
+		RenderAPICore::initializePrepare();
 	}
 
-	void GLRenderSystem::initializeFinalize(const SPtr<RenderWindowCore>& primaryWindow)
+	void GLRenderAPI::initializeFinalize(const SPtr<RenderWindowCore>& primaryWindow)
 	{
 		// Get the context from the window and finish initialization
 		SPtr<GLContext> context;
@@ -155,12 +154,12 @@ namespace BansheeEngine
 
 		mGLInitialised = true;
 
-		RenderSystem::initializeFinalize(primaryWindow);
+		RenderAPICore::initializeFinalize(primaryWindow);
 	}
 
-	void GLRenderSystem::destroy_internal()
+	void GLRenderAPI::destroyCore()
 	{
-		RenderSystem::destroy_internal();
+		RenderAPICore::destroyCore();
 
 		// Deleting the GLSL program factory
 		if (mGLSLProgramFactory)
@@ -209,7 +208,7 @@ namespace BansheeEngine
 			bs_deleteN(mTextureTypes, mNumTextureTypes);
 	}
 
-	void GLRenderSystem::bindGpuProgram(const SPtr<GpuProgramCore>& prg)
+	void GLRenderAPI::bindGpuProgram(const SPtr<GpuProgramCore>& prg)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -234,19 +233,19 @@ namespace BansheeEngine
 			break;
 		}
 
-		RenderSystem::bindGpuProgram(prg);
+		RenderAPICore::bindGpuProgram(prg);
 	}
 
-	void GLRenderSystem::unbindGpuProgram(GpuProgramType gptype)
+	void GLRenderAPI::unbindGpuProgram(GpuProgramType gptype)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		setActiveProgram(gptype, nullptr);
 
-		RenderSystem::unbindGpuProgram(gptype);
+		RenderAPICore::unbindGpuProgram(gptype);
 	}
 
-	void GLRenderSystem::bindGpuParams(GpuProgramType gptype, const SPtr<GpuParamsCore>& bindableParams)
+	void GLRenderAPI::bindGpuParams(GpuProgramType gptype, const SPtr<GpuParamsCore>& bindableParams)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -413,7 +412,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GLRenderSystem::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& texPtr)
+	void GLRenderAPI::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& texPtr)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -444,7 +443,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumTextureBinds);
 	}
 
-	void GLRenderSystem::setSamplerState(GpuProgramType gptype, UINT16 unit, const SPtr<SamplerStateCore>& state)
+	void GLRenderAPI::setSamplerState(GpuProgramType gptype, UINT16 unit, const SPtr<SamplerStateCore>& state)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -473,7 +472,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumSamplerBinds);
 	}
 
-	void GLRenderSystem::setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& texPtr,
+	void GLRenderAPI::setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& texPtr,
 		const TextureSurface& surface)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -491,7 +490,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumTextureBinds);
 	}
 
-	void GLRenderSystem::setBlendState(const SPtr<BlendStateCore>& blendState)
+	void GLRenderAPI::setBlendState(const SPtr<BlendStateCore>& blendState)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -519,7 +518,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumBlendStateChanges);
 	}
 
-	void GLRenderSystem::setRasterizerState(const SPtr<RasterizerStateCore>& rasterizerState)
+	void GLRenderAPI::setRasterizerState(const SPtr<RasterizerStateCore>& rasterizerState)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -542,7 +541,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumRasterizerStateChanges);
 	}
 
-	void GLRenderSystem::setDepthStencilState(const SPtr<DepthStencilStateCore>& depthStencilState, UINT32 stencilRefValue)
+	void GLRenderAPI::setDepthStencilState(const SPtr<DepthStencilStateCore>& depthStencilState, UINT32 stencilRefValue)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -570,7 +569,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumDepthStencilStateChanges);
 	}
 
-	void GLRenderSystem::setViewport(const Rect2& area)
+	void GLRenderAPI::setViewport(const Rect2& area)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -578,7 +577,7 @@ namespace BansheeEngine
 		applyViewport();
 	}
 
-	void GLRenderSystem::setRenderTarget(const SPtr<RenderTargetCore>& target)
+	void GLRenderAPI::setRenderTarget(const SPtr<RenderTargetCore>& target)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -623,7 +622,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumRenderTargetChanges);
 	}
 
-	void GLRenderSystem::beginFrame()
+	void GLRenderAPI::beginFrame()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -631,7 +630,7 @@ namespace BansheeEngine
 		glEnable(GL_SCISSOR_TEST);
 	}
 
-	void GLRenderSystem::endFrame()
+	void GLRenderAPI::endFrame()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -639,7 +638,7 @@ namespace BansheeEngine
 		glDisable(GL_SCISSOR_TEST);
 	}
 
-	void GLRenderSystem::setVertexBuffers(UINT32 index, SPtr<VertexBufferCore>* buffers, UINT32 numBuffers)
+	void GLRenderAPI::setVertexBuffers(UINT32 index, SPtr<VertexBufferCore>* buffers, UINT32 numBuffers)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -652,28 +651,28 @@ namespace BansheeEngine
 		}
 	}
 
-	void GLRenderSystem::setVertexDeclaration(const SPtr<VertexDeclarationCore>& vertexDeclaration)
+	void GLRenderAPI::setVertexDeclaration(const SPtr<VertexDeclarationCore>& vertexDeclaration)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		mBoundVertexDeclaration = vertexDeclaration;
 	}
 
-	void GLRenderSystem::setDrawOperation(DrawOperationType op)
+	void GLRenderAPI::setDrawOperation(DrawOperationType op)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		mCurrentDrawOperation = op;
 	}
 
-	void GLRenderSystem::setIndexBuffer(const SPtr<IndexBufferCore>& buffer)
+	void GLRenderAPI::setIndexBuffer(const SPtr<IndexBufferCore>& buffer)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		mBoundIndexBuffer = buffer;
 	}
 
-	void GLRenderSystem::draw(UINT32 vertexOffset, UINT32 vertexCount)
+	void GLRenderAPI::draw(UINT32 vertexOffset, UINT32 vertexCount)
 	{
 		// Find the correct type to render
 		GLint primType = getGLDrawMode();
@@ -690,7 +689,7 @@ namespace BansheeEngine
 		BS_ADD_RENDER_STAT(NumPrimitives, primCount);
 	}
 
-	void GLRenderSystem::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount)
+	void GLRenderAPI::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount)
 	{
 		if(mBoundIndexBuffer == nullptr)
 		{
@@ -720,7 +719,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumIndexBufferBinds);
 	}
 
-	void GLRenderSystem::setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
+	void GLRenderAPI::setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -730,7 +729,7 @@ namespace BansheeEngine
 		mScissorRight = right;
 	}
 
-	void GLRenderSystem::clearRenderTarget(UINT32 buffers, const Color& color, float depth, UINT16 stencil)
+	void GLRenderAPI::clearRenderTarget(UINT32 buffers, const Color& color, float depth, UINT16 stencil)
 	{
 		if(mActiveRenderTarget == nullptr)
 			return;
@@ -741,14 +740,14 @@ namespace BansheeEngine
 		clearArea(buffers, color, depth, stencil, clearRect);
 	}
 
-	void GLRenderSystem::clearViewport(UINT32 buffers, const Color& color, float depth, UINT16 stencil)
+	void GLRenderAPI::clearViewport(UINT32 buffers, const Color& color, float depth, UINT16 stencil)
 	{
 		Rect2I clearRect(mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight);
 
 		clearArea(buffers, color, depth, stencil, clearRect);
 	}
 
-	void GLRenderSystem::clearArea(UINT32 buffers, const Color& color, float depth, UINT16 stencil, const Rect2I& clearRect)
+	void GLRenderAPI::clearArea(UINT32 buffers, const Color& color, float depth, UINT16 stencil, const Rect2I& clearRect)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -852,7 +851,7 @@ namespace BansheeEngine
 	/* 								PRIVATE		                     		*/
 	/************************************************************************/
 
-	void GLRenderSystem::setTextureAddressingMode(UINT16 stage, const UVWAddressingMode& uvw)
+	void GLRenderAPI::setTextureAddressingMode(UINT16 stage, const UVWAddressingMode& uvw)
 	{
 		if (!activateGLTextureUnit(stage))
 			return;
@@ -866,7 +865,7 @@ namespace BansheeEngine
 		activateGLTextureUnit(0);
 	}
 
-	void GLRenderSystem::setTextureBorderColor(UINT16 stage, const Color& colour)
+	void GLRenderAPI::setTextureBorderColor(UINT16 stage, const Color& colour)
 	{
 		GLfloat border[4] = { colour.r, colour.g, colour.b, colour.a };
 		if (activateGLTextureUnit(stage))
@@ -876,7 +875,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GLRenderSystem::setTextureMipmapBias(UINT16 stage, float bias)
+	void GLRenderAPI::setTextureMipmapBias(UINT16 stage, float bias)
 	{
 		if (mCurrentCapabilities->hasCapability(RSC_MIPMAP_LOD_BIAS))
 		{
@@ -889,7 +888,7 @@ namespace BansheeEngine
 
 	}
 
-	void GLRenderSystem::setSceneBlending(BlendFactor sourceFactor, BlendFactor destFactor, BlendOperation op )
+	void GLRenderAPI::setSceneBlending(BlendFactor sourceFactor, BlendFactor destFactor, BlendOperation op )
 	{
 		GLint sourceBlend = getBlendMode(sourceFactor);
 		GLint destBlend = getBlendMode(destFactor);
@@ -934,7 +933,7 @@ namespace BansheeEngine
 	}
 
 
-	void GLRenderSystem::setSceneBlending(BlendFactor sourceFactor, BlendFactor destFactor, 
+	void GLRenderAPI::setSceneBlending(BlendFactor sourceFactor, BlendFactor destFactor, 
 		BlendFactor sourceFactorAlpha, BlendFactor destFactorAlpha, BlendOperation op, BlendOperation alphaOp)
 	{
 		GLint sourceBlend = getBlendMode(sourceFactor);
@@ -1001,7 +1000,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GLRenderSystem::setAlphaTest(CompareFunction func, unsigned char value)
+	void GLRenderAPI::setAlphaTest(CompareFunction func, unsigned char value)
 	{
 		if(func == CMPF_ALWAYS_PASS)
 		{
@@ -1014,7 +1013,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GLRenderSystem::setAlphaToCoverage(bool enable)
+	void GLRenderAPI::setAlphaToCoverage(bool enable)
 	{
 		static bool lasta2c = false;
 
@@ -1029,7 +1028,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GLRenderSystem::setScissorTestEnable(bool enable)
+	void GLRenderAPI::setScissorTestEnable(bool enable)
 	{
 		const RenderTargetProperties& rtProps = mActiveRenderTarget->getProperties();
 
@@ -1070,7 +1069,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GLRenderSystem::setMultisamplingEnable(bool enable)
+	void GLRenderAPI::setMultisamplingEnable(bool enable)
 	{
 		if (enable)
 			glEnable(GL_MULTISAMPLE);
@@ -1078,7 +1077,7 @@ namespace BansheeEngine
 			glDisable(GL_MULTISAMPLE);
 	}
 
-	void GLRenderSystem::setDepthClipEnable(bool enable)
+	void GLRenderAPI::setDepthClipEnable(bool enable)
 	{
 		if (enable)
 			glEnable(GL_DEPTH_CLAMP);
@@ -1086,7 +1085,7 @@ namespace BansheeEngine
 			glDisable(GL_DEPTH_CLAMP);
 	}
 
-	void GLRenderSystem::setAntialiasedLineEnable(bool enable)
+	void GLRenderAPI::setAntialiasedLineEnable(bool enable)
 	{
 		if (enable)
 			glEnable(GL_LINE_SMOOTH);
@@ -1095,7 +1094,7 @@ namespace BansheeEngine
 	}
 
 
-	void GLRenderSystem::setCullingMode(CullingMode mode)
+	void GLRenderAPI::setCullingMode(CullingMode mode)
 	{
 		mCullingMode = mode;
 		GLenum cullMode;
@@ -1118,7 +1117,7 @@ namespace BansheeEngine
 		glCullFace(cullMode);
 	}
 
-	void GLRenderSystem::setDepthBufferCheckEnabled(bool enabled)
+	void GLRenderAPI::setDepthBufferCheckEnabled(bool enabled)
 	{
 		if (enabled)
 		{
@@ -1131,7 +1130,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GLRenderSystem::setDepthBufferWriteEnabled(bool enabled)
+	void GLRenderAPI::setDepthBufferWriteEnabled(bool enabled)
 	{
 		GLboolean flag = enabled ? GL_TRUE : GL_FALSE;
 		glDepthMask(flag);  
@@ -1139,12 +1138,12 @@ namespace BansheeEngine
 		mDepthWrite = enabled;
 	}
 
-	void GLRenderSystem::setDepthBufferFunction(CompareFunction func)
+	void GLRenderAPI::setDepthBufferFunction(CompareFunction func)
 	{
 		glDepthFunc(convertCompareFunction(func));
 	}
 
-	void GLRenderSystem::setDepthBias(float constantBias, float slopeScaleBias)
+	void GLRenderAPI::setDepthBias(float constantBias, float slopeScaleBias)
 	{
 		if (constantBias != 0 || slopeScaleBias != 0)
 		{
@@ -1161,7 +1160,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GLRenderSystem::setColorBufferWriteEnabled(bool red, bool green, bool blue, bool alpha)
+	void GLRenderAPI::setColorBufferWriteEnabled(bool red, bool green, bool blue, bool alpha)
 	{
 		glColorMask(red, green, blue, alpha);
 		// record this
@@ -1171,7 +1170,7 @@ namespace BansheeEngine
 		mColorWrite[3] = alpha;
 	}
 
-	void GLRenderSystem::setPolygonMode(PolygonMode level)
+	void GLRenderAPI::setPolygonMode(PolygonMode level)
 	{
 		GLenum glmode;
 		switch(level)
@@ -1187,7 +1186,7 @@ namespace BansheeEngine
 		glPolygonMode(GL_FRONT_AND_BACK, glmode);
 	}
 
-	void GLRenderSystem::setStencilCheckEnabled(bool enabled)
+	void GLRenderAPI::setStencilCheckEnabled(bool enabled)
 	{
 		if (enabled)
 			glEnable(GL_STENCIL_TEST);
@@ -1195,7 +1194,7 @@ namespace BansheeEngine
 			glDisable(GL_STENCIL_TEST);
 	}
 
-	void GLRenderSystem::setStencilBufferOperations(StencilOperation stencilFailOp,
+	void GLRenderAPI::setStencilBufferOperations(StencilOperation stencilFailOp,
 		StencilOperation depthFailOp, StencilOperation passOp, bool front)
 	{
 		if (front)
@@ -1214,7 +1213,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GLRenderSystem::setStencilBufferFunc(CompareFunction func, UINT32 mask, bool front)
+	void GLRenderAPI::setStencilBufferFunc(CompareFunction func, UINT32 mask, bool front)
 	{
 		mStencilReadMask = mask;
 
@@ -1230,13 +1229,13 @@ namespace BansheeEngine
 		}
 	}
 
-	void GLRenderSystem::setStencilBufferWriteMask(UINT32 mask)
+	void GLRenderAPI::setStencilBufferWriteMask(UINT32 mask)
 	{
 		mStencilWriteMask = mask;
 		glStencilMask(mask);
 	}
 
-	void GLRenderSystem::setStencilRefValue(UINT32 refValue)
+	void GLRenderAPI::setStencilRefValue(UINT32 refValue)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -1246,7 +1245,7 @@ namespace BansheeEngine
 		glStencilFuncSeparate(GL_BACK, convertCompareFunction(mStencilCompareBack), mStencilRefValue, mStencilReadMask);
 	}
 
-	void GLRenderSystem::setTextureFiltering(UINT16 unit, FilterType ftype, FilterOptions fo)
+	void GLRenderAPI::setTextureFiltering(UINT16 unit, FilterType ftype, FilterOptions fo)
 	{
 		if (!activateGLTextureUnit(unit))
 			return;
@@ -1281,7 +1280,7 @@ namespace BansheeEngine
 		activateGLTextureUnit(0);
 	}
 
-	void GLRenderSystem::setTextureAnisotropy(UINT16 unit, UINT32 maxAnisotropy)
+	void GLRenderAPI::setTextureAnisotropy(UINT16 unit, UINT32 maxAnisotropy)
 	{
 		if (!mCurrentCapabilities->hasCapability(RSC_ANISOTROPY))
 			return;
@@ -1304,7 +1303,7 @@ namespace BansheeEngine
 		activateGLTextureUnit(0);
 	}
 
-	void GLRenderSystem::setClipPlanesImpl(const PlaneList& clipPlanes)
+	void GLRenderAPI::setClipPlanesImpl(const PlaneList& clipPlanes)
 	{
 		size_t i = 0;
 		size_t numClipPlanes;
@@ -1337,7 +1336,7 @@ namespace BansheeEngine
 		}
 	}
 
-	bool GLRenderSystem::activateGLTextureUnit(UINT16 unit)
+	bool GLRenderAPI::activateGLTextureUnit(UINT16 unit)
 	{
 		if (mActiveTextureUnit != unit)
 		{
@@ -1365,7 +1364,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GLRenderSystem::beginDraw()
+	void GLRenderAPI::beginDraw()
 	{
 		if(mDrawCallInProgress)
 			BS_EXCEPT(InternalErrorException, "Calling beginDraw without finishing previous draw call. Please call endDraw().");
@@ -1400,7 +1399,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumGpuProgramBinds);
 	}
 
-	void GLRenderSystem::endDraw()
+	void GLRenderAPI::endDraw()
 	{
 		if(!mDrawCallInProgress)
 			return;
@@ -1408,7 +1407,7 @@ namespace BansheeEngine
 		mDrawCallInProgress = false;
 	}
 
-	GLfloat GLRenderSystem::getCurrentAnisotropy(UINT16 unit)
+	GLfloat GLRenderAPI::getCurrentAnisotropy(UINT16 unit)
 	{
 		GLfloat curAniso = 0;
 		glGetTexParameterfv(mTextureTypes[unit], GL_TEXTURE_MAX_ANISOTROPY_EXT, &curAniso);
@@ -1416,7 +1415,7 @@ namespace BansheeEngine
 		return curAniso ? curAniso : 1;
 	}
 
-	GLint GLRenderSystem::convertStencilOp(StencilOperation op, bool invert) const
+	GLint GLRenderAPI::convertStencilOp(StencilOperation op, bool invert) const
 	{
 		switch (op)
 		{
@@ -1441,7 +1440,7 @@ namespace BansheeEngine
 		return SOP_KEEP;
 	}
 
-	GLint GLRenderSystem::convertCompareFunction(CompareFunction func) const
+	GLint GLRenderAPI::convertCompareFunction(CompareFunction func) const
 	{
 		switch (func)
 		{
@@ -1466,7 +1465,7 @@ namespace BansheeEngine
 		return GL_ALWAYS;
 	}
 
-	GLuint GLRenderSystem::getCombinedMinMipFilter() const
+	GLuint GLRenderAPI::getCombinedMinMipFilter() const
 	{
 		switch (mMinFilter)
 		{
@@ -1508,7 +1507,7 @@ namespace BansheeEngine
 		return 0;
 	}
 
-	GLint GLRenderSystem::getBlendMode(BlendFactor blendMode) const
+	GLint GLRenderAPI::getBlendMode(BlendFactor blendMode) const
 	{
 		switch (blendMode)
 		{
@@ -1537,7 +1536,7 @@ namespace BansheeEngine
 		return GL_ONE;
 	}
 
-	GLint GLRenderSystem::getTextureAddressingMode(TextureAddressingMode tam) const
+	GLint GLRenderAPI::getTextureAddressingMode(TextureAddressingMode tam) const
 	{
 		switch (tam)
 		{
@@ -1553,7 +1552,7 @@ namespace BansheeEngine
 		}
 	}
 
-	GLint GLRenderSystem::getGLDrawMode() const
+	GLint GLRenderAPI::getGLDrawMode() const
 	{
 		GLint primType;
 
@@ -1585,7 +1584,7 @@ namespace BansheeEngine
 		return primType;
 	}
 
-	UINT32 GLRenderSystem::getGLTextureUnit(GpuProgramType gptype, UINT32 unit)
+	UINT32 GLRenderAPI::getGLTextureUnit(GpuProgramType gptype, UINT32 unit)
 	{
 		if (gptype != GPT_VERTEX_PROGRAM && gptype != GPT_FRAGMENT_PROGRAM && gptype != GPT_GEOMETRY_PROGRAM)
 		{
@@ -1612,7 +1611,7 @@ namespace BansheeEngine
 		}
 	}
 
-	UINT32 GLRenderSystem::getGLUniformBlockBinding(GpuProgramType gptype, UINT32 binding)
+	UINT32 GLRenderAPI::getGLUniformBlockBinding(GpuProgramType gptype, UINT32 binding)
 	{
 		UINT32 maxNumBindings = mCurrentCapabilities->getNumGpuParamBlockBuffers(gptype);
 		if (binding < 0 || binding >= maxNumBindings)
@@ -1640,7 +1639,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GLRenderSystem::setActiveProgram(GpuProgramType gptype, const SPtr<GLSLGpuProgramCore>& program)
+	void GLRenderAPI::setActiveProgram(GpuProgramType gptype, const SPtr<GLSLGpuProgramCore>& program)
 	{
 		switch (gptype)
 		{
@@ -1662,7 +1661,7 @@ namespace BansheeEngine
 		}
 	}
 
-	SPtr<GLSLGpuProgramCore> GLRenderSystem::getActiveProgram(GpuProgramType gptype) const
+	SPtr<GLSLGpuProgramCore> GLRenderAPI::getActiveProgram(GpuProgramType gptype) const
 	{
 		switch (gptype)
 		{
@@ -1686,12 +1685,12 @@ namespace BansheeEngine
 		}
 	}
 
-	void GLRenderSystem::initFromCaps(RenderSystemCapabilities* caps)
+	void GLRenderAPI::initFromCaps(RenderAPICapabilities* caps)
 	{
 		if(caps->getRenderSystemName() != getName())
 		{
 			BS_EXCEPT(InvalidParametersException, 
-				"Trying to initialize GLRenderSystem from RenderSystemCapabilities that do not support OpenGL");
+				"Trying to initialize GLRenderAPI from RenderSystemCapabilities that do not support OpenGL");
 		}
 
 #if BS_DEBUG_MODE
@@ -1769,7 +1768,7 @@ namespace BansheeEngine
 		TextureCoreManager::startUp<GLTextureCoreManager>(std::ref(*mGLSupport));
 	}
 
-	void GLRenderSystem::switchContext(const SPtr<GLContext>& context)
+	void GLRenderAPI::switchContext(const SPtr<GLContext>& context)
 	{
 		// Unbind GPU programs and rebind to new context later, because
 		// scene manager treat render system as ONE 'context' ONLY, and it
@@ -1795,9 +1794,9 @@ namespace BansheeEngine
 		glStencilMask(mStencilWriteMask);
 	}
 
-	RenderSystemCapabilities* GLRenderSystem::createRenderSystemCapabilities() const
+	RenderAPICapabilities* GLRenderAPI::createRenderSystemCapabilities() const
 	{
-		RenderSystemCapabilities* rsc = bs_new<RenderSystemCapabilities>();
+		RenderAPICapabilities* rsc = bs_new<RenderAPICapabilities>();
 
 		rsc->setDriverVersion(mDriverVersion);
 		const char* deviceName = (const char*)glGetString(GL_RENDERER);
@@ -2055,7 +2054,7 @@ namespace BansheeEngine
 		return rsc;
 	}
 
-	bool GLRenderSystem::checkForErrors() const
+	bool GLRenderAPI::checkForErrors() const
 	{
 		GLenum glErr = glGetError();
 		bool errorsFound = false;
@@ -2077,7 +2076,7 @@ namespace BansheeEngine
 		return errorsFound;
 	}
 
-	void GLRenderSystem::makeGLMatrix(GLfloat gl_matrix[16], const Matrix4& m)
+	void GLRenderAPI::makeGLMatrix(GLfloat gl_matrix[16], const Matrix4& m)
 	{
 		UINT32 x = 0;
 		for (UINT32 i = 0; i < 4; i++)
@@ -2090,7 +2089,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GLRenderSystem::applyViewport()
+	void GLRenderAPI::applyViewport()
 	{
 		if (mActiveRenderTarget == nullptr)
 			return;
@@ -2118,32 +2117,32 @@ namespace BansheeEngine
 	/************************************************************************/
 	/* 								UTILITY		                     		*/
 	/************************************************************************/
-	float GLRenderSystem::getMinimumDepthInputValue()
+	float GLRenderAPI::getMinimumDepthInputValue()
 	{
 		return -1.0f;
 	}
 
-	float GLRenderSystem::getMaximumDepthInputValue()
+	float GLRenderAPI::getMaximumDepthInputValue()
 	{
 		return 1.0f;
 	}
 
-	float GLRenderSystem::getHorizontalTexelOffset()
+	float GLRenderAPI::getHorizontalTexelOffset()
 	{
 		return 0.0f;
 	}
 
-	float GLRenderSystem::getVerticalTexelOffset()
+	float GLRenderAPI::getVerticalTexelOffset()
 	{
 		return 0.0f;
 	}
 
-	VertexElementType GLRenderSystem::getColorVertexElementType() const
+	VertexElementType GLRenderAPI::getColorVertexElementType() const
 	{
 		return VET_COLOR_ABGR;
 	}
 
-	void GLRenderSystem::convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest)
+	void GLRenderAPI::convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest)
 	{
 		dest = matrix;
 	}

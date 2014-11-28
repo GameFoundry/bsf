@@ -3,7 +3,7 @@
 #include "BsVertexBuffer.h"
 #include "BsVector3.h"
 #include "BsException.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 
 namespace BansheeEngine 
 {

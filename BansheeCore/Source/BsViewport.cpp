@@ -3,7 +3,7 @@
 #include "BsException.h"
 #include "BsRenderTarget.h"
 #include "BsMath.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 #include "BsFrameAlloc.h"
 
 namespace BansheeEngine 

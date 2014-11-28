@@ -3,7 +3,7 @@
 #include "BsD3D9RenderTexture.h"
 #include "BsException.h"
 #include "BsD3D9Mappings.h"
-#include "BsD3D9RenderSystem.h"
+#include "BsD3D9RenderAPI.h"
 #include "BsD3D9MultiRenderTexture.h"
 
 namespace BansheeEngine 

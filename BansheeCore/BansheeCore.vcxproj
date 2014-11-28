@@ -379,10 +379,10 @@
     <ClInclude Include="Include\BsRendererFactory.h" />
     <ClInclude Include="Include\BsRendererManager.h" />
     <ClInclude Include="Include\BsRenderStateManager.h" />
-    <ClInclude Include="Include\BsRenderSystem.h" />
-    <ClInclude Include="Include\BsRenderSystemCapabilities.h" />
-    <ClInclude Include="Include\BsRenderSystemFactory.h" />
-    <ClInclude Include="Include\BsRenderSystemManager.h" />
+    <ClInclude Include="Include\BsRenderAPI.h" />
+    <ClInclude Include="Include\BsRenderAPICapabilities.h" />
+    <ClInclude Include="Include\BsRenderAPIFactory.h" />
+    <ClInclude Include="Include\BsRenderAPIManager.h" />
     <ClInclude Include="Include\BsRenderTarget.h" />
     <ClInclude Include="Include\BsRenderTexture.h" />
     <ClInclude Include="Include\BsRenderWindow.h" />
@@ -492,9 +492,9 @@
     <ClCompile Include="Source\BsPass.cpp" />
     <ClCompile Include="Source\BsRasterizerState.cpp" />
     <ClCompile Include="Source\BsRendererManager.cpp" />
-    <ClCompile Include="Source\BsRenderSystem.cpp" />
-    <ClCompile Include="Source\BsRenderSystemCapabilities.cpp" />
-    <ClCompile Include="Source\BsRenderSystemManager.cpp" />
+    <ClCompile Include="Source\BsRenderAPI.cpp" />
+    <ClCompile Include="Source\BsRenderAPICapabilities.cpp" />
+    <ClCompile Include="Source\BsRenderAPIManager.cpp" />
     <ClCompile Include="Source\BsRenderTarget.cpp" />
     <ClCompile Include="Source\BsRenderTexture.cpp" />
     <ClCompile Include="Source\BsRenderWindow.cpp" />

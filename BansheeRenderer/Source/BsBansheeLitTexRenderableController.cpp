@@ -7,7 +7,7 @@
 #include "BsTechnique.h"
 #include "BsPass.h"
 #include "BsMaterial.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 
 namespace BansheeEngine
 {
@@ -270,12 +270,12 @@ namespace BansheeEngine
 
 	SPtr<ShaderCore> LitTexRenderableController::createDefaultShader()
 	{
-		String rsName = RenderSystem::instance().getName();
+		String rsName = RenderAPICore::instance().getName();
 
 		SPtr<GpuProgramCore> vsProgram;
 		SPtr<GpuProgramCore> psProgram;
 
-		if (rsName == RenderSystemDX11)
+		if (rsName == RenderAPIDX11)
 		{
 			String vsCode = R"(
 			cbuffer PerFrame
@@ -308,7 +308,7 @@ namespace BansheeEngine
 			vsProgram = GpuProgramCore::create(vsCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
 			psProgram = GpuProgramCore::create(psCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_FS_4_0);
 		}
-		else if (rsName == RenderSystemDX9)
+		else if (rsName == RenderAPIDX9)
 		{
 			String vsCode = R"(
 			BS_PARAM_BLOCK PerFrame { time }
@@ -336,7 +336,7 @@ namespace BansheeEngine
 			vsProgram = GpuProgramCore::create(vsCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
 			psProgram = GpuProgramCore::create(psCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_FS_2_0);
 		}
-		else if (rsName == RenderSystemOpenGL)
+		else if (rsName == RenderAPIOpenGL)
 		{
 			String vsCode = R"(#version 400
 

@@ -2,7 +2,7 @@
 
 #include "BsWin32Prerequisites.h"
 #include "BsGLSupport.h"
-#include "BsGLRenderSystem.h"
+#include "BsGLRenderAPI.h"
 
 namespace BansheeEngine
 {

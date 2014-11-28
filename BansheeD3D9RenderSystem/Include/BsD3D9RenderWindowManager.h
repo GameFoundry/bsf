@@ -11,7 +11,7 @@ namespace BansheeEngine
 	class BS_D3D9_EXPORT D3D9RenderWindowManager : public RenderWindowManager
 	{
 	public:
-		D3D9RenderWindowManager(D3D9RenderSystem* renderSystem);
+		D3D9RenderWindowManager(D3D9RenderAPI* renderSystem);
 
 	protected:
 		/**
@@ -20,7 +20,7 @@ namespace BansheeEngine
 		RenderWindowPtr createImpl(RENDER_WINDOW_DESC& desc, const RenderWindowPtr& parentWindow);
 
 	private:
-		D3D9RenderSystem* mRenderSystem;
+		D3D9RenderAPI* mRenderSystem;
 	};
 
 	/**
@@ -29,7 +29,7 @@ namespace BansheeEngine
 	class BS_D3D9_EXPORT D3D9RenderWindowCoreManager : public RenderWindowCoreManager
 	{
 	public:
-		D3D9RenderWindowCoreManager(D3D9RenderSystem* renderSystem);
+		D3D9RenderWindowCoreManager(D3D9RenderAPI* renderSystem);
 
 	protected:
 		/**
@@ -38,6 +38,6 @@ namespace BansheeEngine
 		SPtr<RenderWindowCore> createInternal(RENDER_WINDOW_DESC& desc);
 
 	private:
-		D3D9RenderSystem* mRenderSystem;
+		D3D9RenderAPI* mRenderSystem;
 	};
 }

@@ -1,5 +1,5 @@
 #include "BsD3D11OcclusionQuery.h"
-#include "BsD3D11RenderSystem.h"
+#include "BsD3D11RenderAPI.h"
 #include "BsD3D11Device.h"
 #include "BsRenderStats.h"
 #include "BsMath.h"
@@ -9,7 +9,7 @@ namespace BansheeEngine
 	D3D11OcclusionQuery::D3D11OcclusionQuery(bool binary)
 		:OcclusionQuery(binary), mContext(nullptr), mQuery(nullptr), mNumSamples(0), mFinalized(false), mQueryEndCalled(false)
 	{
-		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
 
 		D3D11_QUERY_DESC queryDesc;

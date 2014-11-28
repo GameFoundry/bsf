@@ -4,8 +4,8 @@
 #include "BsGLGpuBuffer.h"
 #include "BsHardwareBuffer.h"
 #include "BsGLGpuParamBlockBuffer.h"
-#include "BsRenderSystem.h"
-#include "BsRenderSystemCapabilities.h"
+#include "BsRenderAPI.h"
+#include "BsRenderAPICapabilities.h"
 
 namespace BansheeEngine 
 {

@@ -240,7 +240,7 @@ namespace BansheeEngine
 		// Create a shader technique. Shader can have many different techniques and the renderer will automatically
 		// use the most appropriate technique depending on the active renderer and render system. e.g. you can have different
 		// techniques using HLSL9, HLSL11 and GLSL GPU programs for DirectX 9, DirectX 11 and OpenGL render systems respectively.
-		TechniquePtr technique = Technique::create(RenderSystemDX11, RendererDefault, { pass });
+		TechniquePtr technique = Technique::create(RenderAPIDX11, RendererDefault, { pass });
 
 		// Set up shader parameters and renderer semantics.
 		// Renderer semantics allow our renderer to automatically populate certain shader parameters (e.g. a world view projection matrix).
@@ -446,7 +446,7 @@ namespace BansheeEngine
 
 		// Set up video mode list box
 		// First get a list of output devices
-		const VideoModeInfo& videoModeInfo = RenderSystem::instance().getVideoModeInfo();
+		const VideoModeInfo& videoModeInfo = RenderAPI::getVideoModeInfo();
 
 		// Get video mode info for the primary monitor
 		const VideoOutputInfo& primaryMonitorInfo = videoModeInfo.getOutputInfo(0);

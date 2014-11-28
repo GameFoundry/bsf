@@ -2,7 +2,7 @@
 #include "BsD3D9Mappings.h"
 #include "BsException.h"
 #include "BsD3D9HardwareBufferManager.h"
-#include "BsD3D9RenderSystem.h"
+#include "BsD3D9RenderAPI.h"
 #include "BsD3D9Device.h"
 #include "BsD3D9ResourceManager.h"
 #include "BsRenderStats.h"
@@ -47,11 +47,11 @@ namespace BansheeEngine
 		memset(mSystemMemoryBuffer, 0, getSizeInBytes());
 
 		// Case we have to create this buffer resource on loading.
-		if (D3D9RenderSystem::getResourceManager()->getCreationPolicy() == RCP_CREATE_ON_ALL_DEVICES)
+		if (D3D9RenderAPI::getResourceManager()->getCreationPolicy() == RCP_CREATE_ON_ALL_DEVICES)
 		{
-			for (UINT32 i = 0; i < D3D9RenderSystem::getResourceCreationDeviceCount(); ++i)
+			for (UINT32 i = 0; i < D3D9RenderAPI::getResourceCreationDeviceCount(); ++i)
 			{
-				IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getResourceCreationDevice(i);
+				IDirect3DDevice9* d3d9Device = D3D9RenderAPI::getResourceCreationDevice(i);
 
 				createBuffer(d3d9Device, mBufferDesc.Pool);
 			}
@@ -145,7 +145,7 @@ namespace BansheeEngine
 	{			
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
-		if (D3D9RenderSystem::getResourceManager()->getCreationPolicy() == RCP_CREATE_ON_ALL_DEVICES)
+		if (D3D9RenderAPI::getResourceManager()->getCreationPolicy() == RCP_CREATE_ON_ALL_DEVICES)
 			createBuffer(d3d9Device, mBufferDesc.Pool);
 	}
 
@@ -185,7 +185,7 @@ namespace BansheeEngine
 	{		
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
-		if (D3D9RenderSystem::getResourceManager()->getCreationPolicy() == RCP_CREATE_ON_ALL_DEVICES)
+		if (D3D9RenderAPI::getResourceManager()->getCreationPolicy() == RCP_CREATE_ON_ALL_DEVICES)
 			createBuffer(d3d9Device, mBufferDesc.Pool);
 	}
 
@@ -240,7 +240,7 @@ namespace BansheeEngine
 
 	IDirect3DVertexBuffer9* D3D9VertexBufferCore::getD3D9VertexBuffer()
 	{
-		IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getActiveD3D9Device();
+		IDirect3DDevice9* d3d9Device = D3D9RenderAPI::getActiveD3D9Device();
 		auto iterFind = mMapDeviceToBufferResources.find(d3d9Device);
 
 		// Case vertex buffer was not found for the current device -> create it.		

@@ -2,7 +2,7 @@
 #include "BsColor.h"
 #include "BsException.h"
 #include "BsHardwareBufferManager.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 #include "BsVertexDeclarationRTTI.h"
 
 namespace BansheeEngine 

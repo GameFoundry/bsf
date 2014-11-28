@@ -3,7 +3,7 @@
 #include "BsShader.h"
 #include "BsTechnique.h"
 #include "BsPass.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 #include "BsHardwareBufferManager.h"
 #include "BsGpuProgram.h"
 #include "BsGpuParamBlockBuffer.h"

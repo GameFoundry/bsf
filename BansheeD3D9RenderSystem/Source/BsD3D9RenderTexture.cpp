@@ -1,7 +1,7 @@
 #include "BsD3D9RenderTexture.h"
 #include "BsD3D9Texture.h"
 #include "BsD3D9PixelBuffer.h"
-#include "BsD3D9RenderSystem.h"
+#include "BsD3D9RenderAPI.h"
 #include "BsTextureView.h"
 
 namespace BansheeEngine
@@ -26,12 +26,12 @@ namespace BansheeEngine
 		D3D9TextureCore* d3d9texture = static_cast<D3D9TextureCore*>(mColorSurface->getTexture().get());
 		D3D9PixelBuffer* pixelBuffer = static_cast<D3D9PixelBuffer*>(
 			d3d9texture->getBuffer(mColorSurface->getFirstArraySlice(), mColorSurface->getMostDetailedMip()).get());
-		mDX9ColorSurface = pixelBuffer->getSurface(D3D9RenderSystem::getActiveD3D9Device());
+		mDX9ColorSurface = pixelBuffer->getSurface(D3D9RenderAPI::getActiveD3D9Device());
 
 		D3D9TextureCore* d3d9DepthStencil = static_cast<D3D9TextureCore*>(mDepthStencilSurface->getTexture().get());
 		D3D9PixelBuffer* depthStencilBuffer = static_cast<D3D9PixelBuffer*>(
 			d3d9DepthStencil->getBuffer(mDepthStencilSurface->getFirstArraySlice(), mDepthStencilSurface->getMostDetailedMip()).get());
-		mDX9DepthStencilSurface = depthStencilBuffer->getSurface(D3D9RenderSystem::getActiveD3D9Device());
+		mDX9DepthStencilSurface = depthStencilBuffer->getSurface(D3D9RenderAPI::getActiveD3D9Device());
 	}
 
 	void D3D9RenderTextureCore::releaseSurfaces()

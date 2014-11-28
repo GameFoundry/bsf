@@ -1,11 +1,11 @@
 #include "BsGLRenderWindowManager.h"
-#include "BsGLRenderSystem.h"
+#include "BsGLRenderAPI.h"
 #include "BsGLSupport.h"
 #include "BsAsyncOp.h"
 
 namespace BansheeEngine
 {
-	GLRenderWindowManager::GLRenderWindowManager(GLRenderSystem* renderSystem)
+	GLRenderWindowManager::GLRenderWindowManager(GLRenderAPI* renderSystem)
 		:mRenderSystem(renderSystem)
 	{
 		assert(mRenderSystem != nullptr);
@@ -19,7 +19,7 @@ namespace BansheeEngine
 		return glSupport->newWindow(desc, parentWindow);
 	}
 
-	GLRenderWindowCoreManager::GLRenderWindowCoreManager(GLRenderSystem* renderSystem)
+	GLRenderWindowCoreManager::GLRenderWindowCoreManager(GLRenderAPI* renderSystem)
 		:mRenderSystem(renderSystem)
 	{
 		assert(mRenderSystem != nullptr);

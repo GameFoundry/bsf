@@ -131,11 +131,11 @@ namespace BansheeEngine
 	 * @brief	Holds information about render hardware and driver capabilities
 	 *			and allows you to easily set and query those capabilities.
 	 */
-	class BS_CORE_EXPORT RenderSystemCapabilities
+	class BS_CORE_EXPORT RenderAPICapabilities
 	{
 	public:	
-		RenderSystemCapabilities ();
-		virtual ~RenderSystemCapabilities ();
+		RenderAPICapabilities ();
+		virtual ~RenderAPICapabilities ();
 
 		/**
 		 * @brief	Sets the current driver version.
