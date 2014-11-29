@@ -40,6 +40,7 @@
 #include "BsRenderStats.h"
 #include "BsMessageHandler.h"
 #include "BsResourceListenerManager.h"
+#include "BsRenderStateManager.h"
 
 #include "BsMaterial.h"
 #include "BsShader.h"
@@ -86,6 +87,7 @@ namespace BansheeEngine
 		Resources::startUp();
 		ResourceListenerManager::startUp();
 		GpuProgramManager::startUp();
+		RenderStateManager::startUp();
 		GpuProgramCoreManager::startUp();
 		RenderAPIManager::startUp();
 
@@ -133,6 +135,7 @@ namespace BansheeEngine
 		Resources::shutDown();
 		ResourceListenerManager::shutDown();
 		GameObjectManager::shutDown();
+		RenderStateManager::shutDown();
 
 		// All CoreObject related modules should be shut down now. They have likely queued CoreObjects for destruction, so
 		// we need to wait for those objects to get destroyed before continuing.

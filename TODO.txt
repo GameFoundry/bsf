@@ -3,6 +3,9 @@
  New issues:
   - Since Mesh refactor when I select/deselect a gizmo the entire render texture flashes white for one frame (might be related to RT refactor instead)
 
+  Crash on shutdown: RenderStateManager gets initialize on core thread and it holds some references
+ - Happened after i selected something in scene and then shutdown
+
 Fix crash on shutdown with OpenGL
 
 Try to figure out how to deal with material and its references:
@@ -13,6 +16,12 @@ Try to figure out how to deal with material and its references:
  - I cannot delay this init until those are initialized because user expects to be able to set material params right after creation
  - OPTIMAL approach would be to generate shader desc on sim thread or during import and allow delayed initialization
    - If user uses async loading then it's his fault if material hasn't been initialized
+
+NEW IDEA (needs work)
+Allow the material to be initialized ONLY from synced data
+ - While at it modify its shader from ShaderPtr to HShader
+Do the same for Pass
+But when loading a material from disk asynchronously ensure that its handle is not initialized as loaded until all dependencies are loaded async as well
 
 -----------------
 

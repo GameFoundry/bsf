@@ -122,7 +122,6 @@ namespace BansheeEngine
 		mHLSLFactory = bs_new<D3D11HLSLProgramFactory>();
 
 		// Create render state manager
-		RenderStateManager::startUp();
 		RenderStateCoreManager::startUp<D3D11RenderStateCoreManager>();
 
 		mCurrentCapabilities = createRenderSystemCapabilities();
@@ -172,7 +171,6 @@ namespace BansheeEngine
 		mActiveVertexShader = nullptr;
 
 		RenderStateCoreManager::shutDown();
-		RenderStateManager::shutDown();
 		RenderWindowCoreManager::shutDown();
 		RenderWindowManager::shutDown();
 		HardwareBufferCoreManager::shutDown();

@@ -108,7 +108,6 @@ namespace BansheeEngine
 		RenderWindowManager::startUp<GLRenderWindowManager>(this);
 		RenderWindowCoreManager::startUp<GLRenderWindowCoreManager>(this);
 
-		RenderStateManager::startUp();
 		RenderStateCoreManager::startUp();
 
 		QueryManager::startUp<GLQueryManager>();
@@ -193,7 +192,6 @@ namespace BansheeEngine
 		RenderWindowCoreManager::shutDown();
 		RenderWindowManager::shutDown();
 		RenderStateCoreManager::shutDown();
-		RenderStateManager::shutDown();
 		GLVertexArrayObjectManager::shutDown(); // Note: Needs to be after QueryManager shutdown as some resources might be waiting for queries to complete
 
 		mGLInitialised = false;

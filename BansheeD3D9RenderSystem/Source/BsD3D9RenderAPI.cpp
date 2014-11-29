@@ -106,7 +106,6 @@ namespace BansheeEngine
 		RenderWindowCoreManager::startUp<D3D9RenderWindowCoreManager>(this);
 
 		// Create render state manager
-		RenderStateManager::startUp();
 		RenderStateCoreManager::startUp();
 
 		RenderAPICore::initializePrepare();
@@ -157,7 +156,6 @@ namespace BansheeEngine
 		RenderWindowCoreManager::shutDown();
 		RenderWindowManager::shutDown();
 		RenderStateCoreManager::shutDown();
-		RenderStateManager::shutDown();
 
 		// Deleting the HLSL program factory
 		if (mHLSLProgramFactory)
