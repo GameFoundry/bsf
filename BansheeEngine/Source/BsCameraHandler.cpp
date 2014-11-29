@@ -729,7 +729,7 @@ namespace BansheeEngine
 
 	CameraHandler::CameraHandler(RenderTargetPtr target, float left, float top, float width, float height)
 	{
-		target->synchronize();
+		target->blockUntilCoreInitialized();
 		mViewport = Viewport::create(target, left, top, width, height);
 	}
 

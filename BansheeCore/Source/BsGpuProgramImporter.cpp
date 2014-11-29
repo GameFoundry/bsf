@@ -39,7 +39,7 @@ namespace BansheeEngine
 		Vector<HGpuProgInclude> includes = gpuProgImportOptions->getIncludes();
 
 		GpuProgramPtr gpuProgram = GpuProgram::_createPtr(shaderSource, entryPoint, language, gptype, profile, &includes);
-		gpuProgram->synchronize();
+		gpuProgram->blockUntilCoreInitialized();
 
 		if (!gpuProgram->isCompiled())
 		{

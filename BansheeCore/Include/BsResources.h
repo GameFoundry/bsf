@@ -145,6 +145,28 @@ namespace BansheeEngine
 		 */
 		bool getUUIDFromFilePath(const Path& path, String& uuid) const;
 
+		/**
+		 * @brief	Called when the resource has been successfully loaded. 
+		 *
+		 * @note	It is undefined from which thread this will get called from.
+		 *			Most definitely not the sim thread if resource was being loaded
+		 *			asynchronously.
+		 */
+		Event<void(const HResource&)> onResourceLoaded;
+
+		/**
+		 * @brief	Called when the resource has been destroyed.
+		 *
+		 * @note	It is undefined from which thread this will get called from.
+		 */
+		Event<void(const HResource&)> onResourceDestroyed;
+
+		/**
+		 * @brief	Called when the internal resource the handle is pointing to has changed.
+		 *
+		 * @note	It is undefined from which thread this will get called from.
+		 */
+		Event<void(const HResource&)> onResourceModified; // TODO - Not used, implement when I add hot-swapping
 	private:
 		/**
 		 * @brief	Starts resource loading or returns an already loaded resource.

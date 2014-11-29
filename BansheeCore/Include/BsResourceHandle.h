@@ -36,11 +36,11 @@ namespace BansheeEngine
 		bool isLoaded() const;
 
 		/**
-		 * @brief	Blocks the current thread until the resource is fully loaded AND initialized.
+		 * @brief	Blocks the current thread until the resource is fully loaded.
 		 * 			
-		 * @note	Careful not to call this on the thread that does the loading or initializing.
+		 * @note	Careful not to call this on the thread that does the loading.
 		 */
-		void synchronize() const;
+		void blockUntilLoaded() const;
 
 		/**
 		 * @brief	Returns the UUID of the resource the handle is referring to.

@@ -273,8 +273,6 @@ namespace BansheeEngine
 				}
 
 				HTexture newTex = Texture::create(TEX_TYPE_2D, pageIter->width, pageIter->height, 0, PF_R8G8);
-				newTex.synchronize(); // TODO - Required due to a bug in allocateSubresourceBuffer
-
 				UINT32 subresourceIdx = newTex->getProperties().mapToSubresourceIdx(0, 0);
 
 				// It's possible the formats no longer match

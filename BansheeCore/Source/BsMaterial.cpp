@@ -355,42 +355,48 @@ namespace BansheeEngine
 			HGpuProgram vertProgram = curPass->getVertexProgram();
 			if (vertProgram)
 			{
-				vertProgram.synchronize();
+				vertProgram.blockUntilLoaded();
+				vertProgram->blockUntilCoreInitialized();
 				allParamDescs.push_back(vertProgram->getParamDesc());
 			}
 
 			HGpuProgram fragProgram = curPass->getFragmentProgram();
 			if (fragProgram)
 			{
-				fragProgram.synchronize();
+				fragProgram.blockUntilLoaded();
+				fragProgram->blockUntilCoreInitialized();
 				allParamDescs.push_back(fragProgram->getParamDesc());
 			}
 
 			HGpuProgram geomProgram = curPass->getGeometryProgram();
 			if (geomProgram)
 			{
-				geomProgram.synchronize();
+				geomProgram.blockUntilLoaded();
+				geomProgram->blockUntilCoreInitialized();
 				allParamDescs.push_back(geomProgram->getParamDesc());
 			}
 
 			HGpuProgram hullProgram = curPass->getHullProgram();
 			if (hullProgram)
 			{
-				hullProgram.synchronize();
+				hullProgram.blockUntilLoaded();
+				hullProgram->blockUntilCoreInitialized();
 				allParamDescs.push_back(hullProgram->getParamDesc());
 			}
 
 			HGpuProgram domainProgram = curPass->getDomainProgram();
 			if (domainProgram)
 			{
-				domainProgram.synchronize();
+				domainProgram.blockUntilLoaded();
+				domainProgram->blockUntilCoreInitialized();
 				allParamDescs.push_back(domainProgram->getParamDesc());
 			}
 
 			HGpuProgram computeProgram = curPass->getComputeProgram();
 			if (computeProgram)
 			{
-				computeProgram.synchronize();
+				computeProgram.blockUntilLoaded();
+				computeProgram->blockUntilCoreInitialized();
 				allParamDescs.push_back(computeProgram->getParamDesc());
 			}
 		}
@@ -441,6 +447,7 @@ namespace BansheeEngine
 		mShader = shader;
 
 		initBestTechnique();
+
 		_markCoreDirty();
 	}
 

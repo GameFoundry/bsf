@@ -72,7 +72,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void CoreObject::synchronize()
+	void CoreObject::blockUntilCoreInitialized()
 	{
 		if (mCoreSpecific != nullptr)
 			mCoreSpecific->synchronize();

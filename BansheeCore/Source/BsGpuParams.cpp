@@ -308,6 +308,8 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 		}
 
 		mTextures[slot] = texture;
+
+		_markResourcesDirty();
 		_markCoreDirty();
 	}
 
@@ -321,6 +323,8 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 		}
 
 		mSamplerStates[slot] = sampler;
+
+		_markResourcesDirty();
 		_markCoreDirty();
 	}
 
@@ -451,6 +455,11 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 		markCoreDirty();
 	}
 
+	void GpuParams::_markResourcesDirty()
+	{
+		markResourcesDirty();
+	}
+
 	SPtr<GpuParams> GpuParams::create(const GpuParamDescPtr& paramDesc, bool transposeMatrices)
 	{
 		GpuParams* params = new (bs_alloc<GpuParams>()) GpuParams(paramDesc, transposeMatrices);
@@ -515,5 +524,20 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 		}
 
 		return CoreSyncData(data, totalSize);
+	}
+
+	void GpuParams::getResourceDependencies(Vector<HResource>& resources)
+	{
+		for (UINT32 i = 0; i < mNumTextures; i++)
+		{
+			if (mTextures[i] != nullptr)
+				resources.push_back(mTextures[i]);
+		}
+
+		for (UINT32 i = 0; i < mNumSamplerStates; i++)
+		{
+			if (mSamplerStates[i] != nullptr)
+				resources.push_back(mSamplerStates[i]);
+		}
 	}
 }

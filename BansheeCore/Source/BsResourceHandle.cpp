@@ -24,7 +24,7 @@ namespace BansheeEngine
 		return (mData != nullptr && mData->mIsCreated && mData->mPtr != nullptr); 
 	}
 
-	void ResourceHandleBase::synchronize() const
+	void ResourceHandleBase::blockUntilLoaded() const
 	{
 		if(mData == nullptr)
 			return;
@@ -37,8 +37,6 @@ namespace BansheeEngine
 				BS_THREAD_WAIT(mResourceCreatedCondition, mResourceCreatedMutex, lock);
 			}
 		}
-
-		mData->mPtr->synchronize();
 	}
 
 	void ResourceHandleBase::_setHandleData(std::shared_ptr<Resource> ptr, const String& uuid)

@@ -516,6 +516,12 @@
     <ClInclude Include="Include\BsRenderAPICapabilities.h">
       <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsIResourceListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsResourceListenerManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsCoreApplication.cpp">
@@ -811,6 +817,12 @@
     </ClCompile>
     <ClCompile Include="Source\BsRenderAPICapabilities.cpp">
       <Filter>Source Files\RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsIResourceListener.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsResourceListenerManager.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -158,7 +158,6 @@ namespace BansheeEngine
 		else
 			mipLevels.insert(mipLevels.begin(), imgData);
 
-		newTexture->synchronize(); // TODO - Required due to a bug in allocateSubresourceBuffer
 		for (UINT32 mip = 0; mip < (UINT32)mipLevels.size(); ++mip)
 		{
 			UINT32 subresourceIdx = newTexture->getProperties().mapToSubresourceIdx(0, mip);

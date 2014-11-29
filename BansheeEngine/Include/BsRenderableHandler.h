@@ -3,6 +3,7 @@
 #include "BsPrerequisites.h"
 #include "BsIReflectable.h"
 #include "BsCoreObject.h"
+#include "BsIResourceListener.h"
 #include "BsBounds.h"
 #include "BsAABox.h"
 
@@ -122,6 +123,11 @@ namespace BansheeEngine
 		 */
 		virtual void _markCoreDirty(RenderableDirtyFlag flag = RenderableDirtyFlag::Everything) { }
 
+		/**
+		 * @copydoc	IResourceListener::markResourcesDirty
+		 */
+		virtual void _markResourcesDirty() { }
+
 		MeshType mMesh;
 		Vector<MaterialType> mMaterials;
 		UINT64 mLayer;
@@ -180,7 +186,7 @@ namespace BansheeEngine
 	/**
 	 * @copydoc	TRenderableHandler
 	 */
-	class BS_EXPORT RenderableHandler : public IReflectable, public CoreObject, public TRenderableHandler<false>
+	class BS_EXPORT RenderableHandler : public IReflectable, public CoreObject, public TRenderableHandler<false>, public IResourceListener
 	{
 	public:
 		/**
@@ -213,9 +219,34 @@ namespace BansheeEngine
 		void _markCoreDirty(RenderableDirtyFlag flag = RenderableDirtyFlag::Everything);
 
 		/**
+		 * @copydoc	IResourceListener::markResourcesDirty
+		 */
+		void _markResourcesDirty();
+
+		/**
 		 * @copydoc	CoreObject::syncToCore
 		 */
 		CoreSyncData syncToCore(FrameAlloc* allocator);
+
+		/**
+		 * @copydoc	IResourceListener::getResourceDependencies
+		 */
+		void getResourceDependencies(Vector<HResource>& resources);
+
+		/**
+		 * @copydoc IResourceListener::notifyResourceLoaded
+		 */
+		void notifyResourceLoaded(const HResource& resource) { markCoreDirty(); }
+
+		/**
+		 * @copydoc IResourceListener::notifyResourceDestroyed
+		 */
+		void notifyResourceDestroyed(const HResource& resource) { markCoreDirty(); }
+
+		/**
+		 * @copydoc IResourceListener::notifyResourceChanged
+		 */
+		void notifyResourceChanged(const HResource& resource) { markCoreDirty(); }
 
 		/**
 		 * @brief	Creates a new renderable handler instance without initializing it.

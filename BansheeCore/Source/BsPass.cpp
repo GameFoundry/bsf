@@ -11,6 +11,23 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Converts a sim thread pass descriptor to a core thread one.
+	 */
+	void convertPassDesc(const PASS_DESC& input, PASS_DESC_CORE& output)
+	{
+		output.blendState = input.blendState.isLoaded() ? input.blendState->getCore() : nullptr;
+		output.rasterizerState = input.rasterizerState.isLoaded() ? input.rasterizerState->getCore() : nullptr;
+		output.depthStencilState = input.depthStencilState.isLoaded() ? input.depthStencilState->getCore() : nullptr;
+		output.stencilRefValue = input.stencilRefValue;
+		output.vertexProgram = input.vertexProgram.isLoaded() ? input.vertexProgram->getCore() : nullptr;
+		output.fragmentProgram = input.fragmentProgram.isLoaded() ? input.fragmentProgram->getCore() : nullptr;
+		output.geometryProgram = input.geometryProgram.isLoaded() ? input.geometryProgram->getCore() : nullptr;
+		output.hullProgram = input.hullProgram.isLoaded() ? input.hullProgram->getCore() : nullptr;
+		output.domainProgram = input.domainProgram.isLoaded() ? input.domainProgram->getCore() : nullptr;
+		output.hullProgram = input.hullProgram.isLoaded() ? input.hullProgram->getCore() : nullptr;
+	}
+
 	template<bool Core>
 	TPass<Core>::TPass()
 	{
@@ -56,6 +73,15 @@ namespace BansheeEngine
 		:TPass(desc)
 	{ }
 
+	void PassCore::syncToCore(const CoreSyncData& data)
+	{
+		UINT8* dataPtr = data.getBuffer();
+		PASS_DESC_CORE* desc = (PASS_DESC_CORE*)dataPtr;
+
+		mData = *desc;
+		desc->~PASS_DESC_CORE();
+	}
+
 	SPtr<PassCore> PassCore::create(const PASS_DESC_CORE& desc)
 	{
 		PassCore* newPass = new (bs_alloc<PassCore>()) PassCore(desc);
@@ -78,22 +104,66 @@ namespace BansheeEngine
 	SPtr<CoreObjectCore> Pass::createCore() const
 	{
 		PASS_DESC_CORE desc;
-		desc.blendState = mData.blendState.isLoaded() ? mData.blendState->getCore() : nullptr;
-		desc.rasterizerState = mData.rasterizerState.isLoaded() ? mData.rasterizerState->getCore() : nullptr;
-		desc.depthStencilState = mData.depthStencilState.isLoaded() ? mData.depthStencilState->getCore() : nullptr;
-		desc.stencilRefValue = mData.stencilRefValue;
-		desc.vertexProgram = mData.vertexProgram != nullptr ? mData.vertexProgram->getCore() : nullptr;
-		desc.fragmentProgram = mData.fragmentProgram != nullptr ? mData.fragmentProgram->getCore() : nullptr;
-		desc.geometryProgram = mData.geometryProgram != nullptr ? mData.geometryProgram->getCore() : nullptr;
-		desc.hullProgram = mData.hullProgram != nullptr ? mData.hullProgram->getCore() : nullptr;
-		desc.domainProgram = mData.domainProgram != nullptr ? mData.domainProgram->getCore() : nullptr;
-		desc.hullProgram = mData.hullProgram != nullptr ? mData.hullProgram->getCore() : nullptr;
+		convertPassDesc(mData, desc);
 
 		PassCore* pass = new (bs_alloc<PassCore>()) PassCore(desc);
 		SPtr<PassCore> passPtr = bs_shared_ptr<PassCore, GenAlloc>(pass);
 		passPtr->_setThisPtr(passPtr);
 
 		return passPtr;
+	}
+
+	void Pass::initialize()
+	{
+		_markResourcesDirty();
+
+		CoreObject::initialize();
+	}
+
+	CoreSyncData Pass::syncToCore(FrameAlloc* allocator)
+	{
+		UINT32 size = sizeof(PASS_DESC_CORE);
+
+		UINT8* data = allocator->alloc(size);
+		PASS_DESC_CORE* passDesc = new (data) PASS_DESC_CORE();
+		convertPassDesc(mData, *passDesc);
+
+		return CoreSyncData(data, size);
+	}
+
+	void Pass::_markResourcesDirty()
+	{
+		markResourcesDirty();
+	}
+
+	void Pass::getResourceDependencies(Vector<HResource>& resources)
+	{
+		if (mData.blendState != nullptr)
+			resources.push_back(mData.blendState);
+
+		if (mData.rasterizerState != nullptr)
+			resources.push_back(mData.rasterizerState);
+
+		if (mData.depthStencilState != nullptr)
+			resources.push_back(mData.depthStencilState);
+
+		if (mData.vertexProgram != nullptr)
+			resources.push_back(mData.vertexProgram);
+
+		if (mData.fragmentProgram != nullptr)
+			resources.push_back(mData.fragmentProgram);
+
+		if (mData.geometryProgram != nullptr)
+			resources.push_back(mData.geometryProgram);
+
+		if (mData.hullProgram != nullptr)
+			resources.push_back(mData.hullProgram);
+
+		if (mData.domainProgram != nullptr)
+			resources.push_back(mData.domainProgram);
+
+		if (mData.computeProgram != nullptr)
+			resources.push_back(mData.computeProgram);
 	}
 
 	PassPtr Pass::create(const PASS_DESC& desc)

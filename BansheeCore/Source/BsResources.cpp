@@ -134,7 +134,7 @@ namespace BansheeEngine
 			else
 			{
 				// Previously being loaded as async but now we want it synced, so we wait
-				existingResource.synchronize();
+				existingResource.blockUntilLoaded();
 
 				return existingResource;
 			}
@@ -187,7 +187,10 @@ namespace BansheeEngine
 	void Resources::unload(HResource resource)
 	{
 		if(!resource.isLoaded()) // If it's still loading wait until that finishes
-			resource.synchronize();
+			resource.blockUntilLoaded();
+
+		// Call this before we actually destroy it
+		onResourceDestroyed(resource);
 
 		resource->destroy();
 
@@ -221,7 +224,7 @@ namespace BansheeEngine
 	void Resources::save(HResource resource, const Path& filePath, bool overwrite)
 	{
 		if(!resource.isLoaded())
-			resource.synchronize();
+			resource.blockUntilLoaded();
 
 		bool fileExists = FileSystem::isFile(filePath);
 		if(fileExists)
@@ -307,6 +310,8 @@ namespace BansheeEngine
 		}
 
 		resource._setHandleData(rawResource, resource.getUUID());
+
+		onResourceLoaded(resource);
 
 		{
 			BS_LOCK_MUTEX(mLoadedResourceMutex);

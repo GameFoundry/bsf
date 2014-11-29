@@ -3,6 +3,7 @@
 #include "BsCorePrerequisites.h"
 #include "BsGpuParam.h"
 #include "BsCoreObject.h"
+#include "BsIResourceListener.h"
 
 #include "BsDebug.h"
 
@@ -113,6 +114,13 @@ namespace BansheeEngine
 		 * @note	Internal method.
 		 */
 		virtual void _markCoreDirty() { }
+
+		/**
+		 * @copydoc	IResourceListener::markResourcesDirty
+		 *
+		 * @note	Internal method.
+		 */
+		virtual void _markResourcesDirty() { }
 
 	protected:
 		/**
@@ -311,7 +319,7 @@ namespace BansheeEngine
 	 *
 	 * @note	Sim thread only.
 	 */
-	class BS_CORE_EXPORT GpuParams : public CoreObject, public TGpuParams<false>
+	class BS_CORE_EXPORT GpuParams : public CoreObject, public TGpuParams<false>, public IResourceListener
 	{
 	public:
 		~GpuParams() { }
@@ -322,6 +330,13 @@ namespace BansheeEngine
 		 * @note	Internal method.
 		 */
 		void _markCoreDirty();
+
+		/**
+		 * @copydoc	IResourceListener::markResourcesDirty
+		 *
+		 * @note	Internal method.
+		 */
+		void _markResourcesDirty();
 
 		/**
 		 * @brief	Retrieves a core implementation of a mesh usable only from the
@@ -354,5 +369,25 @@ namespace BansheeEngine
 		 * @copydoc	CoreObject::syncToCore
 		 */
 		CoreSyncData syncToCore(FrameAlloc* allocator);
+
+		/**
+		 * @copydoc	IResourceListener::getResourceDependencies
+		 */
+		void getResourceDependencies(Vector<HResource>& resources);
+
+		/**
+		 * @copydoc IResourceListener::notifyResourceLoaded
+		 */
+		void notifyResourceLoaded(const HResource& resource) { markCoreDirty(); }
+
+		/**
+		 * @copydoc IResourceListener::notifyResourceDestroyed
+		 */
+		void notifyResourceDestroyed(const HResource& resource) { markCoreDirty(); }
+
+		/**
+		 * @copydoc IResourceListener::notifyResourceChanged
+		 */
+		void notifyResourceChanged(const HResource& resource) { markCoreDirty(); }
 	};
 }

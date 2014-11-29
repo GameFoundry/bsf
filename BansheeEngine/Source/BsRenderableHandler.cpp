@@ -30,6 +30,7 @@ namespace BansheeEngine
 		mMesh = mesh;
 		mMaterials.resize(mesh->getProperties().getNumSubMeshes());
 
+		_markResourcesDirty();
 		_markCoreDirty();
 	}
 
@@ -38,6 +39,7 @@ namespace BansheeEngine
 	{
 		mMaterials[idx] = material;
 
+		_markResourcesDirty();
 		_markCoreDirty();
 	}
 
@@ -214,6 +216,11 @@ namespace BansheeEngine
 		markCoreDirty((UINT32)flag);
 	}
 
+	void RenderableHandler::_markResourcesDirty()
+	{
+		markResourcesDirty();
+	}
+
 	CoreSyncData RenderableHandler::syncToCore(FrameAlloc* allocator)
 	{
 		UINT32 numMaterials = (UINT32)mMaterials.size();
@@ -254,6 +261,18 @@ namespace BansheeEngine
 		}
 
 		return CoreSyncData(data, size);
+	}
+
+	void RenderableHandler::getResourceDependencies(Vector<HResource>& resources)
+	{
+		if (mMesh != nullptr)
+			resources.push_back(mMesh);
+
+		for (auto& material : mMaterials)
+		{
+			if (material != nullptr)
+				resources.push_back(material);
+		}
 	}
 
 	RenderableHandlerPtr RenderableHandler::create()

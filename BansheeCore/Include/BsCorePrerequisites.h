@@ -157,6 +157,7 @@ namespace BansheeEngine
 	class TechniqueCore;
 	class MaterialCore;
 	class GpuProgramCore;
+	class IResourceListener;
 	// Asset import
 	class SpecificImporter;
 	class Importer;

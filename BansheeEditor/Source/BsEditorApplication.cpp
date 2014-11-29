@@ -41,6 +41,7 @@
 #include "BsEvent.h"
 #include "BsCoreRenderer.h"
 #include "BsProjectSettings.h"
+#include "BsMesh.h"
 
 namespace BansheeEngine
 {
@@ -289,8 +290,10 @@ namespace BansheeEngine
 		mTestTexRef = static_resource_cast<Texture>(gResources().loadAsync(L"C:\\ExportTest.tex"));
 		mDbgMeshRef = static_resource_cast<Mesh>(gResources().loadAsync(L"C:\\ExportMesh.mesh"));
 
-		mDbgMeshRef.synchronize();
-		mTestTexRef.synchronize();
+		mDbgMeshRef.blockUntilLoaded();
+		mDbgMeshRef->blockUntilCoreInitialized();
+		mTestTexRef.blockUntilLoaded();
+		mTestTexRef->blockUntilCoreInitialized();
 
 		mTestMaterial->setTexture("tex", mTestTexRef);
 		gResources().save(mTestMaterial, L"C:\\ExportMaterial.mat", true);

@@ -4,6 +4,7 @@
 #include "BsColor.h"
 #include "BsIReflectable.h"
 #include "BsCoreObject.h"
+#include "BsIResourceListener.h"
 
 namespace BansheeEngine
 {
@@ -126,6 +127,11 @@ namespace BansheeEngine
 		TPass();
 		TPass(const PassDescType& desc);
 
+		/**
+		 * @copydoc	IResourceListener::markResourcesDirty
+		 */
+		virtual void _markResourcesDirty() { }
+
 		PassDescType mData;
     };
 
@@ -150,6 +156,11 @@ namespace BansheeEngine
 
 		PassCore() { }
 		PassCore(const PASS_DESC_CORE& desc);
+
+		/**
+		 * @copydoc	CoreObjectCore::syncToCore
+		 */
+		void syncToCore(const CoreSyncData& data);
     };
 
 	/**
@@ -157,7 +168,7 @@ namespace BansheeEngine
 	 *
 	 * @note	Sim thread.
 	 */
-	class BS_CORE_EXPORT Pass : public IReflectable, public CoreObject, public TPass<false>
+	class BS_CORE_EXPORT Pass : public IReflectable, public CoreObject, public TPass<false>, public IResourceListener
     {
     public:
 		virtual ~Pass() { }
@@ -180,9 +191,44 @@ namespace BansheeEngine
 		Pass(const PASS_DESC& desc);
 
 		/**
+		 * @copydoc	CoreObject::syncToCore
+		 */
+		CoreSyncData syncToCore(FrameAlloc* allocator);
+
+		/**
+		 * @copydoc	IResourceListener::markResourcesDirty
+		 */
+		void _markResourcesDirty();
+
+		/**
+		* @copydoc	IResourceListener::getResourceDependencies
+		*/
+		void getResourceDependencies(Vector<HResource>& resources);
+
+		/**
+		* @copydoc IResourceListener::notifyResourceLoaded
+		*/
+		void notifyResourceLoaded(const HResource& resource) { markCoreDirty(); }
+
+		/**
+		* @copydoc IResourceListener::notifyResourceDestroyed
+		*/
+		void notifyResourceDestroyed(const HResource& resource) { markCoreDirty(); }
+
+		/**
+		* @copydoc IResourceListener::notifyResourceChanged
+		*/
+		void notifyResourceChanged(const HResource& resource) { markCoreDirty(); }
+
+		/**
 		 * @copydoc	CoreObject::createCore
 		 */
 		SPtr<CoreObjectCore> createCore() const;
+
+		/**
+		 * @copydoc	CoreObject::initialize
+		 */
+		virtual void initialize();
 
 		/**
 		 * @brief	Creates a new empty pass but doesn't initialize it.

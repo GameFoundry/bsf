@@ -280,6 +280,7 @@
   <ItemGroup>
     <ClInclude Include="Include\BsCoreObjectCore.h" />
     <ClInclude Include="Include\BsDrawList.h" />
+    <ClInclude Include="Include\BsIResourceListener.h" />
     <ClInclude Include="Include\BsMaterialParam.h" />
     <ClInclude Include="Include\BsRenderStats.h" />
     <ClInclude Include="Include\BsCoreThread.h" />
@@ -310,6 +311,7 @@
     <ClInclude Include="Include\BsPlatform.h" />
     <ClInclude Include="Include\BsProfilingManager.h" />
     <ClInclude Include="Include\BsQueryManager.h" />
+    <ClInclude Include="Include\BsResourceListenerManager.h" />
     <ClInclude Include="Include\BsResourceManifest.h" />
     <ClInclude Include="Include\BsResourceManifestRTTI.h" />
     <ClInclude Include="Include\BsResourceMetaData.h" />
@@ -425,6 +427,7 @@
     <ClCompile Include="Source\BsCoreObjectCore.cpp" />
     <ClCompile Include="Source\BsCoreThread.cpp" />
     <ClCompile Include="Source\BsDrawList.cpp" />
+    <ClCompile Include="Source\BsIResourceListener.cpp" />
     <ClCompile Include="Source\BsMaterialParam.cpp" />
     <ClCompile Include="Source\BsProfilerCPU.cpp" />
     <ClCompile Include="Source\BsDeferredCallManager.cpp" />
@@ -472,6 +475,7 @@
     <ClCompile Include="Source\BsProfilingManager.cpp" />
     <ClCompile Include="Source\BsQueryManager.cpp" />
     <ClCompile Include="Source\BsCoreRenderer.cpp" />
+    <ClCompile Include="Source\BsResourceListenerManager.cpp" />
     <ClCompile Include="Source\BsResourceManifest.cpp" />
     <ClCompile Include="Source\BsResourceMetaData.cpp" />
     <ClCompile Include="Source\BsTextureImportOptions.cpp" />

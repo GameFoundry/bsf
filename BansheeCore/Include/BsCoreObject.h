@@ -70,7 +70,7 @@ namespace BansheeEngine
 		 * @note	If you call this without calling initialize first a deadlock will occur.
 		 * 			You should not call this from core thread.
 		 */
-		void synchronize();
+		void blockUntilCoreInitialized();
 
 		/**
 		 * @brief	Internal method. Sets a shared this pointer to this object. This MUST be called immediately after construction.

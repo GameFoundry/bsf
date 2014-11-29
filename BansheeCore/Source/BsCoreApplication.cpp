@@ -39,6 +39,7 @@
 #include "BsUUID.h"
 #include "BsRenderStats.h"
 #include "BsMessageHandler.h"
+#include "BsResourceListenerManager.h"
 
 #include "BsMaterial.h"
 #include "BsShader.h"
@@ -83,6 +84,7 @@ namespace BansheeEngine
 		CoreObjectManager::startUp();
 		GameObjectManager::startUp();
 		Resources::startUp();
+		ResourceListenerManager::startUp();
 		GpuProgramManager::startUp();
 		GpuProgramCoreManager::startUp();
 		RenderAPIManager::startUp();
@@ -129,6 +131,7 @@ namespace BansheeEngine
 		Input::shutDown();
 
 		Resources::shutDown();
+		ResourceListenerManager::shutDown();
 		GameObjectManager::shutDown();
 
 		// All CoreObject related modules should be shut down now. They have likely queued CoreObjects for destruction, so
@@ -186,6 +189,9 @@ namespace BansheeEngine
 				pluginUpdateFunc.second();
 
 			update();
+
+			// Send out resource events in case any were loaded/destroyed/modified
+			ResourceListenerManager::instance().update();
 
 			// Sync all dirty sim thread CoreObject data to core thread
 			CoreObjectManager::instance().syncDownload(CoreObjectSync::Sim, gCoreThread().getFrameAlloc());

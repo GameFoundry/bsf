@@ -1,35 +1,18 @@
 --------- ALL LONG TERM TASKS / FIXES BELONG TO GOOGLE DOCS: ImplementationTODO OR PossibleImprovements ----------
 
-Renderable TODO:
-
-Disallow CoreObject creation from core thread
- - Add asserts in CoreObject::destroy and CoreObject::initialize
- - Possibly also add asserts to CoreThread::queueCommand and CoreThread::queueReturnCommand
-
  New issues:
   - Since Mesh refactor when I select/deselect a gizmo the entire render texture flashes white for one frame (might be related to RT refactor instead)
 
-HANDLE RESOURCE LOADING AND CORE OBJECT SYNC:
-How to handle RenderableHandler (and other types) that reference resource handles? What if the handle is invalid and in the process 
-of being loaded? The core thread needs to be notified when loading is complete so it retrieves the proper Core object.
- - Add getResourceDependencies() and markDependenciesDirty() to CoreObject
-   - CoreObjectManager then keeps track of all resource handles and receives notifications from 
-     Resources when a resource finishes loading or gets modified due to reimport
-   - When such notification is issued CoreObjectManager performs a lookup among its resource handles to find 
-     CoreObject (store CoreObject as a raw pointer or an ID, but make sure to handle deletion of CoreObject properly in either case)
-   - That object then receives notifyResourceUpdated(const HResource& resource) which by default makes the object dirty
- - This can then be used for resource hot-swap functionality as well
+Fix crash on shutdown with OpenGL
 
-BETTER SYNC IN GENERAL:
- - Extend CoreObject with getDependencies() that returns all child CoreObjects
- - Then when performing syncToCore I can iterate through all dependencies and sync them all
-   - e.g. Material references GpuParams which reference GpuParamBlockBuffer, all of which require syncing
- - Add a method similar to syncToCore that just appends CoreSyncData to a larger object, so many objects
-   can be synced at once.
- - Get rid of syncUpload/syncDownload methods and replace them with:
-   - Custom sync in BansheeRenderer that iterates over all Renderable and Camera objects and syncs the dirty ones
-     - Will likely want to remove core->sim sync with mesh bounds and other similar core->sync transfers
-   - Custom sync for RenderTargets that happens both ways, likely handled by RenderableTargetManager
+Try to figure out how to deal with material and its references:
+ - It references a ShaderPtr but it should be referencing a HShader
+ - It calls synchronize on all GpuPrograms before getting initialized because (same would apply to shader if it was using a HShader as it should):
+    - It needs to ensure they're loaded in case they were loaded asynchronously
+	- It needs to ensure they're initialize on core thread to retrieve gpu param desc which is used for creating gpu param buffers and param name/type checking
+ - I cannot delay this init until those are initialized because user expects to be able to set material params right after creation
+ - OPTIMAL approach would be to generate shader desc on sim thread or during import and allow delayed initialization
+   - If user uses async loading then it's his fault if material hasn't been initialized
 
 -----------------
 
