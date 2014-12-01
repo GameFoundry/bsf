@@ -3,6 +3,7 @@
 #include "BsMonoPrerequisites.h"
 #include "BsException.h"
 #include "BsDebug.h"
+#include "BsMonoArray.h"
 #include <mono/jit/jit.h>
 
 namespace BansheeEngine

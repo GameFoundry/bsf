@@ -5,6 +5,7 @@
 #include "BsCoreThread.h"
 #include "BsTextureManager.h"
 #include "BsFrameAlloc.h"
+#include "BsResources.h"
 
 namespace BansheeEngine
 {
@@ -185,7 +186,18 @@ namespace BansheeEngine
 	MultiRenderTexture::MultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC& desc)
 		:mDesc(desc)
 	{
+		// Create non-persistent resource handles for the used textures (we only need them because a lot of the code accepts only handles,
+		// since they're non persistent they don't really have any benefit over shared pointers)
 
+		for (UINT32 i = 0; i < (UINT32)desc.colorSurfaces.size(); i++)
+		{
+			if (desc.colorSurfaces[i].texture != nullptr)
+				mBindableColorTex.push_back(static_resource_cast<Texture>(gResources()._createResourceHandle(desc.colorSurfaces[i].texture)));
+		}
+
+
+		if (desc.depthStencilSurface.texture != nullptr)
+			mBindableDepthStencilTex = static_resource_cast<Texture>(gResources()._createResourceHandle(desc.depthStencilSurface.texture));
 	}
 
 	SPtr<CoreObjectCore> MultiRenderTexture::createCore() const
@@ -223,5 +235,10 @@ namespace BansheeEngine
 	const MultiRenderTextureProperties& MultiRenderTexture::getProperties() const
 	{
 		return static_cast<const MultiRenderTextureProperties&>(getPropertiesInternal());
+	}
+
+	UINT32 MultiRenderTexture::getColorSurfaceCount() const
+	{
+		return (UINT32)mDesc.colorSurfaces.size();
 	}
 }

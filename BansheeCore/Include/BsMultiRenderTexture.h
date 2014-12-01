@@ -93,6 +93,20 @@ namespace BansheeEngine
 		virtual ~MultiRenderTexture() { }
 
 		/**
+		 * @brief	Returns a color surface texture you may bind as an input to an GPU program.
+		 *
+		 * @note	Be aware that you cannot bind a render texture for reading and writing at the same time.
+		 */
+		const HTexture& getBindableColorTexture(UINT32 idx) const { return mBindableColorTex[idx]; }
+
+		/**
+		 * @brief	Returns a depth/stencil surface texture you may bind as an input to an GPU program.
+		 *
+		 * @note		Be aware that you cannot bind a render texture for reading and writing at the same time.
+		 */
+		const HTexture& getBindableDepthStencilTexture() const { return mBindableDepthStencilTex; }
+
+		/**
 		 * @brief	Retrieves a core implementation of a render texture usable only from the
 		 *			core thread.
 		 */
@@ -107,6 +121,11 @@ namespace BansheeEngine
 		 * @brief	Returns properties that describe the render texture.
 		 */
 		const MultiRenderTextureProperties& getProperties() const;
+
+		/**
+		 * @brief	Returns the number of color surfaces used by the render texture.
+		 */
+		UINT32 getColorSurfaceCount() const;
 
 	protected:
 		MultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC& desc);
@@ -127,5 +146,7 @@ namespace BansheeEngine
 		virtual void syncFromCore(const CoreSyncData& data);
 
 		MULTI_RENDER_TEXTURE_DESC mDesc;
+		Vector<HTexture> mBindableColorTex;
+		HTexture mBindableDepthStencilTex;
 	};
 }

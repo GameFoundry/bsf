@@ -72,7 +72,7 @@ namespace BansheeEngine
 		HEvent mResourceLoadedConn;
 		HEvent mResourceDestroyedConn;
 
-		Set<IResourceListener*> mActiveListeners;
+		
 		Set<IResourceListener*> mDirtyListeners;
 		Map<UINT64, Vector<IResourceListener*>> mResourceToListenerMap;
 		Map<IResourceListener*, Vector<UINT64>> mListenerToResourceMap;
@@ -83,5 +83,9 @@ namespace BansheeEngine
 		Vector<HResource> mTempResourceBuffer;
 
 		BS_MUTEX(mMutex)
+
+#if BS_DEBUG_MODE
+		Set<IResourceListener*> mActiveListeners;
+#endif
 	};
 }

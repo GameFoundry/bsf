@@ -191,7 +191,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RenderTargetCore::setPriority
 		 */
-		void setPriority(CoreAccessor& accessor, UINT32 priority);
+		void setPriority(CoreAccessor& accessor, INT32 priority);
 
 		/**
 		 * @brief	Returns properties that describe the render target.

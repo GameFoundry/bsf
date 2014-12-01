@@ -234,6 +234,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\BsMonoArray.h" />
     <ClInclude Include="Include\BsMonoAssembly.h" />
     <ClInclude Include="Include\BsMonoClass.h" />
     <ClInclude Include="Include\BsMonoField.h" />
@@ -246,6 +247,7 @@
     <ClInclude Include="Include\BsScriptMeta.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\BsMonoArray.cpp" />
     <ClCompile Include="Source\BsMonoAssembly.cpp" />
     <ClCompile Include="Source\BsMonoClass.cpp" />
     <ClCompile Include="Source\BsMonoField.cpp" />

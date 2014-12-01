@@ -22,12 +22,21 @@ namespace BansheeEngine
 
 	void ResourceListenerManager::registerListener(IResourceListener* listener)
 	{
+#if BS_DEBUG_MODE
+		BS_LOCK_MUTEX(mMutex);
 		mActiveListeners.insert(listener);
+#endif
 	}
 
 	void ResourceListenerManager::unregisterListener(IResourceListener* listener)
 	{
-		mActiveListeners.erase(listener);
+#if BS_DEBUG_MODE
+		{
+			BS_LOCK_MUTEX(mMutex);
+			mActiveListeners.erase(listener);
+		}
+#endif
+		
 		mDirtyListeners.erase(listener);
 
 		clearDependencies(listener);
@@ -87,7 +96,10 @@ namespace BansheeEngine
 		const Vector<IResourceListener*> relevantListeners = iterFind->second;
 		for (auto& listener : relevantListeners)
 		{
+#if BS_DEBUG_MODE
+			BS_LOCK_MUTEX(mMutex);
 			assert(mActiveListeners.find(listener) != mActiveListeners.end() && "Attempting to notify a destroyed IResourceListener");
+#endif
 
 			listener->notifyResourceLoaded(resource);
 		}
@@ -104,7 +116,10 @@ namespace BansheeEngine
 		const Vector<IResourceListener*> relevantListeners = iterFind->second;
 		for (auto& listener : relevantListeners)
 		{
+#if BS_DEBUG_MODE
+			BS_LOCK_MUTEX(mMutex);
 			assert(mActiveListeners.find(listener) != mActiveListeners.end() && "Attempting to notify a destroyed IResourceListener");
+#endif
 
 			listener->notifyResourceDestroyed(resource);
 		}
