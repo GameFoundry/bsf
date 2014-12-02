@@ -97,7 +97,6 @@ namespace BansheeEngine
 		for (auto& listener : relevantListeners)
 		{
 #if BS_DEBUG_MODE
-			BS_LOCK_MUTEX(mMutex);
 			assert(mActiveListeners.find(listener) != mActiveListeners.end() && "Attempting to notify a destroyed IResourceListener");
 #endif
 
@@ -117,7 +116,6 @@ namespace BansheeEngine
 		for (auto& listener : relevantListeners)
 		{
 #if BS_DEBUG_MODE
-			BS_LOCK_MUTEX(mMutex);
 			assert(mActiveListeners.find(listener) != mActiveListeners.end() && "Attempting to notify a destroyed IResourceListener");
 #endif
 

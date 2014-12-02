@@ -6,11 +6,14 @@
 #include "BsMonoUtil.h"
 #include "BsApplication.h"
 #include "BsCameraHandler.h"
+#include "BsScriptSceneObject.h"
+#include "BsSceneObject.h"
+#include "BsScriptRenderTarget.h"
 
 namespace BansheeEngine
 {
 	ScriptCamera::ScriptCamera(MonoObject* managedInstance)
-		:ScriptObject(managedInstance), mCameraHandler(nullptr)
+		:ScriptObject(managedInstance), mCameraHandler(nullptr), mLastUpdateHash(0)
 	{ 
 		ViewportPtr primaryViewport = gApplication().getPrimaryViewport();
 
@@ -93,9 +96,21 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_ProjectPoint", &ScriptCamera::internal_GetAspect);
 		metaData.scriptClass->addInternalCall("Internal_UnprojectPoint", &ScriptCamera::internal_GetAspect);
 
-		// TODO
-		// metaData.scriptClass->addInternalCall("Internal_SetRenderTexture", &ScriptCamera::internal_SetRenderTexture);
-		// metaData.scriptClass->addInternalCall("Internal_GetRenderTexture", &ScriptCamera::internal_GetRenderTexture);
+		metaData.scriptClass->addInternalCall("Internal_SetRenderTarget", &ScriptCamera::internal_SetRenderTarget);
+
+		metaData.scriptClass->addInternalCall("Internal_UpdateView", &ScriptCamera::internal_UpdateView);
+	}
+
+	void ScriptCamera::updateView(const HSceneObject& parent)
+	{
+		UINT32 curHash = parent->getTransformHash();
+		if (curHash != mLastUpdateHash)
+		{
+			mCameraHandler->setPosition(parent->getWorldPosition());
+			mCameraHandler->setRotation(parent->getWorldRotation());
+
+			mLastUpdateHash = curHash;
+		}
 	}
 
 	float ScriptCamera::internal_GetAspect(ScriptCamera* instance)
@@ -355,15 +370,9 @@ namespace BansheeEngine
 		return instance->mCameraHandler->unprojectPoint(value);
 	}
 
-	MonoObject* ScriptCamera::internal_GetRenderTexture(ScriptCamera* instance)
+	void ScriptCamera::internal_SetRenderTarget(ScriptCamera* instance, ScriptRenderTarget* target)
 	{
-		// TODO - Not implemented
-		return nullptr;
-	}
-
-	void ScriptCamera::internal_SetRenderTexture(ScriptCamera* instance, MonoObject* textureObj)
-	{
-		if (textureObj == nullptr)
+		if (target == nullptr)
 		{
 			ViewportPtr primaryViewport = gApplication().getPrimaryViewport();
 
@@ -371,7 +380,14 @@ namespace BansheeEngine
 		}
 		else
 		{
-			// TODO - Not implemented
+			instance->mCameraHandler->getViewport()->setTarget(target->getNativeValue());
 		}
+	}
+
+	void ScriptCamera::internal_UpdateView(ScriptCamera* instance, ScriptSceneObject* parent)
+	{
+		HSceneObject parentSO = parent->getNativeSceneObject();
+
+		instance->updateView(parentSO);
 	}
 }

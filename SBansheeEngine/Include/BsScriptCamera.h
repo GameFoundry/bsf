@@ -22,6 +22,8 @@ namespace BansheeEngine
 		ScriptCamera(MonoObject* managedInstance);
 		~ScriptCamera();
 
+		void updateView(const HSceneObject& parent);
+
 		static float internal_GetAspect(ScriptCamera* instance);
 		static void internal_SetAspect(ScriptCamera* instance, float value);
 		static float internal_GetNearClip(ScriptCamera* instance);
@@ -91,9 +93,11 @@ namespace BansheeEngine
 		static Vector3 internal_ProjectPoint(ScriptCamera* instance, Vector3 value);
 		static Vector3 internal_UnprojectPoint(ScriptCamera* instance, Vector3 value);
 
-		static MonoObject* internal_GetRenderTexture(ScriptCamera* instance);
-		static void internal_SetRenderTexture(ScriptCamera* instance, MonoObject* textureObj);
+		static void internal_SetRenderTarget(ScriptCamera* instance, ScriptRenderTarget* target);
+
+		static void internal_UpdateView(ScriptCamera* instance, ScriptSceneObject* parent);
 
 		SPtr<CameraHandler> mCameraHandler;
+		UINT32 mLastUpdateHash;
 	};
 }

@@ -15,6 +15,8 @@ namespace BansheeEngine
 		virtual HGameObject getNativeHandle() const { return mSceneObject; }
 		virtual void setNativeHandle(const HGameObject& gameObject);
 
+		HSceneObject getNativeSceneObject() const { return mSceneObject; }
+
 	private:
 		friend class ScriptGameObjectManager;
 

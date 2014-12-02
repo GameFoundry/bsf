@@ -7,6 +7,9 @@ namespace BansheeEngine
 {
 	class BS_SCR_BE_EXPORT ScriptRenderTargetBase : public ScriptObjectBase
 	{
+	public:
+		virtual RenderTargetPtr getNativeValue() const = 0;
+
 	protected:
 		friend class ScriptResourceManager;
 
@@ -15,8 +18,6 @@ namespace BansheeEngine
 		{ }
 
 		virtual ~ScriptRenderTargetBase() {}
-
-		virtual RenderTargetPtr getNativeValue() const = 0;
 	};
 
 	class BS_SCR_BE_EXPORT ScriptRenderTarget : public ScriptObject<ScriptRenderTarget, ScriptRenderTargetBase>

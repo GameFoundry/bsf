@@ -21,117 +21,135 @@ namespace BansheeEngine
 
     public class Camera : Component
     {
-        public float aspectRatio
+        public float AspectRatio
         {
             get { return Internal_GetAspect(mCachedPtr); }
             set { Internal_SetAspect(mCachedPtr, value); }
         }
 
-        public float nearClipPlane
+        public float NearClipPlane
         {
             get { return Internal_GetNearClip(mCachedPtr); }
             set { Internal_SetNearClip(mCachedPtr, value); }
         }
 
-        public float farClipPlane
+        public float FarClipPlane
         {
             get { return Internal_GetFarClip(mCachedPtr); }
             set { Internal_SetFarClip(mCachedPtr, value); }
         }
 
-        public Degree fieldOfView
+        public Degree FieldOfView
         {
             get { return Internal_GetFieldOfView(mCachedPtr); }
             set { Internal_SetFieldOfView(mCachedPtr, value); }
         }
 
-        public Rect2 viewportRect
+        public Rect2 ViewportRect
         {
             get { return Internal_GetViewportRect(mCachedPtr); }
             set { Internal_SetViewportRect(mCachedPtr, value); }
         }
 
-        public ProjectionType projectionType
+        public ProjectionType ProjectionType
         {
             get { return Internal_GetProjectionType(mCachedPtr); }
             set { Internal_SetProjectionType(mCachedPtr, value); }
         }
 
-        public float orthoHeight
+        public float OrthoHeight
         {
             get { return Internal_GetOrthographicHeight(mCachedPtr); }
             set { Internal_SetOrthographicHeight(mCachedPtr, value); }
         }
 
-        public float orthoWidth
+        public float OrthoWidth
         {
             get { return Internal_GetOrthographicWidth(mCachedPtr); }
         }
 
-        public Color clearColor
+        public Color ClearColor
         {
             get { return Internal_GetClearColor(mCachedPtr); }
             set { Internal_SetClearColor(mCachedPtr, value); }
         }
 
-        public float clearDepth
+        public float ClearDepth
         {
             get { return Internal_GetDepthClearValue(mCachedPtr); }
             set { Internal_SetDepthClearValue(mCachedPtr, value); }
         }
 
-        public UInt16 clearStencil
+        public UInt16 ClearStencil
         {
             get { return Internal_GetStencilClearValue(mCachedPtr); }
             set { Internal_SetStencilClearValue(mCachedPtr, value); }
         }
 
-        public ClearFlags clearFlags
+        public ClearFlags ClearFlags
         {
             get { return Internal_GetClearFlags(mCachedPtr); }
             set { Internal_SetClearFlags(mCachedPtr, value); }
         }
 
-        public int priority
+        public int Priority
         {
             get { return Internal_GetPriority(mCachedPtr); }
             set { Internal_SetPriority(mCachedPtr, value); }
         }
 
-        public UInt64 layers
+        public UInt64 Layers
         {
             get { return Internal_GetLayers(mCachedPtr); }
             set { Internal_SetLayers(mCachedPtr, value); }
         }
 
-        public Matrix4 projMatrix
+        public Matrix4 ProjMatrix
         {
             get { return Internal_GetProjMatrix(mCachedPtr); }
         }
 
-        public Matrix4 projMatrixInv
+        public Matrix4 ProjMatrixInv
         {
             get { return Internal_GetProjMatrixInv(mCachedPtr); }
         }
 
-        public Matrix4 viewMatrix
+        public Matrix4 ViewMatrix
         {
             get { return Internal_GetViewMatrix(mCachedPtr); }
         }
 
-        public Matrix4 viewMatrixInv
+        public Matrix4 ViewMatrixInv
         {
             get { return Internal_GetViewMatrixInv(mCachedPtr); }
         }
 
-        public int widthPixels
+        public int WidthPixels
         {
             get { return Internal_GetWidthPixels(mCachedPtr); }
         }
 
-        public int heightPixels
+        public int HeightPixels
         {
             get { return Internal_GetHeightPixels(mCachedPtr); }
+        }
+
+        public RenderTarget Target
+        {
+            get
+            {
+                return target;
+            }
+            set
+            {
+                target = value;
+
+                IntPtr targetPtr = IntPtr.Zero;
+                if (target != null)
+                    targetPtr = target.mCachedPtr;
+
+                Internal_SetRenderTarget(mCachedPtr, targetPtr);
+            }
         }
 
         public Vector2I WorldToScreen(Vector3 value) { return Internal_WorldToScreen(mCachedPtr, value); }
@@ -154,7 +172,12 @@ namespace BansheeEngine
         public Vector3 ProjectPoint(Vector3 value) { return Internal_ProjectPoint(mCachedPtr, value); }
         public Vector3 UnprojectPoint(Vector3 value) { return Internal_UnprojectPoint(mCachedPtr, value); }
 
-        // TODO - Add RenderTexture
+        private RenderTarget target;
+
+        private void Update()
+        {
+            Internal_UpdateView(mCachedPtr, sceneObject.mCachedPtr);
+        }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern float Internal_GetAspect(IntPtr instance);
@@ -273,5 +296,11 @@ namespace BansheeEngine
         private static extern Vector3 Internal_ProjectPoint(IntPtr instance, Vector3 value);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern Vector3 Internal_UnprojectPoint(IntPtr instance, Vector3 value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetRenderTarget(IntPtr instance, IntPtr rt);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_UpdateView(IntPtr instance, IntPtr parentSO);
     }
 }

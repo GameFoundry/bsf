@@ -45,14 +45,6 @@ dependant resources (including from scripts)
 
 -----------------
 
-Port SceneCameraController to C#
-Port RenderTexture to C# and likely extend Texture2D so it accepts renderable flags. While at it add TextureCube and Texture3D as well.
- - Actually Texture2D doesn't seem to be implemented at all. Will also need to add PixelData wrapper.
- - Will I need to add support for readable textures? e.g. what happens when you try to read a texture from C#?
-   - Almost certainly. It's very useful to be able to read textures.
-   - I can't sync the threads when reading, it would be too slow. Have an AsyncOp similar to c++ code? 
-   - Also DX11 already creates a temporary staging buffer when reading from a texture, so keeping yet another CPU
-     copy seems like a waste.
 Ensure that EditorWindow resize callback works properly.
  - Perhaps add OnResizeEnd callback that can be used for updating the render texture
 Create a C# wrapper around ProjectSettings
@@ -76,16 +68,6 @@ IMPLEMENT SELECTION RENDERING
 IMPROVE SceneGrid LOOK
  - LIKELY USE PIXEL SceneGrid WITH AA
  - OR (better) instead of drawing rows and columns of lines, just draw a plane with procedural texture
-
----------------------------------------------------------------------
-Render textures in C#:
- - In C# have Texture2D, TextureCube, TextureVolume. They should have a common Texture base.
-   - Each of those can be created with a Renderable flag
- - Render textures mirror what we have in C++
-   - RenderTexture and MultiRenderTexture (since we have these separate representation we don't need RenderBuffer that Unity has)
-   - You can provide an existing texture from types listed above, or create a new render target and
-      create a basic 2D texture (multiple constructors)
- - Both RT types should have their color buffer (s) and depth buffer accessible as a texture to be used for rendering, or for reading
 
 ----------------------------------------------------------------------
 Handles
