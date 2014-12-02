@@ -307,6 +307,7 @@
     <ClInclude Include="Include\BsManagedSerializableObjectInfo.h" />
     <ClInclude Include="Include\BsScriptTexture3D.h" />
     <ClInclude Include="Include\BsScriptTextureCube.h" />
+    <ClInclude Include="Include\BsScriptTime.h" />
     <ClInclude Include="Include\BsScriptVector2I.h" />
     <ClInclude Include="Include\BsScriptVirtualButton.h" />
     <ClInclude Include="Include\BsScriptVirtualInput.h" />
@@ -375,6 +376,7 @@
     <ClCompile Include="Source\BsScriptGUIContent.cpp" />
     <ClCompile Include="Source\BsScriptTexture3D.cpp" />
     <ClCompile Include="Source\BsScriptTextureCube.cpp" />
+    <ClCompile Include="Source\BsScriptTime.cpp" />
     <ClCompile Include="Source\BsScriptVector2I.cpp" />
     <ClCompile Include="Source\BsScriptVirtualInput.cpp" />
     <ClCompile Include="Source\BsScriptVirtualButton.cpp" />

@@ -1,0 +1,122 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using BansheeEngine;
+
+namespace BansheeEditor
+{
+    public class SceneCamera : Component
+    {
+        public const string MoveForwardBinding = "SceneForward";
+	    public const string MoveLeftBinding = "SceneLeft";
+	    public const string MoveRightBinding = "SceneRight";
+	    public const string MoveBackBinding = "SceneBackward";
+	    public const string FastMoveBinding = "SceneFastMove";
+	    public const string RotateBinding = "SceneRotate";
+	    public const string HorizontalAxisBinding = "SceneHorizontal";
+	    public const string VerticalAxisBinding = "SceneVertical";
+
+	    private const float StartSpeed = 4.0f;
+	    private const float TopSpeed = 12.0f;
+	    private const float Acceleration = 1.0f;
+	    private const float FastModeMultiplier = 2.0f;
+	    private const float RotationalSpeed = 360.0f; // Degrees/second
+
+        private VirtualButton moveForwardBtn;
+        private VirtualButton moveLeftBtn;
+        private VirtualButton moveRightBtn;
+        private VirtualButton moveBackwardBtn;
+        private VirtualButton fastMoveBtn;
+        private VirtualButton rotateBtn;
+        private VirtualAxis horizontalAxis;
+        private VirtualAxis verticalAxis;
+
+        private float currentSpeed;
+        private Degree pitch;
+        private Degree yaw;
+        private bool lastButtonState;
+
+        public SceneCamera()
+        {
+            moveForwardBtn = new VirtualButton(MoveForwardBinding);
+            moveLeftBtn = new VirtualButton(MoveLeftBinding);
+            moveRightBtn = new VirtualButton(MoveRightBinding);
+            moveBackwardBtn = new VirtualButton(MoveBackBinding);
+            fastMoveBtn = new VirtualButton(FastMoveBinding);
+            rotateBtn = new VirtualButton(RotateBinding);
+            horizontalAxis = new VirtualAxis(HorizontalAxisBinding);
+            verticalAxis = new VirtualAxis(VerticalAxisBinding);
+        }
+
+        private void Update()
+	    {
+            // TODO - Only move if scene view is focused
+
+		    bool goingForward = VirtualInput.IsButtonHeld(moveForwardBtn);
+		    bool goingBack = VirtualInput.IsButtonHeld(moveBackwardBtn);
+		    bool goingLeft = VirtualInput.IsButtonHeld(moveLeftBtn);
+		    bool goingRight = VirtualInput.IsButtonHeld(moveRightBtn);
+		    bool fastMove = VirtualInput.IsButtonHeld(fastMoveBtn);
+		    bool camRotating = VirtualInput.IsButtonHeld(rotateBtn);
+
+		    if (camRotating != lastButtonState)
+		    {
+		        if (camRotating)
+		            Cursor.Hide();
+		        else
+		            Cursor.Show();
+
+			    lastButtonState = camRotating;
+		    }
+
+		    float frameDelta = Time.frameDelta;
+		    if (camRotating)
+		    {
+			    yaw += new Degree(VirtualInput.GetAxisValue(horizontalAxis) * RotationalSpeed * frameDelta);
+			    pitch += new Degree(VirtualInput.GetAxisValue(verticalAxis) * RotationalSpeed * frameDelta);
+
+			    yaw = MathEx.WrapAngle(yaw);
+                pitch = MathEx.WrapAngle(pitch);
+
+		        Quaternion yRot = Quaternion.FromAxisAngle(Vector3.yAxis, yaw);
+                Quaternion xRot = Quaternion.FromAxisAngle(Vector3.xAxis, pitch);
+
+			    Quaternion camRot = yRot * xRot;
+		        camRot.Normalize();
+
+		        sceneObject.Rotate(camRot);
+		    }
+
+		    Vector3 direction = Vector3.zero;
+		    if (goingForward) direction += sceneObject.Forward;
+		    if (goingBack) direction -= sceneObject.Forward;
+		    if (goingRight) direction += sceneObject.Right;
+		    if (goingLeft) direction -= sceneObject.Right;
+
+		    if (direction.sqrdMagnitude != 0)
+		    {
+		        direction.Normalize();
+
+			    float multiplier = 1.0f;
+			    if (fastMove)
+				    multiplier = FastModeMultiplier;
+
+			    currentSpeed = MathEx.Clamp(currentSpeed + Acceleration * frameDelta, StartSpeed, TopSpeed);
+			    currentSpeed *= multiplier;
+		    }
+		    else
+		    {
+			    currentSpeed = 0.0f;
+		    }
+
+		    const float tooSmall = 0.0001f;
+		    if (currentSpeed > tooSmall)
+		    {
+			    Vector3 velocity = direction * currentSpeed;
+			    sceneObject.Move(velocity * frameDelta);
+		    }
+	    }
+    }
+}

@@ -121,6 +121,7 @@
     <Compile Include="Math\Vector4.cs" />
     <Compile Include="Texture3D.cs" />
     <Compile Include="TextureCube.cs" />
+    <Compile Include="Time.cs" />
     <Compile Include="VirtualInput.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
