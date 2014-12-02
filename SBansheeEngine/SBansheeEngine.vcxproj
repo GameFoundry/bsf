@@ -272,6 +272,7 @@
     <ClInclude Include="Include\BsScriptGUILabel.h" />
     <ClInclude Include="Include\BsScriptGUILayout.h" />
     <ClInclude Include="Include\BsScriptGUIListBox.h" />
+    <ClInclude Include="Include\BsScriptGUIRenderTexture.h" />
     <ClInclude Include="Include\BsScriptGUIScrollArea.h" />
     <ClInclude Include="Include\BsScriptGUITexture.h" />
     <ClInclude Include="Include\BsScriptGUIToggle.h" />
@@ -339,6 +340,7 @@
     <ClCompile Include="Source\BsScriptGUILabel.cpp" />
     <ClCompile Include="Source\BsScriptGUILayout.cpp" />
     <ClCompile Include="Source\BsScriptGUIListBox.cpp" />
+    <ClCompile Include="Source\BsScriptGUIRenderTexture.cpp" />
     <ClCompile Include="Source\BsScriptGUIScrollArea.cpp" />
     <ClCompile Include="Source\BsScriptGUITexture.cpp" />
     <ClCompile Include="Source\BsScriptGUIToggle.cpp" />
