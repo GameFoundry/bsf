@@ -68,6 +68,11 @@ namespace BansheeEngine
 		 * @copydoc RTTIField::hasDynamicSize
 		 */
 		virtual bool hasDynamicSize() { return true; }
+
+		/**
+		 * @brief	Retrieves the RTTI object for the type the field contains.
+		 */
+		virtual RTTITypeBase* getType() = 0;
 	};
 
 	/**
@@ -239,6 +244,15 @@ namespace BansheeEngine
 		virtual const String& getRTTIName()
 		{
 			return DataType::getRTTIStatic()->getRTTIName();
+		}
+
+
+		/**
+		 * @copydoc RTTIReflectablePtrFieldBase::getType
+		 */
+		virtual RTTITypeBase* getType()
+		{
+			return DataType::getRTTIStatic();
 		}
 	};
 }

@@ -7,41 +7,10 @@
 2. Make sure material uses HShader
 3. Make sure material listens for HShader load event (derives from IResourceListener)
 4. Delay material initialization until its shader and gpu programs are fully loaded (keep the core thread sync there as is for now)
+--
+5. Make RenderTexture accept a HTexture
 
-Resource saving
- - Keep save as is, only the exact resource is saved without any dependencies
- - However to each resource append InternalResourceMeta as a header which keeps a
-   list of dependant resources which is generated whenever a resource is saved
-   (Use the method described below to find dependencies)
-
-Resource import
- - Extend Resource meta-data to contain a list of CONTAINED(not the same as dependant) resources
-   - So that ProjectLibrary knows to save that resource upon reimport
-
-Resource unload
- - Still unloads just a single resource
- - However refactor unloadUnused to be better (essentially a garbage collector):
-   - Find all resources referenced by the item we're unloading (Use method described below)
-   - Find ones that have no references left and unload them
-     - This is similar to what Unity does
-
-Resource load
- - Use the dependant resource list described above to find a list of assets to load (load the list synchronously)
- - Start loading all the assets using chosen method (sync/async)
-   - I'll have to disable/modify current method of loading resource handles as soon as they're deserialized
-     as they call load (sync) which will overwrite any async behavior.
- - Only when loading of all dependant resources is done should the resource handles be marked as loaded
-   (To prevent having loaded a Material but not its Shader)
- - Need to disable async loading for certain types (like SceneObject/Component and possibly others) - Just a flag in Resource
-
-I think I will most definitely need an utility method that walks entire scene hierarchy and returns all
-dependant resources (including from scripts)
- - Go over all RTTI fields recursively. Make sure to iterate over arrays and go inside IReflectable objects.
- - Refactor ManagedComponent and ManagedResource so they include a list of their fields in their RTTI
-   - They already do but currently it's only generated upon serialization. I need it to be available always and I'll probably want to decouple it from field values.
- - This way I find all fields using normal RTTI methods.
- - Possible problem: If RTTI has special callbacks for deserialization and its "get" method doesn't work without them. But deal with that on a case by case basis
-   - This might be a problem with managed obj serialization as its field data is generated in a callback, consider generating it in "get()" method instead.
+See GDrive/Resources doc for resources refactor
 
 -----------------
 
