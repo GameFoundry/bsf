@@ -12,7 +12,6 @@
 #include "BsEditorTestSuite.h"
 #include "BsTestOutput.h"
 #include "BsVirtualInput.h"
-#include "BsSceneCameraController.h"
 
 // DEBUG ONLY
 #include "BsTestTextSprite.h"
@@ -49,22 +48,6 @@ namespace BansheeEngine
 		mMenuBar->addSeparator(L"File");
 		mMenuBar->addMenuItem(L"File/Exit", nullptr);
 		mMenuBar->addMenuItem(L"Window/Scene", nullptr);
-
-		// Set up default editor input
-		auto inputConfig = VirtualInput::instance().getConfiguration();
-
-		inputConfig->registerButton(SceneCameraController::MOVE_FORWARD_BTN, BC_W);
-		inputConfig->registerButton(SceneCameraController::MOVE_BACKWARD_BTN, BC_S);
-		inputConfig->registerButton(SceneCameraController::MOVE_LEFT_BTN, BC_A);
-		inputConfig->registerButton(SceneCameraController::MOVE_RIGHT_BTN, BC_D);
-		inputConfig->registerButton(SceneCameraController::MOVE_FORWARD_BTN, BC_UP);
-		inputConfig->registerButton(SceneCameraController::MOVE_BACKWARD_BTN, BC_BACK);
-		inputConfig->registerButton(SceneCameraController::MOVE_LEFT_BTN, BC_LEFT);
-		inputConfig->registerButton(SceneCameraController::MOVE_RIGHT_BTN, BC_RIGHT);
-		inputConfig->registerButton(SceneCameraController::FAST_MOVE_BTN, BC_LSHIFT);
-		inputConfig->registerButton(SceneCameraController::ROTATE_BTN, BC_MOUSE_RIGHT);
-		inputConfig->registerAxis(SceneCameraController::HORIZONTAL_AXIS, VIRTUAL_AXIS_DESC((UINT32)InputAxis::MouseX));
-		inputConfig->registerAxis(SceneCameraController::VERTICAL_AXIS, VIRTUAL_AXIS_DESC((UINT32)InputAxis::MouseY));
 
 		//GameObjectHandle<TestTextSprite> textSprite = mSceneObject->addComponent<TestTextSprite>(mCamera->getViewport().get());
 

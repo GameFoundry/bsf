@@ -237,6 +237,7 @@
     <ClInclude Include="Include\BsGUIPanelContainer.h" />
     <ClInclude Include="Include\BsGUIResourceField.h" />
     <ClInclude Include="Include\BsScriptEditorPrerequisites.h" />
+    <ClInclude Include="Include\BsScriptEditorSettings.h" />
     <ClInclude Include="Include\BsScriptEditorUtility.h" />
     <ClInclude Include="Include\BsScriptEditorWindow.h" />
     <ClInclude Include="Include\BsScriptGizmoManager.h" />
@@ -262,6 +263,7 @@
     <ClInclude Include="Include\BsScriptHandleSliderManager.h" />
     <ClInclude Include="Include\BsScriptHandleSliderPlane.h" />
     <ClInclude Include="Include\BsScriptProjectLibrary.h" />
+    <ClInclude Include="Include\BsScriptSceneViewHandler.h" />
     <ClInclude Include="Include\BsScriptSelection.h" />
   </ItemGroup>
   <ItemGroup>
@@ -270,6 +272,7 @@
     <ClCompile Include="Source\BsGUIPanelContainer.cpp" />
     <ClCompile Include="Source\BsGUIResourceField.cpp" />
     <ClCompile Include="Source\BsScriptEditorPlugin.cpp" />
+    <ClCompile Include="Source\BsScriptEditorSettings.cpp" />
     <ClCompile Include="Source\BsScriptEditorUtility.cpp" />
     <ClCompile Include="Source\BsScriptEditorWindow.cpp" />
     <ClCompile Include="Source\BsScriptGizmoManager.cpp" />
@@ -295,6 +298,7 @@
     <ClCompile Include="Source\BsScriptHandleSliderManager.cpp" />
     <ClCompile Include="Source\BsScriptHandleSliderPlane.cpp" />
     <ClCompile Include="Source\BsScriptProjectLibrary.cpp" />
+    <ClCompile Include="Source\BsScriptSceneViewHandler.cpp" />
     <ClCompile Include="Source\BsScriptSelection.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

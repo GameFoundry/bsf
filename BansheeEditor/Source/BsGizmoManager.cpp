@@ -16,7 +16,6 @@
 #include "BsTransientMesh.h"
 #include "BsRendererManager.h"
 #include "BsDrawHelper.h"
-#include "BsSceneEditorWidget.h"
 
 using namespace std::placeholders;
 
@@ -236,49 +235,36 @@ namespace BansheeEngine
 		if (mIconMesh != nullptr)
 			mIconMeshHeap->dealloc(mIconMesh);
 
-		RenderTargetPtr rt;
-		SceneEditorWidget* sceneView = SceneViewLocator::instance();
-		if (sceneView != nullptr)
+		RenderTargetPtr rt = camera->getViewport()->getTarget();
+		IconRenderDataVecPtr iconRenderData;
+
+		mDrawHelper->buildMeshes();
+		const Vector<DrawHelper::ShapeMeshData>& meshes = mDrawHelper->getMeshes();
+
+		SPtr<MeshCoreBase> solidMesh = nullptr;
+		SPtr<MeshCoreBase> wireMesh = nullptr;
+		for (auto& meshData : meshes)
 		{
-			rt = camera->getViewport()->getTarget();
-
-			IconRenderDataVecPtr iconRenderData;
-
-			mDrawHelper->buildMeshes();
-			const Vector<DrawHelper::ShapeMeshData>& meshes = mDrawHelper->getMeshes();
-
-			SPtr<MeshCoreBase> solidMesh = nullptr;
-			SPtr<MeshCoreBase> wireMesh = nullptr;
-			for (auto& meshData : meshes)
+			if (meshData.type == DrawHelper::MeshType::Solid)
 			{
-				if (meshData.type == DrawHelper::MeshType::Solid)
-				{
-					if (solidMesh == nullptr)
-						solidMesh = meshData.mesh->getCore();
-				}
-				else // Wire
-				{
-					if (wireMesh == nullptr)
-						wireMesh = meshData.mesh->getCore();
-				}
+				if (solidMesh == nullptr)
+					solidMesh = meshData.mesh->getCore();
 			}
-
-			// Since there is no sorting used with draw helper meshes we only expect up to two of them,
-			// one for solids, one for wireframe
-			assert(meshes.size() <= 2);
-
-			mIconMesh = buildIconMesh(camera, mIconData, false, iconRenderData);
-			SPtr<MeshCoreBase> iconMesh = mIconMesh->getCore();
-
-			gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::updateData, mCore, rt, solidMesh, wireMesh, iconMesh, iconRenderData));
+			else // Wire
+			{
+				if (wireMesh == nullptr)
+					wireMesh = meshData.mesh->getCore();
+			}
 		}
-		else
-		{
-			mIconMesh = nullptr;
 
-			IconRenderDataVecPtr iconRenderData = bs_shared_ptr<IconRenderDataVec>();
-			gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::updateData, mCore, nullptr, nullptr, nullptr, nullptr, iconRenderData));
-		}
+		// Since there is no sorting used with draw helper meshes we only expect up to two of them,
+		// one for solids, one for wireframe
+		assert(meshes.size() <= 2);
+
+		mIconMesh = buildIconMesh(camera, mIconData, false, iconRenderData);
+		SPtr<MeshCoreBase> iconMesh = mIconMesh->getCore();
+
+		gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::updateData, mCore, rt, solidMesh, wireMesh, iconMesh, iconRenderData));
 	}
 
 	void GizmoManager::renderForPicking(const CameraHandlerPtr& camera, std::function<Color(UINT32)> idxToColorCallback)
@@ -411,6 +397,19 @@ namespace BansheeEngine
 		mDrawHelper->clear();
 
 		mCurrentIdx = 0;
+	}
+
+	void GizmoManager::clearRenderData()
+	{
+		mDrawHelper->clearMeshes();
+
+		if (mIconMesh != nullptr)
+			mIconMeshHeap->dealloc(mIconMesh);
+
+		mIconMesh = nullptr;
+
+		IconRenderDataVecPtr iconRenderData = bs_shared_ptr<IconRenderDataVec>();
+		gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::updateData, mCore, nullptr, nullptr, nullptr, nullptr, iconRenderData));
 	}
 
 	TransientMeshPtr GizmoManager::buildIconMesh(const CameraHandlerPtr& camera, const Vector<IconData>& iconData,

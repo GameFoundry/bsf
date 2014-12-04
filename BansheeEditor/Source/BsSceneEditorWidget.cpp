@@ -45,8 +45,6 @@ namespace BansheeEngine
 		:EditorWidget<SceneEditorWidget>(HString(L"SceneEditorWidget"), parentContainer), mGUIRenderTexture(nullptr), 
 		mLeftButtonPressed(false)
 	{
-		SceneViewLocator::_provide(this);
-
 		updateRenderTexture(getWidth(), getHeight());
 
 		mRenderCallback = RendererManager::instance().getActive()->onRenderViewport.connect(std::bind(&SceneEditorWidget::render, this, _1, _2));
@@ -67,7 +65,7 @@ namespace BansheeEngine
 		mOnPointerPressedConn.disconnect();
 		mOnPointerReleasedConn.disconnect();
 
-		SceneViewLocator::_provide(nullptr);
+		GizmoManager::instance().clearRenderData();
 	}
 
 	void SceneEditorWidget::_update()

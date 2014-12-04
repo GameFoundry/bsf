@@ -35,6 +35,7 @@ namespace BansheeEngine
 		void update(const CameraHandlerPtr& camera);
 		void renderForPicking(const CameraHandlerPtr& camera, std::function<Color(UINT32)> idxToColorCallback);
 		void clearGizmos();
+		void clearRenderData();
 
 		HSceneObject getSceneObject(UINT32 gizmoIdx);
 

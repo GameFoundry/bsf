@@ -1,17 +1,45 @@
-﻿using BansheeEngine;
+﻿using System;
+using BansheeEngine;
 
 namespace BansheeEditor
 {
     public sealed class Handles
     {
-        // TODO - Implement these properly by retrieving them from some user-toggled properly
-        public static bool MoveHandleSnapActive { get { return true; } }
-        public static bool RotateHandleSnapActive { get { return true; } }
-        public static bool ScaleHandleSnapActive { get { return true; } }
+        public static bool MoveHandleSnapActive
+        {
+            get { return EditorSettings.MoveHandleSnapActive; }
+            set { EditorSettings.MoveHandleSnapActive = value; }
+        }
 
-        public static float MoveSnapAmount { get { return 1.0f; /* TODO */ } }
-        public static float RotateSnapAmount { get { return 1.0f; /* TODO */ } }
-        public static float ScaleSnapAmount { get { return 1.0f; /* TODO */ } }
+        public static bool RotateHandleSnapActive
+        {
+            get { return EditorSettings.RotateHandleSnapActive; }
+            set { EditorSettings.RotateHandleSnapActive = value; }
+        }
+
+        public static bool ScaleHandleSnapActive
+        {
+            get { return EditorSettings.ScaleHandleSnapActive; }
+            set { EditorSettings.ScaleHandleSnapActive = value; }
+        }
+
+        public static float MoveSnapAmount
+        {
+            get { return EditorSettings.MoveHandleSnapAmount; }
+            set { EditorSettings.MoveHandleSnapAmount = value; }
+        }
+
+        public static Degree RotateSnapAmount
+        {
+            get { return EditorSettings.RotateHandleSnapAmount; }
+            set { EditorSettings.RotateHandleSnapAmount = value.GetDegrees(); }
+        }
+
+        public static float ScaleSnapAmount
+        {
+            get { return EditorSettings.ScaleHandleSnapAmount; }
+            set { EditorSettings.MoveHandleSnapAmount = value; }
+        }
 
         public static float SnapValue(float value, float snapAmount)
         {
@@ -22,9 +50,12 @@ namespace BansheeEditor
 
         public static float GetHandleSize(Camera camera, Vector3 position)
         {
-            // TODO 
+            Vector3 cameraPos = camera.sceneObject.Position;
 
-            return 1;
+		    Vector3 diff = position - cameraPos;
+		    float distAlongViewDir = Vector3.Dot(diff, camera.sceneObject.Rotation.Forward);
+
+		    return EditorSettings.DefaultHandleSize / Math.Max(distAlongViewDir, 0.0001f);
         }
     }
 }

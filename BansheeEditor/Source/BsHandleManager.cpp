@@ -1,9 +1,9 @@
 #include "BsHandleManager.h"
 #include "BsHandleDrawManager.h"
 #include "BsHandleSliderManager.h"
-#include "BsSceneEditorWidget.h"
 #include "BsCamera.h"
 #include "BsSceneObject.h"
+#include "BsEditorSettings.h"
 
 namespace BansheeEngine
 {
@@ -25,22 +25,34 @@ namespace BansheeEngine
 		return mSliderManager->isSliderActive();
 	}
 
-	void HandleManager::update(const CameraHandlerPtr& camera)
+	void HandleManager::update(const CameraHandlerPtr& camera, const Vector2I& inputPos)
 	{
+		if (mSettings != nullptr && mSettingsHash != mSettings->getHash())
+			updateFromProjectSettings();
+
+		refreshHandles();
+		mSliderManager->update(camera, inputPos);
+		triggerHandles();
+
 		queueDrawCommands();
 		mDrawManager->draw(camera);
 	}
 
-	bool HandleManager::hasHitHandle(const CameraHandlerPtr& camera, const Vector2I& inputPos) const
+	void HandleManager::updateFromProjectSettings()
 	{
-		return mSliderManager->hasHitSlider(camera, inputPos);
+		setDefaultHandleSize(mSettings->getHandleSize());
+
+		mSettingsHash = mSettings->getHash();
 	}
 
-	void HandleManager::handleInput(const CameraHandlerPtr& camera, const Vector2I& inputPos, bool pressed)
+	void HandleManager::trySelect(const CameraHandlerPtr& camera, const Vector2I& inputPos)
 	{
-		refreshHandles();
-		mSliderManager->handleInput(camera, inputPos, pressed);
-		triggerHandles();
+		return mSliderManager->trySelect(camera, inputPos);
+	}
+
+	void HandleManager::clearSelection()
+	{
+		return mSliderManager->clearSelection();
 	}
 
 	float HandleManager::getHandleSize(const CameraHandlerPtr& camera, const Vector3& handlePos) const

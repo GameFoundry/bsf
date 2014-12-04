@@ -6,21 +6,11 @@ namespace BansheeEditor
 {
     class ProgramEd
     {
-        private static InspectorWindow window;
-        private static Debug_Component1 dbgComponent;
+        private static EditorApplication app;
 
         static void Main()
         {
-            window = EditorWindow.OpenWindow<InspectorWindow>();
-
-            SceneObject newDbgObject = new SceneObject("NewDbgObject");
-            dbgComponent = newDbgObject.AddComponent<Debug_Component1>();
-            newDbgObject.AddComponent<Debug_Component2>();
-
-            window.SetObjectToInspect(newDbgObject);
-
-            SceneObject gizmoDbgObject = new SceneObject("GizmoDebug");
-            gizmoDbgObject.AddComponent<DbgGizmoComponent>();
+            app = new EditorApplication();
 
             DbgResource testResource = new DbgResource();
             //ProjectLibrary.Create(testResource, @"testResource");
@@ -43,10 +33,7 @@ namespace BansheeEditor
 
         static void EditorUpdate()
         {
-            window.Refresh();
-
-            if (dbgComponent != null)
-                dbgComponent.intArray[0] = dbgComponent.intArray[0] + 1;
+            app.EditorUpdate();
         }
     }
 

@@ -66,10 +66,18 @@ namespace BansheeEngine
 	class BS_SCR_BED_EXPORT ScriptEditorWidget : public EditorWidgetBase
 	{
 	public:
-		ScriptEditorWidget(const String& windowTypeName, const HString& displayName, EditorWidgetContainer& parentContainer);
+		ScriptEditorWidget(const String& windowTypeName, const HString& displayName, 
+			EditorWidgetContainer& parentContainer, MonoClass* monoClass, MonoObject* managedInstance);
 		~ScriptEditorWidget();
 
+		void update();
+
 	private:
+		typedef void(__stdcall *UpdateThunkDef) (MonoObject*, MonoException**);
+
 		String mWindowTypeName;
+		UpdateThunkDef mUpdateThunk;
+		MonoObject* mManagedInstance;
+		ScriptEditorWindow* mScriptParent;
 	};
 }

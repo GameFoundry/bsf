@@ -198,12 +198,6 @@
     <ClInclude Include="Include\BsGUIFoldout.h">
       <Filter>Header Files\Editor</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsSceneEditorWidget.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsSceneCameraController.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsSceneGrid.h">
       <Filter>Header Files\Editor</Filter>
     </ClInclude>
@@ -243,7 +237,10 @@
     <ClInclude Include="Include\BsEditorUtility.h">
       <Filter>Header Files\Editor</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsProjectSettings.h">
+    <ClInclude Include="Include\BsSceneViewHandler.h">
+      <Filter>Header Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsEditorSettings.h">
       <Filter>Header Files\Editor</Filter>
     </ClInclude>
   </ItemGroup>
@@ -301,9 +298,6 @@
     </ClCompile>
     <ClCompile Include="Source\BsGUISceneTreeView.cpp">
       <Filter>Source Files\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGUITreeViewEditBox.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsEditorCommand.cpp">
       <Filter>Source Files\Editor\Command</Filter>
@@ -392,12 +386,6 @@
     <ClCompile Include="Source\BsGUIFoldout.cpp">
       <Filter>Source Files\Editor</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsSceneEditorWidget.cpp">
-      <Filter>Source Files\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsSceneCameraController.cpp">
-      <Filter>Source Files\Editor</Filter>
-    </ClCompile>
     <ClCompile Include="Source\BsSceneGrid.cpp">
       <Filter>Source Files\Editor</Filter>
     </ClCompile>
@@ -406,9 +394,6 @@
     </ClCompile>
     <ClCompile Include="Source\BsScenePicking.cpp">
       <Filter>Source Files\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGizmoManager.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsSelection.cpp">
       <Filter>Source Files\Editor</Filter>
@@ -435,6 +420,18 @@
       <Filter>Source Files\Editor</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsEditorUtility.cpp">
+      <Filter>Source Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsSceneViewHandler.cpp">
+      <Filter>Source Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGizmoManager.cpp">
+      <Filter>Source Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUITreeViewEditBox.cpp">
+      <Filter>Source Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsEditorSettings.cpp">
       <Filter>Source Files\Editor</Filter>
     </ClCompile>
   </ItemGroup>

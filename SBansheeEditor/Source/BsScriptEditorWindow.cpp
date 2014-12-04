@@ -181,7 +181,7 @@ namespace BansheeEngine
 		String windowFullTypeName = MonoManager::instance().getFullTypeName(editorWindowInstance);
 		String displayName = MonoManager::instance().getTypeName(editorWindowInstance);
 
-		ScriptEditorWidget* editorWidget = bs_new<ScriptEditorWidget>(windowFullTypeName, HString(toWString(displayName)), parentContainer);
+		ScriptEditorWidget* editorWidget = bs_new<ScriptEditorWidget>(windowFullTypeName, HString(toWString(displayName)), parentContainer, editorWindowClass, editorWindowInstance);
 		ScriptEditorWindow* nativeInstance = new (bs_alloc<ScriptEditorWindow>()) ScriptEditorWindow(editorWindowInstance, windowFullTypeName, displayName, editorWidget);
 
 		ScriptEditorWindow::registerScriptEditorWindow(nativeInstance);
@@ -219,14 +219,33 @@ namespace BansheeEngine
 		}
 	}
 
-	ScriptEditorWidget::ScriptEditorWidget(const String& windowTypeName, const HString& displayName, EditorWidgetContainer& parentContainer)
-		:EditorWidgetBase(displayName, windowTypeName, parentContainer), mWindowTypeName(windowTypeName)
+	ScriptEditorWidget::ScriptEditorWidget(const String& windowTypeName, const HString& displayName, 
+		EditorWidgetContainer& parentContainer, MonoClass* monoClass, MonoObject* managedInstance)
+		:EditorWidgetBase(displayName, windowTypeName, parentContainer), 
+		mWindowTypeName(windowTypeName), mUpdateThunk(nullptr), mManagedInstance(managedInstance)
 	{
-		
+		MonoMethod* updateMethod = monoClass->getMethod("EditorUpdate", 0);
+
+		if (updateMethod != nullptr)
+			mUpdateThunk = (UpdateThunkDef)updateMethod->getThunk();
 	}
 
 	ScriptEditorWidget::~ScriptEditorWidget()
 	{
 		ScriptEditorWindow::unregisterScriptEditorWindow(mWindowTypeName);
+	}
+
+	void ScriptEditorWidget::update()
+	{
+		if (mUpdateThunk != nullptr && mManagedInstance != nullptr)
+		{
+			MonoException* exception = nullptr;
+
+			// Note: Not calling virtual methods. Can be easily done if needed but for now doing this
+			// for some extra speed.
+			mUpdateThunk(mManagedInstance, &exception);
+
+			MonoUtil::throwIfException(exception);
+		}
 	}
 }

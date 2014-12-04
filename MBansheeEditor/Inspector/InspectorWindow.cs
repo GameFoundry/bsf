@@ -55,7 +55,7 @@ namespace BansheeEditor
             RepositionInspectors();
         }
 
-        void OnComponentFoldoutToggled(InspectorData inspectorData, bool expanded)
+        private void OnComponentFoldoutToggled(InspectorData inspectorData, bool expanded)
         {
             inspectorData.expanded = expanded;
             inspectorData.inspector.SetVisible(expanded);
@@ -63,7 +63,7 @@ namespace BansheeEditor
             RepositionInspectors();
         }
 
-        internal void Refresh()
+        private void EditorUpdate()
         {
             bool anythingModified = false;
 

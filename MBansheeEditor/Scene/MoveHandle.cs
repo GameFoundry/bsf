@@ -68,7 +68,7 @@ namespace BansheeEditor
             else
                 HandleDrawing.SetColor(Color.red);
 
-            float handleSize = Handles.GetHandleSize(EditorApplication.sceneCamera, position);
+            float handleSize = Handles.GetHandleSize(EditorApplication.SceneViewCamera, position);
 
             HandleDrawing.DrawLine(center, xEnd - GetXDir() * CONE_HEIGHT, handleSize);
             HandleDrawing.DrawCone(xEnd - GetXDir() * CONE_HEIGHT, GetXDir(), CONE_HEIGHT, CONE_RADIUS, handleSize);

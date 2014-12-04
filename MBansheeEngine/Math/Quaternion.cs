@@ -72,6 +72,59 @@ namespace BansheeEngine
             }
         }
 
+        public Vector3 Right
+        {
+            get
+            {
+                float fTy = 2.0f*y;
+                float fTz = 2.0f*z;
+                float fTwy = fTy*w;
+                float fTwz = fTz*w;
+                float fTxy = fTy*x;
+                float fTxz = fTz*x;
+                float fTyy = fTy*y;
+                float fTzz = fTz*z;
+
+                return new Vector3(1.0f - (fTyy + fTzz), fTxy + fTwz, fTxz - fTwy);
+            }
+        }
+
+        public Vector3 Up
+        {
+            get
+            {
+                float fTx = 2.0f * x;
+                float fTy = 2.0f * y;
+                float fTz = 2.0f * z;
+                float fTwx = fTx * w;
+                float fTwz = fTz * w;
+                float fTxx = fTx * x;
+                float fTxy = fTy * x;
+                float fTyz = fTz * y;
+                float fTzz = fTz * z;
+
+                return new Vector3(fTxy - fTwz, 1.0f - (fTxx + fTzz), fTyz + fTwx);
+            }
+        }
+
+        public Vector3 Forward
+        {
+            get
+            {
+                float fTx = 2.0f * x;
+                float fTy = 2.0f * y;
+                float fTz = 2.0f * z;
+                float fTwx = fTx * w;
+                float fTwy = fTy * w;
+                float fTxx = fTx * x;
+                float fTxz = fTz * x;
+                float fTyy = fTy * y;
+                float fTyz = fTz * y;
+
+                return new Vector3(fTxz + fTwy, fTyz - fTwx, 1.0f - (fTxx + fTyy));
+            }
+        }
+
         public Quaternion(float x, float y, float z, float w)
         {
             this.x = x;

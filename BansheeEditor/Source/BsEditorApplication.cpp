@@ -10,7 +10,6 @@
 #include "BsPath.h"
 #include "BsResourceImporter.h"
 #include "BsEditorWidgetLayout.h"
-#include "BsSceneEditorWidget.h"
 #include "BsScenePicking.h"
 #include "BsSelection.h"
 #include "BsGizmoManager.h"
@@ -40,7 +39,7 @@
 #include "BsGUILayout.h"
 #include "BsEvent.h"
 #include "BsCoreRenderer.h"
-#include "BsProjectSettings.h"
+#include "BsEditorSettings.h"
 #include "BsMesh.h"
 
 namespace BansheeEngine
@@ -63,7 +62,7 @@ namespace BansheeEngine
 		mActiveRSPlugin(renderSystemPlugin), mSBansheeEditorPlugin(nullptr)
 	{
 		// TODO - Load project settings
-		mProjectSettings = bs_shared_ptr<ProjectSettings>();
+		mEditorSettings = bs_shared_ptr<EditorSettings>();
 
 		BuiltinEditorResources::startUp(renderSystemPlugin);
 
@@ -156,8 +155,6 @@ namespace BansheeEngine
 		EditorWidgetLayoutPtr layout = loadWidgetLayout();
 		if (layout != nullptr)
 			EditorWidgetManager::instance().setLayout(layout);
-
-		SceneEditorWidget::open();
 
 		/************************************************************************/
 		/* 								DEBUG CODE                      		*/

@@ -42,11 +42,11 @@ namespace BansheeEngine
 		GUIElement::destroy(mTitleBar);
 	}
 
-	void EditorWidgetContainer::_update()
+	void EditorWidgetContainer::update()
 	{
 		for (auto& widget : mWidgets)
 		{
-			widget.second->_update();
+			widget.second->update();
 		}
 	}
 

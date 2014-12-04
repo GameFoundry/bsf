@@ -305,7 +305,7 @@
     <ClInclude Include="Include\BsHandleSliderDisc.h" />
     <ClInclude Include="Include\BsHandleSliderLine.h" />
     <ClInclude Include="Include\BsHandleSliderPlane.h" />
-    <ClInclude Include="Include\BsProjectSettings.h" />
+    <ClInclude Include="Include\BsEditorSettings.h" />
     <ClInclude Include="Include\BsScenePicking.h" />
     <ClInclude Include="Include\BsProjectLibraryEntriesRTTI.h" />
     <ClInclude Include="Include\BsEditorPrerequisites.h" />
@@ -332,9 +332,8 @@
     <ClInclude Include="Include\BsProjectResourceMetaRTTI.h" />
     <ClInclude Include="Include\BsGUIVector2Field.h" />
     <ClInclude Include="Include\BsResourceImporter.h" />
-    <ClInclude Include="Include\BsSceneCameraController.h" />
-    <ClInclude Include="Include\BsSceneEditorWidget.h" />
     <ClInclude Include="Include\BsSceneGrid.h" />
+    <ClInclude Include="Include\BsSceneViewHandler.h" />
     <ClInclude Include="Include\BsSelection.h" />
     <ClInclude Include="Include\BsTestTextSprite.h" />
     <ClInclude Include="Include\DbgEditorWidget1.h" />
@@ -391,14 +390,14 @@
     <ClCompile Include="Source\BsHandleSliderLine.cpp" />
     <ClCompile Include="Source\BsHandleSliderPlane.cpp" />
     <ClCompile Include="Source\BsMainEditorWindow.cpp" />
+    <ClCompile Include="Source\BsEditorSettings.cpp" />
     <ClCompile Include="Source\BsScenePicking.cpp" />
     <ClCompile Include="Source\BsProjectLibrary.cpp" />
     <ClCompile Include="Source\BsProjectLibraryEntries.cpp" />
     <ClCompile Include="Source\BsProjectResourceMeta.cpp" />
     <ClCompile Include="Source\BsResourceImporter.cpp" />
-    <ClCompile Include="Source\BsSceneCameraController.cpp" />
-    <ClCompile Include="Source\BsSceneEditorWidget.cpp" />
     <ClCompile Include="Source\BsSceneGrid.cpp" />
+    <ClCompile Include="Source\BsSceneViewHandler.cpp" />
     <ClCompile Include="Source\BsSelection.cpp" />
     <ClCompile Include="Source\BsUndoRedo.cpp" />
     <ClCompile Include="Source\BsEditorApplication.cpp" />

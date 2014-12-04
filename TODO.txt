@@ -12,15 +12,17 @@
 
 See GDrive/Resources doc for resources refactor
 
+C# SceneView:
+Test new Scene window and fix every issue
+Add ProjectWindow and HierarchyWindow to C#
+ - Make TreeViews a C# element?
+Set up a default layout and save it
+
+Handle snapping is probably set up wrong. Handles.SnapValue seems to wrap a value instead of snapping, plus I might
+need to store the unsnapped amount somewhere until it reaches some amount worthy of snapping to next value
+
 -----------------
 
-Ensure that EditorWindow resize callback works properly.
- - Perhaps add OnResizeEnd callback that can be used for updating the render texture
-Create a C# wrapper around ProjectSettings
-Make a Script version of SceneEditorWindow
- - This would replace SceneEditorWidget so it would initialize scene grid and call
-    update on handle manager and scene grid, as well as apply ProjectSettings to them.
- 
 Move handle is buggy as hell - It moves in wrong direction sometimes, sometimes it skips, other times collision seems to be wrong
 Need a way to drag and drop items from Scene tree view to Scene view
 When dragging a handle make sure it works when cursor leaves the scene view
@@ -75,6 +77,7 @@ HandleSliderPlane/HandleSliderDisc
 STAGE 2
 Implement RotateHandle & ScaleHandle in C#
  - Nearest point to disc/arc code
+Add 2D move and scale
 Add free move, free rotate, free scale functionality
 Handles that remain the same size regardless of distance from camera
  - For both drawing and collision

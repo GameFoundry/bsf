@@ -24,30 +24,48 @@ namespace BansheeEngine
 
 	}
 
-	void HandleSliderManager::update(const CameraHandlerPtr& camera)
+	void HandleSliderManager::update(const CameraHandlerPtr& camera, const Vector2I& inputPos)
 	{
 		for (auto& slider : mSliders)
 			slider->update(camera);
+
+		if (mActiveSlider != nullptr)
+		{
+			Ray inputRay = camera->screenPointToRay(inputPos);
+			mActiveSlider->handleInput(camera, inputPos, inputRay);
+		}
+		else
+		{
+			HandleSlider* newHoverSlider = findUnderCursor(camera, inputPos);
+
+			if (newHoverSlider != mHoverSlider)
+			{
+				if (mHoverSlider != nullptr)
+				{
+					mHoverSlider->setInactive();
+					mHoverSlider = nullptr;
+				}
+
+				if (newHoverSlider != nullptr)
+				{
+					mHoverSlider = newHoverSlider;
+					mHoverSlider->setHover();
+				}
+			}
+		}
 	}
 
-	bool HandleSliderManager::hasHitSlider(const CameraHandlerPtr& camera, const Vector2I& inputPos) const
+	void HandleSliderManager::trySelect(const CameraHandlerPtr& camera, const Vector2I& inputPos)
 	{
-		Ray inputRay = camera->screenPointToRay(inputPos);
-		for (auto& slider : mSliders)
+		HandleSlider* newActiveSlider = findUnderCursor(camera, inputPos);
+
+		if (mHoverSlider != nullptr)
 		{
-			float t;
-			if (slider->intersects(inputRay, t))
-				return true;
+			mHoverSlider->setInactive();
+			mHoverSlider = nullptr;
 		}
 
-		return false;
-	}
-
-	void HandleSliderManager::handleInput(const CameraHandlerPtr& camera, const Vector2I& inputPos, bool pressed)
-	{
-		Ray inputRay = camera->screenPointToRay(inputPos);
-
-		if (!pressed)
+		if (newActiveSlider != mActiveSlider)
 		{
 			if (mActiveSlider != nullptr)
 			{
@@ -55,68 +73,44 @@ namespace BansheeEngine
 				mActiveSlider = nullptr;
 			}
 
-			float nearestT = std::numeric_limits<float>::max();
-			HandleSlider* overSlider = nullptr;
-			for (auto& slider : mSliders)
+			if (newActiveSlider != nullptr)
 			{
-				float t;
-				if (slider->intersects(inputRay, t))
-				{
-					if (t < nearestT)
-					{
-						overSlider = slider;
-						nearestT = t;
-					}
-				}
-			}
-
-			if (mHoverSlider != overSlider)
-			{
-				if (mHoverSlider != nullptr)
-					mHoverSlider->setInactive();
-
-				mHoverSlider = overSlider;
-
-				if (mHoverSlider != nullptr)
-					overSlider->setHover();
-			}
-		}
-		else
-		{
-			if (mActiveSlider == nullptr)
-			{
-				float nearestT = std::numeric_limits<float>::max();
-				HandleSlider* overSlider = nullptr;
-				for (auto& slider : mSliders)
-				{
-					float t;
-					if (slider->intersects(inputRay, t))
-					{
-						if (t < nearestT)
-						{
-							overSlider = slider;
-							nearestT = t;
-						}
-					}
-				}
-
-				if (overSlider != nullptr)
-				{
-					mActiveSlider = overSlider;
-					mActiveSlider->setActive(inputPos);
-				}
-			}
-
-			if (mActiveSlider != nullptr)
-			{
-				mActiveSlider->handleInput(camera, inputPos, inputRay);
+				mActiveSlider = newActiveSlider;
+				mActiveSlider->setActive(inputPos);
 			}
 		}
 	}
 
-	bool HandleSliderManager::isSliderActive() const
+	void HandleSliderManager::clearSelection()
 	{
-		return mActiveSlider != nullptr;
+		if (mActiveSlider != nullptr)
+		{
+			mActiveSlider->setInactive();
+			mActiveSlider = nullptr;
+		}
+	}
+
+	HandleSlider* HandleSliderManager::findUnderCursor(const CameraHandlerPtr& camera, const Vector2I& inputPos) const
+	{
+		Ray inputRay = camera->screenPointToRay(inputPos);
+
+		float nearestT = std::numeric_limits<float>::max();
+		HandleSlider* overSlider = nullptr;
+		
+		for (auto& slider : mSliders)
+		{
+			float t;
+			if (slider->intersects(inputRay, t))
+			{
+				if (t < nearestT)
+				{
+					overSlider = slider;
+					nearestT = t;
+				}
+			}
+		}
+
+		return overSlider;
 	}
 
 	void HandleSliderManager::_registerSlider(HandleSlider* slider)

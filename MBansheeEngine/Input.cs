@@ -111,6 +111,16 @@ namespace BansheeEngine
             return Internal_IsButtonDown(code, deviceIdx);
         }
 
+        public static Vector2I PointerPosition
+        {
+            get
+            {
+                Vector2I value;
+                Internal_GetPointerPosition(out value);
+                return value;
+            }
+        }
+
         private static void Internal_TriggerButtonDown(ButtonCode code, int deviceIdx)
         {
             ButtonEvent ev = new ButtonEvent(code, deviceIdx);
@@ -182,6 +192,9 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool Internal_IsButtonDown(ButtonCode keyCode, int deviceIdx);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_GetPointerPosition(out Vector2I position);
     }
 
     // Do not change IDs, must match ButtonCode C++ enum

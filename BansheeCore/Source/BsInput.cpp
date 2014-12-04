@@ -145,6 +145,8 @@ namespace BansheeEngine
 	{
 		if(!onPointerMoved.empty())
 			onPointerMoved(event);
+
+		mPointerPosition = event.screenPos;
 	}
 
 	void Input::cursorPressed(const PointerEvent& event)
@@ -217,6 +219,11 @@ namespace BansheeEngine
 			return false;
 
 		return mDevices[deviceIdx].keyStates[button & 0x0000FFFF] == ButtonState::ToggledOn;
+	}
+
+	Vector2I Input::getPointerPosition() const
+	{
+		return mPointerPosition;
 	}
 
 	void Input::setMouseSmoothing(bool enable)

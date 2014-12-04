@@ -21,7 +21,7 @@ namespace BansheeEngine
 
 	void EditorWindow::update()
 	{
-		mWidgets->_update();
+		mWidgets->update();
 	}
 
 	void EditorWindow::resized()

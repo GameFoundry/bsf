@@ -48,6 +48,7 @@
     <Compile Include="Debug_Component1.cs" />
     <Compile Include="Debug_Component2.cs" />
     <Compile Include="EditorApplication.cs" />
+    <Compile Include="EditorSettings.cs" />
     <Compile Include="EditorUtility.cs" />
     <Compile Include="EditorWindow.cs" />
     <Compile Include="GUI\GUIFoldout.cs" />
@@ -83,6 +84,7 @@
     <Compile Include="Inspector\Inspector.cs" />
     <Compile Include="Inspector\InspectorWindow.cs" />
     <Compile Include="Scene\SceneCamera.cs" />
+    <Compile Include="Scene\SceneViewHandler.cs" />
     <Compile Include="Scene\SceneWindow.cs" />
     <Compile Include="Scene\DefaultHandle.cs" />
     <Compile Include="Scene\DefaultHandleManager.cs" />

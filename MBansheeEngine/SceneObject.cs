@@ -191,6 +191,11 @@ namespace BansheeEngine
             return Internal_GetChild(mCachedPtr, idx);
         }
 
+        public void LookAt(Vector3 direction)
+        {
+            Internal_LookAt(mCachedPtr, direction, Vector3.yAxis);
+        }
+
         public void LookAt(Vector3 direction, Vector3 up)
         {
             Internal_LookAt(mCachedPtr, direction, up);

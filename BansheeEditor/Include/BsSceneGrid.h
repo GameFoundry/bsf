@@ -17,15 +17,21 @@ namespace BansheeEngine
 		void setSpacing(float spacing);
 		void setMajorAxisSpacing(UINT32 spacing);
 		void setAxisMarkerSpacing(UINT32 spacing);
+		void setSettings(const EditorSettingsPtr& settings);
 
-		void render(const CameraPtr& camera, DrawList& drawList);
+		void render(const CameraHandlerPtr& camera, DrawList& drawList);
+		void update();
 	private:
 		void updateGridMesh();
+		void updateFromProjectSettings();
 
 		HMesh mGridMesh;
 		HMaterial mGridMaterial;
 		MaterialParamMat4 mViewProjParam;
 		VertexDataDescPtr mVertexDesc;
+
+		EditorSettingsPtr mSettings;
+		UINT32 mSettingsHash = 0;
 
 		Vector3 mOrigin;
 		float mSpacing = 1.0f;

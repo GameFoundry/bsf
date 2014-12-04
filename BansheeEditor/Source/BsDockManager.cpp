@@ -396,7 +396,7 @@ namespace BansheeEngine
 		if (mIsLeaf)
 		{
 			if (mWidgets != nullptr)
-				mWidgets->_update();
+				mWidgets->update();
 		}
 		else
 		{

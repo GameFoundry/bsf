@@ -82,7 +82,7 @@ namespace BansheeEngine
 
 	}
 
-	void DbgEditorWidget1::_update()
+	void DbgEditorWidget1::update()
 	{
 		mSceneTreeView->update();
 		mResourceTreeView->update();

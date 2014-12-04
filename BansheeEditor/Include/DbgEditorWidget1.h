@@ -11,7 +11,7 @@ namespace BansheeEngine
 		DbgEditorWidget1(const ConstructPrivately& dummy, EditorWidgetContainer& parentContainer);
 		virtual ~DbgEditorWidget1();
 
-		virtual void _update();
+		virtual void update();
 
 		static DbgEditorWidget1* instance();
 		static DbgEditorWidget1* open();

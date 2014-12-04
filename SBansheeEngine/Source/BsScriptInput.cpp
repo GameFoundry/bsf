@@ -35,6 +35,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_IsButtonDown", &ScriptInput::internal_isButtonDown);
 		metaData.scriptClass->addInternalCall("Internal_IsButtonUp", &ScriptInput::internal_isButtonUp);
 		metaData.scriptClass->addInternalCall("Internal_GetAxisValue", &ScriptInput::internal_getAxisValue);
+		metaData.scriptClass->addInternalCall("Internal_GetPointerPosition", &ScriptInput::internal_getPointerPosition);
 
 		OnButtonPressedThunk = (OnButtonEventThunkDef)metaData.scriptClass->getMethodExact("Internal_TriggerButtonDown", "ButtonCode,int")->getThunk();
 		OnButtonReleasedThunk = (OnButtonEventThunkDef)metaData.scriptClass->getMethodExact("Internal_TriggerButtonUp", "ButtonCode,int")->getThunk();
@@ -151,5 +152,10 @@ namespace BansheeEngine
 	float ScriptInput::internal_getAxisValue(UINT32 axisType, UINT32 deviceIdx)
 	{
 		return Input::instance().getAxisValue(axisType, deviceIdx);
+	}
+
+	void ScriptInput::internal_getPointerPosition(Vector2I* position)
+	{
+		*position = Input::instance().getPointerPosition();
 	}
 }

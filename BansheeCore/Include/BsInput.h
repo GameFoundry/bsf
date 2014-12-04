@@ -132,6 +132,11 @@ namespace BansheeEngine
 		bool isButtonDown(ButtonCode keyCode, UINT32 deviceIdx = 0) const;
 
 		/**
+		 * @brief	Returns positions of the pointer (e.g. mouse cursor) relative to the screen.
+		 */
+		Vector2I getPointerPosition() const;
+
+		/**
 		 * @brief	Enables or disables mouse smoothing. Smoothing makes the changes to
 		 *			mouse axes more gradual.
 		 */
@@ -193,6 +198,7 @@ namespace BansheeEngine
 		std::shared_ptr<OSInputHandler> mOSInputHandler;
 
 		Vector<DeviceData> mDevices;
+		Vector2I mPointerPosition;
 
 		/************************************************************************/
 		/* 								STATICS		                      		*/

@@ -7,6 +7,7 @@
 #include "BsDrawList.h"
 #include "BsBuiltinEditorResources.h"
 #include "BsCamera.h"
+#include "BsEditorSettings.h"
 
 namespace BansheeEngine
 {
@@ -76,7 +77,19 @@ namespace BansheeEngine
 		}
 	}
 
-	void SceneGrid::render(const CameraPtr& camera, DrawList& drawList)
+	void SceneGrid::setSettings(const EditorSettingsPtr& settings)
+	{
+		mSettings = settings;
+		updateFromProjectSettings();
+	}
+
+	void SceneGrid::update()
+	{
+		if (mSettings != nullptr && mSettingsHash != mSettings->getHash())
+			updateFromProjectSettings();
+	}
+
+	void SceneGrid::render(const CameraHandlerPtr& camera, DrawList& drawList)
 	{
 		MaterialPtr mat = mGridMaterial.getInternalPtr();
 		MeshPtr mesh = mGridMesh.getInternalPtr();
@@ -88,6 +101,16 @@ namespace BansheeEngine
 		mViewProjParam.set(viewProjMatrix);
 
 		drawList.add(mat, mesh, 0, Vector3::ZERO);
+	}
+
+	void SceneGrid::updateFromProjectSettings()
+	{
+		setSize(mSettings->getGridSize());
+		setSpacing(mSettings->getGridSpacing());
+		setMajorAxisSpacing(mSettings->getGridMajorAxisSpacing());
+		setAxisMarkerSpacing(mSettings->getGridAxisMarkerSpacing());
+
+		mSettingsHash = mSettings->getHash();
 	}
 
 	void SceneGrid::updateGridMesh()

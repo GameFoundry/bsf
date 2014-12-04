@@ -62,6 +62,4 @@ namespace BansheeEngine
 		HEvent mOnPointerPressedConn;
 		HEvent mOnPointerReleasedConn;
 	};
-
-	typedef ServiceLocator<SceneEditorWidget> SceneViewLocator;
 }

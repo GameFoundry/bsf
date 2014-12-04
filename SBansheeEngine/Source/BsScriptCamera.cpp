@@ -27,6 +27,8 @@ namespace BansheeEngine
 
 	void ScriptCamera::initRuntimeData()
 	{
+		metaData.scriptClass->addInternalCall("Internal_Create", &ScriptCamera::internal_Create);
+
 		metaData.scriptClass->addInternalCall("Internal_GetAspect", &ScriptCamera::internal_GetAspect);
 		metaData.scriptClass->addInternalCall("Internal_SetAspect", &ScriptCamera::internal_GetAspect);
 		metaData.scriptClass->addInternalCall("Internal_GetNearClip", &ScriptCamera::internal_GetAspect);
@@ -111,6 +113,11 @@ namespace BansheeEngine
 
 			mLastUpdateHash = curHash;
 		}
+	}
+
+	void ScriptCamera::internal_Create(MonoObject* managedInstance)
+	{
+		ScriptCamera* nativeInstance = new (bs_alloc<ScriptCamera>()) ScriptCamera(managedInstance);
 	}
 
 	float ScriptCamera::internal_GetAspect(ScriptCamera* instance)

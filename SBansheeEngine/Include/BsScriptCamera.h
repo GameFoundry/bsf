@@ -18,11 +18,15 @@ namespace BansheeEngine
 	public:
 		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "Camera")
 
+		SPtr<CameraHandler> getHandler() const { return mCameraHandler; }
+
 	private:
 		ScriptCamera(MonoObject* managedInstance);
 		~ScriptCamera();
 
 		void updateView(const HSceneObject& parent);
+
+		static void internal_Create(MonoObject* managedInstance);
 
 		static float internal_GetAspect(ScriptCamera* instance);
 		static void internal_SetAspect(ScriptCamera* instance, float value);

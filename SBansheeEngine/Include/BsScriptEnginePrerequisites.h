@@ -39,6 +39,7 @@ namespace BansheeEngine
 	class ScriptManagedResource;
 	class ScriptRenderTarget;
 	class ScriptRenderTexture2D;
+	class ScriptCamera;
 	class ManagedComponent;
 	class ManagedSerializableFieldData;
 	class ManagedSerializableFieldKey;

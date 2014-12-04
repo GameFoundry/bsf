@@ -10,15 +10,17 @@ namespace BansheeEngine
 		HandleSliderManager();
 		~HandleSliderManager();
 
-		void update(const CameraHandlerPtr& camera);
-		bool hasHitSlider(const CameraHandlerPtr& camera, const Vector2I& inputPos) const;
-		void handleInput(const CameraHandlerPtr& camera, const Vector2I& inputPos, bool pressed);
-		bool isSliderActive() const;
+		void update(const CameraHandlerPtr& camera, const Vector2I& inputPos);
+		void trySelect(const CameraHandlerPtr& camera, const Vector2I& inputPos);
+		void clearSelection();
+		bool isSliderActive() const { return mActiveSlider != nullptr; }
 
 		void _registerSlider(HandleSlider* slider);
 		void _unregisterSlider(HandleSlider* slider);
 
 	private:
+		HandleSlider* findUnderCursor(const CameraHandlerPtr& camera, const Vector2I& inputPos) const;
+
 		HandleSlider* mActiveSlider;
 		HandleSlider* mHoverSlider;
 		UnorderedSet<HandleSlider*> mSliders;

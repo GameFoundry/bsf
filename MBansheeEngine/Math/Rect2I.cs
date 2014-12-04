@@ -27,6 +27,17 @@ namespace BansheeEngine
 			return !(lhs == rhs);
 		}
 
+	    public bool Contains(Vector2I point)
+	    {
+		    if(point.x >= x && point.x < (x + width))
+		    {
+			    if(point.y >= y && point.y < (y + height))
+				    return true;
+		    }
+
+		    return false;
+	    }
+
         public override bool Equals(object other)
         {
             if (!(other is Rect2I))

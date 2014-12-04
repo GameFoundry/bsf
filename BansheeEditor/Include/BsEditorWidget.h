@@ -32,7 +32,7 @@ namespace BansheeEngine
 
 		void close();
 
-		virtual void _update() { }
+		virtual void update() { }
 
 		Event<void(UINT32, UINT32)> onResized;
 		Event<void(INT32, INT32)> onMoved;

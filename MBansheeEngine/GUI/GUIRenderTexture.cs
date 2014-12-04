@@ -5,6 +5,26 @@ namespace BansheeEngine
 {
     public sealed class GUIRenderTexture : GUIElement
     {
+        private RenderTexture2D renderTexture;
+
+        public RenderTexture2D RenderTexture
+        {
+            get
+            {
+                return renderTexture;
+            }
+
+            set
+            {
+                IntPtr texturePtr = IntPtr.Zero;
+                if (value != null)
+                    texturePtr = value.GetCachedPtr();
+
+                renderTexture = value;
+                Internal_SetTexture(mCachedPtr, texturePtr);
+            }
+        }
+
         public GUIRenderTexture(RenderTexture2D texture, string style, params GUIOption[] options)
         {
             IntPtr texturePtr = IntPtr.Zero;
@@ -21,15 +41,6 @@ namespace BansheeEngine
                 texturePtr = texture.GetCachedPtr();
 
             Internal_CreateInstance(this, texturePtr, "", options);
-        }
-
-        public void SetTexture(RenderTexture2D texture)
-        {
-            IntPtr texturePtr = IntPtr.Zero;
-            if (texture != null)
-                texturePtr = texture.GetCachedPtr();
-
-            Internal_SetTexture(mCachedPtr, texturePtr);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
