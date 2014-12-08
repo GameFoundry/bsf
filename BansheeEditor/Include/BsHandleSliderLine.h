@@ -14,17 +14,22 @@ namespace BansheeEngine
 		~HandleSliderLine();
 
 		bool intersects(const Ray& ray, float& t) const;
-		void handleInput(const CameraHandlerPtr& camera, const Vector2I& pointerPos, const Ray& ray);
+		void handleInput(const CameraHandlerPtr& camera, const Vector2I& inputDelta);
 
-		Vector3 getNewPosition() const;
+		float getDelta() const { return mDelta; }
 
 	protected:
+		void activate(const CameraHandlerPtr& camera, const Vector2I& pointerPos) { mStartPosition = getPosition(); }
+		void reset() { mDelta = 0.0f; }
 
 		static const float CAPSULE_RADIUS;
 		static const float SPHERE_RADIUS;
 
 		Vector3 mDirection;
 		float mLength;
+
+		float mDelta;
+		Vector3 mStartPosition;
 
 		Capsule mCapsuleCollider;
 		Sphere mSphereCollider;

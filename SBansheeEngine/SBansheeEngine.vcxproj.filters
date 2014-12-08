@@ -216,9 +216,6 @@
     <ClInclude Include="Include\BsScriptSerializableDictionary.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsScriptCamera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsScriptInput.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -272,6 +269,9 @@
     </ClInclude>
     <ClInclude Include="Include\BsScriptGUIRenderTexture.h">
       <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptCameraHandler.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -422,9 +422,6 @@
     <ClCompile Include="Source\BsScriptSerializableDictionary.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsScriptCamera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\BsScriptInput.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -478,6 +475,9 @@
     </ClCompile>
     <ClCompile Include="Source\BsScriptGUIRenderTexture.cpp">
       <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptCameraHandler.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

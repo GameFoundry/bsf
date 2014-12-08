@@ -22,23 +22,10 @@ namespace BansheeEditor
             }
         }
 
-        public Vector3 NewPosition
-        {
-            get
-            {
-                Vector3 value;
-                Internal_GetNewPosition(mCachedPtr, out value);
-                return value;
-            }
-        }
-
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateInstance(HandleSliderLine instance, Vector3 direction, float length, bool fixedScale);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetDelta(IntPtr nativeInstance, out float value);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_GetNewPosition(IntPtr nativeInstance, out Vector3 value);
     }
 }

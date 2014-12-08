@@ -99,6 +99,8 @@ namespace BansheeEngine
 		BS_MUTEX(mOSInputMutex);
 		Vector2I mLastCursorPos;
 		Vector2I mCursorPosition;
+		Vector2I mDelta;
+		bool mLastCursorPosSet;
 		float mMouseScroll;
 		WString mInputString;
 		Queue<ButtonStateChange> mButtonStates;

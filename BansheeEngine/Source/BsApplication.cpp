@@ -11,6 +11,7 @@
 #include "BsSceneManager.h"
 #include "BsSceneObject.h"
 #include "BsCursor.h"
+#include "BsCoreThread.h"
 
 namespace BansheeEngine
 {
@@ -63,6 +64,10 @@ namespace BansheeEngine
 		unloadPlugin(mMonoPlugin);
 #endif
 
+		// Cleanup any new objects queued for destruction by unloaded scripts
+		gCoreThread().update();
+		gCoreThread().submitAccessors(true);
+
 		Cursor::shutDown();
 
 		GUIMaterialManager::instance().clearMaterials();
@@ -95,7 +100,7 @@ namespace BansheeEngine
 		PROFILE_CALL(GUIManager::instance().update(), "GUI");
 	}
 
-	const ViewportPtr& Application::getPrimaryViewport() const
+	ViewportPtr Application::getPrimaryViewport() const
 	{
 		// TODO - Need a way to determine primary viewport!
 		return nullptr;

@@ -21,7 +21,7 @@ namespace BansheeEngine
 		virtual ~HandleSlider() { }
 
 		virtual bool intersects(const Ray& ray, float& t) const = 0;
-		virtual void handleInput(const CameraHandlerPtr& camera, const Vector2I& pointerPos, const Ray& ray) = 0;
+		virtual void handleInput(const CameraHandlerPtr& camera, const Vector2I& inputDelta) = 0;
 		void update(const CameraHandlerPtr& camera);
 
 		State getState() const { return mState; }
@@ -35,19 +35,18 @@ namespace BansheeEngine
 		const Quaternion& getRotation() const { return mRotation; }
 		const Vector3& getScale() const { return mScale; }
 
-		float getDelta() const;
-		void reset();
-
 	protected:
 		friend class HandleSliderManager;
 
-		void setInactive() { mState = State::Inactive; reset(); }
-		void setActive(const Vector2I& pointerPos) { mState = State::Active; mLastPointerPos = pointerPos; }
-		void setHover() { mState = State::Hover; reset(); }
+		void setInactive();
+		void setActive(const CameraHandlerPtr& camera, const Vector2I& pointerPos);
+		void setHover();
 
 		const Matrix4& getTransform() const;
 		const Matrix4& getTransformInv() const;
 
+		virtual void activate(const CameraHandlerPtr& camera, const Vector2I& pointerPos) { }
+		virtual void reset() { }
 		virtual void updateCachedTransform() const;
 
 		float calcDelta(const CameraHandlerPtr& camera, const Vector3& position, const Vector3& direction,
@@ -60,12 +59,9 @@ namespace BansheeEngine
 		Vector3 mScale;
 		float mDistanceScale;
 
-		Vector2I mLastPointerPos;
-		Vector2I mCurPointerPos;
+		Vector2I mStartPointerPos;
+		Vector2I mCurrentPointerPos;
 		State mState;
-
-		float mDelta;
-		bool mHasLastPos;
 
 		mutable bool mTransformDirty;
 		mutable Matrix4 mTransform;

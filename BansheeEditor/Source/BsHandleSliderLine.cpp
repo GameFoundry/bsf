@@ -12,7 +12,7 @@ namespace BansheeEngine
 	const float HandleSliderLine::SPHERE_RADIUS = 0.2f;
 
 	HandleSliderLine::HandleSliderLine(const Vector3& direction, float length, bool fixedScale)
-		:HandleSlider(fixedScale), mLength(length)
+		:HandleSlider(fixedScale), mLength(length), mDelta(0.0f)
 	{
 		mDirection = Vector3::normalize(direction);
 
@@ -63,21 +63,11 @@ namespace BansheeEngine
 		return gotIntersect;
 	}
 
-	void HandleSliderLine::handleInput(const CameraHandlerPtr& camera, const Vector2I& pointerPos, const Ray& ray)
+	void HandleSliderLine::handleInput(const CameraHandlerPtr& camera, const Vector2I& inputDelta)
 	{
 		assert(getState() == State::Active);
 
-		mLastPointerPos = mCurPointerPos;
-		mCurPointerPos = pointerPos;
-
-		if (mHasLastPos)
-			mDelta = calcDelta(camera, getPosition(), mDirection, mLastPointerPos, mCurPointerPos);
-
-		mHasLastPos = true;
-	}
-
-	Vector3 HandleSliderLine::getNewPosition() const
-	{
-		return getPosition() + mDirection * getDelta();
+		mCurrentPointerPos += inputDelta;
+		mDelta = calcDelta(camera, mStartPosition, getTransform().multiplyAffine(mDirection), mStartPointerPos, mCurrentPointerPos);
 	}
 }

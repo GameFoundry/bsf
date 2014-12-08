@@ -10,14 +10,14 @@ namespace BansheeEditor
 {
     internal sealed class SceneViewHandler : ScriptObject
     {
-        internal SceneViewHandler(Camera sceneCamera)
+        internal SceneViewHandler(EditorWindow parent, Camera sceneCamera)
         {
-            Internal_Create(this, sceneCamera.GetCachedPtr());
+            Internal_Create(this, parent.GetCachedPtr(), sceneCamera.Handler.GetCachedPtr());
         }
 
-        internal void Update(Vector2I pointerPos)
+        internal void Update(Vector2I pointerPos, Vector2I inputDelta)
         {
-            Internal_Update(mCachedPtr, pointerPos);
+            Internal_Update(mCachedPtr, pointerPos, inputDelta);
         }
 
         internal void PointerPressed(Vector2I pointerPos)
@@ -31,10 +31,10 @@ namespace BansheeEditor
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_Create(SceneViewHandler managedInstance, IntPtr camera);
+        private static extern void Internal_Create(SceneViewHandler managedInstance, IntPtr parentWindow, IntPtr camera);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_Update(IntPtr thisPtr, Vector2I pointerPos);
+        private static extern void Internal_Update(IntPtr thisPtr, Vector2I pointerPos, Vector2I inputDelta);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_PointerPressed(IntPtr thisPtr, Vector2I pointerPos);

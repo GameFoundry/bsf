@@ -312,6 +312,7 @@ namespace BansheeEngine
 		}
 
 		Vector2I screenPos; /**< Screen position where the input event occurred. */
+		Vector2I delta; /**< Change in movement since last sent event. */
 		bool buttonStates[(UINT32)PointerEventButton::Count]; /**< States of the pointer buttons (e.g. mouse buttons). */
 		PointerEventButton button; /**< Button that triggered the pointer event. Might be irrelevant 
 										depending on event type. (e.g. move events don't correspond to a button. */

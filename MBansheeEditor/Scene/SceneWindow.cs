@@ -16,6 +16,8 @@ namespace BansheeEditor
         private GUIRenderTexture renderTextureGUI;
         private SceneViewHandler sceneViewHandler;
 
+        private bool dragActive;
+
         public Camera GetCamera()
         {
             return camera;
@@ -24,9 +26,6 @@ namespace BansheeEditor
         internal SceneWindow()
         {
             UpdateRenderTexture(Width, Height);
-
-            Input.OnPointerPressed += OnPointerPressed;
-            Input.OnPointerReleased += OnPointerReleased;
         }
 
         private bool ScreenToScenePos(Vector2I screenPos, out Vector2I scenePos)
@@ -48,21 +47,35 @@ namespace BansheeEditor
 
         private void EditorUpdate()
         {
-            Vector2I scenePos;
-            if (ScreenToScenePos(Input.PointerPosition, out scenePos))
+            if (Input.IsButtonDown(ButtonCode.MouseLeft))
             {
-                sceneViewHandler.Update(scenePos);
+                sceneViewHandler.PointerPressed(Input.PointerPosition);
+
+                Vector2I scenePos;
+                if (ScreenToScenePos(Input.PointerPosition, out scenePos))
+                    dragActive = true;
             }
-        }
+            else if (Input.IsButtonUp(ButtonCode.MouseLeft))
+            {
+                bool ctrlHeld = Input.IsButtonHeld(ButtonCode.LeftControl) || Input.IsButtonHeld(ButtonCode.RightControl);
+                sceneViewHandler.PointerReleased(Input.PointerPosition, ctrlHeld);
+                dragActive = false;
+            }
 
-        private void OnPointerPressed(PointerEvent ev)
-        {
-            sceneViewHandler.PointerPressed(ev.ScreenPos);
-        }
-
-        private void OnPointerReleased(PointerEvent ev)
-        {
-            sceneViewHandler.PointerReleased(ev.ScreenPos, ev.Control);
+            if (dragActive)
+            {
+                Vector2I scenePos;
+                ScreenToScenePos(Input.PointerPosition, out scenePos);
+                sceneViewHandler.Update(scenePos, Input.PointerDelta);
+            }
+            else
+            {
+                Vector2I scenePos;
+                if (ScreenToScenePos(Input.PointerPosition, out scenePos))
+                {
+                    sceneViewHandler.Update(scenePos, Input.PointerDelta);
+                }
+            }
         }
 
         protected override void WindowResized(int width, int height)
@@ -99,7 +112,7 @@ namespace BansheeEditor
                 renderTextureGUI = new GUIRenderTexture(renderTexture);
 		        GUI.layout.AddElement(renderTextureGUI);
 
-		        sceneViewHandler = new SceneViewHandler(camera);
+		        sceneViewHandler = new SceneViewHandler(this, camera);
 		    }
 		    else
 		    {

@@ -6,6 +6,16 @@ namespace BansheeEngine
 	inline Radian::Radian (const Degree& d) : mRad(d.valueRadians()) 
 	{ }
 
+	inline Radian Radian::wrap()
+	{
+		mRad = fmod(mRad, Math::TWO_PI);
+
+		if (mRad < 0)
+			mRad += Math::TWO_PI;
+
+		return *this;
+	}
+
 	inline Radian& Radian::operator= (const Degree& d) 
 	{
 		mRad = d.valueRadians(); 

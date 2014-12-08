@@ -155,8 +155,12 @@ namespace BansheeEngine
 
 	SPtr<CoreObjectCore> Viewport::createCore() const
 	{
+		SPtr<RenderTargetCore> targetCore;
+		if (mTarget != nullptr)
+			targetCore = mTarget->getCore();
+
 		ViewportCore* viewport = new (bs_alloc<Viewport>()) 
-			ViewportCore(mTarget->getCore(), mNormArea.x, mNormArea.y, mNormArea.width, mNormArea.height);
+			ViewportCore(targetCore, mNormArea.x, mNormArea.y, mNormArea.width, mNormArea.height);
 
 		SPtr<ViewportCore> viewportPtr = bs_shared_ptr<ViewportCore, GenAlloc>(viewport);
 		viewportPtr->_setThisPtr(viewportPtr);

@@ -19,9 +19,7 @@ namespace BansheeEngine
 
 	private:
 		static void internal_CreateInstance(MonoObject* instance, Vector3 dir1, Vector3 dir2, float length, bool fixedScale);
-		static void internal_GetDelta(ScriptHandleSliderPlane* nativeInstance, float* value);
-		static void internal_GetDeltaDirection(ScriptHandleSliderPlane* nativeInstance, Vector3* value);
-		static void internal_GetNewPosition(ScriptHandleSliderPlane* nativeInstance, Vector3* value);
+		static void internal_GetDelta(ScriptHandleSliderPlane* nativeInstance, Vector2* value);
 
 		ScriptHandleSliderPlane(MonoObject* instance, const Vector3& dir1, const Vector3& dir2, float length, bool fixedScale);
 		~ScriptHandleSliderPlane();

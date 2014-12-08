@@ -33,36 +33,39 @@ namespace BansheeEngine
 
     public struct PointerEvent
     {
-        internal Vector2I screenPos;
-        internal PointerEventButton button;
+        internal Vector2I _screenPos;
+        internal Vector2I _delta;
+        internal PointerEventButton _button;
 
-        internal bool shift;
-        internal bool control;
-        internal bool alt;
+        internal bool _shift;
+        internal bool _control;
+        internal bool _alt;
 
-        internal float mouseWheelScrollAmount;
+        internal float _mouseWheelScrollAmount;
 
-        internal PointerEvent(Vector2I screenPos, PointerEventButton button,
+        internal PointerEvent(Vector2I screenPos, Vector2I delta, PointerEventButton button,
             bool shift, bool control, bool alt, float mouseWheelScrollAmount)
         {
-            this.screenPos = screenPos;
-            this.button = button;
+            _screenPos = screenPos;
+            _delta = delta;
+            _button = button;
 
-            this.shift = shift;
-            this.control = control;
-            this.alt = alt;
+            _shift = shift;
+            _control = control;
+            _alt = alt;
 
-            this.mouseWheelScrollAmount = mouseWheelScrollAmount;
+            _mouseWheelScrollAmount = mouseWheelScrollAmount;
         }
 
-        public Vector2I ScreenPos { get { return screenPos; } }
-        public PointerEventButton Button { get { return button; } }
+        public Vector2I screenPos { get { return _screenPos; } }
+        public Vector2I delta { get { return _delta; } }
+        public PointerEventButton button { get { return _button; } }
 
-        public bool Shift { get { return shift; } }
-        public bool Control { get { return control; } }
-        public bool Alt { get { return alt; } }
+        public bool shift { get { return _shift; } }
+        public bool control { get { return _control; } }
+        public bool alt { get { return _alt; } }
 
-        public float ScrollAmount { get { return mouseWheelScrollAmount; } }
+        public float scrollAmount { get { return _mouseWheelScrollAmount; } }
     }
 
     public struct TextInputEvent
@@ -121,6 +124,16 @@ namespace BansheeEngine
             }
         }
 
+        public static Vector2I PointerDelta
+        {
+            get
+            {
+                Vector2I value;
+                Internal_GetPointerDelta(out value);
+                return value;
+            }
+        }
+
         private static void Internal_TriggerButtonDown(ButtonCode code, int deviceIdx)
         {
             ButtonEvent ev = new ButtonEvent(code, deviceIdx);
@@ -145,37 +158,37 @@ namespace BansheeEngine
                 OnCharInput(ev);
         }
 
-        private static void Internal_TriggerPointerMove(Vector2I screenPos, PointerEventButton button, bool shift, 
+        private static void Internal_TriggerPointerMove(Vector2I screenPos, Vector2I delta, PointerEventButton button, bool shift, 
             bool ctrl, bool alt, float scrollAmount)
         {
-            PointerEvent ev = new PointerEvent(screenPos, button, shift, ctrl, alt, scrollAmount);
+            PointerEvent ev = new PointerEvent(screenPos, delta, button, shift, ctrl, alt, scrollAmount);
 
             if (OnPointerMoved != null)
                 OnPointerMoved(ev);
         }
 
-        private static void Internal_TriggerPointerPressed(Vector2I screenPos, PointerEventButton button, bool shift,
+        private static void Internal_TriggerPointerPressed(Vector2I screenPos, Vector2I delta, PointerEventButton button, bool shift,
             bool ctrl, bool alt, float scrollAmount)
         {
-            PointerEvent ev = new PointerEvent(screenPos, button, shift, ctrl, alt, scrollAmount);
+            PointerEvent ev = new PointerEvent(screenPos, delta, button, shift, ctrl, alt, scrollAmount);
 
             if (OnPointerPressed != null)
                 OnPointerPressed(ev);
         }
 
-        private static void Internal_TriggerPointerReleased(Vector2I screenPos, PointerEventButton button, bool shift,
+        private static void Internal_TriggerPointerReleased(Vector2I screenPos, Vector2I delta, PointerEventButton button, bool shift,
             bool ctrl, bool alt, float scrollAmount)
         {
-            PointerEvent ev = new PointerEvent(screenPos, button, shift, ctrl, alt, scrollAmount);
+            PointerEvent ev = new PointerEvent(screenPos, delta, button, shift, ctrl, alt, scrollAmount);
 
             if (OnPointerReleased != null)
                 OnPointerReleased(ev);
         }
 
-        private static void Internal_TriggerPointerDoubleClick(Vector2I screenPos, PointerEventButton button, bool shift,
+        private static void Internal_TriggerPointerDoubleClick(Vector2I screenPos, Vector2I delta, PointerEventButton button, bool shift,
             bool ctrl, bool alt, float scrollAmount)
         {
-            PointerEvent ev = new PointerEvent(screenPos, button, shift, ctrl, alt, scrollAmount);
+            PointerEvent ev = new PointerEvent(screenPos, delta, button, shift, ctrl, alt, scrollAmount);
 
             if (OnPointerDoubleClick != null)
                 OnPointerDoubleClick(ev);
@@ -195,6 +208,9 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetPointerPosition(out Vector2I position);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_GetPointerDelta(out Vector2I delta);
     }
 
     // Do not change IDs, must match ButtonCode C++ enum

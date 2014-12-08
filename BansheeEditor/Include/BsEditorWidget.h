@@ -17,6 +17,7 @@ namespace BansheeEngine
 		UINT32 getWidth() const { return mWidth; }
 		UINT32 getHeight() const { return mHeight; }
 		bool hasFocus() const { return mHasFocus; }
+		EditorWindowBase* getParentWindow() const;
 
 		void _setSize(UINT32 width, UINT32 height);
 		void _setPosition(INT32 x, INT32 y);

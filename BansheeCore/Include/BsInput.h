@@ -137,6 +137,11 @@ namespace BansheeEngine
 		Vector2I getPointerPosition() const;
 
 		/**
+		 * @brief	Returns difference between last and current pointer position.
+		 */
+		Vector2I getPointerDelta() const { return mPointerDelta; }
+
+		/**
 		 * @brief	Enables or disables mouse smoothing. Smoothing makes the changes to
 		 *			mouse axes more gradual.
 		 */
@@ -199,6 +204,8 @@ namespace BansheeEngine
 
 		Vector<DeviceData> mDevices;
 		Vector2I mPointerPosition;
+		Vector2I mPointerDelta;
+		bool mLastPositionSet;
 
 		/************************************************************************/
 		/* 								STATICS		                      		*/

@@ -25,13 +25,13 @@ namespace BansheeEngine
 		return mSliderManager->isSliderActive();
 	}
 
-	void HandleManager::update(const CameraHandlerPtr& camera, const Vector2I& inputPos)
+	void HandleManager::update(const CameraHandlerPtr& camera, const Vector2I& inputPos, const Vector2I& inputDelta)
 	{
 		if (mSettings != nullptr && mSettingsHash != mSettings->getHash())
 			updateFromProjectSettings();
 
 		refreshHandles();
-		mSliderManager->update(camera, inputPos);
+		mSliderManager->update(camera, inputPos, inputDelta);
 		triggerHandles();
 
 		queueDrawCommands();

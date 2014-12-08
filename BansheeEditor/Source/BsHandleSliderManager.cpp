@@ -24,15 +24,14 @@ namespace BansheeEngine
 
 	}
 
-	void HandleSliderManager::update(const CameraHandlerPtr& camera, const Vector2I& inputPos)
+	void HandleSliderManager::update(const CameraHandlerPtr& camera, const Vector2I& inputPos, const Vector2I& inputDelta)
 	{
 		for (auto& slider : mSliders)
 			slider->update(camera);
 
 		if (mActiveSlider != nullptr)
 		{
-			Ray inputRay = camera->screenPointToRay(inputPos);
-			mActiveSlider->handleInput(camera, inputPos, inputRay);
+			mActiveSlider->handleInput(camera, inputDelta);
 		}
 		else
 		{
@@ -76,7 +75,7 @@ namespace BansheeEngine
 			if (newActiveSlider != nullptr)
 			{
 				mActiveSlider = newActiveSlider;
-				mActiveSlider->setActive(inputPos);
+				mActiveSlider->setActive(camera, inputPos);
 			}
 		}
 	}

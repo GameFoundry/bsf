@@ -23,7 +23,7 @@ namespace BansheeEditor
 
         protected override void PostInput()
         {
-            target.sceneObject.Position = xAxis.NewPosition;
+            //target.sceneObject.Position = xAxis.NewPosition;
         }
 
         protected override void Draw()

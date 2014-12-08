@@ -10,7 +10,7 @@ namespace BansheeEngine
 		HandleSliderManager();
 		~HandleSliderManager();
 
-		void update(const CameraHandlerPtr& camera, const Vector2I& inputPos);
+		void update(const CameraHandlerPtr& camera, const Vector2I& inputPos, const Vector2I& inputDelta);
 		void trySelect(const CameraHandlerPtr& camera, const Vector2I& inputPos);
 		void clearSelection();
 		bool isSliderActive() const { return mActiveSlider != nullptr; }

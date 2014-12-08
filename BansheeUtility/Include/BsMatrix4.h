@@ -230,6 +230,28 @@ namespace BansheeEngine
                            m[0][3], m[1][3], m[2][3], m[3][3]);
         }
 
+		/**
+		 * @brief	Assigns the vector to a column of the matrix
+		 */
+		void setColumn(UINT32 idx, const Vector4& column)
+		{
+			m[0][idx] = column.x;
+			m[1][idx] = column.y;
+			m[2][idx] = column.z;
+			m[3][idx] = column.w;
+		}
+
+		/**
+		 * @brief	Assigns the vector to a row of the matrix
+		 */
+		void setRow(UINT32 idx, const Vector4& column)
+		{
+			m[idx][0] = column.x;
+			m[idx][1] = column.y;
+			m[idx][2] = column.z;
+			m[idx][3] = column.w;
+		}
+
         /**
          * @brief	Extracts the rotation/scaling part of the matrix as a 3x3 matrix.
          */

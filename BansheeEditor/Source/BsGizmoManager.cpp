@@ -715,6 +715,9 @@ namespace BansheeEngine
 
 	void GizmoManagerCore::render(const CameraHandlerCore& camera)
 	{
+		if (mSceneRenderTarget == nullptr)
+			return;
+
 		SPtr<RenderTargetCore> sceneRenderTarget = mSceneRenderTarget->getCore();
 
 		if (camera.getViewport()->getTarget() != sceneRenderTarget)

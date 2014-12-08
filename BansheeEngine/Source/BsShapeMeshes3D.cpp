@@ -928,19 +928,21 @@ namespace BansheeEngine
 	{
 		assert(numVertices >= 2);
 
+		startAngle += Degree(90.0f); // Offset so arc starts the same as trig functions
+
 		Vector3 normalizedUp = Vector3::normalize(up);
 		Vector3 right;
 
 		if (Math::abs(normalizedUp.dot(Vector3::UNIT_Z)) <= 0.95f)
-			right = normalizedUp.cross(Vector3::UNIT_Z);
+			right = Vector3::UNIT_Z.cross(normalizedUp);
 		else
-			right = normalizedUp.cross(Vector3::UNIT_Y);
+			right = Vector3::UNIT_Y.cross(normalizedUp);
 
 		right.normalize();
-		Quaternion moveToStart(up, startAngle);
+		Quaternion moveToStart(-up, startAngle);
 		Vector3 start = moveToStart.rotate(right);
 
-		Quaternion increment(up, angleAmount / (float)(numVertices - 1));
+		Quaternion increment(-up, angleAmount / (float)(numVertices - 1));
 
 		outVertices += vertexOffset * vertexStride;
 		Vector3 curDirection = start * radius;

@@ -239,6 +239,21 @@ namespace BansheeEngine
 			gProfilerCPU().endThread();
 			gProfiler()._update();
 		}
+
+		// Wait until last core frame is finished before exiting
+		{
+			BS_LOCK_MUTEX_NAMED(mFrameRenderingFinishedMutex, lock);
+
+			while (!mIsFrameRenderingFinished)
+			{
+				TaskScheduler::instance().addWorker();
+				BS_THREAD_WAIT(mFrameRenderingFinishedCondition, mFrameRenderingFinishedMutex, lock);
+				TaskScheduler::instance().removeWorker();
+			}
+		}
+
+		// One final sync in order to dealloc anything that was queued for sync from core
+		CoreObjectManager::instance().syncUpload(CoreObjectSync::Core);
 	}
 
 	void CoreApplication::update()

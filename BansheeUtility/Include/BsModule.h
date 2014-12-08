@@ -93,7 +93,7 @@ namespace BansheeEngine
 		 */
 		static void shutDown()
 		{
-			if (isShutDown())
+			if (isShutDown() || isDestroyed())
 			{
 				BS_EXCEPT(InternalErrorException, 
 					"Trying to shut down an already shut down module.");
@@ -102,7 +102,7 @@ namespace BansheeEngine
 			((Module*)_instance())->onShutDown();
 
 			bs_delete(_instance());
-			isShutDown() = true;
+			isDestroyed() = true;
 		}
 
 		/**

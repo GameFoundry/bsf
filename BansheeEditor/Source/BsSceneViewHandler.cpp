@@ -8,12 +8,16 @@
 #include "BsScenePicking.h"
 #include "BsCameraHandler.h"
 #include "BsEditorApplication.h"
+#include "BsEditorWidget.h"
+#include "BsEditorWindowBase.h"
+#include "BsRenderWindow.h"
+#include "BsCursor.h"
 
 using namespace std::placeholders;
 
 namespace BansheeEngine
 {
-	SceneViewHandler::SceneViewHandler(const SPtr<CameraHandler>& camera)
+	SceneViewHandler::SceneViewHandler(const EditorWidgetBase* parentWidget, const SPtr<CameraHandler>& camera)
 		:mCamera(camera), mSceneGrid(nullptr)
 	{
 		mRenderCallback = RendererManager::instance().getActive()->onRenderViewport.connect(std::bind(&SceneViewHandler::render, this, _1, _2));
@@ -26,13 +30,17 @@ namespace BansheeEngine
 		bs_delete(mSceneGrid);
 		mRenderCallback.disconnect();
 
-		GizmoManager::instance().clearRenderData();
+		if (GizmoManager::isStarted()) // If not active, we don't care
+			GizmoManager::instance().clearRenderData();
 	}
 
-	void SceneViewHandler::update(const Vector2I& position)
+	void SceneViewHandler::update(const Vector2I& position, const Vector2I& delta)
 	{
+		if (HandleManager::instance().isHandleActive())
+			wrapCursorToWindow();
+
 		GizmoManager::instance().update(mCamera);
-		HandleManager::instance().update(mCamera, position); // TODO - Make sure these internally check ProjectSettings
+		HandleManager::instance().update(mCamera, position, delta);
 		mSceneGrid->update();
 	}
 
@@ -86,5 +94,26 @@ namespace BansheeEngine
 			return;
 
 		mSceneGrid->render(mCamera, drawList);
+	}
+
+	void SceneViewHandler::wrapCursorToWindow()
+	{
+		RenderWindowPtr parentWindow = mParentWidget->getParentWindow()->_getRenderWindow();
+
+		Vector2I windowPos = parentWindow->screenToWindowPos(Cursor::instance().getScreenPosition());
+		const RenderWindowProperties& rwProps = parentWindow->getProperties();
+
+		if (windowPos.x < 0)
+			windowPos.x += rwProps.getWidth();
+		else if (windowPos.x >= (INT32)rwProps.getWidth())
+			windowPos.x -= rwProps.getWidth();
+
+		if (windowPos.y < 0)
+			windowPos.y += rwProps.getHeight();
+		else if (windowPos.y >= (INT32)rwProps.getHeight())
+			windowPos.y -= rwProps.getHeight();
+
+		Vector2I wrappedScreenPos = parentWindow->windowToScreenPos(windowPos);
+		Cursor::instance().setScreenPosition(wrappedScreenPos);
 	}
 }

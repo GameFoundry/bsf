@@ -19,6 +19,7 @@ namespace BansheeEngine
 	}
 
 	Input::Input()
+		:mLastPositionSet(false)
 	{ 
 		mOSInputHandler = bs_shared_ptr<OSInputHandler>();
 
@@ -146,7 +147,11 @@ namespace BansheeEngine
 		if(!onPointerMoved.empty())
 			onPointerMoved(event);
 
+		if (mLastPositionSet)
+			mPointerDelta = event.screenPos - mPointerPosition;
+
 		mPointerPosition = event.screenPos;
+		mLastPositionSet = true;
 	}
 
 	void Input::cursorPressed(const PointerEvent& event)

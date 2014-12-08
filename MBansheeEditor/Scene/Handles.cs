@@ -43,9 +43,10 @@ namespace BansheeEditor
 
         public static float SnapValue(float value, float snapAmount)
         {
-            int intValue = MathEx.FloorToInt(value/snapAmount);
+            if (snapAmount > 0)
+                return MathEx.RoundToInt(value / snapAmount) * snapAmount;
 
-            return value - intValue*snapAmount;
+            return value;
         }
 
         public static float GetHandleSize(Camera camera, Vector3 position)

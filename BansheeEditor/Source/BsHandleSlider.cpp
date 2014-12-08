@@ -6,7 +6,7 @@ namespace BansheeEngine
 {
 	HandleSlider::HandleSlider(bool fixedScale)
 		:mFixedScale(fixedScale), mScale(Vector3::ONE), mTransformDirty(true),
-		mDistanceScale(1.0f), mDelta(0.0f), mHasLastPos(false)
+		mDistanceScale(1.0f)
 	{
 
 	}
@@ -62,15 +62,24 @@ namespace BansheeEngine
 		mTransformDirty = false;
 	}
 
-	void HandleSlider::reset()
-	{
-		mDelta = 0.0f;
-		mHasLastPos = false;
+	void HandleSlider::setInactive() 
+	{ 
+		mState = State::Inactive; 
+		reset(); 
 	}
 
-	float HandleSlider::getDelta() const
-	{
-		return mDelta;
+	void HandleSlider::setActive(const CameraHandlerPtr& camera, const Vector2I& pointerPos)
+	{ 
+		mState = State::Active; 
+		mStartPointerPos = pointerPos; 
+		mCurrentPointerPos = pointerPos;
+		activate(camera, pointerPos);
+	}
+
+	void HandleSlider::setHover() 
+	{ 
+		mState = State::Hover; 
+		reset(); 
 	}
 
 	float HandleSlider::calcDelta(const CameraHandlerPtr& camera, const Vector3& position, const Vector3& direction,

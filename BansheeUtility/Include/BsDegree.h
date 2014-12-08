@@ -25,6 +25,11 @@ namespace BansheeEngine
 		float valueDegrees() const { return mDeg; }
 		float valueRadians() const;
 
+		/**
+		 * @brief  Wraps the angle in [0, 360) range
+		 */
+		Degree wrap();
+
 		const Degree& operator+ () const { return *this; }
 		Degree operator+ (const Degree& d) const { return Degree (mDeg + d.mDeg); }
 		Degree operator+ (const Radian& r) const;

@@ -33,5 +33,7 @@ namespace BansheeEditor
         {
             Draw();
         }
+
+        internal abstract bool IsDragged();
     }
 }

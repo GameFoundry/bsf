@@ -9,6 +9,11 @@ namespace BansheeEditor
 
         }
 
+        internal override bool IsDragged()
+        {
+            return false;
+        }
+
         protected override void PreInput()
         {
 

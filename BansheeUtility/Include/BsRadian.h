@@ -25,6 +25,11 @@ namespace BansheeEngine
 		float valueDegrees() const;
 		float valueRadians() const { return mRad; }
 
+		/**
+		 * @brief  Wraps the angle in [0, 2 *  PI) range
+		 */
+		Radian wrap();
+
         const Radian& operator+ () const { return *this; }
 		Radian operator+ (const Radian& r) const { return Radian (mRad + r.mRad); }
 		Radian operator+ (const Degree& d) const;

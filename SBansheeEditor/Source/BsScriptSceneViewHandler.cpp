@@ -3,14 +3,17 @@
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
 #include "BsSceneViewHandler.h"
-#include "BsScriptCamera.h"
+#include "BsScriptCameraHandler.h"
+#include "BsScriptEditorWindow.h"
+#include "BsEditorWidgetContainer.h"
+#include "BsEditorWindowBase.h"
 
 namespace BansheeEngine
 {
-	ScriptSceneViewHandler::ScriptSceneViewHandler(MonoObject* object, const SPtr<CameraHandler>& camera)
+	ScriptSceneViewHandler::ScriptSceneViewHandler(MonoObject* object, const EditorWidgetBase* parentWidget, const SPtr<CameraHandler>& camera)
 		:ScriptObject(object), mHandler(nullptr)
 	{ 
-		mHandler = bs_new<SceneViewHandler>(camera);
+		mHandler = bs_new<SceneViewHandler>(parentWidget, camera);
 	}
 
 	ScriptSceneViewHandler::~ScriptSceneViewHandler()
@@ -26,14 +29,16 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_PointerReleased", &ScriptSceneViewHandler::internal_PointerReleased);
 	}
 
-	void ScriptSceneViewHandler::internal_Create(MonoObject* managedInstance, ScriptCamera* camera)
+	void ScriptSceneViewHandler::internal_Create(MonoObject* managedInstance, ScriptEditorWindow* parentWindow, ScriptCameraHandler* camera)
 	{
-		new (bs_alloc<ScriptSceneViewHandler>()) ScriptSceneViewHandler(managedInstance, camera->getHandler());
+		EditorWidgetBase* widget = parentWindow->getEditorWidget();
+
+		new (bs_alloc<ScriptSceneViewHandler>()) ScriptSceneViewHandler(managedInstance, widget, camera->getInternal());
 	}
 
-	void ScriptSceneViewHandler::internal_Update(ScriptSceneViewHandler* thisPtr, Vector2I inputPos)
+	void ScriptSceneViewHandler::internal_Update(ScriptSceneViewHandler* thisPtr, Vector2I inputPos, Vector2I inputDelta)
 	{
-		thisPtr->mHandler->update(inputPos);
+		thisPtr->mHandler->update(inputPos, inputDelta);
 	}
 
 	void ScriptSceneViewHandler::internal_PointerPressed(ScriptSceneViewHandler* thisPtr, Vector2I inputPos)

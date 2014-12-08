@@ -12,21 +12,23 @@
 
 See GDrive/Resources doc for resources refactor
 
+Add cutoff plane when rendering discs for rotation handle.
+
 C# SceneView:
 Test new Scene window and fix every issue
 Add ProjectWindow and HierarchyWindow to C#
  - Make TreeViews a C# element?
 Set up a default layout and save it
 
-Handle snapping is probably set up wrong. Handles.SnapValue seems to wrap a value instead of snapping, plus I might
-need to store the unsnapped amount somewhere until it reaches some amount worthy of snapping to next value
+Test:
+ - If cursor wrap works
+ - If handles work when dragged outside of scene window
+ - If handle is properly released if mouse up is pressed outside
 
 -----------------
 
 Move handle is buggy as hell - It moves in wrong direction sometimes, sometimes it skips, other times collision seems to be wrong
 Need a way to drag and drop items from Scene tree view to Scene view
-When dragging a handle make sure it works when cursor leaves the scene view
-Also make sure that handle manager receives mouse up event if its done outside of scene view
 
 AFTER I have scene widget in C#:
  - Finish up C# Handles class so it returns proper values

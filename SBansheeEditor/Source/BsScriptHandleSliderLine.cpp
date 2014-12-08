@@ -30,7 +30,6 @@ namespace BansheeEngine
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptHandleSliderLine::internal_CreateInstance);
 		metaData.scriptClass->addInternalCall("Internal_GetDelta", &ScriptHandleSliderLine::internal_GetDelta);
-		metaData.scriptClass->addInternalCall("Internal_GetNewPosition", &ScriptHandleSliderLine::internal_GetNewPosition);
 	}
 
 	void ScriptHandleSliderLine::internal_CreateInstance(MonoObject* instance, Vector3 direction, float length, bool fixedScale)
@@ -42,10 +41,5 @@ namespace BansheeEngine
 	void ScriptHandleSliderLine::internal_GetDelta(ScriptHandleSliderLine* nativeInstance, float* value)
 	{
 		*value = nativeInstance->mSlider->getDelta();
-	}
-
-	void ScriptHandleSliderLine::internal_GetNewPosition(ScriptHandleSliderLine* nativeInstance, Vector3* value)
-	{
-		*value = nativeInstance->mSlider->getNewPosition();
 	}
 }

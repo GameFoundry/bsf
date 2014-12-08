@@ -5,8 +5,23 @@ namespace BansheeEditor
 {
     internal sealed class DefaultHandleManager : Handle
     {
+        private struct HandledObject
+        {
+            public HandledObject(SceneObject so)
+            {
+                this.so = so;
+                initialPosition = so.Position;
+            }
+
+            public SceneObject so;
+            public Vector3 initialPosition;
+        }
+
         private SceneViewTool activeHandleType = SceneViewTool.View;
         private DefaultHandle activeHandle;
+
+        private HandledObject[] activeSelection;
+        private bool isDragged;
 
         protected override void PreInput()
         {
@@ -81,39 +96,64 @@ namespace BansheeEditor
         {
             if (activeHandle != null)
             {
+                if (activeHandle.IsDragged())
+                {
+                    if (!isDragged)
+                    {
+                        isDragged = true;
+
+                        SceneObject[] selectedSceneObjects = Selection.sceneObjects;
+                        activeSelection = new HandledObject[selectedSceneObjects.Length];
+                        for (int i = 0; i < selectedSceneObjects.Length; i++)
+                            activeSelection[i] = new HandledObject(selectedSceneObjects[0]);
+                    }
+                }
+                else
+                {
+                    isDragged = false;
+                    activeSelection = null;
+                }
+
                 activeHandle.DoPostInput();
 
-                SceneObject[] selectedSceneObjects = Selection.sceneObjects;
-                switch (activeHandleType)
+                if (activeHandle.IsDragged())
                 {
-                    case SceneViewTool.Move:
+                    switch (activeHandleType)
+                    {
+                        case SceneViewTool.Move:
                         {
-                            MoveHandle moveHandle = (MoveHandle)activeHandle;
+                            MoveHandle moveHandle = (MoveHandle) activeHandle;
 
-                            foreach (var so in selectedSceneObjects)
-                                so.Position += moveHandle.Delta;
+                            foreach (var selectedObj in activeSelection)
+                                selectedObj.so.Position = selectedObj.initialPosition + moveHandle.Delta;
                         }
 
-                        break;
-                    case SceneViewTool.Rotate:
+                            break;
+                        case SceneViewTool.Rotate:
                         {
-                            RotateHandle rotateHandle = (RotateHandle)activeHandle;
+                            RotateHandle rotateHandle = (RotateHandle) activeHandle;
 
                             // TODO - Add delta rotation
                             //foreach (var so in selectedSceneObjects)
                             //    so.rotation += rotateHandle.Delta;
                         }
-                        break;
-                    case SceneViewTool.Scale:
+                            break;
+                        case SceneViewTool.Scale:
                         {
-                            ScaleHandle scaleHandle = (ScaleHandle)activeHandle;
+                            ScaleHandle scaleHandle = (ScaleHandle) activeHandle;
 
                             // TODO - Add delta scale
                             //foreach (var so in selectedSceneObjects)
                             //    so.localScale += scaleHandle.Delta;
                         }
-                        break;
+                            break;
+                    }
                 }
+            }
+            else
+            {
+                isDragged = false;
+                activeSelection = null;
             }
         }
 

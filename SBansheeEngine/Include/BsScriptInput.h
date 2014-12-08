@@ -28,10 +28,11 @@ namespace BansheeEngine
 		static bool internal_isButtonUp(ButtonCode code, UINT32 deviceIdx);
 		static float internal_getAxisValue(UINT32 axisType, UINT32 deviceIdx);
 		static void internal_getPointerPosition(Vector2I* position);
+		static void internal_getPointerDelta(Vector2I* position);
 
 		typedef void(__stdcall *OnButtonEventThunkDef) (ButtonCode, UINT32, MonoException**);
 		typedef void(__stdcall *OnCharInputEventThunkDef) (UINT32, MonoException**);
-		typedef void(__stdcall *OnPointerEventThunkDef) (MonoObject*, PointerEventButton, 
+		typedef void(__stdcall *OnPointerEventThunkDef) (MonoObject*, MonoObject*, PointerEventButton,
 			bool, bool, bool, float, MonoException**);
 
 		static OnButtonEventThunkDef OnButtonPressedThunk;

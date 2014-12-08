@@ -18,6 +18,13 @@ namespace BansheeEditor
             get { return delta; }
         }
 
+        internal override bool IsDragged()
+        {
+            return xAxis.State == HandleSlider.StateType.Active ||
+                    yAxis.State == HandleSlider.StateType.Active ||
+                    zAxis.State == HandleSlider.StateType.Active;
+        }
+
         public MoveHandle()
         {
             xAxis = new HandleSliderLine(this, Vector3.xAxis, 1.0f);

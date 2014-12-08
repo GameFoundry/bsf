@@ -45,18 +45,12 @@ namespace BansheeEngine
 		return false;
 	}
 
-	void HandleSliderPlane::handleInput(const CameraHandlerPtr& camera, const Vector2I& pointerPos, const Ray& ray)
+	void HandleSliderPlane::handleInput(const CameraHandlerPtr& camera, const Vector2I& inputDelta)
 	{
 		assert(getState() == State::Active);
 
-		mLastPointerPos = mCurPointerPos;
-		mCurPointerPos = pointerPos;
-
-		if (mHasLastPos)
-		{
-			// TODO
-		}
-		
-		mHasLastPos = true;
+		mCurrentPointerPos += inputDelta;
+		mDelta.x = calcDelta(camera, mStartPosition, getRotation().rotate(mDirection1), mStartPointerPos, mCurrentPointerPos);
+		mDelta.y = calcDelta(camera, mStartPosition, getRotation().rotate(mDirection2), mStartPointerPos, mCurrentPointerPos);
 	}
 }

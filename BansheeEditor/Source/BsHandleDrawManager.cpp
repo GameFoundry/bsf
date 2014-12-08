@@ -214,6 +214,9 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
+		if (mSceneRenderTarget == nullptr)
+			return;
+
 		SPtr<RenderTargetCore> sceneRenderTarget = mSceneRenderTarget->getCore();
 		if (camera.getViewport()->getTarget() != sceneRenderTarget)
 			return;

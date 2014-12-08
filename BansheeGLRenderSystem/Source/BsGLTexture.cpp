@@ -79,13 +79,13 @@ namespace BansheeEngine
 		}
 
 		UINT32 sampleCount = mProperties.getMultisampleCount();
-		if ((usage & TU_RENDERTARGET) != 0 && mProperties.getTextureType() == TEX_TYPE_2D && sampleCount > 0)
+		if ((usage & TU_RENDERTARGET) != 0 && mProperties.getTextureType() == TEX_TYPE_2D && sampleCount > 1)
 		{
-			glTexImage2DMultisample(GL_TEXTURE_2D, sampleCount, mGLFormat, width, height, GL_FALSE);
+			glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, sampleCount, mGLFormat, width, height, GL_FALSE);
 		}
 		else if ((usage & TU_DEPTHSTENCIL) != 0)
 		{
-			if (sampleCount > 0)
+			if (sampleCount > 1)
 			{
 				glTexImage2DMultisample(GL_TEXTURE_2D, sampleCount, mGLFormat,
 					width, height, GL_FALSE);
@@ -167,7 +167,7 @@ namespace BansheeEngine
             case TEX_TYPE_1D:
                 return GL_TEXTURE_1D;
             case TEX_TYPE_2D:
-				if (mProperties.getMultisampleCount() > 0)
+				if (mProperties.getMultisampleCount() > 1)
 					return GL_TEXTURE_2D_MULTISAMPLE;
 				else
 					return GL_TEXTURE_2D;

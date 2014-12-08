@@ -30,8 +30,6 @@ namespace BansheeEngine
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptHandleSliderPlane::internal_CreateInstance);
 		metaData.scriptClass->addInternalCall("Internal_GetDelta", &ScriptHandleSliderPlane::internal_GetDelta);
-		metaData.scriptClass->addInternalCall("Internal_GetDeltaDirection", &ScriptHandleSliderPlane::internal_GetDeltaDirection);
-		metaData.scriptClass->addInternalCall("Internal_GetNewPosition", &ScriptHandleSliderPlane::internal_GetNewPosition);
 	}
 
 	void ScriptHandleSliderPlane::internal_CreateInstance(MonoObject* instance, Vector3 dir1, Vector3 dir2, float length, bool fixedScale)
@@ -40,18 +38,8 @@ namespace BansheeEngine
 			ScriptHandleSliderPlane(instance, dir1, dir2, length, fixedScale);
 	}
 
-	void ScriptHandleSliderPlane::internal_GetDelta(ScriptHandleSliderPlane* nativeInstance, float* value)
+	void ScriptHandleSliderPlane::internal_GetDelta(ScriptHandleSliderPlane* nativeInstance, Vector2* value)
 	{
 		*value = nativeInstance->mSlider->getDelta();
-	}
-
-	void ScriptHandleSliderPlane::internal_GetDeltaDirection(ScriptHandleSliderPlane* nativeInstance, Vector3* value)
-	{
-		*value = nativeInstance->mSlider->getDeltaDirection();
-	}
-
-	void ScriptHandleSliderPlane::internal_GetNewPosition(ScriptHandleSliderPlane* nativeInstance, Vector3* value)
-	{
-		*value = nativeInstance->mSlider->getNewPosition();
 	}
 }

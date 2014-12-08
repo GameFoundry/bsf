@@ -25,6 +25,11 @@ namespace BansheeEngine
 			GUIArea::destroy(mContent);
 	}
 
+	EditorWindowBase* EditorWidgetBase::getParentWindow() const
+	{
+		return mParent->getParentWindow();
+	}
+
 	void EditorWidgetBase::close()
 	{
 		EditorWidgetManager::instance().close(this);
