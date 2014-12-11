@@ -84,12 +84,12 @@ namespace BansheeEngine
 		return parentScriptSO->getManagedInstance();
 	}
 
-	UINT32 ScriptSceneObject::internal_getNumChildren(ScriptSceneObject* nativeInstance)
+	void ScriptSceneObject::internal_getNumChildren(ScriptSceneObject* nativeInstance, UINT32* value)
 	{
 		if (!checkIfDestroyed(nativeInstance))
-			return nativeInstance->mSceneObject->getNumChildren();
+			*value = nativeInstance->mSceneObject->getNumChildren();
 		else
-			return 0;
+			*value = 0;
 	}
 
 	MonoObject* ScriptSceneObject::internal_getChild(ScriptSceneObject* nativeInstance, UINT32 idx)
@@ -209,7 +209,8 @@ namespace BansheeEngine
 
 	void ScriptSceneObject::internal_lookAt(ScriptSceneObject* nativeInstance, Vector3 direction, Vector3 up)
 	{
-
+		if (!checkIfDestroyed(nativeInstance))
+			nativeInstance->mSceneObject->lookAt(direction, up);
 	}
 
 	void ScriptSceneObject::internal_move(ScriptSceneObject* nativeInstance, Vector3 value)

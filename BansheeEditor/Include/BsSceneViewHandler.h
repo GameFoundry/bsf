@@ -7,12 +7,14 @@ namespace BansheeEngine
 	class BS_ED_EXPORT SceneViewHandler
 	{
 	public:
-		SceneViewHandler(const EditorWidgetBase* parentWidget, const SPtr<CameraHandler>& camera);
+		SceneViewHandler(EditorWidgetBase* parentWidget, const SPtr<CameraHandler>& camera);
 		virtual ~SceneViewHandler();
 
 		void update(const Vector2I& position, const Vector2I& delta);
-		void pointerPressed(const Vector2I& position);
-		void pointerReleased(const Vector2I& position, bool controlHeld);
+		void trySelectHandle(const Vector2I& position);
+		bool isHandleActive() const;
+		void clearHandleSelection();
+		void pickObject(const Vector2I& position, bool additive);
 
 	protected:
 		void render(const Viewport* viewport, DrawList& drawList);

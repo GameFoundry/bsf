@@ -97,8 +97,8 @@ namespace BansheeEngine
 		mAlphaImageDesc.width = mWidth - mColorImageDesc.width;
 		mAlphaImageDesc.height = mHeight;
 
-		mColorSprite->update(mColorImageDesc);
-		mAlphaSprite->update(mAlphaImageDesc);
+		mColorSprite->update(mColorImageDesc, (UINT64)_getParentWidget());
+		mAlphaSprite->update(mAlphaImageDesc, (UINT64)_getParentWidget());
 
 		GUIElement::updateRenderElementsInternal();
 	}

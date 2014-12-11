@@ -34,8 +34,8 @@ namespace BansheeEditor
         private VirtualAxis verticalAxis;
 
         private float currentSpeed;
-        private Degree pitch;
         private Degree yaw;
+        private Radian pitch;
         private bool lastButtonState;
 
         public SceneCamera()
@@ -51,7 +51,7 @@ namespace BansheeEditor
         }
 
         private void Update()
-	    {
+        {
             // TODO - Only move if scene view is focused
 
 		    bool goingForward = VirtualInput.IsButtonHeld(moveForwardBtn);
@@ -61,62 +61,65 @@ namespace BansheeEditor
 		    bool fastMove = VirtualInput.IsButtonHeld(fastMoveBtn);
 		    bool camRotating = VirtualInput.IsButtonHeld(rotateBtn);
 
-		    if (camRotating != lastButtonState)
-		    {
-		        if (camRotating)
-		            Cursor.Hide();
-		        else
-		            Cursor.Show();
+            if (camRotating != lastButtonState)
+            {
+                if (camRotating)
+                    Cursor.Hide();
+                else
+                    Cursor.Show();
 
-			    lastButtonState = camRotating;
-		    }
+                lastButtonState = camRotating;
+            }
 
 		    float frameDelta = Time.frameDelta;
 		    if (camRotating)
 		    {
-			    yaw += new Degree(VirtualInput.GetAxisValue(horizontalAxis) * RotationalSpeed * frameDelta);
-			    pitch += new Degree(VirtualInput.GetAxisValue(verticalAxis) * RotationalSpeed * frameDelta);
+		        float horzValue = VirtualInput.GetAxisValue(horizontalAxis);
+                float vertValue = VirtualInput.GetAxisValue(verticalAxis);
 
-			    yaw = MathEx.WrapAngle(yaw);
+                yaw += new Degree(horzValue * RotationalSpeed * frameDelta);
+                pitch += new Degree(vertValue * RotationalSpeed * frameDelta);
+
+                yaw = MathEx.WrapAngle(yaw);
                 pitch = MathEx.WrapAngle(pitch);
 
 		        Quaternion yRot = Quaternion.FromAxisAngle(Vector3.yAxis, yaw);
                 Quaternion xRot = Quaternion.FromAxisAngle(Vector3.xAxis, pitch);
 
-			    Quaternion camRot = yRot * xRot;
-		        camRot.Normalize();
+                Quaternion camRot = yRot * xRot;
+                camRot.Normalize();
 
-		        sceneObject.Rotate(camRot);
+                sceneObject.rotation = camRot;
 		    }
 
-		    Vector3 direction = Vector3.zero;
-		    if (goingForward) direction += sceneObject.Forward;
-		    if (goingBack) direction -= sceneObject.Forward;
-		    if (goingRight) direction += sceneObject.Right;
-		    if (goingLeft) direction -= sceneObject.Right;
+            Vector3 direction = Vector3.zero;
+            if (goingForward) direction += sceneObject.forward;
+            if (goingBack) direction -= sceneObject.forward;
+            if (goingRight) direction += sceneObject.right;
+            if (goingLeft) direction -= sceneObject.right;
 
-		    if (direction.sqrdMagnitude != 0)
-		    {
-		        direction.Normalize();
+            if (direction.sqrdMagnitude != 0)
+            {
+                direction.Normalize();
 
-			    float multiplier = 1.0f;
-			    if (fastMove)
-				    multiplier = FastModeMultiplier;
+                float multiplier = 1.0f;
+                if (fastMove)
+                    multiplier = FastModeMultiplier;
 
-			    currentSpeed = MathEx.Clamp(currentSpeed + Acceleration * frameDelta, StartSpeed, TopSpeed);
-			    currentSpeed *= multiplier;
-		    }
-		    else
-		    {
-			    currentSpeed = 0.0f;
-		    }
+                currentSpeed = MathEx.Clamp(currentSpeed + Acceleration * frameDelta, StartSpeed, TopSpeed);
+                currentSpeed *= multiplier;
+            }
+            else
+            {
+                currentSpeed = 0.0f;
+            }
 
-		    const float tooSmall = 0.0001f;
-		    if (currentSpeed > tooSmall)
-		    {
-			    Vector3 velocity = direction * currentSpeed;
-			    sceneObject.Move(velocity * frameDelta);
-		    }
-	    }
+            const float tooSmall = 0.0001f;
+            if (currentSpeed > tooSmall)
+            {
+                Vector3 velocity = direction * currentSpeed;
+                sceneObject.Move(velocity * frameDelta);
+            }
+        }
     }
 }

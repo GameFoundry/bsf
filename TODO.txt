@@ -12,7 +12,19 @@
 
 See GDrive/Resources doc for resources refactor
 
+Fix the weird Mono crash that seems to happen in SceneCamera but gets fixed by commenting out various bits of code. However it can be consistently reproduced.
+Scene view initial viewport size isn't valid size
+Screen grid isn't rendered
+Handles aren't properly rendered
+Icon gizmo seems to sometimes get struck to the side of the camera
+Clicking the screen causes a white flash
+
+Other:
+Window resize end callback
+
 Add cutoff plane when rendering discs for rotation handle.
+
+What happens when I close widgets from C++ code (e.g. due to layout reload or change)? Will C# still try to access them?
 
 C# SceneView:
 Test new Scene window and fix every issue

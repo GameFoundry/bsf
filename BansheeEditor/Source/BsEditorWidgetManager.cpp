@@ -9,6 +9,7 @@
 #include "BsException.h"
 #include "BsInput.h"
 #include "BsRenderWindow.h"
+#include "BsRenderWindowManager.h"
 #include "BsVector2I.h"
 
 using namespace std::placeholders;
@@ -28,11 +29,15 @@ namespace BansheeEngine
 		}
 
 		mOnPointerPressedConn = gInput().onPointerPressed.connect(std::bind(&EditorWidgetManager::onPointerPressed, this, _1));
+		mOnFocusLostConn = RenderWindowManager::instance().onFocusLost.connect(std::bind(&EditorWidgetManager::onFocusLost, this, _1));
+		mOnFocusGainedConn = RenderWindowManager::instance().onFocusGained.connect(std::bind(&EditorWidgetManager::onFocusGained, this, _1));
 	}
 
 	EditorWidgetManager::~EditorWidgetManager()
 	{
 		mOnPointerPressedConn.disconnect();
+		mOnFocusLostConn.disconnect();
+		mOnFocusGainedConn.disconnect();
 
 		Map<String, EditorWidgetBase*> widgetsCopy = mActiveWidgets;
 
@@ -109,6 +114,12 @@ namespace BansheeEngine
 			mActiveWidgets[name] = newWidget;
 
 		return newWidget;
+	}
+
+	bool EditorWidgetManager::isValidWidget(const String& name) const
+	{
+		auto iterFindCreate = mCreateCallbacks.find(name);
+		return iterFindCreate != mCreateCallbacks.end();
 	}
 
 	EditorWidgetLayoutPtr EditorWidgetManager::getLayout() const
@@ -243,6 +254,27 @@ namespace BansheeEngine
 			}
 			else
 				widget->_setHasFocus(false);
+		}
+	}
+
+	void EditorWidgetManager::onFocusGained(const RenderWindow& window)
+	{
+		// Do nothing, possibly regain focus on last focused widget?
+	}
+
+	void EditorWidgetManager::onFocusLost(const RenderWindow& window)
+	{
+		for (auto& widgetData : mActiveWidgets)
+		{
+			EditorWidgetBase* widget = widgetData.second;
+			EditorWidgetContainer* parentContainer = widget->_getParent();
+			EditorWindowBase* parentWindow = parentContainer->getParentWindow();
+			RenderWindowPtr parentRenderWindow = parentWindow->_getRenderWindow();
+
+			if (parentRenderWindow.get() != &window)
+				continue;
+
+			widget->_setHasFocus(false);
 		}
 	}
 

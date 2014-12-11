@@ -49,7 +49,7 @@ namespace BansheeEngine
 		mDesc.height = mHeight;
 		mDesc.text = mContent.getText();
 
-		mTextSprite->update(mDesc);
+		mTextSprite->update(mDesc, (UINT64)_getParentWidget());
 
 		GUIElement::updateRenderElementsInternal();
 	}

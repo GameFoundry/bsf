@@ -6,8 +6,8 @@ using System.Text;
 
 namespace BansheeEngine
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public class Rect2I
+    [StructLayout(LayoutKind.Sequential), SerializeObject]
+    public struct Rect2I
     {
         public Rect2I(int x, int y, int width, int height)
         {
@@ -53,6 +53,11 @@ namespace BansheeEngine
         public override int GetHashCode()
         {
             return base.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return String.Format("(x:{0} y:{1} width:{2} height:{3})", x, y, width, height);
         }
 
         public int x, y, width, height;

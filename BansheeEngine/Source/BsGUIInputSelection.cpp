@@ -38,6 +38,10 @@ namespace BansheeEngine
 			}
 		}
 
+		const GUIWidget* widget = nullptr;
+		if (mElement != nullptr)
+			widget = mElement->_getParentWidget();
+
 		UINT32 idx = 0;
 		for(auto& sprite : mSprites)
 		{
@@ -46,7 +50,7 @@ namespace BansheeEngine
 			desc.height = mSelectionRects[idx].height;
 			desc.texture = GUIManager::instance().getTextSelectionTexture().getInternalPtr();
 
-			sprite->update(desc);
+			sprite->update(desc, (UINT64)widget);
 			idx++;
 		}
 	}

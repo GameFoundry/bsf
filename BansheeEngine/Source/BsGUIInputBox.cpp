@@ -143,10 +143,10 @@ namespace BansheeEngine
 			mImageDesc.texture = activeTex.getInternalPtr();
 		}
 
-		mImageSprite->update(mImageDesc);
+		mImageSprite->update(mImageDesc, (UINT64)_getParentWidget());
 
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
-		mTextSprite->update(textDesc);
+		mTextSprite->update(textDesc, (UINT64)_getParentWidget());
 
 		if(mCaretShown && gGUIManager().getCaretBlinkState())
 		{

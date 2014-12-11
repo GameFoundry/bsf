@@ -22,7 +22,7 @@ namespace BansheeEngine
 		void _setSize(UINT32 width, UINT32 height);
 		void _setPosition(INT32 x, INT32 y);
 		void _changeParent(EditorWidgetContainer* parent);
-		void _setHasFocus(bool focus) { mHasFocus = focus; }
+		void _setHasFocus(bool focus);
 		EditorWidgetContainer* _getParent() const { return mParent; }
 
 		Vector2I screenToWidgetPos(const Vector2I& screenPos) const;
@@ -38,6 +38,7 @@ namespace BansheeEngine
 		Event<void(UINT32, UINT32)> onResized;
 		Event<void(INT32, INT32)> onMoved;
 		Event<void(EditorWidgetContainer*)> onParentChanged;
+		Event<void(bool)> onFocusChanged;
 	protected:
 		friend class EditorWidgetManager;
 

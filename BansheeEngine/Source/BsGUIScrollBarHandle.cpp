@@ -104,7 +104,7 @@ namespace BansheeEngine
 			desc.height = mHandleSize;
 		}
 
-		mImageSprite->update(desc);
+		mImageSprite->update(desc, (UINT64)_getParentWidget());
 		
 		GUIElement::updateRenderElementsInternal();
 	}

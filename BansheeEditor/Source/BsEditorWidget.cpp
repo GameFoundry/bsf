@@ -69,6 +69,16 @@ namespace BansheeEngine
 		doOnResized(width, height);
 	}
 
+	void EditorWidgetBase::_setHasFocus(bool focus) 
+	{ 
+		if (mHasFocus != focus)
+		{
+			mHasFocus = focus;
+
+			onFocusChanged(focus);
+		}
+	}
+
 	Vector2I EditorWidgetBase::screenToWidgetPos(const Vector2I& screenPos) const
 	{
 		EditorWindowBase* parentEditorWindow = mParent->getParentWindow();
@@ -95,14 +105,12 @@ namespace BansheeEngine
 
 	void EditorWidgetBase::doOnMoved(INT32 x, INT32 y)
 	{
-		if (!onMoved.empty())
-			onMoved(x, y);
+		onMoved(x, y);
 	}
 
 	void EditorWidgetBase::doOnResized(UINT32 width, UINT32 height)
 	{
-		if (!onResized.empty())
-			onResized(width, height);
+		onResized(width, height);
 	}
 
 	void EditorWidgetBase::doOnParentChanged()

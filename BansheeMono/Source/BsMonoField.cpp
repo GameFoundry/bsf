@@ -76,7 +76,7 @@ namespace BansheeEngine
 
 	MonoFieldVisibility MonoField::getVisibility()
 	{
-		uint32_t flags = mono_field_get_flags(mField);
+		uint32_t flags = mono_field_get_flags(mField) & MONO_FIELD_ATTR_FIELD_ACCESS_MASK;
 
 		if(flags == MONO_FIELD_ATTR_PRIVATE)
 			return MonoFieldVisibility::Private;

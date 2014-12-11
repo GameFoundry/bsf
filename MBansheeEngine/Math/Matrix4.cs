@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace BansheeEngine
 {
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential), SerializeObject]
     public struct Matrix4
     {
         public static readonly Matrix4 zero = new Matrix4();
@@ -489,6 +489,12 @@ namespace BansheeEngine
             Matrix4 copy = mat;
             copy.Transpose();
             return copy;
+        }
+
+        public override string ToString()
+        {
+            return String.Format("({0}, {1}, {2}, {3},\n{4}, {5}, {6}, {7}\n{8}, {9}, {10}, {11}\n{12}, {13}, {14}, {15})",
+                m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33);
         }
     }
 }

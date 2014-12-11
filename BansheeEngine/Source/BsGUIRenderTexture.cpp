@@ -73,7 +73,7 @@ namespace BansheeEngine
 		mDesc.height = mHeight;
 		mDesc.transparent = false;
 
-		mImageSprite->update(mDesc);
+		mImageSprite->update(mDesc, (UINT64)_getParentWidget());
 
 		GUIElement::updateRenderElementsInternal();
 	}

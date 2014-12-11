@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace BansheeEngine
 {
+    [StructLayout(LayoutKind.Sequential), SerializeObject]
 	public struct Degree
 	{
         readonly float value;
@@ -139,6 +141,11 @@ namespace BansheeEngine
         public override int GetHashCode()
         {
             return value.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return value.ToString();
         }
 	};
 }

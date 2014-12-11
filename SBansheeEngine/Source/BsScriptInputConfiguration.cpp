@@ -40,9 +40,10 @@ namespace BansheeEngine
 
 	ScriptInputConfiguration* ScriptInputConfiguration::createScriptInputConfig(const InputConfigurationPtr& inputConfig)
 	{
-		MonoObject* instance = metaData.scriptClass->createInstance();
+		MonoObject* instance = metaData.scriptClass->createInstance(false);
 
-		return ScriptInputConfiguration::toNative(instance);
+		ScriptInputConfiguration* nativeInstance = new (bs_alloc<ScriptInputConfiguration>()) ScriptInputConfiguration(instance, inputConfig);
+		return nativeInstance;
 	}
 
 	void ScriptInputConfiguration::internal_CreateInstance(MonoObject* object)

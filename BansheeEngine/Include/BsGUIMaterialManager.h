@@ -17,33 +17,45 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Creates a new material, or returns a reference to an existing one based on
-		 * 			the provided primary texture.
+		 * 			the provided primary texture, tint and group id.
 		 * 			
 		 *			Returned material can be used for text rendering.
 		 *			
 		 *			Make sure to release all materials with a call to "releaseMaterial()".
+		 *
+		 *  @note	Group ID allows you to force the system to return different materials even if texture and tint could
+		 *			otherwise be shared. Sometimes you need this if you know other material properties (like world transform)
+		 *			won't be shared.
 		 */
-		const GUIMaterialInfo& requestTextMaterial(const HTexture& texture, const Color& tint) const;
+		const GUIMaterialInfo& requestTextMaterial(UINT64 groupId, const HTexture& texture, const Color& tint) const;
 
 		/**
 		 * @brief	Creates a new material, or returns a reference to an existing one based on
-		 * 			the provided primary texture.
+		 * 			the provided primary texture, tint and group id.
 		 * 			
 		 *			Returned material can be used for normal image rendering.
 		 *			
 		 *			Make sure to release all materials with a call to "releaseMaterial()".
+		 *
+		 *  @note	Group ID allows you to force the system to return different materials even if texture and tint could
+		 *			otherwise be shared. Sometimes you need this if you know other material properties (like world transform)
+		 *			won't be shared.
 		 */
-		const GUIMaterialInfo& requestImageMaterial(const HTexture& texture, const Color& tint) const;
+		const GUIMaterialInfo& requestImageMaterial(UINT64 groupId, const HTexture& texture, const Color& tint) const;
 
 		/**
 		 * @brief	Creates a new material, or returns a reference to an existing one based on
-		 * 			the provided primary texture.
+		 * 			the provided primary texture, tint and group id.
 		 * 			
 		 *			Returned material can be used for non-transparent image rendering.
 		 *			
 		 *			Make sure to release all materials with a call to "releaseMaterial()".
+		 *
+		 * @note	Group ID allows you to force the system to return different materials even if texture and tint could
+		 *			otherwise be shared. Sometimes you need this if you know other material properties (like world transform)
+		 *			won't be shared.
 		 */
-		const GUIMaterialInfo& requestNonAlphaImageMaterial(const HTexture& texture, const Color& tint) const;
+		const GUIMaterialInfo& requestNonAlphaImageMaterial(UINT64 groupId, const HTexture& texture, const Color& tint) const;
 
 		/**
 		 * @brief	Releases the held reference to the material. This allows us to fully unload a material
@@ -55,19 +67,19 @@ namespace BansheeEngine
 		 * @brief	Attempts to find an existing text material with the specified color and tint. Returns null
 		 *			if one cannot be found.
 		 */
-		const GUIMaterialInfo* findExistingTextMaterial(const HTexture& texture, const Color& tint) const;
+		const GUIMaterialInfo* findExistingTextMaterial(UINT64 groupId, const HTexture& texture, const Color& tint) const;
 
 		/**
 		 * @brief	Attempts to find an existing image material with the specified color and tint. Returns null
 		 *			if one cannot be found.
 		 */
-		const GUIMaterialInfo* findExistingImageMaterial(const HTexture& texture, const Color& tint) const;
+		const GUIMaterialInfo* findExistingImageMaterial(UINT64 groupId, const HTexture& texture, const Color& tint) const;
 
 		/**
 		 * @brief	Attempts to find an existing non-transparent image material with the specified color and tint.
 		 *			Returns null if one cannot be found.
 		 */
-		const GUIMaterialInfo* findExistingNonAlphaImageMaterial(const HTexture& texture, const Color& tint) const;
+		const GUIMaterialInfo* findExistingNonAlphaImageMaterial(UINT64 groupId, const HTexture& texture, const Color& tint) const;
 
 		/**
 		 * @brief	Releases all internal materials, whether they are used or not.
@@ -83,6 +95,7 @@ namespace BansheeEngine
 				:refCount(0)
 			{ }
 
+			UINT64 groupId;
 			GUIMaterialInfo handle;
 			UINT32 refCount;
 		};

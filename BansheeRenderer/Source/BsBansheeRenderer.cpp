@@ -217,6 +217,9 @@ namespace BansheeEngine
 			const CameraHandlerCore* camera = cameraData.first;
 			SPtr<RenderTargetCore> renderTarget = camera->getViewport()->getTarget();
 
+			if (renderTarget == nullptr)
+				continue;
+
 			auto findIter = std::find_if(mRenderTargets.begin(), mRenderTargets.end(), [&](const RenderTargetData& x) { return x.target == renderTarget; });
 			if (findIter != mRenderTargets.end())
 			{

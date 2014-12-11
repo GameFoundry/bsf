@@ -5,43 +5,43 @@ namespace BansheeEngine
     [StructLayout(LayoutKind.Sequential), SerializeObject]
 	public struct AABox
 	{
-        private Vector3 minimum;
-		private Vector3 maximum;
+        private Vector3 _minimum;
+		private Vector3 _maximum;
 
-        public Vector3 Minimum
+        public Vector3 minimum
         {
-            get { return minimum; }
-            set { minimum = value; }
+            get { return _minimum; }
+            set { _minimum = value; }
         }
 
-        public Vector3 Maximum
+        public Vector3 maximum
         {
-            get { return maximum; }
-            set { maximum = value; }
+            get { return _maximum; }
+            set { _maximum = value; }
         }
 
-        public Vector3 Center
+        public Vector3 center
         {
             get 
             { 		
-                return new Vector3((maximum.x + minimum.x) * 0.5f,
-			            (maximum.y + minimum.y) * 0.5f,
-			            (maximum.z + minimum.z) * 0.5f);
+                return new Vector3((_maximum.x + _minimum.x) * 0.5f,
+			            (_maximum.y + _minimum.y) * 0.5f,
+			            (_maximum.z + _minimum.z) * 0.5f);
             }
         }
 
-	    public Vector3 Size
+	    public Vector3 size
 	    {
 	        get
 	        {
-	            return maximum - minimum;
+	            return _maximum - _minimum;
 	        }
 	    }
 
         public AABox(Vector3 min, Vector3 max)
         {
-            minimum = min;
-            maximum = max;
+            _minimum = min;
+            _maximum = max;
         }
 	};
 }

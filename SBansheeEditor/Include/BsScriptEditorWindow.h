@@ -32,8 +32,8 @@ namespace BansheeEngine
 		static MonoObject* internal_createOrGetInstance(MonoString* ns, MonoString* typeName);
 
 		static bool internal_hasFocus(ScriptEditorWindow* thisPtr);
-		static Vector2I internal_screenToWindowPos(ScriptEditorWindow* thisPtr, const Vector2I& screenPos);
-		static Vector2I internal_windowToScreenPos(ScriptEditorWindow* thisPtr, const Vector2I& windowPos);
+		static void internal_screenToWindowPos(ScriptEditorWindow* thisPtr, Vector2I screenPos, Vector2I* windowPos);
+		static void internal_windowToScreenPos(ScriptEditorWindow* thisPtr, Vector2I windowPos, Vector2I* screenPos);
 		static UINT32 internal_getWidth(ScriptEditorWindow* thisPtr);
 		static UINT32 internal_getHeight(ScriptEditorWindow* thisPtr);
 
@@ -42,6 +42,7 @@ namespace BansheeEngine
 		void onWidgetMoved(INT32 x, INT32 y);
 		void onWidgetResized(UINT32 width, UINT32 height);
 		void onWidgetParentChanged(EditorWidgetContainer* newParent);
+		void onFocusChanged(bool inFocus);
 
 		void _onManagedInstanceDeleted();
 
@@ -51,8 +52,10 @@ namespace BansheeEngine
 		HEvent mOnWidgetMovedConn;
 		HEvent mOnWidgetResizedConn;
 		HEvent mOnParentChangedConn;
+		HEvent mOnFocusChangedConn;
 
 		static MonoMethod* onResizedMethod;
+		static MonoMethod* onFocusChangedMethod;
 
 		// Global editor window management methods
 		static void registerScriptEditorWindow(ScriptEditorWindow* editorWindow);

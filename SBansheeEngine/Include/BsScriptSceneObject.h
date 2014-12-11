@@ -25,7 +25,7 @@ namespace BansheeEngine
 		static void internal_setParent(ScriptSceneObject* nativeInstance, MonoObject* parent);
 		static MonoObject* internal_getParent(ScriptSceneObject* nativeInstance);
 
-		static UINT32 internal_getNumChildren(ScriptSceneObject* nativeInstance);
+		static void internal_getNumChildren(ScriptSceneObject* nativeInstance, UINT32* value);
 		static MonoObject* internal_getChild(ScriptSceneObject* nativeInstance, UINT32 idx);
 
 		static void internal_getPosition(ScriptSceneObject* nativeInstance, Vector3* value);

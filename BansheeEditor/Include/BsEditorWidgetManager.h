@@ -42,6 +42,11 @@ namespace BansheeEngine
 		EditorWidgetBase* create(const String& name, EditorWidgetContainer& parentContainer);
 
 		/**
+		 * @brief	Checks if the provided name represents a widget that can be created.
+		 */
+		bool isValidWidget(const String& name) const;
+
+		/**
 		 * @brief	Closes the given widget.
 		 */
 		void close(EditorWidgetBase* widget);
@@ -83,10 +88,22 @@ namespace BansheeEngine
 		 */
 		void onPointerPressed(const PointerEvent& event);
 
+		/**
+		 * @brief	Triggered whenever a window gains focus.
+		 */
+		void onFocusGained(const RenderWindow& window);
+
+		/**
+		 * @brief	Triggered whenever a window loses focus.
+		 */
+		void onFocusLost(const RenderWindow& window);
+
 		Map<String, EditorWidgetBase*> mActiveWidgets;
 		Map<String, std::function<EditorWidgetBase*(EditorWidgetContainer&)>> mCreateCallbacks;
 
 		HEvent mOnPointerPressedConn;
+		HEvent mOnFocusLostConn;
+		HEvent mOnFocusGainedConn;
 
 		static Stack<std::pair<String, std::function<EditorWidgetBase*(EditorWidgetContainer&)>>> QueuedCreateCallbacks;
 	};

@@ -52,7 +52,11 @@ namespace BansheeEngine
 		mCaretDesc.height = getCaretHeight();
 		mCaretDesc.texture = GUIManager::instance().getCaretTexture().getInternalPtr();
 
-		mCaretSprite->update(mCaretDesc);
+		GUIWidget* widget = nullptr;
+		if (mElement != nullptr)
+			widget = mElement->_getParentWidget();
+
+		mCaretSprite->update(mCaretDesc, (UINT64)widget);
 	}
 
 	void GUIInputCaret::moveCaretToStart()

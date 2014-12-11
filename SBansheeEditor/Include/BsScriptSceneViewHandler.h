@@ -13,10 +13,12 @@ namespace BansheeEngine
 	private:
 		static void internal_Create(MonoObject* managedInstance, ScriptEditorWindow* parentWindow, ScriptCameraHandler* camera);
 		static void internal_Update(ScriptSceneViewHandler* thisPtr, Vector2I inputPos, Vector2I inputDelta);
-		static void internal_PointerPressed(ScriptSceneViewHandler* thisPtr, Vector2I inputPos);
-		static void internal_PointerReleased(ScriptSceneViewHandler* thisPtr, Vector2I inputPos, bool controlPressed);
+		static void internal_TrySelectHandle(ScriptSceneViewHandler* thisPtr, Vector2I inputPos);
+		static bool internal_IsHandleActive(ScriptSceneViewHandler* thisPtr, Vector2I inputPos);
+		static void internal_ClearHandleSelection(ScriptSceneViewHandler* thisPtr, Vector2I inputPos);
+		static void internal_PickObject(ScriptSceneViewHandler* thisPtr, Vector2I inputPos, bool additive);
 
-		ScriptSceneViewHandler(MonoObject* object, const EditorWidgetBase* parentWidget, const SPtr<CameraHandler>& camera);
+		ScriptSceneViewHandler(MonoObject* object, EditorWidgetBase* parentWidget, const SPtr<CameraHandler>& camera);
 		~ScriptSceneViewHandler();
 
 		SceneViewHandler* mHandler;

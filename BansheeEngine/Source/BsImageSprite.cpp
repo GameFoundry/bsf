@@ -13,7 +13,7 @@ namespace BansheeEngine
 
 	}
 
-	void ImageSprite::update(const IMAGE_SPRITE_DESC& desc)
+	void ImageSprite::update(const IMAGE_SPRITE_DESC& desc, UINT64 groupId)
 	{
 		const FontData* fontData = nullptr;
 		if(desc.texture == nullptr || desc.texture->getTexture() == nullptr)
@@ -64,9 +64,9 @@ namespace BansheeEngine
 				const GUIMaterialInfo* matInfo = nullptr;
 				
 				if (desc.transparent)
-					matInfo = GUIMaterialManager::instance().findExistingImageMaterial(tex, desc.color);
+					matInfo = GUIMaterialManager::instance().findExistingImageMaterial(groupId, tex, desc.color);
 				else
-					matInfo = GUIMaterialManager::instance().findExistingNonAlphaImageMaterial(tex, desc.color);
+					matInfo = GUIMaterialManager::instance().findExistingNonAlphaImageMaterial(groupId, tex, desc.color);
 
 				if(matInfo == nullptr)
 				{
@@ -85,9 +85,9 @@ namespace BansheeEngine
 			if (getNewMaterial)
 			{
 				if (desc.transparent)
-					renderElem.matInfo = GUIMaterialManager::instance().requestImageMaterial(tex, desc.color);
+					renderElem.matInfo = GUIMaterialManager::instance().requestImageMaterial(groupId, tex, desc.color);
 				else
-					renderElem.matInfo = GUIMaterialManager::instance().requestNonAlphaImageMaterial(tex, desc.color);
+					renderElem.matInfo = GUIMaterialManager::instance().requestNonAlphaImageMaterial(groupId, tex, desc.color);
 			}
 
 			texPage++;

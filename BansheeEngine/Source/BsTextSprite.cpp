@@ -13,7 +13,7 @@ namespace BansheeEngine
 
 	}
 
-	void TextSprite::update(const TEXT_SPRITE_DESC& desc)
+	void TextSprite::update(const TEXT_SPRITE_DESC& desc, UINT64 groupId)
 	{
 		TextData textData(desc.text, desc.font, desc.fontSize, desc.width, desc.height, desc.wordWrap);
 
@@ -76,7 +76,7 @@ namespace BansheeEngine
 				getNewMaterial = true;
 			else
 			{
-				const GUIMaterialInfo* matInfo = GUIMaterialManager::instance().findExistingImageMaterial(tex, desc.color);
+				const GUIMaterialInfo* matInfo = GUIMaterialManager::instance().findExistingTextMaterial(groupId, tex, desc.color);
 				if(matInfo == nullptr)
 				{
 					getNewMaterial = true;
@@ -92,7 +92,7 @@ namespace BansheeEngine
 			}
 
 			if(getNewMaterial)
-				cachedElem.matInfo = GUIMaterialManager::instance().requestTextMaterial(tex, desc.color);
+				cachedElem.matInfo = GUIMaterialManager::instance().requestTextMaterial(groupId, tex, desc.color);
 
 			texPage++;
 		}

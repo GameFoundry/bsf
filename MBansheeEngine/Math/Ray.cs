@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace BansheeEngine
 {
-    public class Ray
+    [StructLayout(LayoutKind.Sequential), SerializeObject]
+    public struct Ray
     {
 		public Vector3 origin;
 		public Vector3 direction;
-
-        public Ray() {}
 
         public Ray(Vector3 origin, Vector3 direction)
         {
@@ -41,6 +41,11 @@ namespace BansheeEngine
             end = matrix.MultiplyAffine(end);
 
             direction = Vector3.Normalize(end - origin);
+        }
+
+        public override string ToString()
+        {
+            return String.Format("(origin: {0} direction: {1})", origin, direction);
         }
     };
 }

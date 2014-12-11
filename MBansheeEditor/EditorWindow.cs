@@ -19,12 +19,16 @@ namespace BansheeEditor
 
         public Vector2I ScreenToWindowPos(Vector2I screenPos)
         {
-            return Internal_ScreenToWindowPos(mCachedPtr, screenPos);
+            Vector2I windowPos;
+            Internal_ScreenToWindowPos(mCachedPtr, screenPos, out windowPos);
+            return windowPos;
         }
 
-        public Vector2I WindowToScreenPos(Vector2I screenPos)
+        public Vector2I WindowToScreenPos(Vector2I windowPos)
         {
-            return Internal_WindowToScreenPos(mCachedPtr, screenPos);
+            Vector2I screenPos;
+            Internal_WindowToScreenPos(mCachedPtr, windowPos, out screenPos);
+            return screenPos;
         }
 
         protected EditorWindow()
@@ -35,6 +39,11 @@ namespace BansheeEditor
         protected virtual void WindowResized(int width, int height)
         {
             GUI.SetArea(0, 0, width, height);
+        }
+
+        protected virtual void FocusChanged(bool inFocus)
+        {
+            
         }
 
         internal GUIPanel CreatePanel(int x, int y, int width, int height)
@@ -63,9 +72,9 @@ namespace BansheeEditor
         private static extern bool Internal_HasFocus(IntPtr nativeInstance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector2I Internal_ScreenToWindowPos(IntPtr nativeInstance, Vector2I position);
+        private static extern void Internal_ScreenToWindowPos(IntPtr nativeInstance, Vector2I position, out Vector2I windowPos);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector2I Internal_WindowToScreenPos(IntPtr nativeInstance, Vector2I position);
+        private static extern void Internal_WindowToScreenPos(IntPtr nativeInstance, Vector2I position, out Vector2I screenPos);
     }
 }

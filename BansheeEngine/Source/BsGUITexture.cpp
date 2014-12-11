@@ -191,7 +191,7 @@ namespace BansheeEngine
 			break;
 		}
 
-		mImageSprite->update(mDesc);
+		mImageSprite->update(mDesc, (UINT64)_getParentWidget());
 		
 		GUIElement::updateRenderElementsInternal();
 	}

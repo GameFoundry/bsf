@@ -114,9 +114,9 @@ namespace BansheeEngine
 		mImageDesc.borderTop = _getStyle()->border.top;
 		mImageDesc.borderBottom = _getStyle()->border.bottom;
 
-		mImageSprite->update(mImageDesc);
+		mImageSprite->update(mImageDesc, (UINT64)_getParentWidget());
 
-		mTextSprite->update(getTextDesc());
+		mTextSprite->update(getTextDesc(), (UINT64)_getParentWidget());
 
 		if(mContentImageSprite != nullptr)
 		{
@@ -125,7 +125,7 @@ namespace BansheeEngine
 			contentImgDesc.width = mContent.getImage()->getWidth();
 			contentImgDesc.height = mContent.getImage()->getHeight();
 
-			mContentImageSprite->update(contentImgDesc);
+			mContentImageSprite->update(contentImgDesc, (UINT64)_getParentWidget());
 		}
 
 		GUIElement::updateRenderElementsInternal();

@@ -5,13 +5,13 @@ namespace BansheeEngine
 {
     public sealed class SceneObject : GameObject
     {
-        public SceneObject Parent
+        public SceneObject parent
         {
             set { Internal_SetParent(mCachedPtr, value); }
             get { return Internal_GetParent(mCachedPtr); }
         }
 
-        public Vector3 Position
+        public Vector3 position
         {
             get
             {
@@ -26,7 +26,7 @@ namespace BansheeEngine
             }
         }
 
-        public Vector3 LocalPosition
+        public Vector3 localPosition
         {
             get
             {
@@ -41,7 +41,7 @@ namespace BansheeEngine
             }
         }
 
-        public Quaternion Rotation
+        public Quaternion rotation
         {
             get
             {
@@ -56,7 +56,7 @@ namespace BansheeEngine
             }
         }
 
-        public Quaternion LocalRotation
+        public Quaternion localRotation
         {
             get
             {
@@ -71,7 +71,7 @@ namespace BansheeEngine
             }
         }
 
-        public Vector3 Scale
+        public Vector3 scale
         {
             get
             {
@@ -81,7 +81,7 @@ namespace BansheeEngine
             }
         }
 
-        public Vector3 LocalScale
+        public Vector3 localScale
         {
             get
             {
@@ -96,7 +96,7 @@ namespace BansheeEngine
             }
         }
 
-        public Matrix4 WorldTransform
+        public Matrix4 worldTransform
         {
             get
             {
@@ -106,7 +106,7 @@ namespace BansheeEngine
             }
         }
 
-        public Matrix4 LocalTransform
+        public Matrix4 localTransform
         {
             get
             {
@@ -116,7 +116,7 @@ namespace BansheeEngine
             }
         }
 
-        public Vector3 Forward
+        public Vector3 forward
         {
             get
             {
@@ -130,7 +130,7 @@ namespace BansheeEngine
             }
         }
 
-        public Vector3 Right
+        public Vector3 right
         {
             get
             {
@@ -140,7 +140,7 @@ namespace BansheeEngine
             }
         }
 
-        public Vector3 Up
+        public Vector3 up
         {
             get
             {
@@ -183,7 +183,9 @@ namespace BansheeEngine
 
         public int GetNumChildren()
         {
-            return Internal_GetNumChildren(mCachedPtr);
+            int value;
+            Internal_GetNumChildren(mCachedPtr, out value);
+            return value;
         }
 
         public SceneObject GetChild(int idx)
@@ -246,7 +248,7 @@ namespace BansheeEngine
         private static extern SceneObject Internal_GetParent(IntPtr nativeInstance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern int Internal_GetNumChildren(IntPtr nativeInstance);
+        private static extern void Internal_GetNumChildren(IntPtr nativeInstance, out int value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern SceneObject Internal_GetChild(IntPtr nativeInstance, int idx);

@@ -17,8 +17,8 @@ using namespace std::placeholders;
 
 namespace BansheeEngine
 {
-	SceneViewHandler::SceneViewHandler(const EditorWidgetBase* parentWidget, const SPtr<CameraHandler>& camera)
-		:mCamera(camera), mSceneGrid(nullptr)
+	SceneViewHandler::SceneViewHandler(EditorWidgetBase* parentWidget, const SPtr<CameraHandler>& camera)
+		:mCamera(camera), mSceneGrid(nullptr), mParentWidget(parentWidget)
 	{
 		mRenderCallback = RendererManager::instance().getActive()->onRenderViewport.connect(std::bind(&SceneViewHandler::render, this, _1, _2));
 		mSceneGrid = bs_new<SceneGrid>();
@@ -44,45 +44,50 @@ namespace BansheeEngine
 		mSceneGrid->update();
 	}
 
-	void SceneViewHandler::pointerPressed(const Vector2I& position)
+	void SceneViewHandler::trySelectHandle(const Vector2I& position)
 	{
 		HandleManager::instance().trySelect(mCamera, position);
 	}
 
-	void SceneViewHandler::pointerReleased(const Vector2I& position, bool controlHeld)
+	bool SceneViewHandler::isHandleActive() const
 	{
-		if (HandleManager::instance().isHandleActive())
-			HandleManager::instance().clearSelection();
-		else
+		return HandleManager::instance().isHandleActive();
+	}
+
+	void SceneViewHandler::clearHandleSelection()
+	{
+		HandleManager::instance().clearSelection();
+	}
+
+	void SceneViewHandler::pickObject(const Vector2I& position, bool additive)
+	{
+		// TODO - Handle multi-selection (i.e. selection rectangle when dragging)
+		HSceneObject pickedObject = ScenePicking::instance().pickClosestObject(mCamera, position, Vector2I(1, 1));
+
+		if (pickedObject)
 		{
-			// TODO - Handle multi-selection (i.e. selection rectangle when dragging)
-			HSceneObject pickedObject = ScenePicking::instance().pickClosestObject(mCamera, position, Vector2I(1, 1));
-
-			if (pickedObject)
+			if (additive) // Append to existing selection
 			{
-				if (controlHeld) // Append to existing selection
-				{
-					Vector<HSceneObject> selectedSOs = Selection::instance().getSceneObjects();
+				Vector<HSceneObject> selectedSOs = Selection::instance().getSceneObjects();
 
-					auto iterFind = std::find_if(selectedSOs.begin(), selectedSOs.end(),
-						[&](const HSceneObject& obj) { return obj == pickedObject; }
-					);
+				auto iterFind = std::find_if(selectedSOs.begin(), selectedSOs.end(),
+					[&](const HSceneObject& obj) { return obj == pickedObject; }
+				);
 
-					if (iterFind != selectedSOs.end())
-						selectedSOs.push_back(pickedObject);
+				if (iterFind != selectedSOs.end())
+					selectedSOs.push_back(pickedObject);
 
-					Selection::instance().setSceneObjects(selectedSOs);
-				}
-				else
-				{
-					Vector<HSceneObject> selectedSOs = { pickedObject };
-
-					Selection::instance().setSceneObjects(selectedSOs);
-				}
+				Selection::instance().setSceneObjects(selectedSOs);
 			}
 			else
-				Selection::instance().clearSceneSelection();
+			{
+				Vector<HSceneObject> selectedSOs = { pickedObject };
+
+				Selection::instance().setSceneObjects(selectedSOs);
+			}
 		}
+		else
+			Selection::instance().clearSceneSelection();
 	}
 
 	void SceneViewHandler::render(const Viewport* viewport, DrawList& drawList)

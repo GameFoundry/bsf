@@ -1,5 +1,6 @@
 #include "BsDockManagerLayout.h"
 #include "BsDockManagerLayoutRTTI.h"
+#include "BsEditorWidgetManager.h"
 
 namespace BansheeEngine
 {
@@ -66,6 +67,58 @@ namespace BansheeEngine
 			}
 
 			bs_delete(current);
+		}
+	}
+
+	void DockManagerLayout::pruneInvalidLeaves()
+	{
+		Stack<Entry*> layoutTodo;
+		layoutTodo.push(&mRootEntry);
+
+		while (!layoutTodo.empty())
+		{
+			Entry* curEntry = layoutTodo.top();
+			layoutTodo.pop();
+
+			if (!curEntry->isLeaf)
+			{
+				layoutTodo.push(curEntry->children[0]);
+				layoutTodo.push(curEntry->children[1]);
+			}
+			else
+			{
+				for (INT32 i = 0; i < (INT32)curEntry->widgetNames.size(); i++)
+				{
+					if (!EditorWidgetManager::instance().isValidWidget(curEntry->widgetNames[i]))
+					{
+						curEntry->widgetNames.erase(curEntry->widgetNames.begin() + i);
+						i--;
+					}
+				}
+
+				if (curEntry->widgetNames.size() == 0)
+				{
+					Entry* parent = curEntry->parent;
+					if (parent != nullptr)
+					{
+						Entry* newParent = parent->parent;
+						Entry* otherChild = parent->children[0] == curEntry ? parent->children[1] : parent->children[0];
+
+						if (newParent != nullptr)
+						{
+							if (newParent->children[0] == parent)
+								newParent->children[0] = otherChild;
+							else
+								newParent->children[1] = otherChild;
+						}
+
+						otherChild->parent = newParent;
+
+						bs_delete(parent);
+						bs_delete(curEntry);
+					}
+				}
+			}
 		}
 	}
 

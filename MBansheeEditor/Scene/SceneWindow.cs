@@ -47,19 +47,36 @@ namespace BansheeEditor
 
         private void EditorUpdate()
         {
-            if (Input.IsButtonDown(ButtonCode.MouseLeft))
+            if (HasFocus)
             {
-                sceneViewHandler.PointerPressed(Input.PointerPosition);
+                if (Input.IsButtonDown(ButtonCode.MouseLeft))
+                {
+                    sceneViewHandler.TrySelectHandle(Input.PointerPosition);
 
-                Vector2I scenePos;
-                if (ScreenToScenePos(Input.PointerPosition, out scenePos))
-                    dragActive = true;
-            }
-            else if (Input.IsButtonUp(ButtonCode.MouseLeft))
-            {
-                bool ctrlHeld = Input.IsButtonHeld(ButtonCode.LeftControl) || Input.IsButtonHeld(ButtonCode.RightControl);
-                sceneViewHandler.PointerReleased(Input.PointerPosition, ctrlHeld);
-                dragActive = false;
+                    Vector2I scenePos;
+                    if (ScreenToScenePos(Input.PointerPosition, out scenePos))
+                        dragActive = true;
+                }
+                else if (Input.IsButtonUp(ButtonCode.MouseLeft))
+                {
+                    bool ctrlHeld = Input.IsButtonHeld(ButtonCode.LeftControl) || Input.IsButtonHeld(ButtonCode.RightControl);
+
+                    if(sceneViewHandler.IsHandleActive())
+                        sceneViewHandler.ClearHandleSelection();
+                    else
+                        sceneViewHandler.PickObject(Input.PointerPosition, ctrlHeld);
+
+                    dragActive = false;
+                }
+
+                if (!dragActive)
+                {
+                    Vector2I scenePos;
+                    if (ScreenToScenePos(Input.PointerPosition, out scenePos))
+                    {
+                        sceneViewHandler.Update(scenePos, Input.PointerDelta);
+                    }
+                }
             }
 
             if (dragActive)
@@ -68,14 +85,6 @@ namespace BansheeEditor
                 ScreenToScenePos(Input.PointerPosition, out scenePos);
                 sceneViewHandler.Update(scenePos, Input.PointerDelta);
             }
-            else
-            {
-                Vector2I scenePos;
-                if (ScreenToScenePos(Input.PointerPosition, out scenePos))
-                {
-                    sceneViewHandler.Update(scenePos, Input.PointerDelta);
-                }
-            }
         }
 
         protected override void WindowResized(int width, int height)
@@ -83,6 +92,15 @@ namespace BansheeEditor
             UpdateRenderTexture(width, height);
 
             base.WindowResized(width, height);
+        }
+
+        protected override void FocusChanged(bool inFocus)
+        {
+            if (!inFocus)
+            {
+                sceneViewHandler.ClearHandleSelection();
+                dragActive = false;
+            }
         }
 
         private void UpdateRenderTexture(int width, int height)
@@ -100,7 +118,7 @@ namespace BansheeEditor
 		        camera.target = renderTexture;
 		        camera.viewportRect = new Rect2(0.0f, 0.0f, 1.0f, 1.0f);
 
-			    sceneCameraSO.Position = new Vector3(0, 0.5f, 1);
+			    sceneCameraSO.position = new Vector3(0, 0.5f, 1);
 			    sceneCameraSO.LookAt(new Vector3(0, 0, 0));
 
 		        camera.priority = 1;

@@ -12,15 +12,16 @@ namespace BansheeEngine
 		SAMPLER_STATE_DESC ssDesc;
 		ssDesc.magFilter = FO_POINT;
 		ssDesc.minFilter = FO_POINT;
-		ssDesc.mipFilter = FO_POINT;
+		ssDesc.mipFilter = FO_POINT;
+
 		mGUISamplerState = SamplerState::create(ssDesc);
 	}
 
-	const GUIMaterialInfo& GUIMaterialManager::requestTextMaterial(const HTexture& texture, const Color& tint) const
+	const GUIMaterialInfo& GUIMaterialManager::requestTextMaterial(UINT64 groupId, const HTexture& texture, const Color& tint) const
 	{
 		Vector4 vecColor(tint.r, tint.g, tint.b, tint.a);
 
-		const GUIMaterialInfo* matInfo = findExistingTextMaterial(texture, tint);
+		const GUIMaterialInfo* matInfo = findExistingTextMaterial(groupId, texture, tint);
 		if(matInfo != nullptr)
 			return *matInfo;
 
@@ -32,16 +33,17 @@ namespace BansheeEngine
 		guiMat.handle.mainTexSampler.set(mGUISamplerState);
 		guiMat.handle.mainTexture.set(texture);
 		guiMat.handle.tint.set(vecColor);
-		guiMat.refCount = 1;		
+		guiMat.refCount = 1;
+		guiMat.groupId = groupId;
 
 		return guiMat.handle;
 	}
 
-	const GUIMaterialInfo& GUIMaterialManager::requestImageMaterial(const HTexture& texture, const Color& tint) const
+	const GUIMaterialInfo& GUIMaterialManager::requestImageMaterial(UINT64 groupId, const HTexture& texture, const Color& tint) const
 	{
 		Vector4 vecColor(tint.r, tint.g, tint.b, tint.a);
 
-		const GUIMaterialInfo* matInfo = findExistingImageMaterial(texture, tint);
+		const GUIMaterialInfo* matInfo = findExistingImageMaterial(groupId, texture, tint);
 		if(matInfo != nullptr)
 			return *matInfo;
 
@@ -53,16 +55,17 @@ namespace BansheeEngine
 		guiMat.handle.mainTexSampler.set(mGUISamplerState);
 		guiMat.handle.mainTexture.set(texture);
 		guiMat.handle.tint.set(vecColor);
-		guiMat.refCount = 1;		
+		guiMat.refCount = 1;
+		guiMat.groupId = groupId;
 
 		return guiMat.handle;
 	}
 
-	const GUIMaterialInfo& GUIMaterialManager::requestNonAlphaImageMaterial(const HTexture& texture, const Color& tint) const
+	const GUIMaterialInfo& GUIMaterialManager::requestNonAlphaImageMaterial(UINT64 groupId, const HTexture& texture, const Color& tint) const
 	{
 		Vector4 vecColor(tint.r, tint.g, tint.b, tint.a);
 
-		const GUIMaterialInfo* matInfo = findExistingNonAlphaImageMaterial(texture, tint);
+		const GUIMaterialInfo* matInfo = findExistingNonAlphaImageMaterial(groupId, texture, tint);
 		if (matInfo != nullptr)
 			return *matInfo;
 
@@ -75,17 +78,18 @@ namespace BansheeEngine
 		guiMat.handle.mainTexture.set(texture);
 		guiMat.handle.tint.set(vecColor);
 		guiMat.refCount = 1;
+		guiMat.groupId = groupId;
 
 		return guiMat.handle;
 	}
 
-	const GUIMaterialInfo* GUIMaterialManager::findExistingTextMaterial(const HTexture& texture, const Color& tint) const
+	const GUIMaterialInfo* GUIMaterialManager::findExistingTextMaterial(UINT64 groupId, const HTexture& texture, const Color& tint) const
 	{
 		Vector4 vecColor(tint.r, tint.g, tint.b, tint.a);
 
 		for(auto& matHandle : mTextMaterials)
 		{
-			if(matHandle.handle.mainTexture.get() == texture && matHandle.handle.tint.get() == vecColor)
+			if (matHandle.handle.mainTexture.get() == texture && matHandle.handle.tint.get() == vecColor && matHandle.groupId == groupId)
 			{
 				matHandle.refCount++;
 				return &matHandle.handle;
@@ -95,13 +99,13 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	const GUIMaterialInfo* GUIMaterialManager::findExistingImageMaterial(const HTexture& texture, const Color& tint) const
+	const GUIMaterialInfo* GUIMaterialManager::findExistingImageMaterial(UINT64 groupId, const HTexture& texture, const Color& tint) const
 	{
 		Vector4 vecColor(tint.r, tint.g, tint.b, tint.a);
 
 		for(auto& matHandle : mImageMaterials)
 		{
-			if(matHandle.handle.mainTexture.get() == texture && matHandle.handle.tint.get() == vecColor)
+			if (matHandle.handle.mainTexture.get() == texture && matHandle.handle.tint.get() == vecColor && matHandle.groupId == groupId)
 			{
 				matHandle.refCount++;
 				return &matHandle.handle;
@@ -111,13 +115,13 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	const GUIMaterialInfo* GUIMaterialManager::findExistingNonAlphaImageMaterial(const HTexture& texture, const Color& tint) const
+	const GUIMaterialInfo* GUIMaterialManager::findExistingNonAlphaImageMaterial(UINT64 groupId, const HTexture& texture, const Color& tint) const
 	{
 		Vector4 vecColor(tint.r, tint.g, tint.b, tint.a);
 
 		for (auto& matHandle : mNonAlphaImageMaterials)
 		{
-			if (matHandle.handle.mainTexture.get() == texture && matHandle.handle.tint.get() == vecColor)
+			if (matHandle.handle.mainTexture.get() == texture && matHandle.handle.tint.get() == vecColor && matHandle.groupId == groupId)
 			{
 				matHandle.refCount++;
 				return &matHandle.handle;
@@ -162,11 +166,28 @@ namespace BansheeEngine
 
 			i++;
 		}
+
+		i = 0;
+		for (auto& matHandle : mNonAlphaImageMaterials)
+		{
+			if (&matHandle.handle == &material)
+			{
+				if (--matHandle.refCount == 0)
+				{
+					mNonAlphaImageMaterials.erase(mNonAlphaImageMaterials.begin() + i);
+					released = true;
+					break;
+				}
+			}
+
+			i++;
+		}
 	}
 
 	void GUIMaterialManager::clearMaterials()
 	{
 		mTextMaterials.clear();
 		mImageMaterials.clear();
+		mNonAlphaImageMaterials.clear();
 	}
 }

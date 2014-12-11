@@ -4,6 +4,7 @@
 #include "BsGUILayoutY.h"
 #include "BsGUIElement.h"
 #include "BsException.h"
+#include "BsGUIWidget.h"
 
 namespace BansheeEngine
 {

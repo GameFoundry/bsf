@@ -33,6 +33,7 @@ namespace BansheeEngine
 		~DockManagerLayout();
 
 		Entry& getRootEntry() { return mRootEntry; }
+		void pruneInvalidLeaves();
 
 	private:
 		Entry mRootEntry;

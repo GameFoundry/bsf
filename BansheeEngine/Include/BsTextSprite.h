@@ -56,8 +56,13 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Recreates internal sprite data according the specified description structure.
+		 *
+		 * @param	desc	Describes the geometry and material of the sprite.
+		 * @param	groupId	Group identifier that forces different materials to be used for
+		 *					different groups (e.g. you don't want the sprites to
+		 *					share the same material if they use different world transform matrices)
 		 */
-		void update(const TEXT_SPRITE_DESC& desc);
+		void update(const TEXT_SPRITE_DESC& desc, UINT64 groupId);
 
 		/**
 		 * @brief	Calculates and returns offset for each individual text line. The offsets provide

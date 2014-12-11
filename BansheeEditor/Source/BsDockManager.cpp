@@ -693,6 +693,9 @@ namespace BansheeEngine
 			}
 		};
 
+		// Prune layout by removing invalid leafs (ones with no widgets, or widgets that no longer exist)
+		layout->pruneInvalidLeaves();
+
 		// Dock elements
 		const DockManagerLayout::Entry* rootEntry = &layout->getRootEntry();
 		const DockManagerLayout::Entry* leafEntry = GetLeafEntry(rootEntry, 0);

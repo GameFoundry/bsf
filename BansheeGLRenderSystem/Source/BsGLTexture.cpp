@@ -189,7 +189,7 @@ namespace BansheeEngine
 
 	PixelData GLTextureCore::lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face)
 	{
-		if (mProperties.getMultisampleCount() > 0)
+		if (mProperties.getMultisampleCount() > 1)
 			BS_EXCEPT(InvalidStateException, "Multisampled textures cannot be accessed from the CPU directly.");
 
 		if(mLockedBuffer != nullptr)
@@ -219,7 +219,7 @@ namespace BansheeEngine
 
 	void GLTextureCore::readData(PixelData& dest, UINT32 mipLevel, UINT32 face)
 	{
-		if (mProperties.getMultisampleCount() > 0)
+		if (mProperties.getMultisampleCount() > 1)
 			BS_EXCEPT(InvalidStateException, "Multisampled textures cannot be accessed from the CPU directly.");
 
 		getBuffer(face, mipLevel)->download(dest);
@@ -227,7 +227,7 @@ namespace BansheeEngine
 
 	void GLTextureCore::writeData(const PixelData& src, UINT32 mipLevel, UINT32 face, bool discardWholeBuffer)
 	{
-		if (mProperties.getMultisampleCount() > 0)
+		if (mProperties.getMultisampleCount() > 1)
 			BS_EXCEPT(InvalidStateException, "Multisampled textures cannot be accessed from the CPU directly.");
 
 		getBuffer(face, mipLevel)->upload(src, src.getExtents());

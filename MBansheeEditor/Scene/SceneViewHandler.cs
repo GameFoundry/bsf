@@ -20,14 +20,24 @@ namespace BansheeEditor
             Internal_Update(mCachedPtr, pointerPos, inputDelta);
         }
 
-        internal void PointerPressed(Vector2I pointerPos)
+        internal void TrySelectHandle(Vector2I pointerPos)
         {
-            Internal_PointerPressed(mCachedPtr, pointerPos);
+            Internal_TrySelectHandle(mCachedPtr, pointerPos);
         }
 
-        internal void PointerReleased(Vector2I pointerPos, bool controlHeld)
+        internal bool IsHandleActive()
         {
-            Internal_PointerReleased(mCachedPtr, pointerPos, controlHeld);
+            return Internal_IsHandleActive(mCachedPtr);
+        }
+
+        internal void ClearHandleSelection()
+        {
+            Internal_ClearHandleSelection(mCachedPtr);
+        }
+
+        internal void PickObject(Vector2I pointerPos, bool controlHeld)
+        {
+            Internal_PickObject(mCachedPtr, pointerPos, controlHeld);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -37,9 +47,15 @@ namespace BansheeEditor
         private static extern void Internal_Update(IntPtr thisPtr, Vector2I pointerPos, Vector2I inputDelta);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_PointerPressed(IntPtr thisPtr, Vector2I pointerPos);
+        private static extern void Internal_TrySelectHandle(IntPtr thisPtr, Vector2I pointerPos);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_PointerReleased(IntPtr thisPtr, Vector2I pointerPos, bool controlHeld);
+        private static extern bool Internal_IsHandleActive(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_ClearHandleSelection(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_PickObject(IntPtr thisPtr, Vector2I pointerPos, bool controlHeld);
     }
 }

@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace BansheeEngine
 {
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential), SerializeObject]
     public struct Quaternion
     {
         private struct EulerAngleOrderData
@@ -534,6 +534,11 @@ namespace BansheeEngine
                 return true;
 
             return false;
+        }
+
+        public override string ToString()
+        {
+            return String.Format("({0}, {1}, {2}, {3})", x, y, z, w);
         }
     }
 }

@@ -17,6 +17,7 @@ namespace BansheeEngine
 {
 	UnorderedMap<String, ScriptEditorWindow::EditorWindowHandle> ScriptEditorWindow::OpenScriptEditorWindows;
 	MonoMethod* ScriptEditorWindow::onResizedMethod = nullptr;
+	MonoMethod* ScriptEditorWindow::onFocusChangedMethod = nullptr;
 
 	ScriptEditorWindow::ScriptEditorWindow(MonoObject* instance, const String& windowName, const String& displayName, EditorWidgetBase* editorWidget)
 		:ScriptObject(instance), mName(windowName), mEditorWidget(editorWidget)
@@ -24,6 +25,7 @@ namespace BansheeEngine
 		mOnWidgetMovedConn = editorWidget->onMoved.connect(std::bind(&ScriptEditorWindow::onWidgetMoved, this, _1, _2));
 		mOnWidgetResizedConn = editorWidget->onResized.connect(std::bind(&ScriptEditorWindow::onWidgetResized, this, _1, _2));
 		mOnParentChangedConn = editorWidget->onParentChanged.connect(std::bind(&ScriptEditorWindow::onWidgetParentChanged, this, _1));
+		mOnFocusChangedConn = editorWidget->onFocusChanged.connect(std::bind(&ScriptEditorWindow::onFocusChanged, this, _1));
 	}
 
 	ScriptEditorWindow::~ScriptEditorWindow()
@@ -32,6 +34,7 @@ namespace BansheeEngine
 		mOnWidgetMovedConn.disconnect();
 		mOnWidgetResizedConn.disconnect();
 		mOnParentChangedConn.disconnect();
+		mOnFocusChangedConn.disconnect();
 	}
 
 	void ScriptEditorWindow::initRuntimeData()
@@ -45,6 +48,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_WindowToScreenPos", &ScriptEditorWindow::internal_windowToScreenPos);
 
 		onResizedMethod = metaData.scriptClass->getMethod("WindowResized", 2);
+		onFocusChangedMethod = metaData.scriptClass->getMethod("FocusChanged", 1);
 	}
 
 	MonoObject* ScriptEditorWindow::internal_createOrGetInstance(MonoString* ns, MonoString* typeName)
@@ -78,14 +82,14 @@ namespace BansheeEngine
 		return thisPtr->getEditorWidget()->hasFocus();
 	}
 
-	Vector2I ScriptEditorWindow::internal_screenToWindowPos(ScriptEditorWindow* thisPtr, const Vector2I& screenPos)
+	void ScriptEditorWindow::internal_screenToWindowPos(ScriptEditorWindow* thisPtr, Vector2I screenPos, Vector2I* windowPos)
 	{
-		return thisPtr->getEditorWidget()->screenToWidgetPos(screenPos);
+		*windowPos = thisPtr->getEditorWidget()->screenToWidgetPos(screenPos);
 	}
 
-	Vector2I ScriptEditorWindow::internal_windowToScreenPos(ScriptEditorWindow* thisPtr, const Vector2I& windowPos)
+	void ScriptEditorWindow::internal_windowToScreenPos(ScriptEditorWindow* thisPtr, Vector2I windowPos, Vector2I* screenPos)
 	{
-		return thisPtr->getEditorWidget()->widgetToScreenPos(windowPos);
+		*screenPos = thisPtr->getEditorWidget()->widgetToScreenPos(windowPos);
 	}
 
 	UINT32 ScriptEditorWindow::internal_getWidth(ScriptEditorWindow* thisPtr)
@@ -139,6 +143,12 @@ namespace BansheeEngine
 			else
 				panel->setParentWidget(nullptr);
 		}
+	}
+
+	void ScriptEditorWindow::onFocusChanged(bool inFocus)
+	{
+		void* params[1] = { &inFocus};
+		onFocusChangedMethod->invokeVirtual(mManagedInstance, params);
 	}
 
 	void ScriptEditorWindow::registerManagedEditorWindows()
