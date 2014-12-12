@@ -69,7 +69,7 @@ namespace BansheeEditor
             // Register controls
             InputConfiguration inputConfig = VirtualInput.KeyConfig;
 
-		    inputConfig.RegisterButton(SceneCamera.MoveForwardBinding, ButtonCode.W);
+            inputConfig.RegisterButton(SceneCamera.MoveForwardBinding, ButtonCode.W);
             inputConfig.RegisterButton(SceneCamera.MoveBackBinding, ButtonCode.S);
             inputConfig.RegisterButton(SceneCamera.MoveLeftBinding, ButtonCode.A);
             inputConfig.RegisterButton(SceneCamera.MoveRightBinding, ButtonCode.D);

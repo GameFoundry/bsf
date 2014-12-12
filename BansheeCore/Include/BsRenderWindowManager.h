@@ -68,14 +68,14 @@ namespace BansheeEngine
 		void windowFocusLost(RenderWindowCore* window);
 
 		/**
-		 * @brief	Called by the core thread when window is moved or resized.
-		 */
-		void windowMovedOrResized(RenderWindowCore* window);
-
-		/**
 		 * @brief	Called by the core thread when mouse leaves a window.
 		 */
 		void windowMouseLeft(RenderWindowCore* window);
+
+		/**
+		 * @brief	Called by the sim thread when window is moved or resized.
+		 */
+		void windowMovedOrResized(RenderWindow* window);
 
 		/**
 		 * @brief	Finds a sim thread equivalent of the provided core thread window implementation.

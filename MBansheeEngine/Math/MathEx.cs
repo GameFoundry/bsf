@@ -118,11 +118,15 @@ namespace BansheeEngine
 
         public static float Abs(float f)
         {
+            // TODO - Try newer mono version
+            throw new NotImplementedException("Mono seems to have a problem calling Math.Abs()? Call it directly if you need it.");
             return Math.Abs(f);
         }
 
         public static int Abs(int value)
         {
+            // TODO - Try newer mono version
+            throw new NotImplementedException("Mono seems to have a problem calling Math.Abs()? Call it directly if you need it.");
             return Math.Abs(value);
         }
 
@@ -266,7 +270,7 @@ namespace BansheeEngine
         {
             const float inv360 = 1.0f/360.0f;
             float angleVal = angle.GetDegrees();
-            float wrapCount = MathEx.Floor(MathEx.Abs(angleVal*inv360));
+            float wrapCount = (float)MathEx.Floor(Math.Abs(angleVal * inv360));
 
             if (angleVal > 0.0f)
                 angleVal -= 360.0f * wrapCount;

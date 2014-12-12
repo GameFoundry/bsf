@@ -16,9 +16,6 @@
     <Filter Include="Header Files\Utility">
       <UniqueIdentifier>{2c09857e-4a4a-480f-8ebb-1661a9ce78dd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\RenderSystem">
-      <UniqueIdentifier>{e0bdc5fc-afd1-46f9-9e3e-f85ca3e220b8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Importer">
       <UniqueIdentifier>{f1fb2bc5-43c6-476a-89e3-b7de86c5aebe}</UniqueIdentifier>
     </Filter>
@@ -87,6 +84,9 @@
     </Filter>
     <Filter Include="Header Files\RenderAPI">
       <UniqueIdentifier>{3480589d-111c-44b8-b0f1-a178cd00f31e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\RenderAPI">
+      <UniqueIdentifier>{e0bdc5fc-afd1-46f9-9e3e-f85ca3e220b8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -630,94 +630,94 @@
       <Filter>Source Files\Resources</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsBlendState.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsDepthStencilState.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsEventQuery.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGpuBuffer.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGpuBufferView.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGpuParam.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGpuParamBlockBuffer.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGpuParams.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGpuProgram.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGpuProgramManager.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsHardwareBufferManager.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsIndexBuffer.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsMeshManager.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsMultiRenderTexture.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsOcclusionQuery.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsPixelBuffer.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsQueryManager.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsRasterizerState.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsRenderStateManager.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsRenderTarget.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsRenderTexture.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsRenderWindow.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsRenderWindowManager.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsSamplerState.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsTextureView.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsTimerQuery.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsVertexBuffer.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsVertexData.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsVertexDeclaration.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsVideoModeInfo.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsRendererManager.cpp">
       <Filter>Source Files\Renderer</Filter>
@@ -810,13 +810,13 @@
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsRenderAPI.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsRenderAPIManager.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsRenderAPICapabilities.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsIResourceListener.cpp">
       <Filter>Source Files</Filter>

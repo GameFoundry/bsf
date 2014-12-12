@@ -180,6 +180,7 @@ namespace BansheeEngine
     class BS_CORE_EXPORT RenderTarget : public CoreObject
     {
     public:
+		RenderTarget();
 		virtual ~RenderTarget() { }
 
 		/**

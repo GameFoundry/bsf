@@ -38,6 +38,12 @@ namespace BansheeEngine
 		BS_EXCEPT(InvalidParametersException, "Attribute not found.");
 	}
 
+	RenderTarget::RenderTarget()
+	{
+		// We never sync from sim to core, so mark it clean to avoid overwriting core thread changes
+		markCoreClean();
+	}
+
 	void RenderTarget::setPriority(CoreAccessor& accessor, INT32 priority)
 	{
 		std::function<void(SPtr<RenderTargetCore>, INT32)> windowedFunc =

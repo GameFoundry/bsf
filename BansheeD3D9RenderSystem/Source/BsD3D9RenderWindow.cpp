@@ -359,7 +359,6 @@ namespace BansheeEngine
 			props.mTop = top;
 
 			SetWindowPos(mHWnd, 0, top, left, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
-			markCoreDirty();
 		}
 	}
 
@@ -379,8 +378,6 @@ namespace BansheeEngine
 
 			SetWindowPos(mHWnd, 0, 0, 0, winWidth, winHeight,
 				SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
-
-			markCoreDirty();
 		}
 	}
 

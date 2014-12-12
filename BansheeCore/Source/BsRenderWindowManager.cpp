@@ -10,7 +10,6 @@ namespace BansheeEngine
 	{
 		Platform::onWindowFocusReceived.connect(std::bind(&RenderWindowManager::windowFocusReceived, this, _1));
 		Platform::onWindowFocusLost.connect(std::bind(&RenderWindowManager::windowFocusLost, this, _1));
-		Platform::onWindowMovedOrResized.connect(std::bind(&RenderWindowManager::windowMovedOrResized, this, _1));
 		Platform::onMouseLeftWindow.connect(std::bind(&RenderWindowManager::windowMouseLeft, this, _1));
 	}
 
@@ -68,9 +67,8 @@ namespace BansheeEngine
 		mNewWindowInFocus = nullptr;
 	}
 
-	void RenderWindowManager::windowMovedOrResized(RenderWindowCore* coreWindow)
+	void RenderWindowManager::windowMovedOrResized(RenderWindow* window)
 	{
-		RenderWindow* window = getNonCore(coreWindow);
 		bool isValidWindow = false;
 		{
 			BS_LOCK_MUTEX(mWindowMutex);
@@ -80,8 +78,6 @@ namespace BansheeEngine
 
 		if(!isValidWindow)
 			return;
-
-		coreWindow->_windowMovedOrResized();
 
 		BS_LOCK_MUTEX(mWindowMutex);
 

@@ -135,12 +135,15 @@ namespace BansheeEngine
 				return 0;
 			break;
 		case WM_MOVE:
+			win->_windowMovedOrResized();
 			windowMovedOrResized(win);
 			break;
 		case WM_DISPLAYCHANGE:
+			win->_windowMovedOrResized();
 			windowMovedOrResized(win);
 			break;
 		case WM_SIZE:
+			win->_windowMovedOrResized();
 			windowMovedOrResized(win);
 			break;
 		case WM_SETCURSOR:

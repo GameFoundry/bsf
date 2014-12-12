@@ -61,7 +61,7 @@ namespace BansheeEditor
                 {
                     bool ctrlHeld = Input.IsButtonHeld(ButtonCode.LeftControl) || Input.IsButtonHeld(ButtonCode.RightControl);
 
-                    if(sceneViewHandler.IsHandleActive())
+                    if (sceneViewHandler.IsHandleActive())
                         sceneViewHandler.ClearHandleSelection();
                     else
                         sceneViewHandler.PickObject(Input.PointerPosition, ctrlHeld);
@@ -105,32 +105,32 @@ namespace BansheeEditor
 
         private void UpdateRenderTexture(int width, int height)
 	    {
-		    width = Math.Max(20, width);
-		    height = Math.Max(20, height);
+            width = Math.Max(20, width);
+            height = Math.Max(20, height);
 
             renderTexture = new RenderTexture2D(PixelFormat.R8G8B8A8, width, height);
             renderTexture.Priority = 1;
 
 		    if (camera == null)
 		    {
-			    SceneObject sceneCameraSO = new SceneObject("SceneCamera");
-			    camera = sceneCameraSO.AddComponent<Camera>();
-		        camera.target = renderTexture;
-		        camera.viewportRect = new Rect2(0.0f, 0.0f, 1.0f, 1.0f);
+                SceneObject sceneCameraSO = new SceneObject("SceneCamera");
+                camera = sceneCameraSO.AddComponent<Camera>();
+                camera.target = renderTexture;
+                camera.viewportRect = new Rect2(0.0f, 0.0f, 1.0f, 1.0f);
 
-			    sceneCameraSO.position = new Vector3(0, 0.5f, 1);
-			    sceneCameraSO.LookAt(new Vector3(0, 0, 0));
+                sceneCameraSO.position = new Vector3(0, 0.5f, 1);
+                sceneCameraSO.LookAt(new Vector3(0, 0, 0));
 
-		        camera.priority = 1;
-		        camera.nearClipPlane = 0.005f;
-		        camera.farClipPlane = 1000.0f;
+                camera.priority = 1;
+                camera.nearClipPlane = 0.005f;
+                camera.farClipPlane = 1000.0f;
 
-			    cameraController = sceneCameraSO.AddComponent<SceneCamera>();
+                cameraController = sceneCameraSO.AddComponent<SceneCamera>();
 
                 renderTextureGUI = new GUIRenderTexture(renderTexture);
-		        GUI.layout.AddElement(renderTextureGUI);
+                GUI.layout.AddElement(renderTextureGUI);
 
-		        sceneViewHandler = new SceneViewHandler(this, camera);
+                sceneViewHandler = new SceneViewHandler(this, camera);
 		    }
 		    else
 		    {

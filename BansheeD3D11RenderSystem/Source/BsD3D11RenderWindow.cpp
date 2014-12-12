@@ -294,8 +294,7 @@ namespace BansheeEngine
 			props.mTop = top;
 			props.mLeft = left;
 
-			SetWindowPos(mHWnd, 0, top, left, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
-			markCoreDirty();			
+			SetWindowPos(mHWnd, 0, top, left, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);		
 		}
 	}
 
@@ -316,7 +315,6 @@ namespace BansheeEngine
 			height = rc.bottom - rc.top;
 
 			SetWindowPos(mHWnd, 0, 0, 0, width, height, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
-			markCoreDirty();
 		}
 	}
 

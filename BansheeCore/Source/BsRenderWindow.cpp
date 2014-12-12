@@ -210,7 +210,15 @@ namespace BansheeEngine
 	void RenderWindow::syncFromCore(const CoreSyncData& data)
 	{
 		RenderWindowProperties& props = const_cast<RenderWindowProperties&>(getProperties());
-		props = data.getData<RenderWindowProperties>();
+
+		const RenderWindowProperties& newProps = data.getData<RenderWindowProperties>();
+
+		bool movedOrResized = props.getHeight() != newProps.getHeight() || props.getWidth() != newProps.getWidth() || props.getLeft() != newProps.getLeft()
+			|| props.getTop() != newProps.getTop() || props.isFullScreen() != newProps.isFullScreen();
+
+		props = newProps;
+		if (movedOrResized)
+			RenderWindowManager::instance().windowMovedOrResized(this);
 	}
 
 	const RenderWindowProperties& RenderWindow::getProperties() const

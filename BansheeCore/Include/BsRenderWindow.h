@@ -161,16 +161,16 @@ namespace BansheeEngine
 		 */
 		const RenderWindowProperties& getProperties() const;
 
-	protected:
-		friend class RenderWindow;
-		friend class RenderWindowManager;
-
 		/**
 		 * @brief	Called when window is moved or resized.
 		 *
-		 * @note	Core thread.
+		 * @note	Core thread. Internal method.
 		 */
 		virtual void _windowMovedOrResized();
+
+	protected:
+		friend class RenderWindow;
+		friend class RenderWindowManager;
 
 		/**
 		 * @brief	Called when window has received focus.
