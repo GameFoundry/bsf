@@ -167,6 +167,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Guides", "Guides", "{425968
 		Dependencies.txt = Dependencies.txt
 		Mono-3.2.3-IntegrationGuide.txt = Mono-3.2.3-IntegrationGuide.txt
 		Mono-3.4.0-IntegrationGuide.txt = Mono-3.4.0-IntegrationGuide.txt
+		Mono-3.8.0-IntegrationGuide.txt = Mono-3.8.0-IntegrationGuide.txt
 		NVTTCompilationGuide.txt = NVTTCompilationGuide.txt
 	EndProjectSection
 EndProject

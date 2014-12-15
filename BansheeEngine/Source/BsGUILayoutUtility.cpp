@@ -23,8 +23,8 @@ namespace BansheeEngine
 			const GUILayout* layout = static_cast<const GUILayout*>(elem);
 
 			GUIArea* parentGUIArea = layout->_getParentGUIArea();
-			parentArea.x = parentGUIArea->x();
-			parentArea.y = parentGUIArea->y();
+			parentArea.x = 0; // Zero because we want position relative to parent GUIArea
+			parentArea.y = 0;
 			parentArea.width = parentGUIArea->width();
 			parentArea.height = parentGUIArea->height();
 

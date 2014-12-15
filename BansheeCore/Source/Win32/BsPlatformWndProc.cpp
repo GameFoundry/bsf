@@ -23,9 +23,9 @@ namespace BansheeEngine
 				{
 					RenderWindowCore* curModalWindow = mModalWindowStack.top();
 
-					HWND curHwnd;
+					UINT64 curHwnd;
 					curModalWindow->getCustomAttribute("WINDOW", &curHwnd);
-					EnableWindow(curHwnd, FALSE);
+					EnableWindow((HWND)curHwnd, FALSE);
 				}
 				else
 				{
@@ -35,9 +35,9 @@ namespace BansheeEngine
 						if(renderWindow == newWindow)
 							continue;
 
-						HWND curHwnd;
+						UINT64 curHwnd;
 						renderWindow->getCustomAttribute("WINDOW", &curHwnd);
-						EnableWindow(curHwnd, FALSE);
+						EnableWindow((HWND)curHwnd, FALSE);
 					}
 				}
 
@@ -94,9 +94,9 @@ namespace BansheeEngine
 					{
 						RenderWindowCore* curModalWindow = mModalWindowStack.top();
 
-						HWND curHwnd;
+						UINT64 curHwnd;
 						curModalWindow->getCustomAttribute("WINDOW", &curHwnd);
-						EnableWindow(curHwnd, TRUE);
+						EnableWindow((HWND)curHwnd, TRUE);
 					}
 					else
 						reenableWindows = true; // No more modal windows, re-enable any remaining window

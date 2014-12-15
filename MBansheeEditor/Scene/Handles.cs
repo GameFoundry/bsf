@@ -54,9 +54,9 @@ namespace BansheeEditor
             Vector3 cameraPos = camera.sceneObject.position;
 
 		    Vector3 diff = position - cameraPos;
-		    float distAlongViewDir = Vector3.Dot(diff, camera.sceneObject.rotation.Forward);
+		    float distAlongViewDir = Math.Abs(Vector3.Dot(diff, camera.sceneObject.rotation.Forward));
 
-		    return EditorSettings.DefaultHandleSize / Math.Max(distAlongViewDir, 0.0001f);
+            return distAlongViewDir * EditorSettings.DefaultHandleSize;
         }
     }
 }

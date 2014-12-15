@@ -30,9 +30,9 @@ namespace BansheeEngine
 	{		
 		if(parentWindow != nullptr)
 		{
-			HWND hWnd;
+			UINT64 hWnd;
 			parentWindow->getCustomAttribute("WINDOW", &hWnd);
-			desc.platformSpecific["parentWindowHandle"] = toString((UINT64)hWnd);
+			desc.platformSpecific["parentWindowHandle"] = toString(hWnd);
 		}
 
 		Win32Window* window = new (bs_alloc<Win32Window, PoolAlloc>()) Win32Window(desc, *this);

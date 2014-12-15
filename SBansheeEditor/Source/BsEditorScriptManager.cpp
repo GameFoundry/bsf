@@ -20,7 +20,7 @@ namespace BansheeEngine
 	{
 		const String ENGINE_ASSEMBLY_PATH = "..\\..\\Assemblies\\MBansheeEditor.dll";
 		const String ENGINE_ASSEMBLY_NAME = BansheeEditorAssemblyName;
-		const String ASSEMBLY_ENTRY_POINT = "ProgramEd::Main";
+		const String ASSEMBLY_ENTRY_POINT = "Program::Start";
 
 		mEditorAssembly = &MonoManager::instance().loadAssembly(ENGINE_ASSEMBLY_PATH, ENGINE_ASSEMBLY_NAME);
 		ScriptEditorWindow::registerManagedEditorWindows();
@@ -31,7 +31,7 @@ namespace BansheeEngine
 		ScriptGizmoManager::startUp(RuntimeScriptObjects::instance());
 		HandleManager::startUp<ScriptHandleManager>(RuntimeScriptObjects::instance());
 
-		mProgramEdClass = mEditorAssembly->getClass("BansheeEditor", "ProgramEd");
+		mProgramEdClass = mEditorAssembly->getClass("BansheeEditor", "Program");
 		mUpdateMethod = mProgramEdClass->getMethod("EditorUpdate");
 
 		mEditorAssembly->invoke(ASSEMBLY_ENTRY_POINT);

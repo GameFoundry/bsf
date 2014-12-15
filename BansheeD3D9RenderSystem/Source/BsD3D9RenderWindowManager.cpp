@@ -15,9 +15,9 @@ namespace BansheeEngine
 	{
 		if(parentWindow != nullptr)
 		{
-			HWND hWnd;
+			UINT64 hWnd;
 			parentWindow->getCustomAttribute("WINDOW", &hWnd);
-			desc.platformSpecific["parentWindowHandle"] = toString((UINT64)hWnd);
+			desc.platformSpecific["parentWindowHandle"] = toString(hWnd);
 		}
 
 		D3D9RenderWindow* window = new (bs_alloc<D3D9RenderWindow, PoolAlloc>()) D3D9RenderWindow(desc, mRenderSystem->getInstanceHandle());

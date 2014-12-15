@@ -56,7 +56,7 @@ namespace BansheeEngine
 		UINT32 mGridMajorAxisSpacing = 10;
 		UINT32 mGridAxisMarkerSpacing = 25;
 
-		float mHandleSize = 20.0f;
+		float mHandleSize = 0.25f;
 
 		mutable UINT32 mHash = 0;
 	};

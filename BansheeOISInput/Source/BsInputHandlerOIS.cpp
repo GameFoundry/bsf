@@ -241,10 +241,10 @@ namespace BansheeEngine
 
 	void InputHandlerOIS::_inputWindowChanged(const RenderWindow& win)
 	{
-		unsigned long long hWnd;
+		UINT64 hWnd = 0;
 		win.getCustomAttribute("WINDOW", &hWnd);
 
-		std::string normalString = toString((UINT64)hWnd).c_str();
+		std::string normalString = toString(hWnd).c_str();
 		mKeyboard->setCaptureContext(normalString);
 		mMouse->setCaptureContext(normalString);
 	}

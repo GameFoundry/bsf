@@ -12,9 +12,12 @@
 
 See GDrive/Resources doc for resources refactor
 
-Scene view initial viewport size isn't valid size
- - Window resize message arrives before sync happens
+Handle lines don't draw in front of geometry
+
+I can get mono errors by checking g_print calls in goutput.c
+
 Screen grid isn't rendered
+ - Managed camera isn't properly registered with scene manager so its render calls aren't registered
 Handles aren't properly rendered
 Icon gizmo seems to sometimes get struck to the side of the camera
 

@@ -123,5 +123,8 @@ namespace BansheeEngine
 
 		if (mActiveSlider == slider)
 			mActiveSlider = nullptr;
+
+		if (mHoverSlider == slider)
+			mHoverSlider = nullptr;
 	}
 }

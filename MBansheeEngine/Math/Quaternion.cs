@@ -235,7 +235,7 @@ namespace BansheeEngine
         public float Normalize()
         {
             float len = w*w+x*x+y*y+z*z;
-            float factor = 1.0f / MathEx.Sqrt(len);
+            float factor = 1.0f / (float)MathEx.Sqrt(len);
 
             x *= factor;
             y *= factor;
@@ -490,8 +490,8 @@ namespace BansheeEngine
             Quaternion quat;
 
             float halfAngle = (float)(0.5f*angleDeg*MathEx.Deg2Rad);
-            float sin = MathEx.Sin(halfAngle);
-            quat.w = MathEx.Cos(halfAngle);
+            float sin = (float)MathEx.Sin(halfAngle);
+            quat.w = (float)MathEx.Cos(halfAngle);
             quat.x = sin * axis.x;
             quat.y = sin * axis.y;
             quat.z = sin * axis.z;

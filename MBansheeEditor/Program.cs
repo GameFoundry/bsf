@@ -4,11 +4,11 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
-    class ProgramEd
+    class Program
     {
         private static EditorApplication app;
 
-        static void Main()
+        static void Start()
         {
             app = new EditorApplication();
 

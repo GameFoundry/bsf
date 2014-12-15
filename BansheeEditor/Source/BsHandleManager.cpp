@@ -8,7 +8,7 @@
 namespace BansheeEngine
 {
 	HandleManager::HandleManager()
-		:mSliderManager(nullptr), mDrawManager(nullptr)
+		:mSliderManager(nullptr), mDrawManager(nullptr), mSettingsHash(0xFFFFFFFF)
 	{
 		mSliderManager = bs_new<HandleSliderManager>();
 		mDrawManager = bs_new<HandleDrawManager>();
@@ -38,6 +38,13 @@ namespace BansheeEngine
 		mDrawManager->draw(camera);
 	}
 
+	void HandleManager::setSettings(const EditorSettingsPtr& settings)
+	{
+		mSettings = settings;
+
+		updateFromProjectSettings();
+	}
+
 	void HandleManager::updateFromProjectSettings()
 	{
 		setDefaultHandleSize(mSettings->getHandleSize());
@@ -60,8 +67,8 @@ namespace BansheeEngine
 		Vector3 cameraPos = camera->getPosition();
 
 		Vector3 diff = handlePos - cameraPos;
-		float distAlongViewDir = diff.dot(camera->getRotation().zAxis());
+		float distAlongViewDir = Math::abs(diff.dot(camera->getRotation().zAxis()));
 
-		return mDefaultHandleSize / std::max(distAlongViewDir, 0.0001f);
+		return distAlongViewDir * mDefaultHandleSize;
 	}
 }

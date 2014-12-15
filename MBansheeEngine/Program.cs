@@ -115,7 +115,7 @@ namespace BansheeEngine
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void UnitTest1_GameObjectClone(SceneObject so);
 
-        static void Main()
+        static void Start()
         {
             UnitTest1_ManagedSerialization();
 

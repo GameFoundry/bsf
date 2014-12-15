@@ -23,6 +23,7 @@ namespace BansheeEngine
 		mRenderCallback = RendererManager::instance().getActive()->onRenderViewport.connect(std::bind(&SceneViewHandler::render, this, _1, _2));
 		mSceneGrid = bs_new<SceneGrid>();
 		mSceneGrid->setSettings(gEditorApplication().getEditorSettings());
+		HandleManager::instance().setSettings(gEditorApplication().getEditorSettings());
 	}
 
 	SceneViewHandler::~SceneViewHandler()

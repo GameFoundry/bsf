@@ -16,8 +16,6 @@ namespace BansheeEditor
         private GUIRenderTexture renderTextureGUI;
         private SceneViewHandler sceneViewHandler;
 
-        private bool dragActive;
-
         public Camera GetCamera()
         {
             return camera;
@@ -34,6 +32,7 @@ namespace BansheeEditor
             Vector2I windowPos = ScreenToWindowPos(screenPos);
 
             Rect2I bounds = GUILayoutUtility.CalculateBounds(renderTextureGUI);
+
             if (bounds.Contains(windowPos))
             {
                 scenePos.x = windowPos.x - bounds.x;
@@ -47,42 +46,28 @@ namespace BansheeEditor
 
         private void EditorUpdate()
         {
-            if (HasFocus)
+            if (!HasFocus)
+                return;
+
+            Vector2I scenePos;
+            if (ScreenToScenePos(Input.PointerPosition, out scenePos))
             {
+                Debug.Log(scenePos);
                 if (Input.IsButtonDown(ButtonCode.MouseLeft))
                 {
-                    sceneViewHandler.TrySelectHandle(Input.PointerPosition);
-
-                    Vector2I scenePos;
-                    if (ScreenToScenePos(Input.PointerPosition, out scenePos))
-                        dragActive = true;
+                    sceneViewHandler.TrySelectHandle(scenePos);
                 }
                 else if (Input.IsButtonUp(ButtonCode.MouseLeft))
                 {
-                    bool ctrlHeld = Input.IsButtonHeld(ButtonCode.LeftControl) || Input.IsButtonHeld(ButtonCode.RightControl);
+                    bool ctrlHeld = Input.IsButtonHeld(ButtonCode.LeftControl) ||
+                                    Input.IsButtonHeld(ButtonCode.RightControl);
 
                     if (sceneViewHandler.IsHandleActive())
                         sceneViewHandler.ClearHandleSelection();
                     else
-                        sceneViewHandler.PickObject(Input.PointerPosition, ctrlHeld);
-
-                    dragActive = false;
+                        sceneViewHandler.PickObject(scenePos, ctrlHeld);
                 }
 
-                if (!dragActive)
-                {
-                    Vector2I scenePos;
-                    if (ScreenToScenePos(Input.PointerPosition, out scenePos))
-                    {
-                        sceneViewHandler.Update(scenePos, Input.PointerDelta);
-                    }
-                }
-            }
-
-            if (dragActive)
-            {
-                Vector2I scenePos;
-                ScreenToScenePos(Input.PointerPosition, out scenePos);
                 sceneViewHandler.Update(scenePos, Input.PointerDelta);
             }
         }
@@ -99,14 +84,13 @@ namespace BansheeEditor
             if (!inFocus)
             {
                 sceneViewHandler.ClearHandleSelection();
-                dragActive = false;
             }
         }
 
         private void UpdateRenderTexture(int width, int height)
 	    {
-            width = Math.Max(20, width);
-            height = Math.Max(20, height);
+            width = MathEx.Max(20, width);
+            height = MathEx.Max(20, height);
 
             renderTexture = new RenderTexture2D(PixelFormat.R8G8B8A8, width, height);
             renderTexture.Priority = 1;

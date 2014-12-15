@@ -92,19 +92,19 @@ namespace BansheeEngine
 	void Platform::captureMouse(const RenderWindow& window)
 	{
 		RenderWindowPtr primaryWindow = gCoreApplication().getPrimaryWindow();
-		HWND hwnd;
+		UINT64 hwnd;
 		primaryWindow->getCustomAttribute("WINDOW", &hwnd);
 		
-		PostMessage(hwnd, WM_BS_SETCAPTURE, WPARAM(hwnd), 0);
+		PostMessage((HWND)hwnd, WM_BS_SETCAPTURE, WPARAM((HWND)hwnd), 0);
 	}
 
 	void Platform::releaseMouseCapture()
 	{
 		RenderWindowPtr primaryWindow = gCoreApplication().getPrimaryWindow();
-		HWND hwnd;
+		UINT64 hwnd;
 		primaryWindow->getCustomAttribute("WINDOW", &hwnd);
 
-		PostMessage(hwnd, WM_BS_RELEASECAPTURE, WPARAM(hwnd), 0);
+		PostMessage((HWND)hwnd, WM_BS_RELEASECAPTURE, WPARAM((HWND)hwnd), 0);
 	}
 
 	bool Platform::isPointOverWindow(const RenderWindow& window, const Vector2I& screenPos)
@@ -115,11 +115,11 @@ namespace BansheeEngine
 		point.x = screenPos.x;
 		point.y = screenPos.y;
 
-		HWND hwndToCheck;
+		UINT64 hwndToCheck;
 		window.getCustomAttribute("WINDOW", &hwndToCheck);
 
 		HWND hwndUnderPos = WindowFromPoint(point);
-		return hwndUnderPos == hwndToCheck;
+		return hwndUnderPos == (HWND)hwndToCheck;
 	}
 
 	void Platform::hideCursor()
@@ -130,10 +130,10 @@ namespace BansheeEngine
 		// WM_SETCURSOR in message loop to hide the cursor is smarter solution anyway.
 
 		RenderWindowPtr primaryWindow = gCoreApplication().getPrimaryWindow();
-		HWND hwnd;
+		UINT64 hwnd;
 		primaryWindow->getCustomAttribute("WINDOW", &hwnd);
 
-		PostMessage(hwnd, WM_SETCURSOR, WPARAM(hwnd), (LPARAM)MAKELONG(HTCLIENT, WM_MOUSEMOVE));
+		PostMessage((HWND)hwnd, WM_SETCURSOR, WPARAM((HWND)hwnd), (LPARAM)MAKELONG(HTCLIENT, WM_MOUSEMOVE));
 	}
 
 	void Platform::showCursor()
@@ -144,20 +144,20 @@ namespace BansheeEngine
 		// WM_SETCURSOR in message loop to hide the cursor is smarter solution anyway.
 
 		RenderWindowPtr primaryWindow = gCoreApplication().getPrimaryWindow();
-		HWND hwnd;
+		UINT64 hwnd;
 		primaryWindow->getCustomAttribute("WINDOW", &hwnd);
 
-		PostMessage(hwnd, WM_SETCURSOR, WPARAM(hwnd), (LPARAM)MAKELONG(HTCLIENT, WM_MOUSEMOVE));
+		PostMessage((HWND)hwnd, WM_SETCURSOR, WPARAM((HWND)hwnd), (LPARAM)MAKELONG(HTCLIENT, WM_MOUSEMOVE));
 	}
 
 	void Platform::clipCursorToWindow(const RenderWindow& window)
 	{
-		HWND hwnd;
+		UINT64 hwnd;
 		window.getCustomAttribute("WINDOW", &hwnd);
 
 		// Clip cursor to the window
 		RECT clipWindowRect;
-		if(GetWindowRect(hwnd, &clipWindowRect))
+		if(GetWindowRect((HWND)hwnd, &clipWindowRect))
 		{
 			ClipCursor(&clipWindowRect);
 		}
@@ -251,10 +251,10 @@ namespace BansheeEngine
 
 		// Make sure we notify the message loop to perform the actual cursor update
 		RenderWindowPtr primaryWindow = gCoreApplication().getPrimaryWindow();
-		HWND hwnd;
+		UINT64 hwnd;
 		primaryWindow->getCustomAttribute("WINDOW", &hwnd);
 
-		PostMessage(hwnd, WM_SETCURSOR, WPARAM(hwnd), (LPARAM)MAKELONG(HTCLIENT, WM_MOUSEMOVE));
+		PostMessage((HWND)hwnd, WM_SETCURSOR, WPARAM((HWND)hwnd), (LPARAM)MAKELONG(HTCLIENT, WM_MOUSEMOVE));
 	}
 
 	void Platform::setCaptionNonClientAreas(const RenderWindowCore& window, const Vector<Rect2I>& nonClientAreas)
@@ -386,10 +386,10 @@ namespace BansheeEngine
 		auto iterFind = mDropTargets.data->dropTargetsPerWindow.find(window);
 		if(iterFind == mDropTargets.data->dropTargetsPerWindow.end())
 		{
-			HWND hwnd;
+			UINT64 hwnd;
 			window->getCustomAttribute("WINDOW", &hwnd);
 
-			win32DropTarget = bs_new<Win32DropTarget>(hwnd);
+			win32DropTarget = bs_new<Win32DropTarget>((HWND)hwnd);
 			mDropTargets.data->dropTargetsPerWindow[window] = win32DropTarget;
 
 			{

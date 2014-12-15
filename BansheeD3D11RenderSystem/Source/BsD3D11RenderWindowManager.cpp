@@ -18,9 +18,9 @@ namespace BansheeEngine
 
 		if(parentWindow != nullptr)
 		{
-			HWND hWnd;
+			UINT64 hWnd;
 			parentWindow->getCustomAttribute("WINDOW", &hWnd);
-			desc.platformSpecific["parentWindowHandle"] = toString((UINT64)hWnd);
+			desc.platformSpecific["parentWindowHandle"] = toString(hWnd);
 		}
 
 		// Create the window

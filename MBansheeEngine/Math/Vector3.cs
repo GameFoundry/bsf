@@ -64,7 +64,7 @@ namespace BansheeEngine
         {
             get
             {
-                return MathEx.Sqrt(x * x + y * y + z * z);
+                return (float)MathEx.Sqrt(x * x + y * y + z * z);
             }
         }
 
@@ -155,7 +155,7 @@ namespace BansheeEngine
 
         public static float Magnitude(Vector3 v)
         {
-            return MathEx.Sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+            return (float)MathEx.Sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
         }
 
         public static float SqrMagnitude(Vector3 v)

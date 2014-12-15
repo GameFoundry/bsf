@@ -562,8 +562,8 @@ namespace BansheeEngine
 		} 
 		else if(name == "WINDOW")
 		{
-			HWND *pHwnd = (HWND*)pData;
-			*pHwnd = mHWnd;
+			UINT64 *pHwnd = (UINT64*)pData;
+			*pHwnd = (UINT64)mHWnd;
 			return;
 		} 
 	}
@@ -699,8 +699,8 @@ namespace BansheeEngine
 	{
 		if (name == "WINDOW")
 		{
-			HWND *pHwnd = (HWND*)pData;
-			*pHwnd = getHWnd();
+			UINT64 *pHwnd = (UINT64*)pData;
+			*pHwnd = (UINT64)getHWnd();
 			return;
 		}
 	}

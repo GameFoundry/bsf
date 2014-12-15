@@ -36,7 +36,7 @@ namespace BansheeEngine
 	{
 		const String ENGINE_ASSEMBLY_PATH = "..\\..\\Assemblies\\MBansheeEngine.dll";
 		const String ENGINE_ASSEMBLY_NAME = BansheeEngineAssemblyName;
-		const String ASSEMBLY_ENTRY_POINT = "Program::Main";
+		const String ASSEMBLY_ENTRY_POINT = "Program::Start";
 
 		MonoAssembly& bansheeEngineAssembly = MonoManager::instance().loadAssembly(ENGINE_ASSEMBLY_PATH, ENGINE_ASSEMBLY_NAME);
 
