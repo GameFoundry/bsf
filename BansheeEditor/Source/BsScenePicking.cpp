@@ -78,14 +78,14 @@ namespace BansheeEngine
 
 		Matrix4 viewProjMatrix = cam->getProjectionMatrixRS() * cam->getViewMatrix();
 
-		const Vector<SceneRenderableData>& renderables = SceneManager::instance().getAllRenderables();
+		const Map<RenderableHandler*, SceneRenderableData>& renderables = SceneManager::instance().getAllRenderables();
 		RenderableSet pickData(comparePickElement);
 		Map<UINT32, HSceneObject> idxToRenderable;
 
 		for (auto& renderableData : renderables)
 		{
-			RenderableHandlerPtr renderable = renderableData.renderable;
-			HSceneObject so = renderableData.sceneObject;
+			RenderableHandlerPtr renderable = renderableData.second.renderable;
+			HSceneObject so = renderableData.second.sceneObject;
 
 			if (!so->getActive())
 				continue;

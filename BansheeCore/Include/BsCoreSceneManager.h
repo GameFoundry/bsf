@@ -9,8 +9,7 @@ namespace BansheeEngine
 	/**
 	 * @brief	Manages all objects in the scene and provides various query methods
 	 * 			for finding objects. This is just the base class with basic query 
-	 *			functionality. You should override it with your own version that
-	 * 			implements a spatial data structure of your choice for faster queries.
+	 *			functionality. You should override it with your own version.
 	 */
 	class BS_CORE_EXPORT CoreSceneManager : public Module<CoreSceneManager>
 	{
@@ -48,18 +47,35 @@ namespace BansheeEngine
 		 */
 		void registerNewSO(const HSceneObject& node);
 
-		/**
-		 * @brief	SceneObjects call this when they have a component added to them.
-		 */
-		virtual void notifyComponentAdded(const HComponent& component);
-
-		/**
-		 * @brief	SceneObjects call this when they have a component removed from them.
-		 */
-		virtual void notifyComponentRemoved(const HComponent& component);
-
 	protected:
 		HSceneObject mRootNode;
+	};
+
+	/**
+	 * @brief	Handles creation of a scene manager.
+	 *
+	 * @note	Since scene manager implementations may vary it is expected that a concrete implementation
+	 *			of a scene manager will register its creation method using "setFactoryMethod" which will then
+	 *			later be used for creating the scene manager during application start up.
+	 */
+	class BS_CORE_EXPORT SceneManagerFactory
+	{
+	public:
+		/**
+		 * @brief	Creates a concrete scene manager, depending on the currently set factory method.
+		 */
+		static void create();
+
+		/**
+		 * @brief	Sets method that will be used for creating the scene manager when "create" gets called.
+		 */
+		static void setFactoryMethod(const std::function<void()>& method)
+		{
+			mFactoryMethod = method;
+		}
+
+	private:
+		static std::function<void()> mFactoryMethod;
 	};
 
 	/**

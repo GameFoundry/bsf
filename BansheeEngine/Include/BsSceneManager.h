@@ -10,6 +10,8 @@ namespace BansheeEngine
 	 */
 	struct SceneCameraData
 	{
+		SceneCameraData() { }
+
 		SceneCameraData(const CameraHandlerPtr& camera, const HSceneObject& sceneObject)
 			:camera(camera), sceneObject(sceneObject)
 		{ }
@@ -23,6 +25,8 @@ namespace BansheeEngine
 	 */
 	struct SceneRenderableData
 	{
+		SceneRenderableData() { }
+
 		SceneRenderableData(const RenderableHandlerPtr& renderable, const HSceneObject& sceneObject)
 			:renderable(renderable), sceneObject(sceneObject)
 		{ }
@@ -38,18 +42,64 @@ namespace BansheeEngine
 	class BS_EXPORT SceneManager : public CoreSceneManager
 	{
 	public:
-		SceneManager() {}
+		struct InitOnStart
+		{
+		public:
+			InitOnStart()
+			{
+				SceneManagerFactory::setFactoryMethod(&startUp);
+			}
+
+			static void startUp()
+			{
+				CoreSceneManager::startUp<SceneManager>();
+			}
+		};
+
+		SceneManager() { }
 		virtual ~SceneManager() {}
 
 		/**
 		 * @brief	Returns all cameras in the scene.
+		 *
+		 * @note	Internal method.
 		 */
-		virtual const Vector<SceneCameraData>& getAllCameras() const = 0;
+		const Map<CameraHandler*, SceneCameraData>& getAllCameras() const { return mCameras; }
 
 		/**
 		 * @brief	Returns all renderables in the scene.
+		 *
+		 * @note	Internal method.
 		 */
-		virtual const Vector<SceneRenderableData>& getAllRenderables() const = 0;
+		const Map<RenderableHandler*, SceneRenderableData>& getAllRenderables() const { return mRenderables; }
+
+		/**
+		 * @brief	Notifies the scene manager that a new renderable was created.
+		 * 
+		 * @note	Internal method.
+		 */
+		void _registerRenderable(const SPtr<RenderableHandler>& renderable, const HSceneObject& so);
+
+		/**
+		 * @brief	Notifies the scene manager that a renderable was removed.
+		 *
+		 * @note	Internal method.
+		 */
+		void _unregisterRenderable(const SPtr<RenderableHandler>& renderable);
+
+		/**
+		 * @brief	Notifies the scene manager that a new camera was created.
+		 *
+		 * @note	Internal method.
+		 */
+		void _registerCamera(const SPtr<CameraHandler>& camera, const HSceneObject& so);
+
+		/**
+		 * @brief	Notifies the scene manager that a camera was removed.
+		 *
+		 * @note	Internal method.
+		 */
+		void _unregisterCamera(const SPtr<CameraHandler>& camera);
 
 		/**
 		 * @copydoc	CoreSceneManager::instance
@@ -61,10 +111,11 @@ namespace BansheeEngine
 		 */
 		static SceneManager* instancePtr();
 
-		/**
-		 * @brief	Triggered whenever a renderable is removed from a SceneObject.
-		 */
-		Event<void(const RenderableHandlerPtr&)> onRenderableRemoved;
+	private:
+		Map<CameraHandler*, SceneCameraData> mCameras;
+		Map<RenderableHandler*, SceneRenderableData> mRenderables;
+
+		volatile static InitOnStart DoInitOnStart;
 	};
 
 	/**

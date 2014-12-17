@@ -8,6 +8,7 @@
 #include "BsCoreSceneManager.h"
 #include "BsGameObjectManager.h"
 #include "BsGameObject.h"
+#include "BsComponent.h"
 
 namespace BansheeEngine
 {
@@ -402,8 +403,7 @@ namespace BansheeEngine
 				GameObjectHandle<T>(GameObjectManager::instance().registerObject(gameObject));
 
 			mComponents.push_back(newComponent);
-
-			gCoreSceneManager().notifyComponentAdded(newComponent);	
+			newComponent->onInitialized();
 
 			return newComponent;
 		}

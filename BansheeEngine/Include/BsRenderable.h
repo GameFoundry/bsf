@@ -77,6 +77,11 @@ namespace BansheeEngine
 
 		Renderable(const HSceneObject& parent);
 
+		/**
+		 * @copydoc	Component::onDestroyed
+		 */
+		void onDestroyed();
+
 	public:
 		/**
 		 * @copydoc	Component::update

@@ -60,7 +60,7 @@ namespace BansheeEngine
 
 	CoreApplication::CoreApplication(START_UP_DESC& desc)
 		:mPrimaryWindow(nullptr), mIsFrameRenderingFinished(true), mRunMainLoop(false), 
-		mSceneManagerPlugin(nullptr), mRendererPlugin(nullptr)
+		mRendererPlugin(nullptr)
 	{
 		signal(SIGABRT, handleAbort);
 
@@ -97,8 +97,8 @@ namespace BansheeEngine
 		RendererManager::startUp();
 
 		loadPlugin(desc.renderer, &mRendererPlugin);
-		loadPlugin(desc.sceneManager, &mSceneManagerPlugin);
 
+		SceneManagerFactory::create();
 		RendererManager::instance().setActive(desc.renderer);
 
 		ProfilerGPU::startUp();
@@ -125,7 +125,7 @@ namespace BansheeEngine
 		MeshManager::shutDown();
 		ProfilerGPU::shutDown();
 
-		shutdownPlugin(mSceneManagerPlugin);
+		CoreSceneManager::shutDown();
 
 		RendererManager::shutDown();
 		shutdownPlugin(mRendererPlugin);
@@ -142,7 +142,6 @@ namespace BansheeEngine
 		gCoreThread().update();
 		gCoreThread().submitAccessors(true);
 
-		unloadPlugin(mSceneManagerPlugin);
 		unloadPlugin(mRendererPlugin);
 
 		RenderAPIManager::shutDown();

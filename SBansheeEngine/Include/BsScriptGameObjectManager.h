@@ -11,7 +11,7 @@ namespace BansheeEngine
 	public:
 		ScriptGameObjectManager();
 
-		ScriptComponent* createScriptComponent(const GameObjectHandle<ManagedComponent>& component);
+		void registerScriptComponent(ScriptComponent* nativeInstance, const GameObjectHandle<ManagedComponent>& component);
 		ScriptSceneObject* createScriptSceneObject(const HSceneObject& sceneObject);
 		ScriptSceneObject* createScriptSceneObject(MonoObject* existingInstance, const HSceneObject& sceneObject);
 

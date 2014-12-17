@@ -302,6 +302,11 @@ namespace BansheeEngine
 	protected:
 		friend class SceneObject;
 
+		/**
+		 * @copydoc	Component::onDestroyed
+		 */
+		void onDestroyed();
+
 	public:
 		/**
 		 * @copydoc	Component::update

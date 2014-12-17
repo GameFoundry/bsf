@@ -8,6 +8,7 @@
 #include "BsManagedSerializableObject.h"
 #include "BsGameObjectManager.h"
 #include "BsScriptGameObjectManager.h"
+#include "BsScriptComponent.h"
 
 namespace BansheeEngine
 {
@@ -74,27 +75,10 @@ namespace BansheeEngine
 			MonoType* monoType = mono_class_get_type(monoClass);
 			MonoReflectionType* runtimeType = mono_type_get_object(MonoManager::instance().getDomain(), monoType);
 
-			// Find handle so we can create a script component
-			HManagedComponent componentHandle;
-			if (mc->mParent != nullptr)
-			{
-				const Vector<HComponent>& components = mc->mParent->getComponents();
-				for (auto& component : components)
-				{
-					if (component.get() == mc)
-					{
-						componentHandle = component;
-						break;
-					}
-				}
-			}
-
-			assert(componentHandle != nullptr); // It must exist as every component belongs to its parent SO
-
 			MonoClass* managedClass = MonoManager::instance().findClass(monoClass);
+			MonoObject* managedInstance = serializableObject->getManagedInstance();
 
-			mc->construct(serializableObject->getManagedInstance(), runtimeType, managedClass);
-			ScriptComponent* nativeInstance = ScriptGameObjectManager::instance().createScriptComponent(componentHandle);
+			mc->initialize(managedInstance, runtimeType, managedClass);
 		}
 
 		virtual const String& getRTTIName()

@@ -21,12 +21,12 @@ namespace BansheeEngine
 		SPtr<CameraHandler> getInternal() const { return mCameraHandler; }
 
 	private:
-		ScriptCameraHandler(MonoObject* managedInstance);
+		ScriptCameraHandler(MonoObject* managedInstance, const HSceneObject& parentSO);
 		~ScriptCameraHandler();
 
 		void updateView(const HSceneObject& parent);
 
-		static void internal_Create(MonoObject* managedInstance);
+		static void internal_Create(MonoObject* managedInstance, ScriptSceneObject* parentSO);
 
 		static float internal_GetAspect(ScriptCameraHandler* instance);
 		static void internal_SetAspect(ScriptCameraHandler* instance, float value);
@@ -100,6 +100,7 @@ namespace BansheeEngine
 		static void internal_SetRenderTarget(ScriptCameraHandler* instance, ScriptRenderTarget* target);
 
 		static void internal_UpdateView(ScriptCameraHandler* instance, ScriptSceneObject* parent);
+		static void internal_OnDestroy(ScriptCameraHandler* instance);
 
 		SPtr<CameraHandler> mCameraHandler;
 		UINT32 mLastUpdateHash;

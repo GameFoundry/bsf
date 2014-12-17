@@ -100,7 +100,8 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Returns normalized value for the specified input axis. 
-		 *			Returned value will be in [-1.0, 1.0] range.
+		 *			Returned value will usually be in [-1.0, 1.0] range, but can be outside
+		 *			the range for devices with unbound axes (e.g. mouse).
 		 *
 		 * @param	axis		Virtual axis identifier.
 		 * @param	deviceIdx	Optional device index in case multiple input devices are available.

@@ -474,11 +474,10 @@ namespace BansheeEngine
 			}
 			else if(primitiveTypeInfo->mType == ScriptPrimitiveType::ComponentRef)
 			{
-				if(value)
+				if (value)
 				{
 					ScriptComponent* scriptComponent = ScriptGameObjectManager::instance().getScriptComponent(value);
-					if(scriptComponent == nullptr)
-						scriptComponent = ScriptGameObjectManager::instance().createScriptComponent(value);
+					assert(scriptComponent != nullptr);
 
 					return scriptComponent->getManagedInstance();
 				}

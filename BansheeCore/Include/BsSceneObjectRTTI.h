@@ -5,6 +5,7 @@
 #include "BsSceneObject.h"
 #include "BsGameObjectHandle.h"
 #include "BsGameObjectManager.h"
+#include "BsComponent.h"
 
 namespace BansheeEngine
 {
@@ -60,7 +61,27 @@ namespace BansheeEngine
 			DeserializationData deserializationData = any_cast<DeserializationData>(so->mRTTIData);
 
 			if (deserializationData.isDeserializationParent)
+			{
 				GameObjectManager::instance().endDeserialization();
+
+				// Initialize all components
+				Stack<HSceneObject> todo;
+				todo.push(so->mThisHandle);
+
+				while (!todo.empty())
+				{
+					HSceneObject curSO = todo.top();
+					todo.pop();
+
+					const Vector<HComponent>& components = curSO->getComponents();
+
+					for (auto& component : components)
+						component->onInitialized();
+
+					for (UINT32 i = 0; i < curSO->getNumChildren(); i++)
+						todo.push(curSO->getChild(i));
+				}
+			}
 
 			so->mRTTIData = nullptr;
 		}

@@ -6,6 +6,7 @@
 #include "BsMaterial.h"
 #include "BsRenderQueue.h"
 #include "BsBounds.h"
+#include "BsSceneManager.h"
 
 namespace BansheeEngine
 {
@@ -15,6 +16,7 @@ namespace BansheeEngine
 		setName("Renderable");
 
 		mInternal = RenderableHandler::create();
+		gSceneManager()._registerRenderable(mInternal, parent);
 	}
 
 	Bounds Renderable::getBounds() const
@@ -43,6 +45,11 @@ namespace BansheeEngine
 		{
 			mInternal->setIsActive(SO()->getActive());
 		}
+	}
+
+	void Renderable::onDestroyed()
+	{
+		gSceneManager()._unregisterRenderable(mInternal);
 	}
 
 	RTTITypeBase* Renderable::getRTTIStatic()

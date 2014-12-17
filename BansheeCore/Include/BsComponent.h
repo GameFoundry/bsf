@@ -41,9 +41,15 @@ namespace BansheeEngine
 
 	protected:
 		friend class SceneObject;
+		friend class SceneObjectRTTI;
 
 		Component(const HSceneObject& parent);
 		virtual ~Component();
+
+		/**
+		 * @brief	Called when the component is ready to be initialized.
+		 */
+		virtual void onInitialized() {}
 
 		/**
 		 * @brief	Called just before the component is destroyed.

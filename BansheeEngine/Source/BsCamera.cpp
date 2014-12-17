@@ -12,6 +12,7 @@
 #include "BsRenderAPI.h"
 #include "BsSceneObject.h"
 #include "BsDebug.h"
+#include "BsSceneManager.h"
 
 namespace BansheeEngine 
 {
@@ -19,6 +20,7 @@ namespace BansheeEngine
 		: Component(parent), mLastUpdateHash(std::numeric_limits<UINT32>::max())
     {
 		mInternal = CameraHandler::create(target, left, top, width, height);
+		gSceneManager()._registerCamera(mInternal, parent);
 
 		setName("Camera");
     }
@@ -59,6 +61,11 @@ namespace BansheeEngine
 	void Camera::update() 
 	{
 		updateView();
+	}
+
+	void Camera::onDestroyed()
+	{
+		gSceneManager()._unregisterCamera(mInternal);
 	}
 
 	RTTITypeBase* Camera::getRTTIStatic()

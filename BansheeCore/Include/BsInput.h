@@ -100,7 +100,8 @@ namespace BansheeEngine
 		void _update();
 
 		/**
-		 * @brief	Returns value of the specified input axis in range [-1.0, 1.0].
+		 * @brief	Returns value of the specified input axis. Normally in range [-1.0, 1.0] but can be outside
+		 *			the range for devices with unbound axes (e.g. mouse).
 		 *
 		 * @param	type		Type of axis to query. Usually a type from InputAxis but can be a custom value.
 		 * @param	deviceIdx	Index of the device in case more than one is hooked up (0 - primary).

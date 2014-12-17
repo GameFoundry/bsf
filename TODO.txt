@@ -13,12 +13,11 @@
 See GDrive/Resources doc for resources refactor
 
 Handle lines don't draw in front of geometry
+I think mouse delta isn't properly reset between mouse movement
+Gizmos don't start rendering until you click on screen
 
 I can get mono errors by checking g_print calls in goutput.c
 
-Screen grid isn't rendered
- - Managed camera isn't properly registered with scene manager so its render calls aren't registered
-Handles aren't properly rendered
 Icon gizmo seems to sometimes get struck to the side of the camera
 
 Other:

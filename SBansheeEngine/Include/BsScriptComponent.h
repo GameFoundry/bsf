@@ -15,9 +15,12 @@ namespace BansheeEngine
 		virtual HGameObject getNativeHandle() const { return mManagedComponent; }
 		virtual void setNativeHandle(const HGameObject& gameObject);
 
+		void setManagedComponent(const GameObjectHandle<ManagedComponent>& managedComponent);
+
 	private:
 		friend class ScriptGameObjectManager;
 
+		static void internal_createInstance(MonoObject* instance);
 		static MonoObject* internal_addComponent(MonoObject* parentSceneObject, MonoReflectionType* type);
 		static MonoObject* internal_getComponent(MonoObject* parentSceneObject, MonoReflectionType* type);
 		static MonoArray* internal_getComponents(MonoObject* parentSceneObject);
@@ -26,7 +29,7 @@ namespace BansheeEngine
 
 		static bool checkIfDestroyed(const GameObjectHandleBase& handle);
 
-		ScriptComponent(MonoObject* instance, const GameObjectHandle<ManagedComponent>& managedComponent);
+		ScriptComponent(MonoObject* instance);
 		~ScriptComponent() {}
 
 		void _onManagedInstanceDeleted();

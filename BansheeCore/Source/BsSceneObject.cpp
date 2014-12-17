@@ -69,7 +69,6 @@ namespace BansheeEngine
 
 		for(auto iter = mComponents.begin(); iter != mComponents.end(); ++iter)
 		{
-			gCoreSceneManager().notifyComponentRemoved((*iter));
 			(*iter)->onDestroyed();
 
 			if (immediate)
@@ -468,7 +467,6 @@ namespace BansheeEngine
 
 		if(iter != mComponents.end())
 		{
-			gCoreSceneManager().notifyComponentRemoved((*iter));
 			(*iter)->onDestroyed();
 			
 			mComponents.erase(iter);
@@ -509,8 +507,6 @@ namespace BansheeEngine
 		GameObjectHandle<Component> newComponent = GameObjectHandle<Component>(component);
 		newComponent->mParent = mThisHandle;
 		mComponents.push_back(newComponent);
-
-		gCoreSceneManager().notifyComponentAdded(newComponent);
 	}
 
 	RTTITypeBase* SceneObject::getRTTIStatic()

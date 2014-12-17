@@ -23,7 +23,6 @@ namespace BansheeEngine
 		desc.primaryWindowDesc = primaryWindowDesc;
 
 		desc.input = "BansheeOISInput";
-		desc.sceneManager = "BansheeSceneManager";
 		desc.importers.push_back("BansheeFreeImgImporter");
 		desc.importers.push_back("BansheeFBXImporter");
 		desc.importers.push_back("BansheeFontImporter");

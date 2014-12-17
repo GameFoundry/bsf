@@ -5,6 +5,8 @@
 
 namespace BansheeEngine
 {
+	std::function<void()> SceneManagerFactory::mFactoryMethod;
+
 	CoreSceneManager::CoreSceneManager()
 	{
 		mRootNode = SceneObject::createInternal("SceneRoot");
@@ -52,11 +54,16 @@ namespace BansheeEngine
 			node->setParent(mRootNode);
 	}
 
-	void CoreSceneManager::notifyComponentAdded(const HComponent& component) { }
-	void CoreSceneManager::notifyComponentRemoved(const HComponent& component) { }
-
 	CoreSceneManager& gCoreSceneManager()
 	{
 		return CoreSceneManager::instance();
+	}
+
+	void SceneManagerFactory::create()
+	{
+		if (mFactoryMethod != nullptr)
+			mFactoryMethod();
+		else
+			BS_EXCEPT(InvalidStateException, "Failed to initialize scene manager because no valid factory method is set.");
 	}
 }

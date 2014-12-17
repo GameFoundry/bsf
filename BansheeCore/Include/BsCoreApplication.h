@@ -17,7 +17,6 @@ namespace BansheeEngine
 		String renderer; /**< Name of the renderer plugin to use. */
 
 		String input; /**< Name of the input plugin to use. */
-		String sceneManager; /**< Name of the scene manager plugin to use. */
 
 		RENDER_WINDOW_DESC primaryWindowDesc; /**< Describes the window to create during start-up. */
 
@@ -107,7 +106,6 @@ namespace BansheeEngine
 
 		RenderWindowPtr mPrimaryWindow;
 
-		DynLib* mSceneManagerPlugin;
 		DynLib* mRendererPlugin;
 
 		Map<DynLib*, UpdatePluginFunc> mPluginUpdateFunctions;

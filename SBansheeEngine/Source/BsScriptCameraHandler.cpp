@@ -9,10 +9,11 @@
 #include "BsScriptSceneObject.h"
 #include "BsSceneObject.h"
 #include "BsScriptRenderTarget.h"
+#include "BsSceneManager.h"
 
 namespace BansheeEngine
 {
-	ScriptCameraHandler::ScriptCameraHandler(MonoObject* managedInstance)
+	ScriptCameraHandler::ScriptCameraHandler(MonoObject* managedInstance, const HSceneObject& parentSO)
 		:ScriptObject(managedInstance), mCameraHandler(nullptr), mLastUpdateHash(0)
 	{ 
 		ViewportPtr primaryViewport = gApplication().getPrimaryViewport();
@@ -22,6 +23,7 @@ namespace BansheeEngine
 			target = primaryViewport->getTarget();
 
 		mCameraHandler = CameraHandler::create(target);
+		gSceneManager()._registerCamera(mCameraHandler, parentSO);
 	}
 
 	ScriptCameraHandler::~ScriptCameraHandler()
@@ -105,6 +107,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetRenderTarget", &ScriptCameraHandler::internal_SetRenderTarget);
 
 		metaData.scriptClass->addInternalCall("Internal_UpdateView", &ScriptCameraHandler::internal_UpdateView);
+		metaData.scriptClass->addInternalCall("Internal_OnDestroy", &ScriptCameraHandler::internal_OnDestroy);
 	}
 
 	void ScriptCameraHandler::updateView(const HSceneObject& parent)
@@ -119,9 +122,13 @@ namespace BansheeEngine
 		}
 	}
 
-	void ScriptCameraHandler::internal_Create(MonoObject* managedInstance)
+	void ScriptCameraHandler::internal_Create(MonoObject* managedInstance, ScriptSceneObject* parentSO)
 	{
-		ScriptCameraHandler* nativeInstance = new (bs_alloc<ScriptCameraHandler>()) ScriptCameraHandler(managedInstance);
+		HSceneObject so;
+		if (parentSO != nullptr)
+			so = parentSO->getNativeHandle();
+
+		ScriptCameraHandler* nativeInstance = new (bs_alloc<ScriptCameraHandler>()) ScriptCameraHandler(managedInstance, so);
 	}
 
 	float ScriptCameraHandler::internal_GetAspect(ScriptCameraHandler* instance)
@@ -400,5 +407,10 @@ namespace BansheeEngine
 		HSceneObject parentSO = parent->getNativeSceneObject();
 
 		instance->updateView(parentSO);
+	}
+
+	void ScriptCameraHandler::internal_OnDestroy(ScriptCameraHandler* instance)
+	{
+		gSceneManager()._unregisterCamera(instance->getInternal());
 	}
 }

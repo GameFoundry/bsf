@@ -25,16 +25,14 @@ namespace BansheeEngine
 			BS_EXCEPT(InternalErrorException, "Cannot find managed SceneObject class.");
 	}
 
-	ScriptComponent* ScriptGameObjectManager::createScriptComponent(const GameObjectHandle<ManagedComponent>& component)
+	void ScriptGameObjectManager::registerScriptComponent(ScriptComponent* nativeInstance, const GameObjectHandle<ManagedComponent>& component)
 	{
 		auto findIter = mScriptGameObjects.find(component->getInstanceId());
 		if(findIter != mScriptGameObjects.end())
 			BS_EXCEPT(InvalidStateException, "Script component for this Component already exists.");
 
-		ScriptComponent* nativeInstance = new (bs_alloc<ScriptComponent>()) ScriptComponent(component->getManagedInstance(), component);
+		nativeInstance->setManagedComponent(component);
 		mScriptGameObjects[component->getInstanceId()] = nativeInstance;
-
-		return nativeInstance;
 	}
 
 	ScriptSceneObject* ScriptGameObjectManager::createScriptSceneObject(const HSceneObject& sceneObject)

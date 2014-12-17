@@ -91,10 +91,6 @@ namespace BansheeEngine
 		{
 			std::shared_ptr<ManagedSerializableObjectInfo> objInfo = curClassInfo.second;
 
-			String fullTypeName = objInfo->getFullTypeName();
-			assemblyInfo->mTypeNameToId[fullTypeName] = objInfo->mTypeId;
-			assemblyInfo->mObjectInfos[objInfo->mTypeId] = objInfo;
-
 			UINT32 mUniqueFieldId = 1;
 			const Vector<MonoField*>& fields = objInfo->mMonoClass->getAllFields();
 
@@ -277,27 +273,17 @@ namespace BansheeEngine
 			}
 			else
 			{
-				if(hasSerializableObjectInfo(monoClass->getNamespace(), monoClass->getTypeName()))
-				{
-					std::shared_ptr<ManagedSerializableTypeInfoObject> typeInfo = bs_shared_ptr<ManagedSerializableTypeInfoObject>();
-					typeInfo->mTypeNamespace = monoClass->getNamespace();
-					typeInfo->mTypeName = monoClass->getTypeName();
-					typeInfo->mValueType = false;
-
-					return typeInfo;
-				}
+				std::shared_ptr<ManagedSerializableObjectInfo> objInfo;
+				if (getSerializableObjectInfo(monoClass->getNamespace(), monoClass->getTypeName(), objInfo))
+					return objInfo->mTypeInfo;
 			}
 
 			break;
 		case MONO_TYPE_VALUETYPE:
-			if(hasSerializableObjectInfo(monoClass->getNamespace(), monoClass->getTypeName()))
 			{
-				std::shared_ptr<ManagedSerializableTypeInfoObject> typeInfo = bs_shared_ptr<ManagedSerializableTypeInfoObject>();
-				typeInfo->mTypeNamespace = monoClass->getNamespace();
-				typeInfo->mTypeName = monoClass->getTypeName();
-				typeInfo->mValueType = true;
-
-				return typeInfo;
+				std::shared_ptr<ManagedSerializableObjectInfo> objInfo;
+				if (getSerializableObjectInfo(monoClass->getNamespace(), monoClass->getTypeName(), objInfo))
+					return objInfo->mTypeInfo;
 			}
 
 			break;

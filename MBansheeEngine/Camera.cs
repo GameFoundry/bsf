@@ -154,14 +154,19 @@ namespace BansheeEngine
         public Vector3 ProjectPoint(Vector3 value) { return handler.ProjectPoint(value); }
         public Vector3 UnprojectPoint(Vector3 value) { return handler.UnprojectPoint(value); }
 
-        public Camera()
+        private void OnInitialize()
         {
-            handler = new CameraHandler();
+            handler = new CameraHandler(sceneObject);
         }
 
         private void Update()
         {
             handler.UpdateView(sceneObject);
+        }
+
+        private void OnDestroy()
+        {
+            handler.OnDestroy();
         }
     }
 }

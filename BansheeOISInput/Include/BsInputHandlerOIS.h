@@ -129,40 +129,6 @@ namespace BansheeEngine
 		 */
 		float smoothMouse(float value, UINT32 idx);
 
-		/**
-		 * @brief	Default dots per inch reported by the mouse. 
-		 *
-		 * @note	This should be retrieved from the mouse driver but I am not aware of any decent 
-		 *			way of doing it. What this means is that if the user has a mouse with a different 
-		 *			DPI then he will need to adjust sensitivity.
-		 */
-		static const UINT32 MOUSE_DPI;
-
-		/**
-		 * @brief	How much does the user need to move the mouse in order to max out the mouse axis
-		 *			(either positive or negative), in inches.
-		 */
-		static const float MOUSE_MAX;
-
-		/**
-		 * @brief	Number of seconds the mouse needs to reach the MOUSE_MAX value in, in order to
-		 *			max out the axis.
-		 */
-		static const float MOUSE_MAX_TIME;
-
-		/**
-		 * @brief	Minimum number of milliseconds that need to pass before mouse axes are updated again.
-		 *			
-		 * @note	At extremely high frame rates sampling the mouse too often will introduce jitter. This is because
-		 *			mouse will be sampled by the application faster than the hardware reports the samples. This means some
-		 *			of the samples will be reported as 0, while in truth mouse could be moving but it just hasn't been sampled.
-		 *			So we cannot tell if mouse is actually still, or moving but sample hasn't been updated, and must assume mouse
-		 *			is still, which causes jitter as one frame reports mouse as moving and another as still.
-		 *
-		 *			We could get around this if we knew the exact hardware sampling rate, but we don't.
-		 */
-		static const float MOUSE_MAX_SAMPLING_RATE;
-
 		OIS::InputManager* mInputManager;
 		OIS::Mouse*	mMouse;
 		OIS::Keyboard* mKeyboard;
@@ -174,7 +140,6 @@ namespace BansheeEngine
 		INT32 mMouseSampleAccumulator[2];
 		float mMouseSmoothedAxis[2];
 		UINT32 mLastMouseUpdateFrame;
-		float mMouseSampleCounter;
 
 		UINT64 mTimestampClockOffset;
 	};

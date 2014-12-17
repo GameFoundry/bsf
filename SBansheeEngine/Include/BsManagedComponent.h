@@ -9,6 +9,8 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedComponent : public Component
 	{
 	public:
+		~ManagedComponent();
+
 		MonoObject* getManagedInstance() const { return mManagedInstance; }
 		MonoReflectionType* getRuntimeType() const { return mRuntimeType; }
 
@@ -17,7 +19,9 @@ namespace BansheeEngine
 		const String& getManagedFullTypeName() const { return mFullTypeName; }
 
 	private:
+		typedef void(__stdcall *OnInitializedThunkDef) (MonoObject*, MonoException**);
 		typedef void(__stdcall *UpdateThunkDef) (MonoObject*, MonoException**);
+		typedef void(__stdcall *OnDestroyedThunkDef) (MonoObject*, MonoException**);
 
 		MonoObject* mManagedInstance;
 		MonoReflectionType* mRuntimeType;
@@ -27,7 +31,9 @@ namespace BansheeEngine
 		String mTypeName;
 		String mFullTypeName;
 
+		OnInitializedThunkDef mOnInitializedThunk;
 		UpdateThunkDef mUpdateThunk;
+		OnDestroyedThunkDef mOnDestroyThunk;
 
 		/************************************************************************/
 		/* 							COMPONENT OVERRIDES                    		*/
@@ -35,12 +41,14 @@ namespace BansheeEngine
 
 	protected:
 		friend class SceneObject;
+		friend class ScriptComponent;
 
 		/** Standard constructor.
         */
 		ManagedComponent(const HSceneObject& parent, MonoReflectionType* runtimeType);
-		void construct(MonoObject* object, MonoReflectionType* runtimeType, MonoClass* monoClass);
+		void initialize(MonoObject* object, MonoReflectionType* runtimeType, MonoClass* monoClass);
 
+		void onInitialized();
 		void onDestroyed();
 
 	public:

@@ -161,11 +161,11 @@ namespace BansheeEngine
 	void BansheeRenderer::renderAll() 
 	{
 		// Populate direct draw lists
-		const Vector<SceneCameraData>& allCameras = gSceneManager().getAllCameras();
+		const Map<CameraHandler*, SceneCameraData>& allCameras = gSceneManager().getAllCameras();
 		for (auto& cameraData : allCameras)
 		{
-			CameraHandlerPtr camera = cameraData.camera;
-			HSceneObject cameraSO = cameraData.sceneObject;
+			CameraHandlerPtr camera = cameraData.second.camera;
+			HSceneObject cameraSO = cameraData.second.sceneObject;
 
 			DrawListPtr drawList = bs_shared_ptr<DrawList>();
 

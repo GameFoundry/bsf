@@ -174,9 +174,13 @@ namespace BansheeEngine
 
         private RenderTarget _target;
 
-        public CameraHandler()
+        public CameraHandler(SceneObject sceneObject)
         {
-            Internal_Create(this);
+            IntPtr sceneObjPtr = IntPtr.Zero;
+            if (sceneObject != null)
+                sceneObjPtr = sceneObject.GetCachedPtr();
+
+            Internal_Create(this, sceneObjPtr);
         }
 
         internal void UpdateView(SceneObject sceneObject)
@@ -184,8 +188,13 @@ namespace BansheeEngine
             Internal_UpdateView(mCachedPtr, sceneObject.mCachedPtr);
         }
 
+        internal void OnDestroy()
+        {
+            Internal_OnDestroy(mCachedPtr);
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_Create(CameraHandler instance);
+        private static extern void Internal_Create(CameraHandler instance, IntPtr parentSO);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern float Internal_GetAspect(IntPtr instance);
@@ -310,5 +319,8 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_UpdateView(IntPtr instance, IntPtr parentSO);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_OnDestroy(IntPtr thisPtr);
     }
 }
