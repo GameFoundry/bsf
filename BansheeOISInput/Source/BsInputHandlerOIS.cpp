@@ -207,8 +207,6 @@ namespace BansheeEngine
 		rawXValue *= 0.1f;
 		rawYValue *= 0.1f;
 
-		LOGWRN(toString(rawXValue) + " - " + toString(rawYValue));
-
 		mMouseSampleAccumulator[0] = 0;
 		mMouseSampleAccumulator[1] = 0;
 

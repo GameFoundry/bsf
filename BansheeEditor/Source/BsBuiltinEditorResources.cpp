@@ -1428,9 +1428,16 @@ namespace BansheeEngine
 		HGpuProgram vsProgram = getGpuProgram(ShaderWireGizmoVSFile);
 		HGpuProgram psProgram = getGpuProgram(ShaderWireGizmoPSFile);
 
+		DEPTH_STENCIL_STATE_DESC depthStencilStateDesc;
+		depthStencilStateDesc.depthWriteEnable = false;
+		depthStencilStateDesc.depthReadEnable = false;
+
+		HDepthStencilState depthStencilState = DepthStencilState::create(depthStencilStateDesc);
+
 		PASS_DESC passDesc;
 		passDesc.vertexProgram = vsProgram;
 		passDesc.fragmentProgram = psProgram;
+		passDesc.depthStencilState = depthStencilState;
 
 		PassPtr newPass = Pass::create(passDesc);
 		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass });
