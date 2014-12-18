@@ -6,6 +6,8 @@
 #include "BsSphere.h"
 #include "BsRay.h"
 
+#include "BsDebug.h"
+
 namespace BansheeEngine
 {
 	const float HandleSliderLine::CAPSULE_RADIUS = 0.05f;
@@ -37,7 +39,7 @@ namespace BansheeEngine
 	bool HandleSliderLine::intersects(const Ray& ray, float& t) const
 	{
 		Ray localRay = ray;
-		localRay.transform(getTransformInv());
+		localRay.transformAffine(getTransformInv());
 
 		auto capsuleIntersect = mCapsuleCollider.intersects(localRay);
 		auto sphereIntersect = mSphereCollider.intersects(localRay);
@@ -60,6 +62,13 @@ namespace BansheeEngine
 			}
 		}
 
+		if (gotIntersect)
+		{
+			Vector3 intrPoint = localRay.getPoint(t);
+			intrPoint = getTransform().multiplyAffine(intrPoint);
+			t = (intrPoint - ray.getOrigin()).length(); // Get distance in world space
+		}
+
 		return gotIntersect;
 	}
 
@@ -68,6 +77,8 @@ namespace BansheeEngine
 		assert(getState() == State::Active);
 
 		mCurrentPointerPos += inputDelta;
-		mDelta = calcDelta(camera, mStartPosition, getTransform().multiplyAffine(mDirection), mStartPointerPos, mCurrentPointerPos);
+
+		Vector3 worldDir = getRotation().rotate(mDirection);
+		mDelta = calcDelta(camera, mStartPosition, worldDir, mStartPointerPos, mCurrentPointerPos);
 	}
 }

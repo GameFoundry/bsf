@@ -63,10 +63,7 @@ namespace BansheeEditor
 
         protected override void Draw()
         {
-            Vector3 center = position;
-            Vector3 xEnd = center + GetXDir();
-            Vector3 yEnd = center + GetYDir();
-            Vector3 zEnd = center + GetZDir();
+            HandleDrawing.SetTransform(Matrix4.TRS(Position, Rotation, Vector3.one));
 
             if (xAxis.State == HandleSlider.StateType.Active)
                 HandleDrawing.SetColor(Color.white);
@@ -77,8 +74,9 @@ namespace BansheeEditor
 
             float handleSize = Handles.GetHandleSize(EditorApplication.SceneViewCamera, position);
 
-            HandleDrawing.DrawLine(center, xEnd - GetXDir() * CONE_HEIGHT, handleSize);
-            HandleDrawing.DrawCone(xEnd - GetXDir() * CONE_HEIGHT, GetXDir(), CONE_HEIGHT, CONE_RADIUS, handleSize);
+            Vector3 xConeStart = Vector3.xAxis*(1.0f - CONE_HEIGHT);
+            HandleDrawing.DrawLine(Vector3.zero, xConeStart, handleSize);
+            HandleDrawing.DrawCone(xConeStart, Vector3.xAxis, CONE_HEIGHT, CONE_RADIUS, handleSize);
 
             if (yAxis.State == HandleSlider.StateType.Active)
                 HandleDrawing.SetColor(Color.white);
@@ -87,8 +85,9 @@ namespace BansheeEditor
             else
                 HandleDrawing.SetColor(Color.green);
 
-            HandleDrawing.DrawLine(center, yEnd - GetYDir() * CONE_HEIGHT, handleSize);
-            HandleDrawing.DrawCone(yEnd - GetYDir() * CONE_HEIGHT, GetYDir(), CONE_HEIGHT, CONE_RADIUS, handleSize);
+            Vector3 yConeStart = Vector3.yAxis * (1.0f - CONE_HEIGHT);
+            HandleDrawing.DrawLine(Vector3.zero, yConeStart, handleSize);
+            HandleDrawing.DrawCone(yConeStart, Vector3.yAxis, CONE_HEIGHT, CONE_RADIUS, handleSize);
 
             if (zAxis.State == HandleSlider.StateType.Active)
                 HandleDrawing.SetColor(Color.white);
@@ -97,8 +96,9 @@ namespace BansheeEditor
             else
                 HandleDrawing.SetColor(Color.blue);
 
-            HandleDrawing.DrawLine(center, zEnd - GetZDir() * CONE_HEIGHT, handleSize);
-            HandleDrawing.DrawCone(zEnd - GetZDir() * CONE_HEIGHT, GetZDir(), CONE_HEIGHT, CONE_RADIUS, handleSize);
+            Vector3 zConeStart = Vector3.zAxis * (1.0f - CONE_HEIGHT);
+            HandleDrawing.DrawLine(Vector3.zero, zConeStart, handleSize);
+            HandleDrawing.DrawCone(zConeStart, Vector3.zAxis, CONE_HEIGHT, CONE_RADIUS, handleSize);
         }
 
         private Vector3 GetXDir()

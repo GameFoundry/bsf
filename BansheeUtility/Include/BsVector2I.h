@@ -199,5 +199,7 @@ namespace BansheeEngine
         {
             return x * vec.x + y * vec.y;
         }
+
+		static const Vector2I ZERO;
 	};
 }

@@ -13,6 +13,8 @@
 #include "BsRenderWindow.h"
 #include "BsCursor.h"
 
+#include "BsDebug.h"
+
 using namespace std::placeholders;
 
 namespace BansheeEngine
@@ -35,14 +37,22 @@ namespace BansheeEngine
 			GizmoManager::instance().clearRenderData();
 	}
 
-	void SceneViewHandler::update(const Vector2I& position, const Vector2I& delta)
+	void SceneViewHandler::update()
 	{
-		if (HandleManager::instance().isHandleActive())
-			wrapCursorToWindow();
-
 		GizmoManager::instance().update(mCamera);
-		HandleManager::instance().update(mCamera, position, delta);
 		mSceneGrid->update();
+	}
+
+	void SceneViewHandler::updateHandle(const Vector2I& position, const Vector2I& delta)
+	{
+		// If mouse wrapped around last frame then we need to compensate for the jump amount
+		Vector2I realDelta = delta - mMouseDeltaCompensate;
+		mMouseDeltaCompensate = Vector2I::ZERO;
+
+		if (HandleManager::instance().isHandleActive())
+			mMouseDeltaCompensate = wrapCursorToWindow();
+
+		HandleManager::instance().update(mCamera, position, realDelta);
 	}
 
 	void SceneViewHandler::trySelectHandle(const Vector2I& position)
@@ -102,24 +112,29 @@ namespace BansheeEngine
 		mSceneGrid->render(mCamera, drawList);
 	}
 
-	void SceneViewHandler::wrapCursorToWindow()
+	Vector2I SceneViewHandler::wrapCursorToWindow()
 	{
 		RenderWindowPtr parentWindow = mParentWidget->getParentWindow()->_getRenderWindow();
 
 		Vector2I windowPos = parentWindow->screenToWindowPos(Cursor::instance().getScreenPosition());
 		const RenderWindowProperties& rwProps = parentWindow->getProperties();
 
+		Vector2I offset;
 		if (windowPos.x < 0)
-			windowPos.x += rwProps.getWidth();
+			offset.x = (INT32)rwProps.getWidth();
 		else if (windowPos.x >= (INT32)rwProps.getWidth())
-			windowPos.x -= rwProps.getWidth();
+			offset.x = -(INT32)rwProps.getWidth();
 
 		if (windowPos.y < 0)
-			windowPos.y += rwProps.getHeight();
+			offset.y = (INT32)rwProps.getHeight();
 		else if (windowPos.y >= (INT32)rwProps.getHeight())
-			windowPos.y -= rwProps.getHeight();
+			offset.y = -(INT32)rwProps.getHeight();
 
+		windowPos += offset;
+		
 		Vector2I wrappedScreenPos = parentWindow->windowToScreenPos(windowPos);
 		Cursor::instance().setScreenPosition(wrappedScreenPos);
+
+		return offset;
 	}
 }

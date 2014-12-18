@@ -12,19 +12,17 @@
 
 See GDrive/Resources doc for resources refactor
 
-Handle lines don't draw in front of geometry
-I think mouse delta isn't properly reset between mouse movement
-Gizmos don't start rendering until you click on screen
+Slider colliders are not valid after handle moves
+ - Caused by distance scaling
+Wrapping the cursor causes mouse delta to be huge. I need to compensate.
+Don't forget to update mDirection calculations for all slider types
 
 I can get mono errors by checking g_print calls in goutput.c
-
-Icon gizmo seems to sometimes get struck to the side of the camera
+ - Calling thunks incorrectly can cause those weird errors with no real callstack
 
 Other:
 Window resize end callback
-
 Add cutoff plane when rendering discs for rotation handle.
-
 What happens when I close widgets from C++ code (e.g. due to layout reload or change)? Will C# still try to access them?
 
 C# SceneView:

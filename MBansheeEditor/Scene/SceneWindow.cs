@@ -46,13 +46,14 @@ namespace BansheeEditor
 
         private void EditorUpdate()
         {
+            sceneViewHandler.Update();
+
             if (!HasFocus)
                 return;
 
             Vector2I scenePos;
             if (ScreenToScenePos(Input.PointerPosition, out scenePos))
             {
-                Debug.Log(scenePos);
                 if (Input.IsButtonDown(ButtonCode.MouseLeft))
                 {
                     sceneViewHandler.TrySelectHandle(scenePos);
@@ -68,7 +69,7 @@ namespace BansheeEditor
                         sceneViewHandler.PickObject(scenePos, ctrlHeld);
                 }
 
-                sceneViewHandler.Update(scenePos, Input.PointerDelta);
+                sceneViewHandler.UpdateHandle(scenePos, Input.PointerDelta);
             }
         }
 

@@ -278,4 +278,64 @@ namespace BansheeEngine
 		m[3][2] = 0.0f;
 		m[3][3] = 1.0f;
 	}
+
+	Matrix4 Matrix4::translation(const Vector3& translation)
+	{
+		Matrix4 mat;
+
+		mat[0][0] = 1.0f; mat[0][1] = 0.0f; mat[0][2] = 0.0f; mat[0][3] = translation.x;
+		mat[1][0] = 0.0f; mat[1][1] = 1.0f; mat[1][2] = 0.0f; mat[1][3] = translation.y;
+		mat[2][0] = 0.0f; mat[2][1] = 0.0f; mat[2][2] = 1.0f; mat[2][3] = translation.z;
+		mat[3][0] = 0.0f; mat[3][1] = 0.0f; mat[3][2] = 0.0f; mat[3][3] = 1.0f;
+
+		return mat;
+	}
+
+	Matrix4 Matrix4::scaling(const Vector3& scale)
+	{
+		Matrix4 mat;
+
+		mat[0][0] = scale.x; mat[0][1] = 0.0f; mat[0][2] = 0.0f; mat[0][3] = 0.0f;
+		mat[1][0] = 0.0f; mat[1][1] = scale.y; mat[1][2] = 0.0f; mat[1][3] = 0.0f;
+		mat[2][0] = 0.0f; mat[2][1] = 0.0f; mat[2][2] = scale.z; mat[2][3] = 0.0f;
+		mat[3][0] = 0.0f; mat[3][1] = 0.0f; mat[3][2] = 0.0f; mat[3][3] = 1.0f;
+
+		return mat;
+	}
+
+	Matrix4 Matrix4::scaling(float scale)
+	{
+		Matrix4 mat;
+
+		mat[0][0] = scale; mat[0][1] = 0.0f; mat[0][2] = 0.0f; mat[0][3] = 0.0f;
+		mat[1][0] = 0.0f; mat[1][1] = scale; mat[1][2] = 0.0f; mat[1][3] = 0.0f;
+		mat[2][0] = 0.0f; mat[2][1] = 0.0f; mat[2][2] = scale; mat[2][3] = 0.0f;
+		mat[3][0] = 0.0f; mat[3][1] = 0.0f; mat[3][2] = 0.0f; mat[3][3] = 1.0f;
+
+		return mat;
+	}
+
+	Matrix4 Matrix4::rotation(const Quaternion& rotation)
+	{
+		Matrix3 mat;
+		rotation.toRotationMatrix(mat);
+
+		return Matrix4(mat);
+	}
+
+	Matrix4 Matrix4::TRS(const Vector3& translation, const Quaternion& rotation, const Vector3& scale)
+	{
+		Matrix4 mat;
+		mat.setTRS(translation, rotation, scale);
+
+		return mat;
+	}
+
+	Matrix4 Matrix4::inverseTRS(const Vector3& translation, const Quaternion& rotation, const Vector3& scale)
+	{
+		Matrix4 mat;
+		mat.setInverseTRS(translation, rotation, scale);
+
+		return mat;
+	}
 }

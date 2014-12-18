@@ -14,7 +14,10 @@ namespace BansheeEngine
 	void HandleSlider::update(const CameraHandlerPtr& camera)
 	{
 		if (mFixedScale)
+		{
 			mDistanceScale = HandleManager::instance().getHandleSize(camera, mPosition);
+			mTransformDirty = true;
+		}
 	}
 
 	void HandleSlider::setPosition(const Vector3& position)
@@ -54,11 +57,17 @@ namespace BansheeEngine
 	void HandleSlider::updateCachedTransform() const
 	{
 		if (mFixedScale)
+		{
 			mTransform.setTRS(mPosition, mRotation, mScale * mDistanceScale);
+			mTransformInv.setInverseTRS(mPosition, mRotation, mScale * mDistanceScale);
+		}
 		else
+		{
 			mTransform.setTRS(mPosition, mRotation, mScale);
+			mTransformInv.setInverseTRS(mPosition, mRotation, mScale);
+		}
 
-		mTransformInv = mTransform.inverseAffine();
+		//mTransformInv = mTransform.inverseAffine();
 		mTransformDirty = false;
 	}
 

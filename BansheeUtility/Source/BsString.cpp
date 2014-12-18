@@ -6,6 +6,7 @@
 #include "BsVector2.h"
 #include "BsVector3.h"
 #include "BsVector4.h"
+#include "BsVector2I.h"
 #include "BsException.h"
 
 namespace BansheeEngine 
@@ -265,6 +266,13 @@ namespace BansheeEngine
 		return stream.str();
 	}
 
+	WString toWString(const Vector2I& val)
+	{
+		WStringStream stream;
+		stream << val.x << L" " << val.y;
+		return stream.str();
+	}
+
 	WString toWString(const Vector3& val)
 	{
 		WStringStream stream;
@@ -483,6 +491,13 @@ namespace BansheeEngine
 	}
 
 	String toString(const Vector2& val)
+	{
+		StringStream stream;
+		stream << val.x << " " << val.y;
+		return stream.str();
+	}
+
+	String toString(const Vector2I& val)
 	{
 		StringStream stream;
 		stream << val.x << " " << val.y;

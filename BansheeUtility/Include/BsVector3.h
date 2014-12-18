@@ -22,6 +22,8 @@ namespace BansheeEngine
             :x(x), y(y), z(z)
         { }
 
+		explicit Vector3(const Vector4& vec);
+
 		/**
 		 * @brief	Exchange the contents of this vector with another.
 		 */

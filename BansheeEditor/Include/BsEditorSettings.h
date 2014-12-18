@@ -8,6 +8,8 @@ namespace BansheeEngine
 	class BS_ED_EXPORT EditorSettings
 	{
 	public:
+		EditorSettings();
+
 		bool getMoveHandleSnapActive() const { return mMoveSnapActive; }
 		bool getRotateHandleSnapActive() const { return mRotateSnapActive; }
 		bool getScaleHandleSnapActive() const { return mScaleSnapActive; }
@@ -43,21 +45,21 @@ namespace BansheeEngine
 	private:
 		void markAsDirty() const { mHash++; }
 
-		bool mMoveSnapActive = false;
-		bool mRotateSnapActive = false;
-		bool mScaleSnapActive = false;
+		bool mMoveSnapActive;
+		bool mRotateSnapActive;
+		bool mScaleSnapActive;
 
-		float mMoveSnap = 0.1f;
-		Degree mRotationSnap = Degree(20.0f);
-		float mScaleSnap = 0.1f;
+		float mMoveSnap;
+		Degree mRotationSnap;
+		float mScaleSnap;
 
-		UINT32 mGridSize = 256;
-		float mGridAxisSpacing = 1.0f;
-		UINT32 mGridMajorAxisSpacing = 10;
-		UINT32 mGridAxisMarkerSpacing = 25;
+		UINT32 mGridSize;
+		float mGridAxisSpacing;
+		UINT32 mGridMajorAxisSpacing;
+		UINT32 mGridAxisMarkerSpacing;
 
-		float mHandleSize = 0.025f;
+		float mHandleSize;
 
-		mutable UINT32 mHash = 0;
+		mutable UINT32 mHash;
 	};
 }

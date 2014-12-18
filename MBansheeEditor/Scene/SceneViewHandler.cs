@@ -15,9 +15,14 @@ namespace BansheeEditor
             Internal_Create(this, parent.GetCachedPtr(), sceneCamera.Handler.GetCachedPtr());
         }
 
-        internal void Update(Vector2I pointerPos, Vector2I inputDelta)
+        internal void Update()
         {
-            Internal_Update(mCachedPtr, pointerPos, inputDelta);
+            Internal_Update(mCachedPtr);
+        }
+
+        internal void UpdateHandle(Vector2I pointerPos, Vector2I inputDelta)
+        {
+            Internal_UpdateHandle(mCachedPtr, pointerPos, inputDelta);
         }
 
         internal void TrySelectHandle(Vector2I pointerPos)
@@ -44,7 +49,10 @@ namespace BansheeEditor
         private static extern void Internal_Create(SceneViewHandler managedInstance, IntPtr parentWindow, IntPtr camera);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_Update(IntPtr thisPtr, Vector2I pointerPos, Vector2I inputDelta);
+        private static extern void Internal_Update(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_UpdateHandle(IntPtr thisPtr, Vector2I pointerPos, Vector2I inputDelta);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_TrySelectHandle(IntPtr thisPtr, Vector2I pointerPos);

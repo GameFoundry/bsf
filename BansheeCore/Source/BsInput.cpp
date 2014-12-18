@@ -68,6 +68,8 @@ namespace BansheeEngine
 			}
 		}
 
+		mPointerDelta = Vector2I::ZERO; // Reset delta in case we don't receive any mouse input this frame
+
 		if(mRawInputHandler == nullptr)
 		{
 			LOGERR("Raw input handler not initialized!");

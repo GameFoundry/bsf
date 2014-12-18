@@ -22,8 +22,8 @@ namespace BansheeEngine
             :x(x), y(y), z(z), w(w)
         { }
 
-		explicit Vector4(const Vector3& vec)
-			:x(vec.x), y(vec.y), z(vec.z), w(0.0f)
+		explicit Vector4(const Vector3& vec, float w = 0.0f)
+			:x(vec.x), y(vec.y), z(vec.z), w(w)
 		{ }
 
 		/**

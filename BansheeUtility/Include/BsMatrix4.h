@@ -65,14 +65,6 @@ namespace BansheeEngine
 			m[3][0] = 0.0f; m[3][1] = 0.0f; m[3][2] = 0.0f; m[3][3] = 1.0f;
         }
 
-        /**
-         * @brief	Creates a 4x4 transformation matrix with translation, rotation and scale.
-         */
-        Matrix4(const Vector3& translation, const Quaternion& rot, const Vector3& scale)
-        {
-			setTRS(translation, rot, scale);
-        }
-        
 		/**
 		 * @brief	Swaps the contents of this matrix with another.
 		 */
@@ -444,6 +436,40 @@ namespace BansheeEngine
 		 * @brief	Creates an ortographic projection matrix.
 		 */
 		void makeProjectionOrtho(float left, float right, float top, float bottom, float near, float far);
+
+		/**
+		 * @brief	Creates a 4x4 transformation matrix that performs translation.
+		 */
+		static Matrix4 translation(const Vector3& translation);
+
+		/**
+		 * @brief	Creates a 4x4 transformation matrix that performs scaling.
+		 */
+		static Matrix4 scaling(const Vector3& scale);
+
+		/**
+		 * @brief	Creates a 4x4 transformation matrix that performs uniform scaling.
+		 */
+		static Matrix4 scaling(float scale);
+
+		/**
+		 * @brief	Creates a 4x4 transformation matrix that performs rotation.
+		 */
+		static Matrix4 rotation(const Quaternion& rotation);
+
+        /**
+         * @brief	Creates a matrix from translation, rotation and scale. 
+         * 			
+		 * @note	The transformation are applied in scale->rotation->translation order.
+         */
+		static Matrix4 TRS(const Vector3& translation, const Quaternion& rotation, const Vector3& scale);
+
+        /**
+         * @brief	Creates a matrix from inverse translation, rotation and scale. 
+         * 			
+		 * @note	This is cheaper than "setTRS" and then performing "inverse".
+         */
+		static Matrix4 inverseTRS(const Vector3& translation, const Quaternion& rotation, const Vector3& scale);
 
 		static const Matrix4 ZERO;
 		static const Matrix4 IDENTITY;

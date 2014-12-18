@@ -67,88 +67,88 @@ namespace BansheeEngine
 
 	void HandleDrawManager::drawCube(const Vector3& position, const Vector3& extents, float size)
 	{
-		Matrix4 scale(Vector3::ZERO, Quaternion::IDENTITY, Vector3(size, size, size));
-		mDrawHelper->setTransform(scale * mTransform);
+		Matrix4 scale = Matrix4::scaling(size);
+		mDrawHelper->setTransform(mTransform * scale);
 
 		mDrawHelper->cube(position, extents);
 	}
 
 	void HandleDrawManager::drawSphere(const Vector3& position, float radius, float size)
 	{
-		Matrix4 scale(Vector3::ZERO, Quaternion::IDENTITY, Vector3(size, size, size));
-		mDrawHelper->setTransform(scale * mTransform);
+		Matrix4 scale = Matrix4::scaling(size);
+		mDrawHelper->setTransform(mTransform * scale);
 
 		mDrawHelper->sphere(position, radius);
 	}
 
 	void HandleDrawManager::drawWireCube(const Vector3& position, const Vector3& extents, float size)
 	{
-		Matrix4 scale(Vector3::ZERO, Quaternion::IDENTITY, Vector3(size, size, size));
-		mDrawHelper->setTransform(scale * mTransform);
+		Matrix4 scale = Matrix4::scaling(size);
+		mDrawHelper->setTransform(mTransform * scale);
 
 		mDrawHelper->wireCube(position, extents);
 	}
 
 	void HandleDrawManager::drawWireSphere(const Vector3& position, float radius, float size)
 	{
-		Matrix4 scale(Vector3::ZERO, Quaternion::IDENTITY, Vector3(size, size, size));
-		mDrawHelper->setTransform(scale * mTransform);
+		Matrix4 scale = Matrix4::scaling(size);
+		mDrawHelper->setTransform(mTransform * scale);
 
 		mDrawHelper->wireSphere(position, radius);
 	}
 
 	void HandleDrawManager::drawCone(const Vector3& base, const Vector3& normal, float height, float radius, float size)
 	{
-		Matrix4 scale(Vector3::ZERO, Quaternion::IDENTITY, Vector3(size, size, size));
-		mDrawHelper->setTransform(scale * mTransform);
+		Matrix4 scale = Matrix4::scaling(size);
 
+		mDrawHelper->setTransform(mTransform * scale);
 		mDrawHelper->cone(base, normal, height, radius);
 	}
 
 	void HandleDrawManager::drawLine(const Vector3& start, const Vector3& end, float size)
 	{
-		Matrix4 scale(Vector3::ZERO, Quaternion::IDENTITY, Vector3(size, size, size));
-		mDrawHelper->setTransform(scale * mTransform);
+		Matrix4 scale = Matrix4::scaling(size);
+		mDrawHelper->setTransform(mTransform * scale);
 
 		mDrawHelper->line(start, end);
 	}
 
 	void HandleDrawManager::drawDisc(const Vector3& position, const Vector3& normal, float radius, float size)
 	{
-		Matrix4 scale(Vector3::ZERO, Quaternion::IDENTITY, Vector3(size, size, size));
-		mDrawHelper->setTransform(scale * mTransform);
+		Matrix4 scale = Matrix4::scaling(size);
+		mDrawHelper->setTransform(mTransform * scale);
 
 		mDrawHelper->disc(position, normal, radius);
 	}
 
 	void HandleDrawManager::drawWireDisc(const Vector3& position, const Vector3& normal, float radius, float size)
 	{
-		Matrix4 scale(Vector3::ZERO, Quaternion::IDENTITY, Vector3(size, size, size));
-		mDrawHelper->setTransform(scale * mTransform);
+		Matrix4 scale = Matrix4::scaling(size);
+		mDrawHelper->setTransform(mTransform * scale);
 
 		mDrawHelper->wireDisc(position, normal, radius);
 	}
 
 	void HandleDrawManager::drawArc(const Vector3& position, const Vector3& normal, float radius, Degree startAngle, Degree amountAngle, float size)
 	{
-		Matrix4 scale(Vector3::ZERO, Quaternion::IDENTITY, Vector3(size, size, size));
-		mDrawHelper->setTransform(scale * mTransform);
+		Matrix4 scale = Matrix4::scaling(size);
+		mDrawHelper->setTransform(mTransform * scale);
 
 		mDrawHelper->arc(position, normal, radius, startAngle, amountAngle);
 	}
 
 	void HandleDrawManager::drawWireArc(const Vector3& position, const Vector3& normal, float radius, Degree startAngle, Degree amountAngle, float size)
 	{
-		Matrix4 scale(Vector3::ZERO, Quaternion::IDENTITY, Vector3(size, size, size));
-		mDrawHelper->setTransform(scale * mTransform);
+		Matrix4 scale = Matrix4::scaling(size);
+		mDrawHelper->setTransform(mTransform * scale);
 
 		mDrawHelper->wireArc(position, normal, radius, startAngle, amountAngle);
 	}
 
 	void HandleDrawManager::drawRect(const Rect3& area, float size)
 	{
-		Matrix4 scale(Vector3::ZERO, Quaternion::IDENTITY, Vector3(size, size, size));
-		mDrawHelper->setTransform(scale * mTransform);
+		Matrix4 scale = Matrix4::scaling(size);
+		mDrawHelper->setTransform(mTransform * scale);
 
 		mDrawHelper->rectangle(area);
 	}
