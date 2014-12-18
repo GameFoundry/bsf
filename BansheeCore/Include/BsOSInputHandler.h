@@ -93,7 +93,7 @@ namespace BansheeEngine
 		 * 				
 		 * @note	Internal method.
 		 */
-		virtual void _inputWindowChanged(const RenderWindow& win) {}
+		virtual void _inputWindowChanged(const RenderWindow& win) { }
 
 	private:
 		BS_MUTEX(mOSInputMutex);

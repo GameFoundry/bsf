@@ -119,16 +119,19 @@ namespace BansheeEngine
 		Vector2I windowPos = parentWindow->screenToWindowPos(Cursor::instance().getScreenPosition());
 		const RenderWindowProperties& rwProps = parentWindow->getProperties();
 
-		Vector2I offset;
-		if (windowPos.x < 0)
-			offset.x = (INT32)rwProps.getWidth();
-		else if (windowPos.x >= (INT32)rwProps.getWidth())
-			offset.x = -(INT32)rwProps.getWidth();
+		INT32 maxWidth = std::max(0, (INT32)rwProps.getWidth() - 1);
+		INT32 maxHeight = std::max(0, (INT32)rwProps.getHeight() - 1);
 
-		if (windowPos.y < 0)
-			offset.y = (INT32)rwProps.getHeight();
-		else if (windowPos.y >= (INT32)rwProps.getHeight())
-			offset.y = -(INT32)rwProps.getHeight();
+		Vector2I offset;
+		if (windowPos.x <= 0)
+			offset.x = maxWidth;
+		else if (windowPos.x >= maxWidth)
+			offset.x = -maxWidth;
+
+		if (windowPos.y <= 0)
+			offset.y = maxHeight;
+		else if (windowPos.y >= maxHeight)
+			offset.y = -maxHeight;
 
 		windowPos += offset;
 		

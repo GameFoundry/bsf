@@ -48,6 +48,16 @@ namespace BansheeEditor
         {
             sceneViewHandler.Update();
 
+            bool handleActive = false;
+            if (Input.IsButtonUp(ButtonCode.MouseLeft))
+            {
+                if (sceneViewHandler.IsHandleActive())
+                {
+                    sceneViewHandler.ClearHandleSelection();
+                    handleActive = true;
+                }
+            }
+
             if (!HasFocus)
                 return;
 
@@ -60,13 +70,13 @@ namespace BansheeEditor
                 }
                 else if (Input.IsButtonUp(ButtonCode.MouseLeft))
                 {
-                    bool ctrlHeld = Input.IsButtonHeld(ButtonCode.LeftControl) ||
-                                    Input.IsButtonHeld(ButtonCode.RightControl);
+                    if (!handleActive)
+                    {
+                        bool ctrlHeld = Input.IsButtonHeld(ButtonCode.LeftControl) ||
+                            Input.IsButtonHeld(ButtonCode.RightControl);
 
-                    if (sceneViewHandler.IsHandleActive())
-                        sceneViewHandler.ClearHandleSelection();
-                    else
                         sceneViewHandler.PickObject(scenePos, ctrlHeld);
+                    }
                 }
 
                 sceneViewHandler.UpdateHandle(scenePos, Input.PointerDelta);

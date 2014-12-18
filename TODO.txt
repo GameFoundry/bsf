@@ -12,13 +12,11 @@
 
 See GDrive/Resources doc for resources refactor
 
-Slider colliders are not valid after handle moves
- - Caused by distance scaling
-Wrapping the cursor causes mouse delta to be huge. I need to compensate.
-Don't forget to update mDirection calculations for all slider types
-
 I can get mono errors by checking g_print calls in goutput.c
  - Calling thunks incorrectly can cause those weird errors with no real callstack
+
+Mouse wrap doesn't seem to work the first time
+If you release mouse outside the window the handle doesn't get deselected and wrap remains active
 
 Other:
 Window resize end callback
@@ -38,20 +36,16 @@ Test:
 
 -----------------
 
-Move handle is buggy as hell - It moves in wrong direction sometimes, sometimes it skips, other times collision seems to be wrong
 Need a way to drag and drop items from Scene tree view to Scene view
 
 AFTER I have scene widget in C#:
- - Finish up C# Handles class so it returns proper values
- - Ensure fixed handle size and handle snapping works
  - Implement free move handle and remaining handles
  - Test custom handles from C#
+ - Test handle snapping
 
 IMPLEMENT SELECTION RENDERING
 
-IMPROVE SceneGrid LOOK
- - LIKELY USE PIXEL SceneGrid WITH AA
- - OR (better) instead of drawing rows and columns of lines, just draw a plane with procedural texture
+IMPROVE SceneGrid LOOK - Use the shader created in Unity
 
 ----------------------------------------------------------------------
 Handles

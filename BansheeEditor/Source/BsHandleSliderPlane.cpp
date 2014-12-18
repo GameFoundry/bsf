@@ -50,7 +50,11 @@ namespace BansheeEngine
 		assert(getState() == State::Active);
 
 		mCurrentPointerPos += inputDelta;
-		mDelta.x = calcDelta(camera, mStartPosition, getRotation().rotate(mDirection1), mStartPointerPos, mCurrentPointerPos);
-		mDelta.y = calcDelta(camera, mStartPosition, getRotation().rotate(mDirection2), mStartPointerPos, mCurrentPointerPos);
+
+		Vector3 worldDir1 = getRotation().rotate(mDirection1);
+		Vector3 worldDir2 = getRotation().rotate(mDirection2);
+
+		mDelta.x = calcDelta(camera, mStartPosition, worldDir1, mStartPointerPos, mCurrentPointerPos);
+		mDelta.y = calcDelta(camera, mStartPosition, worldDir2, mStartPointerPos, mCurrentPointerPos);
 	}
 }
