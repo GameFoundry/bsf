@@ -23,7 +23,7 @@ namespace BansheeEngine
 	void ResourceListenerManager::registerListener(IResourceListener* listener)
 	{
 #if BS_DEBUG_MODE
-		BS_LOCK_MUTEX(mMutex);
+		BS_LOCK_RECURSIVE_MUTEX(mMutex);
 		mActiveListeners.insert(listener);
 #endif
 	}
@@ -32,7 +32,7 @@ namespace BansheeEngine
 	{
 #if BS_DEBUG_MODE
 		{
-			BS_LOCK_MUTEX(mMutex);
+			BS_LOCK_RECURSIVE_MUTEX(mMutex);
 			mActiveListeners.erase(listener);
 		}
 #endif
@@ -58,31 +58,52 @@ namespace BansheeEngine
 		mDirtyListeners.clear();
 
 		{
-			BS_LOCK_MUTEX(mMutex);
+			BS_LOCK_RECURSIVE_MUTEX(mMutex);
 
-			for (auto& resource : mLoadedResources)
-				sendResourceLoaded(resource);
+			for (auto& entry : mLoadedResources)
+				sendResourceLoaded(entry.second);
 
-			for (auto& resource : mDestroyedResources)
-				sendResourceDestroyed(resource);
+			for (auto& entry : mDestroyedResources)
+				sendResourceDestroyed(entry.second);
 
 			mLoadedResources.clear();
 			mDestroyedResources.clear();
 		}
 	}
 
+	void ResourceListenerManager::notifyListeners(const String& resourceUUID)
+	{
+		BS_LOCK_RECURSIVE_MUTEX(mMutex);
+
+		auto iterFindLoaded = mLoadedResources.find(resourceUUID);
+		if (iterFindLoaded != mLoadedResources.end())
+		{
+			sendResourceLoaded(iterFindLoaded->second);
+
+			mLoadedResources.erase(iterFindLoaded);
+		}
+
+		auto iterFindDestroyed = mDestroyedResources.find(resourceUUID);
+		if (iterFindDestroyed != mDestroyedResources.end())
+		{
+			sendResourceDestroyed(iterFindDestroyed->second);
+
+			mDestroyedResources.erase(iterFindDestroyed);
+		}
+	}
+
 	void ResourceListenerManager::onResourceLoaded(const HResource& resource)
 	{
-		BS_LOCK_MUTEX(mMutex);
+		BS_LOCK_RECURSIVE_MUTEX(mMutex);
 
-		mLoadedResources.push_back(resource);
+		mLoadedResources[resource.getUUID()] = resource;
 	}
 
 	void ResourceListenerManager::onResourceDestroyed(const HResource& resource)
 	{
-		BS_LOCK_MUTEX(mMutex);
+		BS_LOCK_RECURSIVE_MUTEX(mMutex);
 
-		mDestroyedResources.push_back(resource);
+		mDestroyedResources[resource.getUUID()] = resource;
 	}
 
 	void ResourceListenerManager::sendResourceLoaded(const HResource& resource)

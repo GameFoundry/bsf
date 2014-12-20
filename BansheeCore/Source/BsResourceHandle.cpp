@@ -3,6 +3,7 @@
 #include "BsResource.h"
 #include "BsResourceHandleRTTI.h"
 #include "BsResources.h"
+#include "BsResourceListenerManager.h"
 
 namespace BansheeEngine
 {
@@ -36,6 +37,10 @@ namespace BansheeEngine
 			{
 				BS_THREAD_WAIT(mResourceCreatedCondition, mResourceCreatedMutex, lock);
 			}
+
+			// Send out ResourceListener events right away, as whatever called this method
+			// probably also expects the listener events to trigger immediately as well
+			ResourceListenerManager::instance().notifyListeners(mData->mUUID);
 		}
 	}
 

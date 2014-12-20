@@ -2,6 +2,7 @@
 
 #include "BsCorePrerequisites.h"
 #include "BsResource.h"
+#include "BsIResourceListener.h"
 #include "BsMaterialParam.h"
 #include "BsVector2.h"
 #include "BsVector3.h"
@@ -118,6 +119,11 @@ namespace BansheeEngine
 		 * @copydoc	CoreObject::markCoreDirty
 		 */
 		virtual void _markCoreDirty() { }
+
+		/**
+		 * @copydoc	IResourceListener::markResourcesDirty
+		 */
+		virtual void _markResourcesDirty() { }
 
 		/**
 		 * @brief	Returns all GPU parameter descriptions in the specified technique.
@@ -598,7 +604,7 @@ namespace BansheeEngine
 	/**
 	 * @copydoc	MaterialBase
 	 */
-	class BS_CORE_EXPORT Material : public Resource, public TMaterial<false>
+	class BS_CORE_EXPORT Material : public Resource, public TMaterial<false>, public IResourceListener
 	{
 	public:
 		~Material() { }
@@ -608,6 +614,11 @@ namespace BansheeEngine
 		 *			core thread.
 		 */
 		SPtr<MaterialCore> getCore() const;
+
+		/**
+		 * @copydoc	CoreObject::initialize
+		 */
+		void initialize();
 
 		/**
 		 * @brief	Creates a new empty material.
@@ -641,6 +652,31 @@ namespace BansheeEngine
 		 * @copydoc	CoreObject::markCoreDirty
 		 */
 		void _markCoreDirty();
+
+		/**
+		 * @copydoc	IResourceListener::markResourcesDirty
+		 */
+		void _markResourcesDirty();
+
+		/**
+		 * @copydoc	IResourceListener::getResourceDependencies
+		 */
+		void getResourceDependencies(Vector<HResource>& resources);
+
+		/**
+		 * @copydoc IResourceListener::notifyResourceLoaded
+		 */
+		void notifyResourceLoaded(const HResource& resource);
+
+		/**
+		 * @copydoc IResourceListener::notifyResourceDestroyed
+		 */
+		void notifyResourceDestroyed(const HResource& resource);
+
+		/**
+		 * @copydoc IResourceListener::notifyResourceChanged
+		 */
+		void notifyResourceChanged(const HResource& resource);
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

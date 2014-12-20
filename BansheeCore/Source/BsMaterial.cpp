@@ -455,6 +455,8 @@ namespace BansheeEngine
 	void TMaterial<false>::setShader(ShaderType shader)
 	{
 		mShader = shader;
+		_markResourcesDirty();
+
 		if (mShader)
 		{
 			if (!mShader.isLoaded())
@@ -899,12 +901,24 @@ namespace BansheeEngine
 
 	Material::Material(const HShader& shader)
 	{
-		setShader(shader);
+		mShader = shader;
+	}
+
+	void Material::initialize()
+	{
+		setShader(mShader); // Not calling directly in constructor because it calls virtual methods
+
+		Resource::initialize();
 	}
 
 	void Material::_markCoreDirty()
 	{
 		markCoreDirty();
+	}
+
+	void Material::_markResourcesDirty()
+	{
+		markResourcesDirty();
 	}
 
 	SPtr<MaterialCore> Material::getCore() const
@@ -981,6 +995,33 @@ namespace BansheeEngine
 		dataPtr += sizeof(SPtr<TechniqueCore>);
 
 		return CoreSyncData(buffer, size);
+	}
+
+	void Material::getResourceDependencies(Vector<HResource>& resources)
+	{
+		if (mShader != nullptr)
+			resources.push_back(mShader);
+	}
+
+	void Material::notifyResourceLoaded(const HResource& resource)
+	{
+		initBestTechnique();
+
+		markCoreDirty();
+	}
+
+	void Material::notifyResourceDestroyed(const HResource& resource)
+	{
+		initBestTechnique();
+
+		markCoreDirty();
+	}
+
+	void Material::notifyResourceChanged(const HResource& resource)
+	{
+		initBestTechnique();
+
+		markCoreDirty();
 	}
 
 	HMaterial Material::create()

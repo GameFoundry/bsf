@@ -1,13 +1,11 @@
 --------- ALL LONG TERM TASKS / FIXES BELONG TO GOOGLE DOCS: ImplementationTODO OR PossibleImprovements ----------
 
-1. Make sure shader create() methods returns a HShader
-2. Make sure material uses HShader
-3. Make sure material listens for HShader load event (derives from IResourceListener)
-4. Delay material initialization until its shader and gpu programs are fully loaded (keep the core thread sync there as is for now)
---
-5. Make RenderTexture accept a HTexture
-
 See GDrive/Resources doc for resources refactor
+
+TODO - Material waits to Shader to be loaded but doesn't wait for shader GpuPrograms. 
+ - What's the best way to ensure initialization is done when all these are loaded?
+
+Make RenderTexture accept a HTexture
 
 ManagedComponent deserialization IS WRONG
  - I register the component with ScriptGameObjectManager during deserialization when its ID is wrong

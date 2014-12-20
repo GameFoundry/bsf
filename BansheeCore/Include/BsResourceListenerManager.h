@@ -38,6 +38,12 @@ namespace BansheeEngine
 		 */
 		void update();
 
+		/**
+		 * @brief	Forces the listener to send out events about the specified resource immediately, instead
+		 *			of waiting for the next "update()" call.
+		 */
+		void notifyListeners(const String& resourceUUID);
+
 	private:
 		/**
 		 * @brief	Triggered by the resources system when a resource has finished loading.
@@ -77,12 +83,12 @@ namespace BansheeEngine
 		Map<UINT64, Vector<IResourceListener*>> mResourceToListenerMap;
 		Map<IResourceListener*, Vector<UINT64>> mListenerToResourceMap;
 
-		Vector<HResource> mLoadedResources;
-		Vector<HResource> mDestroyedResources;
+		Map<String, HResource> mLoadedResources;
+		Map<String, HResource> mDestroyedResources;
 
 		Vector<HResource> mTempResourceBuffer;
 
-		BS_MUTEX(mMutex)
+		BS_RECURSIVE_MUTEX(mMutex);
 
 #if BS_DEBUG_MODE
 		Set<IResourceListener*> mActiveListeners;
