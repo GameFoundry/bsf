@@ -88,6 +88,9 @@
     <Filter Include="Source Files\RenderAPI">
       <UniqueIdentifier>{e0bdc5fc-afd1-46f9-9e3e-f85ca3e220b8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Utility">
+      <UniqueIdentifier>{0d63b345-0a58-4df2-9d01-f4da53fc40c9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\BsRenderStats.h">
@@ -522,6 +525,9 @@
     <ClInclude Include="Include\BsResourceListenerManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsUtility.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsCoreApplication.cpp">
@@ -823,6 +829,9 @@
     </ClCompile>
     <ClCompile Include="Source\BsResourceListenerManager.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsUtility.cpp">
+      <Filter>Source Files\Utility</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,8 +1,5 @@
 --------- ALL LONG TERM TASKS / FIXES BELONG TO GOOGLE DOCS: ImplementationTODO OR PossibleImprovements ----------
 
- New issues:
-  - Since Mesh refactor when I select/deselect a gizmo the entire render texture flashes white for one frame (might be related to RT refactor instead)
-
 1. Make sure shader create() methods returns a HShader
 2. Make sure material uses HShader
 3. Make sure material listens for HShader load event (derives from IResourceListener)
@@ -12,11 +9,25 @@
 
 See GDrive/Resources doc for resources refactor
 
+ManagedComponent deserialization IS WRONG
+ - I register the component with ScriptGameObjectManager during deserialization when its ID is wrong
+
+Add a special mode to GameObjectManager that is active during deserialization
+ - Any handle or GameObject deserialized when its active will use a special mapping for resolving/updating IDs
+  - THIS doesn't really work because I might need to resolve a handle before the object is deserialized
+  - But could I add entries to the map from both handle and object regardless of which is resolved first?
+    - YES - This gets rid of the need for post-processing of GameObject, solves my ScriptComponent deserialization issue and allows me to deserialize managed fields on demand
+
+Modify managed serialization so that deserialization/serialization happens per field instead of in deserialize/serialize methods during pre- and post-processing step.
+ - Make sure to fix the GameObjectManager delayed deserialization issue first
+ - When generating SerializableFieldInfo generate mFieldGlobalIdx (index that takes into consideration any base classes)
+   - Then when de/serializing use that index to get field info and call get/setFieldData accordingly in RTTI getter/setter directly
+   - How to use it when deserializing though?
+     - Ensure that ManagedObjectInfo is deserialized first. Since this is an unclear dependency make sure to add asserts so when it fails it is clear why.
+     - Then use that to look up field during runtime
+
 I can get mono errors by checking g_print calls in goutput.c
  - Calling thunks incorrectly can cause those weird errors with no real callstack
-
-Mouse wrap doesn't seem to work the first time
-If you release mouse outside the window the handle doesn't get deselected and wrap remains active
 
 Other:
 Window resize end callback
@@ -28,11 +39,6 @@ Test new Scene window and fix every issue
 Add ProjectWindow and HierarchyWindow to C#
  - Make TreeViews a C# element?
 Set up a default layout and save it
-
-Test:
- - If cursor wrap works
- - If handles work when dragged outside of scene window
- - If handle is properly released if mouse up is pressed outside
 
 -----------------
 

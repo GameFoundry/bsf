@@ -360,6 +360,7 @@
     <ClInclude Include="Include\BsTextData.h" />
     <ClInclude Include="Include\BsTimerQuery.h" />
     <ClInclude Include="Include\BsTransientMesh.h" />
+    <ClInclude Include="Include\BsUtility.h" />
     <ClInclude Include="Include\BsUUID.h" />
     <ClInclude Include="Include\BsVertexBuffer.h" />
     <ClInclude Include="Include\BsGpuProgramManager.h" />
@@ -483,6 +484,7 @@
     <ClCompile Include="Source\BsTextData.cpp" />
     <ClCompile Include="Source\BsTimerQuery.cpp" />
     <ClCompile Include="Source\BsTransientMesh.cpp" />
+    <ClCompile Include="Source\BsUtility.cpp" />
     <ClCompile Include="Source\BsUUID.cpp" />
     <ClCompile Include="Source\BsVertexBuffer.cpp" />
     <ClCompile Include="Source\BsGpuProgramManager.cpp" />

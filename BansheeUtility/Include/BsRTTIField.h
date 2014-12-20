@@ -89,7 +89,8 @@ namespace BansheeEngine
 		bool isDataBlockType() { return mType == SerializableFT_DataBlock; }
 		bool isReflectableType() { return mType == SerializableFT_Reflectable; }
 		bool isReflectablePtrType() { return mType == SerializableFT_ReflectablePtr; }
-		
+		bool isArray() const { return mIsVectorType; }
+
 		/**
 		 * @brief	Returns flags that were set in the field meta-data.
 		 */
