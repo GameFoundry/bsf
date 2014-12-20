@@ -540,12 +540,12 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT MaterialRTTI : public RTTIType<Material, Resource, MaterialRTTI>
 	{
 	private:
-		ShaderPtr getShader(Material* obj)
+		HShader& getShader(Material* obj)
 		{
 			return obj->mShader;
 		}
 
-		void setShader(Material* obj, ShaderPtr val)
+		void setShader(Material* obj, HShader& val)
 		{
 			obj->mShader = val;
 		}
@@ -566,7 +566,7 @@ namespace BansheeEngine
 	public:
 		MaterialRTTI()
 		{
-			addReflectablePtrField("mShader", 0, &MaterialRTTI::getShader, &MaterialRTTI::setShader);
+			addReflectableField("mShader", 0, &MaterialRTTI::getShader, &MaterialRTTI::setShader);
 			addReflectablePtrField("mMaterialParams", 1, &MaterialRTTI::getMaterialParams, &MaterialRTTI::setMaterialParams);
 		}
 

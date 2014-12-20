@@ -160,17 +160,17 @@ namespace BansheeEngine
 		WString mActiveShaderSubFolder;
 		String mActiveRenderSystem;
 
-		ShaderPtr mShaderDockOverlay;
-		ShaderPtr mShaderSceneGrid;
-		ShaderPtr mShaderPicking[3];
-		ShaderPtr mShaderPickingAlpha[3];
-		ShaderPtr mShaderGizmoSolid;
-		ShaderPtr mShaderGizmoWire;
-		ShaderPtr mShaderGizmoIcon;
-		ShaderPtr mShaderGizmoPicking;
-		ShaderPtr mShaderGizmoAlphaPicking;
-		ShaderPtr mShaderHandleSolid;
-		ShaderPtr mShaderHandleWire;
+		HShader mShaderDockOverlay;
+		HShader mShaderSceneGrid;
+		HShader mShaderPicking[3];
+		HShader mShaderPickingAlpha[3];
+		HShader mShaderGizmoSolid;
+		HShader mShaderGizmoWire;
+		HShader mShaderGizmoIcon;
+		HShader mShaderGizmoPicking;
+		HShader mShaderGizmoAlphaPicking;
+		HShader mShaderHandleSolid;
+		HShader mShaderHandleWire;
 
 		GUISkin mSkin;
 

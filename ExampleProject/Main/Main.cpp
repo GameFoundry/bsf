@@ -264,7 +264,7 @@ namespace BansheeEngine
 
 		// Create a shader that references our vertex and fragment GPU programs, and set
 		// up shader input parameters. 
-		ShaderPtr exampleShader = Shader::create("ExampleShader", exampleShaderDesc,{ technique });
+		HShader exampleShader = Shader::create("ExampleShader", exampleShaderDesc, { technique });
 
 		/************************************************************************/
 		/* 							CREATE MATERIAL                      		*/

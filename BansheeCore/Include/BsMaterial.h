@@ -146,7 +146,7 @@ namespace BansheeEngine
 		template<> struct TTechniqueType < true > { typedef SPtr<TechniqueCore> Type; };
 
 		template<bool Core> struct TShaderType {};
-		template<> struct TShaderType < false > { typedef SPtr<Shader> Type; };
+		template<> struct TShaderType < false > { typedef HShader Type; };
 		template<> struct TShaderType < true > { typedef SPtr<ShaderCore> Type; };
 
 		template<bool Core> struct TGpuParamBlockBufferType {};
@@ -619,13 +619,13 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates a new material with the specified shader.
 		 */
-		static HMaterial create(ShaderPtr shader);
+		static HMaterial create(const HShader& shader);
 
 	private:
 		friend class MaterialManager;
 
 		Material() { }
-		Material(const ShaderPtr& shader);
+		Material(const HShader& shader);
 
 		/**
 		 * @copydoc	CoreObject::createCore

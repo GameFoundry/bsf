@@ -299,7 +299,7 @@ namespace BansheeEngine
 		 * @brief	Returns an empty shader object with the specified name. Caller must register
 		 *			techniques with the shader before using it in a Material.
 		 */
-		static ShaderPtr create(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques);
+		static HShader create(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques);
 
 		/**
 		 * @brief	Returns a shader object but doesn't initialize it.

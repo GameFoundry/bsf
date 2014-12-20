@@ -3,6 +3,7 @@
 #include "BsException.h"
 #include "BsDebug.h"
 #include "BsShaderRTTI.h"
+#include "BsResources.h"
 #include "BsFrameAlloc.h"
 
 namespace BansheeEngine
@@ -245,13 +246,13 @@ namespace BansheeEngine
 		return false;
 	}
 
-	ShaderPtr Shader::create(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques)
+	HShader Shader::create(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques)
 	{
 		ShaderPtr newShader = bs_core_ptr<Shader, PoolAlloc>(new (bs_alloc<Shader, PoolAlloc>()) Shader(name, desc, techniques));
 		newShader->_setThisPtr(newShader);
 		newShader->initialize();
 
-		return newShader;
+		return static_resource_cast<Shader>(gResources()._createResourceHandle(newShader));
 	}
 
 	ShaderPtr Shader::createEmpty()

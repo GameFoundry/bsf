@@ -39,7 +39,7 @@ namespace BansheeEngine
 		Material* material = static_cast<Material*>(obj);
 		std::shared_ptr<MaterialParams> params = bs_shared_ptr<MaterialParams, ScratchAlloc>();
 
-		ShaderPtr shader = material->getShader();
+		HShader shader = material->getShader();
 		if(shader != nullptr)
 		{
 			const Map<String, String>& validParamNames = material->getValidParamNames();
@@ -212,7 +212,7 @@ namespace BansheeEngine
 
 		std::shared_ptr<MaterialParams> params = any_cast<std::shared_ptr<MaterialParams>>(material->mRTTIData);
 
-		ShaderPtr shader = material->getShader();
+		HShader shader = material->getShader();
 		if(shader != nullptr)
 		{
 			for(auto iter = params->floatParams.begin(); iter != params->floatParams.end(); ++iter)

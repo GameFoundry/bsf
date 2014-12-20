@@ -12,7 +12,7 @@ namespace BansheeEngine
 		return newMat;
 	}
 
-	MaterialPtr MaterialManager::create(ShaderPtr shader) const
+	MaterialPtr MaterialManager::create(const HShader& shader) const
 	{
 		MaterialPtr newMat = bs_core_ptr<Material, PoolAlloc>(new (bs_alloc<Material, PoolAlloc>()) Material(shader));
 		newMat->_setThisPtr(newMat);

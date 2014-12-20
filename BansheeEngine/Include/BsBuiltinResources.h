@@ -175,10 +175,10 @@ namespace BansheeEngine
 
 		HSpriteTexture mWhiteSpriteTexture;
 
-		ShaderPtr mShaderSpriteText;
-		ShaderPtr mShaderSpriteImage;
-		ShaderPtr mShaderSpriteNonAlphaImage;
-		ShaderPtr mShaderDummy;
+		HShader mShaderSpriteText;
+		HShader mShaderSpriteImage;
+		HShader mShaderSpriteNonAlphaImage;
+		HShader mShaderDummy;
 
 		WString mActiveShaderSubFolder;
 		String mActiveRenderSystem;

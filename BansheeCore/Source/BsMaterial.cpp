@@ -441,8 +441,8 @@ namespace BansheeEngine
 		return allParamDescs;
 	}
 
-	template<bool Core>
-	void TMaterial<Core>::setShader(ShaderType shader)
+	template<>
+	void TMaterial<true>::setShader(ShaderType shader)
 	{
 		mShader = shader;
 
@@ -450,6 +450,27 @@ namespace BansheeEngine
 
 		_markCoreDirty();
 	}
+
+	template<>
+	void TMaterial<false>::setShader(ShaderType shader)
+	{
+		mShader = shader;
+		if (mShader)
+		{
+			if (!mShader.isLoaded())
+			{
+				LOGWRN("Initializing a material with shader that is not yet loaded. Waiting until load is complete. This will result in a performance hit.");
+				mShader.blockUntilLoaded();
+
+				return; // Return because we rely on the resource listener to trigger initialization after load, so we don't do it twice
+			}
+		}
+
+		initBestTechnique();
+
+		_markCoreDirty();
+	}
+
 
 	template<bool Core>
 	UINT32 TMaterial<Core>::getNumPasses() const
@@ -876,7 +897,7 @@ namespace BansheeEngine
 		return materialPtr;
 	}
 
-	Material::Material(const ShaderPtr& shader)
+	Material::Material(const HShader& shader)
 	{
 		setShader(shader);
 	}
@@ -969,7 +990,7 @@ namespace BansheeEngine
 		return static_resource_cast<Material>(gResources()._createResourceHandle(materialPtr));
 	}
 
-	HMaterial Material::create(ShaderPtr shader)
+	HMaterial Material::create(const HShader& shader)
 	{
 		MaterialPtr materialPtr = MaterialManager::instance().create(shader);
 

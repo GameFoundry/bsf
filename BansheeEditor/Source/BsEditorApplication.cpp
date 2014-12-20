@@ -293,10 +293,13 @@ namespace BansheeEngine
 		mTestTexRef->blockUntilCoreInitialized();
 
 		mTestMaterial->setTexture("tex", mTestTexRef);
+		gResources().save(mTestShader, L"C:\\ExportShader.asset", true);
 		gResources().save(mTestMaterial, L"C:\\ExportMaterial.mat", true);
 
 		gResources().unload(mTestMaterial);
+		gResources().unload(mTestShader);
 
+		mTestShader = gResources().load<Shader>(L"C:\\ExportShader.asset");
 		mTestMaterial = gResources().load<Material>(L"C:\\ExportMaterial.mat");
 
 		testRenderable->setMesh(mDbgMeshRef);

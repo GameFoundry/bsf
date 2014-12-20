@@ -43,7 +43,7 @@ namespace BansheeEngine
 		HGpuProgram mFragProgRef;
 		HGpuProgram mVertProgRef;
 
-		ShaderPtr mTestShader;
+		HShader mTestShader;
 		TechniquePtr mNewTechniqueGL;
 		PassPtr mNewPassGL;
 		TechniquePtr mNewTechniqueDX;

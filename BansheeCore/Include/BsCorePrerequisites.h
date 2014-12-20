@@ -341,6 +341,7 @@ namespace BansheeEngine
 	typedef ResourceHandle<BlendState> HBlendState;
 	typedef ResourceHandle<GpuProgInclude> HGpuProgInclude;
 	typedef ResourceHandle<Font> HFont;
+	typedef ResourceHandle<Shader> HShader;
 }
 
 namespace BansheeEngine

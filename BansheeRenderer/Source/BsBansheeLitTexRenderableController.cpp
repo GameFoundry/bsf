@@ -133,6 +133,11 @@ namespace BansheeEngine
 		PerObjectData* rendererData = any_cast_unsafe<PerObjectData>(&element.rendererData);
 
 		SPtr<ShaderCore> shader = element.material->getShader();
+		if (shader == nullptr)
+		{
+			LOGWRN("Missing shader on material.");
+			return;
+		}
 
 		const Map<String, SHADER_PARAM_BLOCK_DESC>& paramBlockDescs = shader->getParamBlocks();
 		const Map<String, SHADER_DATA_PARAM_DESC>& dataParamDescs = shader->getDataParams();
