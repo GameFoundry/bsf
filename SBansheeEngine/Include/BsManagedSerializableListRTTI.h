@@ -13,6 +13,12 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableListRTTI : public RTTIType<ManagedSerializableList, IReflectable, ManagedSerializableListRTTI>
 	{
 	private:
+		struct DeserializationInfo
+		{
+			Vector<ManagedSerializableFieldDataPtr> fields;
+			bool isGameObjectDeserialization;
+		};
+
 		ManagedSerializableTypeInfoListPtr getTypeInfo(ManagedSerializableList* obj)
 		{
 			return obj->mListTypeInfo;
@@ -35,22 +41,24 @@ namespace BansheeEngine
 
 		ManagedSerializableFieldDataPtr getListEntry(ManagedSerializableList* obj, UINT32 arrayIdx)
 		{
-			return obj->mListEntries[arrayIdx];
+			return obj->getFieldData(arrayIdx);
 		}
 
 		void setListEntry(ManagedSerializableList* obj, UINT32 arrayIdx, ManagedSerializableFieldDataPtr val)
 		{
-			obj->mListEntries[arrayIdx] = val;
+			SPtr<DeserializationInfo> info = any_cast<SPtr<DeserializationInfo>>(obj->mRTTIData);
+			info->fields[arrayIdx] = val;
 		}
 
 		UINT32 getNumListEntries(ManagedSerializableList* obj)
 		{
-			return (UINT32)obj->mListEntries.size();
+			return obj->mNumElements;
 		}
 
 		void setNumListEntries(ManagedSerializableList* obj, UINT32 numEntries)
 		{
-			obj->mListEntries.resize(numEntries);
+			SPtr<DeserializationInfo> info = any_cast<SPtr<DeserializationInfo>>(obj->mRTTIData);
+			info->fields = Vector<ManagedSerializableFieldDataPtr>(numEntries);
 		}
 
 	public:
@@ -62,22 +70,30 @@ namespace BansheeEngine
 				&ManagedSerializableListRTTI::setListEntry, &ManagedSerializableListRTTI::setNumListEntries);
 		}
 
-		virtual void onSerializationStarted(IReflectable* obj)
-		{
-			ManagedSerializableList* serializableObject = static_cast<ManagedSerializableList*>(obj);
-			serializableObject->serializeManagedInstance();
-		}
-
 		virtual void onDeserializationStarted(IReflectable* obj)
 		{
 			ManagedSerializableList* serializableObject = static_cast<ManagedSerializableList*>(obj);
 
+			serializableObject->mRTTIData = bs_shared_ptr<DeserializationInfo>();
+			SPtr<DeserializationInfo> info = any_cast<SPtr<DeserializationInfo>>(serializableObject->mRTTIData);
+
 			// If we are deserializing a GameObject we need to defer deserializing actual field values
 			// to ensure GameObject handles instances have been fixed up (which only happens after deserialization is done)
-			if(GameObjectManager::instance().isGameObjectDeserializationActive())
-				GameObjectManager::instance().registerOnDeserializationEndCallback([=] () { serializableObject->deserializeManagedInstance(); });
-			else
-				serializableObject->deserializeManagedInstance();
+			info->isGameObjectDeserialization = GameObjectManager::instance().isGameObjectDeserializationActive();
+
+			if (info->isGameObjectDeserialization)
+				GameObjectManager::instance().registerOnDeserializationEndCallback([=]() { serializableObject->deserializeManagedInstance(info->fields); });
+		}
+
+		virtual void onDeserializationEnded(IReflectable* obj)
+		{
+			ManagedSerializableList* serializableObject = static_cast<ManagedSerializableList*>(obj);
+			SPtr<DeserializationInfo> info = any_cast<SPtr<DeserializationInfo>>(serializableObject->mRTTIData);
+
+			if (!info->isGameObjectDeserialization)
+				serializableObject->deserializeManagedInstance(info->fields);
+
+			serializableObject->mRTTIData = nullptr;
 		}
 
 		virtual const String& getRTTIName()

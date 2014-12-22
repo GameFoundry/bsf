@@ -68,16 +68,7 @@ namespace BansheeEngine
 		return bs_shared_ptr<ManagedSerializableList>(ConstructPrivately());
 	}
 
-	void ManagedSerializableList::serializeManagedInstance()
-	{
-		mListEntries.resize(mNumElements);
-		for(UINT32 i = 0; i < mNumElements; i++)
-		{
-			mListEntries[i] = getFieldData(i);
-		}
-	}
-
-	void ManagedSerializableList::deserializeManagedInstance()
+	void ManagedSerializableList::deserializeManagedInstance(const Vector<ManagedSerializableFieldDataPtr>& entries)
 	{
 		mManagedInstance = createManagedInstance(mListTypeInfo, mNumElements);
 
@@ -87,7 +78,7 @@ namespace BansheeEngine
 		MonoClass* listClass = MonoManager::instance().findClass(mListTypeInfo->getMonoClass());
 		initMonoObjects(listClass);
 
-		for(auto& arrayEntry : mListEntries)
+		for(auto& arrayEntry : entries)
 		{
 			addFieldData(arrayEntry);
 		}

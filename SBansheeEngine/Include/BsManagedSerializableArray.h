@@ -26,22 +26,16 @@ namespace BansheeEngine
 		::MonoClass* mElementMonoClass;
 
 		ManagedSerializableTypeInfoArrayPtr mArrayTypeInfo;
-		Vector<ManagedSerializableFieldDataPtr> mArrayEntries;
-		
+
 		Vector<UINT32> mNumElements;
 		UINT32 mElemSize;
 
 		void initMonoObjects();
 
 		/**
-		 * @brief	Populates internal field data based on currently active managed instance.
+		 * @brief	Creates a new managed instance and populates it with provided entries.
 		 */
-		void serializeManagedInstance();
-
-		/**
-		 * @brief	Creates a new managed instance and populates it with stored field data.
-		 */
-		void deserializeManagedInstance();
+		void deserializeManagedInstance(const Vector<ManagedSerializableFieldDataPtr>& entries);
 
 		void setFieldData(UINT32 arrayIdx, const ManagedSerializableFieldDataPtr& val);
 		ManagedSerializableFieldDataPtr getFieldData(UINT32 arrayIdx);

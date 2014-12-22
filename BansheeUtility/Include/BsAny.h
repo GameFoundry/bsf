@@ -199,7 +199,7 @@ namespace BansheeEngine
 	template <typename ValueType>
 	ValueType& any_cast_ref(Any& operand)
 	{
-		ValueType* result = anyCast<ValueType>(&operand);
+		ValueType* result = any_cast<ValueType>(&operand);
 
 		if (result == nullptr)
 			BS_EXCEPT(InvalidStateException, "Failed to cast between Any types.");

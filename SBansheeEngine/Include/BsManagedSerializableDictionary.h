@@ -48,20 +48,20 @@ namespace BansheeEngine
 		MonoProperty* mValueProp;
 
 		ManagedSerializableTypeInfoDictionaryPtr mDictionaryTypeInfo;
-		Vector<ManagedSerializableFieldDataPtr> mKeyEntries;
-		Vector<ManagedSerializableFieldDataPtr> mValueEntries;
 
 		void initMonoObjects(MonoClass* dictionaryClass);
 
 		/**
-		 * @brief	Populates internal field data based on currently active managed instance.
+		 * @brief	Populates provided field data arrays based on currently active managed instance.
 		 */
-		void serializeManagedInstance();
+		void serializeManagedInstance(Vector<ManagedSerializableFieldDataPtr>& keyEntries, 
+			Vector<ManagedSerializableFieldDataPtr>& valueEntries);
 
 		/**
-		 * @brief	Creates a new managed instance and populates it with stored field data.
+		 * @brief	Creates a new managed instance and populates it with provided field data.
 		 */
-		void deserializeManagedInstance();
+		void deserializeManagedInstance(const Vector<ManagedSerializableFieldDataPtr>& keyEntries, 
+			const Vector<ManagedSerializableFieldDataPtr>& valueEntries);
 
 		void setFieldData(const ManagedSerializableFieldDataPtr& key, const ManagedSerializableFieldDataPtr& val);
 		Enumerator getEnumerator() const;

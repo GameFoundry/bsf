@@ -29,21 +29,14 @@ namespace BansheeEngine
 		MonoProperty* mCountProp;
 
 		ManagedSerializableTypeInfoListPtr mListTypeInfo;
-		Vector<ManagedSerializableFieldDataPtr> mListEntries;
-		
 		UINT32 mNumElements;
 
 		void initMonoObjects(MonoClass* listClass);
 
 		/**
-		 * @brief	Populates internal field data based on currently active managed instance.
-		 */
-		void serializeManagedInstance();
-
-		/**
 		 * @brief	Creates a new managed instance and populates it with stored field data.
 		 */
-		void deserializeManagedInstance();
+		void deserializeManagedInstance(const Vector<ManagedSerializableFieldDataPtr>& entries);
 
 		void setFieldData(UINT32 arrayIdx, const ManagedSerializableFieldDataPtr& val);
 		void addFieldData(const ManagedSerializableFieldDataPtr& val);

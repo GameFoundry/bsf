@@ -13,18 +13,63 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableDictionaryRTTI : public RTTIType<ManagedSerializableDictionary, IReflectable, ManagedSerializableDictionaryRTTI>
 	{
 	private:
+		struct SerializationData
+		{
+			Vector<ManagedSerializableFieldDataPtr> keyEntries;
+			Vector<ManagedSerializableFieldDataPtr> valueEntries;
+			bool isGameObjectDeserialization;
+		};
+
 		ManagedSerializableTypeInfoDictionaryPtr getTypeInfo(ManagedSerializableDictionary* obj) { return obj->mDictionaryTypeInfo; }
 		void setTypeInfo(ManagedSerializableDictionary* obj, ManagedSerializableTypeInfoDictionaryPtr val) { obj->mDictionaryTypeInfo = val; }
 
-		ManagedSerializableFieldDataPtr getKeyEntry(ManagedSerializableDictionary* obj, UINT32 arrayIdx) { return obj->mKeyEntries[arrayIdx]; }
-		void setKeyEntry(ManagedSerializableDictionary* obj, UINT32 arrayIdx, ManagedSerializableFieldDataPtr val) { obj->mKeyEntries[arrayIdx] = val; }
-		UINT32 getNumKeyEntries(ManagedSerializableDictionary* obj) { return (UINT32)obj->mKeyEntries.size(); }
-		void setNumKeyEntries(ManagedSerializableDictionary* obj, UINT32 numEntries) { obj->mKeyEntries.resize(numEntries); }
+		ManagedSerializableFieldDataPtr getKeyEntry(ManagedSerializableDictionary* obj, UINT32 arrayIdx) 
+		{ 
+			SPtr<SerializationData> data = any_cast<SPtr<SerializationData>>(obj->mRTTIData);
+			return data->keyEntries[arrayIdx];
+		}
 
-		ManagedSerializableFieldDataPtr getValueEntry(ManagedSerializableDictionary* obj, UINT32 arrayIdx) { return obj->mValueEntries[arrayIdx]; }
-		void setValueEntry(ManagedSerializableDictionary* obj, UINT32 arrayIdx, ManagedSerializableFieldDataPtr val) { obj->mValueEntries[arrayIdx] = val; }
-		UINT32 getNumValueEntries(ManagedSerializableDictionary* obj) { return (UINT32)obj->mValueEntries.size(); }
-		void setNumValueEntries(ManagedSerializableDictionary* obj, UINT32 numEntries) { obj->mValueEntries.resize(numEntries); }
+		void setKeyEntry(ManagedSerializableDictionary* obj, UINT32 arrayIdx, ManagedSerializableFieldDataPtr val) 
+		{ 
+			SPtr<SerializationData> data = any_cast<SPtr<SerializationData>>(obj->mRTTIData);
+			data->keyEntries[arrayIdx] = val;
+		}
+
+		UINT32 getNumKeyEntries(ManagedSerializableDictionary* obj) 
+		{ 
+			SPtr<SerializationData> data = any_cast<SPtr<SerializationData>>(obj->mRTTIData);
+			return (UINT32)data->keyEntries.size();
+		}
+
+		void setNumKeyEntries(ManagedSerializableDictionary* obj, UINT32 numEntries) 
+		{ 
+			SPtr<SerializationData> data = any_cast<SPtr<SerializationData>>(obj->mRTTIData);
+			data->keyEntries.resize(numEntries);
+		}
+
+		ManagedSerializableFieldDataPtr getValueEntry(ManagedSerializableDictionary* obj, UINT32 arrayIdx) 
+		{ 
+			SPtr<SerializationData> data = any_cast<SPtr<SerializationData>>(obj->mRTTIData);
+			return data->valueEntries[arrayIdx];
+		}
+
+		void setValueEntry(ManagedSerializableDictionary* obj, UINT32 arrayIdx, ManagedSerializableFieldDataPtr val) 
+		{ 
+			SPtr<SerializationData> data = any_cast<SPtr<SerializationData>>(obj->mRTTIData);
+			data->valueEntries[arrayIdx] = val;
+		}
+
+		UINT32 getNumValueEntries(ManagedSerializableDictionary* obj) 
+		{ 
+			SPtr<SerializationData> data = any_cast<SPtr<SerializationData>>(obj->mRTTIData);
+			return (UINT32)data->valueEntries.size();
+		}
+
+		void setNumValueEntries(ManagedSerializableDictionary* obj, UINT32 numEntries) 
+		{ 
+			SPtr<SerializationData> data = any_cast<SPtr<SerializationData>>(obj->mRTTIData);
+			data->valueEntries.resize(numEntries);
+		}
 
 	public:
 		ManagedSerializableDictionaryRTTI()
@@ -39,19 +84,43 @@ namespace BansheeEngine
 		virtual void onSerializationStarted(IReflectable* obj)
 		{
 			ManagedSerializableDictionary* serializableObject = static_cast<ManagedSerializableDictionary*>(obj);
-			serializableObject->serializeManagedInstance();
+
+			serializableObject->mRTTIData = bs_shared_ptr<SerializationData>();
+			SPtr<SerializationData> data = any_cast<SPtr<SerializationData>>(serializableObject->mRTTIData);
+
+			serializableObject->serializeManagedInstance(data->keyEntries, data->valueEntries);
+		}
+
+		virtual void onSerializationEnded(IReflectable* obj)
+		{
+			ManagedSerializableDictionary* serializableObject = static_cast<ManagedSerializableDictionary*>(obj);
+			serializableObject->mRTTIData = nullptr;
 		}
 
 		virtual void onDeserializationStarted(IReflectable* obj)
 		{
 			ManagedSerializableDictionary* serializableObject = static_cast<ManagedSerializableDictionary*>(obj);
 
+			serializableObject->mRTTIData = bs_shared_ptr<SerializationData>();
+			SPtr<SerializationData> data = any_cast<SPtr<SerializationData>>(serializableObject->mRTTIData);
+
 			// If we are deserializing a GameObject we need to defer deserializing actual field values
 			// to ensure GameObject handles instances have been fixed up (which only happens after deserialization is done)
-			if(GameObjectManager::instance().isGameObjectDeserializationActive())
-				GameObjectManager::instance().registerOnDeserializationEndCallback([=] () { serializableObject->deserializeManagedInstance(); });
-			else
-				serializableObject->deserializeManagedInstance();
+			data->isGameObjectDeserialization = GameObjectManager::instance().isGameObjectDeserializationActive();
+
+			if (data->isGameObjectDeserialization)
+				GameObjectManager::instance().registerOnDeserializationEndCallback([=]() { serializableObject->deserializeManagedInstance(data->keyEntries, data->valueEntries); });
+		}
+
+		virtual void onDeserializationEnded(IReflectable* obj)
+		{
+			ManagedSerializableDictionary* serializableObject = static_cast<ManagedSerializableDictionary*>(obj);
+			SPtr<SerializationData> data = any_cast<SPtr<SerializationData>>(serializableObject->mRTTIData);
+
+			if (data->isGameObjectDeserialization)
+				serializableObject->deserializeManagedInstance(data->keyEntries, data->valueEntries);
+
+			serializableObject->mRTTIData = nullptr;
 		}
 
 		virtual const String& getRTTIName()

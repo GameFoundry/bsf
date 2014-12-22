@@ -31,6 +31,23 @@ namespace BansheeEngine
 
 	}
 
+	void ManagedSerializableObjectInfo::initialize()
+	{
+		mCachedAllFields.clear();
+
+		ManagedSerializableObjectInfo* curType = this;
+		while (curType != nullptr)
+		{
+			for (auto& field : mFields)
+			{
+				if (field.second->isSerializable())
+					mCachedAllFields.push_back(CachedField(field.second, curType->mTypeId));
+			}
+
+			curType = curType->mBaseClass.get();
+		}
+	}
+
 	RTTITypeBase* ManagedSerializableObjectInfo::getRTTIStatic()
 	{
 		return ManagedSerializableObjectInfoRTTI::instance();

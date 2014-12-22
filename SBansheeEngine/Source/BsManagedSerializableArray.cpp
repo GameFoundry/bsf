@@ -70,22 +70,7 @@ namespace BansheeEngine
 		return createInstance->invoke(nullptr, params);
 	}
 
-	void ManagedSerializableArray::serializeManagedInstance()
-	{
-		UINT32 totalNumElements = 1;
-		for(auto& numElems : mNumElements)
-		{
-			totalNumElements *= numElems;
-		}
-
-		mArrayEntries.resize(totalNumElements);
-		for(UINT32 i = 0; i < totalNumElements; i++)
-		{
-			mArrayEntries[i] = getFieldData(i);
-		}
-	}
-
-	void ManagedSerializableArray::deserializeManagedInstance()
+	void ManagedSerializableArray::deserializeManagedInstance(const Vector<ManagedSerializableFieldDataPtr>& entries)
 	{
 		mManagedInstance = createManagedInstance(mArrayTypeInfo, mNumElements);
 
@@ -95,7 +80,7 @@ namespace BansheeEngine
 		initMonoObjects();
 
 		UINT32 idx = 0;
-		for(auto& arrayEntry : mArrayEntries)
+		for (auto& arrayEntry : entries)
 		{
 			setFieldData(idx, arrayEntry);
 			idx++;

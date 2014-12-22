@@ -65,43 +65,7 @@ namespace BansheeEngine
 		return bs_shared_ptr<ManagedSerializableObject>(ConstructPrivately());
 	}
 
-	void ManagedSerializableObject::serializeManagedInstance()
-	{
-		ManagedSerializableObjectInfoPtr curType = mObjInfo;
-
-		UINT32 numFields = 0;
-		while(curType != nullptr)
-		{
-			for(auto& field : mObjInfo->mFields)
-			{
-				if(field.second->isSerializable())
-					numFields++;
-			}
-			curType = curType->mBaseClass;
-		}
-
-		mFieldEntries.resize(numFields);
-		curType = mObjInfo;
-		UINT32 curIdx = 0;
-		while(curType != nullptr)
-		{
-			for(auto& field : mObjInfo->mFields)
-			{
-				if(!field.second->isSerializable())
-					continue;
-
-				ManagedSerializableFieldKeyPtr fieldKey = ManagedSerializableFieldKey::create(curType->mTypeId, field.second->mFieldId);
-				ManagedSerializableFieldDataPtr fieldData = getFieldData(field.second);
-
-				mFieldEntries[curIdx] = ManagedSerializableFieldDataEntry::create(fieldKey, fieldData);
-				curIdx++;
-			}
-
-			curType = curType->mBaseClass;
-		}
-	}
-
-	void ManagedSerializableObject::deserializeManagedInstance()
+	void ManagedSerializableObject::deserializeManagedInstance(const Vector<ManagedSerializableFieldDataEntryPtr>& entries)
 	{
 		ManagedSerializableObjectInfoPtr storedObjInfo = mObjInfo;
 		ManagedSerializableObjectInfoPtr currentObjInfo = nullptr;
@@ -172,7 +136,7 @@ namespace BansheeEngine
 		};
 
 		// Scan all fields and ensure the fields still exist
-		for(auto& fieldEntry : mFieldEntries)
+		for(auto& fieldEntry : entries)
 		{
 			ManagedSerializableFieldInfoPtr storedFieldEntry;
 			ManagedSerializableObjectInfoPtr storedFieldObjEntry;

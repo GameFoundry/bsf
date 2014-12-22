@@ -91,7 +91,8 @@ namespace BansheeEngine
 		return bs_shared_ptr<ManagedSerializableDictionary>(ConstructPrivately());
 	}
 
-	void ManagedSerializableDictionary::serializeManagedInstance()
+	void ManagedSerializableDictionary::serializeManagedInstance(Vector<ManagedSerializableFieldDataPtr>& keyEntries,
+		Vector<ManagedSerializableFieldDataPtr>& valueEntries)
 	{
 		MonoClass* dictionaryClass = MonoManager::instance().findClass(mono_object_get_class(mManagedInstance));
 		if(dictionaryClass == nullptr)
@@ -99,19 +100,20 @@ namespace BansheeEngine
 
 		initMonoObjects(dictionaryClass);
 
-		mKeyEntries.clear();
-		mValueEntries.clear();
+		keyEntries.clear();
+		valueEntries.clear();
 
 		Enumerator enumerator = getEnumerator();
 
 		while(enumerator.moveNext())
 		{
-			mKeyEntries.push_back(enumerator.getKey());
-			mValueEntries.push_back(enumerator.getValue());
+			keyEntries.push_back(enumerator.getKey());
+			valueEntries.push_back(enumerator.getValue());
 		}
 	}
 
-	void ManagedSerializableDictionary::deserializeManagedInstance()
+	void ManagedSerializableDictionary::deserializeManagedInstance(const Vector<ManagedSerializableFieldDataPtr>& keyEntries,
+		const Vector<ManagedSerializableFieldDataPtr>& valueEntries)
 	{
 		mManagedInstance = createManagedInstance(mDictionaryTypeInfo);
 		if (mManagedInstance == nullptr)
@@ -124,11 +126,11 @@ namespace BansheeEngine
 
 		initMonoObjects(dictionaryClass);
 
-		assert(mKeyEntries.size() == mValueEntries.size());
+		assert(keyEntries.size() == valueEntries.size());
 
-		for(UINT32 i = 0; i < (UINT32)mKeyEntries.size(); i++)
+		for (UINT32 i = 0; i < (UINT32)keyEntries.size(); i++)
 		{
-			setFieldData(mKeyEntries[i], mValueEntries[i]);
+			setFieldData(keyEntries[i], valueEntries[i]);
 		}
 	}
 

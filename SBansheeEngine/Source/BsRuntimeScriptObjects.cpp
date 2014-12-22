@@ -148,6 +148,13 @@ namespace BansheeEngine
 			}
 		}
 
+		// Finish object info initialization
+		for (auto& curClassInfo : assemblyInfo->mObjectInfos)
+		{
+			std::shared_ptr<ManagedSerializableObjectInfo> objInfo = curClassInfo.second;
+			objInfo->initialize();
+		}
+
 		onAssemblyRefreshed(curAssembly);
 	}
 

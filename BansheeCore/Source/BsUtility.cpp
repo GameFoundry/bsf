@@ -22,7 +22,7 @@ namespace BansheeEngine
 	void Utility::findResourceDependenciesInternal(IReflectable& obj, bool recursive, Map<String, HResource>& dependencies)
 	{
 		RTTITypeBase* rtti = obj.getRTTI();
-		rtti->onDeserializationStarted(&obj);
+		rtti->onSerializationStarted(&obj);
 
 		UINT32 numFields = rtti->getNumFields();
 		for (UINT32 i = 0; i < numFields; i++)
@@ -91,6 +91,6 @@ namespace BansheeEngine
 			}
 		}
 
-		rtti->onDeserializationEnded(&obj);
+		rtti->onSerializationEnded(&obj);
 	}
 }

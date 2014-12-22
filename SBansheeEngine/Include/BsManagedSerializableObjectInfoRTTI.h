@@ -127,6 +127,12 @@ namespace BansheeEngine
 				&ManagedSerializableObjectInfoRTTI::setSerializableFieldInfoArraySize);
 		}
 
+		void onDeserializationEnded(IReflectable* obj)
+		{
+			ManagedSerializableObjectInfo* objInfo = static_cast<ManagedSerializableObjectInfo*>(obj);
+			objInfo->initialize();
+		}
+
 		virtual const String& getRTTIName()
 		{
 			static String name = "ScriptSerializableObjectInfo";

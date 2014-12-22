@@ -25,17 +25,11 @@ namespace BansheeEngine
 	protected:
 		ManagedSerializableObjectInfoPtr mObjInfo;
 		MonoObject* mManagedInstance;
-		Vector<ManagedSerializableFieldDataEntryPtr> mFieldEntries;
 
 		/**
-		 * @brief	Populates internal field data based on currently active managed instance.
+		 * @brief	Creates a new managed instance and populates it with provided field data.
 		 */
-		void serializeManagedInstance();
-
-		/**
-		 * @brief	Creates a new managed instance and populates it with stored field data.
-		 */
-		void deserializeManagedInstance();
+		void deserializeManagedInstance(const Vector<ManagedSerializableFieldDataEntryPtr>& data);
 
 		void setFieldData(const ManagedSerializableFieldInfoPtr& fieldInfo, const ManagedSerializableFieldDataPtr& val);
 		ManagedSerializableFieldDataPtr getFieldData(const ManagedSerializableFieldInfoPtr& fieldInfo);
