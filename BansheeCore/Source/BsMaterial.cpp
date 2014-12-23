@@ -455,6 +455,7 @@ namespace BansheeEngine
 	void TMaterial<false>::setShader(ShaderType shader)
 	{
 		mShader = shader;
+		mBestTechnique = nullptr;
 		_markResourcesDirty();
 
 		if (mShader)
@@ -469,7 +470,6 @@ namespace BansheeEngine
 		}
 
 		initBestTechnique();
-
 		_markCoreDirty();
 	}
 
@@ -899,6 +899,9 @@ namespace BansheeEngine
 		return materialPtr;
 	}
 
+	Material::Material()
+	{ }
+
 	Material::Material(const HShader& shader)
 	{
 		mShader = shader;
@@ -1005,23 +1008,29 @@ namespace BansheeEngine
 
 	void Material::notifyResourceLoaded(const HResource& resource)
 	{
-		initBestTechnique();
-
-		markCoreDirty();
+		if (mBestTechnique == nullptr)
+		{
+			initBestTechnique();
+			markCoreDirty();
+		}
 	}
 
 	void Material::notifyResourceDestroyed(const HResource& resource)
 	{
-		initBestTechnique();
-
-		markCoreDirty();
+		if (mBestTechnique == nullptr)
+		{
+			initBestTechnique();
+			markCoreDirty();
+		}
 	}
 
 	void Material::notifyResourceChanged(const HResource& resource)
 	{
-		initBestTechnique();
-
-		markCoreDirty();
+		if (mBestTechnique == nullptr)
+		{
+			initBestTechnique();
+			markCoreDirty();
+		}
 	}
 
 	HMaterial Material::create()

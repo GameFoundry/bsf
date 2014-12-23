@@ -31,6 +31,7 @@ namespace BansheeEngine
 	{
 	public:
 		DragAndDropManager();
+		~DragAndDropManager();
 
 		/**
 		 * @brief	Starts a drag operation of the specified type. This means GUI elements will start receiving
@@ -122,6 +123,7 @@ namespace BansheeEngine
 		Vector<std::function<void(bool)>> mDropCallbacks;
 		bool mIsDragInProgress;
 		bool mNeedsValidDropTarget;
+		HEvent mMouseCaptureChangedConn;
 
 		std::atomic<bool> mCaptureChanged;
 		std::atomic<int> mCaptureActive;

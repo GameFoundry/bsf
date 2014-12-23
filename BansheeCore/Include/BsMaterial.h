@@ -635,7 +635,7 @@ namespace BansheeEngine
 	private:
 		friend class MaterialManager;
 
-		Material() { }
+		Material();
 		Material(const HShader& shader);
 
 		/**
