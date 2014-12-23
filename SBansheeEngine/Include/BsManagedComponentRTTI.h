@@ -79,6 +79,7 @@ namespace BansheeEngine
 			MonoObject* managedInstance = serializableObject->getManagedInstance();
 
 			mc->initialize(managedInstance, runtimeType, managedClass);
+			mc->mRTTIData = nullptr;
 		}
 
 		virtual const String& getRTTIName()
