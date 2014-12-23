@@ -16,7 +16,7 @@ namespace BansheeEngine
 	class BS_RSGL_EXPORT GLMultiRenderTextureCore : public MultiRenderTextureCore
 	{
 	public:
-		GLMultiRenderTextureCore(const MULTI_RENDER_TEXTURE_DESC& desc);
+		GLMultiRenderTextureCore(const MULTI_RENDER_TEXTURE_CORE_DESC& desc);
 		virtual ~GLMultiRenderTextureCore();
 
 		/**

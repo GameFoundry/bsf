@@ -603,7 +603,7 @@ namespace BansheeEngine
 
 		const HTexture& tex = mCaretTexture->getTexture();
 		UINT32 subresourceIdx = tex->getProperties().mapToSubresourceIdx(0, 0);
-		PixelDataPtr data = tex->allocateSubresourceBuffer(subresourceIdx);
+		PixelDataPtr data = tex->getProperties().allocateSubresourceBuffer(subresourceIdx);
 
 		data->setColorAt(mCaretColor, 0, 0);
 		tex->writeSubresource(gCoreAccessor(), subresourceIdx, data, false);
@@ -619,7 +619,7 @@ namespace BansheeEngine
 
 		const HTexture& tex = mTextSelectionTexture->getTexture();
 		UINT32 subresourceIdx = tex->getProperties().mapToSubresourceIdx(0, 0);
-		PixelDataPtr data = tex->allocateSubresourceBuffer(subresourceIdx);
+		PixelDataPtr data = tex->getProperties().allocateSubresourceBuffer(subresourceIdx);
 
 		data->setColorAt(mTextSelectionColor, 0, 0);
 

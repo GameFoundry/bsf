@@ -128,6 +128,16 @@ namespace BansheeEngine
 		 */
 		UINT32 mapToSubresourceIdx(UINT32 face, UINT32 mip) const;
 
+		/**
+		 * @brief	Allocates a buffer you may use for storage when reading or writing a sub-resource. You
+		 * 			need to allocate such a buffer if you are calling "readSubresource".
+		 *
+		 *			You can retrieve a sub-resource index by calling "mapToSubresourceIdx".
+		 * 			
+		 * @note	Thread safe.
+		 */
+		PixelDataPtr allocateSubresourceBuffer(UINT32 subresourceIdx) const;
+
 	protected:
 		friend class TextureRTTI;
 
@@ -347,16 +357,6 @@ namespace BansheeEngine
 		 * @see		TextureCore::readSubresource
 		 */
 		AsyncOp readSubresource(CoreAccessor& accessor, UINT32 subresourceIdx, const PixelDataPtr& data);
-
-		/**
-		 * @brief	Allocates a buffer you may use for storage when reading or writing a sub-resource. You
-		 * 			need to allocate such a buffer if you are calling "readSubresource".
-		 *
-		 *			You can retrieve a sub-resource index by calling "mapToSubresourceIdx".
-		 * 			
-		 * @note	Thread safe.
-		 */
-		PixelDataPtr allocateSubresourceBuffer(UINT32 subresourceIdx) const;
 
 		/**
 		 * @brief	Reads data from the cached system memory texture buffer into the provided buffer. 

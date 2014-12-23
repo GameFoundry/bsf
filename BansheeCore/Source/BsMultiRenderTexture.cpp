@@ -13,27 +13,50 @@ namespace BansheeEngine
 	{
 		for (size_t i = 0; i < desc.colorSurfaces.size(); i++)
 		{
-			TexturePtr texture = desc.colorSurfaces[i].texture;
+			HTexture texture = desc.colorSurfaces[i].texture;
 
 			if (texture != nullptr)
 			{
 				const TextureProperties& texProps = texture->getProperties();
-
-				mWidth = texProps.getWidth();
-				mHeight = texProps.getWidth();
-				mColorDepth = BansheeEngine::PixelUtil::getNumElemBits(texProps.getFormat());
-				mActive = true;
-				mHwGamma = texProps.isHardwareGammaEnabled();
-				mMultisampleCount = texProps.getMultisampleCount();
-				mIsWindow = false;
-				mRequiresTextureFlipping = requiresTextureFlipping();
+				construct(&texProps);
 
 				break;
 			}
 		}
 	}
 
-	MultiRenderTextureCore::MultiRenderTextureCore(const MULTI_RENDER_TEXTURE_DESC& desc)
+	MultiRenderTextureProperties::MultiRenderTextureProperties(const MULTI_RENDER_TEXTURE_CORE_DESC& desc)
+	{
+		for (size_t i = 0; i < desc.colorSurfaces.size(); i++)
+		{
+			SPtr<TextureCore> texture = desc.colorSurfaces[i].texture;
+
+			if (texture != nullptr)
+			{
+				const TextureProperties& texProps = texture->getProperties();
+				construct(&texProps);
+
+				break;
+			}
+		}
+	}
+
+	void MultiRenderTextureProperties::construct(const TextureProperties* props)
+	{
+		if (props == nullptr)
+			return;
+
+		mWidth = props->getWidth();
+		mHeight = props->getWidth();
+		mColorDepth = PixelUtil::getNumElemBits(props->getFormat());
+		mActive = true;
+		mHwGamma = props->isHardwareGammaEnabled();
+		mMultisampleCount = props->getMultisampleCount();
+		mIsWindow = false;
+		mRequiresTextureFlipping = requiresTextureFlipping();
+	}
+
+	MultiRenderTextureCore::MultiRenderTextureCore(const MULTI_RENDER_TEXTURE_CORE_DESC& desc)
 		:mDesc(desc)
 	{ }
 
@@ -67,7 +90,7 @@ namespace BansheeEngine
 					continue;
 				}
 
-				SPtr<TextureCore> texture = mDesc.colorSurfaces[i].texture->getCore();
+				SPtr<TextureCore> texture = mDesc.colorSurfaces[i].texture;
 
 				if (texture->getProperties().getUsage() != TU_RENDERTARGET)
 					BS_EXCEPT(InvalidParametersException, "Provided texture is not created with render target usage.");
@@ -79,7 +102,7 @@ namespace BansheeEngine
 
 		if (mDesc.depthStencilSurface.texture != nullptr)
 		{
-			SPtr<TextureCore> texture = mDesc.depthStencilSurface.texture->getCore();
+			SPtr<TextureCore> texture = mDesc.depthStencilSurface.texture;
 
 			if (texture->getProperties().getUsage() != TU_DEPTHSTENCIL)
 				BS_EXCEPT(InvalidParametersException, "Provided texture is not created with depth stencil usage.");
@@ -186,23 +209,39 @@ namespace BansheeEngine
 	MultiRenderTexture::MultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC& desc)
 		:mDesc(desc)
 	{
-		// Create non-persistent resource handles for the used textures (we only need them because a lot of the code accepts only handles,
-		// since they're non persistent they don't really have any benefit over shared pointers)
-
 		for (UINT32 i = 0; i < (UINT32)desc.colorSurfaces.size(); i++)
 		{
 			if (desc.colorSurfaces[i].texture != nullptr)
-				mBindableColorTex.push_back(static_resource_cast<Texture>(gResources()._createResourceHandle(desc.colorSurfaces[i].texture)));
+				mBindableColorTex.push_back(desc.colorSurfaces[i].texture);
 		}
 
-
 		if (desc.depthStencilSurface.texture != nullptr)
-			mBindableDepthStencilTex = static_resource_cast<Texture>(gResources()._createResourceHandle(desc.depthStencilSurface.texture));
+			mBindableDepthStencilTex = desc.depthStencilSurface.texture;
 	}
 
 	SPtr<CoreObjectCore> MultiRenderTexture::createCore() const
 	{
-		return TextureCoreManager::instance().createMultiRenderTextureInternal(mDesc);
+		MULTI_RENDER_TEXTURE_CORE_DESC coreDesc;
+
+		for (auto& colorSurface : mDesc.colorSurfaces)
+		{
+			RENDER_SURFACE_CORE_DESC surfaceDesc;
+			if (colorSurface.texture.isLoaded())
+				surfaceDesc.texture = colorSurface.texture->getCore();
+
+			surfaceDesc.face = colorSurface.face;
+			surfaceDesc.mipLevel = colorSurface.mipLevel;
+
+			coreDesc.colorSurfaces.push_back(surfaceDesc);
+		}
+
+		if (mDesc.depthStencilSurface.texture.isLoaded())
+			coreDesc.depthStencilSurface.texture = mDesc.depthStencilSurface.texture->getCore();
+
+		coreDesc.depthStencilSurface.face = mDesc.depthStencilSurface.face;
+		coreDesc.depthStencilSurface.mipLevel = mDesc.depthStencilSurface.mipLevel;
+
+		return TextureCoreManager::instance().createMultiRenderTextureInternal(coreDesc);
 	}
 
 	SPtr<MultiRenderTextureCore> MultiRenderTexture::getCore() const

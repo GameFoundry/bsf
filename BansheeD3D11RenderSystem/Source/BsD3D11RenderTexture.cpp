@@ -9,7 +9,7 @@
 
 namespace BansheeEngine
 {
-	D3D11RenderTextureCore::D3D11RenderTextureCore(const RENDER_TEXTURE_DESC& desc)
+	D3D11RenderTextureCore::D3D11RenderTextureCore(const RENDER_TEXTURE_CORE_DESC& desc)
 		:RenderTextureCore(desc), mProperties(desc, false)
 	{ 
 

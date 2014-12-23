@@ -3,6 +3,7 @@
 #include "BsCorePrerequisites.h"
 
 #include "BsTexture.h"
+#include "BsRenderTexture.h"
 #include "BsMultiRenderTexture.h"
 #include "BsModule.h"
 
@@ -118,12 +119,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	TextureManager::createRenderTexture(const RENDER_TEXTURE_DESC&)
 		 */
-		SPtr<RenderTextureCore> createRenderTexture(const RENDER_TEXTURE_DESC& desc);
+		SPtr<RenderTextureCore> createRenderTexture(const RENDER_TEXTURE_CORE_DESC& desc);
 
 		/**
 		 * @copydoc	TextureManager::createMultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC&)
 		 */
-		SPtr<MultiRenderTextureCore> createMultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC& desc);
+		SPtr<MultiRenderTextureCore> createMultiRenderTexture(const MULTI_RENDER_TEXTURE_CORE_DESC& desc);
 
 	protected:
 		friend class Texture;
@@ -141,11 +142,11 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	TextureManager::createRenderTextureImpl
 		 */
-		virtual SPtr<RenderTextureCore> createRenderTextureInternal(const RENDER_TEXTURE_DESC& desc) = 0;
+		virtual SPtr<RenderTextureCore> createRenderTextureInternal(const RENDER_TEXTURE_CORE_DESC& desc) = 0;
 
 		/**
 		 * @copydoc	TextureManager::createMultiRenderTextureImpl
 		 */
-		virtual SPtr<MultiRenderTextureCore> createMultiRenderTextureInternal(const MULTI_RENDER_TEXTURE_DESC& desc) = 0;
+		virtual SPtr<MultiRenderTextureCore> createMultiRenderTextureInternal(const MULTI_RENDER_TEXTURE_CORE_DESC& desc) = 0;
     };
 }

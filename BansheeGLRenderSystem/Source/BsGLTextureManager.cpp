@@ -76,7 +76,7 @@ namespace BansheeEngine
 		return texPtr;
 	}
 
-	SPtr<RenderTextureCore> GLTextureCoreManager::createRenderTextureInternal(const RENDER_TEXTURE_DESC& desc)
+	SPtr<RenderTextureCore> GLTextureCoreManager::createRenderTextureInternal(const RENDER_TEXTURE_CORE_DESC& desc)
 	{
 		SPtr<GLRenderTextureCore> texPtr = bs_shared_ptr<GLRenderTextureCore>(desc);
 		texPtr->_setThisPtr(texPtr);
@@ -84,7 +84,7 @@ namespace BansheeEngine
 		return texPtr;
 	}
 
-	SPtr<MultiRenderTextureCore> GLTextureCoreManager::createMultiRenderTextureInternal(const MULTI_RENDER_TEXTURE_DESC& desc)
+	SPtr<MultiRenderTextureCore> GLTextureCoreManager::createMultiRenderTextureInternal(const MULTI_RENDER_TEXTURE_CORE_DESC& desc)
 	{
 		SPtr<GLMultiRenderTextureCore> texPtr = bs_shared_ptr<GLMultiRenderTextureCore>(desc);
 		texPtr->_setThisPtr(texPtr);

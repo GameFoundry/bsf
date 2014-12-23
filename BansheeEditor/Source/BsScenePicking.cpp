@@ -318,7 +318,7 @@ namespace BansheeEngine
 		}
 
 		SPtr<RenderTextureCore> rtt = std::static_pointer_cast<RenderTextureCore>(target);
-		TexturePtr outputTexture = rtt->getBindableColorTexture();
+		SPtr<TextureCore> outputTexture = rtt->getBindableColorTexture();
 
 		if (position.x < 0 || position.x >= (INT32)outputTexture->getProperties().getWidth() ||
 			position.y < 0 || position.y >= (INT32)outputTexture->getProperties().getHeight())
@@ -327,13 +327,13 @@ namespace BansheeEngine
 			return;
 		}
 
-		PixelDataPtr outputPixelData = outputTexture->allocateSubresourceBuffer(0);
+		PixelDataPtr outputPixelData = outputTexture->getProperties().allocateSubresourceBuffer(0);
 		AsyncOp unused;
 
 		RenderAPICore& rs = RenderAPICore::instance();
 
 		rs.endFrame();
-		outputTexture->getCore()->readSubresource(0, *outputPixelData);
+		outputTexture->readSubresource(0, *outputPixelData);
 
 		Map<UINT32, UINT32> selectionScores;
 		UINT32 numPixels = outputPixelData->getWidth() * outputPixelData->getHeight();

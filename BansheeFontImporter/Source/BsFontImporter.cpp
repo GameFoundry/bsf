@@ -278,7 +278,7 @@ namespace BansheeEngine
 				// It's possible the formats no longer match
 				if (newTex->getProperties().getFormat() != pixelData->getFormat())
 				{
-					PixelDataPtr temp = newTex->allocateSubresourceBuffer(subresourceIdx);
+					PixelDataPtr temp = newTex->getProperties().allocateSubresourceBuffer(subresourceIdx);
 					PixelUtil::bulkPixelConversion(*pixelData, *temp);
 
 					newTex->writeSubresource(gCoreAccessor(), subresourceIdx, temp, false);

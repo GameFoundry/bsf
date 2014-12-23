@@ -66,7 +66,7 @@ namespace BansheeEngine
 				LOGERR("Render texture must be created using a fully loaded texture.");
 			}
 			else
-				depthStencilSurfaceDesc.texture = textureHandle.getInternalPtr();
+				depthStencilSurfaceDesc.texture = textureHandle;
 		}
 
 		RenderTargetPtr tex;
@@ -94,7 +94,7 @@ namespace BansheeEngine
 						LOGERR("Render texture must be created using a fully loaded texture.");
 					}
 					else
-						surfaceDesc.texture = textureHandle.getInternalPtr();
+						surfaceDesc.texture = textureHandle;
 				}
 
 				desc.colorSurfaces.push_back(surfaceDesc);
@@ -123,7 +123,7 @@ namespace BansheeEngine
 						LOGERR("Render texture must be created using a fully loaded texture.");
 					}
 					else
-						surfaceDesc.texture = textureHandle.getInternalPtr();
+						surfaceDesc.texture = textureHandle;
 				}
 			}
 

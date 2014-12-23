@@ -23,7 +23,7 @@ namespace BansheeEngine
 
 #define DEPTHFORMAT_COUNT (sizeof(depthFormats)/sizeof(GLenum))
 
-	GLRenderTextureCore::GLRenderTextureCore(const RENDER_TEXTURE_DESC& desc)
+	GLRenderTextureCore::GLRenderTextureCore(const RENDER_TEXTURE_CORE_DESC& desc)
 		:RenderTextureCore(desc), mProperties(desc, true), mFB(nullptr)
 	{ }
 

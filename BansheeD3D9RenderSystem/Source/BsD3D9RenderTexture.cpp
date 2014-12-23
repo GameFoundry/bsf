@@ -6,7 +6,7 @@
 
 namespace BansheeEngine
 {
-	D3D9RenderTextureCore::D3D9RenderTextureCore(const RENDER_TEXTURE_DESC& desc)
+	D3D9RenderTextureCore::D3D9RenderTextureCore(const RENDER_TEXTURE_CORE_DESC& desc)
 		:RenderTextureCore(desc), mProperties(desc, false), mDX9ColorSurface(nullptr),
 		mDX9DepthStencilSurface(nullptr), mIsBindableToShader(false)
 	{ }

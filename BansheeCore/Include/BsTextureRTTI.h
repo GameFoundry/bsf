@@ -63,7 +63,7 @@ namespace BansheeEngine
 			UINT32 mipmap = idx % (obj->mProperties.getNumMipmaps() + 1);
 
 			UINT32 subresourceIdx = obj->mProperties.mapToSubresourceIdx(face, mipmap);
-			PixelDataPtr pixelData = obj->allocateSubresourceBuffer(subresourceIdx);
+			PixelDataPtr pixelData = obj->mProperties.allocateSubresourceBuffer(subresourceIdx);
 
 			obj->readSubresource(gCoreAccessor(), subresourceIdx, pixelData);
 			gCoreAccessor().submitToCoreThread(true);

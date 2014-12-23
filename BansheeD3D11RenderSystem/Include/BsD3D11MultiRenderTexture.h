@@ -15,7 +15,7 @@ namespace BansheeEngine
 	class BS_D3D11_EXPORT D3D11MultiRenderTextureCore : public MultiRenderTextureCore
 	{
 	public:
-		D3D11MultiRenderTextureCore(const MULTI_RENDER_TEXTURE_DESC& desc);
+		D3D11MultiRenderTextureCore(const MULTI_RENDER_TEXTURE_CORE_DESC& desc);
 		virtual ~D3D11MultiRenderTextureCore();
 		
 		/**

@@ -4,7 +4,7 @@
 
 namespace BansheeEngine
 {
-	D3D9MultiRenderTextureCore::D3D9MultiRenderTextureCore(const MULTI_RENDER_TEXTURE_DESC& desc)
+	D3D9MultiRenderTextureCore::D3D9MultiRenderTextureCore(const MULTI_RENDER_TEXTURE_CORE_DESC& desc)
 		:MultiRenderTextureCore(desc), mProperties(desc), mDX9DepthStencilSurface(nullptr)
 	{ }
 

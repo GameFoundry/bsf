@@ -14,7 +14,19 @@ namespace BansheeEngine
 	 */
 	struct BS_CORE_EXPORT RENDER_SURFACE_DESC
 	{
-		TexturePtr texture;
+		HTexture texture;
+		UINT32 face;
+		UINT32 mipLevel;
+	};
+
+	/**
+	 * @see		RENDER_SURFACE_DESC
+	 *
+	 * @note	References core textures instead of texture handles.
+	 */
+	struct BS_CORE_EXPORT RENDER_SURFACE_CORE_DESC
+	{
+		SPtr<TextureCore> texture;
 		UINT32 face;
 		UINT32 mipLevel;
 	};

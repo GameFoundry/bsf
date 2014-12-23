@@ -55,12 +55,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	TextureCoreManager::createRenderTextureInternal
 		 */
-		SPtr<RenderTextureCore> createRenderTextureInternal(const RENDER_TEXTURE_DESC& desc);
+		SPtr<RenderTextureCore> createRenderTextureInternal(const RENDER_TEXTURE_CORE_DESC& desc);
 
 		/**
 		 * @copydoc	TextureCoreManager::createMultiRenderTextureInternal
 		 */
-		SPtr<MultiRenderTextureCore> createMultiRenderTextureInternal(const MULTI_RENDER_TEXTURE_DESC& desc);
+		SPtr<MultiRenderTextureCore> createMultiRenderTextureInternal(const MULTI_RENDER_TEXTURE_CORE_DESC& desc);
 
 		GLSupport& mGLSupport;
 	};

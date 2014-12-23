@@ -15,7 +15,7 @@ namespace BansheeEngine
 	class BS_D3D9_EXPORT D3D9MultiRenderTextureCore : public MultiRenderTextureCore
 	{
 	public:
-		D3D9MultiRenderTextureCore(const MULTI_RENDER_TEXTURE_DESC& desc);
+		D3D9MultiRenderTextureCore(const MULTI_RENDER_TEXTURE_CORE_DESC& desc);
 		virtual ~D3D9MultiRenderTextureCore();
 		
 		/**

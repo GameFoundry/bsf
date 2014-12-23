@@ -51,6 +51,35 @@ namespace BansheeEngine
 		return face * (getNumMipmaps() + 1) + mip;
 	}
 
+	PixelDataPtr TextureProperties::allocateSubresourceBuffer(UINT32 subresourceIdx) const
+	{
+		UINT32 face = 0;
+		UINT32 mip = 0;
+		mapFromSubresourceIdx(subresourceIdx, face, mip);
+
+		UINT32 numMips = getNumMipmaps();
+		UINT32 width = getWidth();
+		UINT32 height = getHeight();
+		UINT32 depth = getDepth();
+
+		UINT32 totalSize = PixelUtil::getMemorySize(width, height, depth, getFormat());
+
+		for (UINT32 j = 0; j < mip; j++)
+		{
+			totalSize = PixelUtil::getMemorySize(width, height, depth, getFormat());
+
+			if (width != 1) width /= 2;
+			if (height != 1) height /= 2;
+			if (depth != 1) depth /= 2;
+		}
+
+		PixelDataPtr dst = bs_shared_ptr<PixelData, PoolAlloc>(width, height, depth, getFormat());
+
+		dst->allocateInternalBuffer();
+
+		return dst;
+	}
+
 	TextureCore::TextureCore(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps,
 		PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount)
 		:mProperties(textureType, width, height, depth, numMipmaps, format, usage, hwGamma, multisampleCount)
@@ -349,37 +378,6 @@ namespace BansheeEngine
 		memcpy(dest, src, pixelData.getSize());
 	}
 
-	PixelDataPtr Texture::allocateSubresourceBuffer(UINT32 subresourceIdx) const
-	{
-		UINT32 face = 0;
-		UINT32 mip = 0;
-		mProperties.mapFromSubresourceIdx(subresourceIdx, face, mip);
-
-		UINT32 numMips = mProperties.getNumMipmaps();
-		UINT32 width = mProperties.getWidth();
-		UINT32 height = mProperties.getHeight();
-		UINT32 depth = mProperties.getDepth();
-
-		UINT32 totalSize = PixelUtil::getMemorySize(width, height, depth, mProperties.getFormat());
-
-		for(UINT32 j = 0; j < mip; j++)
-		{
-			totalSize = PixelUtil::getMemorySize(width, height, depth, mProperties.getFormat());
-
-			if(width != 1) width /= 2;
-			if(height != 1) height /= 2;
-			if(depth != 1) depth /= 2;
-		}
-
-		PixelDataPtr dst = bs_shared_ptr<PixelData, PoolAlloc>(width, height, depth, mProperties.getFormat());
-
-		dst->allocateInternalBuffer();
-
-		return dst;
-	}
-
-
-
 	void Texture::readData(PixelData& dest, UINT32 mipLevel, UINT32 face)
 	{
 		if ((mProperties.getUsage() & TU_CPUCACHED) == 0)
@@ -510,7 +508,7 @@ namespace BansheeEngine
 			dummyTexture = create(TEX_TYPE_2D, 2, 2, 0, PF_R8G8B8A8);
 
 			UINT32 subresourceIdx = dummyTexture->getProperties().mapToSubresourceIdx(0, 0);
-			PixelDataPtr data = dummyTexture->allocateSubresourceBuffer(subresourceIdx);
+			PixelDataPtr data = dummyTexture->getProperties().allocateSubresourceBuffer(subresourceIdx);
 
 			data->setColorAt(Color::Red, 0, 0);
 			data->setColorAt(Color::Red, 0, 1);

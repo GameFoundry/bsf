@@ -11,17 +11,39 @@ namespace BansheeEngine
 {
 	RenderTextureProperties::RenderTextureProperties(const RENDER_TEXTURE_DESC& desc, bool requiresFlipping)
 	{
-		TexturePtr texture = desc.colorSurface.texture;
+		HTexture texture = desc.colorSurface.texture;
+
+		if (texture.isLoaded())
+		{
+			const TextureProperties& props = texture->getProperties();
+			construct(&props, requiresFlipping);
+		}
+		else
+			construct(nullptr, requiresFlipping);
+	}
+
+	RenderTextureProperties::RenderTextureProperties(const RENDER_TEXTURE_CORE_DESC& desc, bool requiresFlipping)
+	{
+		SPtr<TextureCore> texture = desc.colorSurface.texture;
 
 		if (texture != nullptr)
 		{
 			const TextureProperties& props = texture->getProperties();
+			construct(&props, requiresFlipping);
+		}
+		else
+			construct(nullptr, requiresFlipping);
+	}
 
-			mWidth = props.getWidth();
-			mHeight = props.getHeight();
-			mColorDepth = BansheeEngine::PixelUtil::getNumElemBits(props.getFormat());
-			mHwGamma = props.isHardwareGammaEnabled();
-			mMultisampleCount = props.getMultisampleCount();
+	void RenderTextureProperties::construct(const TextureProperties* textureProps, bool requiresFlipping)
+	{
+		if (textureProps != nullptr)
+		{
+			mWidth = textureProps->getWidth();
+			mHeight = textureProps->getHeight();
+			mColorDepth = BansheeEngine::PixelUtil::getNumElemBits(textureProps->getFormat());
+			mHwGamma = textureProps->isHardwareGammaEnabled();
+			mMultisampleCount = textureProps->getMultisampleCount();
 		}
 
 		mActive = true;
@@ -29,7 +51,7 @@ namespace BansheeEngine
 		mRequiresTextureFlipping = requiresFlipping;
 	}
 
-	RenderTextureCore::RenderTextureCore(const RENDER_TEXTURE_DESC& desc)
+	RenderTextureCore::RenderTextureCore(const RENDER_TEXTURE_CORE_DESC& desc)
 		:mColorSurface(nullptr), mDepthStencilSurface(nullptr), mDesc(desc)
 	{ }
 
@@ -46,10 +68,10 @@ namespace BansheeEngine
 	{
 		RenderTargetCore::initialize();
 
-		const RENDER_SURFACE_DESC& colorSurface = mDesc.colorSurface;
+		const RENDER_SURFACE_CORE_DESC& colorSurface = mDesc.colorSurface;
 		if (colorSurface.texture != nullptr)
 		{
-			SPtr<TextureCore> texture = colorSurface.texture->getCore();
+			SPtr<TextureCore> texture = colorSurface.texture;
 
 			if (texture->getProperties().getUsage() != TU_RENDERTARGET)
 				BS_EXCEPT(InvalidParametersException, "Provided texture is not created with render target usage.");
@@ -58,10 +80,10 @@ namespace BansheeEngine
 				colorSurface.face, 1, GVU_RENDERTARGET);
 		}
 
-		const RENDER_SURFACE_DESC& depthStencilSurface = mDesc.depthStencilSurface;
+		const RENDER_SURFACE_CORE_DESC& depthStencilSurface = mDesc.depthStencilSurface;
 		if (depthStencilSurface.texture != nullptr)
 		{
-			SPtr<TextureCore> texture = depthStencilSurface.texture->getCore();
+			SPtr<TextureCore> texture = depthStencilSurface.texture;
 
 			if (texture->getProperties().getUsage() != TU_DEPTHSTENCIL)
 				BS_EXCEPT(InvalidParametersException, "Provided texture is not created with depth stencil usage.");
@@ -156,18 +178,29 @@ namespace BansheeEngine
 	{
 		mDesc = desc;
 
-		// Create non-persistent resource handles for the used textures (we only need them because a lot of the code accepts only handles,
-		// since they're non persistent they don't really have any benefit over shared pointers)
 		if (desc.colorSurface.texture != nullptr)
-			mBindableColorTex = static_resource_cast<Texture>(gResources()._createResourceHandle(desc.colorSurface.texture));
+			mBindableColorTex = desc.colorSurface.texture;
 
 		if (desc.depthStencilSurface.texture != nullptr)
-			mBindableDepthStencilTex = static_resource_cast<Texture>(gResources()._createResourceHandle(desc.depthStencilSurface.texture));
+			mBindableDepthStencilTex = desc.depthStencilSurface.texture;
 	}
 
 	SPtr<CoreObjectCore> RenderTexture::createCore() const
 	{
-		return TextureCoreManager::instance().createRenderTextureInternal(mDesc);
+		RENDER_TEXTURE_CORE_DESC coreDesc;
+
+		if (mDesc.colorSurface.texture.isLoaded())
+			coreDesc.colorSurface.texture = mDesc.colorSurface.texture->getCore();
+
+		if (mDesc.depthStencilSurface.texture.isLoaded())
+			coreDesc.depthStencilSurface.texture = mDesc.depthStencilSurface.texture->getCore();
+
+		coreDesc.colorSurface.face = mDesc.colorSurface.face;
+		coreDesc.colorSurface.mipLevel = mDesc.colorSurface.mipLevel;
+		coreDesc.depthStencilSurface.face = mDesc.depthStencilSurface.face;
+		coreDesc.depthStencilSurface.mipLevel = mDesc.depthStencilSurface.mipLevel;
+
+		return TextureCoreManager::instance().createRenderTextureInternal(coreDesc);
 	}
 
 	CoreSyncData RenderTexture::syncToCore(FrameAlloc* allocator)

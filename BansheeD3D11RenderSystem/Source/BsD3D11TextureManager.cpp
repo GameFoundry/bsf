@@ -41,7 +41,7 @@ namespace BansheeEngine
 		return texPtr;
 	}
 
-	SPtr<RenderTextureCore> D3D11TextureCoreManager::createRenderTextureInternal(const RENDER_TEXTURE_DESC& desc)
+	SPtr<RenderTextureCore> D3D11TextureCoreManager::createRenderTextureInternal(const RENDER_TEXTURE_CORE_DESC& desc)
 	{
 		SPtr<D3D11RenderTextureCore> texPtr = bs_shared_ptr<D3D11RenderTextureCore>(desc);
 		texPtr->_setThisPtr(texPtr);
@@ -49,7 +49,7 @@ namespace BansheeEngine
 		return texPtr;
 	}
 
-	SPtr<MultiRenderTextureCore> D3D11TextureCoreManager::createMultiRenderTextureInternal(const MULTI_RENDER_TEXTURE_DESC& desc)
+	SPtr<MultiRenderTextureCore> D3D11TextureCoreManager::createMultiRenderTextureInternal(const MULTI_RENDER_TEXTURE_CORE_DESC& desc)
 	{
 		SPtr<D3D11MultiRenderTextureCore> texPtr = bs_shared_ptr<D3D11MultiRenderTextureCore>(desc);
 		texPtr->_setThisPtr(texPtr);

@@ -161,7 +161,7 @@ namespace BansheeEngine
 		for (UINT32 mip = 0; mip < (UINT32)mipLevels.size(); ++mip)
 		{
 			UINT32 subresourceIdx = newTexture->getProperties().mapToSubresourceIdx(0, mip);
-			PixelDataPtr dst = newTexture->allocateSubresourceBuffer(subresourceIdx);
+			PixelDataPtr dst = newTexture->getProperties().allocateSubresourceBuffer(subresourceIdx);
 
 			PixelUtil::bulkPixelConversion(*mipLevels[mip], *dst);
 

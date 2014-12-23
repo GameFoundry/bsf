@@ -16,15 +16,29 @@ namespace BansheeEngine
 	};
 
 	/**
+	 * @see		RENDER_TEXTURE_DESC
+	 *
+	 * @note	References core textures instead of texture handles.
+	 */
+	struct BS_CORE_EXPORT RENDER_TEXTURE_CORE_DESC
+	{
+		RENDER_SURFACE_CORE_DESC colorSurface;
+		RENDER_SURFACE_CORE_DESC depthStencilSurface;
+	};
+
+	/**
 	 * @brief	Contains various properties that describe a render texture.
 	 */
 	class BS_CORE_EXPORT RenderTextureProperties : public RenderTargetProperties
 	{
 	public:
 		RenderTextureProperties(const RENDER_TEXTURE_DESC& desc, bool requiresFlipping);
+		RenderTextureProperties(const RENDER_TEXTURE_CORE_DESC& desc, bool requiresFlipping);
 		virtual ~RenderTextureProperties() { }
 
 	private:
+		void construct(const TextureProperties* textureProps, bool requiresFlipping);
+
 		friend class RenderTextureCore;
 		friend class RenderTexture;
 	};
@@ -37,7 +51,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT RenderTextureCore : public RenderTargetCore
 	{
 	public:
-		RenderTextureCore(const RENDER_TEXTURE_DESC& desc);
+		RenderTextureCore(const RENDER_TEXTURE_CORE_DESC& desc);
 		virtual ~RenderTextureCore();
 
 		/**
@@ -50,14 +64,15 @@ namespace BansheeEngine
 		 *
 		 * @note	Be aware that you cannot bind a render texture for reading and writing at the same time.
 		 */
-		const TexturePtr& getBindableColorTexture() const { return mDesc.colorSurface.texture; }
+		SPtr<TextureCore> getBindableColorTexture() const { return mDesc.colorSurface.texture; }
 
 		/**
 		 * @brief	Returns a depth/stencil surface texture you may bind as an input to an GPU program.
 		 *
-		 * @note		Be aware that you cannot bind a render texture for reading and writing at the same time.
+		 * @note	Be aware that you cannot bind a render texture for reading and writing at the same time.
 		 */
-		const TexturePtr& getBindableDepthStencilTexture() const { return mDesc.depthStencilSurface.texture; }
+		SPtr<TextureCore> getBindableDepthStencilTexture() const { return mDesc.depthStencilSurface.texture; }
+
 
 		/**
 		 * @brief	Returns properties that describe the render texture.
@@ -87,7 +102,7 @@ namespace BansheeEngine
 		TextureViewPtr mColorSurface;
 		TextureViewPtr mDepthStencilSurface;
 
-		RENDER_TEXTURE_DESC mDesc;
+		RENDER_TEXTURE_CORE_DESC mDesc;
 	};
 
 	/**

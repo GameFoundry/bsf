@@ -217,34 +217,34 @@ namespace BansheeEngine
 		HTexture cursorSizeNWSETex = getCursorTexture(CursorSizeNWSETex);
 		HTexture cursorSizeWETex = getCursorTexture(CursorSizeWETex);
 
-		mCursorArrow = cursorArrowTex->allocateSubresourceBuffer(0);
+		mCursorArrow = cursorArrowTex->getProperties().allocateSubresourceBuffer(0);
 		cursorArrowTex->readSubresource(gCoreAccessor(), 0, mCursorArrow);
 
-		mCursorArrowDrag = cursorArrowDragTex->allocateSubresourceBuffer(0);
+		mCursorArrowDrag = cursorArrowDragTex->getProperties().allocateSubresourceBuffer(0);
 		cursorArrowDragTex->readSubresource(gCoreAccessor(), 0, mCursorArrowDrag);
 
-		mCursorArrowLeftRight = cursorArrowLeftRightTex->allocateSubresourceBuffer(0);
+		mCursorArrowLeftRight = cursorArrowLeftRightTex->getProperties().allocateSubresourceBuffer(0);
 		cursorArrowLeftRightTex->readSubresource(gCoreAccessor(), 0, mCursorArrowLeftRight);
 
-		mCursorIBeam = cursorIBeamTex->allocateSubresourceBuffer(0);
+		mCursorIBeam = cursorIBeamTex->getProperties().allocateSubresourceBuffer(0);
 		cursorIBeamTex->readSubresource(gCoreAccessor(), 0, mCursorIBeam);
 
-		mCursorDeny = cursorDenyTex->allocateSubresourceBuffer(0);
+		mCursorDeny = cursorDenyTex->getProperties().allocateSubresourceBuffer(0);
 		cursorDenyTex->readSubresource(gCoreAccessor(), 0, mCursorDeny);
 
-		mCursorWait = cursorWaitTex->allocateSubresourceBuffer(0);
+		mCursorWait = cursorWaitTex->getProperties().allocateSubresourceBuffer(0);
 		cursorWaitTex->readSubresource(gCoreAccessor(), 0, mCursorWait);
 
-		mCursorSizeNESW = cursorSizeNESWTex->allocateSubresourceBuffer(0);
+		mCursorSizeNESW = cursorSizeNESWTex->getProperties().allocateSubresourceBuffer(0);
 		cursorSizeNESWTex->readSubresource(gCoreAccessor(), 0, mCursorSizeNESW);
 
-		mCursorSizeNS = cursorSizeNSTex->allocateSubresourceBuffer(0);
+		mCursorSizeNS = cursorSizeNSTex->getProperties().allocateSubresourceBuffer(0);
 		cursorSizeNSTex->readSubresource(gCoreAccessor(), 0, mCursorSizeNS);
 
-		mCursorSizeNWSE = cursorSizeNWSETex->allocateSubresourceBuffer(0);
+		mCursorSizeNWSE = cursorSizeNWSETex->getProperties().allocateSubresourceBuffer(0);
 		cursorSizeNWSETex->readSubresource(gCoreAccessor(), 0, mCursorSizeNWSE);
 
-		mCursorSizeWE = cursorSizeWETex->allocateSubresourceBuffer(0);
+		mCursorSizeWE = cursorSizeWETex->getProperties().allocateSubresourceBuffer(0);
 		cursorSizeWETex->readSubresource(gCoreAccessor(), 0, mCursorSizeWE);
 
 		gCoreAccessor().submitToCoreThread(true);

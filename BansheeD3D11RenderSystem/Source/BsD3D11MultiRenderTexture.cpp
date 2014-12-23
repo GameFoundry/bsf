@@ -5,7 +5,7 @@
 
 namespace BansheeEngine
 {
-	D3D11MultiRenderTextureCore::D3D11MultiRenderTextureCore(const MULTI_RENDER_TEXTURE_DESC& desc)
+	D3D11MultiRenderTextureCore::D3D11MultiRenderTextureCore(const MULTI_RENDER_TEXTURE_CORE_DESC& desc)
 		:MultiRenderTextureCore(desc), mProperties(desc)
 	{
 

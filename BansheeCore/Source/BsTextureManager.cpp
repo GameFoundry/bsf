@@ -31,12 +31,12 @@ namespace BansheeEngine
 			PixelFormat format, bool hwGamma, UINT32 multisampleCount, 
 			bool createDepth, PixelFormat depthStencilFormat)
 	{
-		TexturePtr texture = createTexture(textureType, width, height, 0, format, TU_RENDERTARGET, hwGamma, multisampleCount);
+		HTexture texture = Texture::create(textureType, width, height, 0, format, TU_RENDERTARGET, hwGamma, multisampleCount);
 
-		TexturePtr depthStencil = nullptr;
+		HTexture depthStencil;
 		if(createDepth)
 		{
-			depthStencil = createTexture(TEX_TYPE_2D, width, height, 0, depthStencilFormat, TU_DEPTHSTENCIL, false, multisampleCount);
+			depthStencil = Texture::create(TEX_TYPE_2D, width, height, 0, depthStencilFormat, TU_DEPTHSTENCIL, false, multisampleCount);
 		}
 
 		RENDER_TEXTURE_DESC desc;
@@ -80,7 +80,7 @@ namespace BansheeEngine
 		return newRT;
 	}
 
-	SPtr<RenderTextureCore> TextureCoreManager::createRenderTexture(const RENDER_TEXTURE_DESC& desc)
+	SPtr<RenderTextureCore> TextureCoreManager::createRenderTexture(const RENDER_TEXTURE_CORE_DESC& desc)
 	{
 		SPtr<RenderTextureCore> newRT = createRenderTextureInternal(desc);
 		newRT->initialize();
@@ -88,7 +88,7 @@ namespace BansheeEngine
 		return newRT;
 	}
 
-	SPtr<MultiRenderTextureCore> TextureCoreManager::createMultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC& desc)
+	SPtr<MultiRenderTextureCore> TextureCoreManager::createMultiRenderTexture(const MULTI_RENDER_TEXTURE_CORE_DESC& desc)
 	{
 		SPtr<MultiRenderTextureCore> newRT = createMultiRenderTextureInternal(desc);
 		newRT->initialize();

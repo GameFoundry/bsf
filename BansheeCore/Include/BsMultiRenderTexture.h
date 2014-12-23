@@ -17,17 +17,31 @@ namespace BansheeEngine
 	};
 
 	/**
+	 * @see		MULTI_RENDER_TEXTURE_DESC
+	 *
+	 * @note	References core textures instead of texture handles.
+	 */
+	struct BS_CORE_EXPORT MULTI_RENDER_TEXTURE_CORE_DESC
+	{
+		Vector<RENDER_SURFACE_CORE_DESC> colorSurfaces;
+		RENDER_SURFACE_CORE_DESC depthStencilSurface;
+	};
+
+	/**
 	 * @brief	Contains various properties that describe a render texture.
 	 */
 	class BS_CORE_EXPORT MultiRenderTextureProperties : public RenderTargetProperties
 	{
 	public:
 		MultiRenderTextureProperties(const MULTI_RENDER_TEXTURE_DESC& desc);
+		MultiRenderTextureProperties(const MULTI_RENDER_TEXTURE_CORE_DESC& desc);
 		virtual ~MultiRenderTextureProperties() { }
 
 	protected:
 		friend class MultiRenderTextureCore;
 		friend class MultiRenderTexture;
+
+		void construct(const TextureProperties* props);
 	};
 
 	/**
@@ -52,7 +66,7 @@ namespace BansheeEngine
 		const MultiRenderTextureProperties& getProperties() const;
 
 	protected:
-		MultiRenderTextureCore(const MULTI_RENDER_TEXTURE_DESC& desc);
+		MultiRenderTextureCore(const MULTI_RENDER_TEXTURE_CORE_DESC& desc);
 
 		/**
 		 * @copydoc	CoreObjectCore::syncFromCore
@@ -78,7 +92,7 @@ namespace BansheeEngine
 		Vector<TextureViewPtr> mColorSurfaces;
 		TextureViewPtr mDepthStencilSurface;
 
-		MULTI_RENDER_TEXTURE_DESC mDesc;
+		MULTI_RENDER_TEXTURE_CORE_DESC mDesc;
 	};
 
 	/**

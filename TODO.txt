@@ -6,6 +6,7 @@ TODO - Material waits to Shader to be loaded but doesn't wait for shader GpuProg
  - What's the best way to ensure initialization is done when all these are loaded?
 
 Make RenderTexture accept a HTexture
+ - Fix up RenderTextureCore so it doesn't hold a resource handle and instead holds TextureCore ptr (same goes for MultiRenderTexture)
 
 When resource loading starts synchonously read all dependencies (and recurse over their dependencies too)
  - Create a ResourceLoadGroup that contains all the non-loaded resources
