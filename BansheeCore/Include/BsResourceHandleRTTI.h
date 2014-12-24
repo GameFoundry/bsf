@@ -30,9 +30,10 @@ namespace BansheeEngine
 
 			if(resourceHandle->mData && resourceHandle->mData->mUUID != "")
 			{
-				// NOTE: This will cause Resources::load to be called recursively with resources that contain other
-				// resources. This might cause problems. Keep this note here as a warning until I prove otherwise.
-				HResource loadedResource = gResources().loadFromUUID(resourceHandle->mData->mUUID);
+				// Note: Resource system needs to be aware of this handle before this point is reached so it
+				// can queue the load. This is handled automatically by Resources but is something to be aware of
+				// if you are loading resources in some other way.
+				HResource loadedResource = gResources()._getResourceHandle(resourceHandle->mData->mUUID);
 
 				if(loadedResource)
 					resourceHandle->_setHandleData(loadedResource.getHandleData());

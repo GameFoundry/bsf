@@ -3,12 +3,12 @@
 
 namespace BansheeEngine
 {
-	Vector<HResource> Utility::findResourceDependencies(IReflectable& obj, bool recursive)
+	Vector<ResourceDependency> Utility::findResourceDependencies(IReflectable& obj, bool recursive)
 	{
-		Map<String, HResource> dependencies;
+		Map<String, ResourceDependency> dependencies;
 		findResourceDependenciesInternal(obj, recursive, dependencies);
 
-		Vector<HResource> dependencyList(dependencies.size());
+		Vector<ResourceDependency> dependencyList(dependencies.size());
 		UINT32 i = 0;
 		for (auto& entry : dependencies)
 		{
@@ -19,7 +19,7 @@ namespace BansheeEngine
 		return dependencyList;
 	}
 
-	void Utility::findResourceDependenciesInternal(IReflectable& obj, bool recursive, Map<String, HResource>& dependencies)
+	void Utility::findResourceDependenciesInternal(IReflectable& obj, bool recursive, Map<String, ResourceDependency>& dependencies)
 	{
 		RTTITypeBase* rtti = obj.getRTTI();
 		rtti->onSerializationStarted(&obj);
@@ -42,14 +42,22 @@ namespace BansheeEngine
 						{
 							HResource resource = (HResource&)reflectableField->getArrayValue(&obj, j);
 							if (resource != nullptr)
-								dependencies[resource.getUUID()] = resource;
+							{
+								ResourceDependency& dependency = dependencies[resource.getUUID()];
+								dependency.resource = resource;
+								dependency.numReferences++;
+							}
 						}
 					}
 					else
 					{
 						HResource resource = (HResource&)reflectableField->getValue(&obj);
 						if (resource != nullptr)
-							dependencies[resource.getUUID()] = resource;
+						{
+							ResourceDependency& dependency = dependencies[resource.getUUID()];
+							dependency.resource = resource;
+							dependency.numReferences++;
+						}
 					}
 				}
 				else if (recursive)

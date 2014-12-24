@@ -9,12 +9,12 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT SavedResourceDataRTTI : public RTTIType <SavedResourceData, IReflectable, SavedResourceDataRTTI>
 	{
 	private:
-		HResource& getDependency(SavedResourceData* obj, UINT32 arrayIdx)
+		String& getDependency(SavedResourceData* obj, UINT32 arrayIdx)
 		{
 			return obj->mDependencies[arrayIdx];
 		}
 
-		void setDependency(SavedResourceData* obj, UINT32 arrayIdx, HResource& val)
+		void setDependency(SavedResourceData* obj, UINT32 arrayIdx, String& val)
 		{
 			obj->mDependencies[arrayIdx] = val;
 		}
@@ -26,7 +26,7 @@ namespace BansheeEngine
 
 		void setNumDependencies(SavedResourceData* obj, UINT32 numEntries)
 		{
-			obj->mDependencies = Vector<HResource>(numEntries);
+			obj->mDependencies = Vector<String>(numEntries);
 		}
 
 		bool& getAllowAsyncLoading(SavedResourceData* obj)
@@ -42,14 +42,14 @@ namespace BansheeEngine
 	public:
 		SavedResourceDataRTTI()
 		{
-			addReflectableArrayField("mDependencies", 0, &SavedResourceDataRTTI::getDependency, &SavedResourceDataRTTI::getNumDependencies,
+			addPlainArrayField("mDependencies", 0, &SavedResourceDataRTTI::getDependency, &SavedResourceDataRTTI::getNumDependencies,
 				&SavedResourceDataRTTI::setDependency, &SavedResourceDataRTTI::setNumDependencies);
 			addPlainField("mAllowAsync", 1, &SavedResourceDataRTTI::getAllowAsyncLoading, &SavedResourceDataRTTI::setAllowAsyncLoading);
 		}
 
 		virtual const String& getRTTIName()
 		{
-			static String name = "Resource";
+			static String name = "ResourceDependencies";
 			return name;
 		}
 

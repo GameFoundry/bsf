@@ -5,6 +5,20 @@
 namespace BansheeEngine
 {
 	/**
+	 * @brief	Contains information about a resource dependency, including
+	 *			the dependant resource and number of references to it.
+	 */
+	struct ResourceDependency
+	{
+		ResourceDependency()
+			:numReferences(0)
+		{ }
+
+		HResource resource;
+		UINT32 numReferences;
+	};
+
+	/**
 	 * @brief	Static class containing various utility methods that do not
 	 *			fit anywhere else.
 	 */
@@ -20,7 +34,7 @@ namespace BansheeEngine
 		 *
 		 * @returns	A list of unique, non-null resources.
 		 */
-		static Vector<HResource> findResourceDependencies(IReflectable& object, bool recursive = true);
+		static Vector<ResourceDependency> findResourceDependencies(IReflectable& object, bool recursive = true);
 
 	private:
 		/**
@@ -28,6 +42,6 @@ namespace BansheeEngine
 		 *
 		 * @see	findDependencies
 		 */
-		static void findResourceDependenciesInternal(IReflectable& object, bool recursive, Map<String, HResource>& dependencies);
+		static void findResourceDependenciesInternal(IReflectable& object, bool recursive, Map<String, ResourceDependency>& dependencies);
 	};
 }

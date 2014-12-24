@@ -10,24 +10,11 @@ related to lambdas not capturing types as I expect them to. It always happens in
 TODO - Material waits to Shader to be loaded but doesn't wait for shader GpuPrograms or state objects.
  - What's the best way to ensure initialization is done when all these are loaded?
 
- Modify Resources so it loads resource dependencies and that actual resource gets loaded from the proper offset in file
-Test if stuff compiles and runs - commit
-Remove loading code from ResourceHandle
-Add loading code to Resources
-
-When resource loading starts synchonously read all dependencies (and recurse over their dependencies too)
- - Create a ResourceLoadGroup that contains all the non-loaded resources
- - Cue async loads for all resources
- - Perform sync loads for resources that don't support async
- - return an unloaded handle
-
-Each time an async load completes check if the resource is part of a resource load group
- - If all resources in the load group are done (or there was just one resource), resolve all of their handles at once
-   and trigger resource listener events.
-
-TODO
- - Pay special care in case a resource in resource load group gets unloaded. I should ignore it to avoid a deadlock that never finishes the resource load.
- - Allow for a situation if resource is part of multiple load groups.
+Implement resource unloading:
+ - Once unload is called, create a unique list of all dependant resources (just direct children)
+ - Track how many times is each resource referenced and how many actual references it has
+ - If ref count is 1 (just held by Resources manager) unload it
+ - Recurse unload over all child resources
 
 I can get mono errors by checking g_print calls in goutput.c
  - Calling thunks incorrectly can cause those weird errors with no real callstack

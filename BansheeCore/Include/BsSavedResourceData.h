@@ -15,12 +15,12 @@ namespace BansheeEngine
 	{
 	public:
 		SavedResourceData();
-		SavedResourceData(const Vector<HResource>& dependencies, bool allowAsync);
+		SavedResourceData(const Vector<String>& dependencies, bool allowAsync);
 
 		/**
 		 * @brief	Returns a list of all resource dependencies.
 		 */
-		const Vector<HResource>& getDependencies() const { return mDependencies; }
+		const Vector<String>& getDependencies() const { return mDependencies; }
 
 		/**
 		 * @brief	Returns true if this resource is allow to be asynchronously loaded.
@@ -28,7 +28,7 @@ namespace BansheeEngine
 		bool allowAsyncLoading() const { return mAllowAsync; }
 
 	private:
-		Vector<HResource> mDependencies;
+		Vector<String> mDependencies;
 		bool mAllowAsync;
 
 	/************************************************************************/

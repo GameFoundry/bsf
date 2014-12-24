@@ -16,6 +16,17 @@ namespace BansheeEngine
 	 */
 	class BS_CORE_EXPORT Resources : public Module<Resources>
 	{
+		struct ResourceLoadData
+		{
+			ResourceLoadData(const HResource& resource, UINT32 numDependencies)
+				:resource(resource), remainingDependencies(numDependencies)
+			{ }
+
+			HResource resource;
+			ResourcePtr loadedData;
+			UINT32 remainingDependencies;
+		};
+
 	public:
 		Resources();
 		~Resources();
@@ -57,23 +68,17 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Loads the resource with the given UUID. Returns an empty handle if resource can't be loaded.
-		 *			Resource is loaded synchronously.
+		 *
+		 * @param	uuid	UUID of the resource to load.
+		 * @param	async	If true resource will be loaded asynchronously. Handle to non-loaded
+		 *					resource will be returned immediately while loading will continue in the background.
 		 */
-		HResource loadFromUUID(const String& uuid);
+		HResource loadFromUUID(const String& uuid, bool async = false);
 
 		/**
-		 * @brief	Loads the resource with the given UUID asynchronously. Initially returned resource handle will be invalid
-		 *			until resource loading is done.
-		 *
-		 * @param	uuid	UUID of the resource to load. 
-		 *
-		 * @note	You can use returned invalid handle in engine systems as the engine will check for handle
-		 *			validity before using it.
-		 */
-		HResource loadFromUUIDAsync(const String& uuid);
-
-		/**
-		 * @brief	Unloads the resource that is referenced by the handle. 
+		 * @brief	Unloads the resource that is referenced by the handle. Resource is unloaded regardless if it is 
+		 *			referenced or not. Any dependencies held by the resource will also be unloaded, but only if the
+		 *			resource is holding the last reference to them.
 		 *
 		 * @param	resourceHandle	Handle of the resource to unload.
 		 * 							
@@ -110,6 +115,12 @@ namespace BansheeEngine
 		 * @note	Internal method used primarily be resource factory methods.
 		 */
 		HResource _createResourceHandle(const ResourcePtr& obj);
+
+		/**
+		 * @brief	Returns an existing handle of a resource that has already been loaded,
+		 *			or is currently being loaded.
+		 */
+		HResource _getResourceHandle(const String& uuid);
 
 		/**
 		 * @brief	Allows you to set a resource manifest containing UUID <-> file path mapping that is
@@ -180,6 +191,11 @@ namespace BansheeEngine
 		ResourcePtr loadFromDiskAndDeserialize(const Path& filePath);
 
 		/**
+		 * @brief	Triggered when individual resource has finished loading.
+		 */
+		void loadComplete(HResource& resource);
+
+		/**
 		 * @brief	Callback triggered when the task manager is ready to process the loading task.
 		 */
 		void loadCallback(const Path& filePath, HResource& resource);
@@ -192,7 +208,8 @@ namespace BansheeEngine
 		BS_MUTEX(mLoadedResourceMutex);
 
 		UnorderedMap<String, HResource> mLoadedResources;
-		UnorderedMap<String, HResource> mInProgressResources; // Resources that are being asynchronously loaded
+		UnorderedMap<String, ResourceLoadData*> mInProgressResources; // Resources that are being asynchronously loaded
+		UnorderedMap<String, Vector<ResourceLoadData*>> mDependantLoads;
 	};
 
 	/**

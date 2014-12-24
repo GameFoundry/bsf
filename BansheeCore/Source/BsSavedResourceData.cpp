@@ -7,8 +7,8 @@ namespace BansheeEngine
 		:mAllowAsync(true)
 	{ }
 
-	SavedResourceData::SavedResourceData(const Vector<HResource>& dependencies, bool allowAsync)
-		:mDependencies(dependencies), mAllowAsync(allowAsync)
+	SavedResourceData::SavedResourceData(const Vector<String>& dependencies, bool allowAsync)
+		: mAllowAsync(allowAsync), mDependencies(dependencies)
 	{
 
 	}
