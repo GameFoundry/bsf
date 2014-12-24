@@ -422,8 +422,8 @@ namespace BansheeEngine
 
 		if(FileSystem::exists(layoutPath))
 		{
-			FileSerializer fs;
-			return std::static_pointer_cast<EditorWidgetLayout>(fs.decode(layoutPath));
+			FileDecoder fs(layoutPath);
+			return std::static_pointer_cast<EditorWidgetLayout>(fs.decode());
 		}
 
 		return nullptr;
@@ -434,8 +434,8 @@ namespace BansheeEngine
 		Path layoutPath = getActiveProjectPath();
 		layoutPath.append(WIDGET_LAYOUT_PATH);
 
-		FileSerializer fs;
-		fs.encode(layout.get(), layoutPath);
+		FileEncoder fs(layoutPath);
+		fs.encode(layout.get());
 	}
 
 	EditorApplication& gEditorApplication()

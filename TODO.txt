@@ -5,10 +5,15 @@ See GDrive/Resources doc for resources refactor
 There seems to be some kind of memory corruption that happens when cloning game objects. During one clone the field entries provided to
 ManagedSerializeArray::deserializeManagedInstance were reported as ManagedSerializedArray instead of ManagerSerializedFieldData types.
 It's inconsistent to reproduce but started happening after I have modified managed object serialization to be on-demand. It's possibly
-related to lambdas not capturing types as I expect them to.
+related to lambdas not capturing types as I expect them to. It always happens in the same place.
 
-TODO - Material waits to Shader to be loaded but doesn't wait for shader GpuPrograms. 
+TODO - Material waits to Shader to be loaded but doesn't wait for shader GpuPrograms or state objects.
  - What's the best way to ensure initialization is done when all these are loaded?
+
+ Modify Resources so it loads resource dependencies and that actual resource gets loaded from the proper offset in file
+Test if stuff compiles and runs - commit
+Remove loading code from ResourceHandle
+Add loading code to Resources
 
 When resource loading starts synchonously read all dependencies (and recurse over their dependencies too)
  - Create a ResourceLoadGroup that contains all the non-loaded resources

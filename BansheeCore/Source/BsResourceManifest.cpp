@@ -135,14 +135,14 @@ namespace BansheeEngine
 			copy->mUUIDToFilePath[elem.first] = elementRelativePath;
 		}
 
-		FileSerializer fs;
-		fs.encode(copy.get(), path);
+		FileEncoder fs(path);
+		fs.encode(copy.get());
 	}
 
 	ResourceManifestPtr ResourceManifest::load(const Path& path, const Path& relativePath)
 	{
-		FileSerializer fs;
-		ResourceManifestPtr manifest = std::static_pointer_cast<ResourceManifest>(fs.decode(path));
+		FileDecoder fs(path);
+		ResourceManifestPtr manifest = std::static_pointer_cast<ResourceManifest>(fs.decode());
 
 		ResourceManifestPtr copy = create(manifest->mName);
 

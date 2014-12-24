@@ -311,6 +311,8 @@
     <ClInclude Include="Include\BsPlatform.h" />
     <ClInclude Include="Include\BsProfilingManager.h" />
     <ClInclude Include="Include\BsQueryManager.h" />
+    <ClInclude Include="Include\BsSavedResourceData.h" />
+    <ClInclude Include="Include\BsSavedResourceDataRTTI.h" />
     <ClInclude Include="Include\BsResourceListenerManager.h" />
     <ClInclude Include="Include\BsResourceManifest.h" />
     <ClInclude Include="Include\BsResourceManifestRTTI.h" />
@@ -476,6 +478,7 @@
     <ClCompile Include="Source\BsProfilingManager.cpp" />
     <ClCompile Include="Source\BsQueryManager.cpp" />
     <ClCompile Include="Source\BsCoreRenderer.cpp" />
+    <ClCompile Include="Source\BsSavedResourceData.cpp" />
     <ClCompile Include="Source\BsResourceListenerManager.cpp" />
     <ClCompile Include="Source\BsResourceManifest.cpp" />
     <ClCompile Include="Source\BsResourceMetaData.cpp" />

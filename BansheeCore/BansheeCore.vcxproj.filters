@@ -9,10 +9,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="Header Files\Utility">
       <UniqueIdentifier>{2c09857e-4a4a-480f-8ebb-1661a9ce78dd}</UniqueIdentifier>
     </Filter>
@@ -528,6 +524,12 @@
     <ClInclude Include="Include\BsUtility.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsSavedResourceData.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsSavedResourceDataRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsCoreApplication.cpp">
@@ -832,6 +834,9 @@
     </ClCompile>
     <ClCompile Include="Source\BsUtility.cpp">
       <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsSavedResourceData.cpp">
+      <Filter>Source Files\Resources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

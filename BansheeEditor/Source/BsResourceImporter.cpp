@@ -33,8 +33,8 @@ namespace BansheeEngine
 
 	ResourcePtr ResourceImporter::import(const Path& filePath, ConstImportOptionsPtr importOptions)
 	{
-		FileSerializer fs;
-		std::shared_ptr<IReflectable> loadedData = fs.decode(filePath);
+		FileDecoder fs(filePath);
+		std::shared_ptr<IReflectable> loadedData = fs.decode();
 
 		if (loadedData == nullptr)
 			BS_EXCEPT(InternalErrorException, "Unable to import resource.");

@@ -8,6 +8,8 @@
 #include "BsUUID.h"
 #include "BsPath.h"
 #include "BsDebug.h"
+#include "BsUtility.h"
+#include "BsSavedResourceData.h"
 
 namespace BansheeEngine
 {
@@ -105,6 +107,11 @@ namespace BansheeEngine
 		if(!foundUUID)
 			uuid = UUIDGenerator::instance().generateRandom();
 
+		// Load saved resource data
+		{
+
+		}
+
 		{
 			BS_LOCK_MUTEX(mLoadedResourceMutex);
 			auto iterFind = mLoadedResources.find(uuid);
@@ -171,8 +178,9 @@ namespace BansheeEngine
 
 	ResourcePtr Resources::loadFromDiskAndDeserialize(const Path& filePath)
 	{
-		FileSerializer fs;
-		std::shared_ptr<IReflectable> loadedData = fs.decode(filePath);
+		FileDecoder fs(filePath);
+		fs.skip(); // Skipped over saved resource data
+		std::shared_ptr<IReflectable> loadedData = fs.decode();
 
 		if(loadedData == nullptr)
 			BS_EXCEPT(InternalErrorException, "Unable to load resource.");
@@ -237,8 +245,12 @@ namespace BansheeEngine
 
 		mDefaultResourceManifest->registerResource(resource.getUUID(), filePath);
 
-		FileSerializer fs;
-		fs.encode(resource.get(), filePath);
+		Vector<HResource> dependencyList = Utility::findResourceDependencies(*resource.get(), false);
+		SPtr<SavedResourceData> resourceData = bs_shared_ptr<SavedResourceData>(dependencyList, resource->allowAsyncLoading());
+
+		FileEncoder fs(filePath);
+		fs.encode(resourceData.get());
+		fs.encode(resource.get());
 	}
 
 	void Resources::registerResourceManifest(const ResourceManifestPtr& manifest)

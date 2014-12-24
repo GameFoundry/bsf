@@ -30,6 +30,11 @@ namespace BansheeEngine
 		 */
 		ResourceMetaDataPtr getMetaData() const { return mMetaData; }
 
+		/**
+		 * @brief	Returns whether or not this resource is allowed to be asynchronously loaded.
+		 */
+		virtual bool allowAsyncLoading() const { return true; }
+
 	protected:
 		friend class Resources;
 

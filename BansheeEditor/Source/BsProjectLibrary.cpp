@@ -351,10 +351,10 @@ namespace BansheeEngine
 
 		if(resource->meta == nullptr)
 		{
-			FileSerializer fs;
 			if(FileSystem::isFile(metaPath))
 			{
-				std::shared_ptr<IReflectable> loadedMeta = fs.decode(metaPath);
+				FileDecoder fs(metaPath);
+				std::shared_ptr<IReflectable> loadedMeta = fs.decode();
 
 				if(loadedMeta != nullptr && loadedMeta->isDerivedFrom(ProjectResourceMeta::getRTTIStatic()))
 				{
@@ -383,8 +383,8 @@ namespace BansheeEngine
 				UINT32 typeId = importedResource->getTypeId();
 
 				resource->meta = ProjectResourceMeta::create(importedResource.getUUID(), typeId, subMeta, importOptions);
-				FileSerializer fs;
-				fs.encode(resource->meta.get(), metaPath);
+				FileEncoder fs(metaPath);
+				fs.encode(resource->meta.get());
 			}
 			else
 			{
@@ -704,8 +704,8 @@ namespace BansheeEngine
 		libraryEntriesPath.append(INTERNAL_RESOURCES_DIR);
 		libraryEntriesPath.append(LIBRARY_ENTRIES_FILENAME);
 
-		FileSerializer fs;
-		fs.encode(libEntries.get(), libraryEntriesPath);
+		FileEncoder fs(libraryEntriesPath);
+		fs.encode(libEntries.get());
 
 		Path resourceManifestPath = mProjectFolder;
 		resourceManifestPath.append(INTERNAL_RESOURCES_DIR);
@@ -730,8 +730,8 @@ namespace BansheeEngine
 
 		if(FileSystem::exists(libraryEntriesPath))
 		{
-			FileSerializer fs;
-			std::shared_ptr<ProjectLibraryEntries> libEntries = std::static_pointer_cast<ProjectLibraryEntries>(fs.decode(libraryEntriesPath));
+			FileDecoder fs(libraryEntriesPath);
+			std::shared_ptr<ProjectLibraryEntries> libEntries = std::static_pointer_cast<ProjectLibraryEntries>(fs.decode());
 
 			*mRootEntry = libEntries->getRootEntry();
 			for(auto& child : mRootEntry->mChildren)
@@ -760,10 +760,10 @@ namespace BansheeEngine
 						Path metaPath = resEntry->path;
 						metaPath.setFilename(metaPath.getWFilename() + L".meta");
 
-						FileSerializer fs;
 						if(FileSystem::isFile(metaPath))
 						{
-							std::shared_ptr<IReflectable> loadedMeta = fs.decode(metaPath);
+							FileDecoder fs(metaPath);
+							std::shared_ptr<IReflectable> loadedMeta = fs.decode();
 
 							if(loadedMeta != nullptr && loadedMeta->isDerivedFrom(ProjectResourceMeta::getRTTIStatic()))
 							{
