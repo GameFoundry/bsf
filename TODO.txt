@@ -10,14 +10,19 @@ related to lambdas not capturing types as I expect them to. It always happens in
 TODO - Material waits to Shader to be loaded but doesn't wait for shader GpuPrograms or state objects.
  - What's the best way to ensure initialization is done when all these are loaded?
 
-Implement resource unloading:
- - Once unload is called, create a unique list of all dependant resources (just direct children)
- - Track how many times is each resource referenced and how many actual references it has
- - If ref count is 1 (just held by Resources manager) unload it
- - Recurse unload over all child resources
+TODO - Material loading issue. Deserializing a material will still call initialize() which will block until shader is loaded.
+ - I should instead wait until everything is loaded before initializing the material. (e.g. when I want to load the material async
+   I shouldn't be blocking.)
+   - Remove call to initialize() in MaterialRTTI and instead add ResourceListener call to Resources?
 
 I can get mono errors by checking g_print calls in goutput.c
  - Calling thunks incorrectly can cause those weird errors with no real callstack
+
+Multi-resource saving:
+ - Modify Font so it doesn't contain a texture, but instead keeps a handle to it
+ - Register it in its meta file
+ - When saving such a resource with dependencies save the contained files to a sub-directory with the same name as top level resource
+   - If it already exists in the manifest at a different location do it anyway, keep the other copy as-is in case user wanted it that way
 
 Other:
 Window resize end callback

@@ -62,7 +62,11 @@ namespace BansheeEngine
 		if(!foundPath)
 		{
 			gDebug().logWarning("Cannot load resource. Resource with UUID '" + uuid + "' doesn't exist.");
-			return HResource();
+
+			HResource outputResource(uuid);
+			loadComplete(outputResource);
+
+			return outputResource;
 		}
 
 		return loadInternal(filePath, !async);
@@ -138,6 +142,7 @@ namespace BansheeEngine
 			ResourceLoadData* loadData = bs_new<ResourceLoadData>(outputResource, 0);
 			mInProgressResources[uuid] = loadData;
 			loadData->resource = outputResource;
+			loadData->remainingDependencies = 1;
 
 			for (auto& dependency : savedResourceData->getDependencies())
 			{
@@ -173,6 +178,8 @@ namespace BansheeEngine
 				TaskScheduler::instance().addTask(task);
 			}
 		}
+		else
+			loadComplete(outputResource);
 
 		return outputResource;
 	}
@@ -387,7 +394,7 @@ namespace BansheeEngine
 			mDependantLoads.erase(uuid);
 		}
 
-		if (resource)
+		if (myLoadData != nullptr)
 		{
 			{
 				BS_LOCK_MUTEX(mLoadedResourceMutex);
@@ -396,10 +403,9 @@ namespace BansheeEngine
 
 			resource._setHandleData(myLoadData->loadedData, resource.getUUID());
 			onResourceLoaded(resource);
-		}
 
-		if (myLoadData != nullptr)
 			bs_delete(myLoadData);
+		}
 
 		for (auto& dependantLoad : dependantLoads)
 		{
