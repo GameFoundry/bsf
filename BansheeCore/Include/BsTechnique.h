@@ -111,6 +111,11 @@ namespace BansheeEngine
 		SPtr<CoreObjectCore> createCore() const;
 
 		/**
+		 * @copydoc	CoreObject::getCoreDependencies
+		 */
+		void getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies);
+
+		/**
 		 * @brief	Creates a new technique but doesn't initialize it.
 		 */
 		static TechniquePtr createEmpty();

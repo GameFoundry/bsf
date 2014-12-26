@@ -25,6 +25,7 @@ namespace BansheeEngine
 			HResource resource;
 			ResourcePtr loadedData;
 			UINT32 remainingDependencies;
+			bool notifyImmediately;
 		};
 
 	public:

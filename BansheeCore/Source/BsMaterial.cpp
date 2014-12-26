@@ -24,6 +24,13 @@ namespace BansheeEngine
 		bool create;
 	};
 
+	enum MaterialLoadFlags
+	{
+		Load_None	= 0,
+		Load_Shader	= 1,
+		Load_All	= 2
+	};
+
 	SPtr<PassParametersCore> convertParamsToCore(const SPtr<PassParameters>& passParams)
 	{
 		SPtr<PassParametersCore> passParameters = bs_shared_ptr<PassParametersCore>();
@@ -441,39 +448,6 @@ namespace BansheeEngine
 		return allParamDescs;
 	}
 
-	template<>
-	void TMaterial<true>::setShader(ShaderType shader)
-	{
-		mShader = shader;
-
-		initBestTechnique();
-
-		_markCoreDirty();
-	}
-
-	template<>
-	void TMaterial<false>::setShader(ShaderType shader)
-	{
-		mShader = shader;
-		mBestTechnique = nullptr;
-		_markResourcesDirty();
-
-		if (mShader)
-		{
-			if (!mShader.isLoaded())
-			{
-				LOGWRN("Initializing a material with shader that is not yet loaded. Waiting until load is complete. This will result in a performance hit.");
-				mShader.blockUntilLoaded();
-
-				return; // Return because we rely on the resource listener to trigger initialization after load, so we don't do it twice
-			}
-		}
-
-		initBestTechnique();
-		_markCoreDirty();
-	}
-
-
 	template<bool Core>
 	UINT32 TMaterial<Core>::getNumPasses() const
 	{
@@ -854,6 +828,15 @@ namespace BansheeEngine
 		mParametersPerPass = passParams;
 	}
 
+	void MaterialCore::setShader(const SPtr<ShaderCore>& shader)
+	{
+		mShader = shader;
+
+		initBestTechnique();
+
+		_markCoreDirty();
+	}
+
 	void MaterialCore::syncToCore(const CoreSyncData& data)
 	{
 		char* dataPtr = (char*)data.getBuffer();
@@ -900,9 +883,11 @@ namespace BansheeEngine
 	}
 
 	Material::Material()
+		:mLoadFlags(Load_None)
 	{ }
 
 	Material::Material(const HShader& shader)
+		:mLoadFlags(Load_None)
 	{
 		mShader = shader;
 	}
@@ -912,6 +897,16 @@ namespace BansheeEngine
 		setShader(mShader); // Not calling directly in constructor because it calls virtual methods
 
 		Resource::initialize();
+	}
+
+	void Material::setShader(const HShader& shader)
+	{
+		mShader = shader;
+		mBestTechnique = nullptr;
+		mLoadFlags = Load_None;
+		_markResourcesDirty();
+
+		initializeIfLoaded();
 	}
 
 	void Material::_markCoreDirty()
@@ -1000,37 +995,172 @@ namespace BansheeEngine
 		return CoreSyncData(buffer, size);
 	}
 
+	void Material::getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies)
+	{
+		if (mShader.isLoaded())
+			dependencies.push_back(mShader.getInternalPtr());
+
+		for (auto& params : mParametersPerPass)
+		{
+			UINT32 numParams = params->getNumParams();
+			for (UINT32 i = 0; i < numParams; i++)
+			{
+				GpuParamsPtr gpuParams = params->getParamByIdx(i);
+				if (gpuParams != nullptr)
+					dependencies.push_back(gpuParams);
+			}
+		}
+	}
+
 	void Material::getResourceDependencies(Vector<HResource>& resources)
 	{
 		if (mShader != nullptr)
+		{
 			resources.push_back(mShader);
+
+			if (mShader.isLoaded())
+			{
+				TechniquePtr bestTechnique = mShader->getBestTechnique();
+				if (bestTechnique != nullptr)
+				{
+					UINT32 numPasses = bestTechnique->getNumPasses();
+					for (UINT32 i = 0; i < numPasses; i++)
+					{
+						PassPtr pass = bestTechnique->getPass(i);
+
+						HGpuProgram vertProg = pass->getVertexProgram();
+						if (vertProg != nullptr)
+							resources.push_back(vertProg);
+
+						HGpuProgram fragProg = pass->getFragmentProgram();
+						if (fragProg != nullptr)
+							resources.push_back(fragProg);
+
+						HGpuProgram geomProg = pass->getGeometryProgram();
+						if (geomProg != nullptr)
+							resources.push_back(geomProg);
+
+						HGpuProgram domProg = pass->getDomainProgram();
+						if (domProg != nullptr)
+							resources.push_back(domProg);
+
+						HGpuProgram hullProg = pass->getHullProgram();
+						if (hullProg != nullptr)
+							resources.push_back(hullProg);
+
+						HGpuProgram computeProg = pass->getComputeProgram();
+						if (computeProg != nullptr)
+							resources.push_back(computeProg);
+
+						HBlendState blendState = pass->getBlendState();
+						if (blendState != nullptr)
+							resources.push_back(blendState);
+
+						HRasterizerState rasterizerState = pass->getRasterizerState();
+						if (rasterizerState != nullptr)
+							resources.push_back(rasterizerState);
+
+						HDepthStencilState depthStencilState = pass->getDepthStencilState();
+						if (depthStencilState != nullptr)
+							resources.push_back(depthStencilState);
+					}
+				}
+			}
+		}
+	}
+
+	bool Material::checkIfDependenciesLoaded() const
+	{
+		if (mShader == nullptr) // No shader, so everything is technically loaded
+			return true;
+
+		if (!mShader.isLoaded())
+			return false;
+
+		TechniquePtr bestTechnique = mShader->getBestTechnique();
+		if (bestTechnique == nullptr) // No valid technique, so everything is technically loaded
+			return true;
+
+		UINT32 numPasses = bestTechnique->getNumPasses();
+		for (UINT32 i = 0; i < numPasses; i++)
+		{
+			PassPtr pass = bestTechnique->getPass(i);
+
+			HGpuProgram vertProg = pass->getVertexProgram();
+			if (vertProg != nullptr && !vertProg.isLoaded())
+				return false;
+
+			HGpuProgram fragProg = pass->getFragmentProgram();
+			if (fragProg != nullptr && !fragProg.isLoaded())
+				return false;
+
+			HGpuProgram geomProg = pass->getGeometryProgram();
+			if (geomProg != nullptr && !geomProg.isLoaded())
+				return false;
+
+			HGpuProgram domProg = pass->getDomainProgram();
+			if (domProg != nullptr && !domProg.isLoaded())
+				return false;
+
+			HGpuProgram hullProg = pass->getHullProgram();
+			if (hullProg != nullptr && !hullProg.isLoaded())
+				return false;
+
+			HGpuProgram computeProg = pass->getComputeProgram();
+			if (computeProg != nullptr && !computeProg.isLoaded())
+				return false;
+
+			HBlendState blendState = pass->getBlendState();
+			if (blendState != nullptr && !blendState.isLoaded())
+				return false;
+
+			HRasterizerState rasterizerState = pass->getRasterizerState();
+			if (rasterizerState != nullptr && !rasterizerState.isLoaded())
+				return false;
+
+			HDepthStencilState depthStencilState = pass->getDepthStencilState();
+			if (depthStencilState != nullptr && !depthStencilState.isLoaded())
+				return false;
+		}
+
+		return true;
+	}
+
+	void Material::initializeIfLoaded()
+	{
+		if (checkIfDependenciesLoaded())
+		{
+			if (mLoadFlags != Load_All)
+			{
+				mLoadFlags = Load_All;
+
+				initBestTechnique();
+				markCoreDirty();
+			}
+		}
+		else
+		{
+			if (mShader.isLoaded() && mLoadFlags == Load_None)
+			{
+				mLoadFlags = Load_Shader;
+				markResourcesDirty(); // Need to register resources dependent on shader now
+			}
+		}
 	}
 
 	void Material::notifyResourceLoaded(const HResource& resource)
 	{
-		if (mBestTechnique == nullptr)
-		{
-			initBestTechnique();
-			markCoreDirty();
-		}
+		initializeIfLoaded();
 	}
 
 	void Material::notifyResourceDestroyed(const HResource& resource)
 	{
-		if (mBestTechnique == nullptr)
-		{
-			initBestTechnique();
-			markCoreDirty();
-		}
+		initializeIfLoaded();
 	}
 
 	void Material::notifyResourceChanged(const HResource& resource)
 	{
-		if (mBestTechnique == nullptr)
-		{
-			initBestTechnique();
-			markCoreDirty();
-		}
+		initializeIfLoaded();
 	}
 
 	HMaterial Material::create()

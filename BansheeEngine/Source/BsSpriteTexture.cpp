@@ -43,6 +43,12 @@ namespace BansheeEngine
 		return Math::roundToInt(mAtlasTexture->getProperties().getHeight() * mUVScale.y);
 	}
 
+	void SpriteTexture::getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies)
+	{
+		if (mAtlasTexture.isLoaded())
+			dependencies.push_back(mAtlasTexture.getInternalPtr());
+	}
+
 	HSpriteTexture SpriteTexture::create(const HTexture& texture)
 	{
 		SpriteTexturePtr texturePtr = bs_core_ptr<SpriteTexture, PoolAlloc>

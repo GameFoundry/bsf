@@ -230,6 +230,11 @@ namespace BansheeEngine
 		 */
 		virtual void syncFromCore(const CoreSyncData& data) { }
 
+		/**
+		 * @brief	Populates the provided array with all core objects that this core object depends upon.
+		 */
+		virtual void getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies) { }
+
 	protected:
 		SPtr<CoreObjectCore> mCoreSpecific;
 	};

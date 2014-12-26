@@ -310,6 +310,11 @@ namespace BansheeEngine
 		Shader(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques);
 
 		/**
+		 * @copydoc	CoreObject::getCoreDependencies
+		 */
+		void getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies);
+
+		/**
 		 * @copydoc	CoreObject::createCore
 		 */
 		SPtr<CoreObjectCore> createCore() const;

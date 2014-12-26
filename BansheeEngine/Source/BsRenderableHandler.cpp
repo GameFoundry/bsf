@@ -263,6 +263,18 @@ namespace BansheeEngine
 		return CoreSyncData(data, size);
 	}
 
+	void RenderableHandler::getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies)
+	{
+		if (mMesh.isLoaded())
+			dependencies.push_back(mMesh.getInternalPtr());
+
+		for (auto& material : mMaterials)
+		{
+			if (material.isLoaded())
+				dependencies.push_back(material.getInternalPtr());
+		}
+	}
+
 	void RenderableHandler::getResourceDependencies(Vector<HResource>& resources)
 	{
 		if (mMesh != nullptr)

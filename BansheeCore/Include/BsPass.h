@@ -226,6 +226,11 @@ namespace BansheeEngine
 		SPtr<CoreObjectCore> createCore() const;
 
 		/**
+		 * @copydoc	CoreObject::syncToCore
+		 */
+		void getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies);
+
+		/**
 		 * @copydoc	CoreObject::initialize
 		 */
 		virtual void initialize();

@@ -10,6 +10,7 @@
 #include "BsDebug.h"
 #include "BsUtility.h"
 #include "BsSavedResourceData.h"
+#include "BsResourceListenerManager.h"
 
 namespace BansheeEngine
 {
@@ -143,6 +144,7 @@ namespace BansheeEngine
 			mInProgressResources[uuid] = loadData;
 			loadData->resource = outputResource;
 			loadData->remainingDependencies = 1;
+			loadData->notifyImmediately = synchronous; // Make resource listener trigger before exit if loading synchronously
 
 			for (auto& dependency : savedResourceData->getDependencies())
 			{
@@ -212,7 +214,7 @@ namespace BansheeEngine
 			resource.blockUntilLoaded();
 		}
 
-		Vector<ResourceDependency> dependencies = Utility::findResourceDependencies(*resource.get(), false);
+		Vector<ResourceDependency> dependencies = Utility::findResourceDependencies(*resource.get());
 
 		// Call this before we actually destroy it
 		onResourceDestroyed(resource);
@@ -280,7 +282,7 @@ namespace BansheeEngine
 
 		mDefaultResourceManifest->registerResource(resource.getUUID(), filePath);
 
-		Vector<ResourceDependency> dependencyList = Utility::findResourceDependencies(*resource.get(), false);
+		Vector<ResourceDependency> dependencyList = Utility::findResourceDependencies(*resource.get());
 
 		Vector<String> dependencyUUIDs(dependencyList.size());
 		for (UINT32 i = 0; i < (UINT32)dependencyList.size(); i++)
@@ -398,11 +400,14 @@ namespace BansheeEngine
 		{
 			{
 				BS_LOCK_MUTEX(mLoadedResourceMutex);
-				mLoadedResources[resource.getUUID()] = resource;
+				mLoadedResources[uuid] = resource;
 			}
 
-			resource._setHandleData(myLoadData->loadedData, resource.getUUID());
+			resource._setHandleData(myLoadData->loadedData, uuid);
 			onResourceLoaded(resource);
+
+			if (myLoadData->notifyImmediately)
+				ResourceListenerManager::instance().notifyListeners(uuid);
 
 			bs_delete(myLoadData);
 		}

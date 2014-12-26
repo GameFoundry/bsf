@@ -136,6 +136,36 @@ namespace BansheeEngine
 		markResourcesDirty();
 	}
 
+	void Pass::getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies)
+	{
+		if (mData.blendState.isLoaded())
+			dependencies.push_back(mData.blendState.getInternalPtr());
+
+		if (mData.rasterizerState.isLoaded())
+			dependencies.push_back(mData.rasterizerState.getInternalPtr());
+
+		if (mData.depthStencilState.isLoaded())
+			dependencies.push_back(mData.depthStencilState.getInternalPtr());
+
+		if (mData.vertexProgram.isLoaded())
+			dependencies.push_back(mData.vertexProgram.getInternalPtr());
+
+		if (mData.fragmentProgram.isLoaded())
+			dependencies.push_back(mData.fragmentProgram.getInternalPtr());
+
+		if (mData.geometryProgram.isLoaded())
+			dependencies.push_back(mData.geometryProgram.getInternalPtr());
+
+		if (mData.hullProgram.isLoaded())
+			dependencies.push_back(mData.hullProgram.getInternalPtr());
+
+		if (mData.domainProgram.isLoaded())
+			dependencies.push_back(mData.domainProgram.getInternalPtr());
+
+		if (mData.computeProgram.isLoaded())
+			dependencies.push_back(mData.computeProgram.getInternalPtr());
+	}
+
 	void Pass::getResourceDependencies(Vector<HResource>& resources)
 	{
 		if (mData.blendState != nullptr)

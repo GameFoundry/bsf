@@ -200,6 +200,12 @@ namespace BansheeEngine
 		return CoreSyncData(buffer, size);
 	}
 
+	void Viewport::getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies)
+	{
+		if (mTarget != nullptr)
+			dependencies.push_back(mTarget);
+	}
+
 	ViewportPtr Viewport::create(const RenderTargetPtr& target, float x, float y, float width, float height)
 	{
 		Viewport* viewport = new (bs_alloc<Viewport>()) Viewport(target, x, y, width, height);

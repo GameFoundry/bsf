@@ -169,17 +169,7 @@ namespace BansheeEngine
 		typedef typename TTechniqueType<Core>::Type TechniqueType;
 		typedef typename TShaderType<Core>::Type ShaderType;
 
-		/**
-		 * @brief	Sets a shader that will be used by the material. Best technique within the
-		 * 			provided shader will be used for the material.
-		 *
-		 * @note	Shader must be set before doing any other operations with the material.
-		 * 			
-		 * 			After setting the shader if change any systems that a shader technique is 
-		 * 			dependent upon (render system, renderer, etc), you will need to call this 
-		 * 			method again on all your Materials to make sure technique used is updated.
-		 */
-		void setShader(ShaderType shader);
+		virtual ~TMaterial() { }
 
 		/**
 		 * @brief	Returns the currently active shader.
@@ -582,6 +572,11 @@ namespace BansheeEngine
 		~MaterialCore() { }
 
 		/**
+		 * @copydoc	Material::setShader
+		 */
+		void setShader(const SPtr<ShaderCore>& shader);
+
+		/**
 		 * @brief	Creates a new material with the specified shader.
 		 */
 		static SPtr<MaterialCore> create(const SPtr<ShaderCore>& shader);
@@ -608,6 +603,18 @@ namespace BansheeEngine
 	{
 	public:
 		~Material() { }
+
+		/**
+		 * @brief	Sets a shader that will be used by the material. Best technique within the
+		 * 			provided shader will be used for the material.
+		 *
+		 * @note	Shader must be set before doing any other operations with the material.
+		 * 			
+		 * 			After setting the shader if change any systems that a shader technique is 
+		 * 			dependent upon (render system, renderer, etc), you will need to call this 
+		 * 			method again on all your Materials to make sure technique used is updated.
+		 */
+		void setShader(const HShader& shader);
 
 		/**
 		 * @brief	Retrieves an implementation of a material usable only from the
@@ -649,6 +656,11 @@ namespace BansheeEngine
 		CoreSyncData syncToCore(FrameAlloc* allocator);
 
 		/**
+		 * @copydoc	CoreObject::getCoreDependencies
+		 */
+		void getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies);
+
+		/**
 		 * @copydoc	CoreObject::markCoreDirty
 		 */
 		void _markCoreDirty();
@@ -677,6 +689,18 @@ namespace BansheeEngine
 		 * @copydoc IResourceListener::notifyResourceChanged
 		 */
 		void notifyResourceChanged(const HResource& resource);
+
+		/**
+		 * @brief	Checks if all resources needed for initialization have been loaded.
+		 */
+		bool checkIfDependenciesLoaded() const;
+
+		/**
+		 * @brief	Performs material initialization when all resources are ready.
+		 */
+		void initializeIfLoaded();
+
+		UINT32 mLoadFlags;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

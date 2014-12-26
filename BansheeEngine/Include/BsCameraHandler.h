@@ -577,6 +577,11 @@ namespace BansheeEngine
 		CoreSyncData syncToCore(FrameAlloc* allocator);
 
 		/**
+		 * @copydoc	CoreObject::getCoreDependencies
+		 */
+		void getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies);
+
+		/**
 		 * @brief	Creates a new camera without initializing it.
 		 */
 		static CameraHandlerPtr createEmpty();

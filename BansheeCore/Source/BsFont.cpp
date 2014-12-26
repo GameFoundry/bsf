@@ -83,6 +83,18 @@ namespace BansheeEngine
 		return bestSize;
 	}
 
+	void Font::getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies)
+	{
+		for (auto& fontDataEntry : mFontDataPerSize)
+		{
+			for (auto& texture : fontDataEntry.second.texturePages)
+			{
+				if (texture.isLoaded())
+					dependencies.push_back(texture.getInternalPtr());
+			}
+		}
+	}
+
 	HFont Font::create(const Vector<FontData>& fontData)
 	{
 		FontPtr newFont = _createPtr(fontData);

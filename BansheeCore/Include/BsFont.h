@@ -84,6 +84,11 @@ namespace BansheeEngine
 
 		Font();
 
+		/**
+		 * @copydoc	CoreObject::getCoreDependencies
+		 */
+		void getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies);
+
 	private:
 		Map<UINT32, FontData> mFontDataPerSize;
 

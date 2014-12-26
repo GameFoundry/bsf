@@ -258,6 +258,11 @@ namespace BansheeEngine
 		CoreSyncData syncToCore(FrameAlloc* allocator);
 
 		/**
+		 * @copydoc	CoreObject::getCoreDependencies
+		 */
+		void getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies);
+
+		/**
 		 * @copydoc	CoreObject::createCore
 		 */
 		SPtr<CoreObjectCore> createCore() const;

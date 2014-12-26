@@ -89,6 +89,12 @@ namespace BansheeEngine
 		return techniquePtr;
 	}
 
+	void Technique::getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies)
+	{
+		for (auto& pass : mPasses)
+			dependencies.push_back(pass);
+	}
+
 	TechniquePtr Technique::create(const String& renderSystem, const String& renderer, const Vector<SPtr<Pass>>& passes)
 	{
 		Technique* technique = new (bs_alloc<Technique>()) Technique(renderSystem, renderer, passes);

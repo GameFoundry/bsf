@@ -7,13 +7,18 @@ ManagedSerializeArray::deserializeManagedInstance were reported as ManagedSerial
 It's inconsistent to reproduce but started happening after I have modified managed object serialization to be on-demand. It's possibly
 related to lambdas not capturing types as I expect them to. It always happens in the same place.
 
-TODO - Material waits to Shader to be loaded but doesn't wait for shader GpuPrograms or state objects.
- - What's the best way to ensure initialization is done when all these are loaded?
-
-TODO - Material loading issue. Deserializing a material will still call initialize() which will block until shader is loaded.
- - I should instead wait until everything is loaded before initializing the material. (e.g. when I want to load the material async
-   I shouldn't be blocking.)
-   - Remove call to initialize() in MaterialRTTI and instead add ResourceListener call to Resources?
+Keep the sync internal to CoreObjectManager
+Add a new public syncToCore method that accepts a core accessor (possibly make it part of CoreObjectManager, to keep things consistent with method described below)
+ - It only syncs that specific object and all the children
+ - getCoreDependencies to get children
+Rename syncUpload, syncDownload to syncToCore
+ - It will sync all objects as it does now, no change
+Add syncToCore for GpuParams when binding them from sim thread
+Possibly remove syncFromCore and replace it with custom managers
+ - Remove mesh bounds sync completely
+ - Remove render target sync (priority and active state)
+   - Remove RenderTargetCore::setPriority and make active state window only
+ - Move anything render target related to RenderWindowManager
 
 I can get mono errors by checking g_print calls in goutput.c
  - Calling thunks incorrectly can cause those weird errors with no real callstack

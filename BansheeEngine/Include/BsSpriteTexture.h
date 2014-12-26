@@ -64,6 +64,11 @@ namespace BansheeEngine
 		 */
 		SpriteTexture(const Vector2& uvOffset, const Vector2& uvScale, const HTexture& texture);
 
+		/**
+		 * @copydoc	CoreObject::getCoreDependencies
+		 */
+		void getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies);
+
 		HTexture mAtlasTexture;
 		Vector2 mUVOffset;
 		Vector2 mUVScale;

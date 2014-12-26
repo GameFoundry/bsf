@@ -229,6 +229,11 @@ namespace BansheeEngine
 		CoreSyncData syncToCore(FrameAlloc* allocator);
 
 		/**
+		 * @copydoc	CoreObject::getCoreDependencies
+		 */
+		void getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies);
+
+		/**
 		 * @copydoc	IResourceListener::getResourceDependencies
 		 */
 		void getResourceDependencies(Vector<HResource>& resources);
