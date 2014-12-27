@@ -44,15 +44,6 @@ namespace BansheeEngine
 		:mProperties(numVertices, numIndices, subMeshes)
 	{ }
 
-	CoreSyncData MeshCoreBase::syncFromCore(FrameAlloc* allocator)
-	{
-		UINT32 size = sizeof(Bounds);
-		UINT8* buffer = allocator->alloc(size);
-
-		memcpy(buffer, &mProperties.mBounds, size);
-		return CoreSyncData(buffer, size);
-	}
-
 	void MeshCoreBase::syncToCore(const CoreSyncData& data)
 	{
 		mProperties.mBounds = data.getData<Bounds>();
@@ -76,11 +67,6 @@ namespace BansheeEngine
 
 		memcpy(buffer, &mProperties.mBounds, size);
 		return CoreSyncData(buffer, size);
-	}
-
-	void MeshBase::syncFromCore(const CoreSyncData& data)
-	{
-		mProperties.mBounds = data.getData<Bounds>();
 	}
 
 	SPtr<MeshCoreBase> MeshBase::getCore() const

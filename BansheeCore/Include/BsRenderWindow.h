@@ -146,6 +146,11 @@ namespace BansheeEngine
          */
         virtual void setHidden(bool hidden);
 
+		/**
+		 * @brief	Makes the render target active or inactive. (e.g. for a window, it will hide or restore the window).
+		 */
+		virtual void setActive(bool state);
+
         /**
          * @brief	Change the size of the window.
          */
@@ -168,10 +173,6 @@ namespace BansheeEngine
 		 */
 		virtual void _windowMovedOrResized();
 
-	protected:
-		friend class RenderWindow;
-		friend class RenderWindowManager;
-
 		/**
 		 * @brief	Called when window has received focus.
 		 *
@@ -186,15 +187,20 @@ namespace BansheeEngine
 		 */
 		virtual void _windowFocusLost();
 
-		/**
-		 * @copydoc	CoreObjectCore::syncFromCore
-		 */
-		virtual CoreSyncData syncFromCore(FrameAlloc* allocator);
+	protected:
+		friend class RenderWindow;
+		friend class RenderWindowManager;
 
 		/**
 		 * @copydoc	CoreObjectCore::syncToCore
 		 */
 		virtual void syncToCore(const CoreSyncData& data);
+
+		/**
+		 * @brief	Retrieves data that is to be used for syncing between core and sim thread
+		 *			versions of this object.
+		 */
+		virtual UINT32 getSyncData(UINT8* buffer) { return 0; }
 
 		RENDER_WINDOW_DESC mDesc;
 	};
@@ -284,6 +290,12 @@ namespace BansheeEngine
 		RenderWindow(const RENDER_WINDOW_DESC& desc);
 
 		/**
+		 * @brief	Updates internal properties using the provided data. Data must have been retrieved from
+		 *			"getSyncData" method of the core version of this object.
+		 */
+		virtual void setSyncData(UINT8* buffer, UINT32 size) { }
+
+		/**
 		 * @copydoc	RenderTarget::createCore
 		 */
 		SPtr<CoreObjectCore> createCore() const;
@@ -292,11 +304,6 @@ namespace BansheeEngine
 		 * @copydoc	CoreObjectCore::syncToCore
 		 */
 		virtual CoreSyncData syncToCore(FrameAlloc* allocator);
-
-		/**
-		 * @copydoc	CoreObjectCore::syncFromCore
-		 */
-		virtual void syncFromCore(const CoreSyncData& data);
 
 	protected:
 		RENDER_WINDOW_DESC mDesc;

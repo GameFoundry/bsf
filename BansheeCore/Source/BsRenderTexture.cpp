@@ -114,17 +114,6 @@ namespace BansheeEngine
 		}
 	}
 
-	CoreSyncData RenderTextureCore::syncFromCore(FrameAlloc* allocator)
-	{
-		UINT32 size = sizeof(RenderTextureProperties);
-		UINT8* buffer = allocator->alloc(size);
-
-		RenderTextureProperties& props = const_cast<RenderTextureProperties&>(getProperties());
-
-		memcpy(buffer, &props, size);
-		return CoreSyncData(buffer, size);
-	}
-
 	void RenderTextureCore::syncToCore(const CoreSyncData& data)
 	{
 		RenderTextureProperties& props = const_cast<RenderTextureProperties&>(getProperties());
@@ -212,12 +201,6 @@ namespace BansheeEngine
 
 		memcpy(buffer, &props, size);
 		return CoreSyncData(buffer, size);
-	}
-
-	void RenderTexture::syncFromCore(const CoreSyncData& data)
-	{
-		RenderTextureProperties& props = const_cast<RenderTextureProperties&>(getProperties());
-		props = data.getData<RenderTextureProperties>();
 	}
 
 	const RenderTextureProperties& RenderTexture::getProperties() const

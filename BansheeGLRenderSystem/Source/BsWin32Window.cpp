@@ -12,6 +12,7 @@
 #include "Win32/BsPlatformWndProc.h"
 #include "BsWin32VideoModeInfo.h"
 #include "BsGLPixelFormat.h"
+#include "BsRenderWindowManager.h"
 
 GLenum GLEWAPIENTRY wglewContextInit(BansheeEngine::GLSupport *glSupport);
 
@@ -56,8 +57,6 @@ namespace BansheeEngine
 			bs_free<ScratchAlloc>(mDeviceName);
 			mDeviceName = NULL;
 		}
-
-		markCoreDirty();
 	}
 
 	void Win32WindowCore::initialize()
@@ -402,7 +401,7 @@ namespace BansheeEngine
 
 		SetWindowPos(mHWnd, HWND_TOP, props.mLeft, props.mTop, width, height, SWP_NOACTIVATE);
 
-		markCoreDirty();
+		RenderWindowManager::instance().notifyMovedOrResized(this);
 	}
 
 	void Win32WindowCore::setFullscreen(const VideoMode& mode)
@@ -451,8 +450,6 @@ namespace BansheeEngine
 			SWP_DRAWFRAME | SWP_FRAMECHANGED | SWP_NOACTIVATE);
 
 		_windowMovedOrResized();
-
-		markCoreDirty();
 	}
 
 	void Win32WindowCore::move(INT32 left, INT32 top)
@@ -618,7 +615,7 @@ namespace BansheeEngine
 			}
 		}
 
-		markCoreDirty();
+		RenderWindowManager::instance().notifyPropertiesDirty(this);
 	}
 
 	void Win32WindowCore::setHidden(bool hidden)
@@ -635,7 +632,7 @@ namespace BansheeEngine
 				ShowWindow(mHWnd, SW_SHOWNORMAL);
 		}
 
-		markCoreDirty();
+		RenderWindowManager::instance().notifyPropertiesDirty(this);
 	}
 
 	void Win32WindowCore::_windowMovedOrResized()
@@ -653,8 +650,6 @@ namespace BansheeEngine
 		GetClientRect(mHWnd, &rc);
 		props.mWidth = rc.right - rc.left;
 		props.mHeight = rc.bottom - rc.top;
-
-		markCoreDirty();
 
 		RenderWindowCore::_windowMovedOrResized();
 	}
@@ -687,6 +682,16 @@ namespace BansheeEngine
 
 		if (*winHeight > (UINT32)maxH)
 			*winHeight = maxH;
+	}
+
+	UINT32 Win32WindowCore::getSyncData(UINT8* buffer)
+	{
+		UINT32 size = sizeof(mProperties);
+
+		if (buffer != nullptr)
+			memcpy(buffer, &mProperties, size);
+
+		return size;
 	}
 
 	Win32Window::Win32Window(const RENDER_WINDOW_DESC& desc, Win32GLSupport &glsupport)
@@ -728,6 +733,13 @@ namespace BansheeEngine
 	SPtr<Win32WindowCore> Win32Window::getCore() const
 	{
 		return std::static_pointer_cast<Win32WindowCore>(mCoreSpecific);
+	}
+
+	void Win32Window::setSyncData(UINT8* buffer, UINT32 size)
+	{
+		assert(size == sizeof(mProperties));
+		
+		memcpy(&mProperties, buffer, size);
 	}
 
 	HWND Win32Window::getHWnd() const

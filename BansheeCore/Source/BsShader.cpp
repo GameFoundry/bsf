@@ -5,6 +5,7 @@
 #include "BsShaderRTTI.h"
 #include "BsResources.h"
 #include "BsFrameAlloc.h"
+#include "BsPass.h"
 
 namespace BansheeEngine
 {
@@ -196,6 +197,57 @@ namespace BansheeEngine
 		shaderCorePtr->_setThisPtr(shaderCorePtr);
 
 		return shaderCorePtr;
+	}
+
+	bool Shader::areDependenciesLoaded() const
+	{
+		TechniquePtr bestTechnique = getBestTechnique();
+		if (bestTechnique == nullptr) // No valid technique, so everything is technically loaded
+			return true;
+
+		UINT32 numPasses = bestTechnique->getNumPasses();
+		for (UINT32 i = 0; i < numPasses; i++)
+		{
+			PassPtr pass = bestTechnique->getPass(i);
+
+			HGpuProgram vertProg = pass->getVertexProgram();
+			if (vertProg != nullptr && !vertProg.isLoaded())
+				return false;
+
+			HGpuProgram fragProg = pass->getFragmentProgram();
+			if (fragProg != nullptr && !fragProg.isLoaded())
+				return false;
+
+			HGpuProgram geomProg = pass->getGeometryProgram();
+			if (geomProg != nullptr && !geomProg.isLoaded())
+				return false;
+
+			HGpuProgram domProg = pass->getDomainProgram();
+			if (domProg != nullptr && !domProg.isLoaded())
+				return false;
+
+			HGpuProgram hullProg = pass->getHullProgram();
+			if (hullProg != nullptr && !hullProg.isLoaded())
+				return false;
+
+			HGpuProgram computeProg = pass->getComputeProgram();
+			if (computeProg != nullptr && !computeProg.isLoaded())
+				return false;
+
+			HBlendState blendState = pass->getBlendState();
+			if (blendState != nullptr && !blendState.isLoaded())
+				return false;
+
+			HRasterizerState rasterizerState = pass->getRasterizerState();
+			if (rasterizerState != nullptr && !rasterizerState.isLoaded())
+				return false;
+
+			HDepthStencilState depthStencilState = pass->getDepthStencilState();
+			if (depthStencilState != nullptr && !depthStencilState.isLoaded())
+				return false;
+		}
+
+		return true;
 	}
 
 	void Shader::getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies)

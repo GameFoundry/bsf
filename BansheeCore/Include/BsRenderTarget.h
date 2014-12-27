@@ -146,11 +146,6 @@ namespace BansheeEngine
 		virtual ~RenderTargetCore() { }
 
 		/**
-		 * @brief	Makes the render target active or inactive. (e.g. for a window, it will hide or restore the window).
-		 */
-		virtual void setActive(bool state);
-
-		/**
 		 * @brief	Sets a priority that determines in which orders the render targets the processed.
 		 * 			
 		 * @param	priority	The priority. Higher value means the target will be rendered sooner.

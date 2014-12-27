@@ -43,6 +43,11 @@ namespace BansheeEngine
 		return Math::roundToInt(mAtlasTexture->getProperties().getHeight() * mUVScale.y);
 	}
 
+	bool SpriteTexture::areDependenciesLoaded() const
+	{
+		return mAtlasTexture.isLoaded();
+	}
+
 	void SpriteTexture::getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies)
 	{
 		if (mAtlasTexture.isLoaded())

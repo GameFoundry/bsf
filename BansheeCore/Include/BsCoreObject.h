@@ -189,7 +189,7 @@ namespace BansheeEngine
 		 *			method to trigger the next time objects are synced between core and sim threads.
 		 *
 		 * @param	flags	Optional flags in case you want to signal that only part of the
-		 *					internal data is dirty. syncFromCore() will be called regardless
+		 *					internal data is dirty. syncToCore() will be called regardless
 		 *					and it's up to the implementation to read the flags value if needed.
 		 */
 		void markCoreDirty(UINT32 flags = 0xFFFFFFFF) { mCoreDirtyFlags |= flags; }
@@ -220,15 +220,6 @@ namespace BansheeEngine
 		 *			available to the core thread the start of the next core thread frame.
 		 */
 		virtual CoreSyncData syncToCore(FrameAlloc* allocator) { return CoreSyncData(); }
-
-		/**
-		 * @brief	Update internal data from provided memory buffer that
-		 *			was populated with data from the core thread.
-		 *
-		 * @note	This generally happens at the start of every sim thread frame. Provided data
-		 *			is from a previous core thread frame.
-		 */
-		virtual void syncFromCore(const CoreSyncData& data) { }
 
 		/**
 		 * @brief	Populates the provided array with all core objects that this core object depends upon.

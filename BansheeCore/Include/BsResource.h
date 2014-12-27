@@ -37,6 +37,12 @@ namespace BansheeEngine
 
 	protected:
 		friend class Resources;
+		friend class ResourceHandleBase;
+
+		/**
+		 * @brief	Checks if are all resources that this resource depends on loaded.
+		 */
+		virtual bool areDependenciesLoaded() const { return true; }
 
 		UINT32 mSize;
 		ResourceMetaDataPtr mMetaData;

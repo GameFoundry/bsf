@@ -7,18 +7,18 @@ ManagedSerializeArray::deserializeManagedInstance were reported as ManagedSerial
 It's inconsistent to reproduce but started happening after I have modified managed object serialization to be on-demand. It's possibly
 related to lambdas not capturing types as I expect them to. It always happens in the same place.
 
-Keep the sync internal to CoreObjectManager
-Add a new public syncToCore method that accepts a core accessor (possibly make it part of CoreObjectManager, to keep things consistent with method described below)
- - It only syncs that specific object and all the children
- - getCoreDependencies to get children
-Rename syncUpload, syncDownload to syncToCore
- - It will sync all objects as it does now, no change
-Add syncToCore for GpuParams when binding them from sim thread
-Possibly remove syncFromCore and replace it with custom managers
- - Remove mesh bounds sync completely
- - Remove render target sync (priority and active state)
-   - Remove RenderTargetCore::setPriority and make active state window only
- - Move anything render target related to RenderWindowManager
+Properly implement getPropertyCopy and updateProperties that are called from RenderWindowManager.
+
+Resource refresh:
+ - Keep track of every single active ScriptObject
+   - Before refresh serialize any managed component and managed resource
+   - After refresh create new instances and restore mCachedPtr fields
+   - After refresh restore managed component and managed resource serialized data
+   - Pay special attention to C# types that store custom data which might not be serialized. I'll need to handle that manually or change where that data is stored.
+   - Pay special attention to script objects that store references to MonoObject*, or MonoClass* (and similar) types (if they're not refreshed in initRuntimeData)
+ - Check non-ScriptObject classes to ensure they properly refresh any references to: MonoClass, MonoField, MonoProperty, MonoMethod, MonoAssembly, function thunk
+ - I should probably avoid calling constructor on restore since it may be doing some initialization. See how Unity does it.
+   - Unity does call the constructor
 
 I can get mono errors by checking g_print calls in goutput.c
  - Calling thunks incorrectly can cause those weird errors with no real callstack
@@ -28,6 +28,7 @@ Multi-resource saving:
  - Register it in its meta file
  - When saving such a resource with dependencies save the contained files to a sub-directory with the same name as top level resource
    - If it already exists in the manifest at a different location do it anyway, keep the other copy as-is in case user wanted it that way
+   - I'm not sure whether to do this for all Resource::save calls or only ones originating from ProjectLIbrary?
 
 Other:
 Window resize end callback

@@ -12,6 +12,7 @@
 #include "BsRenderStats.h"
 #include "BsInput.h"
 #include "BsException.h"
+#include "BsRenderWindowManager.h"
 
 namespace BansheeEngine
 {
@@ -30,7 +31,6 @@ namespace BansheeEngine
 		D3D11RenderWindowProperties& props = mProperties;
 
 		props.mActive = false;
-		markCoreDirty();
 
 		SAFE_RELEASE(mSwapChain);
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_SwapChain);
@@ -356,7 +356,7 @@ namespace BansheeEngine
 				ShowWindow(mHWnd, SW_SHOWNORMAL);
 		}
 
-		markCoreDirty();
+		RenderWindowManager::instance().notifyPropertiesDirty(this);
 	}
 
 	void D3D11RenderWindowCore::setFullscreen(UINT32 width, UINT32 height, float refreshRate, UINT32 monitorIdx)
@@ -397,7 +397,7 @@ namespace BansheeEngine
 		mSwapChain->ResizeTarget(&nearestMode);
 		mSwapChain->SetFullscreenState(true, outputInfo.getDXGIOutput()); 
 
-		markCoreDirty();
+		RenderWindowManager::instance().notifyMovedOrResized(this);
 	}
 
 	void D3D11RenderWindowCore::setFullscreen(const VideoMode& mode)
@@ -430,7 +430,7 @@ namespace BansheeEngine
 		mSwapChain->ResizeTarget(&videoMode.getDXGIModeDesc());
 		mSwapChain->SetFullscreenState(true, outputInfo.getDXGIOutput());
 
-		markCoreDirty();
+		RenderWindowManager::instance().notifyMovedOrResized(this);
 	}
 
 	void D3D11RenderWindowCore::setWindowed(UINT32 width, UINT32 height)
@@ -459,7 +459,7 @@ namespace BansheeEngine
 		mSwapChain->SetFullscreenState(false, nullptr);
 		mSwapChain->ResizeTarget(&modeDesc);
 
-		markCoreDirty();
+		RenderWindowManager::instance().notifyMovedOrResized(this);
 	}
 
 	HWND D3D11RenderWindowCore::_getWindowHandle() const
@@ -575,7 +575,6 @@ namespace BansheeEngine
 
 		mProperties.mTop = rc.top;
 		mProperties.mLeft = rc.left;
-		markCoreDirty();
 
 		GetClientRect(mHWnd, &rc);
 		unsigned int width = rc.right - rc.left;
@@ -714,11 +713,20 @@ namespace BansheeEngine
 		mProperties.mWidth = mSwapChainDesc.BufferDesc.Width;
 		mProperties.mHeight = mSwapChainDesc.BufferDesc.Height;
 		mProperties.mIsFullScreen = (0 == mSwapChainDesc.Windowed); // Alt-Enter together with SetWindowAssociation() can change this state
-		markCoreDirty();
 
 		createSizeDependedD3DResources();
 
 		mDevice.getImmediateContext()->OMSetRenderTargets(0, 0, 0);
+	}
+
+	UINT32 D3D11RenderWindowCore::getSyncData(UINT8* buffer)
+	{
+		UINT32 size = sizeof(mProperties);
+
+		if (buffer != nullptr)
+			memcpy(buffer, &mProperties, size);
+
+		return size;
 	}
 
 	IDXGIDevice* D3D11RenderWindowCore::queryDxgiDevice()
@@ -771,6 +779,13 @@ namespace BansheeEngine
 
 		ClientToScreen(getHWnd(), &pos);
 		return Vector2I(pos.x, pos.y);
+	}
+
+	void D3D11RenderWindow::setSyncData(UINT8* buffer, UINT32 size)
+	{
+		assert(size == sizeof(mProperties));
+
+		memcpy(&mProperties, buffer, size);
 	}
 
 	SPtr<D3D11RenderWindowCore> D3D11RenderWindow::getCore() const

@@ -691,9 +691,9 @@ namespace BansheeEngine
 		void notifyResourceChanged(const HResource& resource);
 
 		/**
-		 * @brief	Checks if all resources needed for initialization have been loaded.
+		 * @copydoc	Resource::areDependenciesLoaded
 		 */
-		bool checkIfDependenciesLoaded() const;
+		bool areDependenciesLoaded() const;
 
 		/**
 		 * @brief	Performs material initialization when all resources are ready.

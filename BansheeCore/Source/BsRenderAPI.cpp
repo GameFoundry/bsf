@@ -122,6 +122,7 @@ namespace BansheeEngine
 
 	void RenderAPI::bindGpuProgram(CoreAccessor& accessor, const GpuProgramPtr& prg)
 	{
+		prg->syncToCore(accessor);
 		accessor.queueCommand(std::bind(&RenderAPICore::bindGpuProgram, RenderAPICore::instancePtr(), prg->getCore()));
 	}
 

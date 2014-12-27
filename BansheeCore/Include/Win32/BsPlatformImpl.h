@@ -322,27 +322,6 @@ namespace BansheeEngine
 		static Event<void(UINT32)> onCharInput;
 
 		/**
-		 * @brief	Triggered whenever a window receives focus.
-		 * 			
-		 * @note	Core thread only.
-		 */
-		static Event<void(RenderWindowCore*)> onWindowFocusReceived;
-
-		/**
-		 * @brief	Triggered whenever a window loses focus.
-		 * 			
-		 * @note	Core thread only.
-		 */
-		static Event<void(RenderWindowCore*)> onWindowFocusLost;
-
-		/**
-		 * @brief	Triggered whenever a window gets moved or resized.
-		 * 			
-		 * @note	Core thread only.
-		 */
-		static Event<void(RenderWindowCore*)> onWindowMovedOrResized;
-
-		/**
 		 * @brief	Triggered whenever mouse capture state for the window is changed
 		 * 			(it receives or loses it).
 		 * 			
@@ -367,9 +346,5 @@ namespace BansheeEngine
 
 		static void win32ShowCursor();
 		static void win32HideCursor();
-
-		static void windowFocusReceived(RenderWindowCore* window);
-		static void windowFocusLost(RenderWindowCore* window);
-		static void windowMovedOrResized(RenderWindowCore* window);
 	};
 }

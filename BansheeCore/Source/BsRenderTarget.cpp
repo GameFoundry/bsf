@@ -12,20 +12,11 @@ namespace BansheeEngine
 
 	}
 
-	void RenderTargetCore::setActive(bool state)
-	{ 
-		RenderTargetProperties& props = const_cast<RenderTargetProperties&>(getProperties());
-
-		props.mActive = state;
-		markCoreDirty();
-	}
-
 	void RenderTargetCore::setPriority(INT32 priority) 
 	{ 
 		RenderTargetProperties& props = const_cast<RenderTargetProperties&>(getProperties());
 
 		props.mPriority = priority;
-		markCoreDirty();
 	}
 
 	const RenderTargetProperties& RenderTargetCore::getProperties() const

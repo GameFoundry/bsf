@@ -85,6 +85,11 @@ namespace BansheeEngine
 		Font();
 
 		/**
+		 * @copydoc	Resource::areDependenciesLoaded
+		 */
+		bool areDependenciesLoaded() const;
+
+		/**
 		 * @copydoc	CoreObject::getCoreDependencies
 		 */
 		void getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies);

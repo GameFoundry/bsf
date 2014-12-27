@@ -9,6 +9,7 @@
 #include "Win32/BsPlatformWndProc.h"
 #include "BsD3D9VideoModeInfo.h"
 #include "BsD3D9DeviceManager.h"
+#include "BsRenderWindowManager.h"
 
 namespace BansheeEngine
 {
@@ -38,8 +39,6 @@ namespace BansheeEngine
 
 		mHWnd = 0;
 		mProperties.mActive = false;
-
-		markCoreDirty();
 	}
 
 	void D3D9RenderWindowCore::initialize()
@@ -278,7 +277,7 @@ namespace BansheeEngine
 		mDevice->invalidate(this);
 		mDevice->acquire();
 
-		markCoreDirty();
+		RenderWindowManager::instance().notifyMovedOrResized(this);
 	}
 
 	void D3D9RenderWindowCore::setFullscreen(const VideoMode& mode)
@@ -326,7 +325,7 @@ namespace BansheeEngine
 		mDevice->invalidate(this);
 		mDevice->acquire();
 
-		markCoreDirty();
+		RenderWindowManager::instance().notifyMovedOrResized(this);
 	}
 
 	void D3D9RenderWindowCore::setHidden(bool hidden)
@@ -344,7 +343,7 @@ namespace BansheeEngine
 				ShowWindow(mHWnd, SW_SHOWNORMAL);
 		}
 
-		markCoreDirty();
+		RenderWindowManager::instance().notifyPropertiesDirty(this);
 	}
 
 	void D3D9RenderWindowCore::move(INT32 top, INT32 left)
@@ -640,7 +639,6 @@ namespace BansheeEngine
 			props.mWidth = 0;
 			props.mHeight = 0;
 
-			markCoreDirty();
 			return;
 		}
 		
@@ -656,14 +654,21 @@ namespace BansheeEngine
 			props.mWidth = 0;
 			props.mHeight = 0;
 
-			markCoreDirty();
 			return;
 		}
 
 		props.mWidth = rc.right - rc.left;
 		props.mHeight = rc.bottom - rc.top;
+	}
 
-		markCoreDirty();
+	UINT32 D3D9RenderWindowCore::getSyncData(UINT8* buffer)
+	{
+		UINT32 size = sizeof(mProperties);
+
+		if (buffer != nullptr)
+			memcpy(buffer, &mProperties, size);
+
+		return size;
 	}
 
 	bool D3D9RenderWindowCore::_validateDevice()
@@ -706,6 +711,13 @@ namespace BansheeEngine
 
 		ClientToScreen(getHWnd(), &pos);
 		return Vector2I(pos.x, pos.y);
+	}
+
+	void D3D9RenderWindow::setSyncData(UINT8* buffer, UINT32 size)
+	{
+		assert(size == sizeof(mProperties));
+
+		memcpy(&mProperties, buffer, size);
 	}
 
 	HWND D3D9RenderWindow::getHWnd() const

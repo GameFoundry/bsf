@@ -7,7 +7,7 @@ namespace BansheeEngine
 		BS_STATIC_MUTEX_CLASS_INSTANCE(mCoreGpuObjectLoadedMutex, CoreObjectCore)
 
 	CoreObjectCore::CoreObjectCore()
-		:mCoreDirtyFlags(0xFFFFFFFF), mFlags(0)
+		:mFlags(0)
 	{ }
 
 	CoreObjectCore::~CoreObjectCore()

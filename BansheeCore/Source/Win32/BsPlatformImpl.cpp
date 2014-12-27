@@ -17,9 +17,6 @@ namespace BansheeEngine
 	Event<void(float)> Platform::onMouseWheelScrolled;
 	Event<void(UINT32)> Platform::onCharInput;
 
-	Event<void(RenderWindowCore*)> Platform::onWindowFocusReceived;
-	Event<void(RenderWindowCore*)> Platform::onWindowFocusLost;
-	Event<void(RenderWindowCore*)> Platform::onWindowMovedOrResized;
 	Event<void(RenderWindowCore*)> Platform::onMouseLeftWindow;
 	Event<void()> Platform::onMouseCaptureChanged;
 
@@ -507,24 +504,6 @@ namespace BansheeEngine
 		BS_LOCK_MUTEX(mSync);
 
 		mRequiresShutDown = true;
-	}
-
-	void Platform::windowFocusReceived(RenderWindowCore* window)
-	{
-		if(!onWindowFocusReceived.empty())
-			onWindowFocusReceived(window);
-	}
-
-	void Platform::windowFocusLost(RenderWindowCore* window)
-	{
-		if(!onWindowFocusLost.empty())
-			onWindowFocusLost(window);
-	}
-	
-	void Platform::windowMovedOrResized(RenderWindowCore* window)
-	{
-		if(!onWindowMovedOrResized.empty())
-			onWindowMovedOrResized(window);
 	}
 
 	void Platform::win32ShowCursor()

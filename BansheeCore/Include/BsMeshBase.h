@@ -139,11 +139,6 @@ namespace BansheeEngine
 
 	protected:
 		/**
-		 * @copydoc	CoreObjectCore::syncFromCore
-		 */
-		virtual CoreSyncData syncFromCore(FrameAlloc* allocator);
-
-		/**
 		 * @copydoc	CoreObjectCore::syncToCore
 		 */
 		virtual void syncToCore(const CoreSyncData& data);
@@ -199,11 +194,6 @@ namespace BansheeEngine
 		 * @copydoc	CoreObject::syncToCore
 		 */
 		virtual CoreSyncData syncToCore(FrameAlloc* allocator);
-
-		/**
-		 * @copydoc	CoreObject::syncFromCore
-		 */
-		virtual void syncFromCore(const CoreSyncData& data);
 
 		MeshProperties mProperties;
 

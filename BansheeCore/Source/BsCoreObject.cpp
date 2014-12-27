@@ -80,13 +80,6 @@ namespace BansheeEngine
 
 	void CoreObject::syncToCore(CoreAccessor& accessor)
 	{
-		if (!isCoreDirty())
-			return;
-
-		SPtr<CoreObjectCore> destObj = getCore();
-		if (destObj == nullptr)
-			return;
-
 		struct IndividualCoreSyncData
 		{
 			SPtr<CoreObjectCore> destination;
@@ -94,25 +87,56 @@ namespace BansheeEngine
 			FrameAlloc* allocator;
 		};
 
-		IndividualCoreSyncData data;
-		data.allocator = gCoreThread().getFrameAlloc();
-		data.destination = destObj;
-		data.syncData = syncToCore(data.allocator);
+		FrameAlloc* allocator = gCoreThread().getFrameAlloc();
 
-		std::function<void(const IndividualCoreSyncData&)> callback =
-			[](const IndividualCoreSyncData& data)
+		Vector<SPtr<CoreObject>> dependencies;
+		Vector<IndividualCoreSyncData> syncData;
+
+		UINT32 stackPos = 0;
+
+		dependencies.push_back(getThisPtr());
+		while (stackPos < dependencies.size())
 		{
-			data.destination->syncToCore(data.syncData);
+			SPtr<CoreObject> curObj = dependencies[stackPos];
+			stackPos++;
 
-			UINT8* dataPtr = data.syncData.getBuffer();
+			if (curObj->isCoreDirty())
+			{
+				SPtr<CoreObjectCore> destObj = curObj->getCore();
+				if (destObj == nullptr)
+					return;
 
-			if (dataPtr != nullptr)
-				data.allocator->dealloc(dataPtr);
+				IndividualCoreSyncData data;
+				data.allocator = allocator;
+				data.destination = destObj;
+				data.syncData = syncToCore(data.allocator);
+
+				syncData.push_back(data);
+
+				curObj->markCoreClean();
+			}
+
+			// Note: I don't check for recursion. Possible infinite loop if two objects
+			// are dependent on one another.
+			curObj->getCoreDependencies(dependencies);
+		}
+
+		std::function<void(const Vector<IndividualCoreSyncData>&)> callback =
+			[](const Vector<IndividualCoreSyncData>& data)
+		{
+			for (auto& entry : data)
+			{
+				entry.destination->syncToCore(entry.syncData);
+
+				UINT8* dataPtr = entry.syncData.getBuffer();
+
+				if (dataPtr != nullptr)
+					entry.allocator->dealloc(dataPtr);
+			}
 		};
 
-		accessor.queueCommand(std::bind(callback, data));
-
-		markCoreClean();
+		if (syncData.size() > 0)
+			accessor.queueCommand(std::bind(callback, syncData));
 	}
 
 	void CoreObject::_setThisPtr(std::shared_ptr<CoreObject> ptrThis)

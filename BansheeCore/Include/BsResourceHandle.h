@@ -32,8 +32,11 @@ namespace BansheeEngine
 		/**
 		 * @brief	Checks if the resource is loaded. Until resource is loaded this handle
 		 *			is invalid and you may not get the internal resource from it.
+		 *
+		 * @param	checkDependencies	If true, and if resource has any dependencies, this method will
+		 *								also check if they are loaded.
 		 */
-		bool isLoaded() const;
+		bool isLoaded(bool checkDependencies = true) const;
 
 		/**
 		 * @brief	Blocks the current thread until the resource is fully loaded.

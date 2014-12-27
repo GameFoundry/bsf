@@ -106,6 +106,11 @@ namespace BansheeEngine
 		virtual void initialize();
 
 		/**
+		 * @copydoc	RenderWindowCore::getSyncData
+		 */
+		UINT32 getSyncData(UINT8* buffer);
+		
+		/**
 		 * @brief	Calculates window size based on provided client area size and currently set window style. 
 		 */
 		void getAdjustedWindowSize(UINT32 clientWidth, UINT32 clientHeight, UINT32* winWidth, UINT32* winHeight);
@@ -168,9 +173,14 @@ namespace BansheeEngine
 		Win32Window(const RENDER_WINDOW_DESC& desc, Win32GLSupport& glsupport);
 
 		/**
-		 * @copydoc	RenderWindowCore::getProperties
+		 * @copydoc	RenderWindow::getProperties
 		 */
 		const RenderTargetProperties& getPropertiesInternal() const { return mProperties; }
+
+		/**
+		 * @copydoc	RenderWindow::setSyncData
+		 */
+		void setSyncData(UINT8* buffer, UINT32 size);
 
 		/**
 		 * @brief	Retrieves internal window handle.

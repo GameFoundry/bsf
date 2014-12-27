@@ -20,9 +20,14 @@ namespace BansheeEngine
 
 	}
 
-	bool ResourceHandleBase::isLoaded() const 
+	bool ResourceHandleBase::isLoaded(bool checkDependencies) const 
 	{ 
-		return (mData != nullptr && mData->mIsCreated && mData->mPtr != nullptr); 
+		bool isLoaded = (mData != nullptr && mData->mIsCreated && mData->mPtr != nullptr);
+
+		if (checkDependencies && isLoaded)
+			isLoaded = mData->mPtr->areDependenciesLoaded();
+
+		return isLoaded;
 	}
 
 	void ResourceHandleBase::blockUntilLoaded() const

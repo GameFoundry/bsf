@@ -266,7 +266,8 @@ namespace BansheeEngine
 	void MeshCore::updateBounds(const MeshData& meshData)
 	{
 		mProperties.mBounds = meshData.calculateBounds();
-		markCoreDirty();
+		
+		// TODO - Sync this to sim-thread possibly?
 	}
 
 	Mesh::Mesh(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 

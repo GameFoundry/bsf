@@ -10,12 +10,23 @@ namespace BansheeEngine
 	/**
 	 * @brief	Handles creation and internal updates relating to render windows.
 	 *
-	 * @note	Sim thread only.
+	 * @note	Internal class.
 	 */
 	class BS_CORE_EXPORT RenderWindowManager : public Module<RenderWindowManager>
 	{
+		/**
+		 * @brief	Holds a buffer that contains dirty data used for updating sim
+		 *			thread render windows after changes on the core thread.
+		 */
+		struct DirtyPropertyData
+		{
+			UINT8* data;
+			UINT32 size;
+		};
+
 	public:
 		RenderWindowManager();
+		~RenderWindowManager();
 
 		/**
 		 * @brief	Creates a new render window using the specified options. Optionally
@@ -29,6 +40,31 @@ namespace BansheeEngine
 		 * @note	Internal method.
 		 */
 		void _update();
+
+		/**
+		 * @brief	Called by the core thread when window is destroyed.
+		 */
+		void notifyWindowDestroyed(RenderWindow* window);
+
+		/**
+		 * @brief	Called by the core thread when window receives focus.
+		 */
+		void notifyFocusReceived(RenderWindowCore* window);
+
+		/**
+		 * @brief	Called by the core thread when window loses focus.
+		 */
+		void notifyFocusLost(RenderWindowCore* window);
+
+		/**
+		 * @brief	Called by the core thread when window is moved or resized.
+		 */
+		void notifyMovedOrResized(RenderWindowCore* window);
+
+		/**
+		 * @brief	Called by the core thread when window properties change.
+		 */
+		void notifyPropertiesDirty(RenderWindowCore* window);
 
 		/**
 		 * @brief	Returns a list of all open render windows.
@@ -53,34 +89,19 @@ namespace BansheeEngine
 		friend class RenderWindow;
 
 		/**
-		 * @brief	Called by the core thread when window is destroyed.
-		 */
-		void windowDestroyed(RenderWindow* window);
-
-		/**
-		 * @brief	Called by the core thread when window receives focus.
-		 */
-		void windowFocusReceived(RenderWindowCore* window);
-
-		/**
-		 * @brief	Called by the core thread when window loses focus.
-		 */
-		void windowFocusLost(RenderWindowCore* window);
-
-		/**
 		 * @brief	Called by the core thread when mouse leaves a window.
 		 */
 		void windowMouseLeft(RenderWindowCore* window);
 
 		/**
-		 * @brief	Called by the sim thread when window is moved or resized.
-		 */
-		void windowMovedOrResized(RenderWindow* window);
-
-		/**
 		 * @brief	Finds a sim thread equivalent of the provided core thread window implementation.
 		 */
 		RenderWindow* getNonCore(const RenderWindowCore* window) const;
+
+		/**
+		 * @brief	Adds a new dirty property entry.
+		 */
+		void setDirtyProperties(RenderWindowCore* coreWindow);
 
 		/**
 		 * @copydoc	create
@@ -96,6 +117,7 @@ namespace BansheeEngine
 		RenderWindow* mNewWindowInFocus;
 		Vector<RenderWindow*> mMovedOrResizedWindows;
 		Vector<RenderWindow*> mMouseLeftWindows;
+		Map<RenderWindow*, DirtyPropertyData> mDirtyProperties;
 	};
 
 	/**

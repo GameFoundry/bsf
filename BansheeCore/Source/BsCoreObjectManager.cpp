@@ -4,6 +4,7 @@
 #include "BsException.h"
 #include "BsMath.h"
 #include "BsFrameAlloc.h"
+#include "BsCoreThread.h"
 
 namespace BansheeEngine
 {
@@ -50,128 +51,70 @@ namespace BansheeEngine
 		UINT64 internalId = object->getInternalID();
 		mObjects.erase(internalId);
 
+		for (auto& syncData : mCoreSyncData)
 		{
-			for (auto& syncData : mSimSyncData)
+			auto iterFind = syncData.entries.find(internalId);
+			if (iterFind != syncData.entries.end())
 			{
-				auto iterFind = syncData.entries.find(internalId);
-				if (iterFind != syncData.entries.end())
-				{
-					UINT8* data = iterFind->second.syncData.getBuffer();
+				UINT8* data = iterFind->second.syncData.getBuffer();
 
-					if (data != nullptr && syncData.alloc != nullptr)
-						syncData.alloc->dealloc(data);
+				if (data != nullptr && syncData.alloc != nullptr)
+					syncData.alloc->dealloc(data);
 
-					syncData.entries.erase(iterFind);
-				}
-			}
-		}
-
-		{
-			for (auto& syncData : mCoreSyncData)
-			{
-				auto iterFind = syncData.entries.find(internalId);
-				if (iterFind != syncData.entries.end())
-				{
-					UINT8* data = iterFind->second.syncData.getBuffer();
-
-					if (data != nullptr && syncData.alloc != nullptr)
-						syncData.alloc->dealloc(data);
-
-					syncData.entries.erase(iterFind);
-				}
+				syncData.entries.erase(iterFind);
 			}
 		}
 	}
 
-	void CoreObjectManager::syncDownload(CoreObjectSync type, FrameAlloc* allocator)
+	void CoreObjectManager::syncToCore(CoreAccessor& accessor)
+	{
+		syncDownload(gCoreThread().getFrameAlloc());
+		accessor.queueCommand(std::bind(&CoreObjectManager::syncUpload, this));
+	}
+
+	void CoreObjectManager::syncDownload(FrameAlloc* allocator)
 	{
 		BS_LOCK_MUTEX(mObjectsMutex);
 
-		if (type == CoreObjectSync::Sim)
+		mCoreSyncData.push_back(CoreStoredSyncData());
+		CoreStoredSyncData& syncData = mCoreSyncData.back();
+
+		syncData.alloc = allocator;
+		for (auto& objectData : mObjects)
 		{
-			mCoreSyncData.push_back(CoreStoredSyncData());
-			CoreStoredSyncData& syncData = mCoreSyncData.back();
-
-			syncData.alloc = allocator;
-			for (auto& objectData : mObjects)
+			CoreObject* object = objectData.second;
+			SPtr<CoreObjectCore> objectCore = object->getCore();
+			if (objectCore != nullptr && object->isCoreDirty())
 			{
-				CoreObject* object = objectData.second;
-				SPtr<CoreObjectCore> objectCore = object->getCore();
-				if (objectCore != nullptr && object->isCoreDirty())
-				{
-					CoreSyncData objSyncData = object->syncToCore(allocator);
-					object->markCoreClean();
+				CoreSyncData objSyncData = object->syncToCore(allocator);
+				object->markCoreClean();
 
-					syncData.entries[object->getInternalID()] = CoreStoredSyncObjData(objectCore.get(), objSyncData);
-				}
-			}
-		}
-		else
-		{
-			mSimSyncData.push_back(SimStoredSyncData());
-			SimStoredSyncData& syncData = mSimSyncData.back();
-
-			syncData.alloc = allocator;
-			for (auto& objectData : mObjects)
-			{
-				CoreObject* object = objectData.second;
-				SPtr<CoreObjectCore> objectCore = object->getCore();
-				if (objectCore != nullptr && objectCore->isCoreDirty())
-				{
-					CoreSyncData objSyncData = objectCore->syncFromCore(allocator);
-					objectCore->markCoreClean();
-
-					syncData.entries[object->getInternalID()] = SimStoredSyncObjData(object, objSyncData);
-				}
+				syncData.entries[object->getInternalID()] = CoreStoredSyncObjData(objectCore.get(), objSyncData);
 			}
 		}
 	}
 
-	void CoreObjectManager::syncUpload(CoreObjectSync type)
+	void CoreObjectManager::syncUpload()
 	{
 		BS_LOCK_MUTEX(mObjectsMutex);
 
-		if (type == CoreObjectSync::Sim)
+		if (mCoreSyncData.size() == 0)
+			return;
+
+		CoreStoredSyncData& syncData = mCoreSyncData.front();
+
+		for (auto& objectData : syncData.entries)
 		{
-			if (mCoreSyncData.size() == 0)
-				return;
+			const CoreStoredSyncObjData& objSyncData = objectData.second;
+			objSyncData.destinationObj->syncToCore(objSyncData.syncData);
 
-			CoreStoredSyncData& syncData = mCoreSyncData.front();
+			UINT8* data = objSyncData.syncData.getBuffer();
 
-			for (auto& objectData : syncData.entries)
-			{
-				const CoreStoredSyncObjData& objSyncData = objectData.second;
-				objSyncData.destinationObj->syncToCore(objSyncData.syncData);
-
-				UINT8* data = objSyncData.syncData.getBuffer();
-
-				if (data != nullptr)
-					syncData.alloc->dealloc(data);
-			}
-
-			syncData.entries.clear();
-			mCoreSyncData.pop_front();
+			if (data != nullptr)
+				syncData.alloc->dealloc(data);
 		}
-		else
-		{
-			if (mSimSyncData.size() == 0)
-				return;
 
-			SimStoredSyncData& syncData = mSimSyncData.front();
-
-			for (auto& objectData : syncData.entries)
-			{
-				const SimStoredSyncObjData& objSyncData = objectData.second;
-				objSyncData.destinationObj->syncFromCore(objSyncData.syncData);
-
-				UINT8* data = objSyncData.syncData.getBuffer();
-
-				if (data != nullptr)
-					syncData.alloc->dealloc(data);
-			}
-
-			syncData.entries.clear();
-			mSimSyncData.pop_front();
-		}
+		syncData.entries.clear();
+		mCoreSyncData.pop_front();
 	}
 }

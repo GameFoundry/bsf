@@ -118,14 +118,14 @@ namespace BansheeEngine
 		case WM_SETFOCUS:
 			{
 				if (!win->getProperties().hasFocus())
-					windowFocusReceived(win);
+					win->_windowFocusReceived();
 
 				break;
 			}
 		case WM_KILLFOCUS:
 			{
 				if (win->getProperties().hasFocus())
-					windowFocusLost(win);
+					win->_windowFocusLost();
 
 				break;
 			}
@@ -136,15 +136,12 @@ namespace BansheeEngine
 			break;
 		case WM_MOVE:
 			win->_windowMovedOrResized();
-			windowMovedOrResized(win);
 			break;
 		case WM_DISPLAYCHANGE:
 			win->_windowMovedOrResized();
-			windowMovedOrResized(win);
 			break;
 		case WM_SIZE:
 			win->_windowMovedOrResized();
-			windowMovedOrResized(win);
 			break;
 		case WM_SETCURSOR:
 			if(isCursorHidden())

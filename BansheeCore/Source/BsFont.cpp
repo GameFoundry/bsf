@@ -83,6 +83,20 @@ namespace BansheeEngine
 		return bestSize;
 	}
 
+	bool Font::areDependenciesLoaded() const
+	{
+		for (auto& fontDataEntry : mFontDataPerSize)
+		{
+			for (auto& texture : fontDataEntry.second.texturePages)
+			{
+				if (!texture.isLoaded())
+					return false;
+			}
+		}
+
+		return true;
+	}
+
 	void Font::getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies)
 	{
 		for (auto& fontDataEntry : mFontDataPerSize)

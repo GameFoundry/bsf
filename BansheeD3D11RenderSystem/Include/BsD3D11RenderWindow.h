@@ -140,6 +140,11 @@ namespace BansheeEngine
 		 */
 		const RenderTargetProperties& getPropertiesInternal() const { return mProperties; }
 
+		/**
+		 * @copydoc	RenderWindowCore::getSyncData
+		 */
+		UINT32 getSyncData(UINT8* buffer);
+
 	protected:
 		D3D11Device& mDevice;
 		IDXGIFactory* mDXGIFactory;
@@ -203,6 +208,11 @@ namespace BansheeEngine
 		 * @copydoc	RenderWindowCore::getProperties
 		 */
 		const RenderTargetProperties& getPropertiesInternal() const { return mProperties; }
+
+		/**
+		 * @copydoc	RenderWindow::setSyncData
+		 */
+		void setSyncData(UINT8* buffer, UINT32 size);
 
 		/**
 		 * @brief	Retrieves internal window handle.

@@ -42,15 +42,14 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 	}
 
-	CoreSyncData RenderWindowCore::syncFromCore(FrameAlloc* allocator)
+	void RenderWindowCore::setActive(bool state)
 	{
-		UINT32 size = sizeof(RenderWindowProperties);
-		UINT8* buffer = allocator->alloc(size);
+		THROW_IF_NOT_CORE_THREAD;
 
 		RenderWindowProperties& props = const_cast<RenderWindowProperties&>(getProperties());
 
-		memcpy(buffer, &props, size);
-		return CoreSyncData(buffer, size);
+		props.mActive = state;
+		RenderWindowManager::instance().notifyPropertiesDirty(this);
 	}
 
 	void RenderWindowCore::syncToCore(const CoreSyncData& data)
@@ -62,6 +61,8 @@ namespace BansheeEngine
 	void RenderWindowCore::_windowMovedOrResized()
 	{
 		THROW_IF_NOT_CORE_THREAD;
+
+		RenderWindowManager::instance().notifyMovedOrResized(this);
 	}
 
 	void RenderWindowCore::_windowFocusReceived()
@@ -71,7 +72,7 @@ namespace BansheeEngine
 		RenderWindowProperties& properties = const_cast<RenderWindowProperties&>(getProperties());
 		properties.mHasFocus = true;
 
-		markCoreDirty();
+		RenderWindowManager::instance().notifyFocusReceived(this);
 	}
 
 	void RenderWindowCore::_windowFocusLost()
@@ -81,7 +82,7 @@ namespace BansheeEngine
 		RenderWindowProperties& properties = const_cast<RenderWindowProperties&>(getProperties());
 		properties.mHasFocus = false;
 
-		markCoreDirty();
+		RenderWindowManager::instance().notifyFocusLost(this);
 	}
 
 	const RenderWindowProperties& RenderWindowCore::getProperties() const
@@ -91,7 +92,7 @@ namespace BansheeEngine
 
 	void RenderWindow::destroy()
 	{
-		RenderWindowManager::instance().windowDestroyed(this);
+		RenderWindowManager::instance().notifyWindowDestroyed(this);
 
 		RenderTarget::destroy();
 	}
@@ -205,20 +206,6 @@ namespace BansheeEngine
 
 		memcpy(buffer, &props, size);
 		return CoreSyncData(buffer, size);
-	}
-
-	void RenderWindow::syncFromCore(const CoreSyncData& data)
-	{
-		RenderWindowProperties& props = const_cast<RenderWindowProperties&>(getProperties());
-
-		const RenderWindowProperties& newProps = data.getData<RenderWindowProperties>();
-
-		bool movedOrResized = props.getHeight() != newProps.getHeight() || props.getWidth() != newProps.getWidth() || props.getLeft() != newProps.getLeft()
-			|| props.getTop() != newProps.getTop() || props.isFullScreen() != newProps.isFullScreen();
-
-		props = newProps;
-		if (movedOrResized)
-			RenderWindowManager::instance().windowMovedOrResized(this);
 	}
 
 	const RenderWindowProperties& RenderWindow::getProperties() const

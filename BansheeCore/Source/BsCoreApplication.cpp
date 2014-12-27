@@ -196,8 +196,7 @@ namespace BansheeEngine
 			ResourceListenerManager::instance().update();
 
 			// Sync all dirty sim thread CoreObject data to core thread
-			CoreObjectManager::instance().syncDownload(CoreObjectSync::Sim, gCoreThread().getFrameAlloc());
-			gCoreAccessor().queueCommand(std::bind(&CoreObjectManager::syncUpload, CoreObjectManager::instancePtr(), CoreObjectSync::Sim));
+			CoreObjectManager::instance().syncToCore(gCoreAccessor());
 
 			PROFILE_CALL(RendererManager::instance().getActive()->renderAll(), "Render");
 
@@ -218,20 +217,11 @@ namespace BansheeEngine
 				mIsFrameRenderingFinished = false;
 			}
 
-			// Sync all dirty core thread CoreObject data to sim thread
-			// Note: This relies on core thread having finished the frame (ensured by the sync primitive above)
-			CoreObjectManager::instance().syncUpload(CoreObjectSync::Core);
-
 			gCoreThread().queueCommand(&Platform::_coreUpdate);
 
-			FrameAlloc* coreFrameAlloc = gCoreThread().getFrameAlloc();
-			gCoreThread().update(); // Active frame allocator now belongs to core thread, do not use it on sim thread anymore
+			gCoreThread().update(); 
 			gCoreThread().submitAccessors(); 
 
-			// This should be called after accessors are submitted to ensure we don't sync CoreObjects that are 
-			// about to be destroyed (They're only ever destroyed from accessors)
-			gCoreThread().queueCommand(std::bind(&CoreObjectManager::syncDownload, CoreObjectManager::instancePtr(), 
-				CoreObjectSync::Core, coreFrameAlloc));
 			gCoreThread().queueCommand(std::bind(&CoreApplication::endCoreProfiling, this));
 			gCoreThread().queueCommand(std::bind(&CoreApplication::frameRenderingFinishedCallback, this));
 
@@ -250,9 +240,6 @@ namespace BansheeEngine
 				TaskScheduler::instance().removeWorker();
 			}
 		}
-
-		// One final sync in order to dealloc anything that was queued for sync from core
-		CoreObjectManager::instance().syncUpload(CoreObjectSync::Core);
 	}
 
 	void CoreApplication::update()

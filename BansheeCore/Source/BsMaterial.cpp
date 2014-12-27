@@ -1069,66 +1069,17 @@ namespace BansheeEngine
 		}
 	}
 
-	bool Material::checkIfDependenciesLoaded() const
+	bool Material::areDependenciesLoaded() const
 	{
 		if (mShader == nullptr) // No shader, so everything is technically loaded
 			return true;
 
-		if (!mShader.isLoaded())
-			return false;
-
-		TechniquePtr bestTechnique = mShader->getBestTechnique();
-		if (bestTechnique == nullptr) // No valid technique, so everything is technically loaded
-			return true;
-
-		UINT32 numPasses = bestTechnique->getNumPasses();
-		for (UINT32 i = 0; i < numPasses; i++)
-		{
-			PassPtr pass = bestTechnique->getPass(i);
-
-			HGpuProgram vertProg = pass->getVertexProgram();
-			if (vertProg != nullptr && !vertProg.isLoaded())
-				return false;
-
-			HGpuProgram fragProg = pass->getFragmentProgram();
-			if (fragProg != nullptr && !fragProg.isLoaded())
-				return false;
-
-			HGpuProgram geomProg = pass->getGeometryProgram();
-			if (geomProg != nullptr && !geomProg.isLoaded())
-				return false;
-
-			HGpuProgram domProg = pass->getDomainProgram();
-			if (domProg != nullptr && !domProg.isLoaded())
-				return false;
-
-			HGpuProgram hullProg = pass->getHullProgram();
-			if (hullProg != nullptr && !hullProg.isLoaded())
-				return false;
-
-			HGpuProgram computeProg = pass->getComputeProgram();
-			if (computeProg != nullptr && !computeProg.isLoaded())
-				return false;
-
-			HBlendState blendState = pass->getBlendState();
-			if (blendState != nullptr && !blendState.isLoaded())
-				return false;
-
-			HRasterizerState rasterizerState = pass->getRasterizerState();
-			if (rasterizerState != nullptr && !rasterizerState.isLoaded())
-				return false;
-
-			HDepthStencilState depthStencilState = pass->getDepthStencilState();
-			if (depthStencilState != nullptr && !depthStencilState.isLoaded())
-				return false;
-		}
-
-		return true;
+		return mShader.isLoaded();
 	}
 
 	void Material::initializeIfLoaded()
 	{
-		if (checkIfDependenciesLoaded())
+		if (areDependenciesLoaded())
 		{
 			if (mLoadFlags != Load_All)
 			{

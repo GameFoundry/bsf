@@ -81,11 +81,6 @@ namespace BansheeEngine
 
 	protected:
 		/**
-		 * @copydoc	CoreObjectCore::syncFromCore
-		 */
-		virtual CoreSyncData syncFromCore(FrameAlloc* allocator);
-
-		/**
 		 * @copydoc	CoreObjectCore::syncToCore
 		 */
 		virtual void syncToCore(const CoreSyncData& data);
@@ -179,11 +174,6 @@ namespace BansheeEngine
 		 * @copydoc	CoreObjectCore::syncToCore
 		 */
 		virtual CoreSyncData syncToCore(FrameAlloc* allocator);
-
-		/**
-		 * @copydoc	CoreObjectCore::syncFromCore
-		 */
-		virtual void syncFromCore(const CoreSyncData& data);
 
 	protected:
 		HTexture mBindableColorTex;
