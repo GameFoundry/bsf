@@ -2,10 +2,7 @@
 
 See GDrive/Resources doc for resources refactor
 
-There seems to be some kind of memory corruption that happens when cloning game objects. During one clone the field entries provided to
-ManagedSerializeArray::deserializeManagedInstance were reported as ManagedSerializedArray instead of ManagerSerializedFieldData types.
-It's inconsistent to reproduce but started happening after I have modified managed object serialization to be on-demand. It's possibly
-related to lambdas not capturing types as I expect them to. It always happens in the same place.
+Shutting down causes an exception as Technique tries to access RendererManager on unload
 
 I can get mono errors by checking g_print calls in goutput.c
  - Calling thunks incorrectly can cause those weird errors with no real callstack

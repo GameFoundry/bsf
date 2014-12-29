@@ -43,7 +43,7 @@ namespace BansheeEngine
 		 * 			
 		 * @note	Careful not to call this on the thread that does the loading.
 		 */
-		void blockUntilLoaded() const;
+		void blockUntilLoaded(bool waitForDependencies = true) const;
 
 		/**
 		 * @brief	Returns the UUID of the resource the handle is referring to.

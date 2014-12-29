@@ -209,8 +209,8 @@ namespace BansheeEngine
 
 		if (!resource.isLoaded()) // If it's still loading wait until that finishes
 		{
-			LOGWRN("Performance warning: Unloading a resource that is still in process of loading \
-				   causes a stall until resource finishes loading.");
+			LOGWRN("Performance warning: Unloading a resource that is still in process of loading "
+				   "causes a stall until resource finishes loading.");
 			resource.blockUntilLoaded();
 		}
 

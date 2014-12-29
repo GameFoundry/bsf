@@ -126,9 +126,6 @@ namespace BansheeEngine
 		ProfilerGPU::shutDown();
 
 		CoreSceneManager::shutDown();
-
-		RendererManager::shutDown();
-		shutdownPlugin(mRendererPlugin);
 		
 		Input::shutDown();
 
@@ -136,6 +133,9 @@ namespace BansheeEngine
 		ResourceListenerManager::shutDown();
 		GameObjectManager::shutDown();
 		RenderStateManager::shutDown();
+
+		RendererManager::shutDown();
+		shutdownPlugin(mRendererPlugin);
 
 		// All CoreObject related modules should be shut down now. They have likely queued CoreObjects for destruction, so
 		// we need to wait for those objects to get destroyed before continuing.

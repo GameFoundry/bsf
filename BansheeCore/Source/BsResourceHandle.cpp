@@ -30,15 +30,15 @@ namespace BansheeEngine
 		return isLoaded;
 	}
 
-	void ResourceHandleBase::blockUntilLoaded() const
+	void ResourceHandleBase::blockUntilLoaded(bool waitForDependencies) const
 	{
 		if(mData == nullptr)
 			return;
 
-		if(!mData->mIsCreated)
+		if (!isLoaded(waitForDependencies))
 		{
 			BS_LOCK_MUTEX_NAMED(mResourceCreatedMutex, lock);
-			while(!mData->mIsCreated)
+			while (!mData->mIsCreated || (waitForDependencies && !mData->mPtr->areDependenciesLoaded()))
 			{
 				BS_THREAD_WAIT(mResourceCreatedCondition, mResourceCreatedMutex, lock);
 			}
