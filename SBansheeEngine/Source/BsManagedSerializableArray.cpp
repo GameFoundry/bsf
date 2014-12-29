@@ -111,7 +111,7 @@ namespace BansheeEngine
 		{
 			MonoObject* boxedObj = nullptr;
 
-			if(arrayValue != nullptr)
+			if (arrayValue != nullptr)
 				boxedObj = mono_value_box(MonoManager::instance().getDomain(), mElementMonoClass, arrayValue);
 
 			return ManagedSerializableFieldData::create(mArrayTypeInfo->mElementType, boxedObj);
@@ -127,8 +127,6 @@ namespace BansheeEngine
 		UINT32 numElems = (UINT32)mono_array_length(array);
 		assert(arrayIdx < numElems);
 	
-		UINT32 dbgSIze = mono_array_element_size(mono_object_get_class(mManagedInstance));
-
 		void* elemAddr = mono_array_addr_with_size(array, mElemSize, arrayIdx);
 		memcpy(elemAddr, val, mElemSize);
 	}

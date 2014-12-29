@@ -27,6 +27,8 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldData : public IReflectable
 	{
 	public:
+		virtual ~ManagedSerializableFieldData() { }
+
 		static ManagedSerializableFieldDataPtr create(const ManagedSerializableTypeInfoPtr& typeInfo, MonoObject* value);
 		virtual void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) = 0;
 		virtual MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) = 0;

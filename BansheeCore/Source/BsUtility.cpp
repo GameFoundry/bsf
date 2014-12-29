@@ -38,7 +38,7 @@ namespace BansheeEngine
 					if (reflectableField->isArray())
 					{
 						UINT32 numElements = reflectableField->getArraySize(&obj);
-						for (UINT32 j = 0; i < numElements; j++)
+						for (UINT32 j = 0; j < numElements; j++)
 						{
 							HResource resource = (HResource&)reflectableField->getArrayValue(&obj, j);
 							if (resource != nullptr)
@@ -65,7 +65,7 @@ namespace BansheeEngine
 					if (reflectableField->isArray())
 					{
 						UINT32 numElements = reflectableField->getArraySize(&obj);
-						for (UINT32 j = 0; i < numElements; j++)
+						for (UINT32 j = 0; j < numElements; j++)
 						{
 							IReflectable& childObj = reflectableField->getArrayValue(&obj, j);
 							findResourceDependenciesInternal(childObj, true, dependencies);
@@ -85,16 +85,20 @@ namespace BansheeEngine
 				if (reflectablePtrField->isArray())
 				{
 					UINT32 numElements = reflectablePtrField->getArraySize(&obj);
-					for (UINT32 j = 0; i < numElements; j++)
+					for (UINT32 j = 0; j < numElements; j++)
 					{
 						SPtr<IReflectable> childObj = reflectablePtrField->getArrayValue(&obj, j);
-						findResourceDependenciesInternal(*childObj, true, dependencies);
+
+						if (childObj != nullptr)
+							findResourceDependenciesInternal(*childObj, true, dependencies);
 					}
 				}
 				else
 				{
 					SPtr<IReflectable> childObj = reflectablePtrField->getValue(&obj);
-					findResourceDependenciesInternal(*childObj, true, dependencies);
+
+					if (childObj != nullptr)
+						findResourceDependenciesInternal(*childObj, true, dependencies);
 				}
 			}
 		}

@@ -51,6 +51,7 @@ namespace BansheeEngine
 		*bytesWritten = 0;
 		mTotalBytesWritten = 0;
 		UINT8* bufferStart = buffer;
+		Vector<std::shared_ptr<IReflectable>> encodedObjects;
 
 		UINT32 objectId = findOrCreatePersistentId(object);
 		
@@ -87,6 +88,13 @@ namespace BansheeEngine
 				}
 
 				foundObjectToProcess = true;
+
+				// Ensure we keep a reference to the object so it isn't released.
+				// The system assigns unique IDs to IReflectable objects based on pointer 
+				// addresses but if objects get released then same address could be assigned twice.
+				// Note: To get around this I could assign unique IDs to IReflectable objects
+				encodedObjects.push_back(curObject);
+
 				break; // Need to start over as mObjectsToSerialize was possibly modified
 			}
 
@@ -103,6 +111,7 @@ namespace BansheeEngine
 
 		*bytesWritten = mTotalBytesWritten;
 
+		encodedObjects.clear();
 		mObjectsToEncode.clear();
 		mObjectAddrToId.clear();
 	}
