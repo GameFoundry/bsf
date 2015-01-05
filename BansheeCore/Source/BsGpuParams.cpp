@@ -457,7 +457,7 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 
 	void GpuParams::_markResourcesDirty()
 	{
-		markResourcesDirty();
+		markListenerResourcesDirty();
 	}
 
 	SPtr<GpuParams> GpuParams::create(const GpuParamDescPtr& paramDesc, bool transposeMatrices)
@@ -526,7 +526,7 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 		return CoreSyncData(data, totalSize);
 	}
 
-	void GpuParams::getResourceDependencies(Vector<HResource>& resources)
+	void GpuParams::getListenerResources(Vector<HResource>& resources)
 	{
 		for (UINT32 i = 0; i < mNumTextures; i++)
 		{

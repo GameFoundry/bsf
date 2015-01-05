@@ -373,7 +373,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	IResourceListener::getResourceDependencies
 		 */
-		void getResourceDependencies(Vector<HResource>& resources);
+		void getListenerResources(Vector<HResource>& resources);
 
 		/**
 		 * @copydoc IResourceListener::notifyResourceLoaded

@@ -35,10 +35,10 @@ namespace BansheeEngine
 		if(mData == nullptr)
 			return;
 
-		if (!isLoaded(waitForDependencies))
+		if (!mData->mIsCreated)
 		{
 			BS_LOCK_MUTEX_NAMED(mResourceCreatedMutex, lock);
-			while (!mData->mIsCreated || (waitForDependencies && !mData->mPtr->areDependenciesLoaded()))
+			while (!mData->mIsCreated)
 			{
 				BS_THREAD_WAIT(mResourceCreatedCondition, mResourceCreatedMutex, lock);
 			}
@@ -46,6 +46,15 @@ namespace BansheeEngine
 			// Send out ResourceListener events right away, as whatever called this method
 			// probably also expects the listener events to trigger immediately as well
 			ResourceListenerManager::instance().notifyListeners(mData->mUUID);
+		}
+
+		if (waitForDependencies)
+		{
+			Vector<HResource> dependencies;
+			mData->mPtr->getResourceDependencies(dependencies);
+
+			for (auto& dependency : dependencies)
+				dependency.blockUntilLoaded(waitForDependencies);
 		}
 	}
 

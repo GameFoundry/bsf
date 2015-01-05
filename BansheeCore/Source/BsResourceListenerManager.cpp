@@ -172,7 +172,7 @@ namespace BansheeEngine
 
 	void ResourceListenerManager::addDependencies(IResourceListener* listener)
 	{
-		listener->getResourceDependencies(mTempResourceBuffer);
+		listener->getListenerResources(mTempResourceBuffer);
 
 		if (mTempResourceBuffer.size() > 0)
 		{

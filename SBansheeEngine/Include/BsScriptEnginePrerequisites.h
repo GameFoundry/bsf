@@ -20,6 +20,7 @@
 
 namespace BansheeEngine
 {
+	class ScriptObjectBase;
 	class ScriptResourceManager;
 	class ScriptResourceBase;
 	class ScriptFont;

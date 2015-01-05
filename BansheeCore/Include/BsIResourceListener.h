@@ -22,12 +22,12 @@ namespace BansheeEngine
 		 *
 		 * @note	You must add the resources to the provided "resources" array.
 		 */
-		virtual void getResourceDependencies(Vector<HResource>& resources) = 0;
+		virtual void getListenerResources(Vector<HResource>& resources) = 0;
 
 		/**
 		 * @brief	Marks the resource dependencies list as dirty and schedules it for rebuild.
 		 */
-		virtual void markResourcesDirty();
+		virtual void markListenerResourcesDirty();
 
 		/**
 		 * @brief	Called when a resource has been fully loaded.

@@ -40,9 +40,17 @@ namespace BansheeEngine
 		friend class ResourceHandleBase;
 
 		/**
-		 * @brief	Checks if are all resources that this resource depends on loaded.
+		 * @brief	Retrieves a list of all resources that this resource depends on.
+		 *
+		 * TODO - Consider using a stack-allocated data type since returned data is almost
+		 *		  always transient. Then we can save on memory allocations.
 		 */
-		virtual bool areDependenciesLoaded() const { return true; }
+		virtual void getResourceDependencies(Vector<HResource>& dependencies) const { }
+
+		/**
+		 * @brief	Checks if all the resources this object is dependent on are fully loaded.
+		 */
+		bool areDependenciesLoaded() const;
 
 		UINT32 mSize;
 		ResourceMetaDataPtr mMetaData;

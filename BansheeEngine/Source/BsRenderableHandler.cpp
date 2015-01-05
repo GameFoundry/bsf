@@ -218,7 +218,7 @@ namespace BansheeEngine
 
 	void RenderableHandler::_markResourcesDirty()
 	{
-		markResourcesDirty();
+		markListenerResourcesDirty();
 	}
 
 	CoreSyncData RenderableHandler::syncToCore(FrameAlloc* allocator)
@@ -275,7 +275,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void RenderableHandler::getResourceDependencies(Vector<HResource>& resources)
+	void RenderableHandler::getListenerResources(Vector<HResource>& resources)
 	{
 		if (mMesh != nullptr)
 			resources.push_back(mMesh);

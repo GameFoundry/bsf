@@ -13,7 +13,7 @@ namespace BansheeEngine
 		ResourceListenerManager::instance().unregisterListener(this);
 	}
 
-	void IResourceListener::markResourcesDirty()
+	void IResourceListener::markListenerResourcesDirty()
 	{
 		ResourceListenerManager::instance().markListenerDirty(this);
 	}

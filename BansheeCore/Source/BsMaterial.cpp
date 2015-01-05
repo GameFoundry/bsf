@@ -916,7 +916,7 @@ namespace BansheeEngine
 
 	void Material::_markResourcesDirty()
 	{
-		markResourcesDirty();
+		markListenerResourcesDirty();
 	}
 
 	SPtr<MaterialCore> Material::getCore() const
@@ -1012,7 +1012,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void Material::getResourceDependencies(Vector<HResource>& resources)
+	void Material::getListenerResources(Vector<HResource>& resources)
 	{
 		if (mShader != nullptr)
 		{
@@ -1069,12 +1069,10 @@ namespace BansheeEngine
 		}
 	}
 
-	bool Material::areDependenciesLoaded() const
+	void Material::getResourceDependencies(Vector<HResource>& dependencies) const
 	{
-		if (mShader == nullptr) // No shader, so everything is technically loaded
-			return true;
-
-		return mShader.isLoaded();
+		if (mShader != nullptr)
+			dependencies.push_back(mShader);
 	}
 
 	void Material::initializeIfLoaded()
@@ -1094,7 +1092,7 @@ namespace BansheeEngine
 			if (mShader.isLoaded() && mLoadFlags == Load_None)
 			{
 				mLoadFlags = Load_Shader;
-				markResourcesDirty(); // Need to register resources dependent on shader now
+				markListenerResourcesDirty(); // Need to register resources dependent on shader now
 			}
 		}
 	}

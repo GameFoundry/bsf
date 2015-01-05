@@ -2,10 +2,11 @@
 
 See GDrive/Resources doc for resources refactor
 
-Shutting down causes an exception as Technique tries to access RendererManager on unload
-
 I can get mono errors by checking g_print calls in goutput.c
  - Calling thunks incorrectly can cause those weird errors with no real callstack
+
+Crash on GLTextureBuffer::download on shutdown (OpenGL error invalid enum)
+Create a stack allocatable custom vector implementation and make getResourceDependencies and getCoreDependencies use it
 
 Multi-resource saving:
  - Modify Font so it doesn't contain a texture, but instead keeps a handle to it

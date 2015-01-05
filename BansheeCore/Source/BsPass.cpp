@@ -133,7 +133,7 @@ namespace BansheeEngine
 
 	void Pass::_markResourcesDirty()
 	{
-		markResourcesDirty();
+		markListenerResourcesDirty();
 	}
 
 	void Pass::getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies)
@@ -166,7 +166,7 @@ namespace BansheeEngine
 			dependencies.push_back(mData.computeProgram.getInternalPtr());
 	}
 
-	void Pass::getResourceDependencies(Vector<HResource>& resources)
+	void Pass::getListenerResources(Vector<HResource>& resources)
 	{
 		if (mData.blendState != nullptr)
 			resources.push_back(mData.blendState);

@@ -23,6 +23,20 @@ namespace BansheeEngine
 		mMetaData->displayName = name; 
 	}
 
+	bool Resource::areDependenciesLoaded() const
+	{
+		Vector<HResource> dependencies;
+		getResourceDependencies(dependencies);
+
+		for (auto& dependency : dependencies)
+		{
+			if (dependency != nullptr && !dependency.isLoaded())
+				return false;
+		}
+
+		return true;
+	}
+
 	RTTITypeBase* Resource::getRTTIStatic()
 	{
 		return ResourceRTTI::instance();

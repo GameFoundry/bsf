@@ -21,7 +21,6 @@ namespace BansheeEngine
 
 		ScriptHString(MonoObject* instance, const HString& string);
 
-		GUIArea* mArea;
 		HString mString;
 	};
 }

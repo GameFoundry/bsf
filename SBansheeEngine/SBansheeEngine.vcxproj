@@ -284,6 +284,7 @@
     <ClInclude Include="Include\BsScriptManagedResource.h" />
     <ClInclude Include="Include\BsScriptObject.h" />
     <ClInclude Include="Include\BsScriptObjectImpl.h" />
+    <ClInclude Include="Include\BsScriptObjectManager.h" />
     <ClInclude Include="Include\BsScriptPixelData.h" />
     <ClInclude Include="Include\BsScriptPixelUtility.h" />
     <ClInclude Include="Include\BsScriptRenderTarget.h" />
@@ -352,6 +353,7 @@
     <ClCompile Include="Source\BsScriptManagedResource.cpp" />
     <ClCompile Include="Source\BsScriptObject.cpp" />
     <ClCompile Include="Source\BsScriptObjectImpl.cpp" />
+    <ClCompile Include="Source\BsScriptObjectManager.cpp" />
     <ClCompile Include="Source\BsScriptPixelData.cpp" />
     <ClCompile Include="Source\BsScriptPixelUtility.cpp" />
     <ClCompile Include="Source\BsScriptRenderTarget.cpp" />

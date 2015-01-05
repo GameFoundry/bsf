@@ -673,7 +673,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	IResourceListener::getResourceDependencies
 		 */
-		void getResourceDependencies(Vector<HResource>& resources);
+		void getListenerResources(Vector<HResource>& resources);
 
 		/**
 		 * @copydoc IResourceListener::notifyResourceLoaded
@@ -691,9 +691,9 @@ namespace BansheeEngine
 		void notifyResourceChanged(const HResource& resource);
 
 		/**
-		 * @copydoc	Resource::areDependenciesLoaded
+		 * @copydoc	Resource::getResourceDependencies
 		 */
-		bool areDependenciesLoaded() const;
+		void getResourceDependencies(Vector<HResource>& dependencies) const;
 
 		/**
 		 * @brief	Performs material initialization when all resources are ready.

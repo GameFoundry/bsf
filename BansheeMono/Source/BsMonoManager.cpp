@@ -25,7 +25,6 @@ namespace BansheeEngine
 		mono_debug_init(MONO_DEBUG_FORMAT_MONO);
 #endif
 
-		
 		mono_config_parse(nullptr);
 
 		mRootDomain = mono_jit_init_version("BansheeMono", "v4.0.30319"); // TODO: Allow user-defined version here?

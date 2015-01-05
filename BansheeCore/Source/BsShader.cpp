@@ -199,11 +199,11 @@ namespace BansheeEngine
 		return shaderCorePtr;
 	}
 
-	bool Shader::areDependenciesLoaded() const
+	void Shader::getResourceDependencies(Vector<HResource>& dependencies) const
 	{
 		TechniquePtr bestTechnique = getBestTechnique();
-		if (bestTechnique == nullptr) // No valid technique, so everything is technically loaded
-			return true;
+		if (bestTechnique == nullptr) // No valid technique
+			return;
 
 		UINT32 numPasses = bestTechnique->getNumPasses();
 		for (UINT32 i = 0; i < numPasses; i++)
@@ -211,43 +211,41 @@ namespace BansheeEngine
 			PassPtr pass = bestTechnique->getPass(i);
 
 			HGpuProgram vertProg = pass->getVertexProgram();
-			if (vertProg != nullptr && !vertProg.isLoaded())
-				return false;
+			if (vertProg != nullptr)
+				dependencies.push_back(vertProg);
 
 			HGpuProgram fragProg = pass->getFragmentProgram();
-			if (fragProg != nullptr && !fragProg.isLoaded())
-				return false;
+			if (fragProg != nullptr)
+				dependencies.push_back(fragProg);
 
 			HGpuProgram geomProg = pass->getGeometryProgram();
-			if (geomProg != nullptr && !geomProg.isLoaded())
-				return false;
+			if (geomProg != nullptr)
+				dependencies.push_back(geomProg);
 
 			HGpuProgram domProg = pass->getDomainProgram();
-			if (domProg != nullptr && !domProg.isLoaded())
-				return false;
+			if (domProg != nullptr)
+				dependencies.push_back(domProg);
 
 			HGpuProgram hullProg = pass->getHullProgram();
-			if (hullProg != nullptr && !hullProg.isLoaded())
-				return false;
+			if (hullProg != nullptr)
+				dependencies.push_back(hullProg);
 
 			HGpuProgram computeProg = pass->getComputeProgram();
-			if (computeProg != nullptr && !computeProg.isLoaded())
-				return false;
+			if (computeProg != nullptr)
+				dependencies.push_back(computeProg);
 
 			HBlendState blendState = pass->getBlendState();
-			if (blendState != nullptr && !blendState.isLoaded())
-				return false;
+			if (blendState != nullptr)
+				dependencies.push_back(blendState);
 
 			HRasterizerState rasterizerState = pass->getRasterizerState();
-			if (rasterizerState != nullptr && !rasterizerState.isLoaded())
-				return false;
+			if (rasterizerState != nullptr)
+				dependencies.push_back(rasterizerState);
 
 			HDepthStencilState depthStencilState = pass->getDepthStencilState();
-			if (depthStencilState != nullptr && !depthStencilState.isLoaded())
-				return false;
+			if (depthStencilState != nullptr)
+				dependencies.push_back(depthStencilState);
 		}
-
-		return true;
 	}
 
 	void Shader::getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies)
