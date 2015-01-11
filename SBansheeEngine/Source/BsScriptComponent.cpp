@@ -1,5 +1,7 @@
 #include "BsScriptComponent.h"
 #include "BsScriptGameObjectManager.h"
+#include "BsScriptObjectManager.h"
+#include "BsScriptAssemblyManager.h"
 #include "BsScriptMeta.h"
 #include "BsMonoField.h"
 #include "BsMonoClass.h"
@@ -14,7 +16,13 @@ namespace BansheeEngine
 {
 	ScriptComponent::ScriptComponent(MonoObject* instance)
 		:ScriptObject(instance)
-	{ }
+	{ 
+		assert(instance != nullptr);
+
+		::MonoClass* monoClass = mono_object_get_class(instance);
+		mNamespace = mono_class_get_namespace(monoClass);
+		mType = mono_class_get_name(monoClass);
+	}
 
 	void ScriptComponent::initRuntimeData()
 	{
@@ -175,10 +183,41 @@ namespace BansheeEngine
 		return false;
 	}
 
+	MonoObject* ScriptComponent::_createManagedInstance(bool construct)
+	{
+		ManagedSerializableObjectInfoPtr currentObjInfo = nullptr;
+
+		// See if this type even still exists
+		if (!ScriptAssemblyManager::instance().getSerializableObjectInfo(mNamespace, mType, currentObjInfo))
+			return nullptr;
+
+		return currentObjInfo->mMonoClass->createInstance(construct);
+	}
+
+	ScriptObjectBackup ScriptComponent::beginRefresh()
+	{
+		ScriptGameObjectBase::beginRefresh();
+
+		ScriptObjectBackup backupData;
+		backupData.data = mManagedComponent->backup(true);
+
+		return backupData;
+	}
+
+	void ScriptComponent::endRefresh(const ScriptObjectBackup& backupData)
+	{
+		ComponentBackupData componentBackup = any_cast<ComponentBackupData>(backupData.data);
+		mManagedComponent->restore(mManagedInstance, componentBackup);
+
+		ScriptGameObjectBase::endRefresh(backupData);
+	}
+
 	void ScriptComponent::_onManagedInstanceDeleted()
 	{
 		mManagedInstance = nullptr;
-		ScriptGameObjectManager::instance().destroyScriptGameObject(this);
+
+		if (!mRefreshInProgress)
+			ScriptGameObjectManager::instance().destroyScriptGameObject(this);
 	}
 
 	void ScriptComponent::setNativeHandle(const HGameObject& gameObject)

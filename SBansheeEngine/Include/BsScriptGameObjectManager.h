@@ -8,8 +8,18 @@ namespace BansheeEngine
 {
 	class BS_SCR_BE_EXPORT ScriptGameObjectManager : public Module<ScriptGameObjectManager>
 	{
+		struct ScriptGameObjectEntry
+		{
+			ScriptGameObjectEntry();
+			ScriptGameObjectEntry(ScriptGameObjectBase* instance, bool isComponent);
+
+			ScriptGameObjectBase* instance;
+			bool isComponent;
+		};
+
 	public:
 		ScriptGameObjectManager();
+		~ScriptGameObjectManager();
 
 		void registerScriptComponent(ScriptComponent* nativeInstance, const GameObjectHandle<ManagedComponent>& component);
 		ScriptSceneObject* createScriptSceneObject(const HSceneObject& sceneObject);
@@ -22,8 +32,9 @@ namespace BansheeEngine
 		void destroyScriptGameObject(ScriptGameObjectBase* gameObject);
 
 	private:
-		UnorderedMap<UINT64, ScriptGameObjectBase*> mScriptGameObjects;
+		void sendComponentResetEvents();
 
-		MonoClass* mSceneObjectClass;
+		UnorderedMap<UINT64, ScriptGameObjectEntry> mScriptGameObjects;
+		HEvent mOnAssemblyReloadDoneConn;
 	};
 }

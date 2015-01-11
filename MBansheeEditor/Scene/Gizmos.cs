@@ -5,19 +5,34 @@ namespace BansheeEditor
 {
     public class Gizmos
     {
-        private static Color _color;
-        private static Matrix4 _transform;
-
         public static Color color
         {
-            get { return _color; }
-            set { _color = value; Internal_SetColor(_color); }
+            get
+            {
+                Color value;
+                Internal_GetColor(out value); 
+                return value; 
+            }
+
+            set
+            {
+                Internal_SetColor(value);
+            }
         }
 
         public static Matrix4 transform
         {
-            get { return _transform; }
-            set { _transform = value; Internal_SetTransform(_transform); }
+            get
+            {
+                Matrix4 value;
+                Internal_GetTransform(out value);
+                return value; 
+            }
+
+            set
+            {
+                Internal_SetTransform(value);
+            }
         }
 
         public static void DrawCube(Vector3 position, Vector3 extents)
@@ -59,7 +74,13 @@ namespace BansheeEditor
         private static extern void Internal_SetColor(Color color);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_GetColor(out Color color);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetTransform(Matrix4 transform);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_GetTransform(out Matrix4 transform);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_DrawCube(Vector3 position, Vector3 extents);

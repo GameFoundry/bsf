@@ -41,19 +41,7 @@ namespace BansheeEngine
 
 		mAssemblies.clear();
 
-		if (mScriptDomain != nullptr)
-		{
-			mono_domain_set(mono_get_root_domain(), false);
-			mono_domain_finalize(mScriptDomain, 2000);
-			
-			MonoObject* exception = nullptr;
-			mono_domain_try_unload(mScriptDomain, &exception);
-
-			if (exception != nullptr)
-				MonoUtil::throwIfException(exception);
-
-			mScriptDomain = nullptr;
-		}
+		unloadScriptDomain();
 
 		if (mRootDomain != nullptr)
 		{
@@ -84,40 +72,11 @@ namespace BansheeEngine
 		}
 		else
 		{
-			assembly = new (bs_alloc<MonoAssembly>()) MonoAssembly();
+			assembly = new (bs_alloc<MonoAssembly>()) MonoAssembly(path, name);
 			mAssemblies[name] = assembly;
 		}
 		
-		if(!assembly->mIsLoaded)
-		{
-			assembly->load(mScriptDomain, path, name);
-
-			// Fully initialize all types that use this assembly
-			Vector<ScriptMeta*>& mTypeMetas = getTypesToInitialize()[name];
-			for(auto& meta : mTypeMetas)
-			{
-				meta->scriptClass = assembly->getClass(meta->ns, meta->name);
-				if(meta->scriptClass == nullptr)
-					BS_EXCEPT(InvalidParametersException, "Unable to find class of type: \"" + meta->ns + "::" + meta->name + "\"");
-
-				if(meta->scriptClass->hasField("mCachedPtr"))
-					meta->thisPtrField = meta->scriptClass->getField("mCachedPtr");
-				else
-					meta->thisPtrField = nullptr;
-
-				meta->initCallback();
-			}
-		}
-
-		if(!mIsCoreLoaded)
-		{
-			mIsCoreLoaded = true;
-
-			MonoAssembly* corlib = new (bs_alloc<MonoAssembly>()) MonoAssembly();
-			mAssemblies["corlib"] = corlib;
-
-			corlib->loadFromImage(mono_get_corlib(), "corlib");		
-		}
+		initializeAssembly(*assembly);
 
 		return *assembly;
 	}
@@ -129,6 +88,48 @@ namespace BansheeEngine
 
 		if(monoAssembly)
 			mono_assembly_close(monoAssembly);
+	}
+
+	void MonoManager::initializeAssembly(MonoAssembly& assembly)
+	{
+		if (!assembly.mIsLoaded)
+		{
+			assembly.load(mScriptDomain);
+
+			// Fully initialize all types that use this assembly
+			Vector<ScriptMeta*>& mTypeMetas = getTypesToInitialize()[assembly.mName];
+			for (auto& meta : mTypeMetas)
+			{
+				meta->scriptClass = assembly.getClass(meta->ns, meta->name);
+				if (meta->scriptClass == nullptr)
+					BS_EXCEPT(InvalidParametersException, "Unable to find class of type: \"" + meta->ns + "::" + meta->name + "\"");
+
+				if (meta->scriptClass->hasField("mCachedPtr"))
+					meta->thisPtrField = meta->scriptClass->getField("mCachedPtr");
+				else
+					meta->thisPtrField = nullptr;
+
+				meta->initCallback();
+			}
+		}
+
+		if (!mIsCoreLoaded)
+		{
+			mIsCoreLoaded = true;
+
+			MonoAssembly* corlib = nullptr;
+
+			auto iterFind = mAssemblies.find("corlib");
+			if (iterFind == mAssemblies.end())
+			{
+				corlib = new (bs_alloc<MonoAssembly>()) MonoAssembly("corlib", "corlib");
+				mAssemblies["corlib"] = corlib;
+			}
+			else
+				corlib = iterFind->second;
+
+			corlib->loadFromImage(mono_get_corlib());
+		}
 	}
 
 	MonoAssembly* MonoManager::getAssembly(const String& name) const
@@ -221,5 +222,54 @@ namespace BansheeEngine
 			typeNameStr = typeNameChars;
 
 		return typeNameStr;
+	}
+
+	void MonoManager::unloadScriptDomain()
+	{
+		if (mScriptDomain != nullptr)
+		{
+			mono_domain_set(mono_get_root_domain(), false);
+			mono_domain_finalize(mScriptDomain, 2000);
+
+			MonoObject* exception = nullptr;
+			mono_domain_try_unload(mScriptDomain, &exception);
+
+			if (exception != nullptr)
+				MonoUtil::throwIfException(exception);
+
+			mono_gc_collect(mono_gc_max_generation());
+
+			mScriptDomain = nullptr;
+		}
+
+		for (auto& assemblyEntry : mAssemblies)
+			assemblyEntry.second->unload();
+
+		mIsCoreLoaded = true;
+	}
+
+	void MonoManager::loadScriptDomain()
+	{
+		if (mScriptDomain != nullptr)
+			unloadScriptDomain();
+
+		if (mScriptDomain == nullptr)
+		{
+			mScriptDomain = mono_domain_create_appdomain("ScriptDomain", nullptr);
+			mono_domain_set(mScriptDomain, false);
+
+			if (mScriptDomain == nullptr)
+			{
+				BS_EXCEPT(InternalErrorException, "Cannot create script app domain.");
+			}
+		}
+
+		if (mScriptDomain != nullptr)
+		{
+			for (auto& assemblyEntry : mAssemblies)
+				initializeAssembly(*assemblyEntry.second);
+		}
+
+		onDomainReload();
 	}
 }

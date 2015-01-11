@@ -2,6 +2,7 @@
 #include "BsMonoManager.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
+#include "BsScriptObjectManager.h"
 
 namespace BansheeEngine
 {

@@ -22,8 +22,13 @@ namespace BansheeEngine
 
 		static void internal_createInstance(MonoObject* instance);
 
+		virtual ScriptObjectBackup beginRefresh();
+		virtual void endRefresh(const ScriptObjectBackup& backupData);
+		virtual MonoObject* _createManagedInstance(bool construct);
 		void _onManagedInstanceDeleted();
 
 		HManagedResource mResource;
+		String mNamespace;
+		String mType;
 	};
 }

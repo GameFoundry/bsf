@@ -126,9 +126,6 @@
     <ClInclude Include="Include\BsScriptGUIPanel.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsRuntimeScriptObjects.h">
-      <Filter>Header Files\Serialization</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsManagedSerializableArrayRTTI.h">
       <Filter>Header Files\Serialization\RTTI</Filter>
     </ClInclude>
@@ -276,6 +273,15 @@
     <ClInclude Include="Include\BsScriptObjectManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsScriptAssemblyManager.h">
+      <Filter>Header Files\Serialization</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsManagedSerializableObjectData.h">
+      <Filter>Header Files\Serialization</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsManagedSerializableObjectDataRTTI.h">
+      <Filter>Header Files\Serialization\RTTI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsScriptTexture2D.cpp">
@@ -358,9 +364,6 @@
     </ClCompile>
     <ClCompile Include="Source\BsScriptGUIPanel.cpp">
       <Filter>Source Files\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsRuntimeScriptObjects.cpp">
-      <Filter>Source Files\Serialization</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsManagedSerializableArray.cpp">
       <Filter>Source Files\Serialization</Filter>
@@ -484,6 +487,18 @@
     </ClCompile>
     <ClCompile Include="Source\BsScriptObjectManager.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptResource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptGameObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptAssemblyManager.cpp">
+      <Filter>Source Files\Serialization</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsManagedSerializableObjectData.cpp">
+      <Filter>Source Files\Serialization</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

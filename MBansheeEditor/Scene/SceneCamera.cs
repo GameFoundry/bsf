@@ -38,7 +38,7 @@ namespace BansheeEditor
         private Radian pitch;
         private bool lastButtonState;
 
-        public SceneCamera()
+        private void OnReset()
         {
             moveForwardBtn = new VirtualButton(MoveForwardBinding);
             moveLeftBtn = new VirtualButton(MoveLeftBinding);

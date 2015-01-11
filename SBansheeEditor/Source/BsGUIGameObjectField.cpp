@@ -10,7 +10,7 @@
 #include "BsGUISceneTreeView.h"
 #include "BsGUIWidget.h"
 #include "BsGameObjectManager.h"
-#include "BsRuntimeScriptObjects.h"
+#include "BsScriptAssemblyManager.h"
 #include "BsMonoClass.h"
 #include "BsSceneObject.h"
 #include "BsManagedComponent.h"
@@ -202,7 +202,7 @@ namespace BansheeEngine
 		if (draggedSceneObjects->numObjects <= 0)
 			return;
 
-		MonoClass* sceneObjectClass = RuntimeScriptObjects::instance().getSceneObjectClass();
+		MonoClass* sceneObjectClass = ScriptAssemblyManager::instance().getSceneObjectClass();
 
 		if (mType == sceneObjectClass->getFullName()) // A scene object
 		{

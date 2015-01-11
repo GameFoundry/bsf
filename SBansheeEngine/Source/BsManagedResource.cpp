@@ -5,6 +5,11 @@
 #include "BsMonoClass.h"
 #include "BsResources.h"
 #include "BsManagedResourceManager.h"
+#include "BsManagedSerializableField.h"
+#include "BsManagedSerializableObject.h"
+#include "BsManagedSerializableObjectInfo.h"
+#include "BsManagedSerializableObjectData.h"
+#include "BsMemorySerializer.h"
 #include "BsDebug.h"
 
 namespace BansheeEngine
@@ -29,6 +34,71 @@ namespace BansheeEngine
 		{
 			LOGWRN("Cannot create managed component: " + metaData->typeNamespace + "." + metaData->typeName + " because that type doesn't exist.");
 			return;
+		}
+	}
+
+	ResourceBackupData ManagedResource::backup(bool clearExisting)
+	{
+		ManagedSerializableObjectPtr serializableObject = ManagedSerializableObject::createFromExisting(mManagedInstance);
+
+		ResourceBackupData backupData;
+		if (serializableObject != nullptr)
+		{
+			ManagedSerializableObjectInfoPtr objectInfo = serializableObject->getObjectInfo();
+			ManagedSerializableObjectDataPtr objectData = serializableObject->getObjectData();
+
+			MemorySerializer ms;
+
+			backupData.mTypeInfo.size = 0;
+			backupData.mTypeInfo.data = ms.encode(objectInfo.get(), backupData.mTypeInfo.size);
+
+			backupData.mObjectData.size = 0;
+			backupData.mObjectData.data = ms.encode(objectData.get(), backupData.mObjectData.size);
+		}
+		else
+		{
+			backupData.mTypeInfo.size = 0;
+			backupData.mTypeInfo.data = nullptr;
+
+			backupData.mObjectData.size = 0;
+			backupData.mObjectData.data = nullptr;
+		}
+
+		if (clearExisting)
+		{
+			if (mManagedInstance != nullptr)
+			{
+				mManagedInstance = nullptr;
+				mono_gchandle_free(mManagedHandle);
+				mManagedHandle = 0;
+			}
+		}
+
+		return backupData;
+	}
+
+	void ManagedResource::restore(MonoObject* instance, const ResourceBackupData& data)
+	{
+		mManagedInstance = instance;
+
+		if (mManagedInstance != nullptr)
+		{
+			mManagedHandle = mono_gchandle_new(mManagedInstance, false);
+
+			if (data.mTypeInfo.data != nullptr && data.mObjectData.data != nullptr)
+			{
+				MemorySerializer ms;
+				ManagedSerializableObjectInfoPtr objectInfo = std::static_pointer_cast<ManagedSerializableObjectInfo>(ms.decode(data.mTypeInfo.data, data.mTypeInfo.size));
+				ManagedSerializableObjectDataPtr objectData = std::static_pointer_cast<ManagedSerializableObjectData>(ms.decode(data.mObjectData.data, data.mObjectData.size));
+
+				ManagedSerializableObjectPtr serializableObject = ManagedSerializableObject::createFromExisting(instance);
+				serializableObject->setObjectData(objectData, objectInfo);
+			}
+		}
+		else
+		{
+			// Could not restore resource
+			ManagedResourceManager::instance().unregisterManagedResource(mMyHandle);
 		}
 	}
 

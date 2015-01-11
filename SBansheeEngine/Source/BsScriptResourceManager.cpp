@@ -8,47 +8,34 @@
 #include "BsScriptSpriteTexture.h"
 #include "BsScriptFont.h"
 #include "BsScriptManagedResource.h"
+#include "BsScriptAssemblyManager.h"
 
 namespace BansheeEngine
 {
 	ScriptResourceManager::ScriptResourceManager()
-		:mTextureClass(nullptr), mSpriteTextureClass(nullptr)
 	{
-		MonoAssembly* assembly = MonoManager::instance().getAssembly(BansheeEngineAssemblyName);
-		if(assembly == nullptr)
-			BS_EXCEPT(InternalErrorException, "Cannot find \"" + String(BansheeEngineAssemblyName) + "\" assembly.");
-
-		mTextureClass = assembly->getClass("BansheeEngine", "Texture2D");
-		mSpriteTextureClass = assembly->getClass("BansheeEngine", "SpriteTexture");
-		mFontClass = assembly->getClass("BansheeEngine", "Font");
-
-		if(mTextureClass == nullptr)
-			BS_EXCEPT(InternalErrorException, "Cannot find managed Texture2D class.");
-
-		if(mSpriteTextureClass == nullptr)
-			BS_EXCEPT(InternalErrorException, "Cannot find managed SpriteTexture class.");
-
-		if (mFontClass == nullptr)
-			BS_EXCEPT(InternalErrorException, "Cannot find managed Font class.");
 	}
 
 	ScriptTexture2D* ScriptResourceManager::createScriptTexture2D(const HTexture& resourceHandle)
 	{
-		MonoObject* monoInstance = mTextureClass->createInstance();
+		MonoClass* textureClass = ScriptAssemblyManager::instance().getTextureClass();
+		MonoObject* monoInstance = textureClass->createInstance();
 
 		return createScriptTexture2D(monoInstance, resourceHandle);
 	}
 
 	ScriptTexture3D* ScriptResourceManager::createScriptTexture3D(const HTexture& resourceHandle)
 	{
-		MonoObject* monoInstance = mTextureClass->createInstance();
+		MonoClass* textureClass = ScriptAssemblyManager::instance().getTextureClass();
+		MonoObject* monoInstance = textureClass->createInstance();
 
 		return createScriptTexture3D(monoInstance, resourceHandle);
 	}
 
 	ScriptTextureCube* ScriptResourceManager::createScriptTextureCube(const HTexture& resourceHandle)
 	{
-		MonoObject* monoInstance = mTextureClass->createInstance();
+		MonoClass* textureClass = ScriptAssemblyManager::instance().getTextureClass();
+		MonoObject* monoInstance = textureClass->createInstance();
 
 		return createScriptTextureCube(monoInstance, resourceHandle);
 	}
@@ -94,7 +81,8 @@ namespace BansheeEngine
 
 	ScriptSpriteTexture* ScriptResourceManager::createScriptSpriteTexture(const HSpriteTexture& resourceHandle)
 	{
-		MonoObject* monoInstance = mSpriteTextureClass->createInstance();
+		MonoClass* spriteTextureClass = ScriptAssemblyManager::instance().getSpriteTextureClass();
+		MonoObject* monoInstance = spriteTextureClass->createInstance();
 
 		return createScriptSpriteTexture(monoInstance, resourceHandle);
 	}
@@ -114,7 +102,8 @@ namespace BansheeEngine
 
 	ScriptFont* ScriptResourceManager::createScriptFont(const HFont& resourceHandle)
 	{
-		MonoObject* monoInstance = mFontClass->createInstance();
+		MonoClass* fontClass = ScriptAssemblyManager::instance().getFontClass();
+		MonoObject* monoInstance = fontClass->createInstance();
 
 		return createScriptFont(monoInstance, resourceHandle);
 	}

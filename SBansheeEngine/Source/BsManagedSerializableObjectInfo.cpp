@@ -11,7 +11,7 @@
 #include "BsScriptComponent.h"
 #include "BsScriptSceneObject.h"
 #include "BsManagedSerializableObjectInfo.h"
-#include "BsRuntimeScriptObjects.h"
+#include "BsScriptAssemblyManager.h"
 
 namespace BansheeEngine
 {
@@ -130,15 +130,15 @@ namespace BansheeEngine
 		case ScriptPrimitiveType::String:
 			return mono_get_string_class();
 		case ScriptPrimitiveType::TextureRef:
-			return RuntimeScriptObjects::instance().getTextureClass()->_getInternalClass();
+			return ScriptAssemblyManager::instance().getTextureClass()->_getInternalClass();
 		case ScriptPrimitiveType::SpriteTextureRef:
-			return RuntimeScriptObjects::instance().getSpriteTextureClass()->_getInternalClass();
+			return ScriptAssemblyManager::instance().getSpriteTextureClass()->_getInternalClass();
 		case ScriptPrimitiveType::ManagedResourceRef:
-			return RuntimeScriptObjects::instance().getManagedResourceClass()->_getInternalClass();
+			return ScriptAssemblyManager::instance().getManagedResourceClass()->_getInternalClass();
 		case ScriptPrimitiveType::SceneObjectRef:
-			return RuntimeScriptObjects::instance().getSceneObjectClass()->_getInternalClass();
+			return ScriptAssemblyManager::instance().getSceneObjectClass()->_getInternalClass();
 		case ScriptPrimitiveType::ComponentRef:
-			return RuntimeScriptObjects::instance().getComponentClass()->_getInternalClass();
+			return ScriptAssemblyManager::instance().getComponentClass()->_getInternalClass();
 		}
 
 		return nullptr;
@@ -166,13 +166,13 @@ namespace BansheeEngine
 
 	bool ManagedSerializableTypeInfoObject::isTypeLoaded() const
 	{
-		return RuntimeScriptObjects::instance().hasSerializableObjectInfo(mTypeNamespace, mTypeName);
+		return ScriptAssemblyManager::instance().hasSerializableObjectInfo(mTypeNamespace, mTypeName);
 	}
 
 	::MonoClass* ManagedSerializableTypeInfoObject::getMonoClass() const
 	{
 		ManagedSerializableObjectInfoPtr objInfo;
-		if(!RuntimeScriptObjects::instance().getSerializableObjectInfo(mTypeNamespace, mTypeName, objInfo))
+		if(!ScriptAssemblyManager::instance().getSerializableObjectInfo(mTypeNamespace, mTypeName, objInfo))
 			return nullptr;
 
 		return objInfo->mMonoClass->_getInternalClass();
@@ -243,7 +243,7 @@ namespace BansheeEngine
 		if(elementClass == nullptr)
 			return nullptr;
 
-		MonoClass* genericListClass = RuntimeScriptObjects::instance().getSystemGenericListClass();
+		MonoClass* genericListClass = ScriptAssemblyManager::instance().getSystemGenericListClass();
 		MonoType* genParams[1] = { mono_class_get_type(elementClass) };
 
 		return mono_class_bind_generic_parameters(genericListClass->_getInternalClass(), 1, genParams, false);
@@ -281,7 +281,7 @@ namespace BansheeEngine
 		if(keyClass == nullptr || valueClass == nullptr)
 			return nullptr;
 
-		MonoClass* genericDictionaryClass = RuntimeScriptObjects::instance().getSystemGenericDictionaryClass();
+		MonoClass* genericDictionaryClass = ScriptAssemblyManager::instance().getSystemGenericDictionaryClass();
 		MonoType* genParams[2] = { mono_class_get_type(keyClass), mono_class_get_type(valueClass) };
 
 		return mono_class_bind_generic_parameters(genericDictionaryClass->_getInternalClass(), 2, genParams, false);

@@ -69,20 +69,20 @@ namespace BansheeEngine
 	private:
 		friend class MonoManager;
 
-		MonoAssembly();
+		MonoAssembly(const String& path, const String& name);
 
 		/**
-		 * @brief	Loads an assembly from the specified path.
+		 * @brief	Loads an assembly into the specified domain.
 		 */
-		void load(MonoDomain* domain, const String& path, const String& name);
+		void load(MonoDomain* domain);
 
 		/**
-		 * @brief	Loads an assembly from an internal mono image.
+		 * @brief	Initializes an assembly from an internal mono image.
 		 *
 		 * @note	Normally used for assemblies that were already loaded by the managed runtime
 		 *			as dependencies.
 		 */
-		void loadFromImage(MonoImage* image, const String& name);
+		void loadFromImage(MonoImage* image);
 
 		/**
 		 * @brief	Unloads the assembly and all the types associated with it.
@@ -99,6 +99,7 @@ namespace BansheeEngine
 		bool isGenericClass(const String& name) const;
 
 		String mName;
+		String mPath;
 		MonoImage* mMonoImage;
 		::MonoAssembly* mMonoAssembly;
 		bool mIsLoaded;

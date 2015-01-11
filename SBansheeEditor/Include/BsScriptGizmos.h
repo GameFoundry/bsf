@@ -16,7 +16,9 @@ namespace BansheeEngine
 
 	private:
 		static void internal_SetColor(Color color);
+		static void internal_GetColor(Color* color);
 		static void internal_SetTransform(Matrix4 transform);
+		static void internal_GetTransform(Matrix4* transform);
 		static void internal_DrawCube(Vector3 position, Vector3 extents);
 		static void internal_DrawSphere(Vector3 position, float radius);
 		static void internal_DrawWireCube(Vector3 position, Vector3 extents);

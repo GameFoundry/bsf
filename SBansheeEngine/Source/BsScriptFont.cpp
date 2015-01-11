@@ -22,7 +22,9 @@ namespace BansheeEngine
 	void ScriptFont::_onManagedInstanceDeleted()
 	{
 		mManagedInstance = nullptr;
-		ScriptResourceManager::instance().destroyScriptResource(this);
+
+		if (!mRefreshInProgress)
+			ScriptResourceManager::instance().destroyScriptResource(this);
 	}
 
 	void ScriptFont::setNativeHandle(const HResource& resource)

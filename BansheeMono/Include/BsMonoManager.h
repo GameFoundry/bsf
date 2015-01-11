@@ -74,14 +74,34 @@ namespace BansheeEngine
 		MonoAssembly* getAssembly(const String& name) const;
 
 		/**
+		 * @brief	Unloads the active domain all script assemblies are loaded in
+		 *			and destroys any managed objects associated with it.
+		 */
+		void unloadScriptDomain();
+
+		/**
+		 * @brief	Loads a new script domain. If another domain already exists it will be unloaded. This will also
+		 *			restore any previously loaded assemblies.
+		 */
+		void loadScriptDomain();
+
+		/**
 		 * @brief	Registers a new script type. This should be done before any assembly loading is done.
 		 *			Upon assembly load these script types will be initialized with necessary information about their
 		 *			managed counterparts.
 		 */
 		static void registerScriptType(ScriptMeta* metaData);
+
+		/**
+		 * @brief	Triggered right after a domain was reloaded. This signals the outside world that they should
+		 *			update any kept Mono references as the old ones will no longer be valid.
+		 */
+		Event<void()> onDomainReload;
 	private:
-		static const String MONO_LIB_DIR;
-		static const String MONO_ETC_DIR;
+		/**
+		 * @brief	Initializes a previous loaded assembly.
+		 */
+		void initializeAssembly(MonoAssembly& assembly);
 
 		/**
 		 * @brief	Returns a list of all types that will be initializes with their assembly gets loaded.
@@ -91,6 +111,9 @@ namespace BansheeEngine
 			static UnorderedMap<String, Vector<ScriptMeta*>> mTypesToInitialize;
 			return mTypesToInitialize;
 		}
+
+		static const String MONO_LIB_DIR;
+		static const String MONO_ETC_DIR;
 
 		UnorderedMap<String, MonoAssembly*> mAssemblies;
 		MonoDomain* mScriptDomain;

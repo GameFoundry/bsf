@@ -1,6 +1,6 @@
 #include "BsScriptSerializableObject.h"
 #include "BsScriptSerializableField.h"
-#include "BsRuntimeScriptObjects.h"
+#include "BsScriptAssemblyManager.h"
 #include "BsScriptMeta.h"
 #include "BsMonoField.h"
 #include "BsMonoClass.h"
@@ -44,7 +44,7 @@ namespace BansheeEngine
 		String elementTypeName = mono_class_get_name(monoClass);
 
 		ManagedSerializableObjectInfoPtr objInfo;
-		RuntimeScriptObjects::instance().getSerializableObjectInfo(elementNs, elementTypeName, objInfo);
+		ScriptAssemblyManager::instance().getSerializableObjectInfo(elementNs, elementTypeName, objInfo);
 
 		createInternal(instance, objInfo);
 	}

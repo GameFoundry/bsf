@@ -4,7 +4,7 @@
 #include "BsRTTIType.h"
 #include "BsGameObjectManager.h"
 #include "BsManagedSerializableArray.h"
-#include "BsRuntimeScriptObjects.h"
+#include "BsScriptAssemblyManager.h"
 #include "BsMonoManager.h"
 #include "BsMonoClass.h"
 

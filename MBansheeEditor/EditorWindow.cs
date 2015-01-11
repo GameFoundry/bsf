@@ -31,7 +31,7 @@ namespace BansheeEditor
             return screenPos;
         }
 
-        protected EditorWindow()
+        private void OnInitializeInternal()
         {
             GUI = CreatePanel(0, 0, Width, Height);
         }

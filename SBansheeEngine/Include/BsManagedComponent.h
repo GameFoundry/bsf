@@ -6,6 +6,8 @@
 
 namespace BansheeEngine
 {
+	struct ComponentBackupData;
+
 	class BS_SCR_BE_EXPORT ManagedComponent : public Component
 	{
 	public:
@@ -18,10 +20,16 @@ namespace BansheeEngine
 		const String& getManagedTypeName() const { return mTypeName; }
 		const String& getManagedFullTypeName() const { return mFullTypeName; }
 
+		ComponentBackupData backup(bool clearExisting = true);
+		void restore(MonoObject* instance, const ComponentBackupData& data);
+
+		void triggerOnReset();
+
 	private:
 		typedef void(__stdcall *OnInitializedThunkDef) (MonoObject*, MonoException**);
 		typedef void(__stdcall *UpdateThunkDef) (MonoObject*, MonoException**);
 		typedef void(__stdcall *OnDestroyedThunkDef) (MonoObject*, MonoException**);
+		typedef void(__stdcall *OnResetThunkDef) (MonoObject*, MonoException**);
 
 		MonoObject* mManagedInstance;
 		MonoReflectionType* mRuntimeType;
@@ -33,6 +41,7 @@ namespace BansheeEngine
 
 		OnInitializedThunkDef mOnInitializedThunk;
 		UpdateThunkDef mUpdateThunk;
+		OnResetThunkDef mOnResetThunk;
 		OnDestroyedThunkDef mOnDestroyThunk;
 
 		/************************************************************************/
@@ -46,7 +55,7 @@ namespace BansheeEngine
 		/** Standard constructor.
         */
 		ManagedComponent(const HSceneObject& parent, MonoReflectionType* runtimeType);
-		void initialize(MonoObject* object, MonoReflectionType* runtimeType, MonoClass* monoClass);
+		void initialize(MonoObject* object);
 
 		void onInitialized();
 		void onDestroyed();
@@ -64,5 +73,17 @@ namespace BansheeEngine
 
 	protected:
 		ManagedComponent(); // Serialization only
+	};
+
+	struct ComponentBackupData
+	{
+		struct DataBlock
+		{
+			UINT8* data;
+			UINT32 size;
+		};
+
+		DataBlock mTypeInfo;
+		DataBlock mObjectData;
 	};
 }

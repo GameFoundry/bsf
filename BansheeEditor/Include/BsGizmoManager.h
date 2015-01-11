@@ -24,6 +24,9 @@ namespace BansheeEngine
 		void setTransform(const Matrix4& transform);
 		void setPickable(bool pickable) { mPickable = pickable; }
 
+		Color getColor() const { return mColor; }
+		Matrix4 getTransform() const { return mTransform; }
+
 		void drawCube(const Vector3& position, const Vector3& extents);
 		void drawSphere(const Vector3& position, float radius);
 		void drawWireCube(const Vector3& position, const Vector3& extents);

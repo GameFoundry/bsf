@@ -248,7 +248,9 @@
     <ClInclude Include="Include\BsManagedSerializableList.h" />
     <ClInclude Include="Include\BsManagedSerializableListRTTI.h" />
     <ClInclude Include="Include\BsManagedSerializableObject.h" />
-    <ClInclude Include="Include\BsRuntimeScriptObjects.h" />
+    <ClInclude Include="Include\BsManagedSerializableObjectData.h" />
+    <ClInclude Include="Include\BsManagedSerializableObjectDataRTTI.h" />
+    <ClInclude Include="Include\BsScriptAssemblyManager.h" />
     <ClInclude Include="Include\BsScriptAsyncOp.h" />
     <ClInclude Include="Include\BsScriptCameraHandler.h" />
     <ClInclude Include="Include\BsScriptColor.h" />
@@ -319,7 +321,8 @@
     <ClCompile Include="Source\BsManagedResource.cpp" />
     <ClCompile Include="Source\BsManagedResourceManager.cpp" />
     <ClCompile Include="Source\BsManagedResourceMetaData.cpp" />
-    <ClCompile Include="Source\BsRuntimeScriptObjects.cpp" />
+    <ClCompile Include="Source\BsManagedSerializableObjectData.cpp" />
+    <ClCompile Include="Source\BsScriptAssemblyManager.cpp" />
     <ClCompile Include="Source\BsScriptAsyncOp.cpp" />
     <ClCompile Include="Source\BsScriptCameraHandler.cpp" />
     <ClCompile Include="Source\BsScriptColor.cpp" />
@@ -327,6 +330,7 @@
     <ClCompile Include="Source\BsScriptCursor.cpp" />
     <ClCompile Include="Source\BsScriptDebug.cpp" />
     <ClCompile Include="Source\BsScriptEnginePlugin.cpp" />
+    <ClCompile Include="Source\BsScriptGameObject.cpp" />
     <ClCompile Include="Source\BsScriptGameObjectManager.cpp" />
     <ClCompile Include="Source\BsScriptGUIButton.cpp" />
     <ClCompile Include="Source\BsScriptGUIElement.cpp" />
@@ -359,6 +363,7 @@
     <ClCompile Include="Source\BsScriptRenderTarget.cpp" />
     <ClCompile Include="Source\BsScriptRenderTexture.cpp" />
     <ClCompile Include="Source\BsScriptRenderTexture2D.cpp" />
+    <ClCompile Include="Source\BsScriptResource.cpp" />
     <ClCompile Include="Source\BsScriptResourceManager.cpp" />
     <ClCompile Include="Source\BsScriptSceneObject.cpp" />
     <ClCompile Include="Source\BsManagedSerializableArray.cpp" />

@@ -1,14 +1,15 @@
 --------- ALL LONG TERM TASKS / FIXES BELONG TO GOOGLE DOCS: ImplementationTODO OR PossibleImprovements ----------
 
-See GDrive/Resources doc for resources refactor
+<<<<<Assembly refresh>>>>>
 
-I can get mono errors by checking g_print calls in goutput.c
- - Calling thunks incorrectly can cause those weird errors with no real callstack
+When serializing Camera I cannot save the reference to RenderTexture. Make it a Resource?
+Enum serialization probably doesn't work. I'll need to fix that before serializing Camera as it will try to serialize multiple enums
+ - Try using mono_type_get_underlying_type(monoType); to detect actual type of the enum (or possibly mono_class_enum_basetype)
+ - Make sure I don't just store enum as int as-is, as that might cause problems when deserializing if enum underlying type changed (e.g. it used to be int64 but is now int32)
 
-Crash on GLTextureBuffer::download on shutdown (OpenGL error invalid enum)
-Create a stack allocatable custom vector implementation and make getResourceDependencies and getCoreDependencies use it
+When component type cannot be found upon refresh it will still remain on SceneObject, invisible. Make sure it is not saved as such, or make it visible and removable.
 
-Multi-resource saving:
+<<<<Multi-resource saving>>>>:
  - Modify Font so it doesn't contain a texture, but instead keeps a handle to it
  - Register it in its meta file
  - When saving such a resource with dependencies save the contained files to a sub-directory with the same name as top level resource
@@ -18,50 +19,18 @@ Multi-resource saving:
 Other:
 Window resize end callback
 Add cutoff plane when rendering discs for rotation handle.
-What happens when I close widgets from C++ code (e.g. due to layout reload or change)? Will C# still try to access them?
+
+I can get mono errors by checking g_print calls in goutput.c
+ - Calling thunks incorrectly can cause those weird errors with no real callstack
+
+Crash on GLTextureBuffer::download on shutdown (OpenGL error invalid enum)
+Create a stack allocatable custom vector implementation and make getResourceDependencies and getCoreDependencies use it
 
 C# SceneView:
 Test new Scene window and fix every issue
 Add ProjectWindow and HierarchyWindow to C#
  - Make TreeViews a C# element?
 Set up a default layout and save it
-
------------------
-Resource refresh:
- - Add ScriptObject::beginRefresh, ScriptObject::endRefresh
-   - Each ScriptObject can internally store data needed for refresh (e.g. serialized instance and similar)
-   - beginRefresh needs to at least clear mCachedPtr (and ensure when managed objects get destroyed that ScriptObjects stay as is)
-   - endRefresh needs to at least restore mCachedPtr
-   - Depending on ScriptObject other functionality might be needed
- - After refresh check if type still exists, and if it doesn't delete the ScriptObject (or throw an assert if that wasn't supposed to happen)
- - Add MonoManager::refreshDomain. This releases current domain (and all assemblies in it), and allocates a new one
- - Add CoreApplication::refreshManagedAssemblies
-    - Calls ScriptObject::beginRefresh, MonoManager::refreshDomain and ScriptObject::endRefresh
-    - Will also need to call RuntimeScriptManager and some other types that rely on Mono types
-
-When restoring manage instance don't call the constructor. Currently some constructors call native methods that set up ScriptObjects, which is not what I want to do.
- - Unity does call the constructor so if it turns out to be necesary go on a case by case basis and change their constructors so they do not call into native code. (Or if they have to, to check if the object isn't already initialized)
-
-Find all references to: MonoObject, MonoClass, MonoField, MonoProperty, MonoMethod, MonoAssembly, function thunks and ensure those are properly released and re-constructed during refresh.
- - Make a list and figure out possible issues. Then modify them before starting the refactor.
-
-Find all C# versions of ScriptObject and see if they store any data. If they do that data might need to be serialized and deserialized during refresh.
- - Make a list and figure out possible issues.
-
-Types that I need to ensure stay valid after refresh:
- - Any Component, Resource and GUI object
- - EditorWindow
-
-Types I can probably ignore:
- - SerializableProperty and related types
-   - They can't be serialized by anything. So technically after refresh we're forced to create new ones anyway.
- - HandleSlider
-   - Also can't be serialized.
-
-I need to ensure to call all start-up methods after refresh.
- - e.g. Component onInitialize and whatever is called for EditorWindow or inspectors
-
------------------
 
 Need a way to drag and drop items from Scene tree view to Scene view
 

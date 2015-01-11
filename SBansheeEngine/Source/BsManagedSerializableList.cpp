@@ -1,7 +1,7 @@
 #include "BsManagedSerializableList.h"
 #include "BsManagedSerializableListRTTI.h"
 #include "BsMonoManager.h"
-#include "BsRuntimeScriptObjects.h"
+#include "BsScriptAssemblyManager.h"
 #include "BsManagedSerializableField.h"
 #include "BsMonoClass.h"
 #include "BsMonoMethod.h"
@@ -38,7 +38,7 @@ namespace BansheeEngine
 		String elementTypeName = mono_class_get_name(monoClass);
 		String fullName = elementNs + "." + elementTypeName;
 
-		if(RuntimeScriptObjects::instance().getSystemGenericListClass()->getFullName() != fullName)
+		if(ScriptAssemblyManager::instance().getSystemGenericListClass()->getFullName() != fullName)
 			return nullptr;
 
 		return bs_shared_ptr<ManagedSerializableList>(ConstructPrivately(), typeInfo, managedInstance);

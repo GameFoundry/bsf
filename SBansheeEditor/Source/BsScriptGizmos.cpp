@@ -10,7 +10,9 @@ namespace BansheeEngine
 	void ScriptGizmos::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_SetColor", &ScriptGizmos::internal_SetColor);
+		metaData.scriptClass->addInternalCall("Internal_GetColor", &ScriptGizmos::internal_GetColor);
 		metaData.scriptClass->addInternalCall("Internal_SetTransform", &ScriptGizmos::internal_SetTransform);
+		metaData.scriptClass->addInternalCall("Internal_GetTransform", &ScriptGizmos::internal_GetTransform);
 		metaData.scriptClass->addInternalCall("Internal_DrawCube", &ScriptGizmos::internal_DrawCube);
 		metaData.scriptClass->addInternalCall("Internal_DrawSphere", &ScriptGizmos::internal_DrawSphere);
 		metaData.scriptClass->addInternalCall("Internal_DrawWireCube", &ScriptGizmos::internal_DrawWireCube);
@@ -25,9 +27,19 @@ namespace BansheeEngine
 		GizmoManager::instance().setColor(color);
 	}
 
+	void ScriptGizmos::internal_GetColor(Color* color)
+	{
+		*color = GizmoManager::instance().getColor();
+	}
+
 	void ScriptGizmos::internal_SetTransform(Matrix4 transform)
 	{
 		GizmoManager::instance().setTransform(transform);
+	}
+
+	void ScriptGizmos::internal_GetTransform(Matrix4* transform)
+	{
+		*transform = GizmoManager::instance().getTransform();
 	}
 
 	void ScriptGizmos::internal_DrawCube(Vector3 position, Vector3 extents)

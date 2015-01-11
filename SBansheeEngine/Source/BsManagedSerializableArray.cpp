@@ -1,7 +1,7 @@
 #include "BsManagedSerializableArray.h"
 #include "BsManagedSerializableArrayRTTI.h"
 #include "BsMonoManager.h"
-#include "BsRuntimeScriptObjects.h"
+#include "BsScriptAssemblyManager.h"
 #include "BsManagedSerializableField.h"
 #include "BsMonoClass.h"
 #include "BsMonoMethod.h"
@@ -32,7 +32,7 @@ namespace BansheeEngine
 		if(managedInstance == nullptr)
 			return nullptr;
 
-		if(!RuntimeScriptObjects::instance().getSystemArrayClass()->isInstanceOfType(managedInstance))
+		if(!ScriptAssemblyManager::instance().getSystemArrayClass()->isInstanceOfType(managedInstance))
 			return nullptr;
 
 		return bs_shared_ptr<ManagedSerializableArray>(ConstructPrivately(), typeInfo, managedInstance);
@@ -53,7 +53,7 @@ namespace BansheeEngine
 		if (!typeInfo->isTypeLoaded())
 			return nullptr;
 
-		MonoClass* arrayClass = RuntimeScriptObjects::instance().getSystemArrayClass();
+		MonoClass* arrayClass = ScriptAssemblyManager::instance().getSystemArrayClass();
 
 		MonoMethod* createInstance = arrayClass->getMethodExact("CreateInstance", "Type,int[]");
 		MonoArray* lengthArray = mono_array_new(MonoManager::instance().getDomain(), mono_get_int32_class(), (UINT32)sizes.size());
@@ -161,7 +161,7 @@ namespace BansheeEngine
 
 	UINT32 ManagedSerializableArray::getLength(UINT32 dimension) const
 	{
-		MonoClass* systemArray = RuntimeScriptObjects::instance().getSystemArrayClass();
+		MonoClass* systemArray = ScriptAssemblyManager::instance().getSystemArrayClass();
 		MonoMethod* getLength = systemArray->getMethod("GetLength", 1);
 
 		void* params[1] = { &dimension };

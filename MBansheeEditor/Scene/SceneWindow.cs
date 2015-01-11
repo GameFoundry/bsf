@@ -22,6 +22,9 @@ namespace BansheeEditor
         }
 
         internal SceneWindow()
+        { }
+
+        private void OnInitialize()
         {
             UpdateRenderTexture(Width, Height);
         }

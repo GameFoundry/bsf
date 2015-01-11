@@ -58,9 +58,10 @@ namespace BansheeEngine
 	class ManagedSerializableAssemblyInfo;
 	class ManagedSerializableObjectInfo;
 	class ManagedSerializableFieldInfo;
+	class ManagedSerializableObjectData;
 	class ManagedResource;
 	class ManagedResourceMetaData;
-	class RuntimeScriptObjects;
+	class ScriptAssemblyManager;
 
 	typedef GameObjectHandle<ManagedComponent> HManagedComponent;
 	typedef ResourceHandle<ManagedResource> HManagedResource;
@@ -104,7 +105,8 @@ namespace BansheeEngine
 		TID_ScriptSerializableList = 50035,
 		TID_ScriptSerializableDictionary = 50036,
 		TID_ManagedResource = 50037,
-		TID_ManagedResourceMetaData = 50038
+		TID_ManagedResourceMetaData = 50038,
+		TID_ScriptSerializableObjectData = 50039
 	};
 
 	static const char* BansheeEngineAssemblyName = "MBansheeEngine";
@@ -124,6 +126,7 @@ namespace BansheeEngine
 	typedef std::shared_ptr<ManagedSerializableTypeInfoArray> ManagedSerializableTypeInfoArrayPtr;
 	typedef std::shared_ptr<ManagedSerializableTypeInfoList> ManagedSerializableTypeInfoListPtr;
 	typedef std::shared_ptr<ManagedSerializableTypeInfoDictionary> ManagedSerializableTypeInfoDictionaryPtr;
+	typedef std::shared_ptr<ManagedSerializableObjectData> ManagedSerializableObjectDataPtr;
 	typedef std::shared_ptr<ManagedResource> ManagedResourcePtr;
 	typedef std::shared_ptr<ManagedResourceMetaData> ManagedResourceMetaDataPtr;
 }

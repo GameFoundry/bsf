@@ -1,5 +1,5 @@
 #include "BsScriptGizmoManager.h"
-#include "BsRuntimeScriptObjects.h"
+#include "BsScriptAssemblyManager.h"
 #include "BsMonoAssembly.h"
 #include "BsMonoClass.h"
 #include "BsMonoMethod.h"
@@ -11,33 +11,22 @@
 #include "BsManagedComponent.h"
 #include "BsGizmoManager.h"
 #include "BsSelection.h"
+#include "BsMonoManager.h"
 
 using namespace std::placeholders;
 
 namespace BansheeEngine
 {
-	ScriptGizmoManager::ScriptGizmoManager(RuntimeScriptObjects& scriptObjectManager)
-		:mScriptObjectManager(scriptObjectManager), mDrawGizmoAttribute(nullptr), mNextAssemblyId(0), mFlagsField(nullptr)
+	ScriptGizmoManager::ScriptGizmoManager(ScriptAssemblyManager& scriptObjectManager)
+		:mScriptObjectManager(scriptObjectManager), mDrawGizmoAttribute(nullptr), mFlagsField(nullptr)
 	{
-		mAssemblyRefreshedConn = mScriptObjectManager.onAssemblyRefreshed.connect(std::bind(&ScriptGizmoManager::reloadAssemblyMethods, this, _1));
-
-		Vector<String> initializedAssemblyNames = mScriptObjectManager.getInitializedAssemblies();
-		for (auto& assemblyName : initializedAssemblyNames)
-		{
-			MonoAssembly* assembly = MonoManager::instance().getAssembly(assemblyName);
-			if (assembly != nullptr)
-				reloadAssemblyMethods(assembly);
-		}
+		mDomainLoadedConn = MonoManager::instance().onDomainReload.connect(std::bind(&ScriptGizmoManager::reloadAssemblyData, this));
+		reloadAssemblyData();
 	}
 
 	ScriptGizmoManager::~ScriptGizmoManager()
 	{
-		mAssemblyRefreshedConn.disconnect();
-	}
-
-	bool dummyIsSelected(const HSceneObject& so)
-	{
-		return false; // TODO - Replace with a call to Selection class once I have it
+		mDomainLoadedConn.disconnect();
 	}
 
 	void ScriptGizmoManager::update()
@@ -113,75 +102,39 @@ namespace BansheeEngine
 		}
 	}
 
-	void ScriptGizmoManager::reloadAssemblyMethods(MonoAssembly* assembly)
+	void ScriptGizmoManager::reloadAssemblyData()
 	{
-		String assemblyName = assembly->getName();
+		// Reload DrawGizmo attribute from editor assembly
+		MonoAssembly* editorAssembly = MonoManager::instance().getAssembly(BansheeEditorAssemblyName);
+		mDrawGizmoAttribute = editorAssembly->getClass("BansheeEditor", "DrawGizmo");
+		if (mDrawGizmoAttribute == nullptr)
+			BS_EXCEPT(InvalidStateException, "Cannot find DrawGizmo managed class.");
 
-		// If editor assembly, reload DrawGizmo attribute
-		if (assemblyName == BansheeEditorAssemblyName) 
+		mFlagsField = mDrawGizmoAttribute->getField("flags");
+
+		Vector<String> scriptAssemblyNames = mScriptObjectManager.getScriptAssemblies();
+		for (auto& assemblyName : scriptAssemblyNames)
 		{
-			mDrawGizmoAttribute = assembly->getClass("BansheeEditor", "DrawGizmo");
-			if (mDrawGizmoAttribute == nullptr)
-				BS_EXCEPT(InvalidStateException, "Cannot find DrawGizmo managed class.");
+			MonoAssembly* assembly = MonoManager::instance().getAssembly(assemblyName);
 
-			mFlagsField = mDrawGizmoAttribute->getField("flags");
-
-			// Load delayed assemblies first
-			for (auto iter = mDelayedLoad.rbegin(); iter != mDelayedLoad.rend(); ++iter)
-				reloadAssemblyMethods(*iter);
-
-			mDelayedLoad.clear();
-		}
-		else
-		{
-			// If we haven't loaded editor assembly yet, wait until we do before continuing
-			if (mDrawGizmoAttribute == nullptr)
+			// Find new gizmo drawer methods
+			const Vector<MonoClass*>& allClasses = assembly->getAllClasses();
+			for (auto curClass : allClasses)
 			{
-				mDelayedLoad.push_back(assembly);
-				return;
-			}
-		}
-
-		// If we had this assembly previously loaded, clear all of its methods
-		UINT32 assemblyId = 0;
-		auto iterFind = mAssemblyNameToId.find(assemblyName);
-		if (iterFind != mAssemblyNameToId.end())
-		{
-			assemblyId = iterFind->second;
-
-			Map<String, GizmoData> newGizmoDrawers;
-			for (auto& gizmoMethod : mGizmoDrawers)
-			{
-				if (gizmoMethod.second.assemblyId != assemblyId)
-					newGizmoDrawers[gizmoMethod.first] = gizmoMethod.second;
-			}
-
-			mGizmoDrawers.swap(newGizmoDrawers);
-		}
-		else
-		{
-			assemblyId = mNextAssemblyId++;
-			mAssemblyNameToId[assemblyName] = assemblyId;
-		}
-
-		// Find new gizmo drawer methods
-		const Vector<MonoClass*>& allClasses = assembly->getAllClasses();
-		for (auto curClass : allClasses)
-		{
-			const Vector<MonoMethod*>& methods = curClass->getAllMethods();
-			for (auto& curMethod : methods)
-			{
-				UINT32 drawGizmoFlags = 0;
-				MonoClass* componentType = nullptr;
-				if (isValidDrawGizmoMethod(curMethod, componentType, drawGizmoFlags))
+				const Vector<MonoMethod*>& methods = curClass->getAllMethods();
+				for (auto& curMethod : methods)
 				{
-					String fullComponentName = componentType->getFullName();
-					GizmoData& newGizmoData = mGizmoDrawers[fullComponentName];
+					UINT32 drawGizmoFlags = 0;
+					MonoClass* componentType = nullptr;
+					if (isValidDrawGizmoMethod(curMethod, componentType, drawGizmoFlags))
+					{
+						String fullComponentName = componentType->getFullName();
+						GizmoData& newGizmoData = mGizmoDrawers[fullComponentName];
 
-					newGizmoData.assemblyId = assemblyId;
-					newGizmoData.componentType = componentType;
-					newGizmoData.drawGizmosMethod = curMethod;
-					newGizmoData.flags = drawGizmoFlags;
+						newGizmoData.componentType = componentType;
+						newGizmoData.drawGizmosMethod = curMethod;
+						newGizmoData.flags = drawGizmoFlags;
+					}
 				}
 			}
 		}

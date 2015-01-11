@@ -39,7 +39,9 @@ namespace BansheeEngine
 	void ScriptSpriteTexture::_onManagedInstanceDeleted()
 	{
 		mManagedInstance = nullptr;
-		ScriptResourceManager::instance().destroyScriptResource(this);
+
+		if (!mRefreshInProgress)
+			ScriptResourceManager::instance().destroyScriptResource(this);
 	}
 
 	void ScriptSpriteTexture::setNativeHandle(const HResource& resource) 

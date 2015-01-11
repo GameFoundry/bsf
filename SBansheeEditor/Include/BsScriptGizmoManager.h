@@ -17,31 +17,26 @@ namespace BansheeEngine
 	{
 		struct GizmoData
 		{
-			UINT32 assemblyId;
 			MonoClass* componentType;
 			MonoMethod* drawGizmosMethod;
 			UINT32 flags;
 		};
 
 	public:
-		ScriptGizmoManager(RuntimeScriptObjects& scriptObjectManager);
+		ScriptGizmoManager(ScriptAssemblyManager& scriptObjectManager);
 		~ScriptGizmoManager();
 
 		void update();
 
 	private:
-		void reloadAssemblyMethods(MonoAssembly* assembly);
+		void reloadAssemblyData();
 		bool isValidDrawGizmoMethod(MonoMethod* method, MonoClass*& componentType, UINT32& drawGizmoFlags);
 
-		RuntimeScriptObjects& mScriptObjectManager;
-		HEvent mAssemblyRefreshedConn;
+		ScriptAssemblyManager& mScriptObjectManager;
+		HEvent mDomainLoadedConn;
 
 		MonoClass* mDrawGizmoAttribute;
 		MonoField* mFlagsField;
-		Map<String, UINT32> mAssemblyNameToId;
 		Map<String, GizmoData> mGizmoDrawers;
-		UINT32 mNextAssemblyId;
-
-		Vector<MonoAssembly*> mDelayedLoad;
 	};
 }

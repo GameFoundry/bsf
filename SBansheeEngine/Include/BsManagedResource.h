@@ -7,12 +7,17 @@
 
 namespace BansheeEngine
 {
+	struct ResourceBackupData;
+
 	class BS_SCR_BE_EXPORT ManagedResource : public Resource
 	{
 	public:
 		void construct(MonoObject* object, const HManagedResource& myHandle);
 
 		MonoObject* getManagedInstance() const { return mManagedInstance; }
+
+		ResourceBackupData backup(bool clearExisting = true);
+		void restore(MonoObject* instance, const ResourceBackupData& data);
 
 		static HManagedResource create(MonoObject* managedResource);
 		static ManagedResourcePtr createEmpty();
@@ -37,5 +42,17 @@ namespace BansheeEngine
 
 	protected:
 		ManagedResource(); // Serialization only
+	};
+
+	struct ResourceBackupData
+	{
+		struct DataBlock
+		{
+			UINT8* data;
+			UINT32 size;
+		};
+
+		DataBlock mTypeInfo;
+		DataBlock mObjectData;
 	};
 }

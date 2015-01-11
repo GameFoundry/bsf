@@ -299,7 +299,9 @@ namespace BansheeEngine
 	void ScriptSceneObject::_onManagedInstanceDeleted()
 	{
 		mManagedInstance = nullptr;
-		ScriptGameObjectManager::instance().destroyScriptGameObject(this);
+
+		if (!mRefreshInProgress)
+			ScriptGameObjectManager::instance().destroyScriptGameObject(this);
 	}
 
 	void ScriptSceneObject::setNativeHandle(const HGameObject& gameObject)

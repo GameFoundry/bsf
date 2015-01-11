@@ -10,6 +10,9 @@ namespace BansheeEngine
     {
         private CameraHandler handler;
 
+        [SerializeField]
+        private SerializableData serializableData;
+
         internal CameraHandler Handler
         {
             get { return handler; }
@@ -18,43 +21,43 @@ namespace BansheeEngine
         public float aspectRatio
         {
             get { return handler.aspectRatio; }
-            set { handler.aspectRatio = value; }
+            set { handler.aspectRatio = value; serializableData.aspectRatio = value; }
         }
 
         public float nearClipPlane
         {
             get { return handler.nearClipPlane; }
-            set { handler.nearClipPlane = value; }
+            set { handler.nearClipPlane = value; serializableData.nearClipPlane = value; }
         }
 
         public float farClipPlane
         {
             get { return handler.farClipPlane; }
-            set { handler.farClipPlane = value; }
+            set { handler.farClipPlane = value; serializableData.farClipPlane = value; }
         }
 
         public Degree fieldOfView
         {
             get { return handler.fieldOfView; }
-            set { handler.fieldOfView = value; }
+            set { handler.fieldOfView = value; serializableData.fieldOfView = value; }
         }
 
         public Rect2 viewportRect
         {
             get { return handler.viewportRect; }
-            set { handler.viewportRect = value; }
+            set { handler.viewportRect = value; serializableData.viewportRect = value; }
         }
 
         public ProjectionType projectionType
         {
             get { return handler.projectionType; }
-            set { handler.projectionType = value; }
+            set { handler.projectionType = value; serializableData.projectionType = value; }
         }
 
         public float orthoHeight
         {
             get { return handler.orthoHeight; }
-            set { handler.orthoHeight = value; }
+            set { handler.orthoHeight = value; serializableData.orthoHeight = value; }
         }
 
         public float orthoWidth
@@ -65,37 +68,37 @@ namespace BansheeEngine
         public Color clearColor
         {
             get { return handler.clearColor; }
-            set { handler.clearColor = value; }
+            set { handler.clearColor = value; serializableData.clearColor = value; }
         }
 
         public float clearDepth
         {
             get { return handler.clearDepth; }
-            set { handler.clearDepth = value; }
+            set { handler.clearDepth = value; serializableData.clearDepth = value; }
         }
 
         public UInt16 clearStencil
         {
             get { return handler.clearStencil; }
-            set { handler.clearStencil = value; }
+            set { handler.clearStencil = value; serializableData.clearStencil = value; }
         }
 
         public ClearFlags clearFlags
         {
             get { return handler.clearFlags; }
-            set { handler.clearFlags = value; }
+            set { handler.clearFlags = value; serializableData.clearFlags = value; }
         }
 
         public int priority
         {
             get { return handler.priority; }
-            set { handler.priority = value; }
+            set { handler.priority = value; serializableData.priority = value; }
         }
 
         public UInt64 layers
         {
             get { return handler.layers; }
-            set { handler.layers = value; }
+            set { handler.layers = value; serializableData.layers = value; }
         }
 
         public Matrix4 projMatrix
@@ -154,9 +157,26 @@ namespace BansheeEngine
         public Vector3 ProjectPoint(Vector3 value) { return handler.ProjectPoint(value); }
         public Vector3 UnprojectPoint(Vector3 value) { return handler.UnprojectPoint(value); }
 
-        private void OnInitialize()
+        private void OnReset()
         {
             handler = new CameraHandler(sceneObject);
+
+            // Restore saved values after reset
+            handler.aspectRatio = serializableData.aspectRatio;
+            handler.nearClipPlane = serializableData.nearClipPlane;
+            handler.farClipPlane = serializableData.farClipPlane;
+            handler.fieldOfView = serializableData.fieldOfView;
+            handler.viewportRect = serializableData.viewportRect;
+            handler.projectionType = serializableData.projectionType;
+            handler.orthoHeight = serializableData.orthoHeight;
+            handler.clearColor = serializableData.clearColor;
+            handler.clearDepth = serializableData.clearDepth;
+            handler.clearStencil = serializableData.clearStencil;
+            handler.clearFlags = serializableData.clearFlags;
+            handler.priority = serializableData.priority;
+            handler.layers = serializableData.layers;
+
+            // TODO - Make RenderTexture a resource so I can save/restore it?
         }
 
         private void Update()
@@ -167,6 +187,24 @@ namespace BansheeEngine
         private void OnDestroy()
         {
             handler.OnDestroy();
+        }
+
+        [SerializeObject]
+        private struct SerializableData
+        {
+            public float aspectRatio;
+            public float nearClipPlane;
+            public float farClipPlane;
+            public Degree fieldOfView;
+            public Rect2 viewportRect;
+            public ProjectionType projectionType;
+            public float orthoHeight;
+            public Color clearColor;
+            public float clearDepth;
+            public UInt16 clearStencil;
+            public ClearFlags clearFlags;
+            public int priority;
+            public UInt64 layers;
         }
     }
 }

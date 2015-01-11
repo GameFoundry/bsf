@@ -1,5 +1,5 @@
 #include "BsScriptHandleManager.h"
-#include "BsRuntimeScriptObjects.h"
+#include "BsScriptAssemblyManager.h"
 #include "BsMonoManager.h"
 #include "BsMonoAssembly.h"
 #include "BsMonoClass.h"
@@ -14,18 +14,11 @@ using namespace std::placeholders;
 
 namespace BansheeEngine
 {
-	ScriptHandleManager::ScriptHandleManager(RuntimeScriptObjects& scriptObjectManager)
+	ScriptHandleManager::ScriptHandleManager(ScriptAssemblyManager& scriptObjectManager)
 		:mScriptObjectManager(scriptObjectManager)
 	{
-		mAssemblyRefreshedConn = mScriptObjectManager.onAssemblyRefreshed.connect(std::bind(&ScriptHandleManager::reloadAssembly, this, _1));
-
-		Vector<String> initializedAssemblyNames = mScriptObjectManager.getInitializedAssemblies();
-		for (auto& assemblyName : initializedAssemblyNames)
-		{
-			MonoAssembly* assembly = MonoManager::instance().getAssembly(assemblyName);
-			if (assembly != nullptr)
-				reloadAssembly(assembly);
-		}
+		mDomainLoadConn = MonoManager::instance().onDomainReload.connect(std::bind(&ScriptHandleManager::reloadAssemblyData, this));
+		reloadAssemblyData();
 	}
 
 	ScriptHandleManager::~ScriptHandleManager()
@@ -42,7 +35,7 @@ namespace BansheeEngine
 			mono_gchandle_free(mDefaultHandleManagerGCHandle);
 		}
 
-		mAssemblyRefreshedConn.disconnect();
+		mDomainLoadConn.disconnect();
 	}
 
 	void ScriptHandleManager::refreshHandles()
@@ -131,83 +124,60 @@ namespace BansheeEngine
 		}
 	}
 
-	void ScriptHandleManager::reloadAssembly(MonoAssembly* assembly)
+	void ScriptHandleManager::reloadAssemblyData()
 	{
-		String assemblyName = assembly->getName();
+		// Reload types from editor assembly
+		MonoAssembly* editorAssembly = MonoManager::instance().getAssembly(BansheeEditorAssemblyName);
+		mCustomHandleAttribute = editorAssembly->getClass("BansheeEditor", "CustomHandle");
+		if (mCustomHandleAttribute == nullptr)
+			BS_EXCEPT(InvalidStateException, "Cannot find CustomHandle managed class.");
 
-		// If editor assembly, reload needed types
-		if (assemblyName == BansheeEditorAssemblyName)
+		mHandleBaseClass = editorAssembly->getClass("BansheeEditor", "Handle");
+		if (mHandleBaseClass == nullptr)
+			BS_EXCEPT(InvalidStateException, "Cannot find Handle managed class.");
+
+		mDefaultHandleManagerClass = editorAssembly->getClass("BansheeEditor", "DefaultHandleManager");
+		if (mDefaultHandleManagerClass == nullptr)
+			BS_EXCEPT(InvalidStateException, "Cannot find DefaultHandleManager managed class.");
+
+		mTypeField = mCustomHandleAttribute->getField("type");
+
+		mPreInputMethod = mHandleBaseClass->getMethod("PreInput", 0);
+		mPostInputMethod = mHandleBaseClass->getMethod("PostInput", 0);
+		mDrawMethod = mHandleBaseClass->getMethod("Draw", 0);
+		mDestroyThunk = (DestroyThunkDef)mHandleBaseClass->getMethod("Destroy", 0)->getThunk();
+
+		mDefaultHandleManager = nullptr; // Freed on assembly unload, so not valid anymore
+		mDefaultHandleManagerGCHandle = 0;
+
+		Vector<String> scriptAssemblyNames = mScriptObjectManager.getScriptAssemblies();
+		for (auto& assemblyName : scriptAssemblyNames)
 		{
-			mCustomHandleAttribute = assembly->getClass("BansheeEditor", "CustomHandle");
-			if (mCustomHandleAttribute == nullptr)
-				BS_EXCEPT(InvalidStateException, "Cannot find CustomHandle managed class.");
+			MonoAssembly* assembly = MonoManager::instance().getAssembly(assemblyName);
 
-			mHandleBaseClass = assembly->getClass("BansheeEditor", "Handle");
-			if (mHandleBaseClass == nullptr)
-				BS_EXCEPT(InvalidStateException, "Cannot find Handle managed class.");
-
-			mDefaultHandleManagerClass = assembly->getClass("BansheeEditor", "DefaultHandleManager");
-			if (mDefaultHandleManagerClass == nullptr)
-				BS_EXCEPT(InvalidStateException, "Cannot find DefaultHandleManager managed class.");
-
-			mTypeField = mCustomHandleAttribute->getField("type");
-
-			mPreInputMethod = mHandleBaseClass->getMethod("PreInput", 0);
-			mPostInputMethod = mHandleBaseClass->getMethod("PostInput", 0);
-			mDrawMethod = mHandleBaseClass->getMethod("Draw", 0);
-			mDestroyThunk = (DestroyThunkDef)mHandleBaseClass->getMethod("Destroy", 0)->getThunk();
-
-			mDefaultHandleManager = nullptr; // Freed on assembly unload, so not valid anymore
-			mDefaultHandleManagerGCHandle = 0;
-		}
-		else
-		{
-			// If we haven't loaded editor assembly yet, do nothing, caller must ensure to load assemblies in order
-			if (mCustomHandleAttribute == nullptr)
-				return;
-		}
-
-		// If we had this assembly previously loaded, clear all of its types
-		UINT32 assemblyId = 0;
-		auto iterFind = mAssemblyNameToId.find(assemblyName);
-		if (iterFind != mAssemblyNameToId.end())
-		{
-			assemblyId = iterFind->second;
-
-			Map<String, CustomHandleData> newHandles;
-			for (auto& handleData : mHandles)
+			// Find new custom handle types
+			const Vector<MonoClass*>& allClasses = assembly->getAllClasses();
+			for (auto curClass : allClasses)
 			{
-				if (handleData.second.assemblyId != assemblyId)
-					newHandles[handleData.first] = handleData.second;
-			}
+				MonoClass* componentType = nullptr;
+				MonoMethod* ctor = nullptr;
 
-			mHandles.swap(newHandles);
-		}
-		else
-		{
-			assemblyId = mNextAssemblyId++;
-			mAssemblyNameToId[assemblyName] = assemblyId;
-		}
+				if (isValidHandleType(curClass, componentType, ctor))
+				{
+					String fullComponentName = componentType->getFullName();
 
-		// Find new custom handle types
-		const Vector<MonoClass*>& allClasses = assembly->getAllClasses();
-		for (auto curClass : allClasses)
-		{
-			MonoClass* componentType = nullptr;
-			MonoMethod* ctor = nullptr;
+					CustomHandleData& newHandleData = mHandles[fullComponentName];
 
-			if (isValidHandleType(curClass, componentType, ctor))
-			{
-				String fullComponentName = componentType->getFullName();
-
-				CustomHandleData& newHandleData = mHandles[fullComponentName];
-
-				newHandleData.assemblyId = assemblyId;
-				newHandleData.componentType = componentType;
-				newHandleData.handleType = curClass;
-				newHandleData.ctor = ctor;
+					newHandleData.componentType = componentType;
+					newHandleData.handleType = curClass;
+					newHandleData.ctor = ctor;
+				}
 			}
 		}
+
+		// Clear selection data
+		mActiveHandleData.selectedObject = HSceneObject();
+		mActiveHandleData.handles.clear();
 	}
 
 	bool ScriptHandleManager::isValidHandleType(MonoClass* type, MonoClass*& componentType, MonoMethod*& ctor)

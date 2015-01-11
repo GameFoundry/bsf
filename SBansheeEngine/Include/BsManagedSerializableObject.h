@@ -18,6 +18,12 @@ namespace BansheeEngine
 		MonoObject* getManagedInstance() const { return mManagedInstance; }
 		ManagedSerializableObjectInfoPtr getObjectInfo() const { return mObjInfo; }
 
+		void setFieldData(const ManagedSerializableFieldInfoPtr& fieldInfo, const ManagedSerializableFieldDataPtr& val);
+		ManagedSerializableFieldDataPtr getFieldData(const ManagedSerializableFieldInfoPtr& fieldInfo) const;
+
+		void setObjectData(const ManagedSerializableObjectDataPtr& objectData, const ManagedSerializableObjectInfoPtr& originalEntriesType);
+		ManagedSerializableObjectDataPtr getObjectData() const;
+
 		static ManagedSerializableObjectPtr createFromExisting(MonoObject* managedInstance);
 		static ManagedSerializableObjectPtr createFromNew(const ManagedSerializableTypeInfoObjectPtr& type);
 		static MonoObject* createManagedInstance(const ManagedSerializableTypeInfoObjectPtr& type);
@@ -31,8 +37,7 @@ namespace BansheeEngine
 		 */
 		void deserializeManagedInstance(const Vector<ManagedSerializableFieldDataEntryPtr>& data);
 
-		void setFieldData(const ManagedSerializableFieldInfoPtr& fieldInfo, const ManagedSerializableFieldDataPtr& val);
-		ManagedSerializableFieldDataPtr getFieldData(const ManagedSerializableFieldInfoPtr& fieldInfo);
+		void setFieldEntries(const Vector<ManagedSerializableFieldDataEntryPtr>& data, const ManagedSerializableObjectInfoPtr& originalEntriesType);
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

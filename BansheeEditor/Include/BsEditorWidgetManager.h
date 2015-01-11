@@ -27,6 +27,11 @@ namespace BansheeEngine
 		void registerWidget(const String& name, std::function<EditorWidgetBase*(EditorWidgetContainer&)> createCallback);
 
 		/**
+		 * @brief	Unregisters a widget so it may no longer be opened using this manager.
+		 */
+		void unregisterWidget(const String& name);
+
+		/**
 		 * @brief	Creates a widget with the given name. If widget is already created it returns the existing instance.
 		 * 			Widget is opened in a new window.
 		 *

@@ -2,7 +2,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsRTTIType.h"
-#include "BsRuntimeScriptObjects.h"
+#include "BsScriptAssemblyManager.h"
 #include "BsManagedSerializableObject.h"
 #include "BsManagedSerializableField.h"
 #include "BsGameObjectManager.h"

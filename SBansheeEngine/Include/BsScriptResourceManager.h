@@ -106,9 +106,6 @@ namespace BansheeEngine
 
 	private:
 		UnorderedMap<String, ScriptResourceBase*> mScriptResources;
-		MonoClass* mTextureClass;
-		MonoClass* mSpriteTextureClass;
-		MonoClass* mFontClass;
 
 		void throwExceptionIfInvalidOrDuplicate(const String& uuid) const;
 	};

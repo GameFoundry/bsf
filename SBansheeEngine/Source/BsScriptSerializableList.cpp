@@ -3,7 +3,7 @@
 #include "BsMonoField.h"
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
-#include "BsRuntimeScriptObjects.h"
+#include "BsScriptAssemblyManager.h"
 #include "BsManagedSerializableObjectInfo.h"
 #include "BsScriptSerializableProperty.h"
 

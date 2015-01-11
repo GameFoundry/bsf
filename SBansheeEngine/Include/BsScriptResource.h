@@ -5,19 +5,22 @@
 
 namespace BansheeEngine
 {
-	class BS_SCR_BE_EXPORT ScriptResourceBase : public ScriptObjectBase
+	class BS_SCR_BE_EXPORT ScriptResourceBase : public PersistentScriptObjectBase
 	{
 	public:
 		virtual HResource getNativeHandle() const = 0;
 		virtual void setNativeHandle(const HResource& resource) = 0;
 
+		virtual ScriptObjectBackup beginRefresh();
+		virtual void endRefresh(const ScriptObjectBackup& backupData);
+
 	protected:
 		friend class ScriptResourceManager;
 
-		ScriptResourceBase(MonoObject* instance)
-			:ScriptObjectBase(instance)
-		{ }
+		ScriptResourceBase(MonoObject* instance);
 		virtual ~ScriptResourceBase() {}
+
+		bool mRefreshInProgress;
 	};
 
 	class BS_SCR_BE_EXPORT ScriptResource : public ScriptObject<ScriptResource, ScriptResourceBase>

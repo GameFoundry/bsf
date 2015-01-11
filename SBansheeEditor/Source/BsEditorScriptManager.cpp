@@ -4,7 +4,7 @@
 #include "BsMonoAssembly.h"
 #include "BsMonoClass.h"
 #include "BsMonoMethod.h"
-#include "BsRuntimeScriptObjects.h"
+#include "BsScriptAssemblyManager.h"
 #include "BsScriptGizmoManager.h"
 #include "BsScriptHandleManager.h"
 #include "BsScriptHandleSliderManager.h"
@@ -18,24 +18,21 @@ namespace BansheeEngine
 	EditorScriptManager::EditorScriptManager()
 		:mEditorAssembly(nullptr), mProgramEdClass(nullptr), mUpdateMethod(nullptr)
 	{
-		const String ENGINE_ASSEMBLY_PATH = "..\\..\\Assemblies\\MBansheeEditor.dll";
-		const String ENGINE_ASSEMBLY_NAME = BansheeEditorAssemblyName;
 		const String ASSEMBLY_ENTRY_POINT = "Program::Start";
 
-		mEditorAssembly = &MonoManager::instance().loadAssembly(ENGINE_ASSEMBLY_PATH, ENGINE_ASSEMBLY_NAME);
 		ScriptEditorWindow::registerManagedEditorWindows();
 
-		RuntimeScriptObjects::instance().refreshScriptObjects(BansheeEditorAssemblyName);
+		ScriptAssemblyManager::instance().loadAssemblyInfo(BansheeEditorAssemblyName);
 
 		ScriptHandleSliderManager::startUp();
-		ScriptGizmoManager::startUp(RuntimeScriptObjects::instance());
-		HandleManager::startUp<ScriptHandleManager>(RuntimeScriptObjects::instance());
+		ScriptGizmoManager::startUp(ScriptAssemblyManager::instance());
+		HandleManager::startUp<ScriptHandleManager>(ScriptAssemblyManager::instance());
 
-		mProgramEdClass = mEditorAssembly->getClass("BansheeEditor", "Program");
-		mUpdateMethod = mProgramEdClass->getMethod("EditorUpdate");
+		mOnDomainLoadConn = MonoManager::instance().onDomainReload.connect(std::bind(&EditorScriptManager::loadMonoTypes, this));
+		loadMonoTypes();
 
 		mEditorAssembly->invoke(ASSEMBLY_ENTRY_POINT);
-		
+
 		// Initial update
 		mLastUpdateTime = gTime().getTime();
 		mUpdateMethod->invoke(nullptr, nullptr);
@@ -43,6 +40,8 @@ namespace BansheeEngine
 
 	EditorScriptManager::~EditorScriptManager()
 	{
+		mOnDomainLoadConn.disconnect();
+
 		ScriptHandleSliderManager::shutDown();
 		HandleManager::shutDown();
 		ScriptGizmoManager::shutDown();
@@ -62,5 +61,19 @@ namespace BansheeEngine
 		}
 
 		ScriptGizmoManager::instance().update();
+	}
+
+	void EditorScriptManager::loadMonoTypes()
+	{
+		const String ENGINE_ASSEMBLY_PATH = "..\\..\\Assemblies\\MBansheeEditor.dll";
+		const String ENGINE_ASSEMBLY_NAME = BansheeEditorAssemblyName;
+		
+		mEditorAssembly = &MonoManager::instance().loadAssembly(ENGINE_ASSEMBLY_PATH, ENGINE_ASSEMBLY_NAME);
+
+		mProgramEdClass = mEditorAssembly->getClass("BansheeEditor", "Program");
+		mUpdateMethod = mProgramEdClass->getMethod("EditorUpdate");
+
+		ScriptEditorWindow::clearRegisteredEditorWindow();
+		ScriptEditorWindow::registerManagedEditorWindows();
 	}
 }

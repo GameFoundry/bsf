@@ -10,7 +10,6 @@ namespace BansheeEngine
 	{
 		struct CustomHandleData
 		{
-			UINT32 assemblyId;
 			MonoClass* handleType;
 			MonoClass* componentType;
 			MonoMethod* ctor;
@@ -29,7 +28,7 @@ namespace BansheeEngine
 		};
 
 	public:
-		ScriptHandleManager(RuntimeScriptObjects& scriptObjectManager);
+		ScriptHandleManager(ScriptAssemblyManager& scriptObjectManager);
 		~ScriptHandleManager();
 
 	protected:
@@ -37,7 +36,7 @@ namespace BansheeEngine
 		void triggerHandles();
 		void queueDrawCommands();
 
-		void reloadAssembly(MonoAssembly* assembly);
+		void reloadAssemblyData();
 		bool isValidHandleType(MonoClass* type, MonoClass*& componentType, MonoMethod*& ctor);
 
 		void callPreInput(MonoObject* instance);
@@ -45,13 +44,10 @@ namespace BansheeEngine
 		void callDraw(MonoObject* instance);
 		void callDestroy(MonoObject* instance);
 
-		RuntimeScriptObjects& mScriptObjectManager;
-		HEvent mAssemblyRefreshedConn;
+		ScriptAssemblyManager& mScriptObjectManager;
+		HEvent mDomainLoadConn;
 
-		Map<String, UINT32> mAssemblyNameToId;
 		Map<String, CustomHandleData> mHandles;
-
-		UINT32 mNextAssemblyId = 0;
 
 		ActiveCustomHandles mActiveHandleData;
 

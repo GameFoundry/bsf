@@ -33,8 +33,9 @@ namespace BansheeEngine
 
 	}
 
-	MonoAssembly::MonoAssembly()
-		:mIsLoaded(false), mMonoImage(nullptr), mMonoAssembly(nullptr), mIsDependency(false), mHaveCachedClassList(false)
+	MonoAssembly::MonoAssembly(const String& path, const String& name)
+		:mIsLoaded(false), mMonoImage(nullptr), mMonoAssembly(nullptr), mIsDependency(false), mHaveCachedClassList(false),
+		mPath(path), mName(name)
 	{
 
 	}
@@ -44,15 +45,17 @@ namespace BansheeEngine
 		unload();
 	}
 
-	void MonoAssembly::load(MonoDomain* domain, const String& path, const String& name)
+	void MonoAssembly::load(MonoDomain* domain)
 	{
-		::MonoAssembly* monoAssembly = mono_domain_assembly_open(domain, path.c_str());
+		if (mIsLoaded)
+			unload();
+
+		::MonoAssembly* monoAssembly = mono_domain_assembly_open(domain, mPath.c_str());
 		if(monoAssembly == nullptr)
 		{
-			BS_EXCEPT(InvalidParametersException, "Cannot load Mono assembly: " + path);
+			BS_EXCEPT(InvalidParametersException, "Cannot load Mono assembly: " + mPath);
 		}
 
-		mName = name;
 		mMonoAssembly = monoAssembly;
 		mMonoImage = mono_assembly_get_image(mMonoAssembly);
 		if(mMonoImage == nullptr)
@@ -66,7 +69,7 @@ namespace BansheeEngine
 		mIsDependency = false;
 	}
 
-	void MonoAssembly::loadFromImage(MonoImage* image, const String& name)
+	void MonoAssembly::loadFromImage(MonoImage* image)
 	{
 		::MonoAssembly* monoAssembly = mono_image_get_assembly(image);
 		if(monoAssembly == nullptr)
@@ -74,7 +77,6 @@ namespace BansheeEngine
 			BS_EXCEPT(InvalidParametersException, "Cannot get assembly from image.");
 		}
 
-		mName = name;
 		mMonoAssembly = monoAssembly;
 		mMonoImage = image;
 
@@ -92,6 +94,7 @@ namespace BansheeEngine
 
 		mClasses.clear();
 		mClassesByRaw.clear();
+		mCachedClassList.clear();
 
 		if(mMonoImage != nullptr && !mIsDependency)
 		{
@@ -101,6 +104,7 @@ namespace BansheeEngine
 		}
 
 		mIsLoaded = false;
+		mIsDependency = false;
 		mMonoAssembly = nullptr;
 		mHaveCachedClassList = false;
 	}

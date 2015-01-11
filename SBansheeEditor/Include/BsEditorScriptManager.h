@@ -14,6 +14,8 @@ namespace BansheeEngine
 		void update();
 
 	private:
+		void loadMonoTypes();
+
 		static const float EDITOR_UPDATE_RATE;
 
 		MonoAssembly* mEditorAssembly;
@@ -21,5 +23,7 @@ namespace BansheeEngine
 
 		MonoClass* mProgramEdClass;
 		MonoMethod* mUpdateMethod;
+
+		HEvent mOnDomainLoadConn;
 	};
 }

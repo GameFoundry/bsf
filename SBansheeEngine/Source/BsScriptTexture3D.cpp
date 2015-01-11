@@ -87,7 +87,9 @@ namespace BansheeEngine
 	void ScriptTexture3D::_onManagedInstanceDeleted()
 	{
 		mManagedInstance = nullptr;
-		ScriptResourceManager::instance().destroyScriptResource(this);
+
+		if (!mRefreshInProgress)
+			ScriptResourceManager::instance().destroyScriptResource(this);
 	}
 
 	void ScriptTexture3D::setNativeHandle(const HResource& resource)

@@ -9,7 +9,7 @@ namespace BansheeEngine
 {
 	class ScriptEditorWidget;
 
-	class BS_SCR_BED_EXPORT ScriptEditorWindow : public ScriptObject<ScriptEditorWindow>
+	class BS_SCR_BED_EXPORT ScriptEditorWindow : public ScriptObject<ScriptEditorWindow, PersistentScriptObjectBase>
 	{
 		struct EditorWindowHandle
 		{
@@ -21,13 +21,14 @@ namespace BansheeEngine
 
 		~ScriptEditorWindow();
 
-		EditorWidgetBase* getEditorWidget() const { return mEditorWidget; }
+		EditorWidgetBase* getEditorWidget() const;
 
 		static void registerManagedEditorWindows();
+		static void clearRegisteredEditorWindow();
 	private:
 		friend class ScriptEditorWidget;
 
-		ScriptEditorWindow(MonoObject* instance, const String& windowName, const String& displayName, EditorWidgetBase* editorWidget);
+		ScriptEditorWindow(ScriptEditorWidget* editorWidget);
 
 		static MonoObject* internal_createOrGetInstance(MonoString* ns, MonoString* typeName);
 
@@ -45,14 +46,18 @@ namespace BansheeEngine
 		void onFocusChanged(bool inFocus);
 
 		void _onManagedInstanceDeleted();
+		ScriptObjectBackup beginRefresh();
+		void endRefresh(const ScriptObjectBackup& backupData);
+		MonoObject* _createManagedInstance(bool construct);
 
 		String mName;
-		EditorWidgetBase* mEditorWidget;
+		ScriptEditorWidget* mEditorWidget;
 		Vector<ScriptGUIPanel*> mPanels;
 		HEvent mOnWidgetMovedConn;
 		HEvent mOnWidgetResizedConn;
 		HEvent mOnParentChangedConn;
 		HEvent mOnFocusChangedConn;
+		bool mRefreshInProgress;
 
 		static MonoMethod* onResizedMethod;
 		static MonoMethod* onFocusChangedMethod;
@@ -62,6 +67,7 @@ namespace BansheeEngine
 		static void unregisterScriptEditorWindow(const String& windowTypeName);
 
 		static UnorderedMap<String, EditorWindowHandle> OpenScriptEditorWindows;
+		static Vector<String> AvailableWindowTypes;
 
 		static EditorWidgetBase* openEditorWidgetCallback(String ns, String type, EditorWidgetContainer& parentContainer);
 	};
@@ -69,18 +75,28 @@ namespace BansheeEngine
 	class BS_SCR_BED_EXPORT ScriptEditorWidget : public EditorWidgetBase
 	{
 	public:
-		ScriptEditorWidget(const String& windowTypeName, const HString& displayName, 
-			EditorWidgetContainer& parentContainer, MonoClass* monoClass, MonoObject* managedInstance);
+		ScriptEditorWidget(const String& ns, const String& type, EditorWidgetContainer& parentContainer);
 		~ScriptEditorWidget();
 
+		bool createManagedInstance();
 		void update();
+		void reloadMonoTypes(MonoClass* windowClass);
+		void triggerOnInitialize();
+
+		MonoObject* getManagedInstance() const { return mManagedInstance; }
 
 	private:
+		typedef void(__stdcall *OnInitializeThunkDef) (MonoObject*, MonoException**);
 		typedef void(__stdcall *UpdateThunkDef) (MonoObject*, MonoException**);
 
-		String mWindowTypeName;
+		String mNamespace;
+		String mTypename;
+
+		OnInitializeThunkDef mOnInitializeThunk;
+		OnInitializeThunkDef mOnInitializeInternalThunk;
 		UpdateThunkDef mUpdateThunk;
 		MonoObject* mManagedInstance;
+
 		ScriptEditorWindow* mScriptParent;
 	};
 }

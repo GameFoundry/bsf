@@ -70,15 +70,9 @@ namespace BansheeEngine
 		static void finalizeDeserialization(ManagedComponent* mc)
 		{
 			ManagedSerializableObjectPtr serializableObject = any_cast<ManagedSerializableObjectPtr>(mc->mRTTIData);
-
-			::MonoClass* monoClass = mono_object_get_class(serializableObject->getManagedInstance());
-			MonoType* monoType = mono_class_get_type(monoClass);
-			MonoReflectionType* runtimeType = mono_type_get_object(MonoManager::instance().getDomain(), monoType);
-
-			MonoClass* managedClass = MonoManager::instance().findClass(monoClass);
 			MonoObject* managedInstance = serializableObject->getManagedInstance();
 
-			mc->initialize(managedInstance, runtimeType, managedClass);
+			mc->initialize(managedInstance);
 			mc->mRTTIData = nullptr;
 		}
 

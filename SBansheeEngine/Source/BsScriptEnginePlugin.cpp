@@ -1,13 +1,14 @@
 #include "BsScriptEnginePrerequisites.h"
 #include "BsMonoManager.h"
 #include "BsMonoAssembly.h"
-#include "BsRuntimeScriptObjects.h"
+#include "BsScriptAssemblyManager.h"
 #include "BsScriptResourceManager.h"
 #include "BsScriptGameObjectManager.h"
 #include "BsManagedResourceManager.h"
 #include "BsScriptManager.h"
 #include "BsScriptInput.h"
 #include "BsScriptVirtualInput.h"
+#include "BsScriptObjectManager.h"
 
 // DEBUG ONLY
 #include "BsScriptSceneObject.h"
@@ -43,14 +44,15 @@ namespace BansheeEngine
 		// DEBUG ONLY
 		mono_add_internal_call("BansheeEngine.Program::UnitTest1_GameObjectClone", &unitTest1_GameObjectClone);
 
+		ScriptObjectManager::startUp();
 		ManagedResourceManager::startUp();
-		RuntimeScriptObjects::startUp();
+		ScriptAssemblyManager::startUp();
 		ScriptResourceManager::startUp();
 		ScriptGameObjectManager::startUp();
 		ScriptInput::startUp();
 		ScriptVirtualInput::startUp();
 
-		RuntimeScriptObjects::instance().refreshScriptObjects(BansheeEngineAssemblyName);
+		ScriptAssemblyManager::instance().loadAssemblyInfo(BansheeEngineAssemblyName);
 
 		bansheeEngineAssembly.invoke(ASSEMBLY_ENTRY_POINT);
 
@@ -65,6 +67,7 @@ namespace BansheeEngine
 		ScriptManager::instance().destroy();
 		ScriptGameObjectManager::shutDown();
 		ScriptResourceManager::shutDown();
-		RuntimeScriptObjects::shutDown();
+		ScriptAssemblyManager::shutDown();
+		ScriptObjectManager::shutDown();
 	}
 }

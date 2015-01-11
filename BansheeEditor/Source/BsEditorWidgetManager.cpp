@@ -55,6 +55,11 @@ namespace BansheeEngine
 		mCreateCallbacks[name] = createCallback;
 	}
 
+	void EditorWidgetManager::unregisterWidget(const String& name)
+	{
+		mCreateCallbacks.erase(name);
+	}
+
 	EditorWidgetBase* EditorWidgetManager::open(const String& name)
 	{
 		auto iterFind = mActiveWidgets.find(name);

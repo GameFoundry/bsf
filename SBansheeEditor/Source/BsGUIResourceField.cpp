@@ -10,7 +10,7 @@
 #include "BsGUIResourceTreeView.h"
 #include "BsGUIWidget.h"
 #include "BsGameObjectManager.h"
-#include "BsRuntimeScriptObjects.h"
+#include "BsScriptAssemblyManager.h"
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
 #include "BsResources.h"
@@ -224,7 +224,7 @@ namespace BansheeEngine
 			{
 			case TID_Texture:
 			{
-				if (RuntimeScriptObjects::instance().getTextureClass()->isSubClassOf(acceptedClass))
+				if (ScriptAssemblyManager::instance().getTextureClass()->isSubClassOf(acceptedClass))
 				{
 					setUUID(uuid);
 					found = true;
@@ -233,7 +233,7 @@ namespace BansheeEngine
 				break;
 			case TID_SpriteTexture:
 			{
-				if (RuntimeScriptObjects::instance().getSpriteTextureClass()->isSubClassOf(acceptedClass))
+				if (ScriptAssemblyManager::instance().getSpriteTextureClass()->isSubClassOf(acceptedClass))
 				{
 					setUUID(uuid);
 					found = true;
