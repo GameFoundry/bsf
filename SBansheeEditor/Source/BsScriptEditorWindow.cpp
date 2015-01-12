@@ -19,6 +19,7 @@ namespace BansheeEngine
 	Vector<String> ScriptEditorWindow::AvailableWindowTypes;
 	MonoMethod* ScriptEditorWindow::onResizedMethod = nullptr;
 	MonoMethod* ScriptEditorWindow::onFocusChangedMethod = nullptr;
+	MonoMethod* ScriptEditorWindow::onInitializedInternalMethod = nullptr;
 
 	ScriptEditorWindow::ScriptEditorWindow(ScriptEditorWidget* editorWidget)
 		:ScriptObject(editorWidget->getManagedInstance()), mName(editorWidget->getName()), mEditorWidget(editorWidget), mRefreshInProgress(false)
@@ -50,6 +51,7 @@ namespace BansheeEngine
 
 		onResizedMethod = metaData.scriptClass->getMethod("WindowResized", 2);
 		onFocusChangedMethod = metaData.scriptClass->getMethod("FocusChanged", 1);
+		onInitializedInternalMethod = metaData.scriptClass->getMethod("OnInitializeInternal", 0);
 	}
 
 	MonoObject* ScriptEditorWindow::internal_createOrGetInstance(MonoString* ns, MonoString* typeName)
@@ -282,7 +284,7 @@ namespace BansheeEngine
 
 	ScriptEditorWidget::ScriptEditorWidget(const String& ns, const String& type, EditorWidgetContainer& parentContainer)
 		:EditorWidgetBase(HString(toWString(type)), ns + "." + type, parentContainer), mNamespace(ns), mTypename(type),
-		mUpdateThunk(nullptr), mManagedInstance(nullptr), mOnInitializeInternalThunk(nullptr), mOnInitializeThunk(nullptr)
+		mUpdateThunk(nullptr), mManagedInstance(nullptr), mOnInitializeThunk(nullptr)
 	{
 		createManagedInstance();
 	}
@@ -314,13 +316,8 @@ namespace BansheeEngine
 
 	void ScriptEditorWidget::triggerOnInitialize()
 	{
-		if (mOnInitializeInternalThunk != nullptr && mManagedInstance != nullptr)
-		{
-			MonoException* exception = nullptr;
-			mOnInitializeInternalThunk(mManagedInstance, &exception);
-
-			MonoUtil::throwIfException(exception);
-		}
+		if (mManagedInstance != nullptr)
+			ScriptEditorWindow::onInitializedInternalMethod->invoke(mManagedInstance, nullptr);
 
 		if (mOnInitializeThunk != nullptr && mManagedInstance != nullptr)
 		{
@@ -359,10 +356,5 @@ namespace BansheeEngine
 
 		if (onInitializeMethod != nullptr)
 			mOnInitializeThunk = (OnInitializeThunkDef)onInitializeMethod->getThunk();
-
-		MonoMethod* onInitializeInternalMethod = windowClass->getMethod("OnInitializeInternal", 0);
-
-		if (onInitializeInternalMethod != nullptr)
-			mOnInitializeInternalThunk = (OnInitializeThunkDef)onInitializeInternalMethod->getThunk();
 	}
 }

@@ -25,6 +25,7 @@ namespace BansheeEngine
 
 		static void registerManagedEditorWindows();
 		static void clearRegisteredEditorWindow();
+
 	private:
 		friend class ScriptEditorWidget;
 
@@ -61,6 +62,7 @@ namespace BansheeEngine
 
 		static MonoMethod* onResizedMethod;
 		static MonoMethod* onFocusChangedMethod;
+		static MonoMethod* onInitializedInternalMethod;
 
 		// Global editor window management methods
 		static void registerScriptEditorWindow(ScriptEditorWindow* editorWindow);
@@ -93,7 +95,6 @@ namespace BansheeEngine
 		String mTypename;
 
 		OnInitializeThunkDef mOnInitializeThunk;
-		OnInitializeThunkDef mOnInitializeInternalThunk;
 		UpdateThunkDef mUpdateThunk;
 		MonoObject* mManagedInstance;
 

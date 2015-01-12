@@ -16,8 +16,6 @@ Add support for multiple components of the same type
    - Instantiate that once a specific component instance cannot be found, also save the backup data on that missing component in case it gets restored
    - Every assembly reload try to restore all missing components if possible
 
-Get rid of thunks? I cannot receive exceptions from thunks apparently so a C# exception causes an access violation.
-
 <<<<Multi-resource saving>>>>:
  - Modify Font so it doesn't contain a texture, but instead keeps a handle to it
  - Register it in its meta file
@@ -31,6 +29,8 @@ Add cutoff plane when rendering discs for rotation handle.
 
 I can get mono errors by checking g_print calls in goutput.c
  - Calling thunks incorrectly can cause those weird errors with no real callstack
+
+Running embedded mono with VS attached causes managed null refs to be registered as access violations
 
 Crash on GLTextureBuffer::download on shutdown (OpenGL error invalid enum)
 Create a stack allocatable custom vector implementation and make getResourceDependencies and getCoreDependencies use it

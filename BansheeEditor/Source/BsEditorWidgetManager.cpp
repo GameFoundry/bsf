@@ -273,6 +273,9 @@ namespace BansheeEngine
 		{
 			EditorWidgetBase* widget = widgetData.second;
 			EditorWidgetContainer* parentContainer = widget->_getParent();
+			if (parentContainer == nullptr)
+				continue;
+
 			EditorWindowBase* parentWindow = parentContainer->getParentWindow();
 			RenderWindowPtr parentRenderWindow = parentWindow->_getRenderWindow();
 

@@ -8,11 +8,15 @@
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32 && BS_COMPILER == BS_COMPILER_MSVC
 #include <windows.h>
+#include <iostream>
 
 void logToIDEConsole(const BansheeEngine::String& message)
 {
 	OutputDebugString(message.c_str());
 	OutputDebugString("\n");
+
+	// Also default output in case we're running without debugger attached
+	std::cout << message << std::endl;
 }
 #else
 void logToIDEConsole(const BansheeEngine::String& message)

@@ -175,7 +175,7 @@ namespace BansheeEngine
 		int monoPrimitiveType = mono_type_get_type(monoType);
 		
 		// If enum get the enum base data type
-		bool isEnum = mono_class_is_enum(monoClass->_getInternalClass());
+		bool isEnum = mono_class_is_enum(monoClass->_getInternalClass()) == 1;
 		if (isEnum)
 		{
 			MonoType* underlyingType = mono_type_get_underlying_type(monoType);
