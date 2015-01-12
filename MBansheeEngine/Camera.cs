@@ -11,7 +11,7 @@ namespace BansheeEngine
         private CameraHandler handler;
 
         [SerializeField]
-        private SerializableData serializableData;
+        private SerializableData serializableData = new SerializableData();
 
         internal CameraHandler Handler
         {
@@ -156,6 +156,16 @@ namespace BansheeEngine
         public Ray ScreenToWorldRay(Vector2I value) { return handler.ScreenToWorldRay(value); }
         public Vector3 ProjectPoint(Vector3 value) { return handler.ProjectPoint(value); }
         public Vector3 UnprojectPoint(Vector3 value) { return handler.UnprojectPoint(value); }
+
+        private void OnInitialize()
+        {
+            serializableData.aspectRatio = 1.333f;
+            serializableData.nearClipPlane = 1.0f;
+            serializableData.farClipPlane = 1000.0f;
+            serializableData.fieldOfView = new Degree(60);
+            serializableData.viewportRect = new Rect2(0, 0, 1, 1);
+            serializableData.projectionType = ProjectionType.Perspective;
+        }
 
         private void OnReset()
         {

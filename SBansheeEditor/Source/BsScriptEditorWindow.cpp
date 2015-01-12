@@ -282,7 +282,7 @@ namespace BansheeEngine
 
 	ScriptEditorWidget::ScriptEditorWidget(const String& ns, const String& type, EditorWidgetContainer& parentContainer)
 		:EditorWidgetBase(HString(toWString(type)), ns + "." + type, parentContainer), mNamespace(ns), mTypename(type),
-		mUpdateThunk(nullptr), mManagedInstance(nullptr)
+		mUpdateThunk(nullptr), mManagedInstance(nullptr), mOnInitializeInternalThunk(nullptr), mOnInitializeThunk(nullptr)
 	{
 		createManagedInstance();
 	}

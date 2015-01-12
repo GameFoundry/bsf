@@ -14,6 +14,7 @@
 #include "BsScriptSceneObject.h"
 #include "BsSceneObject.h"
 #include "BsMonoUtil.h"
+#include "BsMonoMethod.h"
 
 namespace BansheeEngine
 {

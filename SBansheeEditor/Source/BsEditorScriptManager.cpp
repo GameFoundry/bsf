@@ -20,8 +20,7 @@ namespace BansheeEngine
 	{
 		const String ASSEMBLY_ENTRY_POINT = "Program::Start";
 
-		ScriptEditorWindow::registerManagedEditorWindows();
-
+		loadMonoTypes();
 		ScriptAssemblyManager::instance().loadAssemblyInfo(BansheeEditorAssemblyName);
 
 		ScriptHandleSliderManager::startUp();
@@ -29,8 +28,7 @@ namespace BansheeEngine
 		HandleManager::startUp<ScriptHandleManager>(ScriptAssemblyManager::instance());
 
 		mOnDomainLoadConn = MonoManager::instance().onDomainReload.connect(std::bind(&EditorScriptManager::loadMonoTypes, this));
-		loadMonoTypes();
-
+		
 		mEditorAssembly->invoke(ASSEMBLY_ENTRY_POINT);
 
 		// Initial update
