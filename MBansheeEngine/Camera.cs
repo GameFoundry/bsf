@@ -165,6 +165,10 @@ namespace BansheeEngine
             serializableData.fieldOfView = new Degree(60);
             serializableData.viewportRect = new Rect2(0, 0, 1, 1);
             serializableData.projectionType = ProjectionType.Perspective;
+            serializableData.layers = 0xFFFFFFFFFFFFFFFF;
+            serializableData.clearColor = new Color(143.0f / 255.0f, 111.0f / 255.0f, 0);
+            serializableData.clearDepth = 1.0f;
+            serializableData.clearFlags = ClearFlags.Color | ClearFlags.Depth | ClearFlags.Stencil;
         }
 
         private void OnReset()
@@ -172,19 +176,19 @@ namespace BansheeEngine
             handler = new CameraHandler(sceneObject);
 
             // Restore saved values after reset
-            //handler.aspectRatio = serializableData.aspectRatio;
-            //handler.nearClipPlane = serializableData.nearClipPlane;
-            //handler.farClipPlane = serializableData.farClipPlane;
-            //handler.fieldOfView = serializableData.fieldOfView;
-            //handler.viewportRect = serializableData.viewportRect;
-            //handler.projectionType = serializableData.projectionType;
-            //handler.orthoHeight = serializableData.orthoHeight;
-            //handler.clearColor = serializableData.clearColor;
-            //handler.clearDepth = serializableData.clearDepth;
-            //handler.clearStencil = serializableData.clearStencil;
-            //handler.clearFlags = serializableData.clearFlags;
-            //handler.priority = serializableData.priority;
-            //handler.layers = serializableData.layers;
+            handler.aspectRatio = serializableData.aspectRatio;
+            handler.nearClipPlane = serializableData.nearClipPlane;
+            handler.farClipPlane = serializableData.farClipPlane;
+            handler.fieldOfView = serializableData.fieldOfView;
+            handler.viewportRect = serializableData.viewportRect;
+            handler.projectionType = serializableData.projectionType;
+            handler.orthoHeight = serializableData.orthoHeight;
+            handler.clearColor = serializableData.clearColor;
+            handler.clearDepth = serializableData.clearDepth;
+            handler.clearStencil = serializableData.clearStencil;
+            handler.clearFlags = serializableData.clearFlags;
+            handler.priority = serializableData.priority;
+            handler.layers = serializableData.layers;
 
             // TODO - Make RenderTexture a resource so I can save/restore it?
         }
