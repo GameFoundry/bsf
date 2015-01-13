@@ -41,5 +41,6 @@ namespace BansheeEngine
 		GameObjectHandle<ManagedComponent> mManagedComponent;
 		String mNamespace;
 		String mType;
+		bool mTypeMissing;
 	};
 }

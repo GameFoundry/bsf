@@ -14,12 +14,13 @@
 namespace BansheeEngine
 {
 	ManagedComponent::ManagedComponent()
-		:mUpdateThunk(nullptr), mOnDestroyThunk(nullptr), mOnInitializedThunk(nullptr), mOnResetThunk(nullptr)
+		:mManagedInstance(nullptr), mUpdateThunk(nullptr), mOnDestroyThunk(nullptr), mOnInitializedThunk(nullptr), 
+		mOnResetThunk(nullptr), mMissingType(false)
 	{ }
 
 	ManagedComponent::ManagedComponent(const HSceneObject& parent, MonoReflectionType* runtimeType)
 		: Component(parent), mManagedInstance(nullptr), mRuntimeType(runtimeType), mUpdateThunk(nullptr), 
-		mOnDestroyThunk(nullptr), mOnInitializedThunk(nullptr), mOnResetThunk(nullptr)
+		mOnDestroyThunk(nullptr), mOnInitializedThunk(nullptr), mOnResetThunk(nullptr), mMissingType(false)
 	{
 		MonoType* monoType = mono_reflection_type_get_type(mRuntimeType);
 		::MonoClass* monoClass = mono_type_get_class(monoType);
@@ -50,31 +51,56 @@ namespace BansheeEngine
 
 	ComponentBackupData ManagedComponent::backup(bool clearExisting)
 	{
-		ManagedSerializableObjectPtr serializableObject = ManagedSerializableObject::createFromExisting(mManagedInstance);
-
-		// Serialize the object information and its fields. We cannot just serialize the entire object because
-		// the managed instance had to be created in a previous step. So we handle creation of the top level object manually.
 		ComponentBackupData backupData;
-		if (serializableObject != nullptr)
+
+		// If type is not missing read data from actual managed instance, instead just 
+		// return the data we backed up before the type was lost
+		if (!mMissingType)
 		{
-			ManagedSerializableObjectInfoPtr objectInfo = serializableObject->getObjectInfo();
-			ManagedSerializableObjectDataPtr objectData = serializableObject->getObjectData();
+			ManagedSerializableObjectPtr serializableObject = ManagedSerializableObject::createFromExisting(mManagedInstance);
 
-			MemorySerializer ms;
+			// Serialize the object information and its fields. We cannot just serialize the entire object because
+			// the managed instance had to be created in a previous step. So we handle creation of the top level object manually.
+			
+			if (serializableObject != nullptr)
+			{
+				ManagedSerializableObjectInfoPtr objectInfo = serializableObject->getObjectInfo();
+				ManagedSerializableObjectDataPtr objectData = serializableObject->getObjectData();
 
-			backupData.mTypeInfo.size = 0;
-			backupData.mTypeInfo.data = ms.encode(objectInfo.get(), backupData.mTypeInfo.size);
+				MemorySerializer ms;
 
-			backupData.mObjectData.size = 0;
-			backupData.mObjectData.data = ms.encode(objectData.get(), backupData.mObjectData.size);
+				backupData.mTypeInfo.size = 0;
+				backupData.mTypeInfo.data = ms.encode(objectInfo.get(), backupData.mTypeInfo.size);
+
+				backupData.mObjectData.size = 0;
+				backupData.mObjectData.data = ms.encode(objectData.get(), backupData.mObjectData.size);
+			}
+			else
+			{
+				backupData.mTypeInfo.size = 0;
+				backupData.mTypeInfo.data = nullptr;
+
+				backupData.mObjectData.size = 0;
+				backupData.mObjectData.data = nullptr;
+			}
 		}
 		else
 		{
+			MemorySerializer ms;
+
 			backupData.mTypeInfo.size = 0;
-			backupData.mTypeInfo.data = nullptr;
+
+			if (mMissingTypeObjectInfo != nullptr)
+				backupData.mTypeInfo.data = ms.encode(mMissingTypeObjectInfo.get(), backupData.mTypeInfo.size);
+			else
+				backupData.mTypeInfo.data = nullptr;
 
 			backupData.mObjectData.size = 0;
-			backupData.mObjectData.data = nullptr;
+
+			if (mMissingTypeObjectData != nullptr)
+				backupData.mObjectData.data = ms.encode(mMissingTypeObjectData.get(), backupData.mObjectData.size);
+			else
+				backupData.mObjectData.data = nullptr;
 		}
 
 		if (clearExisting)
@@ -95,7 +121,7 @@ namespace BansheeEngine
 		return backupData;
 	}
 
-	void ManagedComponent::restore(MonoObject* instance, const ComponentBackupData& data)
+	void ManagedComponent::restore(MonoObject* instance, const ComponentBackupData& data, bool missingType)
 	{
 		initialize(instance);
 
@@ -105,9 +131,25 @@ namespace BansheeEngine
 			ManagedSerializableObjectInfoPtr objectInfo = std::static_pointer_cast<ManagedSerializableObjectInfo>(ms.decode(data.mTypeInfo.data, data.mTypeInfo.size));
 			ManagedSerializableObjectDataPtr objectData = std::static_pointer_cast<ManagedSerializableObjectData>(ms.decode(data.mObjectData.data, data.mObjectData.size));
 
-			ManagedSerializableObjectPtr serializableObject = ManagedSerializableObject::createFromExisting(instance);
-			serializableObject->setObjectData(objectData, objectInfo);
+			if (!missingType)
+			{
+				ManagedSerializableObjectPtr serializableObject = ManagedSerializableObject::createFromExisting(instance);
+				serializableObject->setObjectData(objectData, objectInfo);
+			}
+			else
+			{
+				mMissingTypeObjectInfo = objectInfo;
+				mMissingTypeObjectData = objectData;
+			}
 		}
+
+		if (!missingType)
+		{
+			mMissingTypeObjectInfo = nullptr;
+			mMissingTypeObjectData = nullptr;
+		}
+
+		mMissingType = missingType;
 	}
 
 	void ManagedComponent::initialize(MonoObject* object)

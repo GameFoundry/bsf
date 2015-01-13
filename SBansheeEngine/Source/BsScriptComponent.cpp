@@ -15,7 +15,7 @@
 namespace BansheeEngine
 {
 	ScriptComponent::ScriptComponent(MonoObject* instance)
-		:ScriptObject(instance)
+		:ScriptObject(instance), mTypeMissing(false)
 	{ 
 		assert(instance != nullptr);
 
@@ -51,22 +51,6 @@ namespace BansheeEngine
 
 		if (checkIfDestroyed(so))
 			return nullptr;
-
-		// We only allow single component per type
-		const Vector<HComponent>& mComponents = so->getComponents();
-		for(auto& component : mComponents)
-		{
-			if(component->getTypeId() == TID_ManagedComponent)
-			{
-				GameObjectHandle<ManagedComponent> managedComponent = static_object_cast<ManagedComponent>(component);
-
-				if(managedComponent->getRuntimeType() == type)
-				{
-					LOGWRN("Attempting to add a component that already exists on SceneObject \"" + so->getName() + "\"");
-					return managedComponent->getManagedInstance();
-				}
-			}
-		}
 
 		GameObjectHandle<ManagedComponent> mc = so->addComponent<ManagedComponent>(type);
 
@@ -189,8 +173,12 @@ namespace BansheeEngine
 
 		// See if this type even still exists
 		if (!ScriptAssemblyManager::instance().getSerializableObjectInfo(mNamespace, mType, currentObjInfo))
-			return nullptr;
+		{
+			mTypeMissing = true;
+			return ScriptAssemblyManager::instance().getMissingComponentClass()->createInstance(true);
+		}
 
+		mTypeMissing = false;
 		return currentObjInfo->mMonoClass->createInstance(construct);
 	}
 
@@ -207,7 +195,7 @@ namespace BansheeEngine
 	void ScriptComponent::endRefresh(const ScriptObjectBackup& backupData)
 	{
 		ComponentBackupData componentBackup = any_cast<ComponentBackupData>(backupData.data);
-		mManagedComponent->restore(mManagedInstance, componentBackup);
+		mManagedComponent->restore(mManagedInstance, componentBackup, mTypeMissing);
 
 		ScriptGameObjectBase::endRefresh(backupData);
 	}

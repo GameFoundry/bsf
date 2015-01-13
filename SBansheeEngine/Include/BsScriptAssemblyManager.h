@@ -24,6 +24,7 @@ namespace BansheeEngine
 		MonoClass* getSystemGenericListClass() const { return mSystemGenericListClass; }
 		MonoClass* getSystemGenericDictionaryClass() const { return mSystemGenericDictionaryClass; }
 		MonoClass* getComponentClass() const { return mComponentClass; }
+		MonoClass* getMissingComponentClass() const { return mMissingComponentClass; }
 		MonoClass* getSceneObjectClass() const { return mSceneObjectClass; }
 		MonoClass* getManagedResourceClass() const { return mManagedResourceClass; }
 		MonoClass* getTextureClass() const { return mTextureClass; }
@@ -41,6 +42,7 @@ namespace BansheeEngine
 
 		MonoClass* mComponentClass;
 		MonoClass* mSceneObjectClass;
+		MonoClass* mMissingComponentClass;
 
 		MonoClass* mTextureClass;
 		MonoClass* mSpriteTextureClass;

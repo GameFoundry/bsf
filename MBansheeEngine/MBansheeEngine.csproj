@@ -95,6 +95,7 @@
     <Compile Include="Math\Rect2.cs" />
     <Compile Include="Math\Rect2I.cs" />
     <Compile Include="Math\Vector2I.cs" />
+    <Compile Include="MissingComponent.cs" />
     <Compile Include="PixelData.cs" />
     <Compile Include="PixelUtility.cs" />
     <Compile Include="Program.cs" />

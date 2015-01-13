@@ -17,7 +17,7 @@ namespace BansheeEngine
 		:mBaseTypesInitialized(false), mSerializeObjectAttribute(nullptr), mDontSerializeFieldAttribute(nullptr), 
 		mComponentClass(nullptr), mSceneObjectClass(nullptr), mTextureClass(nullptr), mSpriteTextureClass(nullptr),
 		mSerializeFieldAttribute(nullptr), mHideInInspectorAttribute(nullptr), mSystemArrayClass(nullptr), mSystemGenericListClass(nullptr),
-		mSystemGenericDictionaryClass(nullptr), mManagedResourceClass(nullptr), mFontClass(nullptr)
+		mSystemGenericDictionaryClass(nullptr), mManagedResourceClass(nullptr), mFontClass(nullptr), mMissingComponentClass(nullptr)
 	{
 
 	}
@@ -382,6 +382,7 @@ namespace BansheeEngine
 
 		mComponentClass = nullptr;
 		mSceneObjectClass = nullptr;
+		mMissingComponentClass = nullptr;
 
 		mManagedResourceClass = nullptr;
 		mTextureClass = nullptr;
@@ -426,6 +427,10 @@ namespace BansheeEngine
 		mComponentClass = bansheeEngineAssembly->getClass("BansheeEngine", "Component");
 		if(mComponentClass == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find Component managed class.");
+
+		mMissingComponentClass = bansheeEngineAssembly->getClass("BansheeEngine", "MissingComponent");
+		if (mMissingComponentClass == nullptr)
+			BS_EXCEPT(InvalidStateException, "Cannot find MissingComponent managed class.");
 
 		mSceneObjectClass = bansheeEngineAssembly->getClass("BansheeEngine", "SceneObject");
 		if(mSceneObjectClass == nullptr)

@@ -45,12 +45,45 @@ namespace BansheeEngine
 			obj->mRTTIData = val;
 		}
 
+		bool& getMissingType(ManagedComponent* obj)
+		{
+			return obj->mMissingType;
+		}
+
+		void setMissingType(ManagedComponent* obj, bool& val)
+		{
+			obj->mMissingType = val;
+		}
+
+		ManagedSerializableObjectInfoPtr getMissingTypeObjectInfo(ManagedComponent* obj)
+		{
+			return obj->mMissingTypeObjectInfo;
+		}
+
+		void setMissingTypeObjectInfo(ManagedComponent* obj, ManagedSerializableObjectInfoPtr val)
+		{
+			obj->mMissingTypeObjectInfo = val;
+		}
+
+		ManagedSerializableObjectDataPtr getMissingTypeObjectData(ManagedComponent* obj)
+		{
+			return obj->mMissingTypeObjectData;
+		}
+
+		void setMissingTypeObjectData(ManagedComponent* obj, ManagedSerializableObjectDataPtr val)
+		{
+			obj->mMissingTypeObjectData = val;
+		}
+
 	public:
 		ManagedComponentRTTI()
 		{
 			addPlainField("mNamespace", 0, &ManagedComponentRTTI::getNamespace, &ManagedComponentRTTI::setNamespace);
 			addPlainField("mTypename", 1, &ManagedComponentRTTI::getTypename, &ManagedComponentRTTI::setTypename);
 			addReflectablePtrField("mObjectData", 2, &ManagedComponentRTTI::getObjectData, &ManagedComponentRTTI::setObjectData);
+			addPlainField("mMissingType", 3, &ManagedComponentRTTI::getMissingType, &ManagedComponentRTTI::setMissingType);
+			addReflectablePtrField("mMissingTypeObjectInfo", 4, &ManagedComponentRTTI::getMissingTypeObjectInfo, &ManagedComponentRTTI::setMissingTypeObjectInfo);
+			addReflectablePtrField("mMissingTypeObjectData", 5, &ManagedComponentRTTI::getMissingTypeObjectData, &ManagedComponentRTTI::setMissingTypeObjectData);
 		}
 
 		void onSerializationStarted(IReflectable* obj)

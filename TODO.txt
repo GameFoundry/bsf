@@ -3,18 +3,7 @@
 <<<<<Assembly refresh>>>>>
 
 When serializing Camera I cannot save the reference to RenderTexture. Make it a Resource?
-Enum serialization probably doesn't work. I'll need to fix that before serializing Camera as it will try to serialize multiple enums
- - Try using mono_type_get_underlying_type(monoType); to detect actual type of the enum (or possibly mono_class_enum_basetype)
- - Make sure I don't just store enum as int as-is, as that might cause problems when deserializing if enum underlying type changed (e.g. it used to be int64 but is now int32)
-
-When component type cannot be found upon refresh it will still remain on SceneObject, invisible. Make sure it is not saved as such, or make it visible and removable.
-
-Add support for multiple components of the same type
-  - This can be changed on per-component basis
-  - How does that even work with ManagedComponent right now?
-  - Add "MissingComponent" ManagedComponent type
-   - Instantiate that once a specific component instance cannot be found, also save the backup data on that missing component in case it gets restored
-   - Every assembly reload try to restore all missing components if possible
+Add a "Assembly Refresh" button so I can actually test it
 
 <<<<Multi-resource saving>>>>:
  - Modify Font so it doesn't contain a texture, but instead keeps a handle to it

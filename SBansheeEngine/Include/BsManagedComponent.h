@@ -21,7 +21,7 @@ namespace BansheeEngine
 		const String& getManagedFullTypeName() const { return mFullTypeName; }
 
 		ComponentBackupData backup(bool clearExisting = true);
-		void restore(MonoObject* instance, const ComponentBackupData& data);
+		void restore(MonoObject* instance, const ComponentBackupData& data, bool missingType);
 
 		void triggerOnReset();
 
@@ -38,6 +38,11 @@ namespace BansheeEngine
 		String mNamespace;
 		String mTypeName;
 		String mFullTypeName;
+
+		// We store data of a missing component type in hope it will be restored later
+		bool mMissingType;
+		ManagedSerializableObjectInfoPtr mMissingTypeObjectInfo;
+		ManagedSerializableObjectDataPtr mMissingTypeObjectData;
 
 		OnInitializedThunkDef mOnInitializedThunk;
 		UpdateThunkDef mUpdateThunk;
