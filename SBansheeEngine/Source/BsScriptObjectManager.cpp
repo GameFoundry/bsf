@@ -38,6 +38,8 @@ namespace BansheeEngine
 		MonoManager::instance().loadScriptDomain();
 		ScriptAssemblyManager::instance().refreshAssemblyInfo();
 
+		onRefreshDomainLoaded();
+
 		for (auto& scriptObject : mScriptObjects)
 			scriptObject->_restoreManagedInstance();
 

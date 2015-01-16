@@ -1,6 +1,6 @@
 #include "BsEditorScriptManager.h"
 #include "BsScriptEditorWindow.h"
-#include "BsMonoManager.h"
+#include "BsScriptObjectManager.h"
 #include "BsMonoAssembly.h"
 #include "BsMonoClass.h"
 #include "BsMonoMethod.h"
@@ -14,6 +14,7 @@
 namespace BansheeEngine
 {
 	const float EditorScriptManager::EDITOR_UPDATE_RATE = 1.0f/60.0f; // Seconds
+	bool EditorScriptManager::mDebugRefresh = false;
 
 	EditorScriptManager::EditorScriptManager()
 		:mEditorAssembly(nullptr), mProgramEdClass(nullptr), mUpdateMethod(nullptr)
@@ -27,7 +28,8 @@ namespace BansheeEngine
 		ScriptGizmoManager::startUp(ScriptAssemblyManager::instance());
 		HandleManager::startUp<ScriptHandleManager>(ScriptAssemblyManager::instance());
 
-		mOnDomainLoadConn = MonoManager::instance().onDomainReload.connect(std::bind(&EditorScriptManager::loadMonoTypes, this));
+		
+		mOnDomainLoadConn = ScriptObjectManager::instance().onRefreshDomainLoaded.connect(std::bind(&EditorScriptManager::loadMonoTypes, this));
 		
 		mEditorAssembly->invoke(ASSEMBLY_ENTRY_POINT);
 
@@ -58,7 +60,18 @@ namespace BansheeEngine
 			mLastUpdateTime += numUpdates * EDITOR_UPDATE_RATE;
 		}
 
+		if (mDebugRefresh)
+		{
+			ScriptObjectManager::instance().refreshAssemblies();
+			mDebugRefresh = false;
+		}
+
 		ScriptGizmoManager::instance().update();
+	}
+
+	void EditorScriptManager::debug_refreshAssembly()
+	{
+		mDebugRefresh = true;
 	}
 
 	void EditorScriptManager::loadMonoTypes()
@@ -73,5 +86,9 @@ namespace BansheeEngine
 
 		ScriptEditorWindow::clearRegisteredEditorWindow();
 		ScriptEditorWindow::registerManagedEditorWindows();
+
+		// DEBUG ONLY
+		MonoClass* debugWindowClass = mEditorAssembly->getClass("BansheeEditor", "DebugWindow");
+		debugWindowClass->addInternalCall("Internal_RefreshAssembly", &EditorScriptManager::debug_refreshAssembly);
 	}
 }

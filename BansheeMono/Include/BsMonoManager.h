@@ -42,27 +42,6 @@ namespace BansheeEngine
 		MonoClass* findClass(::MonoClass* rawMonoClass);
 
 		/**
-		 * @brief	Returns the type name of the provided object, with namespace.
-		 *
-		 * @param 	obj	If non-null, the object to get the type name of.
-		 */
-		String getFullTypeName(MonoObject* obj);
-
-		/**
-		 * @brief	Returns the namespace of the provided object.
-		 *
-		 * @param 	obj	If non-null, the object to get the namespace of.
-		 */
-		String getNamespace(MonoObject* obj);
-
-		/**
-		 * @brief	Returns the type name of the provided object, without namespace.
-		 *
-		 * @param 	obj	If non-null, the object to get the type name of.
-		 */
-		String getTypeName(MonoObject* obj);
-
-		/**
 		 * @brief	Returns the current Mono domains.
 		 */
 		MonoDomain* getDomain() const { return mScriptDomain; }
@@ -92,11 +71,6 @@ namespace BansheeEngine
 		 */
 		static void registerScriptType(ScriptMeta* metaData);
 
-		/**
-		 * @brief	Triggered right after a domain was reloaded. This signals the outside world that they should
-		 *			update any kept Mono references as the old ones will no longer be valid.
-		 */
-		Event<void()> onDomainReload;
 	private:
 		/**
 		 * @brief	Initializes a previous loaded assembly.

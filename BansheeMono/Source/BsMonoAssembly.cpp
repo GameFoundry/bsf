@@ -162,8 +162,9 @@ namespace BansheeEngine
 		if(iterFind != mClassesByRaw.end())
 			return iterFind->second;
 
-		String ns = mono_class_get_namespace(rawMonoClass);
-		String typeName = mono_class_get_name(rawMonoClass);
+		String ns;
+		String typeName;
+		MonoUtil::getClassName(rawMonoClass, ns, typeName);
 
 		MonoClass* newClass = new (bs_alloc<MonoClass>()) MonoClass(ns, typeName, rawMonoClass, this);
 		
@@ -178,12 +179,39 @@ namespace BansheeEngine
 		return newClass;
 	}
 
+	MonoClass* MonoAssembly::getClass(const String& ns, const String& typeName, ::MonoClass* rawMonoClass) const
+	{
+		if (!mIsLoaded)
+			BS_EXCEPT(InvalidStateException, "Trying to use an unloaded assembly.");
+
+		if (rawMonoClass == nullptr)
+			return nullptr;
+
+		auto iterFind = mClassesByRaw.find(rawMonoClass);
+
+		if (iterFind != mClassesByRaw.end())
+			return iterFind->second;
+
+		MonoClass* newClass = new (bs_alloc<MonoClass>()) MonoClass(ns, typeName, rawMonoClass, this);
+
+		mClassesByRaw[rawMonoClass] = newClass;
+
+		if (!isGenericClass(typeName)) // No point in referencing generic types by name as all instances share it
+		{
+			MonoAssembly::ClassId classId(ns, typeName);
+			mClasses[classId] = newClass;
+		}
+
+		return newClass;
+	}
+
 	const Vector<MonoClass*>& MonoAssembly::getAllClasses() const
 	{
 		if(mHaveCachedClassList)
 			return mCachedClassList;
-
+		
 		mCachedClassList.clear();
+		Stack<MonoClass*> todo;
 
 		int numRows = mono_image_get_table_rows (mMonoImage, MONO_TABLE_TYPEDEF);
 
@@ -191,13 +219,42 @@ namespace BansheeEngine
 		{
 			::MonoClass* monoClass = mono_class_get (mMonoImage, (i + 1) | MONO_TOKEN_TYPE_DEF);
 
-			String ns = mono_class_get_namespace(monoClass);
-			String type = mono_class_get_name(monoClass);
+			String ns;
+			String type;
+			MonoUtil::getClassName(monoClass, ns, type);
 
 			MonoClass* curClass = getClass(ns, type);
 
-			if(curClass != nullptr)
+			if (curClass != nullptr)
+			{
+				// Get nested types if it has any
+				todo.push(curClass);
+				while (!todo.empty())
+				{
+					MonoClass* curNestedClass = todo.top();
+					todo.pop();
+
+					void* iter = nullptr;
+					do
+					{
+						::MonoClass* rawNestedClass = rawNestedClass = mono_class_get_nested_types(curNestedClass->_getInternalClass(), &iter);
+						if (rawNestedClass == nullptr)
+							break;
+
+						String nestedType = curNestedClass->getTypeName() + "+" + mono_class_get_name(rawNestedClass);
+
+						MonoClass* nestedClass = getClass(ns, nestedType, rawNestedClass);
+						if (nestedClass != nullptr)
+						{
+							mCachedClassList.push_back(nestedClass);
+							todo.push(nestedClass);
+						}
+
+					} while (true);					
+				}
+
 				mCachedClassList.push_back(curClass);
+			}
 		}
 
 		mHaveCachedClassList = true;

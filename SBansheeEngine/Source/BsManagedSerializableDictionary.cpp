@@ -6,6 +6,7 @@
 #include "BsMonoClass.h"
 #include "BsMonoMethod.h"
 #include "BsMonoProperty.h"
+#include "BsMonoUtil.h"
 
 namespace BansheeEngine
 {
@@ -57,9 +58,10 @@ namespace BansheeEngine
 		if(managedInstance == nullptr)
 			return nullptr;
 
-		::MonoClass* monoClass = mono_object_get_class(managedInstance);
-		String elementNs = mono_class_get_namespace(monoClass);
-		String elementTypeName = mono_class_get_name(monoClass);
+		String elementNs;
+		String elementTypeName;
+		MonoUtil::getClassName(managedInstance, elementNs, elementTypeName);
+
 		String fullName = elementNs + "." + elementTypeName;
 
 		if(ScriptAssemblyManager::instance().getSystemGenericDictionaryClass()->getFullName() != fullName)

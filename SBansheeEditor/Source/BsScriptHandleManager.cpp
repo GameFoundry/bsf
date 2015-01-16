@@ -9,6 +9,7 @@
 #include "BsSelection.h"
 #include "BsSceneObject.h"
 #include "BsManagedComponent.h"
+#include "BsScriptObjectManager.h"
 
 using namespace std::placeholders;
 
@@ -17,7 +18,7 @@ namespace BansheeEngine
 	ScriptHandleManager::ScriptHandleManager(ScriptAssemblyManager& scriptObjectManager)
 		:mScriptObjectManager(scriptObjectManager)
 	{
-		mDomainLoadConn = MonoManager::instance().onDomainReload.connect(std::bind(&ScriptHandleManager::reloadAssemblyData, this));
+		mDomainLoadConn = ScriptObjectManager::instance().onRefreshDomainLoaded.connect(std::bind(&ScriptHandleManager::reloadAssemblyData, this));
 		reloadAssemblyData();
 	}
 

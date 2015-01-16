@@ -101,10 +101,10 @@ namespace BansheeEngine
 
 	void ScriptInputConfiguration::_onManagedInstanceDeleted()
 	{
-		mManagedInstance = nullptr;
-
 		UINT64 configId = (UINT64)mInputConfig.get();
 		ScriptInputConfigurations.erase(configId);
+
+		ScriptObject::_onManagedInstanceDeleted();
 	}
 
 	ScriptVirtualAxis::ScriptVirtualAxis(MonoObject* instance)

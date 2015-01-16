@@ -57,6 +57,7 @@ namespace BansheeEditor
 
         private InspectorWindow inspector;
         private SceneWindow scene;
+        private DebugWindow debug;
 
         // DEBUG ONLY
         Debug_Component1 dbgComponent;
@@ -85,6 +86,7 @@ namespace BansheeEditor
             // Open windows
             inspector = EditorWindow.OpenWindow<InspectorWindow>();
             scene = EditorWindow.OpenWindow<SceneWindow>();
+            debug = EditorWindow.OpenWindow<DebugWindow>();
 
             // DEBUG ONLY
 

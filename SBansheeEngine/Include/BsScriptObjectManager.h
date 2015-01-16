@@ -15,6 +15,12 @@ namespace BansheeEngine
 
 		void refreshAssemblies();
 
+		/**
+		 * @brief	Triggered right after a domain was reloaded. This signals the outside world that they should
+		 *			update any kept Mono references as the old ones will no longer be valid.
+		 */
+		Event<void()> onRefreshDomainLoaded;
+
 		Event<void()> onRefreshComplete;
 	private:
 		Set<ScriptObjectBase*> mScriptObjects;

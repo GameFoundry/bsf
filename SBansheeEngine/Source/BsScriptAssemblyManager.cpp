@@ -468,6 +468,9 @@ namespace BansheeEngine
 		String fullName = ns + "." + typeName;
 		for(auto& curAssembly : mAssemblyInfos)
 		{
+			if (curAssembly.second == nullptr)
+				continue;
+
 			auto iterFind = curAssembly.second->mTypeNameToId.find(fullName);
 			if(iterFind != curAssembly.second->mTypeNameToId.end())
 			{

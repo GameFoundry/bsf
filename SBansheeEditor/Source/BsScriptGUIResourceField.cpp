@@ -53,8 +53,9 @@ namespace BansheeEngine
 		MonoType* monoType = mono_reflection_type_get_type(type);
 		::MonoClass* monoClass = mono_type_get_class(monoType);
 
-		String typeNamespace = mono_class_get_namespace(monoClass);
-		String typeName = mono_class_get_name(monoClass);
+		String typeNamespace;
+		String typeName;
+		MonoUtil::getClassName(monoClass, typeNamespace, typeName);
 
 		GUIResourceField* guiResourceField = nullptr;
 		if (withTitle)

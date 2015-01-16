@@ -11,7 +11,7 @@
 #include "BsManagedComponent.h"
 #include "BsGizmoManager.h"
 #include "BsSelection.h"
-#include "BsMonoManager.h"
+#include "BsScriptObjectManager.h"
 
 using namespace std::placeholders;
 
@@ -20,7 +20,7 @@ namespace BansheeEngine
 	ScriptGizmoManager::ScriptGizmoManager(ScriptAssemblyManager& scriptObjectManager)
 		:mScriptObjectManager(scriptObjectManager), mDrawGizmoAttribute(nullptr), mFlagsField(nullptr)
 	{
-		mDomainLoadedConn = MonoManager::instance().onDomainReload.connect(std::bind(&ScriptGizmoManager::reloadAssemblyData, this));
+		mDomainLoadedConn = ScriptObjectManager::instance().onRefreshDomainLoaded.connect(std::bind(&ScriptGizmoManager::reloadAssemblyData, this));
 		reloadAssemblyData();
 	}
 

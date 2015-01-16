@@ -11,6 +11,7 @@
 #include "BsScriptSceneObject.h"
 #include "BsManagedComponent.h"
 #include "BsSceneObject.h"
+#include "BsMonoUtil.h"
 
 namespace BansheeEngine
 {
@@ -19,9 +20,7 @@ namespace BansheeEngine
 	{ 
 		assert(instance != nullptr);
 
-		::MonoClass* monoClass = mono_object_get_class(instance);
-		mNamespace = mono_class_get_namespace(monoClass);
-		mType = mono_class_get_name(monoClass);
+		MonoUtil::getClassName(instance, mNamespace, mType);
 	}
 
 	void ScriptComponent::initRuntimeData()
@@ -196,7 +195,7 @@ namespace BansheeEngine
 	{
 		ComponentBackupData componentBackup = any_cast<ComponentBackupData>(backupData.data);
 		mManagedComponent->restore(mManagedInstance, componentBackup, mTypeMissing);
-
+		
 		ScriptGameObjectBase::endRefresh(backupData);
 	}
 

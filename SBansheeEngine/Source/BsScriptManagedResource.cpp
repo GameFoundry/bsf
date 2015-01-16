@@ -8,6 +8,7 @@
 #include "BsManagedResource.h"
 #include "BsResources.h"
 #include "BsException.h"
+#include "BsMonoUtil.h"
 
 namespace BansheeEngine
 {
@@ -16,9 +17,7 @@ namespace BansheeEngine
 	{
 		assert(instance != nullptr);
 
-		::MonoClass* monoClass = mono_object_get_class(instance);
-		mNamespace = mono_class_get_namespace(monoClass);
-		mType = mono_class_get_name(monoClass);
+		MonoUtil::getClassName(instance, mNamespace, mType);
 	}
 
 	void ScriptManagedResource::initRuntimeData()

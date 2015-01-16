@@ -49,6 +49,8 @@ namespace BansheeEngine
 			bs_free(iter->buffer);
 		}
 
+		mBufferPieces.clear();
+
 		return resultBuffer;
 	}
 

@@ -3,7 +3,13 @@
 <<<<<Assembly refresh>>>>>
 
 When serializing Camera I cannot save the reference to RenderTexture. Make it a Resource?
-Add a "Assembly Refresh" button so I can actually test it
+Possibly set up automatic refresh in debug mode after initialization? As an ad-hoc unit test
+
+Occasional crash happens in ScriptObjectManager::refreshAssemblies when backupData.data ends up being null (not all the time though)
+
+addComponent gets called during end refresh
+ - This seems to add another Camera to the scene
+ - While the old one contines to exist as well
 
 <<<<Multi-resource saving>>>>:
  - Modify Font so it doesn't contain a texture, but instead keeps a handle to it

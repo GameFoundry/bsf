@@ -25,8 +25,7 @@ namespace BansheeEngine
 		MonoType* monoType = mono_reflection_type_get_type(mRuntimeType);
 		::MonoClass* monoClass = mono_type_get_class(monoType);
 
-		mNamespace = mono_class_get_namespace(monoClass);
-		mTypeName = mono_class_get_name(monoClass);
+		MonoUtil::getClassName(monoClass, mNamespace, mTypeName);
 
 		MonoClass* managedClass = MonoManager::instance().findClass(mNamespace, mTypeName);
 		if(managedClass == nullptr)
@@ -129,7 +128,10 @@ namespace BansheeEngine
 		{
 			MemorySerializer ms;
 			ManagedSerializableObjectInfoPtr objectInfo = std::static_pointer_cast<ManagedSerializableObjectInfo>(ms.decode(data.mTypeInfo.data, data.mTypeInfo.size));
+
+			GameObjectManager::instance().startDeserialization();
 			ManagedSerializableObjectDataPtr objectData = std::static_pointer_cast<ManagedSerializableObjectData>(ms.decode(data.mObjectData.data, data.mObjectData.size));
+			GameObjectManager::instance().endDeserialization();
 
 			if (!missingType)
 			{

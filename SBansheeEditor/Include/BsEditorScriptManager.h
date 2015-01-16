@@ -15,6 +15,7 @@ namespace BansheeEngine
 
 	private:
 		void loadMonoTypes();
+		static void debug_refreshAssembly();
 
 		static const float EDITOR_UPDATE_RATE;
 
@@ -25,5 +26,7 @@ namespace BansheeEngine
 		MonoMethod* mUpdateMethod;
 
 		HEvent mOnDomainLoadConn;
+
+		static bool mDebugRefresh;
 	};
 }

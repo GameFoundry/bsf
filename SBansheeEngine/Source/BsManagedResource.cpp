@@ -10,6 +10,7 @@
 #include "BsManagedSerializableObjectInfo.h"
 #include "BsManagedSerializableObjectData.h"
 #include "BsMemorySerializer.h"
+#include "BsMonoUtil.h"
 #include "BsDebug.h"
 
 namespace BansheeEngine
@@ -24,10 +25,9 @@ namespace BansheeEngine
 		ManagedResourceMetaDataPtr metaData = bs_shared_ptr<ManagedResourceMetaData>();
 		mMetaData = metaData;
 
-		::MonoClass* monoClass = mono_object_get_class(managedInstance);
-
-		metaData->typeNamespace = mono_class_get_namespace(monoClass);
-		metaData->typeName = mono_class_get_name(monoClass);
+		String elementNs;
+		String elementTypeName;
+		MonoUtil::getClassName(managedInstance, metaData->typeNamespace, metaData->typeName);
 
 		MonoClass* managedClass = MonoManager::instance().findClass(metaData->typeNamespace, metaData->typeName);
 		if (managedClass == nullptr)

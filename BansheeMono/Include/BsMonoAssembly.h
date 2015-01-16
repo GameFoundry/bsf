@@ -72,6 +72,13 @@ namespace BansheeEngine
 		MonoAssembly(const String& path, const String& name);
 
 		/**
+	     * @brief	Attempts to find a managed class with the specified namespace and name
+		 *			in this assembly. Registers a new class using the provided raw class if
+		 *			one cannot be found. Returns null provided raw class is null.
+	     */
+		MonoClass* getClass(const String& namespaceName, const String& name, ::MonoClass* rawMonoClass) const;
+
+		/**
 		 * @brief	Loads an assembly into the specified domain.
 		 */
 		void load(MonoDomain* domain);

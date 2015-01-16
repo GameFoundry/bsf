@@ -6,6 +6,7 @@
 #include "BsMonoManager.h"
 #include "BsUtil.h"
 #include "BsException.h"
+#include "BsMonoUtil.h"
 #include <mono/metadata/debug-helpers.h>
 #include "BsDebug.h"
 
@@ -280,10 +281,11 @@ namespace BansheeEngine
 		if(monoBase == nullptr)
 			return nullptr;
 
-		String ns = mono_class_get_namespace(monoBase);
-		String typeName = mono_class_get_name(monoBase);
+		String ns;
+		String type;
+		MonoUtil::getClassName(monoBase, ns, type);
 
-		return MonoManager::instance().findClass(ns, typeName);
+		return MonoManager::instance().findClass(ns, type);
 	}
 
 	bool MonoClass::isInstanceOfType(MonoObject* object) const

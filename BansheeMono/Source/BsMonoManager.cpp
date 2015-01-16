@@ -174,56 +174,6 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	String MonoManager::getFullTypeName(MonoObject* obj)
-	{
-		if(obj == nullptr)
-			BS_EXCEPT(InvalidParametersException, "Object cannot be null.");
-
-		::MonoClass* monoClass = mono_object_get_class(obj);
-
-		const char* nameSpaceChars = mono_class_get_namespace(monoClass);
-		String namespaceStr;
-		if(nameSpaceChars != nullptr)
-			namespaceStr = nameSpaceChars;
-
-		const char* typeNameChars = mono_class_get_name(monoClass);
-		String typeNameStr;
-		if(typeNameChars != nullptr)
-			typeNameStr = typeNameChars;
-
-		return namespaceStr + "." + typeNameStr;
-	}
-
-	String MonoManager::getNamespace(MonoObject* obj)
-	{
-		if(obj == nullptr)
-			BS_EXCEPT(InvalidParametersException, "Object cannot be null.");
-
-		::MonoClass* monoClass = mono_object_get_class(obj);
-
-		const char* nameSpaceChars = mono_class_get_namespace(monoClass);
-		String namespaceStr;
-		if(nameSpaceChars != nullptr)
-			namespaceStr = nameSpaceChars;
-
-		return namespaceStr;
-	}
-
-	String MonoManager::getTypeName(MonoObject* obj)
-	{
-		if(obj == nullptr)
-			BS_EXCEPT(InvalidParametersException, "Object cannot be null.");
-
-		::MonoClass* monoClass = mono_object_get_class(obj);
-
-		const char* typeNameChars = mono_class_get_name(monoClass);
-		String typeNameStr;
-		if(typeNameChars != nullptr)
-			typeNameStr = typeNameChars;
-
-		return typeNameStr;
-	}
-
 	void MonoManager::unloadScriptDomain()
 	{
 		if (mScriptDomain != nullptr)
@@ -245,7 +195,8 @@ namespace BansheeEngine
 		for (auto& assemblyEntry : mAssemblies)
 			assemblyEntry.second->unload();
 
-		mIsCoreLoaded = true;
+		mAssemblies.erase("corlib");
+		mIsCoreLoaded = false;
 	}
 
 	void MonoManager::loadScriptDomain()
@@ -269,7 +220,5 @@ namespace BansheeEngine
 			for (auto& assemblyEntry : mAssemblies)
 				initializeAssembly(*assemblyEntry.second);
 		}
-
-		onDomainReload();
 	}
 }

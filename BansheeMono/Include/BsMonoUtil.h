@@ -68,6 +68,55 @@ namespace BansheeEngine
 		}
 
 		/**
+		 * @brief	Outputs name and namespace for the type of the specified object.
+		 */
+		static void getClassName(MonoObject* obj, String& ns, String& typeName)
+		{
+			if (obj == nullptr)
+				return;
+
+			::MonoClass* monoClass = mono_object_get_class(obj);
+			getClassName(monoClass, ns, typeName);
+		}
+
+		/**
+		 * @brief	Outputs name and namespace for the specified type.
+		 */
+		static void getClassName(::MonoClass* monoClass, String& ns, String& typeName)
+		{
+			::MonoClass* nestingClass = mono_class_get_nesting_type(monoClass);
+
+			if (nestingClass == nullptr)
+			{
+				ns = mono_class_get_namespace(monoClass);
+				typeName = mono_class_get_name(monoClass);
+
+				return;
+			}
+			else
+			{
+				typeName = String("+") + mono_class_get_name(monoClass);
+
+				do 
+				{
+					::MonoClass* nextNestingClass = mono_class_get_nesting_type(nestingClass);
+					if (nextNestingClass != nullptr)
+					{
+						typeName = String("+") + mono_class_get_name(nestingClass) + typeName;
+						nestingClass = nextNestingClass;
+					}
+					else
+					{
+						ns = mono_class_get_namespace(nestingClass);
+						typeName = mono_class_get_name(nestingClass) + typeName;
+
+						break;
+					}
+				} while (true);
+			}
+		}
+
+		/**
 		 * @copydoc	throwIfException
 		 */
 		static void throwIfException(MonoException* exception)

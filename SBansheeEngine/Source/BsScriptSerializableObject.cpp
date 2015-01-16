@@ -5,6 +5,7 @@
 #include "BsMonoField.h"
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
+#include "BsMonoUtil.h"
 
 namespace BansheeEngine
 {
@@ -40,8 +41,10 @@ namespace BansheeEngine
 	{
 		MonoType* internalType = mono_reflection_type_get_type(type);
 		::MonoClass* monoClass = mono_type_get_class(internalType);
-		String elementNs = mono_class_get_namespace(monoClass);
-		String elementTypeName = mono_class_get_name(monoClass);
+
+		String elementNs;
+		String elementTypeName;
+		MonoUtil::getClassName(monoClass, elementNs, elementTypeName);
 
 		ManagedSerializableObjectInfoPtr objInfo;
 		ScriptAssemblyManager::instance().getSerializableObjectInfo(elementNs, elementTypeName, objInfo);
