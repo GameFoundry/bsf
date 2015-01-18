@@ -105,6 +105,10 @@ namespace BansheeEngine
 			ManagedSerializableObjectPtr serializableObject = any_cast<ManagedSerializableObjectPtr>(mc->mRTTIData);
 			MonoObject* managedInstance = serializableObject->getManagedInstance();
 
+			// Note: This callback must be triggered before any child ManagedSerializable* object's callbacks.
+			// This is because their callbacks will try to resolve native GameObject handles to managed objects
+			// but the managed ScriptComponent will only be created in the code below.
+			// I'm noting this specially as it's somewhat of a hidden requirement.
 			mc->initialize(managedInstance);
 			mc->mRTTIData = nullptr;
 		}

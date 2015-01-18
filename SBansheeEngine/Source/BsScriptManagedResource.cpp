@@ -28,8 +28,6 @@ namespace BansheeEngine
 	void ScriptManagedResource::internal_createInstance(MonoObject* instance)
 	{
 		HManagedResource resource = ManagedResource::create(instance);
-
-		ScriptResourceManager::instance().createManagedResource(instance, resource);
 	}
 
 	MonoObject* ScriptManagedResource::_createManagedInstance(bool construct)

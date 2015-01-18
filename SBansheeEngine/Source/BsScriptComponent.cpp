@@ -25,7 +25,6 @@ namespace BansheeEngine
 
 	void ScriptComponent::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptComponent::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_AddComponent", &ScriptComponent::internal_addComponent);
 		metaData.scriptClass->addInternalCall("Internal_GetComponent", &ScriptComponent::internal_getComponent);
 		metaData.scriptClass->addInternalCall("Internal_GetComponents", &ScriptComponent::internal_getComponents);
@@ -36,11 +35,6 @@ namespace BansheeEngine
 	void ScriptComponent::setManagedComponent(const GameObjectHandle<ManagedComponent>& managedComponent)
 	{
 		mManagedComponent = managedComponent;
-	}
-
-	void ScriptComponent::internal_createInstance(MonoObject* instance)
-	{
-		ScriptComponent* nativeInstance = new (bs_alloc<ScriptComponent>()) ScriptComponent(instance);
 	}
 
 	MonoObject* ScriptComponent::internal_addComponent(MonoObject* parentSceneObject, MonoReflectionType* type)

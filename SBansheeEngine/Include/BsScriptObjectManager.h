@@ -21,6 +21,7 @@ namespace BansheeEngine
 		 */
 		Event<void()> onRefreshDomainLoaded;
 
+		Event<void()> onRefreshStarted;
 		Event<void()> onRefreshComplete;
 	private:
 		Set<ScriptObjectBase*> mScriptObjects;

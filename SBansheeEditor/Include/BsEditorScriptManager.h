@@ -14,6 +14,8 @@ namespace BansheeEngine
 		void update();
 
 	private:
+		void triggerOnInitialize();
+		void onAssemblyRefreshDone();
 		void loadMonoTypes();
 		static void debug_refreshAssembly();
 
@@ -26,6 +28,7 @@ namespace BansheeEngine
 		MonoMethod* mUpdateMethod;
 
 		HEvent mOnDomainLoadConn;
+		HEvent mOnAssemblyRefreshDoneConn;
 
 		static bool mDebugRefresh;
 	};

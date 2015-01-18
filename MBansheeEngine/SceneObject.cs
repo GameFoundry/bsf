@@ -150,7 +150,7 @@ namespace BansheeEngine
             }
         }
 
-        // For internal use
+        // For internal use by the runtime
         private SceneObject()
         {
             

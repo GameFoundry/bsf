@@ -8,11 +8,11 @@ namespace BansheeEditor
     {
         private static EditorApplication app;
 
-        static void Start()
+        static void OnInitialize()
         {
             app = new EditorApplication();
 
-            DbgResource testResource = new DbgResource();
+            DbgResource testResource = ManagedResource.Create<DbgResource>();
             //ProjectLibrary.Create(testResource, @"testResource");
 
 

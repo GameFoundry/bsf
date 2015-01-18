@@ -10,6 +10,7 @@
 #include "BsEditorWidgetManager.h"
 #include "BsEditorWidgetContainer.h"
 #include "BsMonoAssembly.h"
+#include "BsScriptObjectManager.h"
 
 using namespace std::placeholders;
 
@@ -28,6 +29,8 @@ namespace BansheeEngine
 		mOnWidgetResizedConn = editorWidget->onResized.connect(std::bind(&ScriptEditorWindow::onWidgetResized, this, _1, _2));
 		mOnParentChangedConn = editorWidget->onParentChanged.connect(std::bind(&ScriptEditorWindow::onWidgetParentChanged, this, _1));
 		mOnFocusChangedConn = editorWidget->onFocusChanged.connect(std::bind(&ScriptEditorWindow::onFocusChanged, this, _1));
+
+		mOnAssemblyRefreshStartedConn = ScriptObjectManager::instance().onRefreshStarted.connect(std::bind(&ScriptEditorWindow::onAssemblyRefreshStarted, this));
 	}
 
 	ScriptEditorWindow::~ScriptEditorWindow()
@@ -37,6 +40,8 @@ namespace BansheeEngine
 		mOnWidgetResizedConn.disconnect();
 		mOnParentChangedConn.disconnect();
 		mOnFocusChangedConn.disconnect();
+
+		mOnAssemblyRefreshStartedConn.disconnect();
 	}
 
 	void ScriptEditorWindow::initRuntimeData()
@@ -97,7 +102,9 @@ namespace BansheeEngine
 		auto iterFind = OpenScriptEditorWindows.find(mName);
 		if (iterFind != OpenScriptEditorWindows.end())
 		{
-			mono_gchandle_free(iterFind->second.gcHandle);
+			EditorWindowHandle handle = iterFind->second;
+
+			mono_gchandle_free(handle.gcHandle);
 			iterFind->second.gcHandle = 0;
 		}
 
@@ -126,6 +133,11 @@ namespace BansheeEngine
 		}
 
 		PersistentScriptObjectBase::endRefresh(backupData);
+	}
+
+	void ScriptEditorWindow::onAssemblyRefreshStarted()
+	{
+		mEditorWidget->triggerOnDestroy();
 	}
 
 	MonoObject* ScriptEditorWindow::_createManagedInstance(bool construct)
@@ -284,13 +296,14 @@ namespace BansheeEngine
 
 	ScriptEditorWidget::ScriptEditorWidget(const String& ns, const String& type, EditorWidgetContainer& parentContainer)
 		:EditorWidgetBase(HString(toWString(type)), ns + "." + type, parentContainer), mNamespace(ns), mTypename(type),
-		mUpdateThunk(nullptr), mManagedInstance(nullptr), mOnInitializeThunk(nullptr)
+		mUpdateThunk(nullptr), mManagedInstance(nullptr), mOnInitializeThunk(nullptr), mOnDestroyThunk(nullptr)
 	{
 		createManagedInstance();
 	}
 
 	ScriptEditorWidget::~ScriptEditorWidget()
 	{
+		triggerOnDestroy();
 		ScriptEditorWindow::unregisterScriptEditorWindow(getName());
 	}
 
@@ -304,7 +317,7 @@ namespace BansheeEngine
 
 			if (editorWindowClass != nullptr)
 			{
-				mManagedInstance = editorWindowClass->createInstance(false);
+				mManagedInstance = editorWindowClass->createInstance();
 
 				reloadMonoTypes(editorWindowClass);
 				return true;
@@ -326,6 +339,20 @@ namespace BansheeEngine
 			// Note: Not calling virtual methods. Can be easily done if needed but for now doing this
 			// for some extra speed.
 			mOnInitializeThunk(mManagedInstance, &exception);
+
+			MonoUtil::throwIfException(exception);
+		}
+	}
+
+	void ScriptEditorWidget::triggerOnDestroy()
+	{
+		if (mOnDestroyThunk != nullptr && mManagedInstance != nullptr)
+		{
+			MonoException* exception = nullptr;
+
+			// Note: Not calling virtual methods. Can be easily done if needed but for now doing this
+			// for some extra speed.
+			mOnDestroyThunk(mManagedInstance, &exception);
 
 			MonoUtil::throwIfException(exception);
 		}
@@ -356,5 +383,10 @@ namespace BansheeEngine
 
 		if (onInitializeMethod != nullptr)
 			mOnInitializeThunk = (OnInitializeThunkDef)onInitializeMethod->getThunk();
+
+		MonoMethod* onDestroyMethod = windowClass->getMethod("OnDestroy", 0);
+
+		if (onDestroyMethod != nullptr)
+			mOnDestroyThunk = (OnDestroyThunkDef)onDestroyMethod->getThunk();
 	}
 }

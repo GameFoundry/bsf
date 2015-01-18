@@ -89,9 +89,7 @@ namespace BansheeEngine
 
 		void _restoreManagedInstance()
 		{
-			// Do not construct as constructor usually calls initialization code we don't need when restoring.
-			// Managed type needs to account for that on a per-type basis.
-			mManagedInstance = _createManagedInstance(false);
+			mManagedInstance = _createManagedInstance(true);
 
 			Type* param = (Type*)(Base*)this; // Needed due to multiple inheritance. Safe since Type must point to an class derived from this one.
 

@@ -24,6 +24,8 @@ namespace BansheeEngine
 	{
 		Map<ScriptObjectBase*, ScriptObjectBackup> backupData;
 
+		onRefreshStarted();
+
 		for (auto& scriptObject : mScriptObjects)
 			backupData[scriptObject] = scriptObject->beginRefresh();
 

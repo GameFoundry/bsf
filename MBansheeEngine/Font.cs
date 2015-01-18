@@ -4,9 +4,10 @@ namespace BansheeEngine
 {
     public sealed class Font : Resource // TODO - Dummy class
     {
-        internal Font()
+        internal Font(bool constructNative)
         {
-            Internal_CreateInstance(this);
+            if (constructNative)
+                Internal_CreateInstance(this);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

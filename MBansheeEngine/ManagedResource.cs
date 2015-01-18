@@ -8,9 +8,16 @@ namespace BansheeEngine
 {
     public class ManagedResource : Resource
     {
-        public ManagedResource()
+        // For internal use by the runtime
+        protected ManagedResource()
+        { }
+
+        static public T Create<T>() where T : ManagedResource, new()
         {
-            Internal_CreateInstance(this);
+            T newResource = new T();
+            Internal_CreateInstance(newResource);
+
+            return newResource;
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

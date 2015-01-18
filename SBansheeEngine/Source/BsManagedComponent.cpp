@@ -223,8 +223,6 @@ namespace BansheeEngine
 	{
 		assert(mManagedInstance != nullptr);
 
-		ScriptComponent* nativeInstance = ScriptComponent::toNative(mManagedInstance);
-
 		// Find handle to self
 		HManagedComponent componentHandle;
 		if (mParent != nullptr)
@@ -241,7 +239,7 @@ namespace BansheeEngine
 		}
 
 		assert(componentHandle != nullptr);
-		ScriptGameObjectManager::instance().registerScriptComponent(nativeInstance, componentHandle);
+		ScriptComponent* nativeInstance = ScriptGameObjectManager::instance().createScriptComponent(mManagedInstance, componentHandle);
 
 		if (mOnInitializedThunk != nullptr)
 		{

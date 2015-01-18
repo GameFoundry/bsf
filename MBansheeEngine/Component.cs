@@ -7,17 +7,12 @@ namespace BansheeEngine
     {
         // Internal use only
         protected Component()
-        {
-            Internal_CreateInstance(this);
-        }
+        { }
 
         public SceneObject sceneObject
         {
             get { return Internal_GetSceneObject(mCachedPtr); }
         }
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern SceneObject Internal_CreateInstance(Component instance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern Component Internal_AddComponent(SceneObject parent, Type type);

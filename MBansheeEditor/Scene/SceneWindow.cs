@@ -29,6 +29,14 @@ namespace BansheeEditor
             UpdateRenderTexture(Width, Height);
         }
 
+        private void OnDestroy()
+        {
+            if (camera != null)
+            {
+                camera.sceneObject.Destroy();
+            }
+        }
+
         private bool ScreenToScenePos(Vector2I screenPos, out Vector2I scenePos)
         {
             scenePos = screenPos;

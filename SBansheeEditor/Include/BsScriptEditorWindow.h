@@ -45,6 +45,7 @@ namespace BansheeEngine
 		void onWidgetResized(UINT32 width, UINT32 height);
 		void onWidgetParentChanged(EditorWidgetContainer* newParent);
 		void onFocusChanged(bool inFocus);
+		void onAssemblyRefreshStarted();
 
 		void _onManagedInstanceDeleted();
 		ScriptObjectBackup beginRefresh();
@@ -58,6 +59,7 @@ namespace BansheeEngine
 		HEvent mOnWidgetResizedConn;
 		HEvent mOnParentChangedConn;
 		HEvent mOnFocusChangedConn;
+		HEvent mOnAssemblyRefreshStartedConn;
 		bool mRefreshInProgress;
 
 		static MonoMethod* onResizedMethod;
@@ -84,17 +86,20 @@ namespace BansheeEngine
 		void update();
 		void reloadMonoTypes(MonoClass* windowClass);
 		void triggerOnInitialize();
+		void triggerOnDestroy();
 
 		MonoObject* getManagedInstance() const { return mManagedInstance; }
 
 	private:
 		typedef void(__stdcall *OnInitializeThunkDef) (MonoObject*, MonoException**);
+		typedef void(__stdcall *OnDestroyThunkDef) (MonoObject*, MonoException**);
 		typedef void(__stdcall *UpdateThunkDef) (MonoObject*, MonoException**);
 
 		String mNamespace;
 		String mTypename;
 
 		OnInitializeThunkDef mOnInitializeThunk;
+		OnDestroyThunkDef mOnDestroyThunk;
 		UpdateThunkDef mUpdateThunk;
 		MonoObject* mManagedInstance;
 

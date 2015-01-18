@@ -10,6 +10,7 @@
 #include "BsManagedSerializableObjectInfo.h"
 #include "BsManagedSerializableObjectData.h"
 #include "BsMemorySerializer.h"
+#include "BsScriptResourceManager.h"
 #include "BsMonoUtil.h"
 #include "BsDebug.h"
 
@@ -129,6 +130,7 @@ namespace BansheeEngine
 		mManagedHandle = mono_gchandle_new(mManagedInstance, false);
 		mMyHandle = myHandle;
 
+		ScriptResourceManager::instance().createManagedResource(object, myHandle);
 		ManagedResourceManager::instance().registerManagedResource(mMyHandle);
 	}
 

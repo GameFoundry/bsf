@@ -19,8 +19,6 @@ namespace BansheeEngine
 	EditorScriptManager::EditorScriptManager()
 		:mEditorAssembly(nullptr), mProgramEdClass(nullptr), mUpdateMethod(nullptr)
 	{
-		const String ASSEMBLY_ENTRY_POINT = "Program::Start";
-
 		loadMonoTypes();
 		ScriptAssemblyManager::instance().loadAssemblyInfo(BansheeEditorAssemblyName);
 
@@ -28,11 +26,10 @@ namespace BansheeEngine
 		ScriptGizmoManager::startUp(ScriptAssemblyManager::instance());
 		HandleManager::startUp<ScriptHandleManager>(ScriptAssemblyManager::instance());
 
-		
 		mOnDomainLoadConn = ScriptObjectManager::instance().onRefreshDomainLoaded.connect(std::bind(&EditorScriptManager::loadMonoTypes, this));
+		mOnAssemblyRefreshDoneConn = ScriptObjectManager::instance().onRefreshComplete.connect(std::bind(&EditorScriptManager::onAssemblyRefreshDone, this));
+		triggerOnInitialize();
 		
-		mEditorAssembly->invoke(ASSEMBLY_ENTRY_POINT);
-
 		// Initial update
 		mLastUpdateTime = gTime().getTime();
 		mUpdateMethod->invoke(nullptr, nullptr);
@@ -41,6 +38,7 @@ namespace BansheeEngine
 	EditorScriptManager::~EditorScriptManager()
 	{
 		mOnDomainLoadConn.disconnect();
+		mOnAssemblyRefreshDoneConn.disconnect();
 
 		ScriptHandleSliderManager::shutDown();
 		HandleManager::shutDown();
@@ -72,6 +70,17 @@ namespace BansheeEngine
 	void EditorScriptManager::debug_refreshAssembly()
 	{
 		mDebugRefresh = true;
+	}
+
+	void EditorScriptManager::triggerOnInitialize()
+	{
+		const String ASSEMBLY_ENTRY_POINT = "Program::OnInitialize";
+		mEditorAssembly->invoke(ASSEMBLY_ENTRY_POINT);
+	}
+
+	void EditorScriptManager::onAssemblyRefreshDone()
+	{
+		triggerOnInitialize();
 	}
 
 	void EditorScriptManager::loadMonoTypes()

@@ -34,16 +34,6 @@ namespace BansheeEngine
 		mOnAssemblyReloadDoneConn.disconnect();
 	}
 
-	void ScriptGameObjectManager::registerScriptComponent(ScriptComponent* nativeInstance, const GameObjectHandle<ManagedComponent>& component)
-	{
-		auto findIter = mScriptGameObjects.find(component->getInstanceId());
-		if(findIter != mScriptGameObjects.end())
-			BS_EXCEPT(InvalidStateException, "Script component for this Component already exists.");
-
-		nativeInstance->setManagedComponent(component);
-		mScriptGameObjects[component->getInstanceId()] = ScriptGameObjectEntry(nativeInstance, true);
-	}
-
 	ScriptSceneObject* ScriptGameObjectManager::createScriptSceneObject(const HSceneObject& sceneObject)
 	{
 		MonoClass* sceneObjectClass = ScriptAssemblyManager::instance().getSceneObjectClass();
@@ -64,10 +54,32 @@ namespace BansheeEngine
 		return nativeInstance;
 	}
 
+	ScriptComponent* ScriptGameObjectManager::createScriptComponent(MonoObject* existingInstance, const GameObjectHandle<ManagedComponent>& component)
+	{
+		auto findIter = mScriptGameObjects.find(component->getInstanceId());
+		if(findIter != mScriptGameObjects.end())
+			BS_EXCEPT(InvalidStateException, "Script component for this Component already exists.");
+
+		ScriptComponent* nativeInstance = new (bs_alloc<ScriptComponent>()) ScriptComponent(existingInstance);
+		nativeInstance->setManagedComponent(component);
+		mScriptGameObjects[component->getInstanceId()] = ScriptGameObjectEntry(nativeInstance, true);
+
+		return nativeInstance;
+	}
+
 	ScriptComponent* ScriptGameObjectManager::getScriptComponent(const GameObjectHandle<ManagedComponent>& component) const
 	{
 		auto findIter = mScriptGameObjects.find(component.getInstanceId());
 		if(findIter != mScriptGameObjects.end())
+			return static_cast<ScriptComponent*>(findIter->second.instance);
+
+		return nullptr;
+	}
+
+	ScriptComponent* ScriptGameObjectManager::getScriptComponent(UINT64 instanceId) const
+	{
+		auto findIter = mScriptGameObjects.find(instanceId);
+		if (findIter != mScriptGameObjects.end())
 			return static_cast<ScriptComponent*>(findIter->second.instance);
 
 		return nullptr;
