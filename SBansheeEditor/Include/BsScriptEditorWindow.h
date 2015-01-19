@@ -40,6 +40,7 @@ namespace BansheeEngine
 		static UINT32 internal_getHeight(ScriptEditorWindow* thisPtr);
 
 		static void internal_initializeGUIPanel(ScriptEditorWindow* thisPtr, MonoObject* panel);
+		static void internal_destroyGUIPanel(ScriptEditorWindow* thisPtr, MonoObject* panel);
 
 		void onWidgetMoved(INT32 x, INT32 y);
 		void onWidgetResized(UINT32 width, UINT32 height);
@@ -65,6 +66,7 @@ namespace BansheeEngine
 		static MonoMethod* onResizedMethod;
 		static MonoMethod* onFocusChangedMethod;
 		static MonoMethod* onInitializedInternalMethod;
+		static MonoMethod* onDestroyInternalMethod;
 
 		// Global editor window management methods
 		static void registerScriptEditorWindow(ScriptEditorWindow* editorWindow);

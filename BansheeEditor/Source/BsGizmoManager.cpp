@@ -264,7 +264,8 @@ namespace BansheeEngine
 		mIconMesh = buildIconMesh(camera, mIconData, false, iconRenderData);
 		SPtr<MeshCoreBase> iconMesh = mIconMesh->getCore();
 
-		gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::updateData, mCore, rt, solidMesh, wireMesh, iconMesh, iconRenderData));
+		gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::updateData, mCore, rt->getCore(), 
+			solidMesh, wireMesh, iconMesh, iconRenderData));
 	}
 
 	void GizmoManager::renderForPicking(const CameraHandlerPtr& camera, std::function<Color(UINT32)> idxToColorCallback)
@@ -703,7 +704,7 @@ namespace BansheeEngine
 		activeRenderer->onCorePostRenderViewport.connect(std::bind(&GizmoManagerCore::render, this, _1));
 	}
 
-	void GizmoManagerCore::updateData(const RenderTargetPtr& rt, const SPtr<MeshCoreBase>& solidMesh, const SPtr<MeshCoreBase>& wireMesh,
+	void GizmoManagerCore::updateData(const SPtr<RenderTargetCore>& rt, const SPtr<MeshCoreBase>& solidMesh, const SPtr<MeshCoreBase>& wireMesh,
 		const SPtr<MeshCoreBase>& iconMesh, const GizmoManager::IconRenderDataVecPtr& iconRenderData)
 	{
 		mSceneRenderTarget = rt;
@@ -718,13 +719,11 @@ namespace BansheeEngine
 		if (mSceneRenderTarget == nullptr)
 			return;
 
-		SPtr<RenderTargetCore> sceneRenderTarget = mSceneRenderTarget->getCore();
-
-		if (camera.getViewport()->getTarget() != sceneRenderTarget)
+		if (camera.getViewport()->getTarget() != mSceneRenderTarget)
 			return;
 
-		float width = (float)sceneRenderTarget->getProperties().getWidth();
-		float height = (float)sceneRenderTarget->getProperties().getHeight();
+		float width = (float)mSceneRenderTarget->getProperties().getWidth();
+		float height = (float)mSceneRenderTarget->getProperties().getHeight();
 
 		Rect2 normArea = camera.getViewport()->getNormArea();
 

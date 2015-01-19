@@ -28,6 +28,7 @@ namespace BansheeEngine
                 parent.childAreas.Add(this);
         }
 
+        // Note: Should only ever be called by its parent GUIPanel
         internal static GUIArea Create(GUIPanel parent, int x, int y, int width, int height, short depth)
         {
             GUIArea newArea = new GUIArea();

@@ -50,6 +50,7 @@ namespace BansheeEngine
             mainArea.SetArea(0, 0, width, height);
         }
 
+        // Note: Only to be called from EditorWindow.DestroyPanel
         internal void Destroy()
         {
             GUIArea[] tempAreas = childAreas.ToArray();
@@ -57,8 +58,6 @@ namespace BansheeEngine
                 tempAreas[i].Destroy();
 
             childAreas.Clear();
-
-            Internal_Destroy(mCachedPtr);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -66,8 +65,5 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateInstance(GUIPanel instance);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_Destroy(IntPtr nativeInstance);
     }
 }

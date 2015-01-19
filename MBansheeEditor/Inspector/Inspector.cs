@@ -12,11 +12,14 @@ namespace BansheeEditor
         protected GUILayoutY layout;
         protected object referencedObject;
 
-        internal void Initialize(GUIPanel gui, object instance)
+        private InspectorWindow parentWindow;
+
+        internal void Initialize(InspectorWindow parentWindow, GUIPanel gui, object instance)
         {
             GUI = gui;
             layout = gui.layout.AddLayoutY();
             referencedObject = instance;
+            this.parentWindow = parentWindow;
         }
 
         internal void SetArea(int x, int y, int width, int height)
@@ -32,7 +35,7 @@ namespace BansheeEditor
         internal void Destroy()
         {
             layout.Destroy();
-            GUI.Destroy();
+            parentWindow.DestroyPanel(GUI);
         }
 
         internal abstract bool Refresh();

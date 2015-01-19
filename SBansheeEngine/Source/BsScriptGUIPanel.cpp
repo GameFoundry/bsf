@@ -6,9 +6,12 @@
 #include "BsScriptGUIArea.h"
 #include "BsGUIArea.h"
 #include "BsGUILayout.h"
+#include "BsMonoMethod.h"
 
 namespace BansheeEngine
 {
+	MonoMethod* ScriptGUIPanel::mDestroyMethod = nullptr;
+
 	ScriptGUIPanel::ScriptGUIPanel(MonoObject* instance)
 		:ScriptObject(instance)
 	{
@@ -19,6 +22,8 @@ namespace BansheeEngine
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIPanel::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_SetArea", &ScriptGUIPanel::internal_setArea);
+
+		mDestroyMethod = metaData.scriptClass->getMethod("Destroy", 0);
 	}
 
 	void ScriptGUIPanel::internal_createInstance(MonoObject* instance)
@@ -67,6 +72,13 @@ namespace BansheeEngine
 
 		if(iterFind != mAreas.end())
 			mAreas.erase(iterFind);
+	}
+
+	void ScriptGUIPanel::destroy()
+	{
+		assert(mDestroyMethod != nullptr);
+
+		mDestroyMethod->invoke(mManagedInstance, nullptr);
 	}
 
 	void ScriptGUIPanel::updateArea()

@@ -218,12 +218,12 @@ namespace BansheeEngine
 		void renderGizmos(Matrix4 viewMatrix, Matrix4 projMatrix, SPtr<MeshCoreBase> mesh, GizmoManager::GizmoMaterial material);
 		void renderIconGizmos(Rect2I screenArea, SPtr<MeshCoreBase> mesh, GizmoManager::IconRenderDataVecPtr renderData, bool usePickingMaterial);
 
-		void updateData(const RenderTargetPtr& rt, const SPtr<MeshCoreBase>& solidMesh, const SPtr<MeshCoreBase>& wireMesh,
+		void updateData(const SPtr<RenderTargetCore>& rt, const SPtr<MeshCoreBase>& solidMesh, const SPtr<MeshCoreBase>& wireMesh,
 			const SPtr<MeshCoreBase>& iconMesh, const GizmoManager::IconRenderDataVecPtr& iconRenderData);
 
 		static const float PICKING_ALPHA_CUTOFF;
 
-		RenderTargetPtr mSceneRenderTarget;
+		SPtr<RenderTargetCore> mSceneRenderTarget;
 
 		SPtr<MeshCoreBase> mSolidMesh;
 		SPtr<MeshCoreBase> mWireMesh;

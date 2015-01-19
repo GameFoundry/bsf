@@ -6,6 +6,7 @@
 #include "BsMonoManager.h"
 #include "BsMonoMethod.h"
 #include "BsGUIOptions.h"
+#include "BsDebug.h"
 
 namespace BansheeEngine
 {
@@ -30,6 +31,7 @@ namespace BansheeEngine
 			options.addOption(mono_array_get(guiOptions, GUIOption, i));
 
 		ScriptGUIPanel* guiPanel = ScriptGUIPanel::toNative(panel);
+		LOGWRN("Creating panel: " + toString((UINT64)guiPanel));
 		GUIPanelContainer* guiPanelContainer = GUIPanelContainer::create(*guiPanel, options);
 
 		ScriptGUIPanelContainer* nativeInstance = new (bs_alloc<ScriptGUIPanelContainer>()) ScriptGUIPanelContainer(instance, guiPanelContainer);

@@ -40,7 +40,7 @@ namespace BansheeEditor
                 inspectorLayout.AddElement(data.container);
 
                 data.inspector = GetInspector(allComponents[i].GetType());
-                data.inspector.Initialize(inspectorPanel, allComponents[i]);
+                data.inspector.Initialize(this, inspectorPanel, allComponents[i]);
 
                 data.foldout.SetExpanded(true);
                 data.foldout.OnToggled += (bool expanded) => OnComponentFoldoutToggled(data, expanded);

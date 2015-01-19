@@ -7,8 +7,15 @@ Possibly set up automatic refresh in debug mode after initialization? As an ad-h
 
 I don't think GUI elements are properly cleaned up after assembly refresh
  - GUIPanelContainer was holding an invalid reference to mGUIPanel
+ - GUI elements aren't destroyed when their managed reference is lost. Instead they remain owned by their GUIWidget.
+   - How to get around this when performing assembly refresh?
+   - Destroying them when reference is lost would be too clumsy as I would need to track when they're referenced by GUILayout or GUIArea and similar.
+   - I probably need to ensure that any GUIArea owned by EditorWindow gets destroyed properly.
+     - By definition this should be any area owned by a GUIPanel
+   - Later when I might have GUI elements in non-editor windows I can handle those on a case by case basis
 
 Scene grid disappears and scene view doesn't work after refresh
+ - This might be related to GUI issue above, as the old GUI still remains so it might be rendering above the new stuff
 
 <<<<Multi-resource saving>>>>:
  - Modify Font so it doesn't contain a texture, but instead keeps a handle to it

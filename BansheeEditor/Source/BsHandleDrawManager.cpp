@@ -178,7 +178,7 @@ namespace BansheeEngine
 		RenderTargetPtr sceneRenderTarget = camera->getViewport()->getTarget();
 
 		gCoreAccessor().queueCommand(std::bind(&HandleDrawManagerCore::updateData, mCore, 
-			sceneRenderTarget, proxyData));
+			sceneRenderTarget->getCore(), proxyData));
 
 		mDrawHelper->clear();
 	}
@@ -204,7 +204,7 @@ namespace BansheeEngine
 		activeRenderer->onCorePostRenderViewport.connect(std::bind(&HandleDrawManagerCore::render, this, _1));
 	}
 
-	void HandleDrawManagerCore::updateData(const RenderTargetPtr& rt, const Vector<MeshData>& meshes)
+	void HandleDrawManagerCore::updateData(const SPtr<RenderTargetCore>& rt, const Vector<MeshData>& meshes)
 	{
 		mSceneRenderTarget = rt;
 		mMeshes = meshes;
@@ -217,12 +217,11 @@ namespace BansheeEngine
 		if (mSceneRenderTarget == nullptr)
 			return;
 
-		SPtr<RenderTargetCore> sceneRenderTarget = mSceneRenderTarget->getCore();
-		if (camera.getViewport()->getTarget() != sceneRenderTarget)
+		if (camera.getViewport()->getTarget() != mSceneRenderTarget)
 			return;
 
-		float width = (float)sceneRenderTarget->getProperties().getWidth();
-		float height = (float)sceneRenderTarget->getProperties().getHeight();
+		float width = (float)mSceneRenderTarget->getProperties().getWidth();
+		float height = (float)mSceneRenderTarget->getProperties().getHeight();
 
 		Rect2 normArea = camera.getViewport()->getNormArea();
 

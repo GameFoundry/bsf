@@ -84,10 +84,10 @@ namespace BansheeEngine
 
 		void initialize(const SPtr<MaterialCore>& wireMat, const SPtr<MaterialCore>& solidMat);
 
-		void updateData(const RenderTargetPtr& rt, const Vector<MeshData>& meshes);
+		void updateData(const SPtr<RenderTargetCore>& rt, const Vector<MeshData>& meshes);
 		void render(const CameraHandlerCore& camera);
 
-		RenderTargetPtr mSceneRenderTarget;
+		SPtr<RenderTargetCore> mSceneRenderTarget;
 		Vector<MeshData> mMeshes;
 
 		// Immutable

@@ -23,6 +23,8 @@ namespace BansheeEngine
 		const Vector<ScriptGUIArea*>& getAreas() const { return mAreas; }
 		Rect2I getArea() const { return mMyArea; }
 
+		void destroy();
+
 	protected:
 		ScriptGUIPanel(MonoObject* instance);
 
@@ -38,5 +40,7 @@ namespace BansheeEngine
 		Rect2I mParentArea;
 		Rect2I mMyArea;
 		Rect2I mClippedArea;
+
+		static MonoMethod* mDestroyMethod;
 	};
 }

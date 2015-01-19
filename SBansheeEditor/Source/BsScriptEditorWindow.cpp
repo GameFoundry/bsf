@@ -21,6 +21,7 @@ namespace BansheeEngine
 	MonoMethod* ScriptEditorWindow::onResizedMethod = nullptr;
 	MonoMethod* ScriptEditorWindow::onFocusChangedMethod = nullptr;
 	MonoMethod* ScriptEditorWindow::onInitializedInternalMethod = nullptr;
+	MonoMethod* ScriptEditorWindow::onDestroyInternalMethod = nullptr;
 
 	ScriptEditorWindow::ScriptEditorWindow(ScriptEditorWidget* editorWidget)
 		:ScriptObject(editorWidget->getManagedInstance()), mName(editorWidget->getName()), mEditorWidget(editorWidget), mRefreshInProgress(false)
@@ -48,6 +49,7 @@ namespace BansheeEngine
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateOrGetInstance", &ScriptEditorWindow::internal_createOrGetInstance);
 		metaData.scriptClass->addInternalCall("Internal_InitializeGUIPanel", &ScriptEditorWindow::internal_initializeGUIPanel);
+		metaData.scriptClass->addInternalCall("Internal_DestroyGUIPanel", &ScriptEditorWindow::internal_destroyGUIPanel);
 		metaData.scriptClass->addInternalCall("Internal_GetWidth", &ScriptEditorWindow::internal_getWidth);
 		metaData.scriptClass->addInternalCall("Internal_GetHeight", &ScriptEditorWindow::internal_getHeight);
 		metaData.scriptClass->addInternalCall("Internal_HasFocus", &ScriptEditorWindow::internal_hasFocus);
@@ -57,6 +59,7 @@ namespace BansheeEngine
 		onResizedMethod = metaData.scriptClass->getMethod("WindowResized", 2);
 		onFocusChangedMethod = metaData.scriptClass->getMethod("FocusChanged", 1);
 		onInitializedInternalMethod = metaData.scriptClass->getMethod("OnInitializeInternal", 0);
+		onDestroyInternalMethod = metaData.scriptClass->getMethod("OnDestroyInternal", 0);
 	}
 
 	MonoObject* ScriptEditorWindow::internal_createOrGetInstance(MonoString* ns, MonoString* typeName)
@@ -181,6 +184,15 @@ namespace BansheeEngine
 			thisPtr->mEditorWidget->getWidth(), thisPtr->mEditorWidget->getHeight());
 
 		scriptGUIPanel->setParentWidget(&thisPtr->mEditorWidget->_getParent()->getParentWidget());
+	}
+
+	void ScriptEditorWindow::internal_destroyGUIPanel(ScriptEditorWindow* thisPtr, MonoObject* panel)
+	{
+		ScriptGUIPanel* scriptGUIPanel = ScriptGUIPanel::toNative(panel);
+
+		auto findIter = std::find(thisPtr->mPanels.begin(), thisPtr->mPanels.end(), scriptGUIPanel);
+		if (findIter != thisPtr->mPanels.end())
+			thisPtr->mPanels.erase(findIter);
 	}
 
 	void ScriptEditorWindow::onWidgetMoved(INT32 x, INT32 y)
@@ -346,6 +358,9 @@ namespace BansheeEngine
 
 	void ScriptEditorWidget::triggerOnDestroy()
 	{
+		if (mManagedInstance != nullptr)
+			ScriptEditorWindow::onDestroyInternalMethod->invoke(mManagedInstance, nullptr);
+
 		if (mOnDestroyThunk != nullptr && mManagedInstance != nullptr)
 		{
 			MonoException* exception = nullptr;
