@@ -38,6 +38,7 @@ namespace BansheeEngine
 		String mNamespace;
 		String mTypeName;
 		String mFullTypeName;
+		bool mRequiresReset;
 
 		// We store data of a missing component type in hope it will be restored later
 		bool mMissingType;

@@ -145,7 +145,7 @@ namespace BansheeEditor
 		    }
 
 		    // TODO - Consider only doing the resize once user stops resizing the widget in order to reduce constant
-		    // render target destroy/create cycle for every little pixel.
+		    // render target destroy/create cycle for every single pixel.
 
 		    camera.aspectRatio = width / (float)height;
 	    }

@@ -15,12 +15,13 @@ namespace BansheeEngine
 {
 	ManagedComponent::ManagedComponent()
 		:mManagedInstance(nullptr), mUpdateThunk(nullptr), mOnDestroyThunk(nullptr), mOnInitializedThunk(nullptr), 
-		mOnResetThunk(nullptr), mMissingType(false)
+		mOnResetThunk(nullptr), mMissingType(false), mRequiresReset(true)
 	{ }
 
 	ManagedComponent::ManagedComponent(const HSceneObject& parent, MonoReflectionType* runtimeType)
 		: Component(parent), mManagedInstance(nullptr), mRuntimeType(runtimeType), mUpdateThunk(nullptr), 
-		mOnDestroyThunk(nullptr), mOnInitializedThunk(nullptr), mOnResetThunk(nullptr), mMissingType(false)
+		mOnDestroyThunk(nullptr), mOnInitializedThunk(nullptr), mOnResetThunk(nullptr), mMissingType(false),
+		mRequiresReset(true)
 	{
 		MonoType* monoType = mono_reflection_type_get_type(mRuntimeType);
 		::MonoClass* monoClass = mono_type_get_class(monoType);
@@ -41,11 +42,7 @@ namespace BansheeEngine
 
 	ManagedComponent::~ManagedComponent()
 	{
-		if (mManagedInstance != nullptr)
-		{
-			mManagedInstance = nullptr;
-			mono_gchandle_free(mManagedHandle);
-		}
+
 	}
 
 	ComponentBackupData ManagedComponent::backup(bool clearExisting)
@@ -152,6 +149,7 @@ namespace BansheeEngine
 		}
 
 		mMissingType = missingType;
+		mRequiresReset = true;
 	}
 
 	void ManagedComponent::initialize(MonoObject* object)
@@ -207,7 +205,7 @@ namespace BansheeEngine
 
 	void ManagedComponent::triggerOnReset()
 	{
-		if (mOnResetThunk != nullptr && mManagedInstance != nullptr)
+		if (mRequiresReset && mOnResetThunk != nullptr && mManagedInstance != nullptr)
 		{
 			MonoException* exception = nullptr;
 
@@ -217,6 +215,8 @@ namespace BansheeEngine
 
 			MonoUtil::throwIfException(exception);
 		}
+
+		mRequiresReset = false;
 	}
 
 	void ManagedComponent::onInitialized()
@@ -268,6 +268,12 @@ namespace BansheeEngine
 			mOnDestroyThunk(mManagedInstance, &exception);
 
 			MonoUtil::throwIfException(exception);
+		}
+
+		if (mManagedInstance != nullptr)
+		{
+			mManagedInstance = nullptr;
+			mono_gchandle_free(mManagedHandle);
 		}
 	}
 

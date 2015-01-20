@@ -180,7 +180,11 @@ namespace BansheeEngine
 		ScriptGameObjectBase::beginRefresh();
 
 		ScriptObjectBackup backupData;
-		backupData.data = mManagedComponent->backup(true);
+
+		// It's possible that managed component is destroyed but a reference to it
+		// is still kept. Don't backup such components.
+		if (!mManagedComponent.isDestroyed(true))
+			backupData.data = mManagedComponent->backup(true);
 
 		return backupData;
 	}
@@ -197,7 +201,10 @@ namespace BansheeEngine
 	{
 		mManagedInstance = nullptr;
 
-		if (!mRefreshInProgress)
+		// It's possible that managed component is destroyed but a reference to it
+		// is still kept during assembly refresh. Such components shouldn't be restored
+		// so we delete them.
+		if (!mRefreshInProgress || mManagedComponent.isDestroyed(true))
 			ScriptGameObjectManager::instance().destroyScriptGameObject(this);
 	}
 

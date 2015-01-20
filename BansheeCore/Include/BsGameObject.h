@@ -46,6 +46,19 @@ namespace BansheeEngine
 		void setName(const String& name) { mName = name; }
 
 		/**
+		 * @brief	Marks the object as destroyed. Generally this means the object
+		 *			has been queued for destruction but it hasn't occurred yet.
+		 *
+		 * @note	Internal method.
+		 */
+		void _setIsDestroyed() { mIsDestroyed = true; }
+
+		/**
+		 * @brief	Checks if the object has been destroyed.
+		 */
+		bool _getIsDestroyed() const { return mIsDestroyed; }
+
+		/**
 		 * @brief	Replaces the instance data with another objects instance data.
 		 *			This object will basically become the original owner of the provided
 		 *			instance data as far as all game object handles referencing it are concerned.
@@ -78,6 +91,7 @@ namespace BansheeEngine
 
 	private:
 		GameObjectInstanceDataPtr mInstanceData;
+		bool mIsDestroyed;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

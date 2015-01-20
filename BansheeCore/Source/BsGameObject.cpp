@@ -5,6 +5,7 @@
 namespace BansheeEngine
 {
 	GameObject::GameObject()
+		:mIsDestroyed(false)
 	{ }
 
 	GameObject::~GameObject()

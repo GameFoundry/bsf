@@ -69,6 +69,7 @@ namespace BansheeEngine
 
 		for(auto iter = mComponents.begin(); iter != mComponents.end(); ++iter)
 		{
+			(*iter)->_setIsDestroyed();
 			(*iter)->onDestroyed();
 
 			if (immediate)
@@ -467,6 +468,7 @@ namespace BansheeEngine
 
 		if(iter != mComponents.end())
 		{
+			(*iter)->_setIsDestroyed();
 			(*iter)->onDestroyed();
 			
 			mComponents.erase(iter);

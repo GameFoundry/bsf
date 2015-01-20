@@ -44,8 +44,13 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Returns true if the object the handle is pointing to has been destroyed.
+		 *
+		 * @param checkQueued	Game objects can be queued for destruction but no actually destroyed yet, and still accessible. 
+		 *						If this is false this method will return true only if the object is completely inaccessible (fully destroyed).
+		 *						If this is true this method will return true if object is completely inaccessible or if it is just queued for destruction.
 		 */
-		bool isDestroyed() const { return mData->mPtr == nullptr || mData->mPtr->object == nullptr; }
+		bool isDestroyed(bool checkQueued = false) const 
+		{ return mData->mPtr == nullptr || mData->mPtr->object == nullptr || (checkQueued && mData->mPtr->object->_getIsDestroyed()); }
 
 		/**
 		 * @brief	Returns the instance ID of the object the handle is referencing.
