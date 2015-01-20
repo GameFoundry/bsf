@@ -608,7 +608,7 @@ namespace BansheeEngine
 				if (currentType->getRTTIId() == getRTTIId())
 					return true;
 
-				Vector<RTTITypeBase*>& derivedClasses = currentType->getDerivedClasses();
+				const Vector<RTTITypeBase*>& derivedClasses = currentType->getDerivedClasses();
 				for (auto iter = derivedClasses.begin(); iter != derivedClasses.end(); ++iter)
 					todo.push(*iter);
 			}

@@ -105,7 +105,7 @@ namespace BansheeEngine
 			addPlainField("mUsage", 11, &TextureRTTI::getUsage, &TextureRTTI::setUsage);
 
 			addReflectablePtrArrayField("mPixelData", 12, &TextureRTTI::getPixelData, &TextureRTTI::getPixelDataArraySize, 
-				&TextureRTTI::setPixelData, &TextureRTTI::setPixelDataArraySize);
+				&TextureRTTI::setPixelData, &TextureRTTI::setPixelDataArraySize, RTTI_Flag_SkipInReferenceSearch);
 		}
 
 		virtual void onDeserializationStarted(IReflectable* obj)

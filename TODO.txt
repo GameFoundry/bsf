@@ -5,19 +5,6 @@
 When serializing Camera I cannot save the reference to RenderTexture. Make it a Resource?
 Possibly set up automatic refresh in debug mode after initialization? As an ad-hoc unit test
 
-Scene grid disappears and scene view doesn't work after refresh
- - This might be related to GUI issue above, as the old GUI still remains so it might be rendering above the new stuff
-
-Assembly refresh issues:
-When managed component is destroyed its ScriptComponent will only get destroyed when last reference to the managed component is lost. With assembly refresh this happens during refresh, which avoids destroying the ScriptComponent.
- - I need a way to mark GameObject as destroyed so I can then avoid backing it up and restoring its instance.
-
-New Camera gets its OnReset called twice
-
-Make sure to remove all debug logs
-
-After refresh BansheeRenderer has two extra cameras (4 new ones total, 2 old ones got deleted). 2 of the new ones have empty targets.
-
 <<<<Multi-resource saving>>>>:
  - Modify Font so it doesn't contain a texture, but instead keeps a handle to it
  - Register it in its meta file
@@ -35,7 +22,8 @@ I can get mono errors by checking g_print calls in goutput.c
 Running embedded mono with VS attached causes managed null refs to be registered as access violations
 
 Crash on GLTextureBuffer::download on shutdown (OpenGL error invalid enum)
-Create a stack allocatable custom vector implementation and make getResourceDependencies and getCoreDependencies use it
+Create a stack allocatable custom vector implementation and make getResourceDependencies and getCoreDependencies use it.
+ - These methods are called often and cause allocations whenever they are.
 
 C# SceneView:
 Test new Scene window and fix every issue

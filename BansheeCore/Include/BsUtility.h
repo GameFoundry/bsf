@@ -43,5 +43,11 @@ namespace BansheeEngine
 		 * @see	findDependencies
 		 */
 		static void findResourceDependenciesInternal(IReflectable& object, bool recursive, Map<String, ResourceDependency>& dependencies);
+
+		/**
+		 * @brief	Checks if the specified type (or any of its derived classes) have any IReflectable pointer or value
+		 *			types as their fields.
+		 */
+		static bool hasReflectableChildren(RTTITypeBase* type);
 	};
 }

@@ -28,6 +28,8 @@ namespace BansheeEngine
 		for (UINT32 i = 0; i < numFields; i++)
 		{
 			RTTIField* field = rtti->getField(i);
+			if ((field->getFlags() & RTTI_Flag_SkipInReferenceSearch) != 0)
+				continue;
 
 			if (field->isReflectableType())
 			{
@@ -62,19 +64,24 @@ namespace BansheeEngine
 				}
 				else if (recursive)
 				{
-					if (reflectableField->isArray())
+					// Optimization, no need to retrieve its value and go deeper if it has no 
+					// reflectable children that may hold the reference.
+					if (hasReflectableChildren(reflectableField->getType())) 
 					{
-						UINT32 numElements = reflectableField->getArraySize(&obj);
-						for (UINT32 j = 0; j < numElements; j++)
+						if (reflectableField->isArray())
 						{
-							IReflectable& childObj = reflectableField->getArrayValue(&obj, j);
+							UINT32 numElements = reflectableField->getArraySize(&obj);
+							for (UINT32 j = 0; j < numElements; j++)
+							{
+								IReflectable& childObj = reflectableField->getArrayValue(&obj, j);
+								findResourceDependenciesInternal(childObj, true, dependencies);
+							}
+						}
+						else
+						{
+							IReflectable& childObj = reflectableField->getValue(&obj);
 							findResourceDependenciesInternal(childObj, true, dependencies);
 						}
-					}
-					else
-					{
-						IReflectable& childObj = reflectableField->getValue(&obj);
-						findResourceDependenciesInternal(childObj, true, dependencies);
 					}
 				}
 			}
@@ -82,27 +89,57 @@ namespace BansheeEngine
 			{
 				RTTIReflectablePtrFieldBase* reflectablePtrField = static_cast<RTTIReflectablePtrFieldBase*>(field);
 
-				if (reflectablePtrField->isArray())
+				// Optimization, no need to retrieve its value and go deeper if it has no 
+				// reflectable children that may hold the reference.
+				if (hasReflectableChildren(reflectablePtrField->getType()))
 				{
-					UINT32 numElements = reflectablePtrField->getArraySize(&obj);
-					for (UINT32 j = 0; j < numElements; j++)
+					if (reflectablePtrField->isArray())
 					{
-						SPtr<IReflectable> childObj = reflectablePtrField->getArrayValue(&obj, j);
+						UINT32 numElements = reflectablePtrField->getArraySize(&obj);
+						for (UINT32 j = 0; j < numElements; j++)
+						{
+							SPtr<IReflectable> childObj = reflectablePtrField->getArrayValue(&obj, j);
+
+							if (childObj != nullptr)
+								findResourceDependenciesInternal(*childObj, true, dependencies);
+						}
+					}
+					else
+					{
+						SPtr<IReflectable> childObj = reflectablePtrField->getValue(&obj);
 
 						if (childObj != nullptr)
 							findResourceDependenciesInternal(*childObj, true, dependencies);
 					}
 				}
-				else
-				{
-					SPtr<IReflectable> childObj = reflectablePtrField->getValue(&obj);
-
-					if (childObj != nullptr)
-						findResourceDependenciesInternal(*childObj, true, dependencies);
-				}
 			}
 		}
 
 		rtti->onSerializationEnded(&obj);
+	}
+
+	bool Utility::hasReflectableChildren(RTTITypeBase* type)
+	{
+		UINT32 numFields = type->getNumFields();
+		for (UINT32 i = 0; i < numFields; i++)
+		{
+			RTTIField* field = type->getField(i);
+			if (field->isReflectableType() || field->isReflectablePtrType())
+				return true;
+		}
+
+		const Vector<RTTITypeBase*>& derivedClasses = type->getDerivedClasses();
+		for (auto& derivedClass : derivedClasses)
+		{
+			numFields = derivedClass->getNumFields();
+			for (UINT32 i = 0; i < numFields; i++)
+			{
+				RTTIField* field = derivedClass->getField(i);
+				if (field->isReflectableType() || field->isReflectablePtrType())
+					return true;
+			}
+		}
+
+		return false;
 	}
 }

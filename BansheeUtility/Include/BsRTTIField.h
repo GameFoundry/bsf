@@ -56,7 +56,14 @@ namespace BansheeEngine
 		// it is not guaranteed the value provided is fully initialized, so you should not access any of its
 		// data until deserialization is fully complete. You only need to use this flag if the RTTI system
 		// complains that is has found a circular reference.
-		RTTI_Flag_WeakRef = 0x01
+		RTTI_Flag_WeakRef = 0x01,
+		// This flags signals various systems that the flagged field should not be searched when looking for 
+		// object references. This normally means the value of this field will no be retrieved during reference
+		// searches but it will likely still be retrieved during other operations (e.g. serialization).
+		// This is used as an optimization to avoid retrieving values of potentially very expensive fields that
+		// would not contribute to the reference search anyway. Whether or not a field contributes to the reference
+		// search depends on the search and should be handled on a case by case basis.
+		RTTI_Flag_SkipInReferenceSearch = 0x02
 	};
 
 	/**
