@@ -68,6 +68,11 @@ namespace BansheeEngine
 		 * @brief	Triggered when pointer that was previously hovering leaves the button.
 		 */
 		Event<void()> onOut;
+
+		/**
+		 * @brief	Triggered when button is clicked twice in rapid succession.
+		 */
+		Event<void()> onDoubleClick;
 	protected:
 		GUIButtonBase(const String& styleName, const GUIContent& content, const GUILayoutOptions& layoutOptions);
 		virtual ~GUIButtonBase();

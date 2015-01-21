@@ -11,20 +11,21 @@
 #include "BsGUIDropDownBoxManager.h"
 #include "BsSceneObject.h"
 #include "BsPlatform.h"
+#include "BsCoreThread.h"
 
 namespace BansheeEngine
 {
 	const UINT32 GUIMenuBar::NUM_ELEMENTS_AFTER_CONTENT = 8;
 
 	GUIMenuBar::GUIMenuBar(GUIWidget* parent, RenderWindow* parentWindow)
-		:mParentWidget(parent), mParentWindow(parentWindow), mMainArea(nullptr), mBackgroundArea(nullptr), 
+		:mParentWidget(parent), mParentWindow(parentWindow), mMainArea(nullptr), mBgTextureArea(nullptr), 
 		mBgTexture(nullptr), mLogoTexture(nullptr), mSubMenuOpen(false), mSubMenuButton(nullptr)
 	{
-		mBackgroundArea = GUIArea::create(*parent, 0, 0, 1, 13, 9900);
+		mBgTextureArea = GUIArea::create(*parent, 0, 0, 1, 13, 9900);
 		mMainArea = GUIArea::create(*parent, 0, 0, 1, 13, 9899);
 
 		mBgTexture = GUITexture::create(GUIImageScaleMode::StretchToFit, GUIOptions(GUIOption::flexibleWidth(), GUIOption::flexibleHeight()), "MenuBarBg");
-		mBackgroundArea->getLayout().addElement(mBgTexture);
+		mBgTextureArea->getLayout().addElement(mBgTexture);
 
 		mLogoTexture = GUITexture::create(GUIImageScaleMode::StretchToFit, "MenuBarBansheeLogo");
 		GUILayout& mainLayout = mMainArea->getLayout();
@@ -70,16 +71,16 @@ namespace BansheeEngine
 		GUIElement::destroy(mLogoTexture);
 
 		GUIArea::destroy(mMainArea);
-		GUIArea::destroy(mBackgroundArea);
+		GUIArea::destroy(mBgTextureArea);
 	}
 
 	void GUIMenuBar::setArea(INT32 x, INT32 y, UINT32 width, UINT32 height)
 	{
 		mMainArea->setPosition(x, y);
-		mBackgroundArea->setPosition(x, y);
+		mBgTextureArea->setPosition(x, y);
 
 		mMainArea->setSize(width, height);
-		mBackgroundArea->setSize(width, height);
+		mBgTextureArea->setSize(width, height);
 
 		refreshNonClientAreas();
 	}
@@ -291,17 +292,20 @@ namespace BansheeEngine
 
 	void GUIMenuBar::onMinimizeClicked()
 	{
-		// TODO
+		mParentWindow->minimize(gCoreAccessor());
 	}
 
 	void GUIMenuBar::onMaximizeClicked()
 	{
-		// TODO
+		if(mParentWindow->getProperties().isMaximized())
+			mParentWindow->restore(gCoreAccessor());
+		else
+			mParentWindow->maximize(gCoreAccessor());
 	}
 
 	void GUIMenuBar::onCloseClicked()
 	{
-		// TODO
+		gCoreApplication().stopMainLoop();
 	}
 
 	void GUIMenuBar::refreshNonClientAreas()

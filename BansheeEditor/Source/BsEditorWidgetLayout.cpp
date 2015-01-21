@@ -11,7 +11,11 @@ namespace BansheeEngine
 	{ }
 
 	EditorWidgetLayout::EditorWidgetLayout(const DockManagerLayoutPtr& dockLayout)
-		:mDockLayout(dockLayout)
+		:mDockLayout(dockLayout), mMaximized(false)
+	{ }
+
+	EditorWidgetLayout::EditorWidgetLayout(const PrivatelyConstruct& dummy)
+		: mMaximized(false)
 	{ }
 
 	/************************************************************************/

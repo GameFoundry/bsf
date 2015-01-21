@@ -91,6 +91,11 @@ namespace BansheeEngine
 		 */
 		bool isHidden() const { return mHidden; }
 
+		/**
+		 * @brief	Returns true if the window is maximized.
+		 */
+		bool isMaximized() const { return mIsMaximized; }
+
 	protected:
 		friend class RenderWindowCore;
 		friend class RenderWindow;
@@ -101,6 +106,7 @@ namespace BansheeEngine
 		bool mHasFocus = false;
 		bool mHidden = false;
 		bool mIsModal = false;
+		bool mIsMaximized = false;
 	};
 
 	/**
@@ -151,6 +157,22 @@ namespace BansheeEngine
 		 */
 		virtual void setActive(bool state);
 
+		/**
+		 * @brief	Minimizes the window to the taskbar.
+		 */
+		virtual void minimize() { }
+
+		/**
+		 * @brief	Maximizes the window over the entire current screen.
+		 */
+		virtual void maximize() { }
+
+		/**
+		 * @brief	Restores the window to original position and size if it is
+		 *			minimized or maximized.
+		 */
+		virtual void restore() { }
+
         /**
          * @brief	Change the size of the window.
          */
@@ -186,6 +208,28 @@ namespace BansheeEngine
 		 * @note	Core thread.
 		 */
 		virtual void _windowFocusLost();
+
+		/**
+		 * @brief	Called when window has been maximized.
+		 *
+		 * @note	Core thread.
+		 */
+		virtual void _notifyMaximized();
+
+		/**
+		 * @brief	Called when window has been minimized.
+		 *
+		 * @note	Core thread.
+		 */
+		virtual void _notifyMinimized();
+
+		/**
+		 * @brief	Called when window has been restored 
+		 *			from minimized or maximized state.
+		 *
+		 * @note	Core thread.
+		 */
+		virtual void _notifyRestored();
 
 	protected:
 		friend class RenderWindow;
@@ -251,6 +295,21 @@ namespace BansheeEngine
 		 * @brief	Shows a previously hidden window.
 		 */
 		void show(CoreAccessor& accessor);
+
+		/**
+		 * @copydoc	RenderWindowCore::minimize
+		 */
+		void minimize(CoreAccessor& accessor);
+
+		/**
+		 * @copydoc	RenderWindowCore::maximize
+		 */
+		void maximize(CoreAccessor& accessor);
+
+		/**
+		 * @copydoc	RenderWindowCore::restore
+		 */
+		void restore(CoreAccessor& accessor);
 
 		/**
 		 * @copydoc RenderWindowCore::setFullscreen(UINT32, UINT32, float, UINT32)

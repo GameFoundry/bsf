@@ -142,6 +142,14 @@ namespace BansheeEngine
 			break;
 		case WM_SIZE:
 			win->_windowMovedOrResized();
+
+			if (wParam == SIZE_MAXIMIZED)
+				win->_notifyMaximized();
+			else if (wParam == SIZE_MINIMIZED)
+				win->_notifyMinimized();
+			else if (wParam == SIZE_RESTORED)
+				win->_notifyRestored();
+
 			break;
 		case WM_SETCURSOR:
 			if(isCursorHidden())
@@ -180,13 +188,27 @@ namespace BansheeEngine
 			}
 			return true;
 		case WM_GETMINMAXINFO:
+		{
 			// Prevent the window from going smaller than some minimu size
 			((MINMAXINFO*)lParam)->ptMinTrackSize.x = 100;
 			((MINMAXINFO*)lParam)->ptMinTrackSize.y = 100;
+
+			// Ensure maximizes window has proper size and doesn't cover the entire screen
+			const POINT ptZero = { 0, 0 };
+			HMONITOR primaryMonitor = MonitorFromPoint(ptZero, MONITOR_DEFAULTTOPRIMARY);
+
+			MONITORINFO monitorInfo;
+			monitorInfo.cbSize = sizeof(MONITORINFO);
+			GetMonitorInfo(primaryMonitor, &monitorInfo);
+
+			((MINMAXINFO*)lParam)->ptMaxPosition.x = monitorInfo.rcWork.left - monitorInfo.rcMonitor.left;
+			((MINMAXINFO*)lParam)->ptMaxPosition.y = monitorInfo.rcWork.top - monitorInfo.rcMonitor.top;
+			((MINMAXINFO*)lParam)->ptMaxSize.x = monitorInfo.rcWork.right - monitorInfo.rcWork.left;
+			((MINMAXINFO*)lParam)->ptMaxSize.y = monitorInfo.rcWork.bottom - monitorInfo.rcWork.top;
+		}
 			break;
 		case WM_CLOSE:
 			{
-				// TODO - Only stop main loop if primary window is closed!!
 				gCoreApplication().stopMainLoop();
 
 				return 0;
@@ -223,6 +245,22 @@ namespace BansheeEngine
 
 				return HTCLIENT;
 			}
+		case WM_NCLBUTTONDBLCLK:
+			// Maximize/Restore on double-click
+			if (wParam == HTCAPTION)
+			{
+				WINDOWPLACEMENT windowPlacement;
+				windowPlacement.length = sizeof(WINDOWPLACEMENT);
+				GetWindowPlacement(hWnd, &windowPlacement);
+
+				if (windowPlacement.showCmd == SW_MAXIMIZE)
+					ShowWindow(hWnd, SW_RESTORE);
+				else
+					ShowWindow(hWnd, SW_MAXIMIZE);
+
+				return 0;
+			}
+			break;
 		case WM_MOUSELEAVE:
 			{
 				// Note: Right now I track only mouse leaving client area. So it's possible for the "mouse left window" callback

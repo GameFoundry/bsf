@@ -5,6 +5,9 @@
 When serializing Camera I cannot save the reference to RenderTexture. Make it a Resource?
 Possibly set up automatic refresh in debug mode after initialization? As an ad-hoc unit test
 
+<<<<<Menu bar issues>>>>>
+Double-clicking the title bar should cause the window to maximize
+
 <<<<Multi-resource saving>>>>:
  - Modify Font so it doesn't contain a texture, but instead keeps a handle to it
  - Register it in its meta file
@@ -21,7 +24,6 @@ I can get mono errors by checking g_print calls in goutput.c
 
 Running embedded mono with VS attached causes managed null refs to be registered as access violations
 
-Crash on GLTextureBuffer::download on shutdown (OpenGL error invalid enum)
 Create a stack allocatable custom vector implementation and make getResourceDependencies and getCoreDependencies use it.
  - These methods are called often and cause allocations whenever they are.
 

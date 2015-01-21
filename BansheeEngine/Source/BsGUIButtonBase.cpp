@@ -280,6 +280,11 @@ namespace BansheeEngine
 
 			return true;
 		}
+		else if (ev.getType() == GUIMouseEventType::MouseDoubleClick)
+		{
+			if (!onDoubleClick.empty())
+				onDoubleClick();
+		}
 
 		return false;
 	}

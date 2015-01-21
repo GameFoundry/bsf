@@ -11,6 +11,7 @@
 #include "BsRenderWindow.h"
 #include "BsRenderWindowManager.h"
 #include "BsVector2I.h"
+#include "BsCoreThread.h"
 
 using namespace std::placeholders;
 
@@ -180,6 +181,8 @@ namespace BansheeEngine
 			}
 		}
 
+		layout->setIsMainWindowMaximized(mainWindow->getRenderWindow()->getProperties().isMaximized());
+
 		return layout;
 	}
 
@@ -226,6 +229,9 @@ namespace BansheeEngine
 			if(widget->_getParent() == nullptr)
 				widget->close();
 		}
+
+		if (layout->getIsMainWindowMaximized())
+			mainWindow->getRenderWindow()->maximize(gCoreAccessor());
 	}
 
 	void EditorWidgetManager::onPointerPressed(const PointerEvent& event)
@@ -235,7 +241,7 @@ namespace BansheeEngine
 			EditorWidgetBase* widget = widgetData.second;
 			EditorWidgetContainer* parentContainer = widget->_getParent();
 			EditorWindowBase* parentWindow = parentContainer->getParentWindow();
-			RenderWindowPtr parentRenderWindow = parentWindow->_getRenderWindow();
+			RenderWindowPtr parentRenderWindow = parentWindow->getRenderWindow();
 			const RenderWindowProperties& props = parentRenderWindow->getProperties();
 
 			if (!props.hasFocus())
@@ -277,7 +283,7 @@ namespace BansheeEngine
 				continue;
 
 			EditorWindowBase* parentWindow = parentContainer->getParentWindow();
-			RenderWindowPtr parentRenderWindow = parentWindow->_getRenderWindow();
+			RenderWindowPtr parentRenderWindow = parentWindow->getRenderWindow();
 
 			if (parentRenderWindow.get() != &window)
 				continue;

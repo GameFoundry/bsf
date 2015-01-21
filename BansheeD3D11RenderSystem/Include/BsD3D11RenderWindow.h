@@ -58,6 +58,21 @@ namespace BansheeEngine
 		void setActive(bool state);
 
 		/**
+		 * @copydoc	RenderWindowCore::minimize
+		 */
+		void minimize();
+
+		/**
+		 * @copydoc	RenderWindowCore::maximize
+		 */
+		void maximize();
+
+		/**
+		 * @copydoc	RenderWindowCore::restore
+		 */
+		void restore();
+
+		/**
 		 * @copydoc RenderWindowCore::setFullscreen(UINT32, UINT32, float, UINT32)
 		 */
 		void setFullscreen(UINT32 width, UINT32 height, float refreshRate = 60.0f, UINT32 monitorIdx = 0);

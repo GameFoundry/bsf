@@ -35,7 +35,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns the render window that this editor window is being rendered to.
 		 */
-		RenderWindowPtr _getRenderWindow() const { return mRenderWindow; }
+		RenderWindowPtr getRenderWindow() const { return mRenderWindow; }
 
 	protected:
 		EditorWindowBase();

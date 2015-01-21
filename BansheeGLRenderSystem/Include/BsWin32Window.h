@@ -53,6 +53,21 @@ namespace BansheeEngine
 		void setHidden(bool hidden);
 
 		/**
+		 * @copydoc	RenderWindowCore::minimize
+		 */
+		void minimize();
+
+		/**
+		 * @copydoc	RenderWindowCore::maximize
+		 */
+		void maximize();
+
+		/**
+		 * @copydoc	RenderWindowCore::restore
+		 */
+		void restore();
+
+		/**
 		 * @copydoc RenderWindowCore::move
 		 */
 		void move(INT32 left, INT32 top);

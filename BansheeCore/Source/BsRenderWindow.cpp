@@ -85,6 +85,36 @@ namespace BansheeEngine
 		RenderWindowManager::instance().notifyFocusLost(this);
 	}
 
+	void RenderWindowCore::_notifyMaximized()
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		RenderWindowProperties& props = const_cast<RenderWindowProperties&>(getProperties());
+
+		props.mIsMaximized = true;
+		RenderWindowManager::instance().notifyPropertiesDirty(this);
+	}
+
+	void RenderWindowCore::_notifyMinimized()
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		RenderWindowProperties& props = const_cast<RenderWindowProperties&>(getProperties());
+
+		props.mIsMaximized = false;
+		RenderWindowManager::instance().notifyPropertiesDirty(this);
+	}
+
+	void RenderWindowCore::_notifyRestored()
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		RenderWindowProperties& props = const_cast<RenderWindowProperties&>(getProperties());
+
+		props.mIsMaximized = false;
+		RenderWindowManager::instance().notifyPropertiesDirty(this);
+	}
+
 	const RenderWindowProperties& RenderWindowCore::getProperties() const
 	{
 		return static_cast<const RenderWindowProperties&>(getPropertiesInternal());
@@ -145,6 +175,39 @@ namespace BansheeEngine
 		};
 
 		accessor.queueCommand(std::bind(showFunc, getCore()));
+	}
+
+	void RenderWindow::minimize(CoreAccessor& accessor)
+	{
+		std::function<void(SPtr<RenderWindowCore>)> minimizeFunc =
+			[](SPtr<RenderWindowCore> renderWindow)
+		{
+			renderWindow->minimize();
+		};
+
+		accessor.queueCommand(std::bind(minimizeFunc, getCore()));
+	}
+
+	void RenderWindow::maximize(CoreAccessor& accessor)
+	{
+		std::function<void(SPtr<RenderWindowCore>)> maximizeFunc =
+			[](SPtr<RenderWindowCore> renderWindow)
+		{
+			renderWindow->maximize();
+		};
+
+		accessor.queueCommand(std::bind(maximizeFunc, getCore()));
+	}
+
+	void RenderWindow::restore(CoreAccessor& accessor)
+	{
+		std::function<void(SPtr<RenderWindowCore>)> restoreFunc =
+			[](SPtr<RenderWindowCore> renderWindow)
+		{
+			renderWindow->restore();
+		};
+
+		accessor.queueCommand(std::bind(restoreFunc, getCore()));
 	}
 
 	void RenderWindow::setFullscreen(CoreAccessor& accessor, UINT32 width, UINT32 height,

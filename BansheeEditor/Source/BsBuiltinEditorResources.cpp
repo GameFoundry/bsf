@@ -96,11 +96,11 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::WindowCloseButtonNormal = L"WindowCloseBtnNormal.psd";
 	const WString BuiltinEditorResources::WindowCloseButtonHover = L"WindowCloseBtnHover.psd";
 
-	const WString BuiltinEditorResources::WindowMinButtonNormal = L"WindowMaxBtnNormal.psd";
-	const WString BuiltinEditorResources::WindowMinButtonHover = L"WindowMaxBtnHover.psd";
+	const WString BuiltinEditorResources::WindowMinButtonNormal = L"WindowMinBtnNormal.psd"; 
+	const WString BuiltinEditorResources::WindowMinButtonHover = L"WindowMinBtnHover.psd"; 
 
-	const WString BuiltinEditorResources::WindowMaxButtonNormal = L"WindowMinBtnNormal.psd";
-	const WString BuiltinEditorResources::WindowMaxButtonHover = L"WindowMinBtnHover.psd";
+	const WString BuiltinEditorResources::WindowMaxButtonNormal = L"WindowMaxBtnNormal.psd";
+	const WString BuiltinEditorResources::WindowMaxButtonHover = L"WindowMaxBtnHover.psd";
 
 	const WString BuiltinEditorResources::TabbedBarBtnNormal = L"TabbedButtonNormal.psd";
 	const WString BuiltinEditorResources::TabbedBarBtnActive = L"TabbedButtonActive.psd";

@@ -359,6 +359,30 @@ namespace BansheeEngine
 		RenderWindowManager::instance().notifyPropertiesDirty(this);
 	}
 
+	void D3D11RenderWindowCore::minimize()
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		if (mHWnd)
+			SendMessage(mHWnd, WM_SYSCOMMAND, SC_MINIMIZE, 0);
+	}
+
+	void D3D11RenderWindowCore::maximize()
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		if (mHWnd)
+			SendMessage(mHWnd, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
+	}
+
+	void D3D11RenderWindowCore::restore()
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		if (mHWnd)
+			SendMessage(mHWnd, WM_SYSCOMMAND, SC_RESTORE, 0);
+	}
+
 	void D3D11RenderWindowCore::setFullscreen(UINT32 width, UINT32 height, float refreshRate, UINT32 monitorIdx)
 	{
 		THROW_IF_NOT_CORE_THREAD;

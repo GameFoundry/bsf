@@ -486,6 +486,30 @@ namespace BansheeEngine
 		}
 	}
 
+	void Win32WindowCore::minimize()
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		if (mHWnd)
+			SendMessage(mHWnd, WM_SYSCOMMAND, SC_MINIMIZE, 0);
+	}
+
+	void Win32WindowCore::maximize()
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		if (mHWnd)
+			SendMessage(mHWnd, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
+	}
+
+	void Win32WindowCore::restore()
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		if (mHWnd)
+			SendMessage(mHWnd, WM_SYSCOMMAND, SC_RESTORE, 0);
+	}
+
 	void Win32WindowCore::swapBuffers()
 	{
 		THROW_IF_NOT_CORE_THREAD;

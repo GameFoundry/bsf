@@ -346,6 +346,30 @@ namespace BansheeEngine
 		RenderWindowManager::instance().notifyPropertiesDirty(this);
 	}
 
+	void D3D9RenderWindowCore::minimize()
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		if (mHWnd)
+			SendMessage(mHWnd, WM_SYSCOMMAND, SC_MINIMIZE, 0);
+	}
+
+	void D3D9RenderWindowCore::maximize()
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		if (mHWnd)
+			SendMessage(mHWnd, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
+	}
+
+	void D3D9RenderWindowCore::restore()
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		if (mHWnd)
+			SendMessage(mHWnd, WM_SYSCOMMAND, SC_RESTORE, 0);
+	}
+
 	void D3D9RenderWindowCore::move(INT32 top, INT32 left)
 	{
 		THROW_IF_NOT_CORE_THREAD;

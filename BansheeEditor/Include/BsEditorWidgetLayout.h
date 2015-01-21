@@ -25,14 +25,18 @@ namespace BansheeEngine
 
 	public:
 		EditorWidgetLayout(const DockManagerLayoutPtr& dockLayout);
-		EditorWidgetLayout(const PrivatelyConstruct& dummy) { }
+		EditorWidgetLayout(const PrivatelyConstruct& dummy);
 
 		Vector<Entry>& getEntries() { return mEntries; }
 		const DockManagerLayoutPtr& getDockLayout() const { return mDockLayout; }
 
+		void setIsMainWindowMaximized(bool maximized) { mMaximized = maximized; }
+		bool getIsMainWindowMaximized() const { return mMaximized; }
+
 	private:
 		Vector<Entry> mEntries;
 		DockManagerLayoutPtr mDockLayout;
+		bool mMaximized;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
