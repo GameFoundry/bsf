@@ -78,6 +78,11 @@ namespace BansheeEngine
 		Renderable(const HSceneObject& parent);
 
 		/**
+		 * @copydoc	Component::onInitialized
+		 */
+		void onInitialized();
+
+		/**
 		 * @copydoc	Component::onDestroyed
 		 */
 		void onDestroyed();

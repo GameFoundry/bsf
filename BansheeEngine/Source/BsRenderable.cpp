@@ -14,9 +14,12 @@ namespace BansheeEngine
 		:Component(parent), mLastUpdateHash(0)
 	{
 		setName("Renderable");
-
 		mInternal = RenderableHandler::create();
-		gSceneManager()._registerRenderable(mInternal, parent);
+	}
+
+	void Renderable::onInitialized()
+	{
+		gSceneManager()._registerRenderable(mInternal, sceneObject());
 	}
 
 	Bounds Renderable::getBounds() const

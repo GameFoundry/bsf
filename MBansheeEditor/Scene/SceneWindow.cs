@@ -16,6 +16,11 @@ namespace BansheeEditor
         private GUIRenderTexture renderTextureGUI;
         private SceneViewHandler sceneViewHandler;
 
+        private GUIToggle viewButton;
+        private GUIToggle moveButton;
+        private GUIToggle rotateButton;
+        private GUIToggle scaleButton;
+
         public Camera GetCamera()
         {
             return camera;
@@ -26,6 +31,20 @@ namespace BansheeEditor
 
         private void OnInitialize()
         {
+            //GUIToggleGroup handlesTG = new GUIToggleGroup();
+
+            //viewButton = new GUIToggle("V", handlesTG);
+            //moveButton = new GUIToggle("M", handlesTG);
+            //rotateButton = new GUIToggle("R", handlesTG);
+            //scaleButton = new GUIToggle("S", handlesTG);
+
+            //GUILayout handlesLayout = GUI.layout.AddLayoutX();
+            //handlesLayout.AddElement(viewButton);
+            //handlesLayout.AddElement(moveButton);
+            //handlesLayout.AddElement(rotateButton);
+            //handlesLayout.AddElement(scaleButton);
+            //handlesLayout.AddFlexibleSpace();
+
             UpdateRenderTexture(Width, Height);
         }
 

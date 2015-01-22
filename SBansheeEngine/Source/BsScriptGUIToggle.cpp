@@ -55,7 +55,7 @@ namespace BansheeEngine
 			options.addOption(mono_array_get(guiOptions, GUIOption, i));
 
 		ScriptGUIToggleGroup* scriptToggleGroup = nullptr;
-		if(scriptToggleGroup != nullptr)
+		if (toggleGroup != nullptr)
 			scriptToggleGroup = ScriptGUIToggleGroup::toNative(toggleGroup);
 
 		GUIContent nativeContent(ScriptGUIContent::getText(content), ScriptGUIContent::getImage(content), ScriptGUIContent::getTooltip(content));
