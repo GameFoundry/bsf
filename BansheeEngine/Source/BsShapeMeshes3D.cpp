@@ -168,8 +168,8 @@ namespace BansheeEngine
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
 		UINT8* normalData = meshData->getElementData(VES_NORMAL);
 
-		assert((vertexOffset + 4) <= meshData->getNumVertices());
-		assert((indexOffset + 6) <= meshData->getNumIndices());
+		assert((vertexOffset + 8) <= meshData->getNumVertices());
+		assert((indexOffset + 12) <= meshData->getNumIndices());
 
 		solidQuad(area, positionData, normalData, vertexOffset,
 			meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
@@ -669,13 +669,24 @@ namespace BansheeEngine
 		outVertices = writeVector3(outVertices, vertexStride, botRight);
 		outVertices = writeVector3(outVertices, vertexStride, botLeft);
 
+		outVertices = writeVector3(outVertices, vertexStride, topLeft);
+		outVertices = writeVector3(outVertices, vertexStride, topRight);
+		outVertices = writeVector3(outVertices, vertexStride, botRight);
+		outVertices = writeVector3(outVertices, vertexStride, botLeft);
+
 		Vector3 normal = area.getAxisHorz().cross(area.getAxisVert());
+		Vector3 reverseNormal = -normal;
 
 		outNormals += (vertexOffset * vertexStride);
 		outNormals = writeVector3(outNormals, vertexStride, normal);
 		outNormals = writeVector3(outNormals, vertexStride, normal);
 		outNormals = writeVector3(outNormals, vertexStride, normal);
 		outNormals = writeVector3(outNormals, vertexStride, normal);
+
+		outNormals = writeVector3(outNormals, vertexStride, reverseNormal);
+		outNormals = writeVector3(outNormals, vertexStride, reverseNormal);
+		outNormals = writeVector3(outNormals, vertexStride, reverseNormal);
+		outNormals = writeVector3(outNormals, vertexStride, reverseNormal);
 
 		outIndices += indexOffset;
 		outIndices[0] = vertexOffset;
@@ -685,6 +696,14 @@ namespace BansheeEngine
 		outIndices[3] = vertexOffset;
 		outIndices[4] = vertexOffset + 2;
 		outIndices[5] = vertexOffset + 3;
+
+		outIndices[6] = vertexOffset;
+		outIndices[7] = vertexOffset + 2;
+		outIndices[8] = vertexOffset + 1;
+
+		outIndices[9] = vertexOffset;
+		outIndices[10] = vertexOffset + 3;
+		outIndices[11] = vertexOffset + 2;
 	}
 
 	Vector3 ShapeMeshes3D::calcCenter(UINT8* vertices, UINT32 numVertices, UINT32 vertexStride)

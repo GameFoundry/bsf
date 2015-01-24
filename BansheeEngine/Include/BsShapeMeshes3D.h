@@ -236,7 +236,7 @@ namespace BansheeEngine
 			const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality = 10);
 
 		/**
-		 * @brief	Fills the mesh data with vertices representing a quad (2 triangles).
+		 * @brief	Fills the mesh data with vertices representing a quad (4 triangles, two sided).
 		 *
 		 * @param	area			Area in which to draw the quad.
 		 * @param	meshData		Mesh data that will be populated.
@@ -247,7 +247,7 @@ namespace BansheeEngine
 		 * 			  Vector3 VES_POSITION
 		 *			  Vector3 VES_NORMAL
 		 * 			  32bit index buffer
-		 * 			  Enough space for 4 vertices and 6 indices
+		 * 			  Enough space for 8 vertices and 12 indices
 		 *
 		 *			Primitives are output in the form of a triangle list.
 		 */

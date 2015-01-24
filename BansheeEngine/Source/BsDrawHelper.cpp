@@ -343,8 +343,8 @@ namespace BansheeEngine
 			rawData.meshType = MeshType::Solid;
 			rawData.shapeType = ShapeType::Rectangle;
 			rawData.distance = shapeData.center.distance(reference);
-			rawData.numVertices = 4;
-			rawData.numIndices = 6;
+			rawData.numVertices = 8;
+			rawData.numIndices = 12;
 			idx++;
 		}
 
