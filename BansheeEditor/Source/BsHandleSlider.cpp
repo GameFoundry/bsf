@@ -67,7 +67,6 @@ namespace BansheeEngine
 			mTransformInv.setInverseTRS(mPosition, mRotation, mScale);
 		}
 
-		//mTransformInv = mTransform.inverseAffine();
 		mTransformDirty = false;
 	}
 
@@ -94,10 +93,19 @@ namespace BansheeEngine
 	float HandleSlider::calcDelta(const CameraHandlerPtr& camera, const Vector3& position, const Vector3& direction,
 		const Vector2I& pointerStart, const Vector2I& pointerEnd)
 	{
+		// position + direction can sometimes project behind the camera (if the camera is looking at position
+		// from very close and at an angle), which will cause the delta to be reversed, so we compensate.
+
+		float negate = 1.0f;
+		Vector3 cameraDir = -camera->getRotation().zAxis();
+		if (cameraDir.dot((position + direction) - camera->getPosition()) <= 0.0f)
+			negate = -1.0f; // Point behind the camera
+
 		Vector2I handleStart2D = camera->worldToScreenPoint(position);
 		Vector2I handleEnd2D = camera->worldToScreenPoint(position + direction);
 
 		Vector2I handleDir2D = handleEnd2D - handleStart2D;
+
 		INT32 sqrdMag = handleDir2D.squaredLength();
 
 		if (sqrdMag == 0)
@@ -109,6 +117,6 @@ namespace BansheeEngine
 		float tStart = handleDir2D.dot(diffStart) / (float)sqrdMag;
 		float tEnd = handleDir2D.dot(diffEnd) / (float)sqrdMag;
 
-		return tEnd - tStart;
+		return negate * (tEnd - tStart);
 	}
 }
