@@ -42,7 +42,7 @@ namespace BansheeEngine
 			if (child == elem)
 				myIndex = i;
 
-			optimalSizes.push_back(calcOptimalSize(elem));
+			optimalSizes.push_back(calcOptimalSize(child));
 		}
 
 		Rect2I* elementAreas = nullptr;

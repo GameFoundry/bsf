@@ -51,25 +51,27 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns the rectangles horizontal axis.
 		 */
-		const Vector3& getAxisHorz() const { return mAxes[0]; }
+		const Vector3& getAxisHorz() const { return mAxisHorz; }
 
 		/**
 		 * @brief	Returns the rectangles vertical axis.
 		 */
-		const Vector3& getAxisVert() const { return mAxes[1]; }
+		const Vector3& getAxisVert() const { return mAxisVert; }
 
 		/**
 		 * @brief	Gets the extent of the rectangle along its horizontal axis.
 		 */
-		const float& getExtentHorz() const { return mExtents[0]; }
+		const float& getExtentHorz() const { return mExtentHorz; }
 
 		/**
 		 * @brief	Gets the extent of the rectangle along its vertical axis.
 		 */
-		const float& getExtentVertical() const { return mExtents[1]; }
+		const float& getExtentVertical() const { return mExtentVert; }
 	private:
 		Vector3 mCenter;
-		std::array<Vector3, 2> mAxes;
-		std::array<float, 2> mExtents;
+		Vector3 mAxisHorz;
+		Vector3 mAxisVert;
+		float mExtentHorz;
+		float mExtentVert;
 	};
 }

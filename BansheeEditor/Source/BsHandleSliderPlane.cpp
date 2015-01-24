@@ -12,10 +12,12 @@ namespace BansheeEngine
 		mDirection1 = Vector3::normalize(dir1);
 		mDirection2 = Vector3::normalize(dir2);
 
+		float halfLength = length * 0.5f;
 		std::array<Vector3, 2> axes = { mDirection1, mDirection2 };
-		std::array<float, 2> extents = { length, length };
+		std::array<float, 2> extents = { halfLength, halfLength };
 
-		mCollider = Rect3(Vector3::ZERO, axes, extents);
+		Vector3 center = (dir1 * length + dir2 * length) * 0.5f;
+		mCollider = Rect3(center, axes, extents);
 
 		HandleSliderManager& sliderManager = HandleManager::instance().getSliderManager();
 		sliderManager._registerSlider(this);

@@ -1434,10 +1434,19 @@ namespace BansheeEngine
 
 		HDepthStencilState depthStencilState = DepthStencilState::create(depthStencilStateDesc);
 
+		BLEND_STATE_DESC blendDesc;
+		blendDesc.renderTargetDesc[0].blendEnable = true;
+		blendDesc.renderTargetDesc[0].srcBlend = BF_SOURCE_ALPHA;
+		blendDesc.renderTargetDesc[0].dstBlend = BF_INV_SOURCE_ALPHA;
+		blendDesc.renderTargetDesc[0].blendOp = BO_ADD;
+
+		HBlendState blendState = BlendState::create(blendDesc);
+
 		PASS_DESC passDesc;
 		passDesc.vertexProgram = vsProgram;
 		passDesc.fragmentProgram = psProgram;
 		passDesc.depthStencilState = depthStencilState;
+		passDesc.blendState = blendState;
 
 		PassPtr newPass = Pass::create(passDesc);
 		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass });
@@ -1459,10 +1468,19 @@ namespace BansheeEngine
 
 		HDepthStencilState depthStencilState = DepthStencilState::create(depthStencilStateDesc);
 
+		BLEND_STATE_DESC blendDesc;
+		blendDesc.renderTargetDesc[0].blendEnable = true;
+		blendDesc.renderTargetDesc[0].srcBlend = BF_SOURCE_ALPHA;
+		blendDesc.renderTargetDesc[0].dstBlend = BF_INV_SOURCE_ALPHA;
+		blendDesc.renderTargetDesc[0].blendOp = BO_ADD;
+
+		HBlendState blendState = BlendState::create(blendDesc);
+
 		PASS_DESC passDesc;
 		passDesc.vertexProgram = vsProgram;
 		passDesc.fragmentProgram = psProgram;
 		passDesc.depthStencilState = depthStencilState;
+		passDesc.blendState = blendState;
 
 		PassPtr newPass = Pass::create(passDesc);
 		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass });

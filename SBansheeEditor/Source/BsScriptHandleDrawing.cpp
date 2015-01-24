@@ -85,8 +85,12 @@ namespace BansheeEngine
 		HandleManager::instance().getDrawManager().drawWireArc(position, normal, radius, startAngle, amountAngle, size);
 	}
 
-	void ScriptHandleDrawing::internal_DrawRect(Rect3 area, float size)
+	void ScriptHandleDrawing::internal_DrawRect(Vector3 center, Vector3 horzAxis, Vector3 vertAxis, float extentH, float extentV, float size)
 	{
+		std::array<Vector3, 2> axes = { horzAxis, vertAxis };
+		std::array<float, 2> extents = { extentH, extentV };
+
+		Rect3 area(center, axes, extents);
 		HandleManager::instance().getDrawManager().drawRect(area, size);
 	}
 }

@@ -67,7 +67,7 @@ namespace BansheeEditor
 
         public static void DrawRect(Rect3 area, float size = 1.0f)
         {
-            Internal_DrawRect(area, size);
+            Internal_DrawRect(area.center, area.axisHorz, area.axisVert, area.extentHorz, area.extentVert, size);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -107,6 +107,6 @@ namespace BansheeEditor
         private static extern void Internal_DrawWireArc(Vector3 position, Vector3 normal, float radius, Degree startAngle, Degree amountAngle, float size);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_DrawRect(Rect3 area, float size);
+        private static extern void Internal_DrawRect(Vector3 center, Vector3 axisH, Vector3 axisV, float extentH, float extentV, float size);
     }
 }

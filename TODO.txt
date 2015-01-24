@@ -1,9 +1,25 @@
 --------- ALL LONG TERM TASKS / FIXES BELONG TO GOOGLE DOCS: ImplementationTODO OR PossibleImprovements ----------
 
+Do a cleanup pass on the editor? Fix the annoying little issues:
+ - When GUIToggle is initialy toggled the texture is missing
+ - Switching between button states seem to cause 1 frame of no texture for the gui element
+ - Much more I can't think of right now
+
 <<<<<Assembly refresh>>>>>
 
 When serializing Camera I cannot save the reference to RenderTexture. Make it a Resource?
 Possibly set up automatic refresh in debug mode after initialization? As an ad-hoc unit test
+
+<<<<<<Handles>>>>>>>>
+
+When active handle in EditorApplication changes externally, update the GUI button in scene view
+Save/load active handle tool (it should also probably persist assembly refresh)
+
+Movement of plane (and possible line) sliders might need tweaking
+ - Move handle was moving object in the opposite direction at one point
+ - It also seems to move too slow
+Need to update ShapeMeshes3D::solidQuad to render both sides of the quad
+
 
 <<<<Multi-resource saving>>>>:
  - Modify Font so it doesn't contain a texture, but instead keeps a handle to it
@@ -15,11 +31,16 @@ Possibly set up automatic refresh in debug mode after initialization? As an ad-h
 Other:
 Window resize end callback
 Add cutoff plane when rendering discs for rotation handle.
+There seems to be a delay when changing GUI element sprite textures (like 1 frame there is no texture at all)
 
 I can get mono errors by checking g_print calls in goutput.c
  - Calling thunks incorrectly can cause those weird errors with no real callstack
 
 Running embedded mono with VS attached causes managed null refs to be registered as access violations
+
+There seems to be a bug in Mono when passing complex structs from C# to C++. e.g. passing Rect3 as a parameter
+will corrupt the parameter after it, even if layout and size is exact as the C++ version. 
+Rect3 has child structs (Vector3) which could be the reason. Be aware of other similar problems.
 
 Create a stack allocatable custom vector implementation and make getResourceDependencies and getCoreDependencies use it.
  - These methods are called often and cause allocations whenever they are.

@@ -9,9 +9,12 @@ namespace BansheeEditor
 {
     internal sealed class SceneWindow : EditorWindow
     {
+        private const int HeaderHeight = 20;
+
         private Camera camera;
         private SceneCamera cameraController;
         private RenderTexture2D renderTexture;
+        private GUILayoutY mainLayout;
 
         private GUIRenderTexture renderTextureGUI;
         private SceneViewHandler sceneViewHandler;
@@ -31,21 +34,28 @@ namespace BansheeEditor
 
         private void OnInitialize()
         {
-            //GUIToggleGroup handlesTG = new GUIToggleGroup();
+            mainLayout = GUI.layout.AddLayoutY();
 
-            //viewButton = new GUIToggle("V", handlesTG);
-            //moveButton = new GUIToggle("M", handlesTG);
-            //rotateButton = new GUIToggle("R", handlesTG);
-            //scaleButton = new GUIToggle("S", handlesTG);
+            GUIToggleGroup handlesTG = new GUIToggleGroup();
 
-            //GUILayout handlesLayout = GUI.layout.AddLayoutX();
-            //handlesLayout.AddElement(viewButton);
-            //handlesLayout.AddElement(moveButton);
-            //handlesLayout.AddElement(rotateButton);
-            //handlesLayout.AddElement(scaleButton);
-            //handlesLayout.AddFlexibleSpace();
+            viewButton = new GUIToggle("V", handlesTG, EditorStyles.Button);
+            moveButton = new GUIToggle("M", handlesTG, EditorStyles.Button);
+            rotateButton = new GUIToggle("R", handlesTG, EditorStyles.Button);
+            scaleButton = new GUIToggle("S", handlesTG, EditorStyles.Button);
 
-            UpdateRenderTexture(Width, Height);
+            viewButton.OnClick += () => EditorApplication.ActiveSceneTool = SceneViewTool.View;
+            moveButton.OnClick += () => EditorApplication.ActiveSceneTool = SceneViewTool.Move;
+            rotateButton.OnClick += () => EditorApplication.ActiveSceneTool = SceneViewTool.Rotate;
+            scaleButton.OnClick += () => EditorApplication.ActiveSceneTool = SceneViewTool.Scale;
+
+            GUILayout handlesLayout = mainLayout.AddLayoutX();
+            handlesLayout.AddElement(viewButton);
+            handlesLayout.AddElement(moveButton);
+            handlesLayout.AddElement(rotateButton);
+            handlesLayout.AddElement(scaleButton);
+            handlesLayout.AddFlexibleSpace();
+
+            UpdateRenderTexture(Width, Height - HeaderHeight);
         }
 
         private void OnDestroy()
@@ -115,7 +125,7 @@ namespace BansheeEditor
 
         protected override void WindowResized(int width, int height)
         {
-            UpdateRenderTexture(width, height);
+            UpdateRenderTexture(width, height - HeaderHeight);
 
             base.WindowResized(width, height);
         }
@@ -153,7 +163,7 @@ namespace BansheeEditor
                 cameraController = sceneCameraSO.AddComponent<SceneCamera>();
 
                 renderTextureGUI = new GUIRenderTexture(renderTexture);
-                GUI.layout.AddElement(renderTextureGUI);
+                mainLayout.AddElement(renderTextureGUI);
 
                 sceneViewHandler = new SceneViewHandler(this, camera);
 		    }

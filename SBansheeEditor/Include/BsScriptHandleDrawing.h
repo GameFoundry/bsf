@@ -28,6 +28,6 @@ namespace BansheeEngine
 		static void internal_DrawWireDisc(Vector3 position, Vector3 normal, float radius, float size);
 		static void internal_DrawArc(Vector3 position, Vector3 normal, float radius, Degree startAngle, Degree amountAngle, float size);
 		static void internal_DrawWireArc(Vector3 position, Vector3 normal, float radius, Degree startAngle, Degree amountAngle, float size);
-		static void internal_DrawRect(Rect3 area, float size);
+		static void internal_DrawRect(Vector3 center, Vector3 horzAxis, Vector3 vertAxis, float extentH, float extentV, float size);
 	};
 }

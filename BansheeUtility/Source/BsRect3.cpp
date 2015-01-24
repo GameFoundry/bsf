@@ -9,7 +9,8 @@ namespace BansheeEngine
 
 	Rect3::Rect3(const Vector3& center, const std::array<Vector3, 2>& axes,
 		const std::array<float, 2>& extents)
-		:mCenter(center), mAxes(axes), mExtents(extents)
+		:mCenter(center), mAxisHorz(axes[0]), mAxisVert(axes[1]),
+		mExtentHorz(extents[0]), mExtentVert(extents[1])
 	{
 
 	}
@@ -40,8 +41,8 @@ namespace BansheeEngine
 		if (!foundNearest)
 		{
 			Vector3 scaledAxes[2];
-			scaledAxes[0] = mExtents[0] * mAxes[0];
-			scaledAxes[1] = mExtents[1] * mAxes[1];
+			scaledAxes[0] = mExtentHorz * mAxisHorz;
+			scaledAxes[1] = mExtentVert * mAxisVert;;
 
 			distance = std::numeric_limits<float>::max();
 			for (UINT32 i = 0; i < 2; i++)
@@ -85,22 +86,22 @@ namespace BansheeEngine
 	std::pair<Vector3, float> Rect3::getNearestPoint(const Vector3& point) const
 	{
 		Vector3 diff = mCenter - point;
-		float b0 = diff.dot(mAxes[0]);
-		float b1 = diff.dot(mAxes[1]);
+		float b0 = diff.dot(mAxisHorz);
+		float b1 = diff.dot(mAxisVert);
 		float s0 = -b0, s1 = -b1;
 		float sqrDistance = diff.dot(diff);
 
-		if (s0 < -mExtents[0])
-			s0 = -mExtents[0];
-		else if (s0 > mExtents[0])
-			s0 = mExtents[0];
+		if (s0 < -mExtentHorz)
+			s0 = -mExtentHorz;
+		else if (s0 > mExtentHorz)
+			s0 = mExtentHorz;
 
 		sqrDistance += s0*(s0 + 2.0f*b0);
 
-		if (s1 < -mExtents[1])
-			s1 = -mExtents[1];
-		else if (s1 > mExtents[1])
-			s1 = mExtents[1];
+		if (s1 < -mExtentVert)
+			s1 = -mExtentVert;
+		else if (s1 > mExtentVert)
+			s1 = mExtentVert;
 
 		sqrDistance += s1*(s1 + 2.0f*b1);
 
@@ -108,7 +109,7 @@ namespace BansheeEngine
 			sqrDistance = 0.0f;
 
 		float dist = std::sqrt(sqrDistance);
-		Vector3 nearestPoint = mCenter + s0 * mAxes[0] + s1 * mAxes[1];
+		Vector3 nearestPoint = mCenter + s0 * mAxisHorz + s1 * mAxisVert;
 
 		return std::make_pair(nearestPoint, dist);
 	}
@@ -118,7 +119,7 @@ namespace BansheeEngine
 		const Vector3& org = ray.getOrigin();
 		const Vector3& dir = ray.getDirection();
 
-		Vector3 normal = mAxes[0].cross(mAxes[1]);
+		Vector3 normal = mAxisHorz.cross(mAxisVert);
 		float NdotD = normal.dot(ray.getDirection());
 		if (fabs(NdotD) > 0.0f)
 		{
@@ -128,21 +129,21 @@ namespace BansheeEngine
 			basis[0] = ray.getDirection();
 			basis[0].orthogonalComplement(basis[1], basis[2]);
 
-			float UdD0 = basis[1].dot(mAxes[0]);
-			float UdD1 = basis[1].dot(mAxes[1]);
+			float UdD0 = basis[1].dot(mAxisHorz);
+			float UdD1 = basis[1].dot(mAxisVert);
 			float UdPmC = basis[1].dot(diff);
-			float VdD0 = basis[2].dot(mAxes[0]);
-			float VdD1 = basis[2].dot(mAxes[1]);
+			float VdD0 = basis[2].dot(mAxisHorz);
+			float VdD1 = basis[2].dot(mAxisVert);
 			float VdPmC = basis[2].dot(diff);
 			float invDet = 1.0f / (UdD0*VdD1 - UdD1*VdD0);
 
 			float s0 = (VdD1*UdPmC - UdD1*VdPmC)*invDet;
 			float s1 = (UdD0*VdPmC - VdD0*UdPmC)*invDet;
 
-			if (fabs(s0) <= mExtents[0] && fabs(s1) <= mExtents[1])
+			if (fabs(s0) <= mExtentHorz && fabs(s1) <= mExtentVert)
 			{
-				float DdD0 = dir.dot(mAxes[0]);
-				float DdD1 = dir.dot(mAxes[1]);
+				float DdD0 = dir.dot(mAxisHorz);
+				float DdD1 = dir.dot(mAxisVert);
 				float DdDiff = dir.dot(diff);
 
 				float t = s0 * DdD0 + s1 * DdD1 - DdDiff;

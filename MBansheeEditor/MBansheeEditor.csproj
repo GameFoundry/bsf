@@ -50,6 +50,7 @@
     <Compile Include="Debug_Component2.cs" />
     <Compile Include="EditorApplication.cs" />
     <Compile Include="EditorSettings.cs" />
+    <Compile Include="EditorStyles.cs" />
     <Compile Include="EditorUtility.cs" />
     <Compile Include="EditorWindow.cs" />
     <Compile Include="GUI\GUIFoldout.cs" />
