@@ -46,7 +46,7 @@ namespace BansheeEngine
 	}
 
 	void ScriptGUIToggle::internal_createInstance(MonoObject* instance, MonoObject* content, 
-		MonoObject* toggleGroup, MonoString* style, MonoArray* guiOptions)
+		MonoObject* monoToggleGroup, MonoString* style, MonoArray* guiOptions)
 	{
 		GUIOptions options;
 
@@ -55,11 +55,15 @@ namespace BansheeEngine
 			options.addOption(mono_array_get(guiOptions, GUIOption, i));
 
 		ScriptGUIToggleGroup* scriptToggleGroup = nullptr;
-		if (toggleGroup != nullptr)
-			scriptToggleGroup = ScriptGUIToggleGroup::toNative(toggleGroup);
+		std::shared_ptr<GUIToggleGroup> toggleGroup;
+		if (monoToggleGroup != nullptr)
+		{
+			scriptToggleGroup = ScriptGUIToggleGroup::toNative(monoToggleGroup);
+			toggleGroup = scriptToggleGroup->getInternalValue();
+		}
 
 		GUIContent nativeContent(ScriptGUIContent::getText(content), ScriptGUIContent::getImage(content), ScriptGUIContent::getTooltip(content));
-		GUIToggle* guiToggle = GUIToggle::create(nativeContent, scriptToggleGroup->getInternalValue(), options, toString(MonoUtil::monoToWString(style)));
+		GUIToggle* guiToggle = GUIToggle::create(nativeContent, toggleGroup, options, toString(MonoUtil::monoToWString(style)));
 
 		guiToggle->onClick.connect(std::bind(&ScriptGUIToggle::onClick, instance));
 		guiToggle->onHover.connect(std::bind(&ScriptGUIToggle::onHover, instance));

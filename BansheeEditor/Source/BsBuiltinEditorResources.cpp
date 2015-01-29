@@ -280,6 +280,9 @@ namespace BansheeEngine
 		buttonStyle.normal.texture = getGUITexture(ButtonNormalTex);
 		buttonStyle.hover.texture = getGUITexture(ButtonHoverTex);
 		buttonStyle.active.texture = getGUITexture(ButtonActiveTex);
+		buttonStyle.normalOn.texture = getGUITexture(ButtonActiveTex);
+		buttonStyle.hoverOn.texture = getGUITexture(ButtonActiveTex);
+		buttonStyle.activeOn.texture = getGUITexture(ButtonActiveTex);
 		buttonStyle.border.left = 6;
 		buttonStyle.border.right = 6;
 		buttonStyle.border.top = 6;

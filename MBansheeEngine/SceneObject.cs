@@ -5,13 +5,13 @@ namespace BansheeEngine
 {
     public sealed class SceneObject : GameObject
     {
-        public SceneObject parent
+        public SceneObject Parent
         {
             set { Internal_SetParent(mCachedPtr, value); }
             get { return Internal_GetParent(mCachedPtr); }
         }
 
-        public Vector3 position
+        public Vector3 Position
         {
             get
             {
@@ -26,7 +26,7 @@ namespace BansheeEngine
             }
         }
 
-        public Vector3 localPosition
+        public Vector3 LocalPosition
         {
             get
             {
@@ -41,7 +41,7 @@ namespace BansheeEngine
             }
         }
 
-        public Quaternion rotation
+        public Quaternion Rotation
         {
             get
             {
@@ -56,7 +56,7 @@ namespace BansheeEngine
             }
         }
 
-        public Quaternion localRotation
+        public Quaternion LocalRotation
         {
             get
             {
@@ -71,7 +71,7 @@ namespace BansheeEngine
             }
         }
 
-        public Vector3 scale
+        public Vector3 Scale
         {
             get
             {
@@ -81,7 +81,7 @@ namespace BansheeEngine
             }
         }
 
-        public Vector3 localScale
+        public Vector3 LocalScale
         {
             get
             {
@@ -96,7 +96,7 @@ namespace BansheeEngine
             }
         }
 
-        public Matrix4 worldTransform
+        public Matrix4 WorldTransform
         {
             get
             {
@@ -106,7 +106,7 @@ namespace BansheeEngine
             }
         }
 
-        public Matrix4 localTransform
+        public Matrix4 LocalTransform
         {
             get
             {
@@ -116,7 +116,7 @@ namespace BansheeEngine
             }
         }
 
-        public Vector3 forward
+        public Vector3 Forward
         {
             get
             {
@@ -130,7 +130,7 @@ namespace BansheeEngine
             }
         }
 
-        public Vector3 right
+        public Vector3 Right
         {
             get
             {
@@ -140,7 +140,7 @@ namespace BansheeEngine
             }
         }
 
-        public Vector3 up
+        public Vector3 Up
         {
             get
             {

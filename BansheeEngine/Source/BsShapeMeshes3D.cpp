@@ -14,6 +14,9 @@
 #include "BsBuiltinResources.h"
 #include "BsVertexDataDesc.h"
 
+// DEBUG ONLY
+#include "BsDebug.h"
+
 namespace BansheeEngine
 {
 	const UINT32 ShapeMeshes3D::NUM_VERTICES_AA_LINE = 8;
@@ -266,8 +269,8 @@ namespace BansheeEngine
 
 	void ShapeMeshes3D::getNumElementsArc(UINT32 quality, UINT32& numVertices, UINT32& numIndices)
 	{
-		numVertices = (quality + 1) * 5 + 1;
-		numIndices = ((quality + 1) * 5 - 1) * 3;
+		numVertices = ((quality + 1) * 5 + 1) * 2;
+		numIndices = ((quality + 1) * 5 - 1) * 6;
 	}
 
 	void ShapeMeshes3D::getNumElementsWireArc(UINT32 quality, UINT32& numVertices, UINT32& numIndices)
@@ -505,18 +508,35 @@ namespace BansheeEngine
 
 		UINT32 totalNumVertices = numArcVertices + 1;
 		outNormals += vertexOffset * vertexStride;
+		outVertices += vertexOffset * vertexStride;
+
+		UINT8* otherSideVertices = outVertices + (totalNumVertices * vertexStride);
+		UINT8* otherSideNormals = outNormals + (totalNumVertices * vertexStride);
 		for (UINT32 i = 0; i < totalNumVertices; i++)
 		{
+			otherSideVertices = writeVector3(otherSideVertices, vertexStride, *(Vector3*)outVertices);
+			outVertices += vertexStride;
+
 			outNormals = writeVector3(outNormals, vertexStride, normal);
+			otherSideNormals = writeVector3(otherSideNormals, vertexStride, -normal);
 		}
 
 		outIndices += indexOffset;
 		UINT32 numTriangles = numArcVertices - 1;
+
+		// If angle is negative the order of vertices is reversed so we need to reverse the indexes too
+		UINT32 frontSideOffset = vertexOffset + (amountAngle.valueDegrees() < 0.0f ? totalNumVertices : 0);
+		UINT32 backSideOffset = vertexOffset + (amountAngle.valueDegrees() >= 0.0f ? totalNumVertices : 0);
+
 		for (UINT32 i = 0; i < numTriangles; i++)
 		{
-			outIndices[i * 3 + 0] = vertexOffset + 0;
-			outIndices[i * 3 + 1] = vertexOffset + i;
-			outIndices[i * 3 + 2] = vertexOffset + i + 1;
+			outIndices[i * 6 + 0] = frontSideOffset + 0;
+			outIndices[i * 6 + 1] = frontSideOffset + i;
+			outIndices[i * 6 + 2] = frontSideOffset + i + 1;
+
+			outIndices[i * 6 + 3] = backSideOffset + 0;
+			outIndices[i * 6 + 4] = backSideOffset + i + 1;
+			outIndices[i * 6 + 5] = backSideOffset + i;
 		}
 	}
 
@@ -946,8 +966,6 @@ namespace BansheeEngine
 		UINT8* outVertices, UINT32 vertexOffset, UINT32 vertexStride)
 	{
 		assert(numVertices >= 2);
-
-		startAngle += Degree(90.0f); // Offset so arc starts the same as trig functions
 
 		Vector3 normalizedUp = Vector3::normalize(up);
 		Vector3 right;

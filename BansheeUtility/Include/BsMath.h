@@ -361,18 +361,14 @@ namespace BansheeEngine
 		template <typename T>
 		static UINT32 solveLinear(T A, T B, T* roots)
 		{
-			if (!approxEquals(B, (T)0))
+			if (!approxEquals(A, (T)0))
 			{
-				roots[0] = -A / B;
-				return 1;
-			}
-			else if (approxEquals(A, (T)0))
-			{
-				roots[0] = 0.0f;
+				roots[0] = -B / A;
 				return 1;
 			}
 
-			return 0;
+			roots[0] = 0.0f;
+			return 1;
 		}
 
 		/**
@@ -387,32 +383,34 @@ namespace BansheeEngine
 		template <typename T>
 		static UINT32 solveQuadratic(T A, T B, T C, T* roots)
 		{
-			if (!approxEquals(C, (T)0))
+			if (!approxEquals(A, (T)0))
 			{
-				T discr = B * B - 4 * A * C;
-				if (discr > std::numeric_limits<T>::epsilon())
-				{
-					float temp = ((T)0.5) / C;
-					discr = std::sqrt(discr);
+				T p = B / (2 * A);
+				T q = C / A;
+				T D = p * p - q;
 
-					roots[0] = temp * (-B - discr);
-					roots[1] = temp * (-B + discr);
+				if (!approxEquals(D, (T)0))
+				{
+					if (D < (T)0)
+						return 0;
+					
+					T sqrtD = sqrt(D);
+					roots[0] = sqrtD - p;
+					roots[1] = -sqrtD - p;
 
 					return 2;
 				}
-				else if (discr < -std::numeric_limits<T>::epsilon())
-				{
-					return 0;
-				}
 				else
 				{
-					roots[0] = ((T)-0.5) * (B / C);
+					roots[0] = -p;
+					roots[1] = -p;
+
 					return 1;
 				}
 			}
 			else
 			{
-				return solveLinear(A, B, roots);
+				return solveLinear(B, C, roots);
 			}
 		}
 
@@ -430,70 +428,67 @@ namespace BansheeEngine
 		{
 			static const T THIRD = (1 / (T)3);
 
+			T invA = 1 / A;
+			A = B * invA;
+			B = C * invA;
+			C = D * invA;
+
+			T sqA = A * A;
+			T p = THIRD * (-THIRD * sqA + B);
+			T q = ((T)0.5) * ((2 / (T)27) * A * sqA - THIRD * A * B + C);
+
+			T cbp = p * p * p;
+			D = q * q + cbp;
+
+			UINT32 numRoots = 0;
 			if (!approxEquals(D, (T)0))
 			{
-				T invD = 1 / D;
-				T k0 = A * invD;
-				T k1 = B * invD;
-				T k2 = C * invD;
-
-				T offset = THIRD * k2;
-				T a = k1 - k2 * offset;
-				T b = k0 + k2 * (2 * k2 * k2 - 9 * k1) * (1 / (T)27);
-				T halfB = ((T)0.5) * b;
-
-				T discr = halfB * halfB + a * a * a * (1 / (T)27);
-				if (discr > std::numeric_limits<T>::epsilon())
+				if (D < 0.0)
 				{
-					discr = std::sqrt(discr);
-					T temp = -halfB + discr;
-					if (temp >= (T)0)
-						roots[0] = pow(temp, THIRD);
-					else
-						roots[0] = -pow(-temp, THIRD);
+					T phi = THIRD * ::acos(-q / sqrt(-cbp));
+					T t = 2 * sqrt(-p);
 
-					temp = -halfB - discr;
-					if (temp >= 0)
-						roots[0] += pow(temp, THIRD);
-					else
-						roots[0] -= -pow(-temp, THIRD);
+					roots[0] = t * cos(phi);
+					roots[1] = -t * cos(phi + PI * THIRD);
+					roots[2] = -t * cos(phi - PI * THIRD);
 
-					roots[0] -= offset;
-					return 1;
-				}
-				else if (discr < -std::numeric_limits<T>::epsilon())
-				{
-					T sqrtThree = std::sqrt((T)3);
-					T dist = sqrt(-THIRD * a);
-					T angle = THIRD * atan2(std::sqrt(-discr), -halfB).valueRadians();
-					T angleCos = cos(angle);
-					T angleSin = sin(angle);
-
-					roots[0] = 2 * dist * angleCos - offset;
-					roots[1] = -dist * (angleCos + sqrtThree * angleSin) - offset;
-					roots[2] = -dist * (angleCos - sqrtThree * angleSin) - offset;
-
-					return 3;
+					numRoots = 3;
 				}
 				else
 				{
-					T temp;
-					if (halfB >= (T)0)
-						temp = -pow(halfB, THIRD);
+					T sqrtD = sqrt(D);
+					T u = cbrt(sqrtD + fabs(q));
+
+					if (q > (T)0)
+						roots[0] = -u + p / u;
 					else
-						temp = pow(-halfB, THIRD);
+						roots[0] = u - p / u;
 
-					roots[0] = 2 * temp - offset;
-					roots[1] = -temp - offset;
-					roots[2] = roots[1];
-
-					return 3;
+					numRoots = 1;
 				}
 			}
 			else
 			{
-				return solveQuadratic(A, B, C, roots);
+				if (!approxEquals(q, (T)0))
+				{
+					T u = cbrt(-q);
+					roots[0] = 2 * u;
+					roots[1] = -u;
+
+					numRoots = 2;
+				}
+				else
+				{
+					roots[0] = 0.0f;
+					numRoots = 1;
+				}
 			}
+
+			T sub = THIRD * A;
+			for (UINT32 i = 0; i < numRoots; i++)
+				roots[i] -= sub;
+
+			return numRoots;
 		}
 
 		/**
@@ -508,84 +503,68 @@ namespace BansheeEngine
 		template <typename T>
 		static UINT32 solveQuartic(T A, T B, T C, T D, T E, T* roots)
 		{
-			if (!approxEquals(E, (T)0))
+			T invA = 1 / A;
+			A = B * invA;
+			B = C * invA;
+			C = D * invA;
+			D = E * invA;
+
+			T sqA = A*A;
+			T p = -(3 / (T)8) * sqA + B;
+			T q = (1 / (T)8) * sqA * A - (T)0.5 * A * B + C;
+			T r = -(3 / (T)256) * sqA * sqA + (1 / (T)16) * sqA * B - (1 / (T)4) * A * C + D;
+
+			UINT32 numRoots = 0;
+			if (!approxEquals(r, (T)0))
 			{
-				T invE = 1 / E;
-				T k0 = A * invE;
-				T k1 = B * invE;
-				T k2 = C * invE;
-				T k3 = D * invE;
+				T cubicA = 1;
+				T cubicB = -(T)0.5 * p ;
+				T cubicC = -r;
+				T cubicD = (T)0.5 * r * p - (1 / (T)8) * q * q;
 
-				T r0 = k0 * (4 * k2 - k3 * k3) - k1 * k1;
-				T r1 = k3 * k1 - 4 * k0;
-				T r2 = -k2;
-				solveCubic(r0, r1, r2, (T)1, roots);
-				T y = roots[0];
+				solveCubic(cubicA, cubicB, cubicC, cubicD, roots);
+				T z = roots[0];
 
-				UINT32 numRoots = 0;
-				T discr = ((T)0.25) * k3 * k3 - k2 + y;
-				if (discr > std::numeric_limits<T>::epsilon())
-				{
-					T r = sqrt(discr);
-					T t1 = ((T)0.75) * k3 * k3 - r * r - 2*k2;
-					T t2 = (k3 * k2 - 2 * k1 - ((T)0.25) * k3 * k3 * k3) / r;
+				T u = z * z - r;
+				T v = 2 * z - p;
 
-					T tPlus = t1 + t2;
-					if (tPlus >= ((T)0))
-					{
-						T d = std::sqrt(tPlus);
-						roots[0] = ((T)-0.25) * k3 + ((T)0.5) * (r + d);
-						roots[1] = ((T)-0.25) * k3 + ((T)0.5) * (r - d);
-
-						numRoots += 2;
-					}
-
-					T tMinus = t1 - t2;
-					if (tMinus >= ((T)0))
-					{
-						T e = std::sqrt(tMinus);
-						roots[numRoots++] = ((T)-0.25) * k3 + ((T)0.5) * (e - r);
-						roots[numRoots++] = ((T)-0.25) * k3 - ((T)0.5) * (e + r);
-					}
-				}
-				else if (discr < -std::numeric_limits<T>::epsilon())
-				{
-					numRoots = 0;
-				}
+				if (approxEquals(u, T(0)))
+					u = 0;
+				else if (u > 0)
+					u = sqrt(u);
 				else
-				{
-					T t2 = y * y - 4 * k0;
-					if (t2 >= ((T)0))
-					{
-						t2 = 2 * std::sqrt(t2);
-						T t1 = ((T)0.75) * k3 * k3 - 2 * k2;
+					return 0;
 
-						T tPlus = t1 + t2;
-						if (tPlus >= ((T)0))
-						{
-							T d = std::sqrt(tPlus);
-							roots[0] = ((T)-0.25) * k3 + ((T)0.5) * d;
-							roots[1] = ((T)-0.25) * k3 + ((T)0.5) * d;
+				if (approxEquals(v, T(0)))
+					v = 0;
+				else if (v > 0)
+					v = sqrt(v);
+				else
+					return 0;
 
-							numRoots += 2;
-						}
+				T quadraticA = 1;
+				T quadraticB = q < 0 ? -v : v;
+				T quadraticC = z - u;
 
-						T tMinus = t1 - t2;
-						if (tMinus >= ((T)0))
-						{
-							T e = std::sqrt(tMinus);
-							roots[numRoots++] = ((T)-0.25) * k3 + ((T)0.5) * e;
-							roots[numRoots++] = ((T)-0.25) * k3 - ((T)0.5) * e;
-						}
-					}
-				}
+				numRoots = solveQuadratic(quadraticA, quadraticB, quadraticC, roots);
 
-				return numRoots;
+				quadraticA = 1;
+				quadraticB = q < 0 ? v : -v;
+				quadraticC = z + u;
+
+				numRoots += solveQuadratic(quadraticA, quadraticB, quadraticC, roots + numRoots);
 			}
 			else
 			{
-				return solveCubic(A, B, C, D, roots);
+				numRoots = solveCubic(q, p, (T)0, (T)1, roots);
+				roots[numRoots++] = 0;
 			}
+
+			T sub = (1/(T)4) * A;
+			for (UINT32 i = 0; i < numRoots; i++)
+				roots[i] -= sub;
+
+			return numRoots;
 		}
 
         static const float POS_INFINITY;

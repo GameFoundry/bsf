@@ -447,6 +447,14 @@ namespace BansheeEngine
                 m30 * v.x + m31 * v.y + m32 * v.z + m33 * v.w);
         }
 
+        public void SetColumn(int columnIdx, Vector4 column)
+        {
+            this[0, columnIdx] = column.x;
+            this[1, columnIdx] = column.y;
+            this[2, columnIdx] = column.z;
+            this[3, columnIdx] = column.w;
+        }
+
         public static Matrix4 TRS(Vector3 translation, Quaternion rotation, Vector3 scale)
         {
             Matrix3 rot3x3 = rotation.ToRotationMatrix();

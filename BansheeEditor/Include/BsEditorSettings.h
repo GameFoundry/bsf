@@ -12,11 +12,9 @@ namespace BansheeEngine
 
 		bool getMoveHandleSnapActive() const { return mMoveSnapActive; }
 		bool getRotateHandleSnapActive() const { return mRotateSnapActive; }
-		bool getScaleHandleSnapActive() const { return mScaleSnapActive; }
 
 		float getMoveHandleSnap() const { return mMoveSnap; }
 		Degree getRotationHandleSnap() const { return mRotationSnap; }
-		float getScaleHandleSnap() const { return mScaleSnap; }
 
 		UINT32 getGridSize() const { return mGridSize; }
 		float getGridSpacing() const { return mGridAxisSpacing; }
@@ -25,13 +23,15 @@ namespace BansheeEngine
 
 		float getHandleSize() const { return mHandleSize; }
 
+		UINT32 getActiveSceneTool() const { return mActiveSceneTool; }
+		UINT32 getActiveCoordinateMode() const { return mActiveCoordinateMode; }
+		UINT32 getActivePivotMode() const { return mActivePivotMode; }
+
 		void setMoveHandleSnapActive(bool snapActive) { mMoveSnapActive = snapActive; markAsDirty(); }
 		void setRotateHandleSnapActive(bool snapActive) { mRotateSnapActive = snapActive; markAsDirty(); }
-		void setScaleHandleSnapActive(bool snapActive) { mScaleSnapActive = snapActive; markAsDirty(); }
 
 		void setMoveHandleSnap(float value) { mMoveSnap = value; markAsDirty(); }
 		void setRotationHandleSnap(Degree value) { mRotationSnap = value; markAsDirty(); }
-		void setScaleHandleSnap(float value) { mScaleSnap = value; markAsDirty(); }
 
 		void setGridSize(UINT32 value) { mGridSize = value; markAsDirty(); }
 		void setGridSpacing(float value) { mGridAxisSpacing = value; markAsDirty(); }
@@ -40,6 +40,10 @@ namespace BansheeEngine
 
 		void setHandleSize(float value) { mHandleSize = value; markAsDirty(); }
 
+		void setActiveSceneTool(UINT32 value) { mActiveSceneTool = value; markAsDirty(); }
+		void setActiveCoordinateMode(UINT32 value) { mActiveCoordinateMode = value; markAsDirty(); }
+		void setActivePivotMode(UINT32 value) { mActivePivotMode = value; markAsDirty(); }
+
 		UINT32 getHash() const { return mHash; }
 
 	private:
@@ -47,16 +51,18 @@ namespace BansheeEngine
 
 		bool mMoveSnapActive;
 		bool mRotateSnapActive;
-		bool mScaleSnapActive;
 
 		float mMoveSnap;
 		Degree mRotationSnap;
-		float mScaleSnap;
 
 		UINT32 mGridSize;
 		float mGridAxisSpacing;
 		UINT32 mGridMajorAxisSpacing;
 		UINT32 mGridAxisMarkerSpacing;
+
+		UINT32 mActiveSceneTool;
+		UINT32 mActiveCoordinateMode;
+		UINT32 mActivePivotMode;
 
 		float mHandleSize;
 

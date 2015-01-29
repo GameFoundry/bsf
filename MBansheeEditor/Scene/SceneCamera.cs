@@ -89,14 +89,14 @@ namespace BansheeEditor
                 Quaternion camRot = yRot * xRot;
                 camRot.Normalize();
 
-                sceneObject.rotation = camRot;
+                sceneObject.Rotation = camRot;
 		    }
 
             Vector3 direction = Vector3.zero;
-            if (goingForward) direction += sceneObject.forward;
-            if (goingBack) direction -= sceneObject.forward;
-            if (goingRight) direction += sceneObject.right;
-            if (goingLeft) direction -= sceneObject.right;
+            if (goingForward) direction += sceneObject.Forward;
+            if (goingBack) direction -= sceneObject.Forward;
+            if (goingRight) direction += sceneObject.Right;
+            if (goingLeft) direction -= sceneObject.Right;
 
             if (direction.sqrdMagnitude != 0)
             {

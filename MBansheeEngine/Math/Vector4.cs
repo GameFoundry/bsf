@@ -90,6 +90,11 @@ namespace BansheeEngine
             this.w = w;
         }
 
+        public static explicit operator Vector3(Vector4 vec)
+        {
+            return new Vector3(vec.x, vec.y, vec.z);
+        }
+
         public static Vector4 operator+ (Vector4 a, Vector4 b)
         {
             return new Vector4(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w);

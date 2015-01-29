@@ -10,11 +10,15 @@ namespace BansheeEditor
             public HandledObject(SceneObject so)
             {
                 this.so = so;
-                initialPosition = so.position;
+                initialPosition = so.Position;
+                initialRotation = so.Rotation;
+                initialScale = so.LocalScale;
             }
 
             public SceneObject so;
             public Vector3 initialPosition;
+            public Quaternion initialRotation;
+            public Vector3 initialScale;
         }
 
         private SceneViewTool activeHandleType = SceneViewTool.View;
@@ -65,14 +69,14 @@ namespace BansheeEditor
             if (activeHandle != null)
             {
                 Quaternion rotation;
-                if (EditorApplication.HandleCoordinateMode == HandleCoordinateMode.World)
+                if (EditorApplication.ActiveCoordinateMode == HandleCoordinateMode.World)
                     rotation = Quaternion.identity;
                 else
-                    rotation = selectedSceneObjects[0].rotation; // We don't average rotation in case of multi-selection
+                    rotation = selectedSceneObjects[0].Rotation; // We don't average rotation in case of multi-selection
 
                 Vector3 position;
-                if (EditorApplication.HandlePositionMode == HandlePositionMode.Pivot)
-                    position = selectedSceneObjects[0].position; // Just take pivot from the first one, no averaging
+                if (EditorApplication.ActivePivotMode == HandlePivotMode.Pivot)
+                    position = selectedSceneObjects[0].Position; // Just take pivot from the first one, no averaging
                 else
                 {
                     List<SceneObject> flatenedHierarchy = new List<SceneObject>();
@@ -125,7 +129,7 @@ namespace BansheeEditor
                             MoveHandle moveHandle = (MoveHandle) activeHandle;
 
                             foreach (var selectedObj in activeSelection)
-                                selectedObj.so.position = selectedObj.initialPosition + moveHandle.Delta;
+                                selectedObj.so.Position = selectedObj.initialPosition + moveHandle.Delta;
                         }
 
                             break;
@@ -133,18 +137,16 @@ namespace BansheeEditor
                         {
                             RotateHandle rotateHandle = (RotateHandle) activeHandle;
 
-                            // TODO - Add delta rotation
-                            //foreach (var so in selectedSceneObjects)
-                            //    so.rotation += rotateHandle.Delta;
+                            foreach (var selectedObj in activeSelection)
+                                selectedObj.so.Rotation = selectedObj.initialRotation * rotateHandle.Delta;
                         }
                             break;
                         case SceneViewTool.Scale:
                         {
                             ScaleHandle scaleHandle = (ScaleHandle) activeHandle;
 
-                            // TODO - Add delta scale
-                            //foreach (var so in selectedSceneObjects)
-                            //    so.localScale += scaleHandle.Delta;
+                            foreach (var selectedObj in activeSelection)
+                                selectedObj.so.LocalScale = selectedObj.initialScale + scaleHandle.Delta;
                         }
                             break;
                     }

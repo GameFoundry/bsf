@@ -52,12 +52,12 @@ namespace BansheeEngine
 
         public void ToggleOn()
         {
-            Internal_ToggleOn();
+            Internal_ToggleOn(mCachedPtr);
         }
 
         public void ToggleOff()
         {
-            Internal_ToggleOff();
+            Internal_ToggleOff(mCachedPtr);
         }
 
         private void DoOnClick()
@@ -92,9 +92,9 @@ namespace BansheeEngine
         private static extern void Internal_SetContent(IntPtr nativeInstance, GUIContent content);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_ToggleOn();
+        private static extern void Internal_ToggleOn(IntPtr nativeInstance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_ToggleOff();
+        private static extern void Internal_ToggleOff(IntPtr nativeInstance);
     }
 }

@@ -1,7 +1,6 @@
 --------- ALL LONG TERM TASKS / FIXES BELONG TO GOOGLE DOCS: ImplementationTODO OR PossibleImprovements ----------
 
 Do a cleanup pass on the editor? Fix the annoying little issues:
- - When GUIToggle is initialy toggled the texture is missing
  - Switching between button states seem to cause 1 frame of no texture for the gui element
  - Much more I can't think of right now
 
@@ -12,14 +11,21 @@ Possibly set up automatic refresh in debug mode after initialization? As an ad-h
 
 <<<<<<Handles>>>>>>>>
 
-When active handle in EditorApplication changes externally, update the GUI button in scene view
-Save/load active handle tool (it should also probably persist assembly refresh)
+Add free rotate handle
+Add free scale handle
 
-Movement of plane (and possible line) sliders might need tweaking
- - Move handle was moving object in the opposite direction at one point
- - It also seems to move too slow
-Need to update ShapeMeshes3D::solidQuad to render both sides of the quad
+Rotate handle:
+ - Transparent angle start is at the wrong position
+ - Red arc is on the wrong side when viewed from above
+ - Missing two free rotate arcs
 
+Cursor wrap only works when cursor moves really slowly over the border, and even then it's spotty
+When changing handle types they do not refresh until you click on the scene view
+
+The first time I mouse over a GUI button it flashes for a frame as if it has no texture
+ - It seems that the ParamBlockBuffer for the vertex shader gets updated one frame too late
+ - First frame it is set to all zeroes, but fragment data seems valid (both the param block and texture/sampler)
+ - Then syncToCore() happens next frame and data is updated.
 
 <<<<Multi-resource saving>>>>:
  - Modify Font so it doesn't contain a texture, but instead keeps a handle to it

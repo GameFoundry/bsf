@@ -139,6 +139,9 @@ namespace BansheeEngine
 		Map<String, String> mValidParams; // Also maps Shader param name -> gpu variable name
 	};
 
+	/**
+	 * @copydoc	MaterialBase
+	 */
 	template<bool Core>
 	class BS_CORE_EXPORT TMaterial : public MaterialBase
 	{

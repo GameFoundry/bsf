@@ -132,8 +132,8 @@ namespace BansheeEngine
 		 * 			  Vector3 VES_POSITION
 		 *			  Vector3 VES_NORMAL
 		 * 			  32bit index buffer
-		 * 			  Enough space for ((quality + 1) * 5 + 1) vertices 
-		 *			  Enough space for (((quality + 1) * 5 - 1) * 3) indices
+		 * 			  Enough space for ((quality + 1) * 5 + 1) * 2 vertices 
+		 *			  Enough space for (((quality + 1) * 5 - 1) * 6) indices
 		 *
 		 *			Primitives are output in the form of a triangle list.
 		 */
@@ -179,8 +179,8 @@ namespace BansheeEngine
 		 * 			  Vector3 VES_POSITION
 		 *			  Vector3 VES_NORMAL
 		 * 			  32bit index buffer
-		 * 			  Enough space for ((quality + 1) * 5 + 1) vertices 
-		 *			  Enough space for (((quality + 1) * 5 - 1) * 3) indices
+		 * 			  Enough space for ((quality + 1) * 5 + 1) * 2 vertices 
+		 *			  Enough space for (((quality + 1) * 5 - 1) * 6) indices
 		 *
 		 *			Primitives are output in the form of a triangle list.
 		 */

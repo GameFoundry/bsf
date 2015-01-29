@@ -12,7 +12,7 @@ namespace BansheeEditor
         Scale
     }
 
-    public enum HandlePositionMode
+    public enum HandlePivotMode
     {
         Center,
         Pivot
@@ -26,26 +26,22 @@ namespace BansheeEditor
 
     public class EditorApplication
     {
-        private static SceneViewTool activeSceneTool = SceneViewTool.Move; // TODO - Actually retrieve this from somewhere
-        private static HandlePositionMode handlePositionMode = HandlePositionMode.Pivot; // TODO - Actually retrieve this from somewhere
-        private static HandleCoordinateMode handleCoordinateMode = HandleCoordinateMode.World; // TODO - Actually retrieve this from somewhere
-
         public static SceneViewTool ActiveSceneTool
         {
-            get { return activeSceneTool; }
-            set { activeSceneTool = value; } // TODO - Will likely need to update active GUI button when this changes
+            get { return EditorSettings.ActiveSceneTool; }
+            set { EditorSettings.ActiveSceneTool = value; }
         }
 
-        public static HandlePositionMode HandlePositionMode
+        public static HandleCoordinateMode ActiveCoordinateMode
         {
-            get { return handlePositionMode; }
-            set { handlePositionMode = value; } // TODO - Will likely need to update active GUI button when this changes
+            get { return EditorSettings.ActiveCoordinateMode; }
+            set { EditorSettings.ActiveCoordinateMode = value; }
         }
 
-        public static HandleCoordinateMode HandleCoordinateMode
+        public static HandlePivotMode ActivePivotMode
         {
-            get { return handleCoordinateMode; }
-            set { handleCoordinateMode = value; } // TODO - Will likely need to update active GUI button when this changes
+            get { return EditorSettings.ActivePivotMode; }
+            set { EditorSettings.ActivePivotMode = value; }
         }
 
         public static Camera SceneViewCamera

@@ -17,15 +17,18 @@ namespace BansheeEngine
 		static void internal_SetMoveHandleSnapActive(bool value);
 		static bool internal_GetRotateHandleSnapActive();
 		static void internal_SetRotateHandleSnapActive(bool value);
-		static bool internal_GetScaleHandleSnapActive();
-		static void internal_SetScaleHandleSnapActive(bool value);
 		static float internal_GetMoveHandleSnapAmount();
 		static void internal_SetMoveHandleSnapAmount(float value);
 		static float internal_GetRotateHandleSnapAmount();
 		static void internal_SetRotateHandleSnapAmount(float value);
-		static float internal_GetScaleHandleSnapAmount();
-		static void internal_SetScaleHandleSnapAmount(float value);
 		static float internal_GetDefaultHandleSize();
 		static void internal_SetDefaultHandleSize(float value);
+		static UINT32 internal_GetActiveSceneTool();
+		static void internal_SetActiveSceneTool(UINT32 value);
+		static UINT32 internal_GetActiveCoordinateMode();
+		static void internal_SetActiveCoordinateMode(UINT32 value);
+		static UINT32 internal_GetActivePivotMode();
+		static void internal_SetActivePivotMode(UINT32 value);
+		static UINT32 internal_GetHash();
 	};
 }

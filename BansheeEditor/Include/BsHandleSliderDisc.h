@@ -15,12 +15,12 @@ namespace BansheeEngine
 		bool intersects(const Ray& ray, float& t) const;
 		void handleInput(const CameraHandlerPtr& camera, const Vector2I& inputDelta);
 
-		float getDelta() const { return mDelta; }
+		Radian getDelta() const { return mDelta; }
+		Radian getStartAngle() const { return mStartAngle; }
 
 	protected:
 		void activate(const CameraHandlerPtr& camera, const Vector2I& pointerPos);
 		void reset() { mDelta = 0.0f; }
-		virtual void updateCachedTransform() const;
 
 		Vector3 calculateClosestPointOnArc(const Ray& inputRay, const Vector3& center, const Vector3& up,
 			float radius, Degree startAngle, Degree angleAmount);
@@ -31,11 +31,11 @@ namespace BansheeEngine
 
 		Vector3 mNormal;
 		float mRadius;
-		Matrix4 mTorusRotation;
 
 		Vector3 mDirection;
 		Vector3 mStartPosition;
-		float mDelta;
+		Degree mStartAngle;
+		Degree mDelta;
 
 		Torus mCollider;
 	};

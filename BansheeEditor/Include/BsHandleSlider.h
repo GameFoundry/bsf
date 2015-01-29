@@ -47,7 +47,8 @@ namespace BansheeEngine
 
 		virtual void activate(const CameraHandlerPtr& camera, const Vector2I& pointerPos) { }
 		virtual void reset() { }
-		virtual void updateCachedTransform() const;
+
+		void updateCachedTransform() const;
 
 		float calcDelta(const CameraHandlerPtr& camera, const Vector3& position, const Vector3& direction,
 			const Vector2I& pointerStart, const Vector2I& pointerEnd);

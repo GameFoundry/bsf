@@ -6,19 +6,17 @@
 #include "BsQuaternion.h"
 #include "BsCamera.h"
 
+// DEBUG ONLY
+#include "BsDebug.h"
+
 namespace BansheeEngine
 {
-	const float HandleSliderDisc::TORUS_RADIUS = 0.5f;
+	const float HandleSliderDisc::TORUS_RADIUS = 0.1f;
 
 	HandleSliderDisc::HandleSliderDisc(const Vector3& normal, float radius, bool fixedScale)
-		:HandleSlider(fixedScale), mRadius(radius), mDelta(0.0f)
+		:HandleSlider(fixedScale), mRadius(radius), mNormal(normal), mDelta(0.0f)
 	{
-		Vector3 x, z;
-		mNormal.orthogonalComplement(x, z);
-
-		mTorusRotation = (Matrix4)Matrix3(x, mNormal, z); // Our Torus class doesn't allow us to specify a normal so we embed it here
-
-		mCollider = Torus(radius, TORUS_RADIUS);
+		mCollider = Torus(normal, radius, TORUS_RADIUS);
 
 		HandleSliderManager& sliderManager = HandleManager::instance().getSliderManager();
 		sliderManager._registerSlider(this);
@@ -28,18 +26,6 @@ namespace BansheeEngine
 	{
 		HandleSliderManager& sliderManager = HandleManager::instance().getSliderManager();
 		sliderManager._unregisterSlider(this);
-	}
-
-	void HandleSliderDisc::updateCachedTransform() const
-	{
-		if (mFixedScale)
-			mTransform.setTRS(mPosition, mRotation, mScale * mDistanceScale);
-		else
-			mTransform.setTRS(mPosition, mRotation, mScale);
-
-		mTransform = mTransform * mTorusRotation;
-		mTransformInv = mTransform.inverseAffine();
-		mTransformDirty = false;
 	}
 
 	bool HandleSliderDisc::intersects(const Ray& ray, float& t) const
@@ -79,8 +65,8 @@ namespace BansheeEngine
 		auto intersectResult = plane.intersects(inputRay);
 
 		float t = 0.0f;
-		if (intersectResult.second)
-			pointOnPlane = inputRay.getPoint(intersectResult.first);
+		if (intersectResult.first)
+			pointOnPlane = inputRay.getPoint(intersectResult.second);
 		else
 			pointOnPlane = Vector3::ZERO;
 
@@ -97,23 +83,33 @@ namespace BansheeEngine
 		Radian angle = Math::atan2(-closestPoint2D.y, -closestPoint2D.x) + Math::PI;
 
 		float angleRad = angle.valueRadians();
-		float startAngleRad = startAngle.wrap().valueRadians();
-		float endAngleRad = (startAngle + angleAmount).wrap().valueRadians();
+		float angleAmountRad = Math::clamp(angleAmount.valueRadians(), 0.0f, Math::PI * 2);
 
-		float clampedAngle;
-		if (startAngleRad <= endAngleRad)
+		float startAngleRad = startAngle.wrap().valueRadians();
+		float endAngleRad = startAngleRad + angleAmountRad;
+
+		float clampedAngle = angleRad;
+		if (endAngleRad <= Math::PI * 2)
+		{
 			clampedAngle = Math::clamp(angleRad, startAngleRad, endAngleRad);
+		}
 		else
 		{
-			if ((angleRad < startAngleRad) && (angleRad > endAngleRad))
-			{
-				if ((startAngleRad - angleRad) > (angleRad - endAngleRad))
-					clampedAngle = endAngleRad;
-				else
-					clampedAngle = startAngleRad;
-			}
+			if (angleRad >= startAngleRad)
+				clampedAngle = Math::clamp(angleRad, startAngleRad, Math::PI * 2);
 			else
-				clampedAngle = angleRad;
+			{
+				endAngleRad -= Math::PI * 2;
+				if (angleRad > endAngleRad)
+				{
+					if ((startAngleRad - angleRad) > (angleRad - endAngleRad))
+						clampedAngle = endAngleRad;
+					else
+						clampedAngle = startAngleRad;
+				}
+				else
+					clampedAngle = angleRad;
+			}
 		}
 
 		Vector3 clampedAnglePoint;
@@ -144,12 +140,8 @@ namespace BansheeEngine
 		Ray localRay = camera->screenPointToRay(pointerPos);
 		localRay.transformAffine(getTransformInv());
 
-		Quaternion camLocalRotation = camera->getRotation() * getRotation().inverse();
-
-		Vector3 startDir = camLocalRotation.zAxis().cross(mNormal);
-		Degree startAngle = pointOnCircleToAngle(mNormal, startDir);
-
-		mStartPosition = calculateClosestPointOnArc(localRay, Vector3::ZERO, mNormal, mRadius, startAngle, Degree(180.0f));
+		mStartPosition = calculateClosestPointOnArc(localRay, Vector3::ZERO, mNormal, mRadius, Degree(0.0f), Degree(360.0f));
+		mStartAngle = pointOnCircleToAngle(mNormal, mStartPosition);
 		mStartPosition = getTransform().multiplyAffine(mStartPosition);
 
 		mDirection = mNormal.cross(mStartPosition - getPosition());
@@ -161,6 +153,6 @@ namespace BansheeEngine
 		assert(getState() == State::Active);
 
 		mCurrentPointerPos += inputDelta;
-		mDelta = calcDelta(camera, mStartPosition, mDirection, mStartPointerPos, mCurrentPointerPos);
+		mDelta = calcDelta(camera, mStartPosition, mDirection, mStartPointerPos, mCurrentPointerPos) * Math::RAD2DEG;
 	}
 }

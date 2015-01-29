@@ -36,9 +36,6 @@ namespace BansheeEngine
 
 	void AABox::setExtents(const Vector3& min, const Vector3& max)
 	{
-        assert( (min.x <= max.x && min.y <= max.y && min.z <= max.z) &&
-            "The minimum corner of the box must be less than or equal to maximum corner" );
-
 		mMinimum = min;
 		mMaximum = max;
 	}

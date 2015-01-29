@@ -301,7 +301,7 @@ namespace BansheeEngine
 				if (uniformBufferData == nullptr && paramBlockBuffer->getSize() > 0)
 				{
 					uniformBufferData = (UINT8*)bs_alloc<ScratchAlloc>(paramBlockBuffer->getSize());
-					paramBlockBuffer->readFromGPU(uniformBufferData);
+					paramBlockBuffer->readFromGPU(uniformBufferData); // TODO - Don't read from GPU!? Just read the cached version
 				}
 
 				continue;

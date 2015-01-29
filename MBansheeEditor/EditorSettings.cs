@@ -8,7 +8,7 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
-    public static class EditorSettings
+    internal static class EditorSettings
     {
         public static bool MoveHandleSnapActive
         {
@@ -22,34 +22,45 @@ namespace BansheeEditor
             set { Internal_SetRotateHandleSnapActive(value); }
         }
 
-        public static bool ScaleHandleSnapActive
-        {
-            get { return Internal_GetScaleHandleSnapActive(); }
-            set { Internal_SetScaleHandleSnapActive(value); }
-        }
-
         public static float MoveHandleSnapAmount
         {
             get { return Internal_GetMoveHandleSnapAmount(); }
             set { Internal_SetMoveHandleSnapAmount(value); }
         }
 
-        public static float RotateHandleSnapAmount
+        public static Degree RotateHandleSnapAmount
         {
             get { return Internal_GetRotateHandleSnapAmount(); }
-            set { Internal_SetRotateHandleSnapAmount(value); }
-        }
-
-        public static float ScaleHandleSnapAmount
-        {
-            get { return Internal_GetScaleHandleSnapAmount(); }
-            set { Internal_SetScaleHandleSnapAmount(value); }
+            set { Internal_SetRotateHandleSnapAmount(value.GetDegrees()); }
         }
 
         public static float DefaultHandleSize
         {
             get { return Internal_GetDefaultHandleSize(); }
             set { Internal_SetDefaultHandleSize(value); }
+        }
+
+        public static SceneViewTool ActiveSceneTool
+        {
+            get { return (SceneViewTool)Internal_GetActiveSceneTool(); }
+            set { Internal_SetActiveSceneTool((int)value); }
+        }
+
+        public static HandleCoordinateMode ActiveCoordinateMode
+        {
+            get { return (HandleCoordinateMode)Internal_GetActiveCoordinateMode(); }
+            set { Internal_SetActiveCoordinateMode((int)value); }
+        }
+
+        public static HandlePivotMode ActivePivotMode
+        {
+            get { return (HandlePivotMode)Internal_GetActivePivotMode(); }
+            set { Internal_SetActivePivotMode((int)value); }
+        }
+
+        public static int Hash
+        {
+            get { return Internal_GetHash(); }
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -63,11 +74,6 @@ namespace BansheeEditor
         private static extern void Internal_SetRotateHandleSnapActive(bool value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern bool Internal_GetScaleHandleSnapActive();
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetScaleHandleSnapActive(bool value);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern float Internal_GetMoveHandleSnapAmount();
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetMoveHandleSnapAmount(float value);
@@ -78,13 +84,26 @@ namespace BansheeEditor
         private static extern void Internal_SetRotateHandleSnapAmount(float value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern float Internal_GetScaleHandleSnapAmount();
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetScaleHandleSnapAmount(float value);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern float Internal_GetDefaultHandleSize();
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetDefaultHandleSize(float value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern int Internal_GetActiveSceneTool();
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetActiveSceneTool(int value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern int Internal_GetActiveCoordinateMode();
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetActiveCoordinateMode(int value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern int Internal_GetActivePivotMode();
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetActivePivotMode(int value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern int Internal_GetHash();
     }
 }

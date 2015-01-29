@@ -1,6 +1,7 @@
 #include "BsTorus.h"
 #include "BsRay.h"
 #include "BsMath.h"
+#include "BsDebug.h"
 
 namespace BansheeEngine
 {
@@ -8,8 +9,8 @@ namespace BansheeEngine
 		:outerRadius(0.0f), innerRadius(0.0f)
 	{ }
 
-	Torus::Torus(float outerRadius, float innerRadius)
-		:outerRadius(outerRadius), innerRadius(innerRadius)
+	Torus::Torus(const Vector3& normal, float outerRadius, float innerRadius)
+		:normal(normal), outerRadius(outerRadius), innerRadius(innerRadius)
 	{ }
 
 	std::pair<bool, float> Torus::intersects(const Ray& ray) const
@@ -17,18 +18,19 @@ namespace BansheeEngine
 		const Vector3& org = ray.getOrigin();
 		const Vector3& dir = ray.getDirection();
 
-		float a = org.dot(dir);
-		float b = org.dot(org);
+		float u = normal.dot(org);
+		float v = normal.dot(dir);
 
-		float outerSqrd = outerRadius*outerRadius;
-		float innerSqrd = innerRadius*innerRadius;
-		float K = a - innerSqrd - outerSqrd;
+		float a = dir.dot(dir) - v * v;
+		float b = 2 * (org.dot(dir) - u * v);
+		float c = org.dot(org) - u * u;
+		float d = org.dot(org) + outerRadius*outerRadius - innerRadius*innerRadius;
 
-		float E = 1.0f;
-		float D = 4 * b;
-		float C = 2 * (2 * b*b + K + 2 * outerSqrd*dir.z*dir.z);
-		float B = 4 * (K*b + 2 * outerSqrd*org.z*dir.z);
-		float A = K*K + 4 * outerSqrd*(org.z*org.z - innerSqrd);
+		float A = 1.0f;
+		float B = 4 * org.dot(dir);
+		float C = 2 * d + 0.25f * B * B - 4 * outerRadius * outerRadius * a;
+		float D = B * d - 4 * outerRadius * outerRadius * b;
+		float E = d * d - 4 * outerRadius * outerRadius * c;
 
 		float roots[4];
 		UINT32 numRoots = Math::solveQuartic(A, B, C, D, E, roots);
@@ -41,7 +43,7 @@ namespace BansheeEngine
 			{
 				float t = roots[i];
 				float x = org.x + t*dir.x;
-				float y = org.x + t*dir.y;
+				float y = org.y + t*dir.y;
 				float l = outerRadius*(Math::PI / 2 - Math::atan2(y, x).valueRadians());
 
 				if (l >= 0 && t < nearestT)
@@ -51,6 +53,6 @@ namespace BansheeEngine
 			return std::make_pair(true, nearestT);
 		}
 
-		return std::make_pair(false, 0.0f);
+		return std::make_pair(false, 0.0f); 
 	}
 }

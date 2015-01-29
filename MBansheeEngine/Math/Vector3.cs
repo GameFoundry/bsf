@@ -83,6 +83,11 @@ namespace BansheeEngine
             this.z = z;
         }
 
+        public static explicit operator Vector4(Vector3 vec)
+        {
+            return new Vector4(vec.x, vec.y, vec.z, 0.0f);
+        }
+
         public static Vector3 operator+ (Vector3 a, Vector3 b)
         {
             return new Vector3(a.x + b.x, a.y + b.y, a.z + b.z);
@@ -199,6 +204,32 @@ namespace BansheeEngine
         public override string ToString()
         {
             return "(" + x + ", " + y + ", " + z + ")";
+        }
+
+        public static void OrthogonalComplement(Vector3 x, out Vector3 y, out Vector3 z)
+        {
+            if (MathEx.Abs(x.x) > MathEx.Abs(x.y))
+                y = new Vector3(-x.z, 0, x.x);
+            else
+                y = new Vector3(0, x.z, -x.y);
+
+            z = Cross(x, y);
+
+            Orthonormalize(ref x, ref y, ref z);
+        }
+
+        public static void Orthonormalize(ref Vector3 x, ref Vector3 y, ref Vector3 z)
+        {
+            x.Normalize();
+
+            float dot0 = Vector3.Dot(x, y);
+            y -= dot0 * x;
+            y.Normalize();
+
+            float dot1 = Vector3.Dot(y, z);
+            dot0 = Vector3.Dot(x, z);
+            z -= dot0 * x + dot1 * y;
+            z.Normalize();
         }
     }
 }

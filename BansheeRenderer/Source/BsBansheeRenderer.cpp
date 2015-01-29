@@ -28,6 +28,7 @@
 #include "BsTime.h"
 #include "BsRenderableElement.h"
 #include "BsFrameAlloc.h"
+#include "BsCoreObjectManager.h"
 
 using namespace std::placeholders;
 
@@ -194,6 +195,9 @@ namespace BansheeEngine
 
 			gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::addToRenderQueue, this, camera->getCore(), renderQueue));
 		}
+
+		// Sync all dirty sim thread CoreObject data to core thread
+		CoreObjectManager::instance().syncToCore(gCoreAccessor());
 
 		gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::renderAllCore, this, gTime().getTime()));
 	}

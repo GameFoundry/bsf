@@ -14,13 +14,14 @@ namespace BansheeEngine
 	{
 	public:
 		Torus();
-		Torus(float outerRadius, float innerRadius);
+		Torus(const Vector3& normal, float outerRadius, float innerRadius);
 
 		/**
 		 * @brief	Ray/torus intersection, returns boolean result and distance to nearest intersection point.
 		 */
 		std::pair<bool, float> intersects(const Ray& ray) const;
 
+		Vector3 normal;
 		float outerRadius;
 		float innerRadius;
 	};

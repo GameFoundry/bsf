@@ -24,6 +24,20 @@ namespace BansheeEditor
         private GUIToggle rotateButton;
         private GUIToggle scaleButton;
 
+        private GUIToggle localCoordButton;
+        private GUIToggle worldCoordButton;
+
+        private GUIToggle pivotButton;
+        private GUIToggle centerButton;
+
+        private GUIToggle moveSnapButton;
+        private GUIFloatField moveSnapInput;
+
+        private GUIToggle rotateSnapButton;
+        private GUIFloatField rotateSnapInput;
+
+        private int editorSettingsHash = int.MaxValue;
+
         public Camera GetCamera()
         {
             return camera;
@@ -37,23 +51,59 @@ namespace BansheeEditor
             mainLayout = GUI.layout.AddLayoutY();
 
             GUIToggleGroup handlesTG = new GUIToggleGroup();
-
             viewButton = new GUIToggle("V", handlesTG, EditorStyles.Button);
             moveButton = new GUIToggle("M", handlesTG, EditorStyles.Button);
             rotateButton = new GUIToggle("R", handlesTG, EditorStyles.Button);
             scaleButton = new GUIToggle("S", handlesTG, EditorStyles.Button);
 
-            viewButton.OnClick += () => EditorApplication.ActiveSceneTool = SceneViewTool.View;
-            moveButton.OnClick += () => EditorApplication.ActiveSceneTool = SceneViewTool.Move;
-            rotateButton.OnClick += () => EditorApplication.ActiveSceneTool = SceneViewTool.Rotate;
-            scaleButton.OnClick += () => EditorApplication.ActiveSceneTool = SceneViewTool.Scale;
+            GUIToggleGroup coordModeTG = new GUIToggleGroup();
+            localCoordButton = new GUIToggle("L", coordModeTG, EditorStyles.Button);
+            worldCoordButton = new GUIToggle("W", coordModeTG, EditorStyles.Button);
+
+            GUIToggleGroup pivotModeTG = new GUIToggleGroup();
+            pivotButton = new GUIToggle("P", pivotModeTG, EditorStyles.Button);
+            centerButton = new GUIToggle("C", pivotModeTG, EditorStyles.Button);
+
+            moveSnapButton = new GUIToggle("MS", EditorStyles.Button);
+            moveSnapInput = new GUIFloatField();
+
+            rotateSnapButton = new GUIToggle("RS", EditorStyles.Button);
+            rotateSnapInput = new GUIFloatField();
+
+            viewButton.OnClick += () => OnSceneToolButtonClicked(SceneViewTool.View);
+            moveButton.OnClick += () => OnSceneToolButtonClicked(SceneViewTool.Move);
+            rotateButton.OnClick += () => OnSceneToolButtonClicked(SceneViewTool.Rotate);
+            scaleButton.OnClick += () => OnSceneToolButtonClicked(SceneViewTool.Scale);
+
+            localCoordButton.OnClick += () => OnCoordinateModeButtonClicked(HandleCoordinateMode.Local);
+            worldCoordButton.OnClick += () => OnCoordinateModeButtonClicked(HandleCoordinateMode.World);
+
+            pivotButton.OnClick += () => OnPivotModeButtonClicked(HandlePivotMode.Pivot);
+            centerButton.OnClick += () => OnPivotModeButtonClicked(HandlePivotMode.Center);
+
+            moveSnapButton.OnToggled += (bool active) => OnMoveSnapToggled(active);
+            moveSnapInput.OnChanged += (float value) => OnMoveSnapValueChanged(value);
+
+            rotateSnapButton.OnToggled += (bool active) => OnRotateSnapToggled(active);
+            rotateSnapInput.OnChanged += (float value) => OnRotateSnapValueChanged(value);
 
             GUILayout handlesLayout = mainLayout.AddLayoutX();
             handlesLayout.AddElement(viewButton);
             handlesLayout.AddElement(moveButton);
             handlesLayout.AddElement(rotateButton);
             handlesLayout.AddElement(scaleButton);
+            handlesLayout.AddSpace(10);
+            handlesLayout.AddElement(localCoordButton);
+            handlesLayout.AddElement(worldCoordButton);
+            handlesLayout.AddSpace(10);
+            handlesLayout.AddElement(pivotButton);
+            handlesLayout.AddElement(centerButton);
             handlesLayout.AddFlexibleSpace();
+            handlesLayout.AddElement(moveSnapButton);
+            handlesLayout.AddElement(moveSnapInput);
+            handlesLayout.AddSpace(10);
+            handlesLayout.AddElement(rotateSnapButton);
+            handlesLayout.AddElement(rotateSnapInput);
 
             UpdateRenderTexture(Width, Height - HeaderHeight);
         }
@@ -86,6 +136,14 @@ namespace BansheeEditor
 
         private void EditorUpdate()
         {
+            // Refresh GUI buttons if needed (in case someones changes the values from script)
+            if (editorSettingsHash != EditorSettings.Hash)
+            {
+                UpdateButtonStates();
+                editorSettingsHash = EditorSettings.Hash;
+            }
+
+            // Update scene view handles and selection
             sceneViewHandler.Update();
 
             bool handleActive = false;
@@ -138,6 +196,101 @@ namespace BansheeEditor
             }
         }
 
+        private void OnSceneToolButtonClicked(SceneViewTool tool)
+        {
+            EditorApplication.ActiveSceneTool = tool;
+            editorSettingsHash = EditorSettings.Hash;
+        }
+
+        private void OnCoordinateModeButtonClicked(HandleCoordinateMode mode)
+        {
+            EditorApplication.ActiveCoordinateMode = mode;
+            editorSettingsHash = EditorSettings.Hash;
+        }
+
+        private void OnPivotModeButtonClicked(HandlePivotMode mode)
+        {
+            EditorApplication.ActivePivotMode = mode;
+            editorSettingsHash = EditorSettings.Hash;
+        }
+
+        private void OnMoveSnapToggled(bool active)
+        {
+            Handles.MoveHandleSnapActive = active;
+            editorSettingsHash = EditorSettings.Hash;
+        }
+
+        private void OnMoveSnapValueChanged(float value)
+        {
+            Handles.MoveSnapAmount = MathEx.Clamp(value, 0.01f, 1000.0f);
+            editorSettingsHash = EditorSettings.Hash;
+        }
+
+        private void OnRotateSnapToggled(bool active)
+        {
+            Handles.RotateHandleSnapActive = active;
+            editorSettingsHash = EditorSettings.Hash;
+        }
+
+        private void OnRotateSnapValueChanged(float value)
+        {
+            Handles.RotateSnapAmount = MathEx.Clamp(value, 0.01f, 360.0f);
+            editorSettingsHash = EditorSettings.Hash;
+        }
+
+        private void UpdateButtonStates()
+        {
+            switch (EditorApplication.ActiveSceneTool)
+            {
+                case SceneViewTool.View:
+                    viewButton.ToggleOn();
+                    break;
+                case SceneViewTool.Move:
+                    moveButton.ToggleOn();
+                    break;
+                case SceneViewTool.Rotate:
+                    rotateButton.ToggleOn();
+                    break;
+                case SceneViewTool.Scale:
+                    scaleButton.ToggleOn();
+                    break;
+            }
+
+            switch (EditorApplication.ActiveCoordinateMode)
+            {
+                case HandleCoordinateMode.Local:
+                    localCoordButton.ToggleOn();
+                    break;
+                case HandleCoordinateMode.World:
+                    worldCoordButton.ToggleOn();
+                    break;
+            }
+
+            switch (EditorApplication.ActivePivotMode)
+            {
+                case HandlePivotMode.Center:
+                    centerButton.ToggleOn();
+                    break;
+                case HandlePivotMode.Pivot:
+                    pivotButton.ToggleOn();
+                    break;
+            }
+
+            if (Handles.MoveHandleSnapActive)
+                moveSnapButton.ToggleOn();
+            else
+                moveSnapButton.ToggleOff();
+
+            moveSnapInput.Value = Handles.MoveSnapAmount;
+
+            if (Handles.RotateHandleSnapActive)
+                rotateSnapButton.ToggleOn();
+            else
+                rotateSnapButton.ToggleOff();
+
+            moveSnapInput.Value = Handles.RotateSnapAmount.GetDegrees();
+        }
+
         private void UpdateRenderTexture(int width, int height)
 	    {
             width = MathEx.Max(20, width);
@@ -153,7 +306,7 @@ namespace BansheeEditor
                 camera.target = renderTexture;
                 camera.viewportRect = new Rect2(0.0f, 0.0f, 1.0f, 1.0f);
 
-                sceneCameraSO.position = new Vector3(0, 0.5f, 1);
+                sceneCameraSO.Position = new Vector3(0, 0.5f, 1);
                 sceneCameraSO.LookAt(new Vector3(0, 0, 0));
 
                 camera.priority = 1;
