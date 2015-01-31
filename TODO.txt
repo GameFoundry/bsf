@@ -11,15 +11,14 @@ Possibly set up automatic refresh in debug mode after initialization? As an ad-h
 
 <<<<<<Handles>>>>>>>>
 
-Add free rotate handle
 Add free scale handle
 
 Rotate handle:
- - Transparent angle start is at the wrong position
  - Selecting the top right quadrant of the blue disc doesn't seem to work
  - Missing two free rotate arcs
  - How to handle local/global with rotate handle?
-
+ - Backside of handle disc sliders shouldn't be interactable
+   - Add an "cutoffPlane" parameter to block intersection with backside if enabled
 
 Cursor wrap only works when cursor moves really slowly over the border, and even then it's spotty
 When changing handle types they do not refresh until you click on the scene view

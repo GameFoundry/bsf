@@ -34,7 +34,6 @@ namespace BansheeEngine
 		localRay.transform(getTransformInv());
 
 		auto intersect = mCollider.intersects(localRay);
-
 		if (intersect.first)
 		{
 			t = intersect.second;

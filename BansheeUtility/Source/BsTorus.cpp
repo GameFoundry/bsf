@@ -42,15 +42,12 @@ namespace BansheeEngine
 			for (UINT32 i = 0; i < numRoots; i++)
 			{
 				float t = roots[i];
-				float x = org.x + t*dir.x;
-				float y = org.y + t*dir.y;
-				float l = outerRadius*(Math::PI / 2 - Math::atan2(y, x).valueRadians());
-
-				if (l >= 0 && t < nearestT)
+				if (t > 0 && t < nearestT)
 					nearestT = t;
 			}
 
-			return std::make_pair(true, nearestT);
+			if (nearestT > std::numeric_limits<float>::epsilon())
+				return std::make_pair(true, nearestT);
 		}
 
 		return std::make_pair(false, 0.0f); 
