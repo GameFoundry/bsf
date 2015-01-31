@@ -103,33 +103,33 @@ namespace BansheeEditor
             Color axisHover = new Color(0.8f, 0.8f, 0.8f, 1.0f);
 
             if (xAxis.State == HandleSlider.StateType.Active)
-                HandleDrawing.SetColor(Color.white);
+                HandleDrawing.SetColor(Color.White);
             else if(xAxis.State == HandleSlider.StateType.Hover)
-                HandleDrawing.SetColor(Color.red * axisHover);
+                HandleDrawing.SetColor(Color.Red * axisHover);
             else
-                HandleDrawing.SetColor(Color.red);
+                HandleDrawing.SetColor(Color.Red);
 
             Vector3 xConeStart = Vector3.xAxis*(1.0f - CONE_HEIGHT);
             HandleDrawing.DrawLine(Vector3.zero, xConeStart, handleSize);
             HandleDrawing.DrawCone(xConeStart, Vector3.xAxis, CONE_HEIGHT, CONE_RADIUS, handleSize);
 
             if (yAxis.State == HandleSlider.StateType.Active)
-                HandleDrawing.SetColor(Color.white);
+                HandleDrawing.SetColor(Color.White);
             else if (yAxis.State == HandleSlider.StateType.Hover)
-                HandleDrawing.SetColor(Color.green * axisHover);
+                HandleDrawing.SetColor(Color.Green * axisHover);
             else
-                HandleDrawing.SetColor(Color.green);
+                HandleDrawing.SetColor(Color.Green);
 
             Vector3 yConeStart = Vector3.yAxis * (1.0f - CONE_HEIGHT);
             HandleDrawing.DrawLine(Vector3.zero, yConeStart, handleSize);
             HandleDrawing.DrawCone(yConeStart, Vector3.yAxis, CONE_HEIGHT, CONE_RADIUS, handleSize);
 
             if (zAxis.State == HandleSlider.StateType.Active)
-                HandleDrawing.SetColor(Color.white);
+                HandleDrawing.SetColor(Color.White);
             else if (zAxis.State == HandleSlider.StateType.Hover)
-                HandleDrawing.SetColor(Color.blue * axisHover);
+                HandleDrawing.SetColor(Color.Blue * axisHover);
             else
-                HandleDrawing.SetColor(Color.blue);
+                HandleDrawing.SetColor(Color.Blue);
 
             Vector3 zConeStart = Vector3.zAxis * (1.0f - CONE_HEIGHT);
             HandleDrawing.DrawLine(Vector3.zero, zConeStart, handleSize);
@@ -145,17 +145,17 @@ namespace BansheeEditor
             Vector3 planeZOffset = Vector3.zAxis * 0.3f;
 
             //// XY plane
-            HandleDrawing.SetColor(Color.blue);
+            HandleDrawing.SetColor(Color.Blue);
 
             HandleDrawing.DrawLine(planeXOffset, planeXOffset + planeYOffset, handleSize);
             HandleDrawing.DrawLine(planeYOffset, planeYOffset + planeXOffset, handleSize);
 
             if (xyPlane.State == HandleSlider.StateType.Active)
-                HandleDrawing.SetColor(Color.blue * planeActive);
+                HandleDrawing.SetColor(Color.Blue * planeActive);
             else if (xyPlane.State == HandleSlider.StateType.Hover)
-                HandleDrawing.SetColor(Color.blue * planeHover);
+                HandleDrawing.SetColor(Color.Blue * planeHover);
             else
-                HandleDrawing.SetColor(Color.blue * planeNormal);
+                HandleDrawing.SetColor(Color.Blue * planeNormal);
 
             Rect3 xyPlaneArea = new Rect3(
                 (planeXOffset + planeYOffset) * 0.5f,
@@ -164,17 +164,17 @@ namespace BansheeEditor
             HandleDrawing.DrawRect(xyPlaneArea, handleSize);
 
             //// YZ plane
-            HandleDrawing.SetColor(Color.red);
+            HandleDrawing.SetColor(Color.Red);
 
             HandleDrawing.DrawLine(planeYOffset, planeYOffset + planeZOffset, handleSize);
             HandleDrawing.DrawLine(planeZOffset, planeZOffset + planeYOffset, handleSize);
 
             if (yzPlane.State == HandleSlider.StateType.Active)
-                HandleDrawing.SetColor(Color.red * planeActive);
+                HandleDrawing.SetColor(Color.Red * planeActive);
             else if (yzPlane.State == HandleSlider.StateType.Hover)
-                HandleDrawing.SetColor(Color.red * planeHover);
+                HandleDrawing.SetColor(Color.Red * planeHover);
             else
-                HandleDrawing.SetColor(Color.red * planeNormal);
+                HandleDrawing.SetColor(Color.Red * planeNormal);
 
             Rect3 yzPlaneArea = new Rect3(
                 (planeYOffset + planeZOffset) * 0.5f,
@@ -184,17 +184,17 @@ namespace BansheeEditor
             HandleDrawing.DrawRect(yzPlaneArea, handleSize);
 
             //// ZX plane
-            HandleDrawing.SetColor(Color.green);
+            HandleDrawing.SetColor(Color.Green);
 
             HandleDrawing.DrawLine(planeZOffset, planeZOffset + planeXOffset, handleSize);
             HandleDrawing.DrawLine(planeXOffset, planeXOffset + planeZOffset, handleSize);
 
             if (zxPlane.State == HandleSlider.StateType.Active)
-                HandleDrawing.SetColor(Color.green * planeActive);
+                HandleDrawing.SetColor(Color.Green * planeActive);
             else if (zxPlane.State == HandleSlider.StateType.Hover)
-                HandleDrawing.SetColor(Color.green * planeHover);
+                HandleDrawing.SetColor(Color.Green * planeHover);
             else
-                HandleDrawing.SetColor(Color.green * planeNormal);
+                HandleDrawing.SetColor(Color.Green * planeNormal);
 
             Rect3 zxPlaneArea = new Rect3(
                 (planeZOffset + planeXOffset) * 0.5f,

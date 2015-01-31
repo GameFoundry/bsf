@@ -967,22 +967,16 @@ namespace BansheeEngine
 	{
 		assert(numVertices >= 2);
 
-		Vector3 normalizedUp = Vector3::normalize(up);
-		Vector3 right;
+		Quaternion alignWithStart = Quaternion(-Vector3::UNIT_Y, startAngle);
+		Quaternion alignWithUp = Quaternion::getRotationFromTo(Vector3::UNIT_Y, up);
 
-		if (Math::abs(normalizedUp.dot(Vector3::UNIT_Z)) <= 0.95f)
-			right = Vector3::UNIT_Z.cross(normalizedUp);
-		else
-			right = Vector3::UNIT_Y.cross(normalizedUp);
-
+		Vector3 right = alignWithUp.rotate(alignWithStart.rotate(Vector3::UNIT_X));
 		right.normalize();
-		Quaternion moveToStart(-up, startAngle);
-		Vector3 start = moveToStart.rotate(right);
 
 		Quaternion increment(-up, angleAmount / (float)(numVertices - 1));
 
 		outVertices += vertexOffset * vertexStride;
-		Vector3 curDirection = start * radius;
+		Vector3 curDirection = right * radius;
 		for (UINT32 i = 0; i < numVertices; i++)
 		{
 			outVertices = writeVector3(outVertices, vertexStride, center + curDirection);

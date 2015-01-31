@@ -62,11 +62,11 @@ namespace BansheeEditor
             Color axisHover = new Color(0.8f, 0.8f, 0.8f, 1.0f);
 
             if (xAxis.State == HandleSlider.StateType.Active)
-                HandleDrawing.SetColor(Color.white);
+                HandleDrawing.SetColor(Color.White);
             else if (xAxis.State == HandleSlider.StateType.Hover)
-                HandleDrawing.SetColor(Color.red * axisHover);
+                HandleDrawing.SetColor(Color.Red * axisHover);
             else
-                HandleDrawing.SetColor(Color.red);
+                HandleDrawing.SetColor(Color.Red);
 
             Vector3 xCubeOffset = Vector3.xAxis * SMALL_CUBE_SIZE * 0.5f;
             Vector3 xCubeStart = Vector3.xAxis - xCubeOffset;
@@ -75,11 +75,11 @@ namespace BansheeEditor
             HandleDrawing.DrawCube(xCubeStart + xCubeOffset, smallCubeExtents, handleSize);
 
             if (yAxis.State == HandleSlider.StateType.Active)
-                HandleDrawing.SetColor(Color.white);
+                HandleDrawing.SetColor(Color.White);
             else if (yAxis.State == HandleSlider.StateType.Hover)
-                HandleDrawing.SetColor(Color.green * axisHover);
+                HandleDrawing.SetColor(Color.Green * axisHover);
             else
-                HandleDrawing.SetColor(Color.green);
+                HandleDrawing.SetColor(Color.Green);
 
             Vector3 yCubeOffset = Vector3.yAxis * SMALL_CUBE_SIZE * 0.5f;
             Vector3 yCubeStart = Vector3.yAxis - yCubeOffset;
@@ -88,11 +88,11 @@ namespace BansheeEditor
             HandleDrawing.DrawCube(yCubeStart + yCubeOffset, smallCubeExtents, handleSize);
 
             if (zAxis.State == HandleSlider.StateType.Active)
-                HandleDrawing.SetColor(Color.white);
+                HandleDrawing.SetColor(Color.White);
             else if (zAxis.State == HandleSlider.StateType.Hover)
-                HandleDrawing.SetColor(Color.blue * axisHover);
+                HandleDrawing.SetColor(Color.Blue * axisHover);
             else
-                HandleDrawing.SetColor(Color.blue);
+                HandleDrawing.SetColor(Color.Blue);
 
             Vector3 zCubeOffset = Vector3.zAxis * SMALL_CUBE_SIZE * 0.5f;
             Vector3 zCubeStart = Vector3.zAxis - zCubeOffset;

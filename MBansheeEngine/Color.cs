@@ -11,45 +11,16 @@ namespace BansheeEngine
         public float b;
         public float a;
 
-        public static Color red
-        {
-            get
-            {
-                return new Color(1.0f, 0.0f, 0.0f, 1.0f);
-            }
-        }
+        public static Color Red { get { return new Color(1.0f, 0.0f, 0.0f, 1.0f); } }
+        public static Color Green { get { return new Color(0.0f, 1.0f, 0.0f, 1.0f); } }
+        public static Color Blue { get { return new Color(0.0f, 0.0f, 1.0f, 1.0f); } }
+        public static Color Yellow { get { return new Color(1.0f, 1.0f, 0.0f, 1.0f); } }
+        public static Color Cyan { get { return new Color(0.0f, 1.0f, 1.0f, 1.0f); } }
+        public static Color Magenta { get { return new Color(1.0f, 0.0f, 1.0f, 1.0f); } }
+        public static Color White { get { return new Color(1.0f, 1.0f, 1.0f, 1.0f); } }
+        public static Color Black { get { return new Color(0.0f, 0.0f, 0.0f, 1.0f); } }
 
-        public static Color green
-        {
-            get
-            {
-                return new Color(0.0f, 1.0f, 0.0f, 1.0f);
-            }
-        }
-
-        public static Color blue
-        {
-            get
-            {
-                return new Color(0.0f, 0.0f, 1.0f, 1.0f);
-            }
-        }
-
-        public static Color white
-        {
-            get
-            {
-                return new Color(1.0f, 1.0f, 1.0f, 1.0f);
-            }
-        }
-
-        public static Color black
-        {
-            get
-            {
-                return new Color(0.0f, 0.0f, 0.0f, 1.0f);
-            }
-        }
+        public static Color BansheeOrange { get { return new Color(1.0f, (168.0f/255.0f), 0.0f, 1.0f); } }
 
         public float this[int index]
         {

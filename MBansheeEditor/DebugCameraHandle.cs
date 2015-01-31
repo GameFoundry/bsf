@@ -31,9 +31,9 @@ namespace BansheeEditor
             Vector3 end = target.sceneObject.Position + Vector3.xAxis * 5;
 
             if (xAxis.State == HandleSlider.StateType.Active)
-                HandleDrawing.SetColor(Color.white);
+                HandleDrawing.SetColor(Color.White);
             else
-                HandleDrawing.SetColor(Color.green);
+                HandleDrawing.SetColor(Color.Green);
 
             HandleDrawing.DrawLine(target.sceneObject.Position, end);
         }

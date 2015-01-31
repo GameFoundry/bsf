@@ -121,15 +121,9 @@ namespace BansheeEngine
 
 	Degree HandleSliderDisc::pointOnCircleToAngle(Vector3 up, Vector3 point)
 	{
-		Vector3 arcBasis[3];
-		arcBasis[1] = up;
-		arcBasis[1].orthogonalComplement(arcBasis[2], arcBasis[0]);
+		Quaternion rot = Quaternion::getRotationFromTo(up, Vector3::UNIT_Y);
 
-		Matrix4 worldToPlane = Matrix4::IDENTITY;
-		worldToPlane.setColumn(0, (Vector4)arcBasis[0]);
-		worldToPlane.setColumn(1, (Vector4)arcBasis[1]);
-		worldToPlane.setColumn(2, (Vector4)arcBasis[2]);
-
+		Matrix4 worldToPlane = Matrix4::TRS(Vector3::ZERO, rot, Vector3::ONE);
 		point = worldToPlane.multiplyAffine(point);
 
 		return Radian(Math::atan2(-point.z, -point.x) + Math::PI);
@@ -144,7 +138,8 @@ namespace BansheeEngine
 		mStartAngle = pointOnCircleToAngle(mNormal, mStartPosition);
 		mStartPosition = getTransform().multiplyAffine(mStartPosition);
 
-		mDirection = mNormal.cross(mStartPosition - getPosition());
+		Vector3 toStart = mStartPosition - getPosition();
+		mDirection = toStart.cross(mNormal);
 		mDirection.normalize();
 	}
 
