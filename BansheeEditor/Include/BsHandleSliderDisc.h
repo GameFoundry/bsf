@@ -14,6 +14,7 @@ namespace BansheeEngine
 
 		bool intersects(const Ray& ray, float& t) const;
 		void handleInput(const CameraHandlerPtr& camera, const Vector2I& inputDelta);
+		void setCutoffPlane(Degree angle, bool enabled);
 
 		Radian getDelta() const { return mDelta; }
 		Radian getStartAngle() const { return mStartAngle; }
@@ -31,6 +32,8 @@ namespace BansheeEngine
 
 		Vector3 mNormal;
 		float mRadius;
+		bool mHasCutoffPlane;
+		Plane mCutoffPlane;
 
 		Vector3 mDirection;
 		Vector3 mStartPosition;

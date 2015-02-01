@@ -371,7 +371,7 @@ namespace BansheeEngine
             float trace = m00 + m11 + m22;
             float cos = 0.5f*(trace-1.0f);
             Radian radians = MathEx.Acos(cos);  // In [0, PI]
-            angle = radians.GetDegrees();
+            angle = radians.Degrees;
 
             if (radians > 0.0f)
             {
@@ -479,8 +479,8 @@ namespace BansheeEngine
         {
             Matrix3 mat;
 
-            float cos = MathEx.Cos(angle.GetRadians());
-            float sin = MathEx.Sin(angle.GetRadians());
+            float cos = MathEx.Cos(angle.Radians);
+            float sin = MathEx.Sin(angle.Radians);
             float oneMinusCos = 1.0f - cos;
             float x2 = axis.x * axis.x;
             float y2 = axis.y * axis.y;

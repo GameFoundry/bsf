@@ -32,6 +32,11 @@ namespace BansheeEditor
             }
         }
 
+        public void SetCutoffPlane(Degree angle, bool enabled)
+        {
+            Internal_SetCutoffPlane(mCachedPtr, angle.Degrees, enabled);
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateInstance(HandleSliderDisc instance, Vector3 normal, float radius, bool fixedScale);
 
@@ -40,5 +45,8 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetStartAngle(IntPtr nativeInstance, out float value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetCutoffPlane(IntPtr nativeInstance, float angle, bool enabled);
     }
 }

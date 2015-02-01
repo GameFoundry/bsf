@@ -14,9 +14,10 @@ Possibly set up automatic refresh in debug mode after initialization? As an ad-h
 Add free scale handle
 
 Rotate handle:
- - Selecting the top right quadrant of the blue disc doesn't seem to work
  - Missing two free rotate arcs
  - How to handle local/global with rotate handle?
+   - This maybe just determines initial rotation of the handle?
+   - I don't think my code properly handles rotation handle transforms (e.g. arc drawing)
  - Backside of handle disc sliders shouldn't be interactable
    - Add an "cutoffPlane" parameter to block intersection with backside if enabled
 

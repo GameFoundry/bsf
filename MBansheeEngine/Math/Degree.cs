@@ -18,7 +18,7 @@ namespace BansheeEngine
 
         public Degree(Radian r)
         {
-            this.value = r.GetDegrees();
+            this.value = r.Degrees;
         }
 
         public static implicit operator Degree(float value)
@@ -28,7 +28,7 @@ namespace BansheeEngine
 
         public static implicit operator Degree(Radian r)
         {
-            return new Degree(r.GetDegrees());
+            return new Degree(r.Degrees);
         }
 
 	    public static explicit operator float(Degree d)
@@ -36,17 +36,17 @@ namespace BansheeEngine
             return d.value;
 	    }
 
-	    public float GetDegrees()
-	    {
-	        return value;
-	    }
-
-        public float GetRadians()
+        public float Degrees
         {
-            return value * MathEx.Deg2Rad;
+            get { return value; }
         }
 
-	    public static Degree operator+(Degree a)
+        public float Radians
+        {
+            get { return value*MathEx.Deg2Rad; }
+        }
+
+        public static Degree operator+(Degree a)
 	    {
 	        return a;
 	    }
@@ -58,7 +58,7 @@ namespace BansheeEngine
 
         public static Degree operator+(Degree a, Radian r) 
         { 
-            return new Degree (a.value + r.GetDegrees()); 
+            return new Degree (a.value + r.Degrees); 
         }
 
 	    public static Degree operator-(Degree a)
@@ -73,7 +73,7 @@ namespace BansheeEngine
 
         public static Degree operator-(Degree a, Radian r) 
         { 
-            return new Degree (a.value - r.GetDegrees()); 
+            return new Degree (a.value - r.Degrees); 
         }
 
         public static Degree operator*(Degree a, float s)

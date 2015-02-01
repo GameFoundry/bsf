@@ -14,7 +14,7 @@ namespace BansheeEngine
 	const float HandleSliderDisc::TORUS_RADIUS = 0.1f;
 
 	HandleSliderDisc::HandleSliderDisc(const Vector3& normal, float radius, bool fixedScale)
-		:HandleSlider(fixedScale), mRadius(radius), mNormal(normal), mDelta(0.0f)
+		:HandleSlider(fixedScale), mRadius(radius), mNormal(normal), mDelta(0.0f), mHasCutoffPlane(false)
 	{
 		mCollider = Torus(normal, radius, TORUS_RADIUS);
 
@@ -28,6 +28,26 @@ namespace BansheeEngine
 		sliderManager._unregisterSlider(this);
 	}
 
+	void HandleSliderDisc::setCutoffPlane(Degree angle, bool enabled)
+	{
+		mHasCutoffPlane = enabled;
+
+		if (mHasCutoffPlane)
+		{
+			Vector3 up = mNormal;
+
+			Quaternion alignWithStart = Quaternion(-Vector3::UNIT_Y, angle);
+			Quaternion alignWithUp = Quaternion::getRotationFromTo(Vector3::UNIT_Y, up);
+
+			Vector3 right = alignWithUp.rotate(alignWithStart.rotate(Vector3::UNIT_X));
+			right.normalize();
+
+			Vector3 planeNormal = right.cross(up);
+
+			mCutoffPlane = Plane(planeNormal, 0.0f);
+		}
+	}
+
 	bool HandleSliderDisc::intersects(const Ray& ray, float& t) const
 	{
 		Ray localRay = ray;
@@ -37,6 +57,13 @@ namespace BansheeEngine
 		if (intersect.first)
 		{
 			t = intersect.second;
+
+			if (mHasCutoffPlane)
+			{
+				auto cutoffIntersect = mCutoffPlane.intersects(localRay);
+				if (cutoffIntersect.first && cutoffIntersect.second < t)
+					return false;
+			}
 
 			return true;
 		}

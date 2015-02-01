@@ -288,7 +288,7 @@ namespace BansheeEditor
             else
                 rotateSnapButton.ToggleOff();
 
-            moveSnapInput.Value = Handles.RotateSnapAmount.GetDegrees();
+            moveSnapInput.Value = Handles.RotateSnapAmount.Degrees;
         }
 
         private void UpdateRenderTexture(int width, int height)

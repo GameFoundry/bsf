@@ -265,7 +265,7 @@ namespace BansheeEngine
         public static Degree WrapAngle(Degree angle)
         {
             const float inv360 = 1.0f/360.0f;
-            float angleVal = angle.GetDegrees();
+            float angleVal = angle.Degrees;
             float wrapCount = (float)MathEx.Floor(MathEx.Abs(angleVal * inv360));
 
             if (angleVal > 0.0f)

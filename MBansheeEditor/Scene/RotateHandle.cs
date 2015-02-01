@@ -34,6 +34,10 @@ namespace BansheeEditor
             xAxis.Position = position;
             yAxis.Position = position;
             zAxis.Position = position;
+
+            xAxis.SetCutoffPlane(GetXStartAngle(), true);
+            yAxis.SetCutoffPlane(GetYStartAngle(), true);
+            zAxis.SetCutoffPlane(GetZStartAngle(), true);
         }
 
         protected override void PostInput()
@@ -75,10 +79,7 @@ namespace BansheeEditor
             else
                 HandleDrawing.SetColor(Color.Red);
 
-            Vector3 xStartDir = Vector3.Cross(EditorApplication.SceneViewCamera.sceneObject.Forward, GetXDir());
-            Degree xStartAngle = PointOnCircleToAngle(GetXDir(), xStartDir);
-
-            HandleDrawing.DrawWireArc(Vector3.zero, GetXDir(), 1.0f, xStartAngle, 180.0f, handleSize);
+            HandleDrawing.DrawWireArc(Vector3.zero, GetXDir(), 1.0f, GetXStartAngle(), 180.0f, handleSize);
 
             if (yAxis.State == HandleSlider.StateType.Active)
                 HandleDrawing.SetColor(Color.White);
@@ -87,10 +88,7 @@ namespace BansheeEditor
             else
                 HandleDrawing.SetColor(Color.Green);
 
-            Vector3 yStartDir = Vector3.Cross(EditorApplication.SceneViewCamera.sceneObject.Forward, GetYDir());
-            Degree yStartAngle = PointOnCircleToAngle(GetYDir(), yStartDir);
-
-            HandleDrawing.DrawWireArc(Vector3.zero, GetYDir(), 1.0f, yStartAngle, 180.0f, handleSize);
+            HandleDrawing.DrawWireArc(Vector3.zero, GetYDir(), 1.0f, GetYStartAngle(), 180.0f, handleSize);
 
             if (zAxis.State == HandleSlider.StateType.Active)
                 HandleDrawing.SetColor(Color.White);
@@ -99,10 +97,7 @@ namespace BansheeEditor
             else
                 HandleDrawing.SetColor(Color.Blue);
 
-            Vector3 zStartDir = Vector3.Cross(EditorApplication.SceneViewCamera.sceneObject.Forward, GetZDir());
-            Degree zStartAngle = PointOnCircleToAngle(GetZDir(), zStartDir);
-
-            HandleDrawing.DrawWireArc(Vector3.zero, GetZDir(), 1.0f, zStartAngle, 180.0f, handleSize);
+            HandleDrawing.DrawWireArc(Vector3.zero, GetZDir(), 1.0f, GetZStartAngle(), 180.0f, handleSize);
 
             // Draw active rotation pie
             Color gray = new Color(1.0f, 1.0f, 1.0f, 0.3f);
@@ -116,6 +111,24 @@ namespace BansheeEditor
                 HandleDrawing.DrawArc(Vector3.zero, GetZDir(), 1.0f, zAxis.StartAngle, zAxis.Delta, handleSize);
 
             // TODO - Free rotate handle
+        }
+
+        private Degree GetXStartAngle()
+        {
+            Vector3 xStartDir = Vector3.Cross(EditorApplication.SceneViewCamera.sceneObject.Forward, GetXDir());
+            return PointOnCircleToAngle(GetXDir(), xStartDir);
+        }
+
+        private Degree GetYStartAngle()
+        {
+            Vector3 yStartDir = Vector3.Cross(EditorApplication.SceneViewCamera.sceneObject.Forward, GetYDir());
+            return PointOnCircleToAngle(GetYDir(), yStartDir);
+        }
+
+        private Degree GetZStartAngle()
+        {
+            Vector3 zStartDir = Vector3.Cross(EditorApplication.SceneViewCamera.sceneObject.Forward, GetZDir());
+            return PointOnCircleToAngle(GetZDir(), zStartDir);
         }
 
         private Vector3 GetXDir()

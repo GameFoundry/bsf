@@ -31,6 +31,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptHandleSliderDisc::internal_CreateInstance);
 		metaData.scriptClass->addInternalCall("Internal_GetDelta", &ScriptHandleSliderDisc::internal_GetDelta);
 		metaData.scriptClass->addInternalCall("Internal_GetStartAngle", &ScriptHandleSliderDisc::internal_GetStartAngle);
+		metaData.scriptClass->addInternalCall("Internal_SetCutoffPlane", &ScriptHandleSliderDisc::internal_SetCutoffPlane);
 	}
 
 	void ScriptHandleSliderDisc::internal_CreateInstance(MonoObject* instance, Vector3 normal, float radius, bool fixedScale)
@@ -47,5 +48,10 @@ namespace BansheeEngine
 	void ScriptHandleSliderDisc::internal_GetStartAngle(ScriptHandleSliderDisc* nativeInstance, float* value)
 	{
 		*value = nativeInstance->mSlider->getStartAngle().valueDegrees();
+	}
+
+	void ScriptHandleSliderDisc::internal_SetCutoffPlane(ScriptHandleSliderDisc* nativeInstance, float value, bool enabled)
+	{
+		nativeInstance->mSlider->setCutoffPlane(Degree(value), enabled);
 	}
 }

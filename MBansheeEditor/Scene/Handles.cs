@@ -39,7 +39,7 @@ namespace BansheeEditor
 
         public static Degree SnapValue(Degree value, Degree snapAmount)
         {
-            return SnapValue(value.GetDegrees(), snapAmount.GetDegrees());
+            return SnapValue(value.Degrees, snapAmount.Degrees);
         }
 
         public static float GetHandleSize(Camera camera, Vector3 position)
