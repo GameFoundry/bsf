@@ -1,9 +1,5 @@
 --------- ALL LONG TERM TASKS / FIXES BELONG TO GOOGLE DOCS: ImplementationTODO OR PossibleImprovements ----------
 
-Do a cleanup pass on the editor? Fix the annoying little issues:
- - Switching between button states seem to cause 1 frame of no texture for the gui element
- - Much more I can't think of right now
-
 <<<<<Assembly refresh>>>>>
 
 When serializing Camera I cannot save the reference to RenderTexture. Make it a Resource?
@@ -11,15 +7,16 @@ Possibly set up automatic refresh in debug mode after initialization? As an ad-h
 
 <<<<<<Handles>>>>>>>>
 
-Add free scale handle
+Rotation is really really jerky
+Free rotate doesn't really work
+When scaling using center make sure to offset the object before scale
 
 Rotate handle:
- - Missing two free rotate arcs
  - How to handle local/global with rotate handle?
    - This maybe just determines initial rotation of the handle?
    - I don't think my code properly handles rotation handle transforms (e.g. arc drawing)
- - Backside of handle disc sliders shouldn't be interactable
-   - Add an "cutoffPlane" parameter to block intersection with backside if enabled
+
+Ideally free scale handle indicator should always render and be interactable and never be hidden by axis scale indicators (Not high priority)
 
 Cursor wrap only works when cursor moves really slowly over the border, and even then it's spotty
 When changing handle types they do not refresh until you click on the scene view

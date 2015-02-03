@@ -1,6 +1,7 @@
 #include "BsRect3.h"
 #include "BsRay.h"
 #include "BsLineSegment3.h"
+#include "BsDebug.h"
 
 namespace BansheeEngine
 {

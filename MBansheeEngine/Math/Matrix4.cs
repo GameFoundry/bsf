@@ -160,6 +160,26 @@ namespace BansheeEngine
             }
         }
 
+        public Matrix4 Inverse
+        {
+            get
+            {
+                Matrix4 value = this;
+                value.Invert();
+                return value;
+            }
+        }
+
+        public Matrix4 InverseAffine
+        {
+            get
+            {
+                Matrix4 value = this;
+                value.InvertAffine();
+                return value;
+            }
+        }
+
         public static Matrix4 operator *(Matrix4 lhs, Matrix4 rhs)
         {
             return new Matrix4()
@@ -478,14 +498,14 @@ namespace BansheeEngine
                 mat.m20, mat.m21, mat.m22);
         }
 
-        public static Matrix4 Inverse(Matrix4 mat)
+        public static Matrix4 Invert(Matrix4 mat)
         {
             Matrix4 copy = mat;
             copy.Invert();
             return copy;
         }
 
-        public static Matrix4 InverseAffine(Matrix4 mat)
+        public static Matrix4 InvertAffine(Matrix4 mat)
         {
             Matrix4 copy = mat;
             copy.InvertAffine();

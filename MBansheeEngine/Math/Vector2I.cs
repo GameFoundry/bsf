@@ -46,6 +46,22 @@ namespace BansheeEngine
             this.y = y;
         }
 
+        public float Magnitude
+        {
+            get
+            {
+                return (float)MathEx.Sqrt(x * x + y * y);
+            }
+        }
+
+        public float SqrdMagnitude
+        {
+            get
+            {
+                return (x * x + y * y);
+            }
+        }
+
         public static Vector2I operator +(Vector2I a, Vector2I b)
         {
             return new Vector2I(a.x + b.x, a.y + b.y);

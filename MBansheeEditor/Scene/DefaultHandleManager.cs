@@ -145,8 +145,19 @@ namespace BansheeEditor
                         {
                             ScaleHandle scaleHandle = (ScaleHandle) activeHandle;
 
-                            foreach (var selectedObj in activeSelection)
-                                selectedObj.so.LocalScale = selectedObj.initialScale + scaleHandle.Delta;
+                            if (EditorApplication.ActivePivotMode == HandlePivotMode.Pivot)
+                            {
+                                foreach (var selectedObj in activeSelection)
+                                    selectedObj.so.LocalScale = selectedObj.initialScale + scaleHandle.Delta;
+                            }
+                            else
+                            {
+                                foreach (var selectedObj in activeSelection)
+                                {
+                                    selectedObj.so.LocalScale = selectedObj.initialScale + scaleHandle.Delta;
+                                    // TODO
+                                }
+                            }
                         }
                             break;
                     }

@@ -52,7 +52,7 @@ namespace BansheeEngine
             }
         }
 
-        public Vector3 normalized
+        public Vector3 Normalized
         {
             get
             {
@@ -60,7 +60,7 @@ namespace BansheeEngine
             }
         }
 
-        public float magnitude
+        public float Magnitude
         {
             get
             {
@@ -68,7 +68,7 @@ namespace BansheeEngine
             }
         }
 
-        public float sqrdMagnitude
+        public float SqrdMagnitude
         {
             get
             {
@@ -140,7 +140,7 @@ namespace BansheeEngine
 
         public static Vector3 Normalize(Vector3 value)
         {
-            float num = Magnitude(value);
+            float num = value.Magnitude;
             if (num > 9.999999E-06)
                 return value / num;
             
@@ -158,16 +158,6 @@ namespace BansheeEngine
             return MathEx.Sqrt(vector3.x * vector3.x + vector3.y * vector3.y + vector3.z * vector3.z);
         }
 
-        public static float Magnitude(Vector3 v)
-        {
-            return (float)MathEx.Sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
-        }
-
-        public static float SqrMagnitude(Vector3 v)
-        {
-            return (v.x * v.x + v.y * v.y + v.z * v.z);
-        }
-
         public void Scale(Vector3 scale)
         {
             x *= scale.x;
@@ -177,7 +167,7 @@ namespace BansheeEngine
 
         public void Normalize()
         {
-            float num = Magnitude(this);
+            float num = Magnitude;
             if (num > 9.999999E-06)
                 this /= num;
             else

@@ -303,15 +303,15 @@ namespace BansheeEditor
 		    {
                 SceneObject sceneCameraSO = new SceneObject("SceneCamera");
                 camera = sceneCameraSO.AddComponent<Camera>();
-                camera.target = renderTexture;
-                camera.viewportRect = new Rect2(0.0f, 0.0f, 1.0f, 1.0f);
+                camera.Target = renderTexture;
+                camera.ViewportRect = new Rect2(0.0f, 0.0f, 1.0f, 1.0f);
 
                 sceneCameraSO.Position = new Vector3(0, 0.5f, 1);
                 sceneCameraSO.LookAt(new Vector3(0, 0, 0));
 
-                camera.priority = 1;
-                camera.nearClipPlane = 0.005f;
-                camera.farClipPlane = 1000.0f;
+                camera.Priority = 1;
+                camera.NearClipPlane = 0.005f;
+                camera.FarClipPlane = 1000.0f;
 
                 cameraController = sceneCameraSO.AddComponent<SceneCamera>();
 
@@ -322,14 +322,14 @@ namespace BansheeEditor
 		    }
 		    else
 		    {
-		        camera.target = renderTexture;
+		        camera.Target = renderTexture;
 		        renderTextureGUI.RenderTexture = renderTexture;
 		    }
 
 		    // TODO - Consider only doing the resize once user stops resizing the widget in order to reduce constant
 		    // render target destroy/create cycle for every single pixel.
 
-		    camera.aspectRatio = width / (float)height;
+		    camera.AspectRatio = width / (float)height;
 	    }
     }
 }

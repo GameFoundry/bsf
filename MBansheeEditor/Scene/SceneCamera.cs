@@ -98,7 +98,7 @@ namespace BansheeEditor
             if (goingRight) direction += sceneObject.Right;
             if (goingLeft) direction -= sceneObject.Right;
 
-            if (direction.sqrdMagnitude != 0)
+            if (direction.SqrdMagnitude != 0)
             {
                 direction.Normalize();
 

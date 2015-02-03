@@ -211,7 +211,7 @@ namespace BansheeEngine
 			    {
 				    // Generate an axis
 				    Vector3 axis = Vector3.Cross(Vector3.xAxis, fromDirection);
-                    if (axis.sqrdMagnitude < ((1e-06f * 1e-06f))) // Pick another if collinear
+                    if (axis.SqrdMagnitude < ((1e-06f * 1e-06f))) // Pick another if collinear
 					    axis = Vector3.Cross(Vector3.yAxis, fromDirection);
 				    axis.Normalize();
                     this = FromAxisAngle(axis, MathEx.Pi * MathEx.Rad2Deg);

@@ -13,6 +13,8 @@ namespace BansheeEditor
         private HandleSliderLine yAxis;
         private HandleSliderLine zAxis;
 
+        private HandleSliderPlane freeAxis;
+
         public Vector3 Delta
         {
             get { return delta; }
@@ -22,7 +24,8 @@ namespace BansheeEditor
         {
             return xAxis.State == HandleSlider.StateType.Active ||
                     yAxis.State == HandleSlider.StateType.Active ||
-                    zAxis.State == HandleSlider.StateType.Active;
+                    zAxis.State == HandleSlider.StateType.Active ||
+                    freeAxis.State == HandleSlider.StateType.Active;
         }
 
         public ScaleHandle()
@@ -30,6 +33,8 @@ namespace BansheeEditor
             xAxis = new HandleSliderLine(this, Vector3.xAxis, 1.0f);
             yAxis = new HandleSliderLine(this, Vector3.yAxis, 1.0f);
             zAxis = new HandleSliderLine(this, Vector3.zAxis, 1.0f);
+
+            freeAxis = new HandleSliderPlane(this, Vector3.xAxis, Vector3.yAxis, 0.6f);
         }
 
         protected override void PreInput()
@@ -41,15 +46,21 @@ namespace BansheeEditor
             xAxis.Rotation = rotation;
             yAxis.Rotation = rotation;
             zAxis.Rotation = rotation;
+
+            float handleSize = Handles.GetHandleSize(EditorApplication.SceneViewCamera, position);
+            Vector3 freeAxisOffset = (Vector3.xAxis * -0.3f + Vector3.yAxis * -0.3f) * handleSize;
+            freeAxis.Rotation = EditorApplication.SceneViewCamera.sceneObject.Rotation;
+            freeAxis.Position = position + freeAxis.Rotation.Rotate(freeAxisOffset);
         }
 
         protected override void PostInput()
         {
             delta = Vector3.zero;
 
-            delta += xAxis.Delta * GetXDir();
-            delta += yAxis.Delta * GetYDir();
-            delta += zAxis.Delta * GetZDir();
+            delta += xAxis.Delta * GetXDir() * 0.01f;
+            delta += yAxis.Delta * GetYDir() * 0.01f;
+            delta += zAxis.Delta * GetZDir() * 0.01f;
+            delta += (freeAxis.Delta.x + freeAxis.Delta.y) * Vector3.one * 0.01f;
         }
 
         protected override void Draw()
@@ -59,12 +70,11 @@ namespace BansheeEditor
 
             // Draw 1D sliders
             Vector3 smallCubeExtents = new Vector3(SMALL_CUBE_SIZE*0.5f, SMALL_CUBE_SIZE*0.5f, SMALL_CUBE_SIZE*0.5f);
-            Color axisHover = new Color(0.8f, 0.8f, 0.8f, 1.0f);
 
             if (xAxis.State == HandleSlider.StateType.Active)
                 HandleDrawing.SetColor(Color.White);
             else if (xAxis.State == HandleSlider.StateType.Hover)
-                HandleDrawing.SetColor(Color.Red * axisHover);
+                HandleDrawing.SetColor(Color.BansheeOrange);
             else
                 HandleDrawing.SetColor(Color.Red);
 
@@ -77,7 +87,7 @@ namespace BansheeEditor
             if (yAxis.State == HandleSlider.StateType.Active)
                 HandleDrawing.SetColor(Color.White);
             else if (yAxis.State == HandleSlider.StateType.Hover)
-                HandleDrawing.SetColor(Color.Green * axisHover);
+                HandleDrawing.SetColor(Color.BansheeOrange);
             else
                 HandleDrawing.SetColor(Color.Green);
 
@@ -90,7 +100,7 @@ namespace BansheeEditor
             if (zAxis.State == HandleSlider.StateType.Active)
                 HandleDrawing.SetColor(Color.White);
             else if (zAxis.State == HandleSlider.StateType.Hover)
-                HandleDrawing.SetColor(Color.Blue * axisHover);
+                HandleDrawing.SetColor(Color.BansheeOrange);
             else
                 HandleDrawing.SetColor(Color.Blue);
 
@@ -100,7 +110,32 @@ namespace BansheeEditor
             HandleDrawing.DrawLine(Vector3.zero, zCubeStart, handleSize);
             HandleDrawing.DrawCube(zCubeStart + zCubeOffset, smallCubeExtents, handleSize);
 
-            // TODO - Draw free scale handle
+            // Draw free scale handle
+            if (freeAxis.State == HandleSlider.StateType.Active)
+                HandleDrawing.SetColor(Color.White);
+            else if (freeAxis.State == HandleSlider.StateType.Hover)
+                HandleDrawing.SetColor(Color.BansheeOrange);
+            else
+                HandleDrawing.SetColor(Color.White);
+
+            //// Rotate it so it always faces the camera, and move it forward a bit to always render in front
+            Vector3 bottomLeft = -Vector3.xAxis * 0.3f - Vector3.yAxis * 0.3f;
+            Vector3 topLeft = -Vector3.xAxis * 0.3f + Vector3.yAxis * 0.3f;
+            Vector3 topRight = Vector3.xAxis * 0.3f + Vector3.yAxis * 0.3f;
+            Vector3 bottomRight = Vector3.xAxis * 0.3f - Vector3.yAxis * 0.3f;
+
+            Vector3 offset = Vector3.zAxis*0.1f;
+
+            Quaternion cameraRot = EditorApplication.SceneViewCamera.sceneObject.Rotation;
+            bottomLeft = cameraRot.Rotate(bottomLeft + offset);
+            topLeft = cameraRot.Rotate(topLeft + offset);
+            topRight = cameraRot.Rotate(topRight + offset);
+            bottomRight = cameraRot.Rotate(bottomRight + offset);
+
+            HandleDrawing.DrawLine(bottomLeft, bottomRight, handleSize);
+            HandleDrawing.DrawLine(bottomLeft, topLeft, handleSize);
+            HandleDrawing.DrawLine(topLeft, topRight, handleSize);
+            HandleDrawing.DrawLine(bottomRight, topRight, handleSize);
         }
 
         private Vector3 GetXDir()

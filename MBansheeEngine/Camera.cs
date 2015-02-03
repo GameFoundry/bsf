@@ -18,120 +18,120 @@ namespace BansheeEngine
             get { return handler; }
         }
 
-        public float aspectRatio
+        public float AspectRatio
         {
             get { return handler.aspectRatio; }
             set { handler.aspectRatio = value; serializableData.aspectRatio = value; }
         }
 
-        public float nearClipPlane
+        public float NearClipPlane
         {
             get { return handler.nearClipPlane; }
             set { handler.nearClipPlane = value; serializableData.nearClipPlane = value; }
         }
 
-        public float farClipPlane
+        public float FarClipPlane
         {
             get { return handler.farClipPlane; }
             set { handler.farClipPlane = value; serializableData.farClipPlane = value; }
         }
 
-        public Degree fieldOfView
+        public Degree FieldOfView
         {
             get { return handler.fieldOfView; }
             set { handler.fieldOfView = value; serializableData.fieldOfView = value; }
         }
 
-        public Rect2 viewportRect
+        public Rect2 ViewportRect
         {
             get { return handler.viewportRect; }
             set { handler.viewportRect = value; serializableData.viewportRect = value; }
         }
 
-        public ProjectionType projectionType
+        public ProjectionType ProjectionType
         {
             get { return handler.projectionType; }
             set { handler.projectionType = value; serializableData.projectionType = value; }
         }
 
-        public float orthoHeight
+        public float OrthoHeight
         {
             get { return handler.orthoHeight; }
             set { handler.orthoHeight = value; serializableData.orthoHeight = value; }
         }
 
-        public float orthoWidth
+        public float OrthoWidth
         {
             get { return handler.orthoWidth; }
         }
 
-        public Color clearColor
+        public Color ClearColor
         {
             get { return handler.clearColor; }
             set { handler.clearColor = value; serializableData.clearColor = value; }
         }
 
-        public float clearDepth
+        public float ClearDepth
         {
             get { return handler.clearDepth; }
             set { handler.clearDepth = value; serializableData.clearDepth = value; }
         }
 
-        public UInt16 clearStencil
+        public UInt16 ClearStencil
         {
             get { return handler.clearStencil; }
             set { handler.clearStencil = value; serializableData.clearStencil = value; }
         }
 
-        public ClearFlags clearFlags
+        public ClearFlags ClearFlags
         {
             get { return handler.clearFlags; }
             set { handler.clearFlags = value; serializableData.clearFlags = value; }
         }
 
-        public int priority
+        public int Priority
         {
             get { return handler.priority; }
             set { handler.priority = value; serializableData.priority = value; }
         }
 
-        public UInt64 layers
+        public UInt64 Layers
         {
             get { return handler.layers; }
             set { handler.layers = value; serializableData.layers = value; }
         }
 
-        public Matrix4 projMatrix
+        public Matrix4 ProjMatrix
         {
             get { return handler.projMatrix; }
         }
 
-        public Matrix4 projMatrixInv
+        public Matrix4 ProjMatrixInverse
         {
             get { return handler.projMatrixInv; }
         }
 
-        public Matrix4 viewMatrix
+        public Matrix4 ViewMatrix
         {
             get { return handler.viewMatrix; }
         }
 
-        public Matrix4 viewMatrixInv
+        public Matrix4 ViewMatrixInverse
         {
             get { return handler.viewMatrixInv; }
         }
 
-        public int widthPixels
+        public int WidthPixels
         {
             get { return handler.widthPixels; }
         }
 
-        public int heightPixels
+        public int HeightPixels
         {
             get { return handler.heightPixels; }
         }
 
-        public RenderTarget target
+        public RenderTarget Target
         {
             get { return handler.target; }
             set { handler.target = value; }
