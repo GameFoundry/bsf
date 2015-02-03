@@ -73,10 +73,13 @@ namespace BansheeEditor
             delta = Quaternion.FromAxisAngle(GetYDir(), yValue) * delta;
             delta = Quaternion.FromAxisAngle(GetZDir(), zValue) * delta;
 
-            Matrix4 cameraToWorld = EditorApplication.SceneViewCamera.ViewMatrixInverse;
+            if (freeAxis.State == HandleSlider.StateType.Active)
+            {
+                Matrix4 cameraToWorld = EditorApplication.SceneViewCamera.ViewMatrixInverse;
 
-            Vector3 rotDir = cameraToWorld.MultiplyAffine(new Vector3(-Input.PointerDelta.y, -Input.PointerDelta.x, 0));
-            delta = Quaternion.FromAxisAngle(rotDir.Normalized, Input.PointerDelta.Magnitude) * delta;
+                Vector3 rotDir = cameraToWorld.MultiplyAffine(new Vector3(-Input.PointerDelta.y, -Input.PointerDelta.x, 0));
+                delta = Quaternion.FromAxisAngle(rotDir.Normalized, Input.PointerDelta.Magnitude)*delta;
+            }
         }
 
         protected override void Draw()

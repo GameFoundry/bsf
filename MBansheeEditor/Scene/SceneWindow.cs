@@ -176,9 +176,9 @@ namespace BansheeEditor
                         sceneViewHandler.PickObject(scenePos, ctrlHeld);
                     }
                 }
-
-                sceneViewHandler.UpdateHandle(scenePos, Input.PointerDelta);
             }
+
+            sceneViewHandler.UpdateHandle(scenePos, Input.PointerDelta);
         }
 
         protected override void WindowResized(int width, int height)

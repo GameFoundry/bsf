@@ -7,7 +7,6 @@ Possibly set up automatic refresh in debug mode after initialization? As an ad-h
 
 <<<<<<Handles>>>>>>>>
 
-Rotation is really really jerky
 Free rotate doesn't really work
 When scaling using center make sure to offset the object before scale
 
