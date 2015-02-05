@@ -345,7 +345,7 @@ namespace BansheeEngine
         }
 
         /**
-         * @brief	Transform a 3D vector by this matrix.
+         * @brief	Transform a 3D point by this matrix.
          * 			
          * @note	Matrix must be affine, if it is not use "multiply" method.
          */
@@ -392,7 +392,7 @@ namespace BansheeEngine
         }
 
         /**
-         * @brief	Transform a 3D vector by this matrix.  
+         * @brief	Transform a 3D point by this matrix.  
          *
          * @note	w component of the vector is assumed to be 1. After transformation all components
          * 			are projected back so that w remains 1.
@@ -410,6 +410,17 @@ namespace BansheeEngine
             r.z = (m[2][0] * v.x + m[2][1] * v.y + m[2][2] * v.z + m[2][3]) * fInvW;
 
             return r;
+        }
+
+		/**
+         * @brief	Transform a 3D direction by this matrix.
+         */
+        Vector3 multiplyDirection(const Vector3& v) const
+        {
+            return Vector3(
+                    m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z, 
+                    m[1][0] * v.x + m[1][1] * v.y + m[1][2] * v.z,
+                    m[2][0] * v.x + m[2][1] * v.y + m[2][2] * v.z);
         }
 
         /**

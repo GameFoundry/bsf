@@ -134,7 +134,7 @@ namespace BansheeEngine
 			offset.y = -maxHeight;
 
 		windowPos += offset;
-		
+
 		Vector2I wrappedScreenPos = parentWindow->windowToScreenPos(windowPos);
 		Cursor::instance().setScreenPosition(wrappedScreenPos);
 

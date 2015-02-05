@@ -155,6 +155,21 @@ namespace BansheeEngine
 		markTfrmDirty();
 	}
 
+	void SceneObject::setWorldScale(const Vector3& scale)
+	{
+		if (mParent != nullptr)
+		{
+			Matrix4 parentTfrm = mParent->getWorldTfrm();
+			parentTfrm.inverseAffine();
+
+			mScale = parentTfrm.multiplyDirection(scale);
+		}
+		else
+			mScale = scale;
+
+		markTfrmDirty();
+	}
+
 	const Vector3& SceneObject::getWorldPosition() const
 	{ 
 		if (!isCachedWorldTfrmUpToDate())
@@ -357,6 +372,11 @@ namespace BansheeEngine
 
 		if(mParent == nullptr || mParent != parent)
 		{
+			// Make sure the object keeps its world coordinates
+			Vector3 worldPos = getWorldPosition();
+			Quaternion worldRot = getWorldRotation();
+			Vector3 worldScale = getWorldScale();
+
 			if(mParent != nullptr)
 				mParent->removeChild(mThisHandle);
 
@@ -364,6 +384,11 @@ namespace BansheeEngine
 				parent->addChild(mThisHandle);
 
 			mParent = parent;
+
+			setWorldPosition(worldPos);
+			setWorldRotation(worldRot);
+			setWorldScale(worldScale);
+
 			markTfrmDirty();
 		}
 	}

@@ -7,8 +7,8 @@ Possibly set up automatic refresh in debug mode after initialization? As an ad-h
 
 <<<<<<Handles>>>>>>>>
 
-Free rotate doesn't really work
 When scaling using center make sure to offset the object before scale
+Handles should probably not having shading, or have better shading.
 
 Rotate handle:
  - How to handle local/global with rotate handle?
@@ -16,9 +16,6 @@ Rotate handle:
    - I don't think my code properly handles rotation handle transforms (e.g. arc drawing)
 
 Ideally free scale handle indicator should always render and be interactable and never be hidden by axis scale indicators (Not high priority)
-
-Cursor wrap only works when cursor moves really slowly over the border, and even then it's spotty
-When changing handle types they do not refresh until you click on the scene view
 
 <<<<Multi-resource saving>>>>:
  - Modify Font so it doesn't contain a texture, but instead keeps a handle to it
@@ -29,8 +26,6 @@ When changing handle types they do not refresh until you click on the scene view
 
 Other:
 Window resize end callback
-Add cutoff plane when rendering discs for rotation handle.
-There seems to be a delay when changing GUI element sprite textures (like 1 frame there is no texture at all)
 
 I can get mono errors by checking g_print calls in goutput.c
  - Calling thunks incorrectly can cause those weird errors with no real callstack
@@ -53,57 +48,10 @@ Set up a default layout and save it
 Need a way to drag and drop items from Scene tree view to Scene view
 
 AFTER I have scene widget in C#:
- - Implement free move handle and remaining handles
  - Test custom handles from C#
  - Test handle snapping
 
-IMPLEMENT SELECTION RENDERING
-
 IMPROVE SceneGrid LOOK - Use the shader created in Unity
-
-----------------------------------------------------------------------
-Handles
-
-SliderLine - position, direction, length
-  - When initially activated it records position nearest so the line as the starting point
-  - Further mouse dragging also finds nearest position to the line
-  - Difference between those two results in a float value (how much to move along direction from position to reach new position)
-  - Slider line has a capsule + sphere collider size of which can be set manually
-
-SliderPlane - position, normal, size
-  - Similar to line slider only the direction is determined dynamically as well as distance
-  - Outputs a Vector2 (direction * distance moved)
-  - A OOB is used as a collider
-
-SliderDisc - position, normal, radius
-  - When initially activated it records position nearest so the disc as the starting point
-  - Further movement calculates the dynamic direction from the starting point to the current point on the plane the disc lies on
-  - Distance along that direction is returned as amount of movement (similar to line slider)
-  - Outputs a single float
-  - A torus is used as a collider
-
-Free move/rotate/scale handles need to exist as well
- - Scale is easy, just perform uniform scale. Use SliderPlane oriented towards camera
- - Move also use SliderPlane oriented towards camera
- - Rotation use SliderDisc oriented towards camera
-
-----------------------------------------------------
-STAGE 1
-
-CONCRETE TODO:
-HandleSliderPlane/HandleSliderDisc
- - update() implementation
-
-----------------------------------------------------
-STAGE 2
-Implement RotateHandle & ScaleHandle in C#
- - Nearest point to disc/arc code
-Add 2D move and scale
-Add free move, free rotate, free scale functionality
-Handles that remain the same size regardless of distance from camera
- - For both drawing and collision
-
- More complex types for drawing like DrawArrow in HandleDrawManager
 
 ----------------------------------------------------------------------
 SelectionRenderer
@@ -112,5 +60,3 @@ Retrieve a list of selected objects from SelectionManager
 Find ones with Renderable components
 Retrieve Meshes, and world transforms from them
 Draw that same mesh with either a wireframe or a grayed out shader with a slight depth bias
-
----------------------------------------------------------------------

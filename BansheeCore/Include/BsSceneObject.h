@@ -133,6 +133,14 @@ namespace BansheeEngine
 		const Vector3& getScale() const { return mScale; }
 
 		/**
+		 * @brief	Sets the world scale of the object.
+		 *
+		 * @note	This will not work properly if this object or any of its parents
+		 *			have non-affine transform matrices.
+		 */
+		void setWorldScale(const Vector3& scale);
+
+		/**
 		 * @brief	Gets world scale of the object.
 		 *
 		 * @note	Performance warning: This might involve updating the transforms if the transform is dirty.

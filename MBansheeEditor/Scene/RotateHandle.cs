@@ -10,8 +10,6 @@ namespace BansheeEditor
         private HandleSliderDisc yAxis;
         private HandleSliderDisc zAxis;
 
-        private HandleSliderDisc freeAxis;
-
         public Quaternion Delta
         {
             get { return delta; }
@@ -21,8 +19,7 @@ namespace BansheeEditor
         {
             return xAxis.State == HandleSlider.StateType.Active ||
                     yAxis.State == HandleSlider.StateType.Active ||
-                    zAxis.State == HandleSlider.StateType.Active ||
-                    freeAxis.State == HandleSlider.StateType.Active;
+                    zAxis.State == HandleSlider.StateType.Active;
         }
 
         public RotateHandle()
@@ -30,7 +27,6 @@ namespace BansheeEditor
             xAxis = new HandleSliderDisc(this, Vector3.xAxis, 1.0f);
             yAxis = new HandleSliderDisc(this, Vector3.yAxis, 1.0f);
             zAxis = new HandleSliderDisc(this, Vector3.zAxis, 1.0f);
-            freeAxis = new HandleSliderDisc(this, Vector3.zAxis, 1.0f);
         }
 
         protected override void PreInput()
@@ -39,13 +35,9 @@ namespace BansheeEditor
             yAxis.Position = position;
             zAxis.Position = position;
 
-            freeAxis.Position = position;
-            freeAxis.Rotation = EditorApplication.SceneViewCamera.sceneObject.Rotation;
-
             xAxis.SetCutoffPlane(GetXStartAngle(), true);
             yAxis.SetCutoffPlane(GetYStartAngle(), true);
             zAxis.SetCutoffPlane(GetZStartAngle(), true);
-            freeAxis.SetCutoffPlane(0.0f, false);
         }
 
         protected override void PostInput()
@@ -72,14 +64,6 @@ namespace BansheeEditor
             delta = Quaternion.FromAxisAngle(GetXDir(), xValue) * delta;
             delta = Quaternion.FromAxisAngle(GetYDir(), yValue) * delta;
             delta = Quaternion.FromAxisAngle(GetZDir(), zValue) * delta;
-
-            if (freeAxis.State == HandleSlider.StateType.Active)
-            {
-                Matrix4 cameraToWorld = EditorApplication.SceneViewCamera.ViewMatrixInverse;
-
-                Vector3 rotDir = cameraToWorld.MultiplyAffine(new Vector3(-Input.PointerDelta.y, -Input.PointerDelta.x, 0));
-                delta = Quaternion.FromAxisAngle(rotDir.Normalized, Input.PointerDelta.Magnitude)*delta;
-            }
         }
 
         protected override void Draw()
@@ -127,13 +111,6 @@ namespace BansheeEditor
                 HandleDrawing.DrawArc(Vector3.zero, GetZDir(), 1.0f, zAxis.StartAngle, zAxis.Delta, handleSize);
 
             // Draw free rotate handle
-            if (freeAxis.State == HandleSlider.StateType.Active)
-                HandleDrawing.SetColor(Color.White);
-            else if (freeAxis.State == HandleSlider.StateType.Hover)
-                HandleDrawing.SetColor(Color.BansheeOrange);
-            else
-                HandleDrawing.SetColor(Color.White);
-
             //// Rotate it so it always faces the camera, and move it forward a bit to always render in front
             Vector3 freeHandleNormal = EditorApplication.SceneViewCamera.sceneObject.Rotation.Rotate(GetZDir());
             Vector3 offset = freeHandleNormal*0.1f;

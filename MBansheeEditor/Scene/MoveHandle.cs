@@ -100,12 +100,10 @@ namespace BansheeEditor
             float handleSize = Handles.GetHandleSize(EditorApplication.SceneViewCamera, position);
 
             // Draw 1D arrows
-            Color axisHover = new Color(0.8f, 0.8f, 0.8f, 1.0f);
-
             if (xAxis.State == HandleSlider.StateType.Active)
                 HandleDrawing.SetColor(Color.White);
             else if(xAxis.State == HandleSlider.StateType.Hover)
-                HandleDrawing.SetColor(Color.Red * axisHover);
+                HandleDrawing.SetColor(Color.BansheeOrange);
             else
                 HandleDrawing.SetColor(Color.Red);
 
@@ -116,7 +114,7 @@ namespace BansheeEditor
             if (yAxis.State == HandleSlider.StateType.Active)
                 HandleDrawing.SetColor(Color.White);
             else if (yAxis.State == HandleSlider.StateType.Hover)
-                HandleDrawing.SetColor(Color.Green * axisHover);
+                HandleDrawing.SetColor(Color.BansheeOrange);
             else
                 HandleDrawing.SetColor(Color.Green);
 
@@ -127,7 +125,7 @@ namespace BansheeEditor
             if (zAxis.State == HandleSlider.StateType.Active)
                 HandleDrawing.SetColor(Color.White);
             else if (zAxis.State == HandleSlider.StateType.Hover)
-                HandleDrawing.SetColor(Color.Blue * axisHover);
+                HandleDrawing.SetColor(Color.BansheeOrange);
             else
                 HandleDrawing.SetColor(Color.Blue);
 
