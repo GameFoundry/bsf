@@ -57,9 +57,6 @@
     <Filter Include="Header Files\Win32">
       <UniqueIdentifier>{1d3fe8eb-ec10-4356-90f0-b27f89f01a13}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Win32">
-      <UniqueIdentifier>{5a1e28c5-e784-44e6-974f-f1d0d66474ed}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Text">
       <UniqueIdentifier>{1daa1a6e-95c0-4e63-b339-4a884773fa64}</UniqueIdentifier>
     </Filter>
@@ -112,15 +109,6 @@
     </ClInclude>
     <ClInclude Include="Include\BsDeferredCallManager.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Win32\BsWin32Defs.h">
-      <Filter>Header Files\Win32</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Win32\BsPlatformImpl.h">
-      <Filter>Header Files\Win32</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Win32\BsPlatformWndProc.h">
-      <Filter>Header Files\Win32</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsTextData.h">
       <Filter>Header Files\Text</Filter>
@@ -530,6 +518,15 @@
     <ClInclude Include="Include\BsSavedResourceDataRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Win32\BsWin32Defs.h">
+      <Filter>Header Files\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Win32\BSWin32PlatformData.h">
+      <Filter>Header Files\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Win32\BsWin32Platform.h">
+      <Filter>Header Files\Platform</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsCoreApplication.cpp">
@@ -539,9 +536,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsUUID.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsPlatform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsPixelVolume.cpp">
@@ -555,12 +549,6 @@
     </ClCompile>
     <ClCompile Include="Source\BsDeferredCallManager.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Win32\BsPlatformWndProc.cpp">
-      <Filter>Source Files\Win32</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Win32\BsPlatformImpl.cpp">
-      <Filter>Source Files\Win32</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsFont.cpp">
       <Filter>Source Files\Text</Filter>
@@ -837,6 +825,12 @@
     </ClCompile>
     <ClCompile Include="Source\BsSavedResourceData.cpp">
       <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsPlatform.cpp">
+      <Filter>Source Files\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Win32\BsWin32Platform.cpp">
+      <Filter>Source Files\Platform</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -6,7 +6,7 @@
 #include "BsD3D9RenderAPI.h"
 #include "BsRenderAPI.h"
 #include "BsBitwise.h"
-#include "Win32/BsPlatformWndProc.h"
+#include "Win32/BsWin32Platform.h"
 #include "BsD3D9VideoModeInfo.h"
 #include "BsD3D9DeviceManager.h"
 #include "BsRenderWindowManager.h"
@@ -203,7 +203,7 @@ namespace BansheeEngine
 
 
 			// Register the window class
-			WNDCLASS wc = { 0, PlatformWndProc::_win32WndProc, 0, 0, hInst,
+			WNDCLASS wc = { 0, Win32Platform::_win32WndProc, 0, 0, hInst,
 				LoadIcon(0, IDI_APPLICATION), LoadCursor(NULL, IDC_ARROW),
 				(HBRUSH)GetStockObject(BLACK_BRUSH), 0, "D3D9Wnd" };
 			RegisterClass(&wc);

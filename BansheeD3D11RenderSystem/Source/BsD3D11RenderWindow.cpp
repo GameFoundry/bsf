@@ -1,6 +1,6 @@
 #include "BsD3D11RenderWindow.h"
 #include "BsCoreThread.h"
-#include "Win32/BsPlatformWndProc.h"
+#include "Win32/BsWin32Platform.h"
 #include "BsD3D11RenderAPI.h"
 #include "BsD3D11Device.h"
 #include "BsD3D11RenderTexture.h"
@@ -228,7 +228,7 @@ namespace BansheeEngine
 
 			// Register the window class
 			// Allow 4 bytes of window data for D3D11RenderWindow pointer
-			WNDCLASS wc = { classStyle, PlatformWndProc::_win32WndProc, 0, 0, hInst,
+			WNDCLASS wc = { classStyle, Win32Platform::_win32WndProc, 0, 0, hInst,
 				LoadIcon(0, IDI_APPLICATION), LoadCursor(NULL, IDC_ARROW),
 				(HBRUSH)GetStockObject(BLACK_BRUSH), 0, "D3D11Wnd" };
 

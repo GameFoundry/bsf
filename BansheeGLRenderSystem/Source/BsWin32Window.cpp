@@ -9,7 +9,7 @@
 #include "BsException.h"
 #include "BsWin32GLSupport.h"
 #include "BsWin32Context.h"
-#include "Win32/BsPlatformWndProc.h"
+#include "Win32/BsWin32Platform.h"
 #include "BsWin32VideoModeInfo.h"
 #include "BsGLPixelFormat.h"
 #include "BsRenderWindowManager.h"
@@ -255,7 +255,7 @@ namespace BansheeEngine
 			}
 
 			// register class and create window
-			WNDCLASS wc = { CS_OWNDC, PlatformWndProc::_win32WndProc, 0, 0, hInst,
+			WNDCLASS wc = { CS_OWNDC, Win32Platform::_win32WndProc, 0, 0, hInst,
 				LoadIcon(NULL, IDI_APPLICATION), LoadCursor(NULL, IDC_ARROW),
 				(HBRUSH)GetStockObject(BLACK_BRUSH), NULL, "GLWindow" };
 			RegisterClass(&wc);

@@ -419,11 +419,11 @@
     <ClInclude Include="Include\BsVertexDeclarationRTTI.h" />
     <ClInclude Include="Include\BsTechnique.h" />
     <ClInclude Include="Include\BsViewportRTTI.h" />
-    <ClInclude Include="Include\Win32\BsPlatformImpl.h" />
     <ClInclude Include="Include\Win32\BsWin32Defs.h" />
-    <ClInclude Include="Include\Win32\BsPlatformWndProc.h" />
+    <ClInclude Include="Include\Win32\BsWin32Platform.h" />
     <ClInclude Include="Include\Win32\BsWin32DropTarget.h" />
     <ClInclude Include="Include\Win32\BsWin32FolderMonitor.h" />
+    <ClInclude Include="Include\Win32\BSWin32PlatformData.h" />
     <ClInclude Include="Source\BsMeshRTTI.h" />
   </ItemGroup>
   <ItemGroup>
@@ -526,8 +526,7 @@
     <ClCompile Include="Source\BsViewport.cpp" />
     <ClCompile Include="Source\BsSceneObject.cpp" />
     <ClCompile Include="Source\BsComponent.cpp" />
-    <ClCompile Include="Source\Win32\BsPlatformImpl.cpp" />
-    <ClCompile Include="Source\Win32\BsPlatformWndProc.cpp" />
+    <ClCompile Include="Source\Win32\BsWin32Platform.cpp" />
     <ClCompile Include="Source\Win32\BsWin32FolderMonitor.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
