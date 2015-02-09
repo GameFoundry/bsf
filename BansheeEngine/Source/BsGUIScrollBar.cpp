@@ -7,7 +7,7 @@
 #include "BsGUILayout.h"
 #include "BsGUISkin.h"
 #include "BsGUIButton.h"
-#include "BsGUIScrollBarHandle.h"
+#include "BsGUISliderHandle.h"
 #include "BsGUISpace.h"
 #include "BsException.h"
 
@@ -29,7 +29,7 @@ namespace BansheeEngine
 			mUpBtn = GUIButton::create(HString(L""), "ScrollLeftBtn");
 			mDownBtn = GUIButton::create(HString(L""), "ScrollRightBtn");
 
-			mHandleBtn = GUIScrollBarHandle::create(mHorizontal, 
+			mHandleBtn = GUISliderHandle::create(mHorizontal, 
 				GUIOptions(GUIOption::flexibleWidth(), GUIOption::fixedHeight(6)), "ScrollBarHorzBtn");
 		}
 		else
@@ -39,7 +39,7 @@ namespace BansheeEngine
 			mUpBtn = GUIButton::create(HString(L""), "ScrollUpBtn");
 			mDownBtn = GUIButton::create(HString(L""), "ScrollDownBtn");
 
-			mHandleBtn = GUIScrollBarHandle::create(mHorizontal, 
+			mHandleBtn = GUISliderHandle::create(mHorizontal, 
 				GUIOptions(GUIOption::fixedWidth(6), GUIOption::flexibleHeight()), "ScrollBarVertBtn");
 		}
 

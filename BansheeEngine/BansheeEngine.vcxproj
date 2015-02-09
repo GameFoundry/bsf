@@ -236,6 +236,8 @@
     <ClCompile Include="Source\BsCursor.cpp" />
     <ClCompile Include="Source\BsDrawHelper.cpp" />
     <ClCompile Include="Source\BsGUILayoutUtility.cpp" />
+    <ClCompile Include="Source\BsGUIProgressBar.cpp" />
+    <ClCompile Include="Source\BsGUISlider.cpp" />
     <ClCompile Include="Source\BsInputConfiguration.cpp" />
     <ClCompile Include="Source\BsRenderableController.cpp" />
     <ClCompile Include="Source\BsRenderableHandler.cpp" />
@@ -247,6 +249,8 @@
     <ClInclude Include="Include\BsCameraHandlerRTTI.h" />
     <ClInclude Include="Include\BsCursor.h" />
     <ClInclude Include="Include\BsDrawHelper.h" />
+    <ClInclude Include="Include\BsGUIProgressBar.h" />
+    <ClInclude Include="Include\BsGUISlider.h" />
     <ClInclude Include="Include\BsRenderableElement.h" />
     <ClInclude Include="Include\BsRenderableHandler.h" />
     <ClInclude Include="Include\BsRenderableHandlerRTTI.h" />
@@ -285,7 +289,7 @@
     <ClInclude Include="Include\BsGUILayoutY.h" />
     <ClInclude Include="Include\BsGUIMenu.h" />
     <ClInclude Include="Include\BsGUIScrollBar.h" />
-    <ClInclude Include="Include\BsGUIScrollBarHandle.h" />
+    <ClInclude Include="Include\BsGUISliderHandle.h" />
     <ClInclude Include="Include\BsGUIScrollBarHorz.h" />
     <ClInclude Include="Include\BsGUIScrollBarVert.h" />
     <ClInclude Include="Include\BsGUISpace.h" />
@@ -359,7 +363,7 @@
     <ClCompile Include="Source\BsGUIMaterialManager.cpp" />
     <ClCompile Include="Source\BsGUIMouseEvent.cpp" />
     <ClCompile Include="Source\BsGUIScrollBar.cpp" />
-    <ClCompile Include="Source\BsGUIScrollBarHandle.cpp" />
+    <ClCompile Include="Source\BsGUISliderHandle.cpp" />
     <ClCompile Include="Source\BsGUIScrollBarHorz.cpp" />
     <ClCompile Include="Source\BsGUIScrollBarVert.cpp" />
     <ClCompile Include="Source\BsGUISkin.cpp" />

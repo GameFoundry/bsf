@@ -5,6 +5,23 @@
 When serializing Camera I cannot save the reference to RenderTexture. Make it a Resource?
 Possibly set up automatic refresh in debug mode after initialization? As an ad-hoc unit test
 
+<<<<<Simple stuff>>>>>>
+
+ColorPicker
+ - Add slider GUI control if I don't have it already. It should be separate from the background image control.
+ - Make sure I can set GUI area depth from C# (and think about how to do it neatly - probably just limit to to -128 - 127)
+
+Test file/folder open/save dialog
+
+Make sure that GUIArea depth works in C#
+
+Add a simple way to create modal dialogs (ModalDialog in C#, similar to EditorWindow)
+
+TODO: Progress bar/slider:
+ - Add proper GUI styles for them
+ - Test them
+ - Add C# wrappers for them
+
 <<<<<<Handles>>>>>>>>
 
 When scaling using center make sure to offset the object before scale
@@ -46,6 +63,8 @@ Add ProjectWindow and HierarchyWindow to C#
 Set up a default layout and save it
 
 Need a way to drag and drop items from Scene tree view to Scene view
+ - When dragging a mesh it should by default create a SceneObject with a renderable
+ - I might want a C# DragAndDrop class? It can contain Resource or SceneObject only for now, similar to Selection
 
 AFTER I have scene widget in C#:
  - Test custom handles from C#

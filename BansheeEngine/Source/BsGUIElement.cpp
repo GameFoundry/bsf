@@ -83,6 +83,12 @@ namespace BansheeEngine
 		markMeshAsDirty();
 	}
 
+	void GUIElement::_setElementDepth(UINT8 depth)
+	{
+		mDepth |= depth;
+		markMeshAsDirty();
+	}
+
 	void GUIElement::_setOffset(const Vector2I& offset) 
 	{ 
 		if(mOffset != offset)

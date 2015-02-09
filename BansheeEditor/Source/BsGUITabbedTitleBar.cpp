@@ -42,12 +42,15 @@ namespace BansheeEngine
 			mTabBtnStyle = "TabbedBarBtn";
 
 		mBackgroundImage = GUITexture::create(mBackgroundStyle);
+		mBackgroundImage->_setElementDepth(2);
 		_registerChildElement(mBackgroundImage);
 
 		mMinBtn = GUIButton::create(HString(L""), mMinimizeBtnStyle);
+		mMinBtn->_setElementDepth(1);
 		_registerChildElement(mMinBtn);
 
 		mCloseBtn = GUIButton::create(HString(L""), mCloseBtnStyle);
+		mCloseBtn->_setElementDepth(1);
 		_registerChildElement(mCloseBtn);
 
 		mCloseBtn->onClick.connect(std::bind(&GUITabbedTitleBar::tabClosed, this));
@@ -82,6 +85,7 @@ namespace BansheeEngine
 	UINT32 GUITabbedTitleBar::insertTab(UINT32 position, const HString& name)
 	{
 		GUITabButton* newTabToggle = GUITabButton::create(mTabToggleGroup, mUniqueTabIdx, name, mTabBtnStyle);
+		newTabToggle->_setElementDepth(1);
 		_registerChildElement(newTabToggle);
 
 		position = Math::clamp(position, 0U, (UINT32)mTabButtons.size());
@@ -247,7 +251,7 @@ namespace BansheeEngine
 			mBackgroundImage->_setOffset(offset);
 			mBackgroundImage->_setWidth(width - 2);
 			mBackgroundImage->_setHeight(optimalSize.y);
-			mBackgroundImage->_setAreaDepth(areaDepth + 2);
+			mBackgroundImage->_setAreaDepth(areaDepth);
 			mBackgroundImage->_setWidgetDepth(widgetDepth);
 
 			Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
@@ -279,7 +283,7 @@ namespace BansheeEngine
 			btn->_setOffset(offset);
 			btn->_setWidth(optimalSize.x);
 			btn->_setHeight(optimalSize.y);
-			btn->_setAreaDepth(areaDepth + 1);
+			btn->_setAreaDepth(areaDepth);
 			btn->_setWidgetDepth(widgetDepth);
 
 			Rect2I elemClipRect(tabClipRect.x - offset.x, tabClipRect.y - offset.y, tabClipRect.width, tabClipRect.height);
@@ -296,7 +300,7 @@ namespace BansheeEngine
 			mMinBtn->_setOffset(offset);
 			mMinBtn->_setWidth(minBtnOptimalSize.x);
 			mMinBtn->_setHeight(minBtnOptimalSize.y);
-			mMinBtn->_setAreaDepth(areaDepth + 1);
+			mMinBtn->_setAreaDepth(areaDepth);
 			mMinBtn->_setWidgetDepth(widgetDepth);
 
 			Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
@@ -311,7 +315,7 @@ namespace BansheeEngine
 			mCloseBtn->_setOffset(offset);
 			mCloseBtn->_setWidth(closeBtnOptimalSize.x);
 			mCloseBtn->_setHeight(closeBtnOptimalSize.y);
-			mCloseBtn->_setAreaDepth(areaDepth + 1);
+			mCloseBtn->_setAreaDepth(areaDepth);
 			mCloseBtn->_setWidgetDepth(widgetDepth);
 
 			Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);

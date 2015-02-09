@@ -149,9 +149,6 @@
     <ClInclude Include="Include\BsGUIScrollBarHorz.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsGUIScrollBarHandle.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsGUIScrollArea.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
@@ -284,6 +281,15 @@
     <ClInclude Include="Include\BsRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsGUISliderHandle.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUISlider.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUIProgressBar.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsGUIElement.cpp">
@@ -380,9 +386,6 @@
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGUIScrollBarHorz.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGUIScrollBarHandle.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGUIScrollArea.cpp">
@@ -486,6 +489,15 @@
     </ClCompile>
     <ClCompile Include="Source\BsRenderer.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUISliderHandle.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUISlider.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUIProgressBar.cpp">
+      <Filter>Source Files\GUI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

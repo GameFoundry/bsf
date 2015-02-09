@@ -6,7 +6,7 @@
 #include "BsGUILayout.h"
 #include "BsGUISkin.h"
 #include "BsGUIButton.h"
-#include "BsGUIScrollBarHandle.h"
+#include "BsGUISliderHandle.h"
 #include "BsGUISpace.h"
 #include "BsException.h"
 

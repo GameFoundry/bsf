@@ -346,13 +346,13 @@ namespace BansheeEngine
 		Sprite* sprite = renderElemToSprite(renderElementIdx, localRenderElementIdx);
 
 		if(sprite == mImageSprite)
-			return _getDepth();
+			return _getDepth() + 3;
 		else if(sprite == mTextSprite)
-			return _getDepth() - 2;
+			return _getDepth() + 1;
 		else if(sprite == gGUIManager().getInputCaretTool()->getSprite())
-			return _getDepth() - 3;
+			return _getDepth();
 		else // Selection sprites
-			return _getDepth() - 1;
+			return _getDepth() + 2;
 	}
 
 	bool GUIInputBox::_hasCustomCursor(const Vector2I position, CursorType& type) const

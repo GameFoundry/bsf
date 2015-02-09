@@ -169,6 +169,14 @@ namespace BansheeEngine
 		 */
 		void _setAreaDepth(UINT16 depth);
 
+/**
+		 * @brief	Set element part of element depth. Less significant than both
+		 *			widget and area depth.
+		 *
+		 * @note	Internal method.
+		 */
+		void _setElementDepth(UINT8 depth);
+
 		/**
 		 * @brief	Sets element position relative to widget origin.
 		 *

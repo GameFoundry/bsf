@@ -33,7 +33,6 @@ namespace BansheeEngine
 		return GUILayoutUtility::calcOptimalSize(mLayout);
 	}
 
-
 	void GUIFieldBase::styleUpdated()
 	{
 		if (mLabel != nullptr)

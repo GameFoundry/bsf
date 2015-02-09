@@ -123,6 +123,9 @@ namespace BansheeEngine
 		mDragHighlight->disableRecursively();
 		mDragSepHighlight->disableRecursively();
 
+		mDragHighlight->_setElementDepth(1);
+		mDragSepHighlight->_setElementDepth(1);
+
 		_registerChildElement(mBackgroundImage);
 		_registerChildElement(mNameEditBox);
 		_registerChildElement(mDragHighlight);
@@ -497,6 +500,7 @@ namespace BansheeEngine
 		if(iterFind == mSelectedElements.end())
 		{
 			GUITexture* background = GUITexture::create(mSelectionBackgroundStyle);
+			background->_setElementDepth(1);
 			_registerChildElement(background);
 
 			element->mIsSelected = true;
@@ -941,7 +945,7 @@ namespace BansheeEngine
 			selectedElem.background->_setOffset(offset);
 			selectedElem.background->_setWidth(width);
 			selectedElem.background->_setHeight(targetElement->_getHeight());
-			selectedElem.background->_setAreaDepth(areaDepth + 1);
+			selectedElem.background->_setAreaDepth(areaDepth);
 			selectedElem.background->_setWidgetDepth(widgetDepth);
 
 			Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
@@ -992,7 +996,7 @@ namespace BansheeEngine
 					mDragHighlight->_setOffset(offset);
 					mDragHighlight->_setWidth(interactableElement->bounds.width);
 					mDragHighlight->_setHeight(interactableElement->bounds.height);
-					mDragHighlight->_setAreaDepth(areaDepth + 1);
+					mDragHighlight->_setAreaDepth(areaDepth);
 					mDragHighlight->_setWidgetDepth(widgetDepth);
 
 					Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
@@ -1010,7 +1014,7 @@ namespace BansheeEngine
 					mDragSepHighlight->_setOffset(offset);
 					mDragSepHighlight->_setWidth(interactableElement->bounds.width);
 					mDragSepHighlight->_setHeight(interactableElement->bounds.height);
-					mDragSepHighlight->_setAreaDepth(areaDepth + 1);
+					mDragSepHighlight->_setAreaDepth(areaDepth);
 					mDragSepHighlight->_setWidgetDepth(widgetDepth);
 
 					Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);

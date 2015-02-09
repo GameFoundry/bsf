@@ -44,7 +44,7 @@ namespace BansheeEngine
 	class GUITexture;
 	class GUIToggle;
 	class GUIInputBox;
-	class GUIScrollBarHandle;
+	class GUISliderHandle;
 	class GUIScrollBarVert;
 	class GUIScrollBarHorz;
 	class GUIScrollArea;

@@ -126,7 +126,7 @@ namespace BansheeEngine
 
 		GUIButton* mUpBtn;
 		GUIButton* mDownBtn;
-		GUIScrollBarHandle* mHandleBtn;
+		GUISliderHandle* mHandleBtn;
 		bool mHorizontal;
 
 		static const UINT32 ButtonScrollAmount;
