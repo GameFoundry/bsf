@@ -17,9 +17,9 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUISliderHandle::GUISliderHandle(bool horizontal, const String& styleName, const GUILayoutOptions& layoutOptions)
+	GUISliderHandle::GUISliderHandle(bool horizontal, bool jumpOnClick, const String& styleName, const GUILayoutOptions& layoutOptions)
 		:GUIElement(styleName, layoutOptions), mHorizontal(horizontal), mHandleSize(0), mMouseOverHandle(false), mHandlePos(0), mDragStartPos(0),
-		mHandleDragged(false), mState(State::Normal)
+		mHandleDragged(false), mState(State::Normal), mJumpOnClick(jumpOnClick)
 	{
 		mImageSprite = bs_new<ImageSprite, PoolAlloc>();
 	}
@@ -29,14 +29,16 @@ namespace BansheeEngine
 		bs_delete<PoolAlloc>(mImageSprite);
 	}
 
-	GUISliderHandle* GUISliderHandle::create(bool horizontal, const String& styleName)
+	GUISliderHandle* GUISliderHandle::create(bool horizontal, bool jumpOnClick, const String& styleName)
 	{
-		return new (bs_alloc<GUISliderHandle, PoolAlloc>()) GUISliderHandle(horizontal, getStyleName<GUISliderHandle>(styleName), GUILayoutOptions::create());
+		return new (bs_alloc<GUISliderHandle, PoolAlloc>()) GUISliderHandle(horizontal, jumpOnClick, 
+			getStyleName<GUISliderHandle>(styleName), GUILayoutOptions::create());
 	}
 
-	GUISliderHandle* GUISliderHandle::create(bool horizontal, const GUIOptions& layoutOptions, const String& styleName)
+	GUISliderHandle* GUISliderHandle::create(bool horizontal, bool jumpOnClick, const GUIOptions& layoutOptions, const String& styleName)
 	{
-		return new (bs_alloc<GUISliderHandle, PoolAlloc>()) GUISliderHandle(horizontal, getStyleName<GUISliderHandle>(styleName), GUILayoutOptions::create(layoutOptions));
+		return new (bs_alloc<GUISliderHandle, PoolAlloc>()) GUISliderHandle(horizontal, jumpOnClick, 
+			getStyleName<GUISliderHandle>(styleName), GUILayoutOptions::create(layoutOptions));
 	}
 
 	void GUISliderHandle::setHandleSize(UINT32 size)
@@ -182,10 +184,21 @@ namespace BansheeEngine
 			}
 		}
 
-		if(ev.getType() == GUIMouseEventType::MouseDown && mMouseOverHandle)
+		if(ev.getType() == GUIMouseEventType::MouseDown && (mMouseOverHandle || mJumpOnClick))
 		{
 			mState = State::Active;
 			markContentAsDirty();
+
+			if (mJumpOnClick)
+			{
+				if (mHorizontal)
+					mHandlePos = (float)(ev.getPosition().x - (INT32)mOffset.x - mHandleSize * 0.5f);
+				else
+					mHandlePos = (float)(ev.getPosition().y - (INT32)mOffset.y - mHandleSize * 0.5f);
+
+				float maxScrollAmount = (float)getMaxSize() - mHandleSize;
+				mHandlePos = Math::clamp(mHandlePos, 0.0f, maxScrollAmount);
+			}
 
 			if(mHorizontal)
 			{
@@ -244,31 +257,35 @@ namespace BansheeEngine
 				mState = State::Hover;
 			else
 				mState = State::Normal;
-
+			
 			// If we clicked above or below the scroll handle, scroll by one page
-			INT32 handleOffset = 0;
-			if(mHorizontal)
+			if (!mJumpOnClick)
 			{
-				INT32 handleLeft = (INT32)mOffset.x + Math::floorToInt(mHandlePos);
-				INT32 handleRight = handleLeft + mHandleSize;
+				INT32 handleOffset = 0;
+				if (mHorizontal)
+				{
+					INT32 handleLeft = (INT32)mOffset.x + Math::floorToInt(mHandlePos);
+					INT32 handleRight = handleLeft + mHandleSize;
 
-				if(ev.getPosition().x < handleLeft)
-					handleOffset -= mHandleSize;
-				else if(ev.getPosition().x > handleRight)
-					handleOffset += mHandleSize;
+					if (ev.getPosition().x < handleLeft)
+						handleOffset -= mHandleSize;
+					else if (ev.getPosition().x > handleRight)
+						handleOffset += mHandleSize;
+				}
+				else
+				{
+					INT32 handleTop = (INT32)mOffset.y + Math::floorToInt(mHandlePos);
+					INT32 handleBottom = handleTop + mHandleSize;
+
+					if (ev.getPosition().y < handleTop)
+						handleOffset -= mHandleSize;
+					else if (ev.getPosition().y > handleBottom)
+						handleOffset += mHandleSize;
+				}
+
+				mHandlePos += handleOffset;
 			}
-			else
-			{
-				INT32 handleTop = (INT32)mOffset.y + Math::floorToInt(mHandlePos);
-				INT32 handleBottom = handleTop + mHandleSize;
 
-				if(ev.getPosition().y < handleTop)
-					handleOffset -= mHandleSize;
-				else if(ev.getPosition().y > handleBottom)
-					handleOffset += mHandleSize;
-			}
-
-			mHandlePos += handleOffset;
 			float maxScrollAmount = (float)getMaxSize() - mHandleSize;
 			mHandlePos = Math::clamp(mHandlePos, 0.0f, maxScrollAmount);
 

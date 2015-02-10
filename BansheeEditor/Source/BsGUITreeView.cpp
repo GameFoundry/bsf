@@ -123,8 +123,8 @@ namespace BansheeEngine
 		mDragHighlight->disableRecursively();
 		mDragSepHighlight->disableRecursively();
 
-		mDragHighlight->_setElementDepth(1);
-		mDragSepHighlight->_setElementDepth(1);
+		mDragHighlight->_setElementDepth(2);
+		mDragSepHighlight->_setElementDepth(2);
 
 		_registerChildElement(mBackgroundImage);
 		_registerChildElement(mNameEditBox);
@@ -500,7 +500,7 @@ namespace BansheeEngine
 		if(iterFind == mSelectedElements.end())
 		{
 			GUITexture* background = GUITexture::create(mSelectionBackgroundStyle);
-			background->_setElementDepth(1);
+			background->_setElementDepth(2);
 			_registerChildElement(background);
 
 			element->mIsSelected = true;

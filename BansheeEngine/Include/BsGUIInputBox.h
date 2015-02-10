@@ -181,6 +181,11 @@ namespace BansheeEngine
 		virtual UINT32 _getRenderElementDepth(UINT32 renderElementIdx) const;
 
 		/**
+		 * @copydoc	GUIElement::_getRenderElementDepthRange
+		 */
+		virtual UINT32 _getRenderElementDepthRange() const;
+
+		/**
 		 * @copydoc	GUIElement::_hasCustomCursor
 		 */
 		virtual bool _hasCustomCursor(const Vector2I position, CursorType& type) const;

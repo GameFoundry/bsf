@@ -29,7 +29,7 @@ namespace BansheeEngine
 			mUpBtn = GUIButton::create(HString(L""), "ScrollLeftBtn");
 			mDownBtn = GUIButton::create(HString(L""), "ScrollRightBtn");
 
-			mHandleBtn = GUISliderHandle::create(mHorizontal, 
+			mHandleBtn = GUISliderHandle::create(mHorizontal, false,
 				GUIOptions(GUIOption::flexibleWidth(), GUIOption::fixedHeight(6)), "ScrollBarHorzBtn");
 		}
 		else
@@ -39,7 +39,7 @@ namespace BansheeEngine
 			mUpBtn = GUIButton::create(HString(L""), "ScrollUpBtn");
 			mDownBtn = GUIButton::create(HString(L""), "ScrollDownBtn");
 
-			mHandleBtn = GUISliderHandle::create(mHorizontal, 
+			mHandleBtn = GUISliderHandle::create(mHorizontal, false,
 				GUIOptions(GUIOption::fixedWidth(6), GUIOption::flexibleHeight()), "ScrollBarVertBtn");
 		}
 
@@ -109,6 +109,11 @@ namespace BansheeEngine
 	UINT32 GUIScrollBar::_getRenderElementDepth(UINT32 renderElementIdx) const
 	{
 		return _getDepth() + 2; // + 2 depth because child buttons use +1
+	}
+
+	UINT32 GUIScrollBar::_getRenderElementDepthRange() const
+	{
+		return 3;
 	}
 
 	void GUIScrollBar::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 

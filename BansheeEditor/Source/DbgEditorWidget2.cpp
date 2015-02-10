@@ -17,6 +17,8 @@
 #include "BsGUIButton.h"
 #include "BsGUIComponentFoldout.h"
 #include "BsGUISpace.h"
+#include "BsGUISlider.h"
+#include "BsGUIProgressBar.h"
 #include "BsHString.h"
 
 #include "BsCoreThread.h"
@@ -63,6 +65,10 @@ namespace BansheeEngine
 		GUIButton* button = GUIButton::create(HString(L"Testing"), GUIOptions(GUIOption::fixedWidth(100)));
 		button->onClick.connect(&toggleFullscreen);
 
+		GUISlider* slider = GUISliderHorz::create(GUIOptions(GUIOption::fixedWidth(200)), "ColorPickerSlider");
+		GUIProgressBar* progressBar = GUIProgressBar::create(GUIOptions(GUIOption::fixedWidth(200)));
+		progressBar->setPercent(0.33f);
+
 		layout.addElement(intField);
 		layout.addElement(floatField);
 		layout.addElement(textField);
@@ -73,6 +79,8 @@ namespace BansheeEngine
 		layout.addElement(colorField);
 		layout.addElement(foldout);
 		layout.addElement(button);
+		layout.addElement(slider);
+		layout.addElement(progressBar);
 
 		layout.addFlexibleSpace();
 	}

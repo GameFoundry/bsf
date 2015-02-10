@@ -55,6 +55,11 @@ namespace BansheeEngine
 		virtual Vector2I _getOptimalSize() const;
 
 		/**
+		 * @copydoc GUIElement::_getRenderElementDepthRange
+		 */
+		virtual UINT32 _getRenderElementDepthRange() const;
+
+		/**
 		 * @brief	Triggered when button is clicked.
 		 */
 		Event<void()> onClick;

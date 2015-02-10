@@ -15,7 +15,7 @@ namespace BansheeEngine
 		mBar = GUITexture::create(getSubStyleName(getBarStyleType()));
 		mBackground = GUITexture::create(getSubStyleName(getBackgroundStyleType()));
 
-		mBackground->_setElementDepth(1);
+		mBackground->_setElementDepth(mBar->_getRenderElementDepthRange());
 
 		_registerChildElement(mBar);
 		_registerChildElement(mBackground);
@@ -59,7 +59,6 @@ namespace BansheeEngine
 
 		const GUIElementStyle* style = _getStyle();
 		
-
 		Vector2I barOffset(x + style->margins.left, y + style->margins.top);
 		Rect2I barClipRect(clipRect.x - barOffset.x, clipRect.y - barOffset.y, clipRect.width, clipRect.height);
 
@@ -72,6 +71,12 @@ namespace BansheeEngine
 		mBar->_setAreaDepth(areaDepth);
 		mBar->_setWidgetDepth(widgetDepth);
 		mBar->_setClipRect(barClipRect);
+	}
+
+	void GUIProgressBar::styleUpdated()
+	{
+		mBar->setStyle(getSubStyleName(getBarStyleType()));
+		mBackground->setStyle(getSubStyleName(getBackgroundStyleType()));
 	}
 
 	void GUIProgressBar::setPercent(float pct)

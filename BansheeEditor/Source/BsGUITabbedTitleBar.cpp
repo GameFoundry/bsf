@@ -41,10 +41,6 @@ namespace BansheeEngine
 		if(mTabBtnStyle == StringUtil::BLANK)
 			mTabBtnStyle = "TabbedBarBtn";
 
-		mBackgroundImage = GUITexture::create(mBackgroundStyle);
-		mBackgroundImage->_setElementDepth(2);
-		_registerChildElement(mBackgroundImage);
-
 		mMinBtn = GUIButton::create(HString(L""), mMinimizeBtnStyle);
 		mMinBtn->_setElementDepth(1);
 		_registerChildElement(mMinBtn);
@@ -52,6 +48,10 @@ namespace BansheeEngine
 		mCloseBtn = GUIButton::create(HString(L""), mCloseBtnStyle);
 		mCloseBtn->_setElementDepth(1);
 		_registerChildElement(mCloseBtn);
+
+		mBackgroundImage = GUITexture::create(mBackgroundStyle);
+		mBackgroundImage->_setElementDepth(mMinBtn->_getRenderElementDepthRange() + 1);
+		_registerChildElement(mBackgroundImage);
 
 		mCloseBtn->onClick.connect(std::bind(&GUITabbedTitleBar::tabClosed, this));
 

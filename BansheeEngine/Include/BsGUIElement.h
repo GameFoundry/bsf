@@ -169,7 +169,7 @@ namespace BansheeEngine
 		 */
 		void _setAreaDepth(UINT16 depth);
 
-/**
+		/**
 		 * @brief	Set element part of element depth. Less significant than both
 		 *			widget and area depth.
 		 *
@@ -256,6 +256,15 @@ namespace BansheeEngine
 		 * @see		getNumRenderElements
 		 */
 		virtual UINT32 _getRenderElementDepth(UINT32 renderElementIdx) const { return _getDepth(); }
+
+		/**
+		 * @brief	Returns the range of depths that the child elements can be rendered it.
+		 *
+		 * @note	e.g. if you are rendering a button with an image and a text you will want the text
+		 *			to be rendered in front of the image at a different depth, which means the depth
+		 *			range is 2 (0 for text, 1 for background image).
+		 */
+		virtual UINT32 _getRenderElementDepthRange() const { return 1; }
 
 		/**
 		 * @brief	Gets internal element style representing the exact type of GUI element

@@ -306,6 +306,11 @@ namespace BansheeEngine
 		static const WString TreeViewElementHighlight;
 		static const WString TreeViewElementSepHighlight;
 
+		static const WString ColorPickerSliderHandleTex;
+
+		static const WString ProgressBarFillTex;
+		static const WString ProgressBarBgTex;
+
 		static const WString ShaderDockOverlayVSFile;
 		static const WString ShaderDockOverlayPSFile;
 		static const WString SceneGridVSFile;

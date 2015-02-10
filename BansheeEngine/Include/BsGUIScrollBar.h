@@ -104,6 +104,11 @@ namespace BansheeEngine
 		 * @copydoc GUIElement::_getRenderElementDepth
 		 */
 		virtual UINT32 _getRenderElementDepth(UINT32 renderElementIdx) const;
+
+		/**
+		 * @copydoc	GUIElement::_getRenderElementDepthRange
+		 */
+		virtual UINT32 _getRenderElementDepthRange() const;
 	private:
 		/**
 		 * @brief	Triggered whenever the scroll handle moves. Provided value represents the new 

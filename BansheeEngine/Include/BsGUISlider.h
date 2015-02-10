@@ -51,6 +51,11 @@ namespace BansheeEngine
 			Rect2I clipRect, UINT8 widgetDepth, UINT16 areaDepth);
 
 		/**
+		 * @copydoc	GUIElementContainer::styleUpdated
+		 */
+		void styleUpdated();
+
+		/**
 		 * @brief	Triggered when the slider handles moves.
 		 */
 		void onHandleMoved(float newPosition);

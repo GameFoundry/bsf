@@ -168,6 +168,11 @@ namespace BansheeEngine
 			return _getDepth() + 1;
 	}
 
+	UINT32 GUIButtonBase::_getRenderElementDepthRange() const
+	{
+		return 2;
+	}
+
 	void GUIButtonBase::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{

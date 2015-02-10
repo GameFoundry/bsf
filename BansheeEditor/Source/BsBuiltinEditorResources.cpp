@@ -20,6 +20,8 @@
 #include "BsGUIVector4Field.h"
 #include "BsGUIComponentFoldout.h"
 #include "BsGUIFoldout.h"
+#include "BsGUIProgressBar.h"
+#include "BsGUISlider.h"
 
 #include "BsFont.h"
 #include "BsFontImportOptions.h"
@@ -174,6 +176,11 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::TreeViewEditBox = L"TreeViewEditBox.psd";
 	const WString BuiltinEditorResources::TreeViewElementHighlight = L"TreeViewElementHighlight.psd";
 	const WString BuiltinEditorResources::TreeViewElementSepHighlight = L"TreeViewElementSepHighlight.psd";
+
+	const WString BuiltinEditorResources::ColorPickerSliderHandleTex = L"ColorPickerSliderHandle.psd";
+
+	const WString BuiltinEditorResources::ProgressBarFillTex = L"ProgressBarFill.psd";
+	const WString BuiltinEditorResources::ProgressBarBgTex = L"ProgressBarBg.psd";
 
 	/************************************************************************/
 	/* 									SHADERS                      		*/
@@ -1043,6 +1050,58 @@ namespace BansheeEngine
 		foldoutStyle.subStyles[GUIFoldout::getFoldoutButtonStyleType()] = GUIFoldout::getFoldoutButtonStyleType();
 
 		mSkin.setStyle(GUIFoldout::getGUITypeName(), foldoutStyle);
+
+		/************************************************************************/
+		/* 								PROGRESS BAR                      		*/
+		/************************************************************************/
+		GUIElementStyle progressBarBgStyle;
+		progressBarBgStyle.fixedHeight = true;
+		progressBarBgStyle.height = 18;
+		progressBarBgStyle.normal.texture = getGUITexture(ProgressBarBgTex);
+
+		mSkin.setStyle(GUIProgressBar::getBackgroundStyleType(), progressBarBgStyle);
+
+		GUIElementStyle progressBarFillStyle;
+		progressBarFillStyle.fixedHeight = true;
+		progressBarFillStyle.height = 12;
+		progressBarFillStyle.normal.texture = getGUITexture(ProgressBarFillTex);
+
+		mSkin.setStyle(GUIProgressBar::getBarStyleType(), progressBarFillStyle);
+
+		GUIElementStyle progressBarStyle;
+		progressBarStyle.fixedHeight = true;
+		progressBarStyle.height = 18;
+		progressBarStyle.minWidth = 100;
+		progressBarStyle.margins.top = 3;
+		progressBarStyle.margins.bottom = 3;
+
+		progressBarStyle.subStyles[GUIProgressBar::getBarStyleType()] = GUIProgressBar::getBarStyleType();
+		progressBarStyle.subStyles[GUIProgressBar::getBackgroundStyleType()] = GUIProgressBar::getBackgroundStyleType();
+
+		mSkin.setStyle(GUIProgressBar::getGUITypeName(), progressBarStyle);
+
+		/************************************************************************/
+		/* 							COLOR PICKER SLIDER                      	*/
+		/************************************************************************/
+
+		GUIElementStyle colorPickerSliderHandleStyle;
+		colorPickerSliderHandleStyle.fixedHeight = true;
+		colorPickerSliderHandleStyle.fixedWidth = true;
+		colorPickerSliderHandleStyle.height = 32;
+		colorPickerSliderHandleStyle.width = 10;
+		colorPickerSliderHandleStyle.normal.texture = getGUITexture(ColorPickerSliderHandleTex);
+		colorPickerSliderHandleStyle.hover.texture = colorPickerSliderHandleStyle.normal.texture;
+		colorPickerSliderHandleStyle.active.texture = colorPickerSliderHandleStyle.normal.texture;
+
+		mSkin.setStyle(GUISlider::getHandleStyleType(), colorPickerSliderHandleStyle);
+
+		GUIElementStyle colorPickerSliderStyle;
+		colorPickerSliderHandleStyle.fixedHeight = true;
+		colorPickerSliderHandleStyle.height = 32;
+		colorPickerSliderHandleStyle.minWidth = 50;
+		colorPickerSliderStyle.subStyles[GUISlider::getHandleStyleType()] = GUISlider::getHandleStyleType();
+
+		mSkin.setStyle("ColorPickerSlider", colorPickerSliderStyle);
 	}
 
 	void BuiltinEditorResources::preprocess()
@@ -1066,7 +1125,8 @@ namespace BansheeEngine
 			DropDownBoxEntryExpHoverTex, DropDownSeparatorTex, DropDownBoxBtnUpArrowTex, DropDownBoxBtnDownArrowTex,
 			ScrollBarBgTex, MenuBarBgTex, MenuBarBtnNormalTex, MenuBarBtnHoverTex, MenuBarBansheeLogoTex, DockSliderNormalTex,
 			TreeViewExpandButtonOffNormal, TreeViewExpandButtonOffHover, TreeViewExpandButtonOnNormal, TreeViewExpandButtonOnHover,
-			TreeViewSelectionBackground, TreeViewEditBox, TreeViewElementHighlight, TreeViewElementSepHighlight };
+			TreeViewSelectionBackground, TreeViewEditBox, TreeViewElementHighlight, TreeViewElementSepHighlight, ProgressBarBgTex,
+			ProgressBarFillTex, ColorPickerSliderHandleTex };
 
 		static const GpuProgramImportData GPU_PROGRAM_IMPORT_DATA[] = 
 		{

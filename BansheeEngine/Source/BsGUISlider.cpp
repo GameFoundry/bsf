@@ -13,10 +13,10 @@ namespace BansheeEngine
 	GUISlider::GUISlider(bool horizontal, const String& styleName, const GUILayoutOptions& layoutOptions)
 		:GUIElementContainer(layoutOptions, styleName)
 	{
-		mSliderHandle = GUISliderHandle::create(horizontal, getSubStyleName(getHandleStyleType()));
+		mSliderHandle = GUISliderHandle::create(horizontal, true, getSubStyleName(getHandleStyleType()));
 		mBackground = GUITexture::create(getSubStyleName(getBackgroundStyleType()));
 
-		mBackground->_setElementDepth(1);
+		mBackground->_setElementDepth(mSliderHandle->_getRenderElementDepthRange());
 
 		_registerChildElement(mSliderHandle);
 		_registerChildElement(mBackground);
@@ -71,6 +71,12 @@ namespace BansheeEngine
 		mSliderHandle->_setAreaDepth(areaDepth);
 		mSliderHandle->_setWidgetDepth(widgetDepth);
 		mSliderHandle->_setClipRect(elemClipRect);
+	}
+
+	void GUISlider::styleUpdated()
+	{
+		mBackground->setStyle(getSubStyleName(getBackgroundStyleType()));
+		mSliderHandle->setStyle(getSubStyleName(getHandleStyleType()));
 	}
 
 	void GUISlider::setPercent(float pct)

@@ -31,23 +31,29 @@ namespace BansheeEngine
 		 * @brief	Creates a new handle.
 		 *
 		 * @param	horizontal		Should the handle be movable vertically or horizontally.
+		 * @param	jumpOnClick		If true clicking on a specific position on the slider will cause
+		 *							the slider handle to jump to that position. Otherwise the slider
+		 *							will just slightly move towards that direction.
 		 * @param	styleName		Optional style to use for the element. Style will be retrieved
 		 *							from GUISkin of the GUIWidget the element is used on. If not specified
 		 *							default style is used.
 		 */
-		static GUISliderHandle* create(bool horizontal, const String& styleName = StringUtil::BLANK);
+		static GUISliderHandle* create(bool horizontal, bool jumpOnClick, const String& styleName = StringUtil::BLANK);
 
 		/**
 		 * @brief	Creates a new handle.
 		 *
 		 * @param	horizontal		Should the handle be movable vertically or horizontally.
+		 * @param	jumpOnClick		If true clicking on a specific position on the slider will cause
+		 *							the slider handle to jump to that position. Otherwise the slider
+		 *							will just slightly move towards that direction.
 		 * @param	layoutOptions	Options that allows you to control how is the element positioned in
 		 *							GUI layout. This will override any similar options set by style.
 		 * @param	styleName		Optional style to use for the element. Style will be retrieved
 		 *							from GUISkin of the GUIWidget the element is used on. If not specified
 		 *							default style is used.
 		 */
-		static GUISliderHandle* create(bool horizontal, const GUIOptions& layoutOptions, 
+		static GUISliderHandle* create(bool horizontal, bool jumpOnClick, const GUIOptions& layoutOptions,
 			const String& styleName = StringUtil::BLANK);
 
 		/**
@@ -117,7 +123,7 @@ namespace BansheeEngine
 		 */
 		virtual void updateClippedBounds();
 	private:
-		GUISliderHandle(bool horizontal, const String& styleName, const GUILayoutOptions& layoutOptions);
+		GUISliderHandle(bool horizontal, bool jumpOnClick, const String& styleName, const GUILayoutOptions& layoutOptions);
 
 		/**
 		 * @copydoc	GUIElement::mouseEvent
@@ -139,11 +145,11 @@ namespace BansheeEngine
 		UINT32 mHandleSize;
 
 		bool mHorizontal; // Otherwise its vertical
+		bool mJumpOnClick;
 		float mHandlePos;
 		INT32 mDragStartPos;
 		bool mMouseOverHandle;
 		bool mHandleDragged;
 		State mState;
-
 	};
 }

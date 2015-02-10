@@ -355,6 +355,11 @@ namespace BansheeEngine
 			return _getDepth() + 2;
 	}
 
+	UINT32 GUIInputBox::_getRenderElementDepthRange() const
+	{
+		return 4;
+	}
+
 	bool GUIInputBox::_hasCustomCursor(const Vector2I position, CursorType& type) const
 	{
 		if(_isInBounds(position))
