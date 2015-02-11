@@ -235,6 +235,7 @@
     <ClCompile Include="Source\BsCameraHandler.cpp" />
     <ClCompile Include="Source\BsCursor.cpp" />
     <ClCompile Include="Source\BsDrawHelper.cpp" />
+    <ClCompile Include="Source\BsGUILayoutExplicit.cpp" />
     <ClCompile Include="Source\BsGUILayoutUtility.cpp" />
     <ClCompile Include="Source\BsGUIProgressBar.cpp" />
     <ClCompile Include="Source\BsGUISlider.cpp" />
@@ -249,6 +250,7 @@
     <ClInclude Include="Include\BsCameraHandlerRTTI.h" />
     <ClInclude Include="Include\BsCursor.h" />
     <ClInclude Include="Include\BsDrawHelper.h" />
+    <ClInclude Include="Include\BsGUILayoutExplicit.h" />
     <ClInclude Include="Include\BsGUIProgressBar.h" />
     <ClInclude Include="Include\BsGUISlider.h" />
     <ClInclude Include="Include\BsRenderableElement.h" />

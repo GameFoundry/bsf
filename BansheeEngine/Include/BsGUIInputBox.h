@@ -84,7 +84,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElement::getElementType
 		 */
-		virtual ElementType getElementType() const { return ElementType::InputBox; }
+		virtual ElementType _getElementType() const { return ElementType::InputBox; }
 
 		/**
 		 * @copydoc	GUIElement::_getOptimalSize
@@ -112,22 +112,22 @@ namespace BansheeEngine
 		/**
 		 * @copydoc GUIElement::getNumRenderElements()
 		 */
-		virtual UINT32 getNumRenderElements() const;
+		virtual UINT32 _getNumRenderElements() const;
 
 		/**
 		 * @copydoc GUIElement::getMaterial()
 		 */
-		virtual const GUIMaterialInfo& getMaterial(UINT32 renderElementIdx) const;
+		virtual const GUIMaterialInfo& _getMaterial(UINT32 renderElementIdx) const;
 
 		/**
 		 * @copydoc GUIElement::getNumQuads()
 		 */
-		virtual UINT32 getNumQuads(UINT32 renderElementIdx) const;
+		virtual UINT32 _getNumQuads(UINT32 renderElementIdx) const;
 
 		/**
 		 * @copydoc GUIElement::fillBuffer()
 		 */
-		virtual void fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, 
+		virtual void _fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, 
 			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const;
 
 		/**
@@ -143,22 +143,22 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElement::mouseEvent
 		 */
-		virtual bool mouseEvent(const GUIMouseEvent& ev);
+		virtual bool _mouseEvent(const GUIMouseEvent& ev);
 
 		/**
 		 * @copydoc	GUIElement::textInputEvent
 		 */
-		virtual bool textInputEvent(const GUITextInputEvent& ev);
+		virtual bool _textInputEvent(const GUITextInputEvent& ev);
 
 		/**
 		 * @copydoc	GUIElement::commandEvent
 		 */
-		virtual bool commandEvent(const GUICommandEvent& ev);
+		virtual bool _commandEvent(const GUICommandEvent& ev);
 
 		/**
 		 * @copydoc	GUIElement::virtualButtonEvent
 		 */
-		virtual bool virtualButtonEvent(const GUIVirtualButtonEvent& ev);
+		virtual bool _virtualButtonEvent(const GUIVirtualButtonEvent& ev);
 
 		/**
 		 * @brief	Returns how much to offset text due to scrolling.
@@ -193,7 +193,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElement::getContextMenu
 		 */
-		virtual GUIContextMenu* getContextMenu() const;
+		virtual GUIContextMenu* _getContextMenu() const;
 	private:
 		/**
 		 * @brief	Retrieves a sprite from a render element index, and a local render element index

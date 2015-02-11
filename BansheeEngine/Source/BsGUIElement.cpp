@@ -4,6 +4,7 @@
 #include "BsGUILayout.h"
 #include "BsGUIManager.h"
 #include "BsException.h"
+#include "BsGUILayoutUtility.h"
 
 namespace BansheeEngine
 {
@@ -17,7 +18,7 @@ namespace BansheeEngine
 	GUIElement::~GUIElement()
 	{ }
 
-	void GUIElement::updateRenderElements()
+	void GUIElement::_updateRenderElements()
 	{
 		updateRenderElementsInternal();
 		_markAsClean();
@@ -51,22 +52,22 @@ namespace BansheeEngine
 		_refreshStyle();
 	}
 
-	bool GUIElement::mouseEvent(const GUIMouseEvent& ev)
+	bool GUIElement::_mouseEvent(const GUIMouseEvent& ev)
 	{
 		return false;
 	}
 
-	bool GUIElement::textInputEvent(const GUITextInputEvent& ev)
+	bool GUIElement::_textInputEvent(const GUITextInputEvent& ev)
 	{
 		return false;
 	}
 
-	bool GUIElement::commandEvent(const GUICommandEvent& ev)
+	bool GUIElement::_commandEvent(const GUICommandEvent& ev)
 	{
 		return false;
 	}
 
-	bool GUIElement::virtualButtonEvent(const GUIVirtualButtonEvent& ev)
+	bool GUIElement::_virtualButtonEvent(const GUIVirtualButtonEvent& ev)
 	{
 		return false;
 	}
@@ -89,7 +90,7 @@ namespace BansheeEngine
 		markMeshAsDirty();
 	}
 
-	void GUIElement::_setOffset(const Vector2I& offset) 
+	void GUIElement::setOffset(const Vector2I& offset) 
 	{ 
 		if(mOffset != offset)
 		{
@@ -100,7 +101,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUIElement::_setWidth(UINT32 width) 
+	void GUIElement::setWidth(UINT32 width) 
 	{ 
 		if(mWidth != width)
 			markContentAsDirty();
@@ -108,7 +109,7 @@ namespace BansheeEngine
 		mWidth = width; 
 	}
 
-	void GUIElement::_setHeight(UINT32 height) 
+	void GUIElement::setHeight(UINT32 height) 
 	{ 
 		if(mHeight != height)
 			markContentAsDirty();
@@ -222,7 +223,7 @@ namespace BansheeEngine
 		markContentAsDirty();
 	}
 
-	Rect2I GUIElement::getVisibleBounds() const
+	Rect2I GUIElement::getCachedVisibleBounds() const
 	{
 		Rect2I bounds = _getClippedBounds();
 		
@@ -234,7 +235,7 @@ namespace BansheeEngine
 		return bounds;
 	}
 
-	Rect2I GUIElement::getContentBounds() const
+	Rect2I GUIElement::getCachedContentBounds() const
 	{
 		Rect2I bounds;
 
@@ -248,9 +249,9 @@ namespace BansheeEngine
 		return bounds;
 	}
 
-	Rect2I GUIElement::getContentClipRect() const
+	Rect2I GUIElement::getCachedContentClipRect() const
 	{
-		Rect2I contentBounds = getContentBounds();
+		Rect2I contentBounds = getCachedContentBounds();
 		
 		// Transform into element space so we can clip it using the element clip rectangle
 		Vector2I offsetDiff = Vector2I(contentBounds.x - mOffset.x, contentBounds.y - mOffset.y);
@@ -266,7 +267,7 @@ namespace BansheeEngine
 
 	bool GUIElement::_isInBounds(const Vector2I position) const
 	{
-		Rect2I contentBounds = getVisibleBounds();
+		Rect2I contentBounds = getCachedVisibleBounds();
 
 		return contentBounds.contains(position);
 	}
@@ -313,5 +314,22 @@ namespace BansheeEngine
 		element->mIsDestroyed = true;
 
 		GUIManager::instance().queueForDestroy(element);
+	}
+
+	Rect2I GUIElement::getBounds() const
+	{
+		return GUILayoutUtility::calcBounds(this);
+	}
+
+	Rect2I GUIElement::getVisibleBounds() const
+	{
+		Rect2I bounds = getBounds();
+
+		bounds.x += mStyle->margins.left;
+		bounds.y += mStyle->margins.top;
+		bounds.width = (UINT32)std::max(0, (INT32)bounds.width - (INT32)(mStyle->margins.left + mStyle->margins.right));
+		bounds.height = (UINT32)std::max(0, (INT32)bounds.height - (INT32)(mStyle->margins.top + mStyle->margins.bottom));
+
+		return bounds;
 	}
 }

@@ -92,7 +92,7 @@ namespace BansheeEngine
 		}
 	}
 
-	UINT32 GUIInputBox::getNumRenderElements() const
+	UINT32 GUIInputBox::_getNumRenderElements() const
 	{
 		UINT32 numElements = mImageSprite->getNumRenderElements();
 		numElements += mTextSprite->getNumRenderElements();
@@ -112,7 +112,7 @@ namespace BansheeEngine
 		return numElements;
 	}
 
-	const GUIMaterialInfo& GUIInputBox::getMaterial(UINT32 renderElementIdx) const
+	const GUIMaterialInfo& GUIInputBox::_getMaterial(UINT32 renderElementIdx) const
 	{
 		UINT32 localRenderElementIdx;
 		Sprite* sprite = renderElemToSprite(renderElementIdx, localRenderElementIdx);
@@ -120,7 +120,7 @@ namespace BansheeEngine
 		return sprite->getMaterial(localRenderElementIdx);
 	}
 
-	UINT32 GUIInputBox::getNumQuads(UINT32 renderElementIdx) const
+	UINT32 GUIInputBox::_getNumQuads(UINT32 renderElementIdx) const
 	{
 		UINT32 localRenderElementIdx;
 		Sprite* sprite = renderElemToSprite(renderElementIdx, localRenderElementIdx);
@@ -333,7 +333,7 @@ namespace BansheeEngine
 
 	Rect2I GUIInputBox::_getTextInputRect() const
 	{
-		Rect2I textBounds = getContentBounds();
+		Rect2I textBounds = getCachedContentBounds();
 		textBounds.x -= mOffset.x;
 		textBounds.y -= mOffset.y;
 
@@ -371,7 +371,7 @@ namespace BansheeEngine
 		return false;
 	}
 
-	void GUIInputBox::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
+	void GUIInputBox::_fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
 		UINT32 localRenderElementIdx;
@@ -382,7 +382,7 @@ namespace BansheeEngine
 		sprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, localRenderElementIdx, offset, clipRect);
 	}
 
-	bool GUIInputBox::mouseEvent(const GUIMouseEvent& ev)
+	bool GUIInputBox::_mouseEvent(const GUIMouseEvent& ev)
 	{
 		if(ev.getType() == GUIMouseEventType::MouseOver)
 		{
@@ -498,7 +498,7 @@ namespace BansheeEngine
 		return false;
 	}
 
-	bool GUIInputBox::textInputEvent(const GUITextInputEvent& ev)
+	bool GUIInputBox::_textInputEvent(const GUITextInputEvent& ev)
 	{
 		if(mSelectionShown)
 			deleteSelectedText();
@@ -530,7 +530,7 @@ namespace BansheeEngine
 		return true;
 	}
 
-	bool GUIInputBox::commandEvent(const GUICommandEvent& ev)
+	bool GUIInputBox::_commandEvent(const GUICommandEvent& ev)
 	{
 		if(ev.getType() == GUICommandEventType::Redraw)
 		{
@@ -815,7 +815,7 @@ namespace BansheeEngine
 		return false;
 	}
 
-	bool GUIInputBox::virtualButtonEvent(const GUIVirtualButtonEvent& ev)
+	bool GUIInputBox::_virtualButtonEvent(const GUIVirtualButtonEvent& ev)
 	{
 		if(ev.getButton() == mCutVB)
 		{
@@ -1037,13 +1037,13 @@ namespace BansheeEngine
 
 	Vector2I GUIInputBox::getTextOffset() const
 	{
-		Rect2I textBounds = getContentBounds();
+		Rect2I textBounds = getCachedContentBounds();
 		return Vector2I(textBounds.x, textBounds.y) + mTextOffset;
 	}
 
 	Rect2I GUIInputBox::getTextClipRect() const
 	{
-		Rect2I contentClipRect = getContentClipRect();
+		Rect2I contentClipRect = getCachedContentClipRect();
 		return Rect2I(contentClipRect.x - mTextOffset.x, contentClipRect.y - mTextOffset.y, contentClipRect.width, contentClipRect.height);
 	}
 
@@ -1054,7 +1054,7 @@ namespace BansheeEngine
 		textDesc.font = _getStyle()->font;
 		textDesc.fontSize = _getStyle()->fontSize;
 
-		Rect2I textBounds = getContentBounds();
+		Rect2I textBounds = getCachedContentBounds();
 		textDesc.width = textBounds.width;
 		textDesc.height = textBounds.height;
 		textDesc.horzAlign = _getStyle()->textHorzAlign;
@@ -1079,7 +1079,7 @@ namespace BansheeEngine
 		return _getStyle()->normal.texture;
 	}
 
-	GUIContextMenu* GUIInputBox::getContextMenu() const
+	GUIContextMenu* GUIInputBox::_getContextMenu() const
 	{
 		static bool initialized = false;
 		static GUIContextMenu mContextMenu;

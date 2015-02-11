@@ -62,7 +62,7 @@ namespace BansheeEngine
 
 	bool GUIIntField::mouseEvent(const GUIMouseEvent& event)
 	{
-		GUIElementContainer::mouseEvent(event);
+		GUIElementContainer::_mouseEvent(event);
 
 		Rect2I draggableArea;
 

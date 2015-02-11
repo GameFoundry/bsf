@@ -63,9 +63,9 @@ namespace BansheeEngine
 		elementSelected(idx);
 	}
 
-	bool GUIListBox::mouseEvent(const GUIMouseEvent& ev)
+	bool GUIListBox::_mouseEvent(const GUIMouseEvent& ev)
 	{
-		bool processed = GUIButtonBase::mouseEvent(ev);
+		bool processed = GUIButtonBase::_mouseEvent(ev);
 
 		if(ev.getType() == GUIMouseEventType::MouseDown)
 		{

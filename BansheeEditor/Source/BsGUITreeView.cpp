@@ -193,7 +193,7 @@ namespace BansheeEngine
 		}
 	}
 
-	bool GUITreeView::mouseEvent(const GUIMouseEvent& event)
+	bool GUITreeView::_mouseEvent(const GUIMouseEvent& event)
 	{
 		if(event.getType() == GUIMouseEventType::MouseUp)
 		{
@@ -378,7 +378,7 @@ namespace BansheeEngine
 		return false;
 	}
 
-	bool GUITreeView::commandEvent(const GUICommandEvent& ev)
+	bool GUITreeView::_commandEvent(const GUICommandEvent& ev)
 	{
 		if(ev.getType() == GUICommandEventType::MoveUp || ev.getType() == GUICommandEventType::SelectUp)
 		{
@@ -432,7 +432,7 @@ namespace BansheeEngine
 		return false;
 	}
 
-	bool GUITreeView::virtualButtonEvent(const GUIVirtualButtonEvent& ev)
+	bool GUITreeView::_virtualButtonEvent(const GUIVirtualButtonEvent& ev)
 	{
 		if(ev.getButton() == mRenameVB)
 		{
@@ -873,9 +873,9 @@ namespace BansheeEngine
 				offset.x = x + INITIAL_INDENT_OFFSET + indent * INDENT_SIZE;
 				offset.y += ELEMENT_EXTRA_SPACING;
 
-				current->mElement->_setOffset(offset);
-				current->mElement->_setWidth(elementSize.x);
-				current->mElement->_setHeight(elementSize.y);
+				current->mElement->setOffset(offset);
+				current->mElement->setWidth(elementSize.x);
+				current->mElement->setHeight(elementSize.y);
 				current->mElement->_setAreaDepth(areaDepth);
 				current->mElement->_setWidgetDepth(widgetDepth);
 
@@ -901,9 +901,9 @@ namespace BansheeEngine
 					myOffset.y -= Math::floorToInt(half);
 				}
 
-				current->mFoldoutBtn->_setOffset(myOffset);
-				current->mFoldoutBtn->_setWidth(elementSize.x);
-				current->mFoldoutBtn->_setHeight(elementSize.y);
+				current->mFoldoutBtn->setOffset(myOffset);
+				current->mFoldoutBtn->setWidth(elementSize.x);
+				current->mFoldoutBtn->setHeight(elementSize.y);
 				current->mFoldoutBtn->_setAreaDepth(areaDepth);
 				current->mFoldoutBtn->_setWidgetDepth(widgetDepth);
 
@@ -942,9 +942,9 @@ namespace BansheeEngine
 			Vector2I offset = targetElement->_getOffset();
 			offset.x = x;
 
-			selectedElem.background->_setOffset(offset);
-			selectedElem.background->_setWidth(width);
-			selectedElem.background->_setHeight(targetElement->_getHeight());
+			selectedElem.background->setOffset(offset);
+			selectedElem.background->setWidth(width);
+			selectedElem.background->setHeight(targetElement->_getHeight());
 			selectedElem.background->_setAreaDepth(areaDepth);
 			selectedElem.background->_setWidgetDepth(widgetDepth);
 
@@ -959,9 +959,9 @@ namespace BansheeEngine
 			Vector2I offset = targetElement->_getOffset();
 			UINT32 remainingWidth = (UINT32)std::max(0, (((INT32)width) - (offset.x - x)));
 
-			mNameEditBox->_setOffset(offset);
-			mNameEditBox->_setWidth(remainingWidth);
-			mNameEditBox->_setHeight(targetElement->_getHeight());
+			mNameEditBox->setOffset(offset);
+			mNameEditBox->setWidth(remainingWidth);
+			mNameEditBox->setHeight(targetElement->_getHeight());
 			mNameEditBox->_setAreaDepth(areaDepth);
 			mNameEditBox->_setWidgetDepth(widgetDepth);
 
@@ -993,9 +993,9 @@ namespace BansheeEngine
 						mDragHighlight->enableRecursively();
 
 					Vector2I offset(interactableElement->bounds.x, interactableElement->bounds.y);
-					mDragHighlight->_setOffset(offset);
-					mDragHighlight->_setWidth(interactableElement->bounds.width);
-					mDragHighlight->_setHeight(interactableElement->bounds.height);
+					mDragHighlight->setOffset(offset);
+					mDragHighlight->setWidth(interactableElement->bounds.width);
+					mDragHighlight->setHeight(interactableElement->bounds.height);
 					mDragHighlight->_setAreaDepth(areaDepth);
 					mDragHighlight->_setWidgetDepth(widgetDepth);
 
@@ -1011,9 +1011,9 @@ namespace BansheeEngine
 						mDragSepHighlight->enableRecursively();
 
 					Vector2I offset(interactableElement->bounds.x, interactableElement->bounds.y);
-					mDragSepHighlight->_setOffset(offset);
-					mDragSepHighlight->_setWidth(interactableElement->bounds.width);
-					mDragSepHighlight->_setHeight(interactableElement->bounds.height);
+					mDragSepHighlight->setOffset(offset);
+					mDragSepHighlight->setWidth(interactableElement->bounds.width);
+					mDragSepHighlight->setHeight(interactableElement->bounds.height);
 					mDragSepHighlight->_setAreaDepth(areaDepth);
 					mDragSepHighlight->_setWidgetDepth(widgetDepth);
 
@@ -1217,7 +1217,7 @@ namespace BansheeEngine
 			{
 				GUIElement* parentElement = static_cast<GUIElement*>(parent);
 
-				if(parentElement->getElementType() == GUIElement::ElementType::ScrollArea)
+				if(parentElement->_getElementType() == GUIElement::ElementType::ScrollArea)
 				{
 					GUIScrollArea* scrollArea = static_cast<GUIScrollArea*>(parentElement);
 					return scrollArea;

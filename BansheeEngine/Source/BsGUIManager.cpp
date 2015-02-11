@@ -393,7 +393,7 @@ namespace BansheeEngine
 					if(element->_isDisabled())
 						continue;
 
-					UINT32 numRenderElems = element->getNumRenderElements();
+					UINT32 numRenderElems = element->_getNumRenderElements();
 					for(UINT32 i = 0; i < numRenderElems; i++)
 					{
 						allElements.insert(GUIGroupElement(element, i));
@@ -413,7 +413,7 @@ namespace BansheeEngine
 				Rect2I tfrmedBounds = guiElem->_getClippedBounds();
 				tfrmedBounds.transform(guiElem->_getParentWidget()->SO()->getWorldTfrm());
 
-				const GUIMaterialInfo& matInfo = guiElem->getMaterial(renderElemIdx);
+				const GUIMaterialInfo& matInfo = guiElem->_getMaterial(renderElemIdx);
 
 				UINT64 materialId = matInfo.material->getInternalID(); // TODO - I group based on material ID. So if two widgets used exact copies of the same material
 				// this system won't detect it. Find a better way of determining material similarity?
@@ -493,14 +493,14 @@ namespace BansheeEngine
 					foundGroup->bounds = tfrmedBounds;
 					foundGroup->elements.push_back(GUIGroupElement(guiElem, renderElemIdx));
 					foundGroup->matInfo = matInfo;
-					foundGroup->numQuads = guiElem->getNumQuads(renderElemIdx);
+					foundGroup->numQuads = guiElem->_getNumQuads(renderElemIdx);
 				}
 				else
 				{
 					foundGroup->bounds.encapsulate(tfrmedBounds);
 					foundGroup->elements.push_back(GUIGroupElement(guiElem, renderElemIdx));
 					foundGroup->depth = std::min(foundGroup->depth, elemDepth);
-					foundGroup->numQuads += guiElem->getNumQuads(renderElemIdx);
+					foundGroup->numQuads += guiElem->_getNumQuads(renderElemIdx);
 				}
 			}
 
@@ -565,9 +565,9 @@ namespace BansheeEngine
 				UINT32 quadOffset = 0;
 				for(auto& matElement : group->elements)
 				{
-					matElement.element->fillBuffer(vertices, uvs, indices, quadOffset, group->numQuads, vertexStride, indexStride, matElement.renderElement);
+					matElement.element->_fillBuffer(vertices, uvs, indices, quadOffset, group->numQuads, vertexStride, indexStride, matElement.renderElement);
 
-					UINT32 numQuads = matElement.element->getNumQuads(matElement.renderElement);
+					UINT32 numQuads = matElement.element->_getNumQuads(matElement.renderElement);
 					UINT32 indexStart = quadOffset * 6;
 					UINT32 indexEnd = indexStart + numQuads * 6;
 					UINT32 vertOffset = quadOffset * 4;
@@ -985,7 +985,7 @@ namespace BansheeEngine
 		{
 			for(auto& elementInfo : mElementsUnderPointer)
 			{
-				GUIContextMenu* menu = elementInfo.element->getContextMenu();
+				GUIContextMenu* menu = elementInfo.element->_getContextMenu();
 
 				if(menu != nullptr)
 				{

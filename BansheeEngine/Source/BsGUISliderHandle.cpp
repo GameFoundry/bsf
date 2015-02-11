@@ -72,17 +72,17 @@ namespace BansheeEngine
 		return getMaxSize() - mHandleSize;
 	}
 
-	UINT32 GUISliderHandle::getNumRenderElements() const
+	UINT32 GUISliderHandle::_getNumRenderElements() const
 	{
 		return mImageSprite->getNumRenderElements();
 	}
 
-	const GUIMaterialInfo& GUISliderHandle::getMaterial(UINT32 renderElementIdx) const
+	const GUIMaterialInfo& GUISliderHandle::_getMaterial(UINT32 renderElementIdx) const
 	{
 		return mImageSprite->getMaterial(renderElementIdx);
 	}
 
-	UINT32 GUISliderHandle::getNumQuads(UINT32 renderElementIdx) const
+	UINT32 GUISliderHandle::_getNumQuads(UINT32 renderElementIdx) const
 	{
 		return mImageSprite->getNumQuads(renderElementIdx);
 	}
@@ -135,7 +135,7 @@ namespace BansheeEngine
 		return Vector2I();
 	}
 
-	void GUISliderHandle::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
+	void GUISliderHandle::_fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
 		Vector2I offset = mOffset;
@@ -154,7 +154,7 @@ namespace BansheeEngine
 			vertexStride, indexStride, renderElementIdx, offset, clipRect);
 	}
 
-	bool GUISliderHandle::mouseEvent(const GUIMouseEvent& ev)
+	bool GUISliderHandle::_mouseEvent(const GUIMouseEvent& ev)
 	{
 		if(ev.getType() == GUIMouseEventType::MouseMove)
 		{

@@ -117,22 +117,22 @@ namespace BansheeEngine
 
 	bool GUIWidget::_mouseEvent(GUIElement* element, const GUIMouseEvent& ev)
 	{
-		return element->mouseEvent(ev);
+		return element->_mouseEvent(ev);
 	}
 
 	bool GUIWidget::_textInputEvent(GUIElement* element, const GUITextInputEvent& ev)
 	{
-		return element->textInputEvent(ev);
+		return element->_textInputEvent(ev);
 	}
 
 	bool GUIWidget::_commandEvent(GUIElement* element, const GUICommandEvent& ev)
 	{
-		return element->commandEvent(ev);
+		return element->_commandEvent(ev);
 	}
 
 	bool GUIWidget::_virtualButtonEvent(GUIElement* element, const GUIVirtualButtonEvent& ev)
 	{
-		return element->virtualButtonEvent(ev);
+		return element->_virtualButtonEvent(ev);
 	}
 
 	void GUIWidget::registerElement(GUIElement* elem)
@@ -207,7 +207,7 @@ namespace BansheeEngine
 				if(elem->_isContentDirty())
 				{
 					dirty = true;
-					elem->updateRenderElements();
+					elem->_updateRenderElements();
 				}
 
 				if(elem->_isMeshDirty())

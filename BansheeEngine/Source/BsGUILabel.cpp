@@ -23,17 +23,17 @@ namespace BansheeEngine
 		bs_delete<PoolAlloc>(mTextSprite);
 	}
 
-	UINT32 GUILabel::getNumRenderElements() const
+	UINT32 GUILabel::_getNumRenderElements() const
 	{
 		return mTextSprite->getNumRenderElements();
 	}
 
-	const GUIMaterialInfo& GUILabel::getMaterial(UINT32 renderElementIdx) const
+	const GUIMaterialInfo& GUILabel::_getMaterial(UINT32 renderElementIdx) const
 	{
 		return mTextSprite->getMaterial(renderElementIdx);
 	}
 
-	UINT32 GUILabel::getNumQuads(UINT32 renderElementIdx) const
+	UINT32 GUILabel::_getNumQuads(UINT32 renderElementIdx) const
 	{
 		return mTextSprite->getNumQuads(renderElementIdx);
 	}
@@ -64,7 +64,7 @@ namespace BansheeEngine
 		return GUIHelper::calcOptimalContentsSize(mContent, *_getStyle(), _getLayoutOptions());
 	}
 
-	void GUILabel::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
+	void GUILabel::_fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
 		mTextSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, renderElementIdx, mOffset, mClipRect);

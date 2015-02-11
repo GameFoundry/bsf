@@ -107,9 +107,9 @@ namespace BansheeEngine
 				mChildren[0]->setArea(mArea.x, mArea.y, mArea.width, sizeTop);
 				mChildren[1]->setArea(mArea.x, mArea.y + sizeTop + SLIDER_SIZE, mArea.width, sizeBottom);
 
-				mSlider->_setOffset(Vector2I(mArea.x, mArea.y + sizeTop));
-				mSlider->_setWidth(mArea.width);
-				mSlider->_setHeight(SLIDER_SIZE);
+				mSlider->setOffset(Vector2I(mArea.x, mArea.y + sizeTop));
+				mSlider->setWidth(mArea.width);
+				mSlider->setHeight(SLIDER_SIZE);
 
 				Rect2I elemClipRect(clipRect.x - mArea.x, clipRect.y - mArea.y, clipRect.width, clipRect.height);
 				mSlider->_setClipRect(elemClipRect);
@@ -123,9 +123,9 @@ namespace BansheeEngine
 				mChildren[0]->setArea(mArea.x, mArea.y, sizeLeft, mArea.height);
 				mChildren[1]->setArea(mArea.x + sizeLeft + SLIDER_SIZE, mArea.y, sizeRight, mArea.height);
 
-				mSlider->_setOffset(Vector2I(mArea.x + sizeLeft, mArea.y));
-				mSlider->_setWidth(SLIDER_SIZE);
-				mSlider->_setHeight(mArea.height);
+				mSlider->setOffset(Vector2I(mArea.x + sizeLeft, mArea.y));
+				mSlider->setWidth(SLIDER_SIZE);
+				mSlider->setHeight(mArea.height);
 
 				Rect2I elemClipRect(clipRect.x - mArea.x, clipRect.y - mArea.y, clipRect.width, clipRect.height);
 				mSlider->_setClipRect(elemClipRect);
@@ -918,7 +918,7 @@ namespace BansheeEngine
 		mDropOverlayMesh = Mesh::create(meshData);
 	}
 
-	bool DockManager::mouseEvent(const GUIMouseEvent& event)
+	bool DockManager::_mouseEvent(const GUIMouseEvent& event)
 	{
 		if(event.getType() == GUIMouseEventType::MouseDragAndDropDragged)
 		{

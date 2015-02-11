@@ -45,9 +45,9 @@ namespace BansheeEngine
 		return false;
 	}
 
-	bool GUIDockSlider::mouseEvent(const GUIMouseEvent& ev)
+	bool GUIDockSlider::_mouseEvent(const GUIMouseEvent& ev)
 	{	
-		bool processed = GUIButtonBase::mouseEvent(ev);
+		bool processed = GUIButtonBase::_mouseEvent(ev);
 
 		if(ev.getType() == GUIMouseEventType::MouseDragStart)
 		{

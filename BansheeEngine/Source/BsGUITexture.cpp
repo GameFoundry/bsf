@@ -108,17 +108,17 @@ namespace BansheeEngine
 		markContentAsDirty();
 	}
 
-	UINT32 GUITexture::getNumRenderElements() const
+	UINT32 GUITexture::_getNumRenderElements() const
 	{
 		return mImageSprite->getNumRenderElements();
 	}
 
-	const GUIMaterialInfo& GUITexture::getMaterial(UINT32 renderElementIdx) const
+	const GUIMaterialInfo& GUITexture::_getMaterial(UINT32 renderElementIdx) const
 	{
 		return mImageSprite->getMaterial(renderElementIdx);
 	}
 
-	UINT32 GUITexture::getNumQuads(UINT32 renderElementIdx) const
+	UINT32 GUITexture::_getNumQuads(UINT32 renderElementIdx) const
 	{
 		return mImageSprite->getNumQuads(renderElementIdx);
 	}
@@ -228,7 +228,7 @@ namespace BansheeEngine
 		return optimalSize;
 	}
 
-	void GUITexture::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
+	void GUITexture::_fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
 		mImageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, renderElementIdx, mOffset, mClipRect);

@@ -44,7 +44,7 @@ namespace BansheeEngine
 		markContentAsDirty();
 	}
 
-	bool GUIWindowDropArea::mouseEvent(const GUIMouseEvent& ev)
+	bool GUIWindowDropArea::_mouseEvent(const GUIMouseEvent& ev)
 	{
 		if(ev.getType() == GUIMouseEventType::MouseDragAndDropDropped)
 		{

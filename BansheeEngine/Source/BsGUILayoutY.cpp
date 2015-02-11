@@ -410,11 +410,11 @@ namespace BansheeEngine
 			{
 				GUIElement* element = static_cast<GUIElement*>(child);
 
-				element->_setWidth(childArea.width);
-				element->_setHeight(childArea.height);
+				element->setWidth(childArea.width);
+				element->setHeight(childArea.height);
 
 				Vector2I offset(childArea.x, childArea.y);
-				element->_setOffset(offset);
+				element->setOffset(offset);
 				element->_setWidgetDepth(widgetDepth);
 				element->_setAreaDepth(areaDepth);
 

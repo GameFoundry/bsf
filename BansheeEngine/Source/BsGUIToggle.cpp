@@ -167,9 +167,9 @@ namespace BansheeEngine
 		}
 	}
 
-	bool GUIToggle::mouseEvent(const GUIMouseEvent& ev)
+	bool GUIToggle::_mouseEvent(const GUIMouseEvent& ev)
 	{
-		bool processed = GUIButtonBase::mouseEvent(ev);
+		bool processed = GUIButtonBase::_mouseEvent(ev);
 
 		if(ev.getType() == GUIMouseEventType::MouseUp)
 		{

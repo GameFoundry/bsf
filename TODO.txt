@@ -7,20 +7,11 @@ Possibly set up automatic refresh in debug mode after initialization? As an ad-h
 
 <<<<<Simple stuff>>>>>>
 
-ColorPicker
- - Add slider GUI control if I don't have it already. It should be separate from the background image control.
- - Make sure I can set GUI area depth from C# (and think about how to do it neatly - probably just limit to to -128 - 127)
-
 Test file/folder open/save dialog
-
-Make sure that GUIArea depth works in C#
 
 Add a simple way to create modal dialogs (ModalDialog in C#, similar to EditorWindow)
 
-TODO: Progress bar/slider:
- - Add proper GUI styles for them
- - Test them
- - Add C# wrappers for them
+Add C# wrappers for progress bar, slider, GUILayoutExplicit and GUIElement bounds and visible bounds (with ability to set non-visible bounds)
 
 <<<<<<Handles>>>>>>>>
 

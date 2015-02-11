@@ -58,7 +58,7 @@ namespace BansheeEngine
 		return ((INT32)mActiveState & 0x10) != 0;
 	}
 
-	UINT32 GUIButtonBase::getNumRenderElements() const
+	UINT32 GUIButtonBase::_getNumRenderElements() const
 	{
 		UINT32 numElements = mImageSprite->getNumRenderElements();
 		numElements += mTextSprite->getNumRenderElements();
@@ -69,7 +69,7 @@ namespace BansheeEngine
 		return numElements;
 	}
 
-	const GUIMaterialInfo& GUIButtonBase::getMaterial(UINT32 renderElementIdx) const
+	const GUIMaterialInfo& GUIButtonBase::_getMaterial(UINT32 renderElementIdx) const
 	{
 		UINT32 textSpriteIdx = mImageSprite->getNumRenderElements();
 		UINT32 contentImgSpriteIdx = textSpriteIdx + mTextSprite->getNumRenderElements();
@@ -82,7 +82,7 @@ namespace BansheeEngine
 			return mImageSprite->getMaterial(renderElementIdx);
 	}
 
-	UINT32 GUIButtonBase::getNumQuads(UINT32 renderElementIdx) const
+	UINT32 GUIButtonBase::_getNumQuads(UINT32 renderElementIdx) const
 	{
 		UINT32 textSpriteIdx = mImageSprite->getNumRenderElements();
 		UINT32 contentImgSpriteIdx = textSpriteIdx + mTextSprite->getNumRenderElements();
@@ -173,7 +173,7 @@ namespace BansheeEngine
 		return 2;
 	}
 
-	void GUIButtonBase::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
+	void GUIButtonBase::_fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
 		UINT32 textSpriteIdx = mImageSprite->getNumRenderElements();
@@ -187,8 +187,8 @@ namespace BansheeEngine
 			return;
 		}
 
-		Rect2I contentBounds = getContentBounds();
-		Rect2I contentClipRect = getContentClipRect();
+		Rect2I contentBounds = getCachedContentBounds();
+		Rect2I contentClipRect = getCachedContentClipRect();
 		Rect2I textBounds = mTextSprite->getBounds(Vector2I(), Rect2I());
 
 		Vector2I textOffset;
@@ -250,7 +250,7 @@ namespace BansheeEngine
 		}
 	}
 
-	bool GUIButtonBase::mouseEvent(const GUIMouseEvent& ev)
+	bool GUIButtonBase::_mouseEvent(const GUIMouseEvent& ev)
 	{
 		if(ev.getType() == GUIMouseEventType::MouseOver)
 		{
@@ -301,7 +301,7 @@ namespace BansheeEngine
 		textDesc.font = _getStyle()->font;
 		textDesc.fontSize = _getStyle()->fontSize;
 
-		Rect2I textBounds = getContentBounds();
+		Rect2I textBounds = getCachedContentBounds();
 
 		textDesc.width = textBounds.width;
 		textDesc.height = textBounds.height;

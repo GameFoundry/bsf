@@ -74,7 +74,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElementContainer::getElementType
 		 */
-		virtual ElementType getElementType() const { return ElementType::ScrollArea; }
+		virtual ElementType _getElementType() const { return ElementType::ScrollArea; }
 
 		/**
 		 * @brief	Returns the scroll area layout that you may use to add elements inside the scroll area.
@@ -134,7 +134,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElementContainer::mouseEvent
 		 */
-		virtual bool mouseEvent(const GUIMouseEvent& ev);
+		virtual bool _mouseEvent(const GUIMouseEvent& ev);
 
 		/**
 		 * @brief	Scrolls the contents to the specified position.

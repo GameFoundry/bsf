@@ -40,17 +40,17 @@ namespace BansheeEngine
 		return new (bs_alloc<GUIViewport, PoolAlloc>()) GUIViewport(getStyleName<GUIViewport>(styleName), camera, aspectRatio, fieldOfView, GUILayoutOptions::create(layoutOptions));
 	}
 
-	UINT32 GUIViewport::getNumRenderElements() const
+	UINT32 GUIViewport::_getNumRenderElements() const
 	{
 		return 0;
 	}
 
-	const GUIMaterialInfo& GUIViewport::getMaterial(UINT32 renderElementIdx) const
+	const GUIMaterialInfo& GUIViewport::_getMaterial(UINT32 renderElementIdx) const
 	{
 		BS_EXCEPT(InternalErrorException, "This element has no render element so no material can be retrieved.");
 	}
 
-	UINT32 GUIViewport::getNumQuads(UINT32 renderElementIdx) const
+	UINT32 GUIViewport::_getNumQuads(UINT32 renderElementIdx) const
 	{
 		return 0;
 	}
@@ -68,7 +68,7 @@ namespace BansheeEngine
 		return Vector2I(0, 0);
 	}
 
-	void GUIViewport::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
+	void GUIViewport::_fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
 

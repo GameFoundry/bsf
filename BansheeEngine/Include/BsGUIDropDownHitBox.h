@@ -60,8 +60,8 @@ namespace BansheeEngine
 	private:
 		GUIDropDownHitBox(bool captureMouse, const GUILayoutOptions& layoutOptions);
 
-		virtual bool commandEvent(const GUICommandEvent& ev);
-		virtual bool mouseEvent(const GUIMouseEvent& ev);
+		virtual bool _commandEvent(const GUICommandEvent& ev);
+		virtual bool _mouseEvent(const GUIMouseEvent& ev);
 		virtual bool _isInBounds(const Vector2I position) const;
 
 		Vector<Rect2I> mBounds;

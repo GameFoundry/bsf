@@ -50,9 +50,9 @@ namespace BansheeEngine
 		Vector2I bgOffset(x, y);
 		Rect2I bgClipRect(clipRect.x - bgOffset.x, clipRect.y - bgOffset.y, clipRect.width, clipRect.height);
 
-		mBackground->_setOffset(bgOffset);
-		mBackground->_setWidth(width);
-		mBackground->_setHeight(height);
+		mBackground->setOffset(bgOffset);
+		mBackground->setWidth(width);
+		mBackground->setHeight(height);
 		mBackground->_setAreaDepth(areaDepth);
 		mBackground->_setWidgetDepth(widgetDepth);
 		mBackground->_setClipRect(bgClipRect);
@@ -65,9 +65,9 @@ namespace BansheeEngine
 		UINT32 maxProgressBarWidth = std::max((UINT32)0, (UINT32)(width - style->margins.left - style->margins.right));
 		UINT32 progressBarHeight = std::max((UINT32)0, (UINT32)(height - style->margins.top - style->margins.bottom)); 
 
-		mBar->_setOffset(barOffset);
-		mBar->_setWidth((UINT32)Math::floorToInt(maxProgressBarWidth * mPercent));
-		mBar->_setHeight(progressBarHeight);
+		mBar->setOffset(barOffset);
+		mBar->setWidth((UINT32)Math::floorToInt(maxProgressBarWidth * mPercent));
+		mBar->setHeight(progressBarHeight);
 		mBar->_setAreaDepth(areaDepth);
 		mBar->_setWidgetDepth(widgetDepth);
 		mBar->_setClipRect(barClipRect);

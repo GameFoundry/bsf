@@ -28,9 +28,9 @@ namespace BansheeEngine
 
 	}
 
-	bool GUIDropDownHitBox::commandEvent(const GUICommandEvent& ev)
+	bool GUIDropDownHitBox::_commandEvent(const GUICommandEvent& ev)
 	{
-		bool processed = GUIElementContainer::commandEvent(ev);
+		bool processed = GUIElementContainer::_commandEvent(ev);
 
 		if(ev.getType() == GUICommandEventType::FocusGained)
 		{
@@ -50,9 +50,9 @@ namespace BansheeEngine
 		return processed;
 	}
 
-	bool GUIDropDownHitBox::mouseEvent(const GUIMouseEvent& ev)
+	bool GUIDropDownHitBox::_mouseEvent(const GUIMouseEvent& ev)
 	{
-		bool processed = GUIElementContainer::mouseEvent(ev);
+		bool processed = GUIElementContainer::_mouseEvent(ev);
 
 		if(mCaptureMouse)
 		{

@@ -58,7 +58,7 @@ namespace BansheeEngine
 		markContentAsDirty();
 	}
 
-	UINT32 GUIColor::getNumRenderElements() const
+	UINT32 GUIColor::_getNumRenderElements() const
 	{
 		UINT32 numElements = mColorSprite->getNumRenderElements();
 		numElements += mAlphaSprite->getNumRenderElements();
@@ -66,7 +66,7 @@ namespace BansheeEngine
 		return numElements;
 	}
 
-	const GUIMaterialInfo& GUIColor::getMaterial(UINT32 renderElementIdx) const
+	const GUIMaterialInfo& GUIColor::_getMaterial(UINT32 renderElementIdx) const
 	{
 		UINT32 alphaSpriteIdx = mColorSprite->getNumRenderElements();
 
@@ -76,7 +76,7 @@ namespace BansheeEngine
 			return mColorSprite->getMaterial(renderElementIdx);
 	}
 
-	UINT32 GUIColor::getNumQuads(UINT32 renderElementIdx) const
+	UINT32 GUIColor::_getNumQuads(UINT32 renderElementIdx) const
 	{
 		UINT32 alphaSpriteIdx = mColorSprite->getNumRenderElements();
 
@@ -119,7 +119,7 @@ namespace BansheeEngine
 		return GUIHelper::calcOptimalContentsSize(Vector2I(80, 10), *_getStyle(), _getLayoutOptions()); // Arbitrary size
 	}
 
-	void GUIColor::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
+	void GUIColor::_fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
 		UINT32 alphaSpriteIdx = mColorSprite->getNumRenderElements();
@@ -145,7 +145,7 @@ namespace BansheeEngine
 		}
 	}
 
-	bool GUIColor::mouseEvent(const GUIMouseEvent& ev)
+	bool GUIColor::_mouseEvent(const GUIMouseEvent& ev)
 	{
 		if(ev.getType() == GUIMouseEventType::MouseUp)
 		{

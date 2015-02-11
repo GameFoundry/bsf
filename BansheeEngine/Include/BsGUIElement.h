@@ -36,67 +36,6 @@ namespace BansheeEngine
 		virtual ~GUIElement();
 
 		/**
-		 * @brief	Returns the number of separate render elements in the GUI element.
-		 * 			
-		 * @return	The number render elements.
-		 *
-		 * @note	GUI system attempts to reduce the number of GUI meshes so it will group
-		 * 			sprites based on their material and textures. One render elements represents a group
-		 * 			of such sprites that share a material/texture.
-		 */
-		virtual UINT32 getNumRenderElements() const = 0;
-
-		/**
-		 * @brief	Gets a material for the specified render element index.
-		 * 		
-		 * @return	Handle to the material.
-		 *
-		 * @see		getNumRenderElements()
-		 */
-		virtual const GUIMaterialInfo& getMaterial(UINT32 renderElementIdx) const = 0;
-
-		/**
-		 * @brief	Returns the number of quads that the specified render element will use. You will need this
-		 * 			value when creating the buffers before calling "fillBuffer.
-		 * 			
-		 * @return	Number of quads for the specified render element. 
-		 *
-		 * @see		getNumRenderElements()
-		 * @see		fillBuffer()
-		 * 		
-		 * @note	Number of vertices = Number of quads * 4
-		 *			Number of indices = Number of quads * 6
-		 *			
-		 */
-		virtual UINT32 getNumQuads(UINT32 renderElementIdx) const = 0;
-
-		/**
-		 * @brief	Fill the pre-allocated vertex, uv and index buffers with the mesh data for the
-		 * 			specified render element.
-		 * 			
-		 * @param	vertices			Previously allocated buffer where to store the vertices.
-		 * @param	uv					Previously allocated buffer where to store the uv coordinates.
-		 * @param	indices				Previously allocated buffer where to store the indices.
-		 * @param	startingQuad		At which quad should the method start filling the buffer.
-		 * @param	maxNumQuads			Total number of quads the buffers were allocated for. Used only
-		 * 								for memory safety.
-		 * @param	vertexStride		Number of bytes between of vertices in the provided vertex and uv data.
-		 * @param	indexStride			Number of bytes between two indexes in the provided index data.
-		 * @param	renderElementIdx	Zero-based index of the render element.
-		 *
-		 * @see getNumRenderElements()
-		 * @see	getNumQuads()
-		 */
-		virtual void fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, 
-			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const = 0;
-
-		/**
-		 * @brief	Recreates the internal render elements. Must be called before fillBuffer if element is dirty. 
-		 * 			Marks the element as non dirty.
-		 */
-		void updateRenderElements();
-
-		/**
 		 * @brief	Sets or removes focus from an element. Will change element style.
 		 */
 		void setFocus(bool enabled);
@@ -115,34 +54,39 @@ namespace BansheeEngine
 		void setStyle(const String& styleName);
 
 		/**
-		 * @brief	Gets internal element style representing the exact type of GUI element
-		 *			in this object.
+		 * @brief	Sets element position relative to widget origin.
+		 *
+		 * @note	Be aware that this value will get overwritten if your element is part of a non-explicit layout.
 		 */
-		virtual ElementType getElementType() const { return ElementType::Undefined; }
+		void setOffset(const Vector2I& offset);
 
 		/**
-		 * @brief	Called when a mouse event is received on any GUI element the mouse is interacting
-		 *			with. Return true if you have processed the event and don't want other elements to process it.
+		 * @brief	Sets element width in pixels.
+		 *
+		 * @note	Be aware that this value will get overwritten if your element is part of a non-explicit layout.
 		 */
-		virtual bool mouseEvent(const GUIMouseEvent& ev);
+		void setWidth(UINT32 width);
 
 		/**
-		 * @brief	Called when some text is input and the GUI element has input focus. 
-		 *			Return true if you have processed the event and don't want other elements to process it.
-		 */	
-		virtual bool textInputEvent(const GUITextInputEvent& ev);
+		 * @brief	Sets element height in pixels.
+		 *
+		 * @note	Be aware that this value will get overwritten if your element is part of a non-explicit layout.
+		 */
+		void setHeight(UINT32 height);
 
 		/**
-		 * @brief	Called when a command event is triggered. Return true if you have processed the event and 
-		 *			don't want other elements to process it.
+		 * @brief	Returns non-clipped bounds of the GUI element. Relative to the parent widget.
+		 *
+		 * @note	This call can be potentially expensive as the bounds need to be calculated based on current GUI state.
 		 */
-		virtual bool commandEvent(const GUICommandEvent& ev);
+		Rect2I getBounds() const;
 
 		/**
-		 * @brief	Called when a virtual button is pressed/released and the GUI element has input focus. 
-		 *			Return true if you have processed the event and don't want other elements to process it.
+		 * @brief	Returns non-clipped visible bounds of the GUI element (bounds exclude the margins). Relative to parent widget.
+		 *
+		 * @note	This call can be potentially expensive as the bounds need to be calculated based on current GUI state.
 		 */
-		virtual bool virtualButtonEvent(const GUIVirtualButtonEvent& ev);
+		Rect2I getVisibleBounds() const;
 
 		/**
 		 * @brief	Destroy the element. Removes it from parent and widget, and queues
@@ -153,6 +97,114 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 							INTERNAL METHODS                      		*/
 		/************************************************************************/
+
+/**
+		 * @brief	Returns the number of separate render elements in the GUI element.
+		 * 			
+		 * @return	The number render elements.
+		 *
+		 * @note	Internal method.
+		 *			GUI system attempts to reduce the number of GUI meshes so it will group
+		 * 			sprites based on their material and textures. One render elements represents a group
+		 * 			of such sprites that share a material/texture.
+		 */
+		virtual UINT32 _getNumRenderElements() const = 0;
+
+		/**
+		 * @brief	Gets a material for the specified render element index.
+		 * 		
+		 * @return	Handle to the material.
+		 *
+		 * @see		getNumRenderElements()
+		 *
+		 * @note	Internal method.
+		 */
+		virtual const GUIMaterialInfo& _getMaterial(UINT32 renderElementIdx) const = 0;
+
+		/**
+		 * @brief	Returns the number of quads that the specified render element will use. You will need this
+		 * 			value when creating the buffers before calling "fillBuffer.
+		 * 			
+		 * @return	Number of quads for the specified render element. 
+		 *
+		 * @see		getNumRenderElements()
+		 * @see		fillBuffer()
+		 * 		
+		 * @note	Internal method.
+		 *			Number of vertices = Number of quads * 4
+		 *			Number of indices = Number of quads * 6	
+		 */
+		virtual UINT32 _getNumQuads(UINT32 renderElementIdx) const = 0;
+
+		/**
+		 * @brief	Fill the pre-allocated vertex, uv and index buffers with the mesh data for the
+		 * 			specified render element.
+		 * 			
+		 * @param	vertices			Previously allocated buffer where to store the vertices.
+		 * @param	uv					Previously allocated buffer where to store the uv coordinates.
+		 * @param	indices				Previously allocated buffer where to store the indices.
+		 * @param	startingQuad		At which quad should the method start filling the buffer.
+		 * @param	maxNumQuads			Total number of quads the buffers were allocated for. Used only
+		 * 								for memory safety.
+		 * @param	vertexStride		Number of bytes between of vertices in the provided vertex and uv data.
+		 * @param	indexStride			Number of bytes between two indexes in the provided index data.
+		 * @param	renderElementIdx	Zero-based index of the render element.
+		 *
+		 * @see		getNumRenderElements()
+		 * @see		getNumQuads()
+		 *
+		 * @note	Internal method.
+		 */
+		virtual void _fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, 
+			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const = 0;
+
+		/**
+		 * @brief	Recreates the internal render elements. Must be called before fillBuffer if element is dirty. 
+		 * 			Marks the element as non dirty.
+		 *
+		 * @note	Internal method.
+		 */
+		void _updateRenderElements();
+
+		/**
+		 * @brief	Gets internal element style representing the exact type of GUI element
+		 *			in this object.
+		 *
+		 * @note	Internal method.
+		 */
+		virtual ElementType _getElementType() const { return ElementType::Undefined; }
+
+		/**
+		 * @brief	Called when a mouse event is received on any GUI element the mouse is interacting
+		 *			with. Return true if you have processed the event and don't want other elements to process it.
+		 *
+		 * @note	Internal method.
+		 */
+		virtual bool _mouseEvent(const GUIMouseEvent& ev);
+
+		/**
+		 * @brief	Called when some text is input and the GUI element has input focus. 
+		 *			Return true if you have processed the event and don't want other elements to process it.
+		 *
+		 * @note	Internal method.
+		 */	
+		virtual bool _textInputEvent(const GUITextInputEvent& ev);
+
+		/**
+		 * @brief	Called when a command event is triggered. Return true if you have processed the event and 
+		 *			don't want other elements to process it.
+		 *
+		 * @note	Internal method.
+		 */
+		virtual bool _commandEvent(const GUICommandEvent& ev);
+
+		/**
+		 * @brief	Called when a virtual button is pressed/released and the GUI element has input focus. 
+		 *			Return true if you have processed the event and don't want other elements to process it.
+		 *
+		 * @note	Internal method.
+		 */
+		virtual bool _virtualButtonEvent(const GUIVirtualButtonEvent& ev);
 
 		/**
 		 * @brief	Set widget part of element depth. (Most significant part)
@@ -178,27 +230,6 @@ namespace BansheeEngine
 		void _setElementDepth(UINT8 depth);
 
 		/**
-		 * @brief	Sets element position relative to widget origin.
-		 *
-		 * @note	Internal method.
-		 */
-		void _setOffset(const Vector2I& offset);
-
-		/**
-		 * @brief	Sets element width in pixels.
-		 *
-		 * @note	Internal method.
-		 */
-		void _setWidth(UINT32 width);
-
-		/**
-		 * @brief	Sets element height in pixels.
-		 *
-		 * @note	Internal method.
-		 */
-		void _setHeight(UINT32 height);
-
-		/**
 		 * @brief	Sets a clip rectangle that GUI element sprite will be clipped to. 
 		 *			Rectangle is in local coordinates. (Relative to GUIElement position)
 		 *
@@ -211,7 +242,7 @@ namespace BansheeEngine
 		 *
 		 * @note	This value is updated during layout update which means it might be out of date
 		 *			if parent element bounds changed since.
-		 *			Internal method:
+		 *			Internal method.
 		 */
 		Rect2I _getCachedBounds() const;
 
@@ -358,7 +389,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method.
 		 */
-		virtual GUIContextMenu* getContextMenu() const { return nullptr; }
+		virtual GUIContextMenu* _getContextMenu() const { return nullptr; }
 
 		/**
 		 * @brief	Returns a clip rectangle relative to the element, used for offsetting
@@ -431,18 +462,18 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns clipped bounds excluding the margins. Relative to parent widget.
 		 */
-		Rect2I getVisibleBounds() const;
+		Rect2I getCachedVisibleBounds() const;
 
 		/**
 		 * @brief	Returns bounds of the content contained within the GUI element. Relative to parent widget.
 		 */
-		Rect2I getContentBounds() const;
+		Rect2I getCachedContentBounds() const;
 
 		/**
 		 * @brief	Returns a clip rectangle that can be used for clipping the contents of this
 		 *			GUI element. Clip rect is relative to GUI element origin.
 		 */
-		Rect2I getContentClipRect() const;
+		Rect2I getCachedContentClipRect() const;
 
 		bool mIsDestroyed;
 		GUILayoutOptions mLayoutOptions;

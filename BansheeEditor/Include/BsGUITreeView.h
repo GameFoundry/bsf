@@ -133,9 +133,9 @@ namespace BansheeEngine
 		void enableEdit(TreeElement* element);
 		void disableEdit(bool acceptChanges);
 
-		virtual bool mouseEvent(const GUIMouseEvent& ev);
-		virtual bool commandEvent(const GUICommandEvent& ev);
-		virtual bool virtualButtonEvent(const GUIVirtualButtonEvent& ev);
+		virtual bool _mouseEvent(const GUIMouseEvent& ev);
+		virtual bool _commandEvent(const GUICommandEvent& ev);
+		virtual bool _virtualButtonEvent(const GUIVirtualButtonEvent& ev);
 		void elementToggled(TreeElement* element, bool toggled);
 
 		virtual TreeElement& getRootElement() = 0;

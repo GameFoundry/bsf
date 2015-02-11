@@ -19,6 +19,6 @@ namespace BansheeEngine
 	private:
 		GUITreeViewEditBox(const String& styleName, const GUILayoutOptions& layoutOptions);
 
-		virtual bool commandEvent(const GUICommandEvent& ev);
+		virtual bool _commandEvent(const GUICommandEvent& ev);
 	};
 }

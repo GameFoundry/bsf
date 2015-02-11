@@ -69,7 +69,7 @@ namespace BansheeEngine
 		GUITabbedTitleBar(const String& backgroundStyle, const String& tabBtnStyle, 
 			const String& minBtnStyle, const String& closeBtnStyle, const GUILayoutOptions& layoutOptions);
 
-		virtual bool mouseEvent(const GUIMouseEvent& ev);
+		virtual bool _mouseEvent(const GUIMouseEvent& ev);
 
 		void startDrag(UINT32 seqIdx, const Vector2I& startDragPos);
 		void endDrag();

@@ -26,7 +26,7 @@ namespace BansheeEngine
 	protected:
 		GUIDropButton(UINT32 dragType, const String& styleName, const GUILayoutOptions& layoutOptions);
 
-		virtual bool mouseEvent(const GUIMouseEvent& ev);
+		virtual bool _mouseEvent(const GUIMouseEvent& ev);
 		virtual bool _acceptDragAndDrop(const Vector2I position, UINT32 typeId) const;
 
 		UINT32 mDragType;

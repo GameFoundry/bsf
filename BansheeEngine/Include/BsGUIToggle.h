@@ -117,7 +117,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIButtonBase::getElementType
 		 */
-		virtual ElementType getElementType() const { return ElementType::Toggle; }
+		virtual ElementType _getElementType() const { return ElementType::Toggle; }
 
 		/**
 		 * @brief	Sets a toggle group of the toggle button. Toggling one button in a group will
@@ -139,7 +139,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIButtonBase::mouseEvent
 		 */
-		virtual bool mouseEvent(const GUIMouseEvent& ev);
+		virtual bool _mouseEvent(const GUIMouseEvent& ev);
 
 	protected:
 		std::shared_ptr<GUIToggleGroup> mToggleGroup;

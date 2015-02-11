@@ -126,7 +126,7 @@ namespace BansheeEngine
 
 		void updateDropOverlay(INT32 x, INT32 y, UINT32 width, UINT32 height);
 
-		bool mouseEvent(const GUIMouseEvent& event);
+		bool _mouseEvent(const GUIMouseEvent& event);
 		bool insidePolygon(Vector2* polyPoints, UINT32 numPoints, Vector2 point) const;
 	};
 }

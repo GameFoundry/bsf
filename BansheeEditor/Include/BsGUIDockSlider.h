@@ -17,7 +17,7 @@ namespace BansheeEngine
 
 		Event<void(const Vector2I&)> onDragged;
 	protected:
-		virtual bool mouseEvent(const GUIMouseEvent& ev);
+		virtual bool _mouseEvent(const GUIMouseEvent& ev);
 
 		bool _hasCustomCursor(const Vector2I position, CursorType& type) const;
 	private:

@@ -89,9 +89,9 @@ namespace BansheeEngine
 			INT32 yOffset = Math::roundToInt(((INT32)height - optimalSize.y) * 0.5f);
 
 			Vector2I offset(x, y + yOffset);
-			mToggle->_setOffset(offset);
-			mToggle->_setWidth(width);
-			mToggle->_setHeight(optimalSize.y);
+			mToggle->setOffset(offset);
+			mToggle->setWidth(width);
+			mToggle->setHeight(optimalSize.y);
 			mToggle->_setAreaDepth(areaDepth);
 			mToggle->_setWidgetDepth(widgetDepth);
 

@@ -37,7 +37,7 @@ namespace BansheeEngine
 
 	void GUILayoutX::_updateOptimalLayoutSizes()
 	{
-		// Update all children first, otherwise we can't determine out own optimal size
+		// Update all children first, otherwise we can't determine our own optimal size
 		GUIElementBase::_updateOptimalLayoutSizes();
 
 		if(mChildren.size() != mOptimalSizes.size())
@@ -347,7 +347,7 @@ namespace BansheeEngine
 			if (child->_getType() == GUIElementBase::Type::Element)
 			{
 				GUIElement* element = static_cast<GUIElement*>(child);
-				element->_setWidth(elemWidth);
+				element->setWidth(elemWidth);
 
 				UINT32 elemHeight = optimalSizes[childIdx].y;
 				const GUILayoutOptions& layoutOptions = element->_getLayoutOptions();
@@ -412,11 +412,11 @@ namespace BansheeEngine
 			if(child->_getType() == GUIElementBase::Type::Element)
 			{
 				GUIElement* element = static_cast<GUIElement*>(child);
-				element->_setWidth(childArea.width);
-				element->_setHeight(childArea.height);
+				element->setWidth(childArea.width);
+				element->setHeight(childArea.height);
 
 				Vector2I offset(childArea.x, childArea.y);
-				element->_setOffset(offset);
+				element->setOffset(offset);
 				element->_setWidgetDepth(widgetDepth);
 				element->_setAreaDepth(areaDepth);
 

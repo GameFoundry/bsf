@@ -39,9 +39,9 @@ namespace BansheeEngine
 			getStyleName<GUIDropButton>(styleName), GUILayoutOptions::create(layoutOptions));
 	}
 
-	bool GUIDropButton::mouseEvent(const GUIMouseEvent& ev)
+	bool GUIDropButton::_mouseEvent(const GUIMouseEvent& ev)
 	{
-		bool processed = GUIButtonBase::mouseEvent(ev);
+		bool processed = GUIButtonBase::_mouseEvent(ev);
 
 		if(ev.getType() == GUIMouseEventType::MouseDragAndDropDragged)
 		{

@@ -29,7 +29,7 @@ namespace BansheeEngine
 		Event<void(UINT32, const Vector2I&)> onDragged;
 		Event<void(UINT32, const Vector2I&)> onDragEnd;
 	protected:
-		virtual bool mouseEvent(const GUIMouseEvent& ev);
+		virtual bool _mouseEvent(const GUIMouseEvent& ev);
 
 	private:
 		UINT32 mIndex;

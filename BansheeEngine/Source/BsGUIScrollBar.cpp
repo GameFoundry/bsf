@@ -66,17 +66,17 @@ namespace BansheeEngine
 		GUIElement::destroy(mHandleBtn);
 	}
 
-	UINT32 GUIScrollBar::getNumRenderElements() const
+	UINT32 GUIScrollBar::_getNumRenderElements() const
 	{
 		return mImageSprite->getNumRenderElements();
 	}
 
-	const GUIMaterialInfo& GUIScrollBar::getMaterial(UINT32 renderElementIdx) const
+	const GUIMaterialInfo& GUIScrollBar::_getMaterial(UINT32 renderElementIdx) const
 	{
 		return mImageSprite->getMaterial(renderElementIdx);
 	}
 
-	UINT32 GUIScrollBar::getNumQuads(UINT32 renderElementIdx) const
+	UINT32 GUIScrollBar::_getNumQuads(UINT32 renderElementIdx) const
 	{
 		return mImageSprite->getNumQuads(renderElementIdx);
 	}
@@ -116,7 +116,7 @@ namespace BansheeEngine
 		return 3;
 	}
 
-	void GUIScrollBar::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
+	void GUIScrollBar::_fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
 		mImageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, renderElementIdx, mOffset, mClipRect);

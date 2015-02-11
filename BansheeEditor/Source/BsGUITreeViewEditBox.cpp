@@ -27,9 +27,9 @@ namespace BansheeEngine
 
 	}
 
-	bool GUITreeViewEditBox::commandEvent(const GUICommandEvent& ev)
+	bool GUITreeViewEditBox::_commandEvent(const GUICommandEvent& ev)
 	{
-		bool processed = GUIInputBox::commandEvent(ev);
+		bool processed = GUIInputBox::_commandEvent(ev);
 
 		if(ev.getType() == GUICommandEventType::Return)
 		{

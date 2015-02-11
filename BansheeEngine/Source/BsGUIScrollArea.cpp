@@ -169,9 +169,9 @@ namespace BansheeEngine
 				scrollBarHeight = (UINT32)std::max(0, (INT32)scrollBarHeight - (INT32)ScrollBarWidth);
 
 			Vector2I offset(x + scrollBarOffset, y);
-			mVertScroll->_setOffset(offset);
-			mVertScroll->_setWidth(ScrollBarWidth);
-			mVertScroll->_setHeight(scrollBarHeight);
+			mVertScroll->setOffset(offset);
+			mVertScroll->setWidth(ScrollBarWidth);
+			mVertScroll->setHeight(scrollBarHeight);
 			mVertScroll->_setAreaDepth(areaDepth);
 			mVertScroll->_setWidgetDepth(widgetDepth);
 
@@ -226,9 +226,9 @@ namespace BansheeEngine
 				scrollBarWidth = (UINT32)std::max(0, (INT32)scrollBarWidth - (INT32)ScrollBarWidth);
 
 			Vector2I offset(x, y + scrollBarOffset);
-			mHorzScroll->_setOffset(offset);
-			mHorzScroll->_setWidth(scrollBarWidth);
-			mHorzScroll->_setHeight(ScrollBarWidth);
+			mHorzScroll->setOffset(offset);
+			mHorzScroll->setWidth(scrollBarWidth);
+			mHorzScroll->setHeight(ScrollBarWidth);
 			mHorzScroll->_setAreaDepth(areaDepth);
 			mHorzScroll->_setWidgetDepth(widgetDepth);
 
@@ -371,7 +371,7 @@ namespace BansheeEngine
 			mHorzScroll->scroll(-percent);
 	}
 
-	bool GUIScrollArea::mouseEvent(const GUIMouseEvent& ev)
+	bool GUIScrollArea::_mouseEvent(const GUIMouseEvent& ev)
 	{
 		if(ev.getType() == GUIMouseEventType::MouseWheelScroll)
 		{

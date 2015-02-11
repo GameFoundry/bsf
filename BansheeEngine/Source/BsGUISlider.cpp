@@ -58,16 +58,16 @@ namespace BansheeEngine
 		Vector2I offset(x, y);
 		Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
 
-		mBackground->_setOffset(offset);
-		mBackground->_setWidth(width);
-		mBackground->_setHeight(height);
+		mBackground->setOffset(offset);
+		mBackground->setWidth(width);
+		mBackground->setHeight(height);
 		mBackground->_setAreaDepth(areaDepth);
 		mBackground->_setWidgetDepth(widgetDepth);
 		mBackground->_setClipRect(elemClipRect);
 
-		mSliderHandle->_setOffset(offset);
-		mSliderHandle->_setWidth(width);
-		mSliderHandle->_setHeight(height);
+		mSliderHandle->setOffset(offset);
+		mSliderHandle->setWidth(width);
+		mSliderHandle->setHeight(height);
 		mSliderHandle->_setAreaDepth(areaDepth);
 		mSliderHandle->_setWidgetDepth(widgetDepth);
 		mSliderHandle->_setClipRect(elemClipRect);

@@ -71,7 +71,7 @@ namespace BansheeEngine
 		}
 	}
 
-	bool GUITabButton::mouseEvent(const GUIMouseEvent& ev)
+	bool GUITabButton::_mouseEvent(const GUIMouseEvent& ev)
 	{	
 		if(ev.getType() == GUIMouseEventType::MouseOver)
 		{
