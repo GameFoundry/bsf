@@ -30,7 +30,7 @@ namespace BansheeEngine
 
 		static void internal_createInstance(MonoObject* instance);
 		static void internal_setArea(ScriptGUIPanel* thisPtr, INT32 x, INT32 y, 
-			UINT32 width, UINT32 height, UINT16 depth);
+			UINT32 width, UINT32 height);
 
 		void updateArea();
 

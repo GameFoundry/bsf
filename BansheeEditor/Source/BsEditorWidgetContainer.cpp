@@ -20,7 +20,7 @@ namespace BansheeEngine
 		:mParent(parent), mX(0), mY(0), mWidth(0), mHeight(0), mTitleBar(nullptr), mActiveWidget(-1),
 		mTitleBarArea(nullptr), mParentWindow(parentEditorWindow)
 	{
-		mTitleBarArea = GUIArea::create(*parent, 0, 0, 0, 0, 9900);
+		mTitleBarArea = GUIArea::create(*parent, 0, 0, 0, 0, 0);
 
 		mTitleBar = GUITabbedTitleBar::create();
 		mTitleBar->onTabActivated.connect(std::bind(&EditorWidgetContainer::tabActivated, this, _1));

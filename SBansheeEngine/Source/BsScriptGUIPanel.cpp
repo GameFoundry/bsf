@@ -31,7 +31,7 @@ namespace BansheeEngine
 		ScriptGUIPanel* nativeInstance = new (bs_alloc<ScriptGUIPanel>()) ScriptGUIPanel(instance);
 	}
 
-	void ScriptGUIPanel::internal_setArea(ScriptGUIPanel* thisPtr, INT32 x, INT32 y, UINT32 width, UINT32 height, UINT16 depth)
+	void ScriptGUIPanel::internal_setArea(ScriptGUIPanel* thisPtr, INT32 x, INT32 y, UINT32 width, UINT32 height)
 	{
 		thisPtr->mMyArea.x = x;
 		thisPtr->mMyArea.y = y;

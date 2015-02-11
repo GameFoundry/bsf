@@ -126,7 +126,7 @@ namespace BansheeEngine
 			if(parent != nullptr)
 			{
 				if(mContent == nullptr)
-					mContent = GUIArea::create(parent->getParentWidget(), 0, 0, 0, 0, 10000);
+					mContent = GUIArea::create(parent->getParentWidget(), 0, 0, 0, 0, 0);
 				else
 					mContent->changeParentWidget(&parent->getParentWidget());
 			}

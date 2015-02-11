@@ -21,8 +21,8 @@ namespace BansheeEngine
 		:mParentWidget(parent), mParentWindow(parentWindow), mMainArea(nullptr), mBgTextureArea(nullptr), 
 		mBgTexture(nullptr), mLogoTexture(nullptr), mSubMenuOpen(false), mSubMenuButton(nullptr)
 	{
-		mBgTextureArea = GUIArea::create(*parent, 0, 0, 1, 13, 9900);
-		mMainArea = GUIArea::create(*parent, 0, 0, 1, 13, 9899);
+		mBgTextureArea = GUIArea::create(*parent, 0, 0, 1, 13, 1);
+		mMainArea = GUIArea::create(*parent, 0, 0, 1, 13, 0);
 
 		mBgTexture = GUITexture::create(GUIImageScaleMode::StretchToFit, GUIOptions(GUIOption::flexibleWidth(), GUIOption::flexibleHeight()), "MenuBarBg");
 		mBgTextureArea->getLayout().addElement(mBgTexture);

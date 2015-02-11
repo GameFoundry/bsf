@@ -29,7 +29,7 @@ namespace BansheeEngine
         }
 
         // Note: Should only ever be called by its parent GUIPanel
-        internal static GUIArea Create(GUIPanel parent, int x, int y, int width, int height, short depth)
+        internal static GUIArea Create(GUIPanel parent, int x, int y, int width, int height, UInt16 depth)
         {
             GUIArea newArea = new GUIArea();
             Internal_CreateInstance(newArea, parent, x, y, width, height, depth);
@@ -38,7 +38,7 @@ namespace BansheeEngine
             return newArea;
         }
 
-        public void SetArea(int x, int y, int width, int height, short depth = 0)
+        public void SetArea(int x, int y, int width, int height, UInt16 depth = 0)
         {
             Internal_SetArea(mCachedPtr, x, y, width, height, depth);
         }
@@ -63,10 +63,10 @@ namespace BansheeEngine
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(GUIArea instance, GUIPanel parent, int x, int y, int width, int height, short depth);
+        private static extern void Internal_CreateInstance(GUIArea instance, GUIPanel parent, int x, int y, int width, int height, UInt16 depth);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetArea(IntPtr nativeInstance, int x, int y, int width, int height, short depth);
+        private static extern void Internal_SetArea(IntPtr nativeInstance, int x, int y, int width, int height, UInt16 depth);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_Destroy(IntPtr nativeInstance);

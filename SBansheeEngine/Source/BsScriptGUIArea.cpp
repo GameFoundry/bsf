@@ -66,6 +66,7 @@ namespace BansheeEngine
 		thisPtr->mArea.height = height;
 
 		thisPtr->updateArea();
+		thisPtr->mGUIArea->setDepth(depth);
 	}
 
 	void ScriptGUIArea::updateArea()
