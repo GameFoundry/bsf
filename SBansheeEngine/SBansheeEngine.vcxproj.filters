@@ -282,6 +282,12 @@
     <ClInclude Include="Include\BsManagedSerializableObjectDataRTTI.h">
       <Filter>Header Files\Serialization\RTTI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsScriptGUISlider.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptGUIProgressBar.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsScriptTexture2D.cpp">
@@ -499,6 +505,12 @@
     </ClCompile>
     <ClCompile Include="Source\BsManagedSerializableObjectData.cpp">
       <Filter>Source Files\Serialization</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptGUISlider.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptGUIProgressBar.cpp">
+      <Filter>Source Files\GUI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

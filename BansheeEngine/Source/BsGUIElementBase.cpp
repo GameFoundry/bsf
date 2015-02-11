@@ -2,6 +2,7 @@
 #include "BsGUILayout.h"
 #include "BsGUILayoutX.h"
 #include "BsGUILayoutY.h"
+#include "BsGUILayoutExplicit.h"
 #include "BsGUIElement.h"
 #include "BsException.h"
 #include "BsGUIWidget.h"
@@ -170,6 +171,21 @@ namespace BansheeEngine
 		return *entry;
 	}
 
+	GUILayout& GUIElementBase::addLayoutExplicitInternal(GUIElementBase* parent)
+	{
+		GUILayoutExplicit* entry = bs_new<GUILayoutExplicit, PoolAlloc>();
+		entry->_setParent(parent);
+
+		mChildren.push_back(entry);
+
+		if (mIsDisabled)
+			entry->disableRecursively();
+
+		markContentAsDirty();
+
+		return *entry;
+	}
+
 	void GUIElementBase::removeLayoutInternal(GUILayout& layout)
 	{
 		bool foundElem = false;
@@ -216,6 +232,24 @@ namespace BansheeEngine
 			BS_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((UINT32)mChildren.size()));
 
 		GUILayoutY* entry = bs_new<GUILayoutY, PoolAlloc>();
+		entry->_setParent(parent);
+
+		mChildren.insert(mChildren.begin() + idx, entry);
+
+		if (mIsDisabled)
+			entry->disableRecursively();
+
+		markContentAsDirty();
+
+		return *entry;
+	}
+
+	GUILayout& GUIElementBase::insertLayoutExplicitInternal(GUIElementBase* parent, UINT32 idx)
+	{
+		if (idx < 0 || idx >(UINT32)mChildren.size())
+			BS_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((UINT32)mChildren.size()));
+
+		GUILayoutExplicit* entry = bs_new<GUILayoutExplicit, PoolAlloc>();
 		entry->_setParent(parent);
 
 		mChildren.insert(mChildren.begin() + idx, entry);

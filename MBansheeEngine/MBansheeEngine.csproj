@@ -58,6 +58,7 @@
     <Compile Include="Font.cs" />
     <Compile Include="GameObject.cs" />
     <Compile Include="GUI\GUIArea.cs" />
+    <Compile Include="GUI\GUILayoutExplicit.cs" />
     <Compile Include="GUI\GUILayoutUtility.cs" />
     <Compile Include="GUI\GUIPanel.cs" />
     <Compile Include="GUI\GUIButton.cs" />
@@ -66,8 +67,10 @@
     <Compile Include="GUI\GUIElementStateStyle.cs" />
     <Compile Include="GUI\GUIElementStyle.cs" />
     <Compile Include="GUI\GUIListBox.cs" />
+    <Compile Include="GUI\GUIProgressBar.cs" />
     <Compile Include="GUI\GUIRenderTexture.cs" />
     <Compile Include="GUI\GUIScrollArea.cs" />
+    <Compile Include="GUI\GUISlider.cs" />
     <Compile Include="GUI\GUITextBox.cs" />
     <Compile Include="GUI\GUILabel.cs" />
     <Compile Include="GUI\GUILayout.cs" />

@@ -11,7 +11,10 @@ Test file/folder open/save dialog
 
 Add a simple way to create modal dialogs (ModalDialog in C#, similar to EditorWindow)
 
-Add C# wrappers for progress bar, slider, GUILayoutExplicit and GUIElement bounds and visible bounds (with ability to set non-visible bounds)
+Add C# wrappers GUIElement bounds and visible bounds (with ability to set non-visible bounds)
+
+Got a crash on shutdown that was caused by locking a mutex in an Event destructor. Event was Platform::onMouseCaptureChanged. 
+Issue happened when I closed the app via the X button (if that's relevant). It doesn't seem to happen always.
 
 <<<<<<Handles>>>>>>>>
 

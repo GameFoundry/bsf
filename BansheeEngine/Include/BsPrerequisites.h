@@ -59,6 +59,7 @@ namespace BansheeEngine
 	class GUILayout;
 	class GUILayoutX;
 	class GUILayoutY;
+	class GUILayoutExplicit;
 	class GUIFixedSpace;
 	class GUIFlexibleSpace;
 	class GUIInputCaret;
@@ -76,6 +77,10 @@ namespace BansheeEngine
 	class GUIContextMenu;
 	class GUIDropDownHitBox;
 	class RenderableElement;
+	class GUISlider;
+	class GUISliderVert;
+	class GUISliderHorz;
+	class GUIProgressBar;
 
 	class RenderableController;
 	class ProfilerOverlay;
