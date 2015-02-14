@@ -57,6 +57,7 @@ namespace BansheeEngine
 		bool createManagedInstance();
 		void releaseManagedInstance();
 
+		void initialize(ScriptModalWindow* parent);
 		void update();
 		void reloadMonoTypes(MonoClass* windowClass);
 		void triggerOnInitialize();

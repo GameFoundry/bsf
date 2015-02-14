@@ -47,6 +47,7 @@ namespace BansheeEngine
 
 		ManagedModalWindow* modalWindow = bs_new<ManagedModalWindow>(strNamespace, strTypeName);
 		ScriptModalWindow* nativeInstance = new (bs_alloc<ScriptModalWindow>()) ScriptModalWindow(modalWindow);
+		modalWindow->initialize(nativeInstance);
 
 		mono_runtime_object_init(modalWindow->getManagedInstance()); // Construct it
 		modalWindow->triggerOnInitialize();
@@ -157,7 +158,8 @@ namespace BansheeEngine
 
 	ManagedModalWindow::ManagedModalWindow(const String& ns, const String& type)
 		:ModalWindow(), mNamespace(ns), mTypename(type), mUpdateThunk(nullptr), mManagedInstance(nullptr), 
-		mOnInitializeThunk(nullptr), mOnDestroyThunk(nullptr), mOnWindowResizedMethod(nullptr), mGCHandle(0)
+		mOnInitializeThunk(nullptr), mOnDestroyThunk(nullptr), mOnWindowResizedMethod(nullptr), mGCHandle(0),
+		mScriptParent(nullptr)
 	{
 		createManagedInstance();
 	}
@@ -226,6 +228,11 @@ namespace BansheeEngine
 
 			MonoUtil::throwIfException(exception);
 		}
+	}
+
+	void ManagedModalWindow::initialize(ScriptModalWindow* parent)
+	{
+		mScriptParent = parent;
 	}
 
 	void ManagedModalWindow::update()

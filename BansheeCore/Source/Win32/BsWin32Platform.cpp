@@ -583,7 +583,7 @@ namespace BansheeEngine
 			{
 				if(!mData->mModalWindowStack.empty())
 				{
-					RenderWindowCore* curModalWindow = mData->mModalWindowStack.top();
+					RenderWindowCore* curModalWindow = mData->mModalWindowStack.back();
 
 					UINT64 curHwnd;
 					curModalWindow->getCustomAttribute("WINDOW", &curHwnd);
@@ -603,7 +603,24 @@ namespace BansheeEngine
 					}
 				}
 
-				mData->mModalWindowStack.push(newWindow);
+				mData->mModalWindowStack.push_back(newWindow);
+			}
+			else
+			{
+				// A non-modal window was opened while another modal one is open:
+				// immediately deactivate it and make sure the modal windows stay on top
+				if (!mData->mModalWindowStack.empty())
+				{
+					EnableWindow((HWND)hWnd, FALSE);
+
+					for (auto window : mData->mModalWindowStack)
+					{
+						UINT64 curHwnd;
+						window->getCustomAttribute("WINDOW", &curHwnd);
+
+						BringWindowToTop((HWND)curHwnd);
+					}
+				}
 			}
 
 			return 0;
@@ -630,31 +647,21 @@ namespace BansheeEngine
 				bool reenableWindows = false;
 				if (!mData->mModalWindowStack.empty())
 				{
-					if (mData->mModalWindowStack.top() == win) // This is the most common case, top-most modal was closed
+					// Start from back because the most common case is closing the top-most modal window
+					for (auto iter = mData->mModalWindowStack.rbegin(); iter != mData->mModalWindowStack.rend(); ++iter)
 					{
-						mData->mModalWindowStack.pop();
-					}
-					else // Possibly some other window was closed somehow, see if it was modal and remove from stack if it is
-					{
-						Stack<RenderWindowCore*> newStack;
-
-						while (!mData->mModalWindowStack.empty())
+						if (*iter == win)
 						{
-							RenderWindowCore* curWindow = mData->mModalWindowStack.top();
-							mData->mModalWindowStack.pop();
+							auto iterFwd = std::next(iter).base(); // erase doesn't accept reverse iter, so convert
 
-							if(curWindow == win)
-								continue;
-
-							newStack.push(curWindow);
+							mData->mModalWindowStack.erase(iterFwd);
+							break;
 						}
-
-						mData->mModalWindowStack = newStack;
 					}
 
 					if (!mData->mModalWindowStack.empty()) // Enable next modal window
 					{
-						RenderWindowCore* curModalWindow = mData->mModalWindowStack.top();
+						RenderWindowCore* curModalWindow = mData->mModalWindowStack.back();
 
 						UINT64 curHwnd;
 						curModalWindow->getCustomAttribute("WINDOW", &curHwnd);

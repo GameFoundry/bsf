@@ -95,6 +95,8 @@ namespace BansheeEditor
             SceneObject gizmoDbgObject = new SceneObject("GizmoDebug");
             gizmoDbgObject.AddComponent<DbgGizmoComponent>();
 
+            ModalWindow.Open<ProgressBar>();
+
             // DEBUG ONLY END
         }
 
