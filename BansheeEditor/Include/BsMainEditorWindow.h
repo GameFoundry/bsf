@@ -5,7 +5,7 @@
 
 namespace BansheeEngine
 {
-	class MainEditorWindow : public EditorWindowBase
+	class BS_ED_EXPORT MainEditorWindow : public EditorWindowBase
 	{
 	public:
 		~MainEditorWindow();

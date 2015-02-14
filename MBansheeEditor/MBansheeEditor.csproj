@@ -85,6 +85,8 @@
     <Compile Include="Inspector\InspectableVector4.cs" />
     <Compile Include="Inspector\Inspector.cs" />
     <Compile Include="Inspector\InspectorWindow.cs" />
+    <Compile Include="ModalWindow.cs" />
+    <Compile Include="ProgressBar.cs" />
     <Compile Include="Scene\SceneCamera.cs" />
     <Compile Include="Scene\SceneViewHandler.cs" />
     <Compile Include="Scene\SceneWindow.cs" />

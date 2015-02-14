@@ -5,7 +5,7 @@
 
 namespace BansheeEngine
 {
-	class EditorWindowBase
+	class BS_ED_EXPORT EditorWindowBase
 	{
 	public:
 		virtual ~EditorWindowBase();
@@ -37,8 +37,13 @@ namespace BansheeEngine
 		 */
 		RenderWindowPtr getRenderWindow() const { return mRenderWindow; }
 
+		/**
+		 * @brief	Returns the GUI widget used for displaying all GUI contents in the window.
+		 */
+		HGUIWidget getGUIWidget() const { return mGUI; }
+
 	protected:
-		EditorWindowBase();
+		EditorWindowBase(bool isModal = false);
 		EditorWindowBase(const RenderWindowPtr& renderWindow);
 
 		RenderWindowPtr mRenderWindow;

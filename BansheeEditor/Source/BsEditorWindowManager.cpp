@@ -1,5 +1,6 @@
 #include "BsEditorWindowManager.h"
 #include "BsEditorWindow.h"
+#include "BsModalWindow.h"
 #include "BsMainEditorWindow.h"
 
 namespace BansheeEngine
@@ -35,6 +36,15 @@ namespace BansheeEngine
 	EditorWindow* EditorWindowManager::create()
 	{
 		EditorWindow* newWindow = new (bs_alloc<EditorWindow>()) EditorWindow();
+		mEditorWindows.push_back(newWindow);
+
+		newWindow->initialize();
+		return newWindow;
+	}
+
+	ModalWindow* EditorWindowManager::createModal()
+	{
+		ModalWindow* newWindow = new (bs_alloc<ModalWindow>()) ModalWindow();
 		mEditorWindows.push_back(newWindow);
 
 		newWindow->initialize();

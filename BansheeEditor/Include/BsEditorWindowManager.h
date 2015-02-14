@@ -14,6 +14,7 @@ namespace BansheeEngine
 
 		MainEditorWindow* createMain(const RenderWindowPtr& parentRenderWindow);
 		EditorWindow* create();
+		ModalWindow* createModal();
 		void destroy(EditorWindowBase* window);
 
 		MainEditorWindow* getMainWindow() const { return mMainWindow; }

@@ -306,6 +306,7 @@
     <ClInclude Include="Include\BsHandleSliderLine.h" />
     <ClInclude Include="Include\BsHandleSliderPlane.h" />
     <ClInclude Include="Include\BsEditorSettings.h" />
+    <ClInclude Include="Include\BsModalWindow.h" />
     <ClInclude Include="Include\BsScenePicking.h" />
     <ClInclude Include="Include\BsProjectLibraryEntriesRTTI.h" />
     <ClInclude Include="Include\BsEditorPrerequisites.h" />
@@ -391,6 +392,7 @@
     <ClCompile Include="Source\BsHandleSliderPlane.cpp" />
     <ClCompile Include="Source\BsMainEditorWindow.cpp" />
     <ClCompile Include="Source\BsEditorSettings.cpp" />
+    <ClCompile Include="Source\BsModalWindow.cpp" />
     <ClCompile Include="Source\BsScenePicking.cpp" />
     <ClCompile Include="Source\BsProjectLibrary.cpp" />
     <ClCompile Include="Source\BsProjectLibraryEntries.cpp" />

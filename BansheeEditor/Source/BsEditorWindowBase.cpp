@@ -11,7 +11,7 @@
 
 namespace BansheeEngine
 {
-	EditorWindowBase::EditorWindowBase()
+	EditorWindowBase::EditorWindowBase(bool isModal)
 		:mOwnsRenderWindow(true)
 	{
 		RENDER_WINDOW_DESC renderWindowDesc;
@@ -20,6 +20,7 @@ namespace BansheeEngine
 		renderWindowDesc.fullscreen = false;
 		renderWindowDesc.border = WindowBorder::None;
 		renderWindowDesc.toolWindow = true;
+		renderWindowDesc.modal = isModal;
 
 		mRenderWindow = RenderWindow::create(renderWindowDesc, gCoreApplication().getPrimaryWindow());
 

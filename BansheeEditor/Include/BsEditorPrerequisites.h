@@ -27,6 +27,7 @@ namespace BansheeEngine
 	class EditorWidgetContainer;
 	class EditorWidgetManager;
 	class EditorWidgetLayout;
+	class ModalWindow;
 	class GUITabbedTitleBar;
 	class GUITabButton;
 	class GUIWindowDropArea;

@@ -16,7 +16,7 @@ namespace BansheeEngine
             Internal_CreateInstance(this, style, options);
         }
 
-        public GUIProgressBar(string style)
+        public GUIProgressBar(string style = "")
         {
             Internal_CreateInstance(this, style, new GUIOption[0]);
         }
