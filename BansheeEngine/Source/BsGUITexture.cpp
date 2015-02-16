@@ -27,7 +27,10 @@ namespace BansheeEngine
 			mUsingStyleTexture = false;
 		}
 		else
+		{
+			mActiveTexture = _getStyle()->normal.texture;
 			mUsingStyleTexture = true;
+		}
 	}
 
 	GUITexture::~GUITexture()
@@ -134,9 +137,6 @@ namespace BansheeEngine
 		mDesc.borderBottom = _getStyle()->border.bottom;
 		mDesc.transparent = mTransparent;
 
-		if(mUsingStyleTexture)
-			mActiveTexture = _getStyle()->normal.texture;
-
 		float optimalWidth = 0.0f;
 		float optimalHeight = 0.0f;
 		if (SpriteTexture::checkIsLoaded(mActiveTexture))
@@ -199,6 +199,12 @@ namespace BansheeEngine
 	void GUITexture::updateClippedBounds()
 	{
 		mClippedBounds = mImageSprite->getBounds(mOffset, mClipRect);
+	}
+
+	void GUITexture::styleUpdated()
+	{
+		if (mUsingStyleTexture)
+			mActiveTexture = _getStyle()->normal.texture;
 	}
 
 	Vector2I GUITexture::_getOptimalSize() const

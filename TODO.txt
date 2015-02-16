@@ -9,9 +9,8 @@ Possibly set up automatic refresh in debug mode after initialization? As an ad-h
 
 Test file/folder open/save dialog
 
-Add a simple way to create modal dialogs (ModalDialog in C#, similar to EditorWindow)
-Modal window needs a title bar probably (with an X button, which would be optional)
- - When I add it make sure to update GUIPanel area in ScriptModalWindow
+Check why focus highlight on windows doesn't work
+Elements in GUIScrollArea will not have valid bounds calculated using GUILayoutUtility::calcBounds
 
 C#:
 Dialog.Show(title, text, btn1 text, btn1 callback, btn2 text, btn2 callback, btn3 text, btn3 callback)

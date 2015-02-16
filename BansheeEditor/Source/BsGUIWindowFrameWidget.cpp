@@ -13,8 +13,8 @@ namespace BansheeEngine
 {
 	const UINT32 WindowFrameWidget::RESIZE_BORDER_WIDTH = 3;
 
-	WindowFrameWidget::WindowFrameWidget(const HSceneObject& parent, Viewport* target, RenderWindow* parentWindow, const GUISkin& skin)
-		:GUIWidget(parent, target), mWindowFrameArea(nullptr), mParentWindow(parentWindow)
+	WindowFrameWidget::WindowFrameWidget(const HSceneObject& parent, bool allowResize, Viewport* target, RenderWindow* parentWindow, const GUISkin& skin)
+		:GUIWidget(parent, target), mWindowFrameArea(nullptr), mParentWindow(parentWindow), mAllowResize(allowResize)
 	{
 		setSkin(skin);
 
@@ -61,6 +61,9 @@ namespace BansheeEngine
 
 	void WindowFrameWidget::refreshNonClientAreas() const
 	{
+		if (!mAllowResize)
+			return;
+
 		INT32 x = mWindowFrameArea->x();
 		INT32 y = mWindowFrameArea->y();
 

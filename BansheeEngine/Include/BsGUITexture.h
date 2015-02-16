@@ -200,6 +200,11 @@ namespace BansheeEngine
 		 */
 		virtual void updateClippedBounds();
 
+		/**
+		 * @copydoc GUIElement::styleUpdated
+		 */
+		virtual void styleUpdated();
+
 		ImageSprite* mImageSprite;
 		HSpriteTexture mActiveTexture;
 		IMAGE_SPRITE_DESC mDesc;

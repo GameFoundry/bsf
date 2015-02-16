@@ -8,6 +8,7 @@
 #include "BsMonoUtil.h"
 #include "BsMonoAssembly.h"
 #include "BsScriptObjectManager.h"
+#include "BsScriptHString.h"
 
 using namespace std::placeholders;
 
@@ -34,36 +35,48 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_InitializeGUIPanel", &ScriptModalWindow::internal_initializeGUIPanel);
 		metaData.scriptClass->addInternalCall("Internal_GetWidth", &ScriptModalWindow::internal_getWidth);
 		metaData.scriptClass->addInternalCall("Internal_GetHeight", &ScriptModalWindow::internal_getHeight);
+		metaData.scriptClass->addInternalCall("Internal_SetWidth", &ScriptModalWindow::internal_setWidth);
+		metaData.scriptClass->addInternalCall("Internal_SetHeight", &ScriptModalWindow::internal_setHeight);
+		metaData.scriptClass->addInternalCall("Internal_SetTitle", &ScriptModalWindow::internal_setTitle);
 
 		onInitializedInternalMethod = metaData.scriptClass->getMethod("OnInitializeInternal", 0);
 		onDestroyInternalMethod = metaData.scriptClass->getMethod("OnDestroyInternal", 0);
 	}
 
-	MonoObject* ScriptModalWindow::internal_createInstance(MonoString* ns, MonoString* typeName)
+	void ScriptModalWindow::internal_createInstance(MonoObject* instance, bool allowCloseButton)
 	{
-		String strTypeName = toString(MonoUtil::monoToWString(typeName));
-		String strNamespace = toString(MonoUtil::monoToWString(ns));
-		String fullName = strNamespace + "." + strTypeName;
-
-		ManagedModalWindow* modalWindow = bs_new<ManagedModalWindow>(strNamespace, strTypeName);
+		ManagedModalWindow* modalWindow = bs_new<ManagedModalWindow>(allowCloseButton, instance);
 		ScriptModalWindow* nativeInstance = new (bs_alloc<ScriptModalWindow>()) ScriptModalWindow(modalWindow);
 		modalWindow->initialize(nativeInstance);
-
-		mono_runtime_object_init(modalWindow->getManagedInstance()); // Construct it
 		modalWindow->triggerOnInitialize();
-
-		return modalWindow->getManagedInstance();
 	}
 
 	void ScriptModalWindow::internal_close(ScriptModalWindow* thisPtr)
 	{
-		if (thisPtr->mModalWindow == nullptr)
+		thisPtr->closeWindow();
+	}
+
+	void ScriptModalWindow::internal_setTitle(ScriptModalWindow* thisPtr, MonoObject* title)
+	{
+		HString titleStr = HString::dummy();
+		if (title != nullptr)
+		{
+			ScriptHString* textScript = ScriptHString::toNative(title);
+			titleStr = textScript->getInternalValue();
+		}
+
+		thisPtr->mModalWindow->setTitle(titleStr);
+	}
+
+	void ScriptModalWindow::closeWindow()
+	{
+		if (mModalWindow == nullptr)
 			return;
 
-		thisPtr->mModalWindow->triggerOnDestroy();
-		thisPtr->mModalWindow->releaseManagedInstance();
-		thisPtr->mModalWindow->close();
-		thisPtr->mModalWindow = nullptr;
+		mModalWindow->triggerOnDestroy();
+		mModalWindow->releaseManagedInstance();
+		mModalWindow->close();
+		mModalWindow = nullptr;
 	}
 
 	void ScriptModalWindow::_onManagedInstanceDeleted()
@@ -144,29 +157,47 @@ namespace BansheeEngine
 		return 0;
 	}
 
+	void ScriptModalWindow::internal_setWidth(ScriptModalWindow* thisPtr, UINT32 value)
+	{
+		if (thisPtr->mModalWindow != nullptr)
+			thisPtr->mModalWindow->setSize(value, thisPtr->mModalWindow->getHeight());
+	}
+
+	void ScriptModalWindow::internal_setHeight(ScriptModalWindow* thisPtr, UINT32 value)
+	{
+		if (thisPtr->mModalWindow != nullptr)
+			thisPtr->mModalWindow->setSize(thisPtr->mModalWindow->getWidth(), value);
+	}
+
 	void ScriptModalWindow::internal_initializeGUIPanel(ScriptModalWindow* thisPtr, MonoObject* panel)
 	{
 		ScriptGUIPanel* scriptGUIPanel = ScriptGUIPanel::toNative(panel);
 		thisPtr->mGUIPanel = scriptGUIPanel;
 
-		// TODO - Handle TitleBar when I add it
-		scriptGUIPanel->setParentArea(0, 0,
-			thisPtr->mModalWindow->getWidth(), thisPtr->mModalWindow->getHeight());
-
+		Rect2I contentArea = thisPtr->mModalWindow->getContentArea();
+		scriptGUIPanel->setParentArea(contentArea.x, contentArea.y, contentArea.width, contentArea.height);
 		scriptGUIPanel->setParentWidget(thisPtr->mModalWindow->getGUIWidget().get());
 	}
 
-	ManagedModalWindow::ManagedModalWindow(const String& ns, const String& type)
-		:ModalWindow(), mNamespace(ns), mTypename(type), mUpdateThunk(nullptr), mManagedInstance(nullptr), 
+	ManagedModalWindow::ManagedModalWindow(bool allowCloseButton, MonoObject* managedInstance)
+		:ModalWindow(HString::dummy(), allowCloseButton), mUpdateThunk(nullptr), mManagedInstance(managedInstance),
 		mOnInitializeThunk(nullptr), mOnDestroyThunk(nullptr), mOnWindowResizedMethod(nullptr), mGCHandle(0),
 		mScriptParent(nullptr)
 	{
-		createManagedInstance();
+		mGCHandle = mono_gchandle_new(mManagedInstance, false);
+
+		::MonoClass* rawMonoClass = mono_object_get_class(mManagedInstance);
+		MonoClass* monoClass = MonoManager::instance().findClass(rawMonoClass);
+
+		mNamespace = monoClass->getNamespace();
+		mTypename = monoClass->getTypeName();
+
+		reloadMonoTypes(monoClass);
 	}
 
 	ManagedModalWindow::~ManagedModalWindow()
 	{
-
+		assert(mGCHandle == 0); // We expect "close" to be called either from C++ or C# before destruction
 	}
 
 	bool ManagedModalWindow::createManagedInstance()
@@ -254,14 +285,19 @@ namespace BansheeEngine
 		UINT32 width = getWidth();
 		UINT32 height = getHeight();
 
-		// TODO - Handle TitleBar when I add it
-		mScriptParent->mGUIPanel->setParentArea(0, 0, width, height);
+		Rect2I contentArea = getContentArea();
+		mScriptParent->mGUIPanel->setParentArea(contentArea.x, contentArea.y, contentArea.width, contentArea.height);
 
 		if (mOnWindowResizedMethod != nullptr && mManagedInstance != nullptr)
 		{
 			void* params[] = { &width, &height };
 			mOnWindowResizedMethod->invokeVirtual(mManagedInstance, params);
 		}
+	}
+
+	void ManagedModalWindow::close()
+	{
+		mScriptParent->closeWindow();
 	}
 
 	void ManagedModalWindow::reloadMonoTypes(MonoClass* windowClass)

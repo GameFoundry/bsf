@@ -52,6 +52,7 @@ namespace BansheeEngine
 		HCamera mCamera;
 		GameObjectHandle<WindowFrameWidget> mWindowFrame;
 		bool mOwnsRenderWindow;
+		bool mIsModal;
 
 		void construct(const RenderWindowPtr& renderWindow);
 		virtual void initialize();

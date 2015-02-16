@@ -26,11 +26,14 @@ namespace BansheeEngine
 
 		ScriptModalWindow(ManagedModalWindow* editorWidget);
 
-		static MonoObject* internal_createInstance(MonoString* ns, MonoString* typeName);
+		static void internal_createInstance(MonoObject* instance, bool allowCloseButton);
 		static void internal_close(ScriptModalWindow* thisPtr);
 		static UINT32 internal_getWidth(ScriptModalWindow* thisPtr);
 		static UINT32 internal_getHeight(ScriptModalWindow* thisPtr);
+		static void internal_setWidth(ScriptModalWindow* thisPtr, UINT32 value);
+		static void internal_setHeight(ScriptModalWindow* thisPtr, UINT32 value);
 		static void internal_initializeGUIPanel(ScriptModalWindow* thisPtr, MonoObject* panel);
+		static void internal_setTitle(ScriptModalWindow* thisPtr, MonoObject* title);
 
 		void onAssemblyRefreshStarted();
 
@@ -38,6 +41,7 @@ namespace BansheeEngine
 		ScriptObjectBackup beginRefresh();
 		void endRefresh(const ScriptObjectBackup& backupData);
 		MonoObject* _createManagedInstance(bool construct);
+		void closeWindow();
 
 		ManagedModalWindow* mModalWindow;
 		ScriptGUIPanel* mGUIPanel;
@@ -51,7 +55,7 @@ namespace BansheeEngine
 	class BS_SCR_BED_EXPORT ManagedModalWindow : public ModalWindow
 	{
 	public:
-		ManagedModalWindow(const String& ns, const String& type);
+		ManagedModalWindow(bool allowCloseButton, MonoObject* managedInstance);
 		~ManagedModalWindow();
 
 		bool createManagedInstance();
@@ -66,6 +70,7 @@ namespace BansheeEngine
 		MonoObject* getManagedInstance() const { return mManagedInstance; }
 	protected:
 		virtual void resized();
+		virtual void close();
 
 	private:
 		friend class ScriptModalWindow;

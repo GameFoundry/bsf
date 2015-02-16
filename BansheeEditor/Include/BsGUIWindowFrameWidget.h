@@ -9,12 +9,13 @@ namespace BansheeEngine
 	class WindowFrameWidget : public GUIWidget
 	{
 	public:
-		WindowFrameWidget(const HSceneObject& parent, Viewport* target, RenderWindow* ownerWindow, const GUISkin& skin);
+		WindowFrameWidget(const HSceneObject& parent, bool allowResize, Viewport* target, RenderWindow* ownerWindow, const GUISkin& skin);
 		virtual ~WindowFrameWidget();
 
 	protected:
 		static const UINT32 RESIZE_BORDER_WIDTH;
 
+		bool mAllowResize;
 		GUIArea* mWindowFrameArea;
 		RenderWindow* mParentWindow;
 		GUIWindowFrame* mWindowFrame;

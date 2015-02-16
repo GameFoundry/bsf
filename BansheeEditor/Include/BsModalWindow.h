@@ -11,16 +11,25 @@ namespace BansheeEngine
 		virtual ~ModalWindow();
 
 		virtual void update();
-
-		static ModalWindow* create();
+		virtual void close();
+		void setTitle(const HString& title);
 
 	protected:
 		friend class EditorWindowManager;
 
-		ModalWindow();
+		ModalWindow(const HString& title, bool hasCloseButton = false);
+		Rect2I getContentArea() const;
 
 		virtual void resized();
 	private:
 		void updateSize();
+		UINT32 getTitleBarHeight() const;
+
+		GUIArea* mTitleBarArea;
+		GUIArea* mTitleBarBgArea;
+
+		GUILabel* mTitle;
+		GUIButton* mCloseButton;
+		GUITexture* mTitleBarBg;
 	};
 }

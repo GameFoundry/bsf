@@ -7,14 +7,28 @@ namespace BansheeEditor
 {
     public class ModalWindow : ScriptObject
     {
-        public int Width { get { return Internal_GetWidth(mCachedPtr); } }
-        public int Height { get { return Internal_GetHeight(mCachedPtr); } }
+        public int Width
+        {
+            get { return Internal_GetWidth(mCachedPtr); }
+            set { Internal_SetWidth(mCachedPtr, value); }
+        }
+
+        public int Height
+        {
+            get { return Internal_GetHeight(mCachedPtr); }
+            set { Internal_SetHeight(mCachedPtr, value); }
+        }
 
         protected GUIPanel GUI;
 
-        public static T Open<T>() where T : ModalWindow
+        protected ModalWindow()
         {
-            return (T)Internal_CreateInstance(typeof(T).Namespace, typeof(T).Name);
+            Internal_CreateInstance(this, false);
+        }
+
+        protected ModalWindow(bool allowCloseButton)
+        {
+            Internal_CreateInstance(this, allowCloseButton);
         }
 
         private void OnInitializeInternal()
@@ -41,11 +55,19 @@ namespace BansheeEditor
             Internal_Close(mCachedPtr);
         }
 
+        public LocString Title
+        {
+            set { Internal_SetTitle(mCachedPtr, value); }
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern ModalWindow Internal_CreateInstance(string ns, string typeName);
+        private static extern void Internal_CreateInstance(ModalWindow instance, bool allowCloseButton);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_Close(IntPtr nativeInstance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetTitle(IntPtr nativeInstance, LocString title);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_InitializeGUIPanel(IntPtr nativeInstance, GUIPanel panel);
@@ -57,6 +79,12 @@ namespace BansheeEditor
         private static extern int Internal_GetWidth(IntPtr nativeInstance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern int Internal_SetWidth(IntPtr nativeInstance, int value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern int Internal_GetHeight(IntPtr nativeInstance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern int Internal_SetHeight(IntPtr nativeInstance, int value);
     }
 }

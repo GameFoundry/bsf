@@ -12,7 +12,7 @@
 namespace BansheeEngine
 {
 	EditorWindowBase::EditorWindowBase(bool isModal)
-		:mOwnsRenderWindow(true)
+		:mOwnsRenderWindow(true), mIsModal(isModal)
 	{
 		RENDER_WINDOW_DESC renderWindowDesc;
 		renderWindowDesc.videoMode = VideoMode(200, 200);
@@ -74,7 +74,7 @@ namespace BansheeEngine
 
 		mGUI->setSkin(BuiltinEditorResources::instance().getSkin());
 
-		mWindowFrame = mSceneObject->addComponent<WindowFrameWidget>(mCamera->getViewport().get(), renderWindow.get(), BuiltinEditorResources::instance().getSkin());
+		mWindowFrame = mSceneObject->addComponent<WindowFrameWidget>(!mIsModal, mCamera->getViewport().get(), renderWindow.get(), BuiltinEditorResources::instance().getSkin());
 		mWindowFrame->setDepth(129);
 
 		mResizedConn = renderWindow->onResized.connect(std::bind(&EditorWindowBase::resized, this));
