@@ -15,33 +15,34 @@ namespace BansheeEngine
 		:EditorWindowBase(true), mTitleBarArea(nullptr), mTitleBarBgArea(nullptr), 
 		mCloseButton(nullptr), mTitleBarBg(nullptr), mTitle(nullptr)
 	{
-		mTitleBarBgArea = GUIArea::createStretchedXY(*mGUI, 1, 1, 1, 1, 1);
+		mTitleBarBgArea = GUIArea::createStretchedXY(*mGUI, 1, 1, 1, 1, std::numeric_limits<UINT16>::max() - 1);
 		mTitleBarArea = GUIArea::createStretchedXY(*mGUI, 1, 1, 1, 1, 0);
 
 		mTitleBarBg = GUITexture::create(GUIOptions(GUIOption::flexibleWidth()), "TitleBarBackground");
 		mTitle = GUILabel::create(title);
 
-		GUILayout& bgLayout = mTitleBarBgArea->getLayout().addLayoutX();
+		GUILayout& bgLayout = mTitleBarBgArea->getLayout().addLayoutY();
 		bgLayout.addElement(mTitleBarBg);
 		bgLayout.addFlexibleSpace();
 
-		GUILayout& contentLayout = mTitleBarArea->getLayout().addLayoutX();
-		contentLayout.addFlexibleSpace();
-		contentLayout.addElement(mTitle);
-		contentLayout.addFlexibleSpace();
+		GUILayout& contentLayoutY = mTitleBarArea->getLayout().addLayoutY();
+		GUILayout& contentLayoutX = contentLayoutY.addLayoutX();
+		contentLayoutX.addFlexibleSpace();
+		GUILayout& titleLayout = contentLayoutX.addLayoutY();
+		titleLayout.addFlexibleSpace();
+		titleLayout.addElement(mTitle);
+		titleLayout.addFlexibleSpace();
+		contentLayoutX.addFlexibleSpace();
 
 		if (hasCloseButton)
 		{
 			mCloseButton = GUIButton::create(HString(L""), "WinCloseBtn");
-
-			GUILayout& contentLayout = mTitleBarArea->getLayout().addLayoutX();
-			contentLayout.addFlexibleSpace();
-			contentLayout.addElement(mCloseButton);
+			contentLayoutX.addElement(mCloseButton);
 			
 			mCloseButton->onClick.connect(std::bind(&ModalWindow::close, this));
 		}
 
-		mTitleBarArea->getLayout().addFlexibleSpace();
+		contentLayoutY.addFlexibleSpace();
 		
 		updateSize();
 	}
