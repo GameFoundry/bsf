@@ -8,7 +8,7 @@ namespace BansheeEditor
         private static ProgressBar instance;
 
         private GUIProgressBar progressBar;
-        private LocString message;
+        private GUILabel messageLabel;
 
         public float Percent
         {
@@ -26,12 +26,17 @@ namespace BansheeEditor
             if (instance == null)
                 instance = new ProgressBar();
 
-            instance.Width = 250;
-            instance.Height = 75;
+            instance.Initialize(title, message, percent);
+        }
 
-            instance.Title = title;
-            instance.Percent = percent;
-            instance.message = message;
+        private void Initialize(LocString title, LocString message, float percent)
+        {
+            Width = 250;
+            Height = 75;
+
+            Title = title;
+            Percent = percent;
+            messageLabel.SetContent(message);
         }
 
         public static void Hide()
@@ -49,13 +54,14 @@ namespace BansheeEditor
         private void OnInitialize()
         {
             progressBar = new GUIProgressBar();
+            messageLabel = new GUILabel("");
 
             GUILayoutY layoutY = GUI.layout.AddLayoutY();
 
             layoutY.AddFlexibleSpace();
             GUILayoutX messageLayout = layoutY.AddLayoutX();
             messageLayout.AddFlexibleSpace();
-            messageLayout.AddElement(new GUILabel(message));
+            messageLayout.AddElement(messageLabel);
             messageLayout.AddFlexibleSpace();
 
             layoutY.AddSpace(10);
