@@ -27,5 +27,14 @@ namespace BansheeEngine
 		// of such custom container elements like tree view don't have method for calculating 
 		// element bounds implemented
 		static Rect2I calcBounds(const GUIElementBase* elem);
+
+		/**
+		 * @brief	Calculates the actual size of the layout taken up by all of its elements.
+		 *			
+		 * @note	Actual size means the bounds might be smaller or larger than the layout area itself.
+		 *			If larger that means certain portions of the child elements will be clipped, and if
+		 *			smaller certain portions of the layout area will be empty.
+		 */
+		static Vector2I calcActualSize(UINT32 width, UINT32 height, const GUILayout* layout);
 	};
 }

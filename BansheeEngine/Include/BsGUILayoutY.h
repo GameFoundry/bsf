@@ -30,6 +30,11 @@ namespace BansheeEngine
 		 * @copydoc	GUILayout::_getElementAreas
 		 */
 		void _getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements, const Vector<Vector2I>& optimalSizes) const;
+
+		/**
+		 * @copydoc	GUILayout::_calcActualSize
+		 */
+		virtual Vector2I _calcActualSize(Rect2I* elementAreas, UINT32 numElements) const;
 	protected:
 		/**
 		 * @brief	Positions/size all child layout elements based on the provided settings and their (previously calculated) optimal sizes.

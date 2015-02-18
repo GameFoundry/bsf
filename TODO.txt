@@ -16,7 +16,6 @@ C#:
 Dialog.Show(title, text, btn1 text, btn1 callback, btn2 text, btn2 callback, btn3 text, btn3 callback)
 ProgressBar.Show(float percent) / ProgressBar.Hide()
 
-
 Add C# wrappers GUIElement bounds and visible bounds (with ability to set non-visible bounds)
 
 Got a crash on shutdown that was caused by locking a mutex in an Event destructor. Event was Platform::onMouseCaptureChanged. 

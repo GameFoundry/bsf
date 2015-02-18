@@ -152,6 +152,15 @@ namespace BansheeEngine
 		 */
 		GUIArea* _getParentGUIArea() const { return mParentGUIArea; }
 
+		/**
+		 * @brief	Calculates the actual size of the layout taken up by all of its elements.
+		 *			
+		 * @note	Actual size means the bounds might be smaller or larger than the layout area itself.
+		 *			If larger that means certain portions of the child elements will be clipped, and if
+		 *			smaller certain portions of the layout area will be empty.
+		 */
+		virtual Vector2I _calcActualSize(Rect2I* elementAreas, UINT32 numElements) const = 0;
+
 	protected:
 		GUIArea* mParentGUIArea;
 

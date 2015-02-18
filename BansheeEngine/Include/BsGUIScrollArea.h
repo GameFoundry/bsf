@@ -170,6 +170,19 @@ namespace BansheeEngine
 		void _updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
 			Rect2I clipRect, UINT8 widgetDepth, UINT16 areaDepth);
 
+		/**
+		 * @copydoc	GUIElementContainer::_getElementAreas
+		 */
+		void _getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements, const Vector<Vector2I>& optimalSizes) const;
+
+		/**
+		 * @copydoc	GUIElementContainer::_getElementAreas
+		 *
+		 * @note	Also calculates some scroll area specific values.
+		 */
+		void _getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements, 
+			const Vector<Vector2I>& optimalSizes, Vector2I& visibleSize, Vector2I& contentSize) const;
+
 		ScrollBarType mVertBarType;
 		ScrollBarType mHorzBarType;
 		String mScrollBarStyle;
@@ -181,8 +194,8 @@ namespace BansheeEngine
 		float mVertOffset;
 		float mHorzOffset;
 
-		UINT32 mClippedContentWidth, mClippedContentHeight;
-		UINT32 mContentWidth, mContentHeight;
+		Vector2I mVisibleSize;
+		Vector2I mContentSize;
 
 		static const UINT32 ScrollBarWidth;
 		static const UINT32 MinHandleSize;

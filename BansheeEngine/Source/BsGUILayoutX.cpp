@@ -402,9 +402,8 @@ namespace BansheeEngine
 
 		// Now that we have all the areas, actually assign them
 		UINT32 childIdx = 0;
+		Rect2I* actualSizes = elementAreas; // We re-use the same array
 
-		mActualWidth = 0;
-		mActualHeight = 0;
 		for(auto& child : mChildren)
 		{
 			Rect2I childArea = elementAreas[childIdx];
@@ -427,9 +426,9 @@ namespace BansheeEngine
 				newClipRect.clip(clipRect);
 				element->_updateLayoutInternal(offset.x, offset.y, childArea.width, childArea.height, newClipRect, widgetDepth, areaDepth);
 
-				mActualHeight = std::max(mActualHeight, (UINT32)childArea.height);
+				actualSizes[childIdx].height = childArea.height + child->_getPadding().top + child->_getPadding().bottom;
 			}
-			else if(child->_getType() == GUIElementBase::Type::Layout)
+			else if (child->_getType() == GUIElementBase::Type::Layout)
 			{
 				GUILayout* layout = static_cast<GUILayout*>(child);
 
@@ -437,17 +436,36 @@ namespace BansheeEngine
 				newClipRect.clip(clipRect);
 				layout->_updateLayoutInternal(childArea.x, childArea.y, childArea.width, height, newClipRect, widgetDepth, areaDepth);
 
-				UINT32 childHeight = layout->_getActualHeight();
-				mActualHeight = std::max(mActualHeight, childHeight);
+				actualSizes[childIdx].height = layout->_getActualHeight();
 			}
+			else
+				actualSizes[childIdx].height = childArea.height;
 
-			mActualWidth += childArea.width + child->_getPadding().left + child->_getPadding().right;
+			actualSizes[childIdx].x = childArea.width + child->_getPadding().left + child->_getPadding().right;
 			childIdx++;
 		}
+
+		Vector2I actualSize = _calcActualSize(actualSizes, numElements);
+		mActualWidth = (UINT32)actualSize.x;
+		mActualHeight = (UINT32)actualSize.y;
 
 		if(elementAreas != nullptr)
 			stackDeallocLast(elementAreas);
 
 		_markAsClean();
+	}
+
+	Vector2I GUILayoutX::_calcActualSize(Rect2I* elementAreas, UINT32 numElements) const
+	{
+		Vector2I actualArea;
+		for (UINT32 i = 0; i < numElements; i++)
+		{
+			Rect2I childArea = elementAreas[i];
+
+			actualArea.x = childArea.width;
+			actualArea.y += std::max(actualArea.x, childArea.width);
+		}
+
+		return actualArea;
 	}
 }

@@ -55,8 +55,6 @@ namespace BansheeEngine
 	{
 		UINT32 childIdx = 0;
 
-		mActualWidth = width;
-		mActualHeight = height;
 		for (auto& child : mChildren)
 		{
 			if (child->_getType() == GUIElementBase::Type::Element)
@@ -83,6 +81,14 @@ namespace BansheeEngine
 			childIdx++;
 		}
 
+		mActualWidth = 0; // Not relevant
+		mActualHeight = 0;
+
 		_markAsClean();
+	}
+
+	Vector2I GUILayoutExplicit::_calcActualSize(Rect2I* elementAreas, UINT32 numElements) const
+	{
+		return Vector2I(0, 0); // Not relevant
 	}
 }
