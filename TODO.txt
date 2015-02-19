@@ -7,8 +7,6 @@ Possibly set up automatic refresh in debug mode after initialization? As an ad-h
 
 <<<<<Simple stuff>>>>>>
 
-Test file/folder open/save dialog
-
 C#:
 Dialog.Show(title, text, btn1 text, btn1 callback, btn2 text, btn2 callback, btn3 text, btn3 callback)
 

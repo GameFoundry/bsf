@@ -65,10 +65,6 @@ namespace BansheeEngine
 	{
 		signal(SIGABRT, handleAbort);
 
-		Vector<Path> outPaths;
-		Platform::openBrowseDialog((FileDialogType)((UINT32)FileDialogType::OpenFile | (UINT32)FileDialogType::Multiselect), "D:\\Downloads", L"*.exe", outPaths);
-
-
 		UINT32 numWorkerThreads = BS_THREAD_HARDWARE_CONCURRENCY - 1; // Number of cores while excluding current thread.
 
 		Platform::_startUp();

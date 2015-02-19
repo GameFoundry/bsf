@@ -236,6 +236,7 @@
     <ClInclude Include="Include\BsGUIGameObjectField.h" />
     <ClInclude Include="Include\BsGUIPanelContainer.h" />
     <ClInclude Include="Include\BsGUIResourceField.h" />
+    <ClInclude Include="Include\BsScriptBrowseDialog.h" />
     <ClInclude Include="Include\BsScriptEditorPrerequisites.h" />
     <ClInclude Include="Include\BsScriptEditorSettings.h" />
     <ClInclude Include="Include\BsScriptEditorUtility.h" />
@@ -272,6 +273,7 @@
     <ClCompile Include="Source\BsGUIGameObjectField.cpp" />
     <ClCompile Include="Source\BsGUIPanelContainer.cpp" />
     <ClCompile Include="Source\BsGUIResourceField.cpp" />
+    <ClCompile Include="Source\BsScriptBrowseDialog.cpp" />
     <ClCompile Include="Source\BsScriptEditorPlugin.cpp" />
     <ClCompile Include="Source\BsScriptEditorSettings.cpp" />
     <ClCompile Include="Source\BsScriptEditorUtility.cpp" />
