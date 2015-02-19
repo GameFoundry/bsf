@@ -52,7 +52,7 @@ namespace BansheeEngine
 		OpenFile = 0x0, 
 		OpenFolder = 0x1, 
 		Save = 0x2,
-		Multiselect = 0x00001,
+		Multiselect = 0x10000,
 		TypeMask = 0xFFFF
 	};
 

@@ -32,7 +32,8 @@ namespace BansheeEngine
 
 	void setDefaultPath(IFileDialog* dialog, const Path& defaultPath)
 	{
-		const wchar_t* defaultPathW = defaultPath.toWString().c_str();
+		WString pathStr = defaultPath.toWString();
+		const wchar_t* defaultPathW = pathStr.c_str();
 
 		IShellItem* folder;
 		HRESULT result = SHCreateItemFromParsingName(defaultPathW, NULL, IID_PPV_ARGS(&folder));
@@ -119,13 +120,15 @@ namespace BansheeEngine
 			if (isMultiselect)
 			{
 				// Get file names
-				IFileOpenDialog* fileOpenDialog = static_cast<IFileOpenDialog*>(fileDialog);
-
+				IFileOpenDialog* fileOpenDialog;
+				fileDialog->QueryInterface(IID_IFileOpenDialog, (void**)&fileOpenDialog);
+				
 				IShellItemArray* shellItems = nullptr;
 				fileOpenDialog->GetResults(&shellItems);
 
 				getPaths(shellItems, paths);
 				shellItems->Release();
+				fileOpenDialog->Release();
 			}
 			else
 			{
