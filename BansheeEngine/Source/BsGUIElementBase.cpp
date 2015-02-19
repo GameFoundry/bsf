@@ -6,11 +6,13 @@
 #include "BsGUIElement.h"
 #include "BsException.h"
 #include "BsGUIWidget.h"
+#include "BsGUILayoutUtility.h"
 
 namespace BansheeEngine
 {
 	GUIElementBase::GUIElementBase()
-		:mIsDirty(true), mParentElement(nullptr), mIsDisabled(false), mParentWidget(nullptr)
+		:mIsDirty(true), mParentElement(nullptr), mIsDisabled(false), 
+		mParentWidget(nullptr), mWidth(0), mHeight(0)
 	{
 
 	}
@@ -35,6 +37,37 @@ namespace BansheeEngine
 				bs_delete(child);
 			}
 		}
+	}
+
+	void GUIElementBase::setOffset(const Vector2I& offset)
+	{
+		mOffset = offset;
+	}
+
+	void GUIElementBase::setWidth(UINT32 width)
+	{
+		if (mWidth != width)
+			markContentAsDirty();
+
+		mWidth = width;
+	}
+
+	void GUIElementBase::setHeight(UINT32 height)
+	{
+		if (mHeight != height)
+			markContentAsDirty();
+
+		mHeight = height;
+	}
+
+	Rect2I GUIElementBase::getBounds() const
+	{
+		return GUILayoutUtility::calcBounds(this);
+	}
+
+	Rect2I GUIElementBase::getVisibleBounds() const
+	{
+		return getBounds();
 	}
 
 	bool GUIElementBase::_isContentDirty() const

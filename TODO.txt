@@ -9,12 +9,8 @@ Possibly set up automatic refresh in debug mode after initialization? As an ad-h
 
 Test file/folder open/save dialog
 
-Check why focus highlight on windows doesn't work
-Elements in GUIScrollArea will not have valid bounds calculated using GUILayoutUtility::calcBounds
-
 C#:
 Dialog.Show(title, text, btn1 text, btn1 callback, btn2 text, btn2 callback, btn3 text, btn3 callback)
-ProgressBar.Show(float percent) / ProgressBar.Hide()
 
 Add C# wrappers GUIElement bounds and visible bounds (with ability to set non-visible bounds)
 

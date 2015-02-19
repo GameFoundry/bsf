@@ -9,7 +9,7 @@
 namespace BansheeEngine
 {
 	GUIElement::GUIElement(const String& styleName, const GUILayoutOptions& layoutOptions)
-		:mLayoutOptions(layoutOptions), mWidth(0), mHeight(0), mDepth(0), mStyle(nullptr),
+		:mLayoutOptions(layoutOptions), mDepth(0), mStyle(nullptr),
 		mIsDestroyed(false), mStyleName(styleName)
 	{
 		_refreshStyle();
@@ -27,6 +27,33 @@ namespace BansheeEngine
 	void GUIElement::updateRenderElementsInternal()
 	{
 		updateClippedBounds();
+	}
+
+	void GUIElement::setOffset(const Vector2I& offset)
+	{
+		if (mOffset != offset)
+		{
+			markMeshAsDirty();
+
+			mOffset = offset;
+			updateClippedBounds();
+		}
+	}
+
+	void GUIElement::setWidth(UINT32 width)
+	{
+		if (mWidth != width)
+			markContentAsDirty();
+
+		mWidth = width;
+	}
+
+	void GUIElement::setHeight(UINT32 height)
+	{
+		if (mHeight != height)
+			markContentAsDirty();
+
+		mHeight = height;
 	}
 
 	void GUIElement::setLayoutOptions(const GUILayoutOptions& layoutOptions) 
@@ -88,33 +115,6 @@ namespace BansheeEngine
 	{
 		mDepth |= depth;
 		markMeshAsDirty();
-	}
-
-	void GUIElement::setOffset(const Vector2I& offset) 
-	{ 
-		if(mOffset != offset)
-		{
-			markMeshAsDirty();
-
-			mOffset = offset;
-			updateClippedBounds();
-		}
-	}
-
-	void GUIElement::setWidth(UINT32 width) 
-	{ 
-		if(mWidth != width)
-			markContentAsDirty();
-
-		mWidth = width; 
-	}
-
-	void GUIElement::setHeight(UINT32 height) 
-	{ 
-		if(mHeight != height)
-			markContentAsDirty();
-
-		mHeight = height;
 	}
 
 	void GUIElement::_setClipRect(const Rect2I& clipRect) 
@@ -314,11 +314,6 @@ namespace BansheeEngine
 		element->mIsDestroyed = true;
 
 		GUIManager::instance().queueForDestroy(element);
-	}
-
-	Rect2I GUIElement::getBounds() const
-	{
-		return GUILayoutUtility::calcBounds(this);
 	}
 
 	Rect2I GUIElement::getVisibleBounds() const

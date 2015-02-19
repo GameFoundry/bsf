@@ -405,15 +405,15 @@ namespace BansheeEngine
 		{
 			Rect2I childArea = elementAreas[childIdx];
 
+			Vector2I offset(childArea.x, childArea.y);
+			child->setOffset(offset);
+			child->setHeight(childArea.height);
+
 			if(child->_getType() == GUIElementBase::Type::Element)
 			{
 				GUIElement* element = static_cast<GUIElement*>(child);
 
 				element->setWidth(childArea.width);
-				element->setHeight(childArea.height);
-
-				Vector2I offset(childArea.x, childArea.y);
-				element->setOffset(offset);
 				element->_setWidgetDepth(widgetDepth);
 				element->_setAreaDepth(areaDepth);
 
@@ -430,6 +430,8 @@ namespace BansheeEngine
 			{
 				GUILayout* layout = static_cast<GUILayout*>(child);
 
+				child->setWidth(width);
+
 				Rect2I newClipRect(childArea.x, childArea.y, width, childArea.height);
 				newClipRect.clip(clipRect);
 				layout->_updateLayoutInternal(childArea.x, childArea.y, width, childArea.height, newClipRect, widgetDepth, areaDepth);
@@ -437,7 +439,10 @@ namespace BansheeEngine
 				actualSizes[childIdx].width = layout->_getActualWidth();
 			}
 			else
+			{
+				child->setWidth(childArea.width);
 				actualSizes[childIdx].width = childArea.width;
+			}
 
 			actualSizes[childIdx].height = childArea.height + child->_getPadding().top + child->_getPadding().bottom;
 			childIdx++;

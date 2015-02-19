@@ -40,6 +40,41 @@ namespace BansheeEngine
 		 */
 		void disableRecursively();
 
+		/**
+		 * @brief	Sets element position relative to widget origin.
+		 *
+		 * @note	Be aware that this value will get overwritten if your element is part of a non-explicit layout.
+		 */
+		virtual void setOffset(const Vector2I& offset);
+
+		/**
+		 * @brief	Sets element width in pixels.
+		 *
+		 * @note	Be aware that this value will get overwritten if your element is part of a non-explicit layout.
+		 */
+		virtual void setWidth(UINT32 width);
+
+		/**
+		 * @brief	Sets element height in pixels.
+		 *
+		 * @note	Be aware that this value will get overwritten if your element is part of a non-explicit layout.
+		 */
+		virtual void setHeight(UINT32 height);
+
+		/**
+		 * @brief	Returns non-clipped bounds of the GUI element. Relative to the parent widget.
+		 *
+		 * @note	This call can be potentially expensive as the bounds need to be calculated based on current GUI state.
+		 */
+		virtual Rect2I getBounds() const;
+
+		/**
+		 * @brief	Returns non-clipped visible bounds of the GUI element (bounds exclude the margins). Relative to parent widget.
+		 *
+		 * @note	This call can be potentially expensive as the bounds need to be calculated based on current GUI state.
+		 */
+		virtual Rect2I getVisibleBounds() const;
+
 		/************************************************************************/
 		/* 							INTERNAL METHODS                      		*/
 		/************************************************************************/
@@ -262,5 +297,8 @@ namespace BansheeEngine
 		Vector<GUIElementBase*> mChildren;	
 		UINT8 mIsDirty;
 		bool mIsDisabled;
+
+		Vector2I mOffset;
+		UINT32 mWidth, mHeight;
 	};
 }

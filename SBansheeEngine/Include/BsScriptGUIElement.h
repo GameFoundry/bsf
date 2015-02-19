@@ -90,6 +90,9 @@ namespace BansheeEngine
 	private:
 		static void internal_destroy(ScriptGUIElementBaseTBase* nativeInstance);
 		static void internal_setVisible(ScriptGUIElementBaseTBase* nativeInstance, bool visible);
+		static Rect2I internal_getBounds(ScriptGUIElementBaseTBase* nativeInstance);
+		static void internal_setBounds(ScriptGUIElementBaseTBase* nativeInstance, Rect2I bounds);
+		static Rect2I internal_getVisibleBounds(ScriptGUIElementBaseTBase* nativeInstance);
 		static void internal_setLayoutOptions(ScriptGUIElementBaseTBase* nativeInstance, MonoArray* guiOptions);
 
 		ScriptGUIElement(MonoObject* instance);

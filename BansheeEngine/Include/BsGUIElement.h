@@ -54,39 +54,24 @@ namespace BansheeEngine
 		void setStyle(const String& styleName);
 
 		/**
-		 * @brief	Sets element position relative to widget origin.
-		 *
-		 * @note	Be aware that this value will get overwritten if your element is part of a non-explicit layout.
+		 * @copydoc	GUIElementBase::setWidth
 		 */
-		void setOffset(const Vector2I& offset);
+		void setWidth(UINT32 width) override;
 
 		/**
-		 * @brief	Sets element width in pixels.
-		 *
-		 * @note	Be aware that this value will get overwritten if your element is part of a non-explicit layout.
+		 * @copydoc	GUIElementBase::setHeight
 		 */
-		void setWidth(UINT32 width);
+		void setHeight(UINT32 height) override;
 
 		/**
-		 * @brief	Sets element height in pixels.
-		 *
-		 * @note	Be aware that this value will get overwritten if your element is part of a non-explicit layout.
+		 * @copydoc	GUIElementBase::setOffset
 		 */
-		void setHeight(UINT32 height);
+		void setOffset(const Vector2I& offset) override;
 
 		/**
-		 * @brief	Returns non-clipped bounds of the GUI element. Relative to the parent widget.
-		 *
-		 * @note	This call can be potentially expensive as the bounds need to be calculated based on current GUI state.
+		 * @copydoc	GUIElementBase::getVisibleBounds
 		 */
-		Rect2I getBounds() const;
-
-		/**
-		 * @brief	Returns non-clipped visible bounds of the GUI element (bounds exclude the margins). Relative to parent widget.
-		 *
-		 * @note	This call can be potentially expensive as the bounds need to be calculated based on current GUI state.
-		 */
-		Rect2I getVisibleBounds() const;
+		Rect2I getVisibleBounds() const override;
 
 		/**
 		 * @brief	Destroy the element. Removes it from parent and widget, and queues
@@ -98,7 +83,7 @@ namespace BansheeEngine
 		/* 							INTERNAL METHODS                      		*/
 		/************************************************************************/
 
-/**
+		/**
 		 * @brief	Returns the number of separate render elements in the GUI element.
 		 * 			
 		 * @return	The number render elements.
@@ -480,8 +465,6 @@ namespace BansheeEngine
 		Rect2I mClippedBounds;
 
 		UINT32 mDepth;
-		Vector2I mOffset;
-		UINT32 mWidth, mHeight;
 		Rect2I mClipRect;
 
 	private:

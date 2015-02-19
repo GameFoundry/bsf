@@ -58,6 +58,9 @@ namespace BansheeEngine
 	{
 		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIElement::internal_destroy);
 		metaData.scriptClass->addInternalCall("Internal_SetVisible", &ScriptGUIElement::internal_setVisible);
+		metaData.scriptClass->addInternalCall("Internal_GetBounds", &ScriptGUIElement::internal_getBounds);
+		metaData.scriptClass->addInternalCall("Internal_SetBounds", &ScriptGUIElement::internal_setBounds);
+		metaData.scriptClass->addInternalCall("Internal_GetVisibleBounds", &ScriptGUIElement::internal_getVisibleBounds);
 		metaData.scriptClass->addInternalCall("Internal_SetLayoutOptions", &ScriptGUIElement::internal_setLayoutOptions);
 	}
 
@@ -72,6 +75,23 @@ namespace BansheeEngine
 			nativeInstance->getGUIElement()->enableRecursively();
 		else
 			nativeInstance->getGUIElement()->disableRecursively();
+	}
+
+	Rect2I ScriptGUIElement::internal_getBounds(ScriptGUIElementBaseTBase* nativeInstance)
+	{
+		return nativeInstance->getGUIElement()->getBounds();
+	}
+
+	void ScriptGUIElement::internal_setBounds(ScriptGUIElementBaseTBase* nativeInstance, Rect2I bounds)
+	{
+		nativeInstance->getGUIElement()->setOffset(Vector2I(bounds.x, bounds.y));
+		nativeInstance->getGUIElement()->setWidth(bounds.width);
+		nativeInstance->getGUIElement()->setHeight(bounds.height);
+	}
+
+	Rect2I ScriptGUIElement::internal_getVisibleBounds(ScriptGUIElementBaseTBase* nativeInstance)
+	{
+		return nativeInstance->getGUIElement()->getVisibleBounds();
 	}
 
 	void ScriptGUIElement::internal_setLayoutOptions(ScriptGUIElementBaseTBase* nativeInstance, MonoArray* guiOptions)
