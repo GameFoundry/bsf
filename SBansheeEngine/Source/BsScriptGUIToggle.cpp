@@ -38,6 +38,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetContent", &ScriptGUIToggle::internal_setContent);
 		metaData.scriptClass->addInternalCall("Internal_ToggleOn", &ScriptGUIToggle::internal_toggleOn);
 		metaData.scriptClass->addInternalCall("Internal_ToggleOff", &ScriptGUIToggle::internal_toggleOff);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIToggle::internal_setTint);
 
 		onClickThunk = (OnClickThunkDef)metaData.scriptClass->getMethod("DoOnClick")->getThunk();
 		onHoverThunk = (OnHoverThunkDef)metaData.scriptClass->getMethod("DoOnHover")->getThunk();
@@ -91,6 +92,12 @@ namespace BansheeEngine
 	{
 		GUIToggle* toggle = (GUIToggle*)nativeInstance->getGUIElement();
 		toggle->toggleOff();
+	}
+
+	void ScriptGUIToggle::internal_setTint(ScriptGUIToggle* nativeInstance, Color color)
+	{
+		GUIToggle* toggle = (GUIToggle*)nativeInstance->getGUIElement();
+		toggle->setTint(color);
 	}
 
 	void ScriptGUIToggle::onClick(MonoObject* instance)

@@ -36,6 +36,14 @@ namespace BansheeEngine
 		mColor->setColor(color);
 	}
 
+	void GUIColorField::setTint(const Color& color)
+	{
+		if (mLabel != nullptr)
+			mLabel->setTint(color);
+
+		mColor->setTint(color);
+	}
+
 	Vector2I GUIColorField::_getOptimalSize() const
 	{
 		Vector2I optimalsize = mColor->_getOptimalSize();

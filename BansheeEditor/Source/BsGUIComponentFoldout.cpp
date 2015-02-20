@@ -70,6 +70,11 @@ namespace BansheeEngine
 		mToggle->setContent(content);
 	}
 
+	void GUIComponentFoldout::setTint(const Color& color)
+	{
+		mToggle->setTint(color);
+	}
+
 	void GUIComponentFoldout::toggleTriggered(bool value)
 	{
 		mIsExpanded = value;

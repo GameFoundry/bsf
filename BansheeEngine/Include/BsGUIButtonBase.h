@@ -36,6 +36,11 @@ namespace BansheeEngine
 		void setContent(const GUIContent& content);
 
 		/**
+		 * @copydoc	GUIElement::setTint
+		 */
+		virtual void setTint(const Color& color);
+
+		/**
 		 * @brief	Change the button "on" state. This state determines
 		 *			whether the button uses normal or "on" fields specified
 		 *			in the GUI style.
@@ -142,11 +147,17 @@ namespace BansheeEngine
 		 * @brief	Returns the active sprite texture, depending on the current state.
 		 */
 		const HSpriteTexture& getActiveTexture() const;
+
+		/**
+		 * @brief	Returns the active text color, depending on the current state.
+		 */
+		Color getActiveTextColor() const;
 	private:
 		ImageSprite* mImageSprite;
 		ImageSprite* mContentImageSprite;
 		TextSprite* mTextSprite;
 		GUIButtonState mActiveState;
+		Color mColor;
 
 		IMAGE_SPRITE_DESC mImageDesc;
 		GUIContent mContent;

@@ -34,6 +34,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptGUITextField::internal_getValue);
 		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptGUITextField::internal_setValue);
 		metaData.scriptClass->addInternalCall("Internal_HasInputFocus", &ScriptGUITextField::internal_hasInputFocus);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUITextField::internal_setTint);
 
 		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("DoOnChanged", 1)->getThunk();
 	}
@@ -68,22 +69,25 @@ namespace BansheeEngine
 	void ScriptGUITextField::internal_getValue(ScriptGUITextField* nativeInstance, MonoString** output)
 	{
 		GUITextField* field = static_cast<GUITextField*>(nativeInstance->getGUIElement());
-
 		*output = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), field->getValue());
 	}
 
 	void ScriptGUITextField::internal_setValue(ScriptGUITextField* nativeInstance, MonoString* value)
 	{
 		GUITextField* field = static_cast<GUITextField*>(nativeInstance->getGUIElement());
-
 		return field->setValue(MonoUtil::monoToWString(value));
 	}
 
 	void ScriptGUITextField::internal_hasInputFocus(ScriptGUITextField* nativeInstance, bool* output)
 	{
 		GUITextField* field = static_cast<GUITextField*>(nativeInstance->getGUIElement());
-
 		*output = field->hasInputFocus();
+	}
+
+	void ScriptGUITextField::internal_setTint(ScriptGUITextField* nativeInstance, Color color)
+	{
+		GUITextField* field = (GUITextField*)nativeInstance->getGUIElement();
+		field->setTint(color);
 	}
 
 	void ScriptGUITextField::onChanged(MonoObject* instance, const WString& newValue)

@@ -30,6 +30,7 @@ namespace BansheeEngine
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIListBox::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_SetElements", &ScriptGUIListBox::internal_setElements);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIListBox::internal_setTint);
 
 		onSelectionChangedThunk = (OnSelectionChangedThunkDef)metaData.scriptClass->getMethod("DoOnSelectionChanged", 1)->getThunk();
 	}
@@ -82,6 +83,12 @@ namespace BansheeEngine
 
 		GUIListBox* listBox = (GUIListBox*)nativeInstance->getGUIElement();
 		listBox->setElements(nativeElements);
+	}
+
+	void ScriptGUIListBox::internal_setTint(ScriptGUIListBox* nativeInstance, Color color)
+	{
+		GUIListBox* listBox = (GUIListBox*)nativeInstance->getGUIElement();
+		listBox->setTint(color);
 	}
 
 	void ScriptGUIListBox::onSelectionChanged(MonoObject* instance, UINT32 index)

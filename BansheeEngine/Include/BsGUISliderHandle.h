@@ -84,6 +84,11 @@ namespace BansheeEngine
 		UINT32 getMaxSize() const;
 
 		/**
+		 * @copydoc	GUIElement::setTint
+		 */
+		virtual void setTint(const Color& color);
+
+		/**
 		 * @copydoc	GUIElement::_getOptimalSize
 		 */
 		virtual Vector2I _getOptimalSize() const;
@@ -151,5 +156,6 @@ namespace BansheeEngine
 		bool mMouseOverHandle;
 		bool mHandleDragged;
 		State mState;
+		Color mColor;
 	};
 }

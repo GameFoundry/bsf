@@ -58,11 +58,19 @@ namespace BansheeEngine
             Internal_SetTexture(mCachedPtr, texture);
         }
 
+        public void SetTint(Color color)
+        {
+            Internal_SetTint(mCachedPtr, color);
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateInstance(GUITexture instance, SpriteTexture texture,
             GUIImageScaleMode scale, bool transparent, string style, GUIOption[] options);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetTexture(IntPtr nativeInstance, SpriteTexture texture);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetTint(IntPtr nativeInstance, Color color);
     }
 }

@@ -44,6 +44,11 @@ namespace BansheeEditor
             Internal_SetRange(mCachedPtr, min, max);
         }
 
+        public void SetTint(Color color)
+        {
+            Internal_SetTint(mCachedPtr, color);
+        }
+
         private void DoOnChanged(int newValue)
         {
             if (OnChanged != null)
@@ -65,5 +70,8 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetRange(IntPtr nativeInstance, int min, int max);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetTint(IntPtr nativeInstance, Color color);
     }
 }

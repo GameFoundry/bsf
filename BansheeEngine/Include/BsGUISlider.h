@@ -35,6 +35,11 @@ namespace BansheeEngine
 		float getPercent() const;
 
 		/**
+		 * @copydoc	GUIElement::setTint
+		 */
+		virtual void setTint(const Color& color);
+
+		/**
 		 * @copydoc	GUIElementContainer::_getOptimalSize
 		 */
 		virtual Vector2I _getOptimalSize() const;

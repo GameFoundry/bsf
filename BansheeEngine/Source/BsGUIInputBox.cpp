@@ -92,6 +92,13 @@ namespace BansheeEngine
 		}
 	}
 
+	void GUIInputBox::setTint(const Color& color)
+	{
+		mColor = color;
+
+		markContentAsDirty();
+	}
+
 	UINT32 GUIInputBox::_getNumRenderElements() const
 	{
 		UINT32 numElements = mImageSprite->getNumRenderElements();
@@ -136,6 +143,7 @@ namespace BansheeEngine
 		mImageDesc.borderRight = _getStyle()->border.right;
 		mImageDesc.borderTop = _getStyle()->border.top;
 		mImageDesc.borderBottom = _getStyle()->border.bottom;
+		mImageDesc.color = mColor;
 
 		const HSpriteTexture& activeTex = getActiveTexture();
 		if(SpriteTexture::checkIsLoaded(activeTex))
@@ -1053,6 +1061,7 @@ namespace BansheeEngine
 		textDesc.text = mText;
 		textDesc.font = _getStyle()->font;
 		textDesc.fontSize = _getStyle()->fontSize;
+		textDesc.color = mColor * getActiveTextColor();
 
 		Rect2I textBounds = getCachedContentBounds();
 		textDesc.width = textBounds.width;
@@ -1077,6 +1086,21 @@ namespace BansheeEngine
 		}
 
 		return _getStyle()->normal.texture;
+	}
+
+	Color GUIInputBox::getActiveTextColor() const
+	{
+		switch (mState)
+		{
+		case State::Focused:
+			return _getStyle()->focused.textColor;
+		case State::Hover:
+			return _getStyle()->hover.textColor;
+		case State::Normal:
+			return _getStyle()->normal.textColor;
+		}
+
+		return _getStyle()->normal.textColor;
 	}
 
 	GUIContextMenu* GUIInputBox::_getContextMenu() const

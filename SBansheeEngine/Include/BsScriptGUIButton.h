@@ -2,6 +2,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptGUIElement.h"
+#include "BsColor.h"
 
 namespace BansheeEngine
 {
@@ -13,6 +14,7 @@ namespace BansheeEngine
 	private:
 		static void internal_createInstance(MonoObject* instance, MonoObject* content, MonoString* style, MonoArray* guiOptions);
 		static void internal_setContent(ScriptGUIButton* nativeInstance, MonoObject* content);
+		static void internal_setTint(ScriptGUIButton* nativeInstance, Color color);
 
 		static void onClick(MonoObject* instance);
 		static void onHover(MonoObject* instance);

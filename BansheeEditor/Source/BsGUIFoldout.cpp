@@ -72,6 +72,12 @@ namespace BansheeEngine
 		mLabel->setContent(content);
 	}
 
+	void GUIFoldout::setTint(const Color& color)
+	{
+		mLabel->setTint(color);
+		mToggle->setTint(color);
+	}
+
 	void GUIFoldout::toggleTriggered(bool value)
 	{
 		mIsExpanded = value;

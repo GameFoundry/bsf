@@ -17,6 +17,7 @@ namespace BansheeEngine
 		static void internal_getValue(ScriptGUITextField* nativeInstance, MonoString** output);
 		static void internal_setValue(ScriptGUITextField* nativeInstance, MonoString* value);
 		static void internal_hasInputFocus(ScriptGUITextField* nativeInstance, bool* output);
+		static void internal_setTint(ScriptGUITextField* nativeInstance, Color color);
 
 		static void onChanged(MonoObject* instance, const WString& newValue);
 

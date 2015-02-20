@@ -103,6 +103,13 @@ namespace BansheeEngine
 			HSpriteTexture(), GUIImageScaleMode::StretchToFit, true, GUILayoutOptions::create());
 	}
 
+	void GUITexture::setTint(const Color& color)
+	{
+		mColor = color;
+
+		markContentAsDirty();
+	}
+
 	void GUITexture::setTexture(const HSpriteTexture& texture)
 	{
 		mActiveTexture = texture;
@@ -136,6 +143,7 @@ namespace BansheeEngine
 		mDesc.borderTop = _getStyle()->border.top;
 		mDesc.borderBottom = _getStyle()->border.bottom;
 		mDesc.transparent = mTransparent;
+		mDesc.color = mColor;
 
 		float optimalWidth = 0.0f;
 		float optimalHeight = 0.0f;

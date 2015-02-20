@@ -34,6 +34,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetContent", &ScriptGUIComponentFoldout::internal_setContent);
 		metaData.scriptClass->addInternalCall("Internal_SetExpanded", &ScriptGUIComponentFoldout::internal_setExpanded);
 		metaData.scriptClass->addInternalCall("Internal_IsExpanded", &ScriptGUIComponentFoldout::internal_getIsExpanded);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIComponentFoldout::internal_setTint);
 
 		onToggledThunk = (OnToggledThunkDef)metaData.scriptClass->getMethod("DoOnToggled", 1)->getThunk();
 	}
@@ -65,15 +66,19 @@ namespace BansheeEngine
 	void ScriptGUIComponentFoldout::internal_setExpanded(ScriptGUIComponentFoldout* nativeInstance, bool expanded)
 	{
 		GUIComponentFoldout* foldout = static_cast<GUIComponentFoldout*>(nativeInstance->getGUIElement());
-
 		foldout->setExpanded(expanded);
 	}
 
 	void ScriptGUIComponentFoldout::internal_getIsExpanded(ScriptGUIComponentFoldout* nativeInstance, bool* isExpanded)
 	{
 		GUIComponentFoldout* foldout = static_cast<GUIComponentFoldout*>(nativeInstance->getGUIElement());
-
 		*isExpanded = foldout->isExpanded();
+	}
+
+	void ScriptGUIComponentFoldout::internal_setTint(ScriptGUIComponentFoldout* nativeInstance, Color color)
+	{
+		GUIComponentFoldout* foldout = (GUIComponentFoldout*)nativeInstance->getGUIElement();
+		foldout->setTint(color);
 	}
 
 	void ScriptGUIComponentFoldout::onToggled(MonoObject* instance, bool expanded)

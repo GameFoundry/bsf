@@ -33,6 +33,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIColorField::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptGUIColorField::internal_getValue);
 		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptGUIColorField::internal_setValue);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIColorField::internal_setTint);
 
 		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("DoOnChanged", 1)->getThunk();
 	}
@@ -67,15 +68,19 @@ namespace BansheeEngine
 	void ScriptGUIColorField::internal_getValue(ScriptGUIColorField* nativeInstance, Color* output)
 	{
 		GUIColorField* colorField = static_cast<GUIColorField*>(nativeInstance->getGUIElement());
-
 		*output = colorField->getValue();
 	}
 
 	void ScriptGUIColorField::internal_setValue(ScriptGUIColorField* nativeInstance, Color value)
 	{
 		GUIColorField* colorField = static_cast<GUIColorField*>(nativeInstance->getGUIElement());
-
 		return colorField->setValue(value);
+	}
+
+	void ScriptGUIColorField::internal_setTint(ScriptGUIColorField* nativeInstance, Color color)
+	{
+		GUIColorField* colorField = (GUIColorField*)nativeInstance->getGUIElement();
+		colorField->setTint(color);
 	}
 
 	void ScriptGUIColorField::onChanged(MonoObject* instance, Color newValue)

@@ -35,6 +35,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIResourceField::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptGUIResourceField::internal_getValue);
 		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptGUIResourceField::internal_setValue);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIResourceField::internal_setTint);
 
 		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("DoOnChanged", 1)->getThunk();
 	}
@@ -92,6 +93,12 @@ namespace BansheeEngine
 			ScriptResourceBase* scriptResource = ScriptResource::toNative(value);
 			resourceField->setValue(scriptResource->getNativeHandle());
 		}
+	}
+
+	void ScriptGUIResourceField::internal_setTint(ScriptGUIResourceField* nativeInstance, Color color)
+	{
+		GUIResourceField* resourceField = (GUIResourceField*)nativeInstance->getGUIElement();
+		resourceField->setTint(color);
 	}
 
 	void ScriptGUIResourceField::onChanged(MonoObject* instance, const HResource& newValue)

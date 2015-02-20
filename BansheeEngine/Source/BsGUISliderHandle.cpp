@@ -72,6 +72,13 @@ namespace BansheeEngine
 		return getMaxSize() - mHandleSize;
 	}
 
+	void GUISliderHandle::setTint(const Color& color)
+	{
+		mColor = color;
+
+		markContentAsDirty();
+	}
+
 	UINT32 GUISliderHandle::_getNumRenderElements() const
 	{
 		return mImageSprite->getNumRenderElements();
@@ -112,6 +119,7 @@ namespace BansheeEngine
 			desc.height = mHandleSize;
 		}
 
+		desc.color = mColor;
 		mImageSprite->update(desc, (UINT64)_getParentWidget());
 		
 		GUIElement::updateRenderElementsInternal();

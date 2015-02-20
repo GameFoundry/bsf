@@ -14,6 +14,7 @@ namespace BansheeEngine
 		static void internal_createInstance(MonoObject* instance, MonoString* style, MonoArray* guiOptions);
 		static void internal_setPercent(ScriptGUISliderH* nativeInstance, float percent);
 		static float internal_getPercent(ScriptGUISliderH* nativeInstance);
+		static void internal_setTint(ScriptGUISliderH* nativeInstance, Color color);
 
 		static void onChanged(MonoObject* instance, float percent);
 
@@ -33,6 +34,7 @@ namespace BansheeEngine
 		static void internal_createInstance(MonoObject* instance, MonoString* style, MonoArray* guiOptions);
 		static void internal_setPercent(ScriptGUISliderV* nativeInstance, float percent);
 		static float internal_getPercent(ScriptGUISliderV* nativeInstance);
+		static void internal_setTint(ScriptGUISliderV* nativeInstance, Color color);
 
 		static void onChanged(MonoObject* instance, float percent);
 

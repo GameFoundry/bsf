@@ -41,6 +41,11 @@ namespace BansheeEngine
 		void setFocus(bool enabled);
 
 		/**
+		 * @brief	Sets the tint of the GUI element.
+		 */
+		virtual void setTint(const Color& color) { }
+
+		/**
 		 * @brief	Sets new layout options for the element.
 		 *
 		 * @param	layoutOptions	Options that allows you to control how is the element positioned in

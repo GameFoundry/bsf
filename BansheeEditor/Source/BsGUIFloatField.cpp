@@ -134,6 +134,14 @@ namespace BansheeEngine
 			mInputBox->setText(toWString(value));
 	}
 
+	void GUIFloatField::setTint(const Color& color)
+	{
+		if (mLabel != nullptr)
+			mLabel->setTint(color);
+
+		mInputBox->setTint(color);
+	}
+
 	void GUIFloatField::updateClippedBounds()
 	{
 		Vector2I offset = _getOffset();

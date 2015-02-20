@@ -154,6 +154,11 @@ namespace BansheeEngine
 		 * @brief	Changes the active texture.
 		 */
 		void setTexture(const HSpriteTexture& texture);
+
+		/**
+		 * @copydoc	GUIElement::setTint
+		 */
+		virtual void setTint(const Color& color);
 		
 		/**
 		 * @copydoc	GUIElement::getElementType
@@ -211,5 +216,6 @@ namespace BansheeEngine
 		GUIImageScaleMode mScaleMode;
 		bool mTransparent;
 		bool mUsingStyleTexture;
+		Color mColor;
 	};
 }

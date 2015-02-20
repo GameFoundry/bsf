@@ -28,6 +28,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIInputBox::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_GetText", &ScriptGUIInputBox::internal_getText);
 		metaData.scriptClass->addInternalCall("Internal_SetText", &ScriptGUIInputBox::internal_setText);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIInputBox::internal_setTint);
 	}
 
 	void ScriptGUIInputBox::internal_createInstance(MonoObject* instance, bool multiline, MonoString* style, MonoArray* guiOptions)
@@ -46,14 +47,18 @@ namespace BansheeEngine
 	void ScriptGUIInputBox::internal_getText(ScriptGUIInputBox* nativeInstance, MonoString** text)
 	{
 		GUIInputBox* inputBox = (GUIInputBox*)nativeInstance->getGUIElement();
-
 		*text = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), inputBox->getText());
 	}
 
 	void ScriptGUIInputBox::internal_setText(ScriptGUIInputBox* nativeInstance, MonoString* text)
 	{
 		GUIInputBox* inputBox = (GUIInputBox*)nativeInstance->getGUIElement();
-
 		inputBox->setText(MonoUtil::monoToWString(text));
+	}
+
+	void ScriptGUIInputBox::internal_setTint(ScriptGUIInputBox* nativeInstance, Color color)
+	{
+		GUIInputBox* inputBox = (GUIInputBox*)nativeInstance->getGUIElement();
+		inputBox->setTint(color);
 	}
 }

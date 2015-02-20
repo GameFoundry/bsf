@@ -25,6 +25,11 @@ namespace BansheeEngine
             Internal_CreateInstance(this, style, new GUIOption[0]);
         }
 
+        public void SetTint(Color color)
+        {
+            Internal_SetTint(mCachedPtr, color);
+        }
+
         private void DoOnChanged(float percent)
         {
             if (OnChanged != null)
@@ -39,6 +44,9 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetPercent(IntPtr nativeInstance, float percent);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetTint(IntPtr nativeInstance, Color color);
     }
 
     public sealed class GUISliderV : GUIElement
@@ -63,6 +71,11 @@ namespace BansheeEngine
             Internal_CreateInstance(this, style, new GUIOption[0]);
         }
 
+        public void SetTint(Color color)
+        {
+            Internal_SetTint(mCachedPtr, color);
+        }
+
         private void DoOnChanged(float percent)
         {
             if (OnChanged != null)
@@ -77,5 +90,8 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetPercent(IntPtr nativeInstance, float percent);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetTint(IntPtr nativeInstance, Color color);
     }
 }

@@ -15,6 +15,7 @@ namespace BansheeEngine
 		static void internal_setContent(ScriptGUIFoldout* nativeInstance, MonoObject* content);
 		static void internal_setExpanded(ScriptGUIFoldout* nativeInstance, bool expanded);
 		static void internal_getIsExpanded(ScriptGUIFoldout* nativeInstance, bool* isExpanded);
+		static void internal_setTint(ScriptGUIFoldout* nativeInstance, Color color);
 
 		static void onToggled(MonoObject* instance, bool expanded);
 

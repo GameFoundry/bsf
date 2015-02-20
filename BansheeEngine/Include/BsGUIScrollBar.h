@@ -51,6 +51,11 @@ namespace BansheeEngine
 		UINT32 getScrollableSize() const;
 
 		/**
+		 * @copydoc	GUIElement::setTint
+		 */
+		virtual void setTint(const Color& color);
+
+		/**
 		 * @copydoc	GUIElement::_getOptimalSize
 		 */
 		virtual Vector2I _getOptimalSize() const;
@@ -133,6 +138,7 @@ namespace BansheeEngine
 		GUIButton* mDownBtn;
 		GUISliderHandle* mHandleBtn;
 		bool mHorizontal;
+		Color mColor;
 
 		static const UINT32 ButtonScrollAmount;
 	};

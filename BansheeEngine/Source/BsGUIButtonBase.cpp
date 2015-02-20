@@ -45,6 +45,13 @@ namespace BansheeEngine
 		markContentAsDirty();
 	}
 
+	void GUIButtonBase::setTint(const Color& color)
+	{
+		mColor = color;
+
+		markContentAsDirty();
+	}
+
 	void GUIButtonBase::_setOn(bool on) 
 	{ 
 		if(on)
@@ -113,6 +120,7 @@ namespace BansheeEngine
 		mImageDesc.borderRight = _getStyle()->border.right;
 		mImageDesc.borderTop = _getStyle()->border.top;
 		mImageDesc.borderBottom = _getStyle()->border.bottom;
+		mImageDesc.color = mColor;
 
 		mImageSprite->update(mImageDesc, (UINT64)_getParentWidget());
 
@@ -124,6 +132,7 @@ namespace BansheeEngine
 			contentImgDesc.texture = mContent.getImage().getInternalPtr();
 			contentImgDesc.width = mContent.getImage()->getWidth();
 			contentImgDesc.height = mContent.getImage()->getHeight();
+			contentImgDesc.color = mColor;
 
 			mContentImageSprite->update(contentImgDesc, (UINT64)_getParentWidget());
 		}
@@ -300,6 +309,7 @@ namespace BansheeEngine
 		textDesc.text = mContent.getText();
 		textDesc.font = _getStyle()->font;
 		textDesc.fontSize = _getStyle()->fontSize;
+		textDesc.color = mColor * getActiveTextColor();
 
 		Rect2I textBounds = getCachedContentBounds();
 
@@ -341,5 +351,30 @@ namespace BansheeEngine
 		}
 
 		return _getStyle()->normal.texture;
+	}
+
+	Color GUIButtonBase::getActiveTextColor() const
+	{
+		switch (mActiveState)
+		{
+		case GUIButtonState::Normal:
+			return _getStyle()->normal.textColor;
+		case GUIButtonState::Hover:
+			return _getStyle()->hover.textColor;
+		case GUIButtonState::Active:
+			return _getStyle()->active.textColor;
+		case GUIButtonState::Focused:
+			return _getStyle()->focused.textColor;
+		case GUIButtonState::NormalOn:
+			return _getStyle()->normalOn.textColor;
+		case GUIButtonState::HoverOn:
+			return _getStyle()->hoverOn.textColor;
+		case GUIButtonState::ActiveOn:
+			return _getStyle()->activeOn.textColor;
+		case GUIButtonState::FocusedOn:
+			return _getStyle()->focusedOn.textColor;
+		}
+
+		return _getStyle()->normal.textColor;
 	}
 }

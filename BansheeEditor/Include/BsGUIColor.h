@@ -20,6 +20,11 @@ namespace BansheeEngine
 		void setColor(const Color& color);
 		Color getColor() const { return mColor; }
 
+		/**
+		 * @copydoc	GUIElement::setTint
+		 */
+		virtual void setTint(const Color& color);
+
 		Event<void(const Color&)> onValueChanged;
 	protected:
 		GUIColor(const String& styleName, const GUILayoutOptions& layoutOptions);
@@ -68,5 +73,6 @@ namespace BansheeEngine
 		IMAGE_SPRITE_DESC mAlphaImageDesc;
 
 		Color mColor;
+		Color mTint;
 	};
 }

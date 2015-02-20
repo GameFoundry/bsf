@@ -33,6 +33,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIToggleField::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptGUIToggleField::internal_getValue);
 		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptGUIToggleField::internal_setValue);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIToggleField::internal_setTint);
 
 		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("DoOnChanged", 1)->getThunk();
 	}
@@ -67,15 +68,19 @@ namespace BansheeEngine
 	void ScriptGUIToggleField::internal_getValue(ScriptGUIToggleField* nativeInstance, bool* output)
 	{
 		GUIToggleField* toggleField = static_cast<GUIToggleField*>(nativeInstance->getGUIElement());
-
 		*output = toggleField->getValue();
 	}
 
 	void ScriptGUIToggleField::internal_setValue(ScriptGUIToggleField* nativeInstance, bool value)
 	{
 		GUIToggleField* toggleField = static_cast<GUIToggleField*>(nativeInstance->getGUIElement());
-
 		return toggleField->setValue(value);
+	}
+
+	void ScriptGUIToggleField::internal_setTint(ScriptGUIToggleField* nativeInstance, Color color)
+	{
+		GUIToggleField* toggleField = (GUIToggleField*)nativeInstance->getGUIElement();
+		toggleField->setTint(color);
 	}
 
 	void ScriptGUIToggleField::onChanged(MonoObject* instance, bool newValue)

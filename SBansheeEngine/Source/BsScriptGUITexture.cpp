@@ -27,6 +27,7 @@ namespace BansheeEngine
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUITexture::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_SetTexture", &ScriptGUITexture::internal_setTexture);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUITexture::internal_setTint);
 	}
 
 	void ScriptGUITexture::internal_createInstance(MonoObject* instance, MonoObject* texture, 
@@ -55,5 +56,11 @@ namespace BansheeEngine
 
 		GUITexture* guiTexture = (GUITexture*)nativeInstance->getGUIElement();
 		guiTexture->setTexture(nativeTexture);
+	}
+
+	void ScriptGUITexture::internal_setTint(ScriptGUITexture* nativeInstance, Color color)
+	{
+		GUITexture* guiTexture = (GUITexture*)nativeInstance->getGUIElement();
+		guiTexture->setTint(color);
 	}
 }

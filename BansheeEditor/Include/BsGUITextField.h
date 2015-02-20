@@ -55,6 +55,11 @@ namespace BansheeEngine
 
 		bool hasInputFocus() const { return mHasInputFocus; }
 
+		/**
+		 * @copydoc	GUIElement::setTint
+		 */
+		virtual void setTint(const Color& color);
+
 		Event<void(const WString&)> onValueChanged;
 	protected:
 		static const UINT32 DEFAULT_LABEL_WIDTH;

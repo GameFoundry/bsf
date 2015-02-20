@@ -16,6 +16,7 @@ namespace BansheeEngine
 
 		static void internal_setText(ScriptGUIInputBox* nativeInstance, MonoString* text);
 		static void internal_getText(ScriptGUIInputBox* nativeInstance, MonoString** text);
+		static void internal_setTint(ScriptGUIInputBox* nativeInstance, Color color);
 
 		ScriptGUIInputBox(MonoObject* instance, GUIInputBox* inputBox);
 	};

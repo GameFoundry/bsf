@@ -24,6 +24,11 @@ namespace BansheeEngine
             Internal_SetElements(mCachedPtr, elements);
         }
 
+        public void SetTint(Color color)
+        {
+            Internal_SetTint(mCachedPtr, color);
+        }
+
         private void DoOnSelectionChanged(int index)
         {
             if (OnSelectionChanged != null)
@@ -35,5 +40,8 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetElements(IntPtr nativeInstance, LocString[] elements);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetTint(IntPtr nativeInstance, Color color);
     }
 }

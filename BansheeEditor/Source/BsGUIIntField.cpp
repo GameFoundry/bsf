@@ -167,6 +167,14 @@ namespace BansheeEngine
 		mMaxValue = max;
 	}
 
+	void GUIIntField::setTint(const Color& color)
+	{
+		if (mLabel != nullptr)
+			mLabel->setTint(color);
+
+		mInputBox->setTint(color);
+	}
+
 	void GUIIntField::updateClippedBounds()
 	{
 		Vector2I offset = _getOffset();

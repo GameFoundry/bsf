@@ -82,6 +82,11 @@ namespace BansheeEngine
 		void setFilter(std::function<bool(const WString&)> filter) { mFilter = filter; }
 
 		/**
+		 * @copydoc	GUIElement::setTint
+		 */
+		virtual void setTint(const Color& color);
+
+		/**
 		 * @copydoc	GUIElement::getElementType
 		 */
 		virtual ElementType _getElementType() const { return ElementType::InputBox; }
@@ -294,6 +299,11 @@ namespace BansheeEngine
 		const HSpriteTexture& getActiveTexture() const;
 		
 		/**
+		 * @brief	Returns currently active input box text color, depending on active state.
+		 */
+		Color getActiveTextColor() const;
+
+		/**
 		 * @brief	Cuts currently selected text to clipboard.
 		 */
 		void cutText();
@@ -322,6 +332,7 @@ namespace BansheeEngine
 		bool mHasFocus;
 		bool mIsMouseOver;
 		State mState;
+		Color mColor;
 
 		IMAGE_SPRITE_DESC mImageDesc;
 		WString mText;

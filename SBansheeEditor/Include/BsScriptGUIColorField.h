@@ -17,6 +17,7 @@ namespace BansheeEngine
 
 		static void internal_getValue(ScriptGUIColorField* nativeInstance, Color* output);
 		static void internal_setValue(ScriptGUIColorField* nativeInstance, Color value);
+		static void internal_setTint(ScriptGUIColorField* nativeInstance, Color color);
 
 		static void onChanged(MonoObject* instance, Color newValue);
 

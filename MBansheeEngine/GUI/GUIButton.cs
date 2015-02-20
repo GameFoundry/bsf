@@ -33,6 +33,11 @@ namespace BansheeEngine
             Internal_SetContent(mCachedPtr, content);
         }
 
+        public void SetTint(Color color)
+        {
+            Internal_SetTint(mCachedPtr, color);
+        }
+
         private void DoOnClick()
         {
             if (OnClick != null)
@@ -56,5 +61,8 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetContent(IntPtr nativeInstance, GUIContent content);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetTint(IntPtr nativeInstance, Color color);
     }
 }

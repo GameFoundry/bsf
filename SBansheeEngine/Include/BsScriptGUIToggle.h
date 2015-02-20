@@ -16,6 +16,7 @@ namespace BansheeEngine
 		static void internal_setContent(ScriptGUIToggle* nativeInstance, MonoObject* content);
 		static void internal_toggleOn(ScriptGUIToggle* nativeInstance);
 		static void internal_toggleOff(ScriptGUIToggle* nativeInstance);
+		static void internal_setTint(ScriptGUIToggle* nativeInstance, Color color);
 
 		static void onClick(MonoObject* instance);
 		static void onHover(MonoObject* instance);

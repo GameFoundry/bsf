@@ -90,6 +90,7 @@ namespace BansheeEngine
 
 		desc.width = mWidth;
 		desc.height = mHeight;
+		desc.color = mColor;
 
 		mImageSprite->update(desc, (UINT64)_getParentWidget());
 
@@ -183,5 +184,12 @@ namespace BansheeEngine
 	UINT32 GUIScrollBar::getScrollableSize() const
 	{
 		return mHandleBtn->getScrollableSize();
+	}
+
+	void GUIScrollBar::setTint(const Color& color)
+	{
+		mColor = color;
+
+		markContentAsDirty();
 	}
 }

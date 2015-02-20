@@ -35,6 +35,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptGUIIntField::internal_setValue);
 		metaData.scriptClass->addInternalCall("Internal_HasInputFocus", &ScriptGUIIntField::internal_hasInputFocus);
 		metaData.scriptClass->addInternalCall("Internal_SetRange", &ScriptGUIIntField::internal_setRange);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIIntField::internal_setTint);
 
 		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("DoOnChanged", 1)->getThunk();
 	}
@@ -69,29 +70,31 @@ namespace BansheeEngine
 	void ScriptGUIIntField::internal_getValue(ScriptGUIIntField* nativeInstance, INT32* output)
 	{
 		GUIIntField* intField = static_cast<GUIIntField*>(nativeInstance->getGUIElement());
-
 		*output = intField->getValue();
 	}
 
 	void ScriptGUIIntField::internal_setValue(ScriptGUIIntField* nativeInstance, INT32 value)
 	{
 		GUIIntField* intField = static_cast<GUIIntField*>(nativeInstance->getGUIElement());
-
 		return intField->setValue(value);
 	}
 
 	void ScriptGUIIntField::internal_hasInputFocus(ScriptGUIIntField* nativeInstance, bool* output)
 	{
 		GUIIntField* intField = static_cast<GUIIntField*>(nativeInstance->getGUIElement());
-
 		*output = intField->hasInputFocus();
 	}
 
 	void ScriptGUIIntField::internal_setRange(ScriptGUIIntField* nativeInstance, INT32 min, INT32 max)
 	{
 		GUIIntField* intField = static_cast<GUIIntField*>(nativeInstance->getGUIElement());
-
 		intField->setRange(min, max);
+	}
+
+	void ScriptGUIIntField::internal_setTint(ScriptGUIIntField* nativeInstance, Color color)
+	{
+		GUIIntField* intField = (GUIIntField*)nativeInstance->getGUIElement();
+		intField->setTint(color);
 	}
 
 	void ScriptGUIIntField::onChanged(MonoObject* instance, INT32 newValue)

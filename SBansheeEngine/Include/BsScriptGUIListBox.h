@@ -14,6 +14,7 @@ namespace BansheeEngine
 	private:
 		static void internal_createInstance(MonoObject* instance, MonoArray* elements, MonoString* style, MonoArray* guiOptions);
 		static void internal_setElements(ScriptGUIListBox* nativeInstance, MonoArray* elements);
+		static void internal_setTint(ScriptGUIListBox* nativeInstance, Color color);
 
 		static void onSelectionChanged(MonoObject* instance, UINT32 index);
 

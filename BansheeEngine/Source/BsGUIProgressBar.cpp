@@ -85,6 +85,12 @@ namespace BansheeEngine
 		markContentAsDirty();
 	}
 
+	void GUIProgressBar::setTint(const Color& color)
+	{
+		mBar->setTint(color);
+		mBackground->setTint(color);
+	}
+
 	GUIProgressBar* GUIProgressBar::create(const String& styleName)
 	{
 		return new (bs_alloc<GUIProgressBar, PoolAlloc>()) GUIProgressBar(getStyleName<GUIProgressBar>(styleName), GUILayoutOptions::create());

@@ -18,6 +18,11 @@ namespace BansheeEngine
 		Color getValue() const { return mValue; }
 		void setValue(const Color& value);
 
+		/**
+		 * @copydoc	GUIElement::setTint
+		 */
+		virtual void setTint(const Color& color);
+
 		Vector2I _getOptimalSize() const;
 
 		Event<void(const Color&)> onValueChanged;

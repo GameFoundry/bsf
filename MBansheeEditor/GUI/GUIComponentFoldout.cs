@@ -42,6 +42,11 @@ namespace BansheeEditor
             Internal_SetExpanded(mCachedPtr, expanded);
         }
 
+        public void SetTint(Color color)
+        {
+            Internal_SetTint(mCachedPtr, color);
+        }
+
         private void DoOnToggled(bool expanded)
         {
             if (OnToggled != null)
@@ -59,5 +64,8 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_IsExpanded(IntPtr nativeInstance, out bool expanded);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetTint(IntPtr nativeInstance, Color color);
     }
 }

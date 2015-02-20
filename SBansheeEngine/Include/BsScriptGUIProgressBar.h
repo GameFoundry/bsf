@@ -14,6 +14,7 @@ namespace BansheeEngine
 		static void internal_createInstance(MonoObject* instance, MonoString* style, MonoArray* guiOptions);
 		static void internal_setPercent(ScriptGUIProgressBar* nativeInstance, float percent);
 		static float internal_getPercent(ScriptGUIProgressBar* nativeInstance);
+		static void internal_setTint(ScriptGUIProgressBar* nativeInstance, Color color);
 
 		ScriptGUIProgressBar(MonoObject* instance, GUIProgressBar* progressBar);
 	};

@@ -26,6 +26,7 @@ namespace BansheeEngine
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUILabel::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_SetContent", &ScriptGUILabel::internal_setContent);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUILabel::internal_setTint);
 	}
 
 	void ScriptGUILabel::internal_createInstance(MonoObject* instance, MonoObject* content, MonoString* style, MonoArray* guiOptions)
@@ -48,5 +49,11 @@ namespace BansheeEngine
 
 		GUILabel* label = (GUILabel*)nativeInstance->getGUIElement();
 		label->setContent(nativeContent);
+	}
+
+	void ScriptGUILabel::internal_setTint(ScriptGUILabel* nativeInstance, Color color)
+	{
+		GUILabel* label = (GUILabel*)nativeInstance->getGUIElement();
+		label->setTint(color);
 	}
 }

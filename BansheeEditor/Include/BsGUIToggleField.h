@@ -17,6 +17,11 @@ namespace BansheeEngine
 		bool getValue() const { return mValue; }
 		void setValue(bool value);
 
+		/**
+		 * @copydoc	GUIElement::setTint
+		 */
+		virtual void setTint(const Color& color);
+
 		Event<void(bool)> onValueChanged;
 	protected:
 		virtual ~GUIToggleField() { }

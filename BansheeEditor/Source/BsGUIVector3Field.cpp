@@ -63,6 +63,16 @@ namespace BansheeEngine
 		return mFieldX->hasInputFocus() || mFieldY->hasInputFocus() || mFieldZ->hasInputFocus();
 	}
 
+	void GUIVector3Field::setTint(const Color& color)
+	{
+		if (mLabel != nullptr)
+			mLabel->setTint(color);
+
+		mFieldX->setTint(color);
+		mFieldY->setTint(color);
+		mFieldZ->setTint(color);
+	}
+
 	void GUIVector3Field::styleUpdated()
 	{
 		if (mLabel != nullptr)

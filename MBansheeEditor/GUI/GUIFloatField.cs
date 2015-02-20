@@ -39,6 +39,11 @@ namespace BansheeEditor
             return value;
         }
 
+        public void SetTint(Color color)
+        {
+            Internal_SetTint(mCachedPtr, color);
+        }
+
         private void DoOnChanged(float newValue)
         {
             if (OnChanged != null)
@@ -57,5 +62,8 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_HasInputFocus(IntPtr nativeInstance, out bool value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetTint(IntPtr nativeInstance, Color color);
     }
 }

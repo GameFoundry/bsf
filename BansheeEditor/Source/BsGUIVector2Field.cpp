@@ -58,6 +58,15 @@ namespace BansheeEngine
 		return mFieldX->hasInputFocus() || mFieldY->hasInputFocus();
 	}
 
+	void GUIVector2Field::setTint(const Color& color)
+	{
+		if (mLabel != nullptr)
+			mLabel->setTint(color);
+
+		mFieldX->setTint(color);
+		mFieldY->setTint(color);
+	}
+
 	void GUIVector2Field::valueChanged(float newValue)
 	{
 		onValueChanged(getValue());

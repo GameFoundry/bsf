@@ -16,6 +16,7 @@ namespace BansheeEngine
 
 		static void internal_getValue(ScriptGUIToggleField* nativeInstance, bool* output);
 		static void internal_setValue(ScriptGUIToggleField* nativeInstance, bool value);
+		static void internal_setTint(ScriptGUIToggleField* nativeInstance, Color color);
 
 		static void onChanged(MonoObject* instance, bool newValue);
 

@@ -31,6 +31,7 @@ namespace BansheeEngine
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIButton::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_SetContent", &ScriptGUIButton::internal_setContent);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIButton::internal_setTint);
 
 		onClickThunk = (OnClickThunkDef)metaData.scriptClass->getMethod("DoOnClick")->getThunk();
 		onHoverThunk = (OnHoverThunkDef)metaData.scriptClass->getMethod("DoOnHover")->getThunk();
@@ -61,6 +62,12 @@ namespace BansheeEngine
 
 		GUIButton* button = (GUIButton*)nativeInstance->getGUIElement();
 		button->setContent(nativeContent);
+	}
+
+	void ScriptGUIButton::internal_setTint(ScriptGUIButton* nativeInstance, Color color)
+	{
+		GUIButton* button = (GUIButton*)nativeInstance->getGUIElement();
+		button->setTint(color);
 	}
 
 	void ScriptGUIButton::onClick(MonoObject* instance)

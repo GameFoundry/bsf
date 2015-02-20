@@ -17,6 +17,7 @@ namespace BansheeEngine
 		static void internal_getValue(ScriptGUIFloatField* nativeInstance, float* output);
 		static void internal_setValue(ScriptGUIFloatField* nativeInstance, float value);
 		static void internal_hasInputFocus(ScriptGUIFloatField* nativeInstance, bool* output);
+		static void internal_setTint(ScriptGUIFloatField* nativeInstance, Color color);
 
 		static void onChanged(MonoObject* instance, float newValue);
 

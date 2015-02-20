@@ -32,6 +32,11 @@ namespace BansheeEditor
             Internal_CreateInstance(this, null, 0, style, options, false);
         }
 
+        public void SetTint(Color color)
+        {
+            Internal_SetTint(mCachedPtr, color);
+        }
+
         private void DoOnChanged(Color newValue)
         {
             if (OnChanged != null)
@@ -47,5 +52,8 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetValue(IntPtr nativeInstance, Color value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetTint(IntPtr nativeInstance, Color color);
     }
 }

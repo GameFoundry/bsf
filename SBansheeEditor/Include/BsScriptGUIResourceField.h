@@ -16,6 +16,7 @@ namespace BansheeEngine
 
 		static void internal_getValue(ScriptGUIResourceField* nativeInstance, MonoObject** output);
 		static void internal_setValue(ScriptGUIResourceField* nativeInstance, MonoObject* value);
+		static void internal_setTint(ScriptGUIResourceField* nativeInstance, Color color);
 
 		static void onChanged(MonoObject* instance, const HResource& newValue);
 		static MonoObject* nativeToManagedResource(const HResource& instance);

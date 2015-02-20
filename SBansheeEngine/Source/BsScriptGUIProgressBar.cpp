@@ -30,6 +30,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIProgressBar::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_SetPercent", &ScriptGUIProgressBar::internal_setPercent);
 		metaData.scriptClass->addInternalCall("Internal_GetPercent", &ScriptGUIProgressBar::internal_getPercent);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIProgressBar::internal_setTint);
 	}
 
 	void ScriptGUIProgressBar::internal_createInstance(MonoObject* instance, MonoString* style, MonoArray* guiOptions)
@@ -54,5 +55,11 @@ namespace BansheeEngine
 	{
 		GUIProgressBar* progressBar = (GUIProgressBar*)nativeInstance->getGUIElement();
 		return progressBar->getPercent();
+	}
+
+	void ScriptGUIProgressBar::internal_setTint(ScriptGUIProgressBar* nativeInstance, Color color)
+	{
+		GUIProgressBar* progressBar = (GUIProgressBar*)nativeInstance->getGUIElement();
+		progressBar->setTint(color);
 	}
 }

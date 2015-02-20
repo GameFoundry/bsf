@@ -20,10 +20,18 @@ namespace BansheeEngine
             Internal_SetContent(mCachedPtr, content);
         }
 
+        public void SetTint(Color color)
+        {
+            Internal_SetTint(mCachedPtr, color);
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateInstance(GUILabel instance, GUIContent content, string style, GUIOption[] options);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetContent(IntPtr nativeInstance, GUIContent content);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetTint(IntPtr nativeInstance, Color color);
     }
 }

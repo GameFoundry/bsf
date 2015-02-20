@@ -17,6 +17,7 @@ namespace BansheeEngine
 		static void internal_getValue(ScriptGUIVector4Field* nativeInstance, Vector4* output);
 		static void internal_setValue(ScriptGUIVector4Field* nativeInstance, Vector4 value);
 		static void internal_hasInputFocus(ScriptGUIVector4Field* nativeInstance, bool* output);
+		static void internal_setTint(ScriptGUIVector4Field* nativeInstance, Color color);
 
 		static void onChanged(MonoObject* instance, Vector4 newValue);
 

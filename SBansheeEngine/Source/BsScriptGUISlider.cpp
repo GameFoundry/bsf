@@ -32,6 +32,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUISliderH::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_SetPercent", &ScriptGUISliderH::internal_setPercent);
 		metaData.scriptClass->addInternalCall("Internal_GetPercent", &ScriptGUISliderH::internal_getPercent);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUISliderH::internal_setTint);
 
 		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("DoOnChanged", 1)->getThunk();
 	}
@@ -62,6 +63,12 @@ namespace BansheeEngine
 		return slider->getPercent();
 	}
 
+	void ScriptGUISliderH::internal_setTint(ScriptGUISliderH* nativeInstance, Color color)
+	{
+		GUISliderHorz* slider = (GUISliderHorz*)nativeInstance->getGUIElement();
+		slider->setTint(color);
+	}
+
 	void ScriptGUISliderH::onChanged(MonoObject* instance, float percent)
 	{
 		MonoException* exception = nullptr;
@@ -83,6 +90,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUISliderV::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_SetPercent", &ScriptGUISliderV::internal_setPercent);
 		metaData.scriptClass->addInternalCall("Internal_GetPercent", &ScriptGUISliderV::internal_getPercent);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUISliderV::internal_setTint);
 
 		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("DoOnChanged", 1)->getThunk();
 	}
@@ -111,6 +119,12 @@ namespace BansheeEngine
 	{
 		GUISliderVert* slider = (GUISliderVert*)nativeInstance->getGUIElement();
 		return slider->getPercent();
+	}
+
+	void ScriptGUISliderV::internal_setTint(ScriptGUISliderV* nativeInstance, Color color)
+	{
+		GUISliderVert* slider = (GUISliderVert*)nativeInstance->getGUIElement();
+		slider->setTint(color);
 	}
 
 	void ScriptGUISliderV::onChanged(MonoObject* instance, float percent)

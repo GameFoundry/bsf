@@ -36,6 +36,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIGameObjectField::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptGUIGameObjectField::internal_getValue);
 		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptGUIGameObjectField::internal_setValue);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIGameObjectField::internal_setTint);
 
 		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("DoOnChanged", 1)->getThunk();
 	}
@@ -93,6 +94,12 @@ namespace BansheeEngine
 			ScriptGameObjectBase* scriptGO = ScriptGameObject::toNative(value);
 			gameObjectField->setValue(scriptGO->getNativeHandle());
 		}
+	}
+
+	void ScriptGUIGameObjectField::internal_setTint(ScriptGUIGameObjectField* nativeInstance, Color color)
+	{
+		GUIGameObjectField* gameObjectField = (GUIGameObjectField*)nativeInstance->getGUIElement();
+		gameObjectField->setTint(color);
 	}
 
 	void ScriptGUIGameObjectField::onChanged(MonoObject* instance, const HGameObject& newValue)

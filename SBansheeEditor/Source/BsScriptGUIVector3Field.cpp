@@ -34,6 +34,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptGUIVector3Field::internal_getValue);
 		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptGUIVector3Field::internal_setValue);
 		metaData.scriptClass->addInternalCall("Internal_HasInputFocus", &ScriptGUIVector3Field::internal_hasInputFocus);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIVector3Field::internal_setTint);
 
 		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("DoOnChanged", 1)->getThunk();
 	}
@@ -68,22 +69,25 @@ namespace BansheeEngine
 	void ScriptGUIVector3Field::internal_getValue(ScriptGUIVector3Field* nativeInstance, Vector3* output)
 	{
 		GUIVector3Field* field = static_cast<GUIVector3Field*>(nativeInstance->getGUIElement());
-
 		*output = field->getValue();
 	}
 
 	void ScriptGUIVector3Field::internal_setValue(ScriptGUIVector3Field* nativeInstance, Vector3 value)
 	{
 		GUIVector3Field* field = static_cast<GUIVector3Field*>(nativeInstance->getGUIElement());
-
 		return field->setValue(value);
 	}
 
 	void ScriptGUIVector3Field::internal_hasInputFocus(ScriptGUIVector3Field* nativeInstance, bool* output)
 	{
 		GUIVector3Field* field = static_cast<GUIVector3Field*>(nativeInstance->getGUIElement());
-
 		*output = field->hasInputFocus();
+	}
+
+	void ScriptGUIVector3Field::internal_setTint(ScriptGUIVector3Field* nativeInstance, Color color)
+	{
+		GUIVector3Field* field = (GUIVector3Field*)nativeInstance->getGUIElement();
+		field->setTint(color);
 	}
 
 	void ScriptGUIVector3Field::onChanged(MonoObject* instance, Vector3 newValue)

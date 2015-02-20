@@ -25,10 +25,15 @@ namespace BansheeEngine
             Internal_CreateInstance(this, false, "", options);
         }
 
-        public string text
+        public string Text
         {
             get { string value; Internal_GetText(mCachedPtr, out value); return value; }
             set { Internal_SetText(mCachedPtr, value); }
+        }
+
+        public void SetTint(Color color)
+        {
+            Internal_SetTint(mCachedPtr, color);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -39,5 +44,8 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetText(IntPtr nativeInstance, out string text);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetTint(IntPtr nativeInstance, Color color);
     }
 }

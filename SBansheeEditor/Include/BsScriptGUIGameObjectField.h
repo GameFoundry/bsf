@@ -16,6 +16,7 @@ namespace BansheeEngine
 
 		static void internal_getValue(ScriptGUIGameObjectField* nativeInstance, MonoObject** output);
 		static void internal_setValue(ScriptGUIGameObjectField* nativeInstance, MonoObject* value);
+		static void internal_setTint(ScriptGUIGameObjectField* nativeInstance, Color color);
 
 		static void onChanged(MonoObject* instance, const HGameObject& newValue);
 		static MonoObject* nativeToManagedGO(const HGameObject& instance);

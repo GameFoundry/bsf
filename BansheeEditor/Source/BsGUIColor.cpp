@@ -49,11 +49,12 @@ namespace BansheeEngine
 	{
 		mColor = color;
 
-		mColorImageDesc.color = mColor;
-		mColorImageDesc.color.a = 1.0f;
+		markContentAsDirty();
+	}
 
-		mAlphaImageDesc.color = Color::White * mColor.a;
-		mAlphaImageDesc.color.a = 1.0f;
+	void GUIColor::setTint(const Color& color)
+	{
+		mTint = color;
 
 		markContentAsDirty();
 	}
@@ -91,6 +92,14 @@ namespace BansheeEngine
 
 	void GUIColor::updateRenderElementsInternal()
 	{		
+		Color color = mColor * mTint;
+
+		mColorImageDesc.color = color;
+		mColorImageDesc.color.a = 1.0f;
+
+		mAlphaImageDesc.color = Color::White * color.a;
+		mAlphaImageDesc.color.a = 1.0f;
+
 		mColorImageDesc.width = (UINT32)(mWidth * ALPHA_SPLIT_POSITION);
 		mColorImageDesc.height = mHeight;
 

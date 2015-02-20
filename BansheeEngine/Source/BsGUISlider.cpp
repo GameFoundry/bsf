@@ -89,6 +89,12 @@ namespace BansheeEngine
 		return mSliderHandle->getHandlePos();
 	}
 
+	void GUISlider::setTint(const Color& color)
+	{
+		mBackground->setTint(color);
+		mSliderHandle->setTint(color);
+	}
+
 	void GUISlider::onHandleMoved(float newPosition)
 	{
 		onChanged(newPosition);

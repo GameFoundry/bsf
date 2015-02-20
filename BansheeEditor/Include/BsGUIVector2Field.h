@@ -20,6 +20,11 @@ namespace BansheeEngine
 
 		bool hasInputFocus() const;
 
+		/**
+		 * @copydoc	GUIElement::setTint
+		 */
+		virtual void setTint(const Color& color);
+
 		Event<void(const Vector2&)> onValueChanged;
 	protected:
 		virtual ~GUIVector2Field() { }

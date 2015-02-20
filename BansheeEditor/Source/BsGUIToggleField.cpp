@@ -33,6 +33,14 @@ namespace BansheeEngine
 			mToggle->toggleOff();
 	}
 
+	void GUIToggleField::setTint(const Color& color)
+	{
+		if (mLabel != nullptr)
+			mLabel->setTint(color);
+
+		mToggle->setTint(color);
+	}
+
 	void GUIToggleField::styleUpdated()
 	{
 		if (mLabel != nullptr)
