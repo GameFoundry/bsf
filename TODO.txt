@@ -44,6 +44,10 @@ There seems to be a bug in Mono when passing complex structs from C# to C++. e.g
 will corrupt the parameter after it, even if layout and size is exact as the C++ version. 
 Rect3 has child structs (Vector3) which could be the reason. Be aware of other similar problems.
 
+Mono cannot marshal structures? Taken from their documentation:
+ Internal calls do not provide support for marshalling structures. This means that any API calls that take a structure 
+ (excluding the system types like int32, int64, etc) must be passed as a pointer, in C# this means passing the value as a "ref" or "out" parameter.
+
 Create a stack allocatable custom vector implementation and make getResourceDependencies and getCoreDependencies use it.
  - These methods are called often and cause allocations whenever they are.
 

@@ -26,6 +26,7 @@ namespace BansheeEngine
 		static MonoObject* internal_getPixels(ScriptTexture2D* thisPtr, UINT32 mipLevel);
 		static MonoObject* internal_getGPUPixels(ScriptTexture2D* thisPtr, UINT32 mipLevel);
 		static void internal_setPixels(ScriptTexture2D* thisPtr, MonoObject* data, UINT32 mipLevel);
+		static void internal_setPixelsArray(ScriptTexture2D* thisPtr, MonoArray* colors, UINT32 mipLevel);
 
 		ScriptTexture2D(MonoObject* instance, const HTexture& texture);
 

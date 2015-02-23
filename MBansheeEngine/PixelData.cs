@@ -126,17 +126,17 @@ namespace BansheeEngine
         private PixelData()
         { }
 
-        public PixelData(PixelVolume volume, PixelFormat format)
+        public PixelData(PixelVolume volume, PixelFormat format = PixelFormat.R8G8B8A8)
         {
             Internal_CreateInstance(this, volume, format);
         }
 
-        public PixelData(int width, int height, PixelFormat format)
+        public PixelData(int width, int height, PixelFormat format = PixelFormat.R8G8B8A8)
         {
             Internal_CreateInstance(this, new PixelVolume(0, 0, width, height), format);
         }
 
-        public PixelData(int width, int height, int depth, PixelFormat format)
+        public PixelData(int width, int height, int depth, PixelFormat format = PixelFormat.R8G8B8A8)
         {
             Internal_CreateInstance(this, new PixelVolume(0, 0, 0, width, height, depth), format);
         }

@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BrowseDialog.cs" />
+    <Compile Include="ColorPicker.cs" />
     <Compile Include="DbgCustomInspector.cs" />
     <Compile Include="DbgEditorWindow.cs" />
     <Compile Include="DbgGizmo.cs" />

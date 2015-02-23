@@ -316,6 +316,13 @@ namespace BansheeEngine
 		 */
 		void setColors(const Vector<Color>& colors);
 
+		/**
+		 * @brief	Initializes the internal buffer with the provided set of colors.
+		 *			The array should be of width * height * depth size and mapped
+		 *			as such: arrayIdx = x + y * width + z * width * height.
+		 */
+		void setColors(Color* colors, UINT32 numElements);
+
 	private:
 		/**
 		 * @brief	Set the rowPitch and slicePitch so that the buffer is laid out consecutive
@@ -326,6 +333,16 @@ namespace BansheeEngine
 			mRowPitch = getWidth();
 			mSlicePitch = getWidth()*getHeight();
 		}
+
+		/**
+		 * @brief	Initializes the internal buffer with the provided set of colors.
+		 *			The array should be of width * height * depth size and mapped
+		 *			as such: arrayIdx = x + y * width + z * width * height.
+		 *
+		 * @note	A generic method that is reused in other more specific "setColors" calls.
+		 */
+		template<class T>
+		void setColorsInternal(const T& colors, UINT32 numElements);
 
 		/**
 		 * @brief	Returns the needed size of the internal buffer, in bytes.

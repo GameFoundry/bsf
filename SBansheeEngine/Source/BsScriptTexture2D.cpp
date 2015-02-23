@@ -27,6 +27,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetPixels", &ScriptTexture2D::internal_getPixels);
 		metaData.scriptClass->addInternalCall("Internal_GetGPUPixels", &ScriptTexture2D::internal_getGPUPixels);
 		metaData.scriptClass->addInternalCall("Internal_SetPixels", &ScriptTexture2D::internal_setPixels);
+		metaData.scriptClass->addInternalCall("Internal_SetPixelsArray", &ScriptTexture2D::internal_setPixelsArray);
 	}
 
 	void ScriptTexture2D::internal_createInstance(MonoObject* instance, PixelFormat format, UINT32 width,
@@ -82,6 +83,21 @@ namespace BansheeEngine
 
 			texture->writeSubresource(gCoreAccessor(), subresourceIdx, scriptPixelData->getInternalValue(), false);
 		}
+	}
+
+	void ScriptTexture2D::internal_setPixelsArray(ScriptTexture2D* thisPtr, MonoArray* colors, UINT32 mipLevel)
+	{
+		Color* colorsRaw = (Color*)mono_array_addr_with_size(colors, sizeof(Color), 0);
+		UINT32 numElements = (UINT32)mono_array_length(colors);
+
+		HTexture texture = thisPtr->mTexture;
+		const TextureProperties& props = texture->getProperties();
+
+		PixelDataPtr pixelData = bs_shared_ptr<PixelData>(props.getWidth(), props.getHeight(), props.getDepth(), props.getFormat());
+		pixelData->setColors(colorsRaw, numElements);
+
+		UINT32 subresourceIdx = texture->getProperties().mapToSubresourceIdx(0, mipLevel);
+		texture->writeSubresource(gCoreAccessor(), subresourceIdx, pixelData, false);
 	}
 
 	void ScriptTexture2D::_onManagedInstanceDeleted()

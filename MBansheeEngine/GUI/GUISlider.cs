@@ -20,7 +20,7 @@ namespace BansheeEngine
             Internal_CreateInstance(this, style, options);
         }
 
-        public GUISliderH(string style)
+        public GUISliderH(string style = "")
         {
             Internal_CreateInstance(this, style, new GUIOption[0]);
         }
@@ -66,7 +66,7 @@ namespace BansheeEngine
             Internal_CreateInstance(this, style, options);
         }
 
-        public GUISliderV(string style)
+        public GUISliderV(string style = "")
         {
             Internal_CreateInstance(this, style, new GUIOption[0]);
         }

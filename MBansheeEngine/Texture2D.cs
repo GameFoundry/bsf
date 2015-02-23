@@ -9,7 +9,7 @@ namespace BansheeEngine
         private Texture2D()
         { }
 
-        public Texture2D(PixelFormat format, int width, int height, TextureUsage usage = TextureUsage.Default, 
+        public Texture2D(int width, int height, PixelFormat format = PixelFormat.R8G8B8A8, TextureUsage usage = TextureUsage.Default, 
             int numSamples = 1, bool hasMipmaps = false, bool gammaCorrection = false)
         {
             Internal_CreateInstance(this, format, width, height, usage, numSamples, hasMipmaps, gammaCorrection);
@@ -23,6 +23,11 @@ namespace BansheeEngine
         public void SetPixels(PixelData data, int mipLevel = 0)
         {
             Internal_SetPixels(mCachedPtr, data, mipLevel);
+        }
+
+        public void SetPixels(Color[] data, int mipLevel = 0)
+        {
+            Internal_SetPixelsArray(mCachedPtr, data, mipLevel);
         }
 
         public AsyncOp GetGPUPixels(int mipLevel = 0)
@@ -42,5 +47,8 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetPixels(IntPtr thisPtr, PixelData data, int mipLevel);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetPixelsArray(IntPtr thisPtr, Color[] data, int mipLevel);
     }
 }

@@ -122,16 +122,17 @@ namespace BansheeEngine
 		return colors;
 	}
 
-	void PixelData::setColors(const Vector<Color>& colors)
+	template<class T>
+	void PixelData::setColorsInternal(const T& colors, UINT32 numElements)
 	{
 		UINT32 depth = mExtents.getDepth();
 		UINT32 height = mExtents.getHeight();
 		UINT32 width = mExtents.getWidth();
 
 		UINT32 totalNumElements = width * height * depth;
-		if (colors.size() != totalNumElements)
+		if (numElements != totalNumElements)
 		{
-			LOGERR("Unable to set colors, invalid array size.")
+			LOGERR("Unable to set colors, invalid array size.");
 			return;
 		}
 
@@ -158,6 +159,19 @@ namespace BansheeEngine
 				}
 			}
 		}
+	}
+
+	template BS_CORE_EXPORT void PixelData::setColorsInternal(Color* const &, UINT32);
+	template BS_CORE_EXPORT void PixelData::setColorsInternal(const Vector<Color>&, UINT32);
+
+	void PixelData::setColors(const Vector<Color>& colors)
+	{
+		setColorsInternal(colors, (UINT32)colors.size());
+	}
+
+	void PixelData::setColors(Color* colors, UINT32 numElements)
+	{
+		setColorsInternal(colors, numElements);
 	}
 
 	UINT32 PixelData::getInternalBufferSize()
