@@ -18,7 +18,7 @@ namespace BansheeEditor
         private float colHue, colSaturation, colValue;
         private float colAlpha = 1.0f;
 
-        private ColorSlider1DHorz sliderR, sliderG, sliderB;
+        private ColorSlider1DHorz sliderR, sliderG, sliderB, sliderA;
         private ColorSlider2D colorBox;
         private ColorSlider1DVert sideSlider;
 
@@ -31,6 +31,7 @@ namespace BansheeEditor
         private GUITexture guiSliderRHorzTex;
         private GUITexture guiSliderGHorzTex;
         private GUITexture guiSliderBHorzTex;
+        private GUITexture guiSliderAHorzTex;
 
         private GUIButton guiColorBoxBtn;
         private GUIButton guiColorModeBtn;
@@ -39,15 +40,18 @@ namespace BansheeEditor
         private GUISliderH guiSliderRHorz;
         private GUISliderH guiSliderGHorz;
         private GUISliderH guiSliderBHorz;
+        private GUISliderH guiSliderAHorz;
         private GUITexture guiSlider2DHandle;
 
         private GUILabel guiLabelR;
         private GUILabel guiLabelG;
         private GUILabel guiLabelB;
+        private GUILabel guiLabelA;
 
         private GUIIntField guiInputR;
         private GUIIntField guiInputG;
         private GUIIntField guiInputB;
+        private GUIIntField guiInputA;
 
         public enum ColorBoxMode
         {
@@ -107,10 +111,12 @@ namespace BansheeEditor
             guiLabelR = new GUILabel("R");
             guiLabelG = new GUILabel("G");
             guiLabelB = new GUILabel("B");
+            guiLabelA = new GUILabel("A");
 
             guiInputR = new GUIIntField();
             guiInputG = new GUIIntField();
             guiInputB = new GUIIntField();
+            guiInputA = new GUIIntField();
 
             guiColorBoxBtn.OnClick += OnColorBoxModeChanged;
             guiColorModeBtn.OnClick += OnSliderModeChanged;
@@ -119,10 +125,12 @@ namespace BansheeEditor
             guiSliderRHorz.OnChanged += OnSliderRHorzChanged;
             guiSliderGHorz.OnChanged += OnSliderGHorzChanged;
             guiSliderBHorz.OnChanged += OnSliderBHorzChanged;
+            guiSliderAHorz.OnChanged += OnSliderAHorzChanged;
 
             guiInputR.OnChanged += OnInputRChanged;
             guiInputG.OnChanged += OnInputGChanged;
             guiInputB.OnChanged += OnInputBChanged;
+            guiInputA.OnChanged += OnInputAChanged;
 
             GUILayout v0 = GUI.layout.AddLayoutY();
 
@@ -176,10 +184,20 @@ namespace BansheeEditor
             sliderR = new ColorSlider1DHorz(guiSliderRHorzTex, guiSliderRHorz, SliderIndividualWidth, SliderIndividualHeight);
             sliderG = new ColorSlider1DHorz(guiSliderGHorzTex, guiSliderGHorz, SliderIndividualWidth, SliderIndividualHeight);
             sliderB = new ColorSlider1DHorz(guiSliderBHorzTex, guiSliderBHorz, SliderIndividualWidth, SliderIndividualHeight);
+            sliderA = new ColorSlider1DHorz(guiSliderAHorzTex, guiSliderAHorz, SliderIndividualWidth, SliderIndividualHeight);
 
             colorBox.OnValueChanged += OnColorBoxValueChanged;
 
-            // TODO - Add alpha slider
+            guiColor.Value = SelectedColor;
+            UpdateInputBoxValues();
+            Update2DSliderTextures();
+            Update2DSliderValues();
+            Update1DSliderTextures();
+            Update1DSliderValues();
+
+            Color startA = new Color(0, 0, 0, 1);
+            Color stepA = new Color(1, 1, 1, 0);
+            sliderA.UpdateTexture(startA, stepA, false);
         }
 
         private void EditorUpdate()
@@ -413,6 +431,14 @@ namespace BansheeEditor
             Update2DSliderValues();
         }
 
+        void OnSliderAHorzChanged(float percent)
+        {
+            colAlpha = percent;
+
+            guiColor.Value = SelectedColor;
+            guiInputA.Value = MathEx.RoundToInt(colValue * 255.0f);
+        }
+
         void OnInputRChanged(int value)
         {
             bool isHSV = sliderMode == SliderMode.HSV;
@@ -471,6 +497,14 @@ namespace BansheeEditor
             Update1DSliderValues();
             Update2DSliderTextures();
             Update2DSliderValues();
+        }
+
+        void OnInputAChanged(int value)
+        {
+            colAlpha = value/255.0f;
+
+            guiColor.Value = SelectedColor;
+            guiSliderAHorz.Percent = colAlpha;
         }
 
         void UpdateInputBoxValues()
