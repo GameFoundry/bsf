@@ -177,7 +177,8 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::TreeViewElementHighlight = L"TreeViewElementHighlight.psd";
 	const WString BuiltinEditorResources::TreeViewElementSepHighlight = L"TreeViewElementSepHighlight.psd";
 
-	const WString BuiltinEditorResources::ColorPickerSliderHandleTex = L"ColorPickerSliderHandle.psd";
+	const WString BuiltinEditorResources::ColorPickerSliderHorzHandleTex = L"ColorPickerSliderHorzHandle.psd";
+	const WString BuiltinEditorResources::ColorPickerSliderVertHandleTex = L"ColorPickerSliderVertHandle.psd";
 
 	const WString BuiltinEditorResources::ProgressBarFillTex = L"ProgressBarFill.psd";
 	const WString BuiltinEditorResources::ProgressBarBgTex = L"ProgressBarBg.psd";
@@ -1084,24 +1085,43 @@ namespace BansheeEngine
 		/* 							COLOR PICKER SLIDER                      	*/
 		/************************************************************************/
 
-		GUIElementStyle colorPickerSliderHandleStyle;
-		colorPickerSliderHandleStyle.fixedHeight = true;
-		colorPickerSliderHandleStyle.fixedWidth = true;
-		colorPickerSliderHandleStyle.height = 32;
-		colorPickerSliderHandleStyle.width = 10;
-		colorPickerSliderHandleStyle.normal.texture = getGUITexture(ColorPickerSliderHandleTex);
-		colorPickerSliderHandleStyle.hover.texture = colorPickerSliderHandleStyle.normal.texture;
-		colorPickerSliderHandleStyle.active.texture = colorPickerSliderHandleStyle.normal.texture;
+		GUIElementStyle colorPickerSliderHorzHandleStyle;
+		colorPickerSliderHorzHandleStyle.fixedHeight = true;
+		colorPickerSliderHorzHandleStyle.fixedWidth = true;
+		colorPickerSliderHorzHandleStyle.height = 32;
+		colorPickerSliderHorzHandleStyle.width = 10;
+		colorPickerSliderHorzHandleStyle.normal.texture = getGUITexture(ColorPickerSliderHorzHandleTex);
+		colorPickerSliderHorzHandleStyle.hover.texture = colorPickerSliderHorzHandleStyle.normal.texture;
+		colorPickerSliderHorzHandleStyle.active.texture = colorPickerSliderHorzHandleStyle.normal.texture;
 
-		mSkin.setStyle(GUISlider::getHandleStyleType(), colorPickerSliderHandleStyle);
+		mSkin.setStyle("ColorSliderHorzHandle", colorPickerSliderHorzHandleStyle);
 
-		GUIElementStyle colorPickerSliderStyle;
-		colorPickerSliderHandleStyle.fixedHeight = true;
-		colorPickerSliderHandleStyle.height = 32;
-		colorPickerSliderHandleStyle.minWidth = 50;
-		colorPickerSliderStyle.subStyles[GUISlider::getHandleStyleType()] = GUISlider::getHandleStyleType();
+		GUIElementStyle colorPickerSliderHorzStyle;
+		colorPickerSliderHorzHandleStyle.fixedHeight = true;
+		colorPickerSliderHorzHandleStyle.height = 32;
+		colorPickerSliderHorzHandleStyle.minWidth = 50;
+		colorPickerSliderHorzStyle.subStyles[GUISlider::getHandleStyleType()] = "ColorSliderHorzHandle";
 
-		mSkin.setStyle("ColorPickerSlider", colorPickerSliderStyle);
+		mSkin.setStyle("ColorSliderHorz", colorPickerSliderHorzStyle);
+
+		GUIElementStyle colorPickerSliderVertHandleStyle;
+		colorPickerSliderVertHandleStyle.fixedHeight = true;
+		colorPickerSliderVertHandleStyle.fixedWidth = true;
+		colorPickerSliderVertHandleStyle.height = 10;
+		colorPickerSliderVertHandleStyle.width = 30;
+		colorPickerSliderVertHandleStyle.normal.texture = getGUITexture(ColorPickerSliderVertHandleTex);
+		colorPickerSliderVertHandleStyle.hover.texture = colorPickerSliderVertHandleStyle.normal.texture;
+		colorPickerSliderVertHandleStyle.active.texture = colorPickerSliderVertHandleStyle.normal.texture;
+
+		mSkin.setStyle("ColorSliderVertHandle", colorPickerSliderVertHandleStyle);
+
+		GUIElementStyle colorPickerSliderVertStyle;
+		colorPickerSliderVertStyle.fixedWidth = true;
+		colorPickerSliderVertStyle.width = 30;
+		colorPickerSliderVertStyle.minHeight = 50;
+		colorPickerSliderVertStyle.subStyles[GUISlider::getHandleStyleType()] = "ColorSliderVertHandle";
+
+		mSkin.setStyle("ColorSliderVert", colorPickerSliderVertStyle);
 	}
 
 	void BuiltinEditorResources::preprocess()
@@ -1126,7 +1146,7 @@ namespace BansheeEngine
 			ScrollBarBgTex, MenuBarBgTex, MenuBarBtnNormalTex, MenuBarBtnHoverTex, MenuBarBansheeLogoTex, DockSliderNormalTex,
 			TreeViewExpandButtonOffNormal, TreeViewExpandButtonOffHover, TreeViewExpandButtonOnNormal, TreeViewExpandButtonOnHover,
 			TreeViewSelectionBackground, TreeViewEditBox, TreeViewElementHighlight, TreeViewElementSepHighlight, ProgressBarBgTex,
-			ProgressBarFillTex, ColorPickerSliderHandleTex };
+			ProgressBarFillTex, ColorPickerSliderHorzHandleTex, ColorPickerSliderVertHandleTex };
 
 		static const GpuProgramImportData GPU_PROGRAM_IMPORT_DATA[] = 
 		{

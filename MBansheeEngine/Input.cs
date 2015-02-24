@@ -26,7 +26,7 @@ namespace BansheeEngine
 	};
 
     // Do not change IDs, must match PointerEventButton C++ enum
-	public enum PointerEventButton
+	public enum PointerButton
 	{
 		Left, Middle, Right, Count
 	};
@@ -35,7 +35,7 @@ namespace BansheeEngine
     {
         internal Vector2I _screenPos;
         internal Vector2I _delta;
-        internal PointerEventButton _button;
+        internal PointerButton _button;
 
         internal bool _shift;
         internal bool _control;
@@ -43,7 +43,7 @@ namespace BansheeEngine
 
         internal float _mouseWheelScrollAmount;
 
-        internal PointerEvent(Vector2I screenPos, Vector2I delta, PointerEventButton button,
+        internal PointerEvent(Vector2I screenPos, Vector2I delta, PointerButton button,
             bool shift, bool control, bool alt, float mouseWheelScrollAmount)
         {
             _screenPos = screenPos;
@@ -59,7 +59,7 @@ namespace BansheeEngine
 
         public Vector2I screenPos { get { return _screenPos; } }
         public Vector2I delta { get { return _delta; } }
-        public PointerEventButton button { get { return _button; } }
+        public PointerButton button { get { return _button; } }
 
         public bool shift { get { return _shift; } }
         public bool control { get { return _control; } }
@@ -114,6 +114,21 @@ namespace BansheeEngine
             return Internal_IsButtonDown(code, deviceIdx);
         }
 
+        public static bool IsPointerButtonHeld(PointerButton code)
+        {
+            return Internal_IsPointerButtonHeld(code);
+        }
+
+        public static bool IsPointerButtonUp(PointerButton code, int deviceIdx)
+        {
+            return Internal_IsPointerButtonUp(code);
+        }
+
+        public static bool IsPointerButtonDown(PointerButton code, int deviceIdx)
+        {
+            return Internal_IsPointerButtonDown(code);
+        }
+
         public static Vector2I PointerPosition
         {
             get
@@ -158,7 +173,7 @@ namespace BansheeEngine
                 OnCharInput(ev);
         }
 
-        private static void Internal_TriggerPointerMove(Vector2I screenPos, Vector2I delta, PointerEventButton button, bool shift, 
+        private static void Internal_TriggerPointerMove(Vector2I screenPos, Vector2I delta, PointerButton button, bool shift, 
             bool ctrl, bool alt, float scrollAmount)
         {
             PointerEvent ev = new PointerEvent(screenPos, delta, button, shift, ctrl, alt, scrollAmount);
@@ -167,7 +182,7 @@ namespace BansheeEngine
                 OnPointerMoved(ev);
         }
 
-        private static void Internal_TriggerPointerPressed(Vector2I screenPos, Vector2I delta, PointerEventButton button, bool shift,
+        private static void Internal_TriggerPointerPressed(Vector2I screenPos, Vector2I delta, PointerButton button, bool shift,
             bool ctrl, bool alt, float scrollAmount)
         {
             PointerEvent ev = new PointerEvent(screenPos, delta, button, shift, ctrl, alt, scrollAmount);
@@ -176,7 +191,7 @@ namespace BansheeEngine
                 OnPointerPressed(ev);
         }
 
-        private static void Internal_TriggerPointerReleased(Vector2I screenPos, Vector2I delta, PointerEventButton button, bool shift,
+        private static void Internal_TriggerPointerReleased(Vector2I screenPos, Vector2I delta, PointerButton button, bool shift,
             bool ctrl, bool alt, float scrollAmount)
         {
             PointerEvent ev = new PointerEvent(screenPos, delta, button, shift, ctrl, alt, scrollAmount);
@@ -185,7 +200,7 @@ namespace BansheeEngine
                 OnPointerReleased(ev);
         }
 
-        private static void Internal_TriggerPointerDoubleClick(Vector2I screenPos, Vector2I delta, PointerEventButton button, bool shift,
+        private static void Internal_TriggerPointerDoubleClick(Vector2I screenPos, Vector2I delta, PointerButton button, bool shift,
             bool ctrl, bool alt, float scrollAmount)
         {
             PointerEvent ev = new PointerEvent(screenPos, delta, button, shift, ctrl, alt, scrollAmount);
@@ -205,6 +220,15 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool Internal_IsButtonDown(ButtonCode keyCode, int deviceIdx);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_IsPointerButtonHeld(PointerButton keyCode);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_IsPointerButtonUp(PointerButton keyCode);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_IsPointerButtonDown(PointerButton keyCode);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetPointerPosition(out Vector2I position);

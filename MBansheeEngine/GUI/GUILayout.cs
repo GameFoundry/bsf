@@ -156,22 +156,6 @@ namespace BansheeEngine
             return layoutY;
         }
 
-        public GUILayoutExplicit AddLayoutExplicit()
-        {
-            GUILayoutExplicit layoutY = new GUILayoutExplicit(this);
-            AddElementInternal(layoutY);
-
-            return layoutY;
-        }
-
-        public GUILayoutExplicit InsertLayoutExplicit(int index)
-        {
-            GUILayoutExplicit layoutY = new GUILayoutExplicit(this, index);
-            InsertElementInternal(index, layoutY);
-
-            return layoutY;
-        }
-
         public void Remove(GUIElement element)
         {
             if (children.Contains(element))
@@ -224,16 +208,10 @@ namespace BansheeEngine
         protected static extern void Internal_CreateInstanceYFromLayoutAdd(GUILayout instance, GUILayout parentLayout);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        protected static extern void Internal_CreateInstanceExplicitFromLayoutAdd(GUILayout instance, GUILayout parentLayout);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
         protected static extern void Internal_CreateInstanceXFromLayoutInsert(GUILayout instance, GUILayout parentLayout, int index);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         protected static extern void Internal_CreateInstanceYFromLayoutInsert(GUILayout instance, GUILayout parentLayout, int index);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        protected static extern void Internal_CreateInstanceExplicitFromLayoutInsert(GUILayout instance, GUILayout parentLayout, int index);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         protected static extern void Internal_AddElement(IntPtr instance, IntPtr element);

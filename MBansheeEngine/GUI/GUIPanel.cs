@@ -29,9 +29,9 @@ namespace BansheeEngine
             _mainLayout = mainArea.layout;
         }
 
-        public GUIArea AddArea(int x, int y, int width, int height, Int16 depth = 0)
+        public GUIArea AddArea(int x, int y, int width, int height, Int16 depth = 0, GUILayoutType layoutType = GUILayoutType.X)
         {
-            GUIArea area = GUIArea.Create(this, x, y, width, height, depth);
+            GUIArea area = GUIArea.Create(this, x, y, width, height, depth, layoutType);
             area.SetParent(this);
 
             return area;

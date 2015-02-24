@@ -163,7 +163,7 @@ namespace BansheeEditor
             h4.AddFlexibleSpace();
             h4.AddElement(guiInputB);
 
-            GUIArea overlay = GUI.AddArea(0, 0, Width, Height, -1); // TODO - Create an area with explicit layout here
+            GUIArea overlay = GUI.AddArea(0, 0, Width, Height, -1, GUILayoutType.Explicit);
             overlay.layout.AddElement(guiSliderVert);
             overlay.layout.AddElement(guiSliderRHorz);
             overlay.layout.AddElement(guiSliderGHorz);
@@ -179,10 +179,14 @@ namespace BansheeEditor
 
             colorBox.OnValueChanged += OnColorBoxValueChanged;
 
-            // TODO
-            //WHen slider value changes convert RGB->HSV and vice versa as needed
-            //Actually position overlay elements
-            //Add alpha slider
+            // TODO - Add alpha slider
+        }
+
+        private void EditorUpdate()
+        {
+            Vector2I windowPos = ScreenToWindowPos(Input.PointerPosition);
+
+            colorBox.UpdateInput(windowPos);
         }
 
         private static void FillArea(int width, int height, Color[] colors, Color start, Color rightGradient, Color downGradient)
@@ -616,6 +620,8 @@ namespace BansheeEditor
 
         public class ColorSlider1DHorz
         {
+            private const int SLIDER_HEIGHT = 8;
+
             private int width, height;
             private Texture2D texture;
             private SpriteTexture spriteTexture;
@@ -632,6 +638,12 @@ namespace BansheeEditor
 
                 texture = new Texture2D(width, height);
                 spriteTexture = new SpriteTexture(texture);
+
+                Rect2I sliderBounds = guiTexture.Bounds;
+                sliderBounds.y -= SLIDER_HEIGHT;
+                sliderBounds.height += SLIDER_HEIGHT;
+
+                guiSlider.Bounds = sliderBounds;
             }
 
             public void UpdateTexture(Color start, Color step, bool isHSV)
@@ -652,6 +664,8 @@ namespace BansheeEditor
 
         public class ColorSlider1DVert
         {
+            private const int SLIDER_WIDTH = 7;
+
             private int width, height;
             private Texture2D texture;
             private SpriteTexture spriteTexture;
@@ -668,6 +682,12 @@ namespace BansheeEditor
 
                 texture = new Texture2D(width, height);
                 spriteTexture = new SpriteTexture(texture);
+
+                Rect2I sliderBounds = guiTexture.Bounds;
+                sliderBounds.x -= SLIDER_WIDTH;
+                sliderBounds.width += SLIDER_WIDTH;
+
+                guiSlider.Bounds = sliderBounds;
             }
 
             public void UpdateTexture(Color start, Color step, bool isHSV)
@@ -694,6 +714,8 @@ namespace BansheeEditor
 
             private GUITexture guiTexture;
             private GUITexture guiSliderHandle;
+
+            private Vector2 oldValue;
 
             public delegate void OnValueChangedDelegate(Vector2 value);
             public event OnValueChangedDelegate OnValueChanged;
@@ -746,15 +768,40 @@ namespace BansheeEditor
                 guiTexture.SetTexture(spriteTexture);
             }
 
-            public void UpdateInput()
+            public void UpdateInput(Vector2I windowPos)
             {
-                // TODO - Detect mouse input over GUITexture, detect coordinates and update gui slider handle position
-                // TODO - Trigger OnValueChanged as needed
+                if (Input.IsPointerButtonHeld(PointerButton.Left))
+                {
+                    Rect2I bounds = guiTexture.Bounds;
+
+                    if (bounds.Contains(windowPos))
+                    {
+                        Vector2 newValue = Vector2.zero;
+                        newValue.x = (windowPos.x - bounds.x) / (float)bounds.width;
+                        newValue.y = (windowPos.y - bounds.y) / (float)bounds.height;
+
+                        SetValue(newValue);
+                    }
+                }
             }
 
             public void SetValue(Vector2 value)
             {
-                // TODO - Move the handle to this position
+                if (oldValue == value)
+                    return;
+
+                Rect2I handleBounds = guiSliderHandle.Bounds;
+                Rect2I boxBounds = guiTexture.Bounds;
+
+                handleBounds.x = boxBounds.x + MathEx.RoundToInt(value.x * boxBounds.width) - handleBounds.width / 2;
+                handleBounds.y = boxBounds.y + MathEx.RoundToInt(value.y * boxBounds.height) - handleBounds.height / 2;
+
+                guiSliderHandle.Bounds = handleBounds;
+
+                oldValue = value;
+
+                if (OnValueChanged != null)
+                    OnValueChanged(value);
             }
         }
     }

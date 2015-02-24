@@ -37,10 +37,11 @@ namespace BansheeEngine
 		}
 	}
 
-	void ScriptGUIArea::internal_createInstance(MonoObject* instance, MonoObject* panel, INT32 x, INT32 y, UINT32 width, UINT32 height, UINT16 depth)
+	void ScriptGUIArea::internal_createInstance(MonoObject* instance, MonoObject* panel, INT32 x, INT32 y, UINT32 width, 
+		UINT32 height, UINT16 depth, GUILayoutType layoutType)
 	{
 		ScriptGUIPanel* scriptGUIPanel = ScriptGUIPanel::toNative(panel);
-		GUIArea* nativeArea = GUIArea::create(scriptGUIPanel->getWidget(), x, y, width, height, depth);
+		GUIArea* nativeArea = GUIArea::create(scriptGUIPanel->getWidget(), x, y, width, height, depth, layoutType);
 
 		ScriptGUIArea* nativeInstance = new (bs_alloc<ScriptGUIArea>()) ScriptGUIArea(instance, nativeArea, scriptGUIPanel);
 	}

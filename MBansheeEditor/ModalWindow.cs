@@ -31,6 +31,20 @@ namespace BansheeEditor
             Internal_CreateInstance(this, allowCloseButton);
         }
 
+        protected Vector2I ScreenToWindowPos(Vector2I screenPos)
+        {
+            Vector2I windowPos;
+            Internal_ScreenToWindowPos(mCachedPtr, screenPos, out windowPos);
+            return windowPos;
+        }
+
+        protected Vector2I WindowToScreenPos(Vector2I windowPos)
+        {
+            Vector2I screenPos;
+            Internal_WindowToScreenPos(mCachedPtr, windowPos, out screenPos);
+            return screenPos;
+        }
+
         private void OnInitializeInternal()
         {
             GUI = new GUIPanel();
@@ -86,5 +100,11 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern int Internal_SetHeight(IntPtr nativeInstance, int value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_ScreenToWindowPos(IntPtr nativeInstance, Vector2I position, out Vector2I windowPos);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_WindowToScreenPos(IntPtr nativeInstance, Vector2I position, out Vector2I screenPos);
     }
 }

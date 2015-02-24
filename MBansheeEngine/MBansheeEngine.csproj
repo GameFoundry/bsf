@@ -58,7 +58,6 @@
     <Compile Include="Font.cs" />
     <Compile Include="GameObject.cs" />
     <Compile Include="GUI\GUIArea.cs" />
-    <Compile Include="GUI\GUILayoutExplicit.cs" />
     <Compile Include="GUI\GUILayoutUtility.cs" />
     <Compile Include="GUI\GUIPanel.cs" />
     <Compile Include="GUI\GUIButton.cs" />

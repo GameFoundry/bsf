@@ -1,17 +1,31 @@
 #include "BsGUIArea.h"
 #include "BsGUIWidget.h"
 #include "BsGUILayoutX.h"
+#include "BsGUILayoutY.h"
+#include "BsGUILayoutExplicit.h"
 #include "BsGUIWidget.h"
 #include "BsRenderWindow.h"
 #include "BsViewport.h"
 
 namespace BansheeEngine
 {
-	GUIArea::GUIArea(GUIWidget* widget, INT32 x, INT32 y, UINT16 depth)
-		:mWidget(widget), mLeft(x), mTop(y), mDepth(depth), mIsDirty(true), mIsDisabled(false),
+	GUIArea::GUIArea(GUIWidget* widget, INT32 x, INT32 y, UINT16 depth, GUILayoutType layoutType)
+		:mWidget(widget), mLeft(x), mTop(y), mDepth(depth), mIsDirty(true), mIsDisabled(false), mLayout(nullptr),
 		mResizeXWithWidget(false), mResizeYWithWidget(false), mWidth(0), mHeight(0), mRight(0), mBottom(0)
 	{
-		mLayout = bs_new<GUILayoutX, PoolAlloc>(this);
+		switch (layoutType)
+		{
+		case GUILayoutType::LayoutX:
+			mLayout = bs_new<GUILayoutX>(this);
+			break;
+		case GUILayoutType::LayoutY:
+			mLayout = bs_new<GUILayoutY>(this);
+			break;
+		case GUILayoutType::LayoutExplicit:
+			mLayout = bs_new<GUILayoutExplicit>(this);
+			break;
+		}
+		
 		mLayout->_changeParentWidget(widget);
 
 		mWidget->registerArea(this);
@@ -19,12 +33,13 @@ namespace BansheeEngine
 
 	GUIArea::~GUIArea() 
 	{
-		bs_delete<PoolAlloc>(mLayout);
+		bs_delete(mLayout);
 	}
 
-	GUIArea* GUIArea::create(GUIWidget& widget, INT32 x, INT32 y, UINT32 width, UINT32 height, UINT16 depth)
+	GUIArea* GUIArea::create(GUIWidget& widget, INT32 x, INT32 y, UINT32 width, UINT32 height, 
+		UINT16 depth, GUILayoutType layoutType)
 	{
-		GUIArea* area = new (bs_alloc<GUIArea, PoolAlloc>()) GUIArea(&widget, x, y, depth);
+		GUIArea* area = new (bs_alloc<GUIArea, PoolAlloc>()) GUIArea(&widget, x, y, depth, layoutType);
 		area->mWidth = width;
 		area->mHeight = height;
 
@@ -32,9 +47,9 @@ namespace BansheeEngine
 	}
 
 	GUIArea* GUIArea::createStretchedXY(GUIWidget& widget, UINT32 offsetLeft, 
-		UINT32 offsetRight, UINT32 offsetTop, UINT32 offsetBottom, UINT16 depth)
+		UINT32 offsetRight, UINT32 offsetTop, UINT32 offsetBottom, UINT16 depth, GUILayoutType layoutType)
 	{
-		GUIArea* area = new (bs_alloc<GUIArea, PoolAlloc>()) GUIArea(&widget, offsetLeft, offsetTop, depth);
+		GUIArea* area = new (bs_alloc<GUIArea, PoolAlloc>()) GUIArea(&widget, offsetLeft, offsetTop, depth, layoutType);
 
 		area->mWidth = std::max(0, (INT32)widget.getTarget()->getWidth() - (INT32)offsetLeft - (INT32)offsetRight);
 		area->mHeight = std::max(0, (INT32)widget.getTarget()->getHeight() - (INT32)offsetTop - (INT32)offsetBottom);
@@ -47,9 +62,9 @@ namespace BansheeEngine
 	}
 
 	GUIArea* GUIArea::createStretchedX(GUIWidget& widget, UINT32 offsetLeft, 
-		UINT32 offsetRight, UINT32 offsetTop, UINT32 height, UINT16 depth)
+		UINT32 offsetRight, UINT32 offsetTop, UINT32 height, UINT16 depth, GUILayoutType layoutType)
 	{
-		GUIArea* area = new (bs_alloc<GUIArea, PoolAlloc>()) GUIArea(&widget, offsetLeft, offsetTop, depth);
+		GUIArea* area = new (bs_alloc<GUIArea, PoolAlloc>()) GUIArea(&widget, offsetLeft, offsetTop, depth, layoutType);
 
 		area->mWidth = std::max(0, (INT32)widget.getTarget()->getWidth() - (INT32)offsetLeft - (INT32)offsetRight);
 		area->mHeight = height;
@@ -61,9 +76,9 @@ namespace BansheeEngine
 	}
 
 	GUIArea* GUIArea::createStretchedY(GUIWidget& widget, UINT32 offsetTop, 
-		UINT32 offsetBottom, UINT32 offsetLeft, UINT32 width, UINT16 depth)
+		UINT32 offsetBottom, UINT32 offsetLeft, UINT32 width, UINT16 depth, GUILayoutType layoutType)
 	{
-		GUIArea* area = new (bs_alloc<GUIArea, PoolAlloc>()) GUIArea(&widget, offsetLeft, offsetTop, depth);
+		GUIArea* area = new (bs_alloc<GUIArea, PoolAlloc>()) GUIArea(&widget, offsetLeft, offsetTop, depth, layoutType);
 
 		area->mWidth = width;
 		area->mHeight = std::max(0, (INT32)widget.getTarget()->getHeight() - (INT32)offsetTop - (INT32)offsetBottom);

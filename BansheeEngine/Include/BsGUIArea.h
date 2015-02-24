@@ -6,6 +6,14 @@
 namespace BansheeEngine
 {
 	/**
+	 * @brief	Type of layout that a GUIArea can initially be created with
+	 */
+	enum class GUILayoutType
+	{
+		LayoutX, LayoutY, LayoutExplicit
+	};
+
+	/**
 	 * @brief	GUIArea represents a freely positionable GUI panel with a GUILayout child.
 	 *			This is one of the top GUI elements (aside from GUIWidget) and all layouts
 	 *			must belong to a single GUIArea.
@@ -22,16 +30,18 @@ namespace BansheeEngine
 		 * Creates a new GUI area. All the layouts used in the area will be placed
 		 * within the specified bounds.
 		 *
-		 * @param	widget	Widget parent of the GUIArea.
-		 * @param	x		X position relative to parent widget position, in pixels.
-		 * @param	y		Y position relative to parent widget position, in pixels.
-		 * @param	width	Width of the area, in pixels. If 0 then the area will be of unlimited width.
-		 * @param	height	Height of the area, in pixels. If 0 then the area will be of unlimited height.
-		 * @param	depth	Depth of the area. This is relative to the depth of parent widget. Depth determines in what
-		 *					order are overlapping GUIAreas drawn. Areas with lower depth will be drawn in front of areas
-		 *					with higher depth.
+		 * @param	widget		Widget parent of the GUIArea.
+		 * @param	x			X position relative to parent widget position, in pixels.
+		 * @param	y			Y position relative to parent widget position, in pixels.
+		 * @param	width		Width of the area, in pixels. If 0 then the area will be of unlimited width.
+		 * @param	height		Height of the area, in pixels. If 0 then the area will be of unlimited height.
+		 * @param	depth		Depth of the area. This is relative to the depth of parent widget. Depth determines in what
+		 *						order are overlapping GUIAreas drawn. Areas with lower depth will be drawn in front of areas
+		 *						with higher depth.
+		 * @param	layoutType	Type of layout to create as the root layout for the area.
 		 */
-		static GUIArea* create(GUIWidget& widget, INT32 x, INT32 y, UINT32 width = 0, UINT32 height = 0, UINT16 depth = 0);
+		static GUIArea* create(GUIWidget& widget, INT32 x, INT32 y, UINT32 width = 0, UINT32 height = 0, UINT16 depth = 0, 
+			GUILayoutType layoutType = GUILayoutType::LayoutX);
 
 		/**
 		 * Creates a new GUI area. All the layouts used in the area will be placed
@@ -48,9 +58,11 @@ namespace BansheeEngine
 		 * @param	depth			Depth of the area. This is relative to the depth of parent widget. Depth determines in what
 		 *							order are overlapping GUIAreas drawn. Areas with lower depth will be drawn in front of areas
 		 *							with higher depth.
+		 * @param	layoutType		Type of layout to create as the root layout for the area.
 		 */
 		static GUIArea* createStretchedXY(GUIWidget& widget, UINT32 offsetLeft, 
-			UINT32 offsetRight, UINT32 offsetTop, UINT32 offsetBottom, UINT16 depth = 0);
+			UINT32 offsetRight, UINT32 offsetTop, UINT32 offsetBottom, UINT16 depth = 0,
+			GUILayoutType layoutType = GUILayoutType::LayoutX);
 
 		/**
 		 * Creates a new GUI area. All the layouts used in the area will be placed
@@ -67,9 +79,11 @@ namespace BansheeEngine
 		 * @param	depth			Depth of the area. This is relative to the depth of parent widget. Depth determines in what
 		 *							order are overlapping GUIAreas drawn. Areas with lower depth will be drawn in front of areas
 		 *							with higher depth.
+		 * @param	layoutType		Type of layout to create as the root layout for the area.
 		 */
 		static GUIArea* createStretchedX(GUIWidget& widget, UINT32 offsetLeft, 
-			UINT32 offsetRight, UINT32 y, UINT32 height, UINT16 depth = 0);
+			UINT32 offsetRight, UINT32 y, UINT32 height, UINT16 depth = 0,
+			GUILayoutType layoutType = GUILayoutType::LayoutX);
 
 		/**
 		 * Creates a new GUI area. All the layouts used in the area will be placed
@@ -86,9 +100,11 @@ namespace BansheeEngine
 		 * @param	depth			Depth of the area. This is relative to the depth of parent widget. Depth determines in what
 		 *							order are overlapping GUIAreas drawn. Areas with lower depth will be drawn in front of areas
 		 *							with higher depth.
+		 * @param	layoutType		Type of layout to create as the root layout for the area.
 		 */
 		static GUIArea* createStretchedY(GUIWidget& widget, UINT32 offsetTop, 
-			UINT32 offsetBottom, UINT32 x, UINT32 width, UINT16 depth = 0);
+			UINT32 offsetBottom, UINT32 x, UINT32 width, UINT16 depth = 0,
+			GUILayoutType layoutType = GUILayoutType::LayoutX);
 
 		/**
 		 * @brief	Destroys a GUI area and removes it from the parent GUIWidget.
@@ -196,7 +212,7 @@ namespace BansheeEngine
 		 *			position relative to the parent widget in pixels, and depth relative to
 		 *			parent widget (smaller depth means closer).
 		 */
-		GUIArea(GUIWidget* widget, INT32 x, INT32 y, UINT16 depth);
+		GUIArea(GUIWidget* widget, INT32 x, INT32 y, UINT16 depth, GUILayoutType layoutType);
 
 		/**
 		 * @brief	Check if any of the area properties changed since the last update.

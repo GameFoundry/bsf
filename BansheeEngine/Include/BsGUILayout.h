@@ -43,11 +43,6 @@ namespace BansheeEngine
 		GUILayout& addLayoutY() { return addLayoutYInternal(this); }
 
 		/**
-		 * @brief	Adds a new explicit layout as a child of this layout.
-		 */
-		GUILayout& addLayoutExplicit() { return addLayoutExplicitInternal(this); }
-
-		/**
 		 * @brief	Removes the specified child layout.
 		 */
 		void removeLayout(GUILayout& layout) { removeLayoutInternal(layout); }
@@ -61,11 +56,6 @@ namespace BansheeEngine
 		 * @brief	Inserts a vertical layout before the element at the specified index.
 		 */
 		GUILayout& insertLayoutY(UINT32 idx) { return insertLayoutYInternal(this, idx); }
-
-		/**
-		 * @brief	Inserts an explicit layout before the element at the specified index.
-		 */
-		GUILayout& insertLayoutExplicit(UINT32 idx) { return insertLayoutExplicitInternal(this, idx); }
 
 		/**
 		 * @brief	Adds a fixed space as a child of this layout. Size of space is specified in pixels.

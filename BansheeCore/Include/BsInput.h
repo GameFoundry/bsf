@@ -143,6 +143,30 @@ namespace BansheeEngine
 		Vector2I getPointerDelta() const { return mPointerDelta; }
 
 		/**
+		 * @brief	Query if the provided pointer button is currently 
+		 *			being held (this frame or previous frames).
+		 *
+		 * @param	pointerButton		Code of the button to query.
+		 */
+		bool isPointerButtonHeld(PointerEventButton pointerButton) const;
+
+		/**
+		 * @brief	Query if the provided pointer button is currently 
+		 *			being released (one true for one frame).
+		 *
+		 * @param	pointerButton		Code of the button to query.
+		 */
+		bool isPointerButtonUp(PointerEventButton pointerButton) const;
+
+		/**
+		 * @brief	Query if the provided pointer button is currently 
+		 *			being pressed (one true for one frame).
+		 *
+		 * @param	pointerButton		Code of the button to query.
+		 */
+		bool isPointerButtonDown(PointerEventButton pointerButton) const;
+
+		/**
 		 * @brief	Enables or disables mouse smoothing. Smoothing makes the changes to
 		 *			mouse axes more gradual.
 		 */
@@ -206,6 +230,7 @@ namespace BansheeEngine
 		Vector<DeviceData> mDevices;
 		Vector2I mPointerPosition;
 		Vector2I mPointerDelta;
+		ButtonState mPointerButtonStates[3];
 		bool mLastPositionSet;
 
 		/************************************************************************/

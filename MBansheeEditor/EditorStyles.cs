@@ -12,5 +12,7 @@ namespace BansheeEditor
         public const string Button = "Button";
         public const string Toggle = "Toggle";
         public const string InputBox = "InputBox";
+        public const string ColorSliderHorz = "ColorSliderHorz";
+        public const string ColorSliderVert = "ColorSliderVert";
     }
 }

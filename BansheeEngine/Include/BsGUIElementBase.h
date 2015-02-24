@@ -265,11 +265,6 @@ namespace BansheeEngine
 		GUILayout& addLayoutYInternal(GUIElementBase* parent);
 
 		/**
-		 * @brief	Creates and adds a new explicit layout to the specified "parent" element.
-		 */
-		GUILayout& addLayoutExplicitInternal(GUIElementBase* parent);
-
-		/**
 		 * @brief	Removes an existing layout from this element.
 		 */
 		void removeLayoutInternal(GUILayout& layout);
@@ -285,12 +280,6 @@ namespace BansheeEngine
 		 *			at a specific child index. Caller must ensure index is in valid range.
 		 */
 		GUILayout& insertLayoutYInternal(GUIElementBase* parent, UINT32 idx);
-
-		/**
-		 * @brief	Creates and adds a new explicit layout to the specified "parent" element,
-		 *			at a specific child index. Caller must ensure index is in valid range.
-		 */
-		GUILayout& insertLayoutExplicitInternal(GUIElementBase* parent, UINT32 idx);
 
 		GUIWidget* mParentWidget;
 		GUIElementBase* mParentElement;

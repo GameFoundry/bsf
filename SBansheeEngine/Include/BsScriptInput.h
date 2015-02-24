@@ -26,6 +26,9 @@ namespace BansheeEngine
 		static bool internal_isButtonHeld(ButtonCode code, UINT32 deviceIdx);
 		static bool internal_isButtonDown(ButtonCode code, UINT32 deviceIdx);
 		static bool internal_isButtonUp(ButtonCode code, UINT32 deviceIdx);
+		static bool internal_isPointerButtonHeld(PointerEventButton code);
+		static bool internal_isPointerButtonDown(PointerEventButton code);
+		static bool internal_isPointerButtonUp(PointerEventButton code);
 		static float internal_getAxisValue(UINT32 axisType, UINT32 deviceIdx);
 		static void internal_getPointerPosition(Vector2I* position);
 		static void internal_getPointerDelta(Vector2I* position);

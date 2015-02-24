@@ -31,6 +31,9 @@ namespace BansheeEngine
 		mOSInputHandler->onInputCommand.connect(std::bind(&Input::inputCommandEntered, this, _1));
 
 		RenderWindowManager::instance().onFocusGained.connect(std::bind(&Input::inputWindowChanged, this, _1));
+
+		for (int i = 0; i < 3; i++)
+			mPointerButtonStates[i] = ButtonState::Off;
 	}
 
 	Input::~Input()
@@ -66,6 +69,14 @@ namespace BansheeEngine
 				else if (deviceData.keyStates[i] == ButtonState::ToggledOn)
 					deviceData.keyStates[i] = ButtonState::On;
 			}
+		}
+
+		for (UINT32 i = 0; i < 3; i++)
+		{
+			if (mPointerButtonStates[i] == ButtonState::ToggledOff)
+				mPointerButtonStates[i] = ButtonState::Off;
+			else if (mPointerButtonStates[i] == ButtonState::ToggledOn)
+				mPointerButtonStates[i] = ButtonState::On;
 		}
 
 		mPointerDelta = Vector2I::ZERO; // Reset delta in case we don't receive any mouse input this frame
@@ -158,12 +169,16 @@ namespace BansheeEngine
 
 	void Input::cursorPressed(const PointerEvent& event)
 	{
+		mPointerButtonStates[(UINT32)event.button] = ButtonState::ToggledOn;
+
 		if(!onPointerPressed.empty())
 			onPointerPressed(event);
 	}
 
 	void Input::cursorReleased(const PointerEvent& event)
 	{
+		mPointerButtonStates[(UINT32)event.button] = ButtonState::ToggledOff;
+
 		if(!onPointerReleased.empty())
 			onPointerReleased(event);
 	}
@@ -226,6 +241,22 @@ namespace BansheeEngine
 			return false;
 
 		return mDevices[deviceIdx].keyStates[button & 0x0000FFFF] == ButtonState::ToggledOn;
+	}
+
+	bool Input::isPointerButtonHeld(PointerEventButton pointerButton) const
+	{
+		return mPointerButtonStates[(UINT32)pointerButton] == ButtonState::On ||
+			mPointerButtonStates[(UINT32)pointerButton] == ButtonState::ToggledOn;
+	}
+
+	bool Input::isPointerButtonUp(PointerEventButton pointerButton) const
+	{
+		return mPointerButtonStates[(UINT32)pointerButton] == ButtonState::ToggledOff;
+	}
+
+	bool Input::isPointerButtonDown(PointerEventButton pointerButton) const
+	{
+		return mPointerButtonStates[(UINT32)pointerButton] == ButtonState::ToggledOn;
 	}
 
 	Vector2I Input::getPointerPosition() const

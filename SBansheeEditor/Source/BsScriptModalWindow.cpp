@@ -9,6 +9,7 @@
 #include "BsMonoAssembly.h"
 #include "BsScriptObjectManager.h"
 #include "BsScriptHString.h"
+#include "BsRenderWindow.h"
 
 using namespace std::placeholders;
 
@@ -38,6 +39,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetWidth", &ScriptModalWindow::internal_setWidth);
 		metaData.scriptClass->addInternalCall("Internal_SetHeight", &ScriptModalWindow::internal_setHeight);
 		metaData.scriptClass->addInternalCall("Internal_SetTitle", &ScriptModalWindow::internal_setTitle);
+		metaData.scriptClass->addInternalCall("Internal_ScreenToWindowPos", &ScriptModalWindow::internal_screenToWindowPos);
+		metaData.scriptClass->addInternalCall("Internal_WindowToScreenPos", &ScriptModalWindow::internal_windowToScreenPos);
 
 		onInitializedInternalMethod = metaData.scriptClass->getMethod("OnInitializeInternal", 0);
 		onDestroyInternalMethod = metaData.scriptClass->getMethod("OnDestroyInternal", 0);
@@ -177,6 +180,18 @@ namespace BansheeEngine
 		Rect2I contentArea = thisPtr->mModalWindow->getContentArea();
 		scriptGUIPanel->setParentArea(contentArea.x, contentArea.y, contentArea.width, contentArea.height);
 		scriptGUIPanel->setParentWidget(thisPtr->mModalWindow->getGUIWidget().get());
+	}
+
+	void ScriptModalWindow::internal_screenToWindowPos(ScriptModalWindow* thisPtr, Vector2I screenPos, Vector2I* windowPos)
+	{
+		RenderWindowPtr parentRenderWindow = thisPtr->mModalWindow->getRenderWindow();
+		*windowPos = parentRenderWindow->screenToWindowPos(screenPos);
+	}
+
+	void ScriptModalWindow::internal_windowToScreenPos(ScriptModalWindow* thisPtr, Vector2I windowPos, Vector2I* screenPos)
+	{
+		RenderWindowPtr parentRenderWindow = thisPtr->mModalWindow->getRenderWindow();
+		*screenPos = parentRenderWindow->windowToScreenPos(windowPos);
 	}
 
 	ManagedModalWindow::ManagedModalWindow(bool allowCloseButton, MonoObject* managedInstance)

@@ -34,6 +34,9 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_IsButtonHeld", &ScriptInput::internal_isButtonHeld);
 		metaData.scriptClass->addInternalCall("Internal_IsButtonDown", &ScriptInput::internal_isButtonDown);
 		metaData.scriptClass->addInternalCall("Internal_IsButtonUp", &ScriptInput::internal_isButtonUp);
+		metaData.scriptClass->addInternalCall("Internal_IsPointerButtonHeld", &ScriptInput::internal_isPointerButtonHeld);
+		metaData.scriptClass->addInternalCall("Internal_IsPointerButtonDown", &ScriptInput::internal_isPointerButtonDown);
+		metaData.scriptClass->addInternalCall("Internal_IsPointerButtonUp", &ScriptInput::internal_isPointerButtonUp);
 		metaData.scriptClass->addInternalCall("Internal_GetAxisValue", &ScriptInput::internal_getAxisValue);
 		metaData.scriptClass->addInternalCall("Internal_GetPointerPosition", &ScriptInput::internal_getPointerPosition);
 		metaData.scriptClass->addInternalCall("Internal_GetPointerDelta", &ScriptInput::internal_getPointerDelta);
@@ -152,6 +155,21 @@ namespace BansheeEngine
 	bool ScriptInput::internal_isButtonUp(ButtonCode code, UINT32 deviceIdx)
 	{
 		return Input::instance().isButtonUp(code, deviceIdx);
+	}
+
+	bool ScriptInput::internal_isPointerButtonHeld(PointerEventButton code)
+	{
+		return Input::instance().isPointerButtonHeld(code);
+	}
+
+	bool ScriptInput::internal_isPointerButtonDown(PointerEventButton code)
+	{
+		return Input::instance().isPointerButtonDown(code);
+	}
+
+	bool ScriptInput::internal_isPointerButtonUp(PointerEventButton code)
+	{
+		return Input::instance().isPointerButtonUp(code);
 	}
 
 	float ScriptInput::internal_getAxisValue(UINT32 axisType, UINT32 deviceIdx)

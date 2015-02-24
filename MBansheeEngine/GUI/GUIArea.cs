@@ -29,10 +29,10 @@ namespace BansheeEngine
         }
 
         // Note: Should only ever be called by its parent GUIPanel
-        internal static GUIArea Create(GUIPanel parent, int x, int y, int width, int height, Int16 depth)
+        internal static GUIArea Create(GUIPanel parent, int x, int y, int width, int height, Int16 depth, GUILayoutType layoutType)
         {
             GUIArea newArea = new GUIArea();
-            Internal_CreateInstance(newArea, parent, x, y, width, height, depth);
+            Internal_CreateInstance(newArea, parent, x, y, width, height, depth, layoutType);
             newArea._layout = new GUILayoutX(newArea);
 
             return newArea;
@@ -63,7 +63,8 @@ namespace BansheeEngine
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(GUIArea instance, GUIPanel parent, int x, int y, int width, int height, Int16 depth);
+        private static extern void Internal_CreateInstance(GUIArea instance, GUIPanel parent, int x, int y, 
+            int width, int height, Int16 depth, GUILayoutType layoutType);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetArea(IntPtr nativeInstance, int x, int y, int width, int height, Int16 depth);
@@ -73,5 +74,11 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetVisible(IntPtr nativeInstance, bool visible);
+    }
+
+    // Note: Must have same layout as GUILayoutType
+    public enum GUILayoutType
+    {
+        X, Y, Explicit
     }
 }

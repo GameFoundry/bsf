@@ -22,10 +22,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateInstanceXFromArea", &ScriptGUILayout::internal_createInstanceXFromArea);
 		metaData.scriptClass->addInternalCall("Internal_CreateInstanceXFromLayoutAdd", &ScriptGUILayout::internal_createInstanceXFromLayoutAdd);
 		metaData.scriptClass->addInternalCall("Internal_CreateInstanceYFromLayoutAdd", &ScriptGUILayout::internal_createInstanceYFromLayoutAdd);
-		metaData.scriptClass->addInternalCall("Internal_CreateInstanceExplicitFromLayoutAdd", &ScriptGUILayout::internal_createInstanceExplicitFromLayoutAdd);
 		metaData.scriptClass->addInternalCall("Internal_CreateInstanceXFromLayoutInsert", &ScriptGUILayout::internal_createInstanceXFromLayoutInsert);
 		metaData.scriptClass->addInternalCall("Internal_CreateInstanceYFromLayoutInsert", &ScriptGUILayout::internal_createInstanceYFromLayoutInsert);
-		metaData.scriptClass->addInternalCall("Internal_CreateInstanceExplicitFromLayoutInsert", &ScriptGUILayout::internal_createInstanceExplicitFromLayoutInsert);
 		metaData.scriptClass->addInternalCall("Internal_CreateInstanceYFromScrollArea", &ScriptGUILayout::internal_createInstanceYFromScrollArea);
 		metaData.scriptClass->addInternalCall("Internal_AddElement", &ScriptGUILayout::internal_addElement);
 		metaData.scriptClass->addInternalCall("Internal_InsertElement", &ScriptGUILayout::internal_insertElement);
@@ -64,16 +62,6 @@ namespace BansheeEngine
 			ScriptGUILayout(instance, &layout, nativeLayout);
 	}
 
-	void ScriptGUILayout::internal_createInstanceExplicitFromLayoutAdd(MonoObject* instance, MonoObject* parentLayout)
-	{
-		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
-		GUILayout* nativeLayout = scriptLayout->getInternalValue();
-		GUILayout& layout = nativeLayout->addLayoutExplicit();
-
-		ScriptGUILayout* nativeInstance = new (bs_alloc<ScriptGUILayout>())
-			ScriptGUILayout(instance, &layout, nativeLayout);
-	}
-
 	void ScriptGUILayout::internal_createInstanceYFromLayoutAdd(MonoObject* instance, MonoObject* parentLayout)
 	{
 		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
@@ -99,16 +87,6 @@ namespace BansheeEngine
 		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
 		GUILayout* nativeLayout = scriptLayout->getInternalValue();
 		GUILayout& layout = nativeLayout->insertLayoutY(index);
-
-		ScriptGUILayout* nativeInstance = new (bs_alloc<ScriptGUILayout>())
-			ScriptGUILayout(instance, &layout, nativeLayout);
-	}
-
-	void ScriptGUILayout::internal_createInstanceExplicitFromLayoutInsert(MonoObject* instance, MonoObject* parentLayout, UINT32 index)
-	{
-		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
-		GUILayout* nativeLayout = scriptLayout->getInternalValue();
-		GUILayout& layout = nativeLayout->insertLayoutExplicit(index);
 
 		ScriptGUILayout* nativeInstance = new (bs_alloc<ScriptGUILayout>())
 			ScriptGUILayout(instance, &layout, nativeLayout);
