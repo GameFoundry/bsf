@@ -308,6 +308,8 @@ namespace BansheeEngine
 			void* params[] = { &width, &height };
 			mOnWindowResizedMethod->invokeVirtual(mManagedInstance, params);
 		}
+
+		ModalWindow::resized();
 	}
 
 	void ManagedModalWindow::close()
@@ -332,6 +334,7 @@ namespace BansheeEngine
 		if (onDestroyMethod != nullptr)
 			mOnDestroyThunk = (OnDestroyThunkDef)onDestroyMethod->getThunk();
 
-		mOnWindowResizedMethod = windowClass->getMethod("OnWindowResized", 2);
+		MonoClass* modalWindowClass = windowClass->getBaseClass();
+		mOnWindowResizedMethod = modalWindowClass->getMethod("OnWindowResized", 2);
 	}
 }

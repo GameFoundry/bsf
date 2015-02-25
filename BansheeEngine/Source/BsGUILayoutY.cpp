@@ -81,14 +81,15 @@ namespace BansheeEngine
 
 			mSizeRange.optimal.y += childSizeRange.optimal.y + paddingY;
 			mSizeRange.min.y += childSizeRange.min.y + paddingY;
-			mSizeRange.max.y += childSizeRange.max.y + paddingY;
 
 			mSizeRange.optimal.x = std::max((UINT32)mSizeRange.optimal.x, childSizeRange.optimal.x + paddingX);
 			mSizeRange.min.x = std::max((UINT32)mSizeRange.min.x, childSizeRange.min.x + paddingX);
-			mSizeRange.max.x = std::max((UINT32)mSizeRange.max.x, childSizeRange.max.x + paddingX);
 
 			childIdx++;
 		}
+
+		mSizeRange.max.x = 0;
+		mSizeRange.max.y = 0;
 	}
 
 	void GUILayoutY::_getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements, 

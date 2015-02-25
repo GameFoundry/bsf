@@ -53,6 +53,11 @@ namespace BansheeEditor
         private GUIIntField guiInputB;
         private GUIIntField guiInputA;
 
+        private GUIButton guiOK;
+        private GUIButton guiCancel;
+
+        private Action<bool, Color> closedCallback;
+
         public enum ColorBoxMode
         {
             BG_R,
@@ -77,9 +82,12 @@ namespace BansheeEditor
             }
         }
 
-        public static ColorPicker Show()
+        public static ColorPicker Show(Action<bool, Color> closedCallback = null)
         {
-            return new ColorPicker();
+            ColorPicker picker = new ColorPicker();
+            picker.closedCallback = closedCallback;
+
+            return picker;
         }
 
         protected ColorPicker()
@@ -120,6 +128,9 @@ namespace BansheeEditor
             guiInputB = new GUIIntField();
             guiInputA = new GUIIntField();
 
+            guiOK = new GUIButton("OK");
+            guiCancel = new GUIButton("Cancel");
+
             guiColorBoxBtn.OnClick += OnColorBoxModeChanged;
             guiColorModeBtn.OnClick += OnSliderModeChanged;
 
@@ -133,6 +144,9 @@ namespace BansheeEditor
             guiInputG.OnChanged += OnInputGChanged;
             guiInputB.OnChanged += OnInputBChanged;
             guiInputA.OnChanged += OnInputAChanged;
+
+            guiOK.OnClick += OnOK;
+            guiCancel.OnClick += OnCancel;
 
             GUILayout v0 = GUI.layout.AddLayoutY();
 
@@ -185,6 +199,15 @@ namespace BansheeEditor
             h5.AddElement(guiSliderAHorzTex);
             h5.AddFlexibleSpace();
             h5.AddElement(guiInputA);
+
+            v0.AddSpace(20);
+
+            GUILayout h6 = v0.AddLayoutX();
+            h6.AddFlexibleSpace();
+            h6.AddElement(guiOK);
+            h6.AddSpace(10);
+            h6.AddElement(guiCancel);
+            h6.AddFlexibleSpace();
 
             GUIArea overlay = GUI.AddArea(0, 0, Width, Height, -1, GUILayoutType.Explicit);
             overlay.layout.AddElement(guiSliderVert);
@@ -524,6 +547,18 @@ namespace BansheeEditor
 
             guiColor.Value = SelectedColor;
             guiSliderAHorz.Percent = colAlpha;
+        }
+
+        void OnOK()
+        {
+            if (closedCallback != null)
+                closedCallback(true, SelectedColor);
+        }
+
+        void OnCancel()
+        {
+            if (closedCallback != null)
+                closedCallback(false, SelectedColor);
         }
 
         void UpdateInputBoxValues()
