@@ -505,5 +505,8 @@
     <ClCompile Include="Source\BsGUILayoutExplicit.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
+    <ClCompile Include="Source\BsGUISpace.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

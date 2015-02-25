@@ -51,14 +51,14 @@ namespace BansheeEngine
 		mClippedBounds = bounds;
 	}
 
-	void GUIScrollArea::_getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements, const Vector<Vector2I>& optimalSizes) const
+	void GUIScrollArea::_getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements, const Vector<LayoutSizeRange>& sizeRanges) const
 	{
 		Vector2I visibleSize, contentSize;
-		_getElementAreas(x, y, width, height, elementAreas, numElements, optimalSizes, visibleSize, contentSize);
+		_getElementAreas(x, y, width, height, elementAreas, numElements, sizeRanges, visibleSize, contentSize);
 	}
 
 	void GUIScrollArea::_getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements, 
-		const Vector<Vector2I>& optimalSizes, Vector2I& visibleSize, Vector2I& contentSize) const
+		const Vector<LayoutSizeRange>& sizeRanges, Vector2I& visibleSize, Vector2I& contentSize) const
 	{
 		assert(mChildren.size() == numElements && numElements == 3);
 
@@ -86,11 +86,11 @@ namespace BansheeEngine
 		//// technically provides "infinite" space
 		UINT32 optimalContentWidth = width;
 		if (mHorzBarType != ScrollBarType::NeverShow)
-			optimalContentWidth = optimalSizes[layoutIdx].x;
+			optimalContentWidth = sizeRanges[layoutIdx].optimal.x;
 
 		UINT32 optimalContentHeight = height;
 		if (mVertBarType != ScrollBarType::NeverShow)
-			optimalContentHeight = optimalSizes[layoutIdx].y;
+			optimalContentHeight = sizeRanges[layoutIdx].optimal.y;
 
 		UINT32 layoutWidth = std::max(optimalContentWidth, width);
 		UINT32 layoutHeight = std::max(optimalContentHeight, height);
@@ -195,14 +195,14 @@ namespace BansheeEngine
 		if (numElements > 0)
 			elementAreas = stackConstructN<Rect2I>(numElements);
 
-		Vector<Vector2I> optimalSizes;
+		Vector<LayoutSizeRange> sizeRanges;
 		UINT32 layoutIdx = 0;
 		UINT32 horzScrollIdx = 0;
 		UINT32 vertScrollIdx = 0;
 		for (UINT32 i = 0; i < numElements; i++)
 		{
 			GUIElementBase* child = _getChild(i);
-			optimalSizes.push_back(GUILayoutUtility::calcOptimalSize(child));
+			sizeRanges.push_back(child->_calculateLayoutSizeRange());
 
 			if (child == mContentLayout)
 				layoutIdx = i;
@@ -214,7 +214,7 @@ namespace BansheeEngine
 				vertScrollIdx = i;
 		}
 
-		_getElementAreas(x, y, width, height, elementAreas, numElements, optimalSizes, mVisibleSize, mContentSize);
+		_getElementAreas(x, y, width, height, elementAreas, numElements, sizeRanges, mVisibleSize, mContentSize);
 
 		Rect2I& layoutBounds = elementAreas[layoutIdx];
 		Rect2I& horzScrollBounds = elementAreas[horzScrollIdx];

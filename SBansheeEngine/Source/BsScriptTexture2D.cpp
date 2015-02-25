@@ -94,6 +94,7 @@ namespace BansheeEngine
 		const TextureProperties& props = texture->getProperties();
 
 		PixelDataPtr pixelData = bs_shared_ptr<PixelData>(props.getWidth(), props.getHeight(), props.getDepth(), props.getFormat());
+		pixelData->allocateInternalBuffer();
 		pixelData->setColors(colorsRaw, numElements);
 
 		UINT32 subresourceIdx = texture->getProperties().mapToSubresourceIdx(0, mipLevel);

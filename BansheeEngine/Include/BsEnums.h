@@ -30,4 +30,12 @@ namespace BansheeEngine
 	{
 		RenType_LitTextured
 	};
+
+	/**
+	 * @brief	Type of layout that a GUIArea can initially be created with.
+	 */
+	enum class GUILayoutType
+	{
+		LayoutX, LayoutY, LayoutExplicit
+	};
 }

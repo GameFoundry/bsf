@@ -10,29 +10,33 @@ namespace BansheeEngine
 		:GUILayout(parentArea)
 	{ }
 
-	Vector2I GUILayoutX::_calculateOptimalLayoutSize() const
+	LayoutSizeRange GUILayoutX::_calculateLayoutSizeRange() const
 	{
-		if (mIsDisabled)
-			return Vector2I(0, 0);
+		LayoutSizeRange layoutSizeRange;
 
-		UINT32 optimalWidth = 0;
-		UINT32 optimalHeight = 0;
+		if (mIsDisabled)
+			return layoutSizeRange;
 
 		for (auto& child : mChildren)
 		{
-			Vector2I optimalSize = child->_calculateOptimalLayoutSize();
+			LayoutSizeRange sizeRange = child->_calculateLayoutSizeRange();
 
 			if (child->_getType() == GUIElementBase::Type::FixedSpace)
-				optimalSize.y = 0;
+				sizeRange.optimal.y = sizeRange.min.y = sizeRange.max.y = 0;
 
 			UINT32 paddingX = child->_getPadding().left + child->_getPadding().right;
 			UINT32 paddingY = child->_getPadding().top + child->_getPadding().bottom;
 
-			optimalWidth += optimalSize.x + paddingX;
-			optimalHeight = std::max((UINT32)optimalSize.y, optimalHeight + paddingY);
+			layoutSizeRange.optimal.x += sizeRange.optimal.x + paddingX;
+			layoutSizeRange.min.x += sizeRange.min.x + paddingX;
+			layoutSizeRange.max.x += sizeRange.max.x + paddingX;
+
+			layoutSizeRange.optimal.y = std::max((UINT32)sizeRange.optimal.y, layoutSizeRange.optimal.y + paddingY);
+			layoutSizeRange.min.y = std::max((UINT32)sizeRange.min.y, layoutSizeRange.min.y + paddingY);
+			layoutSizeRange.max.y = std::max((UINT32)sizeRange.max.y, layoutSizeRange.max.y + paddingY);
 		}
 
-		return Vector2I(optimalWidth, optimalHeight);
+		return layoutSizeRange;
 	}
 
 	void GUILayoutX::_updateOptimalLayoutSizes()
@@ -40,52 +44,54 @@ namespace BansheeEngine
 		// Update all children first, otherwise we can't determine our own optimal size
 		GUIElementBase::_updateOptimalLayoutSizes();
 
-		if(mChildren.size() != mOptimalSizes.size())
-			mOptimalSizes.resize(mChildren.size());
+		if(mChildren.size() != mChildSizeRanges.size())
+			mChildSizeRanges.resize(mChildren.size());
 
-		mOptimalWidth = 0;
-		mOptimalHeight = 0;
+		mSizeRange = LayoutSizeRange();
 
 		UINT32 childIdx = 0;
 		for(auto& child : mChildren)
 		{
-			UINT32 optimalWidth = 0;
-			UINT32 optimalHeight = 0;
+			LayoutSizeRange& childSizeRange = mChildSizeRanges[childIdx];
 
 			if (child->_getType() == GUIElementBase::Type::FixedSpace)
 			{
 				GUIFixedSpace* fixedSpace = static_cast<GUIFixedSpace*>(child);
-				optimalWidth = fixedSpace->_calculateOptimalLayoutSize().x;
+
+				childSizeRange = fixedSpace->_calculateLayoutSizeRange();
+				childSizeRange.optimal.y = 0;
+				childSizeRange.min.y = 0;
+				childSizeRange.max.y = 0;
 			}
 			else if (child->_getType() == GUIElementBase::Type::Element)
 			{
 				GUIElement* element = static_cast<GUIElement*>(child);
 				const GUILayoutOptions& layoutOptions = element->_getLayoutOptions();
 
-				Vector2I optimalSize = child->_calculateOptimalLayoutSize();
-				optimalWidth = optimalSize.x;
-				optimalHeight = optimalSize.y;
+				childSizeRange = child->_calculateLayoutSizeRange();
 			}
 			else if(child->_getType() == GUIElementBase::Type::Layout)
 			{
-				optimalWidth = child->_getOptimalSize().x;
-				optimalHeight = child->_getOptimalSize().y;
+				GUILayout* layout = static_cast<GUILayout*>(child);
+				childSizeRange = layout->_getCachedSizeRange();
 			}
 
 			UINT32 paddingX = child->_getPadding().left + child->_getPadding().right;
 			UINT32 paddingY = child->_getPadding().top + child->_getPadding().bottom;
 
-			mOptimalSizes[childIdx].x = optimalWidth;
-			mOptimalWidth += optimalWidth + paddingX;
+			mSizeRange.optimal.x += childSizeRange.optimal.x + paddingX;
+			mSizeRange.min.x += childSizeRange.min.x + paddingX;
+			mSizeRange.max.x += childSizeRange.max.x + paddingX;
 
-			mOptimalSizes[childIdx].y = optimalHeight;
-			mOptimalHeight = std::max(mOptimalHeight, optimalHeight + paddingY);
+			mSizeRange.optimal.y = std::max((UINT32)mSizeRange.optimal.y, childSizeRange.optimal.y + paddingY);
+			mSizeRange.min.y = std::max((UINT32)mSizeRange.min.y, childSizeRange.min.y + paddingY);
+			mSizeRange.max.y = std::max((UINT32)mSizeRange.max.y, childSizeRange.max.y + paddingY);
 
 			childIdx++;
 		}
 	}
 
-	void GUILayoutX::_getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements, const Vector<Vector2I>& optimalSizes) const
+	void GUILayoutX::_getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements, const Vector<LayoutSizeRange>& sizeRanges) const
 	{
 		assert(mChildren.size() == numElements);
 
@@ -110,7 +116,7 @@ namespace BansheeEngine
 		UINT32 childIdx = 0;
 		for (auto& child : mChildren)
 		{
-			elementAreas[childIdx].width = optimalSizes[childIdx].x;
+			elementAreas[childIdx].width = sizeRanges[childIdx].optimal.x;
 
 			if (child->_getType() == GUIElementBase::Type::FixedSpace)
 			{
@@ -227,32 +233,19 @@ namespace BansheeEngine
 					UINT32 elementWidth = (UINT32)std::max(0, (INT32)elementAreas[childIdx].width - (INT32)extraWidth);
 
 					// Clamp if needed
-					if (child->_getType() == GUIElementBase::Type::Element)
+					if (child->_getType() == GUIElementBase::Type::Element || child->_getType() == GUIElementBase::Type::Layout)
 					{
-						GUIElement* element = static_cast<GUIElement*>(child);
-						const GUILayoutOptions& layoutOptions = element->_getLayoutOptions();
+						const LayoutSizeRange& childSizeRange = sizeRanges[childIdx];
 
 						if (elementWidth == 0)
 						{
 							processedElements[childIdx] = true;
 							numNonClampedElements--;
 						}
-						else if (layoutOptions.minWidth > 0 && elementWidth < layoutOptions.minWidth)
+						else if (childSizeRange.min.x > 0 && (INT32)elementWidth < childSizeRange.min.x)
 						{
-							elementWidth = layoutOptions.minWidth;
+							elementWidth = childSizeRange.min.x;
 
-							processedElements[childIdx] = true;
-							numNonClampedElements--;
-						}
-
-						extraWidth = elementAreas[childIdx].width - elementWidth;
-						elementAreas[childIdx].width = elementWidth;
-						remainingSize = (UINT32)std::max(0, (INT32)remainingSize - (INT32)extraWidth);
-					}
-					else if (child->_getType() == GUIElementBase::Type::Layout)
-					{
-						if (elementWidth == 0)
-						{
 							processedElements[childIdx] = true;
 							numNonClampedElements--;
 						}
@@ -297,30 +290,24 @@ namespace BansheeEngine
 					UINT32 elementWidth = elementAreas[childIdx].width + extraWidth;
 
 					// Clamp if needed
-					if (child->_getType() == GUIElementBase::Type::Element)
+					if (child->_getType() == GUIElementBase::Type::Element || child->_getType() == GUIElementBase::Type::Layout)
 					{
-						GUIElement* element = static_cast<GUIElement*>(child);
-						const GUILayoutOptions& layoutOptions = element->_getLayoutOptions();
+						const LayoutSizeRange& childSizeRange = sizeRanges[childIdx];
 
 						if (elementWidth == 0)
 						{
 							processedElements[childIdx] = true;
 							numNonClampedElements--;
 						}
-						else if (layoutOptions.maxWidth > 0 && elementWidth > layoutOptions.maxWidth)
+						else if (childSizeRange.max.x > 0 && (INT32)elementWidth > childSizeRange.max.x)
 						{
-							elementWidth = layoutOptions.maxWidth;
+							elementWidth = childSizeRange.max.x;
 
 							processedElements[childIdx] = true;
 							numNonClampedElements--;
 						}
 
 						extraWidth = elementWidth - elementAreas[childIdx].width;
-						elementAreas[childIdx].width = elementWidth;
-						remainingSize = (UINT32)std::max(0, (INT32)remainingSize - (INT32)extraWidth);
-					}
-					else if (child->_getType() == GUIElementBase::Type::Layout)
-					{
 						elementAreas[childIdx].width = elementWidth;
 						remainingSize = (UINT32)std::max(0, (INT32)remainingSize - (INT32)extraWidth);
 					}
@@ -349,7 +336,7 @@ namespace BansheeEngine
 				GUIElement* element = static_cast<GUIElement*>(child);
 				element->setWidth(elemWidth);
 
-				UINT32 elemHeight = optimalSizes[childIdx].y;
+				UINT32 elemHeight = (UINT32)sizeRanges[childIdx].optimal.y;
 				const GUILayoutOptions& layoutOptions = element->_getLayoutOptions();
 				if (!layoutOptions.fixedHeight)
 				{
@@ -398,7 +385,7 @@ namespace BansheeEngine
 		if (numElements > 0)
 			elementAreas = stackConstructN<Rect2I>(numElements);
 
-		_getElementAreas(x, y,width, height, elementAreas, numElements, mOptimalSizes);
+		_getElementAreas(x, y,width, height, elementAreas, numElements, mChildSizeRanges);
 
 		// Now that we have all the areas, actually assign them
 		UINT32 childIdx = 0;

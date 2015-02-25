@@ -363,9 +363,9 @@ namespace BansheeEngine
 		virtual bool _hasCustomCursor(const Vector2I position, CursorType& type) const { return false; }
 
 		/**
-		 * @copydoc	GUIElementBase::_calculateOptimalLayoutSize
+		 * @copydoc	GUIElementBase::_calculateLayoutSizeRange
 		 */
-		virtual Vector2I _calculateOptimalLayoutSize() const;
+		virtual LayoutSizeRange _calculateLayoutSizeRange() const;
 
 		/**
 		 * @brief	Checks if the GUI element accepts a drag and drop operation of the specified type.

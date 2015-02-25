@@ -22,14 +22,14 @@ namespace BansheeEngine
 		void _updateOptimalLayoutSizes();
 
 		/**
-		 * @copydoc	GUIElementBase::_calculateOptimalLayoutSize
+		 * @copydoc	GUIElementBase::_calculateLayoutSizeRange
 		 */
-		virtual Vector2I _calculateOptimalLayoutSize() const;
+		virtual LayoutSizeRange _calculateLayoutSizeRange() const;
 
 		/**
 		 * @copydoc	GUILayout::_getElementAreas
 		 */
-		void _getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements, const Vector<Vector2I>& optimalSizes) const;
+		void _getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements, const Vector<LayoutSizeRange>& sizeRanges) const;
 
 		/**
 		 * @copydoc	GUILayout::_calcActualSize

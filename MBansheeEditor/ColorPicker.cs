@@ -86,8 +86,8 @@ namespace BansheeEditor
             : base(false)
         {
             Title = "Color Picker";
-            Width = 250;
-            Height = 75;
+            Width = 400;
+            Height = 800;
         }
 
         private void OnInitialize()
@@ -98,14 +98,16 @@ namespace BansheeEditor
             guiSliderRHorzTex = new GUITexture(null);
             guiSliderGHorzTex = new GUITexture(null);
             guiSliderBHorzTex = new GUITexture(null);
+            guiSliderAHorzTex = new GUITexture(null);
 
             guiColorBoxBtn = new GUIButton(colorBoxMode.ToString());
             guiColorModeBtn = new GUIButton(sliderMode.ToString());
 
-            guiSliderVert = new GUISliderV();
-            guiSliderRHorz = new GUISliderH();
-            guiSliderGHorz = new GUISliderH();
-            guiSliderBHorz = new GUISliderH();
+            guiSliderVert = new GUISliderV(EditorStyles.ColorSliderVert);
+            guiSliderRHorz = new GUISliderH(EditorStyles.ColorSliderHorz);
+            guiSliderGHorz = new GUISliderH(EditorStyles.ColorSliderHorz);
+            guiSliderBHorz = new GUISliderH(EditorStyles.ColorSliderHorz);
+            guiSliderAHorz = new GUISliderH(EditorStyles.ColorSliderHorz);
             guiSlider2DHandle = new GUITexture(null);
 
             guiLabelR = new GUILabel("R");
@@ -157,12 +159,16 @@ namespace BansheeEditor
             h2.AddFlexibleSpace();
             h2.AddElement(guiInputR);
 
+            v0.AddSpace(15);
+
             GUILayout h3 = v0.AddLayoutX();
             h3.AddElement(guiLabelG);
             h3.AddFlexibleSpace();
             h3.AddElement(guiSliderGHorzTex);
             h3.AddFlexibleSpace();
             h3.AddElement(guiInputG);
+
+            v0.AddSpace(15);
 
             GUILayout h4 = v0.AddLayoutX();
             h4.AddElement(guiLabelB);
@@ -171,11 +177,21 @@ namespace BansheeEditor
             h4.AddFlexibleSpace();
             h4.AddElement(guiInputB);
 
+            v0.AddSpace(15);
+
+            GUILayout h5 = v0.AddLayoutX();
+            h5.AddElement(guiLabelA);
+            h5.AddFlexibleSpace();
+            h5.AddElement(guiSliderAHorzTex);
+            h5.AddFlexibleSpace();
+            h5.AddElement(guiInputA);
+
             GUIArea overlay = GUI.AddArea(0, 0, Width, Height, -1, GUILayoutType.Explicit);
             overlay.layout.AddElement(guiSliderVert);
             overlay.layout.AddElement(guiSliderRHorz);
             overlay.layout.AddElement(guiSliderGHorz);
             overlay.layout.AddElement(guiSliderBHorz);
+            overlay.layout.AddElement(guiSliderAHorz);
             overlay.layout.AddElement(guiSlider2DHandle);
 
             colorBox = new ColorSlider2D(guiSlider2DTex, guiSlider2DHandle, ColorBoxWidth, ColorBoxHeight);
@@ -198,13 +214,16 @@ namespace BansheeEditor
             Color startA = new Color(0, 0, 0, 1);
             Color stepA = new Color(1, 1, 1, 0);
             sliderA.UpdateTexture(startA, stepA, false);
+            guiInputA.SetRange(0, 255);
         }
 
-        private void EditorUpdate()
+        private void OnEditorUpdate()
         {
             Vector2I windowPos = ScreenToWindowPos(Input.PointerPosition);
 
             colorBox.UpdateInput(windowPos);
+
+            Debug.Log(Width + " - " + Height + " - " + GUI.childAreas[0].mCachedPtr);
         }
 
         private static void FillArea(int width, int height, Color[] colors, Color start, Color rightGradient, Color downGradient)

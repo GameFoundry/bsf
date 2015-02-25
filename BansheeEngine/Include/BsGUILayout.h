@@ -102,9 +102,14 @@ namespace BansheeEngine
 		void removeChildAt(UINT32 idx);
 
 		/**
+		 * @brief	Returns a size range that was cached during the last "_updateOptimalLayoutSizes" call.
+		 */
+		LayoutSizeRange _getCachedSizeRange() const { return mSizeRange; }
+
+		/**
 		 * @copydoc	GUIElementBase::_getOptimalSize
 		 */
-		Vector2I _getOptimalSize() const { return Vector2I(mOptimalWidth, mOptimalHeight); }
+		Vector2I _getOptimalSize() const { return mSizeRange.optimal; }
 
 		/**
 		 * @copydoc	GUIElementBase::_getPadding
@@ -154,9 +159,8 @@ namespace BansheeEngine
 	protected:
 		GUIArea* mParentGUIArea;
 
-		Vector<Vector2I> mOptimalSizes;
-		UINT32 mOptimalWidth;
-		UINT32 mOptimalHeight;
+		Vector<LayoutSizeRange> mChildSizeRanges;
+		LayoutSizeRange mSizeRange;
 
 		UINT32 mActualWidth;
 		UINT32 mActualHeight;

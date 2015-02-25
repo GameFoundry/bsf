@@ -10,6 +10,11 @@ Possibly set up automatic refresh in debug mode after initialization? As an ad-h
 C#:
 Dialog.Show(title, text, btn1 text, btn1 callback, btn2 text, btn2 callback, btn3 text, btn3 callback)
 
+ColorPicker
+ - Add OK button
+ - GUI elements are all cut off and I cannot see the sliders
+ - Input range limit on int fields seems broken. As I enter larger values they seem to overflow to other fields?
+
 Got a crash on shutdown that was caused by locking a mutex in an Event destructor. Event was Platform::onMouseCaptureChanged. 
 Issue happened when I closed the app via the X button (if that's relevant). It doesn't seem to happen always.
 

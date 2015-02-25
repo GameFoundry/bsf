@@ -15,6 +15,8 @@ namespace BansheeEngine
 		:EditorWindowBase(true), mTitleBarArea(nullptr), mTitleBarBgArea(nullptr), 
 		mCloseButton(nullptr), mTitleBarBg(nullptr), mTitle(nullptr)
 	{
+		EditorWindowManager::instance().registerWindow(this);
+
 		mTitleBarBgArea = GUIArea::createStretchedXY(*mGUI, 1, 1, 1, 1, std::numeric_limits<UINT16>::max() - 1);
 		mTitleBarArea = GUIArea::createStretchedXY(*mGUI, 1, 1, 1, 1, 0);
 
@@ -59,7 +61,7 @@ namespace BansheeEngine
 
 	void ModalWindow::close()
 	{
-		bs_delete(this);
+		EditorWindowManager::instance().destroy(this);
 	}
 
 	void ModalWindow::setTitle(const HString& title)

@@ -10,9 +10,9 @@ namespace BansheeEngine
 		:GUILayout(parentArea)
 	{ }
 
-	Vector2I GUILayoutExplicit::_calculateOptimalLayoutSize() const
+	LayoutSizeRange GUILayoutExplicit::_calculateLayoutSizeRange() const
 	{
-		return Vector2I(0, 0);
+		return LayoutSizeRange();
 	}
 
 	void GUILayoutExplicit::_updateOptimalLayoutSizes()
@@ -20,7 +20,7 @@ namespace BansheeEngine
 
 	}
 
-	void GUILayoutExplicit::_getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements, const Vector<Vector2I>& optimalSizes) const
+	void GUILayoutExplicit::_getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements, const Vector<LayoutSizeRange>& sizeRanges) const
 	{
 		assert(mChildren.size() == numElements);
 

@@ -9,7 +9,7 @@ namespace BansheeEngine
 {
 	Vector2I GUILayoutUtility::calcOptimalSize(const GUIElementBase* elem)
 	{
-		return elem->_calculateOptimalLayoutSize();
+		return elem->_calculateLayoutSizeRange().optimal;
 	}
 
 	Rect2I GUILayoutUtility::calcBounds(const GUIElementBase* elem)
@@ -36,7 +36,7 @@ namespace BansheeEngine
 		UINT32 numElements = (UINT32)parent->_getNumChildren();
 		UINT32 myIndex = 0;
 
-		Vector<Vector2I> optimalSizes;
+		Vector<LayoutSizeRange> sizeRanges;
 		for (UINT32 i = 0; i < numElements; i++)
 		{
 			GUIElementBase* child = parent->_getChild(i);
@@ -44,7 +44,7 @@ namespace BansheeEngine
 			if (child == elem)
 				myIndex = i;
 
-			optimalSizes.push_back(calcOptimalSize(child));
+			sizeRanges.push_back(child->_calculateLayoutSizeRange());
 		}
 
 		Rect2I* elementAreas = nullptr;
@@ -52,7 +52,7 @@ namespace BansheeEngine
 		if (numElements > 0)
 			elementAreas = stackConstructN<Rect2I>(numElements);
 
-		parent->_getElementAreas(parentArea.x, parentArea.y, parentArea.width, parentArea.height, elementAreas, numElements, optimalSizes);
+		parent->_getElementAreas(parentArea.x, parentArea.y, parentArea.width, parentArea.height, elementAreas, numElements, sizeRanges);
 		Rect2I myArea = elementAreas[myIndex];
 
 		if (elementAreas != nullptr)
@@ -65,11 +65,11 @@ namespace BansheeEngine
 	{
 		UINT32 numElements = (UINT32)layout->_getNumChildren();
 
-		Vector<Vector2I> optimalSizes;
+		Vector<LayoutSizeRange> sizeRanges;
 		for (UINT32 i = 0; i < numElements; i++)
 		{
 			GUIElementBase* child = layout->_getChild(i);
-			optimalSizes.push_back(GUILayoutUtility::calcOptimalSize(child));
+			sizeRanges.push_back(child->_calculateLayoutSizeRange());
 		}
 
 		Rect2I* elementAreas = nullptr;
@@ -77,7 +77,7 @@ namespace BansheeEngine
 		if (numElements > 0)
 			elementAreas = stackConstructN<Rect2I>(numElements);
 
-		layout->_getElementAreas(0, 0, width, height, elementAreas, numElements, optimalSizes);
+		layout->_getElementAreas(0, 0, width, height, elementAreas, numElements, sizeRanges);
 		Rect2I* actualAreas = elementAreas; // We re-use the same array
 
 		for (UINT32 i = 0; i < numElements; i++)

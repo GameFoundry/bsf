@@ -6,14 +6,6 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Type of layout that a GUIArea can initially be created with
-	 */
-	enum class GUILayoutType
-	{
-		LayoutX, LayoutY, LayoutExplicit
-	};
-
-	/**
 	 * @brief	GUIArea represents a freely positionable GUI panel with a GUILayout child.
 	 *			This is one of the top GUI elements (aside from GUIWidget) and all layouts
 	 *			must belong to a single GUIArea.

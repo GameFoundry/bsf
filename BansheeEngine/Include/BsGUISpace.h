@@ -39,9 +39,9 @@ namespace BansheeEngine
 		virtual Vector2I _getOptimalSize() const { return Vector2I(getSize(), getSize()); }
 
 		/**
-		 * @copydoc	GUIElementBase::_calculateOptimalLayoutSize
+		 * @copydoc	GUIElementBase::_calculateLayoutSizeRange
 		 */
-		virtual Vector2I _calculateOptimalLayoutSize() const { return _getOptimalSize(); }
+		virtual LayoutSizeRange _calculateLayoutSizeRange() const;
 
 		/**
 		 * @copydoc	GUIElementBase::_isContentDirty
@@ -96,9 +96,9 @@ namespace BansheeEngine
 		virtual Vector2I _getOptimalSize() const { return Vector2I(0, 0); }
 
 		/**
-		 * @copydoc	GUIElementBase::_calculateOptimalLayoutSize
+		 * @copydoc	GUIElementBase::_calculateLayoutSizeRange
 		 */
-		virtual Vector2I _calculateOptimalLayoutSize() const { return _getOptimalSize(); }
+		virtual LayoutSizeRange _calculateLayoutSizeRange() const;
 
 		/**
 		 * @copydoc	GUIElementBase::_isContentDirty

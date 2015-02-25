@@ -96,6 +96,7 @@ namespace BansheeEditor
             gizmoDbgObject.AddComponent<DbgGizmoComponent>();
 
             //ProgressBar.Show("Test", 0.5f);
+            ColorPicker.Show();
 
             // DEBUG ONLY END
         }

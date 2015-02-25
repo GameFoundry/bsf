@@ -71,4 +71,57 @@ namespace BansheeEngine
 	{
 
 	}
+
+	LayoutSizeRange GUILayoutOptions::calculateSizeRange(const Vector2I& optimal) const
+	{
+		LayoutSizeRange sizeRange;
+
+		if (fixedHeight)
+		{
+			sizeRange.optimal.y = height;
+			sizeRange.min.y = height;
+			sizeRange.max.y = height;
+		}
+		else
+		{
+			sizeRange.optimal.y = optimal.y;
+
+			if (minHeight > 0)
+			{
+				sizeRange.optimal.y = std::max((INT32)minHeight, sizeRange.optimal.y);
+				sizeRange.min.y = minHeight;
+			}
+
+			if (maxHeight > 0)
+			{
+				sizeRange.optimal.y = std::min((INT32)maxHeight, sizeRange.optimal.y);
+				sizeRange.max.y = maxHeight;
+			}
+		}
+
+		if (fixedWidth)
+		{
+			sizeRange.optimal.x = width;
+			sizeRange.min.x = width;
+			sizeRange.max.x = width;
+		}
+		else
+		{
+			sizeRange.optimal.x = optimal.x;
+
+			if (minWidth > 0)
+			{
+				sizeRange.optimal.x = std::max((INT32)minWidth, sizeRange.optimal.x);
+				sizeRange.min.x = minWidth;
+			}
+
+			if (maxWidth > 0)
+			{
+				sizeRange.optimal.x = std::min((INT32)maxWidth, sizeRange.optimal.x);
+				sizeRange.max.x = maxWidth;
+			}
+		}
+
+		return sizeRange;
+	}
 }

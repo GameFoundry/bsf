@@ -8,15 +8,13 @@
 namespace BansheeEngine
 {
 	GUILayout::GUILayout(GUIArea* parentArea)
-		:mOptimalWidth(0), mOptimalHeight(0), mActualWidth(0), 
-		mActualHeight(0), mParentGUIArea(parentArea)
+		:mParentGUIArea(parentArea)
 	{
 
 	}
 
 	GUILayout::GUILayout()
-		:mOptimalWidth(0), mOptimalHeight(0), mActualWidth(0),
-		mActualHeight(0), mParentGUIArea(nullptr)
+		:mParentGUIArea(nullptr)
 	{
 
 	}

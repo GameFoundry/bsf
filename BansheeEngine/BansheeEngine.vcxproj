@@ -239,6 +239,7 @@
     <ClCompile Include="Source\BsGUILayoutUtility.cpp" />
     <ClCompile Include="Source\BsGUIProgressBar.cpp" />
     <ClCompile Include="Source\BsGUISlider.cpp" />
+    <ClCompile Include="Source\BsGUISpace.cpp" />
     <ClCompile Include="Source\BsInputConfiguration.cpp" />
     <ClCompile Include="Source\BsRenderableController.cpp" />
     <ClCompile Include="Source\BsRenderableHandler.cpp" />

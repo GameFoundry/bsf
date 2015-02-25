@@ -141,6 +141,8 @@ namespace BansheeEngine
 			renderWindow->resize(width, height);
 		};
 
+		getMutableProperties().mWidth = width;
+		getMutableProperties().mHeight = height;
 		accessor.queueCommand(std::bind(resizeFunc, getCore(), width, height));
 	}
 
@@ -152,6 +154,8 @@ namespace BansheeEngine
 			renderWindow->move(left, top);
 		};
 
+		getMutableProperties().mLeft = left;
+		getMutableProperties().mTop = top;
 		accessor.queueCommand(std::bind(moveFunc, getCore(), left, top));
 	}
 
@@ -163,6 +167,7 @@ namespace BansheeEngine
 			renderWindow->setHidden(true);
 		};
 
+		getMutableProperties().mHidden = true;
 		accessor.queueCommand(std::bind(hideFunc, getCore()));
 	}
 
@@ -174,6 +179,7 @@ namespace BansheeEngine
 			renderWindow->setHidden(false);
 		};
 
+		getMutableProperties().mHidden = false;
 		accessor.queueCommand(std::bind(showFunc, getCore()));
 	}
 
@@ -258,6 +264,11 @@ namespace BansheeEngine
 	RenderWindowPtr RenderWindow::create(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow)
 	{
 		return RenderWindowManager::instance().create(desc, parentWindow);
+	}
+
+	RenderWindowProperties& RenderWindow::getMutableProperties()
+	{
+		return const_cast<RenderWindowProperties&>(getProperties());
 	}
 
 	CoreSyncData RenderWindow::syncToCore(FrameAlloc* allocator)

@@ -160,49 +160,13 @@ namespace BansheeEngine
 		}
 	}
 
-	Vector2I GUIElement::_calculateOptimalLayoutSize() const
+	LayoutSizeRange GUIElement::_calculateLayoutSizeRange() const
 	{
 		if (mIsDisabled)
-			return Vector2I(0, 0);
+			return LayoutSizeRange();
 
 		const GUILayoutOptions& layoutOptions = _getLayoutOptions();
-
-		UINT32 optimalWidth = 0;
-		UINT32 optimalHeight = 0;
-
-		Vector2I optimalSize;
-		if (!layoutOptions.fixedWidth || !layoutOptions.fixedHeight)
-			optimalSize = _getOptimalSize();
-
-		if (layoutOptions.fixedHeight)
-		{
-			optimalHeight = layoutOptions.height;
-		}
-		else
-		{
-			optimalHeight = optimalSize.y;
-
-			if (layoutOptions.minHeight > 0)
-				optimalHeight = std::max(layoutOptions.minHeight, optimalHeight);
-
-			if (layoutOptions.maxHeight > 0)
-				optimalHeight = std::min(layoutOptions.maxHeight, optimalHeight);
-		}
-
-		if (layoutOptions.fixedWidth)
-			optimalWidth = layoutOptions.width;
-		else
-		{
-			optimalWidth = optimalSize.x;
-
-			if (layoutOptions.minWidth > 0)
-				optimalWidth = std::max(layoutOptions.minWidth, optimalWidth);
-
-			if (layoutOptions.maxWidth > 0)
-				optimalWidth = std::min(layoutOptions.maxWidth, optimalWidth);
-		}
-
-		return Vector2I(optimalWidth, optimalHeight);
+		return layoutOptions.calculateSizeRange(_getOptimalSize());
 	}
 
 	Rect2I GUIElement::_getCachedBounds() const

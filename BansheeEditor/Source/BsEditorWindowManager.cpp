@@ -41,6 +41,11 @@ namespace BansheeEngine
 		return newWindow;
 	}
 
+	void EditorWindowManager::registerWindow(EditorWindowBase* window)
+	{
+		mEditorWindows.push_back(window);
+	}
+
 	void EditorWindowManager::destroy(EditorWindowBase* window)
 	{
 		auto iterFind = std::find(begin(mEditorWindows), end(mEditorWindows), window);

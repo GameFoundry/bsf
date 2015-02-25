@@ -121,9 +121,9 @@ namespace BansheeEngine
 		 * @param	height			Available height for the layout elements.
 		 * @param	elementAreas	Array to hold output areas. Must be the same size as the number of child elements.
 		 * @param	numElements		Size of the element areas array.
-		 * @param	optimalSizes	Optimal sizes used by the elements. Array must be same size as elements array.
+		 * @param	optimalSizes	Ranges of possible sizes used for the elements. Array must be same size as elements array.
 		 */
-		virtual void _getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements, const Vector<Vector2I>& optimalSizes) const;
+		virtual void _getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements, const Vector<LayoutSizeRange>& sizeRanges) const;
 
 		/**
 		 * @brief	Sets a new parent for this element.
@@ -154,11 +154,11 @@ namespace BansheeEngine
 		virtual Vector2I _getOptimalSize() const = 0;
 
 		/**
-		 * @brief	Returns element optimal size constrained by its layout options.
+		 * @brief	Returns element size range constrained by its layout options.
 		 *
 		 * @note	Internal method.
 		 */
-		virtual Vector2I _calculateOptimalLayoutSize() const = 0;
+		virtual LayoutSizeRange _calculateLayoutSizeRange() const = 0;
 
 		/**
 		 * @brief	Returns element padding that determines how far apart to space out this element

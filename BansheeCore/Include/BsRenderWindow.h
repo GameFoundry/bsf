@@ -349,6 +349,11 @@ namespace BansheeEngine
 		RenderWindow(const RENDER_WINDOW_DESC& desc);
 
 		/**
+		 * @brief	Returns render window properties that may be edited.
+		 */
+		RenderWindowProperties& getMutableProperties();
+
+		/**
 		 * @brief	Updates internal properties using the provided data. Data must have been retrieved from
 		 *			"getSyncData" method of the core version of this object.
 		 */
