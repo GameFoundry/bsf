@@ -179,6 +179,7 @@ namespace BansheeEngine
 
 	const WString BuiltinEditorResources::ColorPickerSliderHorzHandleTex = L"ColorPickerSliderHorzHandle.psd";
 	const WString BuiltinEditorResources::ColorPickerSliderVertHandleTex = L"ColorPickerSliderVertHandle.psd";
+	const WString BuiltinEditorResources::ColorPickerSlider2DHandleTex = L"ColorPicker2DHandle.psd";
 
 	const WString BuiltinEditorResources::ProgressBarFillTex = L"ProgressBarFill.psd";
 	const WString BuiltinEditorResources::ProgressBarBgTex = L"ProgressBarBg.psd";
@@ -1122,6 +1123,17 @@ namespace BansheeEngine
 		colorPickerSliderVertStyle.subStyles[GUISlider::getHandleStyleType()] = "ColorSliderVertHandle";
 
 		mSkin.setStyle("ColorSliderVert", colorPickerSliderVertStyle);
+
+		GUIElementStyle colorPickerSlider2DHandleStyle;
+		colorPickerSlider2DHandleStyle.fixedHeight = true;
+		colorPickerSlider2DHandleStyle.fixedWidth = true;
+		colorPickerSlider2DHandleStyle.height = 8;
+		colorPickerSlider2DHandleStyle.width = 8;
+		colorPickerSlider2DHandleStyle.normal.texture = getGUITexture(ColorPickerSlider2DHandleTex);
+		colorPickerSlider2DHandleStyle.hover.texture = colorPickerSlider2DHandleStyle.normal.texture;
+		colorPickerSlider2DHandleStyle.active.texture = colorPickerSlider2DHandleStyle.normal.texture;
+
+		mSkin.setStyle("ColorSlider2DHandle", colorPickerSlider2DHandleStyle);
 	}
 
 	void BuiltinEditorResources::preprocess()
@@ -1146,7 +1158,7 @@ namespace BansheeEngine
 			ScrollBarBgTex, MenuBarBgTex, MenuBarBtnNormalTex, MenuBarBtnHoverTex, MenuBarBansheeLogoTex, DockSliderNormalTex,
 			TreeViewExpandButtonOffNormal, TreeViewExpandButtonOffHover, TreeViewExpandButtonOnNormal, TreeViewExpandButtonOnHover,
 			TreeViewSelectionBackground, TreeViewEditBox, TreeViewElementHighlight, TreeViewElementSepHighlight, ProgressBarBgTex,
-			ProgressBarFillTex, ColorPickerSliderHorzHandleTex, ColorPickerSliderVertHandleTex };
+			ProgressBarFillTex, ColorPickerSliderHorzHandleTex, ColorPickerSliderVertHandleTex, ColorPickerSlider2DHandleTex };
 
 		static const GpuProgramImportData GPU_PROGRAM_IMPORT_DATA[] = 
 		{

@@ -173,7 +173,8 @@ namespace BansheeEngine
 		UINT32 idx = 0;
 		for(auto& line : mLineDescs)
 		{
-			if(charIdx >= line.getStartChar() && charIdx < line.getEndChar())
+			if((charIdx >= line.getStartChar() && charIdx < line.getEndChar()) || 
+				(charIdx == line.getStartChar() && line.getStartChar() == line.getEndChar()))
 			{
 				if(line.isNewline(charIdx) && newlineCountsOnNextLine)
 					return idx + 1; // Incrementing is safe because next line must exist, since we just found a newline char

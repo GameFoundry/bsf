@@ -158,7 +158,7 @@ namespace BansheeEngine
 		// updates back to "0" effectively making "." unusable
 		float curValue = parseFloat(mInputBox->getText());
 		if (mValue != curValue)
-			mInputBox->setText(toWString(value));
+			mInputBox->setText(toWString(mValue));
 	}
 
 	void GUIIntField::setRange(INT32 min, INT32 max)

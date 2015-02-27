@@ -308,6 +308,7 @@ namespace BansheeEngine
 
 		static const WString ColorPickerSliderHorzHandleTex;
 		static const WString ColorPickerSliderVertHandleTex;
+		static const WString ColorPickerSlider2DHandleTex;
 
 		static const WString ProgressBarFillTex;
 		static const WString ProgressBarBgTex;

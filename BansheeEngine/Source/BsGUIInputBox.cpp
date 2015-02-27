@@ -434,7 +434,10 @@ namespace BansheeEngine
 						showSelection(gGUIManager().getInputCaretTool()->getCaretPos());
 				}
 				else
+				{
 					clearSelection();
+					showCaret();
+				}
 
 				if(mText.size() > 0)
 					gGUIManager().getInputCaretTool()->moveCaretToPos(ev.getPosition());
@@ -443,19 +446,9 @@ namespace BansheeEngine
 
 				if(ev.isShiftDown())
 					gGUIManager().getInputSelectionTool()->moveSelectionToCaret(gGUIManager().getInputCaretTool()->getCaretPos());
-			}
-			else
-			{
-				clearSelection();
-				showCaret();
 
-				if(mText.size() > 0)
-					gGUIManager().getInputCaretTool()->moveCaretToPos(ev.getPosition());
-				else
-					gGUIManager().getInputCaretTool()->moveCaretToStart();
+				scrollTextToCaret();
 			}
-
-			scrollTextToCaret();
 
 			markContentAsDirty();
 
@@ -542,7 +535,7 @@ namespace BansheeEngine
 	{
 		if(ev.getType() == GUICommandEventType::Redraw)
 		{
-			markMeshAsDirty();
+			markContentAsDirty();
 			return true;
 		}
 
@@ -550,9 +543,8 @@ namespace BansheeEngine
 		{
 			mState = State::Focused;
 
-			clearSelection();
-			showCaret();
-
+			showSelection(0);
+			gGUIManager().getInputSelectionTool()->selectAll();
 			markContentAsDirty();
 
 			mHasFocus = true;

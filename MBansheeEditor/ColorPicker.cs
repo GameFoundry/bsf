@@ -116,7 +116,7 @@ namespace BansheeEditor
             guiSliderGHorz = new GUISliderH(EditorStyles.ColorSliderHorz);
             guiSliderBHorz = new GUISliderH(EditorStyles.ColorSliderHorz);
             guiSliderAHorz = new GUISliderH(EditorStyles.ColorSliderHorz);
-            guiSlider2DHandle = new GUITexture(null);
+            guiSlider2DHandle = new GUITexture(null, EditorStyles.ColorSlider2DHandle);
 
             guiLabelR = new GUILabel("R");
             guiLabelG = new GUILabel("G");
@@ -233,6 +233,7 @@ namespace BansheeEditor
             Update2DSliderValues();
             Update1DSliderTextures();
             Update1DSliderValues();
+            UpdateSliderMode();
 
             Color startA = new Color(0, 0, 0, 1);
             Color stepA = new Color(1, 1, 1, 0);
@@ -245,8 +246,6 @@ namespace BansheeEditor
             Vector2I windowPos = ScreenToWindowPos(Input.PointerPosition);
 
             colorBox.UpdateInput(windowPos);
-
-            Debug.Log(Width + " - " + Height + " - " + GUI.childAreas[0].mCachedPtr);
         }
 
         private static void FillArea(int width, int height, Color[] colors, Color start, Color rightGradient, Color downGradient)
@@ -308,26 +307,7 @@ namespace BansheeEditor
             int maxModes = Enum.GetNames(sliderMode.GetType()).Length;
             sliderMode = (SliderMode)(((int)sliderMode + 1) % maxModes);
 
-            if (sliderMode == SliderMode.RGB)
-            {
-                guiLabelR.SetContent("R");
-                guiLabelG.SetContent("G");
-                guiLabelB.SetContent("B");
-
-                guiInputR.SetRange(0, 255);
-                guiInputG.SetRange(0, 255);
-                guiInputB.SetRange(0, 255);
-            }
-            else
-            {
-                guiLabelR.SetContent("H");
-                guiLabelG.SetContent("S");
-                guiLabelB.SetContent("V");
-
-                guiInputR.SetRange(0, 359);
-                guiInputG.SetRange(0, 255);
-                guiInputB.SetRange(0, 255);
-            }
+            UpdateSliderMode();
 
             guiColorModeBtn.SetContent(sliderMode.ToString());
             UpdateInputBoxValues();
@@ -553,12 +533,40 @@ namespace BansheeEditor
         {
             if (closedCallback != null)
                 closedCallback(true, SelectedColor);
+
+            Close();
         }
 
         void OnCancel()
         {
             if (closedCallback != null)
                 closedCallback(false, SelectedColor);
+
+            Close();
+        }
+
+        void UpdateSliderMode()
+        {
+            if (sliderMode == SliderMode.RGB)
+            {
+                guiLabelR.SetContent("R");
+                guiLabelG.SetContent("G");
+                guiLabelB.SetContent("B");
+
+                guiInputR.SetRange(0, 255);
+                guiInputG.SetRange(0, 255);
+                guiInputB.SetRange(0, 255);
+            }
+            else
+            {
+                guiLabelR.SetContent("H");
+                guiLabelG.SetContent("S");
+                guiLabelB.SetContent("V");
+
+                guiInputR.SetRange(0, 359);
+                guiInputG.SetRange(0, 255);
+                guiInputB.SetRange(0, 255);
+            }
         }
 
         void UpdateInputBoxValues()
