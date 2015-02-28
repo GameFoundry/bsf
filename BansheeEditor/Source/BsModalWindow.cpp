@@ -31,7 +31,7 @@ namespace BansheeEngine
 		GUILayout& contentLayoutX = contentLayoutY.addLayoutX();
 		contentLayoutX.addFlexibleSpace();
 		GUILayout& titleLayout = contentLayoutX.addLayoutY();
-		titleLayout.addFlexibleSpace();
+		titleLayout.addSpace(2);
 		titleLayout.addElement(mTitle);
 		titleLayout.addFlexibleSpace();
 		contentLayoutX.addFlexibleSpace();
