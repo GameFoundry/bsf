@@ -25,6 +25,9 @@ namespace BansheeEngine
 
 	void DragAndDropManager::startDrag(UINT32 typeId, void* data, std::function<void(bool)> dropCallback, bool needsValidDropTarget)
 	{
+		if (mIsDragInProgress)
+			endDrag(false);
+
 		mDragTypeId = typeId;
 		mData = data;
 		mNeedsValidDropTarget = needsValidDropTarget;

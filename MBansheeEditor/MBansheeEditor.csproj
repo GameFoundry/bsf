@@ -51,6 +51,7 @@
     <Compile Include="Debug_Component1.cs" />
     <Compile Include="Debug_Component2.cs" />
     <Compile Include="DialogBox.cs" />
+    <Compile Include="DragDrop.cs" />
     <Compile Include="EditorApplication.cs" />
     <Compile Include="EditorSettings.cs" />
     <Compile Include="EditorStyles.cs" />

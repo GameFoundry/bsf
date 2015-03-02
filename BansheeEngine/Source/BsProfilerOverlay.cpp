@@ -657,7 +657,7 @@ namespace BansheeEngine
 
 	void ProfilerOverlay::updateGPUSampleContents(const GPUProfilerReport& gpuReport)
 	{
-		mGPUFrameNumStr.setParameter(0, toWString((UINT64)gTime().getCurrentFrameNumber()));
+		mGPUFrameNumStr.setParameter(0, toWString((UINT64)gTime().getFrameNumber()));
 		mGPUTimeStr.setParameter(0, toWString(gpuReport.frameSample.timeMs));
 		mGPUDrawCallsStr.setParameter(0, toWString(gpuReport.frameSample.numDrawCalls));
 		mGPURenTargetChangesStr.setParameter(0, toWString(gpuReport.frameSample.numRenderTargetChanges));

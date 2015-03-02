@@ -30,6 +30,6 @@ namespace BansheeEngine
 
 	UINT32 ScriptTime::internal_getFrameNumber()
 	{
-		return gTime().getCurrentFrameNumber();
+		return gTime().getFrameNumber();
 	}
 }

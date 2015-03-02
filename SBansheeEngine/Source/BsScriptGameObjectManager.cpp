@@ -34,6 +34,15 @@ namespace BansheeEngine
 		mOnAssemblyReloadDoneConn.disconnect();
 	}
 
+	ScriptSceneObject* ScriptGameObjectManager::getOrCreateScriptSceneObject(const HSceneObject& sceneObject)
+	{
+		auto findIter = mScriptGameObjects.find(sceneObject.getInstanceId());
+		if (findIter != mScriptGameObjects.end())
+			return static_cast<ScriptSceneObject*>(findIter->second.instance);
+
+		return createScriptSceneObject(sceneObject);
+	}
+
 	ScriptSceneObject* ScriptGameObjectManager::createScriptSceneObject(const HSceneObject& sceneObject)
 	{
 		MonoClass* sceneObjectClass = ScriptAssemblyManager::instance().getSceneObjectClass();

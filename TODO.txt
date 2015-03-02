@@ -11,7 +11,6 @@ C#:
 Dialog.Show(title, text, btn1 text, btn1 callback, btn2 text, btn2 callback, btn3 text, btn3 callback)
 
 ColorPicker
- - Set up proper sizes for elements as it looks pretty shit at the moment
  - Sliders don't show up
 
 Got a crash on shutdown that was caused by locking a mutex in an Event destructor. Event was Platform::onMouseCaptureChanged. 

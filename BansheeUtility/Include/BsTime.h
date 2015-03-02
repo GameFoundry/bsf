@@ -45,7 +45,7 @@ namespace BansheeEngine
 		 *
 		 * @return	The current frame.
 		 */
-		unsigned long getCurrentFrameNumber() const { return mCurrentFrame; }
+		unsigned long getFrameNumber() const { return mCurrentFrame; }
 
 		/**
 		 * @brief	Returns the precise time since application start, in microseconds.

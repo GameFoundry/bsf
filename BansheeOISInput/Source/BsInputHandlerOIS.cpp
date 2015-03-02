@@ -255,7 +255,7 @@ namespace BansheeEngine
 
 		// Update sample times used for determining sampling rate. But only if something was
 		// actually sampled, and only if this isn't the first non-zero sample.
-		if (mLastMouseUpdateFrame != gTime().getCurrentFrameNumber())
+		if (mLastMouseUpdateFrame != gTime().getFrameNumber())
 		{
 			if (arg.state.X.rel != 0 && !Math::approxEquals(mMouseSmoothedAxis[0], 0.0f))
 				mTotalMouseSamplingTime[0] += gTime().getFrameDelta();
@@ -263,7 +263,7 @@ namespace BansheeEngine
 			if (arg.state.Y.rel != 0 && !Math::approxEquals(mMouseSmoothedAxis[1], 0.0f))
 				mTotalMouseSamplingTime[1] += gTime().getFrameDelta();
 
-			mLastMouseUpdateFrame = gTime().getCurrentFrameNumber();
+			mLastMouseUpdateFrame = gTime().getFrameNumber();
 		}
 
 		RawAxisState zState;
