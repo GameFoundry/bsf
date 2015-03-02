@@ -212,7 +212,7 @@ namespace BansheeEngine
 	void GUIResourceField::dataDropped(void* data)
 	{
 		DraggedResources* draggedResources = reinterpret_cast<DraggedResources*>(data);
-		UINT32 numResources = (UINT32)draggedResources->resourceUUIDs.size();
+		UINT32 numResources = (UINT32)draggedResources->resourcePaths.size();
 
 		if (numResources <= 0)
 			return;
@@ -221,7 +221,11 @@ namespace BansheeEngine
 
 		for (UINT32 i = 0; i < numResources; i++)
 		{
-			String uuid = draggedResources->resourceUUIDs[i];
+			Path path = draggedResources->resourcePaths[i];
+
+			String uuid;
+			if (!gResources().getUUIDFromFilePath(draggedResources->resourcePaths[i], uuid))
+				continue;
 
 			ProjectResourceMetaPtr meta = ProjectLibrary::instance().findResourceMeta(uuid);
 			if (meta == nullptr)

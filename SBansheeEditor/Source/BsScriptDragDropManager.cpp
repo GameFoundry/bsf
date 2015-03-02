@@ -53,13 +53,29 @@ namespace BansheeEngine
 			idx++;
 		}
 
-		DragAndDropManager::instance().startDrag((UINT32)DragAndDropType::SceneObject, draggedSceneObjects, nullptr, false);
+		DragAndDropManager::instance().startDrag((UINT32)DragAndDropType::SceneObject, draggedSceneObjects, 
+			&ScriptDragDrop::sceneObjectDragDropFinalize, false);
 	}
 
 	void ScriptDragDrop::internal_StartResourceDrag(ScriptResourceDragDropData* value)
 	{
-		// TODO
+		DraggedResources* draggedResources = bs_new<DraggedResources>();
+		draggedResources->resourcePaths = value->getPaths();
 
+		DragAndDropManager::instance().startDrag((UINT32)DragAndDropType::Resources, draggedResources, 
+			&ScriptDragDrop::resourceDragDropFinalize, false);
+	}
+
+	void ScriptDragDrop::sceneObjectDragDropFinalize(bool processed)
+	{
+		DraggedSceneObjects* draggedSceneObjects = reinterpret_cast<DraggedSceneObjects*>(DragAndDropManager::instance().getDragData());
+		bs_delete(draggedSceneObjects);
+	}
+
+	void ScriptDragDrop::resourceDragDropFinalize(bool processed)
+	{
+		DraggedResources* draggedResources = reinterpret_cast<DraggedResources*>(DragAndDropManager::instance().getDragData());
+		bs_delete(draggedResources);
 	}
 
 	ScriptSceneObjectDragDropData::ScriptSceneObjectDragDropData(MonoObject* instance, const Vector<HSceneObject>& sceneObjects)
@@ -238,8 +254,7 @@ namespace BansheeEngine
 		{
 			DraggedResources* draggedResources = reinterpret_cast<DraggedResources*>(DragAndDropManager::instance().getDragData());
 
-			// TODO - When dragging resources I also need to support dragging of resource folders, which isn't supported by this system
-
+			mDroppedPaths = draggedResources->resourcePaths;
 			mIsDropInProgress = true;
 			mDropType = ScriptDragDropType::Resource;
 			mDroppedFrameIdx = Time::instance().getFrameNumber();

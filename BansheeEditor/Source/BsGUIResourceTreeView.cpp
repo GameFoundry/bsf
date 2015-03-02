@@ -397,10 +397,7 @@ namespace BansheeEngine
 		{
 			ResourceTreeElement* resourceTreeElement = static_cast<ResourceTreeElement*>(selectedElement.element);
 			internalDraggedResources->resourcePaths[cnt] = resourceTreeElement->mFullPath; 
-
-			String uuid;
-			if(gResources().getUUIDFromFilePath(internalDraggedResources->resourcePaths[cnt], uuid))
-				draggedResources->resourceUUIDs.push_back(uuid);
+			draggedResources->resourcePaths.push_back(internalDraggedResources->resourcePaths[cnt]);
 
 			cnt++;
 		}

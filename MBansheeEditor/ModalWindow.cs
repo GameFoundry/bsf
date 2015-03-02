@@ -56,7 +56,6 @@ namespace BansheeEditor
         private void OnDestroyInternal()
         {
             GUI.Destroy();
-            Internal_DestroyGUIPanel(mCachedPtr, GUI);
         }
 
         protected virtual void OnWindowResized(int width, int height)
@@ -85,9 +84,6 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_InitializeGUIPanel(IntPtr nativeInstance, GUIPanel panel);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_DestroyGUIPanel(IntPtr nativeInstance, GUIPanel panel);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern int Internal_GetWidth(IntPtr nativeInstance);

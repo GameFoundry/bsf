@@ -1,11 +1,13 @@
 --------- ALL LONG TERM TASKS / FIXES BELONG TO GOOGLE DOCS: ImplementationTODO OR PossibleImprovements ----------
 
-<<<<<Assembly refresh>>>>>
+----------------------------------------------------------------------
+Assembly refresh
 
 When serializing Camera I cannot save the reference to RenderTexture. Make it a Resource?
 Possibly set up automatic refresh in debug mode after initialization? As an ad-hoc unit test
 
-<<<<<Simple stuff>>>>>>
+----------------------------------------------------------------------
+Simple stuff
 
 C#:
 Dialog.Show(title, text, btn1 text, btn1 callback, btn2 text, btn2 callback, btn3 text, btn3 callback)
@@ -13,10 +15,12 @@ Dialog.Show(title, text, btn1 text, btn1 callback, btn2 text, btn2 callback, btn
 ColorPicker
  - Sliders don't show up
 
-Got a crash on shutdown that was caused by locking a mutex in an Event destructor. Event was Platform::onMouseCaptureChanged. 
-Issue happened when I closed the app via the X button (if that's relevant). It doesn't seem to happen always.
+Other simple stuff:
+ - VS integration (open VS project on doubleclick, generate project files, open on specific line)
+ - C# wrapper for GUISkin (and a way to assign the current skin to a window)
 
-<<<<<<Handles>>>>>>>>
+----------------------------------------------------------------------
+Handles
 
 When scaling using center make sure to offset the object before scale
 Handles should probably not having shading, or have better shading.
@@ -28,15 +32,42 @@ Rotate handle:
 
 Ideally free scale handle indicator should always render and be interactable and never be hidden by axis scale indicators (Not high priority)
 
-<<<<Multi-resource saving>>>>:
+----------------------------------------------------------------------
+Scene View
+
+IMPROVE SceneGrid LOOK - Use the shader created in Unity
+
+AFTER I have scene widget in C#:
+ - Test custom handles from C#
+ - Test handle snapping
+
+Need a way to drag and drop items from Scene tree view to Scene view
+ - When dragging a mesh it should by default create a SceneObject with a renderable
+ - I might want a C# DragAndDrop class? It can contain Resource or SceneObject only for now, similar to Selection
+
+----------------------------------------------------------------------
+Other
+
+Got a crash on shutdown that was caused by locking a mutex in an Event destructor. Event was Platform::onMouseCaptureChanged. 
+Issue happened when I closed the app via the X button (if that's relevant). It doesn't seem to happen always.
+
+Create a stack allocatable custom vector implementation and make getResourceDependencies and getCoreDependencies use it.
+ - These methods are called often and cause allocations whenever they are.
+
+Add ProjectWindow and HierarchyWindow to C#
+ - Make TreeViews a C# element?
+Set up a default layout and save it
+
+----------------------------------------------------------------------
+Multi-resource saving
  - Modify Font so it doesn't contain a texture, but instead keeps a handle to it
  - Register it in its meta file
  - When saving such a resource with dependencies save the contained files to a sub-directory with the same name as top level resource
    - If it already exists in the manifest at a different location do it anyway, keep the other copy as-is in case user wanted it that way
    - I'm not sure whether to do this for all Resource::save calls or only ones originating from ProjectLIbrary?
 
-Other:
-Window resize end callback
+----------------------------------------------------------------------
+Mono notes
 
 I can get mono errors by checking g_print calls in goutput.c
  - Calling thunks incorrectly can cause those weird errors with no real callstack
@@ -50,25 +81,6 @@ Rect3 has child structs (Vector3) which could be the reason. Be aware of other s
 Mono cannot marshal structures? Taken from their documentation:
  Internal calls do not provide support for marshalling structures. This means that any API calls that take a structure 
  (excluding the system types like int32, int64, etc) must be passed as a pointer, in C# this means passing the value as a "ref" or "out" parameter.
-
-Create a stack allocatable custom vector implementation and make getResourceDependencies and getCoreDependencies use it.
- - These methods are called often and cause allocations whenever they are.
-
-C# SceneView:
-Test new Scene window and fix every issue
-Add ProjectWindow and HierarchyWindow to C#
- - Make TreeViews a C# element?
-Set up a default layout and save it
-
-Need a way to drag and drop items from Scene tree view to Scene view
- - When dragging a mesh it should by default create a SceneObject with a renderable
- - I might want a C# DragAndDrop class? It can contain Resource or SceneObject only for now, similar to Selection
-
-AFTER I have scene widget in C#:
- - Test custom handles from C#
- - Test handle snapping
-
-IMPROVE SceneGrid LOOK - Use the shader created in Unity
 
 ----------------------------------------------------------------------
 SelectionRenderer

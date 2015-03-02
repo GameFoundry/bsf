@@ -3,6 +3,7 @@
 #include "BsScriptEditorPrerequisites.h"
 #include "BsScriptObject.h"
 #include "BsDragAndDropManager.h"
+#include "BsPath.h"
 
 namespace BansheeEngine
 {
@@ -16,6 +17,9 @@ namespace BansheeEngine
 
 	private:
 		ScriptDragDrop(MonoObject* instance);
+
+		static void sceneObjectDragDropFinalize(bool processed);
+		static void resourceDragDropFinalize(bool processed);
 
 		static bool internal_IsDragInProgress();
 		static bool internal_IsDropInProgress();

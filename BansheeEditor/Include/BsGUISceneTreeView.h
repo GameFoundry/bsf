@@ -7,7 +7,7 @@
 
 namespace BansheeEngine
 {
-	struct DraggedSceneObjects
+	struct BS_ED_EXPORT DraggedSceneObjects
 	{
 		DraggedSceneObjects(UINT32 numObjects);
 		~DraggedSceneObjects();
