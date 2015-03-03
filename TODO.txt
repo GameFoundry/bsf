@@ -7,6 +7,23 @@ When serializing Camera I cannot save the reference to RenderTexture. Make it a 
 Possibly set up automatic refresh in debug mode after initialization? As an ad-hoc unit test
 
 ----------------------------------------------------------------------
+Project library
+
+Finish ProjectLibrary script interface (this includes Library and DirectoryEntry classes)
+Create ImportOptions script interface
+Figure out how to deal with C# LibraryEntries (if I just make them c++ wrappers I feel it 
+ would be too slow (they'd need to store a path, and then I'd have to lookup that path in ProjectLibrary whenever any property
+ - Keep a separate C# version of the entries? It gets upated when ProjectLibrary callbacks are triggered.
+ - OR integrate C# entries directly in ProjectLibrary? (i.e. some kind of special field that holds a C# version of it)
+ - Performance implications shouldn't matter. It is not something that is called every frame and we're unlikely to iterate over the entire hierarchy. 
+   If such case is needed then I can introduce a more performant specialized wrapper. Therefore C# wrapper should just store a path and then 
+   lookup the entry in ProjectLibrary
+Make sure C# ProjectLibrary triggers same callbacks as its c++ counterpart
+Figure out how to create a C# BuiltinResources class. It should be able to load arbitrary resources from a non-project folder
+ - I should move all the GUI element style creation out of code and make it just pure data (once I have an editor for it)
+ - Will also need a debug button to reimport all the built-in resources
+
+----------------------------------------------------------------------
 Simple stuff
 
 C#:

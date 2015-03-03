@@ -184,12 +184,11 @@ namespace BansheeEngine
 		}
 	}
 
-	void win32_copy(const WString& from, const WString& to)
+	void win32_copyFile(const WString& from, const WString& to)
 	{
 		if (CopyFileW(from.c_str(), to.c_str(), FALSE) == FALSE)
 			win32_handleError(GetLastError(), from);
 	}
-
 
 	void win32_rename(const WString& oldPath, const WString& newPath)
 	{
@@ -328,6 +327,85 @@ namespace BansheeEngine
 		}
 
 		win32_rename(oldPathStr, newPathStr);
+	}
+
+	void FileSystem::copy(const Path& oldPath, const Path& newPath, bool overwriteExisting)
+	{
+		Stack<std::tuple<Path, Path>> todo;
+		todo.push(std::make_tuple(oldPath, newPath));
+
+		while (!todo.empty())
+		{
+			auto current = todo.top();
+			todo.pop();
+
+			Path sourcePath = std::get<0>(current);
+			WString sourcePathStr = sourcePath.toWString();
+			if (!win32_pathExists(sourcePathStr))
+				continue;
+
+			bool srcIsFile = win32_isFile(sourcePathStr);
+
+			Path destinationPath = std::get<1>(current);
+			WString destPathStr = destinationPath.toWString();
+
+			bool destExists = win32_pathExists(destPathStr);
+			if (destExists)
+			{
+				if (win32_isFile(destPathStr))
+				{
+					if (overwriteExisting)
+						win32_remove(destPathStr);
+					else
+					{
+						BS_EXCEPT(InvalidStateException, "Copy operation failed because another file already exists at the new path: \"" + toString(destPathStr) + "\"");
+					}
+				}
+			}
+
+			bool destIsFile = !destinationPath.getWExtension().empty();
+
+			if (!srcIsFile && destIsFile)
+			{
+				BS_EXCEPT(InvalidStateException, "Cannot copy a source folder to a destination file.");
+			}
+			else if (srcIsFile && !destIsFile)
+			{
+				Path destinationFilePath = destinationPath;
+				destinationFilePath.append(sourcePath.getWTail());
+
+				win32_copyFile(sourcePathStr, destinationFilePath.toWString());
+			}
+			else if (srcIsFile && destIsFile)
+			{
+				win32_copyFile(sourcePathStr, destPathStr);
+			}
+			else if (!srcIsFile && !destIsFile)
+			{
+				if (!destExists)
+					win32_createDirectory(destPathStr);
+
+				Vector<Path> files;
+				Vector<Path> directories;
+				getChildren(destinationPath, files, directories);
+
+				for (auto& file : files)
+				{
+					Path fileDestPath = destinationPath;
+					fileDestPath.append(file.getWTail());
+
+					todo.push(std::make_tuple(file, fileDestPath));
+				}
+
+				for (auto& dir : directories)
+				{
+					Path dirDestPath = destinationPath;
+					dirDestPath.append(dir.getWTail());
+
+					todo.push(std::make_tuple(dir, dirDestPath));
+				}
+			}
+		}
 	}
 
 	bool FileSystem::exists(const Path& fullPath)

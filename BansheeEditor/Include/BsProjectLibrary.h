@@ -62,8 +62,12 @@ namespace BansheeEngine
 		Path uuidToPath(const String& uuid) const;
 
 		void createEntry(const HResource& resource, const Path& path);
-		void moveEntry(const Path& oldPath, const Path& newPath);
+		void createFolderEntry(const Path& path);
+		void saveEntry(const HResource& resource);
+		void moveEntry(const Path& oldPath, const Path& newPath, bool overwrite = true);
+		void copyEntry(const Path& oldPath, const Path& newPath, bool overwrite = true);
 		void deleteEntry(const Path& path);
+		void reimport(const Path& path, const ImportOptionsPtr& importOptions = nullptr, bool forceReimport = false);
 
 		const Path& getResourcesFolder() const { return mResourcesFolder; }
 
@@ -84,13 +88,13 @@ namespace BansheeEngine
 		void save();
 		void load();
 
-		ResourceEntry* addResourceInternal(DirectoryEntry* parent, const Path& filePath);
+		ResourceEntry* addResourceInternal(DirectoryEntry* parent, const Path& filePath, const ImportOptionsPtr& importOptions = nullptr, bool forceReimport = false);
 		DirectoryEntry* addDirectoryInternal(DirectoryEntry* parent, const Path& dirPath);
 
 		void deleteResourceInternal(ResourceEntry* resource);
 		void deleteDirectoryInternal(DirectoryEntry* directory);
 
-		void reimportResourceInternal(ResourceEntry* resource);
+		void reimportResourceInternal(ResourceEntry* resource, const ImportOptionsPtr& importOptions = nullptr, bool forceReimport = false);
 
 		void createInternalParentHierarchy(const Path& fullPath, DirectoryEntry** newHierarchyRoot, DirectoryEntry** newHierarchyLeaf);
 

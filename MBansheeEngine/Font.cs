@@ -1,7 +1,16 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace BansheeEngine
 {
+    [StructLayout(LayoutKind.Sequential)]
+    public struct CharRange
+    {
+        public UInt32 start;
+        public UInt32 end;
+    }
+
     public sealed class Font : Resource // TODO - Dummy class
     {
         internal Font(bool constructNative)

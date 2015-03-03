@@ -70,6 +70,7 @@
     <Compile Include="GUI\GUIToggleField.cs" />
     <Compile Include="GUI\GUIVector2Field.cs" />
     <Compile Include="GUI\GUIVector4Field.cs" />
+    <Compile Include="ImportOptions.cs" />
     <Compile Include="Inspector\CustomInspector.cs" />
     <Compile Include="Inspector\GenericInspector.cs" />
     <Compile Include="Inspector\InspectableArray.cs" />

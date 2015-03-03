@@ -55,6 +55,16 @@ namespace BansheeEngine
 		static void move(const Path& oldPath, const Path& newPath, bool overwriteExisting = true);
 
 		/**
+		 * @brief	Makes a copy of a file or a folder in the specified path. 
+		 *
+		 * @param	oldPath			 	Full path to the old file/folder.
+		 * @param	newPath			 	Full path to the new file/folder.
+		 * @param	overwriteExisting	(optional) If true, any existing file/folder at the new location will be overwritten,
+		 * 								otherwise an exception will be thrown if a file/folder already exists.
+		 */
+		static void copy(const Path& oldPath, const Path& newPath, bool overwriteExisting = true);
+
+		/**
 		 * @brief	Creates a folder at the specified path.
 		 *
 		 * @param	fullPath	Full path to a full folder to create.

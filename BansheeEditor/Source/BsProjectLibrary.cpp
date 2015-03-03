@@ -260,12 +260,13 @@ namespace BansheeEngine
 		}
 	}
 
-	ProjectLibrary::ResourceEntry* ProjectLibrary::addResourceInternal(DirectoryEntry* parent, const Path& filePath)
+	ProjectLibrary::ResourceEntry* ProjectLibrary::addResourceInternal(DirectoryEntry* parent, const Path& filePath, 
+		const ImportOptionsPtr& importOptions, bool forceReimport)
 	{
 		ResourceEntry* newResource = bs_new<ResourceEntry>(filePath, filePath.getWTail(), parent);
 		parent->mChildren.push_back(newResource);
 
-		reimportResourceInternal(newResource);
+		reimportResourceInternal(newResource, importOptions, forceReimport);
 
 		if(!onEntryAdded.empty())
 			onEntryAdded(filePath);
@@ -339,7 +340,7 @@ namespace BansheeEngine
 		bs_delete(directory);
 	}
 
-	void ProjectLibrary::reimportResourceInternal(ResourceEntry* resource)
+	void ProjectLibrary::reimportResourceInternal(ResourceEntry* resource, const ImportOptionsPtr& importOptions, bool forceReimport)
 	{
 		WString ext = resource->path.getWExtension();
 		Path metaPath = resource->path;
@@ -364,32 +365,37 @@ namespace BansheeEngine
 			}
 		}
 
-		if(!isUpToDate(resource))
+		if (!isUpToDate(resource) || forceReimport)
 		{
-			ImportOptionsPtr importOptions = nullptr;
+			ImportOptionsPtr curImportOptions = nullptr;
 
-			if(resource->meta != nullptr)
-				importOptions = resource->meta->getImportOptions();
+			if (importOptions == nullptr)
+			{
+				if (resource->meta != nullptr)
+					curImportOptions = resource->meta->getImportOptions();
+				else
+					curImportOptions = Importer::instance().createImportOptions(resource->path);
+			}
 			else
-				importOptions = Importer::instance().createImportOptions(resource->path);
+				curImportOptions = importOptions;
 
 			HResource importedResource;
 
 			if(resource->meta == nullptr)
 			{
-				importedResource = Importer::instance().import(resource->path, importOptions);
+				importedResource = Importer::instance().import(resource->path, curImportOptions);
 
 				ResourceMetaDataPtr subMeta = importedResource->getMetaData();
 				UINT32 typeId = importedResource->getTypeId();
 
-				resource->meta = ProjectResourceMeta::create(importedResource.getUUID(), typeId, subMeta, importOptions);
+				resource->meta = ProjectResourceMeta::create(importedResource.getUUID(), typeId, subMeta, curImportOptions);
 				FileEncoder fs(metaPath);
 				fs.encode(resource->meta.get());
 			}
 			else
 			{
 				importedResource = HResource(resource->meta->getUUID());
-				Importer::instance().reimport(importedResource, resource->path, importOptions);
+				Importer::instance().reimport(importedResource, resource->path, curImportOptions);
 			}
 
 			Path internalResourcesPath = mProjectFolder;
@@ -508,16 +514,55 @@ namespace BansheeEngine
 
 		LibraryEntry* existingEntry = findEntry(assetPath);
 		if (existingEntry != nullptr)
-			BS_EXCEPT(InvalidParametersException, "Existing resource already exists at the specified path: " + assetPath.toString());
+			BS_EXCEPT(InvalidParametersException, "Resource already exists at the specified path: " + assetPath.toString());
 
 		Resources::instance().save(resource, assetPath, false);
 		checkForModifications(assetPath);
 	}
 
-	void ProjectLibrary::moveEntry(const Path& oldPath, const Path& newPath)
+	void ProjectLibrary::saveEntry(const HResource& resource)
+	{
+		if (resource == nullptr)
+			return;
+
+		Path filePath;
+		if (!mResourceManifest->uuidToFilePath(resource.getUUID(), filePath))
+			return;
+
+		Resources::instance().save(resource, filePath, false);
+	}
+
+	void ProjectLibrary::createFolderEntry(const Path& path)
+	{
+		if (FileSystem::isDirectory(path))
+			return; // Already exists
+
+		FileSystem::createDir(path);
+
+		if (!mResourcesFolder.includes(path))
+			return;
+
+		Path parentPath = path.getParent();
+
+		DirectoryEntry* newEntryParent = nullptr;
+		LibraryEntry* newEntryParentLib = findEntry(parentPath);
+		if (newEntryParentLib != nullptr)
+		{
+			assert(newEntryParentLib->type == LibraryEntryType::Directory);
+			newEntryParent = static_cast<DirectoryEntry*>(newEntryParentLib);
+		}
+
+		DirectoryEntry* newHierarchyParent = nullptr;
+		if (newEntryParent == nullptr) // New path parent doesn't exist, so we need to create the hierarchy
+			createInternalParentHierarchy(path, &newHierarchyParent, &newEntryParent);
+
+		addDirectoryInternal(newEntryParent, path);
+	}
+
+	void ProjectLibrary::moveEntry(const Path& oldPath, const Path& newPath, bool overwrite)
 	{
 		if(FileSystem::isFile(oldPath) || FileSystem::isDirectory(oldPath))
-			FileSystem::move(oldPath, newPath);
+			FileSystem::move(oldPath, newPath, overwrite);
 
 		Path oldMetaPath = getMetaPath(oldPath);
 		Path newMetaPath = getMetaPath(newPath);
@@ -605,6 +650,90 @@ namespace BansheeEngine
 		}
 	}
 
+	void ProjectLibrary::copyEntry(const Path& oldPath, const Path& newPath, bool overwrite)
+	{
+		if (!FileSystem::exists(oldPath))
+			return;
+
+		FileSystem::copy(oldPath, newPath, overwrite);
+
+		// Copying a file/folder outside of the Resources folder, no special handling needed
+		if (!mResourcesFolder.includes(newPath))
+			return;
+
+		Path parentPath = newPath.getParent();
+
+		DirectoryEntry* newEntryParent = nullptr;
+		LibraryEntry* newEntryParentLib = findEntry(parentPath);
+		if (newEntryParentLib != nullptr)
+		{
+			assert(newEntryParentLib->type == LibraryEntryType::Directory);
+			newEntryParent = static_cast<DirectoryEntry*>(newEntryParentLib);
+		}
+
+		DirectoryEntry* newHierarchyParent = nullptr;
+		if (newEntryParent == nullptr) // New path parent doesn't exist, so we need to create the hierarchy
+			createInternalParentHierarchy(newPath, &newHierarchyParent, &newEntryParent);
+
+		// If the source is outside of Resources folder, just plain import the copy
+		LibraryEntry* oldEntry = findEntry(oldPath);
+		if (oldEntry == nullptr)
+		{
+			checkForModifications(newHierarchyParent->path);
+			return;
+		}
+
+		// Both source and destination are within Resources folder, need to preserve import options on the copies
+		LibraryEntry* newEntry = nullptr;
+		if (FileSystem::isFile(newPath))
+		{
+			assert(oldEntry->type == LibraryEntryType::File);
+			ResourceEntry* oldResEntry = static_cast<ResourceEntry*>(oldEntry);
+
+			newEntry = addResourceInternal(newEntryParent, newPath, oldResEntry->meta->getImportOptions(), true);
+		}
+		else
+		{
+			assert(oldEntry->type == LibraryEntryType::File);
+			DirectoryEntry* oldDirEntry = static_cast<DirectoryEntry*>(oldEntry);
+
+			DirectoryEntry* newDirEntry = addDirectoryInternal(newEntryParent, newPath);
+			newEntry = newDirEntry;
+
+			Stack<std::tuple<DirectoryEntry*, DirectoryEntry*>> todo;
+			todo.push(std::make_tuple(oldDirEntry, newDirEntry));
+
+			while (!todo.empty())
+			{
+				auto current = todo.top();
+				todo.pop();
+
+				DirectoryEntry* sourceDir = std::get<0>(current);
+				DirectoryEntry* destDir = std::get<1>(current);
+
+				for (auto& child : sourceDir->mChildren)
+				{
+					Path childDestPath = destDir->path;
+					childDestPath.append(child->path.getWTail());
+
+					if (child->type == LibraryEntryType::File)
+					{
+						ResourceEntry* childResEntry = static_cast<ResourceEntry*>(child);
+
+						addResourceInternal(destDir, childDestPath, childResEntry->meta->getImportOptions(), true);
+					}
+					else // Directory
+					{
+						DirectoryEntry* childSourceDirEntry = static_cast<DirectoryEntry*>(child);
+						DirectoryEntry* childDestDirEntry = addDirectoryInternal(destDir, childDestPath);
+
+						todo.push(std::make_tuple(childSourceDirEntry, childSourceDirEntry));
+					}
+				}
+			}
+		}
+	}
+
 	void ProjectLibrary::deleteEntry(const Path& path)
 	{
 		if(FileSystem::exists(path))
@@ -623,6 +752,19 @@ namespace BansheeEngine
 			}
 			else if(entry->type == LibraryEntryType::Directory)
 				deleteDirectoryInternal(static_cast<DirectoryEntry*>(entry));
+		}
+	}
+
+	void ProjectLibrary::reimport(const Path& path, const ImportOptionsPtr& importOptions = nullptr, bool forceReimport = false)
+	{
+		LibraryEntry* entry = findEntry(path);
+		if (entry != nullptr)
+		{
+			if (entry->type == LibraryEntryType::File)
+			{
+				ResourceEntry* resEntry = static_cast<ResourceEntry*>(entry);
+				reimportResourceInternal(resEntry, importOptions, forceReimport);
+			}
 		}
 	}
 
