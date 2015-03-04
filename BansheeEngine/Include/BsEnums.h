@@ -38,4 +38,12 @@ namespace BansheeEngine
 	{
 		LayoutX, LayoutY, LayoutExplicit
 	};
+
+	/**
+	 * @brief	Languages used for writing GPU programs.
+	 */
+	enum class GpuLanguage
+	{
+		HLSL, GLSL, Undefined
+	};
 }

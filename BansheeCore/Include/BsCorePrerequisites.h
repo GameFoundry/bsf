@@ -123,6 +123,9 @@ namespace BansheeEngine
 	class CoreObject;
 	class CoreObjectCore;
 	class ImportOptions;
+	class TextureImportOptions;
+	class FontImportOptions;
+	class GpuProgramImportOptions;
 	struct FontData;
 	class GameObject;
 	class GpuResourceData;

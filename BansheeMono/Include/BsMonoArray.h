@@ -11,6 +11,7 @@ namespace BansheeEngine
 	public:
 		ScriptArray(MonoArray* existingArray);
 		ScriptArray(MonoClass& klass, UINT32 size);
+		ScriptArray(::MonoClass* klass, UINT32 size);
 
 		template<class T>
 		T get(UINT32 idx)
@@ -30,13 +31,41 @@ namespace BansheeEngine
 			return ScriptArray(*T::getMetaData()->scriptClass, size);
 		}
 
+		template<>
+		static ScriptArray create<UINT32>(UINT32 size)
+		{
+			return ScriptArray(mono_get_uint32_class(), size);
+		}
+
+		template<>
+		static ScriptArray create<INT32>(UINT32 size)
+		{
+			return ScriptArray(mono_get_int32_class(), size);
+		}
+
+		template<>
+		static ScriptArray create<WString>(UINT32 size)
+		{
+			return ScriptArray(mono_get_string_class(), size);
+		}
+
+		template<>
+		static ScriptArray create<String>(UINT32 size)
+		{
+			return ScriptArray(mono_get_string_class(), size);
+		}
+
+		template<>
+		static ScriptArray create<float>(UINT32 size)
+		{
+			return ScriptArray(mono_get_single_class(), size);
+		}
+
 		UINT32 size() const;
 
 		MonoArray* getInternal() const { return mInternal; }
 
 	private:
-		MonoArray* createArray(MonoClass& klass, UINT32 size);
-
 		MonoArray* mInternal;
 	};
 }

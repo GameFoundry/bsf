@@ -5,11 +5,12 @@
         // TODO - Dummy class
     }
 
+    // Note: Must be equal to C++ enum GpuLanguage
     public enum GpuLanguage
     {
-        HLSL9,
-        HLSL11,
-        GLSL
+        HLSL,
+        GLSL,
+        Undefined
     }
 
     // Note: Must be equal to C++ enum GpuProgramType
