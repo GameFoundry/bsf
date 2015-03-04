@@ -9,6 +9,7 @@
 #include "BsFontImportOptions.h"
 #include "BsGpuProgramImportOptions.h"
 #include "BsRenderer.h"
+#include "BsRTTIType.h"
 
 using namespace std::placeholders;
 
@@ -26,10 +27,33 @@ namespace BansheeEngine
 	void ScriptCharRange::initRuntimeData()
 	{ }
 
-	ScriptTextureImportOptions::ScriptTextureImportOptions(MonoObject* instance)
-		:ScriptObject(instance), mImportOptions(bs_shared_ptr<TextureImportOptions>())
-	{
+	ScriptImportOptionsBase::ScriptImportOptionsBase(MonoObject* instance)
+		:ScriptObjectBase(instance)
+	{ }
 
+	MonoObject* ScriptImportOptions::create(const SPtr<ImportOptions>& importOptions)
+	{
+		UINT32 typeId = importOptions->getRTTI()->getRTTIId();
+		switch (typeId)
+		{
+		case TID_TextureImportOptions:
+			return ScriptTextureImportOptions::create(std::static_pointer_cast<TextureImportOptions>(importOptions));
+			break;
+		case TID_FontImportOptions:
+			return ScriptFontImportOptions::create(std::static_pointer_cast<FontImportOptions>(importOptions));
+			break;
+		case TID_GpuProgramImportOptions:
+			return ScriptGpuProgramImportOptions::create(std::static_pointer_cast<GpuProgramImportOptions>(importOptions));
+			break;
+		}
+
+		return nullptr;
+	}
+
+	ScriptTextureImportOptions::ScriptTextureImportOptions(MonoObject* instance)
+		:ScriptObject(instance)
+	{
+		mImportOptions = bs_shared_ptr<TextureImportOptions>();
 	}
 
 	void ScriptTextureImportOptions::initRuntimeData()
@@ -43,9 +67,23 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetMaxMipmapLevel", &ScriptTextureImportOptions::internal_SetMaxMipmapLevel);
 	}
 
+	SPtr<TextureImportOptions> ScriptTextureImportOptions::getTexImportOptions()
+	{
+		return std::static_pointer_cast<TextureImportOptions>(mImportOptions);
+	}
+
 	MonoObject* ScriptTextureImportOptions::create()
 	{
 		return metaData.scriptClass->createInstance();
+	}
+
+	MonoObject* ScriptTextureImportOptions::create(const SPtr<TextureImportOptions>& options)
+	{
+		MonoObject* managedInstance = metaData.scriptClass->createInstance();
+		ScriptTextureImportOptions* scriptObj = ScriptTextureImportOptions::toNative(managedInstance);
+		scriptObj->mImportOptions = options;
+
+		return managedInstance;
 	}
 
 	void ScriptTextureImportOptions::internal_CreateInstance(MonoObject* instance)
@@ -55,38 +93,38 @@ namespace BansheeEngine
 
 	PixelFormat ScriptTextureImportOptions::internal_GetPixelFormat(ScriptTextureImportOptions* thisPtr)
 	{
-		return thisPtr->mImportOptions->getFormat();
+		return thisPtr->getTexImportOptions()->getFormat();
 	}
 
 	void ScriptTextureImportOptions::internal_SetPixelFormat(ScriptTextureImportOptions* thisPtr, PixelFormat value)
 	{
-		thisPtr->mImportOptions->setFormat(value);
+		thisPtr->getTexImportOptions()->setFormat(value);
 	}
 
 	bool ScriptTextureImportOptions::internal_GetGenerateMipmaps(ScriptTextureImportOptions* thisPtr)
 	{
-		return thisPtr->mImportOptions->getGenerateMipmaps();
+		return thisPtr->getTexImportOptions()->getGenerateMipmaps();
 	}
 
 	void ScriptTextureImportOptions::internal_SetGenerateMipmaps(ScriptTextureImportOptions* thisPtr, bool value)
 	{
-		thisPtr->mImportOptions->setGenerateMipmaps(value);
+		thisPtr->getTexImportOptions()->setGenerateMipmaps(value);
 	}
 
 	UINT32 ScriptTextureImportOptions::internal_GetMaxMipmapLevel(ScriptTextureImportOptions* thisPtr)
 	{
-		return thisPtr->mImportOptions->getMaxMip();
+		return thisPtr->getTexImportOptions()->getMaxMip();
 	}
 
 	void ScriptTextureImportOptions::internal_SetMaxMipmapLevel(ScriptTextureImportOptions* thisPtr, UINT32 value)
 	{
-		thisPtr->mImportOptions->setMaxMip(value);
+		thisPtr->getTexImportOptions()->setMaxMip(value);
 	}
 
 	ScriptFontImportOptions::ScriptFontImportOptions(MonoObject* instance)
-		:ScriptObject(instance), mImportOptions(bs_shared_ptr<FontImportOptions>())
+		:ScriptObject(instance)
 	{
-
+		mImportOptions = bs_shared_ptr<FontImportOptions>();
 	}
 
 	void ScriptFontImportOptions::initRuntimeData()
@@ -102,9 +140,23 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetCharRanges", &ScriptFontImportOptions::internal_SetCharRanges);
 	}
 
+	SPtr<FontImportOptions> ScriptFontImportOptions::getFontImportOptions()
+	{
+		return std::static_pointer_cast<FontImportOptions>(mImportOptions);
+	}
+
 	MonoObject* ScriptFontImportOptions::create()
 	{
 		return metaData.scriptClass->createInstance();
+	}
+
+	MonoObject* ScriptFontImportOptions::create(const SPtr<FontImportOptions>& options)
+	{
+		MonoObject* managedInstance = metaData.scriptClass->createInstance();
+		ScriptFontImportOptions* scriptObj = ScriptFontImportOptions::toNative(managedInstance);
+		scriptObj->mImportOptions = options;
+
+		return managedInstance;
 	}
 
 	void ScriptFontImportOptions::internal_CreateInstance(MonoObject* instance)
@@ -114,7 +166,7 @@ namespace BansheeEngine
 
 	MonoArray* ScriptFontImportOptions::internal_GetFontSizes(ScriptFontImportOptions* thisPtr)
 	{
-		Vector<UINT32> fontSizes = thisPtr->mImportOptions->getFontSizes();
+		Vector<UINT32> fontSizes = thisPtr->getFontImportOptions()->getFontSizes();
 
 		ScriptArray outArray = ScriptArray::create<UINT32>((UINT32)fontSizes.size());
 		for (UINT32 i = 0; i < fontSizes.size(); i++)
@@ -131,32 +183,32 @@ namespace BansheeEngine
 		for (UINT32 i = 0; i < inArray.size(); i++)
 			fontSizes[i] = inArray.get<UINT32>(i);
 
-		thisPtr->mImportOptions->setFontSizes(fontSizes);
+		thisPtr->getFontImportOptions()->setFontSizes(fontSizes);
 	}
 
 	UINT32 ScriptFontImportOptions::internal_GetDPI(ScriptFontImportOptions* thisPtr)
 	{
-		return thisPtr->mImportOptions->getDPI();
+		return thisPtr->getFontImportOptions()->getDPI();
 	}
 
 	void ScriptFontImportOptions::internal_SetDPI(ScriptFontImportOptions* thisPtr, UINT32 value)
 	{
-		thisPtr->mImportOptions->setDPI(value);
+		thisPtr->getFontImportOptions()->setDPI(value);
 	}
 
 	bool ScriptFontImportOptions::internal_GetAntialiasing(ScriptFontImportOptions* thisPtr)
 	{
-		return thisPtr->mImportOptions->getAntialiasing();
+		return thisPtr->getFontImportOptions()->getAntialiasing();
 	}
 
 	void ScriptFontImportOptions::internal_SetAntialiasing(ScriptFontImportOptions* thisPtr, bool value)
 	{
-		thisPtr->mImportOptions->setAntialiasing(value);
+		thisPtr->getFontImportOptions()->setAntialiasing(value);
 	}
 
 	MonoArray* ScriptFontImportOptions::internal_GetCharRanges(ScriptFontImportOptions* thisPtr)
 	{
-		Vector<std::pair<UINT32, UINT32>> charRanges = thisPtr->mImportOptions->getCharIndexRanges();
+		Vector<std::pair<UINT32, UINT32>> charRanges = thisPtr->getFontImportOptions()->getCharIndexRanges();
 
 		ScriptArray outArray = ScriptArray::create<ScriptCharRange>((UINT32)charRanges.size());
 		for (UINT32 i = 0; i < (UINT32)charRanges.size(); i++)
@@ -174,18 +226,18 @@ namespace BansheeEngine
 	{
 		ScriptArray inArray(value);
 
-		thisPtr->mImportOptions->clearCharIndexRanges();
+		thisPtr->getFontImportOptions()->clearCharIndexRanges();
 		for (UINT32 i = 0; i < inArray.size(); i++)
 		{
 			CharRange range = inArray.get<CharRange>(i);
-			thisPtr->mImportOptions->addCharIndexRange(range.start, range.end);
+			thisPtr->getFontImportOptions()->addCharIndexRange(range.start, range.end);
 		}
 	}
 
 	ScriptGpuProgramImportOptions::ScriptGpuProgramImportOptions(MonoObject* instance)
-		:ScriptObject(instance), mImportOptions(bs_shared_ptr<GpuProgramImportOptions>())
+		:ScriptObject(instance)
 	{
-
+		mImportOptions = bs_shared_ptr<GpuProgramImportOptions>();
 	}
 
 	void ScriptGpuProgramImportOptions::initRuntimeData()
@@ -201,9 +253,23 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetType", &ScriptGpuProgramImportOptions::internal_SetType);
 	}
 
+	SPtr<GpuProgramImportOptions> ScriptGpuProgramImportOptions::getGpuProgImportOptions()
+	{
+		return std::static_pointer_cast<GpuProgramImportOptions>(mImportOptions);
+	}
+
 	MonoObject* ScriptGpuProgramImportOptions::create()
 	{
 		return metaData.scriptClass->createInstance();
+	}
+
+	MonoObject* ScriptGpuProgramImportOptions::create(const SPtr<GpuProgramImportOptions>& options)
+	{
+		MonoObject* managedInstance = metaData.scriptClass->createInstance();
+		ScriptGpuProgramImportOptions* scriptObj = ScriptGpuProgramImportOptions::toNative(managedInstance);
+		scriptObj->mImportOptions = options;
+
+		return managedInstance;
 	}
 
 	void ScriptGpuProgramImportOptions::internal_CreateInstance(MonoObject* instance)
@@ -213,41 +279,41 @@ namespace BansheeEngine
 
 	MonoString* ScriptGpuProgramImportOptions::internal_GetEntryPoint(ScriptGpuProgramImportOptions* thisPtr)
 	{
-		return MonoUtil::stringToMono(MonoManager::instance().getDomain(), thisPtr->mImportOptions->getEntryPoint());
+		return MonoUtil::stringToMono(MonoManager::instance().getDomain(), thisPtr->getGpuProgImportOptions()->getEntryPoint());
 	}
 
 	void ScriptGpuProgramImportOptions::internal_SetEntryPoint(ScriptGpuProgramImportOptions* thisPtr, MonoString* value)
 	{
-		thisPtr->mImportOptions->setEntryPoint(MonoUtil::monoToString(value));
+		thisPtr->getGpuProgImportOptions()->setEntryPoint(MonoUtil::monoToString(value));
 	}
 
 	GpuLanguage ScriptGpuProgramImportOptions::internal_GetLanguage(ScriptGpuProgramImportOptions* thisPtr)
 	{
-		return Renderer::getGpuLanguageType(thisPtr->mImportOptions->getLanguage());
+		return Renderer::getGpuLanguageType(thisPtr->getGpuProgImportOptions()->getLanguage());
 	}
 
 	void ScriptGpuProgramImportOptions::internal_SetLanguage(ScriptGpuProgramImportOptions* thisPtr, GpuLanguage value)
 	{
-		thisPtr->mImportOptions->setLanguage(Renderer::getGpuLanguageName(value));
+		thisPtr->getGpuProgImportOptions()->setLanguage(Renderer::getGpuLanguageName(value));
 	}
 
 	GpuProgramProfile ScriptGpuProgramImportOptions::internal_GetProfile(ScriptGpuProgramImportOptions* thisPtr)
 	{
-		return thisPtr->mImportOptions->getProfile();
+		return thisPtr->getGpuProgImportOptions()->getProfile();
 	}
 
 	void ScriptGpuProgramImportOptions::internal_SetProfile(ScriptGpuProgramImportOptions* thisPtr, GpuProgramProfile value)
 	{
-		thisPtr->mImportOptions->setProfile(value);
+		thisPtr->getGpuProgImportOptions()->setProfile(value);
 	}
 
 	GpuProgramType ScriptGpuProgramImportOptions::internal_GetType(ScriptGpuProgramImportOptions* thisPtr)
 	{
-		return thisPtr->mImportOptions->getType();
+		return thisPtr->getGpuProgImportOptions()->getType();
 	}
 
 	void ScriptGpuProgramImportOptions::internal_SetType(ScriptGpuProgramImportOptions* thisPtr, GpuProgramType value)
 	{
-		thisPtr->mImportOptions->setType(value);
+		thisPtr->getGpuProgImportOptions()->setType(value);
 	}
 }

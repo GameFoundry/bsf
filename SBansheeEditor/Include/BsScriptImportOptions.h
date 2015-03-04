@@ -6,14 +6,45 @@
 
 namespace BansheeEngine
 {
-	class BS_SCR_BED_EXPORT ScriptTextureImportOptions : public ScriptObject<ScriptTextureImportOptions>
+	class BS_SCR_BED_EXPORT ScriptImportOptionsBase : ScriptObjectBase
+	{
+	public:
+		SPtr<ImportOptions> getImportOptions() const { return mImportOptions; }
+
+	protected:
+		ScriptImportOptionsBase(MonoObject* instance);
+		virtual ~ScriptImportOptionsBase() {}
+
+		SPtr<ImportOptions> mImportOptions;
+	};
+
+	class BS_SCR_BED_EXPORT ScriptImportOptions : public ScriptObject <ScriptImportOptions, ScriptImportOptionsBase>
+	{
+	public:
+		static String getAssemblyName() { return BansheeEditorAssemblyName; }
+		static String getNamespace() { return "BansheeEditor"; }
+		static String getTypeName() { return "ImportOptions"; }
+		static void initRuntimeData() { }
+
+		static MonoObject* create(const SPtr<ImportOptions>& importOptions);
+
+	private:
+		ScriptImportOptions(MonoObject* instance)
+			:ScriptObject(instance)
+		{ }
+	};
+
+	class BS_SCR_BED_EXPORT ScriptTextureImportOptions : public ScriptObject<ScriptTextureImportOptions, ScriptImportOptionsBase>
 	{
 	public:
 		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "TextureImportOptions")
 
 		static MonoObject* create();
+		static MonoObject* create(const SPtr<TextureImportOptions>& options);
 
 	private:
+		SPtr<TextureImportOptions> getTexImportOptions();
+
 		static void internal_CreateInstance(MonoObject* instance);
 		static PixelFormat internal_GetPixelFormat(ScriptTextureImportOptions* thisPtr);
 		static void internal_SetPixelFormat(ScriptTextureImportOptions* thisPtr, PixelFormat value);
@@ -23,18 +54,19 @@ namespace BansheeEngine
 		static void internal_SetMaxMipmapLevel(ScriptTextureImportOptions* thisPtr, UINT32 value);
 
 		ScriptTextureImportOptions(MonoObject* instance);
-
-		SPtr<TextureImportOptions> mImportOptions;
 	};
 
-	class BS_SCR_BED_EXPORT ScriptFontImportOptions : public ScriptObject <ScriptFontImportOptions>
+	class BS_SCR_BED_EXPORT ScriptFontImportOptions : public ScriptObject <ScriptFontImportOptions, ScriptImportOptionsBase>
 	{
 	public:
 		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "FontImportOptions")
 
 		static MonoObject* create();
+		static MonoObject* create(const SPtr<FontImportOptions>& options);
 
 	private:
+		SPtr<FontImportOptions> getFontImportOptions();
+
 		static void internal_CreateInstance(MonoObject* instance);
 		static MonoArray* internal_GetFontSizes(ScriptFontImportOptions* thisPtr);
 		static void internal_SetFontSizes(ScriptFontImportOptions* thisPtr, MonoArray* value);
@@ -46,18 +78,19 @@ namespace BansheeEngine
 		static void internal_SetCharRanges(ScriptFontImportOptions* thisPtr, MonoArray* value);
 
 		ScriptFontImportOptions(MonoObject* instance);
-
-		SPtr<FontImportOptions> mImportOptions;
 	};
 
-	class BS_SCR_BED_EXPORT ScriptGpuProgramImportOptions : public ScriptObject <ScriptGpuProgramImportOptions>
+	class BS_SCR_BED_EXPORT ScriptGpuProgramImportOptions : public ScriptObject <ScriptGpuProgramImportOptions, ScriptImportOptionsBase>
 	{
 	public:
 		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "GpuProgramImportOptions")
 
 		static MonoObject* create();
+		static MonoObject* create(const SPtr<GpuProgramImportOptions>& options);
 
 	private:
+		SPtr<GpuProgramImportOptions> getGpuProgImportOptions();
+
 		static void internal_CreateInstance(MonoObject* instance);
 		static MonoString* internal_GetEntryPoint(ScriptGpuProgramImportOptions* thisPtr);
 		static void internal_SetEntryPoint(ScriptGpuProgramImportOptions* thisPtr, MonoString* value);
@@ -69,8 +102,6 @@ namespace BansheeEngine
 		static void internal_SetType(ScriptGpuProgramImportOptions* thisPtr, GpuProgramType value);
 
 		ScriptGpuProgramImportOptions(MonoObject* instance);
-
-		SPtr<GpuProgramImportOptions> mImportOptions;
 	};
 
 	class BS_SCR_BED_EXPORT ScriptCharRange : public ScriptObject <ScriptCharRange>

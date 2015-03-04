@@ -9,6 +9,9 @@ namespace BansheeEditor
     {
         public static DirectoryEntry Root { get { return Internal_GetRoot(); } }
 
+        public static event Action<string> OnEntryAdded;
+        public static event Action<string> OnEntryRemoved;
+
         public static void Create(Resource resource, string path)
         {
             if (Path.IsPathRooted(path))
@@ -75,6 +78,18 @@ namespace BansheeEditor
             Internal_Copy(source, destination, overwrite);
         }
 
+        private static void Internal_DoOnEntryAdded(string path)
+        {
+            if (OnEntryAdded != null)
+                OnEntryAdded(path);
+        }
+
+        private static void Internal_DoOnEntryRemoved(string path)
+        {
+            if (OnEntryRemoved != null)
+                OnEntryRemoved(path);
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_Create(Resource resource, string path);
 
@@ -112,103 +127,64 @@ namespace BansheeEditor
         private static extern void Internal_Copy(string source, string destination, bool overwrite);
     }
 
+    // Note: Must be the same as C++ enum ProjectLibrary::LibraryEntryType
     public enum LibraryEntryType
     {
         File, Directory
     }
 
+    // Note: Must be the same as C++ enum ScriptResourceType
     public enum ResourceType
     {
-        Texture, SpriteTexture, Mesh, Font, GUISkin
+        Texture, SpriteTexture, Mesh, Font, GpuProgram, Undefined
     }
 
     public class LibraryEntry : ScriptObject
     {
-        public String Path
-        {
-            get
-            {
-                // TODO
-                return "";
-            }
-        }
+        public string Path { get { return Internal_GetPath(mCachedPtr); } }
+        public string Name { get { return Internal_GetName(mCachedPtr); } }
 
-        public String Name
-        {
-            get
-            {
-                // TODO
-                return "";
-            }
-        }
+        public LibraryEntryType Type { get { return Internal_GetType(mCachedPtr); } }
+        public DirectoryEntry Parent { get { return Internal_GetParent(mCachedPtr); } }
 
-        public LibraryEntryType Type
-        {
-            get
-            {
-                // TODO
-                return LibraryEntryType.File;
-            }
-        }
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string Internal_GetPath(IntPtr thisPtr);
 
-        public DirectoryEntry Parent
-        {
-            get
-            {
-                // TODO
-                return null;
-            }
-        }
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string Internal_GetName(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern LibraryEntryType Internal_GetType(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern DirectoryEntry Internal_GetParent(IntPtr thisPtr);
     }
 
     public class DirectoryEntry : LibraryEntry
     {
-        public LibraryEntry[] Children
-        {
-            get
-            {
-                // TODO
-                return null;
-            }
-        }
+        public LibraryEntry[] Children { get { return Internal_GetChildren(mCachedPtr); } }
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern LibraryEntry[] Internal_GetChildren(IntPtr thisPtr);
     }
 
     public class FileEntry : LibraryEntry
     {
-        public ImportOptions Options
-        {
-            get
-            {
-                // TODO
-                return null;
-            }
-        }
+        public ImportOptions Options { get { return Internal_GetImportOptions(mCachedPtr); } }
+        public string UUID { get { return Internal_GetUUID(mCachedPtr); } }
+        public Texture2D Icon { get { return Internal_GetIcon(mCachedPtr); } }
+        public ResourceType ResType { get { return Internal_GetResourceType(mCachedPtr); } }
 
-        public string UUID
-        {
-            get
-            {
-                // TODO
-                return "";
-            }
-        }
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern ImportOptions Internal_GetImportOptions(IntPtr thisPtr);
 
-        public Texture2D Icon
-        {
-            get
-            {
-                // TODO
-                return null;
-            }
-        }
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string Internal_GetUUID(IntPtr thisPtr);
 
-        public ResourceType ResType
-        {
-            get
-            {
-                // TODO
-                return ResourceType.Texture;
-            }
-        }
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern Texture2D Internal_GetIcon(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern ResourceType Internal_GetResourceType(IntPtr thisPtr);
     }
 }

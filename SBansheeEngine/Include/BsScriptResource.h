@@ -5,6 +5,11 @@
 
 namespace BansheeEngine
 {
+	enum class ScriptResourceType
+	{
+		Texture, SpriteTexture, Mesh, Font, GpuProgram, Undefined
+	};
+
 	class BS_SCR_BE_EXPORT ScriptResourceBase : public PersistentScriptObjectBase
 	{
 	public:
@@ -30,6 +35,8 @@ namespace BansheeEngine
 		static String getNamespace() { return "BansheeEngine"; }
 		static String getTypeName() { return "Resource"; }
 		static void initRuntimeData() { }
+
+		static ScriptResourceType getTypeFromTypeId(UINT32 typeId);
 
 	private:
 		ScriptResource(MonoObject* instance)
