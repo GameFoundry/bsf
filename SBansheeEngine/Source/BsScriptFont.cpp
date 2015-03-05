@@ -31,4 +31,11 @@ namespace BansheeEngine
 	{
 		mFont = static_resource_cast<Font>(resource);
 	}
+
+	ScriptCharRange::ScriptCharRange(MonoObject* instance)
+		:ScriptObject(instance)
+	{ }
+
+	void ScriptCharRange::initRuntimeData()
+	{ }
 }

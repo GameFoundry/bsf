@@ -3,10 +3,11 @@
 #include "BsScriptEditorPrerequisites.h"
 #include "BsScriptObject.h"
 #include "BsPixelData.h"
+#include "BsGpuProgram.h"
 
 namespace BansheeEngine
 {
-	class BS_SCR_BED_EXPORT ScriptImportOptionsBase : ScriptObjectBase
+	class BS_SCR_BED_EXPORT ScriptImportOptionsBase : public ScriptObjectBase
 	{
 	public:
 		SPtr<ImportOptions> getImportOptions() const { return mImportOptions; }
@@ -102,17 +103,5 @@ namespace BansheeEngine
 		static void internal_SetType(ScriptGpuProgramImportOptions* thisPtr, GpuProgramType value);
 
 		ScriptGpuProgramImportOptions(MonoObject* instance);
-	};
-
-	class BS_SCR_BED_EXPORT ScriptCharRange : public ScriptObject <ScriptCharRange>
-	{
-	public:
-		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "Color")
-
-		static Color unbox(MonoObject* obj);
-		static MonoObject* box(const Color& value);
-
-	private:
-		ScriptCharRange(MonoObject* instance);
 	};
 }

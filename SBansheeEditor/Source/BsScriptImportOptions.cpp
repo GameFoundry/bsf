@@ -9,6 +9,7 @@
 #include "BsFontImportOptions.h"
 #include "BsGpuProgramImportOptions.h"
 #include "BsRenderer.h"
+#include "BsScriptFont.h"
 #include "BsRTTIType.h"
 
 using namespace std::placeholders;
@@ -19,13 +20,6 @@ namespace BansheeEngine
 	{
 		UINT32 start, end;
 	};
-
-	ScriptCharRange::ScriptCharRange(MonoObject* instance)
-		:ScriptObject(instance)
-	{ }
-
-	void ScriptCharRange::initRuntimeData()
-	{ }
 
 	ScriptImportOptionsBase::ScriptImportOptionsBase(MonoObject* instance)
 		:ScriptObjectBase(instance)

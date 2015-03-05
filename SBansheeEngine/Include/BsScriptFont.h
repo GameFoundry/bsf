@@ -25,4 +25,13 @@ namespace BansheeEngine
 
 		HFont mFont;
 	};
+
+	class BS_SCR_BE_EXPORT ScriptCharRange : public ScriptObject <ScriptCharRange>
+	{
+	public:
+		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "CharRange")
+
+	private:
+		ScriptCharRange(MonoObject* instance);
+	};
 }

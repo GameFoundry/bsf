@@ -755,7 +755,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void ProjectLibrary::reimport(const Path& path, const ImportOptionsPtr& importOptions = nullptr, bool forceReimport = false)
+	void ProjectLibrary::reimport(const Path& path, const ImportOptionsPtr& importOptions, bool forceReimport)
 	{
 		LibraryEntry* entry = findEntry(path);
 		if (entry != nullptr)

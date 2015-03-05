@@ -19,6 +19,9 @@ using namespace std::placeholders;
 
 namespace BansheeEngine
 {
+	ScriptProjectLibrary::OnEntryChangedThunkDef ScriptProjectLibrary::OnEntryAddedThunk;
+	ScriptProjectLibrary::OnEntryChangedThunkDef ScriptProjectLibrary::OnEntryRemovedThunk;
+
 	HEvent ScriptProjectLibrary::mOnEntryAddedConn;
 	HEvent ScriptProjectLibrary::mOnEntryRemovedConn;
 
