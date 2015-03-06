@@ -293,6 +293,7 @@
     <ClInclude Include="Include\BsRect3.h" />
     <ClInclude Include="Include\BsServiceLocator.h" />
     <ClInclude Include="Include\BsSpinLock.h" />
+    <ClInclude Include="Include\BsStringFormat.h" />
     <ClInclude Include="Include\BsTaskScheduler.h" />
     <ClInclude Include="Include\BsTestOutput.h" />
     <ClInclude Include="Include\BsTestSuite.h" />

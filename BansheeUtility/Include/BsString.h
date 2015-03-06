@@ -1,18 +1,18 @@
 #pragma once
 
-namespace BansheeEngine 
+namespace BansheeEngine
 {
 	/**
 	 * @brief	Basic string that uses Banshee memory allocators.
 	 */
 	template <typename T>
-	using BasicString = std::basic_string<T, std::char_traits<T>, StdAlloc<T>>;
+	using BasicString = std::basic_string < T, std::char_traits<T>, StdAlloc<T> > ;
 
 	/**
 	 * @brief	Basic string stream that uses Banshee memory allocators.
 	 */
 	template <typename T>
-	using BasicStringStream = std::basic_stringstream<T, std::char_traits<T>, StdAlloc<T>>;
+	using BasicStringStream = std::basic_stringstream < T, std::char_traits<T>, StdAlloc<T> > ;
 
 	/**
 	 * @brief	Wide string used primarily for handling Unicode text.
@@ -35,7 +35,12 @@ namespace BansheeEngine
 	 * 			strings consisting of ASCII text.
 	 */
 	typedef BasicStringStream<char> StringStream;
+}
 
+#include "BsStringFormat.h"
+
+namespace BansheeEngine
+{
     /**
      * @brief	Utility class for manipulating Strings.
      */
@@ -179,6 +184,15 @@ namespace BansheeEngine
          * @copydoc match(const String&, const String&, const String&)
          */
 		static const WString replaceAll(const WString& source, const WString& replaceWhat, const WString& replaceWithWhat);
+
+		/**
+		 * @copydoc	StringFormat::format
+		 */
+		template<class T, class... Args>
+		static BasicString<T> format(const T* source, Args&& ...args)
+		{
+			return StringFormat::format(source, std::forward<Args>(args)...);
+		}
 
 		/**
 		 * @brief	Constant blank string, useful for returning by ref where local does not exist.

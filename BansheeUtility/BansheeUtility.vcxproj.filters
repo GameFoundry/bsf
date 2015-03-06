@@ -269,6 +269,9 @@
     <ClInclude Include="Include\BsMessageHandlerFwd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsStringFormat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsThreadPool.cpp">
