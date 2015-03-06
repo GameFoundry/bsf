@@ -25,6 +25,12 @@
     <Filter Include="Source Files\Editor\Command">
       <UniqueIdentifier>{fc5eed3b-3a94-4c0b-b462-636e84615f94}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Editor\Win32">
+      <UniqueIdentifier>{482fa361-f45b-45d4-9d09-05ffb91c39b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Editor\Win32">
+      <UniqueIdentifier>{ee1257c5-4335-401a-938c-adc62b074503}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -246,6 +252,12 @@
     <ClInclude Include="Include\BsModalWindow.h">
       <Filter>Header Files\Editor</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsCodeEditor.h">
+      <Filter>Header Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Win32\BsVSCodeEditor.h">
+      <Filter>Header Files\Editor\Win32</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsEditorWidgetContainer.cpp">
@@ -439,6 +451,12 @@
     </ClCompile>
     <ClCompile Include="Source\BsModalWindow.cpp">
       <Filter>Source Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsCodeEditor.cpp">
+      <Filter>Source Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Win32\BsVSCodeEditor.cpp">
+      <Filter>Source Files\Editor\Win32</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

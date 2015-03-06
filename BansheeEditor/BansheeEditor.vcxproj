@@ -139,7 +139,7 @@
     <Link>
       <SubSystem>NotSet</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;BansheeEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;BansheeEngine.lib;Advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\lib\x86\$(Configuration);..\Dependencies\lib\x86\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -158,7 +158,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;BansheeEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;BansheeEngine.lib;Advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\lib\$(Platform)\$(Configuration);..\Dependencies\lib\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ShowProgress>NotSet</ShowProgress>
       <ImportLibrary>..\lib\x64\$(Configuration)\$(TargetName).lib</ImportLibrary>
@@ -185,7 +185,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>..\lib\x86\$(Configuration);..\Dependencies\lib\x86\Release</AdditionalLibraryDirectories>
-      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;BansheeEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;BansheeEngine.lib;Advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -210,7 +210,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>..\lib\x86\$(Configuration);..\Dependencies\lib\x86\DebugRelease</AdditionalLibraryDirectories>
-      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;BansheeEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;BansheeEngine.lib;Advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -235,7 +235,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>..\lib\$(Platform)\$(Configuration);..\Dependencies\lib\x64\Release</AdditionalLibraryDirectories>
-      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;BansheeEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;BansheeEngine.lib;Advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\x64\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -260,7 +260,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>..\lib\$(Platform)\$(Configuration);..\Dependencies\lib\x64\DebugRelease</AdditionalLibraryDirectories>
-      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;BansheeEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;BansheeEngine.lib;Advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\x64\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -285,6 +285,7 @@
     <ClInclude Include="Include\BsEditorWidgetLayout.h" />
     <ClInclude Include="Include\BsEditorWidgetLayoutRTTI.h" />
     <ClInclude Include="Include\BsEditorWidgetManager.h" />
+    <ClInclude Include="Include\BsCodeEditor.h" />
     <ClInclude Include="Include\BsGizmoManager.h" />
     <ClInclude Include="Include\BsGUIColor.h" />
     <ClInclude Include="Include\BsGUIColorField.h" />
@@ -340,6 +341,7 @@
     <ClInclude Include="Include\DbgEditorWidget1.h" />
     <ClInclude Include="Include\DbgEditorWidget2.h" />
     <ClInclude Include="Include\BsUndoRedo.h" />
+    <ClInclude Include="Include\Win32\BsVSCodeEditor.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsCmdRecordSO.cpp" />
@@ -358,6 +360,7 @@
     <ClCompile Include="Source\BsEditorWindow.cpp" />
     <ClCompile Include="Source\BsEditorWindowBase.cpp" />
     <ClCompile Include="Source\BsEditorWindowManager.cpp" />
+    <ClCompile Include="Source\BsCodeEditor.cpp" />
     <ClCompile Include="Source\BsGizmoManager.cpp" />
     <ClCompile Include="Source\BsGUIColor.cpp" />
     <ClCompile Include="Source\BsGUIColorField.cpp" />
@@ -406,6 +409,7 @@
     <ClCompile Include="Source\BsTestTextSprite.cpp" />
     <ClCompile Include="Source\DbgEditorWidget1.cpp" />
     <ClCompile Include="Source\DbgEditorWidget2.cpp" />
+    <ClCompile Include="Source\Win32\BsVSCodeEditor.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

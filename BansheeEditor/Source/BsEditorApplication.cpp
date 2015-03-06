@@ -13,6 +13,7 @@
 #include "BsScenePicking.h"
 #include "BsSelection.h"
 #include "BsGizmoManager.h"
+#include "BsCodeEditor.h"
 
 // DEBUG ONLY
 #include "DbgEditorWidget1.h"
@@ -91,10 +92,12 @@ namespace BansheeEngine
 		ScenePicking::startUp();
 		Selection::startUp();
 		GizmoManager::startUp();
+		CodeEditorManager::startUp();
 	}
 
 	EditorApplication::~EditorApplication()
 	{
+		CodeEditorManager::shutDown();
 		GizmoManager::shutDown();
 		Selection::shutDown();
 		ScenePicking::shutDown();
