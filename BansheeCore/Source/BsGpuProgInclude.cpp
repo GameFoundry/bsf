@@ -1,5 +1,6 @@
 #include "BsGpuProgInclude.h"
 #include "BsResources.h"
+#include "BsGpuProgIncludeRTTI.h"
 
 namespace BansheeEngine
 {
@@ -22,5 +23,15 @@ namespace BansheeEngine
 		gpuProgIncludePtr->initialize();
 
 		return gpuProgIncludePtr;
+	}
+
+	RTTITypeBase* GpuProgInclude::getRTTIStatic()
+	{
+		return GpuProgIncludeRTTI::instance();
+	}
+
+	RTTITypeBase* GpuProgInclude::getRTTI() const
+	{
+		return GpuProgInclude::getRTTIStatic();
 	}
 }

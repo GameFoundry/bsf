@@ -89,6 +89,8 @@ namespace BansheeEngine
 	class RenderableHandler;
 	class CameraHandlerCore;
 	class RenderableHandlerCore;
+	class PlainText;
+	class ScriptCode;
 
 	// 2D
 	class TextSprite;
@@ -110,6 +112,8 @@ namespace BansheeEngine
 	typedef std::shared_ptr<CameraHandler> CameraHandlerPtr;
 	typedef std::shared_ptr<RenderableHandler> RenderableHandlerPtr;
 	typedef std::shared_ptr<InputConfiguration> InputConfigurationPtr;
+	typedef std::shared_ptr<PlainText> PlainTextPtr;
+	typedef std::shared_ptr<ScriptCode> ScriptCodePtr;
 
 	typedef GameObjectHandle<GUIWidget> HGUIWidget;
 	typedef GameObjectHandle<Camera> HCamera;
@@ -117,6 +121,8 @@ namespace BansheeEngine
 	typedef GameObjectHandle<ProfilerOverlay> HProfilerOverlay;
 
 	typedef ResourceHandle<SpriteTexture> HSpriteTexture;
+	typedef ResourceHandle<PlainText> HPlainText;
+	typedef ResourceHandle<ScriptCode> HScriptCode;
 
 	/**
 	 * @brief	RTTI types.
@@ -127,6 +133,8 @@ namespace BansheeEngine
 		TID_Renderable = 30001,
 		TID_SpriteTexture = 30002,
 		TID_CameraHandler = 30003,
-		TID_RenderableHandler = 30004
+		TID_RenderableHandler = 30004,
+		TID_PlainText = 30005,
+		TID_ScriptCode = 30006
 	};
 }

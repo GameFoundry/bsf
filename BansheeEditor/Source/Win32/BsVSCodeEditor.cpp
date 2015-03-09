@@ -1,6 +1,7 @@
 #include "Win32/BsVSCodeEditor.h"
 #include <windows.h>
 #include <atlbase.h>
+#include "BsUtil.h"
 
 // Import EnvDTE
 #import "libid:80cc9f66-e7d8-4ddd-85b6-d9e6cd0e93e2" version("8.0") lcid("0") raw_interfaces_only named_guids
@@ -34,10 +35,21 @@ namespace BansheeEngine
 		WString GUID;
 		WString name;
 		Path path;
-	}
+	};
 
 	class VisualStudio
 	{
+	private:
+		static const WString SLN_TEMPLATE;
+		static const WString PROJ_ENTRY_TEMPLATE;
+		static const WString PROJ_PLATFORM_TEMPLATE;
+
+		static const WString PROJ_TEMPLATE;
+		static const WString REFERENCE_ENTRY_TEMPLATE;
+		static const WString REFERENCE_PATH_ENTRY_TEMPLATE;
+		static const WString CODE_ENTRY_TEMPLATE;
+		static const WString NON_CODE_ENTRY_TEMPLATE;
+
 	public:
 		static CComPtr<EnvDTE::_DTE> findRunningInstance(const CLSID& clsID, const Path& solutionPath)
 		{
@@ -164,15 +176,193 @@ namespace BansheeEngine
 			return true;
 		}
 
-		static WString writeSolution(VisualStudioVersion version, const WString& solutionGUID, const Vector<VSProjectInfo>& projects)
+		static String getSolutionGUID(const WString& solutionName)
 		{
-			WStringStream stream;
+			static const String guidTemplate = "{0}-{1}-{2}-{3}-{4}";
+			String hash = md5(L"SLN_" + solutionName);
 
+			return StringUtil::format(guidTemplate, hash.substr(0, 8), hash.substr(8, 4), hash.substr(12, 4), hash.substr(16, 4), hash.substr(20, 12));
+		}
 
-			const WString header;
-			
+		static String getProjectGUID(const WString& projectName)
+		{
+			static const String guidTemplate = "{0}-{1}-{2}-{3}-{4}";
+			String hash = md5(L"PRJ_" + projectName);
+
+			return StringUtil::format(guidTemplate, hash.substr(0, 8), hash.substr(8, 4), hash.substr(12, 4), hash.substr(16, 4), hash.substr(20, 12));
+		}
+
+		static WString writeSolution(VisualStudioVersion version, const WString& name, const Vector<VSProjectInfo>& projects)
+		{
+			struct VersionData
+			{
+				WString formatVersion;
+			};
+
+			Map<VisualStudioVersion, VersionData> versionData =
+			{
+				{ VisualStudioVersion::VS2008, { L"10.0" } },
+				{ VisualStudioVersion::VS2010, { L"11.0" } },
+				{ VisualStudioVersion::VS2012, { L"12.0" } },
+				{ VisualStudioVersion::VS2013, { L"12.0" } },
+				{ VisualStudioVersion::VS2015, { L"12.0" } }
+			};
+
+			String solutionGUID = getSolutionGUID(name);
+
+			WStringStream projectEntriesStream;
+			WStringStream projectPlatformsStream;
+			for (auto& project : projects)
+			{
+				projectEntriesStream << StringUtil::format(PROJ_ENTRY_TEMPLATE, toWString(solutionGUID), project.name, project.path.toWString(), project.GUID) << std::endl;
+				projectPlatformsStream << StringUtil::format(PROJ_PLATFORM_TEMPLATE, project.GUID) << std::endl;
+			}
+
+			WString projectEntries = projectEntriesStream.str();
+			WString projectPlatforms = projectPlatformsStream.str();
+
+			return StringUtil::format(SLN_TEMPLATE, versionData[version].formatVersion, projectEntries, projectPlatforms);
+		}
+
+		static WString writeProject(VisualStudioVersion version, const CodeProjectData& projectData)
+		{
+			struct VersionData
+			{
+				WString toolsVersion;
+			};
+
+			Map<VisualStudioVersion, VersionData> versionData =
+			{
+				{ VisualStudioVersion::VS2008, { L"3.5" } },
+				{ VisualStudioVersion::VS2010, { L"4.0" } },
+				{ VisualStudioVersion::VS2012, { L"4.0" } },
+				{ VisualStudioVersion::VS2013, { L"12.0" } },
+				{ VisualStudioVersion::VS2015, { L"13.0" } }
+			};
+
+			WStringStream tempStream;
+			for (auto& codeEntry : projectData.codeFiles)
+				tempStream << StringUtil::format(CODE_ENTRY_TEMPLATE, codeEntry.toWString()) << std::endl;
+
+			WString codeEntries = tempStream.str();
+			tempStream.str(L"");
+			tempStream.clear();
+
+			for (auto& nonCodeEntry : projectData.nonCodeFiles)
+				tempStream << StringUtil::format(NON_CODE_ENTRY_TEMPLATE, nonCodeEntry.toWString()) << std::endl;
+
+			WString nonCodeEntries = tempStream.str();
+			tempStream.str(L"");
+			tempStream.clear();
+
+			for (auto& referenceEntry : projectData.references)
+			{
+				if (referenceEntry.path.isEmpty())
+					tempStream << StringUtil::format(REFERENCE_ENTRY_TEMPLATE, referenceEntry.name) << std::endl;
+				else
+					tempStream << StringUtil::format(REFERENCE_PATH_ENTRY_TEMPLATE, referenceEntry.name, referenceEntry.path.toWString()) << std::endl;
+			}
+
+			WString referenceEntries = tempStream.str();
+			tempStream.str(L"");
+			tempStream.clear();
+
+			for (auto& define : projectData.defines)
+				tempStream << define << L";";
+
+			WString defines = tempStream.str();
+			WString projectGUID = toWString(getProjectGUID(projectData.name));
+
+			return StringUtil::format(PROJ_ENTRY_TEMPLATE, versionData[version].toolsVersion, projectGUID, 
+				projectData.name, defines, referenceEntries, codeEntries, nonCodeEntries);
 		}
 	};
+
+	const WString VisualStudio::SLN_TEMPLATE =
+		LR"(Microsoft Visual Studio Solution File, Format Version {0}
+{1}
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2}
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal)";
+
+	const WString VisualStudio::PROJ_ENTRY_TEMPLATE =
+		LR"(Project("\{{0}\}") = "{1}", "{2}", "\{{3}\}"
+EndProject)";
+
+	const WString VisualStudio::PROJ_PLATFORM_TEMPLATE =
+		LR"(\{{0}\}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		\{{0}\}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		\{{0}\}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		\{{0}\}.Release|Any CPU.Build.0 = Release|Any CPU)";
+
+	const WString VisualStudio::PROJ_TEMPLATE =
+		LR"literal(<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="{0}" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition = " '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition = " '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>\{{1}\}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace></RootNamespace>
+    <AssemblyName>{2}</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <BaseDirectory>Resources</BaseDirectory>
+    <SchemaVersion>2.0</SchemaVersion>
+  </PropertyGroup>
+    <PropertyGroup Condition = " '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Internal\Temp\Assemblies\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;{3}</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel >
+  </PropertyGroup>
+  <PropertyGroup Condition = " '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Internal\Temp\Assemblies\Release\</OutputPath>
+    <DefineConstants>TRACE;{3}</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+{4}
+  </ItemGroup>
+  <ItemGroup>
+{5}
+  </ItemGroup>
+  <ItemGroup>
+{6}
+  </ItemGroup>
+  <Import Project = "$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
+</Project>)literal";
+
+	const WString VisualStudio::REFERENCE_ENTRY_TEMPLATE =
+		LR"(    <Reference Include="{0}"/>)";
+
+	const WString VisualStudio::REFERENCE_PATH_ENTRY_TEMPLATE =
+		LR"(    <Reference Include="{0}">
+      <HintPath>{1}</HintPath>
+    </Reference>)";
+
+	const WString VisualStudio::CODE_ENTRY_TEMPLATE =
+		LR"(    <Compile Include="{0}"/>)";
+
+	const WString VisualStudio::NO_CODE_ENTRY_TEMPLATE =
+		LR"(    <None Include="{0}"/>)";
 
 	VSCodeEditor::VSCodeEditor(const Path& execPath, const WString& CLSID)
 		:mCLSID(CLSID), mExecPath(execPath)

@@ -45,6 +45,12 @@
     <Filter Include="Header Files\Localization">
       <UniqueIdentifier>{bbd99250-46cb-4299-bbfa-34addc87b878}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\ThirdParty">
+      <UniqueIdentifier>{e0b74f43-dbb4-4e2a-8000-6d9f29dda203}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ThirdParty">
+      <UniqueIdentifier>{8087a3d9-e6ce-4730-9dd6-7550c08cbd3f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\BsThreadPool.h">
@@ -272,6 +278,9 @@
     <ClInclude Include="Include\BsStringFormat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\ThirdParty\md5.h">
+      <Filter>Header Files\ThirdParty</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsThreadPool.cpp">
@@ -434,6 +443,12 @@
       <Filter>Source Files\Math</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsMessageHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\md5.cpp">
+      <Filter>Source Files\ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

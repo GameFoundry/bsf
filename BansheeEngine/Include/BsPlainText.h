@@ -1,42 +1,42 @@
 #pragma once
 
-#include "BsCorePrerequisites.h"
+#include "BsPrerequisites.h"
 #include "BsResource.h"
 
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Raw text resource that serves as an include file for GPU programs.
-	 */
-	class BS_CORE_EXPORT GpuProgInclude : public Resource
+	* @brief	Raw text resource.
+	*/
+	class BS_EXPORT PlainText : public Resource
 	{
 	public:
 		/**
-		 * @brief	Text of the include file.
+		 * @brief	Text contained in the file.
 		 */
-		const String& getString() const { return mString; }
+		const WString& getString() const { return mString; }
 
 		/**
-		 * @brief	Creates a new include file resource with the specified include string.
+		 * @brief	Creates a new text file resource with the specified string.
 		 */
-		static HGpuProgInclude create(const String& includeString);
+		static HPlainText create(const WString& data);
 
 		/**
 		 * @brief	Creates an include file resource with the specified include string.
 		 *
 		 * @note	Internal method. Use "create" for normal use.
 		 */
-		static GpuProgIncludePtr _createPtr(const String& includeString);
+		static PlainTextPtr _createPtr(const WString& data);
 	private:
-		GpuProgInclude(const String& includeString);
+		PlainText(const WString& data);
 
-		String mString;
+		WString mString;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/
 		/************************************************************************/
 	public:
-		friend class GpuProgIncludeRTTI;
+		friend class PlainTextRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const;
 	};

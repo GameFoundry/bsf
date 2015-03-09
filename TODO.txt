@@ -38,6 +38,27 @@ Open visual studio at a specific file/line
      - Use normal shell command?
       - devenv /edit FILE_PATH /command "edit.goto FILE_LINE"
 
+CodeEditorManager
+ - sync()
+ - finds all code and non-code script files using ProjectLibrary
+ - sets up references to the two default BansheeEngine and BansheeEditor assemblies (read from EditorApplication or somewhere?)
+    - their paths need to be retrieved as well. Perhaps EditorApplication::getBuiltinAssemblyPath()
+    - this should be working dir/../../Assemblies (but passed as an absolute path)
+ - sets up references to the two generated assemblies
+    - this should be project dir (EditorApplication::getProjectPath())/Internal/Assemblies
+    - They're names also need to be hardcoded somewhere. ScriptEngine, ScriptEditor
+
+code:
+.cs
+
+text:
+.gpuprog
+.gpuinc
+.txt
+.xml
+.json
+
+
 None of the new VS functionality has been tested
 
 ----------------------------------------------------------------------
@@ -93,6 +114,7 @@ Other simple stuff:
  - VS integration (open VS project on doubleclick, generate project files, open on specific line)
  - C# wrapper for GUISkin (and a way to assign the current skin to a window)
  - Need to add IsPointerDoubleClicked to Input (C++ and C#)
+ - Move all the code files into subfolders so their hierarchy is similar to VS filters
 
 ----------------------------------------------------------------------
 Handles

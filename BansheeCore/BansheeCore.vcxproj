@@ -280,6 +280,7 @@
   <ItemGroup>
     <ClInclude Include="Include\BsCoreObjectCore.h" />
     <ClInclude Include="Include\BsDrawList.h" />
+    <ClInclude Include="Include\BsGpuProgIncludeRTTI.h" />
     <ClInclude Include="Include\BsIResourceListener.h" />
     <ClInclude Include="Include\BsMaterialParam.h" />
     <ClInclude Include="Include\BsRenderStats.h" />

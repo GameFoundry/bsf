@@ -270,6 +270,7 @@
     <ClCompile Include="Source\BsPath.cpp" />
     <ClCompile Include="Source\BsRect2.cpp" />
     <ClCompile Include="Source\BsTorus.cpp" />
+    <ClCompile Include="Source\BsUtil.cpp" />
     <ClCompile Include="Source\BsVector2I.cpp" />
     <ClCompile Include="Source\BsManagedDataBlock.cpp" />
     <ClCompile Include="Source\BsMemoryAllocator.cpp" />
@@ -280,6 +281,7 @@
     <ClCompile Include="Source\BsSphere.cpp" />
     <ClCompile Include="Source\BsStringTable.cpp" />
     <ClCompile Include="Source\BsTexAtlasGenerator.cpp" />
+    <ClCompile Include="Source\ThirdParty\md5.cpp" />
     <ClCompile Include="Source\Win32\BsFileSystem.cpp" />
     <ClCompile Include="Source\Win32\BsTimer.cpp" />
     <ClInclude Include="Include\BsAny.h" />
@@ -363,6 +365,7 @@
     <ClCompile Include="Source\BsRTTIType.cpp" />
     <ClInclude Include="Include\BsTexAtlasGenerator.h" />
     <ClCompile Include="Source\BsHString.cpp" />
+    <ClInclude Include="Include\ThirdParty\md5.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsColor.cpp" />

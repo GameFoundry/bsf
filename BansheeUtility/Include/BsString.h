@@ -189,6 +189,15 @@ namespace BansheeEngine
 		 * @copydoc	StringFormat::format
 		 */
 		template<class T, class... Args>
+		static BasicString<T> format(const BasicString<T>& source, Args&& ...args)
+		{
+			return StringFormat::format(source.c_str(), std::forward<Args>(args)...);
+		}
+
+		/**
+		 * @copydoc	StringFormat::format
+		 */
+		template<class T, class... Args>
 		static BasicString<T> format(const T* source, Args&& ...args)
 		{
 			return StringFormat::format(source, std::forward<Args>(args)...);

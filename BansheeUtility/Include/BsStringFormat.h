@@ -182,6 +182,42 @@ namespace BansheeEngine
 		}
 
 		/**
+		 * @brief	Helper method for converting any data type to a narrow string.
+		 */
+		template<class T> static std::string toString(const T&& param) { return std::to_string(param); }
+
+		/**
+		 * @brief	Helper method that "converts" a narrow string to a narrow string (simply a pass through)
+		 */
+		template<> static std::string toString<std::string>(const std::string&& param) { return param; }
+
+		/**
+		 * @brief	Helper method that converts a Banshee narrow string to a standard narrow string.
+		 */
+		template<> static std::string toString<String>(const String&& param)
+		{
+			return std::string(param.c_str());
+		}
+
+		/**
+		 * @brief	Helper method for converting any data type to a wide string.
+		 */
+		template<class T> static std::wstring toWString(const T&& param) { return std::to_wstring(param); }
+
+		/**
+		 * @brief	Helper method that "converts" a wide string to a wide string (simply a pass through)
+		 */
+		template<> static std::wstring toWString<std::wstring>(const std::wstring&& param) { return param; }
+
+		/**
+		 * @brief	Helper method that converts a Banshee wide string to a standard wide string.
+		 */
+		template<> static std::wstring toWString<WString>(const WString&& param)
+		{
+			return std::wstring(param.c_str());
+		}
+
+		/**
 		 * @brief	Converts all the provided parameters into string representations and populates the provided
 		 *			"parameter" array.
 		 */
@@ -191,7 +227,7 @@ namespace BansheeEngine
 			if (idx >= MAX_PARAMS)
 				return;
 
-			std::basic_string<char> sourceParam = std::to_string(param);
+			std::basic_string<char> sourceParam = toString(param);
 			parameters[idx].buffer = (char*)bs_alloc(sourceParam.size() * sizeof(char));
 			parameters[idx].size = (UINT32)sourceParam.size();
 
@@ -210,7 +246,7 @@ namespace BansheeEngine
 			if (idx >= MAX_PARAMS)
 				return;
 
-			std::basic_string<wchar_t> sourceParam = std::to_wstring(param);
+			std::basic_string<wchar_t> sourceParam = toWString(param);
 			parameters[idx].buffer = (wchar_t*)bs_alloc(sourceParam.size() * sizeof(wchar_t));
 			parameters[idx].size = (UINT32)sourceParam.size();
 			

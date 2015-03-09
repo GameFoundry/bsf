@@ -22,7 +22,7 @@ namespace BansheeEngine
 		WString lowerCaseExt = ext;
 		StringUtil::toLowerCase(lowerCaseExt);
 
-		return lowerCaseExt == L"gpuproginc";
+		return lowerCaseExt == L"gpuinc";
 	}
 
 	bool GpuProgIncludeImporter::isMagicNumberSupported(const UINT8* magicNumPtr, UINT32 numBytes) const
