@@ -291,6 +291,7 @@
     <ClInclude Include="Include\BsScriptObjectManager.h" />
     <ClInclude Include="Include\BsScriptPixelData.h" />
     <ClInclude Include="Include\BsScriptPixelUtility.h" />
+    <ClInclude Include="Include\BsScriptPlainText.h" />
     <ClInclude Include="Include\BsScriptRenderTarget.h" />
     <ClInclude Include="Include\BsScriptRenderTexture.h" />
     <ClInclude Include="Include\BsScriptRenderTexture2D.h" />
@@ -299,6 +300,7 @@
     <ClInclude Include="Include\BsScriptSceneObject.h" />
     <ClInclude Include="Include\BsManagedSerializableObjectInfoRTTI.h" />
     <ClInclude Include="Include\BsManagedSerializableObjectRTTI.h" />
+    <ClInclude Include="Include\BsScriptScriptCode.h" />
     <ClInclude Include="Include\BsScriptSerializableArray.h" />
     <ClInclude Include="Include\BsScriptSerializableDictionary.h" />
     <ClInclude Include="Include\BsScriptSerializableField.h" />
@@ -364,6 +366,7 @@
     <ClCompile Include="Source\BsScriptObjectManager.cpp" />
     <ClCompile Include="Source\BsScriptPixelData.cpp" />
     <ClCompile Include="Source\BsScriptPixelUtility.cpp" />
+    <ClCompile Include="Source\BsScriptPlainText.cpp" />
     <ClCompile Include="Source\BsScriptRenderTarget.cpp" />
     <ClCompile Include="Source\BsScriptRenderTexture.cpp" />
     <ClCompile Include="Source\BsScriptRenderTexture2D.cpp" />
@@ -376,6 +379,7 @@
     <ClCompile Include="Source\BsManagedSerializableList.cpp" />
     <ClCompile Include="Source\BsManagedSerializableObject.cpp" />
     <ClCompile Include="Source\BsManagedSerializableObjectInfo.cpp" />
+    <ClCompile Include="Source\BsScriptScriptCode.cpp" />
     <ClCompile Include="Source\BsScriptSerializableArray.cpp" />
     <ClCompile Include="Source\BsScriptSerializableDictionary.cpp" />
     <ClCompile Include="Source\BsScriptSerializableField.cpp" />

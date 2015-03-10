@@ -91,6 +91,7 @@ namespace BansheeEngine
 	class RenderableHandlerCore;
 	class PlainText;
 	class ScriptCode;
+	class ScriptCodeImportOptions;
 
 	// 2D
 	class TextSprite;

@@ -12,9 +12,14 @@ namespace BansheeEngine
 	{
 	public:
 		/**
-		 * @brief	Text contained in the file.
+		 * @brief	Returns the text contained in the resource.
 		 */
 		const WString& getString() const { return mString; }
+
+		/**
+		 * @brief	Modifies the text contained in the resource.
+		 */
+		void setString(const WString& data) { mString = data; }
 
 		/**
 		 * @brief	Creates a new text file resource with the specified string.

@@ -8,6 +8,7 @@
 #include "BsTextureImportOptions.h"
 #include "BsFontImportOptions.h"
 #include "BsGpuProgramImportOptions.h"
+#include "BsScriptCodeImportOptions.h"
 #include "BsRenderer.h"
 #include "BsScriptFont.h"
 #include "BsRTTIType.h"
@@ -309,5 +310,52 @@ namespace BansheeEngine
 	void ScriptGpuProgramImportOptions::internal_SetType(ScriptGpuProgramImportOptions* thisPtr, GpuProgramType value)
 	{
 		thisPtr->getGpuProgImportOptions()->setType(value);
+	}
+
+	ScriptScriptCodeImportOptions::ScriptScriptCodeImportOptions(MonoObject* instance)
+		:ScriptObject(instance)
+	{
+		mImportOptions = bs_shared_ptr<ScriptCodeImportOptions>();
+	}
+
+	void ScriptScriptCodeImportOptions::initRuntimeData()
+	{
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptScriptCodeImportOptions::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_IsEditorScript", &ScriptScriptCodeImportOptions::internal_IsEditorScript);
+		metaData.scriptClass->addInternalCall("Internal_SetEditorScript", &ScriptScriptCodeImportOptions::internal_SetEditorScript);
+	}
+
+	SPtr<ScriptCodeImportOptions> ScriptScriptCodeImportOptions::getCodeImportOptions()
+	{
+		return std::static_pointer_cast<ScriptCodeImportOptions>(mImportOptions);
+	}
+
+	MonoObject* ScriptScriptCodeImportOptions::create()
+	{
+		return metaData.scriptClass->createInstance();
+	}
+
+	MonoObject* ScriptScriptCodeImportOptions::create(const SPtr<ScriptCodeImportOptions>& options)
+	{
+		MonoObject* managedInstance = metaData.scriptClass->createInstance();
+		ScriptScriptCodeImportOptions* scriptObj = ScriptScriptCodeImportOptions::toNative(managedInstance);
+		scriptObj->mImportOptions = options;
+
+		return managedInstance;
+	}
+
+	void ScriptScriptCodeImportOptions::internal_CreateInstance(MonoObject* instance)
+	{
+		ScriptScriptCodeImportOptions* nativeInstance = new (bs_alloc<ScriptScriptCodeImportOptions>()) ScriptScriptCodeImportOptions(instance);
+	}
+
+	bool ScriptScriptCodeImportOptions::internal_IsEditorScript(ScriptScriptCodeImportOptions* thisPtr)
+	{
+		return thisPtr->getCodeImportOptions()->isEditorScript();
+	}
+
+	void ScriptScriptCodeImportOptions::internal_SetEditorScript(ScriptScriptCodeImportOptions* thisPtr, bool value)
+	{
+		thisPtr->getCodeImportOptions()->setEditorScript(value);
 	}
 }

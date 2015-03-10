@@ -26,6 +26,10 @@ VS integration will likely not work with VSExpress or Community edition
  - VSExpress doesn't support EnvDTE so the only option is to open it using a shell command which doesn't seem to offer precise parameters
  - Community edition should work similarily to Pro, but might have a different executable and/or registry paths
 
+Test:
+ - If string::format works
+ - If VS open and sync works
+
 For later:
  - Make sure that 3rd party assemblies can be imported in the project, and that they are properly referenced in VS project generation
 

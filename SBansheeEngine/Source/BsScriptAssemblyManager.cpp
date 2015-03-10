@@ -17,7 +17,8 @@ namespace BansheeEngine
 		:mBaseTypesInitialized(false), mSerializeObjectAttribute(nullptr), mDontSerializeFieldAttribute(nullptr), 
 		mComponentClass(nullptr), mSceneObjectClass(nullptr), mTextureClass(nullptr), mSpriteTextureClass(nullptr),
 		mSerializeFieldAttribute(nullptr), mHideInInspectorAttribute(nullptr), mSystemArrayClass(nullptr), mSystemGenericListClass(nullptr),
-		mSystemGenericDictionaryClass(nullptr), mManagedResourceClass(nullptr), mFontClass(nullptr), mMissingComponentClass(nullptr)
+		mSystemGenericDictionaryClass(nullptr), mManagedResourceClass(nullptr), mFontClass(nullptr), mMissingComponentClass(nullptr),
+		mPlainTextClass(nullptr), mScriptCodeClass(nullptr)
 	{
 
 	}
@@ -282,6 +283,18 @@ namespace BansheeEngine
 				typeInfo->mType = ScriptPrimitiveType::ManagedResourceRef;
 				return typeInfo;
 			}
+			else if (monoClass->isSubClassOf(mPlainTextClass))
+			{
+				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr<ManagedSerializableTypeInfoPrimitive>();
+				typeInfo->mType = ScriptPrimitiveType::PlainTextRef;
+				return typeInfo;
+			}
+			else if (monoClass->isSubClassOf(mScriptCodeClass))
+			{
+				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr<ManagedSerializableTypeInfoPrimitive>();
+				typeInfo->mType = ScriptPrimitiveType::ScriptCodeRef;
+				return typeInfo;
+			}
 			else if(monoClass->isSubClassOf(mSceneObjectClass))
 			{
 				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr<ManagedSerializableTypeInfoPrimitive>();
@@ -388,6 +401,8 @@ namespace BansheeEngine
 		mTextureClass = nullptr;
 		mSpriteTextureClass = nullptr;
 		mFontClass = nullptr;
+		mPlainTextClass = nullptr;
+		mScriptCodeClass = nullptr;
 
 		mSerializeFieldAttribute = nullptr;
 		mHideInInspectorAttribute = nullptr;
@@ -451,6 +466,14 @@ namespace BansheeEngine
 		mFontClass = bansheeEngineAssembly->getClass("BansheeEngine", "Font");
 		if (mFontClass == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find Font managed class.");
+
+		mPlainTextClass = bansheeEngineAssembly->getClass("BansheeEngine", "PlainText");
+		if (mPlainTextClass == nullptr)
+			BS_EXCEPT(InvalidStateException, "Cannot find PlainText managed class.");
+
+		mScriptCodeClass = bansheeEngineAssembly->getClass("BansheeEngine", "ScriptCode");
+		if (mScriptCodeClass == nullptr)
+			BS_EXCEPT(InvalidStateException, "Cannot find ScriptCode managed class.");
 
 		mSerializeFieldAttribute = bansheeEngineAssembly->getClass("BansheeEngine", "SerializeField");
 		if(mSerializeFieldAttribute == nullptr)

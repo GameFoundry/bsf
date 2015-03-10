@@ -173,4 +173,27 @@ namespace BansheeEditor
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetCharRanges(IntPtr thisPtr, CharRange[] value);
     }
+
+    public class ScriptCodeImportOptions : ImportOptions
+    {
+        public ScriptCodeImportOptions()
+        {
+            Internal_CreateInstance(this);
+        }
+
+        public bool EditorScript
+        {
+            get { return Internal_IsEditorScript(mCachedPtr); }
+            set { Internal_SetEditorScript(mCachedPtr, value); }
+        }
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_CreateInstance(ScriptCodeImportOptions instance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_IsEditorScript(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetEditorScript(IntPtr thisPtr, bool value);
+    }
 }

@@ -17,6 +17,11 @@ namespace BansheeEngine
 		const WString& getString() const { return mString; }
 
 		/**
+		 * @brief	Modifies the source code contained in the resource.
+		 */
+		void setString(const WString& data) { mString = data; }
+
+		/**
 		 * @brief	Creates a new script code resource with the specified source code.
 		 */
 		static HScriptCode create(const WString& data, bool editorScript = false);

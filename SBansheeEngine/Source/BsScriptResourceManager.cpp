@@ -6,6 +6,8 @@
 #include "BsScriptTexture3D.h"
 #include "BsScriptTextureCube.h"
 #include "BsScriptSpriteTexture.h"
+#include "BsScriptPlainText.h"
+#include "BsScriptScriptCode.h"
 #include "BsScriptFont.h"
 #include "BsScriptManagedResource.h"
 #include "BsScriptAssemblyManager.h"
@@ -79,6 +81,48 @@ namespace BansheeEngine
 		return scriptResource;
 	}
 
+	ScriptPlainText* ScriptResourceManager::createScriptPlainText(const HPlainText& resourceHandle)
+	{
+		MonoClass* plainTextClass = ScriptAssemblyManager::instance().getPlainTextClass();
+		MonoObject* monoInstance = plainTextClass->createInstance();
+
+		return createScriptPlainText(monoInstance, resourceHandle);
+	}
+
+	ScriptPlainText* ScriptResourceManager::createScriptPlainText(MonoObject* instance, const HPlainText& resourceHandle)
+	{
+		const String& uuid = resourceHandle.getUUID();
+#if BS_DEBUG_MODE
+		throwExceptionIfInvalidOrDuplicate(uuid);
+#endif
+
+		ScriptPlainText* scriptResource = new (bs_alloc<ScriptPlainText>()) ScriptPlainText(instance, resourceHandle);
+		mScriptResources[uuid] = scriptResource;
+
+		return scriptResource;
+	}
+
+	ScriptScriptCode* ScriptResourceManager::createScriptScriptCode(const HScriptCode& resourceHandle)
+	{
+		MonoClass* scriptCodeClass = ScriptAssemblyManager::instance().getScriptCodeClass();
+		MonoObject* monoInstance = scriptCodeClass->createInstance();
+
+		return createScriptScriptCode(monoInstance, resourceHandle);
+	}
+
+	ScriptScriptCode* ScriptResourceManager::createScriptScriptCode(MonoObject* instance, const HScriptCode& resourceHandle)
+	{
+		const String& uuid = resourceHandle.getUUID();
+#if BS_DEBUG_MODE
+		throwExceptionIfInvalidOrDuplicate(uuid);
+#endif
+
+		ScriptScriptCode* scriptResource = new (bs_alloc<ScriptScriptCode>()) ScriptScriptCode(instance, resourceHandle);
+		mScriptResources[uuid] = scriptResource;
+
+		return scriptResource;
+	}
+
 	ScriptSpriteTexture* ScriptResourceManager::createScriptSpriteTexture(const HSpriteTexture& resourceHandle)
 	{
 		MonoClass* spriteTextureClass = ScriptAssemblyManager::instance().getSpriteTextureClass();
@@ -140,6 +184,16 @@ namespace BansheeEngine
 	ScriptSpriteTexture* ScriptResourceManager::getScriptSpriteTexture(const HSpriteTexture& resourceHandle)
 	{
 		return static_cast<ScriptSpriteTexture*>(getScriptResource(resourceHandle.getUUID()));
+	}
+
+	ScriptPlainText* ScriptResourceManager::getScriptPlainText(const HPlainText& resourceHandle)
+	{
+		return static_cast<ScriptPlainText*>(getScriptResource(resourceHandle.getUUID()));
+	}
+
+	ScriptScriptCode* ScriptResourceManager::getScriptScriptCode(const HScriptCode& resourceHandle)
+	{
+		return static_cast<ScriptScriptCode*>(getScriptResource(resourceHandle.getUUID()));
 	}
 
 	ScriptManagedResource* ScriptResourceManager::getScriptManagedResource(const HManagedResource& resourceHandle)

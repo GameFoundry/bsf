@@ -30,6 +30,8 @@ namespace BansheeEngine
 		MonoClass* getTextureClass() const { return mTextureClass; }
 		MonoClass* getSpriteTextureClass() const { return mSpriteTextureClass; }
 		MonoClass* getFontClass() const { return mFontClass; }
+		MonoClass* getPlainTextClass() const { return mPlainTextClass; }
+		MonoClass* getScriptCodeClass() const { return mScriptCodeClass; }
 
 		ManagedSerializableTypeInfoPtr determineType(MonoClass* monoClass);
 	private:
@@ -48,6 +50,8 @@ namespace BansheeEngine
 		MonoClass* mSpriteTextureClass;
 		MonoClass* mManagedResourceClass;
 		MonoClass* mFontClass;
+		MonoClass* mPlainTextClass;
+		MonoClass* mScriptCodeClass;
 
 		MonoClass* mSerializeObjectAttribute;
 		MonoClass* mDontSerializeFieldAttribute;

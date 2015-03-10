@@ -8,6 +8,8 @@
 #include "BsScriptTexture2D.h"
 #include "BsScriptSpriteTexture.h"
 #include "BsScriptManagedResource.h"
+#include "BsScriptPlainText.h"
+#include "BsScriptScriptCode.h"
 #include "BsScriptSceneObject.h"
 #include "BsScriptComponent.h"
 #include "BsManagedSerializableObject.h"
@@ -172,6 +174,30 @@ namespace BansheeEngine
 
 					return fieldData;
 				}
+			case ScriptPrimitiveType::PlainTextRef:
+			{
+				auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataResourceRef>();
+
+				if (value != nullptr)
+				{
+					ScriptPlainText* scriptPlainResource = ScriptPlainText::toNative(value);
+					fieldData->value = static_resource_cast<PlainText>(scriptPlainResource->getNativeHandle());
+				}
+
+				return fieldData;
+			}
+			case ScriptPrimitiveType::ScriptCodeRef:
+			{
+				auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataResourceRef>();
+
+				if (value != nullptr)
+				{
+					ScriptScriptCode* scriptScriptCode = ScriptScriptCode::toNative(value);
+					fieldData->value = static_resource_cast<ScriptCode>(scriptScriptCode->getNativeHandle());
+				}
+
+				return fieldData;
+			}
 			case ScriptPrimitiveType::SceneObjectRef:
 				{
 					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataGameObjectRef>();
@@ -430,6 +456,36 @@ namespace BansheeEngine
 						scriptResource = ScriptResourceManager::instance().createScriptSpriteTexture(spriteTexture);
 
 					if(scriptResource != nullptr)
+						return scriptResource->getManagedInstance();
+				}
+				else
+					return nullptr;
+			}
+			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::PlainTextRef)
+			{
+				if (value)
+				{
+					HPlainText plainText = static_resource_cast<PlainText>(value);
+					ScriptPlainText* scriptResource = ScriptResourceManager::instance().getScriptPlainText(plainText);
+					if (scriptResource == nullptr)
+						scriptResource = ScriptResourceManager::instance().createScriptPlainText(plainText);
+
+					if (scriptResource != nullptr)
+						return scriptResource->getManagedInstance();
+				}
+				else
+					return nullptr;
+			}
+			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::ScriptCodeRef)
+			{
+				if (value)
+				{
+					HScriptCode scriptCode = static_resource_cast<ScriptCode>(value);
+					ScriptScriptCode* scriptResource = ScriptResourceManager::instance().getScriptScriptCode(scriptCode);
+					if (scriptResource == nullptr)
+						scriptResource = ScriptResourceManager::instance().createScriptScriptCode(scriptCode);
+
+					if (scriptResource != nullptr)
 						return scriptResource->getManagedInstance();
 				}
 				else

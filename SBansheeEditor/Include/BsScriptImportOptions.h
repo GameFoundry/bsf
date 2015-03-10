@@ -104,4 +104,22 @@ namespace BansheeEngine
 
 		ScriptGpuProgramImportOptions(MonoObject* instance);
 	};
+
+	class BS_SCR_BED_EXPORT ScriptScriptCodeImportOptions : public ScriptObject <ScriptScriptCodeImportOptions, ScriptImportOptionsBase>
+	{
+	public:
+		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "ScriptCodeImportOptions")
+
+		static MonoObject* create();
+		static MonoObject* create(const SPtr<ScriptCodeImportOptions>& options);
+
+	private:
+		SPtr<ScriptCodeImportOptions> getCodeImportOptions();
+
+		static void internal_CreateInstance(MonoObject* instance);
+		static bool internal_IsEditorScript(ScriptScriptCodeImportOptions* thisPtr);
+		static void internal_SetEditorScript(ScriptScriptCodeImportOptions* thisPtr, bool value);
+
+		ScriptScriptCodeImportOptions(MonoObject* instance);
+	};
 }

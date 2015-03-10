@@ -101,6 +101,7 @@
     <Compile Include="MissingComponent.cs" />
     <Compile Include="PixelData.cs" />
     <Compile Include="PixelUtility.cs" />
+    <Compile Include="PlainText.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Math\Quaternion.cs" />
@@ -109,6 +110,7 @@
     <Compile Include="RenderTexture2D.cs" />
     <Compile Include="Resource.cs" />
     <Compile Include="SceneObject.cs" />
+    <Compile Include="ScriptCode.cs" />
     <Compile Include="ScriptObject.cs" />
     <Compile Include="SerializableArray.cs" />
     <Compile Include="SerializableDictionary.cs" />
