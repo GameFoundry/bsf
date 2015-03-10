@@ -10,7 +10,7 @@ namespace BansheeEngine
 	class BS_SCR_BED_EXPORT ScriptGUIPanelContainer : public TScriptGUIElement<ScriptGUIPanelContainer>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "GUIPanelContainer")
+		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "GUIPanelContainer")
 
 	private:
 		static void internal_createInstance(MonoObject* instance, MonoObject* panel, MonoArray* guiOptions);

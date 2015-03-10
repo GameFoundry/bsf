@@ -249,6 +249,7 @@
     <ClCompile Include="Source\BsRenderQueue.cpp" />
     <ClCompile Include="Source\BsScriptCode.cpp" />
     <ClCompile Include="Source\BsScriptCodeImporter.cpp" />
+    <ClCompile Include="Source\BsScriptCodeImportOptions.cpp" />
     <ClCompile Include="Source\BsVirtualInput.cpp" />
     <ClInclude Include="Include\BsApplication.h" />
     <ClInclude Include="Include\BsCameraHandler.h" />
@@ -267,6 +268,8 @@
     <ClInclude Include="Include\BsRenderer.h" />
     <ClInclude Include="Include\BsScriptCode.h" />
     <ClInclude Include="Include\BsScriptCodeImporter.h" />
+    <ClInclude Include="Include\BsScriptCodeImportOptions.h" />
+    <ClInclude Include="Include\BsScriptCodeImportOptionsRTTI.h" />
     <ClInclude Include="Include\BsScriptCodeRTTI.h" />
     <ClInclude Include="Include\BsShapeMeshes3D.h" />
     <ClInclude Include="Include\BsDragAndDropManager.h" />

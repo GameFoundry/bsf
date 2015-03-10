@@ -6,7 +6,6 @@
 #include "BsFileSystem.h"
 #include "BsTaskScheduler.h"
 #include "BsUUID.h"
-#include "BsPath.h"
 #include "BsDebug.h"
 #include "BsUtility.h"
 #include "BsSavedResourceData.h"

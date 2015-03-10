@@ -8,7 +8,7 @@ namespace BansheeEngine
 	class BS_SCR_BED_EXPORT ScriptEditorSettings : public ScriptObject < ScriptEditorSettings >
 	{
 	public:
-		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "EditorSettings")
+		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "EditorSettings")
 
 	private:
 		ScriptEditorSettings(MonoObject* instance);

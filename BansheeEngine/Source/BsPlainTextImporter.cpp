@@ -1,6 +1,5 @@
 #include "BsPlainTextImporter.h"
 #include "BsPlainText.h"
-#include "BsPath.h"
 #include "BsDataStream.h"
 #include "BsFileSystem.h"
 

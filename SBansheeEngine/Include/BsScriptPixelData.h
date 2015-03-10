@@ -10,7 +10,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptPixelData : public ScriptObject <ScriptPixelData>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "PixelData")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "PixelData")
 
 		PixelDataPtr getInternalValue() const { return mPixelData; }
 

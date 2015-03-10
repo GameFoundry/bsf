@@ -1,8 +1,8 @@
 #include "BsScriptCodeImporter.h"
 #include "BsScriptCode.h"
-#include "BsPath.h"
 #include "BsDataStream.h"
 #include "BsFileSystem.h"
+#include "BsScriptCodeImportOptions.h"
 
 namespace BansheeEngine
 {
@@ -35,11 +35,23 @@ namespace BansheeEngine
 		DataStreamPtr stream = FileSystem::openFile(filePath);
 		WString textData = stream->getAsWString();
 
-		ScriptCodePtr scriptCode = ScriptCode::_createPtr(textData);
+		bool editorScript = false;
+		if (importOptions != nullptr)
+		{
+			SPtr<const ScriptCodeImportOptions> scriptIO = std::static_pointer_cast<const ScriptCodeImportOptions>(importOptions);
+			editorScript = scriptIO->isEditorScript();
+		}
+			
+		ScriptCodePtr scriptCode = ScriptCode::_createPtr(textData, editorScript);
 
 		WString fileName = filePath.getWFilename(false);
 		scriptCode->setName(fileName);
 
 		return scriptCode;
+	}
+
+	ImportOptionsPtr ScriptCodeImporter::createImportOptions() const
+	{
+		return bs_shared_ptr<ScriptCodeImportOptions>();
 	}
 }

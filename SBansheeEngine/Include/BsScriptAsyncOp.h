@@ -9,7 +9,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptAsyncOp : public ScriptObject<ScriptAsyncOp>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "AsyncOp")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "AsyncOp")
 
 		static MonoObject* create(const AsyncOp& op, std::function<MonoObject*(const AsyncOp&)> asyncOpToReturnValue);
 

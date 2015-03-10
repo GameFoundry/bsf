@@ -9,7 +9,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptStringTable : public ScriptObject<ScriptStringTable>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "StringTable")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "StringTable")
 
 	private:
 		static void internal_GetActiveLanguage(Language* value);

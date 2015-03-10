@@ -2,7 +2,6 @@
 #include "BsResource.h"
 #include "BsDebug.h"
 #include "BsDataStream.h"
-#include "BsPath.h"
 #include "BsTextureManager.h"
 #include "BsTexture.h"
 #include "BsTextureImportOptions.h"

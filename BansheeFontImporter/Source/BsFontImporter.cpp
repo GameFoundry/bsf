@@ -4,7 +4,6 @@
 #include "BsTexture.h"
 #include "BsResources.h"
 #include "BsDebug.h"
-#include "BsPath.h"
 #include "BsTexAtlasGenerator.h"
 #include "BsCoreApplication.h"
 #include "BsCoreThread.h"

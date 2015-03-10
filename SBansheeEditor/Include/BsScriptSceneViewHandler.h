@@ -8,7 +8,7 @@ namespace BansheeEngine
 	class BS_SCR_BED_EXPORT ScriptSceneViewHandler : public ScriptObject < ScriptSceneViewHandler >
 	{
 	public:
-		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "SceneViewHandler")
+		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "SceneViewHandler")
 
 	private:
 		static void internal_Create(MonoObject* managedInstance, ScriptEditorWindow* parentWindow, ScriptCameraHandler* camera);

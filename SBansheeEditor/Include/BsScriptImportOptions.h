@@ -22,7 +22,7 @@ namespace BansheeEngine
 	class BS_SCR_BED_EXPORT ScriptImportOptions : public ScriptObject <ScriptImportOptions, ScriptImportOptionsBase>
 	{
 	public:
-		static String getAssemblyName() { return BansheeEditorAssemblyName; }
+		static String getAssemblyName() { return EDITOR_ASSEMBLY; }
 		static String getNamespace() { return "BansheeEditor"; }
 		static String getTypeName() { return "ImportOptions"; }
 		static void initRuntimeData() { }
@@ -38,7 +38,7 @@ namespace BansheeEngine
 	class BS_SCR_BED_EXPORT ScriptTextureImportOptions : public ScriptObject<ScriptTextureImportOptions, ScriptImportOptionsBase>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "TextureImportOptions")
+		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "TextureImportOptions")
 
 		static MonoObject* create();
 		static MonoObject* create(const SPtr<TextureImportOptions>& options);
@@ -60,7 +60,7 @@ namespace BansheeEngine
 	class BS_SCR_BED_EXPORT ScriptFontImportOptions : public ScriptObject <ScriptFontImportOptions, ScriptImportOptionsBase>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "FontImportOptions")
+		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "FontImportOptions")
 
 		static MonoObject* create();
 		static MonoObject* create(const SPtr<FontImportOptions>& options);
@@ -84,7 +84,7 @@ namespace BansheeEngine
 	class BS_SCR_BED_EXPORT ScriptGpuProgramImportOptions : public ScriptObject <ScriptGpuProgramImportOptions, ScriptImportOptionsBase>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "GpuProgramImportOptions")
+		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "GpuProgramImportOptions")
 
 		static MonoObject* create();
 		static MonoObject* create(const SPtr<GpuProgramImportOptions>& options);

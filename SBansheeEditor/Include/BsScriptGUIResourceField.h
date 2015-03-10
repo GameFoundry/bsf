@@ -8,7 +8,7 @@ namespace BansheeEngine
 	class BS_SCR_BED_EXPORT ScriptGUIResourceField : public TScriptGUIElement<ScriptGUIResourceField>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "GUIResourceField")
+		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "GUIResourceField")
 
 	private:
 		static void internal_createInstance(MonoObject* instance, MonoReflectionType* type, MonoObject* title, UINT32 titleWidth,

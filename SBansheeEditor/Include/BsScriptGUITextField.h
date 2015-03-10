@@ -8,7 +8,7 @@ namespace BansheeEngine
 	class BS_SCR_BED_EXPORT ScriptGUITextField : public TScriptGUIElement<ScriptGUITextField>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "GUITextField")
+		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "GUITextField")
 
 	private:
 		static void internal_createInstance(MonoObject* instance, bool multiline, MonoObject* title, UINT32 titleWidth,

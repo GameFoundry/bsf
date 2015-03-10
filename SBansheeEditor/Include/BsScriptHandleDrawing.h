@@ -12,7 +12,7 @@ namespace BansheeEngine
 	class BS_SCR_BED_EXPORT ScriptHandleDrawing : public ScriptObject <ScriptHandleDrawing>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "HandleDrawing")
+		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "HandleDrawing")
 
 	private:
 		static void internal_SetColor(Color color);

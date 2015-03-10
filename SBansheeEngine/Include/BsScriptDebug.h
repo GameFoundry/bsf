@@ -8,7 +8,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptDebug : public ScriptObject<ScriptDebug>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "Debug")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Debug")
 
 	private:
 		static void internal_log(MonoString* message);

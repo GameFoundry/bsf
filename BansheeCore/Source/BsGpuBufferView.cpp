@@ -1,5 +1,4 @@
 #include "BsGpuBufferView.h"
-#include "BsUtil.h"
 
 namespace BansheeEngine
 {

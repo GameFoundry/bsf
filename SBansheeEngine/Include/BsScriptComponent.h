@@ -10,7 +10,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptComponent : public ScriptObject<ScriptComponent, ScriptGameObjectBase>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "Component")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Component")
 
 		virtual HGameObject getNativeHandle() const { return mManagedComponent; }
 		virtual void setNativeHandle(const HGameObject& gameObject);

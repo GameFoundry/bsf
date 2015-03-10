@@ -37,7 +37,6 @@ documentation and/or software.
 #include <cstdio>
 #include <assert.h>
 
-
 // Constants for MD5Transform routine.
 #define S11 7
 #define S12 12
@@ -112,7 +111,7 @@ MD5::MD5()
 MD5::MD5(const std::string &text)
 {
 	init();
-	update(text.c_str(), text.length());
+	update(text.c_str(), (size_type)text.length());
 	finalize();
 }
 
@@ -352,13 +351,6 @@ void MD5::decdigest(unsigned char* buf, size_type length)
 	assert(length == 16);
 
 	memcpy(buf, digest, length);
-}
-
-//////////////////////////////
-
-std::ostream& operator<<(std::ostream& out, MD5 md5)
-{
-	return out << md5.hexdigest();
 }
 
 //////////////////////////////

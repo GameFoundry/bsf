@@ -41,7 +41,6 @@
 #include "BsMessageHandler.h"
 #include "BsResourceListenerManager.h"
 #include "BsRenderStateManager.h"
-#include "BsPath.h"
 
 #include "BsMaterial.h"
 #include "BsShader.h"

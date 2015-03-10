@@ -1,6 +1,5 @@
 #include "BsTextureView.h"
 #include "BsTexture.h"
-#include "BsUtil.h"
 
 namespace BansheeEngine
 {

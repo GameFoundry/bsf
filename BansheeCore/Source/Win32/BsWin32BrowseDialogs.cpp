@@ -1,5 +1,4 @@
 #include "BsPlatform.h"
-#include "BsPath.h"
 #include <atlbase.h>
 #include <ShObjIdl.h>
 

@@ -9,7 +9,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptInputConfiguration : public ScriptObject<ScriptInputConfiguration>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "InputConfiguration")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "InputConfiguration")
 
 		InputConfigurationPtr getInternalValue() const { return mInputConfig; }
 
@@ -42,7 +42,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptVirtualAxis : public ScriptObject <ScriptVirtualAxis>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "VirtualAxis")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "VirtualAxis")
 
 	private:
 		static UINT32 internal_InitVirtualAxis(MonoString* name);

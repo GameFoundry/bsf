@@ -8,7 +8,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptSerializableField : public ScriptObject<ScriptSerializableField>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "SerializableField")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "SerializableField")
 
 		static ScriptSerializableField* create(MonoObject* parentObject, const ManagedSerializableFieldInfoPtr& fieldInfo);
 

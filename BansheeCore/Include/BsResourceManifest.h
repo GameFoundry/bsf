@@ -2,7 +2,6 @@
 
 #include "BsCorePrerequisites.h"
 #include "BsIReflectable.h"
-#include "BsPath.h"
 
 namespace BansheeEngine
 {

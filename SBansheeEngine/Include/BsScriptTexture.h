@@ -22,7 +22,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptTexture : public ScriptObject <ScriptTexture, ScriptTextureBase>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "Texture")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Texture")
 
 	private:
 		ScriptTexture(MonoObject* instance);

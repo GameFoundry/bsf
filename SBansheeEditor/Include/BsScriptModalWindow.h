@@ -17,7 +17,7 @@ namespace BansheeEngine
 			ManagedModalWindow* nativeObj;
 		};
 	public:
-		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "ModalWindow")
+		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "ModalWindow")
 
 		~ScriptModalWindow();
 

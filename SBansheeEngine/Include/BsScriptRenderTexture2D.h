@@ -9,7 +9,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptRenderTexture2D : public ScriptObject < ScriptRenderTexture2D, ScriptRenderTargetBase >
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "RenderTexture2D")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "RenderTexture2D")
 
 		RenderTargetPtr getNativeValue() const { return mRenderTarget; }
 		RenderTexturePtr getRenderTexture() const;

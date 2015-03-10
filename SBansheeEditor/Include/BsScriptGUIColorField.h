@@ -9,7 +9,7 @@ namespace BansheeEngine
 	class BS_SCR_BED_EXPORT ScriptGUIColorField : public TScriptGUIElement<ScriptGUIColorField>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "GUIColorField")
+		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "GUIColorField")
 
 	private:
 		static void internal_createInstance(MonoObject* instance, MonoObject* title, UINT32 titleWidth,

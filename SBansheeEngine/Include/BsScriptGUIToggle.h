@@ -8,7 +8,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptGUIToggle : public TScriptGUIElement<ScriptGUIToggle>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "GUIToggle")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUIToggle")
 
 	private:
 		static void internal_createInstance(MonoObject* instance, MonoObject* content, 

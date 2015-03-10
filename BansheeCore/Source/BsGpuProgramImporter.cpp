@@ -1,5 +1,4 @@
 #include "BsGpuProgramImporter.h"
-#include "BsPath.h"
 #include "BsDataStream.h"
 #include "BsFileSystem.h"
 #include "BsGpuProgramImportOptions.h"

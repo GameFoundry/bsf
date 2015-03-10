@@ -9,7 +9,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptManagedResource : public ScriptObject<ScriptManagedResource, ScriptResourceBase>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "ManagedResource")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "ManagedResource")
 
 		ScriptManagedResource(MonoObject* instance, const HManagedResource& resource);
 

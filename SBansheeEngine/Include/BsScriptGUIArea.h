@@ -9,7 +9,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptGUIArea : public ScriptObject<ScriptGUIArea>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "GUIArea")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUIArea")
 
 		GUIArea* getInternalValue() const { return mGUIArea; }
 		void* getNativeRaw() const { return mGUIArea; }

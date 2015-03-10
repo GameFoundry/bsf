@@ -1,22 +1,14 @@
 #include "Win32/BsVSCodeEditor.h"
 #include <windows.h>
 #include <atlbase.h>
-#include "BsUtil.h"
+#include "BsFileSystem.h"
+#include "BsDataStream.h"
 
 // Import EnvDTE
 #import "libid:80cc9f66-e7d8-4ddd-85b6-d9e6cd0e93e2" version("8.0") lcid("0") raw_interfaces_only named_guids
 
 namespace BansheeEngine
 {
-	enum class VisualStudioVersion
-	{
-		VS2008,
-		VS2010,
-		VS2012,
-		VS2013,
-		VS2015
-	};
-
 	LONG getRegistryStringValue(HKEY hKey, const WString& name, WString& value, const WString& defaultValue)
 	{
 		value = defaultValue;
@@ -46,6 +38,7 @@ namespace BansheeEngine
 
 		static const WString PROJ_TEMPLATE;
 		static const WString REFERENCE_ENTRY_TEMPLATE;
+		static const WString REFERENCE_PROJECT_ENTRY_TEMPLATE;
 		static const WString REFERENCE_PATH_ENTRY_TEMPLATE;
 		static const WString CODE_ENTRY_TEMPLATE;
 		static const WString NON_CODE_ENTRY_TEMPLATE;
@@ -79,7 +72,9 @@ namespace BansheeEngine
 					if (result != S_OK)
 						continue;
 
-					CComPtr<EnvDTE::_DTE> dte = curObject;
+					CComPtr<EnvDTE::_DTE> dte;
+					curObject->QueryInterface(__uuidof(EnvDTE::_DTE), (void**)&dte);
+
 					if (dte == nullptr)
 						return nullptr;
 
@@ -105,7 +100,9 @@ namespace BansheeEngine
 			if (FAILED(::CoCreateInstance(clsid, nullptr, CLSCTX_LOCAL_SERVER, EnvDTE::IID__DTE, (LPVOID*)&newInstance)))
 				return nullptr;
 
-			CComPtr<EnvDTE::_DTE> dte = newInstance;
+			CComPtr<EnvDTE::_DTE> dte;
+			newInstance->QueryInterface(__uuidof(EnvDTE::_DTE), (void**)&dte);
+
 			if (dte == nullptr)
 				return nullptr;
 
@@ -192,7 +189,7 @@ namespace BansheeEngine
 			return StringUtil::format(guidTemplate, hash.substr(0, 8), hash.substr(8, 4), hash.substr(12, 4), hash.substr(16, 4), hash.substr(20, 12));
 		}
 
-		static WString writeSolution(VisualStudioVersion version, const WString& name, const Vector<VSProjectInfo>& projects)
+		static WString writeSolution(VisualStudioVersion version, const CodeSolutionData& data)
 		{
 			struct VersionData
 			{
@@ -208,14 +205,16 @@ namespace BansheeEngine
 				{ VisualStudioVersion::VS2015, { L"12.0" } }
 			};
 
-			String solutionGUID = getSolutionGUID(name);
+			WString solutionGUID = toWString(getSolutionGUID(data.name));
 
 			WStringStream projectEntriesStream;
 			WStringStream projectPlatformsStream;
-			for (auto& project : projects)
+			for (auto& project : data.projects)
 			{
-				projectEntriesStream << StringUtil::format(PROJ_ENTRY_TEMPLATE, toWString(solutionGUID), project.name, project.path.toWString(), project.GUID) << std::endl;
-				projectPlatformsStream << StringUtil::format(PROJ_PLATFORM_TEMPLATE, project.GUID) << std::endl;
+				WString guid = toWString(getProjectGUID(project.name));
+
+				projectEntriesStream << StringUtil::format(PROJ_ENTRY_TEMPLATE, solutionGUID, project.name, project.name + L".csproj", guid) << std::endl;
+				projectPlatformsStream << StringUtil::format(PROJ_PLATFORM_TEMPLATE, guid) << std::endl;
 			}
 
 			WString projectEntries = projectEntriesStream.str();
@@ -255,7 +254,7 @@ namespace BansheeEngine
 			tempStream.str(L"");
 			tempStream.clear();
 
-			for (auto& referenceEntry : projectData.references)
+			for (auto& referenceEntry : projectData.assemblyReferences)
 			{
 				if (referenceEntry.path.isEmpty())
 					tempStream << StringUtil::format(REFERENCE_ENTRY_TEMPLATE, referenceEntry.name) << std::endl;
@@ -267,6 +266,16 @@ namespace BansheeEngine
 			tempStream.str(L"");
 			tempStream.clear();
 
+			for (auto& referenceEntry : projectData.projectReferences)
+			{
+				WString projectGUID = toWString(getProjectGUID(referenceEntry.name));
+				tempStream << StringUtil::format(REFERENCE_PROJECT_ENTRY_TEMPLATE, referenceEntry.name, projectGUID) << std::endl;
+			}
+
+			WString projectReferenceEntries = tempStream.str();
+			tempStream.str(L"");
+			tempStream.clear();
+
 			for (auto& define : projectData.defines)
 				tempStream << define << L";";
 
@@ -274,7 +283,7 @@ namespace BansheeEngine
 			WString projectGUID = toWString(getProjectGUID(projectData.name));
 
 			return StringUtil::format(PROJ_ENTRY_TEMPLATE, versionData[version].toolsVersion, projectGUID, 
-				projectData.name, defines, referenceEntries, codeEntries, nonCodeEntries);
+				projectData.name, defines, referenceEntries, projectReferenceEntries, codeEntries, nonCodeEntries);
 		}
 	};
 
@@ -347,6 +356,9 @@ EndProject)";
   <ItemGroup>
 {6}
   </ItemGroup>
+  <ItemGroup>
+{7}
+  </ItemGroup>
   <Import Project = "$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
 </Project>)literal";
 
@@ -358,14 +370,20 @@ EndProject)";
       <HintPath>{1}</HintPath>
     </Reference>)";
 
+	const WString VisualStudio::REFERENCE_PROJECT_ENTRY_TEMPLATE =
+		LR"(    <ProjectReference Include="{0}.csproj">
+      <Project>\{{1}\}</Project>
+      <Name>{0}</Name>
+    </ProjectReference>)";
+
 	const WString VisualStudio::CODE_ENTRY_TEMPLATE =
 		LR"(    <Compile Include="{0}"/>)";
 
-	const WString VisualStudio::NO_CODE_ENTRY_TEMPLATE =
+	const WString VisualStudio::NON_CODE_ENTRY_TEMPLATE =
 		LR"(    <None Include="{0}"/>)";
 
-	VSCodeEditor::VSCodeEditor(const Path& execPath, const WString& CLSID)
-		:mCLSID(CLSID), mExecPath(execPath)
+	VSCodeEditor::VSCodeEditor(VisualStudioVersion version, const Path& execPath, const WString& CLSID)
+		:mCLSID(CLSID), mExecPath(execPath), mVersion(version)
 	{
 		
 	}
@@ -373,7 +391,7 @@ EndProject)";
 	void VSCodeEditor::openFile(const Path& solutionPath, const Path& filePath, UINT32 lineNumber) const
 	{
 		CLSID clsID;
-		if (FAILED(CLSIDFromString(mCLSID.toWString().c_str(), &clsID)))
+		if (FAILED(CLSIDFromString(mCLSID.c_str(), &clsID)))
 			return;
 
 		CComPtr<EnvDTE::_DTE> dte = VisualStudio::findRunningInstance(clsID, solutionPath);
@@ -388,7 +406,24 @@ EndProject)";
 
 	void VSCodeEditor::syncSolution(const CodeSolutionData& data, const Path& outputPath) const
 	{
-		// TODO
+		WString solutionString = VisualStudio::writeSolution(mVersion, data);
+		Path solutionPath = outputPath;
+		solutionPath.append(data.name + L".sln");
+
+		for (auto& project : data.projects)
+		{
+			WString projectString = VisualStudio::writeProject(mVersion, project);
+			Path projectPath = outputPath;
+			projectPath.append(project.name + L".csproj");
+
+			DataStreamPtr projectStream = FileSystem::createAndOpenFile(projectPath);
+			projectStream->write(projectString.c_str(), projectString.size());
+			projectStream->close();
+		}
+
+		DataStreamPtr solutionStream = FileSystem::createAndOpenFile(solutionPath);
+		solutionStream->write(solutionString.c_str(), solutionString.size());
+		solutionStream->close();
 	}
 
 	VSCodeEditorFactory::VSCodeEditorFactory()
@@ -451,6 +486,7 @@ EndProject)";
 			info.name = version.second.name;
 			info.execPath = installPath.append(version.second.executable);
 			info.CLSID = clsID;
+			info.version = version.first;
 
 			versionInfo[info.name] = info;
 		}
@@ -468,6 +504,6 @@ EndProject)";
 
 		// TODO - Also create VSExpress and VSCommunity editors
 
-		return bs_new<VSCodeEditor>(findIter->second.execPath, findIter->second.CLSID);
+		return bs_new<VSCodeEditor>(findIter->second.version, findIter->second.execPath, findIter->second.CLSID);
 	}
 }

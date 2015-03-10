@@ -1,5 +1,4 @@
 #include "BsResourceImporter.h"
-#include "BsPath.h"
 #include "BsFileSerializer.h"
 #include "BsResource.h"
 

@@ -8,7 +8,7 @@ namespace BansheeEngine
 	class BS_SCR_BED_EXPORT ScriptEditorUtility : public ScriptObject <ScriptEditorUtility>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "EditorUtility")
+		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "EditorUtility")
 
 	private:
 		static void internal_CalculateBounds(MonoObject* so, AABox* bounds);

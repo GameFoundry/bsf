@@ -124,6 +124,10 @@ namespace BansheeEngine
 	typedef ResourceHandle<PlainText> HPlainText;
 	typedef ResourceHandle<ScriptCode> HScriptCode;
 
+	static const char* ENGINE_ASSEMBLY = "MBansheeEngine";
+	static const char* SCRIPT_GAME_ASSEMBLY = "MScriptGame";
+	static const Path ASSEMBLY_PATH = "..\\..\\Assemblies\\";
+
 	/**
 	 * @brief	RTTI types.
 	 */
@@ -135,6 +139,7 @@ namespace BansheeEngine
 		TID_CameraHandler = 30003,
 		TID_RenderableHandler = 30004,
 		TID_PlainText = 30005,
-		TID_ScriptCode = 30006
+		TID_ScriptCode = 30006,
+		TID_ScriptCodeImportOptions = 30007
 	};
 }

@@ -235,7 +235,7 @@ namespace BansheeEngine
 
 	void ScriptEditorWindow::registerManagedEditorWindows()
 	{
-		MonoAssembly* assembly = MonoManager::instance().getAssembly(BansheeEditorAssemblyName);
+		MonoAssembly* assembly = MonoManager::instance().getAssembly(EDITOR_ASSEMBLY);
 
 		if(assembly != nullptr)
 		{
@@ -321,7 +321,7 @@ namespace BansheeEngine
 
 	bool ScriptEditorWidget::createManagedInstance()
 	{
-		MonoAssembly* assembly = MonoManager::instance().getAssembly(BansheeEditorAssemblyName);
+		MonoAssembly* assembly = MonoManager::instance().getAssembly(EDITOR_ASSEMBLY);
 
 		if (assembly != nullptr)
 		{

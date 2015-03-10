@@ -12,7 +12,7 @@ namespace BansheeEngine
 	class BS_SCR_BED_EXPORT ScriptGizmos : public ScriptObject<ScriptGizmos>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "Gizmos")
+		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "Gizmos")
 
 	private:
 		static void internal_SetColor(Color color);

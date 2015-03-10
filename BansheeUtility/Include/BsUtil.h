@@ -1,7 +1,5 @@
 #pragma once
 
-#include "BsPrerequisitesUtil.h"
-
 namespace BansheeEngine
 {
 	/**
@@ -18,10 +16,10 @@ namespace BansheeEngine
 	/**
 	 * @brief	Generates an MD5 hash string for the provided source string.
 	 */
-	String md5(const WString& source);
+	String BS_UTILITY_EXPORT md5(const WString& source);
 
 	/**
 	 * @brief	Generates an MD5 hash string for the provided source string.
 	 */
-	String md5(const String& source);
+	String BS_UTILITY_EXPORT md5(const String& source);
 }

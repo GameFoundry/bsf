@@ -85,7 +85,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptGUIElement : public ScriptObject<ScriptGUIElement>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "GUIElement")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUIElement")
 
 	private:
 		static void internal_destroy(ScriptGUIElementBaseTBase* nativeInstance);

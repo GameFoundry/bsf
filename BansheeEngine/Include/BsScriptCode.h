@@ -19,18 +19,19 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates a new script code resource with the specified source code.
 		 */
-		static HScriptCode create(const WString& data);
+		static HScriptCode create(const WString& data, bool editorScript = false);
 
 		/**
 		 * @brief	Creates an include file resource with the specified include string.
 		 *
 		 * @note	Internal method. Use "create" for normal use.
 		 */
-		static ScriptCodePtr _createPtr(const WString& data);
+		static ScriptCodePtr _createPtr(const WString& data, bool editorScript = false);
 	private:
-		ScriptCode(const WString& data);
+		ScriptCode(const WString& data, bool editorScript);
 
 		WString mString;
+		bool mEditorScript;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

@@ -21,45 +21,13 @@ Figure out how to create a C# BuiltinResources class. It should be able to load 
 ----------------------------------------------------------------------
 VisualStudio integration
 
-Need to be able to generate a VS solution/project based on source files in the project
-Open visual studio at a specific file/line
-
-1. Detect all installed VS versions with their paths
-     - 32bit OS: HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\VisualStudio\10.0\InstallDir
-     - 64bit OS: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\10.0\InstallDir
-   - In case of Express version replace "VisualStudio" with "VCSExpress"
-   - If "InstallDir" variable doesn't exist then that version isn't installed (its parent key might still exist though) 
-   - TODO - VS Community edition??
-   - Executable for Pro is "devenv.exe" and for Express is vcsexpress.exe and for Community is ??
-2. Detect if we have a VS running with our solution
-   - Need to find CLSID, which is located in same registry folder as "InstallDir" and is named "ThisVersionDTECLSID"
-   - Use EnvDTE to detect and open VS
-    - EnvDTE doesn't work with VSExpress!
-     - Use normal shell command?
-      - devenv /edit FILE_PATH /command "edit.goto FILE_LINE"
-
-CodeEditorManager
- - sync()
- - finds all code and non-code script files using ProjectLibrary
- - sets up references to the two default BansheeEngine and BansheeEditor assemblies (read from EditorApplication or somewhere?)
-    - their paths need to be retrieved as well. Perhaps EditorApplication::getBuiltinAssemblyPath()
-    - this should be working dir/../../Assemblies (but passed as an absolute path)
- - sets up references to the two generated assemblies
-    - this should be project dir (EditorApplication::getProjectPath())/Internal/Assemblies
-    - They're names also need to be hardcoded somewhere. ScriptEngine, ScriptEditor
-
-code:
-.cs
-
-text:
-.gpuprog
-.gpuinc
-.txt
-.xml
-.json
-
-
 None of the new VS functionality has been tested
+VS integration will likely not work with VSExpress or Community edition
+ - VSExpress doesn't support EnvDTE so the only option is to open it using a shell command which doesn't seem to offer precise parameters
+ - Community edition should work similarily to Pro, but might have a different executable and/or registry paths
+
+For later:
+ - Make sure that 3rd party assemblies can be imported in the project, and that they are properly referenced in VS project generation
 
 ----------------------------------------------------------------------
 BuiltinResources
@@ -115,6 +83,7 @@ Other simple stuff:
  - C# wrapper for GUISkin (and a way to assign the current skin to a window)
  - Need to add IsPointerDoubleClicked to Input (C++ and C#)
  - Move all the code files into subfolders so their hierarchy is similar to VS filters
+ - Get rid of PoolAlloc and other unused allocators (plus fix bs_new and others which have weird overloads)
 
 ----------------------------------------------------------------------
 Handles

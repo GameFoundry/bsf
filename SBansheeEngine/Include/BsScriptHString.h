@@ -9,7 +9,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptHString : public ScriptObject<ScriptHString>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "LocString")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "LocString")
 
 		const HString& getInternalValue() const { return mString; }
 		void* getNativeRaw() const { return (void*)&mString; }

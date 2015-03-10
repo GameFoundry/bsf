@@ -1,7 +1,6 @@
 #include "Win32/BsWin32FolderMonitor.h"
 #include "BsFileSystem.h"
 #include "BsException.h"
-#include "BsPath.h"
 
 #include "BsDebug.h"
 

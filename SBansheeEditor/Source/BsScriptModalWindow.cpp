@@ -217,7 +217,7 @@ namespace BansheeEngine
 
 	bool ManagedModalWindow::createManagedInstance()
 	{
-		MonoAssembly* assembly = MonoManager::instance().getAssembly(BansheeEditorAssemblyName);
+		MonoAssembly* assembly = MonoManager::instance().getAssembly(EDITOR_ASSEMBLY);
 
 		if (assembly != nullptr)
 		{

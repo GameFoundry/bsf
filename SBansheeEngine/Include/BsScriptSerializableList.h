@@ -8,7 +8,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptSerializableList : public ScriptObject<ScriptSerializableList>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "SerializableList")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "SerializableList")
 
 			static ScriptSerializableList* create(const ManagedSerializableTypeInfoListPtr& typeInfo, MonoObject* object);
 

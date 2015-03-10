@@ -51,7 +51,7 @@ namespace BansheeEngine
 
 			ParamData<T> parameters[MAX_PARAMS];
 			memset(parameters, 0, sizeof(parameters));
-			getParams<T>(parameters, 0, std::forward<Args>(args)...);
+			getParams(parameters, 0U, std::forward<Args>(args)...);
 
 			T bracketChars[MAX_IDENTIFIER_SIZE + 1];
 			UINT32 bracketWriteIdx = 0;
@@ -184,17 +184,17 @@ namespace BansheeEngine
 		/**
 		 * @brief	Helper method for converting any data type to a narrow string.
 		 */
-		template<class T> static std::string toString(const T&& param) { return std::to_string(param); }
+		template<class T> static std::string toString(const T& param) { return std::to_string(param); }
 
 		/**
 		 * @brief	Helper method that "converts" a narrow string to a narrow string (simply a pass through)
 		 */
-		template<> static std::string toString<std::string>(const std::string&& param) { return param; }
+		template<> static std::string toString<std::string>(const std::string& param) { return param; }
 
 		/**
 		 * @brief	Helper method that converts a Banshee narrow string to a standard narrow string.
 		 */
-		template<> static std::string toString<String>(const String&& param)
+		template<> static std::string toString<String>(const String& param)
 		{
 			return std::string(param.c_str());
 		}
@@ -202,17 +202,17 @@ namespace BansheeEngine
 		/**
 		 * @brief	Helper method for converting any data type to a wide string.
 		 */
-		template<class T> static std::wstring toWString(const T&& param) { return std::to_wstring(param); }
+		template<class T> static std::wstring toWString(const T& param) { return std::to_wstring(param); }
 
 		/**
 		 * @brief	Helper method that "converts" a wide string to a wide string (simply a pass through)
 		 */
-		template<> static std::wstring toWString<std::wstring>(const std::wstring&& param) { return param; }
+		template<> static std::wstring toWString<std::wstring>(const std::wstring& param) { return param; }
 
 		/**
 		 * @brief	Helper method that converts a Banshee wide string to a standard wide string.
 		 */
-		template<> static std::wstring toWString<WString>(const WString&& param)
+		template<> static std::wstring toWString<WString>(const WString& param)
 		{
 			return std::wstring(param.c_str());
 		}
@@ -258,8 +258,15 @@ namespace BansheeEngine
 		/**
 		 * @brief	Helper method for parameter size calculation. Used as a stopping point in template recursion.
 		 */
-		template<class T>
-		static void getParams(ParamData<T>* parameters, UINT32 idx)
+		static void getParams(ParamData<char>* parameters, UINT32 idx)
+		{
+			// Do nothing
+		}
+
+		/**
+		 * @brief	Helper method for parameter size calculation. Used as a stopping point in template recursion.
+		 */
+		static void getParams(ParamData<wchar_t>* parameters, UINT32 idx)
 		{
 			// Do nothing
 		}

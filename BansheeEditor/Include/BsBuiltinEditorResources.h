@@ -3,7 +3,6 @@
 #include "BsEditorPrerequisites.h"
 #include "BsGUISkin.h"
 #include "BsModule.h"
-#include "BsPath.h"
 #include "BsApplication.h"
 
 namespace BansheeEngine

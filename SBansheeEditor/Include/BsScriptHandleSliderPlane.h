@@ -11,7 +11,7 @@ namespace BansheeEngine
 	class BS_SCR_BED_EXPORT ScriptHandleSliderPlane : public ScriptObject <ScriptHandleSliderPlane, ScriptHandleSliderBase>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "HandleSliderPlane")
+		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "HandleSliderPlane")
 
 	protected:
 		virtual HandleSlider* getSlider() const { return mSlider; }

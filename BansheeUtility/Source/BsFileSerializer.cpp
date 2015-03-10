@@ -3,7 +3,6 @@
 #include "BsException.h"
 #include "BsIReflectable.h"
 #include "BsBinarySerializer.h"
-#include "BsPath.h"
 #include "BsFileSystem.h"
 
 #include <numeric>

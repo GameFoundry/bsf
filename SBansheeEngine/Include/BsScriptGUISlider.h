@@ -8,7 +8,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptGUISliderH : public TScriptGUIElement<ScriptGUISliderH>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "GUISliderH")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUISliderH")
 
 	private:
 		static void internal_createInstance(MonoObject* instance, MonoString* style, MonoArray* guiOptions);
@@ -28,7 +28,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptGUISliderV : public TScriptGUIElement<ScriptGUISliderV>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "GUISliderV")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUISliderV")
 
 	private:
 		static void internal_createInstance(MonoObject* instance, MonoString* style, MonoArray* guiOptions);

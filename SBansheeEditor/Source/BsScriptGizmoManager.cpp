@@ -105,7 +105,7 @@ namespace BansheeEngine
 	void ScriptGizmoManager::reloadAssemblyData()
 	{
 		// Reload DrawGizmo attribute from editor assembly
-		MonoAssembly* editorAssembly = MonoManager::instance().getAssembly(BansheeEditorAssemblyName);
+		MonoAssembly* editorAssembly = MonoManager::instance().getAssembly(EDITOR_ASSEMBLY);
 		mDrawGizmoAttribute = editorAssembly->getClass("BansheeEditor", "DrawGizmo");
 		if (mDrawGizmoAttribute == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find DrawGizmo managed class.");

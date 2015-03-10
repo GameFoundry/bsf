@@ -8,7 +8,7 @@ namespace BansheeEngine
 	class BS_SCR_BED_EXPORT ScriptSelection : public ScriptObject<ScriptSelection>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "Selection")
+		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "Selection")
 
 	private:
 		static void internal_GetSceneObjectSelection(MonoArray** selection);

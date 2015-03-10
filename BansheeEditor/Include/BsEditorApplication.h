@@ -2,7 +2,6 @@
 
 #include "BsEditorPrerequisites.h"
 #include "BsApplication.h"
-#include "BsPath.h"
 
 namespace BansheeEngine
 {
@@ -17,7 +16,23 @@ namespace BansheeEngine
 		bool isProjectLoaded() const;
 		bool isGameViewFocused() const;
 		bool isSceneViewFocused() const;
-		const Path& getActiveProjectPath() const;
+		const Path& getProjectPath() const;
+		const WString& getProjectName() const;
+
+		/**
+		 * @brief	Returns the absolute path to the built-in managed editor assembly file.
+		 */
+		Path getEditorAssemblyPath() const;
+
+		/**
+		 * @brief	Returns the absolute path of the managed editor script assembly file.
+		 */
+		Path getEditorScriptAssemblyPath() const;
+
+		/**
+		 * @copydoc	Application::getGameAssemblyPath
+		 */
+		Path getGameAssemblyPath() const override;
 
 		EditorSettingsPtr getEditorSettings() const { return mEditorSettings; }
 

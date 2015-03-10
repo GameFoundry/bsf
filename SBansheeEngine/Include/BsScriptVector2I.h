@@ -9,7 +9,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptVector2I : public ScriptObject<ScriptVector2I>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "Vector2I")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Vector2I")
 
 		static Vector2I unbox(MonoObject* obj);
 		static MonoObject* box(const Vector2I& value);

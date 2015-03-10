@@ -10,7 +10,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptTextureCube : public ScriptObject <ScriptTextureCube, ScriptTextureBase>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "TextureCube")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "TextureCube")
 
 		void* getNativeRaw() const { return mTexture.get(); }
 

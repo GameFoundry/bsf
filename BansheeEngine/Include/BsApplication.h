@@ -49,6 +49,16 @@ namespace BansheeEngine
 		 */
 		ViewportPtr getPrimaryViewport() const;
 
+		/**
+		 * @brief	Returns the absolute path to the builtin managed engine assembly file.
+		 */
+		Path getEngineAssemblyPath() const;
+
+		/**
+		 * @brief	Returns the absolute path to the game managed assembly file.
+		 */
+		virtual Path getGameAssemblyPath() const;
+
 	protected:
 		/**
 		 * @copydoc	Module::onStartUp

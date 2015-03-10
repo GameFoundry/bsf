@@ -72,6 +72,10 @@ namespace BansheeEngine
 	typedef std::shared_ptr<EditorWidgetLayout> EditorWidgetLayoutPtr;
 	typedef std::shared_ptr<EditorSettings> EditorSettingsPtr;
 
+	static const char* EDITOR_ASSEMBLY = "MBansheeEditor";
+	static const char* SCRIPT_EDITOR_ASSEMBLY = "MScriptEditor";
+	static const Path INTERNAL_ASSEMBLY_PATH = "Internal//Assemblies//";
+
 	enum class DragAndDropType
 	{
 		EditorWidget = 10000,

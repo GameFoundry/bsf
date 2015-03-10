@@ -11,10 +11,14 @@ namespace BansheeEngine
 	private:
 		WString& getString(ScriptCode* obj) { return obj->mString; }
 		void setString(ScriptCode* obj, WString& val) { obj->mString = val; }
+
+		bool& getEditorScript(ScriptCode* obj) { return obj->mEditorScript; }
+		void setEditorScript(ScriptCode* obj, bool& val) { obj->mEditorScript = val; }
 	public:
 		ScriptCodeRTTI()
 		{
 			addPlainField("mString", 0, &ScriptCodeRTTI::getString, &ScriptCodeRTTI::setString);
+			addPlainField("mEditorScript", 1, &ScriptCodeRTTI::getEditorScript, &ScriptCodeRTTI::setEditorScript);
 		}
 
 		virtual const String& getRTTIName()

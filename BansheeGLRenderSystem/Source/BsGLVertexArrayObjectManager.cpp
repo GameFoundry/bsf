@@ -3,7 +3,6 @@
 #include "BsVertexDeclaration.h"
 #include "BsGLSLGpuProgram.h"
 #include "BsGLHardwareBufferManager.h"
-#include "BsUtil.h"
 #include "BsRenderStats.h"
 
 #define VBO_BUFFER_OFFSET(i) ((char *)NULL + (i))

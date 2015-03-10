@@ -128,7 +128,7 @@ namespace BansheeEngine
 	void ScriptHandleManager::reloadAssemblyData()
 	{
 		// Reload types from editor assembly
-		MonoAssembly* editorAssembly = MonoManager::instance().getAssembly(BansheeEditorAssemblyName);
+		MonoAssembly* editorAssembly = MonoManager::instance().getAssembly(EDITOR_ASSEMBLY);
 		mCustomHandleAttribute = editorAssembly->getClass("BansheeEditor", "CustomHandle");
 		if (mCustomHandleAttribute == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find CustomHandle managed class.");

@@ -9,7 +9,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptVirtualButton : public ScriptObject <ScriptVirtualButton>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "VirtualButton")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "VirtualButton")
 
 		static VirtualButton unbox(MonoObject* obj);
 		static MonoObject* box(const VirtualButton& value);

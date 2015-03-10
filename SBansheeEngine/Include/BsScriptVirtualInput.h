@@ -9,7 +9,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptVirtualInput : public ScriptObject<ScriptVirtualInput>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "VirtualInput")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "VirtualInput")
 
 		static void startUp();
 		static void shutDown();

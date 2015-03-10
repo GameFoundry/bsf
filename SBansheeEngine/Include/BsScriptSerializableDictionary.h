@@ -8,7 +8,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptSerializableDictionary : public ScriptObject<ScriptSerializableDictionary>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "SerializableDictionary")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "SerializableDictionary")
 
 		static ScriptSerializableDictionary* create(const ManagedSerializableTypeInfoDictionaryPtr& typeInfo, MonoObject* object);
 

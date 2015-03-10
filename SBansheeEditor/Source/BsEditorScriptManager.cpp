@@ -12,6 +12,7 @@
 #include "BsScriptProjectLibrary.h"
 #include "BsTime.h"
 #include "BsMath.h"
+#include "BsEditorApplication.h"
 
 namespace BansheeEngine
 {
@@ -22,7 +23,7 @@ namespace BansheeEngine
 		:mEditorAssembly(nullptr), mProgramEdClass(nullptr), mUpdateMethod(nullptr)
 	{
 		loadMonoTypes();
-		ScriptAssemblyManager::instance().loadAssemblyInfo(BansheeEditorAssemblyName);
+		ScriptAssemblyManager::instance().loadAssemblyInfo(EDITOR_ASSEMBLY);
 
 		ScriptHandleSliderManager::startUp();
 		ScriptGizmoManager::startUp(ScriptAssemblyManager::instance());
@@ -92,10 +93,10 @@ namespace BansheeEngine
 
 	void EditorScriptManager::loadMonoTypes()
 	{
-		const String ENGINE_ASSEMBLY_PATH = "..\\..\\Assemblies\\MBansheeEditor.dll";
-		const String ENGINE_ASSEMBLY_NAME = BansheeEditorAssemblyName;
-		
-		mEditorAssembly = &MonoManager::instance().loadAssembly(ENGINE_ASSEMBLY_PATH, ENGINE_ASSEMBLY_NAME);
+		const String editorAssemblyPath = gEditorApplication().getEditorAssemblyPath().toString();
+		mEditorAssembly = &MonoManager::instance().loadAssembly(editorAssemblyPath, EDITOR_ASSEMBLY);
+
+		// TODO - Load Editor script assembly (gEditorApplication.getEditorScriptAssemblyPath())
 
 		mProgramEdClass = mEditorAssembly->getClass("BansheeEditor", "Program");
 		mUpdateMethod = mProgramEdClass->getMethod("EditorUpdate");

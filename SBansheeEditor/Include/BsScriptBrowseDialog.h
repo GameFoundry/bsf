@@ -8,7 +8,7 @@ namespace BansheeEngine
 	class BS_SCR_BED_EXPORT ScriptBrowseDialog : public ScriptObject<ScriptBrowseDialog>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "BrowseDialog")
+		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "BrowseDialog")
 
 	private:
 		static bool internal_OpenFile(MonoString* defaultFolder, MonoString* filterList, bool allowMultiselect, MonoArray** outPaths);

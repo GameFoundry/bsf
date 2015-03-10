@@ -23,7 +23,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptRenderTarget : public ScriptObject<ScriptRenderTarget, ScriptRenderTargetBase>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "RenderTarget")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "RenderTarget")
 
 	private:
 		ScriptRenderTarget(MonoObject* instance);

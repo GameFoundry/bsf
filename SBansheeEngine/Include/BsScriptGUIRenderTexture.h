@@ -8,7 +8,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptGUIRenderTexture : public TScriptGUIElement < ScriptGUIRenderTexture >
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "GUIRenderTexture")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUIRenderTexture")
 
 	private:
 		static void internal_createInstance(MonoObject* instance, ScriptRenderTexture2D* texture,

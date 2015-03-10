@@ -9,7 +9,6 @@
 #include "BsMeshData.h"
 #include "BsVertexDataDesc.h"
 #include "BsMesh.h"
-#include "BsUtil.h"
 #include "BsRenderWindowManager.h"
 #include "BsPlatform.h"
 #include "BsRect2I.h"

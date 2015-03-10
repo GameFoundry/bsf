@@ -4,7 +4,6 @@
 #include "BsMonoProperty.h"
 #include "BsMonoAssembly.h"
 #include "BsMonoManager.h"
-#include "BsUtil.h"
 #include "BsException.h"
 #include "BsMonoUtil.h"
 #include <mono/metadata/debug-helpers.h>

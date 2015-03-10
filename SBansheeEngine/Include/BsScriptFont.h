@@ -10,7 +10,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptFont : public ScriptObject<ScriptFont, ScriptResourceBase>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "Font")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Font")
 
 		void* getNativeRaw() const { return mFont.get(); }
 
@@ -29,7 +29,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptCharRange : public ScriptObject <ScriptCharRange>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "CharRange")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "CharRange")
 
 	private:
 		ScriptCharRange(MonoObject* instance);

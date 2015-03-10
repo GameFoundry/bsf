@@ -400,9 +400,9 @@ namespace BansheeEngine
 		if(corlib == nullptr)
 			BS_EXCEPT(InvalidStateException, "corlib assembly is not loaded.");
 
-		MonoAssembly* bansheeEngineAssembly = MonoManager::instance().getAssembly(BansheeEngineAssemblyName);
+		MonoAssembly* bansheeEngineAssembly = MonoManager::instance().getAssembly(ENGINE_ASSEMBLY);
 		if(bansheeEngineAssembly == nullptr)
-			BS_EXCEPT(InvalidStateException, String(BansheeEngineAssemblyName) +  " assembly is not loaded.");
+			BS_EXCEPT(InvalidStateException, String(ENGINE_ASSEMBLY) +  " assembly is not loaded.");
 
 		mSystemArrayClass = corlib->getClass("System", "Array");
 		if(mSystemArrayClass == nullptr)

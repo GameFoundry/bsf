@@ -8,7 +8,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptGUILayout : public TScriptGUIElementBase<ScriptGUILayout>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "GUILayout")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUILayout")
 
 		GUILayout* getInternalValue() const { return mLayout; }
 		void* getNativeRaw() const { return mLayout; }

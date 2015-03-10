@@ -20,11 +20,13 @@ namespace BansheeEngine
 		Vector<Path> codeFiles;
 		Vector<Path> nonCodeFiles;
 		Vector<WString> defines;
-		Vector<CodeProjectReference> references;
+		Vector<CodeProjectReference> assemblyReferences;
+		Vector<CodeProjectReference> projectReferences;
 	};
 
 	struct BS_ED_EXPORT CodeSolutionData
 	{
+		WString name;
 		Vector<CodeProjectData> projects;
 	};
 
@@ -38,9 +40,11 @@ namespace BansheeEngine
 		void setActive(const WString& editor);
 
 		void openFile(const Path& path, UINT32 lineNumber) const;
-		void syncSolution(const CodeSolutionData& data, const Path& outputPath) const; // TODO - Need some kind of project information like: name, list of files, list of references, possibly defines and other?
+		void syncSolution() const;
 
 	private:
+		Path getSolutionPath() const;
+
 		CodeEditor* mActiveEditor;
 		Map<WString, CodeEditorFactory*> mFactoryPerEditor;
 		Vector<WString> mEditors;

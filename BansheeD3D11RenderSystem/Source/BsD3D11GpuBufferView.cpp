@@ -2,7 +2,6 @@
 #include "BsD3D11GpuBuffer.h"
 #include "BsD3D11RenderAPI.h"
 #include "BsD3D11Device.h"
-#include "BsUtil.h"
 #include "BsRenderStats.h"
 #include "BsException.h"
 

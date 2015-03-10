@@ -1,4 +1,4 @@
-#include "BsUtil.h"
+#include "BsPrerequisitesUtil.h"
 #include "ThirdParty/md5.h"
 
 namespace BansheeEngine

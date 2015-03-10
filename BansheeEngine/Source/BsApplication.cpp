@@ -12,6 +12,7 @@
 #include "BsSceneObject.h"
 #include "BsCursor.h"
 #include "BsCoreThread.h"
+#include "BsFileSystem.h"
 
 namespace BansheeEngine
 {
@@ -42,11 +43,6 @@ namespace BansheeEngine
 		OverlayManager::startUp();
 
 		Cursor::startUp();
-
-#if BS_VER == BS_VER_DEV
-		loadPlugin("BansheeMono", &mMonoPlugin);
-		loadPlugin("SBansheeEngine", &mSBansheeEnginePlugin); // Scripting interface
-#endif
 	}
 
 	Application::~Application()
@@ -81,6 +77,11 @@ namespace BansheeEngine
 
 	void Application::onStartUp()
 	{
+#if BS_VER == BS_VER_DEV
+		loadPlugin("BansheeMono", &mMonoPlugin);
+		loadPlugin("SBansheeEngine", &mSBansheeEnginePlugin); // Scripting interface
+#endif
+
 		CoreApplication::onStartUp();
 
 		Cursor::instance().setCursor(CursorType::Arrow);
@@ -103,6 +104,24 @@ namespace BansheeEngine
 	{
 		// TODO - Need a way to determine primary viewport!
 		return nullptr;
+	}
+
+	Path Application::getEngineAssemblyPath() const
+	{
+		Path assemblyPath = FileSystem::getWorkingDirectoryPath();
+		assemblyPath.append(ASSEMBLY_PATH);
+		assemblyPath.append(toWString(String(ENGINE_ASSEMBLY)) + L".dll");
+		
+		return assemblyPath;
+	}
+
+	Path Application::getGameAssemblyPath() const
+	{
+		Path assemblyPath = FileSystem::getWorkingDirectoryPath();
+		assemblyPath.append(ASSEMBLY_PATH);
+		assemblyPath.append(toWString(String(SCRIPT_GAME_ASSEMBLY)) + L".dll");
+
+		return assemblyPath;
 	}
 
 	const String& Application::getLibNameForRenderSystem(RenderSystemPlugin plugin)

@@ -2,7 +2,6 @@
 #include "BsException.h"
 #include "BsCoreThread.h"
 #include "BsDebug.h"
-#include "BsUtil.h"
 
 namespace BansheeEngine
 {

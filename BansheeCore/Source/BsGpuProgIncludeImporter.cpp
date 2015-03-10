@@ -1,6 +1,5 @@
 #include "BsGpuProgIncludeImporter.h"
 #include "BsGpuProgInclude.h"
-#include "BsPath.h"
 #include "BsDataStream.h"
 #include "BsFileSystem.h"
 

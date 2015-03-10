@@ -8,7 +8,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptTime : public ScriptObject <ScriptTime>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "Time")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Time")
 
 	private:
 		static float internal_getElapsed();

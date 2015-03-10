@@ -1,6 +1,5 @@
 #include "BsResourceManifest.h"
 #include "BsResourceManifestRTTI.h"
-#include "BsPath.h"
 #include "BsFileSerializer.h"
 #include "BsException.h"
 

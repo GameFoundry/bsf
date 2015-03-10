@@ -8,7 +8,7 @@ namespace BansheeEngine
 	class BS_SCR_BED_EXPORT ScriptGUIFoldout : public TScriptGUIElement<ScriptGUIFoldout>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "GUIFoldout")
+		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "GUIFoldout")
 
 	private:
 		static void internal_createInstance(MonoObject* instance, MonoObject* content, MonoString* style, MonoArray* guiOptions);

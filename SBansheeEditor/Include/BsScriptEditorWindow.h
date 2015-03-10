@@ -17,7 +17,7 @@ namespace BansheeEngine
 			ScriptEditorWindow* nativeObj;
 		};
 	public:
-		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "EditorWindow")
+		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "EditorWindow")
 
 		~ScriptEditorWindow();
 

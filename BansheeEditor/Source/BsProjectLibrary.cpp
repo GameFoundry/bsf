@@ -1,5 +1,4 @@
 #include "BsProjectLibrary.h"
-#include "BsPath.h"
 #include "BsFileSystem.h"
 #include "BsException.h"
 #include "BsResources.h"
@@ -15,6 +14,7 @@
 #include "BsProjectLibraryEntries.h"
 #include "BsResource.h"
 #include "BsResourceImporter.h"
+#include <regex>
 
 using namespace std::placeholders;
 
@@ -429,6 +429,72 @@ namespace BansheeEngine
 
 		std::time_t lastModifiedTime = FileSystem::getLastModifiedTime(path);
 		return lastModifiedTime <= resource->lastUpdateTime;
+	}
+
+	Vector<ProjectLibrary::LibraryEntry*> ProjectLibrary::search(const WString& pattern)
+	{
+		return search(pattern, {});
+	}
+
+	Vector<ProjectLibrary::LibraryEntry*> ProjectLibrary::search(const WString& pattern, const Vector<UINT32>& typeIds)
+	{
+		Vector<LibraryEntry*> foundEntries;
+
+		std::wregex escape(L"[.^$|()\\[\\]{}*+?\\\\]");
+		WString replace(L"\\\\&");
+		WString escapedPattern = std::regex_replace(pattern, escape, replace, std::regex_constants::match_default | std::regex_constants::format_sed);
+
+		std::wregex wildcard(L"\\\\\\*");
+		WString wildcardReplace(L".*");
+		WString searchPattern = std::regex_replace(escapedPattern, wildcard, L".*");
+
+		std::wregex searchRegex(searchPattern);
+
+		Stack<DirectoryEntry*> todo;
+		todo.push(mRootEntry);
+		while (!todo.empty())
+		{
+			DirectoryEntry* dirEntry = todo.top();
+			todo.pop();
+
+			for (auto& child : dirEntry->mChildren)
+			{
+				if (std::regex_match(child->elementName, searchRegex))
+				{
+					if (typeIds.size() == 0)
+						foundEntries.push_back(child);
+					else
+					{
+						if (child->type == LibraryEntryType::File)
+						{
+							ResourceEntry* childResEntry = static_cast<ResourceEntry*>(child);
+							for (auto& typeId : typeIds)
+							{
+								if (childResEntry->meta->getTypeID() == typeId)
+								{
+									foundEntries.push_back(child);
+									break;
+								}
+							}
+						}
+					}
+				}
+
+				if (child->type == LibraryEntryType::Directory)
+				{
+					DirectoryEntry* childDirEntry = static_cast<DirectoryEntry*>(child);
+					todo.push(childDirEntry);
+				}
+			}
+		}
+
+		std::sort(foundEntries.begin(), foundEntries.end(), 
+			[&](const LibraryEntry* a, const LibraryEntry* b) 
+		{ 
+			return a->elementName.compare(b->elementName);
+		});
+
+		return foundEntries;
 	}
 
 	ProjectLibrary::LibraryEntry* ProjectLibrary::findEntry(const Path& fullPath) const

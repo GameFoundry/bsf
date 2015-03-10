@@ -1,7 +1,6 @@
 #include "BsMonoAssembly.h"
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
-#include "BsUtil.h"
 #include "BsMonoUtil.h"
 #include "BsException.h"
 

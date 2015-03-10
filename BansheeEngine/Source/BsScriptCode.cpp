@@ -4,21 +4,21 @@
 
 namespace BansheeEngine
 {
-	ScriptCode::ScriptCode(const WString& data)
-		:Resource(false), mString(data)
+	ScriptCode::ScriptCode(const WString& data, bool editorScript)
+		:Resource(false), mString(data), mEditorScript(editorScript)
 	{
 
 	}
 
-	HScriptCode ScriptCode::create(const WString& data)
+	HScriptCode ScriptCode::create(const WString& data, bool editorScript)
 	{
-		return static_resource_cast<ScriptCode>(gResources()._createResourceHandle(_createPtr(data)));
+		return static_resource_cast<ScriptCode>(gResources()._createResourceHandle(_createPtr(data, editorScript)));
 	}
 
-	ScriptCodePtr ScriptCode::_createPtr(const WString& data)
+	ScriptCodePtr ScriptCode::_createPtr(const WString& data, bool editorScript)
 	{
 		ScriptCodePtr scriptCodePtr = bs_core_ptr<ScriptCode, PoolAlloc>(
-			new (bs_alloc<ScriptCode, PoolAlloc>()) ScriptCode(data));
+			new (bs_alloc<ScriptCode, PoolAlloc>()) ScriptCode(data, editorScript));
 		scriptCodePtr->_setThisPtr(scriptCodePtr);
 		scriptCodePtr->initialize();
 

@@ -10,7 +10,7 @@ namespace BansheeEngine
 	class BS_SCR_BED_EXPORT ScriptProjectLibrary : public ScriptObject<ScriptProjectLibrary>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "ProjectLibrary")
+		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "ProjectLibrary")
 
 		void static startUp();
 		void static shutDown();
@@ -58,7 +58,7 @@ namespace BansheeEngine
 	class BS_SCR_BED_EXPORT ScriptLibraryEntry : public ScriptObject <ScriptLibraryEntry>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "LibraryEntry")
+		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "LibraryEntry")
 
 	private:
 		static MonoString* internal_GetPath(ScriptLibraryEntryBase* thisPtr);
@@ -70,7 +70,7 @@ namespace BansheeEngine
 	class BS_SCR_BED_EXPORT ScriptDirectoryEntry : public ScriptObject <ScriptDirectoryEntry, ScriptLibraryEntryBase>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "DirectoryEntry")
+		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "DirectoryEntry")
 
 		ScriptDirectoryEntry(MonoObject* instance, const Path& assetPath);
 
@@ -83,7 +83,7 @@ namespace BansheeEngine
 	class BS_SCR_BED_EXPORT ScriptFileEntry : public ScriptObject <ScriptFileEntry, ScriptLibraryEntryBase>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "FileEntry")
+		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "FileEntry")
 
 		ScriptFileEntry(MonoObject* instance, const Path& assetPath);
 

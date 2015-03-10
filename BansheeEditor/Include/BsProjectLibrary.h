@@ -2,7 +2,6 @@
 
 #include "BsEditorPrerequisites.h"
 #include "BsModule.h"
-#include "BsPath.h"
 
 namespace BansheeEngine
 {
@@ -57,6 +56,9 @@ namespace BansheeEngine
 
 		const LibraryEntry* getRootEntry() const { return mRootEntry; }
 		LibraryEntry* findEntry(const Path& fullPath) const;
+
+		Vector<LibraryEntry*> search(const WString& pattern);
+		Vector<LibraryEntry*> search(const WString& pattern, const Vector<UINT32>& typeIds);
 
 		ProjectResourceMetaPtr findResourceMeta(const String& uuid) const;
 		Path uuidToPath(const String& uuid) const;

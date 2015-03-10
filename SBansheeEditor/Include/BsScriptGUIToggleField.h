@@ -8,7 +8,7 @@ namespace BansheeEngine
 	class BS_SCR_BED_EXPORT ScriptGUIToggleField : public TScriptGUIElement<ScriptGUIToggleField>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "GUIToggleField")
+		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "GUIToggleField")
 
 	private:
 		static void internal_createInstance(MonoObject* instance, MonoObject* title, UINT32 titleWidth,

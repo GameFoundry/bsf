@@ -4,7 +4,6 @@
 #include "BsSelection.h"
 #include "BsScriptSceneObject.h"
 #include "BsMonoUtil.h"
-#include "BsPath.h"
 #include "BsScriptGameObjectManager.h"
 
 namespace BansheeEngine

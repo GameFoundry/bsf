@@ -10,7 +10,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptCursor : public ScriptObject <ScriptCursor>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "Cursor")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Cursor")
 
 	private:
 		static void internal_getScreenPosition(Vector2I* value);

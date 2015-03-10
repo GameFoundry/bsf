@@ -9,6 +9,7 @@
 #include "BsScriptInput.h"
 #include "BsScriptVirtualInput.h"
 #include "BsScriptObjectManager.h"
+#include "BsApplication.h"
 
 // DEBUG ONLY
 #include "BsScriptSceneObject.h"
@@ -36,11 +37,12 @@ namespace BansheeEngine
 
 	extern "C" BS_SCR_BE_EXPORT void* loadPlugin()
 	{
-		const String ENGINE_ASSEMBLY_PATH = "..\\..\\Assemblies\\MBansheeEngine.dll";
-		const String ENGINE_ASSEMBLY_NAME = BansheeEngineAssemblyName;
+		Path engineAssemblyPath = gApplication().getEngineAssemblyPath();
 		const String ASSEMBLY_ENTRY_POINT = "Program::Start";
 
-		MonoAssembly& bansheeEngineAssembly = MonoManager::instance().loadAssembly(ENGINE_ASSEMBLY_PATH, ENGINE_ASSEMBLY_NAME);
+		MonoAssembly& bansheeEngineAssembly = MonoManager::instance().loadAssembly(engineAssemblyPath.toString(), ENGINE_ASSEMBLY);
+
+		// TODO - Load Game assembly (gApplication().getGameAssemblyPath())
 
 		// DEBUG ONLY
 		mono_add_internal_call("BansheeEngine.Program::UnitTest1_GameObjectClone", &unitTest1_GameObjectClone);
@@ -53,7 +55,7 @@ namespace BansheeEngine
 		ScriptInput::startUp();
 		ScriptVirtualInput::startUp();
 
-		ScriptAssemblyManager::instance().loadAssemblyInfo(BansheeEngineAssemblyName);
+		ScriptAssemblyManager::instance().loadAssemblyInfo(ENGINE_ASSEMBLY);
 
 		bansheeEngineAssembly.invoke(ASSEMBLY_ENTRY_POINT);
 

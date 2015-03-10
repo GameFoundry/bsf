@@ -3,7 +3,6 @@
 #include "BsCoreApplication.h"
 #include "BsDebug.h"
 #include "BsDataStream.h"
-#include "BsPath.h"
 #include "BsMeshData.h"
 #include "BsMesh.h"
 #include "BsVector2.h"

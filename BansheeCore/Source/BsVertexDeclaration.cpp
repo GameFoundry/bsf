@@ -2,7 +2,6 @@
 #include "BsVertexDeclarationRTTI.h"
 #include "BsHardwareBufferManager.h"
 #include "BsRenderAPI.h"
-#include "BsUtil.h"
 
 namespace BansheeEngine
 {

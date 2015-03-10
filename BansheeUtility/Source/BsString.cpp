@@ -131,6 +131,11 @@ namespace BansheeEngine
 		return WString(source.begin(), source.end());
 	}
 
+	WString toWString(const char* source)
+	{
+		return toWString(String(source));
+	}
+
 	WString toWString(float val, unsigned short precision, 
 		unsigned short width, char fill, std::ios::fmtflags flags)
 	{
@@ -381,6 +386,11 @@ namespace BansheeEngine
 	String toString(const WString& source)
 	{
 		return String(source.begin(), source.end());
+	}
+
+	String toString(const wchar_t* source)
+	{
+		return toString(WString(source));
 	}
 
 	String toString(float val, unsigned short precision, 

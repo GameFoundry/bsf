@@ -444,6 +444,11 @@ namespace BansheeEngine
 	BS_UTILITY_EXPORT WString toWString(const String& source);
 
 	/**
+	 * @brief	Converts a narrow string to a wide string.
+	 */
+	BS_UTILITY_EXPORT WString toWString(const char* source);
+
+	/**
 	 * @brief	Converts a float to a string.
 	 */
     BS_UTILITY_EXPORT WString toWString(float val, unsigned short precision = 6, 
@@ -584,9 +589,14 @@ namespace BansheeEngine
     BS_UTILITY_EXPORT WString toWString(const Vector<BansheeEngine::WString>& val);
 
 	/**
-	* @brief	Converts a wide string to a narrow string.
-	*/
+	 * @brief	Converts a wide string to a narrow string.
+	 */
 	BS_UTILITY_EXPORT String toString(const WString& source);
+
+	/**
+	 * @brief	Converts a wide string to a narrow string.
+	 */
+	BS_UTILITY_EXPORT String toString(const wchar_t* source);
 
 	/**
 	 * @brief	Converts a float to a string.

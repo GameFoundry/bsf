@@ -9,7 +9,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptInput : public ScriptObject<ScriptInput>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "Input")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Input")
 
 		static void startUp();
 		static void shutDown();

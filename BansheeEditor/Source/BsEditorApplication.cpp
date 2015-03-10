@@ -7,7 +7,6 @@
 #include "BsUndoRedo.h"
 #include "BsFileSerializer.h"
 #include "BsFileSystem.h"
-#include "BsPath.h"
 #include "BsResourceImporter.h"
 #include "BsEditorWidgetLayout.h"
 #include "BsScenePicking.h"
@@ -83,7 +82,7 @@ namespace BansheeEngine
 		ResourceImporter* resourceImporter = bs_new<ResourceImporter>();
 		Importer::instance()._registerAssetImporter(resourceImporter);
 
-		ProjectLibrary::startUp(getActiveProjectPath());
+		ProjectLibrary::startUp(getProjectPath());
 
 		UndoRedo::startUp();
 		EditorWindowManager::startUp();
@@ -413,16 +412,50 @@ namespace BansheeEngine
 		return true; // TODO
 	}
 
-	const Path& EditorApplication::getActiveProjectPath() const
+	const Path& EditorApplication::getProjectPath() const
 	{
 		static Path dummyProjectPath = L"D:\\DummyBansheeProject\\";
 
 		return dummyProjectPath;
 	}
 
+	const WString& EditorApplication::getProjectName() const
+	{
+		static WString dummyProjectName = L"DummyBansheeProject";
+
+		return dummyProjectName;
+	}
+
+	Path EditorApplication::getEditorAssemblyPath() const
+	{
+		Path assemblyPath = FileSystem::getWorkingDirectoryPath();
+		assemblyPath.append(ASSEMBLY_PATH);
+		assemblyPath.append(toWString(EDITOR_ASSEMBLY) + L".dll");
+
+		return assemblyPath;
+	}
+
+	Path EditorApplication::getEditorScriptAssemblyPath() const
+	{
+		Path assemblyPath = getProjectPath();
+		assemblyPath.append(INTERNAL_ASSEMBLY_PATH);
+		assemblyPath.append(toWString(SCRIPT_EDITOR_ASSEMBLY) + L".dll");
+
+		return assemblyPath;
+	}
+
+	Path EditorApplication::getGameAssemblyPath() const
+	{
+		Path assemblyPath = getProjectPath();
+		assemblyPath.append(INTERNAL_ASSEMBLY_PATH);
+		assemblyPath.append(toWString(SCRIPT_GAME_ASSEMBLY) + L".dll");
+
+		return assemblyPath;
+	}
+
 	EditorWidgetLayoutPtr EditorApplication::loadWidgetLayout()
 	{
-		Path layoutPath = getActiveProjectPath();
+		Path layoutPath = getProjectPath();
 		layoutPath.append(WIDGET_LAYOUT_PATH);
 
 		if(FileSystem::exists(layoutPath))
@@ -436,7 +469,7 @@ namespace BansheeEngine
 
 	void EditorApplication::saveWidgetLayout(const EditorWidgetLayoutPtr& layout)
 	{
-		Path layoutPath = getActiveProjectPath();
+		Path layoutPath = getProjectPath();
 		layoutPath.append(WIDGET_LAYOUT_PATH);
 
 		FileEncoder fs(layoutPath);

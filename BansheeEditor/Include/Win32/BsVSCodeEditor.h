@@ -2,19 +2,28 @@
 
 #include "BsEditorPrerequisites.h"
 #include "BsCodeEditor.h"
-#include "BsPath.h"
 
 namespace BansheeEngine
 {
+	enum class VisualStudioVersion
+	{
+		VS2008,
+		VS2010,
+		VS2012,
+		VS2013,
+		VS2015
+	};
+
 	class BS_ED_EXPORT VSCodeEditor : public CodeEditor
 	{
 	public:
-		VSCodeEditor(const Path& execPath, const WString& CLSID);
+		VSCodeEditor(VisualStudioVersion version, const Path& execPath, const WString& CLSID);
 
 		void openFile(const Path& solutionPath, const Path& filePath, UINT32 lineNumber) const override;
 		void syncSolution(const CodeSolutionData& data, const Path& outputPath) const override;
 
 	private:
+		VisualStudioVersion mVersion;
 		Path mExecPath;
 		WString mCLSID;
 	};
@@ -33,6 +42,7 @@ namespace BansheeEngine
 			WString name;
 			Path execPath;
 			WString CLSID;
+			VisualStudioVersion version;
 		};
 
 		Map<WString, VSVersionInfo> getAvailableVersions() const;

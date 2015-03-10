@@ -2,7 +2,6 @@
 
 #include "BsEditorPrerequisites.h"
 #include "BsModule.h"
-#include "BsPath.h"
 
 namespace BansheeEngine
 {

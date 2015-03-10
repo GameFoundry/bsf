@@ -8,7 +8,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptGUIProgressBar : public TScriptGUIElement <ScriptGUIProgressBar>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "GUIProgressBar")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUIProgressBar")
 
 	private:
 		static void internal_createInstance(MonoObject* instance, MonoString* style, MonoArray* guiOptions);

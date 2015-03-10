@@ -1,7 +1,6 @@
 #include "BsFileSystem.h"
 #include "BsException.h"
 #include "BsDataStream.h"
-#include "BsPath.h"
 #include <windows.h>
 
 namespace BansheeEngine

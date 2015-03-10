@@ -27,7 +27,7 @@ namespace BansheeEngine
 	class BS_SCR_BED_EXPORT ScriptHandleSlider : public ScriptObject <ScriptHandleSlider>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "HandleSlider")
+		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "HandleSlider")
 
 	private:
 		static void internal_Destroy(ScriptHandleSliderBase* nativeInstance);

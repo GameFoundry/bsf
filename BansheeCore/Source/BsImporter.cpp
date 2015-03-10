@@ -1,5 +1,4 @@
 #include "BsImporter.h"
-#include "BsPath.h"
 #include "BsResource.h"
 #include "BsFileSystem.h"
 #include "BsSpecificImporter.h"

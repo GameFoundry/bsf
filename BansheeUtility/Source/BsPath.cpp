@@ -1,4 +1,4 @@
-#include "BsPath.h"
+#include "BsPrerequisitesUtil.h"
 #include "BsException.h"
 
 namespace BansheeEngine

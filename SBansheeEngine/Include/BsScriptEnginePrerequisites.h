@@ -109,8 +109,6 @@ namespace BansheeEngine
 		TID_ScriptSerializableObjectData = 50039
 	};
 
-	static const char* BansheeEngineAssemblyName = "MBansheeEngine";
-
 	typedef std::shared_ptr<ManagedSerializableFieldData> ManagedSerializableFieldDataPtr;
 	typedef std::shared_ptr<ManagedSerializableFieldKey> ManagedSerializableFieldKeyPtr;
 	typedef std::shared_ptr<ManagedSerializableFieldDataEntry> ManagedSerializableFieldDataEntryPtr;

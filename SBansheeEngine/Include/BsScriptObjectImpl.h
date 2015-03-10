@@ -9,7 +9,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptObjectImpl : public ScriptObject<ScriptObjectImpl>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "ScriptObject")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "ScriptObject")
 
 	private:
 		ScriptObjectImpl(MonoObject* instance);

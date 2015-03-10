@@ -3,7 +3,6 @@
 #include "BsMonoClass.h"
 #include "BsPlatform.h"
 #include "BsMonoUtil.h"
-#include "BsPath.h"
 
 namespace BansheeEngine
 {

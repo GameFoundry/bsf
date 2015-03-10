@@ -23,6 +23,9 @@ namespace BansheeEngine
 		/** @copydoc SpecificImporter::import */
 		virtual ResourcePtr import(const Path& filePath, ConstImportOptionsPtr importOptions);
 
+		/** @copydoc SpecificImporter::createImportOptions */
+		virtual ImportOptionsPtr createImportOptions() const;
+
 		static const WString DEFAULT_EXTENSION;
 	};
 }

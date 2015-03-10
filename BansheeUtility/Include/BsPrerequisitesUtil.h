@@ -62,3 +62,5 @@
 
 #include "BsString.h"
 #include "BsMessageHandlerFwd.h"
+#include "BsUtil.h"
+#include "BsPath.h"

@@ -4,7 +4,6 @@
 #include "BsBitmapWriter.h"
 #include "BsFileSystem.h"
 #include "BsDataStream.h"
-#include "BsPath.h"
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32 && BS_COMPILER == BS_COMPILER_MSVC
 #include <windows.h>

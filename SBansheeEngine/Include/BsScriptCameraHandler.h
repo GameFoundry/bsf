@@ -16,7 +16,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptCameraHandler : public ScriptObject<ScriptCameraHandler>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "CameraHandler")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "CameraHandler")
 
 		SPtr<CameraHandler> getInternal() const { return mCameraHandler; }
 

@@ -35,9 +35,10 @@ documentation and/or software.
 #ifndef BZF_MD5_H
 #define BZF_MD5_H
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <cstring>
 #include <iostream>
-
 
 // a small class for calculating MD5 hashes of strings or byte arrays
 // it is not meant to be fast or secure
@@ -61,7 +62,6 @@ public:
 	MD5& finalize();
 	std::string hexdigest() const;
 	void decdigest(unsigned char* buf, size_type length);
-	friend std::ostream& operator<<(std::ostream&, MD5 md5);
 
 private:
 	void init();

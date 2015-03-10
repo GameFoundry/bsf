@@ -10,7 +10,6 @@
 #include "BsViewport.h"
 #include "BsRenderWindow.h"
 #include "BsPlatform.h"
-#include "BsPath.h"
 #include "BsSelection.h"
 
 using namespace std::placeholders;

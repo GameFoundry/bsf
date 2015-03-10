@@ -3,7 +3,6 @@
 #include "BsScriptEditorPrerequisites.h"
 #include "BsScriptObject.h"
 #include "BsDragAndDropManager.h"
-#include "BsPath.h"
 
 namespace BansheeEngine
 {
@@ -13,7 +12,7 @@ namespace BansheeEngine
 	class BS_SCR_BED_EXPORT ScriptDragDrop : public ScriptObject<ScriptDragDrop>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "DragDrop");
+		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "DragDrop");
 
 	private:
 		ScriptDragDrop(MonoObject* instance);
@@ -31,7 +30,7 @@ namespace BansheeEngine
 	class BS_SCR_BED_EXPORT ScriptSceneObjectDragDropData : public ScriptObject<ScriptSceneObjectDragDropData>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "SceneObjectDragDropData");
+		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "SceneObjectDragDropData");
 
 		static MonoObject* create(const Vector<HSceneObject>& sceneObjects);
 
@@ -49,7 +48,7 @@ namespace BansheeEngine
 	class BS_SCR_BED_EXPORT ScriptResourceDragDropData : public ScriptObject < ScriptResourceDragDropData >
 	{
 	public:
-		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "ResourceDragDropData");
+		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "ResourceDragDropData");
 
 		static MonoObject* create(const Vector<Path>& paths);
 

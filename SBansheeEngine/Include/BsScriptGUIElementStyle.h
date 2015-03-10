@@ -21,7 +21,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptGUIElementStyle : public ScriptObject<ScriptGUIElementStyle>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "GUIElementStyle")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUIElementStyle")
 
 		~ScriptGUIElementStyle();
 

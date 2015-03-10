@@ -31,7 +31,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptResource : public ScriptObject<ScriptResource, ScriptResourceBase>
 	{
 	public:
-		static String getAssemblyName() { return BansheeEngineAssemblyName; }
+		static String getAssemblyName() { return ENGINE_ASSEMBLY; }
 		static String getNamespace() { return "BansheeEngine"; }
 		static String getTypeName() { return "Resource"; }
 		static void initRuntimeData() { }

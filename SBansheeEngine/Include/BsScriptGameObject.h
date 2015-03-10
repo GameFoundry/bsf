@@ -24,7 +24,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptGameObject : public ScriptObject<ScriptGameObject, ScriptGameObjectBase>
 	{
 	public:
-		static String getAssemblyName() { return BansheeEngineAssemblyName; }
+		static String getAssemblyName() { return ENGINE_ASSEMBLY; }
 		static String getNamespace() { return "BansheeEngine"; }
 		static String getTypeName() { return "GameObject"; }
 		static void initRuntimeData() { }
