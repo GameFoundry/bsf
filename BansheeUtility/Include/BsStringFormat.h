@@ -69,7 +69,7 @@ namespace BansheeEngine
 				if (source[i] == '\\' && !escaped && paramRangeWriteIdx < MAX_PARAM_REFERENCES)
 				{
 					escaped = true;
-					paramRanges[paramRangeWriteIdx++] = FormatParamRange(charWriteIdx, 1, 0);
+					paramRanges[paramRangeWriteIdx++] = FormatParamRange(charWriteIdx, 1, (UINT32)-1);
 					continue;
 				}
 
@@ -96,8 +96,8 @@ namespace BansheeEngine
 							UINT32 paramIdx = strToInt(bracketChars);
 							if (paramIdx < MAX_PARAMS && paramRangeWriteIdx < MAX_PARAM_REFERENCES) // Check if exceeded maximum parameter limit
 							{
-								charWriteIdx += parameters[paramIdx].size;
 								paramRanges[paramRangeWriteIdx++] = FormatParamRange(charWriteIdx, numParamChars + 2, paramIdx);
+								charWriteIdx += parameters[paramIdx].size;
 
 								processedBracket = true;
 							}
@@ -128,17 +128,20 @@ namespace BansheeEngine
 			{
 				const FormatParamRange& rangeInfo = paramRanges[i];
 				UINT32 copySize = rangeInfo.start - copyDestIdx;
-				UINT32 paramSize = parameters[rangeInfo.paramIdx].size;
-
-				memcpy(outputBuffer + copyDestIdx, source + copySourceIdx, copySize);
+				
+				memcpy(outputBuffer + copyDestIdx, source + copySourceIdx, copySize * sizeof(T));
 				copySourceIdx += copySize + rangeInfo.identifierSize;
 				copyDestIdx += copySize;
 
-				memcpy(outputBuffer + copyDestIdx, parameters[rangeInfo.paramIdx].buffer, paramSize);
+				if (rangeInfo.paramIdx == (UINT32)-1)
+					continue;
+
+				UINT32 paramSize = parameters[rangeInfo.paramIdx].size;
+				memcpy(outputBuffer + copyDestIdx, parameters[rangeInfo.paramIdx].buffer, paramSize * sizeof(T));
 				copyDestIdx += paramSize;
 			}
 
-			memcpy(outputBuffer + copyDestIdx, source + copySourceIdx, finalStringSize - copyDestIdx);
+			memcpy(outputBuffer + copyDestIdx, source + copySourceIdx, (finalStringSize - copyDestIdx) * sizeof(T));
 
 			BasicString<T> outputStr(outputBuffer, finalStringSize);
 			bs_free(outputBuffer);

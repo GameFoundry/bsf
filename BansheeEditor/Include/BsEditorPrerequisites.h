@@ -83,6 +83,15 @@ namespace BansheeEngine
 		Resources = 10002
 	};
 
+	enum class CodeEditorType
+	{
+		VS2008,
+		VS2010,
+		VS2012,
+		VS2013,
+		VS2015
+	};
+
 	enum TypeID_BansheeEditor
 	{
 		TID_ProjectResourceMeta = 40000,

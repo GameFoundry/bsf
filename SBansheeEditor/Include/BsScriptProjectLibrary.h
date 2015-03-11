@@ -23,6 +23,7 @@ namespace BansheeEngine
 		static void internal_Reimport(MonoString* path, MonoObject* options, bool force);
 		static MonoObject* internal_GetEntry(MonoString* path);
 		static MonoString* internal_GetPath(MonoObject* resource);
+		static MonoArray* internal_Search(MonoString* pattern, MonoArray* types);
 		static void internal_Delete(MonoString* path);
 		static void internal_CreateFolder(MonoString* path);
 		static void internal_Rename(MonoString* path, MonoString* name);

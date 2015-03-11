@@ -33,8 +33,8 @@ namespace BansheeEngine
 	public:
 		VSCodeEditorFactory();
 
-		const Vector<WString>& getAvailableEditors() const override { return mAvailableEditors; }
-		CodeEditor* create(const WString& editor) const override;
+		const Vector<CodeEditorType>& getAvailableEditors() const override { return mAvailableEditors; }
+		CodeEditor* create(CodeEditorType editor) const override;
 
 	private:
 		struct VSVersionInfo
@@ -45,9 +45,9 @@ namespace BansheeEngine
 			VisualStudioVersion version;
 		};
 
-		Map<WString, VSVersionInfo> getAvailableVersions() const;
+		Map<CodeEditorType, VSVersionInfo> getAvailableVersions() const;
 
-		Map<WString, VSVersionInfo> mAvailableVersions;
-		Vector<WString> mAvailableEditors;
+		Map<CodeEditorType, VSVersionInfo> mAvailableVersions;
+		Vector<CodeEditorType> mAvailableEditors;
 	};
 }

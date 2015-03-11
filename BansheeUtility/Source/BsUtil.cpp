@@ -6,30 +6,34 @@ namespace BansheeEngine
 	String md5(const WString& source)
 	{
 		MD5 md5;
-		md5.update((UINT8*)source.c_str(), (UINT32)source.length());
+		md5.update((UINT8*)source.c_str(), (UINT32)source.length() * sizeof(WString::value_type));
 		md5.finalize();
 
-		UINT8* digest = (UINT8*)bs_alloc(16);
-		md5.decdigest(digest, 16);
+		UINT8 digest[16];
+		md5.decdigest(digest, sizeof(digest));
 
-		String output((char*)digest);
-		bs_free(digest);
-
-		return output;
+		char buf[33];
+		for (int i = 0; i < 16; i++)
+			sprintf(buf + i * 2, "%02x", digest[i]);
+		buf[32] = 0;
+		
+		return String(buf);
 	}
 
 	String md5(const String& source)
 	{
 		MD5 md5;
-		md5.update((UINT8*)source.c_str(), (UINT32)source.length());
+		md5.update((UINT8*)source.c_str(), (UINT32)source.length() * sizeof(String::value_type));
 		md5.finalize();
 
-		UINT8* digest = (UINT8*)bs_alloc(16);
-		md5.decdigest(digest, 16);
+		UINT8 digest[16];
+		md5.decdigest(digest, sizeof(digest));
 
-		String output((char*)digest);
-		bs_free(digest);
+		char buf[33];
+		for (int i = 0; i < 16; i++)
+			sprintf(buf + i * 2, "%02x", digest[i]);
+		buf[32] = 0;
 
-		return output;
+		return String(buf);
 	}
 }

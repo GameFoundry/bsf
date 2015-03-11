@@ -11,24 +11,19 @@ Project library
 
 Almost all of PRojectLibrary functionality is completely untested
 
-ProjectLibrary needs a method that searches for all entries with a specific name (or a subset of a name), and all entries of a specific type
- - Can I make Library/Resource entries faster so I can do this properly from C#?
-
 Figure out how to create a C# BuiltinResources class. It should be able to load arbitrary resources from a non-project folder
  - I should move all the GUI element style creation out of code and make it just pure data (once I have an editor for it)
  - Will also need a debug button to reimport all the built-in resources
 
+My GUID generation is screwed up. If multiple GUIDs are generated in succession then the timestamp will remain
+the same and the only variable will be the 4byte random number, which can sometimes end up identical to the previous number.
+
 ----------------------------------------------------------------------
 VisualStudio integration
 
-None of the new VS functionality has been tested
 VS integration will likely not work with VSExpress or Community edition
  - VSExpress doesn't support EnvDTE so the only option is to open it using a shell command which doesn't seem to offer precise parameters
  - Community edition should work similarily to Pro, but might have a different executable and/or registry paths
-
-Test:
- - If string::format works
- - If VS open and sync works
 
 For later:
  - Make sure that 3rd party assemblies can be imported in the project, and that they are properly referenced in VS project generation

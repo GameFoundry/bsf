@@ -38,6 +38,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_Reimport", &ScriptProjectLibrary::internal_Reimport);
 		metaData.scriptClass->addInternalCall("Internal_GetEntry", &ScriptProjectLibrary::internal_GetEntry);
 		metaData.scriptClass->addInternalCall("Internal_GetPath", &ScriptProjectLibrary::internal_GetPath);
+		metaData.scriptClass->addInternalCall("Internal_Search", &ScriptProjectLibrary::internal_Search);
 		metaData.scriptClass->addInternalCall("Internal_Delete", &ScriptProjectLibrary::internal_Delete);
 		metaData.scriptClass->addInternalCall("Internal_CreateFolder", &ScriptProjectLibrary::internal_CreateFolder);
 		metaData.scriptClass->addInternalCall("Internal_Rename", &ScriptProjectLibrary::internal_Rename);
@@ -136,6 +137,38 @@ namespace BansheeEngine
 		}
 
 		return nullptr;
+	}
+
+	MonoArray* ScriptProjectLibrary::internal_Search(MonoString* pattern, MonoArray* types)
+	{
+		WString strPattern = MonoUtil::monoToWString(pattern);
+
+		ScriptArray typeArray(types);
+		Vector<UINT32> typeIds;
+		for (UINT32 i = 0; i < typeArray.size(); i++)
+		{
+			UINT32 typeId = ScriptResource::getTypeIdFromType((ScriptResourceType)typeArray.get<UINT32>(i));
+			typeIds.push_back(typeId);
+		}
+
+		Vector<ProjectLibrary::LibraryEntry*> foundEntries = ProjectLibrary::instance().search(strPattern, typeIds);
+
+		UINT32 idx = 0;
+		ScriptArray outArray = ScriptArray::create<ScriptLibraryEntry>((UINT32)foundEntries.size());
+		for (auto& entry : foundEntries)
+		{
+			MonoObject* managedEntry = nullptr;
+
+			if (entry->type == ProjectLibrary::LibraryEntryType::File)
+				managedEntry = ScriptFileEntry::create(static_cast<ProjectLibrary::ResourceEntry*>(entry));
+			else
+				managedEntry = ScriptDirectoryEntry::create(static_cast<ProjectLibrary::DirectoryEntry*>(entry));
+
+			outArray.set(idx, managedEntry);
+			idx++;
+		}
+
+		return outArray.getInternal();
 	}
 
 	void ScriptProjectLibrary::internal_Delete(MonoString* path)

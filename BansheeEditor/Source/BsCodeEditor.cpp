@@ -17,7 +17,7 @@ namespace BansheeEngine
 	{
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 		VSCodeEditorFactory* vsCodeEditorFactory = bs_new<VSCodeEditorFactory>();
-		Vector<WString> vsEditors = vsCodeEditorFactory->getAvailableEditors();
+		Vector<CodeEditorType> vsEditors = vsCodeEditorFactory->getAvailableEditors();
 		for(auto& editor : vsEditors)
 		{
 			mFactoryPerEditor[editor] = vsCodeEditorFactory;
@@ -39,7 +39,7 @@ namespace BansheeEngine
 			bs_delete(mActiveEditor);
 	}
 
-	void CodeEditorManager::setActive(const WString& editor)
+	void CodeEditorManager::setActive(CodeEditorType editor)
 	{
 		if (mActiveEditor != nullptr)
 		{
@@ -56,8 +56,14 @@ namespace BansheeEngine
 
 	void CodeEditorManager::openFile(const Path& path, UINT32 lineNumber) const
 	{
-		if (mActiveEditor != nullptr)
-			mActiveEditor->openFile(getSolutionPath(), path, lineNumber);
+		if (mActiveEditor == nullptr)
+			return;
+
+		Path filePath = path;
+		if (!path.isAbsolute())
+			filePath.makeAbsolute(gEditorApplication().getProjectPath());
+
+		mActiveEditor->openFile(getSolutionPath(), filePath, lineNumber);
 	}
 
 	void CodeEditorManager::syncSolution() const
@@ -75,9 +81,11 @@ namespace BansheeEngine
 
 		Vector<ProjectLibrary::LibraryEntry*> libraryEntries = ProjectLibrary::instance().search(L"*", scriptTypeIds);
 		
-		// Game project
 		slnData.projects.push_back(CodeProjectData());
-		CodeProjectData& gameProject = slnData.projects.back();
+		slnData.projects.push_back(CodeProjectData());
+
+		// Game project
+		CodeProjectData& gameProject = slnData.projects[0];
 		gameProject.name = toWString(SCRIPT_GAME_ASSEMBLY);
 		
 		//// Add references
@@ -85,8 +93,7 @@ namespace BansheeEngine
 		gameProject.assemblyReferences.push_back(CodeProjectReference{ L"BansheeEngine", gApplication().getEngineAssemblyPath() });
 
 		// Editor project
-		slnData.projects.push_back(CodeProjectData());
-		CodeProjectData& editorProject = slnData.projects.back();
+		CodeProjectData& editorProject = slnData.projects[1];
 		editorProject.name = toWString(SCRIPT_EDITOR_ASSEMBLY);
 
 		//// Add references
@@ -94,7 +101,7 @@ namespace BansheeEngine
 		editorProject.assemblyReferences.push_back(CodeProjectReference{ L"BansheeEngine", gApplication().getEngineAssemblyPath() });
 		editorProject.assemblyReferences.push_back(CodeProjectReference{ L"BansheeEditor", gEditorApplication().getEditorAssemblyPath() });
 
-		editorProject.projectReferences.push_back(CodeProjectReference{ gameProject.name, Path::BLANK});
+		editorProject.projectReferences.push_back(CodeProjectReference{ gameProject.name, Path::BLANK });
 
 		//// Add files for both projects
 		for (auto& entry : libraryEntries)
@@ -120,7 +127,7 @@ namespace BansheeEngine
 				gameProject.nonCodeFiles.push_back(resEntry->path);
 		}
 
-		mActiveEditor->syncSolution(slnData, getSolutionPath());
+		mActiveEditor->syncSolution(slnData, gEditorApplication().getProjectPath());
 	}
 
 	Path CodeEditorManager::getSolutionPath() const

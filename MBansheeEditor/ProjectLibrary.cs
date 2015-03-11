@@ -48,6 +48,11 @@ namespace BansheeEditor
             return Internal_GetEntry(path);
         }
 
+        public LibraryEntry[] Search(string pattern, ResourceType[] types = null)
+        {
+            return Internal_Search(pattern, types);
+        }
+
         public static string GetPath(Resource resource)
         {
             return Internal_GetPath(resource);
@@ -109,6 +114,9 @@ namespace BansheeEditor
         private static extern LibraryEntry Internal_GetEntry(string path);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern LibraryEntry[] Internal_Search(string path, ResourceType[] types);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern string Internal_GetPath(Resource resource);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -136,7 +144,7 @@ namespace BansheeEditor
     // Note: Must be the same as C++ enum ScriptResourceType
     public enum ResourceType
     {
-        Texture, SpriteTexture, Mesh, Font, GpuProgram, Undefined
+        Texture, SpriteTexture, Mesh, Font, GpuProgram, PlainText, ScriptCode, Undefined
     }
 
     public class LibraryEntry : ScriptObject

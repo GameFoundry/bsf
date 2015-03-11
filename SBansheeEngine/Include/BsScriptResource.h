@@ -7,7 +7,7 @@ namespace BansheeEngine
 {
 	enum class ScriptResourceType
 	{
-		Texture, SpriteTexture, Mesh, Font, GpuProgram, Undefined
+		Texture, SpriteTexture, Mesh, Font, GpuProgram, PlainText, ScriptCode, Undefined
 	};
 
 	class BS_SCR_BE_EXPORT ScriptResourceBase : public PersistentScriptObjectBase
@@ -37,7 +37,7 @@ namespace BansheeEngine
 		static void initRuntimeData() { }
 
 		static ScriptResourceType getTypeFromTypeId(UINT32 typeId);
-
+		static UINT32 getTypeIdFromType(ScriptResourceType type);
 	private:
 		ScriptResource(MonoObject* instance)
 			:ScriptObject(instance)

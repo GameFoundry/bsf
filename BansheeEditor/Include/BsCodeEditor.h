@@ -36,8 +36,8 @@ namespace BansheeEngine
 		CodeEditorManager();
 		~CodeEditorManager();
 
-		const Vector<WString>& getAvailableEditors() const { return mEditors; }
-		void setActive(const WString& editor);
+		const Vector<CodeEditorType>& getAvailableEditors() const { return mEditors; }
+		void setActive(CodeEditorType editor);
 
 		void openFile(const Path& path, UINT32 lineNumber) const;
 		void syncSolution() const;
@@ -46,8 +46,8 @@ namespace BansheeEngine
 		Path getSolutionPath() const;
 
 		CodeEditor* mActiveEditor;
-		Map<WString, CodeEditorFactory*> mFactoryPerEditor;
-		Vector<WString> mEditors;
+		Map<CodeEditorType, CodeEditorFactory*> mFactoryPerEditor;
+		Vector<CodeEditorType> mEditors;
 		Vector<CodeEditorFactory*> mFactories;
 	};
 
@@ -61,7 +61,7 @@ namespace BansheeEngine
 	class BS_ED_EXPORT CodeEditorFactory
 	{
 	public:
-		virtual const Vector<WString>& getAvailableEditors() const = 0;
-		virtual CodeEditor* create(const WString& editor) const = 0;
+		virtual const Vector<CodeEditorType>& getAvailableEditors() const = 0;
+		virtual CodeEditor* create(CodeEditorType editor) const = 0;
 	};
 }
