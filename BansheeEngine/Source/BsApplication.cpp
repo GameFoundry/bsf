@@ -13,6 +13,8 @@
 #include "BsCursor.h"
 #include "BsCoreThread.h"
 #include "BsFileSystem.h"
+#include "BsPlainTextImporter.h"
+#include "BsImporter.h"
 
 namespace BansheeEngine
 {
@@ -35,6 +37,9 @@ namespace BansheeEngine
 		:CoreApplication(createStartUpDesc(primaryWindowDesc, getLibNameForRenderSystem(renderSystem), getLibNameForRenderer(renderer))),
 		mMonoPlugin(nullptr), mSBansheeEnginePlugin(nullptr)
 	{
+		PlainTextImporter* importer = bs_new<PlainTextImporter>();
+		Importer::instance()._registerAssetImporter(importer);
+
 		VirtualInput::startUp();
 		ScriptManager::startUp();
 		BuiltinResources::startUp(renderSystem);

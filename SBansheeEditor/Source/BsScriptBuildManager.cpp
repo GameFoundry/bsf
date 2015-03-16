@@ -13,14 +13,14 @@ namespace BansheeEngine
 
 	void ScriptBuildManager::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("internal_GetAvailablePlatforms", &ScriptBuildManager::internal_GetAvailablePlatforms);
-		metaData.scriptClass->addInternalCall("internal_GetActivePlatform", &ScriptBuildManager::internal_GetActivePlatform);
-		metaData.scriptClass->addInternalCall("internal_SetActivePlatform", &ScriptBuildManager::internal_SetActivePlatform);
-		metaData.scriptClass->addInternalCall("internal_GetActivePlatformInfo", &ScriptBuildManager::internal_GetActivePlatformInfo);
-		metaData.scriptClass->addInternalCall("internal_GetPlatformInfo", &ScriptBuildManager::internal_GetPlatformInfo);
-		metaData.scriptClass->addInternalCall("internal_GetFrameworkAssemblies", &ScriptBuildManager::internal_GetFrameworkAssemblies);
-		metaData.scriptClass->addInternalCall("internal_GetMainExecutable", &ScriptBuildManager::internal_GetMainExecutable);
-		metaData.scriptClass->addInternalCall("internal_GetDefines", &ScriptBuildManager::internal_GetDefines);
+		metaData.scriptClass->addInternalCall("Internal_GetAvailablePlatforms", &ScriptBuildManager::internal_GetAvailablePlatforms);
+		metaData.scriptClass->addInternalCall("Internal_GetActivePlatform", &ScriptBuildManager::internal_GetActivePlatform);
+		metaData.scriptClass->addInternalCall("Internal_SetActivePlatform", &ScriptBuildManager::internal_SetActivePlatform);
+		metaData.scriptClass->addInternalCall("Internal_GetActivePlatformInfo", &ScriptBuildManager::internal_GetActivePlatformInfo);
+		metaData.scriptClass->addInternalCall("Internal_GetPlatformInfo", &ScriptBuildManager::internal_GetPlatformInfo);
+		metaData.scriptClass->addInternalCall("Internal_GetFrameworkAssemblies", &ScriptBuildManager::internal_GetFrameworkAssemblies);
+		metaData.scriptClass->addInternalCall("Internal_GetMainExecutable", &ScriptBuildManager::internal_GetMainExecutable);
+		metaData.scriptClass->addInternalCall("Internal_GetDefines", &ScriptBuildManager::internal_GetDefines);
 	}
 
 	MonoArray* ScriptBuildManager::internal_GetAvailablePlatforms()
@@ -62,7 +62,7 @@ namespace BansheeEngine
 		ScriptArray outArray = ScriptArray::create<WString>((UINT32)frameworkAssemblies.size());
 		UINT32 idx = 0;
 		for (auto& assemblyName : frameworkAssemblies)
-			outArray.set(idx++, assemblyName);
+			outArray.set(idx++, MonoUtil::wstringToMono(MonoManager::instance().getDomain(), assemblyName));
 
 		return outArray.getInternal();
 	}

@@ -347,7 +347,7 @@ namespace BansheeEngine
 		metaPath.setFilename(metaPath.getWFilename() + L".meta");
 
 		ext = ext.substr(1, ext.size() - 1); // Remove the .
-		if(!Importer::instance().supportsFileType(ext))
+		if (!Importer::instance().supportsFileType(ext))
 			return;
 
 		if(resource->meta == nullptr)

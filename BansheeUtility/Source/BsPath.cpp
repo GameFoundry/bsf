@@ -266,6 +266,8 @@ namespace BansheeEngine
 			return *this;
 
 		mDirectories.erase(mDirectories.begin(), mDirectories.begin() + base.mDirectories.size());
+		mDevice = L"";
+		mNode = L"";
 		mIsAbsolute = false;
 
 		return *this;

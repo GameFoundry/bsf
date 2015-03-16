@@ -14,6 +14,7 @@
 #include "BsGizmoManager.h"
 #include "BsCodeEditor.h"
 #include "BsBuildManager.h"
+#include "BsScriptCodeImporter.h"
 
 // DEBUG ONLY
 #include "DbgEditorWidget1.h"
@@ -80,6 +81,9 @@ namespace BansheeEngine
 			inputConfig->registerButton("Paste", BC_V, VButtonModifier::Ctrl);
 			inputConfig->registerButton("Delete", BC_DELETE);
 		}
+
+		ScriptCodeImporter* scriptCodeImporter = bs_new<ScriptCodeImporter>();
+		Importer::instance()._registerAssetImporter(scriptCodeImporter);
 
 		ResourceImporter* resourceImporter = bs_new<ResourceImporter>();
 		Importer::instance()._registerAssetImporter(resourceImporter);

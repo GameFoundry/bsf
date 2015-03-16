@@ -7,20 +7,10 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using BansheeEngine;
 
 namespace BansheeEditor
 {
-//MonoCompiler::StartCompile
-// - Finds all code files for the specified assembly using ProjectLibrary
-// - Starts a Process with specified parameters:
-//  - default: -target:library -out: [name]
-//  - references: -r: [filename]
-//  - library folder: -lib: [path], [path2]
-//  - defines: -d: [define]
-//  - optimization: -o [+/-]
-//  - debug: -debug [+/-]
-//  - followed by a list of files (space separated I guess)
-
     public enum ScriptAssemblyType
     {
         Game, Editor
@@ -46,19 +36,7 @@ namespace BansheeEditor
             bool debugBuild, string outputFile)
         {
             ProcessStartInfo procStartInfo = new ProcessStartInfo();
-
-            String executable;
-            switch (EditorApplication.EditorPlatform)
-            {
-                case EditorPlatformType.Windows:
-                    executable = Path.Combine(EditorApplication.CompilerPath, "mcs.exe");
-                    break;
-                default:
-                    throw new NotImplementedException("Mono compilation not supported on this platform.");
-            }
-
             StringBuilder argumentsBuilder = new StringBuilder();
-            argumentsBuilder.Append(executable);
 
             if (!string.IsNullOrEmpty(defines))
                 argumentsBuilder.Append(" -d:" + defines);
@@ -95,7 +73,7 @@ namespace BansheeEditor
 
             procStartInfo.Arguments = argumentsBuilder.ToString();
             procStartInfo.CreateNoWindow = true;
-            procStartInfo.FileName = executable;
+            procStartInfo.FileName = EditorApplication.CompilerPath;
             procStartInfo.RedirectStandardError = true;
             procStartInfo.RedirectStandardOutput = false;
             procStartInfo.UseShellExecute = false;
@@ -106,6 +84,7 @@ namespace BansheeEditor
             process.Start();
 
             readErrorsThread = new Thread(ReadErrorStream);
+            readErrorsThread.Start();
         }
 
         private void ReadErrorStream()
@@ -115,9 +94,7 @@ namespace BansheeEditor
                 if (process == null || process.HasExited)
                     return;
 
-                string line = process.StandardOutput.ReadLine();
-                if (line == null)
-                    continue;
+                string line = process.StandardError.ReadLine();
 
                 CompilerMessage message;
                 if (TryParseCompilerMessage(line, out message))
@@ -155,7 +132,7 @@ namespace BansheeEditor
 
         public bool IsDone
         {
-            get { return process.HasExited; }
+            get { return process.HasExited && readErrorsThread.ThreadState == System.Threading.ThreadState.Stopped; }
         }
 
         public bool HasErrors

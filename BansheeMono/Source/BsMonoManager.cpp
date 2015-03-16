@@ -248,15 +248,15 @@ namespace BansheeEngine
 
 	Path MonoManager::getCompilerPath() const
 	{
-		Path assembliesFolder = FileSystem::getWorkingDirectoryPath();
-		assembliesFolder.append(MONO_COMPILER_DIR);
+		Path compilerPath = FileSystem::getWorkingDirectoryPath();
+		compilerPath.append(MONO_COMPILER_DIR);
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32
-		assembliesFolder.append("mcs.exe");
+		compilerPath.append("mcs.exe");
 #else
 		static_assert("Not implemented");
 #endif
 
-		return assembliesFolder;
+		return compilerPath;
 	}
 }

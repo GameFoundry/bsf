@@ -30,9 +30,7 @@ namespace BansheeEngine
 		static MonoObject* create(const SPtr<ImportOptions>& importOptions);
 
 	private:
-		ScriptImportOptions(MonoObject* instance)
-			:ScriptObject(instance)
-		{ }
+		ScriptImportOptions(MonoObject* instance);
 	};
 
 	class BS_SCR_BED_EXPORT ScriptTextureImportOptions : public ScriptObject<ScriptTextureImportOptions, ScriptImportOptionsBase>

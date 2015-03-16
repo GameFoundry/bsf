@@ -9,6 +9,7 @@ namespace BansheeEngine
 		:activePlatform(PlatformType::Windows)
 	{
 		platformData.resize((UINT32)PlatformType::Count);
+		platformData[0] = bs_shared_ptr<WinPlatformInfo>();
 	}
 
 	RTTITypeBase* BuildData::getRTTIStatic()

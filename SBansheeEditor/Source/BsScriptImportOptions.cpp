@@ -40,9 +40,22 @@ namespace BansheeEngine
 		case TID_GpuProgramImportOptions:
 			return ScriptGpuProgramImportOptions::create(std::static_pointer_cast<GpuProgramImportOptions>(importOptions));
 			break;
+		case TID_ScriptCodeImportOptions:
+			return ScriptScriptCodeImportOptions::create(std::static_pointer_cast<ScriptCodeImportOptions>(importOptions));
+			break;
 		}
 
-		return nullptr;
+		MonoObject* managedInstance = metaData.scriptClass->createInstance();
+		ScriptImportOptions* scriptObj = ScriptImportOptions::toNative(managedInstance);
+		scriptObj->mImportOptions = importOptions;
+
+		return managedInstance;
+	}
+
+	ScriptImportOptions::ScriptImportOptions(MonoObject* instance)
+		:ScriptObject(instance)
+	{ 
+		mImportOptions = bs_shared_ptr<ImportOptions>();
 	}
 
 	ScriptTextureImportOptions::ScriptTextureImportOptions(MonoObject* instance)
