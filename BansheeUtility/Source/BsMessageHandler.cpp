@@ -75,11 +75,12 @@ namespace BansheeEngine
 		{
 			Vector<MessageHandlerData>& handlerData = iterFind->second;
 
-			std::remove_if(handlerData.begin(), handlerData.end(), 
+			handlerData.erase(
+				std::remove_if(handlerData.begin(), handlerData.end(), 
 				[&](MessageHandlerData& x)
 				{
 					return x.id == handleId;
-				});
+				}));
 		}
 
 		mHandlerIdToMessageMap.erase(handleId);
