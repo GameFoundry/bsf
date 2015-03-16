@@ -30,9 +30,9 @@ namespace BansheeEngine
 		Path getEditorScriptAssemblyPath() const;
 
 		/**
-		 * @copydoc	Application::getGameAssemblyPath
+		 * @copydoc	Application::getScriptAssemblyFolder
 		 */
-		Path getGameAssemblyPath() const override;
+		Path getScriptAssemblyFolder() const override;
 
 		EditorSettingsPtr getEditorSettings() const { return mEditorSettings; }
 
@@ -48,6 +48,7 @@ namespace BansheeEngine
 
 	private:
 		static const Path WIDGET_LAYOUT_PATH;
+		static const Path BUILD_DATA_PATH;
 		RenderSystemPlugin mActiveRSPlugin;
 		EditorSettingsPtr mEditorSettings;
 

@@ -275,8 +275,7 @@ namespace BansheeEngine
 			tempStream.str("");
 			tempStream.clear();
 
-			for (auto& define : projectData.defines)
-				tempStream << toString(define) << ";";
+			tempStream << toString(projectData.defines);
 
 			String defines = tempStream.str();
 			String projectGUID = getProjectGUID(projectData.name);

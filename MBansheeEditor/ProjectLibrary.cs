@@ -48,7 +48,7 @@ namespace BansheeEditor
             return Internal_GetEntry(path);
         }
 
-        public LibraryEntry[] Search(string pattern, ResourceType[] types = null)
+        public static LibraryEntry[] Search(string pattern, ResourceType[] types = null)
         {
             return Internal_Search(pattern, types);
         }

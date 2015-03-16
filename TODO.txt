@@ -26,7 +26,16 @@ VS integration will likely not work with VSExpress or Community edition
  - Community edition should work similarily to Pro, but might have a different executable and/or registry paths
 
 For later:
- - Make sure that 3rd party assemblies can be imported in the project, and that they are properly referenced in VS project generation
+ - Make sure that 3rd party assemblies can be imported in the project, and that they are properly referenced in VS project generation and compilation
+
+----------------------------------------------------------------------
+Script compilation
+
+For later:
+ - I need to hook up script compilation with assembly refresh, and the build system.
+   - e.g. when recompiling inside the editor it should automatically start compiling when changes are detected,
+     show some kind of visual indicator and refresh assemblies when its done. When publishing it should recompile
+	 assemblies for release. Also hook up console to compiler output?
 
 ----------------------------------------------------------------------
 BuiltinResources
@@ -78,10 +87,14 @@ ColorPicker
  - Sliders don't show up
 
 Other simple stuff:
- - VS integration (open VS project on doubleclick, generate project files, open on specific line)
+ - Inject an icon into an .exe (Win32 specific)
+ - Use Mono compiler to compile the C# scripts
  - C# wrapper for GUISkin (and a way to assign the current skin to a window)
  - Need to add IsPointerDoubleClicked to Input (C++ and C#)
+ - A way to add menu items from C#
  - Move all the code files into subfolders so their hierarchy is similar to VS filters
+ - Font doesn't have a C# interface
+ - Material/Shader/Technique/Pass don't have a C# interface
  - Get rid of PoolAlloc and other unused allocators (plus fix bs_new and others which have weird overloads)
 
 ----------------------------------------------------------------------

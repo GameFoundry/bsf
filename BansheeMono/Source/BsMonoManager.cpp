@@ -4,6 +4,7 @@
 #include "BsMonoAssembly.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
+#include "BsFileSystem.h"
 
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/mono-config.h>
@@ -12,13 +13,28 @@
 
 namespace BansheeEngine
 {
-	const String MonoManager::MONO_LIB_DIR = "..\\..\\Mono\\lib";
-	const String MonoManager::MONO_ETC_DIR = "..\\..\\Mono\\etc";
+	const String MONO_LIB_DIR = "..\\..\\Mono\\lib\\";
+	const String MONO_ETC_DIR = "..\\..\\Mono\\etc\\";
+	const String MONO_COMPILER_DIR = "..\\..\\Mono\\compiler\\";
+	const MonoVersion MONO_VERSION = MonoVersion::v4_5;
+	
+	struct MonoVersionData
+	{
+		String path;
+		String version;
+	};
+
+	static const MonoVersionData MONO_VERSION_DATA[2] =
+	{
+		{ MONO_LIB_DIR + "mono\\4.0", "v4.0.30128" },
+		{ MONO_LIB_DIR + "mono\\4.5", "v4.0.30319" }
+	};
 
 	MonoManager::MonoManager()
 		:mRootDomain(nullptr), mScriptDomain(nullptr), mIsCoreLoaded(false)
 	{
 		mono_set_dirs(MONO_LIB_DIR.c_str(), MONO_ETC_DIR.c_str());
+		mono_set_assemblies_path(MONO_VERSION_DATA[(int)MONO_VERSION].path.c_str());
 
 #if BS_DEBUG_MODE
 		mono_set_signal_chaining(true);
@@ -27,7 +43,7 @@ namespace BansheeEngine
 
 		mono_config_parse(nullptr);
 
-		mRootDomain = mono_jit_init_version("BansheeMono", "v4.0.30319"); // TODO: Allow user-defined version here?
+		mRootDomain = mono_jit_init_version("BansheeMono", MONO_VERSION_DATA[(int)MONO_VERSION].version.c_str());
 		if (mRootDomain == nullptr)
 			BS_EXCEPT(InternalErrorException, "Cannot initialize Mono runtime.");
 	}
@@ -220,5 +236,27 @@ namespace BansheeEngine
 			for (auto& assemblyEntry : mAssemblies)
 				initializeAssembly(*assemblyEntry.second);
 		}
+	}
+
+	Path MonoManager::getFrameworkAssembliesFolder() const
+	{
+		Path assembliesFolder = FileSystem::getWorkingDirectoryPath();
+		assembliesFolder.append(MONO_VERSION_DATA[(int)MONO_VERSION].path);
+
+		return assembliesFolder;
+	}
+
+	Path MonoManager::getCompilerPath() const
+	{
+		Path assembliesFolder = FileSystem::getWorkingDirectoryPath();
+		assembliesFolder.append(MONO_COMPILER_DIR);
+
+#if BS_PLATFORM == BS_PLATFORM_WIN32
+		assembliesFolder.append("mcs.exe");
+#else
+		static_assert("Not implemented");
+#endif
+
+		return assembliesFolder;
 	}
 }

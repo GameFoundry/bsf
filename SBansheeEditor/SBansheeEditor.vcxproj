@@ -237,8 +237,10 @@
     <ClInclude Include="Include\BsGUIPanelContainer.h" />
     <ClInclude Include="Include\BsGUIResourceField.h" />
     <ClInclude Include="Include\BsScriptBrowseDialog.h" />
+    <ClInclude Include="Include\BsScriptBuildManager.h" />
     <ClInclude Include="Include\BsScriptCodeEditor.h" />
     <ClInclude Include="Include\BsScriptDragDropManager.h" />
+    <ClInclude Include="Include\BsScriptEditorApplication.h" />
     <ClInclude Include="Include\BsScriptEditorPrerequisites.h" />
     <ClInclude Include="Include\BsScriptEditorSettings.h" />
     <ClInclude Include="Include\BsScriptEditorUtility.h" />
@@ -267,11 +269,13 @@
     <ClInclude Include="Include\BsScriptHandleSliderPlane.h" />
     <ClInclude Include="Include\BsScriptImportOptions.h" />
     <ClInclude Include="Include\BsScriptModalWindow.h" />
+    <ClInclude Include="Include\BsScriptPlatformInfo.h" />
     <ClInclude Include="Include\BsScriptProjectLibrary.h" />
     <ClInclude Include="Include\BsScriptSceneViewHandler.h" />
     <ClInclude Include="Include\BsScriptSelection.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\BsScriptBuildManager.cpp" />
     <ClCompile Include="Source\BsScriptCodeEditor.cpp" />
     <ClCompile Include="Source\BsScriptDragDropManager.cpp" />
     <ClCompile Include="Source\BsEditorScriptManager.cpp" />
@@ -279,6 +283,7 @@
     <ClCompile Include="Source\BsGUIPanelContainer.cpp" />
     <ClCompile Include="Source\BsGUIResourceField.cpp" />
     <ClCompile Include="Source\BsScriptBrowseDialog.cpp" />
+    <ClCompile Include="Source\BsScriptEditorApplication.cpp" />
     <ClCompile Include="Source\BsScriptEditorPlugin.cpp" />
     <ClCompile Include="Source\BsScriptEditorSettings.cpp" />
     <ClCompile Include="Source\BsScriptEditorUtility.cpp" />
@@ -307,6 +312,7 @@
     <ClCompile Include="Source\BsScriptHandleSliderPlane.cpp" />
     <ClCompile Include="Source\BsScriptImportOptions.cpp" />
     <ClCompile Include="Source\BsScriptModalWindow.cpp" />
+    <ClCompile Include="Source\BsScriptPlatformInfo.cpp" />
     <ClCompile Include="Source\BsScriptProjectLibrary.cpp" />
     <ClCompile Include="Source\BsScriptSceneViewHandler.cpp" />
     <ClCompile Include="Source\BsScriptSelection.cpp" />

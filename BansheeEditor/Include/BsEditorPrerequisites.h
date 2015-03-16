@@ -103,6 +103,9 @@ namespace BansheeEngine
 		TID_EditorWidgetLayout = 40006,
 		TID_EditorWidgetLayoutEntry = 40007,
 		TID_TestComponentA = 40008,
-		TID_TestComponentB = 40009
+		TID_TestComponentB = 40009,
+		TID_PlatformInfo = 40010,
+		TID_WinPlatformInfo = 40011,
+		TID_BuildData = 40012
 	};
 }

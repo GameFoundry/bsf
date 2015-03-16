@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using BansheeEngine;
 
 namespace BansheeEditor
@@ -22,6 +23,11 @@ namespace BansheeEditor
     {
         Local,
         World
+    }
+
+    public enum EditorPlatformType
+    {
+        Windows
     }
 
     public class EditorApplication
@@ -48,6 +54,22 @@ namespace BansheeEditor
         {
             get { return instance.scene.GetCamera(); }
         }
+
+        public static EditorPlatformType EditorPlatform
+        {
+            get { return EditorPlatformType.Windows; } // TODO - Set this properly once we have support for more platforms
+        }
+
+        public static string ProjectPath { get { return Internal_GetProjectPath(); } }
+        public static string ProjectName { get { return Internal_GetProjectName(); } }
+        internal static string CompilerPath { get { return Internal_GetCompilerPath(); } }
+        internal static string BuiltinAssemblyPath { get { return Internal_GetBuiltinAssemblyPath(); } }
+        internal static string ScriptAssemblyPath { get { return Internal_GetScriptAssemblyPath(); } }
+        internal static string FrameworkAssemblyPath { get { return Internal_GetFrameworkAssemblyPath(); } }
+        internal static string EngineAssembly { get { return Internal_GetEngineAssemblyName(); } }
+        internal static string EditorAssembly { get { return Internal_GetEditorAssemblyName(); } }
+        internal static string ScriptGameAssembly { get { return Internal_GetScriptGameAssemblyName(); } }
+        internal static string ScriptEditorAssembly { get { return Internal_GetScriptEditorAssemblyName(); } }
 
         private static EditorApplication instance;
 
@@ -110,5 +132,35 @@ namespace BansheeEditor
 
             // DEBUG ONLY END
         }
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string Internal_GetProjectPath();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string Internal_GetProjectName();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string Internal_GetCompilerPath();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string Internal_GetBuiltinAssemblyPath();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string Internal_GetScriptAssemblyPath();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string Internal_GetFrameworkAssemblyPath();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string Internal_GetEngineAssemblyName();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string Internal_GetEditorAssemblyName();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string Internal_GetScriptGameAssemblyName();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string Internal_GetScriptEditorAssemblyName();
     }
 }

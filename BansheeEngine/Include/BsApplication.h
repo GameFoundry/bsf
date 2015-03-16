@@ -57,7 +57,17 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns the absolute path to the game managed assembly file.
 		 */
-		virtual Path getGameAssemblyPath() const;
+		Path getGameAssemblyPath() const;
+
+		/**
+		 * @brief	Returns the absolute path to the folder where built-in assemblies are located in.
+		 */
+		virtual Path getBuiltinAssemblyFolder() const;
+
+		/**
+		 * @brief	Returns the absolute path to the folder where script assemblies are located in.
+		 */
+		virtual Path getScriptAssemblyFolder() const;
 
 	protected:
 		/**

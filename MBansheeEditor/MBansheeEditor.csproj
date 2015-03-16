@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BrowseDialog.cs" />
+    <Compile Include="BuildManager.cs" />
     <Compile Include="CodeEditor.cs" />
     <Compile Include="ColorPicker.cs" />
     <Compile Include="DbgCustomInspector.cs" />
@@ -114,6 +115,7 @@
     <Compile Include="Scene\Handle.cs" />
     <Compile Include="Scene\RotateHandle.cs" />
     <Compile Include="Scene\ScaleHandle.cs" />
+    <Compile Include="ScriptCompiler.cs" />
     <Compile Include="Selection.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -3,6 +3,7 @@
 #include "BsProjectLibrary.h"
 #include "BsProjectResourceMeta.h"
 #include "BsScriptCodeImportOptions.h"
+#include "BsBuildManager.h"
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 #include "Win32/BsVSCodeEditor.h"
@@ -81,25 +82,31 @@ namespace BansheeEngine
 
 		Vector<ProjectLibrary::LibraryEntry*> libraryEntries = ProjectLibrary::instance().search(L"*", scriptTypeIds);
 		
+		PlatformType activePlatform = BuildManager::instance().getActivePlatform();
+		Vector<WString> frameworkAssemblies = BuildManager::instance().getFrameworkAssemblies(activePlatform);
+
 		slnData.projects.push_back(CodeProjectData());
 		slnData.projects.push_back(CodeProjectData());
 
 		// Game project
 		CodeProjectData& gameProject = slnData.projects[0];
 		gameProject.name = toWString(SCRIPT_GAME_ASSEMBLY);
+		gameProject.defines = BuildManager::instance().getDefines(activePlatform);
 		
 		//// Add references
-		gameProject.assemblyReferences.push_back(CodeProjectReference{ L"System", Path::BLANK });
-		gameProject.assemblyReferences.push_back(CodeProjectReference{ L"BansheeEngine", gApplication().getEngineAssemblyPath() });
+		gameProject.assemblyReferences.push_back(CodeProjectReference{ toWString(ENGINE_ASSEMBLY), gApplication().getEngineAssemblyPath() });
+		for (auto& assemblyName : frameworkAssemblies)
+			gameProject.assemblyReferences.push_back(CodeProjectReference{ assemblyName, Path::BLANK });
 
 		// Editor project
 		CodeProjectData& editorProject = slnData.projects[1];
 		editorProject.name = toWString(SCRIPT_EDITOR_ASSEMBLY);
 
 		//// Add references
-		editorProject.assemblyReferences.push_back(CodeProjectReference{ L"System", Path::BLANK });
-		editorProject.assemblyReferences.push_back(CodeProjectReference{ L"BansheeEngine", gApplication().getEngineAssemblyPath() });
-		editorProject.assemblyReferences.push_back(CodeProjectReference{ L"BansheeEditor", gEditorApplication().getEditorAssemblyPath() });
+		editorProject.assemblyReferences.push_back(CodeProjectReference{ toWString(ENGINE_ASSEMBLY), gApplication().getEngineAssemblyPath() });
+		editorProject.assemblyReferences.push_back(CodeProjectReference{ toWString(EDITOR_ASSEMBLY), gEditorApplication().getEditorAssemblyPath() });
+		for (auto& assemblyName : frameworkAssemblies)
+			gameProject.assemblyReferences.push_back(CodeProjectReference{ assemblyName, Path::BLANK });
 
 		editorProject.projectReferences.push_back(CodeProjectReference{ gameProject.name, Path::BLANK });
 

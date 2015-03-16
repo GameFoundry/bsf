@@ -108,8 +108,7 @@ namespace BansheeEngine
 
 	Path Application::getEngineAssemblyPath() const
 	{
-		Path assemblyPath = FileSystem::getWorkingDirectoryPath();
-		assemblyPath.append(ASSEMBLY_PATH);
+		Path assemblyPath = getBuiltinAssemblyFolder();
 		assemblyPath.append(toWString(String(ENGINE_ASSEMBLY)) + L".dll");
 		
 		return assemblyPath;
@@ -117,12 +116,27 @@ namespace BansheeEngine
 
 	Path Application::getGameAssemblyPath() const
 	{
-		Path assemblyPath = FileSystem::getWorkingDirectoryPath();
-		assemblyPath.append(ASSEMBLY_PATH);
+		Path assemblyPath = getScriptAssemblyFolder();
 		assemblyPath.append(toWString(String(SCRIPT_GAME_ASSEMBLY)) + L".dll");
 
 		return assemblyPath;
 	}
+
+	Path Application::getBuiltinAssemblyFolder() const
+	{
+		Path assemblyFolder = FileSystem::getWorkingDirectoryPath();
+		assemblyFolder.append(ASSEMBLY_PATH);
+
+		return assemblyFolder;
+	}
+
+	Path Application::getScriptAssemblyFolder() const
+	{
+		Path assemblyFolder = FileSystem::getWorkingDirectoryPath();
+		assemblyFolder.append(ASSEMBLY_PATH);
+
+		return assemblyFolder;
+	}	
 
 	const String& Application::getLibNameForRenderSystem(RenderSystemPlugin plugin)
 	{

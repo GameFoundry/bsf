@@ -19,7 +19,7 @@ namespace BansheeEngine
 		WString name;
 		Vector<Path> codeFiles;
 		Vector<Path> nonCodeFiles;
-		Vector<WString> defines;
+		WString defines;
 		Vector<CodeProjectReference> assemblyReferences;
 		Vector<CodeProjectReference> projectReferences;
 	};

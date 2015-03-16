@@ -74,7 +74,7 @@ namespace BansheeEngine
 
 	std::shared_ptr<IReflectable> FileDecoder::decode()
 	{
-		if (mInputStream.eof())
+		if (mInputStream.fail() || mInputStream.eof())
 			return nullptr;
 
 		UINT32 objectSize = 0;

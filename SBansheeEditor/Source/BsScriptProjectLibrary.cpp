@@ -14,6 +14,7 @@
 #include "BsScriptSpriteTexture.h"
 #include "BsScriptFont.h"
 #include "BsScriptImportOptions.h"
+#include "BsEditorApplication.h"
 
 using namespace std::placeholders;
 
@@ -131,7 +132,7 @@ namespace BansheeEngine
 		if (srcResource != nullptr)
 		{
 			Path nativePath = ProjectLibrary::instance().uuidToPath(srcResource->getNativeHandle().getUUID());
-			nativePath.getRelative(ProjectLibrary::instance().getResourcesFolder());
+			nativePath.getRelative(gEditorApplication().getProjectPath());
 
 			return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), nativePath.toWString());
 		}
@@ -257,7 +258,10 @@ namespace BansheeEngine
 		if (entry == nullptr)
 			return nullptr;
 
-		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), entry->path.toWString());
+		Path relativePath = entry->path;
+		relativePath.makeRelative(gEditorApplication().getProjectPath());
+
+		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), relativePath.toWString());
 	}
 
 	MonoString* ScriptLibraryEntry::internal_GetName(ScriptLibraryEntryBase* thisPtr)

@@ -8,6 +8,15 @@
 namespace BansheeEngine
 {
 	/**
+	 * @brief	Available Mono versions
+	 */
+	enum class MonoVersion
+	{
+		v4_0,
+		v4_5
+	};
+
+	/**
 	 * @brief	Loads Mono script assemblies and manages script objects.
 	 */
 	class BS_MONO_EXPORT MonoManager : public Module<MonoManager>
@@ -65,6 +74,16 @@ namespace BansheeEngine
 		void loadScriptDomain();
 
 		/**
+		 * @brief	Returns the absolute location of the folder where Mono framework assemblies are located.
+		 */
+		Path getFrameworkAssembliesFolder() const;
+
+		/**
+		 * @brief	Returns the absolute path to the Mono compiler.
+		 */
+		Path getCompilerPath() const;
+
+		/**
 		 * @brief	Registers a new script type. This should be done before any assembly loading is done.
 		 *			Upon assembly load these script types will be initialized with necessary information about their
 		 *			managed counterparts.
@@ -85,9 +104,6 @@ namespace BansheeEngine
 			static UnorderedMap<String, Vector<ScriptMeta*>> mTypesToInitialize;
 			return mTypesToInitialize;
 		}
-
-		static const String MONO_LIB_DIR;
-		static const String MONO_ETC_DIR;
 
 		UnorderedMap<String, MonoAssembly*> mAssemblies;
 		MonoDomain* mScriptDomain;

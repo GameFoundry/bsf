@@ -13,6 +13,7 @@
 #include "BsSelection.h"
 #include "BsGizmoManager.h"
 #include "BsCodeEditor.h"
+#include "BsBuildManager.h"
 
 // DEBUG ONLY
 #include "DbgEditorWidget1.h"
@@ -46,6 +47,7 @@
 namespace BansheeEngine
 {
 	const Path EditorApplication::WIDGET_LAYOUT_PATH = L"Internal\\Layout.asset";
+	const Path EditorApplication::BUILD_DATA_PATH = L"Internal\\BuildData.asset";
 
 	RENDER_WINDOW_DESC createRenderWindowDesc()
 	{
@@ -91,12 +93,16 @@ namespace BansheeEngine
 		ScenePicking::startUp();
 		Selection::startUp();
 		GizmoManager::startUp();
+		BuildManager::startUp();
 		CodeEditorManager::startUp();
 	}
 
 	EditorApplication::~EditorApplication()
 	{
+		BuildManager::instance().save(BUILD_DATA_PATH);
+
 		CodeEditorManager::shutDown();
+		BuildManager::shutDown();
 		GizmoManager::shutDown();
 		Selection::shutDown();
 		ScenePicking::shutDown();
@@ -158,6 +164,8 @@ namespace BansheeEngine
 		EditorWidgetLayoutPtr layout = loadWidgetLayout();
 		if (layout != nullptr)
 			EditorWidgetManager::instance().setLayout(layout);
+
+		BuildManager::instance().load(BUILD_DATA_PATH);
 
 		/************************************************************************/
 		/* 								DEBUG CODE                      		*/
@@ -428,8 +436,7 @@ namespace BansheeEngine
 
 	Path EditorApplication::getEditorAssemblyPath() const
 	{
-		Path assemblyPath = FileSystem::getWorkingDirectoryPath();
-		assemblyPath.append(ASSEMBLY_PATH);
+		Path assemblyPath = getBuiltinAssemblyFolder();
 		assemblyPath.append(toWString(EDITOR_ASSEMBLY) + L".dll");
 
 		return assemblyPath;
@@ -437,20 +444,18 @@ namespace BansheeEngine
 
 	Path EditorApplication::getEditorScriptAssemblyPath() const
 	{
-		Path assemblyPath = getProjectPath();
-		assemblyPath.append(INTERNAL_ASSEMBLY_PATH);
+		Path assemblyPath = getScriptAssemblyFolder();
 		assemblyPath.append(toWString(SCRIPT_EDITOR_ASSEMBLY) + L".dll");
 
 		return assemblyPath;
 	}
 
-	Path EditorApplication::getGameAssemblyPath() const
+	Path EditorApplication::getScriptAssemblyFolder() const
 	{
-		Path assemblyPath = getProjectPath();
-		assemblyPath.append(INTERNAL_ASSEMBLY_PATH);
-		assemblyPath.append(toWString(SCRIPT_GAME_ASSEMBLY) + L".dll");
+		Path assemblyFolder = getProjectPath();
+		assemblyFolder.append(INTERNAL_ASSEMBLY_PATH);
 
-		return assemblyPath;
+		return assemblyFolder;
 	}
 
 	EditorWidgetLayoutPtr EditorApplication::loadWidgetLayout()

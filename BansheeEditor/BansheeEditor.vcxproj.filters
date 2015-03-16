@@ -31,6 +31,9 @@
     <Filter Include="Header Files\Editor\Win32">
       <UniqueIdentifier>{ee1257c5-4335-401a-938c-adc62b074503}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Editor\RTTI">
+      <UniqueIdentifier>{24ec8e18-6fa3-44c2-a6a5-04d811e55169}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -258,6 +261,18 @@
     <ClInclude Include="Include\Win32\BsVSCodeEditor.h">
       <Filter>Header Files\Editor\Win32</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsBuildManager.h">
+      <Filter>Header Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsPlatformInfo.h">
+      <Filter>Header Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsPlatformInfoRTTI.h">
+      <Filter>Header Files\Editor\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsBuildDataRTTI.h">
+      <Filter>Header Files\Editor\RTTI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsEditorWidgetContainer.cpp">
@@ -457,6 +472,12 @@
     </ClCompile>
     <ClCompile Include="Source\Win32\BsVSCodeEditor.cpp">
       <Filter>Source Files\Editor\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsBuildManager.cpp">
+      <Filter>Source Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsPlatformInfo.cpp">
+      <Filter>Source Files\Editor</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
