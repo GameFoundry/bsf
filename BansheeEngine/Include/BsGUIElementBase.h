@@ -121,9 +121,11 @@ namespace BansheeEngine
 		 * @param	height			Available height for the layout elements.
 		 * @param	elementAreas	Array to hold output areas. Must be the same size as the number of child elements.
 		 * @param	numElements		Size of the element areas array.
-		 * @param	optimalSizes	Ranges of possible sizes used for the elements. Array must be same size as elements array.
+		 * @param	sizeRanges		Ranges of possible sizes used for the child elements. Array must be same size as elements array.
+		 * @param	mySizeRange		Size range of this element.
 		 */
-		virtual void _getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements, const Vector<LayoutSizeRange>& sizeRanges) const;
+		virtual void _getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements, 
+			const Vector<LayoutSizeRange>& sizeRanges, const LayoutSizeRange& mySizeRange) const;
 
 		/**
 		 * @brief	Sets a new parent for this element.

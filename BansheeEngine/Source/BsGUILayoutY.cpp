@@ -93,11 +93,11 @@ namespace BansheeEngine
 	}
 
 	void GUILayoutY::_getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements, 
-		const Vector<LayoutSizeRange>& sizeRanges) const
+		const Vector<LayoutSizeRange>& sizeRanges, const LayoutSizeRange& mySizeRange) const
 	{
 		assert(mChildren.size() == numElements);
 
-		UINT32 totalOptimalSize = _getOptimalSize().y;
+		UINT32 totalOptimalSize = mySizeRange.optimal.y;
 		UINT32 totalNonClampedSize = 0;
 		UINT32 numNonClampedElements = 0;
 		UINT32 numFlexibleSpaces = 0;
@@ -383,7 +383,7 @@ namespace BansheeEngine
 		if (numElements > 0)
 			elementAreas = stackConstructN<Rect2I>(numElements);
 
-		_getElementAreas(x, y, width, height, elementAreas, numElements, mChildSizeRanges);
+		_getElementAreas(x, y, width, height, elementAreas, numElements, mChildSizeRanges, mSizeRange);
 
 		// Now that we have all the areas, actually assign them
 		UINT32 childIdx = 0;

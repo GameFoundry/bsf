@@ -51,7 +51,8 @@ namespace BansheeEngine
 		mClippedBounds = bounds;
 	}
 
-	void GUIScrollArea::_getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements, const Vector<LayoutSizeRange>& sizeRanges) const
+	void GUIScrollArea::_getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements, 
+		const Vector<LayoutSizeRange>& sizeRanges, const LayoutSizeRange& mySizeRange) const
 	{
 		Vector2I visibleSize, contentSize;
 		_getElementAreas(x, y, width, height, elementAreas, numElements, sizeRanges, visibleSize, contentSize);

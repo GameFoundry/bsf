@@ -173,7 +173,8 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElementContainer::_getElementAreas
 		 */
-		void _getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements, const Vector<LayoutSizeRange>& sizeRanges) const;
+		void _getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements, 
+			const Vector<LayoutSizeRange>& sizeRanges, const LayoutSizeRange& mySizeRange) const;
 
 		/**
 		 * @copydoc	GUIElementContainer::_getElementAreas

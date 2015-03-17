@@ -52,7 +52,8 @@ namespace BansheeEngine
 		if (numElements > 0)
 			elementAreas = stackConstructN<Rect2I>(numElements);
 
-		parent->_getElementAreas(parentArea.x, parentArea.y, parentArea.width, parentArea.height, elementAreas, numElements, sizeRanges);
+		parent->_getElementAreas(parentArea.x, parentArea.y, parentArea.width, parentArea.height, elementAreas, 
+			numElements, sizeRanges, parent->_calculateLayoutSizeRange());
 		Rect2I myArea = elementAreas[myIndex];
 
 		if (elementAreas != nullptr)
@@ -77,7 +78,7 @@ namespace BansheeEngine
 		if (numElements > 0)
 			elementAreas = stackConstructN<Rect2I>(numElements);
 
-		layout->_getElementAreas(0, 0, width, height, elementAreas, numElements, sizeRanges);
+		layout->_getElementAreas(0, 0, width, height, elementAreas, numElements, sizeRanges, layout->_calculateLayoutSizeRange());
 		Rect2I* actualAreas = elementAreas; // We re-use the same array
 
 		for (UINT32 i = 0; i < numElements; i++)

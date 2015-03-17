@@ -749,12 +749,6 @@ namespace BansheeEditor
 
                 texture = new Texture2D(width, height);
                 spriteTexture = new SpriteTexture(texture);
-
-                Rect2I sliderBounds = guiTexture.Bounds;
-                sliderBounds.y -= SLIDER_HEIGHT;
-                sliderBounds.height += SLIDER_HEIGHT;
-
-                guiSlider.Bounds = sliderBounds;
             }
 
             public void UpdateTexture(Color start, Color step, bool isHSV)
@@ -770,6 +764,13 @@ namespace BansheeEditor
 
                 texture.SetPixels(colors);
                 guiTexture.SetTexture(spriteTexture);
+
+                Rect2I sliderBounds = guiTexture.Bounds;
+                sliderBounds.y -= SLIDER_HEIGHT;
+                sliderBounds.height += SLIDER_HEIGHT;
+
+                Debug.Log("SLIDER BOUNDS HORZ: " + sliderBounds);
+                guiSlider.Bounds = sliderBounds;
             }
         }
 
@@ -793,12 +794,6 @@ namespace BansheeEditor
 
                 texture = new Texture2D(width, height);
                 spriteTexture = new SpriteTexture(texture);
-
-                Rect2I sliderBounds = guiTexture.Bounds;
-                sliderBounds.x -= SLIDER_WIDTH;
-                sliderBounds.width += SLIDER_WIDTH;
-
-                guiSlider.Bounds = sliderBounds;
             }
 
             public void UpdateTexture(Color start, Color step, bool isHSV)
@@ -814,6 +809,13 @@ namespace BansheeEditor
 
                 texture.SetPixels(colors);
                 guiTexture.SetTexture(spriteTexture);
+
+                Rect2I sliderBounds = guiTexture.Bounds;
+                sliderBounds.x -= SLIDER_WIDTH;
+                sliderBounds.width += SLIDER_WIDTH;
+
+                Debug.Log("SLIDER BOUNDS VERT: " + sliderBounds);
+                guiSlider.Bounds = sliderBounds;
             }
         }
 
