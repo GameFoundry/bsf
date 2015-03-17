@@ -30,7 +30,8 @@ namespace BansheeEditor
         private List<CompilerMessage> errors = new List<CompilerMessage>();
         private List<CompilerMessage> warnings = new List<CompilerMessage>();
 
-        private Regex messageParseRegex = new Regex(@"\s*(?<file>.*)\(\s*(?<line>\d+)\s*,\s*(?<column>\d+)\s*\)\s*:\s*(?<type>warning|error)\s+(.*):\s*(?<message>.*)");
+        private Regex compileErrorRegex = new Regex(@"\s*(?<file>.*)\(\s*(?<line>\d+)\s*,\s*(?<column>\d+)\s*\)\s*:\s*(?<type>warning|error)\s+(.*):\s*(?<message>.*)");
+        private Regex compilerErrorRegex = new Regex(@"\s*error[^:]*:\s*(?<message>.*)");
 
         internal CompilerInstance(string[] files, string defines, string[] assemblyFolders, string[] assemblies,
             bool debugBuild, string outputFile)
@@ -66,10 +67,18 @@ namespace BansheeEditor
             else
                 argumentsBuilder.Append(" -debug- -o+");
 
-            argumentsBuilder.Append(" -target:library -out:" + outputFile);
+            argumentsBuilder.Append(" -target:library -out:" + "\"" + outputFile + "\"");
 
             for (int i = 0; i < files.Length; i++)
                 argumentsBuilder.Append(" \"" + files[i] + "\"");
+
+            if (File.Exists(outputFile))
+                File.Delete(outputFile);
+
+            string outputDir = Path.GetDirectoryName(outputFile);
+
+            if (!Directory.Exists(outputDir))
+                Directory.CreateDirectory(outputDir);
 
             procStartInfo.Arguments = argumentsBuilder.ToString();
             procStartInfo.CreateNoWindow = true;
@@ -95,6 +104,8 @@ namespace BansheeEditor
                     return;
 
                 string line = process.StandardError.ReadLine();
+                if (string.IsNullOrEmpty(line))
+                    continue;
 
                 CompilerMessage message;
                 if (TryParseCompilerMessage(line, out message))
@@ -117,17 +128,33 @@ namespace BansheeEditor
         {
             message = new CompilerMessage();
 
-            Match match = messageParseRegex.Match(messageText);
-            if (!match.Success)
-                return false;
+            Match matchCompile = compileErrorRegex.Match(messageText);
+            if (matchCompile.Success)
+            {
+                message.file = matchCompile.Groups["file"].Value;
+                message.line = Int32.Parse(matchCompile.Groups["line"].Value);
+                message.column = Int32.Parse(matchCompile.Groups["column"].Value);
+                message.type = matchCompile.Groups["type"].Value == "error"
+                    ? CompilerMessageType.Error
+                    : CompilerMessageType.Warning;
+                message.message = matchCompile.Groups["message"].Value;
 
-            message.file = match.Groups["file"].Value;
-            message.line = Int32.Parse(match.Groups["line"].Value);
-            message.column = Int32.Parse(match.Groups["column"].Value);
-            message.type = match.Groups["type"].Value == "error" ? CompilerMessageType.Error : CompilerMessageType.Warning;
-            message.message = match.Groups["message"].Value;
+                return true;
+            }
 
-            return true;
+            Match matchCompiler = compilerErrorRegex.Match(messageText);
+            if (matchCompiler.Success)
+            {
+                message.file = "";
+                message.line = 0;
+                message.column = 0;
+                message.type = CompilerMessageType.Error;
+                message.message = matchCompiler.Groups["message"].Value;
+
+                return true;
+            }
+
+            return false;
         }
 
         public bool IsDone
