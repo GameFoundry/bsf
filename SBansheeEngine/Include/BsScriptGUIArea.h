@@ -18,11 +18,11 @@ namespace BansheeEngine
 
 	private:
 		static void internal_createInstance(MonoObject* instance, MonoObject* parentGUI, INT32 x, INT32 y, UINT32 width, UINT32 height, 
-			UINT16 depth, GUILayoutType layoutType);
+			INT16 depth, GUILayoutType layoutType);
 
 		static void internal_destroy(ScriptGUIArea* thisPtr);
 		static void internal_setVisible(ScriptGUIArea* thisPtr, bool visible);
-		static void internal_setArea(ScriptGUIArea* thisPtr, INT32 x, INT32 y, UINT32 width, UINT32 height, UINT16 depth);
+		static void internal_setArea(ScriptGUIArea* thisPtr, INT32 x, INT32 y, UINT32 width, UINT32 height, INT16 depth);
 
 		ScriptGUIArea(MonoObject* instance, GUIArea* area, ScriptGUIPanel* panel);
 

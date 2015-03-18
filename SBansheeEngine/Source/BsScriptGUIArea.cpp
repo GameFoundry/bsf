@@ -38,10 +38,12 @@ namespace BansheeEngine
 	}
 
 	void ScriptGUIArea::internal_createInstance(MonoObject* instance, MonoObject* panel, INT32 x, INT32 y, UINT32 width, 
-		UINT32 height, UINT16 depth, GUILayoutType layoutType)
+		UINT32 height, INT16 depth, GUILayoutType layoutType)
 	{
+		UINT16 signedDepth = depth + 32768;
+
 		ScriptGUIPanel* scriptGUIPanel = ScriptGUIPanel::toNative(panel);
-		GUIArea* nativeArea = GUIArea::create(scriptGUIPanel->getWidget(), x, y, width, height, depth, layoutType);
+		GUIArea* nativeArea = GUIArea::create(scriptGUIPanel->getWidget(), x, y, width, height, signedDepth, layoutType);
 
 		ScriptGUIArea* nativeInstance = new (bs_alloc<ScriptGUIArea>()) ScriptGUIArea(instance, nativeArea, scriptGUIPanel);
 	}
@@ -59,15 +61,17 @@ namespace BansheeEngine
 			thisPtr->mGUIArea->disable();
 	}
 
-	void ScriptGUIArea::internal_setArea(ScriptGUIArea* thisPtr, INT32 x, INT32 y, UINT32 width, UINT32 height, UINT16 depth)
+	void ScriptGUIArea::internal_setArea(ScriptGUIArea* thisPtr, INT32 x, INT32 y, UINT32 width, UINT32 height, INT16 depth)
 	{
+		UINT16 signedDepth = depth + 32768;
+
 		thisPtr->mArea.x = x;
 		thisPtr->mArea.y = y;
 		thisPtr->mArea.width = width;
 		thisPtr->mArea.height = height;
 
 		thisPtr->updateArea();
-		thisPtr->mGUIArea->setDepth(depth);
+		thisPtr->mGUIArea->setDepth(signedDepth);
 	}
 
 	void ScriptGUIArea::updateArea()

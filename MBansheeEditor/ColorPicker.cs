@@ -22,8 +22,8 @@ namespace BansheeEditor
         private ColorSlider2D colorBox;
         private ColorSlider1DVert sideSlider;
 
-        private ColorBoxMode colorBoxMode;
-        private SliderMode sliderMode;
+        private ColorBoxMode colorBoxMode = ColorBoxMode.BG_R;
+        private SliderMode sliderMode = SliderMode.HSV;
 
         private GUIColorField guiColor;
         private GUITexture guiSlider2DTex;
@@ -242,6 +242,13 @@ namespace BansheeEditor
 
             colorBox.OnValueChanged += OnColorBoxValueChanged;
 
+            Color startA = new Color(0, 0, 0, 1);
+            Color stepA = new Color(1, 1, 1, 0);
+            sliderA.UpdateTexture(startA, stepA, false);
+            guiInputA.SetRange(0, 255);
+            guiInputA.Value = 255;
+            guiSliderAHorz.Percent = 1.0f;
+
             guiColor.Value = SelectedColor;
             UpdateInputBoxValues();
             Update2DSliderTextures();
@@ -249,11 +256,6 @@ namespace BansheeEditor
             Update1DSliderTextures();
             Update1DSliderValues();
             UpdateSliderMode();
-
-            Color startA = new Color(0, 0, 0, 1);
-            Color stepA = new Color(1, 1, 1, 0);
-            sliderA.UpdateTexture(startA, stepA, false);
-            guiInputA.SetRange(0, 255);
         }
 
         private void OnEditorUpdate()
@@ -274,13 +276,14 @@ namespace BansheeEditor
                 downDelta = downGradient / (height - 1);
 
             Color verticalColor = start;
-            int idx = 0;
             for (int y = 0; y < height; y++)
             {
+                int rowIdx = (height - y - 1) * width;
+
                 Color currentColor = verticalColor;
                 for (int x = 0; x < width; x++)
                 {
-                    colors[idx++] = currentColor;
+                    colors[rowIdx + x] = currentColor;
                     currentColor += rightDelta;
                 }
                 verticalColor += downDelta;
@@ -335,13 +338,13 @@ namespace BansheeEditor
             switch (colorBoxMode)
             {
                 case ColorBoxMode.BG_R:
-                    colGreen = value.x;
-                    colBlue = value.y;
+                    colBlue = value.x;
+                    colGreen = value.y;
                     RGBToHSV();
                     break;
                 case ColorBoxMode.BR_G:
-                    colRed = value.x;
-                    colBlue = value.y;
+                    colBlue = value.x;
+                    colRed = value.y;
                     RGBToHSV();
                     break;
                 case ColorBoxMode.RG_B:
@@ -370,10 +373,19 @@ namespace BansheeEditor
             UpdateInputBoxValues();
             Update1DSliderTextures();
             Update1DSliderValues();
+            UpdateSideSliderTexture();
+
+            Vector2 xy;
+            float z;
+
+            GetColorBoxValues(out xy, out z);
+            guiSliderVert.Percent = 1.0f - z;
         }
 
         void OnSliderVertChanged(float percent)
         {
+            percent = 1.0f - percent;
+
             switch (colorBoxMode)
             {
                 case ColorBoxMode.BG_R:
@@ -473,7 +485,7 @@ namespace BansheeEditor
             colAlpha = percent;
 
             guiColor.Value = SelectedColor;
-            guiInputA.Value = MathEx.RoundToInt(colValue * 255.0f);
+            guiInputA.Value = MathEx.RoundToInt(colAlpha * 255.0f);
         }
 
         void OnInputRChanged(int value)
@@ -618,10 +630,10 @@ namespace BansheeEditor
             }
         }
 
-        void Update2DSliderValues()
+        void GetColorBoxValues(out Vector2 xy, out float z)
         {
-            Vector2 xy = Vector2.zero;
-            float z = 0.0f;
+            xy = Vector2.zero;
+            z = 0.0f;
 
             switch (colorBoxMode)
             {
@@ -631,8 +643,8 @@ namespace BansheeEditor
                     z = colRed;
                     break;
                 case ColorBoxMode.BR_G:
-                    xy.x = colRed;
-                    xy.y = colBlue;
+                    xy.x = colBlue;
+                    xy.y = colRed;
                     z = colGreen;
                     break;
                 case ColorBoxMode.RG_B:
@@ -656,6 +668,14 @@ namespace BansheeEditor
                     z = colValue;
                     break;
             }
+        }
+
+        void Update2DSliderValues()
+        {
+            Vector2 xy = Vector2.zero;
+            float z = 0.0f;
+
+            GetColorBoxValues(out xy, out z);
 
             colorBox.SetValue(xy);
             guiSliderVert.Percent = z;
@@ -670,17 +690,17 @@ namespace BansheeEditor
                 Color startH = new Color(0, 1, 1);
                 Color stepH = new Color(1, 0, 0, 0);
 
-                sliderR.UpdateTexture(startH, stepH, false);
+                sliderR.UpdateTexture(startH, stepH, true);
 
                 Color startS = new Color(colHue, 0, MathEx.Max(colValue, 0.2f));
                 Color stepS = new Color(0, 1, 0, 0);
 
-                sliderG.UpdateTexture(startS, stepS, false);
+                sliderG.UpdateTexture(startS, stepS, true);
 
                 Color startV = new Color(colHue, colSaturation, 0);
                 Color stepV = new Color(0, 0, 1, 0);
 
-                sliderB.UpdateTexture(startV, stepV, false);
+                sliderB.UpdateTexture(startV, stepV, true);
             }
             else
             {
@@ -701,7 +721,7 @@ namespace BansheeEditor
             }
         }
 
-        void Update2DSliderTextures()
+        void UpdateSideSliderTexture()
         {
             switch (colorBoxMode)
             {
@@ -724,6 +744,11 @@ namespace BansheeEditor
                     sideSlider.UpdateTexture(new Color(colHue, colSaturation, 0, 1), new Color(0, 0, 1, 0), true);
                     break;
             }
+        }
+
+        void Update2DSliderTextures()
+        {
+            UpdateSideSliderTexture();
 
             float[] valueLookup = new float[] { colRed, colGreen, colBlue, colHue, colSaturation, colValue };
             colorBox.UpdateTexture(colorBoxMode, valueLookup[(int)colorBoxMode]);
@@ -731,7 +756,8 @@ namespace BansheeEditor
 
         public class ColorSlider1DHorz
         {
-            private const int SLIDER_HEIGHT = 8;
+            private const int SLIDER_X_OFFSET = 3;
+            private const int SLIDER_Y_OFFSET = 5;
 
             private int width, height;
             private Texture2D texture;
@@ -766,17 +792,19 @@ namespace BansheeEditor
                 guiTexture.SetTexture(spriteTexture);
 
                 Rect2I sliderBounds = guiTexture.Bounds;
-                sliderBounds.y -= SLIDER_HEIGHT;
-                sliderBounds.height += SLIDER_HEIGHT;
+                sliderBounds.x -= SLIDER_X_OFFSET;
+                sliderBounds.width += SLIDER_X_OFFSET*2;
+                sliderBounds.y -= SLIDER_Y_OFFSET;
+                sliderBounds.height += SLIDER_Y_OFFSET;
 
-                Debug.Log("SLIDER BOUNDS HORZ: " + sliderBounds);
                 guiSlider.Bounds = sliderBounds;
             }
         }
 
         public class ColorSlider1DVert
         {
-            private const int SLIDER_WIDTH = 7;
+            private const int SLIDER_X_OFFSET = 5;
+            private const int SLIDER_Y_OFFSET = 3;
 
             private int width, height;
             private Texture2D texture;
@@ -811,10 +839,11 @@ namespace BansheeEditor
                 guiTexture.SetTexture(spriteTexture);
 
                 Rect2I sliderBounds = guiTexture.Bounds;
-                sliderBounds.x -= SLIDER_WIDTH;
-                sliderBounds.width += SLIDER_WIDTH;
+                sliderBounds.x -= SLIDER_X_OFFSET;
+                sliderBounds.width += SLIDER_X_OFFSET;
+                sliderBounds.y -= SLIDER_Y_OFFSET;
+                sliderBounds.height += SLIDER_Y_OFFSET * 2;
 
-                Debug.Log("SLIDER BOUNDS VERT: " + sliderBounds);
                 guiSlider.Bounds = sliderBounds;
             }
         }
@@ -828,7 +857,7 @@ namespace BansheeEditor
             private GUITexture guiTexture;
             private GUITexture guiSliderHandle;
 
-            private Vector2 oldValue;
+            private Vector2 oldValue = new Vector2(-1, -1);
 
             public delegate void OnValueChangedDelegate(Vector2 value);
             public event OnValueChangedDelegate OnValueChanged;
@@ -891,7 +920,7 @@ namespace BansheeEditor
                     {
                         Vector2 newValue = Vector2.zero;
                         newValue.x = (windowPos.x - bounds.x) / (float)bounds.width;
-                        newValue.y = (windowPos.y - bounds.y) / (float)bounds.height;
+                        newValue.y = 1.0f - (windowPos.y - bounds.y) / (float)bounds.height;
 
                         SetValue(newValue);
                     }
@@ -900,17 +929,19 @@ namespace BansheeEditor
 
             public void SetValue(Vector2 value)
             {
+                Vector2 pos = value;
+                pos.y = 1.0f - pos.y;
+
                 if (oldValue == value)
                     return;
 
                 Rect2I handleBounds = guiSliderHandle.Bounds;
                 Rect2I boxBounds = guiTexture.Bounds;
 
-                handleBounds.x = boxBounds.x + MathEx.RoundToInt(value.x * boxBounds.width) - handleBounds.width / 2;
-                handleBounds.y = boxBounds.y + MathEx.RoundToInt(value.y * boxBounds.height) - handleBounds.height / 2;
+                handleBounds.x = boxBounds.x + MathEx.RoundToInt(pos.x * boxBounds.width) - handleBounds.width / 2;
+                handleBounds.y = boxBounds.y + MathEx.RoundToInt(pos.y * boxBounds.height) - handleBounds.height / 2;
 
                 guiSliderHandle.Bounds = handleBounds;
-
                 oldValue = value;
 
                 if (OnValueChanged != null)

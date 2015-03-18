@@ -9,10 +9,11 @@
 namespace BansheeEngine
 {
 	GUIElement::GUIElement(const String& styleName, const GUILayoutOptions& layoutOptions)
-		:mLayoutOptions(layoutOptions), mDepth(0), mStyle(nullptr),
+		:mLayoutOptions(layoutOptions), mDepth(0), mStyle(&GUISkin::DefaultStyle),
 		mIsDestroyed(false), mStyleName(styleName)
 	{
-		_refreshStyle();
+		// Style is set to default here, and the proper one is assigned once GUI element
+		// is assigned to a parent (that's when the active GUI skin becomes known)
 	}
 
 	GUIElement::~GUIElement()
@@ -249,6 +250,12 @@ namespace BansheeEngine
 			mStyle = newStyle;
 			mLayoutOptions.updateWithStyle(mStyle);
 			styleUpdated();
+
+			// Immediately update size, in case element is part of an explicit layout
+			// (In which case it would never get updated unless user set it explicitly)
+			LayoutSizeRange sizeRange = _calculateLayoutSizeRange();
+			mWidth = (UINT32)sizeRange.optimal.x;
+			mHeight = (UINT32)sizeRange.optimal.y;
 
 			markContentAsDirty();
 		}

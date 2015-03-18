@@ -131,6 +131,11 @@ namespace BansheeEngine
 		GUISliderHandle(bool horizontal, bool jumpOnClick, const String& styleName, const GUILayoutOptions& layoutOptions);
 
 		/**
+		 * @brief	Returns the position of the slider handle, in pixels.
+		 */
+		INT32 getHandlePosPx() const;
+
+		/**
 		 * @copydoc	GUIElement::mouseEvent
 		 */
 		virtual bool _mouseEvent(const GUIMouseEvent& ev);
@@ -151,7 +156,7 @@ namespace BansheeEngine
 
 		bool mHorizontal; // Otherwise its vertical
 		bool mJumpOnClick;
-		float mHandlePos;
+		float mPctHandlePos;
 		INT32 mDragStartPos;
 		bool mMouseOverHandle;
 		bool mHandleDragged;

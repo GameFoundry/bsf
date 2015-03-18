@@ -1089,8 +1089,8 @@ namespace BansheeEngine
 		GUIElementStyle colorPickerSliderHorzHandleStyle;
 		colorPickerSliderHorzHandleStyle.fixedHeight = true;
 		colorPickerSliderHorzHandleStyle.fixedWidth = true;
-		colorPickerSliderHorzHandleStyle.height = 32;
-		colorPickerSliderHorzHandleStyle.width = 10;
+		colorPickerSliderHorzHandleStyle.height = 20;
+		colorPickerSliderHorzHandleStyle.width = 7;
 		colorPickerSliderHorzHandleStyle.normal.texture = getGUITexture(ColorPickerSliderHorzHandleTex);
 		colorPickerSliderHorzHandleStyle.hover.texture = colorPickerSliderHorzHandleStyle.normal.texture;
 		colorPickerSliderHorzHandleStyle.active.texture = colorPickerSliderHorzHandleStyle.normal.texture;
@@ -1100,7 +1100,7 @@ namespace BansheeEngine
 		GUIElementStyle colorPickerSliderHorzStyle;
 		colorPickerSliderHorzHandleStyle.fixedHeight = true;
 		colorPickerSliderHorzHandleStyle.height = 32;
-		colorPickerSliderHorzHandleStyle.minWidth = 50;
+		colorPickerSliderHorzHandleStyle.minWidth = 20;
 		colorPickerSliderHorzStyle.subStyles[GUISlider::getHandleStyleType()] = "ColorSliderHorzHandle";
 
 		mSkin.setStyle("ColorSliderHorz", colorPickerSliderHorzStyle);
@@ -1108,8 +1108,8 @@ namespace BansheeEngine
 		GUIElementStyle colorPickerSliderVertHandleStyle;
 		colorPickerSliderVertHandleStyle.fixedHeight = true;
 		colorPickerSliderVertHandleStyle.fixedWidth = true;
-		colorPickerSliderVertHandleStyle.height = 10;
-		colorPickerSliderVertHandleStyle.width = 30;
+		colorPickerSliderVertHandleStyle.height = 7;
+		colorPickerSliderVertHandleStyle.width = 45;
 		colorPickerSliderVertHandleStyle.normal.texture = getGUITexture(ColorPickerSliderVertHandleTex);
 		colorPickerSliderVertHandleStyle.hover.texture = colorPickerSliderVertHandleStyle.normal.texture;
 		colorPickerSliderVertHandleStyle.active.texture = colorPickerSliderVertHandleStyle.normal.texture;
@@ -1119,7 +1119,7 @@ namespace BansheeEngine
 		GUIElementStyle colorPickerSliderVertStyle;
 		colorPickerSliderVertStyle.fixedWidth = true;
 		colorPickerSliderVertStyle.width = 30;
-		colorPickerSliderVertStyle.minHeight = 50;
+		colorPickerSliderVertStyle.minHeight = 20;
 		colorPickerSliderVertStyle.subStyles[GUISlider::getHandleStyleType()] = "ColorSliderVertHandle";
 
 		mSkin.setStyle("ColorSliderVert", colorPickerSliderVertStyle);

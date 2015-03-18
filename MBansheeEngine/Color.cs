@@ -136,7 +136,7 @@ namespace BansheeEngine
             else
             {
                 output.g = 0.0f;
-                output.r = float.NaN;
+                output.r = 0.0f;
                 return output;
             }
 
