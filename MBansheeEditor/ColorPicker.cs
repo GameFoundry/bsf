@@ -92,14 +92,14 @@ namespace BansheeEditor
 
         protected ColorPicker()
             : base(false)
+        { }
+
+        private void OnInitialize()
         {
             Title = "Color Picker";
             Width = 270;
             Height = 400;
-        }
 
-        private void OnInitialize()
-        {
             guiColor = new GUIColorField("", GUIOption.FixedWidth(100));
             guiSlider2DTex = new GUITexture(null, GUIOption.FixedHeight(200), GUIOption.FixedWidth(200));
             guiSliderVertTex = new GUITexture(null, GUIOption.FixedHeight(200), GUIOption.FixedWidth(40));

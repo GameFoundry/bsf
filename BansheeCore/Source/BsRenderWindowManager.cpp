@@ -52,7 +52,8 @@ namespace BansheeEngine
 
 			mCreatedWindows.erase(iterFind);
 
-			auto iterFind2 = std::find(begin(mMovedOrResizedWindows), end(mMovedOrResizedWindows), window);
+			auto iterFind2 = std::find_if(begin(mMovedOrResizedWindows), end(mMovedOrResizedWindows), 
+				[&](const MoveOrResizeData& x) { return x.window == window; });
 
 			if(iterFind2 != mMovedOrResizedWindows.end())
 				mMovedOrResizedWindows.erase(iterFind2);
@@ -106,10 +107,30 @@ namespace BansheeEngine
 
 		BS_LOCK_MUTEX(mWindowMutex);
 
-		auto iterFind = std::find(begin(mMovedOrResizedWindows), end(mMovedOrResizedWindows), window);
+		auto iterFind = std::find_if(begin(mMovedOrResizedWindows), end(mMovedOrResizedWindows), 
+			[&](const MoveOrResizeData& x) { return x.window == window; });
 
-		if (iterFind == end(mMovedOrResizedWindows))
-			mMovedOrResizedWindows.push_back(window);
+		const RenderWindowProperties& props = coreWindow->getProperties();
+		MoveOrResizeData* moveResizeData = nullptr;
+
+		if (iterFind != end(mMovedOrResizedWindows))
+		{
+			moveResizeData = &*iterFind;
+
+		}
+		else
+		{
+			MoveOrResizeData newEntry;
+			newEntry.window = window;
+
+			mMovedOrResizedWindows.push_back(newEntry);
+			moveResizeData = &mMovedOrResizedWindows.back();
+		}
+		
+		moveResizeData->x = props.getLeft();
+		moveResizeData->y = props.getTop();
+		moveResizeData->width = props.getWidth();
+		moveResizeData->height = props.getHeight();
 
 		setDirtyProperties(coreWindow);
 	}
@@ -155,14 +176,28 @@ namespace BansheeEngine
 	void RenderWindowManager::_update()
 	{
 		RenderWindow* newWinInFocus = nullptr;
-		Vector<RenderWindow*> movedOrResizedWindows;
+		Vector<MoveOrResizeData> movedOrResizedWindows;
 		Vector<RenderWindow*> mouseLeftWindows;
 
 		{
 			BS_LOCK_MUTEX(mWindowMutex);
 			newWinInFocus = mNewWindowInFocus;
 
-			movedOrResizedWindows = mMovedOrResizedWindows;
+			for (auto& moveResizeData : mMovedOrResizedWindows)
+			{
+				RenderWindow* window = moveResizeData.window;
+				const RenderWindowProperties& props = window->getProperties();
+
+				// Need to eliminate non-dirty ones because it's possible we already triggered the resize event
+				// if the resize call originated from the sim thread, so we don't trigger it twice.
+
+				bool isDirty = moveResizeData.x != props.getLeft() || moveResizeData.y != props.getTop()
+					|| moveResizeData.width != props.getWidth() || moveResizeData.height != props.getHeight();
+
+				if (isDirty)
+					movedOrResizedWindows.push_back(moveResizeData);
+			}
+
 			mMovedOrResizedWindows.clear();
 
 			mouseLeftWindows = mMouseLeftWindows;
@@ -185,24 +220,17 @@ namespace BansheeEngine
 		if(mWindowInFocus != newWinInFocus)
 		{
 			if(mWindowInFocus != nullptr)
-			{
-				if(!onFocusLost.empty())
-					onFocusLost(*mWindowInFocus);
-			}
+				onFocusLost(*mWindowInFocus);
 
 			if(newWinInFocus != nullptr)
-			{
-				if(!onFocusGained.empty())
-					onFocusGained(*newWinInFocus);
-			}
+				onFocusGained(*newWinInFocus);
 
 			mWindowInFocus = newWinInFocus;
 		}
 
-		for(auto& window : movedOrResizedWindows)
+		for (auto& moveResizeData : movedOrResizedWindows)
 		{
-			if(!window->onResized.empty())
-				window->onResized();
+			moveResizeData.window->onResized();
 		}
 
 		if (!onMouseLeftWindow.empty())

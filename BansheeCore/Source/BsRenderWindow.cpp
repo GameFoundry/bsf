@@ -143,6 +143,8 @@ namespace BansheeEngine
 
 		getMutableProperties().mWidth = width;
 		getMutableProperties().mHeight = height;
+		onResized();
+
 		accessor.queueCommand(std::bind(resizeFunc, getCore(), width, height));
 	}
 

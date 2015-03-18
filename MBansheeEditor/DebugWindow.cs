@@ -21,6 +21,11 @@ namespace BansheeEditor
 
             GUI.layout.AddElement(refreshAssembly);
             GUI.layout.AddElement(compileGame);
+
+            GUIButton testExplicitBtn = new GUIButton("TESTING EXPLICIT");
+            testExplicitBtn.Bounds = compileGame.Bounds;
+            GUIArea overlay = GUI.AddArea(0, 0, Width, Height, -1, GUILayoutType.Explicit);
+            overlay.layout.AddElement(testExplicitBtn);
         }
 
         void RefreshAssembly_OnClick()

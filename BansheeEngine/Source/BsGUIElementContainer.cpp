@@ -10,6 +10,14 @@ namespace BansheeEngine
 	GUIElementContainer::~GUIElementContainer()
 	{ }
 
+	void GUIElementContainer::setOffset(const Vector2I& offset)
+	{
+		if (mOffset != offset)
+			markContentAsDirty();
+
+		GUIElement::setOffset(offset);
+	}
+
 	UINT32 GUIElementContainer::_getNumRenderElements() const
 	{
 		return 0;

@@ -11,6 +11,12 @@ namespace BansheeEngine
 	 */
 	class BS_EXPORT GUIElementContainer : public GUIElement
 	{
+	public:
+		/**
+		 * @copydoc	GUIElementBase::setOffset
+		 */
+		void setOffset(const Vector2I& offset) override;
+
 	protected:
 		GUIElementContainer(const GUILayoutOptions& layoutOptions, const String& style = StringUtil::BLANK);
 		virtual ~GUIElementContainer();

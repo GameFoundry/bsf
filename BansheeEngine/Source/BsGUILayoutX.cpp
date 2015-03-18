@@ -29,12 +29,13 @@ namespace BansheeEngine
 
 			layoutSizeRange.optimal.x += sizeRange.optimal.x + paddingX;
 			layoutSizeRange.min.x += sizeRange.min.x + paddingX;
-			layoutSizeRange.max.x += sizeRange.max.x + paddingX;
 
-			layoutSizeRange.optimal.y = std::max((UINT32)sizeRange.optimal.y, layoutSizeRange.optimal.y + paddingY);
-			layoutSizeRange.min.y = std::max((UINT32)sizeRange.min.y, layoutSizeRange.min.y + paddingY);
-			layoutSizeRange.max.y = std::max((UINT32)sizeRange.max.y, layoutSizeRange.max.y + paddingY);
+			layoutSizeRange.optimal.y = std::max((UINT32)layoutSizeRange.optimal.y, sizeRange.optimal.y + paddingY);
+			layoutSizeRange.min.y = std::max((UINT32)layoutSizeRange.min.y, sizeRange.min.y + paddingY);
 		}
+
+		layoutSizeRange.max.x = 0;
+		layoutSizeRange.max.y = 0;
 
 		return layoutSizeRange;
 	}

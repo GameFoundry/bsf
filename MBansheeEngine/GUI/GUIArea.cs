@@ -34,6 +34,7 @@ namespace BansheeEngine
             GUIArea newArea = new GUIArea();
             Internal_CreateInstance(newArea, parent, x, y, width, height, depth, layoutType);
             newArea._layout = new GUILayoutX(newArea);
+            newArea.SetArea(x, y, width, height, depth);
 
             return newArea;
         }

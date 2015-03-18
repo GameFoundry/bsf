@@ -24,6 +24,16 @@ namespace BansheeEngine
 			UINT32 size;
 		};
 
+		/**
+		 * @brief	Holds information about a window that was moved or resized.
+		 */
+		struct MoveOrResizeData
+		{
+			INT32 x, y;
+			UINT32 width, height;
+			RenderWindow* window;
+		};
+
 	public:
 		RenderWindowManager();
 		~RenderWindowManager();
@@ -115,7 +125,7 @@ namespace BansheeEngine
 
 		RenderWindow* mWindowInFocus;
 		RenderWindow* mNewWindowInFocus;
-		Vector<RenderWindow*> mMovedOrResizedWindows;
+		Vector<MoveOrResizeData> mMovedOrResizedWindows;
 		Vector<RenderWindow*> mMouseLeftWindows;
 		Map<RenderWindow*, DirtyPropertyData> mDirtyProperties;
 	};

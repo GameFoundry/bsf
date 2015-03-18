@@ -19,6 +19,15 @@ My GUID generation is screwed up. If multiple GUIDs are generated in succession 
 the same and the only variable will be the 4byte random number, which can sometimes end up identical to the previous number.
 
 ----------------------------------------------------------------------
+MenuItem
+
+MenuItem[] attribute in C#
+ - Allowed on static methods in editor assembly
+
+MenuItemManager registers then menu items with MainEditorWindow
+ - upon assembly refresh all menu items are removed, and then re-added
+
+----------------------------------------------------------------------
 VisualStudio integration
 
 VS integration will likely not work with VSExpress or Community edition
