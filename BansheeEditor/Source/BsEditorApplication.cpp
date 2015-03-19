@@ -74,11 +74,11 @@ namespace BansheeEngine
 			auto inputConfig = VirtualInput::instance().getConfiguration();
 
 			inputConfig->registerButton("Rename", BC_F2);
-			inputConfig->registerButton("Undo", BC_Z, VButtonModifier::Ctrl);
-			inputConfig->registerButton("Redo", BC_Y, VButtonModifier::Ctrl);
-			inputConfig->registerButton("Copy", BC_C, VButtonModifier::Ctrl);
-			inputConfig->registerButton("Cut", BC_X, VButtonModifier::Ctrl);
-			inputConfig->registerButton("Paste", BC_V, VButtonModifier::Ctrl);
+			inputConfig->registerButton("Undo", BC_Z, ButtonModifier::Ctrl);
+			inputConfig->registerButton("Redo", BC_Y, ButtonModifier::Ctrl);
+			inputConfig->registerButton("Copy", BC_C, ButtonModifier::Ctrl);
+			inputConfig->registerButton("Cut", BC_X, ButtonModifier::Ctrl);
+			inputConfig->registerButton("Paste", BC_V, ButtonModifier::Ctrl);
 			inputConfig->registerButton("Delete", BC_DELETE);
 		}
 

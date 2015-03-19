@@ -15,6 +15,7 @@
 #include "BsFileSystem.h"
 #include "BsPlainTextImporter.h"
 #include "BsImporter.h"
+#include "BsShortcutManager.h"
 
 namespace BansheeEngine
 {
@@ -46,6 +47,7 @@ namespace BansheeEngine
 		GUIManager::startUp();
 		GUIMaterialManager::startUp();
 		OverlayManager::startUp();
+		ShortcutManager::startUp();
 
 		Cursor::startUp();
 	}
@@ -72,6 +74,7 @@ namespace BansheeEngine
 
 		GUIMaterialManager::instance().clearMaterials();
 
+		ShortcutManager::shutDown();
 		OverlayManager::shutDown();
 		GUIManager::shutDown();
 		GUIMaterialManager::shutDown();

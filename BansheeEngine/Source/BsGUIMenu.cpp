@@ -1,22 +1,32 @@
 #include "BsGUIMenu.h"
 #include "BsGUIDropDownBox.h"
+#include "BsShortcutManager.h"
 
 namespace BansheeEngine
 {
-	GUIMenuItem::GUIMenuItem(GUIMenuItem* parent, const WString& name, std::function<void()> callback)
-		:mParent(parent), mName(name), mCallback(callback), mIsSeparator(false)
+	bool GUIMenuItemComparer::operator() (const GUIMenuItem* const& a, const GUIMenuItem* const& b)
 	{
-
+		return a->mPriority > b->mPriority;
 	}
 
-	GUIMenuItem::GUIMenuItem(GUIMenuItem* parent)
-		:mParent(parent), mCallback(nullptr), mIsSeparator(true)
+	GUIMenuItem::GUIMenuItem(GUIMenuItem* parent, const WString& name, std::function<void()> callback, INT32 priority, const ShortcutKey& key)
+		:mParent(parent), mName(name), mCallback(callback), mIsSeparator(false), mPriority(priority), mShortcut(key)
+	{
+		if (mCallback != nullptr && mShortcut.isValid())
+			ShortcutManager::instance().addShortcut(mShortcut, mCallback);
+	}
+
+	GUIMenuItem::GUIMenuItem(GUIMenuItem* parent, INT32 priority)
+		: mParent(parent), mCallback(nullptr), mIsSeparator(true), mPriority(priority)
 	{
 
 	}
 
 	GUIMenuItem::~GUIMenuItem()
 	{
+		if (mCallback != nullptr && mShortcut.isValid())
+			ShortcutManager::instance().removeShortcut(mShortcut);
+
 		for(auto& child : mChildren)
 			bs_delete<PoolAlloc>(child);
 	}
@@ -53,7 +63,7 @@ namespace BansheeEngine
 	}
 
 	GUIMenu::GUIMenu()
-		:mRootElement(nullptr, L"", nullptr)
+		:mRootElement(nullptr, L"", nullptr, 0, ShortcutKey::NONE)
 	{
 
 	}
@@ -63,17 +73,18 @@ namespace BansheeEngine
 
 	}
 
-	const GUIMenuItem* GUIMenu::addMenuItem(const WString& path, std::function<void()> callback)
+	const GUIMenuItem* GUIMenu::addMenuItem(const WString& path, std::function<void()> callback, INT32 priority, const ShortcutKey& key)
 	{
-		return addMenuItemInternal(path, callback, false);
+		return addMenuItemInternal(path, callback, false, priority, key);
 	}
 
-	const GUIMenuItem* GUIMenu::addSeparator(const WString& path)
+	const GUIMenuItem* GUIMenu::addSeparator(const WString& path, INT32 priority)
 	{
-		return addMenuItemInternal(path, nullptr, true);
+		return addMenuItemInternal(path, nullptr, true, priority, ShortcutKey::NONE);
 	}
 
-	const GUIMenuItem* GUIMenu::addMenuItemInternal(const WString& path, std::function<void()> callback, bool isSeparator)
+	const GUIMenuItem* GUIMenu::addMenuItemInternal(const WString& path, std::function<void()> callback, bool isSeparator, 
+		INT32 priority, const ShortcutKey& key)
 	{
 		Vector<WString> pathElements = StringUtil::split(path, L"/");
 
@@ -91,13 +102,13 @@ namespace BansheeEngine
 				bool isLastElem = i == (UINT32)(pathElements.size() - 1);
 
 				if(isLastElem)
-					existingItem = bs_new<GUIMenuItem, PoolAlloc>(curSubMenu, pathElem, callback);
+					existingItem = bs_new<GUIMenuItem, PoolAlloc>(curSubMenu, pathElem, callback, priority, key);
 				else
 				{
 					const WString& nextPathElem = *(pathElements.begin() + i);
 
 					existingItem = bs_alloc<GUIMenuItem, PoolAlloc>();
-					existingItem = new (existingItem) GUIMenuItem(curSubMenu, pathElem, nullptr);
+					existingItem = new (existingItem)GUIMenuItem(curSubMenu, pathElem, nullptr, 0, ShortcutKey::NONE);
 				}
 
 				curSubMenu->addChild(existingItem);
@@ -108,7 +119,7 @@ namespace BansheeEngine
 
 		if(isSeparator)
 		{
-			GUIMenuItem* separatorItem = bs_new<GUIMenuItem, PoolAlloc>(curSubMenu);
+			GUIMenuItem* separatorItem = bs_new<GUIMenuItem, PoolAlloc>(curSubMenu, priority);
 			curSubMenu->addChild(separatorItem);
 
 			return separatorItem;
@@ -168,7 +179,7 @@ namespace BansheeEngine
 			{
 				if(menuItem->getNumChildren() == 0)
 				{
-					dropDownData.entries.push_back(GUIDropDownDataEntry::button(menuItem->getName(), menuItem->getCallback()));
+					dropDownData.entries.push_back(GUIDropDownDataEntry::button(menuItem->getName(), menuItem->getCallback(), menuItem->getShortcut().getName()));
 				}
 				else
 				{

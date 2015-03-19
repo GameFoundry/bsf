@@ -92,6 +92,7 @@
     <Compile Include="Inspector\InspectableVector4.cs" />
     <Compile Include="Inspector\Inspector.cs" />
     <Compile Include="Inspector\InspectorWindow.cs" />
+    <Compile Include="MenuItem.cs" />
     <Compile Include="ModalWindow.cs" />
     <Compile Include="ProgressBar.cs" />
     <Compile Include="Scene\SceneCamera.cs" />
@@ -117,6 +118,7 @@
     <Compile Include="Scene\ScaleHandle.cs" />
     <Compile Include="ScriptCompiler.cs" />
     <Compile Include="Selection.cs" />
+    <Compile Include="ShortcutKey.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MBansheeEngine\MBansheeEngine.csproj">

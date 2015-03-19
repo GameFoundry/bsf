@@ -2,9 +2,21 @@
 
 #include "BsPrerequisites.h"
 #include "BsGUIDropDownBox.h"
+#include "BsShortcutKey.h"
 
 namespace BansheeEngine
 {
+	class GUIMenuItem;
+
+	/**
+	 * @brief	Used for comparing GUI menu items in order to determine the order
+	 *			in which they are presented.
+	 */
+	struct GUIMenuItemComparer
+	{
+		bool operator() (const GUIMenuItem* const& a, const GUIMenuItem* const& b);
+	};
+
 	/**
 	 * Holds information about a single element in a GUI menu.
 	 */
@@ -17,21 +29,25 @@ namespace BansheeEngine
 		 * @param	parent		Parent item, if any.
 		 * @param	name		Name of the item to be displayed.
 		 * @param	callback	Callback to be triggered when menu items is selected.
+		 * @param	priority	Priority that determines the order of this element compared to its siblings.
+		 * @param	key			Keyboard shortcut that can be used for triggering the menu item.
 		 */
-		GUIMenuItem(GUIMenuItem* parent, const WString& name, std::function<void()> callback);
+		GUIMenuItem(GUIMenuItem* parent, const WString& name, std::function<void()> callback, 
+			INT32 priority, const ShortcutKey& key);
 
 		/**
 		 * @brief	Constructs a new separator menu item.
 		 *
 		 * @param	parent		Parent item, if any.
+		 * @param	priority	Priority that determines the order of this element compared to its siblings.
 		 */
-		GUIMenuItem(GUIMenuItem* parent);
+		GUIMenuItem(GUIMenuItem* parent, INT32 priority);
 		~GUIMenuItem();
 
 		/**
 		 * @brief	Registers a new child with the item.
 		 */
-		void addChild(GUIMenuItem* child) { mChildren.push_back(child); }
+		void addChild(GUIMenuItem* child) { mChildren.insert(child); }
 
 		/**
 		 * @brief	Returns number of child menu items.
@@ -54,6 +70,11 @@ namespace BansheeEngine
 		std::function<void()> getCallback() const { return mCallback; }
 
 		/**
+		 * @brief	Returns a keyboard shortcut that may be used for triggering the menu item callback.
+		 */
+		const ShortcutKey& getShortcut() const { return mShortcut; }
+
+		/**
 		 * @brief	Checks is the menu item a separator or a normal named menu item.
 		 */
 		bool isSeparator() const { return mIsSeparator; }
@@ -71,6 +92,7 @@ namespace BansheeEngine
 
 	private:
 		friend class GUIMenu;
+		friend struct GUIMenuItemComparer;
 
 		/**
 		 * @copydoc	GUIMenuitem::findChild(const WString& name) const
@@ -81,7 +103,9 @@ namespace BansheeEngine
 		bool mIsSeparator;
 		WString mName;
 		std::function<void()> mCallback;
-		Vector<GUIMenuItem*> mChildren;
+		INT32 mPriority;
+		ShortcutKey mShortcut;
+		Set<GUIMenuItem*, GUIMenuItemComparer> mChildren;
 	};
 
 	/**
@@ -103,25 +127,30 @@ namespace BansheeEngine
 		virtual ~GUIMenu();
 
 		/**
-		 * @brief	Adds a new menu item with the specified callback. Element items are added in order.
+		 * @brief	Adds a new menu item with the specified callback. 
 		 *			
 		 * @param	path		Path that determines where to add the element. See class information on how to specify paths.
 		 *						All sub-elements of a path will be added automatically.
 		 * @param	callback	Callback that triggers when the path element is selected.
+		 * @param	priority	Priority determines the position of the menu item relative to its siblings.
+		 *						Higher priority means it will be placed higher up in the menu.
+		 * @param	key			Keyboard shortcut that can be used for triggering the menu item.
 		 *
 		 * @returns	A menu item object that you may use for removing the menu item later. Its lifetime is managed internally.
 		 */
-		const GUIMenuItem* addMenuItem(const WString& path, std::function<void()> callback);
+		const GUIMenuItem* addMenuItem(const WString& path, std::function<void()> callback, INT32 priority, const ShortcutKey& key = ShortcutKey::NONE);
 
 		/**
-		 * @brief	Adds a new separator menu item with the specified callback. Element items are added in order.
+		 * @brief	Adds a new separator menu item with the specified callback.
 		 *			
 		 * @param	path		Path that determines where to add the element. See class information on how to specify paths.
 		 *						All sub-elements of a path will be added automatically.
+		 * @param	priority	Priority determines the position of the menu item relative to its siblings.
+		 *						Higher priority means it will be placed higher up in the menu.
 		 *
 		 * @returns	A menu item object that you may use for removing the menu item later. Its lifetime is managed internally.
 		 */
-		const GUIMenuItem* addSeparator(const WString& path);
+		const GUIMenuItem* addSeparator(const WString& path, INT32 priority);
 
 		/**
 		 * @brief	Returns a menu item at the specified path, or null if one is not found.
@@ -152,7 +181,8 @@ namespace BansheeEngine
 		/**
 		 * @brief	Adds a menu item at the specified path, as a normal button or as a separator.
 		 */
-		const GUIMenuItem* addMenuItemInternal(const WString& path, std::function<void()> callback, bool isSeparator);
+		const GUIMenuItem* addMenuItemInternal(const WString& path, std::function<void()> callback, bool isSeparator, 
+			INT32 priority, const ShortcutKey& key);
 
 		/**
 		 * @brief	Return drop down data for the specified menu.

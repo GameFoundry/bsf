@@ -292,6 +292,23 @@ namespace BansheeEngine
 		return L"";
 	}
 
+	WString Platform::keyCodeToUnicode(UINT32 keyCode)
+	{
+		static HKL keyboardLayout = GetKeyboardLayout(0);
+		static UINT8 keyboarState[256];
+
+		if (GetKeyboardState(keyboarState) == FALSE)
+			return 0;
+
+		UINT virtualKey = MapVirtualKeyExW(keyCode, 1, keyboardLayout);
+
+		wchar_t output[2];
+		if (ToUnicodeEx(virtualKey, keyCode, keyboarState, output, 2, 0, keyboardLayout))
+			return WString(output, 2);
+
+		return StringUtil::WBLANK;
+	}
+
 	bool Platform::getMACAddress(MACAddress& address)
 	{
 		std::memset(&address, 0, sizeof(address));

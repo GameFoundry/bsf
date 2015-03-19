@@ -18,6 +18,7 @@ namespace BansheeEngine
 		virtual bool isMain() const { return true; }
 
 		DockManager& getDockManager() const { return *mDockManager; }
+		GUIMenuBar& getMenuBar() const { return *mMenuBar; }
 
 		static MainEditorWindow* create(const RenderWindowPtr& renderWindow);
 	protected:

@@ -10,6 +10,7 @@
 #include "BsScriptHandleSliderManager.h"
 #include "BsScriptDragDropManager.h"
 #include "BsScriptProjectLibrary.h"
+#include "BsMenuItemManager.h"
 #include "BsTime.h"
 #include "BsMath.h"
 #include "BsEditorApplication.h"
@@ -30,6 +31,7 @@ namespace BansheeEngine
 		HandleManager::startUp<ScriptHandleManager>(ScriptAssemblyManager::instance());
 		ScriptDragDropManager::startUp();
 		ScriptProjectLibrary::startUp();
+		MenuItemManager::startUp(ScriptAssemblyManager::instance());
 
 		mOnDomainLoadConn = ScriptObjectManager::instance().onRefreshDomainLoaded.connect(std::bind(&EditorScriptManager::loadMonoTypes, this));
 		mOnAssemblyRefreshDoneConn = ScriptObjectManager::instance().onRefreshComplete.connect(std::bind(&EditorScriptManager::onAssemblyRefreshDone, this));
@@ -45,6 +47,7 @@ namespace BansheeEngine
 		mOnDomainLoadConn.disconnect();
 		mOnAssemblyRefreshDoneConn.disconnect();
 
+		MenuItemManager::shutDown();
 		ScriptProjectLibrary::shutDown();
 		ScriptDragDropManager::shutDown();
 		ScriptHandleSliderManager::shutDown();

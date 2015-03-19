@@ -33,6 +33,7 @@ namespace BansheeEngine
 	class VirtualInput;
 	class InputConfiguration;
 	struct DragCallbackInfo;
+	struct ShortcutKey;
 
 	// GUI
 	class GUIManager;

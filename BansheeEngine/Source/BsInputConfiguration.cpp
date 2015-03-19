@@ -9,10 +9,10 @@ namespace BansheeEngine
 	UINT32 VirtualAxis::NextAxisId = 0;
 
 	VIRTUAL_BUTTON_DESC::VIRTUAL_BUTTON_DESC()
-		:buttonCode(BC_0), modifiers(VButtonModifier::None), repeatable(false)
+		:buttonCode(BC_0), modifiers(ButtonModifier::None), repeatable(false)
 	{ }
 
-	VIRTUAL_BUTTON_DESC::VIRTUAL_BUTTON_DESC(ButtonCode buttonCode, VButtonModifier modifiers, bool repeatable)
+	VIRTUAL_BUTTON_DESC::VIRTUAL_BUTTON_DESC(ButtonCode buttonCode, ButtonModifier modifiers, bool repeatable)
 		:buttonCode(buttonCode), modifiers(modifiers), repeatable(repeatable)
 	{ }
 
@@ -62,7 +62,7 @@ namespace BansheeEngine
 		:mRepeatInterval(300)
 	{ }
 
-	void InputConfiguration::registerButton(const String& name, ButtonCode buttonCode, VButtonModifier modifiers, bool repeatable)
+	void InputConfiguration::registerButton(const String& name, ButtonCode buttonCode, ButtonModifier modifiers, bool repeatable)
 	{
 		Vector<VirtualButtonData>& btnData = mButtons[buttonCode & 0x0000FFFF];
 

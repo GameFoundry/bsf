@@ -6,21 +6,6 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Modifiers used with virtual buttons.
-	 */
-	enum class VButtonModifier
-	{
-		None = 0x00,
-		Shift = 0x01,
-		Ctrl = 0x02,
-		Alt = 0x04,
-		ShiftCtrl = 0x03,
-		CtrlAlt = 0x06,
-		ShiftAlt = 0x05,
-		ShiftCtrlAlt = 0x07
-	};
-
-	/**
 	 * @brief	Describes a virtual button. Virtual buttons allow you to
 	 *			map custom actions without needing to know about what 
 	 *			physical buttons trigger those actions.
@@ -36,10 +21,10 @@ namespace BansheeEngine
 		 * @param	modifiers	Modifiers required to be pressed with the physical button to trigger the virtual button.
 		 * @param	repeatable	If true, the virtual button events will be sent continually while the physical button is being held.
 		 */
-		VIRTUAL_BUTTON_DESC(ButtonCode buttonCode, VButtonModifier modifiers = VButtonModifier::None, bool repeatable = false);
+		VIRTUAL_BUTTON_DESC(ButtonCode buttonCode, ButtonModifier modifiers = ButtonModifier::None, bool repeatable = false);
 
 		ButtonCode buttonCode;
-		VButtonModifier modifiers;
+		ButtonModifier modifiers;
 		bool repeatable;
 	};
 
@@ -172,7 +157,7 @@ namespace BansheeEngine
 		 * @param	modifiers	Modifiers required to be pressed with the physical button to trigger the virtual button.
 		 * @param	repeatable	If true, the virtual button events will be sent continually while the physical button is being held.
 		 */
-		void registerButton(const String& name, ButtonCode buttonCode, VButtonModifier modifiers = VButtonModifier::None, bool repeatable = false);
+		void registerButton(const String& name, ButtonCode buttonCode, ButtonModifier modifiers = ButtonModifier::None, bool repeatable = false);
 
 		/**
 		 * @brief	Unregisters a virtual button with the specified name. Events will no longer be generated for that button.

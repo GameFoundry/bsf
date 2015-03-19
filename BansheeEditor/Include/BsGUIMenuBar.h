@@ -1,10 +1,11 @@
 #pragma once
 
 #include "BsEditorPrerequisites.h"
+#include "BsShortcutKey.h"
 
 namespace BansheeEngine
 {
-	class GUIMenuBar
+	class BS_ED_EXPORT GUIMenuBar
 	{
 		struct GUIMenuBarData
 		{
@@ -19,8 +20,8 @@ namespace BansheeEngine
 
 		void setArea(INT32 x, INT32 y, UINT32 width, UINT32 height);
 
-		const GUIMenuItem* addMenuItem(const WString& path, std::function<void()> callback);
-		const GUIMenuItem* addSeparator(const WString& path);
+		const GUIMenuItem* addMenuItem(const WString& path, std::function<void()> callback, INT32 priority = 0, const ShortcutKey& shortcut = ShortcutKey::NONE);
+		const GUIMenuItem* addSeparator(const WString& path, INT32 priority = 0);
 		const GUIMenuItem* getMenuItem(const WString& path) const;
 		void removeMenuItem(const WString& path);
 	private:

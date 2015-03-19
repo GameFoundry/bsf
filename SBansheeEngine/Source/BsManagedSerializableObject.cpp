@@ -165,7 +165,7 @@ namespace BansheeEngine
 	{
 		MonoObject* fieldValue = fieldInfo->mMonoField->getValueBoxed(mManagedInstance);
 
-		return ManagedSerializableFieldData::create(fieldInfo->mTypeInfo, fieldValue);		
+		return ManagedSerializableFieldData::create(fieldInfo->mTypeInfo, fieldValue);
 	}
 
 	void ManagedSerializableObject::setObjectData(const ManagedSerializableObjectDataPtr& objectData, const ManagedSerializableObjectInfoPtr& originalEntriesType)

@@ -1,8 +1,11 @@
 #include "BsGUIDropDownBox.h"
 #include "BsGUIArea.h"
 #include "BsGUILayout.h"
+#include "BsGUILayoutX.h"
 #include "BsGUITexture.h"
+#include "BsGUILabel.h"
 #include "BsGUIButton.h"
+#include "BsGUISpace.h"
 #include "BsGUIContent.h"
 #include "BsGUISkin.h"
 #include "BsViewport.h"
@@ -13,7 +16,7 @@
 
 namespace BansheeEngine
 {
-	const UINT32 GUIDropDownBox::DROP_DOWN_BOX_WIDTH = 150;
+	const UINT32 GUIDropDownBox::DROP_DOWN_BOX_WIDTH = 250;
 
 	GUIDropDownDataEntry GUIDropDownDataEntry::separator()
 	{
@@ -24,12 +27,13 @@ namespace BansheeEngine
 		return data;
 	}
 
-	GUIDropDownDataEntry GUIDropDownDataEntry::button(const WString& label, std::function<void()> callback)
+	GUIDropDownDataEntry GUIDropDownDataEntry::button(const WString& label, std::function<void()> callback, const WString& shortcutTag)
 	{
 		GUIDropDownDataEntry data;
 		data.mLabel = label;
 		data.mType = Type::Entry;
 		data.mCallback = callback;
+		data.mShortcutTag = shortcutTag;
 
 		return data;
 	}
@@ -291,8 +295,13 @@ namespace BansheeEngine
 		for(auto& elem : mCachedSeparators)
 			GUIElement::destroy(elem);
 
-		for(auto& elem : mCachedEntryBtns)
-			GUIElement::destroy(elem);
+		for (auto& entryData : mCachedEntryBtns)
+		{
+			GUIElement::destroy(entryData.button);
+
+			if (entryData.shortcutLabel != nullptr)
+				GUIElement::destroy(entryData.shortcutLabel);
+		}
 
 		for(auto& elem : mCachedExpEntryBtns)
 			GUIElement::destroy(elem);
@@ -389,7 +398,7 @@ namespace BansheeEngine
 		}
 
 		Vector<GUITexture*> newSeparators;
-		Vector<GUIButton*> newEntryBtns;
+		Vector<EntryElementGUI> newEntryBtns;
 		Vector<GUIButton*> newExpEntryBtns;
 		for(UINT32 i = pageStart; i < pageEnd; i++)
 		{
@@ -431,9 +440,12 @@ namespace BansheeEngine
 			else
 			{
 				GUIButton* entryBtn = nullptr;
+				GUILabel* shortcutLabel = nullptr;
 				if(!mCachedEntryBtns.empty())
 				{
-					entryBtn = mCachedEntryBtns.back();
+					entryBtn = mCachedEntryBtns.back().button;
+					shortcutLabel = mCachedEntryBtns.back().shortcutLabel;
+
 					mCachedEntryBtns.erase(mCachedEntryBtns.end() - 1);
 				}
 				else
@@ -443,8 +455,36 @@ namespace BansheeEngine
 					entryBtn->onClick.connect(std::bind(&DropDownSubMenu::elementClicked, this,  i));
 				}
 
-				mContentLayout->addElement(entryBtn);
-				newEntryBtns.push_back(entryBtn);
+				const WString& shortcutTag = element.getShortcutTag();
+				if (!shortcutTag.empty())
+				{
+					if (shortcutLabel == nullptr)
+						shortcutLabel = GUILabel::create(HString(shortcutTag));
+					else
+						shortcutLabel->setContent(GUIContent(HString(shortcutTag)));
+				}
+				else
+				{
+					if (shortcutLabel != nullptr)
+						GUIElement::destroy(shortcutLabel);
+
+					shortcutLabel = nullptr;
+				}
+				
+				EntryElementGUI entryElemGUI;
+
+				GUILayout& entryLayout = mContentLayout->addLayoutX();
+				entryLayout.addElement(entryBtn);
+				entryElemGUI.button = entryBtn;
+				entryElemGUI.shortcutLabel = shortcutLabel;
+
+				if (shortcutLabel != nullptr)
+				{
+					entryLayout.addFlexibleSpace();
+					entryLayout.addElement(shortcutLabel);
+				}
+
+				newEntryBtns.push_back(entryElemGUI);
 			}
 		}
 
@@ -452,8 +492,13 @@ namespace BansheeEngine
 		for(auto& elem : mCachedSeparators)
 			GUIElement::destroy(elem);
 
-		for(auto& elem : mCachedEntryBtns)
-			GUIElement::destroy(elem);
+		for (auto& entryData : mCachedEntryBtns)
+		{
+			GUIElement::destroy(entryData.button);
+
+			if (entryData.shortcutLabel != nullptr)
+				GUIElement::destroy(entryData.shortcutLabel);
+		}
 
 		for(auto& elem : mCachedExpEntryBtns)
 			GUIElement::destroy(elem);

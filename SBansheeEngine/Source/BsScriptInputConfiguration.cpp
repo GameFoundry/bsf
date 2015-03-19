@@ -54,7 +54,7 @@ namespace BansheeEngine
 	}
 
 	void ScriptInputConfiguration::internal_RegisterButton(ScriptInputConfiguration* thisPtr, MonoString* name, ButtonCode buttonCode,
-		VButtonModifier modifiers, bool repeatable)
+		ButtonModifier modifiers, bool repeatable)
 	{
 		String nameStr = MonoUtil::monoToString(name);
 

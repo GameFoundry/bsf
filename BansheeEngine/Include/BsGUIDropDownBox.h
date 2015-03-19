@@ -38,7 +38,7 @@ namespace BansheeEngine
 		 * @brief	Creates a new button entry with the specified callback that is triggered
 		 *			when button is selected.
 		 */
-		static GUIDropDownDataEntry button(const WString& label, std::function<void()> callback);
+		static GUIDropDownDataEntry button(const WString& label, std::function<void()> callback, const WString& shortcutTag = StringUtil::WBLANK);
 
 		/**
 		 * @brief	Creates a new sub-menu entry that will open the provided drop down data
@@ -62,6 +62,11 @@ namespace BansheeEngine
 		const WString& getLabel() const { return mLabel; }
 
 		/**
+		 * @brief	Returns the shortcut key combination string that is to be displayed along the entry label.
+		 */
+		const WString& getShortcutTag() const { return mShortcutTag; }
+
+		/**
 		 * @brief	Returns a button callback if the entry (if an entry is a button).
 		 */
 		std::function<void()> getCallback() const { return mCallback; }
@@ -76,6 +81,7 @@ namespace BansheeEngine
 		std::function<void()> mCallback;
 		GUIDropDownData mChildData;
 		WString mLabel;
+		WString mShortcutTag;
 		Type mType; 
 	};
 
@@ -183,6 +189,15 @@ namespace BansheeEngine
 		 */
 		struct DropDownSubMenu
 		{
+			/**
+			 * @brief	Contains various GUI elements used for displaying a single menu entry.
+			 */
+			struct EntryElementGUI
+			{
+				GUIButton* button;
+				GUILabel* shortcutLabel;
+			};
+
 		public:
 			/**
 			 * @brief	Creates a new drop down box sub-menu
@@ -259,7 +274,7 @@ namespace BansheeEngine
 			bool mOpenedUpward;
 
 			Vector<GUITexture*> mCachedSeparators;
-			Vector<GUIButton*> mCachedEntryBtns;
+			Vector<EntryElementGUI> mCachedEntryBtns;
 			Vector<GUIButton*> mCachedExpEntryBtns;
 			GUIButton* mScrollUpBtn;
 			GUIButton* mScrollDownBtn;

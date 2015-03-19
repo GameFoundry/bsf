@@ -406,4 +406,19 @@ namespace BansheeEngine
 		RightTrigger, /**< Gamepad right trigger */
 		Count // Keep at end
 	};
+
+	/**
+	 * @brief	Modifiers used with along with keyboard buttons.
+	 */
+	enum class ButtonModifier
+	{
+		None = 0x00,
+		Shift = 0x01,
+		Ctrl = 0x02,
+		Alt = 0x04,
+		ShiftCtrl = 0x03,
+		CtrlAlt = 0x06,
+		ShiftAlt = 0x05,
+		ShiftCtrlAlt = 0x07
+	};
 }

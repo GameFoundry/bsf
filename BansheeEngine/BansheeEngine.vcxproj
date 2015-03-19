@@ -250,6 +250,8 @@
     <ClCompile Include="Source\BsScriptCode.cpp" />
     <ClCompile Include="Source\BsScriptCodeImporter.cpp" />
     <ClCompile Include="Source\BsScriptCodeImportOptions.cpp" />
+    <ClCompile Include="Source\BsShortcutKey.cpp" />
+    <ClCompile Include="Source\BsShortcutManager.cpp" />
     <ClCompile Include="Source\BsVirtualInput.cpp" />
     <ClInclude Include="Include\BsApplication.h" />
     <ClInclude Include="Include\BsCameraHandler.h" />
@@ -332,6 +334,8 @@
     <ClInclude Include="Include\BsSceneManager.h" />
     <ClInclude Include="Include\BsGUIScrollArea.h" />
     <ClInclude Include="Include\BsScriptManager.h" />
+    <ClInclude Include="Include\BsShortcutKey.h" />
+    <ClInclude Include="Include\BsShortcutManager.h" />
     <ClInclude Include="Include\BsSpriteTextureRTTI.h" />
     <ClInclude Include="Include\BsSprite.h" />
     <ClInclude Include="Include\BsSpriteTexture.h" />

@@ -236,6 +236,7 @@
     <ClInclude Include="Include\BsGUIGameObjectField.h" />
     <ClInclude Include="Include\BsGUIPanelContainer.h" />
     <ClInclude Include="Include\BsGUIResourceField.h" />
+    <ClInclude Include="Include\BsMenuItemManager.h" />
     <ClInclude Include="Include\BsScriptBrowseDialog.h" />
     <ClInclude Include="Include\BsScriptBuildManager.h" />
     <ClInclude Include="Include\BsScriptCodeEditor.h" />
@@ -275,6 +276,7 @@
     <ClInclude Include="Include\BsScriptSelection.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\BsMenuItemManager.cpp" />
     <ClCompile Include="Source\BsScriptBuildManager.cpp" />
     <ClCompile Include="Source\BsScriptCodeEditor.cpp" />
     <ClCompile Include="Source\BsScriptDragDropManager.cpp" />

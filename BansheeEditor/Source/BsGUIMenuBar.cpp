@@ -85,7 +85,8 @@ namespace BansheeEngine
 		refreshNonClientAreas();
 	}
 
-	const GUIMenuItem* GUIMenuBar::addMenuItem(const WString& path, std::function<void()> callback)
+	const GUIMenuItem* GUIMenuBar::addMenuItem(const WString& path, std::function<void()> callback, 
+		INT32 priority, const ShortcutKey& shortcut)
 	{
 		WString strippedPath = path;
 		WString rootName;
@@ -101,10 +102,10 @@ namespace BansheeEngine
 			refreshNonClientAreas();
 		}
 
-		return subMenu->menu->addMenuItem(strippedPath, callback);
+		return subMenu->menu->addMenuItem(strippedPath, callback, priority, shortcut);
 	}
 
-	const GUIMenuItem* GUIMenuBar::addSeparator(const WString& path)
+	const GUIMenuItem* GUIMenuBar::addSeparator(const WString& path, INT32 priority)
 	{
 		WString strippedPath = path;
 		WString rootName;
@@ -120,7 +121,7 @@ namespace BansheeEngine
 			refreshNonClientAreas();
 		}
 
-		return subMenu->menu->addSeparator(strippedPath);
+		return subMenu->menu->addSeparator(strippedPath, priority);
 	}
 
 	GUIMenuBar::GUIMenuBarData* GUIMenuBar::addNewButton(const WString& name)

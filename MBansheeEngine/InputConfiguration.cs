@@ -28,7 +28,7 @@ namespace BansheeEngine
         }
 
         public void RegisterButton(String name, ButtonCode buttonCode, 
-            VButtonModifier modifiers = VButtonModifier.None, bool repeatable = false)
+            ButtonModifier modifiers = ButtonModifier.None, bool repeatable = false)
         {
             Internal_RegisterButton(mCachedPtr, name, buttonCode, modifiers, repeatable);
         }
@@ -54,7 +54,7 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_RegisterButton(IntPtr thisPtr, String name, ButtonCode buttonCode,
-            VButtonModifier modifiers, bool repeatable);
+            ButtonModifier modifiers, bool repeatable);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_UnregisterButton(IntPtr thisPtr, String name);
@@ -74,7 +74,7 @@ namespace BansheeEngine
     }
 
     // Do not modify IDs, they must match the C++ enum VButtonModifier
-    public enum VButtonModifier
+    public enum ButtonModifier
     {
         None = 0x00,
         Shift = 0x01,

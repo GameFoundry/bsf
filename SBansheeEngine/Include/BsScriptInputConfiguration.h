@@ -20,7 +20,7 @@ namespace BansheeEngine
 		static void internal_CreateInstance(MonoObject* object);
 
 		static void internal_RegisterButton(ScriptInputConfiguration* thisPtr, MonoString* name, ButtonCode buttonCode,
-			VButtonModifier modifiers, bool repeatable);
+			ButtonModifier modifiers, bool repeatable);
 		static void internal_UnregisterButton(ScriptInputConfiguration* thisPtr, MonoString* name);
 
 		static void internal_RegisterAxis(ScriptInputConfiguration* thisPtr, MonoString* name, InputAxis type, float deadZone,

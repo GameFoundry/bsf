@@ -8,7 +8,7 @@ using namespace std::placeholders;
 namespace BansheeEngine
 {
 	VirtualInput::VirtualInput()
-		:mActiveModifiers((UINT32)VButtonModifier::None)
+		:mActiveModifiers((UINT32)ButtonModifier::None)
 	{
 		mInputConfiguration = createConfiguration();
 
@@ -174,11 +174,11 @@ namespace BansheeEngine
 	void VirtualInput::buttonDown(const ButtonEvent& event)
 	{
 		if(event.buttonCode == BC_LSHIFT || event.buttonCode == BC_RSHIFT)
-			mActiveModifiers |= (UINT32)VButtonModifier::Shift;
+			mActiveModifiers |= (UINT32)ButtonModifier::Shift;
 		else if(event.buttonCode == BC_LCONTROL || event.buttonCode == BC_RCONTROL)
-			mActiveModifiers |= (UINT32)VButtonModifier::Ctrl;
+			mActiveModifiers |= (UINT32)ButtonModifier::Ctrl;
 		else if(event.buttonCode == BC_LMENU || event.buttonCode == BC_RMENU)
-			mActiveModifiers |= (UINT32)VButtonModifier::Alt;
+			mActiveModifiers |= (UINT32)ButtonModifier::Alt;
 		else
 		{
 			VirtualButton btn;
@@ -209,11 +209,11 @@ namespace BansheeEngine
 	void VirtualInput::buttonUp(const ButtonEvent& event)
 	{
 		if(event.buttonCode == BC_LSHIFT || event.buttonCode == BC_RSHIFT)
-			mActiveModifiers &= ~(UINT32)VButtonModifier::Shift;
+			mActiveModifiers &= ~(UINT32)ButtonModifier::Shift;
 		else if(event.buttonCode == BC_LCONTROL || event.buttonCode == BC_RCONTROL)
-			mActiveModifiers &= ~(UINT32)VButtonModifier::Ctrl;
+			mActiveModifiers &= ~(UINT32)ButtonModifier::Ctrl;
 		else if(event.buttonCode == BC_LMENU || event.buttonCode == BC_RMENU)
-			mActiveModifiers &= ~(UINT32)VButtonModifier::Alt;
+			mActiveModifiers &= ~(UINT32)ButtonModifier::Alt;
 		else
 		{
 			VirtualButton btn;
