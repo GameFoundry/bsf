@@ -119,14 +119,19 @@ namespace BansheeEngine
             return Internal_IsPointerButtonHeld(code);
         }
 
-        public static bool IsPointerButtonUp(PointerButton code, int deviceIdx)
+        public static bool IsPointerButtonUp(PointerButton code)
         {
             return Internal_IsPointerButtonUp(code);
         }
 
-        public static bool IsPointerButtonDown(PointerButton code, int deviceIdx)
+        public static bool IsPointerButtonDown(PointerButton code)
         {
             return Internal_IsPointerButtonDown(code);
+        }
+
+        public static bool IsPointerDoubleClicked()
+        {
+            return Internal_IsPointerDoubleClicked();
         }
 
         public static Vector2I PointerPosition
@@ -220,6 +225,9 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool Internal_IsButtonDown(ButtonCode keyCode, int deviceIdx);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_IsPointerDoubleClicked();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool Internal_IsPointerButtonHeld(PointerButton keyCode);

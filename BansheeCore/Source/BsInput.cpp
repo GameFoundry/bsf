@@ -19,7 +19,7 @@ namespace BansheeEngine
 	}
 
 	Input::Input()
-		:mLastPositionSet(false)
+		:mLastPositionSet(false), mPointerDoubleClicked(false)
 	{ 
 		mOSInputHandler = bs_shared_ptr<OSInputHandler>();
 
@@ -80,6 +80,7 @@ namespace BansheeEngine
 		}
 
 		mPointerDelta = Vector2I::ZERO; // Reset delta in case we don't receive any mouse input this frame
+		mPointerDoubleClicked = false;
 
 		if(mRawInputHandler == nullptr)
 		{
@@ -185,6 +186,8 @@ namespace BansheeEngine
 
 	void Input::cursorDoubleClick(const PointerEvent& event)
 	{
+		mPointerDoubleClicked = true;
+
 		if(!onPointerDoubleClick.empty())
 			onPointerDoubleClick(event);
 	}
@@ -257,6 +260,11 @@ namespace BansheeEngine
 	bool Input::isPointerButtonDown(PointerEventButton pointerButton) const
 	{
 		return mPointerButtonStates[(UINT32)pointerButton] == ButtonState::ToggledOn;
+	}
+
+	bool Input::isPointerDoubleClicked() const
+	{
+		return mPointerDoubleClicked;
 	}
 
 	Vector2I Input::getPointerPosition() const

@@ -92,12 +92,8 @@ Simple stuff
 C#:
 Dialog.Show(title, text, btn1 text, btn1 callback, btn2 text, btn2 callback, btn3 text, btn3 callback)
 
-ColorPicker
- - Sliders don't show up
-
 Other simple stuff:
  - Inject an icon into an .exe (Win32 specific)
- - Use Mono compiler to compile the C# scripts
  - C# wrapper for GUISkin (and a way to assign the current skin to a window)
  - Need to add IsPointerDoubleClicked to Input (C++ and C#)
  - A way to add menu items from C#

@@ -167,6 +167,12 @@ namespace BansheeEngine
 		bool isPointerButtonDown(PointerEventButton pointerButton) const;
 
 		/**
+		 * @brief	Query if the provided the left pointer button has been 
+		 *			double-clicked this frame.
+		 */
+		bool isPointerDoubleClicked() const;
+
+		/**
 		 * @brief	Enables or disables mouse smoothing. Smoothing makes the changes to
 		 *			mouse axes more gradual.
 		 */
@@ -231,6 +237,7 @@ namespace BansheeEngine
 		Vector2I mPointerPosition;
 		Vector2I mPointerDelta;
 		ButtonState mPointerButtonStates[3];
+		bool mPointerDoubleClicked;
 		bool mLastPositionSet;
 
 		/************************************************************************/
