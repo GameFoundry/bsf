@@ -189,20 +189,12 @@ namespace BansheeEngine
 		 */
 		struct DropDownSubMenu
 		{
-			/**
-			 * @brief	Contains various GUI elements used for displaying a single menu entry.
-			 */
-			struct EntryElementGUI
-			{
-				GUIButton* button;
-				GUILabel* shortcutLabel;
-			};
-
 		public:
 			/**
 			 * @brief	Creates a new drop down box sub-menu
 			 *
 			 * @param	owner			Owner drop down box this sub menu belongs to.
+			 * @param	parent			Parent sub-menu. Can be null.
 			 * @param	placement		Determines how is the sub-menu positioned in the visible area.
 			 * @param	availableBounds	Available bounds (in pixels) in which the sub-menu may be opened.
 			 * @param	dropDownData	Data to use for initializing menu items of the sub-menu.
@@ -211,7 +203,7 @@ namespace BansheeEngine
 			 *							sub-menu hierarchy to be in front of lower levels, so you should
 			 *							increase this value for each level of the sub-menu hierarchy.
 			 */
-			DropDownSubMenu(GUIDropDownBox* owner, const GUIDropDownAreaPlacement& placement, 
+			DropDownSubMenu(GUIDropDownBox* owner, DropDownSubMenu* parent, const GUIDropDownAreaPlacement& placement, 
 				const Rect2I& availableBounds, const GUIDropDownData& dropDownData, GUIDropDownType type, UINT32 depthOffset);
 			~DropDownSubMenu();
 
@@ -231,19 +223,18 @@ namespace BansheeEngine
 			void scrollUp();
 
 			/**
-			 * @brief	Returns height of a menu element at the specified index, in pixels.
+			 * @brief	Called when the user activates an element with the specified index.
 			 */
-			UINT32 getElementHeight(UINT32 idx) const;
+			void elementActivated(UINT32 idx);
 
 			/**
-			 * @brief	Called when the user clicks an element with the specified index.
+			 * @brief	Called when the user selects an element with the specified index.
+			 * 
+			 * @param	idx		Index of the element that was selected.
+			 * @param	bounds	Bounds of the GUI element that is used as a visual representation 
+			 *					of this drop down element.
 			 */
-			void elementClicked(UINT32 idx);
-
-			/**
-			 * @brief	Called when the user wants to open a sub-menu with the specified index.
-			 */
-			void openSubMenu(GUIButton* source, UINT32 elementIdx);
+			void elementSelected(UINT32 idx, const Rect2I& bounds);
 
 			/**
 			 * @brief	Called when the user wants to close the currently open sub-menu.
@@ -251,14 +242,14 @@ namespace BansheeEngine
 			void closeSubMenu();
 
 			/**
+			 * @brief	Closes this sub-menu.
+			 */
+			void close();
+
+			/**
 			 * @brief	Returns actual visible bounds of the sub-menu.
 			 */
 			Rect2I getVisibleBounds() const { return mVisibleBounds; }
-
-			/**
-			 * @brief	Get localized name of a menu item element with the specified index.
-			 */
-			HString getElementLocalizedName(UINT32 idx) const;
 
 		public:
 			GUIDropDownBox* mOwner;
@@ -273,21 +264,22 @@ namespace BansheeEngine
 			UINT32 mDepthOffset;
 			bool mOpenedUpward;
 
-			Vector<GUITexture*> mCachedSeparators;
-			Vector<EntryElementGUI> mCachedEntryBtns;
-			Vector<GUIButton*> mCachedExpEntryBtns;
 			GUIButton* mScrollUpBtn;
 			GUIButton* mScrollDownBtn;
+			GUIDropDownContent* mContent;
 			GUITexture* mBackgroundFrame;
 
 			GUIArea* mBackgroundArea;
 			GUIArea* mContentArea;
 			GUILayout* mContentLayout;
 
+			DropDownSubMenu* mParent;
 			DropDownSubMenu* mSubMenu;
 		};
 
 	private:
+		friend class GUIDropDownContent;
+
 		/**
 		 * @brief	Called when the specified sub-menu is opened.
 		 */
@@ -308,10 +300,8 @@ namespace BansheeEngine
 
 		String mScrollUpStyle;
 		String mScrollDownStyle;
-		String mEntryBtnStyle;
-		String mEntryExpBtnStyle;
-		String mSeparatorStyle;
 		String mBackgroundStyle;
+		String mContentStyle;
 		HSpriteTexture mScrollUpBtnArrow;
 		HSpriteTexture mScrollDownBtnArrow;
 
@@ -321,8 +311,5 @@ namespace BansheeEngine
 		// (Particular example is clicking on the button that opened the drop down box in the first place. Clicking will cause
 		// the drop down to lose focus and close, but if the button still processes the mouse click it will be immediately opened again)
 		GUIDropDownHitBox* mCaptureHitBox; 
-
-		UnorderedMap<WString, HString> mLocalizedEntryNames;
-
 	};
 }

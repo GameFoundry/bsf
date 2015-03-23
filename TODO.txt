@@ -23,8 +23,9 @@ MenuItem
 
 TEST the new MenuItem (C#) and menu shortcut GUI, and menu shortcut functionality
 
-While I'm dealing with menus also add support for keyboard navigation (this also includes GUIList)
- - arrows for navigation, enter to confirm, esc to close
+When closing a sub-menu I think I need to call "GUIDropDownBoxManager::instance().closeDropDownBox();" at some point (i.e. when last sub-menu is closed?).
+ - Also when a submenu is closed or opened I should set some kind of focus on it, so it knows to accept/reject keyboard input
+ - "Esc" should move back one sub-menu instead of closing all of it
 
 ----------------------------------------------------------------------
 VisualStudio integration

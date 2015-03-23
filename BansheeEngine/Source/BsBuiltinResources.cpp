@@ -5,6 +5,7 @@
 #include "BsGUIButton.h"
 #include "BsGUIInputBox.h"
 #include "BsGUIToggle.h"
+#include "BsGUIDropDownContent.h"
 #include "BsTextSprite.h"
 #include "BsSpriteTexture.h"
 
@@ -536,6 +537,9 @@ namespace BansheeEngine
 		dropDownEntryBtnStyle.normal.texture = getSkinTexture(DropDownBoxEntryNormalTex);
 		dropDownEntryBtnStyle.hover.texture = getSkinTexture(DropDownBoxEntryHoverTex);
 		dropDownEntryBtnStyle.active.texture = dropDownEntryBtnStyle.hover.texture;
+		dropDownEntryBtnStyle.normalOn.texture = dropDownEntryBtnStyle.hover.texture;
+		dropDownEntryBtnStyle.hoverOn.texture = dropDownEntryBtnStyle.hover.texture;
+		dropDownEntryBtnStyle.activeOn.texture = dropDownEntryBtnStyle.hover.texture;
 		dropDownEntryBtnStyle.fixedHeight = true;
 		dropDownEntryBtnStyle.fixedWidth = false;
 		dropDownEntryBtnStyle.height = 14;
@@ -549,15 +553,16 @@ namespace BansheeEngine
 		dropDownEntryBtnStyle.textHorzAlign = THA_Left;
 		dropDownEntryBtnStyle.textVertAlign = TVA_Top;
 
-		mSkin.setStyle("ListBoxEntryBtn", dropDownEntryBtnStyle);
-		mSkin.setStyle("MenuBarEntryBtn", dropDownEntryBtnStyle);
-		mSkin.setStyle("ContextMenuEntryBtn", dropDownEntryBtnStyle);
+		mSkin.setStyle(GUIDropDownContent::ENTRY_STYLE_TYPE, dropDownEntryBtnStyle);
 
 		// DropDown entry button with expand
 		GUIElementStyle dropDownEntryExpBtnStyle;
 		dropDownEntryExpBtnStyle.normal.texture = getSkinTexture(DropDownBoxEntryExpNormalTex);
 		dropDownEntryExpBtnStyle.hover.texture = getSkinTexture(DropDownBoxEntryExpHoverTex);
 		dropDownEntryExpBtnStyle.active.texture = dropDownEntryExpBtnStyle.hover.texture;
+		dropDownEntryExpBtnStyle.normalOn.texture = dropDownEntryExpBtnStyle.hover.texture;
+		dropDownEntryExpBtnStyle.hoverOn.texture = dropDownEntryExpBtnStyle.hover.texture;
+		dropDownEntryExpBtnStyle.activeOn.texture = dropDownEntryExpBtnStyle.hover.texture;
 		dropDownEntryExpBtnStyle.fixedHeight = true;
 		dropDownEntryExpBtnStyle.fixedWidth = false;
 		dropDownEntryExpBtnStyle.height = 14;
@@ -571,9 +576,33 @@ namespace BansheeEngine
 		dropDownEntryExpBtnStyle.textHorzAlign = THA_Left;
 		dropDownEntryExpBtnStyle.textVertAlign = TVA_Top;
 
-		mSkin.setStyle("ListBoxEntryExpBtn", dropDownEntryExpBtnStyle);
-		mSkin.setStyle("MenuBarEntryExpBtn", dropDownEntryExpBtnStyle);
-		mSkin.setStyle("ContextMenuEntryExpBtn", dropDownEntryExpBtnStyle);
+		mSkin.setStyle(GUIDropDownContent::ENTRY_EXP_STYLE_TYPE, dropDownEntryExpBtnStyle);
+
+		// Drop down separator
+		GUIElementStyle dropDownSeparatorStyle;
+		dropDownSeparatorStyle.normal.texture = getSkinTexture(DropDownSeparatorTex);
+		dropDownSeparatorStyle.fixedHeight = true;
+		dropDownSeparatorStyle.fixedWidth = false;
+		dropDownSeparatorStyle.height = 3;
+		dropDownSeparatorStyle.width = 30;
+		dropDownSeparatorStyle.border.left = 1;
+		dropDownSeparatorStyle.border.right = 1;
+		dropDownSeparatorStyle.border.top = 1;
+		dropDownSeparatorStyle.border.bottom = 1;
+
+		mSkin.setStyle(GUIDropDownContent::SEPARATOR_STYLE_TYPE, dropDownSeparatorStyle);
+
+		// Drop down content
+		GUIElementStyle dropDownContentStyle;
+		dropDownContentStyle.minWidth = 50;
+		dropDownContentStyle.minHeight = 20;
+		dropDownContentStyle.subStyles[GUIDropDownContent::ENTRY_STYLE_TYPE] = GUIDropDownContent::ENTRY_STYLE_TYPE;
+		dropDownContentStyle.subStyles[GUIDropDownContent::ENTRY_EXP_STYLE_TYPE] = GUIDropDownContent::ENTRY_EXP_STYLE_TYPE;
+		dropDownContentStyle.subStyles[GUIDropDownContent::SEPARATOR_STYLE_TYPE] = GUIDropDownContent::SEPARATOR_STYLE_TYPE;
+
+		mSkin.setStyle("ListBoxContent", dropDownContentStyle);
+		mSkin.setStyle("MenuBarContent", dropDownContentStyle);
+		mSkin.setStyle("ContextMenuContent", dropDownContentStyle);
 
 		// DropDown box frame
 		GUIElementStyle dropDownBoxStyle;
@@ -595,21 +624,21 @@ namespace BansheeEngine
 		mSkin.setStyle("MenuBarFrame", dropDownBoxStyle);
 		mSkin.setStyle("ContextMenuFrame", dropDownBoxStyle);
 
-		// Drop down separator
-		GUIElementStyle dropDownSeparatorStyle;
-		dropDownSeparatorStyle.normal.texture = getSkinTexture(DropDownSeparatorTex);
-		dropDownSeparatorStyle.fixedHeight = true;
-		dropDownSeparatorStyle.fixedWidth = false;
-		dropDownSeparatorStyle.height = 3;
-		dropDownSeparatorStyle.width = 30;
-		dropDownSeparatorStyle.border.left = 1;
-		dropDownSeparatorStyle.border.right = 1;
-		dropDownSeparatorStyle.border.top = 1;
-		dropDownSeparatorStyle.border.bottom = 1;
+		/************************************************************************/
+		/* 									OTHER                      			*/
+		/************************************************************************/
 
-		mSkin.setStyle("ListBoxSeparator", dropDownSeparatorStyle);
-		mSkin.setStyle("MenuBarSeparator", dropDownSeparatorStyle);
-		mSkin.setStyle("ContextMenuSeparator", dropDownSeparatorStyle);
+		// Right-aligned label
+		GUIElementStyle rightAlignedLabelStyle;
+		rightAlignedLabelStyle.font = font;
+		rightAlignedLabelStyle.fontSize = DefaultFontSize;
+		rightAlignedLabelStyle.fixedWidth = false;
+		rightAlignedLabelStyle.fixedHeight = true;
+		rightAlignedLabelStyle.height = 11;
+		rightAlignedLabelStyle.minWidth = 10;
+		rightAlignedLabelStyle.textHorzAlign = THA_Right;
+
+		mSkin.setStyle("RightAlignedLabel", rightAlignedLabelStyle);
 	}
 
 	void BuiltinResources::preprocess()

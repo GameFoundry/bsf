@@ -77,6 +77,7 @@ namespace BansheeEngine
 	class GUIContent;
 	class GUIContextMenu;
 	class GUIDropDownHitBox;
+	class GUIDropDownContent;
 	class RenderableElement;
 	class GUISlider;
 	class GUISliderVert;
