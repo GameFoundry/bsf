@@ -1,13 +1,15 @@
 ﻿using System;
+using BansheeEngine;
+
 namespace BansheeEditor
 {
     [AttributeUsage(AttributeTargets.Method)]
     public sealed class MenuItem : Attribute
     {
-        public MenuItem(string path, ShortcutKey shortcut, int priority = 0)
+        public MenuItem(string path, ButtonModifier shortcutModifier, ButtonCode shortcutKey,  int priority = 0)
         {
             this.path = path;
-            this.shortcut = shortcut;
+            this.shortcut = new ShortcutKey(shortcutModifier, shortcutKey);
             this.priority = priority;
         }
 

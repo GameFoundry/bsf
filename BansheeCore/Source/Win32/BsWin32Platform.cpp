@@ -303,8 +303,9 @@ namespace BansheeEngine
 		UINT virtualKey = MapVirtualKeyExW(keyCode, 1, keyboardLayout);
 
 		wchar_t output[2];
-		if (ToUnicodeEx(virtualKey, keyCode, keyboarState, output, 2, 0, keyboardLayout))
-			return WString(output, 2);
+		int count = ToUnicodeEx(virtualKey, keyCode, keyboarState, output, 2, 0, keyboardLayout);
+		if (count > 0)
+			return WString(output, count);
 
 		return StringUtil::WBLANK;
 	}

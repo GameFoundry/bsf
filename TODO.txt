@@ -106,6 +106,7 @@ Other simple stuff:
  - Call stack from C# to use in Debug.Log calls
  - Get rid of event callback from HString and figure out a better way
  - GUI TextureField similar to ResourceField but it displays the texture it has assigned
+ - Getting rid of import on start would be a pretty big deal. Just adding a button in Editor "Reimport" should be good instead
 
 ----------------------------------------------------------------------
 Handles

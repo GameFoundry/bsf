@@ -30,9 +30,11 @@ namespace BansheeEngine
 		UINT32 modifiers = 0;
 		if (Input::instance().isButtonHeld(BC_LSHIFT) || Input::instance().isButtonHeld(BC_RSHIFT))
 			modifiers |= (UINT32)ButtonModifier::Shift;
-		else if (Input::instance().isButtonHeld(BC_LCONTROL) || Input::instance().isButtonHeld(BC_RCONTROL))
+
+		if (Input::instance().isButtonHeld(BC_LCONTROL) || Input::instance().isButtonHeld(BC_RCONTROL))
 			modifiers |= (UINT32)ButtonModifier::Ctrl;
-		else if (Input::instance().isButtonHeld(BC_LMENU) || Input::instance().isButtonHeld(BC_RMENU))
+
+		if (Input::instance().isButtonHeld(BC_LMENU) || Input::instance().isButtonHeld(BC_RMENU))
 			modifiers |= (UINT32)ButtonModifier::Alt;
 
 		ShortcutKey searchKey((ButtonModifier)modifiers, event.buttonCode);
