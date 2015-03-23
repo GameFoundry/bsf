@@ -189,6 +189,17 @@ namespace BansheeEngine
 		 */
 		struct DropDownSubMenu
 		{
+			/**
+			 * @brief	Represents a single sub-menu page.
+			 */
+			struct PageInfo
+			{
+				UINT32 idx;
+				UINT32 start;
+				UINT32 end;
+				UINT32 height;
+			};
+
 		public:
 			/**
 			 * @brief	Creates a new drop down box sub-menu
@@ -223,18 +234,34 @@ namespace BansheeEngine
 			void scrollUp();
 
 			/**
-			 * @brief	Called when the user activates an element with the specified index.
+			 * @brief	Moves the sub-menu to the first page and displays its elements.
 			 */
-			void elementActivated(UINT32 idx);
+			void scrollToTop();
+
+			/**
+			 * @brief	Moves the sub-menu to the last page and displays its elements.
+			 */
+			void scrollToBottom();
+
+			/**
+			 * @brief	Calculates ranges for all the pages of the sub-menu.
+			 */
+			Vector<PageInfo> getPageInfos() const;
+
+			/**
+			 * @brief	Called when the user activates an element with the specified index.
+			 *
+			 * @param	bounds	Bounds of the GUI element that is used as a visual representation
+			 *					of this drop down element.
+			 */
+			void elementActivated(UINT32 idx, const Rect2I& bounds);
 
 			/**
 			 * @brief	Called when the user selects an element with the specified index.
 			 * 
 			 * @param	idx		Index of the element that was selected.
-			 * @param	bounds	Bounds of the GUI element that is used as a visual representation 
-			 *					of this drop down element.
 			 */
-			void elementSelected(UINT32 idx, const Rect2I& bounds);
+			void elementSelected(UINT32 idx);
 
 			/**
 			 * @brief	Called when the user wants to close the currently open sub-menu.
@@ -250,6 +277,11 @@ namespace BansheeEngine
 			 * @brief	Returns actual visible bounds of the sub-menu.
 			 */
 			Rect2I getVisibleBounds() const { return mVisibleBounds; }
+
+			/**
+			 * @brief	Returns the drop box object that owns this sub-menu.
+			 */
+			GUIDropDownBox* getOwner() const { return mOwner; }
 
 		public:
 			GUIDropDownBox* mOwner;
@@ -294,6 +326,11 @@ namespace BansheeEngine
 		 * @brief	Called when the drop down box loses focus (and should be closed).
 		 */
 		void dropDownFocusLost();
+
+		/**
+		 * @copydoc	GUIWidget::onDestroyed
+		 */
+		void onDestroyed() override;
 
 	private:
 		static const UINT32 DROP_DOWN_BOX_WIDTH;

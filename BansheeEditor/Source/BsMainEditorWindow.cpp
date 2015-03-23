@@ -39,14 +39,15 @@ namespace BansheeEngine
 
 		updateAreas();
 
-		mMenuBar->addMenuItem(L"File/New project", nullptr);
-		mMenuBar->addMenuItem(L"File/Open project", nullptr);
-		mMenuBar->addSeparator(L"File");
+		mMenuBar->addMenuItem(L"File/New project", nullptr, 100);
+		mMenuBar->addMenuItem(L"File/Open project", nullptr, 100);
+		mMenuBar->addSeparator(L"File", 99);
+		mMenuBar->addMenuItem(L"File/Recent projects", nullptr, 98);
 		mMenuBar->addMenuItem(L"File/Recent projects/Project A", nullptr);
 		mMenuBar->addMenuItem(L"File/Recent projects/Project B", nullptr);
 		mMenuBar->addMenuItem(L"File/Recent projects/Project C", nullptr);
-		mMenuBar->addSeparator(L"File");
-		mMenuBar->addMenuItem(L"File/Exit", nullptr);
+		mMenuBar->addSeparator(L"File", 97);
+		mMenuBar->addMenuItem(L"File/Exit", nullptr, 96);
 		mMenuBar->addMenuItem(L"Window/Scene", nullptr);
 
 		//GameObjectHandle<TestTextSprite> textSprite = mSceneObject->addComponent<TestTextSprite>(mCamera->getViewport().get());

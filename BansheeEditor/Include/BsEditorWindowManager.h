@@ -6,7 +6,7 @@
 
 namespace BansheeEngine
 {
-	class EditorWindowManager : public Module<EditorWindowManager>
+	class BS_ED_EXPORT EditorWindowManager : public Module<EditorWindowManager>
 	{
 	public:
 		EditorWindowManager();

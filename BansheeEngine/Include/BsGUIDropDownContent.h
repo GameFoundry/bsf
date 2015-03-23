@@ -70,7 +70,7 @@ namespace BansheeEngine
 		 * @brief	Enables or disables keyboard focus. When keyboard focus is enabled the contents
 		 *			will respond to keyboard events.
 		 */
-		void setKeyboardFocus(bool focus) { mKeyboardFocus = focus; }
+		void setKeyboardFocus(bool focus);
 
 		static const String ENTRY_STYLE_TYPE;
 		static const String ENTRY_EXP_STYLE_TYPE;
@@ -115,6 +115,16 @@ namespace BansheeEngine
 		 * @brief	Marks the element with the specified index as selected.
 		 */
 		void setSelected(UINT32 idx);
+
+		/**
+		 * @brief	Selects the next available non-separator entry.
+		 */
+		void selectNext(UINT32 startIdx);
+
+		/**
+		 * @brief	Selects the previous available non-separator entry.
+		 */
+		void selectPrevious(UINT32 startIdx);
 
 		GUIDropDownData mDropDownData;
 		Vector<VisibleElement> mVisibleElements;

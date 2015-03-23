@@ -6,7 +6,7 @@ namespace BansheeEngine
 {
 	bool GUIMenuItemComparer::operator() (const GUIMenuItem* const& a, const GUIMenuItem* const& b)
 	{
-		return a->mPriority > b->mPriority;
+		return a->mPriority > b->mPriority || (a->mPriority == b->mPriority && a->mName.compare(b->mName) < 0);
 	}
 
 	GUIMenuItem::GUIMenuItem(GUIMenuItem* parent, const WString& name, std::function<void()> callback, INT32 priority, const ShortcutKey& key)

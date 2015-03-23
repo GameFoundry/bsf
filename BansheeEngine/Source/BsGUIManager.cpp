@@ -198,25 +198,6 @@ namespace BansheeEngine
 		}
 		gProfilerCPU().endSample("UpdateLayout");
 
-		// Blink caret
-		float curTime = gTime().getTime();
-
-		if((curTime - mCaretLastBlinkTime) >= mCaretBlinkInterval)
-		{
-			mCaretLastBlinkTime = curTime;
-			mIsCaretOn = !mIsCaretOn;
-
-			mCommandEvent = GUICommandEvent();
-			mCommandEvent.setType(GUICommandEventType::Redraw);
-
-			for(auto& elementInfo : mElementsInFocus)
-			{
-				sendCommandEvent(elementInfo.widget, elementInfo.element, mCommandEvent);
-			}
-		}
-
-		PROFILE_CALL(updateMeshes(), "UpdateMeshes");
-
 		// Destroy all queued elements (and loop in case any new ones get queued during destruction)
 		do
 		{
@@ -290,6 +271,25 @@ namespace BansheeEngine
 			mForcedFocusElements.clear();
 
 		} while (processDestroyQueue());
+
+		// Blink caret
+		float curTime = gTime().getTime();
+
+		if ((curTime - mCaretLastBlinkTime) >= mCaretBlinkInterval)
+		{
+			mCaretLastBlinkTime = curTime;
+			mIsCaretOn = !mIsCaretOn;
+
+			mCommandEvent = GUICommandEvent();
+			mCommandEvent.setType(GUICommandEventType::Redraw);
+
+			for (auto& elementInfo : mElementsInFocus)
+			{
+				sendCommandEvent(elementInfo.widget, elementInfo.element, mCommandEvent);
+			}
+		}
+
+		PROFILE_CALL(updateMeshes(), "UpdateMeshes");
 	}
 
 	void GUIManager::render(ViewportPtr& target, DrawList& drawList) const

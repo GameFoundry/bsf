@@ -62,9 +62,9 @@ namespace BansheeEngine
 			if (element.isSeparator())
 				visElem.separator->setStyle(getSubStyleName(SEPARATOR_STYLE_TYPE));
 			else if (element.isSubMenu())
-				visElem.separator->setStyle(getSubStyleName(ENTRY_EXP_STYLE_TYPE));
+				visElem.button->setStyle(getSubStyleName(ENTRY_EXP_STYLE_TYPE));
 			else
-				visElem.separator->setStyle(getSubStyleName(ENTRY_STYLE_TYPE));
+				visElem.button->setStyle(getSubStyleName(ENTRY_STYLE_TYPE));
 		}
 	}
 
@@ -73,11 +73,16 @@ namespace BansheeEngine
 		std::function<void(UINT32, UINT32)> onHover = 
 			[&](UINT32 idx, UINT32 visIdx) 
 		{ 
-			mSelectedIdx = visIdx; 
-			mParent->elementSelected(idx, mVisibleElements[visIdx].button->_getCachedBounds()); 
+			setSelected(visIdx);
+			mParent->elementSelected(idx); 
 		};
 
-		std::function<void(UINT32)> onClick = [&](UINT32 idx) { mParent->elementActivated(idx); };
+		std::function<void(UINT32, UINT32)> onClick =
+			[&](UINT32 idx, UINT32 visIdx)
+		{ 
+			setSelected(visIdx);
+			mParent->elementActivated(idx, mVisibleElements[visIdx].button->_getCachedBounds());
+		};
 
 		// Remove all elements
 		while (_getNumChildren() > 0)
@@ -108,14 +113,14 @@ namespace BansheeEngine
 			else if (element.isSubMenu())
 			{
 				visElem.button = GUIButton::create(getElementLocalizedName(i), getSubStyleName(ENTRY_EXP_STYLE_TYPE));
-				visElem.button->onHover.connect(std::bind(onHover, i, curVisIdx));
+				visElem.button->onHover.connect(std::bind(onClick, i, curVisIdx));
 				_registerChildElement(visElem.button);
 			}
 			else
 			{
 				visElem.button = GUIButton::create(getElementLocalizedName(i), getSubStyleName(ENTRY_STYLE_TYPE));
 				visElem.button->onHover.connect(std::bind(onHover, i, curVisIdx));
-				visElem.button->onClick.connect(std::bind(onClick, i));
+				visElem.button->onClick.connect(std::bind(onClick, i, curVisIdx));
 				_registerChildElement(visElem.button);
 
 				const WString& shortcutTag = element.getShortcutTag();
@@ -129,12 +134,14 @@ namespace BansheeEngine
 			curVisIdx++;
 		}
 
-		if (mSelectedIdx == UINT_MAX)
-			setSelected(0);
+		markContentAsDirty();
 	}
 
 	UINT32 GUIDropDownContent::getElementHeight(UINT32 idx) const
 	{
+		if (_getParentWidget() == nullptr)
+			return 14; // Arbitrary
+
 		if (mDropDownData.entries[idx].isSeparator())
 			return _getParentWidget()->getSkin().getStyle(getSubStyleName(SEPARATOR_STYLE_TYPE))->height;
 		else if (mDropDownData.entries[idx].isSubMenu())
@@ -154,104 +161,32 @@ namespace BansheeEngine
 			return HString(label);
 	}
 
+	void GUIDropDownContent::setKeyboardFocus(bool focus) 
+	{ 
+		mKeyboardFocus = focus; 
+		setFocus(focus);
+	}
+
 	bool GUIDropDownContent::_commandEvent(const GUICommandEvent& ev)
 	{
 		if (!mKeyboardFocus)
 			return false;
 
-		UINT32 maxElemIdx = (UINT32)mDropDownData.entries.size() - 1;
+		UINT32 maxElemIdx = (UINT32)mDropDownData.entries.size();
 
 		switch (ev.getType())
 		{
 		case GUICommandEventType::MoveDown:
-		{
-			{
-				UINT32 curIdx = mVisibleElements[mSelectedIdx].idx;
-				UINT32 nextIdx = curIdx;
-				bool gotNextIndex = false;
-
-				for (nextIdx = curIdx + 1; nextIdx <= maxElemIdx; nextIdx++)
-				{
-					GUIDropDownDataEntry& entry = mDropDownData.entries[nextIdx];
-					if (!entry.isSeparator())
-					{
-						gotNextIndex = true;
-						break;
-					}
-				}
-
-				if (gotNextIndex)
-				{
-					while (nextIdx > mRangeEnd)
-					{
-						if (maxElemIdx == mRangeEnd)
-							break;
-
-						mParent->scrollDown();
-					}
-
-					if (nextIdx <= mRangeEnd)
-					{
-						UINT32 visIdx = 0;
-						for (auto& visElem : mVisibleElements)
-						{
-							if (visElem.idx == nextIdx)
-							{
-								setSelected(visIdx);
-								break;
-							}
-
-							visIdx++;
-						}
-					}
-				}
-			}
-		}
+			if (mSelectedIdx == UINT_MAX)
+				selectNext(0);
+			else
+				selectNext(mSelectedIdx + 1);
 			return true;
 		case GUICommandEventType::MoveUp:
-		{
-			{
-				UINT32 curIdx = mVisibleElements[mSelectedIdx].idx;
-				INT32 prevIdx = curIdx;
-				bool gotNextIndex = false;
-
-				for (prevIdx = (INT32)curIdx - 1; prevIdx >= 0; prevIdx--)
-				{
-					GUIDropDownDataEntry& entry = mDropDownData.entries[prevIdx];
-					if (!entry.isSeparator())
-					{
-						gotNextIndex = true;
-						break;
-					}
-				}
-
-				if (gotNextIndex)
-				{
-					while (prevIdx < (INT32)mRangeStart)
-					{
-						if (mRangeStart == 0)
-							break;
-
-						mParent->scrollUp();
-					}
-
-					if (prevIdx >= (INT32)mRangeStart)
-					{
-						UINT32 visIdx = 0;
-						for (auto& visElem : mVisibleElements)
-						{
-							if (visElem.idx == prevIdx)
-							{
-								setSelected(visIdx);
-								break;
-							}
-
-							visIdx++;
-						}
-					}
-				}
-			}
-		}
+			if (mSelectedIdx == UINT_MAX)
+				selectNext(0);
+			else
+				selectPrevious(mSelectedIdx - 1);
 			return true;
 		case GUICommandEventType::Escape:
 		case GUICommandEventType::MoveLeft:
@@ -259,18 +194,23 @@ namespace BansheeEngine
 			return true;
 		case GUICommandEventType::MoveRight:
 		{
-			GUIDropDownDataEntry& entry = mDropDownData.entries[mVisibleElements[mSelectedIdx].idx];
-			if (entry.isSubMenu())
-				mParent->elementActivated(mVisibleElements[mSelectedIdx].idx);
+			if (mSelectedIdx == UINT_MAX)
+				selectNext(0);
+			else
+			{
+				GUIDropDownDataEntry& entry = mDropDownData.entries[mVisibleElements[mSelectedIdx].idx];
+				if (entry.isSubMenu())
+					mParent->elementActivated(mVisibleElements[mSelectedIdx].idx, mVisibleElements[mSelectedIdx].button->_getCachedBounds());
+			}
 		}
 			return true;
 		case GUICommandEventType::Return:
-			mParent->elementActivated(mVisibleElements[mSelectedIdx].idx);
+			if (mSelectedIdx == UINT_MAX)
+				selectNext(0);
+			else
+				mParent->elementActivated(mVisibleElements[mSelectedIdx].idx, mVisibleElements[mSelectedIdx].button->_getCachedBounds());
 			return true;
 		}
-
-		// TODO - When closing a sub-menu I might need to also call GUIDropDownBoxManager::instance().closeDropDownBox();
-		// TODO - I should be able to set focus to this element, so only the most recent element receives keyboard input
 
 		return false;
 	}
@@ -283,7 +223,88 @@ namespace BansheeEngine
 		mSelectedIdx = idx;
 		mVisibleElements[mSelectedIdx].button->_setOn(true);
 
-		mParent->elementSelected(mVisibleElements[mSelectedIdx].idx, mVisibleElements[mSelectedIdx].button->_getCachedBounds());
+		mParent->elementSelected(mVisibleElements[mSelectedIdx].idx);
+	}
+
+	void GUIDropDownContent::selectNext(UINT32 startIdx)
+	{
+		UINT32 numElements = (UINT32)mDropDownData.entries.size();
+
+		bool gotNextIndex = false;
+		UINT32 nextIdx = startIdx;
+		for (UINT32 i = 0; i < numElements; i++)
+		{
+			if (nextIdx >= numElements)
+				nextIdx = 0; // Wrap around
+
+			GUIDropDownDataEntry& entry = mDropDownData.entries[nextIdx];
+			if (!entry.isSeparator())
+			{
+				gotNextIndex = true;
+				break;
+			}
+
+			nextIdx++;
+		}
+
+		if (gotNextIndex)
+		{
+			while (nextIdx < mRangeStart || nextIdx >= mRangeEnd)
+				mParent->scrollDown();
+
+			UINT32 visIdx = 0;
+			for (auto& visElem : mVisibleElements)
+			{
+				if (visElem.idx == nextIdx)
+				{
+					setSelected(visIdx);
+					break;
+				}
+
+				visIdx++;
+			}
+		}
+	}
+
+	void GUIDropDownContent::selectPrevious(UINT32 startIdx)
+	{
+		UINT32 numElements = (UINT32)mDropDownData.entries.size();
+
+		bool gotNextIndex = false;
+		INT32 prevIdx = (INT32)startIdx;
+
+		for (UINT32 i = 0; i < numElements; i++)
+		{
+			if (prevIdx < 0)
+				prevIdx = numElements - 1; // Wrap around
+
+			GUIDropDownDataEntry& entry = mDropDownData.entries[prevIdx];
+			if (!entry.isSeparator())
+			{
+				gotNextIndex = true;
+				break;
+			}
+
+			prevIdx--;
+		}
+
+		if (gotNextIndex)
+		{
+			while (prevIdx < (INT32)mRangeStart || prevIdx >= (INT32)mRangeEnd)
+				mParent->scrollUp();
+
+			UINT32 visIdx = 0;
+			for (auto& visElem : mVisibleElements)
+			{
+				if (visElem.idx == prevIdx)
+				{
+					setSelected(visIdx);
+					break;
+				}
+
+				visIdx++;
+			}
+		}
 	}
 
 	Vector2I GUIDropDownContent::_getOptimalSize() const
@@ -316,7 +337,7 @@ namespace BansheeEngine
 	void GUIDropDownContent::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
 		Rect2I clipRect, UINT8 widgetDepth, UINT16 areaDepth)
 	{
-		INT32 yOffset = 0;
+		INT32 yOffset = y;
 		for (auto& visElem : mVisibleElements)
 		{
 			const GUIDropDownDataEntry& element = mDropDownData.entries[visElem.idx];

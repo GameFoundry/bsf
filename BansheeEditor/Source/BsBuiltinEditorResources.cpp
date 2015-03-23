@@ -650,6 +650,9 @@ namespace BansheeEngine
 		dropDownEntryBtnStyle.normal.texture = getGUITexture(DropDownBoxEntryNormalTex);
 		dropDownEntryBtnStyle.hover.texture = getGUITexture(DropDownBoxEntryHoverTex);
 		dropDownEntryBtnStyle.active.texture = dropDownEntryBtnStyle.hover.texture;
+		dropDownEntryBtnStyle.normalOn.texture = dropDownEntryBtnStyle.hover.texture;
+		dropDownEntryBtnStyle.hoverOn.texture = dropDownEntryBtnStyle.hover.texture;
+		dropDownEntryBtnStyle.activeOn.texture = dropDownEntryBtnStyle.hover.texture;
 		dropDownEntryBtnStyle.fixedHeight = true;
 		dropDownEntryBtnStyle.fixedWidth = false;
 		dropDownEntryBtnStyle.height = 14;
@@ -670,6 +673,9 @@ namespace BansheeEngine
 		dropDownEntryExpBtnStyle.normal.texture = getGUITexture(DropDownBoxEntryExpNormalTex);
 		dropDownEntryExpBtnStyle.hover.texture = getGUITexture(DropDownBoxEntryExpHoverTex);
 		dropDownEntryExpBtnStyle.active.texture = dropDownEntryExpBtnStyle.hover.texture;
+		dropDownEntryExpBtnStyle.normalOn.texture = dropDownEntryExpBtnStyle.hover.texture;
+		dropDownEntryExpBtnStyle.hoverOn.texture = dropDownEntryExpBtnStyle.hover.texture;
+		dropDownEntryExpBtnStyle.activeOn.texture = dropDownEntryExpBtnStyle.hover.texture;
 		dropDownEntryExpBtnStyle.fixedHeight = true;
 		dropDownEntryExpBtnStyle.fixedWidth = false;
 		dropDownEntryExpBtnStyle.height = 14;

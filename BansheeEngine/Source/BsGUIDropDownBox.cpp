@@ -126,9 +126,16 @@ namespace BansheeEngine
 
 	GUIDropDownBox::~GUIDropDownBox()
 	{
+
+	}
+
+	void GUIDropDownBox::onDestroyed()
+	{
 		GUIElement::destroy(mHitBox);
 		GUIElement::destroy(mCaptureHitBox);
 		bs_delete(mRootMenu);
+
+		GUIWidget::onDestroyed();
 	}
 
 	void GUIDropDownBox::dropDownFocusLost()
@@ -207,6 +214,21 @@ namespace BansheeEngine
 		mContent = GUIDropDownContent::create(this, dropDownData, mOwner->mContentStyle);
 		mContent->setKeyboardFocus(true);
 
+		// Content area
+		mContentArea = GUIArea::create(*mOwner, 0, 0, width, height);
+		mContentArea->setDepth(100 - depthOffset * 2 - 1);
+		mContentLayout = &mContentArea->getLayout().addLayoutY();
+
+		// Background frame
+		mBackgroundArea = GUIArea::create(*mOwner, 0, 0, width, height);
+		mBackgroundArea->setDepth(100 - depthOffset * 2);
+
+		mBackgroundFrame = GUITexture::create(GUIImageScaleMode::StretchToFit, mOwner->mBackgroundStyle);
+		mBackgroundArea->getLayout().addElement(mBackgroundFrame);
+
+		mContentLayout->addElement(mContent); // Note: It's important this is added to the layout before we 
+											  // use it for size calculations, in order for its skin to be assigned
+
 		// Determine x position and whether to align to left or right side of the drop down list
 		UINT32 availableRightwardWidth = (UINT32)std::max(0, (availableBounds.x + availableBounds.width) - potentialRightStart);
 		UINT32 availableLeftwardWidth = (UINT32)std::max(0, potentialLeftStart - availableBounds.x);
@@ -272,17 +294,8 @@ namespace BansheeEngine
 		if(mOpenedUpward)	
 			actualY -= (INT32)std::min(maxNeededHeight, availableUpwardHeight);
 
-		// Content area
-		mContentArea = GUIArea::create(*mOwner, x, actualY, width, height);
-		mContentArea->setDepth(100 - depthOffset * 2 - 1);
-		mContentLayout = &mContentArea->getLayout().addLayoutY();
-
-		// Background frame
-		mBackgroundArea = GUIArea::create(*mOwner, x, actualY, width, height);
-		mBackgroundArea->setDepth(100 - depthOffset * 2);
-
-		mBackgroundFrame = GUITexture::create(GUIImageScaleMode::StretchToFit, mOwner->mBackgroundStyle);
-		mBackgroundArea->getLayout().addElement(mBackgroundFrame);
+		mContentArea->setPosition(x, actualY);
+		mBackgroundArea->setPosition(x, actualY);
 
 		updateGUIElements();
 
@@ -297,10 +310,10 @@ namespace BansheeEngine
 
 		GUIElement::destroy(mContent);
 
-		if(mScrollUpBtn != nullptr)
+		if (mScrollUpBtn != nullptr)
 			GUIElement::destroy(mScrollUpBtn);
 
-		if(mScrollDownBtn != nullptr)
+		if (mScrollDownBtn != nullptr)
 			GUIElement::destroy(mScrollDownBtn);
 
 		GUIElement::destroy(mBackgroundFrame);
@@ -309,11 +322,66 @@ namespace BansheeEngine
 		GUIArea::destroy(mContentArea);
 	}
 
+	Vector<GUIDropDownBox::DropDownSubMenu::PageInfo> GUIDropDownBox::DropDownSubMenu::getPageInfos() const
+	{
+		const GUIElementStyle* scrollUpStyle = mOwner->getSkin().getStyle(mOwner->mScrollUpStyle);
+		const GUIElementStyle* scrollDownStyle = mOwner->getSkin().getStyle(mOwner->mScrollDownStyle);
+		const GUIElementStyle* backgroundStyle = mOwner->getSkin().getStyle(mOwner->mBackgroundStyle);
+
+		INT32 numElements = (INT32)mData.entries.size();
+
+		PageInfo curPageInfo;
+		curPageInfo.start = 0;
+		curPageInfo.end = 0;
+		curPageInfo.idx = 0;
+		curPageInfo.height = backgroundStyle->margins.top + backgroundStyle->margins.bottom;
+		
+		Vector<PageInfo> pageInfos;
+		for (INT32 i = 0; i < numElements; i++)
+		{
+			curPageInfo.height += mContent->getElementHeight((UINT32)i);
+			curPageInfo.end++;
+
+			if (curPageInfo.height > height)
+			{
+				curPageInfo.height += scrollDownStyle->height;
+
+				// Remove last few elements until we fit again
+				while (curPageInfo.height > height && i >= 0)
+				{
+					curPageInfo.height -= mContent->getElementHeight((UINT32)i);
+					curPageInfo.end--;
+
+					i--;
+				}
+
+				// Nothing fits, break out of infinite loop
+				if (curPageInfo.start >= curPageInfo.end)
+					break;
+
+				pageInfos.push_back(curPageInfo);
+
+				curPageInfo.start = curPageInfo.end;
+				curPageInfo.height = backgroundStyle->margins.top + backgroundStyle->margins.bottom;
+				curPageInfo.height += scrollUpStyle->height;
+
+				curPageInfo.idx++;
+			}
+		}
+
+		if (curPageInfo.start < curPageInfo.end)
+			pageInfos.push_back(curPageInfo);
+
+		return pageInfos;
+	}
+
 	void GUIDropDownBox::DropDownSubMenu::updateGUIElements()
 	{
 		// Remove all elements from content layout
 		while(mContentLayout->getNumChildren() > 0)
 			mContentLayout->removeChildAt(mContentLayout->getNumChildren() - 1);
+
+		mContentLayout->addElement(mContent); // Note: Needs to be added first so that size calculations have proper skin to work with
 
 		const GUIElementStyle* scrollUpStyle = mOwner->getSkin().getStyle(mOwner->mScrollUpStyle);
 		const GUIElementStyle* scrollDownStyle = mOwner->getSkin().getStyle(mOwner->mScrollDownStyle);
@@ -321,52 +389,20 @@ namespace BansheeEngine
 
 		// Determine if we need scroll up and/or down buttons, number of visible elements and actual height
 		bool needsScrollUp = mPage > 0;
-		UINT32 numElements = (UINT32)mData.entries.size();
-
-		UINT32 usedHeight = backgroundStyle->margins.top + backgroundStyle->margins.bottom;
 
 		UINT32 pageStart = 0, pageEnd = 0;
-		UINT32 curPage = 0;
-		bool needsScrollDown = false;
-		for(UINT32 i = 0; i < numElements; i++)
+		UINT32 pageHeight = 0;
+		Vector<PageInfo> pageInfos = getPageInfos();
+
+		if (pageInfos.size() > mPage)
 		{
-			usedHeight += mContent->getElementHeight(i);
-			pageEnd++;
-
-			if(usedHeight > height)
-			{
-				usedHeight += scrollDownStyle->height;
-
-				// Remove last few elements until we fit again
-				while(usedHeight > height && i >= 0)
-				{
-					usedHeight -= mContent->getElementHeight(i);
-					pageEnd--;
-
-					i--;
-				}
-
-				// We found our page and are done
-				if(curPage == mPage)
-				{
-					needsScrollDown = i != (numElements - 1);
-					break;
-				}
-
-				// Nothing fits, break out of infinite loop
-				if(pageStart == pageEnd)
-				{
-					needsScrollDown = i != (numElements - 1);
-					break;
-				}
-
-				pageStart = pageEnd;
-				usedHeight = backgroundStyle->margins.top + backgroundStyle->margins.bottom;
-				usedHeight += scrollUpStyle->height;
-
-				curPage++;
-			}
+			pageStart = pageInfos[mPage].start;
+			pageEnd = pageInfos[mPage].end;
+			pageHeight = pageInfos[mPage].height;
 		}
+
+		UINT32 numElements = (UINT32)mData.entries.size();
+		bool needsScrollDown = pageEnd != numElements;
 
 		// Add scroll up button
 		if(needsScrollUp)
@@ -377,7 +413,7 @@ namespace BansheeEngine
 				mScrollUpBtn->onClick.connect(std::bind(&DropDownSubMenu::scrollUp, this));
 			}
 
-			mContentLayout->addElement(mScrollUpBtn);			
+			mContentLayout->insertElement(0, mScrollUpBtn);			
 		}
 		else
 		{
@@ -389,7 +425,6 @@ namespace BansheeEngine
 		}
 
 		mContent->setRange(pageStart, pageEnd);
-		mContentLayout->addElement(mContent);
 
 		// Add scroll down button
 		if(needsScrollDown)
@@ -415,15 +450,15 @@ namespace BansheeEngine
 		INT32 actualY = y;
 
 		if(mOpenedUpward)	
-			actualY -= (INT32)usedHeight;
+			actualY -= (INT32)pageHeight;
 
-		mBackgroundArea->setSize(width, usedHeight);
+		mBackgroundArea->setSize(width, pageHeight);
 		mBackgroundArea->setPosition(x, actualY);
 
-		mVisibleBounds = Rect2I(x, actualY, width, usedHeight);
+		mVisibleBounds = Rect2I(x, actualY, width, pageHeight);
 
 		UINT32 contentWidth = (UINT32)std::max(0, (INT32)width - (INT32)backgroundStyle->margins.left - (INT32)backgroundStyle->margins.right);
-		UINT32 contentHeight = (UINT32)std::max(0, (INT32)usedHeight - (INT32)backgroundStyle->margins.top - (INT32)backgroundStyle->margins.bottom);
+		UINT32 contentHeight = (UINT32)std::max(0, (INT32)pageHeight - (INT32)backgroundStyle->margins.top - (INT32)backgroundStyle->margins.bottom);
 		mContentArea->setSize(contentWidth, contentHeight);
 		mContentArea->setPosition(x + backgroundStyle->margins.left, actualY + backgroundStyle->margins.top);
 	}
@@ -431,6 +466,9 @@ namespace BansheeEngine
 	void GUIDropDownBox::DropDownSubMenu::scrollDown()
 	{
 		mPage++;
+		if (mPage == (UINT32)getPageInfos().size())
+			mPage = 0;
+
 		updateGUIElements();
 
 		closeSubMenu();
@@ -438,11 +476,27 @@ namespace BansheeEngine
 
 	void GUIDropDownBox::DropDownSubMenu::scrollUp()
 	{
-		if(mPage > 0)
-		{
+		if (mPage > 0)
 			mPage--;
-			updateGUIElements();
-		}
+		else
+			mPage = (UINT32)getPageInfos().size() - 1;
+
+		updateGUIElements();
+		closeSubMenu();
+	}
+
+	void GUIDropDownBox::DropDownSubMenu::scrollToTop()
+	{
+		mPage = 0;
+		updateGUIElements();
+
+		closeSubMenu();
+	}
+
+	void GUIDropDownBox::DropDownSubMenu::scrollToBottom()
+	{
+		mPage = (UINT32)(getPageInfos().size() - 1);
+		updateGUIElements();
 
 		closeSubMenu();
 	}
@@ -458,15 +512,25 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUIDropDownBox::DropDownSubMenu::elementActivated(UINT32 idx)
+	void GUIDropDownBox::DropDownSubMenu::elementActivated(UINT32 idx, const Rect2I& bounds)
 	{
 		closeSubMenu();
 
-		auto callback = mData.entries[idx].getCallback();
-		if(callback != nullptr)
-			callback();
+		if (!mData.entries[idx].isSubMenu())
+		{
+			auto callback = mData.entries[idx].getCallback();
+			if (callback != nullptr)
+				callback();
 
-		GUIDropDownBoxManager::instance().closeDropDownBox();
+			GUIDropDownBoxManager::instance().closeDropDownBox();
+		}
+		else
+		{
+			mContent->setKeyboardFocus(false);
+
+			mSubMenu = bs_new<DropDownSubMenu>(mOwner, this, GUIDropDownAreaPlacement::aroundBoundsVert(bounds),
+				mAvailableBounds, mData.entries[idx].getSubMenuData(), mType, mDepthOffset + 1);
+		}
 	}
 
 	void GUIDropDownBox::DropDownSubMenu::close()
@@ -477,16 +541,8 @@ namespace BansheeEngine
 			GUIDropDownBoxManager::instance().closeDropDownBox();
 	}
 
-	void GUIDropDownBox::DropDownSubMenu::elementSelected(UINT32 idx, const Rect2I& bounds)
+	void GUIDropDownBox::DropDownSubMenu::elementSelected(UINT32 idx)
 	{
 		closeSubMenu();
-
-		if (mData.entries[idx].isSubMenu())
-		{
-			mContent->setKeyboardFocus(false);
-
-			mSubMenu = bs_new<DropDownSubMenu>(mOwner, this, GUIDropDownAreaPlacement::aroundBoundsVert(bounds),
-				mAvailableBounds, mData.entries[idx].getSubMenuData(), mType, mDepthOffset + 1);
-		}
 	}
 }

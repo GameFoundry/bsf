@@ -27,6 +27,10 @@ When closing a sub-menu I think I need to call "GUIDropDownBoxManager::instance(
  - Also when a submenu is closed or opened I should set some kind of focus on it, so it knows to accept/reject keyboard input
  - "Esc" should move back one sub-menu instead of closing all of it
 
+LATER: Add keyboard controls to GUIMenuBar (left/right arrows should move between entries if user is not browsing a sub-menu)
+ - esc should cancel out of the menu bar
+ - alt should focus the menu bar
+
 ----------------------------------------------------------------------
 VisualStudio integration
 
