@@ -8,7 +8,7 @@ namespace BansheeEngine
 {
     public static class Time
     {
-        public static float elapsed
+        public static float Elapsed
         {
             get
             {
@@ -16,7 +16,7 @@ namespace BansheeEngine
             }
         }
 
-        public static float frameDelta
+        public static float FrameDelta
         {
             get
             {
@@ -24,7 +24,7 @@ namespace BansheeEngine
             }
         }
 
-        public static int frameNumber
+        public static int FrameNumber
         {
             get
             {

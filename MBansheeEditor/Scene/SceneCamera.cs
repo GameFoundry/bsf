@@ -71,7 +71,7 @@ namespace BansheeEditor
                 lastButtonState = camRotating;
             }
 
-		    float frameDelta = Time.frameDelta;
+		    float frameDelta = Time.FrameDelta;
 		    if (camRotating)
 		    {
 		        float horzValue = VirtualInput.GetAxisValue(horizontalAxis);

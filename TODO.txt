@@ -95,14 +95,13 @@ Dialog.Show(title, text, btn1 text, btn1 callback, btn2 text, btn2 callback, btn
 Other simple stuff:
  - Inject an icon into an .exe (Win32 specific)
  - C# wrapper for GUISkin (and a way to assign the current skin to a window)
- - Need to add IsPointerDoubleClicked to Input (C++ and C#)
- - A way to add menu items from C#
  - Move all the code files into subfolders so their hierarchy is similar to VS filters
  - Font doesn't have a C# interface
  - Material/Shader/Technique/Pass don't have a C# interface
  - Get rid of PoolAlloc and other unused allocators (plus fix bs_new and others which have weird overloads)
  - Call stack from C# to use in Debug.Log calls
  - Get rid of event callback from HString and figure out a better way
+ - GUI TextureField similar to ResourceField but it displays the texture it has assigned
 
 ----------------------------------------------------------------------
 Handles
@@ -116,6 +115,9 @@ Rotate handle:
    - I don't think my code properly handles rotation handle transforms (e.g. arc drawing)
 
 Ideally free scale handle indicator should always render and be interactable and never be hidden by axis scale indicators (Not high priority)
+
+Later:
+ - Raycast snapping Ribek suggested
 
 ----------------------------------------------------------------------
 Scene View
