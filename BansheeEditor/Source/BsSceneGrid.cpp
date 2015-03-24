@@ -7,27 +7,37 @@
 #include "BsDrawList.h"
 #include "BsBuiltinEditorResources.h"
 #include "BsCamera.h"
+#include "BsRect3.h"
 #include "BsEditorSettings.h"
 
 namespace BansheeEngine
 {
+	const Color SceneGrid::GRID_LINE_COLOR = Color(1.0f, 1.0f, 1.0f);
 	const float SceneGrid::LINE_WIDTH = 0.025f;
-	const float SceneGrid::LINE_BORDER_WIDTH = 0.005f;
+	const float SceneGrid::LINE_BORDER_WIDTH = 0.0075f;
 	const float SceneGrid::MAJOR_AXIS_WIDTH = 0.075f;
 	const float SceneGrid::MAJOR_AXIS_BORDER_WIDTH = 0.015f;
 	const float SceneGrid::AXIS_MARKER_WIDTH = 0.1f;
 	const float SceneGrid::AXIS_MARKER_BORDER_WIDTH = 0.02f;
 	const Color SceneGrid::AXIS_X_MARKER_COLOR = Color::Red;
 	const Color SceneGrid::AXIS_Z_MARKER_COLOR = Color::Blue;
+	const float SceneGrid::FADE_OUT_START = 5.0f;
+	const float SceneGrid::FADE_OUT_END = 40.0f;
 
 	SceneGrid::SceneGrid()
 	{
 		mVertexDesc = bs_shared_ptr<VertexDataDesc>();
 		mVertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
-		mVertexDesc->addVertElem(VET_COLOR, VES_COLOR);
+		mVertexDesc->addVertElem(VET_FLOAT3, VES_NORMAL);
 
 		mGridMaterial = BuiltinEditorResources::instance().createSceneGridMaterial();
 		mViewProjParam = mGridMaterial->getParamMat4("matViewProj");
+		mWorldCameraPosParam = mGridMaterial->getParamVec4("worldCameraPos");
+		mGridColorParam = mGridMaterial->getParamColor("gridColor");
+		mGridSpacingParam = mGridMaterial->getParamFloat("gridSpacing");
+		mGridBorderWidthParam = mGridMaterial->getParamFloat("gridBorderWidth");
+		mGridFadeOutStartParam = mGridMaterial->getParamFloat("gridFadeOutStart");
+		mGridFadeOutEndParam = mGridMaterial->getParamFloat("gridFadeOutEnd");
 
 		updateGridMesh();
 	}
@@ -61,6 +71,7 @@ namespace BansheeEngine
 
 	void SceneGrid::setMajorAxisSpacing(UINT32 spacing)
 	{
+		// TODO - Ignored with the current shader
 		if (mMajorAxisSpacing != spacing)
 		{
 			mMajorAxisSpacing = spacing;
@@ -70,6 +81,7 @@ namespace BansheeEngine
 
 	void SceneGrid::setAxisMarkerSpacing(UINT32 spacing)
 	{
+		// TODO - Ignored with the current shader
 		if (mAxisMarkerSpacing != spacing)
 		{
 			mAxisMarkerSpacing = spacing;
@@ -100,6 +112,13 @@ namespace BansheeEngine
 		Matrix4 viewProjMatrix = projMatrix * viewMatrix;
 		mViewProjParam.set(viewProjMatrix);
 
+		mWorldCameraPosParam.set(Vector4(camera->getPosition(), 1.0f));
+		mGridColorParam.set(GRID_LINE_COLOR);
+		mGridSpacingParam.set(mSpacing);
+		mGridBorderWidthParam.set(LINE_BORDER_WIDTH);
+		mGridFadeOutStartParam.set(FADE_OUT_START);
+		mGridFadeOutEndParam.set(FADE_OUT_END);
+
 		drawList.add(mat, mesh, 0, Vector3::ZERO);
 	}
 
@@ -115,82 +134,18 @@ namespace BansheeEngine
 
 	void SceneGrid::updateGridMesh()
 	{
-		UINT32 numLines = (UINT32)Math::roundToInt(mSize / mSpacing);
-		if (numLines % 2 != 0)
-			numLines++;
+		std::array<Vector3, 2> axes;
+		axes[0] = Vector3::UNIT_X;
+		axes[1] = Vector3::UNIT_Z;
 
-		INT32 originX = Math::roundToInt(mOrigin.x / mSpacing);
-		INT32 originZ = Math::roundToInt(mOrigin.y / mSpacing);
+		std::array<float, 2> extents;
+		extents[0] = mSize * 0.5f;
+		extents[1] = mSize * 0.5f;
 
-		INT32 startX = originX - numLines / 2;
-		INT32 startZ = originZ - numLines / 2;
+		Rect3 quad(mOrigin, axes, extents);
+		MeshDataPtr meshData = bs_shared_ptr<MeshData, PoolAlloc>(8, 12, mVertexDesc);
 
-		float minX = startX * mSpacing;
-		float minZ = startZ * mSpacing;
-
-		float maxX = (startX + numLines) * mSpacing;
-		float maxZ = (startZ + numLines) * mSpacing;
-
-		UINT32 totalNumVertices = ShapeMeshes3D::NUM_VERTICES_AA_LINE * (numLines + 1) * 2;
-		UINT32 totalNumIndices = ShapeMeshes3D::NUM_INDICES_AA_LINE * (numLines + 1) * 2;
-
-		MeshDataPtr meshData = bs_shared_ptr<MeshData, PoolAlloc>(totalNumVertices, totalNumIndices, mVertexDesc);
-		UINT32 vertexOffset = 0;
-		UINT32 indexOffset = 0;
-
-		for (UINT32 i = 0; i <= numLines; i++)
-		{
-			INT32 x = startX + i;
-			float linePosX = x * mSpacing;
-
-			Vector3 lineStartX(linePosX, 0, minZ);
-			Vector3 lineEndX(linePosX, 0, maxZ);
-
-			if (x % mAxisMarkerSpacing == 0)
-			{
-				ShapeMeshes3D::antialiasedLine(lineStartX, lineEndX, Vector3::UNIT_Y, AXIS_MARKER_WIDTH, 
-					AXIS_MARKER_BORDER_WIDTH, AXIS_X_MARKER_COLOR, meshData, vertexOffset, indexOffset);
-			}
-			else if (x % mMajorAxisSpacing == 0)
-			{
-				ShapeMeshes3D::antialiasedLine(lineStartX, lineEndX, Vector3::UNIT_Y, MAJOR_AXIS_WIDTH,
-					MAJOR_AXIS_BORDER_WIDTH, Color::White, meshData, vertexOffset, indexOffset);
-			}
-			else
-			{
-				ShapeMeshes3D::antialiasedLine(lineStartX, lineEndX, Vector3::UNIT_Y, LINE_WIDTH,
-					LINE_BORDER_WIDTH, Color::White, meshData, vertexOffset, indexOffset);
-			}
-
-			vertexOffset += ShapeMeshes3D::NUM_VERTICES_AA_LINE;
-			indexOffset += ShapeMeshes3D::NUM_INDICES_AA_LINE;
-
-			INT32 z = startZ + i;
-			float linePosZ = z * mSpacing;
-
-			Vector3 lineStartZ(minX, 0, linePosZ);
-			Vector3 lineEndZ(maxX, 0, linePosZ);
-
-			if (z % mAxisMarkerSpacing == 0)
-			{
-				ShapeMeshes3D::antialiasedLine(lineStartZ, lineEndZ, Vector3::UNIT_Y, AXIS_MARKER_WIDTH,
-					AXIS_MARKER_BORDER_WIDTH, AXIS_Z_MARKER_COLOR, meshData, vertexOffset, indexOffset);
-			}
-			else if (z % mMajorAxisSpacing == 0)
-			{
-				ShapeMeshes3D::antialiasedLine(lineStartZ, lineEndZ, Vector3::UNIT_Y, MAJOR_AXIS_WIDTH,
-					MAJOR_AXIS_BORDER_WIDTH, Color::White, meshData, vertexOffset, indexOffset);
-			}
-			else
-			{
-				ShapeMeshes3D::antialiasedLine(lineStartZ, lineEndZ, Vector3::UNIT_Y, LINE_WIDTH,
-					LINE_BORDER_WIDTH, Color::White, meshData, vertexOffset, indexOffset);
-			}
-
-			vertexOffset += ShapeMeshes3D::NUM_VERTICES_AA_LINE;
-			indexOffset += ShapeMeshes3D::NUM_INDICES_AA_LINE;
-		}
-
+		ShapeMeshes3D::solidQuad(quad, meshData, 0, 0);
 		mGridMesh = Mesh::create(meshData);
 	}
 }

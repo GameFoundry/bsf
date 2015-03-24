@@ -219,6 +219,8 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::GizmoPickingPSFile = L"pickingGizmoPS.gpuprog";
 	const WString BuiltinEditorResources::GizmoPickingAlphaVSFile = L"pickingGizmoAlphaVS.gpuprog";
 	const WString BuiltinEditorResources::GizmoPickingAlphaPSFile = L"pickingGizmoAlphaPS.gpuprog";
+	const WString BuiltinEditorResources::SelectionVSFile = L"selectionVS.gpuprog";
+	const WString BuiltinEditorResources::SelectionPSFile = L"selectionPS.gpuprog";
 
 	BuiltinEditorResources::BuiltinEditorResources(RenderSystemPlugin activeRSPlugin)
 		:mRenderSystemPlugin(activeRSPlugin)
@@ -256,6 +258,7 @@ namespace BansheeEngine
 		initGizmoPickingAlphaShader();
 		initWireHandleShader();
 		initSolidHandleShader();
+		initSelectionShader();
 
 		Path fontPath = FileSystem::getWorkingDirectoryPath();
 		fontPath.append(DefaultSkinFolder);
@@ -1211,6 +1214,8 @@ namespace BansheeEngine
 			{ GizmoPickingPSFile,		"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"hlsl", HLSL11ShaderSubFolder },
 			{ GizmoPickingAlphaVSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL11ShaderSubFolder },
 			{ GizmoPickingAlphaPSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"hlsl", HLSL11ShaderSubFolder },
+			{ SelectionVSFile,			"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL11ShaderSubFolder },
+			{ SelectionPSFile,			"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"hlsl", HLSL11ShaderSubFolder },
 			{ SceneGridVSFile,			"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_2_0,		"hlsl", HLSL9ShaderSubFolder },
 			{ SceneGridPSFile,			"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_2_0,		"hlsl", HLSL9ShaderSubFolder },
 			{ ShaderDockOverlayVSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_2_0,		"hlsl", HLSL9ShaderSubFolder },
@@ -1231,8 +1236,10 @@ namespace BansheeEngine
 			{ GizmoPickingPSFile,		"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_3_0,		"hlsl", HLSL9ShaderSubFolder },
 			{ GizmoPickingAlphaVSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_3_0,		"hlsl", HLSL9ShaderSubFolder },
 			{ GizmoPickingAlphaPSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_3_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ SceneGridVSFile,			"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
-			{ SceneGridPSFile,			"main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"glsl", GLSLShaderSubFolder },
+			{ SelectionVSFile,			"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_2_0,		"hlsl", HLSL9ShaderSubFolder },
+			{ SelectionPSFile,			"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_2_0,		"hlsl", HLSL9ShaderSubFolder },
+			{ SceneGridVSFile,			"main",		GPT_VERTEX_PROGRAM,		GPP_VS_2_0,		"glsl", GLSLShaderSubFolder },
+			{ SceneGridPSFile,			"main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_2_0,		"glsl", GLSLShaderSubFolder },
 			{ ShaderDockOverlayVSFile,	"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
 			{ ShaderDockOverlayPSFile,	"main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"glsl", GLSLShaderSubFolder },
 			{ PickingVSFile,			"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
@@ -1251,6 +1258,8 @@ namespace BansheeEngine
 			{ GizmoPickingPSFile,		"main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"glsl", GLSLShaderSubFolder },
 			{ GizmoPickingAlphaVSFile,	"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
 			{ GizmoPickingAlphaPSFile,	"main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"glsl", GLSLShaderSubFolder },
+			{ SelectionVSFile,			"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
+			{ SelectionPSFile,			"main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"glsl", GLSLShaderSubFolder },
 		};
 
 		if (FileSystem::exists(DefaultSkinFolderRaw))
@@ -1433,17 +1442,29 @@ namespace BansheeEngine
 
 		HRasterizerState rasterizerState = RasterizerState::create(rasterizerDesc);
 
+		DEPTH_STENCIL_STATE_DESC depthStencilDesc;
+		depthStencilDesc.depthWriteEnable = false;
+
+		HDepthStencilState depthStencilState = DepthStencilState::create(depthStencilDesc);
+
 		PASS_DESC passDesc;
 		passDesc.vertexProgram = vsProgram;
 		passDesc.fragmentProgram = psProgram;
 		passDesc.blendState = blendState;
 		passDesc.rasterizerState = rasterizerState;
+		passDesc.depthStencilState = depthStencilState;
 
 		PassPtr newPass = Pass::create(passDesc);
 		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass });
 
 		SHADER_DESC shaderDesc;
 		shaderDesc.addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
+		shaderDesc.addParameter("worldCameraPos", "worldCameraPos", GPDT_FLOAT4);
+		shaderDesc.addParameter("gridColor", "gridColor", GPDT_FLOAT4);
+		shaderDesc.addParameter("gridSpacing", "gridSpacing", GPDT_FLOAT1);
+		shaderDesc.addParameter("gridBorderWidth", "gridBorderWidth", GPDT_FLOAT1);
+		shaderDesc.addParameter("gridFadeOutStart", "gridFadeOutStart", GPDT_FLOAT1);
+		shaderDesc.addParameter("gridFadeOutEnd", "gridFadeOutEnd", GPDT_FLOAT1);
 
 		mShaderSceneGrid = Shader::create("SceneGridShader", shaderDesc, { newTechnique });
 	}
@@ -1723,6 +1744,41 @@ namespace BansheeEngine
 		mShaderGizmoAlphaPicking = Shader::create("GizmoPickingAlphaShader", shaderDesc, { newTechnique });
 	}
 
+	void BuiltinEditorResources::initSelectionShader()
+	{
+		HGpuProgram vsProgram = getGpuProgram(SelectionVSFile);
+		HGpuProgram psProgram = getGpuProgram(SelectionPSFile);
+
+		RASTERIZER_STATE_DESC rasterizerDesc;
+		rasterizerDesc.polygonMode = PM_WIREFRAME;
+		rasterizerDesc.depthBias = 10000;
+
+		HRasterizerState rasterizerState = RasterizerState::create(rasterizerDesc);
+
+		BLEND_STATE_DESC blendDesc;
+		blendDesc.renderTargetDesc[0].blendEnable = true;
+		blendDesc.renderTargetDesc[0].srcBlend = BF_SOURCE_ALPHA;
+		blendDesc.renderTargetDesc[0].dstBlend = BF_INV_SOURCE_ALPHA;
+		blendDesc.renderTargetDesc[0].blendOp = BO_ADD;
+
+		HBlendState blendState = BlendState::create(blendDesc);
+
+		PASS_DESC passDesc;
+		passDesc.vertexProgram = vsProgram;
+		passDesc.fragmentProgram = psProgram;
+		passDesc.rasterizerState = rasterizerState;
+		passDesc.blendState = blendState;
+
+		PassPtr newPass = Pass::create(passDesc);
+		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass });
+
+		SHADER_DESC shaderDesc;
+		shaderDesc.addParameter("matWorldViewProj", "matWorldViewProj", GPDT_MATRIX_4X4);
+		shaderDesc.addParameter("color", "color", GPDT_FLOAT4);
+
+		mShaderSelection = Shader::create("Selection", shaderDesc, { newTechnique });
+	}
+
 	HMaterial BuiltinEditorResources::createDockDropOverlayMaterial() const
 	{
 		return Material::create(mShaderDockOverlay);
@@ -1780,5 +1836,10 @@ namespace BansheeEngine
 	HMaterial BuiltinEditorResources::createSolidHandleMat() const
 	{
 		return Material::create(mShaderHandleSolid);
+	}
+
+	HMaterial BuiltinEditorResources::createSelectionMat() const
+	{
+		return Material::create(mShaderSelection);
 	}
 }

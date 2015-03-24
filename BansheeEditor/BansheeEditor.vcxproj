@@ -341,6 +341,7 @@
     <ClInclude Include="Include\BsSceneGrid.h" />
     <ClInclude Include="Include\BsSceneViewHandler.h" />
     <ClInclude Include="Include\BsSelection.h" />
+    <ClInclude Include="Include\BsSelectionRenderer.h" />
     <ClInclude Include="Include\BsTestTextSprite.h" />
     <ClInclude Include="Include\DbgEditorWidget1.h" />
     <ClInclude Include="Include\DbgEditorWidget2.h" />
@@ -410,6 +411,7 @@
     <ClCompile Include="Source\BsSceneGrid.cpp" />
     <ClCompile Include="Source\BsSceneViewHandler.cpp" />
     <ClCompile Include="Source\BsSelection.cpp" />
+    <ClCompile Include="Source\BsSelectionRenderer.cpp" />
     <ClCompile Include="Source\BsUndoRedo.cpp" />
     <ClCompile Include="Source\BsEditorApplication.cpp" />
     <ClCompile Include="Source\BsTestTextSprite.cpp" />

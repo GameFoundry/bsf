@@ -66,6 +66,7 @@ namespace BansheeEngine
 	class SceneCameraController;
 	class EditorSettings;
 	class SceneViewHandler;
+	class SelectionRenderer;
 
 	typedef std::shared_ptr<ProjectResourceMeta> ProjectResourceMetaPtr;
 	typedef std::shared_ptr<DockManagerLayout> DockManagerLayoutPtr;

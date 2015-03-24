@@ -12,6 +12,7 @@
 #include "BsEditorWindowBase.h"
 #include "BsRenderWindow.h"
 #include "BsCursor.h"
+#include "BsSelectionRenderer.h"
 
 #include "BsDebug.h"
 
@@ -23,6 +24,7 @@ namespace BansheeEngine
 		:mCamera(camera), mSceneGrid(nullptr), mParentWidget(parentWidget)
 	{
 		mRenderCallback = RendererManager::instance().getActive()->onRenderViewport.connect(std::bind(&SceneViewHandler::render, this, _1, _2));
+		mSelectionRenderer = bs_new<SelectionRenderer>();
 		mSceneGrid = bs_new<SceneGrid>();
 		mSceneGrid->setSettings(gEditorApplication().getEditorSettings());
 		HandleManager::instance().setSettings(gEditorApplication().getEditorSettings());
@@ -31,6 +33,7 @@ namespace BansheeEngine
 	SceneViewHandler::~SceneViewHandler()
 	{
 		bs_delete(mSceneGrid);
+		bs_delete(mSelectionRenderer);
 		mRenderCallback.disconnect();
 
 		if (GizmoManager::isStarted()) // If not active, we don't care
@@ -39,6 +42,7 @@ namespace BansheeEngine
 
 	void SceneViewHandler::update()
 	{
+		mSelectionRenderer->update(mCamera);
 		GizmoManager::instance().update(mCamera);
 		mSceneGrid->update();
 	}

@@ -240,7 +240,7 @@ namespace BansheeEngine
 	void GUIElement::_refreshStyle()
 	{
 		const GUIElementStyle* newStyle = nullptr;
-		if(_getParentWidget() != nullptr)
+		if(_getParentWidget() != nullptr && !mStyleName.empty())
 			newStyle = _getParentWidget()->getSkin().getStyle(mStyleName);
 		else
 			newStyle = &GUISkin::DefaultStyle;

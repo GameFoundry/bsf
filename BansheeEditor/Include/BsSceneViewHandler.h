@@ -27,6 +27,7 @@ namespace BansheeEngine
 		EditorWidgetBase* mParentWidget;
 		SPtr<CameraHandler> mCamera;
 		SceneGrid* mSceneGrid;
+		SelectionRenderer* mSelectionRenderer;
 		HEvent mRenderCallback;
 
 		Vector2I mMouseDeltaCompensate;

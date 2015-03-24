@@ -28,6 +28,12 @@ namespace BansheeEngine
 		HMesh mGridMesh;
 		HMaterial mGridMaterial;
 		MaterialParamMat4 mViewProjParam;
+		MaterialParamVec4 mWorldCameraPosParam;
+		MaterialParamColor mGridColorParam;
+		MaterialParamFloat mGridSpacingParam;
+		MaterialParamFloat mGridBorderWidthParam;
+		MaterialParamFloat mGridFadeOutStartParam;
+		MaterialParamFloat mGridFadeOutEndParam;
 		VertexDataDescPtr mVertexDesc;
 
 		EditorSettingsPtr mSettings;
@@ -39,6 +45,7 @@ namespace BansheeEngine
 		UINT32 mMajorAxisSpacing = 10;
 		UINT32 mAxisMarkerSpacing = 25;
 
+		static const Color GRID_LINE_COLOR;
 		static const float LINE_WIDTH;
 		static const float LINE_BORDER_WIDTH;
 		static const float MAJOR_AXIS_WIDTH;
@@ -47,5 +54,7 @@ namespace BansheeEngine
 		static const float AXIS_MARKER_BORDER_WIDTH;
 		static const Color AXIS_X_MARKER_COLOR;
 		static const Color AXIS_Z_MARKER_COLOR;
+		static const float FADE_OUT_START;
+		static const float FADE_OUT_END;
 	};
 }

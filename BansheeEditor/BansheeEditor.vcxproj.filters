@@ -273,6 +273,9 @@
     <ClInclude Include="Include\BsBuildDataRTTI.h">
       <Filter>Header Files\Editor\RTTI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsSelectionRenderer.h">
+      <Filter>Header Files\Editor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsEditorWidgetContainer.cpp">
@@ -477,6 +480,9 @@
       <Filter>Source Files\Editor</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsPlatformInfo.cpp">
+      <Filter>Source Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsSelectionRenderer.cpp">
       <Filter>Source Files\Editor</Filter>
     </ClCompile>
   </ItemGroup>

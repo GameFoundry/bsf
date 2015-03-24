@@ -69,6 +69,11 @@ namespace BansheeEngine
 		 */
 		HMaterial createSolidHandleMat() const;
 
+		/**
+		 * @brief	Creates a material used for displaying selected objects.
+		 */
+		HMaterial createSelectionMat() const;
+
 		static const String ObjectFieldStyleName;
 		static const String ObjectFieldLabelStyleName;
 		static const String ObjectFieldDropBtnStyleName;
@@ -155,6 +160,11 @@ namespace BansheeEngine
 		 */
 		void initSolidHandleShader();
 
+		/**
+		 * @brief	Loads and compiles a shader used for displaying selected objects.
+		 */
+		void initSelectionShader();
+
 		RenderSystemPlugin mRenderSystemPlugin;
 		WString mActiveShaderSubFolder;
 		String mActiveRenderSystem;
@@ -170,6 +180,7 @@ namespace BansheeEngine
 		HShader mShaderGizmoAlphaPicking;
 		HShader mShaderHandleSolid;
 		HShader mShaderHandleWire;
+		HShader mShaderSelection;
 
 		GUISkin mSkin;
 
@@ -332,5 +343,7 @@ namespace BansheeEngine
 		static const WString GizmoPickingPSFile;
 		static const WString GizmoPickingAlphaVSFile;
 		static const WString GizmoPickingAlphaPSFile;
+		static const WString SelectionVSFile;
+		static const WString SelectionPSFile;
 	};
 }

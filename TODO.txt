@@ -19,38 +19,6 @@ My GUID generation is screwed up. If multiple GUIDs are generated in succession 
 the same and the only variable will be the 4byte random number, which can sometimes end up identical to the previous number.
 
 ----------------------------------------------------------------------
-MenuItem
-
-TEST the new MenuItem (C#) and menu shortcut GUI, and menu shortcut functionality
-
-When closing a sub-menu I think I need to call "GUIDropDownBoxManager::instance().closeDropDownBox();" at some point (i.e. when last sub-menu is closed?).
- - Also when a submenu is closed or opened I should set some kind of focus on it, so it knows to accept/reject keyboard input
- - "Esc" should move back one sub-menu instead of closing all of it
-
-LATER: Add keyboard controls to GUIMenuBar (left/right arrows should move between entries if user is not browsing a sub-menu)
- - esc should cancel out of the menu bar
- - alt should focus the menu bar
-
-----------------------------------------------------------------------
-VisualStudio integration
-
-VS integration will likely not work with VSExpress or Community edition
- - VSExpress doesn't support EnvDTE so the only option is to open it using a shell command which doesn't seem to offer precise parameters
- - Community edition should work similarily to Pro, but might have a different executable and/or registry paths
-
-For later:
- - Make sure that 3rd party assemblies can be imported in the project, and that they are properly referenced in VS project generation and compilation
-
-----------------------------------------------------------------------
-Script compilation
-
-For later:
- - I need to hook up script compilation with assembly refresh, and the build system.
-   - e.g. when recompiling inside the editor it should automatically start compiling when changes are detected,
-     show some kind of visual indicator and refresh assemblies when its done. When publishing it should recompile
-	 assemblies for release. Also hook up console to compiler output?
-
-----------------------------------------------------------------------
 BuiltinResources
  - All data in ..\..\BuiltinData (if we start in /bin/Release/BansheeEd.exe)
  - Need BuiltinEngine and BuiltinEditor (separate classes) that internally do pretty much the same thing
@@ -140,6 +108,16 @@ Need a way to drag and drop items from Scene tree view to Scene view
 ----------------------------------------------------------------------
 Other
 
+Constant errors when rendering in DX11, and assert in DX9 when attempting to bind a texture to a shader
+Check in new grid and selection shaders
+ - Test DX9 grid shader
+
+Test selection DX9 and DX11
+
+Grid shader:
+ - Jaggies are significantly more noticable here than in Unity
+ - It doesn't render properly when intersecting geometry
+
 Got a crash on shutdown that was caused by locking a mutex in an Event destructor. Event was Platform::onMouseCaptureChanged. 
 Issue happened when I closed the app via the X button (if that's relevant). It doesn't seem to happen always.
 
@@ -175,9 +153,27 @@ Mono cannot marshal structures? Taken from their documentation:
  (excluding the system types like int32, int64, etc) must be passed as a pointer, in C# this means passing the value as a "ref" or "out" parameter.
 
 ----------------------------------------------------------------------
-SelectionRenderer
+MenuItem
 
-Retrieve a list of selected objects from SelectionManager
-Find ones with Renderable components
-Retrieve Meshes, and world transforms from them
-Draw that same mesh with either a wireframe or a grayed out shader with a slight depth bias
+LATER: Add keyboard controls to GUIMenuBar (left/right arrows should move between entries if user is not browsing a sub-menu)
+ - esc should cancel out of the menu bar
+ - alt should focus the menu bar
+
+----------------------------------------------------------------------
+VisualStudio integration
+
+VS integration will likely not work with VSExpress or Community edition
+ - VSExpress doesn't support EnvDTE so the only option is to open it using a shell command which doesn't seem to offer precise parameters
+ - Community edition should work similarily to Pro, but might have a different executable and/or registry paths
+
+For later:
+ - Make sure that 3rd party assemblies can be imported in the project, and that they are properly referenced in VS project generation and compilation
+
+----------------------------------------------------------------------
+Script compilation
+
+For later:
+ - I need to hook up script compilation with assembly refresh, and the build system.
+   - e.g. when recompiling inside the editor it should automatically start compiling when changes are detected,
+     show some kind of visual indicator and refresh assemblies when its done. When publishing it should recompile
+	 assemblies for release. Also hook up console to compiler output?
