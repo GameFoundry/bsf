@@ -28,12 +28,13 @@ namespace BansheeEngine
 			UINT32 paddingY = child->_getPadding().top + child->_getPadding().bottom;
 
 			layoutSizeRange.optimal.y += sizeRange.optimal.y + paddingY;
-			layoutSizeRange.min.y += sizeRange.min.y + paddingY;
-
 			layoutSizeRange.optimal.x = std::max((UINT32)layoutSizeRange.optimal.x, sizeRange.optimal.x + paddingX);
-			layoutSizeRange.min.x = std::max((UINT32)layoutSizeRange.min.x, sizeRange.min.x + paddingX);
 		}
 
+		// Layout has no min or max, it respects the bounds of its parent element and
+		// child elements
+		layoutSizeRange.min.x = 0;
+		layoutSizeRange.min.y = 0;
 		layoutSizeRange.max.x = 0;
 		layoutSizeRange.max.y = 0;
 
@@ -81,14 +82,15 @@ namespace BansheeEngine
 			UINT32 paddingY = child->_getPadding().top + child->_getPadding().bottom;
 
 			mSizeRange.optimal.y += childSizeRange.optimal.y + paddingY;
-			mSizeRange.min.y += childSizeRange.min.y + paddingY;
-
 			mSizeRange.optimal.x = std::max((UINT32)mSizeRange.optimal.x, childSizeRange.optimal.x + paddingX);
-			mSizeRange.min.x = std::max((UINT32)mSizeRange.min.x, childSizeRange.min.x + paddingX);
 
 			childIdx++;
 		}
 
+		// Layout has no min or max, it respects the bounds of its parent element and
+		// child elements
+		mSizeRange.min.x = 0;
+		mSizeRange.min.y = 0;
 		mSizeRange.max.x = 0;
 		mSizeRange.max.y = 0;
 	}

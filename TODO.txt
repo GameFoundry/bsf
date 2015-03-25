@@ -76,6 +76,14 @@ Other simple stuff:
  - GUI TextureField similar to ResourceField but it displays the texture it has assigned
  - Getting rid of import on start would be a pretty big deal. Just adding a button in Editor "Reimport" should be good instead
 
+Minor issues:
+ - When opening up Color picker it is screwed up for a frame or two
+ - When selecting a mesh, handle shows up first, and only then the selection render
+ - When initially loading the program mesh texture is screwed up for a frame or two (OpenGL - garbage, DX9 - black, DX11 - seems okay)
+ - Attemping to select a mesh while another window is focused doesn't work. Only after first click focuses the window will it work after user clicks again. (OpenGL only?)
+ - Grid depth is wrong
+ - Grid jaggies seem worse than on my test grid
+
 ----------------------------------------------------------------------
 Handles
 

@@ -12,9 +12,9 @@
 
 namespace BansheeEngine
 {
-	const Color SceneGrid::GRID_LINE_COLOR = Color(1.0f, 1.0f, 1.0f);
+	const Color SceneGrid::GRID_LINE_COLOR = Color(0.5f, 0.5f, 0.5f);
 	const float SceneGrid::LINE_WIDTH = 0.025f;
-	const float SceneGrid::LINE_BORDER_WIDTH = 0.0075f;
+	const float SceneGrid::LINE_BORDER_WIDTH = 0.00075f;
 	const float SceneGrid::MAJOR_AXIS_WIDTH = 0.075f;
 	const float SceneGrid::MAJOR_AXIS_BORDER_WIDTH = 0.015f;
 	const float SceneGrid::AXIS_MARKER_WIDTH = 0.1f;
