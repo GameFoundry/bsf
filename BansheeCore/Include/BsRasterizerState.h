@@ -28,7 +28,7 @@ namespace BansheeEngine
 		PolygonMode polygonMode;
 		CullingMode cullMode;
 
-		int depthBias;
+		float depthBias;
 		float depthBiasClamp;
 		float slopeScaledDepthBias;
 
@@ -65,7 +65,7 @@ namespace BansheeEngine
 		*
 		* @note		This is useful if you want to avoid z fighting for objects at the same or similar depth.
 		*/
-		int getDepthBias() const { return mData.depthBias; }
+		float getDepthBias() const { return mData.depthBias; }
 
 		/**
 		 * @brief	Maximum depth bias value.

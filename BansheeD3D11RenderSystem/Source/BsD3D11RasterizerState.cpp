@@ -19,12 +19,14 @@ namespace BansheeEngine
 
 	void D3D11RasterizerStateCore::initialize()
 	{
+		INT32 scaledDepthBias = Math::floorToInt(-mProperties.getDepthBias() * float((1 << 24))); // Note: Assumes 24-bit depth buffer
+
 		D3D11_RASTERIZER_DESC rasterizerStateDesc;
 		ZeroMemory(&rasterizerStateDesc, sizeof(D3D11_RASTERIZER_DESC));
 
 		rasterizerStateDesc.AntialiasedLineEnable = mProperties.getAntialiasedLineEnable();
 		rasterizerStateDesc.CullMode = D3D11Mappings::get(mProperties.getCullMode());
-		rasterizerStateDesc.DepthBias = mProperties.getDepthBias();
+		rasterizerStateDesc.DepthBias = scaledDepthBias;
 		rasterizerStateDesc.DepthBiasClamp = mProperties.getDepthBiasClamp();
 		rasterizerStateDesc.DepthClipEnable = mProperties.getDepthClipEnable();
 		rasterizerStateDesc.FillMode = D3D11Mappings::get(mProperties.getPolygonMode());

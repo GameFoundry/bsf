@@ -94,7 +94,7 @@ namespace BansheeEngine
 
 	void D3D9TextureCore::readData(PixelData& dest, UINT32 mipLevel, UINT32 face)
 	{
-		if (mProperties.getMultisampleCount() > 0)
+		if (mProperties.getMultisampleCount() > 1)
 			BS_EXCEPT(InvalidStateException, "Multisampled textures cannot be accessed from the CPU directly.");
 
 		if (mProperties.getUsage() == TU_DEPTHSTENCIL || mProperties.getUsage() == TU_RENDERTARGET) // Render targets cannot be locked normally

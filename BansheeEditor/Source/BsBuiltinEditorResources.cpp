@@ -1751,7 +1751,7 @@ namespace BansheeEngine
 
 		RASTERIZER_STATE_DESC rasterizerDesc;
 		rasterizerDesc.polygonMode = PM_WIREFRAME;
-		rasterizerDesc.depthBias = 10000;
+		rasterizerDesc.depthBias = 0.00001f;
 
 		HRasterizerState rasterizerState = RasterizerState::create(rasterizerDesc);
 

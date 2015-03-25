@@ -590,7 +590,7 @@ namespace BansheeEngine
 
 		const RasterizerProperties& stateProps = rasterizerState->getProperties();
 
-		setDepthBias((float)stateProps.getDepthBias(), stateProps.getSlopeScaledDepthBias());
+		setDepthBias(stateProps.getDepthBias(), stateProps.getSlopeScaledDepthBias());
 
 		setCullingMode(stateProps.getCullMode());
 
@@ -853,9 +853,7 @@ namespace BansheeEngine
 		if ((mDeviceManager->getActiveDevice()->getD3D9DeviceCaps().RasterCaps & D3DPRASTERCAPS_DEPTHBIAS) != 0)
 		{
 			// Negate bias since D3D is backward
-			// D3D also expresses the constant bias as an absolute value, rather than 
-			// relative to minimum depth unit, so scale to fit
-			constantBias = -constantBias / 250000.0f;
+			constantBias = -constantBias;
 			HRESULT hr = setRenderState(D3DRS_DEPTHBIAS, *((DWORD*)&constantBias));
 			if (FAILED(hr))
 				BS_EXCEPT(RenderingAPIException, "Error setting constant depth bias");

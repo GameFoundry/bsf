@@ -522,7 +522,7 @@ namespace BansheeEngine
 
 		const RasterizerProperties& stateProps = rasterizerState->getProperties();
 
-		setDepthBias((float)stateProps.getDepthBias(), stateProps.getSlopeScaledDepthBias());
+		setDepthBias(stateProps.getDepthBias(), stateProps.getSlopeScaledDepthBias());
 
 		setCullingMode(stateProps.getCullMode());
 
@@ -1148,7 +1148,9 @@ namespace BansheeEngine
 			glEnable(GL_POLYGON_OFFSET_FILL);
 			glEnable(GL_POLYGON_OFFSET_POINT);
 			glEnable(GL_POLYGON_OFFSET_LINE);
-			glPolygonOffset(-slopeScaleBias, -constantBias);
+
+			float scaledConstantBias = -constantBias * float((1 << 24) - 1); // Note: Assumes 24-bit depth buffer
+			glPolygonOffset(slopeScaleBias, scaledConstantBias);
 		}
 		else
 		{
