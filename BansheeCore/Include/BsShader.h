@@ -49,6 +49,8 @@ namespace BansheeEngine
 	 */
 	struct BS_CORE_EXPORT SHADER_DESC
 	{
+		SHADER_DESC();
+
 		/**
 		 * @brief	Registers a new data (int, Vector2, etc.) parameter you that you may then use 
 		 *			via Material by providing the parameter name. All parameters internally map to 
@@ -123,7 +125,7 @@ namespace BansheeEngine
 		 *			provided in "QueuePriority" are just for general guidance and feel free to increase them
 		 *			or decrease them for finer tuning. (e.g. "QueuePriority::Opaque + 1").
 		 */
-		UINT32 queuePriority;
+		INT32 queuePriority;
 
 		/**
 		 * @brief	Enables or disables separable passes. When separable passes are disabled
@@ -167,7 +169,7 @@ namespace BansheeEngine
 		 *
 		 * @see		SHADER_DESC::queuePriority
 		 */
-		UINT32 getQueuePriority() const { return mDesc.queuePriority; }
+		INT32 getQueuePriority() const { return mDesc.queuePriority; }
 
 		/**
 		 * @brief	Returns if separable passes are allowed.

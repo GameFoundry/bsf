@@ -1465,6 +1465,7 @@ namespace BansheeEngine
 		shaderDesc.addParameter("gridBorderWidth", "gridBorderWidth", GPDT_FLOAT1);
 		shaderDesc.addParameter("gridFadeOutStart", "gridFadeOutStart", GPDT_FLOAT1);
 		shaderDesc.addParameter("gridFadeOutEnd", "gridFadeOutEnd", GPDT_FLOAT1);
+		shaderDesc.queuePriority = -10000;
 
 		mShaderSceneGrid = Shader::create("SceneGridShader", shaderDesc, { newTechnique });
 	}

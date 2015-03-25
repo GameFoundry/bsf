@@ -37,7 +37,7 @@ namespace BansheeEngine
 			RenderQueueElement element;
 			QueueSortType sortType;
 			UINT32 seqIdx;
-			UINT32 priority;
+			INT32 priority;
 			float distFromCamera;
 		};
 

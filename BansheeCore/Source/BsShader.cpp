@@ -9,6 +9,12 @@
 
 namespace BansheeEngine
 {
+	SHADER_DESC::SHADER_DESC()
+		:queuePriority(0), queueSortType(QueueSortType::None), separablePasses(false)
+	{
+
+	}
+
 	void SHADER_DESC::addParameter(const String& name, const String& gpuVariableName, GpuParamDataType type, UINT32 rendererSemantic, UINT32 arraySize, UINT32 elementSize)
 	{
 		if(type == GPDT_STRUCT && elementSize <= 0)

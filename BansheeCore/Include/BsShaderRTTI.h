@@ -205,8 +205,8 @@ namespace BansheeEngine
 		UINT32& getQueueSortType(Shader* obj) { return (UINT32&)obj->mDesc.queueSortType; }
 		void setQueueSortType(Shader* obj, UINT32& value) { obj->mDesc.queueSortType = (QueueSortType)value; }
 
-		UINT32& getQueuePriority(Shader* obj) { return obj->mDesc.queuePriority; }
-		void setQueuePriority(Shader* obj, UINT32& value) { obj->mDesc.queuePriority = value; }
+		INT32& getQueuePriority(Shader* obj) { return obj->mDesc.queuePriority; }
+		void setQueuePriority(Shader* obj, INT32& value) { obj->mDesc.queuePriority = value; }
 
 		bool& getAllowSeparablePasses(Shader* obj) { return obj->mDesc.separablePasses; }
 		void setAllowSeparablePasses(Shader* obj, bool& value) { obj->mDesc.separablePasses = value; }
