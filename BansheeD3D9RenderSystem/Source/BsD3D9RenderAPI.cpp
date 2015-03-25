@@ -2161,7 +2161,7 @@ namespace BansheeEngine
 			}
 			else // !CSAA
 			{
-				*outMultisampleType = (D3DMULTISAMPLE_TYPE)multisampleCount;
+				*outMultisampleType = D3DMULTISAMPLE_NONE;
 				*outMultisampleQuality = 0;
 			}
 

@@ -903,7 +903,7 @@ namespace BansheeEngine
 		if ((texUsage & TU_RENDERTARGET) != 0 && (mMultisampleType != D3DMULTISAMPLE_NONE))
 		{
 			assert(textureResources->pMultisampleSurface);
-			assert(texUsage == TEX_TYPE_2D);
+			assert(texType == TEX_TYPE_2D);
 
 			D3D9PixelBuffer* currPixelBuffer = static_cast<D3D9PixelBuffer*>(mSurfaceList[0].get());
 
@@ -912,7 +912,7 @@ namespace BansheeEngine
 		else if ((texUsage & TU_DEPTHSTENCIL) != 0 && (mMultisampleType != D3DMULTISAMPLE_NONE))
 		{
 			assert(textureResources->pDepthStencilSurface);
-			assert(texUsage == TEX_TYPE_2D);
+			assert(texType == TEX_TYPE_2D);
 
 			D3D9PixelBuffer* currPixelBuffer = static_cast<D3D9PixelBuffer*>(mSurfaceList[0].get());
 

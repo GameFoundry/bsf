@@ -65,7 +65,10 @@ namespace BansheeEngine
 		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
 
-		if (mProperties.getMultisampleCount() != target->getProperties().getMultisampleCount()) // Resolving from MS to non-MS texture
+		bool srcHasMultisample = mProperties.getMultisampleCount() > 1;
+		bool destHasMultisample = target->getProperties().getMultisampleCount() > 1;
+
+		if (srcHasMultisample && destHasMultisample && mProperties.getMultisampleCount() != target->getProperties().getMultisampleCount()) // Resolving from MS to non-MS texture
 		{
 			device.getImmediateContext()->ResolveSubresource(other->getDX11Resource(), destResIdx, mTex, srcResIdx, mDXGIFormat);
 		}
@@ -83,7 +86,7 @@ namespace BansheeEngine
 
 	PixelData D3D11TextureCore::lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face)
 	{
-		if (mProperties.getMultisampleCount() > 0)
+		if (mProperties.getMultisampleCount() > 1)
 			BS_EXCEPT(InvalidStateException, "Multisampled textures cannot be accessed from the CPU directly.");
 
 #if BS_PROFILING_ENABLED
@@ -149,7 +152,7 @@ namespace BansheeEngine
 
 	void D3D11TextureCore::readData(PixelData& dest, UINT32 mipLevel, UINT32 face)
 	{
-		if (mProperties.getMultisampleCount() > 0)
+		if (mProperties.getMultisampleCount() > 1)
 			BS_EXCEPT(InvalidStateException, "Multisampled textures cannot be accessed from the CPU directly.");
 
 		PixelData myData = lock(GBL_READ_ONLY, mipLevel, face);
@@ -171,7 +174,7 @@ namespace BansheeEngine
 	{
 		PixelFormat format = mProperties.getFormat();
 
-		if (mProperties.getMultisampleCount() > 0)
+		if (mProperties.getMultisampleCount() > 1)
 			BS_EXCEPT(InvalidStateException, "Multisampled textures cannot be accessed from the CPU directly.");
 
 		if ((mProperties.getUsage() & TU_DYNAMIC) != 0)
@@ -439,7 +442,7 @@ namespace BansheeEngine
 
 			if((usage & TU_RENDERTARGET) != 0)
 			{
-				if (sampleCount > 0)
+				if (sampleCount > 1)
 				{
 					mSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DMS;
 					mSRVDesc.Texture2D.MostDetailedMip = 0;
@@ -481,7 +484,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			if (sampleCount > 0)
+			if (sampleCount > 1)
 				mDimension = D3D11_SRV_DIMENSION_TEXTURE2DMS;
 			else
 				mDimension = D3D11_SRV_DIMENSION_TEXTURE2D;

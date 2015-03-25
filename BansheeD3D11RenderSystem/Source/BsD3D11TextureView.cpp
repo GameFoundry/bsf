@@ -45,7 +45,7 @@ namespace BansheeEngine
 			desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE1D;
 			break;
 		case TEX_TYPE_2D:
-			if (texProps.getMultisampleCount() > 0)
+			if (texProps.getMultisampleCount() > 1)
 			{
 				desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DMS;
 			}
@@ -100,7 +100,7 @@ namespace BansheeEngine
 			desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE1D;
 			break;
 		case TEX_TYPE_2D:
-			if (texProps.getMultisampleCount() > 0)
+			if (texProps.getMultisampleCount() > 1)
 			{
 				desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
 			}
@@ -204,7 +204,7 @@ namespace BansheeEngine
 			desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE1D;
 			break;
 		case TEX_TYPE_2D:
-			if (texProps.getMultisampleCount() > 0)
+			if (texProps.getMultisampleCount() > 1)
 			{
 				desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
 			}
