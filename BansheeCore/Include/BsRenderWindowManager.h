@@ -15,16 +15,6 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT RenderWindowManager : public Module<RenderWindowManager>
 	{
 		/**
-		 * @brief	Holds a buffer that contains dirty data used for updating sim
-		 *			thread render windows after changes on the core thread.
-		 */
-		struct DirtyPropertyData
-		{
-			UINT8* data;
-			UINT32 size;
-		};
-
-		/**
 		 * @brief	Holds information about a window that was moved or resized.
 		 */
 		struct MoveOrResizeData
@@ -72,9 +62,9 @@ namespace BansheeEngine
 		void notifyMovedOrResized(RenderWindowCore* window);
 
 		/**
-		 * @brief	Called by the core thread when window properties change.
+		 * @brief	Called by the sim thread when window properties change.
 		 */
-		void notifyPropertiesDirty(RenderWindowCore* window);
+		void notifySyncDataDirty(RenderWindowCore* coreWindow);
 
 		/**
 		 * @brief	Returns a list of all open render windows.
@@ -109,11 +99,6 @@ namespace BansheeEngine
 		RenderWindow* getNonCore(const RenderWindowCore* window) const;
 
 		/**
-		 * @brief	Adds a new dirty property entry.
-		 */
-		void setDirtyProperties(RenderWindowCore* coreWindow);
-
-		/**
 		 * @copydoc	create
 		 */
 		virtual RenderWindowPtr createImpl(RENDER_WINDOW_DESC& desc, const RenderWindowPtr& parentWindow) = 0;
@@ -127,7 +112,7 @@ namespace BansheeEngine
 		RenderWindow* mNewWindowInFocus;
 		Vector<MoveOrResizeData> mMovedOrResizedWindows;
 		Vector<RenderWindow*> mMouseLeftWindows;
-		Map<RenderWindow*, DirtyPropertyData> mDirtyProperties;
+		UnorderedSet<RenderWindow*> mDirtyProperties;
 	};
 
 	/**
@@ -142,6 +127,18 @@ namespace BansheeEngine
 		 * @copydoc	RenderWindowCoreManager::create
 		 */
 		SPtr<RenderWindowCore> create(RENDER_WINDOW_DESC& desc);
+
+		/**
+		 * @brief	Called once per frame. Dispatches events.
+		 * 
+		 * @note	Internal method.
+		 */
+		void _update();
+
+		/**
+		 * @brief	Called by the core thread when window properties change.
+		 */
+		void notifySyncDataDirty(RenderWindowCore* window);
 
 		/**
 		 * @brief	Returns a list of all open render windows.
@@ -169,5 +166,6 @@ namespace BansheeEngine
 
 		BS_MUTEX(mWindowMutex);
 		Vector<RenderWindowCore*> mCreatedWindows;
+		UnorderedSet<RenderWindowCore*> mDirtyProperties;
 	};
 }

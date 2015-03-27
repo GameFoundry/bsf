@@ -60,7 +60,7 @@ namespace BansheeEngine
 
 	CoreApplication::CoreApplication(START_UP_DESC& desc)
 		:mPrimaryWindow(nullptr), mIsFrameRenderingFinished(true), mRunMainLoop(false), 
-		mRendererPlugin(nullptr)
+		mRendererPlugin(nullptr), mSimThreadId(BS_THREAD_CURRENT_ID)
 	{
 		signal(SIGABRT, handleAbort);
 
@@ -184,6 +184,7 @@ namespace BansheeEngine
 			PROFILE_CALL(gCoreSceneManager()._update(), "SceneManager");
 
 			gCoreThread().queueCommand(std::bind(&CoreApplication::beginCoreProfiling, this));
+			gCoreThread().queueCommand(std::bind(&RenderWindowCoreManager::_update, RenderWindowCoreManager::instancePtr()));
 			gCoreThread().queueCommand(std::bind(&QueryManager::_update, QueryManager::instancePtr()));
 
 			// Update plugins

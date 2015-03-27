@@ -20,7 +20,7 @@ namespace BansheeEngine
 	}
 
 	D3D9RenderWindowCore::D3D9RenderWindowCore(const RENDER_WINDOW_DESC& desc, HINSTANCE instance)
-		: RenderWindowCore(desc), mInstance(instance), mProperties(desc), mIsDepthBuffered(true), mIsChild(false), mHWnd(0),
+		: RenderWindowCore(desc), mInstance(instance), mProperties(desc), mSyncedProperties(desc), mIsDepthBuffered(true), mIsChild(false), mHWnd(0),
 		mStyle(0), mWindowedStyle(0), mWindowedStyleEx(0), mDevice(nullptr), mIsExternal(false), mDisplayFrequency(0), mDeviceValid(false)
 	{ }
 
@@ -237,6 +237,13 @@ namespace BansheeEngine
 
 		D3D9RenderAPI* rs = static_cast<D3D9RenderAPI*>(RenderAPICore::instancePtr());
 		rs->registerWindow(*this);
+
+		{
+			ScopedSpinLock lock(mLock);
+			mSyncedProperties = props;
+		}
+
+		RenderWindowManager::instance().notifySyncDataDirty(this);
 	}
 
 	void D3D9RenderWindowCore::setFullscreen(UINT32 width, UINT32 height, float refreshRate, UINT32 monitorIdx)
@@ -277,6 +284,15 @@ namespace BansheeEngine
 		mDevice->invalidate(this);
 		mDevice->acquire();
 
+		{
+			ScopedSpinLock lock(mLock);
+			mSyncedProperties.mTop = props.mTop;
+			mSyncedProperties.mLeft = props.mLeft;
+			mSyncedProperties.mWidth = props.mWidth;
+			mSyncedProperties.mHeight = props.mHeight;
+		}
+
+		RenderWindowManager::instance().notifySyncDataDirty(this);
 		RenderWindowManager::instance().notifyMovedOrResized(this);
 	}
 
@@ -325,6 +341,15 @@ namespace BansheeEngine
 		mDevice->invalidate(this);
 		mDevice->acquire();
 
+		{
+			ScopedSpinLock lock(mLock);
+			mSyncedProperties.mTop = props.mTop;
+			mSyncedProperties.mLeft = props.mLeft;
+			mSyncedProperties.mWidth = props.mWidth;
+			mSyncedProperties.mHeight = props.mHeight;
+		}
+
+		RenderWindowManager::instance().notifySyncDataDirty(this);
 		RenderWindowManager::instance().notifyMovedOrResized(this);
 	}
 
@@ -343,7 +368,7 @@ namespace BansheeEngine
 				ShowWindow(mHWnd, SW_SHOWNORMAL);
 		}
 
-		RenderWindowManager::instance().notifyPropertiesDirty(this);
+		RenderWindowCore::setHidden(hidden);
 	}
 
 	void D3D9RenderWindowCore::minimize()
@@ -382,6 +407,14 @@ namespace BansheeEngine
 			props.mTop = top;
 
 			SetWindowPos(mHWnd, 0, top, left, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+
+			{
+				ScopedSpinLock lock(mLock);
+				mSyncedProperties.mLeft = props.mLeft;
+				mSyncedProperties.mTop = props.mTop;
+			}
+
+			RenderWindowManager::instance().notifySyncDataDirty(this);
 		}
 	}
 
@@ -401,6 +434,14 @@ namespace BansheeEngine
 
 			SetWindowPos(mHWnd, 0, 0, 0, winWidth, winHeight,
 				SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+
+			{
+				ScopedSpinLock lock(mLock);
+				mSyncedProperties.mWidth = props.mWidth;
+				mSyncedProperties.mHeight = props.mHeight;
+			}
+
+			RenderWindowManager::instance().notifySyncDataDirty(this);
 		}
 	}
 
@@ -685,20 +726,16 @@ namespace BansheeEngine
 		props.mHeight = rc.bottom - rc.top;
 	}
 
-	UINT32 D3D9RenderWindowCore::getSyncData(UINT8* buffer)
-	{
-		UINT32 size = sizeof(mProperties);
-
-		if (buffer != nullptr)
-			memcpy(buffer, &mProperties, size);
-
-		return size;
-	}
-
 	bool D3D9RenderWindowCore::_validateDevice()
 	{
 		mDeviceValid = mDevice->validate(this);
 		return mDeviceValid;
+	}
+
+	void D3D9RenderWindowCore::syncProperties()
+	{
+		ScopedSpinLock lock(mLock);
+		mProperties = mSyncedProperties;
 	}
 
 	D3D9RenderWindow::D3D9RenderWindow(const RENDER_WINDOW_DESC& desc, HINSTANCE instance)
@@ -737,13 +774,6 @@ namespace BansheeEngine
 		return Vector2I(pos.x, pos.y);
 	}
 
-	void D3D9RenderWindow::setSyncData(UINT8* buffer, UINT32 size)
-	{
-		assert(size == sizeof(mProperties));
-
-		memcpy(&mProperties, buffer, size);
-	}
-
 	HWND D3D9RenderWindow::getHWnd() const
 	{
 		// HACK: I'm accessing core method from sim thread, which means an invalid handle
@@ -754,5 +784,11 @@ namespace BansheeEngine
 	SPtr<D3D9RenderWindowCore> D3D9RenderWindow::getCore() const
 	{
 		return std::static_pointer_cast<D3D9RenderWindowCore>(mCoreSpecific);
+	}
+
+	void D3D9RenderWindow::syncProperties()
+	{
+		ScopedSpinLock lock(getCore()->mLock);
+		mProperties = getCore()->mSyncedProperties;
 	}
 }

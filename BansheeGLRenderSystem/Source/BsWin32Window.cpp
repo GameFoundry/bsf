@@ -25,8 +25,8 @@ namespace BansheeEngine
 	{ }
 
 	Win32WindowCore::Win32WindowCore(const RENDER_WINDOW_DESC& desc, Win32GLSupport& glsupport)
-		: RenderWindowCore(desc), mProperties(desc), mGLSupport(glsupport), mContext(0), mWindowedStyle(0), mWindowedStyleEx(0), mIsExternal(false),
-		mIsExternalGLControl(false), mDisplayFrequency(0), mDeviceName(nullptr), mHWnd(0)
+		: RenderWindowCore(desc), mProperties(desc), mSyncedProperties(desc), mGLSupport(glsupport), mContext(0), 
+		mWindowedStyle(0), mWindowedStyleEx(0), mIsExternal(false), mIsExternalGLControl(false), mDisplayFrequency(0), mDeviceName(nullptr), mHWnd(0)
 	{ }
 
 	Win32WindowCore::~Win32WindowCore()
@@ -348,6 +348,13 @@ namespace BansheeEngine
 
 		props.mActive = true;
 		mContext = mGLSupport.createContext(mHDC, glrc);
+
+		{
+			ScopedSpinLock lock(mLock);
+			mSyncedProperties = props;
+		}
+
+		RenderWindowManager::instance().notifySyncDataDirty(this);
 	}
 
 	void Win32WindowCore::setFullscreen(UINT32 width, UINT32 height, float refreshRate, UINT32 monitorIdx)
@@ -401,6 +408,15 @@ namespace BansheeEngine
 
 		SetWindowPos(mHWnd, HWND_TOP, props.mLeft, props.mTop, width, height, SWP_NOACTIVATE);
 
+		{
+			ScopedSpinLock lock(mLock);
+			mSyncedProperties.mTop = props.mTop;
+			mSyncedProperties.mLeft = props.mLeft;
+			mSyncedProperties.mWidth = props.mWidth;
+			mSyncedProperties.mHeight = props.mHeight;
+		}
+
+		RenderWindowManager::instance().notifySyncDataDirty(this);
 		RenderWindowManager::instance().notifyMovedOrResized(this);
 	}
 
@@ -449,6 +465,13 @@ namespace BansheeEngine
 		SetWindowPos(mHWnd, HWND_NOTOPMOST, left, top, winWidth, winHeight,
 			SWP_DRAWFRAME | SWP_FRAMECHANGED | SWP_NOACTIVATE);
 
+		{
+			ScopedSpinLock lock(mLock);
+			mSyncedProperties.mWidth = props.mWidth;
+			mSyncedProperties.mHeight = props.mHeight;
+		}
+
+		RenderWindowManager::instance().notifySyncDataDirty(this);
 		_windowMovedOrResized();
 	}
 
@@ -464,6 +487,14 @@ namespace BansheeEngine
 
 			SetWindowPos(mHWnd, 0, left, top, 0, 0,
 				SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+
+			{
+				ScopedSpinLock lock(mLock);
+				mSyncedProperties.mTop = props.mTop;
+				mSyncedProperties.mLeft = props.mLeft;
+			}
+
+			RenderWindowManager::instance().notifySyncDataDirty(this);
 		}
 	}
 
@@ -483,6 +514,14 @@ namespace BansheeEngine
 			height = rc.bottom - rc.top;
 			SetWindowPos(mHWnd, 0, 0, 0, width, height,
 				SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+
+			{
+				ScopedSpinLock lock(mLock);
+				mSyncedProperties.mWidth = props.mWidth;
+				mSyncedProperties.mHeight = props.mHeight;
+			}
+
+			RenderWindowManager::instance().notifySyncDataDirty(this);
 		}
 	}
 
@@ -639,7 +678,7 @@ namespace BansheeEngine
 			}
 		}
 
-		RenderWindowManager::instance().notifyPropertiesDirty(this);
+		RenderWindowCore::setActive(state);
 	}
 
 	void Win32WindowCore::setHidden(bool hidden)
@@ -656,7 +695,7 @@ namespace BansheeEngine
 				ShowWindow(mHWnd, SW_SHOWNORMAL);
 		}
 
-		RenderWindowManager::instance().notifyPropertiesDirty(this);
+		RenderWindowCore::setHidden(hidden);
 	}
 
 	void Win32WindowCore::_windowMovedOrResized()
@@ -708,14 +747,10 @@ namespace BansheeEngine
 			*winHeight = maxH;
 	}
 
-	UINT32 Win32WindowCore::getSyncData(UINT8* buffer)
+	void Win32WindowCore::syncProperties()
 	{
-		UINT32 size = sizeof(mProperties);
-
-		if (buffer != nullptr)
-			memcpy(buffer, &mProperties, size);
-
-		return size;
+		ScopedSpinLock lock(mLock);
+		mProperties = mSyncedProperties;
 	}
 
 	Win32Window::Win32Window(const RENDER_WINDOW_DESC& desc, Win32GLSupport &glsupport)
@@ -759,11 +794,10 @@ namespace BansheeEngine
 		return std::static_pointer_cast<Win32WindowCore>(mCoreSpecific);
 	}
 
-	void Win32Window::setSyncData(UINT8* buffer, UINT32 size)
+	void Win32Window::syncProperties()
 	{
-		assert(size == sizeof(mProperties));
-		
-		memcpy(&mProperties, buffer, size);
+		ScopedSpinLock lock(getCore()->mLock);
+		mProperties = getCore()->mSyncedProperties;
 	}
 
 	HWND Win32Window::getHWnd() const

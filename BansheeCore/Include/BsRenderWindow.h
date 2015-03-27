@@ -234,19 +234,22 @@ namespace BansheeEngine
 	protected:
 		friend class RenderWindow;
 		friend class RenderWindowManager;
+		friend class RenderWindowCoreManager;
 
 		/**
-		 * @copydoc	CoreObjectCore::syncToCore
+		 * @brief	Returns window properties that are always kept in sync between core and sim threads.
+		 *
+		 * @note	Used for keeping up what are the most up to date settings.
 		 */
-		virtual void syncToCore(const CoreSyncData& data);
+		virtual RenderWindowProperties& getSyncedProperties() = 0;
 
 		/**
-		 * @brief	Retrieves data that is to be used for syncing between core and sim thread
-		 *			versions of this object.
+		 * @brief	Updates window properties from the synced property data.
 		 */
-		virtual UINT32 getSyncData(UINT8* buffer) { return 0; }
+		virtual void syncProperties() = 0;
 
 		RENDER_WINDOW_DESC mDesc;
+		SpinLock mLock;
 	};
 
 	/**
@@ -354,20 +357,14 @@ namespace BansheeEngine
 		RenderWindowProperties& getMutableProperties();
 
 		/**
-		 * @brief	Updates internal properties using the provided data. Data must have been retrieved from
-		 *			"getSyncData" method of the core version of this object.
-		 */
-		virtual void setSyncData(UINT8* buffer, UINT32 size) { }
-
-		/**
 		 * @copydoc	RenderTarget::createCore
 		 */
 		SPtr<CoreObjectCore> createCore() const;
 
 		/**
-		 * @copydoc	CoreObjectCore::syncToCore
+		 * @brief	Updates window properties from the synced property data.
 		 */
-		virtual CoreSyncData syncToCore(FrameAlloc* allocator);
+		virtual void syncProperties() = 0;
 
 	protected:
 		RENDER_WINDOW_DESC mDesc;

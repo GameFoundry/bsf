@@ -156,9 +156,14 @@ namespace BansheeEngine
 		const RenderTargetProperties& getPropertiesInternal() const { return mProperties; }
 
 		/**
-		 * @copydoc	RenderWindowCore::getSyncData
+		 * @copydoc	RenderWindowCore::getSyncedProperties
 		 */
-		UINT32 getSyncData(UINT8* buffer);
+		RenderWindowProperties& getSyncedProperties() override { return mSyncedProperties; }
+
+		/**
+		 * @copydoc	RenderWindowCore::syncProperties
+		 */
+		void syncProperties() override;
 
 	protected:
 		D3D11Device& mDevice;
@@ -181,6 +186,7 @@ namespace BansheeEngine
 		HWND mHWnd;
 
 		D3D11RenderWindowProperties mProperties;
+		D3D11RenderWindowProperties mSyncedProperties;
 	};
 
 	/**
@@ -225,9 +231,9 @@ namespace BansheeEngine
 		const RenderTargetProperties& getPropertiesInternal() const { return mProperties; }
 
 		/**
-		 * @copydoc	RenderWindow::setSyncData
+		 * @copydoc	RenderWindow::syncProperties
 		 */
-		void setSyncData(UINT8* buffer, UINT32 size);
+		void syncProperties() override;
 
 		/**
 		 * @brief	Retrieves internal window handle.

@@ -64,7 +64,7 @@ namespace BansheeEngine
 		{
 			for (UINT32 i = 0; i < BC_Count; i++)
 			{
-				if (deviceData.keyStates[i] == ButtonState::ToggledOff)
+				if (deviceData.keyStates[i] == ButtonState::ToggledOff || deviceData.keyStates[i] == ButtonState::ToggledOnOff)
 					deviceData.keyStates[i] = ButtonState::Off;
 				else if (deviceData.keyStates[i] == ButtonState::ToggledOn)
 					deviceData.keyStates[i] = ButtonState::On;
@@ -73,7 +73,7 @@ namespace BansheeEngine
 
 		for (UINT32 i = 0; i < 3; i++)
 		{
-			if (mPointerButtonStates[i] == ButtonState::ToggledOff)
+			if (mPointerButtonStates[i] == ButtonState::ToggledOff || mPointerButtonStates[i] == ButtonState::ToggledOnOff)
 				mPointerButtonStates[i] = ButtonState::Off;
 			else if (mPointerButtonStates[i] == ButtonState::ToggledOn)
 				mPointerButtonStates[i] = ButtonState::On;
@@ -131,7 +131,10 @@ namespace BansheeEngine
 		while (deviceIdx >= (UINT32)mDevices.size())
 			mDevices.push_back(DeviceData());
 
-		mDevices[deviceIdx].keyStates[code & 0x0000FFFF] = ButtonState::ToggledOff;
+		if (mDevices[deviceIdx].keyStates[code & 0x0000FFFF] == ButtonState::ToggledOn)
+			mDevices[deviceIdx].keyStates[code & 0x0000FFFF] = ButtonState::ToggledOnOff;
+		else
+			mDevices[deviceIdx].keyStates[code & 0x0000FFFF] = ButtonState::ToggledOff;
 
 		if(!onButtonUp.empty())
 		{
@@ -178,7 +181,10 @@ namespace BansheeEngine
 
 	void Input::cursorReleased(const PointerEvent& event)
 	{
-		mPointerButtonStates[(UINT32)event.button] = ButtonState::ToggledOff;
+		if (mPointerButtonStates[(UINT32)event.button] == ButtonState::ToggledOn)
+			mPointerButtonStates[(UINT32)event.button] = ButtonState::ToggledOnOff;
+		else
+			mPointerButtonStates[(UINT32)event.button] = ButtonState::ToggledOff;
 
 		if(!onPointerReleased.empty())
 			onPointerReleased(event);
@@ -227,7 +233,8 @@ namespace BansheeEngine
 			return false;
 
 		return mDevices[deviceIdx].keyStates[button & 0x0000FFFF] == ButtonState::On || 
-			mDevices[deviceIdx].keyStates[button & 0x0000FFFF] == ButtonState::ToggledOn;
+			mDevices[deviceIdx].keyStates[button & 0x0000FFFF] == ButtonState::ToggledOn ||
+			mDevices[deviceIdx].keyStates[button & 0x0000FFFF] == ButtonState::ToggledOnOff;
 	}
 
 	bool Input::isButtonUp(ButtonCode button, UINT32 deviceIdx) const
@@ -235,7 +242,8 @@ namespace BansheeEngine
 		if (deviceIdx >= (UINT32)mDevices.size())
 			return false;
 
-		return mDevices[deviceIdx].keyStates[button & 0x0000FFFF] == ButtonState::ToggledOff;
+		return mDevices[deviceIdx].keyStates[button & 0x0000FFFF] == ButtonState::ToggledOff ||
+			mDevices[deviceIdx].keyStates[button & 0x0000FFFF] == ButtonState::ToggledOnOff;
 	}
 
 	bool Input::isButtonDown(ButtonCode button, UINT32 deviceIdx) const
@@ -243,23 +251,27 @@ namespace BansheeEngine
 		if (deviceIdx >= (UINT32)mDevices.size())
 			return false;
 
-		return mDevices[deviceIdx].keyStates[button & 0x0000FFFF] == ButtonState::ToggledOn;
+		return mDevices[deviceIdx].keyStates[button & 0x0000FFFF] == ButtonState::ToggledOn ||
+			mDevices[deviceIdx].keyStates[button & 0x0000FFFF] == ButtonState::ToggledOnOff;
 	}
 
 	bool Input::isPointerButtonHeld(PointerEventButton pointerButton) const
 	{
 		return mPointerButtonStates[(UINT32)pointerButton] == ButtonState::On ||
-			mPointerButtonStates[(UINT32)pointerButton] == ButtonState::ToggledOn;
+			mPointerButtonStates[(UINT32)pointerButton] == ButtonState::ToggledOn ||
+			mPointerButtonStates[(UINT32)pointerButton] == ButtonState::ToggledOnOff;
 	}
 
 	bool Input::isPointerButtonUp(PointerEventButton pointerButton) const
 	{
-		return mPointerButtonStates[(UINT32)pointerButton] == ButtonState::ToggledOff;
+		return mPointerButtonStates[(UINT32)pointerButton] == ButtonState::ToggledOff ||
+			mPointerButtonStates[(UINT32)pointerButton] == ButtonState::ToggledOnOff;
 	}
 
 	bool Input::isPointerButtonDown(PointerEventButton pointerButton) const
 	{
-		return mPointerButtonStates[(UINT32)pointerButton] == ButtonState::ToggledOn;
+		return mPointerButtonStates[(UINT32)pointerButton] == ButtonState::ToggledOn ||
+			mPointerButtonStates[(UINT32)pointerButton] == ButtonState::ToggledOnOff;
 	}
 
 	bool Input::isPointerDoubleClicked() const

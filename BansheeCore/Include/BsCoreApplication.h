@@ -50,9 +50,16 @@ namespace BansheeEngine
 			void stopMainLoop();
 
 			/**
-			 * @brief	
+			 * @brief	Returns the main window that was created on application start-up.
 			 */
 			RenderWindowPtr getPrimaryWindow() const { return mPrimaryWindow; }
+
+			/**
+			 * @brief	Returns the id of the simulation thread.
+			 *
+			 * @note	Thread safe.
+			 */
+			BS_THREAD_ID_TYPE getSimThreadId() { return mSimThreadId; }
 
 			/**
 			 * @brief	Loads a plugin.
@@ -113,6 +120,7 @@ namespace BansheeEngine
 		bool mIsFrameRenderingFinished;
 		BS_MUTEX(mFrameRenderingFinishedMutex);
 		BS_THREAD_SYNCHRONISER(mFrameRenderingFinishedCondition);
+		BS_THREAD_ID_TYPE mSimThreadId;
 
 		volatile bool mRunMainLoop;
 	};

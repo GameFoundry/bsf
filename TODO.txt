@@ -75,14 +75,39 @@ Other simple stuff:
  - Get rid of event callback from HString and figure out a better way
  - GUI TextureField similar to ResourceField but it displays the texture it has assigned
  - Getting rid of import on start would be a pretty big deal. Just adding a button in Editor "Reimport" should be good instead
+ - Better handle and gizmo shaders
+
+Focus issues:
+ISSUE #1:
+It seems that windows focus change can happen within Input::update. This is due to the fact that the message loop 
+runs on the core thread. When this happens, Input::update() triggers the input event (more specifically pointerPressed event) 
+that EditorWidgetManager is listening for. However the actual focus change wasn't registered with the sim thread yet because 
+RenderWindowManager::update() already happened this frame. This causes EditorWidgetManager to not assign focus to any widget 
+(because it thinks the clicked on render window doesn't have focus).
+ - Potential solution for this and issue #2: Separate input polling and callbacks. Have render window update happen after polling
+   but before callbacks. This way the focus status will properly set. Also it probably makes more sense to trigger input callbacks
+   at about the same time when Component::update calls are sent out.
+ - Potential solution: Do input polling on the core thread. i.e. call OISInput::update and OSInput::update from the core thread.
+   This might require a slight refactor of OSInput (or Platform) so it caches OS events differently.
+ - ADDITIONAL ISSUE: When relying on pointerPressed if the subscriber receives it before EditorWidgetManager it will seem as if
+   window isn't in focus. I need to somehow give priority to EditorWidgetManager.
+      - Solution: If I make sure Input callbacks are triggered after Input polling (i.e. when button states for this frame have already been set)
+	    I can make EditorWidgetManager rely on polling so it retrieves the state before any other system.
+ - ADDITIONAL ISSUE: When updating input on the core thread it can happen that the current frame is mid-Platform::update in which
+   case we'll get partial input from that update. How to handle this? If I only allow input from previous Platform::update to trigger
+   will that work? (i.e. not cause input lag). I say we do this anyway.
+
+ISSUE #2 (needs verification):
+When clicking on an unfocused EditorWindow the mouse down event will be registered but the window will still be marked as not
+in focus. It receives focus properly next frame. It's possible mouse up event happens on that same frame, causing additional randomness.
+
+ISSUE #3 (needs verification):
+When clicking on an unfocused EditorWindow it seems that button up event for LMB (possibly other keys) rarely doesn't ever get triggered. This goes
+as deep as Input class, possibly a problem in OIS.
 
 Minor issues:
  - When opening up Color picker it is screwed up for a frame or two
- - When selecting a mesh, handle shows up first, and only then the selection render
- - When initially loading the program mesh texture is screwed up for a frame or two (OpenGL - garbage, DX9 - black, DX11 - seems okay)
  - Attemping to select a mesh while another window is focused doesn't work. Only after first click focuses the window will it work after user clicks again. (OpenGL only?)
- - Grid depth is wrong
- - Grid jaggies seem worse than on my test grid
 
 ----------------------------------------------------------------------
 Handles
@@ -119,12 +144,6 @@ Other
 Constant errors when rendering in DX11, and assert in DX9 when attempting to bind a texture to a shader
 Check in new grid and selection shaders
  - Test DX9 grid shader
-
-Test selection DX9 and DX11
-
-Grid shader:
- - Jaggies are significantly more noticable here than in Unity
- - It doesn't render properly when intersecting geometry
 
 Got a crash on shutdown that was caused by locking a mutex in an Event destructor. Event was Platform::onMouseCaptureChanged. 
 Issue happened when I closed the app via the X button (if that's relevant). It doesn't seem to happen always.

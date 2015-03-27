@@ -30,6 +30,7 @@ namespace BansheeEngine
 		struct AccessorContainer
 		{
 			CoreAccessorPtr accessor;
+			bool isMain;
 		};
 
 public:
@@ -120,6 +121,7 @@ private:
 	volatile bool mCoreThreadShutdown;
 
 	HThread mCoreThread;
+	BS_THREAD_ID_TYPE mSimThreadId;
 	BS_THREAD_ID_TYPE mCoreThreadId;
 	BS_MUTEX(mCommandQueueMutex)
 	BS_MUTEX(mAccessorMutex)

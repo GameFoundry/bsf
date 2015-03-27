@@ -26,7 +26,8 @@ namespace BansheeEngine
 			Off, /**< Button is not being pressed. */
 			On, /**< Button is being pressed. */
 			ToggledOn, /**< Button has been pressed this frame. */
-			ToggledOff /**< Button has been released this frame. */
+			ToggledOff, /**< Button has been released this frame. */
+			ToggledOnOff, /**< Button has been pressed and released this frame. */
 		};
 
 		/**

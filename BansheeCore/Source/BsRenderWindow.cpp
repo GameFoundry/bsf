@@ -40,6 +40,16 @@ namespace BansheeEngine
 	void RenderWindowCore::setHidden(bool hidden)
 	{
 		THROW_IF_NOT_CORE_THREAD;
+
+		RenderWindowProperties& props = const_cast<RenderWindowProperties&>(getProperties());
+
+		props.mHidden = hidden;
+		{
+			ScopedSpinLock lock(mLock);
+			getSyncedProperties().mHidden = hidden;
+		}
+
+		RenderWindowManager::instance().notifySyncDataDirty(this);
 	}
 
 	void RenderWindowCore::setActive(bool state)
@@ -49,19 +59,28 @@ namespace BansheeEngine
 		RenderWindowProperties& props = const_cast<RenderWindowProperties&>(getProperties());
 
 		props.mActive = state;
-		RenderWindowManager::instance().notifyPropertiesDirty(this);
-	}
+		{
+			ScopedSpinLock lock(mLock);
+			getSyncedProperties().mActive = state;
+		}
 
-	void RenderWindowCore::syncToCore(const CoreSyncData& data)
-	{
-		RenderWindowProperties& props = const_cast<RenderWindowProperties&>(getProperties());
-		props = data.getData<RenderWindowProperties>();
+		RenderWindowManager::instance().notifySyncDataDirty(this);
 	}
 
 	void RenderWindowCore::_windowMovedOrResized()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
+		RenderWindowProperties& props = const_cast<RenderWindowProperties&>(getProperties());
+		{
+			ScopedSpinLock lock(mLock);
+			getSyncedProperties().mTop = props.mTop;
+			getSyncedProperties().mLeft = props.mLeft;
+			getSyncedProperties().mWidth = props.mWidth;
+			getSyncedProperties().mHeight = props.mHeight;
+		}
+
+		RenderWindowManager::instance().notifySyncDataDirty(this);
 		RenderWindowManager::instance().notifyMovedOrResized(this);
 	}
 
@@ -71,7 +90,12 @@ namespace BansheeEngine
 
 		RenderWindowProperties& properties = const_cast<RenderWindowProperties&>(getProperties());
 		properties.mHasFocus = true;
+		{
+			ScopedSpinLock lock(mLock);
+			getSyncedProperties().mHasFocus = true;
+		}
 
+		RenderWindowManager::instance().notifySyncDataDirty(this);
 		RenderWindowManager::instance().notifyFocusReceived(this);
 	}
 
@@ -81,7 +105,12 @@ namespace BansheeEngine
 
 		RenderWindowProperties& properties = const_cast<RenderWindowProperties&>(getProperties());
 		properties.mHasFocus = false;
+		{
+			ScopedSpinLock lock(mLock);
+			getSyncedProperties().mHasFocus = false;
+		}
 
+		RenderWindowManager::instance().notifySyncDataDirty(this);
 		RenderWindowManager::instance().notifyFocusLost(this);
 	}
 
@@ -92,7 +121,12 @@ namespace BansheeEngine
 		RenderWindowProperties& props = const_cast<RenderWindowProperties&>(getProperties());
 
 		props.mIsMaximized = true;
-		RenderWindowManager::instance().notifyPropertiesDirty(this);
+		{
+			ScopedSpinLock lock(mLock);
+			getSyncedProperties().mIsMaximized = true;
+		}
+
+		RenderWindowManager::instance().notifySyncDataDirty(this);
 	}
 
 	void RenderWindowCore::_notifyMinimized()
@@ -102,7 +136,12 @@ namespace BansheeEngine
 		RenderWindowProperties& props = const_cast<RenderWindowProperties&>(getProperties());
 
 		props.mIsMaximized = false;
-		RenderWindowManager::instance().notifyPropertiesDirty(this);
+		{
+			ScopedSpinLock lock(mLock);
+			getSyncedProperties().mIsMaximized = false;
+		}
+
+		RenderWindowManager::instance().notifySyncDataDirty(this);
 	}
 
 	void RenderWindowCore::_notifyRestored()
@@ -112,7 +151,12 @@ namespace BansheeEngine
 		RenderWindowProperties& props = const_cast<RenderWindowProperties&>(getProperties());
 
 		props.mIsMaximized = false;
-		RenderWindowManager::instance().notifyPropertiesDirty(this);
+		{
+			ScopedSpinLock lock(mLock);
+			getSyncedProperties().mIsMaximized = false;
+		}
+
+		RenderWindowManager::instance().notifySyncDataDirty(this);
 	}
 
 	const RenderWindowProperties& RenderWindowCore::getProperties() const
@@ -143,6 +187,14 @@ namespace BansheeEngine
 
 		getMutableProperties().mWidth = width;
 		getMutableProperties().mHeight = height;
+
+		{
+			ScopedSpinLock lock(getCore()->mLock);
+			getCore()->getSyncedProperties().mWidth = width;
+			getCore()->getSyncedProperties().mHeight = height;
+		}
+
+		RenderWindowCoreManager::instance().notifySyncDataDirty(getCore().get());
 		onResized();
 
 		accessor.queueCommand(std::bind(resizeFunc, getCore(), width, height));
@@ -158,6 +210,14 @@ namespace BansheeEngine
 
 		getMutableProperties().mLeft = left;
 		getMutableProperties().mTop = top;
+
+		{
+			ScopedSpinLock lock(getCore()->mLock);
+			getCore()->getSyncedProperties().mLeft = left;
+			getCore()->getSyncedProperties().mTop = top;
+		}
+
+		RenderWindowCoreManager::instance().notifySyncDataDirty(getCore().get());
 		accessor.queueCommand(std::bind(moveFunc, getCore(), left, top));
 	}
 
@@ -170,6 +230,12 @@ namespace BansheeEngine
 		};
 
 		getMutableProperties().mHidden = true;
+		{
+			ScopedSpinLock lock(getCore()->mLock);
+			getCore()->getSyncedProperties().mHidden = true;
+		}
+
+		RenderWindowCoreManager::instance().notifySyncDataDirty(getCore().get());
 		accessor.queueCommand(std::bind(hideFunc, getCore()));
 	}
 
@@ -182,6 +248,12 @@ namespace BansheeEngine
 		};
 
 		getMutableProperties().mHidden = false;
+		{
+			ScopedSpinLock lock(getCore()->mLock);
+			getCore()->getSyncedProperties().mHidden = false;
+		}
+
+		RenderWindowCoreManager::instance().notifySyncDataDirty(getCore().get());
 		accessor.queueCommand(std::bind(showFunc, getCore()));
 	}
 
@@ -193,6 +265,13 @@ namespace BansheeEngine
 			renderWindow->minimize();
 		};
 
+		getMutableProperties().mIsMaximized = false;
+		{
+			ScopedSpinLock lock(getCore()->mLock);
+			getCore()->getSyncedProperties().mIsMaximized = false;
+		}
+
+		RenderWindowCoreManager::instance().notifySyncDataDirty(getCore().get());
 		accessor.queueCommand(std::bind(minimizeFunc, getCore()));
 	}
 
@@ -204,6 +283,13 @@ namespace BansheeEngine
 			renderWindow->maximize();
 		};
 
+		getMutableProperties().mIsMaximized = true;
+		{
+			ScopedSpinLock lock(getCore()->mLock);
+			getCore()->getSyncedProperties().mIsMaximized = true;
+		}
+
+		RenderWindowCoreManager::instance().notifySyncDataDirty(getCore().get());
 		accessor.queueCommand(std::bind(maximizeFunc, getCore()));
 	}
 
@@ -215,6 +301,13 @@ namespace BansheeEngine
 			renderWindow->restore();
 		};
 
+		getMutableProperties().mIsMaximized = false;
+		{
+			ScopedSpinLock lock(getCore()->mLock);
+			getCore()->getSyncedProperties().mIsMaximized = false;
+		}
+
+		RenderWindowCoreManager::instance().notifySyncDataDirty(getCore().get());
 		accessor.queueCommand(std::bind(restoreFunc, getCore()));
 	}
 
@@ -271,17 +364,6 @@ namespace BansheeEngine
 	RenderWindowProperties& RenderWindow::getMutableProperties()
 	{
 		return const_cast<RenderWindowProperties&>(getProperties());
-	}
-
-	CoreSyncData RenderWindow::syncToCore(FrameAlloc* allocator)
-	{
-		UINT32 size = sizeof(RenderWindowProperties);
-		UINT8* buffer = allocator->alloc(size);
-
-		RenderWindowProperties& props = const_cast<RenderWindowProperties&>(getProperties());
-
-		memcpy(buffer, &props, size);
-		return CoreSyncData(buffer, size);
 	}
 
 	const RenderWindowProperties& RenderWindow::getProperties() const

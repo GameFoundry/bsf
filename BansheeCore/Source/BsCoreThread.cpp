@@ -2,6 +2,7 @@
 #include "BsThreadPool.h"
 #include "BsTaskScheduler.h"
 #include "BsFrameAlloc.h"
+#include "BsCoreApplication.h"
 
 using namespace std::placeholders;
 
@@ -22,7 +23,8 @@ namespace BansheeEngine
 			mFrameAllocs[i]->setOwnerThread(BS_THREAD_CURRENT_ID); // Sim thread
 		}
 
-		mCoreThreadId = BS_THREAD_CURRENT_ID;
+		mSimThreadId = BS_THREAD_CURRENT_ID;
+		mCoreThreadId = mSimThreadId; // For now
 		mCommandQueue = bs_new<CommandQueue<CommandQueueSync>>(BS_THREAD_CURRENT_ID);
 
 		initCoreThread();
@@ -131,6 +133,7 @@ namespace BansheeEngine
 			CoreAccessorPtr newAccessor = bs_shared_ptr<CoreThreadAccessor<CommandQueueNoSync>>(BS_THREAD_CURRENT_ID);
 			mAccessor = bs_new<AccessorContainer>();
 			mAccessor->accessor = newAccessor;
+			mAccessor->isMain = BS_THREAD_CURRENT_ID == mSimThreadId;
 
 			BS_LOCK_MUTEX(mAccessorMutex);
 			mAccessors.push_back(mAccessor);
@@ -154,9 +157,21 @@ namespace BansheeEngine
 			accessorCopies = mAccessors;
 		}
 
-		for(auto& accessor : accessorCopies)
-			accessor->accessor->submitToCoreThread(blockUntilComplete);
+		// Submit workers first
+		AccessorContainer* mainAccessor = nullptr;
+		for (auto& accessor : accessorCopies)
+		{
+			if (!accessor->isMain)
+				accessor->accessor->submitToCoreThread(blockUntilComplete);
+			else
+				mainAccessor = accessor;
+		}
 
+		// Then main
+		if (mainAccessor != nullptr)
+			mainAccessor->accessor->submitToCoreThread(blockUntilComplete);
+
+		// Then synced
 		mSyncedCoreAccessor->submitToCoreThread(blockUntilComplete);
 	}
 

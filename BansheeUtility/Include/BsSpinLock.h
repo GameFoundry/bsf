@@ -40,4 +40,27 @@ namespace BansheeEngine
 	private:
 		std::atomic_flag mLock;
 	};
+
+	/**
+	 * @brief	Provides a safer method for locking a spin lock as the lock
+	 *			will get automatically locked when this objected is created and
+	 *			unlocked as soon as it goes out of scope.
+	 */
+	class ScopedSpinLock
+	{
+	public:
+		ScopedSpinLock(SpinLock& spinLock)
+			:mSpinLock(spinLock)
+		{
+			mSpinLock.lock();
+		}
+
+		~ScopedSpinLock()
+		{
+			mSpinLock.unlock();
+		}
+
+	private:
+		SpinLock& mSpinLock;
+	};
 }

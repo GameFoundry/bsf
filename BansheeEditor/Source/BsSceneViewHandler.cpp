@@ -42,7 +42,6 @@ namespace BansheeEngine
 
 	void SceneViewHandler::update()
 	{
-		mSelectionRenderer->update(mCamera);
 		GizmoManager::instance().update(mCamera);
 		mSceneGrid->update();
 	}
@@ -57,6 +56,9 @@ namespace BansheeEngine
 			mMouseDeltaCompensate = wrapCursorToWindow();
 
 		HandleManager::instance().update(mCamera, position, realDelta);
+
+		// Update selection here since this is triggered after user potentially selects a new object
+		mSelectionRenderer->update(mCamera);
 	}
 
 	void SceneViewHandler::trySelectHandle(const Vector2I& position)

@@ -21,8 +21,8 @@ namespace BansheeEngine
 	{ }
 
 	D3D11RenderWindowCore::D3D11RenderWindowCore(const RENDER_WINDOW_DESC& desc, D3D11Device& device, IDXGIFactory* DXGIFactory)
-		: RenderWindowCore(desc), mProperties(desc), mDevice(device), mDXGIFactory(DXGIFactory), mIsExternal(false), mSizing(false),
-		 mRenderTargetView(nullptr), mBackBuffer(nullptr), mSwapChain(nullptr), mDepthStencilView(nullptr), mIsChild(false), 
+		: RenderWindowCore(desc), mProperties(desc), mSyncedProperties(desc), mDevice(device), mDXGIFactory(DXGIFactory), mIsExternal(false), 
+		mSizing(false), mRenderTargetView(nullptr), mBackBuffer(nullptr), mSwapChain(nullptr), mDepthStencilView(nullptr), mIsChild(false), 
 		 mRefreshRateNumerator(0), mRefreshRateDenominator(0), mHWnd(0)
 	{ }
 
@@ -268,6 +268,13 @@ namespace BansheeEngine
 		createSizeDependedD3DResources();
 		mDXGIFactory->MakeWindowAssociation(mHWnd, NULL);
 		setHidden(props.isHidden());
+
+		{
+			ScopedSpinLock lock(mLock);
+			mSyncedProperties = props;
+		}
+
+		RenderWindowManager::instance().notifySyncDataDirty(this);
 	}
 
 	void D3D11RenderWindowCore::swapBuffers()
@@ -294,7 +301,15 @@ namespace BansheeEngine
 			props.mTop = top;
 			props.mLeft = left;
 
-			SetWindowPos(mHWnd, 0, top, left, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);		
+			SetWindowPos(mHWnd, 0, top, left, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);	
+
+			{
+				ScopedSpinLock lock(mLock);
+				mSyncedProperties.mTop = props.mTop;
+				mSyncedProperties.mLeft = props.mLeft;
+			}
+
+			RenderWindowManager::instance().notifySyncDataDirty(this);
 		}
 	}
 
@@ -315,6 +330,14 @@ namespace BansheeEngine
 			height = rc.bottom - rc.top;
 
 			SetWindowPos(mHWnd, 0, 0, 0, width, height, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+
+			{
+				ScopedSpinLock lock(mLock);
+				mSyncedProperties.mWidth = props.mWidth;
+				mSyncedProperties.mHeight = props.mHeight;
+			}
+
+			RenderWindowManager::instance().notifySyncDataDirty(this);
 		}
 	}
 
@@ -356,7 +379,7 @@ namespace BansheeEngine
 				ShowWindow(mHWnd, SW_SHOWNORMAL);
 		}
 
-		RenderWindowManager::instance().notifyPropertiesDirty(this);
+		RenderWindowCore::setHidden(hidden);
 	}
 
 	void D3D11RenderWindowCore::minimize()
@@ -421,6 +444,15 @@ namespace BansheeEngine
 		mSwapChain->ResizeTarget(&nearestMode);
 		mSwapChain->SetFullscreenState(true, outputInfo.getDXGIOutput()); 
 
+		{
+			ScopedSpinLock lock(mLock);
+			mSyncedProperties.mTop = mProperties.mTop;
+			mSyncedProperties.mLeft = mProperties.mLeft;
+			mSyncedProperties.mWidth = mProperties.mWidth;
+			mSyncedProperties.mHeight = mProperties.mHeight;
+		}
+
+		RenderWindowManager::instance().notifySyncDataDirty(this);
 		RenderWindowManager::instance().notifyMovedOrResized(this);
 	}
 
@@ -454,6 +486,15 @@ namespace BansheeEngine
 		mSwapChain->ResizeTarget(&videoMode.getDXGIModeDesc());
 		mSwapChain->SetFullscreenState(true, outputInfo.getDXGIOutput());
 
+		{
+			ScopedSpinLock lock(mLock);
+			mSyncedProperties.mTop = mProperties.mTop;
+			mSyncedProperties.mLeft = mProperties.mLeft;
+			mSyncedProperties.mWidth = mProperties.mWidth;
+			mSyncedProperties.mHeight = mProperties.mHeight;
+		}
+
+		RenderWindowManager::instance().notifySyncDataDirty(this);
 		RenderWindowManager::instance().notifyMovedOrResized(this);
 	}
 
@@ -483,6 +524,15 @@ namespace BansheeEngine
 		mSwapChain->SetFullscreenState(false, nullptr);
 		mSwapChain->ResizeTarget(&modeDesc);
 
+		{
+			ScopedSpinLock lock(mLock);
+			mSyncedProperties.mTop = mProperties.mTop;
+			mSyncedProperties.mLeft = mProperties.mLeft;
+			mSyncedProperties.mWidth = mProperties.mWidth;
+			mSyncedProperties.mHeight = mProperties.mHeight;
+		}
+
+		RenderWindowManager::instance().notifySyncDataDirty(this);
 		RenderWindowManager::instance().notifyMovedOrResized(this);
 	}
 
@@ -743,16 +793,6 @@ namespace BansheeEngine
 		mDevice.getImmediateContext()->OMSetRenderTargets(0, 0, 0);
 	}
 
-	UINT32 D3D11RenderWindowCore::getSyncData(UINT8* buffer)
-	{
-		UINT32 size = sizeof(mProperties);
-
-		if (buffer != nullptr)
-			memcpy(buffer, &mProperties, size);
-
-		return size;
-	}
-
 	IDXGIDevice* D3D11RenderWindowCore::queryDxgiDevice()
 	{
 		if (mDevice.getD3D11Device() == nullptr)
@@ -767,6 +807,12 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "Unable to query a DXGIDevice.");
 
 		return pDXGIDevice;
+	}
+
+	void D3D11RenderWindowCore::syncProperties()
+	{
+		ScopedSpinLock lock(mLock);
+		mProperties = mSyncedProperties;
 	}
 
 	D3D11RenderWindow::D3D11RenderWindow(const RENDER_WINDOW_DESC& desc, D3D11Device& device, IDXGIFactory* DXGIFactory)
@@ -805,13 +851,6 @@ namespace BansheeEngine
 		return Vector2I(pos.x, pos.y);
 	}
 
-	void D3D11RenderWindow::setSyncData(UINT8* buffer, UINT32 size)
-	{
-		assert(size == sizeof(mProperties));
-
-		memcpy(&mProperties, buffer, size);
-	}
-
 	SPtr<D3D11RenderWindowCore> D3D11RenderWindow::getCore() const
 	{
 		return std::static_pointer_cast<D3D11RenderWindowCore>(mCoreSpecific);
@@ -822,5 +861,11 @@ namespace BansheeEngine
 		// HACK: I'm accessing core method from sim thread, which means an invalid handle
 		// could be returned here if requested too soon after initialization.
 		return getCore()->_getWindowHandle();
+	}
+
+	void D3D11RenderWindow::syncProperties()
+	{
+		ScopedSpinLock lock(getCore()->mLock);
+		mProperties = getCore()->mSyncedProperties;
 	}
 }

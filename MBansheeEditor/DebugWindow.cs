@@ -11,6 +11,8 @@ namespace BansheeEditor
 {
     internal class DebugWindow : EditorWindow
     {
+        bool debugSlowDown = false;
+
         private void OnInitialize()
         {
             GUIButton refreshAssembly = new GUIButton("Refresh assembly");
@@ -19,8 +21,12 @@ namespace BansheeEditor
             GUIButton compileGame = new GUIButton("Compile game assembly");
             compileGame.OnClick += CompileGame_OnClick;
 
+            GUIButton openColorPicker = new GUIButton("Color picker");
+            openColorPicker.OnClick += OpenColorPicker;
+
             GUI.layout.AddElement(refreshAssembly);
             GUI.layout.AddElement(compileGame);
+            GUI.layout.AddElement(openColorPicker);
 
             GUIButton testExplicitBtn = new GUIButton("TESTING EXPLICIT");
             testExplicitBtn.Bounds = compileGame.Bounds;
@@ -56,6 +62,18 @@ namespace BansheeEditor
 
             for (int i = 0; i < ci.WarningMessages.Length; i++)
                 Debug.Log("WARNING: " + ci.WarningMessages[i].file + ": " + ci.WarningMessages[i].line + " - " + ci.WarningMessages[i].message);
+        }
+
+        void OpenColorPicker()
+        {
+            ColorPicker.Show();
+            debugSlowDown = true;
+        }
+
+        void EditorUpdate()
+        {
+            //if (debugSlowDown)
+            //    Thread.Sleep(5000);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

@@ -13,15 +13,7 @@ namespace BansheeEngine
 
 	RenderWindowManager::~RenderWindowManager()
 	{
-		for (auto& dirtyPropertyEntry : mDirtyProperties)
-		{
-			DirtyPropertyData& dirtyPropertyData = dirtyPropertyEntry.second;
 
-			if (dirtyPropertyEntry.second.data != nullptr)
-				bs_delete(dirtyPropertyEntry.second.data);
-		}
-
-		mDirtyProperties.clear();
 	}
 
 	RenderWindowPtr RenderWindowManager::create(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow)
@@ -58,17 +50,10 @@ namespace BansheeEngine
 			if(iterFind2 != mMovedOrResizedWindows.end())
 				mMovedOrResizedWindows.erase(iterFind2);
 
-			auto iterFind3 = mDirtyProperties.find(window);
-			if (iterFind3 != mDirtyProperties.end())
-			{
-				if (iterFind3->second.data != nullptr)
-					bs_delete(iterFind3->second.data);
-
-				mDirtyProperties.erase(iterFind3);
-			}
-
 			mCoreToNonCoreMap.erase(window->getCore().get());
 		}
+
+		mDirtyProperties.erase(window);
 	}
 
 	void RenderWindowManager::notifyFocusReceived(RenderWindowCore* coreWindow)
@@ -77,8 +62,6 @@ namespace BansheeEngine
 
 		BS_LOCK_MUTEX(mWindowMutex);
 		mNewWindowInFocus = window;
-
-		setDirtyProperties(coreWindow);
 	}
 
 	void RenderWindowManager::notifyFocusLost(RenderWindowCore* coreWindow)
@@ -87,8 +70,6 @@ namespace BansheeEngine
 
 		BS_LOCK_MUTEX(mWindowMutex);
 		mNewWindowInFocus = nullptr;
-
-		setDirtyProperties(coreWindow);
 	}
 
 	void RenderWindowManager::notifyMovedOrResized(RenderWindowCore* coreWindow)
@@ -131,35 +112,14 @@ namespace BansheeEngine
 		moveResizeData->y = props.getTop();
 		moveResizeData->width = props.getWidth();
 		moveResizeData->height = props.getHeight();
-
-		setDirtyProperties(coreWindow);
 	}
 
-	void RenderWindowManager::notifyPropertiesDirty(RenderWindowCore* coreWindow)
+	void RenderWindowManager::notifySyncDataDirty(RenderWindowCore* coreWindow)
 	{
-		RenderWindow* window = getNonCore(coreWindow);
-
 		BS_LOCK_MUTEX(mWindowMutex);
-		setDirtyProperties(coreWindow);
-	}
 
-	void RenderWindowManager::setDirtyProperties(RenderWindowCore* coreWindow)
-	{
 		RenderWindow* window = getNonCore(coreWindow);
-
-		auto iterFind = mDirtyProperties.find(window);
-		if (iterFind != mDirtyProperties.end())
-		{
-			if (iterFind->second.data != nullptr)
-				bs_delete(iterFind->second.data);
-		}
-
-		mDirtyProperties[window] = DirtyPropertyData();
-		DirtyPropertyData& dirtyPropertyData = mDirtyProperties[window];
-		dirtyPropertyData.size = coreWindow->getSyncData(nullptr);
-		dirtyPropertyData.data = (UINT8*)bs_alloc(dirtyPropertyData.size);
-
-		coreWindow->getSyncData(dirtyPropertyData.data);
+		mDirtyProperties.insert(window);
 	}
 
 	void RenderWindowManager::windowMouseLeft(RenderWindowCore* coreWindow)
@@ -202,20 +162,12 @@ namespace BansheeEngine
 
 			mouseLeftWindows = mMouseLeftWindows;
 			mMouseLeftWindows.clear();
-
-			for (auto& dirtyPropertyEntry : mDirtyProperties)
-			{
-				RenderWindow* window = dirtyPropertyEntry.first;
-				DirtyPropertyData& dirtyPropertyData = dirtyPropertyEntry.second;
-
-				window->setSyncData(dirtyPropertyData.data, dirtyPropertyData.size);
-
-				if (dirtyPropertyEntry.second.data != nullptr)
-					bs_delete(dirtyPropertyEntry.second.data);
-			}
-
-			mDirtyProperties.clear();
 		}
+
+		for (auto& dirtyPropertyWindow : mDirtyProperties)
+			dirtyPropertyWindow->syncProperties();
+
+		mDirtyProperties.clear();
 
 		if(mWindowInFocus != newWinInFocus)
 		{
@@ -265,6 +217,14 @@ namespace BansheeEngine
 		return renderWindow;
 	}
 
+	void RenderWindowCoreManager::_update()
+	{
+		for (auto& dirtyPropertyWindow : mDirtyProperties)
+			dirtyPropertyWindow->syncProperties();
+
+		mDirtyProperties.clear();
+	}
+
 	void RenderWindowCoreManager::windowCreated(RenderWindowCore* window)
 	{
 		BS_LOCK_MUTEX(mWindowMutex);
@@ -284,6 +244,8 @@ namespace BansheeEngine
 
 			mCreatedWindows.erase(iterFind);
 		}
+
+		mDirtyProperties.erase(window);
 	}
 
 	Vector<RenderWindowCore*> RenderWindowCoreManager::getRenderWindows() const
@@ -291,5 +253,10 @@ namespace BansheeEngine
 		BS_LOCK_MUTEX(mWindowMutex);
 
 		return mCreatedWindows;
+	}
+
+	void RenderWindowCoreManager::notifySyncDataDirty(RenderWindowCore* window)
+	{
+		mDirtyProperties.insert(window);
 	}
 }
