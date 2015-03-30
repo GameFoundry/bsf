@@ -658,7 +658,7 @@ namespace BansheeEngine
 				if( active )
 					win->setActive(true);
 
-				break;
+				return 0;
 			}
 		case WM_DESTROY:
 			{
@@ -700,21 +700,21 @@ namespace BansheeEngine
 					}
 				}
 
-				break;
+				return 0;
 			}
 		case WM_SETFOCUS:
 			{
 				if (!win->getProperties().hasFocus())
 					win->_windowFocusReceived();
 
-				break;
+				return 0;
 			}
 		case WM_KILLFOCUS:
 			{
 				if (win->getProperties().hasFocus())
 					win->_windowFocusLost();
 
-				break;
+				return 0;
 			}
 		case WM_SYSCHAR:
 			// return zero to bypass defProc and signal we processed the message, unless it's an ALT-space
@@ -723,7 +723,7 @@ namespace BansheeEngine
 			break;
 		case WM_MOVE:
 			win->_windowMovedOrResized();
-			break;
+			return 0;
 		case WM_DISPLAYCHANGE:
 			win->_windowMovedOrResized();
 			break;
@@ -737,7 +737,7 @@ namespace BansheeEngine
 			else if (wParam == SIZE_RESTORED)
 				win->_notifyRestored();
 
-			break;
+			return 0;
 		case WM_SETCURSOR:
 			if(isCursorHidden())
 				SetCursor(nullptr);
@@ -859,7 +859,7 @@ namespace BansheeEngine
 				if (!onMouseLeftWindow.empty())
 					onMouseLeftWindow(win);
 			}
-			break;
+			return 0;
 		case WM_LBUTTONUP:
 			{
 				ReleaseCapture();
@@ -872,7 +872,7 @@ namespace BansheeEngine
 				if(!onCursorButtonReleased.empty())
 					onCursorButtonReleased(intMousePos, OSMouseButton::Left, btnStates);
 			}
-			break;
+			return 0;
 		case WM_MBUTTONUP:
 			{
 				ReleaseCapture();
@@ -885,7 +885,7 @@ namespace BansheeEngine
 				if(!onCursorButtonReleased.empty())
 					onCursorButtonReleased(intMousePos, OSMouseButton::Middle, btnStates);
 			}
-			break;
+			return 0;
 		case WM_RBUTTONUP:
 			{
 				ReleaseCapture();
@@ -898,7 +898,7 @@ namespace BansheeEngine
 				if(!onCursorButtonReleased.empty())
 					onCursorButtonReleased(intMousePos, OSMouseButton::Right, btnStates);
 			}
-			break;
+			return 0;
 		case WM_LBUTTONDOWN:
 			{
 				SetCapture(hWnd);
@@ -911,7 +911,7 @@ namespace BansheeEngine
 				if(!onCursorButtonPressed.empty())
 					onCursorButtonPressed(intMousePos, OSMouseButton::Left, btnStates);
 			}
-			break;
+			return 0;
 		case WM_MBUTTONDOWN:
 			{
 				SetCapture(hWnd);
@@ -924,7 +924,7 @@ namespace BansheeEngine
 				if(!onCursorButtonPressed.empty())
 					onCursorButtonPressed(intMousePos, OSMouseButton::Middle, btnStates);
 			}
-			break;
+			return 0;
 		case WM_RBUTTONDOWN:
 			{
 				SetCapture(hWnd);
@@ -937,7 +937,7 @@ namespace BansheeEngine
 				if(!onCursorButtonPressed.empty())
 					onCursorButtonPressed(intMousePos, OSMouseButton::Right, btnStates);
 			}
-			break;
+			return 0;
 		case WM_LBUTTONDBLCLK:
 			{
 				Vector2I intMousePos;
@@ -948,7 +948,7 @@ namespace BansheeEngine
 				if(!onCursorDoubleClick.empty())
 					onCursorDoubleClick(intMousePos, btnStates);
 			}
-			break;
+			return 0;
 		case WM_NCMOUSEMOVE:
 		case WM_MOUSEMOVE:
 			{
@@ -1026,7 +1026,7 @@ namespace BansheeEngine
 					isCtrlPressed = false;
 				}
 
-				break;
+				return 0;
 			}
 		case WM_CHAR:
 			{
@@ -1077,7 +1077,7 @@ namespace BansheeEngine
 		case WM_CAPTURECHANGED:
 			if(!onMouseCaptureChanged.empty())
 				onMouseCaptureChanged();
-			break;
+			return 0;
 		}
 
 		return DefWindowProc( hWnd, uMsg, wParam, lParam );

@@ -18,6 +18,11 @@ namespace BansheeEngine
 		~EditorWidgetManager();
 
 		/**
+		 * @brief	Called every frame.
+		 */
+		void update();
+
+		/**
 		 * @brief	Registers a widget that can then be opened by calling "open". When loading
 		 * 			a widget layout this name and callback will be used to attempt creating the widget.
 		 *
@@ -79,21 +84,6 @@ namespace BansheeEngine
 
 	private:
 		/**
-		 * @brief	Called whenever a pointer (e.g. mouse cursor) is moved.
-		 */
-		void onPointerMoved(const PointerEvent& event);
-
-		/**
-		 * @brief	Called whenever a pointer button (e.g. mouse button) is released.
-		 */
-		void onPointerReleased(const PointerEvent& event);
-
-		/**
-		 * @brief	Called whenever a pointer button (e.g. mouse button) is pressed.
-		 */
-		void onPointerPressed(const PointerEvent& event);
-
-		/**
 		 * @brief	Triggered whenever a window gains focus.
 		 */
 		void onFocusGained(const RenderWindow& window);
@@ -106,7 +96,6 @@ namespace BansheeEngine
 		Map<String, EditorWidgetBase*> mActiveWidgets;
 		Map<String, std::function<EditorWidgetBase*(EditorWidgetContainer&)>> mCreateCallbacks;
 
-		HEvent mOnPointerPressedConn;
 		HEvent mOnFocusLostConn;
 		HEvent mOnFocusGainedConn;
 

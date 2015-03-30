@@ -401,9 +401,16 @@ namespace BansheeEngine
 		window->destroy();
 	}
 
-	void EditorApplication::update()
+	void EditorApplication::preUpdate()
 	{
-		Application::update();
+		Application::preUpdate();
+
+		EditorWidgetManager::instance().update();
+	}
+
+	void EditorApplication::postUpdate()
+	{
+		Application::postUpdate();
 
 		ProjectLibrary::instance().update();
 		EditorWindowManager::instance().update();	

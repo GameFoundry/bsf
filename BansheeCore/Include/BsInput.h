@@ -41,6 +41,27 @@ namespace BansheeEngine
 			ButtonState keyStates[BC_Count];
 		};
 
+		/**
+		 * @brief	Different types of possible input event callbacks.
+		 */
+		enum class EventType
+		{
+			ButtonUp, ButtonDown, PointerMoved, PointerUp, PointerDown, PointerDoubleClick, TextInput, Command
+		};
+
+		/**
+		 * @brief	Stores information about a queued input event that is to be triggered later.
+		 */
+		struct QueuedEvent
+		{
+			QueuedEvent(EventType type, UINT32 idx)
+				:type(type), idx(idx)
+			{ }
+
+			EventType type;
+			UINT32 idx;
+		};
+
 	public:
 		Input();
 		~Input();
@@ -94,11 +115,17 @@ namespace BansheeEngine
 		void _registerRawInputHandler(std::shared_ptr<RawInputHandler> inputHandler);
 
 		/**
-		 * @brief	Called every frame. Dispatches any callbacks resulting from input by the user.
+		 * @brief	Called every frame. Detects button state changes and prepares callback events to trigger
+		 *			via a call to "_triggerCallbacks".
 		 *
 		 * @note	Internal method.
 		 */
 		void _update();
+
+		/**
+		 * @brief	Triggers any queued input event callbacks.
+		 */
+		void _triggerCallbacks();
 
 		/**
 		 * @brief	Returns value of the specified input axis. Normally in range [-1.0, 1.0] but can be outside
@@ -240,6 +267,18 @@ namespace BansheeEngine
 		ButtonState mPointerButtonStates[3];
 		bool mPointerDoubleClicked;
 		bool mLastPositionSet;
+
+		Vector<QueuedEvent> mQueuedEvents;
+
+		Vector<TextInputEvent> mTextInputEvents;
+		Vector<InputCommandType> mCommandEvents;
+		Vector<PointerEvent> mPointerDoubleClickEvents;
+		Vector<PointerEvent> mPointerReleasedEvents;
+		Vector<PointerEvent> mPointerPressedEvents;
+		Vector<PointerEvent> mPointerMovedEvents;
+
+		Vector<ButtonEvent> mButtonDownEvents;
+		Vector<ButtonEvent> mButtonUpEvents;
 
 		/************************************************************************/
 		/* 								STATICS		                      		*/

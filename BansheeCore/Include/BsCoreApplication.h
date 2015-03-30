@@ -88,9 +88,14 @@ namespace BansheeEngine
 
 	protected:
 		/**
-		 * @brief	Called for each iteration of the main loop.
+		 * @brief	Called for each iteration of the main loop. Called before any game objects or plugins are updated.
 		 */
-		virtual void update();
+		virtual void preUpdate();
+
+		/**
+		 * @brief	Called for each iteration of the main loop. Called after all game objects and plugins are updated.
+		 */
+		virtual void postUpdate();
 
 	private:
 		/**

@@ -76,9 +76,9 @@ namespace BansheeEngine
 		virtual void onStartUp();
 
 		/**
-		 * @copydoc	CoreApplication::update.
+		 * @copydoc	CoreApplication::postUpdate.
 		 */
-		virtual void update();
+		virtual void postUpdate() override;
 
 	private:
 		/**

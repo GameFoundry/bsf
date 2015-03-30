@@ -177,9 +177,16 @@ namespace BansheeEngine
 
 			Platform::_update();
 			DeferredCallManager::instance()._update();
-			RenderWindowManager::instance()._update();
 			gTime().update();
 			gInput()._update();
+			// RenderWindowManager::update needs to happen after Input::update and before Input::_triggerCallbacks,
+			// so that all input is properly captured in case there is a focus change, and so that
+			// focus change is registered before input events are sent out (mouse press can result in code
+			// checking if a window is in focus, so it has to be up to date)
+			RenderWindowManager::instance()._update(); 
+			gInput()._triggerCallbacks();
+
+			preUpdate();
 
 			PROFILE_CALL(gCoreSceneManager()._update(), "SceneManager");
 
@@ -191,7 +198,7 @@ namespace BansheeEngine
 			for (auto& pluginUpdateFunc : mPluginUpdateFunctions)
 				pluginUpdateFunc.second();
 
-			update();
+			postUpdate();
 
 			// Send out resource events in case any were loaded/destroyed/modified
 			ResourceListenerManager::instance().update();
@@ -240,7 +247,12 @@ namespace BansheeEngine
 		}
 	}
 
-	void CoreApplication::update()
+	void CoreApplication::preUpdate()
+	{
+		// Do nothing
+	}
+
+	void CoreApplication::postUpdate()
 	{
 		// Do nothing
 	}

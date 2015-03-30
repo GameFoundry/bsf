@@ -29,14 +29,12 @@ namespace BansheeEngine
 			registerWidget(curElement.first, curElement.second);
 		}
 
-		mOnPointerPressedConn = gInput().onPointerPressed.connect(std::bind(&EditorWidgetManager::onPointerPressed, this, _1));
 		mOnFocusLostConn = RenderWindowManager::instance().onFocusLost.connect(std::bind(&EditorWidgetManager::onFocusLost, this, _1));
 		mOnFocusGainedConn = RenderWindowManager::instance().onFocusGained.connect(std::bind(&EditorWidgetManager::onFocusGained, this, _1));
 	}
 
 	EditorWidgetManager::~EditorWidgetManager()
 	{
-		mOnPointerPressedConn.disconnect();
 		mOnFocusLostConn.disconnect();
 		mOnFocusGainedConn.disconnect();
 
@@ -44,6 +42,43 @@ namespace BansheeEngine
 
 		for (auto& widget : widgetsCopy)
 			widget.second->close();
+	}
+
+	void EditorWidgetManager::update()
+	{
+		if (gInput().isPointerButtonDown(PointerEventButton::Left))
+		{
+			for (auto& widgetData : mActiveWidgets)
+			{
+				EditorWidgetBase* widget = widgetData.second;
+				EditorWidgetContainer* parentContainer = widget->_getParent();
+				EditorWindowBase* parentWindow = parentContainer->getParentWindow();
+				RenderWindowPtr parentRenderWindow = parentWindow->getRenderWindow();
+				const RenderWindowProperties& props = parentRenderWindow->getProperties();
+
+				if (!props.hasFocus())
+				{
+					widget->_setHasFocus(false);
+					continue;
+				}
+
+				if (parentContainer->getActiveWidget() != widget)
+				{
+					widget->_setHasFocus(false);
+					continue;
+				}
+
+				Vector2I widgetPos = widget->screenToWidgetPos(gInput().getPointerPosition());
+				if (widgetPos.x >= 0 && widgetPos.y >= 0
+					&& widgetPos.x < (INT32)widget->getWidth()
+					&& widgetPos.y < (INT32)widget->getHeight())
+				{
+					widget->_setHasFocus(true);
+				}
+				else
+					widget->_setHasFocus(false);
+			}
+		}
 	}
 
 	void EditorWidgetManager::registerWidget(const String& name, std::function<EditorWidgetBase*(EditorWidgetContainer&)> createCallback)
@@ -232,40 +267,6 @@ namespace BansheeEngine
 
 		if (layout->getIsMainWindowMaximized())
 			mainWindow->getRenderWindow()->maximize(gCoreAccessor());
-	}
-
-	void EditorWidgetManager::onPointerPressed(const PointerEvent& event)
-	{
-		for (auto& widgetData : mActiveWidgets)
-		{
-			EditorWidgetBase* widget = widgetData.second;
-			EditorWidgetContainer* parentContainer = widget->_getParent();
-			EditorWindowBase* parentWindow = parentContainer->getParentWindow();
-			RenderWindowPtr parentRenderWindow = parentWindow->getRenderWindow();
-			const RenderWindowProperties& props = parentRenderWindow->getProperties();
-
-			if (!props.hasFocus())
-			{
-				widget->_setHasFocus(false);
-				continue;
-			}
-
-			if (parentContainer->getActiveWidget() != widget)
-			{
-				widget->_setHasFocus(false);
-				continue;
-			}
-
-			Vector2I widgetPos = widget->screenToWidgetPos(event.screenPos);
-			if (widgetPos.x >= 0 && widgetPos.y >= 0 
-				&& widgetPos.x < (INT32)widget->getWidth() 
-				&& widgetPos.y < (INT32)widget->getHeight())
-			{
-				widget->_setHasFocus(true);
-			}
-			else
-				widget->_setHasFocus(false);
-		}
 	}
 
 	void EditorWidgetManager::onFocusGained(const RenderWindow& window)

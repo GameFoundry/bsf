@@ -100,9 +100,9 @@ namespace BansheeEngine
 		CoreApplication::startUp<Application>(primaryWindowDesc, renderSystem, renderer);
 	}
 
-	void Application::update()
+	void Application::postUpdate()
 	{
-		CoreApplication::update();
+		CoreApplication::postUpdate();
 
 		VirtualInput::instance()._update();
 		PROFILE_CALL(GUIManager::instance().update(), "GUI");

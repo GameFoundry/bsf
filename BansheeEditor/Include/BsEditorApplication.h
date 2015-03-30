@@ -39,7 +39,8 @@ namespace BansheeEngine
 	private:
 		virtual void onStartUp();
 		virtual void onShutDown();
-		virtual void update();
+		virtual void preUpdate() override;
+		virtual void postUpdate() override;
 
 		EditorWidgetLayoutPtr loadWidgetLayout();
 		void saveWidgetLayout(const EditorWidgetLayoutPtr& layout);

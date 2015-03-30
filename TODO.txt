@@ -104,6 +104,10 @@ in focus. It receives focus properly next frame. It's possible mouse up event ha
 ISSUE #3 (needs verification):
 When clicking on an unfocused EditorWindow it seems that button up event for LMB (possibly other keys) rarely doesn't ever get triggered. This goes
 as deep as Input class, possibly a problem in OIS.
+ - Potentially this happens if focus change is issued after button down event, but before button up event (only if button up happens on that frame, otherwise it does get recorded)
+  - If so, then this should be fixed once I move the input polling to core, but I need to pay special attention to this. Optionally I could solve it
+    by making sure I call Input::update() right before the context switch to make sure all current input has been received (there could still be a tiny % chance
+	something gets queued in between, but I don't think there's a way around that, nor that it is important enough)
 
 Minor issues:
  - When opening up Color picker it is screwed up for a frame or two
@@ -126,9 +130,60 @@ Later:
  - Raycast snapping Ribek suggested
 
 ----------------------------------------------------------------------
-Scene View
+C# Material
 
-IMPROVE SceneGrid LOOK - Use the shader created in Unity
+C# material interface:
+ - Pass
+ - GpuProgram
+ - DepthStencilState
+ - RasterizerState
+ - BlendState
+ - SamplerState
+ - Technique
+ - Shader
+ - Material
+
+--------
+
+Consider creating a shader effect language first?
+ - It needs support for multiple gpu programs (vertex, fragment, etc)
+ - Multiple passes, each with options to set up blend/rasterizer/depth-stencil states
+ - Actual GpuProgram code can be marked with HLSL, HLSL11, GLSL (and later BSL) to compile for only specific API
+ - Also needs to support techniques
+ - Also render queue, priority, renderer semantics
+ - Default parameter values?
+ - Parameter ranges?
+
+Then do I not need C# interface for anything but a Shader and Material. Shader doesn't need many (any?) properties and Material only needs property setters. Also potentially it also needs param block buffers and sampler states.
+
+While I'm at this I might also consider dealing with includes and shader combinations
+
+Questions:
+ - How to deal with sampler states? Allow default ones in shader?
+   - Yes, allow default ones. Plus allow sampler states to be tweaked from Material directly (without separate SamplerState class)
+ - PRoblem where DX9 requires sampler to have the same name as texture, but DX11 has them separate. For now go with DX11 approach
+   where you need to define the sampler separately, potentially allow "alias()" attribute so the system knows to look for other names.
+
+Check D:\ExampleBFX.txt for an example effects file
+
+Import:
+ - A special importer for BFX files. It generates a HShader as its output. I MIGHT want to disable separate GpuProgram and state saving so
+  I don't need to deal with multi-resources yet.
+
+How to deal with includes?
+ - You can do Include = "Path/to/CommonShader"
+   - Path is relative to executable
+ - CommonShader might not contain any techniques or passes, but instead just code.
+  - It can use special Include & Code {} tags that allow it to specify various code
+    for some language
+ - How does the runtime resolve those shaders?
+  - They are only resolved during import, after which just resource references are kept (i.e. its GUIDs)
+  - The runtime should then be able to resolve the GUIDs easily
+
+Use Bison to avoid the need to reference C# code from C++?
+
+----------------------------------------------------------------------
+Scene View
 
 AFTER I have scene widget in C#:
  - Test custom handles from C#
@@ -140,10 +195,6 @@ Need a way to drag and drop items from Scene tree view to Scene view
 
 ----------------------------------------------------------------------
 Other
-
-Constant errors when rendering in DX11, and assert in DX9 when attempting to bind a texture to a shader
-Check in new grid and selection shaders
- - Test DX9 grid shader
 
 Got a crash on shutdown that was caused by locking a mutex in an Event destructor. Event was Platform::onMouseCaptureChanged. 
 Issue happened when I closed the app via the X button (if that's relevant). It doesn't seem to happen always.
@@ -162,6 +213,10 @@ Multi-resource saving
  - When saving such a resource with dependencies save the contained files to a sub-directory with the same name as top level resource
    - If it already exists in the manifest at a different location do it anyway, keep the other copy as-is in case user wanted it that way
    - I'm not sure whether to do this for all Resource::save calls or only ones originating from ProjectLIbrary?
+
+/*********************************************************************/
+/************************ LESS IMPORTANT *****************************/
+/*********************************************************************/
 
 ----------------------------------------------------------------------
 Mono notes

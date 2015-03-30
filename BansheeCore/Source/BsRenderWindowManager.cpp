@@ -51,9 +51,8 @@ namespace BansheeEngine
 				mMovedOrResizedWindows.erase(iterFind2);
 
 			mCoreToNonCoreMap.erase(window->getCore().get());
+			mDirtyProperties.erase(window);
 		}
-
-		mDirtyProperties.erase(window);
 	}
 
 	void RenderWindowManager::notifyFocusReceived(RenderWindowCore* coreWindow)
@@ -162,12 +161,12 @@ namespace BansheeEngine
 
 			mouseLeftWindows = mMouseLeftWindows;
 			mMouseLeftWindows.clear();
+
+			for (auto& dirtyPropertyWindow : mDirtyProperties)
+				dirtyPropertyWindow->syncProperties();
+
+			mDirtyProperties.clear();
 		}
-
-		for (auto& dirtyPropertyWindow : mDirtyProperties)
-			dirtyPropertyWindow->syncProperties();
-
-		mDirtyProperties.clear();
 
 		if(mWindowInFocus != newWinInFocus)
 		{
@@ -219,6 +218,8 @@ namespace BansheeEngine
 
 	void RenderWindowCoreManager::_update()
 	{
+		BS_LOCK_MUTEX(mWindowMutex);
+
 		for (auto& dirtyPropertyWindow : mDirtyProperties)
 			dirtyPropertyWindow->syncProperties();
 
@@ -243,9 +244,8 @@ namespace BansheeEngine
 				BS_EXCEPT(InternalErrorException, "Trying to destroy a window that is not in the created windows list.");
 
 			mCreatedWindows.erase(iterFind);
+			mDirtyProperties.erase(window);
 		}
-
-		mDirtyProperties.erase(window);
 	}
 
 	Vector<RenderWindowCore*> RenderWindowCoreManager::getRenderWindows() const
@@ -257,6 +257,8 @@ namespace BansheeEngine
 
 	void RenderWindowCoreManager::notifySyncDataDirty(RenderWindowCore* window)
 	{
+		BS_LOCK_MUTEX(mWindowMutex);
+
 		mDirtyProperties.insert(window);
 	}
 }

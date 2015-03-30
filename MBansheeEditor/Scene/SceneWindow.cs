@@ -147,7 +147,7 @@ namespace BansheeEditor
             sceneViewHandler.Update();
 
             bool handleActive = false;
-            if (Input.IsButtonUp(ButtonCode.MouseLeft))
+            if (Input.IsPointerButtonUp(PointerButton.Left))
             {
                 if (sceneViewHandler.IsHandleActive())
                 {
@@ -162,11 +162,11 @@ namespace BansheeEditor
             Vector2I scenePos;
             if (ScreenToScenePos(Input.PointerPosition, out scenePos))
             {
-                if (Input.IsButtonDown(ButtonCode.MouseLeft))
+                if (Input.IsPointerButtonDown(PointerButton.Left))
                 {
                     sceneViewHandler.TrySelectHandle(scenePos);
                 }
-                else if (Input.IsButtonUp(ButtonCode.MouseLeft))
+                else if (Input.IsPointerButtonUp(PointerButton.Left))
                 {
                     if (!handleActive)
                     {
