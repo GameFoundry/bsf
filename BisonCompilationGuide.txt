@@ -1,0 +1,17 @@
+Set up MinGW environment so you can compile Bison:
+ - Download MinGW from: http://www.mingw.org/ and install
+  - Make sure your installation has these packages:
+     - mingw-developer-toolkit
+     - mingw32-base
+     - msys-base
+  - Launch MSYS from MinGW/msys/1.0/msys.bat
+  - Mount MinGW in MSYS: mount c:/mingw /mingw
+
+Download Bison source from: https://www.gnu.org/software/bison/ and extract it somewhere on your system.
+Configure and compile:
+ - Launch MSYS from MinGW/msys/1.0/msys.bat
+ - input "path/to/bison/folder/configure --prefix=/mingw" (no quotes) and wait
+  - replace "path/to/bison/folder" with actual path. Do not call "./configure" while you are in Bison folder. You must be outside of it, 
+    and then input the path to configure as shown above, otherwise you will run into issues with linking.
+ - input "make" (no quotes) and wait
+If successful your "bison.exe" executable will be in /src subfolder of the folder you called configure and make in.

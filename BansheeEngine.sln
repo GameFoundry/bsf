@@ -155,11 +155,19 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BansheeD3D11RenderSystem", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Guides", "Guides", "{4259680D-8A9B-4C17-B75B-CA29482AB299}"
 	ProjectSection(SolutionItems) = preProject
+		BisonCompilationGuide.txt = BisonCompilationGuide.txt
 		Dependencies.txt = Dependencies.txt
 		Mono-3.2.3-IntegrationGuide.txt = Mono-3.2.3-IntegrationGuide.txt
 		Mono-3.4.0-IntegrationGuide.txt = Mono-3.4.0-IntegrationGuide.txt
 		Mono-3.8.0-IntegrationGuide.txt = Mono-3.8.0-IntegrationGuide.txt
 		NVTTCompilationGuide.txt = NVTTCompilationGuide.txt
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BansheeSL", "BansheeSL\BansheeSL.vcxproj", "{2BA791F1-87F6-4863-A784-D07FF605AC5E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9B21D41C-516B-43BF-9B10-E99B599C7589} = {9B21D41C-516B-43BF-9B10-E99B599C7589}
+		{CC7F9445-71C9-4559-9976-FF0A64DCB582} = {CC7F9445-71C9-4559-9976-FF0A64DCB582}
+		{07B0C186-5173-46F2-BE26-7E4148BD0CCA} = {07B0C186-5173-46F2-BE26-7E4148BD0CCA}
 	EndProjectSection
 EndProject
 Global
@@ -583,6 +591,27 @@ Global
 		{1437BB4E-DDB3-4307-AA41-8C035DA3014B}.Release|Win32.Build.0 = Release|Win32
 		{1437BB4E-DDB3-4307-AA41-8C035DA3014B}.Release|x64.ActiveCfg = Release|x64
 		{1437BB4E-DDB3-4307-AA41-8C035DA3014B}.Release|x64.Build.0 = Release|x64
+		{2BA791F1-87F6-4863-A784-D07FF605AC5E}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{2BA791F1-87F6-4863-A784-D07FF605AC5E}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{2BA791F1-87F6-4863-A784-D07FF605AC5E}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{2BA791F1-87F6-4863-A784-D07FF605AC5E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2BA791F1-87F6-4863-A784-D07FF605AC5E}.Debug|Win32.Build.0 = Debug|Win32
+		{2BA791F1-87F6-4863-A784-D07FF605AC5E}.Debug|x64.ActiveCfg = Debug|x64
+		{2BA791F1-87F6-4863-A784-D07FF605AC5E}.Debug|x64.Build.0 = Debug|x64
+		{2BA791F1-87F6-4863-A784-D07FF605AC5E}.DebugRelease|Any CPU.ActiveCfg = Release|Win32
+		{2BA791F1-87F6-4863-A784-D07FF605AC5E}.DebugRelease|Mixed Platforms.ActiveCfg = Release|Win32
+		{2BA791F1-87F6-4863-A784-D07FF605AC5E}.DebugRelease|Mixed Platforms.Build.0 = Release|Win32
+		{2BA791F1-87F6-4863-A784-D07FF605AC5E}.DebugRelease|Win32.ActiveCfg = DebugRelease|Win32
+		{2BA791F1-87F6-4863-A784-D07FF605AC5E}.DebugRelease|Win32.Build.0 = DebugRelease|Win32
+		{2BA791F1-87F6-4863-A784-D07FF605AC5E}.DebugRelease|x64.ActiveCfg = DebugRelease|x64
+		{2BA791F1-87F6-4863-A784-D07FF605AC5E}.DebugRelease|x64.Build.0 = DebugRelease|x64
+		{2BA791F1-87F6-4863-A784-D07FF605AC5E}.Release|Any CPU.ActiveCfg = Release|Win32
+		{2BA791F1-87F6-4863-A784-D07FF605AC5E}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{2BA791F1-87F6-4863-A784-D07FF605AC5E}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{2BA791F1-87F6-4863-A784-D07FF605AC5E}.Release|Win32.ActiveCfg = Release|Win32
+		{2BA791F1-87F6-4863-A784-D07FF605AC5E}.Release|Win32.Build.0 = Release|Win32
+		{2BA791F1-87F6-4863-A784-D07FF605AC5E}.Release|x64.ActiveCfg = Release|x64
+		{2BA791F1-87F6-4863-A784-D07FF605AC5E}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -604,6 +633,7 @@ Global
 		{796B6DFF-BA04-42B7-A43A-2B14D707A33A} = {32E4E2B7-1B4D-4B06-AD87-57CEE00BC247}
 		{1437BB4E-DDB3-4307-AA41-8C035DA3014B} = {32E4E2B7-1B4D-4B06-AD87-57CEE00BC247}
 		{4259680D-8A9B-4C17-B75B-CA29482AB299} = {1D081E5A-615A-4C06-B2DF-0D8D9390DE02}
+		{2BA791F1-87F6-4863-A784-D07FF605AC5E} = {32E4E2B7-1B4D-4B06-AD87-57CEE00BC247}
 	EndGlobalSection
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
