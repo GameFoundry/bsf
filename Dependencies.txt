@@ -44,19 +44,18 @@ BansheeD3D11RenderSystem & BansheeD3D9RenderSystem (both optional) rely on:
   - http://www.microsoft.com/en-us/download/details.aspx?id=6812
   - After installing the SDK make sure DXSDK_DIR environment variable is set up pointing to the installation path
 
-BansheeFX (optional) relies on:
- - Bison 3.0.4.
-  - Install as a tool, (ToolFolder) is "Bison".
-  - See BisonCompilationGuide.txt for compilation instructions
-  - https://www.gnu.org/software/bison/
- - Flex 2.5.39
-  - Install as a tool, (ToolFolder) is "Flex".
-  - http://gnuwin32.sourceforge.net/packages/flex.htm
+BansheeSL (optional) relies on:
+ - Bison 2.7
+  - Install as a tool dependency, in its own folder as Bison/bison.exe (+ any dependant files)
+  - http://sourceforge.net/projects/winflexbison/files/
+ - Flex 2.5.37
+  - Install as a tool dependency, in its own folder as Flex/flex.exe
+  - http://sourceforge.net/projects/winflexbison/files/
 
 Place plug-in specific dependency files in:
  - Library include files in (BansheeRootDir)/(PluginDir)/Dependencies/Include
  - Static library files in (BansheeRootDir)/(PluginDir)/Dependencies/lib/(Platform)/(Configuration)
- - Tools in (BansheeRootDir)/(PluginDir)/Dependencies/tools/(ToolFolder)
+ - Tools (executables) in (BansheeRootDir)/(PluginDir)/Dependencies/tools
  - Dynamic library files in (BansheeRootDir)/bin/(Platform)/(Configuration)
 
 ----------------------------------------------------------------------------------
@@ -65,7 +64,6 @@ Place plug-in specific dependency files in:
   (BansheeRootDir) - Path to BansheeEngine folder
   (Platform) - Platform you're compiling for, e.g. x86, x64, etc.
   (Configuration) - Debug, Release, DebugRelease
-  (ToolFolder) - Folder with the name of the tool. Each tool is expected to be in its own folder.
 
 Other notes:
  - Some dependencies might not come with DebugRelease binaries, in which case use Release binaries (copy them to DebugRelease folder)

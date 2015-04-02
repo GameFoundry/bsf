@@ -17,3 +17,8 @@
 #else
 #    define BS_SL_EXPORTS
 #endif
+
+namespace BansheeEngine
+{
+	const String SystemName = "BansheeSL";
+}

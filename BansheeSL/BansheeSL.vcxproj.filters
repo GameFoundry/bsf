@@ -18,5 +18,32 @@
     <ClInclude Include="Include\BsSLPrerequisites.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="BsLexerFX.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BsParserFX.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsASTFX.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="BsLexerFX.l" />
+    <None Include="BsParserFX.y" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="BsLexerFX.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BsParserFX.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsSLPlugin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsASTFX.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

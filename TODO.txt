@@ -7,11 +7,6 @@ When serializing Camera I cannot save the reference to RenderTexture. Make it a 
 Possibly set up automatic refresh in debug mode after initialization? As an ad-hoc unit test
 
 ----------------------------------------------------------------------
-BansheeSL
-
-I don't have bison or flex included in dependencies. Make a not of that somewhere and see if its license permits me to include it.
-
-----------------------------------------------------------------------
 Project library
 
 Almost all of PRojectLibrary functionality is completely untested
@@ -150,6 +145,144 @@ How to deal with includes?
   - The runtime should then be able to resolve the GUIDs easily
 
 Use Bison to avoid the need to reference C# code from C++?
+
+VALID KEYWORDS:
+<<RasterizerState>>
+Fill = Wire/Solid
+Cull = None/CW/CCW
+DepthBias = float
+ScaledDepthBias = float
+DepthClip = bool
+Scissor = bool
+Multisample = bool
+AALine = bool
+
+<<DepthStencilState>>
+DepthRead = bool
+DepthWrite = bool
+CompareFunc = Fail/Pass/Less/LessEqual/Equal/NotEqual/GreaterEqual/Greater
+Stencil = bool
+StencilReadMask = byte
+StencilWriteMask = byte
+StencilOpFront = <StencilOp>
+StencilOpBack = <StencilOp>
+
+<<StencilOp>>
+Fail = Keep/Zero/Replace/Increment/Decrement/IncrementWrap/DecrementWrap/Invert,
+ZFail = Keep/Zero/Replace/Increment/Decrement/IncrementWrap/DecrementWrap/Invert,
+Pass = Keep/Zero/Replace/Increment/Decrement/IncrementWrap/DecrementWrap/Invert,
+CompFunc = Fail/Pass/Less/LessEqual/Equal/NotEqual/GreaterEqual/Greater
+
+<<BlendState>>
+AlphaToCoverage = bool
+IndependantBlend = bool
+PerTarget = <TargetBlendState>
+
+<<TargetBlendState>>
+Index = int (0 to 7)
+Blend = bool
+Color = <BlendDefinition>
+Alpha = <BlendDefinition>
+WriteMask = R/G/B/A/RG/RB/RA/GB/GA/BA/RGB/RGA/RBA/GBA/RGBA;
+
+<<BlendDefinition>>
+Source = One/Zero/DestColor/SrcColor/InvDestColor/InvSourceColor/DestAlpha/SrcAlpha/InvDestAlpha/InvSrcAlpha
+Dest  = One/Zero/DestColor/SrcColor/InvDestColor/InvSourceColor/DestAlpha/SrcAlpha/InvDestAlpha/InvSrcAlpha
+Op = Add/Subtract/RevereSubtract/Min/Max
+
+<<SamplerState>>
+AddressingMode =
+{ u = Wrap/Mirror/Clamp/Border,
+  v = Wrap/Mirror/Clamp/Border,
+  w = Wrap/Mirror/Clamp/Border
+}
+MinFilter = None/Point/Linear/Anisotropic/PointComp/LinearComp/AnisotropicComp
+MagFilter = None/Point/Linear/Anisotropic/PointComp/LinearComp/AnisotropicComp
+MipFilter = None/Point/Linear/Anisotropic/PointComp/LinearComp/AnisotropicComp
+MaxAniso = int
+MipmapBias = float
+MipMin = float
+MipMax = float
+BorderColor = <Color>
+ComparisonFunc = Fail/Pass/Less/LessEqual/Equal/NotEqual/GreaterEqual/Greater
+
+<<Color>>
+R = float
+G = float
+B = float
+A = float
+
+Other types
+float, int, bool, float2, float3, float4, mat2x2, mat2x3, mat2x4, mat3x2, mat3x3, mat3x4, mat4x2, mat4x3, mat4x4
+
+FX types:
+<<Shader>>
+Separable = bool
+Queue = int
+Priority = int
+Parameters = <ParamDef>
+Blocks = <BlockDef>
+Technique = <TechniqueDef>
+
+<<ParamDef>>
+Type name (: option)* (= block | literal);
+
+<<BlockDef>>
+Block name (: option)*;
+
+<<TechniqueDef>>
+Renderer = string (default strings recognized: "Any", "Default")
+Language = string (default strings recognized: "HLSL9", "HLSL11", "GLSL", "HLSL"(11))
+Include = string
+Pass = <PassDef> 
+
+<<PassDef>>
+Rasterizer/DepthStencil/Blend state options as above
+Vertex = code
+Fragment = code
+Geometry = code
+Hull = code
+Domain = code
+Compute = code
+
+Make sure to allow multiple properties of the same name (e.g. multiple Targets or Techniques). Where this isn't valid the program can ignore the extra ones.
+
+<<<<<<<<AST>>>>>>>>>
+Node
+
+RootNode : OptionsNode
+ - ParamsNode parameters
+ - BlocksNode blocks
+
+OptionsNode : Node
+ - Dictionary<string, int> options;(identifier -> sym table index)
+   - this can point to another node, float, int, bool, float2, etc.
+
+ParamsNode : Node
+ - ParamNode[] params
+
+BlocksNode : Node
+ - BlockNode[] blocks
+
+ParamNode : Node
+ - enum Type
+ - string name
+ - ParamQualifierNode[] qualifiers;
+ - ValueType value (ValueType can be a SamplerState or any of the primitive types)
+
+BlockNode : Node
+ - string name
+ - BlockQualifierNode[] qualififers;
+
+ParamQualifierNode
+ - ParamQualifierType type
+ - T Value (create different qualifier node types for each qualifier since each has its own type (or multiple values)?)
+  - But it's better just to have a void pointer and detect actual value stored here (it can be a struct with multiple values too)
+
+BlockQualifierNode
+ - BlockQualifierType type
+ - T Value (create different qualifier node types for each qualifier since each has its own type (or multiple values)?)
+  - But it's better just to have a void pointer and detect actual value stored here (it can be a struct with multiple values too)
 
 ----------------------------------------------------------------------
 Scene View
