@@ -12,19 +12,19 @@ extern "C" {
 
 namespace BansheeEngine
 {
-	void parseFX(ParseState& parseState, const char* source)
+	void parseFX(ParseState* parseState, const char* source)
 	{
 		yyscan_t scanner;
 		YY_BUFFER_STATE state;
 
-		if (yylex_init_extra(&parseState, &scanner)) {
+		if (yylex_init_extra(parseState, &scanner)) {
 			// couldn't initialize
 			return;
 		}
 
 		state = yy_scan_string(source, scanner);
 
-		if (yyparse(&parseState, scanner)) {
+		if (yyparse(parseState, scanner)) {
 			// error parsing
 			return;
 		}
@@ -56,17 +56,12 @@ namespace BansheeEngine
 
 		String contents = file->getAsString();
 
-		ParseState parseState;
-		parseState.memContext = mmalloc_new_context();
-		parseState.rootNode = nodeCreate(parseState.memContext, NT_Shader);
-
+		ParseState* parseState = parseStateCreate();
 		parseFX(parseState, contents.c_str());
 
 		int bp = 0;
 
-		nodeDelete(parseState.rootNode);
-		mmalloc_free_context(parseState.memContext);
-
+		parseStateDelete(parseState);
 
 		return nullptr;
 	}

@@ -27,8 +27,8 @@ void nodeOptionDelete(NodeOption* option)
 {
 	if (OPTION_LOOKUP[(int)option->type].dataType == ODT_Complex)
 	{
-		mmfree(option->value.complexValue); // TODO - Maybe this has more complex delete logic? (It probably will have)
-		option->value.complexValue = 0;
+		nodeDelete(option->value.nodePtr);
+		option->value.nodePtr = 0;
 	}
 	else if (OPTION_LOOKUP[(int)option->type].dataType == ODT_String)
 	{
@@ -107,4 +107,54 @@ void nodeDelete(ASTFXNode* node)
 	nodeOptionsDelete(node->options);
 
 	mmfree(node);
+}
+
+void nodePush(ParseState* parseState, ASTFXNode* node)
+{
+	NodeLink* linkNode = (NodeLink*)mmalloc(parseState->memContext, sizeof(NodeLink));
+	linkNode->next = parseState->nodeStack;
+	linkNode->node = node;
+
+	parseState->nodeStack = linkNode;
+	parseState->topNode = node;
+}
+
+void nodePop(ParseState* parseState)
+{
+	if (!parseState->nodeStack)
+		return;
+
+	NodeLink* toRemove = parseState->nodeStack;
+	parseState->nodeStack = toRemove->next;
+
+	if (parseState->nodeStack)
+		parseState->topNode = parseState->nodeStack->node;
+	else
+		parseState->topNode = 0;
+
+	mmfree(toRemove);
+}
+
+ParseState* parseStateCreate()
+{
+	ParseState* parseState = (ParseState*)malloc(sizeof(ParseState));
+	parseState->memContext = mmalloc_new_context();
+	parseState->rootNode = nodeCreate(parseState->memContext, NT_Shader);
+	parseState->topNode = 0;
+	parseState->nodeStack = 0;
+
+	nodePush(parseState, parseState->rootNode);
+
+	return parseState;
+}
+
+void parseStateDelete(ParseState* parseState)
+{
+	while (parseState->nodeStack != 0)
+		nodePop(parseState);
+
+	nodeDelete(parseState->rootNode);
+	mmalloc_free_context(parseState->memContext);
+
+	free(parseState);
 }

@@ -13,6 +13,7 @@ typedef union tagOptionData OptionData;
 typedef struct tagNodeOptions NodeOptions;
 typedef struct tagNodeOption NodeOption;
 typedef struct tagASTFXNode ASTFXNode;
+typedef struct tagNodeLink NodeLink;
 
 enum tagNodeType
 {
@@ -28,7 +29,12 @@ enum tagOptionType
 	OT_Node,
 	OT_Separable,
 	OT_Priority,
-	OT_Queue
+	OT_Queue,
+	OT_Technique,
+	OT_Renderer,
+	OT_Language,
+	OT_Include,
+	OT_Pass
 	// TODO - Add others
 };
 
@@ -41,10 +47,19 @@ enum tagOptionDataType
 	ODT_Complex
 };
 
+struct tagNodeLink
+{
+	ASTFXNode* node;
+	NodeLink* next;
+};
+
 struct tagParseState
 {
 	ASTFXNode* rootNode;
+	ASTFXNode* topNode;
 	void* memContext;
+
+	NodeLink* nodeStack;
 };
 
 struct tagOptionInfo
@@ -57,9 +72,8 @@ union tagOptionData
 {
 	int intValue;
 	float floatValue;
-	int boolValue;
 	const char* strValue;
-	void* complexValue;
+	ASTFXNode* nodePtr;
 };
 
 struct tagNodeOption
@@ -94,5 +108,11 @@ void nodeOptionsAdd(void* context, NodeOptions* options, NodeOption* option);
 
 ASTFXNode* nodeCreate(void* context, NodeType type);
 void nodeDelete(ASTFXNode* node);
+
+void nodePush(ParseState* parseState, ASTFXNode* node);
+void nodePop(ParseState* parseState);
+
+ParseState* parseStateCreate();
+void parseStateDelete(ParseState* parseState);
 
 #endif

@@ -284,6 +284,10 @@ BlockQualifierNode
  - T Value (create different qualifier node types for each qualifier since each has its own type (or multiple values)?)
   - But it's better just to have a void pointer and detect actual value stored here (it can be a struct with multiple values too)
 
+-------------------
+
+In lexer I use numbers to identify different values, but use enums instead so I can use the same ones when parsing AST
+
 ----------------------------------------------------------------------
 Scene View
 
