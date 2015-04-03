@@ -57,7 +57,7 @@
 #include "BsLexerFX.h"
 #define inline
 
-	void yyerror(ASTFXNode* root_node, yyscan_t scanner, const char *msg) 
+	void yyerror(ParseState* parse_state, yyscan_t scanner, const char *msg) 
 	{ 
 		fprintf (stderr, "%s\n", msg);
 	}
@@ -424,13 +424,13 @@ do {                                            \
 
 /*ARGSUSED*/
 static void
-yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, ASTFXNode* root_node, yyscan_t scanner)
+yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, ParseState* parse_state, yyscan_t scanner)
 {
   FILE *yyo = yyoutput;
   YYUSE (yyo);
   if (!yyvaluep)
     return;
-  YYUSE (root_node);
+  YYUSE (parse_state);
   YYUSE (scanner);
 # ifdef YYPRINT
   if (yytype < YYNTOKENS)
@@ -451,14 +451,14 @@ yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvalue
 `--------------------------------*/
 
 static void
-yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, ASTFXNode* root_node, yyscan_t scanner)
+yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, ParseState* parse_state, yyscan_t scanner)
 {
   if (yytype < YYNTOKENS)
     YYFPRINTF (yyoutput, "token %s (", yytname[yytype]);
   else
     YYFPRINTF (yyoutput, "nterm %s (", yytname[yytype]);
 
-  yy_symbol_value_print (yyoutput, yytype, yyvaluep, root_node, scanner);
+  yy_symbol_value_print (yyoutput, yytype, yyvaluep, parse_state, scanner);
   YYFPRINTF (yyoutput, ")");
 }
 
@@ -467,7 +467,7 @@ do {                                                            \
   if (yydebug)                                                  \
     {                                                           \
       YYFPRINTF (stderr, "%s ", Title);                         \
-      yy_symbol_print (stderr, Type, Value, root_node, scanner);        \
+      yy_symbol_print (stderr, Type, Value, parse_state, scanner);        \
       YYFPRINTF (stderr, "\n");                                 \
     }                                                           \
 } while (YYID (0))
@@ -695,13 +695,13 @@ struct yyGLRStack {
 static void yyexpandGLRStack (yyGLRStack* yystackp);
 #endif
 
-static void yyFail (yyGLRStack* yystackp, ASTFXNode* root_node, yyscan_t scanner, const char* yymsg)
+static void yyFail (yyGLRStack* yystackp, ParseState* parse_state, yyscan_t scanner, const char* yymsg)
   __attribute__ ((__noreturn__));
 static void
-yyFail (yyGLRStack* yystackp, ASTFXNode* root_node, yyscan_t scanner, const char* yymsg)
+yyFail (yyGLRStack* yystackp, ParseState* parse_state, yyscan_t scanner, const char* yymsg)
 {
   if (yymsg != YY_NULL)
-    yyerror (root_node, scanner, yymsg);
+    yyerror (parse_state, scanner, yymsg);
   YYLONGJMP (yystackp->yyexception_buffer, 1);
 }
 
@@ -767,12 +767,12 @@ yyfill (yyGLRStackItem *yyvsp, int *yylow, int yylow1, yybool yynormal)
 /*ARGSUSED*/ static YYRESULTTAG
 yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
               yyGLRStack* yystackp,
-              YYSTYPE* yyvalp, ASTFXNode* root_node, yyscan_t scanner)
+              YYSTYPE* yyvalp, ParseState* parse_state, yyscan_t scanner)
 {
   yybool yynormal __attribute__ ((__unused__)) =
     (yystackp->yysplitPoint == YY_NULL);
   int yylow;
-  YYUSE (root_node);
+  YYUSE (parse_state);
   YYUSE (scanner);
 # undef yyerrok
 # define yyerrok (yystackp->yyerrState = 0)
@@ -790,7 +790,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 # define YYFILL(N) yyfill (yyvsp, &yylow, N, yynormal)
 # undef YYBACKUP
 # define YYBACKUP(Token, Value)                                              \
-  return yyerror (root_node, scanner, YY_("syntax error: cannot back up")),     \
+  return yyerror (parse_state, scanner, YY_("syntax error: cannot back up")),     \
          yyerrok, yyerr
 
   yylow = 1;
@@ -809,13 +809,13 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 3:
 /* Line 868 of glr.c  */
 #line 64 "BsParserFX.y"
-    { nodeOptionsAdd(root_node->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.nodeOption)); }
+    { nodeOptionsAdd(parse_state->memContext, parse_state->rootNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.nodeOption)); }
     break;
 
   case 5:
 /* Line 868 of glr.c  */
 #line 72 "BsParserFX.y"
-    { ((*yyvalp).nodeOption).type = OT_Separable; ((*yyvalp).nodeOption).value.boolValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.boolValue); }
+    { ((*yyvalp).nodeOption).type = OT_Separable; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 6:
@@ -868,10 +868,10 @@ yyuserMerge (int yyn, YYSTYPE* yy0, YYSTYPE* yy1)
 
 /*ARGSUSED*/
 static void
-yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, ASTFXNode* root_node, yyscan_t scanner)
+yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, ParseState* parse_state, yyscan_t scanner)
 {
   YYUSE (yyvaluep);
-  YYUSE (root_node);
+  YYUSE (parse_state);
   YYUSE (scanner);
 
   if (!yymsg)
@@ -894,11 +894,11 @@ yyrhsLength (yyRuleNum yyrule)
 }
 
 static void
-yydestroyGLRState (char const *yymsg, yyGLRState *yys, ASTFXNode* root_node, yyscan_t scanner)
+yydestroyGLRState (char const *yymsg, yyGLRState *yys, ParseState* parse_state, yyscan_t scanner)
 {
   if (yys->yyresolved)
     yydestruct (yymsg, yystos[yys->yylrState],
-                &yys->yysemantics.yysval, root_node, scanner);
+                &yys->yysemantics.yysval, parse_state, scanner);
   else
     {
 #if YYDEBUG
@@ -909,7 +909,7 @@ yydestroyGLRState (char const *yymsg, yyGLRState *yys, ASTFXNode* root_node, yys
           else
             YYFPRINTF (stderr, "%s incomplete ", yymsg);
           yy_symbol_print (stderr, yystos[yys->yylrState],
-                           YY_NULL, root_node, scanner);
+                           YY_NULL, parse_state, scanner);
           YYFPRINTF (stderr, "\n");
         }
 #endif
@@ -922,7 +922,7 @@ yydestroyGLRState (char const *yymsg, yyGLRState *yys, ASTFXNode* root_node, yys
           for (yyrh = yyoption->yystate, yyn = yyrhsLength (yyoption->yyrule);
                yyn > 0;
                yyrh = yyrh->yypred, yyn -= 1)
-            yydestroyGLRState (yymsg, yyrh, root_node, scanner);
+            yydestroyGLRState (yymsg, yyrh, parse_state, scanner);
         }
     }
 }
@@ -1287,7 +1287,7 @@ yyglrShiftDefer (yyGLRStack* yystackp, size_t yyk, yyStateNum yylrState,
  *  for userAction.  */
 static inline YYRESULTTAG
 yydoAction (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
-            YYSTYPE* yyvalp, ASTFXNode* root_node, yyscan_t scanner)
+            YYSTYPE* yyvalp, ParseState* parse_state, yyscan_t scanner)
 {
   int yynrhs = yyrhsLength (yyrule);
 
@@ -1300,7 +1300,7 @@ yydoAction (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
       yystackp->yyspaceLeft += yynrhs;
       yystackp->yytops.yystates[0] = & yystackp->yynextFree[-1].yystate;
       return yyuserAction (yyrule, yynrhs, rhs, yystackp,
-                           yyvalp, root_node, scanner);
+                           yyvalp, parse_state, scanner);
     }
   else
     {
@@ -1321,7 +1321,7 @@ yydoAction (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
       yyupdateSplit (yystackp, yys);
       yystackp->yytops.yystates[yyk] = yys;
       return yyuserAction (yyrule, yynrhs, yyrhsVals + YYMAXRHS + YYMAXLEFT - 1,
-                           yystackp, yyvalp, root_node, scanner);
+                           yystackp, yyvalp, parse_state, scanner);
     }
 }
 
@@ -1340,7 +1340,7 @@ do {                                    \
 
 /*ARGSUSED*/ static inline void
 yy_reduce_print (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
-                 YYSTYPE* yyvalp, ASTFXNode* root_node, yyscan_t scanner)
+                 YYSTYPE* yyvalp, ParseState* parse_state, yyscan_t scanner)
 {
   int yynrhs = yyrhsLength (yyrule);
   yybool yynormal __attribute__ ((__unused__)) =
@@ -1349,7 +1349,7 @@ yy_reduce_print (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
   int yylow = 1;
   int yyi;
   YYUSE (yyvalp);
-  YYUSE (root_node);
+  YYUSE (parse_state);
   YYUSE (scanner);
   YYFPRINTF (stderr, "Reducing stack %lu by rule %d (line %lu):\n",
              (unsigned long int) yyk, yyrule - 1,
@@ -1360,7 +1360,7 @@ yy_reduce_print (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
       YYFPRINTF (stderr, "   $%d = ", yyi + 1);
       yy_symbol_print (stderr, yyrhs[yyprhs[yyrule] + yyi],
                        &(((yyGLRStackItem const *)yyvsp)[YYFILL ((yyi + 1) - (yynrhs))].yystate.yysemantics.yysval)
-                                              , root_node, scanner);
+                                              , parse_state, scanner);
       YYFPRINTF (stderr, "\n");
     }
 }
@@ -1379,7 +1379,7 @@ yy_reduce_print (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
  */
 static inline YYRESULTTAG
 yyglrReduce (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
-             yybool yyforceEval, ASTFXNode* root_node, yyscan_t scanner)
+             yybool yyforceEval, ParseState* parse_state, yyscan_t scanner)
 {
   size_t yyposn = yystackp->yytops.yystates[yyk]->yyposn;
 
@@ -1387,8 +1387,8 @@ yyglrReduce (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
     {
       YYSTYPE yysval;
 
-      YY_REDUCE_PRINT ((yystackp, yyk, yyrule, &yysval, root_node, scanner));
-      YYCHK (yydoAction (yystackp, yyk, yyrule, &yysval, root_node, scanner));
+      YY_REDUCE_PRINT ((yystackp, yyk, yyrule, &yysval, parse_state, scanner));
+      YYCHK (yydoAction (yystackp, yyk, yyrule, &yysval, parse_state, scanner));
       YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyrule], &yysval, &yyloc);
       yyglrShift (yystackp, yyk,
                   yyLRgotoState (yystackp->yytops.yystates[yyk]->yylrState,
@@ -1581,7 +1581,7 @@ yypreference (yySemanticOption* y0, yySemanticOption* y1)
 }
 
 static YYRESULTTAG yyresolveValue (yyGLRState* yys,
-                                   yyGLRStack* yystackp, ASTFXNode* root_node, yyscan_t scanner);
+                                   yyGLRStack* yystackp, ParseState* parse_state, yyscan_t scanner);
 
 
 /** Resolve the previous N states starting at and including state S.  If result
@@ -1591,14 +1591,14 @@ static YYRESULTTAG yyresolveValue (yyGLRState* yys,
  *  if necessary.  */
 static YYRESULTTAG
 yyresolveStates (yyGLRState* yys, int yyn,
-                 yyGLRStack* yystackp, ASTFXNode* root_node, yyscan_t scanner)
+                 yyGLRStack* yystackp, ParseState* parse_state, yyscan_t scanner)
 {
   if (0 < yyn)
     {
       YYASSERT (yys->yypred);
-      YYCHK (yyresolveStates (yys->yypred, yyn-1, yystackp, root_node, scanner));
+      YYCHK (yyresolveStates (yys->yypred, yyn-1, yystackp, parse_state, scanner));
       if (! yys->yyresolved)
-        YYCHK (yyresolveValue (yys, yystackp, root_node, scanner));
+        YYCHK (yyresolveValue (yys, yystackp, parse_state, scanner));
     }
   return yyok;
 }
@@ -1609,17 +1609,17 @@ yyresolveStates (yyGLRState* yys, int yyn,
  *  semantic values if invoked).  */
 static YYRESULTTAG
 yyresolveAction (yySemanticOption* yyopt, yyGLRStack* yystackp,
-                 YYSTYPE* yyvalp, ASTFXNode* root_node, yyscan_t scanner)
+                 YYSTYPE* yyvalp, ParseState* parse_state, yyscan_t scanner)
 {
   yyGLRStackItem yyrhsVals[YYMAXRHS + YYMAXLEFT + 1];
   int yynrhs = yyrhsLength (yyopt->yyrule);
   YYRESULTTAG yyflag =
-    yyresolveStates (yyopt->yystate, yynrhs, yystackp, root_node, scanner);
+    yyresolveStates (yyopt->yystate, yynrhs, yystackp, parse_state, scanner);
   if (yyflag != yyok)
     {
       yyGLRState *yys;
       for (yys = yyopt->yystate; yynrhs > 0; yys = yys->yypred, yynrhs -= 1)
-        yydestroyGLRState ("Cleanup: popping", yys, root_node, scanner);
+        yydestroyGLRState ("Cleanup: popping", yys, parse_state, scanner);
       return yyflag;
     }
 
@@ -1631,7 +1631,7 @@ yyresolveAction (yySemanticOption* yyopt, yyGLRStack* yystackp,
     yylval = yyopt->yyval;
     yyflag = yyuserAction (yyopt->yyrule, yynrhs,
                            yyrhsVals + YYMAXRHS + YYMAXLEFT - 1,
-                           yystackp, yyvalp, root_node, scanner);
+                           yystackp, yyvalp, parse_state, scanner);
     yychar = yychar_current;
     yylval = yylval_current;
   }
@@ -1688,7 +1688,7 @@ yyreportTree (yySemanticOption* yyx, int yyindent)
 
 /*ARGSUSED*/ static YYRESULTTAG
 yyreportAmbiguity (yySemanticOption* yyx0,
-                   yySemanticOption* yyx1, ASTFXNode* root_node, yyscan_t scanner)
+                   yySemanticOption* yyx1, ParseState* parse_state, yyscan_t scanner)
 {
   YYUSE (yyx0);
   YYUSE (yyx1);
@@ -1702,7 +1702,7 @@ yyreportAmbiguity (yySemanticOption* yyx0,
   YYFPRINTF (stderr, "\n");
 #endif
 
-  yyerror (root_node, scanner, YY_("syntax is ambiguous"));
+  yyerror (parse_state, scanner, YY_("syntax is ambiguous"));
   return yyabort;
 }
 
@@ -1713,7 +1713,7 @@ yyreportAmbiguity (yySemanticOption* yyx0,
  *  of whether result = yyok, S has been left with consistent data so that
  *  yydestroyGLRState can be invoked if necessary.  */
 static YYRESULTTAG
-yyresolveValue (yyGLRState* yys, yyGLRStack* yystackp, ASTFXNode* root_node, yyscan_t scanner)
+yyresolveValue (yyGLRState* yys, yyGLRStack* yystackp, ParseState* parse_state, yyscan_t scanner)
 {
   yySemanticOption* yyoptionList = yys->yysemantics.yyfirstVal;
   yySemanticOption* yybest = yyoptionList;
@@ -1736,7 +1736,7 @@ yyresolveValue (yyGLRState* yys, yyGLRStack* yystackp, ASTFXNode* root_node, yys
           switch (yypreference (yybest, yyp))
             {
             case 0:
-              return yyreportAmbiguity (yybest, yyp, root_node, scanner);
+              return yyreportAmbiguity (yybest, yyp, parse_state, scanner);
               break;
             case 1:
               yymerge = yytrue;
@@ -1761,19 +1761,19 @@ yyresolveValue (yyGLRState* yys, yyGLRStack* yystackp, ASTFXNode* root_node, yys
     {
       yySemanticOption* yyp;
       int yyprec = yydprec[yybest->yyrule];
-      yyflag = yyresolveAction (yybest, yystackp, &yysval, root_node, scanner);
+      yyflag = yyresolveAction (yybest, yystackp, &yysval, parse_state, scanner);
       if (yyflag == yyok)
         for (yyp = yybest->yynext; yyp != YY_NULL; yyp = yyp->yynext)
           {
             if (yyprec == yydprec[yyp->yyrule])
               {
                 YYSTYPE yysval_other;
-                yyflag = yyresolveAction (yyp, yystackp, &yysval_other, root_node, scanner);
+                yyflag = yyresolveAction (yyp, yystackp, &yysval_other, parse_state, scanner);
                 if (yyflag != yyok)
                   {
                     yydestruct ("Cleanup: discarding incompletely merged value for",
                                 yystos[yys->yylrState],
-                                &yysval, root_node, scanner);
+                                &yysval, parse_state, scanner);
                     break;
                   }
                 yyuserMerge (yymerger[yyp->yyrule], &yysval, &yysval_other);
@@ -1781,7 +1781,7 @@ yyresolveValue (yyGLRState* yys, yyGLRStack* yystackp, ASTFXNode* root_node, yys
           }
     }
   else
-    yyflag = yyresolveAction (yybest, yystackp, &yysval, root_node, scanner);
+    yyflag = yyresolveAction (yybest, yystackp, &yysval, parse_state, scanner);
 
   if (yyflag == yyok)
     {
@@ -1794,7 +1794,7 @@ yyresolveValue (yyGLRState* yys, yyGLRStack* yystackp, ASTFXNode* root_node, yys
 }
 
 static YYRESULTTAG
-yyresolveStack (yyGLRStack* yystackp, ASTFXNode* root_node, yyscan_t scanner)
+yyresolveStack (yyGLRStack* yystackp, ParseState* parse_state, yyscan_t scanner)
 {
   if (yystackp->yysplitPoint != YY_NULL)
     {
@@ -1806,7 +1806,7 @@ yyresolveStack (yyGLRStack* yystackp, ASTFXNode* root_node, yyscan_t scanner)
            yys = yys->yypred, yyn += 1)
         continue;
       YYCHK (yyresolveStates (yystackp->yytops.yystates[0], yyn, yystackp
-                             , root_node, scanner));
+                             , parse_state, scanner));
     }
   return yyok;
 }
@@ -1843,7 +1843,7 @@ yycompressStack (yyGLRStack* yystackp)
 
 static YYRESULTTAG
 yyprocessOneStack (yyGLRStack* yystackp, size_t yyk,
-                   size_t yyposn, ASTFXNode* root_node, yyscan_t scanner)
+                   size_t yyposn, ParseState* parse_state, yyscan_t scanner)
 {
   int yyaction;
   const short int* yyconflicts;
@@ -1867,7 +1867,7 @@ yyprocessOneStack (yyGLRStack* yystackp, size_t yyk,
               yymarkStackDeleted (yystackp, yyk);
               return yyok;
             }
-          YYCHK (yyglrReduce (yystackp, yyk, yyrule, yyfalse, root_node, scanner));
+          YYCHK (yyglrReduce (yystackp, yyk, yyrule, yyfalse, parse_state, scanner));
         }
       else
         {
@@ -1899,9 +1899,9 @@ yyprocessOneStack (yyGLRStack* yystackp, size_t yyk,
                           (unsigned long int) yynewStack,
                           (unsigned long int) yyk));
               YYCHK (yyglrReduce (yystackp, yynewStack,
-                                  *yyconflicts, yyfalse, root_node, scanner));
+                                  *yyconflicts, yyfalse, parse_state, scanner));
               YYCHK (yyprocessOneStack (yystackp, yynewStack,
-                                        yyposn, root_node, scanner));
+                                        yyposn, parse_state, scanner));
               yyconflicts += 1;
             }
 
@@ -1916,19 +1916,19 @@ yyprocessOneStack (yyGLRStack* yystackp, size_t yyk,
             }
           else
             YYCHK (yyglrReduce (yystackp, yyk, -yyaction,
-                                yyfalse, root_node, scanner));
+                                yyfalse, parse_state, scanner));
         }
     }
   return yyok;
 }
 
 /*ARGSUSED*/ static void
-yyreportSyntaxError (yyGLRStack* yystackp, ASTFXNode* root_node, yyscan_t scanner)
+yyreportSyntaxError (yyGLRStack* yystackp, ParseState* parse_state, yyscan_t scanner)
 {
   if (yystackp->yyerrState != 0)
     return;
 #if ! YYERROR_VERBOSE
-  yyerror (root_node, scanner, YY_("syntax error"));
+  yyerror (parse_state, scanner, YY_("syntax error"));
 #else
   {
   yySymbol yytoken = yychar == YYEMPTY ? YYEMPTY : YYTRANSLATE (yychar);
@@ -2043,12 +2043,12 @@ yyreportSyntaxError (yyGLRStack* yystackp, ASTFXNode* root_node, yyscan_t scanne
               yyformat++;
             }
         }
-      yyerror (root_node, scanner, yymsg);
+      yyerror (parse_state, scanner, yymsg);
       YYFREE (yymsg);
     }
   else
     {
-      yyerror (root_node, scanner, YY_("syntax error"));
+      yyerror (parse_state, scanner, YY_("syntax error"));
       yyMemoryExhausted (yystackp);
     }
   }
@@ -2060,7 +2060,7 @@ yyreportSyntaxError (yyGLRStack* yystackp, ASTFXNode* root_node, yyscan_t scanne
    yylval, and yylloc are the syntactic category, semantic value, and location
    of the lookahead.  */
 /*ARGSUSED*/ static void
-yyrecoverSyntaxError (yyGLRStack* yystackp, ASTFXNode* root_node, yyscan_t scanner)
+yyrecoverSyntaxError (yyGLRStack* yystackp, ParseState* parse_state, yyscan_t scanner)
 {
   size_t yyk;
   int yyj;
@@ -2072,12 +2072,12 @@ yyrecoverSyntaxError (yyGLRStack* yystackp, ASTFXNode* root_node, yyscan_t scann
       {
         yySymbol yytoken;
         if (yychar == YYEOF)
-          yyFail (yystackp, root_node, scanner, YY_NULL);
+          yyFail (yystackp, parse_state, scanner, YY_NULL);
         if (yychar != YYEMPTY)
           {
             yytoken = YYTRANSLATE (yychar);
             yydestruct ("Error: discarding",
-                        yytoken, &yylval, root_node, scanner);
+                        yytoken, &yylval, parse_state, scanner);
           }
         YYDPRINTF ((stderr, "Reading a token: "));
         yychar = YYLEX;
@@ -2109,7 +2109,7 @@ yyrecoverSyntaxError (yyGLRStack* yystackp, ASTFXNode* root_node, yyscan_t scann
     if (yystackp->yytops.yystates[yyk] != YY_NULL)
       break;
   if (yyk >= yystackp->yytops.yysize)
-    yyFail (yystackp, root_node, scanner, YY_NULL);
+    yyFail (yystackp, parse_state, scanner, YY_NULL);
   for (yyk += 1; yyk < yystackp->yytops.yysize; yyk += 1)
     yymarkStackDeleted (yystackp, yyk);
   yyremoveDeletes (yystackp);
@@ -2137,13 +2137,13 @@ yyrecoverSyntaxError (yyGLRStack* yystackp, ASTFXNode* root_node, yyscan_t scann
             }
         }
       if (yys->yypred != YY_NULL)
-        yydestroyGLRState ("Error: popping", yys, root_node, scanner);
+        yydestroyGLRState ("Error: popping", yys, parse_state, scanner);
       yystackp->yytops.yystates[0] = yys->yypred;
       yystackp->yynextFree -= 1;
       yystackp->yyspaceLeft += 1;
     }
   if (yystackp->yytops.yystates[0] == YY_NULL)
-    yyFail (yystackp, root_node, scanner, YY_NULL);
+    yyFail (yystackp, parse_state, scanner, YY_NULL);
 }
 
 #define YYCHK1(YYE)                                                          \
@@ -2168,7 +2168,7 @@ yyrecoverSyntaxError (yyGLRStack* yystackp, ASTFXNode* root_node, yyscan_t scann
 `----------*/
 
 int
-yyparse (ASTFXNode* root_node, yyscan_t scanner)
+yyparse (ParseState* parse_state, yyscan_t scanner)
 {
   int yyresult;
   yyGLRStack yystack;
@@ -2214,10 +2214,10 @@ yyparse (ASTFXNode* root_node, yyscan_t scanner)
               if (yyrule == 0)
                 {
 
-                  yyreportSyntaxError (&yystack, root_node, scanner);
+                  yyreportSyntaxError (&yystack, parse_state, scanner);
                   goto yyuser_error;
                 }
-              YYCHK1 (yyglrReduce (&yystack, 0, yyrule, yytrue, root_node, scanner));
+              YYCHK1 (yyglrReduce (&yystack, 0, yyrule, yytrue, parse_state, scanner));
             }
           else
             {
@@ -2254,11 +2254,11 @@ yyparse (ASTFXNode* root_node, yyscan_t scanner)
               else if (yyisErrorAction (yyaction))
                 {
 
-                  yyreportSyntaxError (&yystack, root_node, scanner);
+                  yyreportSyntaxError (&yystack, parse_state, scanner);
                   goto yyuser_error;
                 }
               else
-                YYCHK1 (yyglrReduce (&yystack, 0, -yyaction, yytrue, root_node, scanner));
+                YYCHK1 (yyglrReduce (&yystack, 0, -yyaction, yytrue, parse_state, scanner));
             }
         }
 
@@ -2290,17 +2290,17 @@ yyparse (ASTFXNode* root_node, yyscan_t scanner)
              on yylval in the event of memory exhaustion.  */
 
           for (yys = 0; yys < yystack.yytops.yysize; yys += 1)
-            YYCHK1 (yyprocessOneStack (&yystack, yys, yyposn, root_node, scanner));
+            YYCHK1 (yyprocessOneStack (&yystack, yys, yyposn, parse_state, scanner));
           yyremoveDeletes (&yystack);
           if (yystack.yytops.yysize == 0)
             {
               yyundeleteLastStack (&yystack);
               if (yystack.yytops.yysize == 0)
-                yyFail (&yystack, root_node, scanner, YY_("syntax error"));
-              YYCHK1 (yyresolveStack (&yystack, root_node, scanner));
+                yyFail (&yystack, parse_state, scanner, YY_("syntax error"));
+              YYCHK1 (yyresolveStack (&yystack, parse_state, scanner));
               YYDPRINTF ((stderr, "Returning to deterministic operation.\n"));
 
-              yyreportSyntaxError (&yystack, root_node, scanner);
+              yyreportSyntaxError (&yystack, parse_state, scanner);
               goto yyuser_error;
             }
 
@@ -2331,7 +2331,7 @@ yyparse (ASTFXNode* root_node, yyscan_t scanner)
 
           if (yystack.yytops.yysize == 1)
             {
-              YYCHK1 (yyresolveStack (&yystack, root_node, scanner));
+              YYCHK1 (yyresolveStack (&yystack, parse_state, scanner));
               YYDPRINTF ((stderr, "Returning to deterministic operation.\n"));
               yycompressStack (&yystack);
               break;
@@ -2339,7 +2339,7 @@ yyparse (ASTFXNode* root_node, yyscan_t scanner)
         }
       continue;
     yyuser_error:
-      yyrecoverSyntaxError (&yystack, root_node, scanner);
+      yyrecoverSyntaxError (&yystack, parse_state, scanner);
       yyposn = yystack.yytops.yystates[0]->yyposn;
     }
 
@@ -2356,14 +2356,14 @@ yyparse (ASTFXNode* root_node, yyscan_t scanner)
   goto yyreturn;
 
  yyexhaustedlab:
-  yyerror (root_node, scanner, YY_("memory exhausted"));
+  yyerror (parse_state, scanner, YY_("memory exhausted"));
   yyresult = 2;
   goto yyreturn;
 
  yyreturn:
   if (yychar != YYEMPTY)
     yydestruct ("Cleanup: discarding lookahead",
-                YYTRANSLATE (yychar), &yylval, root_node, scanner);
+                YYTRANSLATE (yychar), &yylval, parse_state, scanner);
 
   /* If the stack is well-formed, pop the stack until it is empty,
      destroying its entries as we go.  But free the stack regardless
@@ -2382,7 +2382,7 @@ yyparse (ASTFXNode* root_node, yyscan_t scanner)
                   {
                     yyGLRState *yys = yystates[yyk];
                   if (yys->yypred != YY_NULL)
-                      yydestroyGLRState ("Cleanup: popping", yys, root_node, scanner);
+                      yydestroyGLRState ("Cleanup: popping", yys, parse_state, scanner);
                     yystates[yyk] = yys->yypred;
                     yystack.yynextFree -= 1;
                     yystack.yyspaceLeft += 1;

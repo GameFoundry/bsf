@@ -7,6 +7,7 @@
 typedef enum tagNodeType NodeType;
 typedef enum tagOptionType OptionType;
 typedef enum tagOptionDataType OptionDataType;
+typedef struct tagParseState ParseState;
 typedef struct tagOptionInfo OptionInfo;
 typedef union tagOptionData OptionData;
 typedef struct tagNodeOptions NodeOptions;
@@ -38,6 +39,12 @@ enum tagOptionDataType
 	ODT_Bool,
 	ODT_String,
 	ODT_Complex
+};
+
+struct tagParseState
+{
+	ASTFXNode* rootNode;
+	void* memContext;
 };
 
 struct tagOptionInfo
@@ -78,14 +85,14 @@ struct tagASTFXNode
 
 OptionInfo OPTION_LOOKUP[];
 
-NodeOptions* nodeOptionsCreate();
+NodeOptions* nodeOptionsCreate(void* context);
 void nodeOptionDelete(NodeOption* option);
 void nodeOptionsDelete(NodeOptions* options);
-void nodeOptionsResize(NodeOptions* options, int size);
-void nodeOptionsGrowIfNeeded(NodeOptions* options);
-void nodeOptionsAdd(NodeOptions* options, NodeOption* option);
+void nodeOptionsResize(void* context, NodeOptions* options, int size);
+void nodeOptionsGrowIfNeeded(void* context, NodeOptions* options);
+void nodeOptionsAdd(void* context, NodeOptions* options, NodeOption* option);
 
-ASTFXNode* nodeCreate(NodeType type);
+ASTFXNode* nodeCreate(void* context, NodeType type);
 void nodeDelete(ASTFXNode* node);
 
 #endif

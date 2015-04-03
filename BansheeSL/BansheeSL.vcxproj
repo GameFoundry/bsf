@@ -264,6 +264,7 @@
     <ClInclude Include="BsLexerFX.h" />
     <ClInclude Include="BsParserFX.h" />
     <ClInclude Include="Include\BsASTFX.h" />
+    <ClInclude Include="Include\BsMMAlloc.h" />
     <ClInclude Include="Include\BsSLPrerequisites.h" />
   </ItemGroup>
   <ItemGroup>
@@ -280,6 +281,7 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">Default</CompileAs>
     </ClCompile>
     <ClCompile Include="Source\BsASTFX.c" />
+    <ClCompile Include="Source\BSMMAlloc.c" />
     <ClCompile Include="Source\BsSLPlugin.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

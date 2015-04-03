@@ -3,7 +3,7 @@
 #include "BsLexerFX.h"
 #define inline
 
-	void yyerror(ASTFXNode* root_node, yyscan_t scanner, const char *msg) 
+	void yyerror(ParseState* parse_state, yyscan_t scanner, const char *msg) 
 	{ 
 		fprintf (stderr, "%s\n", msg);
 	}
@@ -11,6 +11,7 @@
 %}
 
 %code requires{
+#include "BsMMAlloc.h"
 #include "BsASTFX.h"
 
 #ifndef YY_TYPEDEF_YY_SCANNER_T
@@ -26,14 +27,13 @@
 %define api.pure
 %debug
 %lex-param { yyscan_t scanner }
-%parse-param { ASTFXNode* root_node }
+%parse-param { ParseState* parse_state }
 %parse-param { yyscan_t scanner }
 %glr-parser
 
 %union {
 	int intValue;
 	float floatValue;
-	int boolValue;
 	const char* strValue;
 	ASTFXNode* nodePtr;
 	NodeOption nodeOption;
@@ -47,7 +47,7 @@
 
 %token <intValue>	TOKEN_INTEGER
 %token <floatValue> TOKEN_FLOAT
-%token <boolValue>	TOKEN_BOOLEAN
+%token <intValue>	TOKEN_BOOLEAN
 %token <strValue>	TOKEN_STRING
 
 %token	TOKEN_FILLMODE TOKEN_CULLMODE TOKEN_DEPTHBIAS TOKEN_SDEPTHBIAS
@@ -61,7 +61,7 @@
 
 shader
 	: /* empty */				{ }
-	| shader_statement shader	{ nodeOptionsAdd(root_node->options, &$1); }
+	| shader_statement shader	{ nodeOptionsAdd(parse_state->memContext, parse_state->rootNode->options, &$1); }
 	;
 
 shader_statement
@@ -69,7 +69,7 @@ shader_statement
 	;
 
 shader_option_decl
-	: TOKEN_SEPARABLE '=' TOKEN_BOOLEAN ';'		{ $$.type = OT_Separable; $$.value.boolValue = $3; }
+	: TOKEN_SEPARABLE '=' TOKEN_BOOLEAN ';'		{ $$.type = OT_Separable; $$.value.intValue = $3; }
 	| TOKEN_QUEUE '=' TOKEN_INTEGER ';'			{ $$.type = OT_Queue; $$.value.intValue = $3; }
 	| TOKEN_PRIORITY '=' TOKEN_INTEGER ';'		{ $$.type = OT_Priority; $$.value.intValue = $3; }
 	;

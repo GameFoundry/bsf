@@ -1,4 +1,5 @@
 #include "BsASTFX.h"
+#include "BsMMAlloc.h"
 
 OptionInfo OPTION_LOOKUP[] =
 {
@@ -8,15 +9,15 @@ OptionInfo OPTION_LOOKUP[] =
 	{ OT_Queue, ODT_Int },
 };
 
-NodeOptions* nodeOptionsCreate()
+NodeOptions* nodeOptionsCreate(void* context)
 {
 	static const int BUFFER_SIZE = 5;
 
-	NodeOptions* options = (NodeOptions*)malloc(sizeof(NodeOptions));
+	NodeOptions* options = (NodeOptions*)mmalloc(context, sizeof(NodeOptions));
 	options->count = 0;
 	options->bufferSize = BUFFER_SIZE;
 
-	options->entries = (NodeOption*)malloc(sizeof(NodeOption) * options->bufferSize);
+	options->entries = (NodeOption*)mmalloc(context, sizeof(NodeOption) * options->bufferSize);
 	memset(options->entries, 0, sizeof(NodeOption) * options->bufferSize);
 
 	return options;
@@ -26,12 +27,12 @@ void nodeOptionDelete(NodeOption* option)
 {
 	if (OPTION_LOOKUP[(int)option->type].dataType == ODT_Complex)
 	{
-		free(option->value.complexValue); // TODO - Maybe this has more complex delete logic? (It probably will have)
+		mmfree(option->value.complexValue); // TODO - Maybe this has more complex delete logic? (It probably will have)
 		option->value.complexValue = 0;
 	}
 	else if (OPTION_LOOKUP[(int)option->type].dataType == ODT_String)
 	{
-		free((void*)option->value.strValue);
+		mmfree((void*)option->value.strValue);
 		option->value.strValue = 0;
 	}
 }
@@ -43,11 +44,11 @@ void nodeOptionsDelete(NodeOptions* options)
 	for (i = 0; i < options->count; i++)
 		nodeOptionDelete(&options->entries[i]);
 
-	free(options->entries);
-	free(options);
+	mmfree(options->entries);
+	mmfree(options);
 }
 
-void nodeOptionsResize(NodeOptions* options, int size)
+void nodeOptionsResize(void* context, NodeOptions* options, int size)
 {
 	NodeOption* originalEntries = options->entries;
 	int originalSize = options->bufferSize;
@@ -65,7 +66,7 @@ void nodeOptionsResize(NodeOptions* options, int size)
 
 	sizeToCopy = elementsToCopy * sizeof(NodeOption);
 
-	options->entries = (NodeOption*)malloc(sizeof(NodeOption) * options->bufferSize);
+	options->entries = (NodeOption*)mmalloc(context, sizeof(NodeOption) * options->bufferSize);
 
 	memcpy(options->entries, originalEntries, sizeToCopy);
 	memset(options->entries + elementsToCopy, 0, sizeof(NodeOption) * options->bufferSize - sizeToCopy);
@@ -73,29 +74,29 @@ void nodeOptionsResize(NodeOptions* options, int size)
 	for (i = 0; i < originalCount; i++)
 		nodeOptionDelete(&originalEntries[i]);
 
-	free(originalEntries);
+	mmfree(originalEntries);
 }
 
-void nodeOptionsGrowIfNeeded(NodeOptions* options)
+void nodeOptionsGrowIfNeeded(void* context, NodeOptions* options)
 {
 	static const int BUFFER_GROW = 10;
 
 	if (options->count == options->bufferSize)
-		nodeOptionsResize(options, options->bufferSize + BUFFER_GROW);
+		nodeOptionsResize(context, options, options->bufferSize + BUFFER_GROW);
 }
 
-void nodeOptionsAdd(NodeOptions* options, NodeOption* option)
+void nodeOptionsAdd(void* context, NodeOptions* options, NodeOption* option)
 {
-	nodeOptionsGrowIfNeeded(options);
+	nodeOptionsGrowIfNeeded(context, options);
 
 	options->entries[options->count] = *option;
 	options->count++;
 }
 
-ASTFXNode* nodeCreate(NodeType type)
+ASTFXNode* nodeCreate(void* context, NodeType type)
 {
-	ASTFXNode* node = (ASTFXNode*)malloc(sizeof(ASTFXNode));
-	node->options = nodeOptionsCreate();
+	ASTFXNode* node = (ASTFXNode*)mmalloc(context, sizeof(ASTFXNode));
+	node->options = nodeOptionsCreate(context);
 	node->type = type;
 
 	return node;
@@ -105,5 +106,5 @@ void nodeDelete(ASTFXNode* node)
 {
 	nodeOptionsDelete(node->options);
 
-	free(node);
+	mmfree(node);
 }

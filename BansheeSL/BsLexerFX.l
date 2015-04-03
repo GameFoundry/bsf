@@ -2,33 +2,29 @@
 #include "BsParserFX.h"
 %}
  
-%option reentrant noyywrap
-%option nounistd
-%option never-interactive
+%option reentrant noyywrap nounistd never-interactive warn nodefault bison-bridge
 %option outfile="BsLexerFX.c" header-file="BsLexerFX.h"
-%option warn nodefault
+%option extra-type="struct tagParseState *"
 %option debug
 
-%option bison-bridge
- 
 LBRACKET		"{"
 RBRACKET		"}"
  
 INTEGER		[0-9][0-9]*
 INTEGER_BIN	0x[0-9][0-9]*
 FLOAT		[0-9]+\.[0-9]+([eE][+-]?[0-9]+)?[fF]?
-BOOLEAN		(true|false)
 STRING		\"[^"\n]*\"
 WS			[ \r\n\t]*
 
 %%
 
 {WS}			{ /* Skip blank */ }
-{INTEGER}       { return TOKEN_INTEGER; }
-{FLOAT}			{ return TOKEN_FLOAT; }
-{BOOLEAN}		{ return TOKEN_BOOLEAN; }
-{STRING}		{ return TOKEN_STRING; }
- 
+{INTEGER}       { yylval->intValue = atoi(yytext); return TOKEN_INTEGER; }
+{FLOAT}			{ yylval->floatValue = (float)atof(yytext); return TOKEN_FLOAT; }
+{STRING}		{ yylval->strValue = mmalloc_strdup(yyextra->memContext, yytext); return TOKEN_STRING; }
+true			{ yylval->intValue = 1; return TOKEN_BOOLEAN; }
+false			{ yylval->intValue = 0; return TOKEN_BOOLEAN; }
+
 {LBRACKET}      { return TOKEN_LBRACKET; }
 {RBRACKET}      { return TOKEN_RBRACKET; }
 

@@ -43,6 +43,7 @@ extern int yydebug;
 /* Line 2579 of glr.c  */
 #line 13 "BsParserFX.y"
 
+#include "BsMMAlloc.h"
 #include "BsASTFX.h"
 
 #ifndef YY_TYPEDEF_YY_SCANNER_T
@@ -53,7 +54,7 @@ extern int yydebug;
 
 
 /* Line 2579 of glr.c  */
-#line 57 "BsParserFX.h"
+#line 58 "BsParserFX.h"
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -85,11 +86,10 @@ extern int yydebug;
 typedef union YYSTYPE
 {
 /* Line 2579 of glr.c  */
-#line 33 "BsParserFX.y"
+#line 34 "BsParserFX.y"
 
 	int intValue;
 	float floatValue;
-	int boolValue;
 	const char* strValue;
 	ASTFXNode* nodePtr;
 	NodeOption nodeOption;
@@ -104,6 +104,6 @@ typedef union YYSTYPE
 #endif
 
 
-int yyparse (ASTFXNode* root_node, yyscan_t scanner);
+int yyparse (ParseState* parse_state, yyscan_t scanner);
 
 #endif /* !YY_YY_BSPARSERFX_H_INCLUDED  */

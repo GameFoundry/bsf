@@ -296,9 +296,7 @@ void yyfree (void * ,yyscan_t yyscanner );
 #define isatty _isatty
 #define fileno _fileno
     
-#ifndef YY_EXTRA_TYPE
-#define YY_EXTRA_TYPE void *
-#endif
+#define YY_EXTRA_TYPE struct tagParseState *
 
 /* %if-c-only Reentrant structure and macros (non-C++). */
 /* %if-reentrant */
@@ -449,8 +447,8 @@ extern int yylex \
 #undef YY_DECL
 #endif
 
-#line 50 "BsLexerFX.l"
+#line 46 "BsLexerFX.l"
 
-#line 455 "BsLexerFX.h"
+#line 453 "BsLexerFX.h"
 #undef yyIN_HEADER
 #endif /* yyHEADER_H */

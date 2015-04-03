@@ -27,6 +27,9 @@
     <ClInclude Include="Include\BsASTFX.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsMMAlloc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="BsLexerFX.l" />
@@ -43,6 +46,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsASTFX.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BSMMAlloc.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
