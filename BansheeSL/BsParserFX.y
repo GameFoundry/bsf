@@ -19,6 +19,21 @@
 	typedef void* yyscan_t;
 #endif
 
+#define ADD_PARAMETER(OUTPUT, TYPE, NAME)															\
+			OUTPUT = nodeCreate(parse_state->memContext, NT_Parameter);								\
+			nodePush(parse_state, OUTPUT);															\
+																									\
+			NodeOption paramType;																	\
+			paramType.type = OT_ParamType;															\
+			paramType.value.intValue = TYPE;														\
+																									\
+			NodeOption paramName;																	\
+			paramName.type = OT_Identifier;															\
+			paramName.value.strValue = NAME;														\
+																									\
+			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &paramType);		\
+			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &paramName);		\
+
 }
 
 %output  "BsParserFX.c"
@@ -34,6 +49,7 @@
 %union {
 	int intValue;
 	float floatValue;
+	float matrixValue[16];
 	const char* strValue;
 	ASTFXNode* nodePtr;
 	NodeOption nodeOption;
@@ -44,6 +60,7 @@
 %token <floatValue> TOKEN_FLOAT
 %token <intValue>	TOKEN_BOOLEAN
 %token <strValue>	TOKEN_STRING
+%token <strValue>	TOKEN_IDENTIFIER
 
 %token <intValue>	TOKEN_FILLMODEVALUE
 %token <intValue>	TOKEN_CULLMODEVALUE
@@ -53,6 +70,49 @@
 %token <intValue>	TOKEN_ADDRMODEVALUE
 %token <intValue>	TOKEN_FILTERVALUE
 %token <intValue>	TOKEN_BLENDOPVALUE
+%token <intValue>	TOKEN_BUFFERUSAGE
+
+%token <intValue> TOKEN_FLOATTYPE 
+%token <intValue> TOKEN_FLOAT2TYPE 
+%token <intValue> TOKEN_FLOAT3TYPE 
+%token <intValue> TOKEN_FLOAT4TYPE
+
+%token <intValue> TOKEN_MAT2x2TYPE 
+%token <intValue> TOKEN_MAT2x3TYPE 
+%token <intValue> TOKEN_MAT2x4TYPE
+
+%token <intValue> TOKEN_MAT3x2TYPE 
+%token <intValue> TOKEN_MAT3x3TYPE 
+%token <intValue> TOKEN_MAT3x4TYPE
+
+%token <intValue> TOKEN_MAT4x2TYPE 
+%token <intValue> TOKEN_MAT4x3TYPE 
+%token <intValue> TOKEN_MAT4x4TYPE
+
+%token <intValue> TOKEN_SAMPLER1D 
+%token <intValue> TOKEN_SAMPLER2D 
+%token <intValue> TOKEN_SAMPLER3D 
+%token <intValue> TOKEN_SAMPLERCUBE 
+%token <intValue> TOKEN_SAMPLER2DMS
+
+%token <intValue> TOKEN_TEXTURE1D 
+%token <intValue> TOKEN_TEXTURE2D 
+%token <intValue> TOKEN_TEXTURE3D 
+%token <intValue> TOKEN_TEXTURECUBE 
+%token <intValue> TOKEN_TEXTURE2DMS
+
+%token <intValue> TOKEN_BYTEBUFFER 
+%token <intValue> TOKEN_STRUCTBUFFER 
+%token <intValue> TOKEN_RWTYPEDBUFFER 
+%token <intValue> TOKEN_RWBYTEBUFFER
+%token <intValue> TOKEN_RWSTRUCTBUFFER 
+%token <intValue> TOKEN_RWAPPENDBUFFER 
+%token <intValue> TOKEN_RWCONSUMEBUFFER
+
+%token TOKEN_PARAMSBLOCK
+
+	/* Qualifiers */
+%token TOKEN_AUTO TOKEN_ALIAS TOKEN_SHARED TOKEN_USAGE
 
 	/* Shader keywords */
 %token TOKEN_SEPARABLE TOKEN_QUEUE TOKEN_PRIORITY
@@ -69,7 +129,7 @@
 
 %token	TOKEN_DEPTHREAD TOKEN_DEPTHWRITE TOKEN_COMPAREFUNC TOKEN_STENCIL
 %token	TOKEN_STENCILREADMASK TOKEN_STENCILWRITEMASK TOKEN_STENCILOPFRONT TOKEN_STENCILOPBACK
-%token	TOKEN_FAIL TOKEN_ZFAIL TOKEN_PASS
+%token	TOKEN_FAIL TOKEN_ZFAIL
 
 %token	TOKEN_ALPHATOCOVERAGE TOKEN_INDEPENDANTBLEND TOKEN_TARGET TOKEN_INDEX
 %token	TOKEN_BLEND TOKEN_COLOR TOKEN_ALPHA TOKEN_WRITEMASK
@@ -89,7 +149,81 @@
 %type <nodeOption>	technique_statement;
 %type <nodeOption>	technique_option;
 
+%type <nodePtr>		pass;
+%type <nodePtr>		pass_header;
+%type <nodeOption>	pass_statement;
+%type <nodeOption>	pass_option;
+
+%type <nodePtr>		stencil_op_front_header;
+%type <nodePtr>		stencil_op_back_header;
+%type <nodeOption>	stencil_op_option;
+
+%type <nodePtr>		target;
+%type <nodePtr>		target_header;
+%type <nodeOption>	target_statement;
+%type <nodeOption>	target_option;
+
+%type <nodePtr>		blend_color_header;
+%type <nodePtr>		blend_alpha_header;
+%type <nodeOption>	blenddef_option;
+
+%type <nodeOption>	sampler_state_option;
+
+%type <nodePtr>		addr_mode;
+%type <nodePtr>		addr_mode_header;
+%type <nodeOption>	addr_mode_option;
+
+%type <nodePtr> parameters
+%type <nodePtr> parameters_header
+%type <nodeOption> parameter
+
+%type <nodePtr> block_header
+%type <nodeOption> block
+%type <nodePtr> blocks_header
+%type <nodePtr> blocks
+
+%type <nodeOption> qualifier
+
+%type <matrixValue> float2;
+%type <matrixValue> float3;
+%type <matrixValue> float4;
+%type <matrixValue> mat6;
+%type <matrixValue> mat8;
+%type <matrixValue> mat9;
+%type <matrixValue> mat12;
+%type <matrixValue> mat16;
+
+%type <nodePtr> param_header_float
+%type <nodePtr> param_header_float2
+%type <nodePtr> param_header_float3
+%type <nodePtr> param_header_float4
+%type <nodePtr> param_header_mat2x2
+%type <nodePtr> param_header_mat2x3
+%type <nodePtr> param_header_mat2x4
+%type <nodePtr> param_header_mat3x2
+%type <nodePtr> param_header_mat3x3
+%type <nodePtr> param_header_mat3x4
+%type <nodePtr> param_header_mat4x2
+%type <nodePtr> param_header_mat4x3
+%type <nodePtr> param_header_mat4x4
+%type <nodePtr> param_header_sampler
+%type <nodePtr> param_header_generic
+%type <nodePtr> param_header_qualified_sampler
+
+%type <nodeOption> param_body_float
+%type <nodeOption> param_body_float2
+%type <nodeOption> param_body_float3
+%type <nodeOption> param_body_float4
+%type <nodeOption> param_body_mat6
+%type <nodeOption> param_body_mat8
+%type <nodeOption> param_body_mat9
+%type <nodeOption> param_body_mat12
+%type <nodeOption> param_body_mat16
+%type <nodeOption> param_body_sampler
+
 %%
+
+	/* Shader */
 
 shader
 	: /* empty */				{ }
@@ -99,6 +233,8 @@ shader
 shader_statement
 	: shader_option
 	| technique			{ $$.type = OT_Technique; $$.value.nodePtr = $1; }
+	| parameters		{ $$.type = OT_Parameters; $$.value.nodePtr = $1; }
+	| blocks			{ $$.type = OT_Blocks; $$.value.nodePtr = $1; }
 	;
 
 shader_option
@@ -106,6 +242,8 @@ shader_option
 	| TOKEN_QUEUE '=' TOKEN_INTEGER ';'			{ $$.type = OT_Queue; $$.value.intValue = $3; }
 	| TOKEN_PRIORITY '=' TOKEN_INTEGER ';'		{ $$.type = OT_Priority; $$.value.intValue = $3; }
 	;
+
+	/* Technique */
 
 technique
 	: technique_header '{' technique_body '}' ';' { nodePop(parse_state); $$ = $1; }
@@ -126,6 +264,7 @@ technique_body
 
 technique_statement
 	: technique_option
+	| pass				{ $$.type = OT_Pass; $$.value.nodePtr = $1; }
 	;
 
 technique_option
@@ -133,4 +272,479 @@ technique_option
 	| TOKEN_LANGUAGE '=' TOKEN_STRING ';'	{ $$.type = OT_Language; $$.value.strValue = $3; }
 	| TOKEN_INCLUDE '=' TOKEN_STRING ';'	{ $$.type = OT_Include; $$.value.strValue = $3; }
 
+	/* Pass */
+
+pass
+	: pass_header '{' pass_body '}' ';' { nodePop(parse_state); $$ = $1; }
+	;
+
+pass_header
+	: TOKEN_PASS '=' 
+		{ 
+			$$ = nodeCreate(parse_state->memContext, NT_Pass); 
+			nodePush(parse_state, $$);
+		}
+	;
+
+pass_body
+	: /* empty */
+	| pass_statement pass_body		{ nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$1); }
+	;
+
+pass_statement
+	: pass_option
+	;
+
+pass_option
+	: TOKEN_FILLMODE '=' TOKEN_FILLMODEVALUE ';'			{ $$.type = OT_FillMode; $$.value.intValue = $3; }
+	| TOKEN_CULLMODE '=' TOKEN_CULLMODEVALUE ';'			{ $$.type = OT_CullMode; $$.value.intValue = $3; }
+	| TOKEN_DEPTHBIAS '=' TOKEN_FLOAT ';'					{ $$.type = OT_DepthBias; $$.value.floatValue = $3; }
+	| TOKEN_SDEPTHBIAS '=' TOKEN_FLOAT ';'					{ $$.type = OT_SDepthBias; $$.value.floatValue = $3; }
+	| TOKEN_DEPTHCLIP '=' TOKEN_BOOLEAN ';'					{ $$.type = OT_DepthClip; $$.value.intValue = $3; }
+	| TOKEN_SCISSOR '=' TOKEN_BOOLEAN ';'					{ $$.type = OT_Scissor; $$.value.intValue = $3; }
+	| TOKEN_MULTISAMPLE '=' TOKEN_BOOLEAN ';'				{ $$.type = OT_Multisample; $$.value.intValue = $3; }
+	| TOKEN_AALINE '=' TOKEN_BOOLEAN ';'					{ $$.type = OT_AALine; $$.value.intValue = $3; }
+	| TOKEN_DEPTHREAD '=' TOKEN_BOOLEAN ';'					{ $$.type = OT_DepthRead; $$.value.intValue = $3; }
+	| TOKEN_DEPTHWRITE '=' TOKEN_BOOLEAN ';'				{ $$.type = OT_DepthWrite; $$.value.intValue = $3; }
+	| TOKEN_COMPAREFUNC '=' TOKEN_COMPFUNCVALUE ';'			{ $$.type = OT_CompareFunc; $$.value.intValue = $3; }
+	| TOKEN_STENCIL '=' TOKEN_BOOLEAN ';'					{ $$.type = OT_Stencil; $$.value.intValue = $3; }
+	| TOKEN_STENCILREADMASK '=' TOKEN_INTEGER ';'			{ $$.type = OT_StencilReadMask; $$.value.intValue = $3; }
+	| TOKEN_STENCILWRITEMASK '=' TOKEN_INTEGER ';'			{ $$.type = OT_StencilWriteMask; $$.value.intValue = $3; }
+	| stencil_op_front_header '{' stencil_op_body '}' ';'	{ nodePop(parse_state); $$.type = OT_StencilOpFront; $$.value.nodePtr = $1; }
+	| stencil_op_back_header '{' stencil_op_body '}' ';'	{ nodePop(parse_state); $$.type = OT_StencilOpBack; $$.value.nodePtr = $1; }
+	| TOKEN_ALPHATOCOVERAGE '=' TOKEN_BOOLEAN ';'			{ $$.type = OT_AlphaToCoverage; $$.value.intValue = $3; }
+	| TOKEN_INDEPENDANTBLEND '=' TOKEN_BOOLEAN ';'			{ $$.type = OT_IndependantBlend; $$.value.intValue = $3; }
+	| target												{ $$.type = OT_Target; $$.value.nodePtr = $1; }
+	;
+
+	/* Stencil op */
+
+stencil_op_front_header
+	: TOKEN_STENCILOPFRONT '='
+		{ 
+			$$ = nodeCreate(parse_state->memContext, NT_StencilOp); 
+			nodePush(parse_state, $$);
+		}
+	;
+
+stencil_op_back_header
+	: TOKEN_STENCILOPBACK '='
+		{ 
+			$$ = nodeCreate(parse_state->memContext, NT_StencilOp); 
+			nodePush(parse_state, $$);
+		}
+	;
+
+stencil_op_body
+	: /* empty */
+	| stencil_op_option stencil_op_body		{ nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$1); }
+	;
+
+stencil_op_option
+	: TOKEN_FAIL '=' TOKEN_OPVALUE ';'					{ $$.type = OT_Fail; $$.value.intValue = $3; }
+	| TOKEN_ZFAIL '=' TOKEN_OPVALUE ';'					{ $$.type = OT_ZFail; $$.value.intValue = $3; }
+	| TOKEN_PASS '=' TOKEN_OPVALUE ';'					{ $$.type = OT_Pass; $$.value.intValue = $3; }
+	| TOKEN_COMPAREFUNC '=' TOKEN_COMPFUNCVALUE ';'		{ $$.type = OT_CompareFunc; $$.value.intValue = $3; }
+	; 
+
+	/* Target */
+target
+	: target_header '{' target_body '}' ';' { nodePop(parse_state); $$ = $1; }
+	;
+
+target_header
+	: TOKEN_TARGET '='
+		{ 
+			$$ = nodeCreate(parse_state->memContext, NT_Target); 
+			nodePush(parse_state, $$);
+		}
+	;
+
+target_body
+	: /* empty */
+	| target_statement target_body		{ nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$1); }
+	;
+
+target_statement
+	: target_option
+	;
+
+target_option
+	: TOKEN_INDEX '=' TOKEN_INTEGER ';'					{ $$.type = OT_Index; $$.value.intValue = $3; }
+	| TOKEN_BLEND '=' TOKEN_BOOLEAN ';'					{ $$.type = OT_Blend; $$.value.intValue = $3; }
+	| blend_color_header '{' blenddef_body '}' ';'		{ nodePop(parse_state); $$.type = OT_Color; $$.value.nodePtr = $1; }
+	| blend_alpha_header '{' blenddef_body '}' ';'		{ nodePop(parse_state); $$.type = OT_Alpha; $$.value.nodePtr = $1; }
+	| TOKEN_WRITEMASK '=' TOKEN_COLORMASK ';'			{ $$.type = OT_Index; $$.value.intValue = $3; }
+	;
+
+	/* Blend definition */
+blend_color_header
+	: TOKEN_COLOR '='
+		{ 
+			$$ = nodeCreate(parse_state->memContext, NT_BlendDef); 
+			nodePush(parse_state, $$);
+		}
+	;
+
+blend_alpha_header
+	: TOKEN_ALPHA '='
+		{ 
+			$$ = nodeCreate(parse_state->memContext, NT_BlendDef); 
+			nodePush(parse_state, $$);
+		}
+	;
+
+blenddef_body
+	: /* empty */
+	| blenddef_option blenddef_body		{ nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$1); }
+	;
+
+blenddef_option
+	: TOKEN_SOURCE '=' TOKEN_OPVALUE ';'					{ $$.type = OT_Source; $$.value.intValue = $3; }
+	| TOKEN_DEST '=' TOKEN_OPVALUE ';'						{ $$.type = OT_Dest; $$.value.intValue = $3; }
+	| TOKEN_OP '=' TOKEN_BLENDOPVALUE ';'					{ $$.type = OT_Op; $$.value.intValue = $3; }
+	;
+
+	/* Sampler state */
+
+
+sampler_state_body
+	: /* empty */
+	| sampler_state_option sampler_state_body		{ nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$1); }
+	;
+
+sampler_state_option
+	: addr_mode												{ $$.type = OT_AddrMode; $$.value.nodePtr = $1; }
+	| TOKEN_MINFILTER '=' TOKEN_FILTERVALUE ';'				{ $$.type = OT_MinFilter; $$.value.intValue = $3; }
+	| TOKEN_MAGFILTER '=' TOKEN_FILTERVALUE ';'				{ $$.type = OT_MagFilter; $$.value.intValue = $3; }
+	| TOKEN_MIPFILTER '=' TOKEN_FILTERVALUE ';'				{ $$.type = OT_MipFilter; $$.value.intValue = $3; }
+	| TOKEN_MAXANISO '=' TOKEN_INTEGER ';'					{ $$.type = OT_MaxAniso; $$.value.intValue = $3; }
+	| TOKEN_MIPBIAS '=' TOKEN_FLOAT ';'						{ $$.type = OT_MipBias; $$.value.floatValue = $3; }
+	| TOKEN_MIPMIN '=' TOKEN_FLOAT ';'						{ $$.type = OT_MipMin; $$.value.floatValue = $3; }
+	| TOKEN_MIPMAX '=' TOKEN_FLOAT ';'						{ $$.type = OT_MipMax; $$.value.floatValue = $3; }
+	| TOKEN_BORDERCOLOR '=' float4 ';'						{ $$.type = OT_BorderColor; memcpy($$.value.matrixValue, $3, sizeof($3)); }
+	| TOKEN_COMPAREFUNC '=' TOKEN_COMPFUNCVALUE ';'			{ $$.type = OT_CompareFunc; $$.value.intValue = $3; }
+	;
+
+	/* Addresing mode */
+addr_mode
+	: addr_mode_header '{' addr_mode_body '}' ';' { nodePop(parse_state); $$ = $1; }
+	;
+
+addr_mode_header
+	: TOKEN_ADDRMODE '='
+		{ 
+			$$ = nodeCreate(parse_state->memContext, NT_AddrMode); 
+			nodePush(parse_state, $$);
+		}
+	;
+
+addr_mode_body
+	: /* empty */
+	| addr_mode_option addr_mode_body		{ nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$1); }
+	;
+
+addr_mode_option
+	: TOKEN_U '=' TOKEN_ADDRMODEVALUE ';'					{ $$.type = OT_U; $$.value.intValue = $3; }
+	| TOKEN_V '=' TOKEN_ADDRMODEVALUE ';'					{ $$.type = OT_V; $$.value.intValue = $3; }
+	| TOKEN_W '=' TOKEN_ADDRMODEVALUE ';'					{ $$.type = OT_W; $$.value.intValue = $3; }
+	;
+
+	/* Value types */
+float2
+	: '{' TOKEN_FLOAT ',' TOKEN_FLOAT '}'	{ $$[0] = $2; $$[1] = $4; }
+	;
+
+float3
+	: '{' TOKEN_FLOAT ',' TOKEN_FLOAT ',' TOKEN_FLOAT '}'	{ $$[0] = $2; $$[1] = $4; $$[2] = $6; }
+	;
+
+float4
+	: '{' TOKEN_FLOAT ',' TOKEN_FLOAT ',' TOKEN_FLOAT ',' TOKEN_FLOAT '}'	{ $$[0] = $2; $$[1] = $4; $$[2] = $6; $$[3] = $8;}
+	;
+
+mat6
+	: '{' TOKEN_FLOAT ',' TOKEN_FLOAT ',' TOKEN_FLOAT ',' 
+		  TOKEN_FLOAT ',' TOKEN_FLOAT ',' TOKEN_FLOAT '}'	
+		{ 
+			$$[0] = $2; $$[1] = $4; $$[2] = $6; 
+			$$[3] = $8; $$[4] = $10; $$[5] = $12;
+		}
+	;
+
+mat8
+	: '{' TOKEN_FLOAT ',' TOKEN_FLOAT ',' TOKEN_FLOAT ',' 
+		  TOKEN_FLOAT ',' TOKEN_FLOAT ',' TOKEN_FLOAT ',' 
+		  TOKEN_FLOAT ',' TOKEN_FLOAT '}'	
+		{ 
+			$$[0] = $2; $$[1] = $4; $$[2] = $6; 
+			$$[3] = $8; $$[4] = $10; $$[5] = $12;
+			$$[6] = $14; $$[7] = $16;
+		}
+	;
+
+mat9
+	: '{' TOKEN_FLOAT ',' TOKEN_FLOAT ',' TOKEN_FLOAT ',' 
+		  TOKEN_FLOAT ',' TOKEN_FLOAT ',' TOKEN_FLOAT ',' 
+		  TOKEN_FLOAT ',' TOKEN_FLOAT ',' TOKEN_FLOAT '}'	
+		{ 
+			$$[0] = $2; $$[1] = $4; $$[2] = $6; 
+			$$[3] = $8; $$[4] = $10; $$[5] = $12;
+			$$[6] = $14; $$[7] = $16; $$[8] = $18;
+		}
+	;
+
+mat12
+	: '{' TOKEN_FLOAT ',' TOKEN_FLOAT ',' TOKEN_FLOAT ',' TOKEN_FLOAT ',' 
+		  TOKEN_FLOAT ',' TOKEN_FLOAT ',' TOKEN_FLOAT ',' TOKEN_FLOAT ',' 
+		  TOKEN_FLOAT ',' TOKEN_FLOAT ',' TOKEN_FLOAT ',' TOKEN_FLOAT '}'	
+		{ 
+			$$[0] = $2; $$[1] = $4; $$[2] = $6; $$[3] = $8; 
+			$$[4] = $10; $$[5] = $12; $$[6] = $14; $$[7] = $16; 
+			$$[8] = $18; $$[9] = $20; $$[10] = $22; $$[11] = $24;
+		}
+	;
+
+mat16
+	: '{' TOKEN_FLOAT ',' TOKEN_FLOAT ',' TOKEN_FLOAT ',' TOKEN_FLOAT ',' 
+		  TOKEN_FLOAT ',' TOKEN_FLOAT ',' TOKEN_FLOAT ',' TOKEN_FLOAT ',' 
+		  TOKEN_FLOAT ',' TOKEN_FLOAT ',' TOKEN_FLOAT ',' TOKEN_FLOAT ',' 
+		  TOKEN_FLOAT ',' TOKEN_FLOAT ',' TOKEN_FLOAT ',' TOKEN_FLOAT '}'	
+		{ 
+			$$[0] = $2; $$[1] = $4; $$[2] = $6; $$[3] = $8; 
+			$$[4] = $10; $$[5] = $12; $$[6] = $14; $$[7] = $16; 
+			$$[8] = $18; $$[9] = $20; $$[10] = $22; $$[11] = $24;
+			$$[12] = $26; $$[13] = $28; $$[14] = $30; $$[15] = $32;
+		}
+	;
+
+	/* Parameters */
+parameters
+	: parameters_header '{' parameters_body '}' ';' { nodePop(parse_state); $$ = $1; }
+	;
+
+parameters_header
+	: TOKEN_PARAMETERS '='
+		{ 
+			$$ = nodeCreate(parse_state->memContext, NT_Parameters); 
+			nodePush(parse_state, $$);
+		}
+	;
+
+parameters_body
+	: /* empty */
+	| parameter parameters_body		{ nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$1); }
+	;
+
+parameter
+	: param_header_float	qualifier_list param_body_float		';' { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$3); nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
+	| param_header_float2	qualifier_list param_body_float2	';' { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$3); nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
+	| param_header_float3	qualifier_list param_body_float3	';' { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$3); nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
+	| param_header_float4	qualifier_list param_body_float4	';' { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$3); nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
+	| param_header_mat2x2	qualifier_list param_body_float4	';' { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$3); nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
+	| param_header_mat2x3	qualifier_list param_body_mat6		';' { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$3); nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
+	| param_header_mat2x4	qualifier_list param_body_mat8		';' { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$3); nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
+	| param_header_mat3x2	qualifier_list param_body_mat6		';' { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$3); nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
+	| param_header_mat3x3	qualifier_list param_body_mat9		';' { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$3); nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
+	| param_header_mat3x4	qualifier_list param_body_mat12		';' { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$3); nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
+	| param_header_mat4x2	qualifier_list param_body_mat8		';' { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$3); nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
+	| param_header_mat4x3	qualifier_list param_body_mat12		';' { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$3); nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
+	| param_header_mat4x4	qualifier_list param_body_mat16		';' { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$3); nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
+	| param_header_generic	qualifier_list						';' { nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
+	| param_header_qualified_sampler		param_body_sampler	';' 
+		{ 
+			nodePop(parse_state);
+
+			NodeOption samplerState;
+			samplerState.type = OT_SamplerState;
+			samplerState.value.nodePtr = $1;
+
+			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &samplerState); 
+
+			$$.type = OT_Parameter; $$.value.nodePtr = parse_state->topNode; 
+			nodePop(parse_state); 
+		}
+	;
+
+param_header_float 
+	: TOKEN_FLOATTYPE TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	;
+
+param_header_float2
+	: TOKEN_FLOAT2TYPE TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	;
+
+param_header_float3
+	: TOKEN_FLOAT3TYPE TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	;
+
+param_header_float4 
+	: TOKEN_FLOAT4TYPE TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	;
+
+param_header_mat2x2
+	: TOKEN_MAT2x2TYPE TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	;
+
+param_header_mat2x3
+	: TOKEN_MAT2x3TYPE TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	;
+
+param_header_mat2x4
+	: TOKEN_MAT2x4TYPE TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	;
+
+param_header_mat3x2
+	: TOKEN_MAT3x2TYPE TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	;
+
+param_header_mat3x3
+	: TOKEN_MAT3x3TYPE TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	;
+
+param_header_mat3x4
+	: TOKEN_MAT3x4TYPE TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	;
+
+param_header_mat4x2
+	: TOKEN_MAT4x2TYPE TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	;
+
+param_header_mat4x3
+	: TOKEN_MAT4x3TYPE TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	;
+
+param_header_mat4x4
+	: TOKEN_MAT4x4TYPE TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	;
+
+param_header_sampler
+	: TOKEN_SAMPLER1D TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	| TOKEN_SAMPLER2D TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	| TOKEN_SAMPLER3D TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	| TOKEN_SAMPLERCUBE TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	| TOKEN_SAMPLER2DMS TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	;
+
+param_header_generic
+	: TOKEN_TEXTURE1D		TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	| TOKEN_TEXTURE2D		TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	| TOKEN_TEXTURE3D		TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	| TOKEN_TEXTURECUBE		TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	| TOKEN_TEXTURE2DMS		TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	| TOKEN_BYTEBUFFER		TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	| TOKEN_STRUCTBUFFER	TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	| TOKEN_RWTYPEDBUFFER	TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	| TOKEN_RWBYTEBUFFER	TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	| TOKEN_RWSTRUCTBUFFER	TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	| TOKEN_RWAPPENDBUFFER	TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	| TOKEN_RWCONSUMEBUFFER TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	;
+
+param_header_qualified_sampler
+	: param_header_sampler qualifier_list	
+		{ 
+			$$ = nodeCreate(parse_state->memContext, NT_SamplerState); 
+			nodePush(parse_state, $$);
+		}
+	;
+
+param_body_float 
+	: /* empty */		{ $$.type = OT_None; }
+	| '=' TOKEN_FLOAT	{ $$.type = OT_ParamValue; $$.value.floatValue = $2; }
+	;
+
+param_body_float2
+	: /* empty */		{ $$.type = OT_None; }
+	| '=' float2		{ $$.type = OT_ParamValue; memcpy($$.value.matrixValue, $2, sizeof($2)); }
+	;
+
+param_body_float3
+	: /* empty */		{ $$.type = OT_None; }
+	| '=' float3		{ $$.type = OT_ParamValue; memcpy($$.value.matrixValue, $2, sizeof($2)); }
+	;
+
+param_body_float4
+	: /* empty */		{ $$.type = OT_None; }
+	| '=' float4		{ $$.type = OT_ParamValue; memcpy($$.value.matrixValue, $2, sizeof($2)); }
+	;
+
+param_body_mat6
+	: /* empty */		{ $$.type = OT_None; }
+	| '=' mat6			{ $$.type = OT_ParamValue; memcpy($$.value.matrixValue, $2, sizeof($2)); }
+	;
+
+param_body_mat8
+	: /* empty */		{ $$.type = OT_None; }
+	| '=' mat8			{ $$.type = OT_ParamValue; memcpy($$.value.matrixValue, $2, sizeof($2)); }
+	;
+
+param_body_mat9
+	: /* empty */		{ $$.type = OT_None; }
+	| '=' mat9			{ $$.type = OT_ParamValue; memcpy($$.value.matrixValue, $2, sizeof($2)); }
+	;
+
+param_body_mat12
+	: /* empty */		{ $$.type = OT_None; }
+	| '=' mat12			{ $$.type = OT_ParamValue; memcpy($$.value.matrixValue, $2, sizeof($2)); }
+	;
+
+param_body_mat16
+	: /* empty */		{ $$.type = OT_None; }
+	| '=' mat16			{ $$.type = OT_ParamValue; memcpy($$.value.matrixValue, $2, sizeof($2)); }
+	;
+
+param_body_sampler
+	: /* empty */		{ $$.type = OT_None; }
+	| '=' '{' sampler_state_body '}' { }
+	;
+
+	/* Blocks */
+blocks
+	: blocks_header '{' blocks_body '}' ';' { nodePop(parse_state); $$ = $1; }
+	;
+
+blocks_header
+	: TOKEN_BLOCKS '='
+		{ 
+			$$ = nodeCreate(parse_state->memContext, NT_Blocks); 
+			nodePush(parse_state, $$);
+		}
+	;
+
+blocks_body
+	: /* empty */
+	| block blocks_body		{ nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$1); }
+	;
+
+block
+	: block_header qualifier_list ';' { nodePop(parse_state); $$.type = OT_Block; $$.value.nodePtr = $1; }
+	;
+
+block_header
+	: TOKEN_PARAMSBLOCK TOKEN_IDENTIFIER
+		{
+			$$ = nodeCreate(parse_state->memContext, NT_Block);
+			nodePush(parse_state, $$);
+
+			NodeOption blockName;
+			blockName.type = OT_Identifier;
+			blockName.value.strValue = $2;
+
+			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &blockName);
+		}
+	;
+
+	/* Qualifiers */
+qualifier_list
+	: /* empty */
+	| qualifier qualifier_list		{ nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$1); }
+	;
+
+qualifier
+	: ':' TOKEN_ALIAS '(' TOKEN_IDENTIFIER ')'	{ $$.type = OT_Alias; $$.value.strValue = $4; }
+	| ':' TOKEN_AUTO '(' TOKEN_STRING ')'		{ $$.type = OT_Auto; $$.value.strValue = $4; }
+	| ':' TOKEN_SHARED '(' TOKEN_BOOLEAN ')'	{ $$.type = OT_Shared; $$.value.intValue = $4; }
+	| ':' TOKEN_USAGE '(' TOKEN_BUFFERUSAGE ')'	{ $$.type = OT_Usage; $$.value.intValue = $4; }
+	;
 %%

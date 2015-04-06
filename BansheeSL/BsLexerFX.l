@@ -11,6 +11,7 @@ INTEGER			[0-9][0-9]*
 INTEGER_BIN		0x[0-9][0-9]*
 FLOAT			[0-9]+\.[0-9]+([eE][+-]?[0-9]+)?[fF]?
 STRING			\"[^"\n]*\"
+IDENTIFIER		[_a-zA-Z][_a-zA-Z0-9]*
 WS				[ \r\n\t]*
 
 %%
@@ -21,6 +22,48 @@ WS				[ \r\n\t]*
 {STRING}		{ yylval->strValue = mmalloc_strdup(yyextra->memContext, yytext); return TOKEN_STRING; }
 true			{ yylval->intValue = 1; return TOKEN_BOOLEAN; }
 false			{ yylval->intValue = 0; return TOKEN_BOOLEAN; }
+
+	/* Value types */
+
+float			{ yylval->intValue = PT_Float; return TOKEN_FLOATTYPE; } 
+float2			{ yylval->intValue = PT_Float2; return TOKEN_FLOAT2TYPE; } 
+float3			{ yylval->intValue = PT_Float3; return TOKEN_FLOAT3TYPE; } 
+float4			{ yylval->intValue = PT_Float4; return TOKEN_FLOAT4TYPE; }
+
+mat2x2			{ yylval->intValue = PT_Mat2x2; return TOKEN_MAT2x2TYPE; } 
+mat2x3			{ yylval->intValue = PT_Mat2x3; return TOKEN_MAT2x3TYPE; } 
+mat2x4			{ yylval->intValue = PT_Mat2x4; return TOKEN_MAT2x4TYPE; }
+
+mat3x2			{ yylval->intValue = PT_Mat3x2; return TOKEN_MAT3x2TYPE; } 
+mat3x3			{ yylval->intValue = PT_Mat3x3; return TOKEN_MAT3x3TYPE; } 
+mat3x4			{ yylval->intValue = PT_Mat3x4; return TOKEN_MAT3x4TYPE; }
+
+mat4x2			{ yylval->intValue = PT_Mat4x2; return TOKEN_MAT4x2TYPE; } 
+mat4x3			{ yylval->intValue = PT_Mat4x3; return TOKEN_MAT4x3TYPE; } 
+mat4x4			{ yylval->intValue = PT_Mat4x4; return TOKEN_MAT4x4TYPE; }
+
+sampler1D		{ yylval->intValue = PT_Sampler1D; return TOKEN_SAMPLER1D; } 
+sampler2D		{ yylval->intValue = PT_Sampler2D; return TOKEN_SAMPLER2D; } 
+sampler3D		{ yylval->intValue = PT_Sampler3D; return TOKEN_SAMPLER3D; } 
+samplerCUBE		{ yylval->intValue = PT_SamplerCUBE; return TOKEN_SAMPLERCUBE; } 
+sampler2DMS		{ yylval->intValue = PT_Sampler2DMS; return TOKEN_SAMPLER2DMS; }
+
+texture1D		{ yylval->intValue = PT_Texture1D; return TOKEN_TEXTURE1D; } 
+texture2D		{ yylval->intValue = PT_Texture2D; return TOKEN_TEXTURE2D; } 
+texture3D		{ yylval->intValue = PT_Texture3D; return TOKEN_TEXTURE3D; } 
+textureCUBE		{ yylval->intValue = PT_TextureCUBE; return TOKEN_TEXTURECUBE; } 
+texture2DMS		{ yylval->intValue = PT_Texture2DMS; return TOKEN_TEXTURE2DMS; }
+
+bytebuffer		{ yylval->intValue = PT_ByteBuffer; return TOKEN_BYTEBUFFER; } 
+structbuffer	{ yylval->intValue = PT_StructBuffer; return TOKEN_STRUCTBUFFER; } 
+
+typedbufferRW	{ yylval->intValue = PT_TypedBufferRW; return TOKEN_RWTYPEDBUFFER; } 
+bytebufferRW	{ yylval->intValue = PT_ByteBufferRW; return TOKEN_RWBYTEBUFFER; }
+structbufferRW	{ yylval->intValue = PT_StructBufferRW; return TOKEN_RWSTRUCTBUFFER; } 
+appendbuffer	{ yylval->intValue = PT_AppendBuffer; return TOKEN_RWAPPENDBUFFER; } 
+consumebuffer	{ yylval->intValue = PT_ConsumeBuffer; return TOKEN_RWCONSUMEBUFFER; }
+
+block			{ return TOKEN_PARAMSBLOCK; }
 
 	/* Shader keywords */
 Separable		{ return TOKEN_SEPARABLE; }
@@ -93,6 +136,12 @@ U					{ return TOKEN_U; }
 V					{ return TOKEN_V; }
 W					{ return TOKEN_W; }
 
+	/* Qualifiers */
+auto				{ return TOKEN_AUTO; }
+alias				{ return TOKEN_ALIAS; }
+shared				{ return TOKEN_SHARED; }
+usage				{ return TOKEN_USAGE; }
+
 	/* State values */
 wire			{ yylval->intValue = 0; return TOKEN_FILLMODEVALUE; }
 solid			{ yylval->intValue = 1; return TOKEN_FILLMODEVALUE; }
@@ -164,5 +213,8 @@ pointcmp		{ yylval->intValue = 4; return TOKEN_FILTERVALUE; }
 linearcmp		{ yylval->intValue = 5; return TOKEN_FILTERVALUE; }
 anisotropiccmp	{ yylval->intValue = 6; return TOKEN_FILTERVALUE; }
 
+static			{ yylval->intValue = 0; return TOKEN_BUFFERUSAGE; }
+dynamic			{ yylval->intValue = 1; return TOKEN_BUFFERUSAGE; }
 
+{IDENTIFIER}	{ yylval->strValue = mmalloc_strdup(yyextra->memContext, yytext); return TOKEN_IDENTIFIER; }
 .				{ return yytext[0]; }

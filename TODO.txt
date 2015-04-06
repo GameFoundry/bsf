@@ -109,19 +109,6 @@ C# material interface:
 
 --------
 
-Consider creating a shader effect language first?
- - It needs support for multiple gpu programs (vertex, fragment, etc)
- - Multiple passes, each with options to set up blend/rasterizer/depth-stencil states
- - Actual GpuProgram code can be marked with HLSL, HLSL11, GLSL (and later BSL) to compile for only specific API
- - Also needs to support techniques
- - Also render queue, priority, renderer semantics
- - Default parameter values?
- - Parameter ranges?
-
-Then do I not need C# interface for anything but a Shader and Material. Shader doesn't need many (any?) properties and Material only needs property setters. Also potentially it also needs param block buffers and sampler states.
-
-While I'm at this I might also consider dealing with includes and shader combinations
-
 Questions:
  - How to deal with sampler states? Allow default ones in shader?
    - Yes, allow default ones. Plus allow sampler states to be tweaked from Material directly (without separate SamplerState class)
@@ -129,10 +116,6 @@ Questions:
    where you need to define the sampler separately, potentially allow "alias()" attribute so the system knows to look for other names.
 
 Check D:\ExampleBFX.txt for an example effects file
-
-Import:
- - A special importer for BFX files. It generates a HShader as its output. I MIGHT want to disable separate GpuProgram and state saving so
-  I don't need to deal with multi-resources yet.
 
 How to deal with includes?
  - You can do Include = "Path/to/CommonShader"
@@ -143,8 +126,6 @@ How to deal with includes?
  - How does the runtime resolve those shaders?
   - They are only resolved during import, after which just resource references are kept (i.e. its GUIDs)
   - The runtime should then be able to resolve the GUIDs easily
-
-Use Bison to avoid the need to reference C# code from C++?
 
 VALID KEYWORDS:
 <<RasterizerState>>
@@ -245,48 +226,23 @@ Hull = code
 Domain = code
 Compute = code
 
-Make sure to allow multiple properties of the same name (e.g. multiple Targets or Techniques). Where this isn't valid the program can ignore the extra ones.
-
-<<<<<<<<AST>>>>>>>>>
-Node
-
-RootNode : OptionsNode
- - ParamsNode parameters
- - BlocksNode blocks
-
-OptionsNode : Node
- - Dictionary<string, int> options;(identifier -> sym table index)
-   - this can point to another node, float, int, bool, float2, etc.
-
-ParamsNode : Node
- - ParamNode[] params
-
-BlocksNode : Node
- - BlockNode[] blocks
-
-ParamNode : Node
- - enum Type
- - string name
- - ParamQualifierNode[] qualifiers;
- - ValueType value (ValueType can be a SamplerState or any of the primitive types)
-
-BlockNode : Node
- - string name
- - BlockQualifierNode[] qualififers;
-
-ParamQualifierNode
- - ParamQualifierType type
- - T Value (create different qualifier node types for each qualifier since each has its own type (or multiple values)?)
-  - But it's better just to have a void pointer and detect actual value stored here (it can be a struct with multiple values too)
-
-BlockQualifierNode
- - BlockQualifierType type
- - T Value (create different qualifier node types for each qualifier since each has its own type (or multiple values)?)
-  - But it's better just to have a void pointer and detect actual value stored here (it can be a struct with multiple values too)
-
 -------------------
 
-In lexer I use numbers to identify different values, but use enums instead so I can use the same ones when parsing AST
+TODO:
+ - BorderColor for SamplerState isn't implemented yet as I haven't decided how to deal with vectors/matrices yet
+ - Parser logic for parameters and blocks (with qualifier support)
+ - Code blocks (e.g. vertex/fragment/etc)
+ - In lexer I use numbers to identify different values, but use enums instead so I can use the same ones when parsing AST
+ - Generate Shader from parsed AST
+ - Make sure includes are handled properly
+ - Make sure default values are handled properly
+ -----
+ - Move all builtin shaders to the new .shader file model
+ - Optionally change how GpuPrograms are saved
+ -----
+ - Add GpuProgram caching (e.g. save compiled programs somewhere for later use)
+ - Consider adding restrictions on parameter ranges (probably via an additional qualifier)
+ - Parameter definitions don't support arrays (Leave this for a later iteration)
 
 ----------------------------------------------------------------------
 Scene View

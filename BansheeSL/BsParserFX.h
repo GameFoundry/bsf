@@ -51,10 +51,25 @@ extern int yydebug;
 	typedef void* yyscan_t;
 #endif
 
+#define ADD_PARAMETER(OUTPUT, TYPE, NAME)															\
+			OUTPUT = nodeCreate(parse_state->memContext, NT_Parameter);								\
+			nodePush(parse_state, OUTPUT);															\
+																									\
+			NodeOption paramType;																	\
+			paramType.type = OT_ParamType;															\
+			paramType.value.intValue = TYPE;														\
+																									\
+			NodeOption paramName;																	\
+			paramName.type = OT_Identifier;															\
+			paramName.value.strValue = NAME;														\
+																									\
+			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &paramType);		\
+			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &paramName);		\
+
 
 
 /* Line 2579 of glr.c  */
-#line 58 "BsParserFX.h"
+#line 73 "BsParserFX.h"
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -66,71 +81,108 @@ extern int yydebug;
      TOKEN_FLOAT = 259,
      TOKEN_BOOLEAN = 260,
      TOKEN_STRING = 261,
-     TOKEN_FILLMODEVALUE = 262,
-     TOKEN_CULLMODEVALUE = 263,
-     TOKEN_COMPFUNCVALUE = 264,
-     TOKEN_OPVALUE = 265,
-     TOKEN_COLORMASK = 266,
-     TOKEN_ADDRMODEVALUE = 267,
-     TOKEN_FILTERVALUE = 268,
-     TOKEN_BLENDOPVALUE = 269,
-     TOKEN_SEPARABLE = 270,
-     TOKEN_QUEUE = 271,
-     TOKEN_PRIORITY = 272,
-     TOKEN_PARAMETERS = 273,
-     TOKEN_BLOCKS = 274,
-     TOKEN_TECHNIQUE = 275,
-     TOKEN_RENDERER = 276,
-     TOKEN_LANGUAGE = 277,
-     TOKEN_INCLUDE = 278,
-     TOKEN_PASS = 279,
-     TOKEN_VERTEX = 280,
-     TOKEN_FRAGMENT = 281,
-     TOKEN_GEOMETRY = 282,
-     TOKEN_HULL = 283,
-     TOKEN_DOMAIN = 284,
-     TOKEN_COMPUTE = 285,
-     TOKEN_FILLMODE = 286,
-     TOKEN_CULLMODE = 287,
-     TOKEN_DEPTHBIAS = 288,
-     TOKEN_SDEPTHBIAS = 289,
-     TOKEN_DEPTHCLIP = 290,
-     TOKEN_SCISSOR = 291,
-     TOKEN_MULTISAMPLE = 292,
-     TOKEN_AALINE = 293,
-     TOKEN_DEPTHREAD = 294,
-     TOKEN_DEPTHWRITE = 295,
-     TOKEN_COMPAREFUNC = 296,
-     TOKEN_STENCIL = 297,
-     TOKEN_STENCILREADMASK = 298,
-     TOKEN_STENCILWRITEMASK = 299,
-     TOKEN_STENCILOPFRONT = 300,
-     TOKEN_STENCILOPBACK = 301,
-     TOKEN_FAIL = 302,
-     TOKEN_ZFAIL = 303,
-     TOKEN_ALPHATOCOVERAGE = 304,
-     TOKEN_INDEPENDANTBLEND = 305,
-     TOKEN_TARGET = 306,
-     TOKEN_INDEX = 307,
-     TOKEN_BLEND = 308,
-     TOKEN_COLOR = 309,
-     TOKEN_ALPHA = 310,
-     TOKEN_WRITEMASK = 311,
-     TOKEN_SOURCE = 312,
-     TOKEN_DEST = 313,
-     TOKEN_OP = 314,
-     TOKEN_ADDRMODE = 315,
-     TOKEN_MINFILTER = 316,
-     TOKEN_MAGFILTER = 317,
-     TOKEN_MIPFILTER = 318,
-     TOKEN_MAXANISO = 319,
-     TOKEN_MIPBIAS = 320,
-     TOKEN_MIPMIN = 321,
-     TOKEN_MIPMAX = 322,
-     TOKEN_BORDERCOLOR = 323,
-     TOKEN_U = 324,
-     TOKEN_V = 325,
-     TOKEN_W = 326
+     TOKEN_IDENTIFIER = 262,
+     TOKEN_FILLMODEVALUE = 263,
+     TOKEN_CULLMODEVALUE = 264,
+     TOKEN_COMPFUNCVALUE = 265,
+     TOKEN_OPVALUE = 266,
+     TOKEN_COLORMASK = 267,
+     TOKEN_ADDRMODEVALUE = 268,
+     TOKEN_FILTERVALUE = 269,
+     TOKEN_BLENDOPVALUE = 270,
+     TOKEN_BUFFERUSAGE = 271,
+     TOKEN_FLOATTYPE = 272,
+     TOKEN_FLOAT2TYPE = 273,
+     TOKEN_FLOAT3TYPE = 274,
+     TOKEN_FLOAT4TYPE = 275,
+     TOKEN_MAT2x2TYPE = 276,
+     TOKEN_MAT2x3TYPE = 277,
+     TOKEN_MAT2x4TYPE = 278,
+     TOKEN_MAT3x2TYPE = 279,
+     TOKEN_MAT3x3TYPE = 280,
+     TOKEN_MAT3x4TYPE = 281,
+     TOKEN_MAT4x2TYPE = 282,
+     TOKEN_MAT4x3TYPE = 283,
+     TOKEN_MAT4x4TYPE = 284,
+     TOKEN_SAMPLER1D = 285,
+     TOKEN_SAMPLER2D = 286,
+     TOKEN_SAMPLER3D = 287,
+     TOKEN_SAMPLERCUBE = 288,
+     TOKEN_SAMPLER2DMS = 289,
+     TOKEN_TEXTURE1D = 290,
+     TOKEN_TEXTURE2D = 291,
+     TOKEN_TEXTURE3D = 292,
+     TOKEN_TEXTURECUBE = 293,
+     TOKEN_TEXTURE2DMS = 294,
+     TOKEN_BYTEBUFFER = 295,
+     TOKEN_STRUCTBUFFER = 296,
+     TOKEN_RWTYPEDBUFFER = 297,
+     TOKEN_RWBYTEBUFFER = 298,
+     TOKEN_RWSTRUCTBUFFER = 299,
+     TOKEN_RWAPPENDBUFFER = 300,
+     TOKEN_RWCONSUMEBUFFER = 301,
+     TOKEN_PARAMSBLOCK = 302,
+     TOKEN_AUTO = 303,
+     TOKEN_ALIAS = 304,
+     TOKEN_SHARED = 305,
+     TOKEN_USAGE = 306,
+     TOKEN_SEPARABLE = 307,
+     TOKEN_QUEUE = 308,
+     TOKEN_PRIORITY = 309,
+     TOKEN_PARAMETERS = 310,
+     TOKEN_BLOCKS = 311,
+     TOKEN_TECHNIQUE = 312,
+     TOKEN_RENDERER = 313,
+     TOKEN_LANGUAGE = 314,
+     TOKEN_INCLUDE = 315,
+     TOKEN_PASS = 316,
+     TOKEN_VERTEX = 317,
+     TOKEN_FRAGMENT = 318,
+     TOKEN_GEOMETRY = 319,
+     TOKEN_HULL = 320,
+     TOKEN_DOMAIN = 321,
+     TOKEN_COMPUTE = 322,
+     TOKEN_FILLMODE = 323,
+     TOKEN_CULLMODE = 324,
+     TOKEN_DEPTHBIAS = 325,
+     TOKEN_SDEPTHBIAS = 326,
+     TOKEN_DEPTHCLIP = 327,
+     TOKEN_SCISSOR = 328,
+     TOKEN_MULTISAMPLE = 329,
+     TOKEN_AALINE = 330,
+     TOKEN_DEPTHREAD = 331,
+     TOKEN_DEPTHWRITE = 332,
+     TOKEN_COMPAREFUNC = 333,
+     TOKEN_STENCIL = 334,
+     TOKEN_STENCILREADMASK = 335,
+     TOKEN_STENCILWRITEMASK = 336,
+     TOKEN_STENCILOPFRONT = 337,
+     TOKEN_STENCILOPBACK = 338,
+     TOKEN_FAIL = 339,
+     TOKEN_ZFAIL = 340,
+     TOKEN_ALPHATOCOVERAGE = 341,
+     TOKEN_INDEPENDANTBLEND = 342,
+     TOKEN_TARGET = 343,
+     TOKEN_INDEX = 344,
+     TOKEN_BLEND = 345,
+     TOKEN_COLOR = 346,
+     TOKEN_ALPHA = 347,
+     TOKEN_WRITEMASK = 348,
+     TOKEN_SOURCE = 349,
+     TOKEN_DEST = 350,
+     TOKEN_OP = 351,
+     TOKEN_ADDRMODE = 352,
+     TOKEN_MINFILTER = 353,
+     TOKEN_MAGFILTER = 354,
+     TOKEN_MIPFILTER = 355,
+     TOKEN_MAXANISO = 356,
+     TOKEN_MIPBIAS = 357,
+     TOKEN_MIPMIN = 358,
+     TOKEN_MIPMAX = 359,
+     TOKEN_BORDERCOLOR = 360,
+     TOKEN_U = 361,
+     TOKEN_V = 362,
+     TOKEN_W = 363
    };
 #endif
 
@@ -138,17 +190,18 @@ extern int yydebug;
 typedef union YYSTYPE
 {
 /* Line 2579 of glr.c  */
-#line 34 "BsParserFX.y"
+#line 49 "BsParserFX.y"
 
 	int intValue;
 	float floatValue;
+	float matrixValue[16];
 	const char* strValue;
 	ASTFXNode* nodePtr;
 	NodeOption nodeOption;
 
 
 /* Line 2579 of glr.c  */
-#line 152 "BsParserFX.h"
+#line 205 "BsParserFX.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

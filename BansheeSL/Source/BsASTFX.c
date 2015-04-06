@@ -3,10 +3,68 @@
 
 OptionInfo OPTION_LOOKUP[] =
 {
-	{ OT_Node, ODT_Complex },
+	{ OT_None, ODT_Int },
 	{ OT_Separable, ODT_Bool },
 	{ OT_Priority, ODT_Int },
 	{ OT_Queue, ODT_Int },
+	{ OT_Technique, ODT_Complex }, 
+	{ OT_Renderer, ODT_String }, 
+	{ OT_Language, ODT_String }, 
+	{ OT_Include, ODT_String }, 
+	{ OT_Pass, ODT_Complex }, 
+	{ OT_FillMode, ODT_Int }, 
+	{ OT_CullMode, ODT_Int },
+	{ OT_DepthBias, ODT_Float },
+	{ OT_SDepthBias, ODT_Float },
+	{ OT_DepthClip, ODT_Bool },
+	{ OT_Scissor, ODT_Bool },
+	{ OT_Multisample, ODT_Bool },
+	{ OT_AALine, ODT_Bool },
+	{ OT_DepthRead, ODT_Bool },
+	{ OT_DepthWrite, ODT_Bool },
+	{ OT_CompareFunc, ODT_Int },
+	{ OT_Stencil, ODT_Bool },
+	{ OT_StencilReadMask, ODT_Int },
+	{ OT_StencilWriteMask, ODT_Int },
+	{ OT_StencilOpFront, ODT_Complex },
+	{ OT_StencilOpBack, ODT_Complex },
+	{ OT_Fail, ODT_Int },
+	{ OT_ZFail, ODT_Int },
+	{ OT_AlphaToCoverage, ODT_Bool },
+	{ OT_IndependantBlend, ODT_Bool },
+	{ OT_Target, ODT_Complex },
+	{ OT_Index, ODT_Int },
+	{ OT_Blend, ODT_Bool },
+	{ OT_Color, ODT_Complex },
+	{ OT_Alpha, ODT_Complex },
+	{ OT_WriteMask, ODT_Int },
+	{ OT_Source, ODT_Int },
+	{ OT_Dest, ODT_Int },
+	{ OT_Op, ODT_Int },
+	{ OT_AddrMode, ODT_Complex },
+	{ OT_MinFilter, ODT_Int },
+	{ OT_MagFilter, ODT_Int },
+	{ OT_MipFilter, ODT_Int },
+	{ OT_MaxAniso, ODT_Int },
+	{ OT_MipBias, ODT_Float },
+	{ OT_MipMin, ODT_Float },
+	{ OT_MipMax, ODT_Float },
+	{ OT_BorderColor, ODT_Matrix },
+	{ OT_U, ODT_Int },
+	{ OT_V, ODT_Int },
+	{ OT_W, ODT_Int },
+	{ OT_Alias, ODT_String },
+	{ OT_Auto, ODT_String },
+	{ OT_Shared, ODT_Bool },
+	{ OT_Usage, ODT_Int },
+	{ OT_ParamType, ODT_Int },
+	{ OT_Identifier, ODT_String },
+	{ OT_ParamValue, ODT_Matrix },
+	{ OT_Parameters, ODT_Complex },
+	{ OT_Blocks, ODT_Complex },
+	{ OT_Parameter, ODT_Complex },
+	{ OT_Block, ODT_Complex },
+	{ OT_SamplerState, ODT_Complex }
 };
 
 NodeOptions* nodeOptionsCreate(void* context)
@@ -85,7 +143,7 @@ void nodeOptionsGrowIfNeeded(void* context, NodeOptions* options)
 		nodeOptionsResize(context, options, options->bufferSize + BUFFER_GROW);
 }
 
-void nodeOptionsAdd(void* context, NodeOptions* options, NodeOption* option)
+void nodeOptionsAdd(void* context, NodeOptions* options, const NodeOption* option)
 {
 	nodeOptionsGrowIfNeeded(context, options);
 
