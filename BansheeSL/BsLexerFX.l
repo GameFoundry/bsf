@@ -1,23 +1,28 @@
 %{
 #include "BsParserFX.h"
+
+#define YY_USER_ACTION yylloc->first_column = yycolumn + 1; yylloc->first_line = yylineno + 1; yycolumn += (int)yyleng;
+#define YY_USER_INIT yylineno = 0; yycolumn = 0;
 %}
  
-%option reentrant noyywrap nounistd never-interactive warn nodefault bison-bridge
+%option yylineno reentrant noyywrap nounistd never-interactive warn nodefault bison-bridge bison-locations
 %option outfile="BsLexerFX.c" header-file="BsLexerFX.h"
 %option extra-type="struct tagParseState *"
 %option debug
 
 INTEGER			[0-9][0-9]*
-INTEGER_BIN		0x[0-9][0-9]*
+INTEGER_16		0[xX][0-9a-fA-F]+
 FLOAT			[0-9]+\.[0-9]+([eE][+-]?[0-9]+)?[fF]?
 STRING			\"[^"\n]*\"
 IDENTIFIER		[_a-zA-Z][_a-zA-Z0-9]*
 WS				[ \r\n\t]*
+COMMENT			\/\/[^\n]*
 
 %%
 
 {WS}			{ /* Skip blank */ }
 {INTEGER}       { yylval->intValue = atoi(yytext); return TOKEN_INTEGER; }
+{INTEGER_16}    { yylval->intValue = (int)strtol(yytext, 0, 0); return TOKEN_INTEGER; }
 {FLOAT}			{ yylval->floatValue = (float)atof(yytext); return TOKEN_FLOAT; }
 {STRING}		{ yylval->strValue = mmalloc_strdup(yyextra->memContext, yytext); return TOKEN_STRING; }
 true			{ yylval->intValue = 1; return TOKEN_BOOLEAN; }
@@ -216,5 +221,6 @@ anisotropiccmp	{ yylval->intValue = 6; return TOKEN_FILTERVALUE; }
 static			{ yylval->intValue = 0; return TOKEN_BUFFERUSAGE; }
 dynamic			{ yylval->intValue = 1; return TOKEN_BUFFERUSAGE; }
 
+{COMMENT}		{ }
 {IDENTIFIER}	{ yylval->strValue = mmalloc_strdup(yyextra->memContext, yytext); return TOKEN_IDENTIFIER; }
 .				{ return yytext[0]; }

@@ -57,14 +57,10 @@
 #include "BsLexerFX.h"
 #define inline
 
-	void yyerror(ParseState* parse_state, yyscan_t scanner, const char *msg) 
-	{ 
-		fprintf (stderr, "%s\n", msg);
-	}
-
+void yyerror(YYLTYPE *locp, ParseState* parse_state, yyscan_t scanner, const char *msg);
 
 /* Line 207 of glr.c  */
-#line 68 "BsParserFX.c"
+#line 64 "BsParserFX.c"
 
 # ifndef YY_NULL
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -89,11 +85,16 @@
    the default value of $$ to a zeroed-out value.  Since the default
    value is undefined, this behavior is technically correct.  */
 static YYSTYPE yyval_default;
+static YYLTYPE yyloc_default
+# if defined YYLTYPE_IS_TRIVIAL && YYLTYPE_IS_TRIVIAL
+  = { 1, 1, 1, 1 }
+# endif
+;
 
 /* Copy the second part of user declarations.  */
 
 /* Line 230 of glr.c  */
-#line 97 "BsParserFX.c"
+#line 98 "BsParserFX.c"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -349,7 +350,7 @@ static const short int yyrhs[] =
      111,   144,   112,    -1,   189,   111,   190,   112,   110,    -1,
       56,   109,    -1,    -1,   191,   190,    -1,   192,   193,   110,
       -1,    47,     7,    -1,    -1,   194,   193,    -1,   114,    49,
-     115,     7,   116,    -1,   114,    48,   115,     6,   116,    -1,
+     115,     6,   116,    -1,   114,    48,   115,     6,   116,    -1,
      114,    50,   115,     5,   116,    -1,   114,    51,   115,    16,
      116,    -1
 };
@@ -357,24 +358,24 @@ static const short int yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const unsigned short int yyrline[] =
 {
-       0,   229,   229,   230,   234,   235,   236,   237,   241,   242,
-     243,   249,   253,   260,   262,   266,   267,   271,   272,   273,
-     278,   282,   289,   291,   295,   299,   300,   301,   302,   303,
-     304,   305,   306,   307,   308,   309,   310,   311,   312,   313,
-     314,   315,   316,   317,   323,   331,   338,   340,   344,   345,
-     346,   347,   352,   356,   363,   365,   369,   373,   374,   375,
-     376,   377,   382,   390,   397,   399,   403,   404,   405,   411,
-     413,   417,   418,   419,   420,   421,   422,   423,   424,   425,
-     426,   431,   435,   442,   444,   448,   449,   450,   455,   459,
-     463,   467,   476,   487,   498,   509,   523,   527,   534,   536,
-     540,   541,   542,   543,   544,   545,   546,   547,   548,   549,
-     550,   551,   552,   553,   554,   570,   574,   578,   582,   586,
-     590,   594,   598,   602,   606,   610,   614,   618,   622,   623,
-     624,   625,   626,   630,   631,   632,   633,   634,   635,   636,
-     637,   638,   639,   640,   641,   645,   653,   654,   658,   659,
-     663,   664,   668,   669,   673,   674,   678,   679,   683,   684,
-     688,   689,   693,   694,   698,   699,   704,   708,   715,   717,
-     721,   725,   739,   741,   745,   746,   747,   748
+       0,   226,   226,   227,   231,   232,   233,   234,   238,   239,
+     240,   246,   250,   257,   259,   263,   264,   268,   269,   270,
+     275,   279,   286,   288,   292,   296,   297,   298,   299,   300,
+     301,   302,   303,   304,   305,   306,   307,   308,   309,   310,
+     311,   312,   313,   314,   320,   328,   335,   337,   341,   342,
+     343,   344,   349,   353,   360,   362,   366,   370,   371,   372,
+     373,   374,   379,   387,   394,   396,   400,   401,   402,   408,
+     410,   414,   415,   416,   417,   418,   419,   420,   421,   422,
+     423,   428,   432,   439,   441,   445,   446,   447,   452,   456,
+     460,   464,   473,   484,   495,   506,   520,   524,   531,   533,
+     537,   538,   539,   540,   541,   542,   543,   544,   545,   546,
+     547,   548,   549,   550,   551,   567,   571,   575,   579,   583,
+     587,   591,   595,   599,   603,   607,   611,   615,   619,   620,
+     621,   622,   623,   627,   628,   629,   630,   631,   632,   633,
+     634,   635,   636,   637,   638,   642,   650,   651,   655,   656,
+     660,   661,   665,   666,   670,   671,   675,   676,   680,   681,
+     685,   686,   690,   691,   695,   696,   701,   705,   712,   714,
+     718,   722,   736,   738,   742,   743,   744,   745
 };
 #endif
 
@@ -640,16 +641,16 @@ static const short int yypact[] =
      164,   165,   166,   168,  -370,   -24,  -370,  -370,  -370,  -370,
     -370,  -370,   201,   175,   206,   207,   212,   219,   220,   226,
      229,   230,   227,   233,   236,   237,  -370,  -370,   238,   239,
-    -370,   169,  -370,     4,     4,   -23,   235,   240,   241,   232,
-    -370,  -370,   245,  -370,  -370,   246,  -370,  -370,   247,  -370,
-    -370,  -370,   248,  -370,  -370,   249,  -370,  -370,  -370,   250,
-    -370,  -370,   251,  -370,  -370,  -370,  -370,   252,  -370,  -370,
+    -370,   169,  -370,     4,     4,   -23,   235,   240,   242,   232,
+    -370,  -370,   241,  -370,  -370,   245,  -370,  -370,   246,  -370,
+    -370,  -370,   247,  -370,  -370,   248,  -370,  -370,  -370,   249,
+    -370,  -370,   250,  -370,  -370,  -370,  -370,   251,  -370,  -370,
      167,   171,   172,   173,   174,   177,   178,   179,   180,   181,
      182,   -24,  -370,   184,   183,   186,   187,   188,   189,   190,
      191,   192,   193,   194,   195,   196,   197,   198,   199,   200,
     -370,   202,   203,   204,   205,   208,     4,   209,   210,   213,
      214,   215,   216,   217,   -23,  -370,   221,   222,   211,   218,
-     223,   224,   225,   228,   231,   234,   242,   243,   244,   253,
+     223,   224,   225,   228,   231,   234,   243,   244,   252,   253,
      256,  -370,   255,   257,   258,   254,   259,   280,   281,   116,
     -370,  -370,   -90,  -370,  -370,  -370,  -370,  -370,  -370,  -370,
     -370,  -370,  -370,  -370,  -370,  -370,  -370,  -370,  -370,   304,
@@ -662,13 +663,13 @@ static const short int yypact[] =
      295,   296,   297,   298,   299,  -370,  -370,  -370,  -370,  -370,
     -370,  -370,  -370,  -370,   335,   336,   337,   303,  -370,  -370,
     -370,  -370,  -370,  -370,  -370,  -370,   334,   340,   343,   307,
-    -370,   308,  -370,   342,   348,   349,   350,   355,   356,   357,
+    -370,   308,  -370,   342,   348,   349,   350,   351,   355,   356,
      309,   310,   311,  -370,   312,   315,   316,  -370,  -370,   302,
      317,   318,   319,   320,   321,   322,  -370,  -370,  -370,  -370,
-    -370,  -370,  -370,   358,   359,   360,   361,   363,   364,   325,
+    -370,  -370,  -370,   357,   358,   359,   360,   363,   364,   325,
      323,   328,   329,   330,   341,  -370,   365,   382,   387,   388,
-     397,   344,   345,   346,   347,   351,   398,   399,   402,   411,
-     412,   353,   354,   362,   366,   367,  -370,   419,   420,   423,
+     397,   344,   345,   346,   347,   352,   398,   399,   402,   411,
+     412,   354,   361,   362,   366,   367,  -370,   419,   420,   423,
      424,   368,   369,   370,   371,   425,   434,   435,   436,   373,
      374,   375,   376,  -370,   440,   441,   442,   378,   379,   380,
     -370,   443,   444,   381,   383,   445,   446,   384,   385,   447,
@@ -681,11 +682,11 @@ static const short int yypgoto[] =
 {
     -370,   454,  -370,  -370,  -370,  -370,   428,  -370,  -370,  -370,
     -370,    81,  -370,  -370,  -370,  -370,  -244,  -370,  -370,  -370,
-     -82,  -370,  -370,  -370,  -370,  -369,  -370,   -33,  -370,  -370,
-    -370,  -165,  -370,  -370,  -370,   -89,  -370,  -370,  -370,  -370,
-    -370,  -370,  -370,   396,  -370,  -370,  -370,  -370,  -370,  -370,
+     -82,  -370,  -370,  -370,  -370,  -369,  -370,   -35,  -370,  -370,
+    -370,  -152,  -370,  -370,  -370,   -89,  -370,  -370,  -370,  -370,
+    -370,  -370,  -370,   400,  -370,  -370,  -370,  -370,  -370,  -370,
     -370,  -370,  -370,  -370,  -370,  -370,  -370,  -370,  -370,  -370,
-    -370,  -370,  -370,  -370,   352,   372,   377,  -370,   393,  -370,
+    -370,  -370,  -370,  -370,   372,   353,   377,  -370,   393,  -370,
     -370,  -370,  -370,   170,  -370,  -370,   -71,  -370
 };
 
@@ -719,8 +720,8 @@ static const unsigned short int yytable[] =
      296,   297,   241,   243,   244,   245,   246,   298,   251,   254,
      247,   248,   249,   252,   299,   300,   255,   258,   257,   260,
      261,   301,   262,   265,   302,   303,   264,   304,   305,   306,
-     307,   328,   382,   308,   309,   448,   330,   329,   331,   332,
-     333,   334,   335,   336,   337,   338,   339,   401,   351,   154,
+     307,   328,   382,   308,   309,   332,   329,   330,   331,   333,
+     334,   335,   336,   337,   338,   339,   351,   401,   448,   154,
      405,   242,     0,   402,   267,   268,   397,   269,   271,   398,
      272,   399,   400,   274,   275,   276,   340,   277,   279,   310,
      341,   342,   343,   344,   403,   404,   345,   346,   347,   348,
@@ -730,8 +731,8 @@ static const unsigned short int yytable[] =
      373,   375,   377,   378,   379,   380,   419,   385,   427,   381,
      428,   429,   383,   384,   386,   430,   431,   432,   389,   387,
      388,   390,   433,   434,   391,   474,   479,   392,   470,   471,
-     472,   475,   480,   481,   482,   393,   394,   395,   476,   483,
-     484,   485,   499,   500,   501,   502,   396,   503,   504,   511,
+     472,   475,   480,   481,   482,   483,   393,   394,   476,   484,
+     485,   499,   500,   501,   502,   395,   396,   503,   504,   511,
      415,   416,   420,   435,   436,   437,   438,   439,   440,   441,
      442,   443,   444,   445,   446,   463,   512,   449,   447,   450,
      459,   513,   514,   451,   452,   453,   454,   455,   456,   457,
@@ -741,12 +742,12 @@ static const unsigned short int yytable[] =
      493,   494,   495,   496,   497,   498,   506,   505,   540,   541,
      542,   507,   508,   509,   547,   548,   549,   553,   554,   557,
      558,   561,   562,   565,   510,   567,   569,   516,   517,   518,
-     519,   571,    23,    99,   520,   526,   132,   527,     0,     0,
-       0,     0,     0,     0,     0,   528,     0,     0,     0,   529,
+     519,   571,    23,    99,     0,   520,   526,     0,     0,     0,
+     132,     0,     0,     0,   527,   528,     0,     0,     0,   529,
      530,   535,   536,   537,   538,   543,     0,   544,   545,   546,
-     550,   200,   551,   552,   555,     0,   556,   559,   560,   564,
+     550,     0,   551,   552,   555,   205,   556,   559,   560,   564,
        0,   563,     0,   566,   568,   570,   572,     0,     0,     0,
-       0,     0,     0,     0,   205,     0,     0,     0,     0,     0,
+       0,   200,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,   210,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,   211
 };
@@ -846,8 +847,8 @@ static const short int yycheck[] =
        4,     4,   112,   111,   111,   111,   115,     5,   110,   110,
      115,   115,   115,   111,     5,     5,   111,   111,   110,   110,
      110,     5,   111,   111,     5,     5,   110,    10,     5,     3,
-       3,     6,   324,     5,     5,   410,     5,     7,    16,     4,
-       4,     4,     4,     4,     4,     4,     4,     3,   291,    89,
+       3,     6,   324,     5,     5,     4,     6,     5,    16,     4,
+       4,     4,     4,     4,     4,     4,   291,     3,   410,    89,
      349,   180,    -1,     4,   110,   110,    10,   111,   110,    14,
      111,    14,    14,   110,   110,   110,   109,   111,   110,   110,
      109,   109,   109,   109,     4,     4,   109,   109,   109,   109,
@@ -857,8 +858,8 @@ static const short int yycheck[] =
      112,   112,   109,   109,   109,   109,    12,   116,     4,   112,
        4,     4,   111,   111,   116,     4,     4,     4,   113,   116,
      116,   113,     4,     4,   113,    11,     4,   113,    13,    13,
-      13,    11,     4,     4,     4,   113,   113,   113,    15,     4,
-       4,     4,     4,     4,     4,     4,   113,     4,     4,     4,
+      13,    11,     4,     4,     4,     4,   113,   113,    15,     4,
+       4,     4,     4,     4,     4,   113,   113,     4,     4,     4,
      110,   110,   110,   110,   110,   110,   110,   110,   110,   110,
      110,   110,   109,   109,   109,   113,     4,   110,   112,   110,
      112,     4,     4,   110,   110,   110,   110,   110,   109,   109,
@@ -868,12 +869,12 @@ static const short int yycheck[] =
      113,   113,   113,   113,   113,   113,   113,   112,     4,     4,
        4,   113,   113,   113,     4,     4,     4,     4,     4,     4,
        4,     4,     4,     4,   113,     4,     4,   113,   113,   113,
-     113,     4,     8,    35,   113,   112,    70,   113,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,   113,    -1,    -1,    -1,   113,
+     113,     4,     8,    35,    -1,   113,   112,    -1,    -1,    -1,
+      70,    -1,    -1,    -1,   113,   113,    -1,    -1,    -1,   113,
      113,   113,   113,   113,   113,   112,    -1,   113,   113,   113,
-     112,   139,   113,   113,   113,    -1,   113,   113,   113,   113,
+     112,    -1,   113,   113,   113,   142,   113,   113,   113,   113,
       -1,   112,    -1,   113,   113,   113,   112,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,   142,    -1,    -1,    -1,    -1,    -1,
+      -1,   139,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
       -1,    -1,   145,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
       -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,   146
 };
@@ -914,7 +915,7 @@ static const unsigned char yystos[] =
      144,   145,   146,   147,     8,     9,     4,     4,     5,     5,
        5,     5,     5,     5,    10,     5,     3,     3,     5,     5,
      110,    61,    78,    84,    85,   133,   134,   133,    89,    90,
-      91,    92,    93,   137,   138,   139,   140,   141,     6,     7,
+      91,    92,    93,   137,   138,   139,   140,   141,     6,     6,
        5,    16,     4,     4,     4,     4,     4,     4,     4,     4,
      109,   109,   109,   109,   109,   109,   109,   109,   109,   109,
      112,   144,   111,   110,   110,   110,   110,   110,   110,   110,
@@ -946,14 +947,95 @@ static const unsigned char yystos[] =
 #define YYTERROR 1
 
 
-/* This macro is provided for backward compatibility. */
+/* YYLLOC_DEFAULT -- Set CURRENT to span from RHS[1] to RHS[N].
+   If N is 0, then set CURRENT to the empty location which ends
+   the previous symbol: RHS[0] (always defined).  */
+
+#ifndef YYLLOC_DEFAULT
+# define YYLLOC_DEFAULT(Current, Rhs, N)                                \
+    do                                                                  \
+      if (YYID (N))                                                     \
+        {                                                               \
+          (Current).first_line   = YYRHSLOC (Rhs, 1).first_line;        \
+          (Current).first_column = YYRHSLOC (Rhs, 1).first_column;      \
+          (Current).last_line    = YYRHSLOC (Rhs, N).last_line;         \
+          (Current).last_column  = YYRHSLOC (Rhs, N).last_column;       \
+        }                                                               \
+      else                                                              \
+        {                                                               \
+          (Current).first_line   = (Current).last_line   =              \
+            YYRHSLOC (Rhs, 0).last_line;                                \
+          (Current).first_column = (Current).last_column =              \
+            YYRHSLOC (Rhs, 0).last_column;                              \
+        }                                                               \
+    while (YYID (0))
+#endif
+
+# define YYRHSLOC(Rhs, K) ((Rhs)[K].yystate.yyloc)
+
+
+/* YY_LOCATION_PRINT -- Print the location on the stream.
+   This macro was not mandated originally: define only if we know
+   we won't break user code: when these are the locations we know.  */
+
+#ifndef __attribute__
+/* This feature is available in gcc versions 2.5 and later.  */
+# if (! defined __GNUC__ || __GNUC__ < 2 \
+      || (__GNUC__ == 2 && __GNUC_MINOR__ < 5))
+#  define __attribute__(Spec) /* empty */
+# endif
+#endif
+
 #ifndef YY_LOCATION_PRINT
-# define YY_LOCATION_PRINT(File, Loc) ((void) 0)
+# if defined YYLTYPE_IS_TRIVIAL && YYLTYPE_IS_TRIVIAL
+
+/* Print *YYLOCP on YYO.  Private, do not rely on its existence. */
+
+__attribute__((__unused__))
+#if (defined __STDC__ || defined __C99__FUNC__ \
+     || defined __cplusplus || defined _MSC_VER)
+static unsigned
+yy_location_print_ (FILE *yyo, YYLTYPE const * const yylocp)
+#else
+static unsigned
+yy_location_print_ (yyo, yylocp)
+    FILE *yyo;
+    YYLTYPE const * const yylocp;
+#endif
+{
+  unsigned res = 0;
+  int end_col = 0 != yylocp->last_column ? yylocp->last_column - 1 : 0;
+  if (0 <= yylocp->first_line)
+    {
+      res += fprintf (yyo, "%d", yylocp->first_line);
+      if (0 <= yylocp->first_column)
+        res += fprintf (yyo, ".%d", yylocp->first_column);
+    }
+  if (0 <= yylocp->last_line)
+    {
+      if (yylocp->first_line < yylocp->last_line)
+        {
+          res += fprintf (yyo, "-%d", yylocp->last_line);
+          if (0 <= end_col)
+            res += fprintf (yyo, ".%d", end_col);
+        }
+      else if (0 <= end_col && yylocp->first_column < end_col)
+        res += fprintf (yyo, "-%d", end_col);
+    }
+  return res;
+ }
+
+#  define YY_LOCATION_PRINT(File, Loc)          \
+  yy_location_print_ (File, &(Loc))
+
+# else
+#  define YY_LOCATION_PRINT(File, Loc) ((void) 0)
+# endif
 #endif
 
 
 /* YYLEX -- calling `yylex' with the right arguments.  */
-#define YYLEX yylex (&yylval, scanner)
+#define YYLEX yylex (&yylval, &yylloc, scanner)
 
 
 #undef yynerrs
@@ -994,12 +1076,13 @@ do {                                            \
 
 /*ARGSUSED*/
 static void
-yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, ParseState* parse_state, yyscan_t scanner)
+yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, YYLTYPE const * const yylocationp, ParseState* parse_state, yyscan_t scanner)
 {
   FILE *yyo = yyoutput;
   YYUSE (yyo);
   if (!yyvaluep)
     return;
+  YYUSE (yylocationp);
   YYUSE (parse_state);
   YYUSE (scanner);
 # ifdef YYPRINT
@@ -1021,14 +1104,16 @@ yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvalue
 `--------------------------------*/
 
 static void
-yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, ParseState* parse_state, yyscan_t scanner)
+yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, YYLTYPE const * const yylocationp, ParseState* parse_state, yyscan_t scanner)
 {
   if (yytype < YYNTOKENS)
     YYFPRINTF (yyoutput, "token %s (", yytname[yytype]);
   else
     YYFPRINTF (yyoutput, "nterm %s (", yytname[yytype]);
 
-  yy_symbol_value_print (yyoutput, yytype, yyvaluep, parse_state, scanner);
+  YY_LOCATION_PRINT (yyoutput, *yylocationp);
+  YYFPRINTF (yyoutput, ": ");
+  yy_symbol_value_print (yyoutput, yytype, yyvaluep, yylocationp, parse_state, scanner);
   YYFPRINTF (yyoutput, ")");
 }
 
@@ -1037,7 +1122,7 @@ do {                                                            \
   if (yydebug)                                                  \
     {                                                           \
       YYFPRINTF (stderr, "%s ", Title);                         \
-      yy_symbol_print (stderr, Type, Value, parse_state, scanner);        \
+      yy_symbol_print (stderr, Type, Value, Location, parse_state, scanner);        \
       YYFPRINTF (stderr, "\n");                                 \
     }                                                           \
 } while (YYID (0))
@@ -1078,7 +1163,8 @@ int yydebug;
 
 #ifndef YYSTACKEXPANDABLE
 # if (! defined __cplusplus \
-      || (defined YYSTYPE_IS_TRIVIAL && YYSTYPE_IS_TRIVIAL))
+      || (defined YYLTYPE_IS_TRIVIAL && YYLTYPE_IS_TRIVIAL \
+          && defined YYSTYPE_IS_TRIVIAL && YYSTYPE_IS_TRIVIAL))
 #  define YYSTACKEXPANDABLE 1
 # else
 #  define YYSTACKEXPANDABLE 0
@@ -1210,6 +1296,8 @@ struct yyGLRState {
     /** Semantic value for this state.  */
     YYSTYPE yysval;
   } yysemantics;
+  /** Source location for this state.  */
+  YYLTYPE yyloc;
 };
 
 struct yyGLRStateSet {
@@ -1232,6 +1320,7 @@ struct yySemanticOption {
   /** The lookahead for this reduction.  */
   int yyrawchar;
   YYSTYPE yyval;
+  YYLTYPE yyloc;
   /** Next sibling in chain of options.  To facilitate merging,
    *  options are chained in decreasing order by address.  */
   yySemanticOption* yynext;
@@ -1246,11 +1335,13 @@ union yyGLRStackItem {
 
 struct yyGLRStack {
   int yyerrState;
-
+  /* To compute the location of the error token.  */
+  yyGLRStackItem yyerror_range[3];
 
   int yyerrcnt;
   int yyrawchar;
   YYSTYPE yyval;
+  YYLTYPE yyloc;
 
   YYJMP_BUF yyexception_buffer;
   yyGLRStackItem* yyitems;
@@ -1265,13 +1356,13 @@ struct yyGLRStack {
 static void yyexpandGLRStack (yyGLRStack* yystackp);
 #endif
 
-static void yyFail (yyGLRStack* yystackp, ParseState* parse_state, yyscan_t scanner, const char* yymsg)
+static void yyFail (yyGLRStack* yystackp, YYLTYPE *yylocp, ParseState* parse_state, yyscan_t scanner, const char* yymsg)
   __attribute__ ((__noreturn__));
 static void
-yyFail (yyGLRStack* yystackp, ParseState* parse_state, yyscan_t scanner, const char* yymsg)
+yyFail (yyGLRStack* yystackp, YYLTYPE *yylocp, ParseState* parse_state, yyscan_t scanner, const char* yymsg)
 {
   if (yymsg != YY_NULL)
-    yyerror (parse_state, scanner, yymsg);
+    yyerror (yylocp, parse_state, scanner, yymsg);
   YYLONGJMP (yystackp->yyexception_buffer, 1);
 }
 
@@ -1309,6 +1400,7 @@ yyfillin (yyGLRStackItem *yyvsp, int yylow0, int yylow1)
       YYASSERT (s->yyresolved);
       yyvsp[i].yystate.yyresolved = yytrue;
       yyvsp[i].yystate.yysemantics.yysval = s->yysemantics.yysval;
+      yyvsp[i].yystate.yyloc = s->yyloc;
       s = yyvsp[i].yystate.yypred = s->yypred;
     }
 }
@@ -1337,7 +1429,7 @@ yyfill (yyGLRStackItem *yyvsp, int *yylow, int yylow1, yybool yynormal)
 /*ARGSUSED*/ static YYRESULTTAG
 yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
               yyGLRStack* yystackp,
-              YYSTYPE* yyvalp, ParseState* parse_state, yyscan_t scanner)
+              YYSTYPE* yyvalp, YYLTYPE *yylocp, ParseState* parse_state, yyscan_t scanner)
 {
   yybool yynormal __attribute__ ((__unused__)) =
     (yystackp->yysplitPoint == YY_NULL);
@@ -1360,7 +1452,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 # define YYFILL(N) yyfill (yyvsp, &yylow, N, yynormal)
 # undef YYBACKUP
 # define YYBACKUP(Token, Value)                                              \
-  return yyerror (parse_state, scanner, YY_("syntax error: cannot back up")),     \
+  return yyerror (yylocp, parse_state, scanner, YY_("syntax error: cannot back up")),     \
          yyerrok, yyerr
 
   yylow = 1;
@@ -1368,65 +1460,68 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
     *yyvalp = yyval_default;
   else
     *yyvalp = yyvsp[YYFILL (1-yyrhslen)].yystate.yysemantics.yysval;
+  YYLLOC_DEFAULT ((*yylocp), (yyvsp - yyrhslen), yyrhslen);
+  yystackp->yyerror_range[1].yystate.yyloc = *yylocp;
+
   switch (yyn)
     {
         case 2:
 /* Line 868 of glr.c  */
-#line 229 "BsParserFX.y"
+#line 226 "BsParserFX.y"
     { }
     break;
 
   case 3:
 /* Line 868 of glr.c  */
-#line 230 "BsParserFX.y"
+#line 227 "BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.nodeOption)); }
     break;
 
   case 5:
 /* Line 868 of glr.c  */
-#line 235 "BsParserFX.y"
+#line 232 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Technique; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 6:
 /* Line 868 of glr.c  */
-#line 236 "BsParserFX.y"
+#line 233 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Parameters; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 7:
 /* Line 868 of glr.c  */
-#line 237 "BsParserFX.y"
+#line 234 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Blocks; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 8:
 /* Line 868 of glr.c  */
-#line 241 "BsParserFX.y"
+#line 238 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Separable; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 9:
 /* Line 868 of glr.c  */
-#line 242 "BsParserFX.y"
+#line 239 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Queue; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 10:
 /* Line 868 of glr.c  */
-#line 243 "BsParserFX.y"
+#line 240 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Priority; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 11:
 /* Line 868 of glr.c  */
-#line 249 "BsParserFX.y"
+#line 246 "BsParserFX.y"
     { nodePop(parse_state); ((*yyvalp).nodePtr) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 12:
 /* Line 868 of glr.c  */
-#line 254 "BsParserFX.y"
+#line 251 "BsParserFX.y"
     { 
 			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Technique); 
 			nodePush(parse_state, ((*yyvalp).nodePtr));
@@ -1435,43 +1530,43 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 14:
 /* Line 868 of glr.c  */
-#line 262 "BsParserFX.y"
+#line 259 "BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.nodeOption)); }
     break;
 
   case 16:
 /* Line 868 of glr.c  */
-#line 267 "BsParserFX.y"
+#line 264 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Pass; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 17:
 /* Line 868 of glr.c  */
-#line 271 "BsParserFX.y"
+#line 268 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Renderer; ((*yyvalp).nodeOption).value.strValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.strValue); }
     break;
 
   case 18:
 /* Line 868 of glr.c  */
-#line 272 "BsParserFX.y"
+#line 269 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Language; ((*yyvalp).nodeOption).value.strValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.strValue); }
     break;
 
   case 19:
 /* Line 868 of glr.c  */
-#line 273 "BsParserFX.y"
+#line 270 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Include; ((*yyvalp).nodeOption).value.strValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.strValue); }
     break;
 
   case 20:
 /* Line 868 of glr.c  */
-#line 278 "BsParserFX.y"
+#line 275 "BsParserFX.y"
     { nodePop(parse_state); ((*yyvalp).nodePtr) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 21:
 /* Line 868 of glr.c  */
-#line 283 "BsParserFX.y"
+#line 280 "BsParserFX.y"
     { 
 			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Pass); 
 			nodePush(parse_state, ((*yyvalp).nodePtr));
@@ -1480,127 +1575,127 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 23:
 /* Line 868 of glr.c  */
-#line 291 "BsParserFX.y"
+#line 288 "BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.nodeOption)); }
     break;
 
   case 25:
 /* Line 868 of glr.c  */
-#line 299 "BsParserFX.y"
+#line 296 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_FillMode; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 26:
 /* Line 868 of glr.c  */
-#line 300 "BsParserFX.y"
+#line 297 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_CullMode; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 27:
 /* Line 868 of glr.c  */
-#line 301 "BsParserFX.y"
+#line 298 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_DepthBias; ((*yyvalp).nodeOption).value.floatValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.floatValue); }
     break;
 
   case 28:
 /* Line 868 of glr.c  */
-#line 302 "BsParserFX.y"
+#line 299 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_SDepthBias; ((*yyvalp).nodeOption).value.floatValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.floatValue); }
     break;
 
   case 29:
 /* Line 868 of glr.c  */
-#line 303 "BsParserFX.y"
+#line 300 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_DepthClip; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 30:
 /* Line 868 of glr.c  */
-#line 304 "BsParserFX.y"
+#line 301 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Scissor; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 31:
 /* Line 868 of glr.c  */
-#line 305 "BsParserFX.y"
+#line 302 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Multisample; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 32:
 /* Line 868 of glr.c  */
-#line 306 "BsParserFX.y"
+#line 303 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_AALine; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 33:
 /* Line 868 of glr.c  */
-#line 307 "BsParserFX.y"
+#line 304 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_DepthRead; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 34:
 /* Line 868 of glr.c  */
-#line 308 "BsParserFX.y"
+#line 305 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_DepthWrite; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 35:
 /* Line 868 of glr.c  */
-#line 309 "BsParserFX.y"
+#line 306 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_CompareFunc; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 36:
 /* Line 868 of glr.c  */
-#line 310 "BsParserFX.y"
+#line 307 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Stencil; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 37:
 /* Line 868 of glr.c  */
-#line 311 "BsParserFX.y"
+#line 308 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_StencilReadMask; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 38:
 /* Line 868 of glr.c  */
-#line 312 "BsParserFX.y"
+#line 309 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_StencilWriteMask; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 39:
 /* Line 868 of glr.c  */
-#line 313 "BsParserFX.y"
+#line 310 "BsParserFX.y"
     { nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_StencilOpFront; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 40:
 /* Line 868 of glr.c  */
-#line 314 "BsParserFX.y"
+#line 311 "BsParserFX.y"
     { nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_StencilOpBack; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 41:
 /* Line 868 of glr.c  */
-#line 315 "BsParserFX.y"
+#line 312 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_AlphaToCoverage; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 42:
 /* Line 868 of glr.c  */
-#line 316 "BsParserFX.y"
+#line 313 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_IndependantBlend; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 43:
 /* Line 868 of glr.c  */
-#line 317 "BsParserFX.y"
+#line 314 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Target; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 44:
 /* Line 868 of glr.c  */
-#line 324 "BsParserFX.y"
+#line 321 "BsParserFX.y"
     { 
 			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_StencilOp); 
 			nodePush(parse_state, ((*yyvalp).nodePtr));
@@ -1609,7 +1704,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 45:
 /* Line 868 of glr.c  */
-#line 332 "BsParserFX.y"
+#line 329 "BsParserFX.y"
     { 
 			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_StencilOp); 
 			nodePush(parse_state, ((*yyvalp).nodePtr));
@@ -1618,43 +1713,43 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 47:
 /* Line 868 of glr.c  */
-#line 340 "BsParserFX.y"
+#line 337 "BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.nodeOption)); }
     break;
 
   case 48:
 /* Line 868 of glr.c  */
-#line 344 "BsParserFX.y"
+#line 341 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Fail; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 49:
 /* Line 868 of glr.c  */
-#line 345 "BsParserFX.y"
+#line 342 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_ZFail; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 50:
 /* Line 868 of glr.c  */
-#line 346 "BsParserFX.y"
-    { ((*yyvalp).nodeOption).type = OT_Pass; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
+#line 343 "BsParserFX.y"
+    { ((*yyvalp).nodeOption).type = OT_PassOp; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 51:
 /* Line 868 of glr.c  */
-#line 347 "BsParserFX.y"
+#line 344 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_CompareFunc; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 52:
 /* Line 868 of glr.c  */
-#line 352 "BsParserFX.y"
+#line 349 "BsParserFX.y"
     { nodePop(parse_state); ((*yyvalp).nodePtr) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 53:
 /* Line 868 of glr.c  */
-#line 357 "BsParserFX.y"
+#line 354 "BsParserFX.y"
     { 
 			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Target); 
 			nodePush(parse_state, ((*yyvalp).nodePtr));
@@ -1663,43 +1758,43 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 55:
 /* Line 868 of glr.c  */
-#line 365 "BsParserFX.y"
+#line 362 "BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.nodeOption)); }
     break;
 
   case 57:
 /* Line 868 of glr.c  */
-#line 373 "BsParserFX.y"
+#line 370 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Index; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 58:
 /* Line 868 of glr.c  */
-#line 374 "BsParserFX.y"
+#line 371 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Blend; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 59:
 /* Line 868 of glr.c  */
-#line 375 "BsParserFX.y"
+#line 372 "BsParserFX.y"
     { nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Color; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 60:
 /* Line 868 of glr.c  */
-#line 376 "BsParserFX.y"
+#line 373 "BsParserFX.y"
     { nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Alpha; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 61:
 /* Line 868 of glr.c  */
-#line 377 "BsParserFX.y"
+#line 374 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Index; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 62:
 /* Line 868 of glr.c  */
-#line 383 "BsParserFX.y"
+#line 380 "BsParserFX.y"
     { 
 			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_BlendDef); 
 			nodePush(parse_state, ((*yyvalp).nodePtr));
@@ -1708,7 +1803,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 63:
 /* Line 868 of glr.c  */
-#line 391 "BsParserFX.y"
+#line 388 "BsParserFX.y"
     { 
 			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_BlendDef); 
 			nodePush(parse_state, ((*yyvalp).nodePtr));
@@ -1717,103 +1812,103 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 65:
 /* Line 868 of glr.c  */
-#line 399 "BsParserFX.y"
+#line 396 "BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.nodeOption)); }
     break;
 
   case 66:
 /* Line 868 of glr.c  */
-#line 403 "BsParserFX.y"
+#line 400 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Source; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 67:
 /* Line 868 of glr.c  */
-#line 404 "BsParserFX.y"
+#line 401 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Dest; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 68:
 /* Line 868 of glr.c  */
-#line 405 "BsParserFX.y"
+#line 402 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Op; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 70:
 /* Line 868 of glr.c  */
-#line 413 "BsParserFX.y"
+#line 410 "BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.nodeOption)); }
     break;
 
   case 71:
 /* Line 868 of glr.c  */
-#line 417 "BsParserFX.y"
+#line 414 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_AddrMode; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 72:
 /* Line 868 of glr.c  */
-#line 418 "BsParserFX.y"
+#line 415 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_MinFilter; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 73:
 /* Line 868 of glr.c  */
-#line 419 "BsParserFX.y"
+#line 416 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_MagFilter; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 74:
 /* Line 868 of glr.c  */
-#line 420 "BsParserFX.y"
+#line 417 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_MipFilter; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 75:
 /* Line 868 of glr.c  */
-#line 421 "BsParserFX.y"
+#line 418 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_MaxAniso; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 76:
 /* Line 868 of glr.c  */
-#line 422 "BsParserFX.y"
+#line 419 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_MipBias; ((*yyvalp).nodeOption).value.floatValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.floatValue); }
     break;
 
   case 77:
 /* Line 868 of glr.c  */
-#line 423 "BsParserFX.y"
+#line 420 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_MipMin; ((*yyvalp).nodeOption).value.floatValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.floatValue); }
     break;
 
   case 78:
 /* Line 868 of glr.c  */
-#line 424 "BsParserFX.y"
+#line 421 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_MipMax; ((*yyvalp).nodeOption).value.floatValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.floatValue); }
     break;
 
   case 79:
 /* Line 868 of glr.c  */
-#line 425 "BsParserFX.y"
+#line 422 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_BorderColor; memcpy(((*yyvalp).nodeOption).value.matrixValue, (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.matrixValue), sizeof((((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.matrixValue))); }
     break;
 
   case 80:
 /* Line 868 of glr.c  */
-#line 426 "BsParserFX.y"
+#line 423 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_CompareFunc; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 81:
 /* Line 868 of glr.c  */
-#line 431 "BsParserFX.y"
+#line 428 "BsParserFX.y"
     { nodePop(parse_state); ((*yyvalp).nodePtr) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 82:
 /* Line 868 of glr.c  */
-#line 436 "BsParserFX.y"
+#line 433 "BsParserFX.y"
     { 
 			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_AddrMode); 
 			nodePush(parse_state, ((*yyvalp).nodePtr));
@@ -1822,49 +1917,49 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 84:
 /* Line 868 of glr.c  */
-#line 444 "BsParserFX.y"
+#line 441 "BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.nodeOption)); }
     break;
 
   case 85:
 /* Line 868 of glr.c  */
-#line 448 "BsParserFX.y"
+#line 445 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_U; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 86:
 /* Line 868 of glr.c  */
-#line 449 "BsParserFX.y"
+#line 446 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_V; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 87:
 /* Line 868 of glr.c  */
-#line 450 "BsParserFX.y"
+#line 447 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_W; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 88:
 /* Line 868 of glr.c  */
-#line 455 "BsParserFX.y"
+#line 452 "BsParserFX.y"
     { ((*yyvalp).matrixValue)[0] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (5))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[1] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (5))].yystate.yysemantics.yysval.floatValue); }
     break;
 
   case 89:
 /* Line 868 of glr.c  */
-#line 459 "BsParserFX.y"
+#line 456 "BsParserFX.y"
     { ((*yyvalp).matrixValue)[0] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (7))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[1] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (7))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[2] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((6) - (7))].yystate.yysemantics.yysval.floatValue); }
     break;
 
   case 90:
 /* Line 868 of glr.c  */
-#line 463 "BsParserFX.y"
+#line 460 "BsParserFX.y"
     { ((*yyvalp).matrixValue)[0] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (9))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[1] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (9))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[2] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((6) - (9))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[3] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((8) - (9))].yystate.yysemantics.yysval.floatValue);}
     break;
 
   case 91:
 /* Line 868 of glr.c  */
-#line 469 "BsParserFX.y"
+#line 466 "BsParserFX.y"
     { 
 			((*yyvalp).matrixValue)[0] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (13))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[1] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (13))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[2] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((6) - (13))].yystate.yysemantics.yysval.floatValue); 
 			((*yyvalp).matrixValue)[3] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((8) - (13))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[4] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((10) - (13))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[5] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((12) - (13))].yystate.yysemantics.yysval.floatValue);
@@ -1873,7 +1968,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 92:
 /* Line 868 of glr.c  */
-#line 479 "BsParserFX.y"
+#line 476 "BsParserFX.y"
     { 
 			((*yyvalp).matrixValue)[0] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (17))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[1] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (17))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[2] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((6) - (17))].yystate.yysemantics.yysval.floatValue); 
 			((*yyvalp).matrixValue)[3] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((8) - (17))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[4] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((10) - (17))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[5] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((12) - (17))].yystate.yysemantics.yysval.floatValue);
@@ -1883,7 +1978,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 93:
 /* Line 868 of glr.c  */
-#line 490 "BsParserFX.y"
+#line 487 "BsParserFX.y"
     { 
 			((*yyvalp).matrixValue)[0] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (19))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[1] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (19))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[2] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((6) - (19))].yystate.yysemantics.yysval.floatValue); 
 			((*yyvalp).matrixValue)[3] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((8) - (19))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[4] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((10) - (19))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[5] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((12) - (19))].yystate.yysemantics.yysval.floatValue);
@@ -1893,7 +1988,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 94:
 /* Line 868 of glr.c  */
-#line 501 "BsParserFX.y"
+#line 498 "BsParserFX.y"
     { 
 			((*yyvalp).matrixValue)[0] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (25))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[1] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (25))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[2] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((6) - (25))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[3] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((8) - (25))].yystate.yysemantics.yysval.floatValue); 
 			((*yyvalp).matrixValue)[4] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((10) - (25))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[5] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((12) - (25))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[6] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((14) - (25))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[7] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((16) - (25))].yystate.yysemantics.yysval.floatValue); 
@@ -1903,7 +1998,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 95:
 /* Line 868 of glr.c  */
-#line 513 "BsParserFX.y"
+#line 510 "BsParserFX.y"
     { 
 			((*yyvalp).matrixValue)[0] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (33))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[1] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (33))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[2] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((6) - (33))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[3] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((8) - (33))].yystate.yysemantics.yysval.floatValue); 
 			((*yyvalp).matrixValue)[4] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((10) - (33))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[5] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((12) - (33))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[6] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((14) - (33))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[7] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((16) - (33))].yystate.yysemantics.yysval.floatValue); 
@@ -1914,13 +2009,13 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 96:
 /* Line 868 of glr.c  */
-#line 523 "BsParserFX.y"
+#line 520 "BsParserFX.y"
     { nodePop(parse_state); ((*yyvalp).nodePtr) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 97:
 /* Line 868 of glr.c  */
-#line 528 "BsParserFX.y"
+#line 525 "BsParserFX.y"
     { 
 			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Parameters); 
 			nodePush(parse_state, ((*yyvalp).nodePtr));
@@ -1929,97 +2024,97 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 99:
 /* Line 868 of glr.c  */
-#line 536 "BsParserFX.y"
+#line 533 "BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.nodeOption)); }
     break;
 
   case 100:
 /* Line 868 of glr.c  */
-#line 540 "BsParserFX.y"
+#line 537 "BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.nodeOption)); nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Parameter; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 101:
 /* Line 868 of glr.c  */
-#line 541 "BsParserFX.y"
+#line 538 "BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.nodeOption)); nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Parameter; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 102:
 /* Line 868 of glr.c  */
-#line 542 "BsParserFX.y"
+#line 539 "BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.nodeOption)); nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Parameter; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 103:
 /* Line 868 of glr.c  */
-#line 543 "BsParserFX.y"
+#line 540 "BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.nodeOption)); nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Parameter; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 104:
 /* Line 868 of glr.c  */
-#line 544 "BsParserFX.y"
+#line 541 "BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.nodeOption)); nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Parameter; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 105:
 /* Line 868 of glr.c  */
-#line 545 "BsParserFX.y"
+#line 542 "BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.nodeOption)); nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Parameter; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 106:
 /* Line 868 of glr.c  */
-#line 546 "BsParserFX.y"
+#line 543 "BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.nodeOption)); nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Parameter; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 107:
 /* Line 868 of glr.c  */
-#line 547 "BsParserFX.y"
+#line 544 "BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.nodeOption)); nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Parameter; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 108:
 /* Line 868 of glr.c  */
-#line 548 "BsParserFX.y"
+#line 545 "BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.nodeOption)); nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Parameter; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 109:
 /* Line 868 of glr.c  */
-#line 549 "BsParserFX.y"
+#line 546 "BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.nodeOption)); nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Parameter; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 110:
 /* Line 868 of glr.c  */
-#line 550 "BsParserFX.y"
+#line 547 "BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.nodeOption)); nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Parameter; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 111:
 /* Line 868 of glr.c  */
-#line 551 "BsParserFX.y"
+#line 548 "BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.nodeOption)); nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Parameter; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 112:
 /* Line 868 of glr.c  */
-#line 552 "BsParserFX.y"
+#line 549 "BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.nodeOption)); nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Parameter; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 113:
 /* Line 868 of glr.c  */
-#line 553 "BsParserFX.y"
+#line 550 "BsParserFX.y"
     { nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Parameter; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 114:
 /* Line 868 of glr.c  */
-#line 555 "BsParserFX.y"
+#line 552 "BsParserFX.y"
     { 
 			nodePop(parse_state);
 
@@ -2036,187 +2131,187 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 115:
 /* Line 868 of glr.c  */
-#line 570 "BsParserFX.y"
+#line 567 "BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 116:
 /* Line 868 of glr.c  */
-#line 574 "BsParserFX.y"
+#line 571 "BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 117:
 /* Line 868 of glr.c  */
-#line 578 "BsParserFX.y"
+#line 575 "BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 118:
 /* Line 868 of glr.c  */
-#line 582 "BsParserFX.y"
+#line 579 "BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 119:
 /* Line 868 of glr.c  */
-#line 586 "BsParserFX.y"
+#line 583 "BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 120:
 /* Line 868 of glr.c  */
-#line 590 "BsParserFX.y"
+#line 587 "BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 121:
 /* Line 868 of glr.c  */
-#line 594 "BsParserFX.y"
+#line 591 "BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 122:
 /* Line 868 of glr.c  */
-#line 598 "BsParserFX.y"
+#line 595 "BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 123:
 /* Line 868 of glr.c  */
-#line 602 "BsParserFX.y"
+#line 599 "BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 124:
 /* Line 868 of glr.c  */
-#line 606 "BsParserFX.y"
+#line 603 "BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 125:
 /* Line 868 of glr.c  */
-#line 610 "BsParserFX.y"
+#line 607 "BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 126:
 /* Line 868 of glr.c  */
-#line 614 "BsParserFX.y"
+#line 611 "BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 127:
 /* Line 868 of glr.c  */
-#line 618 "BsParserFX.y"
+#line 615 "BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 128:
 /* Line 868 of glr.c  */
-#line 622 "BsParserFX.y"
+#line 619 "BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 129:
 /* Line 868 of glr.c  */
-#line 623 "BsParserFX.y"
+#line 620 "BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 130:
 /* Line 868 of glr.c  */
-#line 624 "BsParserFX.y"
+#line 621 "BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 131:
 /* Line 868 of glr.c  */
-#line 625 "BsParserFX.y"
+#line 622 "BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 132:
 /* Line 868 of glr.c  */
-#line 626 "BsParserFX.y"
+#line 623 "BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 133:
 /* Line 868 of glr.c  */
-#line 630 "BsParserFX.y"
+#line 627 "BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 134:
 /* Line 868 of glr.c  */
-#line 631 "BsParserFX.y"
+#line 628 "BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 135:
 /* Line 868 of glr.c  */
-#line 632 "BsParserFX.y"
+#line 629 "BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 136:
 /* Line 868 of glr.c  */
-#line 633 "BsParserFX.y"
+#line 630 "BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 137:
 /* Line 868 of glr.c  */
-#line 634 "BsParserFX.y"
+#line 631 "BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 138:
 /* Line 868 of glr.c  */
-#line 635 "BsParserFX.y"
+#line 632 "BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 139:
 /* Line 868 of glr.c  */
-#line 636 "BsParserFX.y"
+#line 633 "BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 140:
 /* Line 868 of glr.c  */
-#line 637 "BsParserFX.y"
+#line 634 "BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 141:
 /* Line 868 of glr.c  */
-#line 638 "BsParserFX.y"
+#line 635 "BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 142:
 /* Line 868 of glr.c  */
-#line 639 "BsParserFX.y"
+#line 636 "BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 143:
 /* Line 868 of glr.c  */
-#line 640 "BsParserFX.y"
+#line 637 "BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 144:
 /* Line 868 of glr.c  */
-#line 641 "BsParserFX.y"
+#line 638 "BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 145:
 /* Line 868 of glr.c  */
-#line 646 "BsParserFX.y"
+#line 643 "BsParserFX.y"
     { 
 			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_SamplerState); 
 			nodePush(parse_state, ((*yyvalp).nodePtr));
@@ -2225,133 +2320,133 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 146:
 /* Line 868 of glr.c  */
-#line 653 "BsParserFX.y"
+#line 650 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_None; }
     break;
 
   case 147:
 /* Line 868 of glr.c  */
-#line 654 "BsParserFX.y"
+#line 651 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_ParamValue; ((*yyvalp).nodeOption).value.floatValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.floatValue); }
     break;
 
   case 148:
 /* Line 868 of glr.c  */
-#line 658 "BsParserFX.y"
+#line 655 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_None; }
     break;
 
   case 149:
 /* Line 868 of glr.c  */
-#line 659 "BsParserFX.y"
+#line 656 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_ParamValue; memcpy(((*yyvalp).nodeOption).value.matrixValue, (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.matrixValue), sizeof((((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.matrixValue))); }
     break;
 
   case 150:
 /* Line 868 of glr.c  */
-#line 663 "BsParserFX.y"
+#line 660 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_None; }
     break;
 
   case 151:
 /* Line 868 of glr.c  */
-#line 664 "BsParserFX.y"
+#line 661 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_ParamValue; memcpy(((*yyvalp).nodeOption).value.matrixValue, (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.matrixValue), sizeof((((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.matrixValue))); }
     break;
 
   case 152:
 /* Line 868 of glr.c  */
-#line 668 "BsParserFX.y"
+#line 665 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_None; }
     break;
 
   case 153:
 /* Line 868 of glr.c  */
-#line 669 "BsParserFX.y"
+#line 666 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_ParamValue; memcpy(((*yyvalp).nodeOption).value.matrixValue, (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.matrixValue), sizeof((((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.matrixValue))); }
     break;
 
   case 154:
 /* Line 868 of glr.c  */
-#line 673 "BsParserFX.y"
+#line 670 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_None; }
     break;
 
   case 155:
 /* Line 868 of glr.c  */
-#line 674 "BsParserFX.y"
+#line 671 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_ParamValue; memcpy(((*yyvalp).nodeOption).value.matrixValue, (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.matrixValue), sizeof((((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.matrixValue))); }
     break;
 
   case 156:
 /* Line 868 of glr.c  */
-#line 678 "BsParserFX.y"
+#line 675 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_None; }
     break;
 
   case 157:
 /* Line 868 of glr.c  */
-#line 679 "BsParserFX.y"
+#line 676 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_ParamValue; memcpy(((*yyvalp).nodeOption).value.matrixValue, (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.matrixValue), sizeof((((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.matrixValue))); }
     break;
 
   case 158:
 /* Line 868 of glr.c  */
-#line 683 "BsParserFX.y"
+#line 680 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_None; }
     break;
 
   case 159:
 /* Line 868 of glr.c  */
-#line 684 "BsParserFX.y"
+#line 681 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_ParamValue; memcpy(((*yyvalp).nodeOption).value.matrixValue, (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.matrixValue), sizeof((((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.matrixValue))); }
     break;
 
   case 160:
 /* Line 868 of glr.c  */
-#line 688 "BsParserFX.y"
+#line 685 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_None; }
     break;
 
   case 161:
 /* Line 868 of glr.c  */
-#line 689 "BsParserFX.y"
+#line 686 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_ParamValue; memcpy(((*yyvalp).nodeOption).value.matrixValue, (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.matrixValue), sizeof((((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.matrixValue))); }
     break;
 
   case 162:
 /* Line 868 of glr.c  */
-#line 693 "BsParserFX.y"
+#line 690 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_None; }
     break;
 
   case 163:
 /* Line 868 of glr.c  */
-#line 694 "BsParserFX.y"
+#line 691 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_ParamValue; memcpy(((*yyvalp).nodeOption).value.matrixValue, (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.matrixValue), sizeof((((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.matrixValue))); }
     break;
 
   case 164:
 /* Line 868 of glr.c  */
-#line 698 "BsParserFX.y"
+#line 695 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_None; }
     break;
 
   case 165:
 /* Line 868 of glr.c  */
-#line 699 "BsParserFX.y"
+#line 696 "BsParserFX.y"
     { }
     break;
 
   case 166:
 /* Line 868 of glr.c  */
-#line 704 "BsParserFX.y"
+#line 701 "BsParserFX.y"
     { nodePop(parse_state); ((*yyvalp).nodePtr) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 167:
 /* Line 868 of glr.c  */
-#line 709 "BsParserFX.y"
+#line 706 "BsParserFX.y"
     { 
 			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Blocks); 
 			nodePush(parse_state, ((*yyvalp).nodePtr));
@@ -2360,19 +2455,19 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 169:
 /* Line 868 of glr.c  */
-#line 717 "BsParserFX.y"
+#line 714 "BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.nodeOption)); }
     break;
 
   case 170:
 /* Line 868 of glr.c  */
-#line 721 "BsParserFX.y"
+#line 718 "BsParserFX.y"
     { nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Block; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 171:
 /* Line 868 of glr.c  */
-#line 726 "BsParserFX.y"
+#line 723 "BsParserFX.y"
     {
 			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Block);
 			nodePush(parse_state, ((*yyvalp).nodePtr));
@@ -2387,37 +2482,37 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 173:
 /* Line 868 of glr.c  */
-#line 741 "BsParserFX.y"
+#line 738 "BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.nodeOption)); }
     break;
 
   case 174:
 /* Line 868 of glr.c  */
-#line 745 "BsParserFX.y"
+#line 742 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Alias; ((*yyvalp).nodeOption).value.strValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (5))].yystate.yysemantics.yysval.strValue); }
     break;
 
   case 175:
 /* Line 868 of glr.c  */
-#line 746 "BsParserFX.y"
+#line 743 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Auto; ((*yyvalp).nodeOption).value.strValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (5))].yystate.yysemantics.yysval.strValue); }
     break;
 
   case 176:
 /* Line 868 of glr.c  */
-#line 747 "BsParserFX.y"
+#line 744 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Shared; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (5))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 177:
 /* Line 868 of glr.c  */
-#line 748 "BsParserFX.y"
+#line 745 "BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Usage; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (5))].yystate.yysemantics.yysval.intValue); }
     break;
 
 
 /* Line 868 of glr.c  */
-#line 2421 "BsParserFX.c"
+#line 2516 "BsParserFX.c"
       default: break;
     }
 
@@ -2453,9 +2548,10 @@ yyuserMerge (int yyn, YYSTYPE* yy0, YYSTYPE* yy1)
 
 /*ARGSUSED*/
 static void
-yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, ParseState* parse_state, yyscan_t scanner)
+yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, YYLTYPE *yylocationp, ParseState* parse_state, yyscan_t scanner)
 {
   YYUSE (yyvaluep);
+  YYUSE (yylocationp);
   YYUSE (parse_state);
   YYUSE (scanner);
 
@@ -2483,7 +2579,7 @@ yydestroyGLRState (char const *yymsg, yyGLRState *yys, ParseState* parse_state, 
 {
   if (yys->yyresolved)
     yydestruct (yymsg, yystos[yys->yylrState],
-                &yys->yysemantics.yysval, parse_state, scanner);
+                &yys->yysemantics.yysval, &yys->yyloc, parse_state, scanner);
   else
     {
 #if YYDEBUG
@@ -2494,7 +2590,7 @@ yydestroyGLRState (char const *yymsg, yyGLRState *yys, ParseState* parse_state, 
           else
             YYFPRINTF (stderr, "%s incomplete ", yymsg);
           yy_symbol_print (stderr, yystos[yys->yylrState],
-                           YY_NULL, parse_state, scanner);
+                           YY_NULL, &yys->yyloc, parse_state, scanner);
           YYFPRINTF (stderr, "\n");
         }
 #endif
@@ -2626,6 +2722,7 @@ yyaddDeferredAction (yyGLRStack* yystackp, size_t yyk, yyGLRState* yystate,
     {
       yynewOption->yyrawchar = yychar;
       yynewOption->yyval = yylval;
+      yynewOption->yyloc = yylloc;
     }
   else
     yynewOption->yyrawchar = YYEMPTY;
@@ -2830,7 +2927,7 @@ yyremoveDeletes (yyGLRStack* yystackp)
 static inline void
 yyglrShift (yyGLRStack* yystackp, size_t yyk, yyStateNum yylrState,
             size_t yyposn,
-            YYSTYPE* yyvalp)
+            YYSTYPE* yyvalp, YYLTYPE* yylocp)
 {
   yyGLRState* yynewState = &yynewGLRStackItem (yystackp, yytrue)->yystate;
 
@@ -2839,6 +2936,7 @@ yyglrShift (yyGLRStack* yystackp, size_t yyk, yyStateNum yylrState,
   yynewState->yyresolved = yytrue;
   yynewState->yypred = yystackp->yytops.yystates[yyk];
   yynewState->yysemantics.yysval = *yyvalp;
+  yynewState->yyloc = *yylocp;
   yystackp->yytops.yystates[yyk] = yynewState;
 
   YY_RESERVE_GLRSTACK (yystackp);
@@ -2872,7 +2970,7 @@ yyglrShiftDefer (yyGLRStack* yystackp, size_t yyk, yyStateNum yylrState,
  *  for userAction.  */
 static inline YYRESULTTAG
 yydoAction (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
-            YYSTYPE* yyvalp, ParseState* parse_state, yyscan_t scanner)
+            YYSTYPE* yyvalp, YYLTYPE *yylocp, ParseState* parse_state, yyscan_t scanner)
 {
   int yynrhs = yyrhsLength (yyrule);
 
@@ -2885,7 +2983,7 @@ yydoAction (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
       yystackp->yyspaceLeft += yynrhs;
       yystackp->yytops.yystates[0] = & yystackp->yynextFree[-1].yystate;
       return yyuserAction (yyrule, yynrhs, rhs, yystackp,
-                           yyvalp, parse_state, scanner);
+                           yyvalp, yylocp, parse_state, scanner);
     }
   else
     {
@@ -2898,6 +2996,9 @@ yydoAction (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
       yyGLRStackItem yyrhsVals[YYMAXRHS + YYMAXLEFT + 1];
       yys = yyrhsVals[YYMAXRHS + YYMAXLEFT].yystate.yypred
         = yystackp->yytops.yystates[yyk];
+      if (yynrhs == 0)
+        /* Set default location.  */
+        yyrhsVals[YYMAXRHS + YYMAXLEFT - 1].yystate.yyloc = yys->yyloc;
       for (yyi = 0; yyi < yynrhs; yyi += 1)
         {
           yys = yys->yypred;
@@ -2906,7 +3007,7 @@ yydoAction (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
       yyupdateSplit (yystackp, yys);
       yystackp->yytops.yystates[yyk] = yys;
       return yyuserAction (yyrule, yynrhs, yyrhsVals + YYMAXRHS + YYMAXLEFT - 1,
-                           yystackp, yyvalp, parse_state, scanner);
+                           yystackp, yyvalp, yylocp, parse_state, scanner);
     }
 }
 
@@ -2925,7 +3026,7 @@ do {                                    \
 
 /*ARGSUSED*/ static inline void
 yy_reduce_print (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
-                 YYSTYPE* yyvalp, ParseState* parse_state, yyscan_t scanner)
+                 YYSTYPE* yyvalp, YYLTYPE *yylocp, ParseState* parse_state, yyscan_t scanner)
 {
   int yynrhs = yyrhsLength (yyrule);
   yybool yynormal __attribute__ ((__unused__)) =
@@ -2934,6 +3035,7 @@ yy_reduce_print (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
   int yylow = 1;
   int yyi;
   YYUSE (yyvalp);
+  YYUSE (yylocp);
   YYUSE (parse_state);
   YYUSE (scanner);
   YYFPRINTF (stderr, "Reducing stack %lu by rule %d (line %lu):\n",
@@ -2945,7 +3047,7 @@ yy_reduce_print (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
       YYFPRINTF (stderr, "   $%d = ", yyi + 1);
       yy_symbol_print (stderr, yyrhs[yyprhs[yyrule] + yyi],
                        &(((yyGLRStackItem const *)yyvsp)[YYFILL ((yyi + 1) - (yynrhs))].yystate.yysemantics.yysval)
-                                              , parse_state, scanner);
+                       , &(((yyGLRStackItem const *)yyvsp)[YYFILL ((yyi + 1) - (yynrhs))].yystate.yyloc)                       , parse_state, scanner);
       YYFPRINTF (stderr, "\n");
     }
 }
@@ -2971,14 +3073,15 @@ yyglrReduce (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
   if (yyforceEval || yystackp->yysplitPoint == YY_NULL)
     {
       YYSTYPE yysval;
+      YYLTYPE yyloc;
 
-      YY_REDUCE_PRINT ((yystackp, yyk, yyrule, &yysval, parse_state, scanner));
-      YYCHK (yydoAction (yystackp, yyk, yyrule, &yysval, parse_state, scanner));
+      YY_REDUCE_PRINT ((yystackp, yyk, yyrule, &yysval, &yyloc, parse_state, scanner));
+      YYCHK (yydoAction (yystackp, yyk, yyrule, &yysval, &yyloc, parse_state, scanner));
       YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyrule], &yysval, &yyloc);
       yyglrShift (yystackp, yyk,
                   yyLRgotoState (yystackp->yytops.yystates[yyk]->yylrState,
                                  yylhsNonterm (yyrule)),
-                  yyposn, &yysval);
+                  yyposn, &yysval, &yyloc);
     }
   else
     {
@@ -3194,7 +3297,7 @@ yyresolveStates (yyGLRState* yys, int yyn,
  *  semantic values if invoked).  */
 static YYRESULTTAG
 yyresolveAction (yySemanticOption* yyopt, yyGLRStack* yystackp,
-                 YYSTYPE* yyvalp, ParseState* parse_state, yyscan_t scanner)
+                 YYSTYPE* yyvalp, YYLTYPE *yylocp, ParseState* parse_state, yyscan_t scanner)
 {
   yyGLRStackItem yyrhsVals[YYMAXRHS + YYMAXLEFT + 1];
   int yynrhs = yyrhsLength (yyopt->yyrule);
@@ -3209,16 +3312,22 @@ yyresolveAction (yySemanticOption* yyopt, yyGLRStack* yystackp,
     }
 
   yyrhsVals[YYMAXRHS + YYMAXLEFT].yystate.yypred = yyopt->yystate;
+  if (yynrhs == 0)
+    /* Set default location.  */
+    yyrhsVals[YYMAXRHS + YYMAXLEFT - 1].yystate.yyloc = yyopt->yystate->yyloc;
   {
     int yychar_current = yychar;
     YYSTYPE yylval_current = yylval;
+    YYLTYPE yylloc_current = yylloc;
     yychar = yyopt->yyrawchar;
     yylval = yyopt->yyval;
+    yylloc = yyopt->yyloc;
     yyflag = yyuserAction (yyopt->yyrule, yynrhs,
                            yyrhsVals + YYMAXRHS + YYMAXLEFT - 1,
-                           yystackp, yyvalp, parse_state, scanner);
+                           yystackp, yyvalp, yylocp, parse_state, scanner);
     yychar = yychar_current;
     yylval = yylval_current;
+    yylloc = yylloc_current;
   }
   return yyflag;
 }
@@ -3273,7 +3382,7 @@ yyreportTree (yySemanticOption* yyx, int yyindent)
 
 /*ARGSUSED*/ static YYRESULTTAG
 yyreportAmbiguity (yySemanticOption* yyx0,
-                   yySemanticOption* yyx1, ParseState* parse_state, yyscan_t scanner)
+                   yySemanticOption* yyx1, YYLTYPE *yylocp, ParseState* parse_state, yyscan_t scanner)
 {
   YYUSE (yyx0);
   YYUSE (yyx1);
@@ -3287,8 +3396,64 @@ yyreportAmbiguity (yySemanticOption* yyx0,
   YYFPRINTF (stderr, "\n");
 #endif
 
-  yyerror (parse_state, scanner, YY_("syntax is ambiguous"));
+  yyerror (yylocp, parse_state, scanner, YY_("syntax is ambiguous"));
   return yyabort;
+}
+
+/** Starting at and including state S1, resolve the location for each of the
+ *  previous N1 states that is unresolved.  The first semantic option of a state
+ *  is always chosen.  */
+static void
+yyresolveLocations (yyGLRState* yys1, int yyn1,
+                    yyGLRStack *yystackp, ParseState* parse_state, yyscan_t scanner)
+{
+  if (0 < yyn1)
+    {
+      yyresolveLocations (yys1->yypred, yyn1 - 1, yystackp, parse_state, scanner);
+      if (!yys1->yyresolved)
+        {
+          yyGLRStackItem yyrhsloc[1 + YYMAXRHS];
+          int yynrhs;
+          yySemanticOption *yyoption = yys1->yysemantics.yyfirstVal;
+          YYASSERT (yyoption != YY_NULL);
+          yynrhs = yyrhsLength (yyoption->yyrule);
+          if (yynrhs > 0)
+            {
+              yyGLRState *yys;
+              int yyn;
+              yyresolveLocations (yyoption->yystate, yynrhs,
+                                  yystackp, parse_state, scanner);
+              for (yys = yyoption->yystate, yyn = yynrhs;
+                   yyn > 0;
+                   yys = yys->yypred, yyn -= 1)
+                yyrhsloc[yyn].yystate.yyloc = yys->yyloc;
+            }
+          else
+            {
+              /* Both yyresolveAction and yyresolveLocations traverse the GSS
+                 in reverse rightmost order.  It is only necessary to invoke
+                 yyresolveLocations on a subforest for which yyresolveAction
+                 would have been invoked next had an ambiguity not been
+                 detected.  Thus the location of the previous state (but not
+                 necessarily the previous state itself) is guaranteed to be
+                 resolved already.  */
+              yyGLRState *yyprevious = yyoption->yystate;
+              yyrhsloc[0].yystate.yyloc = yyprevious->yyloc;
+            }
+          {
+            int yychar_current = yychar;
+            YYSTYPE yylval_current = yylval;
+            YYLTYPE yylloc_current = yylloc;
+            yychar = yyoption->yyrawchar;
+            yylval = yyoption->yyval;
+            yylloc = yyoption->yyloc;
+            YYLLOC_DEFAULT ((yys1->yyloc), yyrhsloc, yynrhs);
+            yychar = yychar_current;
+            yylval = yylval_current;
+            yylloc = yylloc_current;
+          }
+        }
+    }
 }
 
 /** Resolve the ambiguity represented in state S, perform the indicated
@@ -3306,6 +3471,7 @@ yyresolveValue (yyGLRState* yys, yyGLRStack* yystackp, ParseState* parse_state, 
   yybool yymerge = yyfalse;
   YYSTYPE yysval;
   YYRESULTTAG yyflag;
+  YYLTYPE *yylocp = &yys->yyloc;
 
   for (yypp = &yyoptionList->yynext; *yypp != YY_NULL; )
     {
@@ -3321,7 +3487,8 @@ yyresolveValue (yyGLRState* yys, yyGLRStack* yystackp, ParseState* parse_state, 
           switch (yypreference (yybest, yyp))
             {
             case 0:
-              return yyreportAmbiguity (yybest, yyp, parse_state, scanner);
+              yyresolveLocations (yys, 1, yystackp, parse_state, scanner);
+              return yyreportAmbiguity (yybest, yyp, yylocp, parse_state, scanner);
               break;
             case 1:
               yymerge = yytrue;
@@ -3346,19 +3513,20 @@ yyresolveValue (yyGLRState* yys, yyGLRStack* yystackp, ParseState* parse_state, 
     {
       yySemanticOption* yyp;
       int yyprec = yydprec[yybest->yyrule];
-      yyflag = yyresolveAction (yybest, yystackp, &yysval, parse_state, scanner);
+      yyflag = yyresolveAction (yybest, yystackp, &yysval, yylocp, parse_state, scanner);
       if (yyflag == yyok)
         for (yyp = yybest->yynext; yyp != YY_NULL; yyp = yyp->yynext)
           {
             if (yyprec == yydprec[yyp->yyrule])
               {
                 YYSTYPE yysval_other;
-                yyflag = yyresolveAction (yyp, yystackp, &yysval_other, parse_state, scanner);
+                YYLTYPE yydummy;
+                yyflag = yyresolveAction (yyp, yystackp, &yysval_other, &yydummy, parse_state, scanner);
                 if (yyflag != yyok)
                   {
                     yydestruct ("Cleanup: discarding incompletely merged value for",
                                 yystos[yys->yylrState],
-                                &yysval, parse_state, scanner);
+                                &yysval, yylocp, parse_state, scanner);
                     break;
                   }
                 yyuserMerge (yymerger[yyp->yyrule], &yysval, &yysval_other);
@@ -3366,7 +3534,7 @@ yyresolveValue (yyGLRState* yys, yyGLRStack* yystackp, ParseState* parse_state, 
           }
     }
   else
-    yyflag = yyresolveAction (yybest, yystackp, &yysval, parse_state, scanner);
+    yyflag = yyresolveAction (yybest, yystackp, &yysval, yylocp, parse_state, scanner);
 
   if (yyflag == yyok)
     {
@@ -3428,7 +3596,7 @@ yycompressStack (yyGLRStack* yystackp)
 
 static YYRESULTTAG
 yyprocessOneStack (yyGLRStack* yystackp, size_t yyk,
-                   size_t yyposn, ParseState* parse_state, yyscan_t scanner)
+                   size_t yyposn, YYLTYPE *yylocp, ParseState* parse_state, yyscan_t scanner)
 {
   int yyaction;
   const short int* yyconflicts;
@@ -3486,7 +3654,7 @@ yyprocessOneStack (yyGLRStack* yystackp, size_t yyk,
               YYCHK (yyglrReduce (yystackp, yynewStack,
                                   *yyconflicts, yyfalse, parse_state, scanner));
               YYCHK (yyprocessOneStack (yystackp, yynewStack,
-                                        yyposn, parse_state, scanner));
+                                        yyposn, yylocp, parse_state, scanner));
               yyconflicts += 1;
             }
 
@@ -3513,7 +3681,7 @@ yyreportSyntaxError (yyGLRStack* yystackp, ParseState* parse_state, yyscan_t sca
   if (yystackp->yyerrState != 0)
     return;
 #if ! YYERROR_VERBOSE
-  yyerror (parse_state, scanner, YY_("syntax error"));
+  yyerror (&yylloc, parse_state, scanner, YY_("syntax error"));
 #else
   {
   yySymbol yytoken = yychar == YYEMPTY ? YYEMPTY : YYTRANSLATE (yychar);
@@ -3628,12 +3796,12 @@ yyreportSyntaxError (yyGLRStack* yystackp, ParseState* parse_state, yyscan_t sca
               yyformat++;
             }
         }
-      yyerror (parse_state, scanner, yymsg);
+      yyerror (&yylloc, parse_state, scanner, yymsg);
       YYFREE (yymsg);
     }
   else
     {
-      yyerror (parse_state, scanner, YY_("syntax error"));
+      yyerror (&yylloc, parse_state, scanner, YY_("syntax error"));
       yyMemoryExhausted (yystackp);
     }
   }
@@ -3657,12 +3825,19 @@ yyrecoverSyntaxError (yyGLRStack* yystackp, ParseState* parse_state, yyscan_t sc
       {
         yySymbol yytoken;
         if (yychar == YYEOF)
-          yyFail (yystackp, parse_state, scanner, YY_NULL);
+          yyFail (yystackp, &yylloc, parse_state, scanner, YY_NULL);
         if (yychar != YYEMPTY)
           {
+            /* We throw away the lookahead, but the error range
+               of the shifted error token must take it into account.  */
+            yyGLRState *yys = yystackp->yytops.yystates[0];
+            yyGLRStackItem yyerror_range[3];
+            yyerror_range[1].yystate.yyloc = yys->yyloc;
+            yyerror_range[2].yystate.yyloc = yylloc;
+            YYLLOC_DEFAULT ((yys->yyloc), yyerror_range, 2);
             yytoken = YYTRANSLATE (yychar);
             yydestruct ("Error: discarding",
-                        yytoken, &yylval, parse_state, scanner);
+                        yytoken, &yylval, &yylloc, parse_state, scanner);
           }
         YYDPRINTF ((stderr, "Reading a token: "));
         yychar = YYLEX;
@@ -3694,7 +3869,7 @@ yyrecoverSyntaxError (yyGLRStack* yystackp, ParseState* parse_state, yyscan_t sc
     if (yystackp->yytops.yystates[yyk] != YY_NULL)
       break;
   if (yyk >= yystackp->yytops.yysize)
-    yyFail (yystackp, parse_state, scanner, YY_NULL);
+    yyFail (yystackp, &yylloc, parse_state, scanner, YY_NULL);
   for (yyk += 1; yyk < yystackp->yytops.yysize; yyk += 1)
     yymarkStackDeleted (yystackp, yyk);
   yyremoveDeletes (yystackp);
@@ -3713,14 +3888,19 @@ yyrecoverSyntaxError (yyGLRStack* yystackp, ParseState* parse_state, yyscan_t sc
               && yyisShiftAction (yytable[yyj]))
             {
               /* Shift the error token.  */
+              /* First adjust its location.*/
+              YYLTYPE yyerrloc;
+              yystackp->yyerror_range[2].yystate.yyloc = yylloc;
+              YYLLOC_DEFAULT (yyerrloc, (yystackp->yyerror_range), 2);
               YY_SYMBOL_PRINT ("Shifting", yystos[yytable[yyj]],
                                &yylval, &yyerrloc);
               yyglrShift (yystackp, 0, yytable[yyj],
-                          yys->yyposn, &yylval);
+                          yys->yyposn, &yylval, &yyerrloc);
               yys = yystackp->yytops.yystates[0];
               break;
             }
         }
+      yystackp->yyerror_range[1].yystate.yyloc = yys->yyloc;
       if (yys->yypred != YY_NULL)
         yydestroyGLRState ("Error: popping", yys, parse_state, scanner);
       yystackp->yytops.yystates[0] = yys->yypred;
@@ -3728,7 +3908,7 @@ yyrecoverSyntaxError (yyGLRStack* yystackp, ParseState* parse_state, yyscan_t sc
       yystackp->yyspaceLeft += 1;
     }
   if (yystackp->yytops.yystates[0] == YY_NULL)
-    yyFail (yystackp, parse_state, scanner, YY_NULL);
+    yyFail (yystackp, &yylloc, parse_state, scanner, YY_NULL);
 }
 
 #define YYCHK1(YYE)                                                          \
@@ -3764,6 +3944,7 @@ yyparse (ParseState* parse_state, yyscan_t scanner)
 
   yychar = YYEMPTY;
   yylval = yyval_default;
+  yylloc = yyloc_default;
 
   if (! yyinitGLRStack (yystackp, YYINITDEPTH))
     goto yyexhaustedlab;
@@ -3774,7 +3955,7 @@ yyparse (ParseState* parse_state, yyscan_t scanner)
     case 2: goto yyexhaustedlab;
     default: goto yybuglab;
     }
-  yyglrShift (&yystack, 0, 0, 0, &yylval);
+  yyglrShift (&yystack, 0, 0, 0, &yylval, &yylloc);
   yyposn = 0;
 
   while (YYID (yytrue))
@@ -3798,7 +3979,7 @@ yyparse (ParseState* parse_state, yyscan_t scanner)
               yyrule = yydefaultAction (yystate);
               if (yyrule == 0)
                 {
-
+               yystack.yyerror_range[1].yystate.yyloc = yylloc;
                   yyreportSyntaxError (&yystack, parse_state, scanner);
                   goto yyuser_error;
                 }
@@ -3832,13 +4013,13 @@ yyparse (ParseState* parse_state, yyscan_t scanner)
                   YY_SYMBOL_PRINT ("Shifting", yytoken, &yylval, &yylloc);
                   yychar = YYEMPTY;
                   yyposn += 1;
-                  yyglrShift (&yystack, 0, yyaction, yyposn, &yylval);
+                  yyglrShift (&yystack, 0, yyaction, yyposn, &yylval, &yylloc);
                   if (0 < yystack.yyerrState)
                     yystack.yyerrState -= 1;
                 }
               else if (yyisErrorAction (yyaction))
                 {
-
+               yystack.yyerror_range[1].yystate.yyloc = yylloc;
                   yyreportSyntaxError (&yystack, parse_state, scanner);
                   goto yyuser_error;
                 }
@@ -3875,16 +4056,16 @@ yyparse (ParseState* parse_state, yyscan_t scanner)
              on yylval in the event of memory exhaustion.  */
 
           for (yys = 0; yys < yystack.yytops.yysize; yys += 1)
-            YYCHK1 (yyprocessOneStack (&yystack, yys, yyposn, parse_state, scanner));
+            YYCHK1 (yyprocessOneStack (&yystack, yys, yyposn, &yylloc, parse_state, scanner));
           yyremoveDeletes (&yystack);
           if (yystack.yytops.yysize == 0)
             {
               yyundeleteLastStack (&yystack);
               if (yystack.yytops.yysize == 0)
-                yyFail (&yystack, parse_state, scanner, YY_("syntax error"));
+                yyFail (&yystack, &yylloc, parse_state, scanner, YY_("syntax error"));
               YYCHK1 (yyresolveStack (&yystack, parse_state, scanner));
               YYDPRINTF ((stderr, "Returning to deterministic operation.\n"));
-
+           yystack.yyerror_range[1].yystate.yyloc = yylloc;
               yyreportSyntaxError (&yystack, parse_state, scanner);
               goto yyuser_error;
             }
@@ -3908,7 +4089,7 @@ yyparse (ParseState* parse_state, yyscan_t scanner)
               YYDPRINTF ((stderr, "On stack %lu, ", (unsigned long int) yys));
               YY_SYMBOL_PRINT ("shifting", yytoken_to_shift, &yylval, &yylloc);
               yyglrShift (&yystack, yys, yyaction, yyposn,
-                          &yylval);
+                          &yylval, &yylloc);
               YYDPRINTF ((stderr, "Stack %lu now in state #%d\n",
                           (unsigned long int) yys,
                           yystack.yytops.yystates[yys]->yylrState));
@@ -3941,14 +4122,14 @@ yyparse (ParseState* parse_state, yyscan_t scanner)
   goto yyreturn;
 
  yyexhaustedlab:
-  yyerror (parse_state, scanner, YY_("memory exhausted"));
+  yyerror (&yylloc, parse_state, scanner, YY_("memory exhausted"));
   yyresult = 2;
   goto yyreturn;
 
  yyreturn:
   if (yychar != YYEMPTY)
     yydestruct ("Cleanup: discarding lookahead",
-                YYTRANSLATE (yychar), &yylval, parse_state, scanner);
+                YYTRANSLATE (yychar), &yylval, &yylloc, parse_state, scanner);
 
   /* If the stack is well-formed, pop the stack until it is empty,
      destroying its entries as we go.  But free the stack regardless
@@ -3966,6 +4147,7 @@ yyparse (ParseState* parse_state, yyscan_t scanner)
                 while (yystates[yyk])
                   {
                     yyGLRState *yys = yystates[yyk];
+                 yystack.yyerror_range[1].yystate.yyloc = yys->yyloc;
                   if (yys->yypred != YY_NULL)
                       yydestroyGLRState ("Cleanup: popping", yys, parse_state, scanner);
                     yystates[yyk] = yys->yypred;
@@ -4057,4 +4239,10 @@ yypdumpstack (yyGLRStack* yystackp)
 }
 #endif
 /* Line 2575 of glr.c  */
-#line 750 "BsParserFX.y"
+#line 747 "BsParserFX.y"
+
+
+void yyerror(YYLTYPE *locp, ParseState* parse_state, yyscan_t scanner, const char *msg) 
+{ 
+	fprintf (stderr, "%s -- Line: %i Column: %i\n", msg, locp->first_line, locp->first_column);
+}

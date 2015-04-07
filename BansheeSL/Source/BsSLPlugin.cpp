@@ -3,6 +3,10 @@
 #include "BsFileSystem.h"
 #include "BsDataStream.h"
 
+// DEBUG ONLY
+#include "BsDebug.h"
+#include "BsMatrix4.h"
+
 extern "C" {
 #include "BsMMAlloc.h"
 #include "BsASTFX.h"
@@ -42,6 +46,47 @@ namespace BansheeEngine
 		return SystemName;
 	}
 
+	void debugPrint(ASTFXNode* node, String indent)
+	{
+		LOGWRN(indent + "NODE " + toString(node->type));
+
+		for (int i = 0; i < node->options->count; i++)
+		{
+			OptionDataType odt = OPTION_LOOKUP[(int)node->options->entries[i].type].dataType;
+			if (odt == ODT_Complex)
+			{
+				LOGWRN(indent + toString(i) + ". " + toString(node->options->entries[i].type));
+				debugPrint(node->options->entries[i].value.nodePtr, indent + "\t");
+				continue;
+			}
+
+			String value;
+			switch (odt)
+			{
+			case ODT_Bool:
+				value = toString(node->options->entries[i].value.intValue != 0);
+				break;
+			case ODT_Int:
+				value = toString(node->options->entries[i].value.intValue);
+				break;
+			case ODT_Float:
+				value = toString(node->options->entries[i].value.floatValue);
+				break;
+			case ODT_String:
+				value = node->options->entries[i].value.strValue;
+				break;
+			case ODT_Matrix:
+				{
+					Matrix4 mat4 = *(Matrix4*)(node->options->entries[i].value.matrixValue);
+					value = toString(mat4);
+				}
+				break;
+			}
+
+			LOGWRN(indent + toString(i) + ". " + toString(node->options->entries[i].type) + " = " + value);
+		}
+	}
+
 	/**
 	 * @brief	Entry point to the plugin. Called by the engine when the plugin is loaded.
 	 */
@@ -59,6 +104,7 @@ namespace BansheeEngine
 		ParseState* parseState = parseStateCreate();
 		parseFX(parseState, contents.c_str());
 
+		debugPrint(parseState->rootNode, "");
 		int bp = 0;
 
 		parseStateDelete(parseState);

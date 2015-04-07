@@ -229,16 +229,22 @@ Compute = code
 -------------------
 
 TODO:
- - BorderColor for SamplerState isn't implemented yet as I haven't decided how to deal with vectors/matrices yet
- - Parser logic for parameters and blocks (with qualifier support)
+ - Test the example shader and ensure parameters/blocks/qualifiers/default values and nested nodes work properly
+ - Stencil read and write masks don't accept binary masks but instead raw integers
  - Code blocks (e.g. vertex/fragment/etc)
  - In lexer I use numbers to identify different values, but use enums instead so I can use the same ones when parsing AST
  - Generate Shader from parsed AST
  - Make sure includes are handled properly
  - Make sure default values are handled properly
+ - POssible way to handle code blocks: http://flex.sourceforge.net/manual/Start-Conditions.html
+ - When replacing code blocks make sure to replace them with empty lines so that line numbers stay valid when reporting errors
  -----
  - Move all builtin shaders to the new .shader file model
  - Optionally change how GpuPrograms are saved
+ - Save the test shader somewhere so I can use it as a unit test
+  - test shader is missing code blocks
+ - Need a decent way to report syntax errors (at minimum a line and column where it happened)
+  - Later on I'd like a better system that actually tells the user something about the problem, other than just "syntax error"
  -----
  - Add GpuProgram caching (e.g. save compiled programs somewhere for later use)
  - Consider adding restrictions on parameter ranges (probably via an additional qualifier)

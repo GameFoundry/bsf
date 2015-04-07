@@ -59,6 +59,7 @@ enum tagOptionType
 	OT_StencilWriteMask,
 	OT_StencilOpFront,
 	OT_StencilOpBack,
+	OT_PassOp,
 	OT_Fail,
 	OT_ZFail,
 	OT_AlphaToCoverage,

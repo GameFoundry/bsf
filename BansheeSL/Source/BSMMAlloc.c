@@ -36,6 +36,9 @@ void* mmalloc(void* context, int size)
 	MMAllocHeader* parent = (MMAllocHeader*)context;
 
 	header->next = parent->next;
+	if (parent->next)
+		parent->next->prev = header;
+
 	header->prev = parent;
 	parent->next = header;
 

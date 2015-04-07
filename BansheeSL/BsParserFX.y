@@ -3,11 +3,7 @@
 #include "BsLexerFX.h"
 #define inline
 
-	void yyerror(ParseState* parse_state, yyscan_t scanner, const char *msg) 
-	{ 
-		fprintf (stderr, "%s\n", msg);
-	}
-
+void yyerror(YYLTYPE *locp, ParseState* parse_state, yyscan_t scanner, const char *msg);
 %}
 
 %code requires{
@@ -41,6 +37,7 @@
 
 %define api.pure
 %debug
+%locations
 %lex-param { yyscan_t scanner }
 %parse-param { ParseState* parse_state }
 %parse-param { yyscan_t scanner }
@@ -343,7 +340,7 @@ stencil_op_body
 stencil_op_option
 	: TOKEN_FAIL '=' TOKEN_OPVALUE ';'					{ $$.type = OT_Fail; $$.value.intValue = $3; }
 	| TOKEN_ZFAIL '=' TOKEN_OPVALUE ';'					{ $$.type = OT_ZFail; $$.value.intValue = $3; }
-	| TOKEN_PASS '=' TOKEN_OPVALUE ';'					{ $$.type = OT_Pass; $$.value.intValue = $3; }
+	| TOKEN_PASS '=' TOKEN_OPVALUE ';'					{ $$.type = OT_PassOp; $$.value.intValue = $3; }
 	| TOKEN_COMPAREFUNC '=' TOKEN_COMPFUNCVALUE ';'		{ $$.type = OT_CompareFunc; $$.value.intValue = $3; }
 	; 
 
@@ -742,9 +739,14 @@ qualifier_list
 	;
 
 qualifier
-	: ':' TOKEN_ALIAS '(' TOKEN_IDENTIFIER ')'	{ $$.type = OT_Alias; $$.value.strValue = $4; }
+	: ':' TOKEN_ALIAS '(' TOKEN_STRING ')'		{ $$.type = OT_Alias; $$.value.strValue = $4; }
 	| ':' TOKEN_AUTO '(' TOKEN_STRING ')'		{ $$.type = OT_Auto; $$.value.strValue = $4; }
 	| ':' TOKEN_SHARED '(' TOKEN_BOOLEAN ')'	{ $$.type = OT_Shared; $$.value.intValue = $4; }
 	| ':' TOKEN_USAGE '(' TOKEN_BUFFERUSAGE ')'	{ $$.type = OT_Usage; $$.value.intValue = $4; }
 	;
 %%
+
+void yyerror(YYLTYPE *locp, ParseState* parse_state, yyscan_t scanner, const char *msg) 
+{ 
+	fprintf (stderr, "%s -- Line: %i Column: %i\n", msg, locp->first_line, locp->first_column);
+}

@@ -28,6 +28,7 @@ OptionInfo OPTION_LOOKUP[] =
 	{ OT_StencilWriteMask, ODT_Int },
 	{ OT_StencilOpFront, ODT_Complex },
 	{ OT_StencilOpBack, ODT_Complex },
+	{ OT_PassOp, ODT_Int },
 	{ OT_Fail, ODT_Int },
 	{ OT_ZFail, ODT_Int },
 	{ OT_AlphaToCoverage, ODT_Bool },
@@ -128,9 +129,6 @@ void nodeOptionsResize(void* context, NodeOptions* options, int size)
 
 	memcpy(options->entries, originalEntries, sizeToCopy);
 	memset(options->entries + elementsToCopy, 0, sizeof(NodeOption) * options->bufferSize - sizeToCopy);
-
-	for (i = 0; i < originalCount; i++)
-		nodeOptionDelete(&originalEntries[i]);
 
 	mmfree(originalEntries);
 }

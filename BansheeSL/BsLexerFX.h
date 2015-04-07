@@ -354,6 +354,10 @@ YYSTYPE * yyget_lval (yyscan_t yyscanner );
 
 void yyset_lval (YYSTYPE * yylval_param ,yyscan_t yyscanner );
 
+       YYLTYPE *yyget_lloc (yyscan_t yyscanner );
+    
+        void yyset_lloc (YYLTYPE * yylloc_param ,yyscan_t yyscanner );
+    
 /* %endif */
 
 /* Macros after this point can all be overridden by user definitions in
@@ -414,10 +418,10 @@ static int yy_flex_strlen (yyconst char * ,yyscan_t yyscanner);
 /* %if-c-only Standard (non-C++) definition */
 
 extern int yylex \
-               (YYSTYPE * yylval_param ,yyscan_t yyscanner);
+               (YYSTYPE * yylval_param,YYLTYPE * yylloc_param ,yyscan_t yyscanner);
 
 #define YY_DECL int yylex \
-               (YYSTYPE * yylval_param , yyscan_t yyscanner)
+               (YYSTYPE * yylval_param, YYLTYPE * yylloc_param , yyscan_t yyscanner)
 /* %endif */
 /* %if-c++-only C++ definition */
 /* %endif */
@@ -447,8 +451,8 @@ extern int yylex \
 #undef YY_DECL
 #endif
 
-#line 220 "BsLexerFX.l"
+#line 226 "BsLexerFX.l"
 
-#line 453 "BsLexerFX.h"
+#line 457 "BsLexerFX.h"
 #undef yyIN_HEADER
 #endif /* yyHEADER_H */

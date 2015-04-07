@@ -41,7 +41,7 @@ extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
 /* Line 2579 of glr.c  */
-#line 13 "BsParserFX.y"
+#line 9 "BsParserFX.y"
 
 #include "BsMMAlloc.h"
 #include "BsASTFX.h"
@@ -190,7 +190,7 @@ extern int yydebug;
 typedef union YYSTYPE
 {
 /* Line 2579 of glr.c  */
-#line 49 "BsParserFX.y"
+#line 46 "BsParserFX.y"
 
 	int intValue;
 	float floatValue;
@@ -206,6 +206,19 @@ typedef union YYSTYPE
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
+#endif
+
+#if ! defined YYLTYPE && ! defined YYLTYPE_IS_DECLARED
+typedef struct YYLTYPE
+{
+  int first_line;
+  int first_column;
+  int last_line;
+  int last_column;
+} YYLTYPE;
+# define yyltype YYLTYPE /* obsolescent; will be withdrawn */
+# define YYLTYPE_IS_DECLARED 1
+# define YYLTYPE_IS_TRIVIAL 1
 #endif
 
 
