@@ -155,7 +155,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Thread safe.
 		 */
-		virtual const String& getName() const = 0;
+		virtual const StringID& getName() const = 0;
 
 		/**
 		 * @brief	Gets the name of the primary shading language

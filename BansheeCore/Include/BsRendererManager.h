@@ -29,19 +29,6 @@ namespace BansheeEngine
 		CoreRendererPtr getActive() { return mActiveRenderer; }
 
 		/**
-		 * @brief	Core renderer represents a set of shared features within all renderers.
-		 * 			Techniques using this renderer name will report as if they are supported regardless
-		 * 			of the active renderer.
-		 *
-		 * @note	Useful when you want to make a technique working on all renderers. (Normally techniques
-		 * 			need to be different as far as render system is concerned but can often be same from
-		 * 			renderers perspective).
-		 * 			
-		 * @see		Technique
-		 */
-		static const String& getCoreRendererName();
-
-		/**
 		 * @brief	Registers a new renderer factory. Any renderer you try to make active with
 		 * 			"setActive" you will need to have previously registered here.
 		 *

@@ -54,9 +54,9 @@ namespace BansheeEngine
 
 	}
 
-	const String& D3D9RenderAPI::getName() const
+	const StringID& D3D9RenderAPI::getName() const
 	{
-		static String strName( "D3D9RenderAPI");
+		static StringID strName("D3D9RenderAPI");
 		return strName;
 	}
 

@@ -15,6 +15,14 @@ typedef struct tagNodeOptions NodeOptions;
 typedef struct tagNodeOption NodeOption;
 typedef struct tagASTFXNode ASTFXNode;
 typedef struct tagNodeLink NodeLink;
+typedef enum tagFillModeValue FillModeValue;
+typedef enum tagCullModeValue CullModeValue;
+typedef enum tagCompFuncValue CompFuncValue;
+typedef enum tagOpValue OpValue;
+typedef enum tagBlendOpValue BlendOpValue;
+typedef enum tagAddrModeValue AddrModeValue;
+typedef enum tagFilterValue FilterValue;
+typedef enum tagBufferUsageValue BufferUsageValue;
 
 enum tagNodeType
 {
@@ -29,7 +37,8 @@ enum tagNodeType
 	NT_SamplerState,
 	NT_AddrMode,
 	NT_Parameter,
-	NT_Block
+	NT_Block,
+	NT_Code
 };
 
 enum tagOptionType
@@ -96,7 +105,9 @@ enum tagOptionType
 	OT_Blocks,
 	OT_Parameter,
 	OT_Block,
-	OT_SamplerState
+	OT_SamplerState,
+	OT_Code,
+	OT_StencilRef
 };
 
 enum tagOptionDataType
@@ -118,7 +129,54 @@ enum tagParamType
 	PT_Sampler1D, PT_Sampler2D, PT_Sampler3D, PT_SamplerCUBE, PT_Sampler2DMS,
 	PT_Texture1D, PT_Texture2D, PT_Texture3D, PT_TextureCUBE, PT_Texture2DMS,
 	PT_ByteBuffer, PT_StructBuffer, PT_ByteBufferRW, PT_StructBufferRW,
-	PT_TypedBufferRW, PT_AppendBuffer, PT_ConsumeBuffer
+	PT_TypedBufferRW, PT_AppendBuffer, PT_ConsumeBuffer,
+	PT_Count // Keep at end
+};
+
+enum tagFillModeValue 
+{ 
+	FMV_Wire, FMV_Solid 
+};
+
+enum tagCullModeValue 
+{ 
+	CMV_None, CMV_CW, CMV_CCW 
+};
+
+enum tagCompFuncValue
+{ 
+	CFV_Fail, CFV_Pass, CFV_LT, CFV_LTE, 
+	CFV_EQ, CFV_NEQ, CFV_GTE, CFV_GT
+};
+
+enum tagOpValue 
+{ 
+	OV_Keep, OV_Zero, OV_Replace, OV_Incr, OV_Decr, 
+	OV_IncrWrap, OV_DecrWrap, OV_Invert, OV_One, OV_DestColor, 
+	OV_SrcColor, OV_InvDestColor, OV_InvSrcColor, OV_DestAlpha, 
+	OV_SrcAlpha, OV_InvDestAlpha, OV_InvSrcAlpha
+};
+
+enum tagBlendOpValue 
+{ 
+	BOV_Add, BOV_Subtract, BOV_RevSubtract, 
+	BOV_Min, BOV_Max 
+};
+
+enum tagAddrModeValue
+{
+	AMV_Wrap, AMV_Mirror, AMV_Clamp, AMV_Border
+};
+
+enum tagFilterValue 
+{ 
+	FV_None, FV_Point, FV_Linear, FV_Anisotropic, 
+	FV_PointCmp, FV_LinearCmp, FV_AnisotropicCmp 
+};
+
+enum tagBufferUsageValue 
+{ 
+	BUV_Static, BUV_Dynamic 
 };
 
 struct tagNodeLink
@@ -132,6 +190,11 @@ struct tagParseState
 	ASTFXNode* rootNode;
 	ASTFXNode* topNode;
 	void* memContext;
+
+	int hasError;
+	int errorLine;
+	int errorColumn;
+	const char* errorMessage;
 
 	NodeLink* nodeStack;
 };

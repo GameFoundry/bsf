@@ -199,6 +199,11 @@ ParseState* parseStateCreate()
 	parseState->topNode = 0;
 	parseState->nodeStack = 0;
 
+	parseState->hasError = 0;
+	parseState->errorLine = 0;
+	parseState->errorColumn = 0;
+	parseState->errorMessage = 0;
+
 	nodePush(parseState, parseState->rootNode);
 
 	return parseState;

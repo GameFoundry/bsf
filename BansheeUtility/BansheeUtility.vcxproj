@@ -257,6 +257,7 @@
     <ClCompile Include="Source\BsLineSegment3.cpp" />
     <ClCompile Include="Source\BsMessageHandler.cpp" />
     <ClCompile Include="Source\BsRect3.cpp" />
+    <ClCompile Include="Source\BsStringID.cpp" />
     <ClCompile Include="Source\BsTaskScheduler.cpp" />
     <ClCompile Include="Source\BsTestOutput.cpp" />
     <ClCompile Include="Source\BsTestSuite.cpp" />
@@ -296,6 +297,7 @@
     <ClInclude Include="Include\BsServiceLocator.h" />
     <ClInclude Include="Include\BsSpinLock.h" />
     <ClInclude Include="Include\BsStringFormat.h" />
+    <ClInclude Include="Include\BsStringID.h" />
     <ClInclude Include="Include\BsTaskScheduler.h" />
     <ClInclude Include="Include\BsTestOutput.h" />
     <ClInclude Include="Include\BsTestSuite.h" />

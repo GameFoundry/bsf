@@ -8,7 +8,6 @@
 %option yylineno reentrant noyywrap nounistd never-interactive warn nodefault bison-bridge bison-locations
 %option outfile="BsLexerFX.c" header-file="BsLexerFX.h"
 %option extra-type="struct tagParseState *"
-%option debug
 
 INTEGER			[0-9][0-9]*
 INTEGER_16		0[xX][0-9a-fA-F]+
@@ -47,28 +46,28 @@ mat4x2			{ yylval->intValue = PT_Mat4x2; return TOKEN_MAT4x2TYPE; }
 mat4x3			{ yylval->intValue = PT_Mat4x3; return TOKEN_MAT4x3TYPE; } 
 mat4x4			{ yylval->intValue = PT_Mat4x4; return TOKEN_MAT4x4TYPE; }
 
-sampler1D		{ yylval->intValue = PT_Sampler1D; return TOKEN_SAMPLER1D; } 
-sampler2D		{ yylval->intValue = PT_Sampler2D; return TOKEN_SAMPLER2D; } 
-sampler3D		{ yylval->intValue = PT_Sampler3D; return TOKEN_SAMPLER3D; } 
-samplerCUBE		{ yylval->intValue = PT_SamplerCUBE; return TOKEN_SAMPLERCUBE; } 
-sampler2DMS		{ yylval->intValue = PT_Sampler2DMS; return TOKEN_SAMPLER2DMS; }
+Sampler1D		{ yylval->intValue = PT_Sampler1D; return TOKEN_SAMPLER1D; } 
+Sampler2D		{ yylval->intValue = PT_Sampler2D; return TOKEN_SAMPLER2D; } 
+Sampler3D		{ yylval->intValue = PT_Sampler3D; return TOKEN_SAMPLER3D; } 
+SamplerCUBE		{ yylval->intValue = PT_SamplerCUBE; return TOKEN_SAMPLERCUBE; } 
+Sampler2DMS		{ yylval->intValue = PT_Sampler2DMS; return TOKEN_SAMPLER2DMS; }
 
-texture1D		{ yylval->intValue = PT_Texture1D; return TOKEN_TEXTURE1D; } 
-texture2D		{ yylval->intValue = PT_Texture2D; return TOKEN_TEXTURE2D; } 
-texture3D		{ yylval->intValue = PT_Texture3D; return TOKEN_TEXTURE3D; } 
-textureCUBE		{ yylval->intValue = PT_TextureCUBE; return TOKEN_TEXTURECUBE; } 
-texture2DMS		{ yylval->intValue = PT_Texture2DMS; return TOKEN_TEXTURE2DMS; }
+Texture1D		{ yylval->intValue = PT_Texture1D; return TOKEN_TEXTURE1D; } 
+Texture2D		{ yylval->intValue = PT_Texture2D; return TOKEN_TEXTURE2D; } 
+Texture3D		{ yylval->intValue = PT_Texture3D; return TOKEN_TEXTURE3D; } 
+TextureCUBE		{ yylval->intValue = PT_TextureCUBE; return TOKEN_TEXTURECUBE; } 
+Texture2DMS		{ yylval->intValue = PT_Texture2DMS; return TOKEN_TEXTURE2DMS; }
 
-bytebuffer		{ yylval->intValue = PT_ByteBuffer; return TOKEN_BYTEBUFFER; } 
-structbuffer	{ yylval->intValue = PT_StructBuffer; return TOKEN_STRUCTBUFFER; } 
+ByteBuffer		{ yylval->intValue = PT_ByteBuffer; return TOKEN_BYTEBUFFER; } 
+StructBuffer	{ yylval->intValue = PT_StructBuffer; return TOKEN_STRUCTBUFFER; } 
 
-typedbufferRW	{ yylval->intValue = PT_TypedBufferRW; return TOKEN_RWTYPEDBUFFER; } 
-bytebufferRW	{ yylval->intValue = PT_ByteBufferRW; return TOKEN_RWBYTEBUFFER; }
-structbufferRW	{ yylval->intValue = PT_StructBufferRW; return TOKEN_RWSTRUCTBUFFER; } 
-appendbuffer	{ yylval->intValue = PT_AppendBuffer; return TOKEN_RWAPPENDBUFFER; } 
-consumebuffer	{ yylval->intValue = PT_ConsumeBuffer; return TOKEN_RWCONSUMEBUFFER; }
+TypedBufferRW	{ yylval->intValue = PT_TypedBufferRW; return TOKEN_RWTYPEDBUFFER; } 
+ByteBufferRW	{ yylval->intValue = PT_ByteBufferRW; return TOKEN_RWBYTEBUFFER; }
+StructBufferRW	{ yylval->intValue = PT_StructBufferRW; return TOKEN_RWSTRUCTBUFFER; } 
+AppendBuffer	{ yylval->intValue = PT_AppendBuffer; return TOKEN_RWAPPENDBUFFER; } 
+ConsumeBuffer	{ yylval->intValue = PT_ConsumeBuffer; return TOKEN_RWCONSUMEBUFFER; }
 
-block			{ return TOKEN_PARAMSBLOCK; }
+Block			{ return TOKEN_PARAMSBLOCK; }
 
 	/* Shader keywords */
 Separable		{ return TOKEN_SEPARABLE; }
@@ -91,6 +90,7 @@ Geometry		{ return TOKEN_GEOMETRY; }
 Hull			{ return TOKEN_HULL; }
 Domain			{ return TOKEN_DOMAIN; }
 Compute			{ return TOKEN_COMPUTE; }
+StencilRef		{ return TOKEN_STENCILREF; }
 
 	/* Rasterizer state keywords */
 Fill			{ return TOKEN_FILLMODE; }
@@ -148,45 +148,45 @@ shared				{ return TOKEN_SHARED; }
 usage				{ return TOKEN_USAGE; }
 
 	/* State values */
-wire			{ yylval->intValue = 0; return TOKEN_FILLMODEVALUE; }
-solid			{ yylval->intValue = 1; return TOKEN_FILLMODEVALUE; }
+wire			{ yylval->intValue = FMV_Wire; return TOKEN_FILLMODEVALUE; }
+solid			{ yylval->intValue = FMV_Solid; return TOKEN_FILLMODEVALUE; }
 
-nocull			{ yylval->intValue = 0; return TOKEN_CULLMODEVALUE; }
-cw				{ yylval->intValue = 1; return TOKEN_CULLMODEVALUE; }
-ccw				{ yylval->intValue = 2; return TOKEN_CULLMODEVALUE; }
+nocull			{ yylval->intValue = CMV_None; return TOKEN_CULLMODEVALUE; }
+cw				{ yylval->intValue = CMV_CW; return TOKEN_CULLMODEVALUE; }
+ccw				{ yylval->intValue = CMV_CCW; return TOKEN_CULLMODEVALUE; }
 
-fail			{ yylval->intValue = 0; return TOKEN_COMPFUNCVALUE; }
-pass			{ yylval->intValue = 1; return TOKEN_COMPFUNCVALUE; }
-lt				{ yylval->intValue = 2; return TOKEN_COMPFUNCVALUE; }
-lte				{ yylval->intValue = 3; return TOKEN_COMPFUNCVALUE; }
-eq				{ yylval->intValue = 4; return TOKEN_COMPFUNCVALUE; }
-neq				{ yylval->intValue = 5; return TOKEN_COMPFUNCVALUE; }
-gte				{ yylval->intValue = 6; return TOKEN_COMPFUNCVALUE; }
-gt				{ yylval->intValue = 7; return TOKEN_COMPFUNCVALUE; }
+fail			{ yylval->intValue = CFV_Fail; return TOKEN_COMPFUNCVALUE; }
+pass			{ yylval->intValue = CFV_Pass; return TOKEN_COMPFUNCVALUE; }
+lt				{ yylval->intValue = CFV_LT; return TOKEN_COMPFUNCVALUE; }
+lte				{ yylval->intValue = CFV_LTE; return TOKEN_COMPFUNCVALUE; }
+eq				{ yylval->intValue = CFV_EQ; return TOKEN_COMPFUNCVALUE; }
+neq				{ yylval->intValue = CFV_NEQ; return TOKEN_COMPFUNCVALUE; }
+gte				{ yylval->intValue = CFV_GTE; return TOKEN_COMPFUNCVALUE; }
+gt				{ yylval->intValue = CFV_GT; return TOKEN_COMPFUNCVALUE; }
 
-keep			{ yylval->intValue = 0; return TOKEN_OPVALUE; }
-zero			{ yylval->intValue = 1; return TOKEN_OPVALUE; }
-replace			{ yylval->intValue = 2; return TOKEN_OPVALUE; }
-incr			{ yylval->intValue = 3; return TOKEN_OPVALUE; }
-decr			{ yylval->intValue = 4; return TOKEN_OPVALUE; }
-incrwrap		{ yylval->intValue = 5; return TOKEN_OPVALUE; }
-decrwrap		{ yylval->intValue = 6; return TOKEN_OPVALUE; }
-invert			{ yylval->intValue = 7; return TOKEN_OPVALUE; }
-one				{ yylval->intValue = 8; return TOKEN_OPVALUE; }
-destcolor		{ yylval->intValue = 9; return TOKEN_OPVALUE; }
-srccolor		{ yylval->intValue = 10; return TOKEN_OPVALUE; }
-invdestcolor	{ yylval->intValue = 11; return TOKEN_OPVALUE; }
-invsrccolor		{ yylval->intValue = 12; return TOKEN_OPVALUE; }
-destalpha		{ yylval->intValue = 13; return TOKEN_OPVALUE; }
-srcalpha		{ yylval->intValue = 14; return TOKEN_OPVALUE; }
-invdestalpha	{ yylval->intValue = 15; return TOKEN_OPVALUE; }
-invsrcalpha		{ yylval->intValue = 16; return TOKEN_OPVALUE; }
+keep					{ yylval->intValue = OV_Keep; return TOKEN_OPVALUE; }
+zero					{ yylval->intValue = OV_Zero; return TOKEN_OPVALUE; }
+replace					{ yylval->intValue = OV_Replace; return TOKEN_OPVALUE; }
+increment				{ yylval->intValue = OV_Incr; return TOKEN_OPVALUE; }
+decrement				{ yylval->intValue = OV_Decr; return TOKEN_OPVALUE; }
+increment_wrap			{ yylval->intValue = OV_IncrWrap; return TOKEN_OPVALUE; }
+decrement_wrap			{ yylval->intValue = OV_DecrWrap; return TOKEN_OPVALUE; }
+invert					{ yylval->intValue = OV_Invert; return TOKEN_OPVALUE; }
+one						{ yylval->intValue = OV_One; return TOKEN_OPVALUE; }
+destinationRGB			{ yylval->intValue = OV_DestColor; return TOKEN_OPVALUE; }
+sourceRGB				{ yylval->intValue = OV_SrcColor; return TOKEN_OPVALUE; }
+destinationRGB_inverse	{ yylval->intValue = OV_InvDestColor; return TOKEN_OPVALUE; }
+sourceRGB_inverse		{ yylval->intValue = OV_InvSrcColor; return TOKEN_OPVALUE; }
+destinationA			{ yylval->intValue = OV_DestAlpha; return TOKEN_OPVALUE; }
+sourceA					{ yylval->intValue = OV_SrcAlpha; return TOKEN_OPVALUE; }
+destinationA_inverse	{ yylval->intValue = OV_InvDestAlpha; return TOKEN_OPVALUE; }
+sourceA_inverse			{ yylval->intValue = OV_InvSrcAlpha; return TOKEN_OPVALUE; }
 
-add				{ yylval->intValue = 0; return TOKEN_BLENDOPVALUE; }
-subtract		{ yylval->intValue = 1; return TOKEN_BLENDOPVALUE; }
-revsubtract		{ yylval->intValue = 2; return TOKEN_BLENDOPVALUE; }
-min				{ yylval->intValue = 3; return TOKEN_BLENDOPVALUE; }
-max				{ yylval->intValue = 4; return TOKEN_BLENDOPVALUE; }
+add					{ yylval->intValue = BOV_Add; return TOKEN_BLENDOPVALUE; }
+subtract			{ yylval->intValue = BOV_Subtract; return TOKEN_BLENDOPVALUE; }
+subtract_reverse	{ yylval->intValue = BOV_RevSubtract; return TOKEN_BLENDOPVALUE; }
+min					{ yylval->intValue = BOV_Min; return TOKEN_BLENDOPVALUE; }
+max					{ yylval->intValue = BOV_Max; return TOKEN_BLENDOPVALUE; }
 
 nocolor			{ yylval->intValue = 0x0; return TOKEN_COLORMASK; }
 R				{ yylval->intValue = 0x1; return TOKEN_COLORMASK; }
@@ -205,21 +205,21 @@ RBA				{ yylval->intValue = 0xD; return TOKEN_COLORMASK; }
 GBA				{ yylval->intValue = 0xE; return TOKEN_COLORMASK; }
 RGBA			{ yylval->intValue = 0xF; return TOKEN_COLORMASK; }
 
-wrap			{ yylval->intValue = 0; return TOKEN_ADDRMODEVALUE; }
-mirror			{ yylval->intValue = 1; return TOKEN_ADDRMODEVALUE; }
-clamp			{ yylval->intValue = 2; return TOKEN_ADDRMODEVALUE; }
-border			{ yylval->intValue = 3; return TOKEN_ADDRMODEVALUE; }
+wrap			{ yylval->intValue = AMV_Wrap; return TOKEN_ADDRMODEVALUE; }
+mirror			{ yylval->intValue = AMV_Mirror; return TOKEN_ADDRMODEVALUE; }
+clamp			{ yylval->intValue = AMV_Clamp; return TOKEN_ADDRMODEVALUE; }
+border			{ yylval->intValue = AMV_Border; return TOKEN_ADDRMODEVALUE; }
 
-nofilter		{ yylval->intValue = 0; return TOKEN_FILTERVALUE; }
-point			{ yylval->intValue = 1; return TOKEN_FILTERVALUE; }
-linear			{ yylval->intValue = 2; return TOKEN_FILTERVALUE; }
-anisotropic		{ yylval->intValue = 3; return TOKEN_FILTERVALUE; }
-pointcmp		{ yylval->intValue = 4; return TOKEN_FILTERVALUE; }
-linearcmp		{ yylval->intValue = 5; return TOKEN_FILTERVALUE; }
-anisotropiccmp	{ yylval->intValue = 6; return TOKEN_FILTERVALUE; }
+nofilter		{ yylval->intValue = FV_None; return TOKEN_FILTERVALUE; }
+point			{ yylval->intValue = FV_Point; return TOKEN_FILTERVALUE; }
+linear			{ yylval->intValue = FV_Linear; return TOKEN_FILTERVALUE; }
+anisotropic		{ yylval->intValue = FV_Anisotropic; return TOKEN_FILTERVALUE; }
+point_cmp		{ yylval->intValue = FV_PointCmp; return TOKEN_FILTERVALUE; }
+linear_cmp		{ yylval->intValue = FV_LinearCmp; return TOKEN_FILTERVALUE; }
+anisotropic_cmp	{ yylval->intValue = FV_AnisotropicCmp; return TOKEN_FILTERVALUE; }
 
-static			{ yylval->intValue = 0; return TOKEN_BUFFERUSAGE; }
-dynamic			{ yylval->intValue = 1; return TOKEN_BUFFERUSAGE; }
+static			{ yylval->intValue = BUV_Static; return TOKEN_BUFFERUSAGE; }
+dynamic			{ yylval->intValue = BUV_Dynamic; return TOKEN_BUFFERUSAGE; }
 
 {COMMENT}		{ }
 {IDENTIFIER}	{ yylval->strValue = mmalloc_strdup(yyextra->memContext, yytext); return TOKEN_IDENTIFIER; }

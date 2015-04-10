@@ -180,7 +180,7 @@ namespace BansheeEngine
 		HShader mShaderDummy;
 
 		WString mActiveShaderSubFolder;
-		String mActiveRenderSystem;
+		StringID mActiveRenderSystem;
 
 		static const Path DefaultSkinFolderRaw;
 		static const Path DefaultCursorFolderRaw;

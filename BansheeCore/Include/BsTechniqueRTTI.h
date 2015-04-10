@@ -9,11 +9,11 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT TechniqueRTTI : public RTTIType<Technique, IReflectable, TechniqueRTTI>
 	{
 	private:
-		String& getRenderSystem(Technique* obj) { return obj->mRenderSystem; }
-		void setRenderSystem(Technique* obj, String& val) { obj->mRenderSystem = val; } 
+		StringID& getRenderSystem(Technique* obj) { return obj->mRenderAPI; }
+		void setRenderSystem(Technique* obj, StringID& val) { obj->mRenderAPI = val; }
 
-		String& getRenderer(Technique* obj) { return obj->mRenderer; }
-		void setRenderer(Technique* obj, String& val) { obj->mRenderer = val; } 
+		StringID& getRenderer(Technique* obj) { return obj->mRenderer; }
+		void setRenderer(Technique* obj, StringID& val) { obj->mRenderer = val; }
 
 		PassPtr getPass(Technique* obj, UINT32 idx)
 		{

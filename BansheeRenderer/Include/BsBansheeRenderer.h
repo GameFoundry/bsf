@@ -8,14 +8,12 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Semantics that may be used for signaling the renderer
-	 *			for what is a certain shader parameter used for.
+	 * Semantics that may be used for signaling the renderer
+	 * for what is a certain shader parameter used for.
 	 */
-	enum BansheeRendererParamSemantic
-	{
-		RPS_Time = 1000,
-		RPS_LightDir = 1001
-	};
+
+	static StringID RPS_Time = "Time";
+	static StringID RPS_LightDir = "LightDir";
 
 	/**
 	 * @brief	Default renderer for Banshee. Performs frustum culling, sorting and 
@@ -59,7 +57,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	Renderer::getName
 		 */
-		virtual const String& getName() const;
+		virtual const StringID& getName() const;
 
 		/**
 		 * @copydoc	Renderer::renderAll

@@ -23,7 +23,7 @@ void mmalloc_free_context(void* context)
 {
 	MMAllocHeader* header = (MMAllocHeader*)context;
 	while (header->next != 0)
-		mmfree(header->next);
+		mmfree((char*)header->next + sizeof(MMAllocHeader));
 
 	free(header);
 }
@@ -59,7 +59,7 @@ void mmfree(void* ptr)
 	free(buffer);
 }
 
-char* mmalloc_strdup(void* context, char* input)
+char* mmalloc_strdup(void* context, const char* input)
 {
 	size_t length = strlen(input);
 	char* output = mmalloc(context, (int)(sizeof(char) * (length + 1)));

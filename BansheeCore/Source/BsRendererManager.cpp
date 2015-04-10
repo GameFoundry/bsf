@@ -35,12 +35,6 @@ namespace BansheeEngine
 		}
 	}
 
-	const String& RendererManager::getCoreRendererName()
-	{
-		static String name = "CoreRenderer";
-		return name;
-	}
-
 	void RendererManager::_registerFactory(RendererFactoryPtr factory)
 	{
 		assert(factory != nullptr);

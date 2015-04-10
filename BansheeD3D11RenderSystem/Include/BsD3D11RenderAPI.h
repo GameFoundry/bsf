@@ -18,7 +18,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RenderAPICore::getName
 		 */
-		const String& getName() const;
+		const StringID& getName() const;
 		
 		/**
 		 * @copydoc RenderAPICore::getShadingLanguageName

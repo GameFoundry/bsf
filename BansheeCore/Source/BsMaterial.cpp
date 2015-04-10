@@ -329,7 +329,7 @@ namespace BansheeEngine
 			auto iterFind = shaderDesc.find(*iter);
 			if (iterFind != shaderDesc.end())
 			{
-				shaderBlockDesc.create = !iterFind->second.shared && iterFind->second.rendererSemantic == 0;
+				shaderBlockDesc.create = !iterFind->second.shared && iterFind->second.rendererSemantic == StringID::NONE;
 				shaderBlockDesc.usage = iterFind->second.usage;
 			}
 

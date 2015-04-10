@@ -859,7 +859,7 @@ namespace BansheeEngine
 		passDesc.depthStencilState = depthState;
 
 		PassPtr newPass = Pass::create(passDesc);
-		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass });
+		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererAny, { newPass });
 
 		SHADER_DESC shaderDesc;
 		shaderDesc.addParameter("worldTransform", "worldTransform", GPDT_MATRIX_4X4);
@@ -902,7 +902,7 @@ namespace BansheeEngine
 		passDesc.depthStencilState = depthState;
 
 		PassPtr newPass = Pass::create(passDesc);
-		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass });
+		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererAny, { newPass });
 
 		SHADER_DESC shaderDesc;
 		shaderDesc.addParameter("worldTransform", "worldTransform", GPDT_MATRIX_4X4);
@@ -935,7 +935,7 @@ namespace BansheeEngine
 		passDesc.depthStencilState = depthState;
 
 		PassPtr newPass = Pass::create(passDesc);
-		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass });
+		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererAny, { newPass });
 
 		SHADER_DESC shaderDesc;
 		shaderDesc.addParameter("worldTransform", "worldTransform", GPDT_MATRIX_4X4);
@@ -961,7 +961,7 @@ namespace BansheeEngine
 		passDesc.fragmentProgram = psProgram;
 
 		PassPtr newPass = Pass::create(passDesc);
-		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass });
+		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererAny, { newPass });
 
 		SHADER_DESC shaderDesc;
 		shaderDesc.addParameter("matWorldViewProj", "matWorldViewProj", GPDT_MATRIX_4X4);

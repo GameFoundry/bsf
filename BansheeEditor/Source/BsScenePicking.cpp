@@ -135,7 +135,7 @@ namespace BansheeEngine
 							const Map<String, SHADER_OBJECT_PARAM_DESC>& objectParams = originalMat->getShader()->getObjectParams();
 							for (auto& objectParam : objectParams)
 							{
-								if (objectParam.second.rendererSemantic == RPS_MainTex)
+								if (objectParam.second.rendererSemantic == RPS_Diffuse)
 								{
 									mainTexture = originalMat->getTexture(objectParam.first);
 									break;

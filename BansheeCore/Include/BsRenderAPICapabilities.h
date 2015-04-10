@@ -576,7 +576,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Get the identifier of the render system from which these capabilities were generated.
 		 */
-		String getRenderSystemName() const
+		StringID getRenderSystemName() const
 		{
 			return mRenderSystemName;
 		}
@@ -584,7 +584,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Set the identifier of the render system from which these capabilities were generated.
 		 */
-		void setRenderSystemName(const String& rs)
+		void setRenderSystemName(const StringID& rs)
 		{
 			mRenderSystemName = rs;
 		}
@@ -618,7 +618,7 @@ namespace BansheeEngine
 		// The name of the device as reported by the render system
 		String mDeviceName;
 		// The identifier associated with the render system for which these capabilities are valid
-		String mRenderSystemName;
+		StringID mRenderSystemName;
 
 		// The number of floating-point constants vertex programs support
 		UINT16 mVertexProgramConstantFloatCount = 0;

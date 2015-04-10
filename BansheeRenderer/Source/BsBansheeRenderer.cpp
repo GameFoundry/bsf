@@ -34,9 +34,9 @@ using namespace std::placeholders;
 
 namespace BansheeEngine
 {
-	const String& BansheeRenderer::getName() const
+	const StringID& BansheeRenderer::getName() const
 	{
-		static String name = "BansheeRenderer";
+		static StringID name = "BansheeRenderer";
 		return name;
 	}
 
@@ -378,7 +378,7 @@ namespace BansheeEngine
 
 	SPtr<ShaderCore> BansheeRenderer::createDefaultShader()
 	{
-		String rsName = RenderAPICore::instance().getName();
+		StringID rsName = RenderAPICore::instance().getName();
 
 		SPtr<GpuProgramCore> vsProgram;
 		SPtr<GpuProgramCore> psProgram;

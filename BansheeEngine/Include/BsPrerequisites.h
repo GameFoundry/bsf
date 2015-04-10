@@ -23,11 +23,10 @@
 
 namespace BansheeEngine
 {
-	static const String RenderAPIDX9 = "D3D9RenderAPI";
-	static const String RenderAPIDX11 = "D3D11RenderAPI";
-	static const String RenderAPIOpenGL = "GLRenderAPI";
-	static const String RendererDefault = "BansheeRenderer";
-	static const String RendererInvariant = "CoreRenderer";
+	static const StringID RenderAPIDX9 = "D3D9RenderAPI";
+	static const StringID RenderAPIDX11 = "D3D11RenderAPI";
+	static const StringID RenderAPIOpenGL = "GLRenderAPI";
+	static const StringID RendererDefault = "BansheeRenderer";
 
 	class VirtualButton;
 	class VirtualInput;

@@ -167,7 +167,7 @@ namespace BansheeEngine
 
 		RenderSystemPlugin mRenderSystemPlugin;
 		WString mActiveShaderSubFolder;
-		String mActiveRenderSystem;
+		StringID mActiveRenderSystem;
 
 		HShader mShaderDockOverlay;
 		HShader mShaderSceneGrid;

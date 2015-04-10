@@ -15,7 +15,8 @@ namespace BansheeEngine
 
 	}
 
-	void SHADER_DESC::addParameter(const String& name, const String& gpuVariableName, GpuParamDataType type, UINT32 rendererSemantic, UINT32 arraySize, UINT32 elementSize)
+	void SHADER_DESC::addParameter(const String& name, const String& gpuVariableName, GpuParamDataType type, 
+		StringID rendererSemantic, UINT32 arraySize, UINT32 elementSize)
 	{
 		if(type == GPDT_STRUCT && elementSize <= 0)
 			BS_EXCEPT(InvalidParametersException, "You need to provide a non-zero element size for a struct parameter.")
@@ -32,7 +33,7 @@ namespace BansheeEngine
 		objectParams.erase(name);
 	}
 
-	void SHADER_DESC::addParameter(const String& name, const String& gpuVariableName, GpuParamObjectType type, UINT32 rendererSemantic)
+	void SHADER_DESC::addParameter(const String& name, const String& gpuVariableName, GpuParamObjectType type, StringID rendererSemantic)
 	{
 		auto iterFind = objectParams.find(name);
 
@@ -71,7 +72,7 @@ namespace BansheeEngine
 		dataParams.erase(name);
 	}
 
-	void SHADER_DESC::setParamBlockAttribs(const String& name, bool shared, GpuParamBlockUsage usage, UINT32 rendererSemantic)
+	void SHADER_DESC::setParamBlockAttribs(const String& name, bool shared, GpuParamBlockUsage usage, StringID rendererSemantic)
 	{
 		SHADER_PARAM_BLOCK_DESC desc;
 		desc.name = name;

@@ -2,6 +2,7 @@
 
 #include "BsCorePrerequisites.h"
 #include "BsResource.h"
+#include "BsStringID.h"
 
 namespace BansheeEngine
 {
@@ -15,7 +16,7 @@ namespace BansheeEngine
 		String name;
 		String gpuVariableName;
 		GpuParamDataType type;
-		UINT32 rendererSemantic;
+		StringID rendererSemantic;
 		UINT32 arraySize;
 		UINT32 elementSize;
 	};
@@ -29,7 +30,7 @@ namespace BansheeEngine
 	{
 		String name;
 		Vector<String> gpuVariableNames;
-		UINT32 rendererSemantic;
+		StringID rendererSemantic;
 		GpuParamObjectType type;
 	};
 
@@ -40,7 +41,7 @@ namespace BansheeEngine
 	{
 		String name;
 		bool shared;
-		UINT32 rendererSemantic;
+		StringID rendererSemantic;
 		GpuParamBlockUsage usage;
 	};
 
@@ -67,7 +68,7 @@ namespace BansheeEngine
 		 * @param	elementSize	   	 (optional) Size of an individual element in the array, in bytes. You only need to set this if you are setting variable
 		 * 							 length parameters, like structs.
 		 */
-		void addParameter(const String& name, const String& gpuVariableName, GpuParamDataType type, UINT32 rendererSemantic = 0,
+		void addParameter(const String& name, const String& gpuVariableName, GpuParamDataType type, StringID rendererSemantic = StringID::NONE,
 			UINT32 arraySize = 1, UINT32 elementSize = 0);
 
 		/**
@@ -87,7 +88,7 @@ namespace BansheeEngine
 		 * @note	Mapping multiple GPU variables to a single parameter is useful when you are defining a shader that supports techniques across different render
 		 *			systems where GPU variable names for the same parameters might differ.
 		 */
-		void addParameter(const String& name, const String& gpuVariableName, GpuParamObjectType type, UINT32 rendererSemantic = 0);
+		void addParameter(const String& name, const String& gpuVariableName, GpuParamObjectType type, StringID rendererSemantic = StringID::NONE);
 
 		/**
 		 * @brief	Changes parameters of a parameter block with the specified name.
@@ -104,7 +105,7 @@ namespace BansheeEngine
 		 *							 buffer and you will need to respect them. If you don't respect them your shader will be deemed incompatible and won't be used. 
 		 *							 Value of 0 signifies the parameter block is not used by the renderer.
 		 */
-		void setParamBlockAttribs(const String& name, bool shared, GpuParamBlockUsage usage, UINT32 rendererSemantic = 0);
+		void setParamBlockAttribs(const String& name, bool shared, GpuParamBlockUsage usage, StringID rendererSemantic = StringID::NONE);
 
 		/**
 		 * @brief	sorting type to use when performing sort in the render queue. Default value is sort front to back

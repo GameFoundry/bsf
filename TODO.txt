@@ -109,146 +109,54 @@ C# material interface:
 
 --------
 
-Questions:
- - How to deal with sampler states? Allow default ones in shader?
-   - Yes, allow default ones. Plus allow sampler states to be tweaked from Material directly (without separate SamplerState class)
- - PRoblem where DX9 requires sampler to have the same name as texture, but DX11 has them separate. For now go with DX11 approach
-   where you need to define the sampler separately, potentially allow "alias()" attribute so the system knows to look for other names.
+Include files:
+ - Remove references to HGpuProgInclude when creating a GpuProgram
+  - Keep using HGpuProgInclude since I need a special resource for includes (I don't want the importer to think 
+     they're Shaders, plus I can avoid making a special case for them in the parser)
+ - Instead try to find and load included shader files in BansheeSL by calling Resources
+  - If resource cannot be found ignore it, but still register it as a dependency
+ - All includes should be registered in ShaderManager
+  - Whenever a shader is loaded this should be notified so it may recompile all shaders
+ - GpuProgram::recompile(newSource)
+   - TODO - Need info
 
-Check D:\ExampleBFX.txt for an example effects file
+ShaderManager will also be needed when I'm changing shader defines
+ - TODO - Test shaders and ensure #defines work
+  - DX11 might need to call D3DPreprocess and include a list of defines
+ - GLSL - Need to manually specify #defines as separate lines
 
-How to deal with includes?
- - You can do Include = "Path/to/CommonShader"
-   - Path is relative to executable
- - CommonShader might not contain any techniques or passes, but instead just code.
-  - It can use special Include & Code {} tags that allow it to specify various code
-    for some language
- - How does the runtime resolve those shaders?
-  - They are only resolved during import, after which just resource references are kept (i.e. its GUIDs)
-  - The runtime should then be able to resolve the GUIDs easily
-
-VALID KEYWORDS:
-<<RasterizerState>>
-Fill = Wire/Solid
-Cull = None/CW/CCW
-DepthBias = float
-ScaledDepthBias = float
-DepthClip = bool
-Scissor = bool
-Multisample = bool
-AALine = bool
-
-<<DepthStencilState>>
-DepthRead = bool
-DepthWrite = bool
-CompareFunc = Fail/Pass/Less/LessEqual/Equal/NotEqual/GreaterEqual/Greater
-Stencil = bool
-StencilReadMask = byte
-StencilWriteMask = byte
-StencilOpFront = <StencilOp>
-StencilOpBack = <StencilOp>
-
-<<StencilOp>>
-Fail = Keep/Zero/Replace/Increment/Decrement/IncrementWrap/DecrementWrap/Invert,
-ZFail = Keep/Zero/Replace/Increment/Decrement/IncrementWrap/DecrementWrap/Invert,
-Pass = Keep/Zero/Replace/Increment/Decrement/IncrementWrap/DecrementWrap/Invert,
-CompFunc = Fail/Pass/Less/LessEqual/Equal/NotEqual/GreaterEqual/Greater
-
-<<BlendState>>
-AlphaToCoverage = bool
-IndependantBlend = bool
-PerTarget = <TargetBlendState>
-
-<<TargetBlendState>>
-Index = int (0 to 7)
-Blend = bool
-Color = <BlendDefinition>
-Alpha = <BlendDefinition>
-WriteMask = R/G/B/A/RG/RB/RA/GB/GA/BA/RGB/RGA/RBA/GBA/RGBA;
-
-<<BlendDefinition>>
-Source = One/Zero/DestColor/SrcColor/InvDestColor/InvSourceColor/DestAlpha/SrcAlpha/InvDestAlpha/InvSrcAlpha
-Dest  = One/Zero/DestColor/SrcColor/InvDestColor/InvSourceColor/DestAlpha/SrcAlpha/InvDestAlpha/InvSrcAlpha
-Op = Add/Subtract/RevereSubtract/Min/Max
-
-<<SamplerState>>
-AddressingMode =
-{ u = Wrap/Mirror/Clamp/Border,
-  v = Wrap/Mirror/Clamp/Border,
-  w = Wrap/Mirror/Clamp/Border
-}
-MinFilter = None/Point/Linear/Anisotropic/PointComp/LinearComp/AnisotropicComp
-MagFilter = None/Point/Linear/Anisotropic/PointComp/LinearComp/AnisotropicComp
-MipFilter = None/Point/Linear/Anisotropic/PointComp/LinearComp/AnisotropicComp
-MaxAniso = int
-MipmapBias = float
-MipMin = float
-MipMax = float
-BorderColor = <Color>
-ComparisonFunc = Fail/Pass/Less/LessEqual/Equal/NotEqual/GreaterEqual/Greater
-
-<<Color>>
-R = float
-G = float
-B = float
-A = float
-
-Other types
-float, int, bool, float2, float3, float4, mat2x2, mat2x3, mat2x4, mat3x2, mat3x3, mat3x4, mat4x2, mat4x3, mat4x4
-
-FX types:
-<<Shader>>
-Separable = bool
-Queue = int
-Priority = int
-Parameters = <ParamDef>
-Blocks = <BlockDef>
-Technique = <TechniqueDef>
-
-<<ParamDef>>
-Type name (: option)* (= block | literal);
-
-<<BlockDef>>
-Block name (: option)*;
-
-<<TechniqueDef>>
-Renderer = string (default strings recognized: "Any", "Default")
-Language = string (default strings recognized: "HLSL9", "HLSL11", "GLSL", "HLSL"(11))
-Include = string
-Pass = <PassDef> 
-
-<<PassDef>>
-Rasterizer/DepthStencil/Blend state options as above
-Vertex = code
-Fragment = code
-Geometry = code
-Hull = code
-Domain = code
-Compute = code
+ShaderManager will also be needed when switching render APIs during runtime (if that will be possible)
+ - It can also serve as a place where we perform shader caching
 
 -------------------
 
-TODO:
- - Test the example shader and ensure parameters/blocks/qualifiers/default values and nested nodes work properly
- - Stencil read and write masks don't accept binary masks but instead raw integers
- - Code blocks (e.g. vertex/fragment/etc)
- - In lexer I use numbers to identify different values, but use enums instead so I can use the same ones when parsing AST
- - Generate Shader from parsed AST
- - Make sure includes are handled properly
- - Make sure default values are handled properly
- - POssible way to handle code blocks: http://flex.sourceforge.net/manual/Start-Conditions.html
- - When replacing code blocks make sure to replace them with empty lines so that line numbers stay valid when reporting errors
- -----
+TODO STAGE 1:
+ - Testing:
+   - If there are any new problems due to semantic and techniques using StringID
+
+TODO STAGE 2:
+ - Handle include files (include files should just be plain text files with no additional parsing)
+  - When includes that shaders depend on are imported/changes I need to recompile those shaders
+    - Whenever a GPU program is created it registers itself with a manager and sets up the includes it relies on
+	- Whenever .shader import is called, it scans through all includes and finds out if any shaders depend on them
+	  - If so, it performs a recompile on those shaders
+  - Currently I handle includes on a pretty low level. Maybe I should handle them in BansheeSL instead? (Directly injecting the include code into the source code)
+  - How to handle parsing of include .shader files? They don't need techniques or passes.
+ - Handle default values (ignore default values for shared param blocks for now)
+   - additional argument in Shader::addParameter, copy values to buffers when initializing Material
+ - Make sure shader saving works and optionally make GpuProgram a non-resource
+  - Make sure GPU programs and states are saved with the Shader
+
+TODO STAGE 3:
  - Move all builtin shaders to the new .shader file model
- - Optionally change how GpuPrograms are saved
- - Save the test shader somewhere so I can use it as a unit test
-  - test shader is missing code blocks
- - Need a decent way to report syntax errors (at minimum a line and column where it happened)
-  - Later on I'd like a better system that actually tells the user something about the problem, other than just "syntax error"
- -----
+ - Store example shader somewhere in Banshee data so I can use it for easy testing.
+
+TODO LATER:
  - Add GpuProgram caching (e.g. save compiled programs somewhere for later use)
  - Consider adding restrictions on parameter ranges (probably via an additional qualifier)
  - Parameter definitions don't support arrays (Leave this for a later iteration)
+ - Parameter definitions don't support structs
+ - Better error reporting instead of just "syntax error" that better informs the user what the error is
 
 ----------------------------------------------------------------------
 Scene View

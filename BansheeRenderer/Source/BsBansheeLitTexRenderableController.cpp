@@ -149,18 +149,12 @@ namespace BansheeEngine
 
 		for (auto& paramBlockDesc : paramBlockDescs)
 		{
-			switch (paramBlockDesc.second.rendererSemantic)
-			{
-			case RBS_Static:
+			if (paramBlockDesc.second.rendererSemantic == RBS_Static)
 				staticBlockName = paramBlockDesc.second.name;
-				break;
-			case RBS_PerFrame:
+			else if(paramBlockDesc.second.rendererSemantic == RBS_PerFrame)
 				perFrameBlockName = paramBlockDesc.second.name;
-				break;
-			case RBS_PerObject:
+			else if (paramBlockDesc.second.rendererSemantic == RBS_PerObject)
 				perObjectBlockName = paramBlockDesc.second.name;
-				break;
-			}
 		}
 
 		for (auto& paramDesc : dataParamDescs)
@@ -275,7 +269,7 @@ namespace BansheeEngine
 
 	SPtr<ShaderCore> LitTexRenderableController::createDefaultShader()
 	{
-		String rsName = RenderAPICore::instance().getName();
+		StringID rsName = RenderAPICore::instance().getName();
 
 		SPtr<GpuProgramCore> vsProgram;
 		SPtr<GpuProgramCore> psProgram;

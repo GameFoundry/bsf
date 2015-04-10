@@ -3,34 +3,29 @@
 #include "BsCorePrerequisites.h"
 #include "BsGameObject.h"
 #include "BsEvent.h"
+#include "BsStringID.h"
 
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Available parameter block semantics that allow the renderer to identify
-	 *			the use of a GPU program parameter block specified in a shader.
+	 * Available parameter block semantics that allow the renderer to identify
+	 * the use of a GPU program parameter block specified in a shader.
 	 */
-	enum RendererBlockSemantic
-	{
-		// 0 - Reserved
-		RBS_Static = 1,
-		RBS_PerCamera = 2,
-		RBS_PerFrame = 3,
-		RBS_PerObject = 4
-	};
+
+	static StringID RBS_Static = "Static";
+	static StringID RBS_PerCamera = "PerCamera";
+	static StringID RBS_PerFrame = "PerFrame";
+	static StringID RBS_PerObject = "PerObject";
 
 	/**
-	 * @brief	Available parameter semantics that allow the renderer to identify
-	 *			the use of a GPU parameter specified in a shader.
+	 * Available parameter semantics that allow the renderer to identify
+	 * the use of a GPU parameter specified in a shader.
 	 */
-	enum RendererParamSemantic
-	{
-		// 0 - Reserved
-		RPS_WorldViewProjTfrm = 1,
-		RPS_ViewProjTfrm = 2,
-		RPS_WorldTfrm = 3,
-		RPS_MainTex = 4
-	};
+
+	static StringID RPS_WorldViewProjTfrm = "WVP";
+	static StringID RPS_ViewProjTfrm = "VP";
+	static StringID RPS_WorldTfrm = "World";
+	static StringID RPS_Diffuse = "Diffuse";
 
 	/**
 	 * @brief	Primarily rendering class that allows you to specify how to render objects that exist
@@ -62,7 +57,7 @@ namespace BansheeEngine
 		 * @brief	Name of the renderer. Used by materials to find 
 		 * 			an appropriate technique for this renderer.
 		 */
-		virtual const String& getName() const = 0;
+		virtual const StringID& getName() const = 0;
 
 		/**
 		 * @brief	Called in order to render all currently active cameras.

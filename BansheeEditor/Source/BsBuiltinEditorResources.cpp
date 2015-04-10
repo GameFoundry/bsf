@@ -1410,7 +1410,7 @@ namespace BansheeEngine
 		passDesc.depthStencilState = depthState;
 
 		PassPtr newPass = Pass::create(passDesc);
-		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass });
+		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererAny, { newPass });
 
 		SHADER_DESC shaderDesc;
 		shaderDesc.addParameter("invViewportWidth", "invViewportWidth", GPDT_FLOAT1);
@@ -1455,7 +1455,7 @@ namespace BansheeEngine
 		passDesc.depthStencilState = depthStencilState;
 
 		PassPtr newPass = Pass::create(passDesc);
-		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass });
+		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererAny, { newPass });
 
 		SHADER_DESC shaderDesc;
 		shaderDesc.addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
@@ -1490,7 +1490,7 @@ namespace BansheeEngine
 
 		PassPtr newPass = Pass::create(passDesc);
 
-		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass });
+		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererAny, { newPass });
 
 		SHADER_DESC shaderDesc;
 		shaderDesc.addParameter("colorIndex", "colorIndex", GPDT_FLOAT4);
@@ -1518,7 +1518,7 @@ namespace BansheeEngine
 		passDesc.rasterizerState = rasterizerState;
 
 		PassPtr newPass = Pass::create(passDesc);
-		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass });
+		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererAny, { newPass });
 
 		SHADER_DESC shaderDesc;
 		shaderDesc.addParameter("mainTexSamp", "mainTexSamp", GPOT_SAMPLER2D);
@@ -1543,7 +1543,7 @@ namespace BansheeEngine
 		passDesc.fragmentProgram = psProgram;
 
 		PassPtr newPass = Pass::create(passDesc);
-		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass });
+		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererAny, { newPass });
 
 		SHADER_DESC shaderDesc;
 		shaderDesc.addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
@@ -1561,7 +1561,7 @@ namespace BansheeEngine
 		passDesc.fragmentProgram = psProgram;
 
 		PassPtr newPass = Pass::create(passDesc);
-		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass });
+		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererAny, { newPass });
 
 		SHADER_DESC shaderDesc;
 		shaderDesc.addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
@@ -1595,7 +1595,7 @@ namespace BansheeEngine
 		passDesc.blendState = blendState;
 
 		PassPtr newPass = Pass::create(passDesc);
-		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass });
+		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererAny, { newPass });
 
 		SHADER_DESC shaderDesc;
 		shaderDesc.addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
@@ -1629,7 +1629,7 @@ namespace BansheeEngine
 		passDesc.blendState = blendState;
 
 		PassPtr newPass = Pass::create(passDesc);
-		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass });
+		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererAny, { newPass });
 
 		SHADER_DESC shaderDesc;
 		shaderDesc.addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
@@ -1680,7 +1680,7 @@ namespace BansheeEngine
 
 		PassPtr newPass1 = Pass::create(pass1Desc);
 
-		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass0, newPass1 });
+		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererAny, { newPass0, newPass1 });
 
 		SHADER_DESC shaderDesc;
 		shaderDesc.addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
@@ -1707,7 +1707,7 @@ namespace BansheeEngine
 		passDesc.rasterizerState = rasterizerState;
 
 		PassPtr newPass = Pass::create(passDesc);
-		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass });
+		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererAny, { newPass });
 
 		SHADER_DESC shaderDesc;
 		shaderDesc.addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
@@ -1731,7 +1731,7 @@ namespace BansheeEngine
 		passDesc.rasterizerState = rasterizerState;
 
 		PassPtr newPass = Pass::create(passDesc);
-		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass });
+		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererAny, { newPass });
 
 		SHADER_DESC shaderDesc;
 		shaderDesc.addParameter("mainTexSamp", "mainTexSamp", GPOT_SAMPLER2D);
@@ -1771,7 +1771,7 @@ namespace BansheeEngine
 		passDesc.blendState = blendState;
 
 		PassPtr newPass = Pass::create(passDesc);
-		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererInvariant, { newPass });
+		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererAny, { newPass });
 
 		SHADER_DESC shaderDesc;
 		shaderDesc.addParameter("matWorldViewProj", "matWorldViewProj", GPDT_MATRIX_4X4);

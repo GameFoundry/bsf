@@ -18,7 +18,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT TechniqueBase
 	{
 	public:
-		TechniqueBase(const String& renderSystem, const String& renderer);
+		TechniqueBase(const StringID& renderAPI, const StringID& renderer);
 		virtual ~TechniqueBase() { }
 
 		/**
@@ -28,9 +28,8 @@ namespace BansheeEngine
 		bool isSupported() const;
 
 	protected:
-
-		String mRenderSystem;
-		String mRenderer;
+		StringID mRenderAPI;
+		StringID mRenderer;
 	};
 
 	/**
@@ -50,7 +49,7 @@ namespace BansheeEngine
 		typedef typename TPassType<Core>::Type PassType;
 		
 		TTechnique();
-		TTechnique(const String& renderSystem, const String& renderer, const Vector<SPtr<PassType>>& passes);
+		TTechnique(const StringID& renderAPI, const StringID& renderer, const Vector<SPtr<PassType>>& passes);
 		virtual ~TTechnique() { }
 
 		/**
@@ -75,12 +74,12 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT TechniqueCore : public CoreObjectCore, public TTechnique<true>
 	{
 	public:
-		TechniqueCore(const String& renderSystem, const String& renderer, const Vector<SPtr<PassCore>>& passes);
+		TechniqueCore(const StringID& renderAPI, const StringID& renderer, const Vector<SPtr<PassCore>>& passes);
 
 		/**
 		 * @brief	Creates a new technique.
 		 */
-		static SPtr<TechniqueCore> create(const String& renderSystem, const String& renderer, const Vector<SPtr<PassCore>>& passes);
+		static SPtr<TechniqueCore> create(const StringID& renderAPI, const StringID& renderer, const Vector<SPtr<PassCore>>& passes);
 	};
 
 	/**
@@ -91,7 +90,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT Technique : public IReflectable, public CoreObject, public TTechnique<false>
 	{
 	public:
-		Technique(const String& renderSystem, const String& renderer, const Vector<SPtr<Pass>>& passes);
+		Technique(const StringID& renderAPI, const StringID& renderer, const Vector<SPtr<Pass>>& passes);
 
 		/**
 		 * @brief	Retrieves an implementation of a technique usable only from the
@@ -102,7 +101,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates a new technique.
 		 */
-		static TechniquePtr create(const String& renderSystem, const String& renderer, const Vector<SPtr<Pass>>& passes);
+		static TechniquePtr create(const StringID& renderAPI, const StringID& renderer, const Vector<SPtr<Pass>>& passes);
 
 	protected:
 		/**

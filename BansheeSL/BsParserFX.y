@@ -36,7 +36,6 @@ void yyerror(YYLTYPE *locp, ParseState* parse_state, yyscan_t scanner, const cha
 %defines "BsParserFX.h"
 
 %define api.pure
-%debug
 %locations
 %lex-param { yyscan_t scanner }
 %parse-param { ParseState* parse_state }
@@ -120,6 +119,7 @@ void yyerror(YYLTYPE *locp, ParseState* parse_state, yyscan_t scanner, const cha
 
 	/* Pass keywords */
 %token	TOKEN_VERTEX TOKEN_FRAGMENT TOKEN_GEOMETRY TOKEN_HULL TOKEN_DOMAIN TOKEN_COMPUTE
+%token	TOKEN_STENCILREF
 
 %token	TOKEN_FILLMODE TOKEN_CULLMODE TOKEN_DEPTHBIAS TOKEN_SDEPTHBIAS
 %token	TOKEN_DEPTHCLIP TOKEN_SCISSOR TOKEN_MULTISAMPLE TOKEN_AALINE
@@ -150,6 +150,9 @@ void yyerror(YYLTYPE *locp, ParseState* parse_state, yyscan_t scanner, const cha
 %type <nodePtr>		pass_header;
 %type <nodeOption>	pass_statement;
 %type <nodeOption>	pass_option;
+
+%type <nodePtr>		code;
+%type <nodePtr>		code_header;
 
 %type <nodePtr>		stencil_op_front_header;
 %type <nodePtr>		stencil_op_back_header;
@@ -290,6 +293,7 @@ pass_body
 
 pass_statement
 	: pass_option
+	| code				{ $$.type = OT_Code; $$.value.nodePtr = $1; }
 	;
 
 pass_option
@@ -312,6 +316,56 @@ pass_option
 	| TOKEN_ALPHATOCOVERAGE '=' TOKEN_BOOLEAN ';'			{ $$.type = OT_AlphaToCoverage; $$.value.intValue = $3; }
 	| TOKEN_INDEPENDANTBLEND '=' TOKEN_BOOLEAN ';'			{ $$.type = OT_IndependantBlend; $$.value.intValue = $3; }
 	| target												{ $$.type = OT_Target; $$.value.nodePtr = $1; }
+	| TOKEN_STENCILREF '=' TOKEN_INTEGER ';'				{ $$.type = OT_StencilRef; $$.value.intValue = $3; }
+	;
+
+	/* Code blocks */
+
+code
+	: code_header '{' TOKEN_INDEX '=' TOKEN_INTEGER ';' '}' ';'
+	{
+		NodeOption index;
+		index.type = OT_Index; 
+		index.value.intValue = $5;
+
+		nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &index);
+
+		nodePop(parse_state); 
+		$$ = $1;
+	}
+	;
+
+code_header
+	: TOKEN_VERTEX '='
+		{ 
+			$$ = nodeCreate(parse_state->memContext, NT_Code); 
+			nodePush(parse_state, $$);
+		}
+	| TOKEN_FRAGMENT '='
+		{ 
+			$$ = nodeCreate(parse_state->memContext, NT_Code); 
+			nodePush(parse_state, $$);
+		}
+	| TOKEN_GEOMETRY '='
+		{ 
+			$$ = nodeCreate(parse_state->memContext, NT_Code); 
+			nodePush(parse_state, $$);
+		}
+	| TOKEN_HULL '='
+		{ 
+			$$ = nodeCreate(parse_state->memContext, NT_Code); 
+			nodePush(parse_state, $$);
+		}
+	| TOKEN_DOMAIN '='
+		{ 
+			$$ = nodeCreate(parse_state->memContext, NT_Code); 
+			nodePush(parse_state, $$);
+		}
+	| TOKEN_COMPUTE '='
+		{ 
+			$$ = nodeCreate(parse_state->memContext, NT_Code); 
+			nodePush(parse_state, $$);
+		}
 	;
 
 	/* Stencil op */
@@ -371,7 +425,7 @@ target_option
 	| TOKEN_BLEND '=' TOKEN_BOOLEAN ';'					{ $$.type = OT_Blend; $$.value.intValue = $3; }
 	| blend_color_header '{' blenddef_body '}' ';'		{ nodePop(parse_state); $$.type = OT_Color; $$.value.nodePtr = $1; }
 	| blend_alpha_header '{' blenddef_body '}' ';'		{ nodePop(parse_state); $$.type = OT_Alpha; $$.value.nodePtr = $1; }
-	| TOKEN_WRITEMASK '=' TOKEN_COLORMASK ';'			{ $$.type = OT_Index; $$.value.intValue = $3; }
+	| TOKEN_WRITEMASK '=' TOKEN_COLORMASK ';'			{ $$.type = OT_WriteMask; $$.value.intValue = $3; }
 	;
 
 	/* Blend definition */
@@ -748,5 +802,8 @@ qualifier
 
 void yyerror(YYLTYPE *locp, ParseState* parse_state, yyscan_t scanner, const char *msg) 
 { 
-	fprintf (stderr, "%s -- Line: %i Column: %i\n", msg, locp->first_line, locp->first_column);
+	parse_state->hasError = 1;
+	parse_state->errorLine = locp->first_line;
+	parse_state->errorColumn = locp->first_column;
+	parse_state->errorMessage = mmalloc_strdup(parse_state->memContext, msg);
 }

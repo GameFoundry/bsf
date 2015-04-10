@@ -86,9 +86,9 @@ namespace BansheeEngine
 
 	}
 
-	const String& GLRenderAPI::getName() const
+	const StringID& GLRenderAPI::getName() const
 	{
-		static String strName("GLRenderAPI");
+		static StringID strName("GLRenderAPI");
 		return strName;
 	}
 
