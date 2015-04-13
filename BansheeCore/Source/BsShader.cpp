@@ -311,11 +311,18 @@ namespace BansheeEngine
 
 	HShader Shader::create(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques)
 	{
+		ShaderPtr newShader = _createPtr(name, desc, techniques);
+
+		return static_resource_cast<Shader>(gResources()._createResourceHandle(newShader));
+	}
+
+	ShaderPtr Shader::_createPtr(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques)
+	{
 		ShaderPtr newShader = bs_core_ptr<Shader, PoolAlloc>(new (bs_alloc<Shader, PoolAlloc>()) Shader(name, desc, techniques));
 		newShader->_setThisPtr(newShader);
 		newShader->initialize();
 
-		return static_resource_cast<Shader>(gResources()._createResourceHandle(newShader));
+		return newShader;
 	}
 
 	ShaderPtr Shader::createEmpty()

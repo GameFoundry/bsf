@@ -264,6 +264,8 @@
     <ClInclude Include="BsLexerFX.h" />
     <ClInclude Include="BsParserFX.h" />
     <ClInclude Include="Include\BsASTFX.h" />
+    <ClInclude Include="Include\BsSLFXCompiler.h" />
+    <ClInclude Include="Include\BsSLImporter.h" />
     <ClInclude Include="Include\BsMMAlloc.h" />
     <ClInclude Include="Include\BsSLPrerequisites.h" />
   </ItemGroup>
@@ -282,6 +284,8 @@
     </ClCompile>
     <ClCompile Include="Source\BsASTFX.c" />
     <ClCompile Include="Source\BSMMAlloc.c" />
+    <ClCompile Include="Source\BsSLFXCompiler.cpp" />
+    <ClCompile Include="Source\BsSLImporter.cpp" />
     <ClCompile Include="Source\BsSLPlugin.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

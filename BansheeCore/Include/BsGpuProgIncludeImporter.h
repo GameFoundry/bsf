@@ -7,7 +7,7 @@ namespace BansheeEngine
 {
 	/**
 	 * @brief	Importer using for importing GPU program (i.e. shader) include files.
-	 * 			Include files are just text files ending with ".gpuinc" extension.
+	 * 			Include files are just text files ending with ".bsi" extension.
 	 */
 	class BS_CORE_EXPORT GpuProgIncludeImporter : public SpecificImporter
 	{

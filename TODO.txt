@@ -128,11 +128,10 @@ ShaderManager will also be needed when I'm changing shader defines
 ShaderManager will also be needed when switching render APIs during runtime (if that will be possible)
  - It can also serve as a place where we perform shader caching
 
--------------------
+ - Separate languages for DX9 and DX11
+ - If I import a shader that tries to compile for a language different than we have available, create a null GpuProgram
 
-TODO STAGE 1:
- - Testing:
-   - If there are any new problems due to semantic and techniques using StringID
+-------------------
 
 TODO STAGE 2:
  - Handle include files (include files should just be plain text files with no additional parsing)
@@ -149,7 +148,6 @@ TODO STAGE 2:
 
 TODO STAGE 3:
  - Move all builtin shaders to the new .shader file model
- - Store example shader somewhere in Banshee data so I can use it for easy testing.
 
 TODO LATER:
  - Add GpuProgram caching (e.g. save compiled programs somewhere for later use)

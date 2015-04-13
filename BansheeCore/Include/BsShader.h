@@ -299,10 +299,16 @@ namespace BansheeEngine
 		static bool isBuffer(GpuParamObjectType type);
 
 		/**
-		 * @brief	Returns an empty shader object with the specified name. Caller must register
-		 *			techniques with the shader before using it in a Material.
+		 * @brief	Creates a new shader resource using the provided descriptor and techniques.
 		 */
 		static HShader create(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques);
+
+		/**
+		 * @brief	Creates a new shader object using the provided descriptor and techniques.
+		 *
+		 * @note	Internal method.
+		 */
+		static ShaderPtr _createPtr(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques);
 
 		/**
 		 * @brief	Returns a shader object but doesn't initialize it.

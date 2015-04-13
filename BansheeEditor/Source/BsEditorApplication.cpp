@@ -175,6 +175,9 @@ namespace BansheeEngine
 		/* 								DEBUG CODE                      		*/
 		/************************************************************************/
 
+		HShader dummyParsedShader = Importer::instance().import<Shader>("..\\..\\..\\..\\Data\\Raw\\Engine\\Shaders\\DummyFX.bsl");
+		assert(dummyParsedShader != nullptr);
+
 		RenderAPICore* renderSystem = RenderAPICore::instancePtr();
 
 		HSceneObject testModelGO = SceneObject::create("TestMesh");
