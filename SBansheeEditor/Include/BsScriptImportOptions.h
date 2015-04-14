@@ -79,30 +79,6 @@ namespace BansheeEngine
 		ScriptFontImportOptions(MonoObject* instance);
 	};
 
-	class BS_SCR_BED_EXPORT ScriptGpuProgramImportOptions : public ScriptObject <ScriptGpuProgramImportOptions, ScriptImportOptionsBase>
-	{
-	public:
-		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "GpuProgramImportOptions")
-
-		static MonoObject* create();
-		static MonoObject* create(const SPtr<GpuProgramImportOptions>& options);
-
-	private:
-		SPtr<GpuProgramImportOptions> getGpuProgImportOptions();
-
-		static void internal_CreateInstance(MonoObject* instance);
-		static MonoString* internal_GetEntryPoint(ScriptGpuProgramImportOptions* thisPtr);
-		static void internal_SetEntryPoint(ScriptGpuProgramImportOptions* thisPtr, MonoString* value);
-		static GpuLanguage internal_GetLanguage(ScriptGpuProgramImportOptions* thisPtr);
-		static void internal_SetLanguage(ScriptGpuProgramImportOptions* thisPtr, GpuLanguage value);
-		static GpuProgramProfile internal_GetProfile(ScriptGpuProgramImportOptions* thisPtr);
-		static void internal_SetProfile(ScriptGpuProgramImportOptions* thisPtr, GpuProgramProfile value);
-		static GpuProgramType internal_GetType(ScriptGpuProgramImportOptions* thisPtr);
-		static void internal_SetType(ScriptGpuProgramImportOptions* thisPtr, GpuProgramType value);
-
-		ScriptGpuProgramImportOptions(MonoObject* instance);
-	};
-
 	class BS_SCR_BED_EXPORT ScriptScriptCodeImportOptions : public ScriptObject <ScriptScriptCodeImportOptions, ScriptImportOptionsBase>
 	{
 	public:

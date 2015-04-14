@@ -106,11 +106,9 @@ namespace BansheeEngine
 		return RenderStateManager::instance().getDefaultBlendState();
 	}
 
-	HBlendState BlendState::create(const BLEND_STATE_DESC& desc)
+	BlendStatePtr BlendState::create(const BLEND_STATE_DESC& desc)
 	{
-		BlendStatePtr blendStatePtr = RenderStateManager::instance().createBlendState(desc);
-
-		return static_resource_cast<BlendState>(gResources()._createResourceHandle(blendStatePtr));
+		return RenderStateManager::instance().createBlendState(desc);
 	}
 
 	/************************************************************************/

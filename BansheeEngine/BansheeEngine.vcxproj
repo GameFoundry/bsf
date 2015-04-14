@@ -286,7 +286,6 @@
     <ClInclude Include="Include\BsGUICommandEvent.h" />
     <ClInclude Include="Include\BsGUIContent.h" />
     <ClInclude Include="Include\BsGUIContextMenu.h" />
-    <ClInclude Include="Include\BsDebugDrawMaterialInfo.h" />
     <ClInclude Include="Include\BsGUIDropDownBox.h" />
     <ClInclude Include="Include\BsGUIDropDownBoxManager.h" />
     <ClInclude Include="Include\BsGUIDropDownHitBox.h" />

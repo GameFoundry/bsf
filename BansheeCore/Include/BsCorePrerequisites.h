@@ -304,7 +304,6 @@ namespace BansheeEngine
 		TID_SHADER_OBJECT_PARAM_DESC = 1036,
 		TID_SHADER_PARAM_BLOCK_DESC = 1047,
 		TID_ImportOptions = 1048,
-		TID_GpuProgramImportOptions = 1049,
 		TID_MaterialParamStruct = 1050,
 		TID_Font = 1051,
 		TID_FONT_DESC = 1052,
@@ -341,12 +340,7 @@ namespace BansheeEngine
 	typedef ResourceHandle<Resource> HResource;
 	typedef ResourceHandle<Texture> HTexture;
 	typedef ResourceHandle<Mesh> HMesh;
-	typedef ResourceHandle<GpuProgram> HGpuProgram;
 	typedef ResourceHandle<Material> HMaterial;
-	typedef ResourceHandle<SamplerState> HSamplerState;
-	typedef ResourceHandle<RasterizerState> HRasterizerState;
-	typedef ResourceHandle<DepthStencilState> HDepthStencilState;
-	typedef ResourceHandle<BlendState> HBlendState;
 	typedef ResourceHandle<GpuProgInclude> HGpuProgInclude;
 	typedef ResourceHandle<Font> HFont;
 	typedef ResourceHandle<Shader> HShader;

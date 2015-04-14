@@ -2,7 +2,8 @@
 
 #include "BsCorePrerequisites.h"
 #include "BsDrawOps.h"
-#include "BsResource.h"
+#include "BsCoreObject.h"
+#include "BsIReflectable.h"
 #include "BsGpuParamDesc.h"
 
 namespace BansheeEngine 
@@ -189,7 +190,7 @@ namespace BansheeEngine
 	 *
 	 * @note	Sim thread only.
 	 */
-	class BS_CORE_EXPORT GpuProgram : public Resource
+	class BS_CORE_EXPORT GpuProgram : public IReflectable, public CoreObject
 	{
 	public:
 		virtual ~GpuProgram() { }
@@ -247,15 +248,7 @@ namespace BansheeEngine
 		 * @param	includes	Optional includes to append to the source before compiling.
 		 * @param	requiresAdjacency	If true then adjacency information will be provided when rendering using this program.
 		 */
-		static HGpuProgram create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype,
-			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes = nullptr, bool requiresAdjacency = false);
-
-		/**
-		 * @copydoc	create
-		 *
-		 * @note	Internal method. For normal use call "create".
-		 */
-		static GpuProgramPtr _createPtr(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, 
+		static GpuProgramPtr create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype,
 			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes = nullptr, bool requiresAdjacency = false);
 
 	protected:

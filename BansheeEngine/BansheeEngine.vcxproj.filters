@@ -206,9 +206,6 @@
     <ClInclude Include="Include\BsGUIMaterialInfo.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsDebugDrawMaterialInfo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsScriptManager.h">
       <Filter>Header Files\Script</Filter>
     </ClInclude>

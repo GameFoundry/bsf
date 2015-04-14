@@ -517,7 +517,7 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 		{
 			new (&samplers[i]) SPtr<SamplerStateCore>();
 
-			if (mSamplerStates[i].isLoaded())
+			if (mSamplerStates[i] != nullptr)
 				samplers[i] = mSamplerStates[i]->getCore();
 			else
 				samplers[i] = nullptr;
@@ -532,12 +532,6 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 		{
 			if (mTextures[i] != nullptr)
 				resources.push_back(mTextures[i]);
-		}
-
-		for (UINT32 i = 0; i < mNumSamplerStates; i++)
-		{
-			if (mSamplerStates[i] != nullptr)
-				resources.push_back(mSamplerStates[i]);
 		}
 	}
 }

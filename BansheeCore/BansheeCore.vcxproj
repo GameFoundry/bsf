@@ -342,9 +342,6 @@
     <ClInclude Include="Include\BsGpuParams.h" />
     <ClInclude Include="Include\BsGpuProgInclude.h" />
     <ClInclude Include="Include\BsGpuProgram.h" />
-    <ClInclude Include="Include\BsGpuProgramImporter.h" />
-    <ClInclude Include="Include\BsGpuProgramImportOptions.h" />
-    <ClInclude Include="Include\BsGpuProgramImportOptionsRTTI.h" />
     <ClInclude Include="Include\BsGpuProgramRTTI.h" />
     <ClInclude Include="Include\BsHardwareBuffer.h" />
     <ClInclude Include="Include\BsHardwareBufferManager.h" />
@@ -457,8 +454,6 @@
     <ClCompile Include="Source\BsProfilerGPU.cpp" />
     <ClCompile Include="Source\BsGpuProgInclude.cpp" />
     <ClCompile Include="Source\BsGpuProgram.cpp" />
-    <ClCompile Include="Source\BsGpuProgramImporter.cpp" />
-    <ClCompile Include="Source\BsGpuProgramImportOptions.cpp" />
     <ClCompile Include="Source\BsGpuResourceData.cpp" />
     <ClCompile Include="Source\BsHardwareBufferManager.cpp" />
     <ClCompile Include="Source\BsGpuParam.cpp" />

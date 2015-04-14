@@ -10,7 +10,7 @@ namespace BansheeEngine
 	class BS_ED_EXPORT BuiltinEditorResources : public BansheeEngine::Module<BuiltinEditorResources>
 	{
 	public:
-		BuiltinEditorResources(RenderSystemPlugin activeRSPlugin);
+		BuiltinEditorResources();
 
 		const GUISkin& getSkin() const { return mSkin; }
 
@@ -94,11 +94,6 @@ namespace BansheeEngine
 		static HSpriteTexture getGUITexture(const WString& name);
 
 		/**
-		 * @brief	Loads a GPU program with the specified filename.
-		 */
-		HGpuProgram getGpuProgram(const WString& name);
-
-		/**
 		 * @brief	Imports a GUI skin texture with the specified filename.
 		 *			Saves the imported texture in engine-ready format in the corresponding
 		 *			output folder.
@@ -106,68 +101,9 @@ namespace BansheeEngine
 		static void importGUITexture(const WString& name);
 
 		/**
-		 * @brief	Loads and compiles a shader for dock overlay rendering.
+		 * @brief	Loads a shader with the specified filename
 		 */
-		void initDockDropOverlayShader();
-
-		/**
-		 * @brief	Loads and compiles a shader for scene grid rendering.
-		 */
-		void initSceneGridShader();
-
-		/**
-		 * @brief	Loads and compiles a shader used for scene picking (non alpha).
-		 */
-		void initPickingShader(CullingMode cullMode);
-
-		/**
-		 * @brief	Loads and compiles a shader used for scene picking (alpha).
-		 */
-		void initPickingAlphaShader(CullingMode cullMode);
-
-		/**
-		 * @brief	Loads and compiles a shader used for rendering wireframe gizmos.
-		 */
-		void initWireGizmoShader();
-
-		/**
-		 * @brief	Loads and compiles a shader used for rendering solid gizmos.
-		 */
-		void initSolidGizmoShader();
-
-		/**
-		 * @brief	Loads and compiles a shader used for rendering icon gizmos.
-		 */
-		void initIconGizmoShader();
-
-		/**
-		 * @brief	Loads and compiles a shader used for scene picking of non-transparent gizmos.
-		 */
-		void initGizmoPickingShader();
-
-		/**
-		 * @brief	Loads and compiles a shader used for scene picking of possibly transparent gizmos.
-		 */
-		void initGizmoPickingAlphaShader();
-
-		/**
-		 * @brief	Loads and compiles a shader used for rendering wireframe handles.
-		 */
-		void initWireHandleShader();
-
-		/**
-		 * @brief	Loads and compiles a shader used for rendering solid handles.
-		 */
-		void initSolidHandleShader();
-
-		/**
-		 * @brief	Loads and compiles a shader used for displaying selected objects.
-		 */
-		void initSelectionShader();
-
-		RenderSystemPlugin mRenderSystemPlugin;
-		WString mActiveShaderSubFolder;
-		StringID mActiveRenderSystem;
+		static HShader getShader(const WString& name);
 
 		HShader mShaderDockOverlay;
 		HShader mShaderSceneGrid;
@@ -323,27 +259,21 @@ namespace BansheeEngine
 		static const WString ProgressBarFillTex;
 		static const WString ProgressBarBgTex;
 
-		static const WString ShaderDockOverlayVSFile;
-		static const WString ShaderDockOverlayPSFile;
-		static const WString SceneGridVSFile;
-		static const WString SceneGridPSFile;
-		static const WString PickingVSFile;
-		static const WString PickingPSFile;
-		static const WString PickingAlphaVSFile;
-		static const WString PickingAlphaPSFile;
-		static const WString ShaderWireGizmoVSFile;
-		static const WString ShaderWireGizmoPSFile;
-		static const WString ShaderSolidGizmoVSFile;
-		static const WString ShaderSolidGizmoPSFile;
-		static const WString ShaderIconGizmo0VSFile;
-		static const WString ShaderIconGizmo0PSFile;
-		static const WString ShaderIconGizmo1VSFile;
-		static const WString ShaderIconGizmo1PSFile;
-		static const WString GizmoPickingVSFile;
-		static const WString GizmoPickingPSFile;
-		static const WString GizmoPickingAlphaVSFile;
-		static const WString GizmoPickingAlphaPSFile;
-		static const WString SelectionVSFile;
-		static const WString SelectionPSFile;
+		static const WString ShaderDockOverlayFile;
+		static const WString ShaderSceneGridFile;
+		static const WString ShaderPickingCullNoneFile;
+		static const WString ShaderPickingCullCWFile;
+		static const WString ShaderPickingCullCCWFile;
+		static const WString ShaderPickingAlphaCullNoneFile;
+		static const WString ShaderPickingAlphaCullCWFile;
+		static const WString ShaderPickingAlphaCullCCWFile;
+		static const WString ShaderWireGizmoFile;
+		static const WString ShaderSolidGizmoFile;
+		static const WString ShaderWireHandleFile;
+		static const WString ShaderSolidHandleFile;
+		static const WString ShaderIconGizmoFile;
+		static const WString ShaderGizmoPickingFile;
+		static const WString ShaderGizmoPickingAlphaFile;
+		static const WString ShaderSelectionFile;
 	};
 }

@@ -5,7 +5,8 @@
 #include "BsPixelUtil.h"
 #include "BsTexture.h"
 #include "BsColor.h"
-#include "BsResource.h"
+#include "BsIReflectable.h"
+#include "BsCoreObject.h"
 
 namespace BansheeEngine 
 {
@@ -132,7 +133,7 @@ namespace BansheeEngine
 	 *
 	 *			Sim thread.
 	 */
-	class BS_CORE_EXPORT SamplerState : public Resource
+	class BS_CORE_EXPORT SamplerState : public IReflectable, public CoreObject
     {
     public:
 		virtual ~SamplerState() {}
@@ -151,7 +152,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates a new sampler state using the provided descriptor structure.
 		 */
-		static HSamplerState create(const SAMPLER_STATE_DESC& desc);
+		static SamplerStatePtr create(const SAMPLER_STATE_DESC& desc);
 
 		/**
 		 * @brief	Returns the default sampler state.

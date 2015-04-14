@@ -178,7 +178,7 @@ namespace BansheeEngine
 	 * 			
 	 * @note	Blend states are immutable. Sim thread only.
 	 */
-	class BS_CORE_EXPORT BlendState : public Resource
+	class BS_CORE_EXPORT BlendState : public IReflectable, public CoreObject
 	{
 	public:
 		virtual ~BlendState() {}
@@ -197,7 +197,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates a new blend state using the specified blend state description structure.
 		 */
-		static HBlendState create(const BLEND_STATE_DESC& desc);
+		static BlendStatePtr create(const BLEND_STATE_DESC& desc);
 
 		/**
 		 * @brief	Returns the default blend state that you may use

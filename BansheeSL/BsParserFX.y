@@ -297,26 +297,28 @@ pass_statement
 	;
 
 pass_option
-	: TOKEN_FILLMODE '=' TOKEN_FILLMODEVALUE ';'			{ $$.type = OT_FillMode; $$.value.intValue = $3; }
-	| TOKEN_CULLMODE '=' TOKEN_CULLMODEVALUE ';'			{ $$.type = OT_CullMode; $$.value.intValue = $3; }
-	| TOKEN_DEPTHBIAS '=' TOKEN_FLOAT ';'					{ $$.type = OT_DepthBias; $$.value.floatValue = $3; }
-	| TOKEN_SDEPTHBIAS '=' TOKEN_FLOAT ';'					{ $$.type = OT_SDepthBias; $$.value.floatValue = $3; }
-	| TOKEN_DEPTHCLIP '=' TOKEN_BOOLEAN ';'					{ $$.type = OT_DepthClip; $$.value.intValue = $3; }
-	| TOKEN_SCISSOR '=' TOKEN_BOOLEAN ';'					{ $$.type = OT_Scissor; $$.value.intValue = $3; }
-	| TOKEN_MULTISAMPLE '=' TOKEN_BOOLEAN ';'				{ $$.type = OT_Multisample; $$.value.intValue = $3; }
-	| TOKEN_AALINE '=' TOKEN_BOOLEAN ';'					{ $$.type = OT_AALine; $$.value.intValue = $3; }
-	| TOKEN_DEPTHREAD '=' TOKEN_BOOLEAN ';'					{ $$.type = OT_DepthRead; $$.value.intValue = $3; }
-	| TOKEN_DEPTHWRITE '=' TOKEN_BOOLEAN ';'				{ $$.type = OT_DepthWrite; $$.value.intValue = $3; }
-	| TOKEN_COMPAREFUNC '=' TOKEN_COMPFUNCVALUE ';'			{ $$.type = OT_CompareFunc; $$.value.intValue = $3; }
-	| TOKEN_STENCIL '=' TOKEN_BOOLEAN ';'					{ $$.type = OT_Stencil; $$.value.intValue = $3; }
-	| TOKEN_STENCILREADMASK '=' TOKEN_INTEGER ';'			{ $$.type = OT_StencilReadMask; $$.value.intValue = $3; }
-	| TOKEN_STENCILWRITEMASK '=' TOKEN_INTEGER ';'			{ $$.type = OT_StencilWriteMask; $$.value.intValue = $3; }
-	| stencil_op_front_header '{' stencil_op_body '}' ';'	{ nodePop(parse_state); $$.type = OT_StencilOpFront; $$.value.nodePtr = $1; }
-	| stencil_op_back_header '{' stencil_op_body '}' ';'	{ nodePop(parse_state); $$.type = OT_StencilOpBack; $$.value.nodePtr = $1; }
-	| TOKEN_ALPHATOCOVERAGE '=' TOKEN_BOOLEAN ';'			{ $$.type = OT_AlphaToCoverage; $$.value.intValue = $3; }
-	| TOKEN_INDEPENDANTBLEND '=' TOKEN_BOOLEAN ';'			{ $$.type = OT_IndependantBlend; $$.value.intValue = $3; }
-	| target												{ $$.type = OT_Target; $$.value.nodePtr = $1; }
-	| TOKEN_STENCILREF '=' TOKEN_INTEGER ';'				{ $$.type = OT_StencilRef; $$.value.intValue = $3; }
+	: TOKEN_FILLMODE '=' TOKEN_FILLMODEVALUE ';'				{ $$.type = OT_FillMode; $$.value.intValue = $3; }
+	| TOKEN_CULLMODE '=' TOKEN_CULLMODEVALUE ';'				{ $$.type = OT_CullMode; $$.value.intValue = $3; }
+	| TOKEN_DEPTHBIAS '=' TOKEN_FLOAT ';'						{ $$.type = OT_DepthBias; $$.value.floatValue = $3; }
+	| TOKEN_SDEPTHBIAS '=' TOKEN_FLOAT ';'						{ $$.type = OT_SDepthBias; $$.value.floatValue = $3; }
+	| TOKEN_DEPTHCLIP '=' TOKEN_BOOLEAN ';'						{ $$.type = OT_DepthClip; $$.value.intValue = $3; }
+	| TOKEN_SCISSOR '=' TOKEN_BOOLEAN ';'						{ $$.type = OT_Scissor; $$.value.intValue = $3; }
+	| TOKEN_MULTISAMPLE '=' TOKEN_BOOLEAN ';'					{ $$.type = OT_Multisample; $$.value.intValue = $3; }
+	| TOKEN_AALINE '=' TOKEN_BOOLEAN ';'						{ $$.type = OT_AALine; $$.value.intValue = $3; }
+	| TOKEN_DEPTHREAD '=' TOKEN_BOOLEAN ';'						{ $$.type = OT_DepthRead; $$.value.intValue = $3; }
+	| TOKEN_DEPTHWRITE '=' TOKEN_BOOLEAN ';'					{ $$.type = OT_DepthWrite; $$.value.intValue = $3; }
+	| TOKEN_COMPAREFUNC '=' TOKEN_COMPFUNCVALUE ';'				{ $$.type = OT_CompareFunc; $$.value.intValue = $3; }
+	| TOKEN_STENCIL '=' TOKEN_BOOLEAN ';'						{ $$.type = OT_Stencil; $$.value.intValue = $3; }
+	| TOKEN_STENCILREADMASK '=' TOKEN_INTEGER ';'				{ $$.type = OT_StencilReadMask; $$.value.intValue = $3; }
+	| TOKEN_STENCILWRITEMASK '=' TOKEN_INTEGER ';'				{ $$.type = OT_StencilWriteMask; $$.value.intValue = $3; }
+	| stencil_op_front_header '{' stencil_op_body '}' ';'		{ nodePop(parse_state); $$.type = OT_StencilOpFront; $$.value.nodePtr = $1; }
+	| stencil_op_back_header '{' stencil_op_body '}' ';'		{ nodePop(parse_state); $$.type = OT_StencilOpBack; $$.value.nodePtr = $1; }
+	| stencil_op_front_header '{' stencil_op_body_init '}' ';'	{ nodePop(parse_state); $$.type = OT_StencilOpFront; $$.value.nodePtr = $1; }
+	| stencil_op_back_header '{' stencil_op_body_init '}' ';'	{ nodePop(parse_state); $$.type = OT_StencilOpBack; $$.value.nodePtr = $1; }
+	| TOKEN_ALPHATOCOVERAGE '=' TOKEN_BOOLEAN ';'				{ $$.type = OT_AlphaToCoverage; $$.value.intValue = $3; }
+	| TOKEN_INDEPENDANTBLEND '=' TOKEN_BOOLEAN ';'				{ $$.type = OT_IndependantBlend; $$.value.intValue = $3; }
+	| target													{ $$.type = OT_Target; $$.value.nodePtr = $1; }
+	| TOKEN_STENCILREF '=' TOKEN_INTEGER ';'					{ $$.type = OT_StencilRef; $$.value.intValue = $3; }
 	;
 
 	/* Code blocks */
@@ -386,6 +388,21 @@ stencil_op_back_header
 		}
 	;
 
+stencil_op_body_init
+	: TOKEN_OPVALUE ',' TOKEN_OPVALUE ',' TOKEN_OPVALUE ',' TOKEN_COMPFUNCVALUE
+		{
+			NodeOption fail; fail.type = OT_Fail; fail.value.intValue = $1;
+			NodeOption zfail; zfail.type = OT_ZFail; zfail.value.intValue = $3;
+			NodeOption pass; pass.type = OT_PassOp; pass.value.intValue = $5;
+			NodeOption cmp; cmp.type = OT_CompareFunc; cmp.value.intValue = $7;
+
+			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &fail);
+			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &zfail);
+			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &pass);
+			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &cmp);
+		}
+	;
+
 stencil_op_body
 	: /* empty */
 	| stencil_op_option stencil_op_body		{ nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$1); }
@@ -425,6 +442,8 @@ target_option
 	| TOKEN_BLEND '=' TOKEN_BOOLEAN ';'					{ $$.type = OT_Blend; $$.value.intValue = $3; }
 	| blend_color_header '{' blenddef_body '}' ';'		{ nodePop(parse_state); $$.type = OT_Color; $$.value.nodePtr = $1; }
 	| blend_alpha_header '{' blenddef_body '}' ';'		{ nodePop(parse_state); $$.type = OT_Alpha; $$.value.nodePtr = $1; }
+	| blend_color_header '{' blenddef_body_init '}' ';'		{ nodePop(parse_state); $$.type = OT_Color; $$.value.nodePtr = $1; }
+	| blend_alpha_header '{' blenddef_body_init '}' ';'		{ nodePop(parse_state); $$.type = OT_Alpha; $$.value.nodePtr = $1; }
 	| TOKEN_WRITEMASK '=' TOKEN_COLORMASK ';'			{ $$.type = OT_WriteMask; $$.value.intValue = $3; }
 	;
 
@@ -450,6 +469,19 @@ blenddef_body
 	| blenddef_option blenddef_body		{ nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$1); }
 	;
 
+blenddef_body_init
+	: TOKEN_OPVALUE ',' TOKEN_OPVALUE ',' TOKEN_BLENDOPVALUE
+		{
+			NodeOption src; src.type = OT_Source; src.value.intValue = $1;
+			NodeOption dst; dst.type = OT_Dest; dst.value.intValue = $3;
+			NodeOption op; op.type = OT_Op; op.value.intValue = $5;
+
+			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &src);
+			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &dst);
+			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &op);
+		}
+	;
+
 blenddef_option
 	: TOKEN_SOURCE '=' TOKEN_OPVALUE ';'					{ $$.type = OT_Source; $$.value.intValue = $3; }
 	| TOKEN_DEST '=' TOKEN_OPVALUE ';'						{ $$.type = OT_Dest; $$.value.intValue = $3; }
@@ -457,7 +489,6 @@ blenddef_option
 	;
 
 	/* Sampler state */
-
 
 sampler_state_body
 	: /* empty */
@@ -479,7 +510,8 @@ sampler_state_option
 
 	/* Addresing mode */
 addr_mode
-	: addr_mode_header '{' addr_mode_body '}' ';' { nodePop(parse_state); $$ = $1; }
+	: addr_mode_header '{' addr_mode_body '}' ';'		{ nodePop(parse_state); $$ = $1; }
+	| addr_mode_header '{' addr_mode_body_init '}' ';'	{ nodePop(parse_state); $$ = $1; }
 	;
 
 addr_mode_header
@@ -487,6 +519,19 @@ addr_mode_header
 		{ 
 			$$ = nodeCreate(parse_state->memContext, NT_AddrMode); 
 			nodePush(parse_state, $$);
+		}
+	;
+
+addr_mode_body_init
+	: TOKEN_ADDRMODEVALUE ',' TOKEN_ADDRMODEVALUE ',' TOKEN_ADDRMODEVALUE
+		{
+			NodeOption u; u.type = OT_U; u.value.intValue = $1;
+			NodeOption v; v.type = OT_V; v.value.intValue = $3;
+			NodeOption w; w.type = OT_W; w.value.intValue = $5;
+
+			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &u);
+			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &v);
+			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &w);
 		}
 	;
 

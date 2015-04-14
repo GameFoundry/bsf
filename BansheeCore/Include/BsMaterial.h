@@ -65,7 +65,7 @@ namespace BansheeEngine
 	template<> struct TGpuParamBlockBufferPtrType<true> { typedef SPtr<GpuParamBlockBufferCore> Type; };
 
 	template<bool Core> struct TGpuProgramType { };
-	template<> struct TGpuProgramType<false> { typedef HGpuProgram Type; };
+	template<> struct TGpuProgramType<false> { typedef GpuProgramPtr Type; };
 	template<> struct TGpuProgramType<true> { typedef SPtr<GpuProgramCore> Type; };
 
 	typedef TPassParameters<false> PassParameters;

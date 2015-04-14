@@ -6,12 +6,9 @@
 
 namespace BansheeEngine
 {
-	class BS_CORE_EXPORT GpuProgramRTTI : public RTTIType<GpuProgram, Resource, GpuProgramRTTI>
+	class BS_CORE_EXPORT GpuProgramRTTI : public RTTIType<GpuProgram, IReflectable, GpuProgramRTTI>
 	{
 	private:
-		UINT32& getSize(GpuProgram* obj) { return obj->mSize; }
-		void setSize(GpuProgram* obj, UINT32& val) { obj->mSize = val; }
-
 		GpuProgramType& getType(GpuProgram* obj) { return obj->mProperties.mType; }
 		void setType(GpuProgram* obj, GpuProgramType& val) { obj->mProperties.mType = val; }
 
@@ -33,7 +30,6 @@ namespace BansheeEngine
 	public:
 		GpuProgramRTTI()
 		{
-			addPlainField("mSize", 0, &GpuProgramRTTI::getSize, &GpuProgramRTTI::setSize);
 			addPlainField("mType", 2, &GpuProgramRTTI::getType, &GpuProgramRTTI::setType);
 			addPlainField("mNeedsAdjacencyInfo", 3, &GpuProgramRTTI::getNeedsAjdInfo, &GpuProgramRTTI::setNeedsAjdInfo);
 			addPlainField("mEntryPoint", 4, &GpuProgramRTTI::getEntryPoint, &GpuProgramRTTI::setEntryPoint);

@@ -57,17 +57,7 @@ namespace BansheeEngine
 
 		// DEBUG ONLY
 
-		HGpuProgram mFragProgRef;
-		HGpuProgram mVertProgRef;
-
 		HShader mTestShader;
-		TechniquePtr mNewTechniqueGL;
-		PassPtr mNewPassGL;
-		TechniquePtr mNewTechniqueDX;
-		PassPtr mNewPassDX;
-		TechniquePtr mNewTechniqueDX11;
-		PassPtr mNewPassDX11;
-
 		HMaterial mTestMaterial;
 		HTexture mTestTexRef;
 		HMesh mDbgMeshRef;

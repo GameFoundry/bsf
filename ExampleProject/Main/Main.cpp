@@ -46,12 +46,12 @@ namespace BansheeEngine
 	/**
 	 * Import mesh/texture/GPU programs used by the example.
 	 */
-	void importAssets(HMesh& model, HTexture& texture, HGpuProgram& fragmentGPUProg, HGpuProgram& vertexGPUProg);
+	void importAssets(HMesh& model, HTexture& texture, HShader& shader);
 
 	/**
 	 * Create a material used by our example model.
 	 */
-	HMaterial createMaterial(const HTexture& texture, const HGpuProgram& vertexGPUProg, const HGpuProgram& fragmentGPUProg);
+	HMaterial createMaterial(const HTexture& texture, const HShader& shader);
 
 	/**
 	 * Set up example scene objects.
@@ -129,8 +129,7 @@ namespace BansheeEngine
 {
 	Path exampleModelPath = "..\\..\\..\\..\\Data\\Examples\\Dragon.fbx";
 	Path exampleTexturePath = "..\\..\\..\\..\\Data\\Examples\\Dragon.tga";
-	Path exampleFragmentShaderPath = "..\\..\\..\\..\\Data\\Examples\\example_fs.gpuprog";
-	Path exampleVertexShaderPath = "..\\..\\..\\..\\Data\\Examples\\example_vs.gpuprog";
+	Path exampleShaderPath = "..\\..\\..\\..\\Data\\Examples\\Example.bsl";
 
 	GUIButton* toggleFullscreenButton = nullptr;
 	bool fullscreen = false;
@@ -151,18 +150,17 @@ namespace BansheeEngine
 	{
 		HMesh exampleModel;
 		HTexture exampleTexture;
-		HGpuProgram exampleFragmentGPUProg;
-		HGpuProgram exampleVertexGPUProg;
+		HShader exampleShader;
 
-		importAssets(exampleModel, exampleTexture, exampleFragmentGPUProg, exampleVertexGPUProg);
-		HMaterial exampleMaterial = createMaterial(exampleTexture, exampleVertexGPUProg, exampleFragmentGPUProg);
+		importAssets(exampleModel, exampleTexture, exampleShader);
+		HMaterial exampleMaterial = createMaterial(exampleTexture, exampleShader);
 
 		setUp3DScene(exampleModel, exampleMaterial);
 		setUpGUI();
 		setUpInput();
 	}
 
-	void importAssets(HMesh& model, HTexture& texture, HGpuProgram& fragmentGPUProg, HGpuProgram& vertexGPUProg)
+	void importAssets(HMesh& model, HTexture& texture, HShader& shader)
 	{
 		// Import mesh, texture and shader from the disk. In a normal application you would want to save the imported assets
 		// so next time the application is ran you can just load them directly. This can be done with Resources::save/load.
@@ -186,92 +184,14 @@ namespace BansheeEngine
 		// Import texture with specified import options
 		texture = Importer::instance().import<Texture>(exampleTexturePath, textureImportOptions);
 
-		// Create import options for fragment GPU program
-		ImportOptionsPtr gpuProgImportOptions = Importer::instance().createImportOptions(exampleFragmentShaderPath);
-		if (rtti_is_of_type<GpuProgramImportOptions>(gpuProgImportOptions))
-		{
-			GpuProgramImportOptions* importOptions = static_cast<GpuProgramImportOptions*>(gpuProgImportOptions.get());
-
-			// Name of the entry function in the GPU program
-			importOptions->setEntryPoint("ps_main");
-
-			// Language the GPU program is written in. Can only be hlsl for DX11
-			importOptions->setLanguage("hlsl");
-
-			// GPU program profile specifying what feature-set the shader code uses.
-			importOptions->setProfile(GPP_FS_4_0);
-
-			// Type of the shader.
-			importOptions->setType(GPT_FRAGMENT_PROGRAM);
-		}
-
-		// Import fragment GPU program
-		fragmentGPUProg = Importer::instance().import<GpuProgram>(exampleFragmentShaderPath, gpuProgImportOptions);
-
-		// Create import options for vertex GPU program. Similar as above.
-		gpuProgImportOptions = Importer::instance().createImportOptions(exampleVertexShaderPath);
-		if (rtti_is_of_type<GpuProgramImportOptions>(gpuProgImportOptions))
-		{
-			GpuProgramImportOptions* importOptions = static_cast<GpuProgramImportOptions*>(gpuProgImportOptions.get());
-
-			importOptions->setEntryPoint("vs_main");
-			importOptions->setLanguage("hlsl");
-			importOptions->setProfile(GPP_VS_4_0);
-			importOptions->setType(GPT_VERTEX_PROGRAM);
-		}
-
-		// Import vertex GPU program
-		vertexGPUProg = Importer::instance().import<GpuProgram>(exampleVertexShaderPath, gpuProgImportOptions);
+		// Import shader
+		shader = Importer::instance().import<Shader>(exampleShaderPath);
 	}
 
-	HMaterial createMaterial(const HTexture& texture, const HGpuProgram& vertexGPUProg, const HGpuProgram& fragmentGPUProg)
+	HMaterial createMaterial(const HTexture& texture, const HShader& shader)
 	{
-		/************************************************************************/
-		/* 							CREATE SHADER	                      		*/
-		/************************************************************************/
-		// Create a new pass for a shader technique. Each technique can have multiple passes that allow you to render the same
-		// object multiple times using different GPU programs.
-		PASS_DESC passDesc;
-		passDesc.vertexProgram = vertexGPUProg;
-		passDesc.fragmentProgram = fragmentGPUProg;
-
-		PassPtr pass = Pass::create(passDesc);
-
-		// Create a shader technique. Shader can have many different techniques and the renderer will automatically
-		// use the most appropriate technique depending on the active renderer and render system. e.g. you can have different
-		// techniques using HLSL9, HLSL11 and GLSL GPU programs for DirectX 9, DirectX 11 and OpenGL render systems respectively.
-		TechniquePtr technique = Technique::create(RenderAPIDX11, RendererDefault, { pass });
-
-		// Set up shader parameters and renderer semantics.
-		// Renderer semantics allow our renderer to automatically populate certain shader parameters (e.g. a world view projection matrix).
-		// These semantics are purely optional and depend on the renderer used. Certain renderers expect certain semantics to be set up
-		// otherwise they will not render the objects. You always have the option to populate all the parameters manually, but in this example
-		// we go with the semantics route as it allows for a "set up and forget" approach.
-		SHADER_DESC exampleShaderDesc;
-
-		// Add a world view projection matrix parameter, which will be populated by the renderer.
-		// We map our shader parameter name to the actual GPU program variable, both being "matWorldViewProj" in this case.
-		exampleShaderDesc.addParameter("matWorldViewProj", "matWorldViewProj", GPDT_MATRIX_4X4, RPS_WorldViewProjTfrm);
-
-		// Add a sampler and a texture semantic that we will populate manually.
-		exampleShaderDesc.addParameter("samp", "samp", GPOT_SAMPLER2D);
-		exampleShaderDesc.addParameter("tex", "tex", GPOT_TEXTURE2D);
-
-		// Our GPU programs use parameter blocks (constant buffers in DX11 lingo). Here we notify the renderer
-		// that this particular parameter block contains object-specific data (like the world view projection parameter
-		// we defined above).
-		exampleShaderDesc.setParamBlockAttribs("PerObject", true, GPBU_DYNAMIC, RBS_PerObject);
-
-		// Create a shader that references our vertex and fragment GPU programs, and set
-		// up shader input parameters. 
-		HShader exampleShader = Shader::create("ExampleShader", exampleShaderDesc, { technique });
-
-		/************************************************************************/
-		/* 							CREATE MATERIAL                      		*/
-		/************************************************************************/
-
 		// And finally create a material with the newly created shader
-		HMaterial exampleMaterial = Material::create(exampleShader);
+		HMaterial exampleMaterial = Material::create(shader);
 
 		// And set the texture to be used by the "tex" shader parameter. We leave the "samp"
 		// parameter at its defaults.

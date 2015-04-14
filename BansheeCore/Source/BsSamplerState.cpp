@@ -63,11 +63,9 @@ namespace BansheeEngine
 		return RenderStateCoreManager::instance().createSamplerStateInternal(mProperties.mData);
 	}
 
-	HSamplerState SamplerState::create(const SAMPLER_STATE_DESC& desc)
+	SamplerStatePtr SamplerState::create(const SAMPLER_STATE_DESC& desc)
 	{
-		SamplerStatePtr samplerPtr = RenderStateManager::instance().createSamplerState(desc);
-
-		return static_resource_cast<SamplerState>(gResources()._createResourceHandle(samplerPtr));
+		return RenderStateManager::instance().createSamplerState(desc);
 	}
 
 	const SamplerStatePtr& SamplerState::getDefault()

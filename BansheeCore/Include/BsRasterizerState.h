@@ -1,7 +1,8 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
-#include "BsResource.h"
+#include "BsIReflectable.h"
+#include "BsCoreObject.h"
 
 namespace BansheeEngine
 {
@@ -157,7 +158,7 @@ namespace BansheeEngine
 	 *
 	 * @note	Rasterizer states are immutable. Sim thread only.
 	 */
-	class BS_CORE_EXPORT RasterizerState : public Resource
+	class BS_CORE_EXPORT RasterizerState : public IReflectable, public CoreObject
 	{
 	public:
 		virtual ~RasterizerState() {}
@@ -176,7 +177,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates a new rasterizer state using the specified rasterizer state descriptor structure.
 		 */
-		static HRasterizerState create(const RASTERIZER_STATE_DESC& desc);
+		static RasterizerStatePtr create(const RASTERIZER_STATE_DESC& desc);
 
 		/**
 		 * @brief	Returns the default rasterizer state.

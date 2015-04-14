@@ -153,7 +153,7 @@ namespace BansheeEngine
 		{ 
 			typedef GpuParams GpuParamsType; 
 			typedef HTexture TextureType;
-			typedef HSamplerState SamplerType;
+			typedef SamplerStatePtr SamplerType;
 			typedef SPtr<GpuParamBlockBuffer> ParamsBufferType;
 		};
 

@@ -9,7 +9,7 @@
 %option outfile="BsLexerFX.c" header-file="BsLexerFX.h"
 %option extra-type="struct tagParseState *"
 
-INTEGER			[0-9][0-9]*
+INTEGER			-?[0-9][0-9]*
 INTEGER_16		0[xX][0-9a-fA-F]+
 FLOAT			[0-9]+\.[0-9]+([eE][+-]?[0-9]+)?[fF]?
 STRING			\"[^"\n]*\"
@@ -148,47 +148,47 @@ shared				{ return TOKEN_SHARED; }
 usage				{ return TOKEN_USAGE; }
 
 	/* State values */
-wire			{ yylval->intValue = FMV_Wire; return TOKEN_FILLMODEVALUE; }
-solid			{ yylval->intValue = FMV_Solid; return TOKEN_FILLMODEVALUE; }
+WIRE			{ yylval->intValue = FMV_Wire; return TOKEN_FILLMODEVALUE; }
+SOLID			{ yylval->intValue = FMV_Solid; return TOKEN_FILLMODEVALUE; }
 
-nocull			{ yylval->intValue = CMV_None; return TOKEN_CULLMODEVALUE; }
-cw				{ yylval->intValue = CMV_CW; return TOKEN_CULLMODEVALUE; }
-ccw				{ yylval->intValue = CMV_CCW; return TOKEN_CULLMODEVALUE; }
+NOCULL			{ yylval->intValue = CMV_None; return TOKEN_CULLMODEVALUE; }
+CW				{ yylval->intValue = CMV_CW; return TOKEN_CULLMODEVALUE; }
+CCW				{ yylval->intValue = CMV_CCW; return TOKEN_CULLMODEVALUE; }
 
-fail			{ yylval->intValue = CFV_Fail; return TOKEN_COMPFUNCVALUE; }
-pass			{ yylval->intValue = CFV_Pass; return TOKEN_COMPFUNCVALUE; }
-lt				{ yylval->intValue = CFV_LT; return TOKEN_COMPFUNCVALUE; }
-lte				{ yylval->intValue = CFV_LTE; return TOKEN_COMPFUNCVALUE; }
-eq				{ yylval->intValue = CFV_EQ; return TOKEN_COMPFUNCVALUE; }
-neq				{ yylval->intValue = CFV_NEQ; return TOKEN_COMPFUNCVALUE; }
-gte				{ yylval->intValue = CFV_GTE; return TOKEN_COMPFUNCVALUE; }
-gt				{ yylval->intValue = CFV_GT; return TOKEN_COMPFUNCVALUE; }
+FAIL			{ yylval->intValue = CFV_Fail; return TOKEN_COMPFUNCVALUE; }
+PASS			{ yylval->intValue = CFV_Pass; return TOKEN_COMPFUNCVALUE; }
+LT				{ yylval->intValue = CFV_LT; return TOKEN_COMPFUNCVALUE; }
+LTE				{ yylval->intValue = CFV_LTE; return TOKEN_COMPFUNCVALUE; }
+EQ				{ yylval->intValue = CFV_EQ; return TOKEN_COMPFUNCVALUE; }
+NEQ				{ yylval->intValue = CFV_NEQ; return TOKEN_COMPFUNCVALUE; }
+GTE				{ yylval->intValue = CFV_GTE; return TOKEN_COMPFUNCVALUE; }
+GT				{ yylval->intValue = CFV_GT; return TOKEN_COMPFUNCVALUE; }
 
-keep					{ yylval->intValue = OV_Keep; return TOKEN_OPVALUE; }
-zero					{ yylval->intValue = OV_Zero; return TOKEN_OPVALUE; }
-replace					{ yylval->intValue = OV_Replace; return TOKEN_OPVALUE; }
-increment				{ yylval->intValue = OV_Incr; return TOKEN_OPVALUE; }
-decrement				{ yylval->intValue = OV_Decr; return TOKEN_OPVALUE; }
-increment_wrap			{ yylval->intValue = OV_IncrWrap; return TOKEN_OPVALUE; }
-decrement_wrap			{ yylval->intValue = OV_DecrWrap; return TOKEN_OPVALUE; }
-invert					{ yylval->intValue = OV_Invert; return TOKEN_OPVALUE; }
-one						{ yylval->intValue = OV_One; return TOKEN_OPVALUE; }
-destinationRGB			{ yylval->intValue = OV_DestColor; return TOKEN_OPVALUE; }
-sourceRGB				{ yylval->intValue = OV_SrcColor; return TOKEN_OPVALUE; }
-destinationRGB_inverse	{ yylval->intValue = OV_InvDestColor; return TOKEN_OPVALUE; }
-sourceRGB_inverse		{ yylval->intValue = OV_InvSrcColor; return TOKEN_OPVALUE; }
-destinationA			{ yylval->intValue = OV_DestAlpha; return TOKEN_OPVALUE; }
-sourceA					{ yylval->intValue = OV_SrcAlpha; return TOKEN_OPVALUE; }
-destinationA_inverse	{ yylval->intValue = OV_InvDestAlpha; return TOKEN_OPVALUE; }
-sourceA_inverse			{ yylval->intValue = OV_InvSrcAlpha; return TOKEN_OPVALUE; }
+KEEP				{ yylval->intValue = OV_Keep; return TOKEN_OPVALUE; }
+ZERO				{ yylval->intValue = OV_Zero; return TOKEN_OPVALUE; }
+REPLACE				{ yylval->intValue = OV_Replace; return TOKEN_OPVALUE; }
+INC					{ yylval->intValue = OV_Incr; return TOKEN_OPVALUE; }
+DEC					{ yylval->intValue = OV_Decr; return TOKEN_OPVALUE; }
+INCWRAP				{ yylval->intValue = OV_IncrWrap; return TOKEN_OPVALUE; }
+DECWRAP				{ yylval->intValue = OV_DecrWrap; return TOKEN_OPVALUE; }
+INV					{ yylval->intValue = OV_Invert; return TOKEN_OPVALUE; }
+ONE					{ yylval->intValue = OV_One; return TOKEN_OPVALUE; }
+DSTRGB				{ yylval->intValue = OV_DestColor; return TOKEN_OPVALUE; }
+SRCRGB				{ yylval->intValue = OV_SrcColor; return TOKEN_OPVALUE; }
+DSTIRGB				{ yylval->intValue = OV_InvDestColor; return TOKEN_OPVALUE; }
+SRCIRGB				{ yylval->intValue = OV_InvSrcColor; return TOKEN_OPVALUE; }
+DSTA				{ yylval->intValue = OV_DestAlpha; return TOKEN_OPVALUE; }
+SRCA				{ yylval->intValue = OV_SrcAlpha; return TOKEN_OPVALUE; }
+DSTIA				{ yylval->intValue = OV_InvDestAlpha; return TOKEN_OPVALUE; }
+SRCIA				{ yylval->intValue = OV_InvSrcAlpha; return TOKEN_OPVALUE; }
 
-add					{ yylval->intValue = BOV_Add; return TOKEN_BLENDOPVALUE; }
-subtract			{ yylval->intValue = BOV_Subtract; return TOKEN_BLENDOPVALUE; }
-subtract_reverse	{ yylval->intValue = BOV_RevSubtract; return TOKEN_BLENDOPVALUE; }
-min					{ yylval->intValue = BOV_Min; return TOKEN_BLENDOPVALUE; }
-max					{ yylval->intValue = BOV_Max; return TOKEN_BLENDOPVALUE; }
+ADD					{ yylval->intValue = BOV_Add; return TOKEN_BLENDOPVALUE; }
+SUB					{ yylval->intValue = BOV_Subtract; return TOKEN_BLENDOPVALUE; }
+RSUB				{ yylval->intValue = BOV_RevSubtract; return TOKEN_BLENDOPVALUE; }
+MIN					{ yylval->intValue = BOV_Min; return TOKEN_BLENDOPVALUE; }
+MAX					{ yylval->intValue = BOV_Max; return TOKEN_BLENDOPVALUE; }
 
-nocolor			{ yylval->intValue = 0x0; return TOKEN_COLORMASK; }
+NOCOLOR			{ yylval->intValue = 0x0; return TOKEN_COLORMASK; }
 R				{ yylval->intValue = 0x1; return TOKEN_COLORMASK; }
 G				{ yylval->intValue = 0x2; return TOKEN_COLORMASK; }
 B				{ yylval->intValue = 0x4; return TOKEN_COLORMASK; }
@@ -205,21 +205,21 @@ RBA				{ yylval->intValue = 0xD; return TOKEN_COLORMASK; }
 GBA				{ yylval->intValue = 0xE; return TOKEN_COLORMASK; }
 RGBA			{ yylval->intValue = 0xF; return TOKEN_COLORMASK; }
 
-wrap			{ yylval->intValue = AMV_Wrap; return TOKEN_ADDRMODEVALUE; }
-mirror			{ yylval->intValue = AMV_Mirror; return TOKEN_ADDRMODEVALUE; }
-clamp			{ yylval->intValue = AMV_Clamp; return TOKEN_ADDRMODEVALUE; }
-border			{ yylval->intValue = AMV_Border; return TOKEN_ADDRMODEVALUE; }
+WRAP			{ yylval->intValue = AMV_Wrap; return TOKEN_ADDRMODEVALUE; }
+MIRROR			{ yylval->intValue = AMV_Mirror; return TOKEN_ADDRMODEVALUE; }
+CLAMP			{ yylval->intValue = AMV_Clamp; return TOKEN_ADDRMODEVALUE; }
+BORDER			{ yylval->intValue = AMV_Border; return TOKEN_ADDRMODEVALUE; }
 
-nofilter		{ yylval->intValue = FV_None; return TOKEN_FILTERVALUE; }
-point			{ yylval->intValue = FV_Point; return TOKEN_FILTERVALUE; }
-linear			{ yylval->intValue = FV_Linear; return TOKEN_FILTERVALUE; }
-anisotropic		{ yylval->intValue = FV_Anisotropic; return TOKEN_FILTERVALUE; }
-point_cmp		{ yylval->intValue = FV_PointCmp; return TOKEN_FILTERVALUE; }
-linear_cmp		{ yylval->intValue = FV_LinearCmp; return TOKEN_FILTERVALUE; }
-anisotropic_cmp	{ yylval->intValue = FV_AnisotropicCmp; return TOKEN_FILTERVALUE; }
+NOFILTER		{ yylval->intValue = FV_None; return TOKEN_FILTERVALUE; }
+POINT			{ yylval->intValue = FV_Point; return TOKEN_FILTERVALUE; }
+LINEAR			{ yylval->intValue = FV_Linear; return TOKEN_FILTERVALUE; }
+ANISO			{ yylval->intValue = FV_Anisotropic; return TOKEN_FILTERVALUE; }
+POINTC			{ yylval->intValue = FV_PointCmp; return TOKEN_FILTERVALUE; }
+LINEARC			{ yylval->intValue = FV_LinearCmp; return TOKEN_FILTERVALUE; }
+ANISOC			{ yylval->intValue = FV_AnisotropicCmp; return TOKEN_FILTERVALUE; }
 
-static			{ yylval->intValue = BUV_Static; return TOKEN_BUFFERUSAGE; }
-dynamic			{ yylval->intValue = BUV_Dynamic; return TOKEN_BUFFERUSAGE; }
+STATIC			{ yylval->intValue = BUV_Static; return TOKEN_BUFFERUSAGE; }
+DYNAMIC			{ yylval->intValue = BUV_Dynamic; return TOKEN_BUFFERUSAGE; }
 
 {COMMENT}		{ }
 {IDENTIFIER}	{ yylval->strValue = mmalloc_strdup(yyextra->memContext, yytext); return TOKEN_IDENTIFIER; }

@@ -5,7 +5,6 @@
 #include "BsModule.h"
 #include "BsVector2I.h"
 #include "BsGUIMaterialInfo.h"
-#include "BsDebugDrawMaterialInfo.h"
 #include "BsApplication.h"
 
 namespace BansheeEngine
@@ -16,7 +15,7 @@ namespace BansheeEngine
 	class BS_EXPORT BuiltinResources : public BansheeEngine::Module<BuiltinResources>
 	{
 	public:
-		BuiltinResources(RenderSystemPlugin activeRSPlugin);
+		BuiltinResources();
 		~BuiltinResources();
 
 		/**
@@ -119,11 +118,6 @@ namespace BansheeEngine
 		static HTexture getCursorTexture(const WString& name);
 
 		/**
-		 * @brief	Loads a GPU program with the specified filename.
-		 */
-		HGpuProgram getGpuProgram(const WString& name);
-
-		/**
 		 * @brief	Imports a GUI skin texture with the specified filename.
 		 *			Saves the imported texture in engine-ready format in the corresponding
 		 *			output folder.
@@ -138,26 +132,9 @@ namespace BansheeEngine
 		static void importCursorTexture(const WString& name);
 
 		/**
-		 * @brief	Loads an compiles a shader for text rendering.
+		 * @brief	Loads a shader with the specified filename
 		 */
-		void initSpriteTextShader();
-
-		/**
-		 * @brief	Loads an compiles a shader for image sprite rendering.
-		 */
-		void initSpriteImageShader();
-
-		/**
-		 * @brief	Loads an compiles a shader for non-transparent image sprite rendering.
-		 */
-		void initSpriteNonAlphaImageShader();
-
-		/**
-		 * @brief	Loads an compiles a simple shader to be used with no other is usable.
-		 */
-		void initDummyShader();
-
-		RenderSystemPlugin mRenderSystemPlugin;
+		static HShader getShader(const WString& name);
 
 		GUISkin mSkin;
 
@@ -179,9 +156,6 @@ namespace BansheeEngine
 		HShader mShaderSpriteNonAlphaImage;
 		HShader mShaderDummy;
 
-		WString mActiveShaderSubFolder;
-		StringID mActiveRenderSystem;
-
 		static const Path DefaultSkinFolderRaw;
 		static const Path DefaultCursorFolderRaw;
 		static const Path DefaultShaderFolderRaw;
@@ -189,10 +163,6 @@ namespace BansheeEngine
 		static const Path DefaultSkinFolder;
 		static const Path DefaultCursorFolder;
 		static const Path DefaultShaderFolder;
-
-		static const WString HLSL11ShaderSubFolder;
-		static const WString HLSL9ShaderSubFolder;
-		static const WString GLSLShaderSubFolder;
 
 		static const WString DefaultFontFilename;
 		static const UINT32 DefaultFontSize;
@@ -283,13 +253,9 @@ namespace BansheeEngine
 		static const Vector2I CursorSizeNWSEHotspot;
 		static const Vector2I CursorSizeWEHotspot;
 
-		static const WString ShaderSpriteTextVSFile;
-		static const WString ShaderSpriteTextPSFile;
-		static const WString ShaderSpriteImageVSFile;
-		static const WString ShaderSpriteImagePSFile;
-		static const WString ShaderDockOverlayVSFile;
-		static const WString ShaderDockOverlayPSFile;
-		static const WString ShaderDummyVSFile;
-		static const WString ShaderDummyPSFile;
+		static const WString ShaderSpriteTextFile;
+		static const WString ShaderSpriteImageAlphaFile;
+		static const WString ShaderSpriteImageNoAlphaFile;
+		static const WString ShaderDummyFile;
 	};
 }

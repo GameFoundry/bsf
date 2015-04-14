@@ -16,16 +16,16 @@ namespace BansheeEngine
 	 */
 	void convertPassDesc(const PASS_DESC& input, PASS_DESC_CORE& output)
 	{
-		output.blendState = input.blendState.isLoaded() ? input.blendState->getCore() : nullptr;
-		output.rasterizerState = input.rasterizerState.isLoaded() ? input.rasterizerState->getCore() : nullptr;
-		output.depthStencilState = input.depthStencilState.isLoaded() ? input.depthStencilState->getCore() : nullptr;
+		output.blendState = input.blendState != nullptr ? input.blendState->getCore() : nullptr;
+		output.rasterizerState = input.rasterizerState != nullptr ? input.rasterizerState->getCore() : nullptr;
+		output.depthStencilState = input.depthStencilState != nullptr ? input.depthStencilState->getCore() : nullptr;
 		output.stencilRefValue = input.stencilRefValue;
-		output.vertexProgram = input.vertexProgram.isLoaded() ? input.vertexProgram->getCore() : nullptr;
-		output.fragmentProgram = input.fragmentProgram.isLoaded() ? input.fragmentProgram->getCore() : nullptr;
-		output.geometryProgram = input.geometryProgram.isLoaded() ? input.geometryProgram->getCore() : nullptr;
-		output.hullProgram = input.hullProgram.isLoaded() ? input.hullProgram->getCore() : nullptr;
-		output.domainProgram = input.domainProgram.isLoaded() ? input.domainProgram->getCore() : nullptr;
-		output.hullProgram = input.hullProgram.isLoaded() ? input.hullProgram->getCore() : nullptr;
+		output.vertexProgram = input.vertexProgram != nullptr ? input.vertexProgram->getCore() : nullptr;
+		output.fragmentProgram = input.fragmentProgram != nullptr ? input.fragmentProgram->getCore() : nullptr;
+		output.geometryProgram = input.geometryProgram != nullptr ? input.geometryProgram->getCore() : nullptr;
+		output.hullProgram = input.hullProgram != nullptr ? input.hullProgram->getCore() : nullptr;
+		output.domainProgram = input.domainProgram != nullptr ? input.domainProgram->getCore() : nullptr;
+		output.hullProgram = input.hullProgram != nullptr ? input.hullProgram->getCore() : nullptr;
 	}
 
 	template<bool Core>
@@ -113,13 +113,6 @@ namespace BansheeEngine
 		return passPtr;
 	}
 
-	void Pass::initialize()
-	{
-		_markResourcesDirty();
-
-		CoreObject::initialize();
-	}
-
 	CoreSyncData Pass::syncToCore(FrameAlloc* allocator)
 	{
 		UINT32 size = sizeof(PASS_DESC_CORE);
@@ -131,69 +124,34 @@ namespace BansheeEngine
 		return CoreSyncData(data, size);
 	}
 
-	void Pass::_markResourcesDirty()
-	{
-		markListenerResourcesDirty();
-	}
-
 	void Pass::getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies)
 	{
-		if (mData.blendState.isLoaded())
-			dependencies.push_back(mData.blendState.getInternalPtr());
-
-		if (mData.rasterizerState.isLoaded())
-			dependencies.push_back(mData.rasterizerState.getInternalPtr());
-
-		if (mData.depthStencilState.isLoaded())
-			dependencies.push_back(mData.depthStencilState.getInternalPtr());
-
-		if (mData.vertexProgram.isLoaded())
-			dependencies.push_back(mData.vertexProgram.getInternalPtr());
-
-		if (mData.fragmentProgram.isLoaded())
-			dependencies.push_back(mData.fragmentProgram.getInternalPtr());
-
-		if (mData.geometryProgram.isLoaded())
-			dependencies.push_back(mData.geometryProgram.getInternalPtr());
-
-		if (mData.hullProgram.isLoaded())
-			dependencies.push_back(mData.hullProgram.getInternalPtr());
-
-		if (mData.domainProgram.isLoaded())
-			dependencies.push_back(mData.domainProgram.getInternalPtr());
-
-		if (mData.computeProgram.isLoaded())
-			dependencies.push_back(mData.computeProgram.getInternalPtr());
-	}
-
-	void Pass::getListenerResources(Vector<HResource>& resources)
-	{
 		if (mData.blendState != nullptr)
-			resources.push_back(mData.blendState);
+			dependencies.push_back(mData.blendState);
 
 		if (mData.rasterizerState != nullptr)
-			resources.push_back(mData.rasterizerState);
+			dependencies.push_back(mData.rasterizerState);
 
 		if (mData.depthStencilState != nullptr)
-			resources.push_back(mData.depthStencilState);
+			dependencies.push_back(mData.depthStencilState);
 
 		if (mData.vertexProgram != nullptr)
-			resources.push_back(mData.vertexProgram);
+			dependencies.push_back(mData.vertexProgram);
 
 		if (mData.fragmentProgram != nullptr)
-			resources.push_back(mData.fragmentProgram);
+			dependencies.push_back(mData.fragmentProgram);
 
 		if (mData.geometryProgram != nullptr)
-			resources.push_back(mData.geometryProgram);
+			dependencies.push_back(mData.geometryProgram);
 
 		if (mData.hullProgram != nullptr)
-			resources.push_back(mData.hullProgram);
+			dependencies.push_back(mData.hullProgram);
 
 		if (mData.domainProgram != nullptr)
-			resources.push_back(mData.domainProgram);
+			dependencies.push_back(mData.domainProgram);
 
 		if (mData.computeProgram != nullptr)
-			resources.push_back(mData.computeProgram);
+			dependencies.push_back(mData.computeProgram);
 	}
 
 	PassPtr Pass::create(const PASS_DESC& desc)

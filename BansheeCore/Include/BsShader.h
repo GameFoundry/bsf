@@ -319,11 +319,6 @@ namespace BansheeEngine
 		Shader(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques);
 
 		/**
-		 * @copydoc	Resource::getResourceDependencies
-		 */
-		void getResourceDependencies(Vector<HResource>& dependencies) const;
-
-		/**
 		 * @copydoc	CoreObject::getCoreDependencies
 		 */
 		void getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies);

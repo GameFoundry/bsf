@@ -1,7 +1,8 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
-#include "BsResource.h"
+#include "BsIReflectable.h"
+#include "BsCoreObject.h"
 
 namespace BansheeEngine
 {
@@ -183,7 +184,7 @@ namespace BansheeEngine
 	 *
 	 * @note	Depth stencil states are immutable. Sim thread only.
 	 */
-	class BS_CORE_EXPORT DepthStencilState : public Resource
+	class BS_CORE_EXPORT DepthStencilState : public IReflectable, public CoreObject
 	{
 	public:
 		virtual ~DepthStencilState() {}
@@ -202,7 +203,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates a new depth stencil state using the specified depth stencil state description structure.
 		 */
-		static HDepthStencilState create(const DEPTH_STENCIL_STATE_DESC& desc);
+		static DepthStencilStatePtr create(const DEPTH_STENCIL_STATE_DESC& desc);
 
 		/**
 		 * @brief	Returns the default depth stencil state that you may use when no other is available.

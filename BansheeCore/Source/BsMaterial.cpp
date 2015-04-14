@@ -359,50 +359,44 @@ namespace BansheeEngine
 		{
 			PassPtr curPass = technique->getPass(i);
 
-			HGpuProgram vertProgram = curPass->getVertexProgram();
+			GpuProgramPtr vertProgram = curPass->getVertexProgram();
 			if (vertProgram)
 			{
-				vertProgram.blockUntilLoaded();
 				vertProgram->blockUntilCoreInitialized();
 				allParamDescs.push_back(vertProgram->getParamDesc());
 			}
 
-			HGpuProgram fragProgram = curPass->getFragmentProgram();
+			GpuProgramPtr fragProgram = curPass->getFragmentProgram();
 			if (fragProgram)
 			{
-				fragProgram.blockUntilLoaded();
 				fragProgram->blockUntilCoreInitialized();
 				allParamDescs.push_back(fragProgram->getParamDesc());
 			}
 
-			HGpuProgram geomProgram = curPass->getGeometryProgram();
+			GpuProgramPtr geomProgram = curPass->getGeometryProgram();
 			if (geomProgram)
 			{
-				geomProgram.blockUntilLoaded();
 				geomProgram->blockUntilCoreInitialized();
 				allParamDescs.push_back(geomProgram->getParamDesc());
 			}
 
-			HGpuProgram hullProgram = curPass->getHullProgram();
+			GpuProgramPtr hullProgram = curPass->getHullProgram();
 			if (hullProgram)
 			{
-				hullProgram.blockUntilLoaded();
 				hullProgram->blockUntilCoreInitialized();
 				allParamDescs.push_back(hullProgram->getParamDesc());
 			}
 
-			HGpuProgram domainProgram = curPass->getDomainProgram();
+			GpuProgramPtr domainProgram = curPass->getDomainProgram();
 			if (domainProgram)
 			{
-				domainProgram.blockUntilLoaded();
 				domainProgram->blockUntilCoreInitialized();
 				allParamDescs.push_back(domainProgram->getParamDesc());
 			}
 
-			HGpuProgram computeProgram = curPass->getComputeProgram();
+			GpuProgramPtr computeProgram = curPass->getComputeProgram();
 			if (computeProgram)
 			{
-				computeProgram.blockUntilLoaded();
 				computeProgram->blockUntilCoreInitialized();
 				allParamDescs.push_back(computeProgram->getParamDesc());
 			}
@@ -1015,58 +1009,7 @@ namespace BansheeEngine
 	void Material::getListenerResources(Vector<HResource>& resources)
 	{
 		if (mShader != nullptr)
-		{
 			resources.push_back(mShader);
-
-			if (mShader.isLoaded())
-			{
-				TechniquePtr bestTechnique = mShader->getBestTechnique();
-				if (bestTechnique != nullptr)
-				{
-					UINT32 numPasses = bestTechnique->getNumPasses();
-					for (UINT32 i = 0; i < numPasses; i++)
-					{
-						PassPtr pass = bestTechnique->getPass(i);
-
-						HGpuProgram vertProg = pass->getVertexProgram();
-						if (vertProg != nullptr)
-							resources.push_back(vertProg);
-
-						HGpuProgram fragProg = pass->getFragmentProgram();
-						if (fragProg != nullptr)
-							resources.push_back(fragProg);
-
-						HGpuProgram geomProg = pass->getGeometryProgram();
-						if (geomProg != nullptr)
-							resources.push_back(geomProg);
-
-						HGpuProgram domProg = pass->getDomainProgram();
-						if (domProg != nullptr)
-							resources.push_back(domProg);
-
-						HGpuProgram hullProg = pass->getHullProgram();
-						if (hullProg != nullptr)
-							resources.push_back(hullProg);
-
-						HGpuProgram computeProg = pass->getComputeProgram();
-						if (computeProg != nullptr)
-							resources.push_back(computeProg);
-
-						HBlendState blendState = pass->getBlendState();
-						if (blendState != nullptr)
-							resources.push_back(blendState);
-
-						HRasterizerState rasterizerState = pass->getRasterizerState();
-						if (rasterizerState != nullptr)
-							resources.push_back(rasterizerState);
-
-						HDepthStencilState depthStencilState = pass->getDepthStencilState();
-						if (depthStencilState != nullptr)
-							resources.push_back(depthStencilState);
-					}
-				}
-			}
-		}
 	}
 
 	void Material::getResourceDependencies(Vector<HResource>& dependencies) const

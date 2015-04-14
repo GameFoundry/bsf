@@ -11,7 +11,6 @@
 
 #include "BsFont.h"
 #include "BsFontImportOptions.h"
-#include "BsGpuProgramImportOptions.h"
 #include "BsImporter.h"
 #include "BsResources.h"
 #include "BsGpuProgram.h"
@@ -39,10 +38,6 @@ namespace BansheeEngine
 	const Path BuiltinResources::DefaultSkinFolder = L"..\\..\\..\\..\\Data\\Engine\\Skin\\";
 	const Path BuiltinResources::DefaultCursorFolder = L"..\\..\\..\\..\\Data\\Engine\\Cursors\\";
 	const Path BuiltinResources::DefaultShaderFolder = L"..\\..\\..\\..\\Data\\Engine\\Shaders\\";
-
-	const WString BuiltinResources::HLSL11ShaderSubFolder = L"HLSL11/";
-	const WString BuiltinResources::HLSL9ShaderSubFolder = L"HLSL9/";
-	const WString BuiltinResources::GLSLShaderSubFolder = L"GLSL/";
 
 	/************************************************************************/
 	/* 								GUI TEXTURES                      		*/
@@ -142,24 +137,10 @@ namespace BansheeEngine
 	/* 									SHADERS                      		*/
 	/************************************************************************/
 
-	struct GpuProgramImportData
-	{
-		WString filename;
-		String entryPoint;
-		GpuProgramType type;
-		GpuProgramProfile profile;
-		String language;
-		WString folder;
-	};
-
-	const WString BuiltinResources::ShaderSpriteTextVSFile = L"spriteTextVS.gpuprog";
-	const WString BuiltinResources::ShaderSpriteTextPSFile = L"spriteTextPS.gpuprog";
-	const WString BuiltinResources::ShaderSpriteImageVSFile = L"spriteImageVS.gpuprog";
-	const WString BuiltinResources::ShaderSpriteImagePSFile = L"spriteImagePS.gpuprog";
-	const WString BuiltinResources::ShaderDockOverlayVSFile = L"dockDropOverlayVS.gpuprog";
-	const WString BuiltinResources::ShaderDockOverlayPSFile = L"dockDropOverlayPS.gpuprog";
-	const WString BuiltinResources::ShaderDummyVSFile = L"dummyVS.gpuprog";
-	const WString BuiltinResources::ShaderDummyPSFile = L"dummyPS.gpuprog";
+	const WString BuiltinResources::ShaderSpriteTextFile = L"SpriteText.bsl";
+	const WString BuiltinResources::ShaderSpriteImageAlphaFile = L"SpriteImageAlpha.bsl";
+	const WString BuiltinResources::ShaderSpriteImageNoAlphaFile = L"SpriteImageNoAlpha.bsl";
+	const WString BuiltinResources::ShaderDummyFile = L"Dummy.bsl";
 
 	BuiltinResources::~BuiltinResources()
 	{
@@ -175,31 +156,14 @@ namespace BansheeEngine
 		mCursorSizeWE = nullptr;
 	}
 
-	BuiltinResources::BuiltinResources(RenderSystemPlugin activeRSPlugin)
-		:mRenderSystemPlugin(activeRSPlugin)
+	BuiltinResources::BuiltinResources()
 	{
-		switch (activeRSPlugin)
-		{
-		case RenderSystemPlugin::DX11:
-			mActiveShaderSubFolder = HLSL11ShaderSubFolder;
-			mActiveRenderSystem = RenderAPIDX11;
-			break;
-		case RenderSystemPlugin::DX9:
-			mActiveShaderSubFolder = HLSL9ShaderSubFolder;
-			mActiveRenderSystem = RenderAPIDX9;
-			break;
-		case RenderSystemPlugin::OpenGL:
-			mActiveShaderSubFolder = GLSLShaderSubFolder;
-			mActiveRenderSystem = RenderAPIOpenGL;
-			break;
-		}
-
 		preprocess();
 
-		initSpriteTextShader();
-		initSpriteImageShader();
-		initSpriteNonAlphaImageShader();
-		initDummyShader();
+		mShaderSpriteText = getShader(ShaderSpriteTextFile);
+		mShaderSpriteImage = getShader(ShaderSpriteImageAlphaFile);
+		mShaderSpriteNonAlphaImage = getShader(ShaderSpriteImageNoAlphaFile);
+		mShaderDummy = getShader(ShaderDummyFile);
 
 		mWhiteSpriteTexture = getSkinTexture(WhiteTex);
 
@@ -657,28 +621,6 @@ namespace BansheeEngine
 		static const WString CURSOR_TEXTURES[] = { CursorArrowTex, CursorArrowDragTex, CursorArrowLeftRightTex, CursorIBeamTex,
 			CursorDenyTex, CursorWaitTex, CursorSizeNESWTex, CursorSizeNSTex, CursorSizeNWSETex, CursorSizeWETex };
 
-		static const GpuProgramImportData GPU_PROGRAM_IMPORT_DATA[] =
-		{
-			{ ShaderSpriteTextVSFile,				"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "hlsl", HLSL11ShaderSubFolder},
-			{ ShaderSpriteTextPSFile,				"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0, "hlsl", HLSL11ShaderSubFolder },
-			{ ShaderSpriteImageVSFile,				"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "hlsl", HLSL11ShaderSubFolder },
-			{ ShaderSpriteImagePSFile,				"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0, "hlsl", HLSL11ShaderSubFolder },
-			{ ShaderDummyVSFile,					"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "hlsl", HLSL11ShaderSubFolder },
-			{ ShaderDummyPSFile,					"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0, "hlsl", HLSL11ShaderSubFolder },
-			{ ShaderSpriteTextVSFile,				"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_2_0, "hlsl", HLSL9ShaderSubFolder },
-			{ ShaderSpriteTextPSFile,				"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_2_0, "hlsl", HLSL9ShaderSubFolder },
-			{ ShaderSpriteImageVSFile,				"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_2_0, "hlsl", HLSL9ShaderSubFolder },
-			{ ShaderSpriteImagePSFile,				"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_2_0, "hlsl", HLSL9ShaderSubFolder },
-			{ ShaderDummyVSFile,					"vs_main",		GPT_VERTEX_PROGRAM,		GPP_VS_2_0, "hlsl", HLSL9ShaderSubFolder },
-			{ ShaderDummyPSFile,					"ps_main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_2_0, "hlsl", HLSL9ShaderSubFolder },
-			{ ShaderSpriteTextVSFile,				"main",			GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "glsl", GLSLShaderSubFolder },
-			{ ShaderSpriteTextPSFile,				"main",			GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0, "glsl", GLSLShaderSubFolder },
-			{ ShaderSpriteImageVSFile,				"main",			GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "glsl", GLSLShaderSubFolder },
-			{ ShaderSpriteImagePSFile,				"main",			GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0, "glsl", GLSLShaderSubFolder },
-			{ ShaderDummyVSFile,					"main",			GPT_VERTEX_PROGRAM,		GPP_VS_4_0, "glsl", GLSLShaderSubFolder },
-			{ ShaderDummyPSFile,					"main",			GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0, "glsl", GLSLShaderSubFolder },
-		};
-
 		if (FileSystem::exists(DefaultCursorFolderRaw))
 		{
 			FileSystem::remove(DefaultCursorFolder);
@@ -735,37 +677,23 @@ namespace BansheeEngine
 
 		if (FileSystem::exists(DefaultShaderFolderRaw))
 		{
-			Path shaderFolder = DefaultShaderFolder;
-			shaderFolder.append(mActiveShaderSubFolder);
+			FileSystem::remove(DefaultShaderFolder);
 
-			FileSystem::remove(shaderFolder);
+			Vector<Path> directories;
+			Vector<Path> files;
+			FileSystem::getChildren(DefaultShaderFolderRaw, files, directories);
 
-			for (auto& importData : GPU_PROGRAM_IMPORT_DATA)
+			for (auto& shaderFile : files)
 			{
-				if (importData.folder != mActiveShaderSubFolder)
-					continue;
+				HShader shader = Importer::instance().import<Shader>(shaderFile);
 
-				Path gpuProgInputLoc = DefaultShaderFolderRaw;
-				gpuProgInputLoc.append(importData.folder);
-				gpuProgInputLoc.append(importData.filename);
-
-				Path gpuProgOutputLoc = DefaultShaderFolder;
-				gpuProgOutputLoc.append(importData.folder);
-				gpuProgOutputLoc.append(importData.filename + L".asset");
-
-				ImportOptionsPtr gpuProgImportOptions = Importer::instance().createImportOptions(gpuProgInputLoc);
-				if (rtti_is_of_type<GpuProgramImportOptions>(gpuProgImportOptions))
+				if (shader != nullptr)
 				{
-					GpuProgramImportOptions* importOptions = static_cast<GpuProgramImportOptions*>(gpuProgImportOptions.get());
+					Path gpuProgOutputLoc = DefaultShaderFolder;
+					gpuProgOutputLoc.append(shaderFile.getWFilename() + L".asset");
 
-					importOptions->setEntryPoint(importData.entryPoint);
-					importOptions->setLanguage(importData.language);
-					importOptions->setProfile(importData.profile);
-					importOptions->setType(importData.type);
+					Resources::instance().save(shader, gpuProgOutputLoc, true);
 				}
-
-				HGpuProgram gpuProgram = Importer::instance().import<GpuProgram>(gpuProgInputLoc, gpuProgImportOptions);
-				Resources::instance().save(gpuProgram, gpuProgOutputLoc, true);
 			}
 		}
 
@@ -781,6 +709,14 @@ namespace BansheeEngine
 		return Resources::instance().load<SpriteTexture>(texturePath);
 	}
 
+	HShader BuiltinResources::getShader(const WString& name)
+	{
+		Path programPath = DefaultShaderFolder;
+		programPath.append(name + L".asset");
+
+		return gResources().load<Shader>(programPath);
+	}
+
 	HTexture BuiltinResources::getCursorTexture(const WString& name)
 	{
 		Path cursorPath = FileSystem::getWorkingDirectoryPath();
@@ -788,15 +724,6 @@ namespace BansheeEngine
 		cursorPath.append(name + L".asset");
 
 		return Resources::instance().load<Texture>(cursorPath);
-	}
-
-	HGpuProgram BuiltinResources::getGpuProgram(const WString& name)
-	{
-		Path programPath = DefaultShaderFolder;
-		programPath.append(mActiveShaderSubFolder);
-		programPath.append(name + L".asset");
-
-		return gResources().load<GpuProgram>(programPath);
 	}
 
 	void BuiltinResources::importSkinTexture(const WString& name)
@@ -831,144 +758,7 @@ namespace BansheeEngine
 		HTexture tex = Importer::instance().import<Texture>(inputPath);
 		Resources::instance().save(tex, ouputPath, true);
 	}
-
-	void BuiltinResources::initSpriteTextShader()
-	{
-		HGpuProgram vsProgram = getGpuProgram(ShaderSpriteTextVSFile);
-		HGpuProgram psProgram = getGpuProgram(ShaderSpriteTextPSFile);
-
-		BLEND_STATE_DESC desc;
-		desc.renderTargetDesc[0].blendEnable = true;
-		desc.renderTargetDesc[0].srcBlend = BF_SOURCE_ALPHA;
-		desc.renderTargetDesc[0].dstBlend = BF_INV_SOURCE_ALPHA;
-		desc.renderTargetDesc[0].blendOp = BO_ADD;
-		desc.renderTargetDesc[0].renderTargetWriteMask = 0x7; // Don't write to alpha
-
-		HBlendState blendState = BlendState::create(desc);
-		
-		DEPTH_STENCIL_STATE_DESC depthStateDesc;
-		depthStateDesc.depthReadEnable = false;
-		depthStateDesc.depthWriteEnable = false;
-
-		HDepthStencilState depthState = DepthStencilState::create(depthStateDesc);
-		
-		PASS_DESC passDesc;
-		passDesc.vertexProgram = vsProgram;
-		passDesc.fragmentProgram = psProgram;
-		passDesc.blendState = blendState;
-		passDesc.depthStencilState = depthState;
-
-		PassPtr newPass = Pass::create(passDesc);
-		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererAny, { newPass });
-
-		SHADER_DESC shaderDesc;
-		shaderDesc.addParameter("worldTransform", "worldTransform", GPDT_MATRIX_4X4);
-		shaderDesc.addParameter("invViewportWidth", "invViewportWidth", GPDT_FLOAT1);
-		shaderDesc.addParameter("invViewportHeight", "invViewportHeight", GPDT_FLOAT1);
-
-		shaderDesc.addParameter("mainTexSamp", "mainTexSamp", GPOT_SAMPLER2D);
-		shaderDesc.addParameter("mainTexSamp", "mainTexture", GPOT_SAMPLER2D);
-
-		shaderDesc.addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
-		shaderDesc.addParameter("tint", "tint", GPDT_FLOAT4);
-
-		mShaderSpriteText = Shader::create("TextSpriteShader", shaderDesc, { newTechnique });
-	}
-
-	void BuiltinResources::initSpriteImageShader()
-	{
-		HGpuProgram vsProgram = getGpuProgram(ShaderSpriteImageVSFile);
-		HGpuProgram psProgram = getGpuProgram(ShaderSpriteImagePSFile);
-
-		BLEND_STATE_DESC desc;
-		desc.renderTargetDesc[0].blendEnable = true;
-		desc.renderTargetDesc[0].srcBlend = BF_SOURCE_ALPHA;
-		desc.renderTargetDesc[0].dstBlend = BF_INV_SOURCE_ALPHA;
-		desc.renderTargetDesc[0].blendOp = BO_ADD;
-		desc.renderTargetDesc[0].renderTargetWriteMask = 0x7; // Don't write to alpha
-
-		HBlendState blendState = BlendState::create(desc);
-
-		DEPTH_STENCIL_STATE_DESC depthStateDesc;
-		depthStateDesc.depthReadEnable = false;
-		depthStateDesc.depthWriteEnable = false;
-
-		HDepthStencilState depthState = DepthStencilState::create(depthStateDesc);
-
-		PASS_DESC passDesc;
-		passDesc.vertexProgram = vsProgram;
-		passDesc.fragmentProgram = psProgram;
-		passDesc.blendState = blendState;
-		passDesc.depthStencilState = depthState;
-
-		PassPtr newPass = Pass::create(passDesc);
-		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererAny, { newPass });
-
-		SHADER_DESC shaderDesc;
-		shaderDesc.addParameter("worldTransform", "worldTransform", GPDT_MATRIX_4X4);
-		shaderDesc.addParameter("invViewportWidth", "invViewportWidth", GPDT_FLOAT1);
-		shaderDesc.addParameter("invViewportHeight", "invViewportHeight", GPDT_FLOAT1);
-
-		shaderDesc.addParameter("mainTexSamp", "mainTexSamp", GPOT_SAMPLER2D);
-		shaderDesc.addParameter("mainTexSamp", "mainTexture", GPOT_SAMPLER2D);
-
-		shaderDesc.addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
-		shaderDesc.addParameter("tint", "tint", GPDT_FLOAT4);
-
-		mShaderSpriteImage = Shader::create("ImageSpriteShader", shaderDesc, { newTechnique });
-	}
-
-	void BuiltinResources::initSpriteNonAlphaImageShader()
-	{
-		HGpuProgram vsProgram = getGpuProgram(ShaderSpriteImageVSFile);
-		HGpuProgram psProgram = getGpuProgram(ShaderSpriteImagePSFile);
-
-		DEPTH_STENCIL_STATE_DESC depthStateDesc;
-		depthStateDesc.depthReadEnable = false;
-		depthStateDesc.depthWriteEnable = false;
-
-		HDepthStencilState depthState = DepthStencilState::create(depthStateDesc);
-		
-		PASS_DESC passDesc;
-		passDesc.vertexProgram = vsProgram;
-		passDesc.fragmentProgram = psProgram;
-		passDesc.depthStencilState = depthState;
-
-		PassPtr newPass = Pass::create(passDesc);
-		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererAny, { newPass });
-
-		SHADER_DESC shaderDesc;
-		shaderDesc.addParameter("worldTransform", "worldTransform", GPDT_MATRIX_4X4);
-		shaderDesc.addParameter("invViewportWidth", "invViewportWidth", GPDT_FLOAT1);
-		shaderDesc.addParameter("invViewportHeight", "invViewportHeight", GPDT_FLOAT1);
-
-		shaderDesc.addParameter("mainTexSamp", "mainTexSamp", GPOT_SAMPLER2D);
-		shaderDesc.addParameter("mainTexSamp", "mainTexture", GPOT_SAMPLER2D);
-
-		shaderDesc.addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
-		shaderDesc.addParameter("tint", "tint", GPDT_FLOAT4);
-
-		mShaderSpriteNonAlphaImage = Shader::create("NonAlphaImageSpriteShader", shaderDesc, { newTechnique });
-	}
-
-	void BuiltinResources::initDummyShader()
-	{
-		HGpuProgram vsProgram = getGpuProgram(ShaderDummyVSFile);
-		HGpuProgram psProgram = getGpuProgram(ShaderDummyPSFile);
-
-		PASS_DESC passDesc;
-		passDesc.vertexProgram = vsProgram;
-		passDesc.fragmentProgram = psProgram;
-
-		PassPtr newPass = Pass::create(passDesc);
-		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererAny, { newPass });
-
-		SHADER_DESC shaderDesc;
-		shaderDesc.addParameter("matWorldViewProj", "matWorldViewProj", GPDT_MATRIX_4X4);
-
-		mShaderDummy = Shader::create("DummyShader", shaderDesc, { newTechnique });
-	}
-
+	
 	const PixelData& BuiltinResources::getCursorArrow(Vector2I& hotSpot)
 	{
 		hotSpot = CursorArrowHotspot;

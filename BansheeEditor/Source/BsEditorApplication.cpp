@@ -23,7 +23,6 @@
 #include "BsSceneObject.h"
 #include "BsImporter.h"
 #include "BsGpuProgram.h"
-#include "BsGpuProgramImportOptions.h"
 #include "BsShader.h"
 #include "BsTexture.h"
 #include "BsMaterial.h"
@@ -68,7 +67,7 @@ namespace BansheeEngine
 		// TODO - Load project settings
 		mEditorSettings = bs_shared_ptr<EditorSettings>();
 
-		BuiltinEditorResources::startUp(renderSystemPlugin);
+		BuiltinEditorResources::startUp();
 
 		{
 			auto inputConfig = VirtualInput::instance().getConfiguration();
@@ -129,25 +128,12 @@ namespace BansheeEngine
 
 		gResources().unload(mTestTexRef);
 		gResources().unload(mDbgMeshRef);
-		gResources().unload(mFragProgRef);
-		gResources().unload(mVertProgRef);
+		gResources().unload(mTestShader);
 		gResources().unload(mTestMaterial);
 
 		mTestMaterial = nullptr;
 		mTestTexRef = nullptr;
 		mDbgMeshRef = nullptr;
-		mFragProgRef = nullptr;
-		mVertProgRef = nullptr;
-
-		mNewPassGL = nullptr;
-		mNewTechniqueGL = nullptr;
-
-		mNewPassDX = nullptr;
-		mNewTechniqueDX = nullptr;
-
-		mNewPassDX11 = nullptr;
-		mNewTechniqueDX11 = nullptr;
-
 		mTestShader = nullptr;
 
 		/************************************************************************/
@@ -175,121 +161,21 @@ namespace BansheeEngine
 		/* 								DEBUG CODE                      		*/
 		/************************************************************************/
 
-		HShader dummyParsedShader = Importer::instance().import<Shader>("..\\..\\..\\..\\Data\\Raw\\Engine\\Shaders\\DummyFX.bsl");
-		assert(dummyParsedShader != nullptr);
+		HShader dummyParsedShader = Importer::instance().import<Shader>("..\\..\\..\\..\\Data\\Raw\\Engine\\Shaders\\TestFX.bsl");
+		assert(dummyParsedShader != nullptr); // Ad hoc unit test
 
 		RenderAPICore* renderSystem = RenderAPICore::instancePtr();
 
 		HSceneObject testModelGO = SceneObject::create("TestMesh");
 		HRenderable testRenderable = testModelGO->addComponent<Renderable>();
 
-		WString psLoc;
-		WString vsLoc;
+		WString testShaderLoc = L"..\\..\\..\\..\\Data\\Test.bsl";;
+		
+		mTestShader = Importer::instance().import<Shader>(testShaderLoc);
 
-		GpuProgramProfile psProfile;
-		GpuProgramProfile vsProfile;
-
-		String psEntry;
-		String vsEntry;
-
-		String language;
-
-		switch (mActiveRSPlugin)
-		{
-		case RenderSystemPlugin::DX11:
-		{
-										 psLoc = L"..\\..\\..\\..\\Data\\hlsl11_ps.gpuprog";
-										 vsLoc = L"..\\..\\..\\..\\Data\\hlsl11_vs.gpuprog";
-										 language = "hlsl";
-										 psProfile = GPP_FS_4_0;
-										 vsProfile = GPP_VS_4_0;
-										 psEntry = "ps_main";
-										 vsEntry = "vs_main";
-										 break;
-		}
-		case RenderSystemPlugin::DX9:
-		{
-										psLoc = L"..\\..\\..\\..\\Data\\hlsl9_ps.gpuprog";
-										vsLoc = L"..\\..\\..\\..\\Data\\hlsl9_vs.gpuprog";
-										language = "hlsl";
-										psProfile = GPP_FS_2_0;
-										vsProfile = GPP_VS_2_0;
-										psEntry = "ps_main";
-										vsEntry = "vs_main";
-										break;
-		}
-		case RenderSystemPlugin::OpenGL:
-		{
-										   psLoc = L"..\\..\\..\\..\\Data\\glsl_ps.gpuprog";
-										   vsLoc = L"..\\..\\..\\..\\Data\\glsl_vs.gpuprog";
-										   language = "glsl";
-										   psProfile = GPP_FS_2_0;
-										   vsProfile = GPP_VS_2_0;
-										   psEntry = "main";
-										   vsEntry = "main";
-										   break;
-		}
-		}
-
-		ImportOptionsPtr gpuProgImportOptions = Importer::instance().createImportOptions(psLoc);
-		if (rtti_is_of_type<GpuProgramImportOptions>(gpuProgImportOptions))
-		{
-			GpuProgramImportOptions* importOptions = static_cast<GpuProgramImportOptions*>(gpuProgImportOptions.get());
-
-			importOptions->setEntryPoint(psEntry);
-			importOptions->setLanguage(language);
-			importOptions->setProfile(psProfile);
-			importOptions->setType(GPT_FRAGMENT_PROGRAM);
-		}
-
-		mFragProgRef = Importer::instance().import<GpuProgram>(psLoc, gpuProgImportOptions);
-
-		gpuProgImportOptions = Importer::instance().createImportOptions(vsLoc);
-		if (rtti_is_of_type<GpuProgramImportOptions>(gpuProgImportOptions))
-		{
-			GpuProgramImportOptions* importOptions = static_cast<GpuProgramImportOptions*>(gpuProgImportOptions.get());
-
-			importOptions->setEntryPoint(vsEntry);
-			importOptions->setLanguage(language);
-			importOptions->setProfile(vsProfile);
-			importOptions->setType(GPT_VERTEX_PROGRAM);
-		}
-
-		mVertProgRef = Importer::instance().import<GpuProgram>(vsLoc, gpuProgImportOptions);
-
-		gResources().save(mVertProgRef, L"C:\\vertProgCg.vprog", true);
-		gResources().unload(mVertProgRef);
-		mVertProgRef = gResources().load<GpuProgram>(L"C:\\vertProgCg.vprog");
-
-		gResources().save(mFragProgRef, L"C:\\fragProgCg.vprog", true);
-		gResources().unload(mFragProgRef);
-		mFragProgRef = gResources().load<GpuProgram>(L"C:\\fragProgCg.vprog");
-
-		PASS_DESC passDesc;
-		passDesc.vertexProgram = mVertProgRef;
-		passDesc.fragmentProgram = mFragProgRef;
-
-		mNewPassGL = Pass::create(passDesc);
-		mNewTechniqueGL = Technique::create(RenderAPIOpenGL, "BansheeRenderer", { mNewPassGL });
-
-		// TODO - I need to create different techniques for different render systems (and renderers, if there were any),
-		// which is redundant as some techniques can be reused. I should add a functionality that supports multiple
-		// render systems/renderers per technique
-		mNewPassDX = Pass::create(passDesc);
-		mNewTechniqueDX = Technique::create(RenderAPIDX9, "BansheeRenderer", { mNewPassDX });
-
-		mNewPassDX11 = Pass::create(passDesc);
-		mNewTechniqueDX11 = Technique::create(RenderAPIDX11, "BansheeRenderer", { mNewPassDX11 });
-
-		SHADER_DESC shaderDesc;
-		shaderDesc.addParameter("matWorldViewProj", "matWorldViewProj", GPDT_MATRIX_4X4, RPS_WorldViewProjTfrm);
-
-		shaderDesc.addParameter("samp", "samp", GPOT_SAMPLER2D);
-		shaderDesc.addParameter("tex", "tex", GPOT_TEXTURE2D);
-
-		shaderDesc.setParamBlockAttribs("PerObject", true, GPBU_DYNAMIC, RBS_PerObject);
-
-		mTestShader = Shader::create("TestShader", shaderDesc, { mNewTechniqueGL, mNewTechniqueDX, mNewTechniqueDX11 });
+		gResources().save(mTestShader, L"C:\\testShader.asset", true);
+		gResources().unload(mTestShader);
+		mTestShader = gResources().load<Shader>(L"C:\\testShader.asset");
 
 		mTestMaterial = Material::create(mTestShader);
 

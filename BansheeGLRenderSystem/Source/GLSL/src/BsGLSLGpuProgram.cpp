@@ -87,6 +87,8 @@ namespace BansheeEngine
 
 	void GLSLGpuProgramCore::initialize()
 	{
+		static const char GLSL_VERSION_LINE[] = "#version 430\n";
+
 		if (!isSupported())
 		{
 			mIsCompiled = false;
@@ -126,6 +128,11 @@ namespace BansheeEngine
 		if (!source.empty())
 		{
 			Vector<GLchar*> lines;
+
+			GLchar* firstLineData = (GLchar*)stackAlloc(sizeof(GLSL_VERSION_LINE));
+			memcpy(firstLineData, GLSL_VERSION_LINE, sizeof(GLSL_VERSION_LINE));
+
+			lines.push_back(firstLineData);
 
 			UINT32 lineLength = 0;
 			for (UINT32 i = 0; i < source.size(); i++)

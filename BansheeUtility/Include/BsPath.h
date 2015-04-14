@@ -294,11 +294,15 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Change or set the extension of the filename in the path.
+		 *
+		 * @param	extension	Extension with a leading ".".
 		 */
 		void setExtension(const WString& extension);
 
 		/**
 		 * @brief	Change or set the extension of the filename in the path.
+		 *
+		 * @param	extension	Extension with a leading ".".
 		 */
 		void setExtension(const String& extension);
 

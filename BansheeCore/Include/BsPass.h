@@ -4,7 +4,6 @@
 #include "BsColor.h"
 #include "BsIReflectable.h"
 #include "BsCoreObject.h"
-#include "BsIResourceListener.h"
 
 namespace BansheeEngine
 {
@@ -13,17 +12,17 @@ namespace BansheeEngine
 	 */
 	struct PASS_DESC
 	{
-		HBlendState blendState;
-		HRasterizerState rasterizerState;
-		HDepthStencilState depthStencilState;
+		BlendStatePtr blendState;
+		RasterizerStatePtr rasterizerState;
+		DepthStencilStatePtr depthStencilState;
 		UINT32 stencilRefValue;
 
-		HGpuProgram vertexProgram;
-		HGpuProgram fragmentProgram;
-		HGpuProgram geometryProgram;
-		HGpuProgram hullProgram;
-		HGpuProgram domainProgram;
-		HGpuProgram computeProgram;
+		GpuProgramPtr vertexProgram;
+		GpuProgramPtr fragmentProgram;
+		GpuProgramPtr geometryProgram;
+		GpuProgramPtr hullProgram;
+		GpuProgramPtr domainProgram;
+		GpuProgramPtr computeProgram;
 	};
 
 	/**
@@ -56,10 +55,10 @@ namespace BansheeEngine
 	template<>
 	struct TPassTypes < false >
 	{
-		typedef HBlendState BlendStateType;
-		typedef HRasterizerState RasterizerStateType;
-		typedef HDepthStencilState DepthStencilStateType;
-		typedef HGpuProgram GpuProgramType;
+		typedef BlendStatePtr BlendStateType;
+		typedef RasterizerStatePtr RasterizerStateType;
+		typedef DepthStencilStatePtr DepthStencilStateType;
+		typedef GpuProgramPtr GpuProgramType;
 		typedef PASS_DESC PassDescType;
 	};
 
@@ -127,11 +126,6 @@ namespace BansheeEngine
 		TPass();
 		TPass(const PassDescType& desc);
 
-		/**
-		 * @copydoc	IResourceListener::markResourcesDirty
-		 */
-		virtual void _markResourcesDirty() { }
-
 		PassDescType mData;
     };
 
@@ -168,7 +162,7 @@ namespace BansheeEngine
 	 *
 	 * @note	Sim thread.
 	 */
-	class BS_CORE_EXPORT Pass : public IReflectable, public CoreObject, public TPass<false>, public IResourceListener
+	class BS_CORE_EXPORT Pass : public IReflectable, public CoreObject, public TPass<false>
     {
     public:
 		virtual ~Pass() { }
@@ -196,31 +190,6 @@ namespace BansheeEngine
 		CoreSyncData syncToCore(FrameAlloc* allocator);
 
 		/**
-		 * @copydoc	IResourceListener::markResourcesDirty
-		 */
-		void _markResourcesDirty();
-
-		/**
-		* @copydoc	IResourceListener::getResourceDependencies
-		*/
-		void getListenerResources(Vector<HResource>& resources);
-
-		/**
-		* @copydoc IResourceListener::notifyResourceLoaded
-		*/
-		void notifyResourceLoaded(const HResource& resource) { markCoreDirty(); }
-
-		/**
-		* @copydoc IResourceListener::notifyResourceDestroyed
-		*/
-		void notifyResourceDestroyed(const HResource& resource) { markCoreDirty(); }
-
-		/**
-		* @copydoc IResourceListener::notifyResourceChanged
-		*/
-		void notifyResourceChanged(const HResource& resource) { markCoreDirty(); }
-
-		/**
 		 * @copydoc	CoreObject::createCore
 		 */
 		SPtr<CoreObjectCore> createCore() const;
@@ -229,11 +198,6 @@ namespace BansheeEngine
 		 * @copydoc	CoreObject::syncToCore
 		 */
 		void getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies);
-
-		/**
-		 * @copydoc	CoreObject::initialize
-		 */
-		virtual void initialize();
 
 		/**
 		 * @brief	Creates a new empty pass but doesn't initialize it.

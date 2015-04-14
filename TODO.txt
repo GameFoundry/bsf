@@ -131,6 +131,22 @@ ShaderManager will also be needed when switching render APIs during runtime (if 
  - Separate languages for DX9 and DX11
  - If I import a shader that tries to compile for a language different than we have available, create a null GpuProgram
 
+0. Move all shaders to new .shader format, ensure everything works
+0.1. Check in new shaders as dependencies
+
+1. Make render states and GPU program non-resources. Ensure they aren't referenced by handles anymore
+1.1. Get rid of GpuProgram importer and modify how BuiltinResources imports shaders
+2. Make render states and GPU programs be saved with the shader
+
+3. Rename HGpuInc to HShaderInc and make its file format be ".bslinc". Remove includes from GpuProgram creation (GpuProgram has mergeWithIncludes method that needs removing as well)
+4. Add ShaderManager that allows GPU programs to register themselves and to be recompiled once their includes change
+  - TODO - Perhaps use ResourceListener instead?
+5. Add support for includes in BansheeSL (injecting their code into actual shader source) + registering with shader manager
+5.1. Modify existing shaders as I have some that share code but differ in state options only
+
+6. Add support for registering default parameters (add a set of addParameter methods to SHADER_DESC). Keep sampler states and textures in a dynamic array, and all other data in a dynamic byte array.
+7. Make sure initializing the material properly sets up default parameters
+
 -------------------
 
 TODO STAGE 2:

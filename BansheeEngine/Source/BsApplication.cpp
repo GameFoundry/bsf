@@ -30,6 +30,7 @@ namespace BansheeEngine
 		desc.importers.push_back("BansheeFreeImgImporter");
 		desc.importers.push_back("BansheeFBXImporter");
 		desc.importers.push_back("BansheeFontImporter");
+		desc.importers.push_back("BansheeSL");
 
 		return desc;
 	}
@@ -43,7 +44,7 @@ namespace BansheeEngine
 
 		VirtualInput::startUp();
 		ScriptManager::startUp();
-		BuiltinResources::startUp(renderSystem);
+		BuiltinResources::startUp();
 		GUIManager::startUp();
 		GUIMaterialManager::startUp();
 		OverlayManager::startUp();

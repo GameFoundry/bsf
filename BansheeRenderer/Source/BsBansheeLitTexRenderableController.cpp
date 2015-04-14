@@ -337,8 +337,7 @@ namespace BansheeEngine
 		}
 		else if (rsName == RenderAPIOpenGL)
 		{
-			String vsCode = R"(#version 400
-
+			String vsCode = R"(
 			uniform PerFrame
 			{
 				float time;
@@ -351,13 +350,17 @@ namespace BansheeEngine
 
 			in vec3 bs_position;
 
+			out gl_PerVertex
+			{
+				vec4 gl_Position;
+			};
+
 			void main()
 			{
 				gl_Position = matWorldViewProj * vec4(bs_position.xyz + vec3(sin(time), 0, 0), 1);
 			})";
 
-			String psCode = R"(#version 400
-
+			String psCode = R"(
 			uniform Static
 			{
 				vec4 lightDir;

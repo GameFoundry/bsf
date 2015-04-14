@@ -161,9 +161,6 @@
     <ClInclude Include="Include\BsGameObjectRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsGpuProgramImportOptionsRTTI.h">
-      <Filter>Header Files\RTTI</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsGpuProgramRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
@@ -423,12 +420,6 @@
       <Filter>Header Files\Importer</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsImporter.h">
-      <Filter>Header Files\Importer</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGpuProgramImportOptions.h">
-      <Filter>Header Files\Importer</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGpuProgramImporter.h">
       <Filter>Header Files\Importer</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsGpuProgIncludeImporter.h">
@@ -746,12 +737,6 @@
       <Filter>Source Files\Input</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGpuProgIncludeImporter.cpp">
-      <Filter>Source Files\Importer</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGpuProgramImporter.cpp">
-      <Filter>Source Files\Importer</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGpuProgramImportOptions.cpp">
       <Filter>Source Files\Importer</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsImporter.cpp">

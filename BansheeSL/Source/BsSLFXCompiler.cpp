@@ -599,10 +599,10 @@ namespace BansheeEngine
 		}
 	}
 
-	HBlendState BSLFXCompiler::parseBlendState(ASTFXNode* passNode)
+	BlendStatePtr BSLFXCompiler::parseBlendState(ASTFXNode* passNode)
 	{
 		if (passNode == nullptr || passNode->type != NT_Pass)
-			return HBlendState();
+			return nullptr;
 
 		BLEND_STATE_DESC desc;
 		bool default = true;
@@ -629,15 +629,15 @@ namespace BansheeEngine
 		}
 
 		if (default)
-			return HBlendState();
+			return nullptr;
 
 		return BlendState::create(desc);
 	}
 
-	HRasterizerState BSLFXCompiler::parseRasterizerState(ASTFXNode* passNode)
+	RasterizerStatePtr BSLFXCompiler::parseRasterizerState(ASTFXNode* passNode)
 	{
 		if (passNode == nullptr || passNode->type != NT_Pass)
-			return HRasterizerState();
+			return nullptr;
 
 		RASTERIZER_STATE_DESC desc;
 		bool default = true;
@@ -684,15 +684,15 @@ namespace BansheeEngine
 		}
 
 		if (default)
-			return HRasterizerState();
+			return nullptr;
 
 		return RasterizerState::create(desc);
 	}
 
-	HDepthStencilState BSLFXCompiler::parseDepthStencilState(ASTFXNode* passNode)
+	DepthStencilStatePtr BSLFXCompiler::parseDepthStencilState(ASTFXNode* passNode)
 	{
 		if (passNode == nullptr || passNode->type != NT_Pass)
-			return HDepthStencilState();
+			return nullptr;
 
 		DEPTH_STENCIL_STATE_DESC desc;
 		bool default = true;
@@ -739,15 +739,15 @@ namespace BansheeEngine
 		}
 
 		if (default)
-			return HDepthStencilState();
+			return nullptr;
 
 		return DepthStencilState::create(desc);
 	}
 
-	HSamplerState BSLFXCompiler::parseSamplerState(ASTFXNode* samplerStateNode)
+	SamplerStatePtr BSLFXCompiler::parseSamplerState(ASTFXNode* samplerStateNode)
 	{
 		if (samplerStateNode == nullptr || samplerStateNode->type != NT_SamplerState)
-			return HSamplerState();
+			return nullptr;
 
 		SAMPLER_STATE_DESC desc;
 		bool default = true;
@@ -803,7 +803,7 @@ namespace BansheeEngine
 		}
 
 		if (default)
-			return HSamplerState();
+			return nullptr;
 
 		return SamplerState::create(desc);
 	}
@@ -948,7 +948,7 @@ namespace BansheeEngine
 			String alias;
 
 			float defaultValue[16];
-			UINT32 typeId;
+			UINT32 typeId = 0;
 			bool isObjType = false;
 			StringID semantic;
 
@@ -974,7 +974,7 @@ namespace BansheeEngine
 					semantic = removeQuotes(paramOption->value.strValue);
 					break;
 				case OT_SamplerState:
-					HSamplerState samplerState = parseSamplerState(paramOption->value.nodePtr);
+					SamplerStatePtr samplerState = parseSamplerState(paramOption->value.nodePtr);
 					// TODO - How to deal with sampler-state default value?
 					break;
 				}
@@ -1013,8 +1013,8 @@ namespace BansheeEngine
 			ASTFXNode* parameter = option->value.nodePtr;
 
 			String name;
-			bool shared;
-			GpuParamBlockUsage usage;
+			bool shared = false;
+			GpuParamBlockUsage usage = GPBU_STATIC;
 			StringID semantic;
 
 			for (int j = 0; j < parameter->options->count; j++)

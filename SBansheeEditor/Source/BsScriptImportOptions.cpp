@@ -7,7 +7,6 @@
 #include "BsMonoUtil.h"
 #include "BsTextureImportOptions.h"
 #include "BsFontImportOptions.h"
-#include "BsGpuProgramImportOptions.h"
 #include "BsScriptCodeImportOptions.h"
 #include "BsRenderer.h"
 #include "BsScriptFont.h"
@@ -36,9 +35,6 @@ namespace BansheeEngine
 			break;
 		case TID_FontImportOptions:
 			return ScriptFontImportOptions::create(std::static_pointer_cast<FontImportOptions>(importOptions));
-			break;
-		case TID_GpuProgramImportOptions:
-			return ScriptGpuProgramImportOptions::create(std::static_pointer_cast<GpuProgramImportOptions>(importOptions));
 			break;
 		case TID_ScriptCodeImportOptions:
 			return ScriptScriptCodeImportOptions::create(std::static_pointer_cast<ScriptCodeImportOptions>(importOptions));
@@ -240,89 +236,6 @@ namespace BansheeEngine
 			CharRange range = inArray.get<CharRange>(i);
 			thisPtr->getFontImportOptions()->addCharIndexRange(range.start, range.end);
 		}
-	}
-
-	ScriptGpuProgramImportOptions::ScriptGpuProgramImportOptions(MonoObject* instance)
-		:ScriptObject(instance)
-	{
-		mImportOptions = bs_shared_ptr<GpuProgramImportOptions>();
-	}
-
-	void ScriptGpuProgramImportOptions::initRuntimeData()
-	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGpuProgramImportOptions::internal_CreateInstance);
-		metaData.scriptClass->addInternalCall("Internal_GetEntryPoint", &ScriptGpuProgramImportOptions::internal_GetEntryPoint);
-		metaData.scriptClass->addInternalCall("Internal_SetEntryPoint", &ScriptGpuProgramImportOptions::internal_SetEntryPoint);
-		metaData.scriptClass->addInternalCall("Internal_GetLanguage", &ScriptGpuProgramImportOptions::internal_GetLanguage);
-		metaData.scriptClass->addInternalCall("Internal_SetLanguage", &ScriptGpuProgramImportOptions::internal_SetLanguage);
-		metaData.scriptClass->addInternalCall("Internal_GetProfile", &ScriptGpuProgramImportOptions::internal_GetProfile);
-		metaData.scriptClass->addInternalCall("Internal_SetProfile", &ScriptGpuProgramImportOptions::internal_SetProfile);
-		metaData.scriptClass->addInternalCall("Internal_GetType", &ScriptGpuProgramImportOptions::internal_GetType);
-		metaData.scriptClass->addInternalCall("Internal_SetType", &ScriptGpuProgramImportOptions::internal_SetType);
-	}
-
-	SPtr<GpuProgramImportOptions> ScriptGpuProgramImportOptions::getGpuProgImportOptions()
-	{
-		return std::static_pointer_cast<GpuProgramImportOptions>(mImportOptions);
-	}
-
-	MonoObject* ScriptGpuProgramImportOptions::create()
-	{
-		return metaData.scriptClass->createInstance();
-	}
-
-	MonoObject* ScriptGpuProgramImportOptions::create(const SPtr<GpuProgramImportOptions>& options)
-	{
-		MonoObject* managedInstance = metaData.scriptClass->createInstance();
-		ScriptGpuProgramImportOptions* scriptObj = ScriptGpuProgramImportOptions::toNative(managedInstance);
-		scriptObj->mImportOptions = options;
-
-		return managedInstance;
-	}
-
-	void ScriptGpuProgramImportOptions::internal_CreateInstance(MonoObject* instance)
-	{
-		ScriptGpuProgramImportOptions* nativeInstance = new (bs_alloc<ScriptGpuProgramImportOptions>()) ScriptGpuProgramImportOptions(instance);
-	}
-
-	MonoString* ScriptGpuProgramImportOptions::internal_GetEntryPoint(ScriptGpuProgramImportOptions* thisPtr)
-	{
-		return MonoUtil::stringToMono(MonoManager::instance().getDomain(), thisPtr->getGpuProgImportOptions()->getEntryPoint());
-	}
-
-	void ScriptGpuProgramImportOptions::internal_SetEntryPoint(ScriptGpuProgramImportOptions* thisPtr, MonoString* value)
-	{
-		thisPtr->getGpuProgImportOptions()->setEntryPoint(MonoUtil::monoToString(value));
-	}
-
-	GpuLanguage ScriptGpuProgramImportOptions::internal_GetLanguage(ScriptGpuProgramImportOptions* thisPtr)
-	{
-		return Renderer::getGpuLanguageType(thisPtr->getGpuProgImportOptions()->getLanguage());
-	}
-
-	void ScriptGpuProgramImportOptions::internal_SetLanguage(ScriptGpuProgramImportOptions* thisPtr, GpuLanguage value)
-	{
-		thisPtr->getGpuProgImportOptions()->setLanguage(Renderer::getGpuLanguageName(value));
-	}
-
-	GpuProgramProfile ScriptGpuProgramImportOptions::internal_GetProfile(ScriptGpuProgramImportOptions* thisPtr)
-	{
-		return thisPtr->getGpuProgImportOptions()->getProfile();
-	}
-
-	void ScriptGpuProgramImportOptions::internal_SetProfile(ScriptGpuProgramImportOptions* thisPtr, GpuProgramProfile value)
-	{
-		thisPtr->getGpuProgImportOptions()->setProfile(value);
-	}
-
-	GpuProgramType ScriptGpuProgramImportOptions::internal_GetType(ScriptGpuProgramImportOptions* thisPtr)
-	{
-		return thisPtr->getGpuProgImportOptions()->getType();
-	}
-
-	void ScriptGpuProgramImportOptions::internal_SetType(ScriptGpuProgramImportOptions* thisPtr, GpuProgramType value)
-	{
-		thisPtr->getGpuProgImportOptions()->setType(value);
 	}
 
 	ScriptScriptCodeImportOptions::ScriptScriptCodeImportOptions(MonoObject* instance)

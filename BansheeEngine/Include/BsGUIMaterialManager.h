@@ -100,7 +100,7 @@ namespace BansheeEngine
 			UINT32 refCount;
 		};
 
-		HSamplerState mGUISamplerState;
+		SamplerStatePtr mGUISamplerState;
 
 		mutable Vector<GUIMaterial> mTextMaterials;
 		mutable Vector<GUIMaterial> mImageMaterials;

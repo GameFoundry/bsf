@@ -115,16 +115,8 @@ namespace BansheeEngine
 		}
 	}
 
-	HGpuProgram GpuProgram::create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype,
+	GpuProgramPtr GpuProgram::create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype,
 		GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool requiresAdjacency)
-	{
-		GpuProgramPtr programPtr = _createPtr(source, entryPoint, language, gptype, profile, includes, requiresAdjacency);
-
-		return static_resource_cast<GpuProgram>(gResources()._createResourceHandle(programPtr));
-	}
-
-	GpuProgramPtr GpuProgram::_createPtr(const String& source, const String& entryPoint,
-		const String& language, GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool requiresAdjacency)
 	{
 		return GpuProgramManager::instance().create(source, entryPoint, language, gptype, profile, includes, requiresAdjacency);
 	}

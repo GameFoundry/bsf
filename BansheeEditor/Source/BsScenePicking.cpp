@@ -125,7 +125,7 @@ namespace BansheeEngine
 						if (firstPass->getRasterizerState() == nullptr)
 							rasterizerState = RasterizerState::getDefault();
 						else
-							rasterizerState = firstPass->getRasterizerState().getInternalPtr();
+							rasterizerState = firstPass->getRasterizerState();
 
 						CullingMode cullMode = rasterizerState->getProperties().getCullMode();
 

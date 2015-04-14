@@ -52,11 +52,9 @@ namespace BansheeEngine
 		return RenderStateManager::instance().getDefaultRasterizerState();
 	}
 
-	HRasterizerState RasterizerState::create(const RASTERIZER_STATE_DESC& desc)
+	RasterizerStatePtr RasterizerState::create(const RASTERIZER_STATE_DESC& desc)
 	{
-		RasterizerStatePtr rasterizerPtr = RenderStateManager::instance().createRasterizerState(desc);
-
-		return static_resource_cast<RasterizerState>(gResources()._createResourceHandle(rasterizerPtr));
+		return RenderStateManager::instance().createRasterizerState(desc);
 	}
 
 	/************************************************************************/

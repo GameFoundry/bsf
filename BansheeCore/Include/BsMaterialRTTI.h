@@ -10,6 +10,7 @@
 #include "BsMaterial.h"
 #include "BsGpuParams.h"
 #include "BsShader.h"
+#include "BsSamplerState.h"
 #include "BsDebug.h"
 #include "BsException.h"
 
@@ -119,7 +120,7 @@ namespace BansheeEngine
 	{
 	public:
 		String name;
-		HSamplerState value;
+		SamplerStatePtr value;
 
 		friend class MaterialSamplerStateParamRTTI;
 		static RTTITypeBase* getRTTIStatic();
@@ -424,13 +425,13 @@ namespace BansheeEngine
 		String& getName(MaterialSamplerStateParam* obj) { return obj->name; }
 		void setName(MaterialSamplerStateParam* obj, String& name) { obj->name = name; }
 
-		HSamplerState& getValue(MaterialSamplerStateParam* obj) { return obj->value; }
-		void setValue(MaterialSamplerStateParam* obj, HSamplerState& value) { obj->value = value; }
+		SamplerStatePtr getValue(MaterialSamplerStateParam* obj) { return obj->value; }
+		void setValue(MaterialSamplerStateParam* obj, SamplerStatePtr value) { obj->value = value; }
 
 		MaterialSamplerStateParamRTTI()
 		{
 			addPlainField("name", 0, &MaterialSamplerStateParamRTTI::getName, &MaterialSamplerStateParamRTTI::setName);
-			addReflectableField("value", 1, &MaterialSamplerStateParamRTTI::getValue, &MaterialSamplerStateParamRTTI::setValue);
+			addReflectablePtrField("value", 1, &MaterialSamplerStateParamRTTI::getValue, &MaterialSamplerStateParamRTTI::setValue);
 		}
 
 		virtual const String& getRTTIName()

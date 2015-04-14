@@ -35,7 +35,6 @@
 #include "BsBlendState.h"
 #include "BsDepthStencilState.h"
 #include "BsRasterizerState.h"
-#include "BsGpuProgramImportOptions.h"
 #include "BsResources.h"
 #include "BsRTTIType.h"
 #include "BsFileSystem.h"
@@ -189,76 +188,43 @@ namespace BansheeEngine
 	/* 									SHADERS                      		*/
 	/************************************************************************/
 
-	struct GpuProgramImportData
+	const WString BuiltinEditorResources::ShaderDockOverlayFile = L"DockDropOverlay.bsl";
+	const WString BuiltinEditorResources::ShaderSceneGridFile = L"SceneGrid.bsl";
+	const WString BuiltinEditorResources::ShaderPickingCullNoneFile = L"PickingCullNone.bsl";
+	const WString BuiltinEditorResources::ShaderPickingCullCWFile = L"PickingCullCW.bsl";
+	const WString BuiltinEditorResources::ShaderPickingCullCCWFile = L"PickingCullCCW.bsl";
+	const WString BuiltinEditorResources::ShaderPickingAlphaCullNoneFile = L"PickingAlphaCullNone.bsl";
+	const WString BuiltinEditorResources::ShaderPickingAlphaCullCWFile = L"PickingAlphaCullCW.bsl";
+	const WString BuiltinEditorResources::ShaderPickingAlphaCullCCWFile = L"PickingAlphaCullCCW.bsl";
+	const WString BuiltinEditorResources::ShaderWireGizmoFile = L"WireGizmo.bsl";
+	const WString BuiltinEditorResources::ShaderSolidGizmoFile = L"SolidGizmo.bsl";
+	const WString BuiltinEditorResources::ShaderWireHandleFile = L"WireHandle.bsl";
+	const WString BuiltinEditorResources::ShaderSolidHandleFile = L"SolidHandle.bsl";
+	const WString BuiltinEditorResources::ShaderIconGizmoFile = L"IconGizmo.bsl";
+	const WString BuiltinEditorResources::ShaderGizmoPickingFile = L"GizmoPicking.bsl";
+	const WString BuiltinEditorResources::ShaderGizmoPickingAlphaFile = L"GizmoPickingAlpha.bsl";
+	const WString BuiltinEditorResources::ShaderSelectionFile = L"Selection.bsl";
+
+	BuiltinEditorResources::BuiltinEditorResources()
 	{
-		WString filename;
-		String entryPoint;
-		GpuProgramType type;
-		GpuProgramProfile profile;
-		String language;
-		WString folder;
-	};
-
-	const WString BuiltinEditorResources::ShaderDockOverlayVSFile = L"dockDropOverlayVS.gpuprog";
-	const WString BuiltinEditorResources::ShaderDockOverlayPSFile = L"dockDropOverlayPS.gpuprog";
-	const WString BuiltinEditorResources::SceneGridVSFile = L"sceneGridVS.gpuprog";
-	const WString BuiltinEditorResources::SceneGridPSFile = L"sceneGridPS.gpuprog";
-	const WString BuiltinEditorResources::PickingVSFile = L"pickingVS.gpuprog";
-	const WString BuiltinEditorResources::PickingPSFile = L"pickingPS.gpuprog";
-	const WString BuiltinEditorResources::PickingAlphaVSFile = L"pickingAlphaVS.gpuprog";
-	const WString BuiltinEditorResources::PickingAlphaPSFile = L"pickingAlphaPS.gpuprog";
-	const WString BuiltinEditorResources::ShaderWireGizmoVSFile = L"wireGizmoVS.gpuprog";
-	const WString BuiltinEditorResources::ShaderWireGizmoPSFile = L"wireGizmoPS.gpuprog";
-	const WString BuiltinEditorResources::ShaderSolidGizmoVSFile = L"solidGizmoVS.gpuprog";
-	const WString BuiltinEditorResources::ShaderSolidGizmoPSFile = L"solidGizmoPS.gpuprog";
-	const WString BuiltinEditorResources::ShaderIconGizmo0VSFile = L"iconGizmo0VS.gpuprog";
-	const WString BuiltinEditorResources::ShaderIconGizmo0PSFile = L"iconGizmo0PS.gpuprog";
-	const WString BuiltinEditorResources::ShaderIconGizmo1VSFile = L"iconGizmo1VS.gpuprog";
-	const WString BuiltinEditorResources::ShaderIconGizmo1PSFile = L"iconGizmo1PS.gpuprog";
-	const WString BuiltinEditorResources::GizmoPickingVSFile = L"pickingGizmoVS.gpuprog";
-	const WString BuiltinEditorResources::GizmoPickingPSFile = L"pickingGizmoPS.gpuprog";
-	const WString BuiltinEditorResources::GizmoPickingAlphaVSFile = L"pickingGizmoAlphaVS.gpuprog";
-	const WString BuiltinEditorResources::GizmoPickingAlphaPSFile = L"pickingGizmoAlphaPS.gpuprog";
-	const WString BuiltinEditorResources::SelectionVSFile = L"selectionVS.gpuprog";
-	const WString BuiltinEditorResources::SelectionPSFile = L"selectionPS.gpuprog";
-
-	BuiltinEditorResources::BuiltinEditorResources(RenderSystemPlugin activeRSPlugin)
-		:mRenderSystemPlugin(activeRSPlugin)
-	{
-		switch (activeRSPlugin)
-		{
-		case RenderSystemPlugin::DX11:
-			mActiveShaderSubFolder = HLSL11ShaderSubFolder;
-			mActiveRenderSystem = RenderAPIDX11;
-			break;
-		case RenderSystemPlugin::DX9:
-			mActiveShaderSubFolder = HLSL9ShaderSubFolder;
-			mActiveRenderSystem = RenderAPIDX9;
-			break;
-		case RenderSystemPlugin::OpenGL:
-			mActiveShaderSubFolder = GLSLShaderSubFolder;
-			mActiveRenderSystem = RenderAPIOpenGL;
-			break;
-		}
-
 		preprocess();
 
-		initDockDropOverlayShader();
-		initSceneGridShader();
-		initPickingShader(CULL_NONE);
-		initPickingShader(CULL_CLOCKWISE);
-		initPickingShader(CULL_COUNTERCLOCKWISE);
-		initPickingAlphaShader(CULL_NONE);
-		initPickingAlphaShader(CULL_CLOCKWISE);
-		initPickingAlphaShader(CULL_COUNTERCLOCKWISE);
-		initWireGizmoShader();
-		initSolidGizmoShader();
-		initIconGizmoShader();
-		initGizmoPickingShader();
-		initGizmoPickingAlphaShader();
-		initWireHandleShader();
-		initSolidHandleShader();
-		initSelectionShader();
+		mShaderDockOverlay = getShader(ShaderDockOverlayFile);
+		mShaderSceneGrid = getShader(ShaderSceneGridFile);
+		mShaderPicking[(int)CULL_NONE] = getShader(ShaderPickingCullNoneFile);
+		mShaderPicking[(int)CULL_CLOCKWISE] = getShader(ShaderPickingCullCWFile);
+		mShaderPicking[(int)CULL_COUNTERCLOCKWISE] = getShader(ShaderPickingCullCCWFile);
+		mShaderPickingAlpha[(int)CULL_NONE] = getShader(ShaderPickingAlphaCullNoneFile);
+		mShaderPickingAlpha[(int)CULL_CLOCKWISE] = getShader(ShaderPickingAlphaCullCWFile);
+		mShaderPickingAlpha[(int)CULL_COUNTERCLOCKWISE] = getShader(ShaderPickingAlphaCullCCWFile);
+		mShaderGizmoSolid = getShader(ShaderSolidGizmoFile);
+		mShaderGizmoWire = getShader(ShaderWireGizmoFile);
+		mShaderGizmoIcon = getShader(ShaderIconGizmoFile);
+		mShaderGizmoPicking = getShader(ShaderGizmoPickingFile);
+		mShaderGizmoAlphaPicking = getShader(ShaderGizmoPickingAlphaFile);
+		mShaderHandleSolid = getShader(ShaderSolidHandleFile);
+		mShaderHandleWire = getShader(ShaderWireHandleFile);
+		mShaderSelection = getShader(ShaderSelectionFile);
 
 		Path fontPath = FileSystem::getWorkingDirectoryPath();
 		fontPath.append(DefaultSkinFolder);
@@ -1192,76 +1158,6 @@ namespace BansheeEngine
 			TreeViewSelectionBackground, TreeViewEditBox, TreeViewElementHighlight, TreeViewElementSepHighlight, ProgressBarBgTex,
 			ProgressBarFillTex, ColorPickerSliderHorzHandleTex, ColorPickerSliderVertHandleTex, ColorPickerSlider2DHandleTex };
 
-		static const GpuProgramImportData GPU_PROGRAM_IMPORT_DATA[] = 
-		{
-			{ SceneGridVSFile,			"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL11ShaderSubFolder },
-			{ SceneGridPSFile,			"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"hlsl", HLSL11ShaderSubFolder },
-			{ ShaderDockOverlayVSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL11ShaderSubFolder },
-			{ ShaderDockOverlayPSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"hlsl", HLSL11ShaderSubFolder },
-			{ PickingVSFile,			"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL11ShaderSubFolder },
-			{ PickingPSFile,			"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"hlsl", HLSL11ShaderSubFolder },
-			{ PickingAlphaVSFile,		"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL11ShaderSubFolder },
-			{ PickingAlphaPSFile,		"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"hlsl", HLSL11ShaderSubFolder },
-			{ ShaderWireGizmoVSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL11ShaderSubFolder },
-			{ ShaderWireGizmoPSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"hlsl", HLSL11ShaderSubFolder },
-			{ ShaderSolidGizmoVSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL11ShaderSubFolder },
-			{ ShaderSolidGizmoPSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"hlsl", HLSL11ShaderSubFolder },
-			{ ShaderIconGizmo0VSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL11ShaderSubFolder },
-			{ ShaderIconGizmo0PSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"hlsl", HLSL11ShaderSubFolder },
-			{ ShaderIconGizmo1VSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL11ShaderSubFolder },
-			{ ShaderIconGizmo1PSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"hlsl", HLSL11ShaderSubFolder },
-			{ GizmoPickingVSFile,		"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL11ShaderSubFolder },
-			{ GizmoPickingPSFile,		"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"hlsl", HLSL11ShaderSubFolder },
-			{ GizmoPickingAlphaVSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL11ShaderSubFolder },
-			{ GizmoPickingAlphaPSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"hlsl", HLSL11ShaderSubFolder },
-			{ SelectionVSFile,			"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"hlsl", HLSL11ShaderSubFolder },
-			{ SelectionPSFile,			"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"hlsl", HLSL11ShaderSubFolder },
-			{ SceneGridVSFile,			"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_3_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ SceneGridPSFile,			"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_3_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ ShaderDockOverlayVSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_2_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ ShaderDockOverlayPSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_2_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ PickingVSFile,			"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_3_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ PickingPSFile,			"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_3_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ PickingAlphaVSFile,		"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_3_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ PickingAlphaPSFile,		"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_3_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ ShaderWireGizmoVSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_3_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ ShaderWireGizmoPSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_3_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ ShaderSolidGizmoVSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_3_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ ShaderSolidGizmoPSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_3_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ ShaderIconGizmo0VSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_3_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ ShaderIconGizmo0PSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_3_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ ShaderIconGizmo1VSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_3_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ ShaderIconGizmo1PSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_3_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ GizmoPickingVSFile,		"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_3_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ GizmoPickingPSFile,		"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_3_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ GizmoPickingAlphaVSFile,	"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_3_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ GizmoPickingAlphaPSFile,	"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_3_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ SelectionVSFile,			"vs_main",	GPT_VERTEX_PROGRAM,		GPP_VS_2_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ SelectionPSFile,			"ps_main",	GPT_FRAGMENT_PROGRAM,	GPP_FS_2_0,		"hlsl", HLSL9ShaderSubFolder },
-			{ SceneGridVSFile,			"main",		GPT_VERTEX_PROGRAM,		GPP_VS_2_0,		"glsl", GLSLShaderSubFolder },
-			{ SceneGridPSFile,			"main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_2_0,		"glsl", GLSLShaderSubFolder },
-			{ ShaderDockOverlayVSFile,	"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
-			{ ShaderDockOverlayPSFile,	"main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"glsl", GLSLShaderSubFolder },
-			{ PickingVSFile,			"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
-			{ PickingPSFile,			"main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"glsl", GLSLShaderSubFolder },
-			{ PickingAlphaVSFile,		"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
-			{ PickingAlphaPSFile,		"main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"glsl", GLSLShaderSubFolder },
-			{ ShaderWireGizmoVSFile,	"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
-			{ ShaderWireGizmoPSFile,	"main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"glsl", GLSLShaderSubFolder },
-			{ ShaderSolidGizmoVSFile,	"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
-			{ ShaderSolidGizmoPSFile,	"main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"glsl", GLSLShaderSubFolder },
-			{ ShaderIconGizmo0VSFile,	"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
-			{ ShaderIconGizmo0PSFile,	"main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"glsl", GLSLShaderSubFolder },
-			{ ShaderIconGizmo1VSFile,	"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
-			{ ShaderIconGizmo1PSFile,	"main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"glsl", GLSLShaderSubFolder },
-			{ GizmoPickingVSFile,		"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
-			{ GizmoPickingPSFile,		"main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"glsl", GLSLShaderSubFolder },
-			{ GizmoPickingAlphaVSFile,	"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
-			{ GizmoPickingAlphaPSFile,	"main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"glsl", GLSLShaderSubFolder },
-			{ SelectionVSFile,			"main",		GPT_VERTEX_PROGRAM,		GPP_VS_4_0,		"glsl", GLSLShaderSubFolder },
-			{ SelectionPSFile,			"main",		GPT_FRAGMENT_PROGRAM,	GPP_FS_4_0,		"glsl", GLSLShaderSubFolder },
-		};
-
 		if (FileSystem::exists(DefaultSkinFolderRaw))
 		{
 			FileSystem::remove(DefaultSkinFolder);
@@ -1310,37 +1206,23 @@ namespace BansheeEngine
 
 		if (FileSystem::exists(DefaultShaderFolderRaw))
 		{
-			Path shaderFolder = DefaultShaderFolder;
-			shaderFolder.append(mActiveShaderSubFolder);
+			FileSystem::remove(DefaultShaderFolder);
 
-			FileSystem::remove(shaderFolder);
+			Vector<Path> directories;
+			Vector<Path> files;
+			FileSystem::getChildren(DefaultShaderFolderRaw, files, directories);
 
-			for (auto& importData : GPU_PROGRAM_IMPORT_DATA)
+			for (auto& shaderFile : files)
 			{
-				if (importData.folder != mActiveShaderSubFolder)
-					continue;
+				HShader shader = Importer::instance().import<Shader>(shaderFile);
 
-				Path gpuProgInputLoc = DefaultShaderFolderRaw;
-				gpuProgInputLoc.append(importData.folder);
-				gpuProgInputLoc.append(importData.filename);
-
-				Path gpuProgOutputLoc = DefaultShaderFolder;
-				gpuProgOutputLoc.append(importData.folder);
-				gpuProgOutputLoc.append(importData.filename + L".asset");
-
-				ImportOptionsPtr gpuProgImportOptions = Importer::instance().createImportOptions(gpuProgInputLoc);
-				if (rtti_is_of_type<GpuProgramImportOptions>(gpuProgImportOptions))
+				if (shader != nullptr)
 				{
-					GpuProgramImportOptions* importOptions = static_cast<GpuProgramImportOptions*>(gpuProgImportOptions.get());
+					Path gpuProgOutputLoc = DefaultShaderFolder;
+					gpuProgOutputLoc.append(shaderFile.getWFilename() + L".asset");
 
-					importOptions->setEntryPoint(importData.entryPoint);
-					importOptions->setLanguage(importData.language);
-					importOptions->setProfile(importData.profile);
-					importOptions->setType(importData.type);
+					Resources::instance().save(shader, gpuProgOutputLoc, true);
 				}
-
-				HGpuProgram gpuProgram = Importer::instance().import<GpuProgram>(gpuProgInputLoc, gpuProgImportOptions);
-				Resources::instance().save(gpuProgram, gpuProgOutputLoc, true);
 			}
 		}
 
@@ -1375,409 +1257,12 @@ namespace BansheeEngine
 		return Resources::instance().load<SpriteTexture>(texturePath);
 	}
 
-	HGpuProgram BuiltinEditorResources::getGpuProgram(const WString& name)
+	HShader BuiltinEditorResources::getShader(const WString& name)
 	{
 		Path programPath = DefaultShaderFolder;
-		programPath.append(mActiveShaderSubFolder);
 		programPath.append(name + L".asset");
 
-		return gResources().load<GpuProgram>(programPath);
-	}
-
-	void BuiltinEditorResources::initDockDropOverlayShader()
-	{
-		HGpuProgram vsProgram = getGpuProgram(ShaderDockOverlayVSFile);
-		HGpuProgram psProgram = getGpuProgram(ShaderDockOverlayPSFile);
-
-		BLEND_STATE_DESC desc;
-		desc.renderTargetDesc[0].blendEnable = true;
-		desc.renderTargetDesc[0].srcBlend = BF_SOURCE_ALPHA;
-		desc.renderTargetDesc[0].dstBlend = BF_INV_SOURCE_ALPHA;
-		desc.renderTargetDesc[0].blendOp = BO_ADD;
-
-		HBlendState blendState = BlendState::create(desc);
-
-		DEPTH_STENCIL_STATE_DESC depthStateDesc;
-		depthStateDesc.depthReadEnable = false;
-		depthStateDesc.depthWriteEnable = false;
-
-		HDepthStencilState depthState = DepthStencilState::create(depthStateDesc);
-
-		PASS_DESC passDesc;
-		passDesc.vertexProgram = vsProgram;
-		passDesc.fragmentProgram = psProgram;
-		passDesc.blendState = blendState;
-		passDesc.depthStencilState = depthState;
-
-		PassPtr newPass = Pass::create(passDesc);
-		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererAny, { newPass });
-
-		SHADER_DESC shaderDesc;
-		shaderDesc.addParameter("invViewportWidth", "invViewportWidth", GPDT_FLOAT1);
-		shaderDesc.addParameter("invViewportHeight", "invViewportHeight", GPDT_FLOAT1);
-
-		shaderDesc.addParameter("tintColor", "tintColor", GPDT_FLOAT4);
-		shaderDesc.addParameter("highlightColor", "highlightColor", GPDT_FLOAT4);
-		shaderDesc.addParameter("highlightActive", "highlightActive", GPDT_FLOAT4);
-
-		mShaderDockOverlay = Shader::create("DockDropOverlayShader", shaderDesc, { newTechnique });
-	}
-
-	void BuiltinEditorResources::initSceneGridShader()
-	{
-		HGpuProgram vsProgram = getGpuProgram(SceneGridVSFile);
-		HGpuProgram psProgram = getGpuProgram(SceneGridPSFile);
-
-		BLEND_STATE_DESC blendDesc;
-		blendDesc.renderTargetDesc[0].blendEnable = true;
-		blendDesc.renderTargetDesc[0].srcBlend = BF_SOURCE_ALPHA;
-		blendDesc.renderTargetDesc[0].dstBlend = BF_INV_SOURCE_ALPHA;
-		blendDesc.renderTargetDesc[0].blendOp = BO_ADD;
-		blendDesc.renderTargetDesc[0].renderTargetWriteMask = 0x7; // Don't write to alpha
-
-		HBlendState blendState = BlendState::create(blendDesc);
-
-		RASTERIZER_STATE_DESC rasterizerDesc;
-		rasterizerDesc.cullMode = CULL_NONE;
-
-		HRasterizerState rasterizerState = RasterizerState::create(rasterizerDesc);
-
-		DEPTH_STENCIL_STATE_DESC depthStencilDesc;
-		depthStencilDesc.depthWriteEnable = false;
-
-		HDepthStencilState depthStencilState = DepthStencilState::create(depthStencilDesc);
-
-		PASS_DESC passDesc;
-		passDesc.vertexProgram = vsProgram;
-		passDesc.fragmentProgram = psProgram;
-		passDesc.blendState = blendState;
-		passDesc.rasterizerState = rasterizerState;
-		passDesc.depthStencilState = depthStencilState;
-
-		PassPtr newPass = Pass::create(passDesc);
-		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererAny, { newPass });
-
-		SHADER_DESC shaderDesc;
-		shaderDesc.addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
-		shaderDesc.addParameter("worldCameraPos", "worldCameraPos", GPDT_FLOAT4);
-		shaderDesc.addParameter("gridColor", "gridColor", GPDT_FLOAT4);
-		shaderDesc.addParameter("gridSpacing", "gridSpacing", GPDT_FLOAT1);
-		shaderDesc.addParameter("gridBorderWidth", "gridBorderWidth", GPDT_FLOAT1);
-		shaderDesc.addParameter("gridFadeOutStart", "gridFadeOutStart", GPDT_FLOAT1);
-		shaderDesc.addParameter("gridFadeOutEnd", "gridFadeOutEnd", GPDT_FLOAT1);
-		shaderDesc.queuePriority = -10000;
-
-		mShaderSceneGrid = Shader::create("SceneGridShader", shaderDesc, { newTechnique });
-	}
-
-	void BuiltinEditorResources::initPickingShader(CullingMode cullMode)
-	{
-		UINT32 modeIdx = (UINT32)cullMode;
-
-		HGpuProgram vsProgram = getGpuProgram(PickingVSFile);
-		HGpuProgram psProgram = getGpuProgram(PickingPSFile);
-
-		RASTERIZER_STATE_DESC rasterizerDesc;
-		rasterizerDesc.scissorEnable = true;
-		rasterizerDesc.cullMode = cullMode;
-
-		HRasterizerState rasterizerState = RasterizerState::create(rasterizerDesc);
-
-		PASS_DESC passDesc;
-		passDesc.vertexProgram = vsProgram;
-		passDesc.fragmentProgram = psProgram;
-		passDesc.rasterizerState = rasterizerState;
-
-		PassPtr newPass = Pass::create(passDesc);
-
-		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererAny, { newPass });
-
-		SHADER_DESC shaderDesc;
-		shaderDesc.addParameter("colorIndex", "colorIndex", GPDT_FLOAT4);
-		shaderDesc.addParameter("matWorldViewProj", "matWorldViewProj", GPDT_MATRIX_4X4);
-
-		mShaderPicking[modeIdx] = Shader::create("PickingShader", shaderDesc, { newTechnique });
-	}
-
-	void BuiltinEditorResources::initPickingAlphaShader(CullingMode cullMode)
-	{
-		UINT32 modeIdx = (UINT32)cullMode;
-
-		HGpuProgram vsProgram = getGpuProgram(PickingAlphaVSFile);
-		HGpuProgram psProgram = getGpuProgram(PickingAlphaPSFile);
-
-		RASTERIZER_STATE_DESC rasterizerDesc;
-		rasterizerDesc.scissorEnable = true;
-		rasterizerDesc.cullMode = cullMode;
-
-		HRasterizerState rasterizerState = RasterizerState::create(rasterizerDesc);
-
-		PASS_DESC passDesc;
-		passDesc.vertexProgram = vsProgram;
-		passDesc.fragmentProgram = psProgram;
-		passDesc.rasterizerState = rasterizerState;
-
-		PassPtr newPass = Pass::create(passDesc);
-		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererAny, { newPass });
-
-		SHADER_DESC shaderDesc;
-		shaderDesc.addParameter("mainTexSamp", "mainTexSamp", GPOT_SAMPLER2D);
-		shaderDesc.addParameter("mainTexSamp", "mainTexture", GPOT_SAMPLER2D);
-
-		shaderDesc.addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
-
-		shaderDesc.addParameter("alphaCutoff", "alphaCutoff", GPDT_FLOAT1);
-		shaderDesc.addParameter("colorIndex", "colorIndex", GPDT_FLOAT4);
-		shaderDesc.addParameter("matWorldViewProj", "matWorldViewProj", GPDT_MATRIX_4X4);
-
-		mShaderPickingAlpha[modeIdx] = Shader::create("PickingAlphaShader", shaderDesc, { newTechnique });
-	}
-
-	void BuiltinEditorResources::initWireGizmoShader()
-	{
-		HGpuProgram vsProgram = getGpuProgram(ShaderWireGizmoVSFile);
-		HGpuProgram psProgram = getGpuProgram(ShaderWireGizmoPSFile);
-
-		PASS_DESC passDesc;
-		passDesc.vertexProgram = vsProgram;
-		passDesc.fragmentProgram = psProgram;
-
-		PassPtr newPass = Pass::create(passDesc);
-		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererAny, { newPass });
-
-		SHADER_DESC shaderDesc;
-		shaderDesc.addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
-
-		mShaderGizmoWire = Shader::create("GizmoWire", shaderDesc, { newTechnique });
-	}
-
-	void BuiltinEditorResources::initSolidGizmoShader()
-	{
-		HGpuProgram vsProgram = getGpuProgram(ShaderSolidGizmoVSFile);
-		HGpuProgram psProgram = getGpuProgram(ShaderSolidGizmoPSFile);
-
-		PASS_DESC passDesc;
-		passDesc.vertexProgram = vsProgram;
-		passDesc.fragmentProgram = psProgram;
-
-		PassPtr newPass = Pass::create(passDesc);
-		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererAny, { newPass });
-
-		SHADER_DESC shaderDesc;
-		shaderDesc.addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
-
-		mShaderGizmoSolid = Shader::create("GizmoSolid", shaderDesc, { newTechnique });
-	}
-
-	void BuiltinEditorResources::initWireHandleShader()
-	{
-		HGpuProgram vsProgram = getGpuProgram(ShaderWireGizmoVSFile);
-		HGpuProgram psProgram = getGpuProgram(ShaderWireGizmoPSFile);
-
-		DEPTH_STENCIL_STATE_DESC depthStencilStateDesc;
-		depthStencilStateDesc.depthWriteEnable = false;
-		depthStencilStateDesc.depthReadEnable = false;
-
-		HDepthStencilState depthStencilState = DepthStencilState::create(depthStencilStateDesc);
-
-		BLEND_STATE_DESC blendDesc;
-		blendDesc.renderTargetDesc[0].blendEnable = true;
-		blendDesc.renderTargetDesc[0].srcBlend = BF_SOURCE_ALPHA;
-		blendDesc.renderTargetDesc[0].dstBlend = BF_INV_SOURCE_ALPHA;
-		blendDesc.renderTargetDesc[0].blendOp = BO_ADD;
-
-		HBlendState blendState = BlendState::create(blendDesc);
-
-		PASS_DESC passDesc;
-		passDesc.vertexProgram = vsProgram;
-		passDesc.fragmentProgram = psProgram;
-		passDesc.depthStencilState = depthStencilState;
-		passDesc.blendState = blendState;
-
-		PassPtr newPass = Pass::create(passDesc);
-		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererAny, { newPass });
-
-		SHADER_DESC shaderDesc;
-		shaderDesc.addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
-
-		mShaderHandleWire = Shader::create("HandleWire", shaderDesc, { newTechnique });
-	}
-
-	void BuiltinEditorResources::initSolidHandleShader()
-	{
-		HGpuProgram vsProgram = getGpuProgram(ShaderSolidGizmoVSFile);
-		HGpuProgram psProgram = getGpuProgram(ShaderSolidGizmoPSFile);
-
-		DEPTH_STENCIL_STATE_DESC depthStencilStateDesc;
-		depthStencilStateDesc.depthWriteEnable = false;
-		depthStencilStateDesc.depthReadEnable = false;
-
-		HDepthStencilState depthStencilState = DepthStencilState::create(depthStencilStateDesc);
-
-		BLEND_STATE_DESC blendDesc;
-		blendDesc.renderTargetDesc[0].blendEnable = true;
-		blendDesc.renderTargetDesc[0].srcBlend = BF_SOURCE_ALPHA;
-		blendDesc.renderTargetDesc[0].dstBlend = BF_INV_SOURCE_ALPHA;
-		blendDesc.renderTargetDesc[0].blendOp = BO_ADD;
-
-		HBlendState blendState = BlendState::create(blendDesc);
-
-		PASS_DESC passDesc;
-		passDesc.vertexProgram = vsProgram;
-		passDesc.fragmentProgram = psProgram;
-		passDesc.depthStencilState = depthStencilState;
-		passDesc.blendState = blendState;
-
-		PassPtr newPass = Pass::create(passDesc);
-		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererAny, { newPass });
-
-		SHADER_DESC shaderDesc;
-		shaderDesc.addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
-
-		mShaderHandleSolid = Shader::create("HandleSolid", shaderDesc, { newTechnique });
-	}
-
-	void BuiltinEditorResources::initIconGizmoShader()
-	{
-		HGpuProgram vsProgram0 = getGpuProgram(ShaderIconGizmo0VSFile);
-		HGpuProgram psProgram0 = getGpuProgram(ShaderIconGizmo0PSFile);
-		HGpuProgram vsProgram1 = getGpuProgram(ShaderIconGizmo1VSFile);
-		HGpuProgram psProgram1 = getGpuProgram(ShaderIconGizmo1PSFile);
-
-		BLEND_STATE_DESC blendDesc;
-		blendDesc.renderTargetDesc[0].blendEnable = true;
-		blendDesc.renderTargetDesc[0].srcBlend = BF_SOURCE_ALPHA;
-		blendDesc.renderTargetDesc[0].dstBlend = BF_INV_SOURCE_ALPHA;
-		blendDesc.renderTargetDesc[0].blendOp = BO_ADD;
-
-		HBlendState blendState = BlendState::create(blendDesc);
-
-		DEPTH_STENCIL_STATE_DESC depthStencilState0Desc;
-		depthStencilState0Desc.depthWriteEnable = false;
-		depthStencilState0Desc.depthComparisonFunc = CMPF_LESS_EQUAL;
-
-		HDepthStencilState depthStencilState0 = DepthStencilState::create(depthStencilState0Desc);
-
-		DEPTH_STENCIL_STATE_DESC depthStencilState1Desc;
-		depthStencilState1Desc.depthWriteEnable = false;
-		depthStencilState1Desc.depthComparisonFunc = CMPF_GREATER;
-
-		HDepthStencilState depthStencilState1 = DepthStencilState::create(depthStencilState1Desc);
-
-		PASS_DESC pass0Desc;
-		pass0Desc.vertexProgram = vsProgram0;
-		pass0Desc.fragmentProgram = psProgram0;
-		pass0Desc.blendState = blendState;
-		pass0Desc.depthStencilState = depthStencilState0;
-
-		PassPtr newPass0 = Pass::create(pass0Desc);
-
-		PASS_DESC pass1Desc;
-		pass1Desc.vertexProgram = vsProgram1;
-		pass1Desc.fragmentProgram = psProgram1;
-		pass1Desc.blendState = blendState;
-		pass1Desc.depthStencilState = depthStencilState1;
-
-		PassPtr newPass1 = Pass::create(pass1Desc);
-
-		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererAny, { newPass0, newPass1 });
-
-		SHADER_DESC shaderDesc;
-		shaderDesc.addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
-		shaderDesc.addParameter("mainTexSamp", "mainTexSamp", GPOT_SAMPLER2D);
-		shaderDesc.addParameter("mainTexSamp", "mainTexture", GPOT_SAMPLER2D);
-		shaderDesc.addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
-
-		mShaderGizmoIcon = Shader::create("GizmoIcon", shaderDesc, { newTechnique });
-	}
-
-	void BuiltinEditorResources::initGizmoPickingShader()
-	{
-		HGpuProgram vsProgram = getGpuProgram(GizmoPickingVSFile);
-		HGpuProgram psProgram = getGpuProgram(GizmoPickingPSFile);
-
-		RASTERIZER_STATE_DESC rasterizerDesc;
-		rasterizerDesc.scissorEnable = true;
-
-		HRasterizerState rasterizerState = RasterizerState::create(rasterizerDesc);
-
-		PASS_DESC passDesc;
-		passDesc.vertexProgram = vsProgram;
-		passDesc.fragmentProgram = psProgram;
-		passDesc.rasterizerState = rasterizerState;
-
-		PassPtr newPass = Pass::create(passDesc);
-		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererAny, { newPass });
-
-		SHADER_DESC shaderDesc;
-		shaderDesc.addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
-
-		mShaderGizmoPicking = Shader::create("GizmoPickingShader", shaderDesc, { newTechnique });
-	}
-
-	void BuiltinEditorResources::initGizmoPickingAlphaShader()
-	{
-		HGpuProgram vsProgram = getGpuProgram(GizmoPickingAlphaVSFile);
-		HGpuProgram psProgram = getGpuProgram(GizmoPickingAlphaPSFile);
-
-		RASTERIZER_STATE_DESC rasterizerDesc;
-		rasterizerDesc.scissorEnable = true;
-
-		HRasterizerState rasterizerState = RasterizerState::create(rasterizerDesc);
-		
-		PASS_DESC passDesc;
-		passDesc.vertexProgram = vsProgram;
-		passDesc.fragmentProgram = psProgram;
-		passDesc.rasterizerState = rasterizerState;
-
-		PassPtr newPass = Pass::create(passDesc);
-		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererAny, { newPass });
-
-		SHADER_DESC shaderDesc;
-		shaderDesc.addParameter("mainTexSamp", "mainTexSamp", GPOT_SAMPLER2D);
-		shaderDesc.addParameter("mainTexSamp", "mainTexture", GPOT_SAMPLER2D);
-
-		shaderDesc.addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
-
-		shaderDesc.addParameter("alphaCutoff", "alphaCutoff", GPDT_FLOAT1);
-		shaderDesc.addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
-
-		mShaderGizmoAlphaPicking = Shader::create("GizmoPickingAlphaShader", shaderDesc, { newTechnique });
-	}
-
-	void BuiltinEditorResources::initSelectionShader()
-	{
-		HGpuProgram vsProgram = getGpuProgram(SelectionVSFile);
-		HGpuProgram psProgram = getGpuProgram(SelectionPSFile);
-
-		RASTERIZER_STATE_DESC rasterizerDesc;
-		rasterizerDesc.polygonMode = PM_WIREFRAME;
-		rasterizerDesc.depthBias = 0.00001f;
-
-		HRasterizerState rasterizerState = RasterizerState::create(rasterizerDesc);
-
-		BLEND_STATE_DESC blendDesc;
-		blendDesc.renderTargetDesc[0].blendEnable = true;
-		blendDesc.renderTargetDesc[0].srcBlend = BF_SOURCE_ALPHA;
-		blendDesc.renderTargetDesc[0].dstBlend = BF_INV_SOURCE_ALPHA;
-		blendDesc.renderTargetDesc[0].blendOp = BO_ADD;
-
-		HBlendState blendState = BlendState::create(blendDesc);
-
-		PASS_DESC passDesc;
-		passDesc.vertexProgram = vsProgram;
-		passDesc.fragmentProgram = psProgram;
-		passDesc.rasterizerState = rasterizerState;
-		passDesc.blendState = blendState;
-
-		PassPtr newPass = Pass::create(passDesc);
-		TechniquePtr newTechnique = Technique::create(mActiveRenderSystem, RendererAny, { newPass });
-
-		SHADER_DESC shaderDesc;
-		shaderDesc.addParameter("matWorldViewProj", "matWorldViewProj", GPDT_MATRIX_4X4);
-		shaderDesc.addParameter("color", "color", GPDT_FLOAT4);
-
-		mShaderSelection = Shader::create("Selection", shaderDesc, { newTechnique });
+		return gResources().load<Shader>(programPath);
 	}
 
 	HMaterial BuiltinEditorResources::createDockDropOverlayMaterial() const

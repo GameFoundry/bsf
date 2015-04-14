@@ -56,65 +56,6 @@ namespace BansheeEditor
         private static extern void Internal_SetMaxMipmapLevel(IntPtr thisPtr, UInt32 value);
     }
 
-    public class GpuProgramImportOptions : ImportOptions
-    {
-        public GpuProgramImportOptions()
-        {
-            Internal_CreateInstance(this);
-        }
-
-        public string EntryPoint
-        {
-            get { return Internal_GetEntryPoint(mCachedPtr); }
-            set { Internal_SetEntryPoint(mCachedPtr, value); }
-        }
-
-        public GpuLanguage Language
-        {
-            get { return Internal_GetLanguage(mCachedPtr); }
-            set { Internal_SetLanguage(mCachedPtr, value); }
-        }
-
-        public GpuProgramProfile Profile
-        {
-            get { return Internal_GetProfile(mCachedPtr); }
-            set { Internal_SetProfile(mCachedPtr, value); }
-        }
-
-        public GpuProgramType Type
-        {
-            get { return Internal_GetType(mCachedPtr); }
-            set { Internal_SetType(mCachedPtr, value); }
-        }
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(GpuProgramImportOptions instance);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern string Internal_GetEntryPoint(IntPtr thisPtr);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetEntryPoint(IntPtr thisPtr, string value);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern GpuLanguage Internal_GetLanguage(IntPtr thisPtr);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetLanguage(IntPtr thisPtr, GpuLanguage value);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern GpuProgramProfile Internal_GetProfile(IntPtr thisPtr);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetProfile(IntPtr thisPtr, GpuProgramProfile value);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern GpuProgramType Internal_GetType(IntPtr thisPtr);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetType(IntPtr thisPtr, GpuProgramType value);
-    }
-
     public class FontImportOptions : ImportOptions
     {
         public FontImportOptions()

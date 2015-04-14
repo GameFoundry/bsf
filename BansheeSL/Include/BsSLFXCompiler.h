@@ -151,28 +151,28 @@ namespace BansheeEngine
 		static void parseRenderTargetBlendState(BLEND_STATE_DESC& desc, ASTFXNode* targetNode);
 
 		/**
-		 * @brief	Parses the blend state AST node and outputs a blend state object, or an invalid
-		 *			handle in case AST node is empty. 
+		 * @brief	Parses the blend state AST node and outputs a blend state object, or a nullptr
+		 *			in case AST node is empty. 
 		 */
-		static HBlendState parseBlendState(ASTFXNode* passNode);
+		static BlendStatePtr parseBlendState(ASTFXNode* passNode);
 
 		/**
-		 * @brief	Parses the rasterizer state AST node and outputs a rasterizer state object, or an invalid
-		 *			handle in case AST node is empty. 
+		 * @brief	Parses the rasterizer state AST node and outputs a rasterizer state object, or a nullptr
+		 *			in case AST node is empty. 
 		 */
-		static HRasterizerState parseRasterizerState(ASTFXNode* passNode);
+		static RasterizerStatePtr parseRasterizerState(ASTFXNode* passNode);
 
 		/**
-		 * @brief	Parses the depth-stencil state AST node and outputs a depth-stencil state object, or an invalid
-		 *			handle in case AST node is empty. 
+		 * @brief	Parses the depth-stencil state AST node and outputs a depth-stencil state object, or a nullptr
+		 *			in case AST node is empty. 
 		 */
-		static HDepthStencilState parseDepthStencilState(ASTFXNode* passNode);
+		static DepthStencilStatePtr parseDepthStencilState(ASTFXNode* passNode);
 
 		/**
-		 * @brief	Parses the sampler state AST node and outputs a sampler state object, or an invalid
-		 *			handle in case AST node is empty. 
+		 * @brief	Parses the sampler state AST node and outputs a sampler state object, or a nullptr
+		 *			in case AST node is empty. 
 		 */
-		static HSamplerState parseSamplerState(ASTFXNode* samplerStateNode);
+		static SamplerStatePtr parseSamplerState(ASTFXNode* samplerStateNode);
 
 		/**
 		 * @brief	Parses the pass AST node and generates a single pass object. Returns null
