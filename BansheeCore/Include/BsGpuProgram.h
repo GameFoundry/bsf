@@ -245,18 +245,16 @@ namespace BansheeEngine
 		 * @param	language	Language the source is written in, e.g. "hlsl" or "glsl".
 		 * @param	gptype		Type of the program, e.g. vertex or fragment.
 		 * @param	profile		Program profile specifying supported feature-set. Must match the type.
-		 * @param	includes	Optional includes to append to the source before compiling.
 		 * @param	requiresAdjacency	If true then adjacency information will be provided when rendering using this program.
 		 */
 		static GpuProgramPtr create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype,
-			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes = nullptr, bool requiresAdjacency = false);
+			GpuProgramProfile profile, bool requiresAdjacency = false);
 
 	protected:
 		friend class GpuProgramManager;
 
 		GpuProgram(const String& source, const String& entryPoint, const String& language,
-			GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes,
-			bool isAdjacencyInfoRequired = false);
+			GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired = false);
 
 		/**
 		 * @copydoc	CoreObject::createCore
@@ -267,11 +265,6 @@ namespace BansheeEngine
 		 * @copydoc Resource::calculateSize
 		 */
 		size_t calculateSize() const { return 0; } // TODO 
-
-		/**
-		 * @brief	Merges the shader code with optional includes.
-		 */
-		static String mergeWithIncludes(const String& source, const Vector<HGpuProgInclude>* includes);
 
 	protected:
 		bool mNeedsAdjacencyInfo;

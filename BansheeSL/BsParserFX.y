@@ -118,7 +118,7 @@ void yyerror(YYLTYPE *locp, ParseState* parse_state, yyscan_t scanner, const cha
 %token	TOKEN_RENDERER TOKEN_LANGUAGE TOKEN_INCLUDE TOKEN_PASS
 
 	/* Pass keywords */
-%token	TOKEN_VERTEX TOKEN_FRAGMENT TOKEN_GEOMETRY TOKEN_HULL TOKEN_DOMAIN TOKEN_COMPUTE
+%token	TOKEN_VERTEX TOKEN_FRAGMENT TOKEN_GEOMETRY TOKEN_HULL TOKEN_DOMAIN TOKEN_COMPUTE TOKEN_COMMON
 %token	TOKEN_STENCILREF
 
 %token	TOKEN_FILLMODE TOKEN_CULLMODE TOKEN_DEPTHBIAS TOKEN_SDEPTHBIAS
@@ -241,6 +241,7 @@ shader_option
 	: TOKEN_SEPARABLE '=' TOKEN_BOOLEAN ';'		{ $$.type = OT_Separable; $$.value.intValue = $3; }
 	| TOKEN_QUEUE '=' TOKEN_INTEGER ';'			{ $$.type = OT_Queue; $$.value.intValue = $3; }
 	| TOKEN_PRIORITY '=' TOKEN_INTEGER ';'		{ $$.type = OT_Priority; $$.value.intValue = $3; }
+	| TOKEN_INCLUDE '=' TOKEN_STRING ';'		{ $$.type = OT_Include; $$.value.strValue = $3; }
 	;
 
 	/* Technique */
@@ -265,12 +266,14 @@ technique_body
 technique_statement
 	: technique_option
 	| pass				{ $$.type = OT_Pass; $$.value.nodePtr = $1; }
+	| pass_option
+	| code				{ $$.type = OT_Code; $$.value.nodePtr = $1; }
 	;
 
 technique_option
 	: TOKEN_RENDERER '=' TOKEN_STRING ';'	{ $$.type = OT_Renderer; $$.value.strValue = $3; }
 	| TOKEN_LANGUAGE '=' TOKEN_STRING ';'	{ $$.type = OT_Language; $$.value.strValue = $3; }
-	| TOKEN_INCLUDE '=' TOKEN_STRING ';'	{ $$.type = OT_Include; $$.value.strValue = $3; }
+	;
 
 	/* Pass */
 
@@ -297,7 +300,8 @@ pass_statement
 	;
 
 pass_option
-	: TOKEN_FILLMODE '=' TOKEN_FILLMODEVALUE ';'				{ $$.type = OT_FillMode; $$.value.intValue = $3; }
+	: TOKEN_INDEX '=' TOKEN_INTEGER ';'							{ $$.type = OT_Index; $$.value.intValue = $3; }
+	| TOKEN_FILLMODE '=' TOKEN_FILLMODEVALUE ';'				{ $$.type = OT_FillMode; $$.value.intValue = $3; }
 	| TOKEN_CULLMODE '=' TOKEN_CULLMODEVALUE ';'				{ $$.type = OT_CullMode; $$.value.intValue = $3; }
 	| TOKEN_DEPTHBIAS '=' TOKEN_FLOAT ';'						{ $$.type = OT_DepthBias; $$.value.floatValue = $3; }
 	| TOKEN_SDEPTHBIAS '=' TOKEN_FLOAT ';'						{ $$.type = OT_SDepthBias; $$.value.floatValue = $3; }
@@ -364,6 +368,11 @@ code_header
 			nodePush(parse_state, $$);
 		}
 	| TOKEN_COMPUTE '='
+		{ 
+			$$ = nodeCreate(parse_state->memContext, NT_Code); 
+			nodePush(parse_state, $$);
+		}
+	| TOKEN_COMMON '='
 		{ 
 			$$ = nodeCreate(parse_state->memContext, NT_Code); 
 			nodePush(parse_state, $$);

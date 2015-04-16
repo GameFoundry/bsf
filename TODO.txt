@@ -94,76 +94,32 @@ Later:
  - Raycast snapping Ribek suggested
 
 ----------------------------------------------------------------------
-C# Material
-
-C# material interface:
- - Pass
- - GpuProgram
- - DepthStencilState
- - RasterizerState
- - BlendState
- - SamplerState
- - Technique
- - Shader
- - Material
-
---------
-
 Include files:
- - Remove references to HGpuProgInclude when creating a GpuProgram
-  - Keep using HGpuProgInclude since I need a special resource for includes (I don't want the importer to think 
-     they're Shaders, plus I can avoid making a special case for them in the parser)
- - Instead try to find and load included shader files in BansheeSL by calling Resources
-  - If resource cannot be found ignore it, but still register it as a dependency
- - All includes should be registered in ShaderManager
-  - Whenever a shader is loaded this should be notified so it may recompile all shaders
- - GpuProgram::recompile(newSource)
-   - TODO - Need info
 
-ShaderManager will also be needed when I'm changing shader defines
- - TODO - Test shaders and ensure #defines work
-  - DX11 might need to call D3DPreprocess and include a list of defines
- - GLSL - Need to manually specify #defines as separate lines
+Include merging:
+ - Finish up merging: Missing recursive parsing and loading of includes + code block array merging
+ - ShaderManager
+   - Do not use ResourceListener for shader updates as it cannot handle missing includes (i.e. if include gets imported after its shader)
+   - Specify includes by asset path
+     - By default they're searched relative to the working directory
+     - Higher layers can override the path resolver to ShaderManager
+       - e.g. EditorApplication can resolve paths that exist in Project Library (i.e. map from source asset -> actual asset)
+   - ShaderManager needs to be notified when an include is deleted/moved/renamed
+     - Job for project libary. Outside of editor do nothing. i.e. add method ShaderManager::recompileDependencies(include)
+	   - Recompile should just rebuild the entire Shader (not calling GpuProgram::recompile or similar)
 
-ShaderManager will also be needed when switching render APIs during runtime (if that will be possible)
- - It can also serve as a place where we perform shader caching
+Once include works modify existing shaders so they use it.
 
- - Separate languages for DX9 and DX11
- - If I import a shader that tries to compile for a language different than we have available, create a null GpuProgram
+Test:
+ - If errors are reported properly from FX compiler and GPU program compilers
+ - Try preprocessing using one RenderAPi and then load the shaders using another and see if they're created normally
 
-0. Move all shaders to new .shader format, ensure everything works
-0.1. Check in new shaders as dependencies
+----
 
-1. Make render states and GPU program non-resources. Ensure they aren't referenced by handles anymore
-1.1. Get rid of GpuProgram importer and modify how BuiltinResources imports shaders
-2. Make render states and GPU programs be saved with the shader
+Add support for registering default parameters (add a set of addParameter methods to SHADER_DESC). Keep sampler states and textures in a dynamic array, and all other data in a dynamic byte array.
+ - Make sure initializing the material properly sets up default parameters
 
-3. Rename HGpuInc to HShaderInc and make its file format be ".bslinc". Remove includes from GpuProgram creation (GpuProgram has mergeWithIncludes method that needs removing as well)
-4. Add ShaderManager that allows GPU programs to register themselves and to be recompiled once their includes change
-  - TODO - Perhaps use ResourceListener instead?
-5. Add support for includes in BansheeSL (injecting their code into actual shader source) + registering with shader manager
-5.1. Modify existing shaders as I have some that share code but differ in state options only
-
-6. Add support for registering default parameters (add a set of addParameter methods to SHADER_DESC). Keep sampler states and textures in a dynamic array, and all other data in a dynamic byte array.
-7. Make sure initializing the material properly sets up default parameters
-
--------------------
-
-TODO STAGE 2:
- - Handle include files (include files should just be plain text files with no additional parsing)
-  - When includes that shaders depend on are imported/changes I need to recompile those shaders
-    - Whenever a GPU program is created it registers itself with a manager and sets up the includes it relies on
-	- Whenever .shader import is called, it scans through all includes and finds out if any shaders depend on them
-	  - If so, it performs a recompile on those shaders
-  - Currently I handle includes on a pretty low level. Maybe I should handle them in BansheeSL instead? (Directly injecting the include code into the source code)
-  - How to handle parsing of include .shader files? They don't need techniques or passes.
- - Handle default values (ignore default values for shared param blocks for now)
-   - additional argument in Shader::addParameter, copy values to buffers when initializing Material
- - Make sure shader saving works and optionally make GpuProgram a non-resource
-  - Make sure GPU programs and states are saved with the Shader
-
-TODO STAGE 3:
- - Move all builtin shaders to the new .shader file model
+----
 
 TODO LATER:
  - Add GpuProgram caching (e.g. save compiled programs somewhere for later use)
@@ -171,6 +127,7 @@ TODO LATER:
  - Parameter definitions don't support arrays (Leave this for a later iteration)
  - Parameter definitions don't support structs
  - Better error reporting instead of just "syntax error" that better informs the user what the error is
+ - Ensure #defines work properly
 
 ----------------------------------------------------------------------
 Scene View

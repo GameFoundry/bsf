@@ -41,6 +41,7 @@
 #include "BsMessageHandler.h"
 #include "BsResourceListenerManager.h"
 #include "BsRenderStateManager.h"
+#include "BsShaderManager.h"
 
 #include "BsMaterial.h"
 #include "BsShader.h"
@@ -60,59 +61,8 @@ namespace BansheeEngine
 
 	CoreApplication::CoreApplication(START_UP_DESC& desc)
 		:mPrimaryWindow(nullptr), mIsFrameRenderingFinished(true), mRunMainLoop(false), 
-		mRendererPlugin(nullptr), mSimThreadId(BS_THREAD_CURRENT_ID)
-	{
-		signal(SIGABRT, handleAbort);
-
-		UINT32 numWorkerThreads = BS_THREAD_HARDWARE_CONCURRENCY - 1; // Number of cores while excluding current thread.
-
-		Platform::_startUp();
-		MemStack::beginThread();
-
-		MessageHandler::startUp();
-		UUIDGenerator::startUp();
-		ProfilerCPU::startUp();
-		ProfilingManager::startUp();
-		ThreadPool::startUp<TThreadPool<ThreadBansheePolicy>>((numWorkerThreads));
-		TaskScheduler::startUp();
-		TaskScheduler::instance().removeWorker();
-		RenderStats::startUp();
-		CoreThread::startUp();
-		StringTable::startUp();
-		DeferredCallManager::startUp();
-		Time::startUp();
-		DynLibManager::startUp();
-		CoreObjectManager::startUp();
-		GameObjectManager::startUp();
-		Resources::startUp();
-		ResourceListenerManager::startUp();
-		GpuProgramManager::startUp();
-		RenderStateManager::startUp();
-		GpuProgramCoreManager::startUp();
-		RenderAPIManager::startUp();
-
-		mPrimaryWindow = RenderAPIManager::instance().initialize(desc.renderSystem, desc.primaryWindowDesc);
-
-		Input::startUp();
-		RendererManager::startUp();
-
-		loadPlugin(desc.renderer, &mRendererPlugin);
-
-		SceneManagerFactory::create();
-		RendererManager::instance().setActive(desc.renderer);
-
-		ProfilerGPU::startUp();
-		MeshManager::startUp();
-		MaterialManager::startUp();
-		FontManager::startUp();
-
-		Importer::startUp();
-
-		for (auto& importerName : desc.importers)
-			loadPlugin(importerName);
-
-		loadPlugin(desc.input, nullptr, mPrimaryWindow.get());
-	}
+		mRendererPlugin(nullptr), mSimThreadId(BS_THREAD_CURRENT_ID), mStartUpDesc(desc)
+	{ }
 
 	CoreApplication::~CoreApplication()
 	{
@@ -162,9 +112,65 @@ namespace BansheeEngine
 		ProfilerCPU::shutDown();
 		UUIDGenerator::shutDown();
 		MessageHandler::shutDown();
+		ShaderManager::shutDown();
 
 		MemStack::endThread();
 		Platform::_shutDown();
+	}
+
+	void CoreApplication::onStartUp()
+	{
+		signal(SIGABRT, handleAbort);
+
+		UINT32 numWorkerThreads = BS_THREAD_HARDWARE_CONCURRENCY - 1; // Number of cores while excluding current thread.
+
+		Platform::_startUp();
+		MemStack::beginThread();
+
+		ShaderManager::startUp(getShaderIncludeHandler());
+		MessageHandler::startUp();
+		UUIDGenerator::startUp();
+		ProfilerCPU::startUp();
+		ProfilingManager::startUp();
+		ThreadPool::startUp<TThreadPool<ThreadBansheePolicy>>((numWorkerThreads));
+		TaskScheduler::startUp();
+		TaskScheduler::instance().removeWorker();
+		RenderStats::startUp();
+		CoreThread::startUp();
+		StringTable::startUp();
+		DeferredCallManager::startUp();
+		Time::startUp();
+		DynLibManager::startUp();
+		CoreObjectManager::startUp();
+		GameObjectManager::startUp();
+		Resources::startUp();
+		ResourceListenerManager::startUp();
+		GpuProgramManager::startUp();
+		RenderStateManager::startUp();
+		GpuProgramCoreManager::startUp();
+		RenderAPIManager::startUp();
+
+		mPrimaryWindow = RenderAPIManager::instance().initialize(mStartUpDesc.renderSystem, mStartUpDesc.primaryWindowDesc);
+
+		Input::startUp();
+		RendererManager::startUp();
+
+		loadPlugin(mStartUpDesc.renderer, &mRendererPlugin);
+
+		SceneManagerFactory::create();
+		RendererManager::instance().setActive(mStartUpDesc.renderer);
+
+		ProfilerGPU::startUp();
+		MeshManager::startUp();
+		MaterialManager::startUp();
+		FontManager::startUp();
+
+		Importer::startUp();
+
+		for (auto& importerName : mStartUpDesc.importers)
+			loadPlugin(importerName);
+
+		loadPlugin(mStartUpDesc.input, nullptr, mPrimaryWindow.get());
 	}
 
 	void CoreApplication::runMainLoop()
@@ -359,6 +365,11 @@ namespace BansheeEngine
 			shutdownPluginFunc();
 
 		mPluginUpdateFunctions.erase(library);
+	}
+
+	ShaderIncludeHandlerPtr CoreApplication::getShaderIncludeHandler() const
+	{
+		return bs_shared_ptr<DefaultShaderIncludeHandler>();
 	}
 
 	CoreApplication& gCoreApplication()

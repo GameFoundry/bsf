@@ -15,6 +15,7 @@
 #include "BsCodeEditor.h"
 #include "BsBuildManager.h"
 #include "BsScriptCodeImporter.h"
+#include "BsShaderIncludeHandler.h"
 
 // DEBUG ONLY
 #include "DbgEditorWidget1.h"
@@ -64,40 +65,7 @@ namespace BansheeEngine
 		:Application(createRenderWindowDesc(), renderSystemPlugin, RendererPlugin::Default), 
 		mActiveRSPlugin(renderSystemPlugin), mSBansheeEditorPlugin(nullptr)
 	{
-		// TODO - Load project settings
-		mEditorSettings = bs_shared_ptr<EditorSettings>();
-
-		BuiltinEditorResources::startUp();
-
-		{
-			auto inputConfig = VirtualInput::instance().getConfiguration();
-
-			inputConfig->registerButton("Rename", BC_F2);
-			inputConfig->registerButton("Undo", BC_Z, ButtonModifier::Ctrl);
-			inputConfig->registerButton("Redo", BC_Y, ButtonModifier::Ctrl);
-			inputConfig->registerButton("Copy", BC_C, ButtonModifier::Ctrl);
-			inputConfig->registerButton("Cut", BC_X, ButtonModifier::Ctrl);
-			inputConfig->registerButton("Paste", BC_V, ButtonModifier::Ctrl);
-			inputConfig->registerButton("Delete", BC_DELETE);
-		}
-
-		ScriptCodeImporter* scriptCodeImporter = bs_new<ScriptCodeImporter>();
-		Importer::instance()._registerAssetImporter(scriptCodeImporter);
-
-		ResourceImporter* resourceImporter = bs_new<ResourceImporter>();
-		Importer::instance()._registerAssetImporter(resourceImporter);
-
-		ProjectLibrary::startUp(getProjectPath());
-
-		UndoRedo::startUp();
-		EditorWindowManager::startUp();
-		EditorWidgetManager::startUp();
-
-		ScenePicking::startUp();
-		Selection::startUp();
-		GizmoManager::startUp();
-		BuildManager::startUp();
-		CodeEditorManager::startUp();
+		
 	}
 
 	EditorApplication::~EditorApplication()
@@ -147,6 +115,41 @@ namespace BansheeEngine
 	void EditorApplication::onStartUp()
 	{
 		Application::onStartUp();
+
+		// TODO - Load project settings
+		mEditorSettings = bs_shared_ptr<EditorSettings>();
+
+		BuiltinEditorResources::startUp();
+
+		{
+			auto inputConfig = VirtualInput::instance().getConfiguration();
+
+			inputConfig->registerButton("Rename", BC_F2);
+			inputConfig->registerButton("Undo", BC_Z, ButtonModifier::Ctrl);
+			inputConfig->registerButton("Redo", BC_Y, ButtonModifier::Ctrl);
+			inputConfig->registerButton("Copy", BC_C, ButtonModifier::Ctrl);
+			inputConfig->registerButton("Cut", BC_X, ButtonModifier::Ctrl);
+			inputConfig->registerButton("Paste", BC_V, ButtonModifier::Ctrl);
+			inputConfig->registerButton("Delete", BC_DELETE);
+		}
+
+		ScriptCodeImporter* scriptCodeImporter = bs_new<ScriptCodeImporter>();
+		Importer::instance()._registerAssetImporter(scriptCodeImporter);
+
+		ResourceImporter* resourceImporter = bs_new<ResourceImporter>();
+		Importer::instance()._registerAssetImporter(resourceImporter);
+
+		ProjectLibrary::startUp(getProjectPath());
+
+		UndoRedo::startUp();
+		EditorWindowManager::startUp();
+		EditorWidgetManager::startUp();
+
+		ScenePicking::startUp();
+		Selection::startUp();
+		GizmoManager::startUp();
+		BuildManager::startUp();
+		CodeEditorManager::startUp();
 
 		MainEditorWindow* mainWindow = MainEditorWindow::create(getPrimaryWindow());
 		loadPlugin("SBansheeEditor", &mSBansheeEditorPlugin); // Managed part of the editor
@@ -379,6 +382,11 @@ namespace BansheeEngine
 
 		FileEncoder fs(layoutPath);
 		fs.encode(layout.get());
+	}
+
+	ShaderIncludeHandlerPtr EditorApplication::getShaderIncludeHandler() const
+	{
+		return bs_shared_ptr<EditorShaderIncludeHandler>();
 	}
 
 	EditorApplication& gEditorApplication()

@@ -263,9 +263,6 @@
     <ClInclude Include="Include\BsGpuResourceData.h">
       <Filter>Header Files\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsGpuProgInclude.h">
-      <Filter>Header Files\Resources</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsVideoModeInfo.h">
       <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
@@ -422,9 +419,6 @@
     <ClInclude Include="Include\BsImporter.h">
       <Filter>Header Files\Importer</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsGpuProgIncludeImporter.h">
-      <Filter>Header Files\Importer</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsCoreThreadAccessor.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
@@ -518,8 +512,17 @@
     <ClInclude Include="Include\Win32\BsWin32Platform.h">
       <Filter>Header Files\Platform</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsGpuProgIncludeRTTI.h">
+    <ClInclude Include="Include\BsShaderIncludeImporter.h">
+      <Filter>Header Files\Importer</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsShaderInclude.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsShaderIncludeRTTI.h">
       <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsShaderManager.h">
+      <Filter>Header Files\Material</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -573,9 +576,6 @@
     </ClCompile>
     <ClCompile Include="Source\BsMaterialRTTI.cpp">
       <Filter>Source Files\RTTI</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGpuProgInclude.cpp">
-      <Filter>Source Files\Resources</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGpuResourceData.cpp">
       <Filter>Source Files\Resources</Filter>
@@ -736,9 +736,6 @@
     <ClCompile Include="Source\BsOSInputHandler.cpp">
       <Filter>Source Files\Input</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsGpuProgIncludeImporter.cpp">
-      <Filter>Source Files\Importer</Filter>
-    </ClCompile>
     <ClCompile Include="Source\BsImporter.cpp">
       <Filter>Source Files\Importer</Filter>
     </ClCompile>
@@ -822,6 +819,15 @@
     </ClCompile>
     <ClCompile Include="Source\Win32\BsWin32BrowseDialogs.cpp">
       <Filter>Source Files\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsShaderIncludeImporter.cpp">
+      <Filter>Source Files\Importer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsShaderInclude.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsShaderManager.cpp">
+      <Filter>Source Files\Material</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

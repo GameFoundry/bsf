@@ -2,7 +2,7 @@
 #include "BsResource.h"
 #include "BsFileSystem.h"
 #include "BsSpecificImporter.h"
-#include "BsGpuProgIncludeImporter.h"
+#include "BsShaderIncludeImporter.h"
 #include "BsImportOptions.h"
 #include "BsDebug.h"
 #include "BsDataStream.h"
@@ -14,7 +14,7 @@ namespace BansheeEngine
 {
 	Importer::Importer()
 	{
-		_registerAssetImporter(bs_new<GpuProgIncludeImporter>());
+		_registerAssetImporter(bs_new<ShaderIncludeImporter>());
 	}
 
 	Importer::~Importer()

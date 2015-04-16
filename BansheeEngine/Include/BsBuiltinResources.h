@@ -98,6 +98,10 @@ namespace BansheeEngine
 		 */
 		HMaterial createDummyMaterial() const;
 
+		static const Path DefaultSkinFolder;
+		static const Path DefaultCursorFolder;
+		static const Path DefaultShaderFolder;
+
 	private:
 		/**
 		 * @brief	Imports all necessary resources and converts them to engine-ready format.
@@ -159,10 +163,6 @@ namespace BansheeEngine
 		static const Path DefaultSkinFolderRaw;
 		static const Path DefaultCursorFolderRaw;
 		static const Path DefaultShaderFolderRaw;
-
-		static const Path DefaultSkinFolder;
-		static const Path DefaultCursorFolder;
-		static const Path DefaultShaderFolder;
 
 		static const WString DefaultFontFilename;
 		static const UINT32 DefaultFontSize;

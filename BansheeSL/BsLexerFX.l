@@ -90,6 +90,7 @@ Geometry		{ return TOKEN_GEOMETRY; }
 Hull			{ return TOKEN_HULL; }
 Domain			{ return TOKEN_DOMAIN; }
 Compute			{ return TOKEN_COMPUTE; }
+Common			{ return TOKEN_COMMON; }
 StencilRef		{ return TOKEN_STENCILREF; }
 
 	/* Rasterizer state keywords */

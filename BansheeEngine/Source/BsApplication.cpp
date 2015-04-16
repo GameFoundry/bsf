@@ -39,18 +39,7 @@ namespace BansheeEngine
 		:CoreApplication(createStartUpDesc(primaryWindowDesc, getLibNameForRenderSystem(renderSystem), getLibNameForRenderer(renderer))),
 		mMonoPlugin(nullptr), mSBansheeEnginePlugin(nullptr)
 	{
-		PlainTextImporter* importer = bs_new<PlainTextImporter>();
-		Importer::instance()._registerAssetImporter(importer);
 
-		VirtualInput::startUp();
-		ScriptManager::startUp();
-		BuiltinResources::startUp();
-		GUIManager::startUp();
-		GUIMaterialManager::startUp();
-		OverlayManager::startUp();
-		ShortcutManager::startUp();
-
-		Cursor::startUp();
 	}
 
 	Application::~Application()
@@ -86,12 +75,25 @@ namespace BansheeEngine
 
 	void Application::onStartUp()
 	{
+		CoreApplication::onStartUp();
+
+		PlainTextImporter* importer = bs_new<PlainTextImporter>();
+		Importer::instance()._registerAssetImporter(importer);
+
+		VirtualInput::startUp();
+		ScriptManager::startUp();
+		BuiltinResources::startUp();
+		GUIManager::startUp();
+		GUIMaterialManager::startUp();
+		OverlayManager::startUp();
+		ShortcutManager::startUp();
+
+		Cursor::startUp();
+
 #if BS_VER == BS_VER_DEV
 		loadPlugin("BansheeMono", &mMonoPlugin);
 		loadPlugin("SBansheeEngine", &mSBansheeEnginePlugin); // Scripting interface
 #endif
-
-		CoreApplication::onStartUp();
 
 		Cursor::instance().setCursor(CursorType::Arrow);
 	}

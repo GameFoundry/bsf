@@ -9,11 +9,11 @@ namespace BansheeEngine
 	 * @brief	Importer using for importing GPU program (i.e. shader) include files.
 	 * 			Include files are just text files ending with ".bsi" extension.
 	 */
-	class BS_CORE_EXPORT GpuProgIncludeImporter : public SpecificImporter
+	class BS_CORE_EXPORT ShaderIncludeImporter : public SpecificImporter
 	{
 	public:
-		GpuProgIncludeImporter();
-		virtual ~GpuProgIncludeImporter();
+		ShaderIncludeImporter();
+		virtual ~ShaderIncludeImporter();
 
 		/** @copydoc SpecificImporter::isExtensionSupported */
 		virtual bool isExtensionSupported(const WString& ext) const;

@@ -79,6 +79,9 @@ namespace BansheeEngine
 		static const String ObjectFieldDropBtnStyleName;
 		static const String ObjectFieldClearBtnStyleName;
 
+		static const Path DefaultSkinFolder;
+		static const Path DefaultShaderFolder;
+
 	private:
 		/**
 		 * @brief	Imports all necessary resources and converts them to engine-ready format.
@@ -120,15 +123,8 @@ namespace BansheeEngine
 
 		GUISkin mSkin;
 
-		static const Path DefaultSkinFolder;
 		static const Path DefaultSkinFolderRaw;
-
-		static const Path DefaultShaderFolder;
 		static const Path DefaultShaderFolderRaw;
-
-		static const WString HLSL11ShaderSubFolder;
-		static const WString HLSL9ShaderSubFolder;
-		static const WString GLSLShaderSubFolder;
 
 		static const WString DefaultFontFilename;
 		static const UINT32 DefaultFontSize;

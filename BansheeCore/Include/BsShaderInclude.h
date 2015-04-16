@@ -6,9 +6,9 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Raw text resource that serves as an include file for GPU programs.
+	 * @brief	Raw text resource that serves as an include file for shaders.
 	 */
-	class BS_CORE_EXPORT GpuProgInclude : public Resource
+	class BS_CORE_EXPORT ShaderInclude : public Resource
 	{
 	public:
 		/**
@@ -19,16 +19,16 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates a new include file resource with the specified include string.
 		 */
-		static HGpuProgInclude create(const String& includeString);
+		static HShaderInclude create(const String& includeString);
 
 		/**
 		 * @brief	Creates an include file resource with the specified include string.
 		 *
 		 * @note	Internal method. Use "create" for normal use.
 		 */
-		static GpuProgIncludePtr _createPtr(const String& includeString);
+		static ShaderIncludePtr _createPtr(const String& includeString);
 	private:
-		GpuProgInclude(const String& includeString);
+		ShaderInclude(const String& includeString);
 
 		String mString;
 
@@ -36,7 +36,7 @@ namespace BansheeEngine
 		/* 								SERIALIZATION                      		*/
 		/************************************************************************/
 	public:
-		friend class GpuProgIncludeRTTI;
+		friend class ShaderIncludeRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const;
 	};

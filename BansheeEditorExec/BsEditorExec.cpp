@@ -65,7 +65,7 @@ int CALLBACK WinMain(
 	InitializeDebugConsole();
 #endif
 
-	EditorApplication::startUp(RenderSystemPlugin::DX11);
+	EditorApplication::startUp(RenderSystemPlugin::OpenGL);
 	EditorApplication::instance().runMainLoop();
 	EditorApplication::shutDown();
 

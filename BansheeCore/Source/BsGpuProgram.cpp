@@ -6,7 +6,6 @@
 #include "BsRenderAPI.h"
 #include "BsAsyncOp.h"
 #include "BsGpuParams.h"
-#include "BsGpuProgInclude.h"
 #include "BsGpuProgramManager.h"
 #include "BsResources.h"
 #include "BsGpuProgramRTTI.h"
@@ -54,8 +53,8 @@ namespace BansheeEngine
 	}
 
 	GpuProgram::GpuProgram(const String& source, const String& entryPoint, const String& language,
-		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool isAdjacencyInfoRequired) 
-		: mProperties(mergeWithIncludes(source, includes), entryPoint, gptype, profile), mLanguage(language),
+		GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired) 
+		: mProperties(source, entryPoint, gptype, profile), mLanguage(language),
 		 mNeedsAdjacencyInfo(isAdjacencyInfoRequired)
     {
 
@@ -92,33 +91,10 @@ namespace BansheeEngine
 			mLanguage, mProperties.getType(), mProperties.getProfile(), mNeedsAdjacencyInfo);
 	}
 
-	String GpuProgram::mergeWithIncludes(const String& source, const Vector<HGpuProgInclude>* includes)
-	{
-		if (includes != nullptr)
-		{
-			StringStream stringStream;
-			for (auto iter = includes->begin(); iter != includes->end(); ++iter)
-			{
-				if (*iter != nullptr)
-				{
-					stringStream << (*iter)->getString();
-				}
-			}
-
-			stringStream << source;
-
-			return stringStream.str();
-		}
-		else
-		{
-			return source;
-		}
-	}
-
 	GpuProgramPtr GpuProgram::create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype,
-		GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool requiresAdjacency)
+		GpuProgramProfile profile, bool requiresAdjacency)
 	{
-		return GpuProgramManager::instance().create(source, entryPoint, language, gptype, profile, includes, requiresAdjacency);
+		return GpuProgramManager::instance().create(source, entryPoint, language, gptype, profile, requiresAdjacency);
 	}
 
 	/************************************************************************/

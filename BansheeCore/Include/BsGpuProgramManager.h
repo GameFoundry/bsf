@@ -61,12 +61,10 @@ namespace BansheeEngine
 		 * @param	language	Language the source is written in, e.g. "hlsl" or "glsl".
 		 * @param	gptype		Type of the program, e.g. vertex or fragment.
 		 * @param	profile		Program profile specifying supported feature-set. Must match the type.
-		 * @param	includes	Optional includes to append to the source before compiling.
 		 * @param	requiresAdjacency	If true then adjacency information will be provided when rendering using this program.
 		 */
 		GpuProgramPtr create(const String& source, const String& entryPoint, const String& language, 
-			GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes,
-			bool requiresAdjacency = false);
+			GpuProgramType gptype, GpuProgramProfile profile, bool requiresAdjacency = false);
 
 		/**
 		 * @brief	Creates a completely empty and uninitialized GpuProgram.

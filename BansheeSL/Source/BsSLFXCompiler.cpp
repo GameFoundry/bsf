@@ -5,17 +5,18 @@
 #include "BsTechnique.h"
 #include "BsPass.h"
 #include "BsSamplerState.h"
-#include "BsRasterizerState.h"
-#include "BsDepthStencilState.h"
-#include "BsBlendState.h"
 #include "BsRenderAPI.h"
 #include "BsDebug.h"
+#include "BsShaderManager.h"
+#include "BsShaderInclude.h"
 
 extern "C" {
 #include "BsMMAlloc.h"
 #include "BsParserFX.h"
 #include "BsLexerFX.h"
 }
+
+using namespace std;
 
 namespace BansheeEngine
 {
@@ -72,12 +73,53 @@ namespace BansheeEngine
 		ShaderPtr output;
 		if (parseState->hasError > 0)
 		{
-			LOGERR("Error while parsing a Shader: " + String(parseState->errorMessage) + ". Location: " +
+			LOGERR("Error while parsing shader FX code: " + String(parseState->errorMessage) + ". Location: " +
 				toString(parseState->errorLine) + " (" + toString(parseState->errorColumn) + ")");
 		}
 		else
 		{
-			output = parseShader("Shader", parseState->rootNode, codeBlocks);
+			output = parseShader("Shader", parseState, codeBlocks);
+
+			StringStream gpuProgError;
+			bool hasError = false;
+			if (output != nullptr)
+			{
+				TechniquePtr bestTechnique = output->getBestTechnique();
+
+				if (bestTechnique != nullptr)
+				{
+					UINT32 numPasses = bestTechnique->getNumPasses();
+
+					for (UINT32 i = 0; i < numPasses; i++)
+					{
+						PassPtr pass = bestTechnique->getPass(i);
+
+						auto checkCompileStatus = [&](const String& prefix, const GpuProgramPtr& prog)
+						{
+							if (prog != nullptr)
+							{
+								prog->blockUntilCoreInitialized();
+
+								if (!prog->isCompiled())
+								{
+									hasError = true;
+									gpuProgError << prefix <<": " << prog->getCompileErrorMessage() << std::endl;
+								}
+							}
+						};
+
+						checkCompileStatus("Vertex program", pass->getVertexProgram());
+						checkCompileStatus("Fragment program", pass->getFragmentProgram());
+						checkCompileStatus("Geometry program", pass->getGeometryProgram());
+						checkCompileStatus("Hull program", pass->getHullProgram());
+						checkCompileStatus("Domain program", pass->getDomainProgram());
+						checkCompileStatus("Compute program", pass->getComputeProgram());
+					}
+				}
+			}
+
+			if (hasError)
+				LOGERR("Failed compiling GPU program(s): " + gpuProgError.str());
 
 			// Only enable for debug purposes
 			//SLFXDebugPrint(parseState->rootNode, "");
@@ -107,7 +149,7 @@ namespace BansheeEngine
 
 	Vector<BSLFXCompiler::CodeBlock> BSLFXCompiler::parseCodeBlocks(String& source)
 	{
-		std::regex pattern = std::regex(R"((Vertex|Fragment|Geometry|Hull|Domain|Compute)\s*=\s*\{)");
+		std::regex pattern = std::regex(R"((Vertex|Fragment|Geometry|Hull|Domain|Compute|Common)\s*=\s*\{)");
 		std::smatch matches;
 
 		Vector<CodeBlock> codeBlocks;
@@ -122,17 +164,19 @@ namespace BansheeEngine
 
 			std::string type = matches[1].str();
 			if (type == "Vertex")
-				newBlock.type = GPT_VERTEX_PROGRAM;
+				newBlock.type = CodeBlockType::Vertex;
 			else if (type == "Fragment")
-				newBlock.type = GPT_FRAGMENT_PROGRAM;
+				newBlock.type = CodeBlockType::Fragment;
 			else if (type == "Geometry")
-				newBlock.type = GPT_GEOMETRY_PROGRAM;
+				newBlock.type = CodeBlockType::Geometry;
 			else if (type == "Hull")
-				newBlock.type = GPT_HULL_PROGRAM;
+				newBlock.type = CodeBlockType::Hull;
 			else if (type == "Domain")
-				newBlock.type = GPT_DOMAIN_PROGRAM;
+				newBlock.type = CodeBlockType::Domain;
 			else if (type == "Compute")
-				newBlock.type = GPT_COMPUTE_PROGRAM;
+				newBlock.type = CodeBlockType::Compute;
+			else if (type == "Common")
+				newBlock.type = CodeBlockType::Common;
 
 			offset += (UINT32)matches.position() + (UINT32)matches.length();
 
@@ -170,6 +214,323 @@ namespace BansheeEngine
 		return codeBlocks;
 	}
 
+	void BSLFXCompiler::mergeBlocks(ParseState* mergeInto, ASTFXNode* blocksNode)
+	{
+		if (blocksNode == nullptr || blocksNode->type != NT_Blocks)
+			return;
+
+		ASTFXNode* destBlocksNode = nullptr;
+		for (int i = 0; i < mergeInto->rootNode->options->count; i++)
+		{
+			NodeOption* option = &mergeInto->rootNode->options->entries[i];
+
+			if (option->type == OT_Blocks)
+			{
+				destBlocksNode = option->value.nodePtr;
+				break;
+			}
+		}
+
+		if (destBlocksNode == nullptr)
+		{
+			destBlocksNode = nodeCreate(mergeInto->memContext, NT_Blocks);
+			NodeOption blocksOption; blocksOption.type = OT_Blocks; blocksOption.value.nodePtr = destBlocksNode;
+			nodeOptionsAdd(mergeInto->memContext, mergeInto->rootNode->options, &blocksOption);
+		}
+
+		for (int i = 0; i < blocksNode->options->count; i++)
+		{
+			NodeOption* option = &blocksNode->options->entries[i];
+
+			if (option->type == OT_Block)
+			{
+				ASTFXNode* dstBlock = nodeCreate(mergeInto->memContext, NT_Block);
+				NodeOption blockOption; blockOption.type = OT_Block; blockOption.value.nodePtr = dstBlock;
+				nodeOptionsAdd(mergeInto->memContext, destBlocksNode->options, &blockOption);
+
+				ASTFXNode* srcBlock = option->value.nodePtr;
+				for (int j = 0; j < srcBlock->options->count; j++)
+					nodeOptionsAdd(mergeInto->memContext, dstBlock->options, &srcBlock->options->entries[j]);
+			}
+		}
+	}
+
+	void BSLFXCompiler::mergeParameters(ParseState* mergeInto, ASTFXNode* paramsNode)
+	{
+		if (paramsNode == nullptr || paramsNode->type != NT_Parameters)
+			return;
+
+		ASTFXNode* destParamsNode = nullptr;
+		for (int i = 0; i < mergeInto->rootNode->options->count; i++)
+		{
+			NodeOption* option = &mergeInto->rootNode->options->entries[i];
+
+			if (option->type == OT_Parameters)
+			{
+				destParamsNode = option->value.nodePtr;
+				break;
+			}
+		}
+
+		if (destParamsNode == nullptr)
+		{
+			destParamsNode = nodeCreate(mergeInto->memContext, NT_Parameters);
+			NodeOption paramsOption; paramsOption.type = OT_Parameters; paramsOption.value.nodePtr = destParamsNode;
+			nodeOptionsAdd(mergeInto->memContext, mergeInto->rootNode->options, &paramsOption);
+		}
+
+		for (int i = 0; i < paramsNode->options->count; i++)
+		{
+			NodeOption* option = &paramsNode->options->entries[i];
+
+			if (option->type == OT_Parameter)
+			{
+				ASTFXNode* dstParam = nodeCreate(mergeInto->memContext, NT_Parameter);
+				NodeOption paramOption; paramOption.type = OT_Parameter; paramOption.value.nodePtr = dstParam;
+				nodeOptionsAdd(mergeInto->memContext, destParamsNode->options, &paramOption);
+
+				ASTFXNode* srcParam = option->value.nodePtr;
+				for (int j = 0; j < srcParam->options->count; j++)
+					nodeOptionsAdd(mergeInto->memContext, dstParam->options, &srcParam->options->entries[j]);
+			}
+		}
+	}
+
+	void BSLFXCompiler::getTechniqueIdentifier(ASTFXNode* technique, StringID& renderer, String& language)
+	{
+		renderer = RendererAny;
+		language = "Any";
+
+		for (int i = 0; i < technique->options->count; i++)
+		{
+			NodeOption* option = &technique->options->entries[i];
+
+			switch (option->type)
+			{
+			case OT_Renderer:
+				renderer = parseRenderer(removeQuotes(option->value.strValue));
+				break;
+			case OT_Language:
+				language = removeQuotes(option->value.strValue);
+				break;
+			}
+		}
+	}
+
+	bool BSLFXCompiler::isTechniqueMergeValid(ASTFXNode* into, ASTFXNode* from)
+	{
+		StringID intoRenderer = RendererAny;
+		String intoLanguage = "Any";
+
+		StringID fromRenderer = RendererAny;
+		String fromLanguage = "Any";
+
+		getTechniqueIdentifier(into, intoRenderer, intoLanguage);
+		getTechniqueIdentifier(from, fromRenderer, fromLanguage);
+
+		return (intoRenderer == fromRenderer || fromRenderer == RendererAny) && (intoLanguage == fromLanguage || fromLanguage == "Any");
+	}
+
+	void BSLFXCompiler::mergePass(ParseState* mergeInto, ASTFXNode* mergeIntoNode, ASTFXNode* mergeFromNode, UINT32 codeBlockOffset)
+	{
+		if (mergeIntoNode == nullptr || mergeIntoNode->type != NT_Pass || mergeFromNode == nullptr || mergeFromNode->type != NT_Pass)
+			return;
+
+		mergeCode(mergeInto, mergeIntoNode, mergeFromNode, codeBlockOffset);
+		mergePassStates(mergeInto, mergeIntoNode, mergeFromNode);
+	}
+
+	void BSLFXCompiler::mergeCode(ParseState* mergeInto, ASTFXNode* mergeIntoNode, ASTFXNode* mergeFromNode, UINT32 codeBlockOffset)
+	{
+		for (int i = 0; i < mergeFromNode->options->count; i++)
+		{
+			NodeOption* option = &mergeFromNode->options->entries[i];
+
+			if (option->type == OT_Code)
+			{
+				ASTFXNode* srcCodeNode = option->value.nodePtr;
+
+				UINT32 origIndex = 0;
+				for (int j = 0; j < srcCodeNode->options->count; j++)
+				{
+					NodeOption* codeOption = &srcCodeNode->options->entries[j];
+					if (codeOption->type == OT_Index)
+						origIndex = codeOption->value.intValue;
+				}
+
+				ASTFXNode* destCodeNode = nodeCreate(mergeInto->memContext, NT_Code);
+				NodeOption index; index.type = OT_Index; index.value.intValue = codeBlockOffset + origIndex;
+				nodeOptionsAdd(mergeInto->memContext, destCodeNode->options, &index);
+
+				NodeOption code; code.type = OT_Code; code.value.nodePtr = destCodeNode;
+				nodeOptionsAdd(mergeInto->memContext, mergeIntoNode->options, &code);
+			}
+		}
+	}
+
+	void BSLFXCompiler::mergePassStates(ParseState* mergeInto, ASTFXNode* mergeIntoNode, ASTFXNode* mergeFromNode)
+	{
+		for (int i = 0; i < mergeFromNode->options->count; i++)
+		{
+			NodeOption* option = &mergeFromNode->options->entries[i];
+
+			// Skip these as we handle them specially elsewhere
+			if (option->type == OT_Code || option->type == OT_Pass || option->type == OT_Renderer || option->type == OT_Language)
+				continue;
+
+			OptionDataType dataType = OPTION_LOOKUP[(int)option->type].dataType;
+			if (dataType == ODT_Complex)
+			{
+				ASTFXNode* newNode = nullptr;
+				
+				if (option->value.nodePtr != nullptr)
+				{
+					newNode = nodeCreate(mergeInto->memContext, option->value.nodePtr->type);
+					mergePassStates(mergeInto, newNode, option->value.nodePtr);
+				}
+				
+				NodeOption newOption;
+				newOption.type = option->type;
+				newOption.value.nodePtr = newNode;
+
+				nodeOptionsAdd(mergeInto->memContext, mergeIntoNode->options, &newOption);
+			}
+			else if (dataType == ODT_String)
+			{
+				NodeOption newOption;
+				newOption.type = option->type;
+				newOption.value.strValue = mmalloc_strdup(mergeInto->memContext, option->value.strValue);
+
+				nodeOptionsAdd(mergeInto->memContext, mergeIntoNode->options, &newOption);
+			}
+			else
+			{
+				nodeOptionsAdd(mergeInto->memContext, mergeIntoNode->options, option);
+			}
+		}
+	}
+
+	void BSLFXCompiler::mergeTechnique(ParseState* mergeInto, ASTFXNode* mergeIntoNode, ASTFXNode* mergeFromNode, UINT32 codeBlockOffset)
+	{
+		if (mergeIntoNode == nullptr || mergeIntoNode->type != NT_Technique || mergeFromNode == nullptr || mergeFromNode->type != NT_Technique)
+			return;
+
+		mergeCode(mergeInto, mergeIntoNode, mergeFromNode, codeBlockOffset);
+		mergePassStates(mergeInto, mergeIntoNode, mergeFromNode);
+
+		Map<UINT32, ASTFXNode*, std::greater<UINT32>> fromPasses;
+
+		UINT32 nextPassIdx = 0;
+		for (int i = 0; i < mergeFromNode->options->count; i++)
+		{
+			NodeOption* option = &mergeFromNode->options->entries[i];
+
+			if (option->type == OT_Pass)
+			{
+				ASTFXNode* passNode = option->value.nodePtr;
+				UINT32 passIdx = nextPassIdx;
+				for (int j = 0; j < passNode->options->count; j++)
+				{
+					NodeOption* passOption = &passNode->options->entries[i];
+
+					if (passOption->type == OT_Index)
+						passIdx = (UINT32)passOption->value.intValue;
+				}
+
+				fromPasses[passIdx] = passNode;
+				nextPassIdx = std::max(nextPassIdx, passIdx) + 1;
+			}
+		}
+
+		Map<UINT32, ASTFXNode*, std::greater<UINT32>> intoPasses;
+
+		nextPassIdx = 0;
+		for (int i = 0; i < mergeIntoNode->options->count; i++)
+		{
+			NodeOption* option = &mergeIntoNode->options->entries[i];
+
+			if (option->type == OT_Pass)
+			{
+				ASTFXNode* passNode = option->value.nodePtr;
+				UINT32 passIdx = nextPassIdx;
+				for (int j = 0; j < passNode->options->count; j++)
+				{
+					NodeOption* passOption = &passNode->options->entries[i];
+
+					if (passOption->type == OT_Index)
+						passIdx = (UINT32)passOption->value.intValue;
+				}
+
+				intoPasses[passIdx] = passNode;
+				nextPassIdx = std::max(nextPassIdx, passIdx) + 1;
+			}
+		}
+
+		for (auto& fromPair : fromPasses)
+		{
+			auto iterFind = intoPasses.find(fromPair.first);
+			if (iterFind != intoPasses.end())
+			{
+				mergePass(mergeInto, iterFind->second, fromPair.second, codeBlockOffset);
+			}
+			else
+			{
+				ASTFXNode* passNode = nodeCreate(mergeInto->memContext, NT_Pass);
+				NodeOption passOption; passOption.type = OT_Pass; passOption.value.nodePtr = passNode;
+				nodeOptionsAdd(mergeInto->memContext, mergeIntoNode->options, &passOption);
+
+				mergePass(mergeInto, passNode, fromPair.second, codeBlockOffset);
+			}
+		}
+	}
+
+	void BSLFXCompiler::mergeTechniques(ParseState* mergeInto, ASTFXNode* techniqueNode, UINT32 codeBlockOffset)
+	{
+		if (techniqueNode == nullptr || techniqueNode->type != NT_Technique)
+			return;
+
+		for (int i = 0; i < mergeInto->rootNode->options->count; i++)
+		{
+			NodeOption* option = &mergeInto->rootNode->options->entries[i];
+
+			if (option->type == OT_Technique)
+			{
+				if (isTechniqueMergeValid(option->value.nodePtr, techniqueNode))
+					mergeTechnique(mergeInto, option->value.nodePtr, techniqueNode, codeBlockOffset);
+				break;
+			}
+		}
+	}
+
+	void BSLFXCompiler::mergeAST(ParseState* mergeInto, ASTFXNode* mergeFrom, UINT32 codeBlockOffset)
+	{
+		if (mergeInto->rootNode->type != NT_Shader || mergeFrom == nullptr || mergeFrom->type != NT_Shader)
+			return;
+
+		for (int i = 0; i < mergeFrom->options->count; i++)
+		{
+			NodeOption* option = &mergeFrom->options->entries[i];
+
+			switch (option->type)
+			{
+			case OT_Separable:
+			case OT_Queue:
+			case OT_Priority:
+				nodeOptionsAdd(mergeInto->memContext, mergeInto->rootNode->options, option);
+				break;
+			case OT_Technique:
+				mergeTechniques(mergeInto, option->value.nodePtr, codeBlockOffset);
+				break;
+			case OT_Parameters:
+				mergeParameters(mergeInto, option->value.nodePtr);
+				break;
+			case OT_Blocks:
+				mergeBlocks(mergeInto, option->value.nodePtr);
+				break;
+			}
+		}
+	}
+
 	StringID BSLFXCompiler::parseRenderer(const String& name)
 	{
 		if (name == "Any")
@@ -190,7 +551,7 @@ namespace BansheeEngine
 		else if (name == "HLSL9")
 		{
 			renderAPI = RenderAPIDX9;
-			language = "hlsl";
+			language = "hlsl9";
 		}
 		else if (name == "GLSL")
 		{
@@ -599,12 +960,11 @@ namespace BansheeEngine
 		}
 	}
 
-	BlendStatePtr BSLFXCompiler::parseBlendState(ASTFXNode* passNode)
+	bool BSLFXCompiler::parseBlendState(BLEND_STATE_DESC& desc, ASTFXNode* passNode)
 	{
-		if (passNode == nullptr || passNode->type != NT_Pass)
-			return nullptr;
+		if (passNode == nullptr || (passNode->type != NT_Pass && passNode->type != NT_Technique))
+			return false;
 
-		BLEND_STATE_DESC desc;
 		bool default = true;
 
 		for (int i = 0; i < passNode->options->count; i++)
@@ -628,18 +988,14 @@ namespace BansheeEngine
 			}
 		}
 
-		if (default)
-			return nullptr;
-
-		return BlendState::create(desc);
+		return !default;
 	}
 
-	RasterizerStatePtr BSLFXCompiler::parseRasterizerState(ASTFXNode* passNode)
+	bool BSLFXCompiler::parseRasterizerState(RASTERIZER_STATE_DESC& desc, ASTFXNode* passNode)
 	{
-		if (passNode == nullptr || passNode->type != NT_Pass)
-			return nullptr;
+		if (passNode == nullptr || (passNode->type != NT_Pass && passNode->type != NT_Technique))
+			return false;
 
-		RASTERIZER_STATE_DESC desc;
 		bool default = true;
 
 		for (int i = 0; i < passNode->options->count; i++)
@@ -683,18 +1039,14 @@ namespace BansheeEngine
 			}
 		}
 
-		if (default)
-			return nullptr;
-
-		return RasterizerState::create(desc);
+		return !default;
 	}
 
-	DepthStencilStatePtr BSLFXCompiler::parseDepthStencilState(ASTFXNode* passNode)
+	bool BSLFXCompiler::parseDepthStencilState(DEPTH_STENCIL_STATE_DESC& desc, ASTFXNode* passNode)
 	{
-		if (passNode == nullptr || passNode->type != NT_Pass)
-			return nullptr;
+		if (passNode == nullptr || (passNode->type != NT_Pass && passNode->type != NT_Technique))
+			return false;
 
-		DEPTH_STENCIL_STATE_DESC desc;
 		bool default = true;
 
 		for (int i = 0; i < passNode->options->count; i++)
@@ -738,10 +1090,7 @@ namespace BansheeEngine
 			}
 		}
 
-		if (default)
-			return nullptr;
-
-		return DepthStencilState::create(desc);
+		return !default;
 	}
 
 	SamplerStatePtr BSLFXCompiler::parseSamplerState(ASTFXNode* samplerStateNode)
@@ -808,16 +1157,68 @@ namespace BansheeEngine
 		return SamplerState::create(desc);
 	}
 
-	PassPtr BSLFXCompiler::parsePass(ASTFXNode* passNode, const Vector<CodeBlock>& codeBlocks, const Vector<String>& includes, const StringID& renderAPI, const String& language)
+	void BSLFXCompiler::parseCodeBlock(ASTFXNode* codeNode, const Vector<CodeBlock>& codeBlocks, PassData& passData)
+	{
+		if (codeNode == nullptr || codeNode->type != NT_Code)
+			return;
+
+		UINT32 index = (UINT32)-1;
+		for (int j = 0; j < codeNode->options->count; j++)
+		{
+			if (codeNode->options->entries[j].type == OT_Index)
+				index = codeNode->options->entries[j].value.intValue;
+		}
+
+		if (index != (UINT32)-1 && index < (UINT32)codeBlocks.size())
+		{
+			const CodeBlock& codeBlock = codeBlocks[index];
+			switch (codeBlock.type)
+			{
+			case CodeBlockType::Vertex:
+				passData.vertexCode += codeBlock.code;
+				break;
+			case CodeBlockType::Fragment:
+				passData.fragmentCode += codeBlock.code;
+				break;
+			case CodeBlockType::Geometry:
+				passData.geometryCode += codeBlock.code;
+				break;
+			case CodeBlockType::Hull:
+				passData.hullCode += codeBlock.code;
+				break;
+			case CodeBlockType::Domain:
+				passData.domainCode += codeBlock.code;
+				break;
+			case CodeBlockType::Compute:
+				passData.computeCode += codeBlock.code;
+				break;
+			case CodeBlockType::Common:
+				passData.commonCode += codeBlock.code;
+				break;
+			}
+		}
+	}
+
+	PassPtr BSLFXCompiler::parsePass(ASTFXNode* passNode, const Vector<CodeBlock>& codeBlocks, PassData& passData, 
+		const StringID& renderAPI, const String& language, UINT32& seqIdx)
 	{
 		if (passNode == nullptr || passNode->type != NT_Pass)
 			return nullptr;
 
 		PASS_DESC passDesc;
 
-		passDesc.blendState = parseBlendState(passNode);
-		passDesc.rasterizerState = parseRasterizerState(passNode);
-		passDesc.depthStencilState = parseDepthStencilState(passNode);
+		passData.blendIsDefault &= !parseBlendState(passData.blendDesc, passNode);
+		passData.rasterizerIsDefault &= !parseRasterizerState(passData.rasterizerDesc, passNode);
+		passData.depthStencilIsDefault &= !parseDepthStencilState(passData.depthStencilDesc, passNode);
+
+		if (!passData.blendIsDefault)
+			passDesc.blendState = BlendState::create(passData.blendDesc);
+
+		if (!passData.rasterizerIsDefault)
+			passDesc.rasterizerState = RasterizerState::create(passData.rasterizerDesc);
+
+		if (!passData.depthStencilIsDefault)
+			passDesc.depthStencilState = DepthStencilState::create(passData.depthStencilDesc);
 
 		for (int i = 0; i < passNode->options->count; i++)
 		{
@@ -825,57 +1226,52 @@ namespace BansheeEngine
 
 			switch (option->type)
 			{
+			case OT_Index:
+				seqIdx = option->value.intValue;
+				break;
 			case OT_StencilRef:
 				passDesc.stencilRefValue = option->value.intValue;
 				break;
 			case OT_Code:
-			{
-				ASTFXNode* codeNode = option->value.nodePtr;
-
-				if (codeNode != nullptr && codeNode->type == NT_Code)
-				{
-					UINT32 index = (UINT32)-1;
-					for (int j = 0; j < codeNode->options->count; j++)
-					{
-						if (codeNode->options->entries[j].type == OT_Index)
-							index = codeNode->options->entries[j].value.intValue;
-					}
-
-					if (index != (UINT32)-1 && index < (UINT32)codeBlocks.size())
-					{
-						const CodeBlock& codeBlock = codeBlocks[index];
-						switch (codeBlock.type)
-						{
-						case GPT_VERTEX_PROGRAM:
-							passDesc.vertexProgram = GpuProgram::create(codeBlock.code, "main", language,
-								codeBlock.type, getProfile(renderAPI, codeBlock.type));
-							break;
-						case GPT_FRAGMENT_PROGRAM:
-							passDesc.fragmentProgram = GpuProgram::create(codeBlock.code, "main", language,
-								codeBlock.type, getProfile(renderAPI, codeBlock.type));
-							break;
-						case GPT_GEOMETRY_PROGRAM:
-							passDesc.geometryProgram = GpuProgram::create(codeBlock.code, "main", language,
-								codeBlock.type, getProfile(renderAPI, codeBlock.type));
-							break;
-						case GPT_HULL_PROGRAM:
-							passDesc.hullProgram = GpuProgram::create(codeBlock.code, "main", language,
-								codeBlock.type, getProfile(renderAPI, codeBlock.type));
-							break;
-						case GPT_DOMAIN_PROGRAM:
-							passDesc.domainProgram = GpuProgram::create(codeBlock.code, "main", language,
-								codeBlock.type, getProfile(renderAPI, codeBlock.type));
-							break;
-						case GPT_COMPUTE_PROGRAM:
-							passDesc.computeProgram = GpuProgram::create(codeBlock.code, "main", language,
-								codeBlock.type, getProfile(renderAPI, codeBlock.type));
-							break;
-						}
-					}
-				}
-			}
+				parseCodeBlock(option->value.nodePtr, codeBlocks, passData);
 				break;
 			}
+		}
+
+		if (!passData.vertexCode.empty())
+		{
+			passDesc.vertexProgram = GpuProgram::create(passData.commonCode + passData.vertexCode, "main", language,
+				GPT_VERTEX_PROGRAM, getProfile(renderAPI, GPT_VERTEX_PROGRAM));
+		}
+
+		if (!passData.fragmentCode.empty())
+		{
+			passDesc.fragmentProgram = GpuProgram::create(passData.commonCode + passData.fragmentCode, "main", language,
+				GPT_FRAGMENT_PROGRAM, getProfile(renderAPI, GPT_FRAGMENT_PROGRAM));
+		}
+
+		if (!passData.geometryCode.empty())
+		{
+			passDesc.geometryProgram = GpuProgram::create(passData.commonCode + passData.geometryCode, "main", language,
+				GPT_GEOMETRY_PROGRAM, getProfile(renderAPI, GPT_GEOMETRY_PROGRAM));
+		}
+
+		if (!passData.hullCode.empty())
+		{
+			passDesc.hullProgram = GpuProgram::create(passData.commonCode + passData.hullCode, "main", language,
+				GPT_HULL_PROGRAM, getProfile(renderAPI, GPT_HULL_PROGRAM));
+		}
+
+		if (!passData.domainCode.empty())
+		{
+			passDesc.domainProgram = GpuProgram::create(passData.commonCode + passData.domainCode, "main", language,
+				GPT_DOMAIN_PROGRAM, getProfile(renderAPI, GPT_DOMAIN_PROGRAM));
+		}
+
+		if (!passData.computeCode.empty())
+		{
+			passDesc.computeProgram = GpuProgram::create(passData.commonCode + passData.computeCode, "main", language,
+				GPT_COMPUTE_PROGRAM, getProfile(renderAPI, GPT_COMPUTE_PROGRAM));
 		}
 
 		return Pass::create(passDesc);
@@ -890,8 +1286,8 @@ namespace BansheeEngine
 		StringID renderer = RendererAny;
 		StringID renderAPI = RenderAPIAny;
 		String language;
-		Vector<String> includes; // TODO - Need to figure out what to do with these
-
+		
+		PassData commonPassData;
 		for (int i = 0; i < techniqueNode->options->count; i++)
 		{
 			NodeOption* option = &techniqueNode->options->entries[i];
@@ -901,31 +1297,43 @@ namespace BansheeEngine
 			case OT_Pass:
 				passNodes.push_back(option->value.nodePtr);
 				break;
-			case OT_Include:
-			{
-				String include = removeQuotes(option->value.strValue);
-				includes.push_back(include);
-			}
-				break;
 			case OT_Renderer:
 				renderer = parseRenderer(removeQuotes(option->value.strValue));
 				break;
 			case OT_Language:
 				parseLanguage(removeQuotes(option->value.strValue), renderAPI, language);
 				break;
+			case OT_Code:
+				parseCodeBlock(option->value.nodePtr, codeBlocks, commonPassData);
+				break;
 			}
 		}
 
-		Vector<PassPtr> passes;
+		commonPassData.blendIsDefault = !parseBlendState(commonPassData.blendDesc, techniqueNode);
+		commonPassData.rasterizerIsDefault = !parseRasterizerState(commonPassData.rasterizerDesc, techniqueNode);
+		commonPassData.depthStencilIsDefault = !parseDepthStencilState(commonPassData.depthStencilDesc, techniqueNode);
+
+		UINT32 nextPassIdx = 0;
+		Map<UINT32, PassPtr, std::greater<UINT32>> passes;
 		for (auto& passNode : passNodes)
 		{
-			PassPtr pass = parsePass(passNode, codeBlocks, includes, renderAPI, language);
+			PassData passDataCopy = commonPassData;
+
+			UINT32 passIdx = nextPassIdx;
+			PassPtr pass = parsePass(passNode, codeBlocks, passDataCopy, renderAPI, language, passIdx);
+
 			if (pass != nullptr)
-				passes.push_back(pass);
+				passes[passIdx] = pass;
+
+			nextPassIdx = std::max(nextPassIdx, passIdx) + 1;
 		}
 
-		if (passes.size() > 0)
-			return Technique::create(renderAPI, renderer, passes);
+		Vector<PassPtr> orderedPasses;
+		for (auto& KVP : passes)
+			orderedPasses.push_back(KVP.second);
+
+		if (orderedPasses.size() > 0)
+			return Technique::create(renderAPI, renderer, orderedPasses);
 
 		return nullptr;
 	}
@@ -1045,43 +1453,117 @@ namespace BansheeEngine
 		}
 	}
 
-	ShaderPtr BSLFXCompiler::parseShader(const String& name, ASTFXNode* rootNode, const Vector<CodeBlock>& codeBlocks)
+	ShaderPtr BSLFXCompiler::parseShader(const String& name, ParseState* parseState, Vector<CodeBlock>& codeBlocks)
 	{
+		ASTFXNode* rootNode = parseState->rootNode;
+		if (rootNode == nullptr || rootNode->type != NT_Shader)
+			return nullptr;
+
+		Vector<String> includeDependencies;
+
+		// Merge all include ASTs
+		std::function<void(ASTFXNode*, Vector<CodeBlock>&)> parseIncludes = [&](ASTFXNode* node, Vector<CodeBlock>& parentCodeBlocks)
+		{
+			Vector<tuple<ParseState*, Vector<CodeBlock>>> toMerge;
+
+			for (int i = 0; i < node->options->count; i++)
+			{
+				NodeOption* option = &node->options->entries[i];
+
+				if (option->type == OT_Include)
+				{
+					String includePath = removeQuotes(option->value.strValue);
+					includeDependencies.push_back(includePath);
+
+					HShaderInclude include = ShaderManager::instance().findInclude(includePath);
+
+					if (include != nullptr)
+					{
+						include.blockUntilLoaded();
+
+						String includeSource = include->getString();
+
+						ParseState* includeParseState = parseStateCreate();
+						Vector<CodeBlock> includeCodeBlocks = parseCodeBlocks(includeSource);
+						parseFX(parseState, includeSource.c_str());
+
+						ShaderPtr output;
+						if (parseState->hasError > 0)
+						{
+							LOGERR("Error while parsing shader FX code: " + String(parseState->errorMessage) + ". Location: " +
+								toString(parseState->errorLine) + " (" + toString(parseState->errorColumn) + ")");
+						}
+						else
+						{
+							parseIncludes(includeParseState->rootNode, includeCodeBlocks);
+
+							toMerge.push_back(make_tuple(includeParseState, includeCodeBlocks));
+						}
+
+						parseStateDelete(parseState);
+					}
+					else
+					{
+						LOGERR("Cannot find shader include file: " + includePath);
+					}
+				}
+			}
+
+			UINT32 size = (UINT32)toMerge.size();
+			if (size > 0)
+			{
+				Vector<CodeBlock>& outputCodeBlocks = get<1>(toMerge[0]);
+				for (UINT32 i = 1; i < size; i++)
+				{
+					mergeAST(get<0>(toMerge[0]), get<0>(toMerge[i])->rootNode, (UINT32)outputCodeBlocks.size());
+
+					const Vector<CodeBlock>& curCodeBlocks = get<1>(toMerge[i]);
+					for (auto& codeBlock : curCodeBlocks)
+						outputCodeBlocks.push_back(codeBlock);
+				}
+
+				mergeAST(get<0>(toMerge[0]), parseState->rootNode, (UINT32)outputCodeBlocks.size());
+				for (auto& codeBlock : parentCodeBlocks)
+					outputCodeBlocks.push_back(codeBlock);
+
+				parentCodeBlocks = outputCodeBlocks;
+			}
+		};
+
+		parseIncludes(parseState->rootNode, codeBlocks);
+		
 		SHADER_DESC shaderDesc;
 		Vector<TechniquePtr> techniques;
 
-		if (rootNode->type == NT_Shader)
+		for (int i = 0; i < rootNode->options->count; i++)
 		{
-			for (int i = 0; i < rootNode->options->count; i++)
+			NodeOption* option = &rootNode->options->entries[i];
+
+			switch (option->type)
 			{
-				NodeOption* option = &rootNode->options->entries[i];
+			case OT_Separable:
+				shaderDesc.separablePasses = option->value.intValue > 1;
+				break;
+			case OT_Queue:
+				shaderDesc.queuePriority = option->value.intValue;
+				break;
+			case OT_Priority:
+				shaderDesc.queuePriority = option->value.intValue;
+				break;
+			case OT_Technique:
+			{
+				TechniquePtr technique = parseTechnique(option->value.nodePtr, codeBlocks);
+				if (technique != nullptr)
+					techniques.push_back(technique);
 
-				switch (option->type)
-				{
-				case OT_Separable:
-					shaderDesc.separablePasses = option->value.intValue > 1;
-					break;
-				case OT_Queue:
-					shaderDesc.queuePriority = option->value.intValue;
-					break;
-				case OT_Priority:
-					shaderDesc.queuePriority = option->value.intValue;
-					break;
-				case OT_Technique:
-				{
-					TechniquePtr technique = parseTechnique(option->value.nodePtr, codeBlocks);
-					if (technique != nullptr)
-						techniques.push_back(technique);
-
-					break;
-				}
-				case OT_Parameters:
-					parseParameters(shaderDesc, option->value.nodePtr);
-					break;
-				case OT_Blocks:
-					parseBlocks(shaderDesc, option->value.nodePtr);
-					break;
-				}
+				break;
+			}
+			case OT_Parameters:
+				parseParameters(shaderDesc, option->value.nodePtr);
+				break;
+			case OT_Blocks:
+				parseBlocks(shaderDesc, option->value.nodePtr);
+				break;
 			}
 		}
 

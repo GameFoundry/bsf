@@ -88,6 +88,11 @@ namespace BansheeEngine
 
 	protected:
 		/**
+		 * @copydoc	Module::onStartUp
+		 */
+		virtual void onStartUp();
+
+		/**
 		 * @brief	Called for each iteration of the main loop. Called before any game objects or plugins are updated.
 		 */
 		virtual void preUpdate();
@@ -96,6 +101,11 @@ namespace BansheeEngine
 		 * @brief	Called for each iteration of the main loop. Called after all game objects and plugins are updated.
 		 */
 		virtual void postUpdate();
+
+		/**
+		 * @brief	Returns a handler that is used for resolving shader include file paths.
+		 */
+		virtual ShaderIncludeHandlerPtr getShaderIncludeHandler() const;
 
 	private:
 		/**
@@ -117,6 +127,7 @@ namespace BansheeEngine
 		typedef void(*UpdatePluginFunc)();
 
 		RenderWindowPtr mPrimaryWindow;
+		START_UP_DESC mStartUpDesc;
 
 		DynLib* mRendererPlugin;
 

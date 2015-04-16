@@ -51,10 +51,6 @@ namespace BansheeEngine
 
 	const Path BuiltinEditorResources::DefaultSkinFolder = L"..\\..\\..\\..\\Data\\Editor\\Skin\\";
 	const Path BuiltinEditorResources::DefaultShaderFolder = L"..\\..\\..\\..\\Data\\Editor\\Shaders\\";
-	
-	const WString BuiltinEditorResources::HLSL11ShaderSubFolder = L"HLSL11/";
-	const WString BuiltinEditorResources::HLSL9ShaderSubFolder = L"HLSL9/";
-	const WString BuiltinEditorResources::GLSLShaderSubFolder = L"GLSL/";
 
 	const WString BuiltinEditorResources::DefaultFontFilename = L"arial.ttf";
 	const UINT32 BuiltinEditorResources::DefaultFontSize = 10;

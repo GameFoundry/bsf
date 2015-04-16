@@ -47,6 +47,11 @@ namespace BansheeEngine
 
 		static void closeModalWindow(RenderWindowPtr window, HSceneObject sceneObject);
 
+		/**
+		 * @copydoc	Application::getShaderIncludeHandler
+		 */
+		virtual ShaderIncludeHandlerPtr getShaderIncludeHandler() const;
+
 	private:
 		static const Path WIDGET_LAYOUT_PATH;
 		static const Path BUILD_DATA_PATH;

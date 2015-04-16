@@ -3,7 +3,7 @@
 
 namespace BansheeEngine
 {
-    String D3D9HLSLProgramFactory::LANGUAGE_NAME = "hlsl";
+    String D3D9HLSLProgramFactory::LANGUAGE_NAME = "hlsl9";
 
     D3D9HLSLProgramFactory::D3D9HLSLProgramFactory()
     {

@@ -77,7 +77,7 @@ namespace BansheeEngine
 
 		Vector<UINT32> scriptTypeIds =
 		{
-			TID_ScriptCode, TID_PlainText, TID_GpuProgram, TID_GpuProgramInclude
+			TID_ScriptCode, TID_PlainText, TID_Shader, TID_ShaderInclude
 		};
 
 		Vector<ProjectLibrary::LibraryEntry*> libraryEntries = ProjectLibrary::instance().search(L"*", scriptTypeIds);

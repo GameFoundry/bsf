@@ -36,16 +36,6 @@ namespace BansheeEngine
 		 *			Internal method.
 		 */
 		virtual void _notifyRenderableRemoved(RenderableHandlerCore* renderable) { }
-
-		/**
-		 * @brief	Returns a GPU language type based on its name.
-		 */
-		static GpuLanguage getGpuLanguageType(const String& name);
-
-		/**
-		 * @brief	Returns a GPU language name based on its type.
-		 */
-		static String getGpuLanguageName(GpuLanguage language);
 	};
 
 	/**

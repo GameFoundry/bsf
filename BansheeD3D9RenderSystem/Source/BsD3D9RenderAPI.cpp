@@ -62,7 +62,7 @@ namespace BansheeEngine
 
 	const String& D3D9RenderAPI::getShadingLanguageName() const
 	{
-		static String strName("hlsl");
+		static String strName("hlsl9");
 		return strName;
 	}
 
@@ -1783,7 +1783,6 @@ namespace BansheeEngine
 		{		
 			mCurrentCapabilities = rsc;
 			mCurrentCapabilities->addShaderProfile("hlsl");
-			mCurrentCapabilities->addShaderProfile("cg");
 
 			if (mCurrentCapabilities->isShaderProfileSupported("hlsl"))
 				GpuProgramCoreManager::instance().addFactory(mHLSLProgramFactory);

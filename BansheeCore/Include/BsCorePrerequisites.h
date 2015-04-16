@@ -121,7 +121,7 @@ namespace BansheeEngine
 	struct GpuParamDataDesc;
 	struct GpuParamObjectDesc;
 	struct GpuParamBlockDesc;
-	class GpuProgInclude;
+	class ShaderInclude;
 	class TextureView;
 	class CoreObject;
 	class CoreObjectCore;
@@ -165,6 +165,7 @@ namespace BansheeEngine
 	class GpuProgramCore;
 	class IResourceListener;
 	class TextureProperties;
+	class IShaderIncludeHandler;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -242,7 +243,7 @@ namespace BansheeEngine
 	typedef std::shared_ptr<GpuParams> GpuParamsPtr;
 	typedef std::shared_ptr<TextureView> TextureViewPtr;
 	typedef std::shared_ptr<Viewport> ViewportPtr;
-	typedef std::shared_ptr<GpuProgInclude> GpuProgIncludePtr;
+	typedef std::shared_ptr<ShaderInclude> ShaderIncludePtr;
 	typedef std::shared_ptr<ImportOptions> ImportOptionsPtr;
 	typedef std::shared_ptr<const ImportOptions> ConstImportOptionsPtr;
 	typedef std::shared_ptr<Font> FontPtr;
@@ -260,6 +261,7 @@ namespace BansheeEngine
 	typedef std::shared_ptr<RenderQueue> RenderQueuePtr;
 	typedef std::shared_ptr<GpuParamDesc> GpuParamDescPtr;
 	typedef std::shared_ptr<ResourceMetaData> ResourceMetaDataPtr;
+	typedef std::shared_ptr<IShaderIncludeHandler> ShaderIncludeHandlerPtr;
 }
 
 /************************************************************************/
@@ -322,7 +324,7 @@ namespace BansheeEngine
 		TID_EmulatedParamBlock = 1069,
 		TID_TextureImportOptions = 1070,
 		TID_ResourceMetaData = 1071,
-		TID_GpuProgramInclude = 1072,
+		TID_ShaderInclude = 1072,
 		TID_Viewport = 1073,
 		TID_ResourceDependencies = 1074
 	};
@@ -341,7 +343,7 @@ namespace BansheeEngine
 	typedef ResourceHandle<Texture> HTexture;
 	typedef ResourceHandle<Mesh> HMesh;
 	typedef ResourceHandle<Material> HMaterial;
-	typedef ResourceHandle<GpuProgInclude> HGpuProgInclude;
+	typedef ResourceHandle<ShaderInclude> HShaderInclude;
 	typedef ResourceHandle<Font> HFont;
 	typedef ResourceHandle<Shader> HShader;
 }
