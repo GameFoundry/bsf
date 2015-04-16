@@ -201,10 +201,6 @@ namespace BansheeEngine
 				mVertexDeclaration = HardwareBufferCoreManager::instance().createVertexDeclaration(elementList);
 			}
 		}
-		else
-		{
-			LOGWRN("Shader compilation/linking failed: " + mCompileError);
-		}
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_GpuProgram);
 		GpuProgramCore::initialize();

@@ -75,9 +75,14 @@ namespace BansheeEngine
 		{
 			LOGERR("Error while parsing shader FX code: " + String(parseState->errorMessage) + ". Location: " +
 				toString(parseState->errorLine) + " (" + toString(parseState->errorColumn) + ")");
+
+			parseStateDelete(parseState);
 		}
 		else
 		{
+			// Only enable for debug purposes
+			//SLFXDebugPrint(parseState->rootNode, "");
+
 			output = parseShader("Shader", parseState, codeBlocks);
 
 			StringStream gpuProgError;
@@ -120,12 +125,7 @@ namespace BansheeEngine
 
 			if (hasError)
 				LOGERR("Failed compiling GPU program(s): " + gpuProgError.str());
-
-			// Only enable for debug purposes
-			//SLFXDebugPrint(parseState->rootNode, "");
 		}
-
-		parseStateDelete(parseState);
 
 		return output;
 	}
@@ -489,6 +489,7 @@ namespace BansheeEngine
 		if (techniqueNode == nullptr || techniqueNode->type != NT_Technique)
 			return;
 
+		bool anyMerged = false;
 		for (int i = 0; i < mergeInto->rootNode->options->count; i++)
 		{
 			NodeOption* option = &mergeInto->rootNode->options->entries[i];
@@ -496,9 +497,22 @@ namespace BansheeEngine
 			if (option->type == OT_Technique)
 			{
 				if (isTechniqueMergeValid(option->value.nodePtr, techniqueNode))
+				{
 					mergeTechnique(mergeInto, option->value.nodePtr, techniqueNode, codeBlockOffset);
+					anyMerged = true;
+				}
 				break;
 			}
+		}
+
+		// If this is a language specific technique and it wasn't merged with anything, create a new technique node
+		if (!anyMerged)
+		{
+			ASTFXNode* techniqueNode = nodeCreate(mergeInto->memContext, NT_Technique);
+			NodeOption techniqueOption; techniqueOption.type = OT_Technique; techniqueOption.value.nodePtr = techniqueNode;
+			nodeOptionsAdd(mergeInto->memContext, mergeInto->rootNode->options, &techniqueOption);
+
+			mergeTechnique(mergeInto, techniqueNode, techniqueNode, codeBlockOffset);
 		}
 	}
 
@@ -1455,15 +1469,15 @@ namespace BansheeEngine
 
 	ShaderPtr BSLFXCompiler::parseShader(const String& name, ParseState* parseState, Vector<CodeBlock>& codeBlocks)
 	{
-		ASTFXNode* rootNode = parseState->rootNode;
-		if (rootNode == nullptr || rootNode->type != NT_Shader)
+		if (parseState->rootNode == nullptr || parseState->rootNode->type != NT_Shader)
 			return nullptr;
 
 		Vector<String> includeDependencies;
 
 		// Merge all include ASTs
-		std::function<void(ASTFXNode*, Vector<CodeBlock>&)> parseIncludes = [&](ASTFXNode* node, Vector<CodeBlock>& parentCodeBlocks)
+		std::function<ParseState*(ParseState*, Vector<CodeBlock>&)> parseIncludes = [&](ParseState* parentParseState, Vector<CodeBlock>& parentCodeBlocks)
 		{
+			ASTFXNode* node = parentParseState->rootNode;
 			Vector<tuple<ParseState*, Vector<CodeBlock>>> toMerge;
 
 			for (int i = 0; i < node->options->count; i++)
@@ -1485,22 +1499,22 @@ namespace BansheeEngine
 
 						ParseState* includeParseState = parseStateCreate();
 						Vector<CodeBlock> includeCodeBlocks = parseCodeBlocks(includeSource);
-						parseFX(parseState, includeSource.c_str());
+						parseFX(includeParseState, includeSource.c_str());
 
 						ShaderPtr output;
-						if (parseState->hasError > 0)
+						if (includeParseState->hasError > 0)
 						{
-							LOGERR("Error while parsing shader FX code: " + String(parseState->errorMessage) + ". Location: " +
-								toString(parseState->errorLine) + " (" + toString(parseState->errorColumn) + ")");
+							LOGERR("Error while parsing shader FX code: " + String(includeParseState->errorMessage) + ". Location: " +
+								toString(includeParseState->errorLine) + " (" + toString(includeParseState->errorColumn) + ")");
+
+							parseStateDelete(includeParseState);
 						}
 						else
 						{
-							parseIncludes(includeParseState->rootNode, includeCodeBlocks);
+							ParseState* combinedIncludeParseState = parseIncludes(includeParseState, includeCodeBlocks);
 
-							toMerge.push_back(make_tuple(includeParseState, includeCodeBlocks));
+							toMerge.push_back(make_tuple(combinedIncludeParseState, includeCodeBlocks));
 						}
-
-						parseStateDelete(parseState);
 					}
 					else
 					{
@@ -1520,24 +1534,31 @@ namespace BansheeEngine
 					const Vector<CodeBlock>& curCodeBlocks = get<1>(toMerge[i]);
 					for (auto& codeBlock : curCodeBlocks)
 						outputCodeBlocks.push_back(codeBlock);
+
+					parseStateDelete(get<0>(toMerge[i]));
 				}
 
-				mergeAST(get<0>(toMerge[0]), parseState->rootNode, (UINT32)outputCodeBlocks.size());
+				mergeAST(get<0>(toMerge[0]), node, (UINT32)outputCodeBlocks.size());
 				for (auto& codeBlock : parentCodeBlocks)
 					outputCodeBlocks.push_back(codeBlock);
 
+				parseStateDelete(parentParseState);
+
 				parentCodeBlocks = outputCodeBlocks;
+				return get<0>(toMerge[0]);
 			}
+			else
+				return parentParseState;
 		};
 
-		parseIncludes(parseState->rootNode, codeBlocks);
+		parseState = parseIncludes(parseState, codeBlocks);
 		
 		SHADER_DESC shaderDesc;
 		Vector<TechniquePtr> techniques;
 
-		for (int i = 0; i < rootNode->options->count; i++)
+		for (int i = 0; i < parseState->rootNode->options->count; i++)
 		{
-			NodeOption* option = &rootNode->options->entries[i];
+			NodeOption* option = &parseState->rootNode->options->entries[i];
 
 			switch (option->type)
 			{
@@ -1566,6 +1587,8 @@ namespace BansheeEngine
 				break;
 			}
 		}
+
+		parseStateDelete(parseState);
 
 		return Shader::_createPtr(name, shaderDesc, techniques);
 	}

@@ -29,6 +29,7 @@
 #include "BsImporter.h"
 #include "BsGpuProgram.h"
 #include "BsShader.h"
+#include "BsShaderInclude.h"
 #include "BsTechnique.h"
 #include "BsPass.h"
 #include "BsMaterial.h"
@@ -1208,16 +1209,42 @@ namespace BansheeEngine
 			Vector<Path> files;
 			FileSystem::getChildren(DefaultShaderFolderRaw, files, directories);
 
+			// Process includes first since shaders reference them
 			for (auto& shaderFile : files)
 			{
-				HShader shader = Importer::instance().import<Shader>(shaderFile);
+				if (shaderFile.getExtension() != ".bslinc")
+					continue;
 
-				if (shader != nullptr)
+				HResource resource = Importer::instance().import(shaderFile);
+
+				if (resource != nullptr)
 				{
-					Path gpuProgOutputLoc = DefaultShaderFolder;
-					gpuProgOutputLoc.append(shaderFile.getWFilename() + L".asset");
+					if (rtti_is_of_type<ShaderInclude>(resource.getInternalPtr()))
+					{
+						Path outputLoc = DefaultShaderFolder;
+						outputLoc.append(shaderFile.getWFilename() + L".asset");
 
-					Resources::instance().save(shader, gpuProgOutputLoc, true);
+						Resources::instance().save(resource, outputLoc, true);
+					}
+				}
+			}
+
+			for (auto& shaderFile : files)
+			{
+				if (shaderFile.getExtension() != ".bsl")
+					continue;
+
+				HResource resource = Importer::instance().import(shaderFile);
+
+				if (resource != nullptr)
+				{
+					if (rtti_is_of_type<Shader>(resource.getInternalPtr()))
+					{
+						Path outputLoc = DefaultShaderFolder;
+						outputLoc.append(shaderFile.getWFilename() + L".asset");
+
+						Resources::instance().save(resource, outputLoc, true);
+					}
 				}
 			}
 		}

@@ -96,21 +96,13 @@ Later:
 ----------------------------------------------------------------------
 Include files:
 
-Include merging:
- - Finish up merging: Missing recursive parsing and loading of includes + code block array merging
- - ShaderManager
-   - Do not use ResourceListener for shader updates as it cannot handle missing includes (i.e. if include gets imported after its shader)
-   - Specify includes by asset path
-     - By default they're searched relative to the working directory
-     - Higher layers can override the path resolver to ShaderManager
-       - e.g. EditorApplication can resolve paths that exist in Project Library (i.e. map from source asset -> actual asset)
-   - ShaderManager needs to be notified when an include is deleted/moved/renamed
-     - Job for project libary. Outside of editor do nothing. i.e. add method ShaderManager::recompileDependencies(include)
-	   - Recompile should just rebuild the entire Shader (not calling GpuProgram::recompile or similar)
-
-Once include works modify existing shaders so they use it.
+Modify all engine/editor shaders so they use includes
+Add support for shader automatic recompilation if includes change
+ - This duty falls on ProjectLibrary. It needs to track shader dependencies, and track
+   include file move/rename/delete/reimport.
 
 Test:
+ - Test include merging and ensure new techniques/passes are created if matching ones cannot be found
  - If errors are reported properly from FX compiler and GPU program compilers
  - Try preprocessing using one RenderAPi and then load the shaders using another and see if they're created normally
 
@@ -118,16 +110,6 @@ Test:
 
 Add support for registering default parameters (add a set of addParameter methods to SHADER_DESC). Keep sampler states and textures in a dynamic array, and all other data in a dynamic byte array.
  - Make sure initializing the material properly sets up default parameters
-
-----
-
-TODO LATER:
- - Add GpuProgram caching (e.g. save compiled programs somewhere for later use)
- - Consider adding restrictions on parameter ranges (probably via an additional qualifier)
- - Parameter definitions don't support arrays (Leave this for a later iteration)
- - Parameter definitions don't support structs
- - Better error reporting instead of just "syntax error" that better informs the user what the error is
- - Ensure #defines work properly
 
 ----------------------------------------------------------------------
 Scene View
