@@ -19,6 +19,7 @@ namespace BansheeEngine
 		StringID rendererSemantic;
 		UINT32 arraySize;
 		UINT32 elementSize;
+		UINT32 defaultValueIdx;
 	};
 
 	/**
@@ -32,6 +33,7 @@ namespace BansheeEngine
 		Vector<String> gpuVariableNames;
 		StringID rendererSemantic;
 		GpuParamObjectType type;
+		UINT32 defaultValueIdx;
 	};
 
 	/**
@@ -48,9 +50,21 @@ namespace BansheeEngine
 	/**
 	 * @brief Structure used for initializing a shader.
 	 */
-	struct BS_CORE_EXPORT SHADER_DESC
+	template<bool Core>
+	struct BS_CORE_EXPORT TSHADER_DESC
 	{
-		SHADER_DESC();
+		template<bool Core> struct TTextureType {};
+		template<> struct TTextureType < false > { typedef HTexture Type; };
+		template<> struct TTextureType < true > { typedef SPtr<TextureCore> Type; };
+
+		template<bool Core> struct TSamplerStateType {};
+		template<> struct TSamplerStateType < false > { typedef SamplerStatePtr Type; };
+		template<> struct TSamplerStateType < true > { typedef SPtr<SamplerStateCore> Type; };
+
+		typedef typename TTextureType<Core>::Type TextureType;
+		typedef typename TSamplerStateType<Core>::Type SamplerStateType;
+
+		TSHADER_DESC();
 
 		/**
 		 * @brief	Registers a new data (int, Vector2, etc.) parameter you that you may then use 
@@ -67,9 +81,14 @@ namespace BansheeEngine
 		 * @param	arraySize	   	 (optional) If the parameter is an array, the number of elements in the array. Size of 1 means its not an array.
 		 * @param	elementSize	   	 (optional) Size of an individual element in the array, in bytes. You only need to set this if you are setting variable
 		 * 							 length parameters, like structs.
+		 * @param	defaultValue	 (optional) Pointer to the buffer containing the default value for this parameter (initial value that will be set
+		 *							 when a material is initialized with this shader). The provided buffer must be of the correct size (depending on the
+		 *							 element type and array size).
+		 *
+		 * @note	If multiple parameters are given with the same name but different types behavior is undefined.
 		 */
 		void addParameter(const String& name, const String& gpuVariableName, GpuParamDataType type, StringID rendererSemantic = StringID::NONE,
-			UINT32 arraySize = 1, UINT32 elementSize = 0);
+			UINT32 arraySize = 1, UINT32 elementSize = 0, UINT8* defaultValue = nullptr);
 
 		/**
 		 * @brief	Registers a new object (texture, sampler state, etc.) parameter you that you may then use 
@@ -85,10 +104,33 @@ namespace BansheeEngine
 		 *							 by the user, and will be updated by the renderer. These semantics will also be used to determine if a shader is compatible
 		 *							 with a specific renderer or not. Value of 0 signifies the parameter is not used by the renderer.
 		 *
-		 * @note	Mapping multiple GPU variables to a single parameter is useful when you are defining a shader that supports techniques across different render
-		 *			systems where GPU variable names for the same parameters might differ.
+		 * @note	If multiple parameters are given with the same name but different types behavior is undefined.
+		 *			You are allowed to call this method multiple times in order to map multiple GPU variable names to a single parameter, 
+		 *			but the default value (if any) will only be recognized on the first call. Mapping multiple GPU variables to a single parameter 
+		 *			is useful when you are defining a shader that supports techniques across different render systems where GPU variable names for 
+		 *			the same parameters might differ.
 		 */
 		void addParameter(const String& name, const String& gpuVariableName, GpuParamObjectType type, StringID rendererSemantic = StringID::NONE);
+
+		/**
+		 * @see	SHADER_DESC::addParameter(const String&, const String&, GpuParamObjectType, StringID)
+		 *
+		 * @note	Specialized version of addParameter that accepts a default sampler value that will be used for
+		 *			initializing the object parameter upon Material creation. Default sampler value is only valid
+		 *			if the object type is one of the sampler types.
+		 */
+		void addParameter(const String& name, const String& gpuVariableName, GpuParamObjectType type, 
+			const SamplerStateType& defaultValue, StringID rendererSemantic = StringID::NONE);
+
+		/**
+		 * @see	SHADER_DESC::addParameter(const String&, const String&, GpuParamObjectType, StringID)
+		 *
+		 * @note	Specialized version of addParameter that accepts a default texture value that will be used for
+		 *			initializing the object parameter upon Material creation. Default texture value is only valid
+		 *			if the object type is one of the texture types.
+		 */
+		void addParameter(const String& name, const String& gpuVariableName, GpuParamObjectType type, 
+			const TextureType& defaultValue, StringID rendererSemantic = StringID::NONE);
 
 		/**
 		 * @brief	Changes parameters of a parameter block with the specified name.
@@ -140,23 +182,65 @@ namespace BansheeEngine
 		bool separablePasses;
 
 		Map<String, SHADER_DATA_PARAM_DESC> dataParams;
-		Map<String, SHADER_OBJECT_PARAM_DESC> objectParams;
+		Map<String, SHADER_OBJECT_PARAM_DESC> textureParams;
+		Map<String, SHADER_OBJECT_PARAM_DESC> bufferParams;
+		Map<String, SHADER_OBJECT_PARAM_DESC> samplerParams;
 		Map<String, SHADER_PARAM_BLOCK_DESC> paramBlocks;
+
+		Vector<UINT8> dataDefaultValues;
+		Vector<SamplerStateType> samplerDefaultValues;
+		Vector<TextureType> textureDefaultValues;
+
+	private:
+		/**
+		 * @copydoc	addParameter(const String&, const String&, GpuParamObjectType, StringID)
+		 *
+		 * @note	Common method shared by different addParameter overloads.
+		 */
+		void addParameterInternal(const String& name, const String& gpuVariableName, GpuParamObjectType type, StringID rendererSemantic, UINT32 defaultValueIdx);
 	};
+
+	typedef TSHADER_DESC<true> SHADER_DESC_CORE;
+	typedef TSHADER_DESC<false> SHADER_DESC;
 
 	/**
 	 * @brief	Shader represents a collection of techniques. They are used in Materials,
 	 * 			which can be considered as instances of a Shader. Multiple materials
 	 * 			may share the same shader but provide different parameters to it.
-	 * 			
+	 *
 	 *			Shader will always choose the first supported technique based on the current render
 	 *			system, render manager and other properties. So make sure to add most important techniques
 	 *			first so you make sure they are used if they are supported.
+	 *
+	 * @note	Templated version of Shader used for implementing both 
+	 *			sim and core thread variants.
 	 */
-	class BS_CORE_EXPORT ShaderBase
+	template<bool Core>
+	class BS_CORE_EXPORT TShader
 	{
 	public:
-		virtual ~ShaderBase() { }
+		template<bool Core> struct TTechniqueType {};
+		template<> struct TTechniqueType < false > { typedef Technique Type; };
+		template<> struct TTechniqueType < true > { typedef TechniqueCore Type; };
+
+		typedef typename TTechniqueType<Core>::Type TechniqueType;
+		typedef typename TSHADER_DESC<Core>::TextureType TextureType;
+		typedef typename TSHADER_DESC<Core>::SamplerStateType SamplerStateType;
+
+		TShader() { }
+		TShader(const String& name, const TSHADER_DESC<Core>& desc, const Vector<SPtr<TechniqueType>>& techniques);
+		virtual ~TShader();
+	
+		/**
+		 * @brief	Returns the total number of techniques in this shader.
+		 */
+		UINT32 getNumTechniques() const { return (UINT32)mTechniques.size(); }
+
+		/**
+		 * @brief	Gets the best supported technique based on current render and other systems.
+		 * 			Returns null if not a single technique is supported.
+		 */
+		SPtr<TechniqueType> getBestTechnique() const;
 
 		/**
 		 * @brief	Returns currently active queue sort type.
@@ -192,10 +276,22 @@ namespace BansheeEngine
 		const SHADER_DATA_PARAM_DESC& getDataParamDesc(const String& name) const;
 
 		/**
-		 * @brief	Returns description for an object parameter with the specified name. Throws exception if
+		 * @brief	Returns description for a texture parameter with the specified name. Throws exception if
 		 *			the parameter doesn't exist.
 		 */
-		const SHADER_OBJECT_PARAM_DESC& getObjectParamDesc(const String& name) const;
+		const SHADER_OBJECT_PARAM_DESC& getTextureParamDesc(const String& name) const;
+
+		/**
+		 * @brief	Returns description for a sampler parameter with the specified name. Throws exception if
+		 *			the parameter doesn't exist.
+		 */
+		const SHADER_OBJECT_PARAM_DESC& getSamplerParamDesc(const String& name) const;
+
+		/**
+		 * @brief	Returns description for a buffer parameter with the specified name. Throws exception if
+		 *			the parameter doesn't exist.
+		 */
+		const SHADER_OBJECT_PARAM_DESC& getBufferParamDesc(const String& name) const;
 
 		/** 
 		 * @brief	Checks if the parameter with the specified name exists, and is a data parameter.
@@ -203,9 +299,19 @@ namespace BansheeEngine
 		bool hasDataParam(const String& name) const;
 
 		/** 
-		 * @brief	Checks if the parameter with the specified name exists, and is an object parameter.
+		 * @brief	Checks if the parameter with the specified name exists, and is a texture parameter.
 		 */
-		bool hasObjectParam(const String& name) const;
+		bool hasTextureParam(const String& name) const;
+
+		/** 
+		 * @brief	Checks if the parameter with the specified name exists, and is a sampler parameter.
+		 */
+		bool hasSamplerParam(const String& name) const;
+
+		/** 
+		 * @brief	Checks if the parameter with the specified name exists, and is a buffer parameter.
+		 */
+		bool hasBufferParam(const String& name) const;
 
 		/** 
 		 * @brief	Returns a map of all data parameters in the shader.
@@ -213,55 +319,47 @@ namespace BansheeEngine
 		const Map<String, SHADER_DATA_PARAM_DESC>& getDataParams() const { return mDesc.dataParams; }
 
 		/** 
-		 * @brief	Returns a map of all object parameters in the shader. 
+		 * @brief	Returns a map of all texture parameters in the shader. 
 		 */
-		const Map<String, SHADER_OBJECT_PARAM_DESC>& getObjectParams() const { return mDesc.objectParams; }
+		const Map<String, SHADER_OBJECT_PARAM_DESC>& getTextureParams() const { return mDesc.textureParams; }
+
+		/**
+		 * @brief	Returns a map of all buffer parameters in the shader.
+		 */
+		const Map<String, SHADER_OBJECT_PARAM_DESC>& getBufferParams() const { return mDesc.bufferParams; }
+
+		/**
+		 * @brief	Returns a map of all sampler parameters in the shader.
+		 */
+		const Map<String, SHADER_OBJECT_PARAM_DESC>& getSamplerParams() const { return mDesc.samplerParams; }
 
 		/** 
 		 * @brief	Returns a map of all parameter blocks.
 		 */
 		const Map<String, SHADER_PARAM_BLOCK_DESC>& getParamBlocks() const { return mDesc.paramBlocks; }
 
-	protected:
-		ShaderBase() { }
-		ShaderBase(const String& name, const SHADER_DESC& desc);
+		/**
+		 * @brief	Returns a default texture for a parameter that has the specified
+		 *			default value index (retrieved from the parameters descriptor).
+		 */
+		TextureType getDefaultTexture(UINT32 index) const;
 
+		/**
+		 * @brief	Returns a default sampler state for a parameter that has the specified
+		 *			default value index (retrieved from the parameters descriptor).
+		 */
+		SamplerStateType getDefaultSampler(UINT32 index) const;
+
+		/**
+		 * @brief	Returns a pointer to the internal buffer containing the default 
+		 *			value for a data parameter that has the specified default value index 
+		 *			(retrieved from the parameters descriptor).
+		 */
+		UINT8* getDefaultValue(UINT32 index) const;
+
+	protected:
 		String mName;
-		SHADER_DESC mDesc;
-	};
-
-	/**
-	 * @copydoc	ShaderBase
-	 *
-	 * @note	Templated version of Shader used for implementing both 
-	 *			sim and core thread variants.
-	 */
-	template<bool Core>
-	class BS_CORE_EXPORT TShader : public ShaderBase
-	{
-	public:
-		template<bool Core> struct TTechniqueType {};
-		template<> struct TTechniqueType < false > { typedef Technique Type; };
-		template<> struct TTechniqueType < true > { typedef TechniqueCore Type; };
-
-		typedef typename TTechniqueType<Core>::Type TechniqueType;
-
-		TShader() { }
-		TShader(const String& name, const SHADER_DESC& desc, const Vector<SPtr<TechniqueType>>& techniques);
-		virtual ~TShader();
-	
-		/**
-		 * @brief	Returns the total number of techniques in this shader.
-		 */
-		UINT32 getNumTechniques() const { return (UINT32)mTechniques.size(); }
-
-		/**
-		 * @brief	Gets the best supported technique based on current render and other systems.
-		 * 			Returns null if not a single technique is supported.
-		 */
-		SPtr<TechniqueType> getBestTechnique() const;
-
-	protected:
+		TSHADER_DESC<Core> mDesc;
 		Vector<SPtr<TechniqueType>> mTechniques;
 	};
 
@@ -274,12 +372,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	Shader::create
 		 */
-		static SPtr<ShaderCore> create(const String& name, const SHADER_DESC& desc, const Vector<SPtr<TechniqueCore>>& techniques);
+		static SPtr<ShaderCore> create(const String& name, const SHADER_DESC_CORE& desc, const Vector<SPtr<TechniqueCore>>& techniques);
 
 	protected:
 		friend class Shader;
 
-		ShaderCore(const String& name, const SHADER_DESC& desc, const Vector<SPtr<TechniqueCore>>& techniques);
+		ShaderCore(const String& name, const SHADER_DESC_CORE& desc, const Vector<SPtr<TechniqueCore>>& techniques);
 	};
 
 	/**
@@ -294,9 +392,27 @@ namespace BansheeEngine
 		 */
 		SPtr<ShaderCore> getCore() const;
 
+		/**
+		 * @brief	Checks is the provided object type a sampler.
+		 */
 		static bool isSampler(GpuParamObjectType type);
+
+		/**
+		 * @brief	Checks is the provided object type a texture.
+		 */
 		static bool isTexture(GpuParamObjectType type);
+
+		/**
+		 * @brief	Checks is the provided object type a buffer.
+		 */
 		static bool isBuffer(GpuParamObjectType type);
+
+		/**
+		 * @brief	Returns the size in bytes for a specific data type.
+		 *
+		 * @note	Returns 0 for variable size types like structures.
+		 */
+		static UINT32 getDataParamSize(GpuParamDataType type);
 
 		/**
 		 * @brief	Creates a new shader resource using the provided descriptor and techniques.
@@ -327,6 +443,12 @@ namespace BansheeEngine
 		 * @copydoc	CoreObject::createCore
 		 */
 		SPtr<CoreObjectCore> createCore() const;
+
+		/**
+		 * @brief	Converts a sim thread version of the shader descriptor to
+		 *			a core thread version.
+		 */
+		SHADER_DESC_CORE convertDesc(const SHADER_DESC& desc) const;
 
 	private:
 		/************************************************************************/

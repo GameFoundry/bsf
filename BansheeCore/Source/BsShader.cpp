@@ -6,17 +6,20 @@
 #include "BsResources.h"
 #include "BsFrameAlloc.h"
 #include "BsPass.h"
+#include "BsSamplerState.h"
 
 namespace BansheeEngine
 {
-	SHADER_DESC::SHADER_DESC()
+	template<bool Core>
+	TSHADER_DESC<Core>::TSHADER_DESC()
 		:queuePriority(0), queueSortType(QueueSortType::None), separablePasses(false)
 	{
 
 	}
 
-	void SHADER_DESC::addParameter(const String& name, const String& gpuVariableName, GpuParamDataType type, 
-		StringID rendererSemantic, UINT32 arraySize, UINT32 elementSize)
+	template<bool Core>
+	void TSHADER_DESC<Core>::addParameter(const String& name, const String& gpuVariableName, GpuParamDataType type,
+		StringID rendererSemantic, UINT32 arraySize, UINT32 elementSize, UINT8* defaultValue)
 	{
 		if(type == GPDT_STRUCT && elementSize <= 0)
 			BS_EXCEPT(InvalidParametersException, "You need to provide a non-zero element size for a struct parameter.")
@@ -30,29 +33,84 @@ namespace BansheeEngine
 		desc.elementSize = elementSize;
 
 		dataParams[name] = desc;
-		objectParams.erase(name);
+
+		if (defaultValue != nullptr)
+		{
+			desc.defaultValueIdx = (UINT32)dataDefaultValues.size();
+			UINT32 defaultValueSize = Shader::getDataParamSize(type);
+
+			dataDefaultValues.resize(desc.defaultValueIdx + defaultValueSize);
+			memcpy(&dataDefaultValues[desc.defaultValueIdx], defaultValue, defaultValueSize);
+		}
+		else
+			desc.defaultValueIdx = (UINT32)-1;
 	}
 
-	void SHADER_DESC::addParameter(const String& name, const String& gpuVariableName, GpuParamObjectType type, StringID rendererSemantic)
+	template<bool Core>
+	void TSHADER_DESC<Core>::addParameter(const String& name, const String& gpuVariableName, GpuParamObjectType type, StringID rendererSemantic)
 	{
-		auto iterFind = objectParams.find(name);
+		UINT32 defaultValueIdx = (UINT32)-1;
 
-		if (iterFind == objectParams.end())
+		addParameterInternal(name, gpuVariableName, type, rendererSemantic, defaultValueIdx);
+	}
+
+	template<bool Core>
+	void TSHADER_DESC<Core>::addParameter(const String& name, const String& gpuVariableName, GpuParamObjectType type, const SamplerStateType& defaultValue, StringID rendererSemantic)
+	{
+		UINT32 defaultValueIdx = (UINT32)-1;
+		if (Shader::isSampler(type) && defaultValue != nullptr)
+		{
+			defaultValueIdx = (UINT32)samplerDefaultValues.size();
+			samplerDefaultValues.push_back(defaultValue);
+		}
+
+		addParameterInternal(name, gpuVariableName, type, rendererSemantic, defaultValueIdx);
+	}
+
+	template<bool Core>
+	void TSHADER_DESC<Core>::addParameter(const String& name, const String& gpuVariableName, GpuParamObjectType type, const TextureType& defaultValue, StringID rendererSemantic)
+	{
+		UINT32 defaultValueIdx = (UINT32)-1;
+		if (Shader::isTexture(type) && defaultValue != nullptr)
+		{
+			defaultValueIdx = (UINT32)textureDefaultValues.size();
+			textureDefaultValues.push_back(defaultValue);
+		}
+
+		addParameterInternal(name, gpuVariableName, type, rendererSemantic, defaultValueIdx);
+	}
+
+	template<bool Core>
+	void TSHADER_DESC<Core>::addParameterInternal(const String& name, const String& gpuVariableName, GpuParamObjectType type, StringID rendererSemantic, UINT32 defaultValueIdx)
+	{
+		Map<String, SHADER_OBJECT_PARAM_DESC>* DEST_LOOKUP[] = { &textureParams, &bufferParams, &samplerParams };
+		UINT32 destIdx = 0;
+		if (Shader::isBuffer(type))
+			destIdx = 1;
+		else if (Shader::isSampler(type))
+			destIdx = 2;
+
+		Map<String, SHADER_OBJECT_PARAM_DESC>& paramsMap = *DEST_LOOKUP[destIdx];
+
+		auto iterFind = paramsMap.find(name);
+		if (iterFind == paramsMap.end())
 		{
 			SHADER_OBJECT_PARAM_DESC desc;
 			desc.name = name;
 			desc.type = type;
 			desc.rendererSemantic = rendererSemantic;
 			desc.gpuVariableNames.push_back(gpuVariableName);
+			desc.defaultValueIdx = defaultValueIdx;
 
-			objectParams[name] = desc;
+			paramsMap[name] = desc;
 		}
 		else
 		{
 			SHADER_OBJECT_PARAM_DESC& desc = iterFind->second;
 
+			// If same name but different properties, we ignore this param
 			if (desc.type != type || desc.rendererSemantic != rendererSemantic)
-				BS_EXCEPT(InvalidParametersException, "Shader parameter with the name \"" + name + "\" already exists with different properties.");
+				return;
 
 			Vector<String>& gpuVariableNames = desc.gpuVariableNames;
 			bool found = false;
@@ -68,11 +126,10 @@ namespace BansheeEngine
 			if (!found)
 				gpuVariableNames.push_back(gpuVariableName);
 		}
-
-		dataParams.erase(name);
 	}
 
-	void SHADER_DESC::setParamBlockAttribs(const String& name, bool shared, GpuParamBlockUsage usage, StringID rendererSemantic)
+	template<bool Core>
+	void TSHADER_DESC<Core>::setParamBlockAttribs(const String& name, bool shared, GpuParamBlockUsage usage, StringID rendererSemantic)
 	{
 		SHADER_PARAM_BLOCK_DESC desc;
 		desc.name = name;
@@ -83,26 +140,42 @@ namespace BansheeEngine
 		paramBlocks[name] = desc;
 	}
 
-	ShaderBase::ShaderBase(const String& name, const SHADER_DESC& desc)
-		:mName(name), mDesc(desc)
-	{
+	template struct TSHADER_DESC<false>;
+	template struct TSHADER_DESC<true>;
 
-	}
+	template<bool Core>
+	TShader<Core>::TShader(const String& name, const TSHADER_DESC<Core>& desc, const Vector<SPtr<TechniqueType>>& techniques)
+		:mName(name), mDesc(desc), mTechniques(techniques)
+	{ }
 
-	GpuParamType ShaderBase::getParamType(const String& name) const
+	template<bool Core>
+	TShader<Core>::~TShader() 
+	{ }
+
+	template<bool Core>
+	GpuParamType TShader<Core>::getParamType(const String& name) const
 	{
 		auto findIterData = mDesc.dataParams.find(name);
 		if (findIterData != mDesc.dataParams.end())
 			return GPT_DATA;
 
-		auto findIterObject = mDesc.objectParams.find(name);
-		if (findIterObject != mDesc.objectParams.end())
-			return GPT_OBJECT;
+		auto findIterTexture = mDesc.textureParams.find(name);
+		if (findIterTexture != mDesc.textureParams.end())
+			return GPT_TEXTURE;
+
+		auto findIterBuffer = mDesc.bufferParams.find(name);
+		if (findIterBuffer != mDesc.bufferParams.end())
+			return GPT_BUFFER;
+
+		auto findIterSampler = mDesc.samplerParams.find(name);
+		if (findIterSampler != mDesc.samplerParams.end())
+			return GPT_SAMPLER;
 
 		BS_EXCEPT(InternalErrorException, "Cannot find the parameter with the name: " + name);
 	}
 
-	const SHADER_DATA_PARAM_DESC& ShaderBase::getDataParamDesc(const String& name) const
+	template<bool Core>
+	const SHADER_DATA_PARAM_DESC& TShader<Core>::getDataParamDesc(const String& name) const
 	{
 		auto findIterData = mDesc.dataParams.find(name);
 		if (findIterData != mDesc.dataParams.end())
@@ -111,16 +184,38 @@ namespace BansheeEngine
 		BS_EXCEPT(InternalErrorException, "Cannot find the parameter with the name: " + name);
 	}
 
-	const SHADER_OBJECT_PARAM_DESC& ShaderBase::getObjectParamDesc(const String& name) const
+	template<bool Core>
+	const SHADER_OBJECT_PARAM_DESC& TShader<Core>::getTextureParamDesc(const String& name) const
 	{
-		auto findIterObject = mDesc.objectParams.find(name);
-		if (findIterObject != mDesc.objectParams.end())
+		auto findIterObject = mDesc.textureParams.find(name);
+		if (findIterObject != mDesc.textureParams.end())
 			return findIterObject->second;
 
 		BS_EXCEPT(InternalErrorException, "Cannot find the parameter with the name: " + name);
 	}
 
-	bool ShaderBase::hasDataParam(const String& name) const
+	template<bool Core>
+	const SHADER_OBJECT_PARAM_DESC& TShader<Core>::getSamplerParamDesc(const String& name) const
+	{
+		auto findIterObject = mDesc.samplerParams.find(name);
+		if (findIterObject != mDesc.samplerParams.end())
+			return findIterObject->second;
+
+		BS_EXCEPT(InternalErrorException, "Cannot find the parameter with the name: " + name);
+	}
+
+	template<bool Core>
+	const SHADER_OBJECT_PARAM_DESC& TShader<Core>::getBufferParamDesc(const String& name) const
+	{
+		auto findIterObject = mDesc.bufferParams.find(name);
+		if (findIterObject != mDesc.bufferParams.end())
+			return findIterObject->second;
+
+		BS_EXCEPT(InternalErrorException, "Cannot find the parameter with the name: " + name);
+	}
+
+	template<bool Core>
+	bool TShader<Core>::hasDataParam(const String& name) const
 	{
 		auto findIterData = mDesc.dataParams.find(name);
 		if (findIterData != mDesc.dataParams.end())
@@ -129,23 +224,62 @@ namespace BansheeEngine
 		return false;
 	}
 
-	bool ShaderBase::hasObjectParam(const String& name) const
+	template<bool Core>
+	bool TShader<Core>::hasTextureParam(const String& name) const
 	{
-		auto findIterObject = mDesc.objectParams.find(name);
-		if (findIterObject != mDesc.objectParams.end())
+		auto findIterObject = mDesc.textureParams.find(name);
+		if (findIterObject != mDesc.textureParams.end())
 			return true;
 
 		return false;
 	}
 
 	template<bool Core>
-	TShader<Core>::TShader(const String& name, const SHADER_DESC& desc, const Vector<SPtr<TechniqueType>>& techniques)
-		:ShaderBase(name, desc), mTechniques(techniques)
-	{ }
+	bool TShader<Core>::hasSamplerParam(const String& name) const
+	{
+		auto findIterObject = mDesc.samplerParams.find(name);
+		if (findIterObject != mDesc.samplerParams.end())
+			return true;
+
+		return false;
+	}
 
 	template<bool Core>
-	TShader<Core>::~TShader() 
-	{ }
+	bool TShader<Core>::hasBufferParam(const String& name) const
+	{
+		auto findIterObject = mDesc.bufferParams.find(name);
+		if (findIterObject != mDesc.bufferParams.end())
+			return true;
+
+		return false;
+	}
+
+	template<bool Core>
+	typename TShader<Core>::TextureType TShader<Core>::getDefaultTexture(UINT32 index) const
+	{
+		if (index < (UINT32)mDesc.textureDefaultValues.size())
+			return mDesc.textureDefaultValues[index];
+
+		return TextureType();
+	}
+
+	template<bool Core>
+	typename TShader<Core>::SamplerStateType TShader<Core>::getDefaultSampler(UINT32 index) const
+	{
+		if (index < (UINT32)mDesc.samplerDefaultValues.size())
+			return mDesc.samplerDefaultValues[index];
+
+		return SamplerStateType();
+	}
+
+	template<bool Core>
+	UINT8* TShader<Core>::getDefaultValue(UINT32 index) const
+	{
+		if (index < (UINT32)mDesc.dataDefaultValues.size())
+			return (UINT8*)&mDesc.dataDefaultValues[index];
+
+		return nullptr;
+	}
 
 	template<bool Core>
 	SPtr<typename TShader<Core>::TechniqueType> TShader<Core>::getBestTechnique() const
@@ -166,13 +300,13 @@ namespace BansheeEngine
 	template class TShader < false > ;
 	template class TShader < true >;
 
-	ShaderCore::ShaderCore(const String& name, const SHADER_DESC& desc, const Vector<SPtr<TechniqueCore>>& techniques)
+	ShaderCore::ShaderCore(const String& name, const SHADER_DESC_CORE& desc, const Vector<SPtr<TechniqueCore>>& techniques)
 		:TShader(name, desc, techniques)
 	{
 
 	}
 
-	SPtr<ShaderCore> ShaderCore::create(const String& name, const SHADER_DESC& desc, const Vector<SPtr<TechniqueCore>>& techniques)
+	SPtr<ShaderCore> ShaderCore::create(const String& name, const SHADER_DESC_CORE& desc, const Vector<SPtr<TechniqueCore>>& techniques)
 	{
 		ShaderCore* shaderCore = new (bs_alloc<ShaderCore>()) ShaderCore(name, desc, techniques);
 		SPtr<ShaderCore> shaderCorePtr = bs_shared_ptr<ShaderCore, GenAlloc>(shaderCore);
@@ -199,11 +333,29 @@ namespace BansheeEngine
 		for (auto& technique : mTechniques)
 			techniques.push_back(technique->getCore());
 
-		ShaderCore* shaderCore = new (bs_alloc<ShaderCore>()) ShaderCore(mName, mDesc, techniques);
+		ShaderCore* shaderCore = new (bs_alloc<ShaderCore>()) ShaderCore(mName, convertDesc(mDesc), techniques);
 		SPtr<ShaderCore> shaderCorePtr = bs_shared_ptr<ShaderCore, GenAlloc>(shaderCore);
 		shaderCorePtr->_setThisPtr(shaderCorePtr);
 
 		return shaderCorePtr;
+	}
+
+	SHADER_DESC_CORE Shader::convertDesc(const SHADER_DESC& desc) const
+	{
+		SHADER_DESC_CORE output;
+		output.dataParams = desc.dataParams;
+		output.textureParams = desc.textureParams;
+		output.samplerParams = desc.samplerParams;
+		output.bufferParams = desc.bufferParams;
+		output.paramBlocks = desc.paramBlocks;
+
+		output.queuePriority = desc.queuePriority;
+		output.queueSortType = desc.queueSortType;
+		output.separablePasses = desc.separablePasses;
+		
+		// Ignoring default values as they are not needed for syncing since
+		// they're initialized through the material.
+		return output;
 	}
 
 	void Shader::getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies)
@@ -258,6 +410,47 @@ namespace BansheeEngine
 		}
 
 		return false;
+	}
+
+	struct ShaderDataParamsSizes
+	{
+		ShaderDataParamsSizes()
+		{
+			memset(LOOKUP, 0, sizeof(LOOKUP));
+
+			LOOKUP[(UINT32)GPDT_FLOAT1] = 4;
+			LOOKUP[(UINT32)GPDT_FLOAT2] = 8;
+			LOOKUP[(UINT32)GPDT_FLOAT3] = 12;
+			LOOKUP[(UINT32)GPDT_FLOAT4] = 16;
+			LOOKUP[(UINT32)GPDT_MATRIX_2X2] = 16;
+			LOOKUP[(UINT32)GPDT_MATRIX_2X3] = 24;
+			LOOKUP[(UINT32)GPDT_MATRIX_2X4] = 32;
+			LOOKUP[(UINT32)GPDT_MATRIX_3X2] = 24;
+			LOOKUP[(UINT32)GPDT_MATRIX_3X3] = 36;
+			LOOKUP[(UINT32)GPDT_MATRIX_3X4] = 52;
+			LOOKUP[(UINT32)GPDT_MATRIX_4X2] = 32;
+			LOOKUP[(UINT32)GPDT_MATRIX_4X3 ] = 52;
+			LOOKUP[(UINT32)GPDT_MATRIX_4X4] = 64;
+			LOOKUP[(UINT32)GPDT_INT1] = 4;
+			LOOKUP[(UINT32)GPDT_INT2] = 8;
+			LOOKUP[(UINT32)GPDT_INT3] = 12;
+			LOOKUP[(UINT32)GPDT_INT4] = 16;
+			LOOKUP[(UINT32)GPDT_BOOL] = 1;
+		}
+
+		static const UINT32 NUM_DATA_PARAMS = 25;
+		UINT32 LOOKUP[NUM_DATA_PARAMS];
+	};
+
+	UINT32 Shader::getDataParamSize(GpuParamDataType type)
+	{
+		static const ShaderDataParamsSizes PARAM_SIZES;
+
+		UINT32 idx = (UINT32)type;
+		if (idx < sizeof(PARAM_SIZES.LOOKUP))
+			return PARAM_SIZES.LOOKUP[idx];
+
+		return 0;
 	}
 
 	HShader Shader::create(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques)

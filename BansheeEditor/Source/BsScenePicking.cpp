@@ -132,8 +132,8 @@ namespace BansheeEngine
 						HTexture mainTexture;
 						if (useAlphaShader)
 						{
-							const Map<String, SHADER_OBJECT_PARAM_DESC>& objectParams = originalMat->getShader()->getObjectParams();
-							for (auto& objectParam : objectParams)
+							const Map<String, SHADER_OBJECT_PARAM_DESC>& textureParams = originalMat->getShader()->getTextureParams();
+							for (auto& objectParam : textureParams)
 							{
 								if (objectParam.second.rendererSemantic == RPS_Diffuse)
 								{

@@ -7,6 +7,8 @@
 #include "BsFrameAlloc.h"
 #include "BsDebug.h"
 #include "BsException.h"
+#include "BsVectorNI.h"
+#include "BsMatrixNxM.h"
 
 namespace BansheeEngine
 {
@@ -332,20 +334,42 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 	template class TGpuParams < true > ;
 
 	template BS_CORE_EXPORT void TGpuParams<false>::getParam<float>(const String&, TGpuDataParam<float, false>&) const;
+	template BS_CORE_EXPORT void TGpuParams<false>::getParam<int>(const String&, TGpuDataParam<int, false>&) const;
 	template BS_CORE_EXPORT void TGpuParams<false>::getParam<Color>(const String&, TGpuDataParam<Color, false>&) const;
 	template BS_CORE_EXPORT void TGpuParams<false>::getParam<Vector2>(const String&, TGpuDataParam<Vector2, false>&) const;
 	template BS_CORE_EXPORT void TGpuParams<false>::getParam<Vector3>(const String&, TGpuDataParam<Vector3, false>&) const;
 	template BS_CORE_EXPORT void TGpuParams<false>::getParam<Vector4>(const String&, TGpuDataParam<Vector4, false>&) const;
+	template BS_CORE_EXPORT void TGpuParams<false>::getParam<Vector2I>(const String&, TGpuDataParam<Vector2I, false>&) const;
+	template BS_CORE_EXPORT void TGpuParams<false>::getParam<Vector3I>(const String&, TGpuDataParam<Vector3I, false>&) const;
+	template BS_CORE_EXPORT void TGpuParams<false>::getParam<Vector4I>(const String&, TGpuDataParam<Vector4I, false>&) const;
+	template BS_CORE_EXPORT void TGpuParams<false>::getParam<Matrix2>(const String&, TGpuDataParam<Matrix2, false>&) const;
+	template BS_CORE_EXPORT void TGpuParams<false>::getParam<Matrix2x3>(const String&, TGpuDataParam<Matrix2x3, false>&) const;
+	template BS_CORE_EXPORT void TGpuParams<false>::getParam<Matrix2x4>(const String&, TGpuDataParam<Matrix2x4, false>&) const;
 	template BS_CORE_EXPORT void TGpuParams<false>::getParam<Matrix3>(const String&, TGpuDataParam<Matrix3, false>&) const;
+	template BS_CORE_EXPORT void TGpuParams<false>::getParam<Matrix3x2>(const String&, TGpuDataParam<Matrix3x2, false>&) const;
+	template BS_CORE_EXPORT void TGpuParams<false>::getParam<Matrix3x4>(const String&, TGpuDataParam<Matrix3x4, false>&) const;
 	template BS_CORE_EXPORT void TGpuParams<false>::getParam<Matrix4>(const String&, TGpuDataParam<Matrix4, false>&) const;
+	template BS_CORE_EXPORT void TGpuParams<false>::getParam<Matrix4x2>(const String&, TGpuDataParam<Matrix4x2, false>&) const;
+	template BS_CORE_EXPORT void TGpuParams<false>::getParam<Matrix4x3>(const String&, TGpuDataParam<Matrix4x3, false>&) const;
 
 	template BS_CORE_EXPORT void TGpuParams<true>::getParam<float>(const String&, TGpuDataParam<float, true>&) const;
+	template BS_CORE_EXPORT void TGpuParams<true>::getParam<int>(const String&, TGpuDataParam<int, true>&) const;
 	template BS_CORE_EXPORT void TGpuParams<true>::getParam<Color>(const String&, TGpuDataParam<Color, true>&) const;
 	template BS_CORE_EXPORT void TGpuParams<true>::getParam<Vector2>(const String&, TGpuDataParam<Vector2, true>&) const;
 	template BS_CORE_EXPORT void TGpuParams<true>::getParam<Vector3>(const String&, TGpuDataParam<Vector3, true>&) const;
 	template BS_CORE_EXPORT void TGpuParams<true>::getParam<Vector4>(const String&, TGpuDataParam<Vector4, true>&) const;
+	template BS_CORE_EXPORT void TGpuParams<true>::getParam<Vector2I>(const String&, TGpuDataParam<Vector2I, true>&) const;
+	template BS_CORE_EXPORT void TGpuParams<true>::getParam<Vector3I>(const String&, TGpuDataParam<Vector3I, true>&) const;
+	template BS_CORE_EXPORT void TGpuParams<true>::getParam<Vector4I>(const String&, TGpuDataParam<Vector4I, true>&) const;
+	template BS_CORE_EXPORT void TGpuParams<true>::getParam<Matrix2>(const String&, TGpuDataParam<Matrix2, true>&) const;
+	template BS_CORE_EXPORT void TGpuParams<true>::getParam<Matrix2x3>(const String&, TGpuDataParam<Matrix2x3, true>&) const;
+	template BS_CORE_EXPORT void TGpuParams<true>::getParam<Matrix2x4>(const String&, TGpuDataParam<Matrix2x4, true>&) const;
 	template BS_CORE_EXPORT void TGpuParams<true>::getParam<Matrix3>(const String&, TGpuDataParam<Matrix3, true>&) const;
+	template BS_CORE_EXPORT void TGpuParams<true>::getParam<Matrix3x2>(const String&, TGpuDataParam<Matrix3x2, true>&) const;
+	template BS_CORE_EXPORT void TGpuParams<true>::getParam<Matrix3x4>(const String&, TGpuDataParam<Matrix3x4, true>&) const;
 	template BS_CORE_EXPORT void TGpuParams<true>::getParam<Matrix4>(const String&, TGpuDataParam<Matrix4, true>&) const;
+	template BS_CORE_EXPORT void TGpuParams<true>::getParam<Matrix4x2>(const String&, TGpuDataParam<Matrix4x2, true>&) const;
+	template BS_CORE_EXPORT void TGpuParams<true>::getParam<Matrix4x3>(const String&, TGpuDataParam<Matrix4x3, true>&) const;
 
 	GpuParamsCore::GpuParamsCore(const GpuParamDescPtr& paramDesc, bool transposeMatrices)
 		: TGpuParams(paramDesc, transposeMatrices)

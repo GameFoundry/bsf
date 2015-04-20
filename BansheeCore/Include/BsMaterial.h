@@ -550,10 +550,24 @@ namespace BansheeEngine
 		void getParam(const String& name, TMaterialDataParam<T, Core>& output) const;
 
 		/**
+		 * @brief	Assigns a value from a raw buffer to the parameter with the specified name.
+		 *			Buffer must be of sizeof(T) * numElements size and initialized.
+		 *
+		 * @note	Provided parameter must exist, no checking is done.
+		 */
+		template <typename T>
+		void setParamValue(const String& name, UINT8* buffer, UINT32 numElements);
+
+		/**
 		 * @brief	Initializes the material by using the best technique from the currently set shader. Shader
 		 * 			must contain the technique that matches the current renderer and render system.
 		 */
 		void initBestTechnique();
+
+		/**
+		 * @brief	Assigns all the default parameters specified in the shader to the material.
+		 */
+		void initDefaultParameters();
 
 		/**
 		 * @brief	Throw an exception if no shader is set, or no acceptable

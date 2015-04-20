@@ -96,20 +96,21 @@ Later:
 ----------------------------------------------------------------------
 Include files:
 
-Modify all engine/editor shaders so they use includes
-Add support for shader automatic recompilation if includes change
- - This duty falls on ProjectLibrary. It needs to track shader dependencies, and track
-   include file move/rename/delete/reimport.
+Shader dependencies:
+ - Store include dependencies in Shader itself
+   - Store by the source path, not referencing the asset
+   - Update shader RTTI so it's properly serialized
+ - Add project library template method:
+  - getImportDependencies<Type>(obj)
+    - shader would return a list of include paths, and other types can include other objects
+  - project library keeps a list of all such dependencies
+   - it detects when the dependencies change (i.e. are moved, renamed, deleted or reimported) and also triggers a reimport of the dependentee
+    - TODO - what if multiple dependencies are reimported at once? do I want to reimport the dependntee 
+       for each one or should there be some kind of a delay?
 
 Test:
- - Test include merging and ensure new techniques/passes are created if matching ones cannot be found
- - If errors are reported properly from FX compiler and GPU program compilers
  - Try preprocessing using one RenderAPi and then load the shaders using another and see if they're created normally
-
-----
-
-Add support for registering default parameters (add a set of addParameter methods to SHADER_DESC). Keep sampler states and textures in a dynamic array, and all other data in a dynamic byte array.
- - Make sure initializing the material properly sets up default parameters
+ - Test if default values work
 
 ----------------------------------------------------------------------
 Scene View
@@ -127,6 +128,7 @@ Other
 
 Got a crash on shutdown that was caused by locking a mutex in an Event destructor. Event was Platform::onMouseCaptureChanged. 
 Issue happened when I closed the app via the X button (if that's relevant). It doesn't seem to happen always.
+ - This is likely due to some other error. When VS finds an exception it triggers a dialog box which triggers the msg loop in-engine and causes another exception.
 
 Create a stack allocatable custom vector implementation and make getResourceDependencies and getCoreDependencies use it.
  - These methods are called often and cause allocations whenever they are.

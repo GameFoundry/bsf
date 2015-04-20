@@ -5,7 +5,7 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	A two dimensional vector with integer
+	 * @brief	A N dimensional vector with integer
 	 *			coordinates.
 	 */
 	struct BS_UTILITY_EXPORT Vector2I

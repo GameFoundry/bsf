@@ -384,7 +384,7 @@ namespace BansheeEngine
 		SPtr<PassCore> newPass = PassCore::create(passDesc);
 		SPtr<TechniqueCore> newTechnique = TechniqueCore::create(rsName, RendererDefault, { newPass });
 
-		SHADER_DESC shaderDesc;
+		SHADER_DESC_CORE shaderDesc;
 		shaderDesc.setParamBlockAttribs("Static", true, GPBU_DYNAMIC, RBS_Static);
 		shaderDesc.setParamBlockAttribs("PerFrame", true, GPBU_DYNAMIC, RBS_PerFrame);
 		shaderDesc.setParamBlockAttribs("PerObject", true, GPBU_DYNAMIC, RBS_PerObject);

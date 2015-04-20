@@ -1,0 +1,66 @@
+#pragma once
+
+#include "BsPrerequisitesUtil.h"
+
+namespace BansheeEngine
+{
+	/**
+	 * @brief	A N dimensional vector with integer
+	 *			coordinates.
+	 */
+	template<int N>
+	struct VectorNI
+	{
+		INT32 v[N];
+
+		VectorNI()
+		{ 
+			memset(v, 0, sizeof(v));
+		}
+
+		VectorNI(INT32 val[N])
+		{ 
+			memcpy(v, val, sizeof(v));
+		}
+
+		INT32 operator[] (size_t i) const
+		{
+			assert(i < N);
+
+			return v[i];
+		}
+
+		INT32& operator[] (size_t i)
+		{
+			assert(i < N);
+
+			return v[i];
+		}
+
+		VectorNI& operator= (const VectorNI& rhs)
+		{
+			memcpy(v, rhs.v, sizeof(v));
+
+			return *this;
+		}
+
+		bool operator== (const Vector2I& rhs) const
+		{
+			for (UINT32 i = 0; i < N; i++)
+			{
+				if (v[i] != rhs.v[i])
+					return false;
+			}
+
+			return true;
+		}
+
+		bool operator!= (const Vector2I& rhs) const
+		{
+			return !operator==(*this, rhs);
+		}
+	};
+
+	typedef VectorNI<3> Vector3I;
+	typedef VectorNI<4> Vector4I;
+}

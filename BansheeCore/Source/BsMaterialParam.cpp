@@ -1,4 +1,6 @@
 #include "BsMaterialParam.h"
+#include "BsVector2I.h"
+#include "BsVectorNI.h"
 
 namespace BansheeEngine
 {
@@ -120,20 +122,42 @@ namespace BansheeEngine
 	}
 
 	template class TMaterialDataParam<float, false>;
+	template class TMaterialDataParam<int, false>;
 	template class TMaterialDataParam<Color, false>;
 	template class TMaterialDataParam<Vector2, false>;
 	template class TMaterialDataParam<Vector3, false>;
 	template class TMaterialDataParam<Vector4, false>;
+	template class TMaterialDataParam<Vector2I, false>;
+	template class TMaterialDataParam<Vector3I, false>;
+	template class TMaterialDataParam<Vector4I, false>;
+	template class TMaterialDataParam<Matrix2, false>;
+	template class TMaterialDataParam<Matrix2x3, false>;
+	template class TMaterialDataParam<Matrix2x4, false>;
 	template class TMaterialDataParam<Matrix3, false>;
+	template class TMaterialDataParam<Matrix3x2, false>;
+	template class TMaterialDataParam<Matrix3x4, false>;
 	template class TMaterialDataParam<Matrix4, false>;
+	template class TMaterialDataParam<Matrix4x2, false>;
+	template class TMaterialDataParam<Matrix4x3, false>;
 
 	template class TMaterialDataParam<float, true>;
+	template class TMaterialDataParam<int, true>;
 	template class TMaterialDataParam<Color, true>;
 	template class TMaterialDataParam<Vector2, true>;
 	template class TMaterialDataParam<Vector3, true>;
 	template class TMaterialDataParam<Vector4, true>;
+	template class TMaterialDataParam<Vector2I, true>;
+	template class TMaterialDataParam<Vector3I, true>;
+	template class TMaterialDataParam<Vector4I, true>;
+	template class TMaterialDataParam<Matrix2, true>;
+	template class TMaterialDataParam<Matrix2x3, true>;
+	template class TMaterialDataParam<Matrix2x4, true>;
 	template class TMaterialDataParam<Matrix3, true>;
+	template class TMaterialDataParam<Matrix3x2, true>;
+	template class TMaterialDataParam<Matrix3x4, true>;
 	template class TMaterialDataParam<Matrix4, true>;
+	template class TMaterialDataParam<Matrix4x2, true>;
+	template class TMaterialDataParam<Matrix4x3, true>;
 
 	template class TMaterialParamStruct<false>;
 	template class TMaterialParamStruct<true>;

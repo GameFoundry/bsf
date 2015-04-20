@@ -4,6 +4,8 @@
 #include "BsGpuParamDesc.h"
 #include "BsDebug.h"
 #include "BsException.h"
+#include "BsVectorNI.h"
+#include "BsVector2I.h"
 
 namespace BansheeEngine
 {
@@ -272,20 +274,42 @@ namespace BansheeEngine
 	}
 
 	template class TGpuDataParam < float, false > ;
+	template class TGpuDataParam < int, false >;
 	template class TGpuDataParam < Color, false > ;
 	template class TGpuDataParam < Vector2, false > ;
 	template class TGpuDataParam < Vector3, false > ;
 	template class TGpuDataParam < Vector4, false > ;
+	template class TGpuDataParam < Vector2I, false > ;
+	template class TGpuDataParam < Vector3I, false > ;
+	template class TGpuDataParam < Vector4I, false > ;
+	template class TGpuDataParam < Matrix2, false >;
+	template class TGpuDataParam < Matrix2x3, false >;
+	template class TGpuDataParam < Matrix2x4, false >;
 	template class TGpuDataParam < Matrix3, false > ;
+	template class TGpuDataParam < Matrix3x2, false > ;
+	template class TGpuDataParam < Matrix3x4, false > ;
 	template class TGpuDataParam < Matrix4, false > ;
+	template class TGpuDataParam < Matrix4x2, false >;
+	template class TGpuDataParam < Matrix4x3, false >;
 
 	template class TGpuDataParam < float, true > ;
+	template class TGpuDataParam < int, true >;
 	template class TGpuDataParam < Color, true > ;
 	template class TGpuDataParam < Vector2, true > ;
 	template class TGpuDataParam < Vector3, true > ;
 	template class TGpuDataParam < Vector4, true > ;
+	template class TGpuDataParam < Vector2I, true > ;
+	template class TGpuDataParam < Vector3I, true > ;
+	template class TGpuDataParam < Vector4I, true > ;
+	template class TGpuDataParam < Matrix2, true >;
+	template class TGpuDataParam < Matrix2x3, true >;
+	template class TGpuDataParam < Matrix2x4, true >;
 	template class TGpuDataParam < Matrix3, true > ;
+	template class TGpuDataParam < Matrix3x2, true >;
+	template class TGpuDataParam < Matrix3x4, true >;
 	template class TGpuDataParam < Matrix4, true > ;
+	template class TGpuDataParam < Matrix4x2, true >;
+	template class TGpuDataParam < Matrix4x3, true >;
 
 	template class TGpuParamStruct < false > ;
 	template class TGpuParamStruct < true > ;

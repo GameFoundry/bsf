@@ -13,6 +13,8 @@
 #include "BsDebug.h"
 #include "BsResources.h"
 #include "BsFrameAlloc.h"
+#include "BsMatrixNxM.h"
+#include "BsVectorNI.h"
 
 namespace BansheeEngine
 {
@@ -253,8 +255,11 @@ namespace BansheeEngine
 		return paramToParamBlock;
 	}
 
-	Map<String, String> determineParamMappings(const Vector<GpuParamDescPtr>& paramDescs, const Map<String, SHADER_DATA_PARAM_DESC>& dataParams,
-		const Map<String, SHADER_OBJECT_PARAM_DESC>& objectParam)
+	Map<String, String> determineParamMappings(const Vector<GpuParamDescPtr>& paramDescs, 
+		const Map<String, SHADER_DATA_PARAM_DESC>& dataParams,
+		const Map<String, SHADER_OBJECT_PARAM_DESC>& textureParams,
+		const Map<String, SHADER_OBJECT_PARAM_DESC>& bufferParams,
+		const Map<String, SHADER_OBJECT_PARAM_DESC>& samplerParams)
 	{
 		Map<String, String> validParams;
 
@@ -295,21 +300,28 @@ namespace BansheeEngine
 		}
 
 		// Create object param mappings
-		for (auto iter = objectParam.begin(); iter != objectParam.end(); ++iter)
+		auto determineObjectMappings = [&](const Map<String, SHADER_OBJECT_PARAM_DESC>& params)
 		{
-			const Vector<String>& gpuVariableNames = iter->second.gpuVariableNames;
-			for (auto iter2 = gpuVariableNames.begin(); iter2 != gpuVariableNames.end(); ++iter2)
+			for (auto iter = params.begin(); iter != params.end(); ++iter)
 			{
-				for (auto iter3 = validObjectParameters.begin(); iter3 != validObjectParameters.end(); ++iter3)
+				const Vector<String>& gpuVariableNames = iter->second.gpuVariableNames;
+				for (auto iter2 = gpuVariableNames.begin(); iter2 != gpuVariableNames.end(); ++iter2)
 				{
-					if ((*iter3)->name == (*iter2) && (*iter3)->type == iter->second.type)
+					for (auto iter3 = validObjectParameters.begin(); iter3 != validObjectParameters.end(); ++iter3)
 					{
-						validParams[iter->first] = *iter2;
-						break;
+						if ((*iter3)->name == (*iter2) && (*iter3)->type == iter->second.type)
+						{
+							validParams[iter->first] = *iter2;
+							break;
+						}
 					}
 				}
 			}
-		}
+		};
+
+		determineObjectMappings(textureParams);
+		determineObjectMappings(samplerParams);
+		determineObjectMappings(bufferParams);
 
 		return validParams;
 	}
@@ -644,7 +656,8 @@ namespace BansheeEngine
 			mValidShareableParamBlocks.clear();
 			Vector<GpuParamDescPtr> allParamDescs = getAllParamDescs(mBestTechnique);
 
-			mValidParams = determineParamMappings(allParamDescs, mShader->getDataParams(), mShader->getObjectParams());
+			mValidParams = determineParamMappings(allParamDescs, mShader->getDataParams(), mShader->getTextureParams(),
+				mShader->getBufferParams(), mShader->getSamplerParams());
 
 			// Fill out various helper structures
 			Set<String> validShareableParamBlocks = determineValidShareableParamBlocks(allParamDescs);
@@ -733,6 +746,139 @@ namespace BansheeEngine
 					}
 				}
 			}
+
+			// Assign default parameters
+			initDefaultParameters();
+		}
+	}
+
+	template <bool Core>
+	template <typename T>
+	void TMaterial<Core>::setParamValue(const String& name, UINT8* buffer, UINT32 numElements)
+	{
+		TMaterialDataParam<T, Core> param;
+		getParam(name, param);
+
+		T* ptr = (T*)buffer;
+		for (UINT32 i = 0; i < numElements; i++)
+			param.set(ptr[i], i);
+	}
+
+	template <bool Core>
+	void TMaterial<Core>::initDefaultParameters()
+	{
+		const Map<String, SHADER_DATA_PARAM_DESC>& dataParams = mShader->getDataParams();
+		for (auto& paramData : dataParams)
+		{
+			if (paramData.second.defaultValueIdx == (UINT32)-1)
+				continue;
+
+			auto iterFind = mValidParams.find(paramData.first);
+			if (iterFind == mValidParams.end())
+				continue;
+			
+			UINT8* buffer = (UINT8*)mShader->getDefaultValue(paramData.second.defaultValueIdx);
+			if (buffer == nullptr)
+				continue;
+
+			switch (paramData.second.type)
+			{
+			case GPDT_FLOAT1: 
+				setParamValue<float>(iterFind->first, buffer, paramData.second.arraySize);
+				break;
+			case GPDT_FLOAT2:
+				setParamValue<Vector2>(iterFind->first, buffer, paramData.second.arraySize);
+				break;
+			case GPDT_FLOAT3:
+				setParamValue<Vector3>(iterFind->first, buffer, paramData.second.arraySize);
+				break;
+			case GPDT_FLOAT4:
+				setParamValue<Vector4>(iterFind->first, buffer, paramData.second.arraySize);
+				break;
+			case GPDT_MATRIX_2X2:
+				setParamValue<Matrix2>(iterFind->first, buffer, paramData.second.arraySize);
+				break;
+			case GPDT_MATRIX_2X3:
+				setParamValue<Matrix2x3>(iterFind->first, buffer, paramData.second.arraySize);
+				break;
+			case GPDT_MATRIX_2X4:
+				setParamValue<Matrix2x4>(iterFind->first, buffer, paramData.second.arraySize);
+				break;
+			case GPDT_MATRIX_3X2:
+				setParamValue<Matrix3x2>(iterFind->first, buffer, paramData.second.arraySize);
+				break;
+			case GPDT_MATRIX_3X3:
+				setParamValue<Matrix3>(iterFind->first, buffer, paramData.second.arraySize);
+				break;
+			case GPDT_MATRIX_3X4:
+				setParamValue<Matrix3x4>(iterFind->first, buffer, paramData.second.arraySize);
+				break;
+			case GPDT_MATRIX_4X2:
+				setParamValue<Matrix4x2>(iterFind->first, buffer, paramData.second.arraySize);
+				break;
+			case GPDT_MATRIX_4X3:
+				setParamValue<Matrix4x3>(iterFind->first, buffer, paramData.second.arraySize);
+				break;
+			case GPDT_MATRIX_4X4:
+				setParamValue<Matrix4>(iterFind->first, buffer, paramData.second.arraySize);
+				break;
+			case GPDT_INT1:
+				setParamValue<int>(iterFind->first, buffer, paramData.second.arraySize);
+				break;
+			case GPDT_INT2:
+				setParamValue<Vector2I>(iterFind->first, buffer, paramData.second.arraySize);
+				break;
+			case GPDT_INT3:
+				setParamValue<Vector3I>(iterFind->first, buffer, paramData.second.arraySize);
+				break;
+			case GPDT_INT4:
+				setParamValue<Vector4I>(iterFind->first, buffer, paramData.second.arraySize);
+				break;
+			case GPDT_BOOL:
+				setParamValue<int>(iterFind->first, buffer, paramData.second.arraySize);
+				break;
+			case GPDT_STRUCT:
+			{
+				TMaterialParamStruct<Core> param = getParamStruct(paramData.first);
+
+				UINT32 elementSizeBytes = paramData.second.elementSize * sizeof(UINT32);
+				UINT8* ptr = buffer;
+				for (UINT32 i = 0; i < paramData.second.arraySize; i++)
+				{
+					param.set(ptr, elementSizeBytes, i);
+					ptr += elementSizeBytes;
+				}
+			}
+			break;
+			}
+		}
+
+		const Map<String, SHADER_OBJECT_PARAM_DESC>& textureParams = mShader->getTextureParams();
+		for (auto& param : textureParams)
+		{
+			if (param.second.defaultValueIdx == (UINT32)-1)
+				continue;
+
+			auto iterFind = mValidParams.find(param.first);
+			if (iterFind == mValidParams.end())
+				continue;
+
+			TextureType defaultTex = mShader->getDefaultTexture(param.second.defaultValueIdx);
+			getParamTexture(param.first).set(defaultTex);
+		}
+
+		const Map<String, SHADER_OBJECT_PARAM_DESC>& samplerParams = mShader->getSamplerParams();
+		for (auto& param : samplerParams)
+		{
+			if (param.second.defaultValueIdx == (UINT32)-1)
+				continue;
+
+			auto iterFind = mValidParams.find(param.first);
+			if (iterFind == mValidParams.end())
+				continue;
+
+			SamplerStateType defaultSampler = mShader->getDefaultSampler(param.second.defaultValueIdx);
+			getParamSamplerState(param.first).set(defaultSampler);
 		}
 	}
 
@@ -791,20 +937,42 @@ namespace BansheeEngine
 	template class TMaterial < true > ;
 
 	template BS_CORE_EXPORT void TMaterial<false>::getParam(const String&, TMaterialDataParam<float, false>&) const;
+	template BS_CORE_EXPORT void TMaterial<false>::getParam(const String&, TMaterialDataParam<int, false>&) const;
 	template BS_CORE_EXPORT void TMaterial<false>::getParam(const String&, TMaterialDataParam<Color, false>&) const;
 	template BS_CORE_EXPORT void TMaterial<false>::getParam(const String&, TMaterialDataParam<Vector2, false>&) const;
 	template BS_CORE_EXPORT void TMaterial<false>::getParam(const String&, TMaterialDataParam<Vector3, false>&) const;
 	template BS_CORE_EXPORT void TMaterial<false>::getParam(const String&, TMaterialDataParam<Vector4, false>&) const;
+	template BS_CORE_EXPORT void TMaterial<false>::getParam(const String&, TMaterialDataParam<Vector2I, false>&) const;
+	template BS_CORE_EXPORT void TMaterial<false>::getParam(const String&, TMaterialDataParam<Vector3I, false>&) const;
+	template BS_CORE_EXPORT void TMaterial<false>::getParam(const String&, TMaterialDataParam<Vector4I, false>&) const;
+	template BS_CORE_EXPORT void TMaterial<false>::getParam(const String&, TMaterialDataParam<Matrix2, false>&) const;
+	template BS_CORE_EXPORT void TMaterial<false>::getParam(const String&, TMaterialDataParam<Matrix2x3, false>&) const;
+	template BS_CORE_EXPORT void TMaterial<false>::getParam(const String&, TMaterialDataParam<Matrix2x4, false>&) const;
 	template BS_CORE_EXPORT void TMaterial<false>::getParam(const String&, TMaterialDataParam<Matrix3, false>&) const;
+	template BS_CORE_EXPORT void TMaterial<false>::getParam(const String&, TMaterialDataParam<Matrix3x2, false>&) const;
+	template BS_CORE_EXPORT void TMaterial<false>::getParam(const String&, TMaterialDataParam<Matrix3x4, false>&) const;
 	template BS_CORE_EXPORT void TMaterial<false>::getParam(const String&, TMaterialDataParam<Matrix4, false>&) const;
+	template BS_CORE_EXPORT void TMaterial<false>::getParam(const String&, TMaterialDataParam<Matrix4x2, false>&) const;
+	template BS_CORE_EXPORT void TMaterial<false>::getParam(const String&, TMaterialDataParam<Matrix4x3, false>&) const;
 
 	template BS_CORE_EXPORT void TMaterial<true>::getParam(const String&, TMaterialDataParam<float, true>&) const;
+	template BS_CORE_EXPORT void TMaterial<true>::getParam(const String&, TMaterialDataParam<int, true>&) const;
 	template BS_CORE_EXPORT void TMaterial<true>::getParam(const String&, TMaterialDataParam<Color, true>&) const;
 	template BS_CORE_EXPORT void TMaterial<true>::getParam(const String&, TMaterialDataParam<Vector2, true>&) const;
 	template BS_CORE_EXPORT void TMaterial<true>::getParam(const String&, TMaterialDataParam<Vector3, true>&) const;
 	template BS_CORE_EXPORT void TMaterial<true>::getParam(const String&, TMaterialDataParam<Vector4, true>&) const;
+	template BS_CORE_EXPORT void TMaterial<true>::getParam(const String&, TMaterialDataParam<Vector2I, true>&) const;
+	template BS_CORE_EXPORT void TMaterial<true>::getParam(const String&, TMaterialDataParam<Vector3I, true>&) const;
+	template BS_CORE_EXPORT void TMaterial<true>::getParam(const String&, TMaterialDataParam<Vector4I, true>&) const;
+	template BS_CORE_EXPORT void TMaterial<true>::getParam(const String&, TMaterialDataParam<Matrix2, true>&) const;
+	template BS_CORE_EXPORT void TMaterial<true>::getParam(const String&, TMaterialDataParam<Matrix2x3, true>&) const;
+	template BS_CORE_EXPORT void TMaterial<true>::getParam(const String&, TMaterialDataParam<Matrix2x4, true>&) const;
 	template BS_CORE_EXPORT void TMaterial<true>::getParam(const String&, TMaterialDataParam<Matrix3, true>&) const;
+	template BS_CORE_EXPORT void TMaterial<true>::getParam(const String&, TMaterialDataParam<Matrix3x2, true>&) const;
+	template BS_CORE_EXPORT void TMaterial<true>::getParam(const String&, TMaterialDataParam<Matrix3x4, true>&) const;
 	template BS_CORE_EXPORT void TMaterial<true>::getParam(const String&, TMaterialDataParam<Matrix4, true>&) const;
+	template BS_CORE_EXPORT void TMaterial<true>::getParam(const String&, TMaterialDataParam<Matrix4x2, true>&) const;
+	template BS_CORE_EXPORT void TMaterial<true>::getParam(const String&, TMaterialDataParam<Matrix4x3, true>&) const;
 
 	MaterialCore::MaterialCore(const SPtr<ShaderCore>& shader)
 	{
@@ -1008,14 +1176,28 @@ namespace BansheeEngine
 
 	void Material::getListenerResources(Vector<HResource>& resources)
 	{
-		if (mShader != nullptr)
-			resources.push_back(mShader);
+		getResourceDependencies(resources);
 	}
 
 	void Material::getResourceDependencies(Vector<HResource>& dependencies) const
 	{
 		if (mShader != nullptr)
 			dependencies.push_back(mShader);
+
+		if (mShader.isLoaded())
+		{
+			const Map<String, SHADER_OBJECT_PARAM_DESC>& textureParams = mShader->getTextureParams();
+
+			for (auto& param : textureParams)
+			{
+				if (param.second.defaultValueIdx != (UINT32)-1)
+				{
+					HTexture defaultTex = mShader->getDefaultTexture(param.second.defaultValueIdx);
+					if (defaultTex != nullptr)
+						dependencies.push_back(defaultTex);
+				}
+			}
+		}
 	}
 
 	void Material::initializeIfLoaded()

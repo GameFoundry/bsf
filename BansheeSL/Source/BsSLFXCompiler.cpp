@@ -1356,7 +1356,6 @@ namespace BansheeEngine
 	{
 		if (parametersNode == nullptr || parametersNode->type != NT_Parameters)
 			return;
-
 		for (int i = 0; i < parametersNode->options->count; i++)
 		{
 			NodeOption* option = &parametersNode->options->entries[i];
@@ -1370,9 +1369,11 @@ namespace BansheeEngine
 			String alias;
 
 			float defaultValue[16];
+			bool hasDefaultValue = false;
 			UINT32 typeId = 0;
 			bool isObjType = false;
 			StringID semantic;
+			SamplerStatePtr samplerState = nullptr;
 
 			for (int j = 0; j < parameter->options->count; j++)
 			{
@@ -1388,6 +1389,7 @@ namespace BansheeEngine
 					break;
 				case OT_ParamValue:
 					memcpy(defaultValue, paramOption->value.matrixValue, sizeof(defaultValue));
+					hasDefaultValue = true;
 					break;
 				case OT_ParamType:
 					parseParamType((ParamType)paramOption->value.intValue, isObjType, typeId);
@@ -1396,8 +1398,7 @@ namespace BansheeEngine
 					semantic = removeQuotes(paramOption->value.strValue);
 					break;
 				case OT_SamplerState:
-					SamplerStatePtr samplerState = parseSamplerState(paramOption->value.nodePtr);
-					// TODO - How to deal with sampler-state default value?
+					samplerState = parseSamplerState(paramOption->value.nodePtr);
 					break;
 				}
 			}
@@ -1405,18 +1406,30 @@ namespace BansheeEngine
 			if (name.empty())
 				continue;
 
-			if (isObjType)
-				desc.addParameter(name, name, (GpuParamObjectType)typeId, semantic);
-			else
-				desc.addParameter(name, name, (GpuParamDataType)typeId, semantic); // TODO - Add default value
-
-			if (!alias.empty())
+			auto addParameter = [&](const String& paramName, const String& gpuVarName)
 			{
 				if (isObjType)
-					desc.addParameter(name, alias, (GpuParamObjectType)typeId, semantic);
+				{
+					GpuParamObjectType objType = (GpuParamObjectType)typeId;
+
+					if (Shader::isSampler(objType) && hasDefaultValue)
+						desc.addParameter(paramName, gpuVarName, objType, samplerState, semantic);
+					else
+						desc.addParameter(paramName, gpuVarName, objType, semantic);
+				}
 				else
-					desc.addParameter(name, alias, (GpuParamDataType)typeId, semantic); // TODO - Add default value
-			}
+				{
+					if (hasDefaultValue)
+						desc.addParameter(paramName, gpuVarName, (GpuParamDataType)typeId, semantic, 1, 0, (UINT8*)defaultValue);
+					else
+						desc.addParameter(paramName, gpuVarName, (GpuParamDataType)typeId, semantic);
+				}
+			};
+
+			addParameter(name, name);
+
+			if (!alias.empty())
+				addParameter(name, alias);
 		}
 	}
 

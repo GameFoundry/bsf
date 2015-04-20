@@ -178,24 +178,48 @@ namespace BansheeEngine
 		UINT32 getDataParamsArraySize(Shader* obj) { return (UINT32)obj->mDesc.dataParams.size(); }
 		void setDataParamsArraySize(Shader* obj, UINT32 size) {  } // Do nothing
 
-		SHADER_OBJECT_PARAM_DESC& getObjectParam(Shader* obj, UINT32 idx) 
+		SHADER_OBJECT_PARAM_DESC& getTextureParam(Shader* obj, UINT32 idx) 
 		{ 
-			auto iter = obj->mDesc.objectParams.begin();
+			auto iter = obj->mDesc.textureParams.begin();
 			for(UINT32 i = 0; i < idx; i++) ++iter;
 
 			return iter->second; 
 		}
 
-		void setObjectParam(Shader* obj, UINT32 idx, SHADER_OBJECT_PARAM_DESC& val) { obj->mDesc.objectParams[val.name] = val; }
-		UINT32 getObjectParamsArraySize(Shader* obj) { return (UINT32)obj->mDesc.objectParams.size(); }
-		void setObjectParamsArraySize(Shader* obj, UINT32 size) {  } // Do nothing
+		void setTextureParam(Shader* obj, UINT32 idx, SHADER_OBJECT_PARAM_DESC& val) { obj->mDesc.textureParams[val.name] = val; }
+		UINT32 getTextureParamsArraySize(Shader* obj) { return (UINT32)obj->mDesc.textureParams.size(); }
+		void setTextureParamsArraySize(Shader* obj, UINT32 size) {  } // Do nothing
 
-		SHADER_PARAM_BLOCK_DESC& getParamBlock(Shader* obj, UINT32 idx) 
-		{ 
+		SHADER_OBJECT_PARAM_DESC& getSamplerParam(Shader* obj, UINT32 idx)
+		{
+			auto iter = obj->mDesc.samplerParams.begin();
+			for (UINT32 i = 0; i < idx; i++) ++iter;
+
+			return iter->second;
+		}
+
+		void setSamplerParam(Shader* obj, UINT32 idx, SHADER_OBJECT_PARAM_DESC& val) { obj->mDesc.samplerParams[val.name] = val; }
+		UINT32 getSamplerParamsArraySize(Shader* obj) { return (UINT32)obj->mDesc.samplerParams.size(); }
+		void setSamplerParamsArraySize(Shader* obj, UINT32 size) {  } // Do nothing
+
+		SHADER_OBJECT_PARAM_DESC& getBufferParam(Shader* obj, UINT32 idx)
+		{
+			auto iter = obj->mDesc.bufferParams.begin();
+			for (UINT32 i = 0; i < idx; i++) ++iter;
+
+			return iter->second;
+		}
+
+		void setBufferParam(Shader* obj, UINT32 idx, SHADER_OBJECT_PARAM_DESC& val) { obj->mDesc.bufferParams[val.name] = val; }
+		UINT32 getBufferParamsArraySize(Shader* obj) { return (UINT32)obj->mDesc.bufferParams.size(); }
+		void setBufferParamsArraySize(Shader* obj, UINT32 size) {  } // Do nothing
+
+		SHADER_PARAM_BLOCK_DESC& getParamBlock(Shader* obj, UINT32 idx)
+		{
 			auto iter = obj->mDesc.paramBlocks.begin();
-			for(UINT32 i = 0; i < idx; i++) ++iter;
+			for (UINT32 i = 0; i < idx; i++) ++iter;
 
-			return iter->second; 
+			return iter->second;
 		}
 
 		void setParamBlock(Shader* obj, UINT32 idx, SHADER_PARAM_BLOCK_DESC& val) { obj->mDesc.paramBlocks[val.name] = val; }
@@ -211,6 +235,18 @@ namespace BansheeEngine
 		bool& getAllowSeparablePasses(Shader* obj) { return obj->mDesc.separablePasses; }
 		void setAllowSeparablePasses(Shader* obj, bool& value) { obj->mDesc.separablePasses = value; }
 
+		Vector<UINT8>& getDataDefaultValues(Shader* obj) { return obj->mDesc.dataDefaultValues; }
+		void setDataDefaultValues(Shader* obj, Vector<UINT8>& value) { obj->mDesc.dataDefaultValues = value; }
+
+		HTexture& getDefaultTexture(Shader* obj, UINT32 idx) { return obj->mDesc.textureDefaultValues[idx]; }
+		void setDefaultTexture(Shader* obj, UINT32 idx, HTexture& val) { obj->mDesc.textureDefaultValues[idx] = val; }
+		UINT32 getDefaultTextureArraySize(Shader* obj) { return (UINT32)obj->mDesc.textureDefaultValues.size(); }
+		void setDefaultTextureArraySize(Shader* obj, UINT32 size) { obj->mDesc.textureDefaultValues.resize(size); }
+
+		SamplerStatePtr getDefaultSampler(Shader* obj, UINT32 idx) { return obj->mDesc.samplerDefaultValues[idx]; }
+		void setDefaultSampler(Shader* obj, UINT32 idx, SamplerStatePtr val) { obj->mDesc.samplerDefaultValues[idx] = val; }
+		UINT32 getDefaultSamplerArraySize(Shader* obj) { return (UINT32)obj->mDesc.samplerDefaultValues.size(); }
+		void setDefaultSamplerArraySize(Shader* obj, UINT32 size) { obj->mDesc.samplerDefaultValues.resize(size); }
 
 	public:
 		ShaderRTTI()
@@ -221,14 +257,24 @@ namespace BansheeEngine
 
 			addPlainArrayField("mDataParams", 2, &ShaderRTTI::getDataParam, &ShaderRTTI::getDataParamsArraySize, 
 				&ShaderRTTI::setDataParam, &ShaderRTTI::setDataParamsArraySize);
-			addPlainArrayField("mObjectParams", 3, &ShaderRTTI::getObjectParam, &ShaderRTTI::getObjectParamsArraySize, 
-				&ShaderRTTI::setObjectParam, &ShaderRTTI::setObjectParamsArraySize);
-			addPlainArrayField("mParamBlocks", 4, &ShaderRTTI::getParamBlock, &ShaderRTTI::getParamBlocksArraySize, 
+			addPlainArrayField("mTextureParams", 3, &ShaderRTTI::getTextureParam, &ShaderRTTI::getTextureParamsArraySize,
+				&ShaderRTTI::setTextureParam, &ShaderRTTI::setTextureParamsArraySize);
+			addPlainArrayField("mSamplerParams", 4, &ShaderRTTI::getSamplerParam, &ShaderRTTI::getSamplerParamsArraySize,
+				&ShaderRTTI::setSamplerParam, &ShaderRTTI::setSamplerParamsArraySize);
+			addPlainArrayField("mBufferParams", 5, &ShaderRTTI::getBufferParam, &ShaderRTTI::getBufferParamsArraySize,
+				&ShaderRTTI::setBufferParam, &ShaderRTTI::setBufferParamsArraySize);
+			addPlainArrayField("mParamBlocks", 6, &ShaderRTTI::getParamBlock, &ShaderRTTI::getParamBlocksArraySize, 
 				&ShaderRTTI::setParamBlock, &ShaderRTTI::setParamBlocksArraySize);
 
-			addPlainField("mQueueSortType", 5, &ShaderRTTI::getQueueSortType, &ShaderRTTI::setQueueSortType);
-			addPlainField("mQueuePriority", 6, &ShaderRTTI::getQueuePriority, &ShaderRTTI::setQueuePriority);
-			addPlainField("mSeparablePasses", 7, &ShaderRTTI::getAllowSeparablePasses, &ShaderRTTI::setAllowSeparablePasses);
+			addPlainField("mQueueSortType", 7, &ShaderRTTI::getQueueSortType, &ShaderRTTI::setQueueSortType);
+			addPlainField("mQueuePriority", 8, &ShaderRTTI::getQueuePriority, &ShaderRTTI::setQueuePriority);
+			addPlainField("mSeparablePasses", 9, &ShaderRTTI::getAllowSeparablePasses, &ShaderRTTI::setAllowSeparablePasses);
+
+			addPlainField("mDataDefaultValues", 10, &ShaderRTTI::getDataDefaultValues, &ShaderRTTI::setDataDefaultValues);
+			addReflectableArrayField("mTextureDefaultValues", 11, &ShaderRTTI::getDefaultTexture, &ShaderRTTI::getDefaultTextureArraySize,
+				&ShaderRTTI::setDefaultTexture, &ShaderRTTI::setDefaultTextureArraySize);
+			addReflectablePtrArrayField("mSamplerDefaultValues", 12, &ShaderRTTI::getDefaultSampler, &ShaderRTTI::getDefaultSamplerArraySize,
+				&ShaderRTTI::setDefaultSampler, &ShaderRTTI::setDefaultSamplerArraySize);
 		}
 
 		virtual void onDeserializationEnded(IReflectable* obj)

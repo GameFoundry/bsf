@@ -468,7 +468,7 @@ namespace BansheeEngine
 		SPtr<PassCore> newPass = PassCore::create(passDesc);
 		SPtr<TechniqueCore> newTechnique = TechniqueCore::create(rsName, RendererDefault, { newPass });
 
-		SHADER_DESC shaderDesc;
+		SHADER_DESC_CORE shaderDesc;
 		shaderDesc.setParamBlockAttribs("PerObject", true, GPBU_DYNAMIC, RBS_PerObject);
 		shaderDesc.addParameter("matWorldViewProj", "matWorldViewProj", GPDT_MATRIX_4X4, RPS_WorldViewProjTfrm);
 

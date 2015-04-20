@@ -220,7 +220,9 @@ namespace BansheeEngine
 	enum GpuParamType
 	{
 		GPT_DATA,
-		GPT_OBJECT
+		GPT_TEXTURE,
+		GPT_BUFFER,
+		GPT_SAMPLER
 	};
 
 	/**

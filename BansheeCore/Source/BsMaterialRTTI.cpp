@@ -150,34 +150,29 @@ namespace BansheeEngine
 						BS_EXCEPT(InternalErrorException, "Cannot serialize this paramater type: " + toString(paramDesc.type));
 					}
 				}
-				else if(type == GPT_OBJECT)
+				else if(type == GPT_TEXTURE)
 				{
-					const SHADER_OBJECT_PARAM_DESC& paramDesc = shader->getObjectParamDesc(iter->first);
+					const SHADER_OBJECT_PARAM_DESC& paramDesc = shader->getTextureParamDesc(iter->first);
 
-					if(Shader::isSampler(paramDesc.type))
-					{
-						MaterialSamplerStateParam param;
-						param.name = iter->first;
-						param.value = material->getSamplerState(iter->first);
+					MaterialTextureParam param;
+					param.name = iter->first;
+					param.value = material->getTexture(iter->first);
 
-						params->samplerStateParams.push_back(param);
-					}
-					else if(Shader::isTexture(paramDesc.type))
-					{
-						MaterialTextureParam param;
-						param.name = iter->first;
-						param.value = material->getTexture(iter->first);
+					params->textureParams.push_back(param);
+				}
+				else if (type == GPT_SAMPLER)
+				{
+					const SHADER_OBJECT_PARAM_DESC& paramDesc = shader->getSamplerParamDesc(iter->first);
 
-						params->textureParams.push_back(param);
-					}
-					else if(Shader::isBuffer(paramDesc.type))
-					{
-						BS_EXCEPT(NotImplementedException, "Buffers can't be serialized yet."); // TODO
-					}
-					else
-					{
-						BS_EXCEPT(InternalErrorException, "Cannot serialize this paramater type: " + toString(paramDesc.type));
-					}
+					MaterialSamplerStateParam param;
+					param.name = iter->first;
+					param.value = material->getSamplerState(iter->first);
+
+					params->samplerStateParams.push_back(param);
+				}
+				else if (type == GPT_BUFFER)
+				{
+					BS_EXCEPT(NotImplementedException, "Buffers can't be serialized yet.");
 				}
 				else
 					BS_EXCEPT(InternalErrorException, "Invalid parameter type.");
@@ -308,27 +303,19 @@ namespace BansheeEngine
 
 			for(auto iter = params->samplerStateParams.begin(); iter != params->samplerStateParams.end(); ++iter)
 			{
-				if(!shader->hasObjectParam(iter->name))
+				if(!shader->hasSamplerParam(iter->name))
 					continue;
 
-				const SHADER_OBJECT_PARAM_DESC& paramDesc = shader->getObjectParamDesc(iter->name);
-
-				if(!Shader::isSampler(paramDesc.type))
-					continue;
-
+				const SHADER_OBJECT_PARAM_DESC& paramDesc = shader->getSamplerParamDesc(iter->name);
 				material->setSamplerState(iter->name, iter->value);
 			}
 
 			for(auto iter = params->textureParams.begin(); iter != params->textureParams.end(); ++iter)
 			{
-				if(!shader->hasObjectParam(iter->name))
+				if(!shader->hasTextureParam(iter->name))
 					continue;
 
-				const SHADER_OBJECT_PARAM_DESC& paramDesc = shader->getObjectParamDesc(iter->name);
-
-				if(!Shader::isTexture(paramDesc.type))
-					continue;
-
+				const SHADER_OBJECT_PARAM_DESC& paramDesc = shader->getTextureParamDesc(iter->name);
 				material->setTexture(iter->name, iter->value);
 			}
 		}
