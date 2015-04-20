@@ -3,6 +3,7 @@
 #include "BsCorePrerequisites.h"
 #include "BsResource.h"
 #include "BsStringID.h"
+#include "BsResourceMetaData.h"
 
 namespace BansheeEngine
 {
@@ -393,6 +394,15 @@ namespace BansheeEngine
 		SPtr<ShaderCore> getCore() const;
 
 		/**
+		 * @brief	Sets a list include file paths that are referenced by this shader.
+		 *
+		 * @note	This is not used directly by the shader as includes are expected to be
+		 *			processed during GPU program and state creation, but it may be referenced 
+		 *			by higher layers for various purposes.
+		 */
+		void setIncludeFiles(const Vector<String>& includes);
+
+		/**
 		 * @brief	Checks is the provided object type a sampler.
 		 */
 		static bool isSampler(GpuParamObjectType type);
@@ -460,5 +470,23 @@ namespace BansheeEngine
 		friend class ShaderRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const;	
+	};
+
+	/**
+	 * @brief	Shader specific resource meta-data containing information
+	 *			about referenced include files.
+	 */
+	class BS_CORE_EXPORT ShaderMetaData : public ResourceMetaData
+	{
+	public:
+		Vector<String> includes;
+
+		/************************************************************************/
+		/* 								SERIALIZATION                      		*/
+		/************************************************************************/
+	public:
+		friend class ShaderMetaDataRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
 	};
 }

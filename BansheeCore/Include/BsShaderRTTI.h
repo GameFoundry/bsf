@@ -299,4 +299,33 @@ namespace BansheeEngine
 			return Shader::createEmpty();
 		}
 	};
+
+	class BS_CORE_EXPORT ShaderMetaDataRTTI : public RTTIType < ShaderMetaData, ResourceMetaData, ShaderMetaDataRTTI >
+	{
+	private:
+		Vector<String>& getIncludes(ShaderMetaData* obj) { return obj->includes; }
+		void setIncludes(ShaderMetaData* obj, Vector<String>& includes) { obj->includes = includes; }
+
+	public:
+		ShaderMetaDataRTTI()
+		{
+			addPlainField("includes", 0, &ShaderMetaDataRTTI::getIncludes, &ShaderMetaDataRTTI::setIncludes);
+		}
+
+		virtual const String& getRTTIName()
+		{
+			static String name = "ShaderMetaData";
+			return name;
+		}
+
+		virtual UINT32 getRTTIId()
+		{
+			return TID_ShaderMetaData;
+		}
+
+		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		{
+			return bs_shared_ptr<ShaderMetaData>();
+		}
+	};
 }

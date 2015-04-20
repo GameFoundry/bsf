@@ -14,6 +14,7 @@
 #include "BsProjectLibraryEntries.h"
 #include "BsResource.h"
 #include "BsResourceImporter.h"
+#include "BsShader.h"
 #include <regex>
 
 using namespace std::placeholders;
@@ -87,6 +88,20 @@ namespace BansheeEngine
 	void ProjectLibrary::update()
 	{
 		mMonitor->_update();
+
+		while (!mReimportQueue.empty())
+		{
+			Path toReimport = *mReimportQueue.begin();
+			LibraryEntry* entry = findEntry(toReimport);
+			if (entry != nullptr && entry->type == LibraryEntryType::File)
+			{
+				ResourceEntry* resEntry = static_cast<ResourceEntry*>(entry);
+				reimportResourceInternal(resEntry, resEntry->meta->getImportOptions(), true);
+				queueDependantForReimport(resEntry);
+			}
+
+			mReimportQueue.erase(mReimportQueue.begin());
+		}
 	}
 
 	void ProjectLibrary::checkForModifications(const Path& fullPath)
@@ -133,7 +148,9 @@ namespace BansheeEngine
 		{
 			if(FileSystem::isFile(entry->path))
 			{
-				reimportResourceInternal(static_cast<ResourceEntry*>(entry));
+				ResourceEntry* resEntry = static_cast<ResourceEntry*>(entry);
+				reimportResourceInternal(resEntry);
+				queueDependantForReimport(resEntry);
 			}
 			else
 			{
@@ -204,6 +221,7 @@ namespace BansheeEngine
 							if(existingEntry != nullptr)
 							{
 								reimportResourceInternal(existingEntry);
+								queueDependantForReimport(existingEntry);
 							}
 							else
 							{
@@ -267,9 +285,7 @@ namespace BansheeEngine
 		parent->mChildren.push_back(newResource);
 
 		reimportResourceInternal(newResource, importOptions, forceReimport);
-
-		if(!onEntryAdded.empty())
-			onEntryAdded(filePath);
+		doOnEntryAdded(newResource);
 
 		return newResource;
 	}
@@ -279,9 +295,7 @@ namespace BansheeEngine
 		DirectoryEntry* newEntry = bs_new<DirectoryEntry>(dirPath, dirPath.getWTail(), parent);
 		parent->mChildren.push_back(newEntry);
 
-		if(!onEntryAdded.empty())
-			onEntryAdded(dirPath);
-
+		doOnEntryAdded(newEntry);
 		return newEntry;
 	}
 
@@ -305,9 +319,7 @@ namespace BansheeEngine
 
 		parent->mChildren.erase(findIter);
 
-		if(!onEntryRemoved.empty())
-			onEntryRemoved(resource->path);
-
+		doOnEntryRemoved(resource);
 		bs_delete(resource);
 	}
 
@@ -334,9 +346,7 @@ namespace BansheeEngine
 			parent->mChildren.erase(findIter);
 		}
 
-		if(!onEntryRemoved.empty())
-			onEntryRemoved(directory->path);
-
+		doOnEntryRemoved(directory);
 		bs_delete(directory);
 	}
 
@@ -380,7 +390,6 @@ namespace BansheeEngine
 				curImportOptions = importOptions;
 
 			HResource importedResource;
-
 			if(resource->meta == nullptr)
 			{
 				importedResource = Importer::instance().import(resource->path, curImportOptions);
@@ -394,9 +403,13 @@ namespace BansheeEngine
 			}
 			else
 			{
+				removeDependencies(resource);
+
 				importedResource = HResource(resource->meta->getUUID());
 				Importer::instance().reimport(importedResource, resource->path, curImportOptions);
 			}
+
+			addDependencies(resource);
 
 			Path internalResourcesPath = mProjectFolder;
 			internalResourcesPath.append(INTERNAL_RESOURCES_DIR);
@@ -651,6 +664,8 @@ namespace BansheeEngine
 			}
 			else // Just moving internally
 			{
+				doOnEntryRemoved(oldEntry);
+
 				if(FileSystem::isFile(oldMetaPath))
 					FileSystem::move(oldMetaPath, newMetaPath);
 
@@ -700,11 +715,7 @@ namespace BansheeEngine
 					}
 				}
 
-				if(!onEntryRemoved.empty())
-					onEntryRemoved(oldPath);
-
-				if(!onEntryAdded.empty())
-					onEntryAdded(newPath);
+				doOnEntryAdded(oldEntry);
 
 				if(newHierarchyParent != nullptr)
 					checkForModifications(newHierarchyParent->path);
@@ -830,6 +841,7 @@ namespace BansheeEngine
 			{
 				ResourceEntry* resEntry = static_cast<ResourceEntry*>(entry);
 				reimportResourceInternal(resEntry, importOptions, forceReimport);
+				queueDependantForReimport(resEntry);
 			}
 		}
 	}
@@ -980,6 +992,8 @@ namespace BansheeEngine
 							}
 						}
 					}
+
+					addDependencies(resEntry);
 				}
 				else if(child->type == LibraryEntryType::Directory)
 				{
@@ -997,5 +1011,78 @@ namespace BansheeEngine
 		{
 			mResourceManifest = ResourceManifest::load(resourceManifestPath, mProjectFolder);
 		}
+	}
+
+	void ProjectLibrary::doOnEntryRemoved(const LibraryEntry* entry)
+	{
+		if (!onEntryRemoved.empty())
+			onEntryRemoved(entry->path);
+
+		if (entry->type == LibraryEntryType::File)
+		{
+			const ResourceEntry* resEntry = static_cast<const ResourceEntry*>(entry);
+			queueDependantForReimport(resEntry);
+			removeDependencies(resEntry);
+		}
+	}
+
+	void ProjectLibrary::doOnEntryAdded(const LibraryEntry* entry)
+	{
+		if (!onEntryAdded.empty())
+			onEntryAdded(entry->path);
+
+		if (entry->type == LibraryEntryType::File)
+		{
+			const ResourceEntry* resEntry = static_cast<const ResourceEntry*>(entry);
+			queueDependantForReimport(resEntry);
+		}
+	}
+
+	Vector<Path> ProjectLibrary::getImportDependencies(const ResourceEntry* entry)
+	{
+		Vector<Path> output;
+
+		if (entry->meta->getTypeID() == TID_Shader)
+		{
+			SPtr<ShaderMetaData> metaData = std::static_pointer_cast<ShaderMetaData>(entry->meta->getResourceMetaData());
+
+			for (auto& include : metaData->includes)
+				output.push_back(include);
+		}
+
+		return output;
+	}
+
+	void ProjectLibrary::addDependencies(const ResourceEntry* entry)
+	{
+		Vector<Path> dependencies = getImportDependencies(entry);
+		for (auto& dependency : dependencies)
+			mDependencies[dependency].push_back(entry->path);
+	}
+
+	void ProjectLibrary::removeDependencies(const ResourceEntry* entry)
+	{
+		Vector<Path> dependencies = getImportDependencies(entry);
+		for (auto& dependency : dependencies)
+		{
+			Vector<Path>& curDependencies = mDependencies[dependency];
+			auto iterRemove = std::remove_if(curDependencies.begin(), curDependencies.end(),
+				[&](const Path& x)
+			{
+				return x == entry->path;
+			});
+
+			curDependencies.erase(iterRemove, curDependencies.end());
+		}
+	}
+	
+	void ProjectLibrary::queueDependantForReimport(const ResourceEntry* entry)
+	{
+		auto iterFind = mDependencies.find(entry->path);
+		if (iterFind == mDependencies.end())
+			return;
+
+		for (auto& dependency : iterFind->second)
+			mReimportQueue.insert(dependency);
 	}
 }

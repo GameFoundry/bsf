@@ -1485,8 +1485,6 @@ namespace BansheeEngine
 		if (parseState->rootNode == nullptr || parseState->rootNode->type != NT_Shader)
 			return nullptr;
 
-		Vector<String> includeDependencies;
-
 		// Merge all include ASTs
 		std::function<ParseState*(ParseState*, Vector<CodeBlock>&)> parseIncludes = [&](ParseState* parentParseState, Vector<CodeBlock>& parentCodeBlocks)
 		{
@@ -1500,8 +1498,6 @@ namespace BansheeEngine
 				if (option->type == OT_Include)
 				{
 					String includePath = removeQuotes(option->value.strValue);
-					includeDependencies.push_back(includePath);
-
 					HShaderInclude include = ShaderManager::instance().findInclude(includePath);
 
 					if (include != nullptr)
@@ -1566,6 +1562,8 @@ namespace BansheeEngine
 
 		parseState = parseIncludes(parseState, codeBlocks);
 		
+		Vector<String> topLevelIncludes;
+
 		SHADER_DESC shaderDesc;
 		Vector<TechniquePtr> techniques;
 
@@ -1575,6 +1573,12 @@ namespace BansheeEngine
 
 			switch (option->type)
 			{
+			case OT_Include:
+			{
+				String includePath = removeQuotes(option->value.strValue);
+				topLevelIncludes.push_back(includePath);
+			}
+				break;
 			case OT_Separable:
 				shaderDesc.separablePasses = option->value.intValue > 1;
 				break;
@@ -1603,7 +1607,10 @@ namespace BansheeEngine
 
 		parseStateDelete(parseState);
 
-		return Shader::_createPtr(name, shaderDesc, techniques);
+		ShaderPtr output = Shader::_createPtr(name, shaderDesc, techniques);
+		output->setIncludeFiles(topLevelIncludes);
+
+		return output;
 	}
 
 	String BSLFXCompiler::removeQuotes(const char* input)

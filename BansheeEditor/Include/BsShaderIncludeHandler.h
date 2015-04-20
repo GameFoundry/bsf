@@ -17,5 +17,11 @@ namespace BansheeEngine
 		 * @copydoc	IShaderIncludeHandler::findInclude
 		 */
 		virtual HShaderInclude findInclude(const String& name) const override;
+
+		/**
+		 * @brief	Converts a shader include name or path to a path
+		 *			of the resource containing include data.
+		 */
+		static Path toResourcePath(const String& name);
 	};
 }

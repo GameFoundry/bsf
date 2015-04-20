@@ -326,7 +326,8 @@ namespace BansheeEngine
 		TID_ResourceMetaData = 1071,
 		TID_ShaderInclude = 1072,
 		TID_Viewport = 1073,
-		TID_ResourceDependencies = 1074
+		TID_ResourceDependencies = 1074,
+		TID_ShaderMetaData = 1075,
 	};
 }
 

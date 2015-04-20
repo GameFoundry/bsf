@@ -87,6 +87,9 @@ namespace BansheeEngine
 		Path mProjectFolder;
 		Path mResourcesFolder;
 
+		UnorderedMap<Path, Vector<Path>> mDependencies;
+		UnorderedSet<Path> mReimportQueue;
+
 		void save();
 		void load();
 
@@ -104,6 +107,14 @@ namespace BansheeEngine
 		Path getMetaPath(const Path& path) const;
 		bool isMeta(const Path& fullPath) const;
 
+		void doOnEntryRemoved(const LibraryEntry* entry);
+		void doOnEntryAdded(const LibraryEntry* entry);
+
 		void onMonitorFileModified(const Path& path);
+
+		Vector<Path> getImportDependencies(const ResourceEntry* entry);
+		void addDependencies(const ResourceEntry* entry);
+		void removeDependencies(const ResourceEntry* entry);
+		void queueDependantForReimport(const ResourceEntry* entry);
 	};
 }

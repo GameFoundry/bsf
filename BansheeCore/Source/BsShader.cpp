@@ -303,7 +303,7 @@ namespace BansheeEngine
 	ShaderCore::ShaderCore(const String& name, const SHADER_DESC_CORE& desc, const Vector<SPtr<TechniqueCore>>& techniques)
 		:TShader(name, desc, techniques)
 	{
-
+		
 	}
 
 	SPtr<ShaderCore> ShaderCore::create(const String& name, const SHADER_DESC_CORE& desc, const Vector<SPtr<TechniqueCore>>& techniques)
@@ -319,12 +319,18 @@ namespace BansheeEngine
 	Shader::Shader(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques)
 		:TShader(name, desc, techniques)
 	{
-
+		mMetaData = bs_shared_ptr<ShaderMetaData>();
 	}
 
 	SPtr<ShaderCore> Shader::getCore() const
 	{
 		return std::static_pointer_cast<ShaderCore>(mCoreSpecific);
+	}
+
+	void Shader::setIncludeFiles(const Vector<String>& includes)
+	{
+		SPtr<ShaderMetaData> meta = std::static_pointer_cast<ShaderMetaData>(getMetaData());
+		meta->includes = includes;
 	}
 
 	SPtr<CoreObjectCore> Shader::createCore() const
@@ -485,5 +491,15 @@ namespace BansheeEngine
 	RTTITypeBase* Shader::getRTTI() const
 	{
 		return Shader::getRTTIStatic();
+	}
+
+	RTTITypeBase* ShaderMetaData::getRTTIStatic()
+	{
+		return ShaderMetaDataRTTI::instance();
+	}
+
+	RTTITypeBase* ShaderMetaData::getRTTI() const
+	{
+		return ShaderMetaData::getRTTIStatic();
 	}
 }
