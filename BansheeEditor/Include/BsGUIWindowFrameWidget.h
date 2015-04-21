@@ -9,7 +9,7 @@ namespace BansheeEngine
 	class WindowFrameWidget : public GUIWidget
 	{
 	public:
-		WindowFrameWidget(const HSceneObject& parent, bool allowResize, Viewport* target, RenderWindow* ownerWindow, const GUISkin& skin);
+		WindowFrameWidget(const HSceneObject& parent, bool allowResize, Viewport* target, RenderWindow* ownerWindow, const HGUISkin& skin);
 		virtual ~WindowFrameWidget();
 
 	protected:

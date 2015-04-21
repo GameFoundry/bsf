@@ -25,12 +25,17 @@ namespace BansheeEngine
 		 * @brief	Sets the skin used for all GUI elements in the widget. This will update
 		 *			the look of all current elements.
 		 */
-		void setSkin(const GUISkin& skin);
+		void setSkin(const HGUISkin& skin);
 
 		/**
 		 * @brief	Returns the currently active GUI skin.
 		 */
 		const GUISkin& getSkin() const;
+
+		/**
+		 * @brief	Returns the currently active GUI skin resource.
+		 */
+		const HGUISkin& getSkinResource() const { return mSkin; }
 
 		/**
 		 * @brief	Returns the depth to render the widget at. If two widgets overlap the
@@ -103,10 +108,6 @@ namespace BansheeEngine
 		 */
 		virtual bool _virtualButtonEvent(GUIElement* element, const GUIVirtualButtonEvent& ev);
 
-		/**
-		 * @brief	Default skin that is used when no other is assigned.
-		 */
-		static GUISkin DefaultSkin;
 	protected:
 		friend class SceneObject;
 		friend class GUIElement;
@@ -183,6 +184,6 @@ namespace BansheeEngine
 		mutable Vector<HMesh> mCachedMeshes;
 		mutable Vector<HMaterial> mCachedMaterials;
 
-		const GUISkin* mSkin;
+		HGUISkin mSkin;
 	};
 }

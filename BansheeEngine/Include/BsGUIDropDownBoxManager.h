@@ -26,7 +26,7 @@ namespace BansheeEngine
 		 * @param	onClosedCallback	Callback triggered when drop down box is closed.
 		 */
 		GameObjectHandle<GUIDropDownBox> openDropDownBox(Viewport* target, const GUIDropDownAreaPlacement& placement,
-			const GUIDropDownData& dropDownData, const GUISkin& skin, GUIDropDownType type, std::function<void()> onClosedCallback);
+			const GUIDropDownData& dropDownData, const HGUISkin& skin, GUIDropDownType type, std::function<void()> onClosedCallback);
 
 		/**
 		 * @brief	Closes the currently active drop down box (if any).

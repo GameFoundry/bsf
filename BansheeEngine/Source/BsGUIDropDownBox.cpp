@@ -79,7 +79,7 @@ namespace BansheeEngine
 	}
 
 	GUIDropDownBox::GUIDropDownBox(const HSceneObject& parent, Viewport* target, const GUIDropDownAreaPlacement& placement,
-		const GUIDropDownData& dropDownData, const GUISkin& skin, GUIDropDownType type)
+		const GUIDropDownData& dropDownData, const HGUISkin& skin, GUIDropDownType type)
 		:GUIWidget(parent, target), mRootMenu(nullptr), mHitBox(nullptr), mCaptureHitBox(nullptr)
 	{
 		String stylePrefix = "";
@@ -101,8 +101,8 @@ namespace BansheeEngine
 		mBackgroundStyle = stylePrefix + "Frame";
 		mContentStyle = stylePrefix + "Content";
 
-		mScrollUpBtnArrow = skin.getStyle(stylePrefix + "ScrollUpBtnArrow")->normal.texture;
-		mScrollDownBtnArrow = skin.getStyle(stylePrefix + "ScrollDownBtnArrow")->normal.texture;
+		mScrollUpBtnArrow = skin->getStyle(stylePrefix + "ScrollUpBtnArrow")->normal.texture;
+		mScrollDownBtnArrow = skin->getStyle(stylePrefix + "ScrollDownBtnArrow")->normal.texture;
 
 		setDepth(0); // Needs to be in front of everything
 		setSkin(skin);

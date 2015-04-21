@@ -36,6 +36,9 @@
     <Filter Include="Source Files\Script">
       <UniqueIdentifier>{74630e1e-ef0d-4dbc-9e23-0ae6ea24fc02}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\RTTI">
+      <UniqueIdentifier>{ced1e9e9-483b-493e-b64b-9de22ec86f3e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\BsPrerequisites.h">
@@ -323,6 +326,12 @@
     <ClInclude Include="Include\BsGUIDropDownContent.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsGUIElementStyleRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUISkinRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsGUIElement.cpp">
@@ -561,6 +570,12 @@
     </ClCompile>
     <ClCompile Include="Source\BsGUIDropDownContent.cpp">
       <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUIElementStyle.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUISkinRTTI.cpp">
+      <Filter>Source Files\RTTI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -21,7 +21,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns the default skin used by engine GUI elements.
 		 */
-		const GUISkin& getGUISkin() const { return mSkin; }
+		const HGUISkin& getGUISkin() const { return mSkin; }
 
 		/**
 		 * @brief	Returns a small entirely white texture.
@@ -140,7 +140,7 @@ namespace BansheeEngine
 		 */
 		static HShader getShader(const WString& name);
 
-		GUISkin mSkin;
+		HGUISkin mSkin;
 
 		PixelDataPtr mCursorArrow;
 		PixelDataPtr mCursorArrowDrag;

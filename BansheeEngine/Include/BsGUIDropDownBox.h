@@ -180,7 +180,7 @@ namespace BansheeEngine
 		 * @param	type			Specific type of drop down box to display.
 		 */
 		GUIDropDownBox(const HSceneObject& parent, Viewport* target, const GUIDropDownAreaPlacement& placement,
-			const GUIDropDownData& dropDownData, const GUISkin& skin, GUIDropDownType type);
+			const GUIDropDownData& dropDownData, const HGUISkin& skin, GUIDropDownType type);
 		~GUIDropDownBox();
 
 	private:

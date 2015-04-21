@@ -12,7 +12,7 @@ namespace BansheeEngine
 	public:
 		BuiltinEditorResources();
 
-		const GUISkin& getSkin() const { return mSkin; }
+		const HGUISkin& getSkin() const { return mSkin; }
 
 		/**
 		 * @brief	Creates a material used for docking drop overlay used by the editor.
@@ -121,7 +121,7 @@ namespace BansheeEngine
 		HShader mShaderHandleWire;
 		HShader mShaderSelection;
 
-		GUISkin mSkin;
+		HGUISkin mSkin;
 
 		static const Path DefaultSkinFolderRaw;
 		static const Path DefaultShaderFolderRaw;

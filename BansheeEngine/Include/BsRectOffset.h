@@ -20,4 +20,6 @@ namespace BansheeEngine
 
 		INT32 left, right, top, bottom;
 	};
+
+	BS_ALLOW_MEMCPY_SERIALIZATION(RectOffset);
 }

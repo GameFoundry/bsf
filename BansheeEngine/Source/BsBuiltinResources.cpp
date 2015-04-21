@@ -220,6 +220,7 @@ namespace BansheeEngine
 		fontPath.append(DefaultFontFilename + L".asset");
 
 		HFont font = Resources::instance().load<Font>(fontPath);
+		mSkin = GUISkin::create();
 
 		// Label
 		GUIElementStyle labelStyle;
@@ -230,7 +231,7 @@ namespace BansheeEngine
 		labelStyle.height = 11;
 		labelStyle.minWidth = 10;
 
-		mSkin.setStyle(GUILabel::getGUITypeName(), labelStyle);
+		mSkin->setStyle(GUILabel::getGUITypeName(), labelStyle);
 
 		// Button
 		GUIElementStyle buttonStyle;
@@ -251,7 +252,7 @@ namespace BansheeEngine
 		buttonStyle.textHorzAlign = THA_Center;
 		buttonStyle.textVertAlign = TVA_Center;
 
-		mSkin.setStyle(GUIButton::getGUITypeName(), buttonStyle);
+		mSkin->setStyle(GUIButton::getGUITypeName(), buttonStyle);
 
 		// Toggle
 		GUIElementStyle toggleStyle;
@@ -266,7 +267,7 @@ namespace BansheeEngine
 		toggleStyle.height = 15;
 		toggleStyle.width = 15;
 
-		mSkin.setStyle(GUIToggle::getGUITypeName(), toggleStyle);
+		mSkin->setStyle(GUIToggle::getGUITypeName(), toggleStyle);
 
 		// Input box
 		GUIElementStyle inputBoxStyle;
@@ -290,7 +291,7 @@ namespace BansheeEngine
 		inputBoxStyle.textHorzAlign = THA_Left;
 		inputBoxStyle.textVertAlign = TVA_Top;
 
-		mSkin.setStyle(GUIInputBox::getGUITypeName(), inputBoxStyle);
+		mSkin->setStyle(GUIInputBox::getGUITypeName(), inputBoxStyle);
 
 		/************************************************************************/
 		/* 								SCROLL BAR                      		*/
@@ -306,7 +307,7 @@ namespace BansheeEngine
 		scrollUpBtnStyle.height = 4;
 		scrollUpBtnStyle.width = 8;
 
-		mSkin.setStyle("ScrollUpBtn", scrollUpBtnStyle);
+		mSkin->setStyle("ScrollUpBtn", scrollUpBtnStyle);
 
 		// Down button
 		GUIElementStyle scrollDownBtnStyle;
@@ -318,7 +319,7 @@ namespace BansheeEngine
 		scrollDownBtnStyle.height = 4;
 		scrollDownBtnStyle.width = 8;
 
-		mSkin.setStyle("ScrollDownBtn", scrollDownBtnStyle);
+		mSkin->setStyle("ScrollDownBtn", scrollDownBtnStyle);
 
 		// Left button
 		GUIElementStyle scrollLeftBtnStyle;
@@ -330,7 +331,7 @@ namespace BansheeEngine
 		scrollLeftBtnStyle.height = 8;
 		scrollLeftBtnStyle.width = 4;
 
-		mSkin.setStyle("ScrollLeftBtn", scrollLeftBtnStyle);
+		mSkin->setStyle("ScrollLeftBtn", scrollLeftBtnStyle);
 
 		// Right button
 		GUIElementStyle scrollRightBtnStyle;
@@ -342,7 +343,7 @@ namespace BansheeEngine
 		scrollRightBtnStyle.height = 8;
 		scrollRightBtnStyle.width = 4;
 
-		mSkin.setStyle("ScrollRightBtn", scrollRightBtnStyle);
+		mSkin->setStyle("ScrollRightBtn", scrollRightBtnStyle);
 
 		// Horizontal handle
 		GUIElementStyle scrollBarHorzBtnStyle;
@@ -354,7 +355,7 @@ namespace BansheeEngine
 		scrollBarHorzBtnStyle.height = 6;
 		scrollBarHorzBtnStyle.width = 4;
 
-		mSkin.setStyle("ScrollBarHorzBtn", scrollBarHorzBtnStyle);
+		mSkin->setStyle("ScrollBarHorzBtn", scrollBarHorzBtnStyle);
 
 		// Vertical handle
 		GUIElementStyle scrollBarVertBtnStyle;
@@ -366,7 +367,7 @@ namespace BansheeEngine
 		scrollBarVertBtnStyle.height = 4;
 		scrollBarVertBtnStyle.width = 6;
 
-		mSkin.setStyle("ScrollBarVertBtn", scrollBarVertBtnStyle);
+		mSkin->setStyle("ScrollBarVertBtn", scrollBarVertBtnStyle);
 
 		HSpriteTexture scrollBarBgPtr = getSkinTexture(ScrollBarBgTex);
 
@@ -380,7 +381,7 @@ namespace BansheeEngine
 		vertScrollBarStyle.minHeight = 16;
 		vertScrollBarStyle.width = 8;
 
-		mSkin.setStyle("ScrollBarVert", vertScrollBarStyle);
+		mSkin->setStyle("ScrollBarVert", vertScrollBarStyle);
 
 		// Horizontal scroll bar
 		GUIElementStyle horzScrollBarStyle;
@@ -392,7 +393,7 @@ namespace BansheeEngine
 		horzScrollBarStyle.minWidth = 16;
 		horzScrollBarStyle.height = 8;
 
-		mSkin.setStyle("ScrollBarHorz", horzScrollBarStyle);
+		mSkin->setStyle("ScrollBarHorz", horzScrollBarStyle);
 
 		/************************************************************************/
 		/* 								DROP DOWN BOX                      		*/
@@ -423,7 +424,7 @@ namespace BansheeEngine
 		dropDownListStyle.textHorzAlign = THA_Left;
 		dropDownListStyle.textVertAlign = TVA_Top;
 
-		mSkin.setStyle("ListBox", dropDownListStyle);
+		mSkin->setStyle("ListBox", dropDownListStyle);
 
 		// DropDown scroll up button arrow
 		GUIElementStyle dropDownScrollUpBtnArrowStyle;
@@ -439,9 +440,9 @@ namespace BansheeEngine
 		dropDownScrollUpBtnArrowStyle.border.top = 1;
 		dropDownScrollUpBtnArrowStyle.border.bottom = 1;
 
-		mSkin.setStyle("ListBoxScrollUpBtnArrow", dropDownScrollUpBtnArrowStyle);
-		mSkin.setStyle("MenuBarScrollUpBtnArrow", dropDownScrollUpBtnArrowStyle);
-		mSkin.setStyle("ContextMenuScrollUpBtnArrow", dropDownScrollUpBtnArrowStyle);
+		mSkin->setStyle("ListBoxScrollUpBtnArrow", dropDownScrollUpBtnArrowStyle);
+		mSkin->setStyle("MenuBarScrollUpBtnArrow", dropDownScrollUpBtnArrowStyle);
+		mSkin->setStyle("ContextMenuScrollUpBtnArrow", dropDownScrollUpBtnArrowStyle);
 
 		// DropDown scroll up button
 		GUIElementStyle dropDownScrollUpBtnStyle;
@@ -457,9 +458,9 @@ namespace BansheeEngine
 		dropDownScrollUpBtnStyle.border.top = 1;
 		dropDownScrollUpBtnStyle.border.bottom = 1;
 
-		mSkin.setStyle("ListBoxScrollUpBtn", dropDownScrollUpBtnStyle);
-		mSkin.setStyle("MenuBarScrollUpBtn", dropDownScrollUpBtnStyle);
-		mSkin.setStyle("ContextMenuScrollUpBtn", dropDownScrollUpBtnStyle);
+		mSkin->setStyle("ListBoxScrollUpBtn", dropDownScrollUpBtnStyle);
+		mSkin->setStyle("MenuBarScrollUpBtn", dropDownScrollUpBtnStyle);
+		mSkin->setStyle("ContextMenuScrollUpBtn", dropDownScrollUpBtnStyle);
 
 		// DropDown scroll down button arrow
 		GUIElementStyle dropDownScrollDownBtnArrowStyle;
@@ -475,9 +476,9 @@ namespace BansheeEngine
 		dropDownScrollDownBtnArrowStyle.border.top = 1;
 		dropDownScrollDownBtnArrowStyle.border.bottom = 1;
 		
-		mSkin.setStyle("ListBoxScrollDownBtnArrow", dropDownScrollDownBtnArrowStyle);
-		mSkin.setStyle("MenuBarScrollDownBtnArrow", dropDownScrollDownBtnArrowStyle);
-		mSkin.setStyle("ContextMenuScrollDownBtnArrow", dropDownScrollDownBtnArrowStyle);
+		mSkin->setStyle("ListBoxScrollDownBtnArrow", dropDownScrollDownBtnArrowStyle);
+		mSkin->setStyle("MenuBarScrollDownBtnArrow", dropDownScrollDownBtnArrowStyle);
+		mSkin->setStyle("ContextMenuScrollDownBtnArrow", dropDownScrollDownBtnArrowStyle);
 
 		// DropDown scroll down button
 		GUIElementStyle dropDownScrollDownBtnStyle;
@@ -493,9 +494,9 @@ namespace BansheeEngine
 		dropDownScrollDownBtnStyle.border.top = 1;
 		dropDownScrollDownBtnStyle.border.bottom = 1;
 
-		mSkin.setStyle("ListBoxScrollDownBtn", dropDownScrollDownBtnStyle);
-		mSkin.setStyle("MenuBarScrollDownBtn", dropDownScrollDownBtnStyle);
-		mSkin.setStyle("ContextMenuScrollDownBtn", dropDownScrollDownBtnStyle);
+		mSkin->setStyle("ListBoxScrollDownBtn", dropDownScrollDownBtnStyle);
+		mSkin->setStyle("MenuBarScrollDownBtn", dropDownScrollDownBtnStyle);
+		mSkin->setStyle("ContextMenuScrollDownBtn", dropDownScrollDownBtnStyle);
 
 		// DropDown entry button
 		GUIElementStyle dropDownEntryBtnStyle;
@@ -518,7 +519,7 @@ namespace BansheeEngine
 		dropDownEntryBtnStyle.textHorzAlign = THA_Left;
 		dropDownEntryBtnStyle.textVertAlign = TVA_Top;
 
-		mSkin.setStyle(GUIDropDownContent::ENTRY_STYLE_TYPE, dropDownEntryBtnStyle);
+		mSkin->setStyle(GUIDropDownContent::ENTRY_STYLE_TYPE, dropDownEntryBtnStyle);
 
 		// DropDown entry button with expand
 		GUIElementStyle dropDownEntryExpBtnStyle;
@@ -541,7 +542,7 @@ namespace BansheeEngine
 		dropDownEntryExpBtnStyle.textHorzAlign = THA_Left;
 		dropDownEntryExpBtnStyle.textVertAlign = TVA_Top;
 
-		mSkin.setStyle(GUIDropDownContent::ENTRY_EXP_STYLE_TYPE, dropDownEntryExpBtnStyle);
+		mSkin->setStyle(GUIDropDownContent::ENTRY_EXP_STYLE_TYPE, dropDownEntryExpBtnStyle);
 
 		// Drop down separator
 		GUIElementStyle dropDownSeparatorStyle;
@@ -555,7 +556,7 @@ namespace BansheeEngine
 		dropDownSeparatorStyle.border.top = 1;
 		dropDownSeparatorStyle.border.bottom = 1;
 
-		mSkin.setStyle(GUIDropDownContent::SEPARATOR_STYLE_TYPE, dropDownSeparatorStyle);
+		mSkin->setStyle(GUIDropDownContent::SEPARATOR_STYLE_TYPE, dropDownSeparatorStyle);
 
 		// Drop down content
 		GUIElementStyle dropDownContentStyle;
@@ -565,9 +566,9 @@ namespace BansheeEngine
 		dropDownContentStyle.subStyles[GUIDropDownContent::ENTRY_EXP_STYLE_TYPE] = GUIDropDownContent::ENTRY_EXP_STYLE_TYPE;
 		dropDownContentStyle.subStyles[GUIDropDownContent::SEPARATOR_STYLE_TYPE] = GUIDropDownContent::SEPARATOR_STYLE_TYPE;
 
-		mSkin.setStyle("ListBoxContent", dropDownContentStyle);
-		mSkin.setStyle("MenuBarContent", dropDownContentStyle);
-		mSkin.setStyle("ContextMenuContent", dropDownContentStyle);
+		mSkin->setStyle("ListBoxContent", dropDownContentStyle);
+		mSkin->setStyle("MenuBarContent", dropDownContentStyle);
+		mSkin->setStyle("ContextMenuContent", dropDownContentStyle);
 
 		// DropDown box frame
 		GUIElementStyle dropDownBoxStyle;
@@ -585,9 +586,9 @@ namespace BansheeEngine
 		dropDownBoxStyle.margins.top = 1;
 		dropDownBoxStyle.margins.bottom = 1;
 
-		mSkin.setStyle("ListBoxFrame", dropDownBoxStyle);
-		mSkin.setStyle("MenuBarFrame", dropDownBoxStyle);
-		mSkin.setStyle("ContextMenuFrame", dropDownBoxStyle);
+		mSkin->setStyle("ListBoxFrame", dropDownBoxStyle);
+		mSkin->setStyle("MenuBarFrame", dropDownBoxStyle);
+		mSkin->setStyle("ContextMenuFrame", dropDownBoxStyle);
 
 		/************************************************************************/
 		/* 									OTHER                      			*/
@@ -603,7 +604,7 @@ namespace BansheeEngine
 		rightAlignedLabelStyle.minWidth = 10;
 		rightAlignedLabelStyle.textHorzAlign = THA_Right;
 
-		mSkin.setStyle("RightAlignedLabel", rightAlignedLabelStyle);
+		mSkin->setStyle("RightAlignedLabel", rightAlignedLabelStyle);
 	}
 
 	void BuiltinResources::preprocess()

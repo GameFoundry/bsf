@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BsPrerequisites.h"
+#include "BsIReflectable.h"
 #include "BsRectOffset.h"
 #include "BsTextSprite.h"
 #include "BsColor.h"
@@ -19,7 +20,7 @@ namespace BansheeEngine
 	/**
 	 * @brief	GUI element style that determines GUI element look depending on its active state
 	 */
-	struct BS_EXPORT GUIElementStyle
+	struct BS_EXPORT GUIElementStyle : public IReflectable
 	{
 		/**
 		 * @brief	Specific texture and text color used in a particular GUI element style
@@ -70,5 +71,13 @@ namespace BansheeEngine
 		bool fixedHeight; /**< If height is fixed, layout will not attempt to resize the element depending on available size. */
 
 		Map<String, String> subStyles; /**< Sub-styles used by certain more complex elements. */
+
+		/************************************************************************/
+		/* 								SERIALIZATION                      		*/
+		/************************************************************************/
+	public:
+		friend class GUIElementStyleRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
 	};
 }

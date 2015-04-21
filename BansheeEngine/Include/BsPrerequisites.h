@@ -116,6 +116,7 @@ namespace BansheeEngine
 	typedef std::shared_ptr<InputConfiguration> InputConfigurationPtr;
 	typedef std::shared_ptr<PlainText> PlainTextPtr;
 	typedef std::shared_ptr<ScriptCode> ScriptCodePtr;
+	typedef std::shared_ptr<GUISkin> GUISkinPtr;
 
 	typedef GameObjectHandle<GUIWidget> HGUIWidget;
 	typedef GameObjectHandle<Camera> HCamera;
@@ -125,6 +126,7 @@ namespace BansheeEngine
 	typedef ResourceHandle<SpriteTexture> HSpriteTexture;
 	typedef ResourceHandle<PlainText> HPlainText;
 	typedef ResourceHandle<ScriptCode> HScriptCode;
+	typedef ResourceHandle<GUISkin> HGUISkin;
 
 	static const char* ENGINE_ASSEMBLY = "MBansheeEngine";
 	static const char* SCRIPT_GAME_ASSEMBLY = "MScriptGame";
@@ -142,6 +144,9 @@ namespace BansheeEngine
 		TID_RenderableHandler = 30004,
 		TID_PlainText = 30005,
 		TID_ScriptCode = 30006,
-		TID_ScriptCodeImportOptions = 30007
+		TID_ScriptCodeImportOptions = 30007,
+		TID_GUIElementStyle = 30008,
+		TID_GUISkin = 30009,
+		TID_GUISkinEntry = 30010
 	};
 }

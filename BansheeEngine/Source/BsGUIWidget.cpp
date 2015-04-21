@@ -18,10 +18,8 @@
 
 namespace BansheeEngine
 {
-	GUISkin GUIWidget::DefaultSkin;
-
 	GUIWidget::GUIWidget(const HSceneObject& parent, Viewport* target)
-		:Component(parent), mSkin(nullptr), mWidgetIsDirty(false), mTarget(nullptr), mDepth(0)
+		:Component(parent), mWidgetIsDirty(false), mTarget(nullptr), mDepth(0)
 	{
 		setName("GUIWidget");
 
@@ -179,9 +177,9 @@ namespace BansheeEngine
 		mWidgetIsDirty = true;
 	}
 
-	void GUIWidget::setSkin(const GUISkin& skin)
+	void GUIWidget::setSkin(const HGUISkin& skin)
 	{
-		mSkin = &skin;
+		mSkin = skin;
 
 		for(auto& element : mElements)
 			element->_refreshStyle();
@@ -189,10 +187,12 @@ namespace BansheeEngine
 
 	const GUISkin& GUIWidget::getSkin() const
 	{
-		if(mSkin != nullptr)
+		static const HGUISkin DEFAULT_SKIN = GUISkin::create();
+
+		if(mSkin.isLoaded())
 			return *mSkin;
 		else
-			return DefaultSkin;
+			return *DEFAULT_SKIN;
 	}
 
 	bool GUIWidget::isDirty(bool cleanIfDirty)
