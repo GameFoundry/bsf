@@ -1,4 +1,5 @@
 #include "BsBuiltinEditorResources.h"
+#include "BsBuiltinResources.h"
 #include "BsGUIElementStyle.h"
 
 #include "BsGUILabel.h"
@@ -39,6 +40,7 @@
 #include "BsResources.h"
 #include "BsRTTIType.h"
 #include "BsFileSystem.h"
+#include "BsResourceManifest.h"
 
 namespace BansheeEngine
 {
@@ -47,14 +49,26 @@ namespace BansheeEngine
 	const String BuiltinEditorResources::ObjectFieldDropBtnStyleName = "DropButton";
 	const String BuiltinEditorResources::ObjectFieldClearBtnStyleName = "ObjectClearButton";
 
-	const Path BuiltinEditorResources::DefaultSkinFolderRaw = L"..\\..\\..\\..\\Data\\Raw\\Editor\\Skin\\";
-	const Path BuiltinEditorResources::DefaultShaderFolderRaw = L"..\\..\\..\\..\\Data\\Raw\\Editor\\Shaders\\";
-
-	const Path BuiltinEditorResources::DefaultSkinFolder = L"..\\..\\..\\..\\Data\\Editor\\Skin\\";
-	const Path BuiltinEditorResources::DefaultShaderFolder = L"..\\..\\..\\..\\Data\\Editor\\Shaders\\";
-
 	const WString BuiltinEditorResources::DefaultFontFilename = L"arial.ttf";
 	const UINT32 BuiltinEditorResources::DefaultFontSize = 10;
+
+	const WString BuiltinEditorResources::GUISkinFile = L"GUISkin";
+
+	const Path BuiltinEditorResources::ShaderFolder = L"Shaders\\";
+	const Path BuiltinEditorResources::SkinFolder = L"Skin\\";
+	const Path BuiltinEditorResources::ShaderIncludeFolder = L"Includes\\";
+
+	const Path BuiltinEditorResources::BuiltinRawDataFolder = L"..\\..\\..\\..\\Data\\Raw\\Editor\\";
+	const Path BuiltinEditorResources::EditorRawSkinFolder = BuiltinRawDataFolder + SkinFolder;
+	const Path BuiltinEditorResources::EditorRawShaderFolder = BuiltinRawDataFolder + ShaderFolder;
+	const Path BuiltinEditorResources::EditorRawShaderIncludeFolder = BuiltinRawDataFolder + ShaderIncludeFolder;
+
+	const Path BuiltinEditorResources::BuiltinDataFolder = L"..\\..\\..\\..\\Data\\Editor\\";
+	const Path BuiltinEditorResources::EditorSkinFolder = BuiltinDataFolder + SkinFolder;
+	const Path BuiltinEditorResources::EditorShaderFolder = BuiltinDataFolder + ShaderFolder;
+	const Path BuiltinEditorResources::EditorShaderIncludeFolder = BuiltinDataFolder + ShaderIncludeFolder;
+
+	const Path BuiltinEditorResources::ResourceManifestPath = BuiltinDataFolder + "ResourceManifest.asset";
 
 	const WString BuiltinEditorResources::WindowBackgroundTexture = L"WindowBgTile.psd";
 
@@ -204,7 +218,29 @@ namespace BansheeEngine
 
 	BuiltinEditorResources::BuiltinEditorResources()
 	{
-		preprocess();
+		Path absoluteDataPath = FileSystem::getWorkingDirectoryPath();
+		absoluteDataPath.append(BuiltinDataFolder);
+
+		if (FileSystem::exists(ResourceManifestPath))
+			mResourceManifest = ResourceManifest::load(ResourceManifestPath, absoluteDataPath);
+
+		if (mResourceManifest == nullptr)
+			mResourceManifest = ResourceManifest::create("BuiltinResources");
+
+		gResources().registerResourceManifest(mResourceManifest);
+
+#if BS_DEBUG_MODE
+		if (BuiltinResourcesHelper::checkForModifications(BuiltinRawDataFolder, BuiltinDataFolder + L"Timestamp.asset"))
+		{
+			preprocess();
+			BuiltinResourcesHelper::writeTimestamp(BuiltinDataFolder + L"Timestamp.asset");
+
+			Path absoluteDataPath = FileSystem::getWorkingDirectoryPath();
+			absoluteDataPath.append(BuiltinDataFolder);
+
+			ResourceManifest::save(mResourceManifest, ResourceManifestPath, absoluteDataPath);
+		}
+#endif
 
 		mShaderDockOverlay = getShader(ShaderDockOverlayFile);
 		mShaderSceneGrid = getShader(ShaderSceneGridFile);
@@ -223,10 +259,45 @@ namespace BansheeEngine
 		mShaderHandleWire = getShader(ShaderWireHandleFile);
 		mShaderSelection = getShader(ShaderSelectionFile);
 
-		mSkin = GUISkin::create();
+		mSkin = gResources().load<GUISkin>(BuiltinDataFolder + (GUISkinFile + L".asset"));
+	}
+
+	BuiltinEditorResources::~BuiltinEditorResources()
+	{ }
+
+	void BuiltinEditorResources::preprocess()
+	{
+		FileSystem::remove(EditorShaderIncludeFolder);
+		FileSystem::remove(EditorShaderFolder);
+		FileSystem::remove(EditorSkinFolder);
+
+		BuiltinResourcesHelper::importAssets(EditorRawShaderIncludeFolder, EditorShaderIncludeFolder, mResourceManifest); // Hidden dependency: Includes must be imported before shaders
+		BuiltinResourcesHelper::importAssets(EditorRawShaderFolder, EditorShaderFolder, mResourceManifest);
+		BuiltinResourcesHelper::importAssets(EditorRawSkinFolder, EditorSkinFolder, mResourceManifest);
+
+		// Import font
+		BuiltinResourcesHelper::importFont(BuiltinRawDataFolder + DefaultFontFilename, BuiltinDataFolder, DefaultFontSize, false, mResourceManifest);
+
+		// Generate & save GUI sprite textures
+		BuiltinResourcesHelper::generateSpriteTextures(EditorSkinFolder, mResourceManifest);
+
+		// Generate & save GUI skin
+		{
+			HGUISkin skin = generateGUISkin();
+			Path outputPath = FileSystem::getWorkingDirectoryPath() + BuiltinDataFolder + (GUISkinFile + L".asset");
+			Resources::instance().save(skin, outputPath, true);
+			mResourceManifest->registerResource(skin.getUUID(), outputPath);
+		}
+
+		Resources::instance().unloadAllUnused();
+	}
+
+	HGUISkin BuiltinEditorResources::generateGUISkin()
+	{
+		HGUISkin skin = GUISkin::create();
 
 		Path fontPath = FileSystem::getWorkingDirectoryPath();
-		fontPath.append(DefaultSkinFolder);
+		fontPath.append(BuiltinDataFolder);
 		fontPath.append(DefaultFontFilename + L".asset");
 
 		HFont font = Resources::instance().load<Font>(fontPath);
@@ -240,7 +311,7 @@ namespace BansheeEngine
 		labelStyle.height = 11;
 		labelStyle.minWidth = 10;
 
-		mSkin->setStyle(GUILabel::getGUITypeName(), labelStyle);
+		skin->setStyle(GUILabel::getGUITypeName(), labelStyle);
 
 		// Window frame
 		GUIElementStyle windowFrameStyle;
@@ -251,7 +322,7 @@ namespace BansheeEngine
 		windowFrameStyle.border.top = 1;
 		windowFrameStyle.border.bottom = 1;
 
-		mSkin->setStyle("WindowFrame", windowFrameStyle);
+		skin->setStyle("WindowFrame", windowFrameStyle);
 
 		// Button
 		GUIElementStyle buttonStyle;
@@ -275,7 +346,7 @@ namespace BansheeEngine
 		buttonStyle.textHorzAlign = THA_Center;
 		buttonStyle.textVertAlign = TVA_Center;
 
-		mSkin->setStyle(GUIButton::getGUITypeName(), buttonStyle);
+		skin->setStyle(GUIButton::getGUITypeName(), buttonStyle);
 
 		// Toggle
 		GUIElementStyle toggleStyle;
@@ -290,7 +361,7 @@ namespace BansheeEngine
 		toggleStyle.height = 15;
 		toggleStyle.width = 15;
 
-		mSkin->setStyle(GUIToggle::getGUITypeName(), toggleStyle);
+		skin->setStyle(GUIToggle::getGUITypeName(), toggleStyle);
 
 		// Color
 		GUIElementStyle colorStyle;
@@ -302,13 +373,13 @@ namespace BansheeEngine
 		colorStyle.height = 10;
 		colorStyle.minWidth = 10;
 
-		mSkin->setStyle(GUIColor::getGUITypeName(), colorStyle);
+		skin->setStyle(GUIColor::getGUITypeName(), colorStyle);
 
 		// Window background texture
 		GUIElementStyle windowBgStyle;
 		windowBgStyle.normal.texture = getGUITexture(WindowBackgroundTexture);
 
-		mSkin->setStyle("WindowBackground", windowBgStyle);
+		skin->setStyle("WindowBackground", windowBgStyle);
 
 		// Window title bar background
 		GUIElementStyle titleBarBgStyle;
@@ -316,7 +387,7 @@ namespace BansheeEngine
 		titleBarBgStyle.fixedHeight = true;
 		titleBarBgStyle.height = 13;
 
-		mSkin->setStyle("TitleBarBackground", titleBarBgStyle);
+		skin->setStyle("TitleBarBackground", titleBarBgStyle);
 
 		// Tabbed title bar tab button
 		GUIElementStyle tabbedBarButton;
@@ -335,7 +406,7 @@ namespace BansheeEngine
 		tabbedBarButton.textHorzAlign = THA_Center;
 		tabbedBarButton.textVertAlign = TVA_Center;
 
-		mSkin->setStyle("TabbedBarBtn", tabbedBarButton);
+		skin->setStyle("TabbedBarBtn", tabbedBarButton);
 
 		// Tabbed title bar drag/drop button
 		GUIElementStyle tabbedBarDropButton;
@@ -344,7 +415,7 @@ namespace BansheeEngine
 		tabbedBarDropButton.height = 13;
 		tabbedBarDropButton.width = 6;
 
-		mSkin->setStyle("TabbedBarDropArea", tabbedBarDropButton);
+		skin->setStyle("TabbedBarDropArea", tabbedBarDropButton);
 
 		// Window minimize button
 		GUIElementStyle winMinButtonStyle;
@@ -356,7 +427,7 @@ namespace BansheeEngine
 		winMinButtonStyle.height = 7;
 		winMinButtonStyle.width = 8;
 
-		mSkin->setStyle("WinMinimizeBtn", winMinButtonStyle);
+		skin->setStyle("WinMinimizeBtn", winMinButtonStyle);
 
 		// Window maximize button
 		GUIElementStyle winMaxButtonStyle;
@@ -368,7 +439,7 @@ namespace BansheeEngine
 		winMaxButtonStyle.height = 8;
 		winMaxButtonStyle.width = 8;
 
-		mSkin->setStyle("WinMaximizeBtn", winMaxButtonStyle);
+		skin->setStyle("WinMaximizeBtn", winMaxButtonStyle);
 
 		// Window close button
 		GUIElementStyle winCloseButtonStyle;
@@ -380,7 +451,7 @@ namespace BansheeEngine
 		winCloseButtonStyle.height = 7;
 		winCloseButtonStyle.width = 8;
 
-		mSkin->setStyle("WinCloseBtn", winCloseButtonStyle);
+		skin->setStyle("WinCloseBtn", winCloseButtonStyle);
 
 		// Input box
 		GUIElementStyle inputBoxStyle;
@@ -404,7 +475,7 @@ namespace BansheeEngine
 		inputBoxStyle.textHorzAlign = THA_Left;
 		inputBoxStyle.textVertAlign = TVA_Top;
 
-		mSkin->setStyle(GUIInputBox::getGUITypeName(), inputBoxStyle);
+		skin->setStyle(GUIInputBox::getGUITypeName(), inputBoxStyle);
 
 		/************************************************************************/
 		/* 								SCROLL BAR                      		*/
@@ -420,7 +491,7 @@ namespace BansheeEngine
 		scrollUpBtnStyle.height = 4;
 		scrollUpBtnStyle.width = 8;
 
-		mSkin->setStyle("ScrollUpBtn", scrollUpBtnStyle);
+		skin->setStyle("ScrollUpBtn", scrollUpBtnStyle);
 
 		// Down button
 		GUIElementStyle scrollDownBtnStyle;
@@ -432,7 +503,7 @@ namespace BansheeEngine
 		scrollDownBtnStyle.height = 4;
 		scrollDownBtnStyle.width = 8;
 
-		mSkin->setStyle("ScrollDownBtn", scrollDownBtnStyle);
+		skin->setStyle("ScrollDownBtn", scrollDownBtnStyle);
 
 		// Left button
 		GUIElementStyle scrollLeftBtnStyle;
@@ -444,7 +515,7 @@ namespace BansheeEngine
 		scrollLeftBtnStyle.height = 8;
 		scrollLeftBtnStyle.width = 4;
 
-		mSkin->setStyle("ScrollLeftBtn", scrollLeftBtnStyle);
+		skin->setStyle("ScrollLeftBtn", scrollLeftBtnStyle);
 
 		// Right button
 		GUIElementStyle scrollRightBtnStyle;
@@ -456,7 +527,7 @@ namespace BansheeEngine
 		scrollRightBtnStyle.height = 8;
 		scrollRightBtnStyle.width = 4;
 
-		mSkin->setStyle("ScrollRightBtn", scrollRightBtnStyle);
+		skin->setStyle("ScrollRightBtn", scrollRightBtnStyle);
 
 		// Horizontal handle
 		GUIElementStyle scrollBarHorzBtnStyle;
@@ -468,7 +539,7 @@ namespace BansheeEngine
 		scrollBarHorzBtnStyle.height = 6;
 		scrollBarHorzBtnStyle.width = 4;
 
-		mSkin->setStyle("ScrollBarHorzBtn", scrollBarHorzBtnStyle);
+		skin->setStyle("ScrollBarHorzBtn", scrollBarHorzBtnStyle);
 
 		// Vertical handle
 		GUIElementStyle scrollBarVertBtnStyle;
@@ -480,7 +551,7 @@ namespace BansheeEngine
 		scrollBarVertBtnStyle.height = 4;
 		scrollBarVertBtnStyle.width = 6;
 
-		mSkin->setStyle("ScrollBarVertBtn", scrollBarVertBtnStyle);
+		skin->setStyle("ScrollBarVertBtn", scrollBarVertBtnStyle);
 
 		HSpriteTexture scrollBarBgPtr = getGUITexture(ScrollBarBgTex);
 
@@ -494,7 +565,7 @@ namespace BansheeEngine
 		vertScrollBarStyle.minHeight = 16;
 		vertScrollBarStyle.width = 8;
 
-		mSkin->setStyle("ScrollBarVert", vertScrollBarStyle);
+		skin->setStyle("ScrollBarVert", vertScrollBarStyle);
 
 		// Horizontal scroll bar
 		GUIElementStyle horzScrollBarStyle;
@@ -506,7 +577,7 @@ namespace BansheeEngine
 		horzScrollBarStyle.minWidth = 16;
 		horzScrollBarStyle.height = 8;
 
-		mSkin->setStyle("ScrollBarHorz", horzScrollBarStyle);
+		skin->setStyle("ScrollBarHorz", horzScrollBarStyle);
 
 		/************************************************************************/
 		/* 								DROP DOWN BOX                      		*/
@@ -537,7 +608,7 @@ namespace BansheeEngine
 		dropDownListStyle.textHorzAlign = THA_Left;
 		dropDownListStyle.textVertAlign = TVA_Top;
 
-		mSkin->setStyle("ListBox", dropDownListStyle);
+		skin->setStyle("ListBox", dropDownListStyle);
 
 		// DropDown scroll up button arrow
 		HSpriteTexture dropDownBtnScrollUpArrow = getGUITexture(DropDownBoxBtnUpArrowTex);
@@ -555,9 +626,9 @@ namespace BansheeEngine
 		dropDownScrollUpBtnArrowStyle.border.top = 1;
 		dropDownScrollUpBtnArrowStyle.border.bottom = 1;
 
-		mSkin->setStyle("ListBoxScrollUpBtnArrow", dropDownScrollUpBtnArrowStyle);
-		mSkin->setStyle("MenuBarScrollUpBtnArrow", dropDownScrollUpBtnArrowStyle);
-		mSkin->setStyle("ContextMenuScrollUpBtnArrow", dropDownScrollUpBtnArrowStyle);
+		skin->setStyle("ListBoxScrollUpBtnArrow", dropDownScrollUpBtnArrowStyle);
+		skin->setStyle("MenuBarScrollUpBtnArrow", dropDownScrollUpBtnArrowStyle);
+		skin->setStyle("ContextMenuScrollUpBtnArrow", dropDownScrollUpBtnArrowStyle);
 
 		// DropDown scroll up button
 		GUIElementStyle dropDownScrollUpBtnStyle;
@@ -573,9 +644,9 @@ namespace BansheeEngine
 		dropDownScrollUpBtnStyle.border.top = 1;
 		dropDownScrollUpBtnStyle.border.bottom = 1;
 
-		mSkin->setStyle("ListBoxScrollUpBtn", dropDownScrollUpBtnStyle);
-		mSkin->setStyle("MenuBarScrollUpBtn", dropDownScrollUpBtnStyle);
-		mSkin->setStyle("ContextMenuScrollUpBtn", dropDownScrollUpBtnStyle);
+		skin->setStyle("ListBoxScrollUpBtn", dropDownScrollUpBtnStyle);
+		skin->setStyle("MenuBarScrollUpBtn", dropDownScrollUpBtnStyle);
+		skin->setStyle("ContextMenuScrollUpBtn", dropDownScrollUpBtnStyle);
 
 		// DropDown scroll down button arrow
 		GUIElementStyle dropDownScrollDownBtnArrowStyle;
@@ -591,9 +662,9 @@ namespace BansheeEngine
 		dropDownScrollDownBtnArrowStyle.border.top = 1;
 		dropDownScrollDownBtnArrowStyle.border.bottom = 1;
 
-		mSkin->setStyle("ListBoxScrollDownBtnArrow", dropDownScrollDownBtnArrowStyle);
-		mSkin->setStyle("MenuBarScrollDownBtnArrow", dropDownScrollDownBtnArrowStyle);
-		mSkin->setStyle("ContextMenuScrollDownBtnArrow", dropDownScrollDownBtnArrowStyle);
+		skin->setStyle("ListBoxScrollDownBtnArrow", dropDownScrollDownBtnArrowStyle);
+		skin->setStyle("MenuBarScrollDownBtnArrow", dropDownScrollDownBtnArrowStyle);
+		skin->setStyle("ContextMenuScrollDownBtnArrow", dropDownScrollDownBtnArrowStyle);
 
 		// DropDown scroll down button
 		GUIElementStyle dropDownScrollDownBtnStyle;
@@ -609,9 +680,9 @@ namespace BansheeEngine
 		dropDownScrollDownBtnStyle.border.top = 1;
 		dropDownScrollDownBtnStyle.border.bottom = 1;
 
-		mSkin->setStyle("ListBoxScrollDownBtn", dropDownScrollDownBtnStyle);
-		mSkin->setStyle("MenuBarScrollDownBtn", dropDownScrollDownBtnStyle);
-		mSkin->setStyle("ContextMenuScrollDownBtn", dropDownScrollDownBtnStyle);
+		skin->setStyle("ListBoxScrollDownBtn", dropDownScrollDownBtnStyle);
+		skin->setStyle("MenuBarScrollDownBtn", dropDownScrollDownBtnStyle);
+		skin->setStyle("ContextMenuScrollDownBtn", dropDownScrollDownBtnStyle);
 
 		// DropDown entry button
 		GUIElementStyle dropDownEntryBtnStyle;
@@ -634,7 +705,7 @@ namespace BansheeEngine
 		dropDownEntryBtnStyle.textHorzAlign = THA_Left;
 		dropDownEntryBtnStyle.textVertAlign = TVA_Top;
 
-		mSkin->setStyle(GUIDropDownContent::ENTRY_STYLE_TYPE, dropDownEntryBtnStyle);
+		skin->setStyle(GUIDropDownContent::ENTRY_STYLE_TYPE, dropDownEntryBtnStyle);
 
 		// DropDown entry button with expand
 		GUIElementStyle dropDownEntryExpBtnStyle;
@@ -657,7 +728,7 @@ namespace BansheeEngine
 		dropDownEntryExpBtnStyle.textHorzAlign = THA_Left;
 		dropDownEntryExpBtnStyle.textVertAlign = TVA_Top;
 
-		mSkin->setStyle(GUIDropDownContent::ENTRY_EXP_STYLE_TYPE, dropDownEntryExpBtnStyle);
+		skin->setStyle(GUIDropDownContent::ENTRY_EXP_STYLE_TYPE, dropDownEntryExpBtnStyle);
 
 		// Drop down separator
 		GUIElementStyle dropDownSeparatorStyle;
@@ -671,7 +742,7 @@ namespace BansheeEngine
 		dropDownSeparatorStyle.border.top = 1;
 		dropDownSeparatorStyle.border.bottom = 1;
 
-		mSkin->setStyle(GUIDropDownContent::SEPARATOR_STYLE_TYPE, dropDownSeparatorStyle);
+		skin->setStyle(GUIDropDownContent::SEPARATOR_STYLE_TYPE, dropDownSeparatorStyle);
 
 		// Drop down content
 		GUIElementStyle dropDownContentStyle;
@@ -681,9 +752,9 @@ namespace BansheeEngine
 		dropDownContentStyle.subStyles[GUIDropDownContent::ENTRY_EXP_STYLE_TYPE] = GUIDropDownContent::ENTRY_EXP_STYLE_TYPE;
 		dropDownContentStyle.subStyles[GUIDropDownContent::SEPARATOR_STYLE_TYPE] = GUIDropDownContent::SEPARATOR_STYLE_TYPE;
 
-		mSkin->setStyle("ListBoxContent", dropDownContentStyle);
-		mSkin->setStyle("MenuBarContent", dropDownContentStyle);
-		mSkin->setStyle("ContextMenuContent", dropDownContentStyle);
+		skin->setStyle("ListBoxContent", dropDownContentStyle);
+		skin->setStyle("MenuBarContent", dropDownContentStyle);
+		skin->setStyle("ContextMenuContent", dropDownContentStyle);
 
 		// DropDown box frame
 		GUIElementStyle dropDownBoxStyle;
@@ -701,9 +772,9 @@ namespace BansheeEngine
 		dropDownBoxStyle.margins.top = 1;
 		dropDownBoxStyle.margins.bottom = 1;
 
-		mSkin->setStyle("ListBoxFrame", dropDownBoxStyle);
-		mSkin->setStyle("MenuBarFrame", dropDownBoxStyle);
-		mSkin->setStyle("ContextMenuFrame", dropDownBoxStyle);
+		skin->setStyle("ListBoxFrame", dropDownBoxStyle);
+		skin->setStyle("MenuBarFrame", dropDownBoxStyle);
+		skin->setStyle("ContextMenuFrame", dropDownBoxStyle);
 
 		/************************************************************************/
 		/* 								MENU BAR	                     		*/
@@ -717,7 +788,7 @@ namespace BansheeEngine
 		menuBarBgStyle.height = 4;
 		menuBarBgStyle.width = 4;
 
-		mSkin->setStyle("MenuBarBg", menuBarBgStyle);
+		skin->setStyle("MenuBarBg", menuBarBgStyle);
 
 		// MenuBar Banshee logo
 		GUIElementStyle menuBarBansheeLogoStyle;
@@ -727,7 +798,7 @@ namespace BansheeEngine
 		menuBarBansheeLogoStyle.height = 7;
 		menuBarBansheeLogoStyle.width = 51;
 
-		mSkin->setStyle("MenuBarBansheeLogo", menuBarBansheeLogoStyle);
+		skin->setStyle("MenuBarBansheeLogo", menuBarBansheeLogoStyle);
 
 		// MenuBar button
 		GUIElementStyle menuBarBtnStyle;
@@ -750,7 +821,7 @@ namespace BansheeEngine
 		menuBarBtnStyle.textHorzAlign = THA_Left;
 		menuBarBtnStyle.textVertAlign = TVA_Top;
 
-		mSkin->setStyle("MenuBarBtn", menuBarBtnStyle);
+		skin->setStyle("MenuBarBtn", menuBarBtnStyle);
 
 		/************************************************************************/
 		/* 								DOCK SLIDER	                     		*/
@@ -763,7 +834,7 @@ namespace BansheeEngine
 		dockSliderBtnStyle.height = 2;
 		dockSliderBtnStyle.width = 2;
 
-		mSkin->setStyle("DockSliderBtn", dockSliderBtnStyle);
+		skin->setStyle("DockSliderBtn", dockSliderBtnStyle);
 
 		/************************************************************************/
 		/* 								TREE VIEW	                     		*/
@@ -786,7 +857,7 @@ namespace BansheeEngine
 		treeViewExpandButtonStyle.height = 16;
 		treeViewExpandButtonStyle.width = 16;
 
-		mSkin->setStyle("TreeViewFoldoutBtn", treeViewExpandButtonStyle);
+		skin->setStyle("TreeViewFoldoutBtn", treeViewExpandButtonStyle);
 
 		// Entry
 		GUIElementStyle treeViewEntryStyle;
@@ -797,7 +868,7 @@ namespace BansheeEngine
 		treeViewEntryStyle.height = 16;
 		treeViewEntryStyle.minWidth = 10;
 
-		mSkin->setStyle("TreeViewElementBtn", treeViewEntryStyle);
+		skin->setStyle("TreeViewElementBtn", treeViewEntryStyle);
 
 		// Selection background
 		GUIElementStyle treeViewSelBackgroundStyle;
@@ -807,7 +878,7 @@ namespace BansheeEngine
 		treeViewSelBackgroundStyle.height = 2;
 		treeViewSelBackgroundStyle.width = 2;
 
-		mSkin->setStyle("TreeViewSelectionBackground", treeViewSelBackgroundStyle);
+		skin->setStyle("TreeViewSelectionBackground", treeViewSelBackgroundStyle);
 
 		// Edit box
 		GUIElementStyle treeViewEditBox;
@@ -831,7 +902,7 @@ namespace BansheeEngine
 		treeViewEditBox.textHorzAlign = THA_Left;
 		treeViewEditBox.textVertAlign = TVA_Top;
 
-		mSkin->setStyle(GUITreeViewEditBox::getGUITypeName(), treeViewEditBox);
+		skin->setStyle(GUITreeViewEditBox::getGUITypeName(), treeViewEditBox);
 
 		// Element highlight
 		GUIElementStyle treeViewElementHighlight;
@@ -841,7 +912,7 @@ namespace BansheeEngine
 		treeViewElementHighlight.border.top = 1;
 		treeViewElementHighlight.border.bottom = 1;
 
-		mSkin->setStyle("TreeViewElementHighlight", treeViewElementHighlight);
+		skin->setStyle("TreeViewElementHighlight", treeViewElementHighlight);
 
 		// Element separator highlight
 		GUIElementStyle treeViewElementSepHighlight;
@@ -851,8 +922,8 @@ namespace BansheeEngine
 		treeViewElementSepHighlight.border.top = 1;
 		treeViewElementSepHighlight.border.bottom = 1;
 
-		mSkin->setStyle("TreeViewElementSepHighlight", treeViewElementSepHighlight);
-	
+		skin->setStyle("TreeViewElementSepHighlight", treeViewElementSepHighlight);
+
 		/************************************************************************/
 		/* 							OBJECT DROP FIELD                      		*/
 		/************************************************************************/
@@ -867,7 +938,7 @@ namespace BansheeEngine
 		objectDropStyle.textHorzAlign = THA_Center;
 		objectDropStyle.textVertAlign = TVA_Center;
 
-		mSkin->setStyle(ObjectFieldDropBtnStyleName, objectDropStyle);
+		skin->setStyle(ObjectFieldDropBtnStyleName, objectDropStyle);
 
 		GUIElementStyle objectClearBtnStyle;
 		objectClearBtnStyle.normal.texture = getGUITexture(ObjectClearBtnNormalTex);
@@ -878,7 +949,7 @@ namespace BansheeEngine
 		objectClearBtnStyle.height = 15;
 		objectClearBtnStyle.width = 13;
 
-		mSkin->setStyle(ObjectFieldClearBtnStyleName, objectClearBtnStyle);
+		skin->setStyle(ObjectFieldClearBtnStyleName, objectClearBtnStyle);
 
 		GUIElementStyle editorObjectFieldStyle;
 		editorObjectFieldStyle.fixedHeight = true;
@@ -888,7 +959,7 @@ namespace BansheeEngine
 		editorObjectFieldStyle.subStyles[ObjectFieldDropBtnStyleName] = ObjectFieldDropBtnStyleName;
 		editorObjectFieldStyle.subStyles[ObjectFieldClearBtnStyleName] = ObjectFieldClearBtnStyleName;
 
-		mSkin->setStyle(ObjectFieldStyleName, editorObjectFieldStyle);
+		skin->setStyle(ObjectFieldStyleName, editorObjectFieldStyle);
 
 		/************************************************************************/
 		/* 								EDITOR FIELDS                      		*/
@@ -903,7 +974,7 @@ namespace BansheeEngine
 		editorFieldLabelStyle.minWidth = 10;
 		editorFieldLabelStyle.textHorzAlign = THA_Left;
 
-		mSkin->setStyle(GUITextField::getLabelStyleType(), editorFieldLabelStyle);
+		skin->setStyle(GUITextField::getLabelStyleType(), editorFieldLabelStyle);
 
 		GUIElementStyle editorIntFieldStyle;
 		editorIntFieldStyle.fixedHeight = true;
@@ -912,7 +983,7 @@ namespace BansheeEngine
 		editorIntFieldStyle.subStyles[GUIIntField::getLabelStyleType()] = GUITextField::getLabelStyleType();
 		editorIntFieldStyle.subStyles[GUIIntField::getInputStyleType()] = GUIInputBox::getGUITypeName();
 
-		mSkin->setStyle(GUIIntField::getGUITypeName(), editorIntFieldStyle);
+		skin->setStyle(GUIIntField::getGUITypeName(), editorIntFieldStyle);
 
 		GUIElementStyle editorFloatFieldStyle;
 		editorFloatFieldStyle.fixedHeight = true;
@@ -921,7 +992,7 @@ namespace BansheeEngine
 		editorFloatFieldStyle.subStyles[GUIFloatField::getLabelStyleType()] = GUITextField::getLabelStyleType();
 		editorFloatFieldStyle.subStyles[GUIFloatField::getInputStyleType()] = GUIInputBox::getGUITypeName();
 
-		mSkin->setStyle(GUIFloatField::getGUITypeName(), editorFloatFieldStyle);
+		skin->setStyle(GUIFloatField::getGUITypeName(), editorFloatFieldStyle);
 
 		GUIElementStyle editorTextFieldStyle;
 		editorTextFieldStyle.fixedHeight = true;
@@ -930,7 +1001,7 @@ namespace BansheeEngine
 		editorTextFieldStyle.subStyles[GUITextField::getLabelStyleType()] = GUITextField::getLabelStyleType();
 		editorTextFieldStyle.subStyles[GUITextField::getInputStyleType()] = GUIInputBox::getGUITypeName();
 
-		mSkin->setStyle(GUITextField::getGUITypeName(), editorTextFieldStyle);
+		skin->setStyle(GUITextField::getGUITypeName(), editorTextFieldStyle);
 
 		GUIElementStyle editorColorFieldStyle;
 		editorColorFieldStyle.fixedHeight = true;
@@ -939,7 +1010,7 @@ namespace BansheeEngine
 		editorColorFieldStyle.subStyles[GUIColorField::getLabelStyleType()] = GUITextField::getLabelStyleType();
 		editorColorFieldStyle.subStyles[GUIColorField::getColorInputStyleType()] = GUIColor::getGUITypeName();
 
-		mSkin->setStyle(GUIColorField::getGUITypeName(), editorColorFieldStyle);
+		skin->setStyle(GUIColorField::getGUITypeName(), editorColorFieldStyle);
 
 		GUIElementStyle editorToggleFieldStyle;
 		editorToggleFieldStyle.fixedHeight = true;
@@ -948,7 +1019,7 @@ namespace BansheeEngine
 		editorToggleFieldStyle.subStyles[GUIToggleField::getLabelStyleType()] = GUITextField::getLabelStyleType();
 		editorToggleFieldStyle.subStyles[GUIToggleField::getToggleStyleType()] = GUIToggle::getGUITypeName();
 
-		mSkin->setStyle(GUIToggleField::getGUITypeName(), editorToggleFieldStyle);
+		skin->setStyle(GUIToggleField::getGUITypeName(), editorToggleFieldStyle);
 
 		GUIElementStyle editorVector2FieldStyle;
 		editorVector2FieldStyle.fixedHeight = true;
@@ -957,7 +1028,7 @@ namespace BansheeEngine
 		editorVector2FieldStyle.subStyles[GUIVector2Field::getLabelStyleType()] = GUITextField::getLabelStyleType();
 		editorVector2FieldStyle.subStyles[GUIVector2Field::getFloatFieldStyleType()] = GUIFloatField::getGUITypeName();
 
-		mSkin->setStyle(GUIVector2Field::getGUITypeName(), editorVector2FieldStyle);
+		skin->setStyle(GUIVector2Field::getGUITypeName(), editorVector2FieldStyle);
 
 		GUIElementStyle editorVector3FieldStyle;
 		editorVector3FieldStyle.fixedHeight = true;
@@ -966,7 +1037,7 @@ namespace BansheeEngine
 		editorVector3FieldStyle.subStyles[GUIVector3Field::getLabelStyleType()] = GUITextField::getLabelStyleType();
 		editorVector3FieldStyle.subStyles[GUIVector3Field::getFloatFieldStyleType()] = GUIFloatField::getGUITypeName();
 
-		mSkin->setStyle(GUIVector3Field::getGUITypeName(), editorVector3FieldStyle);
+		skin->setStyle(GUIVector3Field::getGUITypeName(), editorVector3FieldStyle);
 
 		GUIElementStyle editorVector4FieldStyle;
 		editorVector4FieldStyle.fixedHeight = true;
@@ -975,7 +1046,7 @@ namespace BansheeEngine
 		editorVector4FieldStyle.subStyles[GUIVector4Field::getLabelStyleType()] = GUITextField::getLabelStyleType();
 		editorVector4FieldStyle.subStyles[GUIVector4Field::getFloatFieldStyleType()] = GUIFloatField::getGUITypeName();
 
-		mSkin->setStyle(GUIVector4Field::getGUITypeName(), editorVector4FieldStyle);
+		skin->setStyle(GUIVector4Field::getGUITypeName(), editorVector4FieldStyle);
 
 		/************************************************************************/
 		/* 							COMPONENT FOLDOUT                      		*/
@@ -998,7 +1069,7 @@ namespace BansheeEngine
 		cmpFoldoutBtnStyle.contentOffset = RectOffset(12, 0, 0, 0);
 		cmpFoldoutBtnStyle.border.left = 8;
 
-		mSkin->setStyle(GUIComponentFoldout::getFoldoutButtonStyleType(), cmpFoldoutBtnStyle);
+		skin->setStyle(GUIComponentFoldout::getFoldoutButtonStyleType(), cmpFoldoutBtnStyle);
 
 		GUIElementStyle cmpFoldoutStyle;
 		cmpFoldoutStyle.fixedHeight = true;
@@ -1006,7 +1077,7 @@ namespace BansheeEngine
 		cmpFoldoutStyle.minWidth = 30;
 		cmpFoldoutStyle.subStyles[GUIComponentFoldout::getFoldoutButtonStyleType()] = GUIComponentFoldout::getFoldoutButtonStyleType();
 
-		mSkin->setStyle(GUIComponentFoldout::getGUITypeName(), cmpFoldoutStyle);
+		skin->setStyle(GUIComponentFoldout::getGUITypeName(), cmpFoldoutStyle);
 
 		/************************************************************************/
 		/* 							     FOLDOUT                      		    */
@@ -1023,7 +1094,7 @@ namespace BansheeEngine
 		foldoutBtnStyle.height = 10;
 		foldoutBtnStyle.width = 8;
 
-		mSkin->setStyle(GUIFoldout::getFoldoutButtonStyleType(), foldoutBtnStyle);
+		skin->setStyle(GUIFoldout::getFoldoutButtonStyleType(), foldoutBtnStyle);
 
 		GUIElementStyle foldoutStyle;
 		foldoutStyle.fixedHeight = true;
@@ -1032,7 +1103,7 @@ namespace BansheeEngine
 		foldoutStyle.subStyles[GUIFoldout::getLabelStyleType()] = GUIFoldout::getLabelStyleType();
 		foldoutStyle.subStyles[GUIFoldout::getFoldoutButtonStyleType()] = GUIFoldout::getFoldoutButtonStyleType();
 
-		mSkin->setStyle(GUIFoldout::getGUITypeName(), foldoutStyle);
+		skin->setStyle(GUIFoldout::getGUITypeName(), foldoutStyle);
 
 		/************************************************************************/
 		/* 								PROGRESS BAR                      		*/
@@ -1042,14 +1113,14 @@ namespace BansheeEngine
 		progressBarBgStyle.height = 18;
 		progressBarBgStyle.normal.texture = getGUITexture(ProgressBarBgTex);
 
-		mSkin->setStyle(GUIProgressBar::getBackgroundStyleType(), progressBarBgStyle);
+		skin->setStyle(GUIProgressBar::getBackgroundStyleType(), progressBarBgStyle);
 
 		GUIElementStyle progressBarFillStyle;
 		progressBarFillStyle.fixedHeight = true;
 		progressBarFillStyle.height = 12;
 		progressBarFillStyle.normal.texture = getGUITexture(ProgressBarFillTex);
 
-		mSkin->setStyle(GUIProgressBar::getBarStyleType(), progressBarFillStyle);
+		skin->setStyle(GUIProgressBar::getBarStyleType(), progressBarFillStyle);
 
 		GUIElementStyle progressBarStyle;
 		progressBarStyle.fixedHeight = true;
@@ -1061,7 +1132,7 @@ namespace BansheeEngine
 		progressBarStyle.subStyles[GUIProgressBar::getBarStyleType()] = GUIProgressBar::getBarStyleType();
 		progressBarStyle.subStyles[GUIProgressBar::getBackgroundStyleType()] = GUIProgressBar::getBackgroundStyleType();
 
-		mSkin->setStyle(GUIProgressBar::getGUITypeName(), progressBarStyle);
+		skin->setStyle(GUIProgressBar::getGUITypeName(), progressBarStyle);
 
 		/************************************************************************/
 		/* 							COLOR PICKER SLIDER                      	*/
@@ -1076,7 +1147,7 @@ namespace BansheeEngine
 		colorPickerSliderHorzHandleStyle.hover.texture = colorPickerSliderHorzHandleStyle.normal.texture;
 		colorPickerSliderHorzHandleStyle.active.texture = colorPickerSliderHorzHandleStyle.normal.texture;
 
-		mSkin->setStyle("ColorSliderHorzHandle", colorPickerSliderHorzHandleStyle);
+		skin->setStyle("ColorSliderHorzHandle", colorPickerSliderHorzHandleStyle);
 
 		GUIElementStyle colorPickerSliderHorzStyle;
 		colorPickerSliderHorzHandleStyle.fixedHeight = true;
@@ -1084,7 +1155,7 @@ namespace BansheeEngine
 		colorPickerSliderHorzHandleStyle.minWidth = 20;
 		colorPickerSliderHorzStyle.subStyles[GUISlider::getHandleStyleType()] = "ColorSliderHorzHandle";
 
-		mSkin->setStyle("ColorSliderHorz", colorPickerSliderHorzStyle);
+		skin->setStyle("ColorSliderHorz", colorPickerSliderHorzStyle);
 
 		GUIElementStyle colorPickerSliderVertHandleStyle;
 		colorPickerSliderVertHandleStyle.fixedHeight = true;
@@ -1095,7 +1166,7 @@ namespace BansheeEngine
 		colorPickerSliderVertHandleStyle.hover.texture = colorPickerSliderVertHandleStyle.normal.texture;
 		colorPickerSliderVertHandleStyle.active.texture = colorPickerSliderVertHandleStyle.normal.texture;
 
-		mSkin->setStyle("ColorSliderVertHandle", colorPickerSliderVertHandleStyle);
+		skin->setStyle("ColorSliderVertHandle", colorPickerSliderVertHandleStyle);
 
 		GUIElementStyle colorPickerSliderVertStyle;
 		colorPickerSliderVertStyle.fixedWidth = true;
@@ -1103,7 +1174,7 @@ namespace BansheeEngine
 		colorPickerSliderVertStyle.minHeight = 20;
 		colorPickerSliderVertStyle.subStyles[GUISlider::getHandleStyleType()] = "ColorSliderVertHandle";
 
-		mSkin->setStyle("ColorSliderVert", colorPickerSliderVertStyle);
+		skin->setStyle("ColorSliderVert", colorPickerSliderVertStyle);
 
 		GUIElementStyle colorPickerSlider2DHandleStyle;
 		colorPickerSlider2DHandleStyle.fixedHeight = true;
@@ -1114,7 +1185,7 @@ namespace BansheeEngine
 		colorPickerSlider2DHandleStyle.hover.texture = colorPickerSlider2DHandleStyle.normal.texture;
 		colorPickerSlider2DHandleStyle.active.texture = colorPickerSlider2DHandleStyle.normal.texture;
 
-		mSkin->setStyle("ColorSlider2DHandle", colorPickerSlider2DHandleStyle);
+		skin->setStyle("ColorSlider2DHandle", colorPickerSlider2DHandleStyle);
 
 		/************************************************************************/
 		/* 									OTHER                      			*/
@@ -1130,153 +1201,15 @@ namespace BansheeEngine
 		rightAlignedLabelStyle.minWidth = 10;
 		rightAlignedLabelStyle.textHorzAlign = THA_Right;
 
-		mSkin->setStyle("RightAlignedLabel", rightAlignedLabelStyle);
-	}
+		skin->setStyle("RightAlignedLabel", rightAlignedLabelStyle);
 
-	void BuiltinEditorResources::preprocess()
-	{
-		static const WString GUI_TEXTURES[] = 
-		{   WindowBackgroundTexture, ButtonNormalTex, ButtonHoverTex, ButtonActiveTex, ToggleNormalTex,
-			ToggleHoverTex, ToggleActiveTex, ToggleNormalOnTex, ToggleHoverOnTex, ToggleActiveOnTex,
-			ObjectDropBtnNormalTex, ObjectDropBtnNormalOnTex, ObjectClearBtnNormalTex, ObjectClearBtnHoverTex,
-			ObjectClearBtnActiveTex, FoldoutOpenNormalTex, FoldoutOpenHoverTex, FoldoutClosedNormalTex,
-			FoldoutClosedHoverTex, CmpFoldoutOpenNormalTex, CmpFoldoutOpenHoverTex, CmpFoldoutOpenActiveTex,
-			CmpFoldoutClosedNormalTex, CmpFoldoutClosedHoverTex, CmpFoldoutClosedActiveTex, WindowFrameNormal,
-			WindowFrameFocused, WindowTitleBarBg, WindowCloseButtonNormal, WindowCloseButtonHover, WindowMinButtonNormal,
-			WindowMinButtonHover, WindowMaxButtonNormal, WindowMaxButtonHover, TabbedBarBtnNormal, TabbedBarBtnActive,
-			InputBoxNormalTex, InputBoxHoverTex, InputBoxFocusedTex, ScrollBarUpNormalTex, ScrollBarUpHoverTex,
-			ScrollBarUpActiveTex, ScrollBarDownNormalTex, ScrollBarDownHoverTex, ScrollBarDownActiveTex, ScrollBarLeftNormalTex,
-			ScrollBarLeftHoverTex, ScrollBarLeftActiveTex, ScrollBarRightNormalTex, ScrollBarRightHoverTex, ScrollBarRightActiveTex,
-			ScrollBarHandleHorzNormalTex, ScrollBarHandleHorzHoverTex, ScrollBarHandleHorzActiveTex, ScrollBarHandleVertNormalTex,
-			ScrollBarHandleVertHoverTex, ScrollBarHandleVertActiveTex, DropDownBtnNormalTex, DropDownBtnHoverTex,
-			DropDownBoxBgTex, DropDownBoxEntryNormalTex, DropDownBoxEntryHoverTex, DropDownBoxBtnUpNormalTex,
-			DropDownBoxBtnUpHoverTex, DropDownBoxBtnDownNormalTex, DropDownBoxBtnDownHoverTex, DropDownBoxEntryExpNormalTex,
-			DropDownBoxEntryExpHoverTex, DropDownSeparatorTex, DropDownBoxBtnUpArrowTex, DropDownBoxBtnDownArrowTex,
-			ScrollBarBgTex, MenuBarBgTex, MenuBarBtnNormalTex, MenuBarBtnHoverTex, MenuBarBansheeLogoTex, DockSliderNormalTex,
-			TreeViewExpandButtonOffNormal, TreeViewExpandButtonOffHover, TreeViewExpandButtonOnNormal, TreeViewExpandButtonOnHover,
-			TreeViewSelectionBackground, TreeViewEditBox, TreeViewElementHighlight, TreeViewElementSepHighlight, ProgressBarBgTex,
-			ProgressBarFillTex, ColorPickerSliderHorzHandleTex, ColorPickerSliderVertHandleTex, ColorPickerSlider2DHandleTex };
-
-		if (FileSystem::exists(DefaultSkinFolderRaw))
-		{
-			FileSystem::remove(DefaultSkinFolder);
-
-			for (auto& tex : GUI_TEXTURES)
-				importGUITexture(tex);
-
-			{
-				Path fontPath = FileSystem::getWorkingDirectoryPath();
-				fontPath.append(DefaultSkinFolderRaw);
-				fontPath.append(DefaultFontFilename);
-
-				ImportOptionsPtr fontImportOptions = Importer::instance().createImportOptions(fontPath);
-				if (rtti_is_of_type<FontImportOptions>(fontImportOptions))
-				{
-					FontImportOptions* importOptions = static_cast<FontImportOptions*>(fontImportOptions.get());
-
-					Vector<UINT32> fontSizes;
-					fontSizes.push_back(DefaultFontSize);
-					importOptions->setFontSizes(fontSizes);
-					importOptions->setAntialiasing(false);
-				}
-
-				HFont font = Importer::instance().import<Font>(fontPath, fontImportOptions);
-
-				Path outputPath = FileSystem::getWorkingDirectoryPath();
-				outputPath.append(DefaultSkinFolder);
-				outputPath.append(DefaultFontFilename + L".asset");
-
-				Resources::instance().save(font, outputPath, true);
-
-				// Save font texture pages as well. TODO - Later maybe figure out a more automatic way to do this
-				const FontData* fontData = font->getFontDataForSize(DefaultFontSize);
-
-				Path texPageOutputPath = FileSystem::getWorkingDirectoryPath();
-				texPageOutputPath.append(DefaultSkinFolder);
-
-				UINT32 pageIdx = 0;
-				for (auto tex : fontData->texturePages)
-				{
-					texPageOutputPath.setFilename(DefaultFontFilename + L"_texpage_" + toWString(pageIdx) + L".asset");
-					Resources::instance().save(tex, texPageOutputPath, true);
-				}
-			}
-		}
-
-		if (FileSystem::exists(DefaultShaderFolderRaw))
-		{
-			FileSystem::remove(DefaultShaderFolder);
-
-			Vector<Path> directories;
-			Vector<Path> files;
-			FileSystem::getChildren(DefaultShaderFolderRaw, files, directories);
-
-			// Process includes first since shaders reference them
-			for (auto& shaderFile : files)
-			{
-				if (shaderFile.getExtension() != ".bslinc")
-					continue;
-
-				HResource resource = Importer::instance().import(shaderFile);
-
-				if (resource != nullptr)
-				{
-					if (rtti_is_of_type<ShaderInclude>(resource.getInternalPtr()))
-					{
-						Path outputLoc = DefaultShaderFolder;
-						outputLoc.append(shaderFile.getWFilename() + L".asset");
-
-						Resources::instance().save(resource, outputLoc, true);
-					}
-				}
-			}
-
-			for (auto& shaderFile : files)
-			{
-				if (shaderFile.getExtension() != ".bsl")
-					continue;
-
-				HResource resource = Importer::instance().import(shaderFile);
-
-				if (resource != nullptr)
-				{
-					if (rtti_is_of_type<Shader>(resource.getInternalPtr()))
-					{
-						Path outputLoc = DefaultShaderFolder;
-						outputLoc.append(shaderFile.getWFilename() + L".asset");
-
-						Resources::instance().save(resource, outputLoc, true);
-					}
-				}
-			}
-		}
-
-		Resources::instance().unloadAllUnused();
-	}
-
-	void BuiltinEditorResources::importGUITexture(const WString& name)
-	{
-		Path texturePath = FileSystem::getWorkingDirectoryPath();
-		texturePath.append(DefaultSkinFolderRaw);
-		texturePath.append(name);
-
-		Path texOutputPath = FileSystem::getWorkingDirectoryPath();
-		texOutputPath.append(DefaultSkinFolder);
-		Path spriteTexOutputPath = texOutputPath;
-		texOutputPath.append(name + L".asset");
-		spriteTexOutputPath.append(L"sprite_" + name + L".asset");
-
-		HTexture tex = Importer::instance().import<Texture>(texturePath);
-		Resources::instance().save(tex, texOutputPath, true);
-
-		HSpriteTexture spriteTex = SpriteTexture::create(tex);
-		Resources::instance().save(spriteTex, spriteTexOutputPath, true);
+		return skin;
 	}
 
 	HSpriteTexture BuiltinEditorResources::getGUITexture(const WString& name)
 	{
 		Path texturePath = FileSystem::getWorkingDirectoryPath();
-		texturePath.append(DefaultSkinFolder);
+		texturePath.append(EditorSkinFolder);
 		texturePath.append(L"sprite_" + name + L".asset");
 
 		return Resources::instance().load<SpriteTexture>(texturePath);
@@ -1284,7 +1217,7 @@ namespace BansheeEngine
 
 	HShader BuiltinEditorResources::getShader(const WString& name)
 	{
-		Path programPath = DefaultShaderFolder;
+		Path programPath = EditorShaderFolder;
 		programPath.append(name + L".asset");
 
 		return gResources().load<Shader>(programPath);

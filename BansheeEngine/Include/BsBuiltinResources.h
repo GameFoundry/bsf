@@ -98,9 +98,11 @@ namespace BansheeEngine
 		 */
 		HMaterial createDummyMaterial() const;
 
-		static const Path DefaultSkinFolder;
-		static const Path DefaultCursorFolder;
-		static const Path DefaultShaderFolder;
+		static const Path BuiltinDataFolder;
+		static const Path EngineSkinFolder;
+		static const Path EngineCursorFolder;
+		static const Path EngineShaderFolder;
+		static const Path EngineShaderIncludeFolder;
 
 	private:
 		/**
@@ -112,6 +114,11 @@ namespace BansheeEngine
 		void preprocess();
 
 		/**
+		 * @brief	Generates the default engine skin and all GUI element styles.
+		 */
+		HGUISkin generateGUISkin();
+
+		/**
 		 * @brief	Loads a GUI skin texture with the specified filename.
 		 */
 		static HSpriteTexture getSkinTexture(const WString& name);
@@ -120,20 +127,6 @@ namespace BansheeEngine
 		 * @brief	Loads a cursor texture with the specified filename.
 		 */
 		static HTexture getCursorTexture(const WString& name);
-
-		/**
-		 * @brief	Imports a GUI skin texture with the specified filename.
-		 *			Saves the imported texture in engine-ready format in the corresponding
-		 *			output folder.
-		 */
-		static void importSkinTexture(const WString& name);
-
-		/**
-		 * @brief	Imports a cursor texture with the specified filename.
-		 *			Saves the imported texture in engine-ready format in the corresponding
-		 *			output folder.
-		 */
-		static void importCursorTexture(const WString& name);
 
 		/**
 		 * @brief	Loads a shader with the specified filename
@@ -160,13 +153,25 @@ namespace BansheeEngine
 		HShader mShaderSpriteNonAlphaImage;
 		HShader mShaderDummy;
 
-		static const Path DefaultSkinFolderRaw;
-		static const Path DefaultCursorFolderRaw;
-		static const Path DefaultShaderFolderRaw;
+		ResourceManifestPtr mResourceManifest;
+
+		static const Path BuiltinRawDataFolder;
+		static const Path EngineRawCursorFolder;
+		static const Path EngineRawShaderFolder;
+		static const Path EngineRawShaderIncludeFolder;
+		static const Path EngineRawSkinFolder;
+
+		static const Path CursorFolder;
+		static const Path ShaderFolder;
+		static const Path ShaderIncludeFolder;
+		static const Path SkinFolder;
+
+		static const Path ResourceManifestPath;
 
 		static const WString DefaultFontFilename;
 		static const UINT32 DefaultFontSize;
 
+		static const WString GUISkinFile;
 		static const WString WhiteTex;
 
 		static const WString ButtonNormalTex;
@@ -257,5 +262,46 @@ namespace BansheeEngine
 		static const WString ShaderSpriteImageAlphaFile;
 		static const WString ShaderSpriteImageNoAlphaFile;
 		static const WString ShaderDummyFile;
+	};
+
+	/**
+	 * @brief	Provides various methods commonly used for managing builtin resources.
+	 */
+	class BS_EXPORT BuiltinResourcesHelper
+	{
+	public:
+		/**
+		 * @brief	Imports all recognized assets in the specified folder and saves
+		 *			them to the specified output folder. All saved resources are registered in the
+		 *			provided resource manifest.
+		 */
+		static void importAssets(const Path& inputFolder, const Path& outputFolder, const ResourceManifestPtr& manifest);
+
+		/**
+		 * @brief	Imports a font from the specified file. Imported font assets
+		 *			are saved in the output folder. All saved resources are registered in the
+		 *			provided resource manifest.
+		 */
+		static void importFont(const Path& inputFile, const Path& outputFolder, UINT32 size, 
+			bool antialiasing, const ResourceManifestPtr& manifest);
+
+		/**
+		 * @brief	Generates sprite textures for all texture assets in the specified folder.
+		 *			Results are written in the same folder with a "sprite_" prefix. All saved 
+		 *			resources are registered in the provided resource manifest.
+		 */
+		static void generateSpriteTextures(const Path& folder, const ResourceManifestPtr& manifest);
+
+		/**
+		 * @brief	Writes a timestamp with the current date and time in the specified file.
+		 */
+		static void writeTimestamp(const Path& file);
+
+		/**
+		 * @brief	Checks all files in the specified folder for modifications compared to the
+		 *			time stored in the timestamp file. Timestamp file must have been saved
+		 *			using "writeTimestamp".
+		 */
+		static bool checkForModifications(const Path& folder, const Path& timeStampFile);
 	};
 }

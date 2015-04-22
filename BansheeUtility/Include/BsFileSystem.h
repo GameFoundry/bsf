@@ -102,6 +102,23 @@ namespace BansheeEngine
 		static void getChildren(const Path& dirPath, Vector<Path>& files, Vector<Path>& directories);
 
 		/**
+		 * @brief	Iterates over all files and directories in the specified folder and calls the provided callback
+		 *			when a file/folder is iterated over.
+		 *
+		 * @param	dirPath			Directory over which to iterate
+		 * @param	fileCallback	Callback to call whenever a file is found. If callback returns false iteration stops. Can be null.
+		 * @param	dirCallback		Callback to call whenever a directory is found. If callback returns false iteration stops. Can be null.
+		 * @param	recursive		If false then only the direct children of the provided folder
+		 *							will be iterated over, and if true then child directories will
+		 *							be recursively visited as well.
+		 *
+		 * @returns	True if iteration finished iterating over all files/folders, or false if it was interrupted
+		 *			by a callback returning false.
+		 */
+		static bool iterate(const Path& dirPath, std::function<bool(const Path&)> fileCallback,
+			std::function<bool(const Path&)> dirCallback = nullptr, bool recursive = true);
+
+		/**
 		 * @brief	Returns the last modified time of a file or a folder at the specified path.
 		 *
 		 * @param	fullPath	Full path to a file or a folder.

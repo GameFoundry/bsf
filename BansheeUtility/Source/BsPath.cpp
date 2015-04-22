@@ -255,6 +255,7 @@ namespace BansheeEngine
 		for (auto& dir : mDirectories)
 			absDir.pushDirectory(dir);
 
+		absDir.setFilename(mFilename);
 		*this = absDir;
 
 		return *this;
@@ -512,6 +513,16 @@ namespace BansheeEngine
 		return result.str();
 	}
 
+	Path Path::operator+ (const Path& rhs) const
+	{
+		return Path::combine(*this, rhs);
+	}
+
+	Path& Path::operator+= (const Path& rhs)
+	{
+		return append(rhs);
+	}
+
 	bool Path::comparePathElem(const WString& left, const WString& right)
 	{
 		if (left.size() != right.size())
@@ -525,6 +536,12 @@ namespace BansheeEngine
 		}
 
 		return true;
+	}
+
+	Path Path::combine(const Path& left, const Path& right)
+	{
+		Path output = left;
+		return output.append(right);
 	}
 
 	void Path::pushDirectory(const WString& dir)

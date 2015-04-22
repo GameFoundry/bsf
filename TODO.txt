@@ -11,34 +11,8 @@ Project library
 
 Almost all of PRojectLibrary functionality is completely untested
 
-Figure out how to create a C# BuiltinResources class. It should be able to load arbitrary resources from a non-project folder
- - I should move all the GUI element style creation out of code and make it just pure data (once I have an editor for it)
- - Will also need a debug button to reimport all the built-in resources
-
 My GUID generation is screwed up. If multiple GUIDs are generated in succession then the timestamp will remain
 the same and the only variable will be the 4byte random number, which can sometimes end up identical to the previous number.
-
-----------------------------------------------------------------------
-BuiltinResources
- - All data in ..\..\BuiltinData (if we start in /bin/Release/BansheeEd.exe)
- - Need BuiltinEngine and BuiltinEditor (separate classes) that internally do pretty much the same thing
-   - Derive them from common base since most of the functionality will be reused
-   - Make sure that commonly used resources are available directly and aren't required to call Load
- - Also have ..\..\RawBuiltinData where all the non-processed assets are
- - When compiled as debug, define Preprocess command which goes over all assets in ..\..\RawBuiltinData, imports them and outputs them to ..\..\BuiltinData
-   - Preprocess can be done fully in C++
-
-I need to make a GUISkin a resource so I can save it
- - It should be editable from the Editor (only when in debug mode) and not generated in code
- - Then in Preprocess it can just get copied from RawBuiltinData subfolder to the actual folder
- - Before I have editing capability it can just be generated in Preprocess step
-
-Preprocess will also need to generate any Shaders or SpriteTextures
- - POSSIBLY wait until I get generate these assets directly in Editor, then just copy them over to Builtin
- - This way I can fully avoid writing any preprocess code
-
-I still need to be able to access most of these assets from C++ (e.g. GUI element styles)
- - I need to add BuiltinResources.Load which should allow me to load all needed resources, from C++ or C#
 
 ----------------------------------------------------------------------
 Resources
@@ -74,7 +48,6 @@ Other simple stuff:
  - Call stack from C# to use in Debug.Log calls
  - Get rid of event callback from HString and figure out a better way
  - GUI TextureField similar to ResourceField but it displays the texture it has assigned
- - Getting rid of import on start would be a pretty big deal. Just adding a button in Editor "Reimport" should be good instead
  - Better handle and gizmo shaders
 
 ----------------------------------------------------------------------

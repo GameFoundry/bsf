@@ -341,8 +341,8 @@ namespace BansheeEngine
 		const WString& getWDirectory(UINT32 idx) const;
 
 		/**
-		* @brief	Gets a directory name with the specified index from the path.
-		*/
+		 * @brief	Gets a directory name with the specified index from the path.
+		 */
 		String getDirectory(UINT32 idx) const;
 
 		/**
@@ -351,28 +351,28 @@ namespace BansheeEngine
 		const WString& getWDevice() const { return mDevice; }
 
 		/**
-		* @brief	Returns path device (e.g. drive, volume, etc.) if one exists in the path.
-		*/
+		 * @brief	Returns path device (e.g. drive, volume, etc.) if one exists in the path.
+		 */
 		String getDevice() const { return BansheeEngine::toString(mDevice); }
 
 		/**
-		* @brief	Returns path node (e.g. network name) if one exists in the path.
-		*/
+		 * @brief	Returns path node (e.g. network name) if one exists in the path.
+		 */
 		const WString& getWNode() const { return mNode; }
 
 		/**
-		* @brief	Returns path node (e.g. network name) if one exists in the path.
-		*/
+		 * @brief	Returns path node (e.g. network name) if one exists in the path.
+		 */
 		String getNode() const { return BansheeEngine::toString(mNode); }
 
 		/**
-		* @brief	Gets last element in the path, filename if it exists, otherwise the last directory.
-		*			If no directories exist returns device or node.
-		*
-		* @param	type	Determines format of node or device, in case they are returned. When default,
-		*					format for the active platform will be used, otherwise the format defined
-		*					by the parameter will be used.
-		*/
+		 * @brief	Gets last element in the path, filename if it exists, otherwise the last directory.
+		 *			If no directories exist returns device or node.
+		 *
+		 * @param	type	Determines format of node or device, in case they are returned. When default,
+		 *					format for the active platform will be used, otherwise the format defined
+		 *					by the parameter will be used.
+		 */
 		WString getWTail(PathType type = PathType::Default) const;
 
 		/**
@@ -396,9 +396,24 @@ namespace BansheeEngine
 		bool isEmpty() const { return mDirectories.empty() && mFilename.empty() && mDevice.empty() && mNode.empty(); }
 
 		/**
-		* @brief	Compares two path elements (i.e. filenames, directory names, etc.)
-		*/
+		 * @brief	Concatenates two paths.
+		 */
+		Path operator+ (const Path& rhs) const;
+
+		/**
+		 * @brief	Concatenates two paths.
+		 */
+		Path& operator+= (const Path& rhs);
+
+		/**
+		 * @brief	Compares two path elements (i.e. filenames, directory names, etc.)
+		 */
 		static bool comparePathElem(const WString& left, const WString& right);
+
+		/**
+		 * @brief	Combines two paths and returns the result. Right path should be relative.
+		 */
+		static Path combine(const Path& left, const Path& right);
 
 		static const Path BLANK;
 	private:

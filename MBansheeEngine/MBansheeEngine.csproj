@@ -43,7 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AsyncOp.cs" />
-    <Compile Include="BuiltinResources.cs" />
+    <Compile Include="Builtin.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="CameraHandler.cs" />
     <Compile Include="Cursor.cs" />

@@ -11,6 +11,7 @@ namespace BansheeEngine
 	{
 	public:
 		BuiltinEditorResources();
+		~BuiltinEditorResources();
 
 		const HGUISkin& getSkin() const { return mSkin; }
 
@@ -79,8 +80,10 @@ namespace BansheeEngine
 		static const String ObjectFieldDropBtnStyleName;
 		static const String ObjectFieldClearBtnStyleName;
 
-		static const Path DefaultSkinFolder;
-		static const Path DefaultShaderFolder;
+		static const Path BuiltinDataFolder;
+		static const Path EditorSkinFolder;
+		static const Path EditorShaderFolder;
+		static const Path EditorShaderIncludeFolder;
 
 	private:
 		/**
@@ -92,16 +95,14 @@ namespace BansheeEngine
 		void preprocess();
 
 		/**
+		 * @brief	Generates the default editor skin and all GUI element styles.
+		 */
+		HGUISkin generateGUISkin();
+
+		/**
 		 * @brief	Loads a GUI skin texture with the specified filename.
 		 */
 		static HSpriteTexture getGUITexture(const WString& name);
-
-		/**
-		 * @brief	Imports a GUI skin texture with the specified filename.
-		 *			Saves the imported texture in engine-ready format in the corresponding
-		 *			output folder.
-		 */
-		static void importGUITexture(const WString& name);
 
 		/**
 		 * @brief	Loads a shader with the specified filename
@@ -123,11 +124,23 @@ namespace BansheeEngine
 
 		HGUISkin mSkin;
 
-		static const Path DefaultSkinFolderRaw;
-		static const Path DefaultShaderFolderRaw;
+		ResourceManifestPtr mResourceManifest;
+
+		static const Path ShaderFolder;
+		static const Path SkinFolder;
+		static const Path ShaderIncludeFolder;
+
+		static const Path BuiltinRawDataFolder;
+		static const Path EditorRawSkinFolder;
+		static const Path EditorRawShaderIncludeFolder;
+		static const Path EditorRawShaderFolder;
+
+		static const Path ResourceManifestPath;
 
 		static const WString DefaultFontFilename;
 		static const UINT32 DefaultFontSize;
+
+		static const WString GUISkinFile;
 
 		static const WString WindowBackgroundTexture;
 

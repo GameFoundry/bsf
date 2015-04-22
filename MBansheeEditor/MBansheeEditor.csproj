@@ -55,6 +55,7 @@
     <Compile Include="DialogBox.cs" />
     <Compile Include="DragDrop.cs" />
     <Compile Include="EditorApplication.cs" />
+    <Compile Include="EditorBuiltin.cs" />
     <Compile Include="EditorSettings.cs" />
     <Compile Include="EditorStyles.cs" />
     <Compile Include="EditorUtility.cs" />

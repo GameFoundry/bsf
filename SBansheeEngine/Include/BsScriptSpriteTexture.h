@@ -16,6 +16,8 @@ namespace BansheeEngine
 		HResource getNativeHandle() const { return mTexture; }
 		void setNativeHandle(const HResource& resource);
 
+		static MonoObject* toManaged(const HSpriteTexture& texture);
+
 	private:
 		friend class ScriptResourceManager;
 

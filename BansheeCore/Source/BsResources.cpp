@@ -75,15 +75,7 @@ namespace BansheeEngine
 	HResource Resources::loadInternal(const Path& filePath, bool synchronous)
 	{
 		String uuid;
-		bool foundUUID = false;
-		for(auto iter = mResourceManifests.rbegin(); iter != mResourceManifests.rend(); ++iter) 
-		{
-			if((*iter)->filePathToUUID(filePath, uuid))
-			{
-				foundUUID = true;
-				break;
-			}
-		}
+		bool foundUUID = getUUIDFromFilePath(filePath, uuid);
 
 		if(!foundUUID)
 			uuid = UUIDGenerator::instance().generateRandom();
@@ -367,9 +359,13 @@ namespace BansheeEngine
 
 	bool Resources::getUUIDFromFilePath(const Path& path, String& uuid) const
 	{
+		Path manifestPath = path;
+		if (!manifestPath.isAbsolute())
+			manifestPath.makeAbsolute(FileSystem::getWorkingDirectoryPath());
+
 		for(auto iter = mResourceManifests.rbegin(); iter != mResourceManifests.rend(); ++iter) 
 		{
-			if((*iter)->filePathToUUID(path, uuid))
+			if ((*iter)->filePathToUUID(manifestPath, uuid))
 				return true;
 		}
 

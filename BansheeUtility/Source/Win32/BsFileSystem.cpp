@@ -483,6 +483,79 @@ namespace BansheeEngine
 		FindClose(fileHandle);
 	}
 
+	bool FileSystem::iterate(const Path& dirPath, std::function<bool(const Path&)> fileCallback,
+		std::function<bool(const Path&)> dirCallback, bool recursive)
+	{
+		if (dirPath.isFile())
+			return true;
+
+		WString findPath = dirPath.toWString();
+		findPath.append(L"*");
+
+		WIN32_FIND_DATAW findData;
+		HANDLE fileHandle = FindFirstFileW(findPath.c_str(), &findData);
+
+		bool lastFailed = false;
+		WString tempName;
+		do
+		{
+			if (lastFailed || fileHandle == INVALID_HANDLE_VALUE)
+			{
+				if (GetLastError() == ERROR_NO_MORE_FILES)
+					break;
+				else
+					win32_handleError(GetLastError(), findPath);
+			}
+			else
+			{
+				tempName = findData.cFileName;
+
+				if (tempName != L"." && tempName != L"..")
+				{
+					Path fullPath = dirPath;
+					if ((findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0)
+					{
+						Path childDir = fullPath.append(tempName + L"/");
+						if (dirCallback != nullptr)
+						{
+							if (!dirCallback(childDir))
+							{
+								FindClose(fileHandle);
+								return false;
+							}
+						}
+
+						if (recursive)
+						{
+							if (!iterate(childDir, fileCallback, dirCallback, recursive))
+							{
+								FindClose(fileHandle);
+								return false;
+							}
+						}
+					}
+					else
+					{
+						Path filePath = fullPath.append(tempName);
+						if (fileCallback != nullptr)
+						{
+							if (!fileCallback(filePath))
+							{
+								FindClose(fileHandle);
+								return false;
+							}
+						}
+					}
+				}
+			}
+
+			lastFailed = FindNextFileW(fileHandle, &findData) == FALSE;
+		} while (true);
+
+		FindClose(fileHandle);
+		return true;
+	}
+
 	std::time_t FileSystem::getLastModifiedTime(const Path& fullPath)
 	{
 		return win32_getLastModifiedTime(fullPath.toWString().c_str());

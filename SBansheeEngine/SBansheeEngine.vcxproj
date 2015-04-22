@@ -252,6 +252,7 @@
     <ClInclude Include="Include\BsManagedSerializableObjectDataRTTI.h" />
     <ClInclude Include="Include\BsScriptAssemblyManager.h" />
     <ClInclude Include="Include\BsScriptAsyncOp.h" />
+    <ClInclude Include="Include\BsScriptBuiltin.h" />
     <ClInclude Include="Include\BsScriptCameraHandler.h" />
     <ClInclude Include="Include\BsScriptColor.h" />
     <ClInclude Include="Include\BsScriptComponent.h" />
@@ -328,6 +329,7 @@
     <ClCompile Include="Source\BsManagedSerializableObjectData.cpp" />
     <ClCompile Include="Source\BsScriptAssemblyManager.cpp" />
     <ClCompile Include="Source\BsScriptAsyncOp.cpp" />
+    <ClCompile Include="Source\BsScriptBuiltin.cpp" />
     <ClCompile Include="Source\BsScriptCameraHandler.cpp" />
     <ClCompile Include="Source\BsScriptColor.cpp" />
     <ClCompile Include="Source\BsScriptComponent.cpp" />

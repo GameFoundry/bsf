@@ -26,19 +26,35 @@
 #include "BsCoreApplication.h"
 #include "BsCoreThread.h"
 #include "BsApplication.h"
+#include "BsDataStream.h"
+#include "BsTime.h"
+#include "BsResourceManifest.h"
 
 namespace BansheeEngine
 {
 	const WString BuiltinResources::DefaultFontFilename = L"arial.ttf";
 	const UINT32 BuiltinResources::DefaultFontSize = 10;
 
-	const Path BuiltinResources::DefaultSkinFolderRaw = L"..\\..\\..\\..\\Data\\Raw\\Engine\\Skin\\";
-	const Path BuiltinResources::DefaultCursorFolderRaw = L"..\\..\\..\\..\\Data\\Raw\\Engine\\Cursors\\";
-	const Path BuiltinResources::DefaultShaderFolderRaw = L"..\\..\\..\\..\\Data\\Raw\\Engine\\Shaders\\";
+	const WString BuiltinResources::GUISkinFile = L"GUISkin";
 
-	const Path BuiltinResources::DefaultSkinFolder = L"..\\..\\..\\..\\Data\\Engine\\Skin\\";
-	const Path BuiltinResources::DefaultCursorFolder = L"..\\..\\..\\..\\Data\\Engine\\Cursors\\";
-	const Path BuiltinResources::DefaultShaderFolder = L"..\\..\\..\\..\\Data\\Engine\\Shaders\\";
+	const Path BuiltinResources::CursorFolder = L"Cursors\\";
+	const Path BuiltinResources::ShaderFolder = L"Shaders\\";
+	const Path BuiltinResources::SkinFolder = L"Skin\\";
+	const Path BuiltinResources::ShaderIncludeFolder = L"Includes\\";
+
+	const Path BuiltinResources::BuiltinRawDataFolder = L"..\\..\\..\\..\\Data\\Raw\\Engine\\";
+	const Path BuiltinResources::EngineRawSkinFolder = BuiltinRawDataFolder + SkinFolder;
+	const Path BuiltinResources::EngineRawCursorFolder = BuiltinRawDataFolder + CursorFolder;
+	const Path BuiltinResources::EngineRawShaderFolder = BuiltinRawDataFolder + ShaderFolder;
+	const Path BuiltinResources::EngineRawShaderIncludeFolder = BuiltinRawDataFolder + ShaderIncludeFolder;
+
+	const Path BuiltinResources::BuiltinDataFolder = L"..\\..\\..\\..\\Data\\Engine\\";
+	const Path BuiltinResources::EngineSkinFolder = BuiltinDataFolder + SkinFolder;
+	const Path BuiltinResources::EngineCursorFolder = BuiltinDataFolder + CursorFolder;
+	const Path BuiltinResources::EngineShaderFolder = BuiltinDataFolder + ShaderFolder;
+	const Path BuiltinResources::EngineShaderIncludeFolder = BuiltinDataFolder + ShaderIncludeFolder;
+
+	const Path BuiltinResources::ResourceManifestPath = BuiltinDataFolder + "ResourceManifest.asset";
 
 	/************************************************************************/
 	/* 								GUI TEXTURES                      		*/
@@ -159,14 +175,38 @@ namespace BansheeEngine
 
 	BuiltinResources::BuiltinResources()
 	{
-		preprocess();
+		Path absoluteDataPath = FileSystem::getWorkingDirectoryPath();
+		absoluteDataPath.append(BuiltinDataFolder);
 
+		if (FileSystem::exists(ResourceManifestPath))
+			mResourceManifest = ResourceManifest::load(ResourceManifestPath, absoluteDataPath);
+
+		if (mResourceManifest == nullptr)
+			mResourceManifest = ResourceManifest::create("BuiltinResources");
+
+		gResources().registerResourceManifest(mResourceManifest);
+
+#if BS_DEBUG_MODE
+		if (BuiltinResourcesHelper::checkForModifications(BuiltinRawDataFolder, BuiltinDataFolder + L"Timestamp.asset"))
+		{
+			preprocess();
+			BuiltinResourcesHelper::writeTimestamp(BuiltinDataFolder + L"Timestamp.asset");
+
+			Path absoluteDataPath = FileSystem::getWorkingDirectoryPath();
+			absoluteDataPath.append(BuiltinDataFolder);
+
+			ResourceManifest::save(mResourceManifest, ResourceManifestPath, absoluteDataPath);
+		}
+#endif
+		
 		mShaderSpriteText = getShader(ShaderSpriteTextFile);
 		mShaderSpriteImage = getShader(ShaderSpriteImageAlphaFile);
 		mShaderSpriteNonAlphaImage = getShader(ShaderSpriteImageNoAlphaFile);
 		mShaderDummy = getShader(ShaderDummyFile);
 
 		mWhiteSpriteTexture = getSkinTexture(WhiteTex);
+
+		mSkin = gResources().load<GUISkin>(BuiltinDataFolder + (GUISkinFile + L".asset"));
 
 		/************************************************************************/
 		/* 								CURSOR		                     		*/
@@ -214,13 +254,45 @@ namespace BansheeEngine
 		cursorSizeWETex->readSubresource(gCoreAccessor(), 0, mCursorSizeWE);
 
 		gCoreAccessor().submitToCoreThread(true);
+	}
 
+	void BuiltinResources::preprocess()
+	{
+		FileSystem::remove(EngineCursorFolder);
+		FileSystem::remove(EngineShaderIncludeFolder);
+		FileSystem::remove(EngineShaderFolder);
+		FileSystem::remove(EngineSkinFolder);
+
+		BuiltinResourcesHelper::importAssets(EngineRawCursorFolder, EngineCursorFolder, mResourceManifest);
+		BuiltinResourcesHelper::importAssets(EngineRawShaderIncludeFolder, EngineShaderIncludeFolder, mResourceManifest); // Hidden dependency: Includes must be imported before shaders
+		BuiltinResourcesHelper::importAssets(EngineRawShaderFolder, EngineShaderFolder, mResourceManifest);
+		BuiltinResourcesHelper::importAssets(EngineRawSkinFolder, EngineSkinFolder, mResourceManifest);
+
+		// Import font
+		BuiltinResourcesHelper::importFont(BuiltinRawDataFolder + DefaultFontFilename, BuiltinDataFolder, DefaultFontSize, false, mResourceManifest);
+
+		// Generate & save GUI sprite textures
+		BuiltinResourcesHelper::generateSpriteTextures(EngineSkinFolder, mResourceManifest);
+
+		// Generate & save GUI skin
+		{
+			HGUISkin skin = generateGUISkin();
+			Path outputPath = FileSystem::getWorkingDirectoryPath() + BuiltinDataFolder + (GUISkinFile + L".asset");
+			Resources::instance().save(skin, outputPath, true);
+			mResourceManifest->registerResource(skin.getUUID(), outputPath);
+		}
+		
+		Resources::instance().unloadAllUnused();
+	}
+
+	HGUISkin BuiltinResources::generateGUISkin()
+	{
 		Path fontPath = FileSystem::getWorkingDirectoryPath();
-		fontPath.append(DefaultSkinFolder);
+		fontPath.append(BuiltinDataFolder);
 		fontPath.append(DefaultFontFilename + L".asset");
 
 		HFont font = Resources::instance().load<Font>(fontPath);
-		mSkin = GUISkin::create();
+		HGUISkin skin = GUISkin::create();
 
 		// Label
 		GUIElementStyle labelStyle;
@@ -231,7 +303,7 @@ namespace BansheeEngine
 		labelStyle.height = 11;
 		labelStyle.minWidth = 10;
 
-		mSkin->setStyle(GUILabel::getGUITypeName(), labelStyle);
+		skin->setStyle(GUILabel::getGUITypeName(), labelStyle);
 
 		// Button
 		GUIElementStyle buttonStyle;
@@ -252,7 +324,7 @@ namespace BansheeEngine
 		buttonStyle.textHorzAlign = THA_Center;
 		buttonStyle.textVertAlign = TVA_Center;
 
-		mSkin->setStyle(GUIButton::getGUITypeName(), buttonStyle);
+		skin->setStyle(GUIButton::getGUITypeName(), buttonStyle);
 
 		// Toggle
 		GUIElementStyle toggleStyle;
@@ -267,7 +339,7 @@ namespace BansheeEngine
 		toggleStyle.height = 15;
 		toggleStyle.width = 15;
 
-		mSkin->setStyle(GUIToggle::getGUITypeName(), toggleStyle);
+		skin->setStyle(GUIToggle::getGUITypeName(), toggleStyle);
 
 		// Input box
 		GUIElementStyle inputBoxStyle;
@@ -291,7 +363,7 @@ namespace BansheeEngine
 		inputBoxStyle.textHorzAlign = THA_Left;
 		inputBoxStyle.textVertAlign = TVA_Top;
 
-		mSkin->setStyle(GUIInputBox::getGUITypeName(), inputBoxStyle);
+		skin->setStyle(GUIInputBox::getGUITypeName(), inputBoxStyle);
 
 		/************************************************************************/
 		/* 								SCROLL BAR                      		*/
@@ -307,7 +379,7 @@ namespace BansheeEngine
 		scrollUpBtnStyle.height = 4;
 		scrollUpBtnStyle.width = 8;
 
-		mSkin->setStyle("ScrollUpBtn", scrollUpBtnStyle);
+		skin->setStyle("ScrollUpBtn", scrollUpBtnStyle);
 
 		// Down button
 		GUIElementStyle scrollDownBtnStyle;
@@ -319,7 +391,7 @@ namespace BansheeEngine
 		scrollDownBtnStyle.height = 4;
 		scrollDownBtnStyle.width = 8;
 
-		mSkin->setStyle("ScrollDownBtn", scrollDownBtnStyle);
+		skin->setStyle("ScrollDownBtn", scrollDownBtnStyle);
 
 		// Left button
 		GUIElementStyle scrollLeftBtnStyle;
@@ -331,7 +403,7 @@ namespace BansheeEngine
 		scrollLeftBtnStyle.height = 8;
 		scrollLeftBtnStyle.width = 4;
 
-		mSkin->setStyle("ScrollLeftBtn", scrollLeftBtnStyle);
+		skin->setStyle("ScrollLeftBtn", scrollLeftBtnStyle);
 
 		// Right button
 		GUIElementStyle scrollRightBtnStyle;
@@ -343,7 +415,7 @@ namespace BansheeEngine
 		scrollRightBtnStyle.height = 8;
 		scrollRightBtnStyle.width = 4;
 
-		mSkin->setStyle("ScrollRightBtn", scrollRightBtnStyle);
+		skin->setStyle("ScrollRightBtn", scrollRightBtnStyle);
 
 		// Horizontal handle
 		GUIElementStyle scrollBarHorzBtnStyle;
@@ -355,7 +427,7 @@ namespace BansheeEngine
 		scrollBarHorzBtnStyle.height = 6;
 		scrollBarHorzBtnStyle.width = 4;
 
-		mSkin->setStyle("ScrollBarHorzBtn", scrollBarHorzBtnStyle);
+		skin->setStyle("ScrollBarHorzBtn", scrollBarHorzBtnStyle);
 
 		// Vertical handle
 		GUIElementStyle scrollBarVertBtnStyle;
@@ -367,7 +439,7 @@ namespace BansheeEngine
 		scrollBarVertBtnStyle.height = 4;
 		scrollBarVertBtnStyle.width = 6;
 
-		mSkin->setStyle("ScrollBarVertBtn", scrollBarVertBtnStyle);
+		skin->setStyle("ScrollBarVertBtn", scrollBarVertBtnStyle);
 
 		HSpriteTexture scrollBarBgPtr = getSkinTexture(ScrollBarBgTex);
 
@@ -381,7 +453,7 @@ namespace BansheeEngine
 		vertScrollBarStyle.minHeight = 16;
 		vertScrollBarStyle.width = 8;
 
-		mSkin->setStyle("ScrollBarVert", vertScrollBarStyle);
+		skin->setStyle("ScrollBarVert", vertScrollBarStyle);
 
 		// Horizontal scroll bar
 		GUIElementStyle horzScrollBarStyle;
@@ -393,7 +465,7 @@ namespace BansheeEngine
 		horzScrollBarStyle.minWidth = 16;
 		horzScrollBarStyle.height = 8;
 
-		mSkin->setStyle("ScrollBarHorz", horzScrollBarStyle);
+		skin->setStyle("ScrollBarHorz", horzScrollBarStyle);
 
 		/************************************************************************/
 		/* 								DROP DOWN BOX                      		*/
@@ -424,7 +496,7 @@ namespace BansheeEngine
 		dropDownListStyle.textHorzAlign = THA_Left;
 		dropDownListStyle.textVertAlign = TVA_Top;
 
-		mSkin->setStyle("ListBox", dropDownListStyle);
+		skin->setStyle("ListBox", dropDownListStyle);
 
 		// DropDown scroll up button arrow
 		GUIElementStyle dropDownScrollUpBtnArrowStyle;
@@ -440,9 +512,9 @@ namespace BansheeEngine
 		dropDownScrollUpBtnArrowStyle.border.top = 1;
 		dropDownScrollUpBtnArrowStyle.border.bottom = 1;
 
-		mSkin->setStyle("ListBoxScrollUpBtnArrow", dropDownScrollUpBtnArrowStyle);
-		mSkin->setStyle("MenuBarScrollUpBtnArrow", dropDownScrollUpBtnArrowStyle);
-		mSkin->setStyle("ContextMenuScrollUpBtnArrow", dropDownScrollUpBtnArrowStyle);
+		skin->setStyle("ListBoxScrollUpBtnArrow", dropDownScrollUpBtnArrowStyle);
+		skin->setStyle("MenuBarScrollUpBtnArrow", dropDownScrollUpBtnArrowStyle);
+		skin->setStyle("ContextMenuScrollUpBtnArrow", dropDownScrollUpBtnArrowStyle);
 
 		// DropDown scroll up button
 		GUIElementStyle dropDownScrollUpBtnStyle;
@@ -458,9 +530,9 @@ namespace BansheeEngine
 		dropDownScrollUpBtnStyle.border.top = 1;
 		dropDownScrollUpBtnStyle.border.bottom = 1;
 
-		mSkin->setStyle("ListBoxScrollUpBtn", dropDownScrollUpBtnStyle);
-		mSkin->setStyle("MenuBarScrollUpBtn", dropDownScrollUpBtnStyle);
-		mSkin->setStyle("ContextMenuScrollUpBtn", dropDownScrollUpBtnStyle);
+		skin->setStyle("ListBoxScrollUpBtn", dropDownScrollUpBtnStyle);
+		skin->setStyle("MenuBarScrollUpBtn", dropDownScrollUpBtnStyle);
+		skin->setStyle("ContextMenuScrollUpBtn", dropDownScrollUpBtnStyle);
 
 		// DropDown scroll down button arrow
 		GUIElementStyle dropDownScrollDownBtnArrowStyle;
@@ -475,10 +547,10 @@ namespace BansheeEngine
 		dropDownScrollDownBtnArrowStyle.border.right = 1;
 		dropDownScrollDownBtnArrowStyle.border.top = 1;
 		dropDownScrollDownBtnArrowStyle.border.bottom = 1;
-		
-		mSkin->setStyle("ListBoxScrollDownBtnArrow", dropDownScrollDownBtnArrowStyle);
-		mSkin->setStyle("MenuBarScrollDownBtnArrow", dropDownScrollDownBtnArrowStyle);
-		mSkin->setStyle("ContextMenuScrollDownBtnArrow", dropDownScrollDownBtnArrowStyle);
+
+		skin->setStyle("ListBoxScrollDownBtnArrow", dropDownScrollDownBtnArrowStyle);
+		skin->setStyle("MenuBarScrollDownBtnArrow", dropDownScrollDownBtnArrowStyle);
+		skin->setStyle("ContextMenuScrollDownBtnArrow", dropDownScrollDownBtnArrowStyle);
 
 		// DropDown scroll down button
 		GUIElementStyle dropDownScrollDownBtnStyle;
@@ -494,9 +566,9 @@ namespace BansheeEngine
 		dropDownScrollDownBtnStyle.border.top = 1;
 		dropDownScrollDownBtnStyle.border.bottom = 1;
 
-		mSkin->setStyle("ListBoxScrollDownBtn", dropDownScrollDownBtnStyle);
-		mSkin->setStyle("MenuBarScrollDownBtn", dropDownScrollDownBtnStyle);
-		mSkin->setStyle("ContextMenuScrollDownBtn", dropDownScrollDownBtnStyle);
+		skin->setStyle("ListBoxScrollDownBtn", dropDownScrollDownBtnStyle);
+		skin->setStyle("MenuBarScrollDownBtn", dropDownScrollDownBtnStyle);
+		skin->setStyle("ContextMenuScrollDownBtn", dropDownScrollDownBtnStyle);
 
 		// DropDown entry button
 		GUIElementStyle dropDownEntryBtnStyle;
@@ -519,7 +591,7 @@ namespace BansheeEngine
 		dropDownEntryBtnStyle.textHorzAlign = THA_Left;
 		dropDownEntryBtnStyle.textVertAlign = TVA_Top;
 
-		mSkin->setStyle(GUIDropDownContent::ENTRY_STYLE_TYPE, dropDownEntryBtnStyle);
+		skin->setStyle(GUIDropDownContent::ENTRY_STYLE_TYPE, dropDownEntryBtnStyle);
 
 		// DropDown entry button with expand
 		GUIElementStyle dropDownEntryExpBtnStyle;
@@ -542,7 +614,7 @@ namespace BansheeEngine
 		dropDownEntryExpBtnStyle.textHorzAlign = THA_Left;
 		dropDownEntryExpBtnStyle.textVertAlign = TVA_Top;
 
-		mSkin->setStyle(GUIDropDownContent::ENTRY_EXP_STYLE_TYPE, dropDownEntryExpBtnStyle);
+		skin->setStyle(GUIDropDownContent::ENTRY_EXP_STYLE_TYPE, dropDownEntryExpBtnStyle);
 
 		// Drop down separator
 		GUIElementStyle dropDownSeparatorStyle;
@@ -556,7 +628,7 @@ namespace BansheeEngine
 		dropDownSeparatorStyle.border.top = 1;
 		dropDownSeparatorStyle.border.bottom = 1;
 
-		mSkin->setStyle(GUIDropDownContent::SEPARATOR_STYLE_TYPE, dropDownSeparatorStyle);
+		skin->setStyle(GUIDropDownContent::SEPARATOR_STYLE_TYPE, dropDownSeparatorStyle);
 
 		// Drop down content
 		GUIElementStyle dropDownContentStyle;
@@ -566,9 +638,9 @@ namespace BansheeEngine
 		dropDownContentStyle.subStyles[GUIDropDownContent::ENTRY_EXP_STYLE_TYPE] = GUIDropDownContent::ENTRY_EXP_STYLE_TYPE;
 		dropDownContentStyle.subStyles[GUIDropDownContent::SEPARATOR_STYLE_TYPE] = GUIDropDownContent::SEPARATOR_STYLE_TYPE;
 
-		mSkin->setStyle("ListBoxContent", dropDownContentStyle);
-		mSkin->setStyle("MenuBarContent", dropDownContentStyle);
-		mSkin->setStyle("ContextMenuContent", dropDownContentStyle);
+		skin->setStyle("ListBoxContent", dropDownContentStyle);
+		skin->setStyle("MenuBarContent", dropDownContentStyle);
+		skin->setStyle("ContextMenuContent", dropDownContentStyle);
 
 		// DropDown box frame
 		GUIElementStyle dropDownBoxStyle;
@@ -586,9 +658,9 @@ namespace BansheeEngine
 		dropDownBoxStyle.margins.top = 1;
 		dropDownBoxStyle.margins.bottom = 1;
 
-		mSkin->setStyle("ListBoxFrame", dropDownBoxStyle);
-		mSkin->setStyle("MenuBarFrame", dropDownBoxStyle);
-		mSkin->setStyle("ContextMenuFrame", dropDownBoxStyle);
+		skin->setStyle("ListBoxFrame", dropDownBoxStyle);
+		skin->setStyle("MenuBarFrame", dropDownBoxStyle);
+		skin->setStyle("ContextMenuFrame", dropDownBoxStyle);
 
 		/************************************************************************/
 		/* 									OTHER                      			*/
@@ -604,134 +676,15 @@ namespace BansheeEngine
 		rightAlignedLabelStyle.minWidth = 10;
 		rightAlignedLabelStyle.textHorzAlign = THA_Right;
 
-		mSkin->setStyle("RightAlignedLabel", rightAlignedLabelStyle);
-	}
+		skin->setStyle("RightAlignedLabel", rightAlignedLabelStyle);
 
-	void BuiltinResources::preprocess()
-	{
-		static const WString GUI_TEXTURES[] = { WhiteTex, ButtonNormalTex, ButtonHoverTex, ButtonActiveTex, ToggleNormalTex,
-			ToggleHoverTex, ToggleActiveTex, ToggleNormalOnTex, ToggleHoverOnTex, ToggleActiveOnTex, InputBoxNormalTex,
-			InputBoxHoverTex, InputBoxFocusedTex, ScrollBarUpNormalTex, ScrollBarUpHoverTex, ScrollBarUpActiveTex,
-			ScrollBarDownNormalTex, ScrollBarDownHoverTex, ScrollBarDownActiveTex, ScrollBarLeftNormalTex,
-			ScrollBarLeftHoverTex, ScrollBarLeftActiveTex, ScrollBarRightNormalTex, ScrollBarRightHoverTex,
-			ScrollBarRightActiveTex, ScrollBarHandleHorzNormalTex, ScrollBarHandleHorzHoverTex, ScrollBarHandleHorzActiveTex,
-			ScrollBarHandleVertNormalTex, ScrollBarHandleVertHoverTex, ScrollBarHandleVertActiveTex, DropDownBtnNormalTex,
-			DropDownBtnHoverTex, DropDownBoxBgTex, DropDownBoxEntryNormalTex, DropDownBoxEntryHoverTex, DropDownBoxBtnUpNormalTex,
-			DropDownBoxBtnUpHoverTex, DropDownBoxBtnDownNormalTex, DropDownBoxBtnDownHoverTex, DropDownBoxEntryExpNormalTex, DropDownBoxEntryExpHoverTex,
-			DropDownSeparatorTex, DropDownBoxBtnUpArrowTex, DropDownBoxBtnDownArrowTex };
-
-		static const WString CURSOR_TEXTURES[] = { CursorArrowTex, CursorArrowDragTex, CursorArrowLeftRightTex, CursorIBeamTex,
-			CursorDenyTex, CursorWaitTex, CursorSizeNESWTex, CursorSizeNSTex, CursorSizeNWSETex, CursorSizeWETex };
-
-		if (FileSystem::exists(DefaultCursorFolderRaw))
-		{
-			FileSystem::remove(DefaultCursorFolder);
-
-			for (auto& tex : CURSOR_TEXTURES)
-				importCursorTexture(tex);
-		}
-
-		if (FileSystem::exists(DefaultSkinFolderRaw))
-		{
-			FileSystem::remove(DefaultSkinFolder);
-
-			for (auto& tex : GUI_TEXTURES)
-				importSkinTexture(tex);
-
-			{
-				Path fontPath = FileSystem::getWorkingDirectoryPath();
-				fontPath.append(DefaultSkinFolderRaw);
-				fontPath.append(DefaultFontFilename);
-
-				ImportOptionsPtr fontImportOptions = Importer::instance().createImportOptions(fontPath);
-				if (rtti_is_of_type<FontImportOptions>(fontImportOptions))
-				{
-					FontImportOptions* importOptions = static_cast<FontImportOptions*>(fontImportOptions.get());
-
-					Vector<UINT32> fontSizes;
-					fontSizes.push_back(DefaultFontSize);
-					importOptions->setFontSizes(fontSizes);
-					importOptions->setAntialiasing(false);
-				}
-
-				HFont font = Importer::instance().import<Font>(fontPath, fontImportOptions);
-
-				Path outputPath = FileSystem::getWorkingDirectoryPath();
-				outputPath.append(DefaultSkinFolder);
-				outputPath.append(DefaultFontFilename + L".asset");
-
-				Resources::instance().save(font, outputPath, true);
-
-				// Save font texture pages as well. TODO - Later maybe figure out a more automatic way to do this
-				const FontData* fontData = font->getFontDataForSize(DefaultFontSize);
-
-				Path texPageOutputPath = FileSystem::getWorkingDirectoryPath();
-				texPageOutputPath.append(DefaultSkinFolder);
-
-				UINT32 pageIdx = 0;
-				for (auto tex : fontData->texturePages)
-				{
-					texPageOutputPath.setFilename(DefaultFontFilename + L"_texpage_" + toWString(pageIdx) + L".asset");
-					Resources::instance().save(tex, texPageOutputPath, true);
-				}
-			}
-		}
-
-		if (FileSystem::exists(DefaultShaderFolderRaw))
-		{
-			FileSystem::remove(DefaultShaderFolder);
-
-			Vector<Path> directories;
-			Vector<Path> files;
-			FileSystem::getChildren(DefaultShaderFolderRaw, files, directories);
-
-			// Process includes first since shaders reference them
-			for (auto& shaderFile : files)
-			{
-				if (shaderFile.getExtension() != ".bslinc")
-					continue;
-
-				HResource resource = Importer::instance().import(shaderFile);
-
-				if (resource != nullptr)
-				{
-					if (rtti_is_of_type<ShaderInclude>(resource.getInternalPtr()))
-					{
-						Path outputLoc = DefaultShaderFolder;
-						outputLoc.append(shaderFile.getWFilename() + L".asset");
-
-						Resources::instance().save(resource, outputLoc, true);
-					}
-				}
-			}
-
-			for (auto& shaderFile : files)
-			{
-				if (shaderFile.getExtension() != ".bsl")
-					continue;
-
-				HResource resource = Importer::instance().import(shaderFile);
-
-				if (resource != nullptr)
-				{
-					if (rtti_is_of_type<Shader>(resource.getInternalPtr()))
-					{
-						Path outputLoc = DefaultShaderFolder;
-						outputLoc.append(shaderFile.getWFilename() + L".asset");
-
-						Resources::instance().save(resource, outputLoc, true);
-					}
-				}
-			}
-		}
-
-		Resources::instance().unloadAllUnused();
+		return skin;
 	}
 
 	HSpriteTexture BuiltinResources::getSkinTexture(const WString& name)
 	{
 		Path texturePath = FileSystem::getWorkingDirectoryPath();
-		texturePath.append(DefaultSkinFolder);
+		texturePath.append(EngineSkinFolder);
 		texturePath.append(L"sprite_" + name + L".asset");
 
 		return Resources::instance().load<SpriteTexture>(texturePath);
@@ -739,7 +692,7 @@ namespace BansheeEngine
 
 	HShader BuiltinResources::getShader(const WString& name)
 	{
-		Path programPath = DefaultShaderFolder;
+		Path programPath = EngineShaderFolder;
 		programPath.append(name + L".asset");
 
 		return gResources().load<Shader>(programPath);
@@ -748,45 +701,12 @@ namespace BansheeEngine
 	HTexture BuiltinResources::getCursorTexture(const WString& name)
 	{
 		Path cursorPath = FileSystem::getWorkingDirectoryPath();
-		cursorPath.append(DefaultCursorFolder);
+		cursorPath.append(EngineCursorFolder);
 		cursorPath.append(name + L".asset");
 
 		return Resources::instance().load<Texture>(cursorPath);
 	}
 
-	void BuiltinResources::importSkinTexture(const WString& name)
-	{
-		Path texturePath = FileSystem::getWorkingDirectoryPath();
-		texturePath.append(DefaultSkinFolderRaw);
-		texturePath.append(name);
-
-		Path texOutputPath = FileSystem::getWorkingDirectoryPath();
-		texOutputPath.append(DefaultSkinFolder);
-		Path spriteTexOutputPath = texOutputPath;
-		texOutputPath.append(name + L".asset");
-		spriteTexOutputPath.append(L"sprite_" + name + L".asset");
-
-		HTexture tex = Importer::instance().import<Texture>(texturePath);
-		Resources::instance().save(tex, texOutputPath, true);
-
-		HSpriteTexture spriteTex = SpriteTexture::create(tex);
-		Resources::instance().save(spriteTex, spriteTexOutputPath, true);
-	}
-
-	void BuiltinResources::importCursorTexture(const WString& name)
-	{
-		Path inputPath = FileSystem::getWorkingDirectoryPath();
-		inputPath.append(DefaultCursorFolderRaw);
-		inputPath.append(name);
-
-		Path ouputPath = FileSystem::getWorkingDirectoryPath();
-		ouputPath.append(DefaultCursorFolder);
-		ouputPath.append(name + L".asset");
-
-		HTexture tex = Importer::instance().import<Texture>(inputPath);
-		Resources::instance().save(tex, ouputPath, true);
-	}
-	
 	const PixelData& BuiltinResources::getCursorArrow(Vector2I& hotSpot)
 	{
 		hotSpot = CursorArrowHotspot;
@@ -892,5 +812,137 @@ namespace BansheeEngine
 	HMaterial BuiltinResources::createDummyMaterial() const
 	{
 		return Material::create(mShaderDummy);
+	}
+
+	void BuiltinResourcesHelper::importAssets(const Path& inputFolder, const Path& outputFolder, const ResourceManifestPtr& manifest)
+	{
+		if (!FileSystem::exists(inputFolder))
+			return;
+
+		auto importResource = [&](const Path& filePath)
+		{
+			Path relativePath = filePath.getRelative(inputFolder);
+			Path outputPath = FileSystem::getWorkingDirectoryPath() + outputFolder + relativePath;
+			outputPath.setFilename(outputPath.getWFilename() + L".asset");
+
+			HResource resource = Importer::instance().import(filePath);
+			if (resource != nullptr)
+			{
+				Resources::instance().save(resource, outputPath, true);
+				manifest->registerResource(resource.getUUID(), outputPath);
+			}
+
+			return true;
+		};
+
+		FileSystem::iterate(inputFolder, importResource);
+	}
+
+	void BuiltinResourcesHelper::importFont(const Path& inputFile, const Path& outputFolder, 
+		UINT32 size, bool antialiasing, const ResourceManifestPtr& manifest)
+	{
+		ImportOptionsPtr fontImportOptions = Importer::instance().createImportOptions(inputFile);
+		if (rtti_is_of_type<FontImportOptions>(fontImportOptions))
+		{
+			FontImportOptions* importOptions = static_cast<FontImportOptions*>(fontImportOptions.get());
+
+			Vector<UINT32> fontSizes;
+			fontSizes.push_back(size);
+			importOptions->setFontSizes(fontSizes);
+			importOptions->setAntialiasing(antialiasing);
+		}
+		else
+			return;
+
+		HFont font = Importer::instance().import<Font>(inputFile, fontImportOptions);
+
+		WString fontName = inputFile.getWFilename();
+		Path outputPath = FileSystem::getWorkingDirectoryPath() + outputFolder + fontName;
+		outputPath.setFilename(outputPath.getWFilename() + L".asset");
+
+		Resources::instance().save(font, outputPath, true);
+		manifest->registerResource(font.getUUID(), outputPath);
+
+		// Save font texture pages as well. TODO - Later maybe figure out a more automatic way to do this
+		const FontData* fontData = font->getFontDataForSize(size);
+
+		Path texPageOutputPath = FileSystem::getWorkingDirectoryPath() + outputFolder;
+
+		UINT32 pageIdx = 0;
+		for (auto tex : fontData->texturePages)
+		{
+			texPageOutputPath.setFilename(fontName + L"_texpage_" + toWString(pageIdx) + L".asset");
+			Resources::instance().save(tex, texPageOutputPath, true);
+			manifest->registerResource(tex.getUUID(), texPageOutputPath);
+		}
+	}
+
+	void BuiltinResourcesHelper::generateSpriteTextures(const Path& folder, const ResourceManifestPtr& manifest)
+	{
+		if (!FileSystem::exists(folder))
+			return;
+
+		Vector<Path> filesToProcess;
+		auto gather = [&](const Path& filePath)
+		{
+			filesToProcess.push_back(filePath);
+
+			return true;
+		};
+
+		FileSystem::iterate(folder, gather);
+
+		for (auto& filePath : filesToProcess)
+		{
+			Path outputPath = FileSystem::getWorkingDirectoryPath() + filePath;
+			outputPath.setFilename(L"sprite_" + outputPath.getWFilename());
+
+			HTexture source = gResources().load<Texture>(filePath);
+
+			if (source != nullptr)
+			{
+				HSpriteTexture spriteTex = SpriteTexture::create(source);
+				Resources::instance().save(spriteTex, outputPath, true);
+				manifest->registerResource(spriteTex.getUUID(), outputPath);
+			}
+		}
+	}
+
+	void BuiltinResourcesHelper::writeTimestamp(const Path& file)
+	{
+		DataStreamPtr fileStream = FileSystem::createAndOpenFile(file);
+
+		time_t currentTime = std::time(nullptr);
+		fileStream->write(&currentTime, sizeof(currentTime));
+		fileStream->close();
+	}
+
+	bool BuiltinResourcesHelper::checkForModifications(const Path& folder, const Path& timeStampFile)
+	{
+		if (!FileSystem::exists(timeStampFile))
+			return true;
+
+		DataStreamPtr fileStream = FileSystem::openFile(timeStampFile);
+		time_t lastUpdateTime = 0;
+		fileStream->read(&lastUpdateTime, sizeof(lastUpdateTime));
+		fileStream->close();
+
+		bool upToDate = true;
+		auto checkUpToDate = [&](const Path& filePath)
+		{
+			time_t fileLastModified = FileSystem::getLastModifiedTime(filePath);
+
+			if (fileLastModified > lastUpdateTime)
+			{
+				upToDate = false;
+				return false;
+			}
+
+			return true;
+		};
+
+		FileSystem::iterate(folder, checkUpToDate);
+
+		return !upToDate;
 	}
 }

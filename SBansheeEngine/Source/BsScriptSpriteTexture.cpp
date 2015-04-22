@@ -48,4 +48,16 @@ namespace BansheeEngine
 	{ 
 		mTexture = static_resource_cast<SpriteTexture>(resource);
 	}
+
+	MonoObject* ScriptSpriteTexture::toManaged(const HSpriteTexture& texture)
+	{
+		if (texture == nullptr)
+			return nullptr;
+
+		ScriptSpriteTexture* scriptSpriteTex = ScriptResourceManager::instance().getScriptSpriteTexture(texture);
+		if (scriptSpriteTex == nullptr)
+			scriptSpriteTex = ScriptResourceManager::instance().createScriptSpriteTexture(texture);
+
+		return scriptSpriteTex->getManagedInstance();
+	}
 }

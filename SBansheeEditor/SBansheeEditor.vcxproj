@@ -242,6 +242,7 @@
     <ClInclude Include="Include\BsScriptCodeEditor.h" />
     <ClInclude Include="Include\BsScriptDragDropManager.h" />
     <ClInclude Include="Include\BsScriptEditorApplication.h" />
+    <ClInclude Include="Include\BsScriptEditorBuiltin.h" />
     <ClInclude Include="Include\BsScriptEditorPrerequisites.h" />
     <ClInclude Include="Include\BsScriptEditorSettings.h" />
     <ClInclude Include="Include\BsScriptEditorUtility.h" />
@@ -286,6 +287,7 @@
     <ClCompile Include="Source\BsGUIResourceField.cpp" />
     <ClCompile Include="Source\BsScriptBrowseDialog.cpp" />
     <ClCompile Include="Source\BsScriptEditorApplication.cpp" />
+    <ClCompile Include="Source\BsScriptEditorBuiltin.cpp" />
     <ClCompile Include="Source\BsScriptEditorPlugin.cpp" />
     <ClCompile Include="Source\BsScriptEditorSettings.cpp" />
     <ClCompile Include="Source\BsScriptEditorUtility.cpp" />
