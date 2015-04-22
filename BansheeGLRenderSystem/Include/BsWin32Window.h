@@ -29,7 +29,7 @@ namespace BansheeEngine
     class BS_RSGL_EXPORT Win32WindowCore : public RenderWindowCore
     {
     public:
-		Win32WindowCore(const RENDER_WINDOW_DESC& desc, Win32GLSupport &glsupport);
+		Win32WindowCore(const RENDER_WINDOW_DESC& desc, UINT32 windowId, Win32GLSupport &glsupport);
 		~Win32WindowCore();
 
 		/**
@@ -193,7 +193,7 @@ namespace BansheeEngine
 		friend class Win32GLSupport;
 		friend class Win32WindowCore;
 
-		Win32Window(const RENDER_WINDOW_DESC& desc, Win32GLSupport& glsupport);
+		Win32Window(const RENDER_WINDOW_DESC& desc, UINT32 windowId, Win32GLSupport& glsupport);
 
 		/**
 		 * @copydoc	RenderWindow::getProperties

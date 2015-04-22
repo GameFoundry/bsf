@@ -101,12 +101,11 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	create
 		 */
-		virtual RenderWindowPtr createImpl(RENDER_WINDOW_DESC& desc, const RenderWindowPtr& parentWindow) = 0;
+		virtual RenderWindowPtr createImpl(RENDER_WINDOW_DESC& desc, UINT32 windowId, const RenderWindowPtr& parentWindow) = 0;
 
 	protected:
 		BS_MUTEX(mWindowMutex);
-		Vector<RenderWindow*> mCreatedWindows;
-		Map<const RenderWindowCore*, RenderWindow*> mCoreToNonCoreMap;
+		Map<UINT32, RenderWindow*> mWindows;
 
 		RenderWindow* mWindowInFocus;
 		RenderWindow* mNewWindowInFocus;
@@ -123,6 +122,8 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT RenderWindowCoreManager : public Module<RenderWindowCoreManager>
 	{
 	public:
+		RenderWindowCoreManager();
+
 		/**
 		 * @copydoc	RenderWindowCoreManager::create
 		 */
@@ -148,11 +149,12 @@ namespace BansheeEngine
 	protected:
 		friend class RenderWindowCore;
 		friend class RenderWindow;
+		friend class RenderWindowManager;
 
 		/**
 		 * @copydoc	create
 		 */
-		virtual SPtr<RenderWindowCore> createInternal(RENDER_WINDOW_DESC& desc) = 0;
+		virtual SPtr<RenderWindowCore> createInternal(RENDER_WINDOW_DESC& desc, UINT32 windowId) = 0;
 
 		/**
 		 * @brief	Called whenever a window is created.
@@ -167,5 +169,6 @@ namespace BansheeEngine
 		BS_MUTEX(mWindowMutex);
 		Vector<RenderWindowCore*> mCreatedWindows;
 		UnorderedSet<RenderWindowCore*> mDirtyProperties;
+		std::atomic_uint mNextWindowId;
 	};
 }

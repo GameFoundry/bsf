@@ -32,7 +32,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	RenderWindowCore::RenderWindowCore
 		 */
-		D3D11RenderWindowCore(const RENDER_WINDOW_DESC& desc,
+		D3D11RenderWindowCore(const RENDER_WINDOW_DESC& desc, UINT32 windowId,
 			D3D11Device& device, IDXGIFactory* DXGIFactory);
 
 		~D3D11RenderWindowCore();
@@ -223,7 +223,8 @@ namespace BansheeEngine
 		friend class D3D11RenderWindowManager;
 		friend class D3D11RenderWindowCore;
 
-		D3D11RenderWindow(const RENDER_WINDOW_DESC& desc, D3D11Device& device, IDXGIFactory* DXGIFactory);
+		D3D11RenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId, 
+			D3D11Device& device, IDXGIFactory* DXGIFactory);
 
 		/**
 		 * @copydoc	RenderWindowCore::getProperties

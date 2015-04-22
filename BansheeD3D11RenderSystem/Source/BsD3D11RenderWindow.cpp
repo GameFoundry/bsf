@@ -20,8 +20,8 @@ namespace BansheeEngine
 		:RenderWindowProperties(desc)
 	{ }
 
-	D3D11RenderWindowCore::D3D11RenderWindowCore(const RENDER_WINDOW_DESC& desc, D3D11Device& device, IDXGIFactory* DXGIFactory)
-		: RenderWindowCore(desc), mProperties(desc), mSyncedProperties(desc), mDevice(device), mDXGIFactory(DXGIFactory), mIsExternal(false), 
+	D3D11RenderWindowCore::D3D11RenderWindowCore(const RENDER_WINDOW_DESC& desc, UINT32 windowId, D3D11Device& device, IDXGIFactory* DXGIFactory)
+		: RenderWindowCore(desc, windowId), mProperties(desc), mSyncedProperties(desc), mDevice(device), mDXGIFactory(DXGIFactory), mIsExternal(false), 
 		mSizing(false), mRenderTargetView(nullptr), mBackBuffer(nullptr), mSwapChain(nullptr), mDepthStencilView(nullptr), mIsChild(false), 
 		 mRefreshRateNumerator(0), mRefreshRateDenominator(0), mHWnd(0)
 	{ }
@@ -815,8 +815,8 @@ namespace BansheeEngine
 		mProperties = mSyncedProperties;
 	}
 
-	D3D11RenderWindow::D3D11RenderWindow(const RENDER_WINDOW_DESC& desc, D3D11Device& device, IDXGIFactory* DXGIFactory)
-		:RenderWindow(desc), mProperties(desc), mDevice(device), mDXGIFactory(DXGIFactory)
+	D3D11RenderWindow::D3D11RenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId, D3D11Device& device, IDXGIFactory* DXGIFactory)
+		:RenderWindow(desc, windowId), mProperties(desc), mDevice(device), mDXGIFactory(DXGIFactory)
 	{
 
 	}

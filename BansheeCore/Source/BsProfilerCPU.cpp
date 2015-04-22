@@ -711,7 +711,7 @@ namespace BansheeEngine
 	void ProfilerCPU::estimateTimerOverhead()
 	{
 		// Get an idea of how long timer calls and RDTSC takes
-		const UINT32 reps = 1000, sampleReps = 100;
+		const UINT32 reps = 1000, sampleReps = 20;
 
 		mBasicTimerOverhead = 1000000.0;
 		mPreciseTimerOverhead = 1000000;
@@ -744,7 +744,7 @@ namespace BansheeEngine
 		mPreciseSamplingOverheadMs = 1000000.0;
 		mBasicSamplingOverheadCycles = 1000000;
 		mPreciseSamplingOverheadCycles = 1000000;
-		for (UINT32 tries = 0; tries < 20; tries++) 
+		for (UINT32 tries = 0; tries < 3; tries++) 
 		{
 			/************************************************************************/
 			/* 				AVERAGE TIME IN MS FOR BASIC SAMPLING                   */

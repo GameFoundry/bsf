@@ -11,7 +11,7 @@ namespace BansheeEngine
 		assert(mRenderSystem != nullptr);
 	}
 
-	RenderWindowPtr D3D11RenderWindowManager::createImpl(RENDER_WINDOW_DESC& desc, const RenderWindowPtr& parentWindow)
+	RenderWindowPtr D3D11RenderWindowManager::createImpl(RENDER_WINDOW_DESC& desc, UINT32 windowId, const RenderWindowPtr& parentWindow)
 	{
 		RenderAPICore* rs = RenderAPICore::instancePtr();
 		D3D11RenderAPI* d3d11rs = static_cast<D3D11RenderAPI*>(rs);
@@ -24,7 +24,7 @@ namespace BansheeEngine
 		}
 
 		// Create the window
-		D3D11RenderWindow* renderWindow = new (bs_alloc<D3D11RenderWindow, PoolAlloc>()) D3D11RenderWindow(desc, d3d11rs->getPrimaryDevice(), d3d11rs->getDXGIFactory());
+		D3D11RenderWindow* renderWindow = new (bs_alloc<D3D11RenderWindow, PoolAlloc>()) D3D11RenderWindow(desc, windowId, d3d11rs->getPrimaryDevice(), d3d11rs->getDXGIFactory());
 		return bs_core_ptr<D3D11RenderWindow, PoolAlloc>(renderWindow);
 	}
 
@@ -34,13 +34,13 @@ namespace BansheeEngine
 		assert(mRenderSystem != nullptr);
 	}
 
-	SPtr<RenderWindowCore> D3D11RenderWindowCoreManager::createInternal(RENDER_WINDOW_DESC& desc)
+	SPtr<RenderWindowCore> D3D11RenderWindowCoreManager::createInternal(RENDER_WINDOW_DESC& desc, UINT32 windowId)
 	{
 		RenderAPICore* rs = RenderAPICore::instancePtr();
 		D3D11RenderAPI* d3d11rs = static_cast<D3D11RenderAPI*>(rs);
 
 		// Create the window
-		D3D11RenderWindowCore* renderWindow = new (bs_alloc<D3D11RenderWindowCore, GenAlloc>()) D3D11RenderWindowCore(desc, d3d11rs->getPrimaryDevice(), d3d11rs->getDXGIFactory());
+		D3D11RenderWindowCore* renderWindow = new (bs_alloc<D3D11RenderWindowCore, GenAlloc>()) D3D11RenderWindowCore(desc, windowId, d3d11rs->getPrimaryDevice(), d3d11rs->getDXGIFactory());
 
 		SPtr<D3D11RenderWindowCore> renderWindowPtr = bs_shared_ptr<D3D11RenderWindowCore, GenAlloc>(renderWindow);
 		renderWindowPtr->_setThisPtr(renderWindowPtr);

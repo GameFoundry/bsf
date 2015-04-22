@@ -26,7 +26,7 @@ namespace BansheeEngine
 		initialiseWGL();
     } 
 
-	RenderWindowPtr Win32GLSupport::newWindow(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow)
+	RenderWindowPtr Win32GLSupport::newWindow(RENDER_WINDOW_DESC& desc, UINT32 windowId, RenderWindowPtr parentWindow)
 	{		
 		if(parentWindow != nullptr)
 		{
@@ -35,13 +35,13 @@ namespace BansheeEngine
 			desc.platformSpecific["parentWindowHandle"] = toString(hWnd);
 		}
 
-		Win32Window* window = new (bs_alloc<Win32Window, PoolAlloc>()) Win32Window(desc, *this);
+		Win32Window* window = new (bs_alloc<Win32Window, PoolAlloc>()) Win32Window(desc, windowId, *this);
 		return RenderWindowPtr(window, &CoreObject::_delete<Win32Window, PoolAlloc>);
 	}
 
-	SPtr<RenderWindowCore> Win32GLSupport::newWindowCore(RENDER_WINDOW_DESC& desc)
+	SPtr<RenderWindowCore> Win32GLSupport::newWindowCore(RENDER_WINDOW_DESC& desc, UINT32 windowId)
 	{
-		Win32WindowCore* window = new (bs_alloc<Win32WindowCore, GenAlloc>()) Win32WindowCore(desc, *this);
+		Win32WindowCore* window = new (bs_alloc<Win32WindowCore, GenAlloc>()) Win32WindowCore(desc, windowId, *this);
 
 		if (!mInitialWindow)
 			mInitialWindow = window;

@@ -30,7 +30,7 @@ namespace BansheeEngine
 	class BS_D3D9_EXPORT D3D9RenderWindowCore : public RenderWindowCore
 	{
 	public:
-		D3D9RenderWindowCore(const RENDER_WINDOW_DESC& desc, HINSTANCE instance);
+		D3D9RenderWindowCore(const RENDER_WINDOW_DESC& desc, UINT32 windowId, HINSTANCE instance);
 		~D3D9RenderWindowCore();
 		
 		/**
@@ -226,7 +226,7 @@ namespace BansheeEngine
 		friend class D3D9RenderWindowManager;
 		friend class D3D9RenderWindowCore;
 
-		D3D9RenderWindow(const RENDER_WINDOW_DESC& desc, HINSTANCE instance);
+		D3D9RenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId, HINSTANCE instance);
 
 		/**
 		 * @copydoc	RenderWindowCore::getProperties

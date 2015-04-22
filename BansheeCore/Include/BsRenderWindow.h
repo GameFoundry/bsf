@@ -117,7 +117,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT RenderWindowCore : public RenderTargetCore
 	{
 	public:
-		RenderWindowCore(const RENDER_WINDOW_DESC& desc);
+		RenderWindowCore(const RENDER_WINDOW_DESC& desc, UINT32 windowId);
 		virtual ~RenderWindowCore();
 
 		/** 
@@ -250,6 +250,7 @@ namespace BansheeEngine
 
 		RENDER_WINDOW_DESC mDesc;
 		SpinLock mLock;
+		UINT32 mWindowId;
 	};
 
 	/**
@@ -349,7 +350,7 @@ namespace BansheeEngine
     protected:
 		friend class RenderWindowManager;
 
-		RenderWindow(const RENDER_WINDOW_DESC& desc);
+		RenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId);
 
 		/**
 		 * @brief	Returns render window properties that may be edited.
@@ -368,5 +369,6 @@ namespace BansheeEngine
 
 	protected:
 		RENDER_WINDOW_DESC mDesc;
+		UINT32 mWindowId;
     };
 }

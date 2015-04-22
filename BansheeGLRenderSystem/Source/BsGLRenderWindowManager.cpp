@@ -11,12 +11,12 @@ namespace BansheeEngine
 		assert(mRenderSystem != nullptr);
 	}
 
-	RenderWindowPtr GLRenderWindowManager::createImpl(RENDER_WINDOW_DESC& desc, const RenderWindowPtr& parentWindow)
+	RenderWindowPtr GLRenderWindowManager::createImpl(RENDER_WINDOW_DESC& desc, UINT32 windowId, const RenderWindowPtr& parentWindow)
 	{
 		GLSupport* glSupport = mRenderSystem->getGLSupport();
 
 		// Create the window
-		return glSupport->newWindow(desc, parentWindow);
+		return glSupport->newWindow(desc, windowId, parentWindow);
 	}
 
 	GLRenderWindowCoreManager::GLRenderWindowCoreManager(GLRenderAPI* renderSystem)
@@ -25,12 +25,12 @@ namespace BansheeEngine
 		assert(mRenderSystem != nullptr);
 	}
 
-	SPtr<RenderWindowCore> GLRenderWindowCoreManager::createInternal(RENDER_WINDOW_DESC& desc)
+	SPtr<RenderWindowCore> GLRenderWindowCoreManager::createInternal(RENDER_WINDOW_DESC& desc, UINT32 windowId)
 	{
 		GLSupport* glSupport = mRenderSystem->getGLSupport();
 
 		// Create the window
-		SPtr<RenderWindowCore> window = glSupport->newWindowCore(desc);
+		SPtr<RenderWindowCore> window = glSupport->newWindowCore(desc, windowId);
 		window->_setThisPtr(window);
 
 		windowCreated(window.get());

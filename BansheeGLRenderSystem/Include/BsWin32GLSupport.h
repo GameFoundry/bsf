@@ -18,12 +18,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GLSupport::newWindow
 		 */
-		virtual RenderWindowPtr newWindow(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow);
+		virtual RenderWindowPtr newWindow(RENDER_WINDOW_DESC& desc, UINT32 windowId, RenderWindowPtr parentWindow);
 
 		/**
 		 * @copydoc	GLSupport::newWindowCore
 		 */
-		virtual SPtr<RenderWindowCore> newWindowCore(RENDER_WINDOW_DESC& desc);
+		virtual SPtr<RenderWindowCore> newWindowCore(RENDER_WINDOW_DESC& desc, UINT32 windowId);
 
 		/**
 		 * @copydoc	GLSupport::start

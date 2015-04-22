@@ -24,8 +24,8 @@ namespace BansheeEngine
 		:RenderWindowProperties(desc)
 	{ }
 
-	Win32WindowCore::Win32WindowCore(const RENDER_WINDOW_DESC& desc, Win32GLSupport& glsupport)
-		: RenderWindowCore(desc), mProperties(desc), mSyncedProperties(desc), mGLSupport(glsupport), mContext(0), 
+	Win32WindowCore::Win32WindowCore(const RENDER_WINDOW_DESC& desc, UINT32 windowId, Win32GLSupport& glsupport)
+		: RenderWindowCore(desc, windowId), mProperties(desc), mSyncedProperties(desc), mGLSupport(glsupport), mContext(0), 
 		mWindowedStyle(0), mWindowedStyleEx(0), mIsExternal(false), mIsExternalGLControl(false), mDisplayFrequency(0), mDeviceName(nullptr), mHWnd(0)
 	{ }
 
@@ -753,8 +753,8 @@ namespace BansheeEngine
 		mProperties = mSyncedProperties;
 	}
 
-	Win32Window::Win32Window(const RENDER_WINDOW_DESC& desc, Win32GLSupport &glsupport)
-		:RenderWindow(desc), mGLSupport(glsupport), mProperties(desc)
+	Win32Window::Win32Window(const RENDER_WINDOW_DESC& desc, UINT32 windowId, Win32GLSupport &glsupport)
+		:RenderWindow(desc, windowId), mGLSupport(glsupport), mProperties(desc)
 	{
 
 	}

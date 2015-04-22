@@ -182,14 +182,14 @@ namespace BansheeEngine
 
 		mTestMaterial = Material::create(mTestShader);
 
-		mTestTexRef = static_resource_cast<Texture>(Importer::instance().import(L"..\\..\\..\\..\\Data\\Examples\\Dragon.tga"));
-		mDbgMeshRef = static_resource_cast<Mesh>(Importer::instance().import(L"..\\..\\..\\..\\Data\\Examples\\Dragon.fbx"));
+		//mTestTexRef = static_resource_cast<Texture>(Importer::instance().import(L"..\\..\\..\\..\\Data\\Examples\\Dragon.tga"));
+		//mDbgMeshRef = static_resource_cast<Mesh>(Importer::instance().import(L"..\\..\\..\\..\\Data\\Examples\\Dragon.fbx"));
 
-		gResources().save(mTestTexRef, L"C:\\ExportTest.tex", true);
-		gResources().save(mDbgMeshRef, L"C:\\ExportMesh.mesh", true);
+		//gResources().save(mTestTexRef, L"C:\\ExportTest.tex", true);
+		//gResources().save(mDbgMeshRef, L"C:\\ExportMesh.mesh", true);
 
-		gResources().unload(mTestTexRef);
-		gResources().unload(mDbgMeshRef);
+		//gResources().unload(mTestTexRef);
+		//gResources().unload(mDbgMeshRef);
 
 		mTestTexRef = static_resource_cast<Texture>(gResources().loadAsync(L"C:\\ExportTest.tex"));
 		mDbgMeshRef = static_resource_cast<Mesh>(gResources().loadAsync(L"C:\\ExportMesh.mesh"));

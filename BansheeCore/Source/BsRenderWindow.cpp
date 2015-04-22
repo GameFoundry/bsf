@@ -24,8 +24,8 @@ namespace BansheeEngine
 		mRequiresTextureFlipping = false;
 	}
 
-	RenderWindowCore::RenderWindowCore(const RENDER_WINDOW_DESC& desc)
-		:mDesc(desc)
+	RenderWindowCore::RenderWindowCore(const RENDER_WINDOW_DESC& desc, UINT32 windowId)
+		:mDesc(desc), mWindowId(windowId)
 	{
 
 	}
@@ -171,8 +171,8 @@ namespace BansheeEngine
 		RenderTarget::destroy();
 	}
 
-	RenderWindow::RenderWindow(const RENDER_WINDOW_DESC& desc)
-		:mDesc(desc)
+	RenderWindow::RenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId)
+		:mDesc(desc), mWindowId(windowId)
 	{
 
 	}
@@ -353,7 +353,7 @@ namespace BansheeEngine
 	SPtr<CoreObjectCore> RenderWindow::createCore() const
 	{
 		RENDER_WINDOW_DESC desc = mDesc;
-		return RenderWindowCoreManager::instance().createInternal(desc);
+		return RenderWindowCoreManager::instance().createInternal(desc, mWindowId);
 	}
 
 	RenderWindowPtr RenderWindow::create(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow)

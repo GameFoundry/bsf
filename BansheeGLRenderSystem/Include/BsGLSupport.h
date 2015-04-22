@@ -20,23 +20,25 @@ namespace BansheeEngine
 		 * @brief	Creates a new render window using the specified descriptor.
 		 *
 		 * @param	desc			Description of a render window to create.
+		 * @param	windowId		Window ID provided by the render window manager.
 		 * @param	parentWindow	Optional parent window if the window shouldn't be a main window. First
 		 *							created window cannot have a parent.
 		 *
 		 * @param	Returns newly created window.
 		 */
-		virtual RenderWindowPtr newWindow(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow) = 0;
+		virtual RenderWindowPtr newWindow(RENDER_WINDOW_DESC& desc, UINT32 windowId, RenderWindowPtr parentWindow) = 0;
 
 		/**
 		 * @brief	Creates a new render window using the specified descriptor.
 		 *
 		 * @param	desc			Description of a render window to create.
+		 * @param	windowId		Window ID provided by the render window manager.
 		 * @param	parentWindow	Optional parent window if the window shouldn't be a main window. First
 		 *							created window cannot have a parent.
 		 *
 		 * @param	Returns newly created window.
 		 */
-		virtual SPtr<RenderWindowCore> newWindowCore(RENDER_WINDOW_DESC& desc) = 0;
+		virtual SPtr<RenderWindowCore> newWindowCore(RENDER_WINDOW_DESC& desc, UINT32 windowId) = 0;
 
 		/**
 		 * @brief	Called when OpenGL is being initialized.

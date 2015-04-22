@@ -17,7 +17,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RenderWindowManager::createImpl
 		 */
-		RenderWindowPtr createImpl(RENDER_WINDOW_DESC& desc, const RenderWindowPtr& parentWindow);
+		RenderWindowPtr createImpl(RENDER_WINDOW_DESC& desc, UINT32 windowId, const RenderWindowPtr& parentWindow);
 
 	private:
 		D3D11RenderAPI* mRenderSystem;
@@ -35,7 +35,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RenderWindowCoreManager::createInternal
 		 */
-		virtual SPtr<RenderWindowCore> createInternal(RENDER_WINDOW_DESC& desc);
+		virtual SPtr<RenderWindowCore> createInternal(RENDER_WINDOW_DESC& desc, UINT32 windowId);
 
 	private:
 		D3D11RenderAPI* mRenderSystem;

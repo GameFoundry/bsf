@@ -19,8 +19,8 @@ namespace BansheeEngine
 
 	}
 
-	D3D9RenderWindowCore::D3D9RenderWindowCore(const RENDER_WINDOW_DESC& desc, HINSTANCE instance)
-		: RenderWindowCore(desc), mInstance(instance), mProperties(desc), mSyncedProperties(desc), mIsDepthBuffered(true), mIsChild(false), mHWnd(0),
+	D3D9RenderWindowCore::D3D9RenderWindowCore(const RENDER_WINDOW_DESC& desc, UINT32 windowId, HINSTANCE instance)
+		: RenderWindowCore(desc, windowId), mInstance(instance), mProperties(desc), mSyncedProperties(desc), mIsDepthBuffered(true), mIsChild(false), mHWnd(0),
 		mStyle(0), mWindowedStyle(0), mWindowedStyleEx(0), mDevice(nullptr), mIsExternal(false), mDisplayFrequency(0), mDeviceValid(false)
 	{ }
 
@@ -738,8 +738,8 @@ namespace BansheeEngine
 		mProperties = mSyncedProperties;
 	}
 
-	D3D9RenderWindow::D3D9RenderWindow(const RENDER_WINDOW_DESC& desc, HINSTANCE instance)
-		:RenderWindow(desc), mInstance(instance), mProperties(desc)
+	D3D9RenderWindow::D3D9RenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId, HINSTANCE instance)
+		:RenderWindow(desc, windowId), mInstance(instance), mProperties(desc)
 	{
 
 	}

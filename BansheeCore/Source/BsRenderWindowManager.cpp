@@ -18,16 +18,18 @@ namespace BansheeEngine
 
 	RenderWindowPtr RenderWindowManager::create(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow)
 	{
-		RenderWindowPtr renderWindow = createImpl(desc, parentWindow);
-		renderWindow->_setThisPtr(renderWindow);
-		renderWindow->initialize();
+		UINT32 id = RenderWindowCoreManager::instance().mNextWindowId.fetch_add(1, std::memory_order_relaxed);
 
+		RenderWindowPtr renderWindow = createImpl(desc, id, parentWindow);
+		renderWindow->_setThisPtr(renderWindow);
+		
 		{
 			BS_LOCK_MUTEX(mWindowMutex);
 
-			mCreatedWindows.push_back(renderWindow.get());
-			mCoreToNonCoreMap[renderWindow->getCore().get()] = renderWindow.get();
+			mWindows[renderWindow->mWindowId] = renderWindow.get();
 		}
+
+		renderWindow->initialize();
 		
 		return renderWindow;
 	}
@@ -37,55 +39,39 @@ namespace BansheeEngine
 		{
 			BS_LOCK_MUTEX(mWindowMutex);
 
-			auto iterFind = std::find(begin(mCreatedWindows), end(mCreatedWindows), window);
-
-			if(iterFind == mCreatedWindows.end())
-				BS_EXCEPT(InternalErrorException, "Trying to destroy a window that is not in the created windows list.");
-
-			mCreatedWindows.erase(iterFind);
-
-			auto iterFind2 = std::find_if(begin(mMovedOrResizedWindows), end(mMovedOrResizedWindows), 
+			auto iterFind = std::find_if(begin(mMovedOrResizedWindows), end(mMovedOrResizedWindows), 
 				[&](const MoveOrResizeData& x) { return x.window == window; });
 
-			if(iterFind2 != mMovedOrResizedWindows.end())
-				mMovedOrResizedWindows.erase(iterFind2);
+			if(iterFind != mMovedOrResizedWindows.end())
+				mMovedOrResizedWindows.erase(iterFind);
 
-			mCoreToNonCoreMap.erase(window->getCore().get());
+			mWindows.erase(window->mWindowId);
 			mDirtyProperties.erase(window);
 		}
 	}
 
 	void RenderWindowManager::notifyFocusReceived(RenderWindowCore* coreWindow)
 	{
-		RenderWindow* window = getNonCore(coreWindow);
-
 		BS_LOCK_MUTEX(mWindowMutex);
+
+		RenderWindow* window = getNonCore(coreWindow);
 		mNewWindowInFocus = window;
 	}
 
 	void RenderWindowManager::notifyFocusLost(RenderWindowCore* coreWindow)
 	{
-		RenderWindow* window = getNonCore(coreWindow);
-
 		BS_LOCK_MUTEX(mWindowMutex);
+
 		mNewWindowInFocus = nullptr;
 	}
 
 	void RenderWindowManager::notifyMovedOrResized(RenderWindowCore* coreWindow)
 	{
-		RenderWindow* window = getNonCore(coreWindow);
-
-		bool isValidWindow = false;
-		{
-			BS_LOCK_MUTEX(mWindowMutex);
-
-			isValidWindow = std::find(begin(mCreatedWindows), end(mCreatedWindows), window) != mCreatedWindows.end();
-		}
-
-		if(!isValidWindow)
-			return;
-
 		BS_LOCK_MUTEX(mWindowMutex);
+
+		RenderWindow* window = getNonCore(coreWindow);
+		if (window == nullptr)
+			return;
 
 		auto iterFind = std::find_if(begin(mMovedOrResizedWindows), end(mMovedOrResizedWindows), 
 			[&](const MoveOrResizeData& x) { return x.window == window; });
@@ -96,7 +82,6 @@ namespace BansheeEngine
 		if (iterFind != end(mMovedOrResizedWindows))
 		{
 			moveResizeData = &*iterFind;
-
 		}
 		else
 		{
@@ -118,7 +103,9 @@ namespace BansheeEngine
 		BS_LOCK_MUTEX(mWindowMutex);
 
 		RenderWindow* window = getNonCore(coreWindow);
-		mDirtyProperties.insert(window);
+
+		if (window != nullptr)
+			mDirtyProperties.insert(window);
 	}
 
 	void RenderWindowManager::windowMouseLeft(RenderWindowCore* coreWindow)
@@ -195,22 +182,33 @@ namespace BansheeEngine
 	{
 		BS_LOCK_MUTEX(mWindowMutex);
 
-		return mCreatedWindows;
+		Vector<RenderWindow*> windows;
+		for (auto& windowPair : mWindows)
+			windows.push_back(windowPair.second);
+
+		return windows;
 	}
 
 	RenderWindow* RenderWindowManager::getNonCore(const RenderWindowCore* window) const
 	{
-		auto iterFind = mCoreToNonCoreMap.find(window);
+		auto iterFind = mWindows.find(window->mWindowId);
 
-		if (iterFind != mCoreToNonCoreMap.end())
+		if (iterFind != mWindows.end())
 			return iterFind->second;
 
 		return nullptr;
 	}
 
+	RenderWindowCoreManager::RenderWindowCoreManager()
+	{
+		mNextWindowId = 0;
+	}
+
 	SPtr<RenderWindowCore> RenderWindowCoreManager::create(RENDER_WINDOW_DESC& desc)
 	{
-		SPtr<RenderWindowCore> renderWindow = createInternal(desc);
+		UINT32 id = mNextWindowId.fetch_add(1, std::memory_order_relaxed);
+
+		SPtr<RenderWindowCore> renderWindow = createInternal(desc, id);
 		renderWindow->initialize();
 
 		return renderWindow;
