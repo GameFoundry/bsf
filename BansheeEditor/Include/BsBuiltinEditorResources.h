@@ -7,6 +7,14 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Types of valid icons used when viewing the project library
+	 */
+	enum class ProjectIcon
+	{
+		Folder, Mesh, Font, Texture
+	};
+
 	class BS_ED_EXPORT BuiltinEditorResources : public BansheeEngine::Module<BuiltinEditorResources>
 	{
 	public:
@@ -75,6 +83,12 @@ namespace BansheeEngine
 		 */
 		HMaterial createSelectionMat() const;
 
+		/**
+		 * @brief	Retrieves an icon that represents a specific resource type
+		 *			that may be displayed when viewing the project library.
+		 */
+		HSpriteTexture getLibraryIcon(ProjectIcon icon) const;
+
 		static const String ObjectFieldStyleName;
 		static const String ObjectFieldLabelStyleName;
 		static const String ObjectFieldDropBtnStyleName;
@@ -82,6 +96,7 @@ namespace BansheeEngine
 
 		static const Path BuiltinDataFolder;
 		static const Path EditorSkinFolder;
+		static const Path EditorIconFolder;
 		static const Path EditorShaderFolder;
 		static const Path EditorShaderIncludeFolder;
 
@@ -103,6 +118,11 @@ namespace BansheeEngine
 		 * @brief	Loads a GUI skin texture with the specified filename.
 		 */
 		static HSpriteTexture getGUITexture(const WString& name);
+
+		/**
+		 * @brief	Loads a GUI icon with the specified filename.
+		 */
+		static HSpriteTexture getGUIIcon(const WString& name);
 
 		/**
 		 * @brief	Loads a shader with the specified filename
@@ -128,6 +148,7 @@ namespace BansheeEngine
 
 		static const Path ShaderFolder;
 		static const Path SkinFolder;
+		static const Path IconFolder;
 		static const Path ShaderIncludeFolder;
 
 		static const Path BuiltinRawDataFolder;
@@ -141,6 +162,11 @@ namespace BansheeEngine
 		static const UINT32 DefaultFontSize;
 
 		static const WString GUISkinFile;
+
+		static const WString FolderIconTex;
+		static const WString MeshIconTex;
+		static const WString TextureIconTex;
+		static const WString FontIconTex;
 
 		static const WString WindowBackgroundTexture;
 

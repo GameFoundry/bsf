@@ -15,6 +15,16 @@ My GUID generation is screwed up. If multiple GUIDs are generated in succession 
 the same and the only variable will be the 4byte random number, which can sometimes end up identical to the previous number.
 
 ----------------------------------------------------------------------
+Project window
+
+When working with scroll areas I cannot create multiple child areas of different depths. Can I rely on just the order I add the elements in the layout?
+ - Or can I just have a child GUIArea inside a scroll area?
+
+Simple tasks:
+ - Add GUI button as overlay. Hook up its input event to select (click) + enter directory (double click) + context (right click, for later)
+ - Add element highlights: ping (blue bg), selection (orange bg), cut (fade out icon/label)
+
+----------------------------------------------------------------------
 Resources
  - Load/Unload/UnloadUnused
  - Uses same paths as ProjectLibrary

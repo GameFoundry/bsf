@@ -96,6 +96,7 @@
     <Compile Include="MenuItem.cs" />
     <Compile Include="ModalWindow.cs" />
     <Compile Include="ProgressBar.cs" />
+    <Compile Include="ProjectWindow.cs" />
     <Compile Include="Scene\SceneCamera.cs" />
     <Compile Include="Scene\SceneViewHandler.cs" />
     <Compile Include="Scene\SceneWindow.cs" />

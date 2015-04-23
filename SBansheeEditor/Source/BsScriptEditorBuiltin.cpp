@@ -23,28 +23,28 @@ namespace BansheeEngine
 
 	MonoObject* ScriptEditorBuiltin::internal_getFolderIcon()
 	{
-		HSpriteTexture tex = HSpriteTexture(); // TODO - Get actual texture
+		HSpriteTexture tex = BuiltinEditorResources::instance().getLibraryIcon(ProjectIcon::Folder);
 
 		return ScriptSpriteTexture::toManaged(tex);
 	}
 
 	MonoObject* ScriptEditorBuiltin::internal_getMeshIcon()
 	{
-		HSpriteTexture tex = HSpriteTexture(); // TODO - Get actual texture
+		HSpriteTexture tex = BuiltinEditorResources::instance().getLibraryIcon(ProjectIcon::Mesh);
 
 		return ScriptSpriteTexture::toManaged(tex);
 	}
 
 	MonoObject* ScriptEditorBuiltin::internal_getFontIcon()
 	{
-		HSpriteTexture tex = HSpriteTexture(); // TODO - Get actual texture
+		HSpriteTexture tex = BuiltinEditorResources::instance().getLibraryIcon(ProjectIcon::Font);
 
 		return ScriptSpriteTexture::toManaged(tex);
 	}
 
 	MonoObject* ScriptEditorBuiltin::internal_getTextureIcon()
 	{
-		HSpriteTexture tex = HSpriteTexture(); // TODO - Get actual texture
+		HSpriteTexture tex = BuiltinEditorResources::instance().getLibraryIcon(ProjectIcon::Texture);
 
 		return ScriptSpriteTexture::toManaged(tex);
 	}

@@ -30,8 +30,10 @@ namespace BansheeEngine
 			return ScriptResourceType::SpriteTexture;
 		case TID_Mesh:
 			return ScriptResourceType::Mesh;
-		case TID_GpuProgram:
-			return ScriptResourceType::GpuProgram;
+		case TID_Shader:
+			return ScriptResourceType::Shader;
+		case TID_Material:
+			return ScriptResourceType::Material;
 		case TID_Font:
 			return ScriptResourceType::Font;
 		case TID_PlainText:
@@ -53,10 +55,12 @@ namespace BansheeEngine
 			return TID_SpriteTexture;
 		case ScriptResourceType::Mesh:
 			return TID_Mesh;
-		case ScriptResourceType::GpuProgram:
-			return TID_GpuProgram;
+		case ScriptResourceType::Shader:
+			return TID_Shader;
 		case ScriptResourceType::Font:
 			return TID_Font;
+		case ScriptResourceType::Material:
+			return TID_Material;
 		case ScriptResourceType::PlainText:
 			return TID_PlainText;
 		case ScriptResourceType::ScriptCode:

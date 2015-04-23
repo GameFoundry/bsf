@@ -34,7 +34,7 @@ namespace BansheeEngine
             return option;
         }
 
-        public static GUIOption FlexibleWidth(int minWidth, int maxWidth)
+        public static GUIOption FlexibleWidth(int minWidth = 0, int maxWidth = 0)
         {
             GUIOption option = new GUIOption();
             option.min = minWidth;
@@ -44,7 +44,7 @@ namespace BansheeEngine
             return option;
         }
 
-        public static GUIOption FlexibleHeight(int minHeight, int maxHeight)
+        public static GUIOption FlexibleHeight(int minHeight = 0, int maxHeight = 0)
         {
             GUIOption option = new GUIOption();
             option.min = minHeight;

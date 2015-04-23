@@ -56,6 +56,7 @@ namespace BansheeEngine
 
 	const Path BuiltinEditorResources::ShaderFolder = L"Shaders\\";
 	const Path BuiltinEditorResources::SkinFolder = L"Skin\\";
+	const Path BuiltinEditorResources::IconFolder = L"Skin\\Icons";
 	const Path BuiltinEditorResources::ShaderIncludeFolder = L"Includes\\";
 
 	const Path BuiltinEditorResources::BuiltinRawDataFolder = L"..\\..\\..\\..\\Data\\Raw\\Editor\\";
@@ -65,10 +66,16 @@ namespace BansheeEngine
 
 	const Path BuiltinEditorResources::BuiltinDataFolder = L"..\\..\\..\\..\\Data\\Editor\\";
 	const Path BuiltinEditorResources::EditorSkinFolder = BuiltinDataFolder + SkinFolder;
+	const Path BuiltinEditorResources::EditorIconFolder = BuiltinDataFolder + IconFolder;
 	const Path BuiltinEditorResources::EditorShaderFolder = BuiltinDataFolder + ShaderFolder;
 	const Path BuiltinEditorResources::EditorShaderIncludeFolder = BuiltinDataFolder + ShaderIncludeFolder;
 
 	const Path BuiltinEditorResources::ResourceManifestPath = BuiltinDataFolder + "ResourceManifest.asset";
+
+	const WString BuiltinEditorResources::FolderIconTex = L"FolderIcon.psd";
+	const WString BuiltinEditorResources::MeshIconTex = L"MeshIcon.psd";
+	const WString BuiltinEditorResources::TextureIconTex = L"TextureIcon.psd";
+	const WString BuiltinEditorResources::FontIconTex = L"FontIcon.psd";
 
 	const WString BuiltinEditorResources::WindowBackgroundTexture = L"WindowBgTile.psd";
 
@@ -312,6 +319,18 @@ namespace BansheeEngine
 		labelStyle.minWidth = 10;
 
 		skin->setStyle(GUILabel::getGUITypeName(), labelStyle);
+
+		// Multi-line label
+		GUIElementStyle multiLinelabelStyle;
+		multiLinelabelStyle.font = font;
+		multiLinelabelStyle.fontSize = DefaultFontSize;
+		multiLinelabelStyle.fixedWidth = false;
+		multiLinelabelStyle.fixedHeight = true;
+		multiLinelabelStyle.height = 11;
+		multiLinelabelStyle.minWidth = 10;
+		multiLinelabelStyle.wordWrap = true;
+
+		skin->setStyle("MultiLineLabel", multiLinelabelStyle);
 
 		// Window frame
 		GUIElementStyle windowFrameStyle;
@@ -1215,6 +1234,15 @@ namespace BansheeEngine
 		return Resources::instance().load<SpriteTexture>(texturePath);
 	}
 
+	HSpriteTexture BuiltinEditorResources::getGUIIcon(const WString& name)
+	{
+		Path texturePath = FileSystem::getWorkingDirectoryPath();
+		texturePath.append(EditorIconFolder);
+		texturePath.append(L"sprite_" + name + L".asset");
+
+		return Resources::instance().load<SpriteTexture>(texturePath);
+	}
+
 	HShader BuiltinEditorResources::getShader(const WString& name)
 	{
 		Path programPath = EditorShaderFolder;
@@ -1285,5 +1313,22 @@ namespace BansheeEngine
 	HMaterial BuiltinEditorResources::createSelectionMat() const
 	{
 		return Material::create(mShaderSelection);
+	}
+
+	HSpriteTexture BuiltinEditorResources::getLibraryIcon(ProjectIcon icon) const
+	{
+		switch (icon)
+		{
+		case ProjectIcon::Folder:
+			return getGUIIcon(FolderIconTex);
+		case ProjectIcon::Font:
+			return getGUIIcon(FontIconTex);
+		case ProjectIcon::Mesh:
+			return getGUIIcon(MeshIconTex);
+		case ProjectIcon::Texture:
+			return getGUIIcon(TextureIconTex);
+		}
+
+		return nullptr;
 	}
 }

@@ -9,6 +9,7 @@ namespace BansheeEditor
     public static class EditorStyles
     {
         public const string Label = "Label";
+        public const string MultiLineLabel = "MultiLineLabel";
         public const string Button = "Button";
         public const string Toggle = "Toggle";
         public const string InputBox = "InputBox";
