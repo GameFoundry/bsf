@@ -30,6 +30,7 @@ namespace BansheeEngine
 		{
 			GUILayout* labelLayout;
 			GUILayout* contentLayout;
+			GUIFixedSpace* labelSpace;
 
 			Vector<GUIElement*> elements;
 
@@ -51,6 +52,7 @@ namespace BansheeEngine
 		{
 			GUILayout* labelLayout;
 			GUILayout* contentLayout;
+			GUIFixedSpace* labelSpace;
 
 			Vector<GUIElement*> elements;
 

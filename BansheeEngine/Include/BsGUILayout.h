@@ -18,88 +18,51 @@ namespace BansheeEngine
 		virtual ~GUILayout();
 
 		/**
+		 * @brief	Creates a new element and adds it to the layout after all existing elements.
+		 */
+		template<class Type, class... Args>
+		Type* addNewElement(Args &&...args)
+		{
+			Type* elem = Type::create(std::forward<Args>(args)...);
+			addElement(elem);
+			return elem;
+		}
+
+		/**
+		 * @brief	Creates a new element and inserts it before the element at the specified index.
+		 */
+		template<class Type, class... Args>
+		Type* insertNewElement(UINT32 idx, Args &&...args)
+		{
+			Type* elem = Type::create(std::forward<Args>(args)...);
+			insertElement(idx, elem);
+			return elem;
+		}
+
+		/**
 		 * @brief	Adds a new element to the layout after all existing elements.
 		 */
-		void addElement(GUIElement* element);
+		void addElement(GUIElementBase* element);
 
 		/**
 		 * @brief	Removes the specified element from the layout.
 		 */
-		void removeElement(GUIElement* element);
+		void removeElement(GUIElementBase* element);
+
+		/**
+		 * @brief	Removes a child element at the specified index.
+		 */
+		void removeElementAt(UINT32 idx);
 
 		/**
 		 * @brief	Inserts a GUI element before the element at the specified index.
 		 */
-		void insertElement(UINT32 idx, GUIElement* element);
-
-		/**
-		 * @brief	Adds a new horizontal layout as a child of this layout.
-		 */
-		GUILayout& addLayoutX() { return addLayoutXInternal(this); }
-
-		/**
-		 * @brief	Adds a new vertical layout as a child of this layout.
-		 */
-		GUILayout& addLayoutY() { return addLayoutYInternal(this); }
-
-		/**
-		 * @brief	Removes the specified child layout.
-		 */
-		void removeLayout(GUILayout& layout) { removeLayoutInternal(layout); }
-
-		/**
-		 * @brief	Inserts a horizontal layout before the element at the specified index.
-		 */
-		GUILayout& insertLayoutX(UINT32 idx) { return insertLayoutXInternal(this, idx); }
-
-		/**
-		 * @brief	Inserts a vertical layout before the element at the specified index.
-		 */
-		GUILayout& insertLayoutY(UINT32 idx) { return insertLayoutYInternal(this, idx); }
-
-		/**
-		 * @brief	Adds a fixed space as a child of this layout. Size of space is specified in pixels.
-		 */
-		GUIFixedSpace& addSpace(UINT32 size);
-
-		/**
-		 * @brief	Removes an existing space from the layout.
-		 */
-		void removeSpace(GUIFixedSpace& space);
-
-		/**
-		 * @brief	Inserts a fixed space of "size" pixels before the element at the specified index.
-		 */
-		GUIFixedSpace& insertSpace(UINT32 idx, UINT32 size);
-
-		/**
-		 * @brief	Adds a flexible space as a child of this layout. Flexible space will grow/shrink
-		 *			depending on elements around it, but it will always allow elements to keep their
-		 *			optimal size.
-		 */
-		GUIFlexibleSpace& addFlexibleSpace();
-
-		/**
-		 * @brief	Removes an existing flexible space from the layout.
-		 */
-		void removeFlexibleSpace(GUIFlexibleSpace& space);
-
-		/**
-		 * @brief	Inserts a flexible space before an element at the specified index. Flexible space 
-		 *			will grow/shrink depending on elements around it, but it will always allow elements 
-		 *			to keep their optimal size.
-		 */
-		GUIFlexibleSpace& insertFlexibleSpace(UINT32 idx);
+		void insertElement(UINT32 idx, GUIElementBase* element);
 
 		/**
 		 * @brief	Returns number of child elements in the layout.
 		 */
 		UINT32 getNumChildren() const { return (UINT32)mChildren.size(); }
-
-		/**
-		 * @brief	Removes a child element at the specified index.
-		 */
-		void removeChildAt(UINT32 idx);
 
 		/**
 		 * @brief	Returns a size range that was cached during the last "_updateOptimalLayoutSizes" call.
@@ -155,6 +118,11 @@ namespace BansheeEngine
 		 *			smaller certain portions of the layout area will be empty.
 		 */
 		virtual Vector2I _calcActualSize(Rect2I* elementAreas, UINT32 numElements) const = 0;
+
+		/**
+		 * @brief	Destroy the layout. Removes it from parent and widget, and deletes it.
+		 */	
+		static void destroy(GUILayout* layout);
 
 	protected:
 		GUIArea* mParentGUIArea;

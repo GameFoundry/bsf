@@ -1,6 +1,6 @@
 #include "BsGUIFieldBase.h"
 #include "BsGUILabel.h"
-#include "BsGUILayout.h"
+#include "BsGUILayoutX.h"
 #include "BsGUIWidget.h"
 #include "BsGUISkin.h"
 #include "BsGUILayoutUtility.h"
@@ -13,7 +13,8 @@ namespace BansheeEngine
 		const String& style, const GUILayoutOptions& layoutOptions, bool withLabel)
 		:GUIElementContainer(layoutOptions, style), mLabel(nullptr)
 	{
-		mLayout = &addLayoutXInternal(this);
+		mLayout = GUILayoutX::create();
+		_registerChildElement(mLayout);
 
 		if(withLabel)
 		{

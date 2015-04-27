@@ -1,6 +1,6 @@
 #include "BsGUITextField.h"
 #include "BsGUIArea.h"
-#include "BsGUILayout.h"
+#include "BsGUILayoutX.h"
 #include "BsGUILabel.h"
 #include "BsGUIInputBox.h"
 #include "BsBuiltinResources.h"
@@ -20,7 +20,8 @@ namespace BansheeEngine
 		:GUIElementContainer(layoutOptions, style),
 		mInputBox(nullptr), mValue(L""), mHasInputFocus(false), mLayout(nullptr), mLabel(nullptr)
 	{
-		mLayout = &addLayoutXInternal(this);
+		mLayout = GUILayoutX::create();
+		_registerChildElement(mLayout);
 
 		if (withLabel)
 		{

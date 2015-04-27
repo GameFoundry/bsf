@@ -7,6 +7,9 @@
 #include "BsScriptGUIScrollArea.h"
 #include "BsGUIArea.h"
 #include "BsGUILayout.h"
+#include "BsGUILayoutX.h"
+#include "BsGUILayoutY.h"
+#include "BsGUILayoutExplicit.h"
 #include "BsGUIScrollArea.h"
 
 namespace BansheeEngine
@@ -33,8 +36,7 @@ namespace BansheeEngine
 	{
 		if(!mIsDestroyed)
 		{
-			if(mParentLayout != nullptr)
-				mParentLayout->removeLayout(*mLayout);
+			GUILayout::destroy(mLayout);
 
 			mLayout = nullptr;
 			mParentLayout = nullptr;
@@ -56,40 +58,40 @@ namespace BansheeEngine
 	{
 		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
 		GUILayout* nativeLayout = scriptLayout->getInternalValue();
-		GUILayout& layout = nativeLayout->addLayoutX();
+		GUILayout* layout = nativeLayout->addNewElement<GUILayoutX>();
 
 		ScriptGUILayout* nativeInstance = new (bs_alloc<ScriptGUILayout>()) 
-			ScriptGUILayout(instance, &layout, nativeLayout);
+			ScriptGUILayout(instance, layout, nativeLayout);
 	}
 
 	void ScriptGUILayout::internal_createInstanceYFromLayoutAdd(MonoObject* instance, MonoObject* parentLayout)
 	{
 		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
 		GUILayout* nativeLayout = scriptLayout->getInternalValue();
-		GUILayout& layout = nativeLayout->addLayoutY();
+		GUILayout* layout = nativeLayout->addNewElement<GUILayoutY>();
 
 		ScriptGUILayout* nativeInstance = new (bs_alloc<ScriptGUILayout>()) 
-			ScriptGUILayout(instance, &layout, nativeLayout);
+			ScriptGUILayout(instance, layout, nativeLayout);
 	}
 
 	void ScriptGUILayout::internal_createInstanceXFromLayoutInsert(MonoObject* instance, MonoObject* parentLayout, UINT32 index)
 	{
 		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
 		GUILayout* nativeLayout = scriptLayout->getInternalValue();
-		GUILayout& layout = nativeLayout->insertLayoutX(index);
+		GUILayout* layout = nativeLayout->insertNewElement<GUILayoutX>(index);
 
 		ScriptGUILayout* nativeInstance = new (bs_alloc<ScriptGUILayout>())
-			ScriptGUILayout(instance, &layout, nativeLayout);
+			ScriptGUILayout(instance, layout, nativeLayout);
 	}
 
 	void ScriptGUILayout::internal_createInstanceYFromLayoutInsert(MonoObject* instance, MonoObject* parentLayout, UINT32 index)
 	{
 		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
 		GUILayout* nativeLayout = scriptLayout->getInternalValue();
-		GUILayout& layout = nativeLayout->insertLayoutY(index);
+		GUILayout* layout = nativeLayout->insertNewElement<GUILayoutY>(index);
 
 		ScriptGUILayout* nativeInstance = new (bs_alloc<ScriptGUILayout>())
-			ScriptGUILayout(instance, &layout, nativeLayout);
+			ScriptGUILayout(instance, layout, nativeLayout);
 	}
 
 	void ScriptGUILayout::internal_createInstanceYFromScrollArea(MonoObject* instance, MonoObject* parentScrollArea)

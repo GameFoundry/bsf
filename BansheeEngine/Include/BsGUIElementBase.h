@@ -235,14 +235,14 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method.
 		 */
-		void _registerChildElement(GUIElement* element);
+		void _registerChildElement(GUIElementBase* element);
 
 		/**
 		 * @brief	Unregisters an existing child element.
 		 *
 		 * @note	Internal method.
 		 */
-		void _unregisterChildElement(GUIElement* element);
+		void _unregisterChildElement(GUIElementBase* element);
 
 	protected:
 		/**
@@ -255,33 +255,6 @@ namespace BansheeEngine
 		 * 			to be recreated as dirty. This includes position, depth and clip rectangle.
 		 */
 		void markMeshAsDirty();
-
-		/**
-		 * @brief	Creates and adds a new horizontal layout to the specified "parent" element.
-		 */
-		GUILayout& addLayoutXInternal(GUIElementBase* parent);
-
-		/**
-		 * @brief	Creates and adds a new vertical layout to the specified "parent" element.
-		 */
-		GUILayout& addLayoutYInternal(GUIElementBase* parent);
-
-		/**
-		 * @brief	Removes an existing layout from this element.
-		 */
-		void removeLayoutInternal(GUILayout& layout);
-
-		/**
-		 * @brief	Creates and adds a new horizontal layout to the specified "parent" element,
-		 *			at a specific child index. Caller must ensure index is in valid range.
-		 */
-		GUILayout& insertLayoutXInternal(GUIElementBase* parent, UINT32 idx);
-
-		/**
-		 * @brief	Creates and adds a new vertical layout to the specified "parent" element,
-		 *			at a specific child index. Caller must ensure index is in valid range.
-		 */
-		GUILayout& insertLayoutYInternal(GUIElementBase* parent, UINT32 idx);
 
 		GUIWidget* mParentWidget;
 		GUIElementBase* mParentElement;

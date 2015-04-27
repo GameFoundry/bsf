@@ -466,4 +466,9 @@ namespace BansheeEngine
 
 		return actualArea;
 	}
+
+	GUILayoutX* GUILayoutX::create()
+	{
+		return bs_new<GUILayoutX>();
+	}
 }

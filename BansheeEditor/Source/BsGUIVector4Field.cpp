@@ -1,6 +1,7 @@
 #include "BsGUIVector4Field.h"
 #include "BsGUIArea.h"
-#include "BsGUILayout.h"
+#include "BsGUILayoutX.h"
+#include "BsGUILayoutY.h"
 #include "BsGUILabel.h"
 #include "BsGUIFloatField.h"
 #include "BsBuiltinResources.h"
@@ -31,11 +32,11 @@ namespace BansheeEngine
 
 		mLayout->removeElement(mLabel);
 
-		GUILayout* layout = &mLayout->addLayoutY();
+		GUILayout* layout = mLayout->addNewElement<GUILayoutY>();
 		layout->addElement(mLabel);
 		mLabel->setLayoutOptions(GUIOptions());
 
-		GUILayout* elementLayout = &layout->addLayoutX();
+		GUILayout* elementLayout = layout->addNewElement<GUILayoutX>();
 
 		elementLayout->addElement(mFieldX);
 		elementLayout->addElement(mFieldY);

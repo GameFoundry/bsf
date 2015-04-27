@@ -3,6 +3,8 @@
 #include "BsGUIWidget.h"
 #include "BsGUIArea.h"
 #include "BsGUILayout.h"
+#include "BsGUILayoutX.h"
+#include "BsGUILayoutY.h"
 #include "BsGUIElement.h"
 #include "BsGUILabel.h"
 #include "BsGUISpace.h"
@@ -32,13 +34,10 @@ namespace BansheeEngine
 			UINT32 excessEntries = (UINT32)rows.size() - curIdx;
 			for(UINT32 i = 0; i < excessEntries; i++)
 			{
-				labelLayout.removeChildAt(labelLayout.getNumChildren() - 2); // -2 because last element is flexible space and we want to skip it
-				contentLayout.removeChildAt(contentLayout.getNumChildren() - 2); // -2 because last element is flexible space and we want to skip it
-
 				ProfilerOverlay::BasicRow& row = rows[curIdx + i];
 
-				for(auto& element : row.elements)
-					GUIElement::destroy(element);
+				GUILayout::destroy(row.labelLayout);
+				GUILayout::destroy(row.contentLayout);
 			}
 
 			rows.resize(curIdx);
@@ -63,8 +62,8 @@ namespace BansheeEngine
 				newRow.avgTimeSelf = HString(L"{0}");
 				newRow.totalTimeSelf = HString(L"{0}");
 
-				newRow.labelLayout = &labelLayout.insertLayoutX(labelLayout.getNumChildren() - 1); // Insert before flexible space
-				newRow.contentLayout = &contentLayout.insertLayoutX(contentLayout.getNumChildren() - 1); // Insert before flexible space
+				newRow.labelLayout = labelLayout.insertNewElement<GUILayoutX>(labelLayout.getNumChildren() - 1); // Insert before flexible space
+				newRow.contentLayout = contentLayout.insertNewElement<GUILayoutX>(contentLayout.getNumChildren() - 1); // Insert before flexible space
 
 				GUILabel* name = GUILabel::create(newRow.name, GUIOptions(GUIOption::fixedWidth(200)));
 				GUILabel* pctOfParent = GUILabel::create(newRow.pctOfParent, GUIOptions(GUIOption::fixedWidth(50)));
@@ -76,7 +75,7 @@ namespace BansheeEngine
 				GUILabel* avgTimeSelf = GUILabel::create(newRow.avgTimeSelf, GUIOptions(GUIOption::fixedWidth(100)));
 				GUILabel* totalTimeSelf = GUILabel::create(newRow.totalTimeSelf, GUIOptions(GUIOption::fixedWidth(100)));
 
-				newRow.labelLayout->addSpace(0);
+				newRow.labelSpace = newRow.labelLayout->addNewElement<GUIFixedSpace>(0);
 				newRow.labelLayout->addElement(name);
 
 				newRow.contentLayout->addElement(pctOfParent);
@@ -101,8 +100,8 @@ namespace BansheeEngine
 			
 			ProfilerOverlay::BasicRow& row = rows[curIdx];
 
-			row.labelLayout->removeChildAt(0);
-			row.labelLayout->insertSpace(0, depth * 20);
+			GUIFixedSpace::destroy(row.labelSpace);
+			row.labelSpace = row.labelLayout->insertNewElement<GUIFixedSpace>(0, depth * 20);
 
 			row.name.setParameter(0, toWString(name));
 			row.pctOfParent.setParameter(0, toWString(pctOfParent * 100.0f, 2, 0, ' ', std::ios::fixed));
@@ -136,13 +135,10 @@ namespace BansheeEngine
 			UINT32 excessEntries = (UINT32)rows.size() - curIdx;
 			for(UINT32 i = 0; i < excessEntries; i++)
 			{
-				labelLayout.removeChildAt(labelLayout.getNumChildren() - i - 1); // -1 because last element is flexible space and we want to skip it
-				contentLayout.removeChildAt(contentLayout.getNumChildren() - i - 1); // -1 because last element is flexible space and we want to skip it
-
 				ProfilerOverlay::PreciseRow& row = rows[curIdx + i];
 
-				for(auto& element : row.elements)
-					GUIElement::destroy(element);
+				GUILayout::destroy(row.labelLayout);
+				GUILayout::destroy(row.contentLayout);
 			}
 
 			rows.resize(curIdx);
@@ -167,8 +163,8 @@ namespace BansheeEngine
 				newRow.avgCyclesSelf = HString(L"{0}");
 				newRow.totalCyclesSelf = HString(L"{0}");
 
-				newRow.labelLayout = &labelLayout.insertLayoutX(labelLayout.getNumChildren() - 1); // Insert before flexible space
-				newRow.contentLayout = &contentLayout.insertLayoutX(contentLayout.getNumChildren() - 1); // Insert before flexible space
+				newRow.labelLayout = labelLayout.insertNewElement<GUILayoutX>(labelLayout.getNumChildren() - 1); // Insert before flexible space
+				newRow.contentLayout = contentLayout.insertNewElement<GUILayoutX>(contentLayout.getNumChildren() - 1); // Insert before flexible space
 
 				GUILabel* name = GUILabel::create(newRow.name, GUIOptions(GUIOption::fixedWidth(200)));
 				GUILabel* pctOfParent = GUILabel::create(newRow.pctOfParent, GUIOptions(GUIOption::fixedWidth(50)));
@@ -180,7 +176,7 @@ namespace BansheeEngine
 				GUILabel* avgCyclesSelf = GUILabel::create(newRow.avgCyclesSelf, GUIOptions(GUIOption::fixedWidth(100)));
 				GUILabel* totalCyclesSelf = GUILabel::create(newRow.totalCyclesSelf, GUIOptions(GUIOption::fixedWidth(100)));
 
-				newRow.labelLayout->addSpace(0);
+				newRow.labelSpace = newRow.labelLayout->addNewElement<GUIFixedSpace>(0);
 				newRow.labelLayout->addElement(name);
 
 				newRow.contentLayout->addElement(pctOfParent);
@@ -205,8 +201,8 @@ namespace BansheeEngine
 
 			ProfilerOverlay::PreciseRow& row = rows[curIdx];
 
-			row.labelLayout->removeChildAt(0);
-			row.labelLayout->insertSpace(0, depth * 20);
+			GUIFixedSpace::destroy(row.labelSpace);
+			row.labelSpace = row.labelLayout->insertNewElement<GUIFixedSpace>(0, depth * 20);
 
 			row.name.setParameter(0, toWString(name));
 			row.pctOfParent.setParameter(0, toWString(pctOfParent * 100.0f, 2, 0, ' ', std::ios::fixed));
@@ -239,12 +235,9 @@ namespace BansheeEngine
 			UINT32 excessEntries = (UINT32)rows.size() - curIdx;
 			for (UINT32 i = 0; i < excessEntries; i++)
 			{
-				layout.removeChildAt(layout.getNumChildren() - i); 
-
 				ProfilerOverlay::GPUSampleRow& row = rows[curIdx + i];
 
-				for (auto& element : row.elements)
-					GUIElement::destroy(element);
+				GUILayout::destroy(row.layout);
 			}
 
 			rows.resize(curIdx);
@@ -261,7 +254,7 @@ namespace BansheeEngine
 				newRow.name = HString(L"{1}");
 				newRow.time = HString(L"{0}");
 
-				newRow.layout = &layout.insertLayoutX(layout.getNumChildren());
+				newRow.layout = layout.insertNewElement<GUILayoutX>(layout.getNumChildren());
 
 				GUILabel* nameLabel = GUILabel::create(newRow.name, GUIOptions(GUIOption::fixedWidth(100)));
 				GUILabel* timeLabel = GUILabel::create(newRow.time, GUIOptions(GUIOption::fixedWidth(100)));
@@ -321,10 +314,10 @@ namespace BansheeEngine
 		mCPUBasicAreaContents = GUIArea::create(*mWidget, 0, 0);
 		mCPUPreciseAreaContents = GUIArea::create(*mWidget, 0, 0);
 
-		mBasicLayoutLabels = &mCPUBasicAreaLabels->getLayout().addLayoutY();
-		mPreciseLayoutLabels = &mCPUPreciseAreaLabels->getLayout().addLayoutY();
-		mBasicLayoutContents = &mCPUBasicAreaContents->getLayout().addLayoutY();
-		mPreciseLayoutContents = &mCPUPreciseAreaContents->getLayout().addLayoutY();
+		mBasicLayoutLabels = mCPUBasicAreaLabels->getLayout().addNewElement<GUILayoutY>();
+		mPreciseLayoutLabels = mCPUPreciseAreaLabels->getLayout().addNewElement<GUILayoutY>();
+		mBasicLayoutContents = mCPUBasicAreaContents->getLayout().addNewElement<GUILayoutY>();
+		mPreciseLayoutContents = mCPUPreciseAreaContents->getLayout().addNewElement<GUILayoutY>();
 
 		// Set up CPU sample title bars
 		mTitleBasicName = GUILabel::create(HString(L"Name"), GUIOptions(GUIOption::fixedWidth(200)));
@@ -347,58 +340,58 @@ namespace BansheeEngine
 		mTitlePreciseAvgCyclesSelf = GUILabel::create(HString(L"Avg. self cycles"), GUIOptions(GUIOption::fixedWidth(100)));
 		mTitlePreciseTotalCyclesSelf = GUILabel::create(HString(L"Total self cycles"), GUIOptions(GUIOption::fixedWidth(100)));
 
-		GUILayout& basicTitleLabelLayout = mBasicLayoutLabels->addLayoutX();
-		GUILayout& preciseTitleLabelLayout = mPreciseLayoutLabels->addLayoutX();
-		GUILayout& basicTitleContentLayout = mBasicLayoutContents->addLayoutX();
-		GUILayout& preciseTitleContentLayout = mPreciseLayoutContents->addLayoutX();
+		GUILayout* basicTitleLabelLayout = mBasicLayoutLabels->addNewElement<GUILayoutX>();
+		GUILayout* preciseTitleLabelLayout = mPreciseLayoutLabels->addNewElement<GUILayoutX>();
+		GUILayout* basicTitleContentLayout = mBasicLayoutContents->addNewElement<GUILayoutX>();
+		GUILayout* preciseTitleContentLayout = mPreciseLayoutContents->addNewElement<GUILayoutX>();
 
-		basicTitleLabelLayout.addElement(mTitleBasicName);
-		basicTitleContentLayout.addElement(mTitleBasicPctOfParent);
-		basicTitleContentLayout.addElement(mTitleBasicNumCalls);
-		basicTitleContentLayout.addElement(mTitleBasicNumAllocs);
-		basicTitleContentLayout.addElement(mTitleBasicNumFrees);
-		basicTitleContentLayout.addElement(mTitleBasicAvgTime);
-		basicTitleContentLayout.addElement(mTitleBasicTotalTime);
-		basicTitleContentLayout.addElement(mTitleBasicAvgTitleSelf);
-		basicTitleContentLayout.addElement(mTitleBasicTotalTimeSelf);
+		basicTitleLabelLayout->addElement(mTitleBasicName);
+		basicTitleContentLayout->addElement(mTitleBasicPctOfParent);
+		basicTitleContentLayout->addElement(mTitleBasicNumCalls);
+		basicTitleContentLayout->addElement(mTitleBasicNumAllocs);
+		basicTitleContentLayout->addElement(mTitleBasicNumFrees);
+		basicTitleContentLayout->addElement(mTitleBasicAvgTime);
+		basicTitleContentLayout->addElement(mTitleBasicTotalTime);
+		basicTitleContentLayout->addElement(mTitleBasicAvgTitleSelf);
+		basicTitleContentLayout->addElement(mTitleBasicTotalTimeSelf);
 
-		preciseTitleLabelLayout.addElement(mTitlePreciseName);
-		preciseTitleContentLayout.addElement(mTitlePrecisePctOfParent);
-		preciseTitleContentLayout.addElement(mTitlePreciseNumCalls);
-		preciseTitleContentLayout.addElement(mTitlePreciseNumAllocs);
-		preciseTitleContentLayout.addElement(mTitlePreciseNumFrees);
-		preciseTitleContentLayout.addElement(mTitlePreciseAvgCycles);
-		preciseTitleContentLayout.addElement(mTitlePreciseTotalCycles);
-		preciseTitleContentLayout.addElement(mTitlePreciseAvgCyclesSelf);
-		preciseTitleContentLayout.addElement(mTitlePreciseTotalCyclesSelf);
+		preciseTitleLabelLayout->addElement(mTitlePreciseName);
+		preciseTitleContentLayout->addElement(mTitlePrecisePctOfParent);
+		preciseTitleContentLayout->addElement(mTitlePreciseNumCalls);
+		preciseTitleContentLayout->addElement(mTitlePreciseNumAllocs);
+		preciseTitleContentLayout->addElement(mTitlePreciseNumFrees);
+		preciseTitleContentLayout->addElement(mTitlePreciseAvgCycles);
+		preciseTitleContentLayout->addElement(mTitlePreciseTotalCycles);
+		preciseTitleContentLayout->addElement(mTitlePreciseAvgCyclesSelf);
+		preciseTitleContentLayout->addElement(mTitlePreciseTotalCyclesSelf);
 
-		mBasicLayoutLabels->addFlexibleSpace();
-		mPreciseLayoutLabels->addFlexibleSpace();
-		mBasicLayoutContents->addFlexibleSpace();
-		mPreciseLayoutContents->addFlexibleSpace();
+		mBasicLayoutLabels->addNewElement<GUIFlexibleSpace>();
+		mPreciseLayoutLabels->addNewElement<GUIFlexibleSpace>();
+		mBasicLayoutContents->addNewElement<GUIFlexibleSpace>();
+		mPreciseLayoutContents->addNewElement<GUIFlexibleSpace>();
 
 		// Set up GPU sample areas
 		mGPUAreaFrameContents = GUIArea::create(*mWidget, 0, 0);
 		mGPUAreaFrameSamples = GUIArea::create(*mWidget, 0, 0);
-		mGPULayoutFrameContentsLeft = &mGPUAreaFrameContents->getLayout().addLayoutY();
-		mGPULayoutFrameContentsRight = &mGPUAreaFrameContents->getLayout().addLayoutY();
+		mGPULayoutFrameContentsLeft = mGPUAreaFrameContents->getLayout().addNewElement<GUILayoutY>();
+		mGPULayoutFrameContentsRight = mGPUAreaFrameContents->getLayout().addNewElement<GUILayoutY>();
 
-		GUILayout& gpuSamplesMain = mGPUAreaFrameSamples->getLayout().addLayoutY();
+		GUILayout* gpuSamplesMain = mGPUAreaFrameSamples->getLayout().addNewElement<GUILayoutY>();
 
-		GUILayout& gpuSampleTitle = gpuSamplesMain.addLayoutY();
-		mGPULayoutSamples = &gpuSamplesMain.addLayoutY();
-		gpuSamplesMain.addFlexibleSpace();
+		GUILayout* gpuSampleTitle = gpuSamplesMain->addNewElement<GUILayoutY>();
+		mGPULayoutSamples = gpuSamplesMain->addNewElement<GUILayoutY>();
+		gpuSamplesMain->addNewElement<GUIFlexibleSpace>();
 
 		HString gpuSamplesStr(L"__ProfOvGPUSamples", L"Samples");
-		gpuSampleTitle.addElement(GUILabel::create(gpuSamplesStr));
-		gpuSampleTitle.addSpace(20);
+		gpuSampleTitle->addElement(GUILabel::create(gpuSamplesStr));
+		gpuSampleTitle->addNewElement<GUIFixedSpace>(20);
 
-		GUILayout& gpuSampleTitleRow = gpuSampleTitle.addLayoutX();
+		GUILayout* gpuSampleTitleRow = gpuSampleTitle->addNewElement<GUILayoutX>();
 
 		HString gpuSamplesNameStr(L"__ProfOvGPUSampName", L"Name");
 		HString gpuSamplesTimeStr(L"__ProfOvGPUSampTime", L"Time");
-		gpuSampleTitleRow.addElement(GUILabel::create(gpuSamplesNameStr, GUIOptions(GUIOption::fixedWidth(100))));
-		gpuSampleTitleRow.addElement(GUILabel::create(gpuSamplesTimeStr, GUIOptions(GUIOption::fixedWidth(100))));
+		gpuSampleTitleRow->addElement(GUILabel::create(gpuSamplesNameStr, GUIOptions(GUIOption::fixedWidth(100))));
+		gpuSampleTitleRow->addElement(GUILabel::create(gpuSamplesTimeStr, GUIOptions(GUIOption::fixedWidth(100))));
 
 		mGPUFrameNumStr = HString(L"__ProfOvFrame", L"Frame #{0}");
 		mGPUTimeStr = HString(L"__ProfOvTime", L"Time: {0}ms");
@@ -436,7 +429,7 @@ namespace BansheeEngine
 		mGPULayoutFrameContentsLeft->addElement(GUILabel::create(mGPUBlendStateChangesStr, GUIOptions(GUIOption::fixedWidth(200))));
 		mGPULayoutFrameContentsLeft->addElement(GUILabel::create(mGPURasterStateChangesStr, GUIOptions(GUIOption::fixedWidth(200))));
 		mGPULayoutFrameContentsLeft->addElement(GUILabel::create(mGPUDepthStencilStateChangesStr, GUIOptions(GUIOption::fixedWidth(200))));
-		mGPULayoutFrameContentsLeft->addFlexibleSpace();
+		mGPULayoutFrameContentsLeft->addNewElement<GUIFlexibleSpace>();
 
 		mGPULayoutFrameContentsRight->addElement(GUILabel::create(mGPUObjectsCreatedStr, GUIOptions(GUIOption::fixedWidth(200))));
 		mGPULayoutFrameContentsRight->addElement(GUILabel::create(mGPUObjectsDestroyedStr, GUIOptions(GUIOption::fixedWidth(200))));
@@ -448,7 +441,7 @@ namespace BansheeEngine
 		mGPULayoutFrameContentsRight->addElement(GUILabel::create(mGPUIndexBufferBindsStr, GUIOptions(GUIOption::fixedWidth(200))));
 		mGPULayoutFrameContentsRight->addElement(GUILabel::create(mGPUGPUProgramBufferBindsStr, GUIOptions(GUIOption::fixedWidth(200))));
 		mGPULayoutFrameContentsRight->addElement(GUILabel::create(mGPUGPUProgramBindsStr, GUIOptions(GUIOption::fixedWidth(200))));
-		mGPULayoutFrameContentsRight->addFlexibleSpace();
+		mGPULayoutFrameContentsRight->addNewElement<GUIFlexibleSpace>();
 
 		updateCPUSampleAreaSizes();
 		updateGPUSampleAreaSizes();

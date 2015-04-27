@@ -31,20 +31,20 @@ namespace BansheeEngine
 		GUILayout& mainLayout = mMainArea->getLayout();
 
 		mainLayout.addElement(mLogoTexture);
-		mainLayout.addSpace(5);
-		mainLayout.addFlexibleSpace();
+		mainLayout.addNewElement<GUIFixedSpace>(5);
+		mainLayout.addNewElement<GUIFlexibleSpace>();
 
 		mMinBtn = GUIButton::create(HString(L""), "WinMinimizeBtn");
 		mMaxBtn = GUIButton::create(HString(L""), "WinMaximizeBtn");
 		mCloseBtn = GUIButton::create(HString(L""), "WinCloseBtn");
 
-		mainLayout.addSpace(3);
+		mainLayout.addNewElement<GUIFixedSpace>(3);
 		mainLayout.addElement(mMinBtn);
-		mainLayout.addSpace(3);
+		mainLayout.addNewElement<GUIFixedSpace>(3);
 		mainLayout.addElement(mMaxBtn);
-		mainLayout.addSpace(3);
+		mainLayout.addNewElement<GUIFixedSpace>(3);
 		mainLayout.addElement(mCloseBtn);
-		mainLayout.addSpace(3);
+		mainLayout.addNewElement<GUIFixedSpace>(3);
 
 		mMinBtn->onClick.connect(std::bind(&GUIMenuBar::onMinimizeClicked, this));
 		mMaxBtn->onClick.connect(std::bind(&GUIMenuBar::onMaximizeClicked, this));

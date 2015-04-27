@@ -1,6 +1,6 @@
 #include "BsGUIDropDownBox.h"
 #include "BsGUIArea.h"
-#include "BsGUILayout.h"
+#include "BsGUILayoutY.h"
 #include "BsGUILayoutX.h"
 #include "BsGUITexture.h"
 #include "BsGUILabel.h"
@@ -217,7 +217,7 @@ namespace BansheeEngine
 		// Content area
 		mContentArea = GUIArea::create(*mOwner, 0, 0, width, height);
 		mContentArea->setDepth(100 - depthOffset * 2 - 1);
-		mContentLayout = &mContentArea->getLayout().addLayoutY();
+		mContentLayout = mContentArea->getLayout().addNewElement<GUILayoutY>();
 
 		// Background frame
 		mBackgroundArea = GUIArea::create(*mOwner, 0, 0, width, height);
@@ -379,7 +379,7 @@ namespace BansheeEngine
 	{
 		// Remove all elements from content layout
 		while(mContentLayout->getNumChildren() > 0)
-			mContentLayout->removeChildAt(mContentLayout->getNumChildren() - 1);
+			mContentLayout->removeElementAt(mContentLayout->getNumChildren() - 1);
 
 		mContentLayout->addElement(mContent); // Note: Needs to be added first so that size calculations have proper skin to work with
 

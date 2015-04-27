@@ -63,6 +63,16 @@ namespace BansheeEngine
 			return padding;
 		}
 
+		/**
+		 * @brief	Creates a new fixed space GUI element.
+		 */
+		static GUIFixedSpace* create(UINT32 size);
+
+		/**
+		 * @brief	Destroys the space and removes it from its parent.
+		 */
+		static void destroy(GUIFixedSpace* space);
+
 	protected:
 		UINT32 mSize;
 	};
@@ -119,5 +129,15 @@ namespace BansheeEngine
 
 			return padding;
 		}
+
+		/**
+		 * @brief	Creates a new flexible space GUI element.
+		 */
+		static GUIFlexibleSpace* create();
+
+		/**
+		 * @brief	Destroys the space and removes it from its parent.
+		 */
+		static void destroy(GUIFlexibleSpace* space);
 	};
 }

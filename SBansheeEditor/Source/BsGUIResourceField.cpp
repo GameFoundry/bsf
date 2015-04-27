@@ -1,6 +1,6 @@
 #include "BsGUIResourceField.h"
 #include "BsGUIArea.h"
-#include "BsGUILayout.h"
+#include "BsGUILayoutX.h"
 #include "BsGUILabel.h"
 #include "BsGUIDropButton.h"
 #include "BsGUIButton.h"
@@ -29,7 +29,8 @@ namespace BansheeEngine
 		const String& style, const GUILayoutOptions& layoutOptions, bool withLabel)
 		:GUIElementContainer(layoutOptions, style), mLabel(nullptr), mClearButton(nullptr), mDropButton(nullptr), mType(type), mNamespace(typeNamespace)
 	{
-		mLayout = &addLayoutXInternal(this);
+		mLayout = GUILayoutX::create();
+		_registerChildElement(mLayout);
 
 		if (withLabel)
 		{

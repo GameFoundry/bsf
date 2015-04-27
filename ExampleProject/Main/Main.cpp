@@ -2,7 +2,6 @@
 
 #include "BsApplication.h"
 #include "BsImporter.h"
-#include "BsGpuProgramImportOptions.h"
 #include "BsTextureImportOptions.h"
 #include "BsMaterial.h"
 #include "BsShader.h"
@@ -336,30 +335,30 @@ namespace BansheeEngine
 		GUIArea* bottomArea = GUIArea::createStretchedXY(*gui, 0, 0, 0, 0);
 
 		// Add a vertical layout that will automatically position any child elements top to bottom.
-		GUILayout& bottomLayout = bottomArea->getLayout().addLayoutY();
+		GUILayout* bottomLayout = bottomArea->getLayout().addNewElement<GUILayoutY>();
 
 		// Add a flexible space that fills up any remaining area in the layout, making the two labels above be aligned
 		// to the bottom of the GUI widget (and the screen).
-		bottomLayout.addFlexibleSpace();
+		bottomLayout->addNewElement<GUIFlexibleSpace>();
 
 		// Add a couple of labels to the layout with the needed messages. Labels expect a HString object that
 		// maps into a string table and allows for easily localization. 
-		bottomLayout.addElement(GUILabel::create(HString(L"Press F1 to toggle CPU profiler overlay")));
-		bottomLayout.addElement(GUILabel::create(HString(L"Press F2 to toggle GPU profiler overlay")));
+		bottomLayout->addElement(GUILabel::create(HString(L"Press F1 to toggle CPU profiler overlay")));
+		bottomLayout->addElement(GUILabel::create(HString(L"Press F2 to toggle GPU profiler overlay")));
 
 		// Create a GUI area that is used for displaying resolution and fullscreen options.
 		GUIArea* rightArea = GUIArea::createStretchedXY(*gui, 30, 30, 30, 30);
 
 		// We want all the GUI elements be right aligned, so we add a flexible space first.
-		rightArea->getLayout().addFlexibleSpace();
+		rightArea->getLayout().addNewElement<GUIFlexibleSpace>();
 
 		// And we want the elements to be vertically placed, top to bottom
-		GUILayout& rightLayout = rightArea->getLayout().addLayoutY();
+		GUILayout* rightLayout = rightArea->getLayout().addNewElement<GUILayoutY>();
 
 		// Add a button that will trigger a callback when clicked
 		toggleFullscreenButton = GUIButton::create(HString(L"Toggle fullscreen"));
 		toggleFullscreenButton->onClick.connect(&toggleFullscreen);
-		rightLayout.addElement(toggleFullscreenButton);
+		rightLayout->addElement(toggleFullscreenButton);
 
 		// Add a profiler overlay object that is resposible for displaying CPU and GPU profiling GUI
 		profilerOverlay = guiSO->addComponent<ProfilerOverlay>(guiCamera->getViewport());
@@ -396,7 +395,7 @@ namespace BansheeEngine
 
 		// Create the list box
 		GUIListBox* videoModeListBox = GUIListBox::create(videoModeLabels);
-		rightLayout.addElement(videoModeListBox);
+		rightLayout->addElement(videoModeListBox);
 
 		// Select the default (desktop) video mode
 		videoModeListBox->selectElement(selectedVideoModeIdx);

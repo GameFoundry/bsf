@@ -3,6 +3,7 @@
 #include "BsGUILayoutX.h"
 #include "BsGUILayoutY.h"
 #include "BsGUILayoutExplicit.h"
+#include "BsGUISpace.h"
 #include "BsGUIElement.h"
 #include "BsException.h"
 #include "BsGUIWidget.h"
@@ -22,19 +23,25 @@ namespace BansheeEngine
 		Vector<GUIElementBase*> childCopy = mChildren;
 		for (auto& child : childCopy)
 		{
-			if (child->_getType() == GUIElementBase::Type::Element)
+			if (child->_getType() == Type::Element)
 			{
 				GUIElement* element = static_cast<GUIElement*>(child);
 				GUIElement::destroy(element);
 			}
-			else
+			else if (child->_getType() == Type::Layout)
 			{
-				auto iterFind = std::find(mChildren.begin(), mChildren.end(), child);
-
-				if (iterFind != mChildren.end())
-					mChildren.erase(iterFind);
-
-				bs_delete(child);
+				GUILayout* layout = static_cast<GUILayout*>(child);
+				GUILayout::destroy(layout);
+			}
+			else if (child->_getType() == Type::FixedSpace)
+			{
+				GUIFixedSpace* space = static_cast<GUIFixedSpace*>(child);
+				GUIFixedSpace::destroy(space);
+			}
+			else if (child->_getType() == Type::FlexibleSpace)
+			{
+				GUIFlexibleSpace* space = static_cast<GUIFlexibleSpace*>(child);
+				GUIFlexibleSpace::destroy(space);
 			}
 		}
 	}
@@ -175,95 +182,7 @@ namespace BansheeEngine
 		}
 	}
 
-	GUILayout& GUIElementBase::addLayoutXInternal(GUIElementBase* parent)
-	{
-		GUILayoutX* entry = bs_new<GUILayoutX, PoolAlloc>();
-		entry->_setParent(parent);
-
-		mChildren.push_back(entry);
-		
-		if (mIsDisabled)
-			entry->disableRecursively();
-
-		markContentAsDirty();
-
-		return *entry;
-	}
-
-	GUILayout& GUIElementBase::addLayoutYInternal(GUIElementBase* parent)
-	{
-		GUILayoutY* entry = bs_new<GUILayoutY, PoolAlloc>();
-		entry->_setParent(parent);
-
-		mChildren.push_back(entry);
-
-		if (mIsDisabled)
-			entry->disableRecursively();
-
-		markContentAsDirty();
-
-		return *entry;
-	}
-
-	void GUIElementBase::removeLayoutInternal(GUILayout& layout)
-	{
-		bool foundElem = false;
-		for(auto iter = mChildren.begin(); iter != mChildren.end(); ++iter)
-		{
-			GUIElementBase* child = *iter;
-
-			if(child->_getType() == GUIElementBase::Type::Layout && child == &layout)
-			{
-				bs_delete<PoolAlloc>(child);
-
-				mChildren.erase(iter);
-				foundElem = true;
-				markContentAsDirty();
-				break;
-			}
-		}
-
-		if(!foundElem)
-			BS_EXCEPT(InvalidParametersException, "Provided element is not a part of this layout.");
-	}
-
-	GUILayout& GUIElementBase::insertLayoutXInternal(GUIElementBase* parent, UINT32 idx)
-	{
-		if(idx < 0 || idx > (UINT32)mChildren.size())
-			BS_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((UINT32)mChildren.size()));
-
-		GUILayoutX* entry = bs_new<GUILayoutX, PoolAlloc>();
-		entry->_setParent(parent);
-
-		mChildren.insert(mChildren.begin() + idx, entry);
-
-		if (mIsDisabled)
-			entry->disableRecursively();
-
-		markContentAsDirty();
-
-		return *entry;
-	}
-
-	GUILayout& GUIElementBase::insertLayoutYInternal(GUIElementBase* parent, UINT32 idx)
-	{
-		if(idx < 0 || idx > (UINT32)mChildren.size())
-			BS_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((UINT32)mChildren.size()));
-
-		GUILayoutY* entry = bs_new<GUILayoutY, PoolAlloc>();
-		entry->_setParent(parent);
-
-		mChildren.insert(mChildren.begin() + idx, entry);
-
-		if (mIsDisabled)
-			entry->disableRecursively();
-
-		markContentAsDirty();
-
-		return *entry;
-	}
-
-	void GUIElementBase::_registerChildElement(GUIElement* element)
+	void GUIElementBase::_registerChildElement(GUIElementBase* element)
 	{
 		GUIElementBase* parentElement = element->_getParent();
 		if(parentElement != nullptr)
@@ -280,14 +199,14 @@ namespace BansheeEngine
 		markContentAsDirty();
 	}
 
-	void GUIElementBase::_unregisterChildElement(GUIElement* element)
+	void GUIElementBase::_unregisterChildElement(GUIElementBase* element)
 	{
 		bool foundElem = false;
 		for(auto iter = mChildren.begin(); iter != mChildren.end(); ++iter)
 		{
 			GUIElementBase* child = *iter;
 
-			if(child->_getType() == GUIElementBase::Type::Element && child == element)
+			if (child == element)
 			{
 				mChildren.erase(iter);
 				element->_setParent(nullptr);

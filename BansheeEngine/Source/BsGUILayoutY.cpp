@@ -462,4 +462,9 @@ namespace BansheeEngine
 
 		return actualArea;
 	}
+
+	GUILayoutY* GUILayoutY::create()
+	{
+		return bs_new<GUILayoutY>();
+	}
 }

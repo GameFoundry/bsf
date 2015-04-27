@@ -6,6 +6,7 @@
 #include "BsGUIScrollArea.h"
 #include "BsGUIArea.h"
 #include "BsGUILayout.h"
+#include "BsGUILayoutY.h"
 #include "BsEditorWidgetManager.h"
 #include "BsGUISceneTreeView.h"
 #include "BsGUIResourceTreeView.h"
@@ -28,7 +29,7 @@ namespace BansheeEngine
 		GUIScrollArea* scrollArea = GUIScrollArea::create();
 		layout.addElement(scrollArea);
 
-		GUILayout& treeViewLayout = scrollArea->getLayout().addLayoutY();
+		GUILayout* treeViewLayout = scrollArea->getLayout().addNewElement<GUILayoutY>();
 
 		//scrollLayout.addElement(GUIButton::create(*mGUI, L"Test A"));
 		//scrollLayout.addElement(GUIButton::create(*mGUI, L"Test B"));
@@ -46,11 +47,11 @@ namespace BansheeEngine
 		mSceneTreeView = GUISceneTreeView::create(GUIOptions(GUIOption::flexibleWidth(), GUIOption::flexibleHeight()));
 		mResourceTreeView = GUIResourceTreeView::create(GUIOptions(GUIOption::flexibleWidth(), GUIOption::flexibleHeight()));
 
-		treeViewLayout.addElement(GUILabel::create(HString(L"<<<<<<<<<<<<<<SCENE VIEW>>>>>>>>>>>>>>")));
-		treeViewLayout.addElement(mSceneTreeView);
+		treeViewLayout->addElement(GUILabel::create(HString(L"<<<<<<<<<<<<<<SCENE VIEW>>>>>>>>>>>>>>")));
+		treeViewLayout->addElement(mSceneTreeView);
 
-		treeViewLayout.addElement(GUILabel::create(HString(L"<<<<<<<<<<<<<<RESOURCE VIEW>>>>>>>>>>>>>>")));
-		treeViewLayout.addElement(mResourceTreeView);
+		treeViewLayout->addElement(GUILabel::create(HString(L"<<<<<<<<<<<<<<RESOURCE VIEW>>>>>>>>>>>>>>")));
+		treeViewLayout->addElement(mResourceTreeView);
 
 		//GUIFlexibleSpace& space4 = otherLayout.addFlexibleSpace();
 		//otherLayout.addElement(mDbgLabel);

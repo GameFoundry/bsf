@@ -3,7 +3,7 @@
 #include "BsGUISkin.h"
 #include "BsGUIWidget.h"
 #include "BsGUILayoutOptions.h"
-#include "BsGUILayout.h"
+#include "BsGUILayoutY.h"
 #include "BsGUISkin.h"
 #include "BsGUIScrollBarVert.h"
 #include "BsGUIScrollBarHorz.h"
@@ -24,7 +24,8 @@ namespace BansheeEngine
 		:GUIElementContainer(layoutOptions), mVertScroll(nullptr), mHorzScroll(nullptr), mVertOffset(0), mHorzOffset(0),
 		mVertBarType(vertBarType), mHorzBarType(horzBarType), mScrollBarStyle(scrollBarStyle)
 	{
-		mContentLayout = &addLayoutYInternal(this);
+		mContentLayout = GUILayoutY::create();
+		_registerChildElement(mContentLayout);
 
 		mHorzScroll = GUIScrollBarHorz::create(mScrollBarStyle);
 		mVertScroll = GUIScrollBarVert::create(mScrollBarStyle);

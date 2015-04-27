@@ -14,11 +14,11 @@ namespace BansheeEngine
 		static void internal_createInstanceAdd(MonoObject* instance, MonoObject* parentLayout);
 		static void internal_createInstanceInsert(MonoObject* instance, MonoObject* parentLayout, UINT32 index);
 
-		ScriptGUIFlexibleSpace(MonoObject* instance, GUIFlexibleSpace& flexibleSpace, GUILayout* parentLayout);
+		ScriptGUIFlexibleSpace(MonoObject* instance, GUIFlexibleSpace* flexibleSpace, GUILayout* parentLayout);
 
 		void destroy();
 
-		GUIFlexibleSpace& mFlexibleSpace;
+		GUIFlexibleSpace* mFlexibleSpace;
 		GUILayout* mParentLayout;
 		bool mIsDestroyed;
 	};

@@ -36,6 +36,12 @@ namespace BansheeEngine
 		 * @copydoc	GUILayout::_calcActualSize
 		 */
 		virtual Vector2I _calcActualSize(Rect2I* elementAreas, UINT32 numElements) const;
+
+		/**
+		 * @brief	Creates a new vertical layout.
+		 */
+		static GUILayoutY* create();
+
 	protected:
 		/**
 		 * @brief	Positions/size all child layout elements based on the provided settings and their (previously calculated) optimal sizes.

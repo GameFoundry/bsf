@@ -11,8 +11,8 @@
 
 namespace BansheeEngine
 {
-	ScriptGUIFixedSpace::ScriptGUIFixedSpace(MonoObject* instance, GUIFixedSpace& fixedSpace, GUILayout* parentLayout)
-		:TScriptGUIElementBase(instance, &fixedSpace), mFixedSpace(fixedSpace), mParentLayout(parentLayout), mIsDestroyed(false)
+	ScriptGUIFixedSpace::ScriptGUIFixedSpace(MonoObject* instance, GUIFixedSpace* fixedSpace, GUILayout* parentLayout)
+		:TScriptGUIElementBase(instance, fixedSpace), mFixedSpace(fixedSpace), mParentLayout(parentLayout), mIsDestroyed(false)
 	{
 
 	}
@@ -28,7 +28,7 @@ namespace BansheeEngine
 	{
 		if (!mIsDestroyed)
 		{
-			mParentLayout->removeSpace(mFixedSpace);
+			GUIFixedSpace::destroy(mFixedSpace);
 			mParentLayout = nullptr;
 
 			mIsDestroyed = true;
@@ -39,7 +39,7 @@ namespace BansheeEngine
 	{
 		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
 		GUILayout* nativeLayout = scriptLayout->getInternalValue();
-		GUIFixedSpace& space = nativeLayout->addSpace(size);
+		GUIFixedSpace* space = nativeLayout->addNewElement<GUIFixedSpace>(size);
 
 		ScriptGUIFixedSpace* nativeInstance = new (bs_alloc<ScriptGUIFixedSpace>()) ScriptGUIFixedSpace(instance, space, nativeLayout);
 	}
@@ -48,13 +48,13 @@ namespace BansheeEngine
 	{
 		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
 		GUILayout* nativeLayout = scriptLayout->getInternalValue();
-		GUIFixedSpace& space = nativeLayout->insertSpace(index, size);
+		GUIFixedSpace* space = nativeLayout->insertNewElement<GUIFixedSpace>(index, size);
 
 		ScriptGUIFixedSpace* nativeInstance = new (bs_alloc<ScriptGUIFixedSpace>()) ScriptGUIFixedSpace(instance, space, nativeLayout);
 	}
 
 	void ScriptGUIFixedSpace::internal_setSize(ScriptGUIFixedSpace* nativeInstance, UINT32 size)
 	{
-		nativeInstance->mFixedSpace.setSize(size);
+		nativeInstance->mFixedSpace->setSize(size);
 	}
 }

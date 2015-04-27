@@ -4,7 +4,8 @@
 #include "BsGUISkin.h"
 #include "BsGUIWidget.h"
 #include "BsGUILayoutOptions.h"
-#include "BsGUILayout.h"
+#include "BsGUILayoutX.h"
+#include "BsGUILayoutY.h"
 #include "BsGUISkin.h"
 #include "BsGUIButton.h"
 #include "BsGUISliderHandle.h"
@@ -24,7 +25,8 @@ namespace BansheeEngine
 
 		if(mHorizontal)
 		{
-			mLayout = &addLayoutXInternal(this);
+			mLayout = GUILayoutX::create();
+			_registerChildElement(mLayout);
 
 			mUpBtn = GUIButton::create(HString(L""), "ScrollLeftBtn");
 			mDownBtn = GUIButton::create(HString(L""), "ScrollRightBtn");
@@ -34,7 +36,8 @@ namespace BansheeEngine
 		}
 		else
 		{
-			mLayout = &addLayoutYInternal(this);
+			mLayout = GUILayoutY::create();
+			_registerChildElement(mLayout);
 
 			mUpBtn = GUIButton::create(HString(L""), "ScrollUpBtn");
 			mDownBtn = GUIButton::create(HString(L""), "ScrollDownBtn");
@@ -43,13 +46,13 @@ namespace BansheeEngine
 				GUIOptions(GUIOption::fixedWidth(6), GUIOption::flexibleHeight()), "ScrollBarVertBtn");
 		}
 
-		mLayout->addSpace(2);
+		mLayout->addNewElement<GUIFixedSpace>(2);
 		mLayout->addElement(mUpBtn);
-		mLayout->addSpace(2);
+		mLayout->addNewElement<GUIFixedSpace>(2);
 		mLayout->addElement(mHandleBtn);
-		mLayout->addSpace(2);
+		mLayout->addNewElement<GUIFixedSpace>(2);
 		mLayout->addElement(mDownBtn);
-		mLayout->addSpace(2);
+		mLayout->addNewElement<GUIFixedSpace>(2);
 
 		mHandleBtn->onHandleMoved.connect(std::bind(&GUIScrollBar::handleMoved, this, _1));
 

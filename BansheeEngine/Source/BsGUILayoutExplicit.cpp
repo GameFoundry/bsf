@@ -92,4 +92,9 @@ namespace BansheeEngine
 	{
 		return Vector2I(0, 0); // Not relevant
 	}
+
+	GUILayoutExplicit* GUILayoutExplicit::create()
+	{
+		return bs_new<GUILayoutExplicit>();
+	}
 }

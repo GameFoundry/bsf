@@ -3,7 +3,7 @@
 #include "BsGUIToggle.h"
 #include "BsGUIScrollArea.h"
 #include "BsGUIArea.h"
-#include "BsGUILayout.h"
+#include "BsGUILayoutY.h"
 #include "BsGUIWidget.h"
 #include "BsGUISkin.h"
 #include "BsGUIIntField.h"
@@ -49,7 +49,7 @@ namespace BansheeEngine
 	DbgEditorWidget2::DbgEditorWidget2(const ConstructPrivately& dummy, EditorWidgetContainer& parentContainer)
 		:EditorWidget<DbgEditorWidget2>(HString(L"DbgEditorWidget2"), parentContainer)
 	{
-		GUILayout& layout = mContent->getLayout().addLayoutY();
+		GUILayout* layout = mContent->getLayout().addNewElement<GUILayoutY>();
 
 		GUIIntField* intField = GUIIntField::create(GUIContent(HString(L"Int Field")), 100, GUIOptions(GUIOption::fixedWidth(200)));
 		GUIFloatField* floatField = GUIFloatField::create(HString(L"Float Field"), GUIOptions(GUIOption::fixedWidth(200)));
@@ -69,20 +69,20 @@ namespace BansheeEngine
 		GUIProgressBar* progressBar = GUIProgressBar::create(GUIOptions(GUIOption::fixedWidth(200)));
 		progressBar->setPercent(0.33f);
 
-		layout.addElement(intField);
-		layout.addElement(floatField);
-		layout.addElement(textField);
-		layout.addElement(vec4Field);
-		layout.addElement(vec3Field);
-		layout.addElement(vec2Field);
-		layout.addElement(toggleField);
-		layout.addElement(colorField);
-		layout.addElement(foldout);
-		layout.addElement(button);
-		layout.addElement(slider);
-		layout.addElement(progressBar);
+		layout->addElement(intField);
+		layout->addElement(floatField);
+		layout->addElement(textField);
+		layout->addElement(vec4Field);
+		layout->addElement(vec3Field);
+		layout->addElement(vec2Field);
+		layout->addElement(toggleField);
+		layout->addElement(colorField);
+		layout->addElement(foldout);
+		layout->addElement(button);
+		layout->addElement(slider);
+		layout->addElement(progressBar);
 
-		layout.addFlexibleSpace();
+		layout->addNewElement<GUIFlexibleSpace>();
 	}
 
 	DbgEditorWidget2::~DbgEditorWidget2()
