@@ -11,13 +11,13 @@ namespace BansheeEngine
 		static const String& getGUITypeName();
 
 		static GUITreeViewEditBox* create(const String& styleName = StringUtil::BLANK);
-		static GUITreeViewEditBox* create(const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
+		static GUITreeViewEditBox* create(const GUIOptions& options, const String& styleName = StringUtil::BLANK);
 
 		Event<void()> onInputConfirmed;
 		Event<void()> onInputCanceled;
 
 	private:
-		GUITreeViewEditBox(const String& styleName, const GUIDimensions& layoutOptions);
+		GUITreeViewEditBox(const String& styleName, const GUIDimensions& dimensions);
 
 		virtual bool _commandEvent(const GUICommandEvent& ev);
 	};

@@ -1,4 +1,4 @@
-#include "BsGUILayoutExplicit.h"
+#include "BsGUIPanel.h"
 #include "BsGUIElement.h"
 #include "BsGUISpace.h"
 #include "BsMath.h"
@@ -6,11 +6,15 @@
 
 namespace BansheeEngine
 {
-	GUILayoutExplicit::GUILayoutExplicit(GUIArea* parentArea)
+	GUIPanel::GUIPanel(GUIArea* parentArea)
 		:GUILayout(parentArea)
 	{ }
 
-	LayoutSizeRange GUILayoutExplicit::_calculateLayoutSizeRange() const
+	GUIPanel::GUIPanel(const GUIDimensions& dimensions)
+		: GUILayout(dimensions)
+	{ }
+
+	LayoutSizeRange GUIPanel::_calculateLayoutSizeRange() const
 	{
 		if (mIsDisabled)
 			return LayoutSizeRange();
@@ -38,7 +42,7 @@ namespace BansheeEngine
 		return _getDimensions().calculateSizeRange(optimalSize);
 	}
 
-	void GUILayoutExplicit::_updateOptimalLayoutSizes()
+	void GUIPanel::_updateOptimalLayoutSizes()
 	{
 		// Update all children first, otherwise we can't determine our own optimal size
 		GUIElementBase::_updateOptimalLayoutSizes();
@@ -65,7 +69,7 @@ namespace BansheeEngine
 			{
 				childSizeRange = child->_calculateLayoutSizeRange();
 			}
-			else if (child->_getType() == GUIElementBase::Type::Layout)
+			else if (child->_getType() == GUIElementBase::Type::Layout || child->_getType() == GUIElementBase::Type::Panel)
 			{
 				GUILayout* layout = static_cast<GUILayout*>(child);
 				childSizeRange = layout->_getCachedSizeRange();
@@ -87,7 +91,7 @@ namespace BansheeEngine
 		mSizeRange = _getDimensions().calculateSizeRange(optimalSize);
 	}
 
-	void GUILayoutExplicit::_getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements,
+	void GUIPanel::_getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements,
 		const Vector<LayoutSizeRange>& sizeRanges, const LayoutSizeRange& mySizeRange) const
 	{
 		assert(mChildren.size() == numElements);
@@ -105,7 +109,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUILayoutExplicit::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I clipRect, UINT8 widgetDepth, UINT16 areaDepth)
+	void GUIPanel::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I clipRect, UINT8 widgetDepth, UINT16 areaDepth)
 	{
 		UINT32 numElements = (UINT32)mChildren.size();
 		Rect2I* elementAreas = nullptr;
@@ -143,7 +147,7 @@ namespace BansheeEngine
 				actualSizes[childIdx].width = childArea.width + child->_getPadding().top + child->_getPadding().bottom;
 				actualSizes[childIdx].height = childArea.height + child->_getPadding().top + child->_getPadding().bottom;
 			}
-			else if (child->_getType() == GUIElementBase::Type::Layout)
+			else if (child->_getType() == GUIElementBase::Type::Layout || child->_getType() == GUIElementBase::Type::Panel)
 			{
 				GUILayout* layout = static_cast<GUILayout*>(child);
 
@@ -173,7 +177,7 @@ namespace BansheeEngine
 		_markAsClean();
 	}
 
-	Vector2I GUILayoutExplicit::_calcActualSize(INT32 x, INT32 y, Rect2I* elementAreas, UINT32 numElements) const
+	Vector2I GUIPanel::_calcActualSize(INT32 x, INT32 y, Rect2I* elementAreas, UINT32 numElements) const
 	{
 		Vector2I actualArea;
 		for (UINT32 i = 0; i < numElements; i++)
@@ -190,8 +194,13 @@ namespace BansheeEngine
 		return actualArea;
 	}
 
-	GUILayoutExplicit* GUILayoutExplicit::create()
+	GUIPanel* GUIPanel::create()
 	{
-		return bs_new<GUILayoutExplicit>();
+		return bs_new<GUIPanel>();
+	}
+
+	GUIPanel* GUIPanel::create(const GUIOptions& options)
+	{
+		return bs_new<GUIPanel>(GUIDimensions::create(options));
 	}
 }

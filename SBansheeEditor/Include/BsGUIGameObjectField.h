@@ -12,19 +12,19 @@ namespace BansheeEngine
 	public:
 		static const String& getGUITypeName();
 
-		static GUIGameObjectField* create(const String& typeNamespace, const String& type, const GUIContent& labelContent, UINT32 labelWidth, const GUIOptions& layoutOptions, 
+		static GUIGameObjectField* create(const String& typeNamespace, const String& type, const GUIContent& labelContent, UINT32 labelWidth, const GUIOptions& options, 
 			const String& style = StringUtil::BLANK);
 
-		static GUIGameObjectField* create(const String& typeNamespace, const String& type, const GUIContent& labelContent, const GUIOptions& layoutOptions,
+		static GUIGameObjectField* create(const String& typeNamespace, const String& type, const GUIContent& labelContent, const GUIOptions& options,
 			const String& style = StringUtil::BLANK);
 
-		static GUIGameObjectField* create(const String& typeNamespace, const String& type, const HString& labelText, UINT32 labelWidth, const GUIOptions& layoutOptions,
+		static GUIGameObjectField* create(const String& typeNamespace, const String& type, const HString& labelText, UINT32 labelWidth, const GUIOptions& options,
 			const String& style = StringUtil::BLANK);
 
-		static GUIGameObjectField* create(const String& typeNamespace, const String& type, const HString& labelText, const GUIOptions& layoutOptions,
+		static GUIGameObjectField* create(const String& typeNamespace, const String& type, const HString& labelText, const GUIOptions& options,
 			const String& style = StringUtil::BLANK);
 
-		static GUIGameObjectField* create(const String& typeNamespace, const String& type, const GUIOptions& layoutOptions, const String& style = StringUtil::BLANK);
+		static GUIGameObjectField* create(const String& typeNamespace, const String& type, const GUIOptions& options, const String& style = StringUtil::BLANK);
 
 		static GUIGameObjectField* create(const String& typeNamespace, const String& type, const GUIContent& labelContent, UINT32 labelWidth,
 			const String& style = StringUtil::BLANK);
@@ -41,7 +41,7 @@ namespace BansheeEngine
 		static GUIGameObjectField* create(const String& typeNamespace, const String& type, const String& style = StringUtil::BLANK);
 
 		GUIGameObjectField(const PrivatelyConstruct& dummy, const String& typeNamespace, const String& type, const GUIContent& labelContent,
-			UINT32 labelWidth, const String& style, const GUIDimensions& layoutOptions, bool withLabel);
+			UINT32 labelWidth, const String& style, const GUIDimensions& dimensions, bool withLabel);
 
 		HGameObject getValue() const;
 		void setValue(const HGameObject& value);

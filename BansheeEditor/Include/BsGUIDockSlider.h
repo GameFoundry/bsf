@@ -13,7 +13,7 @@ namespace BansheeEngine
 		static const String& getGUITypeName();
 
 		static GUIDockSlider* create(bool horizontal, const String& styleName = StringUtil::BLANK);
-		static GUIDockSlider* create(bool horizontal, const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
+		static GUIDockSlider* create(bool horizontal, const GUIOptions& options, const String& styleName = StringUtil::BLANK);
 
 		Event<void(const Vector2I&)> onDragged;
 	protected:
@@ -26,6 +26,6 @@ namespace BansheeEngine
 		bool mIsCursorSet;
 		bool mDragInProgress;
 
-		GUIDockSlider(bool horizontal, const String& styleName, const GUIDimensions& layoutOptions);
+		GUIDockSlider(bool horizontal, const String& styleName, const GUIDimensions& dimensions);
 	};
 }

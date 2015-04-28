@@ -408,8 +408,8 @@ namespace BansheeEngine
 		}
 	}
 
-	DockManager::DockManager(EditorWindowBase* parentWindow, const GUIDimensions& layoutOptions)
-		:GUIElementContainer(layoutOptions), mMouseOverContainer(nullptr), mHighlightedDropLoc(DockLocation::None),
+	DockManager::DockManager(EditorWindowBase* parentWindow, const GUIDimensions& dimensions)
+		:GUIElementContainer(dimensions), mMouseOverContainer(nullptr), mHighlightedDropLoc(DockLocation::None),
 		mShowOverlay(false), mRootContainer(this), mParentWindow(parentWindow)
 	{
 		mTopDropPolygon = bs_newN<Vector2>(4);

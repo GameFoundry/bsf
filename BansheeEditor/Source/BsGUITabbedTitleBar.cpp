@@ -22,8 +22,8 @@ namespace BansheeEngine
 	const UINT32 GUITabbedTitleBar::OPTION_BTN_SPACING = 3;
 
 	GUITabbedTitleBar::GUITabbedTitleBar(const String& backgroundStyle, const String& tabBtnStyle, 
-		const String& minBtnStyle, const String& closeBtnStyle, const GUIDimensions& layoutOptions)
-		:GUIElementContainer(layoutOptions), mMinBtn(nullptr), 
+		const String& minBtnStyle, const String& closeBtnStyle, const GUIDimensions& dimensions)
+		:GUIElementContainer(dimensions), mMinBtn(nullptr), 
 		mCloseBtn(nullptr), mBackgroundImage(nullptr), mUniqueTabIdx(0), mActiveTabIdx(0),
 		mDragInProgress(false), mDraggedBtn(nullptr), mDragBtnOffset(0), mInitialDragOffset(0), mBackgroundStyle(backgroundStyle),
 		mTabBtnStyle(tabBtnStyle), mMinimizeBtnStyle(minBtnStyle), mCloseBtnStyle(closeBtnStyle), mTempDraggedWidget(nullptr),
@@ -70,11 +70,11 @@ namespace BansheeEngine
 			minBtnStyle, closeBtnStyle, GUIDimensions::create());
 	}
 
-	GUITabbedTitleBar* GUITabbedTitleBar::create(const GUIDimensions& layoutOptions, const String& backgroundStyle, 
+	GUITabbedTitleBar* GUITabbedTitleBar::create(const GUIDimensions& dimensions, const String& backgroundStyle,
 		const String& tabBtnStyle, const String& minBtnStyle, const String& closeBtnStyle)
 	{
 		return new (bs_alloc<GUITabbedTitleBar, PoolAlloc>()) GUITabbedTitleBar(backgroundStyle, tabBtnStyle, 
-			minBtnStyle, closeBtnStyle, layoutOptions);
+			minBtnStyle, closeBtnStyle, dimensions);
 	}
 
 	void GUITabbedTitleBar::addTab(const HString& name)

@@ -28,11 +28,6 @@ namespace BansheeEngine
             parent = layout;
         }
 
-        internal virtual bool IsStatic()
-        {
-            return false;
-        }
-
         public virtual void Destroy()
         {
             SetParent(null);

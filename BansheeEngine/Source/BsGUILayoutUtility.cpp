@@ -18,15 +18,23 @@ namespace BansheeEngine
 
 		GUIElementBase* parent = elem->_getParent();
 		if (parent != nullptr)
+		{
 			parentArea = calcBounds(parent);
+
+			if (parent->_getType() == GUIElementBase::Type::Panel)
+			{
+				parentArea.x = 0;
+				parentArea.y = 0;
+			}
+		}
 		else
 		{
-			assert(elem->_getType() == GUIElementBase::Type::Layout);
+			assert(elem->_getType() == GUIElementBase::Type::Layout || elem->_getType() == GUIElementBase::Type::Panel);
 			const GUILayout* layout = static_cast<const GUILayout*>(elem);
 
 			GUIArea* parentGUIArea = layout->_getParentGUIArea();
-			parentArea.x = parentGUIArea->x();
-			parentArea.y = parentGUIArea->y();
+			parentArea.x = 0;
+			parentArea.y = 0;
 			parentArea.width = parentGUIArea->width();
 			parentArea.height = parentGUIArea->height();
 
@@ -86,7 +94,7 @@ namespace BansheeEngine
 			GUIElementBase* child = layout->_getChild(i);
 			Rect2I childArea = elementAreas[i];
 
-			if (child->_getType() == GUIElementBase::Type::Layout)
+			if (child->_getType() == GUIElementBase::Type::Layout || child->_getType() == GUIElementBase::Type::Panel)
 			{
 				Vector2I childActualSize = calcActualSize(childArea.width, childArea.height, static_cast<GUILayout*>(child));
 				actualAreas[i].width = (UINT32)childActualSize.x;

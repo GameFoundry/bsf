@@ -34,13 +34,13 @@ namespace BansheeEngine
 		 * @brief	Creates a new listbox with the provided elements.
 		 *
 		 * @param	elements		Elements to display in the list box.
-		 * @param	layoutOptions	Options that allows you to control how is the element positioned in
-		 *							GUI layout. This will override any similar options set by style.
+		 * @param	options			Options that allow you to control how is the element positioned and sized.
+		 *							This will override any similar options set by style.
 		 * @param	styleName		Optional style to use for the element. Style will be retrieved
 		 *							from GUISkin of the GUIWidget the element is used on. If not specified
 		 *							default style is used.
 		 */
-		static GUIListBox* create(const Vector<HString>& elements, const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
+		static GUIListBox* create(const Vector<HString>& elements, const GUIOptions& options, const String& styleName = StringUtil::BLANK);
 
 		/**
 		 * @brief	Changes the list box elements.
@@ -66,7 +66,7 @@ namespace BansheeEngine
 		~GUIListBox();
 
 	private:
-		GUIListBox(const String& styleName, const Vector<HString>& elements, const GUIDimensions& layoutOptions);
+		GUIListBox(const String& styleName, const Vector<HString>& elements, const GUIDimensions& dimensions);
 
 		/**
 		 * @copydoc	GUIButtonBase::mouseEvent

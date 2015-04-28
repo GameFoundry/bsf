@@ -11,15 +11,13 @@ namespace BansheeEngine
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUIFlexibleSpace")
 
 	private:
-		static void internal_createInstanceAdd(MonoObject* instance, MonoObject* parentLayout);
-		static void internal_createInstanceInsert(MonoObject* instance, MonoObject* parentLayout, UINT32 index);
+		static void internal_createInstance(MonoObject* instance);
 
-		ScriptGUIFlexibleSpace(MonoObject* instance, GUIFlexibleSpace* flexibleSpace, GUILayout* parentLayout);
+		ScriptGUIFlexibleSpace(MonoObject* instance, GUIFlexibleSpace* flexibleSpace);
 
 		void destroy();
 
 		GUIFlexibleSpace* mFlexibleSpace;
-		GUILayout* mParentLayout;
 		bool mIsDestroyed;
 	};
 }

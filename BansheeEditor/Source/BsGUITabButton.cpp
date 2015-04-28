@@ -16,8 +16,8 @@ namespace BansheeEngine
 	}
 
 	GUITabButton::GUITabButton(const String& styleName, const GUIToggleGroupPtr& toggleGroup, 
-		UINT32 index, const GUIContent& content, const GUIDimensions& layoutOptions)
-		:GUIToggle(styleName, content, toggleGroup, layoutOptions), mIndex(index), mDraggedState(false)
+		UINT32 index, const GUIContent& content, const GUIDimensions& dimensions)
+		:GUIToggle(styleName, content, toggleGroup, dimensions), mIndex(index), mDraggedState(false)
 	{
 
 	}
@@ -30,10 +30,10 @@ namespace BansheeEngine
 	}
 
 	GUITabButton* GUITabButton::create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, 
-		const HString& text, const GUIOptions& layoutOptions, const String& styleName)
+		const HString& text, const GUIOptions& options, const String& styleName)
 	{
 		return new (bs_alloc<GUITabButton, PoolAlloc>()) GUITabButton(
-			getStyleName<GUITabButton>(styleName), toggleGroup, index, GUIContent(text), GUIDimensions::create(layoutOptions));
+			getStyleName<GUITabButton>(styleName), toggleGroup, index, GUIContent(text), GUIDimensions::create(options));
 	}
 
 	GUITabButton* GUITabButton::create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, 
@@ -44,10 +44,10 @@ namespace BansheeEngine
 	}
 
 	GUITabButton* GUITabButton::create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, 
-		const GUIContent& content, const GUIOptions& layoutOptions, const String& styleName)
+		const GUIContent& content, const GUIOptions& options, const String& styleName)
 	{
 		return new (bs_alloc<GUITabButton, PoolAlloc>()) GUITabButton(
-			getStyleName<GUITabButton>(styleName), toggleGroup, index, content, GUIDimensions::create(layoutOptions));
+			getStyleName<GUITabButton>(styleName), toggleGroup, index, content, GUIDimensions::create(options));
 	}
 
 	void GUITabButton::_setDraggedState(bool active) 

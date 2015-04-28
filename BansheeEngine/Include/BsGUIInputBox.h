@@ -44,25 +44,25 @@ namespace BansheeEngine
 		 * Creates a new input box.
 		 *
 		 * @param	multiline		If true the input box can be of arbitrary height and will accept multiple lines of text.
-		 * @param	layoutOptions	Options that allows you to control how is the element positioned in
-		 *							GUI layout. This will override any similar options set by style.
+		 * @param	options			Options that allow you to control how is the element positioned and sized.
+		 *							This will override any similar options set by style.
 		 * @param	styleName		Optional style to use for the element. Style will be retrieved
 		 *							from GUISkin of the GUIWidget the element is used on. If not specified
 		 *							default button style is used.
 		 */
-		static GUIInputBox* create(bool multiline, const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
+		static GUIInputBox* create(bool multiline, const GUIOptions& options, const String& styleName = StringUtil::BLANK);
 
 
 		/**
 		 * Creates a new single-line input box.
 		 *
-		 * @param	layoutOptions	Options that allows you to control how is the element positioned in
-		 *							GUI layout. This will override any similar options set by style.
+		 * @param	options			Options that allow you to control how is the element positioned and sized.
+		 *							This will override any similar options set by style.
 		 * @param	styleName		Optional style to use for the element. Style will be retrieved
 		 *							from GUISkin of the GUIWidget the element is used on. If not specified
 		 *							default button style is used.
 		 */
-		static GUIInputBox* create(const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
+		static GUIInputBox* create(const GUIOptions& options, const String& styleName = StringUtil::BLANK);
 
 		/**
 		 * @brief	Returns the text currently entered in the input box.
@@ -111,7 +111,7 @@ namespace BansheeEngine
 		 */
 		Event<void()> onFocusLost;
 	protected:
-		GUIInputBox(const String& styleName, const GUIDimensions& layoutOptions, bool multiline);
+		GUIInputBox(const String& styleName, const GUIDimensions& dimensions, bool multiline);
 		virtual ~GUIInputBox();
 
 		/**

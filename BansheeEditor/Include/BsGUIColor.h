@@ -13,7 +13,7 @@ namespace BansheeEngine
 		static const String& getGUITypeName();
 
 		static GUIColor* create(const String& styleName = StringUtil::BLANK);
-		static GUIColor* create(const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
+		static GUIColor* create(const GUIOptions& options, const String& styleName = StringUtil::BLANK);
 
 		virtual Vector2I _getOptimalSize() const;
 
@@ -27,7 +27,7 @@ namespace BansheeEngine
 
 		Event<void(const Color&)> onValueChanged;
 	protected:
-		GUIColor(const String& styleName, const GUIDimensions& layoutOptions);
+		GUIColor(const String& styleName, const GUIDimensions& dimensions);
 		virtual ~GUIColor();
 
 		/**

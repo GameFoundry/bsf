@@ -14,10 +14,10 @@ namespace BansheeEngine
 		static const String& getFoldoutButtonStyleType();
 		static const String& getLabelStyleType();
 
-		static GUIFoldout* create(const HString& label, const GUIOptions& layoutOptions, const String& style = StringUtil::BLANK);
+		static GUIFoldout* create(const HString& label, const GUIOptions& options, const String& style = StringUtil::BLANK);
 		static GUIFoldout* create(const HString& label, const String& style = StringUtil::BLANK);
 
-		GUIFoldout(const PrivatelyConstruct& dummy, const HString& label, const String& style, const GUIDimensions& layoutOptions);
+		GUIFoldout(const PrivatelyConstruct& dummy, const HString& label, const String& style, const GUIDimensions& dimensions);
 
 		bool isExpanded() const { return mIsExpanded; }
 		void setExpanded(bool expanded);

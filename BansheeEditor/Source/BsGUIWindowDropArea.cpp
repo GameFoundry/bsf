@@ -15,8 +15,8 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIWindowDropArea::GUIWindowDropArea(const String& styleName, const GUIDimensions& layoutOptions)
-		:GUITexture(styleName, HSpriteTexture(), GUIImageScaleMode::ScaleToFit, true, layoutOptions)
+	GUIWindowDropArea::GUIWindowDropArea(const String& styleName, const GUIDimensions& dimensions)
+		:GUITexture(styleName, HSpriteTexture(), GUIImageScaleMode::ScaleToFit, true, dimensions)
 	{ }
 
 	GUIWindowDropArea::~GUIWindowDropArea()
@@ -28,10 +28,10 @@ namespace BansheeEngine
 			GUIWindowDropArea(getStyleName<GUIWindowDropArea>(styleName), GUIDimensions::create());
 	}
 
-	GUIWindowDropArea* GUIWindowDropArea::create(const GUIOptions& layoutOptions, const String& styleName)
+	GUIWindowDropArea* GUIWindowDropArea::create(const GUIOptions& options, const String& styleName)
 	{
 		return new (bs_alloc<GUIWindowDropArea, PoolAlloc>()) 
-			GUIWindowDropArea(getStyleName<GUIWindowDropArea>(styleName), GUIDimensions::create(layoutOptions));
+			GUIWindowDropArea(getStyleName<GUIWindowDropArea>(styleName), GUIDimensions::create(options));
 	}
 
 	void GUIWindowDropArea::setFocused(bool focused)

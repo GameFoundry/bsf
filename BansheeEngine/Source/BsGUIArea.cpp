@@ -2,7 +2,7 @@
 #include "BsGUIWidget.h"
 #include "BsGUILayoutX.h"
 #include "BsGUILayoutY.h"
-#include "BsGUILayoutExplicit.h"
+#include "BsGUIPanel.h"
 #include "BsGUIWidget.h"
 #include "BsRenderWindow.h"
 #include "BsViewport.h"
@@ -22,7 +22,7 @@ namespace BansheeEngine
 			mLayout = bs_new<GUILayoutY>(this);
 			break;
 		case GUILayoutType::LayoutExplicit:
-			mLayout = bs_new<GUILayoutExplicit>(this);
+			mLayout = bs_new<GUIPanel>(this);
 			break;
 		}
 		

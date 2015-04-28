@@ -66,6 +66,7 @@
     <Compile Include="GUI\GUIElementStateStyle.cs" />
     <Compile Include="GUI\GUIElementStyle.cs" />
     <Compile Include="GUI\GUIListBox.cs" />
+    <Compile Include="GUI\GUIPanelNEW.cs" />
     <Compile Include="GUI\GUIProgressBar.cs" />
     <Compile Include="GUI\GUIRenderTexture.cs" />
     <Compile Include="GUI\GUIScrollArea.cs" />

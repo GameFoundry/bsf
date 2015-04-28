@@ -32,8 +32,8 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIInputBox::GUIInputBox(const String& styleName, const GUIDimensions& layoutOptions, bool multiline)
-		:GUIElement(styleName, layoutOptions), mDragInProgress(false),
+	GUIInputBox::GUIInputBox(const String& styleName, const GUIDimensions& dimensions, bool multiline)
+		:GUIElement(styleName, dimensions), mDragInProgress(false),
 		mCaretShown(false), mSelectionShown(false), mIsMultiline(multiline), mHasFocus(false), mIsMouseOver(false),
 		mState(State::Normal)
 	{
@@ -52,14 +52,14 @@ namespace BansheeEngine
 		return new (bs_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUIDimensions::create(), multiline);
 	}
 
-	GUIInputBox* GUIInputBox::create(bool multiline, const GUIOptions& layoutOptions, const String& styleName)
+	GUIInputBox* GUIInputBox::create(bool multiline, const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUIDimensions::create(layoutOptions), multiline);
+		return new (bs_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUIDimensions::create(options), multiline);
 	}
 
-	GUIInputBox* GUIInputBox::create(const GUIOptions& layoutOptions, const String& styleName)
+	GUIInputBox* GUIInputBox::create(const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUIDimensions::create(layoutOptions), false);
+		return new (bs_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUIDimensions::create(options), false);
 	}
 
 	void GUIInputBox::setText(const WString& text)

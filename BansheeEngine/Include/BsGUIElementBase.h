@@ -23,7 +23,8 @@ namespace BansheeEngine
 			Layout,
 			Element,
 			FixedSpace,
-			FlexibleSpace
+			FlexibleSpace,
+			Panel
 		};
 
 	public:
@@ -79,14 +80,14 @@ namespace BansheeEngine
 		void disableRecursively();
 
 		/**
-		 * @brief	Returns non-clipped bounds of the GUI element. Relative to the parent widget.
+		 * @brief	Returns non-clipped bounds of the GUI element. Relative to the parent GUI panel.
 		 *
 		 * @note	This call can be potentially expensive as the bounds need to be calculated based on current GUI state.
 		 */
 		virtual Rect2I getBounds() const;
 
 		/**
-		 * @brief	Returns non-clipped visible bounds of the GUI element (bounds exclude the margins). Relative to parent widget.
+		 * @brief	Returns non-clipped visible bounds of the GUI element (bounds exclude the margins). Relative to the parent GUI panel.
 		 *
 		 * @note	This call can be potentially expensive as the bounds need to be calculated based on current GUI state.
 		 */

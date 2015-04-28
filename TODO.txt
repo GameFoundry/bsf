@@ -17,12 +17,8 @@ the same and the only variable will be the 4byte random number, which can someti
 ----------------------------------------------------------------------
 GUIArea refactor:
 
-Ensure that x, y isn't ignored (after ensure ColorPicker looks okay)
-Ensure that layout size dimensions aren't ignored (even if layout is part of GUILayoutExplicit, layouts should expand to cover entire area if flexible)
-COMPILE; CHECK IF STUFF WORKS; COMMIT;
-
-Rename GUILayoutExplicit to GUIPanel
-Make GUILayoutUtility return coordinates relative to parent GUILayoutExplicit or top-most area (will be removed later) (after ensure ColorPicker looks okay)
+ColorPicker 2D handle is broken because it uses window coordinates for positioning, but it needs coordinates relative to parent GUI panel
+ - Will likely need a new method for that
 
 Remove GUIPanel and GUIPanel container and rename GUILayoutExplicit to new GUIPanel. Use that instead in code and ensure everything looks okay.
 Change how depth works so GUIPanels can set it (offset + range)

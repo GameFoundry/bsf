@@ -11,16 +11,15 @@
 
 namespace BansheeEngine
 {
-	ScriptGUIFixedSpace::ScriptGUIFixedSpace(MonoObject* instance, GUIFixedSpace* fixedSpace, GUILayout* parentLayout)
-		:TScriptGUIElementBase(instance, fixedSpace), mFixedSpace(fixedSpace), mParentLayout(parentLayout), mIsDestroyed(false)
+	ScriptGUIFixedSpace::ScriptGUIFixedSpace(MonoObject* instance, GUIFixedSpace* fixedSpace)
+		:TScriptGUIElementBase(instance, fixedSpace), mFixedSpace(fixedSpace), mIsDestroyed(false)
 	{
 
 	}
 
 	void ScriptGUIFixedSpace::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstanceAdd", &ScriptGUIFixedSpace::internal_createInstanceAdd);
-		metaData.scriptClass->addInternalCall("Internal_CreateInstanceInsert", &ScriptGUIFixedSpace::internal_createInstanceInsert);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIFixedSpace::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_SetSize", &ScriptGUIFixedSpace::internal_setSize);
 	}
 
@@ -29,28 +28,16 @@ namespace BansheeEngine
 		if (!mIsDestroyed)
 		{
 			GUIFixedSpace::destroy(mFixedSpace);
-			mParentLayout = nullptr;
 
 			mIsDestroyed = true;
 		}
 	}
 
-	void ScriptGUIFixedSpace::internal_createInstanceAdd(MonoObject* instance, MonoObject* parentLayout, UINT32 size)
+	void ScriptGUIFixedSpace::internal_createInstance(MonoObject* instance, UINT32 size)
 	{
-		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
-		GUILayout* nativeLayout = scriptLayout->getInternalValue();
-		GUIFixedSpace* space = nativeLayout->addNewElement<GUIFixedSpace>(size);
+		GUIFixedSpace* space = GUIFixedSpace::create(size);
 
-		ScriptGUIFixedSpace* nativeInstance = new (bs_alloc<ScriptGUIFixedSpace>()) ScriptGUIFixedSpace(instance, space, nativeLayout);
-	}
-
-	void ScriptGUIFixedSpace::internal_createInstanceInsert(MonoObject* instance, MonoObject* parentLayout, UINT32 index, UINT32 size)
-	{
-		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
-		GUILayout* nativeLayout = scriptLayout->getInternalValue();
-		GUIFixedSpace* space = nativeLayout->insertNewElement<GUIFixedSpace>(index, size);
-
-		ScriptGUIFixedSpace* nativeInstance = new (bs_alloc<ScriptGUIFixedSpace>()) ScriptGUIFixedSpace(instance, space, nativeLayout);
+		ScriptGUIFixedSpace* nativeInstance = new (bs_alloc<ScriptGUIFixedSpace>()) ScriptGUIFixedSpace(instance, space);
 	}
 
 	void ScriptGUIFixedSpace::internal_setSize(ScriptGUIFixedSpace* nativeInstance, UINT32 size)

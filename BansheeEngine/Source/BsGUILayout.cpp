@@ -9,20 +9,18 @@ namespace BansheeEngine
 {
 	GUILayout::GUILayout(GUIArea* parentArea)
 		:mParentGUIArea(parentArea)
-	{
+	{ }
 
-	}
+	GUILayout::GUILayout(const GUIDimensions& dimensions)
+		:GUIElementBase(dimensions), mParentGUIArea(nullptr)
+	{ }
 
 	GUILayout::GUILayout()
 		:mParentGUIArea(nullptr)
-	{
-
-	}
+	{ }
 
 	GUILayout::~GUILayout() 
-	{
-
-	}
+	{ }
 
 	void GUILayout::addElement(GUIElementBase* element)
 	{

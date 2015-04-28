@@ -59,7 +59,7 @@ namespace BansheeEngine
 	class GUILayout;
 	class GUILayoutX;
 	class GUILayoutY;
-	class GUILayoutExplicit;
+	class GUIPanel;
 	class GUIFixedSpace;
 	class GUIFlexibleSpace;
 	class GUIInputCaret;

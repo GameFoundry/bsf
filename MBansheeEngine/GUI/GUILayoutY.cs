@@ -5,19 +5,14 @@ namespace BansheeEngine
 {
     public sealed class GUILayoutY : GUILayout
     {
-        internal GUILayoutY(GUILayout parentLayout)
-        {
-            Internal_CreateInstanceYFromLayoutAdd(this, parentLayout);
-        }
-
         internal GUILayoutY(GUIScrollArea parentArea)
         {
             Internal_CreateInstanceYFromScrollArea(this, parentArea);
         }
 
-        internal GUILayoutY(GUILayout parentLayout, int index)
+        public GUILayoutY(params GUIOption[] options)
         {
-            Internal_CreateInstanceYFromLayoutInsert(this, parentLayout, index);
+            Internal_CreateInstanceY(this, options);
         }
     }
 }

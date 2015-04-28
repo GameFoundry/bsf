@@ -11,8 +11,8 @@
 
 namespace BansheeEngine
 {
-	GUIButtonBase::GUIButtonBase(const String& styleName, const GUIContent& content, const GUIDimensions& layoutOptions)
-		:GUIElement(styleName, layoutOptions), mContent(content), mContentImageSprite(nullptr), mActiveState(GUIButtonState::Normal)
+	GUIButtonBase::GUIButtonBase(const String& styleName, const GUIContent& content, const GUIDimensions& dimensions)
+		:GUIElement(styleName, dimensions), mContent(content), mContentImageSprite(nullptr), mActiveState(GUIButtonState::Normal)
 	{
 		mImageSprite = bs_new<ImageSprite, PoolAlloc>();
 		mTextSprite = bs_new<TextSprite, PoolAlloc>();

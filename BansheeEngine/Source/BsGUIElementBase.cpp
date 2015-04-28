@@ -2,7 +2,7 @@
 #include "BsGUILayout.h"
 #include "BsGUILayoutX.h"
 #include "BsGUILayoutY.h"
-#include "BsGUILayoutExplicit.h"
+#include "BsGUIPanel.h"
 #include "BsGUISpace.h"
 #include "BsGUIElement.h"
 #include "BsException.h"
@@ -35,7 +35,7 @@ namespace BansheeEngine
 				GUIElement* element = static_cast<GUIElement*>(child);
 				GUIElement::destroy(element);
 			}
-			else if (child->_getType() == Type::Layout)
+			else if (child->_getType() == Type::Layout || child->_getType() == GUIElementBase::Type::Panel)
 			{
 				GUILayout* layout = static_cast<GUILayout*>(child);
 				GUILayout::destroy(layout);
@@ -207,8 +207,8 @@ namespace BansheeEngine
 		if (mIsDisabled)
 			return LayoutSizeRange();
 
-		const GUIDimensions& layoutOptions = _getDimensions();
-		return layoutOptions.calculateSizeRange(_getOptimalSize());
+		const GUIDimensions& dimensions = _getDimensions();
+		return dimensions.calculateSizeRange(_getOptimalSize());
 	}
 
 	void GUIElementBase::_getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements,

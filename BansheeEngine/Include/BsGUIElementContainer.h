@@ -18,7 +18,7 @@ namespace BansheeEngine
 		void _setPosition(const Vector2I& offset) override;
 
 	protected:
-		GUIElementContainer(const GUIDimensions& layoutOptions, const String& style = StringUtil::BLANK);
+		GUIElementContainer(const GUIDimensions& dimensions, const String& style = StringUtil::BLANK);
 		virtual ~GUIElementContainer();
 
 		/**

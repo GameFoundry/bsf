@@ -56,7 +56,7 @@ namespace BansheeEngine
 
 		GUISceneTreeView(const String& backgroundStyle, const String& elementBtnStyle, 
 			const String& foldoutBtnStyle, const String& selectionBackgroundStyle, const String& editBoxStyle, 
-			const String& dragHighlightStyle, const String& dragSepHighlightStyle, const GUIDimensions& layoutOptions);
+			const String& dragHighlightStyle, const String& dragSepHighlightStyle, const GUIDimensions& dimensions);
 
 		void updateTreeElement(SceneTreeElement* element);
 

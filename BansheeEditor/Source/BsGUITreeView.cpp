@@ -82,8 +82,8 @@ namespace BansheeEngine
 
 	GUITreeView::GUITreeView(const String& backgroundStyle, const String& elementBtnStyle, 
 		const String& foldoutBtnStyle, const String& selectionBackgroundStyle, const String& editBoxStyle, 
-		const String& dragHighlightStyle, const String& dragSepHighlightStyle, const GUIDimensions& layoutOptions)
-		:GUIElementContainer(layoutOptions), mBackgroundStyle(backgroundStyle),
+		const String& dragHighlightStyle, const String& dragSepHighlightStyle, const GUIDimensions& dimensions)
+		:GUIElementContainer(dimensions), mBackgroundStyle(backgroundStyle),
 		mElementBtnStyle(elementBtnStyle), mFoldoutBtnStyle(foldoutBtnStyle), mEditBoxStyle(editBoxStyle), mEditElement(nullptr), mIsElementSelected(false),
 		mNameEditBox(nullptr), mSelectionBackgroundStyle(selectionBackgroundStyle), mDragInProgress(nullptr), mDragHighlightStyle(dragHighlightStyle),
 		mDragSepHighlightStyle(dragSepHighlightStyle), mDragHighlight(nullptr), mDragSepHighlight(nullptr), mMouseOverDragElement(nullptr), mMouseOverDragElementTime(0.0f),

@@ -15,8 +15,8 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIDockSlider::GUIDockSlider(bool horizontal, const String& styleName, const GUIDimensions& layoutOptions)
-		:GUIButtonBase(styleName, GUIContent(HString(L"")), layoutOptions),
+	GUIDockSlider::GUIDockSlider(bool horizontal, const String& styleName, const GUIDimensions& dimensions)
+		:GUIButtonBase(styleName, GUIContent(HString(L"")), dimensions),
 		mDragInProgress(false), mHorizontal(horizontal), mIsCursorSet(false)
 	{
 
@@ -28,10 +28,10 @@ namespace BansheeEngine
 			getStyleName<GUIDockSlider>(styleName), GUIDimensions::create());
 	}
 
-	GUIDockSlider* GUIDockSlider::create(bool horizontal, const GUIOptions& layoutOptions, const String& styleName)
+	GUIDockSlider* GUIDockSlider::create(bool horizontal, const GUIOptions& options, const String& styleName)
 	{
 		return new (bs_alloc<GUIDockSlider, PoolAlloc>()) GUIDockSlider(horizontal, 
-			getStyleName<GUIDockSlider>(styleName), GUIDimensions::create(layoutOptions));
+			getStyleName<GUIDockSlider>(styleName), GUIDimensions::create(options));
 	}
 
 	bool GUIDockSlider::_hasCustomCursor(const Vector2I position, CursorType& type) const

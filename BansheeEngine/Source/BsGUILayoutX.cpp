@@ -10,6 +10,10 @@ namespace BansheeEngine
 		:GUILayout(parentArea)
 	{ }
 
+	GUILayoutX::GUILayoutX(const GUIDimensions& dimensions)
+		: GUILayout(dimensions)
+	{ }
+
 	LayoutSizeRange GUILayoutX::_calculateLayoutSizeRange() const
 	{
 		if (mIsDisabled)
@@ -59,7 +63,7 @@ namespace BansheeEngine
 			{
 				childSizeRange = child->_calculateLayoutSizeRange();
 			}
-			else if(child->_getType() == GUIElementBase::Type::Layout)
+			else if (child->_getType() == GUIElementBase::Type::Layout || child->_getType() == GUIElementBase::Type::Panel)
 			{
 				GUILayout* layout = static_cast<GUILayout*>(child);
 				childSizeRange = layout->_getCachedSizeRange();
@@ -109,7 +113,12 @@ namespace BansheeEngine
 			{
 				processedElements[childIdx] = true;
 			}
-			else if (child->_getType() == GUIElementBase::Type::Element || child->_getType() == GUIElementBase::Type::Layout)
+			else if (child->_getType() == GUIElementBase::Type::FlexibleSpace)
+			{
+				numFlexibleSpaces++;
+				numNonClampedElements++;
+			}
+			else
 			{
 				const GUIDimensions& dimensions = child->_getDimensions();
 
@@ -120,11 +129,6 @@ namespace BansheeEngine
 					numNonClampedElements++;
 					totalNonClampedSize += elementAreas[childIdx].width;
 				}
-			}
-			else if (child->_getType() == GUIElementBase::Type::FlexibleSpace)
-			{
-				numFlexibleSpaces++;
-				numNonClampedElements++;
 			}
 
 			childIdx++;
@@ -214,7 +218,16 @@ namespace BansheeEngine
 					UINT32 elementWidth = (UINT32)std::max(0, (INT32)elementAreas[childIdx].width - (INT32)extraWidth);
 
 					// Clamp if needed
-					if (child->_getType() == GUIElementBase::Type::Element || child->_getType() == GUIElementBase::Type::Layout)
+					switch (child->_getType())
+					{
+					case GUIElementBase::Type::FlexibleSpace:
+						elementAreas[childIdx].width = 0;
+						processedElements[childIdx] = true;
+						numNonClampedElements--;
+						break;
+					case GUIElementBase::Type::Element:
+					case GUIElementBase::Type::Layout:
+					case GUIElementBase::Type::Panel:
 					{
 						const LayoutSizeRange& childSizeRange = sizeRanges[childIdx];
 
@@ -235,11 +248,7 @@ namespace BansheeEngine
 						elementAreas[childIdx].width = elementWidth;
 						remainingSize = (UINT32)std::max(0, (INT32)remainingSize - (INT32)extraWidth);
 					}
-					else if (child->_getType() == GUIElementBase::Type::FlexibleSpace)
-					{
-						elementAreas[childIdx].width = 0;
-						processedElements[childIdx] = true;
-						numNonClampedElements--;
+						break;
 					}
 
 					childIdx++;
@@ -313,15 +322,15 @@ namespace BansheeEngine
 			xOffset += child->_getPadding().left;
 
 			UINT32 elemHeight = (UINT32)sizeRanges[childIdx].optimal.y;
-			const GUIDimensions& layoutOptions = child->_getDimensions();
-			if (!layoutOptions.fixedHeight())
+			const GUIDimensions& dimensions = child->_getDimensions();
+			if (!dimensions.fixedHeight())
 			{
 				elemHeight = height;
-				if (layoutOptions.minHeight > 0 && elemHeight < layoutOptions.minHeight)
-					elemHeight = layoutOptions.minHeight;
+				if (dimensions.minHeight > 0 && elemHeight < dimensions.minHeight)
+					elemHeight = dimensions.minHeight;
 
-				if (layoutOptions.maxHeight > 0 && elemHeight > layoutOptions.maxHeight)
-					elemHeight = layoutOptions.maxHeight;
+				if (dimensions.maxHeight > 0 && elemHeight > dimensions.maxHeight)
+					elemHeight = dimensions.maxHeight;
 			}
 
 			elementAreas[childIdx].height = elemHeight;
@@ -337,7 +346,7 @@ namespace BansheeEngine
 				elementAreas[childIdx].x = x + xOffset;
 				elementAreas[childIdx].y = y + yOffset;
 			}
-			else if (child->_getType() == GUIElementBase::Type::Layout)
+			else if (child->_getType() == GUIElementBase::Type::Layout || child->_getType() == GUIElementBase::Type::Panel)
 			{
 				GUILayout* layout = static_cast<GUILayout*>(child);
 
@@ -394,7 +403,7 @@ namespace BansheeEngine
 
 				actualSizes[childIdx].height = childArea.height + child->_getPadding().top + child->_getPadding().bottom;
 			}
-			else if (child->_getType() == GUIElementBase::Type::Layout)
+			else if (child->_getType() == GUIElementBase::Type::Layout || child->_getType() == GUIElementBase::Type::Panel)
 			{
 				GUILayout* layout = static_cast<GUILayout*>(child);
 
@@ -440,5 +449,10 @@ namespace BansheeEngine
 	GUILayoutX* GUILayoutX::create()
 	{
 		return bs_new<GUILayoutX>();
+	}
+
+	GUILayoutX* GUILayoutX::create(const GUIOptions& options)
+	{
+		return bs_new<GUILayoutX>(GUIDimensions::create(options));
 	}
 }

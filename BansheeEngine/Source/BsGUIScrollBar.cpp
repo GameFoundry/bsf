@@ -18,8 +18,8 @@ namespace BansheeEngine
 {
 	const UINT32 GUIScrollBar::ButtonScrollAmount = 10;
 
-	GUIScrollBar::GUIScrollBar(bool horizontal, const String& styleName, const GUIDimensions& layoutOptions)
-		:GUIElement(styleName, layoutOptions), mHorizontal(horizontal)
+	GUIScrollBar::GUIScrollBar(bool horizontal, const String& styleName, const GUIDimensions& dimensions)
+		:GUIElement(styleName, dimensions), mHorizontal(horizontal)
 	{
 		mImageSprite = bs_new<ImageSprite, PoolAlloc>();
 

@@ -16,12 +16,12 @@ namespace BansheeEngine
 		static GUITabButton* create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, const HString& text, 
 			const String& styleName = StringUtil::BLANK);
 		static GUITabButton* create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, const HString& text, 
-			const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
+			const GUIOptions& options, const String& styleName = StringUtil::BLANK);
 	
 		static GUITabButton* create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, const GUIContent& content, 
 			const String& styleName = StringUtil::BLANK);
 		static GUITabButton* create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, const GUIContent& content, 
-			const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
+			const GUIOptions& options, const String& styleName = StringUtil::BLANK);
 
 		UINT32 getIndex() const { return mIndex; }
 		void _setDraggedState(bool active);
@@ -39,6 +39,6 @@ namespace BansheeEngine
 
 		static const UINT32 DRAG_MIN_DISTANCE;
 
-		GUITabButton(const String& styleName, const GUIToggleGroupPtr& toggleGroup, UINT32 index, const GUIContent& content, const GUIDimensions& layoutOptions);
+		GUITabButton(const String& styleName, const GUIToggleGroupPtr& toggleGroup, UINT32 index, const GUIContent& content, const GUIDimensions& dimensions);
 	};
 }

@@ -10,8 +10,8 @@ using namespace std::placeholders;
 
 namespace BansheeEngine
 {
-	GUISlider::GUISlider(bool horizontal, const String& styleName, const GUIDimensions& layoutOptions)
-		:GUIElementContainer(layoutOptions, styleName)
+	GUISlider::GUISlider(bool horizontal, const String& styleName, const GUIDimensions& dimensions)
+		:GUIElementContainer(dimensions, styleName)
 	{
 		mSliderHandle = GUISliderHandle::create(horizontal, true, getSubStyleName(getHandleStyleType()));
 		mBackground = GUITexture::create(getSubStyleName(getBackgroundStyleType()));
@@ -100,8 +100,8 @@ namespace BansheeEngine
 		onChanged(newPosition);
 	}
 
-	GUISliderHorz::GUISliderHorz(const String& styleName, const GUIDimensions& layoutOptions)
-		:GUISlider(true, styleName, layoutOptions)
+	GUISliderHorz::GUISliderHorz(const String& styleName, const GUIDimensions& dimensions)
+		:GUISlider(true, styleName, dimensions)
 	{
 
 	}
@@ -111,9 +111,9 @@ namespace BansheeEngine
 		return new (bs_alloc<GUISliderHorz, PoolAlloc>()) GUISliderHorz(getStyleName<GUISliderHorz>(styleName), GUIDimensions::create());
 	}
 
-	GUISliderHorz* GUISliderHorz::create(const GUIOptions& layoutOptions, const String& styleName)
+	GUISliderHorz* GUISliderHorz::create(const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUISliderHorz, PoolAlloc>()) GUISliderHorz(getStyleName<GUISliderHorz>(styleName), GUIDimensions::create(layoutOptions));
+		return new (bs_alloc<GUISliderHorz, PoolAlloc>()) GUISliderHorz(getStyleName<GUISliderHorz>(styleName), GUIDimensions::create(options));
 	}
 
 	const String& GUISliderHorz::getGUITypeName()
@@ -122,8 +122,8 @@ namespace BansheeEngine
 		return typeName;
 	}
 
-	GUISliderVert::GUISliderVert(const String& styleName, const GUIDimensions& layoutOptions)
-		:GUISlider(false, styleName, layoutOptions)
+	GUISliderVert::GUISliderVert(const String& styleName, const GUIDimensions& dimensions)
+		:GUISlider(false, styleName, dimensions)
 	{
 
 	}
@@ -133,9 +133,9 @@ namespace BansheeEngine
 		return new (bs_alloc<GUISliderVert, PoolAlloc>()) GUISliderVert(getStyleName<GUISliderVert>(styleName), GUIDimensions::create());
 	}
 
-	GUISliderVert* GUISliderVert::create(const GUIOptions& layoutOptions, const String& styleName)
+	GUISliderVert* GUISliderVert::create(const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUISliderVert, PoolAlloc>()) GUISliderVert(getStyleName<GUISliderVert>(styleName), GUIDimensions::create(layoutOptions));
+		return new (bs_alloc<GUISliderVert, PoolAlloc>()) GUISliderVert(getStyleName<GUISliderVert>(styleName), GUIDimensions::create(options));
 	}
 
 	const String& GUISliderVert::getGUITypeName()

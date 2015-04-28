@@ -9,8 +9,8 @@
 
 namespace BansheeEngine
 {
-	GUILabel::GUILabel(const String& styleName, const GUIContent& content, const GUIDimensions& layoutOptions)
-		:GUIElement(styleName, layoutOptions), mContent(content)
+	GUILabel::GUILabel(const String& styleName, const GUIContent& content, const GUIDimensions& dimensions)
+		:GUIElement(styleName, dimensions), mContent(content)
 	{
 		mTextSprite = bs_new<TextSprite, PoolAlloc>();
 
@@ -93,9 +93,9 @@ namespace BansheeEngine
 		return create(GUIContent(text), styleName);
 	}
 
-	GUILabel* GUILabel::create(const HString& text, const GUIOptions& layoutOptions, const String& styleName)
+	GUILabel* GUILabel::create(const HString& text, const GUIOptions& options, const String& styleName)
 	{
-		return create(GUIContent(text), layoutOptions, styleName);
+		return create(GUIContent(text), options, styleName);
 	}
 
 	GUILabel* GUILabel::create(const GUIContent& content, const String& styleName)
@@ -103,9 +103,9 @@ namespace BansheeEngine
 		return new (bs_alloc<GUILabel, PoolAlloc>()) GUILabel(getStyleName<GUILabel>(styleName), content, GUIDimensions::create());
 	}
 
-	GUILabel* GUILabel::create(const GUIContent& content, const GUIOptions& layoutOptions, const String& styleName)
+	GUILabel* GUILabel::create(const GUIContent& content, const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUILabel, PoolAlloc>()) GUILabel(getStyleName<GUILabel>(styleName), content, GUIDimensions::create(layoutOptions));
+		return new (bs_alloc<GUILabel, PoolAlloc>()) GUILabel(getStyleName<GUILabel>(styleName), content, GUIDimensions::create(options));
 	}
 
 	const String& GUILabel::getGUITypeName()

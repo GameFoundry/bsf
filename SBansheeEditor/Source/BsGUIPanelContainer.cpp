@@ -7,8 +7,8 @@
 
 namespace BansheeEngine
 {
-	GUIPanelContainer::GUIPanelContainer(const PrivatelyConstruct& dummy, const ScriptGUIPanel& guiPanel, const GUIDimensions& layoutOptions)
-		:GUIElementContainer(layoutOptions), mGUIPanel(&guiPanel)
+	GUIPanelContainer::GUIPanelContainer(const PrivatelyConstruct& dummy, const ScriptGUIPanel& guiPanel, const GUIDimensions& dimensions)
+		:GUIElementContainer(dimensions), mGUIPanel(&guiPanel)
 	{
 
 	}
@@ -18,9 +18,9 @@ namespace BansheeEngine
 
 	}
 
-	GUIPanelContainer* GUIPanelContainer::create(const ScriptGUIPanel& guiPanel, const GUIOptions& layoutOptions)
+	GUIPanelContainer* GUIPanelContainer::create(const ScriptGUIPanel& guiPanel, const GUIOptions& options)
 	{
-		return bs_new<GUIPanelContainer>(PrivatelyConstruct(), guiPanel, GUIDimensions::create(layoutOptions));
+		return bs_new<GUIPanelContainer>(PrivatelyConstruct(), guiPanel, GUIDimensions::create(options));
 	}
 
 	GUIPanelContainer* GUIPanelContainer::create(const ScriptGUIPanel& guiPanel)

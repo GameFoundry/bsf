@@ -6,15 +6,21 @@
 namespace BansheeEngine
 {
 	/**
-	* @brief	Represents an explicit layout that respects bounds originally set by the element
-	*			(i.e. it won't position or resize GUI elements like other layouts)
-	*/
-	class BS_EXPORT GUILayoutExplicit : public GUILayout
+	 * @brief	Represents a GUI panel that you can use for free placement 
+	 *			of GUI elements within its bounds.
+	 */
+	class BS_EXPORT GUIPanel : public GUILayout
 	{
 	public:
-		GUILayoutExplicit(GUIArea* parentArea);
-		GUILayoutExplicit() {};
-		~GUILayoutExplicit() {};
+		GUIPanel(GUIArea* parentArea);
+		GUIPanel(const GUIDimensions& dimensions);
+		GUIPanel() {};
+		~GUIPanel() {};
+
+		/**
+		 * @copydoc	GUIElementBase::_getType
+		 */
+		virtual Type _getType() const override { return GUIElementBase::Type::Panel; }
 
 		/**
 		 * @brief	Calculate optimal sizes of all child layout elements.
@@ -40,7 +46,14 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates a new GUI panel.
 		 */
-		static GUILayoutExplicit* create();
+		static GUIPanel* create();
+
+		/**
+		 * @brief	Creates a new GUI panel.
+		 *
+		 * @param	options		Options that allow you to control how is the element positioned and sized.
+		 */
+		static GUIPanel* create(const GUIOptions& options);
 
 	protected:
 		/**

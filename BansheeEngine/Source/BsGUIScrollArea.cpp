@@ -20,8 +20,8 @@ namespace BansheeEngine
 	const UINT32 GUIScrollArea::WheelScrollAmount = 50;
 
 	GUIScrollArea::GUIScrollArea(ScrollBarType vertBarType, ScrollBarType horzBarType, 
-		const String& scrollBarStyle, const String& scrollAreaStyle, const GUIDimensions& layoutOptions)
-		:GUIElementContainer(layoutOptions), mVertScroll(nullptr), mHorzScroll(nullptr), mVertOffset(0), mHorzOffset(0),
+		const String& scrollBarStyle, const String& scrollAreaStyle, const GUIDimensions& dimensions)
+		:GUIElementContainer(dimensions), mVertScroll(nullptr), mHorzScroll(nullptr), mVertOffset(0), mHorzOffset(0),
 		mVertBarType(vertBarType), mHorzBarType(horzBarType), mScrollBarStyle(scrollBarStyle)
 	{
 		mContentLayout = GUILayoutY::create();
@@ -424,11 +424,11 @@ namespace BansheeEngine
 			getStyleName<GUIScrollArea>(scrollAreaStyle), GUIDimensions::create());
 	}
 
-	GUIScrollArea* GUIScrollArea::create(const GUIOptions& layoutOptions, const String& scrollBarStyle, 
+	GUIScrollArea* GUIScrollArea::create(const GUIOptions& options, const String& scrollBarStyle, 
 		const String& scrollAreaStyle)
 	{
 		return new (bs_alloc<GUIScrollArea, PoolAlloc>()) GUIScrollArea(ScrollBarType::ShowIfDoesntFit, 
-			ScrollBarType::ShowIfDoesntFit, scrollBarStyle, getStyleName<GUIScrollArea>(scrollAreaStyle), GUIDimensions::create(layoutOptions));
+			ScrollBarType::ShowIfDoesntFit, scrollBarStyle, getStyleName<GUIScrollArea>(scrollAreaStyle), GUIDimensions::create(options));
 	}
 
 	GUIScrollArea* GUIScrollArea::create(const String& scrollBarStyle, const String& scrollAreaStyle)
@@ -438,11 +438,11 @@ namespace BansheeEngine
 	}
 
 	GUIScrollArea* GUIScrollArea::create(ScrollBarType vertBarType, 
-		ScrollBarType horzBarType, const GUIOptions& layoutOptions, const String& scrollBarStyle, 
+		ScrollBarType horzBarType, const GUIOptions& options, const String& scrollBarStyle, 
 		const String& scrollAreaStyle)
 	{
 		return new (bs_alloc<GUIScrollArea, PoolAlloc>()) GUIScrollArea(vertBarType, horzBarType, scrollBarStyle, 
-			getStyleName<GUIScrollArea>(scrollAreaStyle), GUIDimensions::create(layoutOptions));
+			getStyleName<GUIScrollArea>(scrollAreaStyle), GUIDimensions::create(options));
 	}
 
 	const String& GUIScrollArea::getGUITypeName()

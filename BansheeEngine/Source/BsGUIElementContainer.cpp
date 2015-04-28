@@ -3,8 +3,8 @@
 
 namespace BansheeEngine
 {
-	GUIElementContainer::GUIElementContainer(const GUIDimensions& layoutOptions, const String& style)
-		:GUIElement(style, layoutOptions)
+	GUIElementContainer::GUIElementContainer(const GUIDimensions& dimensions, const String& style)
+		:GUIElement(style, dimensions)
 	{ }
 
 	GUIElementContainer::~GUIElementContainer()

@@ -16,7 +16,7 @@ namespace BansheeEngine
 		static const String& getGUITypeName();
 
 		static GUIDropButton* create(UINT32 dragType, const String& styleName = StringUtil::BLANK);
-		static GUIDropButton* create(UINT32 dragType, const GUIOptions& layoutOptions, 
+		static GUIDropButton* create(UINT32 dragType, const GUIOptions& options, 
 			const String& styleName = StringUtil::BLANK);
 
 		Event<void(void*)> onDataDropped;
@@ -24,7 +24,7 @@ namespace BansheeEngine
 		virtual ~GUIDropButton();
 
 	protected:
-		GUIDropButton(UINT32 dragType, const String& styleName, const GUIDimensions& layoutOptions);
+		GUIDropButton(UINT32 dragType, const String& styleName, const GUIDimensions& dimensions);
 
 		virtual bool _mouseEvent(const GUIMouseEvent& ev);
 		virtual bool _acceptDragAndDrop(const Vector2I position, UINT32 typeId) const;

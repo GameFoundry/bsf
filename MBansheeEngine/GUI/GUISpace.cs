@@ -5,19 +5,9 @@ namespace BansheeEngine
 {
     public sealed class GUIFixedSpace : GUIElement
     {
-        internal GUIFixedSpace(GUILayout parentLayout, int size)
+        public GUIFixedSpace(int size)
         {
-            Internal_CreateInstanceAdd(this, parentLayout, size);
-        }
-
-        internal GUIFixedSpace(GUILayout parentLayout, int index, int size)
-        {
-            Internal_CreateInstanceInsert(this, parentLayout, index, size);
-        }
-
-        internal override bool IsStatic()
-        {
-            return true;
+            Internal_CreateInstance(this, size);
         }
 
         internal override void SetParent(GUILayout layout)
@@ -38,10 +28,7 @@ namespace BansheeEngine
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstanceAdd(GUIFixedSpace instance, GUILayout parentLayout, int size);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstanceInsert(GUIFixedSpace instance, GUILayout parentLayout, int index, int size);
+        private static extern void Internal_CreateInstance(GUIFixedSpace instance, int size);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetSize(IntPtr nativeInstance, int size);
@@ -49,19 +36,9 @@ namespace BansheeEngine
 
     public sealed class GUIFlexibleSpace : GUIElement
     {
-        internal GUIFlexibleSpace(GUILayout parentLayout)
+        public GUIFlexibleSpace()
         {
-            Internal_CreateInstanceAdd(this, parentLayout);
-        }
-
-        internal GUIFlexibleSpace(GUILayout parentLayout, int index)
-        {
-            Internal_CreateInstanceInsert(this, parentLayout, index);
-        }
-
-        internal override bool IsStatic()
-        {
-            return true;
+            Internal_CreateInstance(this);
         }
 
         internal override void SetParent(GUILayout layout)
@@ -77,9 +54,6 @@ namespace BansheeEngine
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstanceAdd(GUIFlexibleSpace instance, GUILayout parentLayout);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstanceInsert(GUIFlexibleSpace instance, GUILayout parentLayout, int index);
+        private static extern void Internal_CreateInstance(GUIFlexibleSpace instance);
     }
 }

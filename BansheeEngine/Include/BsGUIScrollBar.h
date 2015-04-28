@@ -68,10 +68,10 @@ namespace BansheeEngine
 		 * @param	styleName		Optional style to use for the element. Style will be retrieved
 		 *							from GUISkin of the GUIWidget the element is used on. If not specified
 		 *							default style is used.
-		 * @param	layoutOptions	Options that allows you to control how is the element positioned in
-		 *							GUI layout. This will override any similar options set by style.
+		 * @param	options			Options that allow you to control how is the element positioned and sized.
+		 *							This will override any similar options set by style.
 		 */
-		GUIScrollBar(bool horizontal, const String& styleName, const GUIDimensions& layoutOptions);
+		GUIScrollBar(bool horizontal, const String& styleName, const GUIDimensions& dimensions);
 		virtual ~GUIScrollBar();
 
 		/**

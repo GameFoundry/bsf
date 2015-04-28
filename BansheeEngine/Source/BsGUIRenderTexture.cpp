@@ -13,8 +13,8 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIRenderTexture::GUIRenderTexture(const String& styleName, const RenderTexturePtr& texture, const GUIDimensions& layoutOptions)
-		:GUITexture(styleName, HSpriteTexture(), GUIImageScaleMode::StretchToFit, false, layoutOptions)
+	GUIRenderTexture::GUIRenderTexture(const String& styleName, const RenderTexturePtr& texture, const GUIDimensions& dimensions)
+		:GUITexture(styleName, HSpriteTexture(), GUIImageScaleMode::StretchToFit, false, dimensions)
 	{
 		setRenderTexture(texture);
 	}
@@ -30,9 +30,9 @@ namespace BansheeEngine
 		return new (bs_alloc<GUIRenderTexture, PoolAlloc>()) GUIRenderTexture(getStyleName<GUIRenderTexture>(styleName), texture, GUIDimensions::create());
 	}
 
-	GUIRenderTexture* GUIRenderTexture::create(const RenderTexturePtr& texture, const GUIOptions& layoutOptions, const String& styleName)
+	GUIRenderTexture* GUIRenderTexture::create(const RenderTexturePtr& texture, const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUIRenderTexture, PoolAlloc>()) GUIRenderTexture(getStyleName<GUIRenderTexture>(styleName), texture, GUIDimensions::create(layoutOptions));
+		return new (bs_alloc<GUIRenderTexture, PoolAlloc>()) GUIRenderTexture(getStyleName<GUIRenderTexture>(styleName), texture, GUIDimensions::create(options));
 	}
 
 	void GUIRenderTexture::setRenderTexture(const RenderTexturePtr& texture)

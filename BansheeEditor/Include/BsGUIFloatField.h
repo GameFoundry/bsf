@@ -12,7 +12,7 @@ namespace BansheeEngine
 		static const String& getInputStyleType();
 
 		GUIFloatField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth,
-			const String& style, const GUIDimensions& layoutOptions, bool withLabel);
+			const String& style, const GUIDimensions& dimensions, bool withLabel);
 
 		float getValue() const { return mValue; }
 		void setValue(float value);

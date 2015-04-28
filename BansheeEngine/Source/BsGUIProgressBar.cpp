@@ -9,8 +9,8 @@ using namespace std::placeholders;
 
 namespace BansheeEngine
 {
-	GUIProgressBar::GUIProgressBar(const String& styleName, const GUIDimensions& layoutOptions)
-		:GUIElementContainer(layoutOptions, styleName), mPercent(0)
+	GUIProgressBar::GUIProgressBar(const String& styleName, const GUIDimensions& dimensions)
+		:GUIElementContainer(dimensions, styleName), mPercent(0)
 	{
 		mBar = GUITexture::create(getSubStyleName(getBarStyleType()));
 		mBackground = GUITexture::create(getSubStyleName(getBackgroundStyleType()));
@@ -96,9 +96,9 @@ namespace BansheeEngine
 		return new (bs_alloc<GUIProgressBar, PoolAlloc>()) GUIProgressBar(getStyleName<GUIProgressBar>(styleName), GUIDimensions::create());
 	}
 
-	GUIProgressBar* GUIProgressBar::create(const GUIOptions& layoutOptions, const String& styleName)
+	GUIProgressBar* GUIProgressBar::create(const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUIProgressBar, PoolAlloc>()) GUIProgressBar(getStyleName<GUIProgressBar>(styleName), GUIDimensions::create(layoutOptions));
+		return new (bs_alloc<GUIProgressBar, PoolAlloc>()) GUIProgressBar(getStyleName<GUIProgressBar>(styleName), GUIDimensions::create(options));
 	}
 
 	const String& GUIProgressBar::getGUITypeName()

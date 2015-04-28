@@ -42,13 +42,13 @@ namespace BansheeEngine
 		 *
 		 * @param	vertBarType		Vertical scrollbar options.
 		 * @param	horzBarType		Horizontal scrollbar options.
-		 * @param	layoutOptions	Options that allows you to control how is the element positioned in
-		 *							GUI layout. This will override any similar options set by style.
+		 * @param	options			Options that allow you to control how is the element positioned and sized.
+		 *							This will override any similar options set by style.
 		 * @param	scrollBarStyle	(Optional) Style used by the scroll bars.
 		 * @param	scrollAreaStyle	(Optional) Style used by the scroll content area.
 		 */
 		static GUIScrollArea* create(ScrollBarType vertBarType, ScrollBarType horzBarType, 
-			const GUIOptions& layoutOptions, const String& scrollBarStyle = StringUtil::BLANK, 
+			const GUIOptions& options, const String& scrollBarStyle = StringUtil::BLANK, 
 			const String& scrollAreaStyle = StringUtil::BLANK);
 
 		/**
@@ -63,12 +63,12 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates a new empty scroll area. Scroll bars will be show if needed and hidden otherwise.
 		 *
-		 * @param	layoutOptions	Options that allows you to control how is the element positioned in
-		 *							GUI layout. This will override any similar options set by style.
+		 * @param	options			Options that allow you to control how is the element positioned and sized.
+		 *							This will override any similar options set by style.
 		 * @param	scrollBarStyle	(Optional) Style used by the scroll bars.
 		 * @param	scrollAreaStyle	(Optional) Style used by the scroll content area.
 		 */
-		static GUIScrollArea* create(const GUIOptions& layoutOptions, const String& scrollBarStyle = StringUtil::BLANK, 
+		static GUIScrollArea* create(const GUIOptions& options, const String& scrollBarStyle = StringUtil::BLANK, 
 			const String& scrollAreaStyle = StringUtil::BLANK);
 
 		/**
@@ -129,7 +129,7 @@ namespace BansheeEngine
 		virtual void updateClippedBounds();
 	private:
 		GUIScrollArea(ScrollBarType vertBarType, ScrollBarType horzBarType, 
-			const String& scrollBarStyle, const String& scrollAreaStyle, const GUIDimensions& layoutOptions);
+			const String& scrollBarStyle, const String& scrollAreaStyle, const GUIDimensions& dimensions);
 
 		/**
 		 * @copydoc	GUIElementContainer::mouseEvent

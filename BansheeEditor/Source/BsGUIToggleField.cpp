@@ -14,8 +14,8 @@ using namespace std::placeholders;
 namespace BansheeEngine
 {
 	GUIToggleField::GUIToggleField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, 
-		UINT32 labelWidth, const String& style, const GUIDimensions& layoutOptions, bool withLabel)
-		:TGUIField(dummy, labelContent, labelWidth, style, layoutOptions, withLabel), mToggle(nullptr), mValue(false)
+		UINT32 labelWidth, const String& style, const GUIDimensions& dimensions, bool withLabel)
+		:TGUIField(dummy, labelContent, labelWidth, style, dimensions, withLabel), mToggle(nullptr), mValue(false)
 	{
 		mToggle = GUIToggle::create(HString(L""), getSubStyleName(getToggleStyleType()));
 		mToggle->onToggled.connect(std::bind(&GUIToggleField::valueChanged, this, _1));

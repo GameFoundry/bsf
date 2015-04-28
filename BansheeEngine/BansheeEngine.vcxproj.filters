@@ -287,9 +287,6 @@
     <ClInclude Include="Include\BsGUIProgressBar.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsGUILayoutExplicit.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsPlainText.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -330,6 +327,9 @@
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsGUIDimensions.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUIPanel.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
   </ItemGroup>
@@ -538,9 +538,6 @@
     <ClCompile Include="Source\BsGUIProgressBar.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsGUILayoutExplicit.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
     <ClCompile Include="Source\BsGUISpace.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
@@ -575,6 +572,9 @@
       <Filter>Source Files\RTTI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGUIDimensions.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUIPanel.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
   </ItemGroup>

@@ -20,7 +20,7 @@ namespace BansheeEngine
 
 		/**
 		 * Calculates position and size of a GUI element in its current layout.
-		 * Returned position is relative to layout origin.
+		 * Returned position is relative to parent GUI panel.
 		 */
 		// TODO - This method might fail if element is part of a more complex hierarchy
 		// other than just GUILayouts and base elements (e.g. a tree view) because for a lot

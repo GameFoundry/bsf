@@ -12,19 +12,19 @@ namespace BansheeEngine
 	public:
 		static const String& getGUITypeName();
 
-		static GUIResourceField* create(const String& typeNamespace, const String& type, const GUIContent& labelContent, UINT32 labelWidth, const GUIOptions& layoutOptions,
+		static GUIResourceField* create(const String& typeNamespace, const String& type, const GUIContent& labelContent, UINT32 labelWidth, const GUIOptions& options,
 			const String& style = StringUtil::BLANK);
 
-		static GUIResourceField* create(const String& typeNamespace, const String& type, const GUIContent& labelContent, const GUIOptions& layoutOptions,
+		static GUIResourceField* create(const String& typeNamespace, const String& type, const GUIContent& labelContent, const GUIOptions& options,
 			const String& style = StringUtil::BLANK);
 
-		static GUIResourceField* create(const String& typeNamespace, const String& type, const HString& labelText, UINT32 labelWidth, const GUIOptions& layoutOptions,
+		static GUIResourceField* create(const String& typeNamespace, const String& type, const HString& labelText, UINT32 labelWidth, const GUIOptions& options,
 			const String& style = StringUtil::BLANK);
 
-		static GUIResourceField* create(const String& typeNamespace, const String& type, const HString& labelText, const GUIOptions& layoutOptions,
+		static GUIResourceField* create(const String& typeNamespace, const String& type, const HString& labelText, const GUIOptions& options,
 			const String& style = StringUtil::BLANK);
 
-		static GUIResourceField* create(const String& typeNamespace, const String& type, const GUIOptions& layoutOptions, const String& style = StringUtil::BLANK);
+		static GUIResourceField* create(const String& typeNamespace, const String& type, const GUIOptions& options, const String& style = StringUtil::BLANK);
 
 		static GUIResourceField* create(const String& typeNamespace, const String& type, const GUIContent& labelContent, UINT32 labelWidth,
 			const String& style = StringUtil::BLANK);
@@ -41,7 +41,7 @@ namespace BansheeEngine
 		static GUIResourceField* create(const String& typeNamespace, const String& type, const String& style = StringUtil::BLANK);
 
 		GUIResourceField(const PrivatelyConstruct& dummy, const String& typeNamespace, const String& type, const GUIContent& labelContent,
-			UINT32 labelWidth, const String& style, const GUIDimensions& layoutOptions, bool withLabel);
+			UINT32 labelWidth, const String& style, const GUIDimensions& dimensions, bool withLabel);
 
 		HResource getValue() const;
 		void setValue(const HResource& value);

@@ -11,16 +11,15 @@
 
 namespace BansheeEngine
 {
-	ScriptGUIFlexibleSpace::ScriptGUIFlexibleSpace(MonoObject* instance, GUIFlexibleSpace* flexibleSpace, GUILayout* parentLayout)
-		:TScriptGUIElementBase(instance, flexibleSpace), mFlexibleSpace(flexibleSpace), mParentLayout(parentLayout), mIsDestroyed(false)
+	ScriptGUIFlexibleSpace::ScriptGUIFlexibleSpace(MonoObject* instance, GUIFlexibleSpace* flexibleSpace)
+		:TScriptGUIElementBase(instance, flexibleSpace), mFlexibleSpace(flexibleSpace), mIsDestroyed(false)
 	{
 
 	}
 
 	void ScriptGUIFlexibleSpace::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstanceAdd", &ScriptGUIFlexibleSpace::internal_createInstanceAdd);
-		metaData.scriptClass->addInternalCall("Internal_CreateInstanceInsert", &ScriptGUIFlexibleSpace::internal_createInstanceInsert);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIFlexibleSpace::internal_createInstance);
 	}
 
 	void ScriptGUIFlexibleSpace::destroy()
@@ -28,27 +27,15 @@ namespace BansheeEngine
 		if(!mIsDestroyed)
 		{
 			GUIFlexibleSpace::destroy(mFlexibleSpace);
-			mParentLayout = nullptr;
 
 			mIsDestroyed = true;
 		}
 	}
 
-	void ScriptGUIFlexibleSpace::internal_createInstanceAdd(MonoObject* instance, MonoObject* parentLayout)
+	void ScriptGUIFlexibleSpace::internal_createInstance(MonoObject* instance)
 	{
-		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
-		GUILayout* nativeLayout = scriptLayout->getInternalValue();
-		GUIFlexibleSpace* space = nativeLayout->addNewElement<GUIFlexibleSpace>();
+		GUIFlexibleSpace* space = GUIFlexibleSpace::create();
 
-		ScriptGUIFlexibleSpace* nativeInstance = new (bs_alloc<ScriptGUIFlexibleSpace>()) ScriptGUIFlexibleSpace(instance, space, nativeLayout);
-	}
-
-	void ScriptGUIFlexibleSpace::internal_createInstanceInsert(MonoObject* instance, MonoObject* parentLayout, UINT32 index)
-	{
-		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
-		GUILayout* nativeLayout = scriptLayout->getInternalValue();
-		GUIFlexibleSpace* space = nativeLayout->insertNewElement<GUIFlexibleSpace>(index);
-
-		ScriptGUIFlexibleSpace* nativeInstance = new (bs_alloc<ScriptGUIFlexibleSpace>()) ScriptGUIFlexibleSpace(instance, space, nativeLayout);
+		ScriptGUIFlexibleSpace* nativeInstance = new (bs_alloc<ScriptGUIFlexibleSpace>()) ScriptGUIFlexibleSpace(instance, space);
 	}
 }

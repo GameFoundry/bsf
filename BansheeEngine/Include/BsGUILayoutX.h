@@ -13,6 +13,7 @@ namespace BansheeEngine
 	{
 	public:
 		GUILayoutX(GUIArea* parentArea);
+		GUILayoutX(const GUIDimensions& dimensions);
 		GUILayoutX() {};
 		~GUILayoutX() {};
 
@@ -41,6 +42,13 @@ namespace BansheeEngine
 		 * @brief	Creates a new horizontal layout.
 		 */
 		static GUILayoutX* create();
+
+		/**
+		 * @brief	Creates a new horizontal layout.
+		 *
+		 * @param	options		Options that allow you to control how is the element positioned and sized.
+		 */
+		static GUILayoutX* create(const GUIOptions& options);
 
 	protected:
 		/**

@@ -12,11 +12,11 @@ namespace BansheeEngine
 		static const String& getGUITypeName();
 
 		static GUIWindowFrame* create(const String& styleName = StringUtil::BLANK);
-		static GUIWindowFrame* create(const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
+		static GUIWindowFrame* create(const GUIOptions& options, const String& styleName = StringUtil::BLANK);
 
 		void setFocused(bool focused);
 	protected:
 		~GUIWindowFrame();
-		GUIWindowFrame(const String& styleName, const GUIDimensions& layoutOptions);
+		GUIWindowFrame(const String& styleName, const GUIDimensions& dimensions);
 	};
 }

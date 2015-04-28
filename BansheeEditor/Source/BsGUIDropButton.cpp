@@ -18,8 +18,8 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIDropButton::GUIDropButton(UINT32 dragType, const String& styleName, const GUIDimensions& layoutOptions)
-		:GUIButtonBase(styleName, GUIContent(HString(L"None")), layoutOptions), mDragType(dragType)
+	GUIDropButton::GUIDropButton(UINT32 dragType, const String& styleName, const GUIDimensions& dimensions)
+		:GUIButtonBase(styleName, GUIContent(HString(L"None")), dimensions), mDragType(dragType)
 	{
 
 	}
@@ -33,10 +33,10 @@ namespace BansheeEngine
 			getStyleName<GUIDropButton>(styleName), GUIDimensions::create());
 	}
 
-	GUIDropButton* GUIDropButton::create(UINT32 dragType, const GUIOptions& layoutOptions, const String& styleName)
+	GUIDropButton* GUIDropButton::create(UINT32 dragType, const GUIOptions& options, const String& styleName)
 	{
 		return new (bs_alloc<GUIDropButton, PoolAlloc>()) GUIDropButton(dragType, 
-			getStyleName<GUIDropButton>(styleName), GUIDimensions::create(layoutOptions));
+			getStyleName<GUIDropButton>(styleName), GUIDimensions::create(options));
 	}
 
 	bool GUIDropButton::_mouseEvent(const GUIMouseEvent& ev)

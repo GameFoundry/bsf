@@ -45,14 +45,14 @@ namespace BansheeEngine
 		 *
 		 * @param	parent			Parent sub-menu that owns the drop down contents.
 		 * @param	dropDownData	Data that will be used for initializing the child entries.
-		 * @param	layoutOptions	Options that allows you to control how is the element positioned in
-		 *							GUI layout. This will override any similar options set by style.
+		 * @param	options			Options that allow you to control how is the element positioned and sized.
+		 *							This will override any similar options set by style.
 		 * @param	styleName		Optional style to use for the element. Style will be retrieved
 		 *							from GUISkin of the GUIWidget the element is used on. If not specified
 		 *							default button style is used.
 		 */
 		static GUIDropDownContent* create(GUIDropDownBox::DropDownSubMenu* parent, const GUIDropDownData& dropDownData, 
-			const GUIOptions& layoutOptions, const String& style = StringUtil::BLANK);
+			const GUIOptions& options, const String& style = StringUtil::BLANK);
 
 		/**
 		 * @brief	Changes the range of the displayed elements. 
@@ -77,7 +77,7 @@ namespace BansheeEngine
 		static const String SEPARATOR_STYLE_TYPE;
 	protected:
 		GUIDropDownContent(GUIDropDownBox::DropDownSubMenu* parent, const GUIDropDownData& dropDownData, 
-			const String& style, const GUIDimensions& layoutOptions);
+			const String& style, const GUIDimensions& dimensions);
 		~GUIDropDownContent() override;
 
 		/**

@@ -17,8 +17,8 @@ namespace BansheeEngine
 	}
 
 	GUIViewport::GUIViewport(const String& styleName, const HCamera& camera, 
-		float aspectRatio, Degree fieldOfView, const GUIDimensions& layoutOptions)
-		:GUIElement(styleName, layoutOptions), mCamera(camera), mAspectRatio(aspectRatio),
+		float aspectRatio, Degree fieldOfView, const GUIDimensions& dimensions)
+		:GUIElement(styleName, dimensions), mCamera(camera), mAspectRatio(aspectRatio),
 		mFieldOfView(fieldOfView)
 	{
 		mVerticalFOV = 2.0f * Math::atan(Math::tan(mFieldOfView.valueRadians() * 0.5f) * (1.0f / mAspectRatio));
@@ -34,10 +34,10 @@ namespace BansheeEngine
 		return new (bs_alloc<GUIViewport, PoolAlloc>()) GUIViewport(getStyleName<GUIViewport>(styleName), camera, aspectRatio, fieldOfView, GUIDimensions::create());
 	}
 
-	GUIViewport* GUIViewport::create(const GUIOptions& layoutOptions, const HCamera& camera, 
+	GUIViewport* GUIViewport::create(const GUIOptions& options, const HCamera& camera, 
 		float aspectRatio, Degree fieldOfView, const String& styleName)
 	{
-		return new (bs_alloc<GUIViewport, PoolAlloc>()) GUIViewport(getStyleName<GUIViewport>(styleName), camera, aspectRatio, fieldOfView, GUIDimensions::create(layoutOptions));
+		return new (bs_alloc<GUIViewport, PoolAlloc>()) GUIViewport(getStyleName<GUIViewport>(styleName), camera, aspectRatio, fieldOfView, GUIDimensions::create(options));
 	}
 
 	UINT32 GUIViewport::_getNumRenderElements() const

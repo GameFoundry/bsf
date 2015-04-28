@@ -47,13 +47,13 @@ namespace BansheeEngine
 		 * @param	jumpOnClick		If true clicking on a specific position on the slider will cause
 		 *							the slider handle to jump to that position. Otherwise the slider
 		 *							will just slightly move towards that direction.
-		 * @param	layoutOptions	Options that allows you to control how is the element positioned in
-		 *							GUI layout. This will override any similar options set by style.
+		 * @param	options			Options that allow you to control how is the element positioned and sized.
+		 *							This will override any similar options set by style.
 		 * @param	styleName		Optional style to use for the element. Style will be retrieved
 		 *							from GUISkin of the GUIWidget the element is used on. If not specified
 		 *							default style is used.
 		 */
-		static GUISliderHandle* create(bool horizontal, bool jumpOnClick, const GUIOptions& layoutOptions,
+		static GUISliderHandle* create(bool horizontal, bool jumpOnClick, const GUIOptions& options,
 			const String& styleName = StringUtil::BLANK);
 
 		/**
@@ -128,7 +128,7 @@ namespace BansheeEngine
 		 */
 		virtual void updateClippedBounds();
 	private:
-		GUISliderHandle(bool horizontal, bool jumpOnClick, const String& styleName, const GUIDimensions& layoutOptions);
+		GUISliderHandle(bool horizontal, bool jumpOnClick, const String& styleName, const GUIDimensions& dimensions);
 
 		/**
 		 * @brief	Returns the position of the slider handle, in pixels.

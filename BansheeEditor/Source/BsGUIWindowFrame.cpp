@@ -18,8 +18,8 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIWindowFrame::GUIWindowFrame(const String& styleName, const GUIDimensions& layoutOptions)
-		:GUITexture(styleName, HSpriteTexture(), GUIImageScaleMode::StretchToFit, true, layoutOptions)
+	GUIWindowFrame::GUIWindowFrame(const String& styleName, const GUIDimensions& dimensions)
+		:GUITexture(styleName, HSpriteTexture(), GUIImageScaleMode::StretchToFit, true, dimensions)
 	{
 
 	}
@@ -32,9 +32,9 @@ namespace BansheeEngine
 		return new (bs_alloc<GUIWindowFrame, PoolAlloc>()) GUIWindowFrame(getStyleName<GUIWindowFrame>(styleName), GUIDimensions::create());
 	}
 
-	GUIWindowFrame* GUIWindowFrame::create(const GUIOptions& layoutOptions, const String& styleName)
+	GUIWindowFrame* GUIWindowFrame::create(const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUIWindowFrame, PoolAlloc>()) GUIWindowFrame(getStyleName<GUIWindowFrame>(styleName), GUIDimensions::create(layoutOptions));
+		return new (bs_alloc<GUIWindowFrame, PoolAlloc>()) GUIWindowFrame(getStyleName<GUIWindowFrame>(styleName), GUIDimensions::create(options));
 	}
 
 	void GUIWindowFrame::setFocused(bool focused)

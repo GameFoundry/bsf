@@ -17,8 +17,8 @@ namespace BansheeEngine
 	const UINT32 GUIVector4Field::ELEMENT_LABEL_WIDTH = 10;
 
 	GUIVector4Field::GUIVector4Field(const PrivatelyConstruct& dummy, const GUIContent& labelContent, 
-		UINT32 labelWidth, const String& style, const GUIDimensions& layoutOptions, bool withLabel)
-		:TGUIField(dummy, labelContent, labelWidth, style, layoutOptions, withLabel), mFieldX(nullptr), mFieldY(nullptr)
+		UINT32 labelWidth, const String& style, const GUIDimensions& dimensions, bool withLabel)
+		:TGUIField(dummy, labelContent, labelWidth, style, dimensions, withLabel), mFieldX(nullptr), mFieldY(nullptr)
 	{
 		mFieldX = GUIFloatField::create(HString(L"X"), ELEMENT_LABEL_WIDTH, getSubStyleName(getFloatFieldStyleType()));
 		mFieldY = GUIFloatField::create(HString(L"Y"), ELEMENT_LABEL_WIDTH, getSubStyleName(getFloatFieldStyleType()));

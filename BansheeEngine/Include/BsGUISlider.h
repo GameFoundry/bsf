@@ -46,7 +46,7 @@ namespace BansheeEngine
 
 		Event<void(float percent)> onChanged;
 	protected:
-		GUISlider(bool horizontal, const String& styleName, const GUIDimensions& layoutOptions);
+		GUISlider(bool horizontal, const String& styleName, const GUIDimensions& dimensions);
 		virtual ~GUISlider();
 
 		/**
@@ -95,16 +95,16 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates a new horizontal slider.
 		 *
-		 * @param	layoutOptions	Options that allows you to control how is the element positioned in
-		 *							GUI layout. This will override any similar options set by style.
+		 * @param	options			Options that allow you to control how is the element positioned and sized.
+		 *							This will override any similar options set by style.
 		 * @param	styleName		Optional style to use for the element. Style will be retrieved
 		 *							from GUISkin of the GUIWidget the element is used on. If not specified
 		 *							default style is used.
 		 */
-		static GUISliderHorz* create(const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
+		static GUISliderHorz* create(const GUIOptions& options, const String& styleName = StringUtil::BLANK);
 
 	private:
-		GUISliderHorz(const String& styleName, const GUIDimensions& layoutOptions);
+		GUISliderHorz(const String& styleName, const GUIDimensions& dimensions);
 	};
 
 	/**
@@ -130,15 +130,15 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates a new vertical slider.
 		 *
-		 * @param	layoutOptions	Options that allows you to control how is the element positioned in
-		 *							GUI layout. This will override any similar options set by style.
+		 * @param	options			Options that allow you to control how is the element positioned and sized.
+		 *							This will override any similar options set by style.
 		 * @param	styleName		Optional style to use for the element. Style will be retrieved
 		 *							from GUISkin of the GUIWidget the element is used on. If not specified
 		 *							default style is used.
 		 */
-		static GUISliderVert* create(const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
+		static GUISliderVert* create(const GUIOptions& options, const String& styleName = StringUtil::BLANK);
 
 	private:
-		GUISliderVert(const String& styleName, const GUIDimensions& layoutOptions);
+		GUISliderVert(const String& styleName, const GUIDimensions& dimensions);
 	};
 }

@@ -14,19 +14,19 @@ namespace BansheeEngine
 		static const String& getGUITypeName();
 		static const String& getInputStyleType();
 
-		static GUITextField* create(bool multiline, const GUIContent& labelContent, UINT32 labelWidth, const GUIOptions& layoutOptions,
+		static GUITextField* create(bool multiline, const GUIContent& labelContent, UINT32 labelWidth, const GUIOptions& options,
 			const String& style = StringUtil::BLANK);
 
-		static GUITextField* create(bool multiline, const GUIContent& labelContent, const GUIOptions& layoutOptions,
+		static GUITextField* create(bool multiline, const GUIContent& labelContent, const GUIOptions& options,
 			const String& style = StringUtil::BLANK);
 
-		static GUITextField* create(bool multiline, const HString& labelText, UINT32 labelWidth, const GUIOptions& layoutOptions,
+		static GUITextField* create(bool multiline, const HString& labelText, UINT32 labelWidth, const GUIOptions& options,
 			const String& style = StringUtil::BLANK);
 
-		static GUITextField* create(bool multiline, const HString& labelText, const GUIOptions& layoutOptions,
+		static GUITextField* create(bool multiline, const HString& labelText, const GUIOptions& options,
 			const String& style = StringUtil::BLANK);
 
-		static GUITextField* create(bool multiline, const GUIOptions& layoutOptions, const String& style = StringUtil::BLANK);
+		static GUITextField* create(bool multiline, const GUIOptions& options, const String& style = StringUtil::BLANK);
 
 		static GUITextField* create(bool multiline, const GUIContent& labelContent, UINT32 labelWidth,
 			const String& style = StringUtil::BLANK);
@@ -43,7 +43,7 @@ namespace BansheeEngine
 		static GUITextField* create(bool multiline, const String& style = StringUtil::BLANK);
 
 		GUITextField(const PrivatelyConstruct& dummy, bool multiline, const GUIContent& labelContent, UINT32 labelWidth,
-			const String& style, const GUIDimensions& layoutOptions, bool withLabel);
+			const String& style, const GUIDimensions& dimensions, bool withLabel);
 
 		void _updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
 			Rect2I clipRect, UINT8 widgetDepth, UINT16 areaDepth);

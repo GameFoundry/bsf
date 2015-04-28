@@ -14,6 +14,7 @@ namespace BansheeEngine
 	{
 	public:
 		GUILayout(GUIArea* parentArea);
+		GUILayout(const GUIDimensions& dimensions);
 		GUILayout();
 		virtual ~GUILayout();
 
@@ -82,7 +83,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElementBase::_getType
 		 */
-		Type _getType() const { return GUIElementBase::Type::Layout; }
+		virtual Type _getType() const override { return GUIElementBase::Type::Layout; }
 
 		/**
 		 * @brief	Gets an actual width (in pixels) of all the child elements in the layout.

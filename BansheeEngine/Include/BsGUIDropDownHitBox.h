@@ -32,10 +32,10 @@ namespace BansheeEngine
 		 *
 		 * @param	captureMouse	If true mouse clicks will be captured by this control and wont be passed
 		 *							to other GUI elements.
-		 * @param	layoutOptions	Options that allows you to control how is the element positioned in
-		 *							GUI layout. This will override any similar options set by style.
+		 * @param	options			Options that allow you to control how is the element positioned and sized.
+		 *							This will override any similar options set by style.
 		 */
-		static GUIDropDownHitBox* create(bool captureMouse, const GUIOptions& layoutOptions);
+		static GUIDropDownHitBox* create(bool captureMouse, const GUIOptions& options);
 
 		/**
 		 * Sets a single rectangle bounds in which the hitbox will capture mouse events.
@@ -58,7 +58,7 @@ namespace BansheeEngine
 		Event<void()> onFocusGained;
 
 	private:
-		GUIDropDownHitBox(bool captureMouse, const GUIDimensions& layoutOptions);
+		GUIDropDownHitBox(bool captureMouse, const GUIDimensions& dimensions);
 
 		virtual bool _commandEvent(const GUICommandEvent& ev);
 		virtual bool _mouseEvent(const GUIMouseEvent& ev);

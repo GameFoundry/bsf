@@ -24,8 +24,8 @@ namespace BansheeEngine
 	const UINT32 GUIGameObjectField::DEFAULT_LABEL_WIDTH = 100;
 
 	GUIGameObjectField::GUIGameObjectField(const PrivatelyConstruct& dummy, const String& typeNamespace, const String& type, const GUIContent& labelContent, UINT32 labelWidth,
-		const String& style, const GUIDimensions& layoutOptions, bool withLabel)
-		:GUIElementContainer(layoutOptions, style), mLabel(nullptr), mClearButton(nullptr), mDropButton(nullptr), mInstanceId(0), mType(type), mNamespace(typeNamespace)
+		const String& style, const GUIDimensions& dimensions, bool withLabel)
+		:GUIElementContainer(dimensions, style), mLabel(nullptr), mClearButton(nullptr), mDropButton(nullptr), mInstanceId(0), mType(type), mNamespace(typeNamespace)
 	{
 		mLayout = GUILayoutX::create();
 		_registerChildElement(mLayout);
@@ -51,7 +51,7 @@ namespace BansheeEngine
 
 	}
 
-	GUIGameObjectField* GUIGameObjectField::create(const String& typeNamespace, const String& type, const GUIContent& labelContent, UINT32 labelWidth, const GUIOptions& layoutOptions,
+	GUIGameObjectField* GUIGameObjectField::create(const String& typeNamespace, const String& type, const GUIContent& labelContent, UINT32 labelWidth, const GUIOptions& options,
 		const String& style)
 	{
 		const String* curStyle = &style;
@@ -59,10 +59,10 @@ namespace BansheeEngine
 			curStyle = &BuiltinEditorResources::ObjectFieldStyleName;
 
 		return bs_new<GUIGameObjectField>(PrivatelyConstruct(), typeNamespace, type, labelContent, labelWidth, *curStyle,
-			GUIDimensions::create(layoutOptions), true);
+			GUIDimensions::create(options), true);
 	}
 
-	GUIGameObjectField* GUIGameObjectField::create(const String& typeNamespace, const String& type, const GUIContent& labelContent, const GUIOptions& layoutOptions,
+	GUIGameObjectField* GUIGameObjectField::create(const String& typeNamespace, const String& type, const GUIContent& labelContent, const GUIOptions& options,
 		const String& style)
 	{
 		const String* curStyle = &style;
@@ -70,10 +70,10 @@ namespace BansheeEngine
 			curStyle = &BuiltinEditorResources::ObjectFieldStyleName;
 
 		return bs_new<GUIGameObjectField>(PrivatelyConstruct(), typeNamespace, type, labelContent, DEFAULT_LABEL_WIDTH, *curStyle,
-			GUIDimensions::create(layoutOptions), true);
+			GUIDimensions::create(options), true);
 	}
 
-	GUIGameObjectField* GUIGameObjectField::create(const String& typeNamespace, const String& type, const HString& labelText, UINT32 labelWidth, const GUIOptions& layoutOptions,
+	GUIGameObjectField* GUIGameObjectField::create(const String& typeNamespace, const String& type, const HString& labelText, UINT32 labelWidth, const GUIOptions& options,
 		const String& style)
 	{
 		const String* curStyle = &style;
@@ -81,10 +81,10 @@ namespace BansheeEngine
 			curStyle = &BuiltinEditorResources::ObjectFieldStyleName;
 
 		return bs_new<GUIGameObjectField>(PrivatelyConstruct(), typeNamespace, type, GUIContent(labelText), labelWidth, *curStyle,
-			GUIDimensions::create(layoutOptions), true);
+			GUIDimensions::create(options), true);
 	}
 
-	GUIGameObjectField* GUIGameObjectField::create(const String& typeNamespace, const String& type, const HString& labelText, const GUIOptions& layoutOptions,
+	GUIGameObjectField* GUIGameObjectField::create(const String& typeNamespace, const String& type, const HString& labelText, const GUIOptions& options,
 		const String& style)
 	{
 		const String* curStyle = &style;
@@ -92,17 +92,17 @@ namespace BansheeEngine
 			curStyle = &BuiltinEditorResources::ObjectFieldStyleName;
 
 		return bs_new<GUIGameObjectField>(PrivatelyConstruct(), typeNamespace, type, GUIContent(labelText), DEFAULT_LABEL_WIDTH, *curStyle,
-			GUIDimensions::create(layoutOptions), true);
+			GUIDimensions::create(options), true);
 	}
 
-	GUIGameObjectField* GUIGameObjectField::create(const String& typeNamespace, const String& type, const GUIOptions& layoutOptions, const String& style)
+	GUIGameObjectField* GUIGameObjectField::create(const String& typeNamespace, const String& type, const GUIOptions& options, const String& style)
 	{
 		const String* curStyle = &style;
 		if (*curStyle == StringUtil::BLANK)
 			curStyle = &BuiltinEditorResources::ObjectFieldStyleName;
 
 		return bs_new<GUIGameObjectField>(PrivatelyConstruct(), typeNamespace, type, GUIContent(), 0, *curStyle,
-			GUIDimensions::create(layoutOptions), false);
+			GUIDimensions::create(options), false);
 	}
 
 	GUIGameObjectField* GUIGameObjectField::create(const String& typeNamespace, const String& type, const GUIContent& labelContent, UINT32 labelWidth,

@@ -40,13 +40,13 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates a new progress bar.
 		 *
-		 * @param	layoutOptions	Options that allows you to control how is the element positioned in
-		 *							GUI layout. This will override any similar options set by style.
+		 * @param	options			Options that allow you to control how is the element positioned and sized.
+		 *							This will override any similar options set by style.
 		 * @param	styleName		Optional style to use for the element. Style will be retrieved
 		 *							from GUISkin of the GUIWidget the element is used on. If not specified
 		 *							default style is used.
 		 */
-		static GUIProgressBar* create(const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
+		static GUIProgressBar* create(const GUIOptions& options, const String& styleName = StringUtil::BLANK);
 
 		/**
 		 * @brief	Fills up the progress bar up to the specified percentage.
@@ -72,7 +72,7 @@ namespace BansheeEngine
 
 		Event<void(float percent)> onChanged;
 	protected:
-		GUIProgressBar(const String& styleName, const GUIDimensions& layoutOptions);
+		GUIProgressBar(const String& styleName, const GUIDimensions& dimensions);
 
 		/**
 		 * @copydoc	GUIElementContainer::_getOptimalSize

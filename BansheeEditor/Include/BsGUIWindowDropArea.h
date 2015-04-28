@@ -12,14 +12,14 @@ namespace BansheeEngine
 		static const String& getGUITypeName();
 
 		static GUIWindowDropArea* create(const String& styleName = StringUtil::BLANK);
-		static GUIWindowDropArea* create(const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
+		static GUIWindowDropArea* create(const GUIOptions& options, const String& styleName = StringUtil::BLANK);
 
 		void setFocused(bool focused);
 
 		Event<void()> onDraggedItemDropped;
 	protected:
 		~GUIWindowDropArea();
-		GUIWindowDropArea(const String& styleName, const GUIDimensions& layoutOptions);
+		GUIWindowDropArea(const String& styleName, const GUIDimensions& dimensions);
 
 		virtual bool _mouseEvent(const GUIMouseEvent& ev);
 	};

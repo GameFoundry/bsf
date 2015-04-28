@@ -17,13 +17,13 @@ namespace BansheeEngine
 		return new (bs_alloc<GUIDropDownHitBox, PoolAlloc>()) GUIDropDownHitBox(captureMouse, GUIDimensions::create());
 	}
 
-	GUIDropDownHitBox* GUIDropDownHitBox::create(bool captureMouse, const GUIOptions& layoutOptions)
+	GUIDropDownHitBox* GUIDropDownHitBox::create(bool captureMouse, const GUIOptions& options)
 	{
-		return new (bs_alloc<GUIDropDownHitBox, PoolAlloc>()) GUIDropDownHitBox(captureMouse, GUIDimensions::create(layoutOptions));
+		return new (bs_alloc<GUIDropDownHitBox, PoolAlloc>()) GUIDropDownHitBox(captureMouse, GUIDimensions::create(options));
 	}
 
-	GUIDropDownHitBox::GUIDropDownHitBox(bool captureMouse, const GUIDimensions& layoutOptions)
-		:GUIElementContainer(layoutOptions), mCaptureMouse(captureMouse)
+	GUIDropDownHitBox::GUIDropDownHitBox(bool captureMouse, const GUIDimensions& dimensions)
+		:GUIElementContainer(dimensions), mCaptureMouse(captureMouse)
 	{
 
 	}

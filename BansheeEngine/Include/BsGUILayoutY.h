@@ -13,6 +13,7 @@ namespace BansheeEngine
 	{
 	public:
 		GUILayoutY(GUIArea* parentArea);
+		GUILayoutY(const GUIDimensions& dimensions);
 		GUILayoutY() {};
 		~GUILayoutY() {};
 
@@ -41,6 +42,13 @@ namespace BansheeEngine
 		 * @brief	Creates a new vertical layout.
 		 */
 		static GUILayoutY* create();
+
+		/**
+		 * @brief	Creates a new vertical layout.
+		 *
+		 * @param	options		Options that allow you to control how is the element positioned and sized.
+		 */
+		static GUILayoutY* create(const GUIOptions& options);
 
 	protected:
 		/**

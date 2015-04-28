@@ -13,8 +13,8 @@ namespace BansheeEngine
 {
 	const float GUIColor::ALPHA_SPLIT_POSITION = 0.75f;
 
-	GUIColor::GUIColor(const String& styleName, const GUIDimensions& layoutOptions)
-		:GUIElement(styleName, layoutOptions), mColorSprite(nullptr), mAlphaSprite(nullptr)
+	GUIColor::GUIColor(const String& styleName, const GUIDimensions& dimensions)
+		:GUIElement(styleName, dimensions), mColorSprite(nullptr), mAlphaSprite(nullptr)
 	{
 		mColorSprite = bs_new<ImageSprite, PoolAlloc>();
 		mAlphaSprite = bs_new<ImageSprite, PoolAlloc>();
@@ -40,9 +40,9 @@ namespace BansheeEngine
 		return new (bs_alloc<GUIColor, PoolAlloc>()) GUIColor(getStyleName<GUIColor>(styleName), GUIDimensions::create());
 	}
 
-	GUIColor* GUIColor::create(const GUIOptions& layoutOptions, const String& styleName)
+	GUIColor* GUIColor::create(const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUIColor, PoolAlloc>()) GUIColor(getStyleName<GUIColor>(styleName), GUIDimensions::create(layoutOptions));
+		return new (bs_alloc<GUIColor, PoolAlloc>()) GUIColor(getStyleName<GUIColor>(styleName), GUIDimensions::create(options));
 	}
 
 	void GUIColor::setColor(const Color& color)

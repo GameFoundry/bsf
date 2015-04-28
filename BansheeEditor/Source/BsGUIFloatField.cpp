@@ -20,8 +20,8 @@ namespace BansheeEngine
 	const float GUIFloatField::DRAG_SPEED = 0.05f;
 
 	GUIFloatField::GUIFloatField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth, 
-		const String& style, const GUIDimensions& layoutOptions, bool withLabel)
-		:TGUIField(dummy, labelContent, labelWidth, style, layoutOptions, withLabel), mInputBox(nullptr), mIsDragging(false),
+		const String& style, const GUIDimensions& dimensions, bool withLabel)
+		:TGUIField(dummy, labelContent, labelWidth, style, dimensions, withLabel), mInputBox(nullptr), mIsDragging(false),
 		mLastDragPos(0), mHasInputFocus(false), mValue(0.0f)
 	{
 		mInputBox = GUIInputBox::create(false, GUIOptions(GUIOption::flexibleWidth()), getSubStyleName(getInputStyleType()));

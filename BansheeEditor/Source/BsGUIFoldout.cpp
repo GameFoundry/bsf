@@ -13,8 +13,8 @@ using namespace std::placeholders;
 namespace BansheeEngine
 {
 	GUIFoldout::GUIFoldout(const PrivatelyConstruct& dummy, const HString& label, const String& style,
-		const GUIDimensions& layoutOptions)
-		:GUIElementContainer(layoutOptions, style), mToggle(nullptr), mIsExpanded(false)
+		const GUIDimensions& dimensions)
+		:GUIElementContainer(dimensions, style), mToggle(nullptr), mIsExpanded(false)
 	{
 		mLabel = GUILabel::create(label, getSubStyleName(getLabelStyleType()));
 		mToggle = GUIToggle::create(HString(L""), getSubStyleName(getFoldoutButtonStyleType()));
@@ -30,14 +30,14 @@ namespace BansheeEngine
 
 	}
 
-	GUIFoldout* GUIFoldout::create(const HString& label, const GUIOptions& layoutOptions,
+	GUIFoldout* GUIFoldout::create(const HString& label, const GUIOptions& options,
 		const String& style)
 	{
 		const String* curStyle = &style;
 		if (*curStyle == StringUtil::BLANK)
 			curStyle = &getGUITypeName();
 
-		return bs_new<GUIFoldout>(PrivatelyConstruct(), label, *curStyle, GUIDimensions::create(layoutOptions));
+		return bs_new<GUIFoldout>(PrivatelyConstruct(), label, *curStyle, GUIDimensions::create(options));
 	}
 
 	GUIFoldout* GUIFoldout::create(const HString& label, const String& style)

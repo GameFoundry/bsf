@@ -17,8 +17,8 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUISliderHandle::GUISliderHandle(bool horizontal, bool jumpOnClick, const String& styleName, const GUIDimensions& layoutOptions)
-		:GUIElement(styleName, layoutOptions), mHorizontal(horizontal), mHandleSize(0), mMouseOverHandle(false), mPctHandlePos(0.0f), mDragStartPos(0),
+	GUISliderHandle::GUISliderHandle(bool horizontal, bool jumpOnClick, const String& styleName, const GUIDimensions& dimensions)
+		:GUIElement(styleName, dimensions), mHorizontal(horizontal), mHandleSize(0), mMouseOverHandle(false), mPctHandlePos(0.0f), mDragStartPos(0),
 		mHandleDragged(false), mState(State::Normal), mJumpOnClick(jumpOnClick)
 	{
 		mImageSprite = bs_new<ImageSprite, PoolAlloc>();
@@ -35,10 +35,10 @@ namespace BansheeEngine
 			getStyleName<GUISliderHandle>(styleName), GUIDimensions::create());
 	}
 
-	GUISliderHandle* GUISliderHandle::create(bool horizontal, bool jumpOnClick, const GUIOptions& layoutOptions, const String& styleName)
+	GUISliderHandle* GUISliderHandle::create(bool horizontal, bool jumpOnClick, const GUIOptions& options, const String& styleName)
 	{
 		return new (bs_alloc<GUISliderHandle, PoolAlloc>()) GUISliderHandle(horizontal, jumpOnClick, 
-			getStyleName<GUISliderHandle>(styleName), GUIDimensions::create(layoutOptions));
+			getStyleName<GUISliderHandle>(styleName), GUIDimensions::create(options));
 	}
 
 	void GUISliderHandle::setHandleSize(UINT32 size)

@@ -68,7 +68,7 @@ namespace BansheeEngine
 
 		GUIResourceTreeView(const String& backgroundStyle, const String& elementBtnStyle, 
 			const String& foldoutBtnStyle, const String& selectionBackgroundStyle, const String& editBoxStyle, 
-			const String& dragHighlightStyle, const String& dragSepHighlightStyle, const GUIDimensions& layoutOptions);
+			const String& dragHighlightStyle, const String& dragSepHighlightStyle, const GUIDimensions& dimensions);
 
 		virtual void _updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
 			Rect2I clipRect, UINT8 widgetDepth, UINT16 areaDepth);
