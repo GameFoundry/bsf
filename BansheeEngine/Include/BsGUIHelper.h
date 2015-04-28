@@ -19,7 +19,7 @@ namespace BansheeEngine
 		 * @param	style			Style to use for determining size constraints.
 		 * @param	layoutOptions	Layout options to use for determining size constraints.
 		 */
-		static Vector2I calcOptimalContentsSize(const Vector2I& contentSize, const GUIElementStyle& style, const GUILayoutOptions& layoutOptions);
+		static Vector2I calcOptimalContentsSize(const Vector2I& contentSize, const GUIElementStyle& style, const GUIDimensions& layoutOptions);
 
 		/**
 		 * @brief	Calculates optimal content size for the provided content using the provided style and layout options for constraints.
@@ -28,7 +28,7 @@ namespace BansheeEngine
 		 * @param	style			Style to use for determining size constraints.
 		 * @param	layoutOptions	Layout options to use for determining size constraints.
 		 */
-		static Vector2I calcOptimalContentsSize(const GUIContent& content, const GUIElementStyle& style, const GUILayoutOptions& layoutOptions);
+		static Vector2I calcOptimalContentsSize(const GUIContent& content, const GUIElementStyle& style, const GUIDimensions& layoutOptions);
 
 		/**
 		 * @brief	Calculates optimal content size for the provided text using the provided style and layout options for constraints.
@@ -37,6 +37,6 @@ namespace BansheeEngine
 		 * @param	style			Style to use for determining size constraints.
 		 * @param	layoutOptions	Layout options to use for determining size constraints.
 		 */
-		static Vector2I calcOptimalContentsSize(const WString& text, const GUIElementStyle& style, const GUILayoutOptions& layoutOptions);
+		static Vector2I calcOptimalContentsSize(const WString& text, const GUIElementStyle& style, const GUIDimensions& layoutOptions);
 	};
 }

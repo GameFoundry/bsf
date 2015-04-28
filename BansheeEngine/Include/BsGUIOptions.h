@@ -18,11 +18,19 @@ namespace BansheeEngine
 			FixedWidth,
 			FlexibleWidth,
 			FixedHeight,
-			FlexibleHeight
+			FlexibleHeight,
+			Position
 		};
 
 	public:
 		GUIOption();
+
+		/**
+		 * @brief	Constructs a GUI option notifying the GUI layout that this element should be positioned
+		 *			at this offset from the parent GUI panel. This option is ignored if element is part of a 
+		 layout since it controls its placement.
+		 */
+		static GUIOption position(INT32 x, INT32 y);
 
 		/**
 		 * @brief	Constructs a GUI option notifying the GUI layout that this element has a fixed width.
@@ -51,7 +59,7 @@ namespace BansheeEngine
 		static GUIOption flexibleHeight(UINT32 min = 0, UINT32 max = 0);
 
 	private:
-		friend struct GUILayoutOptions;
+		friend struct GUIDimensions;
 
 		UINT32 min, max;
 		Type type;
@@ -111,7 +119,7 @@ namespace BansheeEngine
 		}
 
 	private:
-		friend struct GUILayoutOptions;
+		friend struct GUIDimensions;
 
 		Vector<GUIOption> mOptions;
 	};

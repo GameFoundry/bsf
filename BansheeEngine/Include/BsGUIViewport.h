@@ -90,7 +90,7 @@ namespace BansheeEngine
 		virtual void updateRenderElementsInternal();
 
 	private:
-		GUIViewport(const String& styleName, const HCamera& camera, float aspectRatio, Degree fieldOfView, const GUILayoutOptions& layoutOptions);
+		GUIViewport(const String& styleName, const HCamera& camera, float aspectRatio, Degree fieldOfView, const GUIDimensions& layoutOptions);
 
 		/**
 		 * @copydoc	GUIElement::_changeParentWidget

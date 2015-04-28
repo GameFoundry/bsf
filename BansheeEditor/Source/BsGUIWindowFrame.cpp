@@ -3,7 +3,7 @@
 #include "BsGUIWidget.h"
 #include "BsGUISkin.h"
 #include "BsSpriteTexture.h"
-#include "BsGUILayoutOptions.h"
+#include "BsGUIDimensions.h"
 #include "BsGUIMouseEvent.h"
 #include "BsCoreApplication.h"
 #include "BsPlatform.h"
@@ -18,7 +18,7 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIWindowFrame::GUIWindowFrame(const String& styleName, const GUILayoutOptions& layoutOptions)
+	GUIWindowFrame::GUIWindowFrame(const String& styleName, const GUIDimensions& layoutOptions)
 		:GUITexture(styleName, HSpriteTexture(), GUIImageScaleMode::StretchToFit, true, layoutOptions)
 	{
 
@@ -29,12 +29,12 @@ namespace BansheeEngine
 
 	GUIWindowFrame* GUIWindowFrame::create(const String& styleName)
 	{
-		return new (bs_alloc<GUIWindowFrame, PoolAlloc>()) GUIWindowFrame(getStyleName<GUIWindowFrame>(styleName), GUILayoutOptions::create());
+		return new (bs_alloc<GUIWindowFrame, PoolAlloc>()) GUIWindowFrame(getStyleName<GUIWindowFrame>(styleName), GUIDimensions::create());
 	}
 
 	GUIWindowFrame* GUIWindowFrame::create(const GUIOptions& layoutOptions, const String& styleName)
 	{
-		return new (bs_alloc<GUIWindowFrame, PoolAlloc>()) GUIWindowFrame(getStyleName<GUIWindowFrame>(styleName), GUILayoutOptions::create(layoutOptions));
+		return new (bs_alloc<GUIWindowFrame, PoolAlloc>()) GUIWindowFrame(getStyleName<GUIWindowFrame>(styleName), GUIDimensions::create(layoutOptions));
 	}
 
 	void GUIWindowFrame::setFocused(bool focused)

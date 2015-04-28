@@ -16,7 +16,7 @@ namespace BansheeEngine
 		static GUIComponentFoldout* create(const HString& label, const GUIOptions& layoutOptions, const String& style = StringUtil::BLANK);
 		static GUIComponentFoldout* create(const HString& label, const String& style = StringUtil::BLANK);
 
-		GUIComponentFoldout(const PrivatelyConstruct& dummy, const HString& label, const String& style, const GUILayoutOptions& layoutOptions);
+		GUIComponentFoldout(const PrivatelyConstruct& dummy, const HString& label, const String& style, const GUIDimensions& layoutOptions);
 
 		bool isExpanded() const { return mIsExpanded; }
 		void setExpanded(bool expanded);

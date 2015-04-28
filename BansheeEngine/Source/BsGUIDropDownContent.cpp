@@ -20,7 +20,7 @@ namespace BansheeEngine
 	const String GUIDropDownContent::SEPARATOR_STYLE_TYPE = "DropDownSeparator";
 
 	GUIDropDownContent::GUIDropDownContent(GUIDropDownBox::DropDownSubMenu* parent, const GUIDropDownData& dropDownData, 
-		const String& style, const GUILayoutOptions& layoutOptions)
+		const String& style, const GUIDimensions& layoutOptions)
 		:GUIElementContainer(layoutOptions, style), mDropDownData(dropDownData), 
 		mSelectedIdx(UINT_MAX), mRangeStart(0), mRangeEnd(0), mParent(parent)
 	{
@@ -39,7 +39,7 @@ namespace BansheeEngine
 		if (*curStyle == StringUtil::BLANK)
 			curStyle = &GUIDropDownContent::getGUITypeName();
 
-		return new (bs_alloc<GUIDropDownContent>()) GUIDropDownContent(parent, dropDownData, *curStyle, GUILayoutOptions::create());
+		return new (bs_alloc<GUIDropDownContent>()) GUIDropDownContent(parent, dropDownData, *curStyle, GUIDimensions::create());
 	}
 
 	GUIDropDownContent* GUIDropDownContent::create(GUIDropDownBox::DropDownSubMenu* parent, 
@@ -50,7 +50,7 @@ namespace BansheeEngine
 		if (*curStyle == StringUtil::BLANK)
 			curStyle = &GUIDropDownContent::getGUITypeName();
 
-		return new (bs_alloc<GUIDropDownContent>()) GUIDropDownContent(parent, dropDownData, *curStyle, GUILayoutOptions::create(layoutOptions));
+		return new (bs_alloc<GUIDropDownContent>()) GUIDropDownContent(parent, dropDownData, *curStyle, GUIDimensions::create(layoutOptions));
 	}
 
 	void GUIDropDownContent::styleUpdated()
@@ -352,9 +352,9 @@ namespace BansheeEngine
 			Vector2I offset(x, yOffset);
 			yOffset += elemHeight;
 
-			guiMainElement->setOffset(offset);
-			guiMainElement->setWidth(width);
-			guiMainElement->setHeight(elemHeight);
+			guiMainElement->_setPosition(offset);
+			guiMainElement->_setWidth(width);
+			guiMainElement->_setHeight(elemHeight);
 			guiMainElement->_setAreaDepth(areaDepth);
 			guiMainElement->_setWidgetDepth(widgetDepth);
 
@@ -365,9 +365,9 @@ namespace BansheeEngine
 			GUILabel* shortcutLabel = visElem.shortcutLabel;
 			if (shortcutLabel != nullptr)
 			{
-				shortcutLabel->setOffset(offset);
-				shortcutLabel->setWidth(width);
-				shortcutLabel->setHeight(elemHeight);
+				shortcutLabel->_setPosition(offset);
+				shortcutLabel->_setWidth(width);
+				shortcutLabel->_setHeight(elemHeight);
 				shortcutLabel->_setAreaDepth(areaDepth);
 				shortcutLabel->_setWidgetDepth(widgetDepth);
 				shortcutLabel->_setClipRect(elemClipRect);

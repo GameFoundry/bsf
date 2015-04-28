@@ -4,7 +4,7 @@
 #include "BsGUISkin.h"
 #include "BsSpriteTexture.h"
 #include "BsTextSprite.h"
-#include "BsGUILayoutOptions.h"
+#include "BsGUIDimensions.h"
 #include "BsGUIMouseEvent.h"
 #include "BsDebug.h"
 #include "BsTexture.h"
@@ -17,7 +17,7 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUISliderHandle::GUISliderHandle(bool horizontal, bool jumpOnClick, const String& styleName, const GUILayoutOptions& layoutOptions)
+	GUISliderHandle::GUISliderHandle(bool horizontal, bool jumpOnClick, const String& styleName, const GUIDimensions& layoutOptions)
 		:GUIElement(styleName, layoutOptions), mHorizontal(horizontal), mHandleSize(0), mMouseOverHandle(false), mPctHandlePos(0.0f), mDragStartPos(0),
 		mHandleDragged(false), mState(State::Normal), mJumpOnClick(jumpOnClick)
 	{
@@ -32,13 +32,13 @@ namespace BansheeEngine
 	GUISliderHandle* GUISliderHandle::create(bool horizontal, bool jumpOnClick, const String& styleName)
 	{
 		return new (bs_alloc<GUISliderHandle, PoolAlloc>()) GUISliderHandle(horizontal, jumpOnClick, 
-			getStyleName<GUISliderHandle>(styleName), GUILayoutOptions::create());
+			getStyleName<GUISliderHandle>(styleName), GUIDimensions::create());
 	}
 
 	GUISliderHandle* GUISliderHandle::create(bool horizontal, bool jumpOnClick, const GUIOptions& layoutOptions, const String& styleName)
 	{
 		return new (bs_alloc<GUISliderHandle, PoolAlloc>()) GUISliderHandle(horizontal, jumpOnClick, 
-			getStyleName<GUISliderHandle>(styleName), GUILayoutOptions::create(layoutOptions));
+			getStyleName<GUISliderHandle>(styleName), GUIDimensions::create(layoutOptions));
 	}
 
 	void GUISliderHandle::setHandleSize(UINT32 size)

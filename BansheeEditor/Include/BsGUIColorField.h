@@ -13,7 +13,7 @@ namespace BansheeEngine
 		static const String& getColorInputStyleType();
 
 		GUIColorField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth,
-			const String& style, const GUILayoutOptions& layoutOptions, bool withLabel);
+			const String& style, const GUIDimensions& layoutOptions, bool withLabel);
 
 		Color getValue() const { return mValue; }
 		void setValue(const Color& value);

@@ -66,7 +66,7 @@ namespace BansheeEngine
 		~GUIListBox();
 
 	private:
-		GUIListBox(const String& styleName, const Vector<HString>& elements, const GUILayoutOptions& layoutOptions);
+		GUIListBox(const String& styleName, const Vector<HString>& elements, const GUIDimensions& layoutOptions);
 
 		/**
 		 * @copydoc	GUIButtonBase::mouseEvent

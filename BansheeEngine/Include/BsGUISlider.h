@@ -46,7 +46,7 @@ namespace BansheeEngine
 
 		Event<void(float percent)> onChanged;
 	protected:
-		GUISlider(bool horizontal, const String& styleName, const GUILayoutOptions& layoutOptions);
+		GUISlider(bool horizontal, const String& styleName, const GUIDimensions& layoutOptions);
 		virtual ~GUISlider();
 
 		/**
@@ -104,7 +104,7 @@ namespace BansheeEngine
 		static GUISliderHorz* create(const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
 
 	private:
-		GUISliderHorz(const String& styleName, const GUILayoutOptions& layoutOptions);
+		GUISliderHorz(const String& styleName, const GUIDimensions& layoutOptions);
 	};
 
 	/**
@@ -139,6 +139,6 @@ namespace BansheeEngine
 		static GUISliderVert* create(const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
 
 	private:
-		GUISliderVert(const String& styleName, const GUILayoutOptions& layoutOptions);
+		GUISliderVert(const String& styleName, const GUIDimensions& layoutOptions);
 	};
 }

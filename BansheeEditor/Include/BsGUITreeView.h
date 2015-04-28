@@ -124,7 +124,7 @@ namespace BansheeEngine
 
 		GUITreeView(const String& backgroundStyle, const String& elementBtnStyle, 
 			const String& foldoutBtnStyle, const String& selectionBackgroundStyle, const String& editBoxStyle, 
-			const String& dragHighlightStyle, const String& dragSepHighlightStyle, const GUILayoutOptions& layoutOptions);
+			const String& dragHighlightStyle, const String& dragSepHighlightStyle, const GUIDimensions& layoutOptions);
 
 		const GUITreeView::InteractableElement* findElementUnderCoord(const Vector2I& coord) const;
 		TreeElement* getTopMostSelectedElement() const;

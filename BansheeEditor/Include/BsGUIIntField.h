@@ -12,7 +12,7 @@ namespace BansheeEngine
 		static const String& getInputStyleType();
 
 		GUIIntField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth,
-			const String& style, const GUILayoutOptions& layoutOptions, bool withLabel);
+			const String& style, const GUIDimensions& layoutOptions, bool withLabel);
 
 		INT32 getValue() const { return mValue; }
 		void setValue(INT32 value);

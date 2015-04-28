@@ -5,7 +5,7 @@
 #include "BsGUISkin.h"
 #include "BsSpriteTexture.h"
 #include "BsTextSprite.h"
-#include "BsGUILayoutOptions.h"
+#include "BsGUIDimensions.h"
 #include "BsGUITextInputEvent.h"
 #include "BsGUIMouseEvent.h"
 #include "BsGUICommandEvent.h"
@@ -32,7 +32,7 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIInputBox::GUIInputBox(const String& styleName, const GUILayoutOptions& layoutOptions, bool multiline)
+	GUIInputBox::GUIInputBox(const String& styleName, const GUIDimensions& layoutOptions, bool multiline)
 		:GUIElement(styleName, layoutOptions), mDragInProgress(false),
 		mCaretShown(false), mSelectionShown(false), mIsMultiline(multiline), mHasFocus(false), mIsMouseOver(false),
 		mState(State::Normal)
@@ -49,17 +49,17 @@ namespace BansheeEngine
 
 	GUIInputBox* GUIInputBox::create(bool multiline, const String& styleName)
 	{
-		return new (bs_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUILayoutOptions::create(), multiline);
+		return new (bs_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUIDimensions::create(), multiline);
 	}
 
 	GUIInputBox* GUIInputBox::create(bool multiline, const GUIOptions& layoutOptions, const String& styleName)
 	{
-		return new (bs_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUILayoutOptions::create(layoutOptions), multiline);
+		return new (bs_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUIDimensions::create(layoutOptions), multiline);
 	}
 
 	GUIInputBox* GUIInputBox::create(const GUIOptions& layoutOptions, const String& styleName)
 	{
-		return new (bs_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUILayoutOptions::create(layoutOptions), false);
+		return new (bs_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUIDimensions::create(layoutOptions), false);
 	}
 
 	void GUIInputBox::setText(const WString& text)
@@ -327,7 +327,7 @@ namespace BansheeEngine
 			imageHeight = activeTex->getHeight();
 		}
 
-		Vector2I contentSize = GUIHelper::calcOptimalContentsSize(mText, *_getStyle(), _getLayoutOptions());
+		Vector2I contentSize = GUIHelper::calcOptimalContentsSize(mText, *_getStyle(), _getDimensions());
 		UINT32 contentWidth = std::max(imageWidth, (UINT32)contentSize.x);
 		UINT32 contentHeight = std::max(imageHeight, (UINT32)contentSize.y);
 

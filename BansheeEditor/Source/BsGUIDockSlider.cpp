@@ -1,7 +1,7 @@
 #include "BsGUIDockSlider.h"
 #include "BsGUIWidget.h"
 #include "BsGUISkin.h"
-#include "BsGUILayoutOptions.h"
+#include "BsGUIDimensions.h"
 #include "BsGUIMouseEvent.h"
 #include "BsGUITabbedTitleBar.h"
 #include "BsCursor.h"
@@ -15,7 +15,7 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIDockSlider::GUIDockSlider(bool horizontal, const String& styleName, const GUILayoutOptions& layoutOptions)
+	GUIDockSlider::GUIDockSlider(bool horizontal, const String& styleName, const GUIDimensions& layoutOptions)
 		:GUIButtonBase(styleName, GUIContent(HString(L"")), layoutOptions),
 		mDragInProgress(false), mHorizontal(horizontal), mIsCursorSet(false)
 	{
@@ -25,13 +25,13 @@ namespace BansheeEngine
 	GUIDockSlider* GUIDockSlider::create(bool horizontal, const String& styleName)
 	{
 		return new (bs_alloc<GUIDockSlider, PoolAlloc>()) GUIDockSlider(horizontal, 
-			getStyleName<GUIDockSlider>(styleName), GUILayoutOptions::create());
+			getStyleName<GUIDockSlider>(styleName), GUIDimensions::create());
 	}
 
 	GUIDockSlider* GUIDockSlider::create(bool horizontal, const GUIOptions& layoutOptions, const String& styleName)
 	{
 		return new (bs_alloc<GUIDockSlider, PoolAlloc>()) GUIDockSlider(horizontal, 
-			getStyleName<GUIDockSlider>(styleName), GUILayoutOptions::create(layoutOptions));
+			getStyleName<GUIDockSlider>(styleName), GUIDimensions::create(layoutOptions));
 	}
 
 	bool GUIDockSlider::_hasCustomCursor(const Vector2I position, CursorType& type) const

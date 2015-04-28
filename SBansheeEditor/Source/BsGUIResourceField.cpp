@@ -26,7 +26,7 @@ namespace BansheeEngine
 	const UINT32 GUIResourceField::DEFAULT_LABEL_WIDTH = 100;
 
 	GUIResourceField::GUIResourceField(const PrivatelyConstruct& dummy, const String& typeNamespace, const String& type, const GUIContent& labelContent, UINT32 labelWidth,
-		const String& style, const GUILayoutOptions& layoutOptions, bool withLabel)
+		const String& style, const GUIDimensions& layoutOptions, bool withLabel)
 		:GUIElementContainer(layoutOptions, style), mLabel(nullptr), mClearButton(nullptr), mDropButton(nullptr), mType(type), mNamespace(typeNamespace)
 	{
 		mLayout = GUILayoutX::create();
@@ -61,7 +61,7 @@ namespace BansheeEngine
 			curStyle = &BuiltinEditorResources::ObjectFieldStyleName;
 
 		return bs_new<GUIResourceField>(PrivatelyConstruct(), typeNamespace, type, labelContent, labelWidth, *curStyle,
-			GUILayoutOptions::create(layoutOptions), true);
+			GUIDimensions::create(layoutOptions), true);
 	}
 
 	GUIResourceField* GUIResourceField::create(const String& typeNamespace, const String& type, const GUIContent& labelContent, const GUIOptions& layoutOptions,
@@ -72,7 +72,7 @@ namespace BansheeEngine
 			curStyle = &BuiltinEditorResources::ObjectFieldStyleName;
 
 		return bs_new<GUIResourceField>(PrivatelyConstruct(), typeNamespace, type, labelContent, DEFAULT_LABEL_WIDTH, *curStyle,
-			GUILayoutOptions::create(layoutOptions), true);
+			GUIDimensions::create(layoutOptions), true);
 	}
 
 	GUIResourceField* GUIResourceField::create(const String& typeNamespace, const String& type, const HString& labelText, UINT32 labelWidth, const GUIOptions& layoutOptions,
@@ -83,7 +83,7 @@ namespace BansheeEngine
 			curStyle = &BuiltinEditorResources::ObjectFieldStyleName;
 
 		return bs_new<GUIResourceField>(PrivatelyConstruct(), typeNamespace, type, GUIContent(labelText), labelWidth, *curStyle,
-			GUILayoutOptions::create(layoutOptions), true);
+			GUIDimensions::create(layoutOptions), true);
 	}
 
 	GUIResourceField* GUIResourceField::create(const String& typeNamespace, const String& type, const HString& labelText, const GUIOptions& layoutOptions,
@@ -94,7 +94,7 @@ namespace BansheeEngine
 			curStyle = &BuiltinEditorResources::ObjectFieldStyleName;
 
 		return bs_new<GUIResourceField>(PrivatelyConstruct(), typeNamespace, type, GUIContent(labelText), DEFAULT_LABEL_WIDTH, *curStyle,
-			GUILayoutOptions::create(layoutOptions), true);
+			GUIDimensions::create(layoutOptions), true);
 	}
 
 	GUIResourceField* GUIResourceField::create(const String& typeNamespace, const String& type, const GUIOptions& layoutOptions, const String& style)
@@ -104,7 +104,7 @@ namespace BansheeEngine
 			curStyle = &BuiltinEditorResources::ObjectFieldStyleName;
 
 		return bs_new<GUIResourceField>(PrivatelyConstruct(), typeNamespace, type, GUIContent(), 0, *curStyle,
-			GUILayoutOptions::create(layoutOptions), false);
+			GUIDimensions::create(layoutOptions), false);
 	}
 
 	GUIResourceField* GUIResourceField::create(const String& typeNamespace, const String& type, const GUIContent& labelContent, UINT32 labelWidth,
@@ -115,7 +115,7 @@ namespace BansheeEngine
 			curStyle = &BuiltinEditorResources::ObjectFieldStyleName;
 
 		return bs_new<GUIResourceField>(PrivatelyConstruct(), typeNamespace, type, labelContent, labelWidth, *curStyle,
-			GUILayoutOptions::create(), true);
+			GUIDimensions::create(), true);
 	}
 
 	GUIResourceField* GUIResourceField::create(const String& typeNamespace, const String& type, const GUIContent& labelContent,
@@ -126,7 +126,7 @@ namespace BansheeEngine
 			curStyle = &BuiltinEditorResources::ObjectFieldStyleName;
 
 		return bs_new<GUIResourceField>(PrivatelyConstruct(), typeNamespace, type, labelContent, DEFAULT_LABEL_WIDTH, *curStyle,
-			GUILayoutOptions::create(), true);
+			GUIDimensions::create(), true);
 	}
 
 	GUIResourceField* GUIResourceField::create(const String& typeNamespace, const String& type, const HString& labelText, UINT32 labelWidth,
@@ -137,7 +137,7 @@ namespace BansheeEngine
 			curStyle = &BuiltinEditorResources::ObjectFieldStyleName;
 
 		return bs_new<GUIResourceField>(PrivatelyConstruct(), typeNamespace, type, GUIContent(labelText), labelWidth, *curStyle,
-			GUILayoutOptions::create(), true);
+			GUIDimensions::create(), true);
 	}
 
 	GUIResourceField* GUIResourceField::create(const String& typeNamespace, const String& type, const HString& labelText,
@@ -148,7 +148,7 @@ namespace BansheeEngine
 			curStyle = &BuiltinEditorResources::ObjectFieldStyleName;
 
 		return bs_new<GUIResourceField>(PrivatelyConstruct(), typeNamespace, type, GUIContent(labelText), DEFAULT_LABEL_WIDTH, *curStyle,
-			GUILayoutOptions::create(), true);
+			GUIDimensions::create(), true);
 	}
 
 	GUIResourceField* GUIResourceField::create(const String& typeNamespace, const String& type, const String& style)
@@ -158,7 +158,7 @@ namespace BansheeEngine
 			curStyle = &BuiltinEditorResources::ObjectFieldStyleName;
 
 		return bs_new<GUIResourceField>(PrivatelyConstruct(), typeNamespace, type, GUIContent(), 0, *curStyle,
-			GUILayoutOptions::create(), false);
+			GUIDimensions::create(), false);
 	}
 
 	HResource GUIResourceField::getValue() const

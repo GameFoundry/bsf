@@ -64,7 +64,7 @@ namespace BansheeEngine
 	class GUIFlexibleSpace;
 	class GUIInputCaret;
 	class GUIInputSelection;
-	struct GUILayoutOptions;
+	struct GUIDimensions;
 	class GUIOptions;
 	class GUIToggleGroup;
 	class GUIListBox;

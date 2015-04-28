@@ -106,7 +106,7 @@ namespace BansheeEngine
 			}
 		}
 
-		Vector2I actualSize = layout->_calcActualSize(actualAreas, numElements);
+		Vector2I actualSize = layout->_calcActualSize(0, 0, actualAreas, numElements);
 
 		if (elementAreas != nullptr)
 			stackDeallocLast(elementAreas);

@@ -17,49 +17,18 @@ the same and the only variable will be the 4byte random number, which can someti
 ----------------------------------------------------------------------
 GUIArea refactor:
 
-Revert all changes and start from scratch:
- 1. Get all layouts to use pointers and be reparentable. Compile/commit
-    - Make GUIElementBase::addElement return a ptr to the element so I don't need to use two lines to init and add an element
- 2. Add new GUILayoutOption (offset) and ensure it works. Add GUILayoutOptions to layouts as well, and ensure parent layouts respect them (when it makes sense).
- 3. Remove normal position/size from GUIElementBase and move it to GUIElement
- 4. Move to the new positioning/size system (get rid of GUIOptions) and add support for offset size type
-   - Also ensure these options work with layouts and that GUILayoutExplicit respects child layout positions same as it does elements
- 5. Rename GUiLayoutExplicit to GUIPanel. Add default layout to it. Make coordinates relative
-     and ensure ColorPicker window works looks fine. (And refactor elements so they contain relative size.)
- 6. Change how GUIArea depth works. Allow GUIPanel to have a depth range (keep at the depth on GUIArea for now as well)
- 7. Modify C# so it no longer uses GUIPanel or GUIPanelContainer and uses GUILayoutExplicit (now GUIPanel) instead
- 8. Remove GUIArea and replace with GUILayoutExplicit in C++ and C#
+Ensure that x, y isn't ignored (after ensure ColorPicker looks okay)
+Ensure that layout size dimensions aren't ignored (even if layout is part of GUILayoutExplicit, layouts should expand to cover entire area if flexible)
+COMPILE; CHECK IF STUFF WORKS; COMMIT;
 
-GUIPanel (ex GUILayoutExplicit)
- - When creating a GUIPanel allow certain size to be specified. When layout is positioned that size is used as if it was fixed GUI element size.
- - Should have a default layout as its child. This layout acts as it was parented by a GUIArea (it tries to cover the entire size of GUILayout)
-  - But it also has standard AddElement methods which will allow elements to be positioned directly.
- - When calculating bounds I need to return them relative to the parent GUIPanel
-   - When specifying bounds they should be relative to parent GUIPanel
-   - This will require updating GUILayoutUtility
+Rename GUILayoutExplicit to GUIPanel
+Make GUILayoutUtility return coordinates relative to parent GUILayoutExplicit or top-most area (will be removed later) (after ensure ColorPicker looks okay)
 
-Replace current GUIOption::fixedWidth/etc. system and implement something new that also works for layouts
- - Also it deals with the issue of relative coordinates
- - setPosition(GUIPosition x, GUIPosition y) <- used only if direct parent of GUIPanel
-   - GUIPosition::fixed(int value) <- position in pixels offset from parent GUIPanel
- - setWidth(GUISize size), setHeight(GUISize size)
-   - GUISize::fixed(int value) <- fixed size in pixels
-   - GUISize::flexible(int min, int max) <- flexible size in pixels with minimum and maximum value (0 means inifinite)
-   - GUISize::offset(int offset) <- size that is determined by the distance from the edge from its parent
- - setAnchor(Vector2 min, Vector2 max)
-   - anchor + specifiying size as an offset is weird but I can't think of a way around it
- - Need to modify layout updates so they properly handle these new settings. Most importantly for layouts as they don't support layout 
-   options right now. And GUI elements don't support float versions of position/size methods.
+Remove GUIPanel and GUIPanel container and rename GUILayoutExplicit to new GUIPanel. Use that instead in code and ensure everything looks okay.
+Change how depth works so GUIPanels can set it (offset + range)
 
-TODO - Better way to handle layout depth?
-  - Specify layout depth as offset + range. Then just add the depths and clamp if outside the range
-TODO - Will I need a separate set of coordinates to properly handle relative coordinates?
-  - Yes, most likely. Other option is somehow storing a reference to the parent but I don't think
-    that's a good solution. Rename current position/size to cached position/size and make current
-	getter/setters point to the new relative position/size instead. Cached should only be available
-	to internal methods.
+Remove GUIArea and replace it with GUIPanel completely
 
-OPTIONAL - Consider making coordinates/size be GUIElement only
 
 Use cases:
 InspectorWindow:

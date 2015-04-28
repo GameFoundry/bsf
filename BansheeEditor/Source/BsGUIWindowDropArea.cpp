@@ -4,7 +4,7 @@
 #include "BsGUIWidget.h"
 #include "BsGUISkin.h"
 #include "BsSpriteTexture.h"
-#include "BsGUILayoutOptions.h"
+#include "BsGUIDimensions.h"
 #include "BsGUIMouseEvent.h"
 
 namespace BansheeEngine
@@ -15,7 +15,7 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIWindowDropArea::GUIWindowDropArea(const String& styleName, const GUILayoutOptions& layoutOptions)
+	GUIWindowDropArea::GUIWindowDropArea(const String& styleName, const GUIDimensions& layoutOptions)
 		:GUITexture(styleName, HSpriteTexture(), GUIImageScaleMode::ScaleToFit, true, layoutOptions)
 	{ }
 
@@ -25,13 +25,13 @@ namespace BansheeEngine
 	GUIWindowDropArea* GUIWindowDropArea::create(const String& styleName)
 	{
 		return new (bs_alloc<GUIWindowDropArea, PoolAlloc>()) 
-			GUIWindowDropArea(getStyleName<GUIWindowDropArea>(styleName), GUILayoutOptions::create());
+			GUIWindowDropArea(getStyleName<GUIWindowDropArea>(styleName), GUIDimensions::create());
 	}
 
 	GUIWindowDropArea* GUIWindowDropArea::create(const GUIOptions& layoutOptions, const String& styleName)
 	{
 		return new (bs_alloc<GUIWindowDropArea, PoolAlloc>()) 
-			GUIWindowDropArea(getStyleName<GUIWindowDropArea>(styleName), GUILayoutOptions::create(layoutOptions));
+			GUIWindowDropArea(getStyleName<GUIWindowDropArea>(styleName), GUIDimensions::create(layoutOptions));
 	}
 
 	void GUIWindowDropArea::setFocused(bool focused)

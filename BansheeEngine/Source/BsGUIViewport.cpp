@@ -2,7 +2,7 @@
 #include "BsGUIWidget.h"
 #include "BsGUISkin.h"
 #include "BsSpriteTexture.h"
-#include "BsGUILayoutOptions.h"
+#include "BsGUIDimensions.h"
 #include "BsCamera.h"
 #include "BsViewport.h"
 #include "BsRenderTarget.h"
@@ -17,7 +17,7 @@ namespace BansheeEngine
 	}
 
 	GUIViewport::GUIViewport(const String& styleName, const HCamera& camera, 
-		float aspectRatio, Degree fieldOfView, const GUILayoutOptions& layoutOptions)
+		float aspectRatio, Degree fieldOfView, const GUIDimensions& layoutOptions)
 		:GUIElement(styleName, layoutOptions), mCamera(camera), mAspectRatio(aspectRatio),
 		mFieldOfView(fieldOfView)
 	{
@@ -31,13 +31,13 @@ namespace BansheeEngine
 
 	GUIViewport* GUIViewport::create(const HCamera& camera, float aspectRatio, Degree fieldOfView, const String& styleName)
 	{
-		return new (bs_alloc<GUIViewport, PoolAlloc>()) GUIViewport(getStyleName<GUIViewport>(styleName), camera, aspectRatio, fieldOfView, GUILayoutOptions::create());
+		return new (bs_alloc<GUIViewport, PoolAlloc>()) GUIViewport(getStyleName<GUIViewport>(styleName), camera, aspectRatio, fieldOfView, GUIDimensions::create());
 	}
 
 	GUIViewport* GUIViewport::create(const GUIOptions& layoutOptions, const HCamera& camera, 
 		float aspectRatio, Degree fieldOfView, const String& styleName)
 	{
-		return new (bs_alloc<GUIViewport, PoolAlloc>()) GUIViewport(getStyleName<GUIViewport>(styleName), camera, aspectRatio, fieldOfView, GUILayoutOptions::create(layoutOptions));
+		return new (bs_alloc<GUIViewport, PoolAlloc>()) GUIViewport(getStyleName<GUIViewport>(styleName), camera, aspectRatio, fieldOfView, GUIDimensions::create(layoutOptions));
 	}
 
 	UINT32 GUIViewport::_getNumRenderElements() const

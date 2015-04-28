@@ -3,19 +3,19 @@
 
 namespace BansheeEngine
 {
-	GUIElementContainer::GUIElementContainer(const GUILayoutOptions& layoutOptions, const String& style)
+	GUIElementContainer::GUIElementContainer(const GUIDimensions& layoutOptions, const String& style)
 		:GUIElement(style, layoutOptions)
 	{ }
 
 	GUIElementContainer::~GUIElementContainer()
 	{ }
 
-	void GUIElementContainer::setOffset(const Vector2I& offset)
+	void GUIElementContainer::_setPosition(const Vector2I& offset)
 	{
 		if (mOffset != offset)
 			markContentAsDirty();
 
-		GUIElement::setOffset(offset);
+		GUIElement::_setPosition(offset);
 	}
 
 	UINT32 GUIElementContainer::_getNumRenderElements() const

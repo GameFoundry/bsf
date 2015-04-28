@@ -10,7 +10,7 @@ namespace BansheeEngine
 	const UINT32 GUIFieldBase::DEFAULT_LABEL_WIDTH = 100;
 
 	GUIFieldBase::GUIFieldBase(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth,
-		const String& style, const GUILayoutOptions& layoutOptions, bool withLabel)
+		const String& style, const GUIDimensions& layoutOptions, bool withLabel)
 		:GUIElementContainer(layoutOptions, style), mLabel(nullptr)
 	{
 		mLayout = GUILayoutX::create();

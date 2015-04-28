@@ -84,7 +84,7 @@ namespace BansheeEngine
 		 */
 		Event<void()> onDoubleClick;
 	protected:
-		GUIButtonBase(const String& styleName, const GUIContent& content, const GUILayoutOptions& layoutOptions);
+		GUIButtonBase(const String& styleName, const GUIContent& content, const GUIDimensions& layoutOptions);
 		virtual ~GUIButtonBase();
 
 		/**

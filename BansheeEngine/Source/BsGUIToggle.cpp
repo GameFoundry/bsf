@@ -4,7 +4,7 @@
 #include "BsGUISkin.h"
 #include "BsSpriteTexture.h"
 #include "BsTextSprite.h"
-#include "BsGUILayoutOptions.h"
+#include "BsGUIDimensions.h"
 #include "BsGUIMouseEvent.h"
 #include "BsGUIToggleGroup.h"
 #include "BsGUIHelper.h"
@@ -18,7 +18,7 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIToggle::GUIToggle(const String& styleName, const GUIContent& content, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUILayoutOptions& layoutOptions)
+	GUIToggle::GUIToggle(const String& styleName, const GUIContent& content, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIDimensions& layoutOptions)
 		:GUIButtonBase(styleName, content, layoutOptions), mIsToggled(false), mToggleGroup(nullptr)
 	{
 		if(toggleGroup != nullptr)
@@ -56,23 +56,23 @@ namespace BansheeEngine
 
 	GUIToggle* GUIToggle::create(const GUIContent& content, const String& styleName)
 	{
-		return new (bs_alloc<GUIToggle, PoolAlloc>()) GUIToggle(getStyleName<GUIToggle>(styleName), content, nullptr, GUILayoutOptions::create());
+		return new (bs_alloc<GUIToggle, PoolAlloc>()) GUIToggle(getStyleName<GUIToggle>(styleName), content, nullptr, GUIDimensions::create());
 	}
 
 	GUIToggle* GUIToggle::create(const GUIContent& content, const GUIOptions& layoutOptions, const String& styleName)
 	{
-		return new (bs_alloc<GUIToggle, PoolAlloc>()) GUIToggle(getStyleName<GUIToggle>(styleName), content, nullptr, GUILayoutOptions::create(layoutOptions));
+		return new (bs_alloc<GUIToggle, PoolAlloc>()) GUIToggle(getStyleName<GUIToggle>(styleName), content, nullptr, GUIDimensions::create(layoutOptions));
 	}
 
 	GUIToggle* GUIToggle::create(const GUIContent& content, std::shared_ptr<GUIToggleGroup> toggleGroup, const String& styleName)
 	{
-		return new (bs_alloc<GUIToggle, PoolAlloc>()) GUIToggle(getStyleName<GUIToggle>(styleName), content, toggleGroup, GUILayoutOptions::create());
+		return new (bs_alloc<GUIToggle, PoolAlloc>()) GUIToggle(getStyleName<GUIToggle>(styleName), content, toggleGroup, GUIDimensions::create());
 	}
 
 	GUIToggle* GUIToggle::create(const GUIContent& content, std::shared_ptr<GUIToggleGroup> toggleGroup, 
 		const GUIOptions& layoutOptions, const String& styleName)
 	{
-		return new (bs_alloc<GUIToggle, PoolAlloc>()) GUIToggle(getStyleName<GUIToggle>(styleName), content, toggleGroup, GUILayoutOptions::create(layoutOptions));
+		return new (bs_alloc<GUIToggle, PoolAlloc>()) GUIToggle(getStyleName<GUIToggle>(styleName), content, toggleGroup, GUIDimensions::create(layoutOptions));
 	}
 
 	std::shared_ptr<GUIToggleGroup> GUIToggle::createToggleGroup()

@@ -14,7 +14,7 @@ using namespace std::placeholders;
 namespace BansheeEngine
 {
 	GUIColorField::GUIColorField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth,
-		const String& style, const GUILayoutOptions& layoutOptions, bool withLabel)
+		const String& style, const GUIDimensions& layoutOptions, bool withLabel)
 		:TGUIField(dummy, labelContent, labelWidth, style, layoutOptions, withLabel), 
 		mLabel(nullptr), mColor(nullptr), mLabelWidth(100)
 	{

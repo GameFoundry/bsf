@@ -35,7 +35,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUILayout::_calcActualSize
 		 */
-		virtual Vector2I _calcActualSize(Rect2I* elementAreas, UINT32 numElements) const;
+		virtual Vector2I _calcActualSize(INT32 x, INT32 y, Rect2I* elementAreas, UINT32 numElements) const;
 
 		/**
 		 * @brief	Creates a new horizontal layout.

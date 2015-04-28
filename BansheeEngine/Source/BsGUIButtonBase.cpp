@@ -4,14 +4,14 @@
 #include "BsGUISkin.h"
 #include "BsSpriteTexture.h"
 #include "BsTextSprite.h"
-#include "BsGUILayoutOptions.h"
+#include "BsGUIDimensions.h"
 #include "BsGUIMouseEvent.h"
 #include "BsGUIHelper.h"
 #include "BsTexture.h"
 
 namespace BansheeEngine
 {
-	GUIButtonBase::GUIButtonBase(const String& styleName, const GUIContent& content, const GUILayoutOptions& layoutOptions)
+	GUIButtonBase::GUIButtonBase(const String& styleName, const GUIContent& content, const GUIDimensions& layoutOptions)
 		:GUIElement(styleName, layoutOptions), mContent(content), mContentImageSprite(nullptr), mActiveState(GUIButtonState::Normal)
 	{
 		mImageSprite = bs_new<ImageSprite, PoolAlloc>();
@@ -157,7 +157,7 @@ namespace BansheeEngine
 			imageHeight = activeTex->getHeight();
 		}
 
-		Vector2I contentSize = GUIHelper::calcOptimalContentsSize(mContent, *_getStyle(), _getLayoutOptions());
+		Vector2I contentSize = GUIHelper::calcOptimalContentsSize(mContent, *_getStyle(), _getDimensions());
 		UINT32 contentWidth = std::max(imageWidth, (UINT32)contentSize.x);
 		UINT32 contentHeight = std::max(imageHeight, (UINT32)contentSize.y);
 

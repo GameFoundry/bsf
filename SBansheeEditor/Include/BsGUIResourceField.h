@@ -41,7 +41,7 @@ namespace BansheeEngine
 		static GUIResourceField* create(const String& typeNamespace, const String& type, const String& style = StringUtil::BLANK);
 
 		GUIResourceField(const PrivatelyConstruct& dummy, const String& typeNamespace, const String& type, const GUIContent& labelContent,
-			UINT32 labelWidth, const String& style, const GUILayoutOptions& layoutOptions, bool withLabel);
+			UINT32 labelWidth, const String& style, const GUIDimensions& layoutOptions, bool withLabel);
 
 		HResource getValue() const;
 		void setValue(const HResource& value);

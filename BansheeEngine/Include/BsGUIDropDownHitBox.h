@@ -58,7 +58,7 @@ namespace BansheeEngine
 		Event<void()> onFocusGained;
 
 	private:
-		GUIDropDownHitBox(bool captureMouse, const GUILayoutOptions& layoutOptions);
+		GUIDropDownHitBox(bool captureMouse, const GUIDimensions& layoutOptions);
 
 		virtual bool _commandEvent(const GUICommandEvent& ev);
 		virtual bool _mouseEvent(const GUIMouseEvent& ev);

@@ -32,7 +32,7 @@ namespace BansheeEngine
 		};
 
 	public:
-		GUIElement(const String& styleName, const GUILayoutOptions& layoutOptions);
+		GUIElement(const String& styleName, const GUIDimensions& dimensions);
 		virtual ~GUIElement();
 
 		/**
@@ -46,32 +46,14 @@ namespace BansheeEngine
 		virtual void setTint(const Color& color) { }
 
 		/**
-		 * @brief	Sets new layout options for the element.
-		 *
-		 * @param	layoutOptions	Options that allows you to control how is the element positioned in
-		 *							GUI layout. This will override any similar options set by style.
+		 * @copydoc	GUIElementBase::resetDimensions
 		 */
-		void setLayoutOptions(const GUIOptions& layoutOptions);
+		virtual void resetDimensions() override;
 
 		/**
 		 * @brief	Sets new style to be used by the element.
 		 */
 		void setStyle(const String& styleName);
-
-		/**
-		 * @copydoc	GUIElementBase::setWidth
-		 */
-		void setWidth(UINT32 width) override;
-
-		/**
-		 * @copydoc	GUIElementBase::setHeight
-		 */
-		void setHeight(UINT32 height) override;
-
-		/**
-		 * @copydoc	GUIElementBase::setOffset
-		 */
-		void setOffset(const Vector2I& offset) override;
 
 		/**
 		 * @copydoc	GUIElementBase::getVisibleBounds
@@ -87,6 +69,27 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 							INTERNAL METHODS                      		*/
 		/************************************************************************/
+
+		/**
+		 * @brief	Sets element position relative to widget origin. This will be the position used directly for rendering.
+		 *
+		 * @note	Internal method.
+		 */
+		virtual void _setPosition(const Vector2I& offset);
+
+		/**
+		 * @brief	Sets element width in pixels. This will be the width used directly for rendering.
+		 *
+		 * @note	Internal method.
+		 */
+		virtual void _setWidth(UINT32 width);
+
+		/**
+		 * @brief	Sets element height in pixels. This will be the height used directly for rendering.
+		 *
+		 * @note	Internal method.
+		 */
+		virtual void _setHeight(UINT32 height);
 
 		/**
 		 * @brief	Returns the number of separate render elements in the GUI element.
@@ -363,11 +366,6 @@ namespace BansheeEngine
 		virtual bool _hasCustomCursor(const Vector2I position, CursorType& type) const { return false; }
 
 		/**
-		 * @copydoc	GUIElementBase::_calculateLayoutSizeRange
-		 */
-		virtual LayoutSizeRange _calculateLayoutSizeRange() const;
-
-		/**
 		 * @brief	Checks if the GUI element accepts a drag and drop operation of the specified type.
 		 *
 		 * @note	Internal method.
@@ -397,12 +395,6 @@ namespace BansheeEngine
 		 */
 		virtual Rect2I _getTextInputRect() const { return Rect2I(); }
 
-		/**
-		 * @brief	Returns layout options that determine how is the element positioned within a GUILayout.
-		 *
-		 * @note	Internal method.
-		 */
-		const GUILayoutOptions& _getLayoutOptions() const { return mLayoutOptions; }
 	protected:
 		/**
 		 * @brief	Called whenever render elements are dirty and need to be rebuilt.
@@ -415,11 +407,6 @@ namespace BansheeEngine
 		 */
 		virtual void updateClippedBounds() = 0;
 
-		/**
-		 * @brief	Sets layout options that determine how is the element positioned within a GUILayout.
-		 */
-		void setLayoutOptions(const GUILayoutOptions& layoutOptions);
-		
 		/**
 		 * @brief	Helper method that returns style name used by an element of a certain type.
 		 *			If override style is empty, default style for that type is returned.
@@ -466,11 +453,13 @@ namespace BansheeEngine
 		Rect2I getCachedContentClipRect() const;
 
 		bool mIsDestroyed;
-		GUILayoutOptions mLayoutOptions;
 		Rect2I mClippedBounds;
 
 		UINT32 mDepth;
 		Rect2I mClipRect;
+
+		Vector2I mOffset;
+		UINT32 mWidth, mHeight;
 
 	private:
 		const GUIElementStyle* mStyle;

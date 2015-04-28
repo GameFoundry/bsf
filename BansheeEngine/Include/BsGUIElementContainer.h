@@ -15,10 +15,10 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElementBase::setOffset
 		 */
-		void setOffset(const Vector2I& offset) override;
+		void _setPosition(const Vector2I& offset) override;
 
 	protected:
-		GUIElementContainer(const GUILayoutOptions& layoutOptions, const String& style = StringUtil::BLANK);
+		GUIElementContainer(const GUIDimensions& layoutOptions, const String& style = StringUtil::BLANK);
 		virtual ~GUIElementContainer();
 
 		/**

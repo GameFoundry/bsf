@@ -47,7 +47,7 @@ namespace BansheeEngine
 		void setRenderTexture(const RenderTexturePtr& texture);
 
 	protected:
-		GUIRenderTexture(const String& styleName, const RenderTexturePtr& texture, const GUILayoutOptions& layoutOptions);
+		GUIRenderTexture(const String& styleName, const RenderTexturePtr& texture, const GUIDimensions& layoutOptions);
 		virtual ~GUIRenderTexture();
 
 		/**

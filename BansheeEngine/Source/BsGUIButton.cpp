@@ -4,7 +4,7 @@
 #include "BsGUISkin.h"
 #include "BsSpriteTexture.h"
 #include "BsTextSprite.h"
-#include "BsGUILayoutOptions.h"
+#include "BsGUIDimensions.h"
 #include "BsGUIMouseEvent.h"
 #include "BsGUIHelper.h"
 #include "BsTexture.h"
@@ -17,7 +17,7 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIButton::GUIButton(const String& styleName, const GUIContent& content, const GUILayoutOptions& layoutOptions)
+	GUIButton::GUIButton(const String& styleName, const GUIContent& content, const GUIDimensions& layoutOptions)
 		:GUIButtonBase(styleName, content, layoutOptions)
 	{ }
 
@@ -33,11 +33,11 @@ namespace BansheeEngine
 
 	GUIButton* GUIButton::create(const GUIContent& content, const String& styleName)
 	{
-		return new (bs_alloc<GUIButton, PoolAlloc>()) GUIButton(getStyleName<GUIButton>(styleName), content, GUILayoutOptions::create());
+		return new (bs_alloc<GUIButton, PoolAlloc>()) GUIButton(getStyleName<GUIButton>(styleName), content, GUIDimensions::create());
 	}
 
 	GUIButton* GUIButton::create(const GUIContent& content, const GUIOptions& layoutOptions, const String& styleName)
 	{
-		return new (bs_alloc<GUIButton, PoolAlloc>()) GUIButton(getStyleName<GUIButton>(styleName), content, GUILayoutOptions::create(layoutOptions));
+		return new (bs_alloc<GUIButton, PoolAlloc>()) GUIButton(getStyleName<GUIButton>(styleName), content, GUIDimensions::create(layoutOptions));
 	}
 }

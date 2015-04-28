@@ -27,7 +27,7 @@ namespace BansheeEngine
 
 		Event<void(const Color&)> onValueChanged;
 	protected:
-		GUIColor(const String& styleName, const GUILayoutOptions& layoutOptions);
+		GUIColor(const String& styleName, const GUIDimensions& layoutOptions);
 		virtual ~GUIColor();
 
 		/**

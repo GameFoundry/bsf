@@ -2,7 +2,7 @@
 #include "BsGUIElementStyle.h"
 #include "BsGUISkin.h"
 #include "BsGUIWidget.h"
-#include "BsGUILayoutOptions.h"
+#include "BsGUIDimensions.h"
 #include "BsGUILayoutY.h"
 #include "BsGUISkin.h"
 #include "BsGUIScrollBarVert.h"
@@ -20,7 +20,7 @@ namespace BansheeEngine
 	const UINT32 GUIScrollArea::WheelScrollAmount = 50;
 
 	GUIScrollArea::GUIScrollArea(ScrollBarType vertBarType, ScrollBarType horzBarType, 
-		const String& scrollBarStyle, const String& scrollAreaStyle, const GUILayoutOptions& layoutOptions)
+		const String& scrollBarStyle, const String& scrollAreaStyle, const GUIDimensions& layoutOptions)
 		:GUIElementContainer(layoutOptions), mVertScroll(nullptr), mHorzScroll(nullptr), mVertOffset(0), mHorzOffset(0),
 		mVertBarType(vertBarType), mHorzBarType(horzBarType), mScrollBarStyle(scrollBarStyle)
 	{
@@ -231,9 +231,9 @@ namespace BansheeEngine
 
 		// Vertical scrollbar
 		{
-			mVertScroll->setOffset(Vector2I(vertScrollBounds.x, vertScrollBounds.y));
-			mVertScroll->setWidth(vertScrollBounds.width);
-			mVertScroll->setHeight(vertScrollBounds.height);
+			mVertScroll->_setPosition(Vector2I(vertScrollBounds.x, vertScrollBounds.y));
+			mVertScroll->_setWidth(vertScrollBounds.width);
+			mVertScroll->_setHeight(vertScrollBounds.height);
 			mVertScroll->_setAreaDepth(areaDepth);
 			mVertScroll->_setWidgetDepth(widgetDepth);
 
@@ -261,9 +261,9 @@ namespace BansheeEngine
 
 		// Horizontal scrollbar
 		{
-			mHorzScroll->setOffset(Vector2I(horzScrollBounds.x, horzScrollBounds.y));
-			mHorzScroll->setWidth(horzScrollBounds.width);
-			mHorzScroll->setHeight(horzScrollBounds.height);
+			mHorzScroll->_setPosition(Vector2I(horzScrollBounds.x, horzScrollBounds.y));
+			mHorzScroll->_setWidth(horzScrollBounds.width);
+			mHorzScroll->_setHeight(horzScrollBounds.height);
 			mHorzScroll->_setAreaDepth(areaDepth);
 			mHorzScroll->_setWidgetDepth(widgetDepth);
 
@@ -421,20 +421,20 @@ namespace BansheeEngine
 		const String& scrollBarStyle, const String& scrollAreaStyle)
 	{
 		return new (bs_alloc<GUIScrollArea, PoolAlloc>()) GUIScrollArea(vertBarType, horzBarType, scrollBarStyle, 
-			getStyleName<GUIScrollArea>(scrollAreaStyle), GUILayoutOptions::create());
+			getStyleName<GUIScrollArea>(scrollAreaStyle), GUIDimensions::create());
 	}
 
 	GUIScrollArea* GUIScrollArea::create(const GUIOptions& layoutOptions, const String& scrollBarStyle, 
 		const String& scrollAreaStyle)
 	{
 		return new (bs_alloc<GUIScrollArea, PoolAlloc>()) GUIScrollArea(ScrollBarType::ShowIfDoesntFit, 
-			ScrollBarType::ShowIfDoesntFit, scrollBarStyle, getStyleName<GUIScrollArea>(scrollAreaStyle), GUILayoutOptions::create(layoutOptions));
+			ScrollBarType::ShowIfDoesntFit, scrollBarStyle, getStyleName<GUIScrollArea>(scrollAreaStyle), GUIDimensions::create(layoutOptions));
 	}
 
 	GUIScrollArea* GUIScrollArea::create(const String& scrollBarStyle, const String& scrollAreaStyle)
 	{
 		return new (bs_alloc<GUIScrollArea, PoolAlloc>()) GUIScrollArea(ScrollBarType::ShowIfDoesntFit, ScrollBarType::ShowIfDoesntFit, scrollBarStyle, 
-			getStyleName<GUIScrollArea>(scrollAreaStyle), GUILayoutOptions::create());
+			getStyleName<GUIScrollArea>(scrollAreaStyle), GUIDimensions::create());
 	}
 
 	GUIScrollArea* GUIScrollArea::create(ScrollBarType vertBarType, 
@@ -442,7 +442,7 @@ namespace BansheeEngine
 		const String& scrollAreaStyle)
 	{
 		return new (bs_alloc<GUIScrollArea, PoolAlloc>()) GUIScrollArea(vertBarType, horzBarType, scrollBarStyle, 
-			getStyleName<GUIScrollArea>(scrollAreaStyle), GUILayoutOptions::create(layoutOptions));
+			getStyleName<GUIScrollArea>(scrollAreaStyle), GUIDimensions::create(layoutOptions));
 	}
 
 	const String& GUIScrollArea::getGUITypeName()

@@ -72,7 +72,7 @@ namespace BansheeEngine
 
 		Event<void(float percent)> onChanged;
 	protected:
-		GUIProgressBar(const String& styleName, const GUILayoutOptions& layoutOptions);
+		GUIProgressBar(const String& styleName, const GUIDimensions& layoutOptions);
 
 		/**
 		 * @copydoc	GUIElementContainer::_getOptimalSize

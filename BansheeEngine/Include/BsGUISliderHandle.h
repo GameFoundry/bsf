@@ -128,7 +128,7 @@ namespace BansheeEngine
 		 */
 		virtual void updateClippedBounds();
 	private:
-		GUISliderHandle(bool horizontal, bool jumpOnClick, const String& styleName, const GUILayoutOptions& layoutOptions);
+		GUISliderHandle(bool horizontal, bool jumpOnClick, const String& styleName, const GUIDimensions& layoutOptions);
 
 		/**
 		 * @brief	Returns the position of the slider handle, in pixels.

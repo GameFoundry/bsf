@@ -17,7 +17,7 @@ namespace BansheeEngine
 	const UINT32 GUIVector2Field::ELEMENT_LABEL_WIDTH = 10;
 
 	GUIVector2Field::GUIVector2Field(const PrivatelyConstruct& dummy, const GUIContent& labelContent, 
-		UINT32 labelWidth, const String& style, const GUILayoutOptions& layoutOptions, bool withLabel)
+		UINT32 labelWidth, const String& style, const GUIDimensions& layoutOptions, bool withLabel)
 		:TGUIField(dummy, labelContent, labelWidth, style, layoutOptions, withLabel), 
 		mFieldX(nullptr), mFieldY(nullptr)
 	{
@@ -32,7 +32,7 @@ namespace BansheeEngine
 		GUILayout* layout = mLayout->addNewElement<GUILayoutY>();
 
 		layout->addElement(mLabel);
-		mLabel->setLayoutOptions(GUIOptions());
+		mLabel->resetDimensions();
 
 		GUILayout* elementLayout = layout->addNewElement<GUILayoutX>();
 

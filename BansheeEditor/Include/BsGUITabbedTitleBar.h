@@ -15,7 +15,7 @@ namespace BansheeEngine
 		static GUITabbedTitleBar* create(const String& backgroundStyle = StringUtil::BLANK, const String& tabBtnStyle = StringUtil::BLANK, 
 			const String& minBtnStyle = StringUtil::BLANK, const String& closeBtnStyle = StringUtil::BLANK);
 
-		static GUITabbedTitleBar* create(const GUILayoutOptions& layoutOptions, 
+		static GUITabbedTitleBar* create(const GUIDimensions& layoutOptions, 
 			const String& backgroundStyle = StringUtil::BLANK, const String& tabBtnStyle = StringUtil::BLANK, 
 			const String& minBtnStyle = StringUtil::BLANK, const String& closeBtnStyle = StringUtil::BLANK);
 
@@ -67,7 +67,7 @@ namespace BansheeEngine
 		String mTabBtnStyle;
 
 		GUITabbedTitleBar(const String& backgroundStyle, const String& tabBtnStyle, 
-			const String& minBtnStyle, const String& closeBtnStyle, const GUILayoutOptions& layoutOptions);
+			const String& minBtnStyle, const String& closeBtnStyle, const GUIDimensions& layoutOptions);
 
 		virtual bool _mouseEvent(const GUIMouseEvent& ev);
 

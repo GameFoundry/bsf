@@ -3,13 +3,13 @@
 #include "BsGUISkin.h"
 #include "BsGUITexture.h"
 #include "BsSpriteTexture.h"
-#include "BsGUILayoutOptions.h"
+#include "BsGUIDimensions.h"
 
 using namespace std::placeholders;
 
 namespace BansheeEngine
 {
-	GUIProgressBar::GUIProgressBar(const String& styleName, const GUILayoutOptions& layoutOptions)
+	GUIProgressBar::GUIProgressBar(const String& styleName, const GUIDimensions& layoutOptions)
 		:GUIElementContainer(layoutOptions, styleName), mPercent(0)
 	{
 		mBar = GUITexture::create(getSubStyleName(getBarStyleType()));
@@ -50,9 +50,9 @@ namespace BansheeEngine
 		Vector2I bgOffset(x, y);
 		Rect2I bgClipRect(clipRect.x - bgOffset.x, clipRect.y - bgOffset.y, clipRect.width, clipRect.height);
 
-		mBackground->setOffset(bgOffset);
-		mBackground->setWidth(width);
-		mBackground->setHeight(height);
+		mBackground->_setPosition(bgOffset);
+		mBackground->_setWidth(width);
+		mBackground->_setHeight(height);
 		mBackground->_setAreaDepth(areaDepth);
 		mBackground->_setWidgetDepth(widgetDepth);
 		mBackground->_setClipRect(bgClipRect);
@@ -65,9 +65,9 @@ namespace BansheeEngine
 		UINT32 maxProgressBarWidth = std::max((UINT32)0, (UINT32)(width - style->margins.left - style->margins.right));
 		UINT32 progressBarHeight = std::max((UINT32)0, (UINT32)(height - style->margins.top - style->margins.bottom)); 
 
-		mBar->setOffset(barOffset);
-		mBar->setWidth((UINT32)Math::floorToInt(maxProgressBarWidth * mPercent));
-		mBar->setHeight(progressBarHeight);
+		mBar->_setPosition(barOffset);
+		mBar->_setWidth((UINT32)Math::floorToInt(maxProgressBarWidth * mPercent));
+		mBar->_setHeight(progressBarHeight);
 		mBar->_setAreaDepth(areaDepth);
 		mBar->_setWidgetDepth(widgetDepth);
 		mBar->_setClipRect(barClipRect);
@@ -93,12 +93,12 @@ namespace BansheeEngine
 
 	GUIProgressBar* GUIProgressBar::create(const String& styleName)
 	{
-		return new (bs_alloc<GUIProgressBar, PoolAlloc>()) GUIProgressBar(getStyleName<GUIProgressBar>(styleName), GUILayoutOptions::create());
+		return new (bs_alloc<GUIProgressBar, PoolAlloc>()) GUIProgressBar(getStyleName<GUIProgressBar>(styleName), GUIDimensions::create());
 	}
 
 	GUIProgressBar* GUIProgressBar::create(const GUIOptions& layoutOptions, const String& styleName)
 	{
-		return new (bs_alloc<GUIProgressBar, PoolAlloc>()) GUIProgressBar(getStyleName<GUIProgressBar>(styleName), GUILayoutOptions::create(layoutOptions));
+		return new (bs_alloc<GUIProgressBar, PoolAlloc>()) GUIProgressBar(getStyleName<GUIProgressBar>(styleName), GUIDimensions::create(layoutOptions));
 	}
 
 	const String& GUIProgressBar::getGUITypeName()

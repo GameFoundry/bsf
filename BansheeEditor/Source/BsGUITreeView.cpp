@@ -82,7 +82,7 @@ namespace BansheeEngine
 
 	GUITreeView::GUITreeView(const String& backgroundStyle, const String& elementBtnStyle, 
 		const String& foldoutBtnStyle, const String& selectionBackgroundStyle, const String& editBoxStyle, 
-		const String& dragHighlightStyle, const String& dragSepHighlightStyle, const GUILayoutOptions& layoutOptions)
+		const String& dragHighlightStyle, const String& dragSepHighlightStyle, const GUIDimensions& layoutOptions)
 		:GUIElementContainer(layoutOptions), mBackgroundStyle(backgroundStyle),
 		mElementBtnStyle(elementBtnStyle), mFoldoutBtnStyle(foldoutBtnStyle), mEditBoxStyle(editBoxStyle), mEditElement(nullptr), mIsElementSelected(false),
 		mNameEditBox(nullptr), mSelectionBackgroundStyle(selectionBackgroundStyle), mDragInProgress(nullptr), mDragHighlightStyle(dragHighlightStyle),
@@ -757,10 +757,10 @@ namespace BansheeEngine
 
 		Vector2I optimalSize;
 
-		if(_getLayoutOptions().fixedWidth && _getLayoutOptions().fixedHeight)
+		if (_getDimensions().fixedWidth() && _getDimensions().fixedHeight())
 		{
-			optimalSize.x = _getLayoutOptions().width;
-			optimalSize.y = _getLayoutOptions().height;
+			optimalSize.x = _getDimensions().minWidth;
+			optimalSize.y = _getDimensions().minHeight;
 		}
 		else
 		{
@@ -793,26 +793,26 @@ namespace BansheeEngine
 				}
 			}
 
-			if(_getLayoutOptions().fixedWidth)
-				optimalSize.x = _getLayoutOptions().width;
+			if(_getDimensions().fixedWidth())
+				optimalSize.x = _getDimensions().minWidth;
 			else
 			{
-				if(_getLayoutOptions().minWidth > 0)
-					optimalSize.x = std::max((INT32)_getLayoutOptions().minWidth, optimalSize.x);
+				if(_getDimensions().minWidth > 0)
+					optimalSize.x = std::max((INT32)_getDimensions().minWidth, optimalSize.x);
 
-				if(_getLayoutOptions().maxWidth > 0)
-					optimalSize.x = std::min((INT32)_getLayoutOptions().maxWidth, optimalSize.x);
+				if(_getDimensions().maxWidth > 0)
+					optimalSize.x = std::min((INT32)_getDimensions().maxWidth, optimalSize.x);
 			}
 
-			if(_getLayoutOptions().fixedHeight)
-				optimalSize.y = _getLayoutOptions().height;
+			if (_getDimensions().fixedHeight())
+				optimalSize.y = _getDimensions().minHeight;
 			else
 			{
-				if(_getLayoutOptions().minHeight > 0)
-					optimalSize.y = std::max((INT32)_getLayoutOptions().minHeight, optimalSize.y);
+				if(_getDimensions().minHeight > 0)
+					optimalSize.y = std::max((INT32)_getDimensions().minHeight, optimalSize.y);
 
-				if(_getLayoutOptions().maxHeight > 0)
-					optimalSize.y = std::min((INT32)_getLayoutOptions().maxHeight, optimalSize.y);
+				if(_getDimensions().maxHeight > 0)
+					optimalSize.y = std::min((INT32)_getDimensions().maxHeight, optimalSize.y);
 			}
 		}
 
@@ -873,9 +873,9 @@ namespace BansheeEngine
 				offset.x = x + INITIAL_INDENT_OFFSET + indent * INDENT_SIZE;
 				offset.y += ELEMENT_EXTRA_SPACING;
 
-				current->mElement->setOffset(offset);
-				current->mElement->setWidth(elementSize.x);
-				current->mElement->setHeight(elementSize.y);
+				current->mElement->_setPosition(offset);
+				current->mElement->_setWidth(elementSize.x);
+				current->mElement->_setHeight(elementSize.y);
 				current->mElement->_setAreaDepth(areaDepth);
 				current->mElement->_setWidgetDepth(widgetDepth);
 
@@ -901,9 +901,9 @@ namespace BansheeEngine
 					myOffset.y -= Math::floorToInt(half);
 				}
 
-				current->mFoldoutBtn->setOffset(myOffset);
-				current->mFoldoutBtn->setWidth(elementSize.x);
-				current->mFoldoutBtn->setHeight(elementSize.y);
+				current->mFoldoutBtn->_setPosition(myOffset);
+				current->mFoldoutBtn->_setWidth(elementSize.x);
+				current->mFoldoutBtn->_setHeight(elementSize.y);
 				current->mFoldoutBtn->_setAreaDepth(areaDepth);
 				current->mFoldoutBtn->_setWidgetDepth(widgetDepth);
 
@@ -942,9 +942,9 @@ namespace BansheeEngine
 			Vector2I offset = targetElement->_getOffset();
 			offset.x = x;
 
-			selectedElem.background->setOffset(offset);
-			selectedElem.background->setWidth(width);
-			selectedElem.background->setHeight(targetElement->_getHeight());
+			selectedElem.background->_setPosition(offset);
+			selectedElem.background->_setWidth(width);
+			selectedElem.background->_setHeight(targetElement->_getHeight());
 			selectedElem.background->_setAreaDepth(areaDepth);
 			selectedElem.background->_setWidgetDepth(widgetDepth);
 
@@ -959,9 +959,9 @@ namespace BansheeEngine
 			Vector2I offset = targetElement->_getOffset();
 			UINT32 remainingWidth = (UINT32)std::max(0, (((INT32)width) - (offset.x - x)));
 
-			mNameEditBox->setOffset(offset);
-			mNameEditBox->setWidth(remainingWidth);
-			mNameEditBox->setHeight(targetElement->_getHeight());
+			mNameEditBox->_setPosition(offset);
+			mNameEditBox->_setWidth(remainingWidth);
+			mNameEditBox->_setHeight(targetElement->_getHeight());
 			mNameEditBox->_setAreaDepth(areaDepth);
 			mNameEditBox->_setWidgetDepth(widgetDepth);
 
@@ -993,9 +993,9 @@ namespace BansheeEngine
 						mDragHighlight->enableRecursively();
 
 					Vector2I offset(interactableElement->bounds.x, interactableElement->bounds.y);
-					mDragHighlight->setOffset(offset);
-					mDragHighlight->setWidth(interactableElement->bounds.width);
-					mDragHighlight->setHeight(interactableElement->bounds.height);
+					mDragHighlight->_setPosition(offset);
+					mDragHighlight->_setWidth(interactableElement->bounds.width);
+					mDragHighlight->_setHeight(interactableElement->bounds.height);
 					mDragHighlight->_setAreaDepth(areaDepth);
 					mDragHighlight->_setWidgetDepth(widgetDepth);
 
@@ -1011,9 +1011,9 @@ namespace BansheeEngine
 						mDragSepHighlight->enableRecursively();
 
 					Vector2I offset(interactableElement->bounds.x, interactableElement->bounds.y);
-					mDragSepHighlight->setOffset(offset);
-					mDragSepHighlight->setWidth(interactableElement->bounds.width);
-					mDragSepHighlight->setHeight(interactableElement->bounds.height);
+					mDragSepHighlight->_setPosition(offset);
+					mDragSepHighlight->_setWidth(interactableElement->bounds.width);
+					mDragSepHighlight->_setHeight(interactableElement->bounds.height);
 					mDragSepHighlight->_setAreaDepth(areaDepth);
 					mDragSepHighlight->_setWidgetDepth(widgetDepth);
 

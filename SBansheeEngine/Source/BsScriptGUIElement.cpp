@@ -42,12 +42,6 @@ namespace BansheeEngine
 		}
 	}
 
-	void ScriptGUIElementTBase::setLayoutOptions(GUIOptions options)
-	{
-		GUIElement* element = static_cast<GUIElement*>(mElement);
-		element->setLayoutOptions(options);
-	}
-
 	ScriptGUIElement::ScriptGUIElement(MonoObject* instance)
 		:ScriptObject(instance)
 	{
@@ -61,7 +55,12 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetBounds", &ScriptGUIElement::internal_getBounds);
 		metaData.scriptClass->addInternalCall("Internal_SetBounds", &ScriptGUIElement::internal_setBounds);
 		metaData.scriptClass->addInternalCall("Internal_GetVisibleBounds", &ScriptGUIElement::internal_getVisibleBounds);
-		metaData.scriptClass->addInternalCall("Internal_SetLayoutOptions", &ScriptGUIElement::internal_setLayoutOptions);
+		metaData.scriptClass->addInternalCall("Internal_SetPosition", &ScriptGUIElement::internal_SetPosition);
+		metaData.scriptClass->addInternalCall("Internal_SetWidth", &ScriptGUIElement::internal_SetWidth);
+		metaData.scriptClass->addInternalCall("Internal_SetFlexibleWidth", &ScriptGUIElement::internal_SetFlexibleWidth);
+		metaData.scriptClass->addInternalCall("Internal_SetHeight", &ScriptGUIElement::internal_SetHeight);
+		metaData.scriptClass->addInternalCall("Internal_SetFlexibleHeight", &ScriptGUIElement::internal_SetFlexibleHeight);
+		metaData.scriptClass->addInternalCall("Internal_ResetDimensions", &ScriptGUIElement::internal_ResetDimensions);
 	}
 
 	void ScriptGUIElement::internal_destroy(ScriptGUIElementBaseTBase* nativeInstance)
@@ -84,7 +83,7 @@ namespace BansheeEngine
 
 	void ScriptGUIElement::internal_setBounds(ScriptGUIElementBaseTBase* nativeInstance, Rect2I bounds)
 	{
-		nativeInstance->getGUIElement()->setOffset(Vector2I(bounds.x, bounds.y));
+		nativeInstance->getGUIElement()->setPosition(bounds.x, bounds.y);
 		nativeInstance->getGUIElement()->setWidth(bounds.width);
 		nativeInstance->getGUIElement()->setHeight(bounds.height);
 	}
@@ -94,14 +93,33 @@ namespace BansheeEngine
 		return nativeInstance->getGUIElement()->getVisibleBounds();
 	}
 
-	void ScriptGUIElement::internal_setLayoutOptions(ScriptGUIElementBaseTBase* nativeInstance, MonoArray* guiOptions)
+	void ScriptGUIElement::internal_SetPosition(ScriptGUIElementBaseTBase* nativeInstance, INT32 x, INT32 y)
 	{
-		GUIOptions options;
+		nativeInstance->getGUIElement()->setPosition(x, y);
+	}
 
-		UINT32 arrayLen = (UINT32)mono_array_length(guiOptions);
-		for (UINT32 i = 0; i < arrayLen; i++)
-			options.addOption(mono_array_get(guiOptions, GUIOption, i));
+	void ScriptGUIElement::internal_SetWidth(ScriptGUIElementBaseTBase* nativeInstance, UINT32 width)
+	{
+		nativeInstance->getGUIElement()->setWidth(width);
+	}
 
-		nativeInstance->setLayoutOptions(options);
+	void ScriptGUIElement::internal_SetFlexibleWidth(ScriptGUIElementBaseTBase* nativeInstance, UINT32 minWidth, UINT32 maxWidth)
+	{
+		nativeInstance->getGUIElement()->setFlexibleWidth(minWidth, maxWidth);
+	}
+
+	void ScriptGUIElement::internal_SetHeight(ScriptGUIElementBaseTBase* nativeInstance, UINT32 height)
+	{
+		nativeInstance->getGUIElement()->setHeight(height);
+	}
+
+	void ScriptGUIElement::internal_SetFlexibleHeight(ScriptGUIElementBaseTBase* nativeInstance, UINT32 minHeight, UINT32 maxHeight)
+	{
+		nativeInstance->getGUIElement()->setFlexibleHeight(minHeight, maxHeight);
+	}
+
+	void ScriptGUIElement::internal_ResetDimensions(ScriptGUIElementBaseTBase* nativeInstance)
+	{
+		nativeInstance->getGUIElement()->resetDimensions();
 	}
 }

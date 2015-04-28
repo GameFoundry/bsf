@@ -134,7 +134,7 @@ namespace BansheeEngine
 
 	protected:
 		GUIToggle(const String& styleName, const GUIContent& content, 
-			std::shared_ptr<GUIToggleGroup> toggleGroup, const GUILayoutOptions& layoutOptions);
+			std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIDimensions& layoutOptions);
 
 		/**
 		 * @copydoc	GUIButtonBase::mouseEvent

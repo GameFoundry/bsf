@@ -8,6 +8,17 @@ namespace BansheeEngine
 
 	}
 
+	GUIOption GUIOption::position(INT32 x, INT32 y)
+	{
+		GUIOption option;
+
+		option.min = (UINT32)x;
+		option.max = (UINT32)y;
+		option.type = Type::Position;
+
+		return option;
+	}
+
 	GUIOption GUIOption::fixedWidth(UINT32 value)
 	{
 		GUIOption option;

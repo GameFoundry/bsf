@@ -13,7 +13,7 @@ using namespace std::placeholders;
 namespace BansheeEngine
 {
 	GUIFoldout::GUIFoldout(const PrivatelyConstruct& dummy, const HString& label, const String& style,
-		const GUILayoutOptions& layoutOptions)
+		const GUIDimensions& layoutOptions)
 		:GUIElementContainer(layoutOptions, style), mToggle(nullptr), mIsExpanded(false)
 	{
 		mLabel = GUILabel::create(label, getSubStyleName(getLabelStyleType()));
@@ -37,7 +37,7 @@ namespace BansheeEngine
 		if (*curStyle == StringUtil::BLANK)
 			curStyle = &getGUITypeName();
 
-		return bs_new<GUIFoldout>(PrivatelyConstruct(), label, *curStyle, GUILayoutOptions::create(layoutOptions));
+		return bs_new<GUIFoldout>(PrivatelyConstruct(), label, *curStyle, GUIDimensions::create(layoutOptions));
 	}
 
 	GUIFoldout* GUIFoldout::create(const HString& label, const String& style)
@@ -46,7 +46,7 @@ namespace BansheeEngine
 		if (*curStyle == StringUtil::BLANK)
 			curStyle = &getGUITypeName();
 
-		return bs_new<GUIFoldout>(PrivatelyConstruct(), label, *curStyle, GUILayoutOptions::create());
+		return bs_new<GUIFoldout>(PrivatelyConstruct(), label, *curStyle, GUIDimensions::create());
 	}
 
 	void GUIFoldout::setExpanded(bool expanded)
@@ -97,9 +97,9 @@ namespace BansheeEngine
 			INT32 yOffset = Math::roundToInt(((INT32)height - optimalSize.y) * 0.5f);
 
 			Vector2I offset(x, y + yOffset);
-			mToggle->setOffset(offset);
-			mToggle->setWidth(optimalSize.x);
-			mToggle->setHeight(optimalSize.y);
+			mToggle->_setPosition(offset);
+			mToggle->_setWidth(optimalSize.x);
+			mToggle->_setHeight(optimalSize.y);
 			mToggle->_setAreaDepth(areaDepth);
 			mToggle->_setWidgetDepth(widgetDepth);
 
@@ -114,9 +114,9 @@ namespace BansheeEngine
 			INT32 yOffset = Math::roundToInt(((INT32)height - optimalSize.y) * 0.5f);
 
 			Vector2I offset(x + toggleOffset, y + yOffset);
-			mLabel->setOffset(offset);
-			mLabel->setWidth(optimalSize.x);
-			mLabel->setHeight(optimalSize.y);
+			mLabel->_setPosition(offset);
+			mLabel->_setWidth(optimalSize.x);
+			mLabel->_setHeight(optimalSize.y);
 			mLabel->_setAreaDepth(areaDepth);
 			mLabel->_setWidgetDepth(widgetDepth);
 

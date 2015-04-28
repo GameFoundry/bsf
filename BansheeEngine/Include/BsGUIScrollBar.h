@@ -71,7 +71,7 @@ namespace BansheeEngine
 		 * @param	layoutOptions	Options that allows you to control how is the element positioned in
 		 *							GUI layout. This will override any similar options set by style.
 		 */
-		GUIScrollBar(bool horizontal, const String& styleName, const GUILayoutOptions& layoutOptions);
+		GUIScrollBar(bool horizontal, const String& styleName, const GUIDimensions& layoutOptions);
 		virtual ~GUIScrollBar();
 
 		/**

@@ -4,13 +4,13 @@
 #include "BsGUISliderHandle.h"
 #include "BsGUITexture.h"
 #include "BsSpriteTexture.h"
-#include "BsGUILayoutOptions.h"
+#include "BsGUIDimensions.h"
 
 using namespace std::placeholders;
 
 namespace BansheeEngine
 {
-	GUISlider::GUISlider(bool horizontal, const String& styleName, const GUILayoutOptions& layoutOptions)
+	GUISlider::GUISlider(bool horizontal, const String& styleName, const GUIDimensions& layoutOptions)
 		:GUIElementContainer(layoutOptions, styleName)
 	{
 		mSliderHandle = GUISliderHandle::create(horizontal, true, getSubStyleName(getHandleStyleType()));
@@ -58,16 +58,16 @@ namespace BansheeEngine
 		Vector2I offset(x, y);
 		Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
 
-		mBackground->setOffset(offset);
-		mBackground->setWidth(width);
-		mBackground->setHeight(height);
+		mBackground->_setPosition(offset);
+		mBackground->_setWidth(width);
+		mBackground->_setHeight(height);
 		mBackground->_setAreaDepth(areaDepth);
 		mBackground->_setWidgetDepth(widgetDepth);
 		mBackground->_setClipRect(elemClipRect);
 
-		mSliderHandle->setOffset(offset);
-		mSliderHandle->setWidth(width);
-		mSliderHandle->setHeight(height);
+		mSliderHandle->_setPosition(offset);
+		mSliderHandle->_setWidth(width);
+		mSliderHandle->_setHeight(height);
 		mSliderHandle->_setAreaDepth(areaDepth);
 		mSliderHandle->_setWidgetDepth(widgetDepth);
 		mSliderHandle->_setClipRect(elemClipRect);
@@ -100,7 +100,7 @@ namespace BansheeEngine
 		onChanged(newPosition);
 	}
 
-	GUISliderHorz::GUISliderHorz(const String& styleName, const GUILayoutOptions& layoutOptions)
+	GUISliderHorz::GUISliderHorz(const String& styleName, const GUIDimensions& layoutOptions)
 		:GUISlider(true, styleName, layoutOptions)
 	{
 
@@ -108,12 +108,12 @@ namespace BansheeEngine
 
 	GUISliderHorz* GUISliderHorz::create(const String& styleName)
 	{
-		return new (bs_alloc<GUISliderHorz, PoolAlloc>()) GUISliderHorz(getStyleName<GUISliderHorz>(styleName), GUILayoutOptions::create());
+		return new (bs_alloc<GUISliderHorz, PoolAlloc>()) GUISliderHorz(getStyleName<GUISliderHorz>(styleName), GUIDimensions::create());
 	}
 
 	GUISliderHorz* GUISliderHorz::create(const GUIOptions& layoutOptions, const String& styleName)
 	{
-		return new (bs_alloc<GUISliderHorz, PoolAlloc>()) GUISliderHorz(getStyleName<GUISliderHorz>(styleName), GUILayoutOptions::create(layoutOptions));
+		return new (bs_alloc<GUISliderHorz, PoolAlloc>()) GUISliderHorz(getStyleName<GUISliderHorz>(styleName), GUIDimensions::create(layoutOptions));
 	}
 
 	const String& GUISliderHorz::getGUITypeName()
@@ -122,7 +122,7 @@ namespace BansheeEngine
 		return typeName;
 	}
 
-	GUISliderVert::GUISliderVert(const String& styleName, const GUILayoutOptions& layoutOptions)
+	GUISliderVert::GUISliderVert(const String& styleName, const GUIDimensions& layoutOptions)
 		:GUISlider(false, styleName, layoutOptions)
 	{
 
@@ -130,12 +130,12 @@ namespace BansheeEngine
 
 	GUISliderVert* GUISliderVert::create(const String& styleName)
 	{
-		return new (bs_alloc<GUISliderVert, PoolAlloc>()) GUISliderVert(getStyleName<GUISliderVert>(styleName), GUILayoutOptions::create());
+		return new (bs_alloc<GUISliderVert, PoolAlloc>()) GUISliderVert(getStyleName<GUISliderVert>(styleName), GUIDimensions::create());
 	}
 
 	GUISliderVert* GUISliderVert::create(const GUIOptions& layoutOptions, const String& styleName)
 	{
-		return new (bs_alloc<GUISliderVert, PoolAlloc>()) GUISliderVert(getStyleName<GUISliderVert>(styleName), GUILayoutOptions::create(layoutOptions));
+		return new (bs_alloc<GUISliderVert, PoolAlloc>()) GUISliderVert(getStyleName<GUISliderVert>(styleName), GUIDimensions::create(layoutOptions));
 	}
 
 	const String& GUISliderVert::getGUITypeName()

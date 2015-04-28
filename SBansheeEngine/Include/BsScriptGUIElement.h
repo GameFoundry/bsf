@@ -15,7 +15,6 @@ namespace BansheeEngine
 		GUIElementBase* getGUIElement() const { return (GUIElementBase*)mElement; }
 
 		virtual void destroy() = 0;
-		virtual void setLayoutOptions(GUIOptions options) { }
 
 	protected:
 		void initialize(GUIElementBase* element);
@@ -55,7 +54,6 @@ namespace BansheeEngine
 		virtual ~ScriptGUIElementTBase() {}
 
 		virtual void destroy();
-		virtual void setLayoutOptions(GUIOptions options);
 	};
 
 	template <class Type>
@@ -93,7 +91,12 @@ namespace BansheeEngine
 		static Rect2I internal_getBounds(ScriptGUIElementBaseTBase* nativeInstance);
 		static void internal_setBounds(ScriptGUIElementBaseTBase* nativeInstance, Rect2I bounds);
 		static Rect2I internal_getVisibleBounds(ScriptGUIElementBaseTBase* nativeInstance);
-		static void internal_setLayoutOptions(ScriptGUIElementBaseTBase* nativeInstance, MonoArray* guiOptions);
+		static void internal_SetPosition(ScriptGUIElementBaseTBase* nativeInstance, INT32 x, INT32 y);
+		static void internal_SetWidth(ScriptGUIElementBaseTBase* nativeInstance, UINT32 width);
+		static void internal_SetFlexibleWidth(ScriptGUIElementBaseTBase* nativeInstance, UINT32 minWidth, UINT32 maxWidth);
+		static void internal_SetHeight(ScriptGUIElementBaseTBase* nativeInstance, UINT32 height);
+		static void internal_SetFlexibleHeight(ScriptGUIElementBaseTBase* nativeInstance, UINT32 minHeight, UINT32 maxHeight);
+		static void internal_ResetDimensions(ScriptGUIElementBaseTBase* nativeInstance);
 
 		ScriptGUIElement(MonoObject* instance);
 	};

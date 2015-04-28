@@ -2,7 +2,7 @@
 
 #include "BsPrerequisites.h"
 #include "BsGUIMaterialInfo.h"
-#include "BsGUILayoutOptions.h"
+#include "BsGUIDimensions.h"
 #include "BsRect2I.h"
 #include "BsVector2I.h"
 #include "BsRectOffset.h"
@@ -28,7 +28,45 @@ namespace BansheeEngine
 
 	public:
 		GUIElementBase();
+		GUIElementBase(const GUIDimensions& dimensions);
 		virtual ~GUIElementBase();
+
+		/**
+		 * @brief	Sets element position relative to parent GUI panel.
+		 *
+		 * @note	Be aware that this value will be ignored if GUI element is part of a layout since then
+		 *			the layout controls its placement.
+		 */
+		void setPosition(INT32 x, INT32 y);
+
+		/**
+		 * @brief	Sets element width in pixels. 
+		 */
+		void setWidth(UINT32 width);
+
+		/**
+		 * @brief	Sets element width in pixels. Element will be resized according to its 
+		 *			contents and parent layout but will always stay within the provided range.
+		 *			If maximum width is zero, the element is allowed to expand as much as it needs.
+		 */
+		void setFlexibleWidth(UINT32 minWidth = 0, UINT32 maxWidth = 0);
+
+		/**
+		 * @brief	Sets element height in pixels.
+		 */
+		void setHeight(UINT32 height);
+
+		/**
+		 * @brief	Sets element height in pixels. Element will be resized according to its 
+		 *			contents and parent layout but will always stay within the provided range.
+		 *			If maximum height is zero, the element is allowed to expand as much as it needs.
+		 */
+		void setFlexibleHeight(UINT32 minHeight = 0, UINT32 maxHeight = 0);
+
+		/**
+		 * @brief	Resets element dimensions to their initial values dictated by the elements style.
+		 */
+		virtual void resetDimensions();
 
 		/**
 		 * @brief	Enables (default) this element and all its children.
@@ -39,27 +77,6 @@ namespace BansheeEngine
 		 * @brief	Disables this element and all its children.
 		 */
 		void disableRecursively();
-
-		/**
-		 * @brief	Sets element position relative to widget origin.
-		 *
-		 * @note	Be aware that this value will get overwritten if your element is part of a non-explicit layout.
-		 */
-		virtual void setOffset(const Vector2I& offset);
-
-		/**
-		 * @brief	Sets element width in pixels.
-		 *
-		 * @note	Be aware that this value will get overwritten if your element is part of a non-explicit layout.
-		 */
-		virtual void setWidth(UINT32 width);
-
-		/**
-		 * @brief	Sets element height in pixels.
-		 *
-		 * @note	Be aware that this value will get overwritten if your element is part of a non-explicit layout.
-		 */
-		virtual void setHeight(UINT32 height);
 
 		/**
 		 * @brief	Returns non-clipped bounds of the GUI element. Relative to the parent widget.
@@ -156,11 +173,18 @@ namespace BansheeEngine
 		virtual Vector2I _getOptimalSize() const = 0;
 
 		/**
+		 * @brief	Returns layout options that determine how is the element positioned and sized.
+		 *
+		 * @note	Internal method.
+		 */
+		const GUIDimensions& _getDimensions() const { return mDimensions; }
+
+		/**
 		 * @brief	Returns element size range constrained by its layout options.
 		 *
 		 * @note	Internal method.
 		 */
-		virtual LayoutSizeRange _calculateLayoutSizeRange() const = 0;
+		virtual LayoutSizeRange _calculateLayoutSizeRange() const ;
 
 		/**
 		 * @brief	Returns element padding that determines how far apart to space out this element
@@ -262,7 +286,6 @@ namespace BansheeEngine
 		UINT8 mIsDirty;
 		bool mIsDisabled;
 
-		Vector2I mOffset;
-		UINT32 mWidth, mHeight;
+		GUIDimensions mDimensions;
 	};
 }

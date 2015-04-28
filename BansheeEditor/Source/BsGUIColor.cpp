@@ -3,7 +3,7 @@
 #include "BsGUIWidget.h"
 #include "BsGUISkin.h"
 #include "BsSpriteTexture.h"
-#include "BsGUILayoutOptions.h"
+#include "BsGUIDimensions.h"
 #include "BsGUIMouseEvent.h"
 #include "BsGUIHelper.h"
 #include "BsBuiltinResources.h"
@@ -13,7 +13,7 @@ namespace BansheeEngine
 {
 	const float GUIColor::ALPHA_SPLIT_POSITION = 0.75f;
 
-	GUIColor::GUIColor(const String& styleName, const GUILayoutOptions& layoutOptions)
+	GUIColor::GUIColor(const String& styleName, const GUIDimensions& layoutOptions)
 		:GUIElement(styleName, layoutOptions), mColorSprite(nullptr), mAlphaSprite(nullptr)
 	{
 		mColorSprite = bs_new<ImageSprite, PoolAlloc>();
@@ -37,12 +37,12 @@ namespace BansheeEngine
 
 	GUIColor* GUIColor::create(const String& styleName)
 	{
-		return new (bs_alloc<GUIColor, PoolAlloc>()) GUIColor(getStyleName<GUIColor>(styleName), GUILayoutOptions::create());
+		return new (bs_alloc<GUIColor, PoolAlloc>()) GUIColor(getStyleName<GUIColor>(styleName), GUIDimensions::create());
 	}
 
 	GUIColor* GUIColor::create(const GUIOptions& layoutOptions, const String& styleName)
 	{
-		return new (bs_alloc<GUIColor, PoolAlloc>()) GUIColor(getStyleName<GUIColor>(styleName), GUILayoutOptions::create(layoutOptions));
+		return new (bs_alloc<GUIColor, PoolAlloc>()) GUIColor(getStyleName<GUIColor>(styleName), GUIDimensions::create(layoutOptions));
 	}
 
 	void GUIColor::setColor(const Color& color)
@@ -125,7 +125,7 @@ namespace BansheeEngine
 
 	Vector2I GUIColor::_getOptimalSize() const
 	{
-		return GUIHelper::calcOptimalContentsSize(Vector2I(80, 10), *_getStyle(), _getLayoutOptions()); // Arbitrary size
+		return GUIHelper::calcOptimalContentsSize(Vector2I(80, 10), *_getStyle(), _getDimensions()); // Arbitrary size
 	}
 
 	void GUIColor::_fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 

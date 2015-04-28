@@ -51,16 +51,56 @@ namespace BansheeEngine
             Internal_SetVisible(mCachedPtr, visible);
         }
 
-        public void SetLayoutOptions(params GUIOption[] options)
+        public void SetPosition(int x, int y)
         {
-            Internal_SetLayoutOptions(mCachedPtr, options);
+            Internal_SetPosition(mCachedPtr, x, y);
+        }
+
+        public void SetWidth(int width)
+        {
+            Internal_SetWidth(mCachedPtr, width);
+        }
+
+        public void SetFlexibleWidth(int minWidth, int maxWidth)
+        {
+            Internal_SetFlexibleWidth(mCachedPtr, minWidth, maxWidth);
+        }
+
+        public void SetHeight(int height)
+        {
+            Internal_SetHeight(mCachedPtr, height);
+        }
+
+        public void SetFlexibleHeight(int minHeight, int maxHeight)
+        {
+            Internal_SetFlexibleHeight(mCachedPtr, minHeight, maxHeight);
+        }
+
+        public void ResetDimensions()
+        {
+            Internal_ResetDimensions(mCachedPtr);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetLayoutOptions(IntPtr nativeInstance, GUIOption[] options);
+        private static extern void Internal_SetVisible(IntPtr nativeInstance, bool visible);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetVisible(IntPtr nativeInstance, bool visible);
+        private static extern void Internal_SetPosition(IntPtr nativeInstance, int x, int y);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetWidth(IntPtr nativeInstance, int width);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetFlexibleWidth(IntPtr nativeInstance, int minWidth, int maxWidth);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetHeight(IntPtr nativeInstance, int height);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetFlexibleHeight(IntPtr nativeInstance, int minHeight, int maxHeight);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_ResetDimensions(IntPtr nativeInstance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern Rect2I Internal_GetBounds(IntPtr nativeInstance);

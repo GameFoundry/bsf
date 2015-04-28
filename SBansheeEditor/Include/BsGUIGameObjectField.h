@@ -41,7 +41,7 @@ namespace BansheeEngine
 		static GUIGameObjectField* create(const String& typeNamespace, const String& type, const String& style = StringUtil::BLANK);
 
 		GUIGameObjectField(const PrivatelyConstruct& dummy, const String& typeNamespace, const String& type, const GUIContent& labelContent,
-			UINT32 labelWidth, const String& style, const GUILayoutOptions& layoutOptions, bool withLabel);
+			UINT32 labelWidth, const String& style, const GUIDimensions& layoutOptions, bool withLabel);
 
 		HGameObject getValue() const;
 		void setValue(const HGameObject& value);

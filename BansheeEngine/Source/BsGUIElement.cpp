@@ -8,9 +8,9 @@
 
 namespace BansheeEngine
 {
-	GUIElement::GUIElement(const String& styleName, const GUILayoutOptions& layoutOptions)
-		:mLayoutOptions(layoutOptions), mDepth(0), mStyle(&GUISkin::DefaultStyle),
-		mIsDestroyed(false), mStyleName(styleName)
+	GUIElement::GUIElement(const String& styleName, const GUIDimensions& dimensions)
+		:GUIElementBase(dimensions), mDepth(0), mStyle(&GUISkin::DefaultStyle),
+		mIsDestroyed(false), mStyleName(styleName), mWidth(0), mHeight(0)
 	{
 		// Style is set to default here, and the proper one is assigned once GUI element
 		// is assigned to a parent (that's when the active GUI skin becomes known)
@@ -30,7 +30,7 @@ namespace BansheeEngine
 		updateClippedBounds();
 	}
 
-	void GUIElement::setOffset(const Vector2I& offset)
+	void GUIElement::_setPosition(const Vector2I& offset)
 	{
 		if (mOffset != offset)
 		{
@@ -41,7 +41,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUIElement::setWidth(UINT32 width)
+	void GUIElement::_setWidth(UINT32 width)
 	{
 		if (mWidth != width)
 			markContentAsDirty();
@@ -49,29 +49,12 @@ namespace BansheeEngine
 		mWidth = width;
 	}
 
-	void GUIElement::setHeight(UINT32 height)
+	void GUIElement::_setHeight(UINT32 height)
 	{
 		if (mHeight != height)
 			markContentAsDirty();
 
 		mHeight = height;
-	}
-
-	void GUIElement::setLayoutOptions(const GUILayoutOptions& layoutOptions) 
-	{
-		if(layoutOptions.maxWidth < layoutOptions.minWidth)
-		{
-			BS_EXCEPT(InvalidParametersException, "Maximum width is less than minimum width! Max width: " + 
-			toString(layoutOptions.maxWidth) + ". Min width: " + toString(layoutOptions.minWidth));
-		}
-
-		if(layoutOptions.maxHeight < layoutOptions.minHeight)
-		{
-			BS_EXCEPT(InvalidParametersException, "Maximum height is less than minimum height! Max height: " + 
-			toString(layoutOptions.maxHeight) + ". Min height: " + toString(layoutOptions.minHeight));
-		}
-
-		mLayoutOptions = layoutOptions; 
 	}
 
 	void GUIElement::setStyle(const String& styleName)
@@ -161,15 +144,6 @@ namespace BansheeEngine
 		}
 	}
 
-	LayoutSizeRange GUIElement::_calculateLayoutSizeRange() const
-	{
-		if (mIsDisabled)
-			return LayoutSizeRange();
-
-		const GUILayoutOptions& layoutOptions = _getLayoutOptions();
-		return layoutOptions.calculateSizeRange(_getOptimalSize());
-	}
-
 	Rect2I GUIElement::_getCachedBounds() const
 	{
 		return Rect2I(mOffset.x, mOffset.y, mWidth, mHeight);
@@ -180,10 +154,10 @@ namespace BansheeEngine
 		GUIManager::instance().setFocus(this, enabled);
 	}
 
-	void GUIElement::setLayoutOptions(const GUIOptions& layoutOptions)
+	void GUIElement::resetDimensions()
 	{
-		mLayoutOptions = GUILayoutOptions::create(layoutOptions);
-		mLayoutOptions.updateWithStyle(mStyle);
+		mDimensions = GUIDimensions::create();
+		mDimensions.updateWithStyle(mStyle);
 
 		markContentAsDirty();
 	}
@@ -248,14 +222,8 @@ namespace BansheeEngine
 		if(newStyle != mStyle)
 		{
 			mStyle = newStyle;
-			mLayoutOptions.updateWithStyle(mStyle);
+			mDimensions.updateWithStyle(mStyle);
 			styleUpdated();
-
-			// Immediately update size, in case element is part of an explicit layout
-			// (In which case it would never get updated unless user set it explicitly)
-			LayoutSizeRange sizeRange = _calculateLayoutSizeRange();
-			mWidth = (UINT32)sizeRange.optimal.x;
-			mHeight = (UINT32)sizeRange.optimal.y;
 
 			markContentAsDirty();
 		}

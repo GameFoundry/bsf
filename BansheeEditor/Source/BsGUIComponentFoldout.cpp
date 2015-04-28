@@ -13,7 +13,7 @@ using namespace std::placeholders;
 namespace BansheeEngine
 {
 	GUIComponentFoldout::GUIComponentFoldout(const PrivatelyConstruct& dummy, const HString& label, const String& style,
-		const GUILayoutOptions& layoutOptions)
+		const GUIDimensions& layoutOptions)
 		:GUIElementContainer(layoutOptions, style), mToggle(nullptr), mIsExpanded(false)
 	{
 		mToggle = GUIToggle::create(label, getSubStyleName(getFoldoutButtonStyleType()));
@@ -35,7 +35,7 @@ namespace BansheeEngine
 		if (*curStyle == StringUtil::BLANK)
 			curStyle = &getGUITypeName();
 
-		return bs_new<GUIComponentFoldout>(PrivatelyConstruct(), label, *curStyle, GUILayoutOptions::create(layoutOptions));
+		return bs_new<GUIComponentFoldout>(PrivatelyConstruct(), label, *curStyle, GUIDimensions::create(layoutOptions));
 	}
 
 	GUIComponentFoldout* GUIComponentFoldout::create(const HString& label, const String& style)
@@ -44,7 +44,7 @@ namespace BansheeEngine
 		if (*curStyle == StringUtil::BLANK)
 			curStyle = &getGUITypeName();
 
-		return bs_new<GUIComponentFoldout>(PrivatelyConstruct(), label, *curStyle, GUILayoutOptions::create());
+		return bs_new<GUIComponentFoldout>(PrivatelyConstruct(), label, *curStyle, GUIDimensions::create());
 	}
 
 	void GUIComponentFoldout::setExpanded(bool expanded)
@@ -94,9 +94,9 @@ namespace BansheeEngine
 			INT32 yOffset = Math::roundToInt(((INT32)height - optimalSize.y) * 0.5f);
 
 			Vector2I offset(x, y + yOffset);
-			mToggle->setOffset(offset);
-			mToggle->setWidth(width);
-			mToggle->setHeight(optimalSize.y);
+			mToggle->_setPosition(offset);
+			mToggle->_setWidth(width);
+			mToggle->_setHeight(optimalSize.y);
 			mToggle->_setAreaDepth(areaDepth);
 			mToggle->_setWidgetDepth(widgetDepth);
 

@@ -3,13 +3,13 @@
 #include "BsTextSprite.h"
 #include "BsGUISkin.h"
 #include "BsGUIWidget.h"
-#include "BsGUILayoutOptions.h"
+#include "BsGUIDimensions.h"
 #include "BsGUIHelper.h"
 #include "BsTextData.h"
 
 namespace BansheeEngine
 {
-	GUILabel::GUILabel(const String& styleName, const GUIContent& content, const GUILayoutOptions& layoutOptions)
+	GUILabel::GUILabel(const String& styleName, const GUIContent& content, const GUIDimensions& layoutOptions)
 		:GUIElement(styleName, layoutOptions), mContent(content)
 	{
 		mTextSprite = bs_new<TextSprite, PoolAlloc>();
@@ -62,7 +62,7 @@ namespace BansheeEngine
 
 	Vector2I GUILabel::_getOptimalSize() const
 	{
-		return GUIHelper::calcOptimalContentsSize(mContent, *_getStyle(), _getLayoutOptions());
+		return GUIHelper::calcOptimalContentsSize(mContent, *_getStyle(), _getDimensions());
 	}
 
 	void GUILabel::_fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
@@ -100,12 +100,12 @@ namespace BansheeEngine
 
 	GUILabel* GUILabel::create(const GUIContent& content, const String& styleName)
 	{
-		return new (bs_alloc<GUILabel, PoolAlloc>()) GUILabel(getStyleName<GUILabel>(styleName), content, GUILayoutOptions::create());
+		return new (bs_alloc<GUILabel, PoolAlloc>()) GUILabel(getStyleName<GUILabel>(styleName), content, GUIDimensions::create());
 	}
 
 	GUILabel* GUILabel::create(const GUIContent& content, const GUIOptions& layoutOptions, const String& styleName)
 	{
-		return new (bs_alloc<GUILabel, PoolAlloc>()) GUILabel(getStyleName<GUILabel>(styleName), content, GUILayoutOptions::create(layoutOptions));
+		return new (bs_alloc<GUILabel, PoolAlloc>()) GUILabel(getStyleName<GUILabel>(styleName), content, GUIDimensions::create(layoutOptions));
 	}
 
 	const String& GUILabel::getGUITypeName()

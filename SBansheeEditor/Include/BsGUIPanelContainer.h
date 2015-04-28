@@ -16,7 +16,7 @@ namespace BansheeEngine
 		static GUIPanelContainer* create(const ScriptGUIPanel& guiPanel, const GUIOptions& layoutOptions);
 		static GUIPanelContainer* create(const ScriptGUIPanel& guiPanel);
 
-		GUIPanelContainer(const PrivatelyConstruct& dummy, const ScriptGUIPanel& guiPanel, const GUILayoutOptions& layoutOptions);
+		GUIPanelContainer(const PrivatelyConstruct& dummy, const ScriptGUIPanel& guiPanel, const GUIDimensions& layoutOptions);
 
 		void setPanel(const ScriptGUIPanel& guiPanel) { mGUIPanel = &guiPanel; }
 

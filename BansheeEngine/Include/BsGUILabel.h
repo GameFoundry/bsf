@@ -115,7 +115,7 @@ namespace BansheeEngine
 		 */
 		virtual void updateClippedBounds();
 	private:
-		GUILabel(const String& styleName, const GUIContent& content, const GUILayoutOptions& layoutOptions);
+		GUILabel(const String& styleName, const GUIContent& content, const GUIDimensions& layoutOptions);
 
 		TextSprite* mTextSprite;
 		GUIContent mContent;

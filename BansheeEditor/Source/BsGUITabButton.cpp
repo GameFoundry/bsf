@@ -1,7 +1,7 @@
 #include "BsGUITabButton.h"
 #include "BsGUIWidget.h"
 #include "BsGUISkin.h"
-#include "BsGUILayoutOptions.h"
+#include "BsGUIDimensions.h"
 #include "BsGUIMouseEvent.h"
 #include "BsGUITabbedTitleBar.h"
 
@@ -16,7 +16,7 @@ namespace BansheeEngine
 	}
 
 	GUITabButton::GUITabButton(const String& styleName, const GUIToggleGroupPtr& toggleGroup, 
-		UINT32 index, const GUIContent& content, const GUILayoutOptions& layoutOptions)
+		UINT32 index, const GUIContent& content, const GUIDimensions& layoutOptions)
 		:GUIToggle(styleName, content, toggleGroup, layoutOptions), mIndex(index), mDraggedState(false)
 	{
 
@@ -26,28 +26,28 @@ namespace BansheeEngine
 		const HString& text, const String& styleName)
 	{
 		return new (bs_alloc<GUITabButton, PoolAlloc>()) GUITabButton(
-			getStyleName<GUITabButton>(styleName), toggleGroup, index, GUIContent(text), GUILayoutOptions::create());
+			getStyleName<GUITabButton>(styleName), toggleGroup, index, GUIContent(text), GUIDimensions::create());
 	}
 
 	GUITabButton* GUITabButton::create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, 
 		const HString& text, const GUIOptions& layoutOptions, const String& styleName)
 	{
 		return new (bs_alloc<GUITabButton, PoolAlloc>()) GUITabButton(
-			getStyleName<GUITabButton>(styleName), toggleGroup, index, GUIContent(text), GUILayoutOptions::create(layoutOptions));
+			getStyleName<GUITabButton>(styleName), toggleGroup, index, GUIContent(text), GUIDimensions::create(layoutOptions));
 	}
 
 	GUITabButton* GUITabButton::create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, 
 		const GUIContent& content, const String& styleName)
 	{
 		return new (bs_alloc<GUITabButton, PoolAlloc>()) GUITabButton(
-			getStyleName<GUITabButton>(styleName), toggleGroup, index, content, GUILayoutOptions::create());
+			getStyleName<GUITabButton>(styleName), toggleGroup, index, content, GUIDimensions::create());
 	}
 
 	GUITabButton* GUITabButton::create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, 
 		const GUIContent& content, const GUIOptions& layoutOptions, const String& styleName)
 	{
 		return new (bs_alloc<GUITabButton, PoolAlloc>()) GUITabButton(
-			getStyleName<GUITabButton>(styleName), toggleGroup, index, content, GUILayoutOptions::create(layoutOptions));
+			getStyleName<GUITabButton>(styleName), toggleGroup, index, content, GUIDimensions::create(layoutOptions));
 	}
 
 	void GUITabButton::_setDraggedState(bool active) 

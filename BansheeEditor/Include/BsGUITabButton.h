@@ -39,6 +39,6 @@ namespace BansheeEngine
 
 		static const UINT32 DRAG_MIN_DISTANCE;
 
-		GUITabButton(const String& styleName, const GUIToggleGroupPtr& toggleGroup, UINT32 index, const GUIContent& content, const GUILayoutOptions& layoutOptions);
+		GUITabButton(const String& styleName, const GUIToggleGroupPtr& toggleGroup, UINT32 index, const GUIContent& content, const GUIDimensions& layoutOptions);
 	};
 }

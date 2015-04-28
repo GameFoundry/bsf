@@ -70,6 +70,6 @@ namespace BansheeEngine
 		 */
 		virtual ElementType _getElementType() const { return ElementType::Button; }
 	private:
-		GUIButton(const String& styleName, const GUIContent& content, const GUILayoutOptions& layoutOptions);
+		GUIButton(const String& styleName, const GUIContent& content, const GUIDimensions& layoutOptions);
 	};
 }

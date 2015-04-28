@@ -43,7 +43,7 @@ namespace BansheeEngine
 		static GUITextField* create(bool multiline, const String& style = StringUtil::BLANK);
 
 		GUITextField(const PrivatelyConstruct& dummy, bool multiline, const GUIContent& labelContent, UINT32 labelWidth,
-			const String& style, const GUILayoutOptions& layoutOptions, bool withLabel);
+			const String& style, const GUIDimensions& layoutOptions, bool withLabel);
 
 		void _updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
 			Rect2I clipRect, UINT8 widgetDepth, UINT16 areaDepth);

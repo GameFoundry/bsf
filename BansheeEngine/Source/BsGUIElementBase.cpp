@@ -13,7 +13,14 @@ namespace BansheeEngine
 {
 	GUIElementBase::GUIElementBase()
 		:mIsDirty(true), mParentElement(nullptr), mIsDisabled(false), 
-		mParentWidget(nullptr), mWidth(0), mHeight(0)
+		mParentWidget(nullptr)
+	{
+
+	}
+
+	GUIElementBase::GUIElementBase(const GUIDimensions& dimensions)
+		:mIsDirty(true), mParentElement(nullptr), mIsDisabled(false),
+		mParentWidget(nullptr), mDimensions(dimensions)
 	{
 
 	}
@@ -46,25 +53,60 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUIElementBase::setOffset(const Vector2I& offset)
+	void GUIElementBase::setPosition(INT32 x, INT32 y)
 	{
-		mOffset = offset;
+		mDimensions.x = x;
+		mDimensions.y = y;
+
+		markMeshAsDirty();
 	}
 
 	void GUIElementBase::setWidth(UINT32 width)
 	{
-		if (mWidth != width)
-			markContentAsDirty();
+		mDimensions.flags |= GUIDF_FixedWidth | GUIDF_OverWidth;
+		mDimensions.minWidth = mDimensions.maxWidth = width;
 
-		mWidth = width;
+		markContentAsDirty();
+	}
+
+	void GUIElementBase::setFlexibleWidth(UINT32 minWidth, UINT32 maxWidth)
+	{
+		if (maxWidth < minWidth)
+			std::swap(minWidth, maxWidth);
+
+		mDimensions.flags |= GUIDF_OverWidth;
+		mDimensions.flags &= ~GUIDF_FixedWidth;
+		mDimensions.minWidth = minWidth;
+		mDimensions.maxWidth = maxWidth;
+
+		markContentAsDirty();
 	}
 
 	void GUIElementBase::setHeight(UINT32 height)
 	{
-		if (mHeight != height)
-			markContentAsDirty();
+		mDimensions.flags |= GUIDF_FixedHeight | GUIDF_OverHeight;
+		mDimensions.minHeight = mDimensions.maxHeight = height;
 
-		mHeight = height;
+		markContentAsDirty();
+	}
+
+	void GUIElementBase::setFlexibleHeight(UINT32 minHeight, UINT32 maxHeight)
+	{
+		if (maxHeight < minHeight)
+			std::swap(minHeight, maxHeight);
+
+		mDimensions.flags |= GUIDF_OverHeight;
+		mDimensions.flags &= ~GUIDF_FixedHeight;
+		mDimensions.minHeight = minHeight;
+		mDimensions.maxHeight = maxHeight;
+
+		markContentAsDirty();
+	}
+
+	void GUIElementBase::resetDimensions()
+	{
+		mDimensions = GUIDimensions::create();
+		markContentAsDirty();
 	}
 
 	Rect2I GUIElementBase::getBounds() const
@@ -158,6 +200,15 @@ namespace BansheeEngine
 		{
 			child->_updateLayoutInternal(x, y, width, height, clipRect, widgetDepth, areaDepth);
 		}
+	}
+
+	LayoutSizeRange GUIElementBase::_calculateLayoutSizeRange() const
+	{
+		if (mIsDisabled)
+			return LayoutSizeRange();
+
+		const GUIDimensions& layoutOptions = _getDimensions();
+		return layoutOptions.calculateSizeRange(_getOptimalSize());
 	}
 
 	void GUIElementBase::_getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements,

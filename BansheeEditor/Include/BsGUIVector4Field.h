@@ -13,7 +13,7 @@ namespace BansheeEngine
 		static const String& getFloatFieldStyleType();
 
 		GUIVector4Field(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth,
-			const String& style, const GUILayoutOptions& layoutOptions, bool withLabel);
+			const String& style, const GUIDimensions& layoutOptions, bool withLabel);
 
 		Vector4 getValue() const;
 		void setValue(const Vector4& value);

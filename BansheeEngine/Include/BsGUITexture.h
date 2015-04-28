@@ -171,7 +171,7 @@ namespace BansheeEngine
 		virtual Vector2I _getOptimalSize() const;
 	protected:
 		GUITexture(const String& styleName, const HSpriteTexture& texture, GUIImageScaleMode scale, 
-			bool transparent, const GUILayoutOptions& layoutOptions);
+			bool transparent, const GUIDimensions& layoutOptions);
 		virtual ~GUITexture();
 
 		/**

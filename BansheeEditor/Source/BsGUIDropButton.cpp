@@ -4,7 +4,7 @@
 #include "BsGUISkin.h"
 #include "BsSpriteTexture.h"
 #include "BsTextSprite.h"
-#include "BsGUILayoutOptions.h"
+#include "BsGUIDimensions.h"
 #include "BsGUIMouseEvent.h"
 #include "BsGUIHelper.h"
 #include "BsTexture.h"
@@ -18,7 +18,7 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIDropButton::GUIDropButton(UINT32 dragType, const String& styleName, const GUILayoutOptions& layoutOptions)
+	GUIDropButton::GUIDropButton(UINT32 dragType, const String& styleName, const GUIDimensions& layoutOptions)
 		:GUIButtonBase(styleName, GUIContent(HString(L"None")), layoutOptions), mDragType(dragType)
 	{
 
@@ -30,13 +30,13 @@ namespace BansheeEngine
 	GUIDropButton* GUIDropButton::create(UINT32 dragType, const String& styleName)
 	{
 		return new (bs_alloc<GUIDropButton, PoolAlloc>()) GUIDropButton(dragType, 
-			getStyleName<GUIDropButton>(styleName), GUILayoutOptions::create());
+			getStyleName<GUIDropButton>(styleName), GUIDimensions::create());
 	}
 
 	GUIDropButton* GUIDropButton::create(UINT32 dragType, const GUIOptions& layoutOptions, const String& styleName)
 	{
 		return new (bs_alloc<GUIDropButton, PoolAlloc>()) GUIDropButton(dragType, 
-			getStyleName<GUIDropButton>(styleName), GUILayoutOptions::create(layoutOptions));
+			getStyleName<GUIDropButton>(styleName), GUIDimensions::create(layoutOptions));
 	}
 
 	bool GUIDropButton::_mouseEvent(const GUIMouseEvent& ev)

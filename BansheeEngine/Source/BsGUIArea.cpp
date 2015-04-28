@@ -152,10 +152,6 @@ namespace BansheeEngine
 				clipRect = newClipRect;
 			}
 
-			mLayout->setOffset(Vector2I(mLeft, mTop));
-			mLayout->setWidth(mWidth);
-			mLayout->setHeight(mHeight);
-
 			mLayout->_updateLayout(mLeft, mTop, mWidth, mHeight, clipRect, mWidget->getDepth(), mDepth);
 			mIsDirty = false;
 		}

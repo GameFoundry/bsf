@@ -306,7 +306,7 @@
     <ClInclude Include="Include\BsGUITextInputEvent.h" />
     <ClInclude Include="Include\BsGUIInputCaret.h" />
     <ClInclude Include="Include\BsGUIInputSelection.h" />
-    <ClInclude Include="Include\BsGUILayoutOptions.h" />
+    <ClInclude Include="Include\BsGUIDimensions.h" />
     <ClInclude Include="Include\BsGUILayoutX.h" />
     <ClInclude Include="Include\BsGUILayout.h" />
     <ClInclude Include="Include\BsGUILayoutY.h" />
@@ -370,7 +370,7 @@
     <ClCompile Include="Source\BsGUIDropDownHitBox.cpp" />
     <ClCompile Include="Source\BsGUIElementContainer.cpp" />
     <ClCompile Include="Source\BsGUIHelper.cpp" />
-    <ClCompile Include="Source\BsGUILayoutOptions.cpp" />
+    <ClCompile Include="Source\BsGUIDimensions.cpp" />
     <ClCompile Include="Source\BsGUIListBox.cpp" />
     <ClCompile Include="Source\BsGUIElement.cpp" />
     <ClCompile Include="Source\BsGUIElementBase.cpp" />

@@ -37,7 +37,7 @@ namespace BansheeEngine
 		 */
 		static GUIScrollBarHorz* create(const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
 	protected:
-		GUIScrollBarHorz(const String& styleName, const GUILayoutOptions& layoutOptions);
+		GUIScrollBarHorz(const String& styleName, const GUIDimensions& layoutOptions);
 		~GUIScrollBarHorz();
 	};
 }

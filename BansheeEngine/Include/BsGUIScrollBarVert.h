@@ -37,7 +37,7 @@ namespace BansheeEngine
 		 */
 		static GUIScrollBarVert* create(const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
 	protected:
-		GUIScrollBarVert(const String& styleName, const GUILayoutOptions& layoutOptions);
+		GUIScrollBarVert(const String& styleName, const GUIDimensions& layoutOptions);
 		~GUIScrollBarVert();
 	};
 }

@@ -22,7 +22,7 @@ namespace BansheeEngine
 	const UINT32 GUITabbedTitleBar::OPTION_BTN_SPACING = 3;
 
 	GUITabbedTitleBar::GUITabbedTitleBar(const String& backgroundStyle, const String& tabBtnStyle, 
-		const String& minBtnStyle, const String& closeBtnStyle, const GUILayoutOptions& layoutOptions)
+		const String& minBtnStyle, const String& closeBtnStyle, const GUIDimensions& layoutOptions)
 		:GUIElementContainer(layoutOptions), mMinBtn(nullptr), 
 		mCloseBtn(nullptr), mBackgroundImage(nullptr), mUniqueTabIdx(0), mActiveTabIdx(0),
 		mDragInProgress(false), mDraggedBtn(nullptr), mDragBtnOffset(0), mInitialDragOffset(0), mBackgroundStyle(backgroundStyle),
@@ -67,10 +67,10 @@ namespace BansheeEngine
 		const String& minBtnStyle, const String& closeBtnStyle)
 	{
 		return new (bs_alloc<GUITabbedTitleBar, PoolAlloc>()) GUITabbedTitleBar(backgroundStyle, tabBtnStyle, 
-			minBtnStyle, closeBtnStyle, GUILayoutOptions::create());
+			minBtnStyle, closeBtnStyle, GUIDimensions::create());
 	}
 
-	GUITabbedTitleBar* GUITabbedTitleBar::create(const GUILayoutOptions& layoutOptions, const String& backgroundStyle, 
+	GUITabbedTitleBar* GUITabbedTitleBar::create(const GUIDimensions& layoutOptions, const String& backgroundStyle, 
 		const String& tabBtnStyle, const String& minBtnStyle, const String& closeBtnStyle)
 	{
 		return new (bs_alloc<GUITabbedTitleBar, PoolAlloc>()) GUITabbedTitleBar(backgroundStyle, tabBtnStyle, 
@@ -248,9 +248,9 @@ namespace BansheeEngine
 		{
 			Vector2I optimalSize = mBackgroundImage->_getOptimalSize();
 			Vector2I offset(x + 1, y + 1);
-			mBackgroundImage->setOffset(offset);
-			mBackgroundImage->setWidth(width - 2);
-			mBackgroundImage->setHeight(optimalSize.y);
+			mBackgroundImage->_setPosition(offset);
+			mBackgroundImage->_setWidth(width - 2);
+			mBackgroundImage->_setHeight(optimalSize.y);
 			mBackgroundImage->_setAreaDepth(areaDepth);
 			mBackgroundImage->_setWidgetDepth(widgetDepth);
 
@@ -280,9 +280,9 @@ namespace BansheeEngine
 				offset.x = mDragBtnOffset;
 			}
 
-			btn->setOffset(offset);
-			btn->setWidth(optimalSize.x);
-			btn->setHeight(optimalSize.y);
+			btn->_setPosition(offset);
+			btn->_setWidth(optimalSize.x);
+			btn->_setHeight(optimalSize.y);
 			btn->_setAreaDepth(areaDepth);
 			btn->_setWidgetDepth(widgetDepth);
 
@@ -297,9 +297,9 @@ namespace BansheeEngine
 			INT32 optionBtnYPos = curY + Math::floorToInt((tabBtnHeight - minBtnOptimalSize.y) * 0.5f);
 
 			Vector2I offset(optionBtnXPos, optionBtnYPos);
-			mMinBtn->setOffset(offset);
-			mMinBtn->setWidth(minBtnOptimalSize.x);
-			mMinBtn->setHeight(minBtnOptimalSize.y);
+			mMinBtn->_setPosition(offset);
+			mMinBtn->_setWidth(minBtnOptimalSize.x);
+			mMinBtn->_setHeight(minBtnOptimalSize.y);
 			mMinBtn->_setAreaDepth(areaDepth);
 			mMinBtn->_setWidgetDepth(widgetDepth);
 
@@ -312,9 +312,9 @@ namespace BansheeEngine
 			INT32 optionBtnYPos = curY + Math::floorToInt((tabBtnHeight - closeBtnOptimalSize.y) * 0.5f);
 
 			Vector2I offset(optionBtnXPos, optionBtnYPos);
-			mCloseBtn->setOffset(offset);
-			mCloseBtn->setWidth(closeBtnOptimalSize.x);
-			mCloseBtn->setHeight(closeBtnOptimalSize.y);
+			mCloseBtn->_setPosition(offset);
+			mCloseBtn->_setWidth(closeBtnOptimalSize.x);
+			mCloseBtn->_setHeight(closeBtnOptimalSize.y);
 			mCloseBtn->_setAreaDepth(areaDepth);
 			mCloseBtn->_setWidgetDepth(widgetDepth);
 

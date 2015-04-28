@@ -19,7 +19,7 @@ namespace BansheeEngine
 		Event<void()> onDraggedItemDropped;
 	protected:
 		~GUIWindowDropArea();
-		GUIWindowDropArea(const String& styleName, const GUILayoutOptions& layoutOptions);
+		GUIWindowDropArea(const String& styleName, const GUIDimensions& layoutOptions);
 
 		virtual bool _mouseEvent(const GUIMouseEvent& ev);
 	};

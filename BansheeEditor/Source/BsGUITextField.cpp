@@ -16,7 +16,7 @@ namespace BansheeEngine
 	const UINT32 GUITextField::DEFAULT_LABEL_WIDTH = 100;
 
 	GUITextField::GUITextField(const PrivatelyConstruct& dummy, bool multiline, const GUIContent& labelContent, 
-		UINT32 labelWidth, const String& style, const GUILayoutOptions& layoutOptions, bool withLabel)
+		UINT32 labelWidth, const String& style, const GUIDimensions& layoutOptions, bool withLabel)
 		:GUIElementContainer(layoutOptions, style),
 		mInputBox(nullptr), mValue(L""), mHasInputFocus(false), mLayout(nullptr), mLabel(nullptr)
 	{
@@ -50,7 +50,7 @@ namespace BansheeEngine
 			curStyle = &GUITextField::getGUITypeName();
 
 		return bs_new<GUITextField>(PrivatelyConstruct(), multiline, labelContent, labelWidth, *curStyle,
-			GUILayoutOptions::create(layoutOptions), true);
+			GUIDimensions::create(layoutOptions), true);
 	}
 
 	GUITextField* GUITextField::create(bool multiline, const GUIContent& labelContent, const GUIOptions& layoutOptions,
@@ -61,7 +61,7 @@ namespace BansheeEngine
 			curStyle = &GUITextField::getGUITypeName();
 
 		return bs_new<GUITextField>(PrivatelyConstruct(), multiline, labelContent, DEFAULT_LABEL_WIDTH, *curStyle,
-			GUILayoutOptions::create(layoutOptions), true);
+			GUIDimensions::create(layoutOptions), true);
 	}
 
 	GUITextField* GUITextField::create(bool multiline, const HString& labelText, UINT32 labelWidth, const GUIOptions& layoutOptions,
@@ -72,7 +72,7 @@ namespace BansheeEngine
 			curStyle = &GUITextField::getGUITypeName();
 
 		return bs_new<GUITextField>(PrivatelyConstruct(), multiline, GUIContent(labelText), labelWidth, *curStyle,
-			GUILayoutOptions::create(layoutOptions), true);
+			GUIDimensions::create(layoutOptions), true);
 	}
 
 	GUITextField* GUITextField::create(bool multiline, const HString& labelText, const GUIOptions& layoutOptions,
@@ -83,7 +83,7 @@ namespace BansheeEngine
 			curStyle = &GUITextField::getGUITypeName();
 
 		return bs_new<GUITextField>(PrivatelyConstruct(), multiline, GUIContent(labelText), DEFAULT_LABEL_WIDTH, *curStyle,
-			GUILayoutOptions::create(layoutOptions), true);
+			GUIDimensions::create(layoutOptions), true);
 	}
 
 	GUITextField* GUITextField::create(bool multiline, const GUIOptions& layoutOptions, const String& style)
@@ -93,7 +93,7 @@ namespace BansheeEngine
 			curStyle = &GUITextField::getGUITypeName();
 
 		return bs_new<GUITextField>(PrivatelyConstruct(), multiline, GUIContent(), 0, *curStyle,
-			GUILayoutOptions::create(layoutOptions), false);
+			GUIDimensions::create(layoutOptions), false);
 	}
 
 	GUITextField* GUITextField::create(bool multiline, const GUIContent& labelContent, UINT32 labelWidth,
@@ -104,7 +104,7 @@ namespace BansheeEngine
 			curStyle = &GUITextField::getGUITypeName();
 
 		return bs_new<GUITextField>(PrivatelyConstruct(), multiline, labelContent, labelWidth, *curStyle,
-			GUILayoutOptions::create(), true);
+			GUIDimensions::create(), true);
 	}
 
 	GUITextField* GUITextField::create(bool multiline, const GUIContent& labelContent,
@@ -115,7 +115,7 @@ namespace BansheeEngine
 			curStyle = &GUITextField::getGUITypeName();
 
 		return bs_new<GUITextField>(PrivatelyConstruct(), multiline, labelContent, DEFAULT_LABEL_WIDTH, *curStyle,
-			GUILayoutOptions::create(), true);
+			GUIDimensions::create(), true);
 	}
 
 	GUITextField* GUITextField::create(bool multiline, const HString& labelText, UINT32 labelWidth,
@@ -126,7 +126,7 @@ namespace BansheeEngine
 			curStyle = &GUITextField::getGUITypeName();
 
 		return bs_new<GUITextField>(PrivatelyConstruct(), multiline, GUIContent(labelText), labelWidth, *curStyle,
-			GUILayoutOptions::create(), true);
+			GUIDimensions::create(), true);
 	}
 
 	GUITextField* GUITextField::create(bool multiline, const HString& labelText,
@@ -137,7 +137,7 @@ namespace BansheeEngine
 			curStyle = &GUITextField::getGUITypeName();
 
 		return bs_new<GUITextField>(PrivatelyConstruct(), multiline, GUIContent(labelText), DEFAULT_LABEL_WIDTH, *curStyle,
-			GUILayoutOptions::create(), true);
+			GUIDimensions::create(), true);
 	}
 
 	GUITextField* GUITextField::create(bool multiline, const String& style)
@@ -147,7 +147,7 @@ namespace BansheeEngine
 			curStyle = &GUITextField::getGUITypeName();
 
 		return bs_new<GUITextField>(PrivatelyConstruct(), multiline, GUIContent(), 0, *curStyle,
-			GUILayoutOptions::create(), false);
+			GUIDimensions::create(), false);
 	}
 
 	void GUITextField::setValue(const WString& value)

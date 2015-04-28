@@ -12,7 +12,7 @@ namespace BansheeEngine
 
 	public:
 		GUIFieldBase(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth,
-			const String& labelStyle, const GUILayoutOptions& layoutOptions, bool withLabel);
+			const String& labelStyle, const GUIDimensions& layoutOptions, bool withLabel);
 
 		void _updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
 			Rect2I clipRect, UINT8 widgetDepth, UINT16 areaDepth);
@@ -48,7 +48,7 @@ namespace BansheeEngine
 				curStyle = &T::getGUITypeName();
 
 			return bs_new<T>(PrivatelyConstruct(), labelContent, labelWidth, *curStyle,
-				GUILayoutOptions::create(layoutOptions), true);
+				GUIDimensions::create(layoutOptions), true);
 		}
 
 		static T* create(const GUIContent& labelContent, const GUIOptions& layoutOptions,
@@ -59,7 +59,7 @@ namespace BansheeEngine
 				curStyle = &T::getGUITypeName();
 
 			return bs_new<T>(PrivatelyConstruct(), labelContent, DEFAULT_LABEL_WIDTH, *curStyle,
-				GUILayoutOptions::create(layoutOptions), true);
+				GUIDimensions::create(layoutOptions), true);
 		}
 
 		static T* create(const HString& labelText, UINT32 labelWidth, const GUIOptions& layoutOptions,
@@ -70,7 +70,7 @@ namespace BansheeEngine
 				curStyle = &T::getGUITypeName();
 
 			return bs_new<T>(PrivatelyConstruct(), GUIContent(labelText), labelWidth, *curStyle,
-				GUILayoutOptions::create(layoutOptions), true);
+				GUIDimensions::create(layoutOptions), true);
 		}
 
 		static T* create(const HString& labelText, const GUIOptions& layoutOptions,
@@ -81,7 +81,7 @@ namespace BansheeEngine
 				curStyle = &T::getGUITypeName();
 
 			return bs_new<T>(PrivatelyConstruct(), GUIContent(labelText), DEFAULT_LABEL_WIDTH, *curStyle,
-				GUILayoutOptions::create(layoutOptions), true);
+				GUIDimensions::create(layoutOptions), true);
 		}
 
 		static T* create(const GUIOptions& layoutOptions, const String& style = StringUtil::BLANK)
@@ -91,7 +91,7 @@ namespace BansheeEngine
 				curStyle = &T::getGUITypeName();
 
 			return bs_new<T>(PrivatelyConstruct(), GUIContent(), 0, *curStyle,
-				GUILayoutOptions::create(layoutOptions), false);
+				GUIDimensions::create(layoutOptions), false);
 		}
 
 		static T* create(const GUIContent& labelContent, UINT32 labelWidth,
@@ -101,7 +101,7 @@ namespace BansheeEngine
 			if (*curStyle == StringUtil::BLANK)
 				curStyle = &T::getGUITypeName();
 
-			return bs_new<T>(PrivatelyConstruct(), labelContent, labelWidth, *curStyle, GUILayoutOptions::create(), true);
+			return bs_new<T>(PrivatelyConstruct(), labelContent, labelWidth, *curStyle, GUIDimensions::create(), true);
 		}
 
 		static T* create(const GUIContent& labelContent,
@@ -112,7 +112,7 @@ namespace BansheeEngine
 				curStyle = &T::getGUITypeName();
 
 			return bs_new<T>(PrivatelyConstruct(), labelContent, DEFAULT_LABEL_WIDTH, *curStyle,
-				GUILayoutOptions::create(), true);
+				GUIDimensions::create(), true);
 		}
 
 		static T* create(const HString& labelText, UINT32 labelWidth,
@@ -123,7 +123,7 @@ namespace BansheeEngine
 				curStyle = &T::getGUITypeName();
 
 			return bs_new<T>(PrivatelyConstruct(), GUIContent(labelText), labelWidth, *curStyle,
-				GUILayoutOptions::create(), true);
+				GUIDimensions::create(), true);
 		}
 
 		static T* create(const HString& labelText,
@@ -134,7 +134,7 @@ namespace BansheeEngine
 				curStyle = &T::getGUITypeName();
 
 			return bs_new<T>(PrivatelyConstruct(), GUIContent(labelText), DEFAULT_LABEL_WIDTH, *curStyle,
-				GUILayoutOptions::create(), true);
+				GUIDimensions::create(), true);
 		}
 
 		static T* create(const String& style = StringUtil::BLANK)
@@ -144,11 +144,11 @@ namespace BansheeEngine
 				curStyle = &T::getGUITypeName();
 
 			return bs_new<T>(PrivatelyConstruct(), GUIContent(), 0, *curStyle,
-				GUILayoutOptions::create(), false);
+				GUIDimensions::create(), false);
 		}
 
 		TGUIField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth,
-			const String& style, const GUILayoutOptions& layoutOptions, bool withLabel)
+			const String& style, const GUIDimensions& layoutOptions, bool withLabel)
 			:GUIFieldBase(dummy, labelContent, labelWidth, style, layoutOptions, withLabel)
 		{ }
 	};

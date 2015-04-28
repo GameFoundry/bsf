@@ -3,7 +3,7 @@
 #include "BsGUIElementStyle.h"
 #include "BsGUISkin.h"
 #include "BsGUIWidget.h"
-#include "BsGUILayoutOptions.h"
+#include "BsGUIDimensions.h"
 #include "BsGUILayoutX.h"
 #include "BsGUILayoutY.h"
 #include "BsGUISkin.h"
@@ -18,7 +18,7 @@ namespace BansheeEngine
 {
 	const UINT32 GUIScrollBar::ButtonScrollAmount = 10;
 
-	GUIScrollBar::GUIScrollBar(bool horizontal, const String& styleName, const GUILayoutOptions& layoutOptions)
+	GUIScrollBar::GUIScrollBar(bool horizontal, const String& styleName, const GUIDimensions& layoutOptions)
 		:GUIElement(styleName, layoutOptions), mHorizontal(horizontal)
 	{
 		mImageSprite = bs_new<ImageSprite, PoolAlloc>();

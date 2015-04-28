@@ -101,7 +101,7 @@ namespace BansheeEngine
 		void updateClippedBounds();
 
 	private:
-		DockManager(EditorWindowBase* parentWindow, const GUILayoutOptions& layoutOptions);
+		DockManager(EditorWindowBase* parentWindow, const GUIDimensions& layoutOptions);
 
 		static const Color TINT_COLOR;
 		static const Color HIGHLIGHT_COLOR;

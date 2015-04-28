@@ -77,7 +77,7 @@ namespace BansheeEngine
 		static const String SEPARATOR_STYLE_TYPE;
 	protected:
 		GUIDropDownContent(GUIDropDownBox::DropDownSubMenu* parent, const GUIDropDownData& dropDownData, 
-			const String& style, const GUILayoutOptions& layoutOptions);
+			const String& style, const GUIDimensions& layoutOptions);
 		~GUIDropDownContent() override;
 
 		/**

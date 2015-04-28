@@ -113,9 +113,6 @@
     <ClInclude Include="Include\BsGUILayoutY.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsGUILayoutOptions.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsGUISpace.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
@@ -332,6 +329,9 @@
     <ClInclude Include="Include\BsGUISkinRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsGUIDimensions.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsGUIElement.cpp">
@@ -478,9 +478,6 @@
     <ClCompile Include="Source\BsGUIOptions.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsGUILayoutOptions.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
     <ClCompile Include="Source\BsGUIRenderTexture.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
@@ -576,6 +573,9 @@
     </ClCompile>
     <ClCompile Include="Source\BsGUISkinRTTI.cpp">
       <Filter>Source Files\RTTI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUIDimensions.cpp">
+      <Filter>Source Files\GUI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

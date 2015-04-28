@@ -26,6 +26,6 @@ namespace BansheeEngine
 		bool mIsCursorSet;
 		bool mDragInProgress;
 
-		GUIDockSlider(bool horizontal, const String& styleName, const GUILayoutOptions& layoutOptions);
+		GUIDockSlider(bool horizontal, const String& styleName, const GUIDimensions& layoutOptions);
 	};
 }

@@ -4,7 +4,7 @@
 #include "BsGUISkin.h"
 #include "BsSpriteTexture.h"
 #include "BsTextSprite.h"
-#include "BsGUILayoutOptions.h"
+#include "BsGUIDimensions.h"
 #include "BsGUIMouseEvent.h"
 #include "BsGUIManager.h"
 #include "BsGUIHelper.h"
@@ -19,7 +19,7 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIListBox::GUIListBox(const String& styleName, const Vector<HString>& elements, const GUILayoutOptions& layoutOptions)
+	GUIListBox::GUIListBox(const String& styleName, const Vector<HString>& elements, const GUIDimensions& layoutOptions)
 		:GUIButtonBase(styleName, GUIContent(HString(L"")), layoutOptions), mElements(elements), mSelectedIdx(0), mIsListBoxOpen(false)
 	{
 		if(elements.size() > 0)
@@ -33,12 +33,12 @@ namespace BansheeEngine
 
 	GUIListBox* GUIListBox::create(const Vector<HString>& elements, const String& styleName)
 	{
-		return new (bs_alloc<GUIListBox, PoolAlloc>()) GUIListBox(getStyleName<GUIListBox>(styleName), elements, GUILayoutOptions::create());
+		return new (bs_alloc<GUIListBox, PoolAlloc>()) GUIListBox(getStyleName<GUIListBox>(styleName), elements, GUIDimensions::create());
 	}
 
 	GUIListBox* GUIListBox::create(const Vector<HString>& elements, const GUIOptions& layoutOptions, const String& styleName)
 	{
-		return new (bs_alloc<GUIListBox, PoolAlloc>()) GUIListBox(getStyleName<GUIListBox>(styleName), elements, GUILayoutOptions::create(layoutOptions));
+		return new (bs_alloc<GUIListBox, PoolAlloc>()) GUIListBox(getStyleName<GUIListBox>(styleName), elements, GUIDimensions::create(layoutOptions));
 	}
 
 	void GUIListBox::setElements(const Vector<HString>& elements)

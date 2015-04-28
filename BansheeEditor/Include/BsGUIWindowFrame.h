@@ -17,6 +17,6 @@ namespace BansheeEngine
 		void setFocused(bool focused);
 	protected:
 		~GUIWindowFrame();
-		GUIWindowFrame(const String& styleName, const GUILayoutOptions& layoutOptions);
+		GUIWindowFrame(const String& styleName, const GUIDimensions& layoutOptions);
 	};
 }

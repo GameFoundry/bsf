@@ -12,33 +12,25 @@ namespace BansheeEngine
 
 	LayoutSizeRange GUILayoutY::_calculateLayoutSizeRange() const
 	{
-		LayoutSizeRange layoutSizeRange;
-
 		if (mIsDisabled)
-			return layoutSizeRange;
+			return LayoutSizeRange();
 
+		Vector2I optimalSize;
 		for (auto& child : mChildren)
 		{
 			LayoutSizeRange sizeRange = child->_calculateLayoutSizeRange();
 			
 			if (child->_getType() == GUIElementBase::Type::FixedSpace)
-				sizeRange.optimal.x = sizeRange.min.x = sizeRange.max.x = 0;
+				sizeRange.optimal.x = 0;
 
 			UINT32 paddingX = child->_getPadding().left + child->_getPadding().right;
 			UINT32 paddingY = child->_getPadding().top + child->_getPadding().bottom;
 
-			layoutSizeRange.optimal.y += sizeRange.optimal.y + paddingY;
-			layoutSizeRange.optimal.x = std::max((UINT32)layoutSizeRange.optimal.x, sizeRange.optimal.x + paddingX);
+			optimalSize.y += sizeRange.optimal.y + paddingY;
+			optimalSize.x = std::max((UINT32)optimalSize.x, sizeRange.optimal.x + paddingX);
 		}
 
-		// Layout has no min or max, it respects the bounds of its parent element and
-		// child elements
-		layoutSizeRange.min.x = 0;
-		layoutSizeRange.min.y = 0;
-		layoutSizeRange.max.x = 0;
-		layoutSizeRange.max.y = 0;
-
-		return layoutSizeRange;
+		return _getDimensions().calculateSizeRange(optimalSize);
 	}
 
 	void GUILayoutY::_updateOptimalLayoutSizes()
@@ -49,7 +41,7 @@ namespace BansheeEngine
 		if(mChildren.size() != mChildSizeRanges.size())
 			mChildSizeRanges.resize(mChildren.size());
 
-		mSizeRange = LayoutSizeRange();
+		Vector2I optimalSize;
 
 		UINT32 childIdx = 0;
 		for(auto& child : mChildren)
@@ -62,14 +54,9 @@ namespace BansheeEngine
 
 				childSizeRange = fixedSpace->_calculateLayoutSizeRange();
 				childSizeRange.optimal.x = 0;
-				childSizeRange.min.x = 0;
-				childSizeRange.max.x = 0;
 			}
 			else if(child->_getType() == GUIElementBase::Type::Element)
 			{
-				GUIElement* element = static_cast<GUIElement*>(child);
-				const GUILayoutOptions& layoutOptions = element->_getLayoutOptions();
-
 				childSizeRange = child->_calculateLayoutSizeRange();
 			}
 			else if(child->_getType() == GUIElementBase::Type::Layout)
@@ -81,18 +68,13 @@ namespace BansheeEngine
 			UINT32 paddingX = child->_getPadding().left + child->_getPadding().right;
 			UINT32 paddingY = child->_getPadding().top + child->_getPadding().bottom;
 
-			mSizeRange.optimal.y += childSizeRange.optimal.y + paddingY;
-			mSizeRange.optimal.x = std::max((UINT32)mSizeRange.optimal.x, childSizeRange.optimal.x + paddingX);
+			optimalSize.y += childSizeRange.optimal.y + paddingY;
+			optimalSize.x = std::max((UINT32)optimalSize.x, childSizeRange.optimal.x + paddingX);
 
 			childIdx++;
 		}
 
-		// Layout has no min or max, it respects the bounds of its parent element and
-		// child elements
-		mSizeRange.min.x = 0;
-		mSizeRange.min.y = 0;
-		mSizeRange.max.x = 0;
-		mSizeRange.max.y = 0;
+		mSizeRange = _getDimensions().calculateSizeRange(optimalSize);
 	}
 
 	void GUILayoutY::_getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements, 
@@ -127,23 +109,17 @@ namespace BansheeEngine
 			{
 				processedElements[childIdx] = true;
 			}
-			else if (child->_getType() == GUIElementBase::Type::Element)
+			else if (child->_getType() == GUIElementBase::Type::Element || child->_getType() == GUIElementBase::Type::Layout)
 			{
-				GUIElement* element = static_cast<GUIElement*>(child);
-				const GUILayoutOptions& layoutOptions = element->_getLayoutOptions();
+				const GUIDimensions& layoutOptions = child->_getDimensions();
 
-				if (layoutOptions.fixedHeight)
+				if (layoutOptions.fixedHeight())
 					processedElements[childIdx] = true;
 				else
 				{
 					numNonClampedElements++;
 					totalNonClampedSize += elementAreas[childIdx].height;
 				}
-			}
-			else if (child->_getType() == GUIElementBase::Type::Layout)
-			{
-				numNonClampedElements++;
-				totalNonClampedSize += elementAreas[childIdx].height;
 			}
 			else if (child->_getType() == GUIElementBase::Type::FlexibleSpace)
 			{
@@ -342,22 +318,23 @@ namespace BansheeEngine
 			UINT32 elemHeight = elementAreas[childIdx].height;
 			yOffset += child->_getPadding().top;
 
+			UINT32 elemWidth = (UINT32)sizeRanges[childIdx].optimal.x;
+			const GUIDimensions& layoutOptions = child->_getDimensions();
+			if (!layoutOptions.fixedWidth())
+			{
+				elemWidth = width;
+				if (layoutOptions.minWidth > 0 && elemWidth < layoutOptions.minWidth)
+					elemWidth = layoutOptions.minWidth;
+
+				if (layoutOptions.maxWidth > 0 && elemWidth > layoutOptions.maxWidth)
+					elemWidth = layoutOptions.maxWidth;
+			}
+
+			elementAreas[childIdx].width = elemWidth;
+
 			if (child->_getType() == GUIElementBase::Type::Element)
 			{
 				GUIElement* element = static_cast<GUIElement*>(child);
-				UINT32 elemWidth = (UINT32)sizeRanges[childIdx].optimal.x;
-				const GUILayoutOptions& layoutOptions = element->_getLayoutOptions();
-				if (!layoutOptions.fixedWidth)
-				{
-					elemWidth = width;
-					if (layoutOptions.minWidth > 0 && elemWidth < layoutOptions.minWidth)
-						elemWidth = layoutOptions.minWidth;
-
-					if (layoutOptions.maxWidth > 0 && elemWidth > layoutOptions.maxWidth)
-						elemWidth = layoutOptions.maxWidth;
-				}
-
-				elementAreas[childIdx].width = elemWidth;
 
 				UINT32 xPadding = element->_getPadding().left + element->_getPadding().right;
 				INT32 xOffset = Math::ceilToInt((INT32)(width - (INT32)(elemWidth + xPadding)) * 0.5f);
@@ -368,7 +345,6 @@ namespace BansheeEngine
 			}
 			else if (child->_getType() == GUIElementBase::Type::Layout)
 			{
-				elementAreas[childIdx].width = width;
 				elementAreas[childIdx].x = x;
 				elementAreas[childIdx].y = y + yOffset;
 			}
@@ -397,14 +373,14 @@ namespace BansheeEngine
 			Rect2I childArea = elementAreas[childIdx];
 
 			Vector2I offset(childArea.x, childArea.y);
-			child->setOffset(offset);
-			child->setHeight(childArea.height);
 
 			if(child->_getType() == GUIElementBase::Type::Element)
 			{
 				GUIElement* element = static_cast<GUIElement*>(child);
 
-				element->setWidth(childArea.width);
+				element->_setPosition(offset);
+				element->_setHeight(childArea.height);
+				element->_setWidth(childArea.width);
 				element->_setWidgetDepth(widgetDepth);
 				element->_setAreaDepth(areaDepth);
 
@@ -421,8 +397,6 @@ namespace BansheeEngine
 			{
 				GUILayout* layout = static_cast<GUILayout*>(child);
 
-				child->setWidth(width);
-
 				Rect2I newClipRect(childArea.x, childArea.y, width, childArea.height);
 				newClipRect.clip(clipRect);
 				layout->_updateLayoutInternal(childArea.x, childArea.y, width, childArea.height, newClipRect, widgetDepth, areaDepth);
@@ -431,7 +405,6 @@ namespace BansheeEngine
 			}
 			else
 			{
-				child->setWidth(childArea.width);
 				actualSizes[childIdx].width = childArea.width;
 			}
 
@@ -439,7 +412,7 @@ namespace BansheeEngine
 			childIdx++;
 		}
 
-		Vector2I actualSize = _calcActualSize(actualSizes, numElements);
+		Vector2I actualSize = _calcActualSize(x, y, actualSizes, numElements);
 		mActualWidth = (UINT32)actualSize.x;
 		mActualHeight = (UINT32)actualSize.y;
 
@@ -449,7 +422,7 @@ namespace BansheeEngine
 		_markAsClean();
 	}
 
-	Vector2I GUILayoutY::_calcActualSize(Rect2I* elementAreas, UINT32 numElements) const
+	Vector2I GUILayoutY::_calcActualSize(INT32 x, INT32 y, Rect2I* elementAreas, UINT32 numElements) const
 	{
 		Vector2I actualArea;
 		for (UINT32 i = 0; i < numElements; i++)

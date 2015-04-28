@@ -17,7 +17,7 @@ namespace BansheeEngine
 		Event<void()> onInputCanceled;
 
 	private:
-		GUITreeViewEditBox(const String& styleName, const GUILayoutOptions& layoutOptions);
+		GUITreeViewEditBox(const String& styleName, const GUIDimensions& layoutOptions);
 
 		virtual bool _commandEvent(const GUICommandEvent& ev);
 	};

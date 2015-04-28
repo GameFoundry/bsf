@@ -2,7 +2,7 @@
 #include "BsGUIElementStyle.h"
 #include "BsGUISkin.h"
 #include "BsGUIWidget.h"
-#include "BsGUILayoutOptions.h"
+#include "BsGUIDimensions.h"
 #include "BsGUILayout.h"
 #include "BsGUISkin.h"
 #include "BsGUIButton.h"
@@ -12,7 +12,7 @@
 
 namespace BansheeEngine
 {
-	GUIScrollBarHorz::GUIScrollBarHorz(const String& styleName, const GUILayoutOptions& layoutOptions)
+	GUIScrollBarHorz::GUIScrollBarHorz(const String& styleName, const GUIDimensions& layoutOptions)
 		:GUIScrollBar(true, styleName, layoutOptions)
 	{
 
@@ -25,12 +25,12 @@ namespace BansheeEngine
 
 	GUIScrollBarHorz* GUIScrollBarHorz::create(const String& styleName)
 	{
-		return new (bs_alloc<GUIScrollBarHorz, PoolAlloc>()) GUIScrollBarHorz(getStyleName<GUIScrollBarHorz>(styleName), GUILayoutOptions::create());
+		return new (bs_alloc<GUIScrollBarHorz, PoolAlloc>()) GUIScrollBarHorz(getStyleName<GUIScrollBarHorz>(styleName), GUIDimensions::create());
 	}
 
 	GUIScrollBarHorz* GUIScrollBarHorz::create(const GUIOptions& layoutOptions, const String& styleName)
 	{
-		return new (bs_alloc<GUIScrollBarHorz, PoolAlloc>()) GUIScrollBarHorz(getStyleName<GUIScrollBarHorz>(styleName), GUILayoutOptions::create(layoutOptions));
+		return new (bs_alloc<GUIScrollBarHorz, PoolAlloc>()) GUIScrollBarHorz(getStyleName<GUIScrollBarHorz>(styleName), GUIDimensions::create(layoutOptions));
 	}
 
 	const String& GUIScrollBarHorz::getGUITypeName()

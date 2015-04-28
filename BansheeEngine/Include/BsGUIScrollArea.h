@@ -129,7 +129,7 @@ namespace BansheeEngine
 		virtual void updateClippedBounds();
 	private:
 		GUIScrollArea(ScrollBarType vertBarType, ScrollBarType horzBarType, 
-			const String& scrollBarStyle, const String& scrollAreaStyle, const GUILayoutOptions& layoutOptions);
+			const String& scrollBarStyle, const String& scrollAreaStyle, const GUIDimensions& layoutOptions);
 
 		/**
 		 * @copydoc	GUIElementContainer::mouseEvent

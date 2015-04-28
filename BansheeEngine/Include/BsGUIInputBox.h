@@ -111,7 +111,7 @@ namespace BansheeEngine
 		 */
 		Event<void()> onFocusLost;
 	protected:
-		GUIInputBox(const String& styleName, const GUILayoutOptions& layoutOptions, bool multiline);
+		GUIInputBox(const String& styleName, const GUIDimensions& layoutOptions, bool multiline);
 		virtual ~GUIInputBox();
 
 		/**
