@@ -4,6 +4,7 @@
 #include "BsGUIScrollArea.h"
 #include "BsGUIArea.h"
 #include "BsGUILayoutY.h"
+#include "BsGUIPanel.h"
 #include "BsGUIWidget.h"
 #include "BsGUISkin.h"
 #include "BsGUIIntField.h"
@@ -49,7 +50,7 @@ namespace BansheeEngine
 	DbgEditorWidget2::DbgEditorWidget2(const ConstructPrivately& dummy, EditorWidgetContainer& parentContainer)
 		:EditorWidget<DbgEditorWidget2>(HString(L"DbgEditorWidget2"), parentContainer)
 	{
-		GUILayout* layout = mContent->getLayout().addNewElement<GUILayoutY>();
+		GUILayout* layout = mContent->addNewElement<GUILayoutY>();
 
 		GUIIntField* intField = GUIIntField::create(GUIContent(HString(L"Int Field")), 100, GUIOptions(GUIOption::fixedWidth(200)));
 		GUIFloatField* floatField = GUIFloatField::create(HString(L"Float Field"), GUIOptions(GUIOption::fixedWidth(200)));

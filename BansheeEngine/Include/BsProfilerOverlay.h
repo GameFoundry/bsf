@@ -143,10 +143,6 @@ namespace BansheeEngine
 
 		HSceneObject mWidgetSO;
 		GameObjectHandle<GUIWidget> mWidget;
-		GUIArea* mCPUBasicAreaLabels = nullptr;
-		GUIArea* mCPUPreciseAreaLabels = nullptr;
-		GUIArea* mCPUBasicAreaContents = nullptr;
-		GUIArea* mCPUPreciseAreaContents = nullptr;
 
 		GUILayout* mBasicLayoutLabels = nullptr;
 		GUILayout* mPreciseLayoutLabels = nullptr;
@@ -173,11 +169,11 @@ namespace BansheeEngine
 		GUIElement* mTitlePreciseAvgCyclesSelf = nullptr;
 		GUIElement* mTitlePreciseTotalCyclesSelf = nullptr;
 
-		GUIArea* mGPUAreaFrameContents = nullptr;
-		GUIArea* mGPUAreaFrameSamples = nullptr;
+		GUILayout* mGPULayoutFrameContents = nullptr;
 		GUILayout* mGPULayoutFrameContentsLeft = nullptr;
 		GUILayout* mGPULayoutFrameContentsRight = nullptr;
 		GUILayout* mGPULayoutSamples = nullptr;
+		GUILayout* mGPULayoutSampleContents = nullptr;
 
 		HString mGPUFrameNumStr;
 		HString mGPUTimeStr;

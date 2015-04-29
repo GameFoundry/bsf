@@ -16,7 +16,7 @@ namespace BansheeEngine
 		static const UINT32 RESIZE_BORDER_WIDTH;
 
 		bool mAllowResize;
-		GUIArea* mWindowFrameArea;
+		GUIPanel* mWindowFramePanel;
 		RenderWindow* mParentWindow;
 		GUIWindowFrame* mWindowFrame;
 

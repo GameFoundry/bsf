@@ -4,6 +4,7 @@
 #include "BsGUILabel.h"
 #include "BsGUIMouseEvent.h"
 #include "BsGUIArea.h"
+#include "BsGUIPanel.h"
 #include "BsCoreApplication.h"
 #include "BsCoreThreadAccessor.h"
 #include "BsMaterial.h"
@@ -19,7 +20,7 @@
 namespace BansheeEngine
 {
 	GUIWidget::GUIWidget(const HSceneObject& parent, Viewport* target)
-		:Component(parent), mWidgetIsDirty(false), mTarget(nullptr), mDepth(0)
+		:Component(parent), mWidgetIsDirty(false), mTarget(nullptr), mDepth(0), mPanel(nullptr)
 	{
 		setName("GUIWidget");
 
@@ -34,6 +35,8 @@ namespace BansheeEngine
 		mOwnerTargetResizedConn = mTarget->getTarget()->onResized.connect(std::bind(&GUIWidget::ownerTargetResized, this));
 
 		GUIManager::instance().registerWidget(this);
+
+		mPanel = GUIPanel::create();
 	}
 
 	GUIWidget::~GUIWidget()
@@ -41,6 +44,9 @@ namespace BansheeEngine
 
 	void GUIWidget::onDestroyed()
 	{
+		GUILayout::destroy(mPanel);
+		mPanel = nullptr;
+
 		if (mTarget != nullptr)
 		{
 			GUIManager::instance().unregisterWidget(this);
@@ -103,6 +109,10 @@ namespace BansheeEngine
 		{
 			area->_update();
 		}
+
+		Rect2I clipRect(0, 0, getTarget()->getWidth(), getTarget()->getHeight());
+		mPanel->_updateLayout(0, 0, getTarget()->getWidth(), getTarget()->getHeight(), clipRect, 
+			getDepth(), 0, -1);
 	}
 
 	bool GUIWidget::_mouseEvent(GUIElement* element, const GUIMouseEvent& ev)
@@ -263,6 +273,9 @@ namespace BansheeEngine
 		{
 			area->updateSizeBasedOnParent(getTarget()->getWidth(), getTarget()->getHeight());
 		}
+
+		mPanel->setWidth(getTarget()->getWidth());
+		mPanel->setHeight(getTarget()->getHeight());
 	}
 
 	void GUIWidget::ownerWindowFocusChanged()

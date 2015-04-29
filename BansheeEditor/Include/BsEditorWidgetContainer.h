@@ -36,7 +36,7 @@ namespace BansheeEngine
 	private:
 		EditorWindowBase* mParentWindow;
 		GUITabbedTitleBar* mTitleBar;
-		GUIArea* mTitleBarArea;
+		GUIPanel* mTitleBarPanel;
 		GUIWidget* mParent;
 		INT32 mX, mY;
 		UINT32 mWidth, mHeight;

@@ -301,8 +301,8 @@ namespace BansheeEngine
 			GUIDropDownContent* mContent;
 			GUITexture* mBackgroundFrame;
 
-			GUIArea* mBackgroundArea;
-			GUIArea* mContentArea;
+			GUIPanel* mBackgroundPanel;
+			GUIPanel* mContentPanel;
 			GUILayout* mContentLayout;
 
 			DropDownSubMenu* mParent;

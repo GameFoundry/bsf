@@ -1,7 +1,7 @@
 #include "BsProfilerOverlay.h"
 #include "BsSceneObject.h"
 #include "BsGUIWidget.h"
-#include "BsGUIArea.h"
+#include "BsGUIPanel.h"
 #include "BsGUILayout.h"
 #include "BsGUILayoutX.h"
 #include "BsGUILayoutY.h"
@@ -309,15 +309,10 @@ namespace BansheeEngine
 		mWidget->setSkin(BuiltinResources::instance().getGUISkin());
 
 		// Set up CPU sample areas
-		mCPUBasicAreaLabels = GUIArea::create(*mWidget, 0, 0);
-		mCPUPreciseAreaLabels = GUIArea::create(*mWidget, 0, 0);
-		mCPUBasicAreaContents = GUIArea::create(*mWidget, 0, 0);
-		mCPUPreciseAreaContents = GUIArea::create(*mWidget, 0, 0);
-
-		mBasicLayoutLabels = mCPUBasicAreaLabels->getLayout().addNewElement<GUILayoutY>();
-		mPreciseLayoutLabels = mCPUPreciseAreaLabels->getLayout().addNewElement<GUILayoutY>();
-		mBasicLayoutContents = mCPUBasicAreaContents->getLayout().addNewElement<GUILayoutY>();
-		mPreciseLayoutContents = mCPUPreciseAreaContents->getLayout().addNewElement<GUILayoutY>();
+		mBasicLayoutLabels = mWidget->getPanel()->addNewElement<GUILayoutY>();
+		mPreciseLayoutLabels = mWidget->getPanel()->addNewElement<GUILayoutY>();
+		mBasicLayoutContents = mWidget->getPanel()->addNewElement<GUILayoutY>();
+		mPreciseLayoutContents = mWidget->getPanel()->addNewElement<GUILayoutY>();
 
 		// Set up CPU sample title bars
 		mTitleBasicName = GUILabel::create(HString(L"Name"), GUIOptions(GUIOption::fixedWidth(200)));
@@ -371,16 +366,15 @@ namespace BansheeEngine
 		mPreciseLayoutContents->addNewElement<GUIFlexibleSpace>();
 
 		// Set up GPU sample areas
-		mGPUAreaFrameContents = GUIArea::create(*mWidget, 0, 0);
-		mGPUAreaFrameSamples = GUIArea::create(*mWidget, 0, 0);
-		mGPULayoutFrameContentsLeft = mGPUAreaFrameContents->getLayout().addNewElement<GUILayoutY>();
-		mGPULayoutFrameContentsRight = mGPUAreaFrameContents->getLayout().addNewElement<GUILayoutY>();
+		mGPULayoutFrameContents = mWidget->getPanel()->addNewElement<GUILayoutX>();
+		mGPULayoutFrameContentsLeft = mGPULayoutFrameContents->addNewElement<GUILayoutY>();
+		mGPULayoutFrameContentsRight = mGPULayoutFrameContents->addNewElement<GUILayoutY>();
 
-		GUILayout* gpuSamplesMain = mGPUAreaFrameSamples->getLayout().addNewElement<GUILayoutY>();
+		mGPULayoutSamples = mWidget->getPanel()->addNewElement<GUILayoutY>();
 
-		GUILayout* gpuSampleTitle = gpuSamplesMain->addNewElement<GUILayoutY>();
-		mGPULayoutSamples = gpuSamplesMain->addNewElement<GUILayoutY>();
-		gpuSamplesMain->addNewElement<GUIFlexibleSpace>();
+		GUILayout* gpuSampleTitle = mGPULayoutSamples->addNewElement<GUILayoutY>();
+		mGPULayoutSampleContents = mGPULayoutSamples->addNewElement<GUILayoutY>();
+		mGPULayoutSamples->addNewElement<GUIFlexibleSpace>();
 
 		HString gpuSamplesStr(L"__ProfOvGPUSamples", L"Samples");
 		gpuSampleTitle->addElement(GUILabel::create(gpuSamplesStr));
@@ -461,21 +455,21 @@ namespace BansheeEngine
 	{
 		if (type == ProfilerOverlayType::CPUSamples)
 		{
-			mCPUBasicAreaLabels->enable();
-			mCPUPreciseAreaLabels->enable();
-			mCPUBasicAreaContents->enable();
-			mCPUPreciseAreaContents->enable();
-			mGPUAreaFrameContents->disable();
-			mGPUAreaFrameSamples->disable();
+			mBasicLayoutLabels->enableRecursively();
+			mPreciseLayoutLabels->enableRecursively();
+			mBasicLayoutContents->enableRecursively();
+			mPreciseLayoutContents->enableRecursively();
+			mGPULayoutFrameContents->disableRecursively();
+			mGPULayoutSamples->disableRecursively();
 		}
 		else
 		{
-			mGPUAreaFrameContents->enable();
-			mGPUAreaFrameSamples->enable();
-			mCPUBasicAreaLabels->disable();
-			mCPUPreciseAreaLabels->disable();
-			mCPUBasicAreaContents->disable();
-			mCPUPreciseAreaContents->disable();
+			mGPULayoutFrameContents->enableRecursively();
+			mGPULayoutSamples->enableRecursively();
+			mBasicLayoutLabels->disableRecursively();
+			mPreciseLayoutLabels->disableRecursively();
+			mBasicLayoutContents->disableRecursively();
+			mPreciseLayoutContents->disableRecursively();
 		}
 
 		mType = type;
@@ -484,12 +478,12 @@ namespace BansheeEngine
 
 	void ProfilerOverlay::hide()
 	{
-		mCPUBasicAreaLabels->disable();
-		mCPUPreciseAreaLabels->disable();
-		mCPUBasicAreaContents->disable();
-		mCPUPreciseAreaContents->disable();
-		mGPUAreaFrameContents->disable();
-		mGPUAreaFrameSamples->disable();
+		mBasicLayoutLabels->disableRecursively();
+		mPreciseLayoutLabels->disableRecursively();
+		mBasicLayoutContents->disableRecursively();
+		mPreciseLayoutContents->disableRecursively();
+		mGPULayoutFrameContents->disableRecursively();
+		mGPULayoutSamples->disableRecursively();
 		mIsShown = false;
 	}
 
@@ -526,17 +520,21 @@ namespace BansheeEngine
 		UINT32 labelsWidth = Math::ceilToInt(width * LABELS_CONTENT_RATIO);
 		UINT32 contentWidth = width - labelsWidth;
 
-		mCPUBasicAreaLabels->setPosition(PADDING, PADDING);
-		mCPUBasicAreaLabels->setSize(labelsWidth, height);
+		mBasicLayoutLabels->setPosition(PADDING, PADDING);
+		mBasicLayoutLabels->setWidth(labelsWidth);
+		mBasicLayoutLabels->setHeight(height);
 
-		mCPUPreciseAreaLabels->setPosition(PADDING, height + PADDING * 2);
-		mCPUPreciseAreaLabels->setSize(labelsWidth, height);
+		mPreciseLayoutLabels->setPosition(PADDING, height + PADDING * 2);
+		mPreciseLayoutLabels->setWidth(labelsWidth);
+		mPreciseLayoutLabels->setHeight(height);
 
-		mCPUBasicAreaContents->setPosition(PADDING + labelsWidth, PADDING);
-		mCPUBasicAreaContents->setSize(contentWidth, height);
+		mBasicLayoutContents->setPosition(PADDING + labelsWidth, PADDING);
+		mBasicLayoutContents->setWidth(contentWidth);
+		mBasicLayoutContents->setHeight(height);
 
-		mCPUPreciseAreaContents->setPosition(PADDING + labelsWidth, height + PADDING * 2);
-		mCPUPreciseAreaContents->setSize(contentWidth, height);
+		mPreciseLayoutContents->setPosition(PADDING + labelsWidth, height + PADDING * 2);
+		mPreciseLayoutContents->setWidth(contentWidth);
+		mPreciseLayoutContents->setHeight(height);
 	}
 
 	void ProfilerOverlay::updateGPUSampleAreaSizes()
@@ -550,11 +548,13 @@ namespace BansheeEngine
 		UINT32 frameHeight = Math::ceilToInt(height * SAMPLES_FRAME_RATIO);
 		UINT32 samplesHeight = height - frameHeight;
 
-		mGPUAreaFrameContents->setPosition(PADDING, PADDING);
-		mGPUAreaFrameContents->setSize(width, frameHeight);
+		mGPULayoutFrameContents->setPosition(PADDING, PADDING);
+		mGPULayoutFrameContents->setWidth(width);
+		mGPULayoutFrameContents->setHeight(frameHeight);
 
-		mGPUAreaFrameSamples->setPosition(PADDING, PADDING + frameHeight + PADDING);
-		mGPUAreaFrameSamples->setSize(width, samplesHeight);
+		mGPULayoutSamples->setPosition(PADDING, PADDING + frameHeight + PADDING);
+		mGPULayoutSamples->setWidth(width);
+		mGPULayoutSamples->setHeight(samplesHeight);
 	}
 
 	void ProfilerOverlay::updateCPUSampleContents(const ProfilerReport& simReport, const ProfilerReport& coreReport)
@@ -674,7 +674,7 @@ namespace BansheeEngine
 		mGPUGPUProgramBufferBindsStr.setParameter(0, toWString(gpuReport.frameSample.numGpuParamBufferBinds));
 		mGPUGPUProgramBindsStr.setParameter(0, toWString(gpuReport.frameSample.numGpuProgramBinds));
 
-		GPUSampleRowFiller sampleRowFiller(mGPUSampleRows, *mGPULayoutSamples, *mWidget);
+		GPUSampleRowFiller sampleRowFiller(mGPUSampleRows, *mGPULayoutSampleContents, *mWidget);
 		for (auto& sample : gpuReport.samples)
 		{
 			sampleRowFiller.addData(sample.name, sample.timeMs);

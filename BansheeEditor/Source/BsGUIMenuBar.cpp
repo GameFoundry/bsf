@@ -1,9 +1,9 @@
 #include "BsGUIMenuBar.h"
-#include "BsGUIArea.h"
+#include "BsGUIPanel.h"
 #include "BsGUIElement.h"
 #include "BsGUIButton.h"
 #include "BsGUITexture.h"
-#include "BsGUILayout.h"
+#include "BsGUILayoutX.h"
 #include "BsGUISpace.h"
 #include "BsGUIMenu.h"
 #include "BsGUIManager.h"
@@ -18,33 +18,36 @@ namespace BansheeEngine
 	const UINT32 GUIMenuBar::NUM_ELEMENTS_AFTER_CONTENT = 8;
 
 	GUIMenuBar::GUIMenuBar(GUIWidget* parent, RenderWindow* parentWindow)
-		:mParentWidget(parent), mParentWindow(parentWindow), mMainArea(nullptr), mBgTextureArea(nullptr), 
+		:mParentWidget(parent), mParentWindow(parentWindow), mMainPanel(nullptr), mMainLayout(nullptr),
 		mBgTexture(nullptr), mLogoTexture(nullptr), mSubMenuOpen(false), mSubMenuButton(nullptr)
 	{
-		mBgTextureArea = GUIArea::create(*parent, 0, 0, 1, 13, 1);
-		mMainArea = GUIArea::create(*parent, 0, 0, 1, 13, 0);
+		mMainPanel = parent->getPanel()->addNewElement<GUIPanel>(0);
+		mMainPanel->setWidth(1);
+		mMainPanel->setHeight(13);
+
+		mMainLayout = mMainPanel->addNewElement<GUILayoutX>();
+		GUILayoutX* bgLayout = mMainPanel->addNewElement<GUILayoutX>();
 
 		mBgTexture = GUITexture::create(GUIImageScaleMode::StretchToFit, GUIOptions(GUIOption::flexibleWidth(), GUIOption::flexibleHeight()), "MenuBarBg");
-		mBgTextureArea->getLayout().addElement(mBgTexture);
+		bgLayout->addElement(mBgTexture);
 
 		mLogoTexture = GUITexture::create(GUIImageScaleMode::StretchToFit, "MenuBarBansheeLogo");
-		GUILayout& mainLayout = mMainArea->getLayout();
 
-		mainLayout.addElement(mLogoTexture);
-		mainLayout.addNewElement<GUIFixedSpace>(5);
-		mainLayout.addNewElement<GUIFlexibleSpace>();
+		mMainLayout->addElement(mLogoTexture);
+		mMainLayout->addNewElement<GUIFixedSpace>(5);
+		mMainLayout->addNewElement<GUIFlexibleSpace>();
 
 		mMinBtn = GUIButton::create(HString(L""), "WinMinimizeBtn");
 		mMaxBtn = GUIButton::create(HString(L""), "WinMaximizeBtn");
 		mCloseBtn = GUIButton::create(HString(L""), "WinCloseBtn");
 
-		mainLayout.addNewElement<GUIFixedSpace>(3);
-		mainLayout.addElement(mMinBtn);
-		mainLayout.addNewElement<GUIFixedSpace>(3);
-		mainLayout.addElement(mMaxBtn);
-		mainLayout.addNewElement<GUIFixedSpace>(3);
-		mainLayout.addElement(mCloseBtn);
-		mainLayout.addNewElement<GUIFixedSpace>(3);
+		mMainLayout->addNewElement<GUIFixedSpace>(3);
+		mMainLayout->addElement(mMinBtn);
+		mMainLayout->addNewElement<GUIFixedSpace>(3);
+		mMainLayout->addElement(mMaxBtn);
+		mMainLayout->addNewElement<GUIFixedSpace>(3);
+		mMainLayout->addElement(mCloseBtn);
+		mMainLayout->addNewElement<GUIFixedSpace>(3);
 
 		mMinBtn->onClick.connect(std::bind(&GUIMenuBar::onMinimizeClicked, this));
 		mMaxBtn->onClick.connect(std::bind(&GUIMenuBar::onMaximizeClicked, this));
@@ -63,24 +66,15 @@ namespace BansheeEngine
 			GUIElement::destroy(menu.button);
 		}
 
-		GUIElement::destroy(mMinBtn);
-		GUIElement::destroy(mMaxBtn);
-		GUIElement::destroy(mCloseBtn);
-
-		GUIElement::destroy(mBgTexture);
-		GUIElement::destroy(mLogoTexture);
-
-		GUIArea::destroy(mMainArea);
-		GUIArea::destroy(mBgTextureArea);
+		GUILayout::destroy(mMainPanel);
 	}
 
 	void GUIMenuBar::setArea(INT32 x, INT32 y, UINT32 width, UINT32 height)
 	{
-		mMainArea->setPosition(x, y);
-		mBgTextureArea->setPosition(x, y);
+		mMainPanel->setPosition(x, y);
 
-		mMainArea->setSize(width, height);
-		mBgTextureArea->setSize(width, height);
+		mMainPanel->setWidth(width);
+		mMainPanel->setHeight(height);
 
 		refreshNonClientAreas();
 	}
@@ -135,7 +129,7 @@ namespace BansheeEngine
 		GUIButton* newButton = GUIButton::create(HString(name), "MenuBarBtn");
 		newButton->onClick.connect(std::bind(&GUIMenuBar::openSubMenu, this, name));
 		newButton->onHover.connect(std::bind(&GUIMenuBar::onSubMenuHover, this, name));
-		mMainArea->getLayout().insertElement(mMainArea->getLayout().getNumChildren() - NUM_ELEMENTS_AFTER_CONTENT, newButton);
+		mMainLayout->insertElement(mMainLayout->getNumChildren() - NUM_ELEMENTS_AFTER_CONTENT, newButton);
 
 		newSubMenu.button = newButton;
 
@@ -183,7 +177,7 @@ namespace BansheeEngine
 			if(subMenuToRemove == nullptr)
 				return;
 
-			mMainArea->getLayout().removeElement(subMenuToRemove->button);
+			mMainLayout->removeElement(subMenuToRemove->button);
 			GUIElement::destroy(subMenuToRemove->button);
 			bs_delete<PoolAlloc>(subMenuToRemove->menu);
 
@@ -311,20 +305,18 @@ namespace BansheeEngine
 
 	void GUIMenuBar::refreshNonClientAreas()
 	{
-		// If the size or contents of the area changed this frame the layout won't be updated yet,
-		// so force the update right away so we get correct element bounds
-		mMainArea->_update();
+		Rect2I mainArea = mMainLayout->getBounds();
 
 		Vector<Rect2I> nonClientAreas;
-		nonClientAreas.push_back(mLogoTexture->_getCachedBounds());
+		nonClientAreas.push_back(mLogoTexture->getBounds());
 
 		if(mChildMenus.size() > 0)
 		{
-			Rect2I lastButtonBounds = mChildMenus.back().button->_getCachedBounds();
-			Rect2I minButtonBounds = mMinBtn->_getCachedBounds();
+			Rect2I lastButtonBounds = mChildMenus.back().button->getBounds();
+			Rect2I minButtonBounds = mMinBtn->getBounds();
 
-			Rect2I emptyArea(lastButtonBounds.x + lastButtonBounds.width, mMainArea->y(), 
-				minButtonBounds.x - (lastButtonBounds.x + lastButtonBounds.width), mMainArea->height());
+			Rect2I emptyArea(lastButtonBounds.x + lastButtonBounds.width, mainArea.y,
+				minButtonBounds.x - (lastButtonBounds.x + lastButtonBounds.width), mainArea.height);
 
 			nonClientAreas.push_back(emptyArea);
 		}

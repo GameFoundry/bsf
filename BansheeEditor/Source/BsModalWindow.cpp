@@ -9,26 +9,36 @@
 #include "BsGUIButton.h"
 #include "BsGUITexture.h"
 #include "BsGUILabel.h"
+#include "BsGUIPanel.h"
+#include "BsGUIWidget.h"
 
 namespace BansheeEngine
 {
 	ModalWindow::ModalWindow(const HString& title, bool hasCloseButton)
-		:EditorWindowBase(true), mTitleBarArea(nullptr), mTitleBarBgArea(nullptr), 
+		:EditorWindowBase(true), mTitleBarPanel(nullptr), mTitleBarBgPanel(nullptr), 
 		mCloseButton(nullptr), mTitleBarBg(nullptr), mTitle(nullptr)
 	{
 		EditorWindowManager::instance().registerWindow(this);
 
-		mTitleBarBgArea = GUIArea::createStretchedXY(*mGUI, 1, 1, 1, 1, std::numeric_limits<UINT16>::max() - 1);
-		mTitleBarArea = GUIArea::createStretchedXY(*mGUI, 1, 1, 1, 1, 0);
+		mTitleBarBgPanel = mGUI->getPanel()->addNewElement<GUIPanel>();
+		mTitleBarBgPanel->setDepthRange(std::numeric_limits<UINT16>::max() - 1);
+		mTitleBarBgPanel->setPosition(1, 1);
+
+		mTitleBarPanel = mGUI->getPanel()->addNewElement<GUIPanel>();
+		mTitleBarPanel->setDepthRange(0);
+		mTitleBarPanel->setPosition(1, 1);
 
 		mTitleBarBg = GUITexture::create(GUIOptions(GUIOption::flexibleWidth()), "TitleBarBackground");
 		mTitle = GUILabel::create(title);
 
-		GUILayout* bgLayout = mTitleBarBgArea->getLayout().addNewElement<GUILayoutY>();
-		bgLayout->addElement(mTitleBarBg);
+		GUILayout* bgLayout = mTitleBarBgPanel->addNewElement<GUILayoutY>();
+		GUILayout* bgLayoutX = bgLayout->addNewElement<GUILayoutX>();
+		bgLayoutX->addElement(mTitleBarBg);
+		bgLayoutX->addNewElement<GUIFixedSpace>(1);
 		bgLayout->addNewElement<GUIFlexibleSpace>();
+		bgLayout->addNewElement<GUIFixedSpace>(1);
 
-		GUILayout* contentLayoutY = mTitleBarArea->getLayout().addNewElement<GUILayoutY>();
+		GUILayout* contentLayoutY = mTitleBarPanel->addNewElement<GUILayoutY>();
 		GUILayout* contentLayoutX = contentLayoutY->addNewElement<GUILayoutX>();
 		contentLayoutX->addNewElement<GUIFlexibleSpace>();
 		GUILayout* titleLayout = contentLayoutX->addNewElement<GUILayoutY>();
@@ -45,8 +55,10 @@ namespace BansheeEngine
 			mCloseButton->onClick.connect(std::bind(&ModalWindow::close, this));
 		}
 
+		contentLayoutX->addNewElement<GUIFixedSpace>(1);
 		contentLayoutY->addNewElement<GUIFlexibleSpace>();
-		
+		contentLayoutY->addNewElement<GUIFixedSpace>(1);
+
 		updateSize();
 	}
 

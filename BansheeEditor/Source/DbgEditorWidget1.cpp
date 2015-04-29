@@ -7,6 +7,7 @@
 #include "BsGUIArea.h"
 #include "BsGUILayout.h"
 #include "BsGUILayoutY.h"
+#include "BsGUIPanel.h"
 #include "BsEditorWidgetManager.h"
 #include "BsGUISceneTreeView.h"
 #include "BsGUIResourceTreeView.h"
@@ -18,10 +19,8 @@ namespace BansheeEngine
 	DbgEditorWidget1::DbgEditorWidget1(const ConstructPrivately& dummy, EditorWidgetContainer& parentContainer)
 		:EditorWidget<DbgEditorWidget1>(HString(L"DbgEditorWidget1"), parentContainer)
 	{
-		GUILayout& layout = mContent->getLayout();
-
 		GUIScrollArea* scrollArea = GUIScrollArea::create();
-		layout.addElement(scrollArea);
+		mContent->addElement(scrollArea);
 
 		GUILayout* treeViewLayout = scrollArea->getLayout().addNewElement<GUILayoutY>();
 

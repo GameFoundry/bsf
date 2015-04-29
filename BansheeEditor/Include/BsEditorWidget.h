@@ -54,7 +54,7 @@ namespace BansheeEngine
 		EditorWidgetContainer* mParent;
 		INT32 mX, mY;
 		UINT32 mWidth, mHeight;
-		GUIArea* mContent;
+		GUIPanel* mContent;
 		bool mHasFocus;
 
 		GUIWidget& getParentWidget() const;

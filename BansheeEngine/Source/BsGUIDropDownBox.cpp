@@ -1,5 +1,5 @@
 #include "BsGUIDropDownBox.h"
-#include "BsGUIArea.h"
+#include "BsGUIPanel.h"
 #include "BsGUILayoutY.h"
 #include "BsGUILayoutX.h"
 #include "BsGUITexture.h"
@@ -174,7 +174,7 @@ namespace BansheeEngine
 
 	GUIDropDownBox::DropDownSubMenu::DropDownSubMenu(GUIDropDownBox* owner, DropDownSubMenu* parent, const GUIDropDownAreaPlacement& placement,
 		const Rect2I& availableBounds, const GUIDropDownData& dropDownData, GUIDropDownType type, UINT32 depthOffset)
-		:mOwner(owner), mParent(parent), mPage(0), mBackgroundFrame(nullptr), mBackgroundArea(nullptr), mContentArea(nullptr),
+		:mOwner(owner), mParent(parent), mPage(0), mBackgroundFrame(nullptr), mBackgroundPanel(nullptr), mContentPanel(nullptr),
 		mContentLayout(nullptr), mScrollUpBtn(nullptr), mScrollDownBtn(nullptr), x(0), y(0), width(0), height(0), 
 		mType(type), mSubMenu(nullptr), mData(dropDownData), mOpenedUpward(false), mDepthOffset(depthOffset), mContent(nullptr)
 	{
@@ -215,16 +215,23 @@ namespace BansheeEngine
 		mContent->setKeyboardFocus(true);
 
 		// Content area
-		mContentArea = GUIArea::create(*mOwner, 0, 0, width, height);
-		mContentArea->setDepth(100 - depthOffset * 2 - 1);
-		mContentLayout = mContentArea->getLayout().addNewElement<GUILayoutY>();
+		mContentPanel = mOwner->getPanel()->addNewElement<GUIPanel>();
+		mContentPanel->setWidth(width);
+		mContentPanel->setHeight(height);
+		mContentPanel->setDepthRange(100 - depthOffset * 2 - 1);
+
+		mContentLayout = mContentPanel->addNewElement<GUILayoutY>();
 
 		// Background frame
-		mBackgroundArea = GUIArea::create(*mOwner, 0, 0, width, height);
-		mBackgroundArea->setDepth(100 - depthOffset * 2);
+		mBackgroundPanel = mOwner->getPanel()->addNewElement<GUIPanel>();
+		mBackgroundPanel->setWidth(width);
+		mBackgroundPanel->setHeight(height);
+		mBackgroundPanel->setDepthRange(100 - depthOffset * 2);
+
+		GUILayout* backgroundLayout = mBackgroundPanel->addNewElement<GUILayoutX>();
 
 		mBackgroundFrame = GUITexture::create(GUIImageScaleMode::StretchToFit, mOwner->mBackgroundStyle);
-		mBackgroundArea->getLayout().addElement(mBackgroundFrame);
+		backgroundLayout->addElement(mBackgroundFrame);
 
 		mContentLayout->addElement(mContent); // Note: It's important this is added to the layout before we 
 											  // use it for size calculations, in order for its skin to be assigned
@@ -294,8 +301,8 @@ namespace BansheeEngine
 		if(mOpenedUpward)	
 			actualY -= (INT32)std::min(maxNeededHeight, availableUpwardHeight);
 
-		mContentArea->setPosition(x, actualY);
-		mBackgroundArea->setPosition(x, actualY);
+		mContentPanel->setPosition(x, actualY);
+		mBackgroundPanel->setPosition(x, actualY);
 
 		updateGUIElements();
 
@@ -318,8 +325,8 @@ namespace BansheeEngine
 
 		GUIElement::destroy(mBackgroundFrame);
 
-		GUIArea::destroy(mBackgroundArea);
-		GUIArea::destroy(mContentArea);
+		GUILayout::destroy(mBackgroundPanel);
+		GUILayout::destroy(mContentPanel);
 	}
 
 	Vector<GUIDropDownBox::DropDownSubMenu::PageInfo> GUIDropDownBox::DropDownSubMenu::getPageInfos() const
@@ -452,15 +459,18 @@ namespace BansheeEngine
 		if(mOpenedUpward)	
 			actualY -= (INT32)pageHeight;
 
-		mBackgroundArea->setSize(width, pageHeight);
-		mBackgroundArea->setPosition(x, actualY);
+		mBackgroundPanel->setWidth(width);
+		mBackgroundPanel->setHeight(pageHeight);
+		mBackgroundPanel->setPosition(x, actualY);
 
 		mVisibleBounds = Rect2I(x, actualY, width, pageHeight);
 
 		UINT32 contentWidth = (UINT32)std::max(0, (INT32)width - (INT32)backgroundStyle->margins.left - (INT32)backgroundStyle->margins.right);
 		UINT32 contentHeight = (UINT32)std::max(0, (INT32)pageHeight - (INT32)backgroundStyle->margins.top - (INT32)backgroundStyle->margins.bottom);
-		mContentArea->setSize(contentWidth, contentHeight);
-		mContentArea->setPosition(x + backgroundStyle->margins.left, actualY + backgroundStyle->margins.top);
+
+		mContentPanel->setWidth(contentWidth);
+		mContentPanel->setHeight(contentHeight);
+		mContentPanel->setPosition(x + backgroundStyle->margins.left, actualY + backgroundStyle->margins.top);
 	}
 
 	void GUIDropDownBox::DropDownSubMenu::scrollDown()

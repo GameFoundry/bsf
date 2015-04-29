@@ -58,35 +58,10 @@ namespace BansheeEngine
 		SceneObject::create("FILLER_J");
 		SceneObject::create("FILLER_K");
 		SceneObject::create("FILLER_L");
-
-		//GUIArea* area = GUIArea::createStretchedXY(*this, 0, 0, 0, 0);
-		//area->getLayout().addElement(GUIRenderTexture::create(*this, sceneView, GUIOptions(GUIOption::fixedWidth(800), GUIOption::fixedHeight(600))));
-
-		//GUIArea* area = GUIArea::createStretchedXY(*this, 0, 0, 0, 0);
-
-		//mSceneTreeView = GUISceneTreeView::create(*this, GUIOptions(GUIOption::flexibleWidth(), GUIOption::flexibleHeight()));
-		//mResourceTreeView = GUIResourceTreeView::create(*this, GUIOptions(GUIOption::flexibleWidth(), GUIOption::flexibleHeight()));
-		//GUILayout& sceneTreeViewLayout = area->getLayout().addLayoutY();
-
-		//GUIScrollArea* scrollArea = GUIScrollArea::create(*this, GUIOptions(GUIOption::fixedWidth(100), GUIOption::fixedHeight(100)));
-		//sceneTreeViewLayout.addFlexibleSpace();
-		//area->getLayout().addElement(scrollArea);
-		//sceneTreeViewLayout.addFlexibleSpace();
-
-		//scrollArea->getLayout().addElement(mSceneTreeView);
-		//area->getLayout().addElement(mResourceTreeView);
-
-		//GUIIntField* intField = GUIIntField::create(*this, HString(L"Int Field"), GUIOptions(GUIOption::fixedWidth(200)));
-		//GUIFloatField* floatField = GUIFloatField::create(*this, HString(L"Float Field"), GUIOptions(GUIOption::fixedWidth(200)));
-		//area->getLayout().addElement(intField);
-		//area->getLayout().addElement(floatField);
-
-		//area->getLayout().addFlexibleSpace();
 	}
 
 	void TestTextSprite::update()
 	{
-		//mSceneTreeView->update();
-		//mResourceTreeView->update();
+
 	}
 }

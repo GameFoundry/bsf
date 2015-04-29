@@ -25,8 +25,8 @@ namespace BansheeEngine
 		void updateSize();
 		UINT32 getTitleBarHeight() const;
 
-		GUIArea* mTitleBarArea;
-		GUIArea* mTitleBarBgArea;
+		GUIPanel* mTitleBarPanel;
+		GUIPanel* mTitleBarBgPanel;
 
 		GUILabel* mTitle;
 		GUIButton* mCloseButton;

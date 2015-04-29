@@ -4,6 +4,7 @@
 #include "BsGUITexture.h"
 #include "BsGUISkin.h"
 #include "BsGUILayout.h"
+#include "BsGUIPanel.h"
 #include "BsBuiltinResources.h"
 #include "BsGUIArea.h"
 #include "BsEditorWidgetContainer.h"
@@ -22,7 +23,7 @@ namespace BansheeEngine
 	EditorWidgetBase::~EditorWidgetBase()
 	{
 		if (mContent != nullptr)
-			GUIArea::destroy(mContent);
+			GUILayout::destroy(mContent);
 	}
 
 	EditorWindowBase* EditorWidgetBase::getParentWindow() const
@@ -63,8 +64,11 @@ namespace BansheeEngine
 		mWidth = width;
 		mHeight = height;
 
-		if(mContent != nullptr)
-			mContent->setSize(width, height);
+		if (mContent != nullptr)
+		{
+			mContent->setWidth(width);
+			mContent->setHeight(height);
+		}
 
 		doOnResized(width, height);
 	}
@@ -125,15 +129,15 @@ namespace BansheeEngine
 		{
 			if(parent != nullptr)
 			{
-				if(mContent == nullptr)
-					mContent = GUIArea::create(parent->getParentWidget(), 0, 0, 0, 0, 0);
+				if (mContent == nullptr)
+					mContent = parent->getParentWidget().getPanel()->addNewElement<GUIPanel>();
 				else
-					mContent->changeParentWidget(&parent->getParentWidget());
+					parent->getParentWidget().getPanel()->addElement(mContent);
 			}
 			else
 			{
-				if(mContent != nullptr)
-					mContent->changeParentWidget(nullptr);
+				if (mContent != nullptr)
+					mParent->getParentWidget().getPanel()->removeElement(mContent);
 			}
 
 			mParent = parent;
@@ -147,12 +151,12 @@ namespace BansheeEngine
 
 	void EditorWidgetBase::_disable()
 	{
-		mContent->disable();
+		mContent->disableRecursively();
 	}
 
 	void EditorWidgetBase::_enable()
 	{
-		mContent->enable();
+		mContent->enableRecursively();
 	}
 
 	GUIWidget& EditorWidgetBase::getParentWidget() const

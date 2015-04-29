@@ -1,5 +1,6 @@
 #include "BsGUIWindowFrameWidget.h"
-#include "BsGUIArea.h"
+#include "BsGUIPanel.h"
+#include "BsGUIWidget.h"
 #include "BsGUILayout.h"
 #include "BsGUITexture.h"
 #include "BsGUIWindowFrame.h"
@@ -14,18 +15,18 @@ namespace BansheeEngine
 	const UINT32 WindowFrameWidget::RESIZE_BORDER_WIDTH = 3;
 
 	WindowFrameWidget::WindowFrameWidget(const HSceneObject& parent, bool allowResize, Viewport* target, RenderWindow* parentWindow, const HGUISkin& skin)
-		:GUIWidget(parent, target), mWindowFrameArea(nullptr), mParentWindow(parentWindow), mAllowResize(allowResize)
+		:GUIWidget(parent, target), mWindowFramePanel(nullptr), mParentWindow(parentWindow), mAllowResize(allowResize)
 	{
 		setSkin(skin);
 
-		GUIArea* backgroundArea = GUIArea::createStretchedXY(*this, 0, 0, 0, 0, 500);
-		backgroundArea->getLayout().addElement(GUITexture::create(GUIImageScaleMode::RepeatToFit, 
+		GUIPanel* backgroundPanel = getPanel()->addNewElement<GUIPanel>(500);
+		backgroundPanel->addElement(GUITexture::create(GUIImageScaleMode::RepeatToFit, 
 			GUIOptions(GUIOption::flexibleWidth(), GUIOption::flexibleHeight()), "WindowBackground"));
 
-		mWindowFrameArea = GUIArea::createStretchedXY(*this, 0, 0, 0, 0, 499);
+		mWindowFramePanel = getPanel()->addNewElement<GUIPanel>(499);
 
 		mWindowFrame = GUIWindowFrame::create("WindowFrame");
-		mWindowFrameArea->getLayout().addElement(mWindowFrame);
+		mWindowFramePanel->addElement(mWindowFrame);
 
 		refreshNonClientAreas();
 	}
@@ -64,11 +65,13 @@ namespace BansheeEngine
 		if (!mAllowResize)
 			return;
 
-		INT32 x = mWindowFrameArea->x();
-		INT32 y = mWindowFrameArea->y();
+		Rect2I bounds = mWindowFramePanel->getBounds();
 
-		UINT32 width = mWindowFrameArea->width();
-		UINT32 height = mWindowFrameArea->height();
+		INT32 x = bounds.x;
+		INT32 y = bounds.y;
+
+		UINT32 width = bounds.width;
+		UINT32 height = bounds.height;
 
 		Vector<NonClientResizeArea> nonClientAreas(8);
 

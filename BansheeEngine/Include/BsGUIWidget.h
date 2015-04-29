@@ -38,6 +38,11 @@ namespace BansheeEngine
 		const HGUISkin& getSkinResource() const { return mSkin; }
 
 		/**
+		 * @brief	Returns the root GUI panel for the widget.
+		 */
+		GUIPanel* getPanel() const { return mPanel; }
+
+		/**
 		 * @brief	Returns the depth to render the widget at. If two widgets overlap the
 		 *			widget with the lower depth will be rendered in front.
 		 */
@@ -171,6 +176,7 @@ namespace BansheeEngine
 		Viewport* mTarget;
 		Vector<GUIElement*> mElements;
 		Vector<GUIArea*> mAreas;
+		GUIPanel* mPanel;
 		UINT8 mDepth;
 
 		Vector3 mLastFramePosition;

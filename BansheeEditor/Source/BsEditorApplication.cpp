@@ -221,54 +221,6 @@ namespace BansheeEngine
 
 		testModelGO->destroy();
 
-		//Win32FolderMonitor* folderMonitor = bs_new<Win32FolderMonitor>();
-
-		//FolderChange folderChanges = (FolderChange)((UINT32)FolderChange::FileName | (UINT32)FolderChange::DirName | 
-		//	(UINT32)FolderChange::Creation | (UINT32)FolderChange::LastWrite);
-		//folderMonitor->startMonitor(L"D:\\TestDetect", true, folderChanges);
-
-		//HTexture dbgCursor = static_resource_cast<Texture>(Importer::instance().import(L"C:\\CursorDbg.psd"));
-		//PixelDataPtr cursorPixelData = dbgCursor->allocateSubresourceBuffer(0);
-
-		//gMainSyncedCA().readSubresource(dbgCursor.getInternalPtr(), 0, cursorPixelData);
-		//gMainSyncedCA().submitToCoreThread(true);
-
-		/************************************************************************/
-		/* 								MODAL WINDOW                      		*/
-		/************************************************************************/
-
-		//RENDER_WINDOW_DESC modalWindowDesc;
-		//modalWindowDesc.width = 200;
-		//modalWindowDesc.height = 200;
-		//modalWindowDesc.left = 0;
-		//modalWindowDesc.top = 0;
-		//modalWindowDesc.title = "ModalWindow";
-		//modalWindowDesc.fullscreen = false;
-		//modalWindowDesc.border = WindowBorder::None;
-		//modalWindowDesc.toolWindow = true;
-		//modalWindowDesc.modal = true;
-
-		//RenderWindowPtr modalWindow = RenderWindow::create(modalWindowDesc, gApplication().getPrimaryWindow());
-
-		//HSceneObject modalSceneObject = SceneObject::create("ModalWindow");
-
-		//HCamera modalCamera = modalSceneObject->addComponent<Camera>();
-		//modalCamera->initialize(modalWindow, 0.0f, 0.0f, 1.0f, 1.0f);
-		//modalCamera->setNearClipDistance(5);
-		//modalCamera->setAspectRatio(1.0f);
-		//modalCamera->setIgnoreSceneRenderables(true);
-
-		//HGUIWidget modalGUI = modalSceneObject->addComponent<GUIWidget>(modalCamera->getViewport().get());
-		//modalGUI->setDepth(128);
-
-		//modalGUI->setSkin(EditorGUI::instance().getSkin());
-
-		//GUIArea* modalArea = GUIArea::createStretchedXY(*modalGUI, 0, 0, 0, 0, 500);
-		//GUIButton* modalButton = GUIButton::create(*modalGUI, HString(L"Close"));
-		//modalButton->onClick.connect(std::bind(&EditorApplication::closeModalWindow, modalWindow, modalSceneObject));
-
-		//modalArea->getLayout().addElement(modalButton);
-
 		/************************************************************************/
 		/* 							END DEBUG CODE                      		*/
 		/************************************************************************/

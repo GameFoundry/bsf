@@ -3,11 +3,11 @@
 #include "BsEditorWidget.h"
 #include "BsDragAndDropManager.h"
 #include "BsEditorWindow.h"
-#include "BsGUIArea.h"
+#include "BsGUIPanel.h"
+#include "BsGUIWidget.h"
 #include "BsMath.h"
 #include "BsInput.h"
-#include "BsGUIWidget.h"
-#include "BsGUILayout.h"
+#include "BsGUILayoutX.h"
 #include "BsCursor.h"
 
 using namespace std::placeholders;
@@ -18,9 +18,9 @@ namespace BansheeEngine
 
 	EditorWidgetContainer::EditorWidgetContainer(GUIWidget* parent, EditorWindowBase* parentEditorWindow)
 		:mParent(parent), mX(0), mY(0), mWidth(0), mHeight(0), mTitleBar(nullptr), mActiveWidget(-1),
-		mTitleBarArea(nullptr), mParentWindow(parentEditorWindow)
+		mTitleBarPanel(nullptr), mParentWindow(parentEditorWindow)
 	{
-		mTitleBarArea = GUIArea::create(*parent, 0, 0, 0, 0, 0);
+		mTitleBarPanel = parent->getPanel()->addNewElement<GUIPanel>();
 
 		mTitleBar = GUITabbedTitleBar::create();
 		mTitleBar->onTabActivated.connect(std::bind(&EditorWidgetContainer::tabActivated, this, _1));
@@ -28,7 +28,8 @@ namespace BansheeEngine
 		mTitleBar->onTabDraggedOff.connect(std::bind(&EditorWidgetContainer::tabDraggedOff, this, _1));
 		mTitleBar->onTabDraggedOn.connect(std::bind(&EditorWidgetContainer::tabDraggedOn, this, _1));
 
-		mTitleBarArea->getLayout().addElement(mTitleBar);
+		GUILayout* titleBarLayout = mTitleBarPanel->addNewElement<GUILayoutX>();
+		titleBarLayout->addElement(mTitleBar);
 	}
 
 	EditorWidgetContainer::~EditorWidgetContainer()
@@ -38,7 +39,7 @@ namespace BansheeEngine
 			widget.second->close();
 		}
 
-		GUIArea::destroy(mTitleBarArea);
+		GUILayout::destroy(mTitleBarPanel);
 		GUIElement::destroy(mTitleBar);
 	}
 
@@ -151,7 +152,8 @@ namespace BansheeEngine
 	void EditorWidgetContainer::setSize(UINT32 width, UINT32 height)
 	{
 		// TODO - Title bar is always TitleBarHeight size, so what happens when the container area is smaller than that?
-		mTitleBarArea->setSize(width, TitleBarHeight);
+		mTitleBarPanel->setWidth(width);
+		mTitleBarPanel->setHeight(TitleBarHeight);
 
 		if(mActiveWidget >= 0)
 		{
@@ -167,7 +169,7 @@ namespace BansheeEngine
 
 	void EditorWidgetContainer::setPosition(INT32 x, INT32 y)
 	{
-		mTitleBarArea->setPosition(x, y);
+		mTitleBarPanel->setPosition(x, y);
 
 		if(mActiveWidget >= 0)
 		{

@@ -7,7 +7,7 @@
 #include "BsRenderTexture.h"
 #include "BsApplication.h"
 #include "BsProfilingManager.h"
-#include "BsGUIArea.h"
+#include "BsGUIPanel.h"
 #include "BsGUILayout.h"
 #include "BsEditorTestSuite.h"
 #include "BsTestOutput.h"
@@ -33,9 +33,7 @@ namespace BansheeEngine
 		mMenuBar(bs_new<GUIMenuBar>(mGUI.get(), mRenderWindow.get()))
 	{
 		mDockManager = DockManager::create(this);
-
-		GUIArea* dockArea = GUIArea::createStretchedXY(*mGUI.get(), 0, 0, 0, 0);
-		dockArea->getLayout().addElement(mDockManager);
+		mGUI->getPanel()->addElement(mDockManager);
 
 		updateAreas();
 

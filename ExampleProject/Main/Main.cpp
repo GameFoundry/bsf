@@ -29,6 +29,7 @@
 #include "BsProfilerOverlay.h"
 #include "BsCoreRenderer.h"
 #include "BsResources.h"
+#include "BsGUIPanel.h"
 
 #include "CameraFlyer.h"
 
@@ -330,12 +331,9 @@ namespace BansheeEngine
 		// and default layout properties. We use the default skin that comes built into Banshee.
 		gui->setSkin(BuiltinResources::instance().getGUISkin());
 
-		// Create a GUI area that is used for displaying messages about toggling profiler overlays.
-		// This area will stretch the entire surface of its parent widget, even if the widget is resized.
-		GUIArea* bottomArea = GUIArea::createStretchedXY(*gui, 0, 0, 0, 0);
-
-		// Add a vertical layout that will automatically position any child elements top to bottom.
-		GUILayout* bottomLayout = bottomArea->getLayout().addNewElement<GUILayoutY>();
+		// Get the primary GUI panel that stretches over the entire window and add to it a vertical layout
+		// that will be using for vertically positioning messages about toggling profiler overlay.
+		GUILayout* bottomLayout = gui->getPanel()->addNewElement<GUILayoutY>();
 
 		// Add a flexible space that fills up any remaining area in the layout, making the two labels above be aligned
 		// to the bottom of the GUI widget (and the screen).
@@ -346,19 +344,23 @@ namespace BansheeEngine
 		bottomLayout->addElement(GUILabel::create(HString(L"Press F1 to toggle CPU profiler overlay")));
 		bottomLayout->addElement(GUILabel::create(HString(L"Press F2 to toggle GPU profiler overlay")));
 
-		// Create a GUI area that is used for displaying resolution and fullscreen options.
-		GUIArea* rightArea = GUIArea::createStretchedXY(*gui, 30, 30, 30, 30);
+		// Create a GUI panel that is used for displaying resolution and fullscreen options.
+		GUILayout* rightLayout = gui->getPanel()->addNewElement<GUILayoutX>();
+		rightLayout->setPosition(30, 30);
 
 		// We want all the GUI elements be right aligned, so we add a flexible space first.
-		rightArea->getLayout().addNewElement<GUIFlexibleSpace>();
+		rightLayout->addNewElement<GUIFlexibleSpace>();
 
 		// And we want the elements to be vertically placed, top to bottom
-		GUILayout* rightLayout = rightArea->getLayout().addNewElement<GUILayoutY>();
+		GUILayout* elemLayout = rightLayout->addNewElement<GUILayoutY>();
 
 		// Add a button that will trigger a callback when clicked
 		toggleFullscreenButton = GUIButton::create(HString(L"Toggle fullscreen"));
 		toggleFullscreenButton->onClick.connect(&toggleFullscreen);
-		rightLayout->addElement(toggleFullscreenButton);
+		elemLayout->addElement(toggleFullscreenButton);
+
+		// Leave 30 pixels to the right free
+		rightLayout->addNewElement<GUIFixedSpace>(30);
 
 		// Add a profiler overlay object that is resposible for displaying CPU and GPU profiling GUI
 		profilerOverlay = guiSO->addComponent<ProfilerOverlay>(guiCamera->getViewport());
