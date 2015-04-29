@@ -115,21 +115,28 @@ namespace BansheeEngine
 
         public GUILayoutX AddLayoutX(params GUIOption[] options)
         {
-            GUILayoutX layout = new GUILayoutX();
+            GUILayoutX layout = new GUILayoutX(options);
             AddElement(layout);
             return layout;
         }
 
         public GUILayoutY AddLayoutY(params GUIOption[] options)
         {
-            GUILayoutY layout = new GUILayoutY();
+            GUILayoutY layout = new GUILayoutY(options);
             AddElement(layout);
             return layout;
         }
 
         public GUIPanelNEW AddPanel(params GUIOption[] options)
         {
-            GUIPanelNEW layout = new GUIPanelNEW();
+            GUIPanelNEW layout = new GUIPanelNEW(options);
+            AddElement(layout);
+            return layout;
+        }
+
+        public GUIPanelNEW AddPanel(ushort depth = 0, ushort depthRange = ushort.MaxValue, params GUIOption[] options)
+        {
+            GUIPanelNEW layout = new GUIPanelNEW(depth, depthRange, options);
             AddElement(layout);
             return layout;
         }
@@ -150,21 +157,28 @@ namespace BansheeEngine
 
         public GUILayoutX InsertLayoutX(int idx, params GUIOption[] options)
         {
-            GUILayoutX layout = new GUILayoutX();
+            GUILayoutX layout = new GUILayoutX(options);
             InsertElement(idx, layout);
             return layout;
         }
 
         public GUILayoutY InsertLayoutY(int idx, params GUIOption[] options)
         {
-            GUILayoutY layout = new GUILayoutY();
+            GUILayoutY layout = new GUILayoutY(options);
             InsertElement(idx, layout);
             return layout;
         }
 
         public GUIPanelNEW InsertPanel(int idx, params GUIOption[] options)
         {
-            GUIPanelNEW layout = new GUIPanelNEW();
+            GUIPanelNEW layout = new GUIPanelNEW(options);
+            InsertElement(idx, layout);
+            return layout;
+        }
+
+        public GUIPanelNEW InsertPanel(int idx, ushort depth = 0, ushort depthRange = ushort.MaxValue, params GUIOption[] options)
+        {
+            GUIPanelNEW layout = new GUIPanelNEW(depth, depthRange, options);
             InsertElement(idx, layout);
             return layout;
         }
@@ -196,7 +210,7 @@ namespace BansheeEngine
         protected static extern void Internal_CreateInstanceY(GUILayout instance, GUIOption[] options);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        protected static extern void Internal_CreateInstancePanel(GUILayout instance, GUIOption[] options);
+        protected static extern void Internal_CreateInstancePanel(GUILayout instance, ushort depth, ushort depthRange, GUIOption[] options);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         protected static extern void Internal_AddElement(IntPtr instance, IntPtr element);

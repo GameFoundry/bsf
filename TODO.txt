@@ -20,18 +20,10 @@ GUIArea refactor:
 ColorPicker 2D handle is broken because it uses window coordinates for positioning, but it needs coordinates relative to parent GUI panel
  - Will likely need a new method for that
 
-Remove GUIPanel and GUIPanel container and rename GUILayoutExplicit to new GUIPanel. Use that instead in code and ensure everything looks okay.
-Change how depth works so GUIPanels can set it (offset + range)
-
-Remove GUIArea and replace it with GUIPanel completely
+Remove GUIArea and GUIPanel from C# and replace its uses with the new GUIPanel. Also replace any child GUIAreas with GUIPanels in C++ code.
+ - Once that is ensured to work, go to the final step and replace GUIWidget GUIArea as well.
 
 Use cases:
-InspectorWindow:
- - It has a scroll area that will have a GUIPanel as its child. User can then add custom GUIPanels as children to the root GUIPanels main layout.
-
-ColorPicker
- - This should work fine as long as I ensure that I add explicit elements to the root GUIPanel (one that has the main layout with all other elements)
-
 ProjectWindow
  - ScrollArea would have a GUIPanel child and then it would work similarly to InspectorWindow
 

@@ -189,7 +189,7 @@ namespace BansheeEngine
 	}
 
 	void GUIScrollArea::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-		Rect2I clipRect, UINT8 widgetDepth, UINT16 areaDepth)
+		Rect2I clipRect, UINT8 widgetDepth, UINT16 panelDepth, UINT16 panelDepthRange)
 	{
 		UINT32 numElements = (UINT32)mChildren.size();
 		Rect2I* elementAreas = nullptr;
@@ -227,14 +227,14 @@ namespace BansheeEngine
 		layoutClipRect.width = (UINT32)mVisibleSize.x;
 		layoutClipRect.height = (UINT32)mVisibleSize.y;
 		mContentLayout->_updateLayoutInternal(layoutBounds.x, layoutBounds.y,
-			layoutBounds.width, layoutBounds.height, layoutClipRect, widgetDepth, areaDepth);
+			layoutBounds.width, layoutBounds.height, layoutClipRect, widgetDepth, panelDepth, panelDepthRange);
 
 		// Vertical scrollbar
 		{
 			mVertScroll->_setPosition(Vector2I(vertScrollBounds.x, vertScrollBounds.y));
 			mVertScroll->_setWidth(vertScrollBounds.width);
 			mVertScroll->_setHeight(vertScrollBounds.height);
-			mVertScroll->_setAreaDepth(areaDepth);
+			mVertScroll->_setAreaDepth(panelDepth);
 			mVertScroll->_setWidgetDepth(widgetDepth);
 
 			UINT32 clippedScrollbarWidth = std::min(width, ScrollBarWidth);
@@ -243,7 +243,8 @@ namespace BansheeEngine
 
 			// This element is not a child of any layout so we treat it as a root element
 			Rect2I scrollBarLayoutClipRect(clipRect.x + (vertScrollBounds.x - x), clipRect.y + (vertScrollBounds.y - y), clippedScrollbarWidth, clipRect.height);
-			mVertScroll->_updateLayout(vertScrollBounds.x, vertScrollBounds.y, vertScrollBounds.width, vertScrollBounds.height, scrollBarLayoutClipRect, widgetDepth, areaDepth);
+			mVertScroll->_updateLayout(vertScrollBounds.x, vertScrollBounds.y, vertScrollBounds.width, 
+				vertScrollBounds.height, scrollBarLayoutClipRect, widgetDepth, panelDepth, panelDepthRange);
 
 			// Set new handle size and update position to match the new size
 			UINT32 newHandleSize = (UINT32)Math::floorToInt(mVertScroll->getMaxHandleSize() * (vertScrollBounds.height / (float)mContentSize.y));
@@ -264,7 +265,7 @@ namespace BansheeEngine
 			mHorzScroll->_setPosition(Vector2I(horzScrollBounds.x, horzScrollBounds.y));
 			mHorzScroll->_setWidth(horzScrollBounds.width);
 			mHorzScroll->_setHeight(horzScrollBounds.height);
-			mHorzScroll->_setAreaDepth(areaDepth);
+			mHorzScroll->_setAreaDepth(panelDepth);
 			mHorzScroll->_setWidgetDepth(widgetDepth);
 
 			UINT32 clippedScrollbarHeight = std::min(height, ScrollBarWidth);
@@ -273,7 +274,8 @@ namespace BansheeEngine
 
 			// This element is not a child of any layout so we treat it as a root element
 			Rect2I scrollBarLayoutClipRect(clipRect.x + (horzScrollBounds.x - x), clipRect.y + (horzScrollBounds.y - y), clipRect.width, clippedScrollbarHeight);
-			mHorzScroll->_updateLayout(horzScrollBounds.x, horzScrollBounds.y, horzScrollBounds.width, horzScrollBounds.height, scrollBarLayoutClipRect, widgetDepth, areaDepth);
+			mHorzScroll->_updateLayout(horzScrollBounds.x, horzScrollBounds.y, horzScrollBounds.width, 
+				horzScrollBounds.height, scrollBarLayoutClipRect, widgetDepth, panelDepth, panelDepthRange);
 
 			// Set new handle size and update position to match the new size
 			UINT32 newHandleSize = (UINT32)Math::floorToInt(mHorzScroll->getMaxHandleSize() * (horzScrollBounds.width / (float)mContentSize.x));

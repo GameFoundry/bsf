@@ -101,19 +101,21 @@ namespace BansheeEngine
 		 * @brief	Updates child elements positions, sizes, clip rectanges and depths so they
 		 *			fit into the provided bounds, while respecting their layout options. 
 		 *
-		 * @param	x			X position of the area to start laying out the elements. Relative to parent widget.
-		 * @param	y			Y position of the area to start laying out the elements. Relative to parent widget.
-		 * @param	width		Width of the area to lay out the elements, in pixels.
-		 * @param	height		Height of the area to lay out the elements, in pixels.
-		 * @param	clipRect	Rectangle to use for clipping of GUI elements. Any element outside of this rectangle will have its
-		 *						visible geometry clipped. In coordinates relative to parent widget.
-		 * @param	widgetDepth	Depth of the parent widget, will be set for all child elements.
-		 * @param	areaDepth	Depth of the parent area, will be set for all child elements.
+		 * @param	x				X position of the area to start laying out the elements. Relative to parent widget.
+		 * @param	y				Y position of the area to start laying out the elements. Relative to parent widget.
+		 * @param	width			Width of the area to lay out the elements, in pixels.
+		 * @param	height			Height of the area to lay out the elements, in pixels.
+		 * @param	clipRect		Rectangle to use for clipping of GUI elements. Any element outside of this rectangle will have its
+		 *							visible geometry clipped. In coordinates relative to parent widget.
+		 * @param	widgetDepth		Depth of the parent widget, will be set for all child elements.
+		 * @param	panelDepth		Depth of the parent panel, will be set for all child elements.
+		 * @param	panelDepthRange	Maximum depth range that child GUI panels can have (relative to panelDepth). 
+		 *							Values outside of the depth range will be clamped.
 		 *
 		 * @note	Internal method.
 		 */
 		virtual void _updateLayout(INT32 x, INT32 y, UINT32 width, UINT32 height, 
-			Rect2I clipRect, UINT8 widgetDepth, UINT16 areaDepth);
+			Rect2I clipRect, UINT8 widgetDepth, UINT16 panelDepth, UINT16 panelDepthRange);
 
 		/**
 		 * @brief	Calculates optimal sizes of all child elements, as determined by their style and layout options.
@@ -128,7 +130,7 @@ namespace BansheeEngine
 		 * @note	Internal method.
 		 */
 		virtual void _updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-			Rect2I clipRect, UINT8 widgetDepth, UINT16 areaDepth);
+			Rect2I clipRect, UINT8 widgetDepth, UINT16 panelDepth, UINT16 panelDepthRange);
 
 		/**
 		 * @brief	Calculates positions & sizes of all elements in the layout. This method expects a pre-allocated array to store the data in.

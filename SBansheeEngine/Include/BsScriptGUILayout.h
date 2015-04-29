@@ -16,7 +16,7 @@ namespace BansheeEngine
 	private:
 		static void internal_createInstanceX(MonoObject* instance, MonoArray* guiOptions);
 		static void internal_createInstanceY(MonoObject* instance, MonoArray* guiOptions);
-		static void internal_createInstancePanel(MonoObject* instance, MonoArray* guiOptions);
+		static void internal_createInstancePanel(MonoObject* instance, UINT16 depth, UINT16 depthRange, MonoArray* guiOptions);
 		static void internal_addElement(ScriptGUILayout* instance, ScriptGUIElementTBase* element);
 		static void internal_insertElement(ScriptGUILayout* instance, UINT32 index, ScriptGUIElementTBase* element);
 

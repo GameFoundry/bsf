@@ -335,7 +335,7 @@ namespace BansheeEngine
 	}
 
 	void GUIDropDownContent::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-		Rect2I clipRect, UINT8 widgetDepth, UINT16 areaDepth)
+		Rect2I clipRect, UINT8 widgetDepth, UINT16 panelDepth, UINT16 panelDepthRange)
 	{
 		INT32 yOffset = y;
 		for (auto& visElem : mVisibleElements)
@@ -355,7 +355,7 @@ namespace BansheeEngine
 			guiMainElement->_setPosition(offset);
 			guiMainElement->_setWidth(width);
 			guiMainElement->_setHeight(elemHeight);
-			guiMainElement->_setAreaDepth(areaDepth);
+			guiMainElement->_setAreaDepth(panelDepth);
 			guiMainElement->_setWidgetDepth(widgetDepth);
 
 			Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
@@ -368,7 +368,7 @@ namespace BansheeEngine
 				shortcutLabel->_setPosition(offset);
 				shortcutLabel->_setWidth(width);
 				shortcutLabel->_setHeight(elemHeight);
-				shortcutLabel->_setAreaDepth(areaDepth);
+				shortcutLabel->_setAreaDepth(panelDepth);
 				shortcutLabel->_setWidgetDepth(widgetDepth);
 				shortcutLabel->_setClipRect(elemClipRect);
 			}

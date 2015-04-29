@@ -829,7 +829,7 @@ namespace BansheeEngine
 	}
 
 	void GUITreeView::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-		Rect2I clipRect, UINT8 widgetDepth, UINT16 areaDepth)
+		Rect2I clipRect, UINT8 widgetDepth, UINT16 panelDepth, UINT16 panelDepthRange)
 	{
 		struct UpdateTreeElement
 		{
@@ -876,7 +876,7 @@ namespace BansheeEngine
 				current->mElement->_setPosition(offset);
 				current->mElement->_setWidth(elementSize.x);
 				current->mElement->_setHeight(elementSize.y);
-				current->mElement->_setAreaDepth(areaDepth);
+				current->mElement->_setAreaDepth(panelDepth);
 				current->mElement->_setWidgetDepth(widgetDepth);
 
 				Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
@@ -904,7 +904,7 @@ namespace BansheeEngine
 				current->mFoldoutBtn->_setPosition(myOffset);
 				current->mFoldoutBtn->_setWidth(elementSize.x);
 				current->mFoldoutBtn->_setHeight(elementSize.y);
-				current->mFoldoutBtn->_setAreaDepth(areaDepth);
+				current->mFoldoutBtn->_setAreaDepth(panelDepth);
 				current->mFoldoutBtn->_setWidgetDepth(widgetDepth);
 
 				Rect2I elemClipRect(clipRect.x - myOffset.x, clipRect.y - myOffset.y, clipRect.width, clipRect.height);
@@ -945,7 +945,7 @@ namespace BansheeEngine
 			selectedElem.background->_setPosition(offset);
 			selectedElem.background->_setWidth(width);
 			selectedElem.background->_setHeight(targetElement->_getHeight());
-			selectedElem.background->_setAreaDepth(areaDepth);
+			selectedElem.background->_setAreaDepth(panelDepth);
 			selectedElem.background->_setWidgetDepth(widgetDepth);
 
 			Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
@@ -962,7 +962,7 @@ namespace BansheeEngine
 			mNameEditBox->_setPosition(offset);
 			mNameEditBox->_setWidth(remainingWidth);
 			mNameEditBox->_setHeight(targetElement->_getHeight());
-			mNameEditBox->_setAreaDepth(areaDepth);
+			mNameEditBox->_setAreaDepth(panelDepth);
 			mNameEditBox->_setWidgetDepth(widgetDepth);
 
 			Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
@@ -996,7 +996,7 @@ namespace BansheeEngine
 					mDragHighlight->_setPosition(offset);
 					mDragHighlight->_setWidth(interactableElement->bounds.width);
 					mDragHighlight->_setHeight(interactableElement->bounds.height);
-					mDragHighlight->_setAreaDepth(areaDepth);
+					mDragHighlight->_setAreaDepth(panelDepth);
 					mDragHighlight->_setWidgetDepth(widgetDepth);
 
 					Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
@@ -1014,7 +1014,7 @@ namespace BansheeEngine
 					mDragSepHighlight->_setPosition(offset);
 					mDragSepHighlight->_setWidth(interactableElement->bounds.width);
 					mDragSepHighlight->_setHeight(interactableElement->bounds.height);
-					mDragSepHighlight->_setAreaDepth(areaDepth);
+					mDragSepHighlight->_setAreaDepth(panelDepth);
 					mDragSepHighlight->_setWidgetDepth(widgetDepth);
 
 					Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);

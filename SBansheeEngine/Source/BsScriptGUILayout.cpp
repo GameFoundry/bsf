@@ -69,7 +69,7 @@ namespace BansheeEngine
 		ScriptGUILayout* nativeInstance = new (bs_alloc<ScriptGUILayout>()) ScriptGUILayout(instance, layout);
 	}
 
-	void ScriptGUILayout::internal_createInstancePanel(MonoObject* instance, MonoArray* guiOptions)
+	void ScriptGUILayout::internal_createInstancePanel(MonoObject* instance, UINT16 depth, UINT16 depthRange, MonoArray* guiOptions)
 	{
 		GUIOptions options;
 
@@ -77,7 +77,7 @@ namespace BansheeEngine
 		for (UINT32 i = 0; i < arrayLen; i++)
 			options.addOption(mono_array_get(guiOptions, GUIOption, i));
 
-		GUILayout* layout = GUIPanel::create(options);
+		GUILayout* layout = GUIPanel::create(depth, depthRange, options);
 
 		ScriptGUILayout* nativeInstance = new (bs_alloc<ScriptGUILayout>()) ScriptGUILayout(instance, layout);
 	}

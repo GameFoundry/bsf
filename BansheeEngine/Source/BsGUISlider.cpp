@@ -53,7 +53,7 @@ namespace BansheeEngine
 	}
 
 	void GUISlider::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-		Rect2I clipRect, UINT8 widgetDepth, UINT16 areaDepth)
+		Rect2I clipRect, UINT8 widgetDepth, UINT16 panelDepth, UINT16 panelDepthRange)
 	{
 		Vector2I offset(x, y);
 		Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
@@ -61,14 +61,14 @@ namespace BansheeEngine
 		mBackground->_setPosition(offset);
 		mBackground->_setWidth(width);
 		mBackground->_setHeight(height);
-		mBackground->_setAreaDepth(areaDepth);
+		mBackground->_setAreaDepth(panelDepth);
 		mBackground->_setWidgetDepth(widgetDepth);
 		mBackground->_setClipRect(elemClipRect);
 
 		mSliderHandle->_setPosition(offset);
 		mSliderHandle->_setWidth(width);
 		mSliderHandle->_setHeight(height);
-		mSliderHandle->_setAreaDepth(areaDepth);
+		mSliderHandle->_setAreaDepth(panelDepth);
 		mSliderHandle->_setWidgetDepth(widgetDepth);
 		mSliderHandle->_setClipRect(elemClipRect);
 	}

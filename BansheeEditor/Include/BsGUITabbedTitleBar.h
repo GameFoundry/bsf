@@ -39,7 +39,7 @@ namespace BansheeEngine
 		void updateClippedBounds();
 
 		void _updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-			Rect2I clipRect, UINT8 widgetDepth, UINT16 areaDepth);
+			Rect2I clipRect, UINT8 widgetDepth, UINT16 panelDepth, UINT16 panelDepthRange);
 	protected:
 		static const UINT32 TAB_SPACING;
 		static const UINT32 OPTION_BTN_SPACING;

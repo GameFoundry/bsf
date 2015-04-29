@@ -45,7 +45,7 @@ namespace BansheeEngine
 	}
 
 	void GUIProgressBar::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-		Rect2I clipRect, UINT8 widgetDepth, UINT16 areaDepth)
+		Rect2I clipRect, UINT8 widgetDepth, UINT16 panelDepth, UINT16 panelDepthRange)
 	{
 		Vector2I bgOffset(x, y);
 		Rect2I bgClipRect(clipRect.x - bgOffset.x, clipRect.y - bgOffset.y, clipRect.width, clipRect.height);
@@ -53,7 +53,7 @@ namespace BansheeEngine
 		mBackground->_setPosition(bgOffset);
 		mBackground->_setWidth(width);
 		mBackground->_setHeight(height);
-		mBackground->_setAreaDepth(areaDepth);
+		mBackground->_setAreaDepth(panelDepth);
 		mBackground->_setWidgetDepth(widgetDepth);
 		mBackground->_setClipRect(bgClipRect);
 
@@ -68,7 +68,7 @@ namespace BansheeEngine
 		mBar->_setPosition(barOffset);
 		mBar->_setWidth((UINT32)Math::floorToInt(maxProgressBarWidth * mPercent));
 		mBar->_setHeight(progressBarHeight);
-		mBar->_setAreaDepth(areaDepth);
+		mBar->_setAreaDepth(panelDepth);
 		mBar->_setWidgetDepth(widgetDepth);
 		mBar->_setClipRect(barClipRect);
 	}

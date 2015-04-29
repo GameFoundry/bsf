@@ -7,12 +7,20 @@
 namespace BansheeEngine
 {
 	GUIPanel::GUIPanel(GUIArea* parentArea)
-		:GUILayout(parentArea)
+		:GUILayout(parentArea), mDepthOffset(0), mDepthRange(0)
 	{ }
 
-	GUIPanel::GUIPanel(const GUIDimensions& dimensions)
-		: GUILayout(dimensions)
+	GUIPanel::GUIPanel(UINT16 depth, UINT16 depthRange, const GUIDimensions& dimensions)
+		: GUILayout(dimensions), mDepthOffset(depth), mDepthRange(depthRange)
 	{ }
+
+	void GUIPanel::setDepthRange(UINT16 depth, UINT16 depthRange)
+	{
+		mDepthOffset = depth;
+		mDepthRange = depthRange;
+
+		markContentAsDirty();
+	}
 
 	LayoutSizeRange GUIPanel::_calculateLayoutSizeRange() const
 	{
@@ -109,8 +117,29 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUIPanel::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I clipRect, UINT8 widgetDepth, UINT16 areaDepth)
+	void GUIPanel::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I clipRect, UINT8 widgetDepth, UINT16 panelDepth, UINT16 panelDepthRange)
 	{
+		UINT32 newPanelDepth = panelDepth + mDepthOffset;
+		UINT32 maxPanelDepth = panelDepth + panelDepthRange;
+
+		newPanelDepth = std::min(newPanelDepth, (UINT32)std::numeric_limits<UINT16>::max());
+
+		if (panelDepthRange != (UINT16)-1)
+		{
+			newPanelDepth = std::min(newPanelDepth, maxPanelDepth);
+
+			UINT16 newRange = (UINT16)(maxPanelDepth - newPanelDepth);
+
+			if (mDepthRange != (UINT16)-1)
+				panelDepthRange = std::min(newRange, mDepthRange);
+			else
+				panelDepthRange = newRange;
+		}
+		else
+			panelDepthRange = mDepthRange;
+
+		panelDepth = (UINT16)newPanelDepth;
+
 		UINT32 numElements = (UINT32)mChildren.size();
 		Rect2I* elementAreas = nullptr;
 
@@ -134,7 +163,7 @@ namespace BansheeEngine
 				element->_setWidth(childArea.width);
 				element->_setHeight(childArea.height);
 				element->_setWidgetDepth(widgetDepth);
-				element->_setAreaDepth(areaDepth);
+				element->_setAreaDepth(panelDepth);
 
 				Vector2I offset = element->_getOffset();
 				Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
@@ -142,7 +171,7 @@ namespace BansheeEngine
 
 				Rect2I newClipRect(offset.x, offset.y, element->_getWidth(), element->_getHeight());
 				newClipRect.clip(clipRect);
-				element->_updateLayoutInternal(offset.x, offset.y, element->_getWidth(), element->_getHeight(), newClipRect, widgetDepth, areaDepth);
+				element->_updateLayoutInternal(offset.x, offset.y, element->_getWidth(), element->_getHeight(), newClipRect, widgetDepth, panelDepth, panelDepthRange);
 
 				actualSizes[childIdx].width = childArea.width + child->_getPadding().top + child->_getPadding().bottom;
 				actualSizes[childIdx].height = childArea.height + child->_getPadding().top + child->_getPadding().bottom;
@@ -153,7 +182,7 @@ namespace BansheeEngine
 
 				Rect2I newClipRect(childArea.x, childArea.y, childArea.width, childArea.height);
 				newClipRect.clip(clipRect);
-				layout->_updateLayoutInternal(offset.x, offset.y, childArea.width, childArea.height, clipRect, widgetDepth, areaDepth);
+				layout->_updateLayoutInternal(offset.x, offset.y, childArea.width, childArea.height, clipRect, widgetDepth, panelDepth, panelDepthRange);
 
 				actualSizes[childIdx].width = layout->_getActualWidth();
 				actualSizes[childIdx].height = layout->_getActualHeight();
@@ -194,13 +223,18 @@ namespace BansheeEngine
 		return actualArea;
 	}
 
-	GUIPanel* GUIPanel::create()
+	GUIPanel* GUIPanel::create(UINT16 depth, UINT16 depthRange)
 	{
-		return bs_new<GUIPanel>();
+		return bs_new<GUIPanel>(depth, depthRange, GUIDimensions::create());
 	}
 
 	GUIPanel* GUIPanel::create(const GUIOptions& options)
 	{
-		return bs_new<GUIPanel>(GUIDimensions::create(options));
+		return bs_new<GUIPanel>(0, -1, GUIDimensions::create(options));
+	}
+
+	GUIPanel* GUIPanel::create(UINT16 depth, UINT16 depthRange, const GUIOptions& options)
+	{
+		return bs_new<GUIPanel>(depth, depthRange, GUIDimensions::create(options));
 	}
 }

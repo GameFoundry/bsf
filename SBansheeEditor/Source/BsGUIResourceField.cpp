@@ -200,9 +200,9 @@ namespace BansheeEngine
 	}
 
 	void GUIResourceField::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-		Rect2I clipRect, UINT8 widgetDepth, UINT16 areaDepth)
+		Rect2I clipRect, UINT8 widgetDepth, UINT16 panelDepth, UINT16 panelDepthRange)
 	{
-		mLayout->_updateLayoutInternal(x, y, width, height, clipRect, widgetDepth, areaDepth);
+		mLayout->_updateLayoutInternal(x, y, width, height, clipRect, widgetDepth, panelDepth, panelDepthRange);
 	}
 
 	Vector2I GUIResourceField::_getOptimalSize() const

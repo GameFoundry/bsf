@@ -152,7 +152,7 @@ namespace BansheeEngine
 				clipRect = newClipRect;
 			}
 
-			mLayout->_updateLayout(mLeft, mTop, mWidth, mHeight, clipRect, mWidget->getDepth(), mDepth);
+			mLayout->_updateLayout(mLeft, mTop, mWidth, mHeight, clipRect, mWidget->getDepth(), mDepth, -1);
 			mIsDirty = false;
 		}
 	}
