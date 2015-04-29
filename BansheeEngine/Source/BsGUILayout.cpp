@@ -20,7 +20,10 @@ namespace BansheeEngine
 	{ }
 
 	GUILayout::~GUILayout() 
-	{ }
+	{ 
+		if (mParentElement != nullptr)
+			mParentElement->_unregisterChildElement(this);
+	}
 
 	void GUILayout::addElement(GUIElementBase* element)
 	{

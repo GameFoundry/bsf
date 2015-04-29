@@ -18,6 +18,8 @@ namespace BansheeEngine
 			_markAsClean();
 		}
 
+		~GUIFixedSpace();
+
 		/**
 		 * @brief	Returns the size of the space in pixels.
 		 */
@@ -94,6 +96,8 @@ namespace BansheeEngine
 		{
 			_markAsClean();
 		}
+
+		~GUIFlexibleSpace();
 
 		/**
 		 * @copydoc	GUIElementBase::_getType

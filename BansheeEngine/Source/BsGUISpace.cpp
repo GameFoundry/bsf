@@ -2,6 +2,12 @@
 
 namespace BansheeEngine
 {
+	GUIFixedSpace::~GUIFixedSpace()
+	{
+		if (mParentElement != nullptr)
+			mParentElement->_unregisterChildElement(this);
+	}
+
 	LayoutSizeRange GUIFixedSpace::_calculateLayoutSizeRange() const
 	{ 
 		LayoutSizeRange range;
@@ -20,6 +26,12 @@ namespace BansheeEngine
 	void GUIFixedSpace::destroy(GUIFixedSpace* space)
 	{
 		bs_delete(space);
+	}
+
+	GUIFlexibleSpace::~GUIFlexibleSpace()
+	{
+		if (mParentElement != nullptr)
+			mParentElement->_unregisterChildElement(this);
 	}
 
 	LayoutSizeRange GUIFlexibleSpace::_calculateLayoutSizeRange() const
