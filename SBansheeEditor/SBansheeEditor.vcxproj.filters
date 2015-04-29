@@ -24,12 +24,6 @@
     <ClInclude Include="Include\BsScriptGUIIntField.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsGUIPanelContainer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsScriptGUIPanelContainer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsScriptGUIFloatField.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -153,12 +147,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsScriptGUIIntField.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGUIPanelContainer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsScriptGUIPanelContainer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsScriptGUIFloatField.cpp">

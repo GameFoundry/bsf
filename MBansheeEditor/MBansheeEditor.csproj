@@ -68,7 +68,6 @@
     <Compile Include="GUI\GUIFloatField.cs" />
     <Compile Include="GUI\GUIComponentFoldout.cs" />
     <Compile Include="GUI\GUIIntField.cs" />
-    <Compile Include="GUI\GUIPanelContainer.cs" />
     <Compile Include="GUI\GUITextField.cs" />
     <Compile Include="GUI\GUIToggleField.cs" />
     <Compile Include="GUI\GUIVector2Field.cs" />

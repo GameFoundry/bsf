@@ -25,7 +25,6 @@ Change how depth works so GUIPanels can set it (offset + range)
 
 Remove GUIArea and replace it with GUIPanel completely
 
-
 Use cases:
 InspectorWindow:
  - It has a scroll area that will have a GUIPanel as its child. User can then add custom GUIPanels as children to the root GUIPanels main layout.

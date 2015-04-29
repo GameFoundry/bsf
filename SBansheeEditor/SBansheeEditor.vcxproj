@@ -234,7 +234,6 @@
   <ItemGroup>
     <ClInclude Include="Include\BsEditorScriptManager.h" />
     <ClInclude Include="Include\BsGUIGameObjectField.h" />
-    <ClInclude Include="Include\BsGUIPanelContainer.h" />
     <ClInclude Include="Include\BsGUIResourceField.h" />
     <ClInclude Include="Include\BsMenuItemManager.h" />
     <ClInclude Include="Include\BsScriptBrowseDialog.h" />
@@ -255,7 +254,6 @@
     <ClInclude Include="Include\BsScriptGUIFoldout.h" />
     <ClInclude Include="Include\BsScriptGUIGameObjectField.h" />
     <ClInclude Include="Include\BsScriptGUIIntField.h" />
-    <ClInclude Include="Include\BsScriptGUIPanelContainer.h" />
     <ClInclude Include="Include\BsScriptGUIResourceField.h" />
     <ClInclude Include="Include\BsScriptGUITextField.h" />
     <ClInclude Include="Include\BsScriptGUIToggleField.h" />
@@ -283,7 +281,6 @@
     <ClCompile Include="Source\BsScriptDragDropManager.cpp" />
     <ClCompile Include="Source\BsEditorScriptManager.cpp" />
     <ClCompile Include="Source\BsGUIGameObjectField.cpp" />
-    <ClCompile Include="Source\BsGUIPanelContainer.cpp" />
     <ClCompile Include="Source\BsGUIResourceField.cpp" />
     <ClCompile Include="Source\BsScriptBrowseDialog.cpp" />
     <ClCompile Include="Source\BsScriptEditorApplication.cpp" />
@@ -300,7 +297,6 @@
     <ClCompile Include="Source\BsScriptGUIFoldout.cpp" />
     <ClCompile Include="Source\BsScriptGUIGameObjectField.cpp" />
     <ClCompile Include="Source\BsScriptGUIIntField.cpp" />
-    <ClCompile Include="Source\BsScriptGUIPanelContainer.cpp" />
     <ClCompile Include="Source\BsScriptGUIResourceField.cpp" />
     <ClCompile Include="Source\BsScriptGUITextField.cpp" />
     <ClCompile Include="Source\BsScriptGUIToggleField.cpp" />

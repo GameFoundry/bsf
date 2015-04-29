@@ -8,23 +8,18 @@ namespace BansheeEditor
 {
     public abstract class Inspector
     {
-        protected GUIPanel GUI;
+        protected GUIPanelNEW GUI;
         protected GUILayoutY layout;
         protected object referencedObject;
 
         private InspectorWindow parentWindow;
 
-        internal void Initialize(InspectorWindow parentWindow, GUIPanel gui, object instance)
+        internal void Initialize(InspectorWindow parentWindow, GUIPanelNEW gui, object instance)
         {
             GUI = gui;
-            layout = gui.layout.AddLayoutY();
+            layout = gui.AddLayoutY();
             referencedObject = instance;
             this.parentWindow = parentWindow;
-        }
-
-        internal void SetArea(int x, int y, int width, int height)
-        {
-            GUI.SetArea(x, y, width, height);
         }
 
         internal void SetVisible(bool visible)
@@ -35,7 +30,7 @@ namespace BansheeEditor
         internal void Destroy()
         {
             layout.Destroy();
-            parentWindow.DestroyPanel(GUI);
+            GUI.Destroy();
         }
 
         internal abstract bool Refresh();
