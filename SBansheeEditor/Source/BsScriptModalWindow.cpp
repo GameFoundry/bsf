@@ -171,14 +171,18 @@ namespace BansheeEngine
 
 	void ScriptModalWindow::internal_screenToWindowPos(ScriptModalWindow* thisPtr, Vector2I screenPos, Vector2I* windowPos)
 	{
-		RenderWindowPtr parentRenderWindow = thisPtr->mModalWindow->getRenderWindow();
-		*windowPos = parentRenderWindow->screenToWindowPos(screenPos);
+		if (thisPtr->mModalWindow != nullptr)
+			*windowPos = thisPtr->mModalWindow->screenToWindowPos(screenPos);
+		else
+			*windowPos = screenPos;
 	}
 
 	void ScriptModalWindow::internal_windowToScreenPos(ScriptModalWindow* thisPtr, Vector2I windowPos, Vector2I* screenPos)
 	{
-		RenderWindowPtr parentRenderWindow = thisPtr->mModalWindow->getRenderWindow();
-		*screenPos = parentRenderWindow->windowToScreenPos(windowPos);
+		if (thisPtr->mModalWindow != nullptr)
+			*screenPos = thisPtr->mModalWindow->windowToScreenPos(windowPos);
+		else
+			*screenPos = windowPos;
 	}
 
 	ManagedModalWindow::ManagedModalWindow(bool allowCloseButton, MonoObject* managedInstance)

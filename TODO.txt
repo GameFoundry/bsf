@@ -17,9 +17,6 @@ the same and the only variable will be the 4byte random number, which can someti
 ----------------------------------------------------------------------
 GUIArea refactor:
 
-EditorWindow and ModalWindow need to initialize the C# "GUI" field.
- - Check if the default GUIPanel has proper size. EditorWindow should be fine, but modal window might need additional handling (I don't think it even has a default contents panel)
-
 ColorPicker 2D handle is broken because it uses window coordinates for positioning, but it needs coordinates relative to parent GUI panel
  - Will likely need a new method for that
  - Extend GUILayoutUtility::calcBounds so it can returns bounds relative to specific GUIPanel

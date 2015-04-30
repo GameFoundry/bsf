@@ -5,6 +5,9 @@
 #include "BsMonoManager.h"
 #include "BsMonoUtil.h"
 #include "BsScriptGUIElement.h"
+#include "BsGUIPanel.h"
+#include "BsGUIElementBase.h"
+#include "BsScriptGUILayout.h"
 #include "BsGUILayoutUtility.h"
 
 namespace BansheeEngine
@@ -24,8 +27,12 @@ namespace BansheeEngine
 		*output = GUILayoutUtility::calcOptimalSize(guiElement->getGUIElement());;
 	}
 
-	void ScriptGUILayoutUtility::internal_CalculateBounds(ScriptGUIElementBaseTBase* guiElement, Rect2I* output)
+	void ScriptGUILayoutUtility::internal_CalculateBounds(ScriptGUIElementBaseTBase* guiElement, ScriptGUILayout* relativeTo, Rect2I* output)
 	{
-		*output = GUILayoutUtility::calcBounds(guiElement->getGUIElement());
+		GUIPanel* relativeToPanel = nullptr;
+		if (relativeTo != nullptr)
+			relativeToPanel = static_cast<GUIPanel*>(relativeTo->getGUIElement());
+
+		*output = GUILayoutUtility::calcBounds(guiElement->getGUIElement(), relativeToPanel);
 	}
 }

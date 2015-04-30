@@ -70,6 +70,30 @@ namespace BansheeEngine
 
 	}
 
+	Vector2I ModalWindow::screenToWindowPos(const Vector2I& screenPos) const
+	{
+		Vector2I renderWindowPos = getRenderWindow()->screenToWindowPos(screenPos);
+
+		Vector2I contentsPos = renderWindowPos;
+		Rect2I contentArea = getContentArea();
+
+		contentsPos.x -= contentArea.x;
+		contentsPos.y -= contentArea.y;
+
+		return contentsPos;
+	}
+
+	Vector2I ModalWindow::windowToScreenPos(const Vector2I& windowPos) const
+	{
+		Vector2I contentsPos = windowPos;
+		Rect2I contentArea = getContentArea();
+
+		contentsPos.x += contentArea.x;
+		contentsPos.y += contentArea.y;
+
+		return getRenderWindow()->windowToScreenPos(contentsPos);
+	}
+
 	void ModalWindow::update()
 	{
 

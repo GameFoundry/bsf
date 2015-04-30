@@ -5,6 +5,7 @@
 #include "BsGUIElementStyle.h"
 #include "BsGUIWidget.h"
 #include "BsViewport.h"
+#include "BsGUIPanel.h"
 
 namespace BansheeEngine
 {
@@ -13,7 +14,7 @@ namespace BansheeEngine
 		return elem->_calculateLayoutSizeRange().optimal;
 	}
 
-	Rect2I GUILayoutUtility::calcBounds(const GUIElementBase* elem)
+	Rect2I GUILayoutUtility::calcBounds(const GUIElementBase* elem, GUIPanel* relativeTo)
 	{
 		Rect2I parentArea;
 
@@ -22,7 +23,8 @@ namespace BansheeEngine
 		{
 			parentArea = calcBounds(parent);
 
-			if (parent->_getType() == GUIElementBase::Type::Panel)
+			// TODO - Implement this properly
+			if (parent->_getType() == GUIElementBase::Type::Panel && (relativeTo == nullptr || relativeTo == parent))
 			{
 				parentArea.x = 0;
 				parentArea.y = 0;
