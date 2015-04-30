@@ -9,10 +9,5 @@ namespace BansheeEngine
         {
             Internal_CreateInstanceX(this, options);
         }
-
-        internal GUILayoutX(GUIArea parentArea)
-        {
-            Internal_CreateInstanceXFromArea(this, parentArea);
-        }
     }
 }

@@ -2,7 +2,6 @@
 #include "BsEditorWindowManager.h"
 #include "BsRenderWindow.h"
 #include "BsPlatform.h"
-#include "BsGUIArea.h"
 #include "BsGUILayoutX.h"
 #include "BsGUILayoutY.h"
 #include "BsGUISpace.h"
@@ -16,7 +15,7 @@ namespace BansheeEngine
 {
 	ModalWindow::ModalWindow(const HString& title, bool hasCloseButton)
 		:EditorWindowBase(true), mTitleBarPanel(nullptr), mTitleBarBgPanel(nullptr), 
-		mCloseButton(nullptr), mTitleBarBg(nullptr), mTitle(nullptr)
+		mCloseButton(nullptr), mTitleBarBg(nullptr), mTitle(nullptr), mContents(nullptr)
 	{
 		EditorWindowManager::instance().registerWindow(this);
 
@@ -59,6 +58,10 @@ namespace BansheeEngine
 		contentLayoutY->addNewElement<GUIFlexibleSpace>();
 		contentLayoutY->addNewElement<GUIFixedSpace>(1);
 
+		mContents = mGUI->getPanel()->addNewElement<GUIPanel>();
+		mContents->setDepthRange(0);
+		mContents->setPosition(1, 1 + getTitleBarHeight());
+
 		updateSize();
 	}
 
@@ -91,6 +94,9 @@ namespace BansheeEngine
 
 	void ModalWindow::updateSize()
 	{
+		mContents->setWidth(getWidth() - 2);
+		mContents->setHeight(getHeight() - 2 - getTitleBarHeight());
+
 		Vector<Rect2I> captionAreas;
 		captionAreas.push_back(Rect2I(1, 1, getWidth() - 2, getTitleBarHeight()));
 

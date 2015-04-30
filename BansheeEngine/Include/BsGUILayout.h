@@ -13,7 +13,6 @@ namespace BansheeEngine
 	class BS_EXPORT GUILayout : public GUIElementBase
 	{
 	public:
-		GUILayout(GUIArea* parentArea);
 		GUILayout(const GUIDimensions& dimensions);
 		GUILayout();
 		virtual ~GUILayout();
@@ -106,12 +105,6 @@ namespace BansheeEngine
 		UINT32 _getActualHeight() const { return mActualHeight; }
 
 		/**
-		 * @brief	Returns parent GUI area of this layout. This value is only be
-		 *			non null if the layout is top level.
-		 */
-		GUIArea* _getParentGUIArea() const { return mParentGUIArea; }
-
-		/**
 		 * @brief	Calculates the actual size of the layout taken up by all of its elements.
 		 *
 		 * @param	x				Origin based on which to calculate the size.
@@ -131,8 +124,6 @@ namespace BansheeEngine
 		static void destroy(GUILayout* layout);
 
 	protected:
-		GUIArea* mParentGUIArea;
-
 		Vector<LayoutSizeRange> mChildSizeRanges;
 		LayoutSizeRange mSizeRange;
 

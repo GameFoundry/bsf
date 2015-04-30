@@ -6,7 +6,6 @@
 #include "BsGUILayout.h"
 #include "BsGUIPanel.h"
 #include "BsBuiltinResources.h"
-#include "BsGUIArea.h"
 #include "BsEditorWidgetContainer.h"
 #include "BsEditorWidgetManager.h"
 #include "BsEditorWindow.h"

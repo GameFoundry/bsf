@@ -148,7 +148,7 @@ namespace BansheeEditor
             guiOK.OnClick += OnOK;
             guiCancel.OnClick += OnCancel;
 
-            GUILayout v0 = GUI.layout.AddLayoutY();
+            GUILayout v0 = GUI.AddLayoutY();
 
             v0.AddSpace(5);
 
@@ -224,13 +224,16 @@ namespace BansheeEditor
 
             v0.AddSpace(5);
 
-            GUIArea overlay = GUI.AddArea(0, 0, Width, Height, -1, GUILayoutType.Explicit);
-            overlay.layout.AddElement(guiSliderVert);
-            overlay.layout.AddElement(guiSliderRHorz);
-            overlay.layout.AddElement(guiSliderGHorz);
-            overlay.layout.AddElement(guiSliderBHorz);
-            overlay.layout.AddElement(guiSliderAHorz);
-            overlay.layout.AddElement(guiSlider2DHandle);
+            GUIPanel overlay = GUI.AddPanel(-1);
+            overlay.SetWidth(Width);
+            overlay.SetHeight(Height);
+
+            overlay.AddElement(guiSliderVert);
+            overlay.AddElement(guiSliderRHorz);
+            overlay.AddElement(guiSliderGHorz);
+            overlay.AddElement(guiSliderBHorz);
+            overlay.AddElement(guiSliderAHorz);
+            overlay.AddElement(guiSlider2DHandle);
 
             colorBox = new ColorSlider2D(guiSlider2DTex, guiSlider2DHandle, ColorBoxWidth, ColorBoxHeight);
             sideSlider = new ColorSlider1DVert(guiSliderVertTex, guiSliderVert, SliderSideWidth, SliderSideHeight);

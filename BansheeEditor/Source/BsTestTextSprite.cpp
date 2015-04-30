@@ -14,7 +14,6 @@
 #include "BsBuiltinEditorResources.h"
 #include "BsGUITexture.h"
 #include "BsGUIRenderTexture.h"
-#include "BsGUIArea.h"
 #include "BsGUILayout.h"
 #include "BsGUISpace.h"
 #include "BsGUIViewport.h"

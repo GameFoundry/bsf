@@ -74,7 +74,7 @@ namespace BansheeEditor
         {
             messageLabel = new GUILabel("");
 
-            GUILayoutY layoutY = GUI.layout.AddLayoutY();
+            GUILayoutY layoutY = GUI.AddLayoutY();
 
             layoutY.AddFlexibleSpace();
             GUILayoutX messageLayout = layoutY.AddLayoutX();

@@ -13,7 +13,6 @@
 #include "BsCamera.h"
 #include "BsRenderable.h"
 #include "BsGUIWidget.h"
-#include "BsGUIArea.h"
 #include "BsGUILayoutX.h"
 #include "BsGUILayoutY.h"
 #include "BsGUISpace.h"

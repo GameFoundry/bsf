@@ -32,8 +32,6 @@ namespace BansheeEngine
 	class ScriptScriptCode;
 	class ScriptGUIElementStyle;
 	class ScriptGUIElementStateStyle;
-	class ScriptGUIPanel;
-	class ScriptGUIArea;
 	class ScriptGUILayout;
 	class ScriptGUILabel;
 	class ScriptGameObjectBase;

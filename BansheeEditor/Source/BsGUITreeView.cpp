@@ -1,5 +1,4 @@
 #include "BsGUITreeView.h"
-#include "BsGUIArea.h"
 #include "BsGUILayout.h"
 #include "BsGUITexture.h"
 #include "BsGUIButton.h"

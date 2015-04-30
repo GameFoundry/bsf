@@ -48,7 +48,7 @@ namespace BansheeEditor
 
         private void OnInitialize()
         {
-            mainLayout = GUI.layout.AddLayoutY();
+            mainLayout = GUI.AddLayoutY();
 
             GUIToggleGroup handlesTG = new GUIToggleGroup();
             viewButton = new GUIToggle("V", handlesTG, EditorStyles.Button);

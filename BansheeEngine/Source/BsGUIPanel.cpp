@@ -6,10 +6,6 @@
 
 namespace BansheeEngine
 {
-	GUIPanel::GUIPanel(GUIArea* parentArea)
-		:GUILayout(parentArea), mDepthOffset(0), mDepthRange(0)
-	{ }
-
 	GUIPanel::GUIPanel(UINT16 depth, UINT16 depthRange, const GUIDimensions& dimensions)
 		: GUILayout(dimensions), mDepthOffset(depth), mDepthRange(depthRange)
 	{ }

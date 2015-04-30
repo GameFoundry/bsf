@@ -284,7 +284,6 @@
     <ClInclude Include="Include\BsShapeMeshes2D.h" />
     <ClInclude Include="Include\BsBuiltinResources.h" />
     <ClInclude Include="Include\BsEnums.h" />
-    <ClInclude Include="Include\BsGUIArea.h" />
     <ClInclude Include="Include\BsGUIButton.h" />
     <ClInclude Include="Include\BsGUIButtonBase.h" />
     <ClInclude Include="Include\BsGUICommandEvent.h" />
@@ -362,7 +361,6 @@
     <ClCompile Include="Source\BsShapeMeshes3D.cpp" />
     <ClCompile Include="Source\BsDragAndDropManager.cpp" />
     <ClCompile Include="Source\BsBuiltinResources.cpp" />
-    <ClCompile Include="Source\BsGUIArea.cpp" />
     <ClCompile Include="Source\BsGUIButton.cpp" />
     <ClCompile Include="Source\BsGUIContent.cpp" />
     <ClCompile Include="Source\BsGUIDropDownBox.cpp" />

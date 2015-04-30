@@ -9,7 +9,7 @@ namespace BansheeEditor
         private class InspectorData
         {
             public GUIComponentFoldout foldout;
-            public GUIPanelNEW panel;
+            public GUIPanel panel;
             public Inspector inspector;
             public bool expanded = true;
         }
@@ -25,7 +25,7 @@ namespace BansheeEditor
             // TODO - Create SceneObject gui elements (name + transform)
 
             inspectorScrollArea = new GUIScrollArea();
-            GUI.layout.AddElement(inspectorScrollArea);
+            GUI.AddElement(inspectorScrollArea);
             inspectorLayout = inspectorScrollArea.layout;
 
             Component[] allComponents = so.GetComponents();

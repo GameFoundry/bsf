@@ -127,16 +127,16 @@ namespace BansheeEngine
             return layout;
         }
 
-        public GUIPanelNEW AddPanel(params GUIOption[] options)
+        public GUIPanel AddPanel(params GUIOption[] options)
         {
-            GUIPanelNEW layout = new GUIPanelNEW(options);
+            GUIPanel layout = new GUIPanel(options);
             AddElement(layout);
             return layout;
         }
 
-        public GUIPanelNEW AddPanel(ushort depth = 0, ushort depthRange = ushort.MaxValue, params GUIOption[] options)
+        public GUIPanel AddPanel(Int16 depth = 0, ushort depthRange = ushort.MaxValue, params GUIOption[] options)
         {
-            GUIPanelNEW layout = new GUIPanelNEW(depth, depthRange, options);
+            GUIPanel layout = new GUIPanel(depth, depthRange, options);
             AddElement(layout);
             return layout;
         }
@@ -169,16 +169,16 @@ namespace BansheeEngine
             return layout;
         }
 
-        public GUIPanelNEW InsertPanel(int idx, params GUIOption[] options)
+        public GUIPanel InsertPanel(int idx, params GUIOption[] options)
         {
-            GUIPanelNEW layout = new GUIPanelNEW(options);
+            GUIPanel layout = new GUIPanel(options);
             InsertElement(idx, layout);
             return layout;
         }
 
-        public GUIPanelNEW InsertPanel(int idx, ushort depth = 0, ushort depthRange = ushort.MaxValue, params GUIOption[] options)
+        public GUIPanel InsertPanel(int idx, Int16 depth = 0, ushort depthRange = ushort.MaxValue, params GUIOption[] options)
         {
-            GUIPanelNEW layout = new GUIPanelNEW(depth, depthRange, options);
+            GUIPanel layout = new GUIPanel(depth, depthRange, options);
             InsertElement(idx, layout);
             return layout;
         }
@@ -198,9 +198,6 @@ namespace BansheeEngine
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        protected static extern void Internal_CreateInstanceXFromArea(GUILayout instance, GUIArea parentArea);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
         protected static extern void Internal_CreateInstanceYFromScrollArea(GUILayout instance, GUIScrollArea parentArea);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -210,7 +207,7 @@ namespace BansheeEngine
         protected static extern void Internal_CreateInstanceY(GUILayout instance, GUIOption[] options);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        protected static extern void Internal_CreateInstancePanel(GUILayout instance, ushort depth, ushort depthRange, GUIOption[] options);
+        protected static extern void Internal_CreateInstancePanel(GUILayout instance, Int16 depth, ushort depthRange, GUIOption[] options);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         protected static extern void Internal_AddElement(IntPtr instance, IntPtr element);

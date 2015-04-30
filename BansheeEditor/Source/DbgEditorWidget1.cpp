@@ -4,7 +4,6 @@
 #include "BsGUIButton.h"
 #include "BsGUIInputBox.h"
 #include "BsGUIScrollArea.h"
-#include "BsGUIArea.h"
 #include "BsGUILayout.h"
 #include "BsGUILayoutY.h"
 #include "BsGUIPanel.h"

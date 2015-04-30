@@ -13,7 +13,6 @@
 #include "BsScriptGUIToggleGroup.h"
 #include "BsScriptGUIElementStyle.h"
 #include "BsScriptGUILayout.h"
-#include "BsScriptGUIArea.h"
 #include "BsScriptHString.h"
 #include "BsScriptGUIContent.h"
 

@@ -24,14 +24,18 @@ namespace BansheeEditor
             GUIButton openColorPicker = new GUIButton("Color picker");
             openColorPicker.OnClick += OpenColorPicker;
 
-            GUI.layout.AddElement(refreshAssembly);
-            GUI.layout.AddElement(compileGame);
-            GUI.layout.AddElement(openColorPicker);
+            GUILayout horzLayout = GUI.AddLayoutX();
+
+            horzLayout.AddElement(refreshAssembly);
+            horzLayout.AddElement(compileGame);
+            horzLayout.AddElement(openColorPicker);
 
             GUIButton testExplicitBtn = new GUIButton("TESTING EXPLICIT");
             testExplicitBtn.Bounds = compileGame.Bounds;
-            GUIArea overlay = GUI.AddArea(0, 0, Width, Height, -1, GUILayoutType.Explicit);
-            overlay.layout.AddElement(testExplicitBtn);
+            GUIPanel overlay = GUI.AddPanel(-1);
+            overlay.SetWidth(Width);
+            overlay.SetHeight(Height);
+            overlay.AddElement(testExplicitBtn);
         }
 
         [MenuItem("Window/Test", ButtonModifier.ShiftAlt, ButtonCode.A)]

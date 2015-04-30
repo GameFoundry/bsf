@@ -1,9 +1,10 @@
 #include "BsGUILayoutUtility.h"
 #include "BsGUIElementBase.h"
 #include "BsGUILayout.h"
-#include "BsGUIArea.h"
 #include "BsGUIElement.h"
 #include "BsGUIElementStyle.h"
+#include "BsGUIWidget.h"
+#include "BsViewport.h"
 
 namespace BansheeEngine
 {
@@ -29,14 +30,13 @@ namespace BansheeEngine
 		}
 		else
 		{
-			assert(elem->_getType() == GUIElementBase::Type::Layout || elem->_getType() == GUIElementBase::Type::Panel);
-			const GUILayout* layout = static_cast<const GUILayout*>(elem);
+			GUIWidget* parentWidget = elem->_getParentWidget();
 
-			GUIArea* parentGUIArea = layout->_getParentGUIArea();
-			parentArea.x = 0;
-			parentArea.y = 0;
-			parentArea.width = parentGUIArea->width();
-			parentArea.height = parentGUIArea->height();
+			if (parentWidget != nullptr)
+			{
+				parentArea.width = parentWidget->getTarget()->getWidth();
+				parentArea.height = parentWidget->getTarget()->getHeight();
+			}
 
 			return parentArea;
 		}

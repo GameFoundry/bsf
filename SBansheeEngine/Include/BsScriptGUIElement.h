@@ -3,6 +3,7 @@
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
 #include "BsGUIOptions.h"
+#include "BsGUIElementBase.h"
 
 namespace BansheeEngine
 {

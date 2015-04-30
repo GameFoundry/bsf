@@ -17,21 +17,12 @@ the same and the only variable will be the 4byte random number, which can someti
 ----------------------------------------------------------------------
 GUIArea refactor:
 
+EditorWindow and ModalWindow need to initialize the C# "GUI" field.
+ - Check if the default GUIPanel has proper size. EditorWindow should be fine, but modal window might need additional handling (I don't think it even has a default contents panel)
+
 ColorPicker 2D handle is broken because it uses window coordinates for positioning, but it needs coordinates relative to parent GUI panel
  - Will likely need a new method for that
-
-Remove GUIArea and GUIPanel from C# and replace its uses with the new GUIPanel. Also replace any child GUIAreas with GUIPanels in C++ code.
- - Once that is ensured to work, go to the final step and replace GUIWidget GUIArea as well.
-
-Use cases:
-ProjectWindow
- - ScrollArea would have a GUIPanel child and then it would work similarly to InspectorWindow
-
-Three child GUIPanels in a widget, title-bar, contents and background
- - Add three GUIPanels to the root panel, each with its own depth
- - Title GUIPanel: Add GUISpaces for padding, GUIFlexibleSpace to anchor to the top, specify GUIPanel height but leave width at 0 for flexible expand
- - Content GUIPanel: Similar as title, but leave both width and height as 0, add GUISpace as padding
- - Background GUIPanel: Leave as is
+ - Extend GUILayoutUtility::calcBounds so it can returns bounds relative to specific GUIPanel
 
 ----------------------------------------------------------------------
 Project window

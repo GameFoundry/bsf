@@ -3,7 +3,6 @@
 #include "BsGUISkin.h"
 #include "BsGUILabel.h"
 #include "BsGUIMouseEvent.h"
-#include "BsGUIArea.h"
 #include "BsGUIPanel.h"
 #include "BsCoreApplication.h"
 #include "BsCoreThreadAccessor.h"
@@ -54,11 +53,6 @@ namespace BansheeEngine
 			mOwnerTargetResizedConn.disconnect();
 		}
 
-		for (auto& area : mAreas)
-		{
-			GUIArea::destroyInternal(area);
-		}
-
 		mElements.clear();
 	}
 
@@ -105,14 +99,12 @@ namespace BansheeEngine
 
 	void GUIWidget::_updateLayout()
 	{
-		for(auto& area : mAreas)
+		if (mPanel->_isContentDirty())
 		{
-			area->_update();
+			Rect2I clipRect(0, 0, getTarget()->getWidth(), getTarget()->getHeight());
+			mPanel->_updateLayout(0, 0, getTarget()->getWidth(), getTarget()->getHeight(), clipRect,
+				getDepth(), 0, -1);
 		}
-
-		Rect2I clipRect(0, 0, getTarget()->getWidth(), getTarget()->getHeight());
-		mPanel->_updateLayout(0, 0, getTarget()->getWidth(), getTarget()->getHeight(), clipRect, 
-			getDepth(), 0, -1);
 	}
 
 	bool GUIWidget::_mouseEvent(GUIElement* element, const GUIMouseEvent& ev)
@@ -155,28 +147,6 @@ namespace BansheeEngine
 			mElements.erase(iterFind);
 			mWidgetIsDirty = true;
 		}
-	}
-
-	void GUIWidget::registerArea(GUIArea* area)
-	{
-		assert(area != nullptr);
-
-		mAreas.push_back(area);
-
-		mWidgetIsDirty = true;
-	}
-
-	void GUIWidget::unregisterArea(GUIArea* area)
-	{
-		assert(area != nullptr);
-
-		auto iterFind = std::find(begin(mAreas), end(mAreas), area);
-
-		if(iterFind == mAreas.end())
-			BS_EXCEPT(InvalidParametersException, "Cannot unregister an area that is not registered on this widget.");
-
-		mAreas.erase(iterFind);
-		mWidgetIsDirty = true;
 	}
 
 	void GUIWidget::setSkin(const HGUISkin& skin)
@@ -269,11 +239,6 @@ namespace BansheeEngine
 
 	void GUIWidget::ownerTargetResized()
 	{
-		for(auto& area : mAreas)
-		{
-			area->updateSizeBasedOnParent(getTarget()->getWidth(), getTarget()->getHeight());
-		}
-
 		mPanel->setWidth(getTarget()->getWidth());
 		mPanel->setHeight(getTarget()->getHeight());
 	}

@@ -37,7 +37,7 @@ namespace BansheeEditor
             ProjectLibrary.OnEntryRemoved += OnEntryChanged;
 
             contentScrollArea = new GUIScrollArea(GUIOption.FlexibleWidth(), GUIOption.FlexibleHeight());
-            GUI.layout.AddElement(contentScrollArea);
+            GUI.AddElement(contentScrollArea);
 
             Reset();
         }

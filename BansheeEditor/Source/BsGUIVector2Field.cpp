@@ -1,5 +1,4 @@
 #include "BsGUIVector2Field.h"
-#include "BsGUIArea.h"
 #include "BsGUILayoutX.h"
 #include "BsGUILayoutY.h"
 #include "BsGUILabel.h"

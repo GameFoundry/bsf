@@ -32,7 +32,6 @@ namespace BansheeEngine
 		static UINT32 internal_getHeight(ScriptModalWindow* thisPtr);
 		static void internal_setWidth(ScriptModalWindow* thisPtr, UINT32 value);
 		static void internal_setHeight(ScriptModalWindow* thisPtr, UINT32 value);
-		static void internal_initializeGUIPanel(ScriptModalWindow* thisPtr, MonoObject* panel);
 		static void internal_setTitle(ScriptModalWindow* thisPtr, MonoObject* title);
 		static void internal_screenToWindowPos(ScriptModalWindow* thisPtr, Vector2I screenPos, Vector2I* windowPos);
 		static void internal_windowToScreenPos(ScriptModalWindow* thisPtr, Vector2I windowPos, Vector2I* screenPos);
@@ -46,12 +45,10 @@ namespace BansheeEngine
 		void closeWindow();
 
 		ManagedModalWindow* mModalWindow;
-		ScriptGUIPanel* mGUIPanel;
 		HEvent mOnAssemblyRefreshStartedConn;
 		bool mRefreshInProgress;
 
-		static MonoMethod* onInitializedInternalMethod;
-		static MonoMethod* onDestroyInternalMethod;
+		static MonoField* guiPanelField;
 	};
 
 	class BS_SCR_BED_EXPORT ManagedModalWindow : public ModalWindow

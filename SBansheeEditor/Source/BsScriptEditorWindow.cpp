@@ -1,6 +1,5 @@
 #include "BsScriptEditorWindow.h"
 #include "BsScriptMeta.h"
-#include "BsScriptGUIPanel.h"
 #include "BsMonoField.h"
 #include "BsMonoClass.h"
 #include "BsMonoMethod.h"
@@ -11,6 +10,7 @@
 #include "BsEditorWidgetContainer.h"
 #include "BsMonoAssembly.h"
 #include "BsScriptObjectManager.h"
+#include "BsScriptGUILayout.h"
 
 using namespace std::placeholders;
 
@@ -20,15 +20,12 @@ namespace BansheeEngine
 	Vector<String> ScriptEditorWindow::AvailableWindowTypes;
 	MonoMethod* ScriptEditorWindow::onResizedMethod = nullptr;
 	MonoMethod* ScriptEditorWindow::onFocusChangedMethod = nullptr;
-	MonoMethod* ScriptEditorWindow::onInitializedInternalMethod = nullptr;
-	MonoMethod* ScriptEditorWindow::onDestroyInternalMethod = nullptr;
+	MonoField* ScriptEditorWindow::guiPanelField = nullptr;
 
 	ScriptEditorWindow::ScriptEditorWindow(ScriptEditorWidget* editorWidget)
 		:ScriptObject(editorWidget->getManagedInstance()), mName(editorWidget->getName()), mEditorWidget(editorWidget), mRefreshInProgress(false)
 	{
-		mOnWidgetMovedConn = editorWidget->onMoved.connect(std::bind(&ScriptEditorWindow::onWidgetMoved, this, _1, _2));
 		mOnWidgetResizedConn = editorWidget->onResized.connect(std::bind(&ScriptEditorWindow::onWidgetResized, this, _1, _2));
-		mOnParentChangedConn = editorWidget->onParentChanged.connect(std::bind(&ScriptEditorWindow::onWidgetParentChanged, this, _1));
 		mOnFocusChangedConn = editorWidget->onFocusChanged.connect(std::bind(&ScriptEditorWindow::onFocusChanged, this, _1));
 
 		mOnAssemblyRefreshStartedConn = ScriptObjectManager::instance().onRefreshStarted.connect(std::bind(&ScriptEditorWindow::onAssemblyRefreshStarted, this));
@@ -37,9 +34,7 @@ namespace BansheeEngine
 	ScriptEditorWindow::~ScriptEditorWindow()
 	{
 		// TODO - This probably need to be called whenever we close a window, and not when script class is destructed
-		mOnWidgetMovedConn.disconnect();
 		mOnWidgetResizedConn.disconnect();
-		mOnParentChangedConn.disconnect();
 		mOnFocusChangedConn.disconnect();
 
 		mOnAssemblyRefreshStartedConn.disconnect();
@@ -48,8 +43,6 @@ namespace BansheeEngine
 	void ScriptEditorWindow::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateOrGetInstance", &ScriptEditorWindow::internal_createOrGetInstance);
-		metaData.scriptClass->addInternalCall("Internal_InitializeGUIPanel", &ScriptEditorWindow::internal_initializeGUIPanel);
-		metaData.scriptClass->addInternalCall("Internal_DestroyGUIPanel", &ScriptEditorWindow::internal_destroyGUIPanel);
 		metaData.scriptClass->addInternalCall("Internal_GetWidth", &ScriptEditorWindow::internal_getWidth);
 		metaData.scriptClass->addInternalCall("Internal_GetHeight", &ScriptEditorWindow::internal_getHeight);
 		metaData.scriptClass->addInternalCall("Internal_HasFocus", &ScriptEditorWindow::internal_hasFocus);
@@ -58,8 +51,8 @@ namespace BansheeEngine
 
 		onResizedMethod = metaData.scriptClass->getMethod("WindowResized", 2);
 		onFocusChangedMethod = metaData.scriptClass->getMethod("FocusChanged", 1);
-		onInitializedInternalMethod = metaData.scriptClass->getMethod("OnInitializeInternal", 0);
-		onDestroyInternalMethod = metaData.scriptClass->getMethod("OnDestroyInternal", 0);
+
+		guiPanelField = metaData.scriptClass->getField("GUI");
 	}
 
 	MonoObject* ScriptEditorWindow::internal_createOrGetInstance(MonoString* ns, MonoString* typeName)
@@ -175,56 +168,10 @@ namespace BansheeEngine
 		return thisPtr->mEditorWidget->getHeight();
 	}
 
-	void ScriptEditorWindow::internal_initializeGUIPanel(ScriptEditorWindow* thisPtr, MonoObject* panel)
-	{
-		ScriptGUIPanel* scriptGUIPanel = ScriptGUIPanel::toNative(panel);
-		thisPtr->mPanels.push_back(scriptGUIPanel);
-
-		scriptGUIPanel->setParentArea(thisPtr->mEditorWidget->getX(), thisPtr->mEditorWidget->getY(), 
-			thisPtr->mEditorWidget->getWidth(), thisPtr->mEditorWidget->getHeight());
-
-		scriptGUIPanel->setParentWidget(&thisPtr->mEditorWidget->_getParent()->getParentWidget());
-	}
-
-	void ScriptEditorWindow::internal_destroyGUIPanel(ScriptEditorWindow* thisPtr, MonoObject* panel)
-	{
-		ScriptGUIPanel* scriptGUIPanel = ScriptGUIPanel::toNative(panel);
-
-		auto findIter = std::find(thisPtr->mPanels.begin(), thisPtr->mPanels.end(), scriptGUIPanel);
-		if (findIter != thisPtr->mPanels.end())
-			thisPtr->mPanels.erase(findIter);
-	}
-
-	void ScriptEditorWindow::onWidgetMoved(INT32 x, INT32 y)
-	{
-		for(auto& panel : mPanels)
-		{
-			panel->setParentArea(x, y, 
-				mEditorWidget->getWidth(), mEditorWidget->getHeight());
-		}
-	}
-
 	void ScriptEditorWindow::onWidgetResized(UINT32 width, UINT32 height)
 	{
-		for(auto& panel : mPanels)
-		{
-			panel->setParentArea(mEditorWidget->getX(), mEditorWidget->getY(), 
-				width, height);
-		}
-
 		void* params[2] = { &width, &height };
 		onResizedMethod->invokeVirtual(mManagedInstance, params);
-	}
-
-	void ScriptEditorWindow::onWidgetParentChanged(EditorWidgetContainer* newParent)
-	{
-		for(auto& panel : mPanels)
-		{
-			if(newParent != nullptr)
-				panel->setParentWidget(&newParent->getParentWidget());
-			else
-				panel->setParentWidget(nullptr);
-		}
 	}
 
 	void ScriptEditorWindow::onFocusChanged(bool inFocus)
@@ -331,6 +278,9 @@ namespace BansheeEngine
 			{
 				mManagedInstance = editorWindowClass->createInstance();
 
+				MonoObject* guiPanel = ScriptGUIPanel::createFromExisting(mContent);
+				ScriptEditorWindow::guiPanelField->setValue(mManagedInstance, guiPanel);
+
 				reloadMonoTypes(editorWindowClass);
 				return true;
 			}
@@ -341,9 +291,6 @@ namespace BansheeEngine
 
 	void ScriptEditorWidget::triggerOnInitialize()
 	{
-		if (mManagedInstance != nullptr)
-			ScriptEditorWindow::onInitializedInternalMethod->invoke(mManagedInstance, nullptr);
-
 		if (mOnInitializeThunk != nullptr && mManagedInstance != nullptr)
 		{
 			MonoException* exception = nullptr;
@@ -358,9 +305,6 @@ namespace BansheeEngine
 
 	void ScriptEditorWidget::triggerOnDestroy()
 	{
-		if (mManagedInstance != nullptr)
-			ScriptEditorWindow::onDestroyInternalMethod->invoke(mManagedInstance, nullptr);
-
 		if (mOnDestroyThunk != nullptr && mManagedInstance != nullptr)
 		{
 			MonoException* exception = nullptr;

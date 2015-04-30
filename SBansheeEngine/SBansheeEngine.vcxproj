@@ -266,9 +266,7 @@
     <ClInclude Include="Include\BsScriptGUIFixedSpace.h" />
     <ClInclude Include="Include\BsScriptGUIFlexibleSpace.h" />
     <ClInclude Include="Include\BsScriptFont.h" />
-    <ClInclude Include="Include\BsScriptGUIArea.h" />
     <ClInclude Include="Include\BsScriptGUILayoutUtility.h" />
-    <ClInclude Include="Include\BsScriptGUIPanel.h" />
     <ClInclude Include="Include\BsScriptGUIElementStateStyle.h" />
     <ClInclude Include="Include\BsScriptGUIElementStyle.h" />
     <ClInclude Include="Include\BsScriptGUIInputBox.h" />
@@ -343,9 +341,7 @@
     <ClCompile Include="Source\BsScriptGUIFixedSpace.cpp" />
     <ClCompile Include="Source\BsScriptGUIFlexibleSpace.cpp" />
     <ClCompile Include="Source\BsScriptFont.cpp" />
-    <ClCompile Include="Source\BsScriptGUIArea.cpp" />
     <ClCompile Include="Source\BsScriptGUILayoutUtility.cpp" />
-    <ClCompile Include="Source\BsScriptGUIPanel.cpp" />
     <ClCompile Include="Source\BsScriptGUIElementStateStyle.cpp" />
     <ClCompile Include="Source\BsScriptGUIElementStyle.cpp" />
     <ClCompile Include="Source\BsScriptGUILabel.cpp" />

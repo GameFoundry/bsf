@@ -116,7 +116,6 @@ namespace BansheeEngine
 	protected:
 		friend class SceneObject;
 		friend class GUIElement;
-		friend class GUIArea;
 		friend class GUIManager;
 
 		/**
@@ -135,16 +134,6 @@ namespace BansheeEngine
 		 *			is destroyed, or reparented to another widget.
 		 */
 		void unregisterElement(GUIElement* elem);
-
-		/**
-		 * @brief	Registers a new areaas a child of the widget.
-		 */
-		void registerArea(GUIArea* area);
-
-		/**
-		 * @brief	Unregisters an area from the widget. Usually called when the area is destroyed.
-		 */
-		void unregisterArea(GUIArea* area);
 
 		/**
 		 * @brief	Called when the viewport size changes and widget elements need to be updated.
@@ -175,7 +164,6 @@ namespace BansheeEngine
 
 		Viewport* mTarget;
 		Vector<GUIElement*> mElements;
-		Vector<GUIArea*> mAreas;
 		GUIPanel* mPanel;
 		UINT8 mDepth;
 

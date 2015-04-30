@@ -1,5 +1,4 @@
 #include "BsGUIFloatField.h"
-#include "BsGUIArea.h"
 #include "BsGUILayout.h"
 #include "BsGUILabel.h"
 #include "BsGUIInputBox.h"

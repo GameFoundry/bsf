@@ -21,6 +21,7 @@ namespace BansheeEngine
 		Rect2I getContentArea() const;
 
 		virtual void resized();
+
 	private:
 		void updateSize();
 		UINT32 getTitleBarHeight() const;
@@ -31,5 +32,8 @@ namespace BansheeEngine
 		GUILabel* mTitle;
 		GUIButton* mCloseButton;
 		GUITexture* mTitleBarBg;
+
+	protected:
+		GUIPanel* mContents;
 	};
 }

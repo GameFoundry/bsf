@@ -3,9 +3,7 @@
 #include "BsMonoField.h"
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
-#include "BsScriptGUIArea.h"
 #include "BsScriptGUIScrollArea.h"
-#include "BsGUIArea.h"
 #include "BsGUILayout.h"
 #include "BsGUILayoutX.h"
 #include "BsGUILayoutY.h"
@@ -25,7 +23,6 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateInstanceX", &ScriptGUILayout::internal_createInstanceX);
 		metaData.scriptClass->addInternalCall("Internal_CreateInstanceY", &ScriptGUILayout::internal_createInstanceY);
 		metaData.scriptClass->addInternalCall("Internal_CreateInstancePanel", &ScriptGUILayout::internal_createInstancePanel);
-		metaData.scriptClass->addInternalCall("Internal_CreateInstanceXFromArea", &ScriptGUILayout::internal_createInstanceXFromArea);
 		metaData.scriptClass->addInternalCall("Internal_CreateInstanceYFromScrollArea", &ScriptGUILayout::internal_createInstanceYFromScrollArea);
 		metaData.scriptClass->addInternalCall("Internal_AddElement", &ScriptGUILayout::internal_addElement);
 		metaData.scriptClass->addInternalCall("Internal_InsertElement", &ScriptGUILayout::internal_insertElement);
@@ -69,7 +66,7 @@ namespace BansheeEngine
 		ScriptGUILayout* nativeInstance = new (bs_alloc<ScriptGUILayout>()) ScriptGUILayout(instance, layout);
 	}
 
-	void ScriptGUILayout::internal_createInstancePanel(MonoObject* instance, UINT16 depth, UINT16 depthRange, MonoArray* guiOptions)
+	void ScriptGUILayout::internal_createInstancePanel(MonoObject* instance, INT16 depth, UINT16 depthRange, MonoArray* guiOptions)
 	{
 		GUIOptions options;
 
@@ -77,18 +74,10 @@ namespace BansheeEngine
 		for (UINT32 i = 0; i < arrayLen; i++)
 			options.addOption(mono_array_get(guiOptions, GUIOption, i));
 
-		GUILayout* layout = GUIPanel::create(depth, depthRange, options);
+		UINT16 signedDepth = depth + 32768;
+		GUILayout* layout = GUIPanel::create(signedDepth, depthRange, options);
 
 		ScriptGUILayout* nativeInstance = new (bs_alloc<ScriptGUILayout>()) ScriptGUILayout(instance, layout);
-	}
-
-	void ScriptGUILayout::internal_createInstanceXFromArea(MonoObject* instance, MonoObject* parentArea)
-	{
-		ScriptGUIArea* scriptArea = ScriptGUIArea::toNative(parentArea);
-		GUIArea* nativeArea = scriptArea->getInternalValue();
-
-		ScriptGUILayout* nativeInstance = new (bs_alloc<ScriptGUILayout>()) 
-			ScriptGUILayout(instance, &nativeArea->getLayout());
 	}
 
 	void ScriptGUILayout::internal_createInstanceYFromScrollArea(MonoObject* instance, MonoObject* parentScrollArea)
@@ -110,5 +99,20 @@ namespace BansheeEngine
 	void ScriptGUILayout::internal_insertElement(ScriptGUILayout* instance, UINT32 index, ScriptGUIElementTBase* element)
 	{
 		instance->getInternalValue()->insertElement(index, element->getGUIElement());
+	}
+
+	ScriptGUIPanel::ScriptGUIPanel(MonoObject* instance)
+		:ScriptObject(instance)
+	{ }
+
+	void ScriptGUIPanel::initRuntimeData()
+	{ }
+
+	MonoObject* ScriptGUIPanel::createFromExisting(GUIPanel* panel)
+	{
+		MonoObject* managedInstance = metaData.scriptClass->createInstance();
+		ScriptGUILayout* nativeInstance = new (bs_alloc<ScriptGUILayout>()) ScriptGUILayout(managedInstance, panel);
+
+		return managedInstance;
 	}
 }

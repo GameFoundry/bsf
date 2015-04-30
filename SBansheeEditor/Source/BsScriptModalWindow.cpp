@@ -1,6 +1,5 @@
 #include "BsScriptModalWindow.h"
 #include "BsScriptMeta.h"
-#include "BsScriptGUIPanel.h"
 #include "BsMonoField.h"
 #include "BsMonoClass.h"
 #include "BsMonoMethod.h"
@@ -10,13 +9,13 @@
 #include "BsScriptObjectManager.h"
 #include "BsScriptHString.h"
 #include "BsRenderWindow.h"
+#include "BsScriptGUILayout.h"
 
 using namespace std::placeholders;
 
 namespace BansheeEngine
 {
-	MonoMethod* ScriptModalWindow::onInitializedInternalMethod = nullptr;
-	MonoMethod* ScriptModalWindow::onDestroyInternalMethod = nullptr;
+	MonoField* ScriptModalWindow::guiPanelField = nullptr;
 
 	ScriptModalWindow::ScriptModalWindow(ManagedModalWindow* window)
 		:ScriptObject(window->getManagedInstance()), mModalWindow(window), mRefreshInProgress(false)
@@ -33,7 +32,6 @@ namespace BansheeEngine
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptModalWindow::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_Close", &ScriptModalWindow::internal_close);
-		metaData.scriptClass->addInternalCall("Internal_InitializeGUIPanel", &ScriptModalWindow::internal_initializeGUIPanel);
 		metaData.scriptClass->addInternalCall("Internal_GetWidth", &ScriptModalWindow::internal_getWidth);
 		metaData.scriptClass->addInternalCall("Internal_GetHeight", &ScriptModalWindow::internal_getHeight);
 		metaData.scriptClass->addInternalCall("Internal_SetWidth", &ScriptModalWindow::internal_setWidth);
@@ -42,8 +40,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_ScreenToWindowPos", &ScriptModalWindow::internal_screenToWindowPos);
 		metaData.scriptClass->addInternalCall("Internal_WindowToScreenPos", &ScriptModalWindow::internal_windowToScreenPos);
 
-		onInitializedInternalMethod = metaData.scriptClass->getMethod("OnInitializeInternal", 0);
-		onDestroyInternalMethod = metaData.scriptClass->getMethod("OnDestroyInternal", 0);
+		guiPanelField = metaData.scriptClass->getField("GUI");
 	}
 
 	void ScriptModalWindow::internal_createInstance(MonoObject* instance, bool allowCloseButton)
@@ -172,16 +169,6 @@ namespace BansheeEngine
 			thisPtr->mModalWindow->setSize(thisPtr->mModalWindow->getWidth(), value);
 	}
 
-	void ScriptModalWindow::internal_initializeGUIPanel(ScriptModalWindow* thisPtr, MonoObject* panel)
-	{
-		ScriptGUIPanel* scriptGUIPanel = ScriptGUIPanel::toNative(panel);
-		thisPtr->mGUIPanel = scriptGUIPanel;
-
-		Rect2I contentArea = thisPtr->mModalWindow->getContentArea();
-		scriptGUIPanel->setParentArea(contentArea.x, contentArea.y, contentArea.width, contentArea.height);
-		scriptGUIPanel->setParentWidget(thisPtr->mModalWindow->getGUIWidget().get());
-	}
-
 	void ScriptModalWindow::internal_screenToWindowPos(ScriptModalWindow* thisPtr, Vector2I screenPos, Vector2I* windowPos)
 	{
 		RenderWindowPtr parentRenderWindow = thisPtr->mModalWindow->getRenderWindow();
@@ -200,6 +187,9 @@ namespace BansheeEngine
 		mScriptParent(nullptr)
 	{
 		mGCHandle = mono_gchandle_new(mManagedInstance, false);
+
+		MonoObject* guiPanel = ScriptGUIPanel::createFromExisting(mContents);
+		ScriptModalWindow::guiPanelField->setValue(mManagedInstance, guiPanel);
 
 		::MonoClass* rawMonoClass = mono_object_get_class(mManagedInstance);
 		MonoClass* monoClass = MonoManager::instance().findClass(rawMonoClass);
@@ -228,6 +218,9 @@ namespace BansheeEngine
 				mManagedInstance = editorWindowClass->createInstance();
 				mGCHandle = mono_gchandle_new(mManagedInstance, false);
 
+				MonoObject* guiPanel = ScriptGUIPanel::createFromExisting(mContents);
+				ScriptModalWindow::guiPanelField->setValue(mManagedInstance, guiPanel);
+
 				reloadMonoTypes(editorWindowClass);
 				return true;
 			}
@@ -244,9 +237,6 @@ namespace BansheeEngine
 
 	void ManagedModalWindow::triggerOnInitialize()
 	{
-		if (mManagedInstance != nullptr)
-			ScriptModalWindow::onInitializedInternalMethod->invoke(mManagedInstance, nullptr);
-
 		if (mOnInitializeThunk != nullptr && mManagedInstance != nullptr)
 		{
 			MonoException* exception = nullptr;
@@ -261,9 +251,6 @@ namespace BansheeEngine
 
 	void ManagedModalWindow::triggerOnDestroy()
 	{
-		if (mManagedInstance != nullptr)
-			ScriptModalWindow::onDestroyInternalMethod->invoke(mManagedInstance, nullptr);
-
 		if (mOnDestroyThunk != nullptr && mManagedInstance != nullptr)
 		{
 			MonoException* exception = nullptr;
@@ -299,9 +286,6 @@ namespace BansheeEngine
 	{
 		UINT32 width = getWidth();
 		UINT32 height = getHeight();
-
-		Rect2I contentArea = getContentArea();
-		mScriptParent->mGUIPanel->setParentArea(contentArea.x, contentArea.y, contentArea.width, contentArea.height);
 
 		if (mOnWindowResizedMethod != nullptr && mManagedInstance != nullptr)
 		{

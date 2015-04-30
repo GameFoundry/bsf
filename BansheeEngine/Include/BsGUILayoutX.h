@@ -12,7 +12,6 @@ namespace BansheeEngine
 	class BS_EXPORT GUILayoutX : public GUILayout
 	{
 	public:
-		GUILayoutX(GUIArea* parentArea);
 		GUILayoutX(const GUIDimensions& dimensions);
 		GUILayoutX() {};
 		~GUILayoutX() {};

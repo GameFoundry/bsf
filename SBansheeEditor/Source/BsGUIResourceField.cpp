@@ -1,5 +1,4 @@
 #include "BsGUIResourceField.h"
-#include "BsGUIArea.h"
 #include "BsGUILayoutX.h"
 #include "BsGUILabel.h"
 #include "BsGUIDropButton.h"

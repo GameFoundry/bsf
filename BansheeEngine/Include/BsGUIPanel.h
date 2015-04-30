@@ -12,7 +12,6 @@ namespace BansheeEngine
 	class BS_EXPORT GUIPanel : public GUILayout
 	{
 	public:
-		GUIPanel(GUIArea* parentArea);
 		GUIPanel(UINT16 depth, UINT16 depthRange, const GUIDimensions& dimensions);
 		GUIPanel() {};
 		~GUIPanel() {};

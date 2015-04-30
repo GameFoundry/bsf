@@ -6,10 +6,6 @@
 
 namespace BansheeEngine
 {
-	GUILayoutX::GUILayoutX(GUIArea* parentArea)
-		:GUILayout(parentArea)
-	{ }
-
 	GUILayoutX::GUILayoutX(const GUIDimensions& dimensions)
 		: GUILayout(dimensions)
 	{ }

@@ -101,9 +101,6 @@
     <ClInclude Include="Include\BsUpdateCallback.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsGUIArea.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsGUILayout.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
@@ -384,9 +381,6 @@
     </ClCompile>
     <ClCompile Include="Source\BsUpdateCallback.cpp">
       <Filter>Source Files\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGUIArea.cpp">
-      <Filter>Source Files\GUI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGUILayout.cpp">
       <Filter>Source Files\GUI</Filter>

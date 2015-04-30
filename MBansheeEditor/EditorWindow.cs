@@ -12,7 +12,6 @@ namespace BansheeEditor
         public bool HasFocus { get { return Internal_HasFocus(mCachedPtr); } }
 
         protected GUIPanel GUI;
-        private List<GUIPanel> panels = new List<GUIPanel>();
 
         public static T OpenWindow<T>() where T : EditorWindow
         {
@@ -33,22 +32,9 @@ namespace BansheeEditor
             return screenPos;
         }
 
-        private void OnInitializeInternal()
-        {
-            GUI = CreatePanel(0, 0, Width, Height);
-        }
-
-        private void OnDestroyInternal()
-        {
-            GUIPanel[] panelsCopy = panels.ToArray();
-
-            for (int i = 0; i < panelsCopy.Length; i++)
-                DestroyPanel(panelsCopy[i]);
-        }
-
         protected virtual void WindowResized(int width, int height)
         {
-            GUI.SetArea(0, 0, width, height);
+
         }
 
         protected virtual void FocusChanged(bool inFocus)
@@ -56,32 +42,8 @@ namespace BansheeEditor
             
         }
 
-        internal GUIPanel CreatePanel(int x, int y, int width, int height)
-        {
-            GUIPanel newPanel = new GUIPanel();
-            Internal_InitializeGUIPanel(mCachedPtr, newPanel);
-            newPanel.Initialize();
-            newPanel.SetArea(x, y, width, height);
-
-            panels.Add(newPanel);
-            return newPanel;
-        }
-
-        internal void DestroyPanel(GUIPanel panel)
-        {
-            panel.Destroy();
-            panels.Remove(panel);
-            Internal_DestroyGUIPanel(mCachedPtr, panel);
-        }
-
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern EditorWindow Internal_CreateOrGetInstance(string ns, string typeName);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_InitializeGUIPanel(IntPtr nativeInstance, GUIPanel panel);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_DestroyGUIPanel(IntPtr nativeInstance, GUIPanel panel);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern int Internal_GetWidth(IntPtr nativeInstance);

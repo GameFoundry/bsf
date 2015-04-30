@@ -55,7 +55,6 @@ namespace BansheeEngine
 	class GUITextInputEvent;
 	class GUICommandEvent;
 	class GUIVirtualButtonEvent;
-	class GUIArea;
 	class GUILayout;
 	class GUILayoutX;
 	class GUILayoutY;

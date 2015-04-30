@@ -45,22 +45,9 @@ namespace BansheeEditor
             return screenPos;
         }
 
-        private void OnInitializeInternal()
-        {
-            GUI = new GUIPanel();
-            Internal_InitializeGUIPanel(mCachedPtr, GUI);
-            GUI.Initialize();
-            GUI.SetArea(0, 0, Width, Height);
-        }
-
-        private void OnDestroyInternal()
-        {
-            GUI.Destroy();
-        }
-
         protected virtual void OnWindowResized(int width, int height)
         {
-            GUI.SetArea(0, 0, width, height);
+
         }
 
         protected void Close()
@@ -81,9 +68,6 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetTitle(IntPtr nativeInstance, LocString title);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_InitializeGUIPanel(IntPtr nativeInstance, GUIPanel panel);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern int Internal_GetWidth(IntPtr nativeInstance);

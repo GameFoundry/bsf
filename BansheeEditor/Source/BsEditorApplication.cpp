@@ -36,7 +36,6 @@
 #include "BsProjectLibrary.h"
 #include "BsCamera.h"
 #include "BsGUIWidget.h"
-#include "BsGUIArea.h"
 #include "BsGUIButton.h"
 #include "BsGUILayout.h"
 #include "BsEvent.h"

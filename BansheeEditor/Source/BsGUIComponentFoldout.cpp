@@ -1,5 +1,4 @@
 #include "BsGUIComponentFoldout.h"
-#include "BsGUIArea.h"
 #include "BsGUILayout.h"
 #include "BsGUILabel.h"
 #include "BsGUIToggle.h"

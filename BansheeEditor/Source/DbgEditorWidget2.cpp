@@ -2,7 +2,6 @@
 #include "BsEditorWidgetManager.h"
 #include "BsGUIToggle.h"
 #include "BsGUIScrollArea.h"
-#include "BsGUIArea.h"
 #include "BsGUILayoutY.h"
 #include "BsGUIPanel.h"
 #include "BsGUIWidget.h"

@@ -8,13 +8,13 @@ namespace BansheeEditor
 {
     public abstract class Inspector
     {
-        protected GUIPanelNEW GUI;
+        protected GUIPanel GUI;
         protected GUILayoutY layout;
         protected object referencedObject;
 
         private InspectorWindow parentWindow;
 
-        internal void Initialize(InspectorWindow parentWindow, GUIPanelNEW gui, object instance)
+        internal void Initialize(InspectorWindow parentWindow, GUIPanel gui, object instance)
         {
             GUI = gui;
             layout = gui.AddLayoutY();
