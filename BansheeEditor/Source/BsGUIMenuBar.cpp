@@ -19,14 +19,18 @@ namespace BansheeEngine
 
 	GUIMenuBar::GUIMenuBar(GUIWidget* parent, RenderWindow* parentWindow)
 		:mParentWidget(parent), mParentWindow(parentWindow), mMainPanel(nullptr), mMainLayout(nullptr),
-		mBgTexture(nullptr), mLogoTexture(nullptr), mSubMenuOpen(false), mSubMenuButton(nullptr)
+		mBgTexture(nullptr), mLogoTexture(nullptr), mSubMenuOpen(false), mSubMenuButton(nullptr), mBgPanel(nullptr)
 	{
 		mMainPanel = parent->getPanel()->addNewElement<GUIPanel>(0);
 		mMainPanel->setWidth(1);
 		mMainPanel->setHeight(13);
 
+		mBgPanel = parent->getPanel()->addNewElement<GUIPanel>(1);
+		mBgPanel->setWidth(1);
+		mBgPanel->setHeight(13);
+
 		mMainLayout = mMainPanel->addNewElement<GUILayoutX>();
-		GUILayoutX* bgLayout = mMainPanel->addNewElement<GUILayoutX>();
+		GUILayoutX* bgLayout = mBgPanel->addNewElement<GUILayoutX>();
 
 		mBgTexture = GUITexture::create(GUIImageScaleMode::StretchToFit, GUIOptions(GUIOption::flexibleWidth(), GUIOption::flexibleHeight()), "MenuBarBg");
 		bgLayout->addElement(mBgTexture);
@@ -67,6 +71,7 @@ namespace BansheeEngine
 		}
 
 		GUILayout::destroy(mMainPanel);
+		GUILayout::destroy(mBgPanel);
 	}
 
 	void GUIMenuBar::setArea(INT32 x, INT32 y, UINT32 width, UINT32 height)
@@ -75,6 +80,11 @@ namespace BansheeEngine
 
 		mMainPanel->setWidth(width);
 		mMainPanel->setHeight(height);
+
+		mBgPanel->setPosition(x, y);
+
+		mBgPanel->setWidth(width);
+		mBgPanel->setHeight(height);
 
 		refreshNonClientAreas();
 	}

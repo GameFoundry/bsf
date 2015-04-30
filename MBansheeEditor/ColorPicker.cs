@@ -148,7 +148,8 @@ namespace BansheeEditor
             guiOK.OnClick += OnOK;
             guiCancel.OnClick += OnCancel;
 
-            GUILayout v0 = GUI.AddLayoutY();
+            GUIPanel mainPanel = GUI.AddPanel(0);
+            GUILayout v0 = mainPanel.AddLayoutY();
 
             v0.AddSpace(5);
 

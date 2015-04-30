@@ -36,6 +36,7 @@ namespace BansheeEngine
 		GUIManager::instance().registerWidget(this);
 
 		mPanel = GUIPanel::create();
+		mPanel->_changeParentWidget(this);
 	}
 
 	GUIWidget::~GUIWidget()

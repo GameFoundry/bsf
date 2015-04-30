@@ -30,6 +30,7 @@ namespace BansheeEngine
 		RenderWindow* mParentWindow;
 		GUIWidget* mParentWidget;
 		GUIPanel* mMainPanel;
+		GUIPanel* mBgPanel;
 		GUILayout* mMainLayout;
 		GUITexture* mBgTexture;
 		GUITexture* mLogoTexture;

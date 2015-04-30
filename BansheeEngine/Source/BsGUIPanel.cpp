@@ -104,10 +104,50 @@ namespace BansheeEngine
 		UINT32 childIdx = 0;
 		for (auto& child : mChildren)
 		{
-			elementAreas[childIdx].x = x + child->_getDimensions().x;
-			elementAreas[childIdx].y = y + child->_getDimensions().y;
-			elementAreas[childIdx].width = (UINT32)sizeRanges[childIdx].optimal.x;
-			elementAreas[childIdx].height = (UINT32)sizeRanges[childIdx].optimal.y;
+			const GUIDimensions& dimensions = child->_getDimensions();
+
+			elementAreas[childIdx].x = x + dimensions.x;
+			elementAreas[childIdx].y = y + dimensions.y;
+
+			if (dimensions.fixedWidth())
+				elementAreas[childIdx].width = (UINT32)sizeRanges[childIdx].optimal.x;
+			else
+			{
+				UINT32 modifiedWidth = (UINT32)std::max(0, (INT32)width - dimensions.x);
+				
+				if (modifiedWidth > (UINT32)sizeRanges[childIdx].optimal.x)
+				{
+					if (dimensions.maxWidth > 0)
+						modifiedWidth = std::min(modifiedWidth, dimensions.maxWidth);
+				}
+				else if (modifiedWidth < (UINT32)sizeRanges[childIdx].optimal.x)
+				{
+					if (dimensions.minWidth > 0)
+						modifiedWidth = std::max(modifiedWidth, dimensions.minWidth);
+				}
+
+				elementAreas[childIdx].width = modifiedWidth;
+			}
+
+			if (dimensions.fixedHeight())
+				elementAreas[childIdx].height = (UINT32)sizeRanges[childIdx].optimal.y;
+			else
+			{
+				UINT32 modifiedHeight = (UINT32)std::max(0, (INT32)height - dimensions.y);
+
+				if (modifiedHeight > (UINT32)sizeRanges[childIdx].optimal.y)
+				{
+					if (dimensions.maxHeight > 0)
+						modifiedHeight = std::min(modifiedHeight, dimensions.maxHeight);
+				}
+				else if (modifiedHeight < (UINT32)sizeRanges[childIdx].optimal.y)
+				{
+					if (dimensions.minHeight > 0)
+						modifiedHeight = std::max(modifiedHeight, dimensions.minHeight);
+				}
+
+				elementAreas[childIdx].height = modifiedHeight;
+			}
 
 			childIdx++;
 		}
