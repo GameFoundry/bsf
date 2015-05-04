@@ -75,9 +75,10 @@ namespace BansheeEngine
 	}
 
 	void GUIResourceTreeView::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I clipRect, 
-		UINT8 widgetDepth, UINT16 panelDepth, UINT16 panelDepthRange)
+		UINT8 widgetDepth, INT16 panelDepth, UINT16 panelDepthRangeMin, UINT16 panelDepthRangeMax)
 	{
-		GUITreeView::_updateLayoutInternal(x, y, width, height, clipRect, widgetDepth, panelDepth, panelDepthRange);
+		GUITreeView::_updateLayoutInternal(x, y, width, height, clipRect, widgetDepth, 
+			panelDepth, panelDepthRangeMin, panelDepthRangeMax);
 
 		if(mDropTarget != nullptr)
 		{

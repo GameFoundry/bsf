@@ -99,7 +99,7 @@ namespace BansheeEngine
 		 * @copydoc	GUIElementContainer::_updateLayoutInternal
 		 */
 		void _updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-			Rect2I clipRect, UINT8 widgetDepth, UINT16 panelDepth, UINT16 panelDepthRange) override;
+			Rect2I clipRect, UINT8 widgetDepth, INT16 panelDepth, UINT16 panelDepthRangeMin, UINT16 panelDepthRangeMax) override;
 
 		/**
 		 * @copydoc	GUIElementContainer::styleUpdated

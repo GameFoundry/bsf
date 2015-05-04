@@ -134,9 +134,9 @@ namespace BansheeEngine
             return layout;
         }
 
-        public GUIPanel AddPanel(Int16 depth = 0, ushort depthRange = ushort.MaxValue, params GUIOption[] options)
+        public GUIPanel AddPanel(Int16 depth = 0, ushort depthRangeMin = ushort.MaxValue, ushort depthRangeMax = ushort.MaxValue, params GUIOption[] options)
         {
-            GUIPanel layout = new GUIPanel(depth, depthRange, options);
+            GUIPanel layout = new GUIPanel(depth, depthRangeMin, depthRangeMax, options);
             AddElement(layout);
             return layout;
         }
@@ -176,9 +176,10 @@ namespace BansheeEngine
             return layout;
         }
 
-        public GUIPanel InsertPanel(int idx, Int16 depth = 0, ushort depthRange = ushort.MaxValue, params GUIOption[] options)
+        public GUIPanel InsertPanel(int idx, Int16 depth = 0, ushort depthRangeMin = ushort.MaxValue, 
+            ushort depthRangeMax = ushort.MaxValue, params GUIOption[] options)
         {
-            GUIPanel layout = new GUIPanel(depth, depthRange, options);
+            GUIPanel layout = new GUIPanel(depth, depthRangeMin, depthRangeMax, options);
             InsertElement(idx, layout);
             return layout;
         }
@@ -207,7 +208,7 @@ namespace BansheeEngine
         protected static extern void Internal_CreateInstanceY(GUILayout instance, GUIOption[] options);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        protected static extern void Internal_CreateInstancePanel(GUILayout instance, Int16 depth, ushort depthRange, GUIOption[] options);
+        protected static extern void Internal_CreateInstancePanel(GUILayout instance, Int16 depth, ushort depthRangeMin, ushort depthRangeMax, GUIOption[] options);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         protected static extern void Internal_AddElement(IntPtr instance, IntPtr element);

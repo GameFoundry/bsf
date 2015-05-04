@@ -9,29 +9,31 @@ Possibly set up automatic refresh in debug mode after initialization? As an ad-h
 ----------------------------------------------------------------------
 Project library
 
-Almost all of PRojectLibrary functionality is completely untested
-
 My GUID generation is screwed up. If multiple GUIDs are generated in succession then the timestamp will remain
 the same and the only variable will be the 4byte random number, which can sometimes end up identical to the previous number.
 
 ----------------------------------------------------------------------
-GUIArea refactor:
-
-ColorPicker 2D handle is broken because it uses window coordinates for positioning, but it needs coordinates relative to parent GUI panel
- - Will likely need a new method for that
- - Extend GUILayoutUtility::calcBounds so it can returns bounds relative to specific GUIPanel
-
-----------------------------------------------------------------------
 Project window
 
-When working with scroll areas I cannot create multiple child areas of different depths. Can I rely on just the order I add the elements in the layout?
- - Or can I just have a child GUIArea inside a scroll area?
-
 Simple tasks:
- - Add GUI button as overlay. Hook up its input event to select (click) + enter directory (double click) + context (right click, for later)
- - Add element highlights: ping (blue bg), selection (orange bg), cut (fade out icon/label)
- - Add C# ContextMenu
- - Add DropDownWindow type
+ - Add C# Renderable & Material interface
+ - Add C# context menu support for GUI elements
+ - Hook up windows drag and drop support
+ - Hook up drag and drop internal to project window
+ - Hook up drag and drop that interacts with scene and hierarchy windows
+ - Ensure dragging near scroll area border scrolls the area
+ - Add search bar
+ - Add directory bar
+ - Add DropDownWindow type that contains size options
+
+Test:
+ - Basic look & navigation, selection/deselection
+ - Cut/Copy/Paste/Duplicate
+ - Ping scroll and effect
+
+Later:
+ - Shift and ctrl-click to select multiple entries
+ - Drag to select multiple entries?
 
 ----------------------------------------------------------------------
 Resources
@@ -91,7 +93,7 @@ Include files:
 Test:
  - Try preprocessing using one RenderAPi and then load the shaders using another and see if they're created normally
  - Test if default values work
- - Test project library dependant resources
+ - Test project library dependant resources (e.g. changing an include and seeing if shader is reimported)
 
 ----------------------------------------------------------------------
 Scene View

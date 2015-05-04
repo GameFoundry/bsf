@@ -57,7 +57,11 @@ namespace BansheeEngine
 
 	void GUILabel::updateClippedBounds()
 	{
-		mClippedBounds = mTextSprite->getBounds(mOffset, mClipRect);
+		Vector2I offset = _getOffset();
+		mClippedBounds = Rect2I(offset.x, offset.y, _getWidth(), _getHeight());
+
+		Rect2I localClipRect(mClipRect.x + mOffset.x, mClipRect.y + mOffset.y, mClipRect.width, mClipRect.height);
+		mClippedBounds.clip(localClipRect);
 	}
 
 	Vector2I GUILabel::_getOptimalSize() const

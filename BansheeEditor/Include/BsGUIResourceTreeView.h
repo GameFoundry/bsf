@@ -71,7 +71,7 @@ namespace BansheeEngine
 			const String& dragHighlightStyle, const String& dragSepHighlightStyle, const GUIDimensions& dimensions);
 
 		virtual void _updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-			Rect2I clipRect, UINT8 widgetDepth, UINT16 panelDepth, UINT16 panelDepthRange);
+			Rect2I clipRect, UINT8 widgetDepth, INT16 panelDepth, UINT16 panelDepthRangeMin, UINT16 panelDepthRangeMax);
 
 		virtual TreeElement& getRootElement() { return mRootElement; }
 		virtual const TreeElement& getRootElementConst() const { return mRootElement; }

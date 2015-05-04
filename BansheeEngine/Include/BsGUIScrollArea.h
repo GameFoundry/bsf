@@ -120,6 +120,40 @@ namespace BansheeEngine
 		 * @brief	Scrolls the area right by specified percentage (ranging [0, 1]), if possible.
 		 */
 		void scrollRightPct(float percent);
+
+		/**
+		 * @brief	Scrolls the contents to the specified position.
+		 *			(0 meaning top-most part of the content is visible,
+		 *			and 1 meaning bottom-most part is visible)
+		 */
+		void scrollToVertical(float pct);
+
+		/**
+		 * @brief	Scrolls the contents to the specified position.
+		 *			(0 meaning left-most part of the content is visible,
+		 *			and 1 meaning right-most part is visible)
+		 */
+		void scrollToHorizontal(float pct);
+
+		/**
+		 * @brief	Returns how much is the scroll area scrolled in the vertical direction.
+		 *			Returned value represents percentage where 0 means no scrolling
+		 *			is happening, and 1 means area is fully scrolled to the bottom.
+		 */
+		float getVerticalScroll() const;
+
+		/**
+		 * @brief	Returns how much is the scroll area scrolled in the horizontal direction.
+		 *			Returned value represents percentage where 0 means no scrolling
+		 *			is happening, and 1 means area is fully scrolled to the right.
+		 */
+		float getHorizontalScroll() const;
+
+		/**
+		 * @brief	Returns the bounds of the scroll area not including the scroll bars.
+		 *			(i.e. only the portion that contains the contents).
+		 */
+		Rect2I getContentBounds() const;
 	protected:
 		~GUIScrollArea();
 
@@ -135,20 +169,6 @@ namespace BansheeEngine
 		 * @copydoc	GUIElementContainer::mouseEvent
 		 */
 		virtual bool _mouseEvent(const GUIMouseEvent& ev);
-
-		/**
-		 * @brief	Scrolls the contents to the specified position.
-		 *			(0 meaning top-most part of the content is visible,
-		 *			and 1 meaning bottom-most part is visible)
-		 */
-		void scrollToVertical(float pct);
-
-		/**
-		 * @brief	Scrolls the contents to the specified position.
-		 *			(0 meaning left-most part of the content is visible,
-		 *			and 1 meaning right-most part is visible)
-		 */
-		void scrollToHorizontal(float pct);
 
 		/**
 		 * @brief	Called when the vertical scrollbar moves. 
@@ -168,7 +188,7 @@ namespace BansheeEngine
 		 * @copydoc	GUIElementContainer::_updateLayoutInternal
 		 */
 		void _updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-			Rect2I clipRect, UINT8 widgetDepth, UINT16 panelDepth, UINT16 panelDepthRange);
+			Rect2I clipRect, UINT8 widgetDepth, INT16 panelDepth, UINT16 panelDepthRangeMin, UINT16 panelDepthRangeMax);
 
 		/**
 		 * @copydoc	GUIElementContainer::_getElementAreas

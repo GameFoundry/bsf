@@ -62,10 +62,7 @@ namespace BansheeEngine
 	{
 		Path resourcePath = MonoUtil::monoToWString(path);
 
-		Path fullPath = ProjectLibrary::instance().getResourcesFolder();
-		fullPath.append(resourcePath);
-
-		ProjectLibrary::LibraryEntry* entry = ProjectLibrary::instance().findEntry(fullPath);
+		ProjectLibrary::LibraryEntry* entry = ProjectLibrary::instance().findEntry(resourcePath);
 
 		if (entry == nullptr || entry->type == ProjectLibrary::LibraryEntryType::Directory)
 			return nullptr;
@@ -132,7 +129,7 @@ namespace BansheeEngine
 		if (srcResource != nullptr)
 		{
 			Path nativePath = ProjectLibrary::instance().uuidToPath(srcResource->getNativeHandle().getUUID());
-			nativePath.getRelative(gEditorApplication().getProjectPath());
+			nativePath.getRelative(ProjectLibrary::instance().getResourcesFolder());
 
 			return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), nativePath.toWString());
 		}
@@ -259,7 +256,7 @@ namespace BansheeEngine
 			return nullptr;
 
 		Path relativePath = entry->path;
-		relativePath.makeRelative(gEditorApplication().getProjectPath());
+		relativePath.makeRelative(ProjectLibrary::instance().getResourcesFolder());
 
 		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), relativePath.toWString());
 	}

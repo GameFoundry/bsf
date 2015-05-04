@@ -30,7 +30,7 @@ namespace BansheeEngine
 	{
 		TEXT_SPRITE_DESC()
 			:width(0), height(0), anchor(SA_TopLeft), fontSize(0),
-			horzAlign(THA_Left), vertAlign(TVA_Top), wordWrap(false)
+			horzAlign(THA_Left), vertAlign(TVA_Top), wordWrap(false), wordBreak(true)
 		{ }
 
 		UINT32 width; /**< Width of the bounds to render the text within, in pixels. */
@@ -44,6 +44,7 @@ namespace BansheeEngine
 		TextHorzAlign horzAlign; /**< Specifies how is text horizontally aligned within its bounds. */
 		TextVertAlign vertAlign; /**< Specifies how is text vertically aligned within its bounds. */
 		bool wordWrap; /**< If true the text will word wrap when it doesn't fit, otherwise it will overflow. */
+		bool wordBreak; /**< If enabled together with word wrap it will allow words to be broken if they don't fit. */
 	};
 
 	/**

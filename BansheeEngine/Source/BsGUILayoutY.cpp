@@ -276,7 +276,15 @@ namespace BansheeEngine
 					UINT32 elementHeight = elementAreas[childIdx].height + extraHeight;
 
 					// Clamp if needed
-					if (child->_getType() == GUIElementBase::Type::Element || child->_getType() == GUIElementBase::Type::Layout)
+					switch (child->_getType())
+					{
+					case GUIElementBase::Type::FlexibleSpace:
+						processedElements[childIdx] = true;
+						numNonClampedElements--;
+						break;
+					case GUIElementBase::Type::Element:
+					case GUIElementBase::Type::Layout:
+					case GUIElementBase::Type::Panel:
 					{
 						const LayoutSizeRange& childSizeRange = sizeRanges[childIdx];
 
@@ -297,10 +305,7 @@ namespace BansheeEngine
 						elementAreas[childIdx].height = elementHeight;
 						remainingSize = (UINT32)std::max(0, (INT32)remainingSize - (INT32)extraHeight);
 					}
-					else if (child->_getType() == GUIElementBase::Type::FlexibleSpace)
-					{
-						processedElements[childIdx] = true;
-						numNonClampedElements--;
+						break;
 					}
 
 					childIdx++;
@@ -360,7 +365,7 @@ namespace BansheeEngine
 	}
 
 	void GUILayoutY::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I clipRect, 
-		UINT8 widgetDepth, UINT16 panelDepth, UINT16 panelDepthRange)
+		UINT8 widgetDepth, INT16 panelDepth, UINT16 panelDepthRangeMin, UINT16 panelDepthRangeMax)
 	{
 		UINT32 numElements = (UINT32)mChildren.size();
 		Rect2I* elementAreas = nullptr;
@@ -395,7 +400,8 @@ namespace BansheeEngine
 
 				Rect2I newClipRect(offset.x, offset.y, childArea.width, childArea.height);
 				newClipRect.clip(clipRect);
-				element->_updateLayoutInternal(offset.x, offset.y, childArea.width, childArea.height, newClipRect, widgetDepth, panelDepth, panelDepthRange);
+				element->_updateLayoutInternal(offset.x, offset.y, childArea.width, childArea.height, newClipRect, 
+					widgetDepth, panelDepth, panelDepthRangeMin, panelDepthRangeMax);
 
 				actualSizes[childIdx].width = childArea.width + element->_getPadding().left + element->_getPadding().right;
 			}
@@ -405,7 +411,8 @@ namespace BansheeEngine
 
 				Rect2I newClipRect(childArea.x, childArea.y, width, childArea.height);
 				newClipRect.clip(clipRect);
-				layout->_updateLayoutInternal(childArea.x, childArea.y, width, childArea.height, newClipRect, widgetDepth, panelDepth, panelDepthRange);
+				layout->_updateLayoutInternal(childArea.x, childArea.y, width, childArea.height, newClipRect, 
+					widgetDepth, panelDepth, panelDepthRangeMin, panelDepthRangeMax);
 
 				actualSizes[childIdx].width = layout->_getActualWidth();
 			}

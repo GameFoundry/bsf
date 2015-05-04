@@ -142,7 +142,11 @@ namespace BansheeEngine
 
 	void GUIButtonBase::updateClippedBounds()
 	{
-		mClippedBounds = mImageSprite->getBounds(mOffset, mClipRect);
+		Vector2I offset = _getOffset();
+		mClippedBounds = Rect2I(offset.x, offset.y, _getWidth(), _getHeight());
+
+		Rect2I localClipRect(mClipRect.x + mOffset.x, mClipRect.y + mOffset.y, mClipRect.width, mClipRect.height);
+		mClippedBounds.clip(localClipRect);
 	}
 
 	Vector2I GUIButtonBase::_getOptimalSize() const

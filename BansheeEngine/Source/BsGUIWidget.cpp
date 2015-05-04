@@ -104,7 +104,7 @@ namespace BansheeEngine
 		{
 			Rect2I clipRect(0, 0, getTarget()->getWidth(), getTarget()->getHeight());
 			mPanel->_updateLayout(0, 0, getTarget()->getWidth(), getTarget()->getHeight(), clipRect,
-				getDepth(), 0, -1);
+				getDepth(), 0, -1, -1);
 		}
 	}
 

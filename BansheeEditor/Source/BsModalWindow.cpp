@@ -20,7 +20,7 @@ namespace BansheeEngine
 		EditorWindowManager::instance().registerWindow(this);
 
 		mTitleBarBgPanel = mGUI->getPanel()->addNewElement<GUIPanel>();
-		mTitleBarBgPanel->setDepthRange(std::numeric_limits<UINT16>::max() - 1);
+		mTitleBarBgPanel->setDepthRange(std::numeric_limits<INT16>::max() - 1);
 		mTitleBarBgPanel->setPosition(1, 1);
 
 		mTitleBarPanel = mGUI->getPanel()->addNewElement<GUIPanel>();

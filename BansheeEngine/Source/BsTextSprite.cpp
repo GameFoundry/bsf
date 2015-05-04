@@ -15,7 +15,7 @@ namespace BansheeEngine
 
 	void TextSprite::update(const TEXT_SPRITE_DESC& desc, UINT64 groupId)
 	{
-		TextData textData(desc.text, desc.font, desc.fontSize, desc.width, desc.height, desc.wordWrap);
+		TextData textData(desc.text, desc.font, desc.fontSize, desc.width, desc.height, desc.wordWrap, desc.wordBreak);
 
 		UINT32 numLines = textData.getNumLines();
 		UINT32 numPages = textData.getNumPages();

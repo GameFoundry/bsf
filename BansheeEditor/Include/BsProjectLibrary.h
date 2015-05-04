@@ -52,10 +52,10 @@ namespace BansheeEngine
 		~ProjectLibrary();
 
 		void update();
-		void checkForModifications(const Path& fullPath);
+		void checkForModifications(const Path& path);
 
 		const LibraryEntry* getRootEntry() const { return mRootEntry; }
-		LibraryEntry* findEntry(const Path& fullPath) const;
+		LibraryEntry* findEntry(const Path& path) const;
 
 		Vector<LibraryEntry*> search(const WString& pattern);
 		Vector<LibraryEntry*> search(const WString& pattern, const Vector<UINT32>& typeIds);

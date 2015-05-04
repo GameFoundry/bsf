@@ -26,7 +26,7 @@ namespace BansheeEditor
 
             inspectorScrollArea = new GUIScrollArea();
             GUI.AddElement(inspectorScrollArea);
-            inspectorLayout = inspectorScrollArea.layout;
+            inspectorLayout = inspectorScrollArea.Layout;
 
             Component[] allComponents = so.GetComponents();
             for (int i = 0; i < allComponents.Length; i++)

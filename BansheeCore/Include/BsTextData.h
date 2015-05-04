@@ -55,6 +55,16 @@ namespace BansheeEngine
 			UINT32 getHeight() const { return mHeight; }
 
 			/**
+			 * @brief	Calculates new width of the word if we were to add the provided character, 
+			 *			without actually adding it.
+			 *
+			 * @param	desc	Character description from the font.
+			 *
+			 * @returns	Width of the word in pixels with the character appended to it.
+			 */
+			UINT32 calcWidthWithChar(const CHAR_DESC& desc);
+
+			/**
 			 * @brief	Returns true if word is a spacer. Spacers contain just a space 
 			 *			of a certain length with no actual characters.
 			 */
@@ -74,6 +84,17 @@ namespace BansheeEngine
 			 * @brief	Returns the index of the last character in the word.
 			 */
 			UINT32 getCharsEnd() const { return mCharsEnd; }
+
+			/**
+			 * @brief	Calculates width of the character by which it would expand the width of the word
+			 *			if it was added to it.
+			 *
+			 * @param	prevDesc	Descriptor of the character preceding the one we need the width for. Can be null.
+			 * @param	desc		Character description from the font.
+			 *
+			 * @returns	How many pixels would the added character expand the word by.
+			 */
+			static UINT32 calcCharWidth(const CHAR_DESC* prevDesc, const CHAR_DESC& desc);
 
 		private:
 			UINT32 mCharsStart, mCharsEnd;
@@ -123,6 +144,17 @@ namespace BansheeEngine
 			UINT32 getYOffset() const { return mTextData->getLineHeight(); }
 
 			/**
+			 * @brief	Calculates new width of the line if we were to add the provided character, 
+			 *			without actually adding it.
+			 *
+			 * @param	desc		Character description from the font.
+			 * @param	space		True if the character is a space.
+			 *
+			 * @returns	Width of the line in pixels with the character appended to it.
+			 */
+			UINT32 calcWidthWithChar(const CHAR_DESC& desc, bool space);
+
+			/**
 			 * @brief	Fills the vertex/uv/index buffers for the specified page, with all the character data
 			 * 			needed for rendering.
 			 *
@@ -137,6 +169,11 @@ namespace BansheeEngine
 			 * @return	Number of quads that were written.
 			 */
 			UINT32 fillBuffer(UINT32 page, Vector2* vertices, Vector2* uvs, UINT32* indexes, UINT32 offset, UINT32 size) const;
+
+			/**
+			 * @brief	Checks are we at a word boundary (i.e. next added character will start a new word).
+			 */
+			bool isAtWordBoundary() const;
 
 			/**
 			 * @brief	Returns the total number of characters on this line.
@@ -217,13 +254,15 @@ namespace BansheeEngine
 	public:
 		/**
 		 * @brief	Initializes a new text data using the specified string and font. Text will attempt to fit into
-		 *			the provided area. It will wrap words to new line if it doesn't fit and is enabled. If word wrap
-		 *			isn't possible the text will be clipped. If the specified area is zero size then the text
+		 *			the provided area. If enabled it will wrap words to new line when they don't fit. Individual words
+		 *			will be broken into multiple pieces if they don't fit on a single line when word break
+		 *			is enabled, otherwise they will be clipped. If the specified area is zero size then the text
 		 *			will not be clipped or word wrapped in any way.
 		 *
 		 *			After this object is constructed you may call various getter methods to get needed information.
 		 */
-		BS_CORE_EXPORT TextData(const WString& text, const HFont& font, UINT32 fontSize, UINT32 width = 0, UINT32 height = 0, bool wordWrap = false);
+		BS_CORE_EXPORT TextData(const WString& text, const HFont& font, UINT32 fontSize, 
+			UINT32 width = 0, UINT32 height = 0, bool wordWrap = false, bool wordBreak = true);
 		BS_CORE_EXPORT ~TextData();
 
 		/**

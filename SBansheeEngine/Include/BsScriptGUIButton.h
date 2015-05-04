@@ -17,16 +17,19 @@ namespace BansheeEngine
 		static void internal_setTint(ScriptGUIButton* nativeInstance, Color color);
 
 		static void onClick(MonoObject* instance);
+		static void onDoubleClick(MonoObject* instance);
 		static void onHover(MonoObject* instance);
 		static void onOut(MonoObject* instance);
 
 		ScriptGUIButton(MonoObject* instance, GUIButton* button);
 
 		typedef void (__stdcall *OnClickThunkDef) (MonoObject*, MonoException**);
+		typedef void (__stdcall *OnDoubleClickThunkDef) (MonoObject*, MonoException**);
 		typedef void (__stdcall *OnHoverThunkDef) (MonoObject*, MonoException**);
 		typedef void (__stdcall *OnOutThunkDef) (MonoObject*, MonoException**);
 
 		static OnClickThunkDef onClickThunk;
+		static OnDoubleClickThunkDef onDoubleClickThunk;
 		static OnHoverThunkDef onHoverThunk;
 		static OnOutThunkDef onOutThunk;
 	};

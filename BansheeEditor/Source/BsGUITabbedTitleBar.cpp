@@ -234,7 +234,7 @@ namespace BansheeEngine
 	}
 
 	void GUITabbedTitleBar::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-		Rect2I clipRect, UINT8 widgetDepth, UINT16 panelDepth, UINT16 panelDepthRange)
+		Rect2I clipRect, UINT8 widgetDepth, INT16 panelDepth, UINT16 panelDepthRangeMin, UINT16 panelDepthRangeMax)
 	{
 		Vector2I minBtnOptimalSize = mMinBtn->_getOptimalSize();
 		Vector2I closeBtnOptimalSize = mCloseBtn->_getOptimalSize();

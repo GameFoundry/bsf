@@ -25,6 +25,11 @@ namespace BansheeEngine
 	void ScriptGUIScrollArea::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIScrollArea::internal_createInstance);
+		metaData.scriptClass->addInternalCall("Internal_GetContentBounds", &ScriptGUIScrollArea::internal_getContentBounds);
+		metaData.scriptClass->addInternalCall("Internal_GetHorzScroll", &ScriptGUIScrollArea::internal_getHorzScroll);
+		metaData.scriptClass->addInternalCall("Internal_SetHorzScroll", &ScriptGUIScrollArea::internal_setHorzScroll);
+		metaData.scriptClass->addInternalCall("Internal_GetVertScroll", &ScriptGUIScrollArea::internal_getVertScroll);
+		metaData.scriptClass->addInternalCall("Internal_SetVertScroll", &ScriptGUIScrollArea::internal_setVertScroll);
 	}
 
 	void ScriptGUIScrollArea::internal_createInstance(MonoObject* instance, ScrollBarType vertBarType, ScrollBarType horzBarType, 
@@ -40,5 +45,35 @@ namespace BansheeEngine
 			toString(MonoUtil::monoToWString(scrollBarStyle)), toString(MonoUtil::monoToWString(scrollAreaStyle)));
 
 		ScriptGUIScrollArea* nativeInstance = new (bs_alloc<ScriptGUIScrollArea>()) ScriptGUIScrollArea(instance, guiScrollArea);
+	}
+
+	Rect2I ScriptGUIScrollArea::internal_getContentBounds(ScriptGUIScrollArea* nativeInstance)
+	{
+		GUIScrollArea* guiScrollArea = static_cast<GUIScrollArea*>(nativeInstance->getGUIElement());
+		return guiScrollArea->getContentBounds();
+	}
+
+	float ScriptGUIScrollArea::internal_getHorzScroll(ScriptGUIScrollArea* nativeInstance)
+	{
+		GUIScrollArea* guiScrollArea = static_cast<GUIScrollArea*>(nativeInstance->getGUIElement());
+		return guiScrollArea->getHorizontalScroll();
+	}
+
+	void ScriptGUIScrollArea::internal_setHorzScroll(ScriptGUIScrollArea* nativeInstance, float value)
+	{
+		GUIScrollArea* guiScrollArea = static_cast<GUIScrollArea*>(nativeInstance->getGUIElement());
+		guiScrollArea->scrollToHorizontal(value);
+	}
+
+	float ScriptGUIScrollArea::internal_getVertScroll(ScriptGUIScrollArea* nativeInstance)
+	{
+		GUIScrollArea* guiScrollArea = static_cast<GUIScrollArea*>(nativeInstance->getGUIElement());
+		return guiScrollArea->getVerticalScroll();
+	}
+
+	void ScriptGUIScrollArea::internal_setVertScroll(ScriptGUIScrollArea* nativeInstance, float value)
+	{
+		GUIScrollArea* guiScrollArea = static_cast<GUIScrollArea*>(nativeInstance->getGUIElement());
+		guiScrollArea->scrollToVertical(value);
 	}
 }

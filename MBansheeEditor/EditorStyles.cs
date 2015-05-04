@@ -8,6 +8,7 @@ namespace BansheeEditor
 {
     public static class EditorStyles
     {
+        public const string Blank = "Blank";
         public const string Label = "Label";
         public const string MultiLineLabel = "MultiLineLabel";
         public const string Button = "Button";

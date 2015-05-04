@@ -20,21 +20,7 @@ namespace BansheeEngine
 	// Assumes charIdx is an index right after last char in the list (if any). All chars need to be sequential.
 	UINT32 TextData::TextWord::addChar(UINT32 charIdx, const CHAR_DESC& desc)
 	{
-		UINT32 charWidth = desc.xAdvance;
-		if(mLastChar != nullptr)
-		{
-			UINT32 kerning = 0;
-			for(size_t j = 0; j < mLastChar->kerningPairs.size(); j++)
-			{
-				if(mLastChar->kerningPairs[j].otherCharId == desc.charId)
-				{
-					kerning = mLastChar->kerningPairs[j].amount;
-					break;
-				}
-			}
-
-			charWidth += kerning;
-		}
+		UINT32 charWidth = calcCharWidth(mLastChar, desc);
 
 		mWidth += charWidth;
 		mHeight = std::max(mHeight, desc.height);
@@ -45,6 +31,32 @@ namespace BansheeEngine
 			mCharsEnd = charIdx;
 
 		mLastChar = &desc;
+
+		return charWidth;
+	}
+
+	UINT32 TextData::TextWord::calcWidthWithChar(const CHAR_DESC& desc)
+	{
+		return mWidth + calcCharWidth(mLastChar, desc);
+	}
+
+	UINT32 TextData::TextWord::calcCharWidth(const CHAR_DESC* prevDesc, const CHAR_DESC& desc)
+	{
+		UINT32 charWidth = desc.xAdvance;
+		if (prevDesc != nullptr)
+		{
+			UINT32 kerning = 0;
+			for (size_t j = 0; j < prevDesc->kerningPairs.size(); j++)
+			{
+				if (prevDesc->kerningPairs[j].otherCharId == desc.charId)
+				{
+					kerning = prevDesc->kerningPairs[j].amount;
+					break;
+				}
+			}
+
+			charWidth += kerning;
+		}
 
 		return charWidth;
 	}
@@ -140,6 +152,37 @@ namespace BansheeEngine
 		calculateBounds();
 
 		return lastWord;
+	}
+
+	UINT32 TextData::TextLine::calcWidthWithChar(const CHAR_DESC& desc, bool space)
+	{
+		UINT32 charWidth = 0;
+
+		if (space)
+			charWidth = mTextData->getSpaceWidth();
+		else
+		{
+			UINT32 word = mWordsEnd;
+			if (!mIsEmpty)
+			{
+				TextWord& lastWord = TextData::WordBuffer[mWordsEnd];
+				if (lastWord.isSpacer())
+					charWidth = TextWord::calcCharWidth(nullptr, desc);
+				else
+					charWidth = lastWord.calcWidthWithChar(desc) - lastWord.getWidth();
+			}
+			else
+			{
+				charWidth = TextWord::calcCharWidth(nullptr, desc);
+			}
+		}
+
+		return mWidth + charWidth;
+	}
+
+	bool TextData::TextLine::isAtWordBoundary() const
+	{
+		return mIsEmpty || TextData::WordBuffer[mWordsEnd].isSpacer();
 	}
 
 	UINT32 TextData::TextLine::fillBuffer(UINT32 page, Vector2* vertices, Vector2* uvs, UINT32* indexes, UINT32 offset, UINT32 size) const
@@ -303,7 +346,7 @@ namespace BansheeEngine
 		}
 	}
 
-	TextData::TextData(const WString& text, const HFont& font, UINT32 fontSize, UINT32 width, UINT32 height, bool wordWrap)
+	TextData::TextData(const WString& text, const HFont& font, UINT32 fontSize, UINT32 width, UINT32 height, bool wordWrap, bool wordBreak)
 		:mFont(font), mChars(nullptr), mFontData(nullptr),
 		mNumChars(0), mWords(nullptr), mNumWords(0), mLines(nullptr), mNumLines(0), mPageInfos(nullptr), mNumPageInfos(0), mData(nullptr)
 	{
@@ -354,6 +397,44 @@ namespace BansheeEngine
 				continue;
 			}
 
+			if (widthIsLimited && wordWrap)
+			{
+				if (curLine->calcWidthWithChar(charDesc, charId == SPACE_CHAR) > width && !curLine->isEmpty())
+				{
+					bool atWordBoundary = charId == SPACE_CHAR || curLine->isAtWordBoundary();
+
+					if (!atWordBoundary) // Need to break word into multiple pieces, or move it to next line
+					{
+						if (wordBreak)
+						{
+							curLine->finalize(false);
+
+							curLineIdx = allocLine(this);
+							curLine = &LineBuffer[curLineIdx];
+
+							curHeight += mFontData->fontDesc.lineHeight;
+						}
+						else
+						{
+							UINT32 lastWordIdx = curLine->removeLastWord();
+							TextWord& lastWord = WordBuffer[lastWordIdx];
+
+							if (lastWord.calcWidthWithChar(charDesc) <= width) // If the word fits, attempt to add it to a new line
+							{
+								curLine->finalize(false);
+
+								curLineIdx = allocLine(this);
+								curLine = &LineBuffer[curLineIdx];
+
+								curHeight += mFontData->fontDesc.lineHeight;
+							}
+
+							curLine->addWord(lastWordIdx, lastWord);
+						}
+					}
+				}
+			}
+
 			if(charId != SPACE_CHAR)
 			{
 				curLine->add(charIdx, charDesc);
@@ -363,29 +444,6 @@ namespace BansheeEngine
 			{
 				curLine->addSpace();
 				addCharToPage(0, *mFontData);
-			}
-
-			if(widthIsLimited && curLine->getWidth() > width)
-			{
-				if(wordWrap)
-				{
-					assert(!curLine->isEmpty());
-
-					UINT32 lastWordIdx = curLine->removeLastWord();
-					TextWord& lastWord = WordBuffer[lastWordIdx];
-
-					if(lastWord.getWidth() <= width) // If the word fits, attempt to add it to a new line
-					{
-						curLine->finalize(false);
-
-						curLineIdx = allocLine(this);
-						curLine = &LineBuffer[curLineIdx];
-
-						curHeight += mFontData->fontDesc.lineHeight;
-					}
-
-					curLine->addWord(lastWordIdx, lastWord);
-				}
 			}
 
 			charIdx++;

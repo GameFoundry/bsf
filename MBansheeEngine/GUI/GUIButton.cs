@@ -6,10 +6,12 @@ namespace BansheeEngine
     public sealed class GUIButton : GUIElement
     {
         public delegate void OnClickDelegate();
+        public delegate void OnDoubleClickDelegate();
         public delegate void OnHoverDelegate();
         public delegate void OnOutDelegate();
 
         public event OnClickDelegate OnClick;
+        public event OnDoubleClickDelegate OnDoubleClick;
         public event OnHoverDelegate OnHover;
         public event OnOutDelegate OnOut;
 
@@ -42,6 +44,12 @@ namespace BansheeEngine
         {
             if (OnClick != null)
                 OnClick();
+        }
+
+        private void DoOnDoubleClick()
+        {
+            if (OnDoubleClick != null)
+                OnDoubleClick();
         }
 
         private void DoOnHover()

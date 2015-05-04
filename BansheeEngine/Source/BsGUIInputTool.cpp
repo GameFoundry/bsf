@@ -21,7 +21,7 @@ namespace BansheeEngine
 		mLineDescs.clear();
 
 		TextData textData(mTextDesc.text, mTextDesc.font, mTextDesc.fontSize, 
-			mTextDesc.width, mTextDesc.height, mTextDesc.wordWrap);
+			mTextDesc.width, mTextDesc.height, mTextDesc.wordWrap, mTextDesc.wordBreak);
 
 		UINT32 numLines = textData.getNumLines();
 		UINT32 numPages = textData.getNumPages();

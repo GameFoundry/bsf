@@ -309,6 +309,11 @@ namespace BansheeEngine
 
 		HFont font = Resources::instance().load<Font>(fontPath);
 
+		// Blank entry
+		GUIElementStyle blankStyle;
+
+		skin->setStyle("Blank", blankStyle);
+
 		// Label
 		GUIElementStyle labelStyle;
 		labelStyle.font = font;

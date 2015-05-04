@@ -181,10 +181,10 @@ namespace BansheeEngine
 	}
 
 	void GUIElementBase::_updateLayout(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I clipRect, 
-		UINT8 widgetDepth, UINT16 panelDepth, UINT16 panelDepthRange)
+		UINT8 widgetDepth, INT16 panelDepth, UINT16 panelDepthRangeMin, UINT16 panelDepthRangeMax)
 	{
 		_updateOptimalLayoutSizes(); // We calculate optimal sizes of all layouts as a pre-processing step, as they are requested often during update
-		_updateLayoutInternal(x, y, width, height, clipRect, widgetDepth, panelDepth, panelDepthRange);
+		_updateLayoutInternal(x, y, width, height, clipRect, widgetDepth, panelDepth, panelDepthRangeMin, panelDepthRangeMax);
 	}
 
 	void GUIElementBase::_updateOptimalLayoutSizes()
@@ -196,11 +196,11 @@ namespace BansheeEngine
 	}
 
 	void GUIElementBase::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I clipRect, 
-		UINT8 widgetDepth, UINT16 panelDepth, UINT16 panelDepthRange)
+		UINT8 widgetDepth, INT16 panelDepth, UINT16 panelDepthRangeMin, UINT16 panelDepthRangeMax)
 	{
 		for(auto& child : mChildren)
 		{
-			child->_updateLayoutInternal(x, y, width, height, clipRect, widgetDepth, panelDepth, panelDepthRange);
+			child->_updateLayoutInternal(x, y, width, height, clipRect, widgetDepth, panelDepth, panelDepthRangeMin, panelDepthRangeMax);
 		}
 	}
 

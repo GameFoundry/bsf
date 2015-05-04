@@ -194,9 +194,9 @@ namespace BansheeEngine
 	}
 
 	void GUIGameObjectField::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-		Rect2I clipRect, UINT8 widgetDepth, UINT16 panelDepth, UINT16 panelDepthRange)
+		Rect2I clipRect, UINT8 widgetDepth, INT16 panelDepth, UINT16 panelDepthRangeMin, UINT16 panelDepthRangeMax)
 	{
-		mLayout->_updateLayoutInternal(x, y, width, height, clipRect, widgetDepth, panelDepth, panelDepthRange);
+		mLayout->_updateLayoutInternal(x, y, width, height, clipRect, widgetDepth, panelDepth, panelDepthRangeMin, panelDepthRangeMax);
 	}
 
 	Vector2I GUIGameObjectField::_getOptimalSize() const

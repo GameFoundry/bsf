@@ -510,10 +510,16 @@ namespace BansheeEngine
 		return foundEntries;
 	}
 
-	ProjectLibrary::LibraryEntry* ProjectLibrary::findEntry(const Path& fullPath) const
+	ProjectLibrary::LibraryEntry* ProjectLibrary::findEntry(const Path& path) const
 	{
-		if (!mRootEntry->path.includes(fullPath))
-			return nullptr;
+		Path fullPath = path;
+		if (fullPath.isAbsolute())
+		{
+			if (!mResourcesFolder.includes(fullPath))
+				return nullptr;
+		}
+		else
+			fullPath.makeAbsolute(mResourcesFolder);
 
 		Path relPath = fullPath.getRelative(mRootEntry->path);
 		UINT32 numElems = relPath.getNumDirectories() + (relPath.isFile() ? 1 : 0);
@@ -586,9 +592,7 @@ namespace BansheeEngine
 		if (resource == nullptr)
 			return;
 
-		Path assetPath = mResourcesFolder;
-		assetPath.append(path);
-
+		Path assetPath = path;
 		assetPath.setExtension(assetPath.getWExtension() + L"." + ResourceImporter::DEFAULT_EXTENSION);
 
 		LibraryEntry* existingEntry = findEntry(assetPath);
@@ -613,15 +617,20 @@ namespace BansheeEngine
 
 	void ProjectLibrary::createFolderEntry(const Path& path)
 	{
-		if (FileSystem::isDirectory(path))
+		Path fullPath = path;
+		if (fullPath.isAbsolute())
+		{
+			if (!mResourcesFolder.includes(fullPath))
+				return;
+		}
+		else
+			fullPath.makeAbsolute(mResourcesFolder);
+
+		if (FileSystem::isDirectory(fullPath))
 			return; // Already exists
 
-		FileSystem::createDir(path);
-
-		if (!mResourcesFolder.includes(path))
-			return;
-
-		Path parentPath = path.getParent();
+		FileSystem::createDir(fullPath);
+		Path parentPath = fullPath.getParent();
 
 		DirectoryEntry* newEntryParent = nullptr;
 		LibraryEntry* newEntryParentLib = findEntry(parentPath);
@@ -633,24 +642,32 @@ namespace BansheeEngine
 
 		DirectoryEntry* newHierarchyParent = nullptr;
 		if (newEntryParent == nullptr) // New path parent doesn't exist, so we need to create the hierarchy
-			createInternalParentHierarchy(path, &newHierarchyParent, &newEntryParent);
+			createInternalParentHierarchy(fullPath, &newHierarchyParent, &newEntryParent);
 
-		addDirectoryInternal(newEntryParent, path);
+		addDirectoryInternal(newEntryParent, fullPath);
 	}
 
 	void ProjectLibrary::moveEntry(const Path& oldPath, const Path& newPath, bool overwrite)
 	{
-		if(FileSystem::isFile(oldPath) || FileSystem::isDirectory(oldPath))
-			FileSystem::move(oldPath, newPath, overwrite);
+		Path oldFullPath = oldPath;
+		if (!oldFullPath.isAbsolute())
+			oldFullPath.makeAbsolute(mResourcesFolder);
 
-		Path oldMetaPath = getMetaPath(oldPath);
-		Path newMetaPath = getMetaPath(newPath);
+		Path newFullPath = newPath;
+		if (!newFullPath.isAbsolute())
+			newFullPath.makeAbsolute(mResourcesFolder);
 
-		LibraryEntry* oldEntry = findEntry(oldPath);
+		if(FileSystem::isFile(oldFullPath) || FileSystem::isDirectory(oldFullPath))
+			FileSystem::move(oldFullPath, newFullPath, overwrite);
+
+		Path oldMetaPath = getMetaPath(oldFullPath);
+		Path newMetaPath = getMetaPath(newFullPath);
+
+		LibraryEntry* oldEntry = findEntry(oldFullPath);
 		if(oldEntry != nullptr) // Moving from the Resources folder
 		{
 			// Moved outside of Resources, delete entry & meta file
-			if (!mResourcesFolder.includes(newPath))
+			if (!mResourcesFolder.includes(newFullPath))
 			{
 				if(oldEntry->type == LibraryEntryType::File)
 				{
@@ -674,7 +691,7 @@ namespace BansheeEngine
 				if(findIter != parent->mChildren.end())
 					parent->mChildren.erase(findIter);
 
-				Path parentPath = newPath.getParent();
+				Path parentPath = newFullPath.getParent();
 
 				DirectoryEntry* newEntryParent = nullptr;
 				LibraryEntry* newEntryParentLib = findEntry(parentPath);
@@ -686,12 +703,12 @@ namespace BansheeEngine
 
 				DirectoryEntry* newHierarchyParent = nullptr;
 				if(newEntryParent == nullptr) // New path parent doesn't exist, so we need to create the hierarchy
-					createInternalParentHierarchy(newPath, &newHierarchyParent, &newEntryParent);
+					createInternalParentHierarchy(newFullPath, &newHierarchyParent, &newEntryParent);
 
 				newEntryParent->mChildren.push_back(oldEntry);
 				oldEntry->parent = newEntryParent;
-				oldEntry->path = newPath;
-				oldEntry->elementName = newPath.getWTail();
+				oldEntry->path = newFullPath;
+				oldEntry->elementName = newFullPath.getWTail();
 
 				if(oldEntry->type == LibraryEntryType::Directory) // Update child paths
 				{
@@ -723,22 +740,30 @@ namespace BansheeEngine
 		}
 		else // Moving from outside of the Resources folder (likely adding a new resource)
 		{
-			checkForModifications(newPath);
+			checkForModifications(newFullPath);
 		}
 	}
 
 	void ProjectLibrary::copyEntry(const Path& oldPath, const Path& newPath, bool overwrite)
 	{
-		if (!FileSystem::exists(oldPath))
+		Path oldFullPath = oldPath;
+		if (!oldFullPath.isAbsolute())
+			oldFullPath.makeAbsolute(mResourcesFolder);
+
+		Path newFullPath = newPath;
+		if (!newFullPath.isAbsolute())
+			newFullPath.makeAbsolute(mResourcesFolder);
+
+		if (!FileSystem::exists(oldFullPath))
 			return;
 
-		FileSystem::copy(oldPath, newPath, overwrite);
+		FileSystem::copy(oldFullPath, newFullPath, overwrite);
 
 		// Copying a file/folder outside of the Resources folder, no special handling needed
-		if (!mResourcesFolder.includes(newPath))
+		if (!mResourcesFolder.includes(newFullPath))
 			return;
 
-		Path parentPath = newPath.getParent();
+		Path parentPath = newFullPath.getParent();
 
 		DirectoryEntry* newEntryParent = nullptr;
 		LibraryEntry* newEntryParentLib = findEntry(parentPath);
@@ -750,10 +775,10 @@ namespace BansheeEngine
 
 		DirectoryEntry* newHierarchyParent = nullptr;
 		if (newEntryParent == nullptr) // New path parent doesn't exist, so we need to create the hierarchy
-			createInternalParentHierarchy(newPath, &newHierarchyParent, &newEntryParent);
+			createInternalParentHierarchy(newFullPath, &newHierarchyParent, &newEntryParent);
 
 		// If the source is outside of Resources folder, just plain import the copy
-		LibraryEntry* oldEntry = findEntry(oldPath);
+		LibraryEntry* oldEntry = findEntry(oldFullPath);
 		if (oldEntry == nullptr)
 		{
 			checkForModifications(newHierarchyParent->path);
@@ -762,19 +787,19 @@ namespace BansheeEngine
 
 		// Both source and destination are within Resources folder, need to preserve import options on the copies
 		LibraryEntry* newEntry = nullptr;
-		if (FileSystem::isFile(newPath))
+		if (FileSystem::isFile(newFullPath))
 		{
 			assert(oldEntry->type == LibraryEntryType::File);
 			ResourceEntry* oldResEntry = static_cast<ResourceEntry*>(oldEntry);
 
-			newEntry = addResourceInternal(newEntryParent, newPath, oldResEntry->meta->getImportOptions(), true);
+			newEntry = addResourceInternal(newEntryParent, newFullPath, oldResEntry->meta->getImportOptions(), true);
 		}
 		else
 		{
 			assert(oldEntry->type == LibraryEntryType::File);
 			DirectoryEntry* oldDirEntry = static_cast<DirectoryEntry*>(oldEntry);
 
-			DirectoryEntry* newDirEntry = addDirectoryInternal(newEntryParent, newPath);
+			DirectoryEntry* newDirEntry = addDirectoryInternal(newEntryParent, newFullPath);
 			newEntry = newDirEntry;
 
 			Stack<std::tuple<DirectoryEntry*, DirectoryEntry*>> todo;
@@ -813,17 +838,21 @@ namespace BansheeEngine
 
 	void ProjectLibrary::deleteEntry(const Path& path)
 	{
-		if(FileSystem::exists(path))
-			FileSystem::remove(path);
+		Path fullPath = path;
+		if (!fullPath.isAbsolute())
+			fullPath.makeAbsolute(mResourcesFolder);
 
-		LibraryEntry* entry = findEntry(path);
+		if(FileSystem::exists(fullPath))
+			FileSystem::remove(fullPath);
+
+		LibraryEntry* entry = findEntry(fullPath);
 		if(entry != nullptr)
 		{
 			if(entry->type == LibraryEntryType::File)
 			{
 				deleteResourceInternal(static_cast<ResourceEntry*>(entry));
 
-				Path metaPath = getMetaPath(path);
+				Path metaPath = getMetaPath(fullPath);
 				if(FileSystem::isFile(metaPath))
 					FileSystem::remove(metaPath);
 			}
