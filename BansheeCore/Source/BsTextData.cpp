@@ -405,7 +405,11 @@ namespace BansheeEngine
 
 					if (!atWordBoundary) // Need to break word into multiple pieces, or move it to next line
 					{
-						if (wordBreak)
+						UINT32 lastWordIdx = curLine->removeLastWord();
+						TextWord& lastWord = WordBuffer[lastWordIdx];
+
+						bool wordFits = lastWord.calcWidthWithChar(charDesc) <= width;
+						if (wordFits)
 						{
 							curLine->finalize(false);
 
@@ -413,14 +417,14 @@ namespace BansheeEngine
 							curLine = &LineBuffer[curLineIdx];
 
 							curHeight += mFontData->fontDesc.lineHeight;
+
+							curLine->addWord(lastWordIdx, lastWord);
 						}
 						else
 						{
-							UINT32 lastWordIdx = curLine->removeLastWord();
-							TextWord& lastWord = WordBuffer[lastWordIdx];
-
-							if (lastWord.calcWidthWithChar(charDesc) <= width) // If the word fits, attempt to add it to a new line
+							if (wordBreak)
 							{
+								curLine->addWord(lastWordIdx, lastWord);
 								curLine->finalize(false);
 
 								curLineIdx = allocLine(this);
@@ -428,9 +432,30 @@ namespace BansheeEngine
 
 								curHeight += mFontData->fontDesc.lineHeight;
 							}
+							else
+							{
+								if (!curLine->isEmpty()) // Add new line unless current line is empty (to avoid constantly moving the word to new lines)
+								{
+									curLine->finalize(false);
 
-							curLine->addWord(lastWordIdx, lastWord);
+									curLineIdx = allocLine(this);
+									curLine = &LineBuffer[curLineIdx];
+
+									curHeight += mFontData->fontDesc.lineHeight;
+								}
+
+								curLine->addWord(lastWordIdx, lastWord);
+							}
 						}
+					}
+					else
+					{
+						curLine->finalize(false);
+
+						curLineIdx = allocLine(this);
+						curLine = &LineBuffer[curLineIdx];
+
+						curHeight += mFontData->fontDesc.lineHeight;
 					}
 				}
 			}

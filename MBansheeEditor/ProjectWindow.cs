@@ -384,7 +384,6 @@ namespace BansheeEditor
             overlayBtn.OnDoubleClick += () => OnEntryDoubleClicked(entry.Path);
 
             overlayPanel.AddElement(overlayBtn);
-            Debug.Log("OVERLAY BTN: " + entryButtonBounds + " - " + overlayBtn.Bounds);
 
             if (cutPaths.Contains(entry.Path))
             {
@@ -411,7 +410,6 @@ namespace BansheeEditor
 
         private void OnEntryClicked(string path)
         {
-            Debug.Log("ENTRY CLICKED");
             Select(new List<string> { path });
 
             Selection.resourcePaths = new string[] {path};
@@ -428,8 +426,6 @@ namespace BansheeEditor
 
         private void OnCatchAllClicked()
         {
-            Debug.Log("CATCH ALL CLICKED");
-
             Select(new List<string> { });
 
             Selection.resourcePaths = new string[] { };
