@@ -23,7 +23,6 @@ namespace BansheeEngine
 		{
 			parentArea = calcBounds(parent);
 
-			// TODO - Implement this properly
 			if (parent->_getType() == GUIElementBase::Type::Panel && (relativeTo == nullptr || relativeTo == parent))
 			{
 				parentArea.x = 0;

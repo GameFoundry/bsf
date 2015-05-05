@@ -3,6 +3,7 @@
 #include "BsGUIElementStyle.h"
 
 #include "BsGUILabel.h"
+#include "BsGUITexture.h"
 #include "BsGUIButton.h"
 #include "BsGUIInputBox.h"
 #include "BsGUIToggle.h"
@@ -313,6 +314,7 @@ namespace BansheeEngine
 		GUIElementStyle blankStyle;
 
 		skin->setStyle("Blank", blankStyle);
+		skin->setStyle(GUITexture::getGUITypeName(), blankStyle);
 
 		// Label
 		GUIElementStyle labelStyle;

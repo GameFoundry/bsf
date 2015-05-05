@@ -240,6 +240,7 @@
     <ClInclude Include="Include\BsScriptBuildManager.h" />
     <ClInclude Include="Include\BsScriptCodeEditor.h" />
     <ClInclude Include="Include\BsScriptDragDropManager.h" />
+    <ClInclude Include="Include\BsScriptDropTarget.h" />
     <ClInclude Include="Include\BsScriptEditorApplication.h" />
     <ClInclude Include="Include\BsScriptEditorBuiltin.h" />
     <ClInclude Include="Include\BsScriptEditorPrerequisites.h" />
@@ -283,6 +284,7 @@
     <ClCompile Include="Source\BsGUIGameObjectField.cpp" />
     <ClCompile Include="Source\BsGUIResourceField.cpp" />
     <ClCompile Include="Source\BsScriptBrowseDialog.cpp" />
+    <ClCompile Include="Source\BsScriptDropTarget.cpp" />
     <ClCompile Include="Source\BsScriptEditorApplication.cpp" />
     <ClCompile Include="Source\BsScriptEditorBuiltin.cpp" />
     <ClCompile Include="Source\BsScriptEditorPlugin.cpp" />

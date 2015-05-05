@@ -15,6 +15,24 @@ the same and the only variable will be the 4byte random number, which can someti
 ----------------------------------------------------------------------
 Project window
 
+C# DropTarget
+ - Requires an EditorWindow parent (so I can retrieve its coordinates)
+ - Bounds - settable area relative to the parent window
+ - Callbacks for OnEnter, OnLeave, OnDrag, OnDrop
+ - C# version only works for file drop types, others are ignored
+ - GetDroppedFiles() returns a list of paths
+
+Need faster GUILayoutUtility::calcBounds:
+ - WAY too much recursion and repetition
+  - Algorithm is 2 * n^3!!
+  - One N for calcBounds recursion
+  - One N for iteration over children for _calculateLayoutSizeRange (multiplied by two as I do it twice in each calcBounds call)
+  - One N for _calculateLayoutSizeRange itself being recursive
+ - Consider an algorithm that first locates the parent GUIPanel and then traverses down
+ - Extend _calculateLayoutSizeRange so it can accept a precalculated array of child size ranges
+  - Then I can hopefully avoid repetition and also merge two code paths for layout size range calculation
+ - CONSIDER actually performing the layout update, and just caching the results
+
 Simple tasks:
  - Add C# Renderable & Material interface
  - Add C# context menu support for GUI elements

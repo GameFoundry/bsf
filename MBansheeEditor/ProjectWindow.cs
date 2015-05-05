@@ -340,6 +340,8 @@ namespace BansheeEditor
             catchAll.OnClick += OnCatchAllClicked;
 
             contentUnderlayPanel.AddElement(catchAll);
+
+            Debug.Log("REFRESHED " + Time.FrameNumber);
         }
 
         private void CreateEntryGUI(GUILayout parentLayout, int tileSize, bool grid, LibraryEntry entry)
@@ -413,6 +415,8 @@ namespace BansheeEditor
             Select(new List<string> { path });
 
             Selection.resourcePaths = new string[] {path};
+
+            Debug.Log("CLICKED " + Time.FrameNumber);
         }
 
         private void OnEntryDoubleClicked(string path)
