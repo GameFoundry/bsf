@@ -50,10 +50,10 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetBounds", &ScriptDropTarget::internal_SetBounds);
 		metaData.scriptClass->addInternalCall("Internal_GetFilePaths", &ScriptDropTarget::internal_GetFilePaths);
 
-		onEnterThunk = (OnEnterThunkDef)metaData.scriptClass->getMethod("InternalDoOnEnter")->getThunk();
-		onMoveThunk = (OnMoveDef)metaData.scriptClass->getMethod("InternalDoOnDrag")->getThunk();
+		onEnterThunk = (OnEnterThunkDef)metaData.scriptClass->getMethod("InternalDoOnEnter", 2)->getThunk();
+		onMoveThunk = (OnMoveDef)metaData.scriptClass->getMethod("InternalDoOnDrag", 2)->getThunk();
 		onLeaveThunk = (OnLeaveDef)metaData.scriptClass->getMethod("InternalDoOnLeave")->getThunk();
-		onDropThunk = (OnDropThunkDef)metaData.scriptClass->getMethod("InternalDoOnDrop")->getThunk();
+		onDropThunk = (OnDropThunkDef)metaData.scriptClass->getMethod("InternalDoOnDrop", 2)->getThunk();
 	}
 
 	void ScriptDropTarget::internal_CreateInstance(MonoObject* instance, ScriptEditorWindow* editorWindow)

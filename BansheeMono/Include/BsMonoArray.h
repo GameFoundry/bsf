@@ -2,6 +2,7 @@
 
 #include "BsMonoPrerequisites.h"
 #include "BsScriptMeta.h"
+#include "BsMonoManager.h"
 #include <mono/jit/jit.h>
 
 namespace BansheeEngine

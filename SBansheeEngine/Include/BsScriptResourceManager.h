@@ -51,6 +51,30 @@ namespace BansheeEngine
 		 * @note Throws an exception if resource for the handle already exists.
 		 * 		 Initializes the ScriptResource with an existing managed instance.
 		 */
+		ScriptShader* createScriptShader(const HShader& resourceHandle);
+
+		/**
+		 * @note Throws an exception if resource for the handle already exists.
+		 * 		 Initializes the ScriptResource with an existing managed instance.
+		 */
+		ScriptShader* createScriptShader(MonoObject* existingInstance, const HShader& resourceHandle);
+
+		/**
+		 * @note Throws an exception if resource for the handle already exists.
+		 * 		 Initializes the ScriptResource with an existing managed instance.
+		 */
+		ScriptMaterial* createScriptMaterial(const HMaterial& resourceHandle);
+
+		/**
+		 * @note Throws an exception if resource for the handle already exists.
+		 * 		 Initializes the ScriptResource with an existing managed instance.
+		 */
+		ScriptMaterial* createScriptMaterial(MonoObject* existingInstance, const HMaterial& resourceHandle);
+
+		/**
+		 * @note Throws an exception if resource for the handle already exists.
+		 * 		 Initializes the ScriptResource with an existing managed instance.
+		 */
 		ScriptPlainText* createScriptPlainText(const HPlainText& resourceHandle);
 
 		/**
@@ -104,7 +128,27 @@ namespace BansheeEngine
 		/**
 		 * @note Returns nullptr if script resource doesn't exist.
 		 */
-		ScriptTexture2D* getScriptTexture(const HTexture& resourceHandle);
+		ScriptTexture2D* getScriptTexture2D(const HTexture& resourceHandle);
+
+		/**
+		 * @note Returns nullptr if script resource doesn't exist.
+		 */
+		ScriptTexture3D* getScriptTexture3D(const HTexture& resourceHandle);
+
+		/**
+		 * @note Returns nullptr if script resource doesn't exist.
+		 */
+		ScriptTextureCube* getScriptTextureCube(const HTexture& resourceHandle);
+
+		/**
+		 * @note Returns nullptr if script resource doesn't exist.
+		 */
+		ScriptShader* getScriptShader(const HShader& resourceHandle);
+
+		/**
+		 * @note Returns nullptr if script resource doesn't exist.
+		 */
+		ScriptMaterial* getScriptMaterial(const HMaterial& resourceHandle);
 
 		/**
 		 * @note Returns nullptr if script resource doesn't exist.

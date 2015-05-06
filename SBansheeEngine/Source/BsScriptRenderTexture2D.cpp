@@ -149,7 +149,7 @@ namespace BansheeEngine
 			{
 				HTexture colorTex = tex->getBindableColorTexture(i);
 
-				ScriptTexture2D* scriptSurface = ScriptResourceManager::instance().getScriptTexture(colorTex);
+				ScriptTexture2D* scriptSurface = ScriptResourceManager::instance().getScriptTexture2D(colorTex);
 				if (scriptSurface == nullptr)
 					scriptSurface = ScriptResourceManager::instance().createScriptTexture2D(colorTex);
 
@@ -164,7 +164,7 @@ namespace BansheeEngine
 
 			HTexture colorTex = tex->getBindableColorTexture();
 
-			ScriptTexture2D* scriptSurface = ScriptResourceManager::instance().getScriptTexture(colorTex);
+			ScriptTexture2D* scriptSurface = ScriptResourceManager::instance().getScriptTexture2D(colorTex);
 			if (scriptSurface == nullptr)
 				scriptSurface = ScriptResourceManager::instance().createScriptTexture2D(colorTex);
 
@@ -187,7 +187,7 @@ namespace BansheeEngine
 			colorTex = tex->getBindableDepthStencilTexture();
 		}
 
-		ScriptTexture2D* scriptSurface = ScriptResourceManager::instance().getScriptTexture(colorTex);
+		ScriptTexture2D* scriptSurface = ScriptResourceManager::instance().getScriptTexture2D(colorTex);
 		if (scriptSurface == nullptr)
 			scriptSurface = ScriptResourceManager::instance().createScriptTexture2D(colorTex);
 

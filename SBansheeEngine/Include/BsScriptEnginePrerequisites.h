@@ -30,6 +30,8 @@ namespace BansheeEngine
 	class ScriptTextureCube;
 	class ScriptPlainText;
 	class ScriptScriptCode;
+	class ScriptShader;
+	class ScriptMaterial;
 	class ScriptGUIElementStyle;
 	class ScriptGUIElementStateStyle;
 	class ScriptGUILayout;

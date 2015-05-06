@@ -129,10 +129,18 @@ namespace BansheeEngine
 			return mono_get_double_class();
 		case ScriptPrimitiveType::String:
 			return mono_get_string_class();
-		case ScriptPrimitiveType::TextureRef:
-			return ScriptAssemblyManager::instance().getTextureClass()->_getInternalClass();
+		case ScriptPrimitiveType::Texture2DRef:
+			return ScriptAssemblyManager::instance().getTexture2DClass()->_getInternalClass();
+		case ScriptPrimitiveType::Texture3DRef:
+			return ScriptAssemblyManager::instance().getTexture3DClass()->_getInternalClass();
+		case ScriptPrimitiveType::TextureCubeRef:
+			return ScriptAssemblyManager::instance().getTextureCubeClass()->_getInternalClass();
 		case ScriptPrimitiveType::SpriteTextureRef:
 			return ScriptAssemblyManager::instance().getSpriteTextureClass()->_getInternalClass();
+		case ScriptPrimitiveType::ShaderRef:
+			return ScriptAssemblyManager::instance().getShaderClass()->_getInternalClass();
+		case ScriptPrimitiveType::MaterialRef:
+			return ScriptAssemblyManager::instance().getMaterialClass()->_getInternalClass();
 		case ScriptPrimitiveType::ManagedResourceRef:
 			return ScriptAssemblyManager::instance().getManagedResourceClass()->_getInternalClass();
 		case ScriptPrimitiveType::PlainTextRef:

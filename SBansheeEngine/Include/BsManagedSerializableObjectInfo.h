@@ -21,11 +21,15 @@ namespace BansheeEngine
 		Float,
 		Double,
 		String,
-		TextureRef,
+		Texture2DRef,
+		Texture3DRef,
+		TextureCubeRef,
 		SpriteTextureRef,
 		ManagedResourceRef,
 		PlainTextRef,
 		ScriptCodeRef,
+		ShaderRef,
+		MaterialRef,
 		SceneObjectRef,
 		ComponentRef
 	};

@@ -8,6 +8,8 @@
 #include "BsScriptSpriteTexture.h"
 #include "BsScriptPlainText.h"
 #include "BsScriptScriptCode.h"
+#include "BsScriptShader.h"
+#include "BsScriptMaterial.h"
 #include "BsScriptFont.h"
 #include "BsScriptManagedResource.h"
 #include "BsScriptAssemblyManager.h"
@@ -20,7 +22,7 @@ namespace BansheeEngine
 
 	ScriptTexture2D* ScriptResourceManager::createScriptTexture2D(const HTexture& resourceHandle)
 	{
-		MonoClass* textureClass = ScriptAssemblyManager::instance().getTextureClass();
+		MonoClass* textureClass = ScriptAssemblyManager::instance().getTexture2DClass();
 		MonoObject* monoInstance = textureClass->createInstance();
 
 		return createScriptTexture2D(monoInstance, resourceHandle);
@@ -28,7 +30,7 @@ namespace BansheeEngine
 
 	ScriptTexture3D* ScriptResourceManager::createScriptTexture3D(const HTexture& resourceHandle)
 	{
-		MonoClass* textureClass = ScriptAssemblyManager::instance().getTextureClass();
+		MonoClass* textureClass = ScriptAssemblyManager::instance().getTexture3DClass();
 		MonoObject* monoInstance = textureClass->createInstance();
 
 		return createScriptTexture3D(monoInstance, resourceHandle);
@@ -36,7 +38,7 @@ namespace BansheeEngine
 
 	ScriptTextureCube* ScriptResourceManager::createScriptTextureCube(const HTexture& resourceHandle)
 	{
-		MonoClass* textureClass = ScriptAssemblyManager::instance().getTextureClass();
+		MonoClass* textureClass = ScriptAssemblyManager::instance().getTextureCubeClass();
 		MonoObject* monoInstance = textureClass->createInstance();
 
 		return createScriptTextureCube(monoInstance, resourceHandle);
@@ -76,6 +78,48 @@ namespace BansheeEngine
 #endif
 
 		ScriptTextureCube* scriptResource = new (bs_alloc<ScriptTextureCube>()) ScriptTextureCube(instance, resourceHandle);
+		mScriptResources[uuid] = scriptResource;
+
+		return scriptResource;
+	}
+
+	ScriptShader* ScriptResourceManager::createScriptShader(const HShader& resourceHandle)
+	{
+		MonoClass* shaderClass = ScriptAssemblyManager::instance().getShaderClass();
+		MonoObject* monoInstance = shaderClass->createInstance();
+
+		return createScriptShader(monoInstance, resourceHandle);
+	}
+
+	ScriptShader* ScriptResourceManager::createScriptShader(MonoObject* instance, const HShader& resourceHandle)
+	{
+		const String& uuid = resourceHandle.getUUID();
+#if BS_DEBUG_MODE
+		throwExceptionIfInvalidOrDuplicate(uuid);
+#endif
+
+		ScriptShader* scriptResource = new (bs_alloc<ScriptShader>()) ScriptShader(instance, resourceHandle);
+		mScriptResources[uuid] = scriptResource;
+
+		return scriptResource;
+	}
+
+	ScriptMaterial* ScriptResourceManager::createScriptMaterial(const HMaterial& resourceHandle)
+	{
+		MonoClass* materialClass = ScriptAssemblyManager::instance().getMaterialClass();
+		MonoObject* monoInstance = materialClass->createInstance();
+
+		return createScriptMaterial(monoInstance, resourceHandle);
+	}
+
+	ScriptMaterial* ScriptResourceManager::createScriptMaterial(MonoObject* instance, const HMaterial& resourceHandle)
+	{
+		const String& uuid = resourceHandle.getUUID();
+#if BS_DEBUG_MODE
+		throwExceptionIfInvalidOrDuplicate(uuid);
+#endif
+
+		ScriptMaterial* scriptResource = new (bs_alloc<ScriptMaterial>()) ScriptMaterial(instance, resourceHandle);
 		mScriptResources[uuid] = scriptResource;
 
 		return scriptResource;
@@ -176,14 +220,34 @@ namespace BansheeEngine
 		return scriptResource;
 	}
 
-	ScriptTexture2D* ScriptResourceManager::getScriptTexture(const HTexture& resourceHandle)
+	ScriptTexture2D* ScriptResourceManager::getScriptTexture2D(const HTexture& resourceHandle)
 	{
 		return static_cast<ScriptTexture2D*>(getScriptResource(resourceHandle.getUUID()));
+	}
+
+	ScriptTexture3D* ScriptResourceManager::getScriptTexture3D(const HTexture& resourceHandle)
+	{
+		return static_cast<ScriptTexture3D*>(getScriptResource(resourceHandle.getUUID()));
+	}
+
+	ScriptTextureCube* ScriptResourceManager::getScriptTextureCube(const HTexture& resourceHandle)
+	{
+		return static_cast<ScriptTextureCube*>(getScriptResource(resourceHandle.getUUID()));
 	}
 
 	ScriptSpriteTexture* ScriptResourceManager::getScriptSpriteTexture(const HSpriteTexture& resourceHandle)
 	{
 		return static_cast<ScriptSpriteTexture*>(getScriptResource(resourceHandle.getUUID()));
+	}
+
+	ScriptShader* ScriptResourceManager::getScriptShader(const HShader& resourceHandle)
+	{
+		return static_cast<ScriptShader*>(getScriptResource(resourceHandle.getUUID()));
+	}
+
+	ScriptMaterial* ScriptResourceManager::getScriptMaterial(const HMaterial& resourceHandle)
+	{
+		return static_cast<ScriptMaterial*>(getScriptResource(resourceHandle.getUUID()));
 	}
 
 	ScriptPlainText* ScriptResourceManager::getScriptPlainText(const HPlainText& resourceHandle)
@@ -224,11 +288,29 @@ namespace BansheeEngine
 		switch (resTypeID)
 		{
 		case TID_Texture:
-			return createScriptTexture2D(static_resource_cast<Texture>(resource));
+		{
+			HTexture texture = static_resource_cast<Texture>(resource);
+			TextureType type = texture->getProperties().getTextureType();
+
+			if (type == TEX_TYPE_3D)
+				return createScriptTexture3D(texture);
+			else if (type == TEX_TYPE_CUBE_MAP)
+				return createScriptTextureCube(texture);
+			else
+				return createScriptTexture2D(texture);
+		}
 		case TID_SpriteTexture:
 			return createScriptSpriteTexture(static_resource_cast<SpriteTexture>(resource));
 		case TID_Font:
 			return createScriptFont(static_resource_cast<Font>(resource));
+		case TID_PlainText:
+			return createScriptPlainText(static_resource_cast<PlainText>(resource));
+		case TID_ScriptCode:
+			return createScriptScriptCode(static_resource_cast<ScriptCode>(resource));
+		case TID_Shader:
+			return createScriptShader(static_resource_cast<Shader>(resource));
+		case TID_Material:
+			return createScriptMaterial(static_resource_cast<Material>(resource));
 		case TID_ManagedResource:
 			BS_EXCEPT(InternalErrorException, "Managed resources must have a managed instance by default, this call is invalid.")
 				break;

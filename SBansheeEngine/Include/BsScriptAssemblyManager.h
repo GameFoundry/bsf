@@ -27,8 +27,12 @@ namespace BansheeEngine
 		MonoClass* getMissingComponentClass() const { return mMissingComponentClass; }
 		MonoClass* getSceneObjectClass() const { return mSceneObjectClass; }
 		MonoClass* getManagedResourceClass() const { return mManagedResourceClass; }
-		MonoClass* getTextureClass() const { return mTextureClass; }
+		MonoClass* getTexture2DClass() const { return mTexture2DClass; }
+		MonoClass* getTexture3DClass() const { return mTexture3DClass; }
+		MonoClass* getTextureCubeClass() const { return mTextureCubeClass; }
 		MonoClass* getSpriteTextureClass() const { return mSpriteTextureClass; }
+		MonoClass* getShaderClass() const { return mShaderClass; }
+		MonoClass* getMaterialClass() const { return mMaterialClass; }
 		MonoClass* getFontClass() const { return mFontClass; }
 		MonoClass* getPlainTextClass() const { return mPlainTextClass; }
 		MonoClass* getScriptCodeClass() const { return mScriptCodeClass; }
@@ -46,8 +50,12 @@ namespace BansheeEngine
 		MonoClass* mSceneObjectClass;
 		MonoClass* mMissingComponentClass;
 
-		MonoClass* mTextureClass;
+		MonoClass* mTexture2DClass;
+		MonoClass* mTexture3DClass;
+		MonoClass* mTextureCubeClass;
 		MonoClass* mSpriteTextureClass;
+		MonoClass* mShaderClass;
+		MonoClass* mMaterialClass;
 		MonoClass* mManagedResourceClass;
 		MonoClass* mFontClass;
 		MonoClass* mPlainTextClass;

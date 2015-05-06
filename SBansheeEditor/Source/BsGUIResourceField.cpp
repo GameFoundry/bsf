@@ -238,7 +238,10 @@ namespace BansheeEngine
 			{
 			case TID_Texture:
 			{
-				if (ScriptAssemblyManager::instance().getTextureClass()->isSubClassOf(acceptedClass))
+				// TODO - Need to distinguish from 2D/3D/Cube
+				if (ScriptAssemblyManager::instance().getTexture2DClass()->isSubClassOf(acceptedClass) ||
+					ScriptAssemblyManager::instance().getTexture3DClass()->isSubClassOf(acceptedClass) ||
+					ScriptAssemblyManager::instance().getTextureCubeClass()->isSubClassOf(acceptedClass))
 				{
 					setUUID(uuid);
 					found = true;
@@ -248,6 +251,51 @@ namespace BansheeEngine
 			case TID_SpriteTexture:
 			{
 				if (ScriptAssemblyManager::instance().getSpriteTextureClass()->isSubClassOf(acceptedClass))
+				{
+					setUUID(uuid);
+					found = true;
+				}
+			}
+				break;
+			case TID_Font:
+			{
+				if (ScriptAssemblyManager::instance().getFontClass()->isSubClassOf(acceptedClass))
+				{
+					setUUID(uuid);
+					found = true;
+				}
+			}
+				break;
+			case TID_PlainText:
+			{
+				if (ScriptAssemblyManager::instance().getPlainTextClass()->isSubClassOf(acceptedClass))
+				{
+					setUUID(uuid);
+					found = true;
+				}
+			}
+				break;
+			case TID_ScriptCode:
+			{
+				if (ScriptAssemblyManager::instance().getScriptCodeClass()->isSubClassOf(acceptedClass))
+				{
+					setUUID(uuid);
+					found = true;
+				}
+			}
+				break;
+			case TID_Shader:
+			{
+				if (ScriptAssemblyManager::instance().getShaderClass()->isSubClassOf(acceptedClass))
+				{
+					setUUID(uuid);
+					found = true;
+				}
+			}
+				break;
+			case TID_Material:
+			{
+				if (ScriptAssemblyManager::instance().getMaterialClass()->isSubClassOf(acceptedClass))
 				{
 					setUUID(uuid);
 					found = true;

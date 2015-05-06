@@ -85,6 +85,7 @@
     <Compile Include="InputConfiguration.cs" />
     <Compile Include="LocString.cs" />
     <Compile Include="ManagedResource.cs" />
+    <Compile Include="Material.cs" />
     <Compile Include="Math\AABox.cs" />
     <Compile Include="Math\BsRect3.cs" />
     <Compile Include="Math\Degree.cs" />
@@ -118,6 +119,7 @@
     <Compile Include="SerializableProperty.cs" />
     <Compile Include="SerializeObject.cs" />
     <Compile Include="SerializeField.cs" />
+    <Compile Include="Shader.cs" />
     <Compile Include="SpriteTexture.cs" />
     <Compile Include="StringTable.cs" />
     <Compile Include="Texture.cs" />

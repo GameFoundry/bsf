@@ -15,10 +15,11 @@ namespace BansheeEngine
 {
 	ScriptAssemblyManager::ScriptAssemblyManager()
 		:mBaseTypesInitialized(false), mSerializeObjectAttribute(nullptr), mDontSerializeFieldAttribute(nullptr), 
-		mComponentClass(nullptr), mSceneObjectClass(nullptr), mTextureClass(nullptr), mSpriteTextureClass(nullptr),
+		mComponentClass(nullptr), mSceneObjectClass(nullptr), mTexture2DClass(nullptr), mSpriteTextureClass(nullptr),
 		mSerializeFieldAttribute(nullptr), mHideInInspectorAttribute(nullptr), mSystemArrayClass(nullptr), mSystemGenericListClass(nullptr),
 		mSystemGenericDictionaryClass(nullptr), mManagedResourceClass(nullptr), mFontClass(nullptr), mMissingComponentClass(nullptr),
-		mPlainTextClass(nullptr), mScriptCodeClass(nullptr)
+		mPlainTextClass(nullptr), mScriptCodeClass(nullptr), mShaderClass(nullptr), mMaterialClass(nullptr), mTexture3DClass(nullptr),
+		mTextureCubeClass(nullptr)
 	{
 
 	}
@@ -265,10 +266,22 @@ namespace BansheeEngine
 				return typeInfo;
 			}
 		case MONO_TYPE_CLASS:
-			if(monoClass->isSubClassOf(mTextureClass))
+			if(monoClass->isSubClassOf(mTexture2DClass))
 			{
 				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr<ManagedSerializableTypeInfoPrimitive>();
-				typeInfo->mType = ScriptPrimitiveType::TextureRef;
+				typeInfo->mType = ScriptPrimitiveType::Texture2DRef;
+				return typeInfo;
+			}
+			if (monoClass->isSubClassOf(mTexture3DClass))
+			{
+				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr<ManagedSerializableTypeInfoPrimitive>();
+				typeInfo->mType = ScriptPrimitiveType::Texture3DRef;
+				return typeInfo;
+			}
+			if (monoClass->isSubClassOf(mTextureCubeClass))
+			{
+				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr<ManagedSerializableTypeInfoPrimitive>();
+				typeInfo->mType = ScriptPrimitiveType::TextureCubeRef;
 				return typeInfo;
 			}
 			else if(monoClass->isSubClassOf(mSpriteTextureClass))
@@ -281,6 +294,18 @@ namespace BansheeEngine
 			{
 				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::ManagedResourceRef;
+				return typeInfo;
+			}
+			else if (monoClass->isSubClassOf(mShaderClass))
+			{
+				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr<ManagedSerializableTypeInfoPrimitive>();
+				typeInfo->mType = ScriptPrimitiveType::ShaderRef;
+				return typeInfo;
+			}
+			else if (monoClass->isSubClassOf(mMaterialClass))
+			{
+				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr<ManagedSerializableTypeInfoPrimitive>();
+				typeInfo->mType = ScriptPrimitiveType::MaterialRef;
 				return typeInfo;
 			}
 			else if (monoClass->isSubClassOf(mPlainTextClass))
@@ -398,8 +423,12 @@ namespace BansheeEngine
 		mMissingComponentClass = nullptr;
 
 		mManagedResourceClass = nullptr;
-		mTextureClass = nullptr;
+		mTexture2DClass = nullptr;
+		mTexture3DClass = nullptr;
+		mTextureCubeClass = nullptr;
 		mSpriteTextureClass = nullptr;
+		mShaderClass = nullptr;
+		mMaterialClass = nullptr;
 		mFontClass = nullptr;
 		mPlainTextClass = nullptr;
 		mScriptCodeClass = nullptr;
@@ -455,13 +484,29 @@ namespace BansheeEngine
 		if (mManagedResourceClass == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find ManagedResource managed class.");
 
-		mTextureClass = bansheeEngineAssembly->getClass("BansheeEngine", "Texture2D");
-		if(mTextureClass == nullptr)
+		mTexture2DClass = bansheeEngineAssembly->getClass("BansheeEngine", "Texture2D");
+		if(mTexture2DClass == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find Texture2D managed class.");
+
+		mTexture3DClass = bansheeEngineAssembly->getClass("BansheeEngine", "Texture3D");
+		if (mTexture3DClass == nullptr)
+			BS_EXCEPT(InvalidStateException, "Cannot find Texture3D managed class.");
+
+		mTextureCubeClass = bansheeEngineAssembly->getClass("BansheeEngine", "TextureCube");
+		if (mTextureCubeClass == nullptr)
+			BS_EXCEPT(InvalidStateException, "Cannot find TextureCube managed class.");
 
 		mSpriteTextureClass = bansheeEngineAssembly->getClass("BansheeEngine", "SpriteTexture");
 		if(mSpriteTextureClass == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find SpriteTexture managed class.");
+
+		mShaderClass = bansheeEngineAssembly->getClass("BansheeEngine", "Shader");
+		if (mShaderClass == nullptr)
+			BS_EXCEPT(InvalidStateException, "Cannot find Shader managed class.");
+
+		mMaterialClass = bansheeEngineAssembly->getClass("BansheeEngine", "Material");
+		if (mMaterialClass == nullptr)
+			BS_EXCEPT(InvalidStateException, "Cannot find Material managed class.");
 
 		mFontClass = bansheeEngineAssembly->getClass("BansheeEngine", "Font");
 		if (mFontClass == nullptr)

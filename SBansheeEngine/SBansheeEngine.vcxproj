@@ -285,6 +285,7 @@
     <ClInclude Include="Include\BsScriptInputConfiguration.h" />
     <ClInclude Include="Include\BsScriptMacros.h" />
     <ClInclude Include="Include\BsScriptManagedResource.h" />
+    <ClInclude Include="Include\BsScriptMaterial.h" />
     <ClInclude Include="Include\BsScriptObject.h" />
     <ClInclude Include="Include\BsScriptObjectImpl.h" />
     <ClInclude Include="Include\BsScriptObjectManager.h" />
@@ -306,6 +307,7 @@
     <ClInclude Include="Include\BsScriptSerializableList.h" />
     <ClInclude Include="Include\BsScriptSerializableObject.h" />
     <ClInclude Include="Include\BsScriptSerializableProperty.h" />
+    <ClInclude Include="Include\BsScriptShader.h" />
     <ClInclude Include="Include\BsScriptSpriteTexture.h" />
     <ClInclude Include="Include\BsScriptStringTable.h" />
     <ClInclude Include="Include\BsScriptTexture.h" />
@@ -359,6 +361,7 @@
     <ClCompile Include="Source\BsScriptInput.cpp" />
     <ClCompile Include="Source\BsScriptInputConfiguration.cpp" />
     <ClCompile Include="Source\BsScriptManagedResource.cpp" />
+    <ClCompile Include="Source\BsScriptMaterial.cpp" />
     <ClCompile Include="Source\BsScriptObject.cpp" />
     <ClCompile Include="Source\BsScriptObjectImpl.cpp" />
     <ClCompile Include="Source\BsScriptObjectManager.cpp" />
@@ -384,6 +387,7 @@
     <ClCompile Include="Source\BsScriptSerializableList.cpp" />
     <ClCompile Include="Source\BsScriptSerializableObject.cpp" />
     <ClCompile Include="Source\BsScriptSerializableProperty.cpp" />
+    <ClCompile Include="Source\BsScriptShader.cpp" />
     <ClCompile Include="Source\BsScriptSpriteTexture.cpp" />
     <ClCompile Include="Source\BsScriptStringTable.cpp" />
     <ClCompile Include="Source\BsScriptTexture.cpp" />

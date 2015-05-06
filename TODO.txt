@@ -13,14 +13,15 @@ My GUID generation is screwed up. If multiple GUIDs are generated in succession 
 the same and the only variable will be the 4byte random number, which can sometimes end up identical to the previous number.
 
 ----------------------------------------------------------------------
-Project window
+C# Material/Shader:
 
-C# DropTarget
- - Requires an EditorWindow parent (so I can retrieve its coordinates)
- - Bounds - settable area relative to the parent window
- - Callbacks for OnEnter, OnLeave, OnDrag, OnDrop
- - C# version only works for file drop types, others are ignored
- - GetDroppedFiles() returns a list of paths
+TODO - Material/Shader has no color type so I cannot know when to display normal vector and when color in inspector
+TODO - Implement param block and sampler support
+TODO - When creating a Material without a shader, a default one should be used, at least in editor
+TODO - Setting Material array parameters isn't possible from C#
+
+----------------------------------------------------------------------
+Project window
 
 Need faster GUILayoutUtility::calcBounds:
  - WAY too much recursion and repetition
@@ -32,6 +33,19 @@ Need faster GUILayoutUtility::calcBounds:
  - Extend _calculateLayoutSizeRange so it can accept a precalculated array of child size ranges
   - Then I can hopefully avoid repetition and also merge two code paths for layout size range calculation
  - CONSIDER actually performing the layout update, and just caching the results
+   - How to check if element is dirty?
+    - Iterating over all of its children (and parents?) every time seems slow
+	- Perhaps I could move dirty flags from the element and to the first non-dependant parent
+	  - Then when any of its children are updated I mark it as dirty. 
+
+Make sure that making a single GUI element dirty doesn't cause an update over the entire GUIWidget
+ - Make sure that _updateLayoutInternal determines whether an element is dependant on children
+   - GUILayout and GUIPanel would need to store bounds
+   - This would also require removal of actual width/height from layout as that makes it dependant on children 100% of the time
+   - It's not dependant of children if it has fixed width and height
+   - When calculating bounds or updating layout make sure to stop at non-dependant layout or panel
+
+GUIResourceField doesn't distinguish between tex2d, tex3d and texcube.
 
 Simple tasks:
  - Add C# Renderable & Material interface
@@ -88,6 +102,7 @@ Other simple stuff:
  - Get rid of event callback from HString and figure out a better way
  - GUI TextureField similar to ResourceField but it displays the texture it has assigned
  - Better handle and gizmo shaders
+ - Fix FBX indexes and while at it also find out how to extract animation data, bone weights and tangent frames
 
 ----------------------------------------------------------------------
 Handles

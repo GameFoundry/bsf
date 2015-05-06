@@ -16,6 +16,8 @@ namespace BansheeEngine
 
 		HResource getNativeHandle() const { return mTexture; }
 		void setNativeHandle(const HResource& resource);
+
+		HTexture getTextureHandle() const { return mTexture; }
 	private:
 		friend class ScriptResourceManager;
 

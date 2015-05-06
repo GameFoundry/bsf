@@ -6,10 +6,14 @@
 #include "BsScriptResourceManager.h"
 #include "BsScriptGameObjectManager.h"
 #include "BsScriptTexture2D.h"
+#include "BsScriptTexture3D.h"
+#include "BsScriptTextureCube.h"
 #include "BsScriptSpriteTexture.h"
 #include "BsScriptManagedResource.h"
 #include "BsScriptPlainText.h"
 #include "BsScriptScriptCode.h"
+#include "BsScriptShader.h"
+#include "BsScriptMaterial.h"
 #include "BsScriptSceneObject.h"
 #include "BsScriptComponent.h"
 #include "BsManagedSerializableObject.h"
@@ -138,7 +142,7 @@ namespace BansheeEngine
 						fieldData->value = MonoUtil::monoToWString(strVal);
 					return fieldData;
 				}
-			case ScriptPrimitiveType::TextureRef:
+			case ScriptPrimitiveType::Texture2DRef:
 				{
 					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataResourceRef>();
 
@@ -150,6 +154,30 @@ namespace BansheeEngine
 
 					return fieldData;
 				}
+			case ScriptPrimitiveType::Texture3DRef:
+			{
+				auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataResourceRef>();
+
+				if (value != nullptr)
+				{
+					ScriptTexture3D* scriptTexture3D = ScriptTexture3D::toNative(value);
+					fieldData->value = static_resource_cast<ScriptTexture3D>(scriptTexture3D->getNativeHandle());
+				}
+
+				return fieldData;
+			}
+			case ScriptPrimitiveType::TextureCubeRef:
+			{
+				auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataResourceRef>();
+
+				if (value != nullptr)
+				{
+					ScriptTextureCube* scriptTextureCube = ScriptTextureCube::toNative(value);
+					fieldData->value = static_resource_cast<ScriptTextureCube>(scriptTextureCube->getNativeHandle());
+				}
+
+				return fieldData;
+			}
 			case ScriptPrimitiveType::SpriteTextureRef:
 				{
 					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataResourceRef>();
@@ -162,6 +190,30 @@ namespace BansheeEngine
 
 					return fieldData;
 				}
+			case ScriptPrimitiveType::ShaderRef:
+			{
+				auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataResourceRef>();
+
+				if (value != nullptr)
+				{
+					ScriptShader* scriptShader = ScriptShader::toNative(value);
+					fieldData->value = static_resource_cast<ScriptShader>(scriptShader->getNativeHandle());
+				}
+
+				return fieldData;
+			}
+			case ScriptPrimitiveType::MaterialRef:
+			{
+				auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataResourceRef>();
+
+				if (value != nullptr)
+				{
+					ScriptMaterial* scriptMaterial = ScriptMaterial::toNative(value);
+					fieldData->value = static_resource_cast<ScriptMaterial>(scriptMaterial->getNativeHandle());
+				}
+
+				return fieldData;
+			}
 			case ScriptPrimitiveType::ManagedResourceRef:
 				{
 					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataResourceRef>();
@@ -432,14 +484,42 @@ namespace BansheeEngine
 		{
 			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
 
-			if(primitiveTypeInfo->mType == ScriptPrimitiveType::TextureRef)
+			if(primitiveTypeInfo->mType == ScriptPrimitiveType::Texture2DRef)
 			{
 				if(value)
 				{
 					HTexture texture = static_resource_cast<Texture>(value);
-					ScriptTexture2D* scriptResource = ScriptResourceManager::instance().getScriptTexture(texture);
+					ScriptTexture2D* scriptResource = ScriptResourceManager::instance().getScriptTexture2D(texture);
 					if(scriptResource == nullptr)
 						scriptResource = ScriptResourceManager::instance().createScriptTexture2D(texture);
+
+					return scriptResource->getManagedInstance();
+				}
+				else
+					return nullptr;
+			}
+			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::Texture3DRef)
+			{
+				if (value)
+				{
+					HTexture texture = static_resource_cast<Texture>(value);
+					ScriptTexture3D* scriptResource = ScriptResourceManager::instance().getScriptTexture3D(texture);
+					if (scriptResource == nullptr)
+						scriptResource = ScriptResourceManager::instance().createScriptTexture3D(texture);
+
+					return scriptResource->getManagedInstance();
+				}
+				else
+					return nullptr;
+			}
+			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::TextureCubeRef)
+			{
+				if (value)
+				{
+					HTexture texture = static_resource_cast<Texture>(value);
+					ScriptTextureCube* scriptResource = ScriptResourceManager::instance().getScriptTextureCube(texture);
+					if (scriptResource == nullptr)
+						scriptResource = ScriptResourceManager::instance().createScriptTextureCube(texture);
 
 					return scriptResource->getManagedInstance();
 				}
@@ -456,6 +536,36 @@ namespace BansheeEngine
 						scriptResource = ScriptResourceManager::instance().createScriptSpriteTexture(spriteTexture);
 
 					if(scriptResource != nullptr)
+						return scriptResource->getManagedInstance();
+				}
+				else
+					return nullptr;
+			}
+			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::ShaderRef)
+			{
+				if (value)
+				{
+					HShader shader = static_resource_cast<Shader>(value);
+					ScriptShader* scriptResource = ScriptResourceManager::instance().getScriptShader(shader);
+					if (scriptResource == nullptr)
+						scriptResource = ScriptResourceManager::instance().createScriptShader(shader);
+
+					if (scriptResource != nullptr)
+						return scriptResource->getManagedInstance();
+				}
+				else
+					return nullptr;
+			}
+			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::MaterialRef)
+			{
+				if (value)
+				{
+					HMaterial material = static_resource_cast<Material>(value);
+					ScriptMaterial* scriptResource = ScriptResourceManager::instance().getScriptMaterial(material);
+					if (scriptResource == nullptr)
+						scriptResource = ScriptResourceManager::instance().createScriptMaterial(material);
+
+					if (scriptResource != nullptr)
 						return scriptResource->getManagedInstance();
 				}
 				else
