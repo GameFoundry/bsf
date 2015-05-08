@@ -26,6 +26,16 @@ namespace BansheeEngine
 	void GUIFieldBase::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
 		Rect2I clipRect, UINT8 widgetDepth, INT16 panelDepth, UINT16 panelDepthRangeMin, UINT16 panelDepthRangeMax)
 	{
+		mLayout->_setPosition(Vector2I(x, y));
+		mLayout->_setWidth(width);
+		mLayout->_setHeight(height);
+		mLayout->_setWidgetDepth(widgetDepth);
+		mLayout->_setAreaDepth(panelDepth);
+		mLayout->_setPanelDepthRange(panelDepthRangeMin, panelDepthRangeMax);
+
+		Rect2I elemClipRect(clipRect.x - x, clipRect.y - y, clipRect.width, clipRect.height);
+		mLayout->_setClipRect(elemClipRect);
+
 		mLayout->_updateLayoutInternal(x, y, width, height, clipRect, widgetDepth, panelDepth, panelDepthRangeMin, panelDepthRangeMax);
 	}
 

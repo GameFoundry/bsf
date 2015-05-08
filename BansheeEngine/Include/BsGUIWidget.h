@@ -85,6 +85,27 @@ namespace BansheeEngine
 		const Vector<GUIElement*>& getElements() const { return mElements; }
 
 		/**
+		 * @brief	Registers a new element as a child of the widget.
+		 *
+		 * @note	Internal method.
+		 */
+		void _registerElement(GUIElementBase* elem);
+		
+		/**
+		 * @brief	Unregisters an element from the widget. Usually called when the element
+		 *			is destroyed, or reparented to another widget.
+		 *
+		 * @note	Internal method.
+		 */
+		void _unregisterElement(GUIElementBase* elem);
+
+		/**
+		 * @brief	Marks the widget mesh dirty requiring a mesh rebuild. Provided element
+		 *			is the one that requested the mesh update.
+		 */
+		void _markMeshDirty(GUIElementBase* elem);
+
+		/**
 		 * @brief	Updates the layout of all child elements, repositioning and resizing them as needed.
 		 */
 		void _updateLayout();
@@ -115,7 +136,7 @@ namespace BansheeEngine
 
 	protected:
 		friend class SceneObject;
-		friend class GUIElement;
+		friend class GUIElementBase;
 		friend class GUIManager;
 
 		/**
@@ -123,17 +144,6 @@ namespace BansheeEngine
 		 *			Widget elements will be rendered on the provided viewport.
 		 */
 		GUIWidget(const HSceneObject& parent, Viewport* target);
-
-		/**
-		 * @brief	Registers a new element as a child of the widget.
-		 */
-		void registerElement(GUIElement* elem);
-		
-		/**
-		 * @brief	Unregisters an element from the widget. Usually called when the element
-		 *			is destroyed, or reparented to another widget.
-		 */
-		void unregisterElement(GUIElement* elem);
 
 		/**
 		 * @brief	Called when the viewport size changes and widget elements need to be updated.
@@ -162,6 +172,11 @@ namespace BansheeEngine
 		 */
 		void updateBounds() const;
 
+		/**
+		 * @brief	Updates the size of the primary GUI panel based on the viewport.
+		 */
+		void updatePanelSize();
+
 		Viewport* mTarget;
 		Vector<GUIElement*> mElements;
 		GUIPanel* mPanel;
@@ -172,6 +187,8 @@ namespace BansheeEngine
 		Vector3 mLastFrameScale;
 
 		HEvent mOwnerTargetResizedConn;
+
+		Vector<GUIElement*> mDirtyContents;
 
 		mutable bool mWidgetIsDirty;
 		mutable Rect2I mBounds;

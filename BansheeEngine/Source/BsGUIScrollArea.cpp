@@ -226,6 +226,17 @@ namespace BansheeEngine
 		Rect2I layoutClipRect = clipRect;
 		layoutClipRect.width = (UINT32)mVisibleSize.x;
 		layoutClipRect.height = (UINT32)mVisibleSize.y;
+
+		mContentLayout->_setPosition(Vector2I(layoutBounds.x, layoutBounds.y));
+		mContentLayout->_setWidth(layoutBounds.width);
+		mContentLayout->_setHeight(layoutBounds.height);
+		mContentLayout->_setWidgetDepth(widgetDepth);
+		mContentLayout->_setAreaDepth(panelDepth);
+		mContentLayout->_setPanelDepthRange(panelDepthRangeMin, panelDepthRangeMax);
+
+		Rect2I localClipRect(layoutClipRect.x - layoutBounds.x, layoutClipRect.y - layoutBounds.y, layoutClipRect.width, layoutClipRect.height);
+		mContentLayout->_setClipRect(localClipRect);
+
 		mContentLayout->_updateLayoutInternal(layoutBounds.x, layoutBounds.y,
 			layoutBounds.width, layoutBounds.height, layoutClipRect, 
 			widgetDepth, panelDepth, panelDepthRangeMin, panelDepthRangeMax);
@@ -237,6 +248,7 @@ namespace BansheeEngine
 			mVertScroll->_setHeight(vertScrollBounds.height);
 			mVertScroll->_setAreaDepth(panelDepth);
 			mVertScroll->_setWidgetDepth(widgetDepth);
+			mVertScroll->_setPanelDepthRange(panelDepthRangeMin, panelDepthRangeMax);
 
 			UINT32 clippedScrollbarWidth = std::min(width, ScrollBarWidth);
 			Rect2I elemClipRect(0, 0, clippedScrollbarWidth, clipRect.height);
@@ -258,8 +270,8 @@ namespace BansheeEngine
 			if (scrollableHeight > 0)
 				newScrollPct = mVertOffset / scrollableHeight;
 
-			mVertScroll->setHandleSize(newHandleSize);
-			mVertScroll->setScrollPos(newScrollPct);
+			mVertScroll->_setHandleSize(newHandleSize);
+			mVertScroll->_setScrollPos(newScrollPct);
 		}
 
 		// Horizontal scrollbar
@@ -269,6 +281,7 @@ namespace BansheeEngine
 			mHorzScroll->_setHeight(horzScrollBounds.height);
 			mHorzScroll->_setAreaDepth(panelDepth);
 			mHorzScroll->_setWidgetDepth(widgetDepth);
+			mVertScroll->_setPanelDepthRange(panelDepthRangeMin, panelDepthRangeMax);
 
 			UINT32 clippedScrollbarHeight = std::min(height, ScrollBarWidth);
 			Rect2I elemClipRect(0, 0, clipRect.width, clippedScrollbarHeight);
@@ -289,8 +302,8 @@ namespace BansheeEngine
 			if (scrollableWidth > 0)
 				newScrollPct = mHorzOffset / scrollableWidth;
 
-			mHorzScroll->setHandleSize(newHandleSize);
-			mHorzScroll->setScrollPos(newScrollPct);
+			mHorzScroll->_setHandleSize(newHandleSize);
+			mHorzScroll->_setScrollPos(newScrollPct);
 		}
 
 		if (elementAreas != nullptr)

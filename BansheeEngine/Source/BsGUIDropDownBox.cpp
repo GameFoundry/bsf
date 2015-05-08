@@ -113,12 +113,14 @@ namespace BansheeEngine
 		mHitBox->_setWidgetDepth(0);
 		mHitBox->_setAreaDepth(0);
 		mHitBox->_changeParentWidget(this);
+		mHitBox->markContentAsDirty();
 
 		mCaptureHitBox = GUIDropDownHitBox::create(true);
 		mCaptureHitBox->setBounds(Rect2I(0, 0, target->getWidth(), target->getHeight()));
 		mCaptureHitBox->_setWidgetDepth(0);
 		mCaptureHitBox->_setAreaDepth(200);
 		mCaptureHitBox->_changeParentWidget(this);
+		mCaptureHitBox->markContentAsDirty();
 
 		Rect2I availableBounds(target->getX(), target->getY(), target->getWidth(), target->getHeight());
 		mRootMenu = bs_new<DropDownSubMenu>(this, nullptr, placement, availableBounds, dropDownData, type, 0);

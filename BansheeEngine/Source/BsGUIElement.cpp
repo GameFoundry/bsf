@@ -9,8 +9,8 @@
 namespace BansheeEngine
 {
 	GUIElement::GUIElement(const String& styleName, const GUIDimensions& dimensions)
-		:GUIElementBase(dimensions), mDepth(0), mStyle(&GUISkin::DefaultStyle),
-		mIsDestroyed(false), mStyleName(styleName), mWidth(0), mHeight(0)
+		:GUIElementBase(dimensions), mStyle(&GUISkin::DefaultStyle),
+		mIsDestroyed(false), mStyleName(styleName)
 	{
 		// Style is set to default here, and the proper one is assigned once GUI element
 		// is assigned to a parent (that's when the active GUI skin becomes known)
@@ -22,39 +22,11 @@ namespace BansheeEngine
 	void GUIElement::_updateRenderElements()
 	{
 		updateRenderElementsInternal();
-		_markAsClean();
 	}
 
 	void GUIElement::updateRenderElementsInternal()
 	{
 		updateClippedBounds();
-	}
-
-	void GUIElement::_setPosition(const Vector2I& offset)
-	{
-		if (mOffset != offset)
-		{
-			markMeshAsDirty();
-
-			mOffset = offset;
-			updateClippedBounds();
-		}
-	}
-
-	void GUIElement::_setWidth(UINT32 width)
-	{
-		if (mWidth != width)
-			markContentAsDirty();
-
-		mWidth = width;
-	}
-
-	void GUIElement::_setHeight(UINT32 height)
-	{
-		if (mHeight != height)
-			markContentAsDirty();
-
-		mHeight = height;
 	}
 
 	void GUIElement::setStyle(const String& styleName)
@@ -83,21 +55,9 @@ namespace BansheeEngine
 		return false;
 	}
 
-	void GUIElement::_setWidgetDepth(UINT8 depth) 
-	{ 
-		mDepth |= depth << 24; 
-		markMeshAsDirty();
-	}
-
-	void GUIElement::_setAreaDepth(UINT16 depth) 
-	{ 
-		mDepth |= depth << 8; 
-		markMeshAsDirty();
-	}
-
 	void GUIElement::_setElementDepth(UINT8 depth)
 	{
-		mDepth |= depth;
+		mDepth = depth | (mDepth & 0xFFFFFF00);
 		markMeshAsDirty();
 	}
 
@@ -105,8 +65,6 @@ namespace BansheeEngine
 	{ 
 		if(mClipRect != clipRect)
 		{
-			markMeshAsDirty();
-
 			mClipRect = clipRect; 
 			updateClippedBounds();
 		}
@@ -116,15 +74,7 @@ namespace BansheeEngine
 	{
 		bool doRefreshStyle = false;
 		if(mParentWidget != widget)
-		{
-			if(mParentWidget != nullptr)
-				mParentWidget->unregisterElement(this);
-
-			if(widget != nullptr)
-				widget->registerElement(this);
-
 			doRefreshStyle = true;
-		}
 
 		GUIElementBase::_changeParentWidget(widget);
 
@@ -243,9 +193,6 @@ namespace BansheeEngine
 	{
 		if(element->mIsDestroyed)
 			return;
-
-		if(element->mParentWidget != nullptr)
-			element->mParentWidget->unregisterElement(element);
 
 		if (element->mParentElement != nullptr)
 			element->mParentElement->_unregisterChildElement(element);

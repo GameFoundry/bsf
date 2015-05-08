@@ -158,20 +158,21 @@ namespace BansheeEngine
 	{
 		float newHandlePos = Math::clamp01(mHandleBtn->getHandlePos() - amount);
 
-		mHandleBtn->setHandlePos(newHandlePos);
+		mHandleBtn->_setHandlePos(newHandlePos);
+		mHandleBtn->markContentAsDirty();
 
 		if(!onScrollPositionChanged.empty())
 			onScrollPositionChanged(newHandlePos);
 	}
 
-	void GUIScrollBar::setHandleSize(UINT32 size)
+	void GUIScrollBar::_setHandleSize(UINT32 size)
 	{
-		mHandleBtn->setHandleSize(size);
+		mHandleBtn->_setHandleSize(size);
 	}
 
-	void GUIScrollBar::setScrollPos(float pct)
+	void GUIScrollBar::_setScrollPos(float pct)
 	{
-		mHandleBtn->setHandlePos(pct);
+		mHandleBtn->_setHandlePos(pct);
 	}
 
 	float GUIScrollBar::getScrollPos() const

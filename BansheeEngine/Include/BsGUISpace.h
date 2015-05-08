@@ -14,9 +14,7 @@ namespace BansheeEngine
 	public:
 		GUIFixedSpace(UINT32 size)
 			:mSize(size)
-		{
-			_markAsClean();
-		}
+		{ }
 
 		~GUIFixedSpace();
 
@@ -44,16 +42,6 @@ namespace BansheeEngine
 		 * @copydoc	GUIElementBase::_calculateLayoutSizeRange
 		 */
 		virtual LayoutSizeRange _calculateLayoutSizeRange() const;
-
-		/**
-		 * @copydoc	GUIElementBase::_isContentDirty
-		 */
-		virtual bool _isContentDirty() const { return false; }
-
-		/**
-		 * @copydoc	GUIElementBase::_isMeshDirty
-		 */
-		virtual bool _isMeshDirty() const { return false; }
 
 		/**
 		 * @copydoc	GUIElementBase::_getPadding
@@ -92,11 +80,7 @@ namespace BansheeEngine
 	class BS_EXPORT GUIFlexibleSpace : public GUIElementBase
 	{
 	public:
-		GUIFlexibleSpace() 
-		{
-			_markAsClean();
-		}
-
+		GUIFlexibleSpace() {}
 		~GUIFlexibleSpace();
 
 		/**
@@ -113,16 +97,6 @@ namespace BansheeEngine
 		 * @copydoc	GUIElementBase::_calculateLayoutSizeRange
 		 */
 		virtual LayoutSizeRange _calculateLayoutSizeRange() const;
-
-		/**
-		 * @copydoc	GUIElementBase::_isContentDirty
-		 */
-		virtual bool _isContentDirty() const { return false; }
-
-		/**
-		 * @copydoc	GUIElementBase::_isMeshDirty
-		 */
-		virtual bool _isMeshDirty() const { return false; }
 
 		/**
 		 * @copydoc	GUIElementBase::_getPadding

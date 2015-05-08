@@ -71,27 +71,6 @@ namespace BansheeEngine
 		/************************************************************************/
 
 		/**
-		 * @brief	Sets element position relative to widget origin. This will be the position used directly for rendering.
-		 *
-		 * @note	Internal method.
-		 */
-		virtual void _setPosition(const Vector2I& offset);
-
-		/**
-		 * @brief	Sets element width in pixels. This will be the width used directly for rendering.
-		 *
-		 * @note	Internal method.
-		 */
-		virtual void _setWidth(UINT32 width);
-
-		/**
-		 * @brief	Sets element height in pixels. This will be the height used directly for rendering.
-		 *
-		 * @note	Internal method.
-		 */
-		virtual void _setHeight(UINT32 height);
-
-		/**
 		 * @brief	Returns the number of separate render elements in the GUI element.
 		 * 			
 		 * @return	The number render elements.
@@ -200,21 +179,6 @@ namespace BansheeEngine
 		virtual bool _virtualButtonEvent(const GUIVirtualButtonEvent& ev);
 
 		/**
-		 * @brief	Set widget part of element depth. (Most significant part)
-		 *
-		 * @note	Internal method.
-		 */
-		void _setWidgetDepth(UINT8 depth);
-
-		/**
-		 * @brief	Set area part of element depth. Less significant than widget
-		 *			depth but more than custom element depth.
-		 *
-		 * @note	Internal method.
-		 */
-		void _setAreaDepth(UINT16 depth);
-
-		/**
 		 * @brief	Set element part of element depth. Less significant than both
 		 *			widget and area depth.
 		 *
@@ -223,12 +187,9 @@ namespace BansheeEngine
 		void _setElementDepth(UINT8 depth);
 
 		/**
-		 * @brief	Sets a clip rectangle that GUI element sprite will be clipped to. 
-		 *			Rectangle is in local coordinates. (Relative to GUIElement position)
-		 *
-		 * @note	Internal method.
+		 * @copydoc GUIElementBase::_setClipRect
 		 */
-		void _setClipRect(const Rect2I& clipRect);
+		void _setClipRect(const Rect2I& clipRect) override;
 
 		/**
 		 * @brief	Gets non-clipped bounds that were assigned to the element by the parent layout.
@@ -243,33 +204,6 @@ namespace BansheeEngine
 		 * @copydoc	GUIElementBase::_changeParentWidget
 		 */
 		virtual void _changeParentWidget(GUIWidget* widget);
-
-		/**
-		 * @brief	Returns width of the element in pixels.
-		 *
-		 * @note	This value is updated during layout update which means it might be out of date
-		 *			if parent element bounds changed since.
-		 *			Internal method:
-		 */
-		UINT32 _getWidth() const { return mWidth; }
-
-		/**
-		 * @brief	Returns height of the element in pixels.
-		 *
-		 * @note	This value is updated during layout update which means it might be out of date
-		 *			if parent element bounds changed since.
-		 *			Internal method:
-		 */
-		UINT32 _getHeight() const { return mHeight; }
-
-		/**
-		 * @brief	Returns position of the element, relative to parent GUI widget origin.
-		 *
-		 * @note	This value is updated during layout update which means it might be out of date
-		 *			if parent element bounds changed since.
-		 *			Internal method:
-		 */
-		Vector2I _getOffset() const { return mOffset; }
 
 		/**
 		 * @brief	Returns depth for a specific render element. This contains a combination
@@ -325,14 +259,6 @@ namespace BansheeEngine
 		 * @note	Internal method.
 		 */
 		const Rect2I& _getClippedBounds() const { return mClippedBounds; }
-
-		/**
-		 * @brief	Returns clip rect used for clipping the GUI element and related sprites
-		 *			to a specific region. Clip rect is relative to GUI element origin.
-		 *
-		 * @note	Internal method.
-		 */
-		const Rect2I& _getClipRect() const { return mClipRect; }
 
 		/**
 		 * @brief	Returns GUI element padding. Padding is modified by changing element style and determines
@@ -454,12 +380,6 @@ namespace BansheeEngine
 
 		bool mIsDestroyed;
 		Rect2I mClippedBounds;
-
-		UINT32 mDepth;
-		Rect2I mClipRect;
-
-		Vector2I mOffset;
-		UINT32 mWidth, mHeight;
 
 	private:
 		const GUIElementStyle* mStyle;

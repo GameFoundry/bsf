@@ -41,17 +41,14 @@ namespace BansheeEngine
 			getStyleName<GUISliderHandle>(styleName), GUIDimensions::create(options));
 	}
 
-	void GUISliderHandle::setHandleSize(UINT32 size)
+	void GUISliderHandle::_setHandleSize(UINT32 size)
 	{
 		mHandleSize = std::min(getMaxSize(), size);
-		markContentAsDirty();
 	}
 
-	void GUISliderHandle::setHandlePos(float pct)
+	void GUISliderHandle::_setHandlePos(float pct)
 	{
 		mPctHandlePos = Math::clamp01(pct);
-
-		markContentAsDirty();
 	}
 
 	float GUISliderHandle::getHandlePos() const

@@ -21,13 +21,17 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Sets the size of the handle in pixels.
+		 *
+		 * @note	Internal method. Does not trigger layout update.
 		 */
-		void setHandleSize(UINT32 size);
+		void _setHandleSize(UINT32 size);
 
 		/**
 		 * @brief	Sets the position of the scroll handle in percent (ranging [0, 1]).
+		 *
+		 * @note	Internal method. Does not trigger layout update.
 		 */
-		void setScrollPos(float pct);
+		void _setScrollPos(float pct);
 
 		/**
 		 * @brief	Returns the position of the scroll handle in percent (ranging [0, 1]).

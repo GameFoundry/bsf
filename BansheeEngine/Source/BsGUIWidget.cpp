@@ -37,6 +37,7 @@ namespace BansheeEngine
 
 		mPanel = GUIPanel::create();
 		mPanel->_changeParentWidget(this);
+		updatePanelSize();
 	}
 
 	GUIWidget::~GUIWidget()
@@ -55,6 +56,7 @@ namespace BansheeEngine
 		}
 
 		mElements.clear();
+		mDirtyContents.clear();
 	}
 
 	void GUIWidget::update()
@@ -100,11 +102,143 @@ namespace BansheeEngine
 
 	void GUIWidget::_updateLayout()
 	{
-		if (mPanel->_isContentDirty())
+		UnorderedMap<GUIElementBase*, bool> elementsToUpdate;
+
+		// Determine dirty contents and layouts
+		Stack<GUIElementBase*> todo;
+		todo.push(mPanel);
+
+		while (!todo.empty())
 		{
-			Rect2I clipRect(0, 0, getTarget()->getWidth(), getTarget()->getHeight());
-			mPanel->_updateLayout(0, 0, getTarget()->getWidth(), getTarget()->getHeight(), clipRect,
-				getDepth(), 0, -1, -1);
+			GUIElementBase* currentElem = todo.top();
+			todo.pop();
+
+			if (currentElem->_isDirty())
+			{
+				GUIElementBase* updateParent = currentElem->_getUpdateParent();
+				assert(updateParent != nullptr || currentElem == mPanel);
+
+				if (updateParent != nullptr)
+				{
+					if (updateParent->_getType() == GUIElementBase::Type::Panel)
+					{
+						GUIElementBase* optimizedUpdateParent = currentElem;
+						while (optimizedUpdateParent->_getParent() != updateParent)
+							optimizedUpdateParent = optimizedUpdateParent->_getParent();
+
+						elementsToUpdate.insert(std::make_pair(optimizedUpdateParent, true));
+					}
+					else
+						elementsToUpdate.insert(std::make_pair(updateParent, false));
+				}
+				else // Must be root panel
+				{
+					elementsToUpdate.insert(std::make_pair(mPanel, false));
+				}
+
+				currentElem->_markAsClean();
+			}
+
+			UINT32 numChildren = currentElem->_getNumChildren();
+			for (UINT32 i = 0; i < numChildren; i++)
+				todo.push(currentElem->_getChild(i));
+		}
+
+		// Determine top-level layouts and update them
+		for (auto& elemData : elementsToUpdate)
+		{
+			bool isPanelOptimized = elemData.second;
+
+			GUIElementBase* updateParent = nullptr;
+			
+			if (isPanelOptimized)
+				updateParent = elemData.first->_getParent();
+			else
+				updateParent = elemData.first;
+
+			// Skip update if a parent element is also queued for update
+			bool isTopLevel = true;
+			GUIElementBase* curUpdateParent = elemData.first->_getParent();
+			while (curUpdateParent != nullptr)
+			{
+				if (elementsToUpdate.find(curUpdateParent) != elementsToUpdate.end())
+				{
+					isTopLevel = false;
+					break;
+				}
+
+				curUpdateParent = curUpdateParent->_getParent();
+			}
+
+			if (!isTopLevel)
+				continue;
+
+			// For GUIPanel we can do a an optimization and update only the element in question instead
+			// of all the children
+			if (isPanelOptimized)
+			{
+				GUIPanel* panel = static_cast<GUIPanel*>(updateParent);
+
+				INT32 x = panel->_getOffset().x;
+				INT32 y = panel->_getOffset().y;
+				UINT32 width = panel->_getWidth();
+				UINT32 height = panel->_getHeight();
+
+				GUIElementBase* dirtyElement = elemData.first;
+				dirtyElement->_updateOptimalLayoutSizes();
+
+				LayoutSizeRange elementSizeRange = panel->_getElementSizeRange(dirtyElement);
+				Rect2I elementArea = panel->_getElementArea(x, y, width, height, dirtyElement, elementSizeRange);
+
+				INT16 panelDepth = panel->_getAreaDepth();
+				UINT16 panelDepthRangeMin = -1;
+				UINT16 panelDepthRangeMax = -1;
+
+				panel->_getPanelDepthRange(panelDepthRangeMin, panelDepthRangeMax);
+
+				Rect2I clipRect = panel->_getClipRect();
+				clipRect.x += x;
+				clipRect.y += y;
+
+				panel->_updateChildLayout(dirtyElement, elementArea, clipRect, mDepth, panelDepth, panelDepthRangeMin, panelDepthRangeMax);
+			}
+			else
+			{
+				INT32 x = updateParent->_getOffset().x;
+				INT32 y = updateParent->_getOffset().y;
+				UINT32 width = updateParent->_getWidth();
+				UINT32 height = updateParent->_getHeight();
+
+				INT16 panelDepth = updateParent->_getAreaDepth();
+				UINT16 panelDepthRangeMin = -1;
+				UINT16 panelDepthRangeMax = -1;
+
+				updateParent->_getPanelDepthRange(panelDepthRangeMin, panelDepthRangeMax);
+
+				Rect2I clipRect = updateParent->_getClipRect();
+				clipRect.x += x;
+				clipRect.y += y;
+
+				updateParent->_updateLayout(x, y, width, height, clipRect, getDepth(), 
+					panelDepth, panelDepthRangeMin, panelDepthRangeMax);
+			}
+
+			// Mark dirty contents
+			Stack<GUIElementBase*> todo;
+			todo.push(mPanel);
+
+			while (!todo.empty())
+			{
+				GUIElementBase* currentElem = todo.top();
+				todo.pop();
+
+				if (currentElem->_getType() == GUIElementBase::Type::Element)
+					mDirtyContents.push_back(static_cast<GUIElement*>(currentElem));
+
+				UINT32 numChildren = currentElem->_getNumChildren();
+				for (UINT32 i = 0; i < numChildren; i++)
+					todo.push(currentElem->_getChild(i));
+			}
 		}
 	}
 
@@ -128,16 +262,17 @@ namespace BansheeEngine
 		return element->_virtualButtonEvent(ev);
 	}
 
-	void GUIWidget::registerElement(GUIElement* elem)
+	void GUIWidget::_registerElement(GUIElementBase* elem)
 	{
 		assert(elem != nullptr);
 
-		mElements.push_back(elem);
+		if (elem->_getType() == GUIElementBase::Type::Element)
+			mElements.push_back(static_cast<GUIElement*>(elem));
 
 		mWidgetIsDirty = true;
 	}
 
-	void GUIWidget::unregisterElement(GUIElement* elem)
+	void GUIWidget::_unregisterElement(GUIElementBase* elem)
 	{
 		assert(elem != nullptr);
 
@@ -148,6 +283,11 @@ namespace BansheeEngine
 			mElements.erase(iterFind);
 			mWidgetIsDirty = true;
 		}
+	}
+
+	void GUIWidget::_markMeshDirty(GUIElementBase* elem)
+	{
+		mWidgetIsDirty = true;
 	}
 
 	void GUIWidget::setSkin(const HGUISkin& skin)
@@ -170,46 +310,20 @@ namespace BansheeEngine
 
 	bool GUIWidget::isDirty(bool cleanIfDirty)
 	{
-		if(cleanIfDirty)
+		bool dirty = mWidgetIsDirty || mDirtyContents.size() > 0;
+
+		if(cleanIfDirty && dirty)
 		{
-			bool dirty = mWidgetIsDirty;
 			mWidgetIsDirty = false;
 
-			for(auto& elem : mElements)
-			{
-				if(elem->_isContentDirty())
-				{
-					dirty = true;
-					elem->_updateRenderElements();
-				}
+			for (auto& dirtyElement : mDirtyContents)
+				dirtyElement->_updateRenderElements();
 
-				if(elem->_isMeshDirty())
-				{
-					dirty = true;
-					elem->_markAsClean();
-				}
-			}
-
-			if(dirty)
-				updateBounds();
-
-			return dirty;
+			mDirtyContents.clear();
+			updateBounds();
 		}
-		else
-		{
-			if(mWidgetIsDirty)
-				return true;
-
-			for(auto& elem : mElements)
-			{
-				if(elem->_isContentDirty() || elem->_isMeshDirty())
-				{
-					return true;
-				}
-			}
-
-			return false;
-		}
+		
+		return dirty;
 	}
 
 	bool GUIWidget::inBounds(const Vector2I& position) const
@@ -240,8 +354,23 @@ namespace BansheeEngine
 
 	void GUIWidget::ownerTargetResized()
 	{
-		mPanel->setWidth(getTarget()->getWidth());
-		mPanel->setHeight(getTarget()->getHeight());
+		updatePanelSize();
+	}
+
+	void GUIWidget::updatePanelSize()
+	{
+		UINT32 width = getTarget()->getWidth();
+		UINT32 height = getTarget()->getHeight();
+
+		mPanel->_setWidth(width);
+		mPanel->_setHeight(height);
+
+		mPanel->setWidth(width);
+		mPanel->setHeight(height);
+
+		Rect2I clipRect(0, 0, width, height);
+		mPanel->_setClipRect(clipRect);
+		mPanel->markContentAsDirty();
 	}
 
 	void GUIWidget::ownerWindowFocusChanged()

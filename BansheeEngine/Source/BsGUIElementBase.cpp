@@ -13,16 +13,19 @@ namespace BansheeEngine
 {
 	GUIElementBase::GUIElementBase()
 		:mIsDirty(true), mParentElement(nullptr), mIsDisabled(false), 
-		mParentWidget(nullptr)
+		mParentWidget(nullptr), mWidth(0), mHeight(0), mAnchorParent(nullptr), 
+		mUpdateParent(nullptr), mPanelDepthRange(-1), mDepth(0)
 	{
-
+		_setAreaDepth(0);
 	}
 
 	GUIElementBase::GUIElementBase(const GUIDimensions& dimensions)
 		:mIsDirty(true), mParentElement(nullptr), mIsDisabled(false),
-		mParentWidget(nullptr), mDimensions(dimensions)
+		mParentWidget(nullptr), mDimensions(dimensions), mWidth(0), 
+		mHeight(0), mAnchorParent(nullptr), mUpdateParent(nullptr), 
+		mPanelDepthRange(-1), mDepth(0)
 	{
-
+		_setAreaDepth(0);
 	}
 
 	GUIElementBase::~GUIElementBase()
@@ -63,9 +66,16 @@ namespace BansheeEngine
 
 	void GUIElementBase::setWidth(UINT32 width)
 	{
+		bool isFixedBefore = (mDimensions.flags & GUIDF_FixedWidth) != 0 && (mDimensions.flags & GUIDF_FixedHeight) != 0;
+
 		mDimensions.flags |= GUIDF_FixedWidth | GUIDF_OverWidth;
 		mDimensions.minWidth = mDimensions.maxWidth = width;
 
+		bool isFixedAfter = (mDimensions.flags & GUIDF_FixedWidth) != 0 && (mDimensions.flags & GUIDF_FixedHeight) != 0;
+
+		if (isFixedBefore != isFixedAfter)
+			refreshChildUpdateParents();
+			
 		markContentAsDirty();
 	}
 
@@ -74,18 +84,32 @@ namespace BansheeEngine
 		if (maxWidth < minWidth)
 			std::swap(minWidth, maxWidth);
 
+		bool isFixedBefore = (mDimensions.flags & GUIDF_FixedWidth) != 0 && (mDimensions.flags & GUIDF_FixedHeight) != 0;
+
 		mDimensions.flags |= GUIDF_OverWidth;
 		mDimensions.flags &= ~GUIDF_FixedWidth;
 		mDimensions.minWidth = minWidth;
 		mDimensions.maxWidth = maxWidth;
+
+		bool isFixedAfter = (mDimensions.flags & GUIDF_FixedWidth) != 0 && (mDimensions.flags & GUIDF_FixedHeight) != 0;
+
+		if (isFixedBefore != isFixedAfter)
+			refreshChildUpdateParents();
 
 		markContentAsDirty();
 	}
 
 	void GUIElementBase::setHeight(UINT32 height)
 	{
+		bool isFixedBefore = (mDimensions.flags & GUIDF_FixedWidth) != 0 && (mDimensions.flags & GUIDF_FixedHeight) != 0;
+
 		mDimensions.flags |= GUIDF_FixedHeight | GUIDF_OverHeight;
 		mDimensions.minHeight = mDimensions.maxHeight = height;
+
+		bool isFixedAfter = (mDimensions.flags & GUIDF_FixedWidth) != 0 && (mDimensions.flags & GUIDF_FixedHeight) != 0;
+
+		if (isFixedBefore != isFixedAfter)
+			refreshChildUpdateParents();
 
 		markContentAsDirty();
 	}
@@ -95,17 +119,32 @@ namespace BansheeEngine
 		if (maxHeight < minHeight)
 			std::swap(minHeight, maxHeight);
 
+		bool isFixedBefore = (mDimensions.flags & GUIDF_FixedWidth) != 0 && (mDimensions.flags & GUIDF_FixedHeight) != 0;
+
 		mDimensions.flags |= GUIDF_OverHeight;
 		mDimensions.flags &= ~GUIDF_FixedHeight;
 		mDimensions.minHeight = minHeight;
 		mDimensions.maxHeight = maxHeight;
+
+		bool isFixedAfter = (mDimensions.flags & GUIDF_FixedWidth) != 0 && (mDimensions.flags & GUIDF_FixedHeight) != 0;
+
+		if (isFixedBefore != isFixedAfter)
+			refreshChildUpdateParents();
 
 		markContentAsDirty();
 	}
 
 	void GUIElementBase::resetDimensions()
 	{
+		bool isFixedBefore = (mDimensions.flags & GUIDF_FixedWidth) != 0 && (mDimensions.flags & GUIDF_FixedHeight) != 0;
+
 		mDimensions = GUIDimensions::create();
+
+		bool isFixedAfter = (mDimensions.flags & GUIDF_FixedWidth) != 0 && (mDimensions.flags & GUIDF_FixedHeight) != 0;
+
+		if (isFixedBefore != isFixedAfter)
+			refreshChildUpdateParents();
+
 		markContentAsDirty();
 	}
 
@@ -119,23 +158,64 @@ namespace BansheeEngine
 		return getBounds();
 	}
 
-	bool GUIElementBase::_isContentDirty() const
+	void GUIElementBase::_setPosition(const Vector2I& offset)
 	{
-		if((mIsDirty & 0x01) != 0)
-			return true;
-
-		for(auto& child : mChildren)
-		{
-			if(child->_isContentDirty())
-				return true;
-		}
-
-		return false;
+		mOffset = offset;
 	}
 
-	bool GUIElementBase::_isMeshDirty() const
+	void GUIElementBase::_setWidth(UINT32 width)
 	{
-		return (mIsDirty & 0x02) != 0;
+		mWidth = width;
+	}
+
+	void GUIElementBase::_setHeight(UINT32 height)
+	{
+		mHeight = height;
+	}
+
+	void GUIElementBase::_setWidgetDepth(UINT8 depth)
+	{
+		UINT32 shiftedDepth = depth << 24;
+
+		mDepth = shiftedDepth | (mDepth & 0x00FFFFFF);
+	}
+
+	void GUIElementBase::_setAreaDepth(INT16 depth)
+	{
+		UINT32 signedDepth = ((INT32)depth + 32768) << 8;
+
+		mDepth = signedDepth | (mDepth & 0xFF0000FF);;
+	}
+
+	void GUIElementBase::_setClipRect(const Rect2I& clipRect)
+	{
+		mClipRect = clipRect;
+	}
+
+	void GUIElementBase::_setPanelDepthRange(UINT16 min, UINT16 max)
+	{
+		mPanelDepthRange = (min << 16) | max;
+	}
+
+	void GUIElementBase::_getPanelDepthRange(UINT16& min, UINT16& max)
+	{
+		min = mPanelDepthRange >> 16;
+		max = mPanelDepthRange & 0xFFFF;
+	}
+
+	UINT8 GUIElementBase::_getWidgetDepth() const
+	{
+		return (mDepth >> 24) & 0xFF;
+	}
+
+	INT16 GUIElementBase::_getAreaDepth() const
+	{
+		return (((INT32)mDepth >> 8) & 0xFFFF) - 32768;
+	}
+
+	void GUIElementBase::_markAsClean()
+	{
+		mIsDirty = false;
 	}
 
 	void GUIElementBase::markContentAsDirty() 
@@ -143,7 +223,7 @@ namespace BansheeEngine
 		if(_isDisabled())
 			return;
 
-		mIsDirty |= 0x01; 
+		mIsDirty = true;
 	}
 
 	void GUIElementBase::markMeshAsDirty()
@@ -151,7 +231,8 @@ namespace BansheeEngine
 		if(_isDisabled())
 			return;
 
-		mIsDirty |= 0x02;
+		if (mParentWidget != nullptr)
+			mParentWidget->_markMeshDirty(this);
 	}
 
 	void GUIElementBase::enableRecursively()
@@ -224,6 +305,7 @@ namespace BansheeEngine
 		if(mParentElement != parent)
 		{
 			mParentElement = parent; 
+			_updateAUParents();
 
 			if (parent != nullptr)
 			{
@@ -276,6 +358,15 @@ namespace BansheeEngine
 
 	void GUIElementBase::_changeParentWidget(GUIWidget* widget)
 	{
+		if (mParentWidget != widget)
+		{
+			if (mParentWidget != nullptr)
+				mParentWidget->_unregisterElement(this);
+
+			if (widget != nullptr)
+				widget->_registerElement(this);
+		}
+
 		mParentWidget = widget;
 
 		for(auto& child : mChildren)
@@ -284,5 +375,78 @@ namespace BansheeEngine
 		}
 
 		markContentAsDirty();
+	}
+
+	void GUIElementBase::_updateAUParents()
+	{
+		GUIElementBase* updateParent = nullptr;
+		if (mParentElement != nullptr)
+			updateParent = mParentElement->findUpdateParent();
+
+		GUIPanel* anchorParent = nullptr;
+		GUIElementBase* currentParent = mParentElement;
+		while (currentParent != nullptr)
+		{
+			if (currentParent->_getType() == Type::Panel)
+			{
+				anchorParent = static_cast<GUIPanel*>(currentParent);
+				break;
+			}
+
+			currentParent = currentParent->mParentElement;
+		}
+
+		setAnchorParent(anchorParent);
+		setUpdateParent(updateParent);
+	}
+
+	GUIElementBase* GUIElementBase::findUpdateParent()
+	{
+		GUIElementBase* currentElement = this;
+		while (currentElement != nullptr)
+		{
+			const GUIDimensions& parentDimensions = currentElement->_getDimensions();
+			bool boundsDependOnChildren = !parentDimensions.fixedHeight() || !parentDimensions.fixedWidth();
+
+			if (!boundsDependOnChildren)
+				return currentElement;
+
+			currentElement = currentElement->mParentElement;
+		}
+
+		return nullptr;
+	}
+
+	void GUIElementBase::refreshChildUpdateParents()
+	{
+		GUIElementBase* updateParent = findUpdateParent();
+
+		for (auto& child : mChildren)
+			child->setUpdateParent(updateParent);
+	}
+
+	void GUIElementBase::setAnchorParent(GUIPanel* anchorParent)
+	{
+		mAnchorParent = anchorParent;
+
+		if (_getType() == Type::Panel)
+			return;
+
+		for (auto& child : mChildren)
+			child->setAnchorParent(anchorParent);
+	}
+
+	void GUIElementBase::setUpdateParent(GUIElementBase* updateParent)
+	{
+		mUpdateParent = updateParent;
+
+		const GUIDimensions& dimensions = _getDimensions();
+		bool boundsDependOnChildren = !dimensions.fixedHeight() || !dimensions.fixedWidth();
+
+		if (!boundsDependOnChildren)
+			return;
+
+		for (auto& child : mChildren)
+			child->setUpdateParent(updateParent);
 	}
 }

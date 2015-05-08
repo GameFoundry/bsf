@@ -20,35 +20,36 @@ TODO - Implement param block and sampler support
 TODO - When creating a Material without a shader, a default one should be used, at least in editor
 TODO - Setting Material array parameters isn't possible from C#
 
+GUIResourceField doesn't distinguish between tex2d, tex3d and texcube.
+
+Add C# Renderable
+ - Mesh
+ - Material (primary)
+ - SetMaterial(i, Material)
+ - GetMaterial
+ - Bounds Bounds
+
 ----------------------------------------------------------------------
 Project window
 
-Need faster GUILayoutUtility::calcBounds:
- - WAY too much recursion and repetition
-  - Algorithm is 2 * n^3!!
-  - One N for calcBounds recursion
-  - One N for iteration over children for _calculateLayoutSizeRange (multiplied by two as I do it twice in each calcBounds call)
-  - One N for _calculateLayoutSizeRange itself being recursive
- - Consider an algorithm that first locates the parent GUIPanel and then traverses down
- - Extend _calculateLayoutSizeRange so it can accept a precalculated array of child size ranges
-  - Then I can hopefully avoid repetition and also merge two code paths for layout size range calculation
- - CONSIDER actually performing the layout update, and just caching the results
-   - How to check if element is dirty?
-    - Iterating over all of its children (and parents?) every time seems slow
-	- Perhaps I could move dirty flags from the element and to the first non-dependant parent
-	  - Then when any of its children are updated I mark it as dirty. 
+Later:
+ - Switch bound calculations to the new system
+ - Get rid of _calculateLayoutSizeRange as I don't need it without GUILayoutUtility::calcBounds
+ - Unify position, width, height, depth, depthMin, depthMax, layoutClipRect, elementClipRect into a single structure
+   - So I don't need to call 6 different _set methods in _updateLayoutInternal, and so that _updateLayoutInternal doesn't have as many parameters
+ - Rename markContentAsDirty and markMeshAsDirty so they have a _ prefix since they're now internal
+ - Rename get/setAreaDepth to get/setPanelDepth
 
-Make sure that making a single GUI element dirty doesn't cause an update over the entire GUIWidget
- - Make sure that _updateLayoutInternal determines whether an element is dependant on children
-   - GUILayout and GUIPanel would need to store bounds
-   - This would also require removal of actual width/height from layout as that makes it dependant on children 100% of the time
-   - It's not dependant of children if it has fixed width and height
-   - When calculating bounds or updating layout make sure to stop at non-dependant layout or panel
+ getBounds
+{
+   if(mUpdateParent != nullptr && mUpdateParent->mIsDirty)
+      mUpdateParent->_updateLayout();
 
-GUIResourceField doesn't distinguish between tex2d, tex3d and texcube.
+   return _getCachedBounds();
+}
 
 Simple tasks:
- - Add C# Renderable & Material interface
+ - Add C# Renderable interface
  - Add C# context menu support for GUI elements
  - Hook up windows drag and drop support
  - Hook up drag and drop internal to project window

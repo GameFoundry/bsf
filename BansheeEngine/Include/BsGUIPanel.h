@@ -38,6 +38,29 @@ namespace BansheeEngine
 			const Vector<LayoutSizeRange>& sizeRanges, const LayoutSizeRange& mySizeRange) const;
 
 		/**
+		 * @brief	Calculates the size of the provided child within this layout with the provided dimensions.
+		 *
+		 * @note	Internal method.
+		 */
+		Rect2I _getElementArea(INT32 x, INT32 y, UINT32 width, UINT32 height, const GUIElementBase* element, const LayoutSizeRange& sizeRange) const;
+
+		/**
+		 * @brief	Calculates an element size range for the provided child of the GUI panel. Will return cached bounds
+		 *			so make sure to update optimal size ranges before calling.
+		 *
+		 * @note	Internal method.
+		 */
+		LayoutSizeRange _getElementSizeRange(const GUIElementBase* element) const;
+
+		/**
+		 * @brief	Assigns the specified layout information to a child element of a GUI panel.
+		 *
+		 * @note	Internal method.
+		 */
+		void _updateChildLayout(GUIElementBase* element, const Rect2I& area, const Rect2I& clipRect, UINT8 widgetDepth,
+			INT16 panelDepth, UINT16 panelDepthRangeMin, UINT16 panelDepthRangeMax);
+
+		/**
 		 * @copydoc	GUILayout::_calcActualSize
 		 */
 		virtual Vector2I _calcActualSize(INT32 x, INT32 y, Rect2I* elementAreas, UINT32 numElements) const;

@@ -85,26 +85,6 @@ namespace BansheeEngine
 		virtual Type _getType() const override { return GUIElementBase::Type::Layout; }
 
 		/**
-		 * @brief	Gets an actual width (in pixels) of all the child elements in the layout.
-		 *
-		 * @note	updateLayoutInternal must be called whenever layout or its children change,
-		 * 			otherwise this method will return an incorrect value.
-		 * 			
-		 *			Returned value is based on non-clipped element bounds.
-		 */
-		UINT32 _getActualWidth() const { return mActualWidth; }
-
-		/**
-		 * @brief	Gets an actual height (in pixels) of all the child elements in the layout.
-		 *
-		 * @note	updateLayoutInternal must be called whenever layout or its children change,
-		 * 			otherwise this method will return an incorrect value.
-		 * 			
-		 *			Returned value is based on non-clipped element bounds.
-		 */
-		UINT32 _getActualHeight() const { return mActualHeight; }
-
-		/**
 		 * @brief	Calculates the actual size of the layout taken up by all of its elements.
 		 *
 		 * @param	x				Origin based on which to calculate the size.
@@ -126,8 +106,5 @@ namespace BansheeEngine
 	protected:
 		Vector<LayoutSizeRange> mChildSizeRanges;
 		LayoutSizeRange mSizeRange;
-
-		UINT32 mActualWidth;
-		UINT32 mActualHeight;
 	};
 }

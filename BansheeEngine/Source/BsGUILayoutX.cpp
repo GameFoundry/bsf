@@ -379,61 +379,33 @@ namespace BansheeEngine
 
 		// Now that we have all the areas, actually assign them
 		UINT32 childIdx = 0;
-		Rect2I* actualSizes = elementAreas; // We re-use the same array
 
 		for(auto& child : mChildren)
 		{
 			Rect2I childArea = elementAreas[childIdx];
-
 			Vector2I offset(childArea.x, childArea.y);
-			if(child->_getType() == GUIElementBase::Type::Element)
-			{
-				GUIElement* element = static_cast<GUIElement*>(child);
 
-				element->_setPosition(offset);
-				element->_setWidth(childArea.width);
-				element->_setHeight(childArea.height);
-				element->_setWidgetDepth(widgetDepth);
-				element->_setAreaDepth(panelDepth);
+			child->_setPosition(offset);
+			child->_setWidth(childArea.width);
+			child->_setHeight(childArea.height);
+			child->_setWidgetDepth(widgetDepth);
+			child->_setAreaDepth(panelDepth);
+			child->_setPanelDepthRange(panelDepthRangeMin, panelDepthRangeMax);
+			
+			Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
+			child->_setClipRect(elemClipRect);
 
-				Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
-				element->_setClipRect(elemClipRect);
+			Rect2I newClipRect(offset.x, offset.y, childArea.width, childArea.height);
+			newClipRect.clip(clipRect);
 
-				Rect2I newClipRect(offset.x, offset.y, childArea.width, childArea.height);
-				newClipRect.clip(clipRect);
-				element->_updateLayoutInternal(offset.x, offset.y, childArea.width, childArea.height, newClipRect, 
-					widgetDepth, panelDepth, panelDepthRangeMin, panelDepthRangeMax);
+			child->_updateLayoutInternal(offset.x, offset.y, childArea.width, childArea.height, newClipRect,
+				widgetDepth, panelDepth, panelDepthRangeMin, panelDepthRangeMax);
 
-				actualSizes[childIdx].height = childArea.height + child->_getPadding().top + child->_getPadding().bottom;
-			}
-			else if (child->_getType() == GUIElementBase::Type::Layout || child->_getType() == GUIElementBase::Type::Panel)
-			{
-				GUILayout* layout = static_cast<GUILayout*>(child);
-
-				Rect2I newClipRect(childArea.x, childArea.y, childArea.width, height);
-				newClipRect.clip(clipRect);
-				layout->_updateLayoutInternal(childArea.x, childArea.y, childArea.width, height, newClipRect, 
-					widgetDepth, panelDepth, panelDepthRangeMin, panelDepthRangeMax);
-
-				actualSizes[childIdx].height = layout->_getActualHeight();
-			}
-			else
-			{
-				actualSizes[childIdx].height = childArea.height;
-			}
-
-			actualSizes[childIdx].width = childArea.width + child->_getPadding().left + child->_getPadding().right;
 			childIdx++;
 		}
 
-		Vector2I actualSize = _calcActualSize(x, y, actualSizes, numElements);
-		mActualWidth = (UINT32)actualSize.x;
-		mActualHeight = (UINT32)actualSize.y;
-
 		if(elementAreas != nullptr)
 			stackDeallocLast(elementAreas);
-
-		_markAsClean();
 	}
 
 	Vector2I GUILayoutX::_calcActualSize(INT32 x, INT32 y, Rect2I* elementAreas, UINT32 numElements) const

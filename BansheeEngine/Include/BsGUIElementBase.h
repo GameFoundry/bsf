@@ -150,6 +150,112 @@ namespace BansheeEngine
 			const Vector<LayoutSizeRange>& sizeRanges, const LayoutSizeRange& mySizeRange) const;
 
 		/**
+		 * @brief	Sets element position relative to widget origin. This will be the position used directly for rendering.
+		 *
+		 * @note	Internal method.
+		 */
+		virtual void _setPosition(const Vector2I& offset);
+
+		/**
+		 * @brief	Sets element width in pixels. This will be the width used directly for rendering.
+		 *
+		 * @note	Internal method.
+		 */
+		virtual void _setWidth(UINT32 width);
+
+		/**
+		 * @brief	Sets element height in pixels. This will be the height used directly for rendering.
+		 *
+		 * @note	Internal method.
+		 */
+		virtual void _setHeight(UINT32 height);
+
+		/**
+		 * @brief	Set widget part of element depth. (Most significant part)
+		 *
+		 * @note	Internal method.
+		 */
+		void _setWidgetDepth(UINT8 depth);
+
+		/**
+		 * @brief	Set area part of element depth. Less significant than widget
+		 *			depth but more than custom element depth.
+		 *
+		 * @note	Internal method.
+		 */
+		void _setAreaDepth(INT16 depth);
+
+		/**
+		 * @brief	Sets a clip rectangle that GUI element sprite will be clipped to. 
+		 *			Rectangle is in local coordinates. (Relative to element position)
+		 *
+		 * @note	Internal method.
+		 */
+		virtual void _setClipRect(const Rect2I& clipRect);
+
+		/**
+		 * @brief	Sets the panel depth range that children of this element are allowed
+		 *			to be placed in.
+		 */
+		void _setPanelDepthRange(UINT16 min, UINT16 max);
+
+		/**
+		 * @brief	Retrieves the panel depth range that children of this element are allowed
+		 *			to be placed in.
+		 */
+		void _getPanelDepthRange(UINT16& min, UINT16& max);
+
+		/**
+		 * @brief	Returns width of the element in pixels.
+		 *
+		 * @note	This value is updated during layout update which means it might be out of date
+		 *			if parent element bounds changed since.
+		 *			Internal method:
+		 */
+		UINT32 _getWidth() const { return mWidth; }
+
+		/**
+		 * @brief	Returns height of the element in pixels.
+		 *
+		 * @note	This value is updated during layout update which means it might be out of date
+		 *			if parent element bounds changed since.
+		 *			Internal method:
+		 */
+		UINT32 _getHeight() const { return mHeight; }
+
+		/**
+		 * @brief	Returns position of the element, relative to parent GUI widget origin.
+		 *
+		 * @note	This value is updated during layout update which means it might be out of date
+		 *			if parent element bounds changed since.
+		 *			Internal method:
+		 */
+		Vector2I _getOffset() const { return mOffset; }
+
+		/**
+		 * @brief	Set widget part of element depth. (Most significant part)
+		 *
+		 * @note	Internal method.
+		 */
+		UINT8 _getWidgetDepth() const;
+
+		/**
+		 * @brief	Set area part of element depth. Less significant than widget
+		 *			depth but more than custom element depth.
+		 *
+		 * @note	Internal method.
+		 */
+		INT16 _getAreaDepth() const;
+
+		/**
+		 * @brief	Returns clip rect used for clipping the GUI element and related sprites
+		 *			to a specific region. Clip rect is relative to GUI element origin.
+		 *
+		 * @note	Internal method.
+		 */
+		const Rect2I& _getClipRect() const { return mClipRect; }
+
+		/**
 		 * @brief	Sets a new parent for this element.
 		 *
 		 * @note	Internal method.
@@ -214,33 +320,24 @@ namespace BansheeEngine
 		GUIElementBase* _getParent() const { return mParentElement; }
 
 		/**
+		 * @brief	Returns the parent element whose layout needs to be updated 
+		 *			when this elements contents change.
+		 *
+		 * @note	Due to the nature of the GUI system, when a child element bounds
+		 *			or contents change, its parents and siblings usually need their
+		 *			layout bound updated. This function returns the first parent of 
+		 *			all the elements that require updating. This parent usually
+		 *			has fixed bounds or some other property that allows its children
+		 *			to be updated independently from the even higher-up elements.
+		 */
+		GUIElementBase* _getUpdateParent() const { return mUpdateParent; }
+
+		/**
 		 * @brief	Returns parent GUI widget, can be null.
 		 *
 		 * @note	Internal method.
 		 */
 		GUIWidget* _getParentWidget() const { return mParentWidget; }
-
-		/**
-		 * @brief	Marks the internal data as clean, usually called after an external
-		 *			system has registered the internal data change.
-		 *
-		 * @note	Internal method.
-		 */
-		void _markAsClean() { mIsDirty = 0; }
-
-		/**
-		 * @brief	Returns true if render elements need to be recalculated by calling updateRenderElements.
-		 *
-		 * @note	Internal method.
-		 */
-		virtual bool _isContentDirty() const;
-
-		/**
-		 * @brief	Returns true if mesh has changed and fillBuffers needs to be called.
-		 *
-		 * @note	Internal method.
-		 */
-		virtual bool _isMeshDirty() const; 
 
 		/**
 		 * @brief	Returns true if element is disabled and won't be visible or interactable.
@@ -273,24 +370,85 @@ namespace BansheeEngine
 		 */
 		void _unregisterChildElement(GUIElementBase* element);
 
-	protected:
 		/**
 		 * @brief	Marks the elements contents as dirty, which causes the sprite meshes to be recreated from scratch.
+		 *
+		 * @note	Internal method.
 		 */
 		void markContentAsDirty();
 
 		/**
 		 * @brief	Mark only the elements that operate directly on the sprite mesh without requiring the mesh
 		 * 			to be recreated as dirty. This includes position, depth and clip rectangle.
+		 *
+		 * @note	Internal method.
 		 */
 		void markMeshAsDirty();
 
+		/**
+		 * @brief	Returns true if elements contents have changed since last update.
+		 */
+		bool _isDirty() const { return mIsDirty; }
+
+		/**
+		 * @brief	Marks the element contents to be up to date. (i.e. processed by the GUI system)
+		 */
+		void _markAsClean();
+
+	protected:
+
+		/**
+		 * @brief	Finds anchor and update parents and recursively assigns them to all children.
+		 */
+		void _updateAUParents();
+
+		/**
+		 * @brief	Refreshes update parents of all child elements.
+		 */
+		void refreshChildUpdateParents();
+
+		/**
+		 * @brief	Finds the first parent element whose size doesn't depend on child sizes.
+		 *			
+		 * @note	This allows us to optimize layout updates and trigger them only on such parents
+		 *			when their child elements contents change, compared to doing them on the entire
+		 *			GUI hierarchy.
+		 */
+		GUIElementBase* findUpdateParent();
+
+		/**
+		 * @brief	Helper method for recursion in "_updateAUParents". Sets the provided anchor 
+		 *			parent for all children recursively. Recursion stops when a child anchor is detected.
+		 *
+		 * @see	_updateParents
+		 */
+		void setAnchorParent(GUIPanel* anchorParent);
+
+		/**
+		 * @brief	Helper method for recursion in "_updateAUParents". Sets the provided update 
+		 *			parent for all children recursively. Recursion stops when a child update parent
+		 *			is detected.
+		 *
+		 * @see	_updateParents
+		 */
+		void setUpdateParent(GUIElementBase* updateParent);
+
 		GUIWidget* mParentWidget;
+		GUIPanel* mAnchorParent;
+		GUIElementBase* mUpdateParent;
+
 		GUIElementBase* mParentElement;
 		Vector<GUIElementBase*> mChildren;	
-		UINT8 mIsDirty;
 		bool mIsDisabled;
+		bool mIsDirty;
 
 		GUIDimensions mDimensions;
+
+		Vector2I mOffset;
+		UINT32 mWidth, mHeight;
+
+		Rect2I mClipRect;
+		UINT32 mPanelDepthRange;
+		UINT32 mDepth;
 	};
 }

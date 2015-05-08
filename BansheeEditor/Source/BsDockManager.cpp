@@ -113,6 +113,7 @@ namespace BansheeEngine
 
 				Rect2I elemClipRect(clipRect.x - mArea.x, clipRect.y - mArea.y, clipRect.width, clipRect.height);
 				mSlider->_setClipRect(elemClipRect);
+				mSlider->markContentAsDirty();
 			}
 			else
 			{
@@ -129,6 +130,7 @@ namespace BansheeEngine
 
 				Rect2I elemClipRect(clipRect.x - mArea.x, clipRect.y - mArea.y, clipRect.width, clipRect.height);
 				mSlider->_setClipRect(elemClipRect);
+				mSlider->markContentAsDirty();
 			}
 		}
 	}
@@ -243,11 +245,13 @@ namespace BansheeEngine
 		{
 			mSlider = GUIDockSlider::create(true, "DockSliderBtn");
 			mSlider->_setWidgetDepth(widgetParent->getDepth());
+			mSlider->markMeshAsDirty();
 		}
 		else
 		{
 			mSlider = GUIDockSlider::create(false, "DockSliderBtn");
 			mSlider->_setWidgetDepth(widgetParent->getDepth());
+			mSlider->markMeshAsDirty();
 		}
 
 		mSlider->_changeParentWidget(widgetParent);
