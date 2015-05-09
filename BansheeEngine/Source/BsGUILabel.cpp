@@ -14,7 +14,7 @@ namespace BansheeEngine
 	{
 		mTextSprite = bs_new<TextSprite, PoolAlloc>();
 
-		mLocStringUpdatedConn = mContent.getText().addOnStringModifiedCallback(std::bind(&GUILabel::markContentAsDirty, this));
+		mLocStringUpdatedConn = mContent.getText().addOnStringModifiedCallback(std::bind(&GUILabel::_markContentAsDirty, this));
 	}
 
 	GUILabel::~GUILabel()
@@ -45,8 +45,8 @@ namespace BansheeEngine
 		mDesc.wordWrap = _getStyle()->wordWrap;
 		mDesc.horzAlign = _getStyle()->textHorzAlign;
 		mDesc.vertAlign = _getStyle()->textVertAlign;
-		mDesc.width = mWidth;
-		mDesc.height = mHeight;
+		mDesc.width = mLayoutData.area.width;
+		mDesc.height = mLayoutData.area.height;
 		mDesc.text = mContent.getText();
 		mDesc.color = mColor * _getStyle()->normal.textColor;;
 
@@ -57,10 +57,11 @@ namespace BansheeEngine
 
 	void GUILabel::updateClippedBounds()
 	{
-		Vector2I offset = _getOffset();
-		mClippedBounds = Rect2I(offset.x, offset.y, _getWidth(), _getHeight());
+		mClippedBounds = mLayoutData.area;
 
-		Rect2I localClipRect(mClipRect.x + mOffset.x, mClipRect.y + mOffset.y, mClipRect.width, mClipRect.height);
+		Rect2I localClipRect = mLayoutData.clipRect;
+		localClipRect.x += mLayoutData.area.x;
+		localClipRect.y += mLayoutData.area.y;
 		mClippedBounds.clip(localClipRect);
 	}
 
@@ -72,24 +73,27 @@ namespace BansheeEngine
 	void GUILabel::_fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
-		mTextSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, renderElementIdx, mOffset, mClipRect);
+		Vector2I offset(mLayoutData.area.x, mLayoutData.area.y);
+
+		mTextSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, 
+			indexStride, renderElementIdx, offset, mLayoutData.clipRect);
 	}
 
 	void GUILabel::setContent(const GUIContent& content)
 	{
 		mLocStringUpdatedConn.disconnect();
-		mLocStringUpdatedConn = content.getText().addOnStringModifiedCallback(std::bind(&GUILabel::markContentAsDirty, this));
+		mLocStringUpdatedConn = content.getText().addOnStringModifiedCallback(std::bind(&GUILabel::_markContentAsDirty, this));
 
 		mContent = content;
 		
-		markContentAsDirty();
+		_markContentAsDirty();
 	}
 
 	void GUILabel::setTint(const Color& color)
 	{
 		mColor = color;
 
-		markContentAsDirty();
+		_markContentAsDirty();
 	}
 
 	GUILabel* GUILabel::create(const HString& text, const String& styleName)

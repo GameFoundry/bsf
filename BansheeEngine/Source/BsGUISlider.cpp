@@ -52,25 +52,15 @@ namespace BansheeEngine
 		return optimalSize;
 	}
 
-	void GUISlider::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-		Rect2I clipRect, UINT8 widgetDepth, INT16 panelDepth, UINT16 panelDepthRangeMin, UINT16 panelDepthRangeMax)
+	void GUISlider::_updateLayoutInternal(const GUILayoutData& data)
 	{
-		Vector2I offset(x, y);
-		Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
+		GUILayoutData childData = data;
 
-		mBackground->_setPosition(offset);
-		mBackground->_setWidth(width);
-		mBackground->_setHeight(height);
-		mBackground->_setAreaDepth(panelDepth);
-		mBackground->_setWidgetDepth(widgetDepth);
-		mBackground->_setClipRect(elemClipRect);
+		childData.clipRect = Rect2I(data.clipRect.x - data.area.x, data.clipRect.y - data.area.y, 
+			data.clipRect.width, data.clipRect.height);
 
-		mSliderHandle->_setPosition(offset);
-		mSliderHandle->_setWidth(width);
-		mSliderHandle->_setHeight(height);
-		mSliderHandle->_setAreaDepth(panelDepth);
-		mSliderHandle->_setWidgetDepth(widgetDepth);
-		mSliderHandle->_setClipRect(elemClipRect);
+		mBackground->_setLayoutData(childData);
+		mSliderHandle->_setLayoutData(childData);
 	}
 
 	void GUISlider::styleUpdated()
@@ -82,7 +72,7 @@ namespace BansheeEngine
 	void GUISlider::setPercent(float pct)
 	{
 		mSliderHandle->_setHandlePos(pct);
-		mSliderHandle->markContentAsDirty();
+		mSliderHandle->_markContentAsDirty();
 	}
 
 	float GUISlider::getPercent() const

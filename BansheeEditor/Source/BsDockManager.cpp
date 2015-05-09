@@ -107,13 +107,17 @@ namespace BansheeEngine
 				mChildren[0]->setArea(mArea.x, mArea.y, mArea.width, sizeTop);
 				mChildren[1]->setArea(mArea.x, mArea.y + sizeTop + SLIDER_SIZE, mArea.width, sizeBottom);
 
-				mSlider->_setPosition(Vector2I(mArea.x, mArea.y + sizeTop));
-				mSlider->_setWidth(mArea.width);
-				mSlider->_setHeight(SLIDER_SIZE);
+				GUILayoutData layoutData = mSlider->_getLayoutData();
+				layoutData.area = mArea;
+				layoutData.area.y += sizeTop;
+				layoutData.area.height = SLIDER_SIZE;
 
-				Rect2I elemClipRect(clipRect.x - mArea.x, clipRect.y - mArea.y, clipRect.width, clipRect.height);
-				mSlider->_setClipRect(elemClipRect);
-				mSlider->markContentAsDirty();
+				layoutData.clipRect = clipRect;
+				layoutData.clipRect.x -= mArea.x;
+				layoutData.clipRect.y -= mArea.y;
+
+				mSlider->_setLayoutData(layoutData);
+				mSlider->_markContentAsDirty();
 			}
 			else
 			{
@@ -124,13 +128,17 @@ namespace BansheeEngine
 				mChildren[0]->setArea(mArea.x, mArea.y, sizeLeft, mArea.height);
 				mChildren[1]->setArea(mArea.x + sizeLeft + SLIDER_SIZE, mArea.y, sizeRight, mArea.height);
 
-				mSlider->_setPosition(Vector2I(mArea.x + sizeLeft, mArea.y));
-				mSlider->_setWidth(SLIDER_SIZE);
-				mSlider->_setHeight(mArea.height);
+				GUILayoutData layoutData = mSlider->_getLayoutData();
+				layoutData.area = mArea;
+				layoutData.area.x += sizeLeft;
+				layoutData.area.width = SLIDER_SIZE;
 
-				Rect2I elemClipRect(clipRect.x - mArea.x, clipRect.y - mArea.y, clipRect.width, clipRect.height);
-				mSlider->_setClipRect(elemClipRect);
-				mSlider->markContentAsDirty();
+				layoutData.clipRect = clipRect;
+				layoutData.clipRect.x -= mArea.x;
+				layoutData.clipRect.y -= mArea.y;
+
+				mSlider->_setLayoutData(layoutData);
+				mSlider->_markContentAsDirty();
 			}
 		}
 	}
@@ -244,14 +252,19 @@ namespace BansheeEngine
 		if (horizontal)
 		{
 			mSlider = GUIDockSlider::create(true, "DockSliderBtn");
-			mSlider->_setWidgetDepth(widgetParent->getDepth());
-			mSlider->markMeshAsDirty();
+
+			GUILayoutData layoutData = mSlider->_getLayoutData();
+			layoutData.setWidgetDepth(widgetParent->getDepth());
+			mSlider->_setLayoutData(layoutData);
+			mSlider->_markMeshAsDirty();
 		}
 		else
 		{
 			mSlider = GUIDockSlider::create(false, "DockSliderBtn");
-			mSlider->_setWidgetDepth(widgetParent->getDepth());
-			mSlider->markMeshAsDirty();
+			GUILayoutData layoutData = mSlider->_getLayoutData();
+			layoutData.setWidgetDepth(widgetParent->getDepth());
+			mSlider->_setLayoutData(layoutData);
+			mSlider->_markMeshAsDirty();
 		}
 
 		mSlider->_changeParentWidget(widgetParent);

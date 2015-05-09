@@ -44,22 +44,22 @@ namespace BansheeEngine
 
 	void GUIScrollArea::updateClippedBounds()
 	{
-		Rect2I bounds(0, 0, mWidth, mHeight);
-		bounds.clip(mClipRect);
-		bounds.x += mOffset.x;
-		bounds.y += mOffset.y;
+		Rect2I bounds(0, 0, mLayoutData.area.width, mLayoutData.area.height);
+		bounds.clip(mLayoutData.clipRect);
+		bounds.x += mLayoutData.area.x;
+		bounds.y += mLayoutData.area.y;
 
 		mClippedBounds = bounds;
 	}
 
-	void GUIScrollArea::_getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements, 
+	void GUIScrollArea::_getElementAreas(const Rect2I& layoutArea, Rect2I* elementAreas, UINT32 numElements,
 		const Vector<LayoutSizeRange>& sizeRanges, const LayoutSizeRange& mySizeRange) const
 	{
 		Vector2I visibleSize, contentSize;
-		_getElementAreas(x, y, width, height, elementAreas, numElements, sizeRanges, visibleSize, contentSize);
+		_getElementAreas(layoutArea, elementAreas, numElements, sizeRanges, visibleSize, contentSize);
 	}
 
-	void GUIScrollArea::_getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements, 
+	void GUIScrollArea::_getElementAreas(const Rect2I& layoutArea, Rect2I* elementAreas, UINT32 numElements,
 		const Vector<LayoutSizeRange>& sizeRanges, Vector2I& visibleSize, Vector2I& contentSize) const
 	{
 		assert(mChildren.size() == numElements && numElements == 3);
@@ -86,19 +86,19 @@ namespace BansheeEngine
 
 		//// We want elements to use their optimal height, since scroll area
 		//// technically provides "infinite" space
-		UINT32 optimalContentWidth = width;
+		UINT32 optimalContentWidth = layoutArea.width;
 		if (mHorzBarType != ScrollBarType::NeverShow)
 			optimalContentWidth = sizeRanges[layoutIdx].optimal.x;
 
-		UINT32 optimalContentHeight = height;
+		UINT32 optimalContentHeight = layoutArea.height;
 		if (mVertBarType != ScrollBarType::NeverShow)
 			optimalContentHeight = sizeRanges[layoutIdx].optimal.y;
 
-		UINT32 layoutWidth = std::max(optimalContentWidth, width);
-		UINT32 layoutHeight = std::max(optimalContentHeight, height);
+		UINT32 layoutWidth = std::max(optimalContentWidth, (UINT32)layoutArea.width);
+		UINT32 layoutHeight = std::max(optimalContentHeight, (UINT32)layoutArea.height);
 
 		contentSize = GUILayoutUtility::calcActualSize(layoutWidth, layoutHeight, mContentLayout);
-		visibleSize = Vector2I(width, height);
+		visibleSize = Vector2I(layoutArea.width, layoutArea.height);
 
 		bool addHorzScrollbar = (mHorzBarType == ScrollBarType::ShowIfDoesntFit && contentSize.x > visibleSize.x) ||
 			mHorzBarType == ScrollBarType::AlwaysShow && mHorzBarType != ScrollBarType::NeverShow;
@@ -108,7 +108,7 @@ namespace BansheeEngine
 		if (addHorzScrollbar)
 		{
 			// Make room for scrollbar
-			visibleSize.y = (UINT32)std::max(0, (INT32)height - (INT32)ScrollBarWidth);
+			visibleSize.y = (UINT32)std::max(0, (INT32)layoutArea.height - (INT32)ScrollBarWidth);
 
 			if (mVertBarType == ScrollBarType::NeverShow)
 				layoutHeight = (UINT32)visibleSize.y;
@@ -125,7 +125,7 @@ namespace BansheeEngine
 		if (addVertScrollbar)
 		{
 			// Make room for scrollbar
-			visibleSize.x = (UINT32)std::max(0, (INT32)width - (INT32)ScrollBarWidth);
+			visibleSize.x = (UINT32)std::max(0, (INT32)layoutArea.width - (INT32)ScrollBarWidth);
 			
 			if (mHorzBarType == ScrollBarType::NeverShow)
 				layoutWidth = (UINT32)visibleSize.x;
@@ -142,7 +142,7 @@ namespace BansheeEngine
 				if (addHorzScrollbar)
 				{
 					// Make room for scrollbar
-					visibleSize.y = (UINT32)std::max(0, (INT32)height - (INT32)ScrollBarWidth);
+					visibleSize.y = (UINT32)std::max(0, (INT32)layoutArea.height - (INT32)ScrollBarWidth);
 
 					if (mVertBarType == ScrollBarType::NeverShow)
 						layoutHeight = (UINT32)visibleSize.y;
@@ -155,41 +155,40 @@ namespace BansheeEngine
 			}
 		}
 
-		elementAreas[layoutIdx] = Rect2I(x - Math::floorToInt(mHorzOffset), y - Math::floorToInt(mVertOffset), layoutWidth, layoutHeight);
+		elementAreas[layoutIdx] = Rect2I(layoutArea.x - Math::floorToInt(mHorzOffset), layoutArea.y - Math::floorToInt(mVertOffset), layoutWidth, layoutHeight);
 
 		// Calculate vertical scrollbar bounds
 		if (hasVertScrollbar)
 		{
-			INT32 scrollBarOffset = (UINT32)std::max(0, (INT32)width - (INT32)ScrollBarWidth);
-			UINT32 scrollBarHeight = height;
+			INT32 scrollBarOffset = (UINT32)std::max(0, (INT32)layoutArea.width - (INT32)ScrollBarWidth);
+			UINT32 scrollBarHeight = layoutArea.height;
 			if (hasHorzScrollbar)
 				scrollBarHeight = (UINT32)std::max(0, (INT32)scrollBarHeight - (INT32)ScrollBarWidth);
 
-			elementAreas[vertScrollIdx] = Rect2I(x + scrollBarOffset, y, ScrollBarWidth, scrollBarHeight);
+			elementAreas[vertScrollIdx] = Rect2I(layoutArea.x + scrollBarOffset, layoutArea.y, ScrollBarWidth, scrollBarHeight);
 		}
 		else
 		{
-			elementAreas[vertScrollIdx] = Rect2I(x + layoutWidth, y, 0, 0);
+			elementAreas[vertScrollIdx] = Rect2I(layoutArea.x + layoutWidth, layoutArea.y, 0, 0);
 		}
 
 		// Calculate horizontal scrollbar bounds
 		if (hasHorzScrollbar)
 		{
-			INT32 scrollBarOffset = (UINT32)std::max(0, (INT32)height - (INT32)ScrollBarWidth);
-			UINT32 scrollBarWidth = width;
+			INT32 scrollBarOffset = (UINT32)std::max(0, (INT32)layoutArea.height - (INT32)ScrollBarWidth);
+			UINT32 scrollBarWidth = layoutArea.width;
 			if (hasVertScrollbar)
 				scrollBarWidth = (UINT32)std::max(0, (INT32)scrollBarWidth - (INT32)ScrollBarWidth);
 
-			elementAreas[horzScrollIdx] = Rect2I(x, y + scrollBarOffset, scrollBarWidth, ScrollBarWidth);
+			elementAreas[horzScrollIdx] = Rect2I(layoutArea.x, layoutArea.y + scrollBarOffset, scrollBarWidth, ScrollBarWidth);
 		}
 		else
 		{
-			elementAreas[horzScrollIdx] = Rect2I(x, y + layoutHeight, 0, 0);
+			elementAreas[horzScrollIdx] = Rect2I(layoutArea.x, layoutArea.y + layoutHeight, 0, 0);
 		}
 	}
 
-	void GUIScrollArea::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-		Rect2I clipRect, UINT8 widgetDepth, INT16 panelDepth, UINT16 panelDepthRangeMin, UINT16 panelDepthRangeMax)
+	void GUIScrollArea::_updateLayoutInternal(const GUILayoutData& data)
 	{
 		UINT32 numElements = (UINT32)mChildren.size();
 		Rect2I* elementAreas = nullptr;
@@ -216,49 +215,44 @@ namespace BansheeEngine
 				vertScrollIdx = i;
 		}
 
-		_getElementAreas(x, y, width, height, elementAreas, numElements, sizeRanges, mVisibleSize, mContentSize);
+		_getElementAreas(data.area, elementAreas, numElements, sizeRanges, mVisibleSize, mContentSize);
 
 		Rect2I& layoutBounds = elementAreas[layoutIdx];
 		Rect2I& horzScrollBounds = elementAreas[horzScrollIdx];
 		Rect2I& vertScrollBounds = elementAreas[vertScrollIdx];
 
 		// Layout
-		Rect2I layoutClipRect = clipRect;
+		Rect2I layoutClipRect = data.clipRect;
 		layoutClipRect.width = (UINT32)mVisibleSize.x;
 		layoutClipRect.height = (UINT32)mVisibleSize.y;
 
-		mContentLayout->_setPosition(Vector2I(layoutBounds.x, layoutBounds.y));
-		mContentLayout->_setWidth(layoutBounds.width);
-		mContentLayout->_setHeight(layoutBounds.height);
-		mContentLayout->_setWidgetDepth(widgetDepth);
-		mContentLayout->_setAreaDepth(panelDepth);
-		mContentLayout->_setPanelDepthRange(panelDepthRangeMin, panelDepthRangeMax);
+		GUILayoutData layoutData = data;
+		layoutData.area = layoutBounds;
+		layoutData.clipRect = layoutClipRect;
+		layoutData.clipRect.x -= layoutBounds.x;
+		layoutData.clipRect.y -= layoutBounds.y;
 
-		Rect2I localClipRect(layoutClipRect.x - layoutBounds.x, layoutClipRect.y - layoutBounds.y, layoutClipRect.width, layoutClipRect.height);
-		mContentLayout->_setClipRect(localClipRect);
+		mContentLayout->_setLayoutData(layoutData);
 
-		mContentLayout->_updateLayoutInternal(layoutBounds.x, layoutBounds.y,
-			layoutBounds.width, layoutBounds.height, layoutClipRect, 
-			widgetDepth, panelDepth, panelDepthRangeMin, panelDepthRangeMax);
+		layoutData.clipRect = layoutClipRect;
+
+		mContentLayout->_updateLayoutInternal(layoutData);
 
 		// Vertical scrollbar
 		{
-			mVertScroll->_setPosition(Vector2I(vertScrollBounds.x, vertScrollBounds.y));
-			mVertScroll->_setWidth(vertScrollBounds.width);
-			mVertScroll->_setHeight(vertScrollBounds.height);
-			mVertScroll->_setAreaDepth(panelDepth);
-			mVertScroll->_setWidgetDepth(widgetDepth);
-			mVertScroll->_setPanelDepthRange(panelDepthRangeMin, panelDepthRangeMax);
+			GUILayoutData vertScrollData = data;
+			vertScrollData.area = vertScrollBounds;
 
-			UINT32 clippedScrollbarWidth = std::min(width, ScrollBarWidth);
-			Rect2I elemClipRect(0, 0, clippedScrollbarWidth, clipRect.height);
-			mVertScroll->_setClipRect(elemClipRect);
+			UINT32 clippedScrollbarWidth = std::min((UINT32)data.area.width, ScrollBarWidth);
+			vertScrollData.clipRect = Rect2I(0, 0, clippedScrollbarWidth, data.clipRect.height);
+
+			mVertScroll->_setLayoutData(layoutData);
+
+			vertScrollData.clipRect = Rect2I(data.clipRect.x + (vertScrollBounds.x - data.area.x), 
+				data.clipRect.y + (vertScrollBounds.y - data.area.y), clippedScrollbarWidth, data.clipRect.height);
 
 			// This element is not a child of any layout so we treat it as a root element
-			Rect2I scrollBarLayoutClipRect(clipRect.x + (vertScrollBounds.x - x), clipRect.y + (vertScrollBounds.y - y), clippedScrollbarWidth, clipRect.height);
-			mVertScroll->_updateLayout(vertScrollBounds.x, vertScrollBounds.y, vertScrollBounds.width, 
-				vertScrollBounds.height, scrollBarLayoutClipRect, widgetDepth, panelDepth, 
-				panelDepthRangeMin, panelDepthRangeMax);
+			mVertScroll->_updateLayout(vertScrollData);
 
 			// Set new handle size and update position to match the new size
 			UINT32 newHandleSize = (UINT32)Math::floorToInt(mVertScroll->getMaxHandleSize() * (vertScrollBounds.height / (float)mContentSize.y));
@@ -276,21 +270,17 @@ namespace BansheeEngine
 
 		// Horizontal scrollbar
 		{
-			mHorzScroll->_setPosition(Vector2I(horzScrollBounds.x, horzScrollBounds.y));
-			mHorzScroll->_setWidth(horzScrollBounds.width);
-			mHorzScroll->_setHeight(horzScrollBounds.height);
-			mHorzScroll->_setAreaDepth(panelDepth);
-			mHorzScroll->_setWidgetDepth(widgetDepth);
-			mVertScroll->_setPanelDepthRange(panelDepthRangeMin, panelDepthRangeMax);
+			GUILayoutData horzScrollData = data;
+			horzScrollData.area = horzScrollBounds;
 
-			UINT32 clippedScrollbarHeight = std::min(height, ScrollBarWidth);
-			Rect2I elemClipRect(0, 0, clipRect.width, clippedScrollbarHeight);
-			mHorzScroll->_setClipRect(elemClipRect);
+			UINT32 clippedScrollbarHeight = std::min((UINT32)data.area.height, ScrollBarWidth);
+			horzScrollData.clipRect = Rect2I(0, 0, data.clipRect.width, clippedScrollbarHeight);
+			mHorzScroll->_setLayoutData(horzScrollData);
 
 			// This element is not a child of any layout so we treat it as a root element
-			Rect2I scrollBarLayoutClipRect(clipRect.x + (horzScrollBounds.x - x), clipRect.y + (horzScrollBounds.y - y), clipRect.width, clippedScrollbarHeight);
-			mHorzScroll->_updateLayout(horzScrollBounds.x, horzScrollBounds.y, horzScrollBounds.width, 
-				horzScrollBounds.height, scrollBarLayoutClipRect, widgetDepth, panelDepth, panelDepthRangeMin, panelDepthRangeMax);
+			horzScrollData.clipRect = Rect2I(data.clipRect.x + (horzScrollBounds.x - data.area.x), 
+				data.clipRect.y + (horzScrollBounds.y - data.area.y), data.clipRect.width, clippedScrollbarHeight);
+			mHorzScroll->_updateLayout(horzScrollData);
 
 			// Set new handle size and update position to match the new size
 			UINT32 newHandleSize = (UINT32)Math::floorToInt(mHorzScroll->getMaxHandleSize() * (horzScrollBounds.width / (float)mContentSize.x));
@@ -325,7 +315,7 @@ namespace BansheeEngine
 		UINT32 scrollableHeight = (UINT32)std::max(0, INT32(mContentSize.y) - INT32(mVisibleSize.y));
 		mVertOffset = scrollableHeight * Math::clamp01(pct);
 
-		markContentAsDirty();
+		_markContentAsDirty();
 	}
 
 	void GUIScrollArea::scrollToHorizontal(float pct)
@@ -333,7 +323,7 @@ namespace BansheeEngine
 		UINT32 scrollableWidth = (UINT32)std::max(0, INT32(mContentSize.x) - INT32(mVisibleSize.x));
 		mHorzOffset = scrollableWidth * Math::clamp01(pct);
 
-		markContentAsDirty();
+		_markContentAsDirty();
 	}
 
 	float GUIScrollArea::getVerticalScroll() const
@@ -352,7 +342,7 @@ namespace BansheeEngine
 		return 0.0f;
 	}
 
-	Rect2I GUIScrollArea::getContentBounds() const
+	Rect2I GUIScrollArea::getContentBounds()
 	{
 		Rect2I bounds = getBounds();
 

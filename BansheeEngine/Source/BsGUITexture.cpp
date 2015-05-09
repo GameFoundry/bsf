@@ -107,7 +107,7 @@ namespace BansheeEngine
 	{
 		mColor = color;
 
-		markContentAsDirty();
+		_markContentAsDirty();
 	}
 
 	void GUITexture::setTexture(const HSpriteTexture& texture)
@@ -115,7 +115,7 @@ namespace BansheeEngine
 		mActiveTexture = texture;
 		mUsingStyleTexture = false;
 
-		markContentAsDirty();
+		_markContentAsDirty();
 	}
 
 	UINT32 GUITexture::_getNumRenderElements() const
@@ -135,8 +135,8 @@ namespace BansheeEngine
 
 	void GUITexture::updateRenderElementsInternal()
 	{		
-		mDesc.width = mWidth;
-		mDesc.height = mHeight;
+		mDesc.width = mLayoutData.area.width;
+		mDesc.height = mLayoutData.area.height;
 
 		mDesc.borderLeft = _getStyle()->border.left;
 		mDesc.borderRight = _getStyle()->border.right;
@@ -160,40 +160,40 @@ namespace BansheeEngine
 			mDesc.uvScale = Vector2(1.0f, 1.0f);
 			break;
 		case GUIImageScaleMode::ScaleToFit:
-			mDesc.uvScale.x = optimalWidth / mWidth;
-			mDesc.uvScale.y = optimalHeight / mHeight;
+			mDesc.uvScale.x = optimalWidth / mLayoutData.area.width;
+			mDesc.uvScale.y = optimalHeight / mLayoutData.area.height;
 
 			if(mDesc.uvScale.x < mDesc.uvScale.y)
 			{
 				mDesc.uvScale.x = 1.0f;
-				mDesc.uvScale.y = (mWidth * (optimalHeight / optimalWidth)) / mHeight;
+				mDesc.uvScale.y = (mLayoutData.area.width * (optimalHeight / optimalWidth)) / mLayoutData.area.height;
 			}
 			else
 			{
-				mDesc.uvScale.x = (mHeight * (optimalWidth / optimalHeight)) / mWidth;
+				mDesc.uvScale.x = (mLayoutData.area.height * (optimalWidth / optimalHeight)) / mLayoutData.area.width;
 				mDesc.uvScale.y = 1.0f;
 			}
 
 			break;
 		case GUIImageScaleMode::CropToFit:
-			mDesc.uvScale.x = optimalWidth / mWidth;
-			mDesc.uvScale.y = optimalHeight / mHeight;
+			mDesc.uvScale.x = optimalWidth / mLayoutData.area.width;
+			mDesc.uvScale.y = optimalHeight / mLayoutData.area.height;
 
 			if(mDesc.uvScale.x < mDesc.uvScale.y)
 			{
-				mDesc.uvScale.x = (mHeight * (optimalWidth / optimalHeight)) / mWidth;
+				mDesc.uvScale.x = (mLayoutData.area.height * (optimalWidth / optimalHeight)) / mLayoutData.area.width;
 				mDesc.uvScale.y = 1.0f;
 			}
 			else
 			{
 				mDesc.uvScale.x = 1.0f;
-				mDesc.uvScale.y = (mWidth * (optimalHeight / optimalWidth)) / mHeight;
+				mDesc.uvScale.y = (mLayoutData.area.width * (optimalHeight / optimalWidth)) / mLayoutData.area.height;
 			}
 
 			break;
 		case GUIImageScaleMode::RepeatToFit:
-			mDesc.uvScale.x = mWidth / optimalWidth;
-			mDesc.uvScale.y = mHeight / optimalHeight;
+			mDesc.uvScale.x = mLayoutData.area.width / optimalWidth;
+			mDesc.uvScale.y = mLayoutData.area.height / optimalHeight;
 			break;
 		default:
 			break;
@@ -206,7 +206,8 @@ namespace BansheeEngine
 
 	void GUITexture::updateClippedBounds()
 	{
-		mClippedBounds = mImageSprite->getBounds(mOffset, mClipRect);
+		Vector2I offset(mLayoutData.area.x, mLayoutData.area.y);
+		mClippedBounds = mImageSprite->getBounds(offset, mLayoutData.clipRect);
 	}
 
 	void GUITexture::styleUpdated()
@@ -245,6 +246,8 @@ namespace BansheeEngine
 	void GUITexture::_fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
-		mImageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, renderElementIdx, mOffset, mClipRect);
+		Vector2I offset(mLayoutData.area.x, mLayoutData.area.y);
+		mImageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, 
+			vertexStride, indexStride, renderElementIdx, offset, mLayoutData.clipRect);
 	}
 }

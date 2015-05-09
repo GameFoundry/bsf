@@ -25,7 +25,9 @@ namespace BansheeEngine
 
 	Rect2I GUIInputCaret::getSpriteClipRect(const Rect2I& parentClipRect) const
 	{
-		Vector2I clipOffset = getSpriteOffset() - mElement->_getOffset() - 
+		Vector2I offset(mElement->_getLayoutData().area.x, mElement->_getLayoutData().area.y);
+
+		Vector2I clipOffset = getSpriteOffset() - offset -
 			Vector2I(mElement->_getTextInputRect().x, mElement->_getTextInputRect().y);
 
 		Rect2I clipRect(-clipOffset.x, -clipOffset.y, mTextDesc.width, mTextDesc.height);

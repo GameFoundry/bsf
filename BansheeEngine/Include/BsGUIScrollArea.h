@@ -153,7 +153,7 @@ namespace BansheeEngine
 		 * @brief	Returns the bounds of the scroll area not including the scroll bars.
 		 *			(i.e. only the portion that contains the contents).
 		 */
-		Rect2I getContentBounds() const;
+		Rect2I getContentBounds();
 	protected:
 		~GUIScrollArea();
 
@@ -187,13 +187,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElementContainer::_updateLayoutInternal
 		 */
-		void _updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-			Rect2I clipRect, UINT8 widgetDepth, INT16 panelDepth, UINT16 panelDepthRangeMin, UINT16 panelDepthRangeMax);
+		void _updateLayoutInternal(const GUILayoutData& data);
 
 		/**
 		 * @copydoc	GUIElementContainer::_getElementAreas
 		 */
-		void _getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements, 
+		void _getElementAreas(const Rect2I& layoutArea, Rect2I* elementAreas, UINT32 numElements, 
 			const Vector<LayoutSizeRange>& sizeRanges, const LayoutSizeRange& mySizeRange) const;
 
 		/**
@@ -201,7 +200,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Also calculates some scroll area specific values.
 		 */
-		void _getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements, 
+		void _getElementAreas(const Rect2I& layoutArea, Rect2I* elementAreas, UINT32 numElements, 
 			const Vector<LayoutSizeRange>& sizeRanges, Vector2I& visibleSize, Vector2I& contentSize) const;
 
 		ScrollBarType mVertBarType;

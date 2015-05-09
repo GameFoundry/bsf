@@ -135,8 +135,6 @@ namespace BansheeEngine
 				{
 					elementsToUpdate.insert(std::make_pair(mPanel, false));
 				}
-
-				currentElem->_markAsClean();
 			}
 
 			UINT32 numChildren = currentElem->_getNumChildren();
@@ -147,10 +145,9 @@ namespace BansheeEngine
 		// Determine top-level layouts and update them
 		for (auto& elemData : elementsToUpdate)
 		{
-			bool isPanelOptimized = elemData.second;
-
 			GUIElementBase* updateParent = nullptr;
-			
+
+			bool isPanelOptimized = elemData.second;
 			if (isPanelOptimized)
 				updateParent = elemData.first->_getParent();
 			else
@@ -173,72 +170,70 @@ namespace BansheeEngine
 			if (!isTopLevel)
 				continue;
 
-			// For GUIPanel we can do a an optimization and update only the element in question instead
-			// of all the children
-			if (isPanelOptimized)
-			{
-				GUIPanel* panel = static_cast<GUIPanel*>(updateParent);
+			_updateLayout(elemData.first);
+		}
+	}
 
-				INT32 x = panel->_getOffset().x;
-				INT32 y = panel->_getOffset().y;
-				UINT32 width = panel->_getWidth();
-				UINT32 height = panel->_getHeight();
+	void GUIWidget::_updateLayout(GUIElementBase* elem)
+	{
+		GUIElementBase* parent = elem->_getParent();
+		bool isPanelOptimized = parent != nullptr && parent->_getType() == GUIElementBase::Type::Panel;
 
-				GUIElementBase* dirtyElement = elemData.first;
-				dirtyElement->_updateOptimalLayoutSizes();
+		GUIElementBase* updateParent = nullptr;
 
-				LayoutSizeRange elementSizeRange = panel->_getElementSizeRange(dirtyElement);
-				Rect2I elementArea = panel->_getElementArea(x, y, width, height, dirtyElement, elementSizeRange);
+		if (isPanelOptimized)
+			updateParent = parent;
+		else
+			updateParent = elem;
 
-				INT16 panelDepth = panel->_getAreaDepth();
-				UINT16 panelDepthRangeMin = -1;
-				UINT16 panelDepthRangeMax = -1;
+		// For GUIPanel we can do a an optimization and update only the element in question instead
+		// of all the children
+		if (isPanelOptimized)
+		{
+			GUIPanel* panel = static_cast<GUIPanel*>(updateParent);
 
-				panel->_getPanelDepthRange(panelDepthRangeMin, panelDepthRangeMax);
+			GUIElementBase* dirtyElement = elem;
+			dirtyElement->_updateOptimalLayoutSizes();
 
-				Rect2I clipRect = panel->_getClipRect();
-				clipRect.x += x;
-				clipRect.y += y;
+			LayoutSizeRange elementSizeRange = panel->_getElementSizeRange(dirtyElement);
+			Rect2I elementArea = panel->_getElementArea(panel->_getLayoutData().area, dirtyElement, elementSizeRange);
 
-				panel->_updateChildLayout(dirtyElement, elementArea, clipRect, mDepth, panelDepth, panelDepthRangeMin, panelDepthRangeMax);
-			}
-			else
-			{
-				INT32 x = updateParent->_getOffset().x;
-				INT32 y = updateParent->_getOffset().y;
-				UINT32 width = updateParent->_getWidth();
-				UINT32 height = updateParent->_getHeight();
+			GUILayoutData childLayoutData = panel->_getLayoutData();
 
-				INT16 panelDepth = updateParent->_getAreaDepth();
-				UINT16 panelDepthRangeMin = -1;
-				UINT16 panelDepthRangeMax = -1;
+			childLayoutData.clipRect.x += childLayoutData.area.x;
+			childLayoutData.clipRect.y += childLayoutData.area.y;
 
-				updateParent->_getPanelDepthRange(panelDepthRangeMin, panelDepthRangeMax);
+			childLayoutData.area = elementArea;
 
-				Rect2I clipRect = updateParent->_getClipRect();
-				clipRect.x += x;
-				clipRect.y += y;
+			panel->_updateChildLayout(dirtyElement, childLayoutData);
+		}
+		else
+		{
+			GUILayoutData childLayoutData = updateParent->_getLayoutData();
 
-				updateParent->_updateLayout(x, y, width, height, clipRect, getDepth(), 
-					panelDepth, panelDepthRangeMin, panelDepthRangeMax);
-			}
+			childLayoutData.clipRect.x += childLayoutData.area.x;
+			childLayoutData.clipRect.y += childLayoutData.area.y;
 
-			// Mark dirty contents
-			Stack<GUIElementBase*> todo;
-			todo.push(mPanel);
+			updateParent->_updateLayout(childLayoutData);
+		}
 
-			while (!todo.empty())
-			{
-				GUIElementBase* currentElem = todo.top();
-				todo.pop();
+		// Mark dirty contents
+		Stack<GUIElementBase*> todo;
+		todo.push(updateParent);
 
-				if (currentElem->_getType() == GUIElementBase::Type::Element)
-					mDirtyContents.push_back(static_cast<GUIElement*>(currentElem));
+		while (!todo.empty())
+		{
+			GUIElementBase* currentElem = todo.top();
+			todo.pop();
 
-				UINT32 numChildren = currentElem->_getNumChildren();
-				for (UINT32 i = 0; i < numChildren; i++)
-					todo.push(currentElem->_getChild(i));
-			}
+			if (currentElem->_getType() == GUIElementBase::Type::Element)
+				mDirtyContents.insert(static_cast<GUIElement*>(currentElem));
+
+			currentElem->_markAsClean();
+
+			UINT32 numChildren = currentElem->_getNumChildren();
+			for (UINT32 i = 0; i < numChildren; i++)
+				todo.push(currentElem->_getChild(i));
 		}
 	}
 
@@ -283,6 +278,9 @@ namespace BansheeEngine
 			mElements.erase(iterFind);
 			mWidgetIsDirty = true;
 		}
+
+		if (elem->_getType() == GUIElementBase::Type::Element)
+			mDirtyContents.erase(static_cast<GUIElement*>(elem));
 	}
 
 	void GUIWidget::_markMeshDirty(GUIElementBase* elem)
@@ -362,15 +360,16 @@ namespace BansheeEngine
 		UINT32 width = getTarget()->getWidth();
 		UINT32 height = getTarget()->getHeight();
 
-		mPanel->_setWidth(width);
-		mPanel->_setHeight(height);
+		GUILayoutData layoutData;
+		layoutData.area.width = width;
+		layoutData.area.height = height;
+		layoutData.clipRect = Rect2I(0, 0, width, height);
 
 		mPanel->setWidth(width);
 		mPanel->setHeight(height);
 
-		Rect2I clipRect(0, 0, width, height);
-		mPanel->_setClipRect(clipRect);
-		mPanel->markContentAsDirty();
+		mPanel->_setLayoutData(layoutData);
+		mPanel->_markContentAsDirty();
 	}
 
 	void GUIWidget::ownerWindowFocusChanged()

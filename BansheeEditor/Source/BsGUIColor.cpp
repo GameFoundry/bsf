@@ -49,14 +49,14 @@ namespace BansheeEngine
 	{
 		mColor = color;
 
-		markContentAsDirty();
+		_markContentAsDirty();
 	}
 
 	void GUIColor::setTint(const Color& color)
 	{
 		mTint = color;
 
-		markContentAsDirty();
+		_markContentAsDirty();
 	}
 
 	UINT32 GUIColor::_getNumRenderElements() const
@@ -100,11 +100,11 @@ namespace BansheeEngine
 		mAlphaImageDesc.color = Color::White * color.a;
 		mAlphaImageDesc.color.a = 1.0f;
 
-		mColorImageDesc.width = (UINT32)(mWidth * ALPHA_SPLIT_POSITION);
-		mColorImageDesc.height = mHeight;
+		mColorImageDesc.width = (UINT32)(mLayoutData.area.width * ALPHA_SPLIT_POSITION);
+		mColorImageDesc.height = mLayoutData.area.height;
 
-		mAlphaImageDesc.width = mWidth - mColorImageDesc.width;
-		mAlphaImageDesc.height = mHeight;
+		mAlphaImageDesc.width = mLayoutData.area.width - mColorImageDesc.width;
+		mAlphaImageDesc.height = mLayoutData.area.height;
 
 		mColorSprite->update(mColorImageDesc, (UINT64)_getParentWidget());
 		mAlphaSprite->update(mAlphaImageDesc, (UINT64)_getParentWidget());
@@ -114,13 +114,13 @@ namespace BansheeEngine
 
 	void GUIColor::updateClippedBounds()
 	{
-		mClippedBounds = Rect2I(0, 0, mWidth, mHeight);
+		mClippedBounds = Rect2I(0, 0, mLayoutData.area.width, mLayoutData.area.height);
 
-		if(mClipRect.width > 0 && mClipRect.height > 0)
-			mClippedBounds.clip(mClipRect);
+		if (mLayoutData.clipRect.width > 0 && mLayoutData.clipRect.height > 0)
+			mClippedBounds.clip(mLayoutData.clipRect);
 
-		mClippedBounds.x += mOffset.x;
-		mClippedBounds.y += mOffset.y;
+		mClippedBounds.x += mLayoutData.area.x;
+		mClippedBounds.y += mLayoutData.area.y;
 	}
 
 	Vector2I GUIColor::_getOptimalSize() const
@@ -133,20 +133,21 @@ namespace BansheeEngine
 	{
 		UINT32 alphaSpriteIdx = mColorSprite->getNumRenderElements();
 
+		Vector2I offset(mLayoutData.area.x, mLayoutData.area.y);
 		if(renderElementIdx < alphaSpriteIdx)
 		{
 			mColorSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, 
-				vertexStride, indexStride, renderElementIdx, mOffset, mClipRect);
+				vertexStride, indexStride, renderElementIdx, offset, mLayoutData.clipRect);
 
 			return;
 		}
 		else if(renderElementIdx >= alphaSpriteIdx)
 		{
-			Vector2I alphaOffset = mOffset;
-			UINT32 xOffset = (UINT32)(mWidth * ALPHA_SPLIT_POSITION);
+			Vector2I alphaOffset = offset;
+			UINT32 xOffset = (UINT32)(mLayoutData.area.width * ALPHA_SPLIT_POSITION);
 			alphaOffset.x += xOffset;
 
-			Rect2I alphaClipRect = mClipRect;
+			Rect2I alphaClipRect = mLayoutData.clipRect;
 			alphaClipRect.x -= xOffset;
 
 			mAlphaSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, 

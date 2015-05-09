@@ -138,8 +138,8 @@ namespace BansheeEngine
 				UINT32 numTabButtons = (UINT32)mTabButtons.size();
 				for(UINT32 i = 0; i < numTabButtons; i++)
 				{
-					UINT32 width = mTabButtons[i]->_getWidth();
-					INT32 centerX = mTabButtons[i]->_getOffset().x + width / 2;
+					UINT32 width = mTabButtons[i]->_getLayoutData().area.width;
+					INT32 centerX = mTabButtons[i]->_getLayoutData().area.x + width / 2;
 
 					if((i + 1) == numTabButtons)
 					{
@@ -169,8 +169,8 @@ namespace BansheeEngine
 						}
 						else
 						{
-							UINT32 nextWidth = mTabButtons[i + 1]->_getWidth();
-							INT32 nextCenterX = mTabButtons[i + 1]->_getOffset().x + nextWidth / 2;
+							UINT32 nextWidth = mTabButtons[i + 1]->_getLayoutData().area.width;
+							INT32 nextCenterX = mTabButtons[i + 1]->_getLayoutData().area.x + nextWidth / 2;
 
 							if(widgetRelPos.x > centerX && widgetRelPos.x < nextCenterX)
 							{
@@ -229,36 +229,35 @@ namespace BansheeEngine
 
 	void GUITabbedTitleBar::updateClippedBounds()
 	{
-		Vector2I offset = _getOffset();
-		mClippedBounds = Rect2I(offset.x, offset.y, _getWidth(), _getHeight());
+		mClippedBounds = mLayoutData.area;
 	}
 
-	void GUITabbedTitleBar::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-		Rect2I clipRect, UINT8 widgetDepth, INT16 panelDepth, UINT16 panelDepthRangeMin, UINT16 panelDepthRangeMax)
+	void GUITabbedTitleBar::_updateLayoutInternal(const GUILayoutData& data)
 	{
 		Vector2I minBtnOptimalSize = mMinBtn->_getOptimalSize();
 		Vector2I closeBtnOptimalSize = mCloseBtn->_getOptimalSize();
 
 		UINT32 endButtonWidth = minBtnOptimalSize.x + closeBtnOptimalSize.x + OPTION_BTN_SPACING;
 
-		Rect2I tabClipRect = clipRect;
+		Rect2I tabClipRect = data.clipRect;
 		tabClipRect.width -= endButtonWidth;
 
 		{
 			Vector2I optimalSize = mBackgroundImage->_getOptimalSize();
-			Vector2I offset(x + 1, y + 1);
-			mBackgroundImage->_setPosition(offset);
-			mBackgroundImage->_setWidth(width - 2);
-			mBackgroundImage->_setHeight(optimalSize.y);
-			mBackgroundImage->_setAreaDepth(panelDepth);
-			mBackgroundImage->_setWidgetDepth(widgetDepth);
 
-			Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
-			mBackgroundImage->_setClipRect(elemClipRect);
+			GUILayoutData childData = data;
+			childData.area.x += 1;
+			childData.area.y += 1;
+			childData.area.width -= 2;
+			childData.area.height = optimalSize.y;
+			childData.clipRect.x -= childData.area.x;
+			childData.clipRect.y -= childData.area.y;
+
+			mBackgroundImage->_setLayoutData(childData);
 		}
 
-		UINT32 curX = x + 1;
-		UINT32 curY = y;
+		UINT32 curX = data.area.x + 1;
+		UINT32 curY = data.area.y;
 		UINT32 tabBtnHeight = 0;
 		for(UINT32 i = 0; i < (UINT32)mTabButtons.size(); i++)
 		{
@@ -275,35 +274,39 @@ namespace BansheeEngine
 			}
 			else if(mDragInProgress && mDraggedBtn == btn)
 			{
-				offset = btn->_getOffset();
 				offset.x = mDragBtnOffset;
+				offset.y = btn->_getLayoutData().area.y;
 			}
 
-			btn->_setPosition(offset);
-			btn->_setWidth(optimalSize.x);
-			btn->_setHeight(optimalSize.y);
-			btn->_setAreaDepth(panelDepth);
-			btn->_setWidgetDepth(widgetDepth);
+			GUILayoutData childData = data;
+			childData.area.x = offset.x;
+			childData.area.y = offset.y;
+			childData.area.width = optimalSize.x;
+			childData.area.height = optimalSize.y;
+			childData.clipRect = tabClipRect;
+			childData.clipRect.x -= childData.area.x;
+			childData.clipRect.y -= childData.area.y;
 
-			Rect2I elemClipRect(tabClipRect.x - offset.x, tabClipRect.y - offset.y, tabClipRect.width, tabClipRect.height);
-			btn->_setClipRect(elemClipRect);
+			btn->_setLayoutData(childData);
 
 			curX += optimalSize.x;
 		}
 
-		INT32 optionBtnXPos = x + width - endButtonWidth - 1;
+		INT32 optionBtnXPos = data.area.x + data.area.width - endButtonWidth - 1;
 		{
 			INT32 optionBtnYPos = curY + Math::floorToInt((tabBtnHeight - minBtnOptimalSize.y) * 0.5f);
 
 			Vector2I offset(optionBtnXPos, optionBtnYPos);
-			mMinBtn->_setPosition(offset);
-			mMinBtn->_setWidth(minBtnOptimalSize.x);
-			mMinBtn->_setHeight(minBtnOptimalSize.y);
-			mMinBtn->_setAreaDepth(panelDepth);
-			mMinBtn->_setWidgetDepth(widgetDepth);
 
-			Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
-			mMinBtn->_setClipRect(elemClipRect);
+			GUILayoutData childData = data;
+			childData.area.x = offset.x;
+			childData.area.y = offset.y;
+			childData.area.width = minBtnOptimalSize.x;
+			childData.area.height = minBtnOptimalSize.y;
+			childData.clipRect.x -= childData.area.x;
+			childData.clipRect.y -= childData.area.y;
+
+			mMinBtn->_setLayoutData(childData);
 		}
 
 		optionBtnXPos += minBtnOptimalSize.x + OPTION_BTN_SPACING;
@@ -311,14 +314,16 @@ namespace BansheeEngine
 			INT32 optionBtnYPos = curY + Math::floorToInt((tabBtnHeight - closeBtnOptimalSize.y) * 0.5f);
 
 			Vector2I offset(optionBtnXPos, optionBtnYPos);
-			mCloseBtn->_setPosition(offset);
-			mCloseBtn->_setWidth(closeBtnOptimalSize.x);
-			mCloseBtn->_setHeight(closeBtnOptimalSize.y);
-			mCloseBtn->_setAreaDepth(panelDepth);
-			mCloseBtn->_setWidgetDepth(widgetDepth);
 
-			Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
-			mCloseBtn->_setClipRect(elemClipRect);
+			GUILayoutData childData = data;
+			childData.area.x = offset.x;
+			childData.area.y = offset.y;
+			childData.area.width = closeBtnOptimalSize.x;
+			childData.area.height = closeBtnOptimalSize.y;
+			childData.clipRect.x -= childData.area.x;
+			childData.clipRect.y -= childData.area.y;
+
+			mCloseBtn->_setLayoutData(childData);
 		}
 	}
 
@@ -381,8 +386,7 @@ namespace BansheeEngine
 
 			mDraggedBtn = mTabButtons[seqIdx];
 
-			Vector2I offset = mDraggedBtn->_getOffset();
-			mInitialDragOffset = (startDragPos.x - offset.x);
+			mInitialDragOffset = (startDragPos.x - mDraggedBtn->_getLayoutData().area.x);
 
 			mDragInProgress = true;
 		}
@@ -403,7 +407,7 @@ namespace BansheeEngine
 		INT32 idx = uniqueIdxToSeqIdx(tabIdx);
 		if(idx != -1)
 		{
-			Rect2I bounds = _getCachedBounds();
+			Rect2I bounds = _getLayoutData().area;
 			if(bounds.contains(dragPos))
 			{
 				if(!mDragInProgress)
@@ -413,8 +417,8 @@ namespace BansheeEngine
 
 				for(INT32 i = 0; i < idx; i++)
 				{
-					UINT32 width = mTabButtons[i]->_getWidth();
-					INT32 centerX = mTabButtons[i]->_getOffset().x + width / 2;
+					UINT32 width = mTabButtons[i]->_getLayoutData().area.width;
+					INT32 centerX = mTabButtons[i]->_getLayoutData().area.x + width / 2;
 
 					if(dragPos.x < centerX)
 					{
@@ -428,8 +432,8 @@ namespace BansheeEngine
 
 				for(UINT32 i = idx + 1; i < (UINT32)mTabButtons.size(); i++)
 				{
-					UINT32 width = mTabButtons[i]->_getWidth();
-					INT32 centerX = mTabButtons[i]->_getOffset().x + width / 2;
+					UINT32 width = mTabButtons[i]->_getLayoutData().area.width;
+					INT32 centerX = mTabButtons[i]->_getLayoutData().area.x + width / 2;
 
 					if(dragPos.x > centerX)
 					{
@@ -441,12 +445,12 @@ namespace BansheeEngine
 					}
 				}
 
-				markContentAsDirty();
+				_markContentAsDirty();
 			}
 			else
 			{
 				endDrag();
-				markContentAsDirty();
+				_markContentAsDirty();
 
 				if(!onTabDraggedOff.empty())
 					onTabDraggedOff(tabIdx);
@@ -461,7 +465,7 @@ namespace BansheeEngine
 		if(mActiveTabIdx != tabIdx)
 			tabToggled(tabIdx, true);
 
-		markContentAsDirty();
+		_markContentAsDirty();
 	}
 
 	INT32 GUITabbedTitleBar::uniqueIdxToSeqIdx(UINT32 uniqueIdx) const

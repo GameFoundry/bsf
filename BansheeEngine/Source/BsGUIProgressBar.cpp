@@ -44,33 +44,30 @@ namespace BansheeEngine
 		return optimalSize;
 	}
 
-	void GUIProgressBar::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-		Rect2I clipRect, UINT8 widgetDepth, INT16 panelDepth, UINT16 panelDepthRangeMin, UINT16 panelDepthRangeMax)
+	void GUIProgressBar::_updateLayoutInternal(const GUILayoutData& data)
 	{
-		Vector2I bgOffset(x, y);
-		Rect2I bgClipRect(clipRect.x - bgOffset.x, clipRect.y - bgOffset.y, clipRect.width, clipRect.height);
+		GUILayoutData bgLayoutData = data;
+		bgLayoutData.clipRect.x -= data.area.x;
+		bgLayoutData.clipRect.y -= data.area.y;
 
-		mBackground->_setPosition(bgOffset);
-		mBackground->_setWidth(width);
-		mBackground->_setHeight(height);
-		mBackground->_setAreaDepth(panelDepth);
-		mBackground->_setWidgetDepth(widgetDepth);
-		mBackground->_setClipRect(bgClipRect);
+		mBackground->_setLayoutData(bgLayoutData);
 
 		const GUIElementStyle* style = _getStyle();
 		
-		Vector2I barOffset(x + style->margins.left, y + style->margins.top);
-		Rect2I barClipRect(clipRect.x - barOffset.x, clipRect.y - barOffset.y, clipRect.width, clipRect.height);
+		GUILayoutData barLayoutData = data;
 
-		UINT32 maxProgressBarWidth = std::max((UINT32)0, (UINT32)(width - style->margins.left - style->margins.right));
-		UINT32 progressBarHeight = std::max((UINT32)0, (UINT32)(height - style->margins.top - style->margins.bottom)); 
+		barLayoutData.area.x += style->margins.left;
+		barLayoutData.area.y += style->margins.top;
+		barLayoutData.clipRect.x -= barLayoutData.area.x;
+		barLayoutData.clipRect.y -= barLayoutData.area.y;
 
-		mBar->_setPosition(barOffset);
-		mBar->_setWidth((UINT32)Math::floorToInt(maxProgressBarWidth * mPercent));
-		mBar->_setHeight(progressBarHeight);
-		mBar->_setAreaDepth(panelDepth);
-		mBar->_setWidgetDepth(widgetDepth);
-		mBar->_setClipRect(barClipRect);
+		UINT32 maxProgressBarWidth = std::max((UINT32)0, (UINT32)(data.area.width - style->margins.left - style->margins.right));
+		UINT32 progressBarHeight = std::max((UINT32)0, (UINT32)(data.area.height - style->margins.top - style->margins.bottom));
+
+		barLayoutData.area.width = (UINT32)Math::floorToInt(maxProgressBarWidth * mPercent);
+		barLayoutData.area.height = progressBarHeight;
+
+		mBar->_setLayoutData(barLayoutData);
 	}
 
 	void GUIProgressBar::styleUpdated()
@@ -82,7 +79,7 @@ namespace BansheeEngine
 	void GUIProgressBar::setPercent(float pct)
 	{
 		mPercent = pct;
-		markContentAsDirty();
+		_markContentAsDirty();
 	}
 
 	void GUIProgressBar::setTint(const Color& color)

@@ -80,7 +80,7 @@ namespace BansheeEngine
 			[&](UINT32 idx, UINT32 visIdx)
 		{ 
 			setSelected(visIdx);
-			mParent->elementActivated(idx, mVisibleElements[visIdx].button->_getCachedBounds());
+			mParent->elementActivated(idx, mVisibleElements[visIdx].button->_getLayoutData().area);
 		};
 
 		// Remove all elements
@@ -133,7 +133,7 @@ namespace BansheeEngine
 			curVisIdx++;
 		}
 
-		markContentAsDirty();
+		_markContentAsDirty();
 	}
 
 	UINT32 GUIDropDownContent::getElementHeight(UINT32 idx) const
@@ -199,7 +199,7 @@ namespace BansheeEngine
 			{
 				GUIDropDownDataEntry& entry = mDropDownData.entries[mVisibleElements[mSelectedIdx].idx];
 				if (entry.isSubMenu())
-					mParent->elementActivated(mVisibleElements[mSelectedIdx].idx, mVisibleElements[mSelectedIdx].button->_getCachedBounds());
+					mParent->elementActivated(mVisibleElements[mSelectedIdx].idx, mVisibleElements[mSelectedIdx].button->_getLayoutData().area);
 			}
 		}
 			return true;
@@ -207,7 +207,7 @@ namespace BansheeEngine
 			if (mSelectedIdx == UINT_MAX)
 				selectNext(0);
 			else
-				mParent->elementActivated(mVisibleElements[mSelectedIdx].idx, mVisibleElements[mSelectedIdx].button->_getCachedBounds());
+				mParent->elementActivated(mVisibleElements[mSelectedIdx].idx, mVisibleElements[mSelectedIdx].button->_getLayoutData().area);
 			return true;
 		}
 
@@ -326,17 +326,20 @@ namespace BansheeEngine
 
 	void GUIDropDownContent::updateClippedBounds()
 	{
-		Vector2I offset = _getOffset();
-		mClippedBounds = Rect2I(offset.x, offset.y, _getWidth(), _getHeight());
+		mClippedBounds = mLayoutData.area;
 
-		Rect2I localClipRect(mClipRect.x + mOffset.x, mClipRect.y + mOffset.y, mClipRect.width, mClipRect.height);
+		Rect2I localClipRect = mLayoutData.clipRect;
+		localClipRect.x += mLayoutData.area.x;
+		localClipRect.y += mLayoutData.area.y;
+
 		mClippedBounds.clip(localClipRect);
 	}
 
-	void GUIDropDownContent::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-		Rect2I clipRect, UINT8 widgetDepth, INT16 panelDepth, UINT16 panelDepthRangeMin, UINT16 panelDepthRangeMax)
+	void GUIDropDownContent::_updateLayoutInternal(const GUILayoutData& data)
 	{
-		INT32 yOffset = y;
+		GUILayoutData childData = data;
+		INT32 yOffset = data.area.y;
+
 		for (auto& visElem : mVisibleElements)
 		{
 			const GUIDropDownDataEntry& element = mDropDownData.entries[visElem.idx];
@@ -347,30 +350,20 @@ namespace BansheeEngine
 			else
 				guiMainElement = visElem.button;
 
-			UINT32 elemHeight = getElementHeight(visElem.idx);
-			Vector2I offset(x, yOffset);
-			yOffset += elemHeight;
+			childData.area.y = yOffset;
+			childData.area.height = getElementHeight(visElem.idx);
 
-			guiMainElement->_setPosition(offset);
-			guiMainElement->_setWidth(width);
-			guiMainElement->_setHeight(elemHeight);
-			guiMainElement->_setAreaDepth(panelDepth);
-			guiMainElement->_setWidgetDepth(widgetDepth);
+			yOffset += childData.area.height;
 
-			Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
-			guiMainElement->_setClipRect(elemClipRect);
+			childData.clipRect.x = data.clipRect.x - childData.area.x;
+			childData.clipRect.y = data.clipRect.y - childData.area.y;
+
+			guiMainElement->_setLayoutData(childData);
 
 			// Shortcut label
 			GUILabel* shortcutLabel = visElem.shortcutLabel;
 			if (shortcutLabel != nullptr)
-			{
-				shortcutLabel->_setPosition(offset);
-				shortcutLabel->_setWidth(width);
-				shortcutLabel->_setHeight(elemHeight);
-				shortcutLabel->_setAreaDepth(panelDepth);
-				shortcutLabel->_setWidgetDepth(widgetDepth);
-				shortcutLabel->_setClipRect(elemClipRect);
-			}
+				shortcutLabel->_setLayoutData(childData);
 		}
 	}
 

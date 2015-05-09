@@ -41,7 +41,7 @@ namespace BansheeEngine
 		else
 			mActiveTexture = _getStyle()->normal.texture;
 
-		markContentAsDirty();
+		_markContentAsDirty();
 	}
 
 	bool GUIWindowDropArea::_mouseEvent(const GUIMouseEvent& ev)

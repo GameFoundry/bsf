@@ -48,7 +48,7 @@ namespace BansheeEngine
 		Rect2I draggableArea;
 
 		if(mLabel != nullptr)
-			draggableArea = mLabel->_getCachedBounds();
+			draggableArea = mLabel->_getLayoutData().area;
 
 		if(draggableArea.contains(position))
 		{
@@ -66,7 +66,7 @@ namespace BansheeEngine
 		Rect2I draggableArea;
 
 		if(mLabel != nullptr)
-			draggableArea = mLabel->_getCachedBounds();
+			draggableArea = mLabel->_getLayoutData().area;
 
 		if(event.getType() == GUIMouseEventType::MouseDragStart)
 		{
@@ -176,8 +176,7 @@ namespace BansheeEngine
 
 	void GUIIntField::updateClippedBounds()
 	{
-		Vector2I offset = _getOffset();
-		mClippedBounds = Rect2I(offset.x, offset.y, _getWidth(), _getHeight());
+		mClippedBounds = mLayoutData.area;
 	}
 
 	const String& GUIIntField::getGUITypeName()

@@ -91,8 +91,8 @@ namespace BansheeEngine
 		if(_getStyle()->normal.texture != nullptr && _getStyle()->normal.texture.isLoaded())
 			desc.texture = _getStyle()->normal.texture.getInternalPtr();
 
-		desc.width = mWidth;
-		desc.height = mHeight;
+		desc.width = mLayoutData.area.width;
+		desc.height = mLayoutData.area.height;
 		desc.color = mColor;
 
 		mImageSprite->update(desc, (UINT64)_getParentWidget());
@@ -123,7 +123,9 @@ namespace BansheeEngine
 	void GUIScrollBar::_fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
-		mImageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, renderElementIdx, mOffset, mClipRect);
+		Vector2I offset(mLayoutData.area.x, mLayoutData.area.y);
+		mImageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, 
+			vertexStride, indexStride, renderElementIdx, offset, mLayoutData.clipRect);
 	}
 
 	void GUIScrollBar::handleMoved(float handlePct)
@@ -159,7 +161,7 @@ namespace BansheeEngine
 		float newHandlePos = Math::clamp01(mHandleBtn->getHandlePos() - amount);
 
 		mHandleBtn->_setHandlePos(newHandlePos);
-		mHandleBtn->markContentAsDirty();
+		mHandleBtn->_markContentAsDirty();
 
 		if(!onScrollPositionChanged.empty())
 			onScrollPositionChanged(newHandlePos);
@@ -194,6 +196,6 @@ namespace BansheeEngine
 	{
 		mColor = color;
 
-		markContentAsDirty();
+		_markContentAsDirty();
 	}
 }

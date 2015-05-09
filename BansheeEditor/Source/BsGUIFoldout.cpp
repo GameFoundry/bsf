@@ -59,7 +59,7 @@ namespace BansheeEngine
 			else
 				mToggle->toggleOff();
 
-			markContentAsDirty();
+			_markContentAsDirty();
 
 			if (!onStateChanged.empty())
 				onStateChanged(mIsExpanded);
@@ -81,46 +81,46 @@ namespace BansheeEngine
 	{
 		mIsExpanded = value;
 
-		markContentAsDirty();
+		_markContentAsDirty();
 
 		onStateChanged(value);
 	}
 
-	void GUIFoldout::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-		Rect2I clipRect, UINT8 widgetDepth, INT16 panelDepth, UINT16 panelDepthRangeMin, UINT16 panelDepthRangeMax)
+	void GUIFoldout::_updateLayoutInternal(const GUILayoutData& data)
 	{
 		UINT32 toggleOffset = 0;
 
 		{
 			Vector2I optimalSize = mToggle->_getOptimalSize();
-			INT32 yOffset = Math::roundToInt(((INT32)height - optimalSize.y) * 0.5f);
+			INT32 yOffset = Math::roundToInt(((INT32)data.area.height - optimalSize.y) * 0.5f);
 
-			Vector2I offset(x, y + yOffset);
-			mToggle->_setPosition(offset);
-			mToggle->_setWidth(optimalSize.x);
-			mToggle->_setHeight(optimalSize.y);
-			mToggle->_setAreaDepth(panelDepth);
-			mToggle->_setWidgetDepth(widgetDepth);
+			GUILayoutData childData = data;
+			childData.area.y += yOffset;
+			childData.area.width = optimalSize.x;
+			childData.area.height = optimalSize.y;
 
-			Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
-			mToggle->_setClipRect(elemClipRect);
+			childData.clipRect.x -= childData.area.x;
+			childData.clipRect.y -= childData.area.y;
+
+			mToggle->_setLayoutData(childData);
 
 			toggleOffset = optimalSize.x;
 		}
 
 		{
 			Vector2I optimalSize = mLabel->_getOptimalSize();
-			INT32 yOffset = Math::roundToInt(((INT32)height - optimalSize.y) * 0.5f);
+			INT32 yOffset = Math::roundToInt(((INT32)data.area.height - optimalSize.y) * 0.5f);
 
-			Vector2I offset(x + toggleOffset, y + yOffset);
-			mLabel->_setPosition(offset);
-			mLabel->_setWidth(optimalSize.x);
-			mLabel->_setHeight(optimalSize.y);
-			mLabel->_setAreaDepth(panelDepth);
-			mLabel->_setWidgetDepth(widgetDepth);
+			GUILayoutData childData = data;
+			childData.area.x += toggleOffset;
+			childData.area.y += yOffset;
+			childData.area.width = optimalSize.x;
+			childData.area.height = optimalSize.y;
 
-			Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
-			mLabel->_setClipRect(elemClipRect);
+			childData.clipRect.x -= childData.area.x;
+			childData.clipRect.y -= childData.area.y;
+
+			mLabel->_setLayoutData(childData);
 		}
 	}
 

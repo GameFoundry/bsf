@@ -21,7 +21,7 @@ namespace BansheeEngine
 		if(SpriteTexture::checkIsLoaded(contentTex))
 			mContentImageSprite = bs_new<ImageSprite, PoolAlloc>();
 
-		mLocStringUpdatedConn = mContent.getText().addOnStringModifiedCallback(std::bind(&GUIButtonBase::markContentAsDirty, this));
+		mLocStringUpdatedConn = mContent.getText().addOnStringModifiedCallback(std::bind(&GUIButtonBase::_markContentAsDirty, this));
 	}
 
 	GUIButtonBase::~GUIButtonBase()
@@ -38,18 +38,18 @@ namespace BansheeEngine
 	void GUIButtonBase::setContent(const GUIContent& content)
 	{
 		mLocStringUpdatedConn.disconnect();
-		mLocStringUpdatedConn = content.getText().addOnStringModifiedCallback(std::bind(&GUIButtonBase::markContentAsDirty, this));
+		mLocStringUpdatedConn = content.getText().addOnStringModifiedCallback(std::bind(&GUIButtonBase::_markContentAsDirty, this));
 
 		mContent = content;
 
-		markContentAsDirty();
+		_markContentAsDirty();
 	}
 
 	void GUIButtonBase::setTint(const Color& color)
 	{
 		mColor = color;
 
-		markContentAsDirty();
+		_markContentAsDirty();
 	}
 
 	void GUIButtonBase::_setOn(bool on) 
@@ -107,8 +107,8 @@ namespace BansheeEngine
 
 	void GUIButtonBase::updateRenderElementsInternal()
 	{		
-		mImageDesc.width = mWidth;
-		mImageDesc.height = mHeight;
+		mImageDesc.width = mLayoutData.area.width;
+		mImageDesc.height = mLayoutData.area.height;
 
 		const HSpriteTexture& activeTex = getActiveTexture();
 		if(SpriteTexture::checkIsLoaded(activeTex))
@@ -142,10 +142,11 @@ namespace BansheeEngine
 
 	void GUIButtonBase::updateClippedBounds()
 	{
-		Vector2I offset = _getOffset();
-		mClippedBounds = Rect2I(offset.x, offset.y, _getWidth(), _getHeight());
+		mClippedBounds = mLayoutData.area;
 
-		Rect2I localClipRect(mClipRect.x + mOffset.x, mClipRect.y + mOffset.y, mClipRect.width, mClipRect.height);
+		Rect2I localClipRect = mLayoutData.clipRect;
+		localClipRect.x += mLayoutData.area.x;
+		localClipRect.y += mLayoutData.area.y;
 		mClippedBounds.clip(localClipRect);
 	}
 
@@ -194,8 +195,10 @@ namespace BansheeEngine
 
 		if(renderElementIdx < textSpriteIdx)
 		{
+			Vector2I offset(mLayoutData.area.x, mLayoutData.area.y);
+
 			mImageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, 
-				vertexStride, indexStride, renderElementIdx, mOffset, mClipRect);
+				vertexStride, indexStride, renderElementIdx, offset, mLayoutData.clipRect);
 
 			return;
 		}
@@ -329,7 +332,7 @@ namespace BansheeEngine
 	{
 		mActiveState = state;
 
-		markContentAsDirty();
+		_markContentAsDirty();
 	}
 
 	const HSpriteTexture& GUIButtonBase::getActiveTexture() const

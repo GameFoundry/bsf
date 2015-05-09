@@ -68,7 +68,9 @@ namespace BansheeEngine
 
 	Vector2I GUIInputTool::getTextOffset() const
 	{
-		return mElement->_getOffset() + mElement->_getTextInputOffset() + Vector2I(mElement->_getTextInputRect().x, mElement->_getTextInputRect().y);
+		Vector2I offset(mElement->_getLayoutData().area.x, mElement->_getLayoutData().area.y);
+
+		return offset + mElement->_getTextInputOffset() + Vector2I(mElement->_getTextInputRect().x, mElement->_getTextInputRect().y);
 	}
 
 	Rect2I GUIInputTool::getCharRect(UINT32 charIdx) const

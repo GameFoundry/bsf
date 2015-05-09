@@ -57,10 +57,10 @@ namespace BansheeEngine
 
 	void GUIViewport::updateClippedBounds()
 	{
-		Rect2I mBounds = Rect2I(0, 0, mWidth, mHeight);
-		mBounds.clip(mClipRect);
-		mBounds.x += mOffset.x;
-		mBounds.y += mOffset.y;
+		Rect2I mBounds = Rect2I(0, 0, mLayoutData.area.width, mLayoutData.area.height);
+		mBounds.clip(mLayoutData.clipRect);
+		mBounds.x += mLayoutData.area.x;
+		mBounds.y += mLayoutData.area.y;
 	}
 
 	Vector2I GUIViewport::_getOptimalSize() const
@@ -77,7 +77,7 @@ namespace BansheeEngine
 	void GUIViewport::updateRenderElementsInternal()
 	{
 		// TODO - This doesn't get called if element mesh is dirty!!! and I need to update the viewport when offset changes (in which case mesh is marked as dirty)
-		float currentAspect = mWidth / (float)mHeight;
+		float currentAspect = mLayoutData.area.width / (float)mLayoutData.area.height;
 		Radian currentFOV = 2.0f * Math::atan(Math::tan(mVerticalFOV * 0.5f) * currentAspect);
 
 		mCamera->setHorzFOV(currentFOV);
@@ -86,10 +86,10 @@ namespace BansheeEngine
 		RenderTargetPtr renderTarget = viewport->getTarget();
 		const RenderTargetProperties& rtProps = renderTarget->getProperties();
 
-		float x = mOffset.x / (float)rtProps.getWidth();
-		float y = mOffset.y / (float)rtProps.getHeight();
-		float width = mWidth / (float)rtProps.getWidth();
-		float height = mHeight / (float)rtProps.getHeight();
+		float x = mLayoutData.area.x / (float)rtProps.getWidth();
+		float y = mLayoutData.area.y / (float)rtProps.getHeight();
+		float width = mLayoutData.area.width / (float)rtProps.getWidth();
+		float height = mLayoutData.area.height / (float)rtProps.getHeight();
 
 		viewport->setArea(x, y, width, height);
 	}

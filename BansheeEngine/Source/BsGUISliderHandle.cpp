@@ -65,7 +65,7 @@ namespace BansheeEngine
 	{
 		mColor = color;
 
-		markContentAsDirty();
+		_markContentAsDirty();
 	}
 
 	UINT32 GUISliderHandle::_getNumRenderElements() const
@@ -97,14 +97,14 @@ namespace BansheeEngine
 				mHandleSize = desc.texture->getWidth();
 
 			desc.width = mHandleSize;
-			desc.height = mHeight;
+			desc.height = mLayoutData.area.height;
 		}
 		else
 		{
 			if (mHandleSize == 0 && desc.texture != nullptr)
 				mHandleSize = desc.texture->getHeight();
 
-			desc.width = mWidth;
+			desc.width = mLayoutData.area.width;
 			desc.height = mHandleSize;
 		}
 
@@ -116,9 +116,11 @@ namespace BansheeEngine
 
 	void GUISliderHandle::updateClippedBounds()
 	{
-		mClippedBounds = Rect2I(mOffset.x, mOffset.y, mWidth, mHeight);
+		mClippedBounds = mLayoutData.area;
 
-		Rect2I localClipRect(mClipRect.x + mOffset.x, mClipRect.y + mOffset.y, mClipRect.width, mClipRect.height);
+		Rect2I localClipRect = mLayoutData.clipRect;
+		localClipRect.x += mLayoutData.area.x;
+		localClipRect.y += mLayoutData.area.y;
 		mClippedBounds.clip(localClipRect);
 	}
 
@@ -135,13 +137,13 @@ namespace BansheeEngine
 	void GUISliderHandle::_fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
-		Vector2I offset = mOffset;
+		Vector2I offset(mLayoutData.area.x, mLayoutData.area.y);
 		if(mHorizontal)
 			offset.x += getHandlePosPx();
 		else
 			offset.y += getHandlePosPx();
 
-		Rect2I clipRect = mClipRect;
+		Rect2I clipRect = mLayoutData.clipRect;
 		if(mHorizontal)
 			clipRect.x -= getHandlePosPx();
 		else
@@ -162,7 +164,7 @@ namespace BansheeEngine
 					mMouseOverHandle = false;
 
 					mState = State::Normal;
-					markContentAsDirty();
+					_markContentAsDirty();
 
 					return true;
 				}
@@ -174,7 +176,7 @@ namespace BansheeEngine
 					mMouseOverHandle = true;
 
 					mState = State::Hover;
-					markContentAsDirty();
+					_markContentAsDirty();
 
 					return true;
 				}
@@ -184,16 +186,16 @@ namespace BansheeEngine
 		if(ev.getType() == GUIMouseEventType::MouseDown && (mMouseOverHandle || mJumpOnClick))
 		{
 			mState = State::Active;
-			markContentAsDirty();
+			_markContentAsDirty();
 
 			if (mJumpOnClick)
 			{
 				float handlePosPx = 0.0f;
 
 				if (mHorizontal)
-					handlePosPx = (float)(ev.getPosition().x - (INT32)mOffset.x - mHandleSize * 0.5f);
+					handlePosPx = (float)(ev.getPosition().x - (INT32)mLayoutData.area.x - mHandleSize * 0.5f);
 				else
-					handlePosPx = (float)(ev.getPosition().y - (INT32)mOffset.y - mHandleSize * 0.5f);
+					handlePosPx = (float)(ev.getPosition().y - (INT32)mLayoutData.area.y - mHandleSize * 0.5f);
 
 				float maxScrollAmount = (float)getMaxSize() - mHandleSize;
 				mPctHandlePos = Math::clamp01(handlePosPx / maxScrollAmount);
@@ -201,12 +203,12 @@ namespace BansheeEngine
 
 			if(mHorizontal)
 			{
-				INT32 left = (INT32)mOffset.x + getHandlePosPx();
+				INT32 left = (INT32)mLayoutData.area.x + getHandlePosPx();
 				mDragStartPos = ev.getPosition().x - left;
 			}
 			else
 			{
-				INT32 top = (INT32)mOffset.y + getHandlePosPx();
+				INT32 top = (INT32)mLayoutData.area.y + getHandlePosPx();
 				mDragStartPos = ev.getPosition().y - top;
 			}
 
@@ -219,11 +221,11 @@ namespace BansheeEngine
 			float handlePosPx = 0.0f;
 			if(mHorizontal)
 			{
-				handlePosPx = (float)(ev.getPosition().x - mDragStartPos - mOffset.x);
+				handlePosPx = (float)(ev.getPosition().x - mDragStartPos - mLayoutData.area.x);
 			}
 			else
 			{
-				handlePosPx = (float)(ev.getPosition().y - mDragStartPos - mOffset.y);
+				handlePosPx = (float)(ev.getPosition().y - mDragStartPos - mLayoutData.area.y);
 			}
 
 			float maxScrollAmount = (float)getMaxSize() - mHandleSize;
@@ -231,7 +233,7 @@ namespace BansheeEngine
 
 			onHandleMoved(mPctHandlePos);
 
-			markContentAsDirty();
+			_markContentAsDirty();
 			return true;
 		}
 
@@ -239,7 +241,7 @@ namespace BansheeEngine
 		{
 			mState = State::Normal;
 			mMouseOverHandle = false;
-			markContentAsDirty();
+			_markContentAsDirty();
 
 			return true;
 		}
@@ -258,7 +260,7 @@ namespace BansheeEngine
 				INT32 handleOffset = 0;
 				if (mHorizontal)
 				{
-					INT32 handleLeft = (INT32)mOffset.x + handlePosPx;
+					INT32 handleLeft = (INT32)mLayoutData.area.x + handlePosPx;
 					INT32 handleRight = handleLeft + mHandleSize;
 
 					if (ev.getPosition().x < handleLeft)
@@ -268,7 +270,7 @@ namespace BansheeEngine
 				}
 				else
 				{
-					INT32 handleTop = (INT32)mOffset.y + handlePosPx;
+					INT32 handleTop = (INT32)mLayoutData.area.y + handlePosPx;
 					INT32 handleBottom = handleTop + mHandleSize;
 
 					if (ev.getPosition().y < handleTop)
@@ -285,7 +287,7 @@ namespace BansheeEngine
 
 			onHandleMoved(mPctHandlePos);
 
-			markContentAsDirty();
+			_markContentAsDirty();
 			return true;
 		}
 
@@ -298,7 +300,7 @@ namespace BansheeEngine
 			else
 				mState = State::Normal;
 
-			markContentAsDirty();
+			_markContentAsDirty();
 			return true;
 		}
 		
@@ -309,7 +311,7 @@ namespace BansheeEngine
 	{
 		if(mHorizontal)
 		{
-			INT32 left = (INT32)mOffset.x + getHandlePosPx();
+			INT32 left = (INT32)mLayoutData.area.x + getHandlePosPx();
 			INT32 right = left + mHandleSize;
 
 			if(pos.x >= left && pos.x < right)
@@ -317,7 +319,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			INT32 top = (INT32)mOffset.y + getHandlePosPx();
+			INT32 top = (INT32)mLayoutData.area.y + getHandlePosPx();
 			INT32 bottom = top + mHandleSize;
 
 			if(pos.y >= top && pos.y < bottom)
@@ -335,9 +337,9 @@ namespace BansheeEngine
 
 	UINT32 GUISliderHandle::getMaxSize() const
 	{
-		UINT32 maxSize = mHeight;
+		UINT32 maxSize = mLayoutData.area.height;
 		if(mHorizontal)
-			maxSize = mWidth;
+			maxSize = mLayoutData.area.width;
 
 		return maxSize;
 	}

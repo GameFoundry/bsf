@@ -263,6 +263,7 @@
     <ClInclude Include="Include\BsDrawHelper.h" />
     <ClInclude Include="Include\BsGUIDropDownContent.h" />
     <ClInclude Include="Include\BsGUIElementStyleRTTI.h" />
+    <ClInclude Include="Include\BsGUILayoutData.h" />
     <ClInclude Include="Include\BsGUIPanel.h" />
     <ClInclude Include="Include\BsGUIProgressBar.h" />
     <ClInclude Include="Include\BsGUISkinRTTI.h" />

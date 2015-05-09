@@ -57,17 +57,14 @@ namespace BansheeEngine
 
 	void GUIElement::_setElementDepth(UINT8 depth)
 	{
-		mDepth = depth | (mDepth & 0xFFFFFF00);
-		markMeshAsDirty();
+		mLayoutData.depth = depth | (mLayoutData.depth & 0xFFFFFF00);
+		_markMeshAsDirty();
 	}
 
-	void GUIElement::_setClipRect(const Rect2I& clipRect) 
-	{ 
-		if(mClipRect != clipRect)
-		{
-			mClipRect = clipRect; 
-			updateClippedBounds();
-		}
+	void GUIElement::_setLayoutData(const GUILayoutData& data)
+	{
+		GUIElementBase::_setLayoutData(data);
+		updateClippedBounds();
 	}
 
 	void GUIElement::_changeParentWidget(GUIWidget* widget)
@@ -94,11 +91,6 @@ namespace BansheeEngine
 		}
 	}
 
-	Rect2I GUIElement::_getCachedBounds() const
-	{
-		return Rect2I(mOffset.x, mOffset.y, mWidth, mHeight);
-	}
-
 	void GUIElement::setFocus(bool enabled)
 	{
 		GUIManager::instance().setFocus(this, enabled);
@@ -109,7 +101,7 @@ namespace BansheeEngine
 		mDimensions = GUIDimensions::create();
 		mDimensions.updateWithStyle(mStyle);
 
-		markContentAsDirty();
+		_markContentAsDirty();
 	}
 
 	Rect2I GUIElement::getCachedVisibleBounds() const
@@ -128,11 +120,11 @@ namespace BansheeEngine
 	{
 		Rect2I bounds;
 
-		bounds.x = mOffset.x + mStyle->margins.left + mStyle->contentOffset.left;
-		bounds.y = mOffset.y + mStyle->margins.top + mStyle->contentOffset.top;
-		bounds.width = (UINT32)std::max(0, (INT32)mWidth - 
+		bounds.x = mLayoutData.area.x + mStyle->margins.left + mStyle->contentOffset.left;
+		bounds.y = mLayoutData.area.y + mStyle->margins.top + mStyle->contentOffset.top;
+		bounds.width = (UINT32)std::max(0, (INT32)mLayoutData.area.width -
 			(INT32)(mStyle->margins.left + mStyle->margins.right + mStyle->contentOffset.left + mStyle->contentOffset.right));
-		bounds.height = (UINT32)std::max(0, (INT32)mHeight - 
+		bounds.height = (UINT32)std::max(0, (INT32)mLayoutData.area.height -
 			(INT32)(mStyle->margins.top + mStyle->margins.bottom + mStyle->contentOffset.top + mStyle->contentOffset.bottom));
 
 		return bounds;
@@ -143,9 +135,9 @@ namespace BansheeEngine
 		Rect2I contentBounds = getCachedContentBounds();
 		
 		// Transform into element space so we can clip it using the element clip rectangle
-		Vector2I offsetDiff = Vector2I(contentBounds.x - mOffset.x, contentBounds.y - mOffset.y);
+		Vector2I offsetDiff = Vector2I(contentBounds.x - mLayoutData.area.x, contentBounds.y - mLayoutData.area.y);
 		Rect2I contentClipRect(offsetDiff.x, offsetDiff.y, contentBounds.width, contentBounds.height);
-		contentClipRect.clip(mClipRect);
+		contentClipRect.clip(mLayoutData.clipRect);
 
 		// Transform into content sprite space
 		contentClipRect.x -= offsetDiff.x;
@@ -175,7 +167,7 @@ namespace BansheeEngine
 			mDimensions.updateWithStyle(mStyle);
 			styleUpdated();
 
-			markContentAsDirty();
+			_markContentAsDirty();
 		}
 	}
 
@@ -202,7 +194,7 @@ namespace BansheeEngine
 		GUIManager::instance().queueForDestroy(element);
 	}
 
-	Rect2I GUIElement::getVisibleBounds() const
+	Rect2I GUIElement::getVisibleBounds()
 	{
 		Rect2I bounds = getBounds();
 

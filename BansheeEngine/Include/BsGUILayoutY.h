@@ -29,7 +29,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUILayout::_getElementAreas
 		 */
-		void _getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements, 
+		void _getElementAreas(const Rect2I& layoutArea, Rect2I* elementAreas, UINT32 numElements, 
 			const Vector<LayoutSizeRange>& sizeRanges, const LayoutSizeRange& mySizeRange) const;
 
 		/**
@@ -51,21 +51,8 @@ namespace BansheeEngine
 
 	protected:
 		/**
-		 * @brief	Positions/size all child layout elements based on the provided settings and their (previously calculated) optimal sizes.
-		 *
-		 * @param	x					Start X coordinate of the layout area. First element will be placed here. Relative to parent widget.
-		 * @param	y					Start Y coordinate of the layout area. First element will be placed here. Relative to parent widget.
-		 * @param	width				Maximum width of the layout in pixels. Elements will be optimized so they best fit within this width if possible.
-		 * @param	height				Maximum height of the layout in pixels. Elements will be optimized so they best fit within this height if possible.
-		 * @param	clipRect			Rectangle to clip all child elements to. Relative to parent widget. Usually equal to specified x, y, width, height parameters.
-		 * @param	widgetDepth			Depth of the parent widget. Determines depth at which child elements will be placed on. Takes priority over any other depth.
-		 * @param	panelDepth			Depth of the parent panel, will be set for all child elements.
-		 * @param	panelDepthRangeMin  Minimum depth range that child GUI panels can have (relative to panelDepth).
-		 *								Values outside of the depth range will be clamped.
-		 * @param	panelDepthRangeMax	Maximum depth range that child GUI panels can have (relative to panelDepth).
-		 *								Values outside of the depth range will be clamped.
+		 * @copydoc	GUIElementBase::_updateLayoutInternal
 		 */
-		void _updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I clipRect, UINT8 widgetDepth, 
-			INT16 panelDepth, UINT16 panelDepthRangeMin, UINT16 panelDepthRangeMax);
+		void _updateLayoutInternal(const GUILayoutData& data);
 	};
 }

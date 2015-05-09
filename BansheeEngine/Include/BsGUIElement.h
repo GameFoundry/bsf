@@ -58,7 +58,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElementBase::getVisibleBounds
 		 */
-		Rect2I getVisibleBounds() const override;
+		Rect2I getVisibleBounds() override;
 
 		/**
 		 * @brief	Destroy the element. Removes it from parent and widget, and queues
@@ -187,18 +187,9 @@ namespace BansheeEngine
 		void _setElementDepth(UINT8 depth);
 
 		/**
-		 * @copydoc GUIElementBase::_setClipRect
+		 * @copydoc	GUIElementBase::_setLayoutData
 		 */
-		void _setClipRect(const Rect2I& clipRect) override;
-
-		/**
-		 * @brief	Gets non-clipped bounds that were assigned to the element by the parent layout.
-		 *
-		 * @note	This value is updated during layout update which means it might be out of date
-		 *			if parent element bounds changed since.
-		 *			Internal method.
-		 */
-		Rect2I _getCachedBounds() const;
+		virtual void _setLayoutData(const GUILayoutData& data) override;
 
 		/**
 		 * @copydoc	GUIElementBase::_changeParentWidget
@@ -274,7 +265,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method.
 		 */
-		UINT32 _getDepth() const { return mDepth; }
+		UINT32 _getDepth() const { return mLayoutData.depth; }
 
 		/**
 		 * @brief	Checks is the specified position within GUI element bounds. Position is relative to

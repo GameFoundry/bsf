@@ -54,8 +54,7 @@ namespace BansheeEngine
 		 */
 		virtual void setTint(const Color& color);
 
-		void _updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-			Rect2I clipRect, UINT8 widgetDepth, INT16 panelDepth, UINT16 panelDepthRangeMin, UINT16 panelDepthRangeMax);
+		void _updateLayoutInternal(const GUILayoutData& data);
 
 		Vector2I _getOptimalSize() const;
 

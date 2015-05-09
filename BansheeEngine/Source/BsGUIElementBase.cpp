@@ -13,19 +13,17 @@ namespace BansheeEngine
 {
 	GUIElementBase::GUIElementBase()
 		:mIsDirty(true), mParentElement(nullptr), mIsDisabled(false), 
-		mParentWidget(nullptr), mWidth(0), mHeight(0), mAnchorParent(nullptr), 
-		mUpdateParent(nullptr), mPanelDepthRange(-1), mDepth(0)
+		mParentWidget(nullptr), mAnchorParent(nullptr), mUpdateParent(nullptr)
 	{
-		_setAreaDepth(0);
+
 	}
 
 	GUIElementBase::GUIElementBase(const GUIDimensions& dimensions)
 		:mIsDirty(true), mParentElement(nullptr), mIsDisabled(false),
-		mParentWidget(nullptr), mDimensions(dimensions), mWidth(0), 
-		mHeight(0), mAnchorParent(nullptr), mUpdateParent(nullptr), 
-		mPanelDepthRange(-1), mDepth(0)
+		mParentWidget(nullptr), mDimensions(dimensions), 
+		mAnchorParent(nullptr), mUpdateParent(nullptr)
 	{
-		_setAreaDepth(0);
+
 	}
 
 	GUIElementBase::~GUIElementBase()
@@ -61,7 +59,7 @@ namespace BansheeEngine
 		mDimensions.x = x;
 		mDimensions.y = y;
 
-		markMeshAsDirty();
+		_markMeshAsDirty();
 	}
 
 	void GUIElementBase::setWidth(UINT32 width)
@@ -76,7 +74,7 @@ namespace BansheeEngine
 		if (isFixedBefore != isFixedAfter)
 			refreshChildUpdateParents();
 			
-		markContentAsDirty();
+		_markContentAsDirty();
 	}
 
 	void GUIElementBase::setFlexibleWidth(UINT32 minWidth, UINT32 maxWidth)
@@ -96,7 +94,7 @@ namespace BansheeEngine
 		if (isFixedBefore != isFixedAfter)
 			refreshChildUpdateParents();
 
-		markContentAsDirty();
+		_markContentAsDirty();
 	}
 
 	void GUIElementBase::setHeight(UINT32 height)
@@ -111,7 +109,7 @@ namespace BansheeEngine
 		if (isFixedBefore != isFixedAfter)
 			refreshChildUpdateParents();
 
-		markContentAsDirty();
+		_markContentAsDirty();
 	}
 
 	void GUIElementBase::setFlexibleHeight(UINT32 minHeight, UINT32 maxHeight)
@@ -131,7 +129,7 @@ namespace BansheeEngine
 		if (isFixedBefore != isFixedAfter)
 			refreshChildUpdateParents();
 
-		markContentAsDirty();
+		_markContentAsDirty();
 	}
 
 	void GUIElementBase::resetDimensions()
@@ -145,88 +143,65 @@ namespace BansheeEngine
 		if (isFixedBefore != isFixedAfter)
 			refreshChildUpdateParents();
 
-		markContentAsDirty();
+		_markContentAsDirty();
 	}
 
-	Rect2I GUIElementBase::getBounds() const
+	Rect2I GUIElementBase::getBounds(GUIPanel* relativeTo)
 	{
-		return GUILayoutUtility::calcBounds(this);
+		if (relativeTo == nullptr)
+			relativeTo = mAnchorParent;
+
+		Rect2I anchorBounds;
+		if (relativeTo != nullptr)
+			anchorBounds = relativeTo->getBounds();
+
+		if (mUpdateParent != nullptr)
+		{
+			if (mUpdateParent->_isDirty() && mParentWidget != nullptr)
+			{
+				GUIElementBase* updateParent = mUpdateParent;
+				if (updateParent->_getType() == GUIElementBase::Type::Panel)
+				{
+					GUIElementBase* optimizedUpdateParent = this;
+					while (optimizedUpdateParent->_getParent() != updateParent)
+						optimizedUpdateParent = optimizedUpdateParent->_getParent();
+
+					updateParent = optimizedUpdateParent;
+				}
+
+				mParentWidget->_updateLayout(updateParent);
+			}
+		}
+
+		Rect2I bounds = mLayoutData.area;
+		bounds.x -= anchorBounds.x;
+		bounds.y -= anchorBounds.y;
+		
+		return bounds;
 	}
 
-	Rect2I GUIElementBase::getVisibleBounds() const
+	Rect2I GUIElementBase::getVisibleBounds()
 	{
 		return getBounds();
 	}
-
-	void GUIElementBase::_setPosition(const Vector2I& offset)
-	{
-		mOffset = offset;
-	}
-
-	void GUIElementBase::_setWidth(UINT32 width)
-	{
-		mWidth = width;
-	}
-
-	void GUIElementBase::_setHeight(UINT32 height)
-	{
-		mHeight = height;
-	}
-
-	void GUIElementBase::_setWidgetDepth(UINT8 depth)
-	{
-		UINT32 shiftedDepth = depth << 24;
-
-		mDepth = shiftedDepth | (mDepth & 0x00FFFFFF);
-	}
-
-	void GUIElementBase::_setAreaDepth(INT16 depth)
-	{
-		UINT32 signedDepth = ((INT32)depth + 32768) << 8;
-
-		mDepth = signedDepth | (mDepth & 0xFF0000FF);;
-	}
-
-	void GUIElementBase::_setClipRect(const Rect2I& clipRect)
-	{
-		mClipRect = clipRect;
-	}
-
-	void GUIElementBase::_setPanelDepthRange(UINT16 min, UINT16 max)
-	{
-		mPanelDepthRange = (min << 16) | max;
-	}
-
-	void GUIElementBase::_getPanelDepthRange(UINT16& min, UINT16& max)
-	{
-		min = mPanelDepthRange >> 16;
-		max = mPanelDepthRange & 0xFFFF;
-	}
-
-	UINT8 GUIElementBase::_getWidgetDepth() const
-	{
-		return (mDepth >> 24) & 0xFF;
-	}
-
-	INT16 GUIElementBase::_getAreaDepth() const
-	{
-		return (((INT32)mDepth >> 8) & 0xFFFF) - 32768;
-	}
-
+	
 	void GUIElementBase::_markAsClean()
 	{
 		mIsDirty = false;
 	}
 
-	void GUIElementBase::markContentAsDirty() 
+	void GUIElementBase::_markContentAsDirty() 
 	{ 
 		if(_isDisabled())
 			return;
 
-		mIsDirty = true;
+		if (mUpdateParent != nullptr)
+			mUpdateParent->mIsDirty = true;
+		else
+			mIsDirty = true;
 	}
 
-	void GUIElementBase::markMeshAsDirty()
+	void GUIElementBase::_markMeshAsDirty()
 	{
 		if(_isDisabled())
 			return;
@@ -242,7 +217,7 @@ namespace BansheeEngine
 
 		// Make sure to mark everything as dirty, as we didn't track any dirty flags while the element was disabled
 		mIsDisabled = false;
-		markContentAsDirty();
+		_markContentAsDirty();
 
 		for(auto& elem : mChildren)
 		{
@@ -252,7 +227,7 @@ namespace BansheeEngine
 
 	void GUIElementBase::disableRecursively()
 	{
-		markMeshAsDirty(); // Just need to hide the mesh
+		_markMeshAsDirty(); // Just need to hide the mesh
 		mIsDisabled = true;
 
 		for(auto& elem : mChildren)
@@ -261,11 +236,10 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUIElementBase::_updateLayout(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I clipRect, 
-		UINT8 widgetDepth, INT16 panelDepth, UINT16 panelDepthRangeMin, UINT16 panelDepthRangeMax)
+	void GUIElementBase::_updateLayout(const GUILayoutData& data)
 	{
 		_updateOptimalLayoutSizes(); // We calculate optimal sizes of all layouts as a pre-processing step, as they are requested often during update
-		_updateLayoutInternal(x, y, width, height, clipRect, widgetDepth, panelDepth, panelDepthRangeMin, panelDepthRangeMax);
+		_updateLayoutInternal(data);
 	}
 
 	void GUIElementBase::_updateOptimalLayoutSizes()
@@ -276,12 +250,11 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUIElementBase::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I clipRect, 
-		UINT8 widgetDepth, INT16 panelDepth, UINT16 panelDepthRangeMin, UINT16 panelDepthRangeMax)
+	void GUIElementBase::_updateLayoutInternal(const GUILayoutData& data)
 	{
 		for(auto& child : mChildren)
 		{
-			child->_updateLayoutInternal(x, y, width, height, clipRect, widgetDepth, panelDepth, panelDepthRangeMin, panelDepthRangeMax);
+			child->_updateLayoutInternal(data);
 		}
 	}
 
@@ -294,7 +267,7 @@ namespace BansheeEngine
 		return dimensions.calculateSizeRange(_getOptimalSize());
 	}
 
-	void GUIElementBase::_getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements,
+	void GUIElementBase::_getElementAreas(const Rect2I& layoutArea, Rect2I* elementAreas, UINT32 numElements,
 		const Vector<LayoutSizeRange>& sizeRanges, const LayoutSizeRange& mySizeRange) const
 	{
 		assert(mChildren.size() == 0);
@@ -331,7 +304,7 @@ namespace BansheeEngine
 		if (mIsDisabled)
 			element->disableRecursively();
 
-		markContentAsDirty();
+		_markContentAsDirty();
 	}
 
 	void GUIElementBase::_unregisterChildElement(GUIElementBase* element)
@@ -347,7 +320,7 @@ namespace BansheeEngine
 				element->_setParent(nullptr);
 				foundElem = true;
 
-				markContentAsDirty();
+				_markContentAsDirty();
 				break;
 			}
 		}
@@ -374,7 +347,7 @@ namespace BansheeEngine
 			child->_changeParentWidget(widget);
 		}
 
-		markContentAsDirty();
+		_markContentAsDirty();
 	}
 
 	void GUIElementBase::_updateAUParents()

@@ -77,7 +77,7 @@ namespace BansheeEngine
 		mSizeRange = _getDimensions().calculateSizeRange(optimalSize);
 	}
 
-	void GUILayoutX::_getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements, 
+	void GUILayoutX::_getElementAreas(const Rect2I& layoutArea, Rect2I* elementAreas, UINT32 numElements,
 		const Vector<LayoutSizeRange>& sizeRanges, const LayoutSizeRange& mySizeRange) const
 	{
 		assert(mChildren.size() == numElements);
@@ -131,9 +131,9 @@ namespace BansheeEngine
 		}
 
 		// If there is some room left, calculate flexible space sizes (since they will fill up all that extra room)
-		if (width > totalOptimalSize)
+		if ((UINT32)layoutArea.width > totalOptimalSize)
 		{
-			UINT32 extraSize = width - totalOptimalSize;
+			UINT32 extraSize = layoutArea.width - totalOptimalSize;
 			UINT32 remainingSize = extraSize;
 
 			// Flexible spaces always expand to fill up all unused space
@@ -166,7 +166,7 @@ namespace BansheeEngine
 					childIdx++;
 				}
 
-				totalOptimalSize = width;
+				totalOptimalSize = layoutArea.width;
 			}
 		}
 
@@ -188,9 +188,9 @@ namespace BansheeEngine
 		}
 
 		// Our optimal size is larger than maximum allowed, so we need to reduce size of some elements
-		if (totalOptimalSize > width)
+		if (totalOptimalSize > (UINT32)layoutArea.width)
 		{
-			UINT32 extraSize = totalOptimalSize - width;
+			UINT32 extraSize = totalOptimalSize - layoutArea.width;
 			UINT32 remainingSize = extraSize;
 
 			// Iterate until we reduce everything so it fits, while maintaining
@@ -253,7 +253,7 @@ namespace BansheeEngine
 		}
 		else // We are smaller than the allowed maximum, so try to expand some elements
 		{
-			UINT32 extraSize = width - totalOptimalSize;
+			UINT32 extraSize = layoutArea.width - totalOptimalSize;
 			UINT32 remainingSize = extraSize;
 
 			// Iterate until we reduce everything so it fits, while maintaining
@@ -326,7 +326,7 @@ namespace BansheeEngine
 			const GUIDimensions& dimensions = child->_getDimensions();
 			if (!dimensions.fixedHeight())
 			{
-				elemHeight = height;
+				elemHeight = layoutArea.height;
 				if (dimensions.minHeight > 0 && elemHeight < dimensions.minHeight)
 					elemHeight = dimensions.minHeight;
 
@@ -341,18 +341,18 @@ namespace BansheeEngine
 				GUIElement* element = static_cast<GUIElement*>(child);
 
 				UINT32 yPadding = element->_getPadding().top + element->_getPadding().bottom;
-				INT32 yOffset = Math::ceilToInt(((INT32)height - (INT32)(elemHeight + yPadding)) * 0.5f);
+				INT32 yOffset = Math::ceilToInt(((INT32)layoutArea.height - (INT32)(elemHeight + yPadding)) * 0.5f);
 				yOffset = std::max(0, yOffset);
 
-				elementAreas[childIdx].x = x + xOffset;
-				elementAreas[childIdx].y = y + yOffset;
+				elementAreas[childIdx].x = layoutArea.x + xOffset;
+				elementAreas[childIdx].y = layoutArea.y + yOffset;
 			}
 			else if (child->_getType() == GUIElementBase::Type::Layout || child->_getType() == GUIElementBase::Type::Panel)
 			{
 				GUILayout* layout = static_cast<GUILayout*>(child);
 
-				elementAreas[childIdx].x = x + xOffset;
-				elementAreas[childIdx].y = y;
+				elementAreas[childIdx].x = layoutArea.x + xOffset;
+				elementAreas[childIdx].y = layoutArea.y;
 			}
 
 			xOffset += elemWidth + child->_getPadding().right;
@@ -366,8 +366,7 @@ namespace BansheeEngine
 			stackDeallocLast(processedElements);
 	}
 
-	void GUILayoutX::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I clipRect, 
-		UINT8 widgetDepth, INT16 panelDepth, UINT16 panelDepthRangeMin, UINT16 panelDepthRangeMax)
+	void GUILayoutX::_updateLayoutInternal(const GUILayoutData& data)
 	{
 		UINT32 numElements = (UINT32)mChildren.size();
 		Rect2I* elementAreas = nullptr;
@@ -375,31 +374,24 @@ namespace BansheeEngine
 		if (numElements > 0)
 			elementAreas = stackConstructN<Rect2I>(numElements);
 
-		_getElementAreas(x, y,width, height, elementAreas, numElements, mChildSizeRanges, mSizeRange);
+		_getElementAreas(data.area, elementAreas, numElements, mChildSizeRanges, mSizeRange);
 
 		// Now that we have all the areas, actually assign them
 		UINT32 childIdx = 0;
 
+		GUILayoutData childData = data;
 		for(auto& child : mChildren)
 		{
-			Rect2I childArea = elementAreas[childIdx];
-			Vector2I offset(childArea.x, childArea.y);
+			childData.area = elementAreas[childIdx];
+			childData.clipRect.x -= childData.area.x;
+			childData.clipRect.y -= childData.area.y;
 
-			child->_setPosition(offset);
-			child->_setWidth(childArea.width);
-			child->_setHeight(childArea.height);
-			child->_setWidgetDepth(widgetDepth);
-			child->_setAreaDepth(panelDepth);
-			child->_setPanelDepthRange(panelDepthRangeMin, panelDepthRangeMax);
-			
-			Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
-			child->_setClipRect(elemClipRect);
+			child->_setLayoutData(childData);
 
-			Rect2I newClipRect(offset.x, offset.y, childArea.width, childArea.height);
-			newClipRect.clip(clipRect);
+			childData.clipRect = childData.area;
+			childData.clipRect.clip(data.clipRect);
 
-			child->_updateLayoutInternal(offset.x, offset.y, childArea.width, childArea.height, newClipRect,
-				widgetDepth, panelDepth, panelDepthRangeMin, panelDepthRangeMax);
+			child->_updateLayoutInternal(childData);
 
 			childIdx++;
 		}

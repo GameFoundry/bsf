@@ -14,63 +14,6 @@ namespace BansheeEngine
 		return elem->_calculateLayoutSizeRange().optimal;
 	}
 
-	Rect2I GUILayoutUtility::calcBounds(const GUIElementBase* elem, GUIPanel* relativeTo)
-	{
-		Rect2I parentArea;
-
-		GUIElementBase* parent = elem->_getParent();
-		if (parent != nullptr)
-		{
-			parentArea = calcBounds(parent);
-
-			if (parent->_getType() == GUIElementBase::Type::Panel && (relativeTo == nullptr || relativeTo == parent))
-			{
-				parentArea.x = 0;
-				parentArea.y = 0;
-			}
-		}
-		else
-		{
-			GUIWidget* parentWidget = elem->_getParentWidget();
-
-			if (parentWidget != nullptr)
-			{
-				parentArea.width = parentWidget->getTarget()->getWidth();
-				parentArea.height = parentWidget->getTarget()->getHeight();
-			}
-
-			return parentArea;
-		}
-
-		UINT32 numElements = (UINT32)parent->_getNumChildren();
-		UINT32 myIndex = 0;
-
-		Vector<LayoutSizeRange> sizeRanges;
-		for (UINT32 i = 0; i < numElements; i++)
-		{
-			GUIElementBase* child = parent->_getChild(i);
-
-			if (child == elem)
-				myIndex = i;
-
-			sizeRanges.push_back(child->_calculateLayoutSizeRange());
-		}
-
-		Rect2I* elementAreas = nullptr;
-
-		if (numElements > 0)
-			elementAreas = stackConstructN<Rect2I>(numElements);
-
-		parent->_getElementAreas(parentArea.x, parentArea.y, parentArea.width, parentArea.height, elementAreas, 
-			numElements, sizeRanges, parent->_calculateLayoutSizeRange());
-		Rect2I myArea = elementAreas[myIndex];
-
-		if (elementAreas != nullptr)
-			stackDeallocLast(elementAreas);
-
-		return myArea;
-	}
-
 	Vector2I GUILayoutUtility::calcActualSize(UINT32 width, UINT32 height, const GUILayout* layout)
 	{
 		UINT32 numElements = (UINT32)layout->_getNumChildren();
@@ -87,7 +30,11 @@ namespace BansheeEngine
 		if (numElements > 0)
 			elementAreas = stackConstructN<Rect2I>(numElements);
 
-		layout->_getElementAreas(0, 0, width, height, elementAreas, numElements, sizeRanges, layout->_calculateLayoutSizeRange());
+		Rect2I parentArea;
+		parentArea.width = width;
+		parentArea.height = height;
+
+		layout->_getElementAreas(parentArea, elementAreas, numElements, sizeRanges, layout->_calculateLayoutSizeRange());
 		Rect2I* actualAreas = elementAreas; // We re-use the same array
 
 		for (UINT32 i = 0; i < numElements; i++)

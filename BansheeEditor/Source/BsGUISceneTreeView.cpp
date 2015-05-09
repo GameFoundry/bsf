@@ -252,7 +252,7 @@ namespace BansheeEngine
 	void GUISceneTreeView::dragAndDropFinalize()
 	{
 		mDragInProgress = false;
-		markContentAsDirty();
+		_markContentAsDirty();
 
 		DraggedSceneObjects* draggedSceneObjects = reinterpret_cast<DraggedSceneObjects*>(DragAndDropManager::instance().getDragData());
 		bs_delete(draggedSceneObjects);

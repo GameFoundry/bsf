@@ -75,8 +75,7 @@ namespace BansheeEngine
 		Vector2I _getOptimalSize() const;
 		void updateClippedBounds();
 
-		virtual void _updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-			Rect2I clipRect, UINT8 widgetDepth, INT16 panelDepth, UINT16 panelDepthRangeMin, UINT16 panelDepthRangeMax);
+		virtual void _updateLayoutInternal(const GUILayoutData& data);
 	protected:
 		static const UINT32 ELEMENT_EXTRA_SPACING;
 		static const UINT32 INDENT_SIZE;

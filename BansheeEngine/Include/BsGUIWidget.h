@@ -111,6 +111,11 @@ namespace BansheeEngine
 		void _updateLayout();
 
 		/**
+		 * @brief	Updates the layout of the provided element, and queues content updates.
+		 */
+		void _updateLayout(GUIElementBase* elem);
+
+		/**
 		 * @brief	Forwards the specified mouse event to the specified element. The element
 		 * 			must be a child of this widget.
 		 */
@@ -188,7 +193,7 @@ namespace BansheeEngine
 
 		HEvent mOwnerTargetResizedConn;
 
-		Vector<GUIElement*> mDirtyContents;
+		UnorderedSet<GUIElement*> mDirtyContents;
 
 		mutable bool mWidgetIsDirty;
 		mutable Rect2I mBounds;

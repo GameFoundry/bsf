@@ -77,7 +77,7 @@ namespace BansheeEngine
 		mSizeRange = _getDimensions().calculateSizeRange(optimalSize);
 	}
 
-	void GUILayoutY::_getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements, 
+	void GUILayoutY::_getElementAreas(const Rect2I& layoutArea, Rect2I* elementAreas, UINT32 numElements,
 		const Vector<LayoutSizeRange>& sizeRanges, const LayoutSizeRange& mySizeRange) const
 	{
 		assert(mChildren.size() == numElements);
@@ -131,9 +131,9 @@ namespace BansheeEngine
 		}
 
 		// If there is some room left, calculate flexible space sizes (since they will fill up all that extra room)
-		if (height > totalOptimalSize)
+		if ((UINT32)layoutArea.height > totalOptimalSize)
 		{
-			UINT32 extraSize = height - totalOptimalSize;
+			UINT32 extraSize = layoutArea.height - totalOptimalSize;
 			UINT32 remainingSize = extraSize;
 
 			// Flexible spaces always expand to fill up all unused space
@@ -166,7 +166,7 @@ namespace BansheeEngine
 					childIdx++;
 				}
 
-				totalOptimalSize = height;
+				totalOptimalSize = layoutArea.height;
 			}
 		}
 
@@ -188,9 +188,9 @@ namespace BansheeEngine
 		}
 
 		// Our optimal size is larger than maximum allowed, so we need to reduce size of some elements
-		if (totalOptimalSize > height)
+		if (totalOptimalSize > (UINT32)layoutArea.height)
 		{
-			UINT32 extraSize = totalOptimalSize - height;
+			UINT32 extraSize = totalOptimalSize - layoutArea.height;
 			UINT32 remainingSize = extraSize;
 
 			// Iterate until we reduce everything so it fits, while maintaining
@@ -253,7 +253,7 @@ namespace BansheeEngine
 		}
 		else // We are smaller than the allowed maximum, so try to expand some elements
 		{
-			UINT32 extraSize = height - totalOptimalSize;
+			UINT32 extraSize = layoutArea.height - totalOptimalSize;
 			UINT32 remainingSize = extraSize;
 
 			// Iterate until we reduce everything so it fits, while maintaining
@@ -332,7 +332,7 @@ namespace BansheeEngine
 			const GUIDimensions& dimensions = child->_getDimensions();
 			if (!dimensions.fixedWidth())
 			{
-				elemWidth = width;
+				elemWidth = layoutArea.width;
 				if (dimensions.minWidth > 0 && elemWidth < dimensions.minWidth)
 					elemWidth = dimensions.minWidth;
 
@@ -347,16 +347,16 @@ namespace BansheeEngine
 				GUIElement* element = static_cast<GUIElement*>(child);
 
 				UINT32 xPadding = element->_getPadding().left + element->_getPadding().right;
-				INT32 xOffset = Math::ceilToInt((INT32)(width - (INT32)(elemWidth + xPadding)) * 0.5f);
+				INT32 xOffset = Math::ceilToInt((INT32)(layoutArea.width - (INT32)(elemWidth + xPadding)) * 0.5f);
 				xOffset = std::max(0, xOffset);
 
-				elementAreas[childIdx].x = x + xOffset;
-				elementAreas[childIdx].y = y + yOffset;
+				elementAreas[childIdx].x = layoutArea.x + xOffset;
+				elementAreas[childIdx].y = layoutArea.y + yOffset;
 			}
 			else if (child->_getType() == GUIElementBase::Type::Layout || child->_getType() == GUIElementBase::Type::Panel)
 			{
-				elementAreas[childIdx].x = x;
-				elementAreas[childIdx].y = y + yOffset;
+				elementAreas[childIdx].x = layoutArea.x;
+				elementAreas[childIdx].y = layoutArea.y + yOffset;
 			}
 
 			yOffset += elemHeight + child->_getPadding().bottom;
@@ -364,8 +364,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUILayoutY::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I clipRect, 
-		UINT8 widgetDepth, INT16 panelDepth, UINT16 panelDepthRangeMin, UINT16 panelDepthRangeMax)
+	void GUILayoutY::_updateLayoutInternal(const GUILayoutData& data)
 	{
 		UINT32 numElements = (UINT32)mChildren.size();
 		Rect2I* elementAreas = nullptr;
@@ -373,31 +372,24 @@ namespace BansheeEngine
 		if (numElements > 0)
 			elementAreas = stackConstructN<Rect2I>(numElements);
 
-		_getElementAreas(x, y, width, height, elementAreas, numElements, mChildSizeRanges, mSizeRange);
+		_getElementAreas(data.area, elementAreas, numElements, mChildSizeRanges, mSizeRange);
 
 		// Now that we have all the areas, actually assign them
 		UINT32 childIdx = 0;
 
+		GUILayoutData childData = data;
 		for(auto& child : mChildren)
 		{
-			Rect2I childArea = elementAreas[childIdx];
-			Vector2I offset(childArea.x, childArea.y);
+			childData.area = elementAreas[childIdx];
+			childData.clipRect.x -= childData.area.x;
+			childData.clipRect.y -= childData.area.y;
 
-			child->_setPosition(offset);
-			child->_setHeight(childArea.height);
-			child->_setWidth(childArea.width);
-			child->_setWidgetDepth(widgetDepth);
-			child->_setAreaDepth(panelDepth);
-			child->_setPanelDepthRange(panelDepthRangeMin, panelDepthRangeMax);
+			child->_setLayoutData(childData);
 
-			Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
-			child->_setClipRect(elemClipRect);
+			childData.clipRect = childData.area;
+			childData.clipRect.clip(data.clipRect);
 
-			Rect2I newClipRect(offset.x, offset.y, childArea.width, childArea.height);
-			newClipRect.clip(clipRect);
-
-			child->_updateLayoutInternal(offset.x, offset.y, childArea.width, childArea.height, newClipRect,
-				widgetDepth, panelDepth, panelDepthRangeMin, panelDepthRangeMax);
+			child->_updateLayoutInternal(childData);
 
 			childIdx++;
 		}

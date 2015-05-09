@@ -207,7 +207,7 @@ namespace BansheeEngine
 				treeElement = element->getTreeElement();
 			}
 
-			if(treeElement != nullptr && event.getPosition().x >= treeElement->mElement->_getCachedBounds().x)
+			if(treeElement != nullptr && event.getPosition().x >= treeElement->mElement->_getLayoutData().area.x)
 			{
 				if(event.isCtrlDown())
 				{
@@ -280,7 +280,7 @@ namespace BansheeEngine
 					selectElement(treeElement);
 				}
 
-				markContentAsDirty();
+				_markContentAsDirty();
 
 				return true;
 			}
@@ -319,7 +319,7 @@ namespace BansheeEngine
 					mDragPosition = event.getPosition();
 					mDragInProgress = true;
 					mScrollState = ScrollState::None;
-					markContentAsDirty();
+					_markContentAsDirty();
 				}
 			}
 		}
@@ -329,7 +329,7 @@ namespace BansheeEngine
 			{
 				mDragPosition = event.getPosition();
 				mDragInProgress = true;
-				markContentAsDirty();
+				_markContentAsDirty();
 
 				if(mBottomScrollBounds.contains(mDragPosition))
 				{
@@ -371,7 +371,7 @@ namespace BansheeEngine
 		else if(event.getType() == GUIMouseEventType::MouseOut)
 		{
 			mDragInProgress = false;
-			markContentAsDirty();
+			_markContentAsDirty();
 		}
 
 		return false;
@@ -522,7 +522,7 @@ namespace BansheeEngine
 			GUIElement::destroy(iterFind->background);
 
 			mSelectedElements.erase(iterFind);
-			markContentAsDirty();
+			_markContentAsDirty();
 
 			selectionChanged();
 		}
@@ -541,7 +541,7 @@ namespace BansheeEngine
 		mSelectedElements.clear();
 		mIsElementSelected = false;
 
-		markContentAsDirty();
+		_markContentAsDirty();
 
 		selectionChanged();
 	}
@@ -691,7 +691,7 @@ namespace BansheeEngine
 				unselectElement(element);
 		}
 
-		markContentAsDirty();
+		_markContentAsDirty();
 	}
 
 	void GUITreeView::elementToggled(TreeElement* element, bool toggled)
@@ -820,15 +820,16 @@ namespace BansheeEngine
 
 	void GUITreeView::updateClippedBounds()
 	{
-		Vector2I offset = _getOffset();
-		mClippedBounds = Rect2I(offset.x, offset.y, _getWidth(), _getHeight());
+		mClippedBounds = mLayoutData.area;
 
-		Rect2I localClipRect(mClipRect.x + mOffset.x, mClipRect.y + mOffset.y, mClipRect.width, mClipRect.height);
+		Rect2I localClipRect = mLayoutData.clipRect;
+		localClipRect.x += mLayoutData.area.x;
+		localClipRect.y += mLayoutData.area.y;
+
 		mClippedBounds.clip(localClipRect);
 	}
 
-	void GUITreeView::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-		Rect2I clipRect, UINT8 widgetDepth, INT16 panelDepth, UINT16 panelDepthRangeMin, UINT16 panelDepthRangeMax)
+	void GUITreeView::_updateLayoutInternal(const GUILayoutData& data)
 	{
 		struct UpdateTreeElement
 		{
@@ -850,7 +851,7 @@ namespace BansheeEngine
 
 		Vector<TreeElement*> tempOrderedElements;
 
-		Vector2I offset(x, y);
+		Vector2I offset(data.area.x, data.area.y);
 
 		while(!todo.empty())
 		{
@@ -866,20 +867,21 @@ namespace BansheeEngine
 				Vector2I elementSize = current->mElement->_getOptimalSize();
 				btnHeight = elementSize.y;
 
-				mVisibleElements.push_back(InteractableElement(current->mParent, current->mSortedIdx * 2 + 0, Rect2I(x, offset.y, width, ELEMENT_EXTRA_SPACING)));
-				mVisibleElements.push_back(InteractableElement(current->mParent, current->mSortedIdx * 2 + 1, Rect2I(x, offset.y + ELEMENT_EXTRA_SPACING, width, btnHeight)));
+				mVisibleElements.push_back(InteractableElement(current->mParent, current->mSortedIdx * 2 + 0, Rect2I(data.area.x, offset.y, data.area.width, ELEMENT_EXTRA_SPACING)));
+				mVisibleElements.push_back(InteractableElement(current->mParent, current->mSortedIdx * 2 + 1, Rect2I(data.area.x, offset.y + ELEMENT_EXTRA_SPACING, data.area.width, btnHeight)));
 
-				offset.x = x + INITIAL_INDENT_OFFSET + indent * INDENT_SIZE;
+				offset.x = data.area.x + INITIAL_INDENT_OFFSET + indent * INDENT_SIZE;
 				offset.y += ELEMENT_EXTRA_SPACING;
 
-				current->mElement->_setPosition(offset);
-				current->mElement->_setWidth(elementSize.x);
-				current->mElement->_setHeight(elementSize.y);
-				current->mElement->_setAreaDepth(panelDepth);
-				current->mElement->_setWidgetDepth(widgetDepth);
+				GUILayoutData childData = data;
+				childData.area.x = offset.x;
+				childData.area.y = offset.y;
+				childData.area.width = elementSize.x;
+				childData.area.height = elementSize.y;
+				childData.clipRect.x -= offset.x;
+				childData.clipRect.y -= offset.y;
 
-				Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
-				current->mElement->_setClipRect(elemClipRect);
+				current->mElement->_setLayoutData(childData);
 
 				yOffset = btnHeight;
 			}
@@ -900,14 +902,15 @@ namespace BansheeEngine
 					myOffset.y -= Math::floorToInt(half);
 				}
 
-				current->mFoldoutBtn->_setPosition(myOffset);
-				current->mFoldoutBtn->_setWidth(elementSize.x);
-				current->mFoldoutBtn->_setHeight(elementSize.y);
-				current->mFoldoutBtn->_setAreaDepth(panelDepth);
-				current->mFoldoutBtn->_setWidgetDepth(widgetDepth);
+				GUILayoutData childData = data;
+				childData.area.x = myOffset.x;
+				childData.area.y = myOffset.y;
+				childData.area.width = elementSize.x;
+				childData.area.height = elementSize.y;
+				childData.clipRect.x -= myOffset.x;
+				childData.clipRect.y -= myOffset.y;
 
-				Rect2I elemClipRect(clipRect.x - myOffset.x, clipRect.y - myOffset.y, clipRect.width, clipRect.height);
-				current->mFoldoutBtn->_setClipRect(elemClipRect);
+				current->mFoldoutBtn->_setLayoutData(childData);
 			}
 
 			offset.y += yOffset;
@@ -929,44 +932,37 @@ namespace BansheeEngine
 			}
 		}
 
-		UINT32 remainingHeight = (UINT32)std::max(0, (INT32)height - (offset.y - y));
+		UINT32 remainingHeight = (UINT32)std::max(0, (INT32)data.area.height - (offset.y - data.area.y));
 
 		if(remainingHeight > 0)
-			mVisibleElements.push_back(InteractableElement(&getRootElement(), (UINT32)getRootElement().mChildren.size() * 2, Rect2I(x, offset.y, width, remainingHeight)));
+			mVisibleElements.push_back(InteractableElement(&getRootElement(), (UINT32)getRootElement().mChildren.size() * 2, Rect2I(data.area.x, offset.y, data.area.width, remainingHeight)));
 
 		for(auto selectedElem : mSelectedElements)
 		{
 			GUILabel* targetElement = selectedElem.element->mElement;
 
-			Vector2I offset = targetElement->_getOffset();
-			offset.x = x;
+			GUILayoutData childData = data;
+			childData.area.y = targetElement->_getLayoutData().area.y;
+			childData.area.height = targetElement->_getLayoutData().area.height;
+			childData.clipRect.x -= childData.area.x;
+			childData.clipRect.y -= childData.area.y;
 
-			selectedElem.background->_setPosition(offset);
-			selectedElem.background->_setWidth(width);
-			selectedElem.background->_setHeight(targetElement->_getHeight());
-			selectedElem.background->_setAreaDepth(panelDepth);
-			selectedElem.background->_setWidgetDepth(widgetDepth);
-
-			Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
-			selectedElem.background->_setClipRect(elemClipRect);
+			selectedElem.background->_setLayoutData(childData);
 		}
 
 		if(mEditElement != nullptr)
 		{
 			GUILabel* targetElement = mEditElement->mElement;
 
-			Vector2I offset = targetElement->_getOffset();
-			UINT32 remainingWidth = (UINT32)std::max(0, (((INT32)width) - (offset.x - x)));
+			UINT32 remainingWidth = (UINT32)std::max(0, (((INT32)data.area.width) - (offset.x - data.area.x)));
 
-			mNameEditBox->_setPosition(offset);
-			mNameEditBox->_setWidth(remainingWidth);
-			mNameEditBox->_setHeight(targetElement->_getHeight());
-			mNameEditBox->_setAreaDepth(panelDepth);
-			mNameEditBox->_setWidgetDepth(widgetDepth);
+			GUILayoutData childData = data;
+			childData.area = targetElement->_getLayoutData().area;
+			childData.area.width = remainingWidth;
+			childData.clipRect.x -= childData.area.x;
+			childData.clipRect.y -= childData.area.y;
 
-			Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
-			mNameEditBox->_setClipRect(elemClipRect);
-
+			mNameEditBox->_setLayoutData(childData);
 		}
 
 		if(mDragInProgress)
@@ -991,15 +987,12 @@ namespace BansheeEngine
 					if(mDragHighlight->_isDisabled())
 						mDragHighlight->enableRecursively();
 
-					Vector2I offset(interactableElement->bounds.x, interactableElement->bounds.y);
-					mDragHighlight->_setPosition(offset);
-					mDragHighlight->_setWidth(interactableElement->bounds.width);
-					mDragHighlight->_setHeight(interactableElement->bounds.height);
-					mDragHighlight->_setAreaDepth(panelDepth);
-					mDragHighlight->_setWidgetDepth(widgetDepth);
+					GUILayoutData childData = data;
+					childData.area = interactableElement->bounds;
+					childData.clipRect.x -= childData.area.x;
+					childData.clipRect.y -= childData.area.y;
 
-					Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
-					mDragHighlight->_setClipRect(elemClipRect);
+					mDragHighlight->_setLayoutData(childData);
 				}
 				else
 				{
@@ -1009,15 +1002,12 @@ namespace BansheeEngine
 					if(mDragSepHighlight->_isDisabled())
 						mDragSepHighlight->enableRecursively();
 
-					Vector2I offset(interactableElement->bounds.x, interactableElement->bounds.y);
-					mDragSepHighlight->_setPosition(offset);
-					mDragSepHighlight->_setWidth(interactableElement->bounds.width);
-					mDragSepHighlight->_setHeight(interactableElement->bounds.height);
-					mDragSepHighlight->_setAreaDepth(panelDepth);
-					mDragSepHighlight->_setWidgetDepth(widgetDepth);
+					GUILayoutData childData = data;
+					childData.area = interactableElement->bounds;
+					childData.clipRect.x -= childData.area.x;
+					childData.clipRect.y -= childData.area.y;
 
-					Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
-					mDragSepHighlight->_setClipRect(elemClipRect);
+					mDragSepHighlight->_setLayoutData(childData);
 				}
 			}
 		}
@@ -1031,16 +1021,16 @@ namespace BansheeEngine
 		}
 
 		// Update scroll bounds
-		UINT32 scrollHeight = (UINT32)Math::roundToInt(clipRect.height * SCROLL_AREA_HEIGHT_PCT);
+		UINT32 scrollHeight = (UINT32)Math::roundToInt(data.clipRect.height * SCROLL_AREA_HEIGHT_PCT);
 
-		mTopScrollBounds.x = clipRect.x;
-		mTopScrollBounds.y = clipRect.y;
-		mTopScrollBounds.width = clipRect.width;
+		mTopScrollBounds.x = data.clipRect.x;
+		mTopScrollBounds.y = data.clipRect.y;
+		mTopScrollBounds.width = data.clipRect.width;
 		mTopScrollBounds.height = scrollHeight;
 
-		mBottomScrollBounds.x = clipRect.x;
-		mBottomScrollBounds.y = clipRect.y + clipRect.height - scrollHeight;
-		mBottomScrollBounds.width = clipRect.width;
+		mBottomScrollBounds.x = data.clipRect.x;
+		mBottomScrollBounds.y = data.clipRect.y + data.clipRect.height - scrollHeight;
+		mBottomScrollBounds.width = data.clipRect.width;
 		mBottomScrollBounds.height = scrollHeight;
 	}
 
@@ -1183,7 +1173,7 @@ namespace BansheeEngine
 		{
 			Rect2I myBounds = _getClippedBounds();
 			INT32 clipVertCenter = myBounds.y + (INT32)Math::roundToInt(myBounds.height * 0.5f);
-			INT32 elemVertCenter = element->mElement->_getOffset().y + (INT32)Math::roundToInt(element->mElement->_getHeight() * 0.5f);
+			INT32 elemVertCenter = element->mElement->_getLayoutData().area.y + (INT32)Math::roundToInt(element->mElement->_getLayoutData().area.height * 0.5f);
 
 			if(elemVertCenter > clipVertCenter)
 				scrollArea->scrollUpPx(elemVertCenter - clipVertCenter);
@@ -1193,8 +1183,8 @@ namespace BansheeEngine
 		else
 		{
 			Rect2I myBounds = _getClippedBounds();
-			INT32 elemVertTop = element->mElement->_getOffset().y;
-			INT32 elemVertBottom = element->mElement->_getOffset().y + element->mElement->_getHeight();
+			INT32 elemVertTop = element->mElement->_getLayoutData().area.y;
+			INT32 elemVertBottom = element->mElement->_getLayoutData().area.y + element->mElement->_getLayoutData().area.height;
 
 			INT32 top = myBounds.y;
 			INT32 bottom = myBounds.y + myBounds.height;

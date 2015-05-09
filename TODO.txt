@@ -32,21 +32,17 @@ Add C# Renderable
 ----------------------------------------------------------------------
 Project window
 
+Potential issue: isPanelOptimize is now determined on the fly in _updateLayout but it can trigger
+ on elements that were originally imaged to be panel optimized (but the end result /should/ be the same)
+
+Root panel isn't being updated properly
+Positions in color picker are screwed up
+Depth in COlorPicker is fucked up
+Test dock manager and sliders (right now it doesn't seem to work at all)
+
 Later:
- - Switch bound calculations to the new system
- - Get rid of _calculateLayoutSizeRange as I don't need it without GUILayoutUtility::calcBounds
  - Unify position, width, height, depth, depthMin, depthMax, layoutClipRect, elementClipRect into a single structure
    - So I don't need to call 6 different _set methods in _updateLayoutInternal, and so that _updateLayoutInternal doesn't have as many parameters
- - Rename markContentAsDirty and markMeshAsDirty so they have a _ prefix since they're now internal
- - Rename get/setAreaDepth to get/setPanelDepth
-
- getBounds
-{
-   if(mUpdateParent != nullptr && mUpdateParent->mIsDirty)
-      mUpdateParent->_updateLayout();
-
-   return _getCachedBounds();
-}
 
 Simple tasks:
  - Add C# Renderable interface

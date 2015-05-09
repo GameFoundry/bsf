@@ -74,15 +74,13 @@ namespace BansheeEngine
 			foldoutBtnStyle, selectionBackgroundStyle, editBoxStyle, dragHighlightStyle, dragSepHighlightStyle, GUIDimensions::create(options));
 	}
 
-	void GUIResourceTreeView::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I clipRect, 
-		UINT8 widgetDepth, INT16 panelDepth, UINT16 panelDepthRangeMin, UINT16 panelDepthRangeMax)
+	void GUIResourceTreeView::_updateLayoutInternal(const GUILayoutData& data)
 	{
-		GUITreeView::_updateLayoutInternal(x, y, width, height, clipRect, widgetDepth, 
-			panelDepth, panelDepthRangeMin, panelDepthRangeMax);
+		GUITreeView::_updateLayoutInternal(data);
 
 		if(mDropTarget != nullptr)
 		{
-			mDropTarget->setArea(x, y, width, height);
+			mDropTarget->setArea(data.area.x, data.area.y, data.area.width, data.area.height);
 		}
 	}
 
@@ -258,7 +256,7 @@ namespace BansheeEngine
 		assert(libEntry != nullptr);
 		updateFromProjectLibraryEntry(newElement, libEntry);
 
-		markContentAsDirty();
+		_markContentAsDirty();
 	}
 
 	void GUIResourceTreeView::entryRemoved(const Path& path)
@@ -284,7 +282,7 @@ namespace BansheeEngine
 		if(parentWindow != nullptr)
 		{
 			mCurrentWindow = parentWindow;
-			mDropTarget = &Platform::createDropTarget(mCurrentWindow, _getOffset().x, _getOffset().y, _getWidth(), _getHeight());
+			mDropTarget = &Platform::createDropTarget(mCurrentWindow, mLayoutData.area.x, mLayoutData.area.y, mLayoutData.area.width, mLayoutData.area.height);
 
 			mDropTargetEnterConn = mDropTarget->onEnter.connect(std::bind(&GUIResourceTreeView::dropTargetDragMove, this, _1, _2));
 			mDropTargetMoveConn = mDropTarget->onDragOver.connect(std::bind(&GUIResourceTreeView::dropTargetDragMove, this, _1, _2));
@@ -305,7 +303,7 @@ namespace BansheeEngine
 		mDragPosition = Vector2I(x, y);
 		mDragInProgress = true;
 		mDropTargetDragActive = true;
-		markContentAsDirty();
+		_markContentAsDirty();
 
 		if(mBottomScrollBounds.contains(mDragPosition))
 		{
@@ -325,7 +323,7 @@ namespace BansheeEngine
 	{
 		mDragInProgress = false;
 		mDropTargetDragActive = false;
-		markContentAsDirty();
+		_markContentAsDirty();
 	}
 
 	void GUIResourceTreeView::dropTargetDragDropped(INT32 x, INT32 y)
@@ -359,7 +357,7 @@ namespace BansheeEngine
 
 		mDragInProgress = false;
 		mDropTargetDragActive = false;
-		markContentAsDirty();
+		_markContentAsDirty();
 	}
 
 	Path GUIResourceTreeView::findUniquePath(const Path& path)
@@ -438,7 +436,7 @@ namespace BansheeEngine
 	void GUIResourceTreeView::dragAndDropFinalize()
 	{
 		mDragInProgress = false;
-		markContentAsDirty();
+		_markContentAsDirty();
 
 		DraggedResources* draggedResources = reinterpret_cast<DraggedResources*>(DragAndDropManager::instance().getDragData());
 		bs_delete(draggedResources);
@@ -457,7 +455,7 @@ namespace BansheeEngine
 		if (widget != nullptr && widget->getTarget()->getTarget()->getProperties().isWindow())
 		{
 			RenderWindow* parentWindow = static_cast<RenderWindow*>(widget->getTarget()->getTarget().get());
-			setDropTarget(parentWindow, _getOffset().x, _getOffset().y, _getWidth(), _getHeight());
+			setDropTarget(parentWindow, mLayoutData.area.x, mLayoutData.area.y, mLayoutData.area.width, mLayoutData.area.height);
 		}
 		else
 			clearDropTarget();

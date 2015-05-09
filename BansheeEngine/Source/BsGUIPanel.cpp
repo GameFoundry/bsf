@@ -16,7 +16,7 @@ namespace BansheeEngine
 		mDepthRangeMin = depthRangeMin;
 		mDepthRangeMax = depthRangeMax;
 
-		markContentAsDirty();
+		_markContentAsDirty();
 	}
 
 	LayoutSizeRange GUIPanel::_calculateLayoutSizeRange() const
@@ -104,7 +104,7 @@ namespace BansheeEngine
 		mSizeRange = _getDimensions().calculateSizeRange(optimalSize);
 	}
 
-	void GUIPanel::_getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements,
+	void GUIPanel::_getElementAreas(const Rect2I& layoutArea, Rect2I* elementAreas, UINT32 numElements,
 		const Vector<LayoutSizeRange>& sizeRanges, const LayoutSizeRange& mySizeRange) const
 	{
 		assert(mChildren.size() == numElements);
@@ -113,26 +113,26 @@ namespace BansheeEngine
 		UINT32 childIdx = 0;
 		for (auto& child : mChildren)
 		{
-			elementAreas[childIdx] = _getElementArea(x, y, width, height, child, sizeRanges[childIdx]);
+			elementAreas[childIdx] = _getElementArea(layoutArea, child, sizeRanges[childIdx]);
 
 			childIdx++;
 		}
 	}
 
-	Rect2I GUIPanel::_getElementArea(INT32 x, INT32 y, UINT32 width, UINT32 height, const GUIElementBase* element, const LayoutSizeRange& sizeRange) const
+	Rect2I GUIPanel::_getElementArea(const Rect2I& layoutArea, const GUIElementBase* element, const LayoutSizeRange& sizeRange) const
 	{
 		const GUIDimensions& dimensions = element->_getDimensions();
 
 		Rect2I area;
 
-		area.x = x + dimensions.x;
-		area.y = y + dimensions.y;
+		area.x = layoutArea.x + dimensions.x;
+		area.y = layoutArea.y + dimensions.y;
 
 		if (dimensions.fixedWidth())
 			area.width = (UINT32)sizeRange.optimal.x;
 		else
 		{
-			UINT32 modifiedWidth = (UINT32)std::max(0, (INT32)width - dimensions.x);
+			UINT32 modifiedWidth = (UINT32)std::max(0, (INT32)layoutArea.width - dimensions.x);
 
 			if (modifiedWidth > (UINT32)sizeRange.optimal.x)
 			{
@@ -152,7 +152,7 @@ namespace BansheeEngine
 			area.height = (UINT32)sizeRange.optimal.y;
 		else
 		{
-			UINT32 modifiedHeight = (UINT32)std::max(0, (INT32)height - dimensions.y);
+			UINT32 modifiedHeight = (UINT32)std::max(0, (INT32)layoutArea.height - dimensions.y);
 
 			if (modifiedHeight > (UINT32)sizeRange.optimal.y)
 			{
@@ -171,10 +171,9 @@ namespace BansheeEngine
 		return area;
 	}
 
-	void GUIPanel::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I clipRect, UINT8 widgetDepth, 
-		INT16 panelDepth, UINT16 panelDepthRangeMin, UINT16 panelDepthRangeMax)
+	void GUIPanel::_updateLayoutInternal(const GUILayoutData& data)
 	{
-		INT32 newPanelDepth = panelDepth + mDepthOffset;
+		INT32 newPanelDepth = data.getPanelDepth() + mDepthOffset;
 		INT32 newPanelDepthRangeMin = newPanelDepth - mDepthRangeMin;
 		INT32 newPanelDepthRangeMax = newPanelDepth + mDepthRangeMax;
 
@@ -182,20 +181,21 @@ namespace BansheeEngine
 
 		for (auto& depth : allDepths)
 		{
-			INT32 minValue = std::max((INT32)panelDepth - (INT32)panelDepthRangeMin, (INT32)std::numeric_limits<INT16>::min());
+			INT32 minValue = std::max((INT32)data.getPanelDepth() - (INT32)data.depthRangeMin, (INT32)std::numeric_limits<INT16>::min());
 			*depth = std::max(*depth, minValue);
 
-			INT32 maxValue = std::min((INT32)panelDepth + (INT32)panelDepthRangeMax, (INT32)std::numeric_limits<INT16>::max());
+			INT32 maxValue = std::min((INT32)data.getPanelDepth() + (INT32)data.depthRangeMax, (INT32)std::numeric_limits<INT16>::max());
 			*depth = std::min(*depth, maxValue);
 		}
 
-		panelDepth = (INT16)newPanelDepth;
+		GUILayoutData childData = data;
+		childData.setPanelDepth((INT16)newPanelDepth);
 		
-		if (mDepthRangeMin != (UINT16)-1 || panelDepthRangeMin != (UINT16)-1)
-			panelDepthRangeMin = (UINT16)(newPanelDepth - newPanelDepthRangeMin);
+		if (mDepthRangeMin != (UINT16)-1 || childData.depthRangeMin != (UINT16)-1)
+			childData.depthRangeMin = (UINT16)(newPanelDepth - newPanelDepthRangeMin);
 
-		if (mDepthRangeMax != (UINT16)-1 || panelDepthRangeMax != (UINT16)-1)
-			panelDepthRangeMax = (UINT16)(newPanelDepthRangeMax - newPanelDepth);
+		if (mDepthRangeMax != (UINT16)-1 || childData.depthRangeMax != (UINT16)-1)
+			childData.depthRangeMax = (UINT16)(newPanelDepthRangeMax - newPanelDepth);
 
 		UINT32 numElements = (UINT32)mChildren.size();
 		Rect2I* elementAreas = nullptr;
@@ -203,15 +203,15 @@ namespace BansheeEngine
 		if (numElements > 0)
 			elementAreas = stackConstructN<Rect2I>(numElements);
 
-		_getElementAreas(x, y, width, height, elementAreas, numElements, mChildSizeRanges, mSizeRange);
+		_getElementAreas(data.area, elementAreas, numElements, mChildSizeRanges, mSizeRange);
 
 		UINT32 childIdx = 0;
 
 		for (auto& child : mChildren)
 		{
-			Rect2I childArea = elementAreas[childIdx];
+			childData.area = elementAreas[childIdx];
 
-			_updateChildLayout(child, childArea, clipRect, widgetDepth, panelDepth, panelDepthRangeMin, panelDepthRangeMax);
+			_updateChildLayout(child, childData);
 
 			childIdx++;
 		}
@@ -220,25 +220,20 @@ namespace BansheeEngine
 			stackDeallocLast(elementAreas);
 	}
 
-	void GUIPanel::_updateChildLayout(GUIElementBase* element, const Rect2I& area, const Rect2I& clipRect, UINT8 widgetDepth,
-		INT16 panelDepth, UINT16 panelDepthRangeMin, UINT16 panelDepthRangeMax)
+	void GUIPanel::_updateChildLayout(GUIElementBase* element, const GUILayoutData& data)
 	{
-		Vector2I offset(area.x, area.y);
-		element->_setPosition(offset);
-		element->_setWidth(area.width);
-		element->_setHeight(area.height);
-		element->_setWidgetDepth(widgetDepth);
-		element->_setAreaDepth(panelDepth);
-		element->_setPanelDepthRange(panelDepthRangeMin, panelDepthRangeMax);
+		GUILayoutData childData = data;
 
-		Rect2I elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
-		element->_setClipRect(elemClipRect);
+		childData.clipRect = data.clipRect;
+		childData.clipRect.x -= data.area.x;
+		childData.clipRect.y -= data.area.y;
 
-		Rect2I newClipRect(offset.x, offset.y, area.width, area.height);
-		newClipRect.clip(clipRect);
+		element->_setLayoutData(childData);
 
-		element->_updateLayoutInternal(offset.x, offset.y, area.width, area.height, newClipRect,
-			widgetDepth, panelDepth, panelDepthRangeMin, panelDepthRangeMax);
+		childData.clipRect = data.area;
+		childData.clipRect.clip(data.clipRect);
+
+		element->_updateLayoutInternal(childData);
 	}
 
 	Vector2I GUIPanel::_calcActualSize(INT32 x, INT32 y, Rect2I* elementAreas, UINT32 numElements) const

@@ -47,7 +47,7 @@ namespace BansheeEngine
 		if (mIsDisabled)
 			element->disableRecursively();
 
-		markContentAsDirty();
+		_markContentAsDirty();
 	}
 
 	void GUILayout::removeElementAt(UINT32 idx)
@@ -60,7 +60,7 @@ namespace BansheeEngine
 
 		child->_setParent(nullptr);
 
-		markContentAsDirty();
+		_markContentAsDirty();
 	}
 
 	const RectOffset& GUILayout::_getPadding() const

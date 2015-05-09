@@ -3,6 +3,7 @@
 #include "BsPrerequisites.h"
 #include "BsGUIMaterialInfo.h"
 #include "BsGUIDimensions.h"
+#include "BsGUILayoutData.h"
 #include "BsRect2I.h"
 #include "BsVector2I.h"
 #include "BsRectOffset.h"
@@ -82,42 +83,35 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns non-clipped bounds of the GUI element. Relative to the parent GUI panel.
 		 *
-		 * @note	This call can be potentially expensive as the bounds need to be calculated based on current GUI state.
+		 * @param	relativeTo	Parent panel of the provided element relative to which to return the
+		 *						bounds. If null the bounds relative to the first parent panel are returned.
+		 *						Behavior is undefined if provided panel is not a parent of the element.
+		 *
+		 * @note	This call can be potentially expensive if the GUI state is dirty.
 		 */
-		virtual Rect2I getBounds() const;
+		Rect2I getBounds(GUIPanel* relativeTo = nullptr);
 
 		/**
 		 * @brief	Returns non-clipped visible bounds of the GUI element (bounds exclude the margins). Relative to the parent GUI panel.
 		 *
 		 * @note	This call can be potentially expensive as the bounds need to be calculated based on current GUI state.
 		 */
-		virtual Rect2I getVisibleBounds() const;
+		virtual Rect2I getVisibleBounds();
 
 		/************************************************************************/
 		/* 							INTERNAL METHODS                      		*/
 		/************************************************************************/
 
 		/**
-		 * @brief	Updates child elements positions, sizes, clip rectanges and depths so they
+		 * @brief	Updates child elements positions, sizes, clip rectangles and depths so they
 		 *			fit into the provided bounds, while respecting their layout options. 
 		 *
-		 * @param	x					X position of the area to start laying out the elements. Relative to parent widget.
-		 * @param	y					Y position of the area to start laying out the elements. Relative to parent widget.
-		 * @param	width				Width of the area to lay out the elements, in pixels.
-		 * @param	height				Height of the area to lay out the elements, in pixels.
-		 * @param	clipRect			Rectangle to use for clipping of GUI elements. Any element outside of this rectangle will have its
-		 *								visible geometry clipped. In coordinates relative to parent widget.
-		 * @param	widgetDepth			Depth of the parent widget, will be set for all child elements.
-		 * @param	panelDepth			Depth of the parent panel, will be set for all child elements.
-		 * @param	panelDepthRangeMin  Minimum depth range that child GUI panels can have (relative to panelDepth).
-		 *								Values outside of the depth range will be clamped.
-		 * @param	panelDepthRangeMax	Maximum depth range that child GUI panels can have (relative to panelDepth).
-		 *								Values outside of the depth range will be clamped.
+		 * @param	data	Layout data containing the necessary bounds and restrictions
+		 *					to use for calculating the child element layout data.
 		 *
 		 * @note	Internal method.
 		 */
-		virtual void _updateLayout(INT32 x, INT32 y, UINT32 width, UINT32 height, 
-			Rect2I clipRect, UINT8 widgetDepth, INT16 panelDepth, UINT16 panelDepthRangeMin, UINT16 panelDepthRangeMax);
+		virtual void _updateLayout(const GUILayoutData& data);
 
 		/**
 		 * @brief	Calculates optimal sizes of all child elements, as determined by their style and layout options.
@@ -131,129 +125,35 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method.
 		 */
-		virtual void _updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-			Rect2I clipRect, UINT8 widgetDepth, INT16 panelDepth, UINT16 panelDepthRangeMin, UINT16 panelDepthRangeMax);
+		virtual void _updateLayoutInternal(const GUILayoutData& data);
 
 		/**
 		 * @brief	Calculates positions & sizes of all elements in the layout. This method expects a pre-allocated array to store the data in.
 		 *
-		 * @brief	x				Start X coordinate of the layout area. First element will be placed here. Relative to parent widget.
-		 * @brief	y				Start Y coordinate of the layout area. First element will be placed here. Relative to parent widget.
-		 * @param	width			Available width for the layout elements.
-		 * @param	height			Available height for the layout elements.
+		 * @brief	layoutArea		Parent layout area to position the child elements in.
 		 * @param	elementAreas	Array to hold output areas. Must be the same size as the number of child elements.
 		 * @param	numElements		Size of the element areas array.
 		 * @param	sizeRanges		Ranges of possible sizes used for the child elements. Array must be same size as elements array.
 		 * @param	mySizeRange		Size range of this element.
 		 */
-		virtual void _getElementAreas(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect2I* elementAreas, UINT32 numElements, 
+		virtual void _getElementAreas(const Rect2I& layoutArea, Rect2I* elementAreas, UINT32 numElements,
 			const Vector<LayoutSizeRange>& sizeRanges, const LayoutSizeRange& mySizeRange) const;
 
 		/**
-		 * @brief	Sets element position relative to widget origin. This will be the position used directly for rendering.
+		 * @brief	Updates layout data that determines GUI elements final position & depth 
+		 *			in the GUI widget.
 		 *
 		 * @note	Internal method.
 		 */
-		virtual void _setPosition(const Vector2I& offset);
+		virtual void _setLayoutData(const GUILayoutData& data) { mLayoutData = data; }
 
 		/**
-		 * @brief	Sets element width in pixels. This will be the width used directly for rendering.
+		 * @brief	Retrieves layout data that determines GUI elements final position & depth
+		 *			in the GUI widget.
 		 *
 		 * @note	Internal method.
 		 */
-		virtual void _setWidth(UINT32 width);
-
-		/**
-		 * @brief	Sets element height in pixels. This will be the height used directly for rendering.
-		 *
-		 * @note	Internal method.
-		 */
-		virtual void _setHeight(UINT32 height);
-
-		/**
-		 * @brief	Set widget part of element depth. (Most significant part)
-		 *
-		 * @note	Internal method.
-		 */
-		void _setWidgetDepth(UINT8 depth);
-
-		/**
-		 * @brief	Set area part of element depth. Less significant than widget
-		 *			depth but more than custom element depth.
-		 *
-		 * @note	Internal method.
-		 */
-		void _setAreaDepth(INT16 depth);
-
-		/**
-		 * @brief	Sets a clip rectangle that GUI element sprite will be clipped to. 
-		 *			Rectangle is in local coordinates. (Relative to element position)
-		 *
-		 * @note	Internal method.
-		 */
-		virtual void _setClipRect(const Rect2I& clipRect);
-
-		/**
-		 * @brief	Sets the panel depth range that children of this element are allowed
-		 *			to be placed in.
-		 */
-		void _setPanelDepthRange(UINT16 min, UINT16 max);
-
-		/**
-		 * @brief	Retrieves the panel depth range that children of this element are allowed
-		 *			to be placed in.
-		 */
-		void _getPanelDepthRange(UINT16& min, UINT16& max);
-
-		/**
-		 * @brief	Returns width of the element in pixels.
-		 *
-		 * @note	This value is updated during layout update which means it might be out of date
-		 *			if parent element bounds changed since.
-		 *			Internal method:
-		 */
-		UINT32 _getWidth() const { return mWidth; }
-
-		/**
-		 * @brief	Returns height of the element in pixels.
-		 *
-		 * @note	This value is updated during layout update which means it might be out of date
-		 *			if parent element bounds changed since.
-		 *			Internal method:
-		 */
-		UINT32 _getHeight() const { return mHeight; }
-
-		/**
-		 * @brief	Returns position of the element, relative to parent GUI widget origin.
-		 *
-		 * @note	This value is updated during layout update which means it might be out of date
-		 *			if parent element bounds changed since.
-		 *			Internal method:
-		 */
-		Vector2I _getOffset() const { return mOffset; }
-
-		/**
-		 * @brief	Set widget part of element depth. (Most significant part)
-		 *
-		 * @note	Internal method.
-		 */
-		UINT8 _getWidgetDepth() const;
-
-		/**
-		 * @brief	Set area part of element depth. Less significant than widget
-		 *			depth but more than custom element depth.
-		 *
-		 * @note	Internal method.
-		 */
-		INT16 _getAreaDepth() const;
-
-		/**
-		 * @brief	Returns clip rect used for clipping the GUI element and related sprites
-		 *			to a specific region. Clip rect is relative to GUI element origin.
-		 *
-		 * @note	Internal method.
-		 */
-		const Rect2I& _getClipRect() const { return mClipRect; }
+		const GUILayoutData& _getLayoutData() const { return mLayoutData; }
 
 		/**
 		 * @brief	Sets a new parent for this element.
@@ -375,7 +275,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method.
 		 */
-		void markContentAsDirty();
+		void _markContentAsDirty();
 
 		/**
 		 * @brief	Mark only the elements that operate directly on the sprite mesh without requiring the mesh
@@ -383,7 +283,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method.
 		 */
-		void markMeshAsDirty();
+		void _markMeshAsDirty();
 
 		/**
 		 * @brief	Returns true if elements contents have changed since last update.
@@ -443,12 +343,6 @@ namespace BansheeEngine
 		bool mIsDirty;
 
 		GUIDimensions mDimensions;
-
-		Vector2I mOffset;
-		UINT32 mWidth, mHeight;
-
-		Rect2I mClipRect;
-		UINT32 mPanelDepthRange;
-		UINT32 mDepth;
+		GUILayoutData mLayoutData;
 	};
 }

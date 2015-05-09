@@ -26,7 +26,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Changes the size of the space to the specified value, in pixels.
 		 */
-		void setSize(UINT32 size) { mSize = size; markContentAsDirty(); }
+		void setSize(UINT32 size) { mSize = size; _markContentAsDirty(); }
 
 		/**
 		 * @copydoc	GUIElementBase::_getType

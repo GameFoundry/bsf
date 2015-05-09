@@ -110,17 +110,21 @@ namespace BansheeEngine
 		mHitBox = GUIDropDownHitBox::create(false);
 		mHitBox->onFocusLost.connect(std::bind(&GUIDropDownBox::dropDownFocusLost, this));
 		mHitBox->setFocus(true);
-		mHitBox->_setWidgetDepth(0);
-		mHitBox->_setAreaDepth(0);
+		GUILayoutData hitboxLayoutData = mHitBox->_getLayoutData();
+		hitboxLayoutData.setWidgetDepth(0);
+		hitboxLayoutData.setPanelDepth(0);
+		mHitBox->_setLayoutData(hitboxLayoutData);
 		mHitBox->_changeParentWidget(this);
-		mHitBox->markContentAsDirty();
+		mHitBox->_markContentAsDirty();
 
 		mCaptureHitBox = GUIDropDownHitBox::create(true);
 		mCaptureHitBox->setBounds(Rect2I(0, 0, target->getWidth(), target->getHeight()));
-		mCaptureHitBox->_setWidgetDepth(0);
-		mCaptureHitBox->_setAreaDepth(200);
+		GUILayoutData captureHitboxLayoutData = mCaptureHitBox->_getLayoutData();
+		captureHitboxLayoutData.setWidgetDepth(0);
+		captureHitboxLayoutData.setPanelDepth(200);
+		mCaptureHitBox->_setLayoutData(captureHitboxLayoutData);
 		mCaptureHitBox->_changeParentWidget(this);
-		mCaptureHitBox->markContentAsDirty();
+		mCaptureHitBox->_markContentAsDirty();
 
 		Rect2I availableBounds(target->getX(), target->getY(), target->getWidth(), target->getHeight());
 		mRootMenu = bs_new<DropDownSubMenu>(this, nullptr, placement, availableBounds, dropDownData, type, 0);

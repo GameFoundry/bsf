@@ -59,7 +59,7 @@ namespace BansheeEngine
 			setTexture(SpriteTexture::create(HTexture()));
 		}
 
-		markContentAsDirty();
+		_markContentAsDirty();
 	}
 
 	void GUIRenderTexture::updateRenderElementsInternal()
@@ -69,8 +69,8 @@ namespace BansheeEngine
 			mDesc.texture = mActiveTexture.getInternalPtr();
 		}
 
-		mDesc.width = mWidth;
-		mDesc.height = mHeight;
+		mDesc.width = mLayoutData.area.width;
+		mDesc.height = mLayoutData.area.height;
 		mDesc.transparent = false;
 		mDesc.color = mColor;
 

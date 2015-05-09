@@ -198,21 +198,17 @@ namespace BansheeEngine
 		mClearButton->setTint(color);
 	}
 
-	void GUIResourceField::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-		Rect2I clipRect, UINT8 widgetDepth, INT16 panelDepth, UINT16 panelDepthRangeMin, UINT16 panelDepthRangeMax)
+	void GUIResourceField::_updateLayoutInternal(const GUILayoutData& data)
 	{
-		mLayout->_setPosition(Vector2I(x, y));
-		mLayout->_setWidth(width);
-		mLayout->_setHeight(height);
-		mLayout->_setWidgetDepth(widgetDepth);
-		mLayout->_setAreaDepth(panelDepth);
-		mLayout->_setPanelDepthRange(panelDepthRangeMin, panelDepthRangeMax);
+		GUILayoutData childData = data;
+		childData.clipRect.x -= data.area.x;
+		childData.clipRect.y -= data.area.y;
 
-		Rect2I elemClipRect(clipRect.x - x, clipRect.y - y, clipRect.width, clipRect.height);
-		mLayout->_setClipRect(elemClipRect);
+		mLayout->_setLayoutData(childData);
 
-		mLayout->_updateLayoutInternal(x, y, width, height, clipRect, widgetDepth, 
-			panelDepth, panelDepthRangeMin, panelDepthRangeMax);
+		childData.clipRect = data.clipRect;
+
+		mLayout->_updateLayoutInternal(childData);
 	}
 
 	Vector2I GUIResourceField::_getOptimalSize() const

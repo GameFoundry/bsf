@@ -33,6 +33,6 @@ namespace BansheeEngine
 		if (relativeTo != nullptr)
 			relativeToPanel = static_cast<GUIPanel*>(relativeTo->getGUIElement());
 
-		*output = GUILayoutUtility::calcBounds(guiElement->getGUIElement(), relativeToPanel);
+		*output = guiElement->getGUIElement()->getBounds(relativeToPanel);
 	}
 }
