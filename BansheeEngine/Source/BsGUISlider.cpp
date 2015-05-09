@@ -54,13 +54,8 @@ namespace BansheeEngine
 
 	void GUISlider::_updateLayoutInternal(const GUILayoutData& data)
 	{
-		GUILayoutData childData = data;
-
-		childData.clipRect = Rect2I(data.clipRect.x - data.area.x, data.clipRect.y - data.area.y, 
-			data.clipRect.width, data.clipRect.height);
-
-		mBackground->_setLayoutData(childData);
-		mSliderHandle->_setLayoutData(childData);
+		mBackground->_setLayoutData(data);
+		mSliderHandle->_setLayoutData(data);
 	}
 
 	void GUISlider::styleUpdated()

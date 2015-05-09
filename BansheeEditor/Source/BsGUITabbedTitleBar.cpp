@@ -250,8 +250,6 @@ namespace BansheeEngine
 			childData.area.y += 1;
 			childData.area.width -= 2;
 			childData.area.height = optimalSize.y;
-			childData.clipRect.x -= childData.area.x;
-			childData.clipRect.y -= childData.area.y;
 
 			mBackgroundImage->_setLayoutData(childData);
 		}
@@ -284,8 +282,6 @@ namespace BansheeEngine
 			childData.area.width = optimalSize.x;
 			childData.area.height = optimalSize.y;
 			childData.clipRect = tabClipRect;
-			childData.clipRect.x -= childData.area.x;
-			childData.clipRect.y -= childData.area.y;
 
 			btn->_setLayoutData(childData);
 
@@ -303,8 +299,6 @@ namespace BansheeEngine
 			childData.area.y = offset.y;
 			childData.area.width = minBtnOptimalSize.x;
 			childData.area.height = minBtnOptimalSize.y;
-			childData.clipRect.x -= childData.area.x;
-			childData.clipRect.y -= childData.area.y;
 
 			mMinBtn->_setLayoutData(childData);
 		}
@@ -320,8 +314,6 @@ namespace BansheeEngine
 			childData.area.y = offset.y;
 			childData.area.width = closeBtnOptimalSize.x;
 			childData.area.height = closeBtnOptimalSize.y;
-			childData.clipRect.x -= childData.area.x;
-			childData.clipRect.y -= childData.area.y;
 
 			mCloseBtn->_setLayoutData(childData);
 		}

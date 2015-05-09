@@ -165,15 +165,8 @@ namespace BansheeEngine
 
 	void GUITextField::_updateLayoutInternal(const GUILayoutData& data)
 	{
-		GUILayoutData childData = data;
-		childData.clipRect.x -= data.area.x;
-		childData.clipRect.y -= data.area.y;
-
-		mLayout->_setLayoutData(childData);
-
-		childData.clipRect = data.clipRect;
-
-		mLayout->_updateLayoutInternal(childData);
+		mLayout->_setLayoutData(data);
+		mLayout->_updateLayoutInternal(data);
 	}
 
 	Vector2I GUITextField::_getOptimalSize() const

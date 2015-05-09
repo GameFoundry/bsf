@@ -57,10 +57,8 @@ namespace BansheeEngine
 
 	void GUIViewport::updateClippedBounds()
 	{
-		Rect2I mBounds = Rect2I(0, 0, mLayoutData.area.width, mLayoutData.area.height);
-		mBounds.clip(mLayoutData.clipRect);
-		mBounds.x += mLayoutData.area.x;
-		mBounds.y += mLayoutData.area.y;
+		mClippedBounds = mLayoutData.area;
+		mClippedBounds.clip(mLayoutData.clipRect);
 	}
 
 	Vector2I GUIViewport::_getOptimalSize() const

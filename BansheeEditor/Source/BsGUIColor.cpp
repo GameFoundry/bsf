@@ -114,13 +114,10 @@ namespace BansheeEngine
 
 	void GUIColor::updateClippedBounds()
 	{
-		mClippedBounds = Rect2I(0, 0, mLayoutData.area.width, mLayoutData.area.height);
+		mClippedBounds = mLayoutData.area;
 
 		if (mLayoutData.clipRect.width > 0 && mLayoutData.clipRect.height > 0)
 			mClippedBounds.clip(mLayoutData.clipRect);
-
-		mClippedBounds.x += mLayoutData.area.x;
-		mClippedBounds.y += mLayoutData.area.y;
 	}
 
 	Vector2I GUIColor::_getOptimalSize() const

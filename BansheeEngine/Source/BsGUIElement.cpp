@@ -137,7 +137,7 @@ namespace BansheeEngine
 		// Transform into element space so we can clip it using the element clip rectangle
 		Vector2I offsetDiff = Vector2I(contentBounds.x - mLayoutData.area.x, contentBounds.y - mLayoutData.area.y);
 		Rect2I contentClipRect(offsetDiff.x, offsetDiff.y, contentBounds.width, contentBounds.height);
-		contentClipRect.clip(mLayoutData.clipRect);
+		contentClipRect.clip(mLayoutData.getLocalClipRect());
 
 		// Transform into content sprite space
 		contentClipRect.x -= offsetDiff.x;

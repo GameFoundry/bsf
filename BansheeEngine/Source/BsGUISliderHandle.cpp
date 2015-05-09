@@ -117,11 +117,7 @@ namespace BansheeEngine
 	void GUISliderHandle::updateClippedBounds()
 	{
 		mClippedBounds = mLayoutData.area;
-
-		Rect2I localClipRect = mLayoutData.clipRect;
-		localClipRect.x += mLayoutData.area.x;
-		localClipRect.y += mLayoutData.area.y;
-		mClippedBounds.clip(localClipRect);
+		mClippedBounds.clip(mLayoutData.clipRect);
 	}
 
 	Vector2I GUISliderHandle::_getOptimalSize() const

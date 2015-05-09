@@ -327,12 +327,7 @@ namespace BansheeEngine
 	void GUIDropDownContent::updateClippedBounds()
 	{
 		mClippedBounds = mLayoutData.area;
-
-		Rect2I localClipRect = mLayoutData.clipRect;
-		localClipRect.x += mLayoutData.area.x;
-		localClipRect.y += mLayoutData.area.y;
-
-		mClippedBounds.clip(localClipRect);
+		mClippedBounds.clip(mLayoutData.clipRect);
 	}
 
 	void GUIDropDownContent::_updateLayoutInternal(const GUILayoutData& data)
@@ -354,9 +349,6 @@ namespace BansheeEngine
 			childData.area.height = getElementHeight(visElem.idx);
 
 			yOffset += childData.area.height;
-
-			childData.clipRect.x = data.clipRect.x - childData.area.x;
-			childData.clipRect.y = data.clipRect.y - childData.area.y;
 
 			guiMainElement->_setLayoutData(childData);
 

@@ -821,12 +821,7 @@ namespace BansheeEngine
 	void GUITreeView::updateClippedBounds()
 	{
 		mClippedBounds = mLayoutData.area;
-
-		Rect2I localClipRect = mLayoutData.clipRect;
-		localClipRect.x += mLayoutData.area.x;
-		localClipRect.y += mLayoutData.area.y;
-
-		mClippedBounds.clip(localClipRect);
+		mClippedBounds.clip(mLayoutData.clipRect);
 	}
 
 	void GUITreeView::_updateLayoutInternal(const GUILayoutData& data)
@@ -878,8 +873,6 @@ namespace BansheeEngine
 				childData.area.y = offset.y;
 				childData.area.width = elementSize.x;
 				childData.area.height = elementSize.y;
-				childData.clipRect.x -= offset.x;
-				childData.clipRect.y -= offset.y;
 
 				current->mElement->_setLayoutData(childData);
 
@@ -907,8 +900,6 @@ namespace BansheeEngine
 				childData.area.y = myOffset.y;
 				childData.area.width = elementSize.x;
 				childData.area.height = elementSize.y;
-				childData.clipRect.x -= myOffset.x;
-				childData.clipRect.y -= myOffset.y;
 
 				current->mFoldoutBtn->_setLayoutData(childData);
 			}
@@ -944,8 +935,6 @@ namespace BansheeEngine
 			GUILayoutData childData = data;
 			childData.area.y = targetElement->_getLayoutData().area.y;
 			childData.area.height = targetElement->_getLayoutData().area.height;
-			childData.clipRect.x -= childData.area.x;
-			childData.clipRect.y -= childData.area.y;
 
 			selectedElem.background->_setLayoutData(childData);
 		}
@@ -959,8 +948,6 @@ namespace BansheeEngine
 			GUILayoutData childData = data;
 			childData.area = targetElement->_getLayoutData().area;
 			childData.area.width = remainingWidth;
-			childData.clipRect.x -= childData.area.x;
-			childData.clipRect.y -= childData.area.y;
 
 			mNameEditBox->_setLayoutData(childData);
 		}
@@ -989,8 +976,6 @@ namespace BansheeEngine
 
 					GUILayoutData childData = data;
 					childData.area = interactableElement->bounds;
-					childData.clipRect.x -= childData.area.x;
-					childData.clipRect.y -= childData.area.y;
 
 					mDragHighlight->_setLayoutData(childData);
 				}
@@ -1004,8 +989,6 @@ namespace BansheeEngine
 
 					GUILayoutData childData = data;
 					childData.area = interactableElement->bounds;
-					childData.clipRect.x -= childData.area.x;
-					childData.clipRect.y -= childData.area.y;
 
 					mDragSepHighlight->_setLayoutData(childData);
 				}

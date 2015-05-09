@@ -381,9 +381,6 @@ namespace BansheeEngine
 		for(auto& child : mChildren)
 		{
 			childData.area = elementAreas[childIdx];
-			childData.clipRect.x -= childData.area.x;
-			childData.clipRect.y -= childData.area.y;
-
 			child->_setLayoutData(childData);
 
 			childData.clipRect = childData.area;

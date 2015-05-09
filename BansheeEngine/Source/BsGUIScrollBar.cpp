@@ -125,7 +125,7 @@ namespace BansheeEngine
 	{
 		Vector2I offset(mLayoutData.area.x, mLayoutData.area.y);
 		mImageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, 
-			vertexStride, indexStride, renderElementIdx, offset, mLayoutData.clipRect);
+			vertexStride, indexStride, renderElementIdx, offset, mLayoutData.getLocalClipRect());
 	}
 
 	void GUIScrollBar::handleMoved(float handlePct)

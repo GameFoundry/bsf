@@ -111,10 +111,7 @@ namespace BansheeEngine
 				layoutData.area = mArea;
 				layoutData.area.y += sizeTop;
 				layoutData.area.height = SLIDER_SIZE;
-
 				layoutData.clipRect = clipRect;
-				layoutData.clipRect.x -= mArea.x;
-				layoutData.clipRect.y -= mArea.y;
 
 				mSlider->_setLayoutData(layoutData);
 				mSlider->_markContentAsDirty();
@@ -132,10 +129,7 @@ namespace BansheeEngine
 				layoutData.area = mArea;
 				layoutData.area.x += sizeLeft;
 				layoutData.area.width = SLIDER_SIZE;
-
 				layoutData.clipRect = clipRect;
-				layoutData.clipRect.x -= mArea.x;
-				layoutData.clipRect.y -= mArea.y;
 
 				mSlider->_setLayoutData(layoutData);
 				mSlider->_markContentAsDirty();

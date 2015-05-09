@@ -46,11 +46,7 @@ namespace BansheeEngine
 
 	void GUIProgressBar::_updateLayoutInternal(const GUILayoutData& data)
 	{
-		GUILayoutData bgLayoutData = data;
-		bgLayoutData.clipRect.x -= data.area.x;
-		bgLayoutData.clipRect.y -= data.area.y;
-
-		mBackground->_setLayoutData(bgLayoutData);
+		mBackground->_setLayoutData(data);
 
 		const GUIElementStyle* style = _getStyle();
 		
@@ -58,8 +54,6 @@ namespace BansheeEngine
 
 		barLayoutData.area.x += style->margins.left;
 		barLayoutData.area.y += style->margins.top;
-		barLayoutData.clipRect.x -= barLayoutData.area.x;
-		barLayoutData.clipRect.y -= barLayoutData.area.y;
 
 		UINT32 maxProgressBarWidth = std::max((UINT32)0, (UINT32)(data.area.width - style->margins.left - style->margins.right));
 		UINT32 progressBarHeight = std::max((UINT32)0, (UINT32)(data.area.height - style->margins.top - style->margins.bottom));

@@ -95,9 +95,6 @@ namespace BansheeEngine
 			childData.area.y += yOffset;
 			childData.area.height = optimalSize.y;
 
-			childData.clipRect.x -= childData.area.x;
-			childData.clipRect.y -= childData.area.y;
-
 			mToggle->_setLayoutData(childData);
 
 			toggleOffset = optimalSize.x;

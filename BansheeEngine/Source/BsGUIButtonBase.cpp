@@ -143,11 +143,7 @@ namespace BansheeEngine
 	void GUIButtonBase::updateClippedBounds()
 	{
 		mClippedBounds = mLayoutData.area;
-
-		Rect2I localClipRect = mLayoutData.clipRect;
-		localClipRect.x += mLayoutData.area.x;
-		localClipRect.y += mLayoutData.area.y;
-		mClippedBounds.clip(localClipRect);
+		mClippedBounds.clip(mLayoutData.clipRect);
 	}
 
 	Vector2I GUIButtonBase::_getOptimalSize() const
@@ -198,7 +194,7 @@ namespace BansheeEngine
 			Vector2I offset(mLayoutData.area.x, mLayoutData.area.y);
 
 			mImageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, 
-				vertexStride, indexStride, renderElementIdx, offset, mLayoutData.clipRect);
+				vertexStride, indexStride, renderElementIdx, offset, mLayoutData.getLocalClipRect());
 
 			return;
 		}

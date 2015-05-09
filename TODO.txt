@@ -40,10 +40,6 @@ Positions in color picker are screwed up
 Depth in COlorPicker is fucked up
 Test dock manager and sliders (right now it doesn't seem to work at all)
 
-Later:
- - Unify position, width, height, depth, depthMin, depthMax, layoutClipRect, elementClipRect into a single structure
-   - So I don't need to call 6 different _set methods in _updateLayoutInternal, and so that _updateLayoutInternal doesn't have as many parameters
-
 Simple tasks:
  - Add C# Renderable interface
  - Add C# context menu support for GUI elements

@@ -179,7 +179,7 @@ namespace BansheeEngine
 	void GUIInputBox::updateClippedBounds()
 	{
 		Vector2I offset(mLayoutData.area.x, mLayoutData.area.y);
-		mClippedBounds = mImageSprite->getBounds(offset, mLayoutData.clipRect);
+		mClippedBounds = mImageSprite->getBounds(offset, mLayoutData.getLocalClipRect());
 	}
 
 	Sprite* GUIInputBox::renderElemToSprite(UINT32 renderElemIdx, UINT32& localRenderElemIdx) const
@@ -285,7 +285,7 @@ namespace BansheeEngine
 		newNumElements += mImageSprite->getNumRenderElements();
 
 		if(renderElemIdx < newNumElements)
-			return mLayoutData.clipRect;
+			return mLayoutData.getLocalClipRect();
 
 		if(mCaretShown && gGUIManager().getCaretBlinkState())
 		{

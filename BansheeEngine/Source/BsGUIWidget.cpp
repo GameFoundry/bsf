@@ -199,10 +199,6 @@ namespace BansheeEngine
 			Rect2I elementArea = panel->_getElementArea(panel->_getLayoutData().area, dirtyElement, elementSizeRange);
 
 			GUILayoutData childLayoutData = panel->_getLayoutData();
-
-			childLayoutData.clipRect.x += childLayoutData.area.x;
-			childLayoutData.clipRect.y += childLayoutData.area.y;
-
 			childLayoutData.area = elementArea;
 
 			panel->_updateChildLayout(dirtyElement, childLayoutData);
@@ -210,9 +206,6 @@ namespace BansheeEngine
 		else
 		{
 			GUILayoutData childLayoutData = updateParent->_getLayoutData();
-
-			childLayoutData.clipRect.x += childLayoutData.area.x;
-			childLayoutData.clipRect.y += childLayoutData.area.y;
 
 			updateParent->_updateLayout(childLayoutData);
 		}
