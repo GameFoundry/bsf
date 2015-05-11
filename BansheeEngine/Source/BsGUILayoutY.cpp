@@ -381,11 +381,10 @@ namespace BansheeEngine
 		for(auto& child : mChildren)
 		{
 			childData.area = elementAreas[childIdx];
-			child->_setLayoutData(childData);
-
 			childData.clipRect = childData.area;
 			childData.clipRect.clip(data.clipRect);
 
+			child->_setLayoutData(childData);
 			child->_updateLayoutInternal(childData);
 
 			childIdx++;

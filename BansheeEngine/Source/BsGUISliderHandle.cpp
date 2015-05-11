@@ -139,7 +139,7 @@ namespace BansheeEngine
 		else
 			offset.y += getHandlePosPx();
 
-		Rect2I clipRect = mLayoutData.clipRect;
+		Rect2I clipRect = mLayoutData.getLocalClipRect();
 		if(mHorizontal)
 			clipRect.x -= getHandlePosPx();
 		else

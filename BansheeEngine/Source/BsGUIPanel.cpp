@@ -223,11 +223,11 @@ namespace BansheeEngine
 	void GUIPanel::_updateChildLayout(GUIElementBase* element, const GUILayoutData& data)
 	{
 		GUILayoutData childData = data;
-		element->_setLayoutData(childData);
 
 		childData.clipRect = data.area;
 		childData.clipRect.clip(data.clipRect);
 
+		element->_setLayoutData(childData);
 		element->_updateLayoutInternal(childData);
 	}
 

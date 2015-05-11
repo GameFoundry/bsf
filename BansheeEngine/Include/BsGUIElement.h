@@ -187,6 +187,14 @@ namespace BansheeEngine
 		void _setElementDepth(UINT8 depth);
 
 		/**
+		 * @brief	Retrieve element part of element depth. Less significant than both
+		 *			widget and area depth.
+		 *
+		 * @note	Internal method.
+		 */
+		UINT8 _getElementDepth() const;
+
+		/**
 		 * @copydoc	GUIElementBase::_setLayoutData
 		 */
 		virtual void _setLayoutData(const GUILayoutData& data) override;

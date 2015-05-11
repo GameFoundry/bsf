@@ -102,8 +102,6 @@ namespace BansheeEngine
 
 	void GUIWidget::_updateLayout()
 	{
-		UnorderedMap<GUIElementBase*, bool> elementsToUpdate;
-
 		// Determine dirty contents and layouts
 		Stack<GUIElementBase*> todo;
 		todo.push(mPanel);
@@ -119,58 +117,16 @@ namespace BansheeEngine
 				assert(updateParent != nullptr || currentElem == mPanel);
 
 				if (updateParent != nullptr)
-				{
-					if (updateParent->_getType() == GUIElementBase::Type::Panel)
-					{
-						GUIElementBase* optimizedUpdateParent = currentElem;
-						while (optimizedUpdateParent->_getParent() != updateParent)
-							optimizedUpdateParent = optimizedUpdateParent->_getParent();
-
-						elementsToUpdate.insert(std::make_pair(optimizedUpdateParent, true));
-					}
-					else
-						elementsToUpdate.insert(std::make_pair(updateParent, false));
-				}
+					_updateLayout(updateParent);
 				else // Must be root panel
-				{
-					elementsToUpdate.insert(std::make_pair(mPanel, false));
-				}
+					_updateLayout(mPanel);
 			}
-
-			UINT32 numChildren = currentElem->_getNumChildren();
-			for (UINT32 i = 0; i < numChildren; i++)
-				todo.push(currentElem->_getChild(i));
-		}
-
-		// Determine top-level layouts and update them
-		for (auto& elemData : elementsToUpdate)
-		{
-			GUIElementBase* updateParent = nullptr;
-
-			bool isPanelOptimized = elemData.second;
-			if (isPanelOptimized)
-				updateParent = elemData.first->_getParent();
 			else
-				updateParent = elemData.first;
-
-			// Skip update if a parent element is also queued for update
-			bool isTopLevel = true;
-			GUIElementBase* curUpdateParent = elemData.first->_getParent();
-			while (curUpdateParent != nullptr)
 			{
-				if (elementsToUpdate.find(curUpdateParent) != elementsToUpdate.end())
-				{
-					isTopLevel = false;
-					break;
-				}
-
-				curUpdateParent = curUpdateParent->_getParent();
+				UINT32 numChildren = currentElem->_getNumChildren();
+				for (UINT32 i = 0; i < numChildren; i++)
+					todo.push(currentElem->_getChild(i));
 			}
-
-			if (!isTopLevel)
-				continue;
-
-			_updateLayout(elemData.first);
 		}
 	}
 
@@ -212,7 +168,7 @@ namespace BansheeEngine
 
 		// Mark dirty contents
 		Stack<GUIElementBase*> todo;
-		todo.push(updateParent);
+		todo.push(elem);
 
 		while (!todo.empty())
 		{
@@ -357,6 +313,7 @@ namespace BansheeEngine
 		layoutData.area.width = width;
 		layoutData.area.height = height;
 		layoutData.clipRect = Rect2I(0, 0, width, height);
+		layoutData.setWidgetDepth(mDepth);
 
 		mPanel->setWidth(width);
 		mPanel->setHeight(height);

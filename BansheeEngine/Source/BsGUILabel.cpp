@@ -72,7 +72,7 @@ namespace BansheeEngine
 		Vector2I offset(mLayoutData.area.x, mLayoutData.area.y);
 
 		mTextSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, 
-			indexStride, renderElementIdx, offset, mLayoutData.clipRect);
+			indexStride, renderElementIdx, offset, mLayoutData.getLocalClipRect());
 	}
 
 	void GUILabel::setContent(const GUIContent& content)

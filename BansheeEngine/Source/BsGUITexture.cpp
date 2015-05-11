@@ -206,8 +206,8 @@ namespace BansheeEngine
 
 	void GUITexture::updateClippedBounds()
 	{
-		Vector2I offset(mLayoutData.area.x, mLayoutData.area.y);
-		mClippedBounds = mImageSprite->getBounds(offset, mLayoutData.getLocalClipRect());
+		mClippedBounds = mLayoutData.area;
+		mClippedBounds.clip(mLayoutData.clipRect);
 	}
 
 	void GUITexture::styleUpdated()

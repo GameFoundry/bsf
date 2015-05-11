@@ -61,9 +61,19 @@ namespace BansheeEngine
 		_markMeshAsDirty();
 	}
 
+	UINT8 GUIElement::_getElementDepth() const
+	{
+		return mLayoutData.depth & 0xFF;
+	}
+
 	void GUIElement::_setLayoutData(const GUILayoutData& data)
 	{
+		// Preserve element depth as that is not controlled by layout but is stored
+		// there only for convenience
+		UINT8 elemDepth = _getElementDepth();
 		GUIElementBase::_setLayoutData(data);
+		_setElementDepth(elemDepth);
+
 		updateClippedBounds();
 	}
 

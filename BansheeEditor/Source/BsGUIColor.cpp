@@ -134,7 +134,7 @@ namespace BansheeEngine
 		if(renderElementIdx < alphaSpriteIdx)
 		{
 			mColorSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, 
-				vertexStride, indexStride, renderElementIdx, offset, mLayoutData.clipRect);
+				vertexStride, indexStride, renderElementIdx, offset, mLayoutData.getLocalClipRect());
 
 			return;
 		}
@@ -144,7 +144,7 @@ namespace BansheeEngine
 			UINT32 xOffset = (UINT32)(mLayoutData.area.width * ALPHA_SPLIT_POSITION);
 			alphaOffset.x += xOffset;
 
-			Rect2I alphaClipRect = mLayoutData.clipRect;
+			Rect2I alphaClipRect = mLayoutData.getLocalClipRect();
 			alphaClipRect.x -= xOffset;
 
 			mAlphaSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, 

@@ -1,0 +1,27 @@
+-------------------------
+FBX
+ - Unity stores mesh attributes per-index and then performs splitting as needed. See code in ImportMeshUtility
+  - This means I probably want to delay creating MeshData - which is also okay since I determine bone weights at a later stage anyway
+ - Transform tangent/bitangent and encode them into a 4-vector value
+ - Transform between FBX trans/rot/scale and engine trans/rot/scale
+ - Neater mesh parsing
+ - Calculate normals from smoothing groups
+  - Control this via an import option? Since in same cases normals are provided.
+ - Import skeleton
+  - Unity just maps nodes referenced by FbxSkin clusters to bones, it do no separate parsing
+ - Import keyframes
+  - ?? TODO
+ - Import blend weights
+  - FbxSkin
+    -> FbxCluster - One cluster per bone, contains weights for each influenced control point in destination geometry
+	  - Its transform is also the bind pose transfrom for the bone
+ - Import blend shapes
+  - FbxBlendShape
+    -> FbxBlendShapeChannel - One channel per blend "animation". One animation can have multiple 
+	   target shapes. e.g. shape 0 is used for 0-40% of the animation, and shape 1 for 40-100%.
+      -> FbxShape -> Contains a set of geometry used for the shape. This should be a set of vertices, 
+	     but I need normals/tangents too. Not sure if FBX stores those as Unity seems to assume it doesn't and calculates them manually.
+
+Create a set of output data that is retrieved from the FBX. Then convert that data to Banshee mesh/animation/etc.
+For now I would only use the mesh part but later I can just take the rest of the data as needed without messing with the
+FBX importer.

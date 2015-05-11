@@ -81,7 +81,7 @@ namespace BansheeEngine
 		void disableRecursively();
 
 		/**
-		 * @brief	Returns non-clipped bounds of the GUI element. Relative to the parent GUI panel.
+		 * @brief	Returns non-clipped bounds of the GUI element. Relative to a parent GUI panel.
 		 *
 		 * @param	relativeTo	Parent panel of the provided element relative to which to return the
 		 *						bounds. If null the bounds relative to the first parent panel are returned.
@@ -90,6 +90,13 @@ namespace BansheeEngine
 		 * @note	This call can be potentially expensive if the GUI state is dirty.
 		 */
 		Rect2I getBounds(GUIPanel* relativeTo = nullptr);
+
+		/**
+		 * @brief	Returns non-clipped bounds of the GUI element. Relative to a parent GUI widget.
+		 *
+		 * @note	This call can be potentially expensive if the GUI state is dirty.
+		 */
+		Rect2I getGlobalBounds();
 
 		/**
 		 * @brief	Returns non-clipped visible bounds of the GUI element (bounds exclude the margins). Relative to the parent GUI panel.
@@ -336,8 +343,8 @@ namespace BansheeEngine
 		GUIWidget* mParentWidget;
 		GUIPanel* mAnchorParent;
 		GUIElementBase* mUpdateParent;
-
 		GUIElementBase* mParentElement;
+
 		Vector<GUIElementBase*> mChildren;	
 		bool mIsDisabled;
 		bool mIsDirty;

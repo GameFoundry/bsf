@@ -21,9 +21,9 @@ namespace BansheeEngine
 		/**
 		 * @brief	Set widget part of element depth. (Most significant part)
 		 */
-		void setWidgetDepth(UINT8 depth)
+		void setWidgetDepth(UINT8 widgetDepth)
 		{
-			UINT32 shiftedDepth = depth << 24;
+			UINT32 shiftedDepth = widgetDepth << 24;
 
 			depth = shiftedDepth | (depth & 0x00FFFFFF);
 		}
@@ -32,13 +32,12 @@ namespace BansheeEngine
 		 * @brief	Set panel part of element depth. Less significant than widget
 		 *			depth but more than custom element depth.
 		 */
-		void setPanelDepth(INT16 depth)
+		void setPanelDepth(INT16 panelDepth)
 		{
-			UINT32 signedDepth = ((INT32)depth + 32768) << 8;
+			UINT32 signedDepth = ((INT32)panelDepth + 32768) << 8;
 
 			depth = signedDepth | (depth & 0xFF0000FF);;
 		}
-
 
 		/**
 		 * @brief	Retrieve widget part of element depth. (Most significant part)

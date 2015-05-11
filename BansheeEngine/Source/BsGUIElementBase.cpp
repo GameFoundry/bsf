@@ -153,31 +153,24 @@ namespace BansheeEngine
 
 		Rect2I anchorBounds;
 		if (relativeTo != nullptr)
-			anchorBounds = relativeTo->getBounds();
+			anchorBounds = relativeTo->getGlobalBounds();
 
-		if (mUpdateParent != nullptr)
-		{
-			if (mUpdateParent->_isDirty() && mParentWidget != nullptr)
-			{
-				GUIElementBase* updateParent = mUpdateParent;
-				if (updateParent->_getType() == GUIElementBase::Type::Panel)
-				{
-					GUIElementBase* optimizedUpdateParent = this;
-					while (optimizedUpdateParent->_getParent() != updateParent)
-						optimizedUpdateParent = optimizedUpdateParent->_getParent();
-
-					updateParent = optimizedUpdateParent;
-				}
-
-				mParentWidget->_updateLayout(updateParent);
-			}
-		}
+		if (mUpdateParent != nullptr && mUpdateParent->_isDirty() && mParentWidget != nullptr)
+			mParentWidget->_updateLayout(mUpdateParent);
 
 		Rect2I bounds = mLayoutData.area;
 		bounds.x -= anchorBounds.x;
 		bounds.y -= anchorBounds.y;
 		
 		return bounds;
+	}
+
+	Rect2I GUIElementBase::getGlobalBounds()
+	{
+		if (mUpdateParent != nullptr && mUpdateParent->_isDirty() && mParentWidget != nullptr)
+			mParentWidget->_updateLayout(mUpdateParent);
+
+		return mLayoutData.area;
 	}
 
 	Rect2I GUIElementBase::getVisibleBounds()
@@ -382,7 +375,20 @@ namespace BansheeEngine
 			bool boundsDependOnChildren = !parentDimensions.fixedHeight() || !parentDimensions.fixedWidth();
 
 			if (!boundsDependOnChildren)
+			{
+				// If parent is a panel then we can do an optimization and only update
+				// one child instead of all of them, so change parent to that child.
+				if (currentElement->_getType() == GUIElementBase::Type::Panel)
+				{
+					GUIElementBase* optimizedUpdateParent = this;
+					while (optimizedUpdateParent != currentElement)
+						optimizedUpdateParent = optimizedUpdateParent->_getParent();
+
+					currentElement = optimizedUpdateParent;
+				}
+
 				return currentElement;
+			}
 
 			currentElement = currentElement->mParentElement;
 		}

@@ -32,10 +32,6 @@ Add C# Renderable
 ----------------------------------------------------------------------
 Project window
 
-Potential issue: isPanelOptimize is now determined on the fly in _updateLayout but it can trigger
- on elements that were originally imaged to be panel optimized (but the end result /should/ be the same)
-
-Root panel isn't being updated properly
 Positions in color picker are screwed up
 Depth in COlorPicker is fucked up
 Test dock manager and sliders (right now it doesn't seem to work at all)
@@ -134,6 +130,10 @@ Need a way to drag and drop items from Scene tree view to Scene view
 
 ----------------------------------------------------------------------
 Other
+
+There is a memory corruption happening. Haven't determined where exactly but it's possible it has something
+to do with the opening of ColorPicker window. One time I got a heap read after delete error caused by GUIManager
+attempting to allocate a new transient mesh, and another time I got a hang when inserting a script object into a std::set.
 
 Got a crash on shutdown that was caused by locking a mutex in an Event destructor. Event was Platform::onMouseCaptureChanged. 
 Issue happened when I closed the app via the X button (if that's relevant). It doesn't seem to happen always.
