@@ -17,8 +17,8 @@ namespace BansheeEngine
 		IndexType& getIndexType(Mesh* obj) { return obj->mIndexType; }
 		void setIndexType(Mesh* obj, IndexType& value) { obj->mIndexType = value; }
 
-		UINT32& getBufferType(Mesh* obj) { return (UINT32&)obj->mBufferType; }
-		void setBufferType(Mesh* obj, UINT32& value) { obj->mBufferType = (MeshBufferType)value; }
+		int& getBufferType(Mesh* obj) { return (int&)obj->mUsage; }
+		void setBufferType(Mesh* obj, int& value) { obj->mUsage = value; }
 
 		MeshDataPtr getMeshData(Mesh* obj) 
 		{ 
@@ -32,7 +32,7 @@ namespace BansheeEngine
 
 		void setMeshData(Mesh* obj, MeshDataPtr meshData) 
 		{ 
-			obj->mTempInitialMeshData = meshData;
+			obj->mCPUData = meshData;
 		}
 
 	public:
@@ -41,7 +41,7 @@ namespace BansheeEngine
 			addReflectablePtrField("mVertexDesc", 0, &MeshRTTI::getVertexDesc, &MeshRTTI::setVertexDesc);
 
 			addPlainField("mIndexType", 1, &MeshRTTI::getIndexType, &MeshRTTI::setIndexType);
-			addPlainField("mBufferType", 2, &MeshRTTI::getBufferType, &MeshRTTI::setBufferType);
+			addPlainField("mUsage", 2, &MeshRTTI::getBufferType, &MeshRTTI::setBufferType);
 
 			addReflectablePtrField("mMeshData", 3, &MeshRTTI::getMeshData, &MeshRTTI::setMeshData);
 		}

@@ -328,6 +328,7 @@ namespace BansheeEngine
 		TID_Viewport = 1073,
 		TID_ResourceDependencies = 1074,
 		TID_ShaderMetaData = 1075,
+		TID_MeshImportOptions = 1076
 	};
 }
 

@@ -18,10 +18,10 @@ namespace BansheeEngine
 	}
 
 	MeshPtr MeshManager::create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
-		MeshBufferType bufferType, DrawOperationType drawOp, IndexType indexType)
+		int usage, DrawOperationType drawOp, IndexType indexType)
 	{
 		MeshPtr mesh = bs_core_ptr<Mesh, PoolAlloc>(new (bs_alloc<Mesh, PoolAlloc>()) 
-			Mesh(numVertices, numIndices, vertexDesc, bufferType, drawOp, indexType));
+			Mesh(numVertices, numIndices, vertexDesc, usage, drawOp, indexType));
 		mesh->_setThisPtr(mesh);
 		mesh->initialize();
 
@@ -29,28 +29,28 @@ namespace BansheeEngine
 	}
 
 	MeshPtr MeshManager::create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
-		const Vector<SubMesh>& subMeshes, MeshBufferType bufferType, IndexType indexType)
+		const Vector<SubMesh>& subMeshes, int usage, IndexType indexType)
 	{
 		MeshPtr mesh = bs_core_ptr<Mesh, PoolAlloc>(new (bs_alloc<Mesh, PoolAlloc>())
-			Mesh(numVertices, numIndices, vertexDesc, subMeshes, bufferType, indexType));
+			Mesh(numVertices, numIndices, vertexDesc, subMeshes, usage, indexType));
 		mesh->_setThisPtr(mesh);
 		mesh->initialize();
 
 		return mesh;
 	}
 
-	MeshPtr MeshManager::create(const MeshDataPtr& initialData, MeshBufferType bufferType, DrawOperationType drawOp)
+	MeshPtr MeshManager::create(const MeshDataPtr& initialData, int usage, DrawOperationType drawOp)
 	{
-		MeshPtr mesh = bs_core_ptr<Mesh, PoolAlloc>(new (bs_alloc<Mesh, PoolAlloc>()) Mesh(initialData, bufferType, drawOp));
+		MeshPtr mesh = bs_core_ptr<Mesh, PoolAlloc>(new (bs_alloc<Mesh, PoolAlloc>()) Mesh(initialData, usage, drawOp));
 		mesh->_setThisPtr(mesh);
 		mesh->initialize();
 
 		return mesh;
 	}
 
-	MeshPtr MeshManager::create(const MeshDataPtr& initialData, const Vector<SubMesh>& subMeshes, MeshBufferType bufferType)
+	MeshPtr MeshManager::create(const MeshDataPtr& initialData, const Vector<SubMesh>& subMeshes, int usage)
 	{
-		MeshPtr mesh = bs_core_ptr<Mesh, PoolAlloc>(new (bs_alloc<Mesh, PoolAlloc>()) Mesh(initialData, subMeshes, bufferType));
+		MeshPtr mesh = bs_core_ptr<Mesh, PoolAlloc>(new (bs_alloc<Mesh, PoolAlloc>()) Mesh(initialData, subMeshes, usage));
 		mesh->_setThisPtr(mesh);
 		mesh->initialize();
 

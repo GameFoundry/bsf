@@ -9,24 +9,15 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Type of mesh dirty flags
-	 */
-	enum class MeshDirtyFlag
-	{
-		Mesh = 0x01, /**< Internal mesh data is dirty. */
-		Proxy = 0x02 /**< Active proxy needs to be updated. */
-	};
-
-
-	/**
-	 * @brief	Type of buffers used by a mesh. These options usually affect performance and 
+	 * @brief	Planned usage for the mesh. These options usually affect performance and 
 	 *			you should specify static if you don't plan on modifying the mesh often,
 	 *			otherwise specify dynamic.
 	 */
-	enum class MeshBufferType
+	enum MeshUsage
 	{
-		Static,
-		Dynamic
+		MU_STATIC, /**< A mesh that is not often updated from the CPU. */
+		MU_DYNAMIC, /**< A mesh that is often updated from the CPU. */
+		MU_CPUCACHED = 0x1000 /**< All mesh data will also be cached in CPU memory. */
 	};
 
 	/**

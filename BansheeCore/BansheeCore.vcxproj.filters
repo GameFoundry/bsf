@@ -524,6 +524,12 @@
     <ClInclude Include="Include\BsShaderManager.h">
       <Filter>Header Files\Material</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsMeshImportOptions.h">
+      <Filter>Header Files\Importer</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsMeshImportOptionsRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsCoreApplication.cpp">
@@ -828,6 +834,9 @@
     </ClCompile>
     <ClCompile Include="Source\BsShaderManager.cpp">
       <Filter>Source Files\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsMeshImportOptions.cpp">
+      <Filter>Source Files\Importer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

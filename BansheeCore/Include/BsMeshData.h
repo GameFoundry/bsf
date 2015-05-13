@@ -88,6 +88,23 @@ namespace BansheeEngine
 	};
 
 	/**
+	 * @brief	Contains per-vertex bone weights and indexes used 
+	 *			for skinning, for up to four bones.
+	 */
+	struct BoneWeight
+	{
+		int index0;
+		int index1;
+		int index2;
+		int index3;
+
+		float weight0;
+		float weight1;
+		float weight2;
+		float weight3;
+	};
+
+	/**
 	 * @brief	Used for initializing, updating and reading mesh data from Meshes.
 	 */
 	class BS_CORE_EXPORT MeshData : public GpuResourceData
@@ -110,6 +127,17 @@ namespace BansheeEngine
 		 * @param	streamIdx   	(optional) Zero-based index of the stream. Each stream will internally be represented as a single vertex buffer.
 		 */
 		void setVertexData(VertexElementSemantic semantic, UINT8* data, UINT32 size, UINT32 semanticIdx = 0, UINT32 streamIdx = 0);
+
+		/**
+		 * @brief	Copies data from the internal buffer to the pre-allocated buffer for the specified semantic.
+		 *
+		 * @param	semantic   		Semantic that allows the engine to connect the data to a shader input slot.
+		 * @param	data			Buffer that will receive vertex data, of at least "size" bytes.
+		 * @param	size			The size of the data. Must be the size of the vertex element type * number of vertices.
+		 * @param	semanticIdx 	(optional) If there are multiple semantics with the same name, use different index to differentiate between them.
+		 * @param	streamIdx   	(optional) Zero-based index of the stream. Each stream will internally be represented as a single vertex buffer.
+		 */
+		void getVertexData(VertexElementSemantic semantic, UINT8* data, UINT32 size, UINT32 semanticIdx = 0, UINT32 streamIdx = 0);
 
 		/**
 		 * @brief	Returns an iterator you can use for easily retrieving or setting Vector2 vertex elements. This is the preferred
@@ -202,6 +230,11 @@ namespace BansheeEngine
 		const VertexDataDescPtr& getVertexDesc() const { return mVertexData; }
 
 		/**
+		 * @brief	Return the size (in bytes) of the entire buffer.
+		 */
+		UINT32 getSize() const { return getInternalBufferSize(); }
+
+		/**
 		 * @brief	Calculates the bounds of all vertices stored in the internal buffer.
 		 */
 		Bounds calculateBounds() const;
@@ -225,7 +258,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns the size of the internal buffer in bytes.
 		 */
-		UINT32 getInternalBufferSize();
+		UINT32 getInternalBufferSize() const;
 
 	private:
 		/**

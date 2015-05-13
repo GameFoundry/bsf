@@ -27,6 +27,22 @@ namespace BansheeEngine
 		}
 
 		template<class T>
+		T* getRawPtr(UINT32 offset = 0)
+		{
+#if BS_DEBUG_MODE
+			int nativeSize = sizeof(T);
+
+			::MonoClass* arrayClass = mono_object_get_class((MonoObject*)(mInternal));
+			::MonoClass* elementClass = mono_class_get_element_class(arrayClass);
+
+			int monoSize = mono_class_array_element_size(elementClass);
+			assert(nativeSize == monoSize);
+#endif
+
+			return (T*)mono_array_addr(mInternal, T, offset);
+		}
+
+		template<class T>
 		static ScriptArray create(UINT32 size)
 		{
 			return ScriptArray(*T::getMetaData()->scriptClass, size);

@@ -174,7 +174,7 @@ namespace BansheeEngine
 		setColorsInternal(colors, numElements);
 	}
 
-	UINT32 PixelData::getInternalBufferSize()
+	UINT32 PixelData::getInternalBufferSize() const
 	{
 		return getSize();
 	}

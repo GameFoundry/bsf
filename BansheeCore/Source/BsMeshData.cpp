@@ -8,6 +8,7 @@
 #include "BsVertexDeclaration.h"
 #include "BsVertexDataDesc.h"
 #include "BsException.h"
+#include "BsDebug.h"
 
 namespace BansheeEngine
 {
@@ -49,7 +50,7 @@ namespace BansheeEngine
 		return (UINT32*)(getData() + indexBufferOffset);
 	}
 
-	UINT32 MeshData::getInternalBufferSize()
+	UINT32 MeshData::getInternalBufferSize() const
 	{
 		return getIndexBufferSize() + getStreamSize();
 	}
@@ -186,8 +187,9 @@ namespace BansheeEngine
 
 		if(!mVertexData->hasElement(semantic, semanticIdx, streamIdx))
 		{
-			BS_EXCEPT(InvalidParametersException, "MeshData doesn't contain an element of specified type: Semantic: " + toString(semantic) + ", Semantic index: "
+			LOGWRN("MeshData doesn't contain an element of specified type: Semantic: " + toString(semantic) + ", Semantic index: "
 				+ toString(semanticIdx) + ", Stream index: " + toString(streamIdx));
+			return;
 		}
 
 		UINT32 elementSize = mVertexData->getElementSize(semantic, semanticIdx, streamIdx);
@@ -206,6 +208,40 @@ namespace BansheeEngine
 		UINT8* dst = getData() + indexBufferOffset + elementOffset;
 		UINT8* src = data;
 		for(UINT32 i = 0; i < mNumVertices; i++)
+		{
+			memcpy(dst, src, elementSize);
+			dst += vertexStride;
+			src += elementSize;
+		}
+	}
+
+	void MeshData::getVertexData(VertexElementSemantic semantic, UINT8* data, UINT32 size, UINT32 semanticIdx, UINT32 streamIdx)
+	{
+		assert(data != nullptr);
+
+		if (!mVertexData->hasElement(semantic, semanticIdx, streamIdx))
+		{
+			LOGWRN("MeshData doesn't contain an element of specified type: Semantic: " + toString(semantic) + ", Semantic index: "
+				+ toString(semanticIdx) + ", Stream index: " + toString(streamIdx));
+			return;
+		}
+
+		UINT32 elementSize = mVertexData->getElementSize(semantic, semanticIdx, streamIdx);
+		UINT32 totalSize = elementSize * mNumVertices;
+
+		if (totalSize != size)
+		{
+			BS_EXCEPT(InvalidParametersException, "Buffer sizes don't match. Expected: " + toString(totalSize) + ". Got: " + toString(size));
+		}
+
+		UINT32 indexBufferOffset = getIndexBufferSize();
+
+		UINT32 elementOffset = getElementOffset(semantic, semanticIdx, streamIdx);
+		UINT32 vertexStride = mVertexData->getVertexStride(streamIdx);
+
+		UINT8* src = getData() + indexBufferOffset + elementOffset;
+		UINT8* dst = data;
+		for (UINT32 i = 0; i < mNumVertices; i++)
 		{
 			memcpy(dst, src, elementSize);
 			dst += vertexStride;

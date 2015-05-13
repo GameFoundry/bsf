@@ -88,7 +88,7 @@ namespace BansheeEngine
 		 * @brief	Returns the size of the internal buffer in bytes. This is calculated based
 		 *			on parameters provided upon construction and specific implementation details.
 		 */
-		virtual UINT32 getInternalBufferSize() = 0;
+		virtual UINT32 getInternalBufferSize() const = 0;
 
 	private:
 		UINT8* mData;

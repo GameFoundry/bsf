@@ -174,6 +174,11 @@ namespace BansheeEngine
 		}
 	}
 
+	VertexDataDescPtr VertexDataDesc::create()
+	{
+		return bs_shared_ptr<VertexDataDesc>();
+	}
+
 	/************************************************************************/
 	/* 								SERIALIZATION                      		*/
 	/************************************************************************/

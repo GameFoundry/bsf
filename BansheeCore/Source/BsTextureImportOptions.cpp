@@ -4,7 +4,8 @@
 namespace BansheeEngine
 {
 	TextureImportOptions::TextureImportOptions()
-		:mFormat(PF_B8G8R8A8), mGenerateMips(false), mMaxMip(0)
+		:mFormat(PF_B8G8R8A8), mGenerateMips(false), mMaxMip(0), 
+		mCPUReadable(false), mSRGB(false)
 	{ }
 
 	/************************************************************************/

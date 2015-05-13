@@ -148,8 +148,14 @@ namespace BansheeEngine
 			}
 		}
 
+		int usage = TU_DEFAULT;
+		if (textureImportOptions->getCPUReadable())
+			usage |= TU_CPUCACHED;
+
+		bool sRGB = textureImportOptions->getSRGB();
+
 		TexturePtr newTexture = Texture::_createPtr(TEX_TYPE_2D, 
-			imgData->getWidth(), imgData->getHeight(), numMips, textureImportOptions->getFormat());
+			imgData->getWidth(), imgData->getHeight(), numMips, textureImportOptions->getFormat(), usage, sRGB);
 
 		Vector<PixelDataPtr> mipLevels;
 		if (numMips > 0)

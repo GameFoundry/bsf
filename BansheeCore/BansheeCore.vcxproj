@@ -280,6 +280,8 @@
   <ItemGroup>
     <ClInclude Include="Include\BsCoreObjectCore.h" />
     <ClInclude Include="Include\BsDrawList.h" />
+    <ClInclude Include="Include\BsMeshImportOptions.h" />
+    <ClInclude Include="Include\BsMeshImportOptionsRTTI.h" />
     <ClInclude Include="Include\BsShaderIncludeRTTI.h" />
     <ClInclude Include="Include\BsIResourceListener.h" />
     <ClInclude Include="Include\BsMaterialParam.h" />
@@ -431,6 +433,7 @@
     <ClCompile Include="Source\BsDrawList.cpp" />
     <ClCompile Include="Source\BsIResourceListener.cpp" />
     <ClCompile Include="Source\BsMaterialParam.cpp" />
+    <ClCompile Include="Source\BsMeshImportOptions.cpp" />
     <ClCompile Include="Source\BsProfilerCPU.cpp" />
     <ClCompile Include="Source\BsDeferredCallManager.cpp" />
     <ClCompile Include="Source\BsDrawOps.cpp" />

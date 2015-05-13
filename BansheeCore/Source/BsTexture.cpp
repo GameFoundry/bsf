@@ -365,7 +365,7 @@ namespace BansheeEngine
 		if (pixelData.getWidth() != mipWidth || pixelData.getHeight() != mipHeight ||
 			pixelData.getDepth() != mipDepth || pixelData.getFormat() != mProperties.getFormat())
 		{
-			LOGERR("Provided buffer is not of valid dimensions or format in order to read from this texture.");
+			LOGERR("Provided buffer is not of valid dimensions or format in order to update this texture.");
 			return;
 		}
 

@@ -14,6 +14,7 @@
 #include "BsScriptScriptCode.h"
 #include "BsScriptShader.h"
 #include "BsScriptMaterial.h"
+#include "BsScriptMesh.h"
 #include "BsScriptSceneObject.h"
 #include "BsScriptComponent.h"
 #include "BsManagedSerializableObject.h"
@@ -210,6 +211,18 @@ namespace BansheeEngine
 				{
 					ScriptMaterial* scriptMaterial = ScriptMaterial::toNative(value);
 					fieldData->value = static_resource_cast<ScriptMaterial>(scriptMaterial->getNativeHandle());
+				}
+
+				return fieldData;
+			}
+			case ScriptPrimitiveType::MeshRef:
+			{
+				auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataResourceRef>();
+
+				if (value != nullptr)
+				{
+					ScriptMesh* scriptMesh = ScriptMesh::toNative(value);
+					fieldData->value = static_resource_cast<ScriptMesh>(scriptMesh->getNativeHandle());
 				}
 
 				return fieldData;
@@ -564,6 +577,21 @@ namespace BansheeEngine
 					ScriptMaterial* scriptResource = ScriptResourceManager::instance().getScriptMaterial(material);
 					if (scriptResource == nullptr)
 						scriptResource = ScriptResourceManager::instance().createScriptMaterial(material);
+
+					if (scriptResource != nullptr)
+						return scriptResource->getManagedInstance();
+				}
+				else
+					return nullptr;
+			}
+			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::MeshRef)
+			{
+				if (value)
+				{
+					HMesh mesh = static_resource_cast<Mesh>(value);
+					ScriptMesh* scriptResource = ScriptResourceManager::instance().getScriptMesh(mesh);
+					if (scriptResource == nullptr)
+						scriptResource = ScriptResourceManager::instance().createScriptMesh(mesh);
 
 					if (scriptResource != nullptr)
 						return scriptResource->getManagedInstance();

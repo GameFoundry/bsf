@@ -21,7 +21,7 @@ namespace BansheeEngine
 	{
 	public:
 		MeshCore(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc,
-			const Vector<SubMesh>& subMeshes, MeshBufferType bufferType, IndexType indexType,
+			const Vector<SubMesh>& subMeshes, int usage, IndexType indexType,
 			MeshDataPtr initialMeshData);
 
 		~MeshCore();
@@ -75,7 +75,7 @@ namespace BansheeEngine
 		SPtr<IndexBufferCore> mIndexBuffer;
 
 		VertexDataDescPtr mVertexDesc;
-		MeshBufferType mBufferType;
+		int mUsage;
 		IndexType mIndexType;
 		MeshDataPtr mTempInitialMeshData;
 	};
@@ -133,6 +133,20 @@ namespace BansheeEngine
 		MeshDataPtr allocateSubresourceBuffer(UINT32 subresourceIdx) const;
 
 		/**
+		 * @brief	Reads data from the cached system memory mesh buffer into the provided buffer. 
+		 * 		  
+		 * @param	dest		Previously allocated buffer to read data into.
+		 *
+		 * @note	The data read is the cached mesh data. Any data written to the mesh from the GPU 
+		 *			or core thread will not be reflected in this data. Use "readSubresource" if you require
+		 *			those changes.
+		 *
+		 *			The mesh must have been created with MU_CPUCACHED usage otherwise this method
+		 *			will not return any data.
+		 */
+		void readData(MeshData& dest);
+
+		/**
 		 * @brief	Retrieves a core implementation of a mesh usable only from the
 		 *			core thread.
 		 */
@@ -147,17 +161,17 @@ namespace BansheeEngine
 		friend class MeshManager;
 
 		Mesh(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
-			MeshBufferType bufferType = MeshBufferType::Static, DrawOperationType drawOp = DOT_TRIANGLE_LIST,
+			int usage = MU_STATIC, DrawOperationType drawOp = DOT_TRIANGLE_LIST,
 			IndexType indexType = IT_32BIT);
 
 		Mesh(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc,
-			const Vector<SubMesh>& subMeshes, MeshBufferType bufferType = MeshBufferType::Static,
+			const Vector<SubMesh>& subMeshes, int usage = MU_STATIC,
 			IndexType indexType = IT_32BIT);
 
-		Mesh(const MeshDataPtr& initialMeshData, MeshBufferType bufferType = MeshBufferType::Static, 
+		Mesh(const MeshDataPtr& initialMeshData, int usage = MU_STATIC,
 			DrawOperationType drawOp = DOT_TRIANGLE_LIST);
 
-		Mesh(const MeshDataPtr& initialMeshData, const Vector<SubMesh>& subMeshes, MeshBufferType bufferType = MeshBufferType::Static);
+		Mesh(const MeshDataPtr& initialMeshData, const Vector<SubMesh>& subMeshes, int usage = MU_STATIC);
 
 		/**
 		 * @brief	Updates bounds by calculating them from the vertices in the provided mesh data object.
@@ -169,10 +183,22 @@ namespace BansheeEngine
 		 */
 		SPtr<CoreObjectCore> createCore() const;
 
-		mutable MeshDataPtr mTempInitialMeshData;
+		/**
+		 * @brief	Creates buffers used for caching of CPU mesh data.
+		 *
+		 * @note	Make sure to initialize all mesh properties before calling this.
+		 */
+		void createCPUBuffer();
+
+		/**
+		 * @brief	Updates the cached CPU buffers with new data.
+		 */
+		void updateCPUBuffer(UINT32 subresourceIdx, const MeshData& data);
+
+		mutable MeshDataPtr mCPUData;
 
 		VertexDataDescPtr mVertexDesc;
-		MeshBufferType mBufferType;
+		int mUsage;
 		IndexType mIndexType;
 
 		/************************************************************************/
@@ -199,14 +225,13 @@ namespace BansheeEngine
 		 * @param	vertexDesc		Vertex description structure that describes how are vertices organized in the
 		 *							vertex buffer. When binding a mesh to the pipeline you must ensure vertex description
 		 *							at least partially matches the input description of the currently bound vertex GPU program.
-		 * @param	bufferType		Specify static for buffers you don't plan on updating other reading from often. Otherwise specify
-		 *							dynamic. This parameter affects performance.
+		 * @param	usage			Optimizes performance depending on planned usage of the mesh.
 		 * @param	drawOp			Determines how should the provided indices be interpreted by the pipeline. Default option is triangles,
 		 *							where three indices represent a single triangle.
 		 * @param	indexType		Size of indices, use smaller size for better performance, however be careful not to go over
 		 *							the number of vertices limited by the size.
 		 */
-		static HMesh create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, MeshBufferType bufferType = MeshBufferType::Static,
+		static HMesh create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, int usage = MU_STATIC,
 			DrawOperationType drawOp = DOT_TRIANGLE_LIST, IndexType indexType = IT_32BIT);
 
 		/**
@@ -219,25 +244,23 @@ namespace BansheeEngine
 		 *							at least partially matches the input description of the currently bound vertex GPU program.
 		 * @param	subMeshes		Defines how are indices separated into sub-meshes, and how are those sub-meshes rendered.
 		 *							Sub-meshes may be rendered independently.
-		 * @param	bufferType		Specify static for buffers you don't plan on updating other reading from often. Otherwise specify
-		 *							dynamic. This parameter affects performance.
+		 * @param	usage			Optimizes performance depending on planned usage of the mesh.
 		 * @param	indexType		Size of indices, use smaller size for better performance, however be careful not to go over
 		 *							the number of vertices limited by the size.
 		 */
 		static HMesh create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, const Vector<SubMesh>& subMeshes,
-			MeshBufferType bufferType = MeshBufferType::Static, IndexType indexType = IT_32BIT);
+			int usage = MU_STATIC, IndexType indexType = IT_32BIT);
 
 		/**
 		 * @brief	Creates a new mesh from an existing mesh data. Created mesh will match the vertex and index buffers described
 		 *			by the mesh data exactly. Created mesh will have no sub-meshes.
 		 *
 		 * @param	initialMeshData	Vertex and index data used for initializing the mesh. 
-		 * @param	bufferType		Specify static for buffers you don't plan on updating other reading from often. Otherwise specify
-		 *							dynamic. This parameter affects performance.
+		 * @param	usage			Optimizes performance depending on planned usage of the mesh.
 		 * @param	drawOp			Determines how should the provided indices be interpreted by the pipeline. Default option is triangles,
 		 *							where three indices represent a single triangle.
 		 */
-		static HMesh create(const MeshDataPtr& initialMeshData, MeshBufferType bufferType = MeshBufferType::Static, 
+		static HMesh create(const MeshDataPtr& initialMeshData, int usage = MU_STATIC,
 			DrawOperationType drawOp = DOT_TRIANGLE_LIST);
 
 		/**
@@ -247,43 +270,42 @@ namespace BansheeEngine
 		 * @param	initialMeshData	Vertex and index data used for initializing the mesh. 
 		 * @param	subMeshes		Defines how are indices separated into sub-meshes, and how are those sub-meshes rendered.
 		 *							Sub-meshes may be rendered independently.
-		 * @param	bufferType		Specify static for buffers you don't plan on updating other reading from often. Otherwise specify
-		 *							dynamic. This parameter affects performance.
+		 * @param	usage			Optimizes performance depending on planned usage of the mesh.
 		 */
-		static HMesh create(const MeshDataPtr& initialMeshData, const Vector<SubMesh>& subMeshes, MeshBufferType bufferType = MeshBufferType::Static);
+		static HMesh create(const MeshDataPtr& initialMeshData, const Vector<SubMesh>& subMeshes, int usage = MU_STATIC);
 
 		/**
-		 * @copydoc	create(UINT32, UINT32, const VertexDataDescPtr&, MeshBufferType, DrawOperationType, IndexType)
+		 * @copydoc	create(UINT32, UINT32, const VertexDataDescPtr&, int, DrawOperationType, IndexType)
 		 *
 		 * @note	Internal method. Use "create" for normal use.
 		 */
 		static MeshPtr _createPtr(UINT32 numVertices, UINT32 numIndices, 
-			const VertexDataDescPtr& vertexDesc, MeshBufferType bufferType = MeshBufferType::Static,
+			const VertexDataDescPtr& vertexDesc, int usage = MU_STATIC,
 			DrawOperationType drawOp = DOT_TRIANGLE_LIST, IndexType indexType = IT_32BIT);
 
 		/**
-		 * @copydoc	create(UINT32, UINT32, const VertexDataDescPtr&, const Vector<SubMesh>&, MeshBufferType, IndexType)
+		 * @copydoc	create(UINT32, UINT32, const VertexDataDescPtr&, const Vector<SubMesh>&, int, IndexType)
 		 *
 		 * @note	Internal method. Use "create" for normal use.
 		 */
 		static MeshPtr _createPtr(UINT32 numVertices, UINT32 numIndices, 
 			const VertexDataDescPtr& vertexDesc, const Vector<SubMesh>& subMeshes,
-			MeshBufferType bufferType = MeshBufferType::Static, IndexType indexType = IT_32BIT);
+			int usage = MU_STATIC, IndexType indexType = IT_32BIT);
 
 		/**
-		 * @copydoc	create(const MeshDataPtr&, MeshBufferType, DrawOperationType)
+		 * @copydoc	create(const MeshDataPtr&, int, DrawOperationType)
 		 *
 		 * @note	Internal method. Use "create" for normal use.
 		 */
-		static MeshPtr _createPtr(const MeshDataPtr& initialMeshData, MeshBufferType bufferType = MeshBufferType::Static,
+		static MeshPtr _createPtr(const MeshDataPtr& initialMeshData, int usage = MU_STATIC,
 			DrawOperationType drawOp = DOT_TRIANGLE_LIST);
 
 		/**
-		 * @copydoc	create(const MeshDataPtr&, const Vector<SubMesh>&, MeshBufferType)
+		 * @copydoc	create(const MeshDataPtr&, const Vector<SubMesh>&, int)
 		 *
 		 * @note	Internal method. Use "create" for normal use.
 		 */
 		static MeshPtr _createPtr(const MeshDataPtr& initialMeshData, const Vector<SubMesh>& subMeshes,
-			MeshBufferType bufferType = MeshBufferType::Static);
+			int usage = MU_STATIC);
 	};
 }

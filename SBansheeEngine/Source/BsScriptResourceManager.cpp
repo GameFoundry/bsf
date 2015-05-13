@@ -10,6 +10,7 @@
 #include "BsScriptScriptCode.h"
 #include "BsScriptShader.h"
 #include "BsScriptMaterial.h"
+#include "BsScriptMesh.h"
 #include "BsScriptFont.h"
 #include "BsScriptManagedResource.h"
 #include "BsScriptAssemblyManager.h"
@@ -120,6 +121,27 @@ namespace BansheeEngine
 #endif
 
 		ScriptMaterial* scriptResource = new (bs_alloc<ScriptMaterial>()) ScriptMaterial(instance, resourceHandle);
+		mScriptResources[uuid] = scriptResource;
+
+		return scriptResource;
+	}
+
+	ScriptMesh* ScriptResourceManager::createScriptMesh(const HMesh& resourceHandle)
+	{
+		MonoClass* meshClass = ScriptAssemblyManager::instance().getMeshClass();
+		MonoObject* monoInstance = meshClass->createInstance();
+
+		return createScriptMesh(monoInstance, resourceHandle);
+	}
+
+	ScriptMesh* ScriptResourceManager::createScriptMesh(MonoObject* instance, const HMesh& resourceHandle)
+	{
+		const String& uuid = resourceHandle.getUUID();
+#if BS_DEBUG_MODE
+		throwExceptionIfInvalidOrDuplicate(uuid);
+#endif
+
+		ScriptMesh* scriptResource = new (bs_alloc<ScriptMesh>()) ScriptMesh(instance, resourceHandle);
 		mScriptResources[uuid] = scriptResource;
 
 		return scriptResource;
@@ -250,6 +272,11 @@ namespace BansheeEngine
 		return static_cast<ScriptMaterial*>(getScriptResource(resourceHandle.getUUID()));
 	}
 
+	ScriptMesh* ScriptResourceManager::getScriptMesh(const HMesh& resourceHandle)
+	{
+		return static_cast<ScriptMesh*>(getScriptResource(resourceHandle.getUUID()));
+	}
+
 	ScriptPlainText* ScriptResourceManager::getScriptPlainText(const HPlainText& resourceHandle)
 	{
 		return static_cast<ScriptPlainText*>(getScriptResource(resourceHandle.getUUID()));
@@ -311,6 +338,8 @@ namespace BansheeEngine
 			return createScriptShader(static_resource_cast<Shader>(resource));
 		case TID_Material:
 			return createScriptMaterial(static_resource_cast<Material>(resource));
+		case TID_Mesh:
+			return createScriptMesh(static_resource_cast<Mesh>(resource));
 		case TID_ManagedResource:
 			BS_EXCEPT(InternalErrorException, "Managed resources must have a managed instance by default, this call is invalid.")
 				break;

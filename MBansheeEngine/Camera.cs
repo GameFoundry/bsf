@@ -173,6 +173,9 @@ namespace BansheeEngine
 
         private void OnReset()
         {
+            if (handler != null)
+                handler.OnDestroy();
+
             handler = new CameraHandler(sceneObject);
 
             // Restore saved values after reset

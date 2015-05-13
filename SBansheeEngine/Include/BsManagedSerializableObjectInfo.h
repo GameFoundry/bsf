@@ -30,6 +30,7 @@ namespace BansheeEngine
 		ScriptCodeRef,
 		ShaderRef,
 		MaterialRef,
+		MeshRef,
 		SceneObjectRef,
 		ComponentRef
 	};

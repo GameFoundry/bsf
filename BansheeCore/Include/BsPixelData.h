@@ -347,7 +347,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns the needed size of the internal buffer, in bytes.
 		 */
-		UINT32 getInternalBufferSize();
+		UINT32 getInternalBufferSize() const;
 
 	private:
 		PixelVolume mExtents;

@@ -22,22 +22,17 @@ TODO - Setting Material array parameters isn't possible from C#
 
 GUIResourceField doesn't distinguish between tex2d, tex3d and texcube.
 
-Add C# Renderable
- - Mesh
- - Material (primary)
- - SetMaterial(i, Material)
- - GetMaterial
- - Bounds Bounds
-
 ----------------------------------------------------------------------
 Project window
 
-Positions in color picker are screwed up
-Depth in COlorPicker is fucked up
-Test dock manager and sliders (right now it doesn't seem to work at all)
+FBXImporter:
+ - It should use DefaultMeshData
+ - It should use and apply MeshImportOptions
+
+TODO:
+ - Implement C# and Script mesh
 
 Simple tasks:
- - Add C# Renderable interface
  - Add C# context menu support for GUI elements
  - Hook up windows drag and drop support
  - Hook up drag and drop internal to project window
@@ -85,13 +80,11 @@ Other simple stuff:
  - C# wrapper for GUISkin (and a way to assign the current skin to a window)
  - Move all the code files into subfolders so their hierarchy is similar to VS filters
  - Font doesn't have a C# interface
- - Material/Shader/Technique/Pass don't have a C# interface
  - Get rid of PoolAlloc and other unused allocators (plus fix bs_new and others which have weird overloads)
  - Call stack from C# to use in Debug.Log calls
  - Get rid of event callback from HString and figure out a better way
  - GUI TextureField similar to ResourceField but it displays the texture it has assigned
  - Better handle and gizmo shaders
- - Fix FBX indexes and while at it also find out how to extract animation data, bone weights and tangent frames
 
 ----------------------------------------------------------------------
 Handles

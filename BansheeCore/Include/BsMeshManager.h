@@ -16,26 +16,26 @@ namespace BansheeEngine
 		~MeshManager();
 
 		/**
-		 * @copydoc	Mesh::create(UINT32, UINT32, const VertexDataDescPtr&, MeshBufferType, DrawOperationType, IndexType)
+		 * @copydoc	Mesh::create(UINT32, UINT32, const VertexDataDescPtr&, int, DrawOperationType, IndexType)
 		 */
-		MeshPtr create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, MeshBufferType bufferType = MeshBufferType::Static, 
+		MeshPtr create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, int usage = MU_STATIC, 
 			DrawOperationType drawOp = DOT_TRIANGLE_LIST, IndexType indexType = IT_32BIT);
 
 		/**
-		 * @copydoc	Mesh::create(UINT32, UINT32, const VertexDataDescPtr&, const Vector<SubMesh>&, MeshBufferType, IndexType)
+		 * @copydoc	Mesh::create(UINT32, UINT32, const VertexDataDescPtr&, const Vector<SubMesh>&, int, IndexType)
 		 */
 		MeshPtr create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, const Vector<SubMesh>& subMeshes, 
-			MeshBufferType bufferType = MeshBufferType::Static, IndexType indexType = IT_32BIT);
+			int usage = MU_STATIC, IndexType indexType = IT_32BIT);
 
 		/**
-		 * @copyodc	Mesh::create(const MeshDataPtr&, MeshBufferType, DrawOperationType)
+		 * @copyodc	Mesh::create(const MeshDataPtr&, int, DrawOperationType)
 		 */
-		MeshPtr create(const MeshDataPtr& initialData, MeshBufferType bufferType = MeshBufferType::Static, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
+		MeshPtr create(const MeshDataPtr& initialData, int usage = MU_STATIC, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
 
 		/**
-		 * @copyodc	Mesh::create(const MeshDataPtr&, const Vector<SubMesh>&, MeshBufferType)
+		 * @copyodc	Mesh::create(const MeshDataPtr&, const Vector<SubMesh>&, int)
 		 */
-		MeshPtr create(const MeshDataPtr& initialData, const Vector<SubMesh>& subMeshes, MeshBufferType bufferType = MeshBufferType::Static);
+		MeshPtr create(const MeshDataPtr& initialData, const Vector<SubMesh>& subMeshes, int usage = MU_STATIC);
 
 		/**
 		 * @brief	Creates a new empty and uninitialized mesh. You will need to manually initialize the mesh before using it.

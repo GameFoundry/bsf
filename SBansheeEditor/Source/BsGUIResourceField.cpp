@@ -301,6 +301,15 @@ namespace BansheeEngine
 				}
 			}
 				break;
+			case TID_Mesh:
+			{
+				if (ScriptAssemblyManager::instance().getMeshClass()->isSubClassOf(acceptedClass))
+				{
+					setUUID(uuid);
+					found = true;
+				}
+			}
+				break;
 			case TID_ManagedResource:
 			{
 				ManagedResourceMetaDataPtr managedResMetaData = std::static_pointer_cast<ManagedResourceMetaData>(meta->getResourceMetaData());

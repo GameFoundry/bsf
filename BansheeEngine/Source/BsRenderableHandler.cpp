@@ -8,6 +8,7 @@
 #include "BsBounds.h"
 #include "BsRenderer.h"
 #include "BsFrameAlloc.h"
+#include "BsDebug.h"
 
 namespace BansheeEngine
 {
@@ -37,6 +38,9 @@ namespace BansheeEngine
 	template<bool Core>
 	void TRenderableHandler<Core>::setMaterial(UINT32 idx, const MaterialType& material)
 	{
+		if (idx >= (UINT32)mMaterials.size())
+			return;
+
 		mMaterials[idx] = material;
 
 		_markResourcesDirty();
@@ -55,7 +59,10 @@ namespace BansheeEngine
 		bool isPow2 = layer && !((layer - 1) & layer);
 
 		if (!isPow2)
-			BS_EXCEPT(InvalidParametersException, "Invalid layer provided. Only one layer bit may be set.");
+		{
+			LOGWRN("Invalid layer provided. Only one layer bit may be set. Ignoring.");
+			return;
+		}
 
 		mLayer = layer;
 		_markCoreDirty();

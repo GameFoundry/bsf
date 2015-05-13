@@ -70,6 +70,12 @@ namespace BansheeEngine
 		 * @brief	Creates a list of vertex elements from internal data.
 		 */
 		List<VertexElement> createElements() const;
+
+		/**
+		 * @brief	Creates a new empty vertex data descriptor.
+		 */
+		static VertexDataDescPtr create();
+
 	private:
 		friend class Mesh;
 		friend class MeshCore;

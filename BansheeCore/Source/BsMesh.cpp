@@ -16,9 +16,9 @@
 namespace BansheeEngine
 {
 	MeshCore::MeshCore(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc,
-		const Vector<SubMesh>& subMeshes, MeshBufferType bufferType, IndexType indexType, MeshDataPtr initialMeshData)
+		const Vector<SubMesh>& subMeshes, int usage, IndexType indexType, MeshDataPtr initialMeshData)
 		:MeshCoreBase(numVertices, numIndices, subMeshes), mVertexData(nullptr), mIndexBuffer(nullptr), 
-		mVertexDesc(vertexDesc), mBufferType(bufferType), mIndexType(indexType), mTempInitialMeshData(initialMeshData)
+		mVertexDesc(vertexDesc), mUsage(usage), mIndexType(indexType), mTempInitialMeshData(initialMeshData)
 	{ }
 
 	MeshCore::~MeshCore()
@@ -35,8 +35,10 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
+		bool isDynamic = (mUsage & MU_DYNAMIC) != 0;
+
 		mIndexBuffer = HardwareBufferCoreManager::instance().createIndexBuffer(mIndexType,
-			mProperties.mNumIndices, mBufferType == MeshBufferType::Dynamic ? GBU_DYNAMIC : GBU_STATIC);
+			mProperties.mNumIndices, isDynamic ? GBU_DYNAMIC : GBU_STATIC);
 
 		mVertexData = std::shared_ptr<VertexData>(bs_new<VertexData, PoolAlloc>());
 
@@ -53,7 +55,7 @@ namespace BansheeEngine
 			SPtr<VertexBufferCore> vertexBuffer = HardwareBufferCoreManager::instance().createVertexBuffer(
 				mVertexData->vertexDeclaration->getProperties().getVertexSize(i),
 				mVertexData->vertexCount,
-				mBufferType == MeshBufferType::Dynamic ? GBU_DYNAMIC : GBU_STATIC);
+				isDynamic ? GBU_DYNAMIC : GBU_STATIC);
 
 			mVertexData->setBuffer(i, vertexBuffer);
 		}
@@ -62,7 +64,7 @@ namespace BansheeEngine
 		// buffer data upon buffer construction, instead of setting it in a second step like I do here
 		if (mTempInitialMeshData != nullptr)
 		{
-			writeSubresource(0, *mTempInitialMeshData, mBufferType == MeshBufferType::Dynamic);
+			writeSubresource(0, *mTempInitialMeshData, isDynamic);
 			mTempInitialMeshData = nullptr;
 		}
 
@@ -89,7 +91,7 @@ namespace BansheeEngine
 
 		if (discardEntireBuffer)
 		{
-			if (mBufferType == MeshBufferType::Static)
+			if ((mUsage & MU_STATIC) != 0)
 			{
 				LOGWRN("Buffer discard is enabled but buffer was not created as dynamic. Disabling discard.");
 				discardEntireBuffer = false;
@@ -97,7 +99,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			if (mBufferType == MeshBufferType::Dynamic)
+			if ((mUsage & MU_DYNAMIC) != 0)
 			{
 				LOGWRN("Buffer discard is not enabled but buffer was created as dynamic. Enabling discard.");
 				discardEntireBuffer = true;
@@ -271,39 +273,39 @@ namespace BansheeEngine
 	}
 
 	Mesh::Mesh(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
-		MeshBufferType bufferType, DrawOperationType drawOp, IndexType indexType)
-		:MeshBase(numVertices, numIndices, drawOp), mVertexDesc(vertexDesc), mBufferType(bufferType), 
+		int usage, DrawOperationType drawOp, IndexType indexType)
+		:MeshBase(numVertices, numIndices, drawOp), mVertexDesc(vertexDesc), mUsage(usage),
 		mIndexType(indexType)
 	{
 
 	}
 
 	Mesh::Mesh(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc,
-		const Vector<SubMesh>& subMeshes, MeshBufferType bufferType, IndexType indexType)
-		:MeshBase(numVertices, numIndices, subMeshes), mVertexDesc(vertexDesc), mBufferType(bufferType), 
+		const Vector<SubMesh>& subMeshes, int usage, IndexType indexType)
+		:MeshBase(numVertices, numIndices, subMeshes), mVertexDesc(vertexDesc), mUsage(usage), 
 		mIndexType(indexType)
 	{
 
 	}
 
-	Mesh::Mesh(const MeshDataPtr& initialMeshData, MeshBufferType bufferType, DrawOperationType drawOp)
+	Mesh::Mesh(const MeshDataPtr& initialMeshData, int usage, DrawOperationType drawOp)
 		:MeshBase(initialMeshData->getNumVertices(), initialMeshData->getNumIndices(), drawOp), 
 		mIndexType(initialMeshData->getIndexType()), mVertexDesc(initialMeshData->getVertexDesc()), 
-		mTempInitialMeshData(initialMeshData)
+		mCPUData(initialMeshData), mUsage(usage)
 	{
 
 	}
 
-	Mesh::Mesh(const MeshDataPtr& initialMeshData, const Vector<SubMesh>& subMeshes, MeshBufferType bufferType)
+	Mesh::Mesh(const MeshDataPtr& initialMeshData, const Vector<SubMesh>& subMeshes, int usage)
 		:MeshBase(initialMeshData->getNumVertices(), initialMeshData->getNumIndices(), subMeshes),
 		mIndexType(initialMeshData->getIndexType()), mVertexDesc(initialMeshData->getVertexDesc()), 
-		mTempInitialMeshData(initialMeshData)
+		mCPUData(initialMeshData), mUsage(usage)
 	{
 
 	}
 
 	Mesh::Mesh()
-		:MeshBase(0, 0, DOT_TRIANGLE_LIST), mBufferType(MeshBufferType::Static), mIndexType(IT_32BIT)
+		:MeshBase(0, 0, DOT_TRIANGLE_LIST), mUsage(MU_STATIC), mIndexType(IT_32BIT)
 	{
 
 	}
@@ -316,6 +318,7 @@ namespace BansheeEngine
 	AsyncOp Mesh::writeSubresource(CoreAccessor& accessor, UINT32 subresourceIdx, const MeshDataPtr& data, bool discardEntireBuffer)
 	{
 		updateBounds(*data);
+		updateCPUBuffer(subresourceIdx, *data);
 
 		data->_lock();
 
@@ -358,12 +361,13 @@ namespace BansheeEngine
 
 	void Mesh::initialize()
 	{
-		if (mTempInitialMeshData != nullptr)
-		{
-			updateBounds(*mTempInitialMeshData);
-		}
+		if (mCPUData != nullptr)
+			updateBounds(*mCPUData);
 
 		MeshBase::initialize();
+
+		if ((mUsage & MU_CPUCACHED) != 0 && mCPUData == nullptr)
+			createCPUBuffer();
 	}
 
 	void Mesh::updateBounds(const MeshData& meshData)
@@ -380,14 +384,75 @@ namespace BansheeEngine
 	SPtr<CoreObjectCore> Mesh::createCore() const
 	{
 		MeshCore* obj = new (bs_alloc<MeshCore>()) MeshCore(mProperties.mNumVertices, mProperties.mNumIndices, 
-			mVertexDesc, mProperties.mSubMeshes, mBufferType, mIndexType, mTempInitialMeshData);
+			mVertexDesc, mProperties.mSubMeshes, mUsage, mIndexType, mCPUData);
 
 		SPtr<CoreObjectCore> meshCore = bs_shared_ptr<MeshCore, GenAlloc>(obj);
 		meshCore->_setThisPtr(meshCore);
 
-		mTempInitialMeshData = nullptr;
+		if ((mUsage & MU_CPUCACHED) == 0)
+			mCPUData = nullptr;
 
 		return meshCore;
+	}
+
+	void Mesh::updateCPUBuffer(UINT32 subresourceIdx, const MeshData& pixelData)
+	{
+		if ((mUsage & MU_CPUCACHED) == 0)
+			return;
+
+		if (subresourceIdx > 0)
+		{
+			LOGERR("Invalid subresource index: " + toString(subresourceIdx) + ". Supported range: 0 .. 1.");
+			return;
+		}
+
+		if (pixelData.getNumIndices() != mProperties.getNumIndices() ||
+			pixelData.getNumVertices() != mProperties.getNumVertices() ||
+			pixelData.getIndexType() != mIndexType ||
+			pixelData.getVertexDesc()->getVertexStride() != mVertexDesc->getVertexStride())
+		{
+			LOGERR("Provided buffer is not of valid dimensions or format in order to update this mesh.");
+			return;
+		}
+
+		if (mCPUData->getSize() != pixelData.getSize())
+			BS_EXCEPT(InternalErrorException, "Buffer sizes don't match.");
+
+		UINT8* dest = mCPUData->getData();
+		UINT8* src = pixelData.getData();
+
+		memcpy(dest, src, pixelData.getSize());
+	}
+
+	void Mesh::readData(MeshData& dest)
+	{
+		if ((mUsage & MU_CPUCACHED) == 0)
+		{
+			LOGERR("Attempting to read CPU data from a mesh that is created without CPU caching.");
+			return;
+		}
+
+		if (dest.getNumIndices() != mProperties.getNumIndices() ||
+			dest.getNumVertices() != mProperties.getNumVertices() ||
+			dest.getIndexType() != mIndexType ||
+			dest.getVertexDesc()->getVertexStride() != mVertexDesc->getVertexStride())
+		{
+			LOGERR("Provided buffer is not of valid dimensions or format in order to read from this mesh.");
+			return;
+		}
+		
+		if (mCPUData->getSize() != dest.getSize())
+			BS_EXCEPT(InternalErrorException, "Buffer sizes don't match.");
+
+		UINT8* srcPtr = mCPUData->getData();
+		UINT8* destPtr = dest.getData();
+
+		memcpy(destPtr, srcPtr, dest.getSize());
+	}
+
+	void Mesh::createCPUBuffer()
+	{
+		mCPUData = allocateSubresourceBuffer(0);
 	}
 
 	HMesh Mesh::dummy()
@@ -414,54 +479,54 @@ namespace BansheeEngine
 	/************************************************************************/
 
 	HMesh Mesh::create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
-		MeshBufferType bufferType, DrawOperationType drawOp, IndexType indexType)
+		int usage, DrawOperationType drawOp, IndexType indexType)
 	{
-		MeshPtr meshPtr = _createPtr(numVertices, numIndices, vertexDesc, bufferType, drawOp, indexType);
+		MeshPtr meshPtr = _createPtr(numVertices, numIndices, vertexDesc, usage, drawOp, indexType);
 
 		return static_resource_cast<Mesh>(gResources()._createResourceHandle(meshPtr));
 	}
 
 	HMesh Mesh::create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc,
-		const Vector<SubMesh>& subMeshes, MeshBufferType bufferType, IndexType indexType)
+		const Vector<SubMesh>& subMeshes, int usage, IndexType indexType)
 	{
-		MeshPtr meshPtr = _createPtr(numVertices, numIndices, vertexDesc, subMeshes, bufferType, indexType);
+		MeshPtr meshPtr = _createPtr(numVertices, numIndices, vertexDesc, subMeshes, usage, indexType);
 
 		return static_resource_cast<Mesh>(gResources()._createResourceHandle(meshPtr));
 	}
 
-	HMesh Mesh::create(const MeshDataPtr& initialMeshData, MeshBufferType bufferType, DrawOperationType drawOp)
+	HMesh Mesh::create(const MeshDataPtr& initialMeshData, int usage, DrawOperationType drawOp)
 	{
-		MeshPtr meshPtr = _createPtr(initialMeshData, bufferType, drawOp);
+		MeshPtr meshPtr = _createPtr(initialMeshData, usage, drawOp);
 
 		return static_resource_cast<Mesh>(gResources()._createResourceHandle(meshPtr));
 	}
 
-	HMesh Mesh::create(const MeshDataPtr& initialMeshData, const Vector<SubMesh>& subMeshes, MeshBufferType bufferType)
+	HMesh Mesh::create(const MeshDataPtr& initialMeshData, const Vector<SubMesh>& subMeshes, int usage)
 	{
-		MeshPtr meshPtr = _createPtr(initialMeshData, subMeshes, bufferType);
+		MeshPtr meshPtr = _createPtr(initialMeshData, subMeshes, usage);
 
 		return static_resource_cast<Mesh>(gResources()._createResourceHandle(meshPtr));
 	}
 
 	MeshPtr Mesh::_createPtr(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
-		MeshBufferType bufferType, DrawOperationType drawOp, IndexType indexType)
+		int usage, DrawOperationType drawOp, IndexType indexType)
 	{
-		return MeshManager::instance().create(numVertices, numIndices, vertexDesc, bufferType, drawOp, indexType);
+		return MeshManager::instance().create(numVertices, numIndices, vertexDesc, usage, drawOp, indexType);
 	}
 
 	MeshPtr Mesh::_createPtr(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc,
-		const Vector<SubMesh>& subMeshes, MeshBufferType bufferType, IndexType indexType)
+		const Vector<SubMesh>& subMeshes, int usage, IndexType indexType)
 	{
-		return MeshManager::instance().create(numVertices, numIndices, vertexDesc, subMeshes, bufferType, indexType);
+		return MeshManager::instance().create(numVertices, numIndices, vertexDesc, subMeshes, usage, indexType);
 	}
 
-	MeshPtr Mesh::_createPtr(const MeshDataPtr& initialMeshData, MeshBufferType bufferType, DrawOperationType drawOp)
+	MeshPtr Mesh::_createPtr(const MeshDataPtr& initialMeshData, int usage, DrawOperationType drawOp)
 	{
-		return MeshManager::instance().create(initialMeshData, bufferType, drawOp);
+		return MeshManager::instance().create(initialMeshData, usage, drawOp);
 	}
 
-	MeshPtr Mesh::_createPtr(const MeshDataPtr& initialMeshData, const Vector<SubMesh>& subMeshes, MeshBufferType bufferType)
+	MeshPtr Mesh::_createPtr(const MeshDataPtr& initialMeshData, const Vector<SubMesh>& subMeshes, int usage)
 	{
-		return MeshManager::instance().create(initialMeshData, subMeshes, bufferType);
+		return MeshManager::instance().create(initialMeshData, subMeshes, usage);
 	}
 }

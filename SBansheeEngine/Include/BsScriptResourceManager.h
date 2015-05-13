@@ -75,6 +75,18 @@ namespace BansheeEngine
 		 * @note Throws an exception if resource for the handle already exists.
 		 * 		 Initializes the ScriptResource with an existing managed instance.
 		 */
+		ScriptMesh* createScriptMesh(const HMesh& resourceHandle);
+
+		/**
+		 * @note Throws an exception if resource for the handle already exists.
+		 * 		 Initializes the ScriptResource with an existing managed instance.
+		 */
+		ScriptMesh* createScriptMesh(MonoObject* existingInstance, const HMesh& resourceHandle);
+
+		/**
+		 * @note Throws an exception if resource for the handle already exists.
+		 * 		 Initializes the ScriptResource with an existing managed instance.
+		 */
 		ScriptPlainText* createScriptPlainText(const HPlainText& resourceHandle);
 
 		/**
@@ -149,6 +161,11 @@ namespace BansheeEngine
 		 * @note Returns nullptr if script resource doesn't exist.
 		 */
 		ScriptMaterial* getScriptMaterial(const HMaterial& resourceHandle);
+
+		/**
+		 * @note Returns nullptr if script resource doesn't exist.
+		 */
+		ScriptMesh* getScriptMesh(const HMesh& resourceHandle);
 
 		/**
 		 * @note Returns nullptr if script resource doesn't exist.

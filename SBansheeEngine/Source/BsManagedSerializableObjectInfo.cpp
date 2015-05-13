@@ -141,6 +141,8 @@ namespace BansheeEngine
 			return ScriptAssemblyManager::instance().getShaderClass()->_getInternalClass();
 		case ScriptPrimitiveType::MaterialRef:
 			return ScriptAssemblyManager::instance().getMaterialClass()->_getInternalClass();
+		case ScriptPrimitiveType::MeshRef:
+			return ScriptAssemblyManager::instance().getMeshClass()->_getInternalClass();
 		case ScriptPrimitiveType::ManagedResourceRef:
 			return ScriptAssemblyManager::instance().getManagedResourceClass()->_getInternalClass();
 		case ScriptPrimitiveType::PlainTextRef:

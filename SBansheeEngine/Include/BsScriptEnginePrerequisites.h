@@ -32,6 +32,7 @@ namespace BansheeEngine
 	class ScriptScriptCode;
 	class ScriptShader;
 	class ScriptMaterial;
+	class ScriptMesh;
 	class ScriptGUIElementStyle;
 	class ScriptGUIElementStateStyle;
 	class ScriptGUILayout;
@@ -43,6 +44,7 @@ namespace BansheeEngine
 	class ScriptRenderTarget;
 	class ScriptRenderTexture2D;
 	class ScriptCameraHandler;
+	class ScriptMeshData;
 	class ManagedComponent;
 	class ManagedSerializableFieldData;
 	class ManagedSerializableFieldKey;
