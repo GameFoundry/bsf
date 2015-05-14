@@ -1279,6 +1279,9 @@ namespace BansheeEngine
 		mNewElementsInFocus.clear();
 		for(auto& focusedElement : mElementsInFocus)
 		{
+			if (focusedElement.element->_isDestroyed())
+				continue;
+
 			if(getWidgetWindow(*focusedElement.widget) == &win)
 			{
 				mCommandEvent = GUICommandEvent();
@@ -1465,21 +1468,33 @@ namespace BansheeEngine
 
 	bool GUIManager::sendMouseEvent(GUIWidget* widget, GUIElement* element, const GUIMouseEvent& event)
 	{
+		if (element->_isDestroyed())
+			return false;
+
 		return widget->_mouseEvent(element, event);
 	}
 
 	bool GUIManager::sendTextInputEvent(GUIWidget* widget, GUIElement* element, const GUITextInputEvent& event)
 	{
+		if (element->_isDestroyed())
+			return false;
+
 		return widget->_textInputEvent(element, event);
 	}
 
 	bool GUIManager::sendCommandEvent(GUIWidget* widget, GUIElement* element, const GUICommandEvent& event)
 	{
+		if (element->_isDestroyed())
+			return false;
+
 		return widget->_commandEvent(element, event);
 	}
 
 	bool GUIManager::sendVirtualButtonEvent(GUIWidget* widget, GUIElement* element, const GUIVirtualButtonEvent& event)
 	{
+		if (element->_isDestroyed())
+			return false;
+
 		return widget->_virtualButtonEvent(element, event);
 	}
 
