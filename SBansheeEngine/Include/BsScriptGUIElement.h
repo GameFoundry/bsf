@@ -97,6 +97,7 @@ namespace BansheeEngine
 		static void internal_SetFlexibleWidth(ScriptGUIElementBaseTBase* nativeInstance, UINT32 minWidth, UINT32 maxWidth);
 		static void internal_SetHeight(ScriptGUIElementBaseTBase* nativeInstance, UINT32 height);
 		static void internal_SetFlexibleHeight(ScriptGUIElementBaseTBase* nativeInstance, UINT32 minHeight, UINT32 maxHeight);
+		static void internal_SetContextMenu(ScriptGUIElementBaseTBase* nativeInstance, ScriptContextMenu* contextMenu);
 		static void internal_ResetDimensions(ScriptGUIElementBaseTBase* nativeInstance);
 
 		ScriptGUIElement(MonoObject* instance);

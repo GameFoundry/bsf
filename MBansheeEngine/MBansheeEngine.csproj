@@ -47,6 +47,7 @@
     <Compile Include="Builtin.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="CameraHandler.cs" />
+    <Compile Include="ContextMenu.cs" />
     <Compile Include="Cursor.cs" />
     <Compile Include="Debug.cs" />
     <Compile Include="Color.cs" />
@@ -125,6 +126,7 @@
     <Compile Include="SerializeObject.cs" />
     <Compile Include="SerializeField.cs" />
     <Compile Include="Shader.cs" />
+    <Compile Include="ShortcutKey.cs" />
     <Compile Include="Sphere.cs" />
     <Compile Include="SpriteTexture.cs" />
     <Compile Include="StringTable.cs" />

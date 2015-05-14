@@ -1,7 +1,6 @@
 ﻿using System.Runtime.InteropServices;
-using BansheeEngine;
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct ShortcutKey

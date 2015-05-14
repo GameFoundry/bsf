@@ -66,6 +66,8 @@ namespace BansheeEngine
 	class ManagedResource;
 	class ManagedResourceMetaData;
 	class ScriptAssemblyManager;
+	class ScriptHString;
+	class ScriptContextMenu;
 
 	typedef GameObjectHandle<ManagedComponent> HManagedComponent;
 	typedef ResourceHandle<ManagedResource> HManagedResource;

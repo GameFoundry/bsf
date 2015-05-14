@@ -76,6 +76,15 @@ namespace BansheeEngine
             Internal_ResetDimensions(mCachedPtr);
         }
 
+        public void SetContextMenu(ContextMenu menu)
+        {
+            IntPtr menuPtr = IntPtr.Zero;
+            if (menu != null)
+                menuPtr = menu.GetCachedPtr();
+
+            Internal_SetContextMenu(mCachedPtr, menuPtr);
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetVisible(IntPtr nativeInstance, bool visible);
 
@@ -105,6 +114,9 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern Rect2I Internal_GetVisualBounds(IntPtr nativeInstance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetContextMenu(IntPtr nativeInstance, IntPtr contextMenu);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_Destroy(IntPtr nativeInstance);

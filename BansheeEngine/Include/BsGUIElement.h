@@ -56,6 +56,12 @@ namespace BansheeEngine
 		void setStyle(const String& styleName);
 
 		/**
+		 * @brief	Assigns a new context menu that will be opened when the element is right clicked.
+		 *			Null is allowed in case no context menu is wanted.
+		 */
+		void setContextMenu(const GUIContextMenuPtr& menu) { mContextMenu = menu; }
+
+		/**
 		 * @copydoc	GUIElementBase::getVisibleBounds
 		 */
 		Rect2I getVisibleBounds() override;
@@ -302,7 +308,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method.
 		 */
-		virtual GUIContextMenu* _getContextMenu() const { return nullptr; }
+		virtual GUIContextMenuPtr _getContextMenu() const { return mContextMenu; }
 
 		/**
 		 * @brief	Returns a clip rectangle relative to the element, used for offsetting
@@ -383,5 +389,7 @@ namespace BansheeEngine
 	private:
 		const GUIElementStyle* mStyle;
 		String mStyleName;
+
+		GUIContextMenuPtr mContextMenu;
 	};
 }

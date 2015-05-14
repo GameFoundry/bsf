@@ -984,7 +984,7 @@ namespace BansheeEngine
 		{
 			for(auto& elementInfo : mElementsUnderPointer)
 			{
-				GUIContextMenu* menu = elementInfo.element->_getContextMenu();
+				GUIContextMenuPtr menu = elementInfo.element->_getContextMenu();
 
 				if(menu != nullptr)
 				{

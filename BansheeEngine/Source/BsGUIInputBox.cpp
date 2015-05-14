@@ -1097,25 +1097,24 @@ namespace BansheeEngine
 		return _getStyle()->normal.textColor;
 	}
 
-	GUIContextMenu* GUIInputBox::_getContextMenu() const
+	GUIContextMenuPtr GUIInputBox::_getContextMenu() const
 	{
-		static bool initialized = false;
-		static GUIContextMenu mContextMenu;
+		static GUIContextMenuPtr contextMenu;
 
-		if(!initialized)
+		if (contextMenu == nullptr)
 		{
-			mContextMenu.addMenuItem(L"Cut", std::bind(&GUIInputBox::cutText, const_cast<GUIInputBox*>(this)), 0);
-			mContextMenu.addMenuItem(L"Copy", std::bind(&GUIInputBox::copyText, const_cast<GUIInputBox*>(this)), 0);
-			mContextMenu.addMenuItem(L"Paste", std::bind(&GUIInputBox::pasteText, const_cast<GUIInputBox*>(this)), 0);
+			contextMenu = bs_shared_ptr<GUIContextMenu>();
 
-			mContextMenu.setLocalizedName(L"Cut", HString(L"Cut"));
-			mContextMenu.setLocalizedName(L"Copy", HString(L"Copy"));
-			mContextMenu.setLocalizedName(L"Paste", HString(L"Paste"));
+			contextMenu->addMenuItem(L"Cut", std::bind(&GUIInputBox::cutText, const_cast<GUIInputBox*>(this)), 0);
+			contextMenu->addMenuItem(L"Copy", std::bind(&GUIInputBox::copyText, const_cast<GUIInputBox*>(this)), 0);
+			contextMenu->addMenuItem(L"Paste", std::bind(&GUIInputBox::pasteText, const_cast<GUIInputBox*>(this)), 0);
 
-			initialized = true;
+			contextMenu->setLocalizedName(L"Cut", HString(L"Cut"));
+			contextMenu->setLocalizedName(L"Copy", HString(L"Copy"));
+			contextMenu->setLocalizedName(L"Paste", HString(L"Paste"));
 		}
 
-		return &mContextMenu;
+		return contextMenu;
 	}
 
 	void GUIInputBox::cutText()

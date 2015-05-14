@@ -198,7 +198,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElement::getContextMenu
 		 */
-		virtual GUIContextMenu* _getContextMenu() const;
+		virtual GUIContextMenuPtr _getContextMenu() const override;
 	private:
 		/**
 		 * @brief	Retrieves a sprite from a render element index, and a local render element index

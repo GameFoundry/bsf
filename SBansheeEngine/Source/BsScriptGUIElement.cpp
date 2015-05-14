@@ -7,6 +7,7 @@
 #include "BsMonoUtil.h"
 #include "BsGUIElement.h"
 #include "BsScriptGUILayout.h"
+#include "BsScriptContextMenu.h"
 #include "BsGUILayout.h"
 
 namespace BansheeEngine
@@ -61,6 +62,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetHeight", &ScriptGUIElement::internal_SetHeight);
 		metaData.scriptClass->addInternalCall("Internal_SetFlexibleHeight", &ScriptGUIElement::internal_SetFlexibleHeight);
 		metaData.scriptClass->addInternalCall("Internal_ResetDimensions", &ScriptGUIElement::internal_ResetDimensions);
+		metaData.scriptClass->addInternalCall("Internal_SetContextMenu", &ScriptGUIElement::internal_SetContextMenu);
 	}
 
 	void ScriptGUIElement::internal_destroy(ScriptGUIElementBaseTBase* nativeInstance)
@@ -121,5 +123,20 @@ namespace BansheeEngine
 	void ScriptGUIElement::internal_ResetDimensions(ScriptGUIElementBaseTBase* nativeInstance)
 	{
 		nativeInstance->getGUIElement()->resetDimensions();
+	}
+
+	void ScriptGUIElement::internal_SetContextMenu(ScriptGUIElementBaseTBase* nativeInstance, ScriptContextMenu* contextMenu)
+	{
+		GUIElementBase* guiElemBase = nativeInstance->getGUIElement();
+		if (guiElemBase->_getType() == GUIElementBase::Type::Element)
+		{
+			GUIElement* guiElem = static_cast<GUIElement*>(guiElemBase);
+
+			GUIContextMenuPtr nativeContextMenu;
+			if (contextMenu != nullptr)
+				nativeContextMenu = contextMenu->getInternal();
+
+			guiElem->setContextMenu(nativeContextMenu);
+		}
 	}
 }
