@@ -1,16 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using BansheeEngine;
 
 namespace BansheeEditor
 {
+    internal enum ProjectViewType
+    {
+        Grid64, Grid48, Grid32, List16
+    }
+
     internal sealed class ProjectWindow : EditorWindow
     {
-        private enum ViewType
-        {
-            Grid64, Grid48, Grid32, List16
-        }
-
         private struct EntryGUI
         {
             public EntryGUI(GUITexture icon, GUILabel label)
@@ -32,7 +33,7 @@ namespace BansheeEditor
         private bool hasContentFocus = false;
         private bool HasContentFocus { get { return HasFocus && hasContentFocus; } } // TODO - This is dummy and never set
 
-        private ViewType viewType = ViewType.Grid32;
+        private ProjectViewType viewType = ProjectViewType.Grid32;
 
         private string currentDirectory = "";
         private List<string> selectionPaths = new List<string>();
@@ -41,11 +42,21 @@ namespace BansheeEditor
         private GUIScrollArea contentScrollArea;
         private GUIPanel scrollAreaPanel;
 
+        private GUIButton optionsButton;
+
+        private ContextMenu entryContextMenu;
+
         private Dictionary<string, EntryGUI> pathToGUIEntry = new Dictionary<string, EntryGUI>();
 
         // Cut/Copy/Paste
         private List<string> copyPaths = new List<string>();
         private List<string> cutPaths = new List<string>();
+
+        internal ProjectViewType ViewType
+        {
+            get { return viewType; }
+            set { viewType = value; Refresh(); }
+        }
 
         [MenuItem("Windows/Project", ButtonModifier.Ctrl, ButtonCode.P)]
         private static void OpenProjectWindow()
@@ -58,11 +69,32 @@ namespace BansheeEditor
             ProjectLibrary.OnEntryAdded += OnEntryChanged;
             ProjectLibrary.OnEntryRemoved += OnEntryChanged;
 
+            GUILayoutY contentLayout = GUI.AddLayoutY();
+
+            GUILayoutX searchBarLayout = contentLayout.AddLayoutX();
+            GUITextField searchField = new GUITextField();
+            searchField.OnChanged += OnSearchChanged;
+            GUIButton clearSearchBtn = new GUIButton("C");
+            clearSearchBtn.OnClick += ClearSearch;
+            clearSearchBtn.SetWidth(40);
+            optionsButton = new GUIButton("O");
+            optionsButton.OnClick += OpenOptionsWindow;
+            optionsButton.SetWidth(40);
+            searchBarLayout.AddElement(searchField);
+            searchBarLayout.AddElement(clearSearchBtn);
+            searchBarLayout.AddElement(optionsButton);
+
             // TODO - Add search bar + options button with drop-down
             // TODO - Add directory bar + home button
 
             contentScrollArea = new GUIScrollArea(GUIOption.FlexibleWidth(), GUIOption.FlexibleHeight());
-            GUI.AddElement(contentScrollArea);
+            contentLayout.AddElement(contentScrollArea);
+
+            entryContextMenu = new ContextMenu();
+            entryContextMenu.AddItem("Cut", CutSelection, new ShortcutKey(ButtonModifier.Ctrl, ButtonCode.X));
+            entryContextMenu.AddItem("Copy", CopySelection, new ShortcutKey(ButtonModifier.Ctrl, ButtonCode.C));
+            entryContextMenu.AddItem("Duplicate", DuplicateSelection, new ShortcutKey(ButtonModifier.Ctrl, ButtonCode.D));
+            entryContextMenu.AddItem("Paste", PasteToSelection, new ShortcutKey(ButtonModifier.Ctrl, ButtonCode.V));
 
             Reset();
         }
@@ -153,12 +185,6 @@ namespace BansheeEditor
             }
         }
 
-        private void SetView(ViewType type)
-        {
-            viewType = type;
-            Refresh();
-        }
-
         private void EditorUpdate()
         {
             if (HasContentFocus)
@@ -167,24 +193,20 @@ namespace BansheeEditor
                 {
                     if (Input.IsButtonUp(ButtonCode.C))
                     {
-                        if(selectionPaths.Count > 0)
-                            Copy(selectionPaths);
+                        CopySelection();
                     }
                     else if (Input.IsButtonUp(ButtonCode.X))
                     {
-                        if (selectionPaths.Count > 0)
-                            Cut(selectionPaths);
+                        CutSelection();
                     }
                     else if (Input.IsButtonUp(ButtonCode.D))
                     {
-                        if (selectionPaths.Count > 0)
-                            Duplicate(selectionPaths);
+                        DuplicateSelection();
                     }
                     else if (Input.IsButtonUp(ButtonCode.V))
                     {
-                        Paste(currentDirectory);
+                        PasteToSelection();
                     }
-                    
                 }
             }
 
@@ -275,7 +297,7 @@ namespace BansheeEditor
             if (childEntries.Length == 0)
                 return;
 
-            if (viewType == ViewType.List16)
+            if (viewType == ProjectViewType.List16)
             {
                 int tileSize = 16;
 
@@ -296,9 +318,9 @@ namespace BansheeEditor
                 int tileSize = 64;
                 switch (viewType)
                 {
-                    case ViewType.Grid64: tileSize = 64; break;
-                    case ViewType.Grid48: tileSize = 48; break;
-                    case ViewType.Grid32: tileSize = 32; break;
+                    case ProjectViewType.Grid64: tileSize = 64; break;
+                    case ProjectViewType.Grid48: tileSize = 48; break;
+                    case ProjectViewType.Grid32: tileSize = 32; break;
                 }
 
                 GUILayoutX rowLayout = contentLayout.AddLayoutX();
@@ -338,6 +360,7 @@ namespace BansheeEditor
             GUIButton catchAll = new GUIButton("", EditorStyles.Blank);
             catchAll.Bounds = contentBounds;
             catchAll.OnClick += OnCatchAllClicked;
+            catchAll.SetContextMenu(entryContextMenu);
 
             contentUnderlayPanel.AddElement(catchAll);
 
@@ -384,6 +407,7 @@ namespace BansheeEditor
             overlayBtn.Bounds = entryButtonBounds;
             overlayBtn.OnClick += () => OnEntryClicked(entry.Path);
             overlayBtn.OnDoubleClick += () => OnEntryDoubleClicked(entry.Path);
+            overlayBtn.SetContextMenu(entryContextMenu);
 
             overlayPanel.AddElement(overlayBtn);
 
@@ -435,6 +459,62 @@ namespace BansheeEditor
             Selection.resourcePaths = new string[] { };
         }
 
+        private void CutSelection()
+        {
+            if (selectionPaths.Count > 0)
+                Cut(selectionPaths);
+        }
+
+        private void CopySelection()
+        {
+            if (selectionPaths.Count > 0)
+                Copy(selectionPaths);
+        }
+
+        private void DuplicateSelection()
+        {
+            if (selectionPaths.Count > 0)
+                Duplicate(selectionPaths);
+        }
+
+        private void PasteToSelection()
+        {
+            DirectoryEntry selectedDirectory = null;
+            if (selectionPaths.Count == 1)
+            {
+                LibraryEntry entry = ProjectLibrary.GetEntry(selectionPaths[0]);
+                if (entry != null && entry.Type == LibraryEntryType.Directory)
+                    selectedDirectory = (DirectoryEntry) entry;
+            }
+
+            if(selectedDirectory != null)
+                Paste(selectedDirectory.Path);
+            else
+                Paste(currentDirectory);
+        }
+
+        private void OnSearchChanged(string newValue)
+        {
+            // TODO
+        }
+
+        private void ClearSearch()
+        {
+            // TODO
+        }
+
+        private void OpenOptionsWindow()
+        {
+            Vector2I openPosition;
+            Rect2I buttonBounds = optionsButton.Bounds;
+
+            openPosition.x = buttonBounds.x + buttonBounds.width / 2;
+            openPosition.y = buttonBounds.y + buttonBounds.height / 2;
+
+            ProjectDropDown dropDown = DropDownWindow.Open<ProjectDropDown>(this, openPosition);
+            dropDown.SetParent(this);
+        }
+
         private void Reset()
         {
             currentDirectory = ProjectLibrary.Root.Path;
@@ -446,6 +526,79 @@ namespace BansheeEditor
             base.WindowResized(width, height);
 
             Refresh();
+        }
+    }
+
+    internal class ProjectDropDown : DropDownWindow
+    {
+        private ProjectWindow parent;
+
+        public ProjectDropDown()
+            :base(100, 50)
+        { }
+
+        internal void SetParent(ProjectWindow parent)
+        {
+            this.parent = parent;
+
+            GUIToggleGroup group = new GUIToggleGroup();
+
+            GUIToggle list16 = new GUIToggle("16", group);
+            GUIToggle grid32 = new GUIToggle("32", group);
+            GUIToggle grid48 = new GUIToggle("32", group);
+            GUIToggle grid64 = new GUIToggle("64", group);
+
+            ProjectViewType activeType = parent.ViewType;
+            switch (activeType)
+            {
+                case ProjectViewType.List16:
+                    list16.ToggleOn();
+                    break;
+                case ProjectViewType.Grid32:
+                    grid32.ToggleOn();
+                    break;
+                case ProjectViewType.Grid48:
+                    grid48.ToggleOn();
+                    break;
+                case ProjectViewType.Grid64:
+                    grid64.ToggleOn();
+                    break;
+            }
+
+            list16.OnToggled += (active) =>
+            {
+                if (active)
+                    ChangeViewType(ProjectViewType.List16);
+            };
+
+            grid32.OnToggled += (active) =>
+            {
+                if (active)
+                    ChangeViewType(ProjectViewType.Grid32);
+            };
+
+            grid48.OnToggled += (active) =>
+            {
+                if (active)
+                    ChangeViewType(ProjectViewType.Grid48);
+            };
+
+            grid64.OnToggled += (active) =>
+            {
+                if (active)
+                    ChangeViewType(ProjectViewType.Grid64);
+            };
+
+            GUILayoutX contentLayout = GUI.AddLayoutX();
+            contentLayout.AddElement(list16);
+            contentLayout.AddElement(grid32);
+            contentLayout.AddElement(grid48);
+            contentLayout.AddElement(grid64);
+        }
+
+        private void ChangeViewType(ProjectViewType viewType)
+        {
+            parent.ViewType = viewType;
         }
     }
 }

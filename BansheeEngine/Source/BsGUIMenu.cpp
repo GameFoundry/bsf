@@ -1,6 +1,5 @@
 #include "BsGUIMenu.h"
 #include "BsGUIDropDownMenu.h"
-#include "BsShortcutManager.h"
 
 namespace BansheeEngine
 {
@@ -12,8 +11,7 @@ namespace BansheeEngine
 	GUIMenuItem::GUIMenuItem(GUIMenuItem* parent, const WString& name, std::function<void()> callback, INT32 priority, const ShortcutKey& key)
 		:mParent(parent), mName(name), mCallback(callback), mIsSeparator(false), mPriority(priority), mShortcut(key)
 	{
-		if (mCallback != nullptr && mShortcut.isValid())
-			ShortcutManager::instance().addShortcut(mShortcut, mCallback);
+
 	}
 
 	GUIMenuItem::GUIMenuItem(GUIMenuItem* parent, INT32 priority)
@@ -24,9 +22,6 @@ namespace BansheeEngine
 
 	GUIMenuItem::~GUIMenuItem()
 	{
-		if (mCallback != nullptr && mShortcut.isValid())
-			ShortcutManager::instance().removeShortcut(mShortcut);
-
 		for(auto& child : mChildren)
 			bs_delete<PoolAlloc>(child);
 	}
@@ -105,8 +100,6 @@ namespace BansheeEngine
 					existingItem = bs_new<GUIMenuItem, PoolAlloc>(curSubMenu, pathElem, callback, priority, key);
 				else
 				{
-					const WString& nextPathElem = *(pathElements.begin() + i);
-
 					existingItem = bs_alloc<GUIMenuItem, PoolAlloc>();
 					existingItem = new (existingItem)GUIMenuItem(curSubMenu, pathElem, nullptr, 0, ShortcutKey::NONE);
 				}

@@ -40,6 +40,7 @@ namespace BansheeEngine
 		GUIButton* mCloseBtn;
 
 		Vector<GUIMenuBarData> mChildMenus;
+		UnorderedMap<WString, ShortcutKey> mEntryShortcuts;
 
 		GUIButton* mSubMenuButton;
 		bool mSubMenuOpen;
@@ -56,6 +57,9 @@ namespace BansheeEngine
 		 * @return	False if first element doesn't exist, true otherwise.
 		 */
 		bool stripPath(WString& path, WString& pathRoot) const;
+
+		void registerShortcut(const WString& path, const ShortcutKey& shortcut, std::function<void()> callback);
+		void unregisterShortcut(const WString& path);
 
 		void openSubMenu(const WString& name);
 		void closeSubMenu();

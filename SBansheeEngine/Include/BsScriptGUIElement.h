@@ -20,6 +20,8 @@ namespace BansheeEngine
 	protected:
 		void initialize(GUIElementBase* element);
 
+		static void onFocusChanged(MonoObject* instance, bool focus);
+
 		bool mIsDestroyed;
 		GUIElementBase* mElement;
 	};
@@ -85,6 +87,10 @@ namespace BansheeEngine
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUIElement")
+
+		typedef void(__stdcall *OnFocusChangedThunkDef) (MonoObject*, bool, MonoException**);
+
+		static OnFocusChangedThunkDef onFocusChangedThunk;
 
 	private:
 		static void internal_destroy(ScriptGUIElementBaseTBase* nativeInstance);

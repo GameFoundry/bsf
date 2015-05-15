@@ -22,10 +22,10 @@ namespace BansheeEngine
 
 	void ScriptContextMenu::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("internal_CreateInstance", &ScriptContextMenu::internal_CreateInstance);
-		metaData.scriptClass->addInternalCall("internal_AddItem", &ScriptContextMenu::internal_AddItem);
-		metaData.scriptClass->addInternalCall("internal_AddSeparator", &ScriptContextMenu::internal_AddSeparator);
-		metaData.scriptClass->addInternalCall("internal_SetLocalizedName", &ScriptContextMenu::internal_SetLocalizedName);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptContextMenu::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_AddItem", &ScriptContextMenu::internal_AddItem);
+		metaData.scriptClass->addInternalCall("Internal_AddSeparator", &ScriptContextMenu::internal_AddSeparator);
+		metaData.scriptClass->addInternalCall("Internal_SetLocalizedName", &ScriptContextMenu::internal_SetLocalizedName);
 
 		onEntryTriggered = (OnEntryTriggeredThunkDef)metaData.scriptClass->getMethod("InternalDoOnEntryTriggered", 1)->getThunk();
 	}

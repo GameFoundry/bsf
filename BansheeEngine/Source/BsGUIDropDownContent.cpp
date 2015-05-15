@@ -168,8 +168,10 @@ namespace BansheeEngine
 
 	bool GUIDropDownContent::_commandEvent(const GUICommandEvent& ev)
 	{
+		bool baseReturn = GUIElementContainer::_commandEvent(ev);
+
 		if (!mKeyboardFocus)
-			return false;
+			return baseReturn;
 
 		UINT32 maxElemIdx = (UINT32)mDropDownData.entries.size();
 
@@ -211,7 +213,7 @@ namespace BansheeEngine
 			return true;
 		}
 
-		return false;
+		return baseReturn;
 	}
 
 	void GUIDropDownContent::setSelected(UINT32 idx)

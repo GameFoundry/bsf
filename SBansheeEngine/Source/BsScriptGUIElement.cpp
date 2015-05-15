@@ -8,7 +8,9 @@
 #include "BsGUIElement.h"
 #include "BsScriptGUILayout.h"
 #include "BsScriptContextMenu.h"
-#include "BsGUILayout.h"
+#include "BsGUIElement.h"
+
+using namespace std::placeholders;
 
 namespace BansheeEngine
 {
@@ -21,6 +23,20 @@ namespace BansheeEngine
 	void ScriptGUIElementBaseTBase::initialize(GUIElementBase* element)
 	{
 		mElement = element;
+
+		if (mElement != nullptr && mElement->_getType() == GUIElementBase::Type::Element)
+		{
+			GUIElement* guiElem = static_cast<GUIElement*>(element);
+			guiElem->onFocusChanged.connect(std::bind(&ScriptGUIElementBaseTBase::onFocusChanged, mManagedInstance, _1));
+		}
+	}
+
+	void ScriptGUIElementBaseTBase::onFocusChanged(MonoObject* instance, bool focus)
+	{
+		MonoException* exception = nullptr;
+		ScriptGUIElement::onFocusChangedThunk(instance, focus, &exception);
+
+		MonoUtil::throwIfException(exception);
 	}
 
 	ScriptGUIElementTBase::ScriptGUIElementTBase(MonoObject* instance)
@@ -43,6 +59,8 @@ namespace BansheeEngine
 		}
 	}
 
+	ScriptGUIElement::OnFocusChangedThunkDef ScriptGUIElement::onFocusChangedThunk;
+
 	ScriptGUIElement::ScriptGUIElement(MonoObject* instance)
 		:ScriptObject(instance)
 	{
@@ -63,6 +81,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetFlexibleHeight", &ScriptGUIElement::internal_SetFlexibleHeight);
 		metaData.scriptClass->addInternalCall("Internal_ResetDimensions", &ScriptGUIElement::internal_ResetDimensions);
 		metaData.scriptClass->addInternalCall("Internal_SetContextMenu", &ScriptGUIElement::internal_SetContextMenu);
+
+		onFocusChangedThunk = (OnFocusChangedThunkDef)metaData.scriptClass->getMethod("InternalOnFocusChanged", 1)->getThunk();
 	}
 
 	void ScriptGUIElement::internal_destroy(ScriptGUIElementBaseTBase* nativeInstance)

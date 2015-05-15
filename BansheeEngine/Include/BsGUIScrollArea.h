@@ -161,6 +161,16 @@ namespace BansheeEngine
 		 * @copydoc GUIElementContainer::updateBounds
 		 */
 		virtual void updateClippedBounds();
+
+		/**
+		 * @copydoc	GUIElementBase::_calculateLayoutSizeRange
+		 */
+		LayoutSizeRange _calculateLayoutSizeRange() const override;
+
+		/**
+		 * @copydoc GUIElementContainer::_getOptimalSize
+		 */
+		Vector2I _getOptimalSize() const override;
 	private:
 		GUIScrollArea(ScrollBarType vertBarType, ScrollBarType horzBarType, 
 			const String& scrollBarStyle, const String& scrollAreaStyle, const GUIDimensions& dimensions);

@@ -326,6 +326,11 @@ namespace BansheeEngine
 		 */
 		virtual Rect2I _getTextInputRect() const { return Rect2I(); }
 
+		/**
+		 * @brief	Triggered when the element loses or gains focus.
+		 */
+		Event<void(bool)> onFocusChanged;
+
 	protected:
 		/**
 		 * @brief	Called whenever render elements are dirty and need to be rebuilt.

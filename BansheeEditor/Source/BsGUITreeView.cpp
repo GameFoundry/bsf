@@ -428,7 +428,7 @@ namespace BansheeEngine
 			}
 		}
 
-		return false;
+		return GUIElementContainer::_commandEvent(ev);
 	}
 
 	bool GUITreeView::_virtualButtonEvent(const GUIVirtualButtonEvent& ev)

@@ -12,6 +12,7 @@
 #include "BsSceneObject.h"
 #include "BsPlatform.h"
 #include "BsCoreThread.h"
+#include <BsShortcutManager.h>
 
 namespace BansheeEngine
 {
@@ -105,6 +106,9 @@ namespace BansheeEngine
 
 			refreshNonClientAreas();
 		}
+
+		if (shortcut.isValid() && callback != nullptr)
+			registerShortcut(path, shortcut, callback);
 
 		return subMenu->menu->addMenuItem(strippedPath, callback, priority, shortcut);
 	}
@@ -217,6 +221,29 @@ namespace BansheeEngine
 		}
 
 		return nullptr;
+	}
+
+	void GUIMenuBar::registerShortcut(const WString& path, const ShortcutKey& shortcut, std::function<void()> callback)
+	{
+		ShortcutManager::instance().addShortcut(shortcut, callback);
+
+		WString trimmedPath = path;
+		StringUtil::trim(trimmedPath, L"/\\", false, true);
+
+		mEntryShortcuts[trimmedPath] = shortcut;
+	}
+
+	void GUIMenuBar::unregisterShortcut(const WString& path)
+	{
+		WString trimmedPath = path;
+		StringUtil::trim(trimmedPath, L"/\\", false, true);
+
+		auto findIter = mEntryShortcuts.find(trimmedPath);
+		if (findIter != mEntryShortcuts.end())
+		{
+			ShortcutManager::instance().removeShortcut(findIter->second);
+			mEntryShortcuts.erase(findIter);
+		}
 	}
 
 	bool GUIMenuBar::stripPath(WString& path, WString& pathRoot) const

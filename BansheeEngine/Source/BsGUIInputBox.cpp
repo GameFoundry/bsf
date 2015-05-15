@@ -535,6 +535,8 @@ namespace BansheeEngine
 
 	bool GUIInputBox::_commandEvent(const GUICommandEvent& ev)
 	{
+		bool baseReturn = GUIElement::_commandEvent(ev);
+
 		if(ev.getType() == GUICommandEventType::Redraw)
 		{
 			_markContentAsDirty();
@@ -814,7 +816,7 @@ namespace BansheeEngine
 
 		}
 
-		return false;
+		return baseReturn;
 	}
 
 	bool GUIInputBox::_virtualButtonEvent(const GUIVirtualButtonEvent& ev)

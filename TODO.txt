@@ -29,18 +29,20 @@ FBXImporter:
  - It should use DefaultMeshData
  - It should use and apply MeshImportOptions
 
-TODO:
- - Implement C# and Script mesh
+Test context menu
+Test drop down window
+
+ - Need to know when a focus was lost from the main area
+  - GUIElement::OnFocusChanged
+   - THis is only partially finished. I haven't hooked up the callback to GUIElement from ScriptGUIElement
 
 Simple tasks:
- - Add C# context menu support for GUI elements
  - Hook up windows drag and drop support
  - Hook up drag and drop internal to project window
  - Hook up drag and drop that interacts with scene and hierarchy windows
  - Ensure dragging near scroll area border scrolls the area
  - Add search bar
  - Add directory bar
- - Add DropDownWindow type that contains size options
 
 Test:
  - Basic look & navigation, selection/deselection

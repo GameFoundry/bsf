@@ -47,6 +47,11 @@ namespace BansheeEngine
 
 	bool GUIElement::_commandEvent(const GUICommandEvent& ev)
 	{
+		if (ev.getType() == GUICommandEventType::FocusGained)
+			onFocusChanged(true);
+		else if (ev.getType() == GUICommandEventType::FocusLost)
+			onFocusChanged(false);
+
 		return false;
 	}
 

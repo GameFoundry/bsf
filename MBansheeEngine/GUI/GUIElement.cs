@@ -9,6 +9,8 @@ namespace BansheeEngine
         protected GUILayout parent;
         private bool isDestroyed;
 
+        public Action<bool> OnFocusChanged;
+
         public Rect2I Bounds
         {
             get { return Internal_GetBounds(mCachedPtr); }
@@ -18,6 +20,12 @@ namespace BansheeEngine
         public Rect2I VisualBounds
         {
             get { return Internal_GetVisualBounds(mCachedPtr); }
+        }
+
+        private void InternalOnFocusChanged(bool focus)
+        {
+            if (OnFocusChanged != null)
+                OnFocusChanged(focus);
         }
 
         internal virtual void SetParent(GUILayout layout)
