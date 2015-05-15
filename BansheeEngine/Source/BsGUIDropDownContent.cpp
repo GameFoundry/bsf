@@ -18,7 +18,7 @@ namespace BansheeEngine
 	const String GUIDropDownContent::ENTRY_EXP_STYLE_TYPE = "DropDownEntryExpBtn";
 	const String GUIDropDownContent::SEPARATOR_STYLE_TYPE = "DropDownSeparator";
 
-	GUIDropDownContent::GUIDropDownContent(GUIDropDownBox::DropDownSubMenu* parent, const GUIDropDownData& dropDownData, 
+	GUIDropDownContent::GUIDropDownContent(GUIDropDownMenu::DropDownSubMenu* parent, const GUIDropDownData& dropDownData, 
 		const String& style, const GUIDimensions& dimensions)
 		:GUIElementContainer(dimensions, style), mDropDownData(dropDownData),
 		mSelectedIdx(UINT_MAX), mRangeStart(0), mRangeEnd(0), mParent(parent)
@@ -31,7 +31,7 @@ namespace BansheeEngine
 
 	}
 
-	GUIDropDownContent* GUIDropDownContent::create(GUIDropDownBox::DropDownSubMenu* parent, 
+	GUIDropDownContent* GUIDropDownContent::create(GUIDropDownMenu::DropDownSubMenu* parent, 
 		const GUIDropDownData& dropDownData, const String& style)
 	{
 		const String* curStyle = &style;
@@ -41,7 +41,7 @@ namespace BansheeEngine
 		return new (bs_alloc<GUIDropDownContent>()) GUIDropDownContent(parent, dropDownData, *curStyle, GUIDimensions::create());
 	}
 
-	GUIDropDownContent* GUIDropDownContent::create(GUIDropDownBox::DropDownSubMenu* parent, 
+	GUIDropDownContent* GUIDropDownContent::create(GUIDropDownMenu::DropDownSubMenu* parent, 
 		const GUIDropDownData& dropDownData, const GUIOptions& options,
 		const String& style)
 	{

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "BsGUIDropDownBox.h"
+#include "BsGUIDropDownMenu.h"
 #include "BsShortcutKey.h"
 
 namespace BansheeEngine

@@ -236,6 +236,7 @@
     <ClCompile Include="Source\BsCursor.cpp" />
     <ClCompile Include="Source\BsDefaultMeshData.cpp" />
     <ClCompile Include="Source\BsDrawHelper.cpp" />
+    <ClCompile Include="Source\BsDropDownAreaPlacement.cpp" />
     <ClCompile Include="Source\BsGUIDropDownContent.cpp" />
     <ClCompile Include="Source\BsGUIElementStyle.cpp" />
     <ClCompile Include="Source\BsGUIPanel.cpp" />
@@ -263,6 +264,7 @@
     <ClInclude Include="Include\BsCursor.h" />
     <ClInclude Include="Include\BsDefaultMeshData.h" />
     <ClInclude Include="Include\BsDrawHelper.h" />
+    <ClInclude Include="Include\BsDropDownAreaPlacement.h" />
     <ClInclude Include="Include\BsGUIDropDownContent.h" />
     <ClInclude Include="Include\BsGUIElementStyleRTTI.h" />
     <ClInclude Include="Include\BsGUILayoutData.h" />
@@ -292,7 +294,7 @@
     <ClInclude Include="Include\BsGUICommandEvent.h" />
     <ClInclude Include="Include\BsGUIContent.h" />
     <ClInclude Include="Include\BsGUIContextMenu.h" />
-    <ClInclude Include="Include\BsGUIDropDownBox.h" />
+    <ClInclude Include="Include\BsGUIDropDownMenu.h" />
     <ClInclude Include="Include\BsGUIDropDownBoxManager.h" />
     <ClInclude Include="Include\BsGUIDropDownHitBox.h" />
     <ClInclude Include="Include\BsGUIElementContainer.h" />
@@ -366,7 +368,7 @@
     <ClCompile Include="Source\BsBuiltinResources.cpp" />
     <ClCompile Include="Source\BsGUIButton.cpp" />
     <ClCompile Include="Source\BsGUIContent.cpp" />
-    <ClCompile Include="Source\BsGUIDropDownBox.cpp" />
+    <ClCompile Include="Source\BsGUIDropDownMenu.cpp" />
     <ClCompile Include="Source\BsGUIDropDownBoxManager.cpp" />
     <ClCompile Include="Source\BsGUIDropDownHitBox.cpp" />
     <ClCompile Include="Source\BsGUIElementContainer.cpp" />

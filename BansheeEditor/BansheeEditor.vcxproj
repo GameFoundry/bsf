@@ -279,6 +279,7 @@
     <ClInclude Include="Include\BsDockManager.h" />
     <ClInclude Include="Include\BsDockManagerLayout.h" />
     <ClInclude Include="Include\BsDockManagerLayoutRTTI.h" />
+    <ClInclude Include="Include\BsDropDownWindowManager.h" />
     <ClInclude Include="Include\BsEditorApplication.h" />
     <ClInclude Include="Include\BsEditorCommand.h" />
     <ClInclude Include="Include\BsBuiltinEditorResources.h" />
@@ -291,6 +292,7 @@
     <ClInclude Include="Include\BsGizmoManager.h" />
     <ClInclude Include="Include\BsGUIColor.h" />
     <ClInclude Include="Include\BsGUIColorField.h" />
+    <ClInclude Include="Include\BsDropDownWindow.h" />
     <ClInclude Include="Include\BsGUIFieldBase.h" />
     <ClInclude Include="Include\BsGUIFloatField.h" />
     <ClInclude Include="Include\BsGUIComponentFoldout.h" />
@@ -356,6 +358,8 @@
     <ClCompile Include="Source\BsDbgTestGameObjectRef.cpp" />
     <ClCompile Include="Source\BsDockManager.cpp" />
     <ClCompile Include="Source\BsDockManagerLayout.cpp" />
+    <ClCompile Include="Source\BsDropDownWindow.cpp" />
+    <ClCompile Include="Source\BsDropDownWindowManager.cpp" />
     <ClCompile Include="Source\BsEditorCommand.cpp" />
     <ClCompile Include="Source\BsBuiltinEditorResources.cpp" />
     <ClCompile Include="Source\BsEditorTestSuite.cpp" />

@@ -2,7 +2,7 @@
 
 #include "BsPrerequisites.h"
 #include "BsGUIElementContainer.h"
-#include "BsGUIDropDownBox.h"
+#include "BsGUIDropDownMenu.h"
 
 namespace BansheeEngine
 {
@@ -37,7 +37,7 @@ namespace BansheeEngine
 		 *							from GUISkin of the GUIWidget the element is used on. If not specified
 		 *							default button style is used.
 		 */
-		static GUIDropDownContent* create(GUIDropDownBox::DropDownSubMenu* parent, const GUIDropDownData& dropDownData,
+		static GUIDropDownContent* create(GUIDropDownMenu::DropDownSubMenu* parent, const GUIDropDownData& dropDownData,
 			const String& style = StringUtil::BLANK);
 
 		/**
@@ -51,7 +51,7 @@ namespace BansheeEngine
 		 *							from GUISkin of the GUIWidget the element is used on. If not specified
 		 *							default button style is used.
 		 */
-		static GUIDropDownContent* create(GUIDropDownBox::DropDownSubMenu* parent, const GUIDropDownData& dropDownData, 
+		static GUIDropDownContent* create(GUIDropDownMenu::DropDownSubMenu* parent, const GUIDropDownData& dropDownData, 
 			const GUIOptions& options, const String& style = StringUtil::BLANK);
 
 		/**
@@ -76,7 +76,7 @@ namespace BansheeEngine
 		static const String ENTRY_EXP_STYLE_TYPE;
 		static const String SEPARATOR_STYLE_TYPE;
 	protected:
-		GUIDropDownContent(GUIDropDownBox::DropDownSubMenu* parent, const GUIDropDownData& dropDownData, 
+		GUIDropDownContent(GUIDropDownMenu::DropDownSubMenu* parent, const GUIDropDownData& dropDownData, 
 			const String& style, const GUIDimensions& dimensions);
 		~GUIDropDownContent() override;
 
@@ -129,7 +129,7 @@ namespace BansheeEngine
 		Vector<VisibleElement> mVisibleElements;
 		UINT32 mSelectedIdx;
 		UINT32 mRangeStart, mRangeEnd;
-		GUIDropDownBox::DropDownSubMenu* mParent;
+		GUIDropDownMenu::DropDownSubMenu* mParent;
 		bool mKeyboardFocus;
 	};
 }

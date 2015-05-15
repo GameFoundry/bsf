@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "BsGUIDropDownBox.h"
+#include "BsGUIDropDownMenu.h"
 #include "BsModule.h"
 
 namespace BansheeEngine
@@ -25,7 +25,7 @@ namespace BansheeEngine
 		 * @param	type				Specific type of drop down box to display.
 		 * @param	onClosedCallback	Callback triggered when drop down box is closed.
 		 */
-		GameObjectHandle<GUIDropDownBox> openDropDownBox(Viewport* target, const GUIDropDownAreaPlacement& placement,
+		GameObjectHandle<GUIDropDownMenu> openDropDownBox(Viewport* target, const DropDownAreaPlacement& placement,
 			const GUIDropDownData& dropDownData, const HGUISkin& skin, GUIDropDownType type, std::function<void()> onClosedCallback);
 
 		/**
@@ -35,7 +35,7 @@ namespace BansheeEngine
 
 	private:
 		HSceneObject mDropDownSO;
-		GameObjectHandle<GUIDropDownBox> mDropDownBox;
+		GameObjectHandle<GUIDropDownMenu> mDropDownBox;
 		std::function<void()> mOnClosedCallback;
 	};
 }

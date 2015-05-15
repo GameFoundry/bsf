@@ -1,5 +1,5 @@
 #include "BsGUIMenu.h"
-#include "BsGUIDropDownBox.h"
+#include "BsGUIDropDownMenu.h"
 #include "BsShortcutManager.h"
 
 namespace BansheeEngine

@@ -22,7 +22,7 @@
 #include "BsGUIInputSelection.h"
 #include "BsGUIListBox.h"
 #include "BsGUIButton.h"
-#include "BsGUIDropDownBox.h"
+#include "BsGUIDropDownMenu.h"
 #include "BsGUIContextMenu.h"
 #include "BsDragAndDropManager.h"
 #include "BsGUIDropDownBoxManager.h"

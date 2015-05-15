@@ -12,6 +12,8 @@ using namespace std::placeholders;
 
 namespace BansheeEngine
 {
+	ScriptContextMenu::OnEntryTriggeredThunkDef ScriptContextMenu::onEntryTriggered;
+
 	ScriptContextMenu::ScriptContextMenu(MonoObject* instance)
 		: ScriptObject(instance)
 	{

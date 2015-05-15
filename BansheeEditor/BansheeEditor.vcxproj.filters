@@ -279,6 +279,12 @@
     <ClInclude Include="Include\BsShaderIncludeHandler.h">
       <Filter>Header Files\Editor</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsDropDownWindow.h">
+      <Filter>Header Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsDropDownWindowManager.h">
+      <Filter>Header Files\Editor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsEditorWidgetContainer.cpp">
@@ -489,6 +495,12 @@
       <Filter>Source Files\Editor</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsShaderIncludeHandler.cpp">
+      <Filter>Source Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsDropDownWindowManager.cpp">
+      <Filter>Source Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsDropDownWindow.cpp">
       <Filter>Source Files\Editor</Filter>
     </ClCompile>
   </ItemGroup>

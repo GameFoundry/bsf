@@ -67,6 +67,7 @@ namespace BansheeEngine
 	class EditorSettings;
 	class SceneViewHandler;
 	class SelectionRenderer;
+	class DropDownWindow;
 
 	typedef std::shared_ptr<ProjectResourceMeta> ProjectResourceMetaPtr;
 	typedef std::shared_ptr<DockManagerLayout> DockManagerLayoutPtr;

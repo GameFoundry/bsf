@@ -9,7 +9,7 @@ namespace BansheeEngine
 	 * Helper class used for detecting when a certain area is in focus,
 	 * and getting notified when that state changes.
 	 */
-	class GUIDropDownHitBox : public GUIElementContainer
+	class BS_EXPORT GUIDropDownHitBox : public GUIElementContainer
 	{
 	public:
 		/**

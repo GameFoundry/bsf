@@ -16,6 +16,7 @@
 #include "BsBuildManager.h"
 #include "BsScriptCodeImporter.h"
 #include "BsShaderIncludeHandler.h"
+#include "BsDropDownWindowManager.h"
 
 // DEBUG ONLY
 #include "DbgEditorWidget1.h"
@@ -80,6 +81,7 @@ namespace BansheeEngine
 		saveWidgetLayout(EditorWidgetManager::instance().getLayout());
 		// TODO - Save project settings
 
+		DropDownWindowManager::shutDown();
 		EditorWidgetManager::shutDown();
 		EditorWindowManager::shutDown();
 		UndoRedo::shutDown();
@@ -143,6 +145,7 @@ namespace BansheeEngine
 		UndoRedo::startUp();
 		EditorWindowManager::startUp();
 		EditorWidgetManager::startUp();
+		DropDownWindowManager::startUp();
 
 		ScenePicking::startUp();
 		Selection::startUp();
@@ -249,6 +252,7 @@ namespace BansheeEngine
 		Application::preUpdate();
 
 		EditorWidgetManager::instance().update();
+		DropDownWindowManager::instance().update();
 	}
 
 	void EditorApplication::postUpdate()

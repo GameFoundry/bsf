@@ -6,7 +6,7 @@ namespace BansheeEngine
 {
     public class ContextMenu : ScriptObject
     {
-        private List<Action> callbacks; 
+        private List<Action> callbacks = new List<Action>(); 
 
         public ContextMenu()
         {
