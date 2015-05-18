@@ -54,11 +54,15 @@ namespace BansheeEngine
 		ManagedDropDownWindow* dropDownWindow = nullptr;
 		if (parentWindow != nullptr)
 		{
-			EditorWidgetContainer* parentContainer = parentWindow->getEditorWidget()->_getParent();
+			EditorWidgetBase* editorWidget = parentWindow->getEditorWidget();
+			EditorWidgetContainer* parentContainer = editorWidget->_getParent();
 			if (parentContainer != nullptr)
 			{
 				RenderWindowPtr parentRenderWindow = parentContainer->getParentWindow()->getRenderWindow();
 				Viewport* parentTarget = parentContainer->getParentWidget().getTarget();
+
+				position.x += editorWidget->getX();
+				position.y += editorWidget->getY();
 
 				dropDownWindow = DropDownWindowManager::instance().open<ManagedDropDownWindow>(
 					parentRenderWindow, parentTarget, position, instance, width, height);
@@ -66,8 +70,12 @@ namespace BansheeEngine
 		}
 
 		ScriptDropDownWindow* nativeInstance = new (bs_alloc<ScriptDropDownWindow>()) ScriptDropDownWindow(dropDownWindow);
-		dropDownWindow->initialize(nativeInstance);
-		dropDownWindow->triggerOnInitialize();
+
+		if (dropDownWindow != nullptr)
+		{
+			dropDownWindow->initialize(nativeInstance);
+			dropDownWindow->triggerOnInitialize();
+		}
 	}
 
 	void ScriptDropDownWindow::internal_Close(ScriptDropDownWindow* thisPtr)

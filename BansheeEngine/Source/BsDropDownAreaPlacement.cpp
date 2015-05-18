@@ -1,4 +1,5 @@
 #include "BsDropDownAreaPlacement.h"
+#include "BsDebug.h"
 
 namespace BansheeEngine
 {
@@ -93,7 +94,7 @@ namespace BansheeEngine
 		if (height <= availableDownwardHeight)
 		{
 			output.y = potentialBottomStart;
-			output.height = availableDownwardHeight;
+			output.height = height;
 			vertDir = VertDir::Down;
 		}
 		else
@@ -101,13 +102,13 @@ namespace BansheeEngine
 			if (availableDownwardHeight >= availableUpwardHeight)
 			{
 				output.y = potentialBottomStart;
-				output.height = availableDownwardHeight;
+				output.height = std::min(height, availableDownwardHeight);;
 				vertDir = VertDir::Down;
 			}
 			else
 			{
 				output.y = potentialTopStart - (INT32)std::min(height, availableUpwardHeight);
-				output.height = availableUpwardHeight;
+				output.height = std::min(height, availableUpwardHeight);
 				vertDir = VertDir::Up;
 			}
 		}

@@ -1,12 +1,9 @@
 -------------------------
 FBX
- - Unity stores mesh attributes per-index and then performs splitting as needed. See code in ImportMeshUtility
-  - This means I probably want to delay creating MeshData - which is also okay since I determine bone weights at a later stage anyway
+ - DefaultMeshData is defined in BansheeEngine but FBXImporter only includes Banshee Core
  - Transform tangent/bitangent and encode them into a 4-vector value
- - Transform between FBX trans/rot/scale and engine trans/rot/scale
- - Neater mesh parsing
- - Calculate normals from smoothing groups
-  - Control this via an import option? Since in same cases normals are provided.
+ - It should use DefaultMeshData
+ - It should use and apply MeshImportOptions
  - Import skeleton
   - Unity just maps nodes referenced by FbxSkin clusters to bones, it do no separate parsing
  - Import keyframes

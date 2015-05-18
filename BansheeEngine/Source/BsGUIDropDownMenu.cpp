@@ -14,6 +14,7 @@
 #include "BsSceneObject.h"
 #include "BsGUIDropDownHitBox.h"
 #include "BsGUIDropDownContent.h"
+#include "BsDebug.h"
 
 using namespace std::placeholders;
 
@@ -173,8 +174,6 @@ namespace BansheeEngine
 		mContentPanel->setHeight(height);
 		mContentPanel->setDepthRange(100 - depthOffset * 2 - 1);
 
-		mContentLayout = mContentPanel->addNewElement<GUILayoutY>();
-
 		// Background frame
 		mBackgroundPanel = mOwner->getPanel()->addNewElement<GUIPanel>();
 		mBackgroundPanel->setWidth(width);
@@ -186,6 +185,7 @@ namespace BansheeEngine
 		mBackgroundFrame = GUITexture::create(GUIImageScaleMode::StretchToFit, mOwner->mBackgroundStyle);
 		backgroundLayout->addElement(mBackgroundFrame);
 
+		mContentLayout = mContentPanel->addNewElement<GUILayoutY>();
 		mContentLayout->addElement(mContent); // Note: It's important this is added to the layout before we 
 		// use it for size calculations, in order for its skin to be assigned
 
@@ -203,13 +203,18 @@ namespace BansheeEngine
 
 		mOpenedUpward = vertDir == DropDownAreaPlacement::VertDir::Up;
 
+		UINT32 actualY = placementBounds.y;
+		if (mOpenedUpward)
+			y = placementBounds.y + placementBounds.height;
+		else
+			y = placementBounds.y;
+
 		x = placementBounds.x;
-		y = placementBounds.y;
 		width = placementBounds.width;
 		height = placementBounds.height;
 
-		mContentPanel->setPosition(x, y);
-		mBackgroundPanel->setPosition(x, y);
+		mContentPanel->setPosition(x, actualY);
+		mBackgroundPanel->setPosition(x, actualY);
 
 		updateGUIElements();
 

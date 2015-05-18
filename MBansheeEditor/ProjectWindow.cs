@@ -506,7 +506,7 @@ namespace BansheeEditor
         private void OpenOptionsWindow()
         {
             Vector2I openPosition;
-            Rect2I buttonBounds = optionsButton.Bounds;
+            Rect2I buttonBounds = GUILayoutUtility.CalculateBounds(optionsButton, GUI);
 
             openPosition.x = buttonBounds.x + buttonBounds.width / 2;
             openPosition.y = buttonBounds.y + buttonBounds.height / 2;

@@ -91,14 +91,29 @@ namespace BansheeEngine
 		}
 
         /**
-         * @brief	Compare 2 floats, using tolerance for inaccuracies.
+         * @brief	Compare two floats, using tolerance for inaccuracies.
          */
         static bool approxEquals(float a, float b, float tolerance = std::numeric_limits<float>::epsilon());
 
         /**
-         * @brief	Compare 2 doubles, using tolerance for inaccuracies.
+         * @brief	Compare two doubles, using tolerance for inaccuracies.
          */
 		static bool approxEquals(double a, double b, double tolerance = std::numeric_limits<double>::epsilon());
+
+		/**
+         * @brief	Compare two 2D vectors, using tolerance for inaccuracies.
+         */
+		static bool approxEquals(const Vector2& a, const Vector2& b, float tolerance = std::numeric_limits<float>::epsilon());
+
+		/**
+         * @brief	Compare two 3D vectors, using tolerance for inaccuracies.
+         */
+		static bool approxEquals(const Vector3& a, const Vector3& b, float tolerance = std::numeric_limits<float>::epsilon());
+
+		/**
+         * @brief	Compare two 4D vectors, using tolerance for inaccuracies.
+         */
+		static bool approxEquals(const Vector4& a, const Vector4& b, float tolerance = std::numeric_limits<float>::epsilon());
 
         /**
          * @brief	Calculates the tangent space vector for a given set of positions / texture coords.

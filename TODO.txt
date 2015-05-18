@@ -25,16 +25,22 @@ GUIResourceField doesn't distinguish between tex2d, tex3d and texcube.
 ----------------------------------------------------------------------
 Project window
 
-FBXImporter:
- - It should use DefaultMeshData
- - It should use and apply MeshImportOptions
+Opening drop down when it doesn't fit vertically opens it at the wrong position
+Crash when opening and closing the context menu many times, trying to delete a GUILayout that has already been deleted
+ - This might happen when parent layout or panel goes out of scope. It will get destroyed but it will not mark any of its children as destroyed
+ - And I can't just call Destroy in finalizer since it accesses its children which might have been finalized already
+ - When a window is closed(editor, modal or drop down, do I call destroy on its child layout?)
+
+Other:
+ - Double click doesn't seem to work
+ - Elements in the options drop down don't have proper style and are ugly in general
+ - List view doesn't look right
+
 
 Test context menu
 Test drop down window
 
- - Need to know when a focus was lost from the main area
-  - GUIElement::OnFocusChanged
-   - THis is only partially finished. I haven't hooked up the callback to GUIElement from ScriptGUIElement
+When clicking on drop down window it will interact with GUI elements beneath it
 
 Simple tasks:
  - Hook up windows drag and drop support

@@ -14,7 +14,7 @@ namespace BansheeEngine
 	DropDownWindow::DropDownWindow(const RenderWindowPtr& parent, Viewport* target, 
 		const Vector2I& position, UINT32 width, UINT32 height)
 		:mRootPanel(nullptr), mPosition(position), mWidth(width), mHeight(height), 
-		mRenderWindow(parent)
+		mRenderWindow(parent), mHitBox(nullptr)
 	{
 		mSceneObject = SceneObject::create("EditorWindow");
 
@@ -25,6 +25,18 @@ namespace BansheeEngine
 
 		mRootPanel = mGUI->getPanel()->addNewElement<GUIPanel>();
 		
+		GUIPanel* hitBoxPanel = mRootPanel->addNewElement<GUIPanel>(std::numeric_limits<INT16>::min());
+
+		mHitBox = GUIDropDownHitBox::create(false);
+		mHitBox->onFocusLost.connect(std::bind(&DropDownWindow::dropDownFocusLost, this));
+		mHitBox->setFocus(true);
+		hitBoxPanel->addElement(mHitBox);
+
+		GUIPanel* captureHitBoxPanel = mGUI->getPanel()->addNewElement<GUIPanel>(std::numeric_limits<INT16>::max());
+		GUIDropDownHitBox* captureHitBox = GUIDropDownHitBox::create(true);
+		captureHitBox->setBounds(Rect2I(0, 0, target->getWidth(), target->getHeight()));
+		captureHitBoxPanel->addElement(captureHitBox);
+
 		setSize(width, height);
 
 		GUIPanel* backgroundPanel = mRootPanel->addNewElement<GUIPanel>(500);
@@ -40,19 +52,6 @@ namespace BansheeEngine
 		mContents->setPosition(1, 1);
 		mContents->setWidth(width - 2);
 		mContents->setHeight(height - 2);
-
-
-		GUIPanel* hitBoxPanel = mRootPanel->addNewElement<GUIPanel>(std::numeric_limits<INT16>::min());
-
-		GUIDropDownHitBox* hitBox = GUIDropDownHitBox::create(false);
-		hitBox->onFocusLost.connect(std::bind(&DropDownWindow::dropDownFocusLost, this));
-		hitBox->setFocus(true);
-		hitBoxPanel->addElement(hitBox);
-
-		GUIPanel* captureHitBoxPanel = mGUI->getPanel()->addNewElement<GUIPanel>(std::numeric_limits<INT16>::max());
-
-		GUIDropDownHitBox* captureHitBox = GUIDropDownHitBox::create(true);
-		captureHitBoxPanel->addElement(captureHitBox);
 	}
 
 	DropDownWindow::~DropDownWindow()
@@ -96,6 +95,8 @@ namespace BansheeEngine
 		mRootPanel->setPosition(placementBounds.x, placementBounds.y);
 		mRootPanel->setWidth(width);
 		mRootPanel->setHeight(height);
+
+		mHitBox->setBounds(Rect2I(placementBounds.x, placementBounds.y, width, height));
 
 		mWidth = width;
 		mHeight = height;

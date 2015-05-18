@@ -285,6 +285,30 @@ namespace BansheeEngine
 			return false;
 	}
 
+	bool Math::approxEquals(const Vector2& a, const Vector2& b, float tolerance)
+	{
+		if (fabs(b.x - a.x) <= tolerance || fabs(b.y - a.y) <= tolerance)
+			return true;
+		else
+			return false;
+	}
+
+	bool Math::approxEquals(const Vector3& a, const Vector3& b, float tolerance)
+	{
+		if (fabs(b.x - a.x) <= tolerance || fabs(b.y - a.y) <= tolerance || fabs(b.z - a.z) <= tolerance)
+			return true;
+		else
+			return false;
+	}
+
+	bool Math::approxEquals(const Vector4& a, const Vector4& b, float tolerance)
+	{
+		if (fabs(b.x - a.x) <= tolerance || fabs(b.y - a.y) <= tolerance || fabs(b.z - a.z) <= tolerance || fabs(b.w - a.w) <= tolerance)
+			return true;
+		else
+			return false;
+	}
+
 	Vector3 Math::calculateTriTangent(const Vector3& position1, const Vector3& position2, 
 		const Vector3& position3, float u1, float v1, float u2, float v2, float u3, float v3)
 	{
