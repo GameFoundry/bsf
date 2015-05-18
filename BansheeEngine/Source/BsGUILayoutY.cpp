@@ -16,21 +16,29 @@ namespace BansheeEngine
 			return LayoutSizeRange();
 
 		Vector2I optimalSize;
+		Vector2I minSize;
 		for (auto& child : mChildren)
 		{
 			LayoutSizeRange sizeRange = child->_calculateLayoutSizeRange();
 			
 			if (child->_getType() == GUIElementBase::Type::FixedSpace)
-				sizeRange.optimal.x = 0;
+				sizeRange.optimal.x = sizeRange.min.x = 0;
 
 			UINT32 paddingX = child->_getPadding().left + child->_getPadding().right;
 			UINT32 paddingY = child->_getPadding().top + child->_getPadding().bottom;
 
 			optimalSize.y += sizeRange.optimal.y + paddingY;
 			optimalSize.x = std::max((UINT32)optimalSize.x, sizeRange.optimal.x + paddingX);
+
+			minSize.y += sizeRange.min.y + paddingY;
+			minSize.x = std::max((UINT32)minSize.x, sizeRange.min.x + paddingX);
 		}
 
-		return _getDimensions().calculateSizeRange(optimalSize);
+		LayoutSizeRange sizeRange = _getDimensions().calculateSizeRange(optimalSize);
+		sizeRange.min.x = std::max(sizeRange.min.x, minSize.x);
+		sizeRange.min.y = std::max(sizeRange.min.y, minSize.y);
+
+		return sizeRange;
 	}
 
 	void GUILayoutY::_updateOptimalLayoutSizes()
@@ -42,6 +50,7 @@ namespace BansheeEngine
 			mChildSizeRanges.resize(mChildren.size());
 
 		Vector2I optimalSize;
+		Vector2I minSize;
 
 		UINT32 childIdx = 0;
 		for(auto& child : mChildren)
@@ -54,6 +63,7 @@ namespace BansheeEngine
 
 				childSizeRange = fixedSpace->_calculateLayoutSizeRange();
 				childSizeRange.optimal.x = 0;
+				childSizeRange.min.x = 0;
 			}
 			else if(child->_getType() == GUIElementBase::Type::Element)
 			{
@@ -71,10 +81,15 @@ namespace BansheeEngine
 			optimalSize.y += childSizeRange.optimal.y + paddingY;
 			optimalSize.x = std::max((UINT32)optimalSize.x, childSizeRange.optimal.x + paddingX);
 
+			minSize.y += childSizeRange.min.y + paddingY;
+			minSize.x = std::max((UINT32)minSize.x, childSizeRange.min.x + paddingX);
+
 			childIdx++;
 		}
 
 		mSizeRange = _getDimensions().calculateSizeRange(optimalSize);
+		mSizeRange.min.x = std::max(mSizeRange.min.x, minSize.x);
+		mSizeRange.min.y = std::max(mSizeRange.min.y, minSize.y);
 	}
 
 	void GUILayoutY::_getElementAreas(const Rect2I& layoutArea, Rect2I* elementAreas, UINT32 numElements,

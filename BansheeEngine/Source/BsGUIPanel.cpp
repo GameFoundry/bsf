@@ -233,19 +233,29 @@ namespace BansheeEngine
 
 	Vector2I GUIPanel::_calcActualSize(INT32 x, INT32 y, Rect2I* elementAreas, UINT32 numElements) const
 	{
-		Vector2I actualArea;
-		for (UINT32 i = 0; i < numElements; i++)
+		Vector2I min;
+		Vector2I max;
+
+		if (numElements > 0)
+		{
+			Rect2I childArea = elementAreas[0];
+
+			min = Vector2I(childArea.x, childArea.y);
+			max = Vector2I(childArea.x + childArea.width, childArea.y + childArea.height);
+		}
+
+		for (UINT32 i = 1; i < numElements; i++)
 		{
 			Rect2I childArea = elementAreas[i];
 
-			INT32 diffX = (childArea.x - childArea.width) - x;
-			INT32 diffY = (childArea.y - childArea.height) - y;
+			min.x = std::min(min.x, childArea.x);
+			min.y = std::min(min.y, childArea.y);
 
-			actualArea.x = std::max(actualArea.x, diffX);
-			actualArea.y = std::max(actualArea.y, diffY);
+			max.x = std::max(max.x, childArea.x + childArea.width);
+			max.y = std::max(max.y, childArea.y + childArea.height);
 		}
 
-		return actualArea;
+		return max - min;
 	}
 
 	GUIPanel* GUIPanel::create(INT16 depth, UINT16 depthRangeMin, UINT16 depthRangeMax)

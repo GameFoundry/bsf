@@ -36,10 +36,7 @@ Crash when opening and closing the context menu many times, trying to delete a G
    that doesn't solve my issue as elements will go out of scope during assembly refresh
 
 Other:
- - Double click doesn't seem to work
- - Elements in the options drop down don't have proper style and are ugly in general
- - List view doesn't look right
-
+ - In larger icon views scrollbar doesn't show, and view elements can overlap the input box
 
 Test context menu
 Test drop down window

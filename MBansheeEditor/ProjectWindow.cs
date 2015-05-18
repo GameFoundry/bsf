@@ -33,7 +33,7 @@ namespace BansheeEditor
         private bool hasContentFocus = false;
         private bool HasContentFocus { get { return HasFocus && hasContentFocus; } } // TODO - This is dummy and never set
 
-        private ProjectViewType viewType = ProjectViewType.Grid32;
+        private ProjectViewType viewType = ProjectViewType.Grid64;
 
         private string currentDirectory = "";
         private List<string> selectionPaths = new List<string>();
@@ -324,30 +324,39 @@ namespace BansheeEditor
                 }
 
                 GUILayoutX rowLayout = contentLayout.AddLayoutX();
-
                 rowLayout.AddFlexibleSpace();
-                int currentWidth = GRID_ENTRY_SPACING * 2;
-                bool addedAny = false;
+
+                int elemSize = tileSize + GRID_ENTRY_SPACING;
+                int elemsPerRow = (scrollBounds.width - GRID_ENTRY_SPACING*2)/elemSize;
+
+                int elemsInRow = 0;
 
                 for (int i = 0; i < childEntries.Length; i++)
                 {
-                    if (currentWidth >= scrollBounds.width && addedAny) // We force at least one entry per row, even if it doesn't fit
+                    if (elemsInRow == elemsPerRow && elemsInRow > 0)
                     {
                         rowLayout = contentLayout.AddLayoutX();
-                        contentLayout.AddFlexibleSpace();
+                        contentLayout.AddSpace(GRID_ENTRY_SPACING);
 
                         rowLayout.AddFlexibleSpace();
-
-                        currentWidth = GRID_ENTRY_SPACING * 2;
+                        elemsInRow = 0;
                     }
 
                     LibraryEntry currentEntry = childEntries[i];
                     CreateEntryGUI(rowLayout, tileSize, true, currentEntry);
                     rowLayout.AddFlexibleSpace();
 
-                    addedAny = true;
-                    currentWidth += tileSize + GRID_ENTRY_SPACING;
+                    elemsInRow++;
                 }
+
+                int extraElements = elemsPerRow - elemsInRow;
+                for (int i = 0; i < extraElements; i++)
+                {
+                    rowLayout.AddSpace(tileSize);
+                    rowLayout.AddFlexibleSpace();
+                }
+
+                contentLayout.AddFlexibleSpace();
             }
 
             for (int i = 0; i < childEntries.Length; i++)
@@ -545,7 +554,7 @@ namespace BansheeEditor
         private ProjectWindow parent;
 
         public ProjectDropDown()
-            :base(100, 50)
+            :base(150, 30)
         { }
 
         internal void SetParent(ProjectWindow parent)
