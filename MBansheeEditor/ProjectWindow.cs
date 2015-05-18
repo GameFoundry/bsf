@@ -381,8 +381,17 @@ namespace BansheeEditor
             GUITexture icon = new GUITexture(iconTexture, GUIImageScaleMode.ScaleToFit,
                 true, GUIOption.FixedHeight(tileSize), GUIOption.FixedWidth(tileSize));
 
-            GUILabel label = new GUILabel(entry.Name, EditorStyles.MultiLineLabel,
-                GUIOption.FixedWidth(tileSize), GUIOption.FlexibleHeight(0, MAX_LABEL_HEIGHT));
+            GUILabel label = null;
+
+            if (grid)
+            {
+                label = new GUILabel(entry.Name, EditorStyles.MultiLineLabel,
+                    GUIOption.FixedWidth(tileSize), GUIOption.FlexibleHeight(0, MAX_LABEL_HEIGHT));
+            }
+            else
+            {
+                label = new GUILabel(entry.Name);   
+            }
 
             entryLayout.AddElement(icon);
             entryLayout.AddElement(label);
@@ -445,6 +454,8 @@ namespace BansheeEditor
 
         private void OnEntryDoubleClicked(string path)
         {
+            Debug.Log("DOUBLE CLICK " + path);
+
             LibraryEntry entry = ProjectLibrary.GetEntry(path);
             if (entry != null && entry.Type == LibraryEntryType.Directory)
             {
@@ -543,10 +554,10 @@ namespace BansheeEditor
 
             GUIToggleGroup group = new GUIToggleGroup();
 
-            GUIToggle list16 = new GUIToggle("16", group);
-            GUIToggle grid32 = new GUIToggle("32", group);
-            GUIToggle grid48 = new GUIToggle("32", group);
-            GUIToggle grid64 = new GUIToggle("64", group);
+            GUIToggle list16 = new GUIToggle("16", group, EditorStyles.Button, GUIOption.FixedWidth(30));
+            GUIToggle grid32 = new GUIToggle("32", group, EditorStyles.Button, GUIOption.FixedWidth(30));
+            GUIToggle grid48 = new GUIToggle("48", group, EditorStyles.Button, GUIOption.FixedWidth(30));
+            GUIToggle grid64 = new GUIToggle("64", group, EditorStyles.Button, GUIOption.FixedWidth(30));
 
             ProjectViewType activeType = parent.ViewType;
             switch (activeType)
@@ -589,11 +600,17 @@ namespace BansheeEditor
                     ChangeViewType(ProjectViewType.Grid64);
             };
 
-            GUILayoutX contentLayout = GUI.AddLayoutX();
+            GUILayoutY vertLayout = GUI.AddLayoutY();
+
+            vertLayout.AddFlexibleSpace();
+            GUILayoutX contentLayout = vertLayout.AddLayoutX();
+            contentLayout.AddFlexibleSpace();
             contentLayout.AddElement(list16);
             contentLayout.AddElement(grid32);
             contentLayout.AddElement(grid48);
             contentLayout.AddElement(grid64);
+            contentLayout.AddFlexibleSpace();
+            vertLayout.AddFlexibleSpace();
         }
 
         private void ChangeViewType(ProjectViewType viewType)

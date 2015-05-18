@@ -201,9 +201,12 @@ namespace BansheeEngine
 				}
 			}
 
+			UINT classStyle = 0;
+			if (mDesc.enableDoubleClick)
+				classStyle |= CS_DBLCLKS;
 
 			// Register the window class
-			WNDCLASS wc = { 0, Win32Platform::_win32WndProc, 0, 0, hInst,
+			WNDCLASS wc = { classStyle, Win32Platform::_win32WndProc, 0, 0, hInst,
 				LoadIcon(0, IDI_APPLICATION), LoadCursor(NULL, IDC_ARROW),
 				(HBRUSH)GetStockObject(BLACK_BRUSH), 0, "D3D9Wnd" };
 			RegisterClass(&wc);

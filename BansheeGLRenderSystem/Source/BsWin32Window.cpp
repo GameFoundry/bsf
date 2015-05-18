@@ -254,8 +254,12 @@ namespace BansheeEngine
 				}
 			}
 
+			UINT classStyle = CS_OWNDC;
+			if (mDesc.enableDoubleClick)
+				classStyle |= CS_DBLCLKS;
+
 			// register class and create window
-			WNDCLASS wc = { CS_OWNDC, Win32Platform::_win32WndProc, 0, 0, hInst,
+			WNDCLASS wc = { classStyle, Win32Platform::_win32WndProc, 0, 0, hInst,
 				LoadIcon(NULL, IDI_APPLICATION), LoadCursor(NULL, IDC_ARROW),
 				(HBRUSH)GetStockObject(BLACK_BRUSH), NULL, "GLWindow" };
 			RegisterClass(&wc);

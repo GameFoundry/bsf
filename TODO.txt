@@ -25,11 +25,15 @@ GUIResourceField doesn't distinguish between tex2d, tex3d and texcube.
 ----------------------------------------------------------------------
 Project window
 
-Opening drop down when it doesn't fit vertically opens it at the wrong position
 Crash when opening and closing the context menu many times, trying to delete a GUILayout that has already been deleted
  - This might happen when parent layout or panel goes out of scope. It will get destroyed but it will not mark any of its children as destroyed
  - And I can't just call Destroy in finalizer since it accesses its children which might have been finalized already
  - When a window is closed(editor, modal or drop down, do I call destroy on its child layout?)
+ - SOLUTION: My only option to deal with this might be to store child elements ScriptObject references in C++. If I do that make sure
+   to properly unregister elements when they're removed manually from the parent, and if they go out of scope (i.e. child goes out of scope
+   before the parent)
+ - In general, do I want GUI elements to go out of scope when not being referenced? Probably doesn't matter much, and even if I add C++ handles
+   that doesn't solve my issue as elements will go out of scope during assembly refresh
 
 Other:
  - Double click doesn't seem to work
