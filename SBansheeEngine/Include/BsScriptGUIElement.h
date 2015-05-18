@@ -16,14 +16,20 @@ namespace BansheeEngine
 		GUIElementBase* getGUIElement() const { return (GUIElementBase*)mElement; }
 
 		virtual void destroy() = 0;
+		bool isDestroyed() const { return mIsDestroyed; }
+		ScriptGUILayout* getParent() const { return mParent; }
+		void setParent(ScriptGUILayout* parent) { mParent = parent; }
 
 	protected:
 		void initialize(GUIElementBase* element);
+
+		virtual void _onManagedInstanceDeleted() override;
 
 		static void onFocusChanged(MonoObject* instance, bool focus);
 
 		bool mIsDestroyed;
 		GUIElementBase* mElement;
+		ScriptGUILayout* mParent;
 	};
 
 	template <class Type>
@@ -56,7 +62,7 @@ namespace BansheeEngine
 		ScriptGUIElementTBase(MonoObject* instance);
 		virtual ~ScriptGUIElementTBase() {}
 
-		virtual void destroy();
+		virtual void destroy() override;
 	};
 
 	template <class Type>

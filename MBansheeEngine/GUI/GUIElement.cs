@@ -6,9 +6,6 @@ namespace BansheeEngine
 {
     public abstract class GUIElement : ScriptObject
     {
-        protected GUILayout parent;
-        private bool isDestroyed;
-
         public Action<bool> OnFocusChanged;
 
         public Rect2I Bounds
@@ -28,25 +25,9 @@ namespace BansheeEngine
                 OnFocusChanged(focus);
         }
 
-        internal virtual void SetParent(GUILayout layout)
-        {
-            if (parent != null)
-                parent.RemoveInternal(this);
-
-            parent = layout;
-        }
-
         public virtual void Destroy()
         {
-            SetParent(null);
-
             Internal_Destroy(mCachedPtr);
-            isDestroyed = true;
-        }
-
-        public bool IsDestroyed()
-        {
-            return isDestroyed;
         }
 
         public void SetVisible(bool visible)

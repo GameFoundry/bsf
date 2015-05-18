@@ -26,17 +26,62 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateInstanceYFromScrollArea", &ScriptGUILayout::internal_createInstanceYFromScrollArea);
 		metaData.scriptClass->addInternalCall("Internal_AddElement", &ScriptGUILayout::internal_addElement);
 		metaData.scriptClass->addInternalCall("Internal_InsertElement", &ScriptGUILayout::internal_insertElement);
+		metaData.scriptClass->addInternalCall("Internal_GetChildCount", &ScriptGUILayout::internal_getChildCount);
+		metaData.scriptClass->addInternalCall("Internal_GetChild", &ScriptGUILayout::internal_getChild);
 	}
 
 	void ScriptGUILayout::destroy()
 	{
 		if(!mIsDestroyed)
 		{
+			if (mParent != nullptr)
+				mParent->removeChild(this);
+
+			while (mChildren.size() > 0)
+			{
+				ChildInfo childInfo = mChildren[0];
+				childInfo.element->destroy();
+			}
+
 			GUILayout::destroy(mLayout);
 
 			mLayout = nullptr;
-
 			mIsDestroyed = true;
+		}
+	}
+
+	void ScriptGUILayout::addChild(ScriptGUIElementBaseTBase* element)
+	{
+		ChildInfo childInfo;
+
+		childInfo.element = element;
+		childInfo.gcHandle = mono_gchandle_new(element->getManagedInstance(), false);
+
+		mChildren.push_back(childInfo);
+	}
+
+	void ScriptGUILayout::insertChild(UINT32 idx, ScriptGUIElementBaseTBase* element)
+	{
+		ChildInfo childInfo;
+
+		childInfo.element = element;
+		childInfo.gcHandle = mono_gchandle_new(element->getManagedInstance(), false);
+
+		mChildren.insert(mChildren.begin() + idx, childInfo);
+	}
+
+	void ScriptGUILayout::removeChild(ScriptGUIElementBaseTBase* element)
+	{
+		auto iterFind = std::find_if(mChildren.begin(), mChildren.end(), 
+			[&](const ChildInfo& x)
+		{
+			return x.element == element;
+		});
+
+		if (iterFind != mChildren.end())
+		{
+			mono_gchandle_free(iterFind->gcHandle);
+			mChildren.erase(iterFind);
 		}
 	}
 
@@ -90,14 +135,48 @@ namespace BansheeEngine
 			ScriptGUILayout(instance, nativeLayout);
 	}
 
-	void ScriptGUILayout::internal_addElement(ScriptGUILayout* instance, ScriptGUIElementTBase* element)
+	void ScriptGUILayout::internal_addElement(ScriptGUILayout* instance, ScriptGUIElementBaseTBase* element)
 	{
+		if (instance->isDestroyed() || element->isDestroyed())
+			return;
+
 		instance->getInternalValue()->addElement(element->getGUIElement());
+
+		if (element->getParent() != nullptr)
+			element->getParent()->removeChild(element);
+
+		element->setParent(instance);
+		instance->addChild(element);
 	}
 
-	void ScriptGUILayout::internal_insertElement(ScriptGUILayout* instance, UINT32 index, ScriptGUIElementTBase* element)
+	void ScriptGUILayout::internal_insertElement(ScriptGUILayout* instance, UINT32 index, ScriptGUIElementBaseTBase* element)
 	{
+		if (instance->isDestroyed() || element->isDestroyed())
+			return;
+
 		instance->getInternalValue()->insertElement(index, element->getGUIElement());
+
+		if (element->getParent() != nullptr)
+			element->getParent()->removeChild(element);
+
+		element->setParent(instance);
+		instance->insertChild(index, element);
+	}
+
+	UINT32 ScriptGUILayout::internal_getChildCount(ScriptGUILayout* instance)
+	{
+		if (instance->isDestroyed())
+			return 0;
+
+		return instance->mLayout->getNumChildren();
+	}
+
+	MonoObject* ScriptGUILayout::internal_getChild(ScriptGUILayout* instance, UINT32 index)
+	{
+		if (instance->isDestroyed() || instance->mChildren.size() >= index)
+			return nullptr;
+
+		return instance->mChildren[index].element->getManagedInstance();
 	}
 
 	ScriptGUIPanel::ScriptGUIPanel(MonoObject* instance)

@@ -73,9 +73,9 @@ namespace BansheeEngine
 		if (mModalWindow == nullptr)
 			return;
 
+		mModalWindow->mContentsPanel->destroy();
 		mModalWindow->triggerOnDestroy();
 		mModalWindow->releaseManagedInstance();
-		mModalWindow->close();
 		mModalWindow = nullptr;
 	}
 
@@ -188,7 +188,7 @@ namespace BansheeEngine
 	ManagedModalWindow::ManagedModalWindow(bool allowCloseButton, MonoObject* managedInstance)
 		:ModalWindow(HString::dummy(), allowCloseButton), mUpdateThunk(nullptr), mManagedInstance(managedInstance),
 		mOnInitializeThunk(nullptr), mOnDestroyThunk(nullptr), mOnWindowResizedMethod(nullptr), mGCHandle(0),
-		mScriptParent(nullptr)
+		mScriptParent(nullptr), mContentsPanel(nullptr)
 	{
 		mGCHandle = mono_gchandle_new(mManagedInstance, false);
 
@@ -223,6 +223,7 @@ namespace BansheeEngine
 				mGCHandle = mono_gchandle_new(mManagedInstance, false);
 
 				MonoObject* guiPanel = ScriptGUIPanel::createFromExisting(mContents);
+				mContentsPanel = ScriptGUILayout::toNative(guiPanel);
 				ScriptModalWindow::guiPanelField->setValue(mManagedInstance, guiPanel);
 
 				reloadMonoTypes(editorWindowClass);

@@ -97,5 +97,6 @@ namespace BansheeEngine
 		MonoObject* mManagedInstance;
 
 		ScriptEditorWindow* mScriptParent;
+		ScriptGUILayout* mContentsPanel;
 	};
 }

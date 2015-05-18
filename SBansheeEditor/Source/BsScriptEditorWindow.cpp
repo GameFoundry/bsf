@@ -255,13 +255,16 @@ namespace BansheeEngine
 
 	ScriptEditorWidget::ScriptEditorWidget(const String& ns, const String& type, EditorWidgetContainer& parentContainer)
 		:EditorWidgetBase(HString(toWString(type)), ns + "." + type, parentContainer), mNamespace(ns), mTypename(type),
-		mUpdateThunk(nullptr), mManagedInstance(nullptr), mOnInitializeThunk(nullptr), mOnDestroyThunk(nullptr)
+		mUpdateThunk(nullptr), mManagedInstance(nullptr), mOnInitializeThunk(nullptr), mOnDestroyThunk(nullptr), mContentsPanel(nullptr)
 	{
 		createManagedInstance();
 	}
 
 	ScriptEditorWidget::~ScriptEditorWidget()
 	{
+		mContentsPanel->destroy();
+		mContentsPanel = nullptr;
+
 		triggerOnDestroy();
 		ScriptEditorWindow::unregisterScriptEditorWindow(getName());
 	}
@@ -279,6 +282,7 @@ namespace BansheeEngine
 				mManagedInstance = editorWindowClass->createInstance();
 
 				MonoObject* guiPanel = ScriptGUIPanel::createFromExisting(mContent);
+				mContentsPanel = ScriptGUILayout::toNative(guiPanel);
 				ScriptEditorWindow::guiPanelField->setValue(mManagedInstance, guiPanel);
 
 				reloadMonoTypes(editorWindowClass);

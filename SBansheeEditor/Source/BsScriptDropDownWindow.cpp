@@ -126,11 +126,12 @@ namespace BansheeEngine
 	ManagedDropDownWindow::ManagedDropDownWindow(const RenderWindowPtr& parent, Viewport* target,
 		const Vector2I& position, MonoObject* managedInstance, UINT32 width, UINT32 height)
 		:DropDownWindow(parent, target, position, width, height), mUpdateThunk(nullptr), mManagedInstance(managedInstance),
-		mOnInitializeThunk(nullptr), mOnDestroyThunk(nullptr), mGCHandle(0), mScriptParent(nullptr)
+		mOnInitializeThunk(nullptr), mOnDestroyThunk(nullptr), mGCHandle(0), mScriptParent(nullptr), mContentsPanel(nullptr)
 	{
 		mGCHandle = mono_gchandle_new(mManagedInstance, false);
 
 		MonoObject* guiPanel = ScriptGUIPanel::createFromExisting(mContents);
+		mContentsPanel = ScriptGUILayout::toNative(guiPanel);
 		ScriptDropDownWindow::guiPanelField->setValue(mManagedInstance, guiPanel);
 
 		::MonoClass* rawMonoClass = mono_object_get_class(mManagedInstance);
@@ -144,6 +145,7 @@ namespace BansheeEngine
 
 	ManagedDropDownWindow::~ManagedDropDownWindow()
 	{
+		mContentsPanel->destroy();
 		triggerOnDestroy();
 		mScriptParent->notifyWindowClosed();
 

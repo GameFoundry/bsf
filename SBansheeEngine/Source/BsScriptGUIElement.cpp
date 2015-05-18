@@ -15,10 +15,8 @@ using namespace std::placeholders;
 namespace BansheeEngine
 {
 	ScriptGUIElementBaseTBase::ScriptGUIElementBaseTBase(MonoObject* instance)
-		:ScriptObjectBase(instance), mIsDestroyed(false), mElement(nullptr)
+		:ScriptObjectBase(instance), mIsDestroyed(false), mElement(nullptr), mParent(nullptr)
 	{ }
-
-
 
 	void ScriptGUIElementBaseTBase::initialize(GUIElementBase* element)
 	{
@@ -39,6 +37,11 @@ namespace BansheeEngine
 		MonoUtil::throwIfException(exception);
 	}
 
+	void ScriptGUIElementBaseTBase::_onManagedInstanceDeleted()
+	{
+		destroy();
+	}
+
 	ScriptGUIElementTBase::ScriptGUIElementTBase(MonoObject* instance)
 		:ScriptGUIElementBaseTBase(instance)
 	{
@@ -49,6 +52,9 @@ namespace BansheeEngine
 	{
 		if(!mIsDestroyed)
 		{
+			if (mParent != nullptr)
+				mParent->removeChild(this);
+
 			if (mElement->_getType() == GUIElementBase::Type::Element)
 			{
 				GUIElement::destroy((GUIElement*)mElement);

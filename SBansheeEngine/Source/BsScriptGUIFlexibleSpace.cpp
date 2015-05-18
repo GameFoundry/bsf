@@ -26,6 +26,9 @@ namespace BansheeEngine
 	{
 		if(!mIsDestroyed)
 		{
+			if (mParent != nullptr)
+				mParent->removeChild(this);
+
 			GUIFlexibleSpace::destroy(mFlexibleSpace);
 
 			mIsDestroyed = true;

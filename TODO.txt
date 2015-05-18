@@ -35,12 +35,6 @@ Crash when opening and closing the context menu many times, trying to delete a G
  - In general, do I want GUI elements to go out of scope when not being referenced? Probably doesn't matter much, and even if I add C++ handles
    that doesn't solve my issue as elements will go out of scope during assembly refresh
 
-Other:
- - In larger icon views scrollbar doesn't show, and view elements can overlap the input box
-
-Test context menu
-Test drop down window
-
 When clicking on drop down window it will interact with GUI elements beneath it
 
 Simple tasks:

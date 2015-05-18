@@ -90,5 +90,6 @@ namespace BansheeEngine
 		uint32_t mGCHandle;
 
 		ScriptModalWindow* mScriptParent;
+		ScriptGUILayout* mContentsPanel;
 	};
 }
