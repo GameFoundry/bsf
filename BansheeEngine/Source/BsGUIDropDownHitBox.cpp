@@ -28,6 +28,34 @@ namespace BansheeEngine
 
 	}
 
+	void GUIDropDownHitBox::setBounds(const Rect2I& bounds)
+	{
+		mBounds.clear();
+		mBounds.push_back(bounds);
+
+		updateClippedBounds();
+	}
+
+	void GUIDropDownHitBox::setBounds(const Vector<Rect2I>& bounds)
+	{
+		mBounds = bounds;
+
+		updateClippedBounds();
+	}
+
+	void GUIDropDownHitBox::updateClippedBounds()
+	{
+		mClippedBounds = Rect2I();
+
+		if (mBounds.size() > 0)
+		{
+			mClippedBounds = mBounds[0];
+
+			for (UINT32 i = 1; i < (UINT32)mBounds.size(); i++)
+				mClippedBounds.encapsulate(mBounds[i]);
+		}
+	}
+
 	bool GUIDropDownHitBox::_commandEvent(const GUICommandEvent& ev)
 	{
 		bool processed = GUIElementContainer::_commandEvent(ev);

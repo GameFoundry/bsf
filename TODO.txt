@@ -27,7 +27,6 @@ Project window
 
 Right-clicking on an element to open a context menu doesn't seem to properly select the element first
  - This might only happen if the right click happens while another context menu is already open
-When clicking on drop down window it will interact with GUI elements beneath it
 
 Simple tasks:
  - Hook up windows drag and drop support
