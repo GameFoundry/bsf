@@ -74,7 +74,8 @@ namespace BansheeEngine
 		HSceneObject mSceneObject;
 		HGUIWidget mGUI;
 
-		GUIDropDownHitBox* mHitBox;
+		GUIDropDownHitBox* mFrontHitBox;
+		GUIDropDownHitBox* mBackHitBox;
 		GUIPanel* mRootPanel;
 		Vector2I mPosition;
 		UINT32 mWidth;

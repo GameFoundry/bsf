@@ -12,18 +12,22 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIDropDownHitBox* GUIDropDownHitBox::create(bool captureMouse)
+	GUIDropDownHitBox* GUIDropDownHitBox::create(bool captureMouseOver, bool captureMousePresses)
 	{
-		return new (bs_alloc<GUIDropDownHitBox, PoolAlloc>()) GUIDropDownHitBox(captureMouse, GUIDimensions::create());
+		return new (bs_alloc<GUIDropDownHitBox, PoolAlloc>()) 
+			GUIDropDownHitBox(captureMouseOver, captureMousePresses, GUIDimensions::create());
 	}
 
-	GUIDropDownHitBox* GUIDropDownHitBox::create(bool captureMouse, const GUIOptions& options)
+	GUIDropDownHitBox* GUIDropDownHitBox::create(bool captureMouseOver, bool captureMousePresses, const GUIOptions& options)
 	{
-		return new (bs_alloc<GUIDropDownHitBox, PoolAlloc>()) GUIDropDownHitBox(captureMouse, GUIDimensions::create(options));
+		return new (bs_alloc<GUIDropDownHitBox, PoolAlloc>()) 
+			GUIDropDownHitBox(captureMouseOver, captureMousePresses, GUIDimensions::create(options));
 	}
 
-	GUIDropDownHitBox::GUIDropDownHitBox(bool captureMouse, const GUIDimensions& dimensions)
-		:GUIElementContainer(dimensions), mCaptureMouse(captureMouse)
+	GUIDropDownHitBox::GUIDropDownHitBox(bool captureMouseOver, 
+		bool captureMousePresses, const GUIDimensions& dimensions)
+		:GUIElementContainer(dimensions), mCaptureMouseOver(captureMouseOver),
+		mCaptureMousePresses(captureMousePresses)
 	{
 
 	}
@@ -82,17 +86,9 @@ namespace BansheeEngine
 	{
 		bool processed = GUIElementContainer::_mouseEvent(ev);
 
-		if(mCaptureMouse)
+		if(mCaptureMouseOver)
 		{
-			if(ev.getType() == GUIMouseEventType::MouseUp)
-			{
-				return true;
-			}
-			else if(ev.getType() == GUIMouseEventType::MouseDown)
-			{
-				return true;
-			}
-			else if (ev.getType() == GUIMouseEventType::MouseOver)
+			if (ev.getType() == GUIMouseEventType::MouseOver)
 			{
 				return true;
 			}
@@ -101,6 +97,18 @@ namespace BansheeEngine
 				return true;
 			}
 			else if (ev.getType() == GUIMouseEventType::MouseMove)
+			{
+				return true;
+			}
+		}
+
+		if (mCaptureMousePresses)
+		{
+			if (ev.getType() == GUIMouseEventType::MouseUp)
+			{
+				return true;
+			}
+			else if (ev.getType() == GUIMouseEventType::MouseDown)
 			{
 				return true;
 			}

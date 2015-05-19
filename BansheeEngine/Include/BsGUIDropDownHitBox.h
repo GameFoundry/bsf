@@ -21,21 +21,23 @@ namespace BansheeEngine
 		 * Creates a new drop down hit box that will detect mouse input over certain area.
 		 * You must call "setBounds" to define the area.
 		 *
-		 * @param	captureMouse	If true mouse clicks will be captured by this control and wont be passed
-		 *							to other GUI elements.
+		 * @param	captureMouseOver	If true mouse over/out/move events will be captured by this control 
+		 *								and wont be passed to other GUI elements.
+		 * @param	captureMousePresses	If true mouse clicks will be captured by this control and wont be passed
+		 *								to other GUI elements.
 		 */
-		static GUIDropDownHitBox* create(bool captureMouse);
+		static GUIDropDownHitBox* create(bool captureMouseOver, bool captureMousePresses);
 
 		/**
 		 * Creates a new drop down hit box that will detect mouse input over certain area.
 		 * You must call "setBounds" to define the area.
 		 *
-		 * @param	captureMouse	If true mouse clicks will be captured by this control and wont be passed
-		 *							to other GUI elements.
-		 * @param	options			Options that allow you to control how is the element positioned and sized.
-		 *							This will override any similar options set by style.
+		 * @param	captureMouseOver	If true mouse over/out/move events will be captured by this control
+		 *								and wont be passed to other GUI elements.
+		 * @param	captureMousePresses	If true mouse clicks will be captured by this control and wont be passed
+		 *								to other GUI elements.
 		 */
-		static GUIDropDownHitBox* create(bool captureMouse, const GUIOptions& options);
+		static GUIDropDownHitBox* create(bool captureMouseOver, bool captureMousePresses, const GUIOptions& options);
 
 		/**
 		 * Sets a single rectangle bounds in which the hitbox will capture mouse events.
@@ -58,7 +60,7 @@ namespace BansheeEngine
 		Event<void()> onFocusGained;
 
 	private:
-		GUIDropDownHitBox(bool captureMouse, const GUIDimensions& dimensions);
+		GUIDropDownHitBox(bool captureMouseOver, bool captureMousePresses, const GUIDimensions& dimensions);
 
 		/**
 		 * @copydoc	GUIElementContainer::updateClippedBounds
@@ -70,6 +72,7 @@ namespace BansheeEngine
 		virtual bool _isInBounds(const Vector2I position) const;
 
 		Vector<Rect2I> mBounds;
-		bool mCaptureMouse;
+		bool mCaptureMouseOver;
+		bool mCaptureMousePresses;
 	};
 }

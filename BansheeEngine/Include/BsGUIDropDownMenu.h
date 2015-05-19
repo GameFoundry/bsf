@@ -277,7 +277,9 @@ namespace BansheeEngine
 		HSpriteTexture mScrollDownBtnArrow;
 
 		DropDownSubMenu* mRootMenu;
-		GUIDropDownHitBox* mHitBox;
+		GUIDropDownHitBox* mFrontHitBox;
+		GUIDropDownHitBox* mBackHitBox;
+
 		// Captures mouse clicks so that we don't trigger elements outside the drop down box when we just want to close it.
 		// (Particular example is clicking on the button that opened the drop down box in the first place. Clicking will cause
 		// the drop down to lose focus and close, but if the button still processes the mouse click it will be immediately opened again)

@@ -14,7 +14,7 @@ namespace BansheeEngine
 	DropDownWindow::DropDownWindow(const RenderWindowPtr& parent, Viewport* target, 
 		const Vector2I& position, UINT32 width, UINT32 height)
 		:mRootPanel(nullptr), mPosition(position), mWidth(width), mHeight(height), 
-		mRenderWindow(parent), mHitBox(nullptr)
+		mRenderWindow(parent), mFrontHitBox(nullptr), mBackHitBox(nullptr)
 	{
 		mSceneObject = SceneObject::create("EditorWindow");
 
@@ -25,15 +25,18 @@ namespace BansheeEngine
 
 		mRootPanel = mGUI->getPanel()->addNewElement<GUIPanel>();
 		
-		GUIPanel* hitBoxPanel = mRootPanel->addNewElement<GUIPanel>(std::numeric_limits<INT16>::min());
+		GUIPanel* frontHitBoxPanel = mRootPanel->addNewElement<GUIPanel>(std::numeric_limits<INT16>::min());
+		mFrontHitBox = GUIDropDownHitBox::create(false, false);
+		mFrontHitBox->onFocusLost.connect(std::bind(&DropDownWindow::dropDownFocusLost, this));
+		mFrontHitBox->setFocus(true);
+		frontHitBoxPanel->addElement(mFrontHitBox);
 
-		mHitBox = GUIDropDownHitBox::create(false);
-		mHitBox->onFocusLost.connect(std::bind(&DropDownWindow::dropDownFocusLost, this));
-		mHitBox->setFocus(true);
-		hitBoxPanel->addElement(mHitBox);
-
+		GUIPanel* backHitBoxPanel = mRootPanel->addNewElement<GUIPanel>(std::numeric_limits<INT16>::max());
+		mBackHitBox = GUIDropDownHitBox::create(false, true);
+		backHitBoxPanel->addElement(mBackHitBox);
+		
 		GUIPanel* captureHitBoxPanel = mGUI->getPanel()->addNewElement<GUIPanel>(std::numeric_limits<INT16>::max());
-		GUIDropDownHitBox* captureHitBox = GUIDropDownHitBox::create(true);
+		GUIDropDownHitBox* captureHitBox = GUIDropDownHitBox::create(true, false);
 		captureHitBox->setBounds(Rect2I(0, 0, target->getWidth(), target->getHeight()));
 		captureHitBoxPanel->addElement(captureHitBox);
 
@@ -96,7 +99,8 @@ namespace BansheeEngine
 		mRootPanel->setWidth(width);
 		mRootPanel->setHeight(height);
 
-		mHitBox->setBounds(Rect2I(placementBounds.x, placementBounds.y, width, height));
+		mFrontHitBox->setBounds(Rect2I(placementBounds.x, placementBounds.y, width, height));
+		mBackHitBox->setBounds(Rect2I(placementBounds.x, placementBounds.y, width, height));
 
 		mWidth = width;
 		mHeight = height;
