@@ -82,6 +82,23 @@ namespace BansheeEngine
 		};
 
 		/**
+		 * @brief	Container for data about a single GUI element and its widget currently under the pointer.
+		 */
+		struct ElementInfoUnderPointer
+		{
+			ElementInfoUnderPointer(GUIElement* element, GUIWidget* widget)
+				:element(element), widget(widget), usesMouseOver(false), 
+				receivedMouseOver(false), isHovering(false)
+			{ }
+
+			GUIElement* element;
+			GUIWidget* widget;
+			bool usesMouseOver;
+			bool receivedMouseOver;
+			bool isHovering;
+		};
+
+		/**
 		 * @brief	Container for GUI element in focus.
 		 */
 		struct ElementFocusInfo
@@ -347,8 +364,8 @@ namespace BansheeEngine
 		Stack<GUIElement*> mScheduledForDestruction;
 
 		// Element and widget pointer is currently over
-		Vector<ElementInfo> mElementsUnderPointer;
-		Vector<ElementInfo> mNewElementsUnderPointer;
+		Vector<ElementInfoUnderPointer> mElementsUnderPointer;
+		Vector<ElementInfoUnderPointer> mNewElementsUnderPointer;
 
 		// Element and widget that's being clicked on
 		GUIMouseButton mActiveMouseButton;

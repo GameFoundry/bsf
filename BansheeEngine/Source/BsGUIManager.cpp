@@ -949,7 +949,7 @@ namespace BansheeEngine
 
 		for(auto& elementInfo : mElementsUnderPointer)
 		{
-			mNewElementsInFocus.push_back(elementInfo);
+			mNewElementsInFocus.push_back(ElementInfo(elementInfo.element, elementInfo.widget));
 
 			auto iterFind = std::find_if(begin(mElementsInFocus), end(mElementsInFocus), 
 				[=] (const ElementInfo& x) { return x.element == elementInfo.element; });
@@ -1169,7 +1169,18 @@ namespace BansheeEngine
 
 						if(!element->_isDisabled() && element->_isInBounds(localPos))
 						{
-							mNewElementsUnderPointer.push_back(ElementInfo(element, widget));
+							ElementInfoUnderPointer elementInfo(element, widget);
+
+							auto iterFind = std::find_if(mElementsUnderPointer.begin(), mElementsUnderPointer.end(),
+								[=](const ElementInfoUnderPointer& x) { return x.element == element; });
+
+							if (iterFind != mElementsUnderPointer.end())
+							{
+								elementInfo.usesMouseOver = iterFind->usesMouseOver;
+								elementInfo.receivedMouseOver = iterFind->receivedMouseOver;
+							}
+
+							mNewElementsUnderPointer.push_back(elementInfo);
 						}
 					}
 				}
@@ -1179,22 +1190,65 @@ namespace BansheeEngine
 		}
 
 		std::sort(mNewElementsUnderPointer.begin(), mNewElementsUnderPointer.end(), 
-			[](const ElementInfo& a, const ElementInfo& b)
+			[](const ElementInfoUnderPointer& a, const ElementInfoUnderPointer& b)
 		{
 			return a.element->_getDepth() < b.element->_getDepth();
 		});
 
 		// Send MouseOut and MouseOver events
+
 		bool eventProcessed = false;
+
+		for (auto& elementInfo : mNewElementsUnderPointer)
+		{
+			GUIElement* element = elementInfo.element;
+			GUIWidget* widget = elementInfo.widget;
+
+			if (elementInfo.receivedMouseOver)
+			{
+				elementInfo.isHovering = true;
+				if (elementInfo.usesMouseOver)
+					break;
+
+				continue;
+			}
+
+			auto iterFind = std::find_if(mActiveElements.begin(), mActiveElements.end(),
+				[&](const ElementInfo& x) { return x.element == element; });
+
+			// Send MouseOver event
+			if (mActiveElements.size() == 0 || iterFind != mActiveElements.end())
+			{
+				Vector2I localPos;
+				if (widget != nullptr)
+					localPos = getWidgetRelativePos(*widget, pointerScreenPos);
+
+				mMouseEvent = GUIMouseEvent(buttonStates, shift, control, alt);
+
+				mMouseEvent.setMouseOverData(localPos);
+				elementInfo.receivedMouseOver = true;
+				elementInfo.isHovering = true;
+				if (sendMouseEvent(widget, element, mMouseEvent))
+				{
+					eventProcessed = true;
+					elementInfo.usesMouseOver = true;
+					break;
+				}
+			}
+		}
+
 		for(auto& elementInfo : mElementsUnderPointer)
 		{
 			GUIElement* element = elementInfo.element;
 			GUIWidget* widget = elementInfo.widget;
 
-			auto iterFind = std::find_if(mNewElementsUnderPointer.begin(), mNewElementsUnderPointer.end(), 
-				[=] (const ElementInfo& x) { return x.element == element; });
+			if (!elementInfo.receivedMouseOver)
+				continue;
 
-			if(iterFind == mNewElementsUnderPointer.end())
+			auto iterFind = std::find_if(mNewElementsUnderPointer.begin(), mNewElementsUnderPointer.end(),
+				[=] (const ElementInfoUnderPointer& x) { return x.element == element; });
+
+			if (iterFind == mNewElementsUnderPointer.end() || !iterFind->isHovering)
 			{
 				auto iterFind2 = std::find_if(mActiveElements.begin(), mActiveElements.end(), 
 					[=](const ElementInfo& x) { return x.element == element; });
@@ -1205,37 +1259,11 @@ namespace BansheeEngine
 					Vector2I localPos = getWidgetRelativePos(*widget, pointerScreenPos);
 
 					mMouseEvent.setMouseOutData(localPos);
-					if(sendMouseEvent(widget, element, mMouseEvent))
+					if (sendMouseEvent(widget, element, mMouseEvent))
+					{
 						eventProcessed = true;
-				}
-			}
-		}
-
-		for(auto& elementInfo : mNewElementsUnderPointer)
-		{
-			GUIElement* element = elementInfo.element;
-			GUIWidget* widget = elementInfo.widget;
-
-			auto iterFind = std::find_if(begin(mElementsUnderPointer), end(mElementsUnderPointer), 
-				[=] (const ElementInfo& x) { return x.element == element; });
-
-			if(iterFind == mElementsUnderPointer.end())
-			{
-				auto iterFind2 = std::find_if(mActiveElements.begin(), mActiveElements.end(), 
-					[&](const ElementInfo& x) { return x.element == element; });
-
-				// Send MouseOver event
-				if(mActiveElements.size() == 0 || iterFind2 != mActiveElements.end())
-				{
-					Vector2I localPos;
-					if(widget != nullptr)
-						localPos = getWidgetRelativePos(*widget, pointerScreenPos);
-
-					mMouseEvent = GUIMouseEvent(buttonStates, shift, control, alt);
-
-					mMouseEvent.setMouseOverData(localPos);
-					if(sendMouseEvent(widget, element, mMouseEvent))
-						eventProcessed = true;
+						break;
+					}
 				}
 			}
 		}

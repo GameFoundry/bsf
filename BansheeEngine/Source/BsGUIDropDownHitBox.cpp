@@ -64,6 +64,22 @@ namespace BansheeEngine
 			{
 				return true;
 			}
+			else if (ev.getType() == GUIMouseEventType::MouseOver)
+			{
+				return true;
+			}
+			else if (ev.getType() == GUIMouseEventType::MouseOut)
+			{
+				return true;
+			}
+			else if (ev.getType() == GUIMouseEventType::MouseMove)
+			{
+				return true;
+			}
+			else if (ev.getType() == GUIMouseEventType::MouseDoubleClick)
+			{
+				return true;
+			}
 		}
 
 		return processed;
