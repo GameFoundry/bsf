@@ -52,7 +52,7 @@ namespace BansheeEngine
 		Vector2I position, int width, int height)
 	{
 		ManagedDropDownWindow* dropDownWindow = nullptr;
-		if (parentWindow != nullptr)
+		if (parentWindow != nullptr && !parentWindow->isDestroyed())
 		{
 			EditorWidgetBase* editorWidget = parentWindow->getEditorWidget();
 			EditorWidgetContainer* parentContainer = editorWidget->_getParent();

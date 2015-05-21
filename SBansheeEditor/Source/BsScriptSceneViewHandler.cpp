@@ -34,7 +34,10 @@ namespace BansheeEngine
 
 	void ScriptSceneViewHandler::internal_Create(MonoObject* managedInstance, ScriptEditorWindow* parentWindow, ScriptCameraHandler* camera)
 	{
-		EditorWidgetBase* widget = parentWindow->getEditorWidget();
+		EditorWidgetBase* widget = nullptr;
+		
+		if (parentWindow != nullptr && !parentWindow->isDestroyed())
+			widget = parentWindow->getEditorWidget();
 
 		new (bs_alloc<ScriptSceneViewHandler>()) ScriptSceneViewHandler(managedInstance, widget, camera->getInternal());
 	}

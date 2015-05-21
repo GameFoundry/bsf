@@ -62,6 +62,12 @@ namespace BansheeEngine
             }
         }
 
+        // Manhattan distance
+        public static int Distance(Vector2I a, Vector2I b)
+		{
+			return Math.Abs(b.x - a.x) + Math.Abs(b.y - a.y);
+		}
+
         public static Vector2I operator +(Vector2I a, Vector2I b)
         {
             return new Vector2I(a.x + b.x, a.y + b.y);

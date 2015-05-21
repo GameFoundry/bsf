@@ -25,15 +25,16 @@ GUIResourceField doesn't distinguish between tex2d, tex3d and texcube.
 ----------------------------------------------------------------------
 Project window
 
-Right-clicking on an element to open a context menu doesn't seem to properly select the element first
- - This might only happen if the right click happens while another context menu is already open
+OSDropTarget works in window coordinates but EditorWindow uses editor window coordiantes for intializing it, and assumes it also returns editor window coordinates
+
+Test:
+ - Drag and drop internal
+ - Drag and drop from outside
+ - Scroll when dragging
 
 Simple tasks:
- - Hook up windows drag and drop support
- - Hook up drag and drop internal to project window
- - Hook up drag and drop that interacts with scene and hierarchy windows
- - Ensure dragging near scroll area border scrolls the area
- - Add search bar
+ - Hook up scene view drag and drop instantiation
+ - Hook up search
  - Add directory bar
 
 Test:
@@ -44,6 +45,13 @@ Test:
 Later:
  - Shift and ctrl-click to select multiple entries
  - Drag to select multiple entries?
+ - Improved navigation:
+   - Enter to go into folder, backspace to go up
+   - Arrow keys to move, shift to select while moving
+    - While moving like this I also need to automatically scroll to the selected element
+ - Hook up ping effect so it triggers when I select a resource or sceneobject
+  - Add ping to SceneTreeView
+ - Check if drag and drop cursor changes properly when over valid/invalid objects (might not be needed)
 
 ----------------------------------------------------------------------
 Resources

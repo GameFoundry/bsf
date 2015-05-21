@@ -12,23 +12,255 @@ namespace BansheeEditor
 
     internal sealed class ProjectWindow : EditorWindow
     {
-        private struct EntryGUI
+        private class ContentInfo
         {
-            public EntryGUI(GUITexture icon, GUILabel label)
+            public ContentInfo(ProjectWindow window, ProjectViewType viewType)
             {
-                this.icon = icon;
-                this.label = label;
+                GUIPanel parentPanel = window.scrollAreaPanel;
+
+                GUIPanel contentPanel = parentPanel.AddPanel(1);
+                overlay = parentPanel.AddPanel(0);
+                underlay = parentPanel.AddPanel(2);
+
+                main = contentPanel.AddLayoutY();
+
+                if (viewType == ProjectViewType.List16)
+                {
+                    tileSize = 16;
+                    gridLayout = false;
+                }
+                else
+                {
+                    switch (viewType)
+                    {
+                        case ProjectViewType.Grid64:
+                            tileSize = 64;
+                            break;
+                        case ProjectViewType.Grid48:
+                            tileSize = 48;
+                            break;
+                        case ProjectViewType.Grid32:
+                            tileSize = 32;
+                            break;
+                    }
+
+                    gridLayout = true;
+                }
+
+                this.window = window;
             }
 
+            public GUILayout main;
+            public GUIPanel overlay;
+            public GUIPanel underlay;
+
+            public ProjectWindow window;
+            public int tileSize;
+            public bool gridLayout;
+        }
+
+        private class ElementEntry
+        {
+            // Note: Order of these is relevant
+            enum UnderlayState
+            {
+                None, Hovered, Selected, Pinged
+            }
+
+            public string path;
             public GUITexture icon;
             public GUILabel label;
+            public Rect2I bounds;
+
+            private GUITexture underlay;
+            private ContentInfo info;
+            private UnderlayState underlayState;
+
+            public ElementEntry(ContentInfo info, GUILayout parent, LibraryEntry entry)
+            {
+                GUILayout entryLayout;
+
+                if (info.gridLayout)
+                    entryLayout = parent.AddLayoutY();
+                else
+                    entryLayout = parent.AddLayoutX();
+
+                SpriteTexture iconTexture = GetIcon(entry);
+
+                icon = new GUITexture(iconTexture, GUIImageScaleMode.ScaleToFit,
+                    true, GUIOption.FixedHeight(info.tileSize), GUIOption.FixedWidth(info.tileSize));
+
+                label = null;
+
+                if (info.gridLayout)
+                {
+                    label = new GUILabel(entry.Name, EditorStyles.MultiLineLabel,
+                        GUIOption.FixedWidth(info.tileSize), GUIOption.FlexibleHeight(0, MAX_LABEL_HEIGHT));
+                }
+                else
+                {
+                    label = new GUILabel(entry.Name);
+                }
+
+                entryLayout.AddElement(icon);
+                entryLayout.AddElement(label);
+
+                this.info = info;
+                this.path = entry.Path;
+                this.bounds = new Rect2I();
+                this.underlay = null;
+            }
+
+            public void Initialize()
+            {
+                bounds = icon.Bounds;
+                Rect2I labelBounds = label.Bounds;
+
+                bounds.x = MathEx.Min(bounds.x, labelBounds.x);
+                bounds.y = MathEx.Min(bounds.y, labelBounds.y);
+                bounds.width = MathEx.Max(bounds.x + bounds.width,
+                    labelBounds.x + labelBounds.width) - bounds.x;
+                bounds.height = MathEx.Max(bounds.y + bounds.height,
+                    labelBounds.y + labelBounds.height) - bounds.y;
+
+                ProjectWindow hoistedWindow = info.window;
+                string hoistedPath = path;
+
+                GUIButton overlayBtn = new GUIButton("", EditorStyles.Blank);
+                overlayBtn.Bounds = bounds;
+                overlayBtn.OnClick += () => hoistedWindow.OnEntryClicked(hoistedPath);
+                overlayBtn.OnDoubleClick += () => hoistedWindow.OnEntryDoubleClicked(hoistedPath);
+                overlayBtn.SetContextMenu(info.window.entryContextMenu);
+
+                info.overlay.AddElement(overlayBtn);
+            }
+
+            public Rect2I Bounds
+            {
+                get { return bounds; }
+            }
+
+            public void MarkAsCut(bool enable)
+            {
+                if (enable)
+                    icon.SetTint(CUT_COLOR);
+                else
+                    icon.SetTint(Color.White);
+            }
+
+            public void MarkAsSelected(bool enable)
+            {
+                if ((int)underlayState > (int) UnderlayState.Selected)
+                    return;
+
+                if (enable)
+                {
+                    CreateUnderlay();
+                    underlay.SetTint(SELECTION_COLOR);
+                }
+                else
+                    ClearUnderlay();
+
+                underlayState = UnderlayState.Selected;
+            }
+
+            public void MarkAsPinged(bool enable)
+            {
+                if ((int)underlayState > (int)UnderlayState.Pinged)
+                    return;
+
+                if (enable)
+                {
+                    CreateUnderlay();
+                    underlay.SetTint(PING_COLOR);
+                }
+                else
+                    ClearUnderlay();
+
+                underlayState = UnderlayState.Pinged;
+            }
+
+            public void MarkAsHovered(bool enable)
+            {
+                if ((int)underlayState > (int)UnderlayState.Hovered)
+                    return;
+
+                if (enable)
+                {
+                    CreateUnderlay();
+                    underlay.SetTint(HOVER_COLOR);
+                }
+                else
+                    ClearUnderlay();
+
+                underlayState = UnderlayState.Hovered;
+            }
+
+            private void ClearUnderlay()
+            {
+                if (underlay != null)
+                {
+                    underlay.Destroy();
+                    underlay = null;
+                }
+
+                underlayState = UnderlayState.None;
+            }
+
+            private void CreateUnderlay()
+            {
+                if (underlay == null)
+                {
+                    underlay = new GUITexture(Builtin.WhiteTexture);
+                    underlay.Bounds = Bounds;
+
+                    info.underlay.AddElement(underlay);
+                }
+            }
+
+            private static SpriteTexture GetIcon(LibraryEntry entry)
+            {
+                if (entry.Type == LibraryEntryType.Directory)
+                {
+                    return EditorBuiltin.FolderIcon;
+                }
+                else
+                {
+                    FileEntry fileEntry = (FileEntry)entry;
+                    switch (fileEntry.ResType)
+                    {
+                        case ResourceType.Font:
+                            return EditorBuiltin.FontIcon;
+                        case ResourceType.Mesh:
+                            return EditorBuiltin.MeshIcon;
+                        case ResourceType.Texture:
+                            return EditorBuiltin.TextureIcon;
+                        case ResourceType.PlainText:
+                            return null; // TODO
+                        case ResourceType.ScriptCode:
+                            return null; // TODO
+                        case ResourceType.SpriteTexture:
+                            return null; // TODO
+                        case ResourceType.Shader:
+                            return null; // TODO
+                        case ResourceType.Material:
+                            return null; // TODO
+                    }
+                }
+
+                return null;
+            }
         }
 
         private const int GRID_ENTRY_SPACING = 15;
         private const int LIST_ENTRY_SPACING = 7;
         private const int MAX_LABEL_HEIGHT = 50;
+        private const int DRAG_SCROLL_HEIGHT = 50;
+        private const int DRAG_SCROLL_AMOUNT_PER_SECOND = 200;
         private static readonly Color PING_COLOR = Color.BansheeOrange;
         private static readonly Color SELECTION_COLOR = Color.DarkCyan;
+        private static readonly Color HOVER_COLOR = new Color(Color.DarkCyan.r, Color.DarkCyan.g, Color.DarkCyan.b, 0.5f);
+        private static readonly Color CUT_COLOR = new Color(1.0f, 1.0f, 1.0f, 0.5f);
 
         private bool hasContentFocus = false;
         private bool HasContentFocus { get { return HasFocus && hasContentFocus; } } // TODO - This is dummy and never set
@@ -38,15 +270,20 @@ namespace BansheeEditor
         private string currentDirectory = "";
         private List<string> selectionPaths = new List<string>();
         private string pingPath = "";
+        private string hoverHighlightPath = "";
 
         private GUIScrollArea contentScrollArea;
         private GUIPanel scrollAreaPanel;
-
         private GUIButton optionsButton;
 
         private ContextMenu entryContextMenu;
+        private ProjectDropTarget dropTarget;
 
-        private Dictionary<string, EntryGUI> pathToGUIEntry = new Dictionary<string, EntryGUI>();
+        private List<ElementEntry> entries = new List<ElementEntry>();
+        private Dictionary<string, ElementEntry> entryLookup = new Dictionary<string, ElementEntry>(); 
+        private GUITexture pingUnderlay;
+
+        private int autoScrollAmount;
 
         // Cut/Copy/Paste
         private List<string> copyPaths = new List<string>();
@@ -96,50 +333,220 @@ namespace BansheeEditor
             entryContextMenu.AddItem("Duplicate", DuplicateSelection, new ShortcutKey(ButtonModifier.Ctrl, ButtonCode.D));
             entryContextMenu.AddItem("Paste", PasteToSelection, new ShortcutKey(ButtonModifier.Ctrl, ButtonCode.V));
 
+            dropTarget = new ProjectDropTarget(this);
+            dropTarget.Bounds = contentScrollArea.Bounds;
+            dropTarget.OnStart += DoOnDragStart; 
+            dropTarget.OnDrag += DoOnDragMove;
+            dropTarget.OnLeave += DoOnDragLeave;
+            dropTarget.OnDrop += DoOnDragDropped;
+
             Reset();
+        }
+
+        private ElementEntry FindElementAt(Vector2I windowPos)
+        {
+            Rect2I scrollBounds = contentScrollArea.Bounds;
+            Vector2I scrollPos = windowPos;
+            scrollPos.x -= scrollBounds.x;
+            scrollPos.y -= scrollBounds.y;
+
+            foreach (var element in entries)
+            {
+                if (element.bounds.Contains(scrollPos))
+                    return element;
+            }
+
+            return null;
+        }
+
+        private void DoOnDragStart(Vector2I windowPos)
+        {
+            ElementEntry underCursorElem = FindElementAt(windowPos);
+            if (underCursorElem == null)
+                return;
+
+            if (!selectionPaths.Contains(underCursorElem.path))
+                Select(new List<string> { underCursorElem.path });
+
+            ResourceDragDropData dragDropData = new ResourceDragDropData(selectionPaths.ToArray());
+            DragDrop.StartDrag(dragDropData);
+        }
+
+        private void DoOnDragMove(Vector2I windowPos)
+        {
+            ElementEntry underCursorElem = FindElementAt(windowPos);
+            if (underCursorElem == null)
+            {
+                if (!string.IsNullOrEmpty(hoverHighlightPath))
+                {
+                    ElementEntry previousUnderCursorElem;
+                    if (entryLookup.TryGetValue(hoverHighlightPath, out previousUnderCursorElem))
+                        previousUnderCursorElem.MarkAsHovered(false);
+                }
+
+                hoverHighlightPath = "";
+            }
+            else
+            {
+                if (underCursorElem.path != hoverHighlightPath)
+                {
+                    if (!string.IsNullOrEmpty(hoverHighlightPath))
+                    {
+                        ElementEntry previousUnderCursorElem;
+                        if (entryLookup.TryGetValue(hoverHighlightPath, out previousUnderCursorElem))
+                            previousUnderCursorElem.MarkAsHovered(false);
+                    }
+
+                    hoverHighlightPath = underCursorElem.path;
+                    underCursorElem.MarkAsHovered(true);
+                }
+            }
+
+            Rect2I scrollAreaBounds = contentScrollArea.Bounds;
+            int scrollAreaTop = scrollAreaBounds.y;
+            int scrollAreaBottom = scrollAreaBounds.y + scrollAreaBounds.height;
+
+            if (windowPos.y > scrollAreaTop && windowPos.y <= (scrollAreaTop + DRAG_SCROLL_HEIGHT))
+                autoScrollAmount = -DRAG_SCROLL_AMOUNT_PER_SECOND;
+            else if (windowPos.y >= (scrollAreaBottom - DRAG_SCROLL_HEIGHT) && windowPos.y < scrollAreaBottom)
+                autoScrollAmount = DRAG_SCROLL_AMOUNT_PER_SECOND;
+            else
+                autoScrollAmount = 0;
+        }
+
+        private void DoOnDragLeave()
+        {
+            if (!string.IsNullOrEmpty(hoverHighlightPath))
+            {
+                ElementEntry previousUnderCursorElem;
+                if (entryLookup.TryGetValue(hoverHighlightPath, out previousUnderCursorElem))
+                    previousUnderCursorElem.MarkAsHovered(false);
+            }
+
+            hoverHighlightPath = "";
+        }
+
+        private void DoOnDragDropped(Vector2I windowPos, string[] paths)
+        {
+            string destinationFolder = currentDirectory;
+
+            ElementEntry underCursorElement = FindElementAt(windowPos);
+            if (underCursorElement != null)
+            {
+                LibraryEntry entry = ProjectLibrary.GetEntry(underCursorElement.path);
+                if (entry != null && entry.Type == LibraryEntryType.Directory)
+                    destinationFolder = entry.Path;
+            }
+
+            if (paths != null)
+            {
+                foreach (var path in paths)
+                {
+                    if (PathEx.IsPartOf(destinationFolder, path) || PathEx.Compare(path, destinationFolder))
+                        continue;
+
+                    string destination = Path.Combine(destinationFolder, Path.GetFileName(path));
+
+                    ProjectLibrary.Move(path, destination, true);
+                }
+            }
         }
 
         public void Ping(Resource resource)
         {
-            pingPath = ProjectLibrary.GetPath(resource);
+            if (!string.IsNullOrEmpty(pingPath))
+            {
+                ElementEntry entry;
+                if (entryLookup.TryGetValue(pingPath, out entry))
+                    entry.MarkAsPinged(false);
+            }
 
-            Refresh();
-            ScrollToEntry(pingPath);
+            if (resource != null)
+                pingPath = ProjectLibrary.GetPath(resource);
+            else
+                pingPath = "";
+
+            if (!string.IsNullOrEmpty(pingPath))
+            {
+                ElementEntry entry;
+                if (entryLookup.TryGetValue(pingPath, out entry))
+                    entry.MarkAsPinged(true);
+
+                ScrollToEntry(pingPath);
+            }
         }
 
         private void Select(List<string> paths)
         {
-            selectionPaths = paths;
-            pingPath = "";
+            if (selectionPaths != null)
+            {
+                foreach (var path in selectionPaths)
+                {
+                    ElementEntry entry;
+                    if (entryLookup.TryGetValue(path, out entry))
+                        entry.MarkAsSelected(false);
+                }
+            }
 
-            Refresh();
+            selectionPaths = paths;
+
+            if (selectionPaths != null)
+            {
+                foreach (var path in selectionPaths)
+                {
+                    ElementEntry entry;
+                    if (entryLookup.TryGetValue(path, out entry))
+                        entry.MarkAsSelected(true);
+                }
+            }
+
+            Ping(null);
         }
 
         private void EnterDirectory(string directory)
         {
             currentDirectory = directory;
-            pingPath = "";
-            selectionPaths.Clear();
+            Ping(null);
+            Select(new List<string>());
 
             Refresh();
         }
 
         private void Cut(IEnumerable<string> sourcePaths)
         {
+            foreach (var path in cutPaths)
+            {
+                ElementEntry entry;
+                if (entryLookup.TryGetValue(path, out entry))
+                    entry.MarkAsCut(false);
+            }
+
             cutPaths.Clear();
             cutPaths.AddRange(sourcePaths);
-            copyPaths.Clear();
 
-            Refresh();
+            foreach (var path in cutPaths)
+            {
+                ElementEntry entry;
+                if (entryLookup.TryGetValue(path, out entry))
+                    entry.MarkAsCut(true);
+            }
+
+            copyPaths.Clear();
         }
 
         private void Copy(IEnumerable<string> sourcePaths)
         {
             copyPaths.Clear();
             copyPaths.AddRange(sourcePaths);
-            cutPaths.Clear();
 
-            Refresh();
+            foreach (var path in cutPaths)
+            {
+                ElementEntry entry;
+                if (entryLookup.TryGetValue(path, out entry))
+                    entry.MarkAsCut(false);
+            }
+
+            cutPaths.Clear();
         }
 
         private void Duplicate(IEnumerable<string> sourcePaths)
@@ -210,11 +617,15 @@ namespace BansheeEditor
                 }
             }
 
-            // TODO - Handle input, drag and drop and whatever else might be needed
-            // TODO - Animate ping?
-            // TODO - Automatically scroll window when dragging near border?
-            // TODO - Drag and drop from Explorer should work to import an asset (i.e. DragAndDropArea)
-            // - This should be something that should be enabled per editor window perhaps?
+            if (autoScrollAmount != 0)
+            {
+                Rect2I contentBounds = contentScrollArea.ContentBounds;
+                float scrollPct = DRAG_SCROLL_AMOUNT_PER_SECOND / (float)contentBounds.height;
+
+                contentScrollArea.VerticalScroll += scrollPct;
+            }
+
+            dropTarget.Update();
         }
 
         private void OnEntryChanged(string entry)
@@ -227,47 +638,14 @@ namespace BansheeEditor
             Rect2I contentBounds = scrollAreaPanel.Bounds;
             Rect2I scrollAreaBounds = contentScrollArea.ContentBounds;
 
-            EntryGUI entryGUI;
-            if (!pathToGUIEntry.TryGetValue(path, out entryGUI))
+            ElementEntry entryGUI;
+            if (!entryLookup.TryGetValue(path, out entryGUI))
                 return;
 
             Rect2I entryBounds = entryGUI.icon.Bounds;
             float percent = (entryBounds.x - scrollAreaBounds.height * 0.5f) / contentBounds.height;
             percent = MathEx.Clamp01(percent);
             contentScrollArea.VerticalScroll = percent;
-        }
-
-        private SpriteTexture GetIcon(LibraryEntry entry)
-        {
-            if (entry.Type == LibraryEntryType.Directory)
-            {
-                return EditorBuiltin.FolderIcon;
-            }
-            else
-            {
-                FileEntry fileEntry = (FileEntry)entry;
-                switch (fileEntry.ResType)
-                {
-                    case ResourceType.Font:
-                        return EditorBuiltin.FontIcon;
-                    case ResourceType.Mesh:
-                        return EditorBuiltin.MeshIcon;
-                    case ResourceType.Texture:
-                        return EditorBuiltin.TextureIcon;
-                    case ResourceType.PlainText:
-                        return null; // TODO
-                    case ResourceType.ScriptCode:
-                        return null; // TODO
-                    case ResourceType.SpriteTexture:
-                        return null; // TODO
-                    case ResourceType.Shader:
-                        return null; // TODO
-                    case ResourceType.Material:
-                        return null; // TODO
-                }
-            }
-
-            return null;
         }
 
         private void Refresh()
@@ -282,14 +660,11 @@ namespace BansheeEditor
             if (scrollAreaPanel != null)
                 scrollAreaPanel.Destroy();
 
-            pathToGUIEntry.Clear();
+            entries.Clear();
+            entryLookup.Clear();
             scrollAreaPanel = contentScrollArea.Layout.AddPanel();
 
-            GUIPanel contentPanel = scrollAreaPanel.AddPanel(1);
-            GUIPanel contentOverlayPanel = scrollAreaPanel.AddPanel(0);
-            GUIPanel contentUnderlayPanel = scrollAreaPanel.AddPanel(2);
-
-            GUILayout contentLayout = contentPanel.AddLayoutY();
+            ContentInfo contentInfo = new ContentInfo(this, viewType);
 
             Rect2I scrollBounds = contentScrollArea.Bounds;
             LibraryEntry[] childEntries = entry.Children;
@@ -303,15 +678,15 @@ namespace BansheeEditor
 
                 for (int i = 0; i < childEntries.Length; i++)
                 {
-                    LibraryEntry currentEntry = childEntries[i];
-
-                    CreateEntryGUI(contentLayout, tileSize, false, currentEntry);
+                    ElementEntry guiEntry = new ElementEntry(contentInfo, contentInfo.main, childEntries[i]);
+                    entries.Add(guiEntry);
+                    entryLookup[guiEntry.path] = guiEntry;
 
                     if (i != childEntries.Length - 1)
-                        contentLayout.AddSpace(LIST_ENTRY_SPACING);
+                        contentInfo.main.AddSpace(LIST_ENTRY_SPACING);
                 }
 
-                contentLayout.AddFlexibleSpace();
+                contentInfo.main.AddFlexibleSpace();
             }
             else
             {
@@ -323,7 +698,7 @@ namespace BansheeEditor
                     case ProjectViewType.Grid32: tileSize = 32; break;
                 }
 
-                GUILayoutX rowLayout = contentLayout.AddLayoutX();
+                GUILayoutX rowLayout = contentInfo.main.AddLayoutX();
                 rowLayout.AddFlexibleSpace();
 
                 int elemSize = tileSize + GRID_ENTRY_SPACING;
@@ -335,15 +710,17 @@ namespace BansheeEditor
                 {
                     if (elemsInRow == elemsPerRow && elemsInRow > 0)
                     {
-                        rowLayout = contentLayout.AddLayoutX();
-                        contentLayout.AddSpace(GRID_ENTRY_SPACING);
+                        rowLayout = contentInfo.main.AddLayoutX();
+                        contentInfo.main.AddSpace(GRID_ENTRY_SPACING);
 
                         rowLayout.AddFlexibleSpace();
                         elemsInRow = 0;
                     }
 
-                    LibraryEntry currentEntry = childEntries[i];
-                    CreateEntryGUI(rowLayout, tileSize, true, currentEntry);
+                    ElementEntry guiEntry = new ElementEntry(contentInfo, rowLayout, childEntries[i]);
+                    entries.Add(guiEntry);
+                    entryLookup[guiEntry.path] = guiEntry;
+
                     rowLayout.AddFlexibleSpace();
 
                     elemsInRow++;
@@ -356,100 +733,30 @@ namespace BansheeEditor
                     rowLayout.AddFlexibleSpace();
                 }
 
-                contentLayout.AddFlexibleSpace();
+                contentInfo.main.AddFlexibleSpace();
             }
 
-            for (int i = 0; i < childEntries.Length; i++)
+            for (int i = 0; i < entries.Count; i++)
             {
-                LibraryEntry currentEntry = childEntries[i];
-                CreateEntryOverlayGUI(contentOverlayPanel, contentUnderlayPanel, pathToGUIEntry[currentEntry.Path], currentEntry);
+                ElementEntry guiEntry = entries[i];
+                guiEntry.Initialize();
+
+                if (cutPaths.Contains(guiEntry.path))
+                    guiEntry.MarkAsCut(true);
+
+                if (selectionPaths.Contains(guiEntry.path))
+                    guiEntry.MarkAsSelected(true);
+                else if (pingPath == guiEntry.path)
+                    guiEntry.MarkAsPinged(true);
             }
 
-            Rect2I contentBounds = contentLayout.Bounds;
+            Rect2I contentBounds = contentInfo.main.Bounds;
             GUIButton catchAll = new GUIButton("", EditorStyles.Blank);
             catchAll.Bounds = contentBounds;
             catchAll.OnClick += OnCatchAllClicked;
             catchAll.SetContextMenu(entryContextMenu);
 
-            contentUnderlayPanel.AddElement(catchAll);
-
-            Debug.Log("REFRESHED " + Time.FrameNumber);
-        }
-
-        private void CreateEntryGUI(GUILayout parentLayout, int tileSize, bool grid, LibraryEntry entry)
-        {
-            GUILayout entryLayout;
-            
-            if(grid)
-                entryLayout = parentLayout.AddLayoutY();
-            else
-                entryLayout = parentLayout.AddLayoutX();
-
-            SpriteTexture iconTexture = GetIcon(entry);
-
-            GUITexture icon = new GUITexture(iconTexture, GUIImageScaleMode.ScaleToFit,
-                true, GUIOption.FixedHeight(tileSize), GUIOption.FixedWidth(tileSize));
-
-            GUILabel label = null;
-
-            if (grid)
-            {
-                label = new GUILabel(entry.Name, EditorStyles.MultiLineLabel,
-                    GUIOption.FixedWidth(tileSize), GUIOption.FlexibleHeight(0, MAX_LABEL_HEIGHT));
-            }
-            else
-            {
-                label = new GUILabel(entry.Name);   
-            }
-
-            entryLayout.AddElement(icon);
-            entryLayout.AddElement(label);
-
-            pathToGUIEntry[entry.Path] = new EntryGUI(icon, label);
-        }
-
-        private void CreateEntryOverlayGUI(GUIPanel overlayPanel, GUIPanel underlayPanel, EntryGUI gui, LibraryEntry entry)
-        {
-            // Add overlay button
-            Rect2I entryButtonBounds = gui.icon.Bounds;
-            Rect2I labelBounds = gui.label.Bounds;
-
-            entryButtonBounds.x = MathEx.Min(entryButtonBounds.x, labelBounds.x);
-            entryButtonBounds.y = MathEx.Min(entryButtonBounds.y, labelBounds.y);
-            entryButtonBounds.width = MathEx.Max(entryButtonBounds.x + entryButtonBounds.width,
-                labelBounds.x + labelBounds.width) - entryButtonBounds.x;
-            entryButtonBounds.height = MathEx.Max(entryButtonBounds.y + entryButtonBounds.height,
-                labelBounds.y + labelBounds.height) - entryButtonBounds.y;
-
-            GUIButton overlayBtn = new GUIButton("", EditorStyles.Blank);
-            overlayBtn.Bounds = entryButtonBounds;
-            overlayBtn.OnClick += () => OnEntryClicked(entry.Path);
-            overlayBtn.OnDoubleClick += () => OnEntryDoubleClicked(entry.Path);
-            overlayBtn.SetContextMenu(entryContextMenu);
-
-            overlayPanel.AddElement(overlayBtn);
-
-            if (cutPaths.Contains(entry.Path))
-            {
-                gui.icon.SetTint(new Color(1.0f, 1.0f, 1.0f, 0.5f));
-            }
-
-            if (selectionPaths.Contains(entry.Path))
-            {
-                GUITexture underlay = new GUITexture(Builtin.WhiteTexture);
-                underlay.Bounds = entryButtonBounds;
-                underlay.SetTint(SELECTION_COLOR);
-
-                underlayPanel.AddElement(underlay);
-            }
-            else if (pingPath == entry.Path)
-            {
-                GUITexture underlay = new GUITexture(Builtin.WhiteTexture);
-                underlay.Bounds = entryButtonBounds;
-                underlay.SetTint(PING_COLOR);
-
-                underlayPanel.AddElement(underlay);
-            }
+            contentInfo.underlay.AddElement(catchAll);
         }
 
         private void OnEntryClicked(string path)
@@ -457,14 +764,10 @@ namespace BansheeEditor
             Select(new List<string> { path });
 
             Selection.resourcePaths = new string[] {path};
-
-            Debug.Log("CLICKED " + Time.FrameNumber);
         }
 
         private void OnEntryDoubleClicked(string path)
         {
-            Debug.Log("DOUBLE CLICK " + path);
-
             LibraryEntry entry = ProjectLibrary.GetEntry(path);
             if (entry != null && entry.Type == LibraryEntryType.Directory)
             {
@@ -546,6 +849,8 @@ namespace BansheeEditor
             base.WindowResized(width, height);
 
             Refresh();
+
+            dropTarget.Bounds = contentScrollArea.Bounds;
         }
     }
 

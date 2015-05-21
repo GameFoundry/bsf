@@ -23,7 +23,8 @@ namespace BansheeEngine
 	MonoField* ScriptEditorWindow::guiPanelField = nullptr;
 
 	ScriptEditorWindow::ScriptEditorWindow(ScriptEditorWidget* editorWidget)
-		:ScriptObject(editorWidget->getManagedInstance()), mName(editorWidget->getName()), mEditorWidget(editorWidget), mRefreshInProgress(false)
+		:ScriptObject(editorWidget->getManagedInstance()), mName(editorWidget->getName()), mEditorWidget(editorWidget), 
+		mRefreshInProgress(false), mIsDestroyed(false)
 	{
 		mOnWidgetResizedConn = editorWidget->onResized.connect(std::bind(&ScriptEditorWindow::onWidgetResized, this, _1, _2));
 		mOnFocusChangedConn = editorWidget->onFocusChanged.connect(std::bind(&ScriptEditorWindow::onFocusChanged, this, _1));
@@ -111,7 +112,11 @@ namespace BansheeEngine
 	{
 		mRefreshInProgress = false;
 
-		mManagedInstance = mEditorWidget->getManagedInstance();
+		if (!isDestroyed())
+			mManagedInstance = mEditorWidget->getManagedInstance();
+		else
+			mManagedInstance = nullptr;
+
 		if (mManagedInstance != nullptr)
 		{
 			auto iterFind = OpenScriptEditorWindows.find(mName);
@@ -133,49 +138,76 @@ namespace BansheeEngine
 
 	void ScriptEditorWindow::onAssemblyRefreshStarted()
 	{
-		mEditorWidget->triggerOnDestroy();
+		if (!isDestroyed())
+			mEditorWidget->triggerOnDestroy();
 	}
 
 	MonoObject* ScriptEditorWindow::_createManagedInstance(bool construct)
 	{
-		mEditorWidget->createManagedInstance();
+		if (!isDestroyed())
+		{
+			mEditorWidget->createManagedInstance();
 
-		return mEditorWidget->getManagedInstance();
+			return mEditorWidget->getManagedInstance();
+		}
+		else
+			return nullptr;
 	}
 
 	bool ScriptEditorWindow::internal_hasFocus(ScriptEditorWindow* thisPtr)
 	{
-		return thisPtr->getEditorWidget()->hasFocus();
+		if (!thisPtr->isDestroyed())
+			return thisPtr->getEditorWidget()->hasFocus();
+		else
+			return false;
 	}
 
 	void ScriptEditorWindow::internal_screenToWindowPos(ScriptEditorWindow* thisPtr, Vector2I screenPos, Vector2I* windowPos)
 	{
-		*windowPos = thisPtr->getEditorWidget()->screenToWidgetPos(screenPos);
+		if (!thisPtr->isDestroyed())
+			*windowPos = thisPtr->getEditorWidget()->screenToWidgetPos(screenPos);
+		else
+			*windowPos = screenPos;
 	}
 
 	void ScriptEditorWindow::internal_windowToScreenPos(ScriptEditorWindow* thisPtr, Vector2I windowPos, Vector2I* screenPos)
 	{
-		*screenPos = thisPtr->getEditorWidget()->widgetToScreenPos(windowPos);
+		if (!thisPtr->isDestroyed())
+			*screenPos = thisPtr->getEditorWidget()->widgetToScreenPos(windowPos);
+		else
+			*screenPos = windowPos;
 	}
 
 	UINT32 ScriptEditorWindow::internal_getWidth(ScriptEditorWindow* thisPtr)
 	{
-		return thisPtr->mEditorWidget->getWidth();
+		if (!thisPtr->isDestroyed())
+			return thisPtr->mEditorWidget->getWidth();
+		else
+			return 0;
 	}
 
 	UINT32 ScriptEditorWindow::internal_getHeight(ScriptEditorWindow* thisPtr)
 	{
-		return thisPtr->mEditorWidget->getHeight();
+		if (!thisPtr->isDestroyed())
+			return thisPtr->mEditorWidget->getHeight();
+		else
+			return 0;
 	}
 
 	void ScriptEditorWindow::onWidgetResized(UINT32 width, UINT32 height)
 	{
+		if (isDestroyed() || mManagedInstance == nullptr)
+			return;
+
 		void* params[2] = { &width, &height };
 		onResizedMethod->invokeVirtual(mManagedInstance, params);
 	}
 
 	void ScriptEditorWindow::onFocusChanged(bool inFocus)
 	{
+		if (isDestroyed() || mManagedInstance == nullptr)
+			return;
+
 		void* params[1] = { &inFocus};
 		onFocusChangedMethod->invokeVirtual(mManagedInstance, params);
 	}
@@ -220,6 +252,7 @@ namespace BansheeEngine
 		ScriptEditorWindow::registerScriptEditorWindow(nativeInstance);
 
 		mono_runtime_object_init(editorWidget->getManagedInstance()); // Construct it
+		editorWidget->setScriptOwner(nativeInstance);
 		editorWidget->triggerOnInitialize();
 
 		return editorWidget;
@@ -255,13 +288,17 @@ namespace BansheeEngine
 
 	ScriptEditorWidget::ScriptEditorWidget(const String& ns, const String& type, EditorWidgetContainer& parentContainer)
 		:EditorWidgetBase(HString(toWString(type)), ns + "." + type, parentContainer), mNamespace(ns), mTypename(type),
-		mUpdateThunk(nullptr), mManagedInstance(nullptr), mOnInitializeThunk(nullptr), mOnDestroyThunk(nullptr), mContentsPanel(nullptr)
+		mUpdateThunk(nullptr), mManagedInstance(nullptr), mOnInitializeThunk(nullptr), mOnDestroyThunk(nullptr), 
+		mContentsPanel(nullptr), mScriptOwner(nullptr)
 	{
 		createManagedInstance();
 	}
 
 	ScriptEditorWidget::~ScriptEditorWidget()
 	{
+		mScriptOwner->mIsDestroyed = true;
+		mScriptOwner->mEditorWidget = nullptr;
+
 		mContentsPanel->destroy();
 		mContentsPanel = nullptr;
 

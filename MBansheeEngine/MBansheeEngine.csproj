@@ -102,6 +102,7 @@
     <Compile Include="Mesh.cs" />
     <Compile Include="MeshData.cs" />
     <Compile Include="MissingComponent.cs" />
+    <Compile Include="PathEx.cs" />
     <Compile Include="PixelData.cs" />
     <Compile Include="PixelUtility.cs" />
     <Compile Include="PlainText.cs" />

@@ -120,6 +120,9 @@ namespace BansheeEngine
 
 	Vector2I SceneViewHandler::wrapCursorToWindow()
 	{
+		if (mParentWidget == nullptr)
+			return Vector2I();
+
 		RenderWindowPtr parentWindow = mParentWidget->getParentWindow()->getRenderWindow();
 
 		Vector2I windowPos = parentWindow->screenToWindowPos(Cursor::instance().getScreenPosition());

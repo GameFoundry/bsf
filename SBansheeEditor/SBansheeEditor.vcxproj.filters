@@ -138,10 +138,10 @@
     <ClInclude Include="Include\BsScriptEditorBuiltin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsScriptDropTarget.h">
+    <ClInclude Include="Include\BsScriptDropDownWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsScriptDropDownWindow.h">
+    <ClInclude Include="Include\BsScriptOSDropTarget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -269,10 +269,10 @@
     <ClCompile Include="Source\BsScriptEditorBuiltin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsScriptDropTarget.cpp">
+    <ClCompile Include="Source\BsScriptDropDownWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsScriptDropDownWindow.cpp">
+    <ClCompile Include="Source\BsScriptOSDropTarget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

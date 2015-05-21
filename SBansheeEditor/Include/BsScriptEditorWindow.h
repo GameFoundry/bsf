@@ -22,6 +22,7 @@ namespace BansheeEngine
 		~ScriptEditorWindow();
 
 		EditorWidgetBase* getEditorWidget() const;
+		bool isDestroyed() const { return mIsDestroyed; }
 
 		static void registerManagedEditorWindows();
 		static void clearRegisteredEditorWindow();
@@ -54,6 +55,7 @@ namespace BansheeEngine
 		HEvent mOnFocusChangedConn;
 		HEvent mOnAssemblyRefreshStartedConn;
 		bool mRefreshInProgress;
+		bool mIsDestroyed;
 
 		static MonoMethod* onResizedMethod;
 		static MonoMethod* onFocusChangedMethod;
@@ -81,6 +83,7 @@ namespace BansheeEngine
 		void triggerOnInitialize();
 		void triggerOnDestroy();
 
+		void setScriptOwner(ScriptEditorWindow* owner) { mScriptOwner = owner; }
 		MonoObject* getManagedInstance() const { return mManagedInstance; }
 
 	private:
@@ -96,7 +99,7 @@ namespace BansheeEngine
 		UpdateThunkDef mUpdateThunk;
 		MonoObject* mManagedInstance;
 
-		ScriptEditorWindow* mScriptParent;
+		ScriptEditorWindow* mScriptOwner;
 		ScriptGUILayout* mContentsPanel;
 	};
 }

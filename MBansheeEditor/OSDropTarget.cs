@@ -4,14 +4,14 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
-    public class DropTarget : ScriptObject
+    public class OSDropTarget : ScriptObject
     {
         public Action<int, int> OnDrop;
         public Action<int, int> OnEnter;
         public Action OnLeave;
         public Action<int, int> OnDrag;
 
-        public DropTarget(EditorWindow window)
+        public OSDropTarget(EditorWindow window)
         {
             IntPtr nativeWindow = window.GetCachedPtr();;
             Internal_CreateInstance(this, nativeWindow);
@@ -57,7 +57,7 @@ namespace BansheeEditor
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(DropTarget instance, IntPtr editorWindow);
+        private static extern void Internal_CreateInstance(OSDropTarget instance, IntPtr editorWindow);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_Destroy(IntPtr nativeInstance);
