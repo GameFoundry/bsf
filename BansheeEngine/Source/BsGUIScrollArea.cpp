@@ -50,7 +50,14 @@ namespace BansheeEngine
 
 	Vector2I GUIScrollArea::_getOptimalSize() const
 	{
-		return mContentLayout->_getOptimalSize();
+		Vector2I optimalSize = mContentLayout->_getOptimalSize();
+
+		// Provide 10x10 in case underlying layout is empty because
+		// 0 doesn't work well with the layout system
+		optimalSize.x = std::max(10, optimalSize.x);
+		optimalSize.y = std::max(10, optimalSize.y);
+
+		return optimalSize;
 	}
 
 	LayoutSizeRange GUIScrollArea::_calculateLayoutSizeRange() const
@@ -62,7 +69,12 @@ namespace BansheeEngine
 		// then they're not needed and the range is valid. And if it doesn't
 		// fit the area will get clipped anyway and including the scroll bars
 		// won't change the size much, but it would complicate this method significantly.
-		return mContentLayout->_calculateLayoutSizeRange();
+		LayoutSizeRange sizeRange = mContentLayout->_calculateLayoutSizeRange();
+
+		sizeRange.optimal.x = std::max(10, sizeRange.optimal.x);
+		sizeRange.optimal.y = std::max(10, sizeRange.optimal.y);
+
+		return sizeRange;
 	}
 
 	void GUIScrollArea::_getElementAreas(const Rect2I& layoutArea, Rect2I* elementAreas, UINT32 numElements,
@@ -251,9 +263,8 @@ namespace BansheeEngine
 			GUILayoutData vertScrollData = data;
 			vertScrollData.area = vertScrollBounds;
 
-			UINT32 clippedScrollbarWidth = std::min((UINT32)data.area.width, ScrollBarWidth);
-			vertScrollData.clipRect = Rect2I(data.clipRect.x + (vertScrollBounds.x - data.area.x), 
-				data.clipRect.y + (vertScrollBounds.y - data.area.y), clippedScrollbarWidth, data.clipRect.height);
+			vertScrollData.clipRect = vertScrollBounds;
+			vertScrollData.clipRect.clip(data.clipRect);
 
 			// This element is not a child of any layout so we treat it as a root element
 			mVertScroll->_setLayoutData(vertScrollData);
@@ -278,11 +289,9 @@ namespace BansheeEngine
 			GUILayoutData horzScrollData = data;
 			horzScrollData.area = horzScrollBounds;
 
-			UINT32 clippedScrollbarHeight = std::min((UINT32)data.area.height, ScrollBarWidth);
+			horzScrollData.clipRect = horzScrollBounds;
+			horzScrollData.clipRect.clip(data.clipRect);
 
-			// This element is not a child of any layout so we treat it as a root element
-			horzScrollData.clipRect = Rect2I(data.clipRect.x + (horzScrollBounds.x - data.area.x), 
-				data.clipRect.y + (horzScrollBounds.y - data.area.y), data.clipRect.width, clippedScrollbarHeight);
 			mHorzScroll->_setLayoutData(horzScrollData);
 			mHorzScroll->_updateLayout(horzScrollData);
 

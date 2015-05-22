@@ -75,8 +75,6 @@ namespace BansheeEngine
 		if(!mIsDragInProgress)
 			return;
 
-		Platform::releaseMouseCapture();
-
 		if(!onDragEnded.empty())
 		{
 			DragCallbackInfo info;
@@ -86,5 +84,7 @@ namespace BansheeEngine
 		}
 		else
 			endDrag(false);
+
+		Platform::releaseMouseCapture();
 	}
 }

@@ -8,6 +8,7 @@ namespace BansheeEditor
     public sealed class ProjectLibrary : ScriptObject
     {
         public static DirectoryEntry Root { get { return Internal_GetRoot(); } }
+        public static string ResourceFolder { get { return Internal_GetResourceFolder(); } }
 
         public static event Action<string> OnEntryAdded;
         public static event Action<string> OnEntryRemoved;
@@ -133,6 +134,9 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_Copy(string source, string destination, bool overwrite);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string Internal_GetResourceFolder();
     }
 
     // Note: Must be the same as C++ enum ProjectLibrary::LibraryEntryType

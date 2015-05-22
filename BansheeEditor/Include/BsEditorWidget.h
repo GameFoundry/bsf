@@ -3,6 +3,7 @@
 #include "BsEditorPrerequisites.h"
 #include "BsEditorWidgetManager.h"
 #include "BsEvent.h"
+#include "BsRect2I.h"
 
 namespace BansheeEngine
 {
@@ -16,6 +17,7 @@ namespace BansheeEngine
 		INT32 getY() const { return mY; }
 		UINT32 getWidth() const { return mWidth; }
 		UINT32 getHeight() const { return mHeight; }
+		Rect2I getBounds() const { return Rect2I(mX, mY, mWidth, mHeight); }
 		bool hasFocus() const { return mHasFocus; }
 		EditorWindowBase* getParentWindow() const;
 

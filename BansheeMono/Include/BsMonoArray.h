@@ -26,6 +26,18 @@ namespace BansheeEngine
 			mono_array_set(mInternal, T, idx, value);
 		}
 
+		template<>
+		String get(UINT32 idx);
+
+		template<>
+		WString get(UINT32 idx);
+
+		template<>
+		void set<String>(UINT32 idx, const String& value);
+
+		template<>
+		void set<WString>(UINT32 idx, const WString& value);
+
 		template<class T>
 		T* getRawPtr(UINT32 offset = 0)
 		{

@@ -540,9 +540,9 @@ namespace BansheeEngine
 			if (current->type == LibraryEntryType::Directory)
 			{
 				DirectoryEntry* dirEntry = static_cast<DirectoryEntry*>(current);
+				current = nullptr;
 				for (auto& child : dirEntry->mChildren)
 				{
-					current = nullptr;
 					if (Path::comparePathElem(curElem, child->elementName))
 					{
 						idx++;
@@ -773,15 +773,11 @@ namespace BansheeEngine
 			newEntryParent = static_cast<DirectoryEntry*>(newEntryParentLib);
 		}
 
-		DirectoryEntry* newHierarchyParent = nullptr;
-		if (newEntryParent == nullptr) // New path parent doesn't exist, so we need to create the hierarchy
-			createInternalParentHierarchy(newFullPath, &newHierarchyParent, &newEntryParent);
-
 		// If the source is outside of Resources folder, just plain import the copy
 		LibraryEntry* oldEntry = findEntry(oldFullPath);
 		if (oldEntry == nullptr)
 		{
-			checkForModifications(newHierarchyParent->path);
+			checkForModifications(newFullPath);
 			return;
 		}
 
@@ -1070,6 +1066,9 @@ namespace BansheeEngine
 	Vector<Path> ProjectLibrary::getImportDependencies(const ResourceEntry* entry)
 	{
 		Vector<Path> output;
+
+		if (entry->meta == nullptr)
+			return output;
 
 		if (entry->meta->getTypeID() == TID_Shader)
 		{

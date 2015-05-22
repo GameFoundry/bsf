@@ -31,11 +31,14 @@ namespace BansheeEngine
 		{
 			mWidgetParentChangedConn = parentWidget->onParentChanged.connect(std::bind(&ScriptOSDropTarget::widgetParentChanged, this, _1));
 			mWidgetResizedConn = parentWidget->onResized.connect(std::bind(&ScriptOSDropTarget::widgetResized, this, _1, _2));
+			mWidgetMovedConn = parentWidget->onMoved.connect(std::bind(&ScriptOSDropTarget::widgetMoved, this, _1, _2));
 
 			EditorWindowBase* parentWindow = parentWidget->getParentWindow();
 
 			if (parentWindow != nullptr)
 				setDropTarget(parentWindow->getRenderWindow(), 0, 0, 0, 0);
+
+			mParentArea = parentWidget->getBounds();
 		}
 	}
 
@@ -113,7 +116,7 @@ namespace BansheeEngine
 	{
 		EditorWidgetBase* parentWidget = nullptr;
 
-		if (mParent != nullptr && mParent->isDestroyed())
+		if (mParent != nullptr && !mParent->isDestroyed())
 			parentWidget = mParent->getEditorWidget();
 
 		return parentWidget;
@@ -122,14 +125,10 @@ namespace BansheeEngine
 	Rect2I ScriptOSDropTarget::getDropTargetArea() const
 	{
 		Rect2I dropTargetArea = mArea;
-		dropTargetArea.clip(mParentArea);
+		dropTargetArea.x += mParentArea.x;
+		dropTargetArea.y += mParentArea.y;
 
-		EditorWidgetBase* parentWidget = getParentWidget();
-		if (parentWidget != nullptr)
-		{
-			dropTargetArea.x += parentWidget->getX();
-			dropTargetArea.y += parentWidget->getY();
-		}
+		dropTargetArea.clip(mParentArea);
 
 		return dropTargetArea;
 	}
@@ -173,12 +172,8 @@ namespace BansheeEngine
 		if (thisPtr->mIsDestroyed)
 			return;
 
-		EditorWidgetBase* parentWidget = thisPtr->getParentWidget();
-		if (parentWidget == nullptr)
-			return;
-
 		MonoException* exception = nullptr;
-		onEnterThunk(thisPtr->getManagedInstance(), x - parentWidget->getX(), y - parentWidget->getY(), &exception);
+		onEnterThunk(thisPtr->getManagedInstance(), x - thisPtr->mParentArea.x, y - thisPtr->mParentArea.y, &exception);
 
 		MonoUtil::throwIfException(exception);
 	}
@@ -188,12 +183,8 @@ namespace BansheeEngine
 		if (thisPtr->mIsDestroyed)
 			return;
 
-		EditorWidgetBase* parentWidget = thisPtr->getParentWidget();
-		if (parentWidget == nullptr)
-			return;
-
 		MonoException* exception = nullptr;
-		onMoveThunk(thisPtr->getManagedInstance(), x - parentWidget->getX(), y - parentWidget->getY(), &exception);
+		onMoveThunk(thisPtr->getManagedInstance(), x - thisPtr->mParentArea.x, y - thisPtr->mParentArea.y, &exception);
 
 		MonoUtil::throwIfException(exception);
 	}
@@ -214,12 +205,8 @@ namespace BansheeEngine
 		if (thisPtr->mIsDestroyed)
 			return;
 
-		EditorWidgetBase* parentWidget = thisPtr->getParentWidget();
-		if (parentWidget == nullptr)
-			return;
-
 		MonoException* exception = nullptr;
-		onDropThunk(thisPtr->getManagedInstance(), x - parentWidget->getX(), y - parentWidget->getY(), &exception);
+		onDropThunk(thisPtr->getManagedInstance(), x - thisPtr->mParentArea.x, y - thisPtr->mParentArea.y, &exception);
 
 		MonoUtil::throwIfException(exception);
 	}
@@ -246,6 +233,14 @@ namespace BansheeEngine
 	{
 		mParentArea.width = width;
 		mParentArea.height = height;
+
+		setBounds(mArea);
+	}
+
+	void ScriptOSDropTarget::widgetMoved(INT32 x, INT32 y)
+	{
+		mParentArea.x = x;
+		mParentArea.y = y;
 
 		setBounds(mArea);
 	}

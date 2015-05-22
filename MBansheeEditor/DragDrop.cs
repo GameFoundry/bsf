@@ -9,17 +9,7 @@ namespace BansheeEditor
         public static bool DragInProgress { get { return Internal_IsDragInProgress(); } }
         public static bool DropInProgress { get { return Internal_IsDropInProgress(); } }
         public static DragDropData Data { get { return Internal_GetData(); } }
-
-        public static DragDropType Type
-        {
-            get
-            {
-                if (Data != null)
-                    return Data.Type;
-
-                return DragDropType.None;
-            }
-        }
+        public static DragDropType Type { get { return Internal_GetDragType();} }
 
         public static void StartDrag(DragDropData data)
         {
@@ -37,6 +27,9 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern DragDropData Internal_GetData();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern DragDropType Internal_GetDragType();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_StartSceneObjectDrag(IntPtr instance);
@@ -91,6 +84,7 @@ namespace BansheeEditor
         private static extern string[] Internal_GetPaths(IntPtr thisPtr);
     }
 
+    // Note: Must match C++ enum ScriptDragDropType
     public enum DragDropType
     {
         Resource,

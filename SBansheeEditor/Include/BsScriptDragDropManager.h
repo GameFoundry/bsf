@@ -9,6 +9,14 @@ namespace BansheeEngine
 	class ScriptSceneObjectDragDropData;
 	class ScriptResourceDragDropData;
 
+	// Note: Must be equal to C# DragDropType enum
+	enum class ScriptDragDropType
+	{
+		Resource,
+		SceneObject,
+		None
+	};
+
 	class BS_SCR_BED_EXPORT ScriptDragDrop : public ScriptObject<ScriptDragDrop>
 	{
 	public:
@@ -23,6 +31,7 @@ namespace BansheeEngine
 		static bool internal_IsDragInProgress();
 		static bool internal_IsDropInProgress();
 		static MonoObject* internal_GetData();
+		static ScriptDragDropType internal_GetDragType();
 		static void internal_StartSceneObjectDrag(ScriptSceneObjectDragDropData* dragData);
 		static void internal_StartResourceDrag(ScriptResourceDragDropData* dragData);
 	};
@@ -63,14 +72,6 @@ namespace BansheeEngine
 		Vector<Path> mPaths;
 	};
 
-	// Note: Must be equal to C# DragDropType enum
-	enum class ScriptDragDropType
-	{
-		Resource,
-		SceneObject,
-		None
-	};
-
 	class BS_SCR_BED_EXPORT ScriptDragDropManager : public Module<ScriptDragDropManager>
 	{
 	public:
@@ -81,6 +82,7 @@ namespace BansheeEngine
 
 		bool isDropInProgress() const { return mIsDropInProgress; }
 		MonoObject* getDropData() const;
+		ScriptDragDropType getDragType() const;
 
 	private:
 		void onMouseDragEnded(const PointerEvent& evt, DragCallbackInfo& callbackInfo);

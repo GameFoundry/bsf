@@ -255,17 +255,17 @@ namespace BansheeEditor
         private const int GRID_ENTRY_SPACING = 15;
         private const int LIST_ENTRY_SPACING = 7;
         private const int MAX_LABEL_HEIGHT = 50;
-        private const int DRAG_SCROLL_HEIGHT = 50;
-        private const int DRAG_SCROLL_AMOUNT_PER_SECOND = 200;
+        private const int DRAG_SCROLL_HEIGHT = 20;
+        private const int DRAG_SCROLL_AMOUNT_PER_SECOND = 100;
         private static readonly Color PING_COLOR = Color.BansheeOrange;
         private static readonly Color SELECTION_COLOR = Color.DarkCyan;
         private static readonly Color HOVER_COLOR = new Color(Color.DarkCyan.r, Color.DarkCyan.g, Color.DarkCyan.b, 0.5f);
         private static readonly Color CUT_COLOR = new Color(1.0f, 1.0f, 1.0f, 0.5f);
 
         private bool hasContentFocus = false;
-        private bool HasContentFocus { get { return HasFocus && hasContentFocus; } } // TODO - This is dummy and never set
+        private bool HasContentFocus { get { return HasFocus && hasContentFocus; } }
 
-        private ProjectViewType viewType = ProjectViewType.Grid64;
+        private ProjectViewType viewType = ProjectViewType.Grid32;
 
         private string currentDirectory = "";
         private List<string> selectionPaths = new List<string>();
@@ -274,6 +274,7 @@ namespace BansheeEditor
 
         private GUIScrollArea contentScrollArea;
         private GUIPanel scrollAreaPanel;
+        private GUILayoutX searchBarLayout;
         private GUIButton optionsButton;
 
         private ContextMenu entryContextMenu;
@@ -281,7 +282,6 @@ namespace BansheeEditor
 
         private List<ElementEntry> entries = new List<ElementEntry>();
         private Dictionary<string, ElementEntry> entryLookup = new Dictionary<string, ElementEntry>(); 
-        private GUITexture pingUnderlay;
 
         private int autoScrollAmount;
 
@@ -308,7 +308,7 @@ namespace BansheeEditor
 
             GUILayoutY contentLayout = GUI.AddLayoutY();
 
-            GUILayoutX searchBarLayout = contentLayout.AddLayoutX();
+            searchBarLayout = contentLayout.AddLayoutX();
             GUITextField searchField = new GUITextField();
             searchField.OnChanged += OnSearchChanged;
             GUIButton clearSearchBtn = new GUIButton("C");
@@ -326,6 +326,7 @@ namespace BansheeEditor
 
             contentScrollArea = new GUIScrollArea(GUIOption.FlexibleWidth(), GUIOption.FlexibleHeight());
             contentLayout.AddElement(contentScrollArea);
+            contentLayout.AddFlexibleSpace();
 
             entryContextMenu = new ContextMenu();
             entryContextMenu.AddItem("Cut", CutSelection, new ShortcutKey(ButtonModifier.Ctrl, ButtonCode.X));
@@ -333,19 +334,19 @@ namespace BansheeEditor
             entryContextMenu.AddItem("Duplicate", DuplicateSelection, new ShortcutKey(ButtonModifier.Ctrl, ButtonCode.D));
             entryContextMenu.AddItem("Paste", PasteToSelection, new ShortcutKey(ButtonModifier.Ctrl, ButtonCode.V));
 
+            Reset();
+
             dropTarget = new ProjectDropTarget(this);
             dropTarget.Bounds = contentScrollArea.Bounds;
-            dropTarget.OnStart += DoOnDragStart; 
+            dropTarget.OnStart += DoOnDragStart;
             dropTarget.OnDrag += DoOnDragMove;
             dropTarget.OnLeave += DoOnDragLeave;
             dropTarget.OnDrop += DoOnDragDropped;
-
-            Reset();
         }
 
         private ElementEntry FindElementAt(Vector2I windowPos)
         {
-            Rect2I scrollBounds = contentScrollArea.Bounds;
+            Rect2I scrollBounds = contentScrollArea.Layout.Bounds;
             Vector2I scrollPos = windowPos;
             scrollPos.x -= scrollBounds.x;
             scrollPos.y -= scrollBounds.y;
@@ -375,27 +376,16 @@ namespace BansheeEditor
         private void DoOnDragMove(Vector2I windowPos)
         {
             ElementEntry underCursorElem = FindElementAt(windowPos);
+            
             if (underCursorElem == null)
             {
-                if (!string.IsNullOrEmpty(hoverHighlightPath))
-                {
-                    ElementEntry previousUnderCursorElem;
-                    if (entryLookup.TryGetValue(hoverHighlightPath, out previousUnderCursorElem))
-                        previousUnderCursorElem.MarkAsHovered(false);
-                }
-
-                hoverHighlightPath = "";
+                ClearHoverHighlight();
             }
             else
             {
                 if (underCursorElem.path != hoverHighlightPath)
                 {
-                    if (!string.IsNullOrEmpty(hoverHighlightPath))
-                    {
-                        ElementEntry previousUnderCursorElem;
-                        if (entryLookup.TryGetValue(hoverHighlightPath, out previousUnderCursorElem))
-                            previousUnderCursorElem.MarkAsHovered(false);
-                    }
+                    ClearHoverHighlight();
 
                     hoverHighlightPath = underCursorElem.path;
                     underCursorElem.MarkAsHovered(true);
@@ -416,6 +406,55 @@ namespace BansheeEditor
 
         private void DoOnDragLeave()
         {
+            ClearHoverHighlight();
+            autoScrollAmount = 0;
+        }
+
+        private void DoOnDragDropped(Vector2I windowPos, string[] paths)
+        {
+            string resourceDir = ProjectLibrary.ResourceFolder;
+            string destinationFolder = Path.Combine(resourceDir, currentDirectory);
+
+            ElementEntry underCursorElement = FindElementAt(windowPos);
+            if (underCursorElement != null)
+            {
+                LibraryEntry entry = ProjectLibrary.GetEntry(underCursorElement.path);
+                if (entry != null && entry.Type == LibraryEntryType.Directory)
+                    destinationFolder = Path.Combine(resourceDir, entry.Path);
+            }
+
+            if (paths != null)
+            {
+                foreach (var path in paths)
+                {
+                    if (path == null)
+                        continue;
+
+                    string absolutePath = path;
+                    if (!Path.IsPathRooted(absolutePath))
+                        absolutePath = Path.Combine(resourceDir, path);
+
+                    if (string.IsNullOrEmpty(absolutePath))
+                        continue;
+
+                    if (PathEx.IsPartOf(destinationFolder, absolutePath) || PathEx.Compare(absolutePath, destinationFolder))
+                        continue;
+
+                    string destination = Path.Combine(destinationFolder, Path.GetFileName(absolutePath));
+
+                    if (ProjectLibrary.Exists(path))
+                        ProjectLibrary.Move(path, destination, true);
+                    else
+                        ProjectLibrary.Copy(path, destination, true);
+                }
+            }
+
+            ClearHoverHighlight();
+            autoScrollAmount = 0;
+        }
+
+        private void ClearHoverHighlight()
+        {
             if (!string.IsNullOrEmpty(hoverHighlightPath))
             {
                 ElementEntry previousUnderCursorElem;
@@ -424,32 +463,6 @@ namespace BansheeEditor
             }
 
             hoverHighlightPath = "";
-        }
-
-        private void DoOnDragDropped(Vector2I windowPos, string[] paths)
-        {
-            string destinationFolder = currentDirectory;
-
-            ElementEntry underCursorElement = FindElementAt(windowPos);
-            if (underCursorElement != null)
-            {
-                LibraryEntry entry = ProjectLibrary.GetEntry(underCursorElement.path);
-                if (entry != null && entry.Type == LibraryEntryType.Directory)
-                    destinationFolder = entry.Path;
-            }
-
-            if (paths != null)
-            {
-                foreach (var path in paths)
-                {
-                    if (PathEx.IsPartOf(destinationFolder, path) || PathEx.Compare(path, destinationFolder))
-                        continue;
-
-                    string destination = Path.Combine(destinationFolder, Path.GetFileName(path));
-
-                    ProjectLibrary.Move(path, destination, true);
-                }
-            }
         }
 
         public void Ping(Resource resource)
@@ -620,9 +633,9 @@ namespace BansheeEditor
             if (autoScrollAmount != 0)
             {
                 Rect2I contentBounds = contentScrollArea.ContentBounds;
-                float scrollPct = DRAG_SCROLL_AMOUNT_PER_SECOND / (float)contentBounds.height;
+                float scrollPct = autoScrollAmount / (float)contentBounds.height;
 
-                contentScrollArea.VerticalScroll += scrollPct;
+                contentScrollArea.VerticalScroll += scrollPct * Time.FrameDelta;
             }
 
             dropTarget.Update();
@@ -674,8 +687,6 @@ namespace BansheeEditor
 
             if (viewType == ProjectViewType.List16)
             {
-                int tileSize = 16;
-
                 for (int i = 0; i < childEntries.Length; i++)
                 {
                     ElementEntry guiEntry = new ElementEntry(contentInfo, contentInfo.main, childEntries[i]);
@@ -751,12 +762,29 @@ namespace BansheeEditor
             }
 
             Rect2I contentBounds = contentInfo.main.Bounds;
+            Rect2I minimalBounds = GetScrollAreaBounds();
+            contentBounds.width = Math.Max(contentBounds.width, minimalBounds.width);
+            contentBounds.height = Math.Max(contentBounds.height, minimalBounds.height);
+
+            Debug.Log(contentBounds + " - " + minimalBounds);
+
             GUIButton catchAll = new GUIButton("", EditorStyles.Blank);
             catchAll.Bounds = contentBounds;
             catchAll.OnClick += OnCatchAllClicked;
             catchAll.SetContextMenu(entryContextMenu);
+            catchAll.OnFocusChanged += OnContentsFocusChanged;
 
             contentInfo.underlay.AddElement(catchAll);
+        }
+
+        private void OnContentsFocusChanged(bool focus)
+        {
+            if(focus)
+                Debug.Log("GOT FOCUS");
+            else
+                Debug.Log("LOST FOCUS");
+
+            hasContentFocus = focus;
         }
 
         private void OnEntryClicked(string path)
@@ -842,6 +870,16 @@ namespace BansheeEditor
         {
             currentDirectory = ProjectLibrary.Root.Path;
             Refresh();
+        }
+
+        private Rect2I GetScrollAreaBounds()
+        {
+            Rect2I bounds = GUI.Bounds;
+            Rect2I searchBarBounds = searchBarLayout.Bounds;
+            bounds.y += searchBarBounds.height;
+            bounds.height -= searchBarBounds.height;
+
+            return bounds;
         }
 
         protected override void WindowResized(int width, int height)

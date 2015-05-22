@@ -329,8 +329,16 @@ namespace BansheeEngine
 
 				if(op.type == DropOpType::Leave || op.type == DropOpType::Drop)
 				{
-					bs_delete(op.mFileList);
-					mFileLists.erase(mFileLists.begin());
+					while (!mFileLists.empty())
+					{
+						bool done = mFileLists[0] == op.mFileList;
+
+						bs_delete(mFileLists[0]);
+						mFileLists.erase(mFileLists.begin());
+
+						if (done)
+							break;
+					}
 				}
 			}
 

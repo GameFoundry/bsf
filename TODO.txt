@@ -25,12 +25,8 @@ GUIResourceField doesn't distinguish between tex2d, tex3d and texcube.
 ----------------------------------------------------------------------
 Project window
 
-OSDropTarget works in window coordinates but EditorWindow uses editor window coordiantes for intializing it, and assumes it also returns editor window coordinates
-
-Test:
- - Drag and drop internal
- - Drag and drop from outside
- - Scroll when dragging
+TODO - When importing/reimporting stuff there should be a progress bar
+TODO - Might need to handle overwritting better when importing/moving 
 
 Simple tasks:
  - Hook up scene view drag and drop instantiation
@@ -51,7 +47,6 @@ Later:
     - While moving like this I also need to automatically scroll to the selected element
  - Hook up ping effect so it triggers when I select a resource or sceneobject
   - Add ping to SceneTreeView
- - Check if drag and drop cursor changes properly when over valid/invalid objects (might not be needed)
 
 ----------------------------------------------------------------------
 Resources
@@ -87,6 +82,7 @@ Other simple stuff:
  - Get rid of event callback from HString and figure out a better way
  - GUI TextureField similar to ResourceField but it displays the texture it has assigned
  - Better handle and gizmo shaders
+ - Splash screen
 
 ----------------------------------------------------------------------
 Handles
@@ -136,10 +132,6 @@ Issue happened when I closed the app via the X button (if that's relevant). It d
 
 Create a stack allocatable custom vector implementation and make getResourceDependencies and getCoreDependencies use it.
  - These methods are called often and cause allocations whenever they are.
-
-Add ProjectWindow and HierarchyWindow to C#
- - Make TreeViews a C# element?
-Set up a default layout and save it
 
 ----------------------------------------------------------------------
 Multi-resource saving

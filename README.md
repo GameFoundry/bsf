@@ -21,7 +21,7 @@ To compile DirectX render systems you will also need a separately installed Dire
 ## Features (currently available)
 
 * Editor
-  * Asset management & import
+  * Asset management
     * Simple drag and drop import
 	* Automatic reimport of externally modified assets
 	* Asset modifications immediately reflected in-game

@@ -29,6 +29,7 @@ namespace BansheeEngine
 		static void internal_Rename(MonoString* path, MonoString* name);
 		static void internal_Move(MonoString* oldPath, MonoString* newPath, bool overwrite);
 		static void internal_Copy(MonoString* source, MonoString* destination, bool overwrite);
+		static MonoString* internal_GetResourceFolder();
 
 		static void onEntryAdded(const Path& path);
 		static void onEntryRemoved(const Path& path);

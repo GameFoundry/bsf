@@ -22,6 +22,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_IsDragInProgress", &ScriptDragDrop::internal_IsDragInProgress);
 		metaData.scriptClass->addInternalCall("Internal_IsDropInProgress", &ScriptDragDrop::internal_IsDropInProgress);
 		metaData.scriptClass->addInternalCall("Internal_GetData", &ScriptDragDrop::internal_GetData);
+		metaData.scriptClass->addInternalCall("Internal_GetDragType", &ScriptDragDrop::internal_GetDragType);
 		metaData.scriptClass->addInternalCall("Internal_StartSceneObjectDrag", &ScriptDragDrop::internal_StartSceneObjectDrag);
 		metaData.scriptClass->addInternalCall("Internal_StartResourceDrag", &ScriptDragDrop::internal_StartResourceDrag);
 	}
@@ -39,6 +40,11 @@ namespace BansheeEngine
 	MonoObject* ScriptDragDrop::internal_GetData()
 	{
 		return ScriptDragDropManager::instance().getDropData();
+	}
+
+	ScriptDragDropType ScriptDragDrop::internal_GetDragType()
+	{
+		return ScriptDragDropManager::instance().getDragType();
 	}
 
 	void ScriptDragDrop::internal_StartSceneObjectDrag(ScriptSceneObjectDragDropData* value)
@@ -225,6 +231,23 @@ namespace BansheeEngine
 			return ScriptResourceDragDropData::create(mDroppedPaths);
 
 		return nullptr;
+	}
+
+	ScriptDragDropType ScriptDragDropManager::getDragType() const
+	{
+		if (DragAndDropManager::instance().isDragInProgress())
+		{
+			UINT32 nativeType = DragAndDropManager::instance().getDragTypeId();
+
+			if (nativeType == (UINT32)DragAndDropType::SceneObject)
+				return ScriptDragDropType::SceneObject;
+			else if (nativeType == (UINT32)DragAndDropType::Resources)
+				return ScriptDragDropType::Resource;
+
+			return ScriptDragDropType::None;
+		}
+		else
+			return mDropType;
 	}
 
 	void ScriptDragDropManager::onMouseDragEnded(const PointerEvent& evt, DragCallbackInfo& callbackInfo)

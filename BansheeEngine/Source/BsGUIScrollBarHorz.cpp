@@ -1,14 +1,5 @@
 #include "BsGUIScrollBarHorz.h"
-#include "BsGUIElementStyle.h"
-#include "BsGUISkin.h"
-#include "BsGUIWidget.h"
 #include "BsGUIDimensions.h"
-#include "BsGUILayout.h"
-#include "BsGUISkin.h"
-#include "BsGUIButton.h"
-#include "BsGUISliderHandle.h"
-#include "BsGUISpace.h"
-#include "BsException.h"
 
 namespace BansheeEngine
 {

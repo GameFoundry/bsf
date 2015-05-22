@@ -23,6 +23,7 @@ namespace BansheeEngine
 		HEvent mDropTargetLeaveConn;
 		HEvent mDropTargetDroppedConn;
 		HEvent mWidgetParentChangedConn;
+		HEvent mWidgetMovedConn;
 		HEvent mWidgetResizedConn;
 
 		ScriptOSDropTarget(MonoObject* instance, ScriptEditorWindow* parent);
@@ -34,6 +35,7 @@ namespace BansheeEngine
 
 		void widgetParentChanged(EditorWidgetContainer* parent);
 		void widgetResized(UINT32 width, UINT32 height);
+		void widgetMoved(INT32 x, INT32 y);
 
 		EditorWidgetBase* getParentWidget() const;
 		Rect2I getDropTargetArea() const;

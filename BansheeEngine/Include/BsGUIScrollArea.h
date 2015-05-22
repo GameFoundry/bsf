@@ -74,7 +74,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElementContainer::getElementType
 		 */
-		virtual ElementType _getElementType() const { return ElementType::ScrollArea; }
+		virtual ElementType _getElementType() const override { return ElementType::ScrollArea; }
 
 		/**
 		 * @brief	Returns the scroll area layout that you may use to add elements inside the scroll area.
@@ -160,7 +160,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc GUIElementContainer::updateBounds
 		 */
-		virtual void updateClippedBounds();
+		virtual void updateClippedBounds() override;
 
 		/**
 		 * @copydoc	GUIElementBase::_calculateLayoutSizeRange
@@ -178,7 +178,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElementContainer::mouseEvent
 		 */
-		virtual bool _mouseEvent(const GUIMouseEvent& ev);
+		virtual bool _mouseEvent(const GUIMouseEvent& ev) override;
 
 		/**
 		 * @brief	Called when the vertical scrollbar moves. 
@@ -197,13 +197,13 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElementContainer::_updateLayoutInternal
 		 */
-		void _updateLayoutInternal(const GUILayoutData& data);
+		void _updateLayoutInternal(const GUILayoutData& data) override;
 
 		/**
 		 * @copydoc	GUIElementContainer::_getElementAreas
 		 */
 		void _getElementAreas(const Rect2I& layoutArea, Rect2I* elementAreas, UINT32 numElements, 
-			const Vector<LayoutSizeRange>& sizeRanges, const LayoutSizeRange& mySizeRange) const;
+			const Vector<LayoutSizeRange>& sizeRanges, const LayoutSizeRange& mySizeRange) const override;
 
 		/**
 		 * @copydoc	GUIElementContainer::_getElementAreas
@@ -230,6 +230,5 @@ namespace BansheeEngine
 		static const UINT32 ScrollBarWidth;
 		static const UINT32 MinHandleSize;
 		static const UINT32 WheelScrollAmount;
-
 	};
 }

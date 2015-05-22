@@ -2,7 +2,6 @@
 
 #include "BsPrerequisites.h"
 #include "BsGUIScrollBar.h"
-#include "BsEvent.h"
 
 namespace BansheeEngine
 {

@@ -45,6 +45,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_Rename", &ScriptProjectLibrary::internal_Rename);
 		metaData.scriptClass->addInternalCall("Internal_Move", &ScriptProjectLibrary::internal_Move);
 		metaData.scriptClass->addInternalCall("Internal_Copy", &ScriptProjectLibrary::internal_Copy);
+		metaData.scriptClass->addInternalCall("Internal_GetResourceFolder", &ScriptProjectLibrary::internal_GetResourceFolder);
 
 		OnEntryAddedThunk = (OnEntryChangedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnEntryAdded", 1)->getThunk();
 		OnEntryRemovedThunk = (OnEntryChangedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnEntryRemoved", 1)->getThunk();
@@ -203,6 +204,11 @@ namespace BansheeEngine
 		Path newPathNative = MonoUtil::monoToWString(destination);
 
 		ProjectLibrary::instance().copyEntry(oldPathNative, newPathNative, overwrite);
+	}
+
+	MonoString* ScriptProjectLibrary::internal_GetResourceFolder()
+	{
+		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), ProjectLibrary::instance().getResourcesFolder().toWString());
 	}
 
 	void ScriptProjectLibrary::startUp()

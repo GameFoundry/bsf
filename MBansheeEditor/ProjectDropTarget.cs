@@ -59,13 +59,9 @@ namespace BansheeEditor
 
             if (isMouseDown && !isDragInProgress)
             {
-                Debug.Log("MOUSE DOWN");
-
                 Vector2I startWindowPos = parentWindow.ScreenToWindowPos(mouseDownScreenPos);
                 if (!Bounds.Contains(startWindowPos))
                     return;
-
-                Debug.Log("IN BOUNDS");
 
                 int distance = Vector2I.Distance(startWindowPos, currentWindowPos);
                 if (distance >= DragStartDistancePx)
@@ -92,8 +88,6 @@ namespace BansheeEditor
 
             if (triggerStartDrag)
             {
-                Debug.Log("TRIGGER START");
-
                 isDragInProgress = true;
                 triggerStartDrag = false;
 
@@ -133,14 +127,14 @@ namespace BansheeEditor
 
                     lastDragWindowPos = currentWindowPos;
                 }
+            }
 
-                if (DragDrop.DropInProgress)
+            if (DragDrop.DropInProgress && DragDrop.Type == DragDropType.Resource)
+            {
+                if (OnDrop != null)
                 {
-                    if (OnDrop != null)
-                    {
-                        ResourceDragDropData resourceDragDrop = (ResourceDragDropData)DragDrop.Data;
-                        OnDrop(currentWindowPos, resourceDragDrop.Paths);
-                    }
+                    ResourceDragDropData resourceDragDrop = (ResourceDragDropData)DragDrop.Data;
+                    OnDrop(currentWindowPos, resourceDragDrop.Paths);
                 }
             }
         }
