@@ -20,48 +20,78 @@ To compile DirectX render systems you will also need a separately installed Dire
 
 ## Features (currently available)
 
-* Design
-  * Built using C++11 and modern design principles
-  * Clean layered design
-  * Fully documented
-  * Modular & plugin based
-  * Multiplatform ready
-* Renderer
-  * DX9, DX11 and OpenGL 4.3 render systems
-  * Multi-threaded rendering
-  * Flexible material system
-    * Easy to control and set up
-    * Shader parsing for HLSL9, HLSL11 and GLSL
-* Asset pipeline
-  * Easy to use
-  * Asynchronous resource loading
-  * Extensible importer system
-  * Available importer plugins for:
-    * FXB,OBJ, DAE meshes
-    * PNG, PSD, BMP, JPG, ... images
-    * OTF, TTF fonts
-    * HLSL9, HLSL11, GLSL shaders
-* Powerful GUI system
-  * Unicode text rendering and input
-  * Easy to use layout based system
-  * Many common GUI controls
-  * Fully skinnable
-  * Automatch batching
-  * Support for texture atlases
-  * Localization
-* Other
-  * CPU & GPU profiler
-  * Virtual input
-  * Advanced RTTI system
-  * Automatic object serialization/deserialization
-  * Debug drawing
-  * Utility library
-    * Math, file system, events, thread pool, task scheduler, logging, memory allocators and more
+* Editor
+  * Asset management & import
+    * Simple drag and drop import
+	* Automatic reimport of externally modified assets
+	* Asset modifications immediately reflected in-game
+    * Version control friendly format
+  * Powerful object inspector
+    * Automatic GUI for script objects
+    * Exposes properties for artists/designers
+    * Customizable per-type
+  * Level creation
+    * Simple drag and drop interface
+	* Traditional set of tools
+    * Custom 2D and 3D tool support
+  * Play in editor
+    * Compile in editor
+    * Immediately test changes
+  * Fully extensible for game-specific needs
+    * Custom editor windows, tool handles and more
+  * Game publishing
+    * One click build process	
+  * Customizable GUI
+    * Dockable layout and floating windows
+    * Skinnable and localizable
+   
+* Core
+  * Design
+    * Built using C++11 and modern design principles
+    * Clean layered design
+    * Fully documented
+    * Modular & plugin based
+    * Multiplatform ready
+  * Renderer
+    * DX9, DX11 and OpenGL 4.3 render systems
+    * Multi-threaded rendering
+    * Flexible material system
+      * Easy to control and set up
+      * Shader parsing for HLSL9, HLSL11 and GLSL
+  * Asset pipeline
+    * Easy to use
+    * Asynchronous resource loading
+    * Extensible importer system
+    * Available importer plugins for:
+      * FXB,OBJ, DAE meshes
+      * PNG, PSD, BMP, JPG, ... images
+      * OTF, TTF fonts
+      * HLSL9, HLSL11, GLSL shaders
+  * Powerful GUI system
+    * Unicode text rendering and input
+    * Easy to use layout based system
+    * Many common GUI controls
+    * Fully skinnable
+    * Automatch batching
+    * Support for texture atlases
+    * Localization
+  * Scripting
+    * C# via Mono
+    * Great performance, safe code, fast compile and iteration times
+    * Full access to .NET framework
+    * High level C# engine API
+    * Editor-only C# API for editor extensions
+    * Support for Visual Studio
+  * Other
+    * CPU & GPU profiler
+    * Virtual input
+    * Advanced RTTI system
+    * Automatic object serialization/deserialization
+    * Debug drawing
+    * Utility library
+      * Math, file system, events, thread pool, task scheduler, logging, memory allocators and more
     
 ## Features (upcoming)
-
- * C# scripting support (in development, coming soon)
- * Multi-purpose and extensible editor (in development, coming soon)
  * High quality renderer
  * Physics system integration
  * Audio system integration
