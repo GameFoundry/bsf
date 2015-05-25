@@ -30,7 +30,7 @@ namespace BansheeEngine
 		{
 			LayoutSizeRange sizeRange = child->_calculateLayoutSizeRange();
 
-			if (child->_getType() == GUIElementBase::Type::FixedSpace)
+			if (child->_getType() == GUIElementBase::Type::FixedSpace || child->_getType() == GUIElementBase::Type::FlexibleSpace)
 				sizeRange.optimal.x = sizeRange.optimal.y = 0;
 
 			UINT32 paddingX = child->_getPadding().left + child->_getPadding().right;
@@ -49,11 +49,9 @@ namespace BansheeEngine
 
 	LayoutSizeRange GUIPanel::_getElementSizeRange(const GUIElementBase* element) const
 	{
-		if (element->_getType() == GUIElementBase::Type::FixedSpace)
+		if (element->_getType() == GUIElementBase::Type::FixedSpace || element->_getType() == GUIElementBase::Type::FlexibleSpace)
 		{
-			const GUIFixedSpace* fixedSpace = static_cast<const GUIFixedSpace*>(element);
-
-			LayoutSizeRange sizeRange = fixedSpace->_calculateLayoutSizeRange();
+			LayoutSizeRange sizeRange = element->_calculateLayoutSizeRange();
 			sizeRange.optimal.x = 0;
 			sizeRange.optimal.y = 0;
 

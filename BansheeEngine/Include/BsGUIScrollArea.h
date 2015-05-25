@@ -154,6 +154,12 @@ namespace BansheeEngine
 		 *			(i.e. only the portion that contains the contents).
 		 */
 		Rect2I getContentBounds();
+
+		/**
+		 * @brief	Number of pixels the scroll bar will occupy when active. This is width
+		 *			for vertical scrollbar, and height for horizontal scrollbar.
+		 */
+		static const UINT32 ScrollBarWidth;
 	protected:
 		~GUIScrollArea();
 
@@ -227,7 +233,6 @@ namespace BansheeEngine
 		Vector2I mVisibleSize;
 		Vector2I mContentSize;
 
-		static const UINT32 ScrollBarWidth;
 		static const UINT32 MinHandleSize;
 		static const UINT32 WheelScrollAmount;
 	};

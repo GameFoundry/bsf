@@ -25,7 +25,6 @@ namespace BansheeEngine
             set { Internal_SetHorzScroll(mCachedPtr, value); }
         }
 
-
         public float VerticalScroll
         {
             get { return Internal_GetVertScroll(mCachedPtr); }
@@ -35,6 +34,11 @@ namespace BansheeEngine
         public Rect2I ContentBounds
         {
             get { return Internal_GetContentBounds(mCachedPtr); }
+        }
+
+        public int ScrollBarWidth
+        {
+            get { return Internal_GetScrollBarWidth(mCachedPtr); }
         }
 
         public GUIScrollArea(ScrollBarType vertBarType, ScrollBarType horzBarType, string scrollBarStyle,
@@ -99,5 +103,8 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetVertScroll(IntPtr nativeInstance, float value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern int Internal_GetScrollBarWidth(IntPtr nativeInstance);
     }
 }

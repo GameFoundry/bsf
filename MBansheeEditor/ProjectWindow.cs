@@ -680,6 +680,7 @@ namespace BansheeEditor
             ContentInfo contentInfo = new ContentInfo(this, viewType);
 
             Rect2I scrollBounds = contentScrollArea.Bounds;
+            int availableWidth = scrollBounds.width;
             LibraryEntry[] childEntries = entry.Children;
 
             if (childEntries.Length == 0)
@@ -713,7 +714,16 @@ namespace BansheeEditor
                 rowLayout.AddFlexibleSpace();
 
                 int elemSize = tileSize + GRID_ENTRY_SPACING;
-                int elemsPerRow = (scrollBounds.width - GRID_ENTRY_SPACING*2)/elemSize;
+                int elemsPerRow = (availableWidth - GRID_ENTRY_SPACING * 2) / elemSize;
+                int numRows = MathEx.CeilToInt(childEntries.Length/(float) elemsPerRow);
+                int neededHeight = numRows*(elemSize);
+
+                bool requiresScrollbar = neededHeight > scrollBounds.height;
+                if (requiresScrollbar)
+                {
+                    availableWidth -= contentScrollArea.ScrollBarWidth;
+                    elemsPerRow = (availableWidth - GRID_ENTRY_SPACING * 2) / elemSize;
+                }
 
                 int elemsInRow = 0;
 
@@ -763,10 +773,7 @@ namespace BansheeEditor
 
             Rect2I contentBounds = contentInfo.main.Bounds;
             Rect2I minimalBounds = GetScrollAreaBounds();
-            contentBounds.width = Math.Max(contentBounds.width, minimalBounds.width);
             contentBounds.height = Math.Max(contentBounds.height, minimalBounds.height);
-
-            Debug.Log(contentBounds + " - " + minimalBounds);
 
             GUIButton catchAll = new GUIButton("", EditorStyles.Blank);
             catchAll.Bounds = contentBounds;
@@ -779,11 +786,6 @@ namespace BansheeEditor
 
         private void OnContentsFocusChanged(bool focus)
         {
-            if(focus)
-                Debug.Log("GOT FOCUS");
-            else
-                Debug.Log("LOST FOCUS");
-
             hasContentFocus = focus;
         }
 
@@ -878,6 +880,7 @@ namespace BansheeEditor
             Rect2I searchBarBounds = searchBarLayout.Bounds;
             bounds.y += searchBarBounds.height;
             bounds.height -= searchBarBounds.height;
+
 
             return bounds;
         }

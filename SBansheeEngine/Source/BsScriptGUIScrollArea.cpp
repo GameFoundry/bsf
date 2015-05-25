@@ -30,6 +30,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetHorzScroll", &ScriptGUIScrollArea::internal_setHorzScroll);
 		metaData.scriptClass->addInternalCall("Internal_GetVertScroll", &ScriptGUIScrollArea::internal_getVertScroll);
 		metaData.scriptClass->addInternalCall("Internal_SetVertScroll", &ScriptGUIScrollArea::internal_setVertScroll);
+		metaData.scriptClass->addInternalCall("Internal_GetScrollBarWidth", &ScriptGUIScrollArea::internal_getScrollBarWidth);
 	}
 
 	void ScriptGUIScrollArea::internal_createInstance(MonoObject* instance, ScrollBarType vertBarType, ScrollBarType horzBarType, 
@@ -75,5 +76,10 @@ namespace BansheeEngine
 	{
 		GUIScrollArea* guiScrollArea = static_cast<GUIScrollArea*>(nativeInstance->getGUIElement());
 		guiScrollArea->scrollToVertical(value);
+	}
+
+	int ScriptGUIScrollArea::internal_getScrollBarWidth(ScriptGUIScrollArea* nativeInstance)
+	{
+		return GUIScrollArea::ScrollBarWidth;
 	}
 }

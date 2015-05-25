@@ -19,6 +19,7 @@ namespace BansheeEngine
 		static void internal_setHorzScroll(ScriptGUIScrollArea* nativeInstance, float value);
 		static float internal_getVertScroll(ScriptGUIScrollArea* nativeInstance);
 		static void internal_setVertScroll(ScriptGUIScrollArea* nativeInstance, float value);
+		static int internal_getScrollBarWidth(ScriptGUIScrollArea* nativeInstance);
 
 		ScriptGUIScrollArea(MonoObject* instance, GUIScrollArea* scrollArea);
 	};
