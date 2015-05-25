@@ -67,6 +67,7 @@ namespace BansheeEditor
                 None, Hovered, Selected, Pinged
             }
 
+            public int index;
             public string path;
             public GUITexture icon;
             public GUILabel label;
@@ -76,7 +77,7 @@ namespace BansheeEditor
             private ContentInfo info;
             private UnderlayState underlayState;
 
-            public ElementEntry(ContentInfo info, GUILayout parent, LibraryEntry entry)
+            public ElementEntry(ContentInfo info, GUILayout parent, LibraryEntry entry, int index)
             {
                 GUILayout entryLayout;
 
@@ -94,8 +95,10 @@ namespace BansheeEditor
 
                 if (info.gridLayout)
                 {
+                    int labelWidth = info.tileSize + LABEL_EXTRA_WIDTH;
+
                     label = new GUILabel(entry.Name, EditorStyles.MultiLineLabel,
-                        GUIOption.FixedWidth(info.tileSize), GUIOption.FlexibleHeight(0, MAX_LABEL_HEIGHT));
+                        GUIOption.FixedWidth(labelWidth), GUIOption.FlexibleHeight(0, MAX_LABEL_HEIGHT));
                 }
                 else
                 {
@@ -106,6 +109,7 @@ namespace BansheeEditor
                 entryLayout.AddElement(label);
 
                 this.info = info;
+                this.index = index;
                 this.path = entry.Path;
                 this.bounds = new Rect2I();
                 this.underlay = null;
@@ -252,9 +256,15 @@ namespace BansheeEditor
             }
         }
 
+        enum MoveDirection
+        {
+            Up, Down, Left, Right
+        }
+
         private const int GRID_ENTRY_SPACING = 15;
         private const int LIST_ENTRY_SPACING = 7;
         private const int MAX_LABEL_HEIGHT = 50;
+        private const int LABEL_EXTRA_WIDTH = 10;
         private const int DRAG_SCROLL_HEIGHT = 20;
         private const int DRAG_SCROLL_AMOUNT_PER_SECOND = 100;
         private static readonly Color PING_COLOR = Color.BansheeOrange;
@@ -269,6 +279,8 @@ namespace BansheeEditor
 
         private string currentDirectory = "";
         private List<string> selectionPaths = new List<string>();
+        private int selectionAnchorStart = -1;
+        private int selectionAnchorEnd = -1;
         private string pingPath = "";
         private string hoverHighlightPath = "";
 
@@ -281,7 +293,8 @@ namespace BansheeEditor
         private ProjectDropTarget dropTarget;
 
         private List<ElementEntry> entries = new List<ElementEntry>();
-        private Dictionary<string, ElementEntry> entryLookup = new Dictionary<string, ElementEntry>(); 
+        private Dictionary<string, ElementEntry> entryLookup = new Dictionary<string, ElementEntry>();
+        private int elementsPerRow;
 
         private int autoScrollAmount;
 
@@ -367,7 +380,7 @@ namespace BansheeEditor
                 return;
 
             if (!selectionPaths.Contains(underCursorElem.path))
-                Select(new List<string> { underCursorElem.path });
+                Select(underCursorElem.path);
 
             ResourceDragDropData dragDropData = new ResourceDragDropData(selectionPaths.ToArray());
             DragDrop.StartDrag(dragDropData);
@@ -489,7 +502,143 @@ namespace BansheeEditor
             }
         }
 
-        private void Select(List<string> paths)
+        private void DeselectAll()
+        {
+            SetSelection(new List<string>());
+            selectionAnchorStart = -1;
+            selectionAnchorEnd = -1;
+        }
+
+        private void Select(string path)
+        {
+            ElementEntry entry;
+            if (!entryLookup.TryGetValue(path, out entry))
+                return;
+
+            bool ctrlDown = Input.IsButtonHeld(ButtonCode.LeftControl) || Input.IsButtonHeld(ButtonCode.RightControl);
+            bool shiftDown = Input.IsButtonHeld(ButtonCode.LeftShift) || Input.IsButtonHeld(ButtonCode.RightShift);
+
+            if (shiftDown)
+            {
+                if (selectionAnchorStart != -1 && selectionAnchorStart < entries.Count)
+                {
+                    int start = Math.Min(entry.index, selectionAnchorStart);
+                    int end = Math.Max(entry.index, selectionAnchorStart);
+
+                    List<string> newSelection = new List<string>();
+                    for(int i = start; i <= end; i++)
+                        newSelection.Add(entries[i].path);
+
+                    SetSelection(newSelection);
+                    selectionAnchorEnd = entry.index;
+                }
+                else
+                {
+                    SetSelection(new List<string>() {path});
+                    selectionAnchorStart = entry.index;
+                    selectionAnchorEnd = entry.index;
+                }
+            }
+            else if (ctrlDown)
+            {
+                List<string> newSelection = new List<string>(selectionPaths);
+
+                if (selectionPaths.Contains(path))
+                {
+                    newSelection.Remove(path);
+                    if (newSelection.Count == 0)
+                        DeselectAll();
+                    else
+                    {
+                        if (selectionAnchorStart == entry.index)
+                        {
+                            ElementEntry newAnchorEntry;
+                            if (!entryLookup.TryGetValue(newSelection[0], out newAnchorEntry))
+                                selectionAnchorStart = -1;
+                            else
+                                selectionAnchorStart = newAnchorEntry.index;
+                        }
+
+                        if (selectionAnchorEnd == entry.index)
+                        {
+                            ElementEntry newAnchorEntry;
+                            if (!entryLookup.TryGetValue(newSelection[newSelection.Count - 1], out newAnchorEntry))
+                                selectionAnchorEnd = -1;
+                            else
+                                selectionAnchorEnd = newAnchorEntry.index;
+                        }
+
+                        SetSelection(newSelection);
+                    }
+                }
+                else
+                {
+                    newSelection.Add(path);
+                    SetSelection(newSelection);
+                    selectionAnchorEnd = entry.index;
+                }
+            }
+            else
+            {
+                SetSelection(new List<string>() { path });
+                selectionAnchorStart = entry.index;
+                selectionAnchorEnd = entry.index;
+            }
+        }
+
+        private void MoveSelection(MoveDirection dir)
+        {
+            string newPath = "";
+
+            if (selectionPaths.Count == 0 || selectionAnchorEnd == -1)
+            {
+                // Nothing is selected so we arbitrarily select first or last element
+                if (entries.Count > 0)
+                {
+                    switch (dir)
+                    {
+                        case MoveDirection.Left:
+                        case MoveDirection.Up:
+                            newPath = entries[0].path;
+                            break;
+                        case MoveDirection.Right:
+                        case MoveDirection.Down:
+                            newPath = entries[entries.Count - 1].path;
+                            break;
+                    }
+                }
+            }
+            else
+            {
+                switch (dir)
+                {
+                    case MoveDirection.Left:
+                        if (selectionAnchorEnd - 1 > 0)
+                            newPath = entries[selectionAnchorEnd - 1].path;
+                        break;
+                    case MoveDirection.Up:
+                        if (selectionAnchorEnd - elementsPerRow > 0)
+                            newPath = entries[selectionAnchorEnd - elementsPerRow].path;
+                        break;
+                    case MoveDirection.Right:
+                        if (selectionAnchorEnd + 1 < entries.Count)
+                            newPath = entries[selectionAnchorEnd + 1].path;
+                        break;
+                    case MoveDirection.Down:
+                        if (selectionAnchorEnd + elementsPerRow > 0)
+                            newPath = entries[selectionAnchorEnd + elementsPerRow].path;
+                        break;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(newPath))
+            {
+                Select(newPath);
+                ScrollToEntry(newPath);
+            }
+        }
+
+        private void SetSelection(List<string> paths)
         {
             if (selectionPaths != null)
             {
@@ -514,13 +663,17 @@ namespace BansheeEditor
             }
 
             Ping(null);
+
+            if (selectionPaths != null)
+                Selection.resourcePaths = selectionPaths.ToArray();
+            else
+                Selection.resourcePaths = new string[0];
         }
 
         private void EnterDirectory(string directory)
         {
             currentDirectory = directory;
-            Ping(null);
-            Select(new List<string>());
+            DeselectAll();
 
             Refresh();
         }
@@ -628,6 +781,42 @@ namespace BansheeEditor
                         PasteToSelection();
                     }
                 }
+
+                if (Input.IsButtonDown(ButtonCode.Return))
+                {
+                    if (selectionPaths.Count == 1)
+                    {
+                        LibraryEntry entry = ProjectLibrary.GetEntry(selectionPaths[0]);
+                        if (entry != null && entry.Type == LibraryEntryType.Directory)
+                        {
+                            EnterDirectory(entry.Path);
+                        }
+                    }
+                }
+                else if (Input.IsButtonDown(ButtonCode.Back))
+                {
+                    LibraryEntry entry = ProjectLibrary.GetEntry(currentDirectory);
+                    if (entry != null && entry.Parent != null)
+                    {
+                        EnterDirectory(entry.Parent.Path);
+                    }
+                }
+                else if (Input.IsButtonDown(ButtonCode.Up))
+                {
+                    MoveSelection(MoveDirection.Up);
+                }
+                else if (Input.IsButtonDown(ButtonCode.Down))
+                {
+                    MoveSelection(MoveDirection.Down);
+                }
+                else if (Input.IsButtonDown(ButtonCode.Left))
+                {
+                    MoveSelection(MoveDirection.Left);
+                }
+                else if (Input.IsButtonDown(ButtonCode.Right))
+                {
+                    MoveSelection(MoveDirection.Right);
+                }
             }
 
             if (autoScrollAmount != 0)
@@ -648,15 +837,23 @@ namespace BansheeEditor
 
         private void ScrollToEntry(string path)
         {
-            Rect2I contentBounds = scrollAreaPanel.Bounds;
-            Rect2I scrollAreaBounds = contentScrollArea.ContentBounds;
-
             ElementEntry entryGUI;
             if (!entryLookup.TryGetValue(path, out entryGUI))
                 return;
 
-            Rect2I entryBounds = entryGUI.icon.Bounds;
-            float percent = (entryBounds.x - scrollAreaBounds.height * 0.5f) / contentBounds.height;
+            Rect2I entryBounds = entryGUI.Bounds;
+            Rect2I contentBounds = contentScrollArea.Layout.Bounds;
+            entryBounds.x += contentBounds.x;
+            entryBounds.y += contentBounds.y;
+
+            Rect2I scrollAreaBounds = scrollAreaPanel.Bounds;
+            bool requiresScroll = entryBounds.y < scrollAreaBounds.y ||
+                                  (entryBounds.y + entryBounds.height) > (scrollAreaBounds.y + scrollAreaBounds.height);
+
+            if (!requiresScroll)
+                return;
+
+            float percent = (entryBounds.y - entryBounds.height * 0.5f - scrollAreaBounds.height * 0.5f) / contentBounds.height;
             percent = MathEx.Clamp01(percent);
             contentScrollArea.VerticalScroll = percent;
         }
@@ -690,7 +887,7 @@ namespace BansheeEditor
             {
                 for (int i = 0; i < childEntries.Length; i++)
                 {
-                    ElementEntry guiEntry = new ElementEntry(contentInfo, contentInfo.main, childEntries[i]);
+                    ElementEntry guiEntry = new ElementEntry(contentInfo, contentInfo.main, childEntries[i], i);
                     entries.Add(guiEntry);
                     entryLookup[guiEntry.path] = guiEntry;
 
@@ -699,6 +896,7 @@ namespace BansheeEditor
                 }
 
                 contentInfo.main.AddFlexibleSpace();
+                elementsPerRow = 1;
             }
             else
             {
@@ -714,22 +912,22 @@ namespace BansheeEditor
                 rowLayout.AddFlexibleSpace();
 
                 int elemSize = tileSize + GRID_ENTRY_SPACING;
-                int elemsPerRow = (availableWidth - GRID_ENTRY_SPACING * 2) / elemSize;
-                int numRows = MathEx.CeilToInt(childEntries.Length/(float) elemsPerRow);
+                elementsPerRow = (availableWidth - GRID_ENTRY_SPACING * 2) / elemSize;
+                int numRows = MathEx.CeilToInt(childEntries.Length / (float)elementsPerRow);
                 int neededHeight = numRows*(elemSize);
 
                 bool requiresScrollbar = neededHeight > scrollBounds.height;
                 if (requiresScrollbar)
                 {
                     availableWidth -= contentScrollArea.ScrollBarWidth;
-                    elemsPerRow = (availableWidth - GRID_ENTRY_SPACING * 2) / elemSize;
+                    elementsPerRow = (availableWidth - GRID_ENTRY_SPACING * 2) / elemSize;
                 }
 
                 int elemsInRow = 0;
 
                 for (int i = 0; i < childEntries.Length; i++)
                 {
-                    if (elemsInRow == elemsPerRow && elemsInRow > 0)
+                    if (elemsInRow == elementsPerRow && elemsInRow > 0)
                     {
                         rowLayout = contentInfo.main.AddLayoutX();
                         contentInfo.main.AddSpace(GRID_ENTRY_SPACING);
@@ -738,7 +936,7 @@ namespace BansheeEditor
                         elemsInRow = 0;
                     }
 
-                    ElementEntry guiEntry = new ElementEntry(contentInfo, rowLayout, childEntries[i]);
+                    ElementEntry guiEntry = new ElementEntry(contentInfo, rowLayout, childEntries[i], i);
                     entries.Add(guiEntry);
                     entryLookup[guiEntry.path] = guiEntry;
 
@@ -747,7 +945,7 @@ namespace BansheeEditor
                     elemsInRow++;
                 }
 
-                int extraElements = elemsPerRow - elemsInRow;
+                int extraElements = elementsPerRow - elemsInRow;
                 for (int i = 0; i < extraElements; i++)
                 {
                     rowLayout.AddSpace(tileSize);
@@ -791,9 +989,7 @@ namespace BansheeEditor
 
         private void OnEntryClicked(string path)
         {
-            Select(new List<string> { path });
-
-            Selection.resourcePaths = new string[] {path};
+            Select(path);
         }
 
         private void OnEntryDoubleClicked(string path)
@@ -807,9 +1003,7 @@ namespace BansheeEditor
 
         private void OnCatchAllClicked()
         {
-            Select(new List<string> { });
-
-            Selection.resourcePaths = new string[] { };
+            DeselectAll();
         }
 
         private void CutSelection()
@@ -871,6 +1065,12 @@ namespace BansheeEditor
         private void Reset()
         {
             currentDirectory = ProjectLibrary.Root.Path;
+            selectionAnchorStart = -1;
+            selectionAnchorEnd = -1;
+            selectionPaths.Clear();
+            pingPath = "";
+            hoverHighlightPath = "";
+
             Refresh();
         }
 
@@ -880,7 +1080,6 @@ namespace BansheeEditor
             Rect2I searchBarBounds = searchBarLayout.Bounds;
             bounds.y += searchBarBounds.height;
             bounds.height -= searchBarBounds.height;
-
 
             return bounds;
         }

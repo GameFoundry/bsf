@@ -27,7 +27,6 @@ Project window
 
 TODO - When importing/reimporting stuff there should be a progress bar
 TODO - Might need to handle overwritting better when importing/moving 
-TODO - When there's room between the elements, labels should probably make use of it (right now they tend to cut off a lot of text too often)
 
 Simple tasks:
  - Hook up scene view drag and drop instantiation
@@ -35,17 +34,14 @@ Simple tasks:
  - Add directory bar
 
 Test:
- - Basic look & navigation, selection/deselection
+ - If labels are now wider and selection looks better
+ - If arrow key navigation and multi-selection (using arrows or ctrl/shift) works
+  - And scroll to element
  - Cut/Copy/Paste/Duplicate
  - Ping scroll and effect
 
 Later:
- - Shift and ctrl-click to select multiple entries
  - Drag to select multiple entries?
- - Improved navigation:
-   - Enter to go into folder, backspace to go up
-   - Arrow keys to move, shift to select while moving
-    - While moving like this I also need to automatically scroll to the selected element
  - Hook up ping effect so it triggers when I select a resource or sceneobject
   - Add ping to SceneTreeView
 
