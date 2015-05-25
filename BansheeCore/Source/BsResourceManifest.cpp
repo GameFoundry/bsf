@@ -42,6 +42,10 @@ namespace BansheeEngine
 		}
 		else
 		{
+			auto iterFind2 = mFilePathToUUID.find(filePath);
+			if (iterFind2 != mFilePathToUUID.end())
+				mUUIDToFilePath.erase(iterFind2->second);
+
 			mUUIDToFilePath[uuid] = filePath;
 			mFilePathToUUID[filePath] = uuid;
 		}

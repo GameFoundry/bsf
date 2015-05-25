@@ -77,6 +77,12 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::MeshIconTex = L"MeshIcon.psd";
 	const WString BuiltinEditorResources::TextureIconTex = L"TextureIcon.psd";
 	const WString BuiltinEditorResources::FontIconTex = L"FontIcon.psd";
+	const WString BuiltinEditorResources::PlainTextIconTex = L"TextIcon.psd";
+	const WString BuiltinEditorResources::ScriptCodeIconTex = L"CSharpIcon.psd";
+	const WString BuiltinEditorResources::ShaderIconTex = L"ShaderIcon.psd";
+	const WString BuiltinEditorResources::ShaderIncludeIconTex = L"ShaderIncludeIcon.psd";
+	const WString BuiltinEditorResources::MaterialIconTex = L"MaterialIcon.psd";
+	const WString BuiltinEditorResources::SpriteTextureIconTex = L"SpriteIcon.psd";
 
 	const WString BuiltinEditorResources::WindowBackgroundTexture = L"WindowBgTile.psd";
 
@@ -229,17 +235,12 @@ namespace BansheeEngine
 		Path absoluteDataPath = FileSystem::getWorkingDirectoryPath();
 		absoluteDataPath.append(BuiltinDataFolder);
 
-		if (FileSystem::exists(ResourceManifestPath))
-			mResourceManifest = ResourceManifest::load(ResourceManifestPath, absoluteDataPath);
-
-		if (mResourceManifest == nullptr)
-			mResourceManifest = ResourceManifest::create("BuiltinResources");
-
-		gResources().registerResourceManifest(mResourceManifest);
-
 #if BS_DEBUG_MODE
 		if (BuiltinResourcesHelper::checkForModifications(BuiltinRawDataFolder, BuiltinDataFolder + L"Timestamp.asset"))
 		{
+			mResourceManifest = ResourceManifest::create("BuiltinResources");
+			gResources().registerResourceManifest(mResourceManifest);
+
 			preprocess();
 			BuiltinResourcesHelper::writeTimestamp(BuiltinDataFolder + L"Timestamp.asset");
 
@@ -249,6 +250,17 @@ namespace BansheeEngine
 			ResourceManifest::save(mResourceManifest, ResourceManifestPath, absoluteDataPath);
 		}
 #endif
+
+		if (mResourceManifest == nullptr)
+		{
+			if (FileSystem::exists(ResourceManifestPath))
+				mResourceManifest = ResourceManifest::load(ResourceManifestPath, absoluteDataPath);
+
+			if (mResourceManifest == nullptr)
+				mResourceManifest = ResourceManifest::create("BuiltinResources");
+
+			gResources().registerResourceManifest(mResourceManifest);
+		}
 
 		mShaderDockOverlay = getShader(ShaderDockOverlayFile);
 		mShaderSceneGrid = getShader(ShaderSceneGridFile);
@@ -1334,8 +1346,20 @@ namespace BansheeEngine
 			return getGUIIcon(MeshIconTex);
 		case ProjectIcon::Texture:
 			return getGUIIcon(TextureIconTex);
+		case ProjectIcon::PlainText:
+			return getGUIIcon(PlainTextIconTex);
+		case ProjectIcon::ScriptCode:
+			return getGUIIcon(ScriptCodeIconTex);
+		case ProjectIcon::Shader:
+			return getGUIIcon(ShaderIconTex);
+		case ProjectIcon::ShaderInclude:
+			return getGUIIcon(ShaderIncludeIconTex);
+		case ProjectIcon::Material:
+			return getGUIIcon(MaterialIconTex);
+		case ProjectIcon::SpriteTexture:
+			return getGUIIcon(SpriteTextureIconTex);
 		}
 
-		return nullptr;
+		return HSpriteTexture();
 	}
 }

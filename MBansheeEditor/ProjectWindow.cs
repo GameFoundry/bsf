@@ -236,15 +236,15 @@ namespace BansheeEditor
                         case ResourceType.Texture:
                             return EditorBuiltin.TextureIcon;
                         case ResourceType.PlainText:
-                            return null; // TODO
+                            return EditorBuiltin.PlainTextIcon;
                         case ResourceType.ScriptCode:
-                            return null; // TODO
+                            return EditorBuiltin.ScriptCodeIcon;
                         case ResourceType.SpriteTexture:
-                            return null; // TODO
+                            return EditorBuiltin.SpriteTextureIcon;
                         case ResourceType.Shader:
-                            return null; // TODO
+                            return EditorBuiltin.ShaderIcon;
                         case ResourceType.Material:
-                            return null; // TODO
+                            return EditorBuiltin.MaterialIcon;
                     }
                 }
 

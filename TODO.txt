@@ -27,6 +27,10 @@ Project window
 
 TODO - When importing/reimporting stuff there should be a progress bar
 TODO - Might need to handle overwritting better when importing/moving 
+TODO - When there's room between the elements, labels should probably make use of it (right now they tend to cut off a lot of text too often)
+
+TODO - GUI element selection outline seems to be slightly wrong now (it was fine before)
+TODO - Horizontal scroll bar seems to show up in GUI
 
 Simple tasks:
  - Hook up scene view drag and drop instantiation

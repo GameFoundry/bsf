@@ -15,6 +15,12 @@ namespace BansheeEngine
 		static MonoObject* internal_getMeshIcon();
 		static MonoObject* internal_getFontIcon();
 		static MonoObject* internal_getTextureIcon();
+		static MonoObject* internal_getPlainTextIcon();
+		static MonoObject* internal_getScriptCodeIcon();
+		static MonoObject* internal_getShaderIcon();
+		static MonoObject* internal_getShaderIncludeIcon();
+		static MonoObject* internal_getMaterialIcon();
+		static MonoObject* internal_getSpriteTextureIcon();
 
 		ScriptEditorBuiltin(MonoObject* instance);
 	};
