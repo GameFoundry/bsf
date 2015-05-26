@@ -351,6 +351,20 @@ namespace BansheeEngine
 		return false;
 	}
 
+	String Platform::generateUUID()
+	{
+		UUID uuid;
+		UuidCreate(&uuid);
+
+		UINT8* uuidStr;
+		UuidToStringA(&uuid, &uuidStr);
+
+		String output((char*)uuidStr);
+		RpcStringFreeA(&uuidStr);
+
+		return output;
+	}
+
 	double Platform::queryPerformanceTimerMs()
 	{
 		LARGE_INTEGER counterValue;

@@ -1,9 +1,6 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
-#include "BsModule.h"
-#include "BsSpinLock.h"
-#include <random>
 
 namespace BansheeEngine
 {
@@ -12,28 +9,12 @@ namespace BansheeEngine
 	 *
 	 * @note	Thread safe.
 	 */
-	class BS_CORE_EXPORT UUIDGenerator : public Module<UUIDGenerator>
+	class BS_CORE_EXPORT UUIDGenerator
 	{
-		/**
-		 * @brief	Type of UUID generation to use.
-		 */
-		enum UUIDVersion
-		{
-			UUIDV_TimeBased = 0x01
-		};
-
 	public:
-		UUIDGenerator();
-
 		/**
 		 * @brief	Generate a new random universally unique identifier.
 		 */
-		String generateRandom();
-
-	private:
-		std::mt19937 mRandomGenerator;
-		MACAddress mMACAddress;
-		SpinLock mSpinLock;
-		bool mHaveMacAddress;
+		static String generateRandom();
 	};
 }

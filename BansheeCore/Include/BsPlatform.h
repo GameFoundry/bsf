@@ -374,6 +374,11 @@ namespace BansheeEngine
 		static bool getMACAddress(MACAddress& address);
 
 		/**
+		 * @brief	Creates a new universally unique identifier and returns it as a string.
+		 */
+		static String generateUUID();
+
+		/**
 		 * @brief	Queries the internal system performance counter you can use for very precise time
 		 * 			measurements. Value is in milliseconds.
 		 *

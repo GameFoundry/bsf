@@ -36,7 +36,6 @@
 #include "BsQueryManager.h"
 #include "BsThreadPool.h"
 #include "BsTaskScheduler.h"
-#include "BsUUID.h"
 #include "BsRenderStats.h"
 #include "BsMessageHandler.h"
 #include "BsResourceListenerManager.h"
@@ -110,7 +109,6 @@ namespace BansheeEngine
 		ThreadPool::shutDown();
 		ProfilingManager::shutDown();
 		ProfilerCPU::shutDown();
-		UUIDGenerator::shutDown();
 		MessageHandler::shutDown();
 		ShaderManager::shutDown();
 
@@ -129,7 +127,6 @@ namespace BansheeEngine
 
 		ShaderManager::startUp(getShaderIncludeHandler());
 		MessageHandler::startUp();
-		UUIDGenerator::startUp();
 		ProfilerCPU::startUp();
 		ProfilingManager::startUp();
 		ThreadPool::startUp<TThreadPool<ThreadBansheePolicy>>((numWorkerThreads));

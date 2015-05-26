@@ -7,12 +7,6 @@ When serializing Camera I cannot save the reference to RenderTexture. Make it a 
 Possibly set up automatic refresh in debug mode after initialization? As an ad-hoc unit test
 
 ----------------------------------------------------------------------
-Project library
-
-My GUID generation is screwed up. If multiple GUIDs are generated in succession then the timestamp will remain
-the same and the only variable will be the 4byte random number, which can sometimes end up identical to the previous number.
-
-----------------------------------------------------------------------
 C# Material/Shader:
 
 TODO - Material/Shader has no color type so I cannot know when to display normal vector and when color in inspector
