@@ -267,6 +267,8 @@ namespace BansheeEditor
         private const int LABEL_EXTRA_WIDTH = 10;
         private const int DRAG_SCROLL_HEIGHT = 20;
         private const int DRAG_SCROLL_AMOUNT_PER_SECOND = 100;
+        private const int FOLDER_BUTTON_WIDTH = 20;
+        private const int FOLDER_SEPARATOR_WIDTH = 7;
         private static readonly Color PING_COLOR = Color.BansheeOrange;
         private static readonly Color SELECTION_COLOR = Color.DarkCyan;
         private static readonly Color HOVER_COLOR = new Color(Color.DarkCyan.r, Color.DarkCyan.g, Color.DarkCyan.b, 0.5f);
@@ -274,6 +276,9 @@ namespace BansheeEditor
 
         private bool hasContentFocus = false;
         private bool HasContentFocus { get { return HasFocus && hasContentFocus; } }
+
+        private string searchQuery;
+        private bool IsSearchActive { get { return !string.IsNullOrEmpty(searchQuery); } }
 
         private ProjectViewType viewType = ProjectViewType.Grid32;
 
@@ -288,6 +293,8 @@ namespace BansheeEditor
         private GUIPanel scrollAreaPanel;
         private GUILayoutX searchBarLayout;
         private GUIButton optionsButton;
+        private GUILayout folderBarLayout;
+        private GUILayout folderListLayout;
 
         private ContextMenu entryContextMenu;
         private ProjectDropTarget dropTarget;
@@ -334,8 +341,14 @@ namespace BansheeEditor
             searchBarLayout.AddElement(clearSearchBtn);
             searchBarLayout.AddElement(optionsButton);
 
-            // TODO - Add search bar + options button with drop-down
-            // TODO - Add directory bar + home button
+            folderBarLayout = contentLayout.AddLayoutX();
+            GUIButton homeButton = new GUIButton("H", GUIOption.FixedWidth(FOLDER_BUTTON_WIDTH));
+            homeButton.OnClick += OnHomeClicked;
+            GUIButton upButton = new GUIButton("U", GUIOption.FixedWidth(FOLDER_BUTTON_WIDTH));
+            upButton.OnClick += OnUpClicked;
+
+            folderBarLayout.AddElement(homeButton);
+            folderBarLayout.AddElement(upButton);
 
             contentScrollArea = new GUIScrollArea(GUIOption.FlexibleWidth(), GUIOption.FlexibleHeight());
             contentLayout.AddElement(contentScrollArea);
@@ -860,11 +873,22 @@ namespace BansheeEditor
 
         private void Refresh()
         {
-            DirectoryEntry entry = ProjectLibrary.GetEntry(currentDirectory) as DirectoryEntry;
-            if (entry == null)
+            LibraryEntry[] entriesToDisplay = new LibraryEntry[0];
+            if (IsSearchActive)
             {
-                Reset();
-                return;
+                entriesToDisplay = ProjectLibrary.Search(searchQuery);
+            }
+            else
+            {
+                DirectoryEntry entry = ProjectLibrary.GetEntry(currentDirectory) as DirectoryEntry;
+                if (entry == null)
+                {
+                    currentDirectory = ProjectLibrary.Root.Path;
+                    entry = ProjectLibrary.GetEntry(currentDirectory) as DirectoryEntry;
+                }
+
+                if(entry != null)
+                    entriesToDisplay = entry.Children;
             }
 
             if (scrollAreaPanel != null)
@@ -874,24 +898,23 @@ namespace BansheeEditor
             entryLookup.Clear();
             scrollAreaPanel = contentScrollArea.Layout.AddPanel();
 
+            if (entriesToDisplay.Length == 0)
+                return;
+
             ContentInfo contentInfo = new ContentInfo(this, viewType);
 
             Rect2I scrollBounds = contentScrollArea.Bounds;
             int availableWidth = scrollBounds.width;
-            LibraryEntry[] childEntries = entry.Children;
-
-            if (childEntries.Length == 0)
-                return;
-
+            
             if (viewType == ProjectViewType.List16)
             {
-                for (int i = 0; i < childEntries.Length; i++)
+                for (int i = 0; i < entriesToDisplay.Length; i++)
                 {
-                    ElementEntry guiEntry = new ElementEntry(contentInfo, contentInfo.main, childEntries[i], i);
+                    ElementEntry guiEntry = new ElementEntry(contentInfo, contentInfo.main, entriesToDisplay[i], i);
                     entries.Add(guiEntry);
                     entryLookup[guiEntry.path] = guiEntry;
 
-                    if (i != childEntries.Length - 1)
+                    if (i != entriesToDisplay.Length - 1)
                         contentInfo.main.AddSpace(LIST_ENTRY_SPACING);
                 }
 
@@ -913,7 +936,7 @@ namespace BansheeEditor
 
                 int elemSize = tileSize + GRID_ENTRY_SPACING;
                 elementsPerRow = (availableWidth - GRID_ENTRY_SPACING * 2) / elemSize;
-                int numRows = MathEx.CeilToInt(childEntries.Length / (float)elementsPerRow);
+                int numRows = MathEx.CeilToInt(entriesToDisplay.Length / (float)elementsPerRow);
                 int neededHeight = numRows*(elemSize);
 
                 bool requiresScrollbar = neededHeight > scrollBounds.height;
@@ -925,7 +948,7 @@ namespace BansheeEditor
 
                 int elemsInRow = 0;
 
-                for (int i = 0; i < childEntries.Length; i++)
+                for (int i = 0; i < entriesToDisplay.Length; i++)
                 {
                     if (elemsInRow == elementsPerRow && elemsInRow > 0)
                     {
@@ -936,7 +959,7 @@ namespace BansheeEditor
                         elemsInRow = 0;
                     }
 
-                    ElementEntry guiEntry = new ElementEntry(contentInfo, rowLayout, childEntries[i], i);
+                    ElementEntry guiEntry = new ElementEntry(contentInfo, rowLayout, entriesToDisplay[i], i);
                     entries.Add(guiEntry);
                     entryLookup[guiEntry.path] = guiEntry;
 
@@ -980,6 +1003,77 @@ namespace BansheeEditor
             catchAll.OnFocusChanged += OnContentsFocusChanged;
 
             contentInfo.underlay.AddElement(catchAll);
+
+            RefreshDirectoryBar();
+        }
+
+        private void RefreshDirectoryBar()
+        {
+            if (folderListLayout != null)
+            {
+                folderListLayout.Destroy();
+                folderListLayout = null;
+            }
+
+            folderListLayout = folderBarLayout.AddLayoutX();
+
+            string[] folders = null;
+            string[] fullPaths = null;
+
+            if (IsSearchActive)
+            {
+                folders = new[] {searchQuery};
+                fullPaths = new[] {""};
+            }
+            else
+            {
+                folders = currentDirectory.Split(new[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar },
+                    StringSplitOptions.RemoveEmptyEntries);
+                fullPaths = new string[folders.Length];
+            }
+
+            for (int i = 0; i < folders.Length; i++)
+            {
+                if (i == 0)
+                    fullPaths[i] = folders[i];
+                else
+                    fullPaths[i] = Path.Combine(fullPaths[i - 1], folders[i]);
+            }
+
+            int availableWidth = folderBarLayout.Bounds.width - FOLDER_BUTTON_WIDTH * 2;
+            int numFolders = 0;
+            for (int i = folders.Length - 1; i >= 0; i--)
+            {
+                GUIButton folderButton = new GUIButton(folders[i]);
+
+                if (!IsSearchActive)
+                {
+                    string fullPath = fullPaths[i];
+                    folderButton.OnClick += () => OnFolderButtonClicked(fullPath);
+                }
+
+                GUILabel separator = new GUILabel("/", GUIOption.FixedWidth(FOLDER_SEPARATOR_WIDTH));
+
+                folderListLayout.InsertElement(0, separator);
+                folderListLayout.InsertElement(0, folderButton);
+                numFolders++;
+
+                Rect2I folderListBounds = folderListLayout.Bounds;
+                if (folderListBounds.width > availableWidth)
+                {
+                    if (numFolders > 2)
+                    {
+                        separator.Destroy();
+                        folderButton.Destroy();
+                        break;
+                    }
+                }
+            }
+        }
+
+        private void OnFolderButtonClicked(string path)
+        {
+            EnterDirectory(path);
         }
 
         private void OnContentsFocusChanged(bool focus)
@@ -1004,6 +1098,22 @@ namespace BansheeEditor
         private void OnCatchAllClicked()
         {
             DeselectAll();
+        }
+
+        private void OnHomeClicked()
+        {
+            currentDirectory = ProjectLibrary.Root.Path;
+            Refresh();
+        }
+
+        private void OnUpClicked()
+        {
+            string parent = Path.GetDirectoryName(currentDirectory);
+            if (!string.IsNullOrEmpty(parent))
+            {
+                currentDirectory = parent;
+                Refresh();
+            }
         }
 
         private void CutSelection()
@@ -1042,12 +1152,14 @@ namespace BansheeEditor
 
         private void OnSearchChanged(string newValue)
         {
-            // TODO
+            searchQuery = newValue;
+            Refresh();
         }
 
         private void ClearSearch()
         {
-            // TODO
+            searchQuery = "";
+            Refresh();
         }
 
         private void OpenOptionsWindow()

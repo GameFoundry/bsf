@@ -26,17 +26,23 @@ GUIResourceField doesn't distinguish between tex2d, tex3d and texcube.
 Project window
 
 TODO - When importing/reimporting stuff there should be a progress bar
+ - Extend project library reimport queue so it finds all dependant assets before starting import
+ - Then it can trigger an event onImportStarted(numAssets)
+ - And onImportDone(entry) for each reimported asset
+ - Then have EditorApplication subscribe to those events and show a progress bar when needed
+   - TODO: I will need to either skip a frame, or force GUI to update meshes in order for the progress bar to update
 TODO - Might need to handle overwritting better when importing/moving 
 
 Simple tasks:
  - Hook up scene view drag and drop instantiation
- - Hook up search
- - Add directory bar
 
 Test:
  - If labels are now wider and selection looks better
  - If arrow key navigation and multi-selection (using arrows or ctrl/shift) works
   - And scroll to element
+ - Test search
+ - Test directory bar
+ - See how are elements and search results ordered (should be by name)
  - Cut/Copy/Paste/Duplicate
  - Ping scroll and effect
 
