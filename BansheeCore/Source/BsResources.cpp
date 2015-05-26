@@ -78,7 +78,7 @@ namespace BansheeEngine
 		bool foundUUID = getUUIDFromFilePath(filePath, uuid);
 
 		if(!foundUUID)
-			uuid = UUIDGenerator::instance().generateRandom();
+			uuid = UUIDGenerator::generateRandom();
 
 		HResource outputResource;
 		bool alreadyLoading = false;
@@ -311,7 +311,7 @@ namespace BansheeEngine
 
 	HResource Resources::_createResourceHandle(const ResourcePtr& obj)
 	{
-		String uuid = UUIDGenerator::instance().generateRandom();
+		String uuid = UUIDGenerator::generateRandom();
 		HResource newHandle(obj, uuid);
 
 		{

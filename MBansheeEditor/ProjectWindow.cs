@@ -14,7 +14,7 @@ namespace BansheeEditor
     {
         private class ContentInfo
         {
-            public ContentInfo(ProjectWindow window, ProjectViewType viewType)
+            public ContentInfo(ProjectWindow window, ProjectViewType viewType, int numEntries)
             {
                 GUIPanel parentPanel = window.scrollAreaPanel;
 
@@ -28,6 +28,7 @@ namespace BansheeEditor
                 {
                     tileSize = 16;
                     gridLayout = false;
+                    elementsPerRow = 1;
                 }
                 else
                 {
@@ -45,6 +46,24 @@ namespace BansheeEditor
                     }
 
                     gridLayout = true;
+
+                    Rect2I scrollBounds = window.contentScrollArea.Bounds;
+                    int availableWidth = scrollBounds.width;
+
+                    int elemSize = tileSize + GRID_ENTRY_SPACING;
+                    elementsPerRow = (availableWidth - GRID_ENTRY_SPACING * 2) / elemSize;
+                    int numRows = MathEx.CeilToInt(numEntries / (float)elementsPerRow);
+                    int neededHeight = numRows * (elemSize);
+
+                    bool requiresScrollbar = neededHeight > scrollBounds.height;
+                    if (requiresScrollbar)
+                    {
+                        availableWidth -= window.contentScrollArea.ScrollBarWidth;
+                        elementsPerRow = (availableWidth - GRID_ENTRY_SPACING * 2) / elemSize;
+                    }
+
+                    labelWidth = availableWidth / elementsPerRow;
+                    labelWidth -= (elementsPerRow + 1)*MIN_HORZ_SPACING;
                 }
 
                 this.window = window;
@@ -57,6 +76,9 @@ namespace BansheeEditor
             public ProjectWindow window;
             public int tileSize;
             public bool gridLayout;
+
+            public int elementsPerRow;
+            public int labelWidth;
         }
 
         private class ElementEntry
@@ -95,10 +117,8 @@ namespace BansheeEditor
 
                 if (info.gridLayout)
                 {
-                    int labelWidth = info.tileSize + LABEL_EXTRA_WIDTH;
-
                     label = new GUILabel(entry.Name, EditorStyles.MultiLineLabel,
-                        GUIOption.FixedWidth(labelWidth), GUIOption.FlexibleHeight(0, MAX_LABEL_HEIGHT));
+                        GUIOption.FixedWidth(info.labelWidth), GUIOption.FlexibleHeight(0, MAX_LABEL_HEIGHT));
                 }
                 else
                 {
@@ -121,7 +141,7 @@ namespace BansheeEditor
                 Rect2I labelBounds = label.Bounds;
 
                 bounds.x = MathEx.Min(bounds.x, labelBounds.x);
-                bounds.y = MathEx.Min(bounds.y, labelBounds.y);
+                bounds.y = MathEx.Min(bounds.y, labelBounds.y) - 5; // 5 - Just padding for better look
                 bounds.width = MathEx.Max(bounds.x + bounds.width,
                     labelBounds.x + labelBounds.width) - bounds.x;
                 bounds.height = MathEx.Max(bounds.y + bounds.height,
@@ -264,7 +284,7 @@ namespace BansheeEditor
         private const int GRID_ENTRY_SPACING = 15;
         private const int LIST_ENTRY_SPACING = 7;
         private const int MAX_LABEL_HEIGHT = 50;
-        private const int LABEL_EXTRA_WIDTH = 10;
+        private const int MIN_HORZ_SPACING = 5;
         private const int DRAG_SCROLL_HEIGHT = 20;
         private const int DRAG_SCROLL_AMOUNT_PER_SECOND = 100;
         private const int FOLDER_BUTTON_WIDTH = 20;
@@ -289,6 +309,7 @@ namespace BansheeEditor
         private string pingPath = "";
         private string hoverHighlightPath = "";
 
+        private ContentInfo contentInfo;
         private GUIScrollArea contentScrollArea;
         private GUIPanel scrollAreaPanel;
         private GUILayoutX searchBarLayout;
@@ -301,7 +322,6 @@ namespace BansheeEditor
 
         private List<ElementEntry> entries = new List<ElementEntry>();
         private Dictionary<string, ElementEntry> entryLookup = new Dictionary<string, ElementEntry>();
-        private int elementsPerRow;
 
         private int autoScrollAmount;
 
@@ -630,16 +650,16 @@ namespace BansheeEditor
                             newPath = entries[selectionAnchorEnd - 1].path;
                         break;
                     case MoveDirection.Up:
-                        if (selectionAnchorEnd - elementsPerRow > 0)
-                            newPath = entries[selectionAnchorEnd - elementsPerRow].path;
+                        if (selectionAnchorEnd - contentInfo.elementsPerRow > 0)
+                            newPath = entries[selectionAnchorEnd - contentInfo.elementsPerRow].path;
                         break;
                     case MoveDirection.Right:
                         if (selectionAnchorEnd + 1 < entries.Count)
                             newPath = entries[selectionAnchorEnd + 1].path;
                         break;
                     case MoveDirection.Down:
-                        if (selectionAnchorEnd + elementsPerRow > 0)
-                            newPath = entries[selectionAnchorEnd + elementsPerRow].path;
+                        if (selectionAnchorEnd + contentInfo.elementsPerRow > 0)
+                            newPath = entries[selectionAnchorEnd + contentInfo.elementsPerRow].path;
                         break;
                 }
             }
@@ -901,11 +921,8 @@ namespace BansheeEditor
             if (entriesToDisplay.Length == 0)
                 return;
 
-            ContentInfo contentInfo = new ContentInfo(this, viewType);
+            contentInfo = new ContentInfo(this, viewType, entriesToDisplay.Length);
 
-            Rect2I scrollBounds = contentScrollArea.Bounds;
-            int availableWidth = scrollBounds.width;
-            
             if (viewType == ProjectViewType.List16)
             {
                 for (int i = 0; i < entriesToDisplay.Length; i++)
@@ -919,7 +936,6 @@ namespace BansheeEditor
                 }
 
                 contentInfo.main.AddFlexibleSpace();
-                elementsPerRow = 1;
             }
             else
             {
@@ -931,26 +947,16 @@ namespace BansheeEditor
                     case ProjectViewType.Grid32: tileSize = 32; break;
                 }
 
+                contentInfo.main.AddSpace(GRID_ENTRY_SPACING / 2);
                 GUILayoutX rowLayout = contentInfo.main.AddLayoutX();
+                contentInfo.main.AddSpace(GRID_ENTRY_SPACING);
                 rowLayout.AddFlexibleSpace();
-
-                int elemSize = tileSize + GRID_ENTRY_SPACING;
-                elementsPerRow = (availableWidth - GRID_ENTRY_SPACING * 2) / elemSize;
-                int numRows = MathEx.CeilToInt(entriesToDisplay.Length / (float)elementsPerRow);
-                int neededHeight = numRows*(elemSize);
-
-                bool requiresScrollbar = neededHeight > scrollBounds.height;
-                if (requiresScrollbar)
-                {
-                    availableWidth -= contentScrollArea.ScrollBarWidth;
-                    elementsPerRow = (availableWidth - GRID_ENTRY_SPACING * 2) / elemSize;
-                }
 
                 int elemsInRow = 0;
 
                 for (int i = 0; i < entriesToDisplay.Length; i++)
                 {
-                    if (elemsInRow == elementsPerRow && elemsInRow > 0)
+                    if (elemsInRow == contentInfo.elementsPerRow && elemsInRow > 0)
                     {
                         rowLayout = contentInfo.main.AddLayoutX();
                         contentInfo.main.AddSpace(GRID_ENTRY_SPACING);
@@ -968,10 +974,10 @@ namespace BansheeEditor
                     elemsInRow++;
                 }
 
-                int extraElements = elementsPerRow - elemsInRow;
+                int extraElements = contentInfo.elementsPerRow - elemsInRow;
                 for (int i = 0; i < extraElements; i++)
                 {
-                    rowLayout.AddSpace(tileSize);
+                    rowLayout.AddSpace(contentInfo.labelWidth);
                     rowLayout.AddFlexibleSpace();
                 }
 
