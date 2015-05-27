@@ -142,12 +142,15 @@ namespace BansheeEngine
 	{
 		WString strPattern = MonoUtil::monoToWString(pattern);
 
-		ScriptArray typeArray(types);
 		Vector<UINT32> typeIds;
-		for (UINT32 i = 0; i < typeArray.size(); i++)
+		if (types != nullptr)
 		{
-			UINT32 typeId = ScriptResource::getTypeIdFromType((ScriptResourceType)typeArray.get<UINT32>(i));
-			typeIds.push_back(typeId);
+			ScriptArray typeArray(types);
+			for (UINT32 i = 0; i < typeArray.size(); i++)
+			{
+				UINT32 typeId = ScriptResource::getTypeIdFromType((ScriptResourceType)typeArray.get<UINT32>(i));
+				typeIds.push_back(typeId);
+			}
 		}
 
 		Vector<ProjectLibrary::LibraryEntry*> foundEntries = ProjectLibrary::instance().search(strPattern, typeIds);

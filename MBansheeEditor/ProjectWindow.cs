@@ -316,6 +316,7 @@ namespace BansheeEditor
         private GUIButton optionsButton;
         private GUILayout folderBarLayout;
         private GUILayout folderListLayout;
+        private GUITextField searchField;
 
         private ContextMenu entryContextMenu;
         private ProjectDropTarget dropTarget;
@@ -349,7 +350,7 @@ namespace BansheeEditor
             GUILayoutY contentLayout = GUI.AddLayoutY();
 
             searchBarLayout = contentLayout.AddLayoutX();
-            GUITextField searchField = new GUITextField();
+            searchField = new GUITextField();
             searchField.OnChanged += OnSearchChanged;
             GUIButton clearSearchBtn = new GUIButton("C");
             clearSearchBtn.OnClick += ClearSearch;
@@ -369,6 +370,7 @@ namespace BansheeEditor
 
             folderBarLayout.AddElement(homeButton);
             folderBarLayout.AddElement(upButton);
+            folderBarLayout.AddSpace(10);
 
             contentScrollArea = new GUIScrollArea(GUIOption.FlexibleWidth(), GUIOption.FlexibleHeight());
             contentLayout.AddElement(contentScrollArea);
@@ -922,6 +924,8 @@ namespace BansheeEditor
             entryLookup.Clear();
             scrollAreaPanel = contentScrollArea.Layout.AddPanel();
 
+            RefreshDirectoryBar();
+
             if (entriesToDisplay.Length == 0)
                 return;
 
@@ -1013,8 +1017,6 @@ namespace BansheeEditor
             catchAll.OnFocusChanged += OnContentsFocusChanged;
 
             contentInfo.underlay.AddElement(catchAll);
-
-            RefreshDirectoryBar();
         }
 
         private void RefreshDirectoryBar()
@@ -1033,21 +1035,23 @@ namespace BansheeEditor
             if (IsSearchActive)
             {
                 folders = new[] {searchQuery};
-                fullPaths = new[] {""};
+                fullPaths = new[] { searchQuery };
             }
             else
             {
-                folders = currentDirectory.Split(new[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar },
-                    StringSplitOptions.RemoveEmptyEntries);
-                fullPaths = new string[folders.Length];
-            }
+                string currentDir = Path.Combine("Resources", currentDirectory);
 
-            for (int i = 0; i < folders.Length; i++)
-            {
-                if (i == 0)
-                    fullPaths[i] = folders[i];
-                else
-                    fullPaths[i] = Path.Combine(fullPaths[i - 1], folders[i]);
+                folders = currentDir.Split(new[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar },
+                    StringSplitOptions.RemoveEmptyEntries);
+
+                fullPaths = new string[folders.Length];
+                for (int i = 0; i < folders.Length; i++)
+                {
+                    if (i == 0)
+                        fullPaths[i] = "";
+                    else
+                        fullPaths[i] = Path.Combine(fullPaths[i - 1], folders[i]);
+                }
             }
 
             int availableWidth = folderBarLayout.Bounds.width - FOLDER_BUTTON_WIDTH * 2;
@@ -1118,9 +1122,12 @@ namespace BansheeEditor
 
         private void OnUpClicked()
         {
-            string parent = Path.GetDirectoryName(currentDirectory);
-            if (!string.IsNullOrEmpty(parent))
+            currentDirectory = currentDirectory.Trim(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+
+            if (!string.IsNullOrEmpty(currentDirectory))
             {
+                string parent = Path.GetDirectoryName(currentDirectory);
+
                 currentDirectory = parent;
                 Refresh();
             }
@@ -1168,6 +1175,7 @@ namespace BansheeEditor
 
         private void ClearSearch()
         {
+            searchField.Value = "";
             searchQuery = "";
             Refresh();
         }

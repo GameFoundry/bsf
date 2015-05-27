@@ -29,11 +29,11 @@ TODO - Might need to handle overwritting better when importing/moving
 
 Simple tasks:
  - Hook up scene view drag and drop instantiation
- - Fix scroll to element
+ - Search should be case insensitive
+ - Search breaks when I type in *
+ - Search only works with exact matches but it should be more robust (append * to start/end automatically?)
 
 Test:
- - Test search
- - Test directory bar
  - See how are elements and search results ordered (should be by name)
  - Cut/Copy/Paste/Duplicate
  - Ping scroll and effect
