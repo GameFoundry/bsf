@@ -461,7 +461,7 @@ namespace BansheeEngine
 		WString wildcardReplace(L".*");
 		WString searchPattern = std::regex_replace(escapedPattern, wildcard, L".*");
 
-		std::wregex searchRegex(searchPattern);
+		std::wregex searchRegex(searchPattern, std::regex_constants::ECMAScript | std::regex_constants::icase);
 
 		Stack<DirectoryEntry*> todo;
 		todo.push(mRootEntry);
@@ -504,7 +504,7 @@ namespace BansheeEngine
 		std::sort(foundEntries.begin(), foundEntries.end(), 
 			[&](const LibraryEntry* a, const LibraryEntry* b) 
 		{ 
-			return a->elementName.compare(b->elementName);
+			return a->elementName.compare(b->elementName) < 0;
 		});
 
 		return foundEntries;

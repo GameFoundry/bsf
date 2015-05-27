@@ -902,7 +902,7 @@ namespace BansheeEditor
             LibraryEntry[] entriesToDisplay = new LibraryEntry[0];
             if (IsSearchActive)
             {
-                entriesToDisplay = ProjectLibrary.Search(searchQuery);
+                entriesToDisplay = ProjectLibrary.Search("*" + searchQuery + "*");
             }
             else
             {
