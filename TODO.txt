@@ -29,11 +29,9 @@ TODO - Might need to handle overwritting better when importing/moving
 
 Simple tasks:
  - Hook up scene view drag and drop instantiation
+ - Fix scroll to element
 
 Test:
- - If labels are now wider and selection looks better
- - If arrow key navigation and multi-selection (using arrows or ctrl/shift) works
-  - And scroll to element
  - Test search
  - Test directory bar
  - See how are elements and search results ordered (should be by name)

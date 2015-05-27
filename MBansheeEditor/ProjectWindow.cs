@@ -632,11 +632,11 @@ namespace BansheeEditor
                     {
                         case MoveDirection.Left:
                         case MoveDirection.Up:
-                            newPath = entries[0].path;
+                            newPath = entries[entries.Count - 1].path;
                             break;
                         case MoveDirection.Right:
                         case MoveDirection.Down:
-                            newPath = entries[entries.Count - 1].path;
+                            newPath = entries[0].path;
                             break;
                     }
                 }
@@ -646,11 +646,11 @@ namespace BansheeEditor
                 switch (dir)
                 {
                     case MoveDirection.Left:
-                        if (selectionAnchorEnd - 1 > 0)
+                        if (selectionAnchorEnd - 1 >= 0)
                             newPath = entries[selectionAnchorEnd - 1].path;
                         break;
                     case MoveDirection.Up:
-                        if (selectionAnchorEnd - contentInfo.elementsPerRow > 0)
+                        if (selectionAnchorEnd - contentInfo.elementsPerRow >= 0)
                             newPath = entries[selectionAnchorEnd - contentInfo.elementsPerRow].path;
                         break;
                     case MoveDirection.Right:
@@ -658,7 +658,7 @@ namespace BansheeEditor
                             newPath = entries[selectionAnchorEnd + 1].path;
                         break;
                     case MoveDirection.Down:
-                        if (selectionAnchorEnd + contentInfo.elementsPerRow > 0)
+                        if (selectionAnchorEnd + contentInfo.elementsPerRow < entries.Count)
                             newPath = entries[selectionAnchorEnd + contentInfo.elementsPerRow].path;
                         break;
                 }
@@ -875,18 +875,22 @@ namespace BansheeEditor
                 return;
 
             Rect2I entryBounds = entryGUI.Bounds;
-            Rect2I contentBounds = contentScrollArea.Layout.Bounds;
-            entryBounds.x += contentBounds.x;
-            entryBounds.y += contentBounds.y;
 
-            Rect2I scrollAreaBounds = scrollAreaPanel.Bounds;
-            bool requiresScroll = entryBounds.y < scrollAreaBounds.y ||
-                                  (entryBounds.y + entryBounds.height) > (scrollAreaBounds.y + scrollAreaBounds.height);
+            Rect2I contentBounds = contentScrollArea.Layout.Bounds;
+            Rect2I windowEntryBounds = entryBounds;
+            windowEntryBounds.x += contentBounds.x;
+            windowEntryBounds.y += contentBounds.y;
+
+            Rect2I scrollAreaBounds = contentScrollArea.Bounds;
+            bool requiresScroll = windowEntryBounds.y < scrollAreaBounds.y ||
+                                  (windowEntryBounds.y + windowEntryBounds.height) > (scrollAreaBounds.y + scrollAreaBounds.height);
 
             if (!requiresScroll)
                 return;
 
-            float percent = (entryBounds.y - entryBounds.height * 0.5f - scrollAreaBounds.height * 0.5f) / contentBounds.height;
+            int scrollableSize = contentBounds.height - scrollAreaBounds.height;
+            float percent = (((entryBounds.y + entryBounds.height * 0.5f) - scrollAreaBounds.height * 0.5f) / (float)scrollableSize);
+
             percent = MathEx.Clamp01(percent);
             contentScrollArea.VerticalScroll = percent;
         }
