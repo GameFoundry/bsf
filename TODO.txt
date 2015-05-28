@@ -34,7 +34,6 @@ Test:
  - Cut/Copy/Paste/Duplicate
 
 Later:
- - Drag to select multiple entries?
  - Hook up ping effect so it triggers when I select a resource or sceneobject
   - Add ping to SceneTreeView
  - Consider delaying search until user stops pressing keys

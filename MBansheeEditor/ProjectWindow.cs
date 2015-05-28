@@ -1047,6 +1047,8 @@ namespace BansheeEditor
 
             contentInfo.underlay.AddElement(catchAll);
 
+            Debug.Log(contentBounds);
+
             UpdateDragSelection(dragSelectionEnd);
         }
 
@@ -1354,9 +1356,11 @@ namespace BansheeEditor
         private Rect2I GetScrollAreaBounds()
         {
             Rect2I bounds = GUI.Bounds;
+            Rect2I folderListBounds = folderListLayout.Bounds;
             Rect2I searchBarBounds = searchBarLayout.Bounds;
-            bounds.y += searchBarBounds.height;
-            bounds.height -= searchBarBounds.height;
+
+            bounds.y += folderListBounds.height + searchBarBounds.height;
+            bounds.height -= folderListBounds.height + searchBarBounds.height;
 
             return bounds;
         }
