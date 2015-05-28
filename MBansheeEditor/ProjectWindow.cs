@@ -800,7 +800,8 @@ namespace BansheeEditor
             {
                 for (int i = 0; i < copyPaths.Count; i++)
                 {
-                    string destination = Path.Combine(destinationFolder, Path.GetFileName(copyPaths[i]));
+                    string cleanPath = copyPaths[i].TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                    string destination = Path.Combine(destinationFolder, Path.GetFileName(cleanPath));
 
                     ProjectLibrary.Copy(copyPaths[i], destination, true);
                 }
@@ -811,7 +812,8 @@ namespace BansheeEditor
             {
                 for (int i = 0; i < cutPaths.Count; i++)
                 {
-                    string destination = Path.Combine(destinationFolder, Path.GetFileName(cutPaths[i]));
+                    string cleanPath = cutPaths[i].TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                    string destination = Path.Combine(destinationFolder, Path.GetFileName(cleanPath));
 
                     ProjectLibrary.Move(cutPaths[i], destination, true);
                 }
@@ -1043,11 +1045,24 @@ namespace BansheeEditor
             catchAll.Bounds = contentBounds;
             catchAll.OnClick += OnCatchAllClicked;
             catchAll.SetContextMenu(entryContextMenu);
-            catchAll.OnFocusChanged += OnContentsFocusChanged;
 
             contentInfo.underlay.AddElement(catchAll);
 
-            Debug.Log(contentBounds);
+            Rect2I focusBounds = contentBounds; // Contents + Folder bar
+            Rect2I scrollBounds = contentScrollArea.Bounds;
+            focusBounds.x += scrollBounds.x;
+            focusBounds.y += scrollBounds.y;
+
+            Rect2I folderBarBounds = folderListLayout.Bounds;
+            focusBounds.y -= folderBarBounds.height;
+            focusBounds.height += folderBarBounds.height;
+
+            GUIButton focusCatcher = new GUIButton("", EditorStyles.Blank);
+            focusCatcher.OnFocusChanged += OnContentsFocusChanged;
+            focusCatcher.Bounds = focusBounds;
+
+            GUIPanel focusPanel = GUI.AddPanel(3);
+            focusPanel.AddElement(focusCatcher);
 
             UpdateDragSelection(dragSelectionEnd);
         }

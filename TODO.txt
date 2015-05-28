@@ -25,18 +25,22 @@ TODO - When importing/reimporting stuff there should be a progress bar
  - And onImportDone(entry) for each reimported asset
  - Then have EditorApplication subscribe to those events and show a progress bar when needed
    - TODO: I will need to either skip a frame, or force GUI to update meshes in order for the progress bar to update
-TODO - Might need to handle overwritting better when importing/moving 
+ - PROBABLY: PRojectLibrary should skip import into time slices (e.g. 16ms). If import took longer than 16ms wait till next
+   frame to continue. This was progress bar can update normally.
+ - TODO: The current import queue only deals with dependant resources. I should probably make it work even when
+   main resources are imported
+TODO - Might need to handle overwritting better when importing/moving
+ - When pasting generate a unique filename if the same one already exists
+ - Do the same when drag and dropping (either internal, or OS)
 
 Simple tasks:
  - Hook up scene view drag and drop instantiation
-
-Test:
- - Cut/Copy/Paste/Duplicate
 
 Later:
  - Hook up ping effect so it triggers when I select a resource or sceneobject
   - Add ping to SceneTreeView
  - Consider delaying search until user stops pressing keys
+ - When interacting with directory bar the window should keep focus
 
 ----------------------------------------------------------------------
 Resources
