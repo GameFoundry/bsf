@@ -925,6 +925,7 @@ namespace BansheeEditor
             scrollAreaPanel = contentScrollArea.Layout.AddPanel();
 
             RefreshDirectoryBar();
+            SortEntries(entriesToDisplay);
 
             if (entriesToDisplay.Length == 0)
                 return;
@@ -1083,6 +1084,17 @@ namespace BansheeEditor
                     }
                 }
             }
+        }
+
+        private void SortEntries(LibraryEntry[] input)
+        {
+            Array.Sort(input, (x, y) =>
+            {
+                if (x.Type == y.Type)
+                    return x.Name.CompareTo(y.Name);
+                else
+                    return x.Type == LibraryEntryType.File ? 1 : -1;
+            });
         }
 
         private void OnFolderButtonClicked(string path)

@@ -31,9 +31,7 @@ Simple tasks:
  - Hook up scene view drag and drop instantiation
 
 Test:
- - See how are elements and search results ordered (should be by name)
  - Cut/Copy/Paste/Duplicate
- - Ping scroll and effect
 
 Later:
  - Drag to select multiple entries?
