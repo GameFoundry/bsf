@@ -38,6 +38,35 @@ namespace BansheeEngine
 		    return false;
 	    }
 
+	    public bool Overlaps(Rect2I other)
+	    {
+		    int otherRight = other.x + other.width;
+            int myRight = x + width;
+
+            int otherBottom = other.y + other.height;
+            int myBottom = y + height;
+
+		    if(x < otherRight && myRight > other.x &&
+			    y < otherBottom && myBottom > other.y)
+			    return true;
+
+		    return false;
+	    }
+
+	    public void Clip(Rect2I clipRect)
+	    {
+		    int newLeft = Math.Max(x, clipRect.x);
+		    int newTop = Math.Max(y, clipRect.y);
+
+		    int newRight = Math.Min(x + width, clipRect.x + clipRect.width);
+		    int newBottom = Math.Min(y + height, clipRect.y + clipRect.height);
+
+		    x = newLeft;
+		    y = newTop;
+		    width = Math.Max(0, newRight - newLeft);
+            height = Math.Max(0, newBottom - newTop);
+	    }
+
         public override bool Equals(object other)
         {
             if (!(other is Rect2I))

@@ -317,6 +317,7 @@ namespace BansheeEditor
         private GUILayout folderBarLayout;
         private GUILayout folderListLayout;
         private GUITextField searchField;
+        private GUITexture dragSelection;
 
         private ContextMenu entryContextMenu;
         private ProjectDropTarget dropTarget;
@@ -325,6 +326,9 @@ namespace BansheeEditor
         private Dictionary<string, ElementEntry> entryLookup = new Dictionary<string, ElementEntry>();
 
         private int autoScrollAmount;
+        private bool isDraggingSelection;
+        private Vector2I dragSelectionStart;
+        private Vector2I dragSelectionEnd;
 
         // Cut/Copy/Paste
         private List<string> copyPaths = new List<string>();
@@ -390,14 +394,12 @@ namespace BansheeEditor
             dropTarget.OnDrag += DoOnDragMove;
             dropTarget.OnLeave += DoOnDragLeave;
             dropTarget.OnDrop += DoOnDragDropped;
+            dropTarget.OnEnd += DoOnDragEnd;
         }
 
         private ElementEntry FindElementAt(Vector2I windowPos)
         {
-            Rect2I scrollBounds = contentScrollArea.Layout.Bounds;
-            Vector2I scrollPos = windowPos;
-            scrollPos.x -= scrollBounds.x;
-            scrollPos.y -= scrollBounds.y;
+            Vector2I scrollPos = WindowToScrollAreaCoords(windowPos);
 
             foreach (var element in entries)
             {
@@ -408,14 +410,26 @@ namespace BansheeEditor
             return null;
         }
 
+        private ElementEntry[] FindElementsOverlapping(Rect2I scrollBounds)
+        {
+            List<ElementEntry> elements = new List<ElementEntry>();
+            foreach (var element in entries)
+            {
+                if(element.Bounds.Overlaps(scrollBounds))
+                    elements.Add(element);
+            }
+
+            return elements.ToArray();
+        }
+
         private void DoOnDragStart(Vector2I windowPos)
         {
             ElementEntry underCursorElem = FindElementAt(windowPos);
-            if (underCursorElem == null)
+            if (underCursorElem == null || !selectionPaths.Contains(underCursorElem.path))
+            {
+                StartDragSelection(windowPos);
                 return;
-
-            if (!selectionPaths.Contains(underCursorElem.path))
-                Select(underCursorElem.path);
+            }
 
             ResourceDragDropData dragDropData = new ResourceDragDropData(selectionPaths.ToArray());
             DragDrop.StartDrag(dragDropData);
@@ -423,6 +437,23 @@ namespace BansheeEditor
 
         private void DoOnDragMove(Vector2I windowPos)
         {
+            // Auto-scroll
+            Rect2I scrollAreaBounds = contentScrollArea.Bounds;
+            int scrollAreaTop = scrollAreaBounds.y;
+            int scrollAreaBottom = scrollAreaBounds.y + scrollAreaBounds.height;
+
+            if (windowPos.y > scrollAreaTop && windowPos.y <= (scrollAreaTop + DRAG_SCROLL_HEIGHT))
+                autoScrollAmount = -DRAG_SCROLL_AMOUNT_PER_SECOND;
+            else if (windowPos.y >= (scrollAreaBottom - DRAG_SCROLL_HEIGHT) && windowPos.y < scrollAreaBottom)
+                autoScrollAmount = DRAG_SCROLL_AMOUNT_PER_SECOND;
+            else
+                autoScrollAmount = 0;
+
+            // Selection box
+            if (UpdateDragSelection(windowPos))
+                return;
+
+            // Drag and drop (hover element under cursor)
             ElementEntry underCursorElem = FindElementAt(windowPos);
             
             if (underCursorElem == null)
@@ -439,17 +470,6 @@ namespace BansheeEditor
                     underCursorElem.MarkAsHovered(true);
                 }
             }
-
-            Rect2I scrollAreaBounds = contentScrollArea.Bounds;
-            int scrollAreaTop = scrollAreaBounds.y;
-            int scrollAreaBottom = scrollAreaBounds.y + scrollAreaBounds.height;
-
-            if (windowPos.y > scrollAreaTop && windowPos.y <= (scrollAreaTop + DRAG_SCROLL_HEIGHT))
-                autoScrollAmount = -DRAG_SCROLL_AMOUNT_PER_SECOND;
-            else if (windowPos.y >= (scrollAreaBottom - DRAG_SCROLL_HEIGHT) && windowPos.y < scrollAreaBottom)
-                autoScrollAmount = DRAG_SCROLL_AMOUNT_PER_SECOND;
-            else
-                autoScrollAmount = 0;
         }
 
         private void DoOnDragLeave()
@@ -460,6 +480,12 @@ namespace BansheeEditor
 
         private void DoOnDragDropped(Vector2I windowPos, string[] paths)
         {
+            ClearHoverHighlight();
+            autoScrollAmount = 0;
+
+            if (EndDragSelection())
+                return;
+
             string resourceDir = ProjectLibrary.ResourceFolder;
             string destinationFolder = Path.Combine(resourceDir, currentDirectory);
 
@@ -496,9 +522,11 @@ namespace BansheeEditor
                         ProjectLibrary.Copy(path, destination, true);
                 }
             }
+        }
 
-            ClearHoverHighlight();
-            autoScrollAmount = 0;
+        private void DoOnDragEnd(Vector2I windowPos)
+        {
+            EndDragSelection();
         }
 
         private void ClearHoverHighlight()
@@ -1018,6 +1046,113 @@ namespace BansheeEditor
             catchAll.OnFocusChanged += OnContentsFocusChanged;
 
             contentInfo.underlay.AddElement(catchAll);
+
+            UpdateDragSelection(dragSelectionEnd);
+        }
+
+        private Vector2I WindowToScrollAreaCoords(Vector2I windowPos)
+        {
+            Rect2I scrollBounds = contentScrollArea.Layout.Bounds;
+            Vector2I scrollPos = windowPos;
+            scrollPos.x -= scrollBounds.x;
+            scrollPos.y -= scrollBounds.y;
+
+            return scrollPos;
+        }
+
+        private void StartDragSelection(Vector2I windowPos)
+        {
+            isDraggingSelection = true;
+            dragSelectionStart = WindowToScrollAreaCoords(windowPos);
+            dragSelectionEnd = dragSelectionStart;
+        }
+
+        private bool UpdateDragSelection(Vector2I windowPos)
+        {
+            if (!isDraggingSelection)
+                return false;
+
+            if (dragSelection == null)
+            {
+                dragSelection = new GUITexture(null, true, EditorStyles.SelectionArea);
+                contentInfo.overlay.AddElement(dragSelection);
+            }
+
+            dragSelectionEnd = WindowToScrollAreaCoords(windowPos);
+
+            Rect2I selectionArea = CalculateSelectionArea();
+            SelectInArea(selectionArea);
+            dragSelection.Bounds = selectionArea;
+
+            return true;
+        }
+
+        private bool EndDragSelection()
+        {
+            if (!isDraggingSelection)
+                return false;
+
+            if (dragSelection != null)
+            {
+                dragSelection.Destroy();
+                dragSelection = null;
+            }
+
+            Rect2I selectionArea = CalculateSelectionArea();
+            SelectInArea(selectionArea);
+
+            isDraggingSelection = false;
+            return false;
+        }
+
+        private Rect2I CalculateSelectionArea()
+        {
+            Rect2I selectionArea = new Rect2I();
+            if (dragSelectionStart.x < dragSelectionEnd.x)
+            {
+                selectionArea.x = dragSelectionStart.x;
+                selectionArea.width = dragSelectionEnd.x - dragSelectionStart.x;
+            }
+            else
+            {
+                selectionArea.x = dragSelectionEnd.x;
+                selectionArea.width = dragSelectionStart.x - dragSelectionEnd.x;
+            }
+
+            if (dragSelectionStart.y < dragSelectionEnd.y)
+            {
+                selectionArea.y = dragSelectionStart.y;
+                selectionArea.height = dragSelectionEnd.y - dragSelectionStart.y;
+            }
+            else
+            {
+                selectionArea.y = dragSelectionEnd.y;
+                selectionArea.height = dragSelectionStart.y - dragSelectionEnd.y;
+            }
+
+            return selectionArea;
+        }
+
+        private void SelectInArea(Rect2I scrollBounds)
+        {
+            ElementEntry[] foundElements = FindElementsOverlapping(scrollBounds);
+
+            if (foundElements.Length > 0)
+            {
+                selectionAnchorStart = foundElements[0].index;
+                selectionAnchorEnd = foundElements[foundElements.Length - 1].index;
+            }
+            else
+            {
+                selectionAnchorStart = -1;
+                selectionAnchorEnd = -1;
+            }
+
+            List<string> elementPaths = new List<string>();
+            foreach (var elem in foundElements)
+                elementPaths.Add(elem.path);
+
+            SetSelection(elementPaths);
         }
 
         private void RefreshDirectoryBar()

@@ -209,6 +209,8 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::ProgressBarFillTex = L"ProgressBarFill.psd";
 	const WString BuiltinEditorResources::ProgressBarBgTex = L"ProgressBarBg.psd";
 
+	const WString BuiltinEditorResources::SelectionAreaTex = L"SelectionHighlight.psd";
+
 	/************************************************************************/
 	/* 									SHADERS                      		*/
 	/************************************************************************/
@@ -1240,6 +1242,16 @@ namespace BansheeEngine
 		rightAlignedLabelStyle.textHorzAlign = THA_Right;
 
 		skin->setStyle("RightAlignedLabel", rightAlignedLabelStyle);
+
+		// Selection area
+		GUIElementStyle selectionAreaStyle;
+		selectionAreaStyle.normal.texture = getGUITexture(SelectionAreaTex);
+		selectionAreaStyle.border.left = 1;
+		selectionAreaStyle.border.right = 1;
+		selectionAreaStyle.border.top = 1;
+		selectionAreaStyle.border.bottom = 1;
+
+		skin->setStyle("SelectionArea", selectionAreaStyle);
 
 		return skin;
 	}

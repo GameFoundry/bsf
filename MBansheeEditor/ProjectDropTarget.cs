@@ -14,6 +14,7 @@ namespace BansheeEditor
         public Action<Vector2I> OnEnter;
         public Action OnLeave;
         public Action<Vector2I> OnDrag;
+        public Action<Vector2I> OnEnd;
 
         private readonly EditorWindow parentWindow;
 
@@ -23,6 +24,7 @@ namespace BansheeEditor
         private bool isMouseDown;
         private bool isDragInProgress;
         private bool triggerStartDrag;
+        private bool triggerEndDrag;
         private bool isDragInBounds;
         private bool isOSDragActive;
         private Vector2I mouseDownScreenPos;
@@ -74,6 +76,7 @@ namespace BansheeEditor
             isDragInProgress = false;
             isMouseDown = false;
             isDragInBounds = false;
+            triggerEndDrag = true;
         }
 
         void Input_OnPointerPressed(PointerEvent ev)
@@ -95,10 +98,18 @@ namespace BansheeEditor
                     OnStart(currentWindowPos);
             }
 
+            if (triggerEndDrag)
+            {
+                triggerEndDrag = false;
+
+                if (OnEnd != null)
+                    OnEnd(currentWindowPos);
+            }
+
             if (isOSDragActive)
                 return;
 
-            if (DragDrop.DragInProgress && DragDrop.Type == DragDropType.Resource)
+            if (isDragInProgress)
             {
                 if (lastDragWindowPos != currentWindowPos)
                 {

@@ -17,5 +17,6 @@ namespace BansheeEditor
         public const string ColorSliderHorz = "ColorSliderHorz";
         public const string ColorSliderVert = "ColorSliderVert";
         public const string ColorSlider2DHandle = "ColorSlider2DHandle";
+        public const string SelectionArea = "SelectionArea";
     }
 }

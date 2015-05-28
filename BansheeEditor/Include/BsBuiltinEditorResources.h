@@ -300,6 +300,8 @@ namespace BansheeEngine
 		static const WString ProgressBarFillTex;
 		static const WString ProgressBarBgTex;
 
+		static const WString SelectionAreaTex;
+
 		static const WString ShaderDockOverlayFile;
 		static const WString ShaderSceneGridFile;
 		static const WString ShaderPickingCullNoneFile;
