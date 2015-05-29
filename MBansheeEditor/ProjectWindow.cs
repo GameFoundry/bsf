@@ -302,6 +302,7 @@ namespace BansheeEditor
 
         private ProjectViewType viewType = ProjectViewType.Grid32;
 
+        private bool requiresRefresh;
         private string currentDirectory = "";
         private List<string> selectionPaths = new List<string>();
         private int selectionAnchorStart = -1;
@@ -892,12 +893,15 @@ namespace BansheeEditor
                 contentScrollArea.VerticalScroll += scrollPct * Time.FrameDelta;
             }
 
+            if (requiresRefresh)
+                Refresh();
+
             dropTarget.Update();
         }
 
         private void OnEntryChanged(string entry)
         {
-            Refresh();
+            requiresRefresh = true;
         }
 
         private void ScrollToEntry(string path)
@@ -929,6 +933,8 @@ namespace BansheeEditor
 
         private void Refresh()
         {
+            requiresRefresh = false;
+
             LibraryEntry[] entriesToDisplay = new LibraryEntry[0];
             if (IsSearchActive)
             {

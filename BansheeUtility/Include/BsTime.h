@@ -73,6 +73,10 @@ namespace BansheeEngine
 		 */
 		void update();
 
+		/**
+		 * @brief	Multiply with time in microseconds to get a time in seconds.
+		 */
+		static const double MICROSEC_TO_SEC;
 	private:
 		float mFrameDelta; /**< Frame delta in seconds */
 		float mTimeSinceStart; /**< Time since start in seconds */
@@ -83,8 +87,6 @@ namespace BansheeEngine
 		unsigned long mCurrentFrame;
 
 		Timer* mTimer;
-
-		static const double MICROSEC_TO_SEC;
 	};
 
 	BS_UTILITY_EXPORT Time& gTime();

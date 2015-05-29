@@ -53,6 +53,7 @@ namespace BansheeEngine
 
 		void update();
 		void checkForModifications(const Path& path);
+		void checkForModifications(const Path& path, bool import, Vector<Path>& dirtyResources);
 
 		const LibraryEntry* getRootEntry() const { return mRootEntry; }
 		LibraryEntry* findEntry(const Path& path) const;
@@ -70,6 +71,7 @@ namespace BansheeEngine
 		void copyEntry(const Path& oldPath, const Path& newPath, bool overwrite = true);
 		void deleteEntry(const Path& path);
 		void reimport(const Path& path, const ImportOptionsPtr& importOptions = nullptr, bool forceReimport = false);
+		HResource load(const Path& path);
 
 		const Path& getResourcesFolder() const { return mResourcesFolder; }
 
@@ -83,7 +85,6 @@ namespace BansheeEngine
 
 		ResourceManifestPtr mResourceManifest;
 		DirectoryEntry* mRootEntry;
-		FolderMonitor* mMonitor;
 		Path mProjectFolder;
 		Path mResourcesFolder;
 
@@ -110,11 +111,10 @@ namespace BansheeEngine
 		void doOnEntryRemoved(const LibraryEntry* entry);
 		void doOnEntryAdded(const LibraryEntry* entry);
 
-		void onMonitorFileModified(const Path& path);
-
 		Vector<Path> getImportDependencies(const ResourceEntry* entry);
 		void addDependencies(const ResourceEntry* entry);
 		void removeDependencies(const ResourceEntry* entry);
+
 		void queueDependantForReimport(const ResourceEntry* entry);
 	};
 }

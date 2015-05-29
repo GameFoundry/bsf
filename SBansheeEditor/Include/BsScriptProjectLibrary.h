@@ -16,6 +16,7 @@ namespace BansheeEngine
 		void static shutDown();
 
 	private:
+		static MonoArray* internal_Refresh(bool import);
 		static void internal_Create(MonoObject* resource, MonoString* path);
 		static MonoObject* internal_Load(MonoString* path);
 		static void internal_Save(MonoObject* resource);

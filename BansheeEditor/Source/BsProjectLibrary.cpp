@@ -9,7 +9,6 @@
 #include "BsImporter.h"
 #include "BsImportOptions.h"
 #include "BsFileSerializer.h"
-#include "BsFolderMonitor.h"
 #include "BsDebug.h"
 #include "BsProjectLibraryEntries.h"
 #include "BsResource.h"
@@ -35,11 +34,11 @@ namespace BansheeEngine
 	{ }
 
 	ProjectLibrary::ResourceEntry::ResourceEntry()
-		:lastUpdateTime(0)
+		: lastUpdateTime(0)
 	{ }
 
 	ProjectLibrary::ResourceEntry::ResourceEntry(const Path& path, const WString& name, DirectoryEntry* parent)
-		:LibraryEntry(path, name, parent, LibraryEntryType::File), lastUpdateTime(0)
+		: LibraryEntry(path, name, parent, LibraryEntryType::File), lastUpdateTime(0)
 	{ }
 
 	ProjectLibrary::DirectoryEntry::DirectoryEntry()
@@ -54,15 +53,6 @@ namespace BansheeEngine
 	{
 		mResourcesFolder = mProjectFolder;
 		mResourcesFolder.append(RESOURCES_DIR);
-		mMonitor = bs_new<FolderMonitor>();
-
-		FolderChange folderChanges = (FolderChange)((UINT32)FolderChange::FileName | (UINT32)FolderChange::DirName | 
-				(UINT32)FolderChange::Creation | (UINT32)FolderChange::LastWrite);
-		mMonitor->startMonitor(mResourcesFolder, true, folderChanges);
-
-		mMonitor->onAdded.connect(std::bind(&ProjectLibrary::onMonitorFileModified, this, _1));
-		mMonitor->onRemoved.connect(std::bind(&ProjectLibrary::onMonitorFileModified, this, _1));
-		mMonitor->onModified.connect(std::bind(&ProjectLibrary::onMonitorFileModified, this, _1));
 
 		load();
 
@@ -70,16 +60,11 @@ namespace BansheeEngine
 			mResourceManifest = ResourceManifest::create("ProjectLibrary");
 
 		gResources().registerResourceManifest(mResourceManifest);
-
-		checkForModifications(mResourcesFolder);
 	}
 
 	ProjectLibrary::~ProjectLibrary()
 	{
 		save();
-
-		mMonitor->stopMonitorAll();
-		bs_delete(mMonitor);
 
 		if(mRootEntry != nullptr)
 			deleteDirectoryInternal(mRootEntry);
@@ -87,8 +72,6 @@ namespace BansheeEngine
 
 	void ProjectLibrary::update()
 	{
-		mMonitor->_update();
-
 		while (!mReimportQueue.empty())
 		{
 			Path toReimport = *mReimportQueue.begin();
@@ -105,6 +88,12 @@ namespace BansheeEngine
 	}
 
 	void ProjectLibrary::checkForModifications(const Path& fullPath)
+	{
+		Vector<Path> dirtyResources;
+		checkForModifications(fullPath, true, dirtyResources);
+	}
+
+	void ProjectLibrary::checkForModifications(const Path& fullPath, bool import, Vector<Path>& dirtyResources)
 	{
 		if (!mResourcesFolder.includes(fullPath))
 			return; // Folder not part of our resources path, so no modifications
@@ -131,26 +120,32 @@ namespace BansheeEngine
 
 			if(FileSystem::isFile(pathToSearch))
 			{
-				addResourceInternal(entryParent, pathToSearch);
+				if (import)
+					addResourceInternal(entryParent, pathToSearch);
+				
+				dirtyResources.push_back(pathToSearch);
 			}
 			else if(FileSystem::isDirectory(pathToSearch))
 			{
 				addDirectoryInternal(entryParent, pathToSearch);
 
-				if(newHierarchyParent == nullptr)
-					checkForModifications(pathToSearch);
+				checkForModifications(pathToSearch);
 			}
-
-			if(newHierarchyParent != nullptr)
-				checkForModifications(newHierarchyParent->path);
 		}
 		else if(entry->type == LibraryEntryType::File)
 		{
 			if(FileSystem::isFile(entry->path))
 			{
 				ResourceEntry* resEntry = static_cast<ResourceEntry*>(entry);
-				reimportResourceInternal(resEntry);
-				queueDependantForReimport(resEntry);
+
+				if (import)
+				{
+					reimportResourceInternal(resEntry);
+					queueDependantForReimport(resEntry);
+				}
+
+				if (!isUpToDate(resEntry))
+					dirtyResources.push_back(entry->path);
 			}
 			else
 			{
@@ -220,8 +215,14 @@ namespace BansheeEngine
 
 							if(existingEntry != nullptr)
 							{
-								reimportResourceInternal(existingEntry);
-								queueDependantForReimport(existingEntry);
+								if (import)
+								{
+									reimportResourceInternal(existingEntry);
+									queueDependantForReimport(existingEntry);
+								}
+
+								if (!isUpToDate(existingEntry))
+									dirtyResources.push_back(existingEntry->path);
 							}
 							else
 							{
@@ -733,9 +734,6 @@ namespace BansheeEngine
 				}
 
 				doOnEntryAdded(oldEntry);
-
-				if(newHierarchyParent != nullptr)
-					checkForModifications(newHierarchyParent->path);
 			}
 		}
 		else // Moving from outside of the Resources folder (likely adding a new resource)
@@ -871,6 +869,19 @@ namespace BansheeEngine
 		}
 	}
 
+	HResource ProjectLibrary::load(const Path& path)
+	{
+		LibraryEntry* entry = findEntry(path);
+
+		if (entry == nullptr || entry->type == LibraryEntryType::Directory)
+			return HResource();
+
+		ResourceEntry* resEntry = static_cast<ResourceEntry*>(entry);
+		String resUUID = resEntry->meta->getUUID();
+
+		return Resources::instance().loadFromUUID(resUUID);
+	}
+
 	void ProjectLibrary::createInternalParentHierarchy(const Path& fullPath, DirectoryEntry** newHierarchyRoot, DirectoryEntry** newHierarchyLeaf)
 	{
 		Path parentPath = fullPath;
@@ -926,19 +937,6 @@ namespace BansheeEngine
 	bool ProjectLibrary::isMeta(const Path& fullPath) const
 	{
 		return fullPath.getWExtension() == L".meta";
-	}
-
-	void ProjectLibrary::onMonitorFileModified(const Path& path)
-	{
-		if(!isMeta(path))
-			checkForModifications(path);
-		else
-		{
-			Path resourcePath = path;
-			resourcePath.setExtension(L"");
-
-			checkForModifications(resourcePath);
-		}
 	}
 
 	void ProjectLibrary::save()
@@ -999,26 +997,37 @@ namespace BansheeEngine
 				if(child->type == LibraryEntryType::File)
 				{
 					ResourceEntry* resEntry = static_cast<ResourceEntry*>(child);
+					bool doAddDependencies = true;
 
-					if(resEntry->meta == nullptr)
+					if (FileSystem::isFile(resEntry->path))
 					{
-						Path metaPath = resEntry->path;
-						metaPath.setFilename(metaPath.getWFilename() + L".meta");
-
-						if(FileSystem::isFile(metaPath))
+						if (resEntry->meta == nullptr)
 						{
-							FileDecoder fs(metaPath);
-							std::shared_ptr<IReflectable> loadedMeta = fs.decode();
+							Path metaPath = resEntry->path;
+							metaPath.setFilename(metaPath.getWFilename() + L".meta");
 
-							if(loadedMeta != nullptr && loadedMeta->isDerivedFrom(ProjectResourceMeta::getRTTIStatic()))
+							if (FileSystem::isFile(metaPath))
 							{
-								ProjectResourceMetaPtr resourceMeta = std::static_pointer_cast<ProjectResourceMeta>(loadedMeta);
-								resEntry->meta = resourceMeta;
+								FileDecoder fs(metaPath);
+								std::shared_ptr<IReflectable> loadedMeta = fs.decode();
+
+								if (loadedMeta != nullptr && loadedMeta->isDerivedFrom(ProjectResourceMeta::getRTTIStatic()))
+								{
+									ProjectResourceMetaPtr resourceMeta = std::static_pointer_cast<ProjectResourceMeta>(loadedMeta);
+									resEntry->meta = resourceMeta;
+								}
+							}
+							else
+							{
+								LOGWRN("Missing meta file: " + metaPath.toString() + ". Triggering reimport.");
+								reimportResourceInternal(resEntry);
+								doAddDependencies = false;
 							}
 						}
 					}
 
-					addDependencies(resEntry);
+					if (doAddDependencies)
+						addDependencies(resEntry);
 				}
 				else if(child->type == LibraryEntryType::Directory)
 				{
@@ -1103,7 +1112,7 @@ namespace BansheeEngine
 			curDependencies.erase(iterRemove, curDependencies.end());
 		}
 	}
-	
+
 	void ProjectLibrary::queueDependantForReimport(const ResourceEntry* entry)
 	{
 		auto iterFind = mDependencies.find(entry->path);

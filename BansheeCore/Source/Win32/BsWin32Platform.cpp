@@ -209,7 +209,7 @@ namespace BansheeEngine
 		iconinfo.hbmColor = hBitmap;
 
 		mData->mCursor.cursor = CreateIconIndirect(&iconinfo);
-
+		
 		DeleteObject(hBitmap);          
 		DeleteObject(hMonoBitmap);
 

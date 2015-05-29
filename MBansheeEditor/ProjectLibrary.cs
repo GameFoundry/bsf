@@ -13,6 +13,11 @@ namespace BansheeEditor
         public static event Action<string> OnEntryAdded;
         public static event Action<string> OnEntryRemoved;
 
+        public static string[] Refresh(bool import = false)
+        {
+            return Internal_Refresh(import);
+        }
+
         public static void Create(Resource resource, string path)
         {
             if (Path.IsPathRooted(path))
@@ -95,6 +100,9 @@ namespace BansheeEditor
             if (OnEntryRemoved != null)
                 OnEntryRemoved(path);
         }
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string[] Internal_Refresh(bool import);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_Create(Resource resource, string path);

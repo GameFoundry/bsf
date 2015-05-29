@@ -32,6 +32,7 @@ namespace BansheeEngine
 
 	void ScriptProjectLibrary::initRuntimeData()
 	{
+		metaData.scriptClass->addInternalCall("Internal_Refresh", &ScriptProjectLibrary::internal_Refresh);
 		metaData.scriptClass->addInternalCall("Internal_Create", &ScriptProjectLibrary::internal_Create);
 		metaData.scriptClass->addInternalCall("Internal_Load", &ScriptProjectLibrary::internal_Load);
 		metaData.scriptClass->addInternalCall("Internal_Save", &ScriptProjectLibrary::internal_Save);
@@ -51,6 +52,20 @@ namespace BansheeEngine
 		OnEntryRemovedThunk = (OnEntryChangedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnEntryRemoved", 1)->getThunk();
 	}
 
+	MonoArray* ScriptProjectLibrary::internal_Refresh(bool import)
+	{
+		Vector<Path> dirtyResources;
+		ProjectLibrary::instance().checkForModifications(ProjectLibrary::instance().getResourcesFolder(), import, dirtyResources);
+
+		ScriptArray output = ScriptArray::create<WString>((UINT32)dirtyResources.size());
+		for (UINT32 i = 0; i < (UINT32)dirtyResources.size(); i++)
+		{
+			output.set(i, dirtyResources[i].toWString());
+		}
+
+		return output.getInternal();
+	}
+
 	void ScriptProjectLibrary::internal_Create(MonoObject* resource, MonoString* path)
 	{
 		ScriptResource* scrResource = ScriptResource::toNative(resource);
@@ -63,19 +78,11 @@ namespace BansheeEngine
 	{
 		Path resourcePath = MonoUtil::monoToWString(path);
 
-		ProjectLibrary::LibraryEntry* entry = ProjectLibrary::instance().findEntry(resourcePath);
-
-		if (entry == nullptr || entry->type == ProjectLibrary::LibraryEntryType::Directory)
-			return nullptr;
-
-		ProjectLibrary::ResourceEntry* resEntry = static_cast<ProjectLibrary::ResourceEntry*>(entry);
-		String resUUID = resEntry->meta->getUUID();
-
-		HResource resource = Resources::instance().loadFromUUID(resUUID);
+		HResource resource = Resources::instance().load(resourcePath);
 		if (!resource)
 			return nullptr;
 
-		ScriptResourceBase* scriptResource = ScriptResourceManager::instance().getScriptResource(resUUID);
+		ScriptResourceBase* scriptResource = ScriptResourceManager::instance().getScriptResource(resource.getUUID());
 		if (scriptResource == nullptr)
 			scriptResource = ScriptResourceManager::instance().createScriptResource(resource);
 
