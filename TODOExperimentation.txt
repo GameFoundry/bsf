@@ -1,9 +1,11 @@
 -------------------------
 FBX
+Next:
+ - Test if import works using the next system
  - DefaultMeshData is defined in BansheeEngine but FBXImporter only includes Banshee Core
- - Transform tangent/bitangent and encode them into a 4-vector value
- - It should use DefaultMeshData
- - It should use and apply MeshImportOptions
+  - Therefore I am not using it in FBXImporter but I should
+
+Later:
  - Import skeleton
   - Unity just maps nodes referenced by FbxSkin clusters to bones, it do no separate parsing
  - Import keyframes

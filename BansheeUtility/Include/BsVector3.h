@@ -418,6 +418,14 @@ namespace BansheeEngine
 			vec2.normalize();
 		}
 
+        /**
+         * @brief	Calculates the dot (scalar) product of two vectors
+         */
+		static float dot(const Vector3& a, const Vector3& b)
+		{
+			return a.x * b.x + a.y * b.y + a.z * b.z;
+		}
+
 		/**
 		 * @brief	Normalizes the provided vector and returns a new normalized instance.
 		 */

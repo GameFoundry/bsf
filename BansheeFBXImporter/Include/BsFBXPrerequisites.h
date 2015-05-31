@@ -17,3 +17,8 @@
 #else
 #    define BS_FBX_EXPORT
 #endif
+
+#define FBXSDK_NEW_API
+#include <fbxsdk.h>
+
+#define FBX_IMPORT_MAX_UV_LAYERS 2

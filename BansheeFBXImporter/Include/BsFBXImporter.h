@@ -2,11 +2,10 @@
 
 #include "BsFBXPrerequisites.h"
 #include "BsSpecificImporter.h"
-#include "BsImporter.h"
 #include "BsSubMesh.h"
+#include "BsFBXImportData.h"
 
-#define FBXSDK_NEW_API
-#include <fbxsdk.h>
+#define FBX_IMPORT_MAX_UV_LAYERS 2
 
 namespace BansheeEngine
 {
@@ -40,39 +39,54 @@ namespace BansheeEngine
 		 *			Outputs an FBX manager and FBX scene instances you should use in
 		 *			further operations.
 		 */
-		void startUpSdk(FbxManager*& manager, FbxScene*& scene);
+		bool startUpSdk(FbxScene*& scene);
 
 		/**
 		 * @brief	Shuts down FBX SDK. Must be called after any other operations.
 		 */
-		void shutDownSdk(FbxManager* manager);
+		void shutDownSdk();
 
 		/**
 		 * @brief	Loads the data from the file at the provided path into the provided FBX scene. 
 		 *			Throws exception if data cannot be loaded.
 		 */
-		void loadScene(FbxManager* manager, FbxScene* scene, const Path& filePath);
+		bool loadFBXFile(FbxScene* scene, const Path& filePath);
 
 		/**
 		 * @brief	Parses an FBX scene. Find all meshes in the scene and returns mesh data object
 		 *			containing all vertices, indexes and other mesh information. Also outputs
 		 *			a sub-mesh array that allows you locate specific sub-meshes within the returned
-		 *			mesh data object.
+		 *			mesh data object. If requested animation and blend shape data is output as well.
 		 */
-		MeshDataPtr parseScene(FbxManager* manager, FbxScene* scene, Vector<SubMesh>& subMeshes);
+		void parseScene(FbxScene* scene, const FBXImportOptions& options, FBXImportScene& outputScene);
 
 		/**
 		 * @brief	Parses an FBX mesh. Converts it from FBX SDK format into a mesh data object containing
 		 *			one or multiple sub-meshes.
 		 */
-		MeshDataPtr parseMesh(FbxMesh* mesh, Vector<SubMesh>& subMeshes, bool createTangentsIfMissing = true);
+		void parseMesh(FbxMesh* mesh, FBXImportNode* parentNode, const FBXImportOptions& options, FBXImportScene& outputScene);
 
 		/**
-		 * @brief	Computes world transform matrix for the specified FBX node.
+		 * @brief	Converts all the meshes from per-index attributes to per-vertex attributes.
+		 *
+		 * @note	This method will replace all meshes in the scene with new ones, and delete old ones
+		 *			so be sure not to keep any mesh references.
 		 */
-		FbxAMatrix computeWorldTransform(FbxNode* node);
+		void splitMeshVertices(FBXImportScene& scene);
+
+		/**
+		 * @brief	Converts the mesh data from the imported FBX scene into mesh data that can be used
+		 *			for initializing a mesh.
+		 */
+		MeshDataPtr generateMeshData(const FBXImportScene& scene, Vector<SubMesh>& subMeshes);
+
+		/**
+		 * @brief	Creates an internal representation of an FBX node from an FbxNode object.
+		 */
+		FBXImportNode* createImportNode(FBXImportScene& scene, FbxNode* fbxNode, FBXImportNode* parent);
 
 	private:
 		Vector<WString> mExtensions;
+		FbxManager* mFBXManager;
 	};
 }

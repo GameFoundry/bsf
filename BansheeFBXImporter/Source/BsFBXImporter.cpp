@@ -8,12 +8,66 @@
 #include "BsVector2.h"
 #include "BsVector3.h"
 #include "BsVector4.h"
+#include "BsQuaternion.h"
 #include "BsVertexDataDesc.h"
+#include "BsFBXUtility.h"
+#include <BsMeshImportOptions.h>
 
 namespace BansheeEngine
 {
+	Vector4 FBXToNativeType(const FbxVector4& value)
+	{
+		Vector4 native;
+		native.x = (float)value[0];
+		native.y = (float)value[1];
+		native.z = (float)value[2];
+		native.w = (float)value[3];
+
+		return native;
+	}
+
+	Vector3 FBXToNativeType(const FbxDouble3& value)
+	{
+		Vector3 native;
+		native.x = (float)value[0];
+		native.y = (float)value[1];
+		native.z = (float)value[2];
+
+		return native;
+	}
+
+	Vector2 FBXToNativeType(const FbxVector2& value)
+	{
+		Vector2 native;
+		native.x = (float)value[0];
+		native.y = (float)value[1];
+
+		return native;
+	}
+
+	RGBA FBXToNativeType(const FbxColor& value)
+	{
+		Color native;
+		native.r = (float)value[0];
+		native.g = (float)value[1];
+		native.b = (float)value[2];
+		native.a = (float)value[3];
+
+		return native.getAsRGBA();
+	}
+
+	FbxSurfaceMaterial* FBXToNativeType(FbxSurfaceMaterial* const& value)
+	{
+		return value;
+	}
+
+	int FBXToNativeType(const int & value)
+	{
+		return value;
+	}
+
 	FBXImporter::FBXImporter()
-		:SpecificImporter() 
+		:SpecificImporter(), mFBXManager(nullptr)
 	{
 		mExtensions.push_back(L"fbx");
 	}
@@ -38,18 +92,38 @@ namespace BansheeEngine
 
 	ResourcePtr FBXImporter::import(const Path& filePath, ConstImportOptionsPtr importOptions)
 	{
-		FbxManager* fbxManager = nullptr;
 		FbxScene* fbxScene = nullptr;
 
-		startUpSdk(fbxManager, fbxScene);
-		loadScene(fbxManager, fbxScene, filePath);
+		if (!startUpSdk(fbxScene))
+			return nullptr;
 
+		if (!loadFBXFile(fbxScene, filePath))
+			return nullptr;
+
+		const MeshImportOptions* meshImportOptions = static_cast<const MeshImportOptions*>(importOptions.get());
+		FBXImportOptions fbxImportOptions;
+		fbxImportOptions.importNormals = meshImportOptions->getImportNormals();
+		fbxImportOptions.importTangents = meshImportOptions->getImportTangents();
+		fbxImportOptions.importAnimation = meshImportOptions->getImportAnimation();
+		fbxImportOptions.importBlendShapes = meshImportOptions->getImportBlendShapes();
+		fbxImportOptions.importSkin = meshImportOptions->getImportSkin();
+
+		FBXImportScene importedScene;
+		parseScene(fbxScene, fbxImportOptions, importedScene);
+		splitMeshVertices(importedScene);
+		
 		Vector<SubMesh> subMeshes;
-		MeshDataPtr meshData = parseScene(fbxManager, fbxScene, subMeshes);	
+		MeshDataPtr meshData = generateMeshData(importedScene, subMeshes);
 
-		shutDownSdk(fbxManager);
+		// TODO - Later: Optimize mesh: Remove bad and degenerate polygons, optimize for vertex cache
 
-		MeshPtr mesh = Mesh::_createPtr(meshData, subMeshes);
+		shutDownSdk();
+
+		INT32 usage = MU_STATIC;
+		if (meshImportOptions->getCPUReadable())
+			usage |= MU_CPUCACHED;
+
+		MeshPtr mesh = Mesh::_createPtr(meshData, subMeshes, usage);
 
 		WString fileName = filePath.getWFilename(false);
 		mesh->setName(fileName);
@@ -57,53 +131,54 @@ namespace BansheeEngine
 		return mesh;
 	}
 
-	void FBXImporter::startUpSdk(FbxManager*& manager, FbxScene*& scene)
+	bool FBXImporter::startUpSdk(FbxScene*& scene)
 	{
-		// TODO Low priority - Initialize allocator methods for FBX. It calls a lot of heap allocs (200 000 calls for a simple 2k poly mesh) which slows down the import.
-		// Custom allocator would help a lot.
+		mFBXManager = FbxManager::Create();
+		if (mFBXManager == nullptr)
+		{
+			LOGERR("FBX import failed: FBX SDK failed to initialize. FbxManager::Create() failed.");
+			return false;
+		}
 
-		manager = FbxManager::Create();
-		if(manager == nullptr)
-			BS_EXCEPT(InternalErrorException, "FBX SDK failed to initialize. FbxManager::Create() failed.");
+		FbxIOSettings* ios = FbxIOSettings::Create(mFBXManager, IOSROOT);
+		mFBXManager->SetIOSettings(ios);
 
-		FbxIOSettings* ios = FbxIOSettings::Create(manager, IOSROOT);
-		manager->SetIOSettings(ios);
+		scene = FbxScene::Create(mFBXManager, "Import Scene");
+		if (scene == nullptr)
+		{
+			LOGWRN("FBX import failed: Failed to create FBX scene.");
+			return false;
+		}
 
-		scene = FbxScene::Create(manager, "Import Scene");
-		if(scene == nullptr)
-			BS_EXCEPT(InternalErrorException, "Failed to create FBX scene.");
+		return true;
 	}
 
-	void FBXImporter::shutDownSdk(FbxManager* manager)
+	void FBXImporter::shutDownSdk()
 	{
-		manager->Destroy();
+		mFBXManager->Destroy();
+		mFBXManager = nullptr;
 	}
 
-	void FBXImporter::loadScene(FbxManager* manager, FbxScene* scene, const Path& filePath)
+	bool FBXImporter::loadFBXFile(FbxScene* scene, const Path& filePath)
 	{
 		int lFileMajor, lFileMinor, lFileRevision;
 		int lSDKMajor,  lSDKMinor,  lSDKRevision;
 		FbxManager::GetFileFormatVersion(lSDKMajor, lSDKMinor, lSDKRevision);
 
-		FbxImporter* importer = FbxImporter::Create(manager, "");
-		bool importStatus = importer->Initialize(filePath.toString().c_str(), -1, manager->GetIOSettings());
+		FbxImporter* importer = FbxImporter::Create(mFBXManager, "");
+		bool importStatus = importer->Initialize(filePath.toString().c_str(), -1, mFBXManager->GetIOSettings());
 		
 		importer->GetFileVersion(lFileMajor, lFileMinor, lFileRevision);
 
 		if(!importStatus)
 		{
-			BS_EXCEPT(InternalErrorException, "Call to FbxImporter::Initialize() failed.\n" +
+			LOGERR("FBX import failed: Call to FbxImporter::Initialize() failed.\n" +
 				String("Error returned: %s\n\n") + String(importer->GetStatus().GetErrorString()));
+			return false;
 		}
 
-		manager->GetIOSettings()->SetBoolProp(IMP_FBX_ANIMATION, false);
-		manager->GetIOSettings()->SetBoolProp(IMP_FBX_TEXTURE, false);
-		manager->GetIOSettings()->SetBoolProp(IMP_FBX_LINK, false);
-		manager->GetIOSettings()->SetBoolProp(IMP_FBX_GOBO, false);
-		manager->GetIOSettings()->SetBoolProp(IMP_FBX_SHAPE, false);
-
-		// TODO - Parse animations
-		// TODO - Parse blend shapes
+		mFBXManager->GetIOSettings()->SetBoolProp(IMP_FBX_TEXTURE, false);
+		mFBXManager->GetIOSettings()->SetBoolProp(IMP_FBX_GOBO, false);
 
 		importStatus = importer->Import(scene);
 
@@ -111,24 +186,31 @@ namespace BansheeEngine
 		{
 			importer->Destroy();
 			
-			BS_EXCEPT(InternalErrorException, "Call to FbxImporter::Initialize() failed.\n" +
+			LOGERR("FBX import failed: Call to FbxImporter::Initialize() failed.\n" +
 				String("Error returned: %s\n\n") + String(importer->GetStatus().GetErrorString()));
+			return false;
 		}
 
+		FbxAxisSystem fileCoordSystem = scene->GetGlobalSettings().GetAxisSystem();
+		FbxAxisSystem bsCoordSystem(FbxAxisSystem::eYAxis, FbxAxisSystem::eParityOdd, FbxAxisSystem::eRightHanded);
+		if (fileCoordSystem != bsCoordSystem)
+			bsCoordSystem.ConvertScene(scene);
+
 		importer->Destroy();
+		return true;
 	}
 
-	MeshDataPtr FBXImporter::parseScene(FbxManager* manager, FbxScene* scene, Vector<SubMesh>& subMeshes)
+	void FBXImporter::parseScene(FbxScene* scene, const FBXImportOptions& options, FBXImportScene& outputScene)
 	{
+		outputScene.rootNode = createImportNode(outputScene, scene->GetRootNode(), nullptr);
+
 		Stack<FbxNode*> todo;
 		todo.push(scene->GetRootNode());
-
-		Vector<MeshDataPtr> allMeshes;
-		Vector<Vector<SubMesh>> allSubMeshes;
 
 		while(!todo.empty())
 		{
 			FbxNode* curNode = todo.top();
+			FBXImportNode* curImportNode = outputScene.nodeMap[curNode];
 			todo.pop();
 
 			const char* name = curNode->GetName();
@@ -140,6 +222,22 @@ namespace BansheeEngine
 
 				switch(attribType)
 				{
+				case FbxNodeAttribute::eNurbs:
+				case FbxNodeAttribute::eNurbsSurface:
+				case FbxNodeAttribute::ePatch:
+				{
+					FbxGeometryConverter geomConverter(mFBXManager);
+					attrib = geomConverter.Triangulate(attrib, true);
+
+					if (attrib->GetAttributeType() == FbxNodeAttribute::eMesh)
+					{
+						FbxMesh* mesh = static_cast<FbxMesh*>(attrib);
+						mesh->RemoveBadPolygons();
+
+						parseMesh(mesh, curImportNode, options, outputScene);
+					}
+				}
+					break;
 				case FbxNodeAttribute::eMesh:
 					{
 						FbxMesh* mesh = static_cast<FbxMesh*>(attrib);
@@ -147,475 +245,567 @@ namespace BansheeEngine
 
 						if(!mesh->IsTriangleMesh())
 						{
-							FbxGeometryConverter geomConverter(manager);
+							FbxGeometryConverter geomConverter(mFBXManager);
 							geomConverter.Triangulate(mesh, true);
 							attrib = curNode->GetNodeAttribute();
 							mesh = static_cast<FbxMesh*>(attrib);
 						}
 
-						allSubMeshes.push_back(Vector<SubMesh>());
-
-						MeshDataPtr meshData = parseMesh(mesh, allSubMeshes.back()); 
-						allMeshes.push_back(meshData);
-
-						// TODO - Transform meshes based on node transform
+						parseMesh(mesh, curImportNode, options, outputScene);
 					}
 					break;
-				case FbxNodeAttribute::eSkeleton:
-					break; // TODO - I should probably implement skeleton parsing
-
 				}
 			}
 
-			for(int i = 0; i < curNode->GetChildCount(); i++)
-				todo.push(curNode->GetChild(i));
+			for (int i = 0; i < curNode->GetChildCount(); i++)
+			{
+				FbxNode* childNode = curNode->GetChild(i);
+				createImportNode(outputScene, childNode, curImportNode);
+
+				todo.push(childNode);
+			}
 		}
 
-		if(allMeshes.size() == 0)
-			return nullptr;
-		else if(allMeshes.size() == 1)
-		{
-			subMeshes = allSubMeshes[0];
+		// TODO - Parse skin
+		// TODO - Parse animation
+		// TODO - Parse blend shapes
+	}
 
-			return allMeshes[0];
+	FBXImportNode* FBXImporter::createImportNode(FBXImportScene& scene, FbxNode* fbxNode, FBXImportNode* parent)
+	{
+		FBXImportNode* node = bs_new<FBXImportNode>();
+
+		Vector3 translation = FBXToNativeType(fbxNode->LclTranslation.Get());
+		Vector3 rotationEuler = FBXToNativeType(fbxNode->LclRotation.Get());
+		Vector3 scale = FBXToNativeType(fbxNode->LclScaling.Get());
+
+		Quaternion rotation((Radian)rotationEuler.x, (Radian)rotationEuler.y, (Radian)rotationEuler.z);
+
+		node->localTransform.setTRS(translation, rotation, scale);
+
+		if (parent != nullptr)
+		{
+			node->worldTransform = node->localTransform * parent->worldTransform;
+
+			parent->children.push_back(node);
+		}
+		else
+			node->worldTransform = node->localTransform;
+
+		scene.nodeMap.insert(std::make_pair(fbxNode, node));
+
+		return node;
+	}
+
+	void FBXImporter::splitMeshVertices(FBXImportScene& scene)
+	{
+		Vector<FBXImportMesh*> splitMeshes;
+
+		for (auto& mesh : scene.meshes)
+		{
+			FBXImportMesh* splitMesh = bs_new<FBXImportMesh>();
+			FBXUtility::splitVertices(*mesh, *splitMesh);
+			FBXUtility::flipWindingOrder(*splitMesh);
+			splitMeshes.push_back(splitMesh);
+
+			bs_delete(mesh);
+		}
+
+		scene.meshes = splitMeshes;
+	}
+
+	MeshDataPtr FBXImporter::generateMeshData(const FBXImportScene& scene, Vector<SubMesh>& outputSubMeshes)
+	{
+		Vector<MeshDataPtr> allMeshData;
+		Vector<Vector<SubMesh>> allSubMeshes;
+
+		for (auto& mesh : scene.meshes)
+		{
+			Vector<Vector<UINT32>> indicesPerMaterial;
+			for (UINT32 i = 0; i < (UINT32)mesh->indices.size(); i++)
+			{
+				while (mesh->materials[i] >= indicesPerMaterial.size())
+					indicesPerMaterial.push_back(Vector<UINT32>());
+
+				indicesPerMaterial[mesh->materials[i]].push_back(mesh->indices[i]);
+			}
+
+			UINT32* orderedIndices = (UINT32*)bs_alloc((UINT32)mesh->indices.size() * sizeof(UINT32));
+			Vector<SubMesh> subMeshes;
+			UINT32 currentIndex = 0;
+
+			for (auto& subMeshIndices : indicesPerMaterial)
+			{
+				UINT32 indexCount = (UINT32)subMeshIndices.size();
+				UINT32* dest = orderedIndices + currentIndex;
+				memcpy(dest, subMeshIndices.data(), indexCount * sizeof(UINT32));
+
+				subMeshes.push_back(SubMesh(currentIndex, indexCount, DOT_TRIANGLE_LIST));
+
+				currentIndex += indexCount;
+			}
+
+			VertexDataDescPtr vertexDesc = bs_shared_ptr<VertexDataDesc>();
+			vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
+
+			size_t numVertices = mesh->positions.size();
+			bool hasColors = mesh->colors.size() == numVertices;
+			bool hasNormals = mesh->normals.size() == numVertices;
+
+			if (hasColors)
+				vertexDesc->addVertElem(VET_COLOR, VES_COLOR);
+
+			bool hasTangents = false;
+			if (hasNormals)
+			{
+				vertexDesc->addVertElem(VET_FLOAT3, VES_NORMAL);
+
+				if (mesh->tangents.size() == numVertices &&
+					mesh->bitangents.size() == numVertices)
+				{
+					vertexDesc->addVertElem(VET_FLOAT4, VES_TANGENT);
+					hasTangents = true;
+				}
+			}
+
+			int UVIdx = 0;
+			for (UINT32 i = 0; i < FBX_IMPORT_MAX_UV_LAYERS; i++)
+			{
+				if (mesh->UV[i].size() == numVertices)
+				{
+					vertexDesc->addVertElem(VET_FLOAT2, VES_TEXCOORD, UVIdx++);
+				}
+			}
+
+			UINT32 numIndices = (UINT32)mesh->indices.size();
+			for (auto& node : mesh->referencedBy)
+			{
+				Matrix4 worldTransform = node->worldTransform;
+				Matrix4 worldTransformIT = worldTransform.transpose();
+				worldTransformIT = worldTransformIT.inverse();
+
+				MeshDataPtr meshData = bs_shared_ptr<MeshData>((UINT32)numVertices, numIndices, vertexDesc);
+
+				// Copy indices
+				UINT32* indices = meshData->getIndices32();
+				memcpy(indices, mesh->indices.data(), numIndices * sizeof(UINT32));
+
+				// Copy & transform positions
+				auto posIter = meshData->getVec3DataIter(VES_POSITION, 0);
+
+				for (auto& position : mesh->positions)
+				{
+					Vector3 tfrmdValue = worldTransform.multiplyAffine((Vector3)position);
+					posIter.addValue(tfrmdValue);
+				}
+
+				// Copy & transform normals
+				if (hasNormals)
+				{
+					auto normalIter = meshData->getVec3DataIter(VES_NORMAL, 0);
+
+					// Copy, convert & transform tangents & bitangents
+					if (hasTangents)
+					{
+						auto tangentIter = meshData->getVec4DataIter(VES_TANGENT, 0);
+
+						for (UINT32 i = 0; i < (UINT32)numVertices; i++)
+						{
+							Vector3 normal = (Vector3)mesh->normals[i];
+							normal = worldTransformIT.multiplyAffine(normal);
+							normalIter.addValue(normal);
+
+							Vector3 tangent = (Vector3)mesh->tangents[i];
+							tangent = worldTransformIT.multiplyAffine(tangent);
+
+							Vector3 bitangent = (Vector3)mesh->bitangents[i];
+							bitangent = worldTransformIT.multiplyAffine(bitangent);
+
+							Vector3 engineBitangent = Vector3::cross(normal, tangent);
+							float sign = Vector3::dot(engineBitangent, bitangent);
+
+							Vector4 combinedTangent(tangent.x, tangent.y, tangent.z, sign > 0 ? 1.0f : -1.0f);
+							tangentIter.addValue(combinedTangent);
+						}
+					}
+					else // Just normals
+					{
+						for (auto& normal : mesh->normals)
+						{
+							Vector3 tfrmdValue = worldTransformIT.multiplyAffine((Vector3)normal);
+							normalIter.addValue(tfrmdValue);
+						}
+					}
+				}
+
+				// Copy colors
+				if (hasColors)
+				{
+					auto colorIter = meshData->getDWORDDataIter(VES_COLOR, 0);
+
+					for (auto& color : mesh->colors)
+						colorIter.addValue(color);
+				}
+
+				// Copy UV
+				int writeUVIDx = 0;
+				for (auto& uvLayer : mesh->UV)
+				{
+					if (uvLayer.size() == numVertices)
+					{
+						auto uvIter = meshData->getVec2DataIter(VES_TEXCOORD, writeUVIDx);
+
+						for (auto& uv : uvLayer)
+						{
+							uv.y = 1.0f - uv.y;
+							uvIter.addValue(uv);
+						}
+
+						writeUVIDx++;
+					}
+				}
+
+				allMeshData.push_back(meshData);
+				allSubMeshes.push_back(subMeshes);
+			}
+		}
+
+		if (allMeshData.size() > 1)
+		{
+			return MeshData::combine(allMeshData, allSubMeshes, outputSubMeshes);
+		}
+		else if (allMeshData.size() == 1)
+		{
+			outputSubMeshes = allSubMeshes[0];
+			return allMeshData[0];
+		}
+
+		return nullptr;
+	}
+
+	template<class TFBX, class TNative>
+	class FBXDirectIndexer
+	{
+	public:
+		FBXDirectIndexer(const FbxLayerElementTemplate<TFBX>& layer)
+			:mElementArray(layer.GetDirectArray()),
+			mElementCount(mElementArray.GetCount())
+		{}
+
+		bool get(int index, TNative& output) const
+		{
+			if (index < 0 || index >= mElementCount)
+				return false;
+
+			output = FBXToNativeType(mElementArray.GetAt(index));
+			return true;
+		}
+
+		bool isEmpty() const
+		{
+			return mElementCount == 0;
+		}
+
+	private:
+		const FbxLayerElementArrayTemplate<TFBX>& mElementArray;
+		int mElementCount;
+	};
+
+	template<class TFBX, class TNative>
+	class FBXIndexIndexer
+	{
+	public:
+		FBXIndexIndexer(const FbxLayerElementTemplate<TFBX>& layer)
+			:mElementArray(layer.GetDirectArray()),
+			mIndexArray(layer.GetIndexArray()),
+			mElementCount(mElementArray.GetCount()),
+			mIndexCount(mIndexArray.GetCount())
+		{}
+
+		bool get(int index, TNative& output) const
+		{
+			if (index < 0 || index >= mIndexCount)
+				return false;
+
+			int actualIndex = mIndexArray.GetAt(index);
+
+			if (actualIndex < 0 || actualIndex >= mElementCount)
+				return false;
+
+			output = FBXToNativeType(mElementArray.GetAt(actualIndex));
+			return true;
+		}
+
+		bool isEmpty() const
+		{
+			return mElementCount == 0 || mIndexCount == 0;
+		}
+
+	private:
+		const FbxLayerElementArrayTemplate<TFBX>& mElementArray;
+		const FbxLayerElementArrayTemplate<int>& mIndexArray;
+		int mElementCount;
+		int mIndexCount;
+	};
+
+	template<class TFBX, class TNative, class TIndexer>
+	void readLayerData(FbxLayerElementTemplate<TFBX>& layer, Vector<TNative>& output, const Vector<int>& indices)
+	{
+		TIndexer indexer(layer);
+		if (indexer.isEmpty())
+			return;
+
+		output.resize(indices.size());
+
+		FbxLayerElement::EMappingMode mappingMode = layer.GetMappingMode();
+
+		UINT32 indexCount = (UINT32)indices.size();
+		switch (mappingMode)
+		{
+		case FbxLayerElement::eByControlPoint:
+			for (UINT32 i = 0; i < indexCount; i++)
+			{
+				int index = indices[i];
+				indexer.get(index, output[i]);
+			}
+			break;
+		case FbxLayerElement::eByPolygonVertex:
+			for (UINT32 i = 0; i < indexCount; i++)
+				indexer.get(i, output[i]);
+			break;
+		case FbxLayerElement::eByPolygon:
+			// We expect mesh to be triangulated here
+		{
+			UINT32 polygonCount = indexCount / 3;
+			UINT32 index = 0;
+
+			for (UINT32 i = 0; i < polygonCount; i++)
+			{
+				TNative value;
+				indexer.get(i, value);
+
+				output[index++] = value;
+				output[index++] = value;
+				output[index++] = value;
+			}
+		}
+			break;
+		case FbxLayerElement::eAllSame:
+		{
+			TNative value;
+			indexer.get(0, value);
+
+			for (UINT32 i = 0; i < indexCount; i++)
+				output[i] = value;
+		}
+			break;
+		default:
+			LOGWRN("FBX Import: Unsupported layer mapping mode.");
+			break;
+		}
+	}
+
+	template<class TFBX, class TNative>
+	void readLayerData(FbxLayerElementTemplate<TFBX>& layer, Vector<TNative>& output, const Vector<int>& indices)
+	{
+		FbxLayerElement::EReferenceMode refMode = layer.GetReferenceMode();
+
+		if (refMode == FbxLayerElement::eDirect)
+			readLayerData<TFBX, TNative, FBXDirectIndexer<TFBX, TNative> >(layer, output, indices);
+		else if (refMode == FbxLayerElement::eIndexToDirect)
+			readLayerData<TFBX, TNative, FBXIndexIndexer<TFBX, TNative> >(layer, output, indices);
+		else
+			LOGWRN("FBX Import: Unsupported layer reference mode.");
+	}
+
+	void FBXImporter::parseMesh(FbxMesh* mesh, FBXImportNode* parentNode, const FBXImportOptions& options, FBXImportScene& outputScene)
+	{
+		// Check if valid
+		if (!mesh->IsTriangleMesh())
+			return;
+
+		UINT32 vertexCount = mesh->GetControlPointsCount();
+		UINT32 triangleCount = mesh->GetPolygonCount();
+
+		if (vertexCount == 0 || triangleCount == 0)
+			return;
+
+		// Register in global mesh array
+		FBXImportMesh* importMesh = nullptr;
+
+		auto iterFindMesh = outputScene.meshMap.find(mesh);
+		if (iterFindMesh != outputScene.meshMap.end())
+		{
+			UINT32 meshIdx = iterFindMesh->second;
+			outputScene.meshes[meshIdx]->referencedBy.push_back(parentNode);
+
+			return;
 		}
 		else
 		{
-			MeshDataPtr combinedMeshData = MeshData::combine(allMeshes, allSubMeshes, subMeshes);
+			importMesh = bs_new<FBXImportMesh>();
+			outputScene.meshes.push_back(importMesh);
 
-			return combinedMeshData;
-		}
-	}
-
-	MeshDataPtr FBXImporter::parseMesh(FbxMesh* mesh, Vector<SubMesh>& subMeshes, bool createTangentsIfMissing)
-	{
-		if (!mesh->GetNode())
-		{
-			VertexDataDescPtr tmpVertDesc = bs_shared_ptr<VertexDataDesc>();
-			return bs_shared_ptr<MeshData, ScratchAlloc>(0, 0, tmpVertDesc);
+			importMesh->referencedBy.push_back(parentNode);
+			outputScene.meshMap[mesh] = (UINT32)outputScene.meshes.size() - 1;
 		}
 
-		// Find out which vertex attributes exist
-		bool hasColor = mesh->GetElementVertexColorCount() > 0;
-		const FbxGeometryElementVertexColor* colorElement = nullptr;
-		FbxGeometryElement::EMappingMode colorMappingMode = FbxGeometryElement::eNone;
-		FbxGeometryElement::EReferenceMode colorRefMode = FbxGeometryElement::eDirect;
+		// Import vertices
+		importMesh->positions.resize(vertexCount);
+		FbxVector4* controlPoints = mesh->GetControlPoints();
 
-		if(hasColor)
+		for (UINT32 i = 0; i < vertexCount; i++)
+			importMesh->positions[i] = FBXToNativeType(controlPoints[i]);
+
+		// Import triangles
+		UINT32 indexCount = triangleCount * 3;
+		importMesh->indices.resize(indexCount);
+
+		int* fbxIndices = mesh->GetPolygonVertices();
+		importMesh->indices.assign(fbxIndices, fbxIndices + indexCount);
+
+		// Import UVs
+		Vector<FbxLayerElementUV*> fbxUVLayers;
+
+		//// Search the diffuse layers first
+		for (UINT32 i = 0; i < FBX_IMPORT_MAX_UV_LAYERS; i++)
 		{
-			colorElement = mesh->GetElementVertexColor(0);
-			colorMappingMode = colorElement->GetMappingMode();
-			colorRefMode = colorElement->GetReferenceMode();
+			FbxLayer* layer = mesh->GetLayer(i, FbxLayerElement::eUV);
+			if (layer == nullptr)
+				continue;
 
-			if (colorMappingMode == FbxGeometryElement::eNone)
-				hasColor = false;
-		}
-
-		bool hasNormal = mesh->GetElementNormalCount() > 0;
-		const FbxGeometryElementNormal* normalElement = nullptr;
-		FbxGeometryElement::EMappingMode normalMappingMode = FbxGeometryElement::eNone;
-		FbxGeometryElement::EReferenceMode normalRefMode = FbxGeometryElement::eDirect;
-
-		if (hasNormal)
-		{
-			normalElement = mesh->GetElementNormal(0);
-			normalMappingMode = normalElement->GetMappingMode();
-			normalRefMode = normalElement->GetReferenceMode();
-
-			if (normalMappingMode == FbxGeometryElement::eNone)
-				hasNormal = false;
-		}
-
-		bool hasTangent = mesh->GetElementTangentCount() > 0;
-		const FbxGeometryElementTangent* tangentElement = nullptr;
-		FbxGeometryElement::EMappingMode tangentMappingMode = FbxGeometryElement::eNone;
-		FbxGeometryElement::EReferenceMode tangentRefMode = FbxGeometryElement::eDirect;
-
-		if (hasTangent)
-		{
-			tangentElement = mesh->GetElementTangent(0);
-			tangentMappingMode = tangentElement->GetMappingMode();
-			tangentRefMode = tangentElement->GetReferenceMode();
-
-			if (tangentMappingMode == FbxGeometryElement::eNone)
-				hasTangent = false;
-		}
-
-		bool hasBitangent = mesh->GetElementBinormalCount() > 0;
-		const FbxGeometryElementBinormal* bitangentElement = nullptr;
-		FbxGeometryElement::EMappingMode bitangentMappingMode = FbxGeometryElement::eNone;
-		FbxGeometryElement::EReferenceMode bitangentRefMode = FbxGeometryElement::eDirect;
-
-		if (hasBitangent)
-		{
-			bitangentElement = mesh->GetElementBinormal(0);
-			bitangentMappingMode = bitangentElement->GetMappingMode();
-			bitangentRefMode = bitangentElement->GetReferenceMode();
-
-			if (bitangentMappingMode == FbxGeometryElement::eNone)
-				hasBitangent = false;
-		}
-
-		bool hasUV0 = mesh->GetElementUVCount() > 0;
-		const FbxGeometryElementUV* UVElement0 = nullptr;
-		FbxGeometryElement::EMappingMode UVMappingMode0 = FbxGeometryElement::eNone;
-		FbxGeometryElement::EReferenceMode UVRefMode0 = FbxGeometryElement::eDirect;
-
-		if (hasUV0)
-		{
-			UVElement0 = mesh->GetElementUV(0);
-			UVMappingMode0 = UVElement0->GetMappingMode();
-			UVRefMode0 = UVElement0->GetReferenceMode();
-
-			if (UVMappingMode0 == FbxGeometryElement::eNone)
-				hasUV0 = false;
-		}
-
-		bool hasUV1 = mesh->GetElementUVCount() > 1;
-		const FbxGeometryElementUV* UVElement1 = nullptr;
-		FbxGeometryElement::EMappingMode UVMappingMode1 = FbxGeometryElement::eNone;
-		FbxGeometryElement::EReferenceMode UVRefMode1 = FbxGeometryElement::eDirect;
-
-		if (hasUV1)
-		{
-			UVElement1 = mesh->GetElementUV(1);
-			UVMappingMode1 = UVElement1->GetMappingMode();
-			UVRefMode1 = UVElement1->GetReferenceMode();
-
-			if (UVMappingMode1 == FbxGeometryElement::eNone)
-				hasUV1 = false;
-		}
-
-		// Create tangents if needed
-		if(createTangentsIfMissing && mesh->GetElementUVCount() > 0)
-			mesh->GenerateTangentsData(0, false);
-
-		// Calculate number of vertices and indexes
-		int polygonCount = mesh->GetPolygonCount();
-		UINT32 vertexCount = 0;
-
-		VertexDataDescPtr vertexDesc = bs_shared_ptr<VertexDataDesc>();
-
-		vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
-
-		if(hasColor)
-			vertexDesc->addVertElem(VET_COLOR, VES_COLOR);
-
-		if(hasNormal)
-			vertexDesc->addVertElem(VET_FLOAT3, VES_NORMAL);
-
-		if(hasTangent)
-			vertexDesc->addVertElem(VET_FLOAT3, VES_TANGENT);
-
-		if(hasBitangent)
-			vertexDesc->addVertElem(VET_FLOAT3, VES_BITANGENT);
-
-		if (hasUV0)
-			vertexDesc->addVertElem(VET_FLOAT2, VES_TEXCOORD, 0);
-
-		if (hasUV1)
-			vertexDesc->addVertElem(VET_FLOAT2, VES_TEXCOORD, 1);
-
-		// Count the polygon count of each material
-		FbxLayerElementArrayTemplate<int>* materialElementArray = NULL;
-		FbxGeometryElement::EMappingMode materialMappingMode = FbxGeometryElement::eNone;
-
-		Set<UINT32> uniqueIndices;
-		UINT32 numIndices = 0;
-		if (mesh->GetElementMaterial())
-		{
-			materialElementArray = &mesh->GetElementMaterial()->GetIndexArray();
-			materialMappingMode = mesh->GetElementMaterial()->GetMappingMode();
-			if (materialElementArray && materialMappingMode == FbxGeometryElement::eByPolygon)
+			for (int j = FbxLayerElement::eTextureDiffuse; j < FbxLayerElement::eTypeCount; j++)
 			{
-				FBX_ASSERT(materialElementArray->GetCount() == polygonCount);
-				if (materialElementArray->GetCount() == polygonCount)
+				FbxLayerElementUV* uvLayer = layer->GetUVs((FbxLayerElement::EType)j);
+				if (uvLayer == nullptr)
+					continue;
+
+				fbxUVLayers.push_back(uvLayer);
+
+				if (fbxUVLayers.size() == FBX_IMPORT_MAX_UV_LAYERS)
+					break;
+			}
+
+			if (fbxUVLayers.size() == FBX_IMPORT_MAX_UV_LAYERS)
+				break;
+		}
+
+		//// If there's room, search all others too
+		if (fbxUVLayers.size() < FBX_IMPORT_MAX_UV_LAYERS)
+		{
+			UINT32 numLayers = mesh->GetLayerCount();
+			for (UINT32 i = 0; i < numLayers; i++)
+			{
+				FbxLayer* layer = mesh->GetLayer(i);
+				if (layer == nullptr)
+					continue;
+
+				for (int j = FbxLayerElement::eTextureDiffuse; j < FbxLayerElement::eTypeCount; j++)
 				{
-					// Count the faces of each material
-					for (int polygonIndex = 0; polygonIndex < polygonCount; ++polygonIndex)
+					FbxLayerElementUV* uvLayer = layer->GetUVs((FbxLayerElement::EType)j);
+					if (uvLayer == nullptr)
+						continue;
+
+					auto iterFind = std::find(fbxUVLayers.begin(), fbxUVLayers.end(), uvLayer);
+					if (iterFind != fbxUVLayers.end())
+						continue;
+
+					fbxUVLayers.push_back(uvLayer);
+
+					if (fbxUVLayers.size() == FBX_IMPORT_MAX_UV_LAYERS)
+						break;
+				}
+
+				if (fbxUVLayers.size() == FBX_IMPORT_MAX_UV_LAYERS)
+					break;
+			}
+		}
+
+		for (size_t i = 0; i < fbxUVLayers.size(); i++)
+			readLayerData(*fbxUVLayers[i], importMesh->UV[i], importMesh->indices);
+
+		FbxLayer* mainLayer = mesh->GetLayer(0);
+		if (mainLayer != nullptr)
+		{
+			// Import colors
+			if (mainLayer->GetVertexColors() != nullptr)
+				readLayerData(*mainLayer->GetVertexColors(), importMesh->colors, importMesh->indices);
+
+			// Import normals
+			if (options.importNormals)
+			{
+				bool hasNormals = mainLayer->GetNormals() != nullptr;
+
+				if (!hasNormals)
+				{
+					if (mainLayer->GetSmoothing() != nullptr)
 					{
-						const UINT32 materialIndex = (UINT32)materialElementArray->GetAt(polygonIndex);
-						if (subMeshes.size() < materialIndex + 1)
+						FbxLayerElementSmoothing* smoothing = mainLayer->GetSmoothing();
+
+						if (smoothing->GetMappingMode() == FbxLayerElement::eByEdge)
 						{
-							subMeshes.resize(materialIndex + 1);
+							FbxGeometryConverter converter(mFBXManager);
+							converter.ComputePolygonSmoothingFromEdgeSmoothing(mesh, 0);
 						}
 
-						subMeshes[materialIndex].indexCount += 3;
-					}
+						Vector<int> smoothingGroups;
+						readLayerData(*smoothing, smoothingGroups, importMesh->indices);
 
-					// Record the offsets and allocate index arrays
-					UINT32 materialCount = (UINT32)subMeshes.size();
-					int offset = 0;
-					for (UINT32 i = 0; i < materialCount; ++i)
-					{
-						subMeshes[i].indexOffset = offset;
-						offset += subMeshes[i].indexCount;
-
-						numIndices += subMeshes[i].indexCount;
+						if (!smoothingGroups.empty())
+						{
+							FBXUtility::normalsFromSmoothing(importMesh->positions, importMesh->indices, smoothingGroups, importMesh->normals);
+							hasNormals = true;
+						}
 					}
-					FBX_ASSERT(offset == polygonCount * 3);
 				}
+				
+				if (hasNormals)
+					readLayerData(*mainLayer->GetNormals(), importMesh->normals, importMesh->indices);
 			}
-		}
 
-		if (subMeshes.size() == 0)
-		{
-			numIndices = polygonCount * 3;
-
-			subMeshes.resize(1);
-			subMeshes[0].indexCount = polygonCount * 3;
-		}
-
-		// Count number of unique vertices
-		for (int polygonIndex = 0; polygonIndex < polygonCount; ++polygonIndex)
-		{
-			for (int vertexIndex = 0; vertexIndex < 3; ++vertexIndex)
+			// Import tangents
+			if (options.importTangents)
 			{
-				const int controlPointIndex = mesh->GetPolygonVertex(polygonIndex, vertexIndex);
-				if (uniqueIndices.find(controlPointIndex) == uniqueIndices.end())
+				bool hasTangents = mainLayer->GetTangents() != nullptr && mainLayer->GetBinormals() != nullptr;
+
+				if (!hasTangents)
 				{
-					uniqueIndices.insert(controlPointIndex);
-					vertexCount++;
+					if (fbxUVLayers.size() > 0)
+						hasTangents = mesh->GenerateTangentsData(0, false);
+				}
+
+				if (hasTangents)
+				{
+					readLayerData(*mainLayer->GetTangents(), importMesh->tangents, importMesh->indices);
+					readLayerData(*mainLayer->GetBinormals(), importMesh->bitangents, importMesh->indices);
 				}
 			}
-		}
 
-		// Allocate the array memory for all vertices and indices
-		MeshDataPtr meshData = bs_shared_ptr<MeshData, ScratchAlloc>(vertexCount, numIndices, vertexDesc);
-
-		VertexElemIter<Vector3> positions = meshData->getVec3DataIter(VES_POSITION);
-
-		VertexElemIter<UINT32> colors;
-		if(hasColor)
-			colors = meshData->getDWORDDataIter(VES_COLOR);
-
-		VertexElemIter<Vector3> normals;
-		if (hasNormal)
-			normals = meshData->getVec3DataIter(VES_NORMAL);
-
-		VertexElemIter<Vector3> tangents;
-		if (hasTangent)
-			tangents = meshData->getVec3DataIter(VES_TANGENT);
-
-		VertexElemIter<Vector3> bitangents;
-		if (hasBitangent)
-			bitangents = meshData->getVec3DataIter(VES_BITANGENT);
-
-		VertexElemIter<Vector2> uv0;
-		if (hasUV0)
-			uv0 = meshData->getVec2DataIter(VES_TEXCOORD, 0);
-
-		VertexElemIter<Vector2> uv1;
-		if (hasUV1)
-			uv1 = meshData->getVec2DataIter(VES_TEXCOORD, 1);
-
-		// Get node transform
-		FbxAMatrix worldTransform;
-		FbxAMatrix worldTransformIT;
-		worldTransform = computeWorldTransform(mesh->GetNode());
-		worldTransformIT = worldTransform.Inverse();
-		worldTransformIT = worldTransformIT.Transpose();
-
-		// Populate the mesh data with vertex attributes and indices
-		const FbxVector4* controlPoints = mesh->GetControlPoints();
-
-		Vector<UINT32> indexOffsetPerSubmesh;
-		indexOffsetPerSubmesh.resize(subMeshes.size(), 0);
-
-		Vector<UINT32*> indices;
-		indices.resize(subMeshes.size());
-
-		for(UINT32 i = 0; i < (UINT32)indices.size(); i++)
-		{
-			indices[i] = meshData->getIndices32() + subMeshes[i].indexOffset;
-		}
-
-		Map<UINT32, UINT32> indexMap;
-
-		UINT32 curVertexCount = 0;
-		for (int polygonIndex = 0; polygonIndex < polygonCount; ++polygonIndex)
-		{
-			// The material for current face.
-			int lMaterialIndex = 0;
-			if (materialElementArray && materialMappingMode == FbxGeometryElement::eByPolygon)
+			// Import material indexes
+			if (mainLayer->GetMaterials() != nullptr)
 			{
-				lMaterialIndex = materialElementArray->GetAt(polygonIndex);
-			}
+				Vector<FbxSurfaceMaterial*> fbxMaterials;
 
-			// Where should I save the vertex attribute index, according to the material
-			int indexOffset = subMeshes[lMaterialIndex].indexOffset + indexOffsetPerSubmesh[lMaterialIndex];
-			for (int vertexIndex = 0; vertexIndex < 3; ++vertexIndex)
-			{
-				int controlPointIndex = mesh->GetPolygonVertex(polygonIndex, vertexIndex);
-				int triangleIndex = indexOffset + (2 - vertexIndex);
+				readLayerData(*mainLayer->GetMaterials(), fbxMaterials, importMesh->indices);
 
-				auto findIter = indexMap.find(controlPointIndex);
-				if (findIter != indexMap.end())
+				UnorderedMap<FbxSurfaceMaterial*, int> materialLookup;
+				int nextMaterialIdx = 0;
+				for (UINT32 i = 0; i < (UINT32)fbxMaterials.size(); i++)
 				{
-					indices[lMaterialIndex][triangleIndex] = static_cast<unsigned int>(findIter->second);
-				}
-				else
-				{
-					indices[lMaterialIndex][triangleIndex] = static_cast<unsigned int>(curVertexCount);
-					FbxVector4 currentVertex = controlPoints[controlPointIndex];
-					currentVertex = worldTransform.MultT(currentVertex);
+					auto iterFind = materialLookup.find(fbxMaterials[i]);
 
-					Vector3 curPosValue;
-					curPosValue[0] = static_cast<float>(currentVertex[0]);
-					curPosValue[1] = static_cast<float>(currentVertex[1]);
-					curPosValue[2] = static_cast<float>(currentVertex[2]);
-
-					positions.addValue(curPosValue);
-					indexMap[controlPointIndex] = curVertexCount;
-					++curVertexCount;
-
-					if (hasColor)
+					int materialIdx = 0;
+					if (iterFind != materialLookup.end())
+						materialIdx = iterFind->second;
+					else
 					{
-						int colorIdx = indexOffset + vertexIndex;
-
-						if (colorMappingMode == FbxLayerElement::eByControlPoint)
-							colorIdx = controlPointIndex;
-
-						if (colorRefMode == FbxLayerElement::eIndexToDirect)
-							colorIdx = colorElement->GetIndexArray().GetAt(colorIdx);
-
-						FbxColor lCurrentColor = colorElement->GetDirectArray().GetAt(colorIdx);
-
-						Color curColorValue;
-						curColorValue[0] = static_cast<float>(lCurrentColor[0]);
-						curColorValue[1] = static_cast<float>(lCurrentColor[1]);
-						curColorValue[2] = static_cast<float>(lCurrentColor[2]);
-						curColorValue[3] = static_cast<float>(lCurrentColor[3]);
-
-						UINT32 color32 = curColorValue.getAsRGBA();
-						colors.addValue(color32);
+						materialIdx = nextMaterialIdx++;
+						materialLookup[fbxMaterials[i]] = materialIdx;
 					}
 
-					if (hasNormal)
-					{
-						int normalIdx = indexOffset + vertexIndex;
-
-						if (normalMappingMode == FbxLayerElement::eByControlPoint)
-							normalIdx = controlPointIndex;
-
-						if (normalRefMode == FbxLayerElement::eIndexToDirect)
-							normalIdx = normalElement->GetIndexArray().GetAt(normalIdx);
-
-						FbxVector4 currentNormal = normalElement->GetDirectArray().GetAt(normalIdx);
-						currentNormal = worldTransformIT.MultT(currentNormal);
-
-						Vector3 curNormalValue;
-						curNormalValue[0] = static_cast<float>(currentNormal[0]);
-						curNormalValue[1] = static_cast<float>(currentNormal[1]);
-						curNormalValue[2] = static_cast<float>(currentNormal[2]);
-
-						normals.addValue(curNormalValue);
-					}
-
-					if (hasTangent)
-					{
-						int tangentIdx = indexOffset + vertexIndex;
-
-						if (tangentMappingMode == FbxLayerElement::eByControlPoint)
-							tangentIdx = controlPointIndex;
-
-						if (tangentRefMode == FbxLayerElement::eIndexToDirect)
-							tangentIdx = tangentElement->GetIndexArray().GetAt(tangentIdx);
-
-						FbxVector4 currentTangent = tangentElement->GetDirectArray().GetAt(tangentIdx);
-						currentTangent = worldTransformIT.MultT(currentTangent);
-
-						Vector3 curTangentValue;
-						curTangentValue[0] = static_cast<float>(currentTangent[0]);
-						curTangentValue[1] = static_cast<float>(currentTangent[1]);
-						curTangentValue[2] = static_cast<float>(currentTangent[2]);
-
-						tangents.addValue(curTangentValue);
-					}
-
-					if (hasBitangent)
-					{
-						int bitangentIdx = indexOffset + vertexIndex;
-
-						if (bitangentMappingMode == FbxLayerElement::eByControlPoint)
-							bitangentIdx = controlPointIndex;
-
-						if (bitangentRefMode == FbxLayerElement::eIndexToDirect)
-							bitangentIdx = bitangentElement->GetIndexArray().GetAt(bitangentIdx);
-
-						FbxVector4 currentBitangent = bitangentElement->GetDirectArray().GetAt(bitangentIdx);
-						currentBitangent = worldTransformIT.MultT(currentBitangent);
-
-						Vector3 curBitangentValue;
-						curBitangentValue[0] = static_cast<float>(currentBitangent[0]);
-						curBitangentValue[1] = static_cast<float>(currentBitangent[1]);
-						curBitangentValue[2] = static_cast<float>(currentBitangent[2]);
-
-						bitangents.addValue(curBitangentValue);
-					}
-
-					if (hasUV0)
-					{
-						int uv0Idx = indexOffset + vertexIndex;
-
-						if (UVMappingMode0 == FbxLayerElement::eByControlPoint)
-							uv0Idx = controlPointIndex;
-
-						if (UVRefMode0 == FbxLayerElement::eIndexToDirect)
-							uv0Idx = UVElement0->GetIndexArray().GetAt(uv0Idx);
-
-						FbxVector4 currentUV = UVElement0->GetDirectArray().GetAt(uv0Idx);
-
-						Vector2 curUV0Value;
-						curUV0Value[0] = static_cast<float>(currentUV[0]);
-						curUV0Value[1] = 1.0f - static_cast<float>(currentUV[1]);
-
-						uv0.addValue(curUV0Value);
-					}
-
-					if (hasUV1)
-					{
-						int uv1Idx = indexOffset + vertexIndex;
-
-						if (UVMappingMode1 == FbxLayerElement::eByControlPoint)
-							uv1Idx = controlPointIndex;
-
-						if (UVRefMode1 == FbxLayerElement::eIndexToDirect)
-							uv1Idx = UVElement1->GetIndexArray().GetAt(uv1Idx);
-
-						FbxVector4 currentUV = UVElement1->GetDirectArray().GetAt(uv1Idx);
-
-						Vector2 curUV1Value;
-						curUV1Value[0] = static_cast<float>(currentUV[0]);
-						curUV1Value[1] = 1.0f - static_cast<float>(currentUV[1]);
-
-						uv1.addValue(curUV1Value);
-					}
+					importMesh->materials.push_back(materialIdx);
 				}
 			}
-
-			indexOffsetPerSubmesh[lMaterialIndex] += 3;
 		}
-
-		return meshData;
-	}
-
-	FbxAMatrix FBXImporter::computeWorldTransform(FbxNode* node)
-	{
-		FbxVector4 translation = node->GetGeometricTranslation(FbxNode::eSourcePivot);
-		FbxVector4 rotation = node->GetGeometricRotation(FbxNode::eSourcePivot);
-		FbxVector4 scaling = node->GetGeometricScaling(FbxNode::eSourcePivot);
-
-		FbxAMatrix localTransform;
-		localTransform.SetT(translation);
-		localTransform.SetR(rotation);
-		localTransform.SetS(scaling);
-
-		FbxAMatrix& globalTransform = node->EvaluateGlobalTransform();
-
-		FbxAMatrix worldTransform;
-		worldTransform = globalTransform * localTransform;
-
-		return worldTransform;
 	}
 }

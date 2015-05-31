@@ -239,12 +239,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\BsFBXImportData.h" />
     <ClInclude Include="Include\BsFBXImporter.h" />
     <ClInclude Include="Include\BsFBXPrerequisites.h" />
+    <ClInclude Include="Include\BsFBXUtility.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\BsFBXImportdata.cpp" />
     <ClCompile Include="Source\BsFBXImporter.cpp" />
     <ClCompile Include="Source\BsFBXPlugin.cpp" />
+    <ClCompile Include="Source\BsFBXUtility.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
