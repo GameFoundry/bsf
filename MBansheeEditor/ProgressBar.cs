@@ -31,7 +31,7 @@ namespace BansheeEditor
 
         private void Initialize(LocString title, LocString message, float percent)
         {
-            Width = 250;
+            Width = 350;
             Height = 75;
 
             Title = title;
@@ -67,9 +67,9 @@ namespace BansheeEditor
             layoutY.AddSpace(10);
 
             GUILayoutX barLayout = layoutY.AddLayoutX();
-            barLayout.AddSpace(10);
+            barLayout.AddSpace(30);
             barLayout.AddElement(progressBar);
-            barLayout.AddSpace(10);
+            barLayout.AddSpace(30);
 
             layoutY.AddFlexibleSpace();
         }

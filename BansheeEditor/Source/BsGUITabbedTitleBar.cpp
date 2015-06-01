@@ -232,6 +232,27 @@ namespace BansheeEngine
 		mClippedBounds = mLayoutData.area;
 	}
 
+	Vector2I GUITabbedTitleBar::_getOptimalSize() const
+	{
+		Vector2I optimalSize = mMinBtn->_getOptimalSize();
+		optimalSize.x += OPTION_BTN_SPACING + 1;
+
+		Vector2I closeBtnOptimalSize = mCloseBtn->_getOptimalSize();
+		optimalSize.x += closeBtnOptimalSize.x;
+		optimalSize.y = std::max(optimalSize.y, closeBtnOptimalSize.y);
+
+		for (UINT32 i = 0; i < (UINT32)mTabButtons.size(); i++)
+		{
+			GUITabButton* btn = mTabButtons[i];
+			Vector2I btnOptimalSize = btn->_getOptimalSize();
+
+			optimalSize.x += btnOptimalSize.x + TAB_SPACING;
+			optimalSize.y = std::max(optimalSize.y, btnOptimalSize.y);
+		}
+
+		return optimalSize;
+	}
+
 	void GUITabbedTitleBar::_updateLayoutInternal(const GUILayoutData& data)
 	{
 		Vector2I minBtnOptimalSize = mMinBtn->_getOptimalSize();

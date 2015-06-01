@@ -847,12 +847,12 @@ namespace BansheeEditor
                 pathNoExtension = path.Remove(path.Length - extension.Length);
 
             int idx = 0;
-            string destination;
-            do
+            string destination = pathNoExtension;
+            while (ProjectLibrary.Exists(destination))
             {
                 destination = pathNoExtension + "_" + idx;
                 idx++;
-            } while (!ProjectLibrary.Exists(destination));
+            }
 
             return destination + extension;
         }

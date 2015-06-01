@@ -38,6 +38,11 @@ namespace BansheeEngine
 
 		void updateClippedBounds();
 
+		/**
+		 * @copydoc GUIElementContainer::_getOptimalSize
+		 */
+		Vector2I _getOptimalSize() const override;
+
 		void _updateLayoutInternal(const GUILayoutData& data);
 	protected:
 		static const UINT32 TAB_SPACING;

@@ -21,10 +21,11 @@ GUIResourceField doesn't distinguish between tex2d, tex3d and texcube.
 When windows first open they show up as all black. This is problematic with progress bar window since it may appear for just one frame and it only shows up as black square during that time.
  - Later on after I fix this issue I should probably just make a special case and not open the progress bar if all import is done in one go
 
-Test DoOnDragDropped with a folder. I feel the copy/move methods might break because they don't properly retrieve folder name.
-
 I'm not sure if queued dependencies are handled properly. They're handled on an internal ProjectLibrary loop but perhaps I should
 return them in checkForModifications?
+
+Window titlebars and focus borders no longer render!?
+ - Might be after my change to fix zero width/height elements in layouts
 
 ----------------------------------------------------------------------
 Project window

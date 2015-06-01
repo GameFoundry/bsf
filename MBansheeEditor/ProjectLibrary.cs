@@ -120,7 +120,17 @@ namespace BansheeEditor
                 foreach (var entry in queuedForImport)
                 {
                     float pct = numImportedFiles/(float)totalFilesToImport;
-                    ProgressBar.Show("Importing (" + numImportedFiles + "/" + totalFilesToImport + ")", entry, pct);
+
+                    string displayName = entry;
+                    displayName = displayName.Replace("\\", "\\\\");
+
+                    if (displayName.Length > 60)
+                    {
+                        displayName = displayName.Remove(0, displayName.Length - 60);
+                        displayName = "..." + displayName;
+                    }
+
+                    ProgressBar.Show("Importing (" + numImportedFiles + "/" + totalFilesToImport + ")", displayName, pct);
 
                     Internal_Refresh(entry, true);
                     toRemove.Add(entry);
