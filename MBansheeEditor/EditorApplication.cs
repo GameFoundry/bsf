@@ -77,6 +77,8 @@ namespace BansheeEditor
         private SceneWindow scene;
         private DebugWindow debug;
 
+        private FolderMonitor monitor;
+
         // DEBUG ONLY
         Debug_Component1 dbgComponent;
         // END DEBUG ONLY
@@ -106,6 +108,12 @@ namespace BansheeEditor
             scene = EditorWindow.OpenWindow<SceneWindow>();
             debug = EditorWindow.OpenWindow<DebugWindow>();
 
+            ProjectLibrary.Refresh();
+            monitor = new FolderMonitor(ProjectLibrary.ResourceFolder);
+            monitor.OnAdded += OnAssetModified;
+            monitor.OnRemoved += OnAssetModified;
+            monitor.OnModified += OnAssetModified;
+
             // DEBUG ONLY
 
             SceneObject newDbgObject = new SceneObject("NewDbgObject");
@@ -123,8 +131,15 @@ namespace BansheeEditor
             // DEBUG ONLY END
         }
 
+        private void OnAssetModified(string path)
+        {
+            ProjectLibrary.Refresh(path);
+        }
+
         internal void EditorUpdate()
         {
+            ProjectLibrary.Update();
+
             // DEBUG ONLY
 
             if (dbgComponent != null)

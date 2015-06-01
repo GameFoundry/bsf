@@ -107,29 +107,44 @@ namespace BansheeEngine
 		LibraryEntry* entry = findEntry(pathToSearch);
 		if(entry == nullptr) // File could be new, try to find parent directory entry
 		{
-			Path parentDirPath = pathToSearch.getParent();
-			entry = findEntry(parentDirPath);
-
-			// Cannot find parent directory. Create the needed hierarchy.
-			DirectoryEntry* entryParent = nullptr;
-			DirectoryEntry* newHierarchyParent = nullptr;
-			if(entry == nullptr) 
-				createInternalParentHierarchy(pathToSearch, &newHierarchyParent, &entryParent);
-			else
-				entryParent = static_cast<DirectoryEntry*>(entry);
-
-			if(FileSystem::isFile(pathToSearch))
+			if (isMeta(pathToSearch))
 			{
-				if (import)
-					addResourceInternal(entryParent, pathToSearch);
-				
-				dirtyResources.push_back(pathToSearch);
+				Path sourceFilePath = pathToSearch;
+				sourceFilePath.setExtension(L"");
+
+				if (!FileSystem::isFile(sourceFilePath))
+				{
+					LOGWRN("Found a .meta file without a corresponding resource. Deleting.");
+
+					FileSystem::remove(pathToSearch);
+				}
 			}
-			else if(FileSystem::isDirectory(pathToSearch))
+			else
 			{
-				addDirectoryInternal(entryParent, pathToSearch);
+				Path parentDirPath = pathToSearch.getParent();
+				entry = findEntry(parentDirPath);
 
-				checkForModifications(pathToSearch);
+				// Cannot find parent directory. Create the needed hierarchy.
+				DirectoryEntry* entryParent = nullptr;
+				DirectoryEntry* newHierarchyParent = nullptr;
+				if (entry == nullptr)
+					createInternalParentHierarchy(pathToSearch, &newHierarchyParent, &entryParent);
+				else
+					entryParent = static_cast<DirectoryEntry*>(entry);
+
+				if (FileSystem::isFile(pathToSearch))
+				{
+					if (import)
+						addResourceInternal(entryParent, pathToSearch);
+
+					dirtyResources.push_back(pathToSearch);
+				}
+				else if (FileSystem::isDirectory(pathToSearch))
+				{
+					addDirectoryInternal(entryParent, pathToSearch);
+
+					checkForModifications(pathToSearch);
+				}
 			}
 		}
 		else if(entry->type == LibraryEntryType::File)
@@ -226,7 +241,10 @@ namespace BansheeEngine
 							}
 							else
 							{
-								addResourceInternal(currentDir, filePath);
+								if (import)
+									addResourceInternal(currentDir, filePath);
+
+								dirtyResources.push_back(filePath);
 							}
 						}
 					}

@@ -137,8 +137,13 @@ namespace BansheeEngine
 					processedElements[childIdx] = true;
 				else
 				{
-					numNonClampedElements++;
-					totalNonClampedSize += elementAreas[childIdx].height;
+					if (elementAreas[childIdx].height > 0)
+					{
+						numNonClampedElements++;
+						totalNonClampedSize += elementAreas[childIdx].height;
+					}
+					else
+						processedElements[childIdx] = true;
 				}
 			}
 

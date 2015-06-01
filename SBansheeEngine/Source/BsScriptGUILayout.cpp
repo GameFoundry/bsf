@@ -37,17 +37,28 @@ namespace BansheeEngine
 			if (mParent != nullptr)
 				mParent->removeChild(this);
 
-			while (mChildren.size() > 0)
-			{
-				ChildInfo childInfo = mChildren[0];
-				childInfo.element->destroy();
-			}
+			destroyChildren();
 
 			GUILayout::destroy(mLayout);
 
 			mLayout = nullptr;
 			mIsDestroyed = true;
 		}
+	}
+
+	void ScriptGUILayout::destroyChildren()
+	{
+		while (mChildren.size() > 0)
+		{
+			ChildInfo childInfo = mChildren[0];
+			childInfo.element->destroy();
+		}
+	}
+
+	void ScriptGUILayout::markAsDestroyed()
+	{
+		mLayout = nullptr;
+		mIsDestroyed = true;
 	}
 
 	void ScriptGUILayout::addChild(ScriptGUIElementBaseTBase* element)

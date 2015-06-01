@@ -45,6 +45,9 @@ namespace BansheeEngine
 			if(iterFind != mMovedOrResizedWindows.end())
 				mMovedOrResizedWindows.erase(iterFind);
 
+			if (mNewWindowInFocus == window)
+				mNewWindowInFocus = nullptr;
+
 			mWindows.erase(window->mWindowId);
 			mDirtyProperties.erase(window);
 		}

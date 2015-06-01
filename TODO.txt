@@ -17,17 +17,14 @@ TODO - Setting Material array parameters isn't possible from C#
 GUIResourceField doesn't distinguish between tex2d, tex3d and texcube.
 
 ---------------------------------------------------------------------
-Extend ProjectLibrary.Refresh
- - Called in EditorApplication on start or assembly refresh
- - Calls checkForModifications(false) internally, retrieves dirty resources and adds them to a HashSet (if they're not already there)
- - EditorApplication also subscribes to FolderMonitor and when it triggers asset modification call Refresh(false)
- - In Update() go over all dirty resources and call checkForModifications(true) on that specific path
-   - Time-slice the import so UI has time to update
-   - Open/Close/Update the progress bar as necessary
-   - Update is called every frame by EditorApplication
 
-Modify ProjectWindow so it only does file-system copy/move operations for copy/paste
-and drag and drop. After which it calls ProjectLibrary.Refresh.
+When windows first open they show up as all black. This is problematic with progress bar window since it may appear for just one frame and it only shows up as black square during that time.
+ - Later on after I fix this issue I should probably just make a special case and not open the progress bar if all import is done in one go
+
+Test DoOnDragDropped with a folder. I feel the copy/move methods might break because they don't properly retrieve folder name.
+
+I'm not sure if queued dependencies are handled properly. They're handled on an internal ProjectLibrary loop but perhaps I should
+return them in checkForModifications?
 
 ----------------------------------------------------------------------
 Project window
@@ -40,10 +37,8 @@ Later:
   - Add ping to SceneTreeView
  - Consider delaying search until user stops pressing keys
  - Save & restore scroll position when Refresh happens
- - Might need to handle overwritting better when importing/moving
-   - When pasting generate a unique filename if the same one already exists
-   - Do the same when drag and dropping (either internal, or OS)
-
+ - F2 and context menu for renaming assets (or when clicking on a solo selected asset)
+   - Also make sure the names contain only valid path characters
 ----------------------------------------------------------------------
 Resources
  - Load/Unload/UnloadUnused

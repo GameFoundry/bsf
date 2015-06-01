@@ -52,10 +52,12 @@ namespace BansheeEngine
 		OnEntryRemovedThunk = (OnEntryChangedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnEntryRemoved", 1)->getThunk();
 	}
 
-	MonoArray* ScriptProjectLibrary::internal_Refresh(bool import)
+	MonoArray* ScriptProjectLibrary::internal_Refresh(MonoString* path, bool import)
 	{
+		Path nativePath = MonoUtil::monoToWString(path);
+
 		Vector<Path> dirtyResources;
-		ProjectLibrary::instance().checkForModifications(ProjectLibrary::instance().getResourcesFolder(), import, dirtyResources);
+		ProjectLibrary::instance().checkForModifications(nativePath, import, dirtyResources);
 
 		ScriptArray output = ScriptArray::create<WString>((UINT32)dirtyResources.size());
 		for (UINT32 i = 0; i < (UINT32)dirtyResources.size(); i++)

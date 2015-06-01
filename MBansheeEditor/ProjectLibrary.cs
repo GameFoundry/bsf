@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using BansheeEngine;
@@ -13,9 +14,30 @@ namespace BansheeEditor
         public static event Action<string> OnEntryAdded;
         public static event Action<string> OnEntryRemoved;
 
-        public static string[] Refresh(bool import = false)
+        private static HashSet<string> queuedForImport = new HashSet<string>();
+        private static int numImportedFiles;
+        private static int totalFilesToImport;
+
+        private const float TIME_SLICE_SECONDS = 0.030f;
+
+        public static void Refresh()
         {
-            return Internal_Refresh(import);
+            string[] modifiedPaths = Internal_Refresh(ResourceFolder, false);
+            foreach (var modifiedPath in modifiedPaths)
+            {
+                if (queuedForImport.Add(modifiedPath))
+                    totalFilesToImport++;
+            }
+        }
+
+        public static void Refresh(string path)
+        {
+            string[] modifiedPaths = Internal_Refresh(path, false);
+            foreach (var modifiedPath in modifiedPaths)
+            {
+                if (queuedForImport.Add(modifiedPath))
+                    totalFilesToImport++;
+            }
         }
 
         public static void Create(Resource resource, string path)
@@ -89,6 +111,42 @@ namespace BansheeEditor
             Internal_Copy(source, destination, overwrite);
         }
 
+        internal static void Update()
+        {
+            if (queuedForImport.Count > 0)
+            {
+                UInt64 start = Time.Precise;
+                List<string> toRemove = new List<string>();
+                foreach (var entry in queuedForImport)
+                {
+                    float pct = numImportedFiles/(float)totalFilesToImport;
+                    ProgressBar.Show("Importing (" + numImportedFiles + "/" + totalFilesToImport + ")", entry, pct);
+
+                    Internal_Refresh(entry, true);
+                    toRemove.Add(entry);
+                    numImportedFiles++;
+
+                    UInt64 end = Time.Precise;
+                    UInt64 elapsed = end - start;
+
+                    float elapsedSeconds = elapsed * Time.MicroToSecond;
+                    if (elapsedSeconds > TIME_SLICE_SECONDS)
+                        break;
+                }
+
+                foreach (var entry in toRemove)
+                    queuedForImport.Remove(entry);
+
+                if (queuedForImport.Count == 0)
+                {
+                    numImportedFiles = 0;
+                    totalFilesToImport = 0;
+
+                    ProgressBar.Hide();
+                }
+            }
+        }
+
         private static void Internal_DoOnEntryAdded(string path)
         {
             if (OnEntryAdded != null)
@@ -102,7 +160,7 @@ namespace BansheeEditor
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern string[] Internal_Refresh(bool import);
+        private static extern string[] Internal_Refresh(string path, bool import);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_Create(Resource resource, string path);

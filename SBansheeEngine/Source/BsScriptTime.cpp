@@ -16,6 +16,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetElapsed", &ScriptTime::internal_getElapsed);
 		metaData.scriptClass->addInternalCall("Internal_GetFrameDelta", &ScriptTime::internal_getFrameDelta);
 		metaData.scriptClass->addInternalCall("Internal_GetFrameNumber", &ScriptTime::internal_getFrameNumber);
+		metaData.scriptClass->addInternalCall("Internal_GetPrecise", &ScriptTime::internal_getPrecise);
 	}
 
 	float ScriptTime::internal_getElapsed()
@@ -31,5 +32,10 @@ namespace BansheeEngine
 	UINT32 ScriptTime::internal_getFrameNumber()
 	{
 		return gTime().getFrameNumber();
+	}
+
+	UINT64 ScriptTime::internal_getPrecise()
+	{
+		return gTime().getTimePrecise();
 	}
 }

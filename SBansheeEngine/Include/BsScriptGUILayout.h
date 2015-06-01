@@ -24,7 +24,8 @@ namespace BansheeEngine
 		void removeChild(ScriptGUIElementBaseTBase* element);
 
 		void destroy() override;
-
+		void destroyChildren();
+		void markAsDestroyed();
 	private:
 		friend class ScriptGUIPanel;
 
@@ -52,7 +53,6 @@ namespace BansheeEngine
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUIPanel")
 
 		static MonoObject* createFromExisting(GUIPanel* panel);
-
 	private:
 		ScriptGUIPanel(MonoObject* instance);
 	};

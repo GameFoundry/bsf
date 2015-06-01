@@ -42,7 +42,7 @@ namespace BansheeEngine
 		ScriptObjectBackup beginRefresh();
 		void endRefresh(const ScriptObjectBackup& backupData);
 		MonoObject* _createManagedInstance(bool construct);
-		void closeWindow();
+		void notifyWindowDestroyed();
 
 		ManagedModalWindow* mModalWindow;
 		HEvent mOnAssemblyRefreshStartedConn;
@@ -60,7 +60,7 @@ namespace BansheeEngine
 		bool createManagedInstance();
 		void releaseManagedInstance();
 
-		void initialize(ScriptModalWindow* parent);
+		void setParent(ScriptModalWindow* parent);
 		void update();
 		void reloadMonoTypes(MonoClass* windowClass);
 		void triggerOnInitialize();

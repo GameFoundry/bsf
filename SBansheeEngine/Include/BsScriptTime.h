@@ -14,6 +14,7 @@ namespace BansheeEngine
 		static float internal_getElapsed();
 		static float internal_getFrameDelta();
 		static UINT32 internal_getFrameNumber();
+		static UINT64 internal_getPrecise();
 
 		ScriptTime(MonoObject* instance);
 	};

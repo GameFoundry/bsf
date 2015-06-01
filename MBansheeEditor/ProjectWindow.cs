@@ -62,8 +62,7 @@ namespace BansheeEditor
                         elementsPerRow = (availableWidth - GRID_ENTRY_SPACING * 2) / elemSize;
                     }
 
-                    labelWidth = availableWidth / elementsPerRow;
-                    labelWidth -= (elementsPerRow + 1)*MIN_HORZ_SPACING;
+                    labelWidth = (availableWidth - (elementsPerRow + 1)*MIN_HORZ_SPACING) / elementsPerRow;
                 }
 
                 this.window = window;
@@ -515,12 +514,27 @@ namespace BansheeEditor
                     if (PathEx.IsPartOf(destinationFolder, absolutePath) || PathEx.Compare(absolutePath, destinationFolder))
                         continue;
 
-                    string destination = Path.Combine(destinationFolder, Path.GetFileName(absolutePath));
+                    string pathTail = PathEx.GetTail(absolutePath);
+                    string destination = Path.Combine(destinationFolder, pathTail);
 
-                    if (ProjectLibrary.Exists(path))
-                        ProjectLibrary.Move(path, destination, true);
-                    else
-                        ProjectLibrary.Copy(path, destination, true);
+                    bool doCopy = !ProjectLibrary.Exists(path);
+
+                    if (Directory.Exists(path))
+                    {
+                        if (doCopy)
+                            DirectoryEx.Copy(path, GetUniquePath(destination));
+                        else
+                            DirectoryEx.Move(path, GetUniquePath(destination));
+                    }
+                    else if (File.Exists(path))
+                    {
+                        if (doCopy)
+                            FileEx.Copy(path, GetUniquePath(destination));
+                        else
+                            FileEx.Move(path, GetUniquePath(destination));
+                    }
+
+                    ProjectLibrary.Refresh();
                 }
             }
         }
@@ -783,15 +797,12 @@ namespace BansheeEditor
         {
             foreach (var source in sourcePaths)
             {
-                int idx = 0;
-                string destination;
-                do
-                {
-                    destination = source + "_" + idx;
-                    idx++;
-                } while (!ProjectLibrary.Exists(destination));
+                if (Directory.Exists(source))
+                    DirectoryEx.Copy(source, GetUniquePath(source));
+                else if (File.Exists(source))
+                    FileEx.Copy(source, GetUniquePath(source));
 
-                ProjectLibrary.Copy(source, destination);
+                ProjectLibrary.Refresh();
             }
         }
 
@@ -801,27 +812,49 @@ namespace BansheeEditor
             {
                 for (int i = 0; i < copyPaths.Count; i++)
                 {
-                    string cleanPath = copyPaths[i].TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-                    string destination = Path.Combine(destinationFolder, Path.GetFileName(cleanPath));
+                    string destination = Path.Combine(destinationFolder, PathEx.GetTail(copyPaths[i]));
 
-                    ProjectLibrary.Copy(copyPaths[i], destination, true);
+                    if (Directory.Exists(copyPaths[i]))
+                        DirectoryEx.Copy(copyPaths[i], GetUniquePath(destination));
+                    else if (File.Exists(copyPaths[i]))
+                        FileEx.Copy(copyPaths[i], GetUniquePath(destination));
                 }
 
-                Refresh();
+                ProjectLibrary.Refresh();
             }
             else if (cutPaths.Count > 0)
             {
                 for (int i = 0; i < cutPaths.Count; i++)
                 {
-                    string cleanPath = cutPaths[i].TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-                    string destination = Path.Combine(destinationFolder, Path.GetFileName(cleanPath));
+                    string destination = Path.Combine(destinationFolder, PathEx.GetTail(cutPaths[i]));
 
-                    ProjectLibrary.Move(cutPaths[i], destination, true);
+                    if (Directory.Exists(cutPaths[i]))
+                        DirectoryEx.Move(cutPaths[i], GetUniquePath(destination));
+                    else if (File.Exists(cutPaths[i]))
+                        FileEx.Move(cutPaths[i], GetUniquePath(destination));
                 }
 
                 cutPaths.Clear();
-                Refresh();
+                ProjectLibrary.Refresh();
             }
+        }
+
+        private string GetUniquePath(string path)
+        {
+            string extension = Path.GetExtension(path);
+            string pathNoExtension = path;
+            if (!string.IsNullOrEmpty(extension))
+                pathNoExtension = path.Remove(path.Length - extension.Length);
+
+            int idx = 0;
+            string destination;
+            do
+            {
+                destination = pathNoExtension + "_" + idx;
+                idx++;
+            } while (!ProjectLibrary.Exists(destination));
+
+            return destination + extension;
         }
 
         private void EditorUpdate()

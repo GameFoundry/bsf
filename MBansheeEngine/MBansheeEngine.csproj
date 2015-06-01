@@ -56,7 +56,9 @@
     <Compile Include="DbgComponent2.cs" />
     <Compile Include="DbgSerzCls.cs" />
     <Compile Include="DbgSerzObj.cs" />
+    <Compile Include="DirectoryEx.cs" />
     <Compile Include="DontSerializeField.cs" />
+    <Compile Include="FileEx.cs" />
     <Compile Include="Font.cs" />
     <Compile Include="GameObject.cs" />
     <Compile Include="GUI\GUILayoutUtility.cs" />

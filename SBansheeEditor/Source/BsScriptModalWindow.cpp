@@ -47,13 +47,14 @@ namespace BansheeEngine
 	{
 		ManagedModalWindow* modalWindow = bs_new<ManagedModalWindow>(allowCloseButton, instance);
 		ScriptModalWindow* nativeInstance = new (bs_alloc<ScriptModalWindow>()) ScriptModalWindow(modalWindow);
-		modalWindow->initialize(nativeInstance);
+		modalWindow->setParent(nativeInstance);
 		modalWindow->triggerOnInitialize();
 	}
 
 	void ScriptModalWindow::internal_close(ScriptModalWindow* thisPtr)
 	{
-		thisPtr->closeWindow();
+		if (thisPtr->mModalWindow != nullptr)
+			thisPtr->mModalWindow->close();
 	}
 
 	void ScriptModalWindow::internal_setTitle(ScriptModalWindow* thisPtr, MonoObject* title)
@@ -68,14 +69,8 @@ namespace BansheeEngine
 		thisPtr->mModalWindow->setTitle(titleStr);
 	}
 
-	void ScriptModalWindow::closeWindow()
+	void ScriptModalWindow::notifyWindowDestroyed()
 	{
-		if (mModalWindow == nullptr)
-			return;
-
-		mModalWindow->mContentsPanel->destroy();
-		mModalWindow->triggerOnDestroy();
-		mModalWindow->releaseManagedInstance();
 		mModalWindow = nullptr;
 	}
 
@@ -193,6 +188,7 @@ namespace BansheeEngine
 		mGCHandle = mono_gchandle_new(mManagedInstance, false);
 
 		MonoObject* guiPanel = ScriptGUIPanel::createFromExisting(mContents);
+		mContentsPanel = ScriptGUILayout::toNative(guiPanel);
 		ScriptModalWindow::guiPanelField->setValue(mManagedInstance, guiPanel);
 
 		::MonoClass* rawMonoClass = mono_object_get_class(mManagedInstance);
@@ -268,7 +264,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void ManagedModalWindow::initialize(ScriptModalWindow* parent)
+	void ManagedModalWindow::setParent(ScriptModalWindow* parent)
 	{
 		mScriptParent = parent;
 	}
@@ -303,7 +299,17 @@ namespace BansheeEngine
 
 	void ManagedModalWindow::close()
 	{
-		mScriptParent->closeWindow();
+		triggerOnDestroy();
+
+		mContentsPanel->destroyChildren();
+		mContentsPanel->markAsDestroyed();
+		mContentsPanel = nullptr;
+
+		releaseManagedInstance();
+
+		mScriptParent->notifyWindowDestroyed();
+
+		ModalWindow::close();
 	}
 
 	void ManagedModalWindow::reloadMonoTypes(MonoClass* windowClass)
