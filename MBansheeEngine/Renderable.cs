@@ -22,7 +22,11 @@ namespace BansheeEngine
                 handler.Mesh = value; 
                 serializableData.mesh = value;
 
-                Material[] newMaterials = new Material[value.SubMeshCount];
+                int subMeshCount = 0;
+                if (value != null)
+                    subMeshCount = value.SubMeshCount;
+
+                Material[] newMaterials = new Material[subMeshCount];
                 int numToCopy = MathEx.Min(newMaterials.Length, serializableData.materials.Length);
                 Array.Copy(serializableData.materials, newMaterials, numToCopy);
                 serializableData.materials = newMaterials;
@@ -55,13 +59,13 @@ namespace BansheeEngine
 
         public Bounds Bounds
         {
-            get { return handler.GetBounds(sceneObject); }
+            get { return handler.GetBounds(SceneObject); }
         }
 
         private void OnInitialize()
         {
             serializableData.materials = new Material[0];
-            serializableData.layers = 0xFFFFFFFFFFFFFFFF;
+            serializableData.layers = 1;
         }
 
         private void OnReset()
@@ -69,7 +73,7 @@ namespace BansheeEngine
             if (handler != null)
                 handler.OnDestroy();
 
-            handler = new RenderableHandler(sceneObject);
+            handler = new RenderableHandler(SceneObject);
 
             // Restore saved values after reset
             handler.Mesh = serializableData.mesh;
@@ -85,7 +89,7 @@ namespace BansheeEngine
 
         private void Update()
         {
-            handler.UpdateTransform(sceneObject);
+            handler.UpdateTransform(SceneObject);
         }
 
         private void OnDestroy()

@@ -5,6 +5,7 @@
 #include "BsMonoUtil.h"
 #include "BsBuiltinResources.h"
 #include "BsScriptSpriteTexture.h"
+#include "BsScriptShader.h"
 #include "BsScriptResourceManager.h"
 
 namespace BansheeEngine
@@ -16,6 +17,7 @@ namespace BansheeEngine
 	void ScriptBuiltin::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_GetWhiteTexture", &ScriptBuiltin::internal_getWhiteTexture);
+		metaData.scriptClass->addInternalCall("Internal_GetDiffuseShader", &ScriptBuiltin::internal_getDiffuseShader);
 	}
 
 	MonoObject* ScriptBuiltin::internal_getWhiteTexture()
@@ -27,5 +29,16 @@ namespace BansheeEngine
 			scriptSpriteTex = ScriptResourceManager::instance().createScriptSpriteTexture(whiteTexture);
 
 		return scriptSpriteTex->getManagedInstance();
+	}
+
+	MonoObject* ScriptBuiltin::internal_getDiffuseShader()
+	{
+		HShader diffuseShader = BuiltinResources::instance().getDiffuseShader();
+
+		ScriptShader* scriptShader = ScriptResourceManager::instance().getScriptShader(diffuseShader);
+		if (scriptShader == nullptr)
+			scriptShader = ScriptResourceManager::instance().createScriptShader(diffuseShader);
+
+		return scriptShader->getManagedInstance();
 	}
 }

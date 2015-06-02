@@ -1001,6 +1001,16 @@ namespace BansheeEngine
 			mRootEntry->parent = nullptr;
 		}
 
+		// Load resource manifest
+		Path resourceManifestPath = mProjectFolder;
+		resourceManifestPath.append(INTERNAL_RESOURCES_DIR);
+		resourceManifestPath.append(RESOURCE_MANIFEST_FILENAME);
+
+		if (FileSystem::exists(resourceManifestPath))
+		{
+			mResourceManifest = ResourceManifest::load(resourceManifestPath, mProjectFolder);
+		}
+
 		// Load all meta files
 		Stack<DirectoryEntry*> todo;
 		todo.push(mRootEntry);
@@ -1052,16 +1062,6 @@ namespace BansheeEngine
 					todo.push(static_cast<DirectoryEntry*>(child));
 				}
 			}
-		}
-
-		// Load resource manifest
-		Path resourceManifestPath = mProjectFolder;
-		resourceManifestPath.append(INTERNAL_RESOURCES_DIR);
-		resourceManifestPath.append(RESOURCE_MANIFEST_FILENAME);
-
-		if(FileSystem::exists(resourceManifestPath))
-		{
-			mResourceManifest = ResourceManifest::load(resourceManifestPath, mProjectFolder);
 		}
 	}
 

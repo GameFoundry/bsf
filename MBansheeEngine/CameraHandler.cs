@@ -156,16 +156,16 @@ namespace BansheeEngine
         internal Vector2 WorldToClip(Vector3 value) { return Internal_WorldToClip(mCachedPtr, value); }
         internal Vector3 WorldToView(Vector3 value) { return Internal_WorldToView(mCachedPtr, value); }
 
-        internal Vector3 ScreenToWorld(Vector2I value) { return Internal_ScreenToWorld(mCachedPtr, value); }
-        internal Vector3 ScreenToView(Vector2I value) { return Internal_ScreenToView(mCachedPtr, value); }
+        internal Vector3 ScreenToWorld(Vector2I value, float depth) { return Internal_ScreenToWorld(mCachedPtr, value, depth); }
+        internal Vector3 ScreenToView(Vector2I value, float depth) { return Internal_ScreenToView(mCachedPtr, value, depth); }
         internal Vector2 ScreenToClip(Vector2I value) { return Internal_ScreenToClip(mCachedPtr, value); }
 
         internal Vector3 ViewToWorld(Vector3 value) { return Internal_ViewToWorld(mCachedPtr, value); }
         internal Vector2I ViewToScreen(Vector3 value) { return Internal_ViewToScreen(mCachedPtr, value); }
         internal Vector2 ViewToClip(Vector3 value) { return Internal_ViewToClip(mCachedPtr, value); }
 
-        internal Vector3 ClipToWorld(Vector2 value) { return Internal_ClipToWorld(mCachedPtr, value); }
-        internal Vector3 ClipToView(Vector2 value) { return Internal_ClipToView(mCachedPtr, value); }
+        internal Vector3 ClipToWorld(Vector2 value, float depth) { return Internal_ClipToWorld(mCachedPtr, value, depth); }
+        internal Vector3 ClipToView(Vector2 value, float depth) { return Internal_ClipToView(mCachedPtr, value, depth); }
         internal Vector2I ClipToScreen(Vector2 value) { return Internal_ClipToScreen(mCachedPtr, value); }
 
         internal Ray ScreenToWorldRay(Vector2I value) { return Internal_ScreenToWorldRay(mCachedPtr, value); }
@@ -287,9 +287,9 @@ namespace BansheeEngine
         private static extern Vector3 Internal_WorldToView(IntPtr instance, Vector3 value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector3 Internal_ScreenToWorld(IntPtr instance, Vector2I value);
+        private static extern Vector3 Internal_ScreenToWorld(IntPtr instance, Vector2I value, float depth);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector3 Internal_ScreenToView(IntPtr instance, Vector2I value);
+        private static extern Vector3 Internal_ScreenToView(IntPtr instance, Vector2I value, float depth);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern Vector2 Internal_ScreenToClip(IntPtr instance, Vector2I value);
 
@@ -301,9 +301,9 @@ namespace BansheeEngine
         private static extern Vector2 Internal_ViewToClip(IntPtr instance, Vector3 value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector3 Internal_ClipToWorld(IntPtr instance, Vector2 value);
+        private static extern Vector3 Internal_ClipToWorld(IntPtr instance, Vector2 value, float depth);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector3 Internal_ClipToView(IntPtr instance, Vector2 value);
+        private static extern Vector3 Internal_ClipToView(IntPtr instance, Vector2 value, float depth);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern Vector2I Internal_ClipToScreen(IntPtr instance, Vector2 value);
 

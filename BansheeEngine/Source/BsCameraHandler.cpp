@@ -539,16 +539,16 @@ namespace BansheeEngine
 		return getViewMatrix().multiplyAffine(worldPoint);
 	}
 
-	Vector3 CameraHandlerBase::screenToWorldPoint(const Vector2I& screenPoint) const
+	Vector3 CameraHandlerBase::screenToWorldPoint(const Vector2I& screenPoint, float depth) const
 	{
 		Vector2 clipPoint = screenToClipPoint(screenPoint);
-		return clipToWorldPoint(clipPoint);
+		return clipToWorldPoint(clipPoint, depth);
 	}
 
-	Vector3 CameraHandlerBase::screenToViewPoint(const Vector2I& screenPoint) const
+	Vector3 CameraHandlerBase::screenToViewPoint(const Vector2I& screenPoint, float depth) const
 	{
 		Vector2 clipPoint = screenToClipPoint(screenPoint);
-		return clipToViewPoint(clipPoint);
+		return clipToViewPoint(clipPoint, depth);
 	}
 
 	Vector2 CameraHandlerBase::screenToClipPoint(const Vector2I& screenPoint) const
@@ -580,15 +580,15 @@ namespace BansheeEngine
 		return Vector2(projPoint.x, projPoint.y);
 	}
 
-	Vector3 CameraHandlerBase::clipToWorldPoint(const Vector2& clipPoint) const
+	Vector3 CameraHandlerBase::clipToWorldPoint(const Vector2& clipPoint, float depth) const
 	{
-		Vector3 viewPoint = clipToViewPoint(clipPoint);
+		Vector3 viewPoint = clipToViewPoint(clipPoint, depth);
 		return viewToWorldPoint(viewPoint);
 	}
 
-	Vector3 CameraHandlerBase::clipToViewPoint(const Vector2& clipPoint) const
+	Vector3 CameraHandlerBase::clipToViewPoint(const Vector2& clipPoint, float depth) const
 	{
-		return unprojectPoint(Vector3(clipPoint.x, clipPoint.y, 0.5f));
+		return unprojectPoint(Vector3(clipPoint.x, clipPoint.y, depth));
 	}
 
 	Vector2I CameraHandlerBase::clipToScreenPoint(const Vector2& clipPoint) const

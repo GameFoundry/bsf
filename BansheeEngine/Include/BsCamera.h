@@ -223,12 +223,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CameraHandler::screenToWorldPoint
 		 */
-		Vector3 screenToWorldPoint(const Vector2I& screenPoint) const { updateView(); return mInternal->screenToWorldPoint(screenPoint); }
+		Vector3 screenToWorldPoint(const Vector2I& screenPoint, float depth = 0.5f) const { updateView(); return mInternal->screenToWorldPoint(screenPoint, depth); }
 
 		/**
 		 * @copydoc	CameraHandler::screenToViewPoint
 		 */
-		Vector3 screenToViewPoint(const Vector2I& screenPoint) const { return mInternal->screenToViewPoint(screenPoint); }
+		Vector3 screenToViewPoint(const Vector2I& screenPoint, float depth = 0.5f) const { return mInternal->screenToViewPoint(screenPoint, depth); }
 
 		/**
 		 * @copydoc	CameraHandler::screenToClipPoint
@@ -253,12 +253,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CameraHandler::clipToWorldPoint
 		 */
-		Vector3 clipToWorldPoint(const Vector2& clipPoint) const { updateView(); return mInternal->clipToWorldPoint(clipPoint); }
+		Vector3 clipToWorldPoint(const Vector2& clipPoint, float depth = 0.5f) const { updateView(); return mInternal->clipToWorldPoint(clipPoint, depth); }
 
 		/**
 		 * @copydoc	CameraHandler::clipToViewPoint
 		 */
-		Vector3 clipToViewPoint(const Vector2& clipPoint) const { return mInternal->clipToViewPoint(clipPoint); }
+		Vector3 clipToViewPoint(const Vector2& clipPoint, float depth = 0.5f) const { return mInternal->clipToViewPoint(clipPoint, depth); }
 
 		/**
 		 * @copydoc	CameraHandler::clipToScreenPoint

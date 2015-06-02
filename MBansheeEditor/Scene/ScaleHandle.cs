@@ -49,7 +49,7 @@ namespace BansheeEditor
 
             float handleSize = Handles.GetHandleSize(EditorApplication.SceneViewCamera, position);
             Vector3 freeAxisOffset = (Vector3.xAxis * -0.3f + Vector3.yAxis * -0.3f) * handleSize;
-            freeAxis.Rotation = EditorApplication.SceneViewCamera.sceneObject.Rotation;
+            freeAxis.Rotation = EditorApplication.SceneViewCamera.SceneObject.Rotation;
             freeAxis.Position = position + freeAxis.Rotation.Rotate(freeAxisOffset);
         }
 
@@ -126,7 +126,7 @@ namespace BansheeEditor
 
             Vector3 offset = Vector3.zAxis*0.1f;
 
-            Quaternion cameraRot = EditorApplication.SceneViewCamera.sceneObject.Rotation;
+            Quaternion cameraRot = EditorApplication.SceneViewCamera.SceneObject.Rotation;
             bottomLeft = cameraRot.Rotate(bottomLeft + offset);
             topLeft = cameraRot.Rotate(topLeft + offset);
             topRight = cameraRot.Rotate(topRight + offset);

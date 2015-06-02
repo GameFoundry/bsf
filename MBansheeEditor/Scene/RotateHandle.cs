@@ -112,7 +112,7 @@ namespace BansheeEditor
 
             // Draw free rotate handle
             //// Rotate it so it always faces the camera, and move it forward a bit to always render in front
-            Vector3 freeHandleNormal = EditorApplication.SceneViewCamera.sceneObject.Rotation.Rotate(GetZDir());
+            Vector3 freeHandleNormal = EditorApplication.SceneViewCamera.SceneObject.Rotation.Rotate(GetZDir());
             Vector3 offset = freeHandleNormal*0.1f;
 
             HandleDrawing.DrawWireDisc(offset, freeHandleNormal, 1.0f, handleSize);
@@ -120,19 +120,19 @@ namespace BansheeEditor
 
         private Degree GetXStartAngle()
         {
-            Vector3 xStartDir = Vector3.Cross(EditorApplication.SceneViewCamera.sceneObject.Forward, GetXDir());
+            Vector3 xStartDir = Vector3.Cross(EditorApplication.SceneViewCamera.SceneObject.Forward, GetXDir());
             return PointOnCircleToAngle(GetXDir(), xStartDir);
         }
 
         private Degree GetYStartAngle()
         {
-            Vector3 yStartDir = Vector3.Cross(EditorApplication.SceneViewCamera.sceneObject.Forward, GetYDir());
+            Vector3 yStartDir = Vector3.Cross(EditorApplication.SceneViewCamera.SceneObject.Forward, GetYDir());
             return PointOnCircleToAngle(GetYDir(), yStartDir);
         }
 
         private Degree GetZStartAngle()
         {
-            Vector3 zStartDir = Vector3.Cross(EditorApplication.SceneViewCamera.sceneObject.Forward, GetZDir());
+            Vector3 zStartDir = Vector3.Cross(EditorApplication.SceneViewCamera.SceneObject.Forward, GetZDir());
             return PointOnCircleToAngle(GetZDir(), zStartDir);
         }
 

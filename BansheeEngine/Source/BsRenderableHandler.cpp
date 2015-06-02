@@ -29,7 +29,12 @@ namespace BansheeEngine
 	void TRenderableHandler<Core>::setMesh(const MeshType& mesh)
 	{
 		mMesh = mesh;
-		mMaterials.resize(mesh->getProperties().getNumSubMeshes());
+
+		int numSubMeshes = 0;
+		if (mesh != nullptr)
+			numSubMeshes = mesh->getProperties().getNumSubMeshes();
+
+		mMaterials.resize(numSubMeshes);
 
 		_markResourcesDirty();
 		_markCoreDirty();

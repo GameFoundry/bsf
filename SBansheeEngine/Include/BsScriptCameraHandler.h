@@ -81,16 +81,16 @@ namespace BansheeEngine
 		static Vector2 internal_WorldToClip(ScriptCameraHandler* instance, Vector3 value);
 		static Vector3 internal_WorldToView(ScriptCameraHandler* instance, Vector3 value);
 
-		static Vector3 internal_ScreenToWorld(ScriptCameraHandler* instance, Vector2I value);
-		static Vector3 internal_ScreenToView(ScriptCameraHandler* instance, Vector2I value);
+		static Vector3 internal_ScreenToWorld(ScriptCameraHandler* instance, Vector2I value, float depth);
+		static Vector3 internal_ScreenToView(ScriptCameraHandler* instance, Vector2I value, float depth);
 		static Vector2 internal_ScreenToClip(ScriptCameraHandler* instance, Vector2I value);
 
 		static Vector3 internal_ViewToWorld(ScriptCameraHandler* instance, Vector3 value);
 		static Vector2I internal_ViewToScreen(ScriptCameraHandler* instance, Vector3 value);
 		static Vector2 internal_ViewToClip(ScriptCameraHandler* instance, Vector3 value);
 
-		static Vector3 internal_ClipToWorld(ScriptCameraHandler* instance, Vector2 value);
-		static Vector3 internal_ClipToView(ScriptCameraHandler* instance, Vector2 value);
+		static Vector3 internal_ClipToWorld(ScriptCameraHandler* instance, Vector2 value, float depth);
+		static Vector3 internal_ClipToView(ScriptCameraHandler* instance, Vector2 value, float depth);
 		static Vector2I internal_ClipToScreen(ScriptCameraHandler* instance, Vector2 value);
 
 		static Ray internal_ScreenToWorldRay(ScriptCameraHandler* instance, Vector2I value);

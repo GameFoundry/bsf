@@ -15,6 +15,7 @@
 #include "BsScriptFont.h"
 #include "BsScriptImportOptions.h"
 #include "BsEditorApplication.h"
+#include "BsPath.h"
 
 using namespace std::placeholders;
 
@@ -80,7 +81,14 @@ namespace BansheeEngine
 	{
 		Path resourcePath = MonoUtil::monoToWString(path);
 
-		HResource resource = Resources::instance().load(resourcePath);
+		HResource resource;
+		ProjectLibrary::LibraryEntry* entry = ProjectLibrary::instance().findEntry(resourcePath);
+		if (entry != nullptr && entry->type == ProjectLibrary::LibraryEntryType::File)
+		{
+			ProjectLibrary::ResourceEntry* resEntry = static_cast <ProjectLibrary::ResourceEntry*>(entry);
+			resource = Resources::instance().loadFromUUID(resEntry->meta->getUUID());
+		}
+		
 		if (!resource)
 			return nullptr;
 

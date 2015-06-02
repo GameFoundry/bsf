@@ -157,6 +157,7 @@ namespace BansheeEngine
 	const WString BuiltinResources::ShaderSpriteTextFile = L"SpriteText.bsl";
 	const WString BuiltinResources::ShaderSpriteImageAlphaFile = L"SpriteImageAlpha.bsl";
 	const WString BuiltinResources::ShaderSpriteImageNoAlphaFile = L"SpriteImageNoAlpha.bsl";
+	const WString BuiltinResources::ShaderDiffuseFile = L"Diffuse.bsl";
 	const WString BuiltinResources::ShaderDummyFile = L"Dummy.bsl";
 
 	BuiltinResources::~BuiltinResources()
@@ -202,6 +203,7 @@ namespace BansheeEngine
 		mShaderSpriteText = getShader(ShaderSpriteTextFile);
 		mShaderSpriteImage = getShader(ShaderSpriteImageAlphaFile);
 		mShaderSpriteNonAlphaImage = getShader(ShaderSpriteImageNoAlphaFile);
+		mShaderDiffuse = getShader(ShaderDiffuseFile);
 		mShaderDummy = getShader(ShaderDummyFile);
 
 		mWhiteSpriteTexture = getSkinTexture(WhiteTex);
@@ -941,7 +943,7 @@ namespace BansheeEngine
 			return true;
 		};
 
-		FileSystem::iterate(folder, checkUpToDate);
+		FileSystem::iterate(folder, checkUpToDate, checkUpToDate);
 
 		return !upToDate;
 	}

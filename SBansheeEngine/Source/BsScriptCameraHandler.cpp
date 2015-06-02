@@ -328,14 +328,14 @@ namespace BansheeEngine
 		return instance->mCameraHandler->worldToViewPoint(value);
 	}
 
-	Vector3 ScriptCameraHandler::internal_ScreenToWorld(ScriptCameraHandler* instance, Vector2I value)
+	Vector3 ScriptCameraHandler::internal_ScreenToWorld(ScriptCameraHandler* instance, Vector2I value, float depth)
 	{
-		return instance->mCameraHandler->screenToWorldPoint(value);
+		return instance->mCameraHandler->screenToWorldPoint(value, depth);
 	}
 
-	Vector3 ScriptCameraHandler::internal_ScreenToView(ScriptCameraHandler* instance, Vector2I value)
+	Vector3 ScriptCameraHandler::internal_ScreenToView(ScriptCameraHandler* instance, Vector2I value, float depth)
 	{
-		return instance->mCameraHandler->screenToViewPoint(value);
+		return instance->mCameraHandler->screenToViewPoint(value, depth);
 	}
 
 	Vector2 ScriptCameraHandler::internal_ScreenToClip(ScriptCameraHandler* instance, Vector2I value)
@@ -358,14 +358,14 @@ namespace BansheeEngine
 		return instance->mCameraHandler->viewToClipPoint(value);
 	}
 
-	Vector3 ScriptCameraHandler::internal_ClipToWorld(ScriptCameraHandler* instance, Vector2 value)
+	Vector3 ScriptCameraHandler::internal_ClipToWorld(ScriptCameraHandler* instance, Vector2 value, float depth)
 	{
-		return instance->mCameraHandler->clipToWorldPoint(value);
+		return instance->mCameraHandler->clipToWorldPoint(value, depth);
 	}
 
-	Vector3 ScriptCameraHandler::internal_ClipToView(ScriptCameraHandler* instance, Vector2 value)
+	Vector3 ScriptCameraHandler::internal_ClipToView(ScriptCameraHandler* instance, Vector2 value, float depth)
 	{
-		return instance->mCameraHandler->clipToViewPoint(value);
+		return instance->mCameraHandler->clipToViewPoint(value, depth);
 	}
 
 	Vector2I ScriptCameraHandler::internal_ClipToScreen(ScriptCameraHandler* instance, Vector2 value)

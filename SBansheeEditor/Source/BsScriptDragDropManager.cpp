@@ -225,10 +225,34 @@ namespace BansheeEngine
 
 	MonoObject* ScriptDragDropManager::getDropData() const
 	{
-		if (mDropType == ScriptDragDropType::SceneObject)
-			return ScriptSceneObjectDragDropData::create(mDroppedSceneObjects);
-		else if (mDropType == ScriptDragDropType::Resource)
-			return ScriptResourceDragDropData::create(mDroppedPaths);
+		if (DragAndDropManager::instance().isDragInProgress())
+		{
+			UINT32 nativeType = DragAndDropManager::instance().getDragTypeId();
+
+			if (nativeType == (UINT32)DragAndDropType::SceneObject)
+			{
+				DraggedSceneObjects* draggedData = reinterpret_cast<DraggedSceneObjects*>(DragAndDropManager::instance().getDragData());
+
+				Vector<HSceneObject> draggedSceneObjects;
+				for (UINT32 i = 0; i < draggedData->numObjects; i++)
+					draggedSceneObjects.push_back(draggedData->objects[i]);
+
+				return ScriptSceneObjectDragDropData::create(draggedSceneObjects);
+			}
+			else if (nativeType == (UINT32)DragAndDropType::Resources)
+			{
+				DraggedResources* draggedResources = reinterpret_cast<DraggedResources*>(DragAndDropManager::instance().getDragData());
+
+				return ScriptResourceDragDropData::create(draggedResources->resourcePaths);
+			}
+		}
+		else
+		{
+			if (mDropType == ScriptDragDropType::SceneObject)
+				return ScriptSceneObjectDragDropData::create(mDroppedSceneObjects);
+			else if (mDropType == ScriptDragDropType::Resource)
+				return ScriptResourceDragDropData::create(mDroppedPaths);
+		}
 
 		return nullptr;
 	}

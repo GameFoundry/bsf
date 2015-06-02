@@ -12,6 +12,7 @@ namespace BansheeEngine
 
 	private:
 		static MonoObject* internal_getWhiteTexture();
+		static MonoObject* internal_getDiffuseShader();
 		
 		ScriptBuiltin(MonoObject* instance);
 	};

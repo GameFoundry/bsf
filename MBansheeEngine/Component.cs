@@ -9,7 +9,7 @@ namespace BansheeEngine
         protected Component()
         { }
 
-        public SceneObject sceneObject
+        public SceneObject SceneObject
         {
             get { return Internal_GetSceneObject(mCachedPtr); }
         }

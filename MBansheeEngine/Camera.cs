@@ -141,16 +141,16 @@ namespace BansheeEngine
         public Vector2 WorldToClip(Vector3 value) { return handler.WorldToClip(value); }
         public Vector3 WorldToView(Vector3 value) { return handler.WorldToView(value); }
 
-        public Vector3 ScreenToWorld(Vector2I value) { return handler.ScreenToWorld(value); }
-        public Vector3 ScreenToView(Vector2I value) { return handler.ScreenToView(value); }
+        public Vector3 ScreenToWorld(Vector2I value, float depth = 0.5f) { return handler.ScreenToWorld(value, depth); }
+        public Vector3 ScreenToView(Vector2I value, float depth = 0.5f) { return handler.ScreenToView(value, depth); }
         public Vector2 ScreenToClip(Vector2I value) { return handler.ScreenToClip(value); }
 
         public Vector3 ViewToWorld(Vector3 value) { return handler.ViewToWorld(value); }
         public Vector2I ViewToScreen(Vector3 value) { return handler.ViewToScreen(value); }
         public Vector2 ViewToClip(Vector3 value) { return handler.ViewToClip(value); }
 
-        public Vector3 ClipToWorld(Vector2 value) { return handler.ClipToWorld(value); }
-        public Vector3 ClipToView(Vector2 value) { return handler.ClipToView(value); }
+        public Vector3 ClipToWorld(Vector2 value, float depth = 0.5f) { return handler.ClipToWorld(value, depth); }
+        public Vector3 ClipToView(Vector2 value, float depth = 0.5f) { return handler.ClipToView(value, depth); }
         public Vector2I ClipToScreen(Vector2 value) { return handler.ClipToScreen(value); }
 
         public Ray ScreenToWorldRay(Vector2I value) { return handler.ScreenToWorldRay(value); }
@@ -176,7 +176,7 @@ namespace BansheeEngine
             if (handler != null)
                 handler.OnDestroy();
 
-            handler = new CameraHandler(sceneObject);
+            handler = new CameraHandler(SceneObject);
 
             // Restore saved values after reset
             handler.aspectRatio = serializableData.aspectRatio;
@@ -198,7 +198,7 @@ namespace BansheeEngine
 
         private void Update()
         {
-            handler.UpdateView(sceneObject);
+            handler.UpdateView(SceneObject);
         }
 
         private void OnDestroy()

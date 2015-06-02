@@ -79,6 +79,16 @@ namespace BansheeEngine
 		const PixelData& getCursorMoveLeftRight(Vector2I& hotSpot);
 
 		/**
+		 * @brief	Returns a shader used for rendering only a diffuse texture.
+		 */
+		HShader getDiffuseShader() const { return mShaderDiffuse; }
+
+		/**
+		 * @brief	Returns a shader used as a replacement when no other is usable.
+		 */
+		HShader getDummyShader() const { return mShaderDummy; }
+
+		/**
 		 * @brief	Creates material used for textual sprite rendering (e.g. text in GUI).
 		 */
 		GUIMaterialInfo createSpriteTextMaterial() const;
@@ -151,6 +161,7 @@ namespace BansheeEngine
 		HShader mShaderSpriteText;
 		HShader mShaderSpriteImage;
 		HShader mShaderSpriteNonAlphaImage;
+		HShader mShaderDiffuse;
 		HShader mShaderDummy;
 
 		ResourceManifestPtr mResourceManifest;
@@ -261,6 +272,7 @@ namespace BansheeEngine
 		static const WString ShaderSpriteTextFile;
 		static const WString ShaderSpriteImageAlphaFile;
 		static const WString ShaderSpriteImageNoAlphaFile;
+		static const WString ShaderDiffuseFile;
 		static const WString ShaderDummyFile;
 	};
 

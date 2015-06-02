@@ -17,9 +17,7 @@ TODO - Setting Material array parameters isn't possible from C#
 GUIResourceField doesn't distinguish between tex2d, tex3d and texcube.
 
 ---------------------------------------------------------------------
-
-When windows first open they show up as all black. This is problematic with progress bar window since it may appear for just one frame and it only shows up as black square during that time.
- - Later on after I fix this issue I should probably just make a special case and not open the progress bar if all import is done in one go
+ProjectLibrary import
 
 I'm not sure if queued dependencies are handled properly. They're handled on an internal ProjectLibrary loop but perhaps I should
 return them in checkForModifications?
@@ -27,8 +25,10 @@ return them in checkForModifications?
 ----------------------------------------------------------------------
 Project window
 
-Simple tasks:
- - Hook up scene view drag and drop instantiation
+Dropping doesn't work. endDrag in DragAndDropManager gets called before cursorReleased()
+Destroying Renderable objects doesn't seem to properly clear them from the renderer
+Dragging the selection area past the scroll area borders will expand the scroll area
+Add mesh scale to FBX importer (and default it to 0.01 or whatever makes the dragon look normal sized)
 
 Later:
  - Hook up ping effect so it triggers when I select a resource or sceneobject
@@ -37,6 +37,8 @@ Later:
  - Save & restore scroll position when Refresh happens
  - F2 and context menu for renaming assets (or when clicking on a solo selected asset)
    - Also make sure the names contain only valid path characters
+ - Delete with a dialog box to confirm
+
 ----------------------------------------------------------------------
 Resources
  - Load/Unload/UnloadUnused
@@ -104,9 +106,7 @@ AFTER I have scene widget in C#:
  - Test custom handles from C#
  - Test handle snapping
 
-Need a way to drag and drop items from Scene tree view to Scene view
- - When dragging a mesh it should by default create a SceneObject with a renderable
- - I might want a C# DragAndDrop class? It can contain Resource or SceneObject only for now, similar to Selection
+Make sure that camera controls only work when scene view is in focus
 
 ----------------------------------------------------------------------
 Other

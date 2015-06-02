@@ -6,6 +6,10 @@ namespace BansheeEngine
 {
     public class Mesh : Resource
     {
+        // For internal use by the runtime
+        private Mesh()
+        { }
+
         public Mesh(int numVertices, int numIndices, MeshTopology topology = MeshTopology.TriangleList,
             MeshUsage usage = MeshUsage.Default, VertexType vertex = VertexType.Position, 
             IndexType index = IndexType.Index32)

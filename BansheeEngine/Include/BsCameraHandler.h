@@ -335,15 +335,25 @@ namespace BansheeEngine
 		/**
 		 * @brief	Converts a point in screen space (pixels corresponding to
 		 *			render target attached to the camera) to a point in world space.
+		 *
+		 * @param	screenPoint	Point to transform.
+		 * @param	depth		Depth to place the world point at. The depth is applied
+		 *						to the vector going from camera origin to the point on
+		 *						the near plane.
 		 */
-		Vector3 screenToWorldPoint(const Vector2I& screenPoint) const;
+		Vector3 screenToWorldPoint(const Vector2I& screenPoint, float depth = 0.5f) const;
 
 		/**
 		 * @brief	Converts a point in screen space (pixels corresponding to
 		 *			render target attached to the camera) to a point relative to
 		 *			camera's coordinate system (view space).
+		 *
+		 * @param	screenPoint	Point to transform.
+		 * @param	depth		Depth to place the world point at. The depth is applied
+		 *						to the vector going from camera origin to the point on
+		 *						the near plane.
 		 */
-		Vector3 screenToViewPoint(const Vector2I& screenPoint) const;
+		Vector3 screenToViewPoint(const Vector2I& screenPoint, float depth = 0.5f) const;
 
 		/**
 		 * @brief	Converts a point in screen space (pixels corresponding to
@@ -374,14 +384,24 @@ namespace BansheeEngine
 		/**
 		 * @brief	Converts a point in normalized clip coordinates ([0, 1] range) to
 		 *			a point in world space.
+		 *
+		 * @param	clipPoint	Point to transform.
+		 * @param	depth		Depth to place the world point at. The depth is applied
+		 *						to the vector going from camera origin to the point on
+		 *						the near plane.
 		 */
-		Vector3 clipToWorldPoint(const Vector2& clipPoint) const;
+		Vector3 clipToWorldPoint(const Vector2& clipPoint, float depth = 0.5f) const;
 
 		/**
 		 * @brief	Converts a point in normalized clip coordinates ([0, 1] range) to
 		 *			a point relative to camera's coordinate system (view space).
+		 *
+		 * @param	clipPoint	Point to transform.
+		 * @param	depth		Depth to place the world point at. The depth is applied
+		 *						to the vector going from camera origin to the point on
+		 *						the near plane.
 		 */
-		Vector3 clipToViewPoint(const Vector2& clipPoint) const;
+		Vector3 clipToViewPoint(const Vector2& clipPoint, float depth = 0.5f) const;
 
 		/**
 		 * @brief	Converts a point in normalized clip coordinates ([0, 1] range) to

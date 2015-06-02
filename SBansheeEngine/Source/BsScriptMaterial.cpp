@@ -9,6 +9,7 @@
 #include "BsScriptTexture2D.h"
 #include "BsScriptTexture3D.h"
 #include "BsScriptTextureCube.h"
+#include <BsBuiltinResources.h>
 
 namespace BansheeEngine
 {
@@ -54,6 +55,9 @@ namespace BansheeEngine
 		if (shader != nullptr)
 			nativeShader = shader->getShaderHandle();
 
+		if (nativeShader == nullptr)
+			nativeShader = BuiltinResources::instance().getDummyShader();
+
 		HMaterial material = Material::create(nativeShader);
 		ScriptResourceManager::instance().createScriptMaterial(instance, material);
 	}
@@ -77,6 +81,9 @@ namespace BansheeEngine
 		HShader nativeShader;
 		if (shader != nullptr)
 			nativeShader = shader->getShaderHandle();
+
+		if (nativeShader == nullptr)
+			nativeShader = BuiltinResources::instance().getDummyShader();
 
 		nativeInstance->getMaterialHandle()->setShader(nativeShader);
 	}

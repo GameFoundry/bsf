@@ -44,10 +44,10 @@ namespace BansheeEditor
 
         public static float GetHandleSize(Camera camera, Vector3 position)
         {
-            Vector3 cameraPos = camera.sceneObject.Position;
+            Vector3 cameraPos = camera.SceneObject.Position;
 
 		    Vector3 diff = position - cameraPos;
-		    float distAlongViewDir = Math.Abs(Vector3.Dot(diff, camera.sceneObject.Rotation.Forward));
+		    float distAlongViewDir = Math.Abs(Vector3.Dot(diff, camera.SceneObject.Rotation.Forward));
 
             return distAlongViewDir * EditorSettings.DefaultHandleSize;
         }

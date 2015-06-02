@@ -15,7 +15,11 @@ namespace BansheeEngine
             {
                 mesh = value;
 
-                Material[] newMaterials = new Material[mesh.SubMeshCount];
+                int subMeshCount = 0;
+                if (mesh != null)
+                    subMeshCount = mesh.SubMeshCount;
+
+                Material[] newMaterials = new Material[subMeshCount];
                 int numToCopy = MathEx.Min(newMaterials.Length, materials.Length);
                 Array.Copy(materials, newMaterials, numToCopy);
                 materials = newMaterials;

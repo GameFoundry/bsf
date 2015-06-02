@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ namespace BansheeEditor
     internal sealed class SceneWindow : EditorWindow
     {
         private const int HeaderHeight = 20;
+        private const float DefaultPlacementDepth = 5.0f;
 
         private Camera camera;
         private SceneCamera cameraController;
@@ -37,6 +39,10 @@ namespace BansheeEditor
         private GUIFloatField rotateSnapInput;
 
         private int editorSettingsHash = int.MaxValue;
+
+        // Drag & drop
+        private bool dragActive;
+        private SceneObject draggedSO;
 
         public Camera GetCamera()
         {
@@ -112,7 +118,7 @@ namespace BansheeEditor
         {
             if (camera != null)
             {
-                camera.sceneObject.Destroy();
+                camera.SceneObject.Destroy();
             }
         }
 
@@ -156,11 +162,97 @@ namespace BansheeEditor
                 }
             }
 
+            Vector2I scenePos;
+            bool inBounds = ScreenToScenePos(Input.PointerPosition, out scenePos);
+
+            bool draggedOver = DragDrop.DragInProgress || DragDrop.DropInProgress;
+            draggedOver &= inBounds && DragDrop.Type == DragDropType.Resource;
+
+            if (DragDrop.DropInProgress)
+            {
+                Debug.Log("DROP IN PROGRESS: " + draggedOver + " - " + inBounds + " - " + DragDrop.Type);
+            }
+
+            if (draggedOver)
+            {
+                if (DragDrop.DropInProgress)
+                {
+                    dragActive = false;
+                    draggedSO = null;
+
+                    Debug.Log("DROPPED DRAGON");
+                }
+                else
+                {
+                    if (!dragActive)
+                    {
+                        dragActive = true;
+
+                        ResourceDragDropData dragData = (ResourceDragDropData)DragDrop.Data;
+
+                        string draggedMeshPath = "";
+                        string[] draggedPaths = dragData.Paths;
+
+                        for (int i = 0; i < draggedPaths.Length; i++)
+                        {
+
+                            LibraryEntry entry = ProjectLibrary.GetEntry(draggedPaths[i]);
+                            if (entry != null && entry.Type == LibraryEntryType.File)
+                            {
+                                FileEntry fileEntry = (FileEntry) entry;
+                                if (fileEntry.ResType == ResourceType.Mesh)
+                                {
+                                    draggedMeshPath = draggedPaths[i];
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (!string.IsNullOrEmpty(draggedMeshPath))
+                        {
+                            string meshName = Path.GetFileName(draggedMeshPath);
+
+                            draggedSO = new SceneObject(meshName);
+                            Mesh mesh = ProjectLibrary.Load<Mesh>(draggedMeshPath);
+                            Material material = new Material(Builtin.DiffuseShader);
+
+                            Renderable renderable = draggedSO.AddComponent<Renderable>();
+                            renderable.Mesh = mesh;
+                            renderable.SetMaterial(material);
+
+                            Debug.Log("CREATED DRAGON");
+                        }
+                    }
+
+                    if (draggedSO != null)
+                    {
+                        Ray worldRay = camera.ScreenToWorldRay(scenePos);
+                        draggedSO.Position = worldRay*DefaultPlacementDepth;
+                    }
+                }
+
+                return;
+            }
+            else
+            {
+                if (dragActive)
+                {
+                    dragActive = false;
+
+                    if (draggedSO != null)
+                    {
+                        Debug.Log("DESTROYED DRAGON");
+
+                        draggedSO.Destroy();
+                        draggedSO = null;
+                    }
+                }
+            }
+
             if (!HasFocus)
                 return;
 
-            Vector2I scenePos;
-            if (ScreenToScenePos(Input.PointerPosition, out scenePos))
+            if (inBounds)
             {
                 if (Input.IsPointerButtonDown(PointerButton.Left))
                 {
