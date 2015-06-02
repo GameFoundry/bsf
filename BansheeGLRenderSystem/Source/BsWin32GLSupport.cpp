@@ -87,7 +87,7 @@ namespace BansheeEngine
 	{
 		GLRenderAPI* rs = static_cast<GLRenderAPI*>(RenderAPICore::instancePtr());
 
-		// If RenderSystem has initialized a context use that, otherwise we create our own
+		// If RenderAPI has initialized a context use that, otherwise we create our own
 		HGLRC glrc = externalGlrc;
 		bool createdNew = false;
 		if (!rs->_isContextInitialized())

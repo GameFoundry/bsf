@@ -117,20 +117,11 @@ namespace BansheeEditor
             {
                 UInt64 start = Time.Precise;
                 List<string> toRemove = new List<string>();
+                string lastEntry = "";
+
                 foreach (var entry in queuedForImport)
                 {
-                    float pct = numImportedFiles/(float)totalFilesToImport;
-
-                    string displayName = entry;
-                    displayName = displayName.Replace("\\", "\\\\");
-
-                    if (displayName.Length > 60)
-                    {
-                        displayName = displayName.Remove(0, displayName.Length - 60);
-                        displayName = "..." + displayName;
-                    }
-
-                    ProgressBar.Show("Importing (" + numImportedFiles + "/" + totalFilesToImport + ")", displayName, pct);
+                    lastEntry = entry;
 
                     Internal_Refresh(entry, true);
                     toRemove.Add(entry);
@@ -153,6 +144,20 @@ namespace BansheeEditor
                     totalFilesToImport = 0;
 
                     ProgressBar.Hide();
+                }
+                else
+                {
+                    string displayName = lastEntry;
+                    displayName = displayName.Replace("\\", "\\\\");
+
+                    if (displayName.Length > 60)
+                    {
+                        displayName = displayName.Remove(0, displayName.Length - 60);
+                        displayName = "..." + displayName;
+                    }
+
+                    float pct = numImportedFiles / (float)totalFilesToImport;
+                    ProgressBar.Show("Importing (" + numImportedFiles + "/" + totalFilesToImport + ")", displayName, pct);
                 }
             }
         }

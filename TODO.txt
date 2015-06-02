@@ -24,9 +24,6 @@ When windows first open they show up as all black. This is problematic with prog
 I'm not sure if queued dependencies are handled properly. They're handled on an internal ProjectLibrary loop but perhaps I should
 return them in checkForModifications?
 
-Window titlebars and focus borders no longer render!?
- - Might be after my change to fix zero width/height elements in layouts
-
 ----------------------------------------------------------------------
 Project window
 
