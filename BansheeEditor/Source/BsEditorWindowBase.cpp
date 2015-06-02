@@ -21,6 +21,7 @@ namespace BansheeEngine
 		renderWindowDesc.border = WindowBorder::None;
 		renderWindowDesc.toolWindow = true;
 		renderWindowDesc.modal = isModal;
+		renderWindowDesc.hideUntilSwap = true;
 
 		mRenderWindow = RenderWindow::create(renderWindowDesc, gCoreApplication().getPrimaryWindow());
 

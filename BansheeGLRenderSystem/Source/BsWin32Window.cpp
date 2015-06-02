@@ -26,7 +26,8 @@ namespace BansheeEngine
 
 	Win32WindowCore::Win32WindowCore(const RENDER_WINDOW_DESC& desc, UINT32 windowId, Win32GLSupport& glsupport)
 		: RenderWindowCore(desc, windowId), mProperties(desc), mSyncedProperties(desc), mGLSupport(glsupport), mContext(0), 
-		mWindowedStyle(0), mWindowedStyleEx(0), mIsExternal(false), mIsExternalGLControl(false), mDisplayFrequency(0), mDeviceName(nullptr), mHWnd(0)
+		mWindowedStyle(0), mWindowedStyleEx(0), mIsExternal(false), mIsExternalGLControl(false), mDisplayFrequency(0), 
+		mDeviceName(nullptr), mHWnd(0), mShowOnSwap(false)
 	{ }
 
 	Win32WindowCore::~Win32WindowCore()
@@ -123,7 +124,13 @@ namespace BansheeEngine
 				props.mColorDepth = GetDeviceCaps(GetDC(0), BITSPIXEL);
 		}
 
-		mWindowedStyle = WS_VISIBLE | WS_CLIPCHILDREN;
+		mWindowedStyle = WS_CLIPCHILDREN;
+		mShowOnSwap = mDesc.hideUntilSwap;
+		props.mHidden = mDesc.hideUntilSwap;
+
+		if (!mShowOnSwap)
+			mWindowedStyle |= WS_VISIBLE;
+
 		mWindowedStyleEx = 0;
 
 		if (!props.mIsFullScreen)
@@ -557,6 +564,9 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
+		if (mShowOnSwap)
+			setHidden(false);
+
 		if (!mIsExternalGLControl) {
 			SwapBuffers(mHDC);
 		}
@@ -691,6 +701,8 @@ namespace BansheeEngine
 
 		Win32RenderWindowProperties& props = mProperties;
 		props.mHidden = hidden;
+		mShowOnSwap = false;
+
 		if (!mIsExternal)
 		{
 			if (hidden)

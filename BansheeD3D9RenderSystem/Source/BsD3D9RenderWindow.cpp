@@ -21,7 +21,7 @@ namespace BansheeEngine
 
 	D3D9RenderWindowCore::D3D9RenderWindowCore(const RENDER_WINDOW_DESC& desc, UINT32 windowId, HINSTANCE instance)
 		: RenderWindowCore(desc, windowId), mInstance(instance), mProperties(desc), mSyncedProperties(desc), mIsDepthBuffered(true), mIsChild(false), mHWnd(0),
-		mStyle(0), mWindowedStyle(0), mWindowedStyleEx(0), mDevice(nullptr), mIsExternal(false), mDisplayFrequency(0), mDeviceValid(false)
+		mStyle(0), mWindowedStyle(0), mWindowedStyleEx(0), mDevice(nullptr), mIsExternal(false), mDisplayFrequency(0), mDeviceValid(false), mShowOnSwap(false)
 	{ }
 
 	D3D9RenderWindowCore::~D3D9RenderWindowCore()
@@ -46,6 +46,7 @@ namespace BansheeEngine
 		RenderWindowCore::initialize();
 
 		HINSTANCE hInst = mInstance;
+		D3D9RenderWindowProperties& props = mProperties;
 
 		mMultisampleType = D3DMULTISAMPLE_NONE;
 		mMultisampleQuality = 0;
@@ -65,7 +66,13 @@ namespace BansheeEngine
 
 		mIsChild = parentHWnd != 0;
 
-		mWindowedStyle = WS_VISIBLE | WS_CLIPCHILDREN;
+		mWindowedStyle = WS_CLIPCHILDREN;
+		mShowOnSwap = mDesc.hideUntilSwap;
+		props.mHidden = mDesc.hideUntilSwap;
+
+		if (!mShowOnSwap)
+			mWindowedStyle |= WS_VISIBLE;
+
 		mWindowedStyleEx = 0;
 
 		if (!mDesc.fullscreen || mIsChild)
@@ -90,7 +97,6 @@ namespace BansheeEngine
 			}
 		}
 
-		D3D9RenderWindowProperties& props = mProperties;
 		if (!externalHandle)
 		{
 			MONITORINFO monitorInfo;
@@ -363,6 +369,8 @@ namespace BansheeEngine
 		D3D9RenderWindowProperties& props = mProperties;
 
 		props.mHidden = hidden;
+		mShowOnSwap = false;
+
 		if (!mIsExternal)
 		{
 			if (hidden)
@@ -496,6 +504,9 @@ namespace BansheeEngine
 	void D3D9RenderWindowCore::swapBuffers()
 	{
 		THROW_IF_NOT_CORE_THREAD;
+
+		if (mShowOnSwap)
+			setHidden(false);
 
 		if (mDeviceValid)
 			mDevice->present(this);		

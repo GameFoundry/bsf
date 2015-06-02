@@ -27,7 +27,7 @@ namespace BansheeEngine
 		: vsync(false), vsyncInterval(1), fullscreen(false), hidden(false), depthBuffer(true)
 			, multisampleCount(0), multisampleHint(""), gamma(false), left(-1), top(-1)
 			, title(""), border(WindowBorder::Normal), outerDimensions(false), enableDoubleClick(true)
-			, toolWindow(false), modal(false)
+			, toolWindow(false), modal(false), hideUntilSwap(false)
 		{ }
 
 		VideoMode videoMode; /**< A set of frame buffer options. */
@@ -47,6 +47,7 @@ namespace BansheeEngine
 		bool enableDoubleClick; /**< Does window accept double-clicks. */
 		bool toolWindow; /**< Tool windows have a different style than normal windows and can be created with no border or title bar. */
 		bool modal; /**< When a modal window is open all other windows will be locked until modal window is closed. */
+		bool hideUntilSwap; /** < Window will be created as hidden and only be shown when the first framebuffer swap happens. */
 
 		NameValuePairList platformSpecific; /**< Platform-specific creation options. */
 	};

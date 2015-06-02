@@ -187,6 +187,7 @@ namespace BansheeEngine
 		bool mIsDepthBuffered;
 		bool mIsChild;
 		HWND mHWnd;
+		bool mShowOnSwap;
 
 		D3D9RenderWindowProperties mProperties;
 		D3D9RenderWindowProperties mSyncedProperties;

@@ -57,6 +57,7 @@ namespace BansheeEngine
 		renderWindowDesc.title = "BansheeEditor";
 		renderWindowDesc.fullscreen = false;
 		renderWindowDesc.border = WindowBorder::None;
+		renderWindowDesc.hideUntilSwap = true;
 
 		return renderWindowDesc;
 	}

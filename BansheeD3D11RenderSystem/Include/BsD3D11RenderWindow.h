@@ -171,6 +171,7 @@ namespace BansheeEngine
 		bool mIsExternal;
 		bool mSizing;
 		bool mIsChild;
+		bool mShowOnSwap;
 
 		DXGI_SAMPLE_DESC mMultisampleType;
 		UINT32 mRefreshRateNumerator;

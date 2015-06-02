@@ -152,6 +152,7 @@ namespace BansheeEngine
 		char* mDeviceName;
 		bool mIsExternalGLControl;
 		int mDisplayFrequency;
+		bool mShowOnSwap;
 		HWND mHWnd;
 		SPtr<Win32Context> mContext;
 		Win32RenderWindowProperties mProperties;

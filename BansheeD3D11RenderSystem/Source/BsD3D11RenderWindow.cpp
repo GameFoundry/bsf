@@ -23,7 +23,7 @@ namespace BansheeEngine
 	D3D11RenderWindowCore::D3D11RenderWindowCore(const RENDER_WINDOW_DESC& desc, UINT32 windowId, D3D11Device& device, IDXGIFactory* DXGIFactory)
 		: RenderWindowCore(desc, windowId), mProperties(desc), mSyncedProperties(desc), mDevice(device), mDXGIFactory(DXGIFactory), mIsExternal(false), 
 		mSizing(false), mRenderTargetView(nullptr), mBackBuffer(nullptr), mSwapChain(nullptr), mDepthStencilView(nullptr), mIsChild(false), 
-		 mRefreshRateNumerator(0), mRefreshRateDenominator(0), mHWnd(0)
+		mRefreshRateNumerator(0), mRefreshRateDenominator(0), mHWnd(0), mShowOnSwap(false)
 	{ }
 
 	D3D11RenderWindowCore::~D3D11RenderWindowCore()
@@ -109,7 +109,14 @@ namespace BansheeEngine
 
 		if (!externalHandle)
 		{
-			DWORD dwStyle = (props.isHidden() ? 0 : WS_VISIBLE) | WS_CLIPCHILDREN;
+			DWORD dwStyle = WS_CLIPCHILDREN;
+
+			mShowOnSwap = mDesc.hideUntilSwap;
+			props.mHidden = mDesc.hideUntilSwap;
+
+			if (!mShowOnSwap)
+				dwStyle |= WS_VISIBLE;
+
 			DWORD dwStyleEx = 0;
 			RECT rc;
 			MONITORINFO monitorInfo;
@@ -281,6 +288,9 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
+		if (mShowOnSwap)
+			setHidden(false);
+
 		if(mDevice.getD3D11Device() != nullptr)
 		{
 			HRESULT hr = mSwapChain->Present(getProperties().getVSync() ? getProperties().getVSyncInterval() : 0, 0);
@@ -371,6 +381,8 @@ namespace BansheeEngine
 		D3D11RenderWindowProperties& props = mProperties;
 
 		props.mHidden = hidden;
+		mShowOnSwap = false;
+
 		if (!mIsExternal)
 		{
 			if (hidden)
