@@ -1,6 +1,7 @@
 #include "BsDragAndDropManager.h"
 #include "BsPlatform.h"
 #include "BsCoreApplication.h"
+#include <BsTime.h>
 
 using namespace std::placeholders;
 
@@ -47,9 +48,11 @@ namespace BansheeEngine
 
 		// This generally happens when window loses focus and capture is lost (e.g. alt+tab)
 		int captureActive = mCaptureActive.load();
-		if(!captureActive && mCaptureChanged.load())
+		if (!captureActive && mCaptureChanged.load() && 
+			(gTime().getFrameNumber() > mCaptureChangeFrame.load())) // Wait one frame to insure input (like mouse up) gets a chance to be processed
 		{
 			endDrag(false);
+			mCaptureChanged.store(false);
 		}
 	}
 
@@ -68,6 +71,7 @@ namespace BansheeEngine
 	{
 		mCaptureActive.fetch_xor(1); // mCaptureActive = !mCaptureActive;
 		mCaptureChanged.store(true);
+		mCaptureChangeFrame.store(gTime().getFrameNumber());
 	}
 
 	void DragAndDropManager::cursorReleased(const PointerEvent& event)

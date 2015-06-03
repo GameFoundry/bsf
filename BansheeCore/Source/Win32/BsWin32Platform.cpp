@@ -1083,12 +1083,15 @@ namespace BansheeEngine
 				break;
 			}
 		case WM_BS_SETCAPTURE:
+			LOGWRN("SET CAPTURE");
 			SetCapture(hWnd);
 			break;
 		case WM_BS_RELEASECAPTURE:
+			LOGWRN("RELEASE CAPTURE");
 			ReleaseCapture();
 			break;
 		case WM_CAPTURECHANGED:
+			LOGWRN("CAPTURE CHANGED");
 			if(!onMouseCaptureChanged.empty())
 				onMouseCaptureChanged();
 			return 0;

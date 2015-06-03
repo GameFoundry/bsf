@@ -26,9 +26,6 @@ return them in checkForModifications?
 Project window
 
 Dropping doesn't work. endDrag in DragAndDropManager gets called before cursorReleased()
-Destroying Renderable objects doesn't seem to properly clear them from the renderer
-Add mesh scale to FBX importer (and default it to 0.01 or whatever makes the dragon look normal sized)
-There's still an issue with dragging a selection area in the scroll box
 
 Later:
  - Hook up ping effect so it triggers when I select a resource or sceneobject

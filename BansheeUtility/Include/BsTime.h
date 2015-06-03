@@ -8,7 +8,7 @@ namespace BansheeEngine
 	/**
 	 * @brief	Manages all time related functionality.
 	 * 			
-	 * @note	Sim thread only 
+	 * @note	Sim thread only unless where specified otherwise.
 	 */
 	class BS_UTILITY_EXPORT Time : public Module<Time>
 	{
@@ -44,8 +44,10 @@ namespace BansheeEngine
 		 * @brief	Returns the number of the current frame. First frame is 0.
 		 *
 		 * @return	The current frame.
+		 *
+		 * @note	Thread safe, but only counts sim thread frames.
 		 */
-		unsigned long getFrameNumber() const { return mCurrentFrame; }
+		unsigned long getFrameNumber() const { return mCurrentFrame.load(); }
 
 		/**
 		 * @brief	Returns the precise time since application start, in microseconds.
@@ -84,7 +86,7 @@ namespace BansheeEngine
 
 		UINT64 mAppStartTime; /**< Time the application started, in microseconds */
 		unsigned long mLastFrameTime; /**< Time since last runOneFrame call, In microseconds */
-		unsigned long mCurrentFrame;
+		std::atomic<unsigned long> mCurrentFrame;
 
 		Timer* mTimer;
 	};
