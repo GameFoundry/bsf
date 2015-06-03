@@ -82,6 +82,16 @@ namespace BansheeEngine
 		 */
 		bool getImportAnimation() const { return mImportAnimation; }
 
+		/**
+		 * @brief	Sets a value that will uniformly scale the imported mesh by the specified value.
+		 */
+		void setImportScale(float import) { mImportScale = import; }
+
+		/**
+		 * @brief	Retrieves a value that will uniformly scale the imported mesh by the specified value.
+		 */
+		float getImportScale() const { return mImportScale; }
+
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/
 		/************************************************************************/
@@ -97,5 +107,6 @@ namespace BansheeEngine
 		bool mImportBlendShapes;
 		bool mImportSkin;
 		bool mImportAnimation;
+		float mImportScale;
 	};
 }

@@ -90,6 +90,11 @@ namespace BansheeEngine
 		return true; // FBX files can be plain-text so I don't even check for magic number
 	}
 
+	ImportOptionsPtr FBXImporter::createImportOptions() const
+	{
+		return bs_shared_ptr<MeshImportOptions, PoolAlloc>();
+	}
+
 	ResourcePtr FBXImporter::import(const Path& filePath, ConstImportOptionsPtr importOptions)
 	{
 		FbxScene* fbxScene = nullptr;
@@ -107,13 +112,14 @@ namespace BansheeEngine
 		fbxImportOptions.importAnimation = meshImportOptions->getImportAnimation();
 		fbxImportOptions.importBlendShapes = meshImportOptions->getImportBlendShapes();
 		fbxImportOptions.importSkin = meshImportOptions->getImportSkin();
+		fbxImportOptions.importScale = meshImportOptions->getImportScale();
 
 		FBXImportScene importedScene;
 		parseScene(fbxScene, fbxImportOptions, importedScene);
 		splitMeshVertices(importedScene);
 		
 		Vector<SubMesh> subMeshes;
-		MeshDataPtr meshData = generateMeshData(importedScene, subMeshes);
+		MeshDataPtr meshData = generateMeshData(importedScene, fbxImportOptions, subMeshes);
 
 		// TODO - Later: Optimize mesh: Remove bad and degenerate polygons, optimize for vertex cache
 
@@ -314,8 +320,10 @@ namespace BansheeEngine
 		scene.meshes = splitMeshes;
 	}
 
-	MeshDataPtr FBXImporter::generateMeshData(const FBXImportScene& scene, Vector<SubMesh>& outputSubMeshes)
+	MeshDataPtr FBXImporter::generateMeshData(const FBXImportScene& scene, const FBXImportOptions& options, Vector<SubMesh>& outputSubMeshes)
 	{
+		Matrix4 importScale = Matrix4::scaling(options.importScale);
+
 		Vector<MeshDataPtr> allMeshData;
 		Vector<Vector<SubMesh>> allSubMeshes;
 
@@ -380,7 +388,7 @@ namespace BansheeEngine
 			UINT32 numIndices = (UINT32)mesh->indices.size();
 			for (auto& node : mesh->referencedBy)
 			{
-				Matrix4 worldTransform = node->worldTransform;
+				Matrix4 worldTransform = node->worldTransform * importScale;
 				Matrix4 worldTransformIT = worldTransform.transpose();
 				worldTransformIT = worldTransformIT.inverse();
 

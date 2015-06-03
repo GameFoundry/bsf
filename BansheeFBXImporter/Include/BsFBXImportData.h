@@ -19,6 +19,7 @@ namespace BansheeEngine
 		bool importBlendShapes = true;
 		bool importNormals = true;
 		bool importTangents = true;
+		float importScale = 0.01f;
 	};
 
 	/**

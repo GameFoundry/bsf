@@ -27,6 +27,9 @@ namespace BansheeEngine
 		bool& getImportAnimation(MeshImportOptions* obj) { return obj->mImportAnimation; }
 		void setImportAnimation(MeshImportOptions* obj, bool& value) { obj->mImportAnimation = value; }
 
+		float& getImportScale(MeshImportOptions* obj) { return obj->mImportScale; }
+		void setImportScale(MeshImportOptions* obj, float& value) { obj->mImportScale = value; }
+
 	public:
 		MeshImportOptionsRTTI()
 		{
@@ -36,6 +39,7 @@ namespace BansheeEngine
 			addPlainField("mImportBlendShapes", 3, &MeshImportOptionsRTTI::getImportBlendShapes, &MeshImportOptionsRTTI::setImportBlendShapes);
 			addPlainField("mImportSkin", 4, &MeshImportOptionsRTTI::getImportSkin, &MeshImportOptionsRTTI::setImportSkin);
 			addPlainField("mImportAnimation", 5, &MeshImportOptionsRTTI::getImportAnimation, &MeshImportOptionsRTTI::setImportAnimation);
+			addPlainField("mImportScale", 6, &MeshImportOptionsRTTI::getImportScale, &MeshImportOptionsRTTI::setImportScale);
 		}
 
 		virtual const String& getRTTIName()

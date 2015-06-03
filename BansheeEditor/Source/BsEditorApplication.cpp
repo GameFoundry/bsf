@@ -220,7 +220,6 @@ namespace BansheeEngine
 
 		HSceneObject clone = testModelGO->clone();
 		GameObjectHandle<DbgTestGameObjectRef> clonedDbgTestGameObjectRef = clone->getComponent<DbgTestGameObjectRef>();
-		clone->setScale(Vector3::ONE * 0.01f);
 
 		testModelGO->destroy();
 

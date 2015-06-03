@@ -22,17 +22,22 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	SpecificImporter::isExtensionSupported
 		 */
-		virtual bool isExtensionSupported(const WString& ext) const;
+		virtual bool isExtensionSupported(const WString& ext) const override;
 
 		/**
 		 * @copydoc	SpecificImporter::isMagicNumberSupported
 		 */
-		virtual bool isMagicNumberSupported(const UINT8* magicNumPtr, UINT32 numBytes) const; 
+		virtual bool isMagicNumberSupported(const UINT8* magicNumPtr, UINT32 numBytes) const override;
 
 		/**
 		 * @copydoc	SpecificImporter::import
 		 */
-		virtual ResourcePtr import(const Path& filePath, ConstImportOptionsPtr importOptions);
+		virtual ResourcePtr import(const Path& filePath, ConstImportOptionsPtr importOptions) override;
+
+		/**
+		 * @copydoc	SpecificImporter::createImportOptions
+		 */
+		ImportOptionsPtr createImportOptions() const override;
 	private:
 		/**
 		 * @brief	Starts up FBX SDK. Must be called before any other operations.
@@ -78,7 +83,7 @@ namespace BansheeEngine
 		 * @brief	Converts the mesh data from the imported FBX scene into mesh data that can be used
 		 *			for initializing a mesh.
 		 */
-		MeshDataPtr generateMeshData(const FBXImportScene& scene, Vector<SubMesh>& subMeshes);
+		MeshDataPtr generateMeshData(const FBXImportScene& scene, const FBXImportOptions& options, Vector<SubMesh>& subMeshes);
 
 		/**
 		 * @brief	Creates an internal representation of an FBX node from an FbxNode object.
