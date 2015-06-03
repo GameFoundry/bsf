@@ -24,7 +24,7 @@ namespace BansheeEditor
 
         internal void SetVisible(bool visible)
         {
-            GUI.SetVisible(visible);
+            GUI.Visible = visible;
         }
 
         internal void Destroy()

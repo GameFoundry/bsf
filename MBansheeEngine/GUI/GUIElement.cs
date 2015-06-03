@@ -19,6 +19,11 @@ namespace BansheeEngine
             get { return Internal_GetVisualBounds(mCachedPtr); }
         }
 
+        public bool Visible
+        {
+            set { Internal_SetVisible(mCachedPtr, value); }
+        }
+
         private void InternalOnFocusChanged(bool focus)
         {
             if (OnFocusChanged != null)
@@ -28,11 +33,6 @@ namespace BansheeEngine
         public virtual void Destroy()
         {
             Internal_Destroy(mCachedPtr);
-        }
-
-        public void SetVisible(bool visible)
-        {
-            Internal_SetVisible(mCachedPtr, visible);
         }
 
         public void SetPosition(int x, int y)

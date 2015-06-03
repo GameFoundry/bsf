@@ -5,6 +5,10 @@ namespace BansheeEngine
 {
     public sealed class GUITextBox : GUIElement
     {
+        public delegate void OnChangedDelegate(string newValue);
+
+        public event OnChangedDelegate OnChanged;
+
         public GUITextBox(bool multiline, string style, params GUIOption[] options)
         {
             Internal_CreateInstance(this, multiline, style, options);
@@ -34,6 +38,12 @@ namespace BansheeEngine
         public void SetTint(Color color)
         {
             Internal_SetTint(mCachedPtr, color);
+        }
+
+        private void DoOnChanged(string newValue)
+        {
+            if (OnChanged != null)
+                OnChanged(newValue);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

@@ -34,5 +34,11 @@ namespace BansheeEngine
 
             return path.Remove(path.Length - tail.Length);
         }
+
+        public static bool IsValidFileName(string name)
+        {
+            return !string.IsNullOrWhiteSpace(name) &&
+                   name.IndexOfAny(Path.GetInvalidFileNameChars()) < 0;
+        }
     }
 }

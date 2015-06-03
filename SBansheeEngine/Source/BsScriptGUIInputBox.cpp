@@ -1,21 +1,18 @@
 #include "BsScriptGUIInputBox.h"
 #include "BsScriptMeta.h"
-#include "BsMonoField.h"
+#include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
-#include "BsSpriteTexture.h"
 #include "BsMonoUtil.h"
-#include "BsGUILayout.h"
 #include "BsGUIInputBox.h"
 #include "BsGUIOptions.h"
-#include "BsScriptSpriteTexture.h"
-#include "BsScriptGUIElementStyle.h"
-#include "BsScriptGUILayout.h"
-#include "BsScriptHString.h"
-#include "BsScriptGUIContent.h"
+
+using namespace std::placeholders;
 
 namespace BansheeEngine
 {
+	ScriptGUIInputBox::OnChangedThunkDef ScriptGUIInputBox::onChangedThunk;
+
 	ScriptGUIInputBox::ScriptGUIInputBox(MonoObject* instance, GUIInputBox* inputBox)
 		:TScriptGUIElement(instance, inputBox)
 	{
@@ -28,6 +25,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetText", &ScriptGUIInputBox::internal_getText);
 		metaData.scriptClass->addInternalCall("Internal_SetText", &ScriptGUIInputBox::internal_setText);
 		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIInputBox::internal_setTint);
+
+		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("DoOnChanged", 1)->getThunk();
 	}
 
 	void ScriptGUIInputBox::internal_createInstance(MonoObject* instance, bool multiline, MonoString* style, MonoArray* guiOptions)
@@ -39,6 +38,8 @@ namespace BansheeEngine
 			options.addOption(mono_array_get(guiOptions, GUIOption, i));
 
 		GUIInputBox* guiInputBox = GUIInputBox::create(multiline, options, toString(MonoUtil::monoToWString(style)));
+		guiInputBox->onValueChanged.connect(std::bind(&ScriptGUIInputBox::onChanged, instance, _1));
+
 
 		ScriptGUIInputBox* nativeInstance = new (bs_alloc<ScriptGUIInputBox>()) ScriptGUIInputBox(instance, guiInputBox);
 	}
@@ -59,5 +60,15 @@ namespace BansheeEngine
 	{
 		GUIInputBox* inputBox = (GUIInputBox*)nativeInstance->getGUIElement();
 		inputBox->setTint(color);
+	}
+
+	void ScriptGUIInputBox::onChanged(MonoObject* instance, const WString& newValue)
+	{
+		MonoString* monoValue = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), newValue);
+
+		MonoException* exception = nullptr;
+		onChangedThunk(instance, monoValue, &exception);
+
+		MonoUtil::throwIfException(exception);
 	}
 }

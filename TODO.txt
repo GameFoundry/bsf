@@ -25,8 +25,6 @@ return them in checkForModifications?
 ----------------------------------------------------------------------
 Project window
 
-Dropping doesn't work. endDrag in DragAndDropManager gets called before cursorReleased()
-
 Later:
  - Hook up ping effect so it triggers when I select a resource or sceneobject
   - Add ping to SceneTreeView

@@ -18,6 +18,11 @@ namespace BansheeEngine
 		static void internal_getText(ScriptGUIInputBox* nativeInstance, MonoString** text);
 		static void internal_setTint(ScriptGUIInputBox* nativeInstance, Color color);
 
+		static void onChanged(MonoObject* instance, const WString& newValue);
+
+		typedef void(__stdcall *OnChangedThunkDef) (MonoObject*, MonoString*, MonoException**);
+		static OnChangedThunkDef onChangedThunk;
+
 		ScriptGUIInputBox(MonoObject* instance, GUIInputBox* inputBox);
 	};
 }

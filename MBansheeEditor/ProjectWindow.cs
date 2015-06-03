@@ -97,6 +97,7 @@ namespace BansheeEditor
             private GUITexture underlay;
             private ContentInfo info;
             private UnderlayState underlayState;
+            private GUITextBox renameTextBox;
 
             public ElementEntry(ContentInfo info, GUILayout parent, LibraryEntry entry, int index)
             {
@@ -219,6 +220,37 @@ namespace BansheeEditor
                 underlayState = UnderlayState.Hovered;
             }
 
+            public void StartRename()
+            {
+                if (renameTextBox != null)
+                    return;
+
+                renameTextBox = new GUITextBox(false);
+                renameTextBox.Bounds = label.Bounds;
+                info.overlay.AddElement(renameTextBox);
+
+                label.Visible = false;
+            }
+
+            public void StopRename()
+            {
+                if (renameTextBox != null)
+                {
+                    renameTextBox.Destroy();
+                    renameTextBox = null;
+                }
+
+                label.Visible = true;
+            }
+
+            public string GetRenamedName()
+            {
+                if (renameTextBox != null)
+                    return renameTextBox.Text;
+
+                return "";
+            }
+
             private void ClearUnderlay()
             {
                 if (underlay != null)
@@ -330,6 +362,8 @@ namespace BansheeEditor
         private Vector2I dragSelectionStart;
         private Vector2I dragSelectionEnd;
 
+        private ElementEntry inProgressRenameElement;
+
         // Cut/Copy/Paste
         private List<string> copyPaths = new List<string>();
         private List<string> cutPaths = new List<string>();
@@ -381,10 +415,14 @@ namespace BansheeEditor
             contentLayout.AddFlexibleSpace();
 
             entryContextMenu = new ContextMenu();
+            entryContextMenu.AddItem("Rename", RenameSelection, new ShortcutKey(ButtonModifier.None, ButtonCode.F2));
+            entryContextMenu.AddSeparator("");
             entryContextMenu.AddItem("Cut", CutSelection, new ShortcutKey(ButtonModifier.Ctrl, ButtonCode.X));
             entryContextMenu.AddItem("Copy", CopySelection, new ShortcutKey(ButtonModifier.Ctrl, ButtonCode.C));
             entryContextMenu.AddItem("Duplicate", DuplicateSelection, new ShortcutKey(ButtonModifier.Ctrl, ButtonCode.D));
             entryContextMenu.AddItem("Paste", PasteToSelection, new ShortcutKey(ButtonModifier.Ctrl, ButtonCode.V));
+            entryContextMenu.AddSeparator("");
+            entryContextMenu.AddItem("Delete", DeleteSelection, new ShortcutKey(ButtonModifier.None, ButtonCode.Delete));
 
             Reset();
 
@@ -741,6 +779,7 @@ namespace BansheeEditor
             }
 
             Ping(null);
+            StopRename();
 
             if (selectionPaths != null)
                 Selection.resourcePaths = selectionPaths.ToArray();
@@ -859,63 +898,118 @@ namespace BansheeEditor
 
         private void EditorUpdate()
         {
+            bool isRenameInProgress = inProgressRenameElement != null;
+
             if (HasContentFocus)
             {
-                if (Input.IsButtonHeld(ButtonCode.LeftControl) || Input.IsButtonHeld(ButtonCode.RightControl))
+                if (!isRenameInProgress)
                 {
-                    if (Input.IsButtonUp(ButtonCode.C))
+                    if (Input.IsButtonHeld(ButtonCode.LeftControl) || Input.IsButtonHeld(ButtonCode.RightControl))
                     {
-                        CopySelection();
-                    }
-                    else if (Input.IsButtonUp(ButtonCode.X))
-                    {
-                        CutSelection();
-                    }
-                    else if (Input.IsButtonUp(ButtonCode.D))
-                    {
-                        DuplicateSelection();
-                    }
-                    else if (Input.IsButtonUp(ButtonCode.V))
-                    {
-                        PasteToSelection();
-                    }
-                }
-
-                if (Input.IsButtonDown(ButtonCode.Return))
-                {
-                    if (selectionPaths.Count == 1)
-                    {
-                        LibraryEntry entry = ProjectLibrary.GetEntry(selectionPaths[0]);
-                        if (entry != null && entry.Type == LibraryEntryType.Directory)
+                        if (Input.IsButtonUp(ButtonCode.C))
                         {
-                            EnterDirectory(entry.Path);
+                            CopySelection();
+                        }
+                        else if (Input.IsButtonUp(ButtonCode.X))
+                        {
+                            CutSelection();
+                        }
+                        else if (Input.IsButtonUp(ButtonCode.D))
+                        {
+                            DuplicateSelection();
+                        }
+                        else if (Input.IsButtonUp(ButtonCode.V))
+                        {
+                            PasteToSelection();
                         }
                     }
-                }
-                else if (Input.IsButtonDown(ButtonCode.Back))
-                {
-                    LibraryEntry entry = ProjectLibrary.GetEntry(currentDirectory);
-                    if (entry != null && entry.Parent != null)
+
+                    if (Input.IsButtonDown(ButtonCode.Return))
                     {
-                        EnterDirectory(entry.Parent.Path);
+                        if (selectionPaths.Count == 1)
+                        {
+                            LibraryEntry entry = ProjectLibrary.GetEntry(selectionPaths[0]);
+                            if (entry != null && entry.Type == LibraryEntryType.Directory)
+                            {
+                                EnterDirectory(entry.Path);
+                            }
+                        }
+                    }
+                    else if (Input.IsButtonDown(ButtonCode.Back))
+                    {
+                        LibraryEntry entry = ProjectLibrary.GetEntry(currentDirectory);
+                        if (entry != null && entry.Parent != null)
+                        {
+                            EnterDirectory(entry.Parent.Path);
+                        }
+                    }
+                    else if (Input.IsButtonDown(ButtonCode.Up))
+                    {
+                        MoveSelection(MoveDirection.Up);
+                    }
+                    else if (Input.IsButtonDown(ButtonCode.Down))
+                    {
+                        MoveSelection(MoveDirection.Down);
+                    }
+                    else if (Input.IsButtonDown(ButtonCode.Left))
+                    {
+                        MoveSelection(MoveDirection.Left);
+                    }
+                    else if (Input.IsButtonDown(ButtonCode.Right))
+                    {
+                        MoveSelection(MoveDirection.Right);
+                    }
+                    else if (Input.IsButtonDown(ButtonCode.F2))
+                    {
+                        RenameSelection();
+                    }
+                    else if (Input.IsButtonDown(ButtonCode.Delete))
+                    {
+                        DeleteSelection();
                     }
                 }
-                else if (Input.IsButtonDown(ButtonCode.Up))
+                else
                 {
-                    MoveSelection(MoveDirection.Up);
+                    if (Input.IsButtonDown(ButtonCode.Return))
+                    {
+                        string newName = inProgressRenameElement.GetRenamedName();
+
+                        string originalPath = inProgressRenameElement.path;
+                            string newPath = Path.GetDirectoryName(originalPath);
+                            newPath = Path.Combine(newPath, newName + Path.GetExtension(originalPath));
+
+                        bool renameOK = true;
+                        if (!PathEx.IsValidFileName(newName))
+                        {
+                            DialogBox.Open("Error", "The name you specified is not a valid file name. Try another.", DialogBox.Type.OK);
+                            renameOK = false;
+                        }
+
+                        if (renameOK)
+                        {
+                            if (ProjectLibrary.Exists(newPath))
+                            {
+                                DialogBox.Open("Error", "File/folder with that name already exists in this folder.", DialogBox.Type.OK);
+                                renameOK = false;
+                            }
+                        }
+
+                        if (renameOK)
+                        {
+                            ProjectLibrary.Rename(originalPath, newPath);
+                            StopRename();
+                        }
+                    }
+                    else if (Input.IsButtonDown(ButtonCode.Escape))
+                    {
+                        StopRename();
+                    }
                 }
-                else if (Input.IsButtonDown(ButtonCode.Down))
-                {
-                    MoveSelection(MoveDirection.Down);
-                }
-                else if (Input.IsButtonDown(ButtonCode.Left))
-                {
-                    MoveSelection(MoveDirection.Left);
-                }
-                else if (Input.IsButtonDown(ButtonCode.Right))
-                {
-                    MoveSelection(MoveDirection.Right);
-                }
+            }
+            else
+            {
+                if(isRenameInProgress)
+                    StopRename();
             }
 
             if (autoScrollAmount != 0)
@@ -991,6 +1085,8 @@ namespace BansheeEditor
 
             entries.Clear();
             entryLookup.Clear();
+            inProgressRenameElement = null;
+
             scrollAreaPanel = contentScrollArea.Layout.AddPanel();
 
             RefreshDirectoryBar();
@@ -1374,6 +1470,56 @@ namespace BansheeEditor
                 Paste(selectedDirectory.Path);
             else
                 Paste(currentDirectory);
+        }
+
+        private void RenameSelection()
+        {
+            if (selectionPaths.Count == 0)
+                return;
+
+            if (selectionPaths.Count > 1)
+            {
+                DeselectAll();
+                Select(selectionPaths[0]);
+            }
+
+            ElementEntry entry;
+            if (entryLookup.TryGetValue(pingPath, out entry))
+            {
+                entry.StartRename();
+                inProgressRenameElement = entry;
+            }
+        }
+
+        private void StopRename()
+        {
+            if (inProgressRenameElement != null)
+            {
+                inProgressRenameElement.StopRename();
+                inProgressRenameElement = null;
+            }
+        }
+
+        private void DeleteSelection()
+        {
+            if (selectionPaths.Count == 0)
+                return;
+
+            DialogBox.Open("Confirm deletion", "Are you sure you want to delete the selected object(s)?",
+                DialogBox.Type.YesNo,
+                type =>
+                {
+                    if (type == DialogBox.ResultType.Yes)
+                    {
+                        foreach (var path in selectionPaths)
+                        {
+                            ProjectLibrary.Delete(path);
+                        }
+
+                        DeselectAll();
+                        Refresh();
+                    }
+                });
         }
 
         private void OnSearchChanged(string newValue)
