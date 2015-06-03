@@ -1189,6 +1189,7 @@ namespace BansheeEditor
             Rect2I maxBounds = contentScrollArea.Layout.Bounds;
             maxBounds.x = 0;
             maxBounds.y = 0;
+
             selectionArea.Clip(maxBounds);
 
             return selectionArea;

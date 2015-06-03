@@ -73,8 +73,8 @@ namespace BansheeEngine
 		int newRight = std::min(x + width, clipRect.x + clipRect.width);
 		int newBottom = std::min(y + height, clipRect.y + clipRect.height);
 
-		x = newLeft;
-		y = newTop;
+		x = std::min(newLeft, newRight);
+		y = std::min(newTop, newBottom);
 		width = std::max(0, newRight - newLeft);
 		height = std::max(0, newBottom - newTop);
 	}

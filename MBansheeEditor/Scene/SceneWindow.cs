@@ -168,19 +168,12 @@ namespace BansheeEditor
             bool draggedOver = DragDrop.DragInProgress || DragDrop.DropInProgress;
             draggedOver &= inBounds && DragDrop.Type == DragDropType.Resource;
 
-            if (DragDrop.DropInProgress)
-            {
-                Debug.Log("DROP IN PROGRESS: " + draggedOver + " - " + inBounds + " - " + DragDrop.Type);
-            }
-
             if (draggedOver)
             {
                 if (DragDrop.DropInProgress)
                 {
                     dragActive = false;
                     draggedSO = null;
-
-                    Debug.Log("DROPPED DRAGON");
                 }
                 else
                 {
@@ -219,8 +212,6 @@ namespace BansheeEditor
                             Renderable renderable = draggedSO.AddComponent<Renderable>();
                             renderable.Mesh = mesh;
                             renderable.SetMaterial(material);
-
-                            Debug.Log("CREATED DRAGON");
                         }
                     }
 
@@ -241,8 +232,6 @@ namespace BansheeEditor
 
                     if (draggedSO != null)
                     {
-                        Debug.Log("DESTROYED DRAGON");
-
                         draggedSO.Destroy();
                         draggedSO = null;
                     }

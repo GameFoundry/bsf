@@ -61,8 +61,8 @@ namespace BansheeEngine
 		    int newRight = Math.Min(x + width, clipRect.x + clipRect.width);
 		    int newBottom = Math.Min(y + height, clipRect.y + clipRect.height);
 
-		    x = newLeft;
-		    y = newTop;
+		    x = Math.Min(newLeft, newRight);
+		    y = Math.Min(newTop, newBottom);
 		    width = Math.Max(0, newRight - newLeft);
             height = Math.Max(0, newBottom - newTop);
 	    }
