@@ -22,9 +22,7 @@ namespace BansheeEngine
 	}
 
 	ScriptRenderableHandler::~ScriptRenderableHandler()
-	{
-
-	}
+	{ }
 
 	void ScriptRenderableHandler::initRuntimeData()
 	{
@@ -111,6 +109,12 @@ namespace BansheeEngine
 
 	void ScriptRenderableHandler::internal_OnDestroy(ScriptRenderableHandler* thisPtr)
 	{
-		gSceneManager()._unregisterRenderable(thisPtr->getInternal());
+		thisPtr->destroy();
+	}
+
+	void ScriptRenderableHandler::destroy()
+	{
+		gSceneManager()._unregisterRenderable(mRenderableHandler);
+		mRenderableHandler->destroy();
 	}
 }

@@ -57,48 +57,48 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	Renderer::getName
 		 */
-		virtual const StringID& getName() const;
+		virtual const StringID& getName() const override;
 
 		/**
 		 * @copydoc	Renderer::renderAll
 		 */
-		virtual void renderAll();
+		virtual void renderAll() override;
 
 		/**
 		 * @copydoc	Renderer::_onActivated
 		 */
-		virtual void _onActivated();
+		virtual void _onActivated() override;
 
 		/**
 		 * @copydoc	Renderer::_onDeactivated
 		 */
-		virtual void _onDeactivated();
+		virtual void _onDeactivated() override;
 
 	private:
 		/**
 		 * @copydoc	Renderer::_notifyCameraAdded
 		 */
-		void _notifyCameraAdded(const CameraHandlerCore* camera);
+		void _notifyCameraAdded(const CameraHandlerCore* camera) override;
 
 		/**
 		 * @copydoc	Renderer::_notifyCameraRemoved
 		 */
-		void _notifyCameraRemoved(const CameraHandlerCore* camera);
+		void _notifyCameraRemoved(const CameraHandlerCore* camera) override;
 
 		/**
 		 * @copydoc	Renderer::_notifyRenderableAdded
 		 */
-		void _notifyRenderableAdded(RenderableHandlerCore* renderable);
+		void _notifyRenderableAdded(RenderableHandlerCore* renderable) override;
 
 		/**
 		 * @copydoc	Renderer::_notifyRenderableUpdated
 		 */
-		void _notifyRenderableUpdated(RenderableHandlerCore* renderable);
+		void _notifyRenderableUpdated(RenderableHandlerCore* renderable) override;
 
 		/**
 		 * @copydoc	Renderer::_notifyRenderableRemoved
 		 */
-		void _notifyRenderableRemoved(RenderableHandlerCore* renderable);
+		void _notifyRenderableRemoved(RenderableHandlerCore* renderable) override;
 
 		/**
 		 * @brief	Adds a new set of objects to the cameras render queue.

@@ -27,6 +27,8 @@ namespace BansheeEngine
 		static void internal_SetMaterial(ScriptRenderableHandler* thisPtr, ScriptMaterial* material, int index);
 		static void internal_OnDestroy(ScriptRenderableHandler* thisPtr);
 
+		void destroy();
+
 		SPtr<RenderableHandler> mRenderableHandler;
 		UINT32 mLastUpdateHash;
 	};

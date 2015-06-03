@@ -412,5 +412,6 @@ namespace BansheeEngine
 	void ScriptCameraHandler::internal_OnDestroy(ScriptCameraHandler* instance)
 	{
 		gSceneManager()._unregisterCamera(instance->getInternal());
+		instance->getInternal()->destroy();
 	}
 }
