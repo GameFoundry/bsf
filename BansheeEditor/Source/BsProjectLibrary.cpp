@@ -285,6 +285,8 @@ namespace BansheeEngine
 							else if(child->type == LibraryEntryType::File)
 								deleteResourceInternal(static_cast<ResourceEntry*>(child));
 						}
+
+						toDelete.clear();
 					}
 
 					for(auto& child : currentDir->mChildren)

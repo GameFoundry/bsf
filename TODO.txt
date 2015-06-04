@@ -27,14 +27,11 @@ return them in checkForModifications?
 ----------------------------------------------------------------------
 Project window
 
-Test rename
-
 Later:
  - Hook up ping effect so it triggers when I select a resource or sceneobject
   - Add ping to SceneTreeView
  - Consider delaying search until user stops pressing keys (so not to have thousands of search results in the initial stages)
  - Save & restore scroll position when Refresh happens
- - Center labels and add a couple of pixels border from the selection rectangle (add special style since MultiLineLabel is used by other code)
 
 ----------------------------------------------------------------------
 Resources

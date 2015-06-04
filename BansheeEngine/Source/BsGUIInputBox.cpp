@@ -673,6 +673,9 @@ namespace BansheeEngine
 				UINT32 selStart = gGUIManager().getInputSelectionTool()->getSelectionStart();
 				clearSelection();
 
+				if (!mCaretShown)
+					showCaret();
+
 				if(selStart > 0)
 					gGUIManager().getInputCaretTool()->moveCaretToChar(selStart - 1, CARET_AFTER);
 				else
@@ -706,6 +709,9 @@ namespace BansheeEngine
 				UINT32 selEnd = gGUIManager().getInputSelectionTool()->getSelectionEnd();
 				clearSelection();
 
+				if (!mCaretShown)
+					showCaret();
+
 				if(selEnd > 0)
 					gGUIManager().getInputCaretTool()->moveCaretToChar(selEnd - 1, CARET_AFTER);
 				else
@@ -734,7 +740,11 @@ namespace BansheeEngine
 
 		if(ev.getType() == GUICommandEventType::MoveUp)
 		{
-			clearSelection();
+			if (mSelectionShown)
+				clearSelection();
+
+			if (!mCaretShown)
+				showCaret();
 
 			gGUIManager().getInputCaretTool()->moveCaretUp();
 
@@ -758,7 +768,11 @@ namespace BansheeEngine
 
 		if(ev.getType() == GUICommandEventType::MoveDown)
 		{
-			clearSelection();
+			if (mSelectionShown)
+				clearSelection();
+
+			if (!mCaretShown)
+				showCaret();
 
 			gGUIManager().getInputCaretTool()->moveCaretDown();
 
@@ -1000,6 +1014,9 @@ namespace BansheeEngine
 
 			filterOkay = mFilter(newText);
 		}
+
+		if (!mCaretShown)
+			showCaret();
 
 		if(filterOkay)
 		{

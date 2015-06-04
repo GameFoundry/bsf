@@ -341,18 +341,6 @@ namespace BansheeEngine
 
 		skin->setStyle(GUILabel::getGUITypeName(), labelStyle);
 
-		// Multi-line label
-		GUIElementStyle multiLinelabelStyle;
-		multiLinelabelStyle.font = font;
-		multiLinelabelStyle.fontSize = DefaultFontSize;
-		multiLinelabelStyle.fixedWidth = false;
-		multiLinelabelStyle.fixedHeight = true;
-		multiLinelabelStyle.height = 11;
-		multiLinelabelStyle.minWidth = 10;
-		multiLinelabelStyle.wordWrap = true;
-
-		skin->setStyle("MultiLineLabel", multiLinelabelStyle);
-
 		// Window frame
 		GUIElementStyle windowFrameStyle;
 		windowFrameStyle.normal.texture = getGUITexture(WindowFrameNormal);
@@ -1242,6 +1230,31 @@ namespace BansheeEngine
 		rightAlignedLabelStyle.textHorzAlign = THA_Right;
 
 		skin->setStyle("RightAlignedLabel", rightAlignedLabelStyle);
+
+		// Multi-line label
+		GUIElementStyle multiLinelabelStyle;
+		multiLinelabelStyle.font = font;
+		multiLinelabelStyle.fontSize = DefaultFontSize;
+		multiLinelabelStyle.fixedWidth = false;
+		multiLinelabelStyle.fixedHeight = true;
+		multiLinelabelStyle.height = 11;
+		multiLinelabelStyle.minWidth = 10;
+		multiLinelabelStyle.wordWrap = true;
+
+		skin->setStyle("MultiLineLabel", multiLinelabelStyle);
+
+		// Multi-line centered label
+		GUIElementStyle multiLineCenteredLabelStyle;
+		multiLineCenteredLabelStyle.font = font;
+		multiLineCenteredLabelStyle.fontSize = DefaultFontSize;
+		multiLineCenteredLabelStyle.fixedWidth = false;
+		multiLineCenteredLabelStyle.fixedHeight = true;
+		multiLineCenteredLabelStyle.height = 11;
+		multiLineCenteredLabelStyle.minWidth = 10;
+		multiLineCenteredLabelStyle.wordWrap = true;
+		multiLineCenteredLabelStyle.textHorzAlign = THA_Center;
+
+		skin->setStyle("MultiLineLabelCentered", multiLineCenteredLabelStyle);
 
 		// Selection area
 		GUIElementStyle selectionAreaStyle;

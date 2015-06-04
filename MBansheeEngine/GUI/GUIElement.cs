@@ -24,6 +24,11 @@ namespace BansheeEngine
             set { Internal_SetVisible(mCachedPtr, value); }
         }
 
+        public bool Focus
+        {
+            set { Internal_SetFocus(mCachedPtr, value); }
+        }
+
         private void InternalOnFocusChanged(bool focus)
         {
             if (OnFocusChanged != null)
@@ -76,6 +81,9 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetVisible(IntPtr nativeInstance, bool visible);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetFocus(IntPtr nativeInstance, bool focus);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetPosition(IntPtr nativeInstance, int x, int y);

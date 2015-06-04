@@ -21,6 +21,7 @@ namespace BansheeEditor
                 GUIPanel contentPanel = parentPanel.AddPanel(1);
                 overlay = parentPanel.AddPanel(0);
                 underlay = parentPanel.AddPanel(2);
+                inputOverlay = parentPanel.AddPanel(-1);
 
                 main = contentPanel.AddLayoutY();
 
@@ -71,6 +72,7 @@ namespace BansheeEditor
             public GUILayout main;
             public GUIPanel overlay;
             public GUIPanel underlay;
+            public GUIPanel inputOverlay;
 
             public ProjectWindow window;
             public int tileSize;
@@ -117,7 +119,7 @@ namespace BansheeEditor
 
                 if (info.gridLayout)
                 {
-                    label = new GUILabel(entry.Name, EditorStyles.MultiLineLabel,
+                    label = new GUILabel(entry.Name, EditorStyles.MultiLineLabelCentered,
                         GUIOption.FixedWidth(info.labelWidth), GUIOption.FlexibleHeight(0, MAX_LABEL_HEIGHT));
                 }
                 else
@@ -140,10 +142,10 @@ namespace BansheeEditor
                 bounds = icon.Bounds;
                 Rect2I labelBounds = label.Bounds;
 
-                bounds.x = MathEx.Min(bounds.x, labelBounds.x);
+                bounds.x = MathEx.Min(bounds.x, labelBounds.x - SELECTION_EXTRA_WIDTH);
                 bounds.y = MathEx.Min(bounds.y, labelBounds.y) - 5; // 5 - Just padding for better look
                 bounds.width = MathEx.Max(bounds.x + bounds.width,
-                    labelBounds.x + labelBounds.width) - bounds.x;
+                    labelBounds.x + labelBounds.width) - bounds.x + SELECTION_EXTRA_WIDTH;
                 bounds.height = MathEx.Max(bounds.y + bounds.height,
                     labelBounds.y + labelBounds.height) - bounds.y;
 
@@ -227,10 +229,11 @@ namespace BansheeEditor
 
                 renameTextBox = new GUITextBox(false);
                 renameTextBox.Bounds = label.Bounds;
-                info.overlay.AddElement(renameTextBox);
+                info.inputOverlay.AddElement(renameTextBox);
 
                 string name = Path.GetFileNameWithoutExtension(PathEx.GetTail(path));
                 renameTextBox.Text = name;
+                renameTextBox.Focus = true;
 
                 label.Visible = false;
             }
@@ -318,11 +321,12 @@ namespace BansheeEditor
         private const int GRID_ENTRY_SPACING = 15;
         private const int LIST_ENTRY_SPACING = 7;
         private const int MAX_LABEL_HEIGHT = 50;
-        private const int MIN_HORZ_SPACING = 5;
+        private const int MIN_HORZ_SPACING = 8;
         private const int DRAG_SCROLL_HEIGHT = 20;
         private const int DRAG_SCROLL_AMOUNT_PER_SECOND = 100;
         private const int FOLDER_BUTTON_WIDTH = 20;
         private const int FOLDER_SEPARATOR_WIDTH = 7;
+        private const int SELECTION_EXTRA_WIDTH = 3;
         private static readonly Color PING_COLOR = Color.BansheeOrange;
         private static readonly Color SELECTION_COLOR = Color.DarkCyan;
         private static readonly Color HOVER_COLOR = new Color(Color.DarkCyan.r, Color.DarkCyan.g, Color.DarkCyan.b, 0.5f);
@@ -699,13 +703,10 @@ namespace BansheeEditor
             }
             else
             {
-                if (!selectionPaths.Contains(path))
-                {
-                    SetSelection(new List<string>() {path});
+                SetSelection(new List<string>() {path});
 
-                    selectionAnchorStart = entry.index;
-                    selectionAnchorEnd = entry.index;
-                }
+                selectionAnchorStart = entry.index;
+                selectionAnchorEnd = entry.index;
             }
         }
 

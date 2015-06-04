@@ -77,6 +77,7 @@ namespace BansheeEngine
 	{
 		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIElement::internal_destroy);
 		metaData.scriptClass->addInternalCall("Internal_SetVisible", &ScriptGUIElement::internal_setVisible);
+		metaData.scriptClass->addInternalCall("Internal_SetFocus", &ScriptGUIElement::internal_setFocus);
 		metaData.scriptClass->addInternalCall("Internal_GetBounds", &ScriptGUIElement::internal_getBounds);
 		metaData.scriptClass->addInternalCall("Internal_SetBounds", &ScriptGUIElement::internal_setBounds);
 		metaData.scriptClass->addInternalCall("Internal_GetVisibleBounds", &ScriptGUIElement::internal_getVisibleBounds);
@@ -102,6 +103,16 @@ namespace BansheeEngine
 			nativeInstance->getGUIElement()->enableRecursively();
 		else
 			nativeInstance->getGUIElement()->disableRecursively();
+	}
+
+	void ScriptGUIElement::internal_setFocus(ScriptGUIElementBaseTBase* nativeInstance, bool focus)
+	{
+		GUIElementBase* guiElemBase = nativeInstance->getGUIElement();
+		if (guiElemBase->_getType() == GUIElementBase::Type::Element)
+		{
+			GUIElement* guiElem = static_cast<GUIElement*>(guiElemBase);
+			guiElem->setFocus(focus);
+		}		
 	}
 
 	Rect2I ScriptGUIElement::internal_getBounds(ScriptGUIElementBaseTBase* nativeInstance)
