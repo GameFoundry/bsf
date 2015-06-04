@@ -229,6 +229,9 @@ namespace BansheeEditor
                 renameTextBox.Bounds = label.Bounds;
                 info.overlay.AddElement(renameTextBox);
 
+                string name = Path.GetFileNameWithoutExtension(PathEx.GetTail(path));
+                renameTextBox.Text = name;
+
                 label.Visible = false;
             }
 
@@ -696,9 +699,13 @@ namespace BansheeEditor
             }
             else
             {
-                SetSelection(new List<string>() { path });
-                selectionAnchorStart = entry.index;
-                selectionAnchorEnd = entry.index;
+                if (!selectionPaths.Contains(path))
+                {
+                    SetSelection(new List<string>() {path});
+
+                    selectionAnchorStart = entry.index;
+                    selectionAnchorEnd = entry.index;
+                }
             }
         }
 
@@ -975,8 +982,10 @@ namespace BansheeEditor
                         string newName = inProgressRenameElement.GetRenamedName();
 
                         string originalPath = inProgressRenameElement.path;
-                            string newPath = Path.GetDirectoryName(originalPath);
-                            newPath = Path.Combine(newPath, newName + Path.GetExtension(originalPath));
+                        originalPath = originalPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+
+                        string newPath = Path.GetDirectoryName(originalPath);
+                        newPath = Path.Combine(newPath, newName + Path.GetExtension(originalPath));
 
                         bool renameOK = true;
                         if (!PathEx.IsValidFileName(newName))
@@ -987,7 +996,11 @@ namespace BansheeEditor
 
                         if (renameOK)
                         {
-                            if (ProjectLibrary.Exists(newPath))
+                            // Windows sees paths with dot at the end as if they didn't have it
+                            // so remove the dot to ensure the project library does the same
+                            string trimmedNewPath = newPath.TrimEnd('.');
+
+                            if (originalPath != trimmedNewPath && ProjectLibrary.Exists(trimmedNewPath))
                             {
                                 DialogBox.Open("Error", "File/folder with that name already exists in this folder.", DialogBox.Type.OK);
                                 renameOK = false;
@@ -1484,7 +1497,7 @@ namespace BansheeEditor
             }
 
             ElementEntry entry;
-            if (entryLookup.TryGetValue(pingPath, out entry))
+            if (entryLookup.TryGetValue(selectionPaths[0], out entry))
             {
                 entry.StartRename();
                 inProgressRenameElement = entry;

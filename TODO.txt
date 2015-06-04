@@ -27,14 +27,14 @@ return them in checkForModifications?
 ----------------------------------------------------------------------
 Project window
 
-Test rename & delete
+Test rename
 
 Later:
  - Hook up ping effect so it triggers when I select a resource or sceneobject
   - Add ping to SceneTreeView
  - Consider delaying search until user stops pressing keys (so not to have thousands of search results in the initial stages)
  - Save & restore scroll position when Refresh happens
- - Center labels and add a couple of pixels border from the selection rectangle
+ - Center labels and add a couple of pixels border from the selection rectangle (add special style since MultiLineLabel is used by other code)
 
 ----------------------------------------------------------------------
 Resources
@@ -57,9 +57,6 @@ Resources
 ----------------------------------------------------------------------
 Simple stuff
 
-When cursor moves from input box to title bar it remains an input cursor (assuming this is because the non-client area)
-
-Other simple stuff:
  - Inject an icon into an .exe (Win32 specific)
  - C# wrapper for GUISkin (and a way to assign the current skin to a window)
  - Move all the code files into subfolders so their hierarchy is similar to VS filters
@@ -117,6 +114,8 @@ Issue happened when I closed the app via the X button (if that's relevant). It d
 
 Create a stack allocatable custom vector implementation and make getResourceDependencies and getCoreDependencies use it.
  - These methods are called often and cause allocations whenever they are.
+
+I shouldn't crash the app when a managed exception happens
 
 ----------------------------------------------------------------------
 Multi-resource saving
