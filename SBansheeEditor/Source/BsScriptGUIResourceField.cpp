@@ -102,12 +102,8 @@ namespace BansheeEngine
 
 	void ScriptGUIResourceField::onChanged(MonoObject* instance, const HResource& newValue)
 	{
-		MonoException* exception = nullptr;
 		MonoObject* managedObj = nativeToManagedResource(newValue);
-
-		onChangedThunk(instance, managedObj, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(onChangedThunk, instance, managedObj);
 	}
 
 	MonoObject* ScriptGUIResourceField::nativeToManagedResource(const HResource& instance)

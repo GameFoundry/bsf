@@ -172,10 +172,8 @@ namespace BansheeEngine
 		if (thisPtr->mIsDestroyed)
 			return;
 
-		MonoException* exception = nullptr;
-		onEnterThunk(thisPtr->getManagedInstance(), x - thisPtr->mParentArea.x, y - thisPtr->mParentArea.y, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(onEnterThunk, thisPtr->getManagedInstance(), 
+			x - thisPtr->mParentArea.x, y - thisPtr->mParentArea.y);
 	}
 
 	void ScriptOSDropTarget::dropTargetDragMove(ScriptOSDropTarget* thisPtr, INT32 x, INT32 y)
@@ -183,10 +181,8 @@ namespace BansheeEngine
 		if (thisPtr->mIsDestroyed)
 			return;
 
-		MonoException* exception = nullptr;
-		onMoveThunk(thisPtr->getManagedInstance(), x - thisPtr->mParentArea.x, y - thisPtr->mParentArea.y, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(onMoveThunk, thisPtr->getManagedInstance(), 
+			x - thisPtr->mParentArea.x, y - thisPtr->mParentArea.y);
 	}
 
 	void ScriptOSDropTarget::dropTargetDragLeave(ScriptOSDropTarget* thisPtr)
@@ -194,10 +190,7 @@ namespace BansheeEngine
 		if (thisPtr->mIsDestroyed)
 			return;
 
-		MonoException* exception = nullptr;
-		onLeaveThunk(thisPtr->getManagedInstance(), &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(onLeaveThunk, thisPtr->getManagedInstance());
 	}
 
 	void ScriptOSDropTarget::dropTargetDragDropped(ScriptOSDropTarget* thisPtr, INT32 x, INT32 y)
@@ -205,10 +198,8 @@ namespace BansheeEngine
 		if (thisPtr->mIsDestroyed)
 			return;
 
-		MonoException* exception = nullptr;
-		onDropThunk(thisPtr->getManagedInstance(), x - thisPtr->mParentArea.x, y - thisPtr->mParentArea.y, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(onDropThunk, thisPtr->getManagedInstance(), 
+			x - thisPtr->mParentArea.x, y - thisPtr->mParentArea.y);
 	}
 
 	void ScriptOSDropTarget::widgetParentChanged(EditorWidgetContainer* parent)

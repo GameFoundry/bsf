@@ -90,6 +90,5 @@ namespace BansheeEngine
 		String mName;
 		MonoClassField* mField;
 		MonoClass* mFieldType;
-		void* mThunk;
 	};
 }

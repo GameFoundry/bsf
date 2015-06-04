@@ -98,9 +98,6 @@ namespace BansheeEngine
 
 	void ScriptGUIIntField::onChanged(MonoObject* instance, INT32 newValue)
 	{
-		MonoException* exception = nullptr;
-		onChangedThunk(instance, newValue, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(onChangedThunk, instance, newValue);
 	}
 }

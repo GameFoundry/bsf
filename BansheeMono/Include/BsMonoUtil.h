@@ -146,5 +146,14 @@ namespace BansheeEngine
 				BS_EXCEPT(InternalErrorException, msg);
 			}
 		}
+
+		template<class T, class... Args>
+		static void invokeThunk(T* thunk, Args... args)
+		{
+			MonoException* exception = nullptr;
+			thunk(std::forward<Args>(args)..., &exception);
+
+			throwIfException(exception);
+		}
 	};
 }

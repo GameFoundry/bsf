@@ -101,33 +101,21 @@ namespace BansheeEngine
 
 	void ScriptGUIToggle::onClick(MonoObject* instance)
 	{
-		MonoException* exception = nullptr;
-		onClickThunk(instance, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(onClickThunk, instance);
 	}
 
 	void ScriptGUIToggle::onHover(MonoObject* instance)
 	{
-		MonoException* exception = nullptr;
-		onHoverThunk(instance, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(onHoverThunk, instance);
 	}
 
 	void ScriptGUIToggle::onOut(MonoObject* instance)
 	{
-		MonoException* exception = nullptr;
-		onOutThunk(instance, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(onOutThunk, instance);
 	}
 
 	void ScriptGUIToggle::onToggled(MonoObject* instance, bool toggled)
 	{
-		MonoException* exception = nullptr;
-		onToggledThunk(instance, toggled, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(onToggledThunk, instance, toggled);
 	}
 }

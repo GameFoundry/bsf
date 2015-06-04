@@ -84,9 +84,6 @@ namespace BansheeEngine
 
 	void ScriptGUIToggleField::onChanged(MonoObject* instance, bool newValue)
 	{
-		MonoException* exception = nullptr;
-		onChangedThunk(instance, newValue, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(onChangedThunk, instance, newValue);
 	}
 }

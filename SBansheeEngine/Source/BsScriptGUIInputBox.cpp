@@ -65,10 +65,6 @@ namespace BansheeEngine
 	void ScriptGUIInputBox::onChanged(MonoObject* instance, const WString& newValue)
 	{
 		MonoString* monoValue = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), newValue);
-
-		MonoException* exception = nullptr;
-		onChangedThunk(instance, monoValue, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(onChangedThunk, instance, monoValue);
 	}
 }

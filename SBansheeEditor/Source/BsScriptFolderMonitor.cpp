@@ -70,31 +70,19 @@ namespace BansheeEngine
 	void ScriptFolderMonitor::onMonitorFileModified(const Path& path)
 	{
 		MonoString* monoPath = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), path.toWString());
-
-		MonoException* exception = nullptr;
-		OnModifiedThunk(getManagedInstance(), monoPath, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(OnModifiedThunk, getManagedInstance(), monoPath);
 	}
 
 	void ScriptFolderMonitor::onMonitorFileAdded(const Path& path)
 	{
 		MonoString* monoPath = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), path.toWString());
-
-		MonoException* exception = nullptr;
-		OnAddedThunk(getManagedInstance(), monoPath, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(OnAddedThunk, getManagedInstance(), monoPath);
 	}
 
 	void ScriptFolderMonitor::onMonitorFileRemoved(const Path& path)
 	{
 		MonoString* monoPath = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), path.toWString());
-
-		MonoException* exception = nullptr;
-		OnRemovedThunk(getManagedInstance(), monoPath, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(OnRemovedThunk, getManagedInstance(), monoPath);
 	}
 
 	void ScriptFolderMonitor::onMonitorFileRenamed(const Path& from, const Path& to)
@@ -102,10 +90,7 @@ namespace BansheeEngine
 		MonoString* monoPathFrom = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), from.toWString());
 		MonoString* monoPathTo = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), to.toWString());
 
-		MonoException* exception = nullptr;
-		OnRenamedThunk(getManagedInstance(), monoPathFrom, monoPathTo, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(OnRenamedThunk, getManagedInstance(), monoPathFrom, monoPathTo);
 	}
 
 	void ScriptFolderMonitor::update()

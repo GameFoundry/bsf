@@ -103,12 +103,8 @@ namespace BansheeEngine
 
 	void ScriptGUIGameObjectField::onChanged(MonoObject* instance, const HGameObject& newValue)
 	{
-		MonoException* exception = nullptr;
 		MonoObject* managedObj = nativeToManagedGO(newValue);
-
-		onChangedThunk(instance, managedObj, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(onChangedThunk, instance, managedObj);
 	}
 
 	MonoObject* ScriptGUIGameObjectField::nativeToManagedGO(const HGameObject& instance)

@@ -54,29 +54,20 @@ namespace BansheeEngine
 
 	void ScriptVirtualInput::onButtonDown(const VirtualButton& btn, UINT32 deviceIdx)
 	{
-		MonoException* exception = nullptr;
 		MonoObject* virtualButton = ScriptVirtualButton::box(btn);
-		OnButtonDownThunk(virtualButton, deviceIdx, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(OnButtonDownThunk, virtualButton, deviceIdx);
 	}
 
 	void ScriptVirtualInput::onButtonUp(const VirtualButton& btn, UINT32 deviceIdx)
 	{
-		MonoException* exception = nullptr;
 		MonoObject* virtualButton = ScriptVirtualButton::box(btn);
-		OnButtonUpThunk(virtualButton, deviceIdx, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(OnButtonUpThunk, virtualButton, deviceIdx);
 	}
 
 	void ScriptVirtualInput::onButtonHeld(const VirtualButton& btn, UINT32 deviceIdx)
 	{
-		MonoException* exception = nullptr;
 		MonoObject* virtualButton = ScriptVirtualButton::box(btn);
-		OnButtonHeldThunk(virtualButton, deviceIdx, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(OnButtonHeldThunk, virtualButton, deviceIdx);
 	}
 
 	MonoObject* ScriptVirtualInput::internal_getKeyConfig()

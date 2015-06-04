@@ -92,9 +92,6 @@ namespace BansheeEngine
 
 	void ScriptGUIListBox::onSelectionChanged(MonoObject* instance, UINT32 index)
 	{
-		MonoException* exception = nullptr;
-		onSelectionChangedThunk(instance, index, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(onSelectionChangedThunk, instance, index);
 	}
 }

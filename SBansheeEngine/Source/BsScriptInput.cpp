@@ -77,70 +77,53 @@ namespace BansheeEngine
 
 	void ScriptInput::onButtonDown(const ButtonEvent& ev)
 	{
-		MonoException* exception = nullptr;
-		OnButtonPressedThunk(ev.buttonCode, ev.deviceIdx, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(OnButtonPressedThunk, ev.buttonCode, ev.deviceIdx);
 	}
 
 	void ScriptInput::onButtonUp(const ButtonEvent& ev)
 	{
-		MonoException* exception = nullptr;
-		OnButtonReleasedThunk(ev.buttonCode, ev.deviceIdx, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(OnButtonReleasedThunk, ev.buttonCode, ev.deviceIdx);
 	}
 
 	void ScriptInput::onCharInput(const TextInputEvent& ev)
 	{
-		MonoException* exception = nullptr;
-		OnCharInputThunk(ev.textChar, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(OnCharInputThunk, ev.textChar);
 	}
 
 	void ScriptInput::onPointerMoved(const PointerEvent& ev)
 	{
-		MonoException* exception = nullptr;
 		MonoObject* screenPos = ScriptVector2I::box(ev.screenPos);
 		MonoObject* delta = ScriptVector2I::box(ev.delta);
 
-		OnPointerMovedThunk(screenPos, delta, ev.button, ev.shift, ev.control, ev.alt, ev.mouseWheelScrollAmount, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(OnPointerMovedThunk, screenPos, delta, 
+			ev.button, ev.shift, ev.control, ev.alt, ev.mouseWheelScrollAmount);
 	}
 
 	void ScriptInput::onPointerPressed(const PointerEvent& ev)
 	{
-		MonoException* exception = nullptr;
 		MonoObject* screenPos = ScriptVector2I::box(ev.screenPos);
 		MonoObject* delta = ScriptVector2I::box(ev.delta);
 
-		OnPointerPressedThunk(screenPos, delta, ev.button, ev.shift, ev.control, ev.alt, ev.mouseWheelScrollAmount, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(OnPointerPressedThunk, screenPos, delta, 
+			ev.button, ev.shift, ev.control, ev.alt, ev.mouseWheelScrollAmount);
 	}
 
 	void ScriptInput::onPointerReleased(const PointerEvent& ev)
 	{
-		MonoException* exception = nullptr;
 		MonoObject* screenPos = ScriptVector2I::box(ev.screenPos);
 		MonoObject* delta = ScriptVector2I::box(ev.delta);
 
-		OnPointerReleasedThunk(screenPos, delta, ev.button, ev.shift, ev.control, ev.alt, ev.mouseWheelScrollAmount, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(OnPointerReleasedThunk, screenPos, delta, 
+			ev.button, ev.shift, ev.control, ev.alt, ev.mouseWheelScrollAmount);
 	}
 
 	void ScriptInput::onPointerDoubleClick(const PointerEvent& ev)
 	{
-		MonoException* exception = nullptr;
 		MonoObject* screenPos = ScriptVector2I::box(ev.screenPos);
 		MonoObject* delta = ScriptVector2I::box(ev.delta);
 
-		OnPointerDoubleClickThunk(screenPos, delta, ev.button, ev.shift, ev.control, ev.alt, ev.mouseWheelScrollAmount, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(OnPointerDoubleClickThunk, screenPos, delta, 
+			ev.button, ev.shift, ev.control, ev.alt, ev.mouseWheelScrollAmount);
 	}
 
 	bool ScriptInput::internal_isButtonHeld(ButtonCode code, UINT32 deviceIdx)

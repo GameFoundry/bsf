@@ -74,33 +74,21 @@ namespace BansheeEngine
 
 	void ScriptGUIButton::onClick(MonoObject* instance)
 	{
-		MonoException* exception = nullptr;
-		onClickThunk(instance, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(onClickThunk, instance);
 	}
 
 	void ScriptGUIButton::onDoubleClick(MonoObject* instance)
 	{
-		MonoException* exception = nullptr;
-		onDoubleClickThunk(instance, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(onDoubleClickThunk, instance);
 	}
 
 	void ScriptGUIButton::onHover(MonoObject* instance)
 	{
-		MonoException* exception = nullptr;
-		onHoverThunk(instance, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(onHoverThunk, instance);
 	}
 
 	void ScriptGUIButton::onOut(MonoObject* instance)
 	{
-		MonoException* exception = nullptr;
-		onOutThunk(instance, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(onOutThunk, instance);
 	}
 }

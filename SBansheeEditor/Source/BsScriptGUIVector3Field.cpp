@@ -91,9 +91,6 @@ namespace BansheeEngine
 
 	void ScriptGUIVector3Field::onChanged(MonoObject* instance, Vector3 newValue)
 	{
-		MonoException* exception = nullptr;
-		onChangedThunk(instance, newValue, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(onChangedThunk, instance, newValue);
 	}
 }

@@ -31,10 +31,7 @@ namespace BansheeEngine
 
 	void ScriptGUIElementBaseTBase::onFocusChanged(MonoObject* instance, bool focus)
 	{
-		MonoException* exception = nullptr;
-		ScriptGUIElement::onFocusChangedThunk(instance, focus, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(ScriptGUIElement::onFocusChangedThunk, instance, focus);
 	}
 
 	void ScriptGUIElementBaseTBase::_onManagedInstanceDeleted()

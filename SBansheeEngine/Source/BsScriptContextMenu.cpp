@@ -65,9 +65,6 @@ namespace BansheeEngine
 
 	void ScriptContextMenu::onContextMenuItemTriggered(UINT32 idx)
 	{
-		MonoException* exception = nullptr;
-		onEntryTriggered(getManagedInstance(), idx, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(onEntryTriggered, getManagedInstance(), idx);
 	}
 }

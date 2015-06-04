@@ -246,21 +246,13 @@ namespace BansheeEngine
 	void ScriptProjectLibrary::onEntryAdded(const Path& path)
 	{
 		MonoString* pathStr = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), path.toWString());
-
-		MonoException* exception = nullptr;
-		OnEntryAddedThunk(pathStr, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(OnEntryAddedThunk, pathStr);
 	}
 
 	void ScriptProjectLibrary::onEntryRemoved(const Path& path)
 	{
 		MonoString* pathStr = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), path.toWString());
-
-		MonoException* exception = nullptr;
-		OnEntryRemovedThunk(pathStr, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(OnEntryRemovedThunk, pathStr);
 	}
 
 	ScriptLibraryEntryBase::ScriptLibraryEntryBase(MonoObject* instance)

@@ -70,10 +70,7 @@ namespace BansheeEngine
 
 	void ScriptGUISliderH::onChanged(MonoObject* instance, float percent)
 	{
-		MonoException* exception = nullptr;
-		onChangedThunk(instance, percent, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(onChangedThunk, instance, percent);
 	}
 
 	ScriptGUISliderV::OnChangedThunkDef ScriptGUISliderV::onChangedThunk;
@@ -128,9 +125,6 @@ namespace BansheeEngine
 
 	void ScriptGUISliderV::onChanged(MonoObject* instance, float percent)
 	{
-		MonoException* exception = nullptr;
-		onChangedThunk(instance, percent, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(onChangedThunk, instance, percent);
 	}
 }

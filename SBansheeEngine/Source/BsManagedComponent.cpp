@@ -193,13 +193,9 @@ namespace BansheeEngine
 	{
 		if (mUpdateThunk != nullptr && mManagedInstance != nullptr)
 		{
-			MonoException* exception = nullptr;
-
 			// Note: Not calling virtual methods. Can be easily done if needed but for now doing this
 			// for some extra speed.
-			mUpdateThunk(mManagedInstance, &exception); 
-
-			MonoUtil::throwIfException(exception);
+			MonoUtil::invokeThunk(mUpdateThunk, mManagedInstance);
 		}
 	}
 
@@ -207,13 +203,9 @@ namespace BansheeEngine
 	{
 		if (mRequiresReset && mOnResetThunk != nullptr && mManagedInstance != nullptr)
 		{
-			MonoException* exception = nullptr;
-
 			// Note: Not calling virtual methods. Can be easily done if needed but for now doing this
 			// for some extra speed.
-			mOnResetThunk(mManagedInstance, &exception);
-
-			MonoUtil::throwIfException(exception);
+			MonoUtil::invokeThunk(mOnResetThunk, mManagedInstance);
 		}
 
 		mRequiresReset = false;
@@ -243,13 +235,9 @@ namespace BansheeEngine
 
 		if (mOnInitializedThunk != nullptr)
 		{
-			MonoException* exception = nullptr;
-
 			// Note: Not calling virtual methods. Can be easily done if needed but for now doing this
 			// for some extra speed.
-			mOnInitializedThunk(mManagedInstance, &exception);
-
-			MonoUtil::throwIfException(exception);
+			MonoUtil::invokeThunk(mOnInitializedThunk, mManagedInstance);
 		}
 
 		triggerOnReset();
@@ -261,13 +249,9 @@ namespace BansheeEngine
 
 		if (mOnDestroyThunk != nullptr)
 		{
-			MonoException* exception = nullptr;
-
 			// Note: Not calling virtual methods. Can be easily done if needed but for now doing this
 			// for some extra speed.
-			mOnDestroyThunk(mManagedInstance, &exception);
-
-			MonoUtil::throwIfException(exception);
+			MonoUtil::invokeThunk(mOnDestroyThunk, mManagedInstance);
 		}
 
 		if (mManagedInstance != nullptr)

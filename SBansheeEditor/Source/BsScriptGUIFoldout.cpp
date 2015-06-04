@@ -82,9 +82,6 @@ namespace BansheeEngine
 
 	void ScriptGUIFoldout::onToggled(MonoObject* instance, bool expanded)
 	{
-		MonoException* exception = nullptr;
-		onToggledThunk(instance, expanded, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(onToggledThunk, instance, expanded);
 	}
 }

@@ -91,11 +91,7 @@ namespace BansheeEngine
 
 	void ScriptGUITextField::onChanged(MonoObject* instance, const WString& newValue)
 	{
-		MonoException* exception = nullptr;
 		MonoString* monoNewValue = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), newValue);
-
-		onChangedThunk(instance, monoNewValue, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(onChangedThunk, instance, monoNewValue);
 	}
 }

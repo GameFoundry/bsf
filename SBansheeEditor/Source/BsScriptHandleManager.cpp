@@ -238,9 +238,6 @@ namespace BansheeEngine
 
 	void ScriptHandleManager::callDestroy(MonoObject* instance)
 	{
-		MonoException* exception = nullptr;
-		mDestroyThunk(instance, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(mDestroyThunk, instance);
 	}
 }

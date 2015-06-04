@@ -335,13 +335,9 @@ namespace BansheeEngine
 	{
 		if (mOnInitializeThunk != nullptr && mManagedInstance != nullptr)
 		{
-			MonoException* exception = nullptr;
-
 			// Note: Not calling virtual methods. Can be easily done if needed but for now doing this
 			// for some extra speed.
-			mOnInitializeThunk(mManagedInstance, &exception);
-
-			MonoUtil::throwIfException(exception);
+			MonoUtil::invokeThunk(mOnInitializeThunk, mManagedInstance);
 		}
 	}
 
@@ -349,13 +345,9 @@ namespace BansheeEngine
 	{
 		if (mOnDestroyThunk != nullptr && mManagedInstance != nullptr)
 		{
-			MonoException* exception = nullptr;
-
 			// Note: Not calling virtual methods. Can be easily done if needed but for now doing this
 			// for some extra speed.
-			mOnDestroyThunk(mManagedInstance, &exception);
-
-			MonoUtil::throwIfException(exception);
+			MonoUtil::invokeThunk(mOnDestroyThunk, mManagedInstance);
 		}
 	}
 
@@ -363,13 +355,9 @@ namespace BansheeEngine
 	{
 		if (mUpdateThunk != nullptr && mManagedInstance != nullptr)
 		{
-			MonoException* exception = nullptr;
-
 			// Note: Not calling virtual methods. Can be easily done if needed but for now doing this
 			// for some extra speed.
-			mUpdateThunk(mManagedInstance, &exception);
-
-			MonoUtil::throwIfException(exception);
+			MonoUtil::invokeThunk(mUpdateThunk, mManagedInstance);
 		}
 	}
 
