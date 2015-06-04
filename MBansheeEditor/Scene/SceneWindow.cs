@@ -140,7 +140,7 @@ namespace BansheeEditor
             return false;
         }
 
-        private void EditorUpdate()
+        private void OnEditorUpdate()
         {
             // Refresh GUI buttons if needed (in case someones changes the values from script)
             if (editorSettingsHash != EditorSettings.Hash)

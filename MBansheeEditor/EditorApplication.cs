@@ -136,7 +136,7 @@ namespace BansheeEditor
             ProjectLibrary.Refresh(path);
         }
 
-        internal void EditorUpdate()
+        internal void OnEditorUpdate()
         {
             ProjectLibrary.Update();
 

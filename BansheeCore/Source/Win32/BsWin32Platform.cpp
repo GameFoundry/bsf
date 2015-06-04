@@ -978,9 +978,6 @@ namespace BansheeEngine
 					mData->mIsTrackingMouse = true;
 				}
 
-				if(uMsg == WM_NCMOUSEMOVE)
-					return true;
-
 				Vector2I intMousePos;
 				OSPointerButtonStates btnStates;
 				
@@ -1083,15 +1080,12 @@ namespace BansheeEngine
 				break;
 			}
 		case WM_BS_SETCAPTURE:
-			LOGWRN("SET CAPTURE");
 			SetCapture(hWnd);
 			break;
 		case WM_BS_RELEASECAPTURE:
-			LOGWRN("RELEASE CAPTURE");
 			ReleaseCapture();
 			break;
 		case WM_CAPTURECHANGED:
-			LOGWRN("CAPTURE CHANGED");
 			if(!onMouseCaptureChanged.empty())
 				onMouseCaptureChanged();
 			return 0;

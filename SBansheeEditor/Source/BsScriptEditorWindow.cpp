@@ -375,7 +375,7 @@ namespace BansheeEngine
 
 	void ScriptEditorWidget::reloadMonoTypes(MonoClass* windowClass)
 	{
-		MonoMethod* updateMethod = windowClass->getMethod("EditorUpdate", 0);
+		MonoMethod* updateMethod = windowClass->getMethod("OnEditorUpdate", 0);
 
 		if (updateMethod != nullptr)
 			mUpdateThunk = (UpdateThunkDef)updateMethod->getThunk();

@@ -106,7 +106,7 @@ namespace BansheeEngine
 		// TODO - Load Editor script assembly (gEditorApplication.getEditorScriptAssemblyPath())
 
 		mProgramEdClass = mEditorAssembly->getClass("BansheeEditor", "Program");
-		mUpdateMethod = mProgramEdClass->getMethod("EditorUpdate");
+		mUpdateMethod = mProgramEdClass->getMethod("OnEditorUpdate");
 
 		ScriptEditorWindow::clearRegisteredEditorWindow();
 		ScriptEditorWindow::registerManagedEditorWindows();

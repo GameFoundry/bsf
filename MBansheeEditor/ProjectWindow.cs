@@ -896,7 +896,7 @@ namespace BansheeEditor
             return destination + extension;
         }
 
-        private void EditorUpdate()
+        private void OnEditorUpdate()
         {
             bool isRenameInProgress = inProgressRenameElement != null;
 

@@ -35,6 +35,7 @@ namespace BansheeEditor
 
         private GUILabel messageLabel;
         private ResultType result = ResultType.None;
+        private bool constructed;
 
         public ResultType Result
         {
@@ -43,40 +44,39 @@ namespace BansheeEditor
 
         public static DialogBox Open(LocString title, LocString message, Type type, Action<ResultType> resultCallback = null)
         {
-            DialogBox instance = new DialogBox();
-
-            instance.Width = 250;
-            instance.Height = 150;
-
-            instance.Title = title;
-            instance.type = type;
-            instance.resultCallback = resultCallback;
-
-            return instance;
+            return new DialogBox(title, message, type, resultCallback);
         }
 
-        private void Initialize(LocString title, LocString message, Type type, Action<ResultType> resultCallback)
+        protected DialogBox(LocString title, LocString message, Type type, Action<ResultType> resultCallback)
+            : base(false)
         {
-            Width = 250;
-            Height = 150;
+            this.resultCallback = resultCallback;
+            this.type = type;
+
+            constructed = true;
+            SetupGUI();
 
             Title = title;
             messageLabel.SetContent(message);
-            this.resultCallback = resultCallback;
-            this.type = type;
-        }
 
-        protected DialogBox()
-            : base(false)
-        { }
+            Width = 280;
+            Height = messageLabel.Bounds.height + 60;
+        }
 
         private void OnInitialize()
         {
-            messageLabel = new GUILabel("");
+            if (constructed)
+                SetupGUI();
+        }
+
+        private void SetupGUI()
+        {
+            messageLabel = new GUILabel("", EditorStyles.MultiLineLabel,
+                GUIOption.FixedWidth(260), GUIOption.FlexibleHeight(0, 600));
 
             GUILayoutY layoutY = GUI.AddLayoutY();
 
-            layoutY.AddFlexibleSpace();
+            layoutY.AddSpace(10);
             GUILayoutX messageLayout = layoutY.AddLayoutX();
             messageLayout.AddFlexibleSpace();
             messageLayout.AddElement(messageLabel);
@@ -90,12 +90,12 @@ namespace BansheeEditor
             switch (type)
             {
                 case Type.OK:
-                {
-                    GUIButton okBtn = new GUIButton("OK");
-                    okBtn.OnClick += () => ButtonClicked(ResultType.OK);
+                    {
+                        GUIButton okBtn = new GUIButton("OK");
+                        okBtn.OnClick += () => ButtonClicked(ResultType.OK);
 
-                    btnLayout.AddElement(okBtn);
-                }
+                        btnLayout.AddElement(okBtn);
+                    }
                     break;
                 case Type.OKCancel:
                     {
@@ -202,6 +202,8 @@ namespace BansheeEditor
 
             if (resultCallback != null)
                 resultCallback(result);
+
+            Close();
         }
     }
 }

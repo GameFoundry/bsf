@@ -6,6 +6,8 @@ Assembly refresh
 When serializing Camera I cannot save the reference to RenderTexture. Make it a Resource?
 Possibly set up automatic refresh in debug mode after initialization? As an ad-hoc unit test
 
+Modal windows are set up as persistent but I don't serialize their internal data anywhere
+
 ----------------------------------------------------------------------
 C# Material/Shader:
 
@@ -25,14 +27,13 @@ return them in checkForModifications?
 ----------------------------------------------------------------------
 Project window
 
+Test rename & delete
+
 Later:
  - Hook up ping effect so it triggers when I select a resource or sceneobject
   - Add ping to SceneTreeView
  - Consider delaying search until user stops pressing keys (so not to have thousands of search results in the initial stages)
  - Save & restore scroll position when Refresh happens
- - F2 and context menu for renaming assets (or when clicking on a solo selected asset)
-   - Also make sure the names contain only valid path characters
- - Delete with a dialog box to confirm
  - Center labels and add a couple of pixels border from the selection rectangle
 
 ----------------------------------------------------------------------
@@ -56,8 +57,7 @@ Resources
 ----------------------------------------------------------------------
 Simple stuff
 
-C#:
-Dialog.Show(title, text, btn1 text, btn1 callback, btn2 text, btn2 callback, btn3 text, btn3 callback)
+When cursor moves from input box to title bar it remains an input cursor (assuming this is because the non-client area)
 
 Other simple stuff:
  - Inject an icon into an .exe (Win32 specific)

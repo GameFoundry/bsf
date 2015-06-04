@@ -57,7 +57,7 @@ namespace BansheeEditor
             inspectorData.inspector.SetVisible(expanded);
         }
 
-        private void EditorUpdate()
+        private void OnEditorUpdate()
         {
             for (int i = 0; i < inspectorData.Count; i++)
             {

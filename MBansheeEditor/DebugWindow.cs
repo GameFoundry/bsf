@@ -74,7 +74,7 @@ namespace BansheeEditor
             debugSlowDown = true;
         }
 
-        void EditorUpdate()
+        void OnEditorUpdate()
         {
             //if (debugSlowDown)
             //    Thread.Sleep(5000);

@@ -73,9 +73,11 @@ namespace BansheeEngine
 
 		mScheduledForDestruction.clear();
 
+		// Make a copy since other editors might be opened/closed from editor update() methods
+		mEditorWindowsSnapshot = mEditorWindows; 
 		mMainWindow->update();
 
-		for(auto& window : mEditorWindows)
+		for (auto& window : mEditorWindowsSnapshot)
 		{
 			window->update();
 		}

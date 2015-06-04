@@ -31,9 +31,9 @@ namespace BansheeEditor
             //dbgStyle.textColor = newColor;
         }
 
-        static void EditorUpdate()
+        static void OnEditorUpdate()
         {
-            app.EditorUpdate();
+            app.OnEditorUpdate();
         }
     }
 

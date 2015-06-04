@@ -25,5 +25,7 @@ namespace BansheeEngine
 
 		Vector<EditorWindowBase*> mEditorWindows;
 		Vector<EditorWindowBase*> mScheduledForDestruction;
+
+		Vector<EditorWindowBase*> mEditorWindowsSnapshot;
 	};
 }
