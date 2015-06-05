@@ -19,6 +19,7 @@ namespace BansheeEngine
 	void ScriptGUISceneTreeView::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUISceneTreeView::internal_createInstance);
+		metaData.scriptClass->addInternalCall("Internal_Update", &ScriptGUISceneTreeView::internal_update);
 	}
 
 	void ScriptGUISceneTreeView::internal_createInstance(MonoObject* instance, MonoString* style, MonoArray* guiOptions)
@@ -33,5 +34,14 @@ namespace BansheeEngine
 
 		GUISceneTreeView* treeView = GUISceneTreeView::create(options);
 		ScriptGUISceneTreeView* nativeInstance = new (bs_alloc<ScriptGUISceneTreeView>()) ScriptGUISceneTreeView(instance, treeView);
+	}
+
+	void ScriptGUISceneTreeView::internal_update(ScriptGUISceneTreeView* thisPtr)
+	{
+		if (thisPtr->mIsDestroyed)
+			return;
+
+		GUISceneTreeView* treeView = static_cast<GUISceneTreeView*>(thisPtr->getGUIElement());
+		treeView->update();
 	}
 }

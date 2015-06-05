@@ -12,6 +12,7 @@ namespace BansheeEngine
 
 	private:
 		static void internal_createInstance(MonoObject* instance, MonoString* style, MonoArray* guiOptions);
+		static void internal_update(ScriptGUISceneTreeView* thisPtr);
 
 		ScriptGUISceneTreeView(MonoObject* instance, GUISceneTreeView* treeView);
 	};

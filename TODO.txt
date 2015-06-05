@@ -34,7 +34,6 @@ Attempting to dock a window that is not in focus will start drag instead (NC are
 Docking problem: When I dock three windows next to each other, e.g. Hierarchy|Scene|Inspector and then try to dock another
  so it splits space with Hierarchy vertically the dock area appears over both hierarchy and scene, and the when docked it looks wrong
 Decent looking default layout
-Fix shutdown
 Fix DX11 (and possibly DX9) rendering
 Missing Inspector values (name + transform fields)
 Fix handles
