@@ -75,7 +75,6 @@ namespace BansheeEditor
 
         private InspectorWindow inspector;
         private SceneWindow scene;
-        private DebugWindow debug;
 
         private FolderMonitor monitor;
 
@@ -106,7 +105,6 @@ namespace BansheeEditor
             // Open windows
             inspector = EditorWindow.OpenWindow<InspectorWindow>();
             scene = EditorWindow.OpenWindow<SceneWindow>();
-            debug = EditorWindow.OpenWindow<DebugWindow>();
 
             ProjectLibrary.Refresh();
             monitor = new FolderMonitor(ProjectLibrary.ResourceFolder);

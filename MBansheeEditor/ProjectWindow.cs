@@ -381,7 +381,7 @@ namespace BansheeEditor
             set { viewType = value; Refresh(); }
         }
 
-        [MenuItem("Windows/Project", ButtonModifier.Ctrl, ButtonCode.P)]
+        [MenuItem("Windows/Project", ButtonModifier.CtrlAlt, ButtonCode.P)]
         private static void OpenProjectWindow()
         {
             OpenWindow<ProjectWindow>();

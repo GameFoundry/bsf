@@ -73,7 +73,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	Module::onStartUp
 		 */
-		virtual void onStartUp();
+		virtual void onStartUp() override;
+
+		/**
+		 * @copydoc	Module::onShutDown
+		 */
+		virtual void onShutDown() override;
 
 		/**
 		 * @copydoc	CoreApplication::postUpdate.

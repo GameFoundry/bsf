@@ -7,7 +7,7 @@
 
 namespace BansheeEngine
 {
-	class GUITreeView : public GUIElementContainer
+	class BS_ED_EXPORT GUITreeView : public GUIElementContainer
 	{
 	protected:
 		enum class ScrollState

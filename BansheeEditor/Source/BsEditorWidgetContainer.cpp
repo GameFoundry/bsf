@@ -212,9 +212,6 @@ namespace BansheeEngine
 	{
 		EditorWidgetBase* widget = mWidgets[uniqueIdx];
 		widget->close();
-
-		if(!onWidgetClosed.empty())
-			onWidgetClosed();
 	}
 
 	void EditorWidgetContainer::tabDraggedOff(UINT32 uniqueIdx)

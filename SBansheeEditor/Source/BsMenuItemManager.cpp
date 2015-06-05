@@ -27,8 +27,6 @@ namespace BansheeEngine
 	MenuItemManager::~MenuItemManager()
 	{
 		mDomainLoadedConn.disconnect();
-
-		clearMenuItems();
 	}
 
 	void MenuItemManager::clearMenuItems()

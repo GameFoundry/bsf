@@ -44,18 +44,6 @@ namespace BansheeEngine
 
 	Application::~Application()
 	{
-		// Need to clear all objects before I unload any plugins, as they
-		// could have allocated parts or all of those objects.
-		SceneManager::instance().clearScene(); 
-
-#if BS_VER == BS_VER_DEV
-		shutdownPlugin(mSBansheeEnginePlugin);
-		unloadPlugin(mSBansheeEnginePlugin);
-
-		shutdownPlugin(mMonoPlugin);
-		unloadPlugin(mMonoPlugin);
-#endif
-
 		// Cleanup any new objects queued for destruction by unloaded scripts
 		gCoreThread().update();
 		gCoreThread().submitAccessors(true);
@@ -96,6 +84,26 @@ namespace BansheeEngine
 #endif
 
 		Cursor::instance().setCursor(CursorType::Arrow);
+	}
+
+	void Application::onShutDown()
+	{
+		// Need to clear all objects before I unload any plugins, as they
+		// could have allocated parts or all of those objects.
+		SceneManager::instance().clearScene();
+
+		// These plugins must be unloaded before any other script plugins, because
+		// they will cause finalizers to trigger and various modules those finalizers
+		// might reference must still be active
+#if BS_VER == BS_VER_DEV
+		shutdownPlugin(mSBansheeEnginePlugin);
+		unloadPlugin(mSBansheeEnginePlugin);
+
+		shutdownPlugin(mMonoPlugin);
+		unloadPlugin(mMonoPlugin);
+#endif
+
+		CoreApplication::onShutDown();
 	}
 
 	void Application::startUp(RENDER_WINDOW_DESC& primaryWindowDesc, RenderSystemPlugin renderSystem, RendererPlugin renderer)

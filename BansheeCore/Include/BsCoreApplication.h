@@ -90,7 +90,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	Module::onStartUp
 		 */
-		virtual void onStartUp();
+		virtual void onStartUp() override;
 
 		/**
 		 * @brief	Called for each iteration of the main loop. Called before any game objects or plugins are updated.

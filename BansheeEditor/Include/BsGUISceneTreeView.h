@@ -16,7 +16,7 @@ namespace BansheeEngine
 		HSceneObject* objects;
 	};
 
-	class GUISceneTreeView : public GUITreeView
+	class BS_ED_EXPORT GUISceneTreeView : public GUITreeView
 	{
 		struct SceneTreeElement : public GUITreeView::TreeElement
 		{

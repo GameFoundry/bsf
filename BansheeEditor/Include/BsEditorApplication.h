@@ -37,8 +37,8 @@ namespace BansheeEngine
 		EditorSettingsPtr getEditorSettings() const { return mEditorSettings; }
 
 	private:
-		virtual void onStartUp();
-		virtual void onShutDown();
+		virtual void onStartUp() override;
+		virtual void onShutDown() override;
 		virtual void preUpdate() override;
 		virtual void postUpdate() override;
 

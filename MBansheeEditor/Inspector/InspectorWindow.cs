@@ -18,6 +18,12 @@ namespace BansheeEditor
         private GUIScrollArea inspectorScrollArea;
         private GUILayout inspectorLayout;
 
+        [MenuItem("Windows/Inspector", ButtonModifier.CtrlAlt, ButtonCode.I)]
+        private static void OpenHierarchyWindow()
+        {
+            OpenWindow<HierarchyWindow>();
+        }
+
         internal void SetObjectToInspect(SceneObject so)
         {
             Clear();

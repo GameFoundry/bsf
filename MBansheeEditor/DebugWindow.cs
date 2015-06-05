@@ -38,12 +38,6 @@ namespace BansheeEditor
             overlay.AddElement(testExplicitBtn);
         }
 
-        [MenuItem("Window/Test", ButtonModifier.ShiftAlt, ButtonCode.A)]
-        private static void TestMenuItem()
-        {
-            ColorPicker.Show();
-        }
-
         void RefreshAssembly_OnClick()
         {
             Internal_RefreshAssembly();

@@ -52,6 +52,12 @@ namespace BansheeEditor
         internal SceneWindow()
         { }
 
+        [MenuItem("Windows/Scene", ButtonModifier.CtrlAlt, ButtonCode.S)]
+        private static void OpenSceneWindow()
+        {
+            OpenWindow<SceneWindow>();
+        }
+
         private void OnInitialize()
         {
             mainLayout = GUI.AddLayoutY();

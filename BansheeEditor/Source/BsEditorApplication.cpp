@@ -71,25 +71,6 @@ namespace BansheeEngine
 
 	EditorApplication::~EditorApplication()
 	{
-		BuildManager::instance().save(BUILD_DATA_PATH);
-
-		CodeEditorManager::shutDown();
-		BuildManager::shutDown();
-		GizmoManager::shutDown();
-		Selection::shutDown();
-		ScenePicking::shutDown();
-
-		saveWidgetLayout(EditorWidgetManager::instance().getLayout());
-		// TODO - Save project settings
-
-		DropDownWindowManager::shutDown();
-		EditorWidgetManager::shutDown();
-		EditorWindowManager::shutDown();
-		UndoRedo::shutDown();
-
-		// We purposely don't unload this plugin, it needs to be unloaded after
-		// all mono assemblies have been unloaded (since their finalizers will call
-		// into the plugin). So we leave it to be unloaded automatically on app exit
 		shutdownPlugin(mSBansheeEditorPlugin);
 
 		/************************************************************************/
@@ -226,13 +207,26 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 							END DEBUG CODE                      		*/
 		/************************************************************************/
-
-		DbgEditorWidget1::open(); // DEBUG ONLY
-		DbgEditorWidget2::open(); // DEBUG ONLY
 	}
 
 	void EditorApplication::onShutDown()
 	{
+		BuildManager::instance().save(BUILD_DATA_PATH);
+
+		CodeEditorManager::shutDown();
+		BuildManager::shutDown();
+		GizmoManager::shutDown();
+		Selection::shutDown();
+		ScenePicking::shutDown();
+
+		saveWidgetLayout(EditorWidgetManager::instance().getLayout());
+		// TODO - Save project settings
+
+		DropDownWindowManager::shutDown();
+		EditorWidgetManager::shutDown();
+		EditorWindowManager::shutDown();
+		UndoRedo::shutDown();
+
 		Application::onShutDown();
 	}
 
