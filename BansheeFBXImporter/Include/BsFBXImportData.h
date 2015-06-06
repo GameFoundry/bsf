@@ -36,10 +36,34 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Imported mesh data
+	 * @brief	Contains geometry from one blend shape frame.
+	 */
+	struct FBXBlendShapeFrame
+	{
+		Vector<Vector4> positions;
+		Vector<Vector4> normals;
+		Vector<Vector4> tangents;
+		Vector<Vector4> bitangents;
+
+		float weight;
+	};
+
+	/**
+	 * @brief	Contains all geometry for a single blend shape.
+	 */
+	struct FBXBlendShape
+	{
+		String name;
+		Vector<FBXBlendShapeFrame> frames;
+	};
+
+	/**
+	 * @brief	Imported mesh data.
 	 */
 	struct FBXImportMesh
 	{
+		FbxMesh* fbxMesh;
+
 		Vector<int> indices;
 		Vector<Vector4> positions;
 		Vector<Vector4> normals;
@@ -49,12 +73,13 @@ namespace BansheeEngine
 		Vector<Vector2> UV[FBX_IMPORT_MAX_UV_LAYERS];
 		Vector<int> materials;
 
+		Vector<int> smoothingGroups;
+		Vector<FBXBlendShape> blendShapes;
+
 		MeshDataPtr meshData;
 		Vector<SubMesh> subMeshes;
 
 		Vector<FBXImportNode*> referencedBy;
-
-		// TODO - Store blend shapes
 	};
 
 	/**

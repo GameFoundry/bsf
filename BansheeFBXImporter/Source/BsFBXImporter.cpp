@@ -116,6 +116,7 @@ namespace BansheeEngine
 
 		FBXImportScene importedScene;
 		parseScene(fbxScene, fbxImportOptions, importedScene);
+		importBlendShapes(importedScene, fbxImportOptions);
 		splitMeshVertices(importedScene);
 		
 		Vector<SubMesh> subMeshes;
@@ -274,7 +275,6 @@ namespace BansheeEngine
 
 		// TODO - Parse skin
 		// TODO - Parse animation
-		// TODO - Parse blend shapes
 	}
 
 	FBXImportNode* FBXImporter::createImportNode(FBXImportScene& scene, FbxNode* fbxNode, FBXImportNode* parent)
@@ -310,6 +310,9 @@ namespace BansheeEngine
 		for (auto& mesh : scene.meshes)
 		{
 			FBXImportMesh* splitMesh = bs_new<FBXImportMesh>();
+			splitMesh->fbxMesh = mesh->fbxMesh;
+			splitMesh->referencedBy = mesh->referencedBy;
+
 			FBXUtility::splitVertices(*mesh, *splitMesh);
 			FBXUtility::flipWindingOrder(*splitMesh);
 			splitMeshes.push_back(splitMesh);
@@ -655,6 +658,7 @@ namespace BansheeEngine
 			outputScene.meshes.push_back(importMesh);
 
 			importMesh->referencedBy.push_back(parentNode);
+			importMesh->fbxMesh = mesh;
 			outputScene.meshMap[mesh] = (UINT32)outputScene.meshes.size() - 1;
 		}
 
@@ -756,18 +760,22 @@ namespace BansheeEngine
 							converter.ComputePolygonSmoothingFromEdgeSmoothing(mesh, 0);
 						}
 
-						Vector<int> smoothingGroups;
-						readLayerData(*smoothing, smoothingGroups, importMesh->indices);
+						readLayerData(*smoothing, importMesh->smoothingGroups, importMesh->indices);
 
-						if (!smoothingGroups.empty())
+						if (!importMesh->smoothingGroups.empty())
 						{
-							FBXUtility::normalsFromSmoothing(importMesh->positions, importMesh->indices, smoothingGroups, importMesh->normals);
+							FBXUtility::normalsFromSmoothing(importMesh->positions, importMesh->indices, 
+								importMesh->smoothingGroups, importMesh->normals);
 							hasNormals = true;
 						}
 					}
+
+					if (!hasNormals)
+					{
+						// TODO - Calculate normals
+					}
 				}
-				
-				if (hasNormals)
+				else
 					readLayerData(*mainLayer->GetNormals(), importMesh->normals, importMesh->indices);
 			}
 
@@ -786,6 +794,10 @@ namespace BansheeEngine
 				{
 					readLayerData(*mainLayer->GetTangents(), importMesh->tangents, importMesh->indices);
 					readLayerData(*mainLayer->GetBinormals(), importMesh->bitangents, importMesh->indices);
+				}
+				else
+				{
+					// TODO - Calculate tangent frame
 				}
 			}
 
@@ -813,6 +825,92 @@ namespace BansheeEngine
 
 					importMesh->materials.push_back(materialIdx);
 				}
+			}
+		}
+	}
+
+	void FBXImporter::importBlendShapes(FBXImportScene& scene, const FBXImportOptions& options)
+	{
+		for (auto& mesh : scene.meshes)
+		{
+			FbxMesh* fbxMesh = mesh->fbxMesh;
+
+			UINT32 deformerCount = (UINT32)fbxMesh->GetDeformerCount(FbxDeformer::eBlendShape);
+			for (UINT32 i = 0; i < deformerCount; i++)
+			{
+				FbxBlendShape* deformer = static_cast<FbxBlendShape*>(fbxMesh->GetDeformer(i, FbxDeformer::eBlendShape));
+
+				UINT32 blendShapeChannelCount = (UINT32)deformer->GetBlendShapeChannelCount();
+				for (UINT32 j = 0; j < blendShapeChannelCount; ++j)
+				{
+					FbxBlendShapeChannel* channel = deformer->GetBlendShapeChannel(j);
+					double* weights = channel->GetTargetShapeFullWeights();
+
+					UINT32 frameCount = channel->GetTargetShapeCount();
+					if (frameCount == 0)
+						continue;
+
+					mesh->blendShapes.push_back(FBXBlendShape());
+					FBXBlendShape& blendShape = mesh->blendShapes.back();
+					blendShape.name = channel->GetName();
+					blendShape.frames.resize(frameCount);
+
+					for (UINT32 k = 0; k < frameCount; k++)
+					{
+						FbxShape* fbxShape = channel->GetTargetShape(k);
+
+						FBXBlendShapeFrame& frame = blendShape.frames[k];
+						frame.weight = (float)weights[k];
+
+						importBlendShapeFrame(fbxShape, *mesh, options, frame);
+					}
+				}
+			}
+		}
+	}
+
+	void FBXImporter::importBlendShapeFrame(FbxShape* shape, const FBXImportMesh& mesh, const FBXImportOptions& options, FBXBlendShapeFrame& outFrame)
+	{
+		UINT32 vertexCount = (UINT32)shape->GetControlPointsCount();
+		outFrame.positions.resize(vertexCount);
+		FbxVector4* controlPoints = shape->GetControlPoints();
+
+		for (UINT32 i = 0; i < vertexCount; i++)
+			outFrame.positions[i] = FBXToNativeType(controlPoints[i]);
+
+		FbxLayer* mainLayer = shape->GetLayer(0);
+		if (options.importNormals)
+		{
+			bool hasNormals = mainLayer->GetNormals() != nullptr;
+
+			if (!hasNormals)
+			{
+				if (!mesh.smoothingGroups.empty())
+				{
+					FBXUtility::normalsFromSmoothing(outFrame.positions, mesh.indices,
+						mesh.smoothingGroups, outFrame.normals);
+				}
+				else
+				{
+					// TODO - Calculate normals
+				}
+			}
+			else
+				readLayerData(*mainLayer->GetNormals(), outFrame.normals, mesh.indices);
+		}
+
+		if (options.importTangents)
+		{
+			bool hasTangents = mainLayer->GetTangents() != nullptr && mainLayer->GetBinormals() != nullptr;
+
+			if (hasTangents)
+			{
+				readLayerData(*mainLayer->GetTangents(), outFrame.tangents, mesh.indices);
+				readLayerData(*mainLayer->GetBinormals(), outFrame.bitangents, mesh.indices);
+			}
+			else
+			{
+				// TODO - Calculate tangent frame
 			}
 		}
 	}

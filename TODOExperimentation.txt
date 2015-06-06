@@ -1,7 +1,6 @@
 -------------------------
 FBX
 Next:
- - Test if import works using the next system
  - DefaultMeshData is defined in BansheeEngine but FBXImporter only includes Banshee Core
   - Therefore I am not using it in FBXImporter but I should
 
@@ -14,13 +13,9 @@ Later:
   - FbxSkin
     -> FbxCluster - One cluster per bone, contains weights for each influenced control point in destination geometry
 	  - Its transform is also the bind pose transfrom for the bone
- - Import blend shapes
-  - FbxBlendShape
-    -> FbxBlendShapeChannel - One channel per blend "animation". One animation can have multiple 
-	   target shapes. e.g. shape 0 is used for 0-40% of the animation, and shape 1 for 40-100%.
-      -> FbxShape -> Contains a set of geometry used for the shape. This should be a set of vertices, 
-	     but I need normals/tangents too. Not sure if FBX stores those as Unity seems to assume it doesn't and calculates them manually.
-
+ - Add methods for calculating normals and tangent frame. This is especially needed for blend shapes as I believe they
+   come with tangent frame or normal information. I've marked points in code where this is needed with a TODO.
+ 
 Create a set of output data that is retrieved from the FBX. Then convert that data to Banshee mesh/animation/etc.
 For now I would only use the mesh part but later I can just take the rest of the data as needed without messing with the
 FBX importer.

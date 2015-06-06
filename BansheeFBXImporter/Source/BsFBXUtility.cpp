@@ -146,7 +146,6 @@ namespace BansheeEngine
 	{
 		dest.indices = source.indices;
 		dest.materials = source.materials;
-		dest.referencedBy = source.referencedBy;
 
 		dest.positions = source.positions;
 
@@ -168,6 +167,36 @@ namespace BansheeEngine
 		{
 			if (!source.UV[i].empty())
 				dest.UV[i].resize(vertexCount);
+		}
+
+		UINT32 numBlendShapes = (UINT32)source.blendShapes.size();
+		dest.blendShapes.resize(numBlendShapes);
+		for (UINT32 i = 0; i < numBlendShapes; i++)
+		{
+			const FBXBlendShape& sourceShape = source.blendShapes[i];
+			FBXBlendShape& destShape = dest.blendShapes[i];
+
+			UINT32 numFrames = (UINT32)sourceShape.frames.size();
+			destShape.frames.resize(numFrames);
+			destShape.name = sourceShape.name;
+
+			for (UINT32 j = 0; j < numFrames; j++)
+			{
+				const FBXBlendShapeFrame& sourceFrame = sourceShape.frames[j];
+				FBXBlendShapeFrame& destFrame = destShape.frames[j];
+
+				destFrame.weight = sourceFrame.weight;
+				destFrame.positions = sourceFrame.positions;
+
+				if (!sourceFrame.normals.empty())
+					destFrame.normals.resize(vertexCount);
+
+				if (!sourceFrame.tangents.empty())
+					destFrame.tangents.resize(vertexCount);
+
+				if (!sourceFrame.bitangents.empty())
+					destFrame.bitangents.resize(vertexCount);
+			}
 		}
 
 		Vector<Vector<int>> splitsPerVertex;
@@ -243,6 +272,29 @@ namespace BansheeEngine
 			if (!srcMesh.UV[i].empty())
 				destMesh.UV[i][dstIdx] = srcMesh.UV[i][srcIdx];
 		}
+
+		UINT32 numBlendShapes = (UINT32)srcMesh.blendShapes.size();
+		for (UINT32 i = 0; i < numBlendShapes; i++)
+		{
+			const FBXBlendShape& sourceShape = srcMesh.blendShapes[i];
+			FBXBlendShape& destShape = destMesh.blendShapes[i];
+
+			UINT32 numFrames = (UINT32)sourceShape.frames.size();
+			for (UINT32 j = 0; j < numFrames; j++)
+			{
+				const FBXBlendShapeFrame& sourceFrame = sourceShape.frames[j];
+				FBXBlendShapeFrame& destFrame = destShape.frames[j];
+
+				if (!sourceFrame.normals.empty())
+					destFrame.normals[dstIdx] = sourceFrame.normals[srcIdx];
+
+				if (!sourceFrame.tangents.empty())
+					destFrame.tangents[dstIdx] = sourceFrame.tangents[srcIdx];
+
+				if (!sourceFrame.bitangents.empty())
+					destFrame.bitangents[dstIdx] = sourceFrame.bitangents[srcIdx];
+			}
+		}
 	}
 
 	void FBXUtility::addVertex(const FBXImportMesh& srcMesh, int srcIdx, int srcVertex, FBXImportMesh& destMesh)
@@ -265,6 +317,31 @@ namespace BansheeEngine
 		{
 			if (!srcMesh.UV[i].empty())
 				destMesh.UV[i].push_back(srcMesh.UV[i][srcIdx]);
+		}
+
+		UINT32 numBlendShapes = (UINT32)srcMesh.blendShapes.size();
+		for (UINT32 i = 0; i < numBlendShapes; i++)
+		{
+			const FBXBlendShape& sourceShape = srcMesh.blendShapes[i];
+			FBXBlendShape& destShape = destMesh.blendShapes[i];
+
+			UINT32 numFrames = (UINT32)sourceShape.frames.size();
+			for (UINT32 j = 0; j < numFrames; j++)
+			{
+				const FBXBlendShapeFrame& sourceFrame = sourceShape.frames[j];
+				FBXBlendShapeFrame& destFrame = destShape.frames[j];
+
+				destFrame.positions.push_back(sourceFrame.positions[srcVertex]);
+
+				if (!sourceFrame.normals.empty())
+					destFrame.normals.push_back(sourceFrame.normals[srcIdx]);
+
+				if (!sourceFrame.tangents.empty())
+					destFrame.tangents.push_back(sourceFrame.tangents[srcIdx]);
+
+				if (!sourceFrame.bitangents.empty())
+					destFrame.bitangents.push_back(sourceFrame.bitangents[srcIdx]);
+			}
 		}
 	}
 
@@ -306,6 +383,41 @@ namespace BansheeEngine
 			{
 				if (!Math::approxEquals(meshA.UV[i][idxA], meshB.UV[i][idxB], UVEpsilon))
 					return true;
+			}
+		}
+
+		UINT32 numBlendShapes = (UINT32)meshA.blendShapes.size();
+		for (UINT32 i = 0; i < numBlendShapes; i++)
+		{
+			const FBXBlendShape& shapeA = meshA.blendShapes[i];
+			const FBXBlendShape& shapeB = meshB.blendShapes[i];
+
+			UINT32 numFrames = (UINT32)shapeA.frames.size();
+			for (UINT32 j = 0; j < numFrames; j++)
+			{
+				const FBXBlendShapeFrame& frameA = shapeA.frames[j];
+				const FBXBlendShapeFrame& frameB = shapeB.frames[j];
+
+				if (!frameA.normals.empty())
+				{
+					float angleCosine = frameA.normals[idxA].dot(frameB.normals[idxB]);
+					if (angleCosine < SplitAngleCosine)
+						return true;
+				}
+
+				if (!frameA.tangents.empty())
+				{
+					float angleCosine = frameA.tangents[idxA].dot(frameB.tangents[idxB]);
+					if (angleCosine < SplitAngleCosine)
+						return true;
+				}
+
+				if (!frameA.bitangents.empty())
+				{
+					float angleCosine = frameA.bitangents[idxA].dot(frameB.bitangents[idxB]);
+					if (angleCosine < SplitAngleCosine)
+						return true;
+				}
 			}
 		}
 

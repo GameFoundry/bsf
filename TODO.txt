@@ -27,7 +27,6 @@ return them in checkForModifications?
 ----------------------------------------------------------------------
 Polish stage 1
 
-Scene tree view in hierarchy window doesn't render
 When elements are docked in the main window the menu bar drop down appears behind them
 Click on empty part of the menu bar doesn't close the menu bar (ignoring NC area clicks?)
 Attempting to dock a window that is not in focus will start drag instead (NC area incorrectly set up?)

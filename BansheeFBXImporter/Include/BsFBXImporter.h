@@ -72,6 +72,17 @@ namespace BansheeEngine
 		void parseMesh(FbxMesh* mesh, FBXImportNode* parentNode, const FBXImportOptions& options, FBXImportScene& outputScene);
 
 		/**
+		 * @brief	Imports blend shapes for all the meshes that are part of the scene.
+		 */
+		void importBlendShapes(FBXImportScene& scene, const FBXImportOptions& options);
+
+		/**
+		 * @brief	Parses a single FBX blend shape frame. Converts it from FBX SDK format into a 
+		 *			shape data object containing position and tangent frame.
+		 */
+		void importBlendShapeFrame(FbxShape* shape, const FBXImportMesh& mesh, const FBXImportOptions& options, FBXBlendShapeFrame& outFrame);
+
+		/**
 		 * @brief	Converts all the meshes from per-index attributes to per-vertex attributes.
 		 *
 		 * @note	This method will replace all meshes in the scene with new ones, and delete old ones
