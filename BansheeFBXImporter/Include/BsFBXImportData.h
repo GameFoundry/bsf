@@ -31,6 +31,7 @@ namespace BansheeEngine
 
 		Matrix4 localTransform;
 		Matrix4 worldTransform;
+		FbxNode* fbxNode;
 
 		Vector<FBXImportNode*> children;
 	};
@@ -58,6 +59,34 @@ namespace BansheeEngine
 	};
 
 	/**
+	 * @brief	Contains data about a single bone in a skinned mesh.
+	 */
+	struct FBXBone
+	{
+		FBXImportNode* node;
+		Matrix4 bindPose;
+	};
+
+	/**
+	 * @brief	Contains a set of bone weights and indices for a single
+	 *			vertex, used in a skinned mesh.
+	 */
+	struct FBXBoneInfluence
+	{
+		FBXBoneInfluence()
+		{
+			for (UINT32 i = 0; i < FBX_IMPORT_MAX_BONE_INFLUENCES; i++)
+			{
+				weights[i] = 0.0f;
+				indices[i] = -1;
+			}
+		}
+
+		float weights[FBX_IMPORT_MAX_BONE_INFLUENCES];
+		INT32 indices[FBX_IMPORT_MAX_BONE_INFLUENCES];
+	};
+
+	/**
 	 * @brief	Imported mesh data.
 	 */
 	struct FBXImportMesh
@@ -75,6 +104,9 @@ namespace BansheeEngine
 
 		Vector<int> smoothingGroups;
 		Vector<FBXBlendShape> blendShapes;
+
+		Vector<FBXBoneInfluence> boneInfluences;
+		Vector<FBXBone> bones;
 
 		MeshDataPtr meshData;
 		Vector<SubMesh> subMeshes;

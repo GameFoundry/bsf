@@ -245,7 +245,7 @@
     <ClInclude Include="Include\BsFBXUtility.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\BsFBXImportdata.cpp" />
+    <ClCompile Include="Source\BsFBXImportData.cpp" />
     <ClCompile Include="Source\BsFBXImporter.cpp" />
     <ClCompile Include="Source\BsFBXPlugin.cpp" />
     <ClCompile Include="Source\BsFBXUtility.cpp" />

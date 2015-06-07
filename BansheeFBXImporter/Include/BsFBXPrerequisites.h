@@ -22,3 +22,4 @@
 #include <fbxsdk.h>
 
 #define FBX_IMPORT_MAX_UV_LAYERS 2
+#define FBX_IMPORT_MAX_BONE_INFLUENCES 4

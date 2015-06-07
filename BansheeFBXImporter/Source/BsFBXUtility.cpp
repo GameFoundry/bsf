@@ -147,6 +147,7 @@ namespace BansheeEngine
 		dest.indices = source.indices;
 		dest.materials = source.materials;
 
+		dest.boneInfluences = source.boneInfluences;
 		dest.positions = source.positions;
 
 		// Make room for minimal set of vertices

@@ -83,6 +83,16 @@ namespace BansheeEngine
 		void importBlendShapeFrame(FbxShape* shape, const FBXImportMesh& mesh, const FBXImportOptions& options, FBXBlendShapeFrame& outFrame);
 
 		/**
+		 * @brief	Imports skinning information and bones for all meshes.
+		 */
+		void importSkin(FBXImportScene& scene);
+
+		/**
+		 * @brief	Imports skinning information and bones for the specified mesh.
+		 */
+		void importSkin(FBXImportScene& scene, FbxSkin* skin, FBXImportMesh& mesh);
+
+		/**
 		 * @brief	Converts all the meshes from per-index attributes to per-vertex attributes.
 		 *
 		 * @note	This method will replace all meshes in the scene with new ones, and delete old ones

@@ -15,6 +15,16 @@
 
 namespace BansheeEngine
 {
+	Matrix4 FBXToNativeType(const FbxAMatrix& value)
+	{
+		Matrix4 native;
+		for (UINT32 row = 0; row < 4; row++)
+			for (UINT32 col = 0; col < 4; col++)
+			native[row][col] = (float)value[col][row];
+
+		return native;
+	}
+
 	Vector4 FBXToNativeType(const FbxVector4& value)
 	{
 		Vector4 native;
@@ -116,7 +126,13 @@ namespace BansheeEngine
 
 		FBXImportScene importedScene;
 		parseScene(fbxScene, fbxImportOptions, importedScene);
-		importBlendShapes(importedScene, fbxImportOptions);
+
+		if (fbxImportOptions.importBlendShapes)
+			importBlendShapes(importedScene, fbxImportOptions);
+
+		if (fbxImportOptions.importSkin)
+			importSkin(importedScene);
+
 		splitMeshVertices(importedScene);
 		
 		Vector<SubMesh> subMeshes;
@@ -273,7 +289,6 @@ namespace BansheeEngine
 			}
 		}
 
-		// TODO - Parse skin
 		// TODO - Parse animation
 	}
 
@@ -288,6 +303,7 @@ namespace BansheeEngine
 		Quaternion rotation((Radian)rotationEuler.x, (Radian)rotationEuler.y, (Radian)rotationEuler.z);
 
 		node->localTransform.setTRS(translation, rotation, scale);
+		node->fbxNode = fbxNode;
 
 		if (parent != nullptr)
 		{
@@ -312,6 +328,7 @@ namespace BansheeEngine
 			FBXImportMesh* splitMesh = bs_new<FBXImportMesh>();
 			splitMesh->fbxMesh = mesh->fbxMesh;
 			splitMesh->referencedBy = mesh->referencedBy;
+			splitMesh->bones = mesh->bones;
 
 			FBXUtility::splitVertices(*mesh, *splitMesh);
 			FBXUtility::flipWindingOrder(*splitMesh);
@@ -912,6 +929,125 @@ namespace BansheeEngine
 			{
 				// TODO - Calculate tangent frame
 			}
+		}
+	}
+
+	void FBXImporter::importSkin(FBXImportScene& scene)
+	{
+		for (auto& mesh : scene.meshes)
+		{
+			FbxMesh* fbxMesh = mesh->fbxMesh;
+
+			UINT32 deformerCount = (UINT32)fbxMesh->GetDeformerCount(FbxDeformer::eSkin);
+			if (deformerCount > 0)
+			{
+				// We ignore other deformers if there's more than one
+				FbxSkin* deformer = static_cast<FbxSkin*>(fbxMesh->GetDeformer(0, FbxDeformer::eSkin));
+				UINT32 boneCount = (UINT32)deformer->GetClusterCount();
+
+				if (boneCount == 0)
+					continue;
+
+				// If only one bone and it links to itself, ignore the bone
+				if (boneCount == 1)
+				{
+					FbxCluster* cluster = deformer->GetCluster(0);
+					if (mesh->referencedBy.size() == 1 && mesh->referencedBy[0]->fbxNode == cluster->GetLink())
+						continue;
+				}
+
+				importSkin(scene, deformer, *mesh);
+			}
+		}
+	}
+
+	void FBXImporter::importSkin(FBXImportScene& scene, FbxSkin* skin, FBXImportMesh& mesh)
+	{
+		Vector<FBXBoneInfluence>& influences = mesh.boneInfluences;
+		influences.resize(mesh.positions.size());
+
+		UnorderedSet<FbxNode*> existingBones;
+		UINT32 boneCount = (UINT32)skin->GetClusterCount();
+		for (UINT32 i = 0; i < boneCount; i++)
+		{
+			FbxCluster* cluster = skin->GetCluster(i);
+			FbxNode* link = cluster->GetLink();
+
+			// The bone node doesn't exist, skip it
+			auto iterFind = scene.nodeMap.find(link);
+			if (iterFind == scene.nodeMap.end())
+				continue;
+
+			mesh.bones.push_back(FBXBone());
+
+			FBXBone& bone = mesh.bones.back();
+			bone.node = iterFind->second;
+
+			FbxAMatrix clusterTransform;
+			cluster->GetTransformMatrix(clusterTransform);
+
+			FbxAMatrix linkTransform;
+			cluster->GetTransformLinkMatrix(linkTransform);
+
+			FbxAMatrix bindPose = linkTransform.Inverse() * clusterTransform;
+			bone.bindPose = FBXToNativeType(bindPose);
+
+			bool isDuplicate = existingBones.insert(link).second;
+			bool isAdditive = cluster->GetLinkMode() == FbxCluster::eAdditive;
+
+			// We avoid importing weights twice for duplicate bones and we don't
+			// support additive link mode.
+			bool importWeights = !isDuplicate && !isAdditive;
+			if (!importWeights)
+				continue;
+
+			double* weights = cluster->GetControlPointWeights();
+			INT32* indices = cluster->GetControlPointIndices();
+			UINT32 numIndices = (UINT32)cluster->GetControlPointIndicesCount();
+			INT32 numVertices = (INT32)influences.size();
+
+			// Add new weights while keeping them in order and removing the smallest ones
+			// if number of influences exceeds the set maximum value
+			for (UINT32 j = 0; j < numIndices; j++)
+			{
+				INT32 vertexIndex = indices[j];
+				float weight = (float)weights[j];
+
+				for (UINT32 k = 0; k < FBX_IMPORT_MAX_BONE_INFLUENCES; k++)
+				{
+					if (vertexIndex < 0 || vertexIndex >= numVertices)
+						continue;
+
+					if (weight >= influences[vertexIndex].weights[k])
+					{
+						for (UINT32 l = FBX_IMPORT_MAX_BONE_INFLUENCES - 2; l >= k; l--)
+						{
+							influences[vertexIndex].weights[l + 1] = influences[vertexIndex].weights[l];
+							influences[vertexIndex].indices[l + 1] = influences[vertexIndex].indices[l];
+						}
+
+						influences[vertexIndex].weights[k] = weight;
+						influences[vertexIndex].indices[k] = i;
+						break;
+					}
+				}
+			}
+		}
+
+		if (mesh.bones.empty())
+			mesh.boneInfluences.clear();
+
+		// Normalize weights
+		UINT32 numInfluences = (UINT32)mesh.boneInfluences.size();
+		for (UINT32 i = 0; i < numInfluences; i++)
+		{
+			float sum = 0.0f;
+			for (UINT32 j = 0; j < FBX_IMPORT_MAX_BONE_INFLUENCES; j++)
+				sum += influences[i].weights[j];
+
+			float invSum = 1.0f / sum;
+			for (UINT32 j = 0; j < FBX_IMPORT_MAX_BONE_INFLUENCES; j++)
+				influences[i].weights[j] *= invSum;
 		}
 	}
 }

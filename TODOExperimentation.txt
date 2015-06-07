@@ -5,14 +5,8 @@ Next:
   - Therefore I am not using it in FBXImporter but I should
 
 Later:
- - Import skeleton
-  - Unity just maps nodes referenced by FbxSkin clusters to bones, it do no separate parsing
  - Import keyframes
   - ?? TODO
- - Import blend weights
-  - FbxSkin
-    -> FbxCluster - One cluster per bone, contains weights for each influenced control point in destination geometry
-	  - Its transform is also the bind pose transfrom for the bone
  - Add methods for calculating normals and tangent frame. This is especially needed for blend shapes as I believe they
    come with tangent frame or normal information. I've marked points in code where this is needed with a TODO.
  

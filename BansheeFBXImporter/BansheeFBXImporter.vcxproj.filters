@@ -35,10 +35,10 @@
     <ClCompile Include="Source\BsFBXImporter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsFBXImportdata.cpp">
+    <ClCompile Include="Source\BsFBXUtility.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsFBXUtility.cpp">
+    <ClCompile Include="Source\BsFBXImportData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
