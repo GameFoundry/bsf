@@ -243,6 +243,8 @@
     <ClInclude Include="Include\BsManagedSerializableArrayRTTI.h" />
     <ClInclude Include="Include\BsManagedSerializableDictionary.h" />
     <ClInclude Include="Include\BsManagedSerializableDictionaryRTTI.h" />
+    <ClInclude Include="Include\BsManagedSerializableDiff.h" />
+    <ClInclude Include="Include\BsManagedSerializableDiffRTTI.h" />
     <ClInclude Include="Include\BsManagedSerializableField.h" />
     <ClInclude Include="Include\BsManagedSerializableFieldRTTI.h" />
     <ClInclude Include="Include\BsManagedSerializableList.h" />
@@ -332,6 +334,7 @@
     <ClCompile Include="Source\BsManagedResource.cpp" />
     <ClCompile Include="Source\BsManagedResourceManager.cpp" />
     <ClCompile Include="Source\BsManagedResourceMetaData.cpp" />
+    <ClCompile Include="Source\BsManagedSerializableDiff.cpp" />
     <ClCompile Include="Source\BsManagedSerializableObjectData.cpp" />
     <ClCompile Include="Source\BsScriptAssemblyManager.cpp" />
     <ClCompile Include="Source\BsScriptAsyncOp.cpp" />

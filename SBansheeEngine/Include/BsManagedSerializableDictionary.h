@@ -9,6 +9,9 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableDictionary : public IReflectable
 	{
 	private:
+		struct ConstructPrivately {};
+
+	public:
 		class Enumerator
 		{
 		public:
@@ -25,22 +28,31 @@ namespace BansheeEngine
 			const ManagedSerializableDictionary* mParent;
 		};
 
-		struct ConstructPrivately {};
-
 	public:
 		ManagedSerializableDictionary(const ConstructPrivately& dummy, const ManagedSerializableTypeInfoDictionaryPtr& typeInfo, MonoObject* managedInstance);
 		ManagedSerializableDictionary(const ConstructPrivately& dummy);
 
 		MonoObject* getManagedInstance() const { return mManagedInstance; }
 
+		ManagedSerializableTypeInfoDictionaryPtr getTypeInfo() const { return mDictionaryTypeInfo; }
+
+		ManagedSerializableFieldDataPtr getFieldData(const ManagedSerializableFieldDataPtr& key);
+		void setFieldData(const ManagedSerializableFieldDataPtr& key, const ManagedSerializableFieldDataPtr& val);
+		void removeFieldData(const ManagedSerializableFieldDataPtr& key);
+		bool contains(const ManagedSerializableFieldDataPtr& key) const;
+		Enumerator getEnumerator() const;
+
 		static ManagedSerializableDictionaryPtr createFromExisting(MonoObject* managedInstance, const ManagedSerializableTypeInfoDictionaryPtr& typeInfo);
-		static ManagedSerializableDictionaryPtr createFromNew(const ManagedSerializableTypeInfoDictionaryPtr& typeInfo);
+		static ManagedSerializableDictionaryPtr createNew(const ManagedSerializableTypeInfoDictionaryPtr& typeInfo);
 		static MonoObject* createManagedInstance(const ManagedSerializableTypeInfoDictionaryPtr& typeInfo);
 
 	protected:
 		MonoObject* mManagedInstance;
 
 		MonoMethod* mAddMethod;
+		MonoMethod* mRemoveMethod;
+		MonoMethod* mTryGetValueMethod;
+		MonoMethod* mContainsKeyMethod;
 		MonoMethod* mGetEnumerator;
 		MonoMethod* mEnumMoveNext;
 		MonoProperty* mEnumCurrentProp;
@@ -62,9 +74,6 @@ namespace BansheeEngine
 		 */
 		void deserializeManagedInstance(const Vector<ManagedSerializableFieldDataPtr>& keyEntries, 
 			const Vector<ManagedSerializableFieldDataPtr>& valueEntries);
-
-		void setFieldData(const ManagedSerializableFieldDataPtr& key, const ManagedSerializableFieldDataPtr& val);
-		Enumerator getEnumerator() const;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

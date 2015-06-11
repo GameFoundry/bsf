@@ -24,6 +24,34 @@
 
 namespace BansheeEngine
 {
+	template<class T>
+	bool compareObjectFieldData(const T* a, const ManagedSerializableFieldDataPtr& b)
+	{
+		if (rtti_is_of_type<T>(b))
+		{
+			auto castObj = std::static_pointer_cast<T>(b);
+
+			if (a->value != nullptr && castObj->value != nullptr)
+				return a->value->getManagedInstance() == castObj->value->getManagedInstance();
+			else
+				return a->value == nullptr && castObj->value == nullptr;
+		}
+
+		return false;
+	}
+
+	template<class T>
+	bool comparePrimitiveFieldData(const T* a, const ManagedSerializableFieldDataPtr& b)
+	{
+		if (rtti_is_of_type<T>(b))
+		{
+			auto castObj = std::static_pointer_cast<T>(b);
+			return a->value == castObj->value;
+		}
+
+		return false;
+	}
+
 	ManagedSerializableFieldKeyPtr ManagedSerializableFieldKey::create(UINT16 typeId, UINT16 fieldId)
 	{
 		ManagedSerializableFieldKeyPtr fieldKey = bs_shared_ptr<ManagedSerializableFieldKey>();
@@ -940,6 +968,101 @@ namespace BansheeEngine
 	MonoObject* ManagedSerializableFieldDataDictionary::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
 	{
 		return (MonoObject*)getValue(typeInfo);
+	}
+
+	bool ManagedSerializableFieldDataBool::equals(const ManagedSerializableFieldDataPtr& other)
+	{
+		return comparePrimitiveFieldData(this, other);
+	}
+
+	bool ManagedSerializableFieldDataChar::equals(const ManagedSerializableFieldDataPtr& other)
+	{
+		return comparePrimitiveFieldData(this, other);
+	}
+
+	bool ManagedSerializableFieldDataI8::equals(const ManagedSerializableFieldDataPtr& other)
+	{
+		return comparePrimitiveFieldData(this, other);
+	}
+
+	bool ManagedSerializableFieldDataU8::equals(const ManagedSerializableFieldDataPtr& other)
+	{
+		return comparePrimitiveFieldData(this, other);
+	}
+
+	bool ManagedSerializableFieldDataI16::equals(const ManagedSerializableFieldDataPtr& other)
+	{
+		return comparePrimitiveFieldData(this, other);
+	}
+
+	bool ManagedSerializableFieldDataU16::equals(const ManagedSerializableFieldDataPtr& other)
+	{
+		return comparePrimitiveFieldData(this, other);
+	}
+
+	bool ManagedSerializableFieldDataI32::equals(const ManagedSerializableFieldDataPtr& other)
+	{
+		return comparePrimitiveFieldData(this, other);
+	}
+
+	bool ManagedSerializableFieldDataU32::equals(const ManagedSerializableFieldDataPtr& other)
+	{
+		return comparePrimitiveFieldData(this, other);
+	}
+
+	bool ManagedSerializableFieldDataI64::equals(const ManagedSerializableFieldDataPtr& other)
+	{
+		return comparePrimitiveFieldData(this, other);
+	}
+
+	bool ManagedSerializableFieldDataU64::equals(const ManagedSerializableFieldDataPtr& other)
+	{
+		return comparePrimitiveFieldData(this, other);
+	}
+
+	bool ManagedSerializableFieldDataFloat::equals(const ManagedSerializableFieldDataPtr& other)
+	{
+		return comparePrimitiveFieldData(this, other);
+	}
+
+	bool ManagedSerializableFieldDataDouble::equals(const ManagedSerializableFieldDataPtr& other)
+	{
+		return comparePrimitiveFieldData(this, other);
+	}
+
+	bool ManagedSerializableFieldDataString::equals(const ManagedSerializableFieldDataPtr& other)
+	{
+		return comparePrimitiveFieldData(this, other);
+	}
+
+	bool ManagedSerializableFieldDataResourceRef::equals(const ManagedSerializableFieldDataPtr& other)
+	{
+		return comparePrimitiveFieldData(this, other);
+	}
+
+	bool ManagedSerializableFieldDataGameObjectRef::equals(const ManagedSerializableFieldDataPtr& other)
+	{
+		return comparePrimitiveFieldData(this, other);
+	}
+
+	bool ManagedSerializableFieldDataObject::equals(const ManagedSerializableFieldDataPtr& other)
+	{
+		return compareObjectFieldData(this, other);
+	}
+
+	bool ManagedSerializableFieldDataArray::equals(const ManagedSerializableFieldDataPtr& other)
+	{
+		return compareObjectFieldData(this, other);
+	}
+
+	bool ManagedSerializableFieldDataList::equals(const ManagedSerializableFieldDataPtr& other)
+	{
+		return compareObjectFieldData(this, other);
+	}
+
+	bool ManagedSerializableFieldDataDictionary::equals(const ManagedSerializableFieldDataPtr& other)
+	{
+		return compareObjectFieldData(this, other);
 	}
 
 	RTTITypeBase* ManagedSerializableFieldKey::getRTTIStatic()

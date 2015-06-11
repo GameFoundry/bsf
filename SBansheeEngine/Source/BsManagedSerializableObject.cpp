@@ -37,7 +37,7 @@ namespace BansheeEngine
 		return bs_shared_ptr<ManagedSerializableObject>(ConstructPrivately(), objInfo, managedInstance);
 	}
 
-	ManagedSerializableObjectPtr ManagedSerializableObject::createFromNew(const ManagedSerializableTypeInfoObjectPtr& type)
+	ManagedSerializableObjectPtr ManagedSerializableObject::createNew(const ManagedSerializableTypeInfoObjectPtr& type)
 	{
 		ManagedSerializableObjectInfoPtr currentObjInfo = nullptr;
 
@@ -104,37 +104,6 @@ namespace BansheeEngine
 			return false;
 		};
 
-		auto findTypeNameMatchingFieldInfo = [&](const ManagedSerializableFieldInfoPtr& fieldInfo, const ManagedSerializableObjectInfoPtr& fieldObjInfo,
-			ManagedSerializableObjectInfoPtr objInfo) -> ManagedSerializableFieldInfoPtr
-		{
-			while (objInfo != nullptr)
-			{
-				if (objInfo->mTypeInfo->matches(fieldObjInfo->mTypeInfo))
-				{
-					auto iterFind = objInfo->mFieldNameToId.find(fieldInfo->mName);
-					if (iterFind != objInfo->mFieldNameToId.end())
-					{
-						auto iterFind2 = objInfo->mFields.find(iterFind->second);
-						if (iterFind2 != objInfo->mFields.end())
-						{
-							ManagedSerializableFieldInfoPtr foundField = iterFind2->second;
-							if (foundField->isSerializable())
-							{
-								if (fieldInfo->mTypeInfo->matches(foundField->mTypeInfo))
-									return foundField;
-							}
-						}
-					}
-
-					return nullptr;
-				}
-
-				objInfo = objInfo->mBaseClass;
-			}
-
-			return nullptr;
-		};
-
 		ManagedSerializableObjectInfoPtr currentObjInfo = nullptr;
 
 		// See if this type even still exists
@@ -150,7 +119,7 @@ namespace BansheeEngine
 			if (!findFieldInfoFromKey(fieldEntry->mKey->mTypeId, fieldEntry->mKey->mFieldId, originalEntriesType, storedFieldEntry, storedFieldObjEntry))
 				continue;
 
-			ManagedSerializableFieldInfoPtr matchingFieldInfo = findTypeNameMatchingFieldInfo(storedFieldEntry, storedFieldObjEntry, currentObjInfo);
+			ManagedSerializableFieldInfoPtr matchingFieldInfo = currentObjInfo->findMatchingField(storedFieldEntry, storedFieldObjEntry->mTypeInfo);
 			if (matchingFieldInfo != nullptr)
 				setFieldData(matchingFieldInfo, fieldEntry->mValue);
 		}

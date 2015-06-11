@@ -11,14 +11,15 @@
 namespace BansheeEngine
 {
 	ManagedSerializableList::ManagedSerializableList(const ConstructPrivately& dummy)
-		:mManagedInstance(nullptr), mNumElements(0), mItemProp(nullptr), mCountProp(nullptr), mAddMethod(nullptr)
+		:mManagedInstance(nullptr), mNumElements(0), mItemProp(nullptr), mCountProp(nullptr), mAddMethod(nullptr),
+		mAddRangeMethod(nullptr), mCopyToMethod(nullptr), mClearMethod(nullptr)
 	{
 
 	}
 
 	ManagedSerializableList::ManagedSerializableList(const ConstructPrivately& dummy, const ManagedSerializableTypeInfoListPtr& typeInfo, MonoObject* managedInstance)
 		:mListTypeInfo(typeInfo), mManagedInstance(managedInstance), mNumElements(0), mItemProp(nullptr),
-		mCountProp(nullptr), mAddMethod(nullptr)
+		mCountProp(nullptr), mAddMethod(nullptr), mAddRangeMethod(nullptr), mCopyToMethod(nullptr), mClearMethod(nullptr)
 	{
 		MonoClass* listClass = MonoManager::instance().findClass(mono_object_get_class(managedInstance));
 		if(listClass == nullptr)
@@ -26,7 +27,7 @@ namespace BansheeEngine
 
 		initMonoObjects(listClass);
 
-		mNumElements = getLength();
+		mNumElements = getLengthInternal();
 	}
 
 	ManagedSerializableListPtr ManagedSerializableList::createFromExisting(MonoObject* managedInstance, const ManagedSerializableTypeInfoListPtr& typeInfo)
@@ -46,7 +47,7 @@ namespace BansheeEngine
 		return bs_shared_ptr<ManagedSerializableList>(ConstructPrivately(), typeInfo, managedInstance);
 	}
 
-	ManagedSerializableListPtr ManagedSerializableList::createFromNew(const ManagedSerializableTypeInfoListPtr& typeInfo, UINT32 size)
+	ManagedSerializableListPtr ManagedSerializableList::createNew(const ManagedSerializableTypeInfoListPtr& typeInfo, UINT32 size)
 	{
 		return bs_shared_ptr<ManagedSerializableList>(ConstructPrivately(), typeInfo, createManagedInstance(typeInfo, size));
 	}
@@ -106,7 +107,29 @@ namespace BansheeEngine
 		return ManagedSerializableFieldData::create(mListTypeInfo->mElementType, obj);
 	}
 
-	UINT32 ManagedSerializableList::getLength() const
+	void ManagedSerializableList::resize(UINT32 newSize)
+	{
+		ScriptArray tempArray(mListTypeInfo->mElementType->getMonoClass(), newSize);
+
+		UINT32 minSize = std::min(mNumElements, newSize);
+		UINT32 dummy = 0;
+
+		void* params[4];
+		params[0] = &dummy;;
+		params[1] = tempArray.getInternal();
+		params[2] = &dummy;
+		params[3] = &minSize;
+
+		mCopyToMethod->invoke(getManagedInstance(), params);
+		mClearMethod->invoke(getManagedInstance(), nullptr);
+
+		params[0] = tempArray.getInternal();
+		mAddRangeMethod->invoke(getManagedInstance(), params);
+
+		mNumElements = newSize;
+	}
+
+	UINT32 ManagedSerializableList::getLengthInternal() const
 	{
 		MonoObject* length = mCountProp->get(mManagedInstance);
 
@@ -121,6 +144,9 @@ namespace BansheeEngine
 		mItemProp = &listClass->getProperty("Item");
 		mCountProp = &listClass->getProperty("Count");
 		mAddMethod = listClass->getMethod("Add", 1);
+		mAddRangeMethod = listClass->getMethod("AddRange", 1);
+		mClearMethod = listClass->getMethod("Clear");
+		mCopyToMethod = listClass->getMethod("CopyTo", 4);
 	}
 
 	RTTITypeBase* ManagedSerializableList::getRTTIStatic()

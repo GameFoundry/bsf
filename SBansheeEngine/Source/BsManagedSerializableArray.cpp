@@ -9,13 +9,14 @@
 namespace BansheeEngine
 {
 	ManagedSerializableArray::ManagedSerializableArray(const ConstructPrivately& dummy)
-		:mManagedInstance(nullptr), mElemSize(0), mElementMonoClass(nullptr)
+		:mManagedInstance(nullptr), mElemSize(0), mElementMonoClass(nullptr), mCopyMethod(nullptr)
 	{
 
 	}
 
 	ManagedSerializableArray::ManagedSerializableArray(const ConstructPrivately& dummy, const ManagedSerializableTypeInfoArrayPtr& typeInfo, MonoObject* managedInstance)
-		:mArrayTypeInfo(typeInfo), mManagedInstance(managedInstance), mElemSize(0), mElementMonoClass(nullptr)
+		: mArrayTypeInfo(typeInfo), mManagedInstance(managedInstance), mElemSize(0), 
+		mElementMonoClass(nullptr), mCopyMethod(nullptr)
 	{
 		::MonoClass* monoClass = mono_object_get_class(mManagedInstance);
 		mElemSize = mono_array_element_size(monoClass);
@@ -24,7 +25,7 @@ namespace BansheeEngine
 
 		mNumElements.resize(typeInfo->mRank);
 		for(UINT32 i = 0; i < typeInfo->mRank; i++)
-			mNumElements[i] = getLength(i);
+			mNumElements[i] = getLengthInternal(i);
 	}
 
 	ManagedSerializableArrayPtr ManagedSerializableArray::createFromExisting(MonoObject* managedInstance, const ManagedSerializableTypeInfoArrayPtr& typeInfo)
@@ -38,12 +39,12 @@ namespace BansheeEngine
 		return bs_shared_ptr<ManagedSerializableArray>(ConstructPrivately(), typeInfo, managedInstance);
 	}
 
-	ManagedSerializableArrayPtr ManagedSerializableArray::createFromNew(const ManagedSerializableTypeInfoArrayPtr& typeInfo, const Vector<UINT32>& sizes)
+	ManagedSerializableArrayPtr ManagedSerializableArray::createNew(const ManagedSerializableTypeInfoArrayPtr& typeInfo, const Vector<UINT32>& sizes)
 	{
 		return bs_shared_ptr<ManagedSerializableArray>(ConstructPrivately(), typeInfo, createManagedInstance(typeInfo, sizes));
 	}
 
-	ManagedSerializableArrayPtr ManagedSerializableArray::createFromNew()
+	ManagedSerializableArrayPtr ManagedSerializableArray::createNew()
 	{
 		return bs_shared_ptr<ManagedSerializableArray>(ConstructPrivately());
 	}
@@ -134,6 +135,9 @@ namespace BansheeEngine
 	void ManagedSerializableArray::initMonoObjects()
 	{
 		mElementMonoClass = mArrayTypeInfo->mElementType->getMonoClass();
+
+		MonoClass* arrayClass = ScriptAssemblyManager::instance().getSystemArrayClass();
+		mCopyMethod = arrayClass->getMethodExact("Copy", "Array,Array,int");
 	}
 
 	UINT32 ManagedSerializableArray::toSequentialIdx(const Vector<UINT32>& idx) const
@@ -159,7 +163,34 @@ namespace BansheeEngine
 		return curIdx;
 	}
 
-	UINT32 ManagedSerializableArray::getLength(UINT32 dimension) const
+	void ManagedSerializableArray::resize(const Vector<UINT32>& newSizes)
+	{
+		assert(mArrayTypeInfo->mRank == (UINT32)newSizes.size());
+
+		UINT32 srcCount = 1;
+		for (auto& numElems : mNumElements)
+			srcCount *= numElems;
+
+		UINT32 dstCount = 1;
+		for (auto& numElems : newSizes)
+			dstCount *= numElems;
+
+		UINT32 copyCount = std::min(srcCount, dstCount);
+
+		MonoObject* newArray = createManagedInstance(mArrayTypeInfo, newSizes);
+
+		void* params[3];
+		params[0] = getManagedInstance();;
+		params[1] = newArray;
+		params[2] = &copyCount;
+
+		mCopyMethod->invoke(nullptr, params);
+
+		mManagedInstance = newArray;
+		mNumElements = newSizes;
+	}
+
+	UINT32 ManagedSerializableArray::getLengthInternal(UINT32 dimension) const
 	{
 		MonoClass* systemArray = ScriptAssemblyManager::instance().getSystemArrayClass();
 		MonoMethod* getLength = systemArray->getMethod("GetLength", 1);
@@ -168,6 +199,15 @@ namespace BansheeEngine
 		MonoObject* returnObj = getLength->invoke(mManagedInstance, params);
 
 		return *(UINT32*)mono_object_unbox(returnObj);
+	}
+
+	UINT32 ManagedSerializableArray::getTotalLength() const
+	{
+		UINT32 totalNumElements = 1;
+		for (auto& numElems : mNumElements)
+			totalNumElements *= numElems;
+
+		return totalNumElements;
 	}
 
 	RTTITypeBase* ManagedSerializableArray::getRTTIStatic()

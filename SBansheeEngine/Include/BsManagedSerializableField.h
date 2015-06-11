@@ -32,6 +32,7 @@ namespace BansheeEngine
 		static ManagedSerializableFieldDataPtr create(const ManagedSerializableTypeInfoPtr& typeInfo, MonoObject* value);
 		virtual void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) = 0;
 		virtual MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) = 0;
+		virtual bool equals(const ManagedSerializableFieldDataPtr& other) = 0;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -66,8 +67,9 @@ namespace BansheeEngine
 	public:
 		bool value;
 
-		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
-		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
+		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -84,8 +86,9 @@ namespace BansheeEngine
 	public:
 		wchar_t value;
 
-		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
-		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
+		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -102,8 +105,9 @@ namespace BansheeEngine
 	public:
 		INT8 value;
 
-		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
-		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
+		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -120,8 +124,9 @@ namespace BansheeEngine
 	public:
 		UINT8 value;
 
-		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
-		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
+		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -138,8 +143,9 @@ namespace BansheeEngine
 	public:
 		INT16 value;
 
-		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
-		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
+		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -156,8 +162,9 @@ namespace BansheeEngine
 	public:
 		UINT16 value;
 
-		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
-		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
+		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -174,8 +181,9 @@ namespace BansheeEngine
 	public:
 		INT32 value;
 
-		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
-		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
+		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -192,8 +200,9 @@ namespace BansheeEngine
 	public:
 		UINT32 value;
 
-		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
-		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
+		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -210,8 +219,9 @@ namespace BansheeEngine
 	public:
 		INT64 value;
 
-		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
-		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
+		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -228,8 +238,9 @@ namespace BansheeEngine
 	public:
 		UINT64 value;
 
-		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
-		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
+		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -246,8 +257,9 @@ namespace BansheeEngine
 	public:
 		float value;
 
-		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
-		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
+		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -265,8 +277,9 @@ namespace BansheeEngine
 	public:
 		double value;
 
-		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
-		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
+		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -283,8 +296,9 @@ namespace BansheeEngine
 	public:
 		WString value;
 
-		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
-		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
+		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -301,8 +315,9 @@ namespace BansheeEngine
 	public:
 		HResource value;
 
-		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
-		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
+		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -319,8 +334,9 @@ namespace BansheeEngine
 	public:
 		HGameObject value;
 
-		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
-		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
+		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -337,8 +353,9 @@ namespace BansheeEngine
 	public:
 		ManagedSerializableObjectPtr value;
 
-		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
-		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
+		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -355,8 +372,9 @@ namespace BansheeEngine
 	public:
 		ManagedSerializableArrayPtr value;
 
-		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
-		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
+		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -373,8 +391,9 @@ namespace BansheeEngine
 	public:
 		ManagedSerializableListPtr value;
 
-		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
-		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
+		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -391,8 +410,9 @@ namespace BansheeEngine
 	public:
 		ManagedSerializableDictionaryPtr value;
 
-		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo);
-		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo);
+		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
+		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

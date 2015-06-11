@@ -200,6 +200,8 @@ namespace BansheeEngine
 		void initialize();
 
 		String getFullTypeName() const { return mTypeInfo->mTypeNamespace + "." + mTypeInfo->mTypeName; }
+		ManagedSerializableFieldInfoPtr findMatchingField(const ManagedSerializableFieldInfoPtr& fieldInfo,
+			const ManagedSerializableTypeInfoPtr& fieldTypeInfo) const;
 
 		ManagedSerializableTypeInfoObjectPtr mTypeInfo;
 		UINT32 mTypeId;

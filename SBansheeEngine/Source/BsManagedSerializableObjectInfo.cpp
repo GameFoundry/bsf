@@ -48,6 +48,41 @@ namespace BansheeEngine
 		}
 	}
 
+	ManagedSerializableFieldInfoPtr ManagedSerializableObjectInfo::findMatchingField(const ManagedSerializableFieldInfoPtr& fieldInfo,
+		const ManagedSerializableTypeInfoPtr& fieldTypeInfo) const
+	{
+		const ManagedSerializableObjectInfo* objInfo = this;
+		while (objInfo != nullptr)
+		{
+			if (objInfo->mTypeInfo->matches(fieldTypeInfo))
+			{
+				auto iterFind = objInfo->mFieldNameToId.find(fieldInfo->mName);
+				if (iterFind != objInfo->mFieldNameToId.end())
+				{
+					auto iterFind2 = objInfo->mFields.find(iterFind->second);
+					if (iterFind2 != objInfo->mFields.end())
+					{
+						ManagedSerializableFieldInfoPtr foundField = iterFind2->second;
+						if (foundField->isSerializable())
+						{
+							if (fieldInfo->mTypeInfo->matches(foundField->mTypeInfo))
+								return foundField;
+						}
+					}
+				}
+
+				return nullptr;
+			}
+
+			if (objInfo->mBaseClass != nullptr)
+				objInfo = objInfo->mBaseClass.get();
+			else
+				objInfo = nullptr;
+		}
+
+		return nullptr;
+	}
+
 	RTTITypeBase* ManagedSerializableObjectInfo::getRTTIStatic()
 	{
 		return ManagedSerializableObjectInfoRTTI::instance();

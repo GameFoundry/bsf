@@ -17,14 +17,25 @@ namespace BansheeEngine
 
 		MonoObject* getManagedInstance() const { return mManagedInstance; }
 
+		void resize(UINT32 newSize);
+		void setFieldData(UINT32 arrayIdx, const ManagedSerializableFieldDataPtr& val);
+		void addFieldData(const ManagedSerializableFieldDataPtr& val);
+		ManagedSerializableFieldDataPtr getFieldData(UINT32 arrayIdx);
+		UINT32 getLength() const { return mNumElements; }
+
+		ManagedSerializableTypeInfoListPtr getTypeInfo() const { return mListTypeInfo; }
+
 		static ManagedSerializableListPtr createFromExisting(MonoObject* managedInstance, const ManagedSerializableTypeInfoListPtr& typeInfo);
-		static ManagedSerializableListPtr createFromNew(const ManagedSerializableTypeInfoListPtr& typeInfo, UINT32 size);
+		static ManagedSerializableListPtr createNew(const ManagedSerializableTypeInfoListPtr& typeInfo, UINT32 size);
 		static MonoObject* createManagedInstance(const ManagedSerializableTypeInfoListPtr& typeInfo, UINT32 size);
 
 	protected:
 		MonoObject* mManagedInstance;
 
 		MonoMethod* mAddMethod;
+		MonoMethod* mAddRangeMethod;
+		MonoMethod* mClearMethod;
+		MonoMethod* mCopyToMethod;
 		MonoProperty* mItemProp;
 		MonoProperty* mCountProp;
 
@@ -32,17 +43,12 @@ namespace BansheeEngine
 		UINT32 mNumElements;
 
 		void initMonoObjects(MonoClass* listClass);
+		UINT32 getLengthInternal() const;
 
 		/**
 		 * @brief	Creates a new managed instance and populates it with stored field data.
 		 */
 		void deserializeManagedInstance(const Vector<ManagedSerializableFieldDataPtr>& entries);
-
-		void setFieldData(UINT32 arrayIdx, const ManagedSerializableFieldDataPtr& val);
-		void addFieldData(const ManagedSerializableFieldDataPtr& val);
-		ManagedSerializableFieldDataPtr getFieldData(UINT32 arrayIdx);
-
-		UINT32 getLength() const;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

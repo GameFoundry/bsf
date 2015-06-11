@@ -24,6 +24,26 @@ ProjectLibrary import
 I'm not sure if queued dependencies are handled properly. They're handled on an internal ProjectLibrary loop but perhaps I should
 return them in checkForModifications?
 
+---------------------------------------------------------------------
+Prefab diff
+
+IMMEDIATE:
+ - Compile and test managed diff (ignoring game object handles for now)
+ - Create a unit test for managed diff
+ - Consider cleaning up ManagedSerializableDiff by moving the smaller classes to a different file
+
+See "Prefabs" gdoc for later goals
+See "Brainstorm" gdoc for ideas about how to solve the ID issue (and see below)
+
+When deserializing diffs do I need to turn on GameObjectManager?
+ - Since some could be refrencing scene objects or components whose IDs changed...
+ - See ManagedSerializableObjectRTTI
+ - THIS IS ANOTHER reason I need to use the new IDs when comparing Game Object handles.
+    e.g. if a game object handle points into a child prefab instance then when I'm comparing a field containing that handle to the original
+    it must have the same ID unless the user manually changed the field value. This won't be true with the current system as that game
+    object will have a different ID each level load (and a different ID compared to its Prefab).
+	  - I will likely need to be able to provide a custom compare method for fields containing GameObjectHandles
+
 ----------------------------------------------------------------------
 Polish stage 1
 

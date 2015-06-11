@@ -42,13 +42,13 @@ namespace BansheeEngine
 	}
 
 	ManagedSerializableDictionary::ManagedSerializableDictionary(const ConstructPrivately& dummy)
-		:mManagedInstance(nullptr), mAddMethod(nullptr), mGetEnumerator(nullptr), mEnumMoveNext(nullptr),
-		mEnumCurrentProp(nullptr), mKeyProp(nullptr), mValueProp(nullptr)
+		:mManagedInstance(nullptr), mAddMethod(nullptr), mGetEnumerator(nullptr), mEnumMoveNext(nullptr), mRemoveMethod(nullptr),
+		mEnumCurrentProp(nullptr), mKeyProp(nullptr), mValueProp(nullptr), mContainsKeyMethod(nullptr), mTryGetValueMethod(nullptr)
 	{ }
 
 	ManagedSerializableDictionary::ManagedSerializableDictionary(const ConstructPrivately& dummy, const ManagedSerializableTypeInfoDictionaryPtr& typeInfo, MonoObject* managedInstance)
 		:mDictionaryTypeInfo(typeInfo), mManagedInstance(managedInstance), mAddMethod(nullptr), mGetEnumerator(nullptr), mEnumMoveNext(nullptr),
-		mEnumCurrentProp(nullptr), mKeyProp(nullptr), mValueProp(nullptr)
+		mEnumCurrentProp(nullptr), mKeyProp(nullptr), mValueProp(nullptr), mContainsKeyMethod(nullptr), mTryGetValueMethod(nullptr), mRemoveMethod(nullptr)
 	{
 
 	}
@@ -70,7 +70,7 @@ namespace BansheeEngine
 		return bs_shared_ptr<ManagedSerializableDictionary>(ConstructPrivately(), typeInfo, managedInstance);
 	}
 
-	ManagedSerializableDictionaryPtr ManagedSerializableDictionary::createFromNew(const ManagedSerializableTypeInfoDictionaryPtr& typeInfo)
+	ManagedSerializableDictionaryPtr ManagedSerializableDictionary::createNew(const ManagedSerializableTypeInfoDictionaryPtr& typeInfo)
 	{
 		return bs_shared_ptr<ManagedSerializableDictionary>(ConstructPrivately(), typeInfo, createManagedInstance(typeInfo));
 	}
@@ -136,6 +136,18 @@ namespace BansheeEngine
 		}
 	}
 
+	ManagedSerializableFieldDataPtr ManagedSerializableDictionary::getFieldData(const ManagedSerializableFieldDataPtr& key)
+	{
+		MonoObject* value = nullptr;
+
+		void* params[2];
+		params[0] = key->getValue(mDictionaryTypeInfo->mKeyType);
+		params[1] = &value;
+
+		mTryGetValueMethod->invoke(mManagedInstance, params);
+		return ManagedSerializableFieldData::create(mDictionaryTypeInfo->mValueType, value);
+	}
+
 	void ManagedSerializableDictionary::setFieldData(const ManagedSerializableFieldDataPtr& key, const ManagedSerializableFieldDataPtr& val)
 	{
 		void* params[2];
@@ -143,6 +155,23 @@ namespace BansheeEngine
 		params[1] = val->getValue(mDictionaryTypeInfo->mValueType);
 
 		mAddMethod->invoke(mManagedInstance, params);
+	}
+
+	void ManagedSerializableDictionary::removeFieldData(const ManagedSerializableFieldDataPtr& key)
+	{
+		void* params[1];
+		params[0] = key->getValue(mDictionaryTypeInfo->mKeyType);
+
+		mRemoveMethod->invoke(mManagedInstance, params);
+	}
+
+	bool ManagedSerializableDictionary::contains(const ManagedSerializableFieldDataPtr& key) const
+	{
+		void* params[1];
+		params[0] = key->getValue(mDictionaryTypeInfo->mKeyType);
+
+		MonoObject* returnVal = mContainsKeyMethod->invoke(mManagedInstance, params);
+		return *(bool*)mono_object_unbox(returnVal);
 	}
 
 	ManagedSerializableDictionary::Enumerator ManagedSerializableDictionary::getEnumerator() const
@@ -153,6 +182,9 @@ namespace BansheeEngine
 	void ManagedSerializableDictionary::initMonoObjects(MonoClass* dictionaryClass)
 	{
 		mAddMethod = dictionaryClass->getMethod("Add", 2);
+		mRemoveMethod = dictionaryClass->getMethod("Remove", 1);
+		mTryGetValueMethod = dictionaryClass->getMethod("TryGetValue", 2);
+		mContainsKeyMethod = dictionaryClass->getMethod("ContainsKey", 1);
 		mGetEnumerator = dictionaryClass->getMethod("GetEnumerator");
 
 		MonoClass* enumeratorClass = mGetEnumerator->getReturnType();
