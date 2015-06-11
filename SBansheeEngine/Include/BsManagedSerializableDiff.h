@@ -151,10 +151,10 @@ namespace BansheeEngine
 		SPtr<ModifiedObject> generateDiff(const ManagedSerializableObjectPtr& oldObj, const ManagedSerializableObjectPtr& newObj);
 		SPtr<Modification> generateDiff(const ManagedSerializableFieldDataPtr& oldData, const ManagedSerializableFieldDataPtr& newData,
 			UINT32 fieldTypeId);
-		void applyDiff(const SPtr<ModifiedObject>& mod, const ManagedSerializableObjectPtr& obj);
-		void applyDiff(const SPtr<ModifiedArray>& mod, const ManagedSerializableArrayPtr& obj);
-		void applyDiff(const SPtr<ModifiedArray>& mod, const ManagedSerializableListPtr& obj);
-		void applyDiff(const SPtr<ModifiedDictionary>& mod, const ManagedSerializableDictionaryPtr& obj);
+		ManagedSerializableFieldDataPtr applyDiff(const SPtr<ModifiedObject>& mod, const ManagedSerializableObjectPtr& obj);
+		ManagedSerializableFieldDataPtr applyDiff(const SPtr<ModifiedArray>& mod, const ManagedSerializableArrayPtr& obj);
+		ManagedSerializableFieldDataPtr applyDiff(const SPtr<ModifiedArray>& mod, const ManagedSerializableListPtr& obj);
+		ManagedSerializableFieldDataPtr applyDiff(const SPtr<ModifiedDictionary>& mod, const ManagedSerializableDictionaryPtr& obj);
 		ManagedSerializableFieldDataPtr applyDiff(const SPtr<Modification>& mod, const ManagedSerializableTypeInfoPtr& fieldType,
 			const ManagedSerializableFieldDataPtr& origData);
 

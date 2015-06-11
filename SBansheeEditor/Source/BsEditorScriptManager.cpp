@@ -46,9 +46,11 @@ namespace BansheeEngine
 		mUpdateMethod->invoke(nullptr, nullptr);
 
 		// Run tests
+#if BS_DEBUG_MODE
 		TestSuitePtr testSuite = TestSuite::create<ScriptEditorTestSuite>();
 		ExceptionTestOutput testOutput;
 		testSuite->run(testOutput);
+#endif
 	}
 
 	EditorScriptManager::~EditorScriptManager()

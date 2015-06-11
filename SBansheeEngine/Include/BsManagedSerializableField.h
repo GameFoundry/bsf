@@ -65,7 +65,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataBool : public ManagedSerializableFieldData
 	{
 	public:
-		bool value;
+		bool value = false;
 
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
@@ -84,7 +84,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataChar : public ManagedSerializableFieldData
 	{
 	public:
-		wchar_t value;
+		wchar_t value = 0;
 
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
@@ -103,7 +103,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataI8 : public ManagedSerializableFieldData
 	{
 	public:
-		INT8 value;
+		INT8 value = 0;
 
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
@@ -122,7 +122,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataU8 : public ManagedSerializableFieldData
 	{
 	public:
-		UINT8 value;
+		UINT8 value = 0;
 
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
@@ -141,7 +141,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataI16 : public ManagedSerializableFieldData
 	{
 	public:
-		INT16 value;
+		INT16 value = 0;
 
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
@@ -160,7 +160,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataU16 : public ManagedSerializableFieldData
 	{
 	public:
-		UINT16 value;
+		UINT16 value = 0;
 
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
@@ -179,7 +179,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataI32 : public ManagedSerializableFieldData
 	{
 	public:
-		INT32 value;
+		INT32 value = 0;
 
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
@@ -198,7 +198,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataU32 : public ManagedSerializableFieldData
 	{
 	public:
-		UINT32 value;
+		UINT32 value = 0;
 
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
@@ -217,7 +217,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataI64 : public ManagedSerializableFieldData
 	{
 	public:
-		INT64 value;
+		INT64 value = 0;
 
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
@@ -236,7 +236,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataU64 : public ManagedSerializableFieldData
 	{
 	public:
-		UINT64 value;
+		UINT64 value = 0;
 
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
@@ -255,7 +255,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataFloat : public ManagedSerializableFieldData
 	{
 	public:
-		float value;
+		float value = 0.0f;
 
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
@@ -275,7 +275,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataDouble : public ManagedSerializableFieldData
 	{
 	public:
-		double value;
+		double value = 0.0;
 
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;

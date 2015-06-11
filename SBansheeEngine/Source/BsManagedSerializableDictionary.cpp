@@ -50,7 +50,11 @@ namespace BansheeEngine
 		:mDictionaryTypeInfo(typeInfo), mManagedInstance(managedInstance), mAddMethod(nullptr), mGetEnumerator(nullptr), mEnumMoveNext(nullptr),
 		mEnumCurrentProp(nullptr), mKeyProp(nullptr), mValueProp(nullptr), mContainsKeyMethod(nullptr), mTryGetValueMethod(nullptr), mRemoveMethod(nullptr)
 	{
+		MonoClass* dictClass = MonoManager::instance().findClass(mono_object_get_class(managedInstance));
+		if (dictClass == nullptr)
+			return;
 
+		initMonoObjects(dictClass);
 	}
 
 	ManagedSerializableDictionaryPtr ManagedSerializableDictionary::createFromExisting(MonoObject* managedInstance, const ManagedSerializableTypeInfoDictionaryPtr& typeInfo)
@@ -145,7 +149,16 @@ namespace BansheeEngine
 		params[1] = &value;
 
 		mTryGetValueMethod->invoke(mManagedInstance, params);
-		return ManagedSerializableFieldData::create(mDictionaryTypeInfo->mValueType, value);
+
+		MonoObject* boxedValue = value;
+		::MonoClass* valueTypeClass = mDictionaryTypeInfo->mValueType->getMonoClass();
+		if (mono_class_is_valuetype(valueTypeClass))
+		{
+			if (value != nullptr)
+				boxedValue = mono_value_box(MonoManager::instance().getDomain(), valueTypeClass, &value);
+		}
+
+		return ManagedSerializableFieldData::create(mDictionaryTypeInfo->mValueType, boxedValue);
 	}
 
 	void ManagedSerializableDictionary::setFieldData(const ManagedSerializableFieldDataPtr& key, const ManagedSerializableFieldDataPtr& val)
