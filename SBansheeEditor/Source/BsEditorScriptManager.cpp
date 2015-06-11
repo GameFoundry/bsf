@@ -12,9 +12,11 @@
 #include "BsScriptProjectLibrary.h"
 #include "BsMenuItemManager.h"
 #include "BsScriptFolderMonitor.h"
+#include "BsScriptEditorTestSuite.h"
 #include "BsTime.h"
 #include "BsMath.h"
 #include "BsEditorApplication.h"
+#include <BsTestOutput.h>
 
 namespace BansheeEngine
 {
@@ -42,6 +44,11 @@ namespace BansheeEngine
 		// Initial update
 		mLastUpdateTime = gTime().getTime();
 		mUpdateMethod->invoke(nullptr, nullptr);
+
+		// Run tests
+		TestSuitePtr testSuite = TestSuite::create<ScriptEditorTestSuite>();
+		ExceptionTestOutput testOutput;
+		testSuite->run(testOutput);
 	}
 
 	EditorScriptManager::~EditorScriptManager()

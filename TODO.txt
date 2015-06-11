@@ -32,17 +32,23 @@ IMMEDIATE:
  - Create a unit test for managed diff
  - Consider cleaning up ManagedSerializableDiff by moving the smaller classes to a different file
 
+Consider adding prefab support without diffs first (add dummy methods in place)
+ - This might make it easier to understand how will it all fit together
+
 See "Prefabs" gdoc for later goals
 See "Brainstorm" gdoc for ideas about how to solve the ID issue (and see below)
 
-When deserializing diffs do I need to turn on GameObjectManager?
- - Since some could be refrencing scene objects or components whose IDs changed...
- - See ManagedSerializableObjectRTTI
- - THIS IS ANOTHER reason I need to use the new IDs when comparing Game Object handles.
-    e.g. if a game object handle points into a child prefab instance then when I'm comparing a field containing that handle to the original
-    it must have the same ID unless the user manually changed the field value. This won't be true with the current system as that game
-    object will have a different ID each level load (and a different ID compared to its Prefab).
-	  - I will likely need to be able to provide a custom compare method for fields containing GameObjectHandles
+When deserializing diffs I need to turn on GameObjectManager
+ - Since diffs should be part of HSceneObject it should already be active but it is something to pay attention for
+
+GameObjectHandle compare in managed serializable diff won't work for prefabs (will have the same problem for native diff)
+ - Handle comparison compares instanceIDs which will be different between prefab and its instance
+ - Best solution is probably to add a flag that tells the diff system how to deal with game object handles
+   (i.e. compare using instance IDs or use the prefab link IDs)
+
+When I'm saving a prefab instance I need to generate the diff, therefore I need to load the prefab (ManagedSerializable stuff automatically created managed instance on load)
+ - Will there be problems if I load the prefab objects? (e.g. a renderable, or some object might trigger some action on load)
+  - It MIGHT be better to be able to load compare the serialized data, without actually instantiating any objects
 
 ----------------------------------------------------------------------
 Polish stage 1

@@ -125,6 +125,8 @@
     <Compile Include="Scene\ScaleHandle.cs" />
     <Compile Include="ScriptCompiler.cs" />
     <Compile Include="Selection.cs" />
+    <Compile Include="UnitTests.cs" />
+    <Compile Include="UnitTestTypes.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MBansheeEngine\MBansheeEngine.csproj">

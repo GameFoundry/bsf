@@ -11,24 +11,8 @@
 #include "BsScriptObjectManager.h"
 #include "BsApplication.h"
 
-// DEBUG ONLY
-#include "BsScriptSceneObject.h"
-#include "BsSceneObject.h"
-#include "BsMonoUtil.h"
-#include "BsMonoMethod.h"
-
 namespace BansheeEngine
 {
-	void unitTest1_GameObjectClone(MonoObject* instance)
-	{
-		ScriptSceneObject* nativeInstance = ScriptSceneObject::toNative(instance);
-
-		HSceneObject SO = static_object_cast<SceneObject>(nativeInstance->getNativeHandle());
-		HSceneObject cloneSO = SO->clone();
-
-		cloneSO->setParent(SO);
-	}
-
 	extern "C" BS_SCR_BE_EXPORT const String& getPluginName()
 	{
 		static String pluginName = "SBansheeEngine";
@@ -43,9 +27,6 @@ namespace BansheeEngine
 		MonoAssembly& bansheeEngineAssembly = MonoManager::instance().loadAssembly(engineAssemblyPath.toString(), ENGINE_ASSEMBLY);
 
 		// TODO - Load Game assembly (gApplication().getGameAssemblyPath())
-
-		// DEBUG ONLY
-		mono_add_internal_call("BansheeEngine.Program::UnitTest1_GameObjectClone", &unitTest1_GameObjectClone);
 
 		ScriptObjectManager::startUp();
 		ManagedResourceManager::startUp();

@@ -52,10 +52,6 @@
     <Compile Include="Debug.cs" />
     <Compile Include="Color.cs" />
     <Compile Include="Component.cs" />
-    <Compile Include="DbgComponent.cs" />
-    <Compile Include="DbgComponent2.cs" />
-    <Compile Include="DbgSerzCls.cs" />
-    <Compile Include="DbgSerzObj.cs" />
     <Compile Include="DirectoryEx.cs" />
     <Compile Include="DontSerializeField.cs" />
     <Compile Include="FileEx.cs" />

@@ -3,7 +3,7 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
-    [CustomInspector(typeof(DbgComponent))]
+    [CustomInspector(typeof(Camera))]
     public class DbgCustomInspector : Inspector
     {
         internal override bool Refresh()

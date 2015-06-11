@@ -241,6 +241,7 @@
     <ClInclude Include="Include\BsScriptCodeEditor.h" />
     <ClInclude Include="Include\BsScriptDragDropManager.h" />
     <ClInclude Include="Include\BsScriptDropDownWindow.h" />
+    <ClInclude Include="Include\BsScriptEditorTestSuite.h" />
     <ClInclude Include="Include\BsScriptFolderMonitor.h" />
     <ClInclude Include="Include\BsScriptGUISceneTreeView.h" />
     <ClInclude Include="Include\BsScriptOSDropTarget.h" />
@@ -277,6 +278,7 @@
     <ClInclude Include="Include\BsScriptProjectLibrary.h" />
     <ClInclude Include="Include\BsScriptSceneViewHandler.h" />
     <ClInclude Include="Include\BsScriptSelection.h" />
+    <ClInclude Include="Include\BsScriptUnitTests.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsMenuItemManager.cpp" />
@@ -288,6 +290,7 @@
     <ClCompile Include="Source\BsGUIResourceField.cpp" />
     <ClCompile Include="Source\BsScriptBrowseDialog.cpp" />
     <ClCompile Include="Source\BsScriptDropDownWindow.cpp" />
+    <ClCompile Include="Source\BsScriptEditorTestSuite.cpp" />
     <ClCompile Include="Source\BsScriptFolderMonitor.cpp" />
     <ClCompile Include="Source\BsScriptGUISceneTreeView.cpp" />
     <ClCompile Include="Source\BsScriptOSDropTarget.cpp" />
@@ -324,6 +327,7 @@
     <ClCompile Include="Source\BsScriptProjectLibrary.cpp" />
     <ClCompile Include="Source\BsScriptSceneViewHandler.cpp" />
     <ClCompile Include="Source\BsScriptSelection.cpp" />
+    <ClCompile Include="Source\BsScriptUnitTests.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
