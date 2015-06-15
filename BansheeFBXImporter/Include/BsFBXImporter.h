@@ -93,6 +93,18 @@ namespace BansheeEngine
 		void importSkin(FBXImportScene& scene, FbxSkin* skin, FBXImportMesh& mesh);
 
 		/**
+		 * @brief	Imports all bone and blend shape animations from the FBX.
+		 */
+		void importAnimations(FbxScene* scene, bool importBlendShapeAnimations, FBXImportScene& importScene);
+
+		/**
+		 * @brief	Imports all animations for the specified animation layer and outputs them in the provided clip.
+		 *			Child nodes will be iterated recursively.
+		 */
+		void importAnimations(FbxAnimLayer* layer, FbxNode* node, bool importBlendShapeAnimations, 
+			FBXAnimationClip& clip, FBXImportScene& importScene);
+
+		/**
 		 * @brief	Converts all the meshes from per-index attributes to per-vertex attributes.
 		 *
 		 * @note	This method will replace all meshes in the scene with new ones, and delete old ones

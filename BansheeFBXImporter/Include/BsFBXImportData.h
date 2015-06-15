@@ -87,6 +87,63 @@ namespace BansheeEngine
 	};
 
 	/**
+	 * @brief	Represents a single frame in an animation curve. Contains
+	 *			a value at a specific time as well as the in and out tangents
+	 *			at that position.
+	 */
+	struct FBXKeyFrame
+	{
+		float time;
+		float value;
+		float inTangent;
+		float outTangent;
+	};
+
+	/**
+	 * @brief	Curve with a set of key frames used for animation
+	 *			of a single value.
+	 */
+	struct FBXAnimationCurve
+	{
+		Vector<FBXKeyFrame> keyframes;
+	};
+
+	/**
+	 * @brief	Animation curves required to animate a single bone.
+	 */
+	struct FBXBoneAnimation
+	{
+		FBXImportNode* node;
+
+		FBXAnimationCurve position[3];
+		FBXAnimationCurve rotation[4];
+		FBXAnimationCurve scale[3];
+	};
+
+	/**
+	 * @brief	Animation curve required to animate a blend shape.
+	 */
+	struct FBXBlendShapeAnimation
+	{
+		String blendShape;
+		FBXAnimationCurve curve;
+	};
+
+	/**
+	 * @brief	Animation clip containing a set of bone or blend shape
+	 *			animations.
+	 */
+	struct FBXAnimationClip
+	{
+		String name;
+		float start;
+		float end;
+
+		Vector<FBXBoneAnimation> boneAnimations;
+		Vector<FBXBlendShapeAnimation> blendShapeAnimations;
+	};
+
+	/**
 	 * @brief	Imported mesh data.
 	 */
 	struct FBXImportMesh
@@ -128,7 +185,7 @@ namespace BansheeEngine
 		UnorderedMap<FbxNode*, FBXImportNode*> nodeMap;
 		UnorderedMap<FbxMesh*, UINT32> meshMap;
 
-		// TODO - Store animation & bones
+		Vector<FBXAnimationClip> clips;
 	};
 
 }

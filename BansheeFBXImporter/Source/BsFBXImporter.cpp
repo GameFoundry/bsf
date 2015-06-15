@@ -133,6 +133,9 @@ namespace BansheeEngine
 		if (fbxImportOptions.importSkin)
 			importSkin(importedScene);
 
+		if (fbxImportOptions.importAnimation)
+			importAnimations(fbxScene, fbxImportOptions.importBlendShapes, importedScene);
+
 		splitMeshVertices(importedScene);
 		
 		Vector<SubMesh> subMeshes;
@@ -288,8 +291,6 @@ namespace BansheeEngine
 				todo.push(childNode);
 			}
 		}
-
-		// TODO - Parse animation
 	}
 
 	FBXImportNode* FBXImporter::createImportNode(FBXImportScene& scene, FbxNode* fbxNode, FBXImportNode* parent)
@@ -1048,6 +1049,81 @@ namespace BansheeEngine
 			float invSum = 1.0f / sum;
 			for (UINT32 j = 0; j < FBX_IMPORT_MAX_BONE_INFLUENCES; j++)
 				influences[i].weights[j] *= invSum;
+		}
+	}
+
+	void FBXImporter::importAnimations(FbxScene* scene, bool importBlendShapeAnimations, FBXImportScene& importScene)
+	{
+		FbxNode* root = scene->GetRootNode();
+
+		UINT32 numAnimStacks = (UINT32)scene->GetSrcObjectCount<FbxAnimStack>();
+		for (UINT32 i = 0; i < numAnimStacks; i++)
+		{
+			FbxAnimStack* animStack = scene->GetSrcObject<FbxAnimStack>(i);
+
+			importScene.clips.push_back(FBXAnimationClip());
+			FBXAnimationClip& clip = importScene.clips.back();
+			clip.name = animStack->GetName();
+
+			FbxTimeSpan timeSpan = animStack->GetLocalTimeSpan();
+			clip.start = (float)timeSpan.GetStart().GetSecondDouble();
+			clip.end = (float)timeSpan.GetStop().GetSecondDouble();
+
+			UINT32 layerCount = animStack->GetMemberCount<FbxAnimLayer>();
+			if (layerCount > 1)
+			{
+				FbxAnimEvaluator* evaluator = scene->GetAnimationEvaluator();
+
+				FbxTime startTime;
+				startTime.SetSecondDouble(clip.start);
+
+				FbxTime endTime;
+				endTime.SetSecondDouble(clip.end);
+
+				FbxTime::EMode timeMode = scene->GetGlobalSettings().GetTimeMode();
+				FbxTime sampleRate;
+				sampleRate.SetSecondDouble(1.0f / FbxTime::GetFrameRate(timeMode));
+
+				if (!animStack->BakeLayers(evaluator, startTime, endTime, sampleRate))
+					continue;
+
+				layerCount = animStack->GetMemberCount<FbxAnimLayer>();
+			}
+
+			if (layerCount == 1)
+			{
+				FbxAnimLayer* animLayer = animStack->GetMember<FbxAnimLayer>(0);
+
+				importAnimations(animLayer, root, importBlendShapeAnimations, clip, importScene);
+			}
+		}
+	}
+
+	void FBXImporter::importAnimations(FbxAnimLayer* layer, FbxNode* node, bool importBlendShapeAnimations, 
+		FBXAnimationClip& clip, FBXImportScene& importScene)
+	{
+		FbxAnimCurve* translation[3];
+		translation[0] = node->LclTranslation.GetCurve(layer, FBXSDK_CURVENODE_COMPONENT_X);
+		translation[1] = node->LclTranslation.GetCurve(layer, FBXSDK_CURVENODE_COMPONENT_Y);
+		translation[2] = node->LclTranslation.GetCurve(layer, FBXSDK_CURVENODE_COMPONENT_Z);
+
+		FbxAnimCurve* rotation[3];
+		rotation[0] = node->LclRotation.GetCurve(layer, FBXSDK_CURVENODE_COMPONENT_X);
+		rotation[1] = node->LclRotation.GetCurve(layer, FBXSDK_CURVENODE_COMPONENT_Y);
+		rotation[2] = node->LclRotation.GetCurve(layer, FBXSDK_CURVENODE_COMPONENT_Z);
+
+		FbxAnimCurve* scale[3];
+		scale[0] = node->LclScaling.GetCurve(layer, FBXSDK_CURVENODE_COMPONENT_X);
+		scale[1] = node->LclScaling.GetCurve(layer, FBXSDK_CURVENODE_COMPONENT_Y);
+		scale[2] = node->LclScaling.GetCurve(layer, FBXSDK_CURVENODE_COMPONENT_Z);
+
+		// TODO
+
+		UINT32 childCount = (UINT32)node->GetChildCount();
+		for (UINT32 i = 0; i < childCount; i++)
+		{
+			FbxNode* child = node->GetChild(i);
+			importAnimations(layer, child, importBlendShapeAnimations, clip, importScene);
 		}
 	}
 }
