@@ -65,6 +65,7 @@ namespace BansheeEngine
 				std::shared_ptr<ManagedSerializableTypeInfoObject> typeInfo = bs_shared_ptr<ManagedSerializableTypeInfoObject>();
 				typeInfo->mTypeNamespace = curClass->getNamespace();
 				typeInfo->mTypeName = curClass->getTypeName();
+				typeInfo->mTypeId = mUniqueTypeId++;
 
 				MonoType* monoType = mono_class_get_type(curClass->_getInternalClass());
 				int monoPrimitiveType = mono_type_get_type(monoType);
@@ -76,13 +77,11 @@ namespace BansheeEngine
 
 				std::shared_ptr<ManagedSerializableObjectInfo> objInfo = bs_shared_ptr<ManagedSerializableObjectInfo>();
 
-				objInfo->mTypeId = mUniqueTypeId++;
-
 				objInfo->mTypeInfo = typeInfo;
 				objInfo->mMonoClass = curClass;
 
-				assemblyInfo->mTypeNameToId[objInfo->getFullTypeName()] = objInfo->mTypeId;
-				assemblyInfo->mObjectInfos[objInfo->mTypeId] = objInfo;
+				assemblyInfo->mTypeNameToId[objInfo->getFullTypeName()] = typeInfo->mTypeId;
+				assemblyInfo->mObjectInfos[typeInfo->mTypeId] = objInfo;
 			}
 		}
 
@@ -108,6 +107,7 @@ namespace BansheeEngine
 				fieldInfo->mName = field->getName();
 				fieldInfo->mMonoField = field;
 				fieldInfo->mTypeInfo = typeInfo;
+				fieldInfo->mParentTypeId = objInfo->mTypeInfo->mTypeId;
 				
 				MonoFieldVisibility visibility = field->getVisibility();
 				if (visibility == MonoFieldVisibility::Public)
@@ -146,13 +146,6 @@ namespace BansheeEngine
 
 				base = base->getBaseClass();
 			}
-		}
-
-		// Finish object info initialization
-		for (auto& curClassInfo : assemblyInfo->mObjectInfos)
-		{
-			std::shared_ptr<ManagedSerializableObjectInfo> objInfo = curClassInfo.second;
-			objInfo->initialize();
 		}
 	}
 

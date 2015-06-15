@@ -5,10 +5,8 @@
 #include "BsMonoUtil.h"
 #include "BsMonoMethod.h"
 #include "BsMemorySerializer.h"
-#include "BsManagedSerializableField.h"
 #include "BsManagedSerializableObject.h"
-#include "BsManagedSerializableObjectInfo.h"
-#include "BsManagedSerializableObjectData.h"
+#include "BsScriptGameObjectManager.h"
 #include "BsDebug.h"
 
 namespace BansheeEngine
@@ -60,43 +58,27 @@ namespace BansheeEngine
 			
 			if (serializableObject != nullptr)
 			{
-				ManagedSerializableObjectInfoPtr objectInfo = serializableObject->getObjectInfo();
-				ManagedSerializableObjectDataPtr objectData = serializableObject->getObjectData();
-
 				MemorySerializer ms;
 
-				backupData.mTypeInfo.size = 0;
-				backupData.mTypeInfo.data = ms.encode(objectInfo.get(), backupData.mTypeInfo.size);
-
-				backupData.mObjectData.size = 0;
-				backupData.mObjectData.data = ms.encode(objectData.get(), backupData.mObjectData.size);
+				backupData.size = 0;
+				backupData.data = ms.encode(serializableObject.get(), backupData.size);
 			}
 			else
 			{
-				backupData.mTypeInfo.size = 0;
-				backupData.mTypeInfo.data = nullptr;
-
-				backupData.mObjectData.size = 0;
-				backupData.mObjectData.data = nullptr;
+				backupData.size = 0;
+				backupData.data = nullptr;
 			}
 		}
 		else
 		{
 			MemorySerializer ms;
 
-			backupData.mTypeInfo.size = 0;
-
-			if (mMissingTypeObjectInfo != nullptr)
-				backupData.mTypeInfo.data = ms.encode(mMissingTypeObjectInfo.get(), backupData.mTypeInfo.size);
-			else
-				backupData.mTypeInfo.data = nullptr;
-
-			backupData.mObjectData.size = 0;
+			backupData.size = 0;
 
 			if (mMissingTypeObjectData != nullptr)
-				backupData.mObjectData.data = ms.encode(mMissingTypeObjectData.get(), backupData.mObjectData.size);
+				backupData.data = ms.encode(mMissingTypeObjectData.get(), backupData.size);
 			else
-				backupData.mObjectData.data = nullptr;
+				backupData.data = nullptr;
 		}
 
 		if (clearExisting)
@@ -121,32 +103,22 @@ namespace BansheeEngine
 	{
 		initialize(instance);
 
-		if (instance != nullptr && data.mTypeInfo.data != nullptr && data.mObjectData.data != nullptr)
+		if (instance != nullptr && data.data != nullptr)
 		{
 			MemorySerializer ms;
-			ManagedSerializableObjectInfoPtr objectInfo = std::static_pointer_cast<ManagedSerializableObjectInfo>(ms.decode(data.mTypeInfo.data, data.mTypeInfo.size));
 
 			GameObjectManager::instance().startDeserialization();
-			ManagedSerializableObjectDataPtr objectData = std::static_pointer_cast<ManagedSerializableObjectData>(ms.decode(data.mObjectData.data, data.mObjectData.size));
+			ManagedSerializableObjectPtr serializableObject = std::static_pointer_cast<ManagedSerializableObject>(ms.decode(data.data, data.size));
 			GameObjectManager::instance().endDeserialization();
 
 			if (!missingType)
-			{
-				ManagedSerializableObjectPtr serializableObject = ManagedSerializableObject::createFromExisting(instance);
-				serializableObject->setObjectData(objectData, objectInfo);
-			}
+				serializableObject->deserialize();
 			else
-			{
-				mMissingTypeObjectInfo = objectInfo;
-				mMissingTypeObjectData = objectData;
-			}
+				mMissingTypeObjectData = serializableObject;
 		}
 
 		if (!missingType)
-		{
-			mMissingTypeObjectInfo = nullptr;
 			mMissingTypeObjectData = nullptr;
-		}
 
 		mMissingType = missingType;
 		mRequiresReset = true;

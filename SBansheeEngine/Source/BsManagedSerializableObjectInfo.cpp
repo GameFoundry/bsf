@@ -26,26 +26,9 @@ namespace BansheeEngine
 	}
 
 	ManagedSerializableObjectInfo::ManagedSerializableObjectInfo()
-		:mMonoClass(nullptr), mTypeId(0)
+		:mMonoClass(nullptr)
 	{
 
-	}
-
-	void ManagedSerializableObjectInfo::initialize()
-	{
-		mCachedAllFields.clear();
-
-		ManagedSerializableObjectInfo* curType = this;
-		while (curType != nullptr)
-		{
-			for (auto& field : mFields)
-			{
-				if (field.second->isSerializable())
-					mCachedAllFields.push_back(CachedField(field.second, curType->mTypeId));
-			}
-
-			curType = curType->mBaseClass.get();
-		}
 	}
 
 	ManagedSerializableFieldInfoPtr ManagedSerializableObjectInfo::findMatchingField(const ManagedSerializableFieldInfoPtr& fieldInfo,

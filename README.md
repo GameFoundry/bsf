@@ -34,16 +34,30 @@ To compile DirectX render systems you will also need a separately installed Dire
     * Simple drag and drop interface
 	* Traditional set of tools
     * Custom 2D and 3D tool support
+  * Prefab system
+    * Pre-built templates for level design
+	* Easy to create and maintain complex levels
+	* Hierarchical prefabs and instance specialization
   * Play in editor
     * Compile in editor
     * Immediately test changes
+	* Pause and frame-step
+	* Analyze and modify scene while playing
   * Fully extensible for game-specific needs
-    * Custom editor windows, tool handles and more
+    * Easy to extend using scripting
+    * Comprehensive extension scripting API
+	* Extend almost anything
+	  * Editor windows
+	  * Object inspectors
+	  * 2D/3D tools
+	  * Automate common tasks
   * Game publishing
-    * One click build process	
-  * Customizable GUI
+    * One click build process
+	* Automatically detect required resources
+	* Automatically package and output an executable
+  * Customizable frontend
     * Dockable layout and floating windows
-    * Skinnable and localizable
+	* Custom skin & localization support
    
 * Core
   * Design
@@ -57,13 +71,14 @@ To compile DirectX render systems you will also need a separately installed Dire
     * Multi-threaded rendering
     * Flexible material system
       * Easy to control and set up
+	  * BansheeFX language for material definitions
       * Shader parsing for HLSL9, HLSL11 and GLSL
   * Asset pipeline
     * Easy to use
     * Asynchronous resource loading
     * Extensible importer system
     * Available importer plugins for:
-      * FXB,OBJ, DAE meshes
+      * FXB, OBJ, DAE meshes
       * PNG, PSD, BMP, JPG, ... images
       * OTF, TTF fonts
       * HLSL9, HLSL11, GLSL shaders
@@ -72,16 +87,20 @@ To compile DirectX render systems you will also need a separately installed Dire
     * Easy to use layout based system
     * Many common GUI controls
     * Fully skinnable
-    * Automatch batching
+    * Automatic batching
     * Support for texture atlases
     * Localization
   * Scripting
     * C# via Mono
-    * Great performance, safe code, fast compile and iteration times
+	* Separate high level engine API
+	* Integrated runtime for maximum performance
     * Full access to .NET framework
-    * High level C# engine API
-    * Editor-only C# API for editor extensions
-    * Support for Visual Studio
+	* Integration with Visual Studio
+	* Automatic serialization
+	  * Custom components
+	  * Custom resources
+	  * No additional code
+	  * Handles complex types and references
   * Other
     * CPU & GPU profiler
     * Virtual input
@@ -99,6 +118,7 @@ To compile DirectX render systems you will also need a separately installed Dire
  * Networking system integration
  * Animation
  * GUI animation
+ * Mac & Linux support
 
 ## Development state
 

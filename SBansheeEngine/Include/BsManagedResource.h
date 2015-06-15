@@ -46,13 +46,7 @@ namespace BansheeEngine
 
 	struct ResourceBackupData
 	{
-		struct DataBlock
-		{
-			UINT8* data;
-			UINT32 size;
-		};
-
-		DataBlock mTypeInfo;
-		DataBlock mObjectData;
+		UINT8* data;
+		UINT32 size;
 	};
 }

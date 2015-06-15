@@ -2,124 +2,114 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsRTTIType.h"
-#include "BsGameObjectManager.h"
 #include "BsManagedSerializableDictionary.h"
-#include "BsScriptAssemblyManager.h"
-#include "BsMonoManager.h"
-#include "BsMonoClass.h"
 
 namespace BansheeEngine
 {
+	class BS_SCR_BE_EXPORT ManagedSerializableDictionaryKeyValueRTTI : 
+		public RTTIType <ManagedSerializableDictionaryKeyValue, IReflectable, ManagedSerializableDictionaryKeyValueRTTI>
+	{
+	private:
+		ManagedSerializableFieldDataPtr getKey(ManagedSerializableDictionaryKeyValue* obj)
+		{
+			return obj->key;
+		}
+
+		void setKey(ManagedSerializableDictionaryKeyValue* obj, ManagedSerializableFieldDataPtr val)
+		{
+			obj->key = val;
+		}
+
+		ManagedSerializableFieldDataPtr getValue(ManagedSerializableDictionaryKeyValue* obj)
+		{
+			return obj->value;
+		}
+
+		void setValue(ManagedSerializableDictionaryKeyValue* obj, ManagedSerializableFieldDataPtr val)
+		{
+			obj->value = val;
+		}
+
+	public:
+		ManagedSerializableDictionaryKeyValueRTTI()
+		{
+			addReflectablePtrField("key", 0, &ManagedSerializableDictionaryKeyValueRTTI::getKey, &ManagedSerializableDictionaryKeyValueRTTI::setKey);
+			addReflectablePtrField("value", 1, &ManagedSerializableDictionaryKeyValueRTTI::getValue, &ManagedSerializableDictionaryKeyValueRTTI::setValue);
+		}
+		
+		virtual const String& getRTTIName()
+		{
+			static String name = "ManagedSerializableDictionaryKeyValue";
+			return name;
+		}
+
+		virtual UINT32 getRTTIId()
+		{
+			return TID_ScriptSerializableDictionaryKeyValue;
+		}
+
+		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		{
+			return bs_shared_ptr<ManagedSerializableDictionaryKeyValue>();
+		}
+	};
+
 	class BS_SCR_BE_EXPORT ManagedSerializableDictionaryRTTI : public RTTIType<ManagedSerializableDictionary, IReflectable, ManagedSerializableDictionaryRTTI>
 	{
 	private:
-		struct SerializationData
-		{
-			Vector<ManagedSerializableFieldDataPtr> keyEntries;
-			Vector<ManagedSerializableFieldDataPtr> valueEntries;
-			bool isGameObjectDeserialization;
-		};
-
 		ManagedSerializableTypeInfoDictionaryPtr getTypeInfo(ManagedSerializableDictionary* obj) { return obj->mDictionaryTypeInfo; }
 		void setTypeInfo(ManagedSerializableDictionary* obj, ManagedSerializableTypeInfoDictionaryPtr val) { obj->mDictionaryTypeInfo = val; }
 
-		ManagedSerializableFieldDataPtr getKeyEntry(ManagedSerializableDictionary* obj, UINT32 arrayIdx) 
+		ManagedSerializableDictionaryKeyValue& getEntry(ManagedSerializableDictionary* obj, UINT32 arrayIdx)
 		{ 
-			SPtr<SerializationData> data = any_cast<SPtr<SerializationData>>(obj->mRTTIData);
-			return data->keyEntries[arrayIdx];
+			ManagedSerializableDictionaryPtr data = any_cast<ManagedSerializableDictionaryPtr>(obj->mRTTIData);
+			Vector<ManagedSerializableDictionaryKeyValue>& sequentialData = any_cast_ref<Vector<ManagedSerializableDictionaryKeyValue>>(data->mRTTIData);
+
+			return sequentialData[arrayIdx];
 		}
 
-		void setKeyEntry(ManagedSerializableDictionary* obj, UINT32 arrayIdx, ManagedSerializableFieldDataPtr val) 
+		void setEntry(ManagedSerializableDictionary* obj, UINT32 arrayIdx, ManagedSerializableDictionaryKeyValue& val)
 		{ 
-			SPtr<SerializationData> data = any_cast<SPtr<SerializationData>>(obj->mRTTIData);
-			data->keyEntries[arrayIdx] = val;
+			obj->setFieldData(val.key, val.value);
 		}
 
-		UINT32 getNumKeyEntries(ManagedSerializableDictionary* obj) 
+		UINT32 getNumEntries(ManagedSerializableDictionary* obj) 
 		{ 
-			SPtr<SerializationData> data = any_cast<SPtr<SerializationData>>(obj->mRTTIData);
-			return (UINT32)data->keyEntries.size();
+			ManagedSerializableDictionaryPtr data = any_cast<ManagedSerializableDictionaryPtr>(obj->mRTTIData);
+			Vector<ManagedSerializableDictionaryKeyValue>& sequentialData = any_cast_ref<Vector<ManagedSerializableDictionaryKeyValue>>(data->mRTTIData);
+
+			return (UINT32)sequentialData.size();
 		}
 
-		void setNumKeyEntries(ManagedSerializableDictionary* obj, UINT32 numEntries) 
+		void setNumEntries(ManagedSerializableDictionary* obj, UINT32 numEntries) 
 		{ 
-			SPtr<SerializationData> data = any_cast<SPtr<SerializationData>>(obj->mRTTIData);
-			data->keyEntries.resize(numEntries);
+			// Do nothing
 		}
-
-		ManagedSerializableFieldDataPtr getValueEntry(ManagedSerializableDictionary* obj, UINT32 arrayIdx) 
-		{ 
-			SPtr<SerializationData> data = any_cast<SPtr<SerializationData>>(obj->mRTTIData);
-			return data->valueEntries[arrayIdx];
-		}
-
-		void setValueEntry(ManagedSerializableDictionary* obj, UINT32 arrayIdx, ManagedSerializableFieldDataPtr val) 
-		{ 
-			SPtr<SerializationData> data = any_cast<SPtr<SerializationData>>(obj->mRTTIData);
-			data->valueEntries[arrayIdx] = val;
-		}
-
-		UINT32 getNumValueEntries(ManagedSerializableDictionary* obj) 
-		{ 
-			SPtr<SerializationData> data = any_cast<SPtr<SerializationData>>(obj->mRTTIData);
-			return (UINT32)data->valueEntries.size();
-		}
-
-		void setNumValueEntries(ManagedSerializableDictionary* obj, UINT32 numEntries) 
-		{ 
-			SPtr<SerializationData> data = any_cast<SPtr<SerializationData>>(obj->mRTTIData);
-			data->valueEntries.resize(numEntries);
-		}
-
+		
 	public:
 		ManagedSerializableDictionaryRTTI()
 		{
 			addReflectablePtrField("mListTypeInfo", 0, &ManagedSerializableDictionaryRTTI::getTypeInfo, &ManagedSerializableDictionaryRTTI::setTypeInfo);
-			addReflectablePtrArrayField("mKeyEntries", 1, &ManagedSerializableDictionaryRTTI::getKeyEntry, &ManagedSerializableDictionaryRTTI::getNumKeyEntries, 
-				&ManagedSerializableDictionaryRTTI::setKeyEntry, &ManagedSerializableDictionaryRTTI::setNumKeyEntries);
-			addReflectablePtrArrayField("mValueEntries", 2, &ManagedSerializableDictionaryRTTI::getValueEntry, &ManagedSerializableDictionaryRTTI::getNumValueEntries, 
-				&ManagedSerializableDictionaryRTTI::setValueEntry, &ManagedSerializableDictionaryRTTI::setNumValueEntries);
+			addReflectableArrayField("mEntries", 1, &ManagedSerializableDictionaryRTTI::getEntry, &ManagedSerializableDictionaryRTTI::getNumEntries,
+				&ManagedSerializableDictionaryRTTI::setEntry, &ManagedSerializableDictionaryRTTI::setNumEntries);
 		}
 
 		virtual void onSerializationStarted(IReflectable* obj)
 		{
 			ManagedSerializableDictionary* serializableObject = static_cast<ManagedSerializableDictionary*>(obj);
 
-			serializableObject->mRTTIData = bs_shared_ptr<SerializationData>();
-			SPtr<SerializationData> data = any_cast<SPtr<SerializationData>>(serializableObject->mRTTIData);
+			Vector<ManagedSerializableDictionaryKeyValue> sequentialData;
+			auto enumerator = serializableObject->getEnumerator();
 
-			serializableObject->serializeManagedInstance(data->keyEntries, data->valueEntries);
+			while (enumerator.moveNext())
+				sequentialData.push_back(ManagedSerializableDictionaryKeyValue(enumerator.getKey(), enumerator.getValue()));
+
+			serializableObject->mRTTIData = sequentialData;
 		}
 
 		virtual void onSerializationEnded(IReflectable* obj)
 		{
 			ManagedSerializableDictionary* serializableObject = static_cast<ManagedSerializableDictionary*>(obj);
-			serializableObject->mRTTIData = nullptr;
-		}
-
-		virtual void onDeserializationStarted(IReflectable* obj)
-		{
-			ManagedSerializableDictionary* serializableObject = static_cast<ManagedSerializableDictionary*>(obj);
-
-			serializableObject->mRTTIData = bs_shared_ptr<SerializationData>();
-			SPtr<SerializationData> data = any_cast<SPtr<SerializationData>>(serializableObject->mRTTIData);
-
-			// If we are deserializing a GameObject we need to defer deserializing actual field values
-			// to ensure GameObject handles instances have been fixed up (which only happens after deserialization is done)
-			data->isGameObjectDeserialization = GameObjectManager::instance().isGameObjectDeserializationActive();
-
-			if (data->isGameObjectDeserialization)
-				GameObjectManager::instance().registerOnDeserializationEndCallback([=]() { serializableObject->deserializeManagedInstance(data->keyEntries, data->valueEntries); });
-		}
-
-		virtual void onDeserializationEnded(IReflectable* obj)
-		{
-			ManagedSerializableDictionary* serializableObject = static_cast<ManagedSerializableDictionary*>(obj);
-			SPtr<SerializationData> data = any_cast<SPtr<SerializationData>>(serializableObject->mRTTIData);
-
-			if (data->isGameObjectDeserialization)
-				serializableObject->deserializeManagedInstance(data->keyEntries, data->valueEntries);
-
 			serializableObject->mRTTIData = nullptr;
 		}
 

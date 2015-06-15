@@ -85,6 +85,7 @@ namespace BansheeEngine
 		String mTypeNamespace;
 		String mTypeName;
 		bool mValueType;
+		UINT32 mTypeId;
 
 		bool matches(const ManagedSerializableTypeInfoPtr& typeInfo) const;
 		bool isTypeLoaded() const;
@@ -166,6 +167,7 @@ namespace BansheeEngine
 
 		String mName;
 		UINT32 mFieldId;
+		UINT32 mParentTypeId;
 
 		ManagedSerializableTypeInfoPtr mTypeInfo;
 		ScriptFieldFlags mFlags;
@@ -186,26 +188,13 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableObjectInfo : public IReflectable
 	{
 	public:
-		struct CachedField
-		{
-			CachedField(const SPtr<ManagedSerializableFieldInfo>& info, UINT32 typeId)
-				:info(info), parentTypeId(typeId)
-			{ }
-
-			SPtr<ManagedSerializableFieldInfo> info;
-			UINT32 parentTypeId;
-		};
-
 		ManagedSerializableObjectInfo();
-		void initialize();
 
 		String getFullTypeName() const { return mTypeInfo->mTypeNamespace + "." + mTypeInfo->mTypeName; }
 		ManagedSerializableFieldInfoPtr findMatchingField(const ManagedSerializableFieldInfoPtr& fieldInfo,
 			const ManagedSerializableTypeInfoPtr& fieldTypeInfo) const;
 
 		ManagedSerializableTypeInfoObjectPtr mTypeInfo;
-		UINT32 mTypeId;
-
 		MonoClass* mMonoClass;
 
 		UnorderedMap<String, UINT32> mFieldNameToId;
@@ -213,8 +202,6 @@ namespace BansheeEngine
 
 		std::shared_ptr<ManagedSerializableObjectInfo> mBaseClass;
 		Vector<std::weak_ptr<ManagedSerializableObjectInfo>> mDerivedClasses;
-
-		Vector<CachedField> mCachedAllFields;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

@@ -5,10 +5,7 @@
 #include "BsMonoClass.h"
 #include "BsResources.h"
 #include "BsManagedResourceManager.h"
-#include "BsManagedSerializableField.h"
 #include "BsManagedSerializableObject.h"
-#include "BsManagedSerializableObjectInfo.h"
-#include "BsManagedSerializableObjectData.h"
 #include "BsMemorySerializer.h"
 #include "BsScriptResourceManager.h"
 #include "BsMonoUtil.h"
@@ -45,24 +42,15 @@ namespace BansheeEngine
 		ResourceBackupData backupData;
 		if (serializableObject != nullptr)
 		{
-			ManagedSerializableObjectInfoPtr objectInfo = serializableObject->getObjectInfo();
-			ManagedSerializableObjectDataPtr objectData = serializableObject->getObjectData();
-
 			MemorySerializer ms;
 
-			backupData.mTypeInfo.size = 0;
-			backupData.mTypeInfo.data = ms.encode(objectInfo.get(), backupData.mTypeInfo.size);
-
-			backupData.mObjectData.size = 0;
-			backupData.mObjectData.data = ms.encode(objectData.get(), backupData.mObjectData.size);
+			backupData.size = 0;
+			backupData.data = ms.encode(serializableObject.get(), backupData.size);
 		}
 		else
 		{
-			backupData.mTypeInfo.size = 0;
-			backupData.mTypeInfo.data = nullptr;
-
-			backupData.mObjectData.size = 0;
-			backupData.mObjectData.data = nullptr;
+			backupData.size = 0;
+			backupData.data = nullptr;
 		}
 
 		if (clearExisting)
@@ -86,14 +74,11 @@ namespace BansheeEngine
 		{
 			mManagedHandle = mono_gchandle_new(mManagedInstance, false);
 
-			if (data.mTypeInfo.data != nullptr && data.mObjectData.data != nullptr)
+			if (data.data != nullptr)
 			{
 				MemorySerializer ms;
-				ManagedSerializableObjectInfoPtr objectInfo = std::static_pointer_cast<ManagedSerializableObjectInfo>(ms.decode(data.mTypeInfo.data, data.mTypeInfo.size));
-				ManagedSerializableObjectDataPtr objectData = std::static_pointer_cast<ManagedSerializableObjectData>(ms.decode(data.mObjectData.data, data.mObjectData.size));
-
-				ManagedSerializableObjectPtr serializableObject = ManagedSerializableObject::createFromExisting(instance);
-				serializableObject->setObjectData(objectData, objectInfo);
+				ManagedSerializableObjectPtr serializableObject = std::static_pointer_cast<ManagedSerializableObject>(ms.decode(data.data, data.size));
+				serializableObject->deserialize();
 			}
 		}
 		else

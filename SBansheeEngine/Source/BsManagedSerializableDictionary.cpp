@@ -10,35 +10,91 @@
 
 namespace BansheeEngine
 {
+	ManagedSerializableDictionaryKeyValue::ManagedSerializableDictionaryKeyValue(const ManagedSerializableFieldDataPtr& key,
+		const ManagedSerializableFieldDataPtr& value)
+		:key(key), value(value)
+	{
+		
+	}
+
+	RTTITypeBase* ManagedSerializableDictionaryKeyValue::getRTTIStatic()
+	{
+		return ManagedSerializableDictionaryKeyValueRTTI::instance();
+	}
+
+	RTTITypeBase* ManagedSerializableDictionaryKeyValue::getRTTI() const
+	{
+		return ManagedSerializableDictionaryKeyValue::getRTTIStatic();
+	}
+
+	inline size_t ManagedSerializableDictionary::Hash::operator()(const ManagedSerializableFieldDataPtr& x) const
+	{
+		return x->getHash();
+	}
+
+	inline bool ManagedSerializableDictionary::Equals::operator()(const ManagedSerializableFieldDataPtr& a, const ManagedSerializableFieldDataPtr& b) const
+	{
+		return a->equals(b);
+	}
+
 	ManagedSerializableDictionary::Enumerator::Enumerator(MonoObject* instance, const ManagedSerializableDictionary* parent)
-		:mInstance(instance), mParent(parent), mCurrent(nullptr)
+		:mInstance(instance), mParent(parent), mCurrent(nullptr), mIteratorInitialized(false)
 	{ }
 
 	ManagedSerializableFieldDataPtr ManagedSerializableDictionary::Enumerator::getKey() const
 	{
-		MonoObject* obj = mParent->mKeyProp->get(mCurrent);
+		if (mInstance != nullptr)
+		{
+			MonoObject* obj = mParent->mKeyProp->get(mCurrent);
 
-		return ManagedSerializableFieldData::create(mParent->mDictionaryTypeInfo->mKeyType, obj);
+			return ManagedSerializableFieldData::create(mParent->mDictionaryTypeInfo->mKeyType, obj);
+		}
+		else
+		{
+			return mCachedIter->first;
+		}
 	}
 
 	ManagedSerializableFieldDataPtr ManagedSerializableDictionary::Enumerator::getValue() const
 	{
-		MonoObject* obj = mParent->mValueProp->get(mCurrent);
+		if (mInstance != nullptr)
+		{
+			MonoObject* obj = mParent->mValueProp->get(mCurrent);
 
-		return ManagedSerializableFieldData::create(mParent->mDictionaryTypeInfo->mValueType, obj);
+			return ManagedSerializableFieldData::create(mParent->mDictionaryTypeInfo->mValueType, obj);
+		}
+		else
+		{
+			return mCachedIter->second;
+		}
 	}
 
 	bool ManagedSerializableDictionary::Enumerator::moveNext()
 	{
-		MonoObject* returnVal = mParent->mEnumMoveNext->invoke(mInstance, nullptr);
-		bool isValid = *(bool*)mono_object_unbox(returnVal);
+		if (mInstance != nullptr)
+		{
+			MonoObject* returnVal = mParent->mEnumMoveNext->invoke(mInstance, nullptr);
+			bool isValid = *(bool*)mono_object_unbox(returnVal);
 
-		if(isValid)
-			mCurrent = (MonoObject*)mono_object_unbox(mParent->mEnumCurrentProp->get(mInstance));
+			if (isValid)
+				mCurrent = (MonoObject*)mono_object_unbox(mParent->mEnumCurrentProp->get(mInstance));
+			else
+				mCurrent = nullptr;
+
+			return isValid;
+		}
 		else
-			mCurrent = nullptr;
+		{
+			if (!mIteratorInitialized)
+			{
+				mCachedIter = mParent->mCachedEntries.begin();
+				mIteratorInitialized = true;
+			}
+			else
+				++mCachedIter;
 
-		return isValid;
+			return mCachedIter != mParent->mCachedEntries.end();
+		}
 	}
 
 	ManagedSerializableDictionary::ManagedSerializableDictionary(const ConstructPrivately& dummy)
@@ -97,33 +153,45 @@ namespace BansheeEngine
 		return bs_shared_ptr<ManagedSerializableDictionary>(ConstructPrivately());
 	}
 
-	void ManagedSerializableDictionary::serializeManagedInstance(Vector<ManagedSerializableFieldDataPtr>& keyEntries,
-		Vector<ManagedSerializableFieldDataPtr>& valueEntries)
+	void ManagedSerializableDictionary::serialize()
 	{
+		if (mManagedInstance == nullptr)
+			return;
+
 		MonoClass* dictionaryClass = MonoManager::instance().findClass(mono_object_get_class(mManagedInstance));
-		if(dictionaryClass == nullptr)
+		if (dictionaryClass == nullptr)
 			return;
 
 		initMonoObjects(dictionaryClass);
-
-		keyEntries.clear();
-		valueEntries.clear();
+		mCachedEntries.clear();
 
 		Enumerator enumerator = getEnumerator();
 
-		while(enumerator.moveNext())
+		while (enumerator.moveNext())
 		{
-			keyEntries.push_back(enumerator.getKey());
-			valueEntries.push_back(enumerator.getValue());
+			ManagedSerializableFieldDataPtr key = enumerator.getKey();
+			mCachedEntries.insert(std::make_pair(key, enumerator.getValue()));
 		}
+
+		// Serialize children
+		for (auto& fieldEntry : mCachedEntries)
+		{
+			fieldEntry.first->serialize();
+			fieldEntry.second->serialize();
+		}
+
+		mManagedInstance = nullptr;
 	}
 
-	void ManagedSerializableDictionary::deserializeManagedInstance(const Vector<ManagedSerializableFieldDataPtr>& keyEntries,
-		const Vector<ManagedSerializableFieldDataPtr>& valueEntries)
+	void ManagedSerializableDictionary::deserialize()
 	{
 		mManagedInstance = createManagedInstance(mDictionaryTypeInfo);
+
 		if (mManagedInstance == nullptr)
+		{
+			mCachedEntries.clear();
 			return;
+		}
 
 		::MonoClass* dictionaryMonoClass = mDictionaryTypeInfo->getMonoClass();
 		MonoClass* dictionaryClass = MonoManager::instance().findClass(dictionaryMonoClass);
@@ -132,59 +200,96 @@ namespace BansheeEngine
 
 		initMonoObjects(dictionaryClass);
 
-		assert(keyEntries.size() == valueEntries.size());
-
-		for (UINT32 i = 0; i < (UINT32)keyEntries.size(); i++)
+		// Deserialize children
+		for (auto& fieldEntry : mCachedEntries)
 		{
-			setFieldData(keyEntries[i], valueEntries[i]);
+			fieldEntry.first->deserialize();
+			fieldEntry.second->deserialize();
 		}
+
+		UINT32 idx = 0;
+		for (auto& entry : mCachedEntries)
+		{
+			setFieldData(entry.first, entry.second);
+			idx++;
+		}
+
+		mCachedEntries.clear();
 	}
 
 	ManagedSerializableFieldDataPtr ManagedSerializableDictionary::getFieldData(const ManagedSerializableFieldDataPtr& key)
 	{
-		MonoObject* value = nullptr;
-
-		void* params[2];
-		params[0] = key->getValue(mDictionaryTypeInfo->mKeyType);
-		params[1] = &value;
-
-		mTryGetValueMethod->invoke(mManagedInstance, params);
-
-		MonoObject* boxedValue = value;
-		::MonoClass* valueTypeClass = mDictionaryTypeInfo->mValueType->getMonoClass();
-		if (mono_class_is_valuetype(valueTypeClass))
+		if (mManagedInstance != nullptr)
 		{
-			if (value != nullptr)
-				boxedValue = mono_value_box(MonoManager::instance().getDomain(), valueTypeClass, &value);
-		}
+			MonoObject* value = nullptr;
 
-		return ManagedSerializableFieldData::create(mDictionaryTypeInfo->mValueType, boxedValue);
+			void* params[2];
+			params[0] = key->getValue(mDictionaryTypeInfo->mKeyType);
+			params[1] = &value;
+
+			mTryGetValueMethod->invoke(mManagedInstance, params);
+
+			MonoObject* boxedValue = value;
+			::MonoClass* valueTypeClass = mDictionaryTypeInfo->mValueType->getMonoClass();
+			if (mono_class_is_valuetype(valueTypeClass))
+			{
+				if (value != nullptr)
+					boxedValue = mono_value_box(MonoManager::instance().getDomain(), valueTypeClass, &value);
+			}
+
+			return ManagedSerializableFieldData::create(mDictionaryTypeInfo->mValueType, boxedValue);
+		}
+		else
+		{
+			return mCachedEntries[key];
+		}
 	}
 
 	void ManagedSerializableDictionary::setFieldData(const ManagedSerializableFieldDataPtr& key, const ManagedSerializableFieldDataPtr& val)
 	{
-		void* params[2];
-		params[0] = key->getValue(mDictionaryTypeInfo->mKeyType);
-		params[1] = val->getValue(mDictionaryTypeInfo->mValueType);
+		if (mManagedInstance != nullptr)
+		{
+			void* params[2];
+			params[0] = key->getValue(mDictionaryTypeInfo->mKeyType);
+			params[1] = val->getValue(mDictionaryTypeInfo->mValueType);
 
-		mAddMethod->invoke(mManagedInstance, params);
+			mAddMethod->invoke(mManagedInstance, params);
+		}
+		else
+		{
+			mCachedEntries[key] = val;
+		}
 	}
 
 	void ManagedSerializableDictionary::removeFieldData(const ManagedSerializableFieldDataPtr& key)
 	{
-		void* params[1];
-		params[0] = key->getValue(mDictionaryTypeInfo->mKeyType);
+		if (mManagedInstance != nullptr)
+		{
+			void* params[1];
+			params[0] = key->getValue(mDictionaryTypeInfo->mKeyType);
 
-		mRemoveMethod->invoke(mManagedInstance, params);
+			mRemoveMethod->invoke(mManagedInstance, params);
+		}
+		else
+		{
+			auto findIter = mCachedEntries.find(key);
+			if (findIter != mCachedEntries.end())
+				mCachedEntries.erase(findIter);
+		}
 	}
 
 	bool ManagedSerializableDictionary::contains(const ManagedSerializableFieldDataPtr& key) const
 	{
-		void* params[1];
-		params[0] = key->getValue(mDictionaryTypeInfo->mKeyType);
+		if (mManagedInstance != nullptr)
+		{
+			void* params[1];
+			params[0] = key->getValue(mDictionaryTypeInfo->mKeyType);
 
-		MonoObject* returnVal = mContainsKeyMethod->invoke(mManagedInstance, params);
-		return *(bool*)mono_object_unbox(returnVal);
+			MonoObject* returnVal = mContainsKeyMethod->invoke(mManagedInstance, params);
+			return *(bool*)mono_object_unbox(returnVal);
+		}
+		else
+			return mCachedEntries.find(key) != mCachedEntries.end();
 	}
 
 	ManagedSerializableDictionary::Enumerator ManagedSerializableDictionary::getEnumerator() const

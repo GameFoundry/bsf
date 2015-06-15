@@ -40,6 +40,7 @@ namespace BansheeEngine
 		{
 			ManagedResource* mr = static_cast<ManagedResource*>(obj);
 			ManagedSerializableObjectPtr serializableObject = any_cast<ManagedSerializableObjectPtr>(mr->mRTTIData);
+			serializableObject->deserialize();
 
 			ResourcePtr mrPtr = std::static_pointer_cast<Resource>(mr->getThisPtr());
 			HManagedResource handle = static_resource_cast<ManagedResource>(gResources()._createResourceHandle(mrPtr));

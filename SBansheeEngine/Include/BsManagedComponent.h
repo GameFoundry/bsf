@@ -42,8 +42,7 @@ namespace BansheeEngine
 
 		// We store data of a missing component type in hope it will be restored later
 		bool mMissingType;
-		ManagedSerializableObjectInfoPtr mMissingTypeObjectInfo;
-		ManagedSerializableObjectDataPtr mMissingTypeObjectData;
+		ManagedSerializableObjectPtr mMissingTypeObjectData;
 
 		OnInitializedThunkDef mOnInitializedThunk;
 		UpdateThunkDef mUpdateThunk;
@@ -83,13 +82,7 @@ namespace BansheeEngine
 
 	struct ComponentBackupData
 	{
-		struct DataBlock
-		{
-			UINT8* data;
-			UINT32 size;
-		};
-
-		DataBlock mTypeInfo;
-		DataBlock mObjectData;
+		UINT8* data;
+		UINT32 size;
 	};
 }

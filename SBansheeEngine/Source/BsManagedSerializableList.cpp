@@ -71,29 +71,15 @@ namespace BansheeEngine
 		return bs_shared_ptr<ManagedSerializableList>(ConstructPrivately());
 	}
 
-	void ManagedSerializableList::deserializeManagedInstance(const Vector<ManagedSerializableFieldDataPtr>& entries)
-	{
-		mManagedInstance = createManagedInstance(mListTypeInfo, mNumElements);
-
-		if (mManagedInstance == nullptr)
-			return;
-
-		MonoClass* listClass = MonoManager::instance().findClass(mListTypeInfo->getMonoClass());
-		initMonoObjects(listClass);
-
-		for(auto& arrayEntry : entries)
-		{
-			addFieldData(arrayEntry);
-		}
-	}
-
 	void ManagedSerializableList::setFieldData(UINT32 arrayIdx, const ManagedSerializableFieldDataPtr& val)
 	{
-		mItemProp->setIndexed(mManagedInstance, arrayIdx, val->getValue(mListTypeInfo->mElementType));
+		if (mManagedInstance != nullptr)
+			mItemProp->setIndexed(mManagedInstance, arrayIdx, val->getValue(mListTypeInfo->mElementType));
+		else
+			mCachedEntries[arrayIdx] = val;
 	}
 
-
-	void ManagedSerializableList::addFieldData(const ManagedSerializableFieldDataPtr& val)
+	void ManagedSerializableList::addFieldDataInternal(const ManagedSerializableFieldDataPtr& val)
 	{
 		void* params[1];
 		params[0] = val->getValue(mListTypeInfo->mElementType);
@@ -102,31 +88,88 @@ namespace BansheeEngine
 
 	ManagedSerializableFieldDataPtr ManagedSerializableList::getFieldData(UINT32 arrayIdx)
 	{
-		MonoObject* obj = mItemProp->getIndexed(mManagedInstance, arrayIdx);
+		if (mManagedInstance != nullptr)
+		{
+			MonoObject* obj = mItemProp->getIndexed(mManagedInstance, arrayIdx);
 
-		return ManagedSerializableFieldData::create(mListTypeInfo->mElementType, obj);
+			return ManagedSerializableFieldData::create(mListTypeInfo->mElementType, obj);
+		}
+		else
+			return mCachedEntries[arrayIdx];
 	}
 
 	void ManagedSerializableList::resize(UINT32 newSize)
 	{
-		ScriptArray tempArray(mListTypeInfo->mElementType->getMonoClass(), newSize);
+		if (mManagedInstance != nullptr)
+		{
+			ScriptArray tempArray(mListTypeInfo->mElementType->getMonoClass(), newSize);
 
-		UINT32 minSize = std::min(mNumElements, newSize);
-		UINT32 dummy = 0;
+			UINT32 minSize = std::min(mNumElements, newSize);
+			UINT32 dummy = 0;
 
-		void* params[4];
-		params[0] = &dummy;;
-		params[1] = tempArray.getInternal();
-		params[2] = &dummy;
-		params[3] = &minSize;
+			void* params[4];
+			params[0] = &dummy;;
+			params[1] = tempArray.getInternal();
+			params[2] = &dummy;
+			params[3] = &minSize;
 
-		mCopyToMethod->invoke(getManagedInstance(), params);
-		mClearMethod->invoke(getManagedInstance(), nullptr);
+			mCopyToMethod->invoke(getManagedInstance(), params);
+			mClearMethod->invoke(getManagedInstance(), nullptr);
 
-		params[0] = tempArray.getInternal();
-		mAddRangeMethod->invoke(getManagedInstance(), params);
+			params[0] = tempArray.getInternal();
+			mAddRangeMethod->invoke(getManagedInstance(), params);
+		}
+		else
+		{
+			mCachedEntries.resize(newSize);
+		}
 
 		mNumElements = newSize;
+	}
+
+	void ManagedSerializableList::serialize()
+	{
+		if (mManagedInstance == nullptr)
+			return;
+
+		mNumElements = getLengthInternal();
+		mCachedEntries = Vector<ManagedSerializableFieldDataPtr>(mNumElements);
+
+		for (UINT32 i = 0; i < mNumElements; i++)
+			mCachedEntries[i] = getFieldData(i);
+
+		// Serialize children
+		for (auto& fieldEntry : mCachedEntries)
+			fieldEntry->serialize();
+
+		mManagedInstance = nullptr;
+	}
+
+	void ManagedSerializableList::deserialize()
+	{
+		mManagedInstance = createManagedInstance(mListTypeInfo, mNumElements);
+
+		if (mManagedInstance == nullptr)
+		{
+			mCachedEntries.clear();
+			return;
+		}
+
+		MonoClass* listClass = MonoManager::instance().findClass(mListTypeInfo->getMonoClass());
+		initMonoObjects(listClass);
+
+		// Deserialize children
+		for (auto& fieldEntry : mCachedEntries)
+			fieldEntry->deserialize();
+
+		UINT32 idx = 0;
+		for (auto& entry : mCachedEntries)
+		{
+			addFieldDataInternal(entry);
+			idx++;
+		}
+
+		mCachedEntries.clear();
 	}
 
 	UINT32 ManagedSerializableList::getLengthInternal() const

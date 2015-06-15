@@ -6,12 +6,57 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	TODO
+	 *
+	 * @note	This class can be in two states:
+	 *			 - Linked - When the object has a link to a managed object. This is the default 
+	 *                      state when a new instance of ManagedSerializableObject is created.
+	 *						Any operations during this state will operate directly on the linked
+	 *						managed object.
+	 *			 - Serialized - When the object has no link to the managed object but instead just
+	 *							contains cached object and field data that may be used for initializing
+	 *							a managed object. Any operations during this state will operate
+	 *							only on the cached internal data.
+	 *			You can transfer between these states by calling serialize(linked->serialized) &
+	 *	
+	 */
+	struct BS_SCR_BE_EXPORT ManagedSerializableDictionaryKeyValue : public IReflectable
+	{
+		ManagedSerializableDictionaryKeyValue() {}
+		ManagedSerializableDictionaryKeyValue(const ManagedSerializableFieldDataPtr& key,
+			const ManagedSerializableFieldDataPtr& value);
+
+		ManagedSerializableFieldDataPtr key;
+		ManagedSerializableFieldDataPtr value;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+	public:
+		friend class ManagedSerializableDictionaryKeyValueRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
+	};
+
 	class BS_SCR_BE_EXPORT ManagedSerializableDictionary : public IReflectable
 	{
 	private:
 		struct ConstructPrivately {};
+		
+		struct BS_SCR_BE_EXPORT Hash
+		{
+			inline size_t operator()(const ManagedSerializableFieldDataPtr& x) const;
+		};
+
+		struct BS_SCR_BE_EXPORT Equals
+		{
+			inline bool operator()(const ManagedSerializableFieldDataPtr& a, const ManagedSerializableFieldDataPtr& b) const;
+		};
 
 	public:
+		typedef UnorderedMap<ManagedSerializableFieldDataPtr, ManagedSerializableFieldDataPtr> CachedEntriesMap;
+
 		class Enumerator
 		{
 		public:
@@ -25,6 +70,9 @@ namespace BansheeEngine
 		private:
 			MonoObject* mInstance;
 			MonoObject* mCurrent;
+			CachedEntriesMap::const_iterator mCachedIter;
+			bool mIteratorInitialized;
+
 			const ManagedSerializableDictionary* mParent;
 		};
 
@@ -33,7 +81,6 @@ namespace BansheeEngine
 		ManagedSerializableDictionary(const ConstructPrivately& dummy);
 
 		MonoObject* getManagedInstance() const { return mManagedInstance; }
-
 		ManagedSerializableTypeInfoDictionaryPtr getTypeInfo() const { return mDictionaryTypeInfo; }
 
 		ManagedSerializableFieldDataPtr getFieldData(const ManagedSerializableFieldDataPtr& key);
@@ -41,6 +88,9 @@ namespace BansheeEngine
 		void removeFieldData(const ManagedSerializableFieldDataPtr& key);
 		bool contains(const ManagedSerializableFieldDataPtr& key) const;
 		Enumerator getEnumerator() const;
+
+		void serialize();
+		void deserialize();
 
 		static ManagedSerializableDictionaryPtr createFromExisting(MonoObject* managedInstance, const ManagedSerializableTypeInfoDictionaryPtr& typeInfo);
 		static ManagedSerializableDictionaryPtr createNew(const ManagedSerializableTypeInfoDictionaryPtr& typeInfo);
@@ -60,20 +110,9 @@ namespace BansheeEngine
 		MonoProperty* mValueProp;
 
 		ManagedSerializableTypeInfoDictionaryPtr mDictionaryTypeInfo;
+		CachedEntriesMap mCachedEntries;
 
 		void initMonoObjects(MonoClass* dictionaryClass);
-
-		/**
-		 * @brief	Populates provided field data arrays based on currently active managed instance.
-		 */
-		void serializeManagedInstance(Vector<ManagedSerializableFieldDataPtr>& keyEntries, 
-			Vector<ManagedSerializableFieldDataPtr>& valueEntries);
-
-		/**
-		 * @brief	Creates a new managed instance and populates it with provided field data.
-		 */
-		void deserializeManagedInstance(const Vector<ManagedSerializableFieldDataPtr>& keyEntries, 
-			const Vector<ManagedSerializableFieldDataPtr>& valueEntries);
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

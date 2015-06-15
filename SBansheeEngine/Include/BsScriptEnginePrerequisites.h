@@ -122,7 +122,8 @@ namespace BansheeEngine
 		TID_ScriptModifiedEntry = 50045,
 		TID_ScriptModifiedField = 50046,
 		TID_ScriptModifiedArrayEntry = 50047,
-		TID_ScriptModifiedDictionaryEntry = 50048
+		TID_ScriptModifiedDictionaryEntry = 50048,
+		TID_ScriptSerializableDictionaryKeyValue = 50049
 	};
 
 	typedef std::shared_ptr<ManagedSerializableFieldData> ManagedSerializableFieldDataPtr;
@@ -140,7 +141,6 @@ namespace BansheeEngine
 	typedef std::shared_ptr<ManagedSerializableTypeInfoArray> ManagedSerializableTypeInfoArrayPtr;
 	typedef std::shared_ptr<ManagedSerializableTypeInfoList> ManagedSerializableTypeInfoListPtr;
 	typedef std::shared_ptr<ManagedSerializableTypeInfoDictionary> ManagedSerializableTypeInfoDictionaryPtr;
-	typedef std::shared_ptr<ManagedSerializableObjectData> ManagedSerializableObjectDataPtr;
 	typedef std::shared_ptr<ManagedSerializableDiff> ManagedSerializableDiffPtr;
 	typedef std::shared_ptr<ManagedResource> ManagedResourcePtr;
 	typedef std::shared_ptr<ManagedResourceMetaData> ManagedResourceMetaDataPtr;

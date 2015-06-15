@@ -5,20 +5,12 @@
 #include "BsScriptAssemblyManager.h"
 #include "BsManagedSerializableObject.h"
 #include "BsManagedSerializableField.h"
-#include "BsGameObjectManager.h"
-#include "BsMonoClass.h"
 
 namespace BansheeEngine
 {
 	class BS_SCR_BE_EXPORT ManagedSerializableObjectRTTI : public RTTIType<ManagedSerializableObject, IReflectable, ManagedSerializableObjectRTTI>
 	{
 	private:
-		struct DeserializationInfo
-		{
-			Vector<ManagedSerializableFieldDataEntryPtr> fields;
-			bool isGameObjectDeserialization;
-		};
-
 		ManagedSerializableObjectInfoPtr getInfo(ManagedSerializableObject* obj)
 		{
 			return obj->mObjInfo;
@@ -31,29 +23,33 @@ namespace BansheeEngine
 
 		ManagedSerializableFieldDataEntryPtr getFieldEntry(ManagedSerializableObject* obj, UINT32 arrayIdx)
 		{
-			ManagedSerializableObjectInfo::CachedField field = obj->mObjInfo->mCachedAllFields[arrayIdx];
+			Vector<ManagedSerializableFieldInfoPtr>& sequentialFields =
+				any_cast_ref<Vector<ManagedSerializableFieldInfoPtr>>(obj->mRTTIData);
 
-			ManagedSerializableFieldKeyPtr fieldKey = ManagedSerializableFieldKey::create(field.parentTypeId, field.info->mFieldId);
-			ManagedSerializableFieldDataPtr fieldData = obj->getFieldData(field.info);
+			ManagedSerializableFieldInfoPtr field = sequentialFields[arrayIdx];
+
+			ManagedSerializableFieldKeyPtr fieldKey = ManagedSerializableFieldKey::create(field->mParentTypeId, field->mFieldId);
+			ManagedSerializableFieldDataPtr fieldData = obj->getFieldData(field);
 
 			return ManagedSerializableFieldDataEntry::create(fieldKey, fieldData);
 		}
 
 		void setFieldsEntry(ManagedSerializableObject* obj, UINT32 arrayIdx, ManagedSerializableFieldDataEntryPtr val)
 		{
-			SPtr<DeserializationInfo> info = any_cast<SPtr<DeserializationInfo>>(obj->mRTTIData);
-			info->fields[arrayIdx] = val;
+			obj->mCachedData[*val->mKey] = val->mValue;
 		}
 
 		UINT32 getNumFieldEntries(ManagedSerializableObject* obj)
 		{
-			return (UINT32)obj->mObjInfo->mCachedAllFields.size();
+			Vector<ManagedSerializableFieldInfoPtr>& sequentialFields =
+				any_cast_ref<Vector<ManagedSerializableFieldInfoPtr>>(obj->mRTTIData);
+
+			return (UINT32)sequentialFields.size();
 		}
 
 		void setNumFieldEntries(ManagedSerializableObject* obj, UINT32 numEntries)
 		{
-			SPtr<DeserializationInfo> info = any_cast<SPtr<DeserializationInfo>>(obj->mRTTIData);
-			info->fields = Vector<ManagedSerializableFieldDataEntryPtr>(numEntries);
+			// Do nothing
 		}
 
 	public:
@@ -64,47 +60,44 @@ namespace BansheeEngine
 				&ManagedSerializableObjectRTTI::setFieldsEntry, &ManagedSerializableObjectRTTI::setNumFieldEntries);
 		}
 
-		virtual void onDeserializationStarted(IReflectable* obj)
+		virtual void onSerializationStarted(IReflectable* obj) override
 		{
-			ManagedSerializableObject* serializableObject = static_cast<ManagedSerializableObject*>(obj);
-			serializableObject->mRTTIData = bs_shared_ptr<DeserializationInfo>();
+			ManagedSerializableObject* castObj = static_cast<ManagedSerializableObject*>(obj);
 
-			SPtr<DeserializationInfo> info = any_cast<SPtr<DeserializationInfo>>(serializableObject->mRTTIData);
-
-			// If we are deserializing a GameObject we need to defer deserializing actual field values
-			// to ensure GameObject handles instances have been fixed up (which only happens after deserialization is done)
-			if (GameObjectManager::instance().isGameObjectDeserializationActive())
+			Vector<ManagedSerializableFieldInfoPtr> sequentialFields;
+			ManagedSerializableObjectInfoPtr curType = castObj->mObjInfo;
+			while (curType != nullptr)
 			{
-				GameObjectManager::instance().registerOnDeserializationEndCallback([=]() { serializableObject->deserializeManagedInstance(info->fields); });
-				info->isGameObjectDeserialization = true;
+				for (auto& field : curType->mFields)
+				{
+					if (field.second->isSerializable())
+						sequentialFields.push_back(field.second);
+				}
+
+				curType = curType->mBaseClass;
 			}
-			else
-				info->isGameObjectDeserialization = false;
+
+			castObj->mRTTIData = sequentialFields;
 		}
 
-		virtual void onDeserializationEnded(IReflectable* obj)
+		virtual void onSerializationEnded(IReflectable* obj) override
 		{
-			ManagedSerializableObject* serializableObject = static_cast<ManagedSerializableObject*>(obj);
-			SPtr<DeserializationInfo> info = any_cast<SPtr<DeserializationInfo>>(serializableObject->mRTTIData);
-
-			if (!info->isGameObjectDeserialization)
-				serializableObject->deserializeManagedInstance(info->fields);
-
-			serializableObject->mRTTIData = nullptr;
+			ManagedSerializableObject* castObj = static_cast<ManagedSerializableObject*>(obj);
+			castObj->mRTTIData = nullptr;
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "ScriptSerializableObject";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_ScriptSerializableObject;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return ManagedSerializableObject::createEmpty();
 		}

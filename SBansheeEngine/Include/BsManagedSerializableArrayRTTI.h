@@ -13,12 +13,6 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableArrayRTTI : public RTTIType<ManagedSerializableArray, IReflectable, ManagedSerializableArrayRTTI>
 	{
 	private:
-		struct DeserializationInfo
-		{
-			Vector<ManagedSerializableFieldDataPtr> fields;
-			bool isGameObjectDeserialization;
-		};
-
 		ManagedSerializableTypeInfoArrayPtr getTypeInfo(ManagedSerializableArray* obj)
 		{
 			return obj->mArrayTypeInfo;
@@ -31,7 +25,7 @@ namespace BansheeEngine
 
 		UINT32& getElementSize(ManagedSerializableArray* obj)
 		{
-			return (UINT32)obj->mElemSize;
+			return (UINT32&)obj->mElemSize;
 		}
 
 		void setElementSize(ManagedSerializableArray* obj, UINT32& numElements)
@@ -41,7 +35,7 @@ namespace BansheeEngine
 
 		UINT32& getNumElements(ManagedSerializableArray* obj, UINT32 arrayIdx)
 		{
-			return (UINT32)obj->mNumElements[arrayIdx];
+			return (UINT32&)obj->mNumElements[arrayIdx];
 		}
 
 		void setNumElements(ManagedSerializableArray* obj, UINT32 arrayIdx, UINT32& numElements)
@@ -66,23 +60,17 @@ namespace BansheeEngine
 
 		void setArrayEntry(ManagedSerializableArray* obj, UINT32 arrayIdx, ManagedSerializableFieldDataPtr val)
 		{
-			SPtr<DeserializationInfo> info = any_cast<SPtr<DeserializationInfo>>(obj->mRTTIData);
-			info->fields[arrayIdx] = val;
+			obj->setFieldData(arrayIdx, val);
 		}
 
 		UINT32 getNumArrayEntries(ManagedSerializableArray* obj)
 		{
-			UINT32 totalNumElements = 1;
-			for (auto& numElems : obj->mNumElements)
-				totalNumElements *= numElems;
-
-			return totalNumElements;
+			return obj->getTotalLength();
 		}
 
 		void setNumArrayEntries(ManagedSerializableArray* obj, UINT32 numEntries)
 		{
-			SPtr<DeserializationInfo> info = any_cast<SPtr<DeserializationInfo>>(obj->mRTTIData);
-			info->fields = Vector<ManagedSerializableFieldDataPtr>(numEntries);
+			obj->mCachedEntries = Vector<ManagedSerializableFieldDataPtr>(numEntries);
 		}
 
 	public:
@@ -94,32 +82,6 @@ namespace BansheeEngine
 				&ManagedSerializableArrayRTTI::setNumElements, &ManagedSerializableArrayRTTI::setNumElementsNumEntries);
 			addReflectablePtrArrayField("mArrayEntries", 3, &ManagedSerializableArrayRTTI::getArrayEntry, &ManagedSerializableArrayRTTI::getNumArrayEntries, 
 				&ManagedSerializableArrayRTTI::setArrayEntry, &ManagedSerializableArrayRTTI::setNumArrayEntries);
-		}
-
-		virtual void onDeserializationStarted(IReflectable* obj)
-		{
-			ManagedSerializableArray* serializableObject = static_cast<ManagedSerializableArray*>(obj);
-
-			serializableObject->mRTTIData = bs_shared_ptr<DeserializationInfo>();
-			SPtr<DeserializationInfo> info = any_cast<SPtr<DeserializationInfo>>(serializableObject->mRTTIData);
-
-			// If we are deserializing a GameObject we need to defer deserializing actual field values
-			// to ensure GameObject handles instances have been fixed up (which only happens after deserialization is done)
-			info->isGameObjectDeserialization = GameObjectManager::instance().isGameObjectDeserializationActive();
-
-			if (info->isGameObjectDeserialization)
-				GameObjectManager::instance().registerOnDeserializationEndCallback([=]() { serializableObject->deserializeManagedInstance(info->fields); });
-		}
-
-		virtual void onDeserializationEnded(IReflectable* obj)
-		{
-			ManagedSerializableArray* serializableObject = static_cast<ManagedSerializableArray*>(obj);
-			SPtr<DeserializationInfo> info = any_cast<SPtr<DeserializationInfo>>(serializableObject->mRTTIData);
-			
-			if (!info->isGameObjectDeserialization)
-				serializableObject->deserializeManagedInstance(info->fields);
-
-			serializableObject->mRTTIData = nullptr;
 		}
 
 		virtual const String& getRTTIName()

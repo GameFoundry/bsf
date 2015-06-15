@@ -7,7 +7,6 @@
 #include "BsMonoManager.h"
 #include "BsManagedSerializableObject.h"
 #include "BsGameObjectManager.h"
-#include "BsScriptGameObjectManager.h"
 #include "BsScriptComponent.h"
 
 namespace BansheeEngine
@@ -55,22 +54,12 @@ namespace BansheeEngine
 			obj->mMissingType = val;
 		}
 
-		ManagedSerializableObjectInfoPtr getMissingTypeObjectInfo(ManagedComponent* obj)
-		{
-			return obj->mMissingTypeObjectInfo;
-		}
-
-		void setMissingTypeObjectInfo(ManagedComponent* obj, ManagedSerializableObjectInfoPtr val)
-		{
-			obj->mMissingTypeObjectInfo = val;
-		}
-
-		ManagedSerializableObjectDataPtr getMissingTypeObjectData(ManagedComponent* obj)
+		ManagedSerializableObjectPtr getMissingTypeObjectData(ManagedComponent* obj)
 		{
 			return obj->mMissingTypeObjectData;
 		}
 
-		void setMissingTypeObjectData(ManagedComponent* obj, ManagedSerializableObjectDataPtr val)
+		void setMissingTypeObjectData(ManagedComponent* obj, ManagedSerializableObjectPtr val)
 		{
 			obj->mMissingTypeObjectData = val;
 		}
@@ -82,7 +71,6 @@ namespace BansheeEngine
 			addPlainField("mTypename", 1, &ManagedComponentRTTI::getTypename, &ManagedComponentRTTI::setTypename);
 			addReflectablePtrField("mObjectData", 2, &ManagedComponentRTTI::getObjectData, &ManagedComponentRTTI::setObjectData);
 			addPlainField("mMissingType", 3, &ManagedComponentRTTI::getMissingType, &ManagedComponentRTTI::setMissingType);
-			addReflectablePtrField("mMissingTypeObjectInfo", 4, &ManagedComponentRTTI::getMissingTypeObjectInfo, &ManagedComponentRTTI::setMissingTypeObjectInfo);
 			addReflectablePtrField("mMissingTypeObjectData", 5, &ManagedComponentRTTI::getMissingTypeObjectData, &ManagedComponentRTTI::setMissingTypeObjectData);
 		}
 
@@ -103,6 +91,7 @@ namespace BansheeEngine
 		static void finalizeDeserialization(ManagedComponent* mc)
 		{
 			ManagedSerializableObjectPtr serializableObject = any_cast<ManagedSerializableObjectPtr>(mc->mRTTIData);
+			serializableObject->deserialize();
 			MonoObject* managedInstance = serializableObject->getManagedInstance();
 
 			// Note: This callback must be triggered before any child ManagedSerializable* object's callbacks.

@@ -31,8 +31,8 @@ namespace BansheeEngine
 
 		void setSerializableObjectInfo(ManagedSerializableAssemblyInfo* obj, UINT32 idx, ManagedSerializableObjectInfoPtr val) 
 		{ 
-			obj->mTypeNameToId[val->getFullTypeName()] = val->mTypeId;
-			obj->mObjectInfos[val->mTypeId] = val;
+			obj->mTypeNameToId[val->getFullTypeName()] = val->mTypeInfo->mTypeId;
+			obj->mObjectInfos[val->mTypeInfo->mTypeId] = val;
 		}
 		
 		UINT32 getSerializableObjectInfoArraySize(ManagedSerializableAssemblyInfo* obj) { return (UINT32)obj->mObjectInfos.size(); }
@@ -77,16 +77,6 @@ namespace BansheeEngine
 			obj->mTypeInfo = val;
 		}
 
-		UINT32& getTypeId(ManagedSerializableObjectInfo* obj)
-		{
-			return obj->mTypeId;
-		}
-
-		void setTypeId(ManagedSerializableObjectInfo* obj, UINT32& val)
-		{
-			obj->mTypeId = val;
-		}
-
 		ManagedSerializableObjectInfoPtr getBaseClass(ManagedSerializableObjectInfo* obj)
 		{
 			return obj->mBaseClass;
@@ -119,18 +109,11 @@ namespace BansheeEngine
 		ManagedSerializableObjectInfoRTTI()
 		{
 			addReflectablePtrField("mTypeInfo", 0, &ManagedSerializableObjectInfoRTTI::getTypeInfo, &ManagedSerializableObjectInfoRTTI::setTypeInfo);
-			addPlainField("mTypeId", 1, &ManagedSerializableObjectInfoRTTI::getTypeId, &ManagedSerializableObjectInfoRTTI::setTypeId);
 			addReflectablePtrField("mBaseClass", 2, &ManagedSerializableObjectInfoRTTI::getBaseClass, &ManagedSerializableObjectInfoRTTI::setBaseClass);
 
 			addReflectablePtrArrayField("mFields", 3, &ManagedSerializableObjectInfoRTTI::getSerializableFieldInfo, 
 				&ManagedSerializableObjectInfoRTTI::getSerializableFieldInfoArraySize, &ManagedSerializableObjectInfoRTTI::setSerializableFieldInfo, 
 				&ManagedSerializableObjectInfoRTTI::setSerializableFieldInfoArraySize);
-		}
-
-		void onDeserializationEnded(IReflectable* obj)
-		{
-			ManagedSerializableObjectInfo* objInfo = static_cast<ManagedSerializableObjectInfo*>(obj);
-			objInfo->initialize();
 		}
 
 		virtual const String& getRTTIName()
@@ -183,6 +166,16 @@ namespace BansheeEngine
 			obj->mFieldId = val;
 		}
 
+		UINT32& getParentTypeId(ManagedSerializableFieldInfo* obj)
+		{
+			return obj->mParentTypeId;
+		}
+
+		void setParentTypeId(ManagedSerializableFieldInfo* obj, UINT32& val)
+		{
+			obj->mParentTypeId = val;
+		}
+
 		UINT32& getFlags(ManagedSerializableFieldInfo* obj)
 		{
 			return (UINT32&)obj->mFlags;
@@ -200,6 +193,7 @@ namespace BansheeEngine
 			addReflectablePtrField("mTypeInfo", 1, &ManagedSerializableFieldInfoRTTI::getTypeInfo, &ManagedSerializableFieldInfoRTTI::setTypeInfo);
 			addPlainField("mFieldId", 2, &ManagedSerializableFieldInfoRTTI::getFieldId, &ManagedSerializableFieldInfoRTTI::setFieldId);
 			addPlainField("mFlags", 3, &ManagedSerializableFieldInfoRTTI::getFlags, &ManagedSerializableFieldInfoRTTI::setFlags);
+			addPlainField("mParentTypeId", 4, &ManagedSerializableFieldInfoRTTI::getParentTypeId, &ManagedSerializableFieldInfoRTTI::setParentTypeId);
 		}
 
 		virtual const String& getRTTIName()
@@ -214,7 +208,8 @@ namespace BansheeEngine
 		}
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
-		{return bs_shared_ptr<ManagedSerializableFieldInfo>();
+		{
+			return bs_shared_ptr<ManagedSerializableFieldInfo>();
 		}
 	};
 
@@ -314,12 +309,23 @@ namespace BansheeEngine
 			obj->mValueType = val;
 		}
 
+		UINT32& getTypeId(ManagedSerializableTypeInfoObject* obj)
+		{
+			return obj->mTypeId;
+		}
+
+		void setTypeId(ManagedSerializableTypeInfoObject* obj, UINT32& val)
+		{
+			obj->mTypeId = val;
+		}
+
 	public:
 		ManagedSerializableTypeInfoObjectRTTI()
 		{
 			addPlainField("mTypeName", 0, &ManagedSerializableTypeInfoObjectRTTI::getTypeName, &ManagedSerializableTypeInfoObjectRTTI::setTypeName);
 			addPlainField("mTypeNamespace", 1, &ManagedSerializableTypeInfoObjectRTTI::getTypeNamespace, &ManagedSerializableTypeInfoObjectRTTI::setTypeNamespace);
 			addPlainField("mValueType", 2, &ManagedSerializableTypeInfoObjectRTTI::getIsValueType, &ManagedSerializableTypeInfoObjectRTTI::setIsValueType);
+			addPlainField("mTypeId", 3, &ManagedSerializableTypeInfoObjectRTTI::getIsValueType, &ManagedSerializableTypeInfoObjectRTTI::setIsValueType);
 		}
 
 		virtual const String& getRTTIName()

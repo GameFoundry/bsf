@@ -270,12 +270,6 @@
     <ClInclude Include="Include\BsScriptAssemblyManager.h">
       <Filter>Header Files\Serialization</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsManagedSerializableObjectData.h">
-      <Filter>Header Files\Serialization</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsManagedSerializableObjectDataRTTI.h">
-      <Filter>Header Files\Serialization\RTTI</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsScriptGUISlider.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
@@ -528,9 +522,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsScriptAssemblyManager.cpp">
-      <Filter>Source Files\Serialization</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsManagedSerializableObjectData.cpp">
       <Filter>Source Files\Serialization</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsScriptGUISlider.cpp">

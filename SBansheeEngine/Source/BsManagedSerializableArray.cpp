@@ -71,57 +71,103 @@ namespace BansheeEngine
 		return createInstance->invoke(nullptr, params);
 	}
 
-	void ManagedSerializableArray::deserializeManagedInstance(const Vector<ManagedSerializableFieldDataPtr>& entries)
-	{
-		mManagedInstance = createManagedInstance(mArrayTypeInfo, mNumElements);
-
-		if (mManagedInstance == nullptr)
-			return;
-
-		initMonoObjects();
-
-		UINT32 idx = 0;
-		for (auto& arrayEntry : entries)
-		{
-			setFieldData(idx, arrayEntry);
-			idx++;
-		}
-	}
-
 	void ManagedSerializableArray::setFieldData(UINT32 arrayIdx, const ManagedSerializableFieldDataPtr& val)
 	{
-		if(mono_class_is_valuetype(mElementMonoClass))
-			setValue(arrayIdx, val->getValue(mArrayTypeInfo->mElementType));
+		if (mManagedInstance != nullptr)
+		{
+			if (mono_class_is_valuetype(mElementMonoClass))
+				setValueInternal(arrayIdx, val->getValue(mArrayTypeInfo->mElementType));
+			else
+			{
+				MonoObject* ptrToObj = (MonoObject*)val->getValue(mArrayTypeInfo->mElementType);
+				setValueInternal(arrayIdx, &ptrToObj);
+			}
+		}
 		else
 		{
-			MonoObject* ptrToObj = (MonoObject*)val->getValue(mArrayTypeInfo->mElementType);
-			setValue(arrayIdx, &ptrToObj);
+			mCachedEntries[arrayIdx] = val;
 		}
 	}
 
 	ManagedSerializableFieldDataPtr ManagedSerializableArray::getFieldData(UINT32 arrayIdx)
 	{
-		MonoArray* array = (MonoArray*)mManagedInstance;
-
-		UINT32 numElems = (UINT32)mono_array_length(array);
-		assert(arrayIdx < numElems);
-
-		void* arrayValue = mono_array_addr_with_size(array, mElemSize, arrayIdx);
-
-		if(mono_class_is_valuetype(mElementMonoClass))
+		if (mManagedInstance != nullptr)
 		{
-			MonoObject* boxedObj = nullptr;
+			MonoArray* array = (MonoArray*)mManagedInstance;
 
-			if (arrayValue != nullptr)
-				boxedObj = mono_value_box(MonoManager::instance().getDomain(), mElementMonoClass, arrayValue);
+			UINT32 numElems = (UINT32)mono_array_length(array);
+			assert(arrayIdx < numElems);
 
-			return ManagedSerializableFieldData::create(mArrayTypeInfo->mElementType, boxedObj);
+			void* arrayValue = mono_array_addr_with_size(array, mElemSize, arrayIdx);
+
+			if (mono_class_is_valuetype(mElementMonoClass))
+			{
+				MonoObject* boxedObj = nullptr;
+
+				if (arrayValue != nullptr)
+					boxedObj = mono_value_box(MonoManager::instance().getDomain(), mElementMonoClass, arrayValue);
+
+				return ManagedSerializableFieldData::create(mArrayTypeInfo->mElementType, boxedObj);
+			}
+			else
+				return ManagedSerializableFieldData::create(mArrayTypeInfo->mElementType, *(MonoObject**)arrayValue);
 		}
 		else
-			return ManagedSerializableFieldData::create(mArrayTypeInfo->mElementType, *(MonoObject**)arrayValue);
+			return mCachedEntries[arrayIdx];
+	}
+
+	void ManagedSerializableArray::serialize()
+	{
+		if (mManagedInstance == nullptr)
+			return;
+
+		mNumElements.resize(mArrayTypeInfo->mRank);
+		for (UINT32 i = 0; i < mArrayTypeInfo->mRank; i++)
+			mNumElements[i] = getLengthInternal(i);
+
+		UINT32 numElements = getTotalLength();
+		mCachedEntries = Vector<ManagedSerializableFieldDataPtr>(numElements);
+
+		for (UINT32 i = 0; i < numElements; i++)
+			mCachedEntries[i] = getFieldData(i);
+
+		// Serialize children
+		for (auto& fieldEntry : mCachedEntries)
+			fieldEntry->serialize();
+
+		mManagedInstance = nullptr;
+	}
+
+	void ManagedSerializableArray::deserialize()
+	{
+		mManagedInstance = createManagedInstance(mArrayTypeInfo, mNumElements);
+
+		if (mManagedInstance == nullptr)
+		{
+			mCachedEntries.clear();
+			return;
+		}
+
+		::MonoClass* monoClass = mono_object_get_class(mManagedInstance);
+		mElemSize = mono_array_element_size(monoClass);
+
+		initMonoObjects();
+
+		// Deserialize children
+		for (auto& fieldEntry : mCachedEntries)
+			fieldEntry->deserialize();
+
+		UINT32 idx = 0;
+		for (auto& arrayEntry : mCachedEntries)
+		{
+			setFieldData(idx, arrayEntry);
+			idx++;
+		}
+
+		mCachedEntries.clear();
 	}
 	
-	void ManagedSerializableArray::setValue(UINT32 arrayIdx, void* val)
+	void ManagedSerializableArray::setValueInternal(UINT32 arrayIdx, void* val)
 	{
 		MonoArray* array = (MonoArray*)mManagedInstance;
 
@@ -165,29 +211,37 @@ namespace BansheeEngine
 
 	void ManagedSerializableArray::resize(const Vector<UINT32>& newSizes)
 	{
-		assert(mArrayTypeInfo->mRank == (UINT32)newSizes.size());
+		if (mManagedInstance != nullptr)
+		{
+			assert(mArrayTypeInfo->mRank == (UINT32)newSizes.size());
 
-		UINT32 srcCount = 1;
-		for (auto& numElems : mNumElements)
-			srcCount *= numElems;
+			UINT32 srcCount = 1;
+			for (auto& numElems : mNumElements)
+				srcCount *= numElems;
 
-		UINT32 dstCount = 1;
-		for (auto& numElems : newSizes)
-			dstCount *= numElems;
+			UINT32 dstCount = 1;
+			for (auto& numElems : newSizes)
+				dstCount *= numElems;
 
-		UINT32 copyCount = std::min(srcCount, dstCount);
+			UINT32 copyCount = std::min(srcCount, dstCount);
 
-		MonoObject* newArray = createManagedInstance(mArrayTypeInfo, newSizes);
+			MonoObject* newArray = createManagedInstance(mArrayTypeInfo, newSizes);
 
-		void* params[3];
-		params[0] = getManagedInstance();;
-		params[1] = newArray;
-		params[2] = &copyCount;
+			void* params[3];
+			params[0] = getManagedInstance();;
+			params[1] = newArray;
+			params[2] = &copyCount;
 
-		mCopyMethod->invoke(nullptr, params);
+			mCopyMethod->invoke(nullptr, params);
 
-		mManagedInstance = newArray;
-		mNumElements = newSizes;
+			mManagedInstance = newArray;
+			mNumElements = newSizes;
+		}
+		else
+		{
+			mNumElements = newSizes;
+			mCachedEntries.resize(getTotalLength());
+		}
 	}
 
 	UINT32 ManagedSerializableArray::getLengthInternal(UINT32 dimension) const
