@@ -3,6 +3,7 @@
 #include <unordered_map>
 
 #include "BsPrerequisitesUtil.h"
+#include "BsSerializedObject.h"
 #include "BsRTTIField.h"
 
 namespace BansheeEngine
@@ -64,7 +65,22 @@ namespace BansheeEngine
 		 */
 		std::shared_ptr<IReflectable> decode(UINT8* data, UINT32 dataLength);
 
+		/**
+		 * @brief	Decodes an object in memory into an intermediate representation for easier parsing.
+		 *			
+		 * @note	Internal method.
+		 *			References to field data will point to the original buffer and will become invalid 
+		 *			when it is destroyed.
+		 */
+		SPtr<SerializedObject> _decodeIntermediate(UINT8* data, UINT32 dataLength, UINT32& bytesRead);
+
 	private:
+		struct ObjectMetaData
+		{
+			UINT32 objectMeta;
+			UINT32 typeId;
+		};
+
 		struct ObjectToEncode
 		{
 			ObjectToEncode(UINT32 _objectId, std::shared_ptr<IReflectable> _object)
@@ -77,29 +93,14 @@ namespace BansheeEngine
 
 		struct ObjectToDecode
 		{
-			ObjectToDecode(UINT32 _objectId, std::shared_ptr<IReflectable> _object, UINT8* _locationInBuffer, UINT32 _locationInFile)
-				:objectId(_objectId), object(_object), locationInBuffer(_locationInBuffer), locationInFile(_locationInFile), isDecoded(false)
+			ObjectToDecode(const SPtr<IReflectable>& _object, const SPtr<SerializedObject>& serializedObject)
+				:object(_object), serializedObject(serializedObject), isDecoded(false)
 			{ }
 
-			UINT32 objectId;
-			std::shared_ptr<IReflectable> object;
-			UINT8* locationInBuffer;
-			UINT32 locationInFile;
+			SPtr<IReflectable> object;
+			SPtr<SerializedObject> serializedObject;
 			bool isDecoded;
 		};
-
-		struct ObjectMetaData
-		{
-			UINT32 objectMeta;
-			UINT32 typeId;
-		};
-
-		UnorderedMap<void*, UINT32> mObjectAddrToId;
-		UINT32 mLastUsedObjectId;
-		Vector<ObjectToEncode> mObjectsToEncode;
-		int mTotalBytesWritten;
-
-		Map<UINT32, ObjectToDecode> mObjectMap;
 
 		/**
 		 * @brief	Parses the entire object and calculates total size required for
@@ -116,49 +117,18 @@ namespace BansheeEngine
 		/**
 		 * @brief	Decodes a single IReflectable object.
 		 */
-		bool decodeInternal(std::shared_ptr<IReflectable> object, UINT8* data, UINT32 dataLength, UINT32& bytesRead);
+		void decodeInternal(const SPtr<IReflectable>& object, const SPtr<SerializedObject>& serializableObject);
 
 		/**
-		* @brief	Encodes data required for representing a serialized field, into 4 bytes.
-		*/
-		UINT32 encodeFieldMetaData(UINT16 id, UINT8 size, bool array, SerializableFieldType type, bool hasDynamicSize);
-
-		/**
-		* @brief	Decode meta field that was encoded using encodeFieldMetaData.
-		*/
-		void decodeFieldMetaData(UINT32 encodedData, UINT16& id, UINT8& size, bool& array, SerializableFieldType& type, bool& hasDynamicSize);
-
-		/**
-		 * @brief	Encodes data required for representing an object identifier, into 8 bytes.
-		 * 			
-		 * 			@note		Id can be a maximum of 30 bits, as two bits are reserved.
-		 *
-		 * @param	objId	   	Unique ID of the object instance.
-		 * @param	objTypeId  	Unique ID of the object type.
-		 * @param	isBaseClass	true if this object is base class (i.e. just a part of a larger object).
+		 * @brief	Decodes an object in memory into an intermediate representation for easier parsing.
 		 */
-		ObjectMetaData encodeObjectMetaData(UINT32 objId, UINT32 objTypeId, bool isBaseClass);
-
-		/**
-		* @brief	Decode meta field that was encoded using encodeObjectMetaData.
-		*/
-		void decodeObjectMetaData(ObjectMetaData encodedData, UINT32& objId, UINT32& objTypeId, bool& isBaseClass);
-
-		/**
-		 * @brief	Returns true if the provided encoded meta data represents object meta data.
-		 */
-		bool isObjectMetaData(UINT32 encodedData);
+		SPtr<SerializedObject> decodeIntermediateInternal(UINT8* data, UINT32 dataLength, UINT32& bytesRead);
 
 		/**
 		 * @brief	Helper method for encoding a complex object and copying its data to a buffer.
 		 */
 		UINT8* complexTypeToBuffer(IReflectable* object, UINT8* buffer, UINT32& bufferLength, int* bytesWritten, 
 			std::function<UINT8*(UINT8* buffer, int bytesWritten, UINT32& newBufferSize)> flushBufferCallback);
-
-		/**
-		 * @brief	Helper method for decoding a complex object from the provided data buffer.
-		 */
-		std::shared_ptr<IReflectable> complexTypeFromBuffer(RTTIReflectableFieldBase* field, UINT8* data, int* complexTypeSize);
 
 		/**
 		 * @brief	Helper method for encoding a data block to a buffer.
@@ -177,5 +147,49 @@ namespace BansheeEngine
 		 * 			if it's not already there.
 		 */
 		UINT32 registerObjectPtr(std::shared_ptr<IReflectable> object);
+
+		/**
+		 * @brief	Encodes data required for representing a serialized field, into 4 bytes.
+		 */
+		static UINT32 encodeFieldMetaData(UINT16 id, UINT8 size, bool array, SerializableFieldType type, bool hasDynamicSize);
+
+		/**
+		 * @brief	Decode meta field that was encoded using encodeFieldMetaData.
+		 */
+		static void decodeFieldMetaData(UINT32 encodedData, UINT16& id, UINT8& size, bool& array, SerializableFieldType& type, bool& hasDynamicSize);
+
+		/**
+		 * @brief	Encodes data required for representing an object identifier, into 8 bytes.
+		 * 			
+		 * 			@note		Id can be a maximum of 30 bits, as two bits are reserved.
+		 *
+		 * @param	objId	   	Unique ID of the object instance.
+		 * @param	objTypeId  	Unique ID of the object type.
+		 * @param	isBaseClass	true if this object is base class (i.e. just a part of a larger object).
+		 */
+		static ObjectMetaData encodeObjectMetaData(UINT32 objId, UINT32 objTypeId, bool isBaseClass);
+
+		/**
+		* @brief	Decode meta field that was encoded using encodeObjectMetaData.
+		*/
+		static void decodeObjectMetaData(ObjectMetaData encodedData, UINT32& objId, UINT32& objTypeId, bool& isBaseClass);
+
+		/**
+		 * @brief	Returns true if the provided encoded meta data represents object meta data.
+		 */
+		static bool isObjectMetaData(UINT32 encodedData);
+
+		UnorderedMap<void*, UINT32> mObjectAddrToId;
+		UINT32 mLastUsedObjectId;
+		Vector<ObjectToEncode> mObjectsToEncode;
+		int mTotalBytesWritten;
+
+		UnorderedMap<SPtr<SerializedObject>, ObjectToDecode> mObjectMap;
+		UnorderedMap<UINT32, SPtr<SerializedObject>> mInterimObjectMap;
+
+		static const int META_SIZE = 4; // Meta field size
+		static const int NUM_ELEM_FIELD_SIZE = 4; // Size of the field storing number of array elements
+		static const int COMPLEX_TYPE_FIELD_SIZE = 4; // Size of the field storing the size of a child complex type
+		static const int DATA_BLOCK_TYPE_FIELD_SIZE = 4;
 	};
 }

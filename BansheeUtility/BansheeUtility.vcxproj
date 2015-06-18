@@ -257,6 +257,8 @@
     <ClCompile Include="Source\BsLineSegment3.cpp" />
     <ClCompile Include="Source\BsMessageHandler.cpp" />
     <ClCompile Include="Source\BsRect3.cpp" />
+    <ClCompile Include="Source\BsBinaryDiff.cpp" />
+    <ClCompile Include="Source\BsSerializedObject.cpp" />
     <ClCompile Include="Source\BsStringID.cpp" />
     <ClCompile Include="Source\BsTaskScheduler.cpp" />
     <ClCompile Include="Source\BsTestOutput.cpp" />
@@ -295,6 +297,9 @@
     <ClInclude Include="Include\BsMessageHandler.h" />
     <ClInclude Include="Include\BsMessageHandlerFwd.h" />
     <ClInclude Include="Include\BsRect3.h" />
+    <ClInclude Include="Include\BsBinaryDiff.h" />
+    <ClInclude Include="Include\BsSerializedObject.h" />
+    <ClInclude Include="Include\BsSerializedObjectRTTI.h" />
     <ClInclude Include="Include\BsServiceLocator.h" />
     <ClInclude Include="Include\BsSpinLock.h" />
     <ClInclude Include="Include\BsStringFormat.h" />

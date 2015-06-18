@@ -56,6 +56,7 @@ namespace BansheeEngine
 	class TestSuite;
 	class TestOutput;
 	class AsyncOpSyncData;
+	class RTTIField;
 	// Reflection
 	class IReflectable;
 	class RTTITypeBase;
@@ -88,6 +89,12 @@ namespace BansheeEngine
 		TID_UnorderedMap = 55,
 		TID_Pair = 56,
 		TID_Set = 57,
-		TID_StringID = 58
+		TID_StringID = 58,
+		TID_SerializedInstance = 59,
+		TID_SerializedField = 60,
+		TID_SerializedObject = 61,
+		TID_SerializedArray = 62,
+		TID_SerializedEntry = 63,
+		TID_SerializedArrayEntry = 64
 	};
 }

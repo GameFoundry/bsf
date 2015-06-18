@@ -27,6 +27,17 @@ return them in checkForModifications?
 ---------------------------------------------------------------------
 Prefab diff
 
+Next:
+ - Create a native diff algorithm (that recursively calls managed diff as needed)
+  - And applyDiff
+ - The diff needs to be done using raw bytes in order to avoid instantiating
+   types that might have side-effects
+ - Create a unit test for native diff
+
+TODO - When applying diff should I call onDeserializeStart/End?
+
+Document Binary Diff
+
 Consider adding prefab support without diffs first (add dummy methods in place)
  - This might make it easier to understand how will it all fit together
 
@@ -42,26 +53,6 @@ GameObjectHandle compare in managed serializable diff won't work for prefabs (wi
    (i.e. compare using instance IDs or use the prefab link IDs)
  - But since I know I will be using serialized data (and not actual objects) to compare with
    I could do a pre-processing step and replace all the handle IDs before compare
-
-When I'm saving a prefab instance I need to generate the diff, therefore I need to load the prefab (ManagedSerializable stuff automatically created managed instance on load)
- - Will there be problems if I load the prefab objects? (e.g. a renderable, or some object might trigger some action on load)
-  - It MIGHT be better to be able to load compare the serialized data, without actually instantiating any objects
-    - ManagedSerializableObjectRTTI (and probably others) return the serialized field data
-      but it references other ManagedSerializableObject fields that I cannot get deserialized data from
- - THIS will also be a problem with native serialization!!!
-  - I'll probably have to do it using raw bytes
-  - Then when performing diff on native bytes if I detect a ManagedSerializableObject I should deserialize it 
-    (without creating a managed instance) and do the managed diff on it
-
-MIGHT need to adjust managed serializable object RTTI but I think it needs to retain ability to read its data directly from the 
-serialized object since I don't want to serialize the entire object hierarchy when all I need is a single field (like in some cases like searching for dependencies)
-
-Managed serialization is used in:
- - Save/Load of managed components and resources 
-   - Created when serialization starts manually, and automatically when deserializing
-     - After deserilization ends a special method is called to actually construct the managed instances from the loaded data
- - Used for assembly refresh, level save/load, undo/redo, clone, finding resource dependencies & diff
- - Used by SerializableProperty for cloning and creating new instances of objects/arrays/etc
 
 Consider making array/list/dictionary method/field references static (right now each instance has its own instance
  but they're identical)
