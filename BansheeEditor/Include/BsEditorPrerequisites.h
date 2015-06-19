@@ -108,6 +108,8 @@ namespace BansheeEngine
 		TID_TestComponentB = 40009,
 		TID_PlatformInfo = 40010,
 		TID_WinPlatformInfo = 40011,
-		TID_BuildData = 40012
+		TID_BuildData = 40012,
+		TID_TestObjectA = 40013,
+		TID_TestObjectB = 40014
 	};
 }

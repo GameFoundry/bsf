@@ -15,12 +15,56 @@
 
 namespace BansheeEngine
 {
-#define BS_SETGET_MEMBER(name, type, parentType)								\
-	type##& get##name(parentType##* obj) { return obj->##name; }				\
-	void Set##name(parentType##* obj, type##& val) { obj->##name = val; } 
+#define BS_PLAIN_MEMBER(name)								\
+	decltype(OwnerType::##name)& get##name(OwnerType* obj) { return obj->##name; }				\
+	void set##name(OwnerType* obj, decltype(OwnerType::##name)& val) { obj->##name = val; } 
 
-#define BS_ADD_PLAINFIELD(name, id, parentType) \
-	addPlainField(#name, id##, &##parentType##::get##name, &##parentType##::Set##name);
+#define BS_REFL_MEMBER(name)								\
+	decltype(OwnerType::##name)& get##name(OwnerType* obj) { return obj->##name; }				\
+	void set##name(OwnerType* obj, decltype(OwnerType::##name)& val) { obj->##name = val; } 
+
+#define BS_REFLPTR_MEMBER(name)								\
+	decltype(OwnerType::##name) get##name(OwnerType* obj) { return obj->##name; }				\
+	void set##name(OwnerType* obj, decltype(OwnerType::##name) val) { obj->##name = val; } 
+
+#define BS_ADD_PLAIN_FIELD(name, id) \
+	addPlainField(#name, id##, &MyType::get##name, &MyType::set##name);
+
+#define BS_ADD_REFL_FIELD(name, id) \
+	addReflectableField(#name, id##, &MyType::get##name, &MyType::set##name);
+
+#define BS_ADD_REFLPTR_FIELD(name, id) \
+	addReflectablePtrField(#name, id##, &MyType::get##name, &MyType::set##name);
+
+#define BS_PLAIN_MEMBER_VEC(name)								\
+	std::common_type<decltype(OwnerType::##name)>::type::value_type& get##name(OwnerType* obj, UINT32 idx) { return obj->##name[idx]; }				\
+	void set##name(OwnerType* obj, UINT32 idx, std::common_type<decltype(OwnerType::##name)>::type::value_type& val) { obj->##name[idx] = val; }		\
+	UINT32 getSize##name(OwnerType* obj) { return (UINT32)obj->##name.size(); }	\
+	void setSize##name(OwnerType* obj, UINT32 val) { obj->##name.resize(val); }
+
+#define BS_REFL_MEMBER_VEC(name)								\
+	std::common_type<decltype(OwnerType::##name)>::type::value_type& get##name(OwnerType* obj, UINT32 idx) { return obj->##name[idx]; }				\
+	void set##name(OwnerType* obj, UINT32 idx, std::common_type<decltype(OwnerType::##name)>::type::value_type& val) { obj->##name[idx] = val; }		\
+	UINT32 getSize##name(OwnerType* obj) { return (UINT32)obj->##name.size(); }	\
+	void setSize##name(OwnerType* obj, UINT32 val) { obj->##name.resize(val); }
+
+#define BS_REFLPTR_MEMBER_VEC(name)								\
+	std::common_type<decltype(OwnerType::##name)>::type::value_type get##name(OwnerType* obj, UINT32 idx) { return obj->##name[idx]; }				\
+	void set##name(OwnerType* obj, UINT32 idx, std::common_type<decltype(OwnerType::##name)>::type::value_type val) { obj->##name[idx] = val; }		\
+	UINT32 getSize##name(OwnerType* obj) { return (UINT32)obj->##name.size(); }	\
+	void setSize##name(OwnerType* obj, UINT32 val) { obj->##name.resize(val); }
+
+#define BS_ADD_PLAIN_FIELD_ARR(name, id) \
+	addPlainArrayField(#name, id##, &MyType::get##name, &MyType::getSize##name, \
+	&MyType::set##name, &MyType::setSize##name);
+
+#define BS_ADD_REFL_FIELD_ARR(name, id) \
+	addReflectableArrayField(#name, id##, &MyType::get##name, &MyType::getSize##name, \
+	&MyType::set##name, &MyType::setSize##name);
+
+#define BS_ADD_REFLPTR_FIELD_ARR(name, id) \
+	addReflectablePtrArrayField(#name, id##, &MyType::get##name, &MyType::getSize##name, \
+	&MyType::set##name, &MyType::setSize##name);
 
 	/**
 	 * @brief	Provides an interface for accessing fields of a certain class.
@@ -803,6 +847,9 @@ namespace BansheeEngine
 		}	
 
 	protected:
+		typedef Type OwnerType;
+		typedef MyRTTIType MyType;
+
 		virtual void initSerializableFields() {}
 
 		/************************************************************************/
