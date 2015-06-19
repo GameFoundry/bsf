@@ -54,8 +54,8 @@ namespace BansheeEngine
 		 * 									either create a new buffer or empty the existing one, and then return it by the callback.
 		 * 									If the returned buffer address is NULL, encoding is aborted.
 		 */
-		void encode(IReflectable* object, UINT8* buffer, UINT32 bufferLength, int* bytesWritten, 
-			std::function<UINT8*(UINT8* buffer, int bytesWritten, UINT32& newBufferSize)> flushBufferCallback);
+		void encode(IReflectable* object, UINT8* buffer, UINT32 bufferLength, UINT32* bytesWritten,
+			std::function<UINT8*(UINT8* buffer, UINT32 bytesWritten, UINT32& newBufferSize)> flushBufferCallback);
 
 		/**
 		 * @brief	Decodes an object from binary data.
@@ -111,8 +111,8 @@ namespace BansheeEngine
 		/**
 		 * @brief	Encodes a single IReflectable object. 
 		 */
-		UINT8* encodeInternal(IReflectable* object, UINT32 objectId, UINT8* buffer, UINT32& bufferLength, int* bytesWritten, 
-			std::function<UINT8*(UINT8* buffer, int bytesWritten, UINT32& newBufferSize)> flushBufferCallback);
+		UINT8* encodeInternal(IReflectable* object, UINT32 objectId, UINT8* buffer, UINT32& bufferLength, UINT32* bytesWritten,
+			std::function<UINT8*(UINT8* buffer, UINT32 bytesWritten, UINT32& newBufferSize)> flushBufferCallback);
 
 		/**
 		 * @brief	Decodes a single IReflectable object.
@@ -122,19 +122,19 @@ namespace BansheeEngine
 		/**
 		 * @brief	Decodes an object in memory into an intermediate representation for easier parsing.
 		 */
-		SPtr<SerializedObject> decodeIntermediateInternal(UINT8* data, UINT32 dataLength, UINT32& bytesRead);
+		bool decodeIntermediateInternal(UINT8* data, UINT32 dataLength, UINT32& bytesRead, SPtr<SerializedObject>& output);
 
 		/**
 		 * @brief	Helper method for encoding a complex object and copying its data to a buffer.
 		 */
-		UINT8* complexTypeToBuffer(IReflectable* object, UINT8* buffer, UINT32& bufferLength, int* bytesWritten, 
-			std::function<UINT8*(UINT8* buffer, int bytesWritten, UINT32& newBufferSize)> flushBufferCallback);
+		UINT8* complexTypeToBuffer(IReflectable* object, UINT8* buffer, UINT32& bufferLength, UINT32* bytesWritten,
+			std::function<UINT8*(UINT8* buffer, UINT32 bytesWritten, UINT32& newBufferSize)> flushBufferCallback);
 
 		/**
 		 * @brief	Helper method for encoding a data block to a buffer.
 		 */
-		UINT8* dataBlockToBuffer(UINT8* data, UINT32 size, UINT8* buffer, UINT32& bufferLength, int* bytesWritten, 
-			std::function<UINT8*(UINT8* buffer, int bytesWritten, UINT32& newBufferSize)> flushBufferCallback);
+		UINT8* dataBlockToBuffer(UINT8* data, UINT32 size, UINT8* buffer, UINT32& bufferLength, UINT32* bytesWritten,
+			std::function<UINT8*(UINT8* buffer, UINT32 bytesWritten, UINT32& newBufferSize)> flushBufferCallback);
 
 		/**
 		 * @brief	Finds an existing, or creates a unique unique identifier for the specified object. 
@@ -182,7 +182,7 @@ namespace BansheeEngine
 		UnorderedMap<void*, UINT32> mObjectAddrToId;
 		UINT32 mLastUsedObjectId;
 		Vector<ObjectToEncode> mObjectsToEncode;
-		int mTotalBytesWritten;
+		UINT32 mTotalBytesWritten;
 
 		UnorderedMap<SPtr<SerializedObject>, ObjectToDecode> mObjectMap;
 		UnorderedMap<UINT32, SPtr<SerializedObject>> mInterimObjectMap;

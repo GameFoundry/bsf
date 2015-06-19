@@ -26,7 +26,7 @@ namespace BansheeEngine
 
 		mBufferPieces.push_back(piece);
 
-		bs.encode(object, piece.buffer, WRITE_BUFFER_SIZE, (INT32*)&bytesWritten, std::bind(&MemorySerializer::flushBuffer, this, _1, _2, _3));
+		bs.encode(object, piece.buffer, WRITE_BUFFER_SIZE, &bytesWritten, std::bind(&MemorySerializer::flushBuffer, this, _1, _2, _3));
 
 		UINT8* resultBuffer;
 		if(allocator != nullptr)
@@ -62,7 +62,7 @@ namespace BansheeEngine
 		return object;
 	}
 
-	UINT8* MemorySerializer::flushBuffer(UINT8* bufferStart, int bytesWritten, UINT32& newBufferSize)
+	UINT8* MemorySerializer::flushBuffer(UINT8* bufferStart, UINT32 bytesWritten, UINT32& newBufferSize)
 	{
 		mBufferPieces.back().size = bytesWritten;
 

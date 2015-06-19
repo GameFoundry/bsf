@@ -37,7 +37,7 @@ namespace BansheeEngine
 		mOutputStream.seekp(sizeof(UINT32), std::ios_base::cur);
 
 		BinarySerializer bs;
-		int totalBytesWritten = 0;
+		UINT32 totalBytesWritten = 0;
 		bs.encode(object, mWriteBuffer, WRITE_BUFFER_SIZE, &totalBytesWritten, std::bind(&FileEncoder::flushBuffer, this, _1, _2, _3));
 
 		mOutputStream.seekp(curPos);
@@ -45,7 +45,7 @@ namespace BansheeEngine
 		mOutputStream.seekp(totalBytesWritten, std::ios_base::cur);
 	}
 
-	UINT8* FileEncoder::flushBuffer(UINT8* bufferStart, int bytesWritten, UINT32& newBufferSize)
+	UINT8* FileEncoder::flushBuffer(UINT8* bufferStart, UINT32 bytesWritten, UINT32& newBufferSize)
 	{
 		mOutputStream.write((const char*)bufferStart, bytesWritten);
 

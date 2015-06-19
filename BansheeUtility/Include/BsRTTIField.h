@@ -13,7 +13,6 @@
 namespace BansheeEngine
 {
 	class RTTITypeBase;
-	struct RTTIField;
 
 	/**
 	 * @brief	Types of fields we can serialize:

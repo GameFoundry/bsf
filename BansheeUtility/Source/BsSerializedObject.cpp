@@ -26,14 +26,22 @@ namespace BansheeEngine
 	SPtr<SerializedInstance> SerializedObject::clone(bool cloneData)
 	{
 		SPtr<SerializedObject> copy = bs_shared_ptr<SerializedObject>();
-		copy->typeId = typeId;
+		copy->subObjects = Vector<SerializedSubObject>(subObjects.size());
 
-		for (auto& entryPair : entries)
+		UINT32 i = 0;
+		for (auto& subObject : subObjects)
 		{
-			SerializedEntry entry = entryPair.second;
-			entry.serialized = entry.serialized->clone(cloneData);
+			copy->subObjects[i].typeId = subObject.typeId;
 
-			copy->entries[entryPair.first] = entry;
+			for (auto& entryPair : subObject.entries)
+			{
+				SerializedEntry entry = entryPair.second;
+				entry.serialized = entry.serialized->clone(cloneData);
+
+				copy->subObjects[i].entries[entryPair.first] = entry;
+			}
+
+			i++;
 		}
 
 		return copy;
@@ -93,6 +101,16 @@ namespace BansheeEngine
 	RTTITypeBase* SerializedArray::getRTTI() const
 	{
 		return SerializedArray::getRTTIStatic();
+	}
+
+	RTTITypeBase* SerializedSubObject::getRTTIStatic()
+	{
+		return SerializedSubObjectRTTI::instance();
+	}
+
+	RTTITypeBase* SerializedSubObject::getRTTI() const
+	{
+		return SerializedSubObject::getRTTIStatic();
 	}
 
 	RTTITypeBase* SerializedEntry::getRTTIStatic()

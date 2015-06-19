@@ -40,7 +40,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Called by the binary serializer whenever the buffer gets full.
 		 */
-		UINT8* flushBuffer(UINT8* bufferStart, int bytesWritten, UINT32& newBufferSize);
+		UINT8* flushBuffer(UINT8* bufferStart, UINT32 bytesWritten, UINT32& newBufferSize);
 
 		/************************************************************************/
 		/* 								CONSTANTS	                     		*/

@@ -25,7 +25,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			return bs_shared_ptr<SerializedInstance>();
+			return nullptr;
 		}
 	};
 
@@ -78,60 +78,30 @@ namespace BansheeEngine
 	class BS_UTILITY_EXPORT SerializedObjectRTTI : public RTTIType <SerializedObject, SerializedInstance, SerializedObjectRTTI>
 	{
 	private:
-		UINT32& getTypeId(SerializedObject* obj)
+		SerializedSubObject& getEntry(SerializedObject* obj, UINT32 arrayIdx)
 		{
-			return obj->typeId;
+			return obj->subObjects[arrayIdx];
 		}
 
-		void setTypeId(SerializedObject* obj, UINT32& val)
+		void setEntry(SerializedObject* obj, UINT32 arrayIdx, SerializedSubObject& val)
 		{
-			obj->typeId = val;
-		}
-
-		SerializedEntry& getEntry(SerializedObject* obj, UINT32 arrayIdx)
-		{
-			Vector<SerializedEntry>& sequentialEntries = any_cast_ref<Vector<SerializedEntry>>(obj->mRTTIData);
-			return sequentialEntries[arrayIdx];
-		}
-
-		void setEntry(SerializedObject* obj, UINT32 arrayIdx, SerializedEntry& val)
-		{
-			obj->entries[val.fieldId] = val;
+			obj->subObjects[arrayIdx] = val;
 		}
 
 		UINT32 getNumEntries(SerializedObject* obj)
 		{
-			Vector<SerializedEntry>& sequentialEntries = any_cast_ref<Vector<SerializedEntry>>(obj->mRTTIData);
-			return (UINT32)sequentialEntries.size();
+			return (UINT32)obj->subObjects.size();
 		}
 
 		void setNumEntries(SerializedObject* obj, UINT32 numEntries)
 		{
-			obj->entries = UnorderedMap<UINT32, SerializedEntry>();
+			obj->subObjects = Vector<SerializedSubObject>(numEntries);
 		}
 	public:
 		SerializedObjectRTTI()
 		{
-			addPlainField("typeId", 0, &SerializedObjectRTTI::getTypeId, &SerializedObjectRTTI::setTypeId);
 			addReflectableArrayField("entries", 1, &SerializedObjectRTTI::getEntry, &SerializedObjectRTTI::getNumEntries,
 				&SerializedObjectRTTI::setEntry, &SerializedObjectRTTI::setNumEntries);
-		}
-
-		virtual void onSerializationStarted(IReflectable* obj)
-		{
-			SerializedObject* serializableObject = static_cast<SerializedObject*>(obj);
-
-			Vector<SerializedEntry> sequentialData;
-			for (auto& entry : serializableObject->entries)
-				sequentialData.push_back(entry.second);
-
-			serializableObject->mRTTIData = sequentialData;
-		}
-
-		virtual void onSerializationEnded(IReflectable* obj)
-		{
-			SerializedObject* serializableObject = static_cast<SerializedObject*>(obj);
-			serializableObject->mRTTIData = nullptr;
 		}
 
 		virtual const String& getRTTIName() override
@@ -224,6 +194,82 @@ namespace BansheeEngine
 		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr<SerializedArray>();
+		}
+	};
+
+	class BS_UTILITY_EXPORT SerializedSubObjectRTTI : public RTTIType <SerializedSubObject, IReflectable, SerializedSubObjectRTTI>
+	{
+	private:
+		UINT32& getTypeId(SerializedSubObject* obj)
+		{
+			return obj->typeId;
+		}
+
+		void setTypeId(SerializedSubObject* obj, UINT32& val)
+		{
+			obj->typeId = val;
+		}
+
+		SerializedEntry& getEntry(SerializedSubObject* obj, UINT32 arrayIdx)
+		{
+			Vector<SerializedEntry>& sequentialEntries = any_cast_ref<Vector<SerializedEntry>>(obj->mRTTIData);
+			return sequentialEntries[arrayIdx];
+		}
+
+		void setEntry(SerializedSubObject* obj, UINT32 arrayIdx, SerializedEntry& val)
+		{
+			obj->entries[val.fieldId] = val;
+		}
+
+		UINT32 getNumEntries(SerializedSubObject* obj)
+		{
+			Vector<SerializedEntry>& sequentialEntries = any_cast_ref<Vector<SerializedEntry>>(obj->mRTTIData);
+			return (UINT32)sequentialEntries.size();
+		}
+
+		void setNumEntries(SerializedSubObject* obj, UINT32 numEntries)
+		{
+			obj->entries = UnorderedMap<UINT32, SerializedEntry>();
+		}
+	public:
+		SerializedSubObjectRTTI()
+		{
+			addPlainField("typeId", 0, &SerializedSubObjectRTTI::getTypeId, &SerializedSubObjectRTTI::setTypeId);
+			addReflectableArrayField("entries", 1, &SerializedSubObjectRTTI::getEntry, &SerializedSubObjectRTTI::getNumEntries,
+				&SerializedSubObjectRTTI::setEntry, &SerializedSubObjectRTTI::setNumEntries);
+		}
+
+		virtual void onSerializationStarted(IReflectable* obj) override
+		{
+			SerializedSubObject* serializableObject = static_cast<SerializedSubObject*>(obj);
+
+			Vector<SerializedEntry> sequentialData;
+			for (auto& entry : serializableObject->entries)
+				sequentialData.push_back(entry.second);
+
+			serializableObject->mRTTIData = sequentialData;
+		}
+
+		virtual void onSerializationEnded(IReflectable* obj) override
+		{
+			SerializedSubObject* serializableObject = static_cast<SerializedSubObject*>(obj);
+			serializableObject->mRTTIData = nullptr;
+		}
+
+		virtual const String& getRTTIName() override
+		{
+			static String name = "SerializedSubObject";
+			return name;
+		}
+
+		virtual UINT32 getRTTIId() override
+		{
+			return TID_SerializedSubObject;
+		}
+
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		{
+			return bs_shared_ptr<SerializedSubObject>();
 		}
 	};
 

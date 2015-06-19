@@ -67,19 +67,38 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	A serialized object consisting of multiple entries,
+	 * @brief	A serialized portion of an object consisting of multiple entries,
 	 *			one for each field.
 	 */
-	struct BS_UTILITY_EXPORT SerializedObject : SerializedInstance
+	struct BS_UTILITY_EXPORT SerializedSubObject : IReflectable
 	{
-		SerializedObject()
+		SerializedSubObject()
 			:typeId(0)
 		{ }
 
-		SPtr<SerializedInstance> clone(bool cloneData = true) override;
-
 		UINT32 typeId;
 		UnorderedMap<UINT32, SerializedEntry> entries;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+	public:
+		friend class SerializedSubObjectRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const override;
+	};
+
+
+	/**
+	 * @brief	A serialized object consisting of multiple sub-objects,
+	 *			one for each inherited class.
+	 */
+	struct BS_UTILITY_EXPORT SerializedObject : SerializedInstance
+	{
+		UINT32 getRootTypeId() const { return subObjects[0].typeId; }
+		SPtr<SerializedInstance> clone(bool cloneData = true) override;
+
+		Vector<SerializedSubObject> subObjects;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

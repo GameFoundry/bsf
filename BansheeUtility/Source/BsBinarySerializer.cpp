@@ -43,7 +43,7 @@ namespace BansheeEngine
 	{
 	}
 
-	void BinarySerializer::encode(IReflectable* object, UINT8* buffer, UINT32 bufferLength, int* bytesWritten, std::function<UINT8*(UINT8*, int, UINT32&)> flushBufferCallback)
+	void BinarySerializer::encode(IReflectable* object, UINT8* buffer, UINT32 bufferLength, UINT32* bytesWritten, std::function<UINT8*(UINT8*, UINT32, UINT32&)> flushBufferCallback)
 	{
 		mObjectsToEncode.clear();
 		mObjectAddrToId.clear();
@@ -127,7 +127,7 @@ namespace BansheeEngine
 
 		SPtr<IReflectable> rootObject;
 
-		RTTITypeBase* type = IReflectable::_getRTTIfromTypeId(intermediateObject->typeId);
+		RTTITypeBase* type = IReflectable::_getRTTIfromTypeId(intermediateObject->getRootTypeId());
 		if (type != nullptr)
 		{
 			rootObject = type->newRTTIObject();
@@ -153,7 +153,7 @@ namespace BansheeEngine
 	}
 
 	UINT8* BinarySerializer::encodeInternal(IReflectable* object, UINT32 objectId, UINT8* buffer, UINT32& bufferLength, 
-		int* bytesWritten, std::function<UINT8*(UINT8*, int, UINT32&)> flushBufferCallback)
+		UINT32* bytesWritten, std::function<UINT8*(UINT8*, UINT32, UINT32&)> flushBufferCallback)
 	{
 		RTTITypeBase* si = object->getRTTI();
 		bool isBaseClass = false;
@@ -366,10 +366,20 @@ namespace BansheeEngine
 	{
 		mInterimObjectMap.clear();
 
-		return decodeIntermediateInternal(data, dataLength, bytesRead);
+		SPtr<SerializedObject> rootObj;
+		bool hasMore = decodeIntermediateInternal(data, dataLength, bytesRead, rootObj);
+		while (hasMore)
+		{
+			UINT8* dataPtr = data + bytesRead;
+
+			SPtr<SerializedObject> dummyObj;
+			hasMore = decodeIntermediateInternal(dataPtr, dataLength, bytesRead, dummyObj);
+		}
+
+		return rootObj;
 	}
 
-	SPtr<SerializedObject> BinarySerializer::decodeIntermediateInternal(UINT8* data, UINT32 dataLength, UINT32& bytesRead)
+	bool BinarySerializer::decodeIntermediateInternal(UINT8* data, UINT32 dataLength, UINT32& bytesRead, SPtr<SerializedObject>& output)
 	{
 		if ((bytesRead + sizeof(ObjectMetaData)) > dataLength)
 		{
@@ -396,20 +406,28 @@ namespace BansheeEngine
 		}
 
 		RTTITypeBase* rtti = IReflectable::_getRTTIfromTypeId(objectTypeId);
-		SPtr<SerializedObject> serializedObject;
+		SerializedSubObject* serializedSubObject = nullptr;
 		
 		if (rtti != nullptr)
 		{
-			auto iterFind = mInterimObjectMap.find(objectId);
-			if (iterFind == mInterimObjectMap.end())
+			if (objectId > 0)
 			{
-				serializedObject = bs_shared_ptr<SerializedObject>();
-				mInterimObjectMap.insert(std::make_pair(objectId, serializedObject));
+				auto iterFind = mInterimObjectMap.find(objectId);
+				if (iterFind == mInterimObjectMap.end())
+				{
+					output = bs_shared_ptr<SerializedObject>();
+					mInterimObjectMap.insert(std::make_pair(objectId, output));
+				}
+				else
+					output = iterFind->second;
 			}
-			else
-				serializedObject = iterFind->second;
+			else // Not a reflectable ptr referenced object
+				output = bs_shared_ptr<SerializedObject>();
 
-			serializedObject->typeId = objectTypeId;
+			output->subObjects.push_back(SerializedSubObject());
+			serializedSubObject = &output->subObjects.back();
+
+			serializedSubObject->typeId = objectTypeId;
 		}
 
 		while (bytesRead < dataLength)
@@ -454,6 +472,14 @@ namespace BansheeEngine
 						rtti = nullptr;
 					}
 
+					if (rtti != nullptr)
+					{
+						output->subObjects.push_back(SerializedSubObject());
+						serializedSubObject = &output->subObjects.back();
+
+						serializedSubObject->typeId = objTypeId;
+					}
+
 					data += sizeof(ObjectMetaData);
 					bytesRead += sizeof(ObjectMetaData);
 					continue;
@@ -461,10 +487,7 @@ namespace BansheeEngine
 				else
 				{
 					if (objId != 0)
-					{
-						decodeIntermediateInternal(data, dataLength, bytesRead);
-						return;
-					}
+						return true;
 
 					// Objects with ID == 0 represent complex types serialized by value, but they should only get serialized
 					// if we encounter a field with one, not by just iterating through the file.
@@ -556,14 +579,17 @@ namespace BansheeEngine
 						{
 							SPtr<SerializedObject> serializedArrayEntry = nullptr;
 							
-							auto findObj = mInterimObjectMap.find(childObjectId);
-							if (findObj == mInterimObjectMap.end())
+							if (childObjectId > 0)
 							{
-								serializedArrayEntry = bs_shared_ptr<SerializedObject>();
-								mInterimObjectMap.insert(std::make_pair(childObjectId, serializedArrayEntry));
+								auto findObj = mInterimObjectMap.find(childObjectId);
+								if (findObj == mInterimObjectMap.end())
+								{
+									serializedArrayEntry = bs_shared_ptr<SerializedObject>();
+									mInterimObjectMap.insert(std::make_pair(childObjectId, serializedArrayEntry));
+								}
+								else
+									serializedArrayEntry = findObj->second;
 							}
-							else
-								serializedArrayEntry = findObj->second;
 
 							SerializedArrayEntry arrayEntry;
 							arrayEntry.serialized = serializedArrayEntry;
@@ -587,27 +613,26 @@ namespace BansheeEngine
 								"Error decoding data.");
 						}
 
-						int complexTypeSize = 0;
+						UINT32 complexTypeSize = 0;
 						memcpy(&complexTypeSize, data, COMPLEX_TYPE_FIELD_SIZE);
 						data += COMPLEX_TYPE_FIELD_SIZE;
 						bytesRead += COMPLEX_TYPE_FIELD_SIZE;
 
-						if (curField != nullptr)
+						if (curField != nullptr && complexTypeSize > 0)
 						{
-							SPtr<SerializedObject> serializedArrayEntry = decodeIntermediateInternal(data, dataLength, bytesRead);
+							UINT32 dummy = 0;
+							SPtr<SerializedObject> serializedArrayEntry;
+							decodeIntermediateInternal(data, complexTypeSize, dummy, serializedArrayEntry);
 
 							SerializedArrayEntry arrayEntry;
 							arrayEntry.serialized = serializedArrayEntry;
 							arrayEntry.index = i;
 
 							serializedArray->entries[i] = arrayEntry;
-							data += complexTypeSize;
 						}
-						else
-						{
-							data += complexTypeSize;
-							bytesRead += complexTypeSize;
-						}
+
+						data += complexTypeSize;
+						bytesRead += complexTypeSize;
 					}
 					break;
 				}
@@ -668,14 +693,17 @@ namespace BansheeEngine
 					{
 						SPtr<SerializedObject> serializedField = nullptr;
 
-						auto findObj = mInterimObjectMap.find(childObjectId);
-						if (findObj == mInterimObjectMap.end())
+						if (childObjectId > 0)
 						{
-							serializedField = bs_shared_ptr<SerializedObject>();
-							mInterimObjectMap.insert(std::make_pair(childObjectId, serializedField));
+							auto findObj = mInterimObjectMap.find(childObjectId);
+							if (findObj == mInterimObjectMap.end())
+							{
+								serializedField = bs_shared_ptr<SerializedObject>();
+								mInterimObjectMap.insert(std::make_pair(childObjectId, serializedField));
+							}
+							else
+								serializedField = findObj->second;
 						}
-						else
-							serializedField = findObj->second;
 
 						serializedEntry = serializedField;
 					}
@@ -692,21 +720,23 @@ namespace BansheeEngine
 							"Error decoding data.");
 					}
 
-					int complexTypeSize = 0;
+					UINT32 complexTypeSize = 0;
 					memcpy(&complexTypeSize, data, COMPLEX_TYPE_FIELD_SIZE);
 					data += COMPLEX_TYPE_FIELD_SIZE;
 					bytesRead += COMPLEX_TYPE_FIELD_SIZE;
 
-					if (curField != nullptr)
+					if (curField != nullptr && complexTypeSize > 0)
 					{
-						serializedEntry = decodeIntermediateInternal(data, dataLength, bytesRead);
-						data += complexTypeSize;
+						UINT32 dummy = 0;
+
+						SPtr<SerializedObject> serializedChildObj;
+						decodeIntermediateInternal(data, complexTypeSize, dummy, serializedChildObj);
+
+						serializedEntry = serializedChildObj;
 					}
-					else
-					{
-						data += complexTypeSize;
-						bytesRead += complexTypeSize;
-					}
+
+					data += complexTypeSize;
+					bytesRead += complexTypeSize;
 
 					break;
 				}
@@ -781,25 +811,36 @@ namespace BansheeEngine
 				entry.fieldId = curGenericField->mUniqueId;
 				entry.serialized = serializedEntry;
 
-				serializedObject->entries.insert(std::make_pair(curGenericField->mUniqueId, entry));
+				serializedSubObject->entries.insert(std::make_pair(curGenericField->mUniqueId, entry));
 			}
 		}
+
+		return false;
 	}
 
 	void BinarySerializer::decodeInternal(const SPtr<IReflectable>& object, const SPtr<SerializedObject>& serializableObject)
 	{
-		RTTITypeBase* rtti = IReflectable::_getRTTIfromTypeId(serializableObject->typeId);
-		while (rtti != nullptr)
+		UINT32 numSubObjects = (UINT32)serializableObject->subObjects.size();
+
+		Vector<RTTITypeBase*> rttiTypes;
+		for (UINT32 subObjectIdx = 0; subObjectIdx < numSubObjects; subObjectIdx++)
 		{
+			const SerializedSubObject& subObject = serializableObject->subObjects[subObjectIdx];
+
+			RTTITypeBase* rtti = IReflectable::_getRTTIfromTypeId(subObject.typeId);
+			if (rtti == nullptr)
+				continue;
+
 			rtti->onDeserializationStarted(object.get());
+			rttiTypes.push_back(rtti);
 
 			UINT32 numFields = rtti->getNumFields();
 			for (UINT32 fieldIdx = 0; fieldIdx < numFields; fieldIdx++)
 			{
 				RTTIField* curGenericField = rtti->getField(fieldIdx);
 
-				auto iterFindFieldData = serializableObject->entries.find(curGenericField->mUniqueId);
-				if (iterFindFieldData == serializableObject->entries.end())
+				auto iterFindFieldData = subObject.entries.find(curGenericField->mUniqueId);
+				if (iterFindFieldData == subObject.entries.end())
 					continue;
 
 				SPtr<SerializedInstance> entryData = iterFindFieldData->second.serialized;
@@ -822,7 +863,7 @@ namespace BansheeEngine
 							RTTITypeBase* childRtti = nullptr;
 							
 							if (arrayElemData != nullptr)
-								childRtti = IReflectable::_getRTTIfromTypeId(arrayElemData->typeId);
+								childRtti = IReflectable::_getRTTIfromTypeId(arrayElemData->getRootTypeId());
 
 							if (childRtti != nullptr)
 							{
@@ -861,7 +902,7 @@ namespace BansheeEngine
 							RTTITypeBase* childRtti = nullptr;
 
 							if (arrayElemData != nullptr)
-								childRtti = IReflectable::_getRTTIfromTypeId(arrayElemData->typeId);
+								childRtti = IReflectable::_getRTTIfromTypeId(arrayElemData->getRootTypeId());
 
 							if (childRtti != nullptr)
 							{
@@ -900,7 +941,7 @@ namespace BansheeEngine
 						RTTITypeBase* childRtti = nullptr;
 
 						if (fieldObjectData != nullptr)
-							childRtti = IReflectable::_getRTTIfromTypeId(fieldObjectData->typeId);
+							childRtti = IReflectable::_getRTTIfromTypeId(fieldObjectData->getRootTypeId());
 
 						if (childRtti != nullptr)
 						{
@@ -936,7 +977,7 @@ namespace BansheeEngine
 						RTTITypeBase* childRtti = nullptr;
 
 						if (fieldObjectData != nullptr)
-							childRtti = IReflectable::_getRTTIfromTypeId(fieldObjectData->typeId);
+							childRtti = IReflectable::_getRTTIfromTypeId(fieldObjectData->getRootTypeId());
 
 						if (childRtti != nullptr)
 						{
@@ -976,25 +1017,11 @@ namespace BansheeEngine
 					}
 				}
 			}
-
-			rtti = rtti->getBaseClass();
 		}
 
-		Stack<RTTITypeBase*> typesToProcess;
-
-		RTTITypeBase* currentType = object->getRTTI();
-		while (currentType != nullptr)
+		for (auto iterFind = rttiTypes.rbegin(); iterFind != rttiTypes.rend(); ++iterFind)
 		{
-			typesToProcess.push(currentType);
-			currentType = currentType->getBaseClass();
-		}
-
-		while (!typesToProcess.empty())
-		{
-			currentType = typesToProcess.top();
-			typesToProcess.pop();
-
-			currentType->onDeserializationEnded(object.get());
+			(*iterFind)->onDeserializationEnded(object.get());
 		}
 	}
 
@@ -1211,7 +1238,7 @@ namespace BansheeEngine
 	}
 
 	UINT8* BinarySerializer::complexTypeToBuffer(IReflectable* object, UINT8* buffer, UINT32& bufferLength, 
-		int* bytesWritten, std::function<UINT8*(UINT8*, int, UINT32&)> flushBufferCallback)
+		UINT32* bytesWritten, std::function<UINT8*(UINT8*, UINT32, UINT32&)> flushBufferCallback)
 	{
 		int complexTypeSize = 0;
 		if(object != nullptr)
@@ -1225,8 +1252,8 @@ namespace BansheeEngine
 		return buffer;
 	}
 
-	UINT8* BinarySerializer::dataBlockToBuffer(UINT8* data, UINT32 size, UINT8* buffer, UINT32& bufferLength, int* bytesWritten,
-		std::function<UINT8*(UINT8* buffer, int bytesWritten, UINT32& newBufferSize)> flushBufferCallback)
+	UINT8* BinarySerializer::dataBlockToBuffer(UINT8* data, UINT32 size, UINT8* buffer, UINT32& bufferLength, UINT32* bytesWritten,
+		std::function<UINT8*(UINT8* buffer, UINT32 bytesWritten, UINT32& newBufferSize)> flushBufferCallback)
 	{
 		UINT32 remainingSize = size;
 		while (remainingSize > 0)
