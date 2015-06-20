@@ -3,13 +3,7 @@ FBX
 Next:
  - DefaultMeshData is defined in BansheeEngine but FBXImporter only includes Banshee Core
   - Therefore I am not using it in FBXImporter but I should
-
-Later:
- - Import keyframes
-  - ?? TODO
+ - When import animation generate slopes for quaternion rotation curves
  - Add methods for calculating normals and tangent frame. This is especially needed for blend shapes as I believe they
    come with tangent frame or normal information. I've marked points in code where this is needed with a TODO.
  
-Create a set of output data that is retrieved from the FBX. Then convert that data to Banshee mesh/animation/etc.
-For now I would only use the mesh part but later I can just take the rest of the data as needed without messing with the
-FBX importer.

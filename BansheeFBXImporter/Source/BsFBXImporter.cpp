@@ -134,7 +134,7 @@ namespace BansheeEngine
 			importSkin(importedScene);
 
 		if (fbxImportOptions.importAnimation)
-			importAnimations(fbxScene, fbxImportOptions.importBlendShapes, importedScene);
+			importAnimations(fbxScene, fbxImportOptions, importedScene);
 
 		splitMeshVertices(importedScene);
 		
@@ -1052,7 +1052,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void FBXImporter::importAnimations(FbxScene* scene, bool importBlendShapeAnimations, FBXImportScene& importScene)
+	void FBXImporter::importAnimations(FbxScene* scene, FBXImportOptions& importOptions, FBXImportScene& importScene)
 	{
 		FbxNode* root = scene->GetRootNode();
 
@@ -1080,9 +1080,15 @@ namespace BansheeEngine
 				FbxTime endTime;
 				endTime.SetSecondDouble(clip.end);
 
-				FbxTime::EMode timeMode = scene->GetGlobalSettings().GetTimeMode();
 				FbxTime sampleRate;
-				sampleRate.SetSecondDouble(1.0f / FbxTime::GetFrameRate(timeMode));
+
+				if (importOptions.animResample)
+					sampleRate.SetSecondDouble(importOptions.animSampleRate);
+				else
+				{
+					FbxTime::EMode timeMode = scene->GetGlobalSettings().GetTimeMode();
+					sampleRate.SetSecondDouble(1.0f / FbxTime::GetFrameRate(timeMode));
+				}
 
 				if (!animStack->BakeLayers(evaluator, startTime, endTime, sampleRate))
 					continue;
@@ -1094,12 +1100,12 @@ namespace BansheeEngine
 			{
 				FbxAnimLayer* animLayer = animStack->GetMember<FbxAnimLayer>(0);
 
-				importAnimations(animLayer, root, importBlendShapeAnimations, clip, importScene);
+				importAnimations(animLayer, root, importOptions, clip, importScene);
 			}
 		}
 	}
 
-	void FBXImporter::importAnimations(FbxAnimLayer* layer, FbxNode* node, bool importBlendShapeAnimations, 
+	void FBXImporter::importAnimations(FbxAnimLayer* layer, FbxNode* node, FBXImportOptions& importOptions,
 		FBXAnimationClip& clip, FBXImportScene& importScene)
 	{
 		FbxAnimCurve* translation[3];
@@ -1117,13 +1123,189 @@ namespace BansheeEngine
 		scale[1] = node->LclScaling.GetCurve(layer, FBXSDK_CURVENODE_COMPONENT_Y);
 		scale[2] = node->LclScaling.GetCurve(layer, FBXSDK_CURVENODE_COMPONENT_Z);
 
-		// TODO
+		auto hasCurveValues = [](FbxAnimCurve* curves[3])
+		{
+			for (UINT32 i = 0; i < 3; i++)
+			{
+				if (curves[i] != nullptr && curves[i]->KeyGetCount() > 0)
+					return true;
+			}
+
+			return false;
+		};
+
+		bool hasBoneAnimation = hasCurveValues(translation) || hasCurveValues(rotation) || hasCurveValues(scale);
+		if (hasBoneAnimation)
+		{
+			clip.boneAnimations.push_back(FBXBoneAnimation());
+			FBXBoneAnimation& boneAnim = clip.boneAnimations.back();
+			boneAnim.node = importScene.nodeMap[node];
+
+			importCurve(translation[0], importOptions, boneAnim.translation[0], clip.start, clip.end);
+			importCurve(translation[1], importOptions, boneAnim.translation[1], clip.start, clip.end);
+			importCurve(translation[2], importOptions, boneAnim.translation[2], clip.start, clip.end);
+
+			importCurve(scale[0], importOptions, boneAnim.scale[0], clip.start, clip.end);
+			importCurve(scale[1], importOptions, boneAnim.scale[1], clip.start, clip.end);
+			importCurve(scale[2], importOptions, boneAnim.scale[2], clip.start, clip.end);
+
+			FBXAnimationCurve tempCurveRotation[3];
+			importCurve(rotation[0], importOptions, tempCurveRotation[0], clip.start, clip.end);
+			importCurve(rotation[1], importOptions, tempCurveRotation[1], clip.start, clip.end);
+			importCurve(rotation[2], importOptions, tempCurveRotation[2], clip.start, clip.end);
+
+			eulerToQuaternionCurves(tempCurveRotation, boneAnim.rotation);
+		}
+
+		if (importOptions.importBlendShapes)
+		{
+			FbxMesh* fbxMesh = node->GetMesh();
+			if (fbxMesh != nullptr)
+			{
+				INT32 deformerCount = fbxMesh->GetDeformerCount(FbxDeformer::eBlendShape);
+				for (INT32 i = 0; i < deformerCount; i++)
+				{
+					FbxBlendShape* deformer = static_cast<FbxBlendShape*>(fbxMesh->GetDeformer(i, FbxDeformer::eBlendShape));
+
+					INT32 channelCount = deformer->GetBlendShapeChannelCount();
+					for (INT32 j = 0; j < channelCount; j++)
+					{
+						FbxBlendShapeChannel* channel = deformer->GetBlendShapeChannel(j);
+
+						FbxAnimCurve* curve = fbxMesh->GetShapeChannel(i, j, layer);
+						if (curve != nullptr && curve->KeyGetCount() > 0)
+						{
+							clip.blendShapeAnimations.push_back(FBXBlendShapeAnimation());
+							FBXBlendShapeAnimation& blendShapeAnim = clip.blendShapeAnimations.back();
+							blendShapeAnim.blendShape = channel->GetName();
+
+							importCurve(curve, importOptions, blendShapeAnim.curve, clip.start, clip.end);
+						}
+					}
+				}
+			}
+		}
 
 		UINT32 childCount = (UINT32)node->GetChildCount();
 		for (UINT32 i = 0; i < childCount; i++)
 		{
 			FbxNode* child = node->GetChild(i);
-			importAnimations(layer, child, importBlendShapeAnimations, clip, importScene);
+			importAnimations(layer, child, importOptions, clip, importScene);
+		}
+	}
+
+	void FBXImporter::eulerToQuaternionCurves(FBXAnimationCurve(&eulerCurves)[3], FBXAnimationCurve(&quatCurves)[4])
+	{
+		INT32 numKeys = (INT32)eulerCurves[0].keyframes.size();
+
+		if (numKeys != (INT32)eulerCurves[1].keyframes.size() || numKeys != (INT32)eulerCurves[2].keyframes.size())
+			return;
+
+		Quaternion lastQuat;
+		for (INT32 i = 0; i < numKeys; i++)
+		{
+			float time = eulerCurves[0].keyframes[i].time;
+
+			Degree x = (Degree)eulerCurves[0].keyframes[i].value;
+			Degree y = (Degree)eulerCurves[1].keyframes[i].value;
+			Degree z = (Degree)eulerCurves[2].keyframes[i].value;
+
+			Quaternion quat(x, y, z);
+
+			// Flip quaternion in case rotation is over 180 degrees
+			if (i > 0)
+			{
+				float dot = quat.dot(lastQuat);
+				if (dot < 0.0f)
+					quat = Quaternion(-quat.x, -quat.y, -quat.z, -quat.w);
+			}
+
+			// TODO - If animation is looping I should also compare last and first for continuity
+
+			for (INT32 j = 0; j < 4; j++)
+			{
+				quatCurves[j].keyframes.push_back(FBXKeyFrame());
+				FBXKeyFrame& keyFrame = quatCurves[j].keyframes.back();
+				keyFrame.time = time;
+				keyFrame.value = quat[j];
+
+				// TODO - Recalculate tangents(make sure not to ignore original ones)
+				//  - Pay attention to deal with non-equally spaced keyframes
+				// TODO - Tangent recalculation assumes all curves are cubic, which might not be the case
+
+				keyFrame.inTangent = 0;
+				keyFrame.outTangent = 0;
+			}
+
+			lastQuat = quat;
+		}
+	}
+
+	void FBXImporter::importCurve(FbxAnimCurve* fbxCurve, FBXImportOptions& importOptions, FBXAnimationCurve& curve, float start, float end)
+	{
+		if (fbxCurve == nullptr)
+			return;
+
+		INT32 keyCount = fbxCurve->KeyGetCount();
+		if (importOptions.animResample)
+		{
+			float curveStart = std::numeric_limits<float>::infinity();
+			float curveEnd = -std::numeric_limits<float>::infinity();
+
+			for (INT32 i = 0; i < keyCount; i++)
+			{
+				FbxTime fbxTime = fbxCurve->KeyGetTime(i);
+				float time = (float)fbxTime.GetSecondDouble();
+
+				curveStart = std::min(time, curveStart);
+				curveEnd = std::max(time, curveEnd);
+			}
+
+			curveStart = Math::clamp(curveStart, start, end);
+			curveEnd = Math::clamp(curveEnd, start, end);
+
+			float curveLength = curveEnd - curveStart;
+			INT32 numSamples = Math::ceilToInt(curveLength / importOptions.animSampleRate);
+
+			// We don't use the exact provided sample rate but instead modify it slightly so it
+			// completely covers the curve range including start/end points while maintaining
+			// constant time step between keyframes.
+			float dt = curveLength / (float)numSamples; 
+
+			INT32 lastKeyframe = 0;
+			INT32 lastLeftTangent = 0;
+			INT32 lastRightTangent = 0;
+			for (INT32 i = 0; i < numSamples; i++)
+			{
+				float sampleTime = std::min(curveStart + i * dt, curveEnd);
+				FbxTime fbxSampleTime;
+				fbxSampleTime.SetSecondDouble(sampleTime);
+
+				curve.keyframes.push_back(FBXKeyFrame());
+				FBXKeyFrame& keyFrame = curve.keyframes.back();
+				keyFrame.time = sampleTime;
+				keyFrame.value = fbxCurve->Evaluate(fbxSampleTime, &lastKeyframe);
+				keyFrame.inTangent = fbxCurve->EvaluateLeftDerivative(fbxSampleTime, &lastLeftTangent);
+				keyFrame.outTangent = fbxCurve->EvaluateRightDerivative(fbxSampleTime, &lastRightTangent);
+			}
+		}
+		else
+		{
+			for (int i = 0; i < keyCount; i++)
+			{
+				FbxTime fbxTime = fbxCurve->KeyGetTime(i);
+				float time = (float)fbxTime.GetSecondDouble();
+
+				if (time < start || time > end)
+					continue;
+
+				curve.keyframes.push_back(FBXKeyFrame());
+				FBXKeyFrame& keyFrame = curve.keyframes.back();
+				keyFrame.time = time;
+				keyFrame.value = fbxCurve->KeyGetValue(i);
+				keyFrame.inTangent = fbxCurve->KeyGetLeftDerivative(i);
+				keyFrame.outTangent = fbxCurve->KeyGetRightDerivative(i);
+			}
 		}
 	}
 }

@@ -95,14 +95,26 @@ namespace BansheeEngine
 		/**
 		 * @brief	Imports all bone and blend shape animations from the FBX.
 		 */
-		void importAnimations(FbxScene* scene, bool importBlendShapeAnimations, FBXImportScene& importScene);
+		void importAnimations(FbxScene* scene, FBXImportOptions& importOptions, FBXImportScene& importScene);
 
 		/**
 		 * @brief	Imports all animations for the specified animation layer and outputs them in the provided clip.
 		 *			Child nodes will be iterated recursively.
 		 */
-		void importAnimations(FbxAnimLayer* layer, FbxNode* node, bool importBlendShapeAnimations, 
+		void importAnimations(FbxAnimLayer* layer, FbxNode* node, FBXImportOptions& importOptions, 
 			FBXAnimationClip& clip, FBXImportScene& importScene);
+
+		/**
+		 * @brief	Converts a single FBX animation curve into an engine curve format, resampling it if
+		 *			necessary.
+		 */
+		void importCurve(FbxAnimCurve* fbxCurve, FBXImportOptions& importOptions, FBXAnimationCurve& curve, float start, float end);
+
+		/**
+		 * @brief	Converts a set of curves containing rotation in euler angles into a set of curves using
+		 *			quaternion rotation.
+		 */
+		void eulerToQuaternionCurves(FBXAnimationCurve(&eulerCurves)[3], FBXAnimationCurve(&quatCurves)[4]);
 
 		/**
 		 * @brief	Converts all the meshes from per-index attributes to per-vertex attributes.

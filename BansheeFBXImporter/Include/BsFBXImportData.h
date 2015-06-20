@@ -20,6 +20,8 @@ namespace BansheeEngine
 		bool importNormals = true;
 		bool importTangents = true;
 		float importScale = 0.01f;
+		float animSampleRate = 1.0f / 60.0f;
+		bool animResample = false;
 	};
 
 	/**
@@ -106,6 +108,8 @@ namespace BansheeEngine
 	struct FBXAnimationCurve
 	{
 		Vector<FBXKeyFrame> keyframes;
+
+		float evaluate(float time);
 	};
 
 	/**
@@ -115,7 +119,7 @@ namespace BansheeEngine
 	{
 		FBXImportNode* node;
 
-		FBXAnimationCurve position[3];
+		FBXAnimationCurve translation[3];
 		FBXAnimationCurve rotation[4];
 		FBXAnimationCurve scale[3];
 	};
