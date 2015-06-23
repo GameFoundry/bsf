@@ -302,6 +302,9 @@
     <ClInclude Include="Include\BsSerializedObjectRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsBinaryCloner.h">
+      <Filter>Header Files\Serialization</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsThreadPool.cpp">
@@ -479,6 +482,9 @@
       <Filter>Source Files\Serialization</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsSerializedObject.cpp">
+      <Filter>Source Files\Serialization</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsBinaryCloner.cpp">
       <Filter>Source Files\Serialization</Filter>
     </ClCompile>
   </ItemGroup>

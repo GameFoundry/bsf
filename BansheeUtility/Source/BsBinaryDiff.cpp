@@ -1,6 +1,6 @@
 #include "BsBinaryDiff.h"
 #include "BsBinarySerializer.h"
-#include "BsMemorySerializer.h"
+#include "BsBinaryCloner.h"
 #include "BsRTTIType.h"
 
 namespace BansheeEngine
@@ -425,7 +425,7 @@ namespace BansheeEngine
 						for (UINT32 i = 0; i < minArrayLength; i++)
 						{
 							IReflectable& childObj = field->getArrayValue(object.get(), i);
-							newArrayElements[i] = clone(&childObj);
+							newArrayElements[i] = BinaryCloner::clone(&childObj, true);
 						}
 
 						for (auto& arrayElem : diffArray->entries)
@@ -535,7 +535,7 @@ namespace BansheeEngine
 						SPtr<SerializedObject> fieldObjectData = std::static_pointer_cast<SerializedObject>(diffData);
 
 						IReflectable& childObj = field->getValue(object.get());
-						std::shared_ptr<IReflectable> clonedObj = clone(&childObj);
+						std::shared_ptr<IReflectable> clonedObj = BinaryCloner::clone(&childObj, true);
 
 						applyDiff(clonedObj, fieldObjectData);
 
@@ -593,16 +593,5 @@ namespace BansheeEngine
 			rttiTypes.top()->onSerializationEnded(object.get());
 			rttiTypes.pop();
 		}
-	}
-
-	SPtr<IReflectable> BinaryDiff::clone(IReflectable* object)
-	{
-		UINT32 bufferSize = 0;
-		MemorySerializer serializer;
-		UINT8* buffer = serializer.encode(object, bufferSize, &bs_alloc);
-		std::shared_ptr<IReflectable> clonedObj = serializer.decode(buffer, bufferSize);
-		bs_free(buffer);
-
-		return clonedObj;
 	}
 }

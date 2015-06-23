@@ -251,6 +251,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\BsBinaryCloner.cpp" />
     <ClCompile Include="Source\BsBounds.cpp" />
     <ClCompile Include="Source\BsCapsule.cpp" />
     <ClCompile Include="Source\BsConvexVolume.cpp" />
@@ -288,6 +289,7 @@
     <ClCompile Include="Source\Win32\BsFileSystem.cpp" />
     <ClCompile Include="Source\Win32\BsTimer.cpp" />
     <ClInclude Include="Include\BsAny.h" />
+    <ClInclude Include="Include\BsBinaryCloner.h" />
     <ClInclude Include="Include\BsBounds.h" />
     <ClInclude Include="Include\BsCapsule.h" />
     <ClInclude Include="Include\BsConvexVolume.h" />

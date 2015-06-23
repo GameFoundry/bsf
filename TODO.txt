@@ -32,9 +32,6 @@ IMMEDIATE:
  - Create a native only unit test for binary diff
  - Test and debug native diff
 
-Is cloning broken?
- - What if I clone a Reflectable that references a Reflectable by pointer? Then that will be cloned as well but it shouldn't be
-
 See "Prefabs" gdoc for later goals
 See "Brainstorm" gdoc for ideas about how to solve the ID issue (and see below)
 

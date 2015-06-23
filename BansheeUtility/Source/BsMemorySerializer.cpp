@@ -14,7 +14,8 @@ namespace BansheeEngine
 	MemorySerializer::~MemorySerializer()
 	{ }
 
-	UINT8* MemorySerializer::encode(IReflectable* object, UINT32& bytesWritten, std::function<void*(UINT32)> allocator)
+	UINT8* MemorySerializer::encode(IReflectable* object, UINT32& bytesWritten, 
+		std::function<void*(UINT32)> allocator, bool shallow)
 	{
 		using namespace std::placeholders;
 
@@ -26,7 +27,8 @@ namespace BansheeEngine
 
 		mBufferPieces.push_back(piece);
 
-		bs.encode(object, piece.buffer, WRITE_BUFFER_SIZE, &bytesWritten, std::bind(&MemorySerializer::flushBuffer, this, _1, _2, _3));
+		bs.encode(object, piece.buffer, WRITE_BUFFER_SIZE, &bytesWritten, 
+			std::bind(&MemorySerializer::flushBuffer, this, _1, _2, _3), shallow);
 
 		UINT8* resultBuffer;
 		if(allocator != nullptr)

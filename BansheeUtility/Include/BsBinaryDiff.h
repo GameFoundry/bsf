@@ -92,10 +92,5 @@ namespace BansheeEngine
 		 * @see		applyDiff(const SPtr<IReflectable>& object, const SPtr<SerializedObject>& diff)
 		 */
 		static void applyDiff(const SPtr<IReflectable>& object, const SPtr<SerializedObject>& diff, DiffObjectMap& objectMap, Vector<DiffCommand>& diffCommands);
-
-		/**
-		 * @brief	Helper method that clones any object with RTTI implemented.
-		 */
-		static SPtr<IReflectable> clone(IReflectable* object);
 	};
 }

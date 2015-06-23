@@ -53,17 +53,31 @@ namespace BansheeEngine
 		 * 									"bytesRead" variable, as buffer might not be full completely). User must then
 		 * 									either create a new buffer or empty the existing one, and then return it by the callback.
 		 * 									If the returned buffer address is NULL, encoding is aborted.
+		 * @param	shallow					Determines how to handle referenced objects. If true then references will not be encoded
+		 *									and will be set to null. If false then references will be encoded as well and restored
+		 *									upon decoding.
 		 */
 		void encode(IReflectable* object, UINT8* buffer, UINT32 bufferLength, UINT32* bytesWritten,
-			std::function<UINT8*(UINT8* buffer, UINT32 bytesWritten, UINT32& newBufferSize)> flushBufferCallback);
+			std::function<UINT8*(UINT8* buffer, UINT32 bytesWritten, UINT32& newBufferSize)> flushBufferCallback,
+			bool shallow = false);
 
 		/**
 		 * @brief	Decodes an object from binary data.
 		 *
 		 * @param 	data  	Binary data to decode.
-		 * @param	dataLength	Length of the data.
+		 * @param	dataLength	Length of the data in bytes.
 		 */
 		std::shared_ptr<IReflectable> decode(UINT8* data, UINT32 dataLength);
+
+		/**
+		 * @brief	Returns a copy of the provided object with indentical data.
+		 *
+		 * @param	object		Object to clone
+		 * @param	shallow		If false then all referenced objects will be cloned
+		 *						as well, otherwise the references to the original
+		 *						objects will be kept.
+		 */
+		std::shared_ptr<IReflectable> clone(IReflectable* object, bool shallow = false);
 
 		/**
 		 * @brief	Decodes an object in memory into an intermediate representation for easier parsing.
@@ -112,7 +126,7 @@ namespace BansheeEngine
 		 * @brief	Encodes a single IReflectable object. 
 		 */
 		UINT8* encodeInternal(IReflectable* object, UINT32 objectId, UINT8* buffer, UINT32& bufferLength, UINT32* bytesWritten,
-			std::function<UINT8*(UINT8* buffer, UINT32 bytesWritten, UINT32& newBufferSize)> flushBufferCallback);
+			std::function<UINT8*(UINT8* buffer, UINT32 bytesWritten, UINT32& newBufferSize)> flushBufferCallback, bool shallow);
 
 		/**
 		 * @brief	Decodes a single IReflectable object.
@@ -128,7 +142,7 @@ namespace BansheeEngine
 		 * @brief	Helper method for encoding a complex object and copying its data to a buffer.
 		 */
 		UINT8* complexTypeToBuffer(IReflectable* object, UINT8* buffer, UINT32& bufferLength, UINT32* bytesWritten,
-			std::function<UINT8*(UINT8* buffer, UINT32 bytesWritten, UINT32& newBufferSize)> flushBufferCallback);
+			std::function<UINT8*(UINT8* buffer, UINT32 bytesWritten, UINT32& newBufferSize)> flushBufferCallback, bool shallow);
 
 		/**
 		 * @brief	Helper method for encoding a data block to a buffer.

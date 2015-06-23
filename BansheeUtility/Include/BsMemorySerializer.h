@@ -23,10 +23,18 @@ namespace BansheeEngine
 		 * @brief	Parses the provided object, serializes all of its data as specified by its
 		 *			RTTIType and returns the data in the form of raw memory.
 		 *
-		 *			All memory is allocated using the provided "allocator". If not specified the default
-		 *			allocator is used.
+		 * @param	object			Object to encode.
+		 * @param	bytesWritten	Output value containing the total number of bytes it took to encode the object.
+		 * @param	allocator		Determines how is memory allocated. If not specified the default allocator is used.
+		 * @param	shallow			Determines how to handle referenced objects. If true then references will not be encoded
+		 *							and will be set to null. If false then references will be encoded as well and restored
+		 *							upon decoding.
+		 *
+		 * @return	A buffer containing the encoded object. It is up to the user to release the buffer memory when
+		 *			no longer needed.
 		 */
-		UINT8* encode(IReflectable* object, UINT32& bytesWritten, std::function<void*(UINT32)> allocator = nullptr);
+		UINT8* encode(IReflectable* object, UINT32& bytesWritten, std::function<void*(UINT32)> allocator = nullptr, 
+			bool shallow = false);
 
 		/**
 		 * @brief	Deserializes an IReflectable object by reading the binary data from the provided

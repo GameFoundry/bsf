@@ -43,7 +43,8 @@ namespace BansheeEngine
 	{
 	}
 
-	void BinarySerializer::encode(IReflectable* object, UINT8* buffer, UINT32 bufferLength, UINT32* bytesWritten, std::function<UINT8*(UINT8*, UINT32, UINT32&)> flushBufferCallback)
+	void BinarySerializer::encode(IReflectable* object, UINT8* buffer, UINT32 bufferLength, 
+		UINT32* bytesWritten, std::function<UINT8*(UINT8*, UINT32, UINT32&)> flushBufferCallback, bool shallow)
 	{
 		mObjectsToEncode.clear();
 		mObjectAddrToId.clear();
@@ -56,7 +57,7 @@ namespace BansheeEngine
 		UINT32 objectId = findOrCreatePersistentId(object);
 		
 		// Encode primary object and its value types
-		buffer = encodeInternal(object, objectId, buffer, bufferLength, bytesWritten, flushBufferCallback);
+		buffer = encodeInternal(object, objectId, buffer, bufferLength, bytesWritten, flushBufferCallback, shallow);
 		if(buffer == nullptr)
 		{
 			BS_EXCEPT(InternalErrorException, 
@@ -80,7 +81,8 @@ namespace BansheeEngine
 				serializedObjects.insert(curObjectid);
 				mObjectsToEncode.erase(iter);
 
-				buffer = encodeInternal(curObject.get(), curObjectid, buffer, bufferLength, bytesWritten, flushBufferCallback);
+				buffer = encodeInternal(curObject.get(), curObjectid, buffer, 
+					bufferLength, bytesWritten, flushBufferCallback, shallow);
 				if(buffer == nullptr)
 				{
 					BS_EXCEPT(InternalErrorException, 
@@ -153,7 +155,7 @@ namespace BansheeEngine
 	}
 
 	UINT8* BinarySerializer::encodeInternal(IReflectable* object, UINT32 objectId, UINT8* buffer, UINT32& bufferLength, 
-		UINT32* bytesWritten, std::function<UINT8*(UINT8*, UINT32, UINT32&)> flushBufferCallback)
+		UINT32* bytesWritten, std::function<UINT8*(UINT8*, UINT32, UINT32&)> flushBufferCallback, bool shallow)
 	{
 		RTTITypeBase* si = object->getRTTI();
 		bool isBaseClass = false;
@@ -192,7 +194,10 @@ namespace BansheeEngine
 
 							for(UINT32 arrIdx = 0; arrIdx < arrayNumElems; arrIdx++)
 							{
-								std::shared_ptr<IReflectable> childObject = curField->getArrayValue(object, arrIdx); 
+								std::shared_ptr<IReflectable> childObject;
+								
+								if (!shallow)
+									childObject = curField->getArrayValue(object, arrIdx);
 
 								UINT32 objId = registerObjectPtr(childObject);
 								COPY_TO_BUFFER(&objId, sizeof(UINT32))
@@ -208,7 +213,8 @@ namespace BansheeEngine
 							{
 								IReflectable& childObject = curField->getArrayValue(object, arrIdx);
 
-								buffer = complexTypeToBuffer(&childObject, buffer, bufferLength, bytesWritten, flushBufferCallback);
+								buffer = complexTypeToBuffer(&childObject, buffer, bufferLength, 
+									bytesWritten, flushBufferCallback, shallow);
 								if(buffer == nullptr)
 								{
 									si->onSerializationEnded(object);
@@ -268,7 +274,10 @@ namespace BansheeEngine
 					case SerializableFT_ReflectablePtr:
 						{
 							RTTIReflectablePtrFieldBase* curField = static_cast<RTTIReflectablePtrFieldBase*>(curGenericField);
-							std::shared_ptr<IReflectable> childObject = curField->getValue(object); 
+							std::shared_ptr<IReflectable> childObject;
+							
+							if (!shallow)
+								childObject = curField->getValue(object);
 
 							UINT32 objId = registerObjectPtr(childObject);
 							COPY_TO_BUFFER(&objId, sizeof(UINT32))
@@ -280,7 +289,8 @@ namespace BansheeEngine
 							RTTIReflectableFieldBase* curField = static_cast<RTTIReflectableFieldBase*>(curGenericField);
 							IReflectable& childObject = curField->getValue(object);
 
-							buffer = complexTypeToBuffer(&childObject, buffer, bufferLength, bytesWritten, flushBufferCallback);
+							buffer = complexTypeToBuffer(&childObject, buffer, bufferLength, 
+								bytesWritten, flushBufferCallback, shallow);
 							if(buffer == nullptr)
 							{
 								si->onSerializationEnded(object);
@@ -1238,7 +1248,7 @@ namespace BansheeEngine
 	}
 
 	UINT8* BinarySerializer::complexTypeToBuffer(IReflectable* object, UINT8* buffer, UINT32& bufferLength, 
-		UINT32* bytesWritten, std::function<UINT8*(UINT8*, UINT32, UINT32&)> flushBufferCallback)
+		UINT32* bytesWritten, std::function<UINT8*(UINT8*, UINT32, UINT32&)> flushBufferCallback, bool shallow)
 	{
 		int complexTypeSize = 0;
 		if(object != nullptr)
@@ -1247,7 +1257,7 @@ namespace BansheeEngine
 		COPY_TO_BUFFER(&complexTypeSize, COMPLEX_TYPE_FIELD_SIZE)
 
 		if(object != nullptr)
-			return encodeInternal(object, 0, buffer, bufferLength, bytesWritten, flushBufferCallback);
+			return encodeInternal(object, 0, buffer, bufferLength, bytesWritten, flushBufferCallback, shallow);
 
 		return buffer;
 	}

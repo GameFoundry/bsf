@@ -57,6 +57,7 @@ namespace BansheeEngine
 	class TestOutput;
 	class AsyncOpSyncData;
 	struct RTTIField;
+	struct RTTIReflectablePtrFieldBase;
 	// Reflection
 	class IReflectable;
 	class RTTITypeBase;
