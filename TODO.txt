@@ -29,8 +29,11 @@ Prefab diff
 
 IMMEDIATE:
  - Integrated native diff and managed diff
- - Create a native only unit test for binary diff
  - Test and debug native diff
+
+Later: Native+Managed diff is not tested (only the link needs to be tested, I have a separate managed and native tests)
+
+Make RTTIType return an interface for creating and applying diffs, rather than dealing with overriding individual methods.
 
 See "Prefabs" gdoc for later goals
 See "Brainstorm" gdoc for ideas about how to solve the ID issue (and see below)

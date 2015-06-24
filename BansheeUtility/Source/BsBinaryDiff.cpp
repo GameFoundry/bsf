@@ -1,27 +1,202 @@
 #include "BsBinaryDiff.h"
+#include "BsSerializedObject.h"
 #include "BsBinarySerializer.h"
 #include "BsBinaryCloner.h"
 #include "BsRTTIType.h"
 
 namespace BansheeEngine
 {
-	SPtr<SerializedObject> BinaryDiff::generateDiff(const SPtr<SerializedObject>& orgObj,
+	SPtr<SerializedObject> IDiff::generateDiff(const SPtr<SerializedObject>& orgObj,
 		const SPtr<SerializedObject>& newObj)
 	{
 		ObjectMap objectMap;
 		return generateDiff(orgObj, newObj, objectMap);
 	}
 
+	SPtr<SerializedInstance> IDiff::generateDiff(RTTITypeBase* rtti, UINT32 fieldType, const SPtr<SerializedInstance>& orgData,
+		const SPtr<SerializedInstance>& newData, ObjectMap& objectMap)
+	{
+		SPtr<SerializedInstance> modification;
+		switch (fieldType)
+		{
+		case SerializableFT_ReflectablePtr:
+		case SerializableFT_Reflectable:
+		{
+			SPtr<SerializedObject> orgObjData = std::static_pointer_cast<SerializedObject>(orgData);
+			SPtr<SerializedObject> newObjData = std::static_pointer_cast<SerializedObject>(newData);
+
+			auto iterFind = objectMap.find(newObjData);
+			if (iterFind != objectMap.end())
+				modification = iterFind->second;
+			else
+			{
+				RTTITypeBase* childRtti = nullptr;
+				if (orgObjData->getRootTypeId() == newObjData->getRootTypeId())
+					childRtti = IReflectable::_getRTTIfromTypeId(newObjData->getRootTypeId());
+
+				SPtr<SerializedObject> objectDiff;
+				if (childRtti != nullptr)
+				{
+					IDiff& handler = childRtti->getDiffHandler();
+					objectDiff = handler.generateDiff(orgObjData, newObjData, objectMap);
+				}
+
+				if (objectDiff != nullptr)
+					objectMap[newObjData] = objectDiff;
+
+				modification = objectDiff;
+			}
+		}
+			break;
+		case SerializableFT_Plain:
+		case SerializableFT_DataBlock:
+		{
+			SPtr<SerializedField> orgFieldData = std::static_pointer_cast<SerializedField>(orgData);
+			SPtr<SerializedField> newFieldData = std::static_pointer_cast<SerializedField>(newData);
+
+			bool isModified = orgFieldData->size != newFieldData->size;
+			if (!isModified)
+				isModified = memcmp(orgFieldData->value, newFieldData->value, newFieldData->size) != 0;
+
+			if (isModified)
+				modification = newFieldData->clone();
+		}
+			break;
+		}
+
+		return modification;
+	}
+
+	void IDiff::applyDiff(const SPtr<IReflectable>& object, const SPtr<SerializedObject>& diff)
+	{
+		Vector<DiffCommand> commands;
+
+		DiffObjectMap objectMap;
+		applyDiff(object, diff, objectMap, commands);
+
+		IReflectable* destObject = nullptr;
+		Stack<IReflectable*> objectStack;
+
+		for (auto& command : commands)
+		{
+			bool isArray = (command.type & Diff_ArrayFlag) != 0;
+			DiffCommandType type = (DiffCommandType)(command.type & 0xF);
+
+			switch (type)
+			{
+			case Diff_ArraySize:
+				command.field->setArraySize(destObject, command.arraySize);
+				break;
+			case Diff_ObjectStart:
+			{
+				destObject = command.object.get();
+				objectStack.push(destObject);
+
+				RTTITypeBase* curRtti = destObject->getRTTI();
+				while (curRtti != nullptr)
+				{
+					curRtti->onDeserializationStarted(destObject);
+					curRtti = curRtti->getBaseClass();
+				}
+			}
+				break;
+			case Diff_ObjectEnd:
+			{
+				Stack<RTTITypeBase*> rttiTypes;
+				RTTITypeBase* curRtti = destObject->getRTTI();
+				while (curRtti != nullptr)
+				{
+					rttiTypes.push(curRtti);
+					curRtti = curRtti->getBaseClass();
+				}
+
+				while (!rttiTypes.empty())
+				{
+					rttiTypes.top()->onDeserializationEnded(destObject);
+					rttiTypes.pop();
+				}
+
+				objectStack.pop();
+
+				if (!objectStack.empty())
+					destObject = objectStack.top();
+				else
+					destObject = nullptr;
+			}
+				break;
+			}
+
+			if (isArray)
+			{
+				switch (type)
+				{
+				case Diff_ReflectablePtr:
+				{
+					RTTIReflectablePtrFieldBase* field = static_cast<RTTIReflectablePtrFieldBase*>(command.field);
+					field->setArrayValue(destObject, command.arrayIdx, command.object);
+				}
+					break;
+				case Diff_Reflectable:
+				{
+					RTTIReflectableFieldBase* field = static_cast<RTTIReflectableFieldBase*>(command.field);
+					field->setArrayValue(destObject, command.arrayIdx, *command.object);
+				}
+					break;
+				case Diff_Plain:
+				{
+					RTTIPlainFieldBase* field = static_cast<RTTIPlainFieldBase*>(command.field);
+					field->arrayElemFromBuffer(destObject, command.arrayIdx, command.value);
+				}
+					break;
+				}
+			}
+			else
+			{
+				switch (type)
+				{
+				case Diff_ReflectablePtr:
+				{
+					RTTIReflectablePtrFieldBase* field = static_cast<RTTIReflectablePtrFieldBase*>(command.field);
+					field->setValue(destObject, command.object);
+				}
+					break;
+				case Diff_Reflectable:
+				{
+					RTTIReflectableFieldBase* field = static_cast<RTTIReflectableFieldBase*>(command.field);
+					field->setValue(destObject, *command.object);
+				}
+					break;
+				case Diff_Plain:
+				{
+					RTTIPlainFieldBase* field = static_cast<RTTIPlainFieldBase*>(command.field);
+					field->fromBuffer(destObject, command.value);
+				}
+					break;
+				case Diff_DataBlock:
+				{
+					RTTIManagedDataBlockFieldBase* field = static_cast<RTTIManagedDataBlockFieldBase*>(command.field);
+					UINT8* dataCopy = field->allocate(destObject, command.size);
+					memcpy(dataCopy, command.value, command.size);
+
+					ManagedDataBlock value(dataCopy, command.size); // Not managed because I assume the owner class will decide whether to delete the data or keep it
+					field->setValue(destObject, value);
+				}
+					break;
+				}
+			}
+		}
+	}
+
+	void IDiff::applyDiff(RTTITypeBase* rtti, const SPtr<IReflectable>& object, const SPtr<SerializedObject>& diff, 
+		DiffObjectMap& objectMap, Vector<DiffCommand>& diffCommands)
+	{
+		IDiff& diffHandler = rtti->getDiffHandler();
+		diffHandler.applyDiff(object, diff, objectMap, diffCommands);
+	}
+
 	SPtr<SerializedObject> BinaryDiff::generateDiff(const SPtr<SerializedObject>& orgObj, 
 		const SPtr<SerializedObject>& newObj, ObjectMap& objectMap)
 	{
-		if (orgObj == nullptr || newObj == nullptr || orgObj->getRootTypeId() != newObj->getRootTypeId())
-			return nullptr;
-
-		RTTITypeBase* rootRtti = IReflectable::_getRTTIfromTypeId(newObj->getRootTypeId());
-		if (rootRtti == nullptr)
-			return nullptr;
-
 		SPtr<SerializedObject> output;
 		for (auto& subObject : newObj->subObjects)
 		{
@@ -53,7 +228,7 @@ namespace BansheeEngine
 				{
 					auto orgEntryFind = orgSubObject->entries.find(newEntry.first);
 					if (orgEntryFind != orgSubObject->entries.end())
-						orgEntryData = newEntry.second.serialized;
+						orgEntryData = orgEntryFind->second.serialized;
 				}
 
 				SPtr<SerializedInstance> modification;
@@ -76,7 +251,7 @@ namespace BansheeEngine
 								arrayModification = arrayEntryPair.second.serialized->clone();
 							else
 							{
-								arrayModification = generateDiff(genericField->mType, iterFind->second.serialized,
+								arrayModification = IDiff::generateDiff(rtti, genericField->mType, iterFind->second.serialized,
 									arrayEntryPair.second.serialized, objectMap);
 							}
 
@@ -111,7 +286,7 @@ namespace BansheeEngine
 				{
 					if (newEntryData != nullptr && orgEntryData != nullptr)
 					{
-						modification = generateDiff(genericField->mType, orgEntryData, newEntryData, objectMap);
+						modification = IDiff::generateDiff(rtti, genericField->mType, orgEntryData, newEntryData, objectMap);
 						hasModification = modification != nullptr;
 					}
 					else if (newEntryData == nullptr)
@@ -142,6 +317,7 @@ namespace BansheeEngine
 					{
 						output->subObjects.push_back(SerializedSubObject());
 						diffSubObject = &output->subObjects.back();
+						diffSubObject->typeId = rtti->getRTTIId();
 					}
 
 					SerializedEntry modificationEntry;
@@ -153,158 +329,6 @@ namespace BansheeEngine
 		}
 
 		return output;
-	}
-
-	SPtr<SerializedInstance> BinaryDiff::generateDiff(UINT32 fieldType, const SPtr<SerializedInstance>& orgData, 
-		const SPtr<SerializedInstance>& newData, ObjectMap& objectMap)
-	{
-		SPtr<SerializedInstance> modification;
-		switch (fieldType)
-		{
-		case SerializableFT_ReflectablePtr:
-		case SerializableFT_Reflectable:
-		{
-			SPtr<SerializedObject> orgObjData = std::static_pointer_cast<SerializedObject>(orgData);
-			SPtr<SerializedObject> newObjData = std::static_pointer_cast<SerializedObject>(newData);
-
-			auto iterFind = objectMap.find(newObjData);
-			if (iterFind != objectMap.end())
-				modification = iterFind->second;
-			else
-			{
-				SPtr<SerializedObject> objectDiff = generateDiff(orgObjData, newObjData);
-				if (objectDiff != nullptr)
-					objectMap[newObjData] = objectDiff;
-
-				modification = objectDiff;
-			}
-		}
-			break;
-		case SerializableFT_Plain:
-		case SerializableFT_DataBlock:
-		{
-			SPtr<SerializedField> orgFieldData = std::static_pointer_cast<SerializedField>(orgData);
-			SPtr<SerializedField> newFieldData = std::static_pointer_cast<SerializedField>(newData);
-
-			bool isModified = orgFieldData->size != newFieldData->size;
-			if (!isModified)
-				isModified = memcmp(orgFieldData->value, newFieldData->value, newFieldData->size) == 0;
-
-			if (isModified)
-				modification = newFieldData->clone();
-		}
-			break;
-		}
-
-		return modification;
-	}
-
-	void BinaryDiff::applyDiff(const SPtr<IReflectable>& object, const SPtr<SerializedObject>& diff)
-	{
-		Vector<DiffCommand> commands;
-
-		DiffObjectMap objectMap;
-		applyDiff(object, diff, objectMap, commands);
-
-		for (auto& command : commands)
-		{
-			bool isArray = (command.type & Diff_ArrayFlag) != 0;
-			DiffCommandType type = (DiffCommandType)(command.type & 0xFF);
-			IReflectable* destObject = command.object.get();
-
-			switch (type)
-			{
-			case Diff_ArraySize: 
-				command.field->setArraySize(destObject, command.size);
-				break;
-			case Diff_ObjectStart:
-			{
-				RTTITypeBase* curRtti = destObject->getRTTI();
-				while (curRtti != nullptr)
-				{
-					curRtti->onDeserializationStarted(destObject);
-					curRtti = curRtti->getBaseClass();
-				}
-			}
-				break;
-			case Diff_ObjectEnd: 
-			{
-				Stack<RTTITypeBase*> rttiTypes;
-				RTTITypeBase* curRtti = destObject->getRTTI();
-				while (curRtti != nullptr)
-				{
-					rttiTypes.push(curRtti);
-					curRtti = curRtti->getBaseClass();
-				}
-
-				while (!rttiTypes.empty())
-				{
-					rttiTypes.top()->onDeserializationEnded(destObject);
-					rttiTypes.pop();
-				}
-			}
-				break;
-			}
-
-			if (isArray)
-			{
-				switch (type)
-				{
-				case Diff_ReflectablePtr:
-				{
-					RTTIReflectablePtrFieldBase* field = static_cast<RTTIReflectablePtrFieldBase*>(command.field);
-					field->setArrayValue(destObject, command.arrayIdx, command.object);
-				}
-					break;
-				case Diff_Reflectable: 
-				{
-					RTTIReflectableFieldBase* field = static_cast<RTTIReflectableFieldBase*>(command.field);
-					field->setArrayValue(object.get(), command.arrayIdx, *command.object);
-				}
-					break;
-				case Diff_Plain: 
-				{
-					RTTIPlainFieldBase* field = static_cast<RTTIPlainFieldBase*>(command.field);
-					field->arrayElemFromBuffer(destObject, command.arrayIdx, command.value);
-				}
-					break;
-				}
-			}
-			else
-			{
-				switch (type)
-				{
-				case Diff_ReflectablePtr:
-				{
-					RTTIReflectablePtrFieldBase* field = static_cast<RTTIReflectablePtrFieldBase*>(command.field);
-					field->setValue(destObject, command.object);
-				}
-					break;
-				case Diff_Reflectable:
-				{
-					RTTIReflectableFieldBase* field = static_cast<RTTIReflectableFieldBase*>(command.field);
-					field->setValue(object.get(), *command.object);
-				}
-					break;
-				case Diff_Plain:
-				{
-					RTTIPlainFieldBase* field = static_cast<RTTIPlainFieldBase*>(command.field);
-					field->fromBuffer(destObject, command.value);
-				}
-					break;
-				case Diff_DataBlock: 
-				{
-					RTTIManagedDataBlockFieldBase* field = static_cast<RTTIManagedDataBlockFieldBase*>(command.field);
-					UINT8* dataCopy = field->allocate(destObject, command.size);
-					memcpy(dataCopy, command.value, command.size);
-
-					ManagedDataBlock value(dataCopy, command.size); // Not managed because I assume the owner class will decide whether to delete the data or keep it
-					field->setValue(destObject, value);
-				}
-					break;
-				}
-			}
-		}
 	}
 
 	void BinaryDiff::applyDiff(const SPtr<IReflectable>& object, const SPtr<SerializedObject>& diff,
@@ -363,7 +387,7 @@ namespace BansheeEngine
 						UINT32 orgArraySize = genericField->getArraySize(object.get());
 						for (auto& arrayElem : diffArray->entries)
 						{
-							SPtr<SerializedObject> arrayElemData = std::static_pointer_cast<SerializedObject>(diffData);
+							SPtr<SerializedObject> arrayElemData = std::static_pointer_cast<SerializedObject>(arrayElem.second.serialized);
 
 							DiffCommand command;
 							command.field = genericField;
@@ -383,7 +407,10 @@ namespace BansheeEngine
 								{
 									SPtr<IReflectable> childObj = field->getArrayValue(object.get(), arrayElem.first);
 									if (childObj != nullptr)
-										applyDiff(childObj, arrayElemData);
+									{
+										IDiff::applyDiff(childObj->getRTTI(), childObj, arrayElemData, objectMap, diffCommands);
+										command.object = childObj;
+									}
 									else
 										needsNewObject = true;
 								}
@@ -400,7 +427,7 @@ namespace BansheeEngine
 											findObj = objectMap.insert(std::make_pair(arrayElemData, newObject)).first;
 										}
 
-										applyDiff(findObj->second, arrayElemData);
+										IDiff::applyDiff(childRtti, findObj->second, arrayElemData, objectMap, diffCommands);
 										command.object = findObj->second;
 										diffCommands.push_back(command);
 									}
@@ -434,7 +461,8 @@ namespace BansheeEngine
 
 							if (arrayElem.first < orgArraySize)
 							{
-								applyDiff(newArrayElements[arrayElem.first], arrayElemData);
+								SPtr<IReflectable> childObj = newArrayElements[arrayElem.first];
+								IDiff::applyDiff(childObj->getRTTI(), childObj, arrayElemData, objectMap, diffCommands);
 							}
 							else
 							{
@@ -442,7 +470,7 @@ namespace BansheeEngine
 								if (childRtti != nullptr)
 								{
 									SPtr<IReflectable> newObject = childRtti->newRTTIObject();
-									applyDiff(newObject, arrayElemData);
+									IDiff::applyDiff(childRtti, newObject, arrayElemData, objectMap, diffCommands);
 
 									newArrayElements[arrayElem.first] = newObject;
 								}
@@ -470,7 +498,7 @@ namespace BansheeEngine
 							{
 								DiffCommand command;
 								command.field = genericField;
-								command.type = Diff_DataBlock | Diff_ArrayFlag;
+								command.type = Diff_Plain | Diff_ArrayFlag;
 								command.value = fieldData->value;
 								command.size = fieldData->size;
 								command.arrayIdx = arrayElem.first;
@@ -512,7 +540,7 @@ namespace BansheeEngine
 										findObj = objectMap.insert(std::make_pair(fieldObjectData, newObject)).first;
 									}
 
-									applyDiff(findObj->second, fieldObjectData);
+									IDiff::applyDiff(childRtti, findObj->second, fieldObjectData, objectMap, diffCommands);
 									command.object = findObj->second;
 								}
 								else
@@ -522,7 +550,8 @@ namespace BansheeEngine
 							}
 							else
 							{
-								applyDiff(childObj, fieldObjectData);
+								IDiff::applyDiff(childObj->getRTTI(), childObj, fieldObjectData, objectMap, diffCommands);
+								command.object = childObj;
 							}
 						}
 
@@ -537,7 +566,7 @@ namespace BansheeEngine
 						IReflectable& childObj = field->getValue(object.get());
 						std::shared_ptr<IReflectable> clonedObj = BinaryCloner::clone(&childObj, true);
 
-						applyDiff(clonedObj, fieldObjectData);
+						IDiff::applyDiff(clonedObj->getRTTI(), clonedObj, fieldObjectData, objectMap, diffCommands);
 
 						DiffCommand command;
 						command.field = genericField;

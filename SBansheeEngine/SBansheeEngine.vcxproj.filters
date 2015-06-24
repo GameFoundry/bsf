@@ -315,6 +315,9 @@
     <ClInclude Include="Include\BsManagedSerializableDiffRTTI.h">
       <Filter>Header Files\Serialization\RTTI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsManagedDiff.h">
+      <Filter>Header Files\Serialization</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsScriptTexture2D.cpp">
@@ -564,6 +567,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsManagedSerializableDiff.cpp">
+      <Filter>Source Files\Serialization</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsManagedDiff.cpp">
       <Filter>Source Files\Serialization</Filter>
     </ClCompile>
   </ItemGroup>

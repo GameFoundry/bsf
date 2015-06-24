@@ -343,7 +343,7 @@ namespace BansheeEngine
 		newObj->objPtrB->strA = "kiwi";
 		newObj->objPtrC = nullptr;
 		newObj->objPtrD = bs_shared_ptr<TestObjectB>();
-		newObj->arrObjB[1].strA = "starberry";
+		newObj->arrObjB[1].strA = "strawberry";
 		newObj->arrObjPtrB[0]->intA = 99100;
 
 		MemorySerializer ms;
@@ -356,10 +356,12 @@ namespace BansheeEngine
 		UINT32 dummy = 0;
 		BinarySerializer bs;
 		SPtr<SerializedObject> orgSerialized = bs._decodeIntermediate(orgData, orgDataLength, dummy);
+		dummy = 0;
 		SPtr<SerializedObject> newSerialized = bs._decodeIntermediate(newData, newDataLength, dummy);
 
-		SPtr<SerializedObject> objDiff = BinaryDiff::generateDiff(orgSerialized, newSerialized);
-		BinaryDiff::applyDiff(orgObj, objDiff);
+		IDiff& diffHandler = orgObj->getRTTI()->getDiffHandler();
+		SPtr<SerializedObject> objDiff = diffHandler.generateDiff(orgSerialized, newSerialized);
+		diffHandler.applyDiff(orgObj, objDiff);
 
 		bs_free(orgData);
 		bs_free(newData);

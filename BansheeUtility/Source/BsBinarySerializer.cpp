@@ -120,30 +120,34 @@ namespace BansheeEngine
 
 	std::shared_ptr<IReflectable> BinarySerializer::decode(UINT8* data, UINT32 dataLength)
 	{
-		mObjectMap.clear();
-
 		UINT32 dummy = 0;
 		SPtr<SerializedObject> intermediateObject = _decodeIntermediate(data, dataLength, dummy);
 		if (intermediateObject == nullptr)
 			return nullptr;
 
-		SPtr<IReflectable> rootObject;
+		return _decodeIntermediate(intermediateObject);
+	}
 
-		RTTITypeBase* type = IReflectable::_getRTTIfromTypeId(intermediateObject->getRootTypeId());
+	SPtr<IReflectable> BinarySerializer::_decodeIntermediate(const SPtr<SerializedObject>& serializedObject)
+	{
+		mObjectMap.clear();
+
+		SPtr<IReflectable> output;
+		RTTITypeBase* type = IReflectable::_getRTTIfromTypeId(serializedObject->getRootTypeId());
 		if (type != nullptr)
 		{
-			rootObject = type->newRTTIObject();
-			auto iterNewObj = mObjectMap.insert(std::make_pair(intermediateObject, ObjectToDecode(rootObject, intermediateObject)));
-			decodeInternal(rootObject, intermediateObject);
+			output = type->newRTTIObject();
+			auto iterNewObj = mObjectMap.insert(std::make_pair(serializedObject, ObjectToDecode(output, serializedObject)));
+			decodeInternal(output, serializedObject);
 			iterNewObj.first->second.isDecoded = true;
 		}
 
 		// Go through the remaining objects (should be only ones with weak refs)
-		for(auto iter = mObjectMap.begin(); iter != mObjectMap.end(); ++iter)
+		for (auto iter = mObjectMap.begin(); iter != mObjectMap.end(); ++iter)
 		{
 			ObjectToDecode& objToDecode = iter->second;
 
-			if(objToDecode.isDecoded)
+			if (objToDecode.isDecoded)
 				continue;
 
 			decodeInternal(objToDecode.object, objToDecode.serializedObject);
@@ -151,7 +155,7 @@ namespace BansheeEngine
 		}
 
 		mObjectMap.clear();
-		return rootObject;
+		return output;
 	}
 
 	UINT8* BinarySerializer::encodeInternal(IReflectable* object, UINT32 objectId, UINT8* buffer, UINT32& bufferLength, 
@@ -543,6 +547,7 @@ namespace BansheeEngine
 			}
 
 			SPtr<SerializedInstance> serializedEntry;
+			bool hasModification = false;
 
 			int arrayNumElems = 1;
 			if (isArray)
@@ -564,6 +569,7 @@ namespace BansheeEngine
 					serializedArray->numElements = arrayNumElems;
 
 					serializedEntry = serializedArray;
+					hasModification = true;
 				}
 
 				switch (fieldType)
@@ -716,6 +722,7 @@ namespace BansheeEngine
 						}
 
 						serializedEntry = serializedField;
+						hasModification = true;
 					}
 
 					break;
@@ -743,6 +750,7 @@ namespace BansheeEngine
 						decodeIntermediateInternal(data, complexTypeSize, dummy, serializedChildObj);
 
 						serializedEntry = serializedChildObj;
+						hasModification = true;
 					}
 
 					data += complexTypeSize;
@@ -765,6 +773,7 @@ namespace BansheeEngine
 						serializedField->size = typeSize;
 
 						serializedEntry = serializedField;
+						hasModification = true;
 					}
 
 					data += typeSize;
@@ -801,6 +810,7 @@ namespace BansheeEngine
 						serializedField->size = dataBlockSize;
 
 						serializedEntry = serializedField;
+						hasModification = true;
 					}
 
 					data += dataBlockSize;
@@ -815,7 +825,7 @@ namespace BansheeEngine
 				}
 			}
 
-			if (serializedEntry != nullptr)
+			if (hasModification)
 			{
 				SerializedEntry entry;
 				entry.fieldId = curGenericField->mUniqueId;

@@ -12,6 +12,7 @@
 #include "BsRTTIReflectablePtrField.h"
 #include "BsRTTIManagedDataBlockField.h"
 #include "BsIReflectable.h"
+#include "BsBinaryDiff.h"
 
 namespace BansheeEngine
 {
@@ -151,6 +152,17 @@ namespace BansheeEngine
 		 *			only after deserialization has fully completed for all objects.
 		 */
 		virtual void onDeserializationEnded(IReflectable* obj) {}
+
+		/**
+		 * @brief	Returns a handler that determines how are "diffs" generated and applied when it
+		 *			comes to objects of this RTTI type. A "diff" is a list of differences between two
+		 *			objects that may be saved, viewed or applied to another object to transform it.
+		 */
+		virtual IDiff& getDiffHandler() const
+		{
+			static BinaryDiff diffHandler;
+			return diffHandler;
+		}
 
 		/**
 		 * @brief	Allows you to assign a value to a plain field with the specified name on 

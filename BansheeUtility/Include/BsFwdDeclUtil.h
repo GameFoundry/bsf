@@ -58,6 +58,8 @@ namespace BansheeEngine
 	class AsyncOpSyncData;
 	struct RTTIField;
 	struct RTTIReflectablePtrFieldBase;
+	struct SerializedObject;
+	struct SerializedInstance;
 	// Reflection
 	class IReflectable;
 	class RTTITypeBase;

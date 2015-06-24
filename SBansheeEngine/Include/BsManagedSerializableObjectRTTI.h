@@ -5,6 +5,7 @@
 #include "BsScriptAssemblyManager.h"
 #include "BsManagedSerializableObject.h"
 #include "BsManagedSerializableField.h"
+#include "BsManagedDiff.h"
 
 namespace BansheeEngine
 {
@@ -84,6 +85,12 @@ namespace BansheeEngine
 		{
 			ManagedSerializableObject* castObj = static_cast<ManagedSerializableObject*>(obj);
 			castObj->mRTTIData = nullptr;
+		}
+
+		virtual IDiff& getDiffHandler() const override
+		{
+			static ManagedDiff managedDiffHandler;
+			return managedDiffHandler;
 		}
 
 		virtual const String& getRTTIName() override

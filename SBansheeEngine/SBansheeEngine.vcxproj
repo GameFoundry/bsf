@@ -234,6 +234,7 @@
   <ItemGroup>
     <ClInclude Include="Include\BsManagedComponent.h" />
     <ClInclude Include="Include\BsManagedComponentRTTI.h" />
+    <ClInclude Include="Include\BsManagedDiff.h" />
     <ClInclude Include="Include\BsManagedResource.h" />
     <ClInclude Include="Include\BsManagedResourceManager.h" />
     <ClInclude Include="Include\BsManagedResourceMetaData.h" />
@@ -329,6 +330,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsManagedComponent.cpp" />
+    <ClCompile Include="Source\BsManagedDiff.cpp" />
     <ClCompile Include="Source\BsManagedResource.cpp" />
     <ClCompile Include="Source\BsManagedResourceManager.cpp" />
     <ClCompile Include="Source\BsManagedResourceMetaData.cpp" />

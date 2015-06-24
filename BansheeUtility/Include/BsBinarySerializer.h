@@ -67,17 +67,7 @@ namespace BansheeEngine
 		 * @param 	data  	Binary data to decode.
 		 * @param	dataLength	Length of the data in bytes.
 		 */
-		std::shared_ptr<IReflectable> decode(UINT8* data, UINT32 dataLength);
-
-		/**
-		 * @brief	Returns a copy of the provided object with indentical data.
-		 *
-		 * @param	object		Object to clone
-		 * @param	shallow		If false then all referenced objects will be cloned
-		 *						as well, otherwise the references to the original
-		 *						objects will be kept.
-		 */
-		std::shared_ptr<IReflectable> clone(IReflectable* object, bool shallow = false);
+		SPtr<IReflectable> decode(UINT8* data, UINT32 dataLength);
 
 		/**
 		 * @brief	Decodes an object in memory into an intermediate representation for easier parsing.
@@ -87,6 +77,13 @@ namespace BansheeEngine
 		 *			when it is destroyed.
 		 */
 		SPtr<SerializedObject> _decodeIntermediate(UINT8* data, UINT32 dataLength, UINT32& bytesRead);
+
+		/**
+		 * @brief	Decodes an intermediate representation of a serialized object into the actual object.
+		 *			
+		 * @note	Internal method.
+		 */
+		SPtr<IReflectable> _decodeIntermediate(const SPtr<SerializedObject>& serializedObject);
 
 	private:
 		struct ObjectMetaData
