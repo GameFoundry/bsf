@@ -22,6 +22,9 @@ namespace BansheeEngine
 			GameObjectManager::instance().registerDeserializedId(instanceId, obj->getInstanceId());
 		}
 
+		INT32& getLinkId(GameObject* obj) { return obj->mLinkId; }
+		void setLinkId(GameObject* obj, INT32& linkId) { obj->mLinkId = linkId; }
+
 	public:
 		template <typename T>
 		static std::shared_ptr<T> createGameObject()
@@ -34,6 +37,7 @@ namespace BansheeEngine
 		{
 			addPlainField("mInstanceID", 0, &GameObjectRTTI::getInstanceID, &GameObjectRTTI::setInstanceID);
 			addPlainField("mName", 1, &GameObjectRTTI::getName, &GameObjectRTTI::setName);
+			addPlainField("mLinkId", 2, &GameObjectRTTI::getLinkId, &GameObjectRTTI::setLinkId);
 		}
 
 		virtual const String& getRTTIName()

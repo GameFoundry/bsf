@@ -530,6 +530,18 @@
     <ClInclude Include="Include\BsMeshImportOptionsRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsPrefab.h">
+      <Filter>Header Files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsPrefabRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsPrefabDiff.h">
+      <Filter>Header Files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsPrefabDiffRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsCoreApplication.cpp">
@@ -837,6 +849,12 @@
     </ClCompile>
     <ClCompile Include="Source\BsMeshImportOptions.cpp">
       <Filter>Source Files\Importer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsPrefab.cpp">
+      <Filter>Source Files\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsPrefabDiff.cpp">
+      <Filter>Source Files\Scene</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -33,6 +33,11 @@ namespace BansheeEngine
 		UINT32 getNumComponents(SceneObject* obj) { return (UINT32)obj->mComponents.size(); }
 		void setNumComponents(SceneObject* obj, UINT32 size) { /* DO NOTHING */ }
 
+		HPrefab& getPrefabLink(SceneObject* obj) { return obj->mPrefabLink; }
+		void setPrefabLink(SceneObject* obj, HPrefab& value) { obj->mPrefabLink = value; }
+
+		UINT32& getFlags(SceneObject* obj) { return obj->mFlags; }
+		void setFlags(SceneObject* obj, UINT32& value) { obj->mFlags = value; }
 	public:
 		SceneObjectRTTI()
 		{
@@ -40,9 +45,11 @@ namespace BansheeEngine
 				&SceneObjectRTTI::getNumChildren, &SceneObjectRTTI::setChild, &SceneObjectRTTI::setNumChildren);
 			addReflectablePtrArrayField("mComponents", 1, &SceneObjectRTTI::getComponent, 
 				&SceneObjectRTTI::getNumComponents, &SceneObjectRTTI::setComponent, &SceneObjectRTTI::setNumComponents);
+			addReflectableField("mPrefabLink", 2, &SceneObjectRTTI::getPrefabLink, &SceneObjectRTTI::setPrefabLink);
+			addPlainField("mFlags", 3, &SceneObjectRTTI::getFlags, &SceneObjectRTTI::setFlags);
 		}
 
-		virtual void onDeserializationStarted(IReflectable* obj)
+		virtual void onDeserializationStarted(IReflectable* obj) override
 		{
 			SceneObject* so = static_cast<SceneObject*>(obj);
 
@@ -55,7 +62,7 @@ namespace BansheeEngine
 				so->mRTTIData = DeserializationData(false);
 		}
 
-		virtual void onDeserializationEnded(IReflectable* obj)
+		virtual void onDeserializationEnded(IReflectable* obj) override
 		{
 			SceneObject* so = static_cast<SceneObject*>(obj);
 			DeserializationData deserializationData = any_cast<DeserializationData>(so->mRTTIData);
@@ -64,42 +71,27 @@ namespace BansheeEngine
 			{
 				GameObjectManager::instance().endDeserialization();
 
-				// Initialize all components
-				Stack<HSceneObject> todo;
-				todo.push(so->mThisHandle);
-
-				while (!todo.empty())
-				{
-					HSceneObject curSO = todo.top();
-					todo.pop();
-
-					const Vector<HComponent>& components = curSO->getComponents();
-
-					for (auto& component : components)
-						component->onInitialized();
-
-					for (UINT32 i = 0; i < curSO->getNumChildren(); i++)
-						todo.push(curSO->getChild(i));
-				}
+				if ((so->mFlags & SOF_DontInstantiate) == 0)
+					so->instantiate();
 			}
 
 			so->mRTTIData = nullptr;
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "SceneObject";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_SceneObject;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			HSceneObject newObject = SceneObject::create("");
+			HSceneObject newObject = SceneObject::create("", SOF_DontInstantiate);
 
 			return newObject.getInternalPtr();
 		}

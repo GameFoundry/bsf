@@ -9,6 +9,7 @@
 #include "BsRTTIReflectableField.h"
 #include "BsRTTIReflectablePtrField.h"
 #include "BsRTTIManagedDataBlockField.h"
+#include "BsMemorySerializer.h"
 
 #include <unordered_set>
 
@@ -120,8 +121,7 @@ namespace BansheeEngine
 
 	std::shared_ptr<IReflectable> BinarySerializer::decode(UINT8* data, UINT32 dataLength)
 	{
-		UINT32 dummy = 0;
-		SPtr<SerializedObject> intermediateObject = _decodeIntermediate(data, dataLength, dummy);
+		SPtr<SerializedObject> intermediateObject = _decodeIntermediate(data, dataLength);
 		if (intermediateObject == nullptr)
 			return nullptr;
 
@@ -376,24 +376,43 @@ namespace BansheeEngine
 		return buffer;
 	}
 
-	SPtr<SerializedObject> BinarySerializer::_decodeIntermediate(UINT8* data, UINT32 dataLength, UINT32& bytesRead)
+	SPtr<SerializedObject> BinarySerializer::_encodeIntermediate(IReflectable* object, bool shallow)
 	{
+		// TODO: This is a hacky way of generating an intermediate format to save development time and complexity.
+		// It is hacky because it requires a full on encode to binary and then decode into intermediate. It should 
+		// be better to modify encoding process so it outputs the intermediate format directly (similar to how decoding works). 
+		// This also means that once you have an intermediate format you cannot use it to encode to binary. 
+
+		MemorySerializer ms;
+		UINT32 dataLength = 0;
+		UINT8* data = ms.encode(object, dataLength, &bs_alloc, shallow);
+
+		BinarySerializer bs;
+		SPtr<SerializedObject> obj = bs._decodeIntermediate(data, dataLength, true);
+
+		bs_free(data);
+		return obj;
+	}
+
+	SPtr<SerializedObject> BinarySerializer::_decodeIntermediate(UINT8* data, UINT32 dataLength, bool copyData)
+	{
+		UINT32 bytesRead = 0;
 		mInterimObjectMap.clear();
 
 		SPtr<SerializedObject> rootObj;
-		bool hasMore = decodeIntermediateInternal(data, dataLength, bytesRead, rootObj);
+		bool hasMore = decodeIntermediateInternal(data, dataLength, bytesRead, rootObj, copyData);
 		while (hasMore)
 		{
 			UINT8* dataPtr = data + bytesRead;
 
 			SPtr<SerializedObject> dummyObj;
-			hasMore = decodeIntermediateInternal(dataPtr, dataLength, bytesRead, dummyObj);
+			hasMore = decodeIntermediateInternal(dataPtr, dataLength, bytesRead, dummyObj, copyData);
 		}
 
 		return rootObj;
 	}
 
-	bool BinarySerializer::decodeIntermediateInternal(UINT8* data, UINT32 dataLength, UINT32& bytesRead, SPtr<SerializedObject>& output)
+	bool BinarySerializer::decodeIntermediateInternal(UINT8* data, UINT32 dataLength, UINT32& bytesRead, SPtr<SerializedObject>& output, bool copyData)
 	{
 		if ((bytesRead + sizeof(ObjectMetaData)) > dataLength)
 		{
@@ -638,7 +657,7 @@ namespace BansheeEngine
 						{
 							UINT32 dummy = 0;
 							SPtr<SerializedObject> serializedArrayEntry;
-							decodeIntermediateInternal(data, complexTypeSize, dummy, serializedArrayEntry);
+							decodeIntermediateInternal(data, complexTypeSize, dummy, serializedArrayEntry, copyData);
 
 							SerializedArrayEntry arrayEntry;
 							arrayEntry.serialized = serializedArrayEntry;
@@ -665,7 +684,16 @@ namespace BansheeEngine
 						if (curField != nullptr)
 						{
 							SPtr<SerializedField> serializedField = bs_shared_ptr<SerializedField>();
-							serializedField->value = data;
+
+							if (copyData)
+							{
+								serializedField->value = (UINT8*)bs_alloc(typeSize);
+								memcpy(serializedField->value, data, typeSize);
+								serializedField->ownsMemory = true;
+							}
+							else
+								serializedField->value = data;
+
 							serializedField->size = typeSize;
 
 							SerializedArrayEntry arrayEntry;
@@ -747,7 +775,7 @@ namespace BansheeEngine
 						UINT32 dummy = 0;
 
 						SPtr<SerializedObject> serializedChildObj;
-						decodeIntermediateInternal(data, complexTypeSize, dummy, serializedChildObj);
+						decodeIntermediateInternal(data, complexTypeSize, dummy, serializedChildObj, copyData);
 
 						serializedEntry = serializedChildObj;
 						hasModification = true;
@@ -769,7 +797,16 @@ namespace BansheeEngine
 					if (curField != nullptr)
 					{
 						SPtr<SerializedField> serializedField = bs_shared_ptr<SerializedField>();
-						serializedField->value = data;
+
+						if (copyData)
+						{
+							serializedField->value = (UINT8*)bs_alloc(typeSize);
+							memcpy(serializedField->value, data, typeSize);
+							serializedField->ownsMemory = true;
+						}
+						else
+							serializedField->value = data;
+
 						serializedField->size = typeSize;
 
 						serializedEntry = serializedField;
@@ -806,7 +843,16 @@ namespace BansheeEngine
 					if (curField != nullptr)
 					{
 						SPtr<SerializedField> serializedField = bs_shared_ptr<SerializedField>();
-						serializedField->value = data;
+
+						if (copyData)
+						{
+							serializedField->value = (UINT8*)bs_alloc(dataBlockSize);
+							memcpy(serializedField->value, data, dataBlockSize);
+							serializedField->ownsMemory = true;
+						}
+						else
+							serializedField->value = data;
+
 						serializedField->size = dataBlockSize;
 
 						serializedEntry = serializedField;

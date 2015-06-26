@@ -166,6 +166,7 @@ namespace BansheeEngine
 	class IResourceListener;
 	class TextureProperties;
 	class IShaderIncludeHandler;
+	class Prefab;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -262,6 +263,7 @@ namespace BansheeEngine
 	typedef std::shared_ptr<GpuParamDesc> GpuParamDescPtr;
 	typedef std::shared_ptr<ResourceMetaData> ResourceMetaDataPtr;
 	typedef std::shared_ptr<IShaderIncludeHandler> ShaderIncludeHandlerPtr;
+	typedef std::shared_ptr<Prefab> PrefabPtr;
 }
 
 /************************************************************************/
@@ -328,7 +330,11 @@ namespace BansheeEngine
 		TID_Viewport = 1073,
 		TID_ResourceDependencies = 1074,
 		TID_ShaderMetaData = 1075,
-		TID_MeshImportOptions = 1076
+		TID_MeshImportOptions = 1076,
+		TID_Prefab = 1077,
+		TID_PrefabDiff = 1078,
+		TID_PrefabObjectDiff = 1079,
+		TID_PrefabComponentDiff = 1080
 	};
 }
 
@@ -348,6 +354,7 @@ namespace BansheeEngine
 	typedef ResourceHandle<ShaderInclude> HShaderInclude;
 	typedef ResourceHandle<Font> HFont;
 	typedef ResourceHandle<Shader> HShader;
+	typedef ResourceHandle<Prefab> HPrefab;
 }
 
 namespace BansheeEngine

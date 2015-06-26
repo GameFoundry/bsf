@@ -50,7 +50,7 @@ namespace BansheeEngine
 
 	void CoreSceneManager::registerNewSO(const HSceneObject& node) 
 	{ 
-		if(mRootNode) // If root node is null, then this new node is the root node
+		if(mRootNode)
 			node->setParent(mRootNode);
 	}
 

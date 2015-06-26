@@ -36,6 +36,13 @@ namespace BansheeEngine
 		UINT64 getInstanceId() const { return mInstanceData->mInstanceId; }
 
 		/**
+		 * @brief	Returns an ID that identifies a link between this object and its equivalent
+		 *			in the linked prefab. This will be -1 if the object has no prefab link, or if
+		 *			the object is specific to the instance and has no prefab equivalent.
+		 */
+		INT32 getLinkId() const { return mLinkId; }
+
+		/**
 		 * @brief	Gets the name of the object.
 		 */
 		const String& getName() const { return mName; }
@@ -88,8 +95,11 @@ namespace BansheeEngine
 
 	protected:
 		String mName;
+		INT32 mLinkId;
 
 	private:
+		friend class Prefab;
+
 		GameObjectInstanceDataPtr mInstanceData;
 		bool mIsDestroyed;
 

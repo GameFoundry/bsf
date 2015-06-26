@@ -353,11 +353,9 @@ namespace BansheeEngine
 		UINT32 newDataLength = 0;
 		UINT8* newData = ms.encode(newObj.get(), newDataLength, &bs_alloc);
 
-		UINT32 dummy = 0;
 		BinarySerializer bs;
-		SPtr<SerializedObject> orgSerialized = bs._decodeIntermediate(orgData, orgDataLength, dummy);
-		dummy = 0;
-		SPtr<SerializedObject> newSerialized = bs._decodeIntermediate(newData, newDataLength, dummy);
+		SPtr<SerializedObject> orgSerialized = bs._decodeIntermediate(orgData, orgDataLength);
+		SPtr<SerializedObject> newSerialized = bs._decodeIntermediate(newData, newDataLength);
 
 		IDiff& diffHandler = orgObj->getRTTI()->getDiffHandler();
 		SPtr<SerializedObject> objDiff = diffHandler.generateDiff(orgSerialized, newSerialized);

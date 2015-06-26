@@ -9,11 +9,11 @@
 
 namespace BansheeEngine
 {
-	SceneObject::SceneObject(const String& name)
+	SceneObject::SceneObject(const String& name, UINT32 flags)
 		:GameObject(), mPosition(Vector3::ZERO), mRotation(Quaternion::IDENTITY), mScale(Vector3::ONE),
 		mWorldPosition(Vector3::ZERO), mWorldRotation(Quaternion::IDENTITY), mWorldScale(Vector3::ONE),
 		mCachedLocalTfrm(Matrix4::IDENTITY), mDirtyFlags(0xFFFFFFFF), mCachedWorldTfrm(Matrix4::IDENTITY), 
-		mActiveSelf(true), mActiveHierarchy(true), mDirtyHash(0)
+		mActiveSelf(true), mActiveHierarchy(true), mDirtyHash(0), mFlags(flags)
 	{
 		setName(name);
 	}
@@ -27,18 +27,19 @@ namespace BansheeEngine
 		}
 	}
 
-	HSceneObject SceneObject::create(const String& name)
+	HSceneObject SceneObject::create(const String& name, UINT32 flags)
 	{
-		HSceneObject newObject = createInternal(name);
+		HSceneObject newObject = createInternal(name, flags);
 
-		gCoreSceneManager().registerNewSO(newObject);
+		if (newObject->isInstantiated())
+			gCoreSceneManager().registerNewSO(newObject);
 
 		return newObject;
 	}
 
-	HSceneObject SceneObject::createInternal(const String& name)
+	HSceneObject SceneObject::createInternal(const String& name, UINT32 flags)
 	{
-		std::shared_ptr<SceneObject> sceneObjectPtr = std::shared_ptr<SceneObject>(new (bs_alloc<SceneObject, PoolAlloc>()) SceneObject(name), 
+		std::shared_ptr<SceneObject> sceneObjectPtr = std::shared_ptr<SceneObject>(new (bs_alloc<SceneObject, PoolAlloc>()) SceneObject(name, flags), 
 			&bs_delete<PoolAlloc, SceneObject>, StdAlloc<SceneObject, PoolAlloc>());
 		
 		HSceneObject sceneObject = GameObjectManager::instance().registerObject(sceneObjectPtr);
@@ -70,7 +71,9 @@ namespace BansheeEngine
 		for(auto iter = mComponents.begin(); iter != mComponents.end(); ++iter)
 		{
 			(*iter)->_setIsDestroyed();
-			(*iter)->onDestroyed();
+
+			if (isInstantiated())
+				(*iter)->onDestroyed();
 
 			if (immediate)
 			{
@@ -98,6 +101,54 @@ namespace BansheeEngine
 
 		// Instance data changed, so make sure to refresh the handles to reflect that
 		mThisHandle._setHandleData(mThisHandle.getInternalPtr());
+	}
+
+	HPrefab SceneObject::getPrefabLink() const
+	{
+		const SceneObject* curObj = this;
+
+		while (curObj == nullptr)
+		{
+			if (curObj->mPrefabLink != nullptr)
+				return curObj->mPrefabLink;
+
+			if (curObj->mParent != nullptr)
+				curObj = curObj->mParent.get();
+			else
+				curObj = nullptr;
+		}
+
+		return HPrefab();
+	}
+
+	void SceneObject::setFlags(UINT32 flags)
+	{
+		mFlags |= flags;
+
+		for (auto& child : mChildren)
+			child->setFlags(flags);
+	}
+
+	void SceneObject::unsetFlags(UINT32 flags)
+	{
+		mFlags &= ~flags;
+
+		for (auto& child : mChildren)
+			child->unsetFlags(flags);
+	}
+
+	void SceneObject::instantiate()
+	{
+		mFlags &= ~SOF_DontInstantiate;
+
+		if (mParent == nullptr)
+			gCoreSceneManager().registerNewSO(mThisHandle);
+
+		for (auto& component : mComponents)
+			component->onInitialized();
+
+		for (auto& child : mChildren)
+			child->instantiate();
 	}
 
 	/************************************************************************/
@@ -417,6 +468,8 @@ namespace BansheeEngine
 	void SceneObject::addChild(const HSceneObject& object)
 	{
 		mChildren.push_back(object); 
+
+		object->setFlags(mFlags);
 	}
 
 	void SceneObject::removeChild(const HSceneObject& object)
@@ -494,7 +547,9 @@ namespace BansheeEngine
 		if(iter != mComponents.end())
 		{
 			(*iter)->_setIsDestroyed();
-			(*iter)->onDestroyed();
+
+			if (isInstantiated())
+				(*iter)->onDestroyed();
 			
 			mComponents.erase(iter);
 

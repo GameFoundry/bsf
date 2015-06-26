@@ -13,6 +13,15 @@
 namespace BansheeEngine
 {
 	/**
+	 * @brief	Possible modifiers that can be applied to a SceneObject
+	 */
+	enum SceneObjectFlags
+	{
+		SOF_DontInstantiate = 0x01, /**< Object wont be in the main scene and its components won't receive updates. */
+		SOF_DontSave = 0x02 /**< Object will be skipped when saving the scene hierarchy or a prefab. */
+	};
+
+	/**
 	 * @brief	SceneObject represents an object in the scene graph. It has a world position,
 	 *			place in the hierarchy and optionally a number of attached components.
 	 */
@@ -28,6 +37,8 @@ namespace BansheeEngine
 		};
 
 		friend class CoreSceneManager;
+		friend class Prefab;
+		friend class PrefabDiff;
 	public:
 		~SceneObject();
 
@@ -35,7 +46,7 @@ namespace BansheeEngine
 		 * @brief	Creates a new SceneObject with the specified name. Object will be placed in the top
 		 *			of the scene hierarchy.
 		 */
-		static HSceneObject create(const String& name);
+		static HSceneObject create(const String& name, UINT32 flags = 0);
 
 		/**
 		 * @brief	Destroys this object and any of its held components.
@@ -55,10 +66,24 @@ namespace BansheeEngine
 		 * @brief	Returns a handle to this object.
 		 */
 		HSceneObject getHandle() const { return mThisHandle; }
-	private:
-		SceneObject(const String& name);
 
-		static HSceneObject createInternal(const String& name);
+		/**
+		 * @brief	Returns the prefab this object is linked to, if any. 
+		 *
+		 * @note	Requires a search of all parents potentially.
+		 */
+		HPrefab getPrefabLink() const;
+	private:
+		SceneObject(const String& name, UINT32 flags);
+
+		/**
+		 * @brief	Creates a new SceneObject instance, registers it with the game object manager,
+		 *			creates and returns a handle to the new object.
+		 *
+		 * @note	When creating objects with DontInstantiate flag it is the callers responsibility
+		 *			to manually destroy the object, otherwise it will leak.
+		 */
+		static HSceneObject createInternal(const String& name, UINT32 flags = 0);
 
 		/**
 		 * @brief	Destroys this object and any of its held components.
@@ -71,8 +96,32 @@ namespace BansheeEngine
 		 */
 		void destroyInternal(bool immediate = false);
 
+		/**
+		 * @brief	Recursively enables the provided set of flags on
+		 *			this object and all children.
+		 */
+		void setFlags(UINT32 flags);
+
+		/**
+		 * @brief	Recursively disables the provided set of flags on
+		 *			this object and all children.
+		 */
+		void unsetFlags(UINT32 flags);
+
+		/**
+		 * @brief	Checks is the scene object instantiated and visible in the scene.
+		 */
+		bool isInstantiated() const { return (mFlags & SOF_DontInstantiate) == 0; }
+
+		/**
+		 * @brief	Register the scene object with the scene and activate all of its components.
+		 */
+		void instantiate();
+
 	private:
 		HSceneObject mThisHandle;
+		HPrefab mPrefabLink;
+		UINT32 mFlags;
 
 		/************************************************************************/
 		/* 								Transform	                     		*/
@@ -411,7 +460,9 @@ namespace BansheeEngine
 				GameObjectHandle<T>(GameObjectManager::instance().registerObject(gameObject));
 
 			mComponents.push_back(newComponent);
-			newComponent->onInitialized();
+
+			if (isInstantiated())
+				newComponent->onInitialized();
 
 			return newComponent;
 		}

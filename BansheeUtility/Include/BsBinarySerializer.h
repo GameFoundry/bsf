@@ -70,13 +70,29 @@ namespace BansheeEngine
 		SPtr<IReflectable> decode(UINT8* data, UINT32 dataLength);
 
 		/**
+		 * @brief	Encodes an object into an intermediate representation.
+		 *
+		 * @param	object		Object to encode.
+		 * @param	shallow		Determines how to handle referenced objects. If true then references will not be encoded
+		 *						and will be set to null. If false then references will be encoded as well and restored
+		 *						upon decoding.
+		 */
+		SPtr<SerializedObject> _encodeIntermediate(IReflectable* object, bool shallow = false);
+
+		/**
 		 * @brief	Decodes an object in memory into an intermediate representation for easier parsing.
 		 *			
+		 * @param 	data  		Binary data to decode.
+		 * @param	dataLength	Length of the data in bytes.
+		 * @param	copyData	Determines should the data be copied or just referenced. If referenced
+		 *						then the returned serialized object will be invalid as soon as the original
+		 *						data buffer is destroyed. Referencing is faster than copying.
+		 *
 		 * @note	Internal method.
 		 *			References to field data will point to the original buffer and will become invalid 
 		 *			when it is destroyed.
 		 */
-		SPtr<SerializedObject> _decodeIntermediate(UINT8* data, UINT32 dataLength, UINT32& bytesRead);
+		SPtr<SerializedObject> _decodeIntermediate(UINT8* data, UINT32 dataLength, bool copyData = false);
 
 		/**
 		 * @brief	Decodes an intermediate representation of a serialized object into the actual object.
@@ -133,7 +149,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Decodes an object in memory into an intermediate representation for easier parsing.
 		 */
-		bool decodeIntermediateInternal(UINT8* data, UINT32 dataLength, UINT32& bytesRead, SPtr<SerializedObject>& output);
+		bool decodeIntermediateInternal(UINT8* data, UINT32 dataLength, UINT32& bytesRead, SPtr<SerializedObject>& output, bool copyData);
 
 		/**
 		 * @brief	Helper method for encoding a complex object and copying its data to a buffer.
