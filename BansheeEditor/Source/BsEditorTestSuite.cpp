@@ -7,6 +7,9 @@
 #include "BsBinarySerializer.h"
 #include "BsMemorySerializer.h"
 #include "BsBinaryDiff.h"
+#include "BsPrefab.h"
+#include "BsResources.h"
+#include "BsPrefabDiff.h"
 
 namespace BansheeEngine
 {
@@ -282,10 +285,143 @@ namespace BansheeEngine
 		return TestObjectA::getRTTIStatic();
 	}
 
+	class TestComponentC : public Component
+	{
+	public:
+		TestObjectA obj;
+
+		/************************************************************************/
+		/* 							COMPONENT OVERRIDES                    		*/
+		/************************************************************************/
+
+	protected:
+		friend class SceneObject;
+
+		TestComponentC(const HSceneObject& parent)
+			:Component(parent)
+		{}
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+	public:
+		friend class TestComponentCRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
+
+	protected:
+		TestComponentC() {} // Serialization only
+	};
+
+	class TestComponentD : public Component
+	{
+	public:
+		TestObjectB obj;
+
+		/************************************************************************/
+		/* 							COMPONENT OVERRIDES                    		*/
+		/************************************************************************/
+
+	protected:
+		friend class SceneObject;
+
+		TestComponentD(const HSceneObject& parent)
+			:Component(parent)
+		{}
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+	public:
+		friend class TestComponentDRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
+
+	protected:
+		TestComponentD() {} // Serialization only
+	};
+
+	class TestComponentCRTTI : public RTTIType < TestComponentC, Component, TestComponentCRTTI >
+	{
+	private:
+		BS_REFL_MEMBER(obj)
+
+	public:
+		TestComponentCRTTI()
+		{
+			BS_ADD_REFL_FIELD(obj, 0);
+		}
+
+		virtual const String& getRTTIName()
+		{
+			static String name = "TestComponentC";
+			return name;
+		}
+
+		virtual UINT32 getRTTIId()
+		{
+			return TID_TestComponentC;
+		}
+
+		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		{
+			return GameObjectRTTI::createGameObject<TestComponentC>();
+		}
+	};
+
+	class TestComponentDRTTI : public RTTIType < TestComponentD, Component, TestComponentDRTTI >
+	{
+	private:
+		BS_REFL_MEMBER(obj)
+
+	public:
+		TestComponentDRTTI()
+		{
+			BS_ADD_REFL_FIELD(obj, 0);
+		}
+
+		virtual const String& getRTTIName()
+		{
+			static String name = "TestComponentD";
+			return name;
+		}
+
+		virtual UINT32 getRTTIId()
+		{
+			return TID_TestComponentD;
+		}
+
+		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		{
+			return GameObjectRTTI::createGameObject<TestComponentD>();
+		}
+	};
+
+	RTTITypeBase* TestComponentC::getRTTIStatic()
+	{
+		return TestComponentCRTTI::instance();
+	}
+
+	RTTITypeBase* TestComponentC::getRTTI() const
+	{
+		return TestComponentC::getRTTIStatic();
+	}
+
+	RTTITypeBase* TestComponentD::getRTTIStatic()
+	{
+		return TestComponentDRTTI::instance();
+	}
+
+	RTTITypeBase* TestComponentD::getRTTI() const
+	{
+		return TestComponentD::getRTTIStatic();
+	}
+
 	EditorTestSuite::EditorTestSuite()
 	{
 		BS_ADD_TEST(EditorTestSuite::SceneObjectRecord_UndoRedo);
 		BS_ADD_TEST(EditorTestSuite::BinaryDiff);
+		BS_ADD_TEST(EditorTestSuite::TestPrefabDiff);
 	}
 
 	void EditorTestSuite::SceneObjectRecord_UndoRedo()
@@ -405,4 +541,116 @@ namespace BansheeEngine
 			BS_TEST_ASSERT(orgObj->arrObjPtrB[i]->intA == newObj->arrObjPtrB[i]->intA);
 	}
 
+	void EditorTestSuite::TestPrefabDiff()
+	{
+		HSceneObject root = SceneObject::create("root");
+		HSceneObject so0 = SceneObject::create("so0");
+		HSceneObject so1 = SceneObject::create("so1");
+		HSceneObject so2 = SceneObject::create("so2");
+		HSceneObject so0_0 = SceneObject::create("so0_0");
+		HSceneObject so0_1 = SceneObject::create("so0_1");
+		HSceneObject so1_0 = SceneObject::create("so1_0");
+		HSceneObject so1_1 = SceneObject::create("so1_1");
+		HSceneObject so1_2 = SceneObject::create("so1_2");
+		HSceneObject so2_0 = SceneObject::create("so2_0");
+
+		so0->setParent(root);
+		so1->setParent(root);
+		so2->setParent(root);
+
+		so0_0->setParent(so0);
+		so0_1->setParent(so0);
+
+		so1_0->setParent(so1);
+		so1_1->setParent(so1);
+		so1_2->setParent(so1);
+
+		so2_0->setParent(so2);
+
+		GameObjectHandle<TestComponentC> cmp0 = so0->addComponent<TestComponentC>();
+		GameObjectHandle<TestComponentC> cmp0_1_A = so0_1->addComponent<TestComponentC>();
+		GameObjectHandle<TestComponentD> cmp0_1_B = so0_1->addComponent<TestComponentD>();
+
+		GameObjectHandle<TestComponentD> cmp1 = so1->addComponent<TestComponentD>();
+		GameObjectHandle<TestComponentD> cmp1_2 = so1_2->addComponent<TestComponentD>();
+
+		GameObjectHandle<TestComponentD> cmp2 = so2->addComponent<TestComponentD>();
+
+		HPrefab prefab = Prefab::create(root);
+		gResources().save(prefab, "C:\\testprefab.asset", true);
+
+		// Perform modifications
+		GameObjectHandle<TestComponentC> cmp1_3;
+		GameObjectHandle<TestComponentD> cmp3;
+		HSceneObject so1_3, so2_1, so3;
+		{
+			cmp0->obj.strA = "banana";
+			so1_0->destroy();
+			cmp0_1_A->destroy();
+
+			so1_3 = SceneObject::create("so1_2");
+			so1_3->setParent(so1);
+			cmp1_3 = so1_3->addComponent<TestComponentC>();
+			cmp1_3->obj.intA = 999;
+
+			so1_0->setName("apple");
+			so1_1->destroy();
+			cmp1_2->destroy();
+
+			cmp1_2 = so1_2->addComponent<TestComponentD>();
+			cmp1_2->obj.strA = "orange";
+
+			so2_1 = SceneObject::create("so2_1");
+			so2_1->setParent(so2);
+
+			so2_0->addComponent<TestComponentD>();
+
+			so3 = SceneObject::create("so3");
+			so3->setParent(root);
+			cmp3 = so3->addComponent<TestComponentD>();
+		}
+
+		SPtr<PrefabDiff> prefabDiff = PrefabDiff::create(prefab->getRoot(), root);
+
+		prefab = gResources().load<Prefab>("C:\\testprefab.asset");
+		HSceneObject newRoot = prefab->instantiate();
+		prefabDiff->apply(newRoot);
+
+		// Compare and assert
+		BS_TEST_ASSERT(root->getNumChildren() == newRoot->getNumChildren());
+		HSceneObject nso0 = newRoot->getChild(0);
+
+		GameObjectHandle<TestComponentC> ncmp0 = nso0->getComponent<TestComponentC>();
+		BS_TEST_ASSERT(cmp0->obj.strA == ncmp0->obj.strA);
+
+		BS_TEST_ASSERT(so0->getNumChildren() == nso0->getNumChildren());
+		HSceneObject nso0_1 = nso0->getChild(0);
+		GameObjectHandle<TestComponentC> ncmp0_1 = nso0_1->getComponent<TestComponentD>();
+		BS_TEST_ASSERT(ncmp0_1 != nullptr);
+
+		HSceneObject nso1 = newRoot->getChild(1);
+		BS_TEST_ASSERT(so1->getNumChildren() == nso1->getNumChildren());
+
+		HSceneObject nso1_0 = nso1->getChild(0);
+		BS_TEST_ASSERT(so1_0->getName() == nso1_0->getName());
+
+		HSceneObject nso1_2 = nso1->getChild(1);
+		GameObjectHandle<TestComponentD> ncmp1_2 = nso1_2->getComponent<TestComponentD>();
+		BS_TEST_ASSERT(cmp1_2->obj.strA == ncmp1_2->obj.strA);
+
+		HSceneObject nso1_3 = nso1->getChild(2);
+		GameObjectHandle<TestComponentC> ncmp1_3 = nso1_3->getComponent<TestComponentC>();
+		BS_TEST_ASSERT(cmp1_3->obj.intA == ncmp1_3->obj.intA);
+
+		HSceneObject nso2 = newRoot->getChild(2);
+		BS_TEST_ASSERT(so2->getNumChildren() == nso2->getNumChildren());
+
+		HSceneObject nso2_0 = nso2->getChild(0);
+		GameObjectHandle<TestComponentD> ncmp2_0 = nso2_0->getComponent<TestComponentD>();
+		BS_TEST_ASSERT(ncmp2_0 != nullptr);
+
+		HSceneObject nso3 = newRoot->getChild(3);
+		GameObjectHandle<TestComponentD> ncmp3 = nso3->getComponent<TestComponentD>();
+		BS_TEST_ASSERT(ncmp3 != nullptr);
+	}
 }

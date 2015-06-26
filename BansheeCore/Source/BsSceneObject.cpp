@@ -121,6 +121,11 @@ namespace BansheeEngine
 		return HPrefab();
 	}
 
+	bool SceneObject::hasFlag(UINT32 flag) const
+	{
+		return (mFlags & flag) != 0;
+	}
+
 	void SceneObject::setFlags(UINT32 flags)
 	{
 		mFlags |= flags;

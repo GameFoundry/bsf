@@ -73,6 +73,11 @@ namespace BansheeEngine
 		 * @note	Requires a search of all parents potentially.
 		 */
 		HPrefab getPrefabLink() const;
+
+		/**
+		 * @brief	Checks if the scene object has a specific bit flag set.
+		 */
+		bool hasFlag(UINT32 flag) const;
 	private:
 		SceneObject(const String& name, UINT32 flags);
 

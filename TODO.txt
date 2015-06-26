@@ -28,17 +28,7 @@ return them in checkForModifications?
 Prefab diff
 
 TODO:
- - Document new Prefab code (Prefab & PrefabDiff)
- - Test prefab diff creation and applying (unit test)
-
-Prefab unit test:
- - Create a set of scene objects
- - Create a prefab from them
- - Modify original set objects
- - Create prefab diff
- - Save prefab to disk
- - Load prefab and compare with instance
- - Compare and assert results
+ - Test & debug prefab diff (execute unit test)
 
 Get prefab saving/loading working and only add diffs later
 

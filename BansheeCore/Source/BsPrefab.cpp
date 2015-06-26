@@ -86,6 +86,25 @@ namespace BansheeEngine
 		sceneObject->setFlags(SOF_DontInstantiate);
 		mRoot = sceneObject->clone();
 		sceneObject->unsetFlags(SOF_DontInstantiate);
+
+		// Remove objects with "dont save" flag
+		Stack<HSceneObject> todo;
+		todo.push(mRoot);
+
+		while (!todo.empty())
+		{
+			HSceneObject current = todo.top();
+			todo.pop();
+
+			if (current->hasFlag(SOF_DontSave))
+				current->destroy();
+			else
+			{
+				UINT32 numChildren = current->getNumChildren();
+				for (UINT32 i = 0; i < numChildren; i++)
+					todo.push(current->getChild(i));
+			}
+		}
 	}
 
 	HSceneObject Prefab::instantiate()

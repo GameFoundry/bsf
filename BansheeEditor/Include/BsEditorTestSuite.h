@@ -68,5 +68,6 @@ namespace BansheeEngine
 	private:
 		void SceneObjectRecord_UndoRedo();
 		void BinaryDiff();
+		void TestPrefabDiff();
 	};
 }
