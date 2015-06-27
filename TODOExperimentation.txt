@@ -4,6 +4,4 @@ Next:
  - DefaultMeshData is defined in BansheeEngine but FBXImporter only includes Banshee Core
   - Therefore I am not using it in FBXImporter but I should
  - When import animation generate slopes for quaternion rotation curves
- - Add methods for calculating normals and tangent frame. This is especially needed for blend shapes as I believe they
-   come with tangent frame or normal information. I've marked points in code where this is needed with a TODO.
  

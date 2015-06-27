@@ -89,13 +89,13 @@ namespace BansheeEngine
 		}
 	};
 
-	void FBXUtility::normalsFromSmoothing(const Vector<Vector4>& positions, const Vector<int>& indices,
-		const Vector<int>& smoothing, Vector<Vector4>& normals)
+	void FBXUtility::normalsFromSmoothing(const Vector<Vector3>& positions, const Vector<int>& indices,
+		const Vector<int>& smoothing, Vector<Vector3>& normals)
 	{
 		std::vector<SmoothVertex> smoothNormals;
 		smoothNormals.resize(positions.size());
 
-		normals.resize(indices.size(), Vector4::ZERO);
+		normals.resize(indices.size(), Vector3::ZERO);
 
 		UINT32 numPolygons = (UINT32)(indices.size() / 3);
 
@@ -134,7 +134,7 @@ namespace BansheeEngine
 				{
 					int current = indices[idx + i];
 
-					normals[idx + i] = (Vector4)smoothNormals[current].getNormal(smoothing[idx + i]);
+					normals[idx + i] = smoothNormals[current].getNormal(smoothing[idx + i]);
 				}
 			}
 

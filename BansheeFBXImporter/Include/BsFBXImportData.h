@@ -43,10 +43,10 @@ namespace BansheeEngine
 	 */
 	struct FBXBlendShapeFrame
 	{
-		Vector<Vector4> positions;
-		Vector<Vector4> normals;
-		Vector<Vector4> tangents;
-		Vector<Vector4> bitangents;
+		Vector<Vector3> positions;
+		Vector<Vector3> normals;
+		Vector<Vector3> tangents;
+		Vector<Vector3> bitangents;
 
 		float weight;
 	};
@@ -155,10 +155,10 @@ namespace BansheeEngine
 		FbxMesh* fbxMesh;
 
 		Vector<int> indices;
-		Vector<Vector4> positions;
-		Vector<Vector4> normals;
-		Vector<Vector4> tangents;
-		Vector<Vector4> bitangents;
+		Vector<Vector3> positions;
+		Vector<Vector3> normals;
+		Vector<Vector3> tangents;
+		Vector<Vector3> bitangents;
 		Vector<RGBA> colors;
 		Vector<Vector2> UV[FBX_IMPORT_MAX_UV_LAYERS];
 		Vector<int> materials;

@@ -11,6 +11,7 @@
 #include "BsQuaternion.h"
 #include "BsVertexDataDesc.h"
 #include "BsFBXUtility.h"
+#include "BsMeshUtility.h"
 #include <BsMeshImportOptions.h>
 
 namespace BansheeEngine
@@ -25,13 +26,12 @@ namespace BansheeEngine
 		return native;
 	}
 
-	Vector4 FBXToNativeType(const FbxVector4& value)
+	Vector3 FBXToNativeType(const FbxVector4& value)
 	{
-		Vector4 native;
+		Vector3 native;
 		native.x = (float)value[0];
 		native.y = (float)value[1];
 		native.z = (float)value[2];
-		native.w = (float)value[3];
 
 		return native;
 	}
@@ -137,11 +137,12 @@ namespace BansheeEngine
 			importAnimations(fbxScene, fbxImportOptions, importedScene);
 
 		splitMeshVertices(importedScene);
+		generateMissingTangentSpace(importedScene, fbxImportOptions);
 		
 		Vector<SubMesh> subMeshes;
 		MeshDataPtr meshData = generateMeshData(importedScene, fbxImportOptions, subMeshes);
 
-		// TODO - Later: Optimize mesh: Remove bad and degenerate polygons, optimize for vertex cache
+		// TODO - Later: Optimize mesh: Remove bad and degenerate polygons, weld nearby vertices, optimize for vertex cache
 
 		shutDownSdk();
 
@@ -784,13 +785,7 @@ namespace BansheeEngine
 						{
 							FBXUtility::normalsFromSmoothing(importMesh->positions, importMesh->indices, 
 								importMesh->smoothingGroups, importMesh->normals);
-							hasNormals = true;
 						}
-					}
-
-					if (!hasNormals)
-					{
-						// TODO - Calculate normals
 					}
 				}
 				else
@@ -812,10 +807,6 @@ namespace BansheeEngine
 				{
 					readLayerData(*mainLayer->GetTangents(), importMesh->tangents, importMesh->indices);
 					readLayerData(*mainLayer->GetBinormals(), importMesh->bitangents, importMesh->indices);
-				}
-				else
-				{
-					// TODO - Calculate tangent frame
 				}
 			}
 
@@ -908,10 +899,6 @@ namespace BansheeEngine
 					FBXUtility::normalsFromSmoothing(outFrame.positions, mesh.indices,
 						mesh.smoothingGroups, outFrame.normals);
 				}
-				else
-				{
-					// TODO - Calculate normals
-				}
 			}
 			else
 				readLayerData(*mainLayer->GetNormals(), outFrame.normals, mesh.indices);
@@ -925,10 +912,6 @@ namespace BansheeEngine
 			{
 				readLayerData(*mainLayer->GetTangents(), outFrame.tangents, mesh.indices);
 				readLayerData(*mainLayer->GetBinormals(), outFrame.bitangents, mesh.indices);
-			}
-			else
-			{
-				// TODO - Calculate tangent frame
 			}
 		}
 	}
@@ -1049,6 +1032,53 @@ namespace BansheeEngine
 			float invSum = 1.0f / sum;
 			for (UINT32 j = 0; j < FBX_IMPORT_MAX_BONE_INFLUENCES; j++)
 				influences[i].weights[j] *= invSum;
+		}
+	}
+
+	void FBXImporter::generateMissingTangentSpace(FBXImportScene& scene, const FBXImportOptions& options)
+	{
+		for (auto& mesh : scene.meshes)
+		{
+			UINT32 numVertices = (UINT32)mesh->positions.size();
+			UINT32 numIndices = (UINT32)mesh->indices.size();
+
+			if ((options.importNormals || options.importTangents) && mesh->normals.empty())
+			{
+				mesh->normals.resize(numVertices);
+
+				MeshUtility::calculateNormals(mesh->positions.data(), (UINT8*)mesh->indices.data(), numVertices, numIndices, mesh->normals.data());
+			}
+
+			if (options.importTangents && !mesh->UV[0].empty() && (mesh->tangents.empty() || mesh->bitangents.empty()))
+			{
+				mesh->tangents.resize(numVertices);
+				mesh->bitangents.resize(numVertices);
+
+				MeshUtility::calculateTangents(mesh->positions.data(), mesh->normals.data(), mesh->UV[0].data(), (UINT8*)mesh->indices.data(), 
+					numVertices, numIndices, mesh->tangents.data(), mesh->bitangents.data());
+			}
+
+			for (auto& shape : mesh->blendShapes)
+			{
+				for (auto& frame : shape.frames)
+				{
+					if ((options.importNormals || options.importTangents) && frame.normals.empty())
+					{
+						frame.normals.resize(numVertices);
+
+						MeshUtility::calculateNormals(mesh->positions.data(), (UINT8*)mesh->indices.data(), numVertices, numIndices, frame.normals.data());
+					}
+
+					if (options.importTangents && !mesh->UV[0].empty() && (frame.tangents.empty() || frame.bitangents.empty()))
+					{
+						mesh->tangents.resize(numVertices);
+						mesh->bitangents.resize(numVertices);
+
+						MeshUtility::calculateTangents(mesh->positions.data(), frame.normals.data(), mesh->UV[0].data(), (UINT8*)mesh->indices.data(),
+							numVertices, numIndices, frame.tangents.data(), frame.bitangents.data());
+					}
+				}
+			}
 		}
 	}
 

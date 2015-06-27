@@ -282,6 +282,7 @@
     <ClInclude Include="Include\BsDrawList.h" />
     <ClInclude Include="Include\BsMeshImportOptions.h" />
     <ClInclude Include="Include\BsMeshImportOptionsRTTI.h" />
+    <ClInclude Include="Include\BsMeshUtility.h" />
     <ClInclude Include="Include\BsPrefab.h" />
     <ClInclude Include="Include\BsPrefabDiff.h" />
     <ClInclude Include="Include\BsPrefabDiffRTTI.h" />
@@ -438,6 +439,7 @@
     <ClCompile Include="Source\BsIResourceListener.cpp" />
     <ClCompile Include="Source\BsMaterialParam.cpp" />
     <ClCompile Include="Source\BsMeshImportOptions.cpp" />
+    <ClCompile Include="Source\BsMeshUtility.cpp" />
     <ClCompile Include="Source\BsPrefab.cpp" />
     <ClCompile Include="Source\BsPrefabDiff.cpp" />
     <ClCompile Include="Source\BsProfilerCPU.cpp" />

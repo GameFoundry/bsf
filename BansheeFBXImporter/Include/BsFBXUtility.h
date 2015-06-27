@@ -14,8 +14,8 @@ namespace BansheeEngine
 		/**
 		 * @brief	Calculates per-index normals based on the provided smoothing groups.
 		 */
-		static void normalsFromSmoothing(const Vector<Vector4>& positions, const Vector<int>& indices,
-			const Vector<int>& smoothing, Vector<Vector4>& normals);
+		static void normalsFromSmoothing(const Vector<Vector3>& positions, const Vector<int>& indices,
+			const Vector<int>& smoothing, Vector<Vector3>& normals);
 
 		/**
 		 * @brief	Find vertices in the source mesh that have different attributes but have the same

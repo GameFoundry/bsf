@@ -125,6 +125,13 @@ namespace BansheeEngine
 		void splitMeshVertices(FBXImportScene& scene);
 
 		/**
+		 * @brief	Traverses over all meshes in the scene and generates normals, tangents and bitangents if they're missing.
+		 *
+		 * @note	This assumes vertices have already been split and shouldn't be called on pre-split meshes.
+		 */
+		void generateMissingTangentSpace(FBXImportScene& scene, const FBXImportOptions& options);
+
+		/**
 		 * @brief	Converts the mesh data from the imported FBX scene into mesh data that can be used
 		 *			for initializing a mesh.
 		 */
