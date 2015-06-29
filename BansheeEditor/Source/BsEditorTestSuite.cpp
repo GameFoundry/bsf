@@ -585,7 +585,7 @@ namespace BansheeEngine
 		HSceneObject so1_3, so2_1, so3;
 		{
 			cmp0->obj.strA = "banana";
-			so1_0->destroy();
+			so0_0->destroy();
 			cmp0_1_A->destroy();
 
 			so1_3 = SceneObject::create("so1_2");

@@ -36,7 +36,9 @@ namespace BansheeEngine
 			for (auto& entryPair : subObject.entries)
 			{
 				SerializedEntry entry = entryPair.second;
-				entry.serialized = entry.serialized->clone(cloneData);
+
+				if (entry.serialized != nullptr)
+					entry.serialized = entry.serialized->clone(cloneData);
 
 				copy->subObjects[i].entries[entryPair.first] = entry;
 			}

@@ -537,7 +537,7 @@ namespace BansheeEngine
 		 *							right away. Otherwise the deallocation will be delayed to the end of
 		 *							frame (preferred method).
 		 */
-		void destroyComponent(const HComponent& component, bool immediate = false);
+		void destroyComponent(const HComponent component, bool immediate = false);
 
 		/**
 		 * @brief	Removes the component from this object, and deallocates it.

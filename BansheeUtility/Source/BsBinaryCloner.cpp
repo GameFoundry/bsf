@@ -94,7 +94,7 @@ namespace BansheeEngine
 							}
 
 							subObjectData->children.push_back(ObjectReferenceData());
-							ObjectReferenceData childData = subObjectData->children.back();
+							ObjectReferenceData& childData = subObjectData->children.back();
 							childData.fieldId = fieldId;
 
 							gatherReferences(childObj, childData);
@@ -136,7 +136,7 @@ namespace BansheeEngine
 						}
 
 						subObjectData->children.push_back(ObjectReferenceData());
-						ObjectReferenceData childData = subObjectData->children.back();
+						ObjectReferenceData& childData = subObjectData->children.back();
 						childData.fieldId = fieldId;
 
 						gatherReferences(childObj, childData);

@@ -539,7 +539,7 @@ namespace BansheeEngine
 		return HComponent();
 	}
 
-	void SceneObject::destroyComponent(const HComponent& component, bool immediate)
+	void SceneObject::destroyComponent(const HComponent component, bool immediate)
 	{
 		if(component == nullptr)
 		{

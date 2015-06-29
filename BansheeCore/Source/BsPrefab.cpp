@@ -13,7 +13,7 @@ namespace BansheeEngine
 
 	HPrefab Prefab::create(const HSceneObject& sceneObject)
 	{
-		assert(sceneObject->mPrefabLink != nullptr);
+		assert(sceneObject->mPrefabLink == nullptr);
 
 		PrefabPtr newPrefab = createEmpty();
 		newPrefab->initialize(sceneObject);
@@ -57,6 +57,10 @@ namespace BansheeEngine
 				else
 					existingIds.insert(component->mLinkId);
 			}
+
+			UINT32 numChildren = (UINT32)currentSO->getNumChildren();
+			for (UINT32 i = 0; i < numChildren; i++)
+				todo.push(currentSO->getChild(i));
 		}
 
 		auto setIter = existingIds.begin();

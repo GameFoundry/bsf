@@ -43,7 +43,9 @@ namespace BansheeEngine
 		if (mRoot == nullptr)
 			return;
 
+		GameObjectManager::instance().startDeserialization();
 		applyDiff(mRoot, object);
+		GameObjectManager::instance().endDeserialization();
 	}
 
 	void PrefabDiff::applyDiff(const SPtr<PrefabObjectDiff>& diff, const HSceneObject& object)
@@ -56,7 +58,7 @@ namespace BansheeEngine
 		const Vector<HComponent>& components = object->getComponents();
 		for (auto& removedId : diff->removedComponents)
 		{
-			for (auto& component : components)
+			for (auto component : components)
 			{
 				if (removedId == component->getLinkId())
 				{
@@ -66,9 +68,9 @@ namespace BansheeEngine
 			}
 		}
 
-		UINT32 childCount = object->getNumChildren();
 		for (auto& removedId : diff->removedChildren)
 		{
+			UINT32 childCount = object->getNumChildren();
 			for (UINT32 i = 0; i < childCount; i++)
 			{
 				HSceneObject child = object->getChild(i);
@@ -92,6 +94,7 @@ namespace BansheeEngine
 			BinarySerializer bs;
 			SPtr<SceneObject> sceneObject = std::static_pointer_cast<SceneObject>(bs._decodeIntermediate(addedChildData));
 			sceneObject->setParent(object);
+			sceneObject->instantiate();
 		}
 
 		for (auto& componentDiff : diff->componentDiffs)
@@ -109,6 +112,7 @@ namespace BansheeEngine
 
 		for (auto& childDiff : diff->childDiffs)
 		{
+			UINT32 childCount = object->getNumChildren();
 			for (UINT32 i = 0; i < childCount; i++)
 			{
 				HSceneObject child = object->getChild(i);
@@ -269,7 +273,7 @@ namespace BansheeEngine
 			bool foundMatching = false;
 			if (instanceComponent->getLinkId() != -1)
 			{
-				for (UINT32 j = 0; j < prefabChildCount; j++)
+				for (UINT32 j = 0; j < prefabComponentCount; j++)
 				{
 					HComponent prefabComponent = prefabComponents[j];
 
@@ -289,7 +293,7 @@ namespace BansheeEngine
 				if (output == nullptr)
 					output = bs_shared_ptr<PrefabObjectDiff>();
 
-				output->addedChildren.push_back(obj);
+				output->addedComponents.push_back(obj);
 			}
 		}
 
