@@ -87,6 +87,8 @@ namespace BansheeEngine
 	protected:
 		friend class GameObjectHandleBase;
 		friend class GameObjectManager;
+		friend class PrefabDiff;
+		friend class PrefabUtility;
 
 		/**
 		 * @brief	Initializes the GameObject after construction.

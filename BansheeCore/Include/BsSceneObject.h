@@ -39,6 +39,7 @@ namespace BansheeEngine
 		friend class CoreSceneManager;
 		friend class Prefab;
 		friend class PrefabDiff;
+		friend class PrefabUtility;
 	public:
 		~SceneObject();
 
@@ -60,7 +61,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GameObject::_setInstanceData
 		 */
-		void _setInstanceData(GameObjectInstanceDataPtr& other);
+		void _setInstanceData(GameObjectInstanceDataPtr& other) override;
 
 		/**
 		 * @brief	Returns a handle to this object.
@@ -73,6 +74,11 @@ namespace BansheeEngine
 		 * @note	Requires a search of all parents potentially.
 		 */
 		HPrefab getPrefabLink() const;
+
+		/**
+		 * @brief	Breaks the link between this prefab instance and its prefab.
+		 */
+		void breakPrefabLink();
 
 		/**
 		 * @brief	Checks if the scene object has a specific bit flag set.
@@ -126,6 +132,7 @@ namespace BansheeEngine
 	private:
 		HSceneObject mThisHandle;
 		HPrefab mPrefabLink;
+		PrefabDiffPtr mPrefabDiff;
 		UINT32 mFlags;
 
 		/************************************************************************/
@@ -415,6 +422,12 @@ namespace BansheeEngine
 		 * @brief	Makes a deep copy of this object.
 		 */
 		HSceneObject clone();
+
+		/**
+		 * @brief	Updates the internal prefab diff data by recording the difference
+		 *			between the current values in this prefab instance and the prefab.
+		 */
+		void recordPrefabDiff();
 
 	private:
 		HSceneObject mParent;

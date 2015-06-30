@@ -6,6 +6,9 @@
 #include "BsSceneObjectRTTI.h"
 #include "BsMemorySerializer.h"
 #include "BsGameObjectManager.h"
+#include "BsPrefab.h"
+#include "BsPrefabUtility.h"
+#include "BsPrefabDiff.h"
 
 namespace BansheeEngine
 {
@@ -119,6 +122,28 @@ namespace BansheeEngine
 		}
 
 		return HPrefab();
+	}
+
+	void SceneObject::breakPrefabLink()
+	{
+		SceneObject* curObj = this;
+
+		while (curObj == nullptr)
+		{
+			if (curObj->mPrefabLink != nullptr)
+			{
+				curObj->mPrefabLink = nullptr;
+				curObj->mPrefabDiff = nullptr;
+				PrefabUtility::clearPrefabIds(curObj->getHandle());
+
+				return;
+			}
+
+			if (curObj->mParent != nullptr)
+				curObj = curObj->mParent.get();
+			else
+				curObj = nullptr;
+		}
 	}
 
 	bool SceneObject::hasFlag(UINT32 flag) const
@@ -526,6 +551,27 @@ namespace BansheeEngine
 		bs_free(buffer);
 
 		return cloneObj->mThisHandle;
+	}
+
+	void SceneObject::recordPrefabDiff()
+	{
+		SceneObject* curObj = this;
+
+		while (curObj == nullptr)
+		{
+			if (curObj->mPrefabLink != nullptr)
+			{
+				curObj->mPrefabDiff = nullptr;
+				curObj->mPrefabDiff = PrefabDiff::create(curObj->mPrefabLink->getRoot(), curObj->getHandle());
+				
+				return;
+			}
+
+			if (curObj->mParent != nullptr)
+				curObj = curObj->mParent.get();
+			else
+				curObj = nullptr;
+		}
 	}
 
 	HComponent SceneObject::getComponent(UINT32 typeId) const

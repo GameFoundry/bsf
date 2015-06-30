@@ -287,6 +287,7 @@
     <ClInclude Include="Include\BsPrefabDiff.h" />
     <ClInclude Include="Include\BsPrefabDiffRTTI.h" />
     <ClInclude Include="Include\BsPrefabRTTI.h" />
+    <ClInclude Include="Include\BsPrefabUtility.h" />
     <ClInclude Include="Include\BsShaderIncludeRTTI.h" />
     <ClInclude Include="Include\BsIResourceListener.h" />
     <ClInclude Include="Include\BsMaterialParam.h" />
@@ -442,6 +443,7 @@
     <ClCompile Include="Source\BsMeshUtility.cpp" />
     <ClCompile Include="Source\BsPrefab.cpp" />
     <ClCompile Include="Source\BsPrefabDiff.cpp" />
+    <ClCompile Include="Source\BsPrefabUtility.cpp" />
     <ClCompile Include="Source\BsProfilerCPU.cpp" />
     <ClCompile Include="Source\BsDeferredCallManager.cpp" />
     <ClCompile Include="Source\BsDrawOps.cpp" />

@@ -2,6 +2,7 @@
 #include "BsPrefabRTTI.h"
 #include "BsResources.h"
 #include "BsSceneObject.h"
+#include "BsPrefabUtility.h"
 
 namespace BansheeEngine
 {
@@ -32,60 +33,9 @@ namespace BansheeEngine
 		return newPrefab;
 	}
 
-	void Prefab::generatePrefabIds(const HSceneObject& sceneObject)
-	{
-		Vector<HGameObject> objectsToId;
-		Set<INT32> existingIds;
-
-		Stack<HSceneObject> todo;
-		todo.push(sceneObject);
-
-		while (!todo.empty())
-		{
-			HSceneObject currentSO = todo.top();
-			todo.pop();
-
-			if (currentSO->mLinkId == -1)
-				objectsToId.push_back(currentSO);
-			else
-				existingIds.insert(currentSO->mLinkId);
-
-			for (auto& component : currentSO->mComponents)
-			{
-				if (component->mLinkId == -1)
-					objectsToId.push_back(component);
-				else
-					existingIds.insert(component->mLinkId);
-			}
-
-			UINT32 numChildren = (UINT32)currentSO->getNumChildren();
-			for (UINT32 i = 0; i < numChildren; i++)
-				todo.push(currentSO->getChild(i));
-		}
-
-		auto setIter = existingIds.begin();
-		INT32 nextId = 0;
-		for (auto& object : objectsToId)
-		{
-			INT32 freeId = -1;
-			for (; setIter != existingIds.end(); ++setIter)
-			{
-				if (nextId < (*setIter))
-					freeId = nextId++;
-				else
-					nextId++;
-			}
-
-			if (freeId == -1)
-				freeId = nextId++;
-
-			object->mLinkId = freeId;
-		}		
-	}
-
 	void Prefab::initialize(const HSceneObject& sceneObject)
 	{
-		generatePrefabIds(sceneObject);
+		PrefabUtility::generatePrefabIds(sceneObject);
 
 		sceneObject->setFlags(SOF_DontInstantiate);
 		mRoot = sceneObject->clone();

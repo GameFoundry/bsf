@@ -14,10 +14,10 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns a copy of the provided object with identical data.
 		 *
-		 * @param	object		Object to clone.
-		 * @param	shallow		If false then all referenced objects will be cloned
-		 *						as well, otherwise the references to the original
-		 *						objects will be kept.
+		 * @param[in]	object		Object to clone.
+		 * @param[in]	shallow		If false then all referenced objects will be cloned
+		 *							as well, otherwise the references to the original
+		 *							objects will be kept.
 		 */
 		static SPtr<IReflectable> clone(IReflectable* object, bool shallow = false);
 

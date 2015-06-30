@@ -36,6 +36,9 @@ namespace BansheeEngine
 		HPrefab& getPrefabLink(SceneObject* obj) { return obj->mPrefabLink; }
 		void setPrefabLink(SceneObject* obj, HPrefab& value) { obj->mPrefabLink = value; }
 
+		PrefabDiffPtr getPrefabDiff(SceneObject* obj) { return obj->mPrefabDiff; }
+		void setPrefabDiff(SceneObject* obj, PrefabDiffPtr value) { obj->mPrefabDiff = value; }
+
 		UINT32& getFlags(SceneObject* obj) { return obj->mFlags; }
 		void setFlags(SceneObject* obj, UINT32& value) { obj->mFlags = value; }
 	public:
@@ -47,6 +50,7 @@ namespace BansheeEngine
 				&SceneObjectRTTI::getNumComponents, &SceneObjectRTTI::setComponent, &SceneObjectRTTI::setNumComponents);
 			addReflectableField("mPrefabLink", 2, &SceneObjectRTTI::getPrefabLink, &SceneObjectRTTI::setPrefabLink);
 			addPlainField("mFlags", 3, &SceneObjectRTTI::getFlags, &SceneObjectRTTI::setFlags);
+			addReflectablePtrField("mPrefabDiff", 3, &SceneObjectRTTI::getPrefabDiff, &SceneObjectRTTI::setPrefabDiff);
 		}
 
 		virtual void onDeserializationStarted(IReflectable* obj) override

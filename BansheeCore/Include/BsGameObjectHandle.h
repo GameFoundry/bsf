@@ -4,6 +4,9 @@ namespace BansheeEngine
 {
 	class GameObjectManager;
 
+	template <typename T>
+	class GameObjectHandle;
+
 	/**
 	 * @brief	Internal data shared between GameObject handles.
 	 */
@@ -120,6 +123,9 @@ namespace BansheeEngine
 		friend class SceneObject;
 		friend class SceneObjectRTTI;
 		friend class GameObjectManager;
+
+		template<class _Ty1, class _Ty2>
+		friend bool operator==(const GameObjectHandle<_Ty1>& _Left, const GameObjectHandle<_Ty2>& _Right);
 
 		GameObjectHandleBase(const std::shared_ptr<GameObject> ptr);
 		GameObjectHandleBase(const std::shared_ptr<GameObjectHandleData>& data);
@@ -294,7 +300,8 @@ namespace BansheeEngine
 	template<class _Ty1, class _Ty2>
 	bool operator==(const GameObjectHandle<_Ty1>& _Left, const GameObjectHandle<_Ty2>& _Right)
 	{	
-		return (_Left == nullptr && _Right == nullptr) || (_Left != nullptr && _Right != nullptr && _Left.get() == _Right.get());
+		return (_Left.mData == nullptr && _Right.mData == nullptr) || 
+			(_Left.mData != nullptr && _Right.mData != nullptr && _Left.mData->mInstanceId == _Right.mData->mInstanceId);
 	}
 
 	/**

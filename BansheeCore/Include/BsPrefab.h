@@ -42,12 +42,6 @@ namespace BansheeEngine
 		void initialize(const HSceneObject& sceneObject);
 
 		/**
-		 * @brief	Generates prefab "link" ID that can be used for tracking which game object
-		 *			in a prefab instance corresponds to an object in the prefab.
-		 */
-		void generatePrefabIds(const HSceneObject& sceneObject);
-
-		/**
 		 * @brief	Creates an empty and uninitialized prefab.
 		 */
 		static PrefabPtr createEmpty();

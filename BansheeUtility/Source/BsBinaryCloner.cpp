@@ -36,8 +36,6 @@ namespace BansheeEngine
 		if (object == nullptr)
 			return;
 
-		Stack<IReflectable*> todo;
-
 		RTTITypeBase* rtti = object->getRTTI();
 		Stack<RTTITypeBase*> rttiTypes;
 		while (rtti != nullptr)

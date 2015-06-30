@@ -76,6 +76,16 @@ namespace BansheeEngine
 
 	private:
 		/**
+		 * @brief	A reference to a renamed game object instance data, and its original ID
+		 *			so it may be restored later.
+		 */
+		struct RenamedGameObject
+		{
+			GameObjectInstanceDataPtr instanceData;
+			UINT64 originalId;
+		};
+
+		/**
 		 * @brief	Recurses over every scene object in the prefab a generates differences between itself
 		 *			and the instanced version.
 		 *
@@ -89,6 +99,25 @@ namespace BansheeEngine
 		 * @see		apply			
 		 */
 		static void applyDiff(const SPtr<PrefabObjectDiff>& diff, const HSceneObject& object);
+
+		/**
+		 * @brief	Renames all game objects in the provided instance so that IDs of the objects will match
+		 *			the IDs of their counterparts in the prefab. 
+		 *
+		 * @note	This is a temporary action and should be undone by calling "restoreInstanceIds" and providing 
+		 *			it with the output of this method. 
+		 * @par		By doing this before calling "diff" we ensure that any game object handles pointing to objects 
+		 *			within the prefab instance hierarchy aren't recorded by the diff system, since we want those to 
+		 *			remain as they are after applying the diff.
+		 */
+		static void renameInstanceIds(const HSceneObject& prefab, const HSceneObject& instance, Vector<RenamedGameObject>& output);
+
+		/**
+		 * @brief	Restores any instance IDs that were modified by the "renameInstanceIds" method.
+		 *
+		 * @see		renameInstanceIds;
+		 */
+		static void restoreInstanceIds(const Vector<RenamedGameObject>& renamedObjects);
 
 		SPtr<PrefabObjectDiff> mRoot;
 

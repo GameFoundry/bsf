@@ -167,6 +167,7 @@ namespace BansheeEngine
 	class TextureProperties;
 	class IShaderIncludeHandler;
 	class Prefab;
+	class PrefabDiff;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -264,6 +265,7 @@ namespace BansheeEngine
 	typedef std::shared_ptr<ResourceMetaData> ResourceMetaDataPtr;
 	typedef std::shared_ptr<IShaderIncludeHandler> ShaderIncludeHandlerPtr;
 	typedef std::shared_ptr<Prefab> PrefabPtr;
+	typedef std::shared_ptr<PrefabDiff> PrefabDiffPtr;
 }
 
 /************************************************************************/

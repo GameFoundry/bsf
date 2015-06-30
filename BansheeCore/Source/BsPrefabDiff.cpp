@@ -32,8 +32,13 @@ namespace BansheeEngine
 		if (prefab->getPrefabLink() != instance->getPrefabLink() || prefab->getLinkId() != instance->getLinkId())
 			return nullptr;
 
+		Vector<RenamedGameObject> renamedObjects;
+		renameInstanceIds(prefab, instance, renamedObjects);
+
 		SPtr<PrefabDiff> output = bs_shared_ptr<PrefabDiff>();
 		output->mRoot = generateDiff(prefab, instance);
+
+		restoreInstanceIds(renamedObjects);
 
 		return output;
 	}
@@ -55,6 +60,9 @@ namespace BansheeEngine
 
 		object->setName(diff->name);
 
+		// Note: It is important to remove objects and components first, before adding them.
+		//		 Some systems rely on the fact that applyDiff added components/objects are 
+		//       always at the end.
 		const Vector<HComponent>& components = object->getComponents();
 		for (auto& removedId : diff->removedComponents)
 		{
@@ -304,6 +312,85 @@ namespace BansheeEngine
 		}
 
 		return output;
+	}
+
+	void PrefabDiff::renameInstanceIds(const HSceneObject& prefab, const HSceneObject& instance, Vector<RenamedGameObject>& output)
+	{
+		UnorderedMap<UINT32, UINT64> linkToInstanceId;
+
+		Stack<HSceneObject> todo;
+		todo.push(prefab);
+		while (!todo.empty())
+		{
+			HSceneObject current = todo.top();
+			todo.pop();
+
+			linkToInstanceId[current->getLinkId()] = current->getInstanceId();
+
+			const Vector<HComponent>& components = current->getComponents();
+			for (auto& component : components)
+				linkToInstanceId[component->getLinkId()] = component->getInstanceId();
+
+			UINT32 numChildren = current->getNumChildren();
+			for (UINT32 i = 0; i < numChildren; i++)
+			{
+				HSceneObject child = current->getChild(i);
+
+				if (child->mPrefabLink == nullptr)
+					todo.push(child);
+			}
+		}
+
+		todo.push(instance);
+		while (!todo.empty())
+		{
+			HSceneObject current = todo.top();
+			todo.pop();
+
+			if (current->getLinkId() != -1)
+			{
+				auto iterFind = linkToInstanceId.find(current->getLinkId());
+				if (iterFind != linkToInstanceId.end())
+				{
+					output.push_back(RenamedGameObject());
+					RenamedGameObject& renamedGO = output.back();
+					renamedGO.instanceData = current->mInstanceData;
+					renamedGO.originalId = current->getInstanceId();
+
+					current->mInstanceData->mInstanceId = iterFind->second;
+				}
+			}
+
+			const Vector<HComponent>& components = current->getComponents();
+			for (auto& component : components)
+			{
+				auto iterFind = linkToInstanceId.find(component->getLinkId());
+				if (iterFind != linkToInstanceId.end())
+				{
+					output.push_back(RenamedGameObject());
+					RenamedGameObject& renamedGO = output.back();
+					renamedGO.instanceData = component->mInstanceData;
+					renamedGO.originalId = component->getInstanceId();
+
+					component->mInstanceData->mInstanceId = iterFind->second;
+				}
+			}
+
+			UINT32 numChildren = current->getNumChildren();
+			for (UINT32 i = 0; i < numChildren; i++)
+			{
+				HSceneObject child = current->getChild(i);
+
+				if (child->mPrefabLink == nullptr)
+					todo.push(child);
+			}
+		}
+	}
+
+	void PrefabDiff::restoreInstanceIds(const Vector<RenamedGameObject>& renamedObjects)
+	{
+		for (auto& renamedGO : renamedObjects)
+			renamedGO.instanceData->mInstanceId = renamedGO.originalId;
 	}
 
 	RTTITypeBase* PrefabDiff::getRTTIStatic()
