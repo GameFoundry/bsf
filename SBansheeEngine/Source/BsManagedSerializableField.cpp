@@ -15,6 +15,7 @@
 #include "BsScriptShader.h"
 #include "BsScriptMaterial.h"
 #include "BsScriptMesh.h"
+#include "BsScriptPrefab.h"
 #include "BsScriptSceneObject.h"
 #include "BsScriptComponent.h"
 #include "BsManagedSerializableObject.h"
@@ -167,7 +168,7 @@ namespace BansheeEngine
 					if(value != nullptr)
 					{
 						ScriptTexture2D* scriptTexture2D = ScriptTexture2D::toNative(value);
-						fieldData->value = static_resource_cast<ScriptTexture2D>(scriptTexture2D->getNativeHandle());
+						fieldData->value = static_resource_cast<Texture>(scriptTexture2D->getNativeHandle());
 					}
 
 					return fieldData;
@@ -179,7 +180,7 @@ namespace BansheeEngine
 				if (value != nullptr)
 				{
 					ScriptTexture3D* scriptTexture3D = ScriptTexture3D::toNative(value);
-					fieldData->value = static_resource_cast<ScriptTexture3D>(scriptTexture3D->getNativeHandle());
+					fieldData->value = static_resource_cast<Texture>(scriptTexture3D->getNativeHandle());
 				}
 
 				return fieldData;
@@ -191,7 +192,7 @@ namespace BansheeEngine
 				if (value != nullptr)
 				{
 					ScriptTextureCube* scriptTextureCube = ScriptTextureCube::toNative(value);
-					fieldData->value = static_resource_cast<ScriptTextureCube>(scriptTextureCube->getNativeHandle());
+					fieldData->value = static_resource_cast<Texture>(scriptTextureCube->getNativeHandle());
 				}
 
 				return fieldData;
@@ -215,7 +216,7 @@ namespace BansheeEngine
 				if (value != nullptr)
 				{
 					ScriptShader* scriptShader = ScriptShader::toNative(value);
-					fieldData->value = static_resource_cast<ScriptShader>(scriptShader->getNativeHandle());
+					fieldData->value = static_resource_cast<Shader>(scriptShader->getNativeHandle());
 				}
 
 				return fieldData;
@@ -227,7 +228,7 @@ namespace BansheeEngine
 				if (value != nullptr)
 				{
 					ScriptMaterial* scriptMaterial = ScriptMaterial::toNative(value);
-					fieldData->value = static_resource_cast<ScriptMaterial>(scriptMaterial->getNativeHandle());
+					fieldData->value = static_resource_cast<Material>(scriptMaterial->getNativeHandle());
 				}
 
 				return fieldData;
@@ -239,7 +240,19 @@ namespace BansheeEngine
 				if (value != nullptr)
 				{
 					ScriptMesh* scriptMesh = ScriptMesh::toNative(value);
-					fieldData->value = static_resource_cast<ScriptMesh>(scriptMesh->getNativeHandle());
+					fieldData->value = static_resource_cast<Mesh>(scriptMesh->getNativeHandle());
+				}
+
+				return fieldData;
+			}
+			case ScriptPrimitiveType::PrefabRef:
+			{
+				auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataResourceRef>();
+
+				if (value != nullptr)
+				{
+					ScriptPrefab* scriptPrefab = ScriptPrefab::toNative(value);
+					fieldData->value = static_resource_cast<Prefab>(scriptPrefab->getNativeHandle());
 				}
 
 				return fieldData;
@@ -639,6 +652,21 @@ namespace BansheeEngine
 					ScriptScriptCode* scriptResource = ScriptResourceManager::instance().getScriptScriptCode(scriptCode);
 					if (scriptResource == nullptr)
 						scriptResource = ScriptResourceManager::instance().createScriptScriptCode(scriptCode);
+
+					if (scriptResource != nullptr)
+						return scriptResource->getManagedInstance();
+				}
+				else
+					return nullptr;
+			}
+			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::PrefabRef)
+			{
+				if (value)
+				{
+					HPrefab prefab = static_resource_cast<Prefab>(value);
+					ScriptPrefab* scriptResource = ScriptResourceManager::instance().getScriptPrefab(prefab);
+					if (scriptResource == nullptr)
+						scriptResource = ScriptResourceManager::instance().createScriptPrefab(prefab);
 
 					if (scriptResource != nullptr)
 						return scriptResource->getManagedInstance();

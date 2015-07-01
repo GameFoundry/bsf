@@ -35,6 +35,7 @@ namespace BansheeEngine
 
 	void Prefab::initialize(const HSceneObject& sceneObject)
 	{
+		sceneObject->breakPrefabLink();
 		PrefabUtility::generatePrefabIds(sceneObject);
 
 		sceneObject->setFlags(SOF_DontInstantiate);

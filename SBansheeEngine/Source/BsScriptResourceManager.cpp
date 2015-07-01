@@ -12,6 +12,7 @@
 #include "BsScriptMaterial.h"
 #include "BsScriptMesh.h"
 #include "BsScriptFont.h"
+#include "BsScriptPrefab.h"
 #include "BsScriptManagedResource.h"
 #include "BsScriptAssemblyManager.h"
 
@@ -231,6 +232,27 @@ namespace BansheeEngine
 		return scriptResource;
 	}
 
+	ScriptPrefab* ScriptResourceManager::createScriptPrefab(const HPrefab& resourceHandle)
+	{
+		MonoClass* prefabClass = ScriptAssemblyManager::instance().getPrefabClass();
+		MonoObject* monoInstance = prefabClass->createInstance();
+
+		return createScriptPrefab(monoInstance, resourceHandle);
+	}
+
+	ScriptPrefab* ScriptResourceManager::createScriptPrefab(MonoObject* instance, const HPrefab& resourceHandle)
+	{
+		const String& uuid = resourceHandle.getUUID();
+#if BS_DEBUG_MODE
+		throwExceptionIfInvalidOrDuplicate(uuid);
+#endif
+
+		ScriptPrefab* scriptResource = new (bs_alloc<ScriptPrefab>()) ScriptPrefab(instance, resourceHandle);
+		mScriptResources[uuid] = scriptResource;
+
+		return scriptResource;
+	}
+
 	ScriptManagedResource* ScriptResourceManager::createManagedResource(MonoObject* existingInstance, const HManagedResource& resourceHandle)
 	{
 		const String& uuid = resourceHandle.getUUID();
@@ -290,6 +312,11 @@ namespace BansheeEngine
 	ScriptManagedResource* ScriptResourceManager::getScriptManagedResource(const HManagedResource& resourceHandle)
 	{
 		return static_cast<ScriptManagedResource*>(getScriptResource(resourceHandle.getUUID()));
+	}
+
+	ScriptPrefab* ScriptResourceManager::getScriptPrefab(const HPrefab& resourceHandle)
+	{
+		return static_cast<ScriptPrefab*>(getScriptResource(resourceHandle.getUUID()));
 	}
 
 	ScriptResourceBase* ScriptResourceManager::getScriptResource(const String& uuid)

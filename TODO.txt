@@ -36,11 +36,15 @@ TODO:
 TODO - Whenever I load a SceneObject the entire prefab will be loaded as well. It might be better to store the
  prefab link as a UUID and then load it on demand.
 
-Later: Test game object handle compare, and ID restore systems (likely later once I have more editor functionality working)
-Later: Native+Managed diff is not tested (only the link needs to be tested, I have a separate managed and native tests)
-Later: Modify BinarySerializer so that _encodeIntermediate outputs intermediate format directly without a full on encode
-Later: Consider making ManagedSerializable* array/list/dictionary method/field references static (right now each instance has its own instance
- but they're identical)
+ Test (likely later once I have more editor functionality working):
+  - Game object handle compare
+  - ID restore systems 
+  - Native+Managed diff (only the link between the two)
+
+Code quality improvements:
+ - Modify BinarySerializer so that _encodeIntermediate outputs intermediate format directly without a full on encode
+ - Consider making ManagedSerializable* array/list/dictionary method/field references static (right now each instance has its own instance
+   but they're identical)
 
 ----------------------------------------------------------------------
 Polish stage 1

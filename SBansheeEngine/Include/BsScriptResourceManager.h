@@ -132,6 +132,18 @@ namespace BansheeEngine
 		ScriptFont* createScriptFont(MonoObject* existingInstance, const HFont& resourceHandle);
 
 		/**
+		 * @note Throws an exception if resource for the handle already exists.
+		 * 		 Creates a new managed instance of the object.
+		 */
+		ScriptPrefab* createScriptPrefab(const HPrefab& resourceHandle);
+
+		/**
+		 * @note Throws an exception if resource for the handle already exists.
+		 * 		 Initializes the ScriptResource with an existing managed instance.
+		 */
+		ScriptPrefab* createScriptPrefab(MonoObject* existingInstance, const HPrefab& resourceHandle);
+
+		/**
 		* @note  Throws an exception if resource for the handle already exists.
 		* 		 Initializes the ScriptResource with an existing managed instance.
 		*/
@@ -186,6 +198,11 @@ namespace BansheeEngine
 		 * @note Returns nullptr if script resource doesn't exist.
 		 */
 		ScriptManagedResource* getScriptManagedResource(const HManagedResource& resourceHandle);
+
+		/**
+		 * @note Returns nullptr if script resource doesn't exist.
+		 */
+		ScriptPrefab* getScriptPrefab(const HPrefab& resourceHandle);
 
 		/**
 		 * @note Returns nullptr if script resource doesn't exist.

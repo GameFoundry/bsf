@@ -35,6 +35,7 @@ namespace BansheeEngine
 		MonoClass* getMaterialClass() const { return mMaterialClass; }
 		MonoClass* getMeshClass() const { return mMeshClass; }
 		MonoClass* getFontClass() const { return mFontClass; }
+		MonoClass* getPrefabClass() const { return mPrefabClass;  }
 		MonoClass* getPlainTextClass() const { return mPlainTextClass; }
 		MonoClass* getScriptCodeClass() const { return mScriptCodeClass; }
 
@@ -60,6 +61,7 @@ namespace BansheeEngine
 		MonoClass* mMeshClass;
 		MonoClass* mManagedResourceClass;
 		MonoClass* mFontClass;
+		MonoClass* mPrefabClass;
 		MonoClass* mPlainTextClass;
 		MonoClass* mScriptCodeClass;
 

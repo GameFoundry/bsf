@@ -193,6 +193,26 @@ namespace BansheeEngine
             return Internal_GetChild(mCachedPtr, idx);
         }
 
+        public Prefab GetPrefab()
+        {
+            return Internal_GetPrefab(mCachedPtr);
+        }
+
+        public void BreakPrefab()
+        {
+            Internal_BreakPrefab(mCachedPtr);
+        }
+
+        public void ApplyPrefab()
+        {
+            Internal_ApplyPrefab(mCachedPtr);
+        }
+
+        public void RevertPrefab()
+        {
+            Internal_RevertPrefab(mCachedPtr);
+        }
+
         public void LookAt(Vector3 direction)
         {
             Internal_LookAt(mCachedPtr, direction, Vector3.yAxis);
@@ -252,6 +272,18 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern SceneObject Internal_GetChild(IntPtr nativeInstance, int idx);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern Prefab Internal_GetPrefab(IntPtr nativeInstance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_BreakPrefab(IntPtr nativeInstance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_ApplyPrefab(IntPtr nativeInstance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_RevertPrefab(IntPtr nativeInstance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetPosition(IntPtr nativeInstance, out Vector3 value);

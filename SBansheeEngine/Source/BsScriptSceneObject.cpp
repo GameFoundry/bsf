@@ -1,11 +1,15 @@
 #include "BsScriptSceneObject.h"
 #include "BsScriptGameObjectManager.h"
+#include "BsScriptResourceManager.h"
 #include "BsScriptMeta.h"
 #include "BsMonoField.h"
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
 #include "BsSceneObject.h"
 #include "BsMonoUtil.h"
+#include "BsScriptPrefab.h"
+#include "BsPrefab.h"
+#include "BsPrefabUtility.h"
 
 namespace BansheeEngine
 {
@@ -22,6 +26,11 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetParent", &ScriptSceneObject::internal_setParent);
 		metaData.scriptClass->addInternalCall("Internal_GetNumChildren", &ScriptSceneObject::internal_getNumChildren);
 		metaData.scriptClass->addInternalCall("Internal_GetChild", &ScriptSceneObject::internal_getChild);
+
+		metaData.scriptClass->addInternalCall("Internal_GetPrefab", &ScriptSceneObject::internal_getPrefab);
+		metaData.scriptClass->addInternalCall("Internal_BreakPrefab", &ScriptSceneObject::internal_breakPrefab);
+		metaData.scriptClass->addInternalCall("Internal_ApplyPrefab", &ScriptSceneObject::internal_applyPrefab);
+		metaData.scriptClass->addInternalCall("Internal_RevertPrefab", &ScriptSceneObject::internal_revertPrefab);
 
 		metaData.scriptClass->addInternalCall("Internal_GetPosition", &ScriptSceneObject::internal_getPosition);
 		metaData.scriptClass->addInternalCall("Internal_GetLocalPosition", &ScriptSceneObject::internal_getLocalPosition);
@@ -111,6 +120,50 @@ namespace BansheeEngine
 			childScriptSO = ScriptGameObjectManager::instance().createScriptSceneObject(childSO);
 
 		return childScriptSO->getManagedInstance();
+	}
+
+	MonoObject* ScriptSceneObject::internal_getPrefab(ScriptSceneObject* nativeInstance)
+	{
+		if (checkIfDestroyed(nativeInstance))
+			return nullptr;
+
+		HPrefab prefab = nativeInstance->mSceneObject->getPrefabLink();
+		if (prefab != nullptr)
+		{
+			ScriptPrefab* scriptPrefab = ScriptResourceManager::instance().getScriptPrefab(prefab);
+			if (scriptPrefab == nullptr)
+				scriptPrefab = ScriptResourceManager::instance().createScriptPrefab(prefab);
+
+			return scriptPrefab->getManagedInstance();
+		}
+
+		return nullptr;
+	}
+
+	void ScriptSceneObject::internal_breakPrefab(ScriptSceneObject* nativeInstance)
+	{
+		if (checkIfDestroyed(nativeInstance))
+			return;
+
+		nativeInstance->mSceneObject->breakPrefabLink();
+	}
+
+	void ScriptSceneObject::internal_applyPrefab(ScriptSceneObject* nativeInstance)
+	{
+		if (checkIfDestroyed(nativeInstance))
+			return;
+
+		HPrefab prefab = nativeInstance->mSceneObject->getPrefabLink();
+		if (prefab != nullptr)
+			prefab->update(nativeInstance->mSceneObject);
+	}
+
+	void ScriptSceneObject::internal_revertPrefab(ScriptSceneObject* nativeInstance)
+	{
+		if (checkIfDestroyed(nativeInstance))
+			return;
+
+		PrefabUtility::revertToPrefab(nativeInstance->mSceneObject);
 	}
 
 	void ScriptSceneObject::internal_getPosition(ScriptSceneObject* nativeInstance, Vector3* value)

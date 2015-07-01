@@ -33,6 +33,7 @@ namespace BansheeEngine
 	class ScriptShader;
 	class ScriptMaterial;
 	class ScriptMesh;
+	class ScriptPrefab;
 	class ScriptGUIElementStyle;
 	class ScriptGUIElementStateStyle;
 	class ScriptGUILayout;
