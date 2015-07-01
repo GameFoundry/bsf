@@ -33,17 +33,17 @@ namespace BansheeEngine
 		}
 	}
 
-	HResource Resources::load(const Path& filePath)
+	HResource Resources::load(const Path& filePath, bool loadDependencies)
 	{
-		return loadInternal(filePath, true);
+		return loadInternal(filePath, true, loadDependencies);
 	}
 
-	HResource Resources::loadAsync(const Path& filePath)
+	HResource Resources::loadAsync(const Path& filePath, bool loadDependencies)
 	{
-		return loadInternal(filePath, false);
+		return loadInternal(filePath, false, loadDependencies);
 	}
 
-	HResource Resources::loadFromUUID(const String& uuid, bool async)
+	HResource Resources::loadFromUUID(const String& uuid, bool async, bool loadDependencies)
 	{
 		Path filePath;
 		bool foundPath = false;
@@ -69,16 +69,21 @@ namespace BansheeEngine
 			return outputResource;
 		}
 
-		return loadInternal(filePath, !async);
+		return loadInternal(filePath, !async, loadDependencies);
 	}
 
-	HResource Resources::loadInternal(const Path& filePath, bool synchronous)
+	HResource Resources::loadInternal(const Path& filePath, bool synchronous, bool loadDependencies)
 	{
 		String uuid;
 		bool foundUUID = getUUIDFromFilePath(filePath, uuid);
 
 		if(!foundUUID)
 			uuid = UUIDGenerator::generateRandom();
+
+		
+		// TODO - Load dependencies not implemented
+
+
 
 		HResource outputResource;
 		bool alreadyLoading = false;
@@ -137,21 +142,27 @@ namespace BansheeEngine
 			loadData->remainingDependencies = 1;
 			loadData->notifyImmediately = synchronous; // Make resource listener trigger before exit if loading synchronously
 
-			for (auto& dependency : savedResourceData->getDependencies())
+			if (loadDependencies)
 			{
-				if (dependency != uuid)
+				for (auto& dependency : savedResourceData->getDependencies())
 				{
-					mDependantLoads[dependency].push_back(loadData);
-					loadData->remainingDependencies++;
+					if (dependency != uuid)
+					{
+						mDependantLoads[dependency].push_back(loadData);
+						loadData->remainingDependencies++;
+					}
 				}
 			}
 		}
 
 		// Load dependencies
+		if (loadDependencies)
 		{
-			for (auto& dependency : savedResourceData->getDependencies())
 			{
-				loadFromUUID(dependency, !synchronous);
+				for (auto& dependency : savedResourceData->getDependencies())
+				{
+					loadFromUUID(dependency, !synchronous);
+				}
 			}
 		}
 

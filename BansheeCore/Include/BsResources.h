@@ -36,13 +36,13 @@ namespace BansheeEngine
 		 * @brief	Loads the resource from a given path. Returns an empty handle if resource can't be loaded.
 		 *			Resource is loaded synchronously.
 		 */
-		HResource load(const Path& filePath);
+		HResource load(const Path& filePath, bool loadDependencies = true);
 
 		/**
 		 * @copydoc	load
 		 */
 		template <class T>
-		ResourceHandle<T> load(const Path& filePath)
+		ResourceHandle<T> load(const Path& filePath, bool loadDependencies = true)
 		{
 			return static_resource_cast<T>(load(filePath));
 		}
@@ -56,13 +56,13 @@ namespace BansheeEngine
 		 * @note	You can use returned invalid handle in engine systems as the engine will check for handle 
 		 *			validity before using it.
 		 */
-		HResource loadAsync(const Path& filePath);
+		HResource loadAsync(const Path& filePath, bool loadDependencies = true);
 
 		/**
 		 * @copydoc	loadAsync
 		 */
 		template <class T>
-		ResourceHandle<T> loadAsync(const Path& filePath)
+		ResourceHandle<T> loadAsync(const Path& filePath, bool loadDependencies = true)
 		{
 			return static_resource_cast<T>(loadAsync(filePath));
 		}
@@ -74,7 +74,7 @@ namespace BansheeEngine
 		 * @param	async	If true resource will be loaded asynchronously. Handle to non-loaded
 		 *					resource will be returned immediately while loading will continue in the background.
 		 */
-		HResource loadFromUUID(const String& uuid, bool async = false);
+		HResource loadFromUUID(const String& uuid, bool async = false, bool loadDependencies = true);
 
 		/**
 		 * @brief	Unloads the resource that is referenced by the handle. Resource is unloaded regardless if it is 
@@ -183,7 +183,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Starts resource loading or returns an already loaded resource.
 		 */
-		HResource loadInternal(const Path& filePath, bool synchronous);
+		HResource loadInternal(const Path& filePath, bool synchronous, bool loadDependencies);
 
 		/**
 		 * @brief	Performs actually reading and deserializing of the resource file. 

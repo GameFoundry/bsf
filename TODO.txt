@@ -31,7 +31,6 @@ TODO:
  - Hook up prefabs & prefab diffs:
    - Save a diff whenever a HSceneObject with a HPrefab link is saved (call recordPrefabDiff)
    - Update active scene when prefab is modified (destroy them, create original prefab then apply saved diff)
- - C# prefab
 
 TODO - Whenever I load a SceneObject the entire prefab will be loaded as well. It might be better to store the
  prefab link as a UUID and then load it on demand.
