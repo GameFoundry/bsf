@@ -31,6 +31,12 @@ namespace BansheeEngine
 		HSceneObject instantiate();
 
 		/**
+		 * @brief	Replaces the contents of this prefab with new contents
+		 *			from the provided object.
+		 */
+		void update(const HSceneObject& sceneObject);
+
+		/**
 		 * @brief	Returns a reference to the internal prefab hierarchy.
 		 */
 		HSceneObject getRoot() const { return mRoot; }

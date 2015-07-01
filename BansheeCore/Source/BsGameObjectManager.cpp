@@ -99,32 +99,7 @@ namespace BansheeEngine
 		assert(mIsDeserializationActive);
 
 		for(auto& unresolvedHandle : mUnresolvedHandles)
-		{
-			UINT64 instanceId = unresolvedHandle.getInstanceId();
-			
-			bool isInternalReference = false;
-			
-			auto findIter = mIdMapping.find(instanceId);
-			if (findIter != mIdMapping.end())
-			{
-				if ((mGODeserializationMode & GODM_UseNewIds) != 0)
-					instanceId = findIter->second;
-
-				isInternalReference = true;
-			}
-
-			if (isInternalReference || (!isInternalReference && (mGODeserializationMode & GODM_RestoreExternal) != 0))
-			{
-				auto findIterObj = mObjects.find(instanceId);
-
-				if (findIterObj != mObjects.end())
-					unresolvedHandle._resolve(findIterObj->second);
-				else
-					unresolvedHandle._resolve(nullptr);
-			}
-			else
-				unresolvedHandle._resolve(nullptr);
-		}
+			resolveDeserializedHandle(unresolvedHandle, mGODeserializationMode);
 
 		for(auto iter = mEndCallbacks.rbegin(); iter != mEndCallbacks.rend(); ++iter)
 		{
@@ -136,6 +111,42 @@ namespace BansheeEngine
 		mIdMapping.clear();
 		mUnresolvedHandles.clear();
 		mEndCallbacks.clear();
+	}
+
+	void GameObjectManager::resolveDeserializedHandle(GameObjectHandleBase& handle, UINT32 flags)
+	{
+		assert(mIsDeserializationActive);
+
+		UINT64 instanceId = handle.getInstanceId();
+
+		bool isInternalReference = false;
+
+		auto findIter = mIdMapping.find(instanceId);
+		if (findIter != mIdMapping.end())
+		{
+			if ((flags & GODM_UseNewIds) != 0)
+				instanceId = findIter->second;
+
+			isInternalReference = true;
+		}
+
+		if (isInternalReference || (!isInternalReference && (flags & GODM_RestoreExternal) != 0))
+		{
+			auto findIterObj = mObjects.find(instanceId);
+
+			if (findIterObj != mObjects.end())
+				handle._resolve(findIterObj->second);
+			else
+			{
+				if ((flags & GODM_KeepMissing) == 0)
+					handle._resolve(nullptr);
+			}
+		}
+		else
+		{
+			if ((flags & GODM_KeepMissing) == 0)
+				handle._resolve(nullptr);
+		}
 	}
 
 	void GameObjectManager::registerDeserializedId(UINT64 serializedId, UINT64 actualId)

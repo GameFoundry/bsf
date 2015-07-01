@@ -27,17 +27,11 @@ return them in checkForModifications?
 ---------------------------------------------------------------------
 Prefab diff
 
-TODO - Any GameObjectHandles stored in PrefabDiff will not be valid after deserialization. Normally GameObjectManager updates the handles
- but in PrefabDiff they're stored as raw memory and cannot be updated.
-  - Have PrefabDiff store a separate list of just handles and their original IDs? Then after applyDiff I update the handles manually.
-
 TODO:
- - Need to figure out how to restore IDs after prefab revert/update
  - Hook up prefabs & prefab diffs:
    - Save a diff whenever a HSceneObject with a HPrefab link is saved (call recordPrefabDiff)
    - Update active scene when prefab is modified (destroy them, create original prefab then apply saved diff)
  - C# prefab
- - Need a way to update an existing prefab from an instance
 
 TODO - Whenever I load a SceneObject the entire prefab will be loaded as well. It might be better to store the
  prefab link as a UUID and then load it on demand.

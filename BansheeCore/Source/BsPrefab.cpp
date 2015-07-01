@@ -61,6 +61,11 @@ namespace BansheeEngine
 		}
 	}
 
+	void Prefab::update(const HSceneObject& sceneObject)
+	{
+		initialize(sceneObject);
+	}
+
 	HSceneObject Prefab::instantiate()
 	{
 		if (mRoot == nullptr)

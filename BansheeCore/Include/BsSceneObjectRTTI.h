@@ -50,7 +50,7 @@ namespace BansheeEngine
 				&SceneObjectRTTI::getNumComponents, &SceneObjectRTTI::setComponent, &SceneObjectRTTI::setNumComponents);
 			addReflectableField("mPrefabLink", 2, &SceneObjectRTTI::getPrefabLink, &SceneObjectRTTI::setPrefabLink);
 			addPlainField("mFlags", 3, &SceneObjectRTTI::getFlags, &SceneObjectRTTI::setFlags);
-			addReflectablePtrField("mPrefabDiff", 3, &SceneObjectRTTI::getPrefabDiff, &SceneObjectRTTI::setPrefabDiff);
+			addReflectablePtrField("mPrefabDiff", 4, &SceneObjectRTTI::getPrefabDiff, &SceneObjectRTTI::setPrefabDiff);
 		}
 
 		virtual void onDeserializationStarted(IReflectable* obj) override

@@ -20,7 +20,9 @@ namespace BansheeEngine
 		GODM_RestoreExternal = 0x04,
 		/** Handles pointing to GameObjects outside of the currently deserialized set
 		will be broken. */
-		GODM_BreakExternal = 0x08
+		GODM_BreakExternal = 0x08,
+		/** Handles pointing to GameObjects that cannot be found will not be set to null. */
+		GODM_KeepMissing = 0x10
 	};
 
 	/**
@@ -129,6 +131,18 @@ namespace BansheeEngine
 		 * @param	gameObjectDeserializationMode		Mode that controls how are GameObjects handles resolved when being deserialized.
 		 */
 		void setDeserializationMode(UINT32 gameObjectDeserializationMode);
+
+		/**
+		 * @brief	Attempts to update the ID of the provided handle by mapping its old ID to
+		 *			the newly deserialized object and its new ID. Game object deserialization
+		 *			must be active.
+		 */
+		void resolveDeserializedHandle(GameObjectHandleBase& handle, UINT32 flags);
+
+		/**
+		 * @brief	Gets the currently active flags that control how are game object handles deserialized.
+		 */
+		UINT32 getDeserializationFlags() const { return mGODeserializationMode; }
 
 	private:
 		UINT64 mNextAvailableID; // 0 is not a valid ID
