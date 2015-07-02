@@ -75,6 +75,10 @@ namespace BansheeEngine
 		HSceneObject clone = mRoot->clone();
 		clone->instantiate();
 
+#if BS_EDITOR_BUILD
+		PrefabUtility::updateFromPrefab(clone);
+#endif
+
 		return clone;
 	}
 

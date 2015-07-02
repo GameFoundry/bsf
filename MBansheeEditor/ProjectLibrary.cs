@@ -86,6 +86,11 @@ namespace BansheeEditor
             return Internal_GetPath(resource);
         }
 
+        public static string GetPath(string uuid)
+        {
+            return Internal_GetPathFromUUID(uuid);
+        }
+
         public static void Delete(string path)
         {
             Internal_Delete(path);
@@ -200,6 +205,9 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern string Internal_GetPath(Resource resource);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string Internal_GetPathFromUUID(string uuid);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_Delete(string path);

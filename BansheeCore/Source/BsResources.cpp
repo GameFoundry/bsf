@@ -297,6 +297,16 @@ namespace BansheeEngine
 		fs.encode(resource.get());
 	}
 
+	void Resources::save(HResource resource)
+	{
+		if (resource == nullptr)
+			return;
+
+		Path path;
+		if (getFilePathFromUUID(resource.getUUID(), path))
+			save(resource, path, true);
+	}
+
 	void Resources::registerResourceManifest(const ResourceManifestPtr& manifest)
 	{
 		if(manifest->getName() == "Default")

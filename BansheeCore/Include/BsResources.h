@@ -111,6 +111,20 @@ namespace BansheeEngine
 		void save(HResource resource, const Path& filePath, bool overwrite);
 
 		/**
+		 * @brief	Saves an existing resource to its previous location.
+		 *
+		 * @param	resource 	Handle to the resource.
+		 *
+		 * @note	If the resource is a GpuResource and you are in some way modifying it from the Core thread, make
+		 * 			sure all those commands are submitted before you call this method. Otherwise an obsolete
+		 * 			version of the resource might get saved.
+		 *
+		 *			If saving a core thread resource this is a potentially very slow operation as we must wait on the
+		 *			core thread and the GPU in order to read the resource.
+		 */
+		void save(HResource resource);
+
+		/**
 		 * @brief	Creates a new resource handle from a resource pointer. 
 		 *
 		 * @note	Internal method used primarily be resource factory methods.

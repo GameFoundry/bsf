@@ -321,6 +321,9 @@
     <ClInclude Include="Include\BsScriptPrefab.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsScriptScene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsScriptTexture2D.cpp">
@@ -576,6 +579,9 @@
       <Filter>Source Files\Serialization</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsScriptPrefab.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

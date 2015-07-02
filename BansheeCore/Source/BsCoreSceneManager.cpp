@@ -20,8 +20,15 @@ namespace BansheeEngine
 
 	void CoreSceneManager::clearScene()
 	{
+		UINT32 numChildren = mRootNode->getNumChildren();
+
+		for (UINT32 i = 0; i < numChildren; i++)
+		{
+			HSceneObject child = mRootNode->getChild(0);
+			child->destroy();
+		}
+
 		GameObjectManager::instance().destroyQueuedObjects();
-		mRootNode->destroy(true);
 	}
 
 	void CoreSceneManager::_update()

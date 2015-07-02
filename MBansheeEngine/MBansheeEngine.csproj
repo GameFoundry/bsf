@@ -114,6 +114,7 @@
     <Compile Include="RenderTexture.cs" />
     <Compile Include="RenderTexture2D.cs" />
     <Compile Include="Resource.cs" />
+    <Compile Include="Scene.cs" />
     <Compile Include="SceneObject.cs" />
     <Compile Include="ScriptCode.cs" />
     <Compile Include="ScriptObject.cs" />

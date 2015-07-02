@@ -12,6 +12,8 @@ namespace BansheeEngine
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "SceneObject")
 
+		static bool checkIfDestroyed(ScriptSceneObject* nativeInstance);
+
 		virtual HGameObject getNativeHandle() const { return mSceneObject; }
 		virtual void setNativeHandle(const HGameObject& gameObject);
 
@@ -27,11 +29,6 @@ namespace BansheeEngine
 
 		static void internal_getNumChildren(ScriptSceneObject* nativeInstance, UINT32* value);
 		static MonoObject* internal_getChild(ScriptSceneObject* nativeInstance, UINT32 idx);
-
-		static MonoObject* internal_getPrefab(ScriptSceneObject* nativeInstance);
-		static void internal_breakPrefab(ScriptSceneObject* nativeInstance);
-		static void internal_applyPrefab(ScriptSceneObject* nativeInstance);
-		static void internal_revertPrefab(ScriptSceneObject* nativeInstance);
 
 		static void internal_getPosition(ScriptSceneObject* nativeInstance, Vector3* value);
 		static void internal_getLocalPosition(ScriptSceneObject* nativeInstance, Vector3* value);
@@ -61,8 +58,7 @@ namespace BansheeEngine
 		static void internal_getRight(ScriptSceneObject* nativeInstance, Vector3* value);
 
 		static void internal_destroy(ScriptSceneObject* nativeInstance, bool immediate);
-		static bool checkIfDestroyed(ScriptSceneObject* nativeInstance);
-
+		
 		ScriptSceneObject(MonoObject* instance, const HSceneObject& sceneObject);
 
 		void _onManagedInstanceDeleted();

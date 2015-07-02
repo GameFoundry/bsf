@@ -304,6 +304,7 @@
     <ClInclude Include="Include\BsScriptRenderTexture2D.h" />
     <ClInclude Include="Include\BsScriptResource.h" />
     <ClInclude Include="Include\BsScriptResourceManager.h" />
+    <ClInclude Include="Include\BsScriptScene.h" />
     <ClInclude Include="Include\BsScriptSceneObject.h" />
     <ClInclude Include="Include\BsManagedSerializableObjectInfoRTTI.h" />
     <ClInclude Include="Include\BsManagedSerializableObjectRTTI.h" />
@@ -388,6 +389,7 @@
     <ClCompile Include="Source\BsScriptRenderTexture2D.cpp" />
     <ClCompile Include="Source\BsScriptResource.cpp" />
     <ClCompile Include="Source\BsScriptResourceManager.cpp" />
+    <ClCompile Include="Source\BsScriptScene.cpp" />
     <ClCompile Include="Source\BsScriptSceneObject.cpp" />
     <ClCompile Include="Source\BsManagedSerializableArray.cpp" />
     <ClCompile Include="Source\BsManagedSerializableDictionary.cpp" />

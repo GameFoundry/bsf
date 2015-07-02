@@ -146,6 +146,65 @@ namespace BansheeEditor
             // DEBUG ONLY END
         }
 
+        [MenuItem("File/Save Prefab", ButtonModifier.Ctrl, ButtonCode.S)]
+        private static void SavePrefab()
+        {
+            if (!string.IsNullOrEmpty(Scene.ActiveSceneUUID))
+            {
+                string scenePath = ProjectLibrary.GetPath(Scene.ActiveSceneUUID);
+                Internal_SaveScene(scenePath);
+            }
+            else
+            {
+                string scenePath = "";
+                BrowseDialog.SaveFile(ProjectLibrary.ResourceFolder, "", out scenePath);
+
+                if (!PathEx.IsPartOf(scenePath, ProjectLibrary.ResourceFolder))
+                    DialogBox.Open("Error", "The location must be inside the Resources folder of the project.", DialogBox.Type.OK);
+                else
+                {
+                    // TODO - If path points to an existing non-scene asset or folder I should delete it otherwise
+                    //        Internal_SaveScene will silently fail.
+
+                    Scene.ActiveSceneUUID = Internal_SaveScene(scenePath);
+                }
+            }
+        }
+
+        [MenuItem("File/Load Prefab", ButtonModifier.Ctrl, ButtonCode.L)]
+        private static void LoadPrefab()
+        {
+            Action doLoad =
+                () =>
+                {
+                    string[] scenePaths;
+                    BrowseDialog.OpenFile(ProjectLibrary.ResourceFolder, "", false, out scenePaths);
+
+                    if(scenePaths.Length > 0)
+                        Scene.Load(scenePaths[0]);
+                };
+
+            Action<DialogBox.ResultType> dialogCallback =
+                (result) =>
+                {
+                    if (result == DialogBox.ResultType.Yes)
+                    {
+                        SavePrefab();
+                        doLoad();
+                    }
+                    else if (result == DialogBox.ResultType.No)
+                        doLoad();
+                };
+
+            if (Scene.IsModified())
+            {
+                DialogBox.Open("Warning", "You current scene has modifications. Do you wish to save them first?",
+                    DialogBox.Type.YesNoCancel, dialogCallback);
+            }
+            else
+                doLoad();
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern string Internal_GetProjectPath();
 
@@ -175,5 +234,8 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern string Internal_GetScriptEditorAssemblyName();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string Internal_SaveScene(string path);
     }
 }

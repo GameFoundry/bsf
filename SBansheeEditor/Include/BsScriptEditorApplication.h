@@ -23,5 +23,6 @@ namespace BansheeEngine
 		static MonoString* internal_GetEditorAssemblyName();
 		static MonoString* internal_GetScriptGameAssemblyName();
 		static MonoString* internal_GetScriptEditorAssemblyName();
+		static MonoString* internal_SaveScene(MonoString* path);
 	};
 }

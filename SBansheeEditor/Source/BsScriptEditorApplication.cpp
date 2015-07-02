@@ -4,6 +4,12 @@
 #include "BsMonoMethod.h"
 #include "BsMonoUtil.h"
 #include "BsEditorApplication.h"
+#include "BsProjectLibrary.h"
+#include "BsProjectResourceMeta.h"
+#include "BsPrefab.h"
+#include "BsPrefabUtility.h"
+#include "BsSceneManager.h"
+#include "BsResources.h"
 
 namespace BansheeEngine
 {
@@ -23,6 +29,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetEditorAssemblyName", &ScriptEditorApplication::internal_GetEditorAssemblyName);
 		metaData.scriptClass->addInternalCall("Internal_GetScriptGameAssemblyName", &ScriptEditorApplication::internal_GetScriptGameAssemblyName);
 		metaData.scriptClass->addInternalCall("Internal_GetScriptEditorAssemblyName", &ScriptEditorApplication::internal_GetScriptEditorAssemblyName);
+		metaData.scriptClass->addInternalCall("Internal_SaveScene", &ScriptEditorApplication::internal_SaveScene);
 	}
 
 	MonoString* ScriptEditorApplication::internal_GetProjectPath()
@@ -85,5 +92,35 @@ namespace BansheeEngine
 	MonoString* ScriptEditorApplication::internal_GetScriptEditorAssemblyName()
 	{
 		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), toWString(SCRIPT_EDITOR_ASSEMBLY) + L".dll");
+	}
+
+	MonoString* ScriptEditorApplication::internal_SaveScene(MonoString* path)
+	{
+		Path nativePath = MonoUtil::monoToWString(path);
+		HSceneObject sceneRoot = gSceneManager().getRootNode();
+		
+		ProjectLibrary::LibraryEntry* entry = ProjectLibrary::instance().findEntry(nativePath);
+		HPrefab scene;
+		if (entry != nullptr)
+		{
+			if (entry->type == ProjectLibrary::LibraryEntryType::Directory)
+				return nullptr;
+
+			ProjectLibrary::ResourceEntry* resEntry = static_cast<ProjectLibrary::ResourceEntry*>(entry);
+			if (resEntry->meta->getTypeID() != TID_Prefab)
+				return nullptr;
+
+			scene = static_resource_cast<Prefab>(ProjectLibrary::instance().load(nativePath));
+			scene->update(sceneRoot);
+		}
+		else
+		{
+			scene = Prefab::create(sceneRoot);
+		}
+
+		PrefabUtility::recordPrefabDiff(sceneRoot);
+		ProjectLibrary::instance().saveEntry(scene);
+
+		return MonoUtil::stringToMono(MonoManager::instance().getDomain(), scene.getUUID());
 	}
 }

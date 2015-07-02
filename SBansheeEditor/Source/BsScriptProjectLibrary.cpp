@@ -41,6 +41,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_Reimport", &ScriptProjectLibrary::internal_Reimport);
 		metaData.scriptClass->addInternalCall("Internal_GetEntry", &ScriptProjectLibrary::internal_GetEntry);
 		metaData.scriptClass->addInternalCall("Internal_GetPath", &ScriptProjectLibrary::internal_GetPath);
+		metaData.scriptClass->addInternalCall("Internal_GetPathFromUUID", &ScriptProjectLibrary::internal_GetPathFromUUID);
 		metaData.scriptClass->addInternalCall("Internal_Search", &ScriptProjectLibrary::internal_Search);
 		metaData.scriptClass->addInternalCall("Internal_Delete", &ScriptProjectLibrary::internal_Delete);
 		metaData.scriptClass->addInternalCall("Internal_CreateFolder", &ScriptProjectLibrary::internal_CreateFolder);
@@ -138,6 +139,14 @@ namespace BansheeEngine
 			return ScriptFileEntry::create(static_cast<ProjectLibrary::ResourceEntry*>(entry));
 		else
 			return ScriptDirectoryEntry::create(static_cast<ProjectLibrary::DirectoryEntry*>(entry));
+	}
+
+	MonoString* ScriptProjectLibrary::internal_GetPathFromUUID(MonoString* uuid)
+	{
+		String nativeUUID = MonoUtil::monoToString(uuid);
+		Path nativePath = ProjectLibrary::instance().uuidToPath(nativeUUID);
+
+		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), nativePath.toWString());
 	}
 
 	MonoString* ScriptProjectLibrary::internal_GetPath(MonoObject* resource)
