@@ -2,12 +2,15 @@
 #include "BsPrefabDiff.h"
 #include "BsPrefab.h"
 #include "BsSceneObject.h"
+#include "BsResources.h"
 
 namespace BansheeEngine
 {
 	void PrefabUtility::revertToPrefab(const HSceneObject& so)
 	{
-		HPrefab prefabLink = so->getPrefabLink();
+		String prefabLinkUUID = so->getPrefabLink();
+		HPrefab prefabLink = static_resource_cast<Prefab>(gResources().loadFromUUID(prefabLinkUUID, false, false));
+
 		if (prefabLink == nullptr)
 			return;
 
@@ -24,7 +27,9 @@ namespace BansheeEngine
 
 	void PrefabUtility::updateFromPrefab(const HSceneObject& so)
 	{
-		HPrefab prefabLink = so->getPrefabLink();
+		String prefabLinkUUID = so->getPrefabLink();
+		HPrefab prefabLink = static_resource_cast<Prefab>(gResources().loadFromUUID(prefabLinkUUID, false, false));
+
 		if (prefabLink == nullptr)
 			return;
 
@@ -75,7 +80,7 @@ namespace BansheeEngine
 			{
 				HSceneObject child = currentSO->getChild(i);
 
-				if (child->mPrefabLink == nullptr)
+				if (child->mPrefabLinkUUID.empty())
 					todo.push(currentSO->getChild(i));
 			}
 		}
@@ -100,7 +105,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void PrefabUtility::clearPrefabIds(const HSceneObject& sceneObject)
+	void PrefabUtility::clearPrefabIds(const HSceneObject& sceneObject, bool recursive)
 	{
 		Stack<HSceneObject> todo;
 		todo.push(sceneObject);
@@ -114,14 +119,41 @@ namespace BansheeEngine
 			for (auto& component : currentSO->mComponents)
 				component->mLinkId = -1;
 
-			UINT32 numChildren = (UINT32)currentSO->getNumChildren();
-			for (UINT32 i = 0; i < numChildren; i++)
+			if (recursive)
 			{
-				HSceneObject child = currentSO->getChild(i);
+				UINT32 numChildren = (UINT32)currentSO->getNumChildren();
+				for (UINT32 i = 0; i < numChildren; i++)
+				{
+					HSceneObject child = currentSO->getChild(i);
 
-				if (child->mPrefabLink == nullptr)
-					todo.push(child);
+					if (child->mPrefabLinkUUID.empty())
+						todo.push(child);
+				}
 			}
+		}
+	}
+
+	void PrefabUtility::recordPrefabDiff(const HSceneObject& sceneObject)
+	{
+		HSceneObject curObj = sceneObject;
+
+		while (curObj == nullptr)
+		{
+			if (!curObj->mPrefabLinkUUID.empty())
+			{
+				curObj->mPrefabDiff = nullptr;
+
+				HPrefab prefabLink = static_resource_cast<Prefab>(gResources().loadFromUUID(curObj->mPrefabLinkUUID, false, false));
+				if (prefabLink != nullptr)
+					curObj->mPrefabDiff = PrefabDiff::create(prefabLink->getRoot(), curObj->getHandle());
+
+				return;
+			}
+
+			if (curObj->mParent != nullptr)
+				curObj = curObj->mParent;
+			else
+				curObj = nullptr;
 		}
 	}
 
@@ -182,7 +214,7 @@ namespace BansheeEngine
 				StackEntry& newEntry = todo.top();
 
 				newEntry.so = child;
-				newEntry.isPartOfPrefab = current.isPartOfPrefab && (child->mPrefabLink == nullptr);
+				newEntry.isPartOfPrefab = current.isPartOfPrefab && child->mPrefabLinkUUID.empty();
 			}
 		}
 	}
@@ -220,7 +252,7 @@ namespace BansheeEngine
 			{
 				HSceneObject child = current->getChild(i);
 
-				if (child->mPrefabLink == nullptr)
+				if (child->mPrefabLinkUUID.empty())
 					todo.push(child);
 			}
 		}

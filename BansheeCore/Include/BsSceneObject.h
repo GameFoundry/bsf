@@ -69,11 +69,11 @@ namespace BansheeEngine
 		HSceneObject getHandle() const { return mThisHandle; }
 
 		/**
-		 * @brief	Returns the prefab this object is linked to, if any. 
+		 * @brief	Returns the UUID of the prefab this object is linked to, if any. 
 		 *
 		 * @note	Requires a search of all parents potentially.
 		 */
-		HPrefab getPrefabLink() const;
+		String getPrefabLink() const;
 
 		/**
 		 * @brief	Breaks the link between this prefab instance and its prefab.
@@ -131,7 +131,7 @@ namespace BansheeEngine
 
 	private:
 		HSceneObject mThisHandle;
-		HPrefab mPrefabLink;
+		String mPrefabLinkUUID;
 		PrefabDiffPtr mPrefabDiff;
 		UINT32 mFlags;
 
@@ -422,12 +422,6 @@ namespace BansheeEngine
 		 * @brief	Makes a deep copy of this object.
 		 */
 		HSceneObject clone();
-
-		/**
-		 * @brief	Updates the internal prefab diff data by recording the difference
-		 *			between the current values in this prefab instance and the prefab.
-		 */
-		void recordPrefabDiff();
 
 	private:
 		HSceneObject mParent;

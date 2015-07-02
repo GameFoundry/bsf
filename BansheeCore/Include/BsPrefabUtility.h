@@ -67,7 +67,13 @@ namespace BansheeEngine
 		 *
 		 * @note	If any of its children belong to another prefab they will not be cleared.
 		 */
-		static void clearPrefabIds(const HSceneObject& sceneObject);
+		static void clearPrefabIds(const HSceneObject& sceneObject, bool recursive = true);
+
+		/**
+		 * @brief	Updates the internal prefab diff data by recording the difference
+		 *			between the current values in the provided prefab instance and its prefab.
+		 */
+		static void recordPrefabDiff(const HSceneObject& sceneObject);
 
 	private:
 		/**

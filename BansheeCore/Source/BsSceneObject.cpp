@@ -106,14 +106,14 @@ namespace BansheeEngine
 		mThisHandle._setHandleData(mThisHandle.getInternalPtr());
 	}
 
-	HPrefab SceneObject::getPrefabLink() const
+	String SceneObject::getPrefabLink() const
 	{
 		const SceneObject* curObj = this;
 
 		while (curObj == nullptr)
 		{
-			if (curObj->mPrefabLink != nullptr)
-				return curObj->mPrefabLink;
+			if (!curObj->mPrefabLinkUUID.empty())
+				return curObj->mPrefabLinkUUID;
 
 			if (curObj->mParent != nullptr)
 				curObj = curObj->mParent.get();
@@ -121,7 +121,7 @@ namespace BansheeEngine
 				curObj = nullptr;
 		}
 
-		return HPrefab();
+		return "";
 	}
 
 	void SceneObject::breakPrefabLink()
@@ -130,9 +130,9 @@ namespace BansheeEngine
 
 		while (curObj == nullptr)
 		{
-			if (curObj->mPrefabLink != nullptr)
+			if (!curObj->mPrefabLinkUUID.empty())
 			{
-				curObj->mPrefabLink = nullptr;
+				curObj->mPrefabLinkUUID = "";
 				curObj->mPrefabDiff = nullptr;
 				PrefabUtility::clearPrefabIds(curObj->getHandle());
 
@@ -458,6 +458,10 @@ namespace BansheeEngine
 			Quaternion worldRot = getWorldRotation();
 			Vector3 worldScale = getWorldScale();
 
+#if BS_EDITOR_BUILD
+			String originalPrefab = getPrefabLink();
+#endif
+
 			if(mParent != nullptr)
 				mParent->removeChild(mThisHandle);
 
@@ -465,6 +469,12 @@ namespace BansheeEngine
 				parent->addChild(mThisHandle);
 
 			mParent = parent;
+
+#if BS_EDITOR_BUILD
+			String newPrefab = getPrefabLink();
+			if (originalPrefab != newPrefab)
+				PrefabUtility::clearPrefabIds(mThisHandle, false);
+#endif
 
 			setWorldPosition(worldPos);
 			setWorldRotation(worldRot);
@@ -551,27 +561,6 @@ namespace BansheeEngine
 		bs_free(buffer);
 
 		return cloneObj->mThisHandle;
-	}
-
-	void SceneObject::recordPrefabDiff()
-	{
-		SceneObject* curObj = this;
-
-		while (curObj == nullptr)
-		{
-			if (curObj->mPrefabLink != nullptr)
-			{
-				curObj->mPrefabDiff = nullptr;
-				curObj->mPrefabDiff = PrefabDiff::create(curObj->mPrefabLink->getRoot(), curObj->getHandle());
-				
-				return;
-			}
-
-			if (curObj->mParent != nullptr)
-				curObj = curObj->mParent.get();
-			else
-				curObj = nullptr;
-		}
 	}
 
 	HComponent SceneObject::getComponent(UINT32 typeId) const

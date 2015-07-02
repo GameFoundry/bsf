@@ -15,8 +15,9 @@
 
 #define BS_ENDIAN_LITTLE 1
 #define BS_ENDIAN_BIG 2
-
 #define BS_ENDIAN BS_ENDIAN_LITTLE
+
+#define BS_EDITOR_BUILD 1
 
 // Finds the compiler type and version.
 #if defined( _MSC_VER )

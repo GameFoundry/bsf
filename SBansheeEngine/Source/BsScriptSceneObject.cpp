@@ -10,6 +10,7 @@
 #include "BsScriptPrefab.h"
 #include "BsPrefab.h"
 #include "BsPrefabUtility.h"
+#include "BsResources.h"
 
 namespace BansheeEngine
 {
@@ -127,7 +128,9 @@ namespace BansheeEngine
 		if (checkIfDestroyed(nativeInstance))
 			return nullptr;
 
-		HPrefab prefab = nativeInstance->mSceneObject->getPrefabLink();
+		String prefabLinkUUID = nativeInstance->mSceneObject->getPrefabLink();
+		HPrefab prefab = static_resource_cast<Prefab>(gResources().loadFromUUID(prefabLinkUUID, false, false));
+
 		if (prefab != nullptr)
 		{
 			ScriptPrefab* scriptPrefab = ScriptResourceManager::instance().getScriptPrefab(prefab);
@@ -153,7 +156,9 @@ namespace BansheeEngine
 		if (checkIfDestroyed(nativeInstance))
 			return;
 
-		HPrefab prefab = nativeInstance->mSceneObject->getPrefabLink();
+		String prefabLinkUUID = nativeInstance->mSceneObject->getPrefabLink();
+		HPrefab prefab = static_resource_cast<Prefab>(gResources().loadFromUUID(prefabLinkUUID, false, false));
+
 		if (prefab != nullptr)
 			prefab->update(nativeInstance->mSceneObject);
 	}

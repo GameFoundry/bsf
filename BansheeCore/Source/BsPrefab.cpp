@@ -14,13 +14,13 @@ namespace BansheeEngine
 
 	HPrefab Prefab::create(const HSceneObject& sceneObject)
 	{
-		assert(sceneObject->mPrefabLink == nullptr);
+		assert(sceneObject->mPrefabLinkUUID.empty());
 
 		PrefabPtr newPrefab = createEmpty();
 		newPrefab->initialize(sceneObject);
 
 		HPrefab handle = static_resource_cast<Prefab>(gResources()._createResourceHandle(newPrefab));
-		sceneObject->mPrefabLink = handle;
+		sceneObject->mPrefabLinkUUID = handle.getUUID();
 
 		return handle;
 	}

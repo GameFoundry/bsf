@@ -27,13 +27,31 @@ return them in checkForModifications?
 ---------------------------------------------------------------------
 Prefab diff
 
-TODO:
- - Hook up prefabs & prefab diffs:
-   - Save a diff whenever a HSceneObject with a HPrefab link is saved (call recordPrefabDiff)
-   - Update active scene when prefab is modified (destroy them, create original prefab then apply saved diff)
+Level save
+ - Entry in File menu (Ctrl + S)
+   - Clicking it opens up a save file dialog unless level is already linked to prefab
+ - Drag and drop to project window
+   - Automatically creates a new prefab with the same name as the root object
+    - Or creates a unique name if an asset with the same name exists
+ - Whenever I save I need to go through all prefab instances and update their diffs (Make this editor only, but level saving should be editor only all together)
 
-TODO - Whenever I load a SceneObject the entire prefab will be loaded as well. It might be better to store the
- prefab link as a UUID and then load it on demand.
+Level load
+ - Entry in File menu (Ctrl + L)
+   - Opens up a file open dialog
+ - Drag and drop from project window or double-click in project window
+  - Unloads the current level and loads the new one
+   - TODO - If current level is modified ask the user to confirm?
+ - After loading a new scene always perform an "updateFromPrefab" action on all prefab instances (Make this editor only)
+   - TODO - Should I monitor for prefab changes so I don't update unless prefab actually changed? 
+    - Have each scene object have a prefabHash stored, and prefab hash should increase whenever it is saved.
+	  This way I can check if I really need to update the prefab instance.
+
+TODO - Prefabs should be editor only, especially automatic diff creation and updates on load
+ - In C# instead of having prefab stuff on SceneObject, move it to BansheeEditor.PrefabUtility
+
+TODO - Add Prefab buttons to Inspector (Apply, Break, Revert)
+
+TODO - Later - When building level for release make sure to clear all prefab diffs (possibly store them elsewhere in the first place)
 
  Test (likely later once I have more editor functionality working):
   - Game object handle compare

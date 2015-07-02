@@ -33,8 +33,8 @@ namespace BansheeEngine
 		UINT32 getNumComponents(SceneObject* obj) { return (UINT32)obj->mComponents.size(); }
 		void setNumComponents(SceneObject* obj, UINT32 size) { /* DO NOTHING */ }
 
-		HPrefab& getPrefabLink(SceneObject* obj) { return obj->mPrefabLink; }
-		void setPrefabLink(SceneObject* obj, HPrefab& value) { obj->mPrefabLink = value; }
+		String& getPrefabLink(SceneObject* obj) { return obj->mPrefabLinkUUID; }
+		void setPrefabLink(SceneObject* obj, String& value) { obj->mPrefabLinkUUID = value; }
 
 		PrefabDiffPtr getPrefabDiff(SceneObject* obj) { return obj->mPrefabDiff; }
 		void setPrefabDiff(SceneObject* obj, PrefabDiffPtr value) { obj->mPrefabDiff = value; }
@@ -48,7 +48,7 @@ namespace BansheeEngine
 				&SceneObjectRTTI::getNumChildren, &SceneObjectRTTI::setChild, &SceneObjectRTTI::setNumChildren);
 			addReflectablePtrArrayField("mComponents", 1, &SceneObjectRTTI::getComponent, 
 				&SceneObjectRTTI::getNumComponents, &SceneObjectRTTI::setComponent, &SceneObjectRTTI::setNumComponents);
-			addReflectableField("mPrefabLink", 2, &SceneObjectRTTI::getPrefabLink, &SceneObjectRTTI::setPrefabLink);
+			addPlainField("mPrefabLink", 2, &SceneObjectRTTI::getPrefabLink, &SceneObjectRTTI::setPrefabLink);
 			addPlainField("mFlags", 3, &SceneObjectRTTI::getFlags, &SceneObjectRTTI::setFlags);
 			addReflectablePtrField("mPrefabDiff", 4, &SceneObjectRTTI::getPrefabDiff, &SceneObjectRTTI::setPrefabDiff);
 		}

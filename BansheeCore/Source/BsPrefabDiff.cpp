@@ -336,7 +336,7 @@ namespace BansheeEngine
 			{
 				HSceneObject child = current->getChild(i);
 
-				if (child->mPrefabLink == nullptr)
+				if (child->mPrefabLinkUUID.empty())
 					todo.push(child);
 			}
 		}
@@ -381,7 +381,7 @@ namespace BansheeEngine
 			{
 				HSceneObject child = current->getChild(i);
 
-				if (child->mPrefabLink == nullptr)
+				if (child->mPrefabLinkUUID.empty())
 					todo.push(child);
 			}
 		}
