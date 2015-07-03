@@ -5,10 +5,16 @@ namespace BansheeEngine
 {
     public sealed class SceneObject : GameObject
     {
+        public string Name
+        {
+            get { return Internal_GetName(mCachedPtr); }
+            set { Internal_SetName(mCachedPtr, value); }
+        }
+
         public SceneObject Parent
         {
-            set { Internal_SetParent(mCachedPtr, value); }
             get { return Internal_GetParent(mCachedPtr); }
+            set { Internal_SetParent(mCachedPtr, value); }
         }
 
         public Vector3 Position
@@ -248,6 +254,12 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateInstance(SceneObject instance, string name, int flags);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetName(IntPtr nativeInstance, string name);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string Internal_GetName(IntPtr nativeInstance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetParent(IntPtr nativeInstance, SceneObject parent);

@@ -42,14 +42,6 @@ TODO - How do I mark the scene as modified? I need to know if user made any modi
 		 - Should I store dirty state in Script* objects?
 		  - Probably the best
 
-Level save
- - Drag and drop to project window
-   - Automatically creates a new prefab with the same name as the root object
-    - Or creates a unique name if an asset with the same name exists
-
-Level load
- - Drag and drop from project window or double-click in project window
-
 TODO - Add Prefab buttons to Inspector (Apply, Break, Revert)
 
 TODO - Later - When building level for release make sure to clear all prefab diffs (possibly store them elsewhere in the first place)
@@ -57,6 +49,7 @@ TODO - Later - When building level for release make sure to clear all prefab dif
 
  Test (likely later once I have more editor functionality working):
   - If level save/load works
+  - If drag and drop works, both ways, plus double-click to load level
   - Game object handle compare
   - ID restore systems 
   - Native+Managed diff (only the link between the two)
@@ -71,6 +64,7 @@ Polish stage 1
 
 When elements are docked in the main window the menu bar drop down appears behind them
 Click on empty part of the menu bar doesn't close the menu bar (ignoring NC area clicks?)
+Clicking on a parent of a menu item just reopens that item but I would expect it to close it
 Attempting to dock a window that is not in focus will start drag instead (NC area incorrectly set up?)
 Docking problem: When I dock three windows next to each other, e.g. Hierarchy|Scene|Inspector and then try to dock another
  so it splits space with Hierarchy vertically the dock area appears over both hierarchy and scene, and the when docked it looks wrong
@@ -79,6 +73,8 @@ Fix DX11 (and possibly DX9) rendering
 Missing Inspector values (name + transform fields)
 Fix handles
 Moving the title bar tab and then dropping it closes the window (possibly only happens when there is just one tab)
+
+Need a way to add scene objects and components (and remove them)
 
 ----------------------------------------------------------------------
 Project window

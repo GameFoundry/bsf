@@ -12,312 +12,6 @@ namespace BansheeEditor
 
     internal sealed class ProjectWindow : EditorWindow
     {
-        private class ContentInfo
-        {
-            public ContentInfo(ProjectWindow window, ProjectViewType viewType, int numEntries)
-            {
-                GUIPanel parentPanel = window.scrollAreaPanel;
-
-                GUIPanel contentPanel = parentPanel.AddPanel(1);
-                overlay = parentPanel.AddPanel(0);
-                underlay = parentPanel.AddPanel(2);
-                inputOverlay = parentPanel.AddPanel(-1);
-
-                main = contentPanel.AddLayoutY();
-
-                if (viewType == ProjectViewType.List16)
-                {
-                    tileSize = 16;
-                    gridLayout = false;
-                    elementsPerRow = 1;
-                }
-                else
-                {
-                    switch (viewType)
-                    {
-                        case ProjectViewType.Grid64:
-                            tileSize = 64;
-                            break;
-                        case ProjectViewType.Grid48:
-                            tileSize = 48;
-                            break;
-                        case ProjectViewType.Grid32:
-                            tileSize = 32;
-                            break;
-                    }
-
-                    gridLayout = true;
-
-                    Rect2I scrollBounds = window.contentScrollArea.Bounds;
-                    int availableWidth = scrollBounds.width;
-
-                    int elemSize = tileSize + GRID_ENTRY_SPACING;
-                    elementsPerRow = (availableWidth - GRID_ENTRY_SPACING * 2) / elemSize;
-                    int numRows = MathEx.CeilToInt(numEntries / (float)elementsPerRow);
-                    int neededHeight = numRows * (elemSize);
-
-                    bool requiresScrollbar = neededHeight > scrollBounds.height;
-                    if (requiresScrollbar)
-                    {
-                        availableWidth -= window.contentScrollArea.ScrollBarWidth;
-                        elementsPerRow = (availableWidth - GRID_ENTRY_SPACING * 2) / elemSize;
-                    }
-
-                    labelWidth = (availableWidth - (elementsPerRow + 1)*MIN_HORZ_SPACING) / elementsPerRow;
-                }
-
-                this.window = window;
-            }
-
-            public GUILayout main;
-            public GUIPanel overlay;
-            public GUIPanel underlay;
-            public GUIPanel inputOverlay;
-
-            public ProjectWindow window;
-            public int tileSize;
-            public bool gridLayout;
-
-            public int elementsPerRow;
-            public int labelWidth;
-        }
-
-        private class ElementEntry
-        {
-            // Note: Order of these is relevant
-            enum UnderlayState
-            {
-                None, Hovered, Selected, Pinged
-            }
-
-            public int index;
-            public string path;
-            public GUITexture icon;
-            public GUILabel label;
-            public Rect2I bounds;
-
-            private GUITexture underlay;
-            private ContentInfo info;
-            private UnderlayState underlayState;
-            private GUITextBox renameTextBox;
-
-            public ElementEntry(ContentInfo info, GUILayout parent, LibraryEntry entry, int index)
-            {
-                GUILayout entryLayout;
-
-                if (info.gridLayout)
-                    entryLayout = parent.AddLayoutY();
-                else
-                    entryLayout = parent.AddLayoutX();
-
-                SpriteTexture iconTexture = GetIcon(entry);
-
-                icon = new GUITexture(iconTexture, GUIImageScaleMode.ScaleToFit,
-                    true, GUIOption.FixedHeight(info.tileSize), GUIOption.FixedWidth(info.tileSize));
-
-                label = null;
-
-                if (info.gridLayout)
-                {
-                    label = new GUILabel(entry.Name, EditorStyles.MultiLineLabelCentered,
-                        GUIOption.FixedWidth(info.labelWidth), GUIOption.FlexibleHeight(0, MAX_LABEL_HEIGHT));
-                }
-                else
-                {
-                    label = new GUILabel(entry.Name);
-                }
-
-                entryLayout.AddElement(icon);
-                entryLayout.AddElement(label);
-
-                this.info = info;
-                this.index = index;
-                this.path = entry.Path;
-                this.bounds = new Rect2I();
-                this.underlay = null;
-            }
-
-            public void Initialize()
-            {
-                bounds = icon.Bounds;
-                Rect2I labelBounds = label.Bounds;
-
-                bounds.x = MathEx.Min(bounds.x, labelBounds.x - SELECTION_EXTRA_WIDTH);
-                bounds.y = MathEx.Min(bounds.y, labelBounds.y) - 5; // 5 - Just padding for better look
-                bounds.width = MathEx.Max(bounds.x + bounds.width,
-                    labelBounds.x + labelBounds.width) - bounds.x + SELECTION_EXTRA_WIDTH;
-                bounds.height = MathEx.Max(bounds.y + bounds.height,
-                    labelBounds.y + labelBounds.height) - bounds.y;
-
-                ProjectWindow hoistedWindow = info.window;
-                string hoistedPath = path;
-
-                GUIButton overlayBtn = new GUIButton("", EditorStyles.Blank);
-                overlayBtn.Bounds = bounds;
-                overlayBtn.OnClick += () => hoistedWindow.OnEntryClicked(hoistedPath);
-                overlayBtn.OnDoubleClick += () => hoistedWindow.OnEntryDoubleClicked(hoistedPath);
-                overlayBtn.SetContextMenu(info.window.entryContextMenu);
-
-                info.overlay.AddElement(overlayBtn);
-            }
-
-            public Rect2I Bounds
-            {
-                get { return bounds; }
-            }
-
-            public void MarkAsCut(bool enable)
-            {
-                if (enable)
-                    icon.SetTint(CUT_COLOR);
-                else
-                    icon.SetTint(Color.White);
-            }
-
-            public void MarkAsSelected(bool enable)
-            {
-                if ((int)underlayState > (int) UnderlayState.Selected)
-                    return;
-
-                if (enable)
-                {
-                    CreateUnderlay();
-                    underlay.SetTint(SELECTION_COLOR);
-                }
-                else
-                    ClearUnderlay();
-
-                underlayState = UnderlayState.Selected;
-            }
-
-            public void MarkAsPinged(bool enable)
-            {
-                if ((int)underlayState > (int)UnderlayState.Pinged)
-                    return;
-
-                if (enable)
-                {
-                    CreateUnderlay();
-                    underlay.SetTint(PING_COLOR);
-                }
-                else
-                    ClearUnderlay();
-
-                underlayState = UnderlayState.Pinged;
-            }
-
-            public void MarkAsHovered(bool enable)
-            {
-                if ((int)underlayState > (int)UnderlayState.Hovered)
-                    return;
-
-                if (enable)
-                {
-                    CreateUnderlay();
-                    underlay.SetTint(HOVER_COLOR);
-                }
-                else
-                    ClearUnderlay();
-
-                underlayState = UnderlayState.Hovered;
-            }
-
-            public void StartRename()
-            {
-                if (renameTextBox != null)
-                    return;
-
-                renameTextBox = new GUITextBox(false);
-                renameTextBox.Bounds = label.Bounds;
-                info.inputOverlay.AddElement(renameTextBox);
-
-                string name = Path.GetFileNameWithoutExtension(PathEx.GetTail(path));
-                renameTextBox.Text = name;
-                renameTextBox.Focus = true;
-
-                label.Visible = false;
-            }
-
-            public void StopRename()
-            {
-                if (renameTextBox != null)
-                {
-                    renameTextBox.Destroy();
-                    renameTextBox = null;
-                }
-
-                label.Visible = true;
-            }
-
-            public string GetRenamedName()
-            {
-                if (renameTextBox != null)
-                    return renameTextBox.Text;
-
-                return "";
-            }
-
-            private void ClearUnderlay()
-            {
-                if (underlay != null)
-                {
-                    underlay.Destroy();
-                    underlay = null;
-                }
-
-                underlayState = UnderlayState.None;
-            }
-
-            private void CreateUnderlay()
-            {
-                if (underlay == null)
-                {
-                    underlay = new GUITexture(Builtin.WhiteTexture);
-                    underlay.Bounds = Bounds;
-
-                    info.underlay.AddElement(underlay);
-                }
-            }
-
-            private static SpriteTexture GetIcon(LibraryEntry entry)
-            {
-                if (entry.Type == LibraryEntryType.Directory)
-                {
-                    return EditorBuiltin.FolderIcon;
-                }
-                else
-                {
-                    FileEntry fileEntry = (FileEntry)entry;
-                    switch (fileEntry.ResType)
-                    {
-                        case ResourceType.Font:
-                            return EditorBuiltin.FontIcon;
-                        case ResourceType.Mesh:
-                            return EditorBuiltin.MeshIcon;
-                        case ResourceType.Texture:
-                            return EditorBuiltin.TextureIcon;
-                        case ResourceType.PlainText:
-                            return EditorBuiltin.PlainTextIcon;
-                        case ResourceType.ScriptCode:
-                            return EditorBuiltin.ScriptCodeIcon;
-                        case ResourceType.SpriteTexture:
-                            return EditorBuiltin.SpriteTextureIcon;
-                        case ResourceType.Shader:
-                            return EditorBuiltin.ShaderIcon;
-                        case ResourceType.Material:
-                            return EditorBuiltin.MaterialIcon;
-                    }
-                }
-
-                return null;
-            }
-        }
-
-        enum MoveDirection
-        {
-            Up, Down, Left, Right
-        }
-
         private const int GRID_ENTRY_SPACING = 15;
         private const int LIST_ENTRY_SPACING = 7;
         private const int MAX_LABEL_HEIGHT = 50;
@@ -438,7 +132,8 @@ namespace BansheeEditor
             dropTarget.OnStart += DoOnDragStart;
             dropTarget.OnDrag += DoOnDragMove;
             dropTarget.OnLeave += DoOnDragLeave;
-            dropTarget.OnDrop += DoOnDragDropped;
+            dropTarget.OnDropResource += DoOnResourceDragDropped;
+            dropTarget.OnDropSceneObject += DoOnSceneObjectDragDropped;
             dropTarget.OnEnd += DoOnDragEnd;
         }
 
@@ -523,7 +218,7 @@ namespace BansheeEditor
             autoScrollAmount = 0;
         }
 
-        private void DoOnDragDropped(Vector2I windowPos, string[] paths)
+        private void DoOnResourceDragDropped(Vector2I windowPos, string[] paths)
         {
             ClearHoverHighlight();
             autoScrollAmount = 0;
@@ -578,6 +273,42 @@ namespace BansheeEditor
                         else
                             FileEx.Move(path, GetUniquePath(destination));
                     }
+
+                    ProjectLibrary.Refresh();
+                }
+            }
+        }
+
+        private void DoOnSceneObjectDragDropped(Vector2I windowPos, SceneObject[] objects)
+        {
+            ClearHoverHighlight();
+            autoScrollAmount = 0;
+
+            if (EndDragSelection())
+                return;
+
+            string resourceDir = ProjectLibrary.ResourceFolder;
+            string destinationFolder = Path.Combine(resourceDir, currentDirectory);
+
+            ElementEntry underCursorElement = FindElementAt(windowPos);
+            if (underCursorElement != null)
+            {
+                LibraryEntry entry = ProjectLibrary.GetEntry(underCursorElement.path);
+                if (entry != null && entry.Type == LibraryEntryType.Directory)
+                    destinationFolder = Path.Combine(resourceDir, entry.Path);
+            }
+
+            if (objects != null)
+            {
+                foreach (var so in objects)
+                {
+                    if (so == null)
+                        continue;
+
+                    Prefab newPrefab = new Prefab(so);
+
+                    string destination = GetUniquePath(Path.Combine(destinationFolder, so.Name + ".prefab"));
+                    ProjectLibrary.Create(newPrefab, destination);
 
                     ProjectLibrary.Refresh();
                 }
@@ -1422,9 +1153,18 @@ namespace BansheeEditor
         private void OnEntryDoubleClicked(string path)
         {
             LibraryEntry entry = ProjectLibrary.GetEntry(path);
-            if (entry != null && entry.Type == LibraryEntryType.Directory)
+            if (entry != null)
             {
-                EnterDirectory(path);
+                if (entry.Type == LibraryEntryType.Directory)
+                    EnterDirectory(path);
+                else
+                {
+                    FileEntry resEntry = (FileEntry) entry;
+                    if (resEntry.ResType == ResourceType.Prefab)
+                    {
+                        Scene.Load(resEntry.Path);
+                    }
+                }
             }
         }
 
@@ -1592,6 +1332,314 @@ namespace BansheeEditor
             Refresh();
 
             dropTarget.Bounds = contentScrollArea.Bounds;
+        }
+
+        private class ContentInfo
+        {
+            public ContentInfo(ProjectWindow window, ProjectViewType viewType, int numEntries)
+            {
+                GUIPanel parentPanel = window.scrollAreaPanel;
+
+                GUIPanel contentPanel = parentPanel.AddPanel(1);
+                overlay = parentPanel.AddPanel(0);
+                underlay = parentPanel.AddPanel(2);
+                inputOverlay = parentPanel.AddPanel(-1);
+
+                main = contentPanel.AddLayoutY();
+
+                if (viewType == ProjectViewType.List16)
+                {
+                    tileSize = 16;
+                    gridLayout = false;
+                    elementsPerRow = 1;
+                }
+                else
+                {
+                    switch (viewType)
+                    {
+                        case ProjectViewType.Grid64:
+                            tileSize = 64;
+                            break;
+                        case ProjectViewType.Grid48:
+                            tileSize = 48;
+                            break;
+                        case ProjectViewType.Grid32:
+                            tileSize = 32;
+                            break;
+                    }
+
+                    gridLayout = true;
+
+                    Rect2I scrollBounds = window.contentScrollArea.Bounds;
+                    int availableWidth = scrollBounds.width;
+
+                    int elemSize = tileSize + GRID_ENTRY_SPACING;
+                    elementsPerRow = (availableWidth - GRID_ENTRY_SPACING * 2) / elemSize;
+                    int numRows = MathEx.CeilToInt(numEntries / (float)elementsPerRow);
+                    int neededHeight = numRows * (elemSize);
+
+                    bool requiresScrollbar = neededHeight > scrollBounds.height;
+                    if (requiresScrollbar)
+                    {
+                        availableWidth -= window.contentScrollArea.ScrollBarWidth;
+                        elementsPerRow = (availableWidth - GRID_ENTRY_SPACING * 2) / elemSize;
+                    }
+
+                    labelWidth = (availableWidth - (elementsPerRow + 1) * MIN_HORZ_SPACING) / elementsPerRow;
+                }
+
+                this.window = window;
+            }
+
+            public GUILayout main;
+            public GUIPanel overlay;
+            public GUIPanel underlay;
+            public GUIPanel inputOverlay;
+
+            public ProjectWindow window;
+            public int tileSize;
+            public bool gridLayout;
+
+            public int elementsPerRow;
+            public int labelWidth;
+        }
+
+        private class ElementEntry
+        {
+            // Note: Order of these is relevant
+            enum UnderlayState
+            {
+                None, Hovered, Selected, Pinged
+            }
+
+            public int index;
+            public string path;
+            public GUITexture icon;
+            public GUILabel label;
+            public Rect2I bounds;
+
+            private GUITexture underlay;
+            private ContentInfo info;
+            private UnderlayState underlayState;
+            private GUITextBox renameTextBox;
+
+            public ElementEntry(ContentInfo info, GUILayout parent, LibraryEntry entry, int index)
+            {
+                GUILayout entryLayout;
+
+                if (info.gridLayout)
+                    entryLayout = parent.AddLayoutY();
+                else
+                    entryLayout = parent.AddLayoutX();
+
+                SpriteTexture iconTexture = GetIcon(entry);
+
+                icon = new GUITexture(iconTexture, GUIImageScaleMode.ScaleToFit,
+                    true, GUIOption.FixedHeight(info.tileSize), GUIOption.FixedWidth(info.tileSize));
+
+                label = null;
+
+                if (info.gridLayout)
+                {
+                    label = new GUILabel(entry.Name, EditorStyles.MultiLineLabelCentered,
+                        GUIOption.FixedWidth(info.labelWidth), GUIOption.FlexibleHeight(0, MAX_LABEL_HEIGHT));
+                }
+                else
+                {
+                    label = new GUILabel(entry.Name);
+                }
+
+                entryLayout.AddElement(icon);
+                entryLayout.AddElement(label);
+
+                this.info = info;
+                this.index = index;
+                this.path = entry.Path;
+                this.bounds = new Rect2I();
+                this.underlay = null;
+            }
+
+            public void Initialize()
+            {
+                bounds = icon.Bounds;
+                Rect2I labelBounds = label.Bounds;
+
+                bounds.x = MathEx.Min(bounds.x, labelBounds.x - SELECTION_EXTRA_WIDTH);
+                bounds.y = MathEx.Min(bounds.y, labelBounds.y) - 5; // 5 - Just padding for better look
+                bounds.width = MathEx.Max(bounds.x + bounds.width,
+                    labelBounds.x + labelBounds.width) - bounds.x + SELECTION_EXTRA_WIDTH;
+                bounds.height = MathEx.Max(bounds.y + bounds.height,
+                    labelBounds.y + labelBounds.height) - bounds.y;
+
+                ProjectWindow hoistedWindow = info.window;
+                string hoistedPath = path;
+
+                GUIButton overlayBtn = new GUIButton("", EditorStyles.Blank);
+                overlayBtn.Bounds = bounds;
+                overlayBtn.OnClick += () => hoistedWindow.OnEntryClicked(hoistedPath);
+                overlayBtn.OnDoubleClick += () => hoistedWindow.OnEntryDoubleClicked(hoistedPath);
+                overlayBtn.SetContextMenu(info.window.entryContextMenu);
+
+                info.overlay.AddElement(overlayBtn);
+            }
+
+            public Rect2I Bounds
+            {
+                get { return bounds; }
+            }
+
+            public void MarkAsCut(bool enable)
+            {
+                if (enable)
+                    icon.SetTint(CUT_COLOR);
+                else
+                    icon.SetTint(Color.White);
+            }
+
+            public void MarkAsSelected(bool enable)
+            {
+                if ((int)underlayState > (int)UnderlayState.Selected)
+                    return;
+
+                if (enable)
+                {
+                    CreateUnderlay();
+                    underlay.SetTint(SELECTION_COLOR);
+                }
+                else
+                    ClearUnderlay();
+
+                underlayState = UnderlayState.Selected;
+            }
+
+            public void MarkAsPinged(bool enable)
+            {
+                if ((int)underlayState > (int)UnderlayState.Pinged)
+                    return;
+
+                if (enable)
+                {
+                    CreateUnderlay();
+                    underlay.SetTint(PING_COLOR);
+                }
+                else
+                    ClearUnderlay();
+
+                underlayState = UnderlayState.Pinged;
+            }
+
+            public void MarkAsHovered(bool enable)
+            {
+                if ((int)underlayState > (int)UnderlayState.Hovered)
+                    return;
+
+                if (enable)
+                {
+                    CreateUnderlay();
+                    underlay.SetTint(HOVER_COLOR);
+                }
+                else
+                    ClearUnderlay();
+
+                underlayState = UnderlayState.Hovered;
+            }
+
+            public void StartRename()
+            {
+                if (renameTextBox != null)
+                    return;
+
+                renameTextBox = new GUITextBox(false);
+                renameTextBox.Bounds = label.Bounds;
+                info.inputOverlay.AddElement(renameTextBox);
+
+                string name = Path.GetFileNameWithoutExtension(PathEx.GetTail(path));
+                renameTextBox.Text = name;
+                renameTextBox.Focus = true;
+
+                label.Visible = false;
+            }
+
+            public void StopRename()
+            {
+                if (renameTextBox != null)
+                {
+                    renameTextBox.Destroy();
+                    renameTextBox = null;
+                }
+
+                label.Visible = true;
+            }
+
+            public string GetRenamedName()
+            {
+                if (renameTextBox != null)
+                    return renameTextBox.Text;
+
+                return "";
+            }
+
+            private void ClearUnderlay()
+            {
+                if (underlay != null)
+                {
+                    underlay.Destroy();
+                    underlay = null;
+                }
+
+                underlayState = UnderlayState.None;
+            }
+
+            private void CreateUnderlay()
+            {
+                if (underlay == null)
+                {
+                    underlay = new GUITexture(Builtin.WhiteTexture);
+                    underlay.Bounds = Bounds;
+
+                    info.underlay.AddElement(underlay);
+                }
+            }
+
+            private static SpriteTexture GetIcon(LibraryEntry entry)
+            {
+                if (entry.Type == LibraryEntryType.Directory)
+                {
+                    return EditorBuiltin.FolderIcon;
+                }
+                else
+                {
+                    FileEntry fileEntry = (FileEntry)entry;
+                    switch (fileEntry.ResType)
+                    {
+                        case ResourceType.Font:
+                            return EditorBuiltin.FontIcon;
+                        case ResourceType.Mesh:
+                            return EditorBuiltin.MeshIcon;
+                        case ResourceType.Texture:
+                            return EditorBuiltin.TextureIcon;
+                        case ResourceType.PlainText:
+                            return EditorBuiltin.PlainTextIcon;
+                        case ResourceType.ScriptCode:
+                            return EditorBuiltin.ScriptCodeIcon;
+                        case ResourceType.SpriteTexture:
+                            return EditorBuiltin.SpriteTextureIcon;
+                        case ResourceType.Shader:
+                            return EditorBuiltin.ShaderIcon;
+                        case ResourceType.Material:
+                            return EditorBuiltin.MaterialIcon;
+                        case ResourceType.Prefab:
+                            return EditorBuiltin.PrefabIcon;
+                    }
+                }
+
+                return null;
+            }
+        }
+
+        enum MoveDirection
+        {
+            Up, Down, Left, Right
         }
     }
 

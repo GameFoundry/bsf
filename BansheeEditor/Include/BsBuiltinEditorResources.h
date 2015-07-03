@@ -12,7 +12,7 @@ namespace BansheeEngine
 	 */
 	enum class ProjectIcon
 	{
-		Folder, Mesh, Font, Texture, PlainText, ScriptCode, SpriteTexture, Shader, ShaderInclude, Material
+		Folder, Mesh, Font, Texture, PlainText, ScriptCode, SpriteTexture, Shader, ShaderInclude, Material, Prefab
 	};
 
 	class BS_ED_EXPORT BuiltinEditorResources : public BansheeEngine::Module<BuiltinEditorResources>
@@ -173,6 +173,7 @@ namespace BansheeEngine
 		static const WString ShaderIncludeIconTex;
 		static const WString MaterialIconTex;
 		static const WString SpriteTextureIconTex;
+		static const WString PrefabIconTex;
 
 		static const WString WindowBackgroundTexture;
 

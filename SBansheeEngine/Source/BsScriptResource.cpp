@@ -36,6 +36,8 @@ namespace BansheeEngine
 			return ScriptResourceType::Material;
 		case TID_Font:
 			return ScriptResourceType::Font;
+		case TID_Prefab:
+			return ScriptResourceType::Prefab;
 		case TID_PlainText:
 			return ScriptResourceType::PlainText;
 		case TID_ScriptCode:
@@ -61,6 +63,8 @@ namespace BansheeEngine
 			return TID_Font;
 		case ScriptResourceType::Material:
 			return TID_Material;
+		case ScriptResourceType::Prefab:
+			return TID_Prefab;
 		case ScriptResourceType::PlainText:
 			return TID_PlainText;
 		case ScriptResourceType::ScriptCode:

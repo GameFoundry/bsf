@@ -15,6 +15,7 @@ namespace BansheeEditor
         public static SpriteTexture ShaderIncludeIcon { get { return Internal_GetShaderIncludeIcon(); } }
         public static SpriteTexture MaterialIcon { get { return Internal_GetMaterialIcon(); } }
         public static SpriteTexture SpriteTextureIcon { get { return Internal_GetSpriteTextureIcon(); } }
+        public static SpriteTexture PrefabIcon { get { return Internal_GetPrefabIcon(); } }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern SpriteTexture Internal_GetFolderIcon();
@@ -45,5 +46,8 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern SpriteTexture Internal_GetSpriteTextureIcon();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern SpriteTexture Internal_GetPrefabIcon();
     }
 }

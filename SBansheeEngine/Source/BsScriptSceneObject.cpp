@@ -23,6 +23,8 @@ namespace BansheeEngine
 	void ScriptSceneObject::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptSceneObject::internal_createInstance);
+		metaData.scriptClass->addInternalCall("Internal_GetName", &ScriptSceneObject::internal_getName);
+		metaData.scriptClass->addInternalCall("Internal_SetName", &ScriptSceneObject::internal_setName);
 		metaData.scriptClass->addInternalCall("Internal_GetParent", &ScriptSceneObject::internal_getParent);
 		metaData.scriptClass->addInternalCall("Internal_SetParent", &ScriptSceneObject::internal_setParent);
 		metaData.scriptClass->addInternalCall("Internal_GetNumChildren", &ScriptSceneObject::internal_getNumChildren);
@@ -63,6 +65,23 @@ namespace BansheeEngine
 		HSceneObject sceneObject = SceneObject::create(toString(MonoUtil::monoToWString(name)), flags);
 
 		ScriptGameObjectManager::instance().createScriptSceneObject(instance, sceneObject);
+	}
+
+	void ScriptSceneObject::internal_setName(ScriptSceneObject* nativeInstance, MonoString* name)
+	{
+		if (checkIfDestroyed(nativeInstance))
+			return;
+
+		nativeInstance->mSceneObject->setName(MonoUtil::monoToString(name));
+	}
+
+	MonoString* ScriptSceneObject::internal_getName(ScriptSceneObject* nativeInstance)
+	{
+		if (checkIfDestroyed(nativeInstance))
+			return nullptr;
+
+		String name = nativeInstance->mSceneObject->getName();
+		return MonoUtil::stringToMono(MonoManager::instance().getDomain(), name);
 	}
 
 	void ScriptSceneObject::internal_setParent(ScriptSceneObject* nativeInstance, MonoObject* parent)

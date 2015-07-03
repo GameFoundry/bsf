@@ -60,17 +60,17 @@ namespace BansheeEngine
 
 		void updateTreeElement(SceneTreeElement* element);
 
-		virtual TreeElement& getRootElement() { return mRootElement; }
-		virtual const TreeElement& getRootElementConst() const { return mRootElement; }
-		virtual void updateTreeElementHierarchy();
-		virtual void renameTreeElement(TreeElement* element, const WString& name);
-		virtual void deleteTreeElement(TreeElement* element);
-		virtual bool acceptDragAndDrop() const;
-		virtual void dragAndDropStart();
-		virtual void dragAndDropEnded(TreeElement* overTreeElement);
-		virtual void dragAndDropFinalize();
-		virtual bool _acceptDragAndDrop(const Vector2I position, UINT32 typeId) const;
-		virtual void selectionChanged();
+		virtual TreeElement& getRootElement() override { return mRootElement; }
+		virtual const TreeElement& getRootElementConst() const override { return mRootElement; }
+		virtual void updateTreeElementHierarchy() override;
+		virtual void renameTreeElement(TreeElement* element, const WString& name) override;
+		virtual void deleteTreeElement(TreeElement* element) override;
+		virtual bool acceptDragAndDrop() const override;
+		virtual void dragAndDropStart() override;
+		virtual void dragAndDropEnded(TreeElement* overTreeElement) override;
+		virtual void dragAndDropFinalize() override;
+		virtual bool _acceptDragAndDrop(const Vector2I position, UINT32 typeId) const override;
+		virtual void selectionChanged() override;
 
 		void deleteTreeElementInternal(TreeElement* element);
 	};

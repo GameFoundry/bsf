@@ -21,6 +21,7 @@ namespace BansheeEngine
 		static MonoObject* internal_getShaderIncludeIcon();
 		static MonoObject* internal_getMaterialIcon();
 		static MonoObject* internal_getSpriteTextureIcon();
+		static MonoObject* internal_getPrefabIcon();
 
 		ScriptEditorBuiltin(MonoObject* instance);
 	};

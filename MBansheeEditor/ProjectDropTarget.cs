@@ -9,7 +9,8 @@ namespace BansheeEditor
     {
         private const int DragStartDistancePx = 3;
 
-        public Action<Vector2I, string[]> OnDrop;
+        public Action<Vector2I, string[]> OnDropResource;
+        public Action<Vector2I, SceneObject[]> OnDropSceneObject;
         public Action<Vector2I> OnStart;
         public Action<Vector2I> OnEnter;
         public Action OnLeave;
@@ -140,12 +141,23 @@ namespace BansheeEditor
                 }
             }
 
-            if (DragDrop.DropInProgress && DragDrop.Type == DragDropType.Resource)
+            if (DragDrop.DropInProgress)
             {
-                if (OnDrop != null)
+                if (DragDrop.Type == DragDropType.Resource)
                 {
-                    ResourceDragDropData resourceDragDrop = (ResourceDragDropData)DragDrop.Data;
-                    OnDrop(currentWindowPos, resourceDragDrop.Paths);
+                    if (OnDropResource != null)
+                    {
+                        ResourceDragDropData resourceDragDrop = (ResourceDragDropData) DragDrop.Data;
+                        OnDropResource(currentWindowPos, resourceDragDrop.Paths);
+                    }
+                }
+                else if (DragDrop.Type == DragDropType.SceneObject)
+                {
+                    if (OnDropSceneObject != null)
+                    {
+                        SceneObjectDragDropData sceneDragDrop = (SceneObjectDragDropData) DragDrop.Data;
+                        OnDropSceneObject(currentWindowPos, sceneDragDrop.Objects);
+                    }
                 }
             }
         }
@@ -182,8 +194,8 @@ namespace BansheeEditor
         {
             isOSDragActive = false;
 
-            if (OnDrop != null)
-                OnDrop(new Vector2I(x, y), dropTargetOS.FilePaths);
+            if (OnDropResource != null)
+                OnDropResource(new Vector2I(x, y), dropTargetOS.FilePaths);
         }
     }
 }

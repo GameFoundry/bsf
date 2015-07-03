@@ -83,6 +83,7 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::ShaderIncludeIconTex = L"ShaderIncludeIcon.psd";
 	const WString BuiltinEditorResources::MaterialIconTex = L"MaterialIcon.psd";
 	const WString BuiltinEditorResources::SpriteTextureIconTex = L"SpriteIcon.psd";
+	const WString BuiltinEditorResources::PrefabIconTex = L"PrefabIcon.psd";
 
 	const WString BuiltinEditorResources::WindowBackgroundTexture = L"WindowBgTile.psd";
 
@@ -1383,6 +1384,8 @@ namespace BansheeEngine
 			return getGUIIcon(MaterialIconTex);
 		case ProjectIcon::SpriteTexture:
 			return getGUIIcon(SpriteTextureIconTex);
+		case ProjectIcon::Prefab:
+			return getGUIIcon(PrefabIconTex);
 		}
 
 		return HSpriteTexture();

@@ -6,6 +6,11 @@
 #include "BsDragAndDropManager.h"
 #include "BsCmdReparentSO.h"
 #include "BsSelection.h"
+#include "BsGUIResourceTreeView.h"
+#include "BsProjectLibrary.h"
+#include "BsProjectResourceMeta.h"
+#include "BsPrefab.h"
+#include "BsResources.h"
 
 namespace BansheeEngine
 {
@@ -230,7 +235,9 @@ namespace BansheeEngine
 
 	bool GUISceneTreeView::acceptDragAndDrop() const
 	{
-		return DragAndDropManager::instance().isDragInProgress() && DragAndDropManager::instance().getDragTypeId() == (UINT32)DragAndDropType::SceneObject;
+		return DragAndDropManager::instance().isDragInProgress() && 
+			(DragAndDropManager::instance().getDragTypeId() == (UINT32)DragAndDropType::SceneObject ||
+			DragAndDropManager::instance().getDragTypeId() == (UINT32)DragAndDropType::Resources);
 	}
 
 	void GUISceneTreeView::dragAndDropStart()
@@ -251,21 +258,59 @@ namespace BansheeEngine
 
 	void GUISceneTreeView::dragAndDropEnded(TreeElement* overTreeElement)
 	{
-		if(overTreeElement != nullptr)
+		UINT32 dragTypeId = DragAndDropManager::instance().getDragTypeId();
+
+		if (dragTypeId == (UINT32)DragAndDropType::SceneObject)
 		{
-			DraggedSceneObjects* draggedSceneObjects = reinterpret_cast<DraggedSceneObjects*>(DragAndDropManager::instance().getDragData());
-
-			Vector<HSceneObject> sceneObjects;
-			SceneTreeElement* sceneTreeElement = static_cast<SceneTreeElement*>(overTreeElement);
-			HSceneObject newParent = sceneTreeElement->mSceneObject;
-
-			for(UINT32 i = 0; i < draggedSceneObjects->numObjects; i++)
+			if (overTreeElement != nullptr)
 			{
-				if(draggedSceneObjects->objects[i] != newParent)
-					sceneObjects.push_back(draggedSceneObjects->objects[i]);
+				DraggedSceneObjects* draggedSceneObjects = reinterpret_cast<DraggedSceneObjects*>(DragAndDropManager::instance().getDragData());
+
+				Vector<HSceneObject> sceneObjects;
+				SceneTreeElement* sceneTreeElement = static_cast<SceneTreeElement*>(overTreeElement);
+				HSceneObject newParent = sceneTreeElement->mSceneObject;
+
+				for (UINT32 i = 0; i < draggedSceneObjects->numObjects; i++)
+				{
+					if (draggedSceneObjects->objects[i] != newParent)
+						sceneObjects.push_back(draggedSceneObjects->objects[i]);
+				}
+
+				CmdReparentSO::execute(sceneObjects, newParent);
+			}
+		}
+		else if (dragTypeId == (UINT32)DragAndDropType::Resources)
+		{
+			DraggedResources* draggedResources = reinterpret_cast<DraggedResources*>(DragAndDropManager::instance().getDragData());
+
+			HSceneObject newParent;
+			if (overTreeElement != nullptr)
+			{
+				SceneTreeElement* sceneTreeElement = static_cast<SceneTreeElement*>(overTreeElement);
+				newParent = sceneTreeElement->mSceneObject;
 			}
 
-			CmdReparentSO::execute(sceneObjects, newParent);
+			for (auto& path : draggedResources->resourcePaths)
+			{
+				ProjectLibrary::LibraryEntry* entry = ProjectLibrary::instance().findEntry(path);
+
+				if (entry != nullptr && entry->type == ProjectLibrary::LibraryEntryType::File)
+				{
+					ProjectLibrary::ResourceEntry* resEntry = static_cast<ProjectLibrary::ResourceEntry*>(entry);
+					if (resEntry->meta->getTypeID() == TID_Prefab)
+					{
+						HPrefab prefab = static_resource_cast<Prefab>(gResources().loadFromUUID(resEntry->meta->getUUID()));
+
+						if (prefab != nullptr)
+						{
+							HSceneObject instance = prefab->instantiate();
+
+							if (newParent != nullptr)
+								instance->setParent(newParent);
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -274,13 +319,16 @@ namespace BansheeEngine
 		mDragInProgress = false;
 		_markContentAsDirty();
 
-		DraggedSceneObjects* draggedSceneObjects = reinterpret_cast<DraggedSceneObjects*>(DragAndDropManager::instance().getDragData());
-		bs_delete(draggedSceneObjects);
+		if (DragAndDropManager::instance().getDragTypeId() == (UINT32)DragAndDropType::SceneObject)
+		{
+			DraggedSceneObjects* draggedSceneObjects = reinterpret_cast<DraggedSceneObjects*>(DragAndDropManager::instance().getDragData());
+			bs_delete(draggedSceneObjects);
+		}
 	}
 
 	bool GUISceneTreeView::_acceptDragAndDrop(const Vector2I position, UINT32 typeId) const
 	{
-		return typeId == (UINT32)DragAndDropType::SceneObject;
+		return typeId == (UINT32)DragAndDropType::SceneObject || typeId == (UINT32)DragAndDropType::Resources;
 	}
 
 	void GUISceneTreeView::selectionChanged()
