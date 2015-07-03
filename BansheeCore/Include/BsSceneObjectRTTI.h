@@ -41,6 +41,9 @@ namespace BansheeEngine
 
 		UINT32& getFlags(SceneObject* obj) { return obj->mFlags; }
 		void setFlags(SceneObject* obj, UINT32& value) { obj->mFlags = value; }
+
+		UINT32& getPrefabHash(SceneObject* obj) { return obj->mPrefabHash; }
+		void setPrefabHash(SceneObject* obj, UINT32& value) { obj->mPrefabHash = value; }
 	public:
 		SceneObjectRTTI()
 		{
@@ -51,6 +54,7 @@ namespace BansheeEngine
 			addPlainField("mPrefabLink", 2, &SceneObjectRTTI::getPrefabLink, &SceneObjectRTTI::setPrefabLink);
 			addPlainField("mFlags", 3, &SceneObjectRTTI::getFlags, &SceneObjectRTTI::setFlags);
 			addReflectablePtrField("mPrefabDiff", 4, &SceneObjectRTTI::getPrefabDiff, &SceneObjectRTTI::setPrefabDiff);
+			addPlainField("mPrefabHash", 5, &SceneObjectRTTI::getPrefabHash, &SceneObjectRTTI::setPrefabHash);
 		}
 
 		virtual void onDeserializationStarted(IReflectable* obj) override

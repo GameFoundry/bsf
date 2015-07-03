@@ -13,7 +13,7 @@ namespace BansheeEngine
 	{
 		closeDropDownBox();
 
-		mDropDownSO = SceneObject::create("DropDownBox");
+		mDropDownSO = SceneObject::create("DropDownBox", SOF_Internal | SOF_Persistent | SOF_DontSave);
 		mDropDownBox = mDropDownSO->addComponent<GUIDropDownMenu>(target, placement, dropDownData, skin, type);
 		mOnClosedCallback = onClosedCallback;
 

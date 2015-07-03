@@ -27,26 +27,67 @@ namespace BansheeEngine
 
 	void PrefabUtility::updateFromPrefab(const HSceneObject& so)
 	{
-		String prefabLinkUUID = so->getPrefabLink();
-		HPrefab prefabLink = static_resource_cast<Prefab>(gResources().loadFromUUID(prefabLinkUUID, false, false));
+		HSceneObject topLevelObject = so;
 
-		if (prefabLink == nullptr)
-			return;
+		while (topLevelObject != nullptr)
+		{
+			if (!topLevelObject->mPrefabLinkUUID.empty())
+				break;
 
-		// Save IDs, destroy original, create new, apply diff, restore IDs
-		SceneObjectProxy soProxy;
-		UnorderedMap<UINT32, GameObjectInstanceDataPtr> linkedInstanceData;
-		recordInstanceData(so, soProxy, linkedInstanceData);
+			if (topLevelObject->mParent != nullptr)
+				topLevelObject = topLevelObject->mParent;
+			else
+				topLevelObject = nullptr;
+		}
 
-		PrefabDiffPtr prefabDiff = so->mPrefabDiff;
-		so->destroy();
+		Stack<HSceneObject> todo;
+		todo.push(topLevelObject);
 
-		HSceneObject newInstance = prefabLink->instantiate();
-		if (prefabDiff != nullptr)
-			prefabDiff->apply(newInstance);
+		Vector<HSceneObject> prefabInstanceRoots;
 
-		restoreLinkedInstanceData(newInstance, linkedInstanceData);
-		restoreUnlinkedInstanceData(newInstance, soProxy);
+		while (!todo.empty())
+		{
+			HSceneObject current = todo.top();
+			todo.pop();
+
+			String prefabLinkUUID = current->getPrefabLink();
+			if (!prefabLinkUUID.empty())
+				prefabInstanceRoots.push_back(current);
+
+			UINT32 childCount = current->getNumChildren();
+			for (UINT32 i = 0; i < childCount; i++)
+			{
+				HSceneObject child = current->getChild(i);
+				todo.push(child);
+			}
+		}
+
+		// Need to do this bottom up to ensure I don't destroy the parents before children
+		for (auto iter = prefabInstanceRoots.rbegin(); iter != prefabInstanceRoots.rend(); ++iter)
+		{
+			HSceneObject current = *iter;
+			HPrefab prefabLink = static_resource_cast<Prefab>(gResources().loadFromUUID(current->getPrefabLink(), false, false));
+
+			if (prefabLink != nullptr && prefabLink->getHash() != current->mPrefabHash)
+			{
+				// Save IDs, destroy original, create new, apply diff, restore IDs
+				SceneObjectProxy soProxy;
+				UnorderedMap<UINT32, GameObjectInstanceDataPtr> linkedInstanceData;
+				recordInstanceData(current, soProxy, linkedInstanceData);
+
+				PrefabDiffPtr prefabDiff = current->mPrefabDiff;
+				current->destroy();
+
+				HSceneObject newInstance = prefabLink->instantiate();
+				if (prefabDiff != nullptr)
+					prefabDiff->apply(newInstance);
+
+				restoreLinkedInstanceData(newInstance, linkedInstanceData);
+				restoreUnlinkedInstanceData(newInstance, soProxy);
+			}
+		}
+
+		gResources().unloadAllUnused();
 	}
 
 	void PrefabUtility::generatePrefabIds(const HSceneObject& sceneObject)
@@ -135,86 +176,82 @@ namespace BansheeEngine
 
 	void PrefabUtility::recordPrefabDiff(const HSceneObject& sceneObject)
 	{
-		HSceneObject curObj = sceneObject;
+		HSceneObject topLevelObject = sceneObject;
 
-		while (curObj == nullptr)
+		while (topLevelObject != nullptr)
 		{
-			if (!curObj->mPrefabLinkUUID.empty())
+			if (!topLevelObject->mPrefabLinkUUID.empty())
+				break;
+
+			if (topLevelObject->mParent != nullptr)
+				topLevelObject = topLevelObject->mParent;
+			else
+				topLevelObject = nullptr;
+		}
+
+		Stack<HSceneObject> todo;
+		todo.push(topLevelObject);
+
+		while (!todo.empty())
+		{
+			HSceneObject current = todo.top();
+			todo.pop();
+
+			if (!current->getPrefabLink().empty())
 			{
-				curObj->mPrefabDiff = nullptr;
+				current->mPrefabDiff = nullptr;
 
-				HPrefab prefabLink = static_resource_cast<Prefab>(gResources().loadFromUUID(curObj->mPrefabLinkUUID, false, false));
+				HPrefab prefabLink = static_resource_cast<Prefab>(gResources().loadFromUUID(current->getPrefabLink(), false, false));
 				if (prefabLink != nullptr)
-					curObj->mPrefabDiff = PrefabDiff::create(prefabLink->getRoot(), curObj->getHandle());
-
-				return;
+					current->mPrefabDiff = PrefabDiff::create(prefabLink->getRoot(), current->getHandle());
 			}
 
-			if (curObj->mParent != nullptr)
-				curObj = curObj->mParent;
-			else
-				curObj = nullptr;
+			UINT32 childCount = current->getNumChildren();
+			for (UINT32 i = 0; i < childCount; i++)
+			{
+				HSceneObject child = current->getChild(i);
+				todo.push(child);
+			}
 		}
+
+		gResources().unloadAllUnused();
 	}
 
 	void PrefabUtility::recordInstanceData(const HSceneObject& so, SceneObjectProxy& output,
 		UnorderedMap<UINT32, GameObjectInstanceDataPtr>& linkedInstanceData)
 	{
-		struct StackEntry
-		{
-			HSceneObject so;
-			bool isPartOfPrefab;
-		};
-
-		Stack<StackEntry> todo;
-		todo.push(StackEntry());
-
-		StackEntry& topEntry = todo.top();
-		topEntry.so = so;
-		topEntry.isPartOfPrefab = true;
+		Stack<HSceneObject> todo;
+		todo.push(so);
 
 		while (!todo.empty())
 		{
-			StackEntry current = todo.top();
+			HSceneObject current = todo.top();
 			todo.pop();
 
-			output.instanceData = current.so->_getInstanceData();
+			output.instanceData = current->_getInstanceData();
+			output.linkId = current->getLinkId();
 
-			if (current.isPartOfPrefab)
-			{
-				output.linkId = current.so->getLinkId();
-				linkedInstanceData[output.linkId] = output.instanceData;
-			}
-			else
-				output.linkId = -1;
+			linkedInstanceData[output.linkId] = output.instanceData;
 
-			const Vector<HComponent>& components = current.so->getComponents();
+			const Vector<HComponent>& components = current->getComponents();
 			for (auto& component : components)
 			{
 				output.components.push_back(ComponentProxy());
 
 				ComponentProxy& componentProxy = output.components.back();
 				componentProxy.instanceData = component->_getInstanceData();
+				componentProxy.linkId = component->getLinkId();
 
-				if (current.isPartOfPrefab)
-				{
-					componentProxy.linkId = component->getLinkId();
-					linkedInstanceData[componentProxy.linkId] = componentProxy.instanceData;
-				}
-				else
-					componentProxy.linkId = -1;
+				linkedInstanceData[componentProxy.linkId] = componentProxy.instanceData;
 			}
 
-			UINT32 numChildren = current.so->getNumChildren();
+			UINT32 numChildren = current->getNumChildren();
 			for (UINT32 i = 0; i < numChildren; i++)
 			{
-				HSceneObject child = current.so->getChild(i);
+				HSceneObject child = current->getChild(i);
 
-				todo.push(StackEntry());
-				StackEntry& newEntry = todo.top();
-
-				newEntry.so = child;
-				newEntry.isPartOfPrefab = current.isPartOfPrefab && child->mPrefabLinkUUID.empty();
+				if (child->mPrefabLinkUUID.empty())
+					todo.push(child);
 			}
 		}
 	}
@@ -312,6 +349,9 @@ namespace BansheeEngine
 			for (UINT32 i = 0; i < numChildren; i++)
 			{
 				HSceneObject child = current.so->getChild(i);
+
+				if (!child->mPrefabLinkUUID.empty())
+					continue;
 
 				if (child->getLinkId() == -1)
 				{

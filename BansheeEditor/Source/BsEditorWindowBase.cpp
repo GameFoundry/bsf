@@ -63,7 +63,7 @@ namespace BansheeEngine
 	void EditorWindowBase::construct(const RenderWindowPtr& renderWindow)
 	{
 		mRenderWindow = renderWindow;
-		mSceneObject = SceneObject::create("EditorWindow");
+		mSceneObject = SceneObject::create("EditorWindow", SOF_Internal | SOF_Persistent | SOF_DontSave);
 
 		mCamera = mSceneObject->addComponent<Camera>(renderWindow, 0.0f, 0.0f, 1.0f, 1.0f);
 		mCamera->setNearClipDistance(5);

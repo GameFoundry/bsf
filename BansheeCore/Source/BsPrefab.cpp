@@ -7,7 +7,7 @@
 namespace BansheeEngine
 {
 	Prefab::Prefab()
-		:Resource(false)
+		:Resource(false), mHash(0)
 	{
 		
 	}
@@ -65,6 +65,7 @@ namespace BansheeEngine
 	void Prefab::update(const HSceneObject& sceneObject)
 	{
 		initialize(sceneObject);
+		mHash++;
 	}
 
 	HSceneObject Prefab::instantiate()
@@ -74,9 +75,32 @@ namespace BansheeEngine
 
 		HSceneObject clone = mRoot->clone();
 		clone->instantiate();
+		clone->mPrefabHash = mHash;
 
 #if BS_EDITOR_BUILD
-		PrefabUtility::updateFromPrefab(clone);
+		// Update any child prefab instances in case their prefabs changed
+		Stack<HSceneObject> todo;
+		todo.push(clone);
+
+		Vector<HSceneObject> prefabInstanceRoots;
+
+		while (!todo.empty())
+		{
+			HSceneObject current = todo.top();
+			todo.pop();
+
+			UINT32 childCount = current->getNumChildren();
+			for (UINT32 i = 0; i < childCount; i++)
+			{
+				HSceneObject child = current->getChild(i);
+
+				String prefabLinkUUID = child->getPrefabLink();
+				if (!prefabLinkUUID.empty())
+					PrefabUtility::updateFromPrefab(child);
+				else
+					todo.push(child);
+			}
+		}
 #endif
 
 		return clone;

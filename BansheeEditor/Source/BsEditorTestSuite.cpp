@@ -464,6 +464,8 @@ namespace BansheeEngine
 		BS_TEST_ASSERT(!cmpExternal->ref1.isDestroyed());
 		BS_TEST_ASSERT(!cmpExternal->ref2.isDestroyed());
 		BS_TEST_ASSERT(cmpB1_1->val1 == "InitialValue");
+
+		so0_0->destroy();
 	}
 
 	void EditorTestSuite::BinaryDiff()
@@ -652,5 +654,7 @@ namespace BansheeEngine
 		HSceneObject nso3 = newRoot->getChild(3);
 		GameObjectHandle<TestComponentD> ncmp3 = nso3->getComponent<TestComponentD>();
 		BS_TEST_ASSERT(ncmp3 != nullptr);
+
+		root->destroy();
 	}
 }

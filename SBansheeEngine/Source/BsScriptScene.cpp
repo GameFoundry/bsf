@@ -28,8 +28,8 @@ namespace BansheeEngine
 		HSceneObject root = prefab->instantiate();
 
 		MonoString* uuid = MonoUtil::stringToMono(MonoManager::instance().getDomain(), prefab.getUUID());
-		gResources().unload(prefab);
 
+		// TODO - Return actual prefab
 		return uuid;
 	}
 

@@ -59,24 +59,37 @@ namespace BansheeEngine
 
 		// Check if SceneObject has changed in any way and update the tree element
 
-		bool completeMatch = (UINT32)element->mChildren.size() == currentSO->getNumChildren();
-
 		// Early exit case - Most commonly there will be no changes between active and cached data so 
 		// we first do a quick check in order to avoid expensive comparison later
-		if(completeMatch)
+		bool completeMatch = true;
+		UINT32 visibleChildCount = 0;
+		for (UINT32 i = 0; i < currentSO->getNumChildren(); i++)
 		{
-			for(UINT32 i = 0; i < currentSO->getNumChildren(); i++)
+			if (i >= element->mChildren.size())
 			{
-				SceneTreeElement* currentChild = static_cast<SceneTreeElement*>(element->mChildren[i]);
+				completeMatch = false;
+				break;
+			}
 
-				UINT64 curId = currentSO->getChild(i)->getInstanceId();
-				if(curId != currentChild->mId)
-				{
-					completeMatch = false;
-					break;
-				}
+			HSceneObject currentSOChild = currentSO->getChild(i);
+
+#if BS_DEBUG_MODE == 0
+			if (currentSOChild->hasFlag(SOF_Internal))
+				continue;
+#endif
+
+			SceneTreeElement* currentChild = static_cast<SceneTreeElement*>(element->mChildren[visibleChildCount]);
+			visibleChildCount++;
+
+			UINT64 curId = currentSOChild->getInstanceId();
+			if (curId != currentChild->mId)
+			{
+				completeMatch = false;
+				break;
 			}
 		}
+
+		completeMatch &= visibleChildCount == element->mChildren.size();
 
 		// Not a complete match, compare everything and insert/delete elements as needed
 		bool needsUpdate = false;
@@ -91,8 +104,15 @@ namespace BansheeEngine
 			for(UINT32 i = 0; i < currentSO->getNumChildren(); i++)
 			{
 				HSceneObject currentSOChild = currentSO->getChild(i);
+
+#if BS_DEBUG_MODE == 0
+				if (currentSOChild->hasFlag(SOF_Internal))
+					continue;
+#endif
+
 				UINT64 curId = currentSOChild->getInstanceId();
 				bool found = false;
+
 				for(UINT32 j = 0; j < element->mChildren.size(); j++)
 				{
 					SceneTreeElement* currentChild = static_cast<SceneTreeElement*>(element->mChildren[j]);

@@ -13,25 +13,14 @@ namespace BansheeEngine
 		SceneObjectPtr getSceneObject(Prefab* obj) { return obj->mRoot.getInternalPtr(); }
 		void setSceneObject(Prefab* obj, SceneObjectPtr value) { obj->mRoot = value->getHandle(); }
 
+		UINT32& getHash(Prefab* obj) { return obj->mHash; }
+		void setHash(Prefab* obj, UINT32& val) { obj->mHash = val; }
+
 	public:
 		PrefabRTTI()
 		{
 			addReflectablePtrField("mRoot", 0, &PrefabRTTI::getSceneObject, &PrefabRTTI::setSceneObject);
-		}
-
-		virtual void onDeserializationStarted(IReflectable* obj) override
-		{
-			Prefab* so = static_cast<Prefab*>(obj);
-
-			// TODO
-		}
-
-		virtual void onDeserializationEnded(IReflectable* obj) override
-		{
-			Prefab* so = static_cast<Prefab*>(obj);
-			// TODO
-
-			so->mRTTIData = nullptr;
+			addPlainField("mHash", 1, &PrefabRTTI::getHash, &PrefabRTTI::setHash);
 		}
 
 		virtual const String& getRTTIName() override

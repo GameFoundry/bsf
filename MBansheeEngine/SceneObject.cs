@@ -158,7 +158,15 @@ namespace BansheeEngine
 
         public SceneObject(string name)
         {
-            Internal_CreateInstance(this, name);
+            Internal_CreateInstance(this, name, 0);
+        }
+
+        internal SceneObject(string name, bool isInternal)
+        {
+            if(isInternal)
+                Internal_CreateInstance(this, name, (int)(SceneObjectEditorFlags.DontSave | SceneObjectEditorFlags.Internal | SceneObjectEditorFlags.Persistent));
+            else
+                Internal_CreateInstance(this, name, 0);
         }
 
         public T AddComponent<T>() where T : Component
@@ -239,7 +247,7 @@ namespace BansheeEngine
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(SceneObject instance, string name);
+        private static extern void Internal_CreateInstance(SceneObject instance, string name, int flags);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetParent(IntPtr nativeInstance, SceneObject parent);
@@ -330,5 +338,17 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_Destroy(IntPtr nativeInstance, bool immediate);
+    }
+
+    // Note: Must be equal to C++ enum SceneObjectFlags
+    internal enum SceneObjectEditorFlags
+    {
+        DontInstantiate = 0x01, /**< Object wont be in the main scene and its components won't receive updates. */
+        DontSave = 0x02,		/**< Object will be skipped when saving the scene hierarchy or a prefab. */
+        Persistent = 0x04,		/**< Object will remain in the scene even after scene clear, unless destroyed directly. 
+									 This only works with top-level objects. */
+        Internal = 0x08			/**< Provides a hint to external systems that his object is used by engine internals.
+									 For example, those systems might not want to display those objects together with the
+									 user created ones. */
     }
 }

@@ -388,7 +388,7 @@ namespace BansheeEditor
 
 		    if (camera == null)
 		    {
-                SceneObject sceneCameraSO = new SceneObject("SceneCamera");
+                SceneObject sceneCameraSO = new SceneObject("SceneCamera", true);
                 camera = sceneCameraSO.AddComponent<Camera>();
                 camera.Target = renderTexture;
                 camera.ViewportRect = new Rect2(0.0f, 0.0f, 1.0f, 1.0f);

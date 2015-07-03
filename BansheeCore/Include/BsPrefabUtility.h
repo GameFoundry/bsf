@@ -72,6 +72,9 @@ namespace BansheeEngine
 		/**
 		 * @brief	Updates the internal prefab diff data by recording the difference
 		 *			between the current values in the provided prefab instance and its prefab.
+		 *
+		 * @note	If the provided object contains any child prefab instances, this will be
+		 *			done recursively for them as well.
 		 */
 		static void recordPrefabDiff(const HSceneObject& sceneObject);
 
@@ -86,6 +89,8 @@ namespace BansheeEngine
 		 * @param[out]	output				Contains the output hierarchy of instance data.
 		 * @param[out]	linkedInstanceData	A map of link IDs to instance data. Objects without
 		 *									link IDs will not be included here.
+		 *
+		 * @note	Does not recurse into child prefab instances.
 		 */
 		static void recordInstanceData(const HSceneObject& so, SceneObjectProxy& output, 
 			UnorderedMap<UINT32, GameObjectInstanceDataPtr>& linkedInstanceData);
@@ -96,6 +101,8 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	so					Object to traverse and restore the instance data.
 		 * @param[in]	linkedInstanceData	A map of link IDs to instance data, returned by "recordInstanceData" method.
+		 *
+		 * @note	Does not recurse into child prefab instances.
 		 */
 		static void restoreLinkedInstanceData(const HSceneObject& so, UnorderedMap<UINT32, GameObjectInstanceDataPtr>& linkedInstanceData);
 
@@ -107,6 +114,8 @@ namespace BansheeEngine
 		 * @param[in]	so		Object to traverse and restore the instance data.
 		 * @param[in]	proxy	Hierarchy containing instance data for all objects and components, returned by
 		 *						"recordInstanceData" method.
+		 *
+		 * @note	Does not recurse into child prefab instances.
 		 */
 		static void restoreUnlinkedInstanceData(const HSceneObject& so, SceneObjectProxy& proxy);
 	};

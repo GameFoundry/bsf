@@ -58,9 +58,9 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptSceneObject::internal_destroy);
 	}
 
-	void ScriptSceneObject::internal_createInstance(MonoObject* instance, MonoString* name)
+	void ScriptSceneObject::internal_createInstance(MonoObject* instance, MonoString* name, UINT32 flags)
 	{
-		HSceneObject sceneObject = SceneObject::create(toString(MonoUtil::monoToWString(name)));
+		HSceneObject sceneObject = SceneObject::create(toString(MonoUtil::monoToWString(name)), flags);
 
 		ScriptGameObjectManager::instance().createScriptSceneObject(instance, sceneObject);
 	}

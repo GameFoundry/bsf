@@ -22,10 +22,16 @@ namespace BansheeEngine
 	{
 		UINT32 numChildren = mRootNode->getNumChildren();
 
+		UINT32 curIdx = 0;
 		for (UINT32 i = 0; i < numChildren; i++)
 		{
-			HSceneObject child = mRootNode->getChild(0);
-			child->destroy();
+			HSceneObject child = mRootNode->getChild(curIdx);
+
+			if (!child->hasFlag(SOF_Persistent))
+			{
+				child->destroy();
+				curIdx++;
+			}
 		}
 
 		GameObjectManager::instance().destroyQueuedObjects();

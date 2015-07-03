@@ -18,7 +18,12 @@ namespace BansheeEngine
 	enum SceneObjectFlags
 	{
 		SOF_DontInstantiate = 0x01, /**< Object wont be in the main scene and its components won't receive updates. */
-		SOF_DontSave = 0x02 /**< Object will be skipped when saving the scene hierarchy or a prefab. */
+		SOF_DontSave = 0x02,		/**< Object will be skipped when saving the scene hierarchy or a prefab. */
+		SOF_Persistent = 0x04,		/**< Object will remain in the scene even after scene clear, unless destroyed directly. 
+										 This only works with top-level objects. */
+		SOF_Internal = 0x08			/**< Provides a hint to external systems that his object is used by engine internals.
+									     For example, those systems might not want to display those objects together with the
+										 user created ones. */
 	};
 
 	/**
@@ -133,6 +138,7 @@ namespace BansheeEngine
 		HSceneObject mThisHandle;
 		String mPrefabLinkUUID;
 		PrefabDiffPtr mPrefabDiff;
+		UINT32 mPrefabHash;
 		UINT32 mFlags;
 
 		/************************************************************************/

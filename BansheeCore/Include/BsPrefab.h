@@ -41,6 +41,12 @@ namespace BansheeEngine
 		 */
 		HSceneObject getRoot() const { return mRoot; }
 
+		/**
+		 * @brief	Returns a hash value that can be used for determining if a prefab changed
+		 *			by comparing it to a previously saved hash.
+		 */
+		UINT32 getHash() const { return mHash; }
+
 	private:
 		/**
 		 * @brief	Initializes the internal prefab hierarchy. Must be called druing creation.
@@ -53,6 +59,7 @@ namespace BansheeEngine
 		static PrefabPtr createEmpty();
 
 		HSceneObject mRoot;
+		UINT32 mHash;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

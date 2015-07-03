@@ -16,7 +16,7 @@ namespace BansheeEngine
 		:mRootPanel(nullptr), mPosition(position), mWidth(width), mHeight(height), 
 		mRenderWindow(parent), mFrontHitBox(nullptr), mBackHitBox(nullptr)
 	{
-		mSceneObject = SceneObject::create("EditorWindow");
+		mSceneObject = SceneObject::create("EditorWindow", SOF_Internal | SOF_Persistent | SOF_DontSave);
 
 		mGUI = mSceneObject->addComponent<GUIWidget>(target);
 

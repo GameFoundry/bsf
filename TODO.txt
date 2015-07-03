@@ -27,20 +27,20 @@ return them in checkForModifications?
 ---------------------------------------------------------------------
 Prefab diff
 
-TODO - Recursively generating prefab diffs doesn't work. e.g. if one prefab has multiple prefab children we just generate a single
-       diff for the top-most parent but I should probably generate one for each prefab?
-	    - The same issue is with updateFromPrefab - presumably it should update all child prefabs as well
-
-TODO - When clearing a scene I need to be able to persist certain elements (e.g. editor-only stuff)
-
 TODO - How do I mark the scene as modified? I need to know if user made any modifications to the scene to
        ask him before loading another scene or exiting.
 	     - Just have a EditorUtility.SetDirty for the resource? This means I would need to use this general
 		   approach for all resources, but I probably need that since likely I want to save all modified resources
 		   before editor exits? Think about this.
-
-TODO - I should add a "prefabHash" to each scene object so I know when I need to call updateFromPrefab and when not.
-       Otherwise I need to call it every time I instantiate a prefab.
+		 - Keep active scene Prefab loaded in Scene
+		 - Call SetDirty on it whenever I:
+		   - Reparent an object, create new SO, or delete an SO (from editor)
+		   - Add a new component, remove a component, or modify a component in inspector
+		   - Allow user to call SetDirty himself
+		 - What do I do when I try to unload a dirty object?
+		  - Nothing unless doing so from the editor
+		 - Should I store dirty state in Script* objects?
+		  - Probably the best
 
 Level save
  - Drag and drop to project window

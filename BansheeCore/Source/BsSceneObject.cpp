@@ -16,7 +16,7 @@ namespace BansheeEngine
 		:GameObject(), mPosition(Vector3::ZERO), mRotation(Quaternion::IDENTITY), mScale(Vector3::ONE),
 		mWorldPosition(Vector3::ZERO), mWorldRotation(Quaternion::IDENTITY), mWorldScale(Vector3::ONE),
 		mCachedLocalTfrm(Matrix4::IDENTITY), mDirtyFlags(0xFFFFFFFF), mCachedWorldTfrm(Matrix4::IDENTITY), 
-		mActiveSelf(true), mActiveHierarchy(true), mDirtyHash(0), mFlags(flags)
+		mActiveSelf(true), mActiveHierarchy(true), mDirtyHash(0), mFlags(flags), mPrefabHash(0)
 	{
 		setName(name);
 	}

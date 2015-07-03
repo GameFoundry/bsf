@@ -303,7 +303,7 @@ namespace BansheeEngine
 		if(mWidgetSO)
 			mWidgetSO->destroy();
 
-		mWidgetSO = SceneObject::create("ProfilerOverlay");
+		mWidgetSO = SceneObject::create("ProfilerOverlay", SOF_Internal | SOF_Persistent | SOF_DontSave);
 		mWidget = mWidgetSO->addComponent<GUIWidget>(mTarget.get());
 		mWidget->setDepth(127);
 		mWidget->setSkin(BuiltinResources::instance().getGUISkin());

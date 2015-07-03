@@ -22,7 +22,7 @@ namespace BansheeEngine
 	private:
 		friend class ScriptGameObjectManager;
 
-		static void internal_createInstance(MonoObject* instance, MonoString* name);
+		static void internal_createInstance(MonoObject* instance, MonoString* name, UINT32 flags);
 
 		static void internal_setParent(ScriptSceneObject* nativeInstance, MonoObject* parent);
 		static MonoObject* internal_getParent(ScriptSceneObject* nativeInstance);
