@@ -3,5 +3,4 @@ FBX
 Next:
  - DefaultMeshData is defined in BansheeEngine but FBXImporter only includes Banshee Core
   - Therefore I am not using it in FBXImporter but I should
- - When import animation generate slopes for quaternion rotation curves
  

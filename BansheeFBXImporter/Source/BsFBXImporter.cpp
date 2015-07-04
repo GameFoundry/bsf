@@ -1226,28 +1226,62 @@ namespace BansheeEngine
 
 	void FBXImporter::eulerToQuaternionCurves(FBXAnimationCurve(&eulerCurves)[3], FBXAnimationCurve(&quatCurves)[4])
 	{
+		const float FIT_TIME = 0.33f;
+
 		INT32 numKeys = (INT32)eulerCurves[0].keyframes.size();
 
 		if (numKeys != (INT32)eulerCurves[1].keyframes.size() || numKeys != (INT32)eulerCurves[2].keyframes.size())
 			return;
 
-		Quaternion lastQuat;
-		for (INT32 i = 0; i < numKeys; i++)
+		auto eulerToQuaternion = [&](INT32 keyIdx, float time, const Quaternion& lastQuat)
 		{
-			float time = eulerCurves[0].keyframes[i].time;
-
-			Degree x = (Degree)eulerCurves[0].keyframes[i].value;
-			Degree y = (Degree)eulerCurves[1].keyframes[i].value;
-			Degree z = (Degree)eulerCurves[2].keyframes[i].value;
+			Degree x = (Degree)eulerCurves[0].evaluate(time);
+			Degree y = (Degree)eulerCurves[1].evaluate(time);
+			Degree z = (Degree)eulerCurves[2].evaluate(time);
 
 			Quaternion quat(x, y, z);
 
 			// Flip quaternion in case rotation is over 180 degrees
-			if (i > 0)
+			if (keyIdx > 0)
 			{
 				float dot = quat.dot(lastQuat);
 				if (dot < 0.0f)
 					quat = Quaternion(-quat.x, -quat.y, -quat.z, -quat.w);
+			}
+
+			return quat;
+		};
+
+		struct FitKeyframe
+		{
+			float time;
+			Quaternion value;
+		};
+
+		Vector<FitKeyframe> fitQuaternions(numKeys * 2);
+
+		Quaternion lastQuat;
+		for (INT32 i = 0; i < numKeys; i++)
+		{
+			float time = eulerCurves[0].keyframes[i].time;
+			Quaternion quat = eulerToQuaternion(i, time, lastQuat);
+
+			// Calculate extra values between keys so we can better approximate tangents
+			if ((i + 1) < numKeys)
+			{
+				float nextTime = eulerCurves[0].keyframes[i + 1].time;
+				float dt = nextTime - time;
+
+				FitKeyframe& fitStart = fitQuaternions[i * 2 + 0];
+				FitKeyframe& fitEnd = fitQuaternions[i * 2 + 1];
+
+				fitStart.time = time + dt * FIT_TIME;
+				fitEnd.time = time + dt * (1.0f - FIT_TIME);
+
+				fitStart.value = eulerToQuaternion(i, fitStart.time, quat);
+				fitEnd.value = eulerToQuaternion(i, fitEnd.time, fitStart.value);
+
+				lastQuat = fitStart.value;
 			}
 
 			// TODO - If animation is looping I should also compare last and first for continuity
@@ -1259,15 +1293,74 @@ namespace BansheeEngine
 				keyFrame.time = time;
 				keyFrame.value = quat[j];
 
-				// TODO - Recalculate tangents(make sure not to ignore original ones)
-				//  - Pay attention to deal with non-equally spaced keyframes
-				// TODO - Tangent recalculation assumes all curves are cubic, which might not be the case
-
 				keyFrame.inTangent = 0;
 				keyFrame.outTangent = 0;
 			}
+		}
 
-			lastQuat = quat;
+		// Recalculate tangents for quaternion curves
+
+		// TODO - There must be an analytical way to convert euler angle tangents
+		//        to quaternion tangents, but I don't want to bother figuring it out
+		//        until I have a test-bed for animation.
+		if (numKeys > 1)
+		{
+			// TODO - I could check per-key curve interpolation originally assigned in FBX
+			//        and use that to generate linear/constant slopes. Currently I assume 
+			//        its all cubic.
+
+			// First key
+			{
+				const FitKeyframe& fitKeyFrame = fitQuaternions[0];
+
+				for (INT32 j = 0; j < 4; j++)
+				{
+					FBXKeyFrame& keyFrame = quatCurves[j].keyframes[0];
+
+					float dt = fitKeyFrame.time - keyFrame.time;
+
+					keyFrame.inTangent = (fitKeyFrame.value[j] - keyFrame.value) / dt;
+					keyFrame.outTangent = keyFrame.inTangent;
+				}
+			}
+
+			// In-between keys
+			{
+				for (INT32 i = 1; i < (numKeys - 1); i++)
+				{
+					const FitKeyframe& fitPointStart = fitQuaternions[i * 2 - 1];
+					const FitKeyframe& fitPointEnd = fitQuaternions[i * 2 + 0];
+
+					for (INT32 j = 0; j < 4; j++)
+					{
+						FBXKeyFrame& keyFrame = quatCurves[j].keyframes[i];
+
+						float dt0 = fitPointEnd.time - keyFrame.time;
+						float dt1 = keyFrame.time - fitPointStart.time;
+
+						float t0 = fitPointEnd.value[j] - keyFrame.value;
+						float t1 = keyFrame.value - fitPointStart.value[j];
+
+						keyFrame.inTangent = t0 / (0.5f * dt0) + t1 / (0.5f * dt1);
+						keyFrame.outTangent = keyFrame.inTangent;
+					}
+				}
+			}
+
+			// Last key
+			{
+				const FitKeyframe& fitKeyFrame = fitQuaternions[(numKeys - 2) * 2];
+
+				for (INT32 j = 0; j < 4; j++)
+				{
+					FBXKeyFrame& keyFrame = quatCurves[j].keyframes[numKeys - 2];
+
+					float dt = keyFrame.time - fitKeyFrame.time;
+
+					keyFrame.inTangent = (keyFrame.value - fitKeyFrame.value[j]) / dt;
+					keyFrame.outTangent = keyFrame.inTangent;
+				}
+			}
 		}
 	}
 
