@@ -16,6 +16,8 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT RendererFactory
 	{
 	public:
+		virtual ~RendererFactory() { }
+
 		/**
 		 * @brief	Creates a new instance of the renderer.
 		 */

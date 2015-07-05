@@ -48,7 +48,7 @@ namespace BansheeEngine
 	void ScriptMesh::internal_CreateInstance(MonoObject* instance, int numVertices, int numIndices, 
 		MonoArray* subMeshes, MeshUsage usage, VertexLayout vertex, ScriptIndexType index)
 	{
-		VertexDataDescPtr vertexDesc = DefaultMeshData::vertexLayoutVertexDesc(vertex);
+		VertexDataDescPtr vertexDesc = RendererMeshData::vertexLayoutVertexDesc(vertex);
 
 		IndexType indexType = IT_16BIT;
 		if (index == ScriptIndexType::Index32)

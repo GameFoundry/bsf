@@ -92,7 +92,7 @@ namespace BansheeEngine
 	class PlainText;
 	class ScriptCode;
 	class ScriptCodeImportOptions;
-	class DefaultMeshData;
+	class RendererMeshData;
 
 	// 2D
 	class TextSprite;
@@ -118,7 +118,6 @@ namespace BansheeEngine
 	typedef std::shared_ptr<ScriptCode> ScriptCodePtr;
 	typedef std::shared_ptr<GUISkin> GUISkinPtr;
 	typedef std::shared_ptr<GUIContextMenu> GUIContextMenuPtr;
-	typedef std::shared_ptr<DefaultMeshData> DefaultMeshDataPtr;
 
 	typedef GameObjectHandle<GUIWidget> HGUIWidget;
 	typedef GameObjectHandle<Camera> HCamera;

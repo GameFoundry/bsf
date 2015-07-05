@@ -135,7 +135,7 @@ namespace BansheeEngine
 		 * @brief	Converts the mesh data from the imported FBX scene into mesh data that can be used
 		 *			for initializing a mesh.
 		 */
-		MeshDataPtr generateMeshData(const FBXImportScene& scene, const FBXImportOptions& options, Vector<SubMesh>& subMeshes);
+		RendererMeshDataPtr generateMeshData(const FBXImportScene& scene, const FBXImportOptions& options, Vector<SubMesh>& subMeshes);
 
 		/**
 		 * @brief	Creates an internal representation of an FBX node from an FbxNode object.

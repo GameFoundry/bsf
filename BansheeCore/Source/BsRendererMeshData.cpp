@@ -1,27 +1,29 @@
-#include "BsDefaultMeshData.h"
+#include "BsRendererMeshData.h"
 #include "BsVertexDataDesc.h"
 #include "BsVector2.h"
 #include "BsVector3.h"
 #include "BsVector4.h"
 #include "BsColor.h"
 #include "BsPixelUtil.h"
+#include "BsRendererManager.h"
+#include "BsCoreRenderer.h"
 
 namespace BansheeEngine
 {
-	DefaultMeshData::DefaultMeshData(UINT32 numVertices, UINT32 numIndices, VertexLayout layout, IndexType indexType)
+	RendererMeshData::RendererMeshData(UINT32 numVertices, UINT32 numIndices, VertexLayout layout, IndexType indexType)
 	{
 		VertexDataDescPtr vertexDesc = vertexLayoutVertexDesc(layout);
 
 		mMeshData = bs_shared_ptr<MeshData>(numVertices, numIndices, vertexDesc, indexType);
 	}
 
-	DefaultMeshData::DefaultMeshData(const MeshDataPtr& meshData)
+	RendererMeshData::RendererMeshData(const MeshDataPtr& meshData)
 		:mMeshData(meshData)
 	{
 
 	}
 
-	void DefaultMeshData::getPositions(Vector3* buffer, UINT32 size)
+	void RendererMeshData::getPositions(Vector3* buffer, UINT32 size)
 	{
 		if (!mMeshData->getVertexDesc()->hasElement(VES_POSITION))
 			return;
@@ -32,7 +34,7 @@ namespace BansheeEngine
 		mMeshData->getVertexData(VES_POSITION, (UINT8*)buffer, size);
 	}
 
-	void DefaultMeshData::setPositions(Vector3* buffer, UINT32 size)
+	void RendererMeshData::setPositions(Vector3* buffer, UINT32 size)
 	{
 		if (!mMeshData->getVertexDesc()->hasElement(VES_POSITION))
 			return;
@@ -43,7 +45,7 @@ namespace BansheeEngine
 		mMeshData->setVertexData(VES_POSITION, (UINT8*)buffer, size);
 	}
 
-	void DefaultMeshData::getNormals(Vector3* buffer, UINT32 size)
+	void RendererMeshData::getNormals(Vector3* buffer, UINT32 size)
 	{
 		if (!mMeshData->getVertexDesc()->hasElement(VES_NORMAL))
 			return;
@@ -54,7 +56,7 @@ namespace BansheeEngine
 		mMeshData->getVertexData(VES_NORMAL, (UINT8*)buffer, size);
 	}
 
-	void DefaultMeshData::setNormals(Vector3* buffer, UINT32 size)
+	void RendererMeshData::setNormals(Vector3* buffer, UINT32 size)
 	{
 		if (!mMeshData->getVertexDesc()->hasElement(VES_NORMAL))
 			return;
@@ -65,7 +67,7 @@ namespace BansheeEngine
 		mMeshData->setVertexData(VES_NORMAL, (UINT8*)buffer, size);
 	}
 
-	void DefaultMeshData::getTangents(Vector4* buffer, UINT32 size)
+	void RendererMeshData::getTangents(Vector4* buffer, UINT32 size)
 	{
 		if (!mMeshData->getVertexDesc()->hasElement(VES_TANGENT))
 			return;
@@ -76,7 +78,7 @@ namespace BansheeEngine
 		mMeshData->getVertexData(VES_TANGENT, (UINT8*)buffer, size);
 	}
 
-	void DefaultMeshData::setTangents(Vector4* buffer, UINT32 size)
+	void RendererMeshData::setTangents(Vector4* buffer, UINT32 size)
 	{
 		if (!mMeshData->getVertexDesc()->hasElement(VES_TANGENT))
 			return;
@@ -87,7 +89,7 @@ namespace BansheeEngine
 		mMeshData->setVertexData(VES_TANGENT, (UINT8*)buffer, size);
 	}
 
-	void DefaultMeshData::getColors(Color* buffer, UINT32 size)
+	void RendererMeshData::getColors(Color* buffer, UINT32 size)
 	{
 		if (!mMeshData->getVertexDesc()->hasElement(VES_COLOR))
 			return;
@@ -108,7 +110,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void DefaultMeshData::setColors(Color* buffer, UINT32 size)
+	void RendererMeshData::setColors(Color* buffer, UINT32 size)
 	{
 		if (!mMeshData->getVertexDesc()->hasElement(VES_COLOR))
 			return;
@@ -129,7 +131,19 @@ namespace BansheeEngine
 		}
 	}
 
-	void DefaultMeshData::getUV0(Vector2* buffer, UINT32 size)
+	void RendererMeshData::setColors(UINT32* buffer, UINT32 size)
+	{
+		if (!mMeshData->getVertexDesc()->hasElement(VES_COLOR))
+			return;
+
+		UINT32 numElements = mMeshData->getNumVertices();
+		assert(numElements * sizeof(UINT32) == size);
+
+		UINT8* colorDst = mMeshData->getElementData(VES_COLOR);
+		memcpy(colorDst, buffer, size);
+	}
+
+	void RendererMeshData::getUV0(Vector2* buffer, UINT32 size)
 	{
 		if (!mMeshData->getVertexDesc()->hasElement(VES_TEXCOORD, 0))
 			return;
@@ -140,7 +154,7 @@ namespace BansheeEngine
 		mMeshData->getVertexData(VES_TEXCOORD, (UINT8*)buffer, size, 0);
 	}
 
-	void DefaultMeshData::setUV0(Vector2* buffer, UINT32 size)
+	void RendererMeshData::setUV0(Vector2* buffer, UINT32 size)
 	{
 		if (!mMeshData->getVertexDesc()->hasElement(VES_TEXCOORD, 0))
 			return;
@@ -151,7 +165,7 @@ namespace BansheeEngine
 		mMeshData->setVertexData(VES_TEXCOORD, (UINT8*)buffer, size, 0);
 	}
 
-	void DefaultMeshData::getUV1(Vector2* buffer, UINT32 size)
+	void RendererMeshData::getUV1(Vector2* buffer, UINT32 size)
 	{
 		if (!mMeshData->getVertexDesc()->hasElement(VES_TEXCOORD, 1))
 			return;
@@ -162,7 +176,7 @@ namespace BansheeEngine
 		mMeshData->getVertexData(VES_TEXCOORD, (UINT8*)buffer, size, 1);
 	}
 
-	void DefaultMeshData::setUV1(Vector2* buffer, UINT32 size)
+	void RendererMeshData::setUV1(Vector2* buffer, UINT32 size)
 	{
 		if (!mMeshData->getVertexDesc()->hasElement(VES_TEXCOORD, 1))
 			return;
@@ -173,7 +187,7 @@ namespace BansheeEngine
 		mMeshData->setVertexData(VES_TEXCOORD, (UINT8*)buffer, size, 1);
 	}
 
-	void DefaultMeshData::getBoneWeights(BoneWeight* buffer, UINT32 size)
+	void RendererMeshData::getBoneWeights(BoneWeight* buffer, UINT32 size)
 	{
 		VertexDataDescPtr vertexDesc = mMeshData->getVertexDesc();
 
@@ -211,7 +225,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void DefaultMeshData::setBoneWeights(BoneWeight* buffer, UINT32 size)
+	void RendererMeshData::setBoneWeights(BoneWeight* buffer, UINT32 size)
 	{
 		VertexDataDescPtr vertexDesc = mMeshData->getVertexDesc();
 
@@ -249,7 +263,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void DefaultMeshData::getIndices(UINT32* buffer, UINT32 size)
+	void RendererMeshData::getIndices(UINT32* buffer, UINT32 size)
 	{
 		UINT32 indexSize = mMeshData->getIndexElementSize();
 		UINT32 numIndices = mMeshData->getNumIndices();
@@ -275,7 +289,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void DefaultMeshData::setIndices(UINT32* buffer, UINT32 size)
+	void RendererMeshData::setIndices(UINT32* buffer, UINT32 size)
 	{
 		UINT32 indexSize = mMeshData->getIndexElementSize();
 		UINT32 numIndices = mMeshData->getNumIndices();
@@ -301,17 +315,17 @@ namespace BansheeEngine
 		}
 	}
 
-	DefaultMeshDataPtr DefaultMeshData::create(UINT32 numVertices, UINT32 numIndices, VertexLayout layout, IndexType indexType)
+	RendererMeshDataPtr RendererMeshData::create(UINT32 numVertices, UINT32 numIndices, VertexLayout layout, IndexType indexType)
 	{
-		return bs_shared_ptr<DefaultMeshData>(numVertices, numIndices, layout, indexType);
+		return RendererManager::instance().getActive()->_createMeshData(numVertices, numIndices, layout, indexType);
 	}
 
-	DefaultMeshDataPtr DefaultMeshData::create(const MeshDataPtr& meshData)
+	RendererMeshDataPtr RendererMeshData::create(const MeshDataPtr& meshData)
 	{
-		return bs_shared_ptr<DefaultMeshData>(meshData);
+		return RendererManager::instance().getActive()->_createMeshData(meshData);
 	}
 
-	VertexDataDescPtr DefaultMeshData::vertexLayoutVertexDesc(VertexLayout type)
+	VertexDataDescPtr RendererMeshData::vertexLayoutVertexDesc(VertexLayout type)
 	{
 		VertexDataDescPtr vertexDesc = VertexDataDesc::create();
 

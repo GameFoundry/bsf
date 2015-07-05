@@ -2,7 +2,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
-#include "BsDefaultMeshData.h"
+#include "BsRendererMeshData.h"
 
 namespace BansheeEngine
 {
@@ -18,15 +18,15 @@ namespace BansheeEngine
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "MeshData")
 
-		DefaultMeshDataPtr getInternalValue() const { return mMeshData; }
+		RendererMeshDataPtr getInternalValue() const { return mMeshData; }
 
-		static MonoObject* create(const DefaultMeshDataPtr& meshData);
+		static MonoObject* create(const RendererMeshDataPtr& meshData);
 		static MonoObject* create(const MeshDataPtr& meshData);
 	private:
 		ScriptMeshData(MonoObject* managedInstance);
 		~ScriptMeshData();
 
-		void initialize(const DefaultMeshDataPtr& meshData);
+		void initialize(const RendererMeshDataPtr& meshData);
 
 		static void internal_CreateInstance(MonoObject* instance, int numVertices,
 			int numIndices, VertexLayout vertex, ScriptIndexType index);
@@ -51,6 +51,6 @@ namespace BansheeEngine
 
 		static bool checkIsLocked(ScriptMeshData* thisPtr);
 		
-		DefaultMeshDataPtr mMeshData;
+		RendererMeshDataPtr mMeshData;
 	};
 }

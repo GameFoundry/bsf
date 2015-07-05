@@ -4,6 +4,7 @@
 #include "BsGameObject.h"
 #include "BsEvent.h"
 #include "BsStringID.h"
+#include "BsRendererMeshData.h"
 
 namespace BansheeEngine
 {
@@ -79,6 +80,23 @@ namespace BansheeEngine
 		 *			Internal method.
 		 */
 		virtual void _notifyCameraRemoved(const CameraHandlerCore* camera) { }
+
+		/**
+		 * @brief	Creates a new empty renderer mesh data.
+		 *
+		 * @note	Sim thread.
+		 *			Internal method.
+		 */
+		virtual RendererMeshDataPtr _createMeshData(UINT32 numVertices, UINT32 numIndices, VertexLayout layout, IndexType indexType = IT_32BIT);
+
+		/**
+		 * @brief	Creates a new renderer mesh data using an existing generic mesh data buffer.
+		 *
+		 * @note	Sim thread.
+		 *			Internal method.
+		 */
+		virtual RendererMeshDataPtr _createMeshData(const MeshDataPtr& meshData);
+
 
 		/**
 		 * @brief	Activates the specified pass on the pipeline.

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BsPrerequisites.h"
+#include "BsCorePrerequisites.h"
 #include "BsMeshData.h"
 
 namespace BansheeEngine
@@ -30,19 +30,17 @@ namespace BansheeEngine
 		PNTU = Position | Normal | Tangent | UV0,
 	};
 
-
 	/**
 	 * @brief	Wrapper around MeshData that constructs the default mesh data structure 
 	 *			expected by the renderer and other engine systems. Data will be compressed and
 	 *			uncompressed when written to and read to as needed to comply with wanted format.
+	 *			
+	 * @note	This is the default implementation while the Renderer plugins can override it by overriding
+	 *			createMeshData method in their Renderer implementation.
 	 */
-	// TODO: Allow the Renderer plugin to override how is data packed.
-	class BS_EXPORT DefaultMeshData
+	class BS_CORE_EXPORT RendererMeshData
 	{
 	public:
-		DefaultMeshData(UINT32 numVertices, UINT32 numIndices, VertexLayout layout, IndexType indexType = IT_32BIT);
-		DefaultMeshData(const MeshDataPtr& meshData);
-
 		/**
 		 * @brief	Reads the vertex positions into the provided output buffer.
 		 *			Data will be copied and potentially uncompressed to fit the output
@@ -126,6 +124,16 @@ namespace BansheeEngine
 		 * @param	size	Size of the input buffer. Must be (numVertices * sizeof(Color)).
 		 */
 		void setColors(Color* buffer, UINT32 size);
+
+		/**
+		 * @brief	Writes the vertex colors from the provided output buffer.
+		 *			Data will be copied and potentially compressed to fit the internal 
+		 *			mesh data format as needed.
+		 *			
+		 * @param	buffer	Pre-allocated buffer to read the color data from. Colors should be in RGBA format.
+		 * @param	size	Size of the input buffer. Must be (numVertices * sizeof(UINT32)).
+		 */
+		void setColors(UINT32* buffer, UINT32 size);
 
 		/**
 		 * @brief	Reads the first UV channel coordinates into the provided output buffer.
@@ -219,12 +227,12 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates a new empty mesh data structure.
 		 */
-		static DefaultMeshDataPtr create(UINT32 numVertices, UINT32 numIndices, VertexLayout layout, IndexType indexType = IT_32BIT);
+		static RendererMeshDataPtr create(UINT32 numVertices, UINT32 numIndices, VertexLayout layout, IndexType indexType = IT_32BIT);
 
 		/**
 		 * @brief	Creates a new mesh data structure using an existing mesh data buffer.
 		 */
-		static DefaultMeshDataPtr create(const MeshDataPtr& meshData);
+		static RendererMeshDataPtr create(const MeshDataPtr& meshData);
 
 		/**
 		 * @brief	Creates a vertex descriptor from a vertex layout enum.
@@ -232,6 +240,11 @@ namespace BansheeEngine
 		static VertexDataDescPtr vertexLayoutVertexDesc(VertexLayout type);
 
 	private:
+		friend class CoreRenderer;
+
+		RendererMeshData(UINT32 numVertices, UINT32 numIndices, VertexLayout layout, IndexType indexType = IT_32BIT);
+		RendererMeshData(const MeshDataPtr& meshData);
+
 		MeshDataPtr mMeshData;
 	};
 }

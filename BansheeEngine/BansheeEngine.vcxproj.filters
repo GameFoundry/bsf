@@ -329,9 +329,6 @@
     <ClInclude Include="Include\BsGUILayoutData.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsDefaultMeshData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsGUIDropDownMenu.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
@@ -576,9 +573,6 @@
     </ClCompile>
     <ClCompile Include="Source\BsGUIPanel.cpp">
       <Filter>Source Files\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsDefaultMeshData.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGUIDropDownMenu.cpp">
       <Filter>Source Files\GUI</Filter>

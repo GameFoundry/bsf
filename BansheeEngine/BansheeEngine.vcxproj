@@ -234,7 +234,6 @@
   <ItemGroup>
     <ClCompile Include="Source\BsCameraHandler.cpp" />
     <ClCompile Include="Source\BsCursor.cpp" />
-    <ClCompile Include="Source\BsDefaultMeshData.cpp" />
     <ClCompile Include="Source\BsDrawHelper.cpp" />
     <ClCompile Include="Source\BsDropDownAreaPlacement.cpp" />
     <ClCompile Include="Source\BsGUIDropDownContent.cpp" />
@@ -262,7 +261,6 @@
     <ClInclude Include="Include\BsCameraHandler.h" />
     <ClInclude Include="Include\BsCameraHandlerRTTI.h" />
     <ClInclude Include="Include\BsCursor.h" />
-    <ClInclude Include="Include\BsDefaultMeshData.h" />
     <ClInclude Include="Include\BsDrawHelper.h" />
     <ClInclude Include="Include\BsDropDownAreaPlacement.h" />
     <ClInclude Include="Include\BsGUIDropDownContent.h" />

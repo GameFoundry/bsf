@@ -288,6 +288,7 @@
     <ClInclude Include="Include\BsPrefabDiffRTTI.h" />
     <ClInclude Include="Include\BsPrefabRTTI.h" />
     <ClInclude Include="Include\BsPrefabUtility.h" />
+    <ClInclude Include="Include\BsRendererMeshData.h" />
     <ClInclude Include="Include\BsShaderIncludeRTTI.h" />
     <ClInclude Include="Include\BsIResourceListener.h" />
     <ClInclude Include="Include\BsMaterialParam.h" />
@@ -466,6 +467,7 @@
     <ClCompile Include="Source\BsGpuParamBlockBuffer.cpp" />
     <ClCompile Include="Source\BsGpuParams.cpp" />
     <ClCompile Include="Source\BsProfilerGPU.cpp" />
+    <ClCompile Include="Source\BsRendererMeshData.cpp" />
     <ClCompile Include="Source\BsShaderInclude.cpp" />
     <ClCompile Include="Source\BsGpuProgram.cpp" />
     <ClCompile Include="Source\BsGpuResourceData.cpp" />

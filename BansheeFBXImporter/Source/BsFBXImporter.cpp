@@ -12,7 +12,8 @@
 #include "BsVertexDataDesc.h"
 #include "BsFBXUtility.h"
 #include "BsMeshUtility.h"
-#include <BsMeshImportOptions.h>
+#include "BsRendererMeshData.h"
+#include "BsMeshImportOptions.h"
 
 namespace BansheeEngine
 {
@@ -140,7 +141,7 @@ namespace BansheeEngine
 		generateMissingTangentSpace(importedScene, fbxImportOptions);
 		
 		Vector<SubMesh> subMeshes;
-		MeshDataPtr meshData = generateMeshData(importedScene, fbxImportOptions, subMeshes);
+		RendererMeshDataPtr rendererMeshData = generateMeshData(importedScene, fbxImportOptions, subMeshes);
 
 		// TODO - Later: Optimize mesh: Remove bad and degenerate polygons, weld nearby vertices, optimize for vertex cache
 
@@ -150,7 +151,7 @@ namespace BansheeEngine
 		if (meshImportOptions->getCPUReadable())
 			usage |= MU_CPUCACHED;
 
-		MeshPtr mesh = Mesh::_createPtr(meshData, subMeshes, usage);
+		MeshPtr mesh = Mesh::_createPtr(rendererMeshData->getData(), subMeshes, usage);
 
 		WString fileName = filePath.getWFilename(false);
 		mesh->setName(fileName);
@@ -342,7 +343,7 @@ namespace BansheeEngine
 		scene.meshes = splitMeshes;
 	}
 
-	MeshDataPtr FBXImporter::generateMeshData(const FBXImportScene& scene, const FBXImportOptions& options, Vector<SubMesh>& outputSubMeshes)
+	RendererMeshDataPtr FBXImporter::generateMeshData(const FBXImportScene& scene, const FBXImportOptions& options, Vector<SubMesh>& outputSubMeshes)
 	{
 		Matrix4 importScale = Matrix4::scaling(options.importScale);
 
@@ -375,25 +376,24 @@ namespace BansheeEngine
 				currentIndex += indexCount;
 			}
 
-			VertexDataDescPtr vertexDesc = bs_shared_ptr<VertexDataDesc>();
-			vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
+			UINT32 vertexLayout = (UINT32)VertexLayout::Position;
 
 			size_t numVertices = mesh->positions.size();
 			bool hasColors = mesh->colors.size() == numVertices;
 			bool hasNormals = mesh->normals.size() == numVertices;
 
 			if (hasColors)
-				vertexDesc->addVertElem(VET_COLOR, VES_COLOR);
+				vertexLayout |= (UINT32)VertexLayout::Color;
 
 			bool hasTangents = false;
 			if (hasNormals)
 			{
-				vertexDesc->addVertElem(VET_FLOAT3, VES_NORMAL);
+				vertexLayout |= (UINT32)VertexLayout::Normal;
 
 				if (mesh->tangents.size() == numVertices &&
 					mesh->bitangents.size() == numVertices)
 				{
-					vertexDesc->addVertElem(VET_FLOAT4, VES_TANGENT);
+					vertexLayout |= (UINT32)VertexLayout::Tangent;
 					hasTangents = true;
 				}
 			}
@@ -403,7 +403,10 @@ namespace BansheeEngine
 			{
 				if (mesh->UV[i].size() == numVertices)
 				{
-					vertexDesc->addVertElem(VET_FLOAT2, VES_TEXCOORD, UVIdx++);
+					if (i == 0)
+						vertexLayout |= (UINT32)VertexLayout::UV0;
+					else if (i == 1)
+						vertexLayout |= (UINT32)VertexLayout::UV1;
 				}
 			}
 
@@ -414,36 +417,37 @@ namespace BansheeEngine
 				Matrix4 worldTransformIT = worldTransform.transpose();
 				worldTransformIT = worldTransformIT.inverse();
 
-				MeshDataPtr meshData = bs_shared_ptr<MeshData>((UINT32)numVertices, numIndices, vertexDesc);
+				RendererMeshDataPtr meshData = RendererMeshData::create((UINT32)numVertices, numIndices, (VertexLayout)vertexLayout);
 
 				// Copy indices
-				UINT32* indices = meshData->getIndices32();
-				memcpy(indices, mesh->indices.data(), numIndices * sizeof(UINT32));
+				meshData->setIndices((UINT32*)mesh->indices.data(), numIndices * sizeof(UINT32));
 
 				// Copy & transform positions
-				auto posIter = meshData->getVec3DataIter(VES_POSITION, 0);
+				UINT32 positionsSize = sizeof(Vector3) * (UINT32)numVertices;
+				Vector3* transformedPositions = (Vector3*)stackAlloc(positionsSize);
 
-				for (auto& position : mesh->positions)
-				{
-					Vector3 tfrmdValue = worldTransform.multiplyAffine((Vector3)position);
-					posIter.addValue(tfrmdValue);
-				}
+				for (UINT32 i = 0; i < (UINT32)numVertices; i++)
+					transformedPositions[i] = worldTransform.multiplyAffine((Vector3)mesh->positions[i]);
+
+				meshData->setPositions(transformedPositions, positionsSize);
+				stackDeallocLast(transformedPositions);
 
 				// Copy & transform normals
 				if (hasNormals)
 				{
-					auto normalIter = meshData->getVec3DataIter(VES_NORMAL, 0);
+					UINT32 normalsSize = sizeof(Vector3) * (UINT32)numVertices;
+					Vector3* transformedNormals = (Vector3*)stackAlloc(normalsSize);
 
 					// Copy, convert & transform tangents & bitangents
 					if (hasTangents)
 					{
-						auto tangentIter = meshData->getVec4DataIter(VES_TANGENT, 0);
+						UINT32 tangentsSize = sizeof(Vector4) * (UINT32)numVertices;
+						Vector4* transformedTangents = (Vector4*)stackAlloc(tangentsSize);
 
 						for (UINT32 i = 0; i < (UINT32)numVertices; i++)
 						{
 							Vector3 normal = (Vector3)mesh->normals[i];
-							normal = worldTransformIT.multiplyAffine(normal);
-							normalIter.addValue(normal);
+							transformedNormals[i] = worldTransformIT.multiplyAffine(normal);
 
 							Vector3 tangent = (Vector3)mesh->tangents[i];
 							tangent = worldTransformIT.multiplyAffine(tangent);
@@ -454,27 +458,26 @@ namespace BansheeEngine
 							Vector3 engineBitangent = Vector3::cross(normal, tangent);
 							float sign = Vector3::dot(engineBitangent, bitangent);
 
-							Vector4 combinedTangent(tangent.x, tangent.y, tangent.z, sign > 0 ? 1.0f : -1.0f);
-							tangentIter.addValue(combinedTangent);
+							transformedTangents[i] = Vector4(tangent.x, tangent.y, tangent.z, sign > 0 ? 1.0f : -1.0f);
 						}
+
+						meshData->setTangents(transformedTangents, tangentsSize);
+						stackDeallocLast(transformedTangents);
 					}
 					else // Just normals
 					{
-						for (auto& normal : mesh->normals)
-						{
-							Vector3 tfrmdValue = worldTransformIT.multiplyAffine((Vector3)normal);
-							normalIter.addValue(tfrmdValue);
-						}
+						for (UINT32 i = 0; i < (UINT32)numVertices; i++)
+							transformedNormals[i] = worldTransformIT.multiplyAffine((Vector3)mesh->normals[i]);
 					}
+
+					meshData->setNormals(transformedNormals, normalsSize);
+					stackDeallocLast(transformedNormals);
 				}
 
 				// Copy colors
 				if (hasColors)
 				{
-					auto colorIter = meshData->getDWORDDataIter(VES_COLOR, 0);
-
-					for (auto& color : mesh->colors)
-						colorIter.addValue(color);
+					meshData->setColors(mesh->colors.data(), sizeof(UINT32) * (UINT32)numVertices);
 				}
 
 				// Copy UV
@@ -483,31 +486,42 @@ namespace BansheeEngine
 				{
 					if (uvLayer.size() == numVertices)
 					{
-						auto uvIter = meshData->getVec2DataIter(VES_TEXCOORD, writeUVIDx);
+						UINT32 size = sizeof(Vector2) * (UINT32)numVertices;
+						Vector2* transformedUV = (Vector2*)stackAlloc(size);
 
+						UINT32 i = 0;
 						for (auto& uv : uvLayer)
 						{
-							uv.y = 1.0f - uv.y;
-							uvIter.addValue(uv);
+							transformedUV[i] = uv;
+							transformedUV[i].y = 1.0f - uv.y;
+
+							i++;
 						}
+
+						if (writeUVIDx == 0)
+							meshData->setUV0(transformedUV, size);
+						else if (writeUVIDx == 1)
+							meshData->setUV1(transformedUV, size);
+
+						stackDeallocLast(transformedUV);
 
 						writeUVIDx++;
 					}
 				}
 
-				allMeshData.push_back(meshData);
+				allMeshData.push_back(meshData->getData());
 				allSubMeshes.push_back(subMeshes);
 			}
 		}
 
 		if (allMeshData.size() > 1)
 		{
-			return MeshData::combine(allMeshData, allSubMeshes, outputSubMeshes);
+			return RendererMeshData::create(MeshData::combine(allMeshData, allSubMeshes, outputSubMeshes));
 		}
 		else if (allMeshData.size() == 1)
 		{
 			outputSubMeshes = allSubMeshes[0];
-			return allMeshData[0];
+			return RendererMeshData::create(allMeshData[0]);
 		}
 
 		return nullptr;

@@ -1,6 +1,62 @@
 -------------------------
-FBX
-Next:
- - DefaultMeshData is defined in BansheeEngine but FBXImporter only includes Banshee Core
-  - Therefore I am not using it in FBXImporter but I should
- 
+Study shadow rendering implementations
+
+Add basic light type components and their core thread representations
+ - Directional, Point, Spot light
+ - Luminous flux - intensity
+ - Color
+ - Directional - direction
+ - Spot - angle, direction, position
+ - Point - range (or derive that from flux?), position
+
+Load up and set up a test-bed with Ribek's scene
+
+Create a basic GBuffer - albedo, normal, depth
+ - Using HDR formats where needed
+
+Implement deferred rendering (just basic lambert shading for now, only point light)
+ - Then convert to tiled rendering
+
+-------------
+
+Implement gamma correct rendering, HDR, tone mapping
+ - Will likely need a simple framework for rendering full-screen effects
+   (e.g. I will need to downsample scene to determine brightness here, but will
+    also need that framework for all post-processing)
+
+-------------
+
+Implement shadows
+ - Start with hard shadows
+ - Move to PCF soft shadows (see if there's anything better)
+ - Then cascaded maps
+
+-------------
+
+Later: 
+ - Finish up all light types
+ - Reflection probes
+ - Proper PBR materials with reflection
+ - Post-processing system - FXAA, SSAO, Color correction, Depth of field (Bokeh)
+ - Forward rendering for transparent objects
+
+-----------------
+
+SECOND STAGE(S)
+ - Occlusion
+ - GI
+ - Volumetric lighting
+ - SSR
+ - Depth pre-pass
+ - HDR skybox, skylight stuff
+
+-----------------
+
+THIRD STAGE(S)
+ - Skin & vegetation shaders
+ - Tesselation/displacement/parallax
+ - Water
+ - Fog
+ - Motion blur
+ - Per object shadows
+ - Extend camera with shutter speed (motion blur), aperture size and focal distance (depth of field), exposure (HDR)

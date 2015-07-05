@@ -548,6 +548,9 @@
     <ClInclude Include="Include\BsPrefabUtility.h">
       <Filter>Header Files\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsRendererMeshData.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsCoreApplication.cpp">
@@ -867,6 +870,9 @@
     </ClCompile>
     <ClCompile Include="Source\BsPrefabUtility.cpp">
       <Filter>Source Files\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsRendererMeshData.cpp">
+      <Filter>Source Files\Renderer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

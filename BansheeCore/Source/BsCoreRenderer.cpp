@@ -10,6 +10,18 @@
 
 namespace BansheeEngine
 {
+	RendererMeshDataPtr CoreRenderer::_createMeshData(UINT32 numVertices, UINT32 numIndices, VertexLayout layout, IndexType indexType)
+	{
+		return bs_shared_ptr<RendererMeshData, PoolAlloc>(new (bs_alloc<RendererMeshData, PoolAlloc>()) 
+			RendererMeshData(numVertices, numIndices, layout, indexType));
+	}
+
+	RendererMeshDataPtr CoreRenderer::_createMeshData(const MeshDataPtr& meshData)
+	{
+		return bs_shared_ptr<RendererMeshData, PoolAlloc>(new (bs_alloc<RendererMeshData, PoolAlloc>())
+			RendererMeshData(meshData));
+	}
+
 	void CoreRenderer::setPass(const SPtr<MaterialCore>& material, UINT32 passIdx)
 	{
 		THROW_IF_NOT_CORE_THREAD;
