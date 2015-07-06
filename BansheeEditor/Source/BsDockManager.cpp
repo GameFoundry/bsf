@@ -335,11 +335,21 @@ namespace BansheeEngine
 		}
 		else
 		{
-			if(mChildren[0] != nullptr && mChildren[0]->find(widgetContainer) != nullptr)
-				return mChildren[0];
+			if(mChildren[0] != nullptr)
+			{
+				DockContainer* foundContainer = mChildren[0]->find(widgetContainer);
+
+				if (foundContainer != nullptr)
+					return foundContainer;
+			}
 
 			if(mChildren[1] != nullptr && mChildren[1]->find(widgetContainer) != nullptr)
-				return mChildren[1];
+			{
+				DockContainer* foundContainer = mChildren[1]->find(widgetContainer);
+
+				if (foundContainer != nullptr)
+					return foundContainer;
+			}
 		}
 
 		return nullptr;
@@ -356,11 +366,21 @@ namespace BansheeEngine
 		}
 		else
 		{
-			if(mChildren[0] != nullptr && mChildren[0]->findAtPos(pos) != nullptr)
-				return mChildren[0];
+			if (mChildren[0] != nullptr)
+			{
+				DockContainer* foundContainer = mChildren[0]->findAtPos(pos);
 
-			if(mChildren[1] != nullptr && mChildren[1]->findAtPos(pos) != nullptr)
-				return mChildren[1];
+				if (foundContainer != nullptr)
+					return foundContainer;
+			}
+
+			if(mChildren[1] != nullptr)
+			{
+				DockContainer* foundContainer = mChildren[1]->findAtPos(pos);
+
+				if (foundContainer != nullptr)
+					return foundContainer;
+			}
 		}
 
 		return nullptr;
