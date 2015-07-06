@@ -37,11 +37,19 @@ namespace BansheeEngine
 
 		mPanel = GUIPanel::create();
 		mPanel->_changeParentWidget(this);
-		updatePanelSize();
+		updateRootPanel();
 	}
 
 	GUIWidget::~GUIWidget()
 	{ }
+
+	void GUIWidget::setDepth(UINT8 depth)
+	{
+		mDepth = depth; 
+		mWidgetIsDirty = true;
+
+		updateRootPanel();
+	}
 
 	void GUIWidget::onDestroyed()
 	{
@@ -302,10 +310,10 @@ namespace BansheeEngine
 
 	void GUIWidget::ownerTargetResized()
 	{
-		updatePanelSize();
+		updateRootPanel();
 	}
 
-	void GUIWidget::updatePanelSize()
+	void GUIWidget::updateRootPanel()
 	{
 		UINT32 width = getTarget()->getWidth();
 		UINT32 height = getTarget()->getHeight();

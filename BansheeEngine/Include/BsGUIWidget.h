@@ -52,7 +52,7 @@ namespace BansheeEngine
 		 * @brief	Changes the depth to render the widget at. If two widgets overlap the
 		 *			widget with the lower depth will be rendered in front.
 		 */
-		void setDepth(UINT8 depth) { mDepth = depth; mWidgetIsDirty = true; }
+		void setDepth(UINT8 depth);
 
 		/**
 		 * @brief	Checks are the specified coordinates within widget bounds. Coordinates should
@@ -180,7 +180,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Updates the size of the primary GUI panel based on the viewport.
 		 */
-		void updatePanelSize();
+		void updateRootPanel();
 
 		Viewport* mTarget;
 		Vector<GUIElement*> mElements;

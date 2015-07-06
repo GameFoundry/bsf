@@ -52,6 +52,12 @@ namespace BansheeEngine
 			{
 				EditorWidgetBase* widget = widgetData.second;
 				EditorWidgetContainer* parentContainer = widget->_getParent();
+				if (parentContainer == nullptr)
+				{
+					widget->_setHasFocus(false);
+					continue;
+				}
+
 				EditorWindowBase* parentWindow = parentContainer->getParentWindow();
 				RenderWindowPtr parentRenderWindow = parentWindow->getRenderWindow();
 				const RenderWindowProperties& props = parentRenderWindow->getProperties();

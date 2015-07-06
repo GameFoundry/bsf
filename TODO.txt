@@ -66,7 +66,6 @@ When elements are docked in the main window the menu bar drop down appears behin
 Click on empty part of the menu bar doesn't close the menu bar (ignoring NC area clicks?)
 Clicking on a parent of a menu item just reopens that item but I would expect it to close it
 Clicking on menu items doesn't seem to work
-Attempting to dock a window that is not in focus will start drag instead (NC area incorrectly set up?)
 Docking a window to another windows title bar doesn't seem to work
 Decent looking default layout
 Fix DX11 (and possibly DX9) rendering
@@ -74,10 +73,17 @@ Missing Inspector values (name + transform fields)
 Fix handles
  - Some handle functionality is unfinished
  - Handles look too large when scene view is enlarged
-Moving the title bar tab and then dropping it closes the window (possibly only happens when there is just one tab)
 After undocking ProjectWindow the auto-scroll seems to be stuck in up position
 
 Need a way to add scene objects and components (and remove them)
+ - Components adding should be only done by drag and dropping scripts to inspector (undoable)
+ - COmponent removal should be done by context menu in inspector (undoable)
+ - Adding scene objects should be doable from context menu in Hierarchy, by dropping a Prefab or by main Menu (undoable)
+ - Deleting them should be doable by context menu in Hierarchy and Del keystroke (undoable)
+
+For later: I could record undo/redo per-property using the new diff system
+Remember: Record all portions where objects & components get modified so I can mark them dirty, will likely need
+ to use those some points for undo/redo
 
 ----------------------------------------------------------------------
 Project window

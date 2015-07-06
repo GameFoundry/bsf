@@ -2,24 +2,10 @@
 #include "BsEditorWindowManager.h"
 #include "BsDockManager.h"
 #include "BsGUIMenuBar.h"
-#include "BsCamera.h"
-#include "BsSceneObject.h"
-#include "BsRenderTexture.h"
-#include "BsApplication.h"
-#include "BsProfilingManager.h"
+#include "BsGUIWidget.h"
 #include "BsGUIPanel.h"
-#include "BsGUILayout.h"
 #include "BsEditorTestSuite.h"
 #include "BsTestOutput.h"
-#include "BsVirtualInput.h"
-
-// DEBUG ONLY
-#include "BsTestTextSprite.h"
-#include "BsShapeMeshes2D.h"
-#include "BsShapeMeshes3D.h"
-#include "BsRect2.h"
-#include "BsProfilerOverlay.h"
-#include "BsPlatform.h"
 
 namespace BansheeEngine
 {

@@ -22,11 +22,11 @@ namespace BansheeEngine
 		:mParentWidget(parent), mParentWindow(parentWindow), mMainPanel(nullptr), mMainLayout(nullptr),
 		mBgTexture(nullptr), mLogoTexture(nullptr), mSubMenuOpen(false), mSubMenuButton(nullptr), mBgPanel(nullptr)
 	{
-		mMainPanel = parent->getPanel()->addNewElement<GUIPanel>(0);
+		mMainPanel = parent->getPanel()->addNewElement<GUIPanel>(std::numeric_limits<INT16>::min() + 10);
 		mMainPanel->setWidth(1);
 		mMainPanel->setHeight(13);
 
-		mBgPanel = parent->getPanel()->addNewElement<GUIPanel>(1);
+		mBgPanel = parent->getPanel()->addNewElement<GUIPanel>(std::numeric_limits<INT16>::min() + 11);
 		mBgPanel->setWidth(1);
 		mBgPanel->setHeight(13);
 
