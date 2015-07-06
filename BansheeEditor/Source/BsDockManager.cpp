@@ -1002,21 +1002,32 @@ namespace BansheeEngine
 				if(overlayBounds.contains(windowPos))
 				{
 					insert(nullptr, draggedWidget, DockLocation::None);
+					return true;
 				}
 			}
 			else
 			{
-				if(insidePolygon(mTopDropPolygon, 4, windowPosVec))
+				if (insidePolygon(mTopDropPolygon, 4, windowPosVec))
+				{
 					insert(mouseOverContainer->mWidgets, draggedWidget, DockLocation::Top);
-				else if(insidePolygon(mBotDropPolygon, 4, windowPosVec))
+					return true;
+				}
+				else if (insidePolygon(mBotDropPolygon, 4, windowPosVec))
+				{
 					insert(mouseOverContainer->mWidgets, draggedWidget, DockLocation::Bottom);
-				else if(insidePolygon(mLeftDropPolygon, 4, windowPosVec))
+					return true;
+				}
+				else if (insidePolygon(mLeftDropPolygon, 4, windowPosVec))
+				{
 					insert(mouseOverContainer->mWidgets, draggedWidget, DockLocation::Left);
-				else if(insidePolygon(mRightDropPolygon, 4, windowPosVec))
+					return true;
+				}
+				else if (insidePolygon(mRightDropPolygon, 4, windowPosVec))
+				{
 					insert(mouseOverContainer->mWidgets, draggedWidget, DockLocation::Right);
+					return true;
+				}
 			}
-
-			return true;
 		}
 
 		return false;
