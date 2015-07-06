@@ -64,7 +64,6 @@ Polish stage 1
 
 Click on empty part of the menu bar doesn't close the menu bar (ignoring NC area clicks?)
 Clicking on a parent of a menu item just reopens that item but I would expect it to close it
-Clicking on menu items doesn't seem to work
 Docking a window to another windows title bar doesn't seem to work
 Decent looking default layout
 Fix DX11 (and possibly DX9) rendering

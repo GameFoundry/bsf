@@ -874,6 +874,7 @@ namespace BansheeEngine
 					onMouseLeftWindow(win);
 			}
 			return 0;
+		case WM_NCLBUTTONUP:
 		case WM_LBUTTONUP:
 			{
 				ReleaseCapture();
@@ -885,8 +886,13 @@ namespace BansheeEngine
 
 				if(!onCursorButtonReleased.empty())
 					onCursorButtonReleased(intMousePos, OSMouseButton::Left, btnStates);
+
+				if (uMsg == WM_LBUTTONUP)
+					return 0;
+				else
+					break;
 			}
-			return 0;
+		case WM_NCMBUTTONUP:
 		case WM_MBUTTONUP:
 			{
 				ReleaseCapture();
@@ -898,8 +904,13 @@ namespace BansheeEngine
 
 				if(!onCursorButtonReleased.empty())
 					onCursorButtonReleased(intMousePos, OSMouseButton::Middle, btnStates);
+
+				if (uMsg == WM_MBUTTONUP)
+					return 0;
+				else
+					break;
 			}
-			return 0;
+		case WM_NCRBUTTONUP:
 		case WM_RBUTTONUP:
 			{
 				ReleaseCapture();
@@ -911,8 +922,23 @@ namespace BansheeEngine
 
 				if(!onCursorButtonReleased.empty())
 					onCursorButtonReleased(intMousePos, OSMouseButton::Right, btnStates);
+
+				if (uMsg == WM_RBUTTONUP)
+					return 0;
+				else
+					break;
 			}
-			return 0;
+		case WM_NCLBUTTONDOWN:
+			{
+				Vector2I intMousePos;
+				OSPointerButtonStates btnStates;
+
+				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
+
+				if (!onCursorButtonPressed.empty())
+					onCursorButtonPressed(intMousePos, OSMouseButton::Left, btnStates);
+			}
+			break;
 		case WM_LBUTTONDOWN:
 			{
 				SetCapture(hWnd);
@@ -926,6 +952,17 @@ namespace BansheeEngine
 					onCursorButtonPressed(intMousePos, OSMouseButton::Left, btnStates);
 			}
 			return 0;
+		case WM_NCMBUTTONDOWN:
+			{
+				Vector2I intMousePos;
+				OSPointerButtonStates btnStates;
+
+				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
+
+				if (!onCursorButtonPressed.empty())
+					onCursorButtonPressed(intMousePos, OSMouseButton::Middle, btnStates);
+			}
+			break;
 		case WM_MBUTTONDOWN:
 			{
 				SetCapture(hWnd);
@@ -939,6 +976,17 @@ namespace BansheeEngine
 					onCursorButtonPressed(intMousePos, OSMouseButton::Middle, btnStates);
 			}
 			return 0;
+		case WM_NCRBUTTONDOWN:
+			{
+				Vector2I intMousePos;
+				OSPointerButtonStates btnStates;
+
+				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
+
+				if (!onCursorButtonPressed.empty())
+					onCursorButtonPressed(intMousePos, OSMouseButton::Right, btnStates);
+			}
+			break;
 		case WM_RBUTTONDOWN:
 			{
 				SetCapture(hWnd);
