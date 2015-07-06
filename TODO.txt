@@ -67,10 +67,14 @@ Click on empty part of the menu bar doesn't close the menu bar (ignoring NC area
 Clicking on a parent of a menu item just reopens that item but I would expect it to close it
 Clicking on menu items doesn't seem to work
 Attempting to dock a window that is not in focus will start drag instead (NC area incorrectly set up?)
+Removing the last widget from the dock area will cause a crash
+Dropping an element in "None" dock area closes the window
 Decent looking default layout
 Fix DX11 (and possibly DX9) rendering
 Missing Inspector values (name + transform fields)
 Fix handles
+ - Some handle functionality is unfinished
+ - Handles look too large when scene view is enlarged
 Moving the title bar tab and then dropping it closes the window (possibly only happens when there is just one tab)
 After undocking ProjectWindow the auto-scroll seems to be stuck in up position
 

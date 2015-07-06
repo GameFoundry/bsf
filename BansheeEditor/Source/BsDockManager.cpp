@@ -287,7 +287,7 @@ namespace BansheeEngine
 				bs_delete(mWidgets);
 				mWidgets = nullptr;
 
-				mIsLeaf = false;
+				mIsLeaf = true;
 				mSplitPosition = 0.5f;
 				mIsHorizontal = false;
 			}
