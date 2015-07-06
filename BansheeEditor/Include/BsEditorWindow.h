@@ -25,6 +25,7 @@ namespace BansheeEngine
 		EditorWidgetContainer* mWidgets;
 
 		void updateSize();
+		void widgetAdded();
 		void widgetRemoved();
 		void closeWindowDelayed();
 	};

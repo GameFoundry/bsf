@@ -108,6 +108,8 @@ namespace BansheeEngine
 			setActiveWidget(mTitleBar->getTabIdx(mTitleBar->getNumTabs() - 1));
 		else
 			widget._disable();
+
+		onWidgetAdded();
 	}
 
 	bool EditorWidgetContainer::contains(EditorWidgetBase& widget)

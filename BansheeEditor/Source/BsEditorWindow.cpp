@@ -11,6 +11,7 @@ namespace BansheeEngine
 	{
 		updateSize();
 		
+		mWidgets->onWidgetAdded.connect(std::bind(&EditorWindow::widgetAdded, this));
 		mWidgets->onWidgetClosed.connect(std::bind(&EditorWindow::widgetRemoved, this));
 	}
 
@@ -40,6 +41,11 @@ namespace BansheeEngine
 
 		mWidgets->setSize(widgetWidth, widgetHeight);
 
+		Platform::setCaptionNonClientAreas(*mRenderWindow->getCore().get(), mWidgets->getDraggableAreas());
+	}
+
+	void EditorWindow::widgetAdded()
+	{
 		Platform::setCaptionNonClientAreas(*mRenderWindow->getCore().get(), mWidgets->getDraggableAreas());
 	}
 

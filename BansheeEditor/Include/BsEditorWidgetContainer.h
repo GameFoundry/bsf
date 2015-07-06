@@ -32,6 +32,7 @@ namespace BansheeEngine
 
 		void _notifyWidgetDestroyed(EditorWidgetBase* widget);
 
+		Event<void()> onWidgetAdded;
 		Event<void()> onWidgetClosed;
 	private:
 		EditorWindowBase* mParentWindow;
