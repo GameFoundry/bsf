@@ -208,12 +208,13 @@ namespace BansheeEngine
 
 	void GUIWidget::_registerElement(GUIElementBase* elem)
 	{
-		assert(elem != nullptr);
+		assert(elem != nullptr && !elem->_isDestroyed());
 
 		if (elem->_getType() == GUIElementBase::Type::Element)
+		{
 			mElements.push_back(static_cast<GUIElement*>(elem));
-
-		mWidgetIsDirty = true;
+			mWidgetIsDirty = true;
+		}
 	}
 
 	void GUIWidget::_unregisterElement(GUIElementBase* elem)

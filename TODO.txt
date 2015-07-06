@@ -65,6 +65,8 @@ Polish stage 1
 When elements are docked in the main window the menu bar drop down appears behind them
 Click on empty part of the menu bar doesn't close the menu bar (ignoring NC area clicks?)
 Clicking on a parent of a menu item just reopens that item but I would expect it to close it
+Clicking on menu items doesn't seem to work
+GUI element that was deleted was part of a widget. This happened when I was docking windows and undocking them (scene, hierarchy, inspector)
 Attempting to dock a window that is not in focus will start drag instead (NC area incorrectly set up?)
 Docking problem: When I dock three windows next to each other, e.g. Hierarchy|Scene|Inspector and then try to dock another
  so it splits space with Hierarchy vertically the dock area appears over both hierarchy and scene, and the when docked it looks wrong

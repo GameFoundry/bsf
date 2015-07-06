@@ -278,6 +278,13 @@ namespace BansheeEngine
 		void _unregisterChildElement(GUIElementBase* element);
 
 		/**
+		 * @brief	Checks if element has been destroyed and is queued for deletion.
+		 *
+		 * @note	Internal method.
+		 */
+		virtual bool _isDestroyed() const { return false; }
+
+		/**
 		 * @brief	Marks the elements contents as dirty, which causes the sprite meshes to be recreated from scratch.
 		 *
 		 * @note	Internal method.

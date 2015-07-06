@@ -285,6 +285,8 @@ namespace BansheeEngine
 
 	void GUIElementBase::_registerChildElement(GUIElementBase* element)
 	{
+		assert(!element->_isDestroyed());
+
 		GUIElementBase* parentElement = element->_getParent();
 		if(parentElement != nullptr)
 		{
@@ -324,6 +326,8 @@ namespace BansheeEngine
 
 	void GUIElementBase::_changeParentWidget(GUIWidget* widget)
 	{
+		assert(!_isDestroyed());
+
 		if (mParentWidget != widget)
 		{
 			if (mParentWidget != nullptr)

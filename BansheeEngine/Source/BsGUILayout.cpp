@@ -22,7 +22,8 @@ namespace BansheeEngine
 
 	void GUILayout::addElement(GUIElementBase* element)
 	{
-		_registerChildElement(element);
+		if (!element->_isDestroyed())
+			_registerChildElement(element);
 	}
 
 	void GUILayout::removeElement(GUIElementBase* element)
@@ -34,6 +35,9 @@ namespace BansheeEngine
 	{
 		if(idx < 0 || idx > (UINT32)mChildren.size())
 			BS_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((UINT32)mChildren.size()));
+
+		if (element->_isDestroyed())
+			return;
 
 		GUIElementBase* parentElement = element->_getParent();
 		if(parentElement != nullptr)

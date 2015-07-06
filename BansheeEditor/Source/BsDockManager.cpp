@@ -23,6 +23,7 @@
 #include "BsBuiltinResources.h"
 #include "BsDockManagerLayout.h"
 #include "BsEditorWindow.h"
+#include "BsGUIPanel.h"
 
 #include "BsGUISkin.h"
 #include "BsGUIButton.h"
@@ -97,7 +98,6 @@ namespace BansheeEngine
 	{
 		if(!mIsLeaf && mChildren[0] != nullptr && mChildren[1] != nullptr)
 		{
-			Rect2I clipRect = mArea;
 			if(mIsHorizontal)
 			{
 				UINT32 remainingSize = (UINT32)std::max(0, (INT32)mArea.height - (INT32)SLIDER_SIZE);
@@ -107,14 +107,9 @@ namespace BansheeEngine
 				mChildren[0]->setArea(mArea.x, mArea.y, mArea.width, sizeTop);
 				mChildren[1]->setArea(mArea.x, mArea.y + sizeTop + SLIDER_SIZE, mArea.width, sizeBottom);
 
-				GUILayoutData layoutData = mSlider->_getLayoutData();
-				layoutData.area = mArea;
-				layoutData.area.y += sizeTop;
-				layoutData.area.height = SLIDER_SIZE;
-				layoutData.clipRect = clipRect;
-
-				mSlider->_setLayoutData(layoutData);
-				mSlider->_markContentAsDirty();
+				mSlider->setWidth(mArea.width);
+				mSlider->setHeight(SLIDER_SIZE);
+				mSlider->setPosition(mArea.x, mArea.y + sizeTop);
 			}
 			else
 			{
@@ -125,14 +120,9 @@ namespace BansheeEngine
 				mChildren[0]->setArea(mArea.x, mArea.y, sizeLeft, mArea.height);
 				mChildren[1]->setArea(mArea.x + sizeLeft + SLIDER_SIZE, mArea.y, sizeRight, mArea.height);
 
-				GUILayoutData layoutData = mSlider->_getLayoutData();
-				layoutData.area = mArea;
-				layoutData.area.x += sizeLeft;
-				layoutData.area.width = SLIDER_SIZE;
-				layoutData.clipRect = clipRect;
-
-				mSlider->_setLayoutData(layoutData);
-				mSlider->_markContentAsDirty();
+				mSlider->setWidth(SLIDER_SIZE);
+				mSlider->setHeight(mArea.height);
+				mSlider->setPosition(mArea.x + sizeLeft, mArea.y);
 			}
 		}
 	}
@@ -243,26 +233,8 @@ namespace BansheeEngine
 			mSlider = nullptr;
 		}
 
-		if (horizontal)
-		{
-			mSlider = GUIDockSlider::create(true, "DockSliderBtn");
-
-			GUILayoutData layoutData = mSlider->_getLayoutData();
-			layoutData.setWidgetDepth(widgetParent->getDepth());
-			mSlider->_setLayoutData(layoutData);
-			mSlider->_markMeshAsDirty();
-		}
-		else
-		{
-			mSlider = GUIDockSlider::create(false, "DockSliderBtn");
-			GUILayoutData layoutData = mSlider->_getLayoutData();
-			layoutData.setWidgetDepth(widgetParent->getDepth());
-			mSlider->_setLayoutData(layoutData);
-			mSlider->_markMeshAsDirty();
-		}
-
-		mSlider->_changeParentWidget(widgetParent);
-
+		mSlider = GUIDockSlider::create(horizontal, "DockSliderBtn");
+		widgetParent->getPanel()->addElement(mSlider);
 		mSlider->onDragged.connect(std::bind(&DockManager::DockContainer::sliderDragged, this, _1));
 
 		setArea(mArea.x, mArea.y, mArea.width, mArea.height);

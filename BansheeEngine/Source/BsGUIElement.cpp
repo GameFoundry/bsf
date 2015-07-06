@@ -5,6 +5,7 @@
 #include "BsGUIManager.h"
 #include "BsException.h"
 #include "BsGUILayoutUtility.h"
+#include "BsDebug.h"
 
 namespace BansheeEngine
 {
@@ -17,7 +18,9 @@ namespace BansheeEngine
 	}
 
 	GUIElement::~GUIElement()
-	{ }
+	{
+
+	}
 
 	void GUIElement::_updateRenderElements()
 	{
@@ -84,6 +87,9 @@ namespace BansheeEngine
 
 	void GUIElement::_changeParentWidget(GUIWidget* widget)
 	{
+		if (_isDestroyed())
+			return;
+
 		bool doRefreshStyle = false;
 		if(mParentWidget != widget)
 			doRefreshStyle = true;

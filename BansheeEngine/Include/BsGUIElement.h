@@ -208,7 +208,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElementBase::_changeParentWidget
 		 */
-		virtual void _changeParentWidget(GUIWidget* widget);
+		virtual void _changeParentWidget(GUIWidget* widget) override;
 
 		/**
 		 * @brief	Returns depth for a specific render element. This contains a combination
@@ -242,7 +242,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method.
 		 */
-		bool _isDestroyed() const { return mIsDestroyed; }
+		bool _isDestroyed() const override { return mIsDestroyed; }
 
 		/**
 		 * @brief	Update element style based on active GUI skin and style name.
