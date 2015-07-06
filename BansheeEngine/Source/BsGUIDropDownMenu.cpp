@@ -95,7 +95,7 @@ namespace BansheeEngine
 		GUILayoutData backHitboxLayoutData = mBackHitBox->_getLayoutData();
 		backHitboxLayoutData.setWidgetDepth(0);
 		backHitboxLayoutData.setPanelDepth(std::numeric_limits<INT16>::max());
-		mBackHitBox->_setLayoutData(hitboxLayoutData);
+		mBackHitBox->_setLayoutData(backHitboxLayoutData);
 		mBackHitBox->_changeParentWidget(this);
 		mBackHitBox->_markContentAsDirty();
 

@@ -62,7 +62,6 @@ Code quality improvements:
 ----------------------------------------------------------------------
 Polish stage 1
 
-When elements are docked in the main window the menu bar drop down appears behind them
 Click on empty part of the menu bar doesn't close the menu bar (ignoring NC area clicks?)
 Clicking on a parent of a menu item just reopens that item but I would expect it to close it
 Clicking on menu items doesn't seem to work
