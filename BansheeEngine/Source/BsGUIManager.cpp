@@ -1237,16 +1237,39 @@ namespace BansheeEngine
 			}
 		}
 
+		// Send DragAndDropLeft event - It is similar to MouseOut events but we send it to all
+		// elements a user might hover over, while we send mouse over/out events only to active elements while dragging
+		if (DragAndDropManager::instance().isDragInProgress())
+		{
+			for (auto& elementInfo : mElementsUnderPointer)
+			{
+				auto iterFind = std::find_if(mNewElementsUnderPointer.begin(), mNewElementsUnderPointer.end(),
+					[=](const ElementInfoUnderPointer& x) { return x.element == elementInfo.element; });
+
+				if (iterFind == mNewElementsUnderPointer.end())
+				{
+					Vector2I localPos = getWidgetRelativePos(*elementInfo.widget, pointerScreenPos);
+
+					mMouseEvent.setDragAndDropLeftData(localPos, DragAndDropManager::instance().getDragTypeId(), DragAndDropManager::instance().getDragData());
+					if (sendMouseEvent(elementInfo.widget, elementInfo.element, mMouseEvent))
+					{
+						eventProcessed = true;
+						break;
+					}
+				}
+			}
+		}
+
 		for(auto& elementInfo : mElementsUnderPointer)
 		{
 			GUIElement* element = elementInfo.element;
 			GUIWidget* widget = elementInfo.widget;
 
+			auto iterFind = std::find_if(mNewElementsUnderPointer.begin(), mNewElementsUnderPointer.end(),
+				[=](const ElementInfoUnderPointer& x) { return x.element == element; });
+
 			if (!elementInfo.receivedMouseOver)
 				continue;
-
-			auto iterFind = std::find_if(mNewElementsUnderPointer.begin(), mNewElementsUnderPointer.end(),
-				[=] (const ElementInfoUnderPointer& x) { return x.element == element; });
 
 			if (iterFind == mNewElementsUnderPointer.end() || !iterFind->isHovering)
 			{

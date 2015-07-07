@@ -22,6 +22,7 @@ namespace BansheeEngine
 		MouseDragEnd,
 		MouseDragAndDropDragged,
 		MouseDragAndDropDropped,
+		MouseDragAndDropLeft
 	};
 
 	/**
@@ -160,6 +161,11 @@ namespace BansheeEngine
 		 * @brief	Initializes the event with DragAndDropDragged event data.
 		 */
 		void setDragAndDropDraggedData(const Vector2I& position, UINT32 dragTypeId, void* dragData);
+
+		/**
+		 * @brief	Initializes the event with DragAndDropLeft event data.
+		 */
+		void setDragAndDropLeftData(const Vector2I& position, UINT32 dragTypeId, void* dragData);
 
 		bool mButtonStates[(int)GUIMouseButton::Count];
 		Vector2I mPosition;

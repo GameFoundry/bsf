@@ -127,4 +127,15 @@ namespace BansheeEngine
 		mDragTypeId = dragTypeId;
 		mDragData = dragData;
 	}
+
+	void GUIMouseEvent::setDragAndDropLeftData(const Vector2I& position, UINT32 dragTypeId, void* dragData)
+	{
+		mType = GUIMouseEventType::MouseDragAndDropLeft;
+		mPosition = position;
+		mButton = GUIMouseButton::Left;
+		mDragAmount = Vector2I();
+		mWheelScrollAmount = 0.0f;
+		mDragTypeId = dragTypeId;
+		mDragData = dragData;
+	}
 }

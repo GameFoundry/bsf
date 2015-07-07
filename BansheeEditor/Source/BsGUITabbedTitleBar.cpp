@@ -12,6 +12,7 @@
 #include "BsEditorWidget.h"
 #include "BsMath.h"
 #include "BsPlatform.h"
+#include "BsRenderTarget.h"
 
 using namespace std::placeholders;
 
@@ -185,7 +186,7 @@ namespace BansheeEngine
 
 				mTempDraggedWidget = draggedWidget;
 				startDrag(uniqueIdxToSeqIdx(mTempDraggedTabIdx), Vector2I());
-				mInitialDragOffset = Math::roundToInt(mDraggedBtn->_getOptimalSize().x * 0.5f);
+				mInitialDragOffset = Math::roundToInt(mDraggedBtn->_getOptimalSize().x * 0.5f);		
 			}
 
 			if(mTempDraggedWidget != nullptr)
@@ -214,7 +215,7 @@ namespace BansheeEngine
 
 			return true;
 		}
-		else if(event.getType() == GUIMouseEventType::MouseOut)
+		else if(event.getType() == GUIMouseEventType::MouseDragAndDropLeft)
 		{
 			if(mTempDraggedWidget != nullptr)
 			{
