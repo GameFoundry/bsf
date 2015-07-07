@@ -27,22 +27,16 @@ return them in checkForModifications?
 ---------------------------------------------------------------------
 Prefab diff
 
-TODO - How do I mark the scene as modified? I need to know if user made any modifications to the scene to
-       ask him before loading another scene or exiting.
-	     - Just have a EditorUtility.SetDirty for the resource? This means I would need to use this general
-		   approach for all resources, but I probably need that since likely I want to save all modified resources
-		   before editor exits? Think about this.
-		 - Keep active scene Prefab loaded in Scene
-		 - Call SetDirty on it whenever I:
-		   - Reparent an object, create new SO, or delete an SO (from editor)
-		   - Add a new component, remove a component, or modify a component in inspector
-		   - Allow user to call SetDirty himself
-		 - What do I do when I try to unload a dirty object?
-		  - Nothing unless doing so from the editor
-		 - Should I store dirty state in Script* objects?
-		  - Probably the best
-
-TODO - Add Prefab buttons to Inspector (Apply, Break, Revert)
+Add "dirty object" system to C#. Each ScriptResource and ScriptGameObject should have a dirty flag.
+ - It should be toggle-able via EditorUtility.SetDirty or similar. (Possibly make this part of ProjectLibrary)
+ - There should also be a method to check if something is dirty via EditorUtility.IsDirty or similar. (Possibly make this part of ProjectLibrary)
+  - Hook this up to Scene.IsModified because it is currently not implemented (Might need to keep a link to active Prefab in scene to do this)
+ - Add a "Save Project" button that automatically saves all dirty assets. Do this automatically when user quits the editor.
+ - Call SetDirty manually whenever:
+  - A new object or component is added to the scene
+  - An object or component is removed from the scene
+  - An object is reparented
+  - When component or resource is modified from inspector
 
 TODO - Later - When building level for release make sure to clear all prefab diffs (possibly store them elsewhere in the first place)
        - And all prefab instances should have updateFromPrefab called on them.
@@ -62,15 +56,25 @@ Code quality improvements:
 ----------------------------------------------------------------------
 Polish stage 1
 
-Hovering over a menu item doesn't open its sub-menu
 Docking a window to another windows title bar doesn't seem to work
-Decent looking default layout
+ - Seems to only happen when windows are docked
 Fix DX11 (and possibly DX9) rendering
-Missing Inspector values (name + transform fields)
+After undocking ProjectWindow the auto-scroll seems to be stuck in up position
+Decent looking default layout
+When selecting an gizmo icon the selection seems delayed and its gizmos flash for a frame before hiding
+Make sure that scene camera controls only work when scene view is in focus
+
 Fix handles
  - Some handle functionality is unfinished
  - Handles look too large when scene view is enlarged
-After undocking ProjectWindow the auto-scroll seems to be stuck in up position
+
+Add ping to SceneTreeView
+ - Hook up ping effect so it triggers when I select a resource or sceneobject
+
+Finish up inspector
+ - Missing name + transform fields (+ possible local/global toggle)
+ - Add Prefab buttons (Apply, Break, Revert)
+ - Hook it up to Selection changes so it shows inspector for current component/resource
 
 Need a way to add scene objects and components (and remove them)
  - Components adding should be only done by drag and dropping scripts to inspector (undoable)
@@ -86,8 +90,6 @@ Remember: Record all portions where objects & components get modified so I can m
 Project window
 
 Later:
- - Hook up ping effect so it triggers when I select a resource or sceneobject
-  - Add ping to SceneTreeView
  - Consider delaying search until user stops pressing keys (so not to have thousands of search results in the initial stages)
  - Save & restore scroll position when Refresh happens
 
@@ -149,11 +151,9 @@ Test:
 ----------------------------------------------------------------------
 Scene View
 
-AFTER I have scene widget in C#:
- - Test custom handles from C#
- - Test handle snapping
-
-Make sure that camera controls only work when scene view is in focus
+Test:
+ - Custom handles from C#
+ - Handle snapping
 
 ----------------------------------------------------------------------
 Other
@@ -170,14 +170,6 @@ Create a stack allocatable custom vector implementation and make getResourceDepe
  - These methods are called often and cause allocations whenever they are.
 
 I shouldn't crash the app when a managed exception happens
-
-----------------------------------------------------------------------
-Multi-resource saving
- - Modify Font so it doesn't contain a texture, but instead keeps a handle to it
- - Register it in its meta file
- - When saving such a resource with dependencies save the contained files to a sub-directory with the same name as top level resource
-   - If it already exists in the manifest at a different location do it anyway, keep the other copy as-is in case user wanted it that way
-   - I'm not sure whether to do this for all Resource::save calls or only ones originating from ProjectLIbrary?
 
 /*********************************************************************/
 /************************ LESS IMPORTANT *****************************/

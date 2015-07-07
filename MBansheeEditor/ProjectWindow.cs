@@ -1375,6 +1375,8 @@ namespace BansheeEditor
 
                     int elemSize = tileSize + GRID_ENTRY_SPACING;
                     elementsPerRow = (availableWidth - GRID_ENTRY_SPACING * 2) / elemSize;
+                    elementsPerRow = Math.Max(elementsPerRow, 1);
+
                     int numRows = MathEx.CeilToInt(numEntries / (float)elementsPerRow);
                     int neededHeight = numRows * (elemSize);
 

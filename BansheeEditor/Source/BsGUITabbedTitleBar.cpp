@@ -294,7 +294,7 @@ namespace BansheeEngine
 			else if(mDragInProgress && mDraggedBtn == btn)
 			{
 				offset.x = mDragBtnOffset;
-				offset.y = btn->_getLayoutData().area.y;
+				offset.y = curY;
 			}
 
 			GUILayoutData childData = data;

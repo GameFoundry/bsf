@@ -978,7 +978,7 @@ namespace BansheeEngine
 			else
 				mShowOverlay = false;
 
-			return true;
+			return false;
 		}
 		else if(event.getType() == GUIMouseEventType::MouseDragAndDropDropped)
 		{
