@@ -41,6 +41,20 @@ namespace BansheeEngine
 		void clip(const Rect2I& clipRect);
 
 		/**
+		 * @brief	Cuts the current rectangle with the provided rectangle and outputs
+		 *			the pieces. The pieces will contain all area of the current rectangle
+		 *			without including the cut rectangle area.
+		 */
+		void cut(const Rect2I& cutRect, Vector<Rect2I>& pieces);
+
+		/**
+		 * @brief	Cuts the current rectangle with the provided rectangles and outputs
+		 *			the pieces. The pieces will contain all area of the current rectangle
+		 *			without including the cut rectangles area.
+		 */
+		void cut(const Vector<Rect2I>& cutRects, Vector<Rect2I>& pieces);
+
+		/**
 		 * @brief	Transforms the bounds by the given matrix.
 		 * 			Resulting value is an axis aligned rectangle encompassing the transformed points.
 		 * 			

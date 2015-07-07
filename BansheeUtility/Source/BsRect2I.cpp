@@ -79,6 +79,96 @@ namespace BansheeEngine
 		height = std::max(0, newBottom - newTop);
 	}
 
+	void Rect2I::cut(const Rect2I& cutRect, Vector<Rect2I>& pieces)
+	{
+		UINT32 initialPieces = (UINT32)pieces.size();
+
+		// Cut horizontal
+		if (cutRect.x > x && cutRect.x < (x + width))
+		{
+			Rect2I leftPiece;
+			leftPiece.x = x;
+			leftPiece.width = cutRect.x - x;
+			leftPiece.y = y;
+			leftPiece.height = height;
+
+			pieces.push_back(leftPiece);
+		}
+
+		if ((cutRect.x + cutRect.width) > x && (cutRect.x + cutRect.width) < (x + width))
+		{
+			Rect2I rightPiece;
+			rightPiece.x = cutRect.x + cutRect.width;
+			rightPiece.width = (x + width) - (cutRect.x + cutRect.width);
+			rightPiece.y = y;
+			rightPiece.height = height;
+
+			pieces.push_back(rightPiece);
+		}
+
+		// Cut vertical
+		INT32 cutLeft = std::min(std::max(x, cutRect.x), x + width);
+		INT32 cutRight = std::max(std::min(x + width, cutRect.x + cutRect.width), x);
+
+		if (cutLeft != cutRight)
+		{
+			if (cutRect.y > y && cutRect.y < (y + height))
+			{
+				Rect2I topPiece;
+				topPiece.y = y;
+				topPiece.height = cutRect.y - y;
+				topPiece.x = cutLeft;
+				topPiece.width = cutRight - cutLeft;
+
+				pieces.push_back(topPiece);
+			}
+
+			if ((cutRect.y + cutRect.height) > y && (cutRect.y + cutRect.height) < (y + height))
+			{
+				Rect2I bottomPiece;
+				bottomPiece.y = cutRect.y + cutRect.height;
+				bottomPiece.height = (y + height) - (cutRect.y + cutRect.height);
+				bottomPiece.x = cutLeft;
+				bottomPiece.width = cutRight - cutLeft;
+
+				pieces.push_back(bottomPiece);
+			}
+		}
+
+		// No cut
+		if (initialPieces == (UINT32)pieces.size())
+		{
+			if (cutRect.x <= x && (cutRect.x + cutRect.width) >= (x + width) &&
+				cutRect.y <= y && (cutRect.y + cutRect.height) >= (y + height))
+			{
+				// Cut rectangle completely encompasses this one
+			}
+			else
+				pieces.push_back(*this); // Cut rectangle doesn't even touch this one
+		}
+	}
+
+	void Rect2I::cut(const Vector<Rect2I>& cutRects, Vector<Rect2I>& pieces)
+	{
+		Vector<Rect2I> tempPieces[2];
+		UINT32 bufferIdx = 0;
+
+		tempPieces[0].push_back(*this);
+
+		for (auto& cutRect : cutRects)
+		{
+			UINT32 currentBufferIdx = bufferIdx;
+
+			bufferIdx = (bufferIdx + 1) % 2;
+			tempPieces[bufferIdx].clear();
+
+			for (auto& rect : tempPieces[currentBufferIdx])
+				rect.cut(cutRect, tempPieces[bufferIdx]);
+		}
+
+		pieces = tempPieces[bufferIdx];
+	}
+
 	void Rect2I::transform(const Matrix4& matrix)
 	{
 		Vector4 verts[4];
