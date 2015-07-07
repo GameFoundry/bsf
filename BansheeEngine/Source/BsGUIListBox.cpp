@@ -95,21 +95,25 @@ namespace BansheeEngine
 	{
 		closeListBox();
 
-		GUIDropDownData dropDownData;
+		DROP_DOWN_BOX_DESC desc;
+
 		UINT32 i = 0;
 		for(auto& elem : mElements)
 		{
 			WString identifier = toWString(i);
-			dropDownData.entries.push_back(GUIDropDownDataEntry::button(identifier, std::bind(&GUIListBox::elementSelected, this, i)));
-			dropDownData.localizedNames[identifier] = elem;
+			desc.dropDownData.entries.push_back(GUIDropDownDataEntry::button(identifier, std::bind(&GUIListBox::elementSelected, this, i)));
+			desc.dropDownData.localizedNames[identifier] = elem;
 			i++;
 		}
 
 		GUIWidget* widget = _getParentWidget();
-		DropDownAreaPlacement placement = DropDownAreaPlacement::aroundBoundsHorz(_getLayoutData().area);
 
-		GameObjectHandle<GUIDropDownMenu> dropDownBox = GUIDropDownBoxManager::instance().openDropDownBox(widget->getTarget(), 
-			placement, dropDownData, widget->getSkinResource(), GUIDropDownType::MenuBar, std::bind(&GUIListBox::onListBoxClosed, this));
+		desc.target = widget->getTarget();
+		desc.skin = widget->getSkinResource();
+		desc.placement = DropDownAreaPlacement::aroundBoundsHorz(_getLayoutData().area);
+		
+		GameObjectHandle<GUIDropDownMenu> dropDownBox = GUIDropDownBoxManager::instance().openDropDownBox(
+			desc, GUIDropDownType::MenuBar, std::bind(&GUIListBox::onListBoxClosed, this));
 
 		_setOn(true);
 		mIsListBoxOpen = true;

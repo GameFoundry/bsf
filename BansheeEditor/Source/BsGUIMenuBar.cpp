@@ -277,13 +277,22 @@ namespace BansheeEngine
 				return;
 		}
 
-		GUIDropDownData dropDownData = subMenu->menu->getDropDownData();
 		GUIWidget* widget = subMenu->button->_getParentWidget();
 
-		DropDownAreaPlacement placement = DropDownAreaPlacement::aroundBoundsHorz(subMenu->button->_getLayoutData().area);
+		DROP_DOWN_BOX_DESC desc;
+		desc.target = widget->getTarget();
+		desc.skin = widget->getSkinResource();
+		desc.placement = DropDownAreaPlacement::aroundBoundsHorz(subMenu->button->_getLayoutData().area);
+		desc.dropDownData = subMenu->menu->getDropDownData();
 
-		GameObjectHandle<GUIDropDownMenu> dropDownBox = GUIDropDownBoxManager::instance().openDropDownBox(widget->getTarget(), 
-			placement, dropDownData, widget->getSkinResource(), GUIDropDownType::MenuBar, std::bind(&GUIMenuBar::onSubMenuClosed, this));
+		for (auto& childMenu : mChildMenus)
+		{
+			Rect2I bounds = childMenu.button->getBounds();
+			desc.additionalBounds.push_back(bounds);
+		}
+		
+		GameObjectHandle<GUIDropDownMenu> dropDownBox = GUIDropDownBoxManager::instance().openDropDownBox(
+			desc, GUIDropDownType::MenuBar, std::bind(&GUIMenuBar::onSubMenuClosed, this));
 
 		subMenu->button->_setOn(true);
 

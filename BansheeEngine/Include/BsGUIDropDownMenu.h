@@ -3,6 +3,7 @@
 #include "BsPrerequisites.h"
 #include "BsGUIWidget.h"
 #include "BsVector2I.h"
+#include "BsRect2I.h"
 #include "BsEvent.h"
 #include "BsDropDownAreaPlacement.h"
 
@@ -15,6 +16,18 @@ namespace BansheeEngine
 	{
 		Vector<GUIDropDownDataEntry> entries;
 		UnorderedMap<WString, HString> localizedNames;
+	};
+
+	/**
+	 * @brief	A set of parameters used for initializing a drop down box.
+	 */
+	struct DROP_DOWN_BOX_DESC
+	{
+		Viewport* target; /**< Viewport on which to open the drop down box. */
+		DropDownAreaPlacement placement; /**< Determines how is the drop down box positioned in the visible area. */
+		GUIDropDownData dropDownData; /**< Data to use for initializing menu items of the drop down box. */
+		HGUISkin skin; /**< Skin to use for drop down box GUI elements. */
+		Vector<Rect2I> additionalBounds; /**< Additional bounds that control what is considered the inside or the outside of the drop down box. */
 	};
 
 	/**
@@ -107,14 +120,10 @@ namespace BansheeEngine
 		 * @brief	Creates a new drop down box widget.
 		 *
 		 * @param	parent			Parent scene object to attach the drop down box to.
-		 * @param	target			Viewport on which to open the drop down box.
-		 * @param	placement		Determines how is the drop down box positioned in the visible area.
-		 * @param	dropDownData	Data to use for initializing menu items of the drop down box.
-		 * @param	skin			Skin to use for drop down box GUI elements.
+		 * @param	desc			Various parameters that control the drop down menu features and content.
 		 * @param	type			Specific type of drop down box to display.
 		 */
-		GUIDropDownMenu(const HSceneObject& parent, Viewport* target, const DropDownAreaPlacement& placement,
-			const GUIDropDownData& dropDownData, const HGUISkin& skin, GUIDropDownType type);
+		GUIDropDownMenu(const HSceneObject& parent, const DROP_DOWN_BOX_DESC& desc, GUIDropDownType type);
 		~GUIDropDownMenu();
 
 	private:
@@ -283,6 +292,8 @@ namespace BansheeEngine
 		// Captures mouse clicks so that we don't trigger elements outside the drop down box when we just want to close it.
 		// (Particular example is clicking on the button that opened the drop down box in the first place. Clicking will cause
 		// the drop down to lose focus and close, but if the button still processes the mouse click it will be immediately opened again)
-		GUIDropDownHitBox* mCaptureHitBox; 
+		GUIDropDownHitBox* mCaptureHitBox;
+
+		Vector<Rect2I> mAdditionalCaptureBounds;
 	};
 }

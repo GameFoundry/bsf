@@ -45,6 +45,8 @@ namespace BansheeEngine
 			Up, Down
 		};
 
+		DropDownAreaPlacement() { }
+
 		/**
 		 * @brief	Drop down box will be placed at the specified position. By default the system
 		 * 			prefers the top left corner of the box to correspond to the position, but if
@@ -96,8 +98,6 @@ namespace BansheeEngine
 		Rect2I getOptimalBounds(UINT32 width, UINT32 height, const Rect2I& availableArea, HorzDir& horzDir, VertDir& vertDir) const;
 
 	private:
-		DropDownAreaPlacement() { }
-
 		Type mType;
 		Rect2I mBounds;
 		Vector2I mPosition;

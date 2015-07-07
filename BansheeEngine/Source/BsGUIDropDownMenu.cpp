@@ -52,9 +52,8 @@ namespace BansheeEngine
 		return dataEntry;
 	}
 
-	GUIDropDownMenu::GUIDropDownMenu(const HSceneObject& parent, Viewport* target, const DropDownAreaPlacement& placement,
-		const GUIDropDownData& dropDownData, const HGUISkin& skin, GUIDropDownType type)
-		:GUIWidget(parent, target), mRootMenu(nullptr), mFrontHitBox(nullptr), mCaptureHitBox(nullptr), mBackHitBox(nullptr)
+	GUIDropDownMenu::GUIDropDownMenu(const HSceneObject& parent, const DROP_DOWN_BOX_DESC& desc, GUIDropDownType type)
+		:GUIWidget(parent, desc.target), mRootMenu(nullptr), mFrontHitBox(nullptr), mCaptureHitBox(nullptr), mBackHitBox(nullptr)
 	{
 		String stylePrefix = "";
 		switch(type)
@@ -75,11 +74,11 @@ namespace BansheeEngine
 		mBackgroundStyle = stylePrefix + "Frame";
 		mContentStyle = stylePrefix + "Content";
 
-		mScrollUpBtnArrow = skin->getStyle(stylePrefix + "ScrollUpBtnArrow")->normal.texture;
-		mScrollDownBtnArrow = skin->getStyle(stylePrefix + "ScrollDownBtnArrow")->normal.texture;
+		mScrollUpBtnArrow = desc.skin->getStyle(stylePrefix + "ScrollUpBtnArrow")->normal.texture;
+		mScrollDownBtnArrow = desc.skin->getStyle(stylePrefix + "ScrollDownBtnArrow")->normal.texture;
 
 		setDepth(0); // Needs to be in front of everything
-		setSkin(skin);
+		setSkin(desc.skin);
 
 		mFrontHitBox = GUIDropDownHitBox::create(false, false);
 		mFrontHitBox->onFocusLost.connect(std::bind(&GUIDropDownMenu::dropDownFocusLost, this));
@@ -100,7 +99,7 @@ namespace BansheeEngine
 		mBackHitBox->_markContentAsDirty();
 
 		mCaptureHitBox = GUIDropDownHitBox::create(true, false);
-		mCaptureHitBox->setBounds(Rect2I(0, 0, target->getWidth(), target->getHeight()));
+		mCaptureHitBox->setBounds(Rect2I(0, 0, desc.target->getWidth(), desc.target->getHeight()));
 		GUILayoutData captureHitboxLayoutData = mCaptureHitBox->_getLayoutData();
 		captureHitboxLayoutData.setWidgetDepth(0);
 		captureHitboxLayoutData.setPanelDepth(std::numeric_limits<INT16>::max());
@@ -108,8 +107,10 @@ namespace BansheeEngine
 		mCaptureHitBox->_changeParentWidget(this);
 		mCaptureHitBox->_markContentAsDirty();
 
-		Rect2I availableBounds(target->getX(), target->getY(), target->getWidth(), target->getHeight());
-		mRootMenu = bs_new<DropDownSubMenu>(this, nullptr, placement, availableBounds, dropDownData, type, 0);
+		mAdditionalCaptureBounds = desc.additionalBounds;
+
+		Rect2I availableBounds(desc.target->getX(), desc.target->getY(), desc.target->getWidth(), desc.target->getHeight());
+		mRootMenu = bs_new<DropDownSubMenu>(this, nullptr, desc.placement, availableBounds, desc.dropDownData, type, 0);
 	}
 
 	GUIDropDownMenu::~GUIDropDownMenu()
@@ -144,8 +145,12 @@ namespace BansheeEngine
 			subMenu = subMenu->mSubMenu;
 		}
 
-		mFrontHitBox->setBounds(bounds);
 		mBackHitBox->setBounds(bounds);
+
+		for (auto& additionalBound : mAdditionalCaptureBounds)
+			bounds.push_back(additionalBound);
+
+		mFrontHitBox->setBounds(bounds);
 	}
 
 	void GUIDropDownMenu::notifySubMenuClosed(DropDownSubMenu* subMenu)
@@ -159,8 +164,12 @@ namespace BansheeEngine
 			subMenu = subMenu->mSubMenu;
 		}
 
-		mFrontHitBox->setBounds(bounds);
 		mBackHitBox->setBounds(bounds);
+		
+		for (auto& additionalBound : mAdditionalCaptureBounds)
+			bounds.push_back(additionalBound);
+
+		mFrontHitBox->setBounds(bounds);
 	}
 
 	GUIDropDownMenu::DropDownSubMenu::DropDownSubMenu(GUIDropDownMenu* owner, DropDownSubMenu* parent, const DropDownAreaPlacement& placement,

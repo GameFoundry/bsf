@@ -18,15 +18,12 @@ namespace BansheeEngine
 		 * @brief	Opens a new drop down box at the specified location, look and elements. This will close
 		 *			any previously open drop down box.
 		 *
-		 * @param	target				Viewport on which to open the drop down box.
-		 * @param	placement			Determines how is the drop down box positioned in the visible area.
-		 * @param	dropDownData		Data to use for initializing menu items of the drop down box.
-		 * @param	skin				Skin to use for drop down box GUI elements.
+		 * @param	desc				Various parameters for initializing the drop down box.
 		 * @param	type				Specific type of drop down box to display.
 		 * @param	onClosedCallback	Callback triggered when drop down box is closed.
 		 */
-		GameObjectHandle<GUIDropDownMenu> openDropDownBox(Viewport* target, const DropDownAreaPlacement& placement,
-			const GUIDropDownData& dropDownData, const HGUISkin& skin, GUIDropDownType type, std::function<void()> onClosedCallback);
+		GameObjectHandle<GUIDropDownMenu> openDropDownBox(const DROP_DOWN_BOX_DESC& desc, 
+			GUIDropDownType type, std::function<void()> onClosedCallback);
 
 		/**
 		 * @brief	Closes the currently active drop down box (if any).
