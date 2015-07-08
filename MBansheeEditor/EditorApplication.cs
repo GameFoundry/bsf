@@ -94,7 +94,7 @@ namespace BansheeEditor
             inputConfig.RegisterButton(SceneCamera.MoveLeftBinding, ButtonCode.A);
             inputConfig.RegisterButton(SceneCamera.MoveRightBinding, ButtonCode.D);
             inputConfig.RegisterButton(SceneCamera.MoveForwardBinding, ButtonCode.Up);
-            inputConfig.RegisterButton(SceneCamera.MoveBackBinding, ButtonCode.Back);
+            inputConfig.RegisterButton(SceneCamera.MoveBackBinding, ButtonCode.Down);
             inputConfig.RegisterButton(SceneCamera.MoveLeftBinding, ButtonCode.Left);
             inputConfig.RegisterButton(SceneCamera.MoveRightBinding, ButtonCode.Right);
             inputConfig.RegisterButton(SceneCamera.FastMoveBinding, ButtonCode.LeftShift);

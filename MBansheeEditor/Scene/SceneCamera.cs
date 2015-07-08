@@ -52,8 +52,6 @@ namespace BansheeEditor
 
         private void Update()
         {
-            // TODO - Only move if scene view is focused
-
 		    bool goingForward = VirtualInput.IsButtonHeld(moveForwardBtn);
 		    bool goingBack = VirtualInput.IsButtonHeld(moveBackwardBtn);
 		    bool goingLeft = VirtualInput.IsButtonHeld(moveLeftBtn);

@@ -194,7 +194,6 @@ namespace BansheeEditor
 
                         for (int i = 0; i < draggedPaths.Length; i++)
                         {
-
                             LibraryEntry entry = ProjectLibrary.GetEntry(draggedPaths[i]);
                             if (entry != null && entry.Type == LibraryEntryType.File)
                             {
@@ -245,7 +244,12 @@ namespace BansheeEditor
             }
 
             if (!HasFocus)
+            {
+                cameraController.SceneObject.Active = false;
                 return;
+            }
+            else
+                cameraController.SceneObject.Active = true;
 
             if (inBounds)
             {

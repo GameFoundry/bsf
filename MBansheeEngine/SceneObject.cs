@@ -17,6 +17,12 @@ namespace BansheeEngine
             set { Internal_SetParent(mCachedPtr, value); }
         }
 
+        public bool Active
+        {
+            get { return Internal_GetActive(mCachedPtr); }
+            set { Internal_SetActive(mCachedPtr, value); }
+        }
+
         public Vector3 Position
         {
             get
@@ -260,6 +266,12 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern string Internal_GetName(IntPtr nativeInstance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetActive(IntPtr nativeInstance, bool value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_GetActive(IntPtr nativeInstance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetParent(IntPtr nativeInstance, SceneObject parent);

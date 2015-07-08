@@ -46,6 +46,9 @@ namespace BansheeEngine
 		{
 			HSceneObject currentGO = todo.top();
 			todo.pop();
+
+			if (!currentGO->getActive(true))
+				continue;
 			                  
 			const Vector<HComponent>& components = currentGO->getComponents();
 

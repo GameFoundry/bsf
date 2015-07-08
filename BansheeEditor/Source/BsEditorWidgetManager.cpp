@@ -46,7 +46,7 @@ namespace BansheeEngine
 
 	void EditorWidgetManager::update()
 	{
-		if (gInput().isPointerButtonDown(PointerEventButton::Left))
+		if (gInput().isPointerButtonDown(PointerEventButton::Left) || gInput().isPointerButtonDown(PointerEventButton::Right))
 		{
 			for (auto& widgetData : mActiveWidgets)
 			{

@@ -26,6 +26,8 @@ namespace BansheeEngine
 
 		static void internal_setName(ScriptSceneObject* nativeInstance, MonoString* name);
 		static MonoString* internal_getName(ScriptSceneObject* nativeInstance);
+		static void internal_setActive(ScriptSceneObject* nativeInstance, bool value);
+		static bool internal_getActive(ScriptSceneObject* nativeInstance);
 
 		static void internal_setParent(ScriptSceneObject* nativeInstance, MonoObject* parent);
 		static MonoObject* internal_getParent(ScriptSceneObject* nativeInstance);
