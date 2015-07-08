@@ -386,6 +386,7 @@ namespace BansheeEngine
 
 		DragState mDragState;
 		Vector2I mLastPointerClickPos;
+		Vector2I mDragStartPos;
 
 		GUIMouseEvent mMouseEvent;
 		GUITextInputEvent mTextInputEvent;

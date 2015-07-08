@@ -680,13 +680,15 @@ namespace BansheeEngine
 				for(auto& activeElement : mActiveElements)
 				{
 					Vector2I localPos = getWidgetRelativePos(*activeElement.widget, event.screenPos);
+					Vector2I localDragStartPos = getWidgetRelativePos(*activeElement.widget, mLastPointerClickPos);
 
-					mMouseEvent.setMouseDragStartData(localPos);
+					mMouseEvent.setMouseDragStartData(localPos, localDragStartPos);
 					if(sendMouseEvent(activeElement.widget, activeElement.element, mMouseEvent))
 						event.markAsUsed();
 				}
 
 				mDragState = DragState::Dragging;
+				mDragStartPos = event.screenPos;
 			}
 		}
 
@@ -699,7 +701,7 @@ namespace BansheeEngine
 				{
 					Vector2I localPos = getWidgetRelativePos(*activeElement.widget, event.screenPos);
 
-					mMouseEvent.setMouseDragData(localPos, localPos - mLastPointerScreenPos);
+					mMouseEvent.setMouseDragData(localPos, event.screenPos - mDragStartPos);
 					if(sendMouseEvent(activeElement.widget, activeElement.element, mMouseEvent))
 						event.markAsUsed();
 				}
@@ -767,13 +769,10 @@ namespace BansheeEngine
 						moveProcessed = sendMouseEvent(elementInfo.widget, elementInfo.element, mMouseEvent);
 
 						if(moveProcessed)
-						{
 							event.markAsUsed();
-							break;
-						}
 					}
 
-					if(!hasCustomCursor)
+					if (!hasCustomCursor && mDragState == DragState::NoDrag)
 					{
 						CursorType newCursor = CursorType::Arrow;
 						if(elementInfo.element->_hasCustomCursor(localPos, newCursor))
@@ -792,12 +791,16 @@ namespace BansheeEngine
 						break;
 				}
 
-				if(!hasCustomCursor)
+				// While dragging we don't want to modify the cursor
+				if (mDragState == DragState::NoDrag)
 				{
-					if(mActiveCursor != CursorType::Arrow)
+					if (!hasCustomCursor)
 					{
-						Cursor::instance().setCursor(CursorType::Arrow);
-						mActiveCursor = CursorType::Arrow;
+						if (mActiveCursor != CursorType::Arrow)
+						{
+							Cursor::instance().setCursor(CursorType::Arrow);
+							mActiveCursor = CursorType::Arrow;
+						}
 					}
 				}
 			}

@@ -59,7 +59,7 @@ namespace BansheeEngine
 		return false;
 	}
 
-	bool GUIIntField::mouseEvent(const GUIMouseEvent& event)
+	bool GUIIntField::_mouseEvent(const GUIMouseEvent& event)
 	{
 		GUIElementContainer::_mouseEvent(event);
 
@@ -70,7 +70,7 @@ namespace BansheeEngine
 
 		if(event.getType() == GUIMouseEventType::MouseDragStart)
 		{
-			if(draggableArea.contains(event.getPosition()))
+			if(draggableArea.contains(event.getDragStartPosition()))
 			{
 				mLastDragPos = event.getPosition().x;
 				mIsDragging = true;

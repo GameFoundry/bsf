@@ -67,6 +67,11 @@ namespace BansheeEngine
 		Vector2I getDragAmount() const { return mDragAmount; }
 
 		/**
+		 * @brief	Returns the position where the drag was started from, if event is drag related.
+		 */
+		Vector2I getDragStartPosition() const { return mDragStartPosition; }
+
+		/**
 		 * @brief	Returns amount of mouse wheel scroll, if event is scroll wheel related.
 		 */
 		float getWheelScrollAmount() const { return mWheelScrollAmount; }
@@ -141,12 +146,12 @@ namespace BansheeEngine
 		/**
 		 * @brief	Initializes the event with MouseDrag event data.
 		 */
-		void setMouseDragData(const Vector2I& position, const Vector2I& dragAmount);
+		void setMouseDragData(const Vector2I& position, const Vector2I& dragStartPosition);
 
 		/**
 		 * @brief	Initializes the event with MouseDragStart event data.
 		 */
-		void setMouseDragStartData(const Vector2I& position);
+		void setMouseDragStartData(const Vector2I& position, const Vector2I& dragStartPosition);
 		/**
 		 * @brief	Initializes the event with MouseDragEnd event data.
 		 */
@@ -169,6 +174,7 @@ namespace BansheeEngine
 
 		bool mButtonStates[(int)GUIMouseButton::Count];
 		Vector2I mPosition;
+		Vector2I mDragStartPosition;
 		Vector2I mDragAmount;
 		float mWheelScrollAmount;
 		GUIMouseEventType mType;

@@ -22,17 +22,17 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElement::setTint
 		 */
-		virtual void setTint(const Color& color);
+		virtual void setTint(const Color& color) override;
 
 		Event<void(float)> onValueChanged;
 	protected:
 		virtual ~GUIFloatField();
 
-		void updateClippedBounds();
+		void updateClippedBounds() override;
 
-		bool _hasCustomCursor(const Vector2I position, CursorType& type) const;
-		virtual bool mouseEvent(const GUIMouseEvent& ev);
-		void styleUpdated();
+		bool _hasCustomCursor(const Vector2I position, CursorType& type) const override;
+		virtual bool _mouseEvent(const GUIMouseEvent& ev) override;
+		void styleUpdated() override;
 
 		void valueChanged(const WString& newValue);
 		void focusGained();

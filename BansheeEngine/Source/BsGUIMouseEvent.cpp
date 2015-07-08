@@ -22,6 +22,7 @@ namespace BansheeEngine
 		mPosition = position;
 		mButton = GUIMouseButton::Left;
 		mDragAmount = Vector2I();
+		mDragStartPosition = Vector2I();
 		mWheelScrollAmount = 0.0f;
 	}
 
@@ -31,6 +32,7 @@ namespace BansheeEngine
 		mPosition = position;
 		mButton = GUIMouseButton::Left;
 		mDragAmount = Vector2I();
+		mDragStartPosition = Vector2I();
 		mWheelScrollAmount = 0.0f;
 	}
 
@@ -40,6 +42,7 @@ namespace BansheeEngine
 		mPosition = position;
 		mButton = GUIMouseButton::Left;
 		mDragAmount = Vector2I();
+		mDragStartPosition = Vector2I();
 		mWheelScrollAmount = 0.0f;
 	}
 
@@ -49,6 +52,7 @@ namespace BansheeEngine
 		mPosition = Vector2I();
 		mButton = GUIMouseButton::Left;
 		mDragAmount = Vector2I();
+		mDragStartPosition = Vector2I();
 		mWheelScrollAmount = scrollAmount;
 	}
 
@@ -58,6 +62,7 @@ namespace BansheeEngine
 		mPosition = position;
 		mButton = button;
 		mDragAmount = Vector2I();
+		mDragStartPosition = Vector2I();
 		mWheelScrollAmount = 0.0f;
 	}
 
@@ -67,6 +72,7 @@ namespace BansheeEngine
 		mPosition = position;
 		mButton = button;
 		mDragAmount = Vector2I();
+		mDragStartPosition = Vector2I();
 		mWheelScrollAmount = 0.0f;
 	}
 
@@ -76,6 +82,7 @@ namespace BansheeEngine
 		mPosition = position;
 		mButton = button;
 		mDragAmount = Vector2I();
+		mDragStartPosition = Vector2I();
 		mWheelScrollAmount = 0.0f;
 	}
 
@@ -85,15 +92,17 @@ namespace BansheeEngine
 		mPosition = position;
 		mButton = GUIMouseButton::Left;
 		mDragAmount = dragAmount;
+		mDragStartPosition = Vector2I();
 		mWheelScrollAmount = 0.0f;
 	}
 
-	void GUIMouseEvent::setMouseDragStartData(const Vector2I& position)
+	void GUIMouseEvent::setMouseDragStartData(const Vector2I& position, const Vector2I& dragStartPosition)
 	{
 		mType = GUIMouseEventType::MouseDragStart;
 		mPosition = position;
 		mButton = GUIMouseButton::Left;
 		mDragAmount = Vector2I();
+		mDragStartPosition = dragStartPosition;
 		mWheelScrollAmount = 0.0f;
 	}
 
@@ -103,6 +112,7 @@ namespace BansheeEngine
 		mPosition = position;
 		mButton = GUIMouseButton::Left;
 		mDragAmount = Vector2I();
+		mDragStartPosition = Vector2I();
 		mWheelScrollAmount = 0.0f;
 	}
 
@@ -112,6 +122,7 @@ namespace BansheeEngine
 		mPosition = position;
 		mButton = GUIMouseButton::Left;
 		mDragAmount = Vector2I();
+		mDragStartPosition = Vector2I();
 		mWheelScrollAmount = 0.0f;
 		mDragTypeId = dragTypeId;
 		mDragData = dragData;
@@ -123,6 +134,7 @@ namespace BansheeEngine
 		mPosition = position;
 		mButton = GUIMouseButton::Left;
 		mDragAmount = Vector2I();
+		mDragStartPosition = Vector2I();
 		mWheelScrollAmount = 0.0f;
 		mDragTypeId = dragTypeId;
 		mDragData = dragData;
@@ -134,6 +146,7 @@ namespace BansheeEngine
 		mPosition = position;
 		mButton = GUIMouseButton::Left;
 		mDragAmount = Vector2I();
+		mDragStartPosition = Vector2I();
 		mWheelScrollAmount = 0.0f;
 		mDragTypeId = dragTypeId;
 		mDragData = dragData;

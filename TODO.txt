@@ -56,7 +56,8 @@ Code quality improvements:
 ----------------------------------------------------------------------
 Polish stage 1
 
-Int/Float field mouse scrolling doesn't work
+Int/Float field mouse scrolling doesn't work unless clicked on a specific spot
+ - Additionally the scroll value doesn't seem to persist when it comes to the inspector window
 Fix DX11 (and possibly DX9) rendering
 After undocking ProjectWindow the auto-scroll seems to be stuck in up position
 Decent looking default layout
@@ -74,8 +75,7 @@ Add ping to SceneTreeView
  - Hook up ping effect so it triggers when I select a resource or sceneobject
 
 Finish up inspector
- - Missing name + transform fields (+ possible local/global toggle)
- - Add Prefab buttons (Apply, Break, Revert)
+ - Do I handle the case of updating the inspector when component is added or removed?
  - Hook it up to Selection changes so it shows inspector for current component/resource
 
 Need a way to add scene objects and components (and remove them)
