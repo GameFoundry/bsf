@@ -175,10 +175,8 @@ namespace BansheeEngine
 			}
 		}
 
-		RenderTargetPtr sceneRenderTarget = camera->getViewport()->getTarget();
-
 		gCoreAccessor().queueCommand(std::bind(&HandleDrawManagerCore::updateData, mCore, 
-			sceneRenderTarget->getCore(), proxyData));
+			camera->getCore(), proxyData));
 
 		mDrawHelper->clear();
 	}
@@ -199,31 +197,37 @@ namespace BansheeEngine
 
 			vertParams->getParam("matViewProj", mSolidMaterial.mViewProj);
 		}
-
-		CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
-		activeRenderer->onCorePostRenderViewport.connect(std::bind(&HandleDrawManagerCore::render, this, _1));
 	}
 
-	void HandleDrawManagerCore::updateData(const SPtr<RenderTargetCore>& rt, const Vector<MeshData>& meshes)
+	void HandleDrawManagerCore::updateData(const SPtr<CameraHandlerCore>& camera, const Vector<MeshData>& meshes)
 	{
-		mSceneRenderTarget = rt;
+		if (mCamera != camera)
+		{
+			CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
+			if (mCamera != nullptr)
+				activeRenderer->_unregisterRenderCallback(mCamera.get(), 20);
+
+			if (camera != nullptr)
+				activeRenderer->_registerRenderCallback(camera.get(), 20, std::bind(&HandleDrawManagerCore::render, this));
+		}
+
+		mCamera = camera;
 		mMeshes = meshes;
 	}
 
-	void HandleDrawManagerCore::render(const CameraHandlerCore& camera)
+	void HandleDrawManagerCore::render()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		if (mSceneRenderTarget == nullptr)
+		if (mCamera == nullptr)
 			return;
 
-		if (camera.getViewport()->getTarget() != mSceneRenderTarget)
-			return;
+		SPtr<RenderTargetCore> renderTarget = mCamera->getViewport()->getTarget();
 
-		float width = (float)mSceneRenderTarget->getProperties().getWidth();
-		float height = (float)mSceneRenderTarget->getProperties().getHeight();
+		float width = (float)renderTarget->getProperties().getWidth();
+		float height = (float)renderTarget->getProperties().getHeight();
 
-		Rect2 normArea = camera.getViewport()->getNormArea();
+		Rect2 normArea = mCamera->getViewport()->getNormArea();
 
 		Rect2I screenArea;
 		screenArea.x = (int)(normArea.x * width);
@@ -231,7 +235,7 @@ namespace BansheeEngine
 		screenArea.width = (int)(normArea.width * width);
 		screenArea.height = (int)(normArea.height * height);
 
-		Matrix4 viewProjMat = camera.getProjectionMatrixRS() * camera.getViewMatrix();
+		Matrix4 viewProjMat = mCamera->getProjectionMatrixRS() * mCamera->getViewMatrix();
 		mSolidMaterial.mViewProj.set(viewProjMat);
 		mWireMaterial.mViewProj.set(viewProjMat);
 

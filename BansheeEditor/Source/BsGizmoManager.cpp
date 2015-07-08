@@ -235,7 +235,6 @@ namespace BansheeEngine
 		if (mIconMesh != nullptr)
 			mIconMeshHeap->dealloc(mIconMesh);
 
-		RenderTargetPtr rt = camera->getViewport()->getTarget();
 		IconRenderDataVecPtr iconRenderData;
 
 		mDrawHelper->buildMeshes();
@@ -264,7 +263,7 @@ namespace BansheeEngine
 		mIconMesh = buildIconMesh(camera, mIconData, false, iconRenderData);
 		SPtr<MeshCoreBase> iconMesh = mIconMesh->getCore();
 
-		gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::updateData, mCore, rt->getCore(), 
+		gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::updateData, mCore, camera->getCore(),
 			solidMesh, wireMesh, iconMesh, iconRenderData));
 	}
 
@@ -699,33 +698,39 @@ namespace BansheeEngine
 			mAlphaPickingMaterial.mFragParams->getParam("alphaCutoff", alphaCutoffParam);
 			alphaCutoffParam.set(PICKING_ALPHA_CUTOFF);
 		}
-
-		CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
-		activeRenderer->onCorePostRenderViewport.connect(std::bind(&GizmoManagerCore::render, this, _1));
 	}
 
-	void GizmoManagerCore::updateData(const SPtr<RenderTargetCore>& rt, const SPtr<MeshCoreBase>& solidMesh, const SPtr<MeshCoreBase>& wireMesh,
+	void GizmoManagerCore::updateData(const SPtr<CameraHandlerCore>& camera, const SPtr<MeshCoreBase>& solidMesh, const SPtr<MeshCoreBase>& wireMesh,
 		const SPtr<MeshCoreBase>& iconMesh, const GizmoManager::IconRenderDataVecPtr& iconRenderData)
 	{
-		mSceneRenderTarget = rt;
+		if (mCamera != camera)
+		{
+			CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
+			if (mCamera != nullptr)
+				activeRenderer->_unregisterRenderCallback(mCamera.get(), 0);
+
+			if (camera != nullptr)
+				activeRenderer->_registerRenderCallback(camera.get(), 0, std::bind(&GizmoManagerCore::render, this));
+		}
+
+		mCamera = camera;
 		mSolidMesh = solidMesh;
 		mWireMesh = wireMesh;
 		mIconMesh = iconMesh;
 		mIconRenderData = iconRenderData;
 	}
 
-	void GizmoManagerCore::render(const CameraHandlerCore& camera)
+	void GizmoManagerCore::render()
 	{
-		if (mSceneRenderTarget == nullptr)
+		if (mCamera == nullptr)
 			return;
 
-		if (camera.getViewport()->getTarget() != mSceneRenderTarget)
-			return;
+		SPtr<RenderTargetCore> renderTarget = mCamera->getViewport()->getTarget();
 
-		float width = (float)mSceneRenderTarget->getProperties().getWidth();
-		float height = (float)mSceneRenderTarget->getProperties().getHeight();
+		float width = (float)renderTarget->getProperties().getWidth();
+		float height = (float)renderTarget->getProperties().getHeight();
 
-		Rect2 normArea = camera.getViewport()->getNormArea();
+		Rect2 normArea = mCamera->getViewport()->getNormArea();
 
 		Rect2I screenArea;
 		screenArea.x = (int)(normArea.x * width);
@@ -734,10 +739,10 @@ namespace BansheeEngine
 		screenArea.height = (int)(normArea.height * height);
 
 		if (mSolidMesh != nullptr)
-			renderGizmos(camera.getViewMatrix(), camera.getProjectionMatrixRS(), mSolidMesh, GizmoManager::GizmoMaterial::Solid);
+			renderGizmos(mCamera->getViewMatrix(), mCamera->getProjectionMatrixRS(), mSolidMesh, GizmoManager::GizmoMaterial::Solid);
 
 		if (mWireMesh != nullptr)
-			renderGizmos(camera.getViewMatrix(), camera.getProjectionMatrixRS(), mWireMesh, GizmoManager::GizmoMaterial::Wire);
+			renderGizmos(mCamera->getViewMatrix(), mCamera->getProjectionMatrixRS(), mWireMesh, GizmoManager::GizmoMaterial::Wire);
 
 		if (mIconMesh != nullptr)
 			renderIconGizmos(screenArea, mIconMesh, mIconRenderData, false);

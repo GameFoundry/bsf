@@ -22,6 +22,23 @@ namespace BansheeEngine
 			RendererMeshData(meshData));
 	}
 
+	void CoreRenderer::_registerRenderCallback(const CameraHandlerCore* camera, INT32 index, const std::function<void()>& callback)
+	{
+		mRenderCallbacks[camera][index] = callback;
+	}
+
+	void CoreRenderer::_unregisterRenderCallback(const CameraHandlerCore* camera, INT32 index)
+	{
+		auto iterFind = mRenderCallbacks.find(camera);
+		if (iterFind != mRenderCallbacks.end())
+		{
+			iterFind->second.erase(index);
+
+			if (iterFind->second.empty())
+				mRenderCallbacks.erase(iterFind);
+		}
+	}
+
 	void CoreRenderer::setPass(const SPtr<MaterialCore>& material, UINT32 passIdx)
 	{
 		THROW_IF_NOT_CORE_THREAD;

@@ -97,6 +97,24 @@ namespace BansheeEngine
 		 */
 		virtual RendererMeshDataPtr _createMeshData(const MeshDataPtr& meshData);
 
+		/**
+		 * @brief	Registers a new callback that will be executed when the the specify camera is being rendered.
+		 *
+		 * @param	camera			Camera for which to trigger the callback.
+		 * @param	index			Index that determines the order of rendering when there are multiple registered callbacks.
+		 *							This must be unique. Lower indices get rendered sooner. Indices below 0 get rendered before the
+		 *							main viewport elements, while indices equal to greater to zero, after.
+		 * @param	callback		Callback to trigger when the specified camera is being rendered.
+		 *
+		 * @note	Core thread.
+		 *			Internal method.
+		 */
+		void _registerRenderCallback(const CameraHandlerCore* camera, INT32 index, const std::function<void()>& callback);
+
+		/**
+		 * @brief	Removes a previously registered callback registered with "_registerRenderCallback".
+		 */
+		void _unregisterRenderCallback(const CameraHandlerCore* camera, INT32 index);
 
 		/**
 		 * @brief	Activates the specified pass on the pipeline.
@@ -104,38 +122,25 @@ namespace BansheeEngine
 		 * @param	material	Parent material of the pass.
 		 * @param	passIdx		Index of the pass in the parent material.
 		 *
-		 * @note	Core thread only.
+		 * @note	Core thread.
 		 */
 		static void setPass(const SPtr<MaterialCore>& material, UINT32 passIdx);
 
 		/**
 		 * @brief	Draws the specified mesh proxy with last set pass.
 		 *
-		 * @note	Core thread only.
+		 * @note	Core thread.
 		 */
 		static void draw(const SPtr<MeshCoreBase>& mesh, const SubMesh& subMesh);
 
 		/**
 		 * @brief	Callback that gets triggered before a viewport gets rendered.
 		 *
-		 * @note	Sim thread only
+		 * @note	Sim thread.
 		 */
 		Event<void(const Viewport*, DrawList&)> onRenderViewport;
 
-		/**
-		 * @brief	Callback that gets triggered before main render queue items are rendered
-		 *			to the provided viewport, called from the core thread directly.
-		 *
-		 * @note	Core thread only.
-		 */
-		Event<void(const CameraHandlerCore&)> onCorePreRenderViewport;
-
-		/**
-		 * @brief	Callback that gets triggered after main render queue items are rendered,
-		 *			to the provided viewport, called from the core thread directly.
-		 *
-		 * @note	Core thread only.
-		 */
-		Event<void(const CameraHandlerCore&)> onCorePostRenderViewport;
+	protected:
+		UnorderedMap<const CameraHandlerCore*, Map<UINT32, std::function<void()>>> mRenderCallbacks;
 	};
 }

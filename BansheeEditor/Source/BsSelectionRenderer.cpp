@@ -43,7 +43,7 @@ namespace BansheeEngine
 
 	void SelectionRenderer::update(const CameraHandlerPtr& camera)
 	{
-		Vector<SelectionRenderer::ObjectData> objects;
+		Vector<ObjectData> objects;
 
 		const Vector<HSceneObject>& sceneObjects = Selection::instance().getSceneObjects();
 		for (auto& so : sceneObjects)
@@ -59,8 +59,7 @@ namespace BansheeEngine
 			}
 		}
 
-		RenderTargetPtr rt = camera->getViewport()->getTarget();
-		gCoreAccessor().queueCommand(std::bind(&SelectionRendererCore::updateData, mCore, rt->getCore(), objects));
+		gCoreAccessor().queueCommand(std::bind(&SelectionRendererCore::updateData, mCore, camera->getCore(), objects));
 	}
 
 	const Color SelectionRendererCore::SELECTION_COLOR = Color(1.0f, 1.0f, 1.0f, 0.3f);
@@ -80,28 +79,32 @@ namespace BansheeEngine
 
 		SPtr<GpuParamsCore> fragParams = mat->getPassParameters(0)->mFragParams;
 		fragParams->getParam("color", mColor);
-		
-		CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
-		activeRenderer->onCorePostRenderViewport.connect(std::bind(&SelectionRendererCore::render, this, _1));
 	}
 
-	void SelectionRendererCore::updateData(const SPtr<RenderTargetCore>& rt, const Vector<SelectionRenderer::ObjectData>& objects)
+	void SelectionRendererCore::updateData(const SPtr<CameraHandlerCore>& camera, const Vector<SelectionRenderer::ObjectData>& objects)
 	{
-		mSceneRenderTarget = rt;
+		if (mCamera != camera)
+		{
+			CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
+			if (mCamera != nullptr)
+				activeRenderer->_unregisterRenderCallback(mCamera.get(), 10);
+
+			if (camera != nullptr)
+				activeRenderer->_registerRenderCallback(camera.get(), 10, std::bind(&SelectionRendererCore::render, this));
+		}
+
+		mCamera = camera;
 		mObjects = objects;
 	}
 
-	void SelectionRendererCore::render(const CameraHandlerCore& camera)
+	void SelectionRendererCore::render()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		if (mSceneRenderTarget == nullptr)
+		if (mCamera == nullptr)
 			return;
 
-		if (camera.getViewport()->getTarget() != mSceneRenderTarget)
-			return;
-
-		Matrix4 viewProjMat = camera.getProjectionMatrixRS() * camera.getViewMatrix();
+		Matrix4 viewProjMat = mCamera->getProjectionMatrixRS() * mCamera->getViewMatrix();
 
 		for (auto& objData : mObjects)
 		{

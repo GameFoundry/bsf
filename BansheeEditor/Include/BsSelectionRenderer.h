@@ -44,11 +44,11 @@ namespace BansheeEngine
 	private:
 		void initialize(const SPtr<MaterialCore>& mat);
 
-		void render(const CameraHandlerCore& camera);
-		void updateData(const SPtr<RenderTargetCore>& rt, const Vector<SelectionRenderer::ObjectData>& objects);
+		void render();
+		void updateData(const SPtr<CameraHandlerCore>& camera, const Vector<SelectionRenderer::ObjectData>& objects);
 
-		SPtr<RenderTargetCore> mSceneRenderTarget;
 		Vector<SelectionRenderer::ObjectData> mObjects;
+		SPtr<CameraHandlerCore> mCamera;
 
 		// Immutable
 		SPtr<MaterialCore> mMaterial;

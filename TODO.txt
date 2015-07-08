@@ -59,8 +59,7 @@ Polish stage 1
 Fix DX11 (and possibly DX9) rendering
 After undocking ProjectWindow the auto-scroll seems to be stuck in up position
 Decent looking default layout
-When selecting an gizmo icon the selection seems delayed and its gizmos flash for a frame before hiding
-Make sure that scene camera controls only work when scene view is in focus
+When selecting an gizmo icon the selection seems delayed and its gizmos flash for a frame before hiding (Can't reproduce atm but I saw it)
 Make proper window names instead of InspectorWindow
 Selection wireframe seems to render in front of handles
 

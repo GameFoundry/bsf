@@ -289,7 +289,7 @@ namespace BansheeEngine
 		mRenderTargets.clear();
 	}
 
-	void BansheeRenderer::render(const CameraHandlerCore& camera, const RenderQueuePtr& renderQueue)
+	void BansheeRenderer::render(const CameraHandlerCore& camera, RenderQueuePtr& renderQueue)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -300,7 +300,18 @@ namespace BansheeEngine
 
 		Matrix4 viewProjMatrix = projMatrixCstm * viewMatrixCstm;
 
-		onCorePreRenderViewport(camera);
+		// Trigger pre-render callbacks
+		auto iterCameraCallbacks = mRenderCallbacks.find(&camera);
+		if (iterCameraCallbacks != mRenderCallbacks.end())
+		{
+			for (auto& callbackPair : iterCameraCallbacks->second)
+			{
+				if (callbackPair.first >= 0)
+					break;
+
+				callbackPair.second();
+			}
+		}
 
 		if (!camera.getIgnoreSceneRenderables())
 		{
@@ -373,7 +384,17 @@ namespace BansheeEngine
 
 		renderQueue->clear();
 
-		onCorePostRenderViewport(camera);
+		// Trigger post-render callbacks
+		if (iterCameraCallbacks != mRenderCallbacks.end())
+		{
+			for (auto& callbackPair : iterCameraCallbacks->second)
+			{
+				if (callbackPair.first < 0)
+					continue;
+
+				callbackPair.second();
+			}
+		}
 	}
 
 	SPtr<ShaderCore> BansheeRenderer::createDefaultShader()

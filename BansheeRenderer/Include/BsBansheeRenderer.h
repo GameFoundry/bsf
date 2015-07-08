@@ -127,7 +127,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Core thread only.
 		 */
-		virtual void render(const CameraHandlerCore& camera, const RenderQueuePtr& renderQueue);
+		virtual void render(const CameraHandlerCore& camera, RenderQueuePtr& renderQueue);
 
 		/**
 		 * @brief	Creates data used by the renderer on the core thread.

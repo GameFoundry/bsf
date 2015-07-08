@@ -214,16 +214,16 @@ namespace BansheeEngine
 	private:
 		void initialize(const GizmoManager::CoreInitData& initData);
 
-		void render(const CameraHandlerCore& camera);
+		void render();
 		void renderGizmos(Matrix4 viewMatrix, Matrix4 projMatrix, SPtr<MeshCoreBase> mesh, GizmoManager::GizmoMaterial material);
 		void renderIconGizmos(Rect2I screenArea, SPtr<MeshCoreBase> mesh, GizmoManager::IconRenderDataVecPtr renderData, bool usePickingMaterial);
 
-		void updateData(const SPtr<RenderTargetCore>& rt, const SPtr<MeshCoreBase>& solidMesh, const SPtr<MeshCoreBase>& wireMesh,
+		void updateData(const SPtr<CameraHandlerCore>& camera, const SPtr<MeshCoreBase>& solidMesh, const SPtr<MeshCoreBase>& wireMesh,
 			const SPtr<MeshCoreBase>& iconMesh, const GizmoManager::IconRenderDataVecPtr& iconRenderData);
 
 		static const float PICKING_ALPHA_CUTOFF;
 
-		SPtr<RenderTargetCore> mSceneRenderTarget;
+		SPtr<CameraHandlerCore> mCamera;
 
 		SPtr<MeshCoreBase> mSolidMesh;
 		SPtr<MeshCoreBase> mWireMesh;
