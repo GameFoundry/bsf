@@ -64,6 +64,9 @@ namespace BansheeEngine
 
 	void GUIInputBox::setText(const WString& text)
 	{
+		if (mText == text)
+			return;
+
 		bool filterOkay = true;
 		if(mFilter != nullptr)
 		{

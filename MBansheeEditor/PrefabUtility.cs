@@ -37,6 +37,15 @@ namespace BansheeEditor
             Internal_RevertPrefab(objPtr);
         }
 
+        public static bool HasPrefabLink(SceneObject obj)
+        {
+            if (obj == null)
+                return false;
+
+            IntPtr objPtr = obj.GetCachedPtr();
+            return Internal_HasPrefabLink(objPtr);
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_BreakPrefab(IntPtr nativeInstance);
 
@@ -45,5 +54,8 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_RevertPrefab(IntPtr nativeInstance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_HasPrefabLink(IntPtr nativeInstance);
     }
 }

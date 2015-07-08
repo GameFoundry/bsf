@@ -93,24 +93,16 @@ namespace BansheeEngine
 
 	void Quaternion::fromEulerAngles(const Radian& xAngle, const Radian& yAngle, const Radian& zAngle)
 	{
-		Quaternion quats[3];
-		quats[0].fromAxisAngle(Vector3::UNIT_X, xAngle);
-		quats[1].fromAxisAngle(Vector3::UNIT_Y, yAngle);
-		quats[2].fromAxisAngle(Vector3::UNIT_Z, zAngle);
-
-		*this = quats[2]*(quats[0] * quats[1]);
+		Matrix3 mat;
+		mat.fromEulerAngles(xAngle, yAngle, zAngle);
+		mat.toQuaternion(*this);
 	}
 
 	void Quaternion::fromEulerAngles(const Radian& xAngle, const Radian& yAngle, const Radian& zAngle, EulerAngleOrder order)
 	{
-		const EulerAngleOrderData& l = EA_LOOKUP[(int)order];
-
-		Quaternion quats[3];
-		quats[0].fromAxisAngle(Vector3::UNIT_X, xAngle);
-		quats[1].fromAxisAngle(Vector3::UNIT_Y, yAngle);
-		quats[2].fromAxisAngle(Vector3::UNIT_Z, zAngle);
-
-		*this = quats[l.c]*(quats[l.a] * quats[l.b]);
+		Matrix3 mat;
+		mat.fromEulerAngles(xAngle, yAngle, zAngle, order);
+		mat.toQuaternion(*this);
 	}
 
 	void Quaternion::toRotationMatrix(Matrix3& mat) const

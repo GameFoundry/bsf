@@ -56,15 +56,19 @@ Code quality improvements:
 ----------------------------------------------------------------------
 Polish stage 1
 
+Int/Float field mouse scrolling doesn't work
 Fix DX11 (and possibly DX9) rendering
 After undocking ProjectWindow the auto-scroll seems to be stuck in up position
 Decent looking default layout
 When selecting an gizmo icon the selection seems delayed and its gizmos flash for a frame before hiding
 Make sure that scene camera controls only work when scene view is in focus
+Make proper window names instead of InspectorWindow
+Selection wireframe seems to render in front of handles
 
 Fix handles
  - Some handle functionality is unfinished
  - Handles look too large when scene view is enlarged
+ - Moving around XZ plane seems to be wrong (it doesn't move as fast as the mouse)
 
 Add ping to SceneTreeView
  - Hook up ping effect so it triggers when I select a resource or sceneobject
@@ -83,6 +87,9 @@ Need a way to add scene objects and components (and remove them)
 For later: I could record undo/redo per-property using the new diff system
 Remember: Record all portions where objects & components get modified so I can mark them dirty, will likely need
  to use those some points for undo/redo
+
+UndoRedo reminders:
+ - When breaking or reverting a scene object
 
 ----------------------------------------------------------------------
 Project window

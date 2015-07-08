@@ -14,6 +14,7 @@ namespace BansheeEngine
 		static void internal_breakPrefab(ScriptSceneObject* nativeInstance);
 		static void internal_applyPrefab(ScriptSceneObject* nativeInstance);
 		static void internal_revertPrefab(ScriptSceneObject* nativeInstance);
+		static bool internal_hasPrefabLink(ScriptSceneObject* nativeInstance);
 
 		ScriptPrefabUtility(MonoObject* instance);
 	};

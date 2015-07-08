@@ -20,6 +20,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_BreakPrefab", &ScriptPrefabUtility::internal_breakPrefab);
 		metaData.scriptClass->addInternalCall("Internal_ApplyPrefab", &ScriptPrefabUtility::internal_applyPrefab);
 		metaData.scriptClass->addInternalCall("Internal_RevertPrefab", &ScriptPrefabUtility::internal_revertPrefab);
+		metaData.scriptClass->addInternalCall("Internal_HasPrefabLink", &ScriptPrefabUtility::internal_hasPrefabLink);
 	}
 
 	void ScriptPrefabUtility::internal_breakPrefab(ScriptSceneObject* nativeInstance)
@@ -50,5 +51,13 @@ namespace BansheeEngine
 			return;
 
 		PrefabUtility::revertToPrefab(nativeInstance->getNativeSceneObject());
+	}
+
+	bool ScriptPrefabUtility::internal_hasPrefabLink(ScriptSceneObject* nativeInstance)
+	{
+		if (ScriptSceneObject::checkIfDestroyed(nativeInstance))
+			return false;
+
+		return !nativeInstance->getNativeSceneObject()->getPrefabLink().empty();
 	}
 }
