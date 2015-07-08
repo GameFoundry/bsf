@@ -56,8 +56,7 @@ Code quality improvements:
 ----------------------------------------------------------------------
 Polish stage 1
 
-Int/Float field mouse scrolling doesn't work unless clicked on a specific spot
- - Additionally the scroll value doesn't seem to persist when it comes to the inspector window
+Float field scroll value doesn't seem to persist when it comes to the inspector window
 Fix DX11 (and possibly DX9) rendering
 After undocking ProjectWindow the auto-scroll seems to be stuck in up position
 Decent looking default layout

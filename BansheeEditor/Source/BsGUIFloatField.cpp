@@ -26,7 +26,7 @@ namespace BansheeEngine
 		mInputBox = GUIInputBox::create(false, GUIOptions(GUIOption::flexibleWidth()), getSubStyleName(getInputStyleType()));
 		mInputBox->setFilter(&GUIFloatField::floatFilter);
 
-		mInputBox->onValueChanged.connect(std::bind(&GUIFloatField::valueChanged, this, _1));
+		mInputBox->onValueChanged.connect(std::bind((void(GUIFloatField::*)(const WString&))&GUIFloatField::valueChanged, this, _1));
 		mInputBox->onFocusGained.connect(std::bind(&GUIFloatField::focusGained, this));
 		mInputBox->onFocusLost.connect(std::bind(&GUIFloatField::focusLost, this));
 
@@ -105,8 +105,11 @@ namespace BansheeEngine
 
 				mLastDragPos = event.getPosition().x + jumpAmount;
 
-				if(oldValue != newValue)
+				if (oldValue != newValue)
+				{
 					setValue(newValue);
+					valueChanged(newValue);
+				}
 			}
 
 			return true;
@@ -168,12 +171,15 @@ namespace BansheeEngine
 
 	void GUIFloatField::valueChanged(const WString& newValue)
 	{
-		float newFloatValue = parseFloat(newValue);
+		valueChanged(parseFloat(newValue));
+	}
 
-		CmdInputFieldValueChange<GUIFloatField, float>::execute(this, newFloatValue);
+	void GUIFloatField::valueChanged(float newValue)
+	{
+		CmdInputFieldValueChange<GUIFloatField, float>::execute(this, newValue);
 
 		if (!onValueChanged.empty())
-			onValueChanged(newFloatValue);
+			onValueChanged(newValue);
 	}
 
 	void GUIFloatField::focusGained()

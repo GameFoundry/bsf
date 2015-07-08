@@ -36,6 +36,7 @@ namespace BansheeEngine
 		void styleUpdated() override;
 
 		void valueChanged(const WString& newValue);
+		void valueChanged(INT32 newValue);
 		void focusGained();
 		void focusLost();
 

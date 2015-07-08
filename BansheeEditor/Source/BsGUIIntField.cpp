@@ -28,7 +28,7 @@ namespace BansheeEngine
 		mInputBox = GUIInputBox::create(false, GUIOptions(GUIOption::flexibleWidth()), getSubStyleName(getInputStyleType()));
 		mInputBox->setFilter(&GUIIntField::intFilter);
 
-		mInputBox->onValueChanged.connect(std::bind(&GUIIntField::valueChanged, this, _1));
+		mInputBox->onValueChanged.connect(std::bind((void(GUIIntField::*)(const WString&))&GUIIntField::valueChanged, this, _1));
 		mInputBox->onFocusGained.connect(std::bind(&GUIIntField::focusGained, this));
 		mInputBox->onFocusLost.connect(std::bind(&GUIIntField::focusLost, this));
 
@@ -124,8 +124,11 @@ namespace BansheeEngine
 
 				mLastDragPos += (newValue - oldValue) * DRAG_SPEED + jumpAmount;
 
-				if(oldValue != newValue)
+				if (oldValue != newValue)
+				{
 					setValue(newValue);
+					valueChanged(newValue);
+				}
 			}
 
 			return true;
@@ -193,12 +196,15 @@ namespace BansheeEngine
 
 	void GUIIntField::valueChanged(const WString& newValue)
 	{
-		INT32 newIntValue = parseInt(newValue);
+		valueChanged(parseInt(newValue));
+	}
 
-		CmdInputFieldValueChange<GUIIntField, INT32>::execute(this, newIntValue);
+	void GUIIntField::valueChanged(INT32 newValue)
+	{
+		CmdInputFieldValueChange<GUIIntField, INT32>::execute(this, newValue);
 
-		if(!onValueChanged.empty())
-			onValueChanged(newIntValue);
+		if (!onValueChanged.empty())
+			onValueChanged(newValue);
 	}
 
 	void GUIIntField::focusGained()
