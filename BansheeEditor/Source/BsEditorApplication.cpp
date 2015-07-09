@@ -66,7 +66,7 @@ namespace BansheeEngine
 		:Application(createRenderWindowDesc(), renderSystemPlugin, RendererPlugin::Default), 
 		mActiveRSPlugin(renderSystemPlugin), mSBansheeEditorPlugin(nullptr)
 	{
-		
+
 	}
 
 	EditorApplication::~EditorApplication()

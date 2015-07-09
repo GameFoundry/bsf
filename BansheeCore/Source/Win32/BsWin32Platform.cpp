@@ -666,14 +666,6 @@ namespace BansheeEngine
 
 		switch( uMsg )
 		{
-		case WM_ACTIVATE:
-			{
-				bool active = (LOWORD(wParam) != WA_INACTIVE);
-				if( active )
-					win->setActive(true);
-
-				return 0;
-			}
 		case WM_DESTROY:
 			{
 				bool reenableWindows = false;

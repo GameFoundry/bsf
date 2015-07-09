@@ -122,13 +122,34 @@ namespace BansheeEngine
 			if(texture->mRTTIData.empty())
 				return;
 
-			const TextureProperties texProps = texture->getProperties();
+			TextureProperties& texProps = texture->mProperties;
+
+			// Update pixel format if needed as it's possible the original texture was saved using some other render API
+			// that has an unsupported format.
+			PixelFormat originalFormat = texProps.mFormat;
+			PixelFormat validFormat = TextureManager::instance().getNativeFormat(
+				texProps.mTextureType, texProps.mFormat, texProps.mUsage, texProps.mHwGamma);
+
+			Vector<PixelDataPtr>* pixelData = any_cast<Vector<PixelDataPtr>*>(texture->mRTTIData);
+			if (originalFormat != validFormat)
+			{
+				texProps.mFormat = validFormat;
+
+				for (size_t i = 0; i < pixelData->size(); i++)
+				{
+					PixelDataPtr origData = pixelData->at(i);
+					PixelDataPtr newData = PixelData::create(origData->getWidth(), origData->getHeight(), origData->getDepth(), validFormat);
+					newData->allocateInternalBuffer();
+
+					PixelUtil::bulkPixelConversion(*origData, *newData);
+					(*pixelData)[i] = newData;
+				}
+			}
 
 			// A bit clumsy initializing with already set values, but I feel its better than complicating things and storing the values
 			// in mRTTIData.
 			texture->initialize();
 
-			Vector<PixelDataPtr>* pixelData = any_cast<Vector<PixelDataPtr>*>(texture->mRTTIData);
 			for(size_t i = 0; i < pixelData->size(); i++)
 			{
 				UINT32 face = (size_t)Math::floor(i / (float)(texProps.getNumMipmaps() + 1));

@@ -136,7 +136,7 @@ namespace BansheeEngine
 	using UnorderedMultimap = std::unordered_multimap<K, V, H, C, A>;
 
 	template <typename T>
-	using SPtr = std::shared_ptr<T> ;
+	using SPtr = std::shared_ptr<T>;
 
 	/**
 	 * @brief	Create a new shared pointer using a custom allocator category.
@@ -148,8 +148,8 @@ namespace BansheeEngine
 	}
 
 	/**
-	* @brief	Create a new shared pointer using the default allocator category.
-	*/
+	 * @brief	Create a new shared pointer using the default allocator category.
+	 */
 	template<class Type, class... Args>
 	std::shared_ptr<Type> bs_shared_ptr(Args &&... args)
 	{
@@ -167,9 +167,9 @@ namespace BansheeEngine
 	}
 
 	/**
-	* @brief	Create a new shared pointer from a previously constructed object.
-	*			Pointer specific data will be allocated using the provided allocator category.
-	*/
+	 * @brief	Create a new shared pointer from a previously constructed object.
+	 *			Pointer specific data will be allocated using the provided allocator category.
+	 */
 	template<class Type, class MainAlloc, class PtrDataAlloc>
 	std::shared_ptr<Type> bs_shared_ptr(Type* data) 
 	{

@@ -174,6 +174,16 @@ namespace BansheeEngine
 		setColorsInternal(colors, numElements);
 	}
 
+	PixelDataPtr PixelData::create(const PixelVolume &extents, PixelFormat pixelFormat)
+	{
+		return bs_shared_ptr<PixelData>(extents, pixelFormat);
+	}
+
+	PixelDataPtr PixelData::create(UINT32 width, UINT32 height, UINT32 depth, PixelFormat pixelFormat)
+	{
+		return bs_shared_ptr<PixelData>(width, height, depth, pixelFormat);
+	}
+
 	UINT32 PixelData::getInternalBufferSize() const
 	{
 		return getSize();

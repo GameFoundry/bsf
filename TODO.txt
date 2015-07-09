@@ -57,11 +57,11 @@ Code quality improvements:
 Polish stage 1
 
 Fix DX11 (and possibly DX9) rendering
+Main window resize areas don't seem to be set up or work
 After undocking ProjectWindow the auto-scroll seems to be stuck in up position
 Decent looking default layout
 When selecting an gizmo icon the selection seems delayed and its gizmos flash for a frame before hiding (Can't reproduce atm but I saw it)
 Make proper window names instead of InspectorWindow
-Selection wireframe seems to render in front of handles
 
 Fix handles
  - Some handle functionality is unfinished
@@ -87,6 +87,10 @@ Remember: Record all portions where objects & components get modified so I can m
 
 UndoRedo reminders:
  - When breaking or reverting a scene object
+
+When building game make sure to go over texture resources and ensure they are saved in the valid format
+as we don't want to do format conversion at runtime (Not cruical, but it should be done eventually)
+ - This should something similar to Unity where when changing the platform all resources get reimported
 
 ----------------------------------------------------------------------
 Project window

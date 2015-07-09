@@ -40,52 +40,52 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RenderWindowCore::move
 		 */
-		void move(INT32 left, INT32 top);
+		void move(INT32 left, INT32 top) override;
 
 		/**
 		 * @copydoc RenderWindowCore::resize
 		 */
-		void resize(UINT32 width, UINT32 height);
+		void resize(UINT32 width, UINT32 height) override;
 
 		/**
 		 * @copydoc RenderWindowCore::setHidden
 		 */
-		void setHidden(bool hidden);
+		void setHidden(bool hidden) override;
 
 		/**
 		 * @copydoc RenderWindowCore::setActive
 		 */
-		void setActive(bool state);
+		void setActive(bool state) override;
 
 		/**
 		 * @copydoc	RenderWindowCore::minimize
 		 */
-		void minimize();
+		void minimize() override;
 
 		/**
 		 * @copydoc	RenderWindowCore::maximize
 		 */
-		void maximize();
+		void maximize() override;
 
 		/**
 		 * @copydoc	RenderWindowCore::restore
 		 */
-		void restore();
+		void restore() override;
 
 		/**
 		 * @copydoc RenderWindowCore::setFullscreen(UINT32, UINT32, float, UINT32)
 		 */
-		void setFullscreen(UINT32 width, UINT32 height, float refreshRate = 60.0f, UINT32 monitorIdx = 0);
+		void setFullscreen(UINT32 width, UINT32 height, float refreshRate = 60.0f, UINT32 monitorIdx = 0) override;
 
 		/**
 		 * @copydoc RenderWindowCore::setFullscreen(const VideoMode&)
 		 */
-		void setFullscreen(const VideoMode& mode);
+		void setFullscreen(const VideoMode& mode) override;
 
 		/**
 		* @copydoc RenderWindowCore::setWindowed
 		*/
-		void setWindowed(UINT32 width, UINT32 height);
+		void setWindowed(UINT32 width, UINT32 height) override;
 
 		/**
 		 * @copydoc RenderWindowCore::copyContentsToMemory
@@ -95,17 +95,17 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RenderWindowCore::swapBuffers
 		 */
-		void swapBuffers();
+		void swapBuffers() override;
 
 		/**
 		 * @copydoc RenderWindowCore::getCustomAttribute
 		 */
-		void getCustomAttribute(const String& name, void* pData) const;
+		void getCustomAttribute(const String& name, void* pData) const override;
 
 		/**
 		 * @copydoc	RenderWindowCore::_windowMovedOrResized
 		 */
-		void _windowMovedOrResized();
+		void _windowMovedOrResized() override;
 
 		/**
 		 * @brief	Returns presentation parameters used for creating the window swap chain.
@@ -153,7 +153,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	RenderWindowCore::getProperties
 		 */
-		const RenderTargetProperties& getPropertiesInternal() const { return mProperties; }
+		const RenderTargetProperties& getPropertiesInternal() const override { return mProperties; }
 
 		/**
 		 * @copydoc	RenderWindowCore::getSyncedProperties
@@ -203,17 +203,17 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RenderWindow::screenToWindowPos
 		 */
-		void getCustomAttribute(const String& name, void* pData) const;
+		void getCustomAttribute(const String& name, void* pData) const override;
 
 		/**
 		 * @copydoc RenderWindow::screenToWindowPos
 		 */
-		Vector2I screenToWindowPos(const Vector2I& screenPos) const;
+		Vector2I screenToWindowPos(const Vector2I& screenPos) const override;
 
 		/**
 		 * @copydoc RenderWindow::windowToScreenPos
 		 */
-		Vector2I windowToScreenPos(const Vector2I& windowPos) const;
+		Vector2I windowToScreenPos(const Vector2I& windowPos) const override;
 
 		/**
 		 * @copydoc	RenderWindow::getCore
@@ -230,7 +230,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	RenderWindowCore::getProperties
 		 */
-		const RenderTargetProperties& getPropertiesInternal() const { return mProperties; }
+		const RenderTargetProperties& getPropertiesInternal() const override { return mProperties; }
 
 		/**
 		 * @copydoc	RenderWindow::syncProperties

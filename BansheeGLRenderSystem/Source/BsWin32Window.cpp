@@ -647,49 +647,13 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		Win32RenderWindowProperties& props = mProperties;
-		if (mDeviceName != NULL && state == false)
+
+		if (mHWnd)
 		{
-			HWND hActiveWindow = GetActiveWindow();
-			char classNameSrc[_MAX_CLASS_NAME_ + 1];
-			char classNameDst[_MAX_CLASS_NAME_ + 1];
-
-			GetClassName(mHWnd, classNameSrc, _MAX_CLASS_NAME_);
-			GetClassName(hActiveWindow, classNameDst, _MAX_CLASS_NAME_);
-
-			if (strcmp(classNameDst, classNameSrc) == 0)
-			{
-				state = true;
-			}						
-		}
-		
-		props.mActive = state;
-
-		if(props.mIsFullScreen)
-		{
-			if( state == false )
-			{	//Restore Desktop
-				ChangeDisplaySettingsEx(mDeviceName, NULL, NULL, 0, NULL);
-				ShowWindow(mHWnd, SW_SHOWMINNOACTIVE);
-			}
+			if (state)
+				ShowWindow(mHWnd, SW_RESTORE);
 			else
-			{	//Restore App
-				ShowWindow(mHWnd, SW_SHOWNORMAL);
-
-				DEVMODE displayDeviceMode;
-
-				memset(&displayDeviceMode, 0, sizeof(displayDeviceMode));
-				displayDeviceMode.dmSize = sizeof(DEVMODE);
-				displayDeviceMode.dmBitsPerPel = props.mColorDepth;
-				displayDeviceMode.dmPelsWidth = props.mWidth;
-				displayDeviceMode.dmPelsHeight = props.mHeight;
-				displayDeviceMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
-				if (mDisplayFrequency)
-				{
-					displayDeviceMode.dmDisplayFrequency = mDisplayFrequency;
-					displayDeviceMode.dmFields |= DM_DISPLAYFREQUENCY;
-				}
-				ChangeDisplaySettingsEx(mDeviceName, &displayDeviceMode, NULL, CDS_FULLSCREEN, NULL);
-			}
+				ShowWindow(mHWnd, SW_SHOWMINNOACTIVE);
 		}
 
 		RenderWindowCore::setActive(state);

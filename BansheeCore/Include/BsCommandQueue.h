@@ -98,6 +98,10 @@ namespace BansheeEngine
 			returnsValue = source.returnsValue;
 			callbackId = source.callbackId;
 			notifyWhenComplete = source.notifyWhenComplete;
+
+#if BS_DEBUG_MODE
+			debugId = source.debugId;
+#endif
 		}
 
 		QueuedCommand& operator=(const QueuedCommand& rhs)
@@ -109,6 +113,10 @@ namespace BansheeEngine
 			callbackId = rhs.callbackId;
 			notifyWhenComplete = rhs.notifyWhenComplete;
 			
+#if BS_DEBUG_MODE
+			debugId = rhs.debugId;
+#endif
+
 			return *this;
 		}
 

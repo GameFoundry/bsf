@@ -274,7 +274,6 @@ namespace BansheeEngine
 
 		createSizeDependedD3DResources();
 		mDXGIFactory->MakeWindowAssociation(mHWnd, NULL);
-		setHidden(props.isHidden());
 
 		{
 			ScopedSpinLock lock(mLock);
@@ -366,7 +365,7 @@ namespace BansheeEngine
 			}
 			else
 			{
-				ShowWindow(mHWnd, SW_SHOWMINIMIZED);
+				ShowWindow(mHWnd, SW_SHOWMINNOACTIVE);
 				mSwapChain->SetFullscreenState(FALSE, nullptr);
 			}
 		}
@@ -378,9 +377,6 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		D3D11RenderWindowProperties& props = mProperties;
-
-		props.mHidden = hidden;
 		mShowOnSwap = false;
 
 		if (!mIsExternal)

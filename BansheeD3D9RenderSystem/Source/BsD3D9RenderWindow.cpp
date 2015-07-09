@@ -362,13 +362,29 @@ namespace BansheeEngine
 		RenderWindowManager::instance().notifyMovedOrResized(this);
 	}
 
+	void D3D9RenderWindowCore::setActive(bool state)
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		D3D9RenderWindowProperties& props = mProperties;
+
+		if (mHWnd)
+		{
+			if (state)
+				ShowWindow(mHWnd, SW_RESTORE);
+			else
+				ShowWindow(mHWnd, SW_SHOWMINNOACTIVE);
+		}
+
+		RenderWindowCore::setActive(state);
+	}
+
 	void D3D9RenderWindowCore::setHidden(bool hidden)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		D3D9RenderWindowProperties& props = mProperties;
 
-		props.mHidden = hidden;
 		mShowOnSwap = false;
 
 		if (!mIsExternal)
