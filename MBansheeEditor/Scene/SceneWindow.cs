@@ -125,6 +125,7 @@ namespace BansheeEditor
             if (camera != null)
             {
                 camera.SceneObject.Destroy();
+                camera = null;
             }
         }
 

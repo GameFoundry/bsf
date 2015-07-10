@@ -33,6 +33,7 @@ namespace BansheeEngine
 		ScriptEditorWindow(ScriptEditorWidget* editorWidget);
 
 		static MonoObject* internal_createOrGetInstance(MonoString* ns, MonoString* typeName);
+		static MonoObject* internal_getInstance(MonoString* ns, MonoString* typeName);
 
 		static bool internal_hasFocus(ScriptEditorWindow* thisPtr);
 		static void internal_screenToWindowPos(ScriptEditorWindow* thisPtr, Vector2I screenPos, Vector2I* windowPos);

@@ -44,6 +44,7 @@ namespace BansheeEngine
 	void ScriptEditorWindow::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateOrGetInstance", &ScriptEditorWindow::internal_createOrGetInstance);
+		metaData.scriptClass->addInternalCall("Internal_GetInstance", &ScriptEditorWindow::internal_getInstance);
 		metaData.scriptClass->addInternalCall("Internal_GetWidth", &ScriptEditorWindow::internal_getWidth);
 		metaData.scriptClass->addInternalCall("Internal_GetHeight", &ScriptEditorWindow::internal_getHeight);
 		metaData.scriptClass->addInternalCall("Internal_HasFocus", &ScriptEditorWindow::internal_hasFocus);
@@ -71,6 +72,19 @@ namespace BansheeEngine
 		auto findIter2 = OpenScriptEditorWindows.find(fullName);
 		if(findIter2 != OpenScriptEditorWindows.end())
 			return findIter2->second.nativeObj->mManagedInstance;
+
+		return nullptr;
+	}
+
+	MonoObject* ScriptEditorWindow::internal_getInstance(MonoString* ns, MonoString* typeName)
+	{
+		String strTypeName = toString(MonoUtil::monoToWString(typeName));
+		String strNamespace = toString(MonoUtil::monoToWString(ns));
+		String fullName = strNamespace + "." + strTypeName;
+
+		auto findIter = OpenScriptEditorWindows.find(fullName);
+		if (findIter != OpenScriptEditorWindows.end())
+			return findIter->second.nativeObj->mManagedInstance;
 
 		return nullptr;
 	}

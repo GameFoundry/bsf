@@ -56,20 +56,21 @@ Code quality improvements:
 ----------------------------------------------------------------------
 Polish stage 1
 
-Fix DX11 (and possibly DX9) rendering
-Main window resize areas don't seem to be set up or work
 After undocking ProjectWindow the auto-scroll seems to be stuck in up position
-Decent looking default layout
 When selecting an gizmo icon the selection seems delayed and its gizmos flash for a frame before hiding (Can't reproduce atm but I saw it)
+Main window resize areas don't seem to be set up or work
 Make proper window names instead of InspectorWindow
+Decent looking default layout
 
 Fix handles
  - Some handle functionality is unfinished
  - Handles look too large when scene view is enlarged
  - Moving around XZ plane seems to be wrong (it doesn't move as fast as the mouse)
+ - Handle (and gizmo) shaders suck
 
-Add ping to SceneTreeView
+SceneTreeView
  - Hook up ping effect so it triggers when I select a resource or sceneobject
+ - See if it needs other enhancements (rename, delete all work properly? etc.)
 
 Finish up inspector
  - Do I handle the case of updating the inspector when component is added or removed?

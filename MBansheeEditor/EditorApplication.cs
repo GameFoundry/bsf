@@ -52,7 +52,7 @@ namespace BansheeEditor
 
         public static Camera SceneViewCamera
         {
-            get { return instance.scene.GetCamera(); }
+            get { return EditorWindow.GetWindow<SceneWindow>().GetCamera(); }
         }
 
         public static EditorPlatformType EditorPlatform
@@ -72,9 +72,6 @@ namespace BansheeEditor
         internal static string ScriptEditorAssembly { get { return Internal_GetScriptEditorAssemblyName(); } }
 
         private static EditorApplication instance;
-
-        private InspectorWindow inspector;
-        private SceneWindow scene;
 
         private FolderMonitor monitor;
 
@@ -103,8 +100,8 @@ namespace BansheeEditor
             inputConfig.RegisterAxis(SceneCamera.VerticalAxisBinding, InputAxis.MouseY);
 
             // Open windows
-            inspector = EditorWindow.OpenWindow<InspectorWindow>();
-            scene = EditorWindow.OpenWindow<SceneWindow>();
+            InspectorWindow inspector = EditorWindow.OpenWindow<InspectorWindow>();
+            EditorWindow.OpenWindow<SceneWindow>();
 
             ProjectLibrary.Refresh();
             monitor = new FolderMonitor(ProjectLibrary.ResourceFolder);

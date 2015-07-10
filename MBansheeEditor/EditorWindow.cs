@@ -18,6 +18,11 @@ namespace BansheeEditor
             return (T)Internal_CreateOrGetInstance(typeof(T).Namespace, typeof(T).Name);
         }
 
+        public static T GetWindow<T>() where T : EditorWindow
+        {
+            return (T)Internal_GetInstance(typeof(T).Namespace, typeof(T).Name);
+        }
+
         public Vector2I ScreenToWindowPos(Vector2I screenPos)
         {
             Vector2I windowPos;
@@ -44,6 +49,9 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern EditorWindow Internal_CreateOrGetInstance(string ns, string typeName);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern EditorWindow Internal_GetInstance(string ns, string typeName);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern int Internal_GetWidth(IntPtr nativeInstance);
