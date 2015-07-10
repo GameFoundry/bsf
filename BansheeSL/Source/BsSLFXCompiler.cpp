@@ -500,8 +500,8 @@ namespace BansheeEngine
 				{
 					mergeTechnique(mergeInto, option->value.nodePtr, techniqueNode, codeBlockOffset);
 					anyMerged = true;
+					break;
 				}
-				break;
 			}
 		}
 

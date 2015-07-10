@@ -562,7 +562,7 @@ namespace BansheeEngine
 		
 		for(auto iter = paramDesc.samplers.begin(); iter != paramDesc.samplers.end(); ++iter)
 		{
-			SPtr<SamplerStateCore>& samplerState = bindableParams->getSamplerState(iter->second.slot);
+			SPtr<SamplerStateCore> samplerState = bindableParams->getSamplerState(iter->second.slot);
 
 			if(samplerState == nullptr)
 				setSamplerState(gptype, iter->second.slot, SamplerStateCore::getDefault());
