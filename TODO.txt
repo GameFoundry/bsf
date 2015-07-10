@@ -68,7 +68,6 @@ Fix handles
  - Some handle functionality is unfinished
  - Handles look too large when scene view is enlarged
  - Moving around XZ plane seems to be wrong (it doesn't move as fast as the mouse)
- - Handle (and gizmo) shaders suck
 
 SceneTreeView
  - Hook up ping effect so it triggers when I select a resource or sceneobject
@@ -130,7 +129,6 @@ Simple stuff
  - Get rid of PoolAlloc and other unused allocators (plus fix bs_new and others which have weird overloads)
  - Get rid of event callback from HString and figure out a better way
  - GUI TextureField similar to ResourceField but it displays the texture it has assigned
- - Better handle and gizmo shaders
  - Splash screen
 
 ----------------------------------------------------------------------

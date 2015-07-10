@@ -29,7 +29,7 @@ namespace BansheeEngine
 	}
 
 	EditorWindowBase::EditorWindowBase(const RenderWindowPtr& renderWindow)
-		:mOwnsRenderWindow(false)
+		:mOwnsRenderWindow(false), mIsModal(false)
 	{
 		construct(renderWindow);
 	}
