@@ -176,6 +176,7 @@ namespace BansheeEngine
 		{
 			SPtr<MaterialCore> mat;
 			GpuParamMat4Core mViewProj;
+			GpuParamVec4Core mViewDir;
 		};
 
 		struct WireMaterialData
@@ -215,7 +216,7 @@ namespace BansheeEngine
 		void initialize(const GizmoManager::CoreInitData& initData);
 
 		void render();
-		void renderGizmos(Matrix4 viewMatrix, Matrix4 projMatrix, SPtr<MeshCoreBase> mesh, GizmoManager::GizmoMaterial material);
+		void renderGizmos(Matrix4 viewMatrix, Matrix4 projMatrix, Vector3 viewDir, SPtr<MeshCoreBase> mesh, GizmoManager::GizmoMaterial material);
 		void renderIconGizmos(Rect2I screenArea, SPtr<MeshCoreBase> mesh, GizmoManager::IconRenderDataVecPtr renderData, bool usePickingMaterial);
 
 		void updateData(const SPtr<CameraHandlerCore>& camera, const SPtr<MeshCoreBase>& solidMesh, const SPtr<MeshCoreBase>& wireMesh,

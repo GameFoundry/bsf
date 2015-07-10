@@ -27,6 +27,7 @@ namespace BansheeEngine
 	static StringID RPS_ViewProjTfrm = "VP";
 	static StringID RPS_WorldTfrm = "World";
 	static StringID RPS_Diffuse = "Diffuse";
+	static StringID RPS_ViewDir = "ViewDir";
 
 	/**
 	 * @brief	Primarily rendering class that allows you to specify how to render objects that exist

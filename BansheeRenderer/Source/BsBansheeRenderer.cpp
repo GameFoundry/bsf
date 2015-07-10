@@ -212,8 +212,8 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		// Update global hardware buffers
-		mLitTexHandler->updateGlobalBuffers(time);
+		// Update global per-frame hardware buffers
+		mLitTexHandler->updatePerFrameBuffers(time);
 
 		// Sort cameras by render target
 		for (auto& cameraData : mCameraData)
@@ -294,6 +294,9 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		RenderAPICore& rs = RenderAPICore::instance();
+
+		// Update global per-frame hardware buffers
+		mLitTexHandler->updatePerCameraBuffers(camera.getForward());
 
 		Matrix4 projMatrixCstm = camera.getProjectionMatrixRS();
 		Matrix4 viewMatrixCstm = camera.getViewMatrix();

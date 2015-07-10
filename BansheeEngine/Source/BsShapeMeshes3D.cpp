@@ -291,7 +291,7 @@ namespace BansheeEngine
 
 	void ShapeMeshes3D::getNumElementsCone(UINT32 quality, UINT32& numVertices, UINT32& numIndices)
 	{
-		numVertices = ((quality + 1) * 4 + 1) * 2;
+		numVertices = ((quality + 1) * 4) * 3 + 1;
 		numIndices = ((quality + 1) * 4) * 6;
 	}
 
@@ -619,59 +619,72 @@ namespace BansheeEngine
 		for (UINT32 i = 0; i < numTriangles - 1; i++)
 		{
 			outIndices[i * 3 + 0] = vertexOffset + baseIdx;
-			outIndices[i * 3 + 1] = vertexOffset + i;
-			outIndices[i * 3 + 2] = vertexOffset + i + 1;
+			outIndices[i * 3 + 1] = vertexOffset + i + 1;
+			outIndices[i * 3 + 2] = vertexOffset + i;
 		}
 
 		{
 			UINT32 i = numTriangles - 1;
 			outIndices[i * 3 + 0] = vertexOffset + baseIdx;
-			outIndices[i * 3 + 1] = vertexOffset + i;
-			outIndices[i * 3 + 2] = vertexOffset + 0;
+			outIndices[i * 3 + 1] = vertexOffset + 0;
+			outIndices[i * 3 + 2] = vertexOffset + i;
 		}
 
-		// Generate cone
+		//// Generate cone
+		// Base vertices
 		generateArcVertices(base, normal, radius, Degree(0), Degree(360),
 			numArcVertices + 1, outVertices, 0, vertexStride);
 
 		Vector3 topVertex = base + normal * height;
 
-		UINT32 totalNumConeVertices = numArcVertices;
-		for (UINT32 i = 0; i < totalNumConeVertices; i++)
+		// Normals
+		UINT8* outNormalsBase = outNormals;
+		UINT8* outNormalsTop = outNormals + numArcVertices * vertexStride;
+		for (INT32 i = 0; i < (INT32)numArcVertices; i++)
 		{
-			int offsetA = i;
-			int offsetB = (i + 1) % totalNumConeVertices;
+			int offsetA = i == 0 ? numArcVertices - 1 : i - 1;
+			int offsetB = i;
+			int offsetC = (i + 1) % numArcVertices;
 
 			Vector3* a = (Vector3*)(outVertices + (offsetA * vertexStride));
 			Vector3* b = (Vector3*)(outVertices + (offsetB * vertexStride));
+			Vector3* c = (Vector3*)(outVertices + (offsetC * vertexStride));
 
-			Vector3 triNormal = *a - topVertex;
-			triNormal = triNormal.cross(*b - topVertex);
-			triNormal.normalize();
+			Vector3 toTop = topVertex - *b;
 
-			outNormals = writeVector3(outNormals, vertexStride, triNormal); // TODO - Smooth normals?
+			Vector3 normalLeft = Vector3::cross(*a - *b, toTop);
+			normalLeft.normalize();
+
+			Vector3 normalRight = Vector3::cross(toTop, *c - *b);
+			normalRight.normalize();
+
+			Vector3 triNormal = Vector3::normalize(normalLeft + normalRight);
+
+			outNormalsBase = writeVector3(outNormalsBase, vertexStride, triNormal);
+			outNormalsTop = writeVector3(outNormalsTop, vertexStride, triNormal);
 		}
 
-		*(Vector3*)outNormals = normal;
-
+		// Top vertices (All same position, but need them separate because of different normals)
 		outVertices += numArcVertices * vertexStride;
-		outVertices = writeVector3(outVertices, vertexStride, topVertex); // Write top vertex
-		UINT32 topIdx = numArcVertices;
+
+		for (UINT32 i = 0; i < numArcVertices; i++)
+			outVertices = writeVector3(outVertices, vertexStride, topVertex);
 
 		outIndices += numTriangles * 3;
-		UINT32 curVertOffset = vertexOffset + numArcVertices + 1;
+		UINT32 curVertBaseOffset = vertexOffset + numArcVertices + 1;
+		UINT32 curVertTopOffset = curVertBaseOffset + numArcVertices;
 		for (UINT32 i = 0; i < numTriangles - 1; i++)
 		{
-			outIndices[i * 3 + 0] = curVertOffset + topIdx;
-			outIndices[i * 3 + 1] = curVertOffset + i + 1;
-			outIndices[i * 3 + 2] = curVertOffset + i;
+			outIndices[i * 3 + 0] = curVertTopOffset + i;
+			outIndices[i * 3 + 1] = curVertBaseOffset + i;
+			outIndices[i * 3 + 2] = curVertBaseOffset + i + 1;
 		}
 
 		{
 			UINT32 i = numTriangles - 1;
-			outIndices[i * 3 + 0] = curVertOffset + topIdx;
-			outIndices[i * 3 + 1] = curVertOffset + 0;
-			outIndices[i * 3 + 2] = curVertOffset + i;
+			outIndices[i * 3 + 0] = curVertTopOffset + i;
+			outIndices[i * 3 + 1] = curVertBaseOffset + i;
+			outIndices[i * 3 + 2] = curVertBaseOffset + 0;
 		}
 	}
 

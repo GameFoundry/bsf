@@ -25,7 +25,6 @@ namespace BansheeEngine
 		{
 			SPtr<GpuParamBlockBufferCore> perObjectParamBuffer;
 
-			bool hasWVPParam = false;
 			GpuParamMat4Core wvpParam;
 
 			Vector<RenderableElement::BufferBindInfo> perObjectBuffers;
@@ -36,18 +35,24 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	RenderableHandler::initializeRenderElem
 		 */
-		void initializeRenderElem(RenderableElement& element);
+		void initializeRenderElem(RenderableElement& element) override;
 
 		/**
 		 * @copydoc	RenderableHandler::bindPerObjectBuffers
 		 */
-		void bindPerObjectBuffers(const RenderableElement& element);
+		void bindPerObjectBuffers(const RenderableElement& element) override;
 
 		/**
-		 * @brief	Updates global parameter buffers with new values. 
-		 *			To be called whenever global values change.
+		 * @brief	Updates global per frame parameter buffers with new values. 
+		 *			To be called at the start of every frame.
 		 */
-		void updateGlobalBuffers(float time);
+		void updatePerFrameBuffers(float time);
+
+		/**
+		 * @brief	Updates global per frame parameter buffers with new values. 
+		 *			To be called at the start of rendering for every camera.
+		 */
+		void updatePerCameraBuffers(const Vector3& viewDir);
 
 		/**
 		 * @brief	Updates object specific parameter buffers with new values.
@@ -67,19 +72,24 @@ namespace BansheeEngine
 
 		GpuParamBlockDesc staticParamBlockDesc;
 		GpuParamBlockDesc perFrameParamBlockDesc;
+		GpuParamBlockDesc perCameraParamBlockDesc;
 		GpuParamBlockDesc perObjectParamBlockDesc;
 
 		GpuParamDataDesc timeParamDesc;
 		GpuParamDataDesc lightDirParamDesc;
 		GpuParamDataDesc wvpParamDesc;
+		GpuParamDataDesc viewDirParamDesc;
 
 		SPtr<GpuParamBlockBufferCore> staticParamBuffer;
 		SPtr<GpuParamBlockBufferCore> perFrameParamBuffer;
+		SPtr<GpuParamBlockBufferCore> perCameraParamBuffer;
 
 		SPtr<GpuParamsCore> staticParams;
 		SPtr<GpuParamsCore> perFrameParams;
+		SPtr<GpuParamsCore> perCameraParams;
 
 		GpuParamVec4Core lightDirParam;
+		GpuParamVec3Core viewDirParam;
 		GpuParamFloatCore timeParam;
 	};
 }

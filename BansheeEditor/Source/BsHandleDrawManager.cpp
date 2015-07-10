@@ -183,7 +183,6 @@ namespace BansheeEngine
 
 	void HandleDrawManagerCore::initialize(const SPtr<MaterialCore>& wireMat, const SPtr<MaterialCore>& solidMat)
 	{
-		// TODO - Make a better interface when dealing with parameters through proxies?
 		{
 			mWireMaterial.mat = wireMat;
 			SPtr<GpuParamsCore> vertParams = wireMat->getPassParameters(0)->mVertParams;
@@ -194,8 +193,10 @@ namespace BansheeEngine
 		{
 			mSolidMaterial.mat = solidMat;
 			SPtr<GpuParamsCore> vertParams = solidMat->getPassParameters(0)->mVertParams;
+			SPtr<GpuParamsCore> fragParams = solidMat->getPassParameters(0)->mFragParams;
 
 			vertParams->getParam("matViewProj", mSolidMaterial.mViewProj);
+			fragParams->getParam("viewDir", mSolidMaterial.mViewDir);
 		}
 	}
 
@@ -237,6 +238,7 @@ namespace BansheeEngine
 
 		Matrix4 viewProjMat = mCamera->getProjectionMatrixRS() * mCamera->getViewMatrix();
 		mSolidMaterial.mViewProj.set(viewProjMat);
+		mSolidMaterial.mViewDir.set((Vector4)mCamera->getForward());
 		mWireMaterial.mViewProj.set(viewProjMat);
 
 		MeshType currentType = MeshType::Solid;

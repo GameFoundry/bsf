@@ -365,12 +365,12 @@ namespace BansheeEngine
 			if (meshData.type == DrawHelper::MeshType::Solid)
 			{
 				gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::renderGizmos,
-					mCore, viewMat, projMat, meshData.mesh->getCore(), GizmoMaterial::Picking));
+					mCore, viewMat, projMat, camera->getForward(), meshData.mesh->getCore(), GizmoMaterial::Picking));
 			}
 			else // Wire
 			{
 				gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::renderGizmos,
-					mCore, viewMat, projMat, meshData.mesh->getCore(), GizmoMaterial::Picking));
+					mCore, viewMat, projMat, camera->getForward(), meshData.mesh->getCore(), GizmoMaterial::Picking));
 			}
 		}
 
@@ -655,8 +655,10 @@ namespace BansheeEngine
 		{
 			SPtr<MaterialCore> mat = mSolidMaterial.mat;
 			SPtr<GpuParamsCore> vertParams = mat->getPassParameters(0)->mVertParams;
+			SPtr<GpuParamsCore> fragParams = mat->getPassParameters(0)->mFragParams;
 
 			vertParams->getParam("matViewProj", mSolidMaterial.mViewProj);
+			fragParams->getParam("viewDir", mSolidMaterial.mViewDir);
 		}
 
 		{
@@ -739,16 +741,16 @@ namespace BansheeEngine
 		screenArea.height = (int)(normArea.height * height);
 
 		if (mSolidMesh != nullptr)
-			renderGizmos(mCamera->getViewMatrix(), mCamera->getProjectionMatrixRS(), mSolidMesh, GizmoManager::GizmoMaterial::Solid);
+			renderGizmos(mCamera->getViewMatrix(), mCamera->getProjectionMatrixRS(), mCamera->getForward(), mSolidMesh, GizmoManager::GizmoMaterial::Solid);
 
 		if (mWireMesh != nullptr)
-			renderGizmos(mCamera->getViewMatrix(), mCamera->getProjectionMatrixRS(), mWireMesh, GizmoManager::GizmoMaterial::Wire);
+			renderGizmos(mCamera->getViewMatrix(), mCamera->getProjectionMatrixRS(), mCamera->getForward(), mWireMesh, GizmoManager::GizmoMaterial::Wire);
 
 		if (mIconMesh != nullptr)
 			renderIconGizmos(screenArea, mIconMesh, mIconRenderData, false);
 	}
 
-	void GizmoManagerCore::renderGizmos(Matrix4 viewMatrix, Matrix4 projMatrix, SPtr<MeshCoreBase> mesh, GizmoManager::GizmoMaterial material)
+	void GizmoManagerCore::renderGizmos(Matrix4 viewMatrix, Matrix4 projMatrix, Vector3 viewDir, SPtr<MeshCoreBase> mesh, GizmoManager::GizmoMaterial material)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -758,6 +760,7 @@ namespace BansheeEngine
 		{
 		case GizmoManager::GizmoMaterial::Solid:
 			mSolidMaterial.mViewProj.set(viewProjMat);
+			mSolidMaterial.mViewDir.set((Vector4)viewDir);
 			CoreRenderer::setPass(mSolidMaterial.mat, 0);
 			break;
 		case GizmoManager::GizmoMaterial::Wire:

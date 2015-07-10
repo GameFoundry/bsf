@@ -114,6 +114,14 @@ namespace BansheeEngine
 		 */
 		T get(UINT32 arrayIdx = 0);
 
+		/**
+		 * @brief	Checks if param is initialized.
+		 */
+		bool operator==(const nullptr_t &nullval) const
+		{
+			return mParamDesc == nullptr;
+		}
+
 	protected:
 		GpuParamsType mParent;
 		GpuParamDataDesc* mParamDesc;
@@ -146,11 +154,18 @@ namespace BansheeEngine
 		 */
 		void get(void* value, UINT32 sizeBytes, UINT32 arrayIdx = 0);
 
-
 		/**
 		 * @brief	Returns the size of the struct in bytes.
 		 */
 		UINT32 getElementSize() const;
+
+		/**
+		 * @brief	Checks if param is initialized.
+		 */
+		bool operator==(const nullptr_t &nullval) const
+		{
+			return mParamDesc == nullptr;
+		}
 
 	protected:
 		GpuParamsType mParent;
@@ -184,6 +199,14 @@ namespace BansheeEngine
 		 */
 		TextureType get();
 
+		/**
+		 * @brief	Checks if param is initialized.
+		 */
+		bool operator==(const nullptr_t &nullval) const
+		{
+			return mParamDesc == nullptr;
+		}
+
 	protected:
 		GpuParamsType mParent;
 		GpuParamObjectDesc* mParamDesc;
@@ -216,6 +239,14 @@ namespace BansheeEngine
 		 */
 		TextureType get();
 
+		/**
+		 * @brief	Checks if param is initialized.
+		 */
+		bool operator==(const nullptr_t &nullval) const
+		{
+			return mParamDesc == nullptr;
+		}
+
 	protected:
 		GpuParamsType mParent;
 		GpuParamObjectDesc* mParamDesc;
@@ -247,6 +278,14 @@ namespace BansheeEngine
 		 * @copydoc	TGpuDataParam::get
 		 */
 		SamplerStateType get();
+
+		/**
+		 * @brief	Checks if param is initialized.
+		 */
+		bool operator==(const nullptr_t &nullval) const
+		{
+			return mParamDesc == nullptr;
+		}
 
 	protected:
 		GpuParamsType mParent;

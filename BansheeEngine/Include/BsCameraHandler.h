@@ -107,6 +107,13 @@ namespace BansheeEngine
 		virtual Vector3 getPosition() const { return mPosition; }
 
 		/**
+		 * @brief	Gets the Z (forward) axis of the object, in world space.
+		 *
+		 * @return	Forward axis of the object.
+		 */
+		Vector3 getForward() const { return getRotation().rotate(-Vector3::UNIT_Z); }
+
+		/**
 		 * @brief	Sets camera world space rotation.
 		 */
 		virtual void setRotation(const Quaternion& rotation);

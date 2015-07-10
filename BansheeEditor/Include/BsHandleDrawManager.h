@@ -51,6 +51,7 @@ namespace BansheeEngine
 		{
 			SPtr<MaterialCore> mat;
 			GpuParamMat4Core mViewProj;
+			GpuParamVec4Core mViewDir;
 		};
 
 		struct WireMaterialData
