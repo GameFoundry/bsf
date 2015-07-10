@@ -138,9 +138,9 @@ namespace BansheeEngine
 		MainEditorWindow* mainWindow = MainEditorWindow::create(getPrimaryWindow());
 		loadPlugin("SBansheeEditor", &mSBansheeEditorPlugin); // Managed part of the editor
 
-		//EditorWidgetLayoutPtr layout = loadWidgetLayout();
-		//if (layout != nullptr)
-		//	EditorWidgetManager::instance().setLayout(layout);
+		EditorWidgetLayoutPtr layout = loadWidgetLayout();
+		if (layout != nullptr)
+			EditorWidgetManager::instance().setLayout(layout);
 
 		BuildManager::instance().load(BUILD_DATA_PATH);
 

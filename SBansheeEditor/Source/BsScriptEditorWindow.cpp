@@ -11,6 +11,7 @@
 #include "BsMonoAssembly.h"
 #include "BsScriptObjectManager.h"
 #include "BsScriptGUILayout.h"
+#include "BsScriptHString.h"
 
 using namespace std::placeholders;
 
@@ -303,9 +304,22 @@ namespace BansheeEngine
 	ScriptEditorWidget::ScriptEditorWidget(const String& ns, const String& type, EditorWidgetContainer& parentContainer)
 		:EditorWidgetBase(HString(toWString(type)), ns + "." + type, parentContainer), mNamespace(ns), mTypename(type),
 		mUpdateThunk(nullptr), mManagedInstance(nullptr), mOnInitializeThunk(nullptr), mOnDestroyThunk(nullptr), 
-		mContentsPanel(nullptr), mScriptOwner(nullptr)
+		mContentsPanel(nullptr), mScriptOwner(nullptr), mGetDisplayName(nullptr)
 	{
-		createManagedInstance();
+		if(createManagedInstance())
+		{
+			if (mGetDisplayName != nullptr)
+			{
+				MonoObject* displayNameMono = mGetDisplayName->invokeVirtual(mManagedInstance, nullptr);
+				ScriptHString* scriptHString = ScriptHString::toNative(displayNameMono);
+
+				if (scriptHString != nullptr)
+				{
+					mDisplayName = HString(scriptHString->getInternalValue());
+					parentContainer.refreshWidgetNames();
+				}
+			}
+		}
 	}
 
 	ScriptEditorWidget::~ScriptEditorWidget()
@@ -391,5 +405,7 @@ namespace BansheeEngine
 
 		if (onDestroyMethod != nullptr)
 			mOnDestroyThunk = (OnDestroyThunkDef)onDestroyMethod->getThunk();
+
+		mGetDisplayName = windowClass->getMethod("GetDisplayName", 0);
 	}
 }

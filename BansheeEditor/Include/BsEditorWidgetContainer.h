@@ -29,6 +29,7 @@ namespace BansheeEngine
 		Vector<Rect2I> getDraggableAreas() const;
 
 		void update();
+		void refreshWidgetNames();
 
 		void _notifyWidgetDestroyed(EditorWidgetBase* widget);
 

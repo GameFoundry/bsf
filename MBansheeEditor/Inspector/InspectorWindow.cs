@@ -33,9 +33,14 @@ namespace BansheeEditor
         private GUIFloatField soScaleZ;
 
         [MenuItem("Windows/Inspector", ButtonModifier.CtrlAlt, ButtonCode.I)]
-        private static void OpenHierarchyWindow()
+        private static void OpenInspectorWindow()
         {
-            OpenWindow<HierarchyWindow>();
+            OpenWindow<InspectorWindow>();
+        }
+
+        protected override LocString GetDisplayName()
+        {
+            return "Inspector";
         }
 
         internal void SetObjectToInspect(SceneObject so)

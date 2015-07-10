@@ -51,6 +51,15 @@ namespace BansheeEngine
 		}
 	}
 
+	void EditorWidgetContainer::refreshWidgetNames()
+	{
+		for (auto& curWidget : mWidgets)
+		{
+			INT32 tabIdx = curWidget.first;
+			mTitleBar->updateTabName((UINT32)tabIdx, curWidget.second->getDisplayName());
+		}
+	}
+
 	void EditorWidgetContainer::add(EditorWidgetBase& widget)
 	{
 		insert((UINT32)mWidgets.size(), widget);

@@ -58,6 +58,11 @@ namespace BansheeEditor
             OpenWindow<SceneWindow>();
         }
 
+        protected override LocString GetDisplayName()
+        {
+            return "Scene";
+        }
+
         private void OnInitialize()
         {
             mainLayout = GUI.AddLayoutY();

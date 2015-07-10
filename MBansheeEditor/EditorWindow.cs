@@ -47,6 +47,11 @@ namespace BansheeEditor
             
         }
 
+        protected virtual LocString GetDisplayName()
+        {
+            return GetType().Name;
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern EditorWindow Internal_CreateOrGetInstance(string ns, string typeName);
 

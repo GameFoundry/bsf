@@ -81,6 +81,11 @@ namespace BansheeEditor
             OpenWindow<ProjectWindow>();
         }
 
+        protected override LocString GetDisplayName()
+        {
+            return "Project";
+        }
+
         private void OnInitialize()
         {
             ProjectLibrary.OnEntryAdded += OnEntryChanged;

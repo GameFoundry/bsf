@@ -12,6 +12,11 @@ namespace BansheeEditor
             OpenWindow<HierarchyWindow>();
         }
 
+        protected override LocString GetDisplayName()
+        {
+            return "Hierarchy";
+        }
+
         private void OnInitialize()
         {
             GUIScrollArea scrollArea = new GUIScrollArea();

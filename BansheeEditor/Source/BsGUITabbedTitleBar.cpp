@@ -114,6 +114,16 @@ namespace BansheeEngine
 		mTabButtons.erase(mTabButtons.begin() + idx);
 	}
 
+	void GUITabbedTitleBar::updateTabName(UINT32 uniqueIdx, const HString& name)
+	{
+		INT32 idx = uniqueIdxToSeqIdx(uniqueIdx);
+		if (idx == -1)
+			return;
+
+		idx = (INT32)Math::clamp((UINT32)idx, 0U, (UINT32)mTabButtons.size() - 1);
+		mTabButtons[idx]->setContent(GUIContent(name));
+	}
+
 	void GUITabbedTitleBar::setActive(UINT32 uniqueIdx)
 	{
 		mTabButtons[uniqueIdxToSeqIdx(uniqueIdx)]->toggleOn();

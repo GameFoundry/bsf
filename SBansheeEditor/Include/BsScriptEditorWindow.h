@@ -99,6 +99,7 @@ namespace BansheeEngine
 		OnDestroyThunkDef mOnDestroyThunk;
 		UpdateThunkDef mUpdateThunk;
 		MonoObject* mManagedInstance;
+		MonoMethod* mGetDisplayName;
 
 		ScriptEditorWindow* mScriptOwner;
 		ScriptGUILayout* mContentsPanel;

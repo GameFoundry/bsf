@@ -25,6 +25,7 @@ namespace BansheeEngine
 		void setActive(UINT32 uniqueIdx);
 		UINT32 getTabIdx(UINT32 position) const;
 		UINT32 getNumTabs() const { return (UINT32)mTabButtons.size(); }
+		void updateTabName(UINT32 uniqueIdx, const HString& name);
 
 		Vector<Rect2I> calcDraggableAreas(INT32 x, INT32 y, UINT32 width, UINT32 height) const;
 
