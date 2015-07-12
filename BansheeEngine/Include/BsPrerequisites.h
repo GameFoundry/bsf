@@ -104,6 +104,7 @@ namespace BansheeEngine
 	class Overlay;
 	class Renderable;
 	class Camera;
+	class Light;
 
 	typedef std::shared_ptr<TextSprite> TextSpritePtr;
 	typedef std::shared_ptr<SpriteTexture> SpriteTexturePtr;
@@ -148,6 +149,8 @@ namespace BansheeEngine
 		TID_ScriptCodeImportOptions = 30007,
 		TID_GUIElementStyle = 30008,
 		TID_GUISkin = 30009,
-		TID_GUISkinEntry = 30010
+		TID_GUISkinEntry = 30010,
+		TID_LightInternal = 30011,
+		TID_Light = 30012
 	};
 }

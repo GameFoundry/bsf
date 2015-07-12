@@ -169,6 +169,8 @@ namespace BansheeEngine
 	class Prefab;
 	class PrefabDiff;
 	class RendererMeshData;
+	class LightInternalCore;
+	class LightInternal;
 	// Asset import
 	class SpecificImporter;
 	class Importer;

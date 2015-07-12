@@ -148,6 +148,16 @@ namespace BansheeEngine
 		mWorldBounds[renderableId] = renderable->getBounds();
 	}
 
+	void BansheeRenderer::_notifyLightAdded(const LightInternalCore* light)
+	{
+		// TODO
+	}
+
+	void BansheeRenderer::_notifyLightRemoved(const LightInternalCore* light)
+	{
+		// TODO
+	}
+
 	void BansheeRenderer::_notifyCameraAdded(const CameraHandlerCore* camera)
 	{
 		CameraData& camData = mCameraData[camera];

@@ -286,6 +286,7 @@
     <ClInclude Include="Include\BsScriptHString.h" />
     <ClInclude Include="Include\BsScriptInput.h" />
     <ClInclude Include="Include\BsScriptInputConfiguration.h" />
+    <ClInclude Include="Include\BsScriptLightInternal.h" />
     <ClInclude Include="Include\BsScriptMacros.h" />
     <ClInclude Include="Include\BsScriptManagedResource.h" />
     <ClInclude Include="Include\BsScriptMaterial.h" />
@@ -372,6 +373,7 @@
     <ClCompile Include="Source\BsScriptGUIInputBox.cpp" />
     <ClCompile Include="Source\BsScriptInput.cpp" />
     <ClCompile Include="Source\BsScriptInputConfiguration.cpp" />
+    <ClCompile Include="Source\BsScriptLightInternal.cpp" />
     <ClCompile Include="Source\BsScriptManagedResource.cpp" />
     <ClCompile Include="Source\BsScriptMaterial.cpp" />
     <ClCompile Include="Source\BsScriptMesh.cpp" />

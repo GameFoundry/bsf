@@ -61,7 +61,6 @@ Crash in DefaultHandleManager.PreInput when just flying around the scene while h
 
 After undocking ProjectWindow the auto-scroll seems to be stuck in up position
 When selecting an gizmo icon the selection seems delayed and its gizmos flash for a frame before hiding (Can't reproduce atm but I saw it)
-Main window resize areas don't seem to be set up or work
 Decent looking default layout
 
 Fix handles

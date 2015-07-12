@@ -86,6 +86,16 @@ namespace BansheeEngine
 		void _notifyCameraRemoved(const CameraHandlerCore* camera) override;
 
 		/**
+		 * @copydoc	Renderer::_notifyLightAdded
+		 */
+		void _notifyLightAdded(const LightInternalCore* light) override;
+
+		/**
+		 * @copydoc	Renderer::_notifyLightRemoved
+		 */
+		void _notifyLightRemoved(const LightInternalCore* light) override;
+
+		/**
 		 * @copydoc	Renderer::_notifyRenderableAdded
 		 */
 		void _notifyRenderableAdded(RenderableHandlerCore* renderable) override;

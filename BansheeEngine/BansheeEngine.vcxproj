@@ -245,6 +245,7 @@
     <ClCompile Include="Source\BsGUISlider.cpp" />
     <ClCompile Include="Source\BsGUISpace.cpp" />
     <ClCompile Include="Source\BsInputConfiguration.cpp" />
+    <ClCompile Include="Source\BsLight.cpp" />
     <ClCompile Include="Source\BsPlainText.cpp" />
     <ClCompile Include="Source\BsPlainTextImporter.cpp" />
     <ClCompile Include="Source\BsRenderableController.cpp" />
@@ -257,6 +258,7 @@
     <ClCompile Include="Source\BsShortcutKey.cpp" />
     <ClCompile Include="Source\BsShortcutManager.cpp" />
     <ClCompile Include="Source\BsVirtualInput.cpp" />
+    <ClCompile Include="Source\BsLightInternal.cpp" />
     <ClInclude Include="Include\BsApplication.h" />
     <ClInclude Include="Include\BsCameraHandler.h" />
     <ClInclude Include="Include\BsCameraHandlerRTTI.h" />
@@ -270,6 +272,10 @@
     <ClInclude Include="Include\BsGUIProgressBar.h" />
     <ClInclude Include="Include\BsGUISkinRTTI.h" />
     <ClInclude Include="Include\BsGUISlider.h" />
+    <ClInclude Include="Include\BsLight.h" />
+    <ClInclude Include="Include\BsLightInternal.h" />
+    <ClInclude Include="Include\BsLightInternalRTTI.h" />
+    <ClInclude Include="Include\BsLightRTTI.h" />
     <ClInclude Include="Include\BsPlainText.h" />
     <ClInclude Include="Include\BsPlainTextImporter.h" />
     <ClInclude Include="Include\BsPlainTextRTTI.h" />

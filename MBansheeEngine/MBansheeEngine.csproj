@@ -83,6 +83,8 @@
     <Compile Include="HideInInspector.cs" />
     <Compile Include="Input.cs" />
     <Compile Include="InputConfiguration.cs" />
+    <Compile Include="Light.cs" />
+    <Compile Include="LightInternal.cs" />
     <Compile Include="LocString.cs" />
     <Compile Include="ManagedResource.cs" />
     <Compile Include="Material.cs" />

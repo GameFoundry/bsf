@@ -9,6 +9,10 @@ Add basic light type components and their core thread representations
  - Spot - angle, direction, position
  - Point - range (or derive that from flux?), position
 
+Document all Light stutff
+Light bounding box
+Need to update light handler when parent component moves/rotates
+
 Load up and set up a test-bed with Ribek's scene
 
 Create a basic GBuffer - albedo, normal, depth

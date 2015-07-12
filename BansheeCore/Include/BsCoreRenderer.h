@@ -83,6 +83,22 @@ namespace BansheeEngine
 		virtual void _notifyCameraRemoved(const CameraHandlerCore* camera) { }
 
 		/**
+		 * @brief	Called whenever a new light is created.
+		 *
+		 * @note	Core thread.
+		 *			Internal method.
+		 */
+		virtual void _notifyLightAdded(const LightInternalCore* light) { }
+
+		/**
+		 * @brief	Called whenever a light is destroyed.
+		 *
+		 * @note	Core thread.
+		 *			Internal method.
+		 */
+		virtual void _notifyLightRemoved(const LightInternalCore* light) { }
+
+		/**
 		 * @brief	Creates a new empty renderer mesh data.
 		 *
 		 * @note	Sim thread.
