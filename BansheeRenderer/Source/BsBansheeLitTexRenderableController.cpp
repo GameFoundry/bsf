@@ -422,13 +422,13 @@ namespace BansheeEngine
 			uniform PerCamera
 			{
 				vec3 viewDir;
-			}
+			};
 
 			out vec4 fragColor;
 
 			void main()
 			{
-				fragColor = lightDir * vec4(0.5f, 0.5f, 0.5f, 0.5f) + viewDir * vec4(0.5f, 0.5f 0.5f, 0.5f);
+				fragColor.x = dot(lightDir.xyz, vec3(0.5f, 0.5f, 0.5f)) + dot(viewDir, vec3(0.5f, 0.5f, 0.5f));
 			})";
 
 			vsProgram = GpuProgramCore::create(vsCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
