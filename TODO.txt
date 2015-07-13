@@ -41,7 +41,7 @@ Add "dirty object" system to C#. Each ScriptResource and ScriptGameObject should
 TODO - Later - When building level for release make sure to clear all prefab diffs (possibly store them elsewhere in the first place)
        - And all prefab instances should have updateFromPrefab called on them.
 
- Test (likely later once I have more editor functionality working):h
+ Test (likely later once I have more editor functionality working):
   - If level save/load works
   - If drag and drop works, both ways, plus double-click to load level
   - Game object handle compare

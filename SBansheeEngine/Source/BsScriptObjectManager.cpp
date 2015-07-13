@@ -6,6 +6,7 @@
 namespace BansheeEngine
 {
 	ScriptObjectManager::ScriptObjectManager()
+		:mFinalizedQueueIdx(0)
 	{
 
 	}
@@ -30,6 +31,9 @@ namespace BansheeEngine
 			backupData[scriptObject] = scriptObject->beginRefresh();
 
 		MonoManager::instance().unloadScriptDomain();
+		// Unload script domain should trigger finalizers on everything, but since we usually delay
+		// their processing we need to manually trigger it here.
+		processFinalizedObjects();
 
 		for (auto& scriptObject : mScriptObjects)
 			assert(scriptObject->isPersistent() && "Non-persistent ScriptObject alive after domain unload.");
@@ -49,5 +53,26 @@ namespace BansheeEngine
 			scriptObject->endRefresh(backupData[scriptObject]);
 
 		onRefreshComplete();
+	}
+
+	void ScriptObjectManager::notifyObjectFinalized(ScriptObjectBase* instance)
+	{
+		UINT32 idx = mFinalizedQueueIdx.load(std::memory_order_relaxed);
+		mFinalizedObjects[idx].push_back(instance);
+	}
+
+	void ScriptObjectManager::update()
+	{
+		processFinalizedObjects();
+	}
+
+	void ScriptObjectManager::processFinalizedObjects()
+	{
+		UINT32 readQueueIdx = mFinalizedQueueIdx.fetch_xor(0x1, std::memory_order_relaxed);
+
+		for (auto& finalizedObj : mFinalizedObjects[readQueueIdx])
+			finalizedObj->_onManagedInstanceDeleted();
+
+		mFinalizedObjects[readQueueIdx].clear();
 	}
 }

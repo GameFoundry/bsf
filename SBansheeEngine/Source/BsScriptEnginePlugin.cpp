@@ -43,6 +43,11 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
+	extern "C" BS_SCR_BE_EXPORT void updatePlugin()
+	{
+		ScriptObjectManager::instance().update();
+	}
+
 	extern "C" BS_SCR_BE_EXPORT void unloadPlugin()
 	{
 		ScriptVirtualInput::shutDown();

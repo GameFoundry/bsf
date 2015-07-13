@@ -98,11 +98,7 @@ namespace BansheeEngine
 	void ScriptEditorWindow::_onManagedInstanceDeleted()
 	{
 		if (!mRefreshInProgress)
-		{
-			unregisterScriptEditorWindow(mName);
-
 			ScriptObject::_onManagedInstanceDeleted();
-		}
 		else
 			mManagedInstance = nullptr;
 	}
