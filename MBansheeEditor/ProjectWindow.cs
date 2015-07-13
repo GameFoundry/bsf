@@ -323,6 +323,7 @@ namespace BansheeEditor
         private void DoOnDragEnd(Vector2I windowPos)
         {
             EndDragSelection();
+            autoScrollAmount = 0;
         }
 
         private void ClearHoverHighlight()

@@ -78,6 +78,7 @@ namespace BansheeEditor
             isMouseDown = false;
             isDragInBounds = false;
             triggerEndDrag = true;
+            triggerStartDrag = false;
         }
 
         void Input_OnPointerPressed(PointerEvent ev)
