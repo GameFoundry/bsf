@@ -11,6 +11,11 @@ namespace BansheeEngine
 
 	}
 
+	ScriptObjectManager::~ScriptObjectManager()
+	{
+		processFinalizedObjects();
+	}
+
 	void ScriptObjectManager::registerScriptObject(ScriptObjectBase* instance)
 	{
 		mScriptObjects.insert(instance);

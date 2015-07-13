@@ -9,6 +9,7 @@ namespace BansheeEngine
 	{
 	public:
 		ScriptObjectManager();
+		~ScriptObjectManager();
 
 		void registerScriptObject(ScriptObjectBase* instance);
 		void unregisterScriptObject(ScriptObjectBase* instance);

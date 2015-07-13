@@ -99,10 +99,6 @@ namespace BansheeEditor
             inputConfig.RegisterAxis(SceneCamera.HorizontalAxisBinding, InputAxis.MouseX);
             inputConfig.RegisterAxis(SceneCamera.VerticalAxisBinding, InputAxis.MouseY);
 
-            // Open windows
-            InspectorWindow inspector = EditorWindow.OpenWindow<InspectorWindow>();
-            EditorWindow.OpenWindow<SceneWindow>();
-
             ProjectLibrary.Refresh();
             monitor = new FolderMonitor(ProjectLibrary.ResourceFolder);
             monitor.OnAdded += OnAssetModified;
@@ -114,8 +110,6 @@ namespace BansheeEditor
             SceneObject newDbgObject = new SceneObject("NewDbgObject");
             dbgComponent = newDbgObject.AddComponent<Debug_Component1>();
             newDbgObject.AddComponent<Debug_Component2>();
-
-            inspector.SetObjectToInspect(newDbgObject);
 
             SceneObject gizmoDbgObject = new SceneObject("GizmoDebug");
             gizmoDbgObject.AddComponent<DbgGizmoComponent>();

@@ -24,8 +24,10 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Destroys all scene objects in the scene.
+		 *
+		 * @param	forceAll	If true, then even the persistent objects will be unloaded.
 		 */
-		void clearScene();
+		void clearScene(bool forceAll = false);
 
 		/**
 		 * @brief	Called every frame.

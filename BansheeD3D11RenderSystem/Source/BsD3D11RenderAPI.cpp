@@ -169,6 +169,7 @@ namespace BansheeEngine
 
 		mActiveVertexDeclaration = nullptr;
 		mActiveVertexShader = nullptr;
+		mActiveRenderTarget = nullptr;
 
 		RenderStateCoreManager::shutDown();
 		RenderWindowCoreManager::shutDown();

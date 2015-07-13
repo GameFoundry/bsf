@@ -54,6 +54,8 @@ namespace BansheeEngine
 		ScriptInput::shutDown();
 		ManagedResourceManager::shutDown();
 		ScriptManager::instance().destroy();
+		ScriptObjectManager::instance().processFinalizedObjects();
+
 		ScriptGameObjectManager::shutDown();
 		ScriptResourceManager::shutDown();
 		ScriptAssemblyManager::shutDown();

@@ -90,7 +90,7 @@ namespace BansheeEngine
 	{
 		// Need to clear all objects before I unload any plugins, as they
 		// could have allocated parts or all of those objects.
-		SceneManager::instance().clearScene();
+		SceneManager::instance().clearScene(true);
 
 		// These plugins must be unloaded before any other script plugins, because
 		// they will cause finalizers to trigger and various modules those finalizers

@@ -18,7 +18,7 @@ namespace BansheeEngine
 			mRootNode->destroy(true);
 	}
 
-	void CoreSceneManager::clearScene()
+	void CoreSceneManager::clearScene(bool forceAll)
 	{
 		UINT32 numChildren = mRootNode->getNumChildren();
 
@@ -27,11 +27,10 @@ namespace BansheeEngine
 		{
 			HSceneObject child = mRootNode->getChild(curIdx);
 
-			if (!child->hasFlag(SOF_Persistent))
-			{
+			if (forceAll || !child->hasFlag(SOF_Persistent))
 				child->destroy();
+			else
 				curIdx++;
-			}
 		}
 
 		GameObjectManager::instance().destroyQueuedObjects();

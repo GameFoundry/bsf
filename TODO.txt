@@ -56,7 +56,6 @@ Code quality improvements:
 ----------------------------------------------------------------------
 Polish stage 1
 
-After undocking ProjectWindow the auto-scroll seems to be stuck in up position
 When selecting an gizmo icon the selection seems delayed and its gizmos flash for a frame before hiding (Can't reproduce atm but I saw it)
 Decent looking default layout
 
