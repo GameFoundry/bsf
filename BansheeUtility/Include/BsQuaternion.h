@@ -47,7 +47,7 @@ namespace BansheeEngine
         }
 
         /**
-         * @brief	Construct a quaternion from euler angles, XYZ ordering.
+         * @brief	Construct a quaternion from euler angles, YXZ ordering.
          * 			
 		 * @see		Quaternion::fromEulerAngles
          */
@@ -120,7 +120,7 @@ namespace BansheeEngine
 		 * @param	zAngle	Rotation about z axis. (AKA Roll)
          *
          * @note	Since different values will be produced depending in which order are the rotations applied, this method assumes
-		 * 			they are applied in XYZ order. If you need a specific order, use the overloaded "fromEulerAngles" method instead.
+		 * 			they are applied in YXZ order. If you need a specific order, use the overloaded "fromEulerAngles" method instead.
          */
         void fromEulerAngles(const Radian& xAngle, const Radian& yAngle, const Radian& zAngle);
 
@@ -165,24 +165,8 @@ namespace BansheeEngine
          * @param [out]	zAngle 	Rotation about z axis. (AKA Roll)
          *
          * @return	True if unique solution was found, false otherwise.
-         * 			
-		 * @note	Since different values will be returned depending in which order are the rotations applied, this method assumes
-		 * 			they are applied in XYZ order. If you need a specific order, use the overloaded "toEulerAngles" method instead.
          */
         bool toEulerAngles(Radian& xAngle, Radian& yAngle, Radian& zAngle) const;
-
-		/**
-		 * @brief	Extracts Pitch/Yaw/Roll rotations from this quaternion.
-		 *
-		 * @param [out]	xAngle	Rotation about x axis. (AKA Pitch)
-		 * @param [out]	yAngle	Rotation about y axis. (AKA Yaw)
-		 * @param [out]	zAngle	Rotation about z axis. (AKA Roll)
-		 * @param	order 	The order in which rotations will be extracted. 
-		 * 					Different values can be retrieved depending on the order.
-		 *
-		 * @return	True if unique solution was found, false otherwise.
-		 */
-		bool toEulerAngles(Radian& xAngle, Radian& yAngle, Radian& zAngle, EulerAngleOrder order) const;
 
         /**
          * @brief	Get the local x-axis.

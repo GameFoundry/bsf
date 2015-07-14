@@ -62,10 +62,9 @@ namespace BansheeEngine
 
     void Quaternion::fromAxisAngle(const Vector3& axis, const Radian& angle)
     {
-        // Assert:  axis[] is unit length
-
         Radian halfAngle (0.5f*angle);
         float sin = Math::sin(halfAngle);
+
         w = Math::cos(halfAngle);
         x = sin*axis.x;
         y = sin*axis.y;
@@ -93,16 +92,49 @@ namespace BansheeEngine
 
 	void Quaternion::fromEulerAngles(const Radian& xAngle, const Radian& yAngle, const Radian& zAngle)
 	{
-		Matrix3 mat;
-		mat.fromEulerAngles(xAngle, yAngle, zAngle);
-		mat.toQuaternion(*this);
+		Radian halfXAngle = xAngle * 0.5f;
+		Radian halfYAngle = yAngle * 0.5f;
+		Radian halfZAngle = zAngle * 0.5f;
+
+		float cx = Math::cos(halfXAngle);
+		float sx = Math::sin(halfXAngle);
+
+		float cy = Math::cos(halfYAngle);
+		float sy = Math::sin(halfYAngle);
+
+		float cz = Math::cos(halfZAngle);
+		float sz = Math::sin(halfZAngle);
+
+		Quaternion quatX(cx, sx, 0.0f, 0.0f);
+		Quaternion quatY(cy, 0.0f, sy, 0.0f);
+		Quaternion quatZ(cz, 0.0f, 0.0f, sz);
+
+		*this = (quatY * quatX) * quatZ;
 	}
 
 	void Quaternion::fromEulerAngles(const Radian& xAngle, const Radian& yAngle, const Radian& zAngle, EulerAngleOrder order)
 	{
-		Matrix3 mat;
-		mat.fromEulerAngles(xAngle, yAngle, zAngle, order);
-		mat.toQuaternion(*this);
+		const EulerAngleOrderData& l = EA_LOOKUP[(int)order];
+
+		Radian halfXAngle = xAngle * 0.5f;
+		Radian halfYAngle = yAngle * 0.5f;
+		Radian halfZAngle = zAngle * 0.5f;
+
+		float cx = Math::cos(halfXAngle);
+		float sx = Math::sin(halfXAngle);
+
+		float cy = Math::cos(halfYAngle);
+		float sy = Math::sin(halfYAngle);
+
+		float cz = Math::cos(halfZAngle);
+		float sz = Math::sin(halfZAngle);
+
+		Quaternion quats[3];
+		quats[0] = Quaternion(cx, sx, 0.0f, 0.0f);
+		quats[1] = Quaternion(cy, 0.0f, sy, 0.0f);
+		quats[2] = Quaternion(cz, 0.0f, 0.0f, sz);
+
+		*this = (quats[l.a] * quats[l.b]) * quats[l.c];
 	}
 
 	void Quaternion::toRotationMatrix(Matrix3& mat) const
@@ -175,13 +207,6 @@ namespace BansheeEngine
 		Matrix3 matRot;
 		toRotationMatrix(matRot);
 		return matRot.toEulerAngles(xAngle, yAngle, zAngle);
-	}
-
-	bool Quaternion::toEulerAngles(Radian& xAngle, Radian& yAngle, Radian& zAngle, EulerAngleOrder order) const
-	{
-		Matrix3 matRot;
-		toRotationMatrix(matRot);
-		return matRot.toEulerAngles(xAngle, yAngle, zAngle, order);
 	}
 
     Vector3 Quaternion::xAxis() const

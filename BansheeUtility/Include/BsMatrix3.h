@@ -79,7 +79,7 @@ namespace BansheeEngine
         }
 
         /**
-         * @brief	Construct a matrix from euler angles, XYZ ordering.
+         * @brief	Construct a matrix from euler angles, YXZ ordering.
          * 			
 		 * @see		Matrix3::fromEulerAngles
          */
@@ -247,26 +247,8 @@ namespace BansheeEngine
          * @return	True if unique solution was found, false otherwise.
          * 			
 		 * @note	Matrix must be orthonormal.
-		 * 			
-		 * 			Since different values will be returned depending in which order are the rotations applied, this method assumes
-		 * 			they are applied in XYZ order. If you need a specific order, use the overloaded "toEulerAngles" method instead.
          */
         bool toEulerAngles(Radian& xAngle, Radian& yAngle, Radian& zAngle) const;
-
-		/**
-		 * @brief	Extracts Pitch/Yaw/Roll rotations from this matrix.
-		 *
-		 * @param	xAngle	Rotation about x axis. (AKA Pitch)
-		 * @param	yAngle	Rotation about y axis. (AKA Yaw)
-		 * @param	zAngle	Rotation about z axis. (AKA Roll)
-		 * @param	order 	The order in which rotations will be extracted. 
-		 * 					Different values can be retrieved depending on the order.
-		 *
-		 * @return	True if unique solution was found, false otherwise.
-		 * 			
-		 * @note	Matrix must be orthonormal.
-		 */
-		bool toEulerAngles(Radian& xAngle, Radian& yAngle, Radian& zAngle, EulerAngleOrder order) const;
 
         /**
          * @brief	Creates a rotation matrix from the provided Pitch/Yaw/Roll angles.
@@ -277,7 +259,7 @@ namespace BansheeEngine
          *
          * @note	Matrix must be orthonormal.
 		 * 			Since different values will be produced depending in which order are the rotations applied, this method assumes
-		 * 			they are applied in XYZ order. If you need a specific order, use the overloaded "fromEulerAngles" method instead.
+		 * 			they are applied in YXZ order. If you need a specific order, use the overloaded "fromEulerAngles" method instead.
          */
         void fromEulerAngles(const Radian& xAngle, const Radian& yAngle, const Radian& zAngle);
 
@@ -296,6 +278,11 @@ namespace BansheeEngine
 
         /**
          * @brief	Eigensolver, matrix must be symmetric.
+		 *
+		 * @note	Eigenvectors are vectors which when transformed by the matrix, only change
+		 *			in magnitude, but not in direction. Eigenvalue is that magnitude. In other words
+		 *			you will get the same result whether you multiply the vector by the matrix or by its
+		 *			eigenvalue.
          */
         void eigenSolveSymmetric(float eigenValues[3], Vector3 eigenVectors[3]) const;
 

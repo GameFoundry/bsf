@@ -754,89 +754,59 @@ namespace BansheeEngine
 
     bool Matrix3::toEulerAngles(Radian& xAngle, Radian& yAngle, Radian& zAngle) const
     {
-        xAngle = Radian(Math::asin(m[0][2]));
+        xAngle = -Radian(Math::asin(m[1][2]));
         if (xAngle < Radian(Math::HALF_PI))
         {
             if (xAngle > Radian(-Math::HALF_PI))
             {
-                yAngle = Math::atan2(-m[1][2], m[2][2]);
-                zAngle = Math::atan2(-m[0][1], m[0][0]);
+                yAngle = Math::atan2(m[0][2], m[2][2]);
+                zAngle = Math::atan2(m[1][0], m[1][1]);
 
                 return true;
             }
             else
             {
-                // WARNING.  Not a unique solution.
-                Radian angle = Math::atan2(m[1][0],m[1][1]);
-                zAngle = Radian(0.0f);  // Any angle works
-                yAngle = zAngle - angle;
+                // Note: Not an unique solution.
+				xAngle = Radian(-Math::HALF_PI);
+				yAngle = Math::atan2(-m[0][1], m[0][0]);
+				zAngle = Radian(0.0f);
 
                 return false;
             }
         }
         else
         {
-            // WARNING.  Not a unique solution.
-            Radian angle = Math::atan2(m[1][0],m[1][1]);
-            zAngle = Radian(0.0f);  // Any angle works
-            yAngle = angle - zAngle;
-
+            // Note: Not an unique solution.
+			xAngle = Radian(Math::HALF_PI);
+			yAngle = Math::atan2(m[0][1], m[0][0]);
+            zAngle = Radian(0.0f);
+			
             return false;
         }
     }
 
-	bool Matrix3::toEulerAngles(Radian& xAngle, Radian& yAngle, Radian& zAngle, EulerAngleOrder order) const
-	{
-		const EulerAngleOrderData& l = EA_LOOKUP[(int)order];
-
-		xAngle = Radian(Math::asin(l.sign * m[l.a][l.c]));
-		if (xAngle < Radian(Math::HALF_PI))
-		{
-			if (xAngle > Radian(-Math::HALF_PI))
-			{
-				yAngle = Math::atan2(-l.sign * m[l.b][l.c], m[l.c][l.c]);
-				zAngle = Math::atan2(-l.sign * m[l.a][l.b], m[l.a][l.a]);
-
-				return true;
-			}
-			else
-			{
-				// WARNING.  Not a unique solution.
-				Radian angle = Math::atan2(l.sign * m[l.b][l.a], m[l.b][l.b]);
-				zAngle = Radian(0.0f);  // Any angle works
-				yAngle = zAngle - angle;
-
-				return false;
-			}
-		}
-		else
-		{
-			// WARNING.  Not a unique solution.
-			Radian angle = Math::atan2(l.sign * m[l.b][l.a], m[l.b][l.b]);
-			zAngle = Radian(0.0f);  // Any angle works
-			yAngle = angle - zAngle;
-
-			return false;
-		}
-	}
-
     void Matrix3::fromEulerAngles(const Radian& xAngle, const Radian& yAngle, const Radian& zAngle)
     {
-        float cos, sin;
+		float cx = Math::cos(xAngle);
+		float sx = Math::sin(xAngle);
 
-        cos = Math::cos(yAngle);
-        sin = Math::sin(yAngle);
-        Matrix3 xMat(1.0f, 0.0f, 0.0f, 0.0f, cos, -sin, 0.0f, sin, cos);
+		float cy = Math::cos(yAngle);
+		float sy = Math::sin(yAngle);
 
-        cos = Math::cos(xAngle);
-        sin = Math::sin(xAngle);
-        Matrix3 yMat(cos, 0.0f, sin, 0.0f, 1.0f, 0.0f, -sin, 0.0f, cos);
+        float cz = Math::cos(zAngle);
+		float sz = Math::sin(zAngle);
 
-        cos = Math::cos(zAngle);
-        sin = Math::sin(zAngle);
-        Matrix3 zMat(cos,-sin, 0.0f, sin, cos, 0.0f, 0.0f, 0.0f, 1.0f);
+		m[0][0] = cy * cz + sx * sy * sz;
+		m[0][1] = cz * sx * sy - cy * sz;
+		m[0][2] = cx * sy;
 
-        *this = xMat*(yMat*zMat);
+		m[1][0] = cx * sz;
+		m[1][1] = cx * cz;
+		m[1][2] = -sx;
+
+		m[2][0] = -cz * sy + cy * sx * sz;
+		m[2][1] = cy * cz * sx + sy * sz;
+		m[2][2] = cx * cy;
     }
 
 	void Matrix3::fromEulerAngles(const Radian& xAngle, const Radian& yAngle, const Radian& zAngle, EulerAngleOrder order)
@@ -844,19 +814,26 @@ namespace BansheeEngine
 		const EulerAngleOrderData& l = EA_LOOKUP[(int)order];
 
 		Matrix3 mats[3];
-		float cos, sin;
+		float cx = Math::cos(xAngle);
+		float sx = Math::sin(xAngle);
+		mats[0] = Matrix3(
+			1.0f, 0.0f, 0.0f,
+			0.0f, cx, -sx,
+			0.0f, sx, cx);
 
-		cos = Math::cos(yAngle);
-		sin = Math::sin(yAngle);
-		mats[0] = Matrix3(1.0f, 0.0f, 0.0f, 0.0f, cos, -sin, 0.0f, sin, cos);
+		float cy = Math::cos(yAngle);
+		float sy = Math::sin(yAngle);
+		mats[1] = Matrix3(
+			cy, 0.0f, sy,
+			0.0f, 1.0f, 0.0f,
+			-sy, 0.0f, cy);
 
-		cos = Math::cos(xAngle);
-		sin = Math::sin(xAngle);
-		mats[1] = Matrix3(cos, 0.0f, sin, 0.0f, 1.0f, 0.0f, -sin, 0.0f, cos);
-
-		cos = Math::cos(zAngle);
-		sin = Math::sin(zAngle);
-		mats[2] = Matrix3(cos,-sin, 0.0f, sin, cos, 0.0f, 0.0f, 0.0f, 1.0f);
+		float cz = Math::cos(zAngle);
+		float sz = Math::sin(zAngle);
+		mats[2] = Matrix3(
+			cz, -sz, 0.0f,
+			sz, cz, 0.0f,
+			0.0f, 0.0f, 1.0f);
 	
 		*this = mats[l.a]*(mats[l.b]*mats[l.c]);
 	}

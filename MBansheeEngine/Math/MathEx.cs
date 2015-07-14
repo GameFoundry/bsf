@@ -221,6 +221,41 @@ namespace BansheeEngine
             return (float)Math.Atan2(y, x);
         }
 
+        public static float Sin(Radian f)
+        {
+            return (float)Math.Sin(f.Radians);
+        }
+
+        public static float Cos(Radian f)
+        {
+            return (float)Math.Cos(f.Radians);
+        }
+
+        public static float Tan(Radian f)
+        {
+            return (float)Math.Tan(f.Radians);
+        }
+
+        public static float Asin(Radian f)
+        {
+            return (float)Math.Asin(f.Radians);
+        }
+
+        public static float Acos(Radian f)
+        {
+            return (float)Math.Acos(f.Radians);
+        }
+
+        public static float Atan(Radian f)
+        {
+            return (float)Math.Atan(f.Radians);
+        }
+
+        public static float Atan2(Radian y, Radian x)
+        {
+            return (float)Math.Atan2(y.Radians, x.Radians);
+        }
+
         public static float Sqrt(float f)
         {
             return (float)Math.Sqrt(f);

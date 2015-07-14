@@ -125,6 +125,26 @@ namespace BansheeEngine
             }
         }
 
+        public Quaternion Inverse
+        {
+            get
+            {
+                Quaternion copy = this;
+                copy.Invert();
+                return copy;
+            }
+        }
+
+        public Quaternion Normalized
+        {
+            get
+            {
+                Quaternion copy = this;
+                copy.Normalize();
+                return copy;
+            }
+        }
+
         public Quaternion(float x, float y, float z, float w)
         {
             this.x = x;
@@ -244,7 +264,7 @@ namespace BansheeEngine
             return len;
         }
 
-        public void Inverse()
+        public void Invert()
         {
             float fNorm = w * w + x * x + y * y + z * z;
             if (fNorm > 0.0f)
@@ -325,10 +345,10 @@ namespace BansheeEngine
             return Slerp(from, to, t);
         }
 
-        public static Quaternion Inverse(Quaternion rotation)
+        public static Quaternion Invert(Quaternion rotation)
         {
             Quaternion copy = rotation;
-            copy.Inverse();
+            copy.Invert();
 
             return copy;
         }
@@ -360,10 +380,10 @@ namespace BansheeEngine
         }
 
         // Returns angles in degrees
-        public Vector3 ToEuler(EulerAngleOrder order = EulerAngleOrder.XYZ)
+        public Vector3 ToEuler()
         {
             Matrix3 matRot = ToRotationMatrix();
-            return matRot.ToEulerAngles(order);
+            return matRot.ToEulerAngles();
         }
 
         public Matrix3 ToRotationMatrix()
@@ -426,9 +446,9 @@ namespace BansheeEngine
             return quat;
         }
 
-        public static Vector3 ToEuler(Quaternion rotation, EulerAngleOrder order = EulerAngleOrder.XYZ)
+        public static Vector3 ToEuler(Quaternion rotation)
         {
-            return rotation.ToEuler(order);
+            return rotation.ToEuler();
         }
 
         public static void ToAxisAngle(Quaternion rotation, out Vector3 axis, out Degree angleDeg)
@@ -499,16 +519,35 @@ namespace BansheeEngine
             return quat;
         }
 
-        public static Quaternion FromEuler(float xDeg, float yDeg, float zDeg, EulerAngleOrder order = EulerAngleOrder.XYZ)
+        public static Quaternion FromEuler(Degree xDeg, Degree yDeg, Degree zDeg, EulerAngleOrder order = EulerAngleOrder.YXZ)
         {
-            Matrix3 mat = Matrix3.FromEuler(new Vector3(xDeg, yDeg, zDeg), order);
-            return mat.ToQuaternion();
+		    EulerAngleOrderData l = EA_LOOKUP[(int)order];
+
+		    Radian halfXAngle = xDeg * 0.5f;
+		    Radian halfYAngle = yDeg * 0.5f;
+		    Radian halfZAngle = zDeg * 0.5f;
+
+		    float cx = MathEx.Cos(halfXAngle);
+		    float sx = MathEx.Sin(halfXAngle);
+
+		    float cy = MathEx.Cos(halfYAngle);
+		    float sy = MathEx.Sin(halfYAngle);
+
+		    float cz = MathEx.Cos(halfZAngle);
+		    float sz = MathEx.Sin(halfZAngle);
+
+		    Quaternion[] quats = new Quaternion[3];
+		    quats[0] = new Quaternion(cx, sx, 0.0f, 0.0f);
+		    quats[1] = new Quaternion(cy, 0.0f, sy, 0.0f);
+		    quats[2] = new Quaternion(cz, 0.0f, 0.0f, sz);
+
+		    return (quats[l.a] * quats[l.b]) * quats[l.c];
         }
 
         /**
          * @note Angles in degrees.
          */
-        public static Quaternion FromEuler(Vector3 euler, EulerAngleOrder order = EulerAngleOrder.XYZ)
+        public static Quaternion FromEuler(Vector3 euler, EulerAngleOrder order = EulerAngleOrder.YXZ)
         {
             return FromEuler(euler.x, euler.y, euler.z, order);
         }

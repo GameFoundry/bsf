@@ -56,12 +56,24 @@ Code quality improvements:
 ----------------------------------------------------------------------
 Polish stage 1
 
+Handles:
+Move plane handles could be more precise
+Once rotated further rotations seem to be going in wrong direction and gizmo is messed up
+Rotations seems to be going in the wrong direction
+Rotations around center incorrectly move and rotate the rotation gizmos
+Free rotation handle doesn't seem to be implemented
+Investigate rotation local/global (also move, I don't think its implemented properly, I seem to be modifying only Position)
+Investigate scale
+Check multi-select move/Rotate/scale
+
+There's a large hang when doing certain operations like selecting a mesh in scene, or switching from center to pivot mode
+Crash on shutdown in mono_gchandle_free
 When selecting an gizmo icon the selection seems delayed and its gizmos flash for a frame before hiding (Can't reproduce atm but I saw it)
 Decent looking default layout
+ProjectLibrary seems to import some files on every start-up
 
 Fix handles
  - Some handle functionality is unfinished
- - Handles look too large when scene view is enlarged
  - Moving around XZ plane seems to be wrong (it doesn't move as fast as the mouse)
 
 SceneTreeView
@@ -89,10 +101,19 @@ When building game make sure to go over texture resources and ensure they are sa
 as we don't want to do format conversion at runtime (Not cruical, but it should be done eventually)
  - This should something similar to Unity where when changing the platform all resources get reimported
 
+Later:
+ - Save the default editor layout somewhere and make sure its used on initial startup when no layout exists
+
+Will need a status bar:
+ - Displays last error message
+ - Opens up console on click
+ - Indicator when compiling
+
 ----------------------------------------------------------------------
 Project window
 
 Later:
+ - Might need to improve search (need to test). Do multiple search keywords work properly?
  - Consider delaying search until user stops pressing keys (so not to have thousands of search results in the initial stages)
  - Save & restore scroll position when Refresh happens
 
@@ -130,7 +151,6 @@ Simple stuff
 Handles
 
 When scaling using center make sure to offset the object before scale
-Handles should probably not having shading, or have better shading.
 
 Rotate handle:
  - How to handle local/global with rotate handle?

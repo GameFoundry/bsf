@@ -326,36 +326,34 @@ namespace BansheeEngine
         /**
          * @note    Returns angles in degrees.
          */
-        public Vector3 ToEulerAngles(EulerAngleOrder order = EulerAngleOrder.XYZ)
+        public Vector3 ToEulerAngles()
         {
-            EulerAngleOrderData l = EA_LOOKUP[(int)order];
-
-		    float xAngle = MathEx.Asin(l.sign * this[l.a, l.c]);
+            float xAngle = -MathEx.Asin(this[1, 2]);
 		    if (xAngle < MathEx.HalfPi)
 		    {
 			    if (xAngle > -MathEx.HalfPi)
 			    {
-				    float yAngle = MathEx.Atan2(-l.sign * this[l.b, l.c], this[l.c, l.c]);
-				    float zAngle = MathEx.Atan2(-l.sign * this[l.a, l.b], this[l.a, l.a]);
+				    float yAngle = MathEx.Atan2(this[0, 2], this[2, 2]);
+				    float zAngle = MathEx.Atan2(this[1, 0], this[1, 1]);
 
                     return new Vector3(xAngle * MathEx.Rad2Deg, yAngle * MathEx.Rad2Deg, zAngle * MathEx.Rad2Deg);
 			    }
 			    else
 			    {
-				    // WARNING.  Not a unique solution.
-				    float angle = MathEx.Atan2(l.sign * this[l.b, l.a], this[l.b, l.b]);
-				    float zAngle = 0.0f;  // Any angle works
-				    float yAngle = zAngle - angle;
-
+				    // Note: Not an unique solution.
+			        xAngle = -MathEx.HalfPi;
+                    float yAngle = MathEx.Atan2(-this[0, 1], this[0, 0]);
+				    float zAngle = 0.0f;
+				    
                     return new Vector3(xAngle * MathEx.Rad2Deg, yAngle * MathEx.Rad2Deg, zAngle * MathEx.Rad2Deg);
 			    }
 		    }
 		    else
 		    {
-			    // WARNING.  Not a unique solution.
-			    float angle = MathEx.Atan2(l.sign * this[l.b, l.a], this[l.b, l.b]);
-                float zAngle = 0.0f; // Any angle works
-			    float yAngle = angle - zAngle;
+			    // Note: Not an unique solution.
+                xAngle = MathEx.HalfPi;
+                float yAngle = MathEx.Atan2(this[0, 1], this[0, 0]);
+                float zAngle = 0.0f; 
 
                 return new Vector3(xAngle * MathEx.Rad2Deg, yAngle * MathEx.Rad2Deg, zAngle * MathEx.Rad2Deg);
 		    }
@@ -455,32 +453,78 @@ namespace BansheeEngine
 
         public static Matrix3 FromEuler(Vector3 eulerDeg, EulerAngleOrder order)
         {
+            return FromEuler(new Degree(eulerDeg.x), new Degree(eulerDeg.y), new Degree(eulerDeg.y), order);
+        }
+
+        public static Matrix3 FromEuler(Radian xAngle, Radian yAngle, Radian zAngle, EulerAngleOrder order)
+        {
             EulerAngleOrderData l = EA_LOOKUP[(int)order];
 
 		    Matrix3[] mats = new Matrix3[3];
-		    float cos, sin;
 
-		    cos = MathEx.Cos(eulerDeg.y * MathEx.Deg2Rad);
-            sin = MathEx.Sin(eulerDeg.y * MathEx.Deg2Rad);
-		    mats[0] = new Matrix3(1.0f, 0.0f, 0.0f, 0.0f, cos, -sin, 0.0f, sin, cos);
+            float cx = MathEx.Cos(xAngle);
+            float sx = MathEx.Sin(xAngle);
+		    mats[0] = new Matrix3(
+			    1.0f, 0.0f, 0.0f,
+			    0.0f, cx, -sx,
+			    0.0f, sx, cx);
 
-            cos = MathEx.Cos(eulerDeg.x * MathEx.Deg2Rad);
-            sin = MathEx.Sin(eulerDeg.x * MathEx.Deg2Rad);
-		    mats[1] = new Matrix3(cos, 0.0f, sin, 0.0f, 1.0f, 0.0f, -sin, 0.0f, cos);
+            float cy = MathEx.Cos(yAngle);
+            float sy = MathEx.Sin(yAngle);
+		    mats[1] = new Matrix3(
+			    cy, 0.0f, sy,
+			    0.0f, 1.0f, 0.0f,
+			    -sy, 0.0f, cy);
 
-            cos = MathEx.Cos(eulerDeg.z * MathEx.Deg2Rad);
-            sin = MathEx.Sin(eulerDeg.z * MathEx.Deg2Rad);
-		    mats[2] = new Matrix3(cos,-sin, 0.0f, sin, cos, 0.0f, 0.0f, 0.0f, 1.0f);
+            float cz = MathEx.Cos(zAngle);
+            float sz = MathEx.Sin(zAngle);
+		    mats[2] = new Matrix3(
+			    cz, -sz, 0.0f,
+			    sz, cz, 0.0f,
+			    0.0f, 0.0f, 1.0f);
 	
 		    return mats[l.a]*(mats[l.b]*mats[l.c]);
+        }
+
+        public static Matrix3 FromEuler(Vector3 eulerDeg)
+        {
+            return FromEuler(new Degree(eulerDeg.x), new Degree(eulerDeg.y), new Degree(eulerDeg.y));
+        }
+
+        public static Matrix3 FromEuler(Radian xAngle, Radian yAngle, Radian zAngle)
+        {
+            Matrix3 m = new Matrix3();
+
+		    float cx = MathEx.Cos(xAngle);
+		    float sx = MathEx.Sin(xAngle);
+
+		    float cy = MathEx.Cos(yAngle);
+		    float sy = MathEx.Sin(yAngle);
+
+            float cz = MathEx.Cos(zAngle);
+		    float sz = MathEx.Sin(zAngle);
+
+		    m[0, 0] = cy * cz + sx * sy * sz;
+		    m[0, 1] = cz * sx * sy - cy * sz;
+		    m[0, 2] = cx * sy;
+
+		    m[1, 0] = cx * sz;
+		    m[1, 1] = cx * cz;
+		    m[1, 2] = -sx;
+
+		    m[2, 0] = -cz * sy + cy * sx * sz;
+		    m[2, 1] = cy * cz * sx + sy * sz;
+		    m[2, 2] = cx * cy;
+
+            return m;
         }
 
         public static Matrix3 FromAxisAngle(Vector3 axis, Degree angle)
         {
             Matrix3 mat;
 
-            float cos = MathEx.Cos(angle.Radians);
-            float sin = MathEx.Sin(angle.Radians);
+            float cos = MathEx.Cos(angle);
+            float sin = MathEx.Sin(angle);
             float oneMinusCos = 1.0f - cos;
             float x2 = axis.x * axis.x;
             float y2 = axis.y * axis.y;
