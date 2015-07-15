@@ -26,8 +26,9 @@ namespace BansheeEditor
 
         private HandledObject[] activeSelection;
         private bool isDragged;
+        private Vector3 initialHandlePosition;
         private Quaternion initialHandleRotation;
-
+       
         protected override void PreInput()
         {
             SceneObject[] selectedSceneObjects = Selection.sceneObjects;
@@ -110,6 +111,7 @@ namespace BansheeEditor
                         for (int i = 0; i < selectedSceneObjects.Length; i++)
                             activeSelection[i] = new HandledObject(selectedSceneObjects[0]);
 
+                        initialHandlePosition = activeHandle.Position;
                         initialHandleRotation = activeHandle.Rotation;
                     }
                 }
@@ -138,7 +140,7 @@ namespace BansheeEditor
 
                             // Make sure we transform relative to the handle position
                             SceneObject temporarySO = new SceneObject("Temp");
-                            temporarySO.Position = activeHandle.Position;
+                            temporarySO.Position = initialHandlePosition;
                             temporarySO.LocalRotation = initialHandleRotation;
 
                             SceneObject[] originalParents = new SceneObject[activeSelection.Length];
