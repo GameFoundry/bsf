@@ -113,7 +113,6 @@ namespace BansheeEditor
 
             SceneObject gizmoDbgObject = new SceneObject("GizmoDebug");
             gizmoDbgObject.AddComponent<DbgGizmoComponent>();
-
             //ProgressBar.Show("Test", 0.5f);
             //ColorPicker.Show();
 

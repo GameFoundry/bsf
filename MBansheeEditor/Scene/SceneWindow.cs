@@ -12,6 +12,7 @@ namespace BansheeEditor
     {
         private const int HeaderHeight = 20;
         private const float DefaultPlacementDepth = 5.0f;
+        private static readonly Color ClearColor = new Color(83.0f/255.0f, 83.0f/255.0f, 83.0f/255.0f);
 
         private Camera camera;
         private SceneCamera cameraController;
@@ -409,6 +410,7 @@ namespace BansheeEditor
                 camera.Priority = 1;
                 camera.NearClipPlane = 0.005f;
                 camera.FarClipPlane = 1000.0f;
+                camera.ClearColor = ClearColor;
 
                 cameraController = sceneCameraSO.AddComponent<SceneCamera>();
 

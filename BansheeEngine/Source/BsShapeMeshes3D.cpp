@@ -531,12 +531,12 @@ namespace BansheeEngine
 		for (UINT32 i = 0; i < numTriangles; i++)
 		{
 			outIndices[i * 6 + 0] = frontSideOffset + 0;
-			outIndices[i * 6 + 1] = frontSideOffset + i;
-			outIndices[i * 6 + 2] = frontSideOffset + i + 1;
+			outIndices[i * 6 + 1] = frontSideOffset + i + 1;
+			outIndices[i * 6 + 2] = frontSideOffset + i;
 
 			outIndices[i * 6 + 3] = backSideOffset + 0;
-			outIndices[i * 6 + 4] = backSideOffset + i + 1;
-			outIndices[i * 6 + 5] = backSideOffset + i;
+			outIndices[i * 6 + 4] = backSideOffset + i;
+			outIndices[i * 6 + 5] = backSideOffset + i + 1;
 		}
 	}
 
@@ -619,15 +619,15 @@ namespace BansheeEngine
 		for (UINT32 i = 0; i < numTriangles - 1; i++)
 		{
 			outIndices[i * 3 + 0] = vertexOffset + baseIdx;
-			outIndices[i * 3 + 1] = vertexOffset + i + 1;
-			outIndices[i * 3 + 2] = vertexOffset + i;
+			outIndices[i * 3 + 1] = vertexOffset + i;
+			outIndices[i * 3 + 2] = vertexOffset + i + 1;
 		}
 
 		{
 			UINT32 i = numTriangles - 1;
 			outIndices[i * 3 + 0] = vertexOffset + baseIdx;
-			outIndices[i * 3 + 1] = vertexOffset + 0;
-			outIndices[i * 3 + 2] = vertexOffset + i;
+			outIndices[i * 3 + 1] = vertexOffset + i;
+			outIndices[i * 3 + 2] = vertexOffset + 0;
 		}
 
 		//// Generate cone
@@ -652,10 +652,10 @@ namespace BansheeEngine
 
 			Vector3 toTop = topVertex - *b;
 
-			Vector3 normalLeft = Vector3::cross(*a - *b, toTop);
+			Vector3 normalLeft = Vector3::cross(toTop, *a - *b);
 			normalLeft.normalize();
 
-			Vector3 normalRight = Vector3::cross(toTop, *c - *b);
+			Vector3 normalRight = Vector3::cross(*c - *b, toTop);
 			normalRight.normalize();
 
 			Vector3 triNormal = Vector3::normalize(normalLeft + normalRight);
@@ -676,15 +676,15 @@ namespace BansheeEngine
 		for (UINT32 i = 0; i < numTriangles - 1; i++)
 		{
 			outIndices[i * 3 + 0] = curVertTopOffset + i;
-			outIndices[i * 3 + 1] = curVertBaseOffset + i;
-			outIndices[i * 3 + 2] = curVertBaseOffset + i + 1;
+			outIndices[i * 3 + 1] = curVertBaseOffset + i + 1;
+			outIndices[i * 3 + 2] = curVertBaseOffset + i;
 		}
 
 		{
 			UINT32 i = numTriangles - 1;
 			outIndices[i * 3 + 0] = curVertTopOffset + i;
-			outIndices[i * 3 + 1] = curVertBaseOffset + i;
-			outIndices[i * 3 + 2] = curVertBaseOffset + 0;
+			outIndices[i * 3 + 1] = curVertBaseOffset + 0;
+			outIndices[i * 3 + 2] = curVertBaseOffset + i;
 		}
 	}
 
@@ -986,7 +986,7 @@ namespace BansheeEngine
 		Vector3 right = alignWithUp.rotate(alignWithStart.rotate(Vector3::UNIT_X));
 		right.normalize();
 
-		Quaternion increment(-up, angleAmount / (float)(numVertices - 1));
+		Quaternion increment(up, angleAmount / (float)(numVertices - 1));
 
 		outVertices += vertexOffset * vertexStride;
 		Vector3 curDirection = right * radius;

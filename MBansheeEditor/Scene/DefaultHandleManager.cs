@@ -81,9 +81,7 @@ namespace BansheeEditor
                 {
                     List<SceneObject> flatenedHierarchy = new List<SceneObject>();
                     foreach (var so in selectedSceneObjects)
-                    {
                         flatenedHierarchy.AddRange(EditorUtility.FlattenHierarchy(so));
-                    }
 
                     AABox selectionBounds = EditorUtility.CalculateBounds(flatenedHierarchy.ToArray());
                     position = selectionBounds.center;
@@ -125,40 +123,48 @@ namespace BansheeEditor
                     switch (activeHandleType)
                     {
                         case SceneViewTool.Move:
-                        {
                             MoveHandle moveHandle = (MoveHandle) activeHandle;
 
                             foreach (var selectedObj in activeSelection)
                                 selectedObj.so.Position = selectedObj.initialPosition + moveHandle.Delta;
-                        }
 
                             break;
                         case SceneViewTool.Rotate:
-                        {
                             RotateHandle rotateHandle = (RotateHandle) activeHandle;
 
                             foreach (var selectedObj in activeSelection)
                                 selectedObj.so.Rotation = selectedObj.initialRotation * rotateHandle.Delta;
-                        }
+
                             break;
                         case SceneViewTool.Scale:
-                        {
                             ScaleHandle scaleHandle = (ScaleHandle) activeHandle;
 
-                            if (EditorApplication.ActivePivotMode == HandlePivotMode.Pivot)
+                            // Make sure we transform relative to the handle position
+                            SceneObject temporarySO = new SceneObject("Temp");
+                            temporarySO.Position = activeHandle.Position;
+
+                            SceneObject[] originalParents = new SceneObject[activeSelection.Length];
+                            for (int i = 0; i < activeSelection.Length; i++)
                             {
-                                foreach (var selectedObj in activeSelection)
-                                    selectedObj.so.LocalScale = selectedObj.initialScale + scaleHandle.Delta;
+                                originalParents[i] = activeSelection[i].so.Parent;
+                                activeSelection[i].so.LocalScale = activeSelection[i].initialScale;
+                                activeSelection[i].so.Parent = temporarySO;
                             }
-                            else
+
+                            //temporarySO.LocalScale = Vector3.one + scaleHandle.Delta;
+                            temporarySO.LocalScale = Vector3.one*0.5f;
+                            Debug.Log("SCALE " + temporarySO.LocalScale + " - " + scaleHandle.Delta);
+
+                            for (int i = 0; i < activeSelection.Length; i++)
                             {
-                                foreach (var selectedObj in activeSelection)
-                                {
-                                    selectedObj.so.LocalScale = selectedObj.initialScale + scaleHandle.Delta;
-                                    // TODO
-                                }
+                                Debug.Log("POSITION A: " + activeSelection[i].so.Position);
+                                activeSelection[i].so.Parent = originalParents[i];
+                                Debug.Log("TFRM " + activeSelection[i].so.LocalScale + " - " + activeSelection[i].so.Position);
                             }
-                        }
+
+                            
+                            temporarySO.Destroy();
+
                             break;
                     }
                 }

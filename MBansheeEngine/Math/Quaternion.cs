@@ -178,7 +178,7 @@ namespace BansheeEngine
 
         public static Quaternion operator- (Quaternion quat)
         {
-            return new Quaternion(-quat.w, -quat.x, -quat.y, -quat.z);
+            return new Quaternion(-quat.x, -quat.y, -quat.z, -quat.w);
         }
 
         public static bool operator== (Quaternion lhs, Quaternion rhs)
@@ -537,9 +537,9 @@ namespace BansheeEngine
 		    float sz = MathEx.Sin(halfZAngle);
 
 		    Quaternion[] quats = new Quaternion[3];
-		    quats[0] = new Quaternion(cx, sx, 0.0f, 0.0f);
-		    quats[1] = new Quaternion(cy, 0.0f, sy, 0.0f);
-		    quats[2] = new Quaternion(cz, 0.0f, 0.0f, sz);
+		    quats[0] = new Quaternion(sx, 0.0f, 0.0f, cx);
+		    quats[1] = new Quaternion(0.0f, sy, 0.0f, cy);
+		    quats[2] = new Quaternion(0.0f, 0.0f, sz, cz);
 
 		    return (quats[l.a] * quats[l.b]) * quats[l.c];
         }

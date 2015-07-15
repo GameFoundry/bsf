@@ -58,6 +58,8 @@ Polish stage 1
 
 Handles:
 Move plane handles could be more precise
+Cut-off angle for rotation discs is wrong after they rotate
+Rotation disc normals are wrong on one side (likely it's double-sided)
 Once rotated further rotations seem to be going in wrong direction and gizmo is messed up
 Rotations seems to be going in the wrong direction
 Rotations around center incorrectly move and rotate the rotation gizmos
@@ -89,6 +91,9 @@ Need a way to add scene objects and components (and remove them)
  - COmponent removal should be done by context menu in inspector (undoable)
  - Adding scene objects should be doable from context menu in Hierarchy, by dropping a Prefab or by main Menu (undoable)
  - Deleting them should be doable by context menu in Hierarchy and Del keystroke (undoable)
+
+Add shortcut keys for view/move/rotate/scale
+Add "focus on object" key (F)
 
 For later: I could record undo/redo per-property using the new diff system
 Remember: Record all portions where objects & components get modified so I can mark them dirty, will likely need

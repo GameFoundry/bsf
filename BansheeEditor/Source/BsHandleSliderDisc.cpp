@@ -164,8 +164,10 @@ namespace BansheeEngine
 		mStartAngle = pointOnCircleToAngle(mNormal, mStartPosition);
 		mStartPosition = getTransform().multiplyAffine(mStartPosition);
 
+		Vector3 worldNormal = getTransform().multiplyAffine(mNormal);
+
 		Vector3 toStart = mStartPosition - getPosition();
-		mDirection = toStart.cross(mNormal);
+		mDirection = worldNormal.cross(toStart);
 		mDirection.normalize();
 	}
 

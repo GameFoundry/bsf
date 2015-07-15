@@ -10,6 +10,9 @@ namespace BansheeEditor
         private HandleSliderDisc yAxis;
         private HandleSliderDisc zAxis;
 
+        private bool isDragged;
+        private Quaternion dragStartRotation;
+
         public Quaternion Delta
         {
             get { return delta; }
@@ -35,14 +38,31 @@ namespace BansheeEditor
             yAxis.Position = position;
             zAxis.Position = position;
 
-            xAxis.SetCutoffPlane(GetXStartAngle(), true);
-            yAxis.SetCutoffPlane(GetYStartAngle(), true);
-            zAxis.SetCutoffPlane(GetZStartAngle(), true);
+            Quaternion handleRotation = isDragged ? dragStartRotation : Rotation;
+            xAxis.Rotation = handleRotation;
+            yAxis.Rotation = handleRotation;
+            zAxis.Rotation = handleRotation;
+
+            xAxis.SetCutoffPlane(GetXStartAngle(isDragged), true);
+            yAxis.SetCutoffPlane(GetYStartAngle(isDragged), true);
+            zAxis.SetCutoffPlane(GetZStartAngle(isDragged), true);
         }
 
         protected override void PostInput()
         {
-            delta = Quaternion.identity;
+            if (IsDragged())
+            {
+                if (!isDragged)
+                {
+                    isDragged = true;
+                    dragStartRotation = Rotation;
+                }
+            }
+            else
+            {
+                isDragged = false;
+                dragStartRotation = Quaternion.identity;
+            }
 
             Degree xValue = 0.0f;
             Degree yValue = 0.0f;
@@ -61,14 +81,13 @@ namespace BansheeEditor
                 zValue = zAxis.Delta;
             }
 
-            delta = Quaternion.FromAxisAngle(GetXDir(), xValue) * delta;
-            delta = Quaternion.FromAxisAngle(GetYDir(), yValue) * delta;
-            delta = Quaternion.FromAxisAngle(GetZDir(), zValue) * delta;
+            delta = Quaternion.FromEuler(xValue, yValue, zValue);
         }
 
         protected override void Draw()
         {
-            HandleDrawing.SetTransform(Matrix4.TRS(Position, Quaternion.identity, Vector3.one));
+            //HandleDrawing.SetTransform(Matrix4.TRS(Position, Quaternion.identity, Vector3.one));
+            HandleDrawing.SetTransform(Matrix4.TRS(Position, Rotation, Vector3.one));
             float handleSize = Handles.GetHandleSize(EditorApplication.SceneViewCamera, position);
 
             // Draw arcs
@@ -79,7 +98,8 @@ namespace BansheeEditor
             else
                 HandleDrawing.SetColor(Color.Red);
 
-            HandleDrawing.DrawWireArc(Vector3.zero, GetXDir(), 1.0f, GetXStartAngle(), 180.0f, handleSize);
+            //HandleDrawing.DrawWireArc(Vector3.zero, Rotation.Rotate(Vector3.xAxis), 1.0f, GetXStartAngle(false), -180.0f, handleSize);
+            HandleDrawing.DrawWireArc(Vector3.zero, Vector3.xAxis, 1.0f, GetXStartAngle(false), -180.0f, handleSize);
 
             if (yAxis.State == HandleSlider.StateType.Active)
                 HandleDrawing.SetColor(Color.White);
@@ -88,7 +108,8 @@ namespace BansheeEditor
             else
                 HandleDrawing.SetColor(Color.Green);
 
-            HandleDrawing.DrawWireArc(Vector3.zero, GetYDir(), 1.0f, GetYStartAngle(), 180.0f, handleSize);
+            //HandleDrawing.DrawWireArc(Vector3.zero, Rotation.Rotate(Vector3.yAxis), 1.0f, GetYStartAngle(false), -180.0f, handleSize);
+            HandleDrawing.DrawWireArc(Vector3.zero, Vector3.yAxis, 1.0f, GetYStartAngle(false), -180.0f, handleSize);
 
             if (zAxis.State == HandleSlider.StateType.Active)
                 HandleDrawing.SetColor(Color.White);
@@ -97,58 +118,53 @@ namespace BansheeEditor
             else
                 HandleDrawing.SetColor(Color.Blue);
 
-            HandleDrawing.DrawWireArc(Vector3.zero, GetZDir(), 1.0f, GetZStartAngle(), 180.0f, handleSize);
+            //HandleDrawing.DrawWireArc(Vector3.zero, Rotation.Rotate(Vector3.zAxis), 1.0f, GetZStartAngle(false), -180.0f, handleSize);
+            HandleDrawing.DrawWireArc(Vector3.zero, Vector3.zAxis, 1.0f, GetZStartAngle(false), -180.0f, handleSize);
 
             // Draw active rotation pie
             Color gray = new Color(1.0f, 1.0f, 1.0f, 0.3f);
             HandleDrawing.SetColor(gray);
+            HandleDrawing.SetTransform(Matrix4.TRS(Position, dragStartRotation, Vector3.one));
 
             if (xAxis.State == HandleSlider.StateType.Active)
-                HandleDrawing.DrawArc(Vector3.zero, GetXDir(), 1.0f, xAxis.StartAngle, xAxis.Delta, handleSize);
+                HandleDrawing.DrawArc(Vector3.zero, Vector3.xAxis, 1.0f, xAxis.StartAngle, xAxis.Delta, handleSize);
             else if (yAxis.State == HandleSlider.StateType.Active)
-                HandleDrawing.DrawArc(Vector3.zero, GetYDir(), 1.0f, yAxis.StartAngle, yAxis.Delta, handleSize);
+                HandleDrawing.DrawArc(Vector3.zero, Vector3.yAxis, 1.0f, yAxis.StartAngle, yAxis.Delta, handleSize);
             else if (zAxis.State == HandleSlider.StateType.Active)
-                HandleDrawing.DrawArc(Vector3.zero, GetZDir(), 1.0f, zAxis.StartAngle, zAxis.Delta, handleSize);
+                HandleDrawing.DrawArc(Vector3.zero, Vector3.zAxis, 1.0f, zAxis.StartAngle, zAxis.Delta, handleSize);
 
             // Draw free rotate handle
+            HandleDrawing.SetTransform(Matrix4.TRS(Position, Quaternion.identity, Vector3.one));
+            
             //// Rotate it so it always faces the camera, and move it forward a bit to always render in front
-            Vector3 freeHandleNormal = EditorApplication.SceneViewCamera.SceneObject.Rotation.Rotate(GetZDir());
-            Vector3 offset = freeHandleNormal*0.1f;
+            Vector3 freeHandleNormal = EditorApplication.SceneViewCamera.SceneObject.Rotation.Rotate(Vector3.zAxis);
+            Vector3 offset = freeHandleNormal * 0.1f;
 
             HandleDrawing.DrawWireDisc(offset, freeHandleNormal, 1.0f, handleSize);
         }
 
-        private Degree GetXStartAngle()
+        private Degree GetXStartAngle(bool frozen)
         {
-            Vector3 xStartDir = Vector3.Cross(EditorApplication.SceneViewCamera.SceneObject.Forward, GetXDir());
-            return PointOnCircleToAngle(GetXDir(), xStartDir);
+            Quaternion handleRotation = frozen ? dragStartRotation : Rotation;
+
+            Vector3 xStartDir = Vector3.Cross(handleRotation.Inverse.Rotate(EditorApplication.SceneViewCamera.SceneObject.Forward), Vector3.xAxis);
+            return PointOnCircleToAngle(Vector3.xAxis, xStartDir);
         }
 
-        private Degree GetYStartAngle()
+        private Degree GetYStartAngle(bool frozen)
         {
-            Vector3 yStartDir = Vector3.Cross(EditorApplication.SceneViewCamera.SceneObject.Forward, GetYDir());
-            return PointOnCircleToAngle(GetYDir(), yStartDir);
+            Quaternion handleRotation = frozen ? dragStartRotation : Rotation;
+
+            Vector3 yStartDir = Vector3.Cross(handleRotation.Inverse.Rotate(EditorApplication.SceneViewCamera.SceneObject.Forward), Vector3.yAxis);
+            return PointOnCircleToAngle(Vector3.yAxis, yStartDir);
         }
 
-        private Degree GetZStartAngle()
+        private Degree GetZStartAngle(bool frozen)
         {
-            Vector3 zStartDir = Vector3.Cross(EditorApplication.SceneViewCamera.SceneObject.Forward, GetZDir());
-            return PointOnCircleToAngle(GetZDir(), zStartDir);
-        }
+            Quaternion handleRotation = frozen ? dragStartRotation : Rotation;
 
-        private Vector3 GetXDir()
-        {
-             return Vector3.xAxis;
-        }
-
-        private Vector3 GetYDir()
-        {
-            return Vector3.yAxis;
-        }
-
-        private Vector3 GetZDir()
-        {
-            return Vector3.zAxis;
+            Vector3 zStartDir = Vector3.Cross(handleRotation.Inverse.Rotate(EditorApplication.SceneViewCamera.SceneObject.Forward), Vector3.zAxis);
+            return PointOnCircleToAngle(Vector3.zAxis, zStartDir);
         }
 
         private Degree PointOnCircleToAngle(Vector3 up, Vector3 point)

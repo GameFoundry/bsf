@@ -8,7 +8,7 @@
 
 namespace BansheeEngine 
 {
-	const Color Viewport::DEFAULT_CLEAR_COLOR = Color(143.0f / 255.0f, 111.0f / 255.0f, 0);
+	const Color Viewport::DEFAULT_CLEAR_COLOR = Color(83.0f / 255.0f, 83.0f / 255.0f, 83.0f / 255.0f);
 
 	ViewportBase::ViewportBase(float x, float y, float width, float height)
          :mNormArea(x, y, width, height), mClearColor(DEFAULT_CLEAR_COLOR), mRequiresColorClear(true), 
