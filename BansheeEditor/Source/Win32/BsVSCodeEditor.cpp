@@ -11,6 +11,14 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Reads a string value from the specified key in the registry.
+	 * 
+	 * @param	key				Registry key to read from.
+	 * @param	name			Identifier of the value to read from.
+	 * @param	value			Output value read from the key.
+	 * @param	defaultValue	Default value to return if the key or identifier doesn't exist.
+	 */
 	LONG getRegistryStringValue(HKEY hKey, const WString& name, WString& value, const WString& defaultValue)
 	{
 		value = defaultValue;
@@ -24,6 +32,9 @@ namespace BansheeEngine
 		return result;
 	}
 
+	/**
+	 * @brief	Contains data about a Visual Studio project.
+	 */
 	struct VSProjectInfo
 	{
 		WString GUID;
@@ -31,21 +42,35 @@ namespace BansheeEngine
 		Path path;
 	};
 
+	/**
+	 * @brief	Contains various helper classes for interacting with a Visual Studio instance
+	 *			running on this machine.
+	 */
 	class VisualStudio
 	{
 	private:
-		static const String SLN_TEMPLATE;
-		static const String PROJ_ENTRY_TEMPLATE;
-		static const String PROJ_PLATFORM_TEMPLATE;
+		static const String SLN_TEMPLATE; /**< Template text used for a solution file. */
+		static const String PROJ_ENTRY_TEMPLATE; /**< Template text used for a project entry in a solution file. */
+		static const String PROJ_PLATFORM_TEMPLATE; /**< Template text used for platform specific information for a project entry in a solution file. */
 
-		static const String PROJ_TEMPLATE;
-		static const String REFERENCE_ENTRY_TEMPLATE;
-		static const String REFERENCE_PROJECT_ENTRY_TEMPLATE;
-		static const String REFERENCE_PATH_ENTRY_TEMPLATE;
-		static const String CODE_ENTRY_TEMPLATE;
-		static const String NON_CODE_ENTRY_TEMPLATE;
+		static const String PROJ_TEMPLATE; /**< Template XML used for a project file. */
+		static const String REFERENCE_ENTRY_TEMPLATE; /**< Template XML used for a reference to another assembly entry by name. */
+		static const String REFERENCE_PROJECT_ENTRY_TEMPLATE; /**< Template XML used for a reference to another project entry. */
+		static const String REFERENCE_PATH_ENTRY_TEMPLATE; /**< Template XML used for a reference to another assembly entry by name and path. */
+		static const String CODE_ENTRY_TEMPLATE; /**< Template XML used for a single code file entry in a project. */
+		static const String NON_CODE_ENTRY_TEMPLATE; /**< Template XML used for a single non-code file entry in a project. */
 
 	public:
+		/**
+		 * @brief	Scans the running processes to find a running Visual Studio instance with the specified
+		 *			version and open solution.
+		 *
+		 * @param	clsID			Class ID of the specific Visual Studio version we are looking for.
+		 * @param	solutionPath	Path to the solution the instance needs to have open.
+		 *
+		 * @returns	DTE object that may be used to interact with the Visual Studio instance, or null if
+		 *			not found.
+		 */
 		static CComPtr<EnvDTE::_DTE> findRunningInstance(const CLSID& clsID, const Path& solutionPath)
 		{
 			CComPtr<IRunningObjectTable> runningObjectTable = nullptr;
@@ -96,6 +121,12 @@ namespace BansheeEngine
 			return nullptr;
 		}
 
+		/**
+		 * @brief	Opens a new Visual Studio instance of the specified version with the provided solution.
+		 *
+		 * @param	clsID			Class ID of the specific Visual Studio version to start.
+		 * @param	solutionPath	Path to the solution the instance needs to open.
+		 */
 		static CComPtr<EnvDTE::_DTE> openInstance(const CLSID& clsid, const Path& solutionPath)
 		{
 			CComPtr<IUnknown> newInstance = nullptr;
@@ -133,6 +164,13 @@ namespace BansheeEngine
 			return nullptr;
 		}
 
+		/**
+		 * @brief	Opens a file on a specific line in a running Visual Studio instance.
+		 *
+		 * @param	dte			DTE object retrieved from "findRunningInstance" or "openInstance".
+		 * @param	filePath	Path of the file to open. File should be a part of the VS solution.
+		 * @param	line		Line on which to focus Visual Studio after the file is open.
+		 */
 		static bool openFile(CComPtr<EnvDTE::_DTE> dte, const Path& filePath, UINT32 line)
 		{
 			// Open file
@@ -175,6 +213,9 @@ namespace BansheeEngine
 			return true;
 		}
 
+		/**
+		 * @brief	Generates a Visual Studio project GUID from the project name.
+		 */
 		static String getProjectGUID(const WString& projectName)
 		{
 			static const String guidTemplate = "{0}-{1}-{2}-{3}-{4}";
@@ -187,6 +228,16 @@ namespace BansheeEngine
 			return output;
 		}
 
+		/**
+		 * @brief	Builds the Visual Studio solution text (.sln) for the provided version, 
+		 *			using the provided solution data.
+		 *
+		 * @param	version	Visual Studio version for which we're generating the solution file.
+		 * @param	data	Data containing a list of projects and other information required to 
+		 *					build the solution text.
+		 *
+		 * @returns	Generated text of the solution file.
+		 */
 		static String writeSolution(VisualStudioVersion version, const CodeSolutionData& data)
 		{
 			struct VersionData
@@ -220,6 +271,16 @@ namespace BansheeEngine
 			return StringUtil::format(SLN_TEMPLATE, versionData[version].formatVersion, projectEntries, projectPlatforms);
 		}
 
+		/**
+		 * @brief	Builds the Visual Studio project text (.csproj) for the provided version, 
+		 *			using the provided project data.
+		 *
+		 * @param	version		Visual Studio version for which we're generating the project file.
+		 * @param	projectData	Data containing a list of files, references and other information required to 
+		 *						build the project text.
+		 *
+		 * @returns	Generated text of the project file.
+		 */
 		static String writeProject(VisualStudioVersion version, const CodeProjectData& projectData)
 		{
 			struct VersionData

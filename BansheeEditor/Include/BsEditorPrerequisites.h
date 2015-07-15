@@ -78,6 +78,10 @@ namespace BansheeEngine
 	static const char* SCRIPT_EDITOR_ASSEMBLY = "MScriptEditor";
 	static const Path INTERNAL_ASSEMBLY_PATH = "Internal//Assemblies//";
 
+	/**
+	 * @brief	Types of drag and drop operations. Different types specify
+	 *			different types of dragged data.
+	 */
 	enum class DragAndDropType
 	{
 		EditorWidget = 10000,
@@ -85,6 +89,11 @@ namespace BansheeEngine
 		Resources = 10002
 	};
 
+	/**
+	 * @brief	Recognized types of external code editors.
+	 *
+	 * @see		CodeEditorManager
+	 */
 	enum class CodeEditorType
 	{
 		VS2008,
@@ -94,6 +103,9 @@ namespace BansheeEngine
 		VS2015
 	};
 
+	/**
+	 * @brief	Type IDs used by the RTTI system for the editor library.
+	 */
 	enum TypeID_BansheeEditor
 	{
 		TID_ProjectResourceMeta = 40000,
