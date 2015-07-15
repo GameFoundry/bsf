@@ -6,10 +6,22 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	A command used for undo/redo purposes. It records a value of a GUI input field
+	 *			(specified by template type) and allows you to apply or revert a change to that field
+	 *			as needed.
+	 */
 	template <class InputFieldType, class ValueType>
 	class CmdInputFieldValueChange : public EditorCommand
 	{
 	public:
+		/**
+		 * @brief	Creates and executes the command on the provided object and field.
+		 *			Automatically registers the command with undo/redo system.
+		 *
+		 * @param	inputField	Input field to modify the value on.
+		 * @param	value		New value for the field.
+		 */
 		static void execute(InputFieldType* inputField, const ValueType& value)
 		{
 			CmdInputFieldValueChange* command = new (bs_alloc<CmdInputFieldValueChange>()) CmdInputFieldValueChange(inputField, value);
@@ -17,12 +29,18 @@ namespace BansheeEngine
 			command->commit();
 		}
 
-		void commit()
+		/**
+		 * @copydoc	EditorCommand::commit
+		 */
+		void commit() override
 		{
 			mInputField->setValue(mNewValue);
 		}
 
-		void revert()
+		/**
+		 * @copydoc	EditorCommand::revert
+		 */
+		void revert() override
 		{
 			mInputField->setValue(mOldValue);
 		}

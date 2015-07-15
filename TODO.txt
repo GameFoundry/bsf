@@ -37,6 +37,8 @@ Add "dirty object" system to C#. Each ScriptResource and ScriptGameObject should
   - An object or component is removed from the scene
   - An object is reparented
   - When component or resource is modified from inspector
+ - Record all portions where objects & components get modified so I can mark them dirty, will likely need
+    to use those some points for undo/redo
 
 TODO - Later - When building level for release make sure to clear all prefab diffs (possibly store them elsewhere in the first place)
        - And all prefab instances should have updateFromPrefab called on them.
@@ -57,25 +59,18 @@ Code quality improvements:
 Polish stage 1
 
 Handles:
-Setting rotation to an SO and then adding a child to it will incorrectly transform the child (scaling/skewing it)
+In some cases it's really hard to rotate or the rotation twitches
+When rotating the handle (and sometimes immediately in global mode) the rotation direction is opposite of move movement
 Move plane handles could be more precise
-Rotations around center incorrectly move and rotate the rotation gizmos
-Investigate rotation local/global (also move, I don't think its implemented properly, I seem to be modifying only Position)
-Investigate scale
+Investigate scale and its issues
 Check multi-select move/Rotate/scale
-Rotation disc normals are wrong on one side (likely it's double-sided)
 Free rotation handle doesn't seem to be implemented
 
-There's a large hang when doing certain operations like selecting a mesh in scene, or switching from center to pivot mode
+There's a large hang when doing certain operations like selecting a mesh in scene, or switching from center to pivot mode (possibly GC?)
 Crash on shutdown in mono_gchandle_free
 When selecting an gizmo icon the selection seems delayed and its gizmos flash for a frame before hiding (Can't reproduce atm but I saw it)
-Decent looking default layout
 ProjectLibrary seems to import some files on every start-up
 Selection rendering seems to be delayed 1 frame (noticeable when rotating/moving)
-
-Fix handles
- - Some handle functionality is unfinished
- - Moving around XZ plane seems to be wrong (it doesn't move as fast as the mouse)
 
 SceneTreeView
  - Hook up ping effect so it triggers when I select a resource or sceneobject
@@ -94,24 +89,18 @@ Need a way to add scene objects and components (and remove them)
 Add shortcut keys for view/move/rotate/scale
 Add "focus on object" key (F)
 
-For later: I could record undo/redo per-property using the new diff system
-Remember: Record all portions where objects & components get modified so I can mark them dirty, will likely need
- to use those some points for undo/redo
-
-UndoRedo reminders:
- - When breaking or reverting a scene object
-
-When building game make sure to go over texture resources and ensure they are saved in the valid format
-as we don't want to do format conversion at runtime (Not cruical, but it should be done eventually)
- - This should something similar to Unity where when changing the platform all resources get reimported
-
-Later:
- - Save the default editor layout somewhere and make sure its used on initial startup when no layout exists
-
 Will need a status bar:
  - Displays last error message
  - Opens up console on click
  - Indicator when compiling
+
+Later:
+ - I could record undo/redo per-property using the new diff system
+ - When building game make sure to go over texture resources and ensure they are saved in the valid format
+   as we don't want to do format conversion at runtime (Not cruical, but it should be done eventually)
+   - This should something similar to Unity where when changing the platform all resources get reimported
+ - Save the default editor layout somewhere and make sure its used on initial startup when no layout exists
+ - Undo/Redo when breaking or reverting a scene object
 
 ----------------------------------------------------------------------
 Project window

@@ -7,6 +7,11 @@
 namespace BansheeEngine
 {
 	// TODO - This is only valid for plain field types. Add something similar for pointers and/or arrays?
+	/**
+	 * @brief	A command used for undo/redo purposes. It records a value of a single RTTI field and
+	 *			using the provided interface allows you to commit a change to that field, or restore
+	 *			it to the original value.
+	 */
 	template<class T>
 	class CmdEditPlainFieldGO : public EditorCommand
 	{
@@ -20,6 +25,14 @@ namespace BansheeEngine
 				bs_free(mOldData);
 		}
 
+		/**
+		 * @brief	Creates and executes the command on the provided object and field.
+		 *			Automatically registers the command with undo/redo system.
+		 *
+		 * @param	gameObject	Game object to search for the field.
+		 * @param	fieldName	RTTI name of the field.
+		 * @param	fieldValue	New value for the field.
+		 */
 		static void execute(const GameObjectHandleBase& gameObject, const String& fieldName, const T& fieldValue)
 		{
 			// Register command and commit it
@@ -28,7 +41,10 @@ namespace BansheeEngine
 			command->commit();
 		}
 
-		void commit()
+		/**
+		 * @copydoc	EditorCommand::commit
+		 */
+		void commit() override
 		{
 			if(mGameObject.isDestroyed())
 				return;
@@ -40,7 +56,10 @@ namespace BansheeEngine
 			rtti->setPlainValue(mGameObject.get(), mFieldName, fieldValue);
 		}
 
-		void revert()
+		/**
+		 * @copydoc	EditorCommand::revert
+		 */
+		void revert() override
 		{
 			if(mGameObject.isDestroyed())
 				return;
