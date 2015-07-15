@@ -44,6 +44,7 @@
 #include "BsEditorSettings.h"
 #include "BsMesh.h"
 #include "BsMath.h"
+#include "BsDebug.h"
 
 namespace BansheeEngine
 {

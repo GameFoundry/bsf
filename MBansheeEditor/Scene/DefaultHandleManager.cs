@@ -10,8 +10,8 @@ namespace BansheeEditor
             public HandledObject(SceneObject so)
             {
                 this.so = so;
-                initialPosition = so.Position;
-                initialRotation = so.Rotation;
+                initialPosition = so.LocalPosition;
+                initialRotation = so.LocalRotation;
                 initialScale = so.LocalScale;
             }
 
@@ -26,6 +26,7 @@ namespace BansheeEditor
 
         private HandledObject[] activeSelection;
         private bool isDragged;
+        private Quaternion initialHandleRotation;
 
         protected override void PreInput()
         {
@@ -108,6 +109,8 @@ namespace BansheeEditor
                         activeSelection = new HandledObject[selectedSceneObjects.Length];
                         for (int i = 0; i < selectedSceneObjects.Length; i++)
                             activeSelection[i] = new HandledObject(selectedSceneObjects[0]);
+
+                        initialHandleRotation = activeHandle.Rotation;
                     }
                 }
                 else
@@ -126,17 +129,37 @@ namespace BansheeEditor
                             MoveHandle moveHandle = (MoveHandle) activeHandle;
 
                             foreach (var selectedObj in activeSelection)
-                                selectedObj.so.Position = selectedObj.initialPosition + moveHandle.Delta;
+                                selectedObj.so.LocalPosition = selectedObj.initialPosition + moveHandle.Delta;
 
                             break;
                         case SceneViewTool.Rotate:
+                        {
                             RotateHandle rotateHandle = (RotateHandle) activeHandle;
 
-                            foreach (var selectedObj in activeSelection)
-                                selectedObj.so.Rotation = selectedObj.initialRotation * rotateHandle.Delta;
+                            // Make sure we transform relative to the handle position
+                            SceneObject temporarySO = new SceneObject("Temp");
+                            temporarySO.Position = activeHandle.Position;
+                            temporarySO.LocalRotation = initialHandleRotation;
 
+                            SceneObject[] originalParents = new SceneObject[activeSelection.Length];
+                            for (int i = 0; i < activeSelection.Length; i++)
+                            {
+                                originalParents[i] = activeSelection[i].so.Parent;
+                                activeSelection[i].so.LocalPosition = activeSelection[i].initialPosition;
+                                activeSelection[i].so.LocalRotation = activeSelection[i].initialRotation;
+                                activeSelection[i].so.Parent = temporarySO;
+                            }
+
+                            temporarySO.LocalRotation *= rotateHandle.Delta;
+
+                            for (int i = 0; i < activeSelection.Length; i++)
+                                activeSelection[i].so.Parent = originalParents[i];
+
+                            temporarySO.Destroy();
+                        }
                             break;
                         case SceneViewTool.Scale:
+                        {
                             ScaleHandle scaleHandle = (ScaleHandle) activeHandle;
 
                             // Make sure we transform relative to the handle position
@@ -159,12 +182,12 @@ namespace BansheeEditor
                             {
                                 Debug.Log("POSITION A: " + activeSelection[i].so.Position);
                                 activeSelection[i].so.Parent = originalParents[i];
-                                Debug.Log("TFRM " + activeSelection[i].so.LocalScale + " - " + activeSelection[i].so.Position);
+                                Debug.Log("TFRM " + activeSelection[i].so.LocalScale + " - " +
+                                          activeSelection[i].so.Position);
                             }
 
-                            
                             temporarySO.Destroy();
-
+                        }
                             break;
                     }
                 }

@@ -9,6 +9,7 @@
 #include "BsPrefab.h"
 #include "BsPrefabUtility.h"
 #include "BsPrefabDiff.h"
+#include "BsMatrix3.h"
 
 namespace BansheeEngine
 {
@@ -240,10 +241,18 @@ namespace BansheeEngine
 	{
 		if (mParent != nullptr)
 		{
-			Matrix4 parentTfrm = mParent->getWorldTfrm();
-			parentTfrm.inverseAffine();
+			Matrix3 rotScale;
+			mParent->getWorldTfrm().extract3x3Matrix(rotScale);
+			rotScale.inverse();
 
-			mScale = parentTfrm.multiplyDirection(scale);
+			Matrix3 scaleMat = Matrix3(Quaternion::IDENTITY, scale);
+			scaleMat = rotScale * scaleMat;
+
+			Quaternion rotation;
+			Vector3 localScale;
+			scaleMat.decomposition(rotation, localScale);
+
+			mScale = localScale;
 		}
 		else
 			mScale = scale;

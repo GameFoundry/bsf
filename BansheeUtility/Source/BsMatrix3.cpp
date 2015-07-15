@@ -573,6 +573,15 @@ namespace BansheeEngine
         m[2][2] *= invLength;
     }
 
+	void Matrix3::decomposition(Quaternion& rotation, Vector3& scale) const
+	{
+		Matrix3 matQ;
+		Vector3 vecU;
+		QDUDecomposition(matQ, scale, vecU);
+
+		rotation = Quaternion(matQ);
+	}
+
     void Matrix3::QDUDecomposition(Matrix3& matQ, Vector3& vecD, Vector3& vecU) const
     {
         // Build orthogonal matrix Q

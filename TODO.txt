@@ -57,22 +57,21 @@ Code quality improvements:
 Polish stage 1
 
 Handles:
+Setting rotation to an SO and then adding a child to it will incorrectly transform the child (scaling/skewing it)
 Move plane handles could be more precise
-Cut-off angle for rotation discs is wrong after they rotate
-Rotation disc normals are wrong on one side (likely it's double-sided)
-Once rotated further rotations seem to be going in wrong direction and gizmo is messed up
-Rotations seems to be going in the wrong direction
 Rotations around center incorrectly move and rotate the rotation gizmos
-Free rotation handle doesn't seem to be implemented
 Investigate rotation local/global (also move, I don't think its implemented properly, I seem to be modifying only Position)
 Investigate scale
 Check multi-select move/Rotate/scale
+Rotation disc normals are wrong on one side (likely it's double-sided)
+Free rotation handle doesn't seem to be implemented
 
 There's a large hang when doing certain operations like selecting a mesh in scene, or switching from center to pivot mode
 Crash on shutdown in mono_gchandle_free
 When selecting an gizmo icon the selection seems delayed and its gizmos flash for a frame before hiding (Can't reproduce atm but I saw it)
 Decent looking default layout
 ProjectLibrary seems to import some files on every start-up
+Selection rendering seems to be delayed 1 frame (noticeable when rotating/moving)
 
 Fix handles
  - Some handle functionality is unfinished

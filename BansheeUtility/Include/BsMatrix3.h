@@ -43,17 +43,17 @@ namespace BansheeEngine
 		/**
          * @brief	Construct a matrix from a quaternion.
          */
-        explicit Matrix3(const Quaternion& quad)
+        explicit Matrix3(const Quaternion& rotation)
         {
-            fromQuaternion(quad);
+            fromQuaternion(rotation);
         }
 
 		/**
          * @brief	Construct a matrix that performs rotation and scale.
          */
-        explicit Matrix3(const Quaternion& quad, const Vector3 scale)
+        explicit Matrix3(const Quaternion& rotation, const Vector3& scale)
         {
-            fromQuaternion(quad);
+            fromQuaternion(rotation);
 			
 			for (int row = 0; row < 3; row++)
 			{
@@ -181,6 +181,15 @@ namespace BansheeEngine
          * @brief	Calculates the matrix determinant.
          */
         float determinant() const;
+
+        /**
+         * @brief	Decompose a Matrix3 to rotation and scale.
+         *
+         * @note	Matrix must consist only of rotation and uniform scale transformations,
+         * 			otherwise accurate results are not guaranteed. Applying non-uniform scale guarantees
+         * 			rotation portion will not be accurate.
+         */
+        void decomposition(Quaternion& rotation, Vector3& scale) const;
 
         /**
          * @brief	Decomposes the matrix into various useful values.
