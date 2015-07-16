@@ -72,7 +72,6 @@ There's a large hang when doing certain operations like selecting a mesh in scen
 Crash on shutdown in mono_gchandle_free
 When selecting an gizmo icon the selection seems delayed and its gizmos flash for a frame before hiding (Can't reproduce atm but I saw it)
 ProjectLibrary seems to import some files on every start-up
-Selection rendering seems to be delayed 1 frame (noticeable when rotating/moving)
 
 SceneTreeView
  - Hook up ping effect so it triggers when I select a resource or sceneobject

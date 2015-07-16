@@ -69,26 +69,6 @@ namespace BansheeEngine
 		}
 	}
 
-	void SceneGrid::setMajorAxisSpacing(UINT32 spacing)
-	{
-		// TODO - Ignored with the current shader
-		if (mMajorAxisSpacing != spacing)
-		{
-			mMajorAxisSpacing = spacing;
-			updateGridMesh();
-		}
-	}
-
-	void SceneGrid::setAxisMarkerSpacing(UINT32 spacing)
-	{
-		// TODO - Ignored with the current shader
-		if (mAxisMarkerSpacing != spacing)
-		{
-			mAxisMarkerSpacing = spacing;
-			updateGridMesh();
-		}
-	}
-
 	void SceneGrid::setSettings(const EditorSettingsPtr& settings)
 	{
 		mSettings = settings;
@@ -126,8 +106,6 @@ namespace BansheeEngine
 	{
 		setSize(mSettings->getGridSize());
 		setSpacing(mSettings->getGridSpacing());
-		setMajorAxisSpacing(mSettings->getGridMajorAxisSpacing());
-		setAxisMarkerSpacing(mSettings->getGridAxisMarkerSpacing());
 
 		mSettingsHash = mSettings->getHash();
 	}

@@ -236,12 +236,6 @@ namespace BansheeEngine
 		CoreApplication::startUp<EditorApplication>(renderSystemPlugin);
 	}
 
-	void EditorApplication::closeModalWindow(RenderWindowPtr window, HSceneObject sceneObject)
-	{
-		//sceneObject->destroy();
-		window->destroy();
-	}
-
 	void EditorApplication::preUpdate()
 	{
 		Application::preUpdate();
@@ -261,16 +255,6 @@ namespace BansheeEngine
 	bool EditorApplication::isProjectLoaded() const
 	{
 		return true; // TODO - DEBUG ONLY
-	}
-
-	bool EditorApplication::isGameViewFocused() const
-	{
-		return false; // TODO
-	}
-
-	bool EditorApplication::isSceneViewFocused() const
-	{
-		return true; // TODO
 	}
 
 	const Path& EditorApplication::getProjectPath() const

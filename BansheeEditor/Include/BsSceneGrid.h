@@ -15,8 +15,6 @@ namespace BansheeEngine
 		void setOrigin(const Vector3& origin);
 		void setSize(UINT32 size);
 		void setSpacing(float spacing);
-		void setMajorAxisSpacing(UINT32 spacing);
-		void setAxisMarkerSpacing(UINT32 spacing);
 		void setSettings(const EditorSettingsPtr& settings);
 
 		void render(const CameraHandlerPtr& camera, DrawList& drawList);

@@ -60,14 +60,30 @@ namespace BansheeEngine
 		TestComponentB() {} // Serialization only
 	};
 
+	/**
+	 * @brief	Contains a set of unit tests for the editor.
+	 */
 	class EditorTestSuite : public TestSuite
 	{
 	public:
 		EditorTestSuite();
 
 	private:
+		/**
+		 * @brief	Tests SceneObject record undo/redo operation.
+		 */
 		void SceneObjectRecord_UndoRedo();
+
+		/**
+		 * @brief	Tests native diff by modifiying an object, generating a diff
+		 *			and re-applying the modifications.
+		 */
 		void BinaryDiff();
+
+		/**
+		 * @brief	Tests prefab diff by modifiying a prefab, generating a diff
+		 *			and re-applying the modifications.
+		 */
 		void TestPrefabDiff();
 	};
 }
