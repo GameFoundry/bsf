@@ -3,6 +3,11 @@
 #include "BsHandleSliderManager.h"
 #include "BsVector3.h"
 #include "BsRay.h"
+#include "BsPlane.h"
+#include "BsCameraHandler.h"
+
+// DEBUG ONLY
+#include "BsDebug.h"
 
 namespace BansheeEngine
 {
@@ -29,7 +34,6 @@ namespace BansheeEngine
 		sliderManager._unregisterSlider(this);
 	}
 
-
 	bool HandleSliderPlane::intersects(const Ray& ray, float& t) const
 	{
 		Ray localRay = ray;
@@ -47,6 +51,12 @@ namespace BansheeEngine
 		return false;
 	}
 
+	void HandleSliderPlane::activate(const CameraHandlerPtr& camera, const Vector2I& pointerPos)
+	{
+		mStartPlanePosition = getPosition();
+		mStartClickPosition = getClickPosition(camera, pointerPos);
+	}
+
 	void HandleSliderPlane::handleInput(const CameraHandlerPtr& camera, const Vector2I& inputDelta)
 	{
 		assert(getState() == State::Active);
@@ -56,7 +66,30 @@ namespace BansheeEngine
 		Vector3 worldDir1 = getRotation().rotate(mDirection1);
 		Vector3 worldDir2 = getRotation().rotate(mDirection2);
 
-		mDelta.x = calcDelta(camera, mStartPosition, worldDir1, mStartPointerPos, mCurrentPointerPos);
-		mDelta.y = calcDelta(camera, mStartPosition, worldDir2, mStartPointerPos, mCurrentPointerPos);
+		Vector3 intersectPosition = getClickPosition(camera, mCurrentPointerPos);
+		Vector3 positionDelta = intersectPosition - mStartClickPosition;
+
+		mDelta.x = positionDelta.dot(worldDir1);
+		mDelta.y = positionDelta.dot(worldDir2);
+	}
+
+	Vector3 HandleSliderPlane::getClickPosition(const CameraHandlerPtr& camera, const Vector2I& pointerPos) const
+	{
+		Vector3 worldDir1 = getRotation().rotate(mDirection1);
+		Vector3 worldDir2 = getRotation().rotate(mDirection2);
+
+		Vector3 normal = worldDir1.cross(worldDir2);
+		float dot = normal.dot(camera->getForward());
+		if (dot > 0)
+			normal = -normal;
+
+		Plane plane(normal, mStartPlanePosition);
+
+		Ray clickRay = camera->screenPointToRay(pointerPos);
+		auto intersectResult = plane.intersects(clickRay);
+		if (intersectResult.first)
+			return clickRay.getPoint(intersectResult.second);
+
+		return mStartClickPosition;
 	}
 }
