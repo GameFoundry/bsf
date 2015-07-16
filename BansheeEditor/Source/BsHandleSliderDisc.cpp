@@ -8,6 +8,7 @@
 
 // DEBUG ONLY
 #include "BsDebug.h"
+#include "BsGizmoManager.h"
 
 namespace BansheeEngine
 {
@@ -164,7 +165,8 @@ namespace BansheeEngine
 		mStartAngle = pointOnCircleToAngle(mNormal, mStartPosition);
 		mStartPosition = getTransform().multiplyAffine(mStartPosition);
 
-		Vector3 worldNormal = getTransform().multiplyAffine(mNormal);
+		Vector3 worldNormal = getTransform().multiplyDirection(mNormal);
+		worldNormal.normalize();
 
 		Vector3 toStart = mStartPosition - getPosition();
 		mDirection = worldNormal.cross(toStart);

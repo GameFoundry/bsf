@@ -61,7 +61,6 @@ Polish stage 1
 Handles:
 In some cases it's really hard to rotate or the rotation twitches
 When rotating the handle (and sometimes immediately in global mode) the rotation direction is opposite of move movement
-Distance of camera from rotation handle seems to effect the rotation speed. When very close it is extremely small.
 Move plane handles could be more precise
 Investigate scale and its issues
 Check multi-select move/Rotate/scale

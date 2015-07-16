@@ -345,6 +345,26 @@ namespace BansheeEngine
         }
 
         /**
+         * @brief	Transform a plane by this matrix.
+         * 			
+         * @note	Matrix must be affine.
+         */
+        Plane multiplyAffine(const Plane& p) const
+        {
+			Vector4 localNormal(p.normal.x, p.normal.y, p.normal.z, 0.0f);
+			Vector4 localPoint = localNormal * p.d;
+			localPoint.w = 1.0f;
+
+			Matrix4 itMat = inverse().transpose();
+			Vector4 worldNormal = itMat.multiplyAffine(localNormal);
+			Vector4 worldPoint = multiplyAffine(localPoint);
+
+			float d = worldNormal.dot(worldPoint);
+
+			return Plane(worldNormal.x, worldNormal.y, worldNormal.z, d);
+        }
+
+        /**
          * @brief	Transform a 3D point by this matrix.
          * 			
          * @note	Matrix must be affine, if it is not use "multiply" method.
@@ -371,24 +391,15 @@ namespace BansheeEngine
                 v.w);
         }
 
-        /**
-         * @brief	Transform a plane by this matrix.
-         * 			
-         * @note	Matrix must be affine.
+		/**
+         * @brief	Transform a 3D direction by this matrix.
          */
-        Plane multiplyAffine(const Plane& p) const
+        Vector3 multiplyDirection(const Vector3& v) const
         {
-			Vector4 localNormal(p.normal.x, p.normal.y, p.normal.z, 0.0f);
-			Vector4 localPoint = localNormal * p.d;
-			localPoint.w = 1.0f;
-
-			Matrix4 itMat = inverse().transpose();
-			Vector4 worldNormal = itMat.multiplyAffine(localNormal);
-			Vector4 worldPoint = multiplyAffine(localPoint);
-
-			float d = worldNormal.dot(worldPoint);
-
-			return Plane(worldNormal.x, worldNormal.y, worldNormal.z, d);
+            return Vector3(
+                    m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z, 
+                    m[1][0] * v.x + m[1][1] * v.y + m[1][2] * v.z,
+                    m[2][0] * v.x + m[2][1] * v.y + m[2][2] * v.z);
         }
 
         /**
@@ -399,7 +410,7 @@ namespace BansheeEngine
          * 			
 		 *			If your matrix doesn't contain projection components use "multiplyAffine" method as it is faster.
          */
-        Vector3 multiply(const Vector3 &v) const
+        Vector3 multiply(const Vector3& v) const
         {
             Vector3 r;
 
@@ -410,17 +421,6 @@ namespace BansheeEngine
             r.z = (m[2][0] * v.x + m[2][1] * v.y + m[2][2] * v.z + m[2][3]) * fInvW;
 
             return r;
-        }
-
-		/**
-         * @brief	Transform a 3D direction by this matrix.
-         */
-        Vector3 multiplyDirection(const Vector3& v) const
-        {
-            return Vector3(
-                    m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z, 
-                    m[1][0] * v.x + m[1][1] * v.y + m[1][2] * v.z,
-                    m[2][0] * v.x + m[2][1] * v.y + m[2][2] * v.z);
         }
 
         /**
