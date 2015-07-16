@@ -1,6 +1,7 @@
 #include "BsHandleSlider.h"
 #include "BsCamera.h"
 #include "BsHandleManager.h"
+#include "BsDebug.h"
 
 namespace BansheeEngine
 {
@@ -114,9 +115,11 @@ namespace BansheeEngine
 		Vector2I diffStart = pointerStart - handleStart2D;
 		Vector2I diffEnd = pointerEnd - handleStart2D;
 
-		float tStart = handleDir2D.dot(diffStart) / (float)sqrdMag;
-		float tEnd = handleDir2D.dot(diffEnd) / (float)sqrdMag;
+		float mag = sqrt((float)sqrdMag);
+		float tStart = handleDir2D.dot(diffStart) / mag;
+		float tEnd = handleDir2D.dot(diffEnd) / mag;
 
-		return negate * (tEnd - tStart);
+		float arbitraryScale = 1.0f / 100.0f;
+		return negate * (tEnd - tStart) * arbitraryScale;
 	}
 }

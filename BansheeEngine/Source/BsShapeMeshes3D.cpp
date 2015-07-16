@@ -499,34 +499,40 @@ namespace BansheeEngine
 	void ShapeMeshes3D::solidArc(const Vector3& center, float radius, const Vector3& normal, Degree startAngle, Degree amountAngle, 
 		UINT8* outVertices, UINT8* outNormals, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset, UINT32 quality)
 	{
-		Vector3* centerVertex = (Vector3*)(outVertices + (vertexOffset * vertexStride));
-		*centerVertex = center;
+		outVertices += vertexOffset * vertexStride;
+		outNormals += vertexOffset * vertexStride;
+		outIndices += indexOffset;
+
+		bool reverseOrder = amountAngle.valueDegrees() < 0.0f;
+		Vector3 visibleNormal = normal;
+
+		outVertices = writeVector3(outVertices, vertexStride, center);
+		outNormals = writeVector3(outNormals, vertexStride, visibleNormal);
 
 		UINT32 numArcVertices = (quality + 1) * 5;
 		generateArcVertices(center, normal, radius, startAngle, amountAngle,
-			numArcVertices, outVertices, vertexOffset + 1, vertexStride);
+			numArcVertices, outVertices, vertexOffset, vertexStride);
 
-		UINT32 totalNumVertices = numArcVertices + 1;
-		outNormals += vertexOffset * vertexStride;
-		outVertices += vertexOffset * vertexStride;
+		UINT8* otherSideVertices = outVertices + (numArcVertices * vertexStride);
+		UINT8* otherSideNormals = outNormals + (numArcVertices * vertexStride);
 
-		UINT8* otherSideVertices = outVertices + (totalNumVertices * vertexStride);
-		UINT8* otherSideNormals = outNormals + (totalNumVertices * vertexStride);
-		for (UINT32 i = 0; i < totalNumVertices; i++)
+		otherSideVertices = writeVector3(otherSideVertices, vertexStride, center);
+		otherSideNormals = writeVector3(otherSideNormals, vertexStride, -visibleNormal);
+
+		for (UINT32 i = 0; i < numArcVertices; i++)
 		{
 			otherSideVertices = writeVector3(otherSideVertices, vertexStride, *(Vector3*)outVertices);
 			outVertices += vertexStride;
 
-			outNormals = writeVector3(outNormals, vertexStride, normal);
-			otherSideNormals = writeVector3(otherSideNormals, vertexStride, -normal);
+			outNormals = writeVector3(outNormals, vertexStride, visibleNormal);
+			otherSideNormals = writeVector3(otherSideNormals, vertexStride, -visibleNormal);
 		}
 
-		outIndices += indexOffset;
 		UINT32 numTriangles = numArcVertices - 1;
 
 		// If angle is negative the order of vertices is reversed so we need to reverse the indexes too
-		UINT32 frontSideOffset = vertexOffset + (amountAngle.valueDegrees() < 0.0f ? totalNumVertices : 0);
-		UINT32 backSideOffset = vertexOffset + (amountAngle.valueDegrees() >= 0.0f ? totalNumVertices : 0);
+		UINT32 frontSideOffset = vertexOffset + (reverseOrder ? (numArcVertices + 1) : 0);
+		UINT32 backSideOffset = vertexOffset + (!reverseOrder ? (numArcVertices + 1) : 0);
 
 		for (UINT32 i = 0; i < numTriangles; i++)
 		{

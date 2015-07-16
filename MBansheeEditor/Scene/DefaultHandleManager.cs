@@ -28,7 +28,7 @@ namespace BansheeEditor
         private bool isDragged;
         private Vector3 initialHandlePosition;
         private Quaternion initialHandleRotation;
-       
+
         protected override void PreInput()
         {
             SceneObject[] selectedSceneObjects = Selection.sceneObjects;
@@ -167,26 +167,22 @@ namespace BansheeEditor
                             // Make sure we transform relative to the handle position
                             SceneObject temporarySO = new SceneObject("Temp");
                             temporarySO.Position = activeHandle.Position;
+                            // TODO - Save initial handle scale
 
                             SceneObject[] originalParents = new SceneObject[activeSelection.Length];
                             for (int i = 0; i < activeSelection.Length; i++)
                             {
                                 originalParents[i] = activeSelection[i].so.Parent;
+                                activeSelection[i].so.LocalPosition = activeSelection[i].initialPosition;
+                                activeSelection[i].so.LocalRotation = activeSelection[i].initialRotation;
                                 activeSelection[i].so.LocalScale = activeSelection[i].initialScale;
                                 activeSelection[i].so.Parent = temporarySO;
                             }
 
-                            //temporarySO.LocalScale = Vector3.one + scaleHandle.Delta;
-                            temporarySO.LocalScale = Vector3.one*0.5f;
-                            Debug.Log("SCALE " + temporarySO.LocalScale + " - " + scaleHandle.Delta);
+                            temporarySO.LocalScale += scaleHandle.Delta;
 
                             for (int i = 0; i < activeSelection.Length; i++)
-                            {
-                                Debug.Log("POSITION A: " + activeSelection[i].so.Position);
                                 activeSelection[i].so.Parent = originalParents[i];
-                                Debug.Log("TFRM " + activeSelection[i].so.LocalScale + " - " +
-                                          activeSelection[i].so.Position);
-                            }
 
                             temporarySO.Destroy();
                         }
