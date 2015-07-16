@@ -82,8 +82,6 @@ namespace BansheeEditor
             }
 
             delta = Quaternion.FromEuler(xValue, yValue, zValue);
-
-            Debug.Log("ROTATION: " + Rotation);
         }
 
         protected override void Draw()

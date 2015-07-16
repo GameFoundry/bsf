@@ -1,4 +1,7 @@
 #include "BsSceneManager.h"
+#include "BsSceneObject.h"
+#include "BsRenderableHandler.h"
+#include "BsCameraHandler.h"
 
 namespace BansheeEngine
 {
@@ -22,6 +25,42 @@ namespace BansheeEngine
 	void SceneManager::_unregisterCamera(const SPtr<CameraHandler>& camera)
 	{
 		mCameras.erase(camera.get());
+	}
+
+	void SceneManager::_updateCoreObjectTransforms()
+	{
+		for (auto& renderablePair : mRenderables)
+		{
+			RenderableHandlerPtr handler = renderablePair.second.renderable;
+			HSceneObject so = renderablePair.second.sceneObject;
+
+			UINT32 curHash = so->getTransformHash();
+			if (curHash != handler->_getLastModifiedHash())
+			{
+				handler->setTransform(so->getWorldTfrm());
+				handler->_setLastModifiedHash(curHash);
+			}
+
+			if (so->getActive() != handler->getIsActive())
+			{
+				handler->setIsActive(so->getActive());
+			}
+		}
+
+		for (auto& cameraPair : mCameras)
+		{
+			CameraHandlerPtr handler = cameraPair.second.camera;
+			HSceneObject so = cameraPair.second.sceneObject;
+
+			UINT32 curHash = so->getTransformHash();
+			if (curHash != handler->_getLastModifiedHash())
+			{
+				handler->setPosition(so->getWorldPosition());
+				handler->setRotation(so->getWorldRotation());
+
+				handler->_setLastModifiedHash(curHash);
+			}
+		}
 	}
 
 	SceneManager& SceneManager::instance()

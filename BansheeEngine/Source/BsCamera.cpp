@@ -17,7 +17,7 @@
 namespace BansheeEngine 
 {
 	Camera::Camera(const HSceneObject& parent, RenderTargetPtr target, float left, float top, float width, float height)
-		: Component(parent), mLastUpdateHash(std::numeric_limits<UINT32>::max())
+		: Component(parent)
     {
 		mInternal = CameraHandler::create(target, left, top, width, height);
 		gSceneManager()._registerCamera(mInternal, parent);
@@ -49,18 +49,18 @@ namespace BansheeEngine
 	void Camera::updateView() const
 	{
 		UINT32 curHash = SO()->getTransformHash();
-		if (curHash != mLastUpdateHash)
+		if (curHash != mInternal->_getLastModifiedHash())
 		{
 			mInternal->setPosition(SO()->getWorldPosition());
 			mInternal->setRotation(SO()->getWorldRotation());
 
-			mLastUpdateHash = curHash;
+			mInternal->_setLastModifiedHash(curHash);
 		}
 	}
 
 	void Camera::update() 
 	{
-		updateView();
+
 	}
 
 	void Camera::onDestroyed()

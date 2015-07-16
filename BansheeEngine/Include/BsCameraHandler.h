@@ -541,17 +541,17 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObjectCore::initialize
 		 */
-		void initialize();
+		void initialize() override;
 
 		/**
 		 * @copydoc	CameraHandlerBase
 		 */
-		virtual Rect2I getViewportRect() const;
+		virtual Rect2I getViewportRect() const override;
 
 		/**
 		 * @copydoc	CoreObject::syncToCore
 		 */
-		void syncToCore(const CoreSyncData& data);
+		void syncToCore(const CoreSyncData& data) override;
 
 		SPtr<ViewportCore> mViewport;
 	};
@@ -574,6 +574,16 @@ namespace BansheeEngine
 		SPtr<CameraHandlerCore> getCore() const;
 
 		/**
+	     * @brief	Returns the hash value that can be used to identify if the internal data needs an update.
+		 */
+		UINT32 _getLastModifiedHash() const { return mLastUpdateHash; }
+
+		/**
+	     * @brief	Sets the hash value that can be used to identify if the internal data needs an update.
+		 */
+		void _setLastModifiedHash(UINT32 hash) { mLastUpdateHash = hash; }
+
+		/**
 		 * @brief	Creates a new camera that renders to the specified portion of the provided render target.
 		 */
 		static CameraHandlerPtr create(RenderTargetPtr target = nullptr,
@@ -586,27 +596,27 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CameraHandlerBase
 		 */
-		virtual Rect2I getViewportRect() const;
+		virtual Rect2I getViewportRect() const override;
 
 		/**
 		 * @copydoc	CoreObject::createCore
 		 */
-		SPtr<CoreObjectCore> createCore() const;
+		SPtr<CoreObjectCore> createCore() const override;
 
 		/**
 		 * @copydoc	CoreObject::markCoreDirty
 		 */
-		void _markCoreDirty();
+		void _markCoreDirty() override;
 
 		/**
 		 * @copydoc	CoreObject::syncToCore
 		 */
-		CoreSyncData syncToCore(FrameAlloc* allocator);
+		CoreSyncData syncToCore(FrameAlloc* allocator) override;
 
 		/**
 		 * @copydoc	CoreObject::getCoreDependencies
 		 */
-		void getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies);
+		void getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies) override;
 
 		/**
 		 * @brief	Creates a new camera without initializing it.
@@ -614,6 +624,7 @@ namespace BansheeEngine
 		static CameraHandlerPtr createEmpty();
 
 		ViewportPtr mViewport; /**< Viewport that describes 2D rendering surface. */
+		UINT32 mLastUpdateHash;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

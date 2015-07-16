@@ -11,7 +11,7 @@
 namespace BansheeEngine
 {
 	Renderable::Renderable(const HSceneObject& parent)
-		:Component(parent), mLastUpdateHash(0)
+		:Component(parent)
 	{
 		setName("Renderable");
 		mInternal = RenderableHandler::create();
@@ -32,22 +32,16 @@ namespace BansheeEngine
 	void Renderable::updateTransform() const
 	{
 		UINT32 curHash = SO()->getTransformHash();
-		if (curHash != mLastUpdateHash)
+		if (curHash != mInternal->_getLastModifiedHash())
 		{
 			mInternal->setTransform(SO()->getWorldTfrm());
-
-			mLastUpdateHash = curHash;
+			mInternal->_setLastModifiedHash(curHash);
 		}
 	}
 
 	void Renderable::update()
 	{
-		updateTransform();
 
-		if (SO()->getActive() != mInternal->getIsActive())
-		{
-			mInternal->setIsActive(SO()->getActive());
-		}
 	}
 
 	void Renderable::onDestroyed()

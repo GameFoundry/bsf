@@ -173,12 +173,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	RenderableHandlerCore::initialize
 		 */
-		void initialize();
+		void initialize() override;
 
 		/**
 		 * @copydoc	CoreObject::syncToCore
 		 */
-		void syncToCore(const CoreSyncData& data);
+		void syncToCore(const CoreSyncData& data) override;
 
 		UINT32 mRendererId;
 	};
@@ -201,62 +201,74 @@ namespace BansheeEngine
 		SPtr<RenderableHandlerCore> getCore() const;
 
 		/**
+	     * @brief	Returns the hash value that can be used to identify if the internal data needs an update.
+		 */
+		UINT32 _getLastModifiedHash() const { return mLastUpdateHash; }
+
+		/**
+	     * @brief	Sets the hash value that can be used to identify if the internal data needs an update.
+		 */
+		void _setLastModifiedHash(UINT32 hash) { mLastUpdateHash = hash; }
+
+		/**
 		 * @brief	Creates a new renderable handler instance.
 		 */
 		static RenderableHandlerPtr create();
 
 	protected:
-		RenderableHandler() { }
+		RenderableHandler();
 
 		/**
 		 * @copydoc	CoreObject::createCore
 		 */
-		SPtr<CoreObjectCore> createCore() const;
+		SPtr<CoreObjectCore> createCore() const override;
 
 		/**
 		 * @copydoc	CoreObject::markCoreDirty
 		 */
-		void _markCoreDirty(RenderableDirtyFlag flag = RenderableDirtyFlag::Everything);
+		void _markCoreDirty(RenderableDirtyFlag flag = RenderableDirtyFlag::Everything) override;
 
 		/**
 		 * @copydoc	IResourceListener::markResourcesDirty
 		 */
-		void _markResourcesDirty();
+		void _markResourcesDirty() override;
 
 		/**
 		 * @copydoc	CoreObject::syncToCore
 		 */
-		CoreSyncData syncToCore(FrameAlloc* allocator);
+		CoreSyncData syncToCore(FrameAlloc* allocator) override;
 
 		/**
 		 * @copydoc	CoreObject::getCoreDependencies
 		 */
-		void getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies);
+		void getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies) override;
 
 		/**
 		 * @copydoc	IResourceListener::getResourceDependencies
 		 */
-		void getListenerResources(Vector<HResource>& resources);
+		void getListenerResources(Vector<HResource>& resources) override;
 
 		/**
 		 * @copydoc IResourceListener::notifyResourceLoaded
 		 */
-		void notifyResourceLoaded(const HResource& resource) { markCoreDirty(); }
+		void notifyResourceLoaded(const HResource& resource) override { markCoreDirty(); }
 
 		/**
 		 * @copydoc IResourceListener::notifyResourceDestroyed
 		 */
-		void notifyResourceDestroyed(const HResource& resource) { markCoreDirty(); }
+		void notifyResourceDestroyed(const HResource& resource) override { markCoreDirty(); }
 
 		/**
 		 * @copydoc IResourceListener::notifyResourceChanged
 		 */
-		void notifyResourceChanged(const HResource& resource) { markCoreDirty(); }
+		void notifyResourceChanged(const HResource& resource) override { markCoreDirty(); }
 
 		/**
 		 * @brief	Creates a new renderable handler instance without initializing it.
 		 */
 		static RenderableHandlerPtr createEmpty();
+
+		UINT32 mLastUpdateHash;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

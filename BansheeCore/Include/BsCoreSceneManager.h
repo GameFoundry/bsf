@@ -30,11 +30,18 @@ namespace BansheeEngine
 		void clearScene(bool forceAll = false);
 
 		/**
-		 * @brief	Called every frame.
+		 * @brief	Called every frame. Calls update methods on all 
+		 *			scene objects and their components.
 		 *
 		 * @note	Internal method.
 		 */
 		virtual void _update();
+
+		/**
+		 * @brief	Updates dirty transforms on any core objects that may be tied with
+		 *			scene objects.
+		 */
+		virtual void _updateCoreObjectTransforms() { }
 
 	protected:
 		friend class SceneObject;

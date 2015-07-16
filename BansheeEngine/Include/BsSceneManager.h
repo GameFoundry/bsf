@@ -102,6 +102,11 @@ namespace BansheeEngine
 		void _unregisterCamera(const SPtr<CameraHandler>& camera);
 
 		/**
+		 * @copydoc	CoreSceneManager::_updateCoreObjectTransforms
+		 */
+		virtual void _updateCoreObjectTransforms() override;
+
+		/**
 		 * @copydoc	CoreSceneManager::instance
 		 */
 		static SceneManager& instance();

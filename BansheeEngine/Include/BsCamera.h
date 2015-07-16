@@ -294,7 +294,6 @@ namespace BansheeEngine
 		void updateView() const;
 
 		mutable CameraHandlerPtr mInternal;
-		mutable UINT32 mLastUpdateHash;
 
 		/************************************************************************/
 		/* 						COMPONENT OVERRIDES                      		*/
@@ -305,13 +304,13 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	Component::onDestroyed
 		 */
-		void onDestroyed();
+		void onDestroyed() override;
 
 	public:
 		/**
 		 * @copydoc	Component::update
 		 */
-		virtual void update();
+		virtual void update() override;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

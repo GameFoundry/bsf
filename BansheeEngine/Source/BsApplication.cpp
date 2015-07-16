@@ -111,11 +111,17 @@ namespace BansheeEngine
 		CoreApplication::startUp<Application>(primaryWindowDesc, renderSystem, renderer);
 	}
 
+	void Application::preUpdate()
+	{
+		CoreApplication::preUpdate();
+
+		VirtualInput::instance()._update();
+	}
+
 	void Application::postUpdate()
 	{
 		CoreApplication::postUpdate();
 
-		VirtualInput::instance()._update();
 		PROFILE_CALL(GUIManager::instance().update(), "GUI");
 	}
 

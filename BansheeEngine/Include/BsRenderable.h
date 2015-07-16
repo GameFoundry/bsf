@@ -66,7 +66,6 @@ namespace BansheeEngine
 		void updateTransform() const;
 
 		mutable RenderableHandlerPtr mInternal;
-		mutable UINT32 mLastUpdateHash;
 
 		/************************************************************************/
 		/* 							COMPONENT OVERRIDES                    		*/
@@ -80,18 +79,18 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	Component::onInitialized
 		 */
-		void onInitialized();
+		void onInitialized() override;
 
 		/**
 		 * @copydoc	Component::onDestroyed
 		 */
-		void onDestroyed();
+		void onDestroyed() override;
 
 	public:
 		/**
 		 * @copydoc	Component::update
 		 */
-		virtual void update();
+		virtual void update() override;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -99,7 +98,7 @@ namespace BansheeEngine
 	public:
 		friend class RenderableRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		virtual RTTITypeBase* getRTTI() const override;
 
 	protected:
 		Renderable() {} // Serialization only

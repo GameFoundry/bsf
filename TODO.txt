@@ -58,8 +58,13 @@ Code quality improvements:
 ----------------------------------------------------------------------
 Polish stage 1
 
+Perform Renderable/Camera updates in CoreSceneManager
+ - it has a scene object + renderable/camera stored already
+ - for update all I need is those two
+ - plus a stored hash which I can move from renderable/camera to the handler
+ - Then before calling renderAll in CoreApp I can call gSceneObject().updateTransforms().
+
 Handles:
-Investigate scale and its issues
 Check multi-select move/Rotate/scale
 Free rotation handle doesn't seem to be implemented
 

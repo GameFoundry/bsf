@@ -189,6 +189,12 @@ namespace BansheeEngine
 		}
 	}
 
+	RenderableHandler::RenderableHandler()
+		:mLastUpdateHash(0)
+	{
+		
+	}
+
 	Bounds RenderableHandler::getBounds() const
 	{
 		HMesh mesh = getMesh();

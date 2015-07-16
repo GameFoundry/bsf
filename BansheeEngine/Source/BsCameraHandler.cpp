@@ -728,6 +728,7 @@ namespace BansheeEngine
 	}
 
 	CameraHandler::CameraHandler(RenderTargetPtr target, float left, float top, float width, float height)
+		:mLastUpdateHash(0)
 	{
 		if (target != nullptr)
 			target->blockUntilCoreInitialized();

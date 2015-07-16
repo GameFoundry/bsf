@@ -206,6 +206,7 @@ namespace BansheeEngine
 			// Send out resource events in case any were loaded/destroyed/modified
 			ResourceListenerManager::instance().update();
 
+			gCoreSceneManager()._updateCoreObjectTransforms();
 			PROFILE_CALL(RendererManager::instance().getActive()->renderAll(), "Render");
 
 			// Core and sim thread run in lockstep. This will result in a larger input latency than if I was 
