@@ -15,12 +15,18 @@ namespace BansheeEngine
 		Folder, Mesh, Font, Texture, PlainText, ScriptCode, SpriteTexture, Shader, ShaderInclude, Material, Prefab
 	};
 
+	/**
+	 * @brief	Contains a set of built-in resources used by the editor.
+	 */
 	class BS_ED_EXPORT BuiltinEditorResources : public BansheeEngine::Module<BuiltinEditorResources>
 	{
 	public:
 		BuiltinEditorResources();
 		~BuiltinEditorResources();
 
+		/**
+		 * @brief	Returns the default editor GUI skin.
+		 */
 		const HGUISkin& getSkin() const { return mSkin; }
 
 		/**

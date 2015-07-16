@@ -209,10 +209,10 @@ namespace BansheeEngine
 		children[idxB]->makeLeaf(mWidgets);
 
 		mWidgets = nullptr;
-		makeSplit(mManager->_getParentWidget(), children[0], children[1], horizontal, splitPosition);
+		makeSplit(children[0], children[1], horizontal, splitPosition);
 	}
 
-	void DockManager::DockContainer::makeSplit(GUIWidget* widgetParent, DockManager::DockContainer* first, DockManager::DockContainer* second, bool horizontal, float splitPosition)
+	void DockManager::DockContainer::makeSplit(DockManager::DockContainer* first, DockManager::DockContainer* second, bool horizontal, float splitPosition)
 	{
 		mChildren[0] = first;
 		mChildren[1] = second;
@@ -234,7 +234,7 @@ namespace BansheeEngine
 		}
 
 		mSlider = GUIDockSlider::create(horizontal, "DockSliderBtn");
-		widgetParent->getPanel()->addElement(mSlider);
+		mManager->_getParentWidget()->getPanel()->addElement(mSlider);
 		mSlider->onDragged.connect(std::bind(&DockManager::DockContainer::sliderDragged, this, _1));
 
 		setArea(mArea.x, mArea.y, mArea.width, mArea.height);
@@ -309,7 +309,7 @@ namespace BansheeEngine
 				}
 				else
 				{
-					mParent->makeSplit(mManager->_getParentWidget(), sibling->mChildren[0], sibling->mChildren[1], sibling->mIsHorizontal, sibling->mSplitPosition);
+					mParent->makeSplit(sibling->mChildren[0], sibling->mChildren[1], sibling->mIsHorizontal, sibling->mSplitPosition);
 
 					sibling->mChildren[0]->mParent = mParent;
 					sibling->mChildren[1]->mParent = mParent;

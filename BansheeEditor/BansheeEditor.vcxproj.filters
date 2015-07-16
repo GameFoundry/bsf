@@ -138,9 +138,6 @@
     <ClInclude Include="Include\BsDockManagerLayout.h">
       <Filter>Header Files\Editor</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsDockManagerLayoutRTTI.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsEditorWidgetLayout.h">
       <Filter>Header Files\Editor</Filter>
     </ClInclude>
@@ -284,6 +281,9 @@
     </ClInclude>
     <ClInclude Include="Include\BsDropDownWindowManager.h">
       <Filter>Header Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsDockManagerLayoutRTTI.h">
+      <Filter>Header Files\Editor\RTTI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
