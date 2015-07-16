@@ -59,7 +59,6 @@ Code quality improvements:
 Polish stage 1
 
 Handles:
-Move plane handles could be more precise
 Investigate scale and its issues
 Check multi-select move/Rotate/scale
 Free rotation handle doesn't seem to be implemented

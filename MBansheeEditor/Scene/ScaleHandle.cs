@@ -34,7 +34,7 @@ namespace BansheeEditor
             yAxis = new HandleSliderLine(this, Vector3.yAxis, 1.0f);
             zAxis = new HandleSliderLine(this, Vector3.zAxis, 1.0f);
 
-            freeAxis = new HandleSliderPlane(this, Vector3.xAxis, Vector3.yAxis, 0.6f);
+            freeAxis = new HandleSliderPlane(this, Vector3.xAxis, Vector3.yAxis, 0.4f);
         }
 
         protected override void PreInput()
@@ -48,7 +48,7 @@ namespace BansheeEditor
             zAxis.Rotation = rotation;
 
             float handleSize = Handles.GetHandleSize(EditorApplication.SceneViewCamera, position);
-            Vector3 freeAxisOffset = (Vector3.xAxis * -0.3f + Vector3.yAxis * -0.3f) * handleSize;
+            Vector3 freeAxisOffset = (Vector3.xAxis * -0.2f + Vector3.yAxis * -0.2f) * handleSize;
             freeAxis.Rotation = EditorApplication.SceneViewCamera.SceneObject.Rotation;
             freeAxis.Position = position + freeAxis.Rotation.Rotate(freeAxisOffset);
         }
@@ -57,10 +57,10 @@ namespace BansheeEditor
         {
             delta = Vector3.zero;
 
-            delta += xAxis.Delta * GetXDir() * 0.01f;
-            delta += yAxis.Delta * GetYDir() * 0.01f;
-            delta += zAxis.Delta * GetZDir() * 0.01f;
-            delta += (freeAxis.Delta.x + freeAxis.Delta.y) * Vector3.one * 0.01f;
+            delta += xAxis.Delta * GetXDir() * 0.1f;
+            delta += yAxis.Delta * GetYDir() * 0.1f;
+            delta += zAxis.Delta * GetZDir() * 0.1f;
+            delta += (freeAxis.Delta.x + freeAxis.Delta.y) * Vector3.one * 0.1f;
         }
 
         protected override void Draw()
@@ -119,10 +119,10 @@ namespace BansheeEditor
                 HandleDrawing.SetColor(Color.White);
 
             //// Rotate it so it always faces the camera, and move it forward a bit to always render in front
-            Vector3 bottomLeft = -Vector3.xAxis * 0.3f - Vector3.yAxis * 0.3f;
-            Vector3 topLeft = -Vector3.xAxis * 0.3f + Vector3.yAxis * 0.3f;
-            Vector3 topRight = Vector3.xAxis * 0.3f + Vector3.yAxis * 0.3f;
-            Vector3 bottomRight = Vector3.xAxis * 0.3f - Vector3.yAxis * 0.3f;
+            Vector3 bottomLeft = -Vector3.xAxis * 0.2f - Vector3.yAxis * 0.2f;
+            Vector3 topLeft = -Vector3.xAxis * 0.2f + Vector3.yAxis * 0.2f;
+            Vector3 topRight = Vector3.xAxis * 0.2f + Vector3.yAxis * 0.2f;
+            Vector3 bottomRight = Vector3.xAxis * 0.2f - Vector3.yAxis * 0.2f;
 
             Vector3 offset = Vector3.zAxis*0.1f;
 
