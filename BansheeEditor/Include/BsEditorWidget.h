@@ -210,11 +210,6 @@ namespace BansheeEngine
 		{
 			return bs_new<Type>(EditorWidget<Type>::ConstructPrivately(), parentContainer);
 		}
-
-		/**
-		 * @brief	Helper method to make sure this type doesn't get optimized out.
-		 */
-		void makeSureIAmInstantiated() { }
 	};
 
 	/**
@@ -235,9 +230,7 @@ namespace BansheeEngine
 
 		EditorWidget(const HString& displayName, EditorWidgetContainer& parentContainer)
 			:EditorWidgetBase(displayName, Type::getTypeName(), parentContainer)
-		{
-			RegisterOnStart.makeSureIAmInstantiated();
-		}
+		{ }
 
 	public:
 
@@ -245,5 +238,5 @@ namespace BansheeEngine
 	};
 
 	template <typename Type>
-	RegisterWidgetOnStart<Type> EditorWidget<Type>::RegisterOnStart;
+	volatile RegisterWidgetOnStart<Type> EditorWidget<Type>::RegisterOnStart;
 }
