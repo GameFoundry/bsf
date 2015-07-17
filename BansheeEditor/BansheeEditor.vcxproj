@@ -274,8 +274,6 @@
     <ClInclude Include="Include\BsCmdInputFieldValueChange.h" />
     <ClInclude Include="Include\BsCmdRecordSO.h" />
     <ClInclude Include="Include\BsCmdReparentSO.h" />
-    <ClInclude Include="Include\BsDbgTestGameObjectRef.h" />
-    <ClInclude Include="Include\BsDbgTestGameObjectRefRTTI.h" />
     <ClInclude Include="Include\BsDockManager.h" />
     <ClInclude Include="Include\BsDockManagerLayout.h" />
     <ClInclude Include="Include\BsDockManagerLayoutRTTI.h" />
@@ -345,9 +343,6 @@
     <ClInclude Include="Include\BsSelection.h" />
     <ClInclude Include="Include\BsSelectionRenderer.h" />
     <ClInclude Include="Include\BsShaderIncludeHandler.h" />
-    <ClInclude Include="Include\BsTestTextSprite.h" />
-    <ClInclude Include="Include\DbgEditorWidget1.h" />
-    <ClInclude Include="Include\DbgEditorWidget2.h" />
     <ClInclude Include="Include\BsUndoRedo.h" />
     <ClInclude Include="Include\Win32\BsVSCodeEditor.h" />
   </ItemGroup>
@@ -355,7 +350,6 @@
     <ClCompile Include="Source\BsBuildManager.cpp" />
     <ClCompile Include="Source\BsCmdRecordSO.cpp" />
     <ClCompile Include="Source\BsCmdReparentSO.cpp" />
-    <ClCompile Include="Source\BsDbgTestGameObjectRef.cpp" />
     <ClCompile Include="Source\BsDockManager.cpp" />
     <ClCompile Include="Source\BsDockManagerLayout.cpp" />
     <ClCompile Include="Source\BsDropDownWindow.cpp" />
@@ -420,9 +414,6 @@
     <ClCompile Include="Source\BsShaderIncludeHandler.cpp" />
     <ClCompile Include="Source\BsUndoRedo.cpp" />
     <ClCompile Include="Source\BsEditorApplication.cpp" />
-    <ClCompile Include="Source\BsTestTextSprite.cpp" />
-    <ClCompile Include="Source\DbgEditorWidget1.cpp" />
-    <ClCompile Include="Source\DbgEditorWidget2.cpp" />
     <ClCompile Include="Source\Win32\BsVSCodeEditor.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
