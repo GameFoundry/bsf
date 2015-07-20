@@ -112,6 +112,9 @@ namespace BansheeEngine
 
 	void ScriptCameraHandler::updateView(const HSceneObject& parent)
 	{
+		if (parent.isDestroyed())
+			return;
+
 		UINT32 curHash = parent->getTransformHash();
 		if (curHash != mLastUpdateHash)
 		{

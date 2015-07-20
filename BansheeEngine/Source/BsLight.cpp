@@ -1,13 +1,15 @@
 #include "BsLight.h"
 #include "BsLightRTTI.h"
+#include "BsSceneManager.h"
 
 namespace BansheeEngine
 {
 	Light::Light(const HSceneObject& parent, LightType type, Color color,
-		float luminousFlux, float range, bool castsShadows, Degree spotAngle)
-		: Component(parent), mLastUpdateHash(std::numeric_limits<UINT32>::max())
+		float intensity, float range, bool castsShadows, Degree spotAngle, Degree spotFalloffAngle)
+		: Component(parent)
 	{
-		mInternal = LightInternal::create(type, color, luminousFlux, range, castsShadows, spotAngle);
+		mInternal = LightInternal::create(type, color, intensity, 
+			range, castsShadows, spotAngle, spotFalloffAngle);
 
 		setName("Light");
 	}
@@ -15,6 +17,23 @@ namespace BansheeEngine
 	Light::~Light()
 	{
 		mInternal->destroy();
+	}
+
+	Sphere Light::getBounds() const
+	{
+		mInternal->_updateTransform(SO());
+
+		return mInternal->getBounds();
+	}
+
+	void Light::onInitialized()
+	{
+		gSceneManager()._registerLight(mInternal, sceneObject());
+	}
+
+	void Light::onDestroyed()
+	{
+		gSceneManager()._unregisterLight(mInternal);
 	}
 	
 	RTTITypeBase* Light::getRTTIStatic()

@@ -36,6 +36,21 @@ namespace BansheeEngine
 	};
 
 	/**
+	 * @brief	Contains information about a light managed by the scene manager.
+	 */
+	struct SceneLightData
+	{
+		SceneLightData() { }
+
+		SceneLightData(const SPtr<LightInternal>& light, const HSceneObject& sceneObject)
+			:light(light), sceneObject(sceneObject)
+		{ }
+
+		SPtr<LightInternal> light;
+		HSceneObject sceneObject;
+	};
+
+	/**
 	 * @brief	Manages active SceneObjects and provides ways for querying
 	 *			and updating them or their components.
 	 */
@@ -102,6 +117,20 @@ namespace BansheeEngine
 		void _unregisterCamera(const SPtr<CameraHandler>& camera);
 
 		/**
+		 * @brief	Notifies the scene manager that a new light was created.
+		 *
+		 * @note	Internal method.
+		 */
+		void _registerLight(const SPtr<LightInternal>& light, const HSceneObject& so);
+
+		/**
+		 * @brief	Notifies the scene manager that a light was removed.
+		 *
+		 * @note	Internal method.
+		 */
+		void _unregisterLight(const SPtr<LightInternal>& light);
+
+		/**
 		 * @copydoc	CoreSceneManager::_updateCoreObjectTransforms
 		 */
 		virtual void _updateCoreObjectTransforms() override;
@@ -119,6 +148,7 @@ namespace BansheeEngine
 	private:
 		Map<CameraHandler*, SceneCameraData> mCameras;
 		Map<RenderableHandler*, SceneRenderableData> mRenderables;
+		Map<LightInternal*, SceneLightData> mLights;
 
 		volatile static InitOnStart DoInitOnStart;
 	};

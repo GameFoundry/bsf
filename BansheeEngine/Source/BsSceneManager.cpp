@@ -2,6 +2,7 @@
 #include "BsSceneObject.h"
 #include "BsRenderableHandler.h"
 #include "BsCameraHandler.h"
+#include "BsLightInternal.h"
 
 namespace BansheeEngine
 {
@@ -25,6 +26,16 @@ namespace BansheeEngine
 	void SceneManager::_unregisterCamera(const SPtr<CameraHandler>& camera)
 	{
 		mCameras.erase(camera.get());
+	}
+
+	void SceneManager::_registerLight(const SPtr<LightInternal>& light, const HSceneObject& so)
+	{
+		mLights[light.get()] = SceneLightData(light, so);
+	}
+
+	void SceneManager::_unregisterLight(const SPtr<LightInternal>& light)
+	{
+		mLights.erase(light.get());
 	}
 
 	void SceneManager::_updateCoreObjectTransforms()
@@ -51,6 +62,21 @@ namespace BansheeEngine
 		{
 			CameraHandlerPtr handler = cameraPair.second.camera;
 			HSceneObject so = cameraPair.second.sceneObject;
+
+			UINT32 curHash = so->getTransformHash();
+			if (curHash != handler->_getLastModifiedHash())
+			{
+				handler->setPosition(so->getWorldPosition());
+				handler->setRotation(so->getWorldRotation());
+
+				handler->_setLastModifiedHash(curHash);
+			}
+		}
+
+		for (auto& lightPair : mLights)
+		{
+			SPtr<LightInternal> handler = lightPair.second.light;
+			HSceneObject so = lightPair.second.sceneObject;
 
 			UINT32 curHash = so->getTransformHash();
 			if (curHash != handler->_getLastModifiedHash())

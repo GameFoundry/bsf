@@ -1,6 +1,8 @@
 #include "BsScriptLightInternal.h"
 #include "BsScriptSceneObject.h"
 #include "BsSceneObject.h"
+#include "BsScriptSceneObject.h"
+#include "BsSceneManager.h"
 
 namespace BansheeEngine
 {
@@ -8,6 +10,7 @@ namespace BansheeEngine
 		:ScriptObject(managedInstance), mLightInternal(nullptr), mLastUpdateHash(0)
 	{
 		mLightInternal = LightInternal::create();
+		gSceneManager()._registerLight(mLightInternal, parentSO);
 	}
 
 	ScriptLightInternal::~ScriptLightInternal()
@@ -31,10 +34,14 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetColor", &ScriptLightInternal::internal_setColor);
 		metaData.scriptClass->addInternalCall("Internal_GetRange", &ScriptLightInternal::internal_getRange);
 		metaData.scriptClass->addInternalCall("Internal_SetRange", &ScriptLightInternal::internal_setRange);
-		metaData.scriptClass->addInternalCall("Internal_GetLuminousFlux", &ScriptLightInternal::internal_getLuminousFlux);
-		metaData.scriptClass->addInternalCall("Internal_SetLuminousFlux", &ScriptLightInternal::internal_setLuminousFlux);
+		metaData.scriptClass->addInternalCall("Internal_GetIntensity", &ScriptLightInternal::internal_getIntensity);
+		metaData.scriptClass->addInternalCall("Internal_SetIntensity", &ScriptLightInternal::internal_setIntensity);
 		metaData.scriptClass->addInternalCall("Internal_GetSpotAngle", &ScriptLightInternal::internal_getSpotAngle);
 		metaData.scriptClass->addInternalCall("Internal_SetSpotAngle", &ScriptLightInternal::internal_setSpotAngle);
+		metaData.scriptClass->addInternalCall("Internal_GetSpotFalloffAngle", &ScriptLightInternal::internal_getSpotFalloffAngle);
+		metaData.scriptClass->addInternalCall("Internal_SetSpotFalloffAngle", &ScriptLightInternal::internal_setSpotFalloffAngle);
+		metaData.scriptClass->addInternalCall("Internal_GetBounds", &ScriptLightInternal::internal_getBounds);
+		metaData.scriptClass->addInternalCall("Internal_UpdateTransform", &ScriptLightInternal::internal_updateTransform);
 		metaData.scriptClass->addInternalCall("Internal_OnDestroy", &ScriptLightInternal::internal_onDestroy);
 	}
 
@@ -107,14 +114,14 @@ namespace BansheeEngine
 		thisPtr->getInternal()->setRange(range);
 	}
 
-	float ScriptLightInternal::internal_getLuminousFlux(ScriptLightInternal* thisPtr)
+	float ScriptLightInternal::internal_getIntensity(ScriptLightInternal* thisPtr)
 	{
-		return thisPtr->getInternal()->getLuminousFlux();
+		return thisPtr->getInternal()->getIntensity();
 	}
 
-	void ScriptLightInternal::internal_setLuminousFlux(ScriptLightInternal* thisPtr, float luminousFlux)
+	void ScriptLightInternal::internal_setIntensity(ScriptLightInternal* thisPtr, float intensity)
 	{
-		thisPtr->getInternal()->setLuminousFlux(luminousFlux);
+		thisPtr->getInternal()->setIntensity(intensity);
 	}
 
 	Degree ScriptLightInternal::internal_getSpotAngle(ScriptLightInternal* thisPtr)
@@ -127,8 +134,32 @@ namespace BansheeEngine
 		thisPtr->getInternal()->setSpotAngle(spotAngle);
 	}
 
+	Degree ScriptLightInternal::internal_getSpotFalloffAngle(ScriptLightInternal* thisPtr)
+	{
+		return thisPtr->getInternal()->getSpotFalloffAngle();
+	}
+
+	void ScriptLightInternal::internal_setSpotFalloffAngle(ScriptLightInternal* thisPtr, Degree spotFalloffAngle)
+	{
+		thisPtr->getInternal()->setSpotFalloffAngle(spotFalloffAngle);
+	}
+
+	Sphere ScriptLightInternal::internal_getBounds(ScriptLightInternal* thisPtr)
+	{
+		return thisPtr->getInternal()->getBounds();
+	}
+
+	void ScriptLightInternal::internal_updateTransform(ScriptLightInternal* thisPtr, ScriptSceneObject* parent)
+	{
+		HSceneObject parentSO = parent->getNativeSceneObject();
+
+		if (!parentSO.isDestroyed())
+			thisPtr->getInternal()->_updateTransform(parentSO);
+	}
+
 	void ScriptLightInternal::internal_onDestroy(ScriptLightInternal* instance)
 	{
+		gSceneManager()._unregisterLight(instance->getInternal());
 		instance->getInternal()->destroy();
 	}
 }

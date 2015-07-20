@@ -41,12 +41,18 @@ namespace BansheeEngine
 		static float internal_getRange(ScriptLightInternal* thisPtr);
 		static void internal_setRange(ScriptLightInternal* thisPtr, float range);
 
-		static float internal_getLuminousFlux(ScriptLightInternal* thisPtr);
-		static void internal_setLuminousFlux(ScriptLightInternal* thisPtr, float luminousFlux);
+		static float internal_getIntensity(ScriptLightInternal* thisPtr);
+		static void internal_setIntensity(ScriptLightInternal* thisPtr, float intensity);
 
 		static Degree internal_getSpotAngle(ScriptLightInternal* thisPtr);
 		static void internal_setSpotAngle(ScriptLightInternal* thisPtr, Degree spotAngle);
 
+		static Degree internal_getSpotFalloffAngle(ScriptLightInternal* thisPtr);
+		static void internal_setSpotFalloffAngle(ScriptLightInternal* thisPtr, Degree spotFalloffAngle);
+
+		static Sphere internal_getBounds(ScriptLightInternal* thisPtr);
+
+		static void internal_updateTransform(ScriptLightInternal* thisPtr, ScriptSceneObject* parent);
 		static void internal_onDestroy(ScriptLightInternal* instance);
 
 		SPtr<LightInternal> mLightInternal;

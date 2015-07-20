@@ -27,11 +27,14 @@ namespace BansheeEngine
 		float& getRange(LightInternal* obj) { return obj->mRange; }
 		void setRange(LightInternal* obj, float& range) { obj->mRange = range; }
 
-		float& getLuminousFlux(LightInternal* obj) { return obj->mLuminousFlux; }
-		void setLuminousFlux(LightInternal* obj, float& luminousFlux) { obj->mLuminousFlux = luminousFlux; }
+		float& getIntensity(LightInternal* obj) { return obj->mIntensity; }
+		void setIntensity(LightInternal* obj, float& intensity) { obj->mIntensity = intensity; }
 
 		Degree& getSpotAngle(LightInternal* obj) { return obj->mSpotAngle; }
 		void setSpotAngle(LightInternal* obj, Degree& spotAngle) { obj->mSpotAngle = spotAngle; }
+
+		Degree& getSpotFalloffAngle(LightInternal* obj) { return obj->mSpotFalloffAngle; }
+		void setSpotFalloffAngle(LightInternal* obj, Degree& spotAngle) { obj->mSpotFalloffAngle = spotAngle; }
 	public:
 		LightInternalRTTI()
 		{
@@ -41,8 +44,9 @@ namespace BansheeEngine
 			addPlainField("mCastsShadow", 3, &LightInternalRTTI::getCastsShadow, &LightInternalRTTI::setCastsShadow);
 			addPlainField("mColor", 4, &LightInternalRTTI::getColor, &LightInternalRTTI::setColor);
 			addPlainField("mRange", 5, &LightInternalRTTI::getRange, &LightInternalRTTI::setRange);
-			addPlainField("mLuminousFlux", 6, &LightInternalRTTI::getLuminousFlux, &LightInternalRTTI::setLuminousFlux);
+			addPlainField("mIntensity", 6, &LightInternalRTTI::getIntensity, &LightInternalRTTI::setIntensity);
 			addPlainField("mSpotAngle", 7, &LightInternalRTTI::getSpotAngle, &LightInternalRTTI::setSpotAngle);
+			addPlainField("mSpotFalloffAngle", 8, &LightInternalRTTI::getSpotFalloffAngle, &LightInternalRTTI::setSpotFalloffAngle);
 		}
 
 		virtual void onDeserializationEnded(IReflectable* obj) override

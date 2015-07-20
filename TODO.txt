@@ -58,14 +58,32 @@ Code quality improvements:
 ----------------------------------------------------------------------
 Polish stage 1
 
-Handles:
-Check multi-select move/Rotate/scale
-Free rotation handle doesn't seem to be implemented
+Finish up profiler overlay:
+ - Add a way to add generic settings in EditorSettings.cs (e.g. key/value pairs)
+ - Hook that up to SceneWindow
+ - Add a shortcut (e.g. F12) to open/close profile overlay
+ - Test if profiler overlay works
+ - Continue with profiling the hang issue
 
 There's a large hang when doing certain operations like selecting a mesh in scene, or switching from center to pivot mode (possibly GC?)
 Crash on shutdown in mono_gchandle_free
 When selecting an gizmo icon the selection seems delayed and its gizmos flash for a frame before hiding (Can't reproduce atm but I saw it)
 ProjectLibrary seems to import some files on every start-up
+
+First screenshot work:
+- Inspector change contents on selection (and make sure the selected object/component looks okay)
+- Additional menu bar items: 
+ - File: Exit, Save Project, New Project, Open Project, Save Scene As
+ - Edit: Undo/Redo, Cut/Copy/Paste/Duplicate/Delete(need to make sure it works in Hierarchy, with shortcuts), Frame Selected, Preferences, Play/Pause/Step
+ - Assets (also add to context): Create(Folder, Material, Shader, Script, Prefab, GUI Skin), Show in explorer
+ - Game Object (also add to context): Create(Empty, Empty Child, Camera, Renderable, Point/Spot/Directional Light), Apply prefab, Break prefab, Revert prefab
+   - Possibly create helper objects: Cube, Sphere, Plane, Quad, Capsule, Cylinder
+ - Component (also add to inspector context): Camera, Renderable, Point/Spot/Directional light, all other components from scripts
+ - Help - About, API Reference (link to site)
+- Status bar with last console message
+- (Optionally) Console window
+
+-----------
 
 SceneTreeView
  - Hook up ping effect so it triggers when I select a resource or sceneobject
@@ -83,11 +101,15 @@ Need a way to add scene objects and components (and remove them)
 
 Add shortcut keys for view/move/rotate/scale
 Add "focus on object" key (F)
+Ortographic camera views (+ gizmo in scene view corner that shows camera orientation)
+Drag to select in scene view
 
 Will need a status bar:
  - Displays last error message
  - Opens up console on click
  - Indicator when compiling
+
+Make sure to persist EditorSettings
 
 Later:
  - I could record undo/redo per-property using the new diff system
@@ -164,6 +186,7 @@ Scene View
 Test:
  - Custom handles from C#
  - Handle snapping
+ - Multi-select Move/Rotate/scale
 
 ----------------------------------------------------------------------
 Other

@@ -1,25 +1,33 @@
 -------------------------
 Study shadow rendering implementations
 
-Add basic light type components and their core thread representations
- - Directional, Point, Spot light
- - Luminous flux - intensity
- - Color
- - Directional - direction
- - Spot - angle, direction, position
- - Point - range (or derive that from flux?), position
-
-Document all Light stutff
-Light bounding box
-Need to update light handler when parent component moves/rotates
-
+Implement light added/removed/updated in BansheeRenderer
 Load up and set up a test-bed with Ribek's scene
+
+Need cone to use when rendering spot light
 
 Create a basic GBuffer - albedo, normal, depth
  - Using HDR formats where needed
+ - Will need some kind of a pool that handles multiple viewports (each with its own gbuffer) and viewport resizing
 
 Implement deferred rendering (just basic lambert shading for now, only point light)
- - Then convert to tiled rendering
+ - Then convert to tiled rendering (will likely need normal deferred too as a fallback - and to be able to toggle and compare)
+
+Create SceneRenderTargets class:
+ - Allocate(Camera - call at start rendering with camera - Allocates gbuffer (for now, more later probably)
+  - Internally calls RenderTargetPool that returns available cached render targets
+   - Actually this probably isn't the best idea. It might be better to store gbuffer targets with CameraHandlerCore
+     so when it resizes or gets destroyed we can immediately change/destroy them. With a pool I cannot tell when to destroy the gbuffer.
+	  - ALTHOUGH if two cameras have same viewport size them I shouldn't allocate two sets of targets. So maybe a combination of the two.
+ - Free(Camera)
+ - BeginSceneRendering - Sets the color target and gbuffer targets for rendering
+ - ResolveSceneRendering (also ends scene rendering) - possibly resolves MSAA into normal buffer
+   - Allow SceneRenderTargets to have a resolve target. Avoid resolve if they're equal
+
+How to handle MSAA in deferred? - Should be trivial with MSAA textures. I do only plan to support SM4 and higher anyway (maybe even SM5?)
+Will likely need an easy way to determine supported feature set (likely just depending on shader model)
+Consider encapsulating shaders together with methods for setting their parameters (and possibly retrieving output)
+ - So that external code doesn't need to know about its internal and do less work
 
 -------------
 
@@ -43,6 +51,7 @@ Later:
  - Proper PBR materials with reflection
  - Post-processing system - FXAA, SSAO, Color correction, Depth of field (Bokeh)
  - Forward rendering for transparent objects
+ - Need a way to toggle texture filtering mode for all textures (Some kind of an override?)
 
 -----------------
 
@@ -51,7 +60,7 @@ SECOND STAGE(S)
  - GI
  - Volumetric lighting
  - SSR
- - Depth pre-pass
+ - Depth pre-pass - Make sure this can be toggled on and off as needed
  - HDR skybox, skylight stuff
 
 -----------------

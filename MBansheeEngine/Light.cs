@@ -18,52 +18,63 @@ namespace BansheeEngine
             get { return internalLight; }
         }
 
-        internal Vector3 Position
+        public Vector3 Position
         {
             get { return internalLight.Position; }
             set { internalLight.Position = value; serializableData.position = value; }
         }
 
-        internal Quaternion Rotation
+        public Quaternion Rotation
         {
             get { return internalLight.Rotation; }
             set { internalLight.Rotation = value; serializableData.rotation = value; }
         }
 
-        internal LightType Type
+        public LightType Type
         {
             get { return internalLight.Type; }
             set { internalLight.Type = value; serializableData.type = value; }
         }
 
-        internal Color Color
+        public Color Color
         {
             get { return internalLight.Color; }
             set { internalLight.Color = value; serializableData.color = value; }
         }
 
-        internal float Range
+        public float Range
         {
             get { return internalLight.Range; }
             set { internalLight.Range = value; serializableData.range = value; }
         }
 
-        internal float LuminousFlux
+        public float Intensity
         {
-            get { return internalLight.LuminousFlux; }
-            set { internalLight.LuminousFlux = value; serializableData.luminousFlux = value; }
+            get { return internalLight.Intensity; }
+            set { internalLight.Intensity = value; serializableData.intensity = value; }
         }
 
-        internal Degree SpotAngle
+        public Degree SpotAngle
         {
             get { return internalLight.SpotAngle; }
             set { internalLight.SpotAngle = value; serializableData.spotAngle = value; }
         }
 
-        internal bool CastsShadow
+        public Degree SpotFalloffAngle
+        {
+            get { return internalLight.SpotFalloffAngle; }
+            set { internalLight.SpotFalloffAngle = value; serializableData.spotFalloffAngle = value; }
+        }
+
+        public bool CastsShadow
         {
             get { return internalLight.CastsShadow; }
             set { internalLight.CastsShadow = value; serializableData.castShadows = value; }
+        }
+
+        public Sphere Bounds
+        {
+            get { Internal.UpdateTransform(SceneObject); return Internal.Bounds; }
         }
 
         private void OnInitialize()
@@ -72,8 +83,9 @@ namespace BansheeEngine
             serializableData.rotation = Quaternion.identity;
             serializableData.color = Color.White;
             serializableData.spotAngle = new Degree(45);
+            serializableData.spotFalloffAngle = new Degree(40);
             serializableData.range = 10.0f;
-            serializableData.luminousFlux = 100.0f;
+            serializableData.intensity = 100.0f;
             serializableData.type = LightType.Point;
             serializableData.castShadows = false;
         }
@@ -90,8 +102,9 @@ namespace BansheeEngine
             internalLight.Rotation = serializableData.rotation;
             internalLight.Color = serializableData.color;
             internalLight.SpotAngle = serializableData.spotAngle;
+            internalLight.SpotFalloffAngle = serializableData.spotFalloffAngle;
             internalLight.Range = serializableData.range;
-            internalLight.LuminousFlux = serializableData.luminousFlux;
+            internalLight.Intensity = serializableData.intensity;
             internalLight.Type = serializableData.type;
             internalLight.CastsShadow = serializableData.castShadows;
         }
@@ -113,8 +126,9 @@ namespace BansheeEngine
             public Quaternion rotation;
             public Color color;
             public Degree spotAngle;
+            public Degree spotFalloffAngle;
             public float range;
-            public float luminousFlux;
+            public float intensity;
             public LightType type;
             public bool castShadows;
         }

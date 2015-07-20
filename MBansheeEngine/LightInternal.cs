@@ -44,10 +44,10 @@ namespace BansheeEngine
             set { Internal_SetRange(mCachedPtr, value); }
         }
 
-        internal float LuminousFlux
+        internal float Intensity
         {
-            get { return Internal_GetLuminousFlux(mCachedPtr); }
-            set { Internal_SetLuminousFlux(mCachedPtr, value); }
+            get { return Internal_GetIntensity(mCachedPtr); }
+            set { Internal_SetIntensity(mCachedPtr, value); }
         }
 
         internal Degree SpotAngle
@@ -56,19 +56,36 @@ namespace BansheeEngine
             set { Internal_SetSpotAngle(mCachedPtr, value.Degrees); }
         }
 
+        internal Degree SpotFalloffAngle
+        {
+            get { return Internal_GetSpotFalloffAngle(mCachedPtr); }
+            set { Internal_SetSpotFalloffAngle(mCachedPtr, value.Degrees); }
+        }
+
         internal bool CastsShadow
         {
             get { return Internal_GetCastsShadow(mCachedPtr); }
             set { Internal_SetCastsShadow(mCachedPtr, value); }
         }
 
-        public LightInternal(SceneObject sceneObject)
+        internal Sphere Bounds
+        {
+            get { return Internal_GetBounds(mCachedPtr); }
+        }
+
+        internal LightInternal(SceneObject sceneObject)
         {
             IntPtr sceneObjPtr = IntPtr.Zero;
             if (sceneObject != null)
                 sceneObjPtr = sceneObject.GetCachedPtr();
 
             Internal_Create(this, sceneObjPtr);
+        }
+
+        internal void UpdateTransform(SceneObject parentSO)
+        {
+            if (parentSO != null)
+                Internal_UpdateTransform(mCachedPtr, parentSO.GetCachedPtr());
         }
 
         internal void OnDestroy()
@@ -96,9 +113,9 @@ namespace BansheeEngine
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetRange(IntPtr instance, float value);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern float Internal_GetLuminousFlux(IntPtr instance);
+        private static extern float Internal_GetIntensity(IntPtr instance);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetLuminousFlux(IntPtr instance, float value);
+        private static extern void Internal_SetIntensity(IntPtr instance, float value);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern Color Internal_GetColor(IntPtr instance);
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -111,7 +128,15 @@ namespace BansheeEngine
         private static extern float Internal_GetSpotAngle(IntPtr instance);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetSpotAngle(IntPtr instance, float value);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern float Internal_GetSpotFalloffAngle(IntPtr instance);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetSpotFalloffAngle(IntPtr instance, float value);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern Sphere Internal_GetBounds(IntPtr instance);
 
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_UpdateTransform(IntPtr instance, IntPtr parentSO);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_OnDestroy(IntPtr thisPtr);
     }
