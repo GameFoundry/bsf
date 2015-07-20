@@ -340,7 +340,9 @@ namespace BansheeEngine
 		TID_Prefab = 1077,
 		TID_PrefabDiff = 1078,
 		TID_PrefabObjectDiff = 1079,
-		TID_PrefabComponentDiff = 1080
+		TID_PrefabComponentDiff = 1080,
+		TID_GUIWidget = 1081,
+		TID_ProfilerOverlay = 1082
 	};
 }
 

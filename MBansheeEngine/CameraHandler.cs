@@ -16,7 +16,7 @@ namespace BansheeEngine
     [Flags]
     public enum ClearFlags
     {
-        Color = 0x01, Depth = 0x02, Stencil = 0x04
+        None = 0, Color = 0x01, Depth = 0x02, Stencil = 0x04
     }
 
     internal class CameraHandler : ScriptObject

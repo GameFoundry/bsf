@@ -68,7 +68,7 @@ namespace BansheeEngine
 		mCamera = mSceneObject->addComponent<Camera>(renderWindow, 0.0f, 0.0f, 1.0f, 1.0f);
 		mCamera->setNearClipDistance(5);
 		mCamera->setAspectRatio(1.0f);
-		mCamera->setIgnoreSceneRenderables(true);
+		mCamera->setLayers(0);
 
 		mGUI = mSceneObject->addComponent<GUIWidget>(mCamera->getViewport().get());
 		mGUI->setDepth(128);

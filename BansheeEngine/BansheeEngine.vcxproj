@@ -272,6 +272,7 @@
     <ClInclude Include="Include\BsGUIProgressBar.h" />
     <ClInclude Include="Include\BsGUISkinRTTI.h" />
     <ClInclude Include="Include\BsGUISlider.h" />
+    <ClInclude Include="Include\BsGUIWidgetRTTI.h" />
     <ClInclude Include="Include\BsLight.h" />
     <ClInclude Include="Include\BsLightInternal.h" />
     <ClInclude Include="Include\BsLightInternalRTTI.h" />
@@ -363,6 +364,7 @@
     <ClCompile Include="Source\BsGUIButtonBase.cpp" />
     <ClCompile Include="Source\BsGUIContextMenu.cpp" />
     <ClInclude Include="Include\BsVirtualInput.h" />
+    <ClInclude Include="Include\BsProfilerOverlayRTTI.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsApplication.cpp" />

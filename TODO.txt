@@ -58,18 +58,11 @@ Code quality improvements:
 ----------------------------------------------------------------------
 Polish stage 1
 
-Finish up profiler overlay:
- - Add a way to add generic settings in EditorSettings.cs (e.g. key/value pairs)
- - Hook that up to SceneWindow
- - Add a shortcut (e.g. F12) to open/close profile overlay
- - Test if profiler overlay works
- - Continue with profiling the hang issue
+IMPORTANT: Overlay camera will also draw renderables
+Track down the large performance spike
 
-There's a large hang when doing certain operations like selecting a mesh in scene, or switching from center to pivot mode (possibly GC?)
-Crash on shutdown in mono_gchandle_free
-When selecting an gizmo icon the selection seems delayed and its gizmos flash for a frame before hiding (Can't reproduce atm but I saw it)
 ProjectLibrary seems to import some files on every start-up
-Handles don't seem to move at the same speed at the selected mesh (mostly visible with move handle)
+Crash on shutdown in mono_gchandle_free
 
 First screenshot work:
 - Inspector change contents on selection (and make sure the selected object/component looks okay)

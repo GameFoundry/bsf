@@ -312,7 +312,7 @@ namespace BansheeEngine
 		guiCamera->setAspectRatio(1.0f);
 
 		// This camera should ignore any Renderable objects in the scene
-		guiCamera->setIgnoreSceneRenderables(true);
+		guiCamera->setLayers(0);
 
 		// Don't clear this camera as that would clear anything the main camera has rendered.
 		guiCamera->getViewport()->setRequiresClear(false, false, false);

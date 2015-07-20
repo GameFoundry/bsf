@@ -76,6 +76,11 @@ namespace BansheeEngine
 		 */
 		HGUIWidget getGUIWidget() const { return mGUI; }
 
+		/**
+		 * @brief	Returns the camera used for rendering the window GUI contents.
+		 */	
+		HCamera getGUICamera() const { return mCamera; }
+
 	protected:
 		EditorWindowBase(bool isModal = false);
 		EditorWindowBase(const RenderWindowPtr& renderWindow);

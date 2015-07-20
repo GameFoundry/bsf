@@ -16,6 +16,8 @@ namespace BansheeEngine
     {
         private ProfilerOverlayInternal impl;
 
+        public bool Paused { get; set; }
+
         public void SetType(ProfilerOverlayType type)
         {
             impl.SetType(type);   
@@ -32,7 +34,8 @@ namespace BansheeEngine
 
         private void Update()
         {
-            impl.Update();
+            if(!Paused)
+                impl.Update();
         }
 
         private void OnDestroy()

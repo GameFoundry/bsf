@@ -20,8 +20,8 @@ namespace BansheeEngine
 	CameraHandlerBase::CameraHandlerBase(RenderTargetPtr target, float left, float top, float width, float height)
 		:mProjType(PT_PERSPECTIVE), mHorzFOV(Radian(Math::PI / 4.0f)), mFarDist(1000.0f),
 		mNearDist(0.05f), mAspect(1.33333333333333f), mOrthoHeight(1000), mRecalcFrustum(true), mRecalcFrustumPlanes(true),
-		mCustomViewMatrix(false), mCustomProjMatrix(false), mFrustumExtentsManuallySet(false), mIgnoreSceneRenderables(false),
-		mPriority(0), mLayers(0xFFFFFFFFFFFFFFFF), mRecalcView(true)
+		mCustomViewMatrix(false), mCustomProjMatrix(false), mFrustumExtentsManuallySet(false), mPriority(0), 
+		mLayers(0xFFFFFFFFFFFFFFFF), mRecalcView(true)
 	{
 		mViewMatrix = Matrix4::ZERO;
 		mProjMatrixRS = Matrix4::ZERO;
@@ -720,7 +720,6 @@ namespace BansheeEngine
 		dataPtr = rttiReadElem(mCustomViewMatrix, dataPtr);
 		dataPtr = rttiReadElem(mCustomProjMatrix, dataPtr);
 		dataPtr = rttiReadElem(mFrustumExtentsManuallySet, dataPtr);
-		dataPtr = rttiReadElem(mIgnoreSceneRenderables, dataPtr);
 
 		mRecalcFrustum = true;
 		mRecalcFrustumPlanes = true;
@@ -794,7 +793,6 @@ namespace BansheeEngine
 		size += rttiGetElemSize(mCustomProjMatrix);
 
 		size += rttiGetElemSize(mFrustumExtentsManuallySet);
-		size += rttiGetElemSize(mIgnoreSceneRenderables);
 
 		UINT8* buffer = allocator->alloc(size);
 
@@ -812,7 +810,6 @@ namespace BansheeEngine
 		dataPtr = rttiWriteElem(mCustomViewMatrix, dataPtr);
 		dataPtr = rttiWriteElem(mCustomProjMatrix, dataPtr);
 		dataPtr = rttiWriteElem(mFrustumExtentsManuallySet, dataPtr);
-		dataPtr = rttiWriteElem(mIgnoreSceneRenderables, dataPtr);
 
 		return CoreSyncData(buffer, size);
 	}

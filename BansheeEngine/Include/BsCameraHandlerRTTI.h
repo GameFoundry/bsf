@@ -51,9 +51,6 @@ namespace BansheeEngine
 		bool& getFrustumManual(CameraHandler* obj) { return obj->mFrustumExtentsManuallySet; }
 		void setFrustumManual(CameraHandler* obj, bool& val) { obj->mFrustumExtentsManuallySet = val; }
 
-		bool& getIgnoreSceneRenderables(CameraHandler* obj) { return obj->mIgnoreSceneRenderables; }
-		void setIgnoreSceneRenderables(CameraHandler* obj, bool& val) { obj->mIgnoreSceneRenderables = val; }
-
 		Matrix4& getProjMatrix(CameraHandler* obj) { return obj->mProjMatrix; }
 		void setProjMatrix(CameraHandler* obj, Matrix4& val) { obj->mProjMatrix = val; }
 
@@ -92,7 +89,6 @@ namespace BansheeEngine
 			addPlainField("mCustomViewMatrix", 11, &CameraHandlerRTTI::getCustomViewMatrix, &CameraHandlerRTTI::setCustomViewMatrix);
 			addPlainField("mCustomProjMatrix", 12, &CameraHandlerRTTI::getCustomProjMatrix, &CameraHandlerRTTI::setCustomProjMatrix);
 			addPlainField("mFrustumExtentsManuallySet", 13, &CameraHandlerRTTI::getFrustumManual, &CameraHandlerRTTI::setFrustumManual);
-			addPlainField("mIgnoreSceneRenderables", 14, &CameraHandlerRTTI::getIgnoreSceneRenderables, &CameraHandlerRTTI::setIgnoreSceneRenderables);
 			addPlainField("mProjMatrixRS", 15, &CameraHandlerRTTI::getProjMatrixRS, &CameraHandlerRTTI::setProjMatrixRS);
 			addPlainField("mProjMatrix", 16, &CameraHandlerRTTI::getProjMatrix, &CameraHandlerRTTI::setProjMatrix);
 			addPlainField("mViewMatrix", 17, &CameraHandlerRTTI::getViewMatrix, &CameraHandlerRTTI::setViewMatrix);
@@ -102,24 +98,24 @@ namespace BansheeEngine
 			addPlainField("mBottom", 21, &CameraHandlerRTTI::getBottom, &CameraHandlerRTTI::setBottom);
 		}
 
-		virtual void onDeserializationEnded(IReflectable* obj)
+		virtual void onDeserializationEnded(IReflectable* obj) override
 		{
 			CameraHandler* cameraHandler = static_cast<CameraHandler*>(obj);
 			cameraHandler->initialize();
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "CameraHandler";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_CameraHandler;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return CameraHandler::createEmpty();
 		}

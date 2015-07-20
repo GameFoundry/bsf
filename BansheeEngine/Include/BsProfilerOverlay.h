@@ -55,6 +55,16 @@ namespace BansheeEngine
 
 	private:
 		ProfilerOverlayInternal* mInternal;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+	public:
+		friend class ProfilerOverlayRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const override;
+
+		ProfilerOverlay() { } // Serialization only
 	};
 
 	/**

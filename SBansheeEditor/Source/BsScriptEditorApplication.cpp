@@ -10,6 +10,12 @@
 #include "BsPrefabUtility.h"
 #include "BsSceneManager.h"
 #include "BsResources.h"
+#include "BsScriptEditorWindow.h"
+#include "BsEditorWindowBase.h"
+#include "BsProfilerOverlay.h"
+#include "BsGUIWidget.h"
+#include "BsSceneObject.h"
+#include "BsCamera.h"
 
 namespace BansheeEngine
 {

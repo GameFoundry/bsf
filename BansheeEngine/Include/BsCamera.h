@@ -176,16 +176,6 @@ namespace BansheeEngine
 		virtual float getOrthoWindowWidth() const { return mInternal->getOrthoWindowWidth(); }
 
 		/**
-		 * @copydoc	CameraHandler::setIgnoreSceneRenderables
-		 */
-		void setIgnoreSceneRenderables(bool value) { mInternal->setIgnoreSceneRenderables(value); }
-
-		/**
-		 * @copydoc	CameraHandler::getIgnoreSceneRenderables
-		 */
-		bool getIgnoreSceneRenderables() const { return mInternal->getIgnoreSceneRenderables(); }
-
-		/**
 		 * @copydoc	CameraHandler::getPriority
 		 */
 		INT32 getPriority() const { return mInternal->getPriority(); }

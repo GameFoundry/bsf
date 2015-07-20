@@ -269,11 +269,11 @@ namespace BansheeEngine
 			Vector<const CameraHandlerCore*>& cameras = renderTargetData.cameras;
 
 			RenderAPICore::instance().beginFrame();
+			RenderAPICore::instance().setRenderTarget(target);
 
 			for(auto& camera : cameras)
 			{
 				SPtr<ViewportCore> viewport = camera->getViewport();
-				RenderAPICore::instance().setRenderTarget(target);
 				RenderAPICore::instance().setViewport(viewport->getNormArea());
 
 				UINT32 clearBuffers = 0;
@@ -326,60 +326,61 @@ namespace BansheeEngine
 			}
 		}
 
-		if (!camera.getIgnoreSceneRenderables())
+		UINT64 cameraLayers = camera.getLayers();
+		ConvexVolume worldFrustum = camera.getWorldFrustum();
+
+		// Update per-object param buffers and queue render elements
+		for (auto& renderableData : mRenderables)
 		{
-			ConvexVolume worldFrustum = camera.getWorldFrustum();
+			RenderableHandlerCore* renderable = renderableData.renderable;
+			RenderableController* controller = renderableData.controller;
+			UINT32 renderableType = renderable->getRenderableType();
+			UINT32 rendererId = renderable->getRendererId();
 
-			// Update per-object param buffers and queue render elements
-			for (auto& renderableData : mRenderables)
+			if ((renderable->getLayer() & cameraLayers) == 0)
+				continue;
+
+			// Update buffers
+			for (auto& renderElem : renderableData.elements)
 			{
-				RenderableHandlerCore* renderable = renderableData.renderable;
-				RenderableController* controller = renderableData.controller;
-				UINT32 renderableType = renderable->getRenderableType();
-				UINT32 rendererId = renderable->getRendererId();
+				if (controller != nullptr)
+					controller->bindPerObjectBuffers(renderElem);
 
-				// Update buffers
-				for (auto& renderElem : renderableData.elements)
+				if (renderableType == RenType_LitTextured)
 				{
-					if (controller != nullptr)
-						controller->bindPerObjectBuffers(renderElem);
-
-					if (renderableType == RenType_LitTextured)
-					{
-						Matrix4 worldViewProjMatrix = viewProjMatrix * mWorldTransforms[rendererId];
-						mLitTexHandler->updatePerObjectBuffers(renderElem, worldViewProjMatrix);
-					}
-
-					UINT32 numPasses = renderElem.material->getNumPasses();
-					for (UINT32 i = 0; i < numPasses; i++)
-					{
-						SPtr<PassParametersCore> passParams = renderElem.material->getPassParameters(i);
-
-						for (UINT32 j = 0; j < passParams->getNumParams(); j++)
-						{
-							SPtr<GpuParamsCore> params = passParams->getParamByIdx(j);
-							if (params != nullptr)
-								params->updateHardwareBuffers();
-						}
-					}
+					Matrix4 worldViewProjMatrix = viewProjMatrix * mWorldTransforms[rendererId];
+					mLitTexHandler->updatePerObjectBuffers(renderElem, worldViewProjMatrix);
 				}
 
-				// Do frustum culling
-				// TODO - This is bound to be a bottleneck at some point. When it is ensure that intersect
-				// methods use vector operations, as it is trivial to update them.
-				const Sphere& boundingSphere = mWorldBounds[rendererId].getSphere();
-				if (worldFrustum.intersects(boundingSphere))
+				UINT32 numPasses = renderElem.material->getNumPasses();
+				for (UINT32 i = 0; i < numPasses; i++)
 				{
-					// More precise with the box
-					const AABox& boundingBox = mWorldBounds[rendererId].getBox();
+					SPtr<PassParametersCore> passParams = renderElem.material->getPassParameters(i);
 
-					if (worldFrustum.intersects(boundingBox))
+					for (UINT32 j = 0; j < passParams->getNumParams(); j++)
 					{
-						float distanceToCamera = (camera.getPosition() - boundingBox.getCenter()).length();
-
-						for (auto& renderElem : renderableData.elements)
-							renderQueue->add(&renderElem, distanceToCamera);
+						SPtr<GpuParamsCore> params = passParams->getParamByIdx(j);
+						if (params != nullptr)
+							params->updateHardwareBuffers();
 					}
+				}
+			}
+
+			// Do frustum culling
+			// TODO - This is bound to be a bottleneck at some point. When it is ensure that intersect
+			// methods use vector operations, as it is trivial to update them.
+			const Sphere& boundingSphere = mWorldBounds[rendererId].getSphere();
+			if (worldFrustum.intersects(boundingSphere))
+			{
+				// More precise with the box
+				const AABox& boundingBox = mWorldBounds[rendererId].getBox();
+
+				if (worldFrustum.intersects(boundingBox))
+				{
+					float distanceToCamera = (camera.getPosition() - boundingBox.getCenter()).length();
+
+					for (auto& renderElem : renderableData.elements)
+						renderQueue->add(&renderElem, distanceToCamera);
 				}
 			}
 		}

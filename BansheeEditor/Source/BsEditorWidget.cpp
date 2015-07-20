@@ -27,7 +27,10 @@ namespace BansheeEngine
 
 	EditorWindowBase* EditorWidgetBase::getParentWindow() const
 	{
-		return mParent->getParentWindow();
+		if (mParent != nullptr)
+			return mParent->getParentWindow();
+		else
+			return nullptr;
 	}
 
 	void EditorWidgetBase::close()

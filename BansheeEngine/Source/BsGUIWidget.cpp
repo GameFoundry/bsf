@@ -15,6 +15,7 @@
 #include "BsViewport.h"
 #include "BsSceneObject.h"
 #include "BsRenderWindow.h"
+#include "BsGUIWidgetRTTI.h"
 
 namespace BansheeEngine
 {
@@ -334,5 +335,15 @@ namespace BansheeEngine
 	void GUIWidget::ownerWindowFocusChanged()
 	{
 
+	}
+
+	RTTITypeBase* GUIWidget::getRTTIStatic()
+	{
+		return GUIWidgetRTTI::instance();
+	}
+
+	RTTITypeBase* GUIWidget::getRTTI() const
+	{
+		return GUIWidget::getRTTIStatic();
 	}
 }

@@ -288,16 +288,6 @@ namespace BansheeEngine
 		virtual float getOrthoWindowWidth() const;
 
 		/**
-		 * @brief	This option tells the renderer that this camera should ignore any renderable components.
-		 */
-		void setIgnoreSceneRenderables(bool value) { mIgnoreSceneRenderables = true; _markCoreDirty(); }
-
-		/**
-		 * @brief	This option tells the renderer that this camera should ignore any renderable components.
-		 */
-		bool getIgnoreSceneRenderables() const { return mIgnoreSceneRenderables; }
-
-		/**
 		 * @brief	Gets a priority that determines in which orders the cameras are rendered.
 		 *			This only applies to cameras rendering to the same render target. 
 		 */
@@ -500,7 +490,6 @@ namespace BansheeEngine
 		bool mCustomProjMatrix; /**< Is custom projection matrix set. */
 
 		bool mFrustumExtentsManuallySet; /**< Are frustum extents manually set. */
-		bool mIgnoreSceneRenderables; /**< Should the camera ignore renderable components. */
 
 		mutable Matrix4 mProjMatrixRS; /**< Cached render-system specific projection matrix. */
 		mutable Matrix4 mProjMatrix; /**< Cached projection matrix that determines how are 3D points projected to a 2D viewport. */

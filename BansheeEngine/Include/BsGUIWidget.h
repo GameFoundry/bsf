@@ -163,12 +163,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	Component::update
 		 */
-		virtual void update();
+		virtual void update() override;
 
 		/**
 		 * @copydoc	Component::onDestroyed
 		 */
-		virtual void onDestroyed();
+		virtual void onDestroyed() override;
 	private:
 		GUIWidget(const GUIWidget& other) { }
 
@@ -201,5 +201,15 @@ namespace BansheeEngine
 		mutable Vector<HMaterial> mCachedMaterials;
 
 		HGUISkin mSkin;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+	public:
+		friend class GUIWidgetRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const override;
+
+		GUIWidget() { } // Serialization only
 	};
 }

@@ -46,6 +46,7 @@ namespace BansheeEditor
 
         // Profiler overlay
         private ProfilerOverlay activeProfilerOverlay;
+        private Camera profilerCamera;
         private VirtualButton toggleProfilerOverlayKey;
 
         // Drag & drop
@@ -165,6 +166,10 @@ namespace BansheeEditor
 
         private void OnEditorUpdate()
         {
+            // DEBUG ONLY
+            if (activeProfilerOverlay != null && Time.FrameDelta > 100.0f)
+                activeProfilerOverlay.Paused = true;
+
             if (HasFocus)
             {
                 if (VirtualInput.IsButtonUp(toggleProfilerOverlayKey))
@@ -411,14 +416,24 @@ namespace BansheeEditor
             if (EditorSettings.GetBool(ProfilerOverlayActiveKey))
             {
                 if (activeProfilerOverlay == null)
-                    activeProfilerOverlay = camera.SceneObject.AddComponent<ProfilerOverlay>();
+                {
+                    SceneObject profilerSO = new SceneObject("EditorProfilerOverlay");
+                    profilerCamera = profilerSO.AddComponent<Camera>();
+                    profilerCamera.Target = renderTexture;
+                    profilerCamera.ClearFlags = ClearFlags.None;
+                    profilerCamera.Priority = 1;
+                    profilerCamera.Layers = 0;
+
+                    activeProfilerOverlay = profilerSO.AddComponent<ProfilerOverlay>();
+                }
             }
             else
             {
                 if (activeProfilerOverlay != null)
                 {
-                    activeProfilerOverlay.SceneObject.RemoveComponent<ProfilerOverlay>();
+                    activeProfilerOverlay.SceneObject.Destroy();
                     activeProfilerOverlay = null;
+                    profilerCamera = null;
                 }
             }
         }
@@ -441,7 +456,7 @@ namespace BansheeEditor
                 sceneCameraSO.Position = new Vector3(0, 0.5f, 1);
                 sceneCameraSO.LookAt(new Vector3(0, 0, 0));
 
-                camera.Priority = 1;
+                camera.Priority = 2;
                 camera.NearClipPlane = 0.005f;
                 camera.FarClipPlane = 1000.0f;
                 camera.ClearColor = ClearColor;
@@ -463,6 +478,9 @@ namespace BansheeEditor
 		    // render target destroy/create cycle for every single pixel.
 
 		    camera.AspectRatio = width / (float)height;
+
+            if (profilerCamera != null)
+                profilerCamera.Target = renderTexture;
 	    }
     }
 }

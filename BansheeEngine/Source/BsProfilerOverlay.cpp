@@ -13,6 +13,7 @@
 #include "BsBuiltinResources.h"
 #include "BsProfilingManager.h"
 #include "BsRenderTarget.h"
+#include "BsProfilerOverlayRTTI.h"
 
 namespace BansheeEngine
 {
@@ -305,6 +306,16 @@ namespace BansheeEngine
 	void ProfilerOverlay::update()
 	{
 		mInternal->update();
+	}
+
+	RTTITypeBase* ProfilerOverlay::getRTTIStatic()
+	{
+		return ProfilerOverlayRTTI::instance();
+	}
+
+	RTTITypeBase* ProfilerOverlay::getRTTI() const
+	{
+		return ProfilerOverlay::getRTTIStatic();
 	}
 
 	ProfilerOverlayInternal::ProfilerOverlayInternal(const ViewportPtr& target)
