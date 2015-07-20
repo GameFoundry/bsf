@@ -10,9 +10,12 @@ namespace BansheeEditor
 {
     internal sealed class SceneWindow : EditorWindow
     {
+        internal const string ToggleProfilerOverlayBinding = "ToggleProfilerOverlay";
+
         private const int HeaderHeight = 20;
         private const float DefaultPlacementDepth = 5.0f;
         private static readonly Color ClearColor = new Color(83.0f/255.0f, 83.0f/255.0f, 83.0f/255.0f);
+        private const string ProfilerOverlayActiveKey = "_Internal_ProfilerOverlayActive";
 
         private Camera camera;
         private SceneCamera cameraController;
@@ -40,6 +43,10 @@ namespace BansheeEditor
         private GUIFloatField rotateSnapInput;
 
         private int editorSettingsHash = int.MaxValue;
+
+        // Profiler overlay
+        private ProfilerOverlay activeProfilerOverlay;
+        private VirtualButton toggleProfilerOverlayKey;
 
         // Drag & drop
         private bool dragActive;
@@ -123,7 +130,10 @@ namespace BansheeEditor
             handlesLayout.AddElement(rotateSnapButton);
             handlesLayout.AddElement(rotateSnapInput);
 
+            toggleProfilerOverlayKey = new VirtualButton(ToggleProfilerOverlayBinding);
+
             UpdateRenderTexture(Width, Height - HeaderHeight);
+            UpdateProfilerOverlay();
         }
 
         private void OnDestroy()
@@ -155,10 +165,17 @@ namespace BansheeEditor
 
         private void OnEditorUpdate()
         {
+            if (HasFocus)
+            {
+                if (VirtualInput.IsButtonUp(toggleProfilerOverlayKey))
+                    EditorSettings.SetBool(ProfilerOverlayActiveKey, !EditorSettings.GetBool(ProfilerOverlayActiveKey));
+            }
+
             // Refresh GUI buttons if needed (in case someones changes the values from script)
             if (editorSettingsHash != EditorSettings.Hash)
             {
                 UpdateButtonStates();
+                UpdateProfilerOverlay();
                 editorSettingsHash = EditorSettings.Hash;
             }
 
@@ -387,6 +404,23 @@ namespace BansheeEditor
                 rotateSnapButton.ToggleOff();
 
             moveSnapInput.Value = Handles.RotateSnapAmount.Degrees;
+        }
+
+        private void UpdateProfilerOverlay()
+        {
+            if (EditorSettings.GetBool(ProfilerOverlayActiveKey))
+            {
+                if (activeProfilerOverlay == null)
+                    activeProfilerOverlay = camera.SceneObject.AddComponent<ProfilerOverlay>();
+            }
+            else
+            {
+                if (activeProfilerOverlay != null)
+                {
+                    activeProfilerOverlay.SceneObject.RemoveComponent<ProfilerOverlay>();
+                    activeProfilerOverlay = null;
+                }
+            }
         }
 
         private void UpdateRenderTexture(int width, int height)

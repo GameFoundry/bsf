@@ -23,9 +23,9 @@ namespace BansheeEngine
 		GUILayout& labelLayout;
 		GUILayout& contentLayout;
 		GUIWidget& widget;
-		Vector<ProfilerOverlay::BasicRow>& rows;
+		Vector<ProfilerOverlayInternal::BasicRow>& rows;
 
-		BasicRowFiller(Vector<ProfilerOverlay::BasicRow>& _rows, GUILayout& _labelLayout, GUILayout& _contentLayout, GUIWidget& _widget)
+		BasicRowFiller(Vector<ProfilerOverlayInternal::BasicRow>& _rows, GUILayout& _labelLayout, GUILayout& _contentLayout, GUIWidget& _widget)
 			:rows(_rows), curIdx(0), labelLayout(_labelLayout), contentLayout(_contentLayout), widget(_widget)
 		{ }
 
@@ -34,7 +34,7 @@ namespace BansheeEngine
 			UINT32 excessEntries = (UINT32)rows.size() - curIdx;
 			for(UINT32 i = 0; i < excessEntries; i++)
 			{
-				ProfilerOverlay::BasicRow& row = rows[curIdx + i];
+				ProfilerOverlayInternal::BasicRow& row = rows[curIdx + i];
 
 				GUILayout::destroy(row.labelLayout);
 				GUILayout::destroy(row.contentLayout);
@@ -48,9 +48,9 @@ namespace BansheeEngine
 		{
 			if(curIdx >= rows.size())
 			{
-				rows.push_back(ProfilerOverlay::BasicRow());
+				rows.push_back(ProfilerOverlayInternal::BasicRow());
 
-				ProfilerOverlay::BasicRow& newRow = rows.back();
+				ProfilerOverlayInternal::BasicRow& newRow = rows.back();
 
 				newRow.name = HString(L"{0}");
 				newRow.pctOfParent = HString(L"{0} %");
@@ -98,7 +98,7 @@ namespace BansheeEngine
 				newRow.elements.push_back(totalTimeSelf);
 			}
 			
-			ProfilerOverlay::BasicRow& row = rows[curIdx];
+			ProfilerOverlayInternal::BasicRow& row = rows[curIdx];
 
 			GUIFixedSpace::destroy(row.labelSpace);
 			row.labelSpace = row.labelLayout->insertNewElement<GUIFixedSpace>(0, depth * 20);
@@ -124,9 +124,9 @@ namespace BansheeEngine
 		GUILayout& labelLayout;
 		GUILayout& contentLayout;
 		GUIWidget& widget;
-		Vector<ProfilerOverlay::PreciseRow>& rows;
+		Vector<ProfilerOverlayInternal::PreciseRow>& rows;
 
-		PreciseRowFiller(Vector<ProfilerOverlay::PreciseRow>& _rows, GUILayout& _labelLayout, GUILayout& _contentLayout, GUIWidget& _widget)
+		PreciseRowFiller(Vector<ProfilerOverlayInternal::PreciseRow>& _rows, GUILayout& _labelLayout, GUILayout& _contentLayout, GUIWidget& _widget)
 			:rows(_rows), curIdx(0), labelLayout(_labelLayout), contentLayout(_contentLayout), widget(_widget)
 		{ }
 
@@ -135,7 +135,7 @@ namespace BansheeEngine
 			UINT32 excessEntries = (UINT32)rows.size() - curIdx;
 			for(UINT32 i = 0; i < excessEntries; i++)
 			{
-				ProfilerOverlay::PreciseRow& row = rows[curIdx + i];
+				ProfilerOverlayInternal::PreciseRow& row = rows[curIdx + i];
 
 				GUILayout::destroy(row.labelLayout);
 				GUILayout::destroy(row.contentLayout);
@@ -149,9 +149,9 @@ namespace BansheeEngine
 		{
 			if(curIdx >= rows.size())
 			{
-				rows.push_back(ProfilerOverlay::PreciseRow());
+				rows.push_back(ProfilerOverlayInternal::PreciseRow());
 
-				ProfilerOverlay::PreciseRow& newRow = rows.back();
+				ProfilerOverlayInternal::PreciseRow& newRow = rows.back();
 
 				newRow.name = HString(L"{0}");
 				newRow.pctOfParent = HString(L"{0}");
@@ -199,7 +199,7 @@ namespace BansheeEngine
 				newRow.elements.push_back(totalCyclesSelf);
 			}
 
-			ProfilerOverlay::PreciseRow& row = rows[curIdx];
+			ProfilerOverlayInternal::PreciseRow& row = rows[curIdx];
 
 			GUIFixedSpace::destroy(row.labelSpace);
 			row.labelSpace = row.labelLayout->insertNewElement<GUIFixedSpace>(0, depth * 20);
@@ -224,9 +224,9 @@ namespace BansheeEngine
 		UINT32 curIdx;
 		GUILayout& layout;
 		GUIWidget& widget;
-		Vector<ProfilerOverlay::GPUSampleRow>& rows;
+		Vector<ProfilerOverlayInternal::GPUSampleRow>& rows;
 
-		GPUSampleRowFiller(Vector<ProfilerOverlay::GPUSampleRow>& _rows, GUILayout& _layout, GUIWidget& _widget)
+		GPUSampleRowFiller(Vector<ProfilerOverlayInternal::GPUSampleRow>& _rows, GUILayout& _layout, GUIWidget& _widget)
 			:rows(_rows), curIdx(0), layout(_layout), widget(_widget)
 		{ }
 
@@ -235,7 +235,7 @@ namespace BansheeEngine
 			UINT32 excessEntries = (UINT32)rows.size() - curIdx;
 			for (UINT32 i = 0; i < excessEntries; i++)
 			{
-				ProfilerOverlay::GPUSampleRow& row = rows[curIdx + i];
+				ProfilerOverlayInternal::GPUSampleRow& row = rows[curIdx + i];
 
 				GUILayout::destroy(row.layout);
 			}
@@ -247,9 +247,9 @@ namespace BansheeEngine
 		{
 			if (curIdx >= rows.size())
 			{
-				rows.push_back(ProfilerOverlay::GPUSampleRow());
+				rows.push_back(ProfilerOverlayInternal::GPUSampleRow());
 
-				ProfilerOverlay::GPUSampleRow& newRow = rows.back();
+				ProfilerOverlayInternal::GPUSampleRow& newRow = rows.back();
 
 				newRow.name = HString(L"{1}");
 				newRow.time = HString(L"{0}");
@@ -266,7 +266,7 @@ namespace BansheeEngine
 				newRow.elements.push_back(timeLabel);
 			}
 
-			ProfilerOverlay::GPUSampleRow& row = rows[curIdx];
+			ProfilerOverlayInternal::GPUSampleRow& row = rows[curIdx];
 			row.name.setParameter(0, toWString(name));
 			row.time.setParameter(0, toWString(timeMs));
 
@@ -274,15 +274,46 @@ namespace BansheeEngine
 		}
 	};
 
-	const UINT32 ProfilerOverlay::MAX_DEPTH = 4;
+	const UINT32 ProfilerOverlayInternal::MAX_DEPTH = 4;
 
 	ProfilerOverlay::ProfilerOverlay(const HSceneObject& parent, const ViewportPtr& target)
-		:Component(parent), mIsShown(false), mType(ProfilerOverlayType::CPUSamples)
+		:Component(parent), mInternal(nullptr)
+	{
+		mInternal = bs_new<ProfilerOverlayInternal>(target);
+	}
+
+	ProfilerOverlay::~ProfilerOverlay()
+	{
+		bs_delete(mInternal);
+	}
+
+	void ProfilerOverlay::setTarget(const ViewportPtr& target)
+	{
+		mInternal->setTarget(target);
+	}
+
+	void ProfilerOverlay::show(ProfilerOverlayType type)
+	{
+		mInternal->show(type);
+	}
+
+	void ProfilerOverlay::hide()
+	{
+		mInternal->hide();
+	}
+
+	void ProfilerOverlay::update()
+	{
+		mInternal->update();
+	}
+
+	ProfilerOverlayInternal::ProfilerOverlayInternal(const ViewportPtr& target)
+		:mIsShown(true), mType(ProfilerOverlayType::CPUSamples)
 	{
 		setTarget(target);
 	}
 
-	ProfilerOverlay::~ProfilerOverlay()
+	ProfilerOverlayInternal::~ProfilerOverlayInternal()
 	{
 		if(mTarget != nullptr)
 			mTargetResizedConn.disconnect();
@@ -291,14 +322,14 @@ namespace BansheeEngine
 			mWidgetSO->destroy();
 	}
 
-	void ProfilerOverlay::setTarget(const ViewportPtr& target)
+	void ProfilerOverlayInternal::setTarget(const ViewportPtr& target)
 	{
 		if(mTarget != nullptr)
 			mTargetResizedConn.disconnect();
 
 		mTarget = target;
 
-		mTargetResizedConn = target->getTarget()->onResized.connect(std::bind(&ProfilerOverlay::targetResized, this));
+		mTargetResizedConn = target->getTarget()->onResized.connect(std::bind(&ProfilerOverlayInternal::targetResized, this));
 
 		if(mWidgetSO)
 			mWidgetSO->destroy();
@@ -451,7 +482,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void ProfilerOverlay::show(ProfilerOverlayType type)
+	void ProfilerOverlayInternal::show(ProfilerOverlayType type)
 	{
 		if (type == ProfilerOverlayType::CPUSamples)
 		{
@@ -476,7 +507,7 @@ namespace BansheeEngine
 		mIsShown = true;
 	}
 
-	void ProfilerOverlay::hide()
+	void ProfilerOverlayInternal::hide()
 	{
 		mBasicLayoutLabels->disableRecursively();
 		mPreciseLayoutLabels->disableRecursively();
@@ -487,7 +518,7 @@ namespace BansheeEngine
 		mIsShown = false;
 	}
 
-	void ProfilerOverlay::update()
+	void ProfilerOverlayInternal::update()
 	{
 		const ProfilerReport& latestSimReport = ProfilingManager::instance().getReport(ProfiledThread::Sim);
 		const ProfilerReport& latestCoreReport = ProfilingManager::instance().getReport(ProfiledThread::Core);
@@ -503,13 +534,13 @@ namespace BansheeEngine
 		}
 	}
 
-	void ProfilerOverlay::targetResized()
+	void ProfilerOverlayInternal::targetResized()
 	{
 		updateCPUSampleAreaSizes();
 		updateGPUSampleAreaSizes();
 	}
 
-	void ProfilerOverlay::updateCPUSampleAreaSizes()
+	void ProfilerOverlayInternal::updateCPUSampleAreaSizes()
 	{
 		static const INT32 PADDING = 10;
 		static const float LABELS_CONTENT_RATIO = 0.3f;
@@ -537,7 +568,7 @@ namespace BansheeEngine
 		mPreciseLayoutContents->setHeight(height);
 	}
 
-	void ProfilerOverlay::updateGPUSampleAreaSizes()
+	void ProfilerOverlayInternal::updateGPUSampleAreaSizes()
 	{
 		static const INT32 PADDING = 10;
 		static const float SAMPLES_FRAME_RATIO = 0.5f;
@@ -557,7 +588,7 @@ namespace BansheeEngine
 		mGPULayoutSamples->setHeight(samplesHeight);
 	}
 
-	void ProfilerOverlay::updateCPUSampleContents(const ProfilerReport& simReport, const ProfilerReport& coreReport)
+	void ProfilerOverlayInternal::updateCPUSampleContents(const ProfilerReport& simReport, const ProfilerReport& coreReport)
 	{
 		static const UINT32 NUM_ROOT_ENTRIES = 2;
 
@@ -648,9 +679,9 @@ namespace BansheeEngine
 		}
 	}
 
-	void ProfilerOverlay::updateGPUSampleContents(const GPUProfilerReport& gpuReport)
+	void ProfilerOverlayInternal::updateGPUSampleContents(const GPUProfilerReport& gpuReport)
 	{
-		mGPUFrameNumStr.setParameter(0, toWString((UINT64)gTime().getFrameNumber()));
+		mGPUFrameNumStr.setParameter(0, toWString((UINT64)gTime().getFrameIdx()));
 		mGPUTimeStr.setParameter(0, toWString(gpuReport.frameSample.timeMs));
 		mGPUDrawCallsStr.setParameter(0, toWString(gpuReport.frameSample.numDrawCalls));
 		mGPURenTargetChangesStr.setParameter(0, toWString(gpuReport.frameSample.numRenderTargetChanges));

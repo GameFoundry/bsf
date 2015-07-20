@@ -299,6 +299,7 @@
     <ClInclude Include="Include\BsScriptPixelUtility.h" />
     <ClInclude Include="Include\BsScriptPlainText.h" />
     <ClInclude Include="Include\BsScriptPrefab.h" />
+    <ClInclude Include="Include\BsScriptProfilerOverlayInternal.h" />
     <ClInclude Include="Include\BsScriptRenderableHandler.h" />
     <ClInclude Include="Include\BsScriptRenderTarget.h" />
     <ClInclude Include="Include\BsScriptRenderTexture.h" />
@@ -385,6 +386,7 @@
     <ClCompile Include="Source\BsScriptPixelUtility.cpp" />
     <ClCompile Include="Source\BsScriptPlainText.cpp" />
     <ClCompile Include="Source\BsScriptPrefab.cpp" />
+    <ClCompile Include="Source\BsScriptProfilerOverlayInternal.cpp" />
     <ClCompile Include="Source\BsScriptRenderableHandler.cpp" />
     <ClCompile Include="Source\BsScriptRenderTarget.cpp" />
     <ClCompile Include="Source\BsScriptRenderTexture.cpp" />

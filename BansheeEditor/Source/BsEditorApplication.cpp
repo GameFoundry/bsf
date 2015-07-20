@@ -19,8 +19,6 @@
 #include "BsDropDownWindowManager.h"
 
 // DEBUG ONLY
-#include "DbgEditorWidget1.h"
-#include "DbgEditorWidget2.h"
 #include "BsResources.h"
 #include "BsSceneObject.h"
 #include "BsImporter.h"
@@ -31,7 +29,6 @@
 #include "BsTechnique.h"
 #include "BsPass.h"
 #include "BsRenderable.h"
-#include "BsDbgTestGameObjectRef.h"
 #include "BsVirtualInput.h"
 #include "BsFolderMonitor.h"
 #include "BsProjectLibrary.h"
@@ -197,12 +194,7 @@ namespace BansheeEngine
 		testRenderable->setMesh(mDbgMeshRef);
 		testRenderable->setMaterial(0, mTestMaterial);
 
-		GameObjectHandle<DbgTestGameObjectRef> dbgTestGameObjectRef = testModelGO->addComponent<DbgTestGameObjectRef>();
-		dbgTestGameObjectRef->mRenderable = testRenderable;
-
 		HSceneObject clone = testModelGO->clone();
-		GameObjectHandle<DbgTestGameObjectRef> clonedDbgTestGameObjectRef = clone->getComponent<DbgTestGameObjectRef>();
-
 		testModelGO->destroy();
 
 		/************************************************************************/

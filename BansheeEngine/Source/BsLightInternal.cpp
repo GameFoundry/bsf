@@ -229,7 +229,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void LightInternal::_markCoreDirty(LightDirtyFlag flag = LightDirtyFlag::Everything)
+	void LightInternal::_markCoreDirty(LightDirtyFlag flag)
 	{
 		markCoreDirty((UINT32)flag);
 	}

@@ -29,9 +29,9 @@ namespace BansheeEngine
 		return gTime().getFrameDelta();
 	}
 
-	UINT32 ScriptTime::internal_getFrameNumber()
+	UINT64 ScriptTime::internal_getFrameNumber()
 	{
-		return gTime().getFrameNumber();
+		return gTime().getFrameIdx();
 	}
 
 	UINT64 ScriptTime::internal_getPrecise()

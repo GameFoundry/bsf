@@ -8,6 +8,8 @@
 
 namespace BansheeEngine
 {
+	class ProfilerOverlayInternal;
+
 	/**
 	 * @brief	Types of profiler overlay.
 	 */
@@ -18,9 +20,47 @@ namespace BansheeEngine
 	};
 
 	/**
+	* @brief	Handles rendering of Profiler information as an overlay in a viewport.
+	*			
+	* @note		Component wrapper of ProfilerOverlayInternal.
+	*/
+	class BS_EXPORT ProfilerOverlay : public Component
+	{
+	public:
+		/**
+		 * @brief	Constructs a new overlay attached to the specified parent and displayed on the provided viewport.
+		 */
+		ProfilerOverlay(const HSceneObject& parent, const ViewportPtr& target);
+		~ProfilerOverlay();
+
+		/**
+		 * @brief	Changes the viewport to display the overlay on.
+		 */
+		void setTarget(const ViewportPtr& target);
+
+		/**
+		 * @brief	Shows the overlay of the specified type.
+		 */
+		void show(ProfilerOverlayType type);
+
+		/**
+		 * @brief	Hides the overlay.
+		 */
+		void hide();
+
+		/**
+		 * @copydoc	Component::update
+		 */
+		void update() override;
+
+	private:
+		ProfilerOverlayInternal* mInternal;
+	};
+
+	/**
 	 * @brief	Handles rendering of Profiler information as an overlay in a viewport.
 	 */
-	class BS_EXPORT ProfilerOverlay : public Component
+	class BS_EXPORT ProfilerOverlayInternal
 	{
 	public:
 		/**
@@ -84,8 +124,8 @@ namespace BansheeEngine
 		/**
 		 * @brief	Constructs a new overlay attached to the specified parent and displayed on the provided viewport.
 		 */
-		ProfilerOverlay(const HSceneObject& parent, const ViewportPtr& target);
-		~ProfilerOverlay();
+		ProfilerOverlayInternal(const ViewportPtr& target);
+		~ProfilerOverlayInternal();
 
 		/**
 		 * @brief	Changes the viewport to display the overlay on.
@@ -103,7 +143,7 @@ namespace BansheeEngine
 		void hide();
 
 		/**
-		 * @copydoc	Component::update
+		 * @brief	Updates overlay contents. Should be called once per frame.
 		 */
 		void update();
 	private:

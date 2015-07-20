@@ -47,7 +47,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Thread safe, but only counts sim thread frames.
 		 */
-		unsigned long getFrameNumber() const { return mCurrentFrame.load(); }
+		UINT64 getFrameIdx() const { return mCurrentFrame.load(); }
 
 		/**
 		 * @brief	Returns the precise time since application start, in microseconds.

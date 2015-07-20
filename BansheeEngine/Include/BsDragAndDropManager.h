@@ -127,6 +127,6 @@ namespace BansheeEngine
 
 		std::atomic<bool> mCaptureChanged;
 		std::atomic<int> mCaptureActive;
-		std::atomic<unsigned long> mCaptureChangeFrame;
+		std::atomic<UINT64> mCaptureChangeFrame;
 	};
 }

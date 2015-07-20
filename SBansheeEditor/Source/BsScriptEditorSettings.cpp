@@ -30,6 +30,17 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetActiveCoordinateMode", &ScriptEditorSettings::internal_SetActiveCoordinateMode);
 		metaData.scriptClass->addInternalCall("Internal_GetActivePivotMode", &ScriptEditorSettings::internal_GetActivePivotMode);
 		metaData.scriptClass->addInternalCall("Internal_SetActivePivotMode", &ScriptEditorSettings::internal_SetActivePivotMode);
+		metaData.scriptClass->addInternalCall("Internal_SetFloat", &ScriptEditorSettings::internal_SetFloat);
+		metaData.scriptClass->addInternalCall("Internal_SetInt", &ScriptEditorSettings::internal_SetInt);
+		metaData.scriptClass->addInternalCall("Internal_SetBool", &ScriptEditorSettings::internal_SetBool);
+		metaData.scriptClass->addInternalCall("Internal_SetString", &ScriptEditorSettings::internal_SetString);
+		metaData.scriptClass->addInternalCall("Internal_GetFloat", &ScriptEditorSettings::internal_GetFloat);
+		metaData.scriptClass->addInternalCall("Internal_GetInt", &ScriptEditorSettings::internal_GetInt);
+		metaData.scriptClass->addInternalCall("Internal_GetBool", &ScriptEditorSettings::internal_GetBool);
+		metaData.scriptClass->addInternalCall("Internal_GetString", &ScriptEditorSettings::internal_GetString);
+		metaData.scriptClass->addInternalCall("Internal_HasKey", &ScriptEditorSettings::internal_HasKey);
+		metaData.scriptClass->addInternalCall("Internal_DeleteKey", &ScriptEditorSettings::internal_DeleteKey);
+		metaData.scriptClass->addInternalCall("Internal_DeleteAllKeys", &ScriptEditorSettings::internal_DeleteAllKeys);
 		metaData.scriptClass->addInternalCall("Internal_GetHash", &ScriptEditorSettings::internal_GetHash);
 	}
 
@@ -127,6 +138,95 @@ namespace BansheeEngine
 	{
 		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
 		settings->setActivePivotMode(value);
+	}
+
+	void ScriptEditorSettings::internal_SetFloat(MonoString* name, float value)
+	{
+		String nativeName = MonoUtil::monoToString(name);
+
+		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		settings->setFloat(nativeName, value);
+	}
+
+	void ScriptEditorSettings::internal_SetInt(MonoString* name, int value)
+	{
+		String nativeName = MonoUtil::monoToString(name);
+
+		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		settings->setInt(nativeName, value);
+	}
+
+	void ScriptEditorSettings::internal_SetBool(MonoString* name, bool value)
+	{
+		String nativeName = MonoUtil::monoToString(name);
+
+		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		settings->setBool(nativeName, value);
+	}
+
+	void ScriptEditorSettings::internal_SetString(MonoString* name, MonoString* value)
+	{
+		String nativeName = MonoUtil::monoToString(name);
+		WString nativeValue = MonoUtil::monoToWString(value);
+
+		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		settings->setString(nativeName, nativeValue);
+	}
+
+	float ScriptEditorSettings::internal_GetFloat(MonoString* name, float defaultValue)
+	{
+		String nativeName = MonoUtil::monoToString(name);
+
+		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		return settings->getFloat(nativeName);
+	}
+
+	int ScriptEditorSettings::internal_GetInt(MonoString* name, int defaultValue)
+	{
+		String nativeName = MonoUtil::monoToString(name);
+
+		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		return settings->getInt(nativeName);
+	}
+
+	bool ScriptEditorSettings::internal_GetBool(MonoString* name, bool defaultValue)
+	{
+		String nativeName = MonoUtil::monoToString(name);
+
+		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		return settings->getBool(nativeName);
+	}
+
+	MonoString* ScriptEditorSettings::internal_GetString(MonoString* name, MonoString* defaultValue)
+	{
+		String nativeName = MonoUtil::monoToString(name);
+
+		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		WString nativeValue = settings->getString(nativeName);
+
+		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), nativeValue);
+	}
+
+	bool ScriptEditorSettings::internal_HasKey(MonoString* name)
+	{
+		String nativeName = MonoUtil::monoToString(name);
+
+		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		return settings->hasKey(nativeName);
+	}
+
+	void ScriptEditorSettings::internal_DeleteKey(MonoString* name)
+	{
+		String nativeName = MonoUtil::monoToString(name);
+
+		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		settings->deleteKey(nativeName);
+	}
+
+	void ScriptEditorSettings::internal_DeleteAllKeys()
+	{
+		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		settings->deleteAllKeys();
 	}
 
 	UINT32 ScriptEditorSettings::internal_GetHash()

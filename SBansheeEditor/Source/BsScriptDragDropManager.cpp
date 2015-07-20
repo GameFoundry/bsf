@@ -219,7 +219,7 @@ namespace BansheeEngine
 	void ScriptDragDropManager::update()
 	{
 		// This only stays active for a single frame
-		if (mIsDropInProgress && mDroppedFrameIdx < Time::instance().getFrameNumber())
+		if (mIsDropInProgress && mDroppedFrameIdx < Time::instance().getFrameIdx())
 			mIsDropInProgress = false;
 	}
 
@@ -295,7 +295,7 @@ namespace BansheeEngine
 
 			mIsDropInProgress = true;
 			mDropType = ScriptDragDropType::SceneObject;
-			mDroppedFrameIdx = Time::instance().getFrameNumber();
+			mDroppedFrameIdx = Time::instance().getFrameIdx();
 		}
 		else if (nativeType == (UINT32)DragAndDropType::Resources)
 		{
@@ -304,7 +304,7 @@ namespace BansheeEngine
 			mDroppedPaths = draggedResources->resourcePaths;
 			mIsDropInProgress = true;
 			mDropType = ScriptDragDropType::Resource;
-			mDroppedFrameIdx = Time::instance().getFrameNumber();
+			mDroppedFrameIdx = Time::instance().getFrameIdx();
 		}
 	}
 }

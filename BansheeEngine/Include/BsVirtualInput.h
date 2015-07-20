@@ -32,6 +32,7 @@ namespace BansheeEngine
 			VirtualButton button;
 			ButtonState state;
 			UINT64 timestamp;
+			UINT64 updateFrameIdx;
 			bool allowRepeat;
 		};
 

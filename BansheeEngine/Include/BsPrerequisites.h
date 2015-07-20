@@ -84,6 +84,7 @@ namespace BansheeEngine
 
 	class RenderableController;
 	class ProfilerOverlay;
+	class ProfilerOverlayInternal;
 	class DrawHelper;
 	class CameraHandler;
 	class RenderableHandler;

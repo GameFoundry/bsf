@@ -32,11 +32,11 @@ namespace BansheeEngine
 		ScriptComponent(MonoObject* instance);
 		~ScriptComponent() {}
 
-		virtual ScriptObjectBackup beginRefresh();
-		virtual void endRefresh(const ScriptObjectBackup& backupData);
-		virtual MonoObject* _createManagedInstance(bool construct);
+		virtual ScriptObjectBackup beginRefresh() override;
+		virtual void endRefresh(const ScriptObjectBackup& backupData) override;
+		virtual MonoObject* _createManagedInstance(bool construct) override;
 
-		void _onManagedInstanceDeleted();
+		void _onManagedInstanceDeleted() override;
 
 		GameObjectHandle<ManagedComponent> mManagedComponent;
 		String mNamespace;

@@ -24,17 +24,17 @@ namespace BansheeEngine
 		/**
 		 * @brief	Called by OIS whenever a gamepad/joystick button is pressed.
 		 */
-		virtual bool buttonPressed(const OIS::JoyStickEvent& arg, int button);
+		virtual bool buttonPressed(const OIS::JoyStickEvent& arg, int button) override;
 
 		/**
 		 * @brief	Called by OIS whenever a gamepad/joystick button is released.
 		 */
-		virtual bool buttonReleased(const OIS::JoyStickEvent& arg, int button);
+		virtual bool buttonReleased(const OIS::JoyStickEvent& arg, int button) override;
 
 		/**
 		 * @brief	Called by OIS whenever a gamepad/joystick axis is moved.
 		 */
-		virtual bool axisMoved(const OIS::JoyStickEvent& arg, int axis);
+		virtual bool axisMoved(const OIS::JoyStickEvent& arg, int axis) override;
 
 	private:
 		UINT32 mGamepadIdx;
@@ -64,41 +64,41 @@ namespace BansheeEngine
 		/**
 		 * @brief	Called by OIS whenever a keyboard button is pressed.
 		 */
-		virtual bool keyPressed(const OIS::KeyEvent& arg);
+		virtual bool keyPressed(const OIS::KeyEvent& arg) override;
 
 		/**
 		 * @brief	Called by OIS whenever a keyboard button is released.
 		 */
-		virtual bool keyReleased(const OIS::KeyEvent& arg);
+		virtual bool keyReleased(const OIS::KeyEvent& arg) override;
 
 		/**
 		 * @brief	Called by OIS whenever mouse is moved.
 		 */
-		virtual bool mouseMoved(const OIS::MouseEvent& arg);
+		virtual bool mouseMoved(const OIS::MouseEvent& arg) override;
 
 		/**
 		 * @brief	Called by OIS whenever is a mouse button pressed.
 		 */
-		virtual bool mousePressed(const OIS::MouseEvent& arg, OIS::MouseButtonID id);
+		virtual bool mousePressed(const OIS::MouseEvent& arg, OIS::MouseButtonID id) override;
 
 		/**
 		 * @brief	Called by OIS whenever is a mouse button released
 		 */
-		virtual bool mouseReleased(const OIS::MouseEvent& arg, OIS::MouseButtonID id);
+		virtual bool mouseReleased(const OIS::MouseEvent& arg, OIS::MouseButtonID id) override;
 
 		/**
 		 * @brief	Called once per frame.
 		 *
 		 * @note	Internal method.
 		 */
-		virtual void _update();
+		virtual void _update() override;
 
 		/**
 		 * @brief	Called whenever the currently focused window changes.
 		 *
 		 * @note	Internal method.
 		 */
-		virtual void _inputWindowChanged(const RenderWindow& win);
+		virtual void _inputWindowChanged(const RenderWindow& win) override;
 
 		/**
 		 * @brief	Converts an OIS key code into engine button code.
@@ -139,7 +139,7 @@ namespace BansheeEngine
 		float mMouseZeroTime[2];
 		INT32 mMouseSampleAccumulator[2];
 		float mMouseSmoothedAxis[2];
-		UINT32 mLastMouseUpdateFrame;
+		UINT64 mLastMouseUpdateFrame;
 
 		UINT64 mTimestampClockOffset;
 	};

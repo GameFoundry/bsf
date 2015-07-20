@@ -361,7 +361,7 @@ namespace BansheeEngine
 		// Leave 30 pixels to the right free
 		rightLayout->addNewElement<GUIFixedSpace>(30);
 
-		// Add a profiler overlay object that is resposible for displaying CPU and GPU profiling GUI
+		// Add a profiler overlay object that is responsible for displaying CPU and GPU profiling GUI
 		profilerOverlay = guiSO->addComponent<ProfilerOverlay>(guiCamera->getViewport());
 
 		// Set up video mode list box

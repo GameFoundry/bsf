@@ -97,4 +97,6 @@ namespace BansheeEngine
 		float mRadius;
 		Vector3 mCenter;
     };
+
+	BS_ALLOW_MEMCPY_SERIALIZATION(Sphere);
 }

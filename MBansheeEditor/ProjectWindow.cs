@@ -864,14 +864,6 @@ namespace BansheeEditor
             }
             else
             {
-                int tileSize = 64;
-                switch (viewType)
-                {
-                    case ProjectViewType.Grid64: tileSize = 64; break;
-                    case ProjectViewType.Grid48: tileSize = 48; break;
-                    case ProjectViewType.Grid32: tileSize = 32; break;
-                }
-
                 contentInfo.main.AddSpace(GRID_ENTRY_SPACING / 2);
                 GUILayoutX rowLayout = contentInfo.main.AddLayoutX();
                 contentInfo.main.AddSpace(GRID_ENTRY_SPACING);

@@ -18,7 +18,7 @@ namespace BansheeEngine
             get { return Internal_GetFrameDelta(); }
         }
 
-        public static int FrameNumber
+        public static UInt64 FrameIdx
         {
             get { return Internal_GetFrameNumber(); }
         }
@@ -38,7 +38,7 @@ namespace BansheeEngine
         private static extern float Internal_GetFrameDelta();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern int Internal_GetFrameNumber();
+        private static extern UInt64 Internal_GetFrameNumber();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern UInt64 Internal_GetPrecise();

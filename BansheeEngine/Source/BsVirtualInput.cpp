@@ -102,10 +102,15 @@ namespace BansheeEngine
 
 	void VirtualInput::_update()
 	{
+		UINT64 frameIdx = gTime().getFrameIdx();
 		for (auto& deviceData : mDevices)
 		{
 			for (auto& state : deviceData.cachedStates)
 			{
+				// We need to stay in toggled state for one frame.
+				if (state.second.updateFrameIdx == frameIdx)
+					continue;
+
 				if (state.second.state == ButtonState::ToggledOff)
 					state.second.state = ButtonState::Off;
 				else if (state.second.state == ButtonState::ToggledOn)
@@ -194,6 +199,7 @@ namespace BansheeEngine
 				data.button = btn;
 				data.state = ButtonState::ToggledOn;
 				data.timestamp = event.timestamp;
+				data.updateFrameIdx = gTime().getFrameIdx();
 				data.allowRepeat = btnDesc.repeatable;
 
 				VirtualButtonEvent virtualEvent;
@@ -229,6 +235,7 @@ namespace BansheeEngine
 				data.button = btn;
 				data.state = ButtonState::ToggledOff;
 				data.timestamp = event.timestamp;
+				data.updateFrameIdx = gTime().getFrameIdx();
 				data.allowRepeat = btnDesc.repeatable;
 
 				VirtualButtonEvent virtualEvent;
