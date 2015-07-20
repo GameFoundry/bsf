@@ -6,30 +6,59 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	A composite GUI object representing an editor field. Editor fields are a combination
+	 *			of a label and an input field. Label is optional. This specific implementation
+	 *			displays a color input field.
+	 */
 	class BS_ED_EXPORT GUIColorField : public TGUIField<GUIColorField>
 	{
 	public:
+		/**
+		 * Returns type name of the GUI element used for finding GUI element styles. 
+		 */
 		static const String& getGUITypeName();
+
+		/**
+		 * Style type name for the internal color field.
+		 */
 		static const String& getColorInputStyleType();
 
 		GUIColorField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth,
 			const String& style, const GUIDimensions& dimensions, bool withLabel);
 
+		/**
+		 * @brief	Returns the value of the field.
+		 */
 		Color getValue() const { return mValue; }
+
+		/**
+		 * @brief	Changes the value of the field.
+		 */
 		void setValue(const Color& value);
 
 		/**
 		 * @copydoc	GUIElement::setTint
 		 */
-		virtual void setTint(const Color& color);
+		virtual void setTint(const Color& color) override;
 
-		Vector2I _getOptimalSize() const;
+		/**
+		 * @copydoc	GUIElement::_getOptimalSize
+		 */
+		Vector2I _getOptimalSize() const override;
 
-		Event<void(const Color&)> onValueChanged;
+		Event<void(const Color&)> onValueChanged; /**< Triggered when the displayed color value changes. */
 	protected:
 		virtual ~GUIColorField();
 
-		void styleUpdated();
+		/**
+		 * @copydoc	GUIElement::styleUpdated
+		 */
+		void styleUpdated() override;
+
+		/**
+		 * @brief	Triggered when the child color input field's value changes.
+		 */
 		void valueChanged(const Color& newValue);
 
 		UINT32 mLabelWidth;
