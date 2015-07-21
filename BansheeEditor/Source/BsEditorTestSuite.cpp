@@ -10,6 +10,7 @@
 #include "BsPrefab.h"
 #include "BsResources.h"
 #include "BsPrefabDiff.h"
+#include "BsFrameAlloc.h"
 
 namespace BansheeEngine
 {
@@ -422,6 +423,7 @@ namespace BansheeEngine
 		BS_ADD_TEST(EditorTestSuite::SceneObjectRecord_UndoRedo);
 		BS_ADD_TEST(EditorTestSuite::BinaryDiff);
 		BS_ADD_TEST(EditorTestSuite::TestPrefabDiff);
+		BS_ADD_TEST(EditorTestSuite::TestFrameAlloc)
 	}
 
 	void EditorTestSuite::SceneObjectRecord_UndoRedo()
@@ -656,5 +658,51 @@ namespace BansheeEngine
 		BS_TEST_ASSERT(ncmp3 != nullptr);
 
 		root->destroy();
+	}
+
+	void EditorTestSuite::TestFrameAlloc()
+	{
+		FrameAlloc alloc(128);
+		alloc.markFrame();
+		UINT8* a1 = alloc.alloc(5);
+		UINT8* a2 = alloc.alloc(10);
+		UINT8* a3 = alloc.alloc(130);
+		UINT8* a4 = alloc.alloc(5);
+
+		alloc.dealloc(a1);
+		alloc.dealloc(a2);
+		alloc.dealloc(a3);
+		alloc.dealloc(a4);
+
+		alloc.clear();
+
+		alloc.markFrame();
+		UINT8* a5 = alloc.alloc(5);
+		UINT8* a6 = alloc.alloc(10);
+		UINT8* a7 = alloc.alloc(130);
+		UINT8* a8 = alloc.alloc(5);
+
+		alloc.dealloc(a5);
+		alloc.dealloc(a6);
+		alloc.dealloc(a7);
+		alloc.dealloc(a8);
+
+		alloc.markFrame();
+		UINT8* a9 = alloc.alloc(5);
+		UINT8* a10 = alloc.alloc(10);
+		UINT8* a11 = alloc.alloc(130);
+		UINT8* a12 = alloc.alloc(5);
+
+		alloc.dealloc(a9);
+		alloc.dealloc(a10);
+		alloc.dealloc(a11);
+		alloc.dealloc(a12);
+
+		alloc.clear();
+		alloc.clear();
+
+		UINT8* a13 = alloc.alloc(5);
+		alloc.dealloc(a13);
+		alloc.clear();
 	}
 }

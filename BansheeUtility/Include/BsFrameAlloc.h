@@ -80,7 +80,14 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Deallocates all allocated memory.
+		 * @brief	Starts a new frame. Next call to ::clear will only clear memory
+		 *			allocated past this point.
+		 */
+		void markFrame();
+
+		/**
+		 * @brief	Deallocates all allocated memory since the last call to ::markFrame
+		 *			(or all the memory if there was no call to ::markFrame).
 		 * 			
 		 * @note	Not thread safe.
 		 */
@@ -90,17 +97,17 @@ namespace BansheeEngine
 		 * @brief	Changes the frame allocator owner thread. After the owner
 		 *			thread has changed only allocations from that thread can be made.
 		 */
-		void setOwnerThread(BS_THREAD_ID_TYPE thread) { mOwnerThread = thread; }
+		void setOwnerThread(BS_THREAD_ID_TYPE thread);
 
 	private:
 		UINT32 mBlockSize;
 		Vector<MemBlock*> mBlocks;
 		MemBlock* mFreeBlock;
+		UINT32 mNextBlockIdx;
 		std::atomic<UINT32> mTotalAllocBytes;
+		void* mLastFrame;
 
 #if BS_DEBUG_MODE
-		UINT32 mAllocId;
-		Set<UINT32> mActiveAllocs;
 		BS_THREAD_ID_TYPE mOwnerThread;
 #endif
 

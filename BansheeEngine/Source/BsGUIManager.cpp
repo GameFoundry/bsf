@@ -191,12 +191,10 @@ namespace BansheeEngine
 		DragAndDropManager::instance()._update();
 
 		// Update layouts
-		gProfilerCPU().beginSample("UpdateLayout");
 		for(auto& widgetInfo : mWidgets)
 		{
 			widgetInfo.widget->_updateLayout();
 		}
-		gProfilerCPU().endSample("UpdateLayout");
 
 		// Destroy all queued elements (and loop in case any new ones get queued during destruction)
 		do

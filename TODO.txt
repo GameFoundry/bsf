@@ -77,8 +77,9 @@ First screenshot work:
 - (Optionally) Console window
 
 Optimization:
+ - Remove profiling calls in GUIWidget and text sprite
+ - Remove pause mechanic from profiler overlay
  - HResource.isLoaded checks are using up a lot of allocations in GUI updates
- - (Profiler has a large overhead as it allocates strings with each call. Consider using stack allocated strings which are either hashed or stored internally on stack as well)
  - There are more issues with GUI allocations
 
 -----------

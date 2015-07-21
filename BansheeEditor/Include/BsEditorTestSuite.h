@@ -85,5 +85,10 @@ namespace BansheeEngine
 		 *			and re-applying the modifications.
 		 */
 		void TestPrefabDiff();
+
+		/**
+		 * @brief	Tests the frame allocator.
+		 */
+		void TestFrameAlloc();
 	};
 }

@@ -25,9 +25,8 @@ namespace BansheeEngine
 
 	FrameAlloc::FrameAlloc(UINT32 blockSize)
 		:mTotalAllocBytes(0), mFreeBlock(nullptr), mBlockSize(blockSize),
-		mOwnerThread(BS_THREAD_CURRENT_ID)
+		mOwnerThread(BS_THREAD_CURRENT_ID), mLastFrame(nullptr), mNextBlockIdx(0)
 	{
-		
 		allocBlock(mBlockSize);
 	}
 
@@ -42,7 +41,7 @@ namespace BansheeEngine
 #if BS_DEBUG_MODE
 		assert(mOwnerThread == BS_THREAD_CURRENT_ID && "Frame allocator called from invalid thread.");
 
-		amount += sizeof(UINT32) * 2;
+		amount += sizeof(UINT32);
 #endif
 
 		UINT32 freeMem = mFreeBlock->mSize - mFreeBlock->mFreePtr;
@@ -57,13 +56,7 @@ namespace BansheeEngine
 		UINT32* storedSize = reinterpret_cast<UINT32*>(data);
 		*storedSize = amount;
 
-		UINT32* storedId = reinterpret_cast<UINT32*>(data + sizeof(UINT32));
-		*storedId = mAllocId;
-
-		mActiveAllocs.insert(mAllocId);
-		mAllocId++;
-
-		return data + sizeof(UINT32) * 2;
+		return data + sizeof(UINT32);
 #else
 		return data;
 #endif
@@ -72,40 +65,108 @@ namespace BansheeEngine
 	void FrameAlloc::dealloc(UINT8* data)
 	{
 		// Dealloc is only used for debug and can be removed if needed. All the actual deallocation
-		// happens in "clear"
+		// happens in ::clear
 			
 #if BS_DEBUG_MODE
-		data -= sizeof(UINT32) * 2;
+		data -= sizeof(UINT32);
 		UINT32* storedSize = reinterpret_cast<UINT32*>(data);
-		UINT32* storedId = reinterpret_cast<UINT32*>(data + sizeof(UINT32));
 		mTotalAllocBytes -= *storedSize;
-		mActiveAllocs.erase(*storedId);
 #endif
+	}
+
+	void FrameAlloc::markFrame()
+	{
+		void** framePtr = (void**)alloc(sizeof(void*));
+		*framePtr = mLastFrame;
+		mLastFrame = framePtr;
 	}
 
 	void FrameAlloc::clear()
 	{
-#if BS_DEBUG_MODE
 		assert(mOwnerThread == BS_THREAD_CURRENT_ID && "Frame allocator called from invalid thread.");
 
-		if(mTotalAllocBytes.load() > 0)
-			BS_EXCEPT(InvalidStateException, "Not all frame allocated bytes were properly released.");
+		if(mLastFrame != nullptr)
+		{
+			assert(mBlocks.size() > 0 && mNextBlockIdx > 0);
 
-		mAllocId = 0;
-		mActiveAllocs.clear();
+			dealloc(mLastFrame);
+
+			UINT8* framePtr = (UINT8*)mLastFrame;
+			mLastFrame = *(void**)mLastFrame;
+
+#if BS_DEBUG_MODE
+			framePtr -= sizeof(UINT32);
 #endif
 
-		// Merge all blocks into one
-		UINT32 totalBytes = 0;
-		for(auto& block : mBlocks)
-		{
-			totalBytes += block->mSize;
-			deallocBlock(block);
-		}
+			UINT32 startBlockIdx = mNextBlockIdx - 1;
+			UINT32 numFreedBlocks = 0;
+			for (UINT32 i = startBlockIdx; i >= 0; i--)
+			{
+				MemBlock* curBlock = mBlocks[i];
+				UINT8* blockEnd = curBlock->mData + curBlock->mSize;
+				if (framePtr >= curBlock->mData && framePtr < blockEnd)
+				{
+					UINT8* dataEnd = curBlock->mData + curBlock->mFreePtr;
+					UINT32 sizeInBlock = (UINT32)(dataEnd - framePtr);
+					assert(sizeInBlock <= curBlock->mFreePtr);
 
-		mBlocks.clear();
+					curBlock->mFreePtr -= sizeInBlock;
+					if (curBlock->mFreePtr == 0)
+					{
+						numFreedBlocks++;
+						mNextBlockIdx = i;
+					}
+
+					break;
+				}
+				else
+				{
+					curBlock->mFreePtr = 0;
+					mNextBlockIdx = i;
+					numFreedBlocks++;
+				}
+			}
+
+			UINT32 oldNextBlockIdx = mNextBlockIdx;
+			if (numFreedBlocks > 1)
+			{
+				UINT32 totalBytes = 0;
+				for (UINT32 i = 0; i < numFreedBlocks; i++)
+				{
+					MemBlock* curBlock = mBlocks[mNextBlockIdx];
+					totalBytes += curBlock->mSize;
+
+					deallocBlock(curBlock);
+					mBlocks.erase(mBlocks.begin() + mNextBlockIdx);
+				}
+				
+				allocBlock(totalBytes);
+			}
 			
-		allocBlock(totalBytes);			
+			// Point to the first non-full block, or if none available then point the the block we just allocated
+			if (oldNextBlockIdx > 0)
+				mFreeBlock = mBlocks[oldNextBlockIdx - 1];
+		}
+		else
+		{
+#if BS_DEBUG_MODE
+			if (mTotalAllocBytes.load() > 0)
+				BS_EXCEPT(InvalidStateException, "Not all frame allocated bytes were properly released.");
+#endif
+
+			// Merge all blocks into one
+			UINT32 totalBytes = 0;
+			for (auto& block : mBlocks)
+			{
+				totalBytes += block->mSize;
+				deallocBlock(block);
+			}
+
+			mBlocks.clear();
+			mNextBlockIdx = 0;
+
+			allocBlock(totalBytes);
+		}
 	}
 
 	FrameAlloc::MemBlock* FrameAlloc::allocBlock(UINT32 wantedSize)
@@ -114,12 +175,35 @@ namespace BansheeEngine
 		if(wantedSize > blockSize)
 			blockSize = wantedSize;
 
-		UINT8* data = (UINT8*)reinterpret_cast<UINT8*>(bs_alloc(blockSize + sizeof(MemBlock)));
-		MemBlock* newBlock = new (data) MemBlock(blockSize);
-		data += sizeof(MemBlock);
-		newBlock->mData = data;
+		MemBlock* newBlock = nullptr;
+		while (mNextBlockIdx < mBlocks.size())
+		{
+			MemBlock* curBlock = mBlocks[mNextBlockIdx];
+			if (blockSize <= curBlock->mSize)
+			{
+				newBlock = curBlock;
+				mNextBlockIdx++;
+				break;
+			}
+			else
+			{
+				// Found an empty block that doesn't fit our data, delete it
+				deallocBlock(curBlock);
+				mBlocks.erase(mBlocks.begin() + mNextBlockIdx);
+			}
+		}
 
-		mBlocks.push_back(newBlock);
+		if (newBlock == nullptr)
+		{
+			UINT8* data = (UINT8*)reinterpret_cast<UINT8*>(bs_alloc(blockSize + sizeof(MemBlock)));
+			newBlock = new (data) MemBlock(blockSize);
+			data += sizeof(MemBlock);
+			newBlock->mData = data;
+
+			mBlocks.push_back(newBlock);
+			mNextBlockIdx++;
+		}
+
 		mFreeBlock = newBlock; // If previous block had some empty space it is lost until next "clear"
 
 		return newBlock;
@@ -129,5 +213,12 @@ namespace BansheeEngine
 	{
 		block->~MemBlock();
 		bs_free(block);
+	}
+
+	void FrameAlloc::setOwnerThread(BS_THREAD_ID_TYPE thread)
+	{
+#if BS_DEBUG_MODE
+		mOwnerThread = thread;
+#endif
 	}
 }
