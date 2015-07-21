@@ -8,7 +8,7 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	GUI elements that displays the set color. RGB and alpha
+	 * @brief	GUI element that displays the set color. RGB and alpha
 	 *			values are displayed separately.
 	 */
 	class GUIColor : public GUIElement
