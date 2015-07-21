@@ -129,7 +129,7 @@ namespace BansheeEngine
 		{
 			Vector<GLchar*> lines;
 
-			GLchar* firstLineData = (GLchar*)stackAlloc(sizeof(GLSL_VERSION_LINE));
+			GLchar* firstLineData = (GLchar*)bs_stack_alloc(sizeof(GLSL_VERSION_LINE));
 			memcpy(firstLineData, GLSL_VERSION_LINE, sizeof(GLSL_VERSION_LINE));
 
 			lines.push_back(firstLineData);
@@ -145,7 +145,7 @@ namespace BansheeEngine
 
 						bool isDefine = source[i - lineLength] == '#';
 
-						GLchar* lineData = (GLchar*)stackAlloc(sizeof(GLchar) * (lineLength + 1 + (isDefine ? 1 : 0)));
+						GLchar* lineData = (GLchar*)bs_stack_alloc(sizeof(GLchar) * (lineLength + 1 + (isDefine ? 1 : 0)));
 						memcpy(lineData, &source[i - lineLength], sizeof(GLchar) * lineLength);
 
 						if (isDefine) // Defines require a newline as well as a null terminator, otherwise it doesn't compile properly
@@ -171,7 +171,7 @@ namespace BansheeEngine
 				UINT32 end = (UINT32)source.size() - 1;
 				assert(sizeof(source[end]) == sizeof(GLchar));
 
-				GLchar* lineData = (GLchar*)stackAlloc(sizeof(GLchar) * (lineLength + 1));
+				GLchar* lineData = (GLchar*)bs_stack_alloc(sizeof(GLchar) * (lineLength + 1));
 				memcpy(lineData, &source[source.size() - lineLength], sizeof(GLchar) * lineLength);
 				lineData[lineLength] = '\0';
 
@@ -183,7 +183,7 @@ namespace BansheeEngine
 
 			for (auto iter = lines.rbegin(); iter != lines.rend(); ++iter)
 			{
-				stackDeallocLast(*iter);
+				bs_stack_free(*iter);
 			}
 
 			mCompileError = "";

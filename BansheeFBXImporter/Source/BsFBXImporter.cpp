@@ -424,25 +424,25 @@ namespace BansheeEngine
 
 				// Copy & transform positions
 				UINT32 positionsSize = sizeof(Vector3) * (UINT32)numVertices;
-				Vector3* transformedPositions = (Vector3*)stackAlloc(positionsSize);
+				Vector3* transformedPositions = (Vector3*)bs_stack_alloc(positionsSize);
 
 				for (UINT32 i = 0; i < (UINT32)numVertices; i++)
 					transformedPositions[i] = worldTransform.multiplyAffine((Vector3)mesh->positions[i]);
 
 				meshData->setPositions(transformedPositions, positionsSize);
-				stackDeallocLast(transformedPositions);
+				bs_stack_free(transformedPositions);
 
 				// Copy & transform normals
 				if (hasNormals)
 				{
 					UINT32 normalsSize = sizeof(Vector3) * (UINT32)numVertices;
-					Vector3* transformedNormals = (Vector3*)stackAlloc(normalsSize);
+					Vector3* transformedNormals = (Vector3*)bs_stack_alloc(normalsSize);
 
 					// Copy, convert & transform tangents & bitangents
 					if (hasTangents)
 					{
 						UINT32 tangentsSize = sizeof(Vector4) * (UINT32)numVertices;
-						Vector4* transformedTangents = (Vector4*)stackAlloc(tangentsSize);
+						Vector4* transformedTangents = (Vector4*)bs_stack_alloc(tangentsSize);
 
 						for (UINT32 i = 0; i < (UINT32)numVertices; i++)
 						{
@@ -462,7 +462,7 @@ namespace BansheeEngine
 						}
 
 						meshData->setTangents(transformedTangents, tangentsSize);
-						stackDeallocLast(transformedTangents);
+						bs_stack_free(transformedTangents);
 					}
 					else // Just normals
 					{
@@ -471,7 +471,7 @@ namespace BansheeEngine
 					}
 
 					meshData->setNormals(transformedNormals, normalsSize);
-					stackDeallocLast(transformedNormals);
+					bs_stack_free(transformedNormals);
 				}
 
 				// Copy colors
@@ -487,7 +487,7 @@ namespace BansheeEngine
 					if (uvLayer.size() == numVertices)
 					{
 						UINT32 size = sizeof(Vector2) * (UINT32)numVertices;
-						Vector2* transformedUV = (Vector2*)stackAlloc(size);
+						Vector2* transformedUV = (Vector2*)bs_stack_alloc(size);
 
 						UINT32 i = 0;
 						for (auto& uv : uvLayer)
@@ -503,7 +503,7 @@ namespace BansheeEngine
 						else if (writeUVIDx == 1)
 							meshData->setUV1(transformedUV, size);
 
-						stackDeallocLast(transformedUV);
+						bs_stack_free(transformedUV);
 
 						writeUVIDx++;
 					}

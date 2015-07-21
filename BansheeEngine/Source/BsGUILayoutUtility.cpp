@@ -28,7 +28,7 @@ namespace BansheeEngine
 		Rect2I* elementAreas = nullptr;
 
 		if (numElements > 0)
-			elementAreas = stackConstructN<Rect2I>(numElements);
+			elementAreas = bs_stack_new<Rect2I>(numElements);
 
 		Rect2I parentArea;
 		parentArea.width = width;
@@ -65,7 +65,7 @@ namespace BansheeEngine
 		Vector2I actualSize = layout->_calcActualSize(0, 0, actualAreas, numElements);
 
 		if (elementAreas != nullptr)
-			stackDeallocLast(elementAreas);
+			bs_stack_free(elementAreas);
 
 		return actualSize;
 	}

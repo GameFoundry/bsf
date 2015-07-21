@@ -242,18 +242,18 @@ namespace BansheeEngine
 
 								if ((*bytesWritten + typeSize) > bufferLength)
 								{
-									UINT8* tempBuffer = (UINT8*)stackAlloc(typeSize);
+									UINT8* tempBuffer = (UINT8*)bs_stack_alloc(typeSize);
 									curField->arrayElemToBuffer(object, arrIdx, tempBuffer);
 
 									buffer = dataBlockToBuffer(tempBuffer, typeSize, buffer, bufferLength, bytesWritten, flushBufferCallback);
 									if (buffer == nullptr || bufferLength == 0)
 									{
-										stackDeallocLast(tempBuffer);
+										bs_stack_free(tempBuffer);
 										si->onSerializationEnded(object);
 										return nullptr;
 									}
 
-									stackDeallocLast(tempBuffer);
+									bs_stack_free(tempBuffer);
 								}
 								else
 								{
@@ -315,18 +315,18 @@ namespace BansheeEngine
 
 							if ((*bytesWritten + typeSize) > bufferLength)
 							{
-								UINT8* tempBuffer = (UINT8*)stackAlloc(typeSize);
+								UINT8* tempBuffer = (UINT8*)bs_stack_alloc(typeSize);
 								curField->toBuffer(object, tempBuffer);
 								
 								buffer = dataBlockToBuffer(tempBuffer, typeSize, buffer, bufferLength, bytesWritten, flushBufferCallback);
 								if (buffer == nullptr || bufferLength == 0)
 								{
-									stackDeallocLast(tempBuffer);
+									bs_stack_free(tempBuffer);
 									si->onSerializationEnded(object);
 									return nullptr;
 								}
 
-								stackDeallocLast(tempBuffer);
+								bs_stack_free(tempBuffer);
 							}
 							else
 							{

@@ -219,7 +219,7 @@ namespace BansheeEngine
 		Rect2I* elementAreas = nullptr;
 
 		if (numElements > 0)
-			elementAreas = stackConstructN<Rect2I>(numElements);
+			elementAreas = bs_stack_new<Rect2I>(numElements);
 
 		Vector<LayoutSizeRange> sizeRanges;
 		UINT32 layoutIdx = 0;
@@ -310,7 +310,7 @@ namespace BansheeEngine
 		}
 
 		if (elementAreas != nullptr)
-			stackDeallocLast(elementAreas);
+			bs_stack_free(elementAreas);
 	}
 
 	void GUIScrollArea::vertScrollUpdate(float scrollPos)

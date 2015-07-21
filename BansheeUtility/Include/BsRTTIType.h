@@ -184,12 +184,12 @@ namespace BansheeEngine
 			else
 				typeSize = sizeof(DataType);
 
-			UINT8* tempBuffer = (UINT8*)stackAlloc(typeSize);
+			UINT8* tempBuffer = (UINT8*)bs_stack_alloc(typeSize);
 			RTTIPlainType<DataType>::toMemory(value, (char*)tempBuffer);
 			
 			field->fromBuffer(object, tempBuffer);
 
-			stackDeallocLast(tempBuffer);
+			bs_stack_free(tempBuffer);
 		}
 
 		/**
@@ -212,12 +212,12 @@ namespace BansheeEngine
 			else
 				typeSize = sizeof(DataType);
 
-			UINT8* tempBuffer = (UINT8*)stackAlloc(typeSize);
+			UINT8* tempBuffer = (UINT8*)bs_stack_alloc(typeSize);
 			RTTIPlainType<DataType>::toMemory(value, (char*)tempBuffer);
 
 			field->arrayElemFromBuffer(object, index, tempBuffer);
 
-			stackDeallocLast(tempBuffer);
+			bs_stack_free(tempBuffer);
 		}
 
 		/**
@@ -331,12 +331,12 @@ namespace BansheeEngine
 			else
 				typeSize = field->getTypeSize();
 
-			UINT8* tempBuffer = (UINT8*)stackAlloc(typeSize);
+			UINT8* tempBuffer = (UINT8*)bs_stack_alloc(typeSize);
 
 			field->toBuffer(object, tempBuffer);
 			RTTIPlainType<DataType>::fromMemory(value, (char*)tempBuffer);
 
-			stackDeallocLast(tempBuffer);
+			bs_stack_free(tempBuffer);
 		}
 
 		/**
@@ -358,12 +358,12 @@ namespace BansheeEngine
 			else
 				typeSize = field->getTypeSize();
 
-			UINT8* tempBuffer = (UINT8*)stackAlloc(typeSize);
+			UINT8* tempBuffer = (UINT8*)bs_stack_alloc(typeSize);
 
 			field->arrayElemToBuffer(object, index, tempBuffer);
 			RTTIPlainType<DataType>::fromMemory(value, (char*)tempBuffer);
 
-			stackDeallocLast(tempBuffer);
+			bs_stack_free(tempBuffer);
 		}	
 
 		/**

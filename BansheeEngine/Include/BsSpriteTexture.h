@@ -67,12 +67,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	Resource::getResourceDependencies
 		 */
-		void getResourceDependencies(Vector<HResource>& dependencies) const;
+		void getResourceDependencies(Vector<HResource>& dependencies) const override;
 
 		/**
 		 * @copydoc	CoreObject::getCoreDependencies
 		 */
-		void getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies);
+		void getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies) override;
 
 		HTexture mAtlasTexture;
 		Vector2 mUVOffset;

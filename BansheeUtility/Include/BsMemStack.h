@@ -213,9 +213,9 @@ namespace BansheeEngine
 	};
 
 	/**
-	* @copydoc	MemoryStackInternal::alloc
-	*/
-	BS_UTILITY_EXPORT inline void* stackAlloc(UINT32 numBytes);
+	 * @copydoc	MemoryStackInternal::alloc
+	 */
+	BS_UTILITY_EXPORT inline void* bs_stack_alloc(UINT32 numBytes);
 
 	/**
 	 * @brief	Allocates enough memory to hold the specified type, on the stack, but
@@ -224,7 +224,7 @@ namespace BansheeEngine
 	 * @see		MemoryStackInternal::alloc()
 	 */
 	template<class T>
-	T* stackAlloc()
+	T* bs_stack_alloc()
 	{
 		return (T*)MemStack::alloc(sizeof(T));
 	}
@@ -236,24 +236,41 @@ namespace BansheeEngine
 	 * @see		MemoryStackInternal::alloc()
 	 */
 	template<class T>
-	T* stackAllocN(UINT32 count)
+	T* bs_stack_alloc(UINT32 count)
 	{
 		return (T*)MemStack::alloc(sizeof(T) * count);
 	}
 
 	/**
 	 * @brief	Allocates enough memory to hold the specified type, on the stack, 
-	 * 			and initializes the object using the parameterless constructor.
+	 * 			and constructs the object.
 	 *
 	 * @see		MemoryStackInternal::alloc()
 	 */
 	template<class T>
-	T* stackConstructN(UINT32 count)
+	T* bs_stack_new(UINT32 count = 0)
 	{
-		T* data = stackAllocN<T>(count);
+		T* data = bs_stack_alloc<T>(count);
 
 		for(unsigned int i = 0; i < count; i++)
 			new ((void*)&data[i]) T;
+
+		return data;
+	}
+
+	/**
+	 * @brief	Allocates enough memory to hold the specified type, on the stack, 
+	 * 			and constructs the object.
+	 *
+	 * @see		MemoryStackInternal::alloc()
+	 */
+	template<class T, class... Args>
+	T* bs_stack_new(Args &&...args, UINT32 count = 0)
+	{
+		T* data = bs_stack_alloc<T>(count);
+
+		for(unsigned int i = 0; i < count; i++)
+			new ((void*)&data[i]) T(std::forward<Args>(args)...);
 
 		return data;
 	}
@@ -264,7 +281,7 @@ namespace BansheeEngine
 	 * @see		MemoryStackInternal::dealloc()
 	 */
 	template<class T>
-	void stackDestruct(T* data)
+	void bs_stack_delete(T* data)
 	{
 		data->~T();
 
@@ -278,7 +295,7 @@ namespace BansheeEngine
 	 * @see		MemoryStackInternal::dealloc()
 	 */
 	template<class T>
-	void stackDestructN(T* data, UINT32 count)
+	void bs_stack_delete(T* data, UINT32 count)
 	{
 		for(unsigned int i = 0; i < count; i++)
 			data[i].~T();
@@ -289,7 +306,7 @@ namespace BansheeEngine
 	/**
 	 * @copydoc	MemoryStackInternal::dealloc()
 	 */
-	BS_UTILITY_EXPORT inline void stackDeallocLast(void* data);
+	BS_UTILITY_EXPORT inline void bs_stack_free(void* data);
 
 	/**
 	* @brief	Allows use of a stack allocator by using normal new/delete/free/dealloc operators.
@@ -311,22 +328,22 @@ namespace BansheeEngine
 	public:
 		static inline void* allocate(size_t bytes)
 		{
-			return stackAlloc((UINT32)bytes);
+			return bs_stack_alloc((UINT32)bytes);
 		}
 
 		static inline void* allocateArray(size_t bytes, UINT32 count)
 		{
-			return stackAlloc((UINT32)(bytes * count));
+			return bs_stack_alloc((UINT32)(bytes * count));
 		}
 
 		static inline void free(void* ptr)
 		{
-			stackDeallocLast(ptr);
+			bs_stack_free(ptr);
 		}
 
 		static inline void freeArray(void* ptr, UINT32 count)
 		{
-			stackDeallocLast(ptr);
+			bs_stack_free(ptr);
 		}
 	};
 }

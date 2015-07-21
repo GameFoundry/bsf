@@ -83,8 +83,8 @@ namespace BansheeEngine
 
 		UINT32 numStreams = maxStreamIdx + 1;
 		UINT32 numUsedBuffers = 0;
-		INT32* streamToSeqIdx = stackAllocN<INT32>(numStreams);
-		GLVertexBufferCore** usedBuffers = stackAllocN<GLVertexBufferCore*>((UINT32)boundBuffers.size());
+		INT32* streamToSeqIdx = bs_stack_alloc<INT32>(numStreams);
+		GLVertexBufferCore** usedBuffers = bs_stack_alloc<GLVertexBufferCore*>((UINT32)boundBuffers.size());
 		
 		memset(usedBuffers, 0, (UINT32)boundBuffers.size() * sizeof(GLVertexBuffer*));
 
@@ -116,8 +116,8 @@ namespace BansheeEngine
 		auto findIter = mVAObjects.find(wantedVAO);
 		if (findIter != mVAObjects.end())
 		{
-			stackDeallocLast(usedBuffers);
-			stackDeallocLast(streamToSeqIdx);
+			bs_stack_free(usedBuffers);
+			bs_stack_free(streamToSeqIdx);
 
 			return *findIter; // Found existing, return that
 		}
@@ -187,8 +187,8 @@ namespace BansheeEngine
 			usedBuffers[i]->registerVAO(wantedVAO);
 		}
 
-		stackDeallocLast(usedBuffers);
-		stackDeallocLast(streamToSeqIdx);
+		bs_stack_free(usedBuffers);
+		bs_stack_free(streamToSeqIdx);
 
 		auto iter = mVAObjects.insert(wantedVAO);
 

@@ -404,4 +404,5 @@ namespace BansheeEngine
 }
 
 #include "BsMemStack.h"
+#include "BsGlobalFrameAlloc.h"
 #include "BsMemAllocProfiler.h"

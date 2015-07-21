@@ -107,10 +107,10 @@ namespace BansheeEngine
 
 		if (mChildren.size() > 0)
 		{
-			processedElements = stackAllocN<bool>((UINT32)mChildren.size());
+			processedElements = bs_stack_alloc<bool>((UINT32)mChildren.size());
 			memset(processedElements, 0, mChildren.size() * sizeof(bool));
 
-			elementScaleWeights = stackAllocN<float>((UINT32)mChildren.size());
+			elementScaleWeights = bs_stack_alloc<float>((UINT32)mChildren.size());
 			memset(elementScaleWeights, 0, mChildren.size() * sizeof(float));
 		}
 
@@ -380,10 +380,10 @@ namespace BansheeEngine
 		}
 
 		if (elementScaleWeights != nullptr)
-			stackDeallocLast(elementScaleWeights);
+			bs_stack_free(elementScaleWeights);
 
 		if (processedElements != nullptr)
-			stackDeallocLast(processedElements);
+			bs_stack_free(processedElements);
 	}
 
 	void GUILayoutX::_updateLayoutInternal(const GUILayoutData& data)
@@ -392,7 +392,7 @@ namespace BansheeEngine
 		Rect2I* elementAreas = nullptr;
 
 		if (numElements > 0)
-			elementAreas = stackConstructN<Rect2I>(numElements);
+			elementAreas = bs_stack_new<Rect2I>(numElements);
 
 		_getElementAreas(data.area, elementAreas, numElements, mChildSizeRanges, mSizeRange);
 
@@ -413,7 +413,7 @@ namespace BansheeEngine
 		}
 
 		if(elementAreas != nullptr)
-			stackDeallocLast(elementAreas);
+			bs_stack_free(elementAreas);
 	}
 
 	Vector2I GUILayoutX::_calcActualSize(INT32 x, INT32 y, Rect2I* elementAreas, UINT32 numElements) const

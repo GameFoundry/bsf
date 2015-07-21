@@ -102,7 +102,7 @@ namespace BansheeEngine
 		{
 			Vector<TreeElement*> newChildren;
 
-			bool* tempToDelete = (bool*)stackAlloc(sizeof(bool) * (UINT32)element->mChildren.size());
+			bool* tempToDelete = (bool*)bs_stack_alloc(sizeof(bool) * (UINT32)element->mChildren.size());
 			for(UINT32 i = 0; i < (UINT32)element->mChildren.size(); i++)
 				tempToDelete[i] = true;
 
@@ -157,7 +157,7 @@ namespace BansheeEngine
 				deleteTreeElementInternal(element->mChildren[i]);
 			}
 
-			stackDeallocLast(tempToDelete);
+			bs_stack_free(tempToDelete);
 
 			element->mChildren = newChildren;
 			needsUpdate = true;

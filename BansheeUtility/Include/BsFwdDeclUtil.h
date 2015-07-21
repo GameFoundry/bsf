@@ -60,6 +60,7 @@ namespace BansheeEngine
 	struct RTTIReflectablePtrFieldBase;
 	struct SerializedObject;
 	struct SerializedInstance;
+	class FrameAlloc;
 	// Reflection
 	class IReflectable;
 	class RTTITypeBase;

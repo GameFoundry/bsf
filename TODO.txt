@@ -80,6 +80,7 @@ Optimization:
  - Remove profiling calls in GUIWidget and text sprite
  - Remove pause mechanic from profiler overlay
  - HResource.isLoaded checks are using up a lot of allocations in GUI updates
+  - getResourceDependencies AND getCoreDependencies need to use frame alloc
  - There are more issues with GUI allocations
 
 -----------

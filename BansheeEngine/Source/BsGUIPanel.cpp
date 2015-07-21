@@ -199,7 +199,7 @@ namespace BansheeEngine
 		Rect2I* elementAreas = nullptr;
 
 		if (numElements > 0)
-			elementAreas = stackConstructN<Rect2I>(numElements);
+			elementAreas = bs_stack_new<Rect2I>(numElements);
 
 		_getElementAreas(data.area, elementAreas, numElements, mChildSizeRanges, mSizeRange);
 
@@ -215,7 +215,7 @@ namespace BansheeEngine
 		}
 
 		if (elementAreas != nullptr)
-			stackDeallocLast(elementAreas);
+			bs_stack_free(elementAreas);
 	}
 
 	void GUIPanel::_updateChildLayout(GUIElementBase* element, const GUILayoutData& data)
