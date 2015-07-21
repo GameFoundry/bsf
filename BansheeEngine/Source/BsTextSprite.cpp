@@ -15,6 +15,8 @@ namespace BansheeEngine
 
 	void TextSprite::update(const TEXT_SPRITE_DESC& desc, UINT64 groupId)
 	{
+		gProfilerCPU().beginSample("UpdateTextSprite");
+
 		TextData textData(desc.text, desc.font, desc.fontSize, desc.width, desc.height, desc.wordWrap, desc.wordBreak);
 
 		UINT32 numLines = textData.getNumLines();
@@ -107,6 +109,8 @@ namespace BansheeEngine
 		}
 
 		updateBounds();
+
+		gProfilerCPU().endSample("UpdateTextSprite");
 	}
 
 	UINT32 TextSprite::genTextQuads(UINT32 page, const TextData& textData, UINT32 width, UINT32 height, 

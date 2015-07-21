@@ -359,10 +359,12 @@ namespace BansheeEngine
 
 			for(auto& widget : renderData.widgets)
 			{
-				if(widget->isDirty(true))
+				gProfilerCPU().beginSample("Widget::isDirty");
+				if (widget->isDirty(true))
 				{
 					isDirty = true;
 				}
+				gProfilerCPU().endSample("Widget::isDirty");
 			}
 
 			if(!isDirty)
@@ -564,7 +566,9 @@ namespace BansheeEngine
 				UINT32 quadOffset = 0;
 				for(auto& matElement : group->elements)
 				{
+					gProfilerCPU().beginSample("_fillBuffer");
 					matElement.element->_fillBuffer(vertices, uvs, indices, quadOffset, group->numQuads, vertexStride, indexStride, matElement.renderElement);
+					gProfilerCPU().endSample("_fillBuffer");
 
 					UINT32 numQuads = matElement.element->_getNumQuads(matElement.renderElement);
 					UINT32 indexStart = quadOffset * 6;
@@ -577,6 +581,7 @@ namespace BansheeEngine
 					quadOffset += numQuads;
 				}
 
+				gProfilerCPU().beginSample("alloc/dealloc mesh data");
 				if(groupIdx < (UINT32)renderData.cachedMeshes.size())
 				{
 					mMeshHeap->dealloc(renderData.cachedMeshes[groupIdx]);
@@ -586,6 +591,7 @@ namespace BansheeEngine
 				{
 					renderData.cachedMeshes.push_back(mMeshHeap->alloc(meshData));
 				}
+				gProfilerCPU().endSample("alloc/dealloc mesh data");
 
 				groupIdx++;
 			}

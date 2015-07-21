@@ -16,6 +16,7 @@
 #include "BsSceneObject.h"
 #include "BsRenderWindow.h"
 #include "BsGUIWidgetRTTI.h"
+#include "BsProfilerCPU.h"
 
 namespace BansheeEngine
 {
@@ -274,7 +275,9 @@ namespace BansheeEngine
 			mWidgetIsDirty = false;
 
 			for (auto& dirtyElement : mDirtyContents)
-				dirtyElement->_updateRenderElements();
+			{
+				PROFILE_CALL(dirtyElement->_updateRenderElements(), "UpdateDirty");
+			}
 
 			mDirtyContents.clear();
 			updateBounds();

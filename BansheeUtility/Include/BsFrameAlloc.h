@@ -42,6 +42,17 @@ namespace BansheeEngine
 		UINT8* alloc(UINT32 amount);
 
 		/**
+		 * @brief	Allocates and constructs a new object.
+		 *	
+		 * @note	Not thread safe.
+		 */
+		template<class T, class... Args>
+		T* alloc(Args &&...args)
+		{
+			return new ((T*)alloc(sizeof(T))) T(std::forward<Args>(args)...);
+		}
+
+		/**
 		 * @brief	Deallocates a previously allocated block of memory.
 		 *
 		 * @note	No deallocation is actually done here. This method is only used for debug purposes
@@ -50,6 +61,23 @@ namespace BansheeEngine
 		 *			Thread safe.
 		 */
 		void dealloc(UINT8* data);
+
+		/**
+		 * @brief	Deallocates and destructs a previously allocated object.
+		 *
+		 * @note	No deallocation is actually done here. This method is only used to call the destructor
+		 *			and for debug purposes so it is easier to track down memory leaks and corruption.
+		 * 			
+		 *			Thread safe.
+		 */
+		template<class T>
+		void dealloc(T* obj)
+		{
+			if (obj != nullptr)
+				obj->~T();
+
+			dealloc((UINT8*)obj);
+		}
 
 		/**
 		 * @brief	Deallocates all allocated memory.

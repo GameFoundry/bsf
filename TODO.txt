@@ -58,9 +58,8 @@ Code quality improvements:
 ----------------------------------------------------------------------
 Polish stage 1
 
-IMPORTANT: Overlay camera will also draw renderables
 Track down the large performance spike
-
+ - Seems to be caused by something on core thread
 ProjectLibrary seems to import some files on every start-up
 Crash on shutdown in mono_gchandle_free
 
@@ -76,6 +75,11 @@ First screenshot work:
  - Help - About, API Reference (link to site)
 - Status bar with last console message
 - (Optionally) Console window
+
+Optimization:
+ - HResource.isLoaded checks are using up a lot of allocations in GUI updates
+ - (Profiler has a large overhead as it allocates strings with each call. Consider using stack allocated strings which are either hashed or stored internally on stack as well)
+ - There are more issues with GUI allocations
 
 -----------
 

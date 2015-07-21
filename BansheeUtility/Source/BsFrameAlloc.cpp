@@ -24,8 +24,10 @@ namespace BansheeEngine
 	}
 
 	FrameAlloc::FrameAlloc(UINT32 blockSize)
-		:mTotalAllocBytes(0), mFreeBlock(nullptr), mBlockSize(blockSize)
+		:mTotalAllocBytes(0), mFreeBlock(nullptr), mBlockSize(blockSize),
+		mOwnerThread(BS_THREAD_CURRENT_ID)
 	{
+		
 		allocBlock(mBlockSize);
 	}
 

@@ -2,6 +2,7 @@
 
 #include "BsCorePrerequisites.h"
 #include "BsModule.h"
+#include "BsFrameAlloc.h"
 
 namespace BansheeEngine
 {
@@ -124,6 +125,8 @@ namespace BansheeEngine
 		 */
 		struct ProfileData
 		{
+			ProfileData(FrameAlloc* alloc);
+
 			/**
 			 * @brief	Begins a new sample and records current sample state. Previous sample must
 			 *			not be active.
@@ -142,7 +145,7 @@ namespace BansheeEngine
 			 */
 			void resumeLastSample();
 
-			ProfilerVector<ProfileSample> samples;
+			Vector<ProfileSample, StdFrameAlloc<ProfileSample>> samples;
 			Timer timer;
 
 			UINT64 memAllocs;
@@ -154,6 +157,8 @@ namespace BansheeEngine
 		 */
 		struct PreciseProfileData
 		{
+			PreciseProfileData(FrameAlloc* alloc);
+
 			/**
 			 * @brief	Begins a new sample and records current sample state. Previous sample must
 			 *			not be active.
@@ -172,7 +177,7 @@ namespace BansheeEngine
 			 */
 			void resumeLastSample();
 
-			ProfilerVector<PreciseProfileSample> samples;
+			Vector<PreciseProfileSample, StdFrameAlloc<ProfileSample>> samples;
 			TimerPrecise timer;
 
 			UINT64 memAllocs;
@@ -185,21 +190,21 @@ namespace BansheeEngine
 		 */
 		struct ProfiledBlock
 		{
-			ProfiledBlock();
+			ProfiledBlock(FrameAlloc* alloc);
 			~ProfiledBlock();
 
 			/**
 			 * @brief	Attempts to find a child block with the specified name. Returns
 			 *			null if not found.
 			 */
-			ProfiledBlock* findChild(const ProfilerString& name) const;
+			ProfiledBlock* findChild(const char* name) const;
 
-			ProfilerString name;
+			char* name;
 			
 			ProfileData basic;
 			PreciseProfileData precise;
 
-			ProfilerVector<ProfiledBlock*> children;
+			Vector<ProfiledBlock*, StdFrameAlloc<ProfiledBlock*>> children;
 		};
 
 		/**
@@ -239,7 +244,7 @@ namespace BansheeEngine
 			 * @brief	Starts profiling on the thread. New primary profiling block
 			 *			is created with the given name.
 			 */
-			void begin(const ProfilerString& _name);
+			void begin(const char* _name);
 
 			/**
 			 * @brief	Ends profiling on the thread. You should end all samples before calling this,
@@ -256,7 +261,7 @@ namespace BansheeEngine
 			/**
 			 * @brief	Gets the primary profiling block used by the thread.
 			 */
-			ProfiledBlock* getBlock();
+			ProfiledBlock* getBlock(const char* name);
 			
 			/**
 			 * @brief	Deletes the provided block.
@@ -268,8 +273,9 @@ namespace BansheeEngine
 
 			ProfiledBlock* rootBlock;
 
-			ProfilerStack<ActiveBlock> activeBlocks;
+			FrameAlloc frameAlloc;
 			ActiveBlock activeBlock;
+			Stack<ActiveBlock, StdFrameAlloc<ActiveBlock>>* activeBlocks;
 		};
 
 	public:
@@ -282,7 +288,7 @@ namespace BansheeEngine
 		 *
 		 * @param	name	Name that will allow you to more easily identify the thread.
 		 */
-		void beginThread(const ProfilerString& name);
+		void beginThread(const char* name);
 
 		/**
 		 * @brief	Ends sampling for the current thread. No beginSample*\endSample* calls after this point.
@@ -294,7 +300,7 @@ namespace BansheeEngine
 		 *
 		 * @param	name	Unique name for the sample you can later use to find the sampling data.
 		 */
-		void beginSample(const ProfilerString& name);
+		void beginSample(const char* name);
 
 		/**
 		 * @brief	Ends sample measurement.
@@ -304,7 +310,7 @@ namespace BansheeEngine
 		 * @note	Unique name is primarily needed to more easily identify mismatched
 		 * 			begin/end sample pairs. Otherwise the name in beginSample would be enough.
 		 */
-		void endSample(const ProfilerString& name);
+		void endSample(const char* name);
 
 		/**
 		 * @brief	Begins sample measurement. Must be followed by endSample. 
@@ -316,7 +322,7 @@ namespace BansheeEngine
 		 * 			not use this method for larger parts of code. It does not consider context switches so if the OS
 		 * 			decides to switch context between measurements you will get invalid data.
 		 */
-		void beginSamplePrecise(const ProfilerString& name);
+		void beginSamplePrecise(const char* name);
 
 		/**
 		 * @brief	Ends precise sample measurement.
@@ -326,7 +332,7 @@ namespace BansheeEngine
 		 * @note	Unique name is primarily needed to more easily identify mismatched
 		 * 			begin/end sample pairs. Otherwise the name in beginSamplePrecise would be enough.
 		 */
-		void endSamplePrecise(const ProfilerString& name);
+		void endSamplePrecise(const char* name);
 
 		/**
 		 * @brief	Clears all sampling data, and ends any unfinished sampling blocks.

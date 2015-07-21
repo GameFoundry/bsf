@@ -1,6 +1,7 @@
 #include "BsTextSprite.h"
 #include "BsGUIMaterialManager.h"
 #include "BsVector2.h"
+#include "BsProfilerCPU.h"
 
 namespace BansheeEngine
 {
@@ -45,7 +46,7 @@ namespace BansheeEngine
 	UINT32 Sprite::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx, const Vector2I& offset, const Rect2I& clipRect, bool clip) const
 	{
-		auto renderElem = mCachedRenderElements.at(renderElementIdx);
+		const auto& renderElem = mCachedRenderElements.at(renderElementIdx);
 
 		UINT32 startVert = startingQuad * 4;
 		UINT32 startIndex = startingQuad * 6;
@@ -248,14 +249,23 @@ namespace BansheeEngine
 			UINT32 vertexCount = renderElem.numQuads * 4;
 			UINT32 indexCount = renderElem.numQuads * 6;
 
-			if(renderElem.vertices != nullptr)
+			if (renderElem.vertices != nullptr)
+			{
 				bs_deleteN<ScratchAlloc>(renderElem.vertices, vertexCount);
+				renderElem.vertices = nullptr;
+			}
 
-			if(renderElem.uvs != nullptr)
+			if (renderElem.uvs != nullptr)
+			{
 				bs_deleteN<ScratchAlloc>(renderElem.uvs, vertexCount);
+				renderElem.uvs = nullptr;
+			}
 
-			if(renderElem.indexes != nullptr)
+			if (renderElem.indexes != nullptr)
+			{
 				bs_deleteN<ScratchAlloc>(renderElem.indexes, indexCount);
+				renderElem.indexes = nullptr;
+			}
 
 			if(renderElem.matInfo.material != nullptr)
 			{
