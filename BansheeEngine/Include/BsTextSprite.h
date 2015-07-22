@@ -75,7 +75,7 @@ namespace BansheeEngine
 		 * @param	horzAlign	Specifies how is text horizontally aligned within its bounds.
 		 * @param	vertAlign	Specifies how is text vertically aligned within its bounds.
 		 */
-		static Vector<Vector2I> getAlignmentOffsets(const TextData& textData, 
+		static Vector<Vector2I> getAlignmentOffsets(const TextDataBase& textData, 
 			UINT32 width, UINT32 height, TextHorzAlign horzAlign, TextVertAlign vertAlign);
 
 		/**
@@ -96,7 +96,7 @@ namespace BansheeEngine
 		 *
 		 * @returns	Number of generated quads.
 		 */
-		static UINT32 genTextQuads(UINT32 page, const TextData& textData, UINT32 width, UINT32 height, 
+		static UINT32 genTextQuads(UINT32 page, const TextDataBase& textData, UINT32 width, UINT32 height, 
 			TextHorzAlign horzAlign, TextVertAlign vertAlign, SpriteAnchor anchor, Vector2* vertices, Vector2* uv, UINT32* indices, 
 			UINT32 bufferSizeQuads);
 
@@ -116,7 +116,7 @@ namespace BansheeEngine
 		 *
 		 * @returns	Number of generated quads.
 		 */
-		static UINT32 genTextQuads(const TextData& textData, UINT32 width, UINT32 height, 
+		static UINT32 genTextQuads(const TextDataBase& textData, UINT32 width, UINT32 height,
 			TextHorzAlign horzAlign, TextVertAlign vertAlign, SpriteAnchor anchor, Vector2* vertices, Vector2* uv, UINT32* indices, 
 			UINT32 bufferSizeQuads);
 	};

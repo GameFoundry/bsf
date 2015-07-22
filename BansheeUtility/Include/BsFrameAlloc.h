@@ -14,13 +14,24 @@ namespace BansheeEngine
 	class BS_UTILITY_EXPORT FrameAlloc
 	{
 	private:
+		/**
+		 * @brief	A single block of memory within a frame allocator.
+		 */
 		class MemBlock
 		{
 		public:
 			MemBlock(UINT32 size);
 			~MemBlock();
 
+			/**
+			 * @brief	Allocates a piece of memory within the block. Caller must ensure
+			 *			the block has enough empty space.
+			 */
 			UINT8* alloc(UINT32 amount);
+
+			/**
+			 * @brief	Releases all allocations within a block but doesn't actually free the memory.
+			 */
 			void clear();
 
 			UINT8* mData;
@@ -111,7 +122,15 @@ namespace BansheeEngine
 		BS_THREAD_ID_TYPE mOwnerThread;
 #endif
 
+		/**
+		 * @brief	Allocates a dynamic block of memory of the wanted size. The exact allocation size
+		 *			might be slightly higher in order to store block meta data.
+		 */
 		MemBlock* allocBlock(UINT32 wantedSize);
+
+		/**
+		 * @brief	Frees a memory block.
+		 */
 		void deallocBlock(MemBlock* block);
 	};
 

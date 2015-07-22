@@ -41,10 +41,14 @@ namespace BansheeEngine
 
 		if(style.font != nullptr)
 		{
-			TextData textData(text, style.font, style.fontSize, wordWrapWidth, 0, style.wordWrap);
+			bs_frame_mark();
+
+			TextData<FrameAlloc> textData(text, style.font, style.fontSize, wordWrapWidth, 0, style.wordWrap);
 
 			contentWidth += textData.getWidth();
 			contentHeight += textData.getNumLines() * textData.getLineHeight(); 
+
+			bs_frame_clear();
 		}
 
 		return Vector2I(contentWidth, contentHeight);

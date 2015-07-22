@@ -308,6 +308,9 @@
     <ClInclude Include="Include\BsGlobalFrameAlloc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsStaticAlloc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsThreadPool.cpp">

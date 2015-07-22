@@ -20,50 +20,54 @@ namespace BansheeEngine
 
 		mLineDescs.clear();
 
-		TextData textData(mTextDesc.text, mTextDesc.font, mTextDesc.fontSize, 
-			mTextDesc.width, mTextDesc.height, mTextDesc.wordWrap, mTextDesc.wordBreak);
-
-		UINT32 numLines = textData.getNumLines();
-		UINT32 numPages = textData.getNumPages();
-
-		mNumQuads = 0;
-		for(UINT32 i = 0; i < numPages; i++)
-			mNumQuads += textData.getNumQuadsForPage(i);
-
-		if(mQuads != nullptr)
-			bs_delete<ScratchAlloc>(mQuads);
-
-		mQuads = bs_newN<Vector2, ScratchAlloc>(mNumQuads * 4);
-
-		TextSprite::genTextQuads(textData, mTextDesc.width, mTextDesc.height, mTextDesc.horzAlign, mTextDesc.vertAlign, mTextDesc.anchor, 
-			mQuads, nullptr, nullptr, mNumQuads);
-
-		UINT32 numVerts = mNumQuads * 4;
-
-		// Store cached line data
-		UINT32 curCharIdx = 0;
-		UINT32 curLineIdx = 0;
-		Vector<Vector2I> alignmentOffsets = TextSprite::getAlignmentOffsets(textData, mTextDesc.width, 
-			mTextDesc.height, mTextDesc.horzAlign, mTextDesc.vertAlign);
-
-		for(UINT32 i = 0; i < numLines; i++)
+		bs_frame_mark();
 		{
-			const TextData::TextLine& line = textData.getLine(i);
+			TextData<FrameAlloc> textData(mTextDesc.text, mTextDesc.font, mTextDesc.fontSize,
+				mTextDesc.width, mTextDesc.height, mTextDesc.wordWrap, mTextDesc.wordBreak);
 
-			// Line has a newline char only if it wasn't created by word wrap and it isn't the last line
-			bool hasNewline = line.hasNewlineChar() && (curLineIdx != (numLines - 1));
+			UINT32 numLines = textData.getNumLines();
+			UINT32 numPages = textData.getNumPages();
 
-			UINT32 startChar = curCharIdx;
-			UINT32 endChar = curCharIdx + line.getNumChars() + (hasNewline ? 1 : 0);
-			UINT32 lineHeight = line.getYOffset();
-			INT32 lineYStart = alignmentOffsets[curLineIdx].y;
+			mNumQuads = 0;
+			for (UINT32 i = 0; i < numPages; i++)
+				mNumQuads += textData.getNumQuadsForPage(i);
 
-			GUIInputLineDesc lineDesc(startChar, endChar, lineHeight, lineYStart, hasNewline);
-			mLineDescs.push_back(lineDesc);
+			if (mQuads != nullptr)
+				bs_delete<ScratchAlloc>(mQuads);
 
-			curCharIdx = lineDesc.getEndChar();
-			curLineIdx++;
+			mQuads = bs_newN<Vector2, ScratchAlloc>(mNumQuads * 4);
+
+			TextSprite::genTextQuads(textData, mTextDesc.width, mTextDesc.height, mTextDesc.horzAlign, mTextDesc.vertAlign, mTextDesc.anchor,
+				mQuads, nullptr, nullptr, mNumQuads);
+
+			UINT32 numVerts = mNumQuads * 4;
+
+			// Store cached line data
+			UINT32 curCharIdx = 0;
+			UINT32 curLineIdx = 0;
+			Vector<Vector2I> alignmentOffsets = TextSprite::getAlignmentOffsets(textData, mTextDesc.width,
+				mTextDesc.height, mTextDesc.horzAlign, mTextDesc.vertAlign);
+
+			for (UINT32 i = 0; i < numLines; i++)
+			{
+				const TextDataBase::TextLine& line = textData.getLine(i);
+
+				// Line has a newline char only if it wasn't created by word wrap and it isn't the last line
+				bool hasNewline = line.hasNewlineChar() && (curLineIdx != (numLines - 1));
+
+				UINT32 startChar = curCharIdx;
+				UINT32 endChar = curCharIdx + line.getNumChars() + (hasNewline ? 1 : 0);
+				UINT32 lineHeight = line.getYOffset();
+				INT32 lineYStart = alignmentOffsets[curLineIdx].y;
+
+				GUIInputLineDesc lineDesc(startChar, endChar, lineHeight, lineYStart, hasNewline);
+				mLineDescs.push_back(lineDesc);
+
+				curCharIdx = lineDesc.getEndChar();
+				curLineIdx++;
+			}
 		}
+		bs_frame_clear();
 	}
 
 	Vector2I GUIInputTool::getTextOffset() const

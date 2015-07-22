@@ -305,6 +305,7 @@
     <ClInclude Include="Include\BsSerializedObjectRTTI.h" />
     <ClInclude Include="Include\BsServiceLocator.h" />
     <ClInclude Include="Include\BsSpinLock.h" />
+    <ClInclude Include="Include\BsStaticAlloc.h" />
     <ClInclude Include="Include\BsStringFormat.h" />
     <ClInclude Include="Include\BsStringID.h" />
     <ClInclude Include="Include\BsTaskScheduler.h" />

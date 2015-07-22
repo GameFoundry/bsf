@@ -10,9 +10,9 @@ namespace BansheeEngine
 	 * @brief	This object takes as input a string, a font and optionally some constraints (like word wrap)
 	 *			and outputs a set of character data you may use for rendering or metrics.
 	 */
-	class TextData
+	class TextDataBase
 	{
-	private:
+	protected:
 		/**
 		 * @brief	Represents a single word as a set of characters, or optionally just a blank space
 		 *			of a certain length.
@@ -186,7 +186,7 @@ namespace BansheeEngine
 			 */
 			bool hasNewlineChar() const { return mHasNewline; }
 		private:
-			friend class TextData;
+			friend class TextDataBase;
 
 			/**
 			 * @brief	Appends a new character to the line.
@@ -213,7 +213,7 @@ namespace BansheeEngine
 			/**
 			 * @brief	Initializes the line. Must be called after construction.
 			 */
-			void init(TextData* textData);
+			void init(TextDataBase* textData);
 
 			/**
 			 * @brief	Finalizes the line. Do not add new characters/words after a line has
@@ -241,7 +241,7 @@ namespace BansheeEngine
 			void calculateBounds();
 
 		private:
-			TextData* mTextData;
+			TextDataBase* mTextData;
 			UINT32 mWordsStart, mWordsEnd;
 
 			UINT32 mWidth;
@@ -261,9 +261,9 @@ namespace BansheeEngine
 		 *
 		 *			After this object is constructed you may call various getter methods to get needed information.
 		 */
-		BS_CORE_EXPORT TextData(const WString& text, const HFont& font, UINT32 fontSize, 
+		BS_CORE_EXPORT TextDataBase(const WString& text, const HFont& font, UINT32 fontSize,
 			UINT32 width = 0, UINT32 height = 0, bool wordWrap = false, bool wordBreak = true);
-		BS_CORE_EXPORT ~TextData();
+		BS_CORE_EXPORT virtual ~TextDataBase() { }
 
 		/**
 		 * @brief	Returns the number of lines that were generated.
@@ -305,6 +305,20 @@ namespace BansheeEngine
 		 */
 		BS_CORE_EXPORT UINT32 getHeight() const;
 
+	protected:
+		/**
+		 * @brief	Copies internally stored data in temporary buffers to a persistent buffer.
+		 *
+		 * @param	text			Text originally used for creating the internal temporary buffer data.
+		 * @param	buffer			Memory location to copy the data to. If null then no data will be copied
+		 *							and the parameter \p size will contain the required buffer size.
+		 * @param	size			Size of the provided memory buffer, or if the buffer is null, this will
+		 *							contain the required buffer size after method exists.
+		 * @param	freeTemporary	If true the internal temporary data will be freed after copying.
+		 *
+		 * @note	Must be called after text data has been constructed and is in the temporary buffers.
+		 */
+		BS_CORE_EXPORT void generatePersistentData(const WString& text, UINT8* buffer, UINT32& size, bool freeTemporary = true);
 	private:
 		friend class TextLine;
 
@@ -331,7 +345,7 @@ namespace BansheeEngine
 		 */
 		const TextWord& getWord(UINT32 idx) const { return mWords[idx]; }
 
-	private:
+	protected:
 		const CHAR_DESC** mChars;
 		UINT32 mNumChars;
 
@@ -344,57 +358,96 @@ namespace BansheeEngine
 		PageInfo* mPageInfos;
 		UINT32 mNumPageInfos;
 
-		void* mData;
-
 		HFont mFont;
 		const FontData* mFontData;
 
 		// Static buffers used to reduce runtime memory allocation
-	private:
-		static BS_THREADLOCAL bool BuffersInitialized;
+	protected:
+		/**
+		 * @brief	Stores per-thread memory buffers used to reduce memory allocation.
+		 */
+		// Note: I could replace this with the global frame allocator to avoid the extra logic
+		struct BufferData
+		{
+			BufferData();
+			~BufferData();
 
-		static BS_THREADLOCAL TextWord* WordBuffer;
-		static BS_THREADLOCAL UINT32 WordBufferSize;
-		static BS_THREADLOCAL UINT32 NextFreeWord;
+			/**
+			 * @brief	Allocates a new word and adds it to the buffer. Returns index of the word
+			 *			in the word buffer.
+			 *
+			 * @param	spacer	Specify true if the word is only to contain spaces. (Spaces are considered
+			 *					a special type of word).
+			 */
+			UINT32 allocWord(bool spacer);
 
-		static BS_THREADLOCAL TextLine* LineBuffer;
-		static BS_THREADLOCAL UINT32 LineBufferSize;
-		static BS_THREADLOCAL UINT32 NextFreeLine;
+			/**
+			 * @brief	Allocates a new line and adds it to the buffer. Returns index of the line
+			 *			in the line buffer.
+			 */
+			UINT32 allocLine(TextDataBase* textData);
 
-		static BS_THREADLOCAL PageInfo* PageBuffer;
-		static BS_THREADLOCAL UINT32 PageBufferSize;
-		static BS_THREADLOCAL UINT32 NextFreePageInfo;
+			/**
+			 * @brief	Increments the count of characters for the referenced page, and optionally
+			 *			creates page info if it doesn't already exist.
+			 */
+			void addCharToPage(UINT32 page, const FontData& fontData);
+
+			/**
+			 * @brief	Resets all allocation counters, but doesn't actually release memory.
+			 */
+			void deallocAll();
+
+			TextWord* WordBuffer;
+			UINT32 WordBufferSize;
+			UINT32 NextFreeWord;
+
+			TextLine* LineBuffer;
+			UINT32 LineBufferSize;
+			UINT32 NextFreeLine;
+
+			PageInfo* PageBuffer;
+			UINT32 PageBufferSize;
+			UINT32 NextFreePageInfo;
+		};
+
+		static BS_THREADLOCAL BufferData* MemBuffer;
 
 		/**
 		 * @brief	Allocates an initial set of buffers that will be reused while parsing
 		 *			text data.
 		 */
 		static void initAlloc();
+	};
 
+	/**
+	 * @copydoc	TextDataBase
+	 */
+	template<class Alloc = GenAlloc>
+	class TextData : public TextDataBase
+	{
+	public:
 		/**
-		 * @brief	Allocates a new word and adds it to the buffer. Returns index of the word
-		 *			in the word buffer.
-		 *
-		 * @param	spacer	Specify true if the word is only to contain spaces. (Spaces are considered
-		 *					a special type of word).
+		 * @copydoc	TextDataBase::TextDataBase
 		 */
-		static UINT32 allocWord(bool spacer);
+		TextData(const WString& text, const HFont& font, UINT32 fontSize,
+			UINT32 width = 0, UINT32 height = 0, bool wordWrap = false, bool wordBreak = true)
+			:TextDataBase(text, font, fontSize, width, height, wordWrap, wordBreak), mData(nullptr)
+		{
+			UINT32 totalBufferSize = 0;
+			generatePersistentData(text, nullptr, totalBufferSize);
 
-		/**
-		 * @brief	Allocates a new line and adds it to the buffer. Returns index of the line
-		 *			in the line buffer.
-		 */
-		static UINT32 allocLine(TextData* textData);
+			mData = (UINT8*)bs_alloc<GenAlloc>(totalBufferSize);
+			generatePersistentData(text, (UINT8*)mData, totalBufferSize);
+		}
 
-		/**
-		 * @brief	Resets all allocation counters.
-		 */
-		static void deallocAll();
+		~TextData()
+		{
+			if (mData != nullptr)
+				bs_free<Alloc>(mData);
+		}
 
-		/**
-		 * @brief	Increments the count of characters for the referenced page, and optionally
-		 *			creates page info if it doesn't already exist.
-		 */
-		static void addCharToPage(UINT32 page, const FontData& fontData);
+	private:
+		UINT8* mData;
 	};
 }

@@ -7,7 +7,7 @@ namespace BansheeEngine
 {
 	const int SPACE_CHAR = 32;
 
-	void TextData::TextWord::init(bool spacer)
+	void TextDataBase::TextWord::init(bool spacer)
 	{
 		mWidth = mHeight = 0;
 		mSpacer = spacer;
@@ -18,7 +18,7 @@ namespace BansheeEngine
 	}
 
 	// Assumes charIdx is an index right after last char in the list (if any). All chars need to be sequential.
-	UINT32 TextData::TextWord::addChar(UINT32 charIdx, const CHAR_DESC& desc)
+	UINT32 TextDataBase::TextWord::addChar(UINT32 charIdx, const CHAR_DESC& desc)
 	{
 		UINT32 charWidth = calcCharWidth(mLastChar, desc);
 
@@ -35,12 +35,12 @@ namespace BansheeEngine
 		return charWidth;
 	}
 
-	UINT32 TextData::TextWord::calcWidthWithChar(const CHAR_DESC& desc)
+	UINT32 TextDataBase::TextWord::calcWidthWithChar(const CHAR_DESC& desc)
 	{
 		return mWidth + calcCharWidth(mLastChar, desc);
 	}
 
-	UINT32 TextData::TextWord::calcCharWidth(const CHAR_DESC* prevDesc, const CHAR_DESC& desc)
+	UINT32 TextDataBase::TextWord::calcCharWidth(const CHAR_DESC* prevDesc, const CHAR_DESC& desc)
 	{
 		UINT32 charWidth = desc.xAdvance;
 		if (prevDesc != nullptr)
@@ -61,14 +61,14 @@ namespace BansheeEngine
 		return charWidth;
 	}
 
-	void TextData::TextWord::addSpace(UINT32 spaceWidth)
+	void TextDataBase::TextWord::addSpace(UINT32 spaceWidth)
 	{
 		mSpaceWidth += spaceWidth;
 		mWidth = mSpaceWidth;
 		mHeight = 0;
 	}
 
-	void TextData::TextLine::init(TextData* textData)
+	void TextDataBase::TextLine::init(TextDataBase* textData)
 	{
 		mWidth = 0;
 		mHeight = 0;
@@ -77,50 +77,50 @@ namespace BansheeEngine
 		mWordsStart = mWordsEnd = 0;
 	}
 
-	void TextData::TextLine::finalize(bool hasNewlineChar)
+	void TextDataBase::TextLine::finalize(bool hasNewlineChar)
 	{
 		mHasNewline = hasNewlineChar;
 	}
 
-	void TextData::TextLine::add(UINT32 charIdx, const CHAR_DESC& charDesc)
+	void TextDataBase::TextLine::add(UINT32 charIdx, const CHAR_DESC& charDesc)
 	{
 		UINT32 charWidth = 0;
 		if(mIsEmpty)
 		{
-			mWordsStart = mWordsEnd = allocWord(false);
+			mWordsStart = mWordsEnd = MemBuffer->allocWord(false);
 			mIsEmpty = false;
 		}
 		else
 		{
-			if(TextData::WordBuffer[mWordsEnd].isSpacer())
-				mWordsEnd = allocWord(false);
+			if(MemBuffer->WordBuffer[mWordsEnd].isSpacer())
+				mWordsEnd = MemBuffer->allocWord(false);
 		}
 
-		TextWord& lastWord = TextData::WordBuffer[mWordsEnd];
+		TextWord& lastWord = MemBuffer->WordBuffer[mWordsEnd];
 		charWidth = lastWord.addChar(charIdx, charDesc);
 
 		mWidth += charWidth;
 		mHeight = std::max(mHeight, lastWord.getHeight());
 	}
 
-	void TextData::TextLine::addSpace()
+	void TextDataBase::TextLine::addSpace()
 	{
 		if(mIsEmpty)
 		{
-			mWordsStart = mWordsEnd = allocWord(true);
+			mWordsStart = mWordsEnd = MemBuffer->allocWord(true);
 			mIsEmpty = false;
 		}
 		else
-			mWordsEnd = allocWord(true); // Each space is counted as its own word, to make certain operations easier
+			mWordsEnd = MemBuffer->allocWord(true); // Each space is counted as its own word, to make certain operations easier
 
-		TextWord& lastWord = TextData::WordBuffer[mWordsEnd];
+		TextWord& lastWord = MemBuffer->WordBuffer[mWordsEnd];
 		lastWord.addSpace(mTextData->getSpaceWidth());
 
 		mWidth += mTextData->getSpaceWidth();
 	}
 
 	// Assumes wordIdx is an index right after last word in the list (if any). All words need to be sequential.
-	void TextData::TextLine::addWord(UINT32 wordIdx, const TextWord& word)
+	void TextDataBase::TextLine::addWord(UINT32 wordIdx, const TextWord& word)
 	{
 		if(mIsEmpty)
 		{
@@ -134,7 +134,7 @@ namespace BansheeEngine
 		mHeight = std::max(mHeight, word.getHeight());
 	}
 
-	UINT32 TextData::TextLine::removeLastWord()
+	UINT32 TextDataBase::TextLine::removeLastWord()
 	{
 		if(mIsEmpty)
 		{
@@ -154,7 +154,7 @@ namespace BansheeEngine
 		return lastWord;
 	}
 
-	UINT32 TextData::TextLine::calcWidthWithChar(const CHAR_DESC& desc, bool space)
+	UINT32 TextDataBase::TextLine::calcWidthWithChar(const CHAR_DESC& desc, bool space)
 	{
 		UINT32 charWidth = 0;
 
@@ -165,7 +165,7 @@ namespace BansheeEngine
 			UINT32 word = mWordsEnd;
 			if (!mIsEmpty)
 			{
-				TextWord& lastWord = TextData::WordBuffer[mWordsEnd];
+				TextWord& lastWord = MemBuffer->WordBuffer[mWordsEnd];
 				if (lastWord.isSpacer())
 					charWidth = TextWord::calcCharWidth(nullptr, desc);
 				else
@@ -180,12 +180,12 @@ namespace BansheeEngine
 		return mWidth + charWidth;
 	}
 
-	bool TextData::TextLine::isAtWordBoundary() const
+	bool TextDataBase::TextLine::isAtWordBoundary() const
 	{
-		return mIsEmpty || TextData::WordBuffer[mWordsEnd].isSpacer();
+		return mIsEmpty || MemBuffer->WordBuffer[mWordsEnd].isSpacer();
 	}
 
-	UINT32 TextData::TextLine::fillBuffer(UINT32 page, Vector2* vertices, Vector2* uvs, UINT32* indexes, UINT32 offset, UINT32 size) const
+	UINT32 TextDataBase::TextLine::fillBuffer(UINT32 page, Vector2* vertices, Vector2* uvs, UINT32* indexes, UINT32 offset, UINT32 size) const
 	{
 		UINT32 numQuads = 0;
 
@@ -310,7 +310,7 @@ namespace BansheeEngine
 		return numQuads;
 	}
 
-	UINT32 TextData::TextLine::getNumChars() const
+	UINT32 TextDataBase::TextLine::getNumChars() const
 	{
 		if(mIsEmpty)
 			return 0;
@@ -318,7 +318,7 @@ namespace BansheeEngine
 		UINT32 numChars = 0;
 		for(UINT32 i = mWordsStart; i <= mWordsEnd; i++)
 		{
-			TextWord& word = TextData::WordBuffer[i];
+			TextWord& word = MemBuffer->WordBuffer[i];
 
 			if(word.isSpacer())
 				numChars++;
@@ -329,7 +329,7 @@ namespace BansheeEngine
 		return numChars;
 	}
 
-	void TextData::TextLine::calculateBounds()
+	void TextDataBase::TextLine::calculateBounds()
 	{
 		mWidth = 0;
 		mHeight = 0;
@@ -339,16 +339,16 @@ namespace BansheeEngine
 
 		for(UINT32 i = mWordsStart; i <= mWordsEnd; i++)
 		{
-			TextWord& word = TextData::WordBuffer[i];
+			TextWord& word = MemBuffer->WordBuffer[i];
 
 			mWidth += word.getWidth();
 			mHeight = std::max(mHeight, word.getHeight());
 		}
 	}
 
-	TextData::TextData(const WString& text, const HFont& font, UINT32 fontSize, UINT32 width, UINT32 height, bool wordWrap, bool wordBreak)
+	TextDataBase::TextDataBase(const WString& text, const HFont& font, UINT32 fontSize, UINT32 width, UINT32 height, bool wordWrap, bool wordBreak)
 		:mFont(font), mChars(nullptr), mFontData(nullptr),
-		mNumChars(0), mWords(nullptr), mNumWords(0), mLines(nullptr), mNumLines(0), mPageInfos(nullptr), mNumPageInfos(0), mData(nullptr)
+		mNumChars(0), mWords(nullptr), mNumWords(0), mLines(nullptr), mNumLines(0), mPageInfos(nullptr), mNumPageInfos(0)
 	{
 		// In order to reduce number of memory allocations algorithm first calculates data into temporary buffers and then copies the results
 		initAlloc();
@@ -370,7 +370,7 @@ namespace BansheeEngine
 		bool widthIsLimited = width > 0;
 		mFont = font;
 
-		UINT32 curLineIdx = allocLine(this);
+		UINT32 curLineIdx = MemBuffer->allocLine(this);
 		UINT32 curHeight = mFontData->fontDesc.lineHeight;
 		UINT32 charIdx = 0;
 
@@ -382,14 +382,14 @@ namespace BansheeEngine
 			UINT32 charId = text[charIdx];
 			const CHAR_DESC& charDesc = mFontData->getCharDesc(charId);
 
-			TextLine* curLine = &LineBuffer[curLineIdx];
+			TextLine* curLine = &MemBuffer->LineBuffer[curLineIdx];
 
 			if(text[charIdx] == '\n')
 			{
 				curLine->finalize(true);
 
-				curLineIdx = allocLine(this);
-				curLine = &LineBuffer[curLineIdx];
+				curLineIdx = MemBuffer->allocLine(this);
+				curLine = &MemBuffer->LineBuffer[curLineIdx];
 
 				curHeight += mFontData->fontDesc.lineHeight;
 
@@ -406,15 +406,15 @@ namespace BansheeEngine
 					if (!atWordBoundary) // Need to break word into multiple pieces, or move it to next line
 					{
 						UINT32 lastWordIdx = curLine->removeLastWord();
-						TextWord& lastWord = WordBuffer[lastWordIdx];
+						TextWord& lastWord = MemBuffer->WordBuffer[lastWordIdx];
 
 						bool wordFits = lastWord.calcWidthWithChar(charDesc) <= width;
 						if (wordFits)
 						{
 							curLine->finalize(false);
 
-							curLineIdx = allocLine(this);
-							curLine = &LineBuffer[curLineIdx];
+							curLineIdx = MemBuffer->allocLine(this);
+							curLine = &MemBuffer->LineBuffer[curLineIdx];
 
 							curHeight += mFontData->fontDesc.lineHeight;
 
@@ -427,8 +427,8 @@ namespace BansheeEngine
 								curLine->addWord(lastWordIdx, lastWord);
 								curLine->finalize(false);
 
-								curLineIdx = allocLine(this);
-								curLine = &LineBuffer[curLineIdx];
+								curLineIdx = MemBuffer->allocLine(this);
+								curLine = &MemBuffer->LineBuffer[curLineIdx];
 
 								curHeight += mFontData->fontDesc.lineHeight;
 							}
@@ -438,8 +438,8 @@ namespace BansheeEngine
 								{
 									curLine->finalize(false);
 
-									curLineIdx = allocLine(this);
-									curLine = &LineBuffer[curLineIdx];
+									curLineIdx = MemBuffer->allocLine(this);
+									curLine = &MemBuffer->LineBuffer[curLineIdx];
 
 									curHeight += mFontData->fontDesc.lineHeight;
 								}
@@ -452,8 +452,8 @@ namespace BansheeEngine
 					{
 						curLine->finalize(false);
 
-						curLineIdx = allocLine(this);
-						curLine = &LineBuffer[curLineIdx];
+						curLineIdx = MemBuffer->allocLine(this);
+						curLine = &MemBuffer->LineBuffer[curLineIdx];
 
 						curHeight += mFontData->fontDesc.lineHeight;
 					}
@@ -463,37 +463,43 @@ namespace BansheeEngine
 			if(charId != SPACE_CHAR)
 			{
 				curLine->add(charIdx, charDesc);
-				addCharToPage(charDesc.page, *mFontData);
+				MemBuffer->addCharToPage(charDesc.page, *mFontData);
 			}
 			else
 			{
 				curLine->addSpace();
-				addCharToPage(0, *mFontData);
+				MemBuffer->addCharToPage(0, *mFontData);
 			}
 
 			charIdx++;
 		}
 
-		LineBuffer[curLineIdx].finalize(true);
+		MemBuffer->LineBuffer[curLineIdx].finalize(true);
 
 		// Now that we have all the data we need, allocate the permanent buffers and copy the data
 		mNumChars = (UINT32)text.size();
-		mNumWords = NextFreeWord;
-		mNumLines = NextFreeLine;
-		mNumPageInfos = NextFreePageInfo;
+		mNumWords = MemBuffer->NextFreeWord;
+		mNumLines = MemBuffer->NextFreeLine;
+		mNumPageInfos = MemBuffer->NextFreePageInfo;
+	}
 
+	void TextDataBase::generatePersistentData(const WString& text, UINT8* buffer, UINT32& size, bool freeTemporary)
+	{
 		UINT32 charArraySize = mNumChars * sizeof(const CHAR_DESC*);
 		UINT32 wordArraySize = mNumWords * sizeof(TextWord);
 		UINT32 lineArraySize = mNumLines * sizeof(TextLine);
 		UINT32 pageInfoArraySize = mNumPageInfos * sizeof(PageInfo);
 
-		UINT32 totalBufferSize = charArraySize + wordArraySize + lineArraySize + pageInfoArraySize;
-		mData = bs_alloc(totalBufferSize);
+		if (buffer == nullptr)
+		{
+			size = charArraySize + wordArraySize + lineArraySize + pageInfoArraySize;;
+			return;
+		}
 
-		UINT8* dataPtr = (UINT8*)mData;
+		UINT8* dataPtr = (UINT8*)buffer;
 		mChars = (const CHAR_DESC**)dataPtr;
 
-		for(UINT32 i = 0; i < mNumChars; i++)
+		for (UINT32 i = 0; i < mNumChars; i++)
 		{
 			UINT32 charId = text[i];
 			const CHAR_DESC& charDesc = mFontData->getCharDesc(charId);
@@ -503,76 +509,67 @@ namespace BansheeEngine
 
 		dataPtr += charArraySize;
 		mWords = (TextWord*)dataPtr;
-		memcpy(mWords, &WordBuffer[0], wordArraySize);
+		memcpy(mWords, &MemBuffer->WordBuffer[0], wordArraySize);
 
 		dataPtr += wordArraySize;
 		mLines = (TextLine*)dataPtr;
-		memcpy(mLines, &LineBuffer[0], lineArraySize);
+		memcpy(mLines, &MemBuffer->LineBuffer[0], lineArraySize);
 
 		dataPtr += lineArraySize;
 		mPageInfos = (PageInfo*)dataPtr;
-		memcpy(mPageInfos, &PageBuffer[0], pageInfoArraySize);
+		memcpy(mPageInfos, &MemBuffer->PageBuffer[0], pageInfoArraySize);
 
-		TextData::deallocAll();
+		if (freeTemporary)
+			MemBuffer->deallocAll();
 	}
 
-	TextData::~TextData()
-	{
-		if(mData != nullptr)
-			bs_free(mData);
-	}
-
-	const HTexture& TextData::getTextureForPage(UINT32 page) const 
+	const HTexture& TextDataBase::getTextureForPage(UINT32 page) const 
 	{ 
 		return mFontData->texturePages[page]; 
 	}
 
-	INT32 TextData::getBaselineOffset() const 
+	INT32 TextDataBase::getBaselineOffset() const 
 	{ 
 		return mFontData->fontDesc.baselineOffset; 
 	}
 
-	UINT32 TextData::getLineHeight() const 
+	UINT32 TextDataBase::getLineHeight() const 
 	{ 
 		return mFontData->fontDesc.lineHeight; 
 	}
 
-	UINT32 TextData::getSpaceWidth() const 
+	UINT32 TextDataBase::getSpaceWidth() const 
 	{ 
 		return mFontData->fontDesc.spaceWidth; 
 	}
 
-	bool TextData::BuffersInitialized = false;
-
-	TextData::TextWord* TextData::WordBuffer = nullptr;
-	UINT32 TextData::NextFreeWord = 0;
-	UINT32 TextData::WordBufferSize = 0;
-
-	TextData::TextLine* TextData::LineBuffer = nullptr;
-	UINT32 TextData::NextFreeLine = 0;
-	UINT32 TextData::LineBufferSize = 0;
-
-	TextData::PageInfo* TextData::PageBuffer = nullptr;
-	UINT32 TextData::NextFreePageInfo = 0;
-	UINT32 TextData::PageBufferSize = 0;
-
-	void TextData::initAlloc()
+	void TextDataBase::initAlloc()
 	{
-		if(!BuffersInitialized)
-		{
-			WordBufferSize = 2000;
-			LineBufferSize = 500;
-			PageBufferSize = 20;
-
-			WordBuffer = bs_newN<TextWord>(WordBufferSize);
-			LineBuffer = bs_newN<TextLine>(LineBufferSize);
-			PageBuffer = bs_newN<PageInfo>(PageBufferSize);
-
-			BuffersInitialized = true;
-		}
+		if (MemBuffer == nullptr)
+			MemBuffer = bs_new<BufferData>();
 	}
 
-	UINT32 TextData::allocWord(bool spacer)
+	TextDataBase::BufferData* TextDataBase::MemBuffer = nullptr;
+
+	TextDataBase::BufferData::BufferData()
+	{
+		WordBufferSize = 2000;
+		LineBufferSize = 500;
+		PageBufferSize = 20;
+
+		WordBuffer = bs_newN<TextWord>(WordBufferSize);
+		LineBuffer = bs_newN<TextLine>(LineBufferSize);
+		PageBuffer = bs_newN<PageInfo>(PageBufferSize);
+	}
+
+	TextDataBase::BufferData::~BufferData()
+	{
+		bs_deleteN(WordBuffer, WordBufferSize);
+		bs_deleteN(LineBuffer, LineBufferSize);
+		bs_deleteN(PageBuffer, PageBufferSize);
+	}
+
+	UINT32 TextDataBase::BufferData::allocWord(bool spacer)
 	{
 		if(NextFreeWord >= WordBufferSize)
 		{
@@ -590,7 +587,7 @@ namespace BansheeEngine
 		return NextFreeWord++;
 	}
 
-	UINT32 TextData::allocLine(TextData* textData)
+	UINT32 TextDataBase::BufferData::allocLine(TextDataBase* textData)
 	{
 		if(NextFreeLine >= LineBufferSize)
 		{
@@ -608,14 +605,14 @@ namespace BansheeEngine
 		return NextFreeLine++;
 	}
 
-	void TextData::deallocAll()
+	void TextDataBase::BufferData::deallocAll()
 	{
 		NextFreeWord = 0;
 		NextFreeLine = 0;
 		NextFreePageInfo = 0;
 	}
 
-	void TextData::addCharToPage(UINT32 page, const FontData& fontData)
+	void TextDataBase::BufferData::addCharToPage(UINT32 page, const FontData& fontData)
 	{
 		if(NextFreePageInfo >= PageBufferSize)
 		{
@@ -638,7 +635,7 @@ namespace BansheeEngine
 		PageBuffer[page].numQuads++;
 	}
 
-	UINT32 TextData::getWidth() const
+	UINT32 TextDataBase::getWidth() const
 	{
 		UINT32 width = 0;
 
@@ -648,7 +645,7 @@ namespace BansheeEngine
 		return width;
 	}
 
-	UINT32 TextData::getHeight() const
+	UINT32 TextDataBase::getHeight() const
 	{
 		UINT32 height = 0;
 
