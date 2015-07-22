@@ -50,11 +50,17 @@ namespace BansheeEngine
 
 		if (waitForDependencies)
 		{
-			Vector<HResource> dependencies;
-			mData->mPtr->getResourceDependencies(dependencies);
+			bs_frame_mark();
 
-			for (auto& dependency : dependencies)
-				dependency.blockUntilLoaded(waitForDependencies);
+			{
+				FrameVector<HResource> dependencies;
+				mData->mPtr->getResourceDependencies(dependencies);
+
+				for (auto& dependency : dependencies)
+					dependency.blockUntilLoaded(waitForDependencies);
+			}
+
+			bs_frame_clear();
 		}
 	}
 

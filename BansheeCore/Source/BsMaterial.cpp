@@ -1176,10 +1176,20 @@ namespace BansheeEngine
 
 	void Material::getListenerResources(Vector<HResource>& resources)
 	{
-		getResourceDependencies(resources);
+		bs_frame_mark();
+
+		{
+			FrameVector<HResource> temp;
+			getResourceDependencies(temp);
+
+			for (auto& entry : temp)
+				resources.push_back(entry);
+		}
+
+		bs_frame_clear();
 	}
 
-	void Material::getResourceDependencies(Vector<HResource>& dependencies) const
+	void Material::getResourceDependencies(FrameVector<HResource>& dependencies) const
 	{
 		if (mShader != nullptr)
 			dependencies.push_back(mShader);

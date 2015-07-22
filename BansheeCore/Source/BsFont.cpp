@@ -83,7 +83,7 @@ namespace BansheeEngine
 		return bestSize;
 	}
 
-	void Font::getResourceDependencies(Vector<HResource>& dependencies) const
+	void Font::getResourceDependencies(FrameVector<HResource>& dependencies) const
 	{
 		for (auto& fontDataEntry : mFontDataPerSize)
 		{

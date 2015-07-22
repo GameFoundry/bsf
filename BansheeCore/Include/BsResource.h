@@ -45,7 +45,7 @@ namespace BansheeEngine
 		 * TODO - Consider using a stack-allocated data type since returned data is almost
 		 *		  always transient. Then we can save on memory allocations.
 		 */
-		virtual void getResourceDependencies(Vector<HResource>& dependencies) const { }
+		virtual void getResourceDependencies(FrameVector<HResource>& dependencies) const { }
 
 		/**
 		 * @brief	Checks if all the resources this object is dependent on are fully loaded.

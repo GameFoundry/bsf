@@ -87,12 +87,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	Resource::getResourceDependencies
 		 */
-		void getResourceDependencies(Vector<HResource>& dependencies) const;
+		void getResourceDependencies(FrameVector<HResource>& dependencies) const override;
 
 		/**
 		 * @copydoc	CoreObject::getCoreDependencies
 		 */
-		void getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies);
+		void getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies) override;
 
 	private:
 		Map<UINT32, FontData> mFontDataPerSize;

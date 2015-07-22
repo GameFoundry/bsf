@@ -147,4 +147,28 @@ namespace BansheeEngine
 			bs_frame_free(ptr);
 		}
 	};
+
+	/**
+	 * Implementations of various standard library constructs using the frame allocator.
+	 */
+	typedef std::basic_string<char, std::char_traits<char>, StdAlloc<char, FrameAlloc>> FrameString;
+	typedef std::basic_string<wchar_t, std::char_traits<wchar_t>, StdAlloc<wchar_t, FrameAlloc>> FrameWString;
+
+	template <typename T, typename A = StdAlloc<T, FrameAlloc>>
+	using FrameVector = std::vector < T, A > ;
+
+	template <typename T, typename A = StdAlloc<T, FrameAlloc>>
+	using FrameStack = std::stack < T, std::deque<T, A> > ;
+
+	template <typename T, typename P = std::less<T>, typename A = StdAlloc<T, FrameAlloc>>
+	using FrameSet = std::set < T, P, A > ;
+
+	template <typename K, typename V, typename P = std::less<K>, typename A = StdAlloc<std::pair<const K, V>, FrameAlloc>>
+	using FrameMap = std::map < K, V, P, A >;
+
+	template <typename T, typename H = std::hash<T>, typename C = std::equal_to<T>, typename A = StdAlloc<T, FrameAlloc>>
+	using FrameUnorderedSet = std::unordered_set < T, H, C, A >;
+
+	template <typename K, typename V, typename H = std::hash<K>, typename C = std::equal_to<K>, typename A = StdAlloc<std::pair<const K, V>, FrameAlloc>>
+	using FrameUnorderedMap = std::unordered_map < K, V, H, C, A >;
 }

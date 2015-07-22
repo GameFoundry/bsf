@@ -301,12 +301,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObject::getThisPtr
 		 */
-		SPtr<GpuParamsCore> _getThisPtr() const;
+		SPtr<GpuParamsCore> _getThisPtr() const override;
 
 		/**
 		 * @copydoc	CoreObjectCore::syncToCore
 		 */
-		void syncToCore(const CoreSyncData& data);
+		void syncToCore(const CoreSyncData& data) override;
 	};
 
 	/**
@@ -329,14 +329,14 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method.
 		 */
-		void _markCoreDirty();
+		void _markCoreDirty() override;
 
 		/**
 		 * @copydoc	IResourceListener::markResourcesDirty
 		 *
 		 * @note	Internal method.
 		 */
-		void _markResourcesDirty();
+		void _markResourcesDirty() override;
 
 		/**
 		 * @brief	Retrieves a core implementation of a mesh usable only from the
@@ -358,36 +358,36 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObject::getThisPtr
 		 */
-		SPtr<GpuParams> _getThisPtr() const;
+		SPtr<GpuParams> _getThisPtr() const override;
 
 		/**
 		 * @copydoc	CoreObject::createCore
 		 */
-		SPtr<CoreObjectCore> createCore() const;
+		SPtr<CoreObjectCore> createCore() const override;
 
 		/**
 		 * @copydoc	CoreObject::syncToCore
 		 */
-		CoreSyncData syncToCore(FrameAlloc* allocator);
+		CoreSyncData syncToCore(FrameAlloc* allocator) override;
 
 		/**
-		 * @copydoc	IResourceListener::getResourceDependencies
+		 * @copydoc	IResourceListener::getListenerResources
 		 */
-		void getListenerResources(Vector<HResource>& resources);
+		void getListenerResources(Vector<HResource>& resources) override;
 
 		/**
 		 * @copydoc IResourceListener::notifyResourceLoaded
 		 */
-		void notifyResourceLoaded(const HResource& resource) { markCoreDirty(); }
+		void notifyResourceLoaded(const HResource& resource) override { markCoreDirty(); }
 
 		/**
 		 * @copydoc IResourceListener::notifyResourceDestroyed
 		 */
-		void notifyResourceDestroyed(const HResource& resource) { markCoreDirty(); }
+		void notifyResourceDestroyed(const HResource& resource) override { markCoreDirty(); }
 
 		/**
 		 * @copydoc IResourceListener::notifyResourceChanged
 		 */
-		void notifyResourceChanged(const HResource& resource) { markCoreDirty(); }
+		void notifyResourceChanged(const HResource& resource) override { markCoreDirty(); }
 	};
 }

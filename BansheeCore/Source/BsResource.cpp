@@ -25,16 +25,25 @@ namespace BansheeEngine
 
 	bool Resource::areDependenciesLoaded() const
 	{
-		Vector<HResource> dependencies;
-		getResourceDependencies(dependencies);
+		bs_frame_mark();
 
-		for (auto& dependency : dependencies)
+		bool areLoaded = true;
 		{
-			if (dependency != nullptr && !dependency.isLoaded())
-				return false;
+			FrameVector<HResource> dependencies;
+			getResourceDependencies(dependencies);
+
+			for (auto& dependency : dependencies)
+			{
+				if (dependency != nullptr && !dependency.isLoaded())
+				{
+					areLoaded = false;
+					break;
+				}
+			}
 		}
 
-		return true;
+		bs_frame_clear();
+		return areLoaded;
 	}
 
 	RTTITypeBase* Resource::getRTTIStatic()

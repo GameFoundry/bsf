@@ -610,7 +610,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObjectCore::syncToCore
 		 */
-		void syncToCore(const CoreSyncData& data);
+		void syncToCore(const CoreSyncData& data) override;
 	};
 
 	/**
@@ -642,7 +642,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObject::initialize
 		 */
-		void initialize();
+		void initialize() override;
 
 		/**
 		 * @brief	Creates a new empty material.
@@ -665,52 +665,52 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObject::createCore
 		 */
-		SPtr<CoreObjectCore> createCore() const;
+		SPtr<CoreObjectCore> createCore() const override;
 
 		/**
 		 * @copydoc	CoreObject::syncToCore
 		 */
-		CoreSyncData syncToCore(FrameAlloc* allocator);
+		CoreSyncData syncToCore(FrameAlloc* allocator) override;
 
 		/**
 		 * @copydoc	CoreObject::getCoreDependencies
 		 */
-		void getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies);
+		void getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies) override;
 
 		/**
 		 * @copydoc	CoreObject::markCoreDirty
 		 */
-		void _markCoreDirty();
+		void _markCoreDirty() override;
 
 		/**
 		 * @copydoc	IResourceListener::markResourcesDirty
 		 */
-		void _markResourcesDirty();
+		void _markResourcesDirty() override;
 
 		/**
-		 * @copydoc	IResourceListener::getResourceDependencies
+		 * @copydoc	IResourceListener::getListenerResources
 		 */
-		void getListenerResources(Vector<HResource>& resources);
+		void getListenerResources(Vector<HResource>& resources) override;
 
 		/**
 		 * @copydoc IResourceListener::notifyResourceLoaded
 		 */
-		void notifyResourceLoaded(const HResource& resource);
+		void notifyResourceLoaded(const HResource& resource) override;
 
 		/**
 		 * @copydoc IResourceListener::notifyResourceDestroyed
 		 */
-		void notifyResourceDestroyed(const HResource& resource);
+		void notifyResourceDestroyed(const HResource& resource) override;
 
 		/**
 		 * @copydoc IResourceListener::notifyResourceChanged
 		 */
-		void notifyResourceChanged(const HResource& resource);
+		void notifyResourceChanged(const HResource& resource) override;
 
 		/**
 		 * @copydoc	Resource::getResourceDependencies
 		 */
-		void getResourceDependencies(Vector<HResource>& dependencies) const;
+		void getResourceDependencies(FrameVector<HResource>& dependencies) const override;
 
 		/**
 		 * @brief	Performs material initialization when all resources are ready.
@@ -726,6 +726,6 @@ namespace BansheeEngine
 	public:
 		friend class MaterialRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;	
+		virtual RTTITypeBase* getRTTI() const override;
 	};
 }

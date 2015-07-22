@@ -191,10 +191,12 @@ namespace BansheeEngine
 		DragAndDropManager::instance()._update();
 
 		// Update layouts
+		gProfilerCPU().beginSample("UpdateLayout");
 		for(auto& widgetInfo : mWidgets)
 		{
 			widgetInfo.widget->_updateLayout();
 		}
+		gProfilerCPU().endSample("UpdateLayout");
 
 		// Destroy all queued elements (and loop in case any new ones get queued during destruction)
 		do
@@ -368,231 +370,252 @@ namespace BansheeEngine
 			if(!isDirty)
 				continue;
 
-			// Make a list of all GUI elements, sorted from farthest to nearest (highest depth to lowest)
-			auto elemComp = [](const GUIGroupElement& a, const GUIGroupElement& b)
+			bs_frame_mark();
 			{
-				UINT32 aDepth = a.element->_getRenderElementDepth(a.renderElement);
-				UINT32 bDepth = b.element->_getRenderElementDepth(b.renderElement);
+				gProfilerCPU().beginSample("Sort elements");
 
-				// Compare pointers just to differentiate between two elements with the same depth, their order doesn't really matter, but std::set
-				// requires all elements to be unique
-				return (aDepth > bDepth) || 
-					(aDepth == bDepth && a.element > b.element) || 
-					(aDepth == bDepth && a.element == b.element && a.renderElement > b.renderElement); 
-			};
-
-			Set<GUIGroupElement, std::function<bool(const GUIGroupElement&, const GUIGroupElement&)>> allElements(elemComp);
-
-			for(auto& widget : renderData.widgets)
-			{
-				const Vector<GUIElement*>& elements = widget->getElements();
-
-				for(auto& element : elements)
+				// Make a list of all GUI elements, sorted from farthest to nearest (highest depth to lowest)
+				auto elemComp = [](const GUIGroupElement& a, const GUIGroupElement& b)
 				{
-					if(element->_isDisabled())
-						continue;
+					UINT32 aDepth = a.element->_getRenderElementDepth(a.renderElement);
+					UINT32 bDepth = b.element->_getRenderElementDepth(b.renderElement);
 
-					UINT32 numRenderElems = element->_getNumRenderElements();
-					for(UINT32 i = 0; i < numRenderElems; i++)
-					{
-						allElements.insert(GUIGroupElement(element, i));
-					}
-				}
-			}
+					// Compare pointers just to differentiate between two elements with the same depth, their order doesn't really matter, but std::set
+					// requires all elements to be unique
+					return (aDepth > bDepth) || 
+						(aDepth == bDepth && a.element > b.element) || 
+						(aDepth == bDepth && a.element == b.element && a.renderElement > b.renderElement); 
+				};
 
-			// Group the elements in such a way so that we end up with a smallest amount of
-			// meshes, without breaking back to front rendering order
-			UnorderedMap<UINT64, Vector<GUIMaterialGroup>> materialGroups;
-			for(auto& elem : allElements)
-			{
-				GUIElement* guiElem = elem.element;
-				UINT32 renderElemIdx = elem.renderElement;
-				UINT32 elemDepth = guiElem->_getRenderElementDepth(renderElemIdx);
+				FrameSet<GUIGroupElement, std::function<bool(const GUIGroupElement&, const GUIGroupElement&)>> allElements(elemComp);
 
-				Rect2I tfrmedBounds = guiElem->_getClippedBounds();
-				tfrmedBounds.transform(guiElem->_getParentWidget()->SO()->getWorldTfrm());
-
-				const GUIMaterialInfo& matInfo = guiElem->_getMaterial(renderElemIdx);
-
-				UINT64 materialId = matInfo.material->getInternalID(); // TODO - I group based on material ID. So if two widgets used exact copies of the same material
-				// this system won't detect it. Find a better way of determining material similarity?
-
-				// If this is a new material, add a new list of groups
-				auto findIterMaterial = materialGroups.find(materialId);
-				if(findIterMaterial == end(materialGroups))
-					materialGroups[materialId] = Vector<GUIMaterialGroup>();
-
-				// Try to find a group this material will fit in:
-				//  - Group that has a depth value same or one below elements depth will always be a match
-				//  - Otherwise, we search higher depth values as well, but we only use them if no elements in between those depth values
-				//    overlap the current elements bounds.
-				Vector<GUIMaterialGroup>& allGroups = materialGroups[materialId];
-				GUIMaterialGroup* foundGroup = nullptr;
-				for(auto groupIter = allGroups.rbegin(); groupIter != allGroups.rend(); ++groupIter)
+				gProfilerCPU().beginSample("InsertAll");
+				for (auto& widget : renderData.widgets)
 				{
-					// If we separate meshes by widget, ignore any groups with widget parents other than mine
-					if(mSeparateMeshesByWidget)
+					const Vector<GUIElement*>& elements = widget->getElements();
+
+					for (auto& element : elements)
 					{
-						if(groupIter->elements.size() > 0)
+						if (element->_isDisabled())
+							continue;
+
+						UINT32 numRenderElems = element->_getNumRenderElements();
+						for (UINT32 i = 0; i < numRenderElems; i++)
 						{
-							GUIElement* otherElem = groupIter->elements.begin()->element; // We only need to check the first element
-							if(otherElem->_getParentWidget() != guiElem->_getParentWidget())
-								continue;
+							allElements.insert(GUIGroupElement(element, i));
 						}
 					}
+				}
+				gProfilerCPU().endSample("InsertAll");
 
-					GUIMaterialGroup& group = *groupIter;
+				// Group the elements in such a way so that we end up with a smallest amount of
+				// meshes, without breaking back to front rendering order
+				FrameUnorderedMap<UINT64, FrameVector<GUIMaterialGroup>> materialGroups;
+				for (auto& elem : allElements)
+				{
+					GUIElement* guiElem = elem.element;
+					UINT32 renderElemIdx = elem.renderElement;
+					UINT32 elemDepth = guiElem->_getRenderElementDepth(renderElemIdx);
 
-					if(group.depth == elemDepth || group.depth == (elemDepth - 1))
+					gProfilerCPU().beginSample("Tfrm");
+
+					Rect2I tfrmedBounds = guiElem->_getClippedBounds();
+					tfrmedBounds.transform(guiElem->_getParentWidget()->SO()->getWorldTfrm());
+
+					gProfilerCPU().endSample("Tfrm");
+
+					const GUIMaterialInfo& matInfo = guiElem->_getMaterial(renderElemIdx);
+
+					UINT64 materialId = matInfo.material->getInternalID(); // TODO - I group based on material ID. So if two widgets used exact copies of the same material
+					// this system won't detect it. Find a better way of determining material similarity?
+
+					// If this is a new material, add a new list of groups
+					auto findIterMaterial = materialGroups.find(materialId);
+					if (findIterMaterial == end(materialGroups))
+						materialGroups[materialId] = FrameVector<GUIMaterialGroup>();
+
+					// Try to find a group this material will fit in:
+					//  - Group that has a depth value same or one below elements depth will always be a match
+					//  - Otherwise, we search higher depth values as well, but we only use them if no elements in between those depth values
+					//    overlap the current elements bounds.
+					FrameVector<GUIMaterialGroup>& allGroups = materialGroups[materialId];
+					GUIMaterialGroup* foundGroup = nullptr;
+					for (auto groupIter = allGroups.rbegin(); groupIter != allGroups.rend(); ++groupIter)
 					{
-						foundGroup = &group;
-						break;
-					}
-					else
-					{
-						UINT32 startDepth = elemDepth;
-						UINT32 endDepth = group.depth;
-
-						Rect2I potentialGroupBounds = group.bounds;
-						potentialGroupBounds.encapsulate(tfrmedBounds);
-
-						bool foundOverlap = false;
-						for(auto& material : materialGroups)
+						// If we separate meshes by widget, ignore any groups with widget parents other than mine
+						if (mSeparateMeshesByWidget)
 						{
-							for(auto& matGroup : material.second)
+							if (groupIter->elements.size() > 0)
 							{
-								if(&matGroup == &group)
+								GUIElement* otherElem = groupIter->elements.begin()->element; // We only need to check the first element
+								if (otherElem->_getParentWidget() != guiElem->_getParentWidget())
 									continue;
-
-								if(matGroup.depth > startDepth && matGroup.depth < endDepth)
-								{
-									if(matGroup.bounds.overlaps(potentialGroupBounds))
-									{
-										foundOverlap = true;
-										break;
-									}
-								}
 							}
 						}
 
-						if(!foundOverlap)
+						GUIMaterialGroup& group = *groupIter;
+
+						if (group.depth == elemDepth || group.depth == (elemDepth - 1))
 						{
 							foundGroup = &group;
 							break;
 						}
+						else
+						{
+							UINT32 startDepth = elemDepth;
+							UINT32 endDepth = group.depth;
+
+							Rect2I potentialGroupBounds = group.bounds;
+							potentialGroupBounds.encapsulate(tfrmedBounds);
+
+							bool foundOverlap = false;
+							for (auto& material : materialGroups)
+							{
+								for (auto& matGroup : material.second)
+								{
+									if (&matGroup == &group)
+										continue;
+
+									if (matGroup.depth > startDepth && matGroup.depth < endDepth)
+									{
+										if (matGroup.bounds.overlaps(potentialGroupBounds))
+										{
+											foundOverlap = true;
+											break;
+										}
+									}
+								}
+							}
+
+							if (!foundOverlap)
+							{
+								foundGroup = &group;
+								break;
+							}
+						}
 					}
-				}
 
-				if(foundGroup == nullptr)
-				{
-					allGroups.push_back(GUIMaterialGroup());
-					foundGroup = &allGroups[allGroups.size() - 1];
+					gProfilerCPU().beginSample("AddToGroup");
 
-					foundGroup->depth = elemDepth;
-					foundGroup->bounds = tfrmedBounds;
-					foundGroup->elements.push_back(GUIGroupElement(guiElem, renderElemIdx));
-					foundGroup->matInfo = matInfo;
-					foundGroup->numQuads = guiElem->_getNumQuads(renderElemIdx);
-				}
-				else
-				{
-					foundGroup->bounds.encapsulate(tfrmedBounds);
-					foundGroup->elements.push_back(GUIGroupElement(guiElem, renderElemIdx));
-					foundGroup->depth = std::min(foundGroup->depth, elemDepth);
-					foundGroup->numQuads += guiElem->_getNumQuads(renderElemIdx);
-				}
-			}
+					if (foundGroup == nullptr)
+					{
+						allGroups.push_back(GUIMaterialGroup());
+						foundGroup = &allGroups[allGroups.size() - 1];
 
-			// Make a list of all GUI elements, sorted from farthest to nearest (highest depth to lowest)
-			auto groupComp = [](GUIMaterialGroup* a, GUIMaterialGroup* b)
-			{
-				return (a->depth > b->depth) || (a->depth == b->depth && a > b);
-				// Compare pointers just to differentiate between two elements with the same depth, their order doesn't really matter, but std::set
-				// requires all elements to be unique
-			};
-
-			Set<GUIMaterialGroup*, std::function<bool(GUIMaterialGroup*, GUIMaterialGroup*)>> sortedGroups(groupComp);
-			for(auto& material : materialGroups)
-			{
-				for(auto& group : material.second)
-				{
-					sortedGroups.insert(&group);
-				}
-			}
-
-			UINT32 numMeshes = (UINT32)sortedGroups.size();
-			UINT32 oldNumMeshes = (UINT32)renderData.cachedMeshes.size();
-
-			if(numMeshes < oldNumMeshes)
-			{
-				for (UINT32 i = numMeshes; i < oldNumMeshes; i++)
-					mMeshHeap->dealloc(renderData.cachedMeshes[i]);
-
-				renderData.cachedMeshes.resize(numMeshes);
-			}
-
-			renderData.cachedMaterials.resize(numMeshes);
-
-			if(mSeparateMeshesByWidget)
-				renderData.cachedWidgetsPerMesh.resize(numMeshes);
-
-			// Fill buffers for each group and update their meshes
-			UINT32 groupIdx = 0;
-			for(auto& group : sortedGroups)
-			{
-				renderData.cachedMaterials[groupIdx] = group->matInfo;
-
-				if(mSeparateMeshesByWidget)
-				{
-					if(group->elements.size() == 0)
-						renderData.cachedWidgetsPerMesh[groupIdx] = nullptr;
+						foundGroup->depth = elemDepth;
+						foundGroup->bounds = tfrmedBounds;
+						foundGroup->elements.push_back(GUIGroupElement(guiElem, renderElemIdx));
+						foundGroup->matInfo = matInfo;
+						foundGroup->numQuads = guiElem->_getNumQuads(renderElemIdx);
+					}
 					else
 					{
-						GUIElement* elem = group->elements.begin()->element;
-						renderData.cachedWidgetsPerMesh[groupIdx] = elem->_getParentWidget();
+						foundGroup->bounds.encapsulate(tfrmedBounds);
+						foundGroup->elements.push_back(GUIGroupElement(guiElem, renderElemIdx));
+						foundGroup->depth = std::min(foundGroup->depth, elemDepth);
+						foundGroup->numQuads += guiElem->_getNumQuads(renderElemIdx);
+					}
+
+					gProfilerCPU().endSample("AddToGroup");
+				}
+
+				// Make a list of all GUI elements, sorted from farthest to nearest (highest depth to lowest)
+				auto groupComp = [](GUIMaterialGroup* a, GUIMaterialGroup* b)
+				{
+					return (a->depth > b->depth) || (a->depth == b->depth && a > b);
+					// Compare pointers just to differentiate between two elements with the same depth, their order doesn't really matter, but std::set
+					// requires all elements to be unique
+				};
+
+				FrameSet<GUIMaterialGroup*, std::function<bool(GUIMaterialGroup*, GUIMaterialGroup*)>> sortedGroups(groupComp);
+				for(auto& material : materialGroups)
+				{
+					for(auto& group : material.second)
+					{
+						sortedGroups.insert(&group);
 					}
 				}
 
-				MeshDataPtr meshData = bs_shared_ptr<MeshData, PoolAlloc>(group->numQuads * 4, group->numQuads * 6, mVertexDesc);
+				gProfilerCPU().endSample("Sort elements");
 
-				UINT8* vertices = meshData->getElementData(VES_POSITION);
-				UINT8* uvs = meshData->getElementData(VES_TEXCOORD);
-				UINT32* indices = meshData->getIndices32();
-				UINT32 vertexStride = meshData->getVertexDesc()->getVertexStride();
-				UINT32 indexStride = meshData->getIndexElementSize();
+				gProfilerCPU().beginSample("Mesh data");
 
-				UINT32 quadOffset = 0;
-				for(auto& matElement : group->elements)
+				UINT32 numMeshes = (UINT32)sortedGroups.size();
+				UINT32 oldNumMeshes = (UINT32)renderData.cachedMeshes.size();
+
+				if(numMeshes < oldNumMeshes)
 				{
-					gProfilerCPU().beginSample("_fillBuffer");
-					matElement.element->_fillBuffer(vertices, uvs, indices, quadOffset, group->numQuads, vertexStride, indexStride, matElement.renderElement);
-					gProfilerCPU().endSample("_fillBuffer");
+					for (UINT32 i = numMeshes; i < oldNumMeshes; i++)
+						mMeshHeap->dealloc(renderData.cachedMeshes[i]);
 
-					UINT32 numQuads = matElement.element->_getNumQuads(matElement.renderElement);
-					UINT32 indexStart = quadOffset * 6;
-					UINT32 indexEnd = indexStart + numQuads * 6;
-					UINT32 vertOffset = quadOffset * 4;
-
-					for(UINT32 i = indexStart; i < indexEnd; i++)
-						indices[i] += vertOffset;
-
-					quadOffset += numQuads;
+					renderData.cachedMeshes.resize(numMeshes);
 				}
 
-				gProfilerCPU().beginSample("alloc/dealloc mesh data");
-				if(groupIdx < (UINT32)renderData.cachedMeshes.size())
-				{
-					mMeshHeap->dealloc(renderData.cachedMeshes[groupIdx]);
-					renderData.cachedMeshes[groupIdx] = mMeshHeap->alloc(meshData);
-				}
-				else
-				{
-					renderData.cachedMeshes.push_back(mMeshHeap->alloc(meshData));
-				}
-				gProfilerCPU().endSample("alloc/dealloc mesh data");
+				renderData.cachedMaterials.resize(numMeshes);
 
-				groupIdx++;
+				if(mSeparateMeshesByWidget)
+					renderData.cachedWidgetsPerMesh.resize(numMeshes);
+
+				// Fill buffers for each group and update their meshes
+				UINT32 groupIdx = 0;
+				for(auto& group : sortedGroups)
+				{
+					renderData.cachedMaterials[groupIdx] = group->matInfo;
+
+					if(mSeparateMeshesByWidget)
+					{
+						if(group->elements.size() == 0)
+							renderData.cachedWidgetsPerMesh[groupIdx] = nullptr;
+						else
+						{
+							GUIElement* elem = group->elements.begin()->element;
+							renderData.cachedWidgetsPerMesh[groupIdx] = elem->_getParentWidget();
+						}
+					}
+
+					MeshDataPtr meshData = bs_shared_ptr<MeshData, PoolAlloc>(group->numQuads * 4, group->numQuads * 6, mVertexDesc);
+
+					UINT8* vertices = meshData->getElementData(VES_POSITION);
+					UINT8* uvs = meshData->getElementData(VES_TEXCOORD);
+					UINT32* indices = meshData->getIndices32();
+					UINT32 vertexStride = meshData->getVertexDesc()->getVertexStride();
+					UINT32 indexStride = meshData->getIndexElementSize();
+
+					UINT32 quadOffset = 0;
+					for(auto& matElement : group->elements)
+					{
+						matElement.element->_fillBuffer(vertices, uvs, indices, quadOffset, group->numQuads, vertexStride, indexStride, matElement.renderElement);
+
+						UINT32 numQuads = matElement.element->_getNumQuads(matElement.renderElement);
+						UINT32 indexStart = quadOffset * 6;
+						UINT32 indexEnd = indexStart + numQuads * 6;
+						UINT32 vertOffset = quadOffset * 4;
+
+						for(UINT32 i = indexStart; i < indexEnd; i++)
+							indices[i] += vertOffset;
+
+						quadOffset += numQuads;
+					}
+
+					gProfilerCPU().beginSample("alloc/dealloc mesh data");
+					if(groupIdx < (UINT32)renderData.cachedMeshes.size())
+					{
+						mMeshHeap->dealloc(renderData.cachedMeshes[groupIdx]);
+						renderData.cachedMeshes[groupIdx] = mMeshHeap->alloc(meshData);
+					}
+					else
+					{
+						renderData.cachedMeshes.push_back(mMeshHeap->alloc(meshData));
+					}
+					gProfilerCPU().endSample("alloc/dealloc mesh data");
+
+					groupIdx++;
+				}
+
+				gProfilerCPU().endSample("Mesh data");
 			}
+
+			bs_frame_clear();			
 		}
 	}
 

@@ -67,7 +67,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	Resource::getResourceDependencies
 		 */
-		void getResourceDependencies(Vector<HResource>& dependencies) const override;
+		void getResourceDependencies(FrameVector<HResource>& dependencies) const override;
 
 		/**
 		 * @copydoc	CoreObject::getCoreDependencies

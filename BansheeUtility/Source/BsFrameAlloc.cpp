@@ -114,7 +114,10 @@ namespace BansheeEngine
 					if (curBlock->mFreePtr == 0)
 					{
 						numFreedBlocks++;
-						mNextBlockIdx = i;
+
+						// Reset block counter if we're gonna reallocate this one
+						if (numFreedBlocks > 1)
+							mNextBlockIdx = i;
 					}
 
 					break;
@@ -127,7 +130,6 @@ namespace BansheeEngine
 				}
 			}
 
-			UINT32 oldNextBlockIdx = mNextBlockIdx;
 			if (numFreedBlocks > 1)
 			{
 				UINT32 totalBytes = 0;
@@ -140,12 +142,17 @@ namespace BansheeEngine
 					mBlocks.erase(mBlocks.begin() + mNextBlockIdx);
 				}
 				
+				UINT32 oldNextBlockIdx = mNextBlockIdx;
 				allocBlock(totalBytes);
+
+				// Point to the first non-full block, or if none available then point the the block we just allocated
+				if (oldNextBlockIdx > 0)
+					mFreeBlock = mBlocks[oldNextBlockIdx - 1];
 			}
-			
-			// Point to the first non-full block, or if none available then point the the block we just allocated
-			if (oldNextBlockIdx > 0)
-				mFreeBlock = mBlocks[oldNextBlockIdx - 1];
+			else
+			{
+				mFreeBlock = mBlocks[mNextBlockIdx - 1];
+			}
 		}
 		else
 		{

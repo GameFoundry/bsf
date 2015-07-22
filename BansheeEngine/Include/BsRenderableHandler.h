@@ -244,7 +244,7 @@ namespace BansheeEngine
 		void getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies) override;
 
 		/**
-		 * @copydoc	IResourceListener::getResourceDependencies
+		 * @copydoc	IResourceListener::getListenerResources
 		 */
 		void getListenerResources(Vector<HResource>& resources) override;
 
