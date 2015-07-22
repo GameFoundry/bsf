@@ -168,11 +168,6 @@ namespace BansheeEngine
 		virtual void dragAndDropEnded(TreeElement* overTreeElement) override;
 
 		/**
-		 * @copydoc	GUITreeView::dragAndDropFinalize
-		 */	
-		virtual void dragAndDropFinalize() override;
-
-		/**
 		 * @copydoc	GUITreeView::_acceptDragAndDrop
 		 */	
 		virtual bool _acceptDragAndDrop(const Vector2I position, UINT32 typeId) const override;
@@ -186,6 +181,12 @@ namespace BansheeEngine
 		 * @copydoc	GUITreeView::_changeParentWidget
 		 */	
 		void _changeParentWidget(GUIWidget* widget) override;
+
+		/**
+		 * @brief	Triggered when a drag and drop operation that was started by the tree view
+		 *			ends, regardless if it was processed or not.
+		 */
+		void dragAndDropFinalize();
 
 		/**
 		 * @brief	Updates the contents of the provided tree entry with a project library entry.

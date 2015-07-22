@@ -136,7 +136,7 @@ namespace BansheeEngine
 
 	}
 
-	void GUITreeView::update()
+	void GUITreeView::_update()
 	{
 		// Attempt to auto-expand elements we are dragging over
 		if(acceptDragAndDrop())

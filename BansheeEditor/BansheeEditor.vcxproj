@@ -265,9 +265,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="Include\BsBuildDataRTTI.h" />
     <ClInclude Include="Include\BsBuildManager.h" />
     <ClInclude Include="Include\BsCmdEditPlainFieldGO.h" />

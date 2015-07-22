@@ -42,6 +42,6 @@ namespace BansheeEngine
 			return;
 
 		GUISceneTreeView* treeView = static_cast<GUISceneTreeView*>(thisPtr->getGUIElement());
-		treeView->update();
+		treeView->_update();
 	}
 }
