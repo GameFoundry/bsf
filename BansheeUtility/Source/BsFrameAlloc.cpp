@@ -161,18 +161,21 @@ namespace BansheeEngine
 				BS_EXCEPT(InvalidStateException, "Not all frame allocated bytes were properly released.");
 #endif
 
-			// Merge all blocks into one
-			UINT32 totalBytes = 0;
-			for (auto& block : mBlocks)
+			if (mBlocks.size() > 1)
 			{
-				totalBytes += block->mSize;
-				deallocBlock(block);
+				// Merge all blocks into one
+				UINT32 totalBytes = 0;
+				for (auto& block : mBlocks)
+				{
+					totalBytes += block->mSize;
+					deallocBlock(block);
+				}
+
+				mBlocks.clear();
+				mNextBlockIdx = 0;
+
+				allocBlock(totalBytes);
 			}
-
-			mBlocks.clear();
-			mNextBlockIdx = 0;
-
-			allocBlock(totalBytes);
 		}
 	}
 

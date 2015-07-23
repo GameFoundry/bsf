@@ -6,14 +6,10 @@
 namespace BansheeEngine
 {
 	Sprite::Sprite()
-	{
-
-	}
+	{ }
 
 	Sprite::~Sprite()
-	{
-		clearMesh();
-	}
+	{ }
 
 	Rect2I Sprite::getBounds(const Vector2I& offset, const Rect2I& clipRect) const 
 	{
@@ -240,41 +236,6 @@ namespace BansheeEngine
 		}
 
 		mBounds = Rect2I((int)min.x, (int)min.y, (int)(max.x - min.x), (int)(max.y - min.y));
-	}
-
-	void Sprite::clearMesh() const
-	{
-		for(auto& renderElem : mCachedRenderElements)
-		{
-			UINT32 vertexCount = renderElem.numQuads * 4;
-			UINT32 indexCount = renderElem.numQuads * 6;
-
-			if (renderElem.vertices != nullptr)
-			{
-				bs_deleteN<ScratchAlloc>(renderElem.vertices, vertexCount);
-				renderElem.vertices = nullptr;
-			}
-
-			if (renderElem.uvs != nullptr)
-			{
-				bs_deleteN<ScratchAlloc>(renderElem.uvs, vertexCount);
-				renderElem.uvs = nullptr;
-			}
-
-			if (renderElem.indexes != nullptr)
-			{
-				bs_deleteN<ScratchAlloc>(renderElem.indexes, indexCount);
-				renderElem.indexes = nullptr;
-			}
-
-			if(renderElem.matInfo.material != nullptr)
-			{
-				GUIMaterialManager::instance().releaseMaterial(renderElem.matInfo);
-			}
-		}
-
-		mCachedRenderElements.clear();
-		updateBounds();
 	}
 
 	// This will only properly clip an array of quads

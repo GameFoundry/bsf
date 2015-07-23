@@ -4,6 +4,7 @@
 #include "BsSprite.h"
 #include "BsTextData.h"
 #include "BsColor.h"
+#include "BsStaticAlloc.h"
 
 namespace BansheeEngine
 {
@@ -54,6 +55,7 @@ namespace BansheeEngine
 	{
 	public:
 		TextSprite();
+		~TextSprite();
 
 		/**
 		 * @brief	Recreates internal sprite data according the specified description structure.
@@ -74,9 +76,11 @@ namespace BansheeEngine
 		 * @param	height		Height of the text bounds into which to constrain the text, in pixels.
 		 * @param	horzAlign	Specifies how is text horizontally aligned within its bounds.
 		 * @param	vertAlign	Specifies how is text vertically aligned within its bounds.
+		 * @param	output		Pre-allocated buffer to output the results in. Buffer must have an element
+		 *						for every line in \p textData.
 		 */
-		static Vector<Vector2I> getAlignmentOffsets(const TextDataBase& textData, 
-			UINT32 width, UINT32 height, TextHorzAlign horzAlign, TextVertAlign vertAlign);
+		static void getAlignmentOffsets(const TextDataBase& textData, 
+			UINT32 width, UINT32 height, TextHorzAlign horzAlign, TextVertAlign vertAlign, Vector2I* output);
 
 		/**
 		 * @brief	Calculates text quads you may use for text rendering, based on the specified text
@@ -119,5 +123,16 @@ namespace BansheeEngine
 		static UINT32 genTextQuads(const TextDataBase& textData, UINT32 width, UINT32 height,
 			TextHorzAlign horzAlign, TextVertAlign vertAlign, SpriteAnchor anchor, Vector2* vertices, Vector2* uv, UINT32* indices, 
 			UINT32 bufferSizeQuads);
+
+	private:
+		static const int STATIC_CHARS_TO_BUFFER = 25;
+		static const int STATIC_BUFFER_SIZE = STATIC_CHARS_TO_BUFFER * (4 * (2 * sizeof(Vector2)) + (6 * sizeof(UINT32)));
+
+		/**
+		 * @brief	Clears internal geometry buffers.
+		 */
+		void clearMesh();
+
+		mutable StaticAlloc<STATIC_BUFFER_SIZE, STATIC_BUFFER_SIZE> mAlloc;
 	};
 }

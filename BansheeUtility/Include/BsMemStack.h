@@ -27,7 +27,8 @@ namespace BansheeEngine
 		{
 		public:
 			MemBlock(UINT32 size)
-				:mData(nullptr), mFreePtr(0), mSize(size)
+				:mData(nullptr), mFreePtr(0), mSize(size), 
+				mNextBlock(nullptr), mPrevBlock(nullptr)
 			{ }
 
 			~MemBlock()
@@ -62,22 +63,28 @@ namespace BansheeEngine
 			UINT8* mData;
 			UINT32 mFreePtr;
 			UINT32 mSize;
+			MemBlock* mNextBlock;
+			MemBlock* mPrevBlock;
 		};
 
 	public:
 		MemStackInternal()
-		{ }
+			:mFreeBlock(nullptr)
+		{
+			mFreeBlock = allocBlock(BlockCapacity);
+		}
 
 		~MemStackInternal()
 		{
-			assert(mBlocks.size() == 0 && "Not all blocks were released before shutting down the stack allocator.");
+			assert(mFreeBlock->mFreePtr == 0 && "Not all blocks were released before shutting down the stack allocator.");
 
-			while(!mBlocks.empty())
+			MemBlock* curBlock = mFreeBlock;
+			while (curBlock != nullptr)
 			{
-				MemBlock* curPtr = mBlocks.top();
-				mBlocks.pop();
+				MemBlock* nextBlock = curBlock->mNextBlock;
+				deallocBlock(curBlock);
 
-				deallocBlock(curPtr);
+				curBlock = nextBlock;
 			}
 		}
 
@@ -97,20 +104,11 @@ namespace BansheeEngine
 		{
 			amount += sizeof(UINT32);
 
-			MemBlock* topBlock;
-			if(mBlocks.size() == 0)
-				topBlock = allocBlock(amount);
-			else
-				topBlock = mBlocks.top();
+			UINT32 freeMem = mFreeBlock->mSize - mFreeBlock->mFreePtr;
+			if(amount > freeMem)
+				allocBlock(amount);
 
-			MemBlock* memBlock = nullptr;
-			UINT32 freeMem = topBlock->mSize - topBlock->mFreePtr;
-			if(amount <= freeMem)
-				memBlock = topBlock;
-			else
-				memBlock = allocBlock(amount);
-
-			UINT8* data = memBlock->alloc(amount);
+			UINT8* data = mFreeBlock->alloc(amount);
 
 			UINT32* storedSize = reinterpret_cast<UINT32*>(data);
 			*storedSize = amount;
@@ -127,19 +125,35 @@ namespace BansheeEngine
 			data -= sizeof(UINT32);
 
 			UINT32* storedSize = reinterpret_cast<UINT32*>(data);
+			mFreeBlock->dealloc(data, *storedSize);
 
-			MemBlock* topBlock = mBlocks.top();
-			topBlock->dealloc(data, *storedSize);
-
-			if(topBlock->mFreePtr == 0)
+			if (mFreeBlock->mFreePtr == 0)
 			{
-				deallocBlock(topBlock);
-				mBlocks.pop();
+				MemBlock* emptyBlock = mFreeBlock;
+
+				if (emptyBlock->mPrevBlock != nullptr)
+					mFreeBlock = emptyBlock->mPrevBlock;
+
+				// Merge with next block
+				if (emptyBlock->mNextBlock != nullptr)
+				{
+					UINT32 totalSize = emptyBlock->mSize + emptyBlock->mNextBlock->mSize;
+
+					if (emptyBlock->mPrevBlock != nullptr)
+						emptyBlock->mPrevBlock->mNextBlock = nullptr;
+					else
+						mFreeBlock = nullptr;
+
+					deallocBlock(emptyBlock->mNextBlock);
+					deallocBlock(emptyBlock);
+
+					allocBlock(totalSize);
+				}
 			}
 		}
 
 	private:
-		std::stack<MemBlock*> mBlocks;
+		MemBlock* mFreeBlock;
 
 		/**
 		 * @brief	Allocates a new block of memory using a heap allocator. Block will never be 
@@ -151,13 +165,35 @@ namespace BansheeEngine
 			if(wantedSize > blockSize)
 				blockSize = wantedSize;
 
-			UINT8* data = (UINT8*)reinterpret_cast<UINT8*>(bs_alloc(blockSize + sizeof(MemBlock)));
-			MemBlock* newBlock = new (data) MemBlock(blockSize);
-			data += sizeof(MemBlock);
-			newBlock->mData = data;
+			MemBlock* newBlock = nullptr;
+			MemBlock* curBlock = mFreeBlock;
 
-			mBlocks.push(newBlock);
+			while (curBlock != nullptr)
+			{
+				MemBlock* nextBlock = curBlock->mNextBlock;
+				if (nextBlock->mSize >= blockSize)
+				{
+					newBlock = nextBlock;
+					break;
+				}
 
+				curBlock = nextBlock;
+			}
+
+			if (newBlock == nullptr)
+			{
+				UINT8* data = (UINT8*)reinterpret_cast<UINT8*>(bs_alloc(blockSize + sizeof(MemBlock)));
+				newBlock = new (data)MemBlock(blockSize);
+				data += sizeof(MemBlock);
+
+				newBlock->mData = data;
+				newBlock->mPrevBlock = mFreeBlock;
+
+				if (mFreeBlock != nullptr)
+					mFreeBlock->mNextBlock = newBlock;
+			}
+
+			mFreeBlock = newBlock;
 			return newBlock;
 		}
 

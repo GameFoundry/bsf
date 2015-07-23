@@ -437,7 +437,7 @@ namespace BansheeEngine
 			UINT32 totalBufferSize = 0;
 			generatePersistentData(text, nullptr, totalBufferSize);
 
-			mData = (UINT8*)bs_alloc<GenAlloc>(totalBufferSize);
+			mData = (UINT8*)bs_alloc<Alloc>(totalBufferSize);
 			generatePersistentData(text, (UINT8*)mData, totalBufferSize);
 		}
 

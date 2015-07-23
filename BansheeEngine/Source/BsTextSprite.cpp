@@ -13,10 +13,13 @@ namespace BansheeEngine
 
 	}
 
+	TextSprite::~TextSprite()
+	{
+		clearMesh();
+	}
+
 	void TextSprite::update(const TEXT_SPRITE_DESC& desc, UINT64 groupId)
 	{
-		gProfilerCPU().beginSample("UpdateTextSprite");
-
 		bs_frame_mark();
 		{
 			TextData<FrameAlloc> textData(desc.text, desc.font, desc.fontSize, desc.width, desc.height, desc.wordWrap, desc.wordBreak);
@@ -24,30 +27,23 @@ namespace BansheeEngine
 			UINT32 numLines = textData.getNumLines();
 			UINT32 numPages = textData.getNumPages();
 
-			// Resize cached mesh array to needed size
-			if (mCachedRenderElements.size() > numPages)
+			// Free all previous memory
+			for (auto& cachedElem : mCachedRenderElements)
 			{
-				for (UINT32 i = numPages; i < (UINT32)mCachedRenderElements.size(); i++)
-				{
-					auto& renderElem = mCachedRenderElements[i];
+				if (cachedElem.vertices != nullptr) mAlloc.free(cachedElem.vertices);
+				if (cachedElem.uvs != nullptr) mAlloc.free(cachedElem.uvs);
+				if (cachedElem.indexes != nullptr) mAlloc.free(cachedElem.indexes);
+			}
 
-					UINT32 vertexCount = renderElem.numQuads * 4;
-					UINT32 indexCount = renderElem.numQuads * 6;
+			mAlloc.clear();
 
-					if (renderElem.vertices != nullptr)
-						bs_deleteN<ScratchAlloc>(renderElem.vertices, vertexCount);
+			// Resize cached mesh array to needed size
+			for (UINT32 i = numPages; i < (UINT32)mCachedRenderElements.size(); i++)
+			{
+				auto& renderElem = mCachedRenderElements[i];
 
-					if (renderElem.uvs != nullptr)
-						bs_deleteN<ScratchAlloc>(renderElem.uvs, vertexCount);
-
-					if (renderElem.indexes != nullptr)
-						bs_deleteN<ScratchAlloc>(renderElem.indexes, indexCount);
-
-					if (renderElem.matInfo.material != nullptr)
-					{
-						GUIMaterialManager::instance().releaseMaterial(renderElem.matInfo);
-					}
-				}
+				if (renderElem.matInfo.material != nullptr)
+					GUIMaterialManager::instance().releaseMaterial(renderElem.matInfo);
 			}
 
 			if (mCachedRenderElements.size() != numPages)
@@ -58,20 +54,11 @@ namespace BansheeEngine
 			for (auto& cachedElem : mCachedRenderElements)
 			{
 				UINT32 newNumQuads = textData.getNumQuadsForPage(texPage);
-				if (newNumQuads != cachedElem.numQuads)
-				{
-					UINT32 oldVertexCount = cachedElem.numQuads * 4;
-					UINT32 oldIndexCount = cachedElem.numQuads * 6;
 
-					if (cachedElem.vertices != nullptr) bs_deleteN<ScratchAlloc>(cachedElem.vertices, oldVertexCount);
-					if (cachedElem.uvs != nullptr) bs_deleteN<ScratchAlloc>(cachedElem.uvs, oldVertexCount);
-					if (cachedElem.indexes != nullptr) bs_deleteN<ScratchAlloc>(cachedElem.indexes, oldIndexCount);
-
-					cachedElem.vertices = bs_newN<Vector2, ScratchAlloc>(newNumQuads * 4);
-					cachedElem.uvs = bs_newN<Vector2, ScratchAlloc>(newNumQuads * 4);
-					cachedElem.indexes = bs_newN<UINT32, ScratchAlloc>(newNumQuads * 6);
-					cachedElem.numQuads = newNumQuads;
-				}
+				cachedElem.vertices = (Vector2*)mAlloc.alloc(sizeof(Vector2) * newNumQuads * 4);
+				cachedElem.uvs = (Vector2*)mAlloc.alloc(sizeof(Vector2) * newNumQuads * 4);
+				cachedElem.indexes = (UINT32*)mAlloc.alloc(sizeof(UINT32) * newNumQuads * 6);
+				cachedElem.numQuads = newNumQuads;
 
 				const HTexture& tex = textData.getTextureForPage(texPage);
 
@@ -114,8 +101,6 @@ namespace BansheeEngine
 		bs_frame_clear();
 
 		updateBounds();
-
-		gProfilerCPU().endSample("UpdateTextSprite");
 	}
 
 	UINT32 TextSprite::genTextQuads(UINT32 page, const TextDataBase& textData, UINT32 width, UINT32 height,
@@ -124,7 +109,8 @@ namespace BansheeEngine
 		UINT32 numLines = textData.getNumLines();
 		UINT32 newNumQuads = textData.getNumQuadsForPage(page);
 
-		Vector<Vector2I> alignmentOffsets = getAlignmentOffsets(textData, width, height, horzAlign, vertAlign);
+		Vector2I* alignmentOffsets = bs_stack_new<Vector2I>(numLines);
+		getAlignmentOffsets(textData, width, height, horzAlign, vertAlign, alignmentOffsets);
 		Vector2I offset = getAnchorOffset(anchor, width, height);
 
 		UINT32 quadOffset = 0;
@@ -144,6 +130,7 @@ namespace BansheeEngine
 			quadOffset += writtenQuads;
 		}
 
+		bs_stack_delete(alignmentOffsets, numLines);
 		return newNumQuads;
 	}
 
@@ -154,7 +141,8 @@ namespace BansheeEngine
 		UINT32 numLines = textData.getNumLines();
 		UINT32 numPages = textData.getNumPages();
 
-		Vector<Vector2I> alignmentOffsets = getAlignmentOffsets(textData, width, height, horzAlign, vertAlign);
+		Vector2I* alignmentOffsets = bs_stack_new<Vector2I>(numLines);
+		getAlignmentOffsets(textData, width, height, horzAlign, vertAlign, alignmentOffsets);
 		Vector2I offset = getAnchorOffset(anchor, width, height);
 
 		UINT32 quadOffset = 0;
@@ -169,21 +157,22 @@ namespace BansheeEngine
 				Vector2I position = offset + alignmentOffsets[i];
 
 				UINT32 numVertices = writtenQuads * 4;
-				for(UINT32 i = 0; i < numVertices; i++)
+				for(UINT32 k = 0; k < numVertices; k++)
 				{
-					vertices[quadOffset * 4 + i].x += (float)position.x;
-					vertices[quadOffset * 4 + i].y += (float)position.y;
+					vertices[quadOffset * 4 + k].x += (float)position.x;
+					vertices[quadOffset * 4 + k].y += (float)position.y;
 				}
 
 				quadOffset += writtenQuads;
 			}
 		}
 
+		bs_stack_delete(alignmentOffsets, numLines);
 		return quadOffset;
 	}
 
-	Vector<Vector2I> TextSprite::getAlignmentOffsets(const TextDataBase& textData,
-		UINT32 width, UINT32 height, TextHorzAlign horzAlign, TextVertAlign vertAlign)
+	void TextSprite::getAlignmentOffsets(const TextDataBase& textData,
+		UINT32 width, UINT32 height, TextHorzAlign horzAlign, TextVertAlign vertAlign, Vector2I* output)
 	{
 		UINT32 numLines = textData.getNumLines();
 		UINT32 curHeight = 0;
@@ -211,7 +200,6 @@ namespace BansheeEngine
 
 		// Calc horizontal alignment offset
 		UINT32 curY = 0;
-		Vector<Vector2I> lineOffsets;
 		for(UINT32 i = 0; i < numLines; i++)
 		{
 			const TextDataBase::TextLine& line = textData.getLine(i);
@@ -230,10 +218,42 @@ namespace BansheeEngine
 				break;
 			}
 
-			lineOffsets.push_back(Vector2I(horzOffset, vertOffset + curY));
+			output[i] = Vector2I(horzOffset, vertOffset + curY);
 			curY += line.getYOffset();
 		}
+	}
 
-		return lineOffsets;
+	void TextSprite::clearMesh()
+	{
+		for (auto& renderElem : mCachedRenderElements)
+		{
+			if (renderElem.vertices != nullptr)
+			{
+				mAlloc.free(renderElem.vertices);
+				renderElem.vertices = nullptr;
+			}
+
+			if (renderElem.uvs != nullptr)
+			{
+				mAlloc.free(renderElem.uvs);
+				renderElem.uvs = nullptr;
+			}
+
+			if (renderElem.indexes != nullptr)
+			{
+				mAlloc.free(renderElem.indexes);
+				renderElem.indexes = nullptr;
+			}
+
+			if (renderElem.matInfo.material != nullptr)
+			{
+				GUIMaterialManager::instance().releaseMaterial(renderElem.matInfo);
+			}
+		}
+
+		mCachedRenderElements.clear();
+		mAlloc.clear();
+
+		updateBounds();
 	}
 }

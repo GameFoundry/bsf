@@ -43,6 +43,7 @@ namespace BansheeEngine
 	{
 	public:
 		ImageSprite();
+		~ImageSprite();
 
 		/**
 		 * @brief	Recreates internal sprite data according the specified description structure.
@@ -53,5 +54,11 @@ namespace BansheeEngine
 		 *					share the same material if they use different world transform matrices)
 		 */
 		void update(const IMAGE_SPRITE_DESC& desc, UINT64 groupId);
+
+	private:
+		/**
+		 * @brief	Clears internal geometry buffers.
+		 */
+		void clearMesh();
 	};
 }

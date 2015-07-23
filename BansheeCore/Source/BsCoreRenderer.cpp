@@ -124,7 +124,7 @@ namespace BansheeEngine
 		std::shared_ptr<VertexData> vertexData = mesh->getVertexData();
 
 		rs.setVertexDeclaration(vertexData->vertexDeclaration);
-		auto vertexBuffers = vertexData->getBuffers();
+		auto& vertexBuffers = vertexData->getBuffers();
 
 		if (vertexBuffers.size() > 0)
 		{

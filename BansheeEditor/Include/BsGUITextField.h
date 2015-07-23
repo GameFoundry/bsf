@@ -178,6 +178,11 @@ namespace BansheeEngine
 		 */
 		bool hasInputFocus() const { return mHasInputFocus; }
 
+		/**
+		 * @copydoc	GUIElement::setTint
+		 */
+		virtual void setTint(const Color& color) override;
+
 		Event<void(const WString&)> onValueChanged; /** Triggered when the value in the field changes. */
 	protected:
 		static const UINT32 DEFAULT_LABEL_WIDTH;
@@ -188,11 +193,6 @@ namespace BansheeEngine
 		 * @copydoc	GUIElement::styleUpdated
 		 */
 		void styleUpdated() override;
-
-		/**
-		 * @copydoc	GUIElement::setTint
-		 */
-		virtual void setTint(const Color& color) override;
 
 		/**
 		 * @copydoc	GUIElement::_updateLayoutInternal

@@ -136,11 +136,6 @@ namespace BansheeEngine
 		 */
 		void updateBounds() const;
 
-		/**
-		 * @brief	Clears internal geometry buffers.
-		 */
-		void clearMesh() const;
-
 		mutable Rect2I mBounds;
 		mutable Vector<SpriteRenderElement> mCachedRenderElements;
 	};

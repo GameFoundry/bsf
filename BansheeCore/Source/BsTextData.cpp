@@ -557,6 +557,10 @@ namespace BansheeEngine
 		LineBufferSize = 500;
 		PageBufferSize = 20;
 
+		NextFreeWord = 0;
+		NextFreeLine = 0;
+		NextFreePageInfo = 0;
+
 		WordBuffer = bs_newN<TextWord>(WordBufferSize);
 		LineBuffer = bs_newN<TextLine>(LineBufferSize);
 		PageBuffer = bs_newN<PageInfo>(PageBufferSize);

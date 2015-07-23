@@ -112,8 +112,10 @@ namespace BansheeEngine
 
 	void GUIWidget::_updateLayout()
 	{
+		bs_frame_mark();
+
 		// Determine dirty contents and layouts
-		Stack<GUIElementBase*> todo;
+		FrameStack<GUIElementBase*> todo;
 		todo.push(mPanel);
 
 		while (!todo.empty())
@@ -138,6 +140,8 @@ namespace BansheeEngine
 					todo.push(currentElem->_getChild(i));
 			}
 		}
+
+		bs_frame_clear();
 	}
 
 	void GUIWidget::_updateLayout(GUIElementBase* elem)
@@ -177,23 +181,27 @@ namespace BansheeEngine
 		}
 
 		// Mark dirty contents
-		Stack<GUIElementBase*> todo;
-		todo.push(elem);
-
-		while (!todo.empty())
+		bs_frame_mark();
 		{
-			GUIElementBase* currentElem = todo.top();
-			todo.pop();
+			FrameStack<GUIElementBase*> todo;
+			todo.push(elem);
 
-			if (currentElem->_getType() == GUIElementBase::Type::Element)
-				mDirtyContents.insert(static_cast<GUIElement*>(currentElem));
+			while (!todo.empty())
+			{
+				GUIElementBase* currentElem = todo.top();
+				todo.pop();
 
-			currentElem->_markAsClean();
+				if (currentElem->_getType() == GUIElementBase::Type::Element)
+					mDirtyContents.insert(static_cast<GUIElement*>(currentElem));
 
-			UINT32 numChildren = currentElem->_getNumChildren();
-			for (UINT32 i = 0; i < numChildren; i++)
-				todo.push(currentElem->_getChild(i));
+				currentElem->_markAsClean();
+
+				UINT32 numChildren = currentElem->_getNumChildren();
+				for (UINT32 i = 0; i < numChildren; i++)
+					todo.push(currentElem->_getChild(i));
+			}
 		}
+		bs_frame_clear();
 	}
 
 	bool GUIWidget::_mouseEvent(GUIElement* element, const GUIMouseEvent& ev)
@@ -275,9 +283,7 @@ namespace BansheeEngine
 			mWidgetIsDirty = false;
 
 			for (auto& dirtyElement : mDirtyContents)
-			{
-				PROFILE_CALL(dirtyElement->_updateRenderElements(), "UpdateDirty");
-			}
+				dirtyElement->_updateRenderElements();
 
 			mDirtyContents.clear();
 			updateBounds();

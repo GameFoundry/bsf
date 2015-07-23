@@ -1,7 +1,5 @@
 #pragma once
 
-#include "BsPrerequisitesUtil.h"
-
 namespace BansheeEngine
 {
 	/**
@@ -18,7 +16,7 @@ namespace BansheeEngine
 	 *									if you stay within the bounds of the statically allocated memory.
 	 */
 	template<int BlockSize = 512, int MaxDynamicMemory = 512>
-	class BS_UTILITY_EXPORT StaticAlloc
+	class StaticAlloc
 	{
 	private:
 		/**
@@ -71,7 +69,7 @@ namespace BansheeEngine
 		{
 			assert(mFreeBlock == &mStaticBlock && mStaticBlock.mFreePtr == 0);
 
-			freeEmptyDynamicBlocks(mFreeBlock);
+			freeBlocks(mFreeBlock);
 		}
 
 		/**
@@ -106,14 +104,16 @@ namespace BansheeEngine
 		/**
 		 * @brief	Deallocates a previously allocated piece of memory.
 		 */
-		void dealloc(UINT8* data)
+		void free(void* data)
 		{
 			// Dealloc is only used for debug and can be removed if needed. All the actual deallocation
 			// happens in ::clear
 
 #if BS_DEBUG_MODE
-			data -= sizeof(UINT32);
-			UINT32* storedSize = reinterpret_cast<UINT32*>(data);
+			UINT8* dataPtr = (UINT8*)data;
+			dataPtr -= sizeof(UINT32);
+
+			UINT32* storedSize = (UINT32*)(dataPtr);
 			mTotalAllocBytes -= *storedSize;
 #endif
 		}
@@ -121,9 +121,8 @@ namespace BansheeEngine
 		void clear()
 		{
 			assert(mTotalAllocBytes == 0);
-			assert(mFreeBlock == &mStaticBlock);
 
-			MemBlock* dynamicBlock = mFreeBlock->mNextBlock;
+			MemBlock* dynamicBlock = mStaticBlock.mNextBlock;
 			INT32 totalDynamicMemAmount = 0;
 			UINT32 numDynamicBlocks = 0;
 
@@ -136,18 +135,19 @@ namespace BansheeEngine
 				numDynamicBlocks++;
 			}
 
+			mFreeBlock = &mStaticBlock;
+			mStaticBlock.clear();
+
 			if (numDynamicBlocks > 1)
 			{
-				freeBlocks(mFreeBlock);
+				freeBlocks(&mStaticBlock);
 				allocBlock(std::min(totalDynamicMemAmount, MaxDynamicMemory));
 				mFreeBlock = &mStaticBlock;
 			}
 			else if (numDynamicBlocks == 1 && MaxDynamicMemory == 0)
 			{
-				freeBlocks(mFreeBlock);
+				freeBlocks(&mStaticBlock);
 			}
-
-			mFreeBlock->clear();
 		}
 
 	private:

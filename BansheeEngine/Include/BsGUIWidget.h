@@ -193,7 +193,7 @@ namespace BansheeEngine
 
 		HEvent mOwnerTargetResizedConn;
 
-		UnorderedSet<GUIElement*> mDirtyContents;
+		Set<GUIElement*> mDirtyContents;
 
 		mutable bool mWidgetIsDirty;
 		mutable Rect2I mBounds;

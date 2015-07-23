@@ -13,6 +13,11 @@ namespace BansheeEngine
 
 	}
 
+	ImageSprite::~ImageSprite()
+	{
+		clearMesh();
+	}
+
 	void ImageSprite::update(const IMAGE_SPRITE_DESC& desc, UINT64 groupId)
 	{
 		const FontData* fontData = nullptr;
@@ -21,8 +26,6 @@ namespace BansheeEngine
 			clearMesh();
 			return;
 		}
-
-		gProfilerCPU().beginSample("UpdateImageSprite");
 
 		// Actually generate a mesh
 		if(mCachedRenderElements.size() < 1)
@@ -262,7 +265,40 @@ namespace BansheeEngine
 		}
 
 		updateBounds();
+	}
 
-		gProfilerCPU().endSample("UpdateImageSprite");
+	void ImageSprite::clearMesh()
+	{
+		for (auto& renderElem : mCachedRenderElements)
+		{
+			UINT32 vertexCount = renderElem.numQuads * 4;
+			UINT32 indexCount = renderElem.numQuads * 6;
+
+			if (renderElem.vertices != nullptr)
+			{
+				bs_deleteN<ScratchAlloc>(renderElem.vertices, vertexCount);
+				renderElem.vertices = nullptr;
+			}
+
+			if (renderElem.uvs != nullptr)
+			{
+				bs_deleteN<ScratchAlloc>(renderElem.uvs, vertexCount);
+				renderElem.uvs = nullptr;
+			}
+
+			if (renderElem.indexes != nullptr)
+			{
+				bs_deleteN<ScratchAlloc>(renderElem.indexes, indexCount);
+				renderElem.indexes = nullptr;
+			}
+
+			if (renderElem.matInfo.material != nullptr)
+			{
+				GUIMaterialManager::instance().releaseMaterial(renderElem.matInfo);
+			}
+		}
+
+		mCachedRenderElements.clear();
+		updateBounds();
 	}
 }

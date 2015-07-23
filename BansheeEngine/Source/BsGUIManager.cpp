@@ -359,12 +359,10 @@ namespace BansheeEngine
 
 			for(auto& widget : renderData.widgets)
 			{
-				gProfilerCPU().beginSample("Widget::isDirty");
 				if (widget->isDirty(true))
 				{
 					isDirty = true;
 				}
-				gProfilerCPU().endSample("Widget::isDirty");
 			}
 
 			if(!isDirty)
@@ -372,8 +370,6 @@ namespace BansheeEngine
 
 			bs_frame_mark();
 			{
-				gProfilerCPU().beginSample("Sort elements");
-
 				// Make a list of all GUI elements, sorted from farthest to nearest (highest depth to lowest)
 				auto elemComp = [](const GUIGroupElement& a, const GUIGroupElement& b)
 				{
@@ -389,7 +385,6 @@ namespace BansheeEngine
 
 				FrameSet<GUIGroupElement, std::function<bool(const GUIGroupElement&, const GUIGroupElement&)>> allElements(elemComp);
 
-				gProfilerCPU().beginSample("InsertAll");
 				for (auto& widget : renderData.widgets)
 				{
 					const Vector<GUIElement*>& elements = widget->getElements();
@@ -406,7 +401,6 @@ namespace BansheeEngine
 						}
 					}
 				}
-				gProfilerCPU().endSample("InsertAll");
 
 				// Group the elements in such a way so that we end up with a smallest amount of
 				// meshes, without breaking back to front rendering order
@@ -417,12 +411,8 @@ namespace BansheeEngine
 					UINT32 renderElemIdx = elem.renderElement;
 					UINT32 elemDepth = guiElem->_getRenderElementDepth(renderElemIdx);
 
-					gProfilerCPU().beginSample("Tfrm");
-
 					Rect2I tfrmedBounds = guiElem->_getClippedBounds();
 					tfrmedBounds.transform(guiElem->_getParentWidget()->SO()->getWorldTfrm());
-
-					gProfilerCPU().endSample("Tfrm");
 
 					const GUIMaterialInfo& matInfo = guiElem->_getMaterial(renderElemIdx);
 
@@ -495,8 +485,6 @@ namespace BansheeEngine
 						}
 					}
 
-					gProfilerCPU().beginSample("AddToGroup");
-
 					if (foundGroup == nullptr)
 					{
 						allGroups.push_back(GUIMaterialGroup());
@@ -515,8 +503,6 @@ namespace BansheeEngine
 						foundGroup->depth = std::min(foundGroup->depth, elemDepth);
 						foundGroup->numQuads += guiElem->_getNumQuads(renderElemIdx);
 					}
-
-					gProfilerCPU().endSample("AddToGroup");
 				}
 
 				// Make a list of all GUI elements, sorted from farthest to nearest (highest depth to lowest)
@@ -535,10 +521,6 @@ namespace BansheeEngine
 						sortedGroups.insert(&group);
 					}
 				}
-
-				gProfilerCPU().endSample("Sort elements");
-
-				gProfilerCPU().beginSample("Mesh data");
 
 				UINT32 numMeshes = (UINT32)sortedGroups.size();
 				UINT32 oldNumMeshes = (UINT32)renderData.cachedMeshes.size();
@@ -597,7 +579,6 @@ namespace BansheeEngine
 						quadOffset += numQuads;
 					}
 
-					gProfilerCPU().beginSample("alloc/dealloc mesh data");
 					if(groupIdx < (UINT32)renderData.cachedMeshes.size())
 					{
 						mMeshHeap->dealloc(renderData.cachedMeshes[groupIdx]);
@@ -607,12 +588,9 @@ namespace BansheeEngine
 					{
 						renderData.cachedMeshes.push_back(mMeshHeap->alloc(meshData));
 					}
-					gProfilerCPU().endSample("alloc/dealloc mesh data");
 
 					groupIdx++;
 				}
-
-				gProfilerCPU().endSample("Mesh data");
 			}
 
 			bs_frame_clear();			

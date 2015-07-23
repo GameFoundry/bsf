@@ -33,9 +33,9 @@ namespace BansheeEngine
 				mNumQuads += textData.getNumQuadsForPage(i);
 
 			if (mQuads != nullptr)
-				bs_delete<ScratchAlloc>(mQuads);
+				bs_delete(mQuads);
 
-			mQuads = bs_newN<Vector2, ScratchAlloc>(mNumQuads * 4);
+			mQuads = bs_newN<Vector2>(mNumQuads * 4);
 
 			TextSprite::genTextQuads(textData, mTextDesc.width, mTextDesc.height, mTextDesc.horzAlign, mTextDesc.vertAlign, mTextDesc.anchor,
 				mQuads, nullptr, nullptr, mNumQuads);
@@ -45,8 +45,10 @@ namespace BansheeEngine
 			// Store cached line data
 			UINT32 curCharIdx = 0;
 			UINT32 curLineIdx = 0;
-			Vector<Vector2I> alignmentOffsets = TextSprite::getAlignmentOffsets(textData, mTextDesc.width,
-				mTextDesc.height, mTextDesc.horzAlign, mTextDesc.vertAlign);
+
+			Vector2I* alignmentOffsets = bs_frame_new<Vector2I>(numLines);
+			TextSprite::getAlignmentOffsets(textData, mTextDesc.width, mTextDesc.height, mTextDesc.horzAlign, 
+				mTextDesc.vertAlign, alignmentOffsets);
 
 			for (UINT32 i = 0; i < numLines; i++)
 			{
@@ -66,6 +68,8 @@ namespace BansheeEngine
 				curCharIdx = lineDesc.getEndChar();
 				curLineIdx++;
 			}
+
+			bs_frame_delete(alignmentOffsets);
 		}
 		bs_frame_clear();
 	}

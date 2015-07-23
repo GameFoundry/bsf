@@ -24,18 +24,18 @@ namespace BansheeEngine
 		/**
 		 * @brief	Calculate optimal sizes of all child layout elements.
 		 */
-		void _updateOptimalLayoutSizes();
+		void _updateOptimalLayoutSizes() override;
 
 		/**
 		 * @copydoc	GUIElementBase::_calculateLayoutSizeRange
 		 */
-		virtual LayoutSizeRange _calculateLayoutSizeRange() const;
+		virtual LayoutSizeRange _calculateLayoutSizeRange() const override;
 
 		/**
 		 * @copydoc	GUILayout::_getElementAreas
 		 */
 		void _getElementAreas(const Rect2I& layoutArea, Rect2I* elementAreas, UINT32 numElements,
-			const Vector<LayoutSizeRange>& sizeRanges, const LayoutSizeRange& mySizeRange) const;
+			const Vector<LayoutSizeRange>& sizeRanges, const LayoutSizeRange& mySizeRange) const override;
 
 		/**
 		 * @brief	Calculates the size of the provided child within this layout with the provided dimensions.
@@ -62,7 +62,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUILayout::_calcActualSize
 		 */
-		virtual Vector2I _calcActualSize(INT32 x, INT32 y, Rect2I* elementAreas, UINT32 numElements) const;
+		virtual Vector2I _calcActualSize(INT32 x, INT32 y, Rect2I* elementAreas, UINT32 numElements) const override;
 
 		/**
 		 * @brief	Changes values that control at which depth is GUI panel and its children rendered.
@@ -123,7 +123,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElementBase::_updateLayoutInternal
 		 */
-		void _updateLayoutInternal(const GUILayoutData& data);
+		void _updateLayoutInternal(const GUILayoutData& data) override;
 
 		INT16 mDepthOffset;
 		UINT16 mDepthRangeMin;
