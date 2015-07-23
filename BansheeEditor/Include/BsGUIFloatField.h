@@ -46,7 +46,7 @@ namespace BansheeEngine
 		 */
 		virtual void setTint(const Color& color) override;
 
-		Event<void(float)> onValueChanged; /**< Triggers when the internal value changes. */
+		Event<void(float)> onValueChanged; /**< Triggers when the field value changes. */
 	protected:
 		virtual ~GUIFloatField();
 

@@ -4,7 +4,6 @@
 #include "BsGUIButton.h"
 #include "BsGUITabButton.h"
 #include "BsGUISpace.h"
-#include "BsGUIWindowDropArea.h"
 #include "BsBuiltinResources.h"
 #include "BsGUIWidget.h"
 #include "BsGUIMouseEvent.h"

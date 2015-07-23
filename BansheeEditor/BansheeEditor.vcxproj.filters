@@ -183,9 +183,6 @@
     <ClInclude Include="Include\BsGUIVector4Field.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsGUIWindowDropArea.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsGUIWindowFrame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -393,9 +390,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGUIVector4Field.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGUIWindowDropArea.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGUIWindowFrame.cpp">

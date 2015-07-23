@@ -327,7 +327,6 @@
     <ClInclude Include="Include\BsGUITreeViewEditBox.h" />
     <ClInclude Include="Include\BsGUIWindowFrame.h" />
     <ClInclude Include="Include\BsGUIWindowFrameWidget.h" />
-    <ClInclude Include="Include\BsGUIWindowDropArea.h" />
     <ClInclude Include="Include\BsMainEditorWindow.h" />
     <ClInclude Include="Include\BsProjectLibrary.h" />
     <ClInclude Include="Include\BsProjectLibraryEntries.h" />
@@ -387,7 +386,6 @@
     <ClCompile Include="Source\BsGUIVector4Field.cpp" />
     <ClCompile Include="Source\BsGUIWindowFrame.cpp" />
     <ClCompile Include="Source\BsGUIWindowFrameWidget.cpp" />
-    <ClCompile Include="Source\BsGUIWindowDropArea.cpp" />
     <ClCompile Include="Source\BsHandleDrawManager.cpp" />
     <ClCompile Include="Source\BsHandleManager.cpp" />
     <ClCompile Include="Source\BsHandleSliderManager.cpp" />

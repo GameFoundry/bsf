@@ -30,7 +30,6 @@ namespace BansheeEngine
 	class ModalWindow;
 	class GUITabbedTitleBar;
 	class GUITabButton;
-	class GUIWindowDropArea;
 	class GUIWindowFrame;
 	class GUIIntField;
 	class GUIFloatField;
