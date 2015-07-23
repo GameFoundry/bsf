@@ -93,6 +93,8 @@ namespace BansheeEngine
 			HString totalTime;
 			HString avgTimeSelf;
 			HString totalTimeSelf;
+
+			bool disabled;
 		};
 
 		/**
@@ -115,6 +117,8 @@ namespace BansheeEngine
 			HString totalCycles;
 			HString avgCyclesSelf;
 			HString totalCyclesSelf;
+
+			bool disabled;
 		};
 		
 		/**
@@ -128,6 +132,8 @@ namespace BansheeEngine
 
 			HString name;
 			HString time;
+
+			bool disabled;
 		};
 
 	public:

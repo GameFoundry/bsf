@@ -15,7 +15,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT TMaterialDataParam
 	{
 	public:
-		TMaterialDataParam(const Vector<TGpuDataParam<T, Core>>& params);
+		TMaterialDataParam(const SPtr<Vector<TGpuDataParam<T, Core>>>& params);
 		TMaterialDataParam() { }
 		
 		/**
@@ -29,7 +29,7 @@ namespace BansheeEngine
 		T get(UINT32 arrayIdx = 0);
 
 	protected:
-		Vector<TGpuDataParam<T, Core>> mParams;
+		SPtr<Vector<TGpuDataParam<T, Core>>> mParams;
 	};
 
 	/**
@@ -39,7 +39,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT TMaterialParamStruct
 	{
 	public:
-		TMaterialParamStruct(const Vector<TGpuParamStruct<Core>>& params);
+		TMaterialParamStruct(const SPtr<Vector<TGpuParamStruct<Core>>>& params);
 		TMaterialParamStruct() { }
 
 		/**
@@ -58,7 +58,7 @@ namespace BansheeEngine
 		UINT32 getElementSize() const;
 
 	protected:
-		Vector<TGpuParamStruct<Core>> mParams;
+		SPtr<Vector<TGpuParamStruct<Core>>> mParams;
 	};
 
 	/**
@@ -70,7 +70,7 @@ namespace BansheeEngine
 	public:
 		typedef typename TGpuParamTextureType<Core>::Type TextureType;
 
-		TMaterialParamTexture(const Vector<TGpuParamTexture<Core>>& params);
+		TMaterialParamTexture(const SPtr<Vector<TGpuParamTexture<Core>>>& params);
 		TMaterialParamTexture() { }
 
 		/**
@@ -84,7 +84,7 @@ namespace BansheeEngine
 		TextureType get();
 
 	protected:
-		Vector<TGpuParamTexture<Core>> mParams;
+		SPtr<Vector<TGpuParamTexture<Core>>> mParams;
 	};
 
 	/**
@@ -96,7 +96,7 @@ namespace BansheeEngine
 	public:
 		typedef typename TGpuParamTextureType<Core>::Type TextureType;
 
-		TMaterialParamLoadStoreTexture(const Vector<TGpuParamLoadStoreTexture<Core>>& params);
+		TMaterialParamLoadStoreTexture(const SPtr<Vector<TGpuParamLoadStoreTexture<Core>>>& params);
 		TMaterialParamLoadStoreTexture() { }
 
 		/**
@@ -110,7 +110,7 @@ namespace BansheeEngine
 		TextureType get();
 
 	protected:
-		Vector<TGpuParamLoadStoreTexture<Core>> mParams;
+		SPtr<Vector<TGpuParamLoadStoreTexture<Core>>> mParams;
 	};
 
 	/**
@@ -122,7 +122,7 @@ namespace BansheeEngine
 	public:
 		typedef typename TGpuParamSamplerStateType<Core>::Type SamplerType;
 
-		TMaterialParamSampState(const Vector<TGpuParamSampState<Core>>& params);
+		TMaterialParamSampState(const SPtr<Vector<TGpuParamSampState<Core>>>& params);
 		TMaterialParamSampState() { }
 
 		/**
@@ -136,7 +136,7 @@ namespace BansheeEngine
 		SamplerType get();
 
 	protected:
-		Vector<TGpuParamSampState<Core>> mParams;
+		SPtr<Vector<TGpuParamSampState<Core>>> mParams;
 	};
 
 	typedef TMaterialDataParam<float, false> MaterialParamFloat;

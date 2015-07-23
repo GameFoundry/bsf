@@ -5,120 +5,120 @@
 namespace BansheeEngine
 {
 	template<class T, bool Core>
-	TMaterialDataParam<T, Core>::TMaterialDataParam(const Vector<TGpuDataParam<T, Core>>& params)
+	TMaterialDataParam<T, Core>::TMaterialDataParam(const SPtr<Vector<TGpuDataParam<T, Core>>>& params)
 		:mParams(params)
 	{ }
 
 	template<class T, bool Core>
 	void TMaterialDataParam<T, Core>::set(const T& value, UINT32 arrayIdx)
 	{
-		for (auto& param : mParams)
+		for (auto& param : *mParams)
 			param.set(value, arrayIdx);
 	}
 
 	template<class T, bool Core>
 	T TMaterialDataParam<T, Core>::get(UINT32 arrayIdx)
 	{
-		if (mParams.size() == 0)
+		if (mParams->size() == 0)
 			return T();
 
-		return mParams[0].get(arrayIdx); // They should all have the same value
+		return (*mParams)[0].get(arrayIdx); // They should all have the same value
 	}
 
 	template<bool Core>
-	TMaterialParamStruct<Core>::TMaterialParamStruct(const Vector<TGpuParamStruct<Core>>& params)
+	TMaterialParamStruct<Core>::TMaterialParamStruct(const SPtr<Vector<TGpuParamStruct<Core>>>& params)
 		:mParams(params)
 	{ }
 
 	template<bool Core>
 	void TMaterialParamStruct<Core>::set(const void* value, UINT32 sizeBytes, UINT32 arrayIdx)
 	{
-		for (auto& param : mParams)
+		for (auto& param : *mParams)
 			param.set(value, sizeBytes, arrayIdx);
 	}
 
 	template<bool Core>
 	void TMaterialParamStruct<Core>::get(void* value, UINT32 sizeBytes, UINT32 arrayIdx)
 	{
-		if (mParams.size() == 0)
+		if (mParams->size() == 0)
 		{
 			value = nullptr;
 			return;
 		}
 
-		return mParams[0].get(value, sizeBytes, arrayIdx); // They should all have the same value
+		return (*mParams)[0].get(value, sizeBytes, arrayIdx); // They should all have the same value
 	}
 
 	template<bool Core>
 	UINT32 TMaterialParamStruct<Core>::getElementSize() const
 	{
-		if (mParams.size() == 0)
+		if (mParams->size() == 0)
 			return 0;
 
-		return mParams[0].getElementSize();
+		return (*mParams)[0].getElementSize();
 	}
 
 	template<bool Core>
-	TMaterialParamTexture<Core>::TMaterialParamTexture(const Vector<TGpuParamTexture<Core>>& params)
+	TMaterialParamTexture<Core>::TMaterialParamTexture(const SPtr<Vector<TGpuParamTexture<Core>>>& params)
 		:mParams(params)
 	{ }
 
 	template<bool Core>
 	void TMaterialParamTexture<Core>::set(const TextureType& texture)
 	{
-		for (auto& param : mParams)
+		for (auto& param : *mParams)
 			param.set(texture);
 	}
 
 	template<bool Core>
 	typename TMaterialParamTexture<Core>::TextureType TMaterialParamTexture<Core>::get()
 	{
-		if (mParams.size() == 0)
+		if (mParams->size() == 0)
 			return TextureType();
 
-		return mParams[0].get(); // They should all have the same value
+		return (*mParams)[0].get(); // They should all have the same value
 	}
 
 	template<bool Core>
-	TMaterialParamLoadStoreTexture<Core>::TMaterialParamLoadStoreTexture(const Vector<TGpuParamLoadStoreTexture<Core>>& params)
+	TMaterialParamLoadStoreTexture<Core>::TMaterialParamLoadStoreTexture(const SPtr<Vector<TGpuParamLoadStoreTexture<Core>>>& params)
 		:mParams(params)
 	{ }
 
 	template<bool Core>
 	void TMaterialParamLoadStoreTexture<Core>::set(const TextureType& texture, const TextureSurface& surface)
 	{
-		for (auto& param : mParams)
+		for (auto& param : *mParams)
 			param.set(texture, surface);
 	}
 
 	template<bool Core>
 	typename TMaterialParamLoadStoreTexture<Core>::TextureType TMaterialParamLoadStoreTexture<Core>::get()
 	{
-		if (mParams.size() == 0)
+		if (mParams->size() == 0)
 			return TextureType();
 
-		return mParams[0].get(); // They should all have the same value
+		return (*mParams)[0].get(); // They should all have the same value
 	}
 
 	template<bool Core>
-	TMaterialParamSampState<Core>::TMaterialParamSampState(const Vector<TGpuParamSampState<Core>>& params)
+	TMaterialParamSampState<Core>::TMaterialParamSampState(const SPtr<Vector<TGpuParamSampState<Core>>>& params)
 		:mParams(params)
 	{ }
 
 	template<bool Core>
 	void TMaterialParamSampState<Core>::set(const SamplerType& sampState)
 	{
-		for (auto& param : mParams)
+		for (auto& param : *mParams)
 			param.set(sampState);
 	}
 
 	template<bool Core>
 	typename TMaterialParamSampState<Core>::SamplerType TMaterialParamSampState<Core>::get()
 	{
-		if (mParams.size() == 0)
+		if (mParams->size() == 0)
 			return SamplerType();
 
-		return mParams[0].get(); // They should all have the same value
+		return (*mParams)[0].get(); // They should all have the same value
 	}
 
 	template class TMaterialDataParam<float, false>;

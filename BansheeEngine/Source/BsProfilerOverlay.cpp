@@ -37,8 +37,12 @@ namespace BansheeEngine
 			{
 				ProfilerOverlayInternal::BasicRow& row = rows[curIdx + i];
 
-				GUILayout::destroy(row.labelLayout);
-				GUILayout::destroy(row.contentLayout);
+				if (!row.disabled)
+				{
+					row.labelLayout->disableRecursively();
+					row.contentLayout->disableRecursively();
+					row.disabled = true;
+				}
 			}
 
 			rows.resize(curIdx);
@@ -53,6 +57,7 @@ namespace BansheeEngine
 
 				ProfilerOverlayInternal::BasicRow& newRow = rows.back();
 
+				newRow.disabled = false;
 				newRow.name = HString(L"{0}");
 				newRow.pctOfParent = HString(L"{0} %");
 				newRow.numCalls = HString(L"{0}");
@@ -101,9 +106,7 @@ namespace BansheeEngine
 			
 			ProfilerOverlayInternal::BasicRow& row = rows[curIdx];
 
-			GUIFixedSpace::destroy(row.labelSpace);
-			row.labelSpace = row.labelLayout->insertNewElement<GUIFixedSpace>(0, depth * 20);
-
+			row.labelSpace->setSize(depth * 20);
 			row.name.setParameter(0, toWString(name));
 			row.pctOfParent.setParameter(0, toWString(pctOfParent * 100.0f, 2, 0, ' ', std::ios::fixed));
 			row.numCalls.setParameter(0, toWString(numCalls));
@@ -113,6 +116,13 @@ namespace BansheeEngine
 			row.totalTime.setParameter(0, toWString(totalTime, 2, 0, ' ', std::ios::fixed));
 			row.avgTimeSelf.setParameter(0, toWString(avgSelfTime, 2, 0, ' ', std::ios::fixed));
 			row.totalTimeSelf.setParameter(0, toWString(totalSelfTime, 2, 0, ' ', std::ios::fixed));
+
+			if (row.disabled)
+			{
+				row.labelLayout->enableRecursively();
+				row.contentLayout->enableRecursively();
+				row.disabled = false;
+			}
 
 			curIdx++;
 		}
@@ -138,8 +148,12 @@ namespace BansheeEngine
 			{
 				ProfilerOverlayInternal::PreciseRow& row = rows[curIdx + i];
 
-				GUILayout::destroy(row.labelLayout);
-				GUILayout::destroy(row.contentLayout);
+				if (!row.disabled)
+				{
+					row.labelLayout->disableRecursively();
+					row.contentLayout->disableRecursively();
+					row.disabled = true;
+				}
 			}
 
 			rows.resize(curIdx);
@@ -154,6 +168,7 @@ namespace BansheeEngine
 
 				ProfilerOverlayInternal::PreciseRow& newRow = rows.back();
 
+				newRow.disabled = false;
 				newRow.name = HString(L"{0}");
 				newRow.pctOfParent = HString(L"{0}");
 				newRow.numCalls = HString(L"{0}");
@@ -202,9 +217,7 @@ namespace BansheeEngine
 
 			ProfilerOverlayInternal::PreciseRow& row = rows[curIdx];
 
-			GUIFixedSpace::destroy(row.labelSpace);
-			row.labelSpace = row.labelLayout->insertNewElement<GUIFixedSpace>(0, depth * 20);
-
+			row.labelSpace->setSize(depth * 20);
 			row.name.setParameter(0, toWString(name));
 			row.pctOfParent.setParameter(0, toWString(pctOfParent * 100.0f, 2, 0, ' ', std::ios::fixed));
 			row.numCalls.setParameter(0, toWString(numCalls));
@@ -214,6 +227,13 @@ namespace BansheeEngine
 			row.totalCycles.setParameter(0, toWString(totalCycles));
 			row.avgCyclesSelf.setParameter(0, toWString(avgSelfCycles));
 			row.totalCyclesSelf.setParameter(0, toWString(totalSelfCycles));
+
+			if (row.disabled)
+			{
+				row.labelLayout->enableRecursively();
+				row.contentLayout->enableRecursively();
+				row.disabled = false;
+			}
 
 			curIdx++;
 		}
@@ -238,7 +258,11 @@ namespace BansheeEngine
 			{
 				ProfilerOverlayInternal::GPUSampleRow& row = rows[curIdx + i];
 
-				GUILayout::destroy(row.layout);
+				if (!row.disabled)
+				{
+					row.layout->disableRecursively();
+					row.disabled = true;
+				}
 			}
 
 			rows.resize(curIdx);
@@ -252,6 +276,7 @@ namespace BansheeEngine
 
 				ProfilerOverlayInternal::GPUSampleRow& newRow = rows.back();
 
+				newRow.disabled = false;
 				newRow.name = HString(L"{1}");
 				newRow.time = HString(L"{0}");
 
@@ -270,6 +295,12 @@ namespace BansheeEngine
 			ProfilerOverlayInternal::GPUSampleRow& row = rows[curIdx];
 			row.name.setParameter(0, toWString(name));
 			row.time.setParameter(0, toWString(timeMs));
+
+			if (row.disabled)
+			{
+				row.layout->enableRecursively();
+				row.disabled = false;
+			}
 
 			curIdx++;
 		}

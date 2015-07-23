@@ -36,17 +36,17 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElementBase::_getOptimalSize
 		 */
-		virtual Vector2I _getOptimalSize() const { return Vector2I(getSize(), getSize()); }
+		virtual Vector2I _getOptimalSize() const override { return Vector2I(getSize(), getSize()); }
 
 		/**
 		 * @copydoc	GUIElementBase::_calculateLayoutSizeRange
 		 */
-		virtual LayoutSizeRange _calculateLayoutSizeRange() const;
+		virtual LayoutSizeRange _calculateLayoutSizeRange() const override;
 
 		/**
 		 * @copydoc	GUIElementBase::_getPadding
 		 */
-		virtual const RectOffset& _getPadding() const 
+		virtual const RectOffset& _getPadding() const  override
 		{
 			static RectOffset padding;
 
@@ -86,22 +86,22 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElementBase::_getType
 		 */
-		Type _getType() const { return GUIElementBase::Type::FlexibleSpace; }
+		Type _getType() const override { return GUIElementBase::Type::FlexibleSpace; }
 
 		/**
 		 * @copydoc	GUIElementBase::_getOptimalSize
 		 */
-		virtual Vector2I _getOptimalSize() const { return Vector2I(0, 0); }
+		virtual Vector2I _getOptimalSize() const override { return Vector2I(0, 0); }
 
 		/**
 		 * @copydoc	GUIElementBase::_calculateLayoutSizeRange
 		 */
-		virtual LayoutSizeRange _calculateLayoutSizeRange() const;
+		virtual LayoutSizeRange _calculateLayoutSizeRange() const override;
 
 		/**
 		 * @copydoc	GUIElementBase::_getPadding
 		 */
-		virtual const RectOffset& _getPadding() const 
+		virtual const RectOffset& _getPadding() const override
 		{
 			static RectOffset padding;
 

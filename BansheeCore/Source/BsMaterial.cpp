@@ -484,7 +484,7 @@ namespace BansheeEngine
 		}
 
 		const String& gpuVarName = iterFind->second;
-		Vector<TGpuParamStruct<Core>> gpuParams;
+		SPtr<Vector<TGpuParamStruct<Core>>> gpuParams = bs_shared_ptr<Vector<TGpuParamStruct<Core>>>();
 
 		for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
 		{
@@ -497,8 +497,8 @@ namespace BansheeEngine
 				{
 					if (paramPtr->hasParam(gpuVarName))
 					{
-						gpuParams.push_back(TGpuParamStruct<Core>());
-						paramPtr->getStructParam(gpuVarName, gpuParams.back());
+						gpuParams->push_back(TGpuParamStruct<Core>());
+						paramPtr->getStructParam(gpuVarName, gpuParams->back());
 					}
 				}
 			}
@@ -520,7 +520,7 @@ namespace BansheeEngine
 		}
 
 		const String& gpuVarName = iterFind->second;
-		Vector<TGpuParamTexture<Core>> gpuParams;
+		SPtr<Vector<TGpuParamTexture<Core>>> gpuParams = bs_shared_ptr<Vector<TGpuParamTexture<Core>>>();
 
 		for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
 		{
@@ -533,8 +533,8 @@ namespace BansheeEngine
 				{
 					if (paramPtr->hasTexture(gpuVarName))
 					{
-						gpuParams.push_back(TGpuParamTexture<Core>());
-						paramPtr->getTextureParam(gpuVarName, gpuParams.back());
+						gpuParams->push_back(TGpuParamTexture<Core>());
+						paramPtr->getTextureParam(gpuVarName, gpuParams->back());
 					}
 				}
 			}
@@ -556,7 +556,7 @@ namespace BansheeEngine
 		}
 
 		const String& gpuVarName = iterFind->second;
-		Vector<TGpuParamLoadStoreTexture<Core>> gpuParams;
+		SPtr<Vector<TGpuParamLoadStoreTexture<Core>>> gpuParams = bs_shared_ptr<Vector<TGpuParamLoadStoreTexture<Core>>>();
 
 		for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
 		{
@@ -569,8 +569,8 @@ namespace BansheeEngine
 				{
 					if (paramPtr->hasTexture(gpuVarName))
 					{
-						gpuParams.push_back(TGpuParamLoadStoreTexture<Core>());
-						paramPtr->getLoadStoreTextureParam(gpuVarName, gpuParams.back());
+						gpuParams->push_back(TGpuParamLoadStoreTexture<Core>());
+						paramPtr->getLoadStoreTextureParam(gpuVarName, gpuParams->back());
 					}
 				}
 			}
@@ -592,7 +592,7 @@ namespace BansheeEngine
 		}
 
 		const String& gpuVarName = iterFind->second;
-		Vector<TGpuParamSampState<Core>> gpuParams;
+		SPtr<Vector<TGpuParamSampState<Core>>> gpuParams = bs_shared_ptr<Vector<TGpuParamSampState<Core>>>();
 		for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
 		{
 			SPtr<TPassParameters<Core>> params = *iter;
@@ -604,8 +604,8 @@ namespace BansheeEngine
 				{
 					if (paramPtr->hasSamplerState(gpuVarName))
 					{
-						gpuParams.push_back(TGpuParamSampState<Core>());
-						paramPtr->getSamplerStateParam(gpuVarName, gpuParams.back());
+						gpuParams->push_back(TGpuParamSampState<Core>());
+						paramPtr->getSamplerStateParam(gpuVarName, gpuParams->back());
 					}
 				}
 			}
@@ -896,7 +896,7 @@ namespace BansheeEngine
 		}
 
 		const String& gpuVarName = iterFind->second;
-		Vector<TGpuDataParam<T, Core>> gpuParams;
+		SPtr<Vector<TGpuDataParam<T, Core>>> gpuParams = bs_shared_ptr<Vector<TGpuDataParam<T, Core>>>();
 
 		for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
 		{
@@ -909,8 +909,8 @@ namespace BansheeEngine
 				{
 					if (paramPtr->hasParam(gpuVarName))
 					{
-						gpuParams.push_back(TGpuDataParam<T, Core>());
-						paramPtr->getParam<T>(gpuVarName, gpuParams.back());
+						gpuParams->push_back(TGpuDataParam<T, Core>());
+						paramPtr->getParam<T>(gpuVarName, gpuParams->back());
 					}
 				}
 			}
