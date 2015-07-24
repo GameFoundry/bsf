@@ -6,9 +6,6 @@
 #include "BsPlane.h"
 #include "BsCameraHandler.h"
 
-// DEBUG ONLY
-#include "BsDebug.h"
-
 namespace BansheeEngine
 {
 	HandleSliderPlane::HandleSliderPlane(const Vector3& dir1, const Vector3& dir2, float length, bool fixedScale)
@@ -54,7 +51,7 @@ namespace BansheeEngine
 	void HandleSliderPlane::activate(const CameraHandlerPtr& camera, const Vector2I& pointerPos)
 	{
 		mStartPlanePosition = getPosition();
-		mStartClickPosition = getClickPosition(camera, pointerPos);
+		mStartClickPosition = getPositionOnPlane(camera, pointerPos);
 	}
 
 	void HandleSliderPlane::handleInput(const CameraHandlerPtr& camera, const Vector2I& inputDelta)
@@ -66,14 +63,14 @@ namespace BansheeEngine
 		Vector3 worldDir1 = getRotation().rotate(mDirection1);
 		Vector3 worldDir2 = getRotation().rotate(mDirection2);
 
-		Vector3 intersectPosition = getClickPosition(camera, mCurrentPointerPos);
+		Vector3 intersectPosition = getPositionOnPlane(camera, mCurrentPointerPos);
 		Vector3 positionDelta = intersectPosition - mStartClickPosition;
 
 		mDelta.x = positionDelta.dot(worldDir1);
 		mDelta.y = positionDelta.dot(worldDir2);
 	}
 
-	Vector3 HandleSliderPlane::getClickPosition(const CameraHandlerPtr& camera, const Vector2I& pointerPos) const
+	Vector3 HandleSliderPlane::getPositionOnPlane(const CameraHandlerPtr& camera, const Vector2I& pointerPos) const
 	{
 		Vector3 worldDir1 = getRotation().rotate(mDirection1);
 		Vector3 worldDir2 = getRotation().rotate(mDirection2);

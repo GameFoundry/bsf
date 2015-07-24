@@ -34,6 +34,9 @@ namespace BansheeEngine
 		bool hasHandleLink;
 	};
 
+	/**
+	 * @brief	Internal data for an Event, storing all connections.
+	 */
 	struct EventInternalData
 	{
 		EventInternalData()
@@ -61,6 +64,12 @@ namespace BansheeEngine
 			}
 		}
 
+		/**
+		 * @brief	Disconnects the connection with the specified data,
+		 *			ensuring the event doesn't call its callback again.
+		 *
+		 * @note	Only call this once.
+		 */
 		void disconnect(BaseConnectionData* conn)
 		{
 			BS_LOCK_RECURSIVE_MUTEX(mMutex);
@@ -71,6 +80,9 @@ namespace BansheeEngine
 			free(conn);
 		}
 
+		/**
+		 * @brief	Disconnects all connections in the event.
+		 */
 		void clear()
 		{
 			BS_LOCK_RECURSIVE_MUTEX(mMutex);
@@ -88,6 +100,12 @@ namespace BansheeEngine
 			}
 		}
 
+		/**
+		 * @brief	Called when the event handle no longer keeps
+		 *			a reference to the connection data. This means
+		 *			we might be able to free (and reuse) its memory
+		 *			if the event is done with it too.
+		 */
 		void freeHandle(BaseConnectionData* conn)
 		{
 			BS_LOCK_RECURSIVE_MUTEX(mMutex);
@@ -98,6 +116,11 @@ namespace BansheeEngine
 				free(conn);
 		}
 
+		/**
+		 * @brief	Releases connection data and makes it
+		 *			available for re-use when next connection
+		 *			is formed.
+		 */
 		void free(BaseConnectionData* conn)
 		{
 			if (conn->prev != nullptr)
@@ -186,6 +209,8 @@ namespace BansheeEngine
 	 *
 	 * @note	Callback method return value is ignored.
 	 */
+	// Note: I could create a policy template argument that allows creation of 
+	// lockable and non-lockable events in the case mutex is causing too much overhead.
 	template <class RetType, class... Args>
 	class TEvent
 	{
