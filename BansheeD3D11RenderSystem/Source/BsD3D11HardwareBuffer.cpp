@@ -161,14 +161,13 @@ namespace BansheeEngine
 			D3D11_MAPPED_SUBRESOURCE mappedSubResource;
 			mappedSubResource.pData = NULL;
 			mDevice.clearErrors();
-			gProfilerCPU().beginSample("Map");
+
 			HRESULT hr = mDevice.getImmediateContext()->Map(mD3DBuffer, 0, mapType, 0, &mappedSubResource);
 			if (FAILED(hr) || mDevice.hasError())
 			{
 				String msg = mDevice.getErrorDescription();
 				BS_EXCEPT(RenderingAPIException, "Error calling Map: " + msg);
 			}
-			gProfilerCPU().endSample("Map");
 
 			pRet = static_cast<void*>(static_cast<char*>(mappedSubResource.pData) + offset);
 

@@ -562,11 +562,6 @@ namespace BansheeEngine
 
 	void ProfilerOverlayInternal::update()
 	{
-		static float pausedTime = 0.0f; // DEBUG ONLY
-
-		if ((gTime().getTime() - pausedTime) <= 5.0f)
-			return;
-
 		const ProfilerReport& latestSimReport = ProfilingManager::instance().getReport(ProfiledThread::Sim);
 		const ProfilerReport& latestCoreReport = ProfilingManager::instance().getReport(ProfiledThread::Core);
 
@@ -578,11 +573,6 @@ namespace BansheeEngine
 		if (ProfilerGPU::instance().getNumAvailableReports() > 0)
 		{
 			updateGPUSampleContents(ProfilerGPU::instance().getNextReport());
-		}
-
-		if (gTime().getFrameDelta() > 0.100f)
-		{
-			pausedTime = gTime().getTime();
 		}
 	}
 

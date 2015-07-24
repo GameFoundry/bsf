@@ -11,7 +11,119 @@ namespace BansheeEngine
 	class BaseConnectionData
 	{
 	public:
-		bool isValid;
+		BaseConnectionData()
+			:prev(nullptr), next(nullptr), isActive(true),
+			hasHandleLink(true)
+		{
+			
+		}
+
+		virtual ~BaseConnectionData()
+		{
+			assert(!hasHandleLink && !isActive);
+		}
+
+		virtual void deactivate()
+		{
+			isActive = false;
+		}
+
+		BaseConnectionData* prev;
+		BaseConnectionData* next;
+		bool isActive;
+		bool hasHandleLink;
+	};
+
+	struct EventInternalData
+	{
+		EventInternalData()
+			:mConnections(nullptr), mFreeConnections(nullptr)
+		{ }
+
+		~EventInternalData()
+		{
+			BaseConnectionData* conn = mConnections;
+			while (conn != nullptr)
+			{
+				BaseConnectionData* next = conn->next;
+				bs_delete(conn);
+
+				conn = next;
+			}
+
+			conn = mFreeConnections;
+			while (conn != nullptr)
+			{
+				BaseConnectionData* next = conn->next;
+				bs_delete(conn);
+
+				conn = next;
+			}
+		}
+
+		void disconnect(BaseConnectionData* conn)
+		{
+			BS_LOCK_RECURSIVE_MUTEX(mMutex);
+
+			conn->deactivate();
+			conn->hasHandleLink = false;
+
+			free(conn);
+		}
+
+		void clear()
+		{
+			BS_LOCK_RECURSIVE_MUTEX(mMutex);
+
+			BaseConnectionData* conn = mConnections;
+			while (conn != nullptr)
+			{
+				BaseConnectionData* next = conn->next;
+				conn->deactivate();
+
+				if (!conn->hasHandleLink)
+					free(conn);
+
+				conn = next;
+			}
+		}
+
+		void freeHandle(BaseConnectionData* conn)
+		{
+			BS_LOCK_RECURSIVE_MUTEX(mMutex);
+
+			conn->hasHandleLink = false;
+
+			if (!conn->isActive)
+				free(conn);
+		}
+
+		void free(BaseConnectionData* conn)
+		{
+			if (conn->prev != nullptr)
+				conn->prev->next = conn->next;
+			else
+				mConnections = conn->next;
+
+			if (conn->next != nullptr)
+				conn->next->prev = conn->prev;
+
+			conn->prev = nullptr;
+			conn->next = nullptr;
+
+			if (mFreeConnections != nullptr)
+			{
+				conn->next = mFreeConnections;
+				mFreeConnections->prev = conn;
+			}
+
+			mFreeConnections = conn;
+		}
+
+		BaseConnectionData* mConnections;
+		BaseConnectionData* mFreeConnections;
+
+		BS_RECURSIVE_MUTEX(mMutex);
 	};
 
 	/**
@@ -22,22 +134,29 @@ namespace BansheeEngine
 	{
 	public:
 		HEvent()
-			:mDisconnectCallback(nullptr), mConnection(nullptr), mEvent(nullptr)
+			:mConnection(nullptr)
 		{ }
 
-		HEvent(std::shared_ptr<BaseConnectionData> connection, void* event, void(*disconnectCallback) (const std::shared_ptr<BaseConnectionData>&, void*))
-			:mConnection(connection), mEvent(event), mDisconnectCallback(disconnectCallback)
+		explicit HEvent(const SPtr<EventInternalData>& eventData, BaseConnectionData* connection)
+			:mConnection(connection), mEventData(eventData)
 		{ }
+
+		~HEvent()
+		{
+			if (mConnection != nullptr)
+				mEventData->freeHandle(mConnection);
+		}
 
 		/**
 		 * @brief	Disconnect from the event you are subscribed to.
-		 *
-		 * @note	Caller must ensure the event is still valid.
 		 */
 		void disconnect()
 		{
-			if (mConnection != nullptr && mConnection->isValid)
-				mDisconnectCallback(mConnection, mEvent);
+			if (mConnection != nullptr)
+			{
+				mEventData->disconnect(mConnection);
+				mConnection = nullptr;
+			}
 		}
 
 		struct Bool_struct
@@ -53,13 +172,12 @@ namespace BansheeEngine
 		*/
 		operator int Bool_struct::*() const
 		{
-			return ((mConnection != nullptr && mConnection->isValid) ? &Bool_struct::_Member : 0);
+			return (mConnection != nullptr ? &Bool_struct::_Member : 0);
 		}
 
 	private:
-		void(*mDisconnectCallback) (const std::shared_ptr<BaseConnectionData>&, void*);
-		std::shared_ptr<BaseConnectionData> mConnection;
-		void* mEvent;
+		BaseConnectionData* mConnection;
+		SPtr<EventInternalData> mEventData;
 	};	
 
 	/**
@@ -74,27 +192,19 @@ namespace BansheeEngine
 		struct ConnectionData : BaseConnectionData
 		{
 		public:
-			ConnectionData(std::function<RetType(Args...)> func)
-				:func(func)
-			{ }
+			void deactivate() override
+			{
+				func = nullptr;
+
+				BaseConnectionData::deactivate();
+			}
 
 			std::function<RetType(Args...)> func;
 		};
 
-		struct InternalData
-		{
-			InternalData()
-				:mHasDisconnectedCallbacks(false)
-			{ }
-
-			Vector<std::shared_ptr<ConnectionData>> mConnections;
-			bool mHasDisconnectedCallbacks;
-			BS_RECURSIVE_MUTEX(mMutex);
-		};
-
 	public:
 		TEvent()
-			:mInternalData(bs_shared_ptr<InternalData>())
+			:mInternalData(bs_shared_ptr<EventInternalData>())
 		{ }
 
 		~TEvent()
@@ -108,15 +218,33 @@ namespace BansheeEngine
 		 */
 		HEvent connect(std::function<RetType(Args...)> func)
 		{
-			std::shared_ptr<ConnectionData> connData = bs_shared_ptr<ConnectionData>(func);
-			connData->isValid = true;
+			BS_LOCK_RECURSIVE_MUTEX(mInternalData->mMutex);
 
+			ConnectionData* connData = nullptr;
+			if (mInternalData->mFreeConnections != nullptr)
 			{
-				BS_LOCK_RECURSIVE_MUTEX(mInternalData->mMutex);
-				mInternalData->mConnections.push_back(connData);
+				connData = static_cast<ConnectionData*>(mInternalData->mFreeConnections);
+				mInternalData->mFreeConnections = connData->next;
+
+				if (connData->next != nullptr)
+					connData->next->prev = nullptr;
+
+				connData->isActive = true;
+				connData->hasHandleLink = true;
 			}
-			
-			return HEvent(connData, this, &TEvent::disconnectCallback);
+
+			if (connData == nullptr)
+				connData = bs_new<ConnectionData>();
+
+			connData->next = mInternalData->mConnections;
+
+			if (mInternalData->mConnections != nullptr)
+				mInternalData->mConnections->prev = connData;
+
+			mInternalData->mConnections = connData;
+			connData->func = func;
+
+			return HEvent(mInternalData, connData);
 		}
 
 		/**
@@ -126,33 +254,22 @@ namespace BansheeEngine
 		{
 			// Increase ref count to ensure this event data isn't destroyed if one of the callbacks
 			// deletes the event itself.
-			std::shared_ptr<InternalData> internalData = mInternalData;
+			std::shared_ptr<EventInternalData> internalData = mInternalData;
 
 			BS_LOCK_RECURSIVE_MUTEX(internalData->mMutex);
 
-			// Here is the only place we remove connections, in order to allow disconnect() and clear() to be called
-			// recursively from the notify callbacks
-			if (internalData->mHasDisconnectedCallbacks)
+			// Hidden dependency: If any new connections are made during these callbacks they must be
+			// inserted at the start of the linked list so that we don't trigger them here.
+			ConnectionData* conn = static_cast<ConnectionData*>(mInternalData->mConnections);
+			while (conn != nullptr)
 			{
-				for (UINT32 i = 0; i < internalData->mConnections.size(); i++)
-				{
-					if (!internalData->mConnections[i]->isValid)
-					{
-						internalData->mConnections.erase(internalData->mConnections.begin() + i);
-						i--;
-					}
-				}
+				// Save next here in case the callback itself disconnects this connection
+				ConnectionData* next = static_cast<ConnectionData*>(conn->next);
+				
+				if (conn->func != nullptr)
+					conn->func(args...);
 
-				internalData->mHasDisconnectedCallbacks = false;
-			}
-
-			// Do not use an iterator here, as new connections might be added during iteration from
-			// the notify callback
-			UINT32 numConnections = (UINT32)internalData->mConnections.size(); // Remember current num. connections as we don't want to notify new ones
-			for (UINT32 i = 0; i < numConnections; i++)
-			{
-				if (internalData->mConnections[i]->func != nullptr)
-					internalData->mConnections[i]->func(args...);
+				conn = next;
 			}
 		}
 
@@ -161,16 +278,7 @@ namespace BansheeEngine
 		 */
 		void clear()
 		{
-			BS_LOCK_RECURSIVE_MUTEX(mInternalData->mMutex);
-
-			for (auto& connection : mInternalData->mConnections)
-			{
-				connection->isValid = false;
-				connection->func = nullptr;
-			}
-
-			if (mInternalData->mConnections.size() > 0)
-				mInternalData->mHasDisconnectedCallbacks = true;
+			mInternalData->clear();
 		}
 
 		/**
@@ -182,43 +290,11 @@ namespace BansheeEngine
 		{
 			BS_LOCK_RECURSIVE_MUTEX(mInternalData->mMutex);
 
-			return mInternalData->mConnections.size() == 0;
+			return mInternalData->mConnections == nullptr;
 		}
 
 	private:
-		std::shared_ptr<InternalData> mInternalData;
-
-		/**
-		 * @brief	Callback triggered by event handles when they want to disconnect from
-		 *			an event.
-		 */
-		static void disconnectCallback(const std::shared_ptr<BaseConnectionData>& connection, void* event)
-		{
-			TEvent<RetType, Args...>* castEvent = reinterpret_cast<TEvent<RetType, Args...>*>(event);
-
-			castEvent->disconnect(connection);
-		}
-
-		/**
-		 * @brief	Internal method that disconnects the callback described by the provided connection data.
-		 */
-		void disconnect(const std::shared_ptr<BaseConnectionData>& connData)
-		{
-			BS_LOCK_RECURSIVE_MUTEX(mInternalData->mMutex);
-
-			std::shared_ptr<ConnectionData> myConnData = std::static_pointer_cast<ConnectionData>(connData);
-
-			for (auto& iter = mInternalData->mConnections.begin(); iter != mInternalData->mConnections.end(); ++iter)
-			{
-				if ((*iter) == myConnData)
-				{
-					myConnData->isValid = false;
-					myConnData->func = nullptr;
-					mInternalData->mHasDisconnectedCallbacks = true;
-					return;
-				}
-			}
-		}
+		SPtr<EventInternalData> mInternalData;
 	};
 
 	/************************************************************************/

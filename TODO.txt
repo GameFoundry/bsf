@@ -58,6 +58,8 @@ Code quality improvements:
 ----------------------------------------------------------------------
 Polish stage 1
 
+Handle seems to lag behind the selected mesh
+
 Track down the large performance spike
  - Seems to be caused by something on core thread
 ProjectLibrary seems to import some files on every start-up

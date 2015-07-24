@@ -2,6 +2,7 @@
 #include "BsEventQuery.h"
 #include "BsTimerQuery.h"
 #include "BsOcclusionQuery.h"
+#include "BsProfilerCPU.h"
 
 namespace BansheeEngine
 {
