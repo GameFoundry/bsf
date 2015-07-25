@@ -1,4 +1,4 @@
-#include "BsBansheeLitTexRenderableController.h"
+#include "BsLitTexRenderableController.h"
 #include "BsShader.h"
 #include "BsGpuParams.h"
 #include "BsBansheeRenderer.h"

@@ -565,8 +565,16 @@ namespace BansheeEngine
 		}
 		else if(name == "DSV")
 		{
-			D3D11TextureView* d3d11TextureView = static_cast<D3D11TextureView*>(mDepthStencilView.get());
-			*static_cast<ID3D11DepthStencilView**>(pData) = d3d11TextureView->getDSV();
+			if (mDepthStencilView != nullptr)
+			{
+				D3D11TextureView* d3d11TextureView = static_cast<D3D11TextureView*>(mDepthStencilView.get());
+				*static_cast<ID3D11DepthStencilView**>(pData) = d3d11TextureView->getDSV();
+			}
+			else
+			{
+				*static_cast<ID3D11DepthStencilView**>(pData) = nullptr;
+			}
+
 			return;
 		}
 
@@ -750,7 +758,7 @@ namespace BansheeEngine
 		ZeroMemory( &RTVDesc, sizeof(RTVDesc) );
 
 		RTVDesc.Format = BBDesc.Format;
-		RTVDesc.ViewDimension = getProperties().getMultisampleCount() ? D3D11_RTV_DIMENSION_TEXTURE2DMS : D3D11_RTV_DIMENSION_TEXTURE2D;
+		RTVDesc.ViewDimension = getProperties().getMultisampleCount() > 1 ? D3D11_RTV_DIMENSION_TEXTURE2DMS : D3D11_RTV_DIMENSION_TEXTURE2D;
 		RTVDesc.Texture2D.MipSlice = 0;
 		hr = mDevice.getD3D11Device()->CreateRenderTargetView(mBackBuffer, &RTVDesc, &mRenderTargetView);
 
@@ -760,17 +768,22 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "Unable to create rendertagert view\nError Description:" + errorDescription);
 		}
 
-		mDepthStencilBuffer = TextureCoreManager::instance().createTexture(TEX_TYPE_2D, 
-			BBDesc.Width, BBDesc.Height, 0, 0, PF_D24S8, TU_DEPTHSTENCIL, false, 
-			getProperties().getMultisampleCount());
-
-		if(mDepthStencilView != nullptr)
+		if (mDepthStencilView != nullptr)
 		{
 			TextureCore::releaseView(mDepthStencilView);
 			mDepthStencilView = nullptr;
 		}
 
-		mDepthStencilView = TextureCore::requestView(mDepthStencilBuffer, 0, 1, 0, 1, GVU_DEPTHSTENCIL);
+		if (mDesc.depthBuffer)
+		{
+			mDepthStencilBuffer = TextureCoreManager::instance().createTexture(TEX_TYPE_2D,
+				BBDesc.Width, BBDesc.Height, 0, 0, PF_D24S8, TU_DEPTHSTENCIL, false,
+				getProperties().getMultisampleCount());
+
+			mDepthStencilView = TextureCore::requestView(mDepthStencilBuffer, 0, 1, 0, 1, GVU_DEPTHSTENCIL);
+		}
+		else
+			mDepthStencilBuffer = nullptr;
 	}
 
 	void D3D11RenderWindowCore::destroySizeDependedD3DResources()

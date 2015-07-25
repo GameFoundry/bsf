@@ -231,15 +231,14 @@ namespace BansheeEngine
 				int formats[256];
 				unsigned int count;
                 WGLEW_GET_FUN(__wglewChoosePixelFormatARB) = (PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
+				PFNWGLGETPIXELFORMATATTRIBIVARBPROC _wglGetPixelFormatAttribivARB = 
+					(PFNWGLGETPIXELFORMATATTRIBIVARBPROC)wglGetProcAddress("wglGetPixelFormatAttribivARB");
                 if (WGLEW_GET_FUN(__wglewChoosePixelFormatARB)(hdc, iattr, 0, 256, formats, &count))
                 {
                     // determine what multisampling levels are offered
                     int query = WGL_SAMPLES_ARB, samples;
                     for (unsigned int i = 0; i < count; ++i)
                     {
-                        PFNWGLGETPIXELFORMATATTRIBIVARBPROC _wglGetPixelFormatAttribivARB =
-                            (PFNWGLGETPIXELFORMATATTRIBIVARBPROC)
-                            wglGetProcAddress("wglGetPixelFormatAttribivARB");
                         if (_wglGetPixelFormatAttribivARB(hdc, formats[i], 0, 1, &query, &samples))
                         {
                             mMultisampleLevels.push_back(samples);
@@ -263,7 +262,7 @@ namespace BansheeEngine
 		return DefWindowProc(hwnd, umsg, wp, lp);
 	}
 
-	bool Win32GLSupport::selectPixelFormat(HDC hdc, int colorDepth, int multisample, bool hwGamma)
+	bool Win32GLSupport::selectPixelFormat(HDC hdc, int colorDepth, int multisample, bool hwGamma, bool depthStencil)
 	{
 		PIXELFORMATDESCRIPTOR pfd;
 		memset(&pfd, 0, sizeof(pfd));
@@ -273,8 +272,12 @@ namespace BansheeEngine
 		pfd.iPixelType = PFD_TYPE_RGBA;
 		pfd.cColorBits = (colorDepth > 16)? 24 : colorDepth;
 		pfd.cAlphaBits = (colorDepth > 16)? 8 : 0;
-		pfd.cDepthBits = 24;
-		pfd.cStencilBits = 8;
+
+		if (depthStencil)
+		{
+			pfd.cDepthBits = 24;
+			pfd.cStencilBits = 8;
+		}
 
 		int format = 0;
 
@@ -297,8 +300,8 @@ namespace BansheeEngine
 			attribList.push_back(WGL_ACCELERATION_ARB); attribList.push_back(WGL_FULL_ACCELERATION_ARB);
 			attribList.push_back(WGL_COLOR_BITS_ARB); attribList.push_back(pfd.cColorBits);
 			attribList.push_back(WGL_ALPHA_BITS_ARB); attribList.push_back(pfd.cAlphaBits);
-			attribList.push_back(WGL_DEPTH_BITS_ARB); attribList.push_back(24);
-			attribList.push_back(WGL_STENCIL_BITS_ARB); attribList.push_back(8);
+			attribList.push_back(WGL_DEPTH_BITS_ARB); attribList.push_back(pfd.cDepthBits);
+			attribList.push_back(WGL_STENCIL_BITS_ARB); attribList.push_back(pfd.cStencilBits);
 			attribList.push_back(WGL_SAMPLES_ARB); attribList.push_back(multisample);
 			if (useHwGamma && checkExtension("WGL_EXT_framebuffer_sRGB"))
 			{

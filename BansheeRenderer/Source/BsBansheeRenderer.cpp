@@ -24,7 +24,7 @@
 #include "BsHardwareBufferManager.h"
 #include "BsGpuParamBlockBuffer.h"
 #include "BsShader.h"
-#include "BsBansheeLitTexRenderableController.h"
+#include "BsLitTexRenderableController.h"
 #include "BsTime.h"
 #include "BsRenderableElement.h"
 #include "BsFrameAlloc.h"

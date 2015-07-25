@@ -320,14 +320,14 @@ namespace BansheeEngine
 		{
 			int testMultisample = props.mMultisampleCount;
 			bool testHwGamma = mDesc.gamma;
-			bool formatOk = mGLSupport.selectPixelFormat(mHDC, props.mColorDepth, testMultisample, testHwGamma);
+			bool formatOk = mGLSupport.selectPixelFormat(mHDC, props.mColorDepth, testMultisample, testHwGamma, mDesc.depthBuffer);
 			if (!formatOk)
 			{
 				if (props.mMultisampleCount > 0)
 				{
 					// Try without multisampling
 					testMultisample = 0;
-					formatOk = mGLSupport.selectPixelFormat(mHDC, props.mColorDepth, testMultisample, testHwGamma);
+					formatOk = mGLSupport.selectPixelFormat(mHDC, props.mColorDepth, testMultisample, testHwGamma, mDesc.depthBuffer);
 				}
 
 				if (!formatOk && mDesc.gamma)
@@ -335,7 +335,7 @@ namespace BansheeEngine
 					// Try without sRGB
 					testHwGamma = false;
 					testMultisample = props.mMultisampleCount;
-					formatOk = mGLSupport.selectPixelFormat(mHDC, props.mColorDepth, testMultisample, testHwGamma);
+					formatOk = mGLSupport.selectPixelFormat(mHDC, props.mColorDepth, testMultisample, testHwGamma, mDesc.depthBuffer);
 				}
 
 				if (!formatOk && mDesc.gamma && (props.mMultisampleCount > 0))
@@ -343,7 +343,7 @@ namespace BansheeEngine
 					// Try without both
 					testHwGamma = false;
 					testMultisample = 0;
-					formatOk = mGLSupport.selectPixelFormat(mHDC, props.mColorDepth, testMultisample, testHwGamma);
+					formatOk = mGLSupport.selectPixelFormat(mHDC, props.mColorDepth, testMultisample, testHwGamma, mDesc.depthBuffer);
 				}
 
 				if (!formatOk)

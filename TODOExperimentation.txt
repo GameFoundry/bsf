@@ -1,10 +1,20 @@
 -------------------------
 Study shadow rendering implementations
 
+Test all APIs with new changes regarding depth buffer creation on windows
+Document RenderTargetPool and potentially move it outside of BansheeRenderer
+ - Quantize buffer sizes so they're divideable by 8
 Implement light added/removed/updated in BansheeRenderer
 Load up and set up a test-bed with Ribek's scene
 
 Need cone to use when rendering spot light
+
+Renderer needs options:
+ - Sample count
+ - sRGB output
+ - HDR rendering
+ - Texture filtering + anisotropic amount
+ - These need to properly recreate gbuffer and other objects when they change
 
 Create a basic GBuffer - albedo, normal, depth
  - Using HDR formats where needed
@@ -13,18 +23,38 @@ Create a basic GBuffer - albedo, normal, depth
 Implement deferred rendering (just basic lambert shading for now, only point light)
  - Then convert to tiled rendering (will likely need normal deferred too as a fallback - and to be able to toggle and compare)
 
-Create SceneRenderTargets class:
- - Allocate(Camera - call at start rendering with camera - Allocates gbuffer (for now, more later probably)
-  - Internally calls RenderTargetPool that returns available cached render targets
-   - Actually this probably isn't the best idea. It might be better to store gbuffer targets with CameraHandlerCore
-     so when it resizes or gets destroyed we can immediately change/destroy them. With a pool I cannot tell when to destroy the gbuffer.
-	  - ALTHOUGH if two cameras have same viewport size them I shouldn't allocate two sets of targets. So maybe a combination of the two.
- - Free(Camera)
- - BeginSceneRendering - Sets the color target and gbuffer targets for rendering
- - ResolveSceneRendering (also ends scene rendering) - possibly resolves MSAA into normal buffer
-   - Allow SceneRenderTargets to have a resolve target. Avoid resolve if they're equal
+How will cameras interact with the renderer? The cameras currently available shouldn't have depth buffers
+ - Need to modify RenderWindow so it doesn't create depth buffers
+  - Find all places where I create windows and modify this
+  - Modify render target creation in SceneWindow
+ - What happens when a user creates a camera with a depth buffer?
+   - Print out a warning and ignore it?
+   - Or resolve the gbuffer into it? Probably this, as I want to be able to read the depth buffer from script code if needed
+     - This still isn't perfect as I'd have duplicate buffers when using non-MSAA buffer that require no resolve
 
-How to handle MSAA in deferred? - Should be trivial with MSAA textures. I do only plan to support SM4 and higher anyway (maybe even SM5?)
+Render:
+ - Iterate over all cameras and create their render queues, record whether a camera requires a gbuffer or not
+    - How will "render()" callback signify whether they want a gbuffer or something else? 
+     - Assume they need it? Probably - although it would be nice to be able to customize the render targets
+	   of the render() calls. But I should probably think about that if it ever comes up, and implement it simply for now.
+	 - Potentially restrict cameras to only non-multisampled RGBA8 targets. Then later we can add a special
+	   mechanism for reading the depth buffer from sim thread(as well as reading other gbuffers)
+	    - But I don't think this should be needed (It will probably be enough to signal to the rendering
+		  thread to bind any one of those buffers, as we're only likely to use them from shaders. And shaders
+		  can then even render them out to an outside target if needed.)
+		- ALTHOUGH I do want to be able to set up custom render targets for the camera. So that custom scripts
+		  and shaders can be executed as needed, possibly outputting multiple targets of various formats.
+ - Sort cameras based on render targets and priority as we do now, additionally sort by whether they require gbuffer or not
+ - Add new class RendererTargets
+   - beginSceneRendering
+   - endSceneRendering
+   - resolve(RenderTarget)
+  - Add new class RenderTargetPool
+   - RTHandle handle = find(format, width, height, depth)
+   - RTHandle keeps a shared ptr so that all cameras that use it can hold (once it runs out the render targets are freed)
+
+ - Separate GUI rendering into a separate part to be rendered after gbuffer is resolved?
+
 Will likely need an easy way to determine supported feature set (likely just depending on shader model)
 Consider encapsulating shaders together with methods for setting their parameters (and possibly retrieving output)
  - So that external code doesn't need to know about its internal and do less work

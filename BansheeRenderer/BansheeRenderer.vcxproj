@@ -239,16 +239,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Include\BsBansheeLitTexRenderableController.h" />
+    <ClInclude Include="Include\BsLitTexRenderableController.h" />
     <ClInclude Include="Include\BsBansheeRenderer.h" />
     <ClInclude Include="Include\BsBansheeRendererFactory.h" />
     <ClInclude Include="Include\BsBansheeRendererPrerequisites.h" />
+    <ClInclude Include="Include\BsRenderTexturePool.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\BsBansheeLitTexRenderableController.cpp" />
+    <ClCompile Include="Source\BsLitTexRenderableController.cpp" />
     <ClCompile Include="Source\BsBansheeRenderer.cpp" />
     <ClCompile Include="Source\BsBansheeRendererFactory.cpp" />
     <ClCompile Include="Source\BsBansheeRendererPlugin.cpp" />
+    <ClCompile Include="Source\BsRenderTexturePool.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

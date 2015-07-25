@@ -18,32 +18,32 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GLSupport::newWindow
 		 */
-		virtual RenderWindowPtr newWindow(RENDER_WINDOW_DESC& desc, UINT32 windowId, RenderWindowPtr parentWindow);
+		virtual RenderWindowPtr newWindow(RENDER_WINDOW_DESC& desc, UINT32 windowId, RenderWindowPtr parentWindow) override;
 
 		/**
 		 * @copydoc	GLSupport::newWindowCore
 		 */
-		virtual SPtr<RenderWindowCore> newWindowCore(RENDER_WINDOW_DESC& desc, UINT32 windowId);
+		virtual SPtr<RenderWindowCore> newWindowCore(RENDER_WINDOW_DESC& desc, UINT32 windowId) override;
 
 		/**
 		 * @copydoc	GLSupport::start
 		 */
-		void start();
+		void start() override;
 
 		/**
 		 * @copydoc	GLSupport::stop
 		 */
-		void stop();
+		void stop() override;
 
 		/**
 		 * @copydoc	GLSupport::getProcAddress
 		 */
-		void* getProcAddress(const String& procname);
+		void* getProcAddress(const String& procname) override;
 
 		/**
 		 * @copydoc	GLSupport::initializeExtensions
 		 */
-		virtual void initializeExtensions();
+		virtual void initializeExtensions() override;
 		
 		/**
 		 * @brief	Creates a new OpenGL context.
@@ -63,15 +63,16 @@ namespace BansheeEngine
 		 * @param	colorDepth	Wanted color depth of the pixel format, in bits.
 		 * @param	multisample	Amount of multisampling wanted, if any.
 		 * @param	hwGamma		Should the format support automatic gamma conversion on write/read.
+		 * @param	depth		Should the pixel format contain the depth/stencil buffer.
 		 *
 		 * @returns	True if a pixel format was successfully set.
 		 */
-		bool selectPixelFormat(HDC hdc, int colorDepth, int multisample, bool hwGamma);
+		bool selectPixelFormat(HDC hdc, int colorDepth, int multisample, bool hwGamma, bool depthStencil);
 
 		/**
 		 * @copydoc	GLSupport::getVideoModeInfo
 		 */
-		VideoModeInfoPtr getVideoModeInfo() const;
+		VideoModeInfoPtr getVideoModeInfo() const override;
 
 	private:
 		/**
