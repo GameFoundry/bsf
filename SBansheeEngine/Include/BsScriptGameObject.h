@@ -14,8 +14,8 @@ namespace BansheeEngine
 		virtual HGameObject getNativeHandle() const = 0;
 		virtual void setNativeHandle(const HGameObject& gameObject) = 0;
 
-		virtual ScriptObjectBackup beginRefresh();
-		virtual void endRefresh(const ScriptObjectBackup& backupData);
+		virtual ScriptObjectBackup beginRefresh() override;
+		virtual void endRefresh(const ScriptObjectBackup& backupData) override;
 
 	protected:
 		bool mRefreshInProgress;
@@ -24,14 +24,11 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptGameObject : public ScriptObject<ScriptGameObject, ScriptGameObjectBase>
 	{
 	public:
-		static String getAssemblyName() { return ENGINE_ASSEMBLY; }
-		static String getNamespace() { return "BansheeEngine"; }
-		static String getTypeName() { return "GameObject"; }
-		static void initRuntimeData() { }
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GameObject")
 
 	private:
-		ScriptGameObject(MonoObject* instance)
-			:ScriptObject(instance)
-		{ }
+		ScriptGameObject(MonoObject* instance);
+
+		static UINT64 internal_getInstanceId(ScriptGameObject* nativeInstance);
 	};
 }

@@ -1,10 +1,13 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using BansheeEngine;
 
 namespace BansheeEditor
 {
     public sealed class Selection
     {
+        public static Action<SceneObject[], string[]> OnSelectionChanged;
+
         public static SceneObject[] sceneObjects
         {
             get
@@ -45,6 +48,12 @@ namespace BansheeEditor
             {
                 Internal_SetResourcePathSelection(value);
             }
+        }
+
+        private static void Internal_TriggerSelectionChanged(SceneObject[] objects, string[] paths)
+        {
+            if (OnSelectionChanged != null)
+                OnSelectionChanged(objects, paths);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

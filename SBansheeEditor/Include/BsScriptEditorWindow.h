@@ -45,10 +45,10 @@ namespace BansheeEngine
 		void onFocusChanged(bool inFocus);
 		void onAssemblyRefreshStarted();
 
-		void _onManagedInstanceDeleted();
-		ScriptObjectBackup beginRefresh();
-		void endRefresh(const ScriptObjectBackup& backupData);
-		MonoObject* _createManagedInstance(bool construct);
+		void _onManagedInstanceDeleted() override;
+		ScriptObjectBackup beginRefresh() override;
+		void endRefresh(const ScriptObjectBackup& backupData) override;
+		MonoObject* _createManagedInstance(bool construct) override;
 
 		String mName;
 		ScriptEditorWidget* mEditorWidget;
@@ -79,7 +79,7 @@ namespace BansheeEngine
 		~ScriptEditorWidget();
 
 		bool createManagedInstance();
-		void update();
+		void update() override;
 		void reloadMonoTypes(MonoClass* windowClass);
 		void triggerOnInitialize();
 		void triggerOnDestroy();

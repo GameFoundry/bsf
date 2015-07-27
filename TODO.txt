@@ -11,7 +11,6 @@ Modal windows are set up as persistent but I don't serialize their internal data
 ----------------------------------------------------------------------
 C# Material/Shader:
 
-TODO - Material/Shader has no color type so I cannot know when to display normal vector and when color in inspector
 TODO - Implement param block and sampler support
 TODO - When creating a Material without a shader, a default one should be used, at least in editor
 TODO - Setting Material array parameters isn't possible from C#
@@ -58,9 +57,14 @@ Code quality improvements:
 ----------------------------------------------------------------------
 Polish stage 1
 
+Test inspector selection, selecting a resource and adding/removing component updates
+Showing the inspector causes a considerable slowdown (maybe stuff gets refreshed too often?)
+Crash when showing the inspector (invalid index in Layout.InsertElement)
+
 Handle seems to lag behind the selected mesh
 ProjectLibrary seems to import some files on every start-up
 Crash on shutdown in mono_gchandle_free
+Material/Shader has no color type so I cannot know when to display normal vector and when color in inspector
 
 First screenshot work:
 - Inspector change contents on selection (and make sure the selected object/component looks okay)
@@ -80,10 +84,12 @@ First screenshot work:
 SceneTreeView
  - Hook up ping effect so it triggers when I select a resource or sceneobject
  - See if it needs other enhancements (rename, delete all work properly? etc.)
+ - Add copy/cut/paste/duplicate (with context menu)
 
 Finish up inspector
  - Do I handle the case of updating the inspector when component is added or removed?
  - Hook it up to Selection changes so it shows inspector for current component/resource
+ - GUI TextureField similar to ResourceField but it displays the texture it has assigned
 
 Need a way to add scene objects and components (and remove them)
  - Components adding should be only done by drag and dropping scripts to inspector (undoable)
@@ -92,9 +98,11 @@ Need a way to add scene objects and components (and remove them)
  - Deleting them should be doable by context menu in Hierarchy and Del keystroke (undoable)
 
 Add shortcut keys for view/move/rotate/scale
-Add "focus on object" key (F)
+Add "focus on object" key (F) - animate it: rotate camera towards then speed towards while zooming in
 Ortographic camera views (+ gizmo in scene view corner that shows camera orientation)
 Drag to select in scene view
+
+Replace "minimize" button in tabbed title bar with maximize and make sure it works
 
 Will need a status bar:
  - Displays last error message
@@ -112,12 +120,14 @@ Later:
  - Undo/Redo when breaking or reverting a scene object
 
 ----------------------------------------------------------------------
-Project window
-
-Later:
- - Might need to improve search (need to test). Do multiple search keywords work properly?
- - Consider delaying search until user stops pressing keys (so not to have thousands of search results in the initial stages)
- - Save & restore scroll position when Refresh happens
+Simple stuff
+ - Inject an icon into an .exe (Win32 specific)
+ - C# wrapper for GUISkin (and a way to assign the current skin to a window)
+ - Move all the code files into subfolders so their hierarchy is similar to VS filters
+ - Font doesn't have a C# interface
+ - Get rid of PoolAlloc and other unused allocators (plus fix bs_new and others which have weird overloads)
+ - Get rid of event callback from HString and figure out a better way
+ - Splash screen
 
 ----------------------------------------------------------------------
 Resources
@@ -138,26 +148,15 @@ Resources
    - Copy all the resources marked with the flag mentioned above to \Data subfolder in the output folder, preserving the same asset structure
 
 ----------------------------------------------------------------------
-Simple stuff
+Project window
 
- - Inject an icon into an .exe (Win32 specific)
- - C# wrapper for GUISkin (and a way to assign the current skin to a window)
- - Move all the code files into subfolders so their hierarchy is similar to VS filters
- - Font doesn't have a C# interface
- - Get rid of PoolAlloc and other unused allocators (plus fix bs_new and others which have weird overloads)
- - Get rid of event callback from HString and figure out a better way
- - GUI TextureField similar to ResourceField but it displays the texture it has assigned
- - Splash screen
+Later:
+ - Might need to improve search (need to test). Do multiple search keywords work properly?
+ - Consider delaying search until user stops pressing keys (so not to have thousands of search results in the initial stages)
+ - Save & restore scroll position when Refresh happens
 
 ----------------------------------------------------------------------
 Handles
-
-When scaling using center make sure to offset the object before scale
-
-Rotate handle:
- - How to handle local/global with rotate handle?
-   - This maybe just determines initial rotation of the handle?
-   - I don't think my code properly handles rotation handle transforms (e.g. arc drawing)
 
 Ideally free scale handle indicator should always render and be interactable and never be hidden by axis scale indicators (Not high priority)
 
@@ -168,7 +167,6 @@ Later:
 Include files:
 
 Test:
- - Try preprocessing using one RenderAPi and then load the shaders using another and see if they're created normally
  - Test if default values work
  - Test project library dependant resources (e.g. changing an include and seeing if shader is reimported)
 
@@ -179,6 +177,24 @@ Test:
  - Custom handles from C#
  - Handle snapping
  - Multi-select Move/Rotate/scale
+
+----------------------------------------------------------------------
+Undo/Redo C#
+
+UndoRedo class
+ - RegisterCommand(cmd, operationName)
+ - pushGroup
+ - popGroup
+ - undo
+ - redo
+ - clear
+
+RecordObjectCommand
+ - Saves the entire object and at the end of the frame performs a diff of the object to actually generate the undo operation
+ - Must work for scene objects, components and resources
+SetParentCommand - For reparenting scene objects
+AddComponentCommand
+DestroyCommand - for destroying scene objects or components
 
 ----------------------------------------------------------------------
 Other

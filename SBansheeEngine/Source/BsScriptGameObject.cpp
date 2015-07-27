@@ -1,4 +1,5 @@
 #include "BsScriptGameObject.h"
+#include "BsDebug.h"
 
 namespace BansheeEngine
 {
@@ -18,5 +19,19 @@ namespace BansheeEngine
 		mRefreshInProgress = false;
 
 		PersistentScriptObjectBase::endRefresh(backupData);
+	}
+
+	ScriptGameObject::ScriptGameObject(MonoObject* instance)
+		:ScriptObject(instance)
+	{ }
+
+	void ScriptGameObject::initRuntimeData()
+	{
+		metaData.scriptClass->addInternalCall("Internal_GetInstanceId", &ScriptGameObject::internal_getInstanceId);
+	}
+
+	UINT64 ScriptGameObject::internal_getInstanceId(ScriptGameObject* nativeInstance)
+	{
+		return nativeInstance->getNativeHandle().getInstanceId();
 	}
 }

@@ -1,6 +1,7 @@
 #include "BsScriptSelection.h"
 #include "BsScriptMeta.h"
 #include "BsMonoClass.h"
+#include "BsMonoMethod.h"
 #include "BsSelection.h"
 #include "BsScriptSceneObject.h"
 #include "BsMonoUtil.h"
@@ -8,6 +9,15 @@
 
 namespace BansheeEngine
 {
+	ScriptSelection::OnSelectionChangedThunkDef ScriptSelection::OnSelectionChangedThunk;
+	HEvent ScriptSelection::OnSelectionChangedConn;
+
+	ScriptSelection::ScriptSelection(MonoObject* instance)
+		:ScriptObject(instance)
+	{
+		
+	}
+
 	void ScriptSelection::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_GetSceneObjectSelection", &ScriptSelection::internal_GetSceneObjectSelection);
@@ -16,6 +26,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetResourceUUIDSelection", &ScriptSelection::internal_SetResourceUUIDSelection);
 		metaData.scriptClass->addInternalCall("Internal_GetResourcePathSelection", &ScriptSelection::internal_GetResourcePathSelection);
 		metaData.scriptClass->addInternalCall("Internal_SetResourcePathSelection", &ScriptSelection::internal_SetResourcePathSelection);
+
+		OnSelectionChangedThunk = (OnSelectionChangedThunkDef)metaData.scriptClass->getMethod("Internal_TriggerSelectionChanged", 2)->getThunk();
 	}
 
 	void ScriptSelection::internal_GetSceneObjectSelection(MonoArray** selection)
@@ -125,5 +137,40 @@ namespace BansheeEngine
 		}
 
 		Selection::instance().setResourcePaths(paths);
+	}
+
+
+	void ScriptSelection::startUp()
+	{
+		OnSelectionChangedConn = Selection::instance().onSelectionChanged.connect(&ScriptSelection::onSelectionChanged);
+	}
+
+	void ScriptSelection::shutDown()
+	{
+		OnSelectionChangedConn.disconnect();
+	}
+
+	void ScriptSelection::onSelectionChanged(const Vector<HSceneObject>& sceneObjects, const Vector<Path>& resPaths)
+	{
+		UINT32 numObjects = (UINT32)sceneObjects.size();
+		ScriptArray scriptObjects = ScriptArray::create<ScriptSceneObject>(numObjects);
+		for (UINT32 i = 0; i < numObjects; i++)
+		{
+			// TODO - This bit is commonly used, I should add a method in ScriptGameObjectManager
+			ScriptSceneObject* scriptSceneObject = ScriptGameObjectManager::instance().getScriptSceneObject(sceneObjects[i]);
+			if (scriptSceneObject == nullptr)
+				scriptSceneObject = ScriptGameObjectManager::instance().createScriptSceneObject(sceneObjects[i]);
+
+			scriptObjects.set(i, scriptSceneObject->getManagedInstance());
+		}
+
+		UINT32 numPaths = (UINT32)resPaths.size();
+		ScriptArray scriptPaths = ScriptArray::create<String>(numPaths);
+		for (UINT32 i = 0; i < numPaths; i++)
+			scriptObjects.set(i, resPaths[i].toString());
+
+		MonoArray* monoObjects = scriptObjects.getInternal();
+		MonoArray* monoPaths = scriptPaths.getInternal();
+		MonoUtil::invokeThunk(OnSelectionChangedThunk, monoObjects, monoPaths);
 	}
 }

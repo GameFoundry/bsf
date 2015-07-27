@@ -14,6 +14,9 @@ namespace BansheeEngine
 
         public void InsertElement(int index, GUIElement element)
         {
+            if(index < 0 || index > GetNumChildren())
+                throw new ArgumentOutOfRangeException("index", index, "Index out of range.");
+
             if (element != null)
                 Internal_InsertElement(mCachedPtr, index, element.mCachedPtr);
         }

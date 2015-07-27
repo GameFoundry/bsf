@@ -6,15 +6,31 @@ namespace BansheeEditor
 {
     internal sealed class InspectorWindow : EditorWindow
     {
-        private class InspectorData
+        private enum InspectorType
+        {
+            SceneObject,
+            Resource,
+            Multiple,
+            None
+        }
+
+        private class InspectorComponent
         {
             public GUIComponentFoldout foldout;
             public GUIPanel panel;
             public Inspector inspector;
             public bool expanded = true;
+            public UInt64 instanceId;
         }
 
-        private List<InspectorData> inspectorData = new List<InspectorData>();
+        private class InspectorResource
+        {
+            public GUIPanel panel;
+            public Inspector inspector;
+        }
+
+        private List<InspectorComponent> inspectorComponents = new List<InspectorComponent>();
+        private InspectorResource inspectorResource;
         private GUIScrollArea inspectorScrollArea;
         private GUILayout inspectorLayout;
 
@@ -32,6 +48,9 @@ namespace BansheeEditor
         private GUIFloatField soScaleY;
         private GUIFloatField soScaleZ;
 
+        private InspectorType currentType = InspectorType.None;
+        private Resource activeResource;
+
         [MenuItem("Windows/Inspector", ButtonModifier.CtrlAlt, ButtonCode.I)]
         private static void OpenInspectorWindow()
         {
@@ -43,14 +62,36 @@ namespace BansheeEditor
             return "Inspector";
         }
 
-        internal void SetObjectToInspect(SceneObject so)
+        private void SetObjectToInspect(String resourcePath)
         {
-            Clear();
+            activeResource = ProjectLibrary.Load<Resource>(resourcePath);
 
-            activeSO = so;
-
-            if (activeSO == null)
+            if (activeResource == null)
                 return;
+
+            currentType = InspectorType.Resource;
+
+            inspectorScrollArea = new GUIScrollArea();
+            GUI.AddElement(inspectorScrollArea);
+            inspectorLayout = inspectorScrollArea.Layout;
+
+            inspectorResource = new InspectorResource();
+            inspectorResource.panel = inspectorLayout.AddPanel();
+
+            inspectorResource.inspector = GetInspector(activeResource.GetType());
+            inspectorResource.inspector.Initialize(this, inspectorResource.panel, activeResource);
+            inspectorResource.inspector.Refresh();
+
+            inspectorLayout.AddFlexibleSpace();
+        }
+
+        private void SetObjectToInspect(SceneObject so)
+        {
+            if (so == null)
+                return;
+
+            currentType = InspectorType.SceneObject;
+            activeSO = so;
 
             inspectorScrollArea = new GUIScrollArea();
             GUI.AddElement(inspectorScrollArea);
@@ -64,7 +105,8 @@ namespace BansheeEditor
             Component[] allComponents = so.GetComponents();
             for (int i = 0; i < allComponents.Length; i++)
             {
-                InspectorData data = new InspectorData();
+                InspectorComponent data = new InspectorComponent();
+                data.instanceId = allComponents[i].InstanceId;
 
                 data.foldout = new GUIComponentFoldout(allComponents[i].GetType().Name);
                 inspectorLayout.AddElement(data.foldout);
@@ -76,15 +118,15 @@ namespace BansheeEditor
                 data.foldout.SetExpanded(true);
                 data.foldout.OnToggled += (bool expanded) => OnComponentFoldoutToggled(data, expanded);
 
-                inspectorData.Add(data);
+                inspectorComponents.Add(data);
 
-                inspectorData[i].inspector.Refresh();
+                inspectorComponents[i].inspector.Refresh();
             }
 
             inspectorLayout.AddFlexibleSpace();
         }
 
-        private void OnComponentFoldoutToggled(InspectorData inspectorData, bool expanded)
+        private void OnComponentFoldoutToggled(InspectorComponent inspectorData, bool expanded)
         {
             inspectorData.expanded = expanded;
             inspectorData.inspector.SetVisible(expanded);
@@ -160,6 +202,8 @@ namespace BansheeEditor
             scaleLayout.AddSpace(10);
             scaleLayout.AddElement(soScaleZ);
             scaleLayout.AddFlexibleSpace();
+
+            inspectorLayout.AddSpace(15);
         }
 
         private void RefreshSceneObjectFields(bool forceUpdate)
@@ -230,13 +274,84 @@ namespace BansheeEditor
             soScaleZ.Value = scale.z;
         }
 
+        private void OnInitialize()
+        {
+            Selection.OnSelectionChanged += OnSelectionChanged;
+        }
+
+        private void OnDestroy()
+        {
+            Selection.OnSelectionChanged -= OnSelectionChanged;
+        }
+
         private void OnEditorUpdate()
         {
-            RefreshSceneObjectFields(false);
-
-            for (int i = 0; i < inspectorData.Count; i++)
+            if (currentType == InspectorType.SceneObject)
             {
-                inspectorData[i].inspector.Refresh();
+                Component[] allComponents = activeSO.GetComponents();
+                bool requiresRebuild = allComponents.Length != inspectorComponents.Count;
+
+                if (!requiresRebuild)
+                {
+                    for (int i = 0; i < inspectorComponents.Count; i++)
+                    {
+                        if (inspectorComponents[i].instanceId != allComponents[i].InstanceId)
+                        {
+                            requiresRebuild = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (requiresRebuild)
+                    SetObjectToInspect(activeSO);
+                else
+                {
+                    RefreshSceneObjectFields(false);
+
+                    for (int i = 0; i < inspectorComponents.Count; i++)
+                    {
+                        inspectorComponents[i].inspector.Refresh();
+                    }
+                }
+            }
+            else if (currentType == InspectorType.Resource)
+            {
+                inspectorResource.inspector.Refresh();
+            }
+        }
+
+        private void OnSelectionChanged(SceneObject[] objects, string[] paths)
+        {
+            Clear();
+
+            if (objects.Length == 0 && paths.Length == 0)
+            {
+                currentType = InspectorType.None;
+                inspectorScrollArea = new GUIScrollArea();
+                GUI.AddElement(inspectorScrollArea);
+                inspectorLayout = inspectorScrollArea.Layout;
+                inspectorLayout.AddElement(new GUILabel("No object selected"));
+                inspectorLayout.AddFlexibleSpace();
+            }
+            else if ((objects.Length + paths.Length) > 1)
+            {
+                currentType = InspectorType.None;
+                inspectorScrollArea = new GUIScrollArea();
+                GUI.AddElement(inspectorScrollArea);
+                inspectorLayout = inspectorScrollArea.Layout;
+                inspectorLayout.AddElement(new GUILabel("Multiple objects selected"));
+                inspectorLayout.AddFlexibleSpace();
+            }
+            else if (objects.Length == 1)
+            {
+                Debug.Log("Object selected: " + objects[0].Name);
+                SetObjectToInspect(objects[0]);
+            }
+            else if (paths.Length == 1)
+            {
+                Debug.Log("Path selected: " + paths[0]);
+                SetObjectToInspect(paths[0]);
             }
         }
 
@@ -247,13 +362,19 @@ namespace BansheeEditor
 
         internal void Clear()
         {
-            for (int i = 0; i < inspectorData.Count; i++)
+            for (int i = 0; i < inspectorComponents.Count; i++)
             {
-                inspectorData[i].foldout.Destroy();
-                inspectorData[i].inspector.Destroy();
+                inspectorComponents[i].foldout.Destroy();
+                inspectorComponents[i].inspector.Destroy();
             }
 
-            inspectorData.Clear();
+            inspectorComponents.Clear();
+
+            if (inspectorResource != null)
+            {
+                inspectorResource.inspector.Destroy();
+                inspectorResource = null;
+            }
 
             if (inspectorScrollArea != null)
             {
@@ -274,6 +395,9 @@ namespace BansheeEditor
             soScaleX = null;
             soScaleY = null;
             soScaleZ = null;
+
+            activeResource = null;
+            currentType = InspectorType.None;
         }
 
         private void OnPositionChanged(int idx, float value)

@@ -23,6 +23,7 @@ namespace BansheeEngine
 		void clearSceneSelection();
 		void clearResourceSelection();
 
+		Event<void(const Vector<HSceneObject>&, const Vector<Path>&)> onSelectionChanged;
 	private:
 		void sceneSelectionChanged();
 		void resourceSelectionChanged();

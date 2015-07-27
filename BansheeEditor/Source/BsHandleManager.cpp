@@ -28,7 +28,7 @@ namespace BansheeEngine
 	void HandleManager::update(const CameraHandlerPtr& camera, const Vector2I& inputPos, const Vector2I& inputDelta)
 	{
 		if (mSettings != nullptr && mSettingsHash != mSettings->getHash())
-			updateFromProjectSettings();
+			updateFromEditorSettings();
 
 		refreshHandles();
 		mSliderManager->update(camera, inputPos, inputDelta);
@@ -42,10 +42,10 @@ namespace BansheeEngine
 	{
 		mSettings = settings;
 
-		updateFromProjectSettings();
+		updateFromEditorSettings();
 	}
 
-	void HandleManager::updateFromProjectSettings()
+	void HandleManager::updateFromEditorSettings()
 	{
 		setDefaultHandleSize(mSettings->getHandleSize());
 

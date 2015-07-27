@@ -16,7 +16,8 @@
 #include "BsTime.h"
 #include "BsMath.h"
 #include "BsEditorApplication.h"
-#include <BsTestOutput.h>
+#include "BsScriptSelection.h"
+#include "BsTestOutput.h"
 
 namespace BansheeEngine
 {
@@ -36,6 +37,7 @@ namespace BansheeEngine
 		ScriptProjectLibrary::startUp();
 		MenuItemManager::startUp(ScriptAssemblyManager::instance());
 		ScriptFolderMonitorManager::startUp();
+		ScriptSelection::startUp();
 
 		mOnDomainLoadConn = ScriptObjectManager::instance().onRefreshDomainLoaded.connect(std::bind(&EditorScriptManager::loadMonoTypes, this));
 		mOnAssemblyRefreshDoneConn = ScriptObjectManager::instance().onRefreshComplete.connect(std::bind(&EditorScriptManager::onAssemblyRefreshDone, this));
@@ -58,6 +60,7 @@ namespace BansheeEngine
 		mOnDomainLoadConn.disconnect();
 		mOnAssemblyRefreshDoneConn.disconnect();
 
+		ScriptSelection::shutDown();
 		ScriptFolderMonitorManager::shutDown();
 		MenuItemManager::shutDown();
 		ScriptProjectLibrary::shutDown();

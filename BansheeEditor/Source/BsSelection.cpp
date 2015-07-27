@@ -34,6 +34,8 @@ namespace BansheeEngine
 		GUISceneTreeView* sceneTreeView = SceneTreeViewLocator::instance();
 		if (sceneTreeView != nullptr)
 			sceneTreeView->setSelection(sceneObjects);
+
+		onSelectionChanged(mSelectedSceneObjects, Vector<Path>());
 	}
 
 	const Vector<Path>& Selection::getResourcePaths() const
@@ -44,6 +46,8 @@ namespace BansheeEngine
 	void Selection::setResourcePaths(const Vector<Path>& paths)
 	{
 		mSelectedResourcePaths = paths;
+
+		onSelectionChanged(Vector<HSceneObject>(), mSelectedResourcePaths);
 	}
 
 	Vector<String> Selection::getResourceUUIDs() const
@@ -75,6 +79,8 @@ namespace BansheeEngine
 		GUIResourceTreeView* resourceTreeView = ResourceTreeViewLocator::instance();
 		if (resourceTreeView != nullptr)
 			resourceTreeView->setSelection(mSelectedResourcePaths);
+
+		onSelectionChanged(Vector<HSceneObject>(), mSelectedResourcePaths);
 	}
 
 	void Selection::clearSceneSelection()
@@ -91,13 +97,21 @@ namespace BansheeEngine
 	{
 		GUISceneTreeView* sceneTreeView = SceneTreeViewLocator::instance();
 		if (sceneTreeView != nullptr)
+		{
 			mSelectedSceneObjects = sceneTreeView->getSelection();
+
+			onSelectionChanged(mSelectedSceneObjects, Vector<Path>());
+		}
 	}
 
 	void Selection::resourceSelectionChanged()
 	{
 		GUIResourceTreeView* resourceTreeView = ResourceTreeViewLocator::instance();
 		if (resourceTreeView != nullptr)
+		{
 			mSelectedResourcePaths = resourceTreeView->getSelection();
+
+			onSelectionChanged(Vector<HSceneObject>(), mSelectedResourcePaths);
+		}
 	}
 }

@@ -14,8 +14,8 @@ namespace BansheeEngine
 
 		static bool checkIfDestroyed(ScriptSceneObject* nativeInstance);
 
-		virtual HGameObject getNativeHandle() const { return mSceneObject; }
-		virtual void setNativeHandle(const HGameObject& gameObject);
+		virtual HGameObject getNativeHandle() const override { return mSceneObject; }
+		virtual void setNativeHandle(const HGameObject& gameObject) override;
 
 		HSceneObject getNativeSceneObject() const { return mSceneObject; }
 
@@ -66,7 +66,7 @@ namespace BansheeEngine
 		
 		ScriptSceneObject(MonoObject* instance, const HSceneObject& sceneObject);
 
-		void _onManagedInstanceDeleted();
+		void _onManagedInstanceDeleted() override;
 
 		HSceneObject mSceneObject;
 	};
