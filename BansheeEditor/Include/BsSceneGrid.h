@@ -7,21 +7,61 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Handles rendering of the grid in the scene view.
+	 */
 	class SceneGrid
 	{
 	public:
 		SceneGrid();
 
+		/**
+		 * @brief	Sets the grid origin in world coordinates.
+		 */
 		void setOrigin(const Vector3& origin);
+
+		/**
+		 * @brief	Sets the total width/height of the grid in XZ plane.
+		 */
 		void setSize(UINT32 size);
+		
+		/**
+		 * @brief	Sets the spacing between grid lines.
+		 */
 		void setSpacing(float spacing);
+
+		/**
+		 * @brief	Changes the active editor settings. Grid properties
+		 *			will be updated internally when editor settings change.
+		 */
 		void setSettings(const EditorSettingsPtr& settings);
 
-		void render(const CameraHandlerPtr& camera, DrawList& drawList);
+		/**
+		 * @brief	Triggered by the renderer when rendering the specified camera.
+		 *
+		 * @param	camera		Camera about to be rendered.
+		 * @param	drawList	Draw list we can use to queue our render commands in.
+		 *
+		 * @note	Internal method.
+		 */
+		void _render(const CameraHandlerPtr& camera, DrawList& drawList);
+
+		/**
+		 * @brief	Called once per frame.
+		 *
+		 * @note	Internal method.
+		 */
 		void update();
 	private:
+		/**
+		 * @brief	Rebuilds the scene grid mesh. Call this whenever grid parameters change.
+		 */
 		void updateGridMesh();
-		void updateFromProjectSettings();
+
+		/**
+		 * @brief	Updates internal grid parameters from the attached settings object.
+		 */
+		void updateFromEditorSettings();
 
 		HMesh mGridMesh;
 		HMaterial mGridMaterial;

@@ -9,8 +9,14 @@ namespace BansheeEngine
 {
 	class ScenePickingCore;
 
+	/**
+	 * @brief	Handles picking of scene objects with a pointer in scene view.
+	 */
 	class ScenePicking : public Module<ScenePicking>
 	{
+		/**
+		 * @brief	Contains information about a single pickable item (mesh).
+		 */
 		struct RenderablePickData
 		{
 			SPtr<MeshCore> mesh;
@@ -25,7 +31,30 @@ namespace BansheeEngine
 		ScenePicking();
 		~ScenePicking();
 
+		/**
+		 * @brief	Attempts to find a single nearest scene object under the provided position and area.
+		 *
+		 * @param	cam			Camera to perform the picking from.
+		 * @param	position	Pointer position relative to the camera viewport, in pixels.
+		 * @param	area		Width/height of the checked area in pixels. Use (1, 1) if you want the
+		 *						exact position under the pointer.
+		 *
+		 * @return	Nearest SceneObject under the provided area, or an empty handle if no object is found.
+		 */
 		HSceneObject pickClosestObject(const CameraHandlerPtr& cam, const Vector2I& position, const Vector2I& area);
+
+
+		/**
+		 * @brief	Attempts to find all scene objects under the provided position and area. This does not mean
+		 *			objects occluded by other objects.
+		 *
+		 * @param	cam			Camera to perform the picking from.
+		 * @param	position	Pointer position relative to the camera viewport, in pixels.
+		 * @param	area		Width/height of the checked area in pixels. Use (1, 1) if you want the
+		 *						exact position under the pointer.
+		 *
+		 * @return	A list of SceneObject%s under the provided area.
+		 */
 		Vector<HSceneObject> pickObjects(const CameraHandlerPtr& cam, const Vector2I& position, const Vector2I& area);
 
 	private:
@@ -33,14 +62,30 @@ namespace BansheeEngine
 
 		typedef Set<RenderablePickData, std::function<bool(const RenderablePickData&, const RenderablePickData&)>> RenderableSet;
 
+		/**
+		 * @brief	Encodes a pickable object identifier to a unique color.
+		 */
 		static Color encodeIndex(UINT32 index);
+
+		/**
+		 * @brief	Decodes a color into a unique object identifier. Color should
+		 *			have initially been encoded with ::encodeIndex.
+		 */
 		static UINT32 decodeIndex(Color color);
 
 		ScenePickingCore* mCore;
 	};
 
+	/**
+	 * @brief	Core thread version of the ScenePicking manager. Handles
+	 *			actual rendering.
+	 */
 	class ScenePickingCore
 	{
+		/**
+		 * @brief	A list of materials and their parameters to be used for rendering
+		 *			of pickable objects.
+		 */
 		struct MaterialData
 		{
 			SPtr<MaterialCore> mMatPickingCore;
@@ -59,11 +104,42 @@ namespace BansheeEngine
 		};
 
 	public:
+		/**
+		 * @brief	Initializes the manager. Must be called right after construction.
+		 */
 		void initialize();
+
+		/**
+		 * @brief	Destroys the manager. Must be called right before destruction.
+		 */
 		void destroy();
 
+		/**
+		 * @brief	Sets up the viewport, materials and their parameters as needed for picking. Also renders
+		 *			all the provided renderable objects. Must be followed by ::corePickingEnd. You may call other methods
+		 *			after this one, but you must ensure they render proper unique pickable colors that can be resolved
+		 *			to SceneObject%s later.
+		 *
+		 * @param	target			Render target to render to.
+		 * @param	viewportArea	Normalized area of the render target to render in.
+		 * @param	renderables		A set of pickable Renderable objects to render.
+		 * @param	position		Position of the pointer where to pick objects, in pixels relative to viewport.
+		 * @param	area			Width/height of the area to pick objects, in pixels.
+		 */
 		void corePickingBegin(const SPtr<RenderTargetCore>& target, const Rect2& viewportArea, const ScenePicking::RenderableSet& renderables,
 			const Vector2I& position, const Vector2I& area);
+		
+		/**
+		 * @brief	Ends picking operation started by ::corePickingBegin. Render target is resolved and objects in the picked area
+		 *			are returned.
+		 *
+		 * @param	target			Render target we're rendering to.
+		 * @param	viewportArea	Normalized area of the render target we're rendering in.
+		 * @param	position		Position of the pointer where to pick objects, in pixels relative to viewport.
+		 * @param	area			Width/height of the area to pick objects, in pixels.
+		 * @param	asyncOp			Async operation handle that when complete will contain the results of the picking
+		 *							operation in the form of Vector<SelectedObject>.
+		 */
 		void corePickingEnd(const SPtr<RenderTargetCore>& target, const Rect2& viewportArea, const Vector2I& position,
 			const Vector2I& area, AsyncOp& asyncOp);
 

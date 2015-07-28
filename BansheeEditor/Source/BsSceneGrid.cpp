@@ -72,16 +72,16 @@ namespace BansheeEngine
 	void SceneGrid::setSettings(const EditorSettingsPtr& settings)
 	{
 		mSettings = settings;
-		updateFromProjectSettings();
+		updateFromEditorSettings();
 	}
 
 	void SceneGrid::update()
 	{
 		if (mSettings != nullptr && mSettingsHash != mSettings->getHash())
-			updateFromProjectSettings();
+			updateFromEditorSettings();
 	}
 
-	void SceneGrid::render(const CameraHandlerPtr& camera, DrawList& drawList)
+	void SceneGrid::_render(const CameraHandlerPtr& camera, DrawList& drawList)
 	{
 		MaterialPtr mat = mGridMaterial.getInternalPtr();
 		MeshPtr mesh = mGridMesh.getInternalPtr();
@@ -102,7 +102,7 @@ namespace BansheeEngine
 		drawList.add(mat, mesh, 0, Vector3::ZERO);
 	}
 
-	void SceneGrid::updateFromProjectSettings()
+	void SceneGrid::updateFromEditorSettings()
 	{
 		setSize(mSettings->getGridSize());
 		setSpacing(mSettings->getGridSpacing());

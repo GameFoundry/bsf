@@ -115,7 +115,7 @@ namespace BansheeEngine
 		if (mCamera->getViewport().get() != viewport)
 			return;
 
-		mSceneGrid->render(mCamera, drawList);
+		mSceneGrid->_render(mCamera, drawList);
 	}
 
 	Vector2I SceneViewHandler::wrapCursorToWindow()
