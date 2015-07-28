@@ -3,8 +3,8 @@
 
 namespace BansheeEngine
 {
-	LogEntry::LogEntry(const String& msg, const String& level)
-		:mMsg(msg), mChannel(level)
+	LogEntry::LogEntry(const String& msg, UINT32 channel)
+		:mMsg(msg), mChannel(channel)
 	{ }
 
 	Log::Log()
@@ -19,11 +19,11 @@ namespace BansheeEngine
 			bs_delete<PoolAlloc>(*iter);
 	}
 
-	void Log::logMsg(const String& message, const String& level)
+	void Log::logMsg(const String& message, UINT32 channel)
 	{
 		BS_LOCK_RECURSIVE_MUTEX(mMutex);
 
-		LogEntry* newEntry = bs_new<LogEntry, PoolAlloc>(message, level);
+		LogEntry* newEntry = bs_new<LogEntry>(message, channel);
 		mEntries.push_back(newEntry);
 
 		doOnEntryAdded(*newEntry);

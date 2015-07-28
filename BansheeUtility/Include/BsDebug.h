@@ -8,6 +8,14 @@ namespace BansheeEngine
 	class Log;
 
 	/**
+	 * @brief	Available types of channels that debug messages can be logged to.
+	 */
+	enum class DebugChannel
+	{
+		Debug, Info, Warning, Error
+	};
+
+	/**
 	 * @brief	Utility class providing various debug functionality. Thread safe.
 	 */
 	class BS_UTILITY_EXPORT Debug
@@ -36,7 +44,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Adds a log entry in the specified channel. You may specify custom channels as needed.
 		 */
-		void log(const String& msg, const String& channel);
+		void log(const String& msg, UINT32 channel);
 
 		/**
 		 * @brief	Retrieves the Log used by the Debug instance.

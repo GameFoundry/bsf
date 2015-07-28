@@ -19,16 +19,16 @@ namespace BansheeEngine
 
 	void ScriptDebug::internal_log(MonoString* message)
 	{
-		gDebug().log(MonoUtil::monoToString(message), "ScriptInfo");
+		gDebug().logInfo(MonoUtil::monoToString(message));
 	}
 
 	void ScriptDebug::internal_logWarning(MonoString* message)
 	{
-		gDebug().log(MonoUtil::monoToString(message), "ScriptWarning");
+		gDebug().logWarning(MonoUtil::monoToString(message));
 	}
 
 	void ScriptDebug::internal_logError(MonoString* message)
 	{
-		gDebug().log(MonoUtil::monoToString(message), "ScriptError");
+		gDebug().logError(MonoUtil::monoToString(message));
 	}
 }

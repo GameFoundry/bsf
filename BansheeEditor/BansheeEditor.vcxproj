@@ -294,6 +294,7 @@
     <ClInclude Include="Include\BsGUIFoldout.h" />
     <ClInclude Include="Include\BsGUIIntField.h" />
     <ClInclude Include="Include\BsGUIDropButton.h" />
+    <ClInclude Include="Include\BsGUIStatusBar.h" />
     <ClInclude Include="Include\BsGUITextField.h" />
     <ClInclude Include="Include\BsGUIToggleField.h" />
     <ClInclude Include="Include\BsGUIVector3Field.h" />
@@ -375,6 +376,7 @@
     <ClCompile Include="Source\BsGUIDropButton.cpp" />
     <ClCompile Include="Source\BsGUIResourceTreeView.cpp" />
     <ClCompile Include="Source\BsGUISceneTreeView.cpp" />
+    <ClCompile Include="Source\BsGUIStatusBar.cpp" />
     <ClCompile Include="Source\BsGUITabbedTitleBar.cpp" />
     <ClCompile Include="Source\BsGUITabButton.cpp" />
     <ClCompile Include="Source\BsGUITextField.cpp" />

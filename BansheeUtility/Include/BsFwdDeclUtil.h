@@ -61,6 +61,7 @@ namespace BansheeEngine
 	struct SerializedObject;
 	struct SerializedInstance;
 	class FrameAlloc;
+	class LogEntry;
 	// Reflection
 	class IReflectable;
 	class RTTITypeBase;

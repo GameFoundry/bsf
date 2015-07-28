@@ -42,6 +42,7 @@ namespace BansheeEngine
 	class GUIColor;
 	class GUIComponentFoldout;
 	class GUIFoldout;
+	class GUIStatusBar;
 	class GUIDropButton;
 	class EditorWindowManager;
 	class DockManager;

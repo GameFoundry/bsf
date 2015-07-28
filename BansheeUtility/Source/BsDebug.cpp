@@ -28,29 +28,29 @@ namespace BansheeEngine
 {
 	void Debug::logDebug(const String& msg)
 	{
-		mLog.logMsg(msg, "GlobalDebug");
+		mLog.logMsg(msg, (UINT32)DebugChannel::Debug);
 		logToIDEConsole(msg);
 	}
 
 	void Debug::logInfo(const String& msg)
 	{
-		mLog.logMsg(msg, "GlobalInfo");
+		mLog.logMsg(msg, (UINT32)DebugChannel::Info);
 		logToIDEConsole(msg);
 	}
 
 	void Debug::logWarning(const String& msg)
 	{
-		mLog.logMsg(msg, "GlobalWarning");
+		mLog.logMsg(msg, (UINT32)DebugChannel::Warning);
 		logToIDEConsole(msg);
 	}
 
 	void Debug::logError(const String& msg)
 	{
-		mLog.logMsg(msg, "GlobalError");
+		mLog.logMsg(msg, (UINT32)DebugChannel::Error);
 		logToIDEConsole(msg);
 	}
 
-	void Debug::log(const String& msg, const String& channel)
+	void Debug::log(const String& msg, UINT32 channel)
 	{
 		mLog.logMsg(msg, channel);
 		logToIDEConsole(msg);

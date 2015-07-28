@@ -25,6 +25,7 @@
 #include "BsGUIProgressBar.h"
 #include "BsGUISlider.h"
 #include "BsGUIDropDownContent.h"
+#include "BsGUIStatusBar.h"
 
 #include "BsFont.h"
 #include "BsFontImportOptions.h"
@@ -89,6 +90,10 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::MaterialIconTex = L"MaterialIcon.psd";
 	const WString BuiltinEditorResources::SpriteTextureIconTex = L"SpriteIcon.psd";
 	const WString BuiltinEditorResources::PrefabIconTex = L"PrefabIcon.psd";
+
+	const WString BuiltinEditorResources::LogInfoIconTex = L"IconInfo.psd";
+	const WString BuiltinEditorResources::LogWarningIconTex = L"IconWarning.psd";
+	const WString BuiltinEditorResources::LogErrorIconTex = L"IconError.psd";
 
 	const WString BuiltinEditorResources::WindowBackgroundTexture = L"WindowBgTile.psd";
 
@@ -221,6 +226,8 @@ namespace BansheeEngine
 
 	const WString BuiltinEditorResources::XButtonNormalTex = L"XButtonNormal.psd";
 	const WString BuiltinEditorResources::XButtonHoverTex = L"XButtonHover.psd";
+
+	const WString BuiltinEditorResources::StatusBarBgTex = L"StatusBarBg.psd";
 
 	/************************************************************************/
 	/* 									SHADERS                      		*/
@@ -1266,6 +1273,37 @@ namespace BansheeEngine
 		skin->setStyle("ColorSlider2DHandle", colorPickerSlider2DHandleStyle);
 
 		/************************************************************************/
+		/* 								STATUS BAR                      		*/
+		/************************************************************************/
+		GUIElementStyle statusBarBgStyle;
+		statusBarBgStyle.fixedHeight = true;
+		statusBarBgStyle.height = 13;
+		statusBarBgStyle.normal.texture = getGUITexture(StatusBarBgTex);
+
+		skin->setStyle(GUIStatusBar::getGUIBackgroundTypeName(), statusBarBgStyle);
+
+		GUIElementStyle statusBarMessageBtnStyle;
+		statusBarMessageBtnStyle.font = font;
+		statusBarMessageBtnStyle.fontSize = DefaultFontSize;
+		statusBarMessageBtnStyle.fixedWidth = false;
+		statusBarMessageBtnStyle.fixedHeight = true;
+		statusBarMessageBtnStyle.height = 13;
+		statusBarMessageBtnStyle.minWidth = 10;
+		statusBarMessageBtnStyle.textHorzAlign = THA_Left;
+		statusBarMessageBtnStyle.imagePosition = GUIImagePosition::Left;
+
+		skin->setStyle(GUIStatusBar::getGUIMessageTypeName(), statusBarMessageBtnStyle);
+
+		GUIElementStyle statusBarStyle;
+		statusBarStyle.fixedHeight = true;
+		statusBarStyle.height = 13;
+
+		statusBarStyle.subStyles[GUIStatusBar::getGUIBackgroundTypeName()] = GUIStatusBar::getGUIBackgroundTypeName();
+		statusBarStyle.subStyles[GUIStatusBar::getGUIMessageTypeName()] = GUIStatusBar::getGUIMessageTypeName();
+
+		skin->setStyle(GUIStatusBar::getGUITypeName(), statusBarStyle);
+
+		/************************************************************************/
 		/* 									OTHER                      			*/
 		/************************************************************************/
 
@@ -1435,6 +1473,21 @@ namespace BansheeEngine
 			return getGUIIcon(SpriteTextureIconTex);
 		case ProjectIcon::Prefab:
 			return getGUIIcon(PrefabIconTex);
+		}
+
+		return HSpriteTexture();
+	}
+
+	HSpriteTexture BuiltinEditorResources::getLogMessageIcon(LogMessageIcon icon) const
+	{
+		switch (icon)
+		{
+		case LogMessageIcon::Info:
+			return getGUIIcon(LogInfoIconTex);
+		case LogMessageIcon::Warning:
+			return getGUIIcon(LogWarningIconTex);
+		case LogMessageIcon::Error:
+			return getGUIIcon(LogErrorIconTex);
 		}
 
 		return HSpriteTexture();

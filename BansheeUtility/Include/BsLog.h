@@ -12,14 +12,14 @@ namespace BansheeEngine
 	class BS_UTILITY_EXPORT LogEntry
 	{
 	public:
-		LogEntry(const String& msg, const String& channel);
+		LogEntry(const String& msg, UINT32 channel);
 
-		const String& getChannel(void) { return mChannel; }
-		const String& getMessage(void) { return mMsg; }
+		UINT32 getChannel() const { return mChannel; }
+		const String& getMessage() const { return mMsg; }
 
 	private:
 		String mMsg;
-		String mChannel;
+		UINT32 mChannel;
 	};
 
 	/**
@@ -40,7 +40,7 @@ namespace BansheeEngine
 		 * @param	message	The message describing the log entry.
 		 * @param	channel Channel in which to store the log entry.
 		 */
-		void logMsg(const String& message, const String& channel);
+		void logMsg(const String& message, UINT32 channel);
 
 		/**
 		 * @brief	Removes all log entries. 

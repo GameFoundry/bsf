@@ -52,6 +52,7 @@ namespace BansheeEngine
 	protected:
 		GUIMenuBar* mMenuBar;
 		DockManager* mDockManager;
+		GUIStatusBar* mStatusBar;
 		HProfilerOverlay mProfilerOverlay;
 
 		/**

@@ -65,6 +65,11 @@ namespace BansheeEngine
 		virtual Vector2I _calcActualSize(INT32 x, INT32 y, Rect2I* elementAreas, UINT32 numElements) const override;
 
 		/**
+		 * @copydoc	GUIElementBase::_updateLayoutInternal
+		 */
+		void _updateLayoutInternal(const GUILayoutData& data) override;
+
+		/**
 		 * @brief	Changes values that control at which depth is GUI panel and its children rendered.
 		 *
 		 * @param	depth			Determines rendering order of the GUI panel. Panels with lower depth will be
@@ -120,11 +125,6 @@ namespace BansheeEngine
 		static GUIPanel* create(INT16 depth, UINT16 depthRangeMin, UINT16 depthRangeMax, const GUIOptions& options);
 
 	protected:
-		/**
-		 * @copydoc	GUIElementBase::_updateLayoutInternal
-		 */
-		void _updateLayoutInternal(const GUILayoutData& data) override;
-
 		INT16 mDepthOffset;
 		UINT16 mDepthRangeMin;
 		UINT16 mDepthRangeMax;

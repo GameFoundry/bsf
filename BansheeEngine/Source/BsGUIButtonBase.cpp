@@ -128,10 +128,32 @@ namespace BansheeEngine
 
 		if(mContentImageSprite != nullptr)
 		{
+			Rect2I contentBounds = getCachedContentBounds();
+
+			UINT32 contentWidth = mContent.getImage()->getWidth();
+			UINT32 contentHeight = mContent.getImage()->getHeight();
+
+			UINT32 contentMaxWidth = std::min((UINT32)contentBounds.width, contentWidth);
+			UINT32 contentMaxHeight = std::min((UINT32)contentBounds.height, contentHeight);
+
+			float horzRatio = contentMaxWidth / (float)contentWidth;
+			float vertRatio = contentMaxHeight / (float)contentHeight;
+
+			if (horzRatio < vertRatio)
+			{
+				contentWidth = Math::roundToInt(contentWidth * horzRatio);
+				contentHeight = Math::roundToInt(contentHeight * horzRatio);
+			}
+			else
+			{
+				contentWidth = Math::roundToInt(contentWidth * vertRatio);
+				contentHeight = Math::roundToInt(contentHeight * vertRatio);
+			}
+
 			IMAGE_SPRITE_DESC contentImgDesc;
 			contentImgDesc.texture = mContent.getImage().getInternalPtr();
-			contentImgDesc.width = std::min(mImageDesc.width, mContent.getImage()->getWidth());
-			contentImgDesc.height = std::min(mImageDesc.height, mContent.getImage()->getHeight());
+			contentImgDesc.width = contentWidth;
+			contentImgDesc.height = contentHeight;
 			contentImgDesc.color = mColor;
 
 			mContentImageSprite->update(contentImgDesc, (UINT64)_getParentWidget());

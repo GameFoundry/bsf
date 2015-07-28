@@ -53,6 +53,6 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElementBase::_updateLayoutInternal
 		 */
-		void _updateLayoutInternal(const GUILayoutData& data);
+		void _updateLayoutInternal(const GUILayoutData& data) override;
 	};
 }

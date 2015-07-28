@@ -16,6 +16,14 @@ namespace BansheeEngine
 	};
 
 	/**
+	 * @brief	Types of icons to be used along with log messages depending on their severity.
+	 */
+	enum class LogMessageIcon
+	{
+		Info, Warning, Error
+	};
+
+	/**
 	 * @brief	Contains a set of built-in resources used by the editor.
 	 */
 	class BS_ED_EXPORT BuiltinEditorResources : public BansheeEngine::Module<BuiltinEditorResources>
@@ -94,6 +102,11 @@ namespace BansheeEngine
 		 *			that may be displayed when viewing the project library.
 		 */
 		HSpriteTexture getLibraryIcon(ProjectIcon icon) const;
+
+		/**
+		 * @brief	Retrieves an icon that represents a specific log message type.
+		 */
+		HSpriteTexture getLogMessageIcon(LogMessageIcon icon) const;
 
 		static const String ObjectFieldStyleName;
 		static const String ObjectFieldLabelStyleName;
@@ -185,6 +198,10 @@ namespace BansheeEngine
 		static const WString MaterialIconTex;
 		static const WString SpriteTextureIconTex;
 		static const WString PrefabIconTex;
+
+		static const WString LogInfoIconTex;
+		static const WString LogWarningIconTex;
+		static const WString LogErrorIconTex;
 
 		static const WString WindowBackgroundTexture;
 
@@ -318,6 +335,8 @@ namespace BansheeEngine
 
 		static const WString XButtonNormalTex;
 		static const WString XButtonHoverTex;
+
+		static const WString StatusBarBgTex;
 
 		static const WString ShaderDockOverlayFile;
 		static const WString ShaderSceneGridFile;

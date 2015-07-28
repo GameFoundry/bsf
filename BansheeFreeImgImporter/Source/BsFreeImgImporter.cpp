@@ -22,11 +22,11 @@ namespace BansheeEngine
 		const char* typeName = FreeImage_GetFormatFromFIF(fif);
 		if (typeName)
 		{
-			gDebug().log("FreeImage error: '" + String(message) + "' when loading format " + typeName, "AssetImport");
+			gDebug().logError("FreeImage error: '" + String(message) + "' when loading format " + typeName);
 		}
 		else
 		{
-			gDebug().log("FreeImage error: '" + String(message) + "'", "AssetImport");
+			gDebug().logError("FreeImage error: '" + String(message) + "'");
 		}
 	}
 

@@ -72,12 +72,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElementBase::_getOptimalSize
 		 */
-		Vector2I _getOptimalSize() const { return mSizeRange.optimal; }
+		Vector2I _getOptimalSize() const override { return mSizeRange.optimal; }
 
 		/**
 		 * @copydoc	GUIElementBase::_getPadding
 		 */
-		const RectOffset& _getPadding() const;
+		const RectOffset& _getPadding() const override;
 
 		/**
 		 * @copydoc	GUIElementBase::_getType
