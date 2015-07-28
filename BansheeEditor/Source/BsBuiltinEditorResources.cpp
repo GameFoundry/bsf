@@ -50,6 +50,11 @@ namespace BansheeEngine
 	const String BuiltinEditorResources::ObjectFieldDropBtnStyleName = "DropButton";
 	const String BuiltinEditorResources::ObjectFieldClearBtnStyleName = "ObjectClearButton";
 
+	const String BuiltinEditorResources::TextureFieldStyleName = "GUITextureField";
+	const String BuiltinEditorResources::TextureFieldLabelStyleName = "TextureFieldLabel";
+	const String BuiltinEditorResources::TextureFieldDropStyleName = "TextureDrop";
+	const String BuiltinEditorResources::TextureFieldClearBtnStyleName = "TextureClearButton";
+
 	const WString BuiltinEditorResources::DefaultFontFilename = L"arial.ttf";
 	const UINT32 BuiltinEditorResources::DefaultFontSize = 10;
 
@@ -211,6 +216,11 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::ProgressBarBgTex = L"ProgressBarBg.psd";
 
 	const WString BuiltinEditorResources::SelectionAreaTex = L"SelectionHighlight.psd";
+
+	const WString BuiltinEditorResources::TextureDropTex = L"TextureDrop.psd";
+
+	const WString BuiltinEditorResources::XButtonNormalTex = L"XButtonNormal.psd";
+	const WString BuiltinEditorResources::XButtonHoverTex = L"XButtonHover.psd";
 
 	/************************************************************************/
 	/* 									SHADERS                      		*/
@@ -989,6 +999,45 @@ namespace BansheeEngine
 		editorObjectFieldStyle.subStyles[ObjectFieldClearBtnStyleName] = ObjectFieldClearBtnStyleName;
 
 		skin->setStyle(ObjectFieldStyleName, editorObjectFieldStyle);
+
+		/************************************************************************/
+		/* 						TEXTURE DROP FIELD                      		*/
+		/************************************************************************/
+		GUIElementStyle textureFieldStyle;
+		textureFieldStyle.minHeight = 15;
+		textureFieldStyle.minWidth = 15;
+		textureFieldStyle.subStyles[TextureFieldDropStyleName] = TextureFieldDropStyleName;
+		textureFieldStyle.subStyles[TextureFieldClearBtnStyleName] = TextureFieldClearBtnStyleName;
+		textureFieldStyle.subStyles[TextureFieldLabelStyleName] = GUITextField::getLabelStyleType();
+
+		skin->setStyle(TextureFieldStyleName, textureFieldStyle);
+
+		GUIElementStyle textureDropStyle;
+		textureDropStyle.font = font;
+		textureDropStyle.fontSize = DefaultFontSize;
+		textureDropStyle.textHorzAlign = THA_Center;
+		textureDropStyle.textVertAlign = TVA_Center;
+		textureDropStyle.normal.textColor = Color(95 / 255.0f, 95 / 255.0f, 95 / 255.0f, 1.0f);
+		textureDropStyle.normal.texture = getGUITexture(TextureDropTex);
+		textureDropStyle.minHeight = 15;
+		textureDropStyle.minWidth = 15;
+		textureDropStyle.border.left = 2;
+		textureDropStyle.border.right = 2;
+		textureDropStyle.border.top = 2;
+		textureDropStyle.border.bottom = 2;
+
+		skin->setStyle(TextureFieldDropStyleName, textureDropStyle);
+		
+		GUIElementStyle textureDropClearStyle;
+		textureDropClearStyle.normal.texture = getGUITexture(XButtonNormalTex);
+		textureDropClearStyle.hover.texture = getGUITexture(XButtonHoverTex);
+		textureDropClearStyle.active.texture = textureDropStyle.hover.texture;
+		textureDropClearStyle.fixedWidth = true;
+		textureDropClearStyle.fixedHeight = true;
+		textureDropClearStyle.height = 11;
+		textureDropClearStyle.width = 11;
+
+		skin->setStyle(TextureFieldClearBtnStyleName, textureDropClearStyle);
 
 		/************************************************************************/
 		/* 								EDITOR FIELDS                      		*/

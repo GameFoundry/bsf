@@ -57,6 +57,7 @@
     <Compile Include="DropDownWindow.cs" />
     <Compile Include="FolderMonitor.cs" />
     <Compile Include="GUI\GUISceneTreeView.cs" />
+    <Compile Include="GUI\TextureField.cs" />
     <Compile Include="HierarchyWindow.cs" />
     <Compile Include="PrefabUtility.cs" />
     <Compile Include="ProjectDropTarget.cs" />

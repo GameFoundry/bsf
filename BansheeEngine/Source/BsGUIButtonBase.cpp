@@ -130,8 +130,8 @@ namespace BansheeEngine
 		{
 			IMAGE_SPRITE_DESC contentImgDesc;
 			contentImgDesc.texture = mContent.getImage().getInternalPtr();
-			contentImgDesc.width = mContent.getImage()->getWidth();
-			contentImgDesc.height = mContent.getImage()->getHeight();
+			contentImgDesc.width = std::min(mImageDesc.width, mContent.getImage()->getWidth());
+			contentImgDesc.height = std::min(mImageDesc.height, mContent.getImage()->getHeight());
 			contentImgDesc.color = mColor;
 
 			mContentImageSprite->update(contentImgDesc, (UINT64)_getParentWidget());

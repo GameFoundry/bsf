@@ -100,6 +100,11 @@ namespace BansheeEngine
 		static const String ObjectFieldDropBtnStyleName;
 		static const String ObjectFieldClearBtnStyleName;
 
+		static const String TextureFieldStyleName;
+		static const String TextureFieldLabelStyleName;
+		static const String TextureFieldDropStyleName;
+		static const String TextureFieldClearBtnStyleName;
+
 		static const Path BuiltinDataFolder;
 		static const Path EditorSkinFolder;
 		static const Path EditorIconFolder;
@@ -308,6 +313,11 @@ namespace BansheeEngine
 		static const WString ProgressBarBgTex;
 
 		static const WString SelectionAreaTex;
+
+		static const WString TextureDropTex;
+
+		static const WString XButtonNormalTex;
+		static const WString XButtonHoverTex;
 
 		static const WString ShaderDockOverlayFile;
 		static const WString ShaderSceneGridFile;
