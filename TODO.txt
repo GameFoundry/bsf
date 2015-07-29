@@ -78,6 +78,7 @@ First screenshot work:
  - Component (also add to inspector context): Camera, Renderable, Point/Spot/Directional light, all other components from scripts
  - Help - About, API Reference (link to site)
 - Camera & Renderable inspector
+- Normalize colors between project and hierarchy windows (both blue or both orange selection + same ping color)
 - (Optionally) New UI look (tabs, component/array containers, better buttons)
 - (Optionally) Console window
 

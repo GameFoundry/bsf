@@ -224,8 +224,8 @@ namespace BansheeEngine
 
 	const WString BuiltinEditorResources::TextureDropTex = L"TextureDrop.psd";
 
-	const WString BuiltinEditorResources::XButtonNormalTex = L"XButtonNormal.psd";
-	const WString BuiltinEditorResources::XButtonHoverTex = L"XButtonHover.psd";
+	const WString BuiltinEditorResources::XButtonNormalTex = L"XBtnNormal.psd";
+	const WString BuiltinEditorResources::XButtonHoverTex = L"XBtnHover.psd";
 
 	const WString BuiltinEditorResources::StatusBarBgTex = L"StatusBarBg.psd";
 
@@ -1290,6 +1290,7 @@ namespace BansheeEngine
 		statusBarMessageBtnStyle.height = 13;
 		statusBarMessageBtnStyle.minWidth = 10;
 		statusBarMessageBtnStyle.textHorzAlign = THA_Left;
+		statusBarMessageBtnStyle.textVertAlign = TVA_Center;
 		statusBarMessageBtnStyle.imagePosition = GUIImagePosition::Left;
 
 		skin->setStyle(GUIStatusBar::getGUIMessageTypeName(), statusBarMessageBtnStyle);

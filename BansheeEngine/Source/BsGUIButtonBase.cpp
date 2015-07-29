@@ -14,12 +14,12 @@ namespace BansheeEngine
 	GUIButtonBase::GUIButtonBase(const String& styleName, const GUIContent& content, const GUIDimensions& dimensions)
 		:GUIElement(styleName, dimensions), mContent(content), mContentImageSprite(nullptr), mActiveState(GUIButtonState::Normal)
 	{
-		mImageSprite = bs_new<ImageSprite, PoolAlloc>();
-		mTextSprite = bs_new<TextSprite, PoolAlloc>();
+		mImageSprite = bs_new<ImageSprite>();
+		mTextSprite = bs_new<TextSprite>();
 
 		HSpriteTexture contentTex = content.getImage();
 		if(SpriteTexture::checkIsLoaded(contentTex))
-			mContentImageSprite = bs_new<ImageSprite, PoolAlloc>();
+			mContentImageSprite = bs_new<ImageSprite>();
 
 		mLocStringUpdatedConn = mContent.getText().addOnStringModifiedCallback(std::bind(&GUIButtonBase::_markContentAsDirty, this));
 	}
@@ -28,11 +28,11 @@ namespace BansheeEngine
 	{
 		mLocStringUpdatedConn.disconnect();
 
-		bs_delete<PoolAlloc>(mTextSprite);
-		bs_delete<PoolAlloc>(mImageSprite);
+		bs_delete(mTextSprite);
+		bs_delete(mImageSprite);
 
 		if(mContentImageSprite != nullptr)
-			bs_delete<PoolAlloc>(mContentImageSprite);
+			bs_delete(mContentImageSprite);
 	}
 
 	void GUIButtonBase::setContent(const GUIContent& content)
@@ -41,6 +41,21 @@ namespace BansheeEngine
 		mLocStringUpdatedConn = content.getText().addOnStringModifiedCallback(std::bind(&GUIButtonBase::_markContentAsDirty, this));
 
 		mContent = content;
+
+		HSpriteTexture contentTex = content.getImage();
+		if (SpriteTexture::checkIsLoaded(contentTex))
+		{
+			if (mContentImageSprite == nullptr)
+				mContentImageSprite = bs_new<ImageSprite>();
+		}
+		else
+		{
+			if (mContentImageSprite != nullptr)
+			{
+				bs_delete(mContentImageSprite);
+				mContentImageSprite = nullptr;
+			}
+		}
 
 		_markContentAsDirty();
 	}
@@ -233,8 +248,13 @@ namespace BansheeEngine
 		if(mContentImageSprite != nullptr)
 		{
 			Rect2I imageBounds = mContentImageSprite->getBounds(Vector2I(), Rect2I());
-			UINT32 freeWidth = (UINT32)std::max(0, contentBounds.width - textBounds.width - imageBounds.width);
-			INT32 imageXOffset = (INT32)(freeWidth / 2);
+			INT32 imageXOffset = 0;
+			
+			if (textBounds.width == 0)
+			{
+				UINT32 freeWidth = (UINT32)std::max(0, contentBounds.width - textBounds.width - imageBounds.width);
+				imageXOffset = (INT32)(freeWidth / 2);
+			}
 
 			if(_getStyle()->imagePosition == GUIImagePosition::Right)
 			{

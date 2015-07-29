@@ -13,6 +13,10 @@ using namespace std::placeholders;
 
 namespace BansheeEngine
 {
+	const Color GUIStatusBar::COLOR_INFO = Color(1.0f, 1.0f, 1.0f, 1.0f);
+	const Color GUIStatusBar::COLOR_WARNING = Color(192 / 255.0f, 176 / 255.0f, 0.0f, 1.0f);
+	const Color GUIStatusBar::COLOR_ERROR = Color(192 / 255.0f, 36 / 255.0f, 0.0f, 1.0f);
+
 	GUIStatusBar::GUIStatusBar(const PrivatelyConstruct& dummy,
 		const String& style, const GUIDimensions& dimensions)
 		:GUIElementContainer(dimensions, style)
@@ -89,6 +93,7 @@ namespace BansheeEngine
 	void GUIStatusBar::logEntryAdded(const LogEntry& entry)
 	{
 		HSpriteTexture iconTexture;
+		Color textColor = COLOR_INFO;
 
 		UINT32 logChannel = entry.getChannel();
 		switch (logChannel)
@@ -99,14 +104,45 @@ namespace BansheeEngine
 			break;
 		case (UINT32)DebugChannel::Warning:
 			iconTexture = BuiltinEditorResources::instance().getLogMessageIcon(LogMessageIcon::Warning);
+			textColor = COLOR_WARNING;
 			break;
 		case (UINT32)DebugChannel::Error:
 			iconTexture = BuiltinEditorResources::instance().getLogMessageIcon(LogMessageIcon::Error);
+			textColor = COLOR_ERROR;
 			break;
 		}
 
-		GUIContent messageContent(HString(toWString(entry.getMessage())), iconTexture);
-		mMessage->setContent(messageContent);
+		WString message = toWString(entry.getMessage());
+		WString::size_type lfPos = message.find_first_of('\n');
+		WString::size_type crPos = message.find_first_of('\r');
+		WString::size_type newlinePos;
+
+		if (lfPos >= 0)
+		{
+			if (crPos >= 0)
+				newlinePos = std::min(lfPos, crPos);
+			else
+				newlinePos = lfPos;
+		}
+		else if (crPos >= 0)
+			newlinePos = crPos;
+		else
+			newlinePos = -1;
+
+		if (newlinePos == -1)
+		{
+			GUIContent messageContent(HString(message), iconTexture);
+			mMessage->setContent(messageContent);
+			mMessage->setTint(textColor);
+		}
+		else
+		{
+			WString firstLine = message.substr(0, newlinePos);
+
+			GUIContent messageContent(HString(firstLine), iconTexture);
+			mMessage->setContent(messageContent);
+			mMessage->setTint(textColor);
+		}		
 	}
 
 	void GUIStatusBar::messageBtnClicked()

@@ -87,7 +87,9 @@ namespace BansheeEngine
 		void messageBtnClicked();
 
 	private:
-		static const UINT32 DEFAULT_LABEL_WIDTH;
+		static const Color COLOR_INFO;
+		static const Color COLOR_WARNING;
+		static const Color COLOR_ERROR;
 
 		GUIPanel* mPanel;
 		GUIPanel* mBgPanel;
