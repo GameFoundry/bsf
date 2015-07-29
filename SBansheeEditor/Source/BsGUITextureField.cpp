@@ -39,7 +39,7 @@ namespace BansheeEngine
 		GUIPanel* dropTargetPanel = mLayout->addNewElement<GUIPanel>();
 		dropTargetPanel->addElement(mDropButton);
 
-		GUIPanel* closeBtnPanel = mLayout->addNewElement<GUIPanel>();
+		GUIPanel* closeBtnPanel = dropTargetPanel->addNewElement<GUIPanel>(-1);
 		GUILayoutY* closeBtnLayoutY = closeBtnPanel->addNewElement<GUILayoutY>();
 		closeBtnLayoutY->addNewElement<GUIFixedSpace>(5);
 		GUILayoutX* closeBtnLayoutX = closeBtnLayoutY->addNewElement<GUILayoutX>();
@@ -48,7 +48,12 @@ namespace BansheeEngine
 		closeBtnLayoutX->addElement(mClearButton);
 		closeBtnLayoutX->addNewElement<GUIFixedSpace>(5);
 
+		if (withLabel)
+			mLayout->addNewElement<GUIFlexibleSpace>();
+
 		mDropButton->onDataDropped.connect(std::bind(&GUITextureField::dataDropped, this, _1));
+
+		setValue(HTexture());
 	}
 
 	GUITextureField::~GUITextureField()
@@ -230,15 +235,17 @@ namespace BansheeEngine
 		{
 			Path path = draggedResources->resourcePaths[i];
 
-			String uuid;
-			if (!gResources().getUUIDFromFilePath(draggedResources->resourcePaths[i], uuid))
+			ProjectLibrary::LibraryEntry* libEntry = ProjectLibrary::instance().findEntry(draggedResources->resourcePaths[i]);
+			if (libEntry == nullptr || libEntry->type == ProjectLibrary::LibraryEntryType::Directory)
 				continue;
 
-			ProjectResourceMetaPtr meta = ProjectLibrary::instance().findResourceMeta(uuid);
-			if (meta == nullptr || meta->getTypeId() != TID_Texture)
+			ProjectLibrary::ResourceEntry* resEntry = static_cast<ProjectLibrary::ResourceEntry*>(libEntry);
+
+			ProjectResourceMetaPtr meta = resEntry->meta;
+			if (meta == nullptr || meta->getTypeID() != TID_Texture)
 				continue;
 
-			setUUID(uuid);
+			setUUID(meta->getUUID());
 			break;
 		}
 	}

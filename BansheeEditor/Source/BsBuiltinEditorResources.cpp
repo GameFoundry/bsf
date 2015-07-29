@@ -223,6 +223,7 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::SelectionAreaTex = L"SelectionHighlight.psd";
 
 	const WString BuiltinEditorResources::TextureDropTex = L"TextureDrop.psd";
+	const WString BuiltinEditorResources::TextureDropOnTex = L"TextureDropOn.psd";
 
 	const WString BuiltinEditorResources::XButtonNormalTex = L"XBtnNormal.psd";
 	const WString BuiltinEditorResources::XButtonHoverTex = L"XBtnHover.psd";
@@ -1026,8 +1027,20 @@ namespace BansheeEngine
 		textureDropStyle.textVertAlign = TVA_Center;
 		textureDropStyle.normal.textColor = Color(95 / 255.0f, 95 / 255.0f, 95 / 255.0f, 1.0f);
 		textureDropStyle.normal.texture = getGUITexture(TextureDropTex);
-		textureDropStyle.minHeight = 15;
-		textureDropStyle.minWidth = 15;
+		textureDropStyle.hover.textColor = textureDropStyle.normal.textColor;
+		textureDropStyle.hover.texture = textureDropStyle.normal.texture;
+		textureDropStyle.active.textColor = textureDropStyle.normal.textColor;
+		textureDropStyle.active.texture = textureDropStyle.normal.texture;
+		textureDropStyle.normalOn.textColor = Color(95 / 255.0f, 95 / 255.0f, 95 / 255.0f, 1.0f);
+		textureDropStyle.normalOn.texture = getGUITexture(TextureDropOnTex);
+		textureDropStyle.hoverOn.textColor = textureDropStyle.normalOn.textColor;
+		textureDropStyle.hoverOn.texture = textureDropStyle.normalOn.texture;
+		textureDropStyle.activeOn.textColor = textureDropStyle.normalOn.textColor;
+		textureDropStyle.activeOn.texture = textureDropStyle.normalOn.texture;
+		textureDropStyle.height = 82;
+		textureDropStyle.width = 82;
+		textureDropStyle.fixedHeight = true;
+		textureDropStyle.fixedWidth = true;
 		textureDropStyle.border.left = 2;
 		textureDropStyle.border.right = 2;
 		textureDropStyle.border.top = 2;

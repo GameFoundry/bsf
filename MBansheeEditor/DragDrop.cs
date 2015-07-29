@@ -70,6 +70,7 @@ namespace BansheeEditor
     {
         public string[] Paths { get { return Internal_GetPaths(mCachedPtr); } }
 
+        // Paths must be absolute
         public ResourceDragDropData(string[] paths)
         {
             this.type = DragDropType.Resource;

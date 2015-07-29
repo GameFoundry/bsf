@@ -140,6 +140,13 @@ namespace BansheeEditor
             dropTarget.OnDropResource += DoOnResourceDragDropped;
             dropTarget.OnDropSceneObject += DoOnSceneObjectDragDropped;
             dropTarget.OnEnd += DoOnDragEnd;
+
+            Selection.OnSelectionChanged += OnSelectionChanged;
+        }
+
+        private void OnDestroy()
+        {
+            Selection.OnSelectionChanged -= OnSelectionChanged;
         }
 
         private ElementEntry FindElementAt(Vector2I windowPos)
@@ -170,13 +177,36 @@ namespace BansheeEditor
         private void DoOnDragStart(Vector2I windowPos)
         {
             ElementEntry underCursorElem = FindElementAt(windowPos);
-            if (underCursorElem == null || !selectionPaths.Contains(underCursorElem.path))
+            if (underCursorElem == null)
             {
                 StartDragSelection(windowPos);
                 return;
             }
 
-            ResourceDragDropData dragDropData = new ResourceDragDropData(selectionPaths.ToArray());
+            string resourceDir = ProjectLibrary.ResourceFolder;
+
+            string[] dragPaths = null;
+            if (selectionPaths.Count > 0)
+            {
+                foreach(var path in selectionPaths)
+                {
+                    if (path == underCursorElem.path)
+                    {
+                        dragPaths = new string[selectionPaths.Count];
+                        for (int i = 0; i < selectionPaths.Count; i++)
+                        {
+                            dragPaths[i] = Path.Combine(resourceDir, selectionPaths[i]);
+                        }
+
+                        break;
+                    }
+                }
+            }
+
+            if (dragPaths == null)
+                dragPaths = new[] { Path.Combine(resourceDir, underCursorElem.path) };
+
+            ResourceDragDropData dragDropData = new ResourceDragDropData(dragPaths);
             DragDrop.StartDrag(dragDropData);
         }
 
@@ -362,9 +392,9 @@ namespace BansheeEditor
             }
         }
 
-        private void DeselectAll()
+        private void DeselectAll(bool onlyInternal = false)
         {
-            SetSelection(new List<string>());
+            SetSelection(new List<string>(), onlyInternal);
             selectionAnchorStart = -1;
             selectionAnchorEnd = -1;
         }
@@ -499,7 +529,7 @@ namespace BansheeEditor
             }
         }
 
-        private void SetSelection(List<string> paths)
+        private void SetSelection(List<string> paths, bool onlyInternal = false)
         {
             if (selectionPaths != null)
             {
@@ -526,10 +556,13 @@ namespace BansheeEditor
             Ping(null);
             StopRename();
 
-            if (selectionPaths != null)
-                Selection.resourcePaths = selectionPaths.ToArray();
-            else
-                Selection.resourcePaths = new string[0];
+            if (!onlyInternal)
+            {
+                if (selectionPaths != null)
+                    Selection.resourcePaths = selectionPaths.ToArray();
+                else
+                    Selection.resourcePaths = new string[0];
+            }
         }
 
         private void EnterDirectory(string directory)
@@ -1131,6 +1164,12 @@ namespace BansheeEditor
                 else
                     return x.Type == LibraryEntryType.File ? 1 : -1;
             });
+        }
+
+        private void OnSelectionChanged(SceneObject[] sceneObjects, string[] resourcePaths)
+        {
+            if(sceneObjects.Length > 0)
+                DeselectAll(true);
         }
 
         private void OnFolderButtonClicked(string path)

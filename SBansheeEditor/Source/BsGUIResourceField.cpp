@@ -223,16 +223,17 @@ namespace BansheeEngine
 		{
 			Path path = draggedResources->resourcePaths[i];
 
-			String uuid;
-			if (!gResources().getUUIDFromFilePath(draggedResources->resourcePaths[i], uuid))
+			ProjectLibrary::LibraryEntry* libEntry = ProjectLibrary::instance().findEntry(path);
+			if (libEntry == nullptr || libEntry->type == ProjectLibrary::LibraryEntryType::Directory)
 				continue;
 
-			ProjectResourceMetaPtr meta = ProjectLibrary::instance().findResourceMeta(uuid);
-			if (meta == nullptr)
-				continue;
+			ProjectLibrary::ResourceEntry* resEntry = static_cast<ProjectLibrary::ResourceEntry*>(libEntry);
+
+			ProjectResourceMetaPtr meta = resEntry->meta;
+			UINT32 typeId = meta->getTypeID();
+			String uuid = meta->getUUID();
 
 			bool found = false;
-			UINT32 typeId = meta->getTypeID();
 			switch (typeId)
 			{
 			case TID_Texture:

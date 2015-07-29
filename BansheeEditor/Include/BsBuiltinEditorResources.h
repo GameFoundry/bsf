@@ -332,6 +332,7 @@ namespace BansheeEngine
 		static const WString SelectionAreaTex;
 
 		static const WString TextureDropTex;
+		static const WString TextureDropOnTex;
 
 		static const WString XButtonNormalTex;
 		static const WString XButtonHoverTex;

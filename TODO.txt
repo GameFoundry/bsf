@@ -57,8 +57,7 @@ Code quality improvements:
 ----------------------------------------------------------------------
 Polish stage 1
 
-Test GUITextureField
-Test GUIStatusBar
+Selecting a resource doesn't clear selection overlay
 Test inspector selection, selecting a resource and adding/removing component updates
 Showing the inspector causes a considerable slowdown (maybe stuff gets refreshed too often?)
 Crash when showing the inspector (invalid index in Layout.InsertElement)
@@ -89,6 +88,7 @@ SceneTreeView
    - Add Selection::ping method to both C++ and C# and an Event that triggers when its called
  - See if it needs other enhancements (rename, delete all work properly? etc.)
  - Add copy/cut/paste/duplicate (with context menu)
+ - Cannot deselect element by clicking on empty space
 
 Need a way to add scene objects and components (and remove them)
  - Components adding should be only done by drag and dropping scripts to inspector (undoable)

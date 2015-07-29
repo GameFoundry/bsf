@@ -77,6 +77,11 @@ namespace BansheeEngine
 					onDataDropped(DragAndDropManager::instance().getDragData());
 			}
 		}
+		else if (ev.getType() == GUIMouseEventType::MouseDragAndDropLeft)
+		{
+			if (_isOn())
+				_setOn(false);
+		}
 
 		return processed;
 	}

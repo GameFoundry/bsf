@@ -166,10 +166,6 @@ namespace BansheeEditor
 
         private void OnEditorUpdate()
         {
-            // DEBUG ONLY
-            if (activeProfilerOverlay != null && Time.FrameDelta > 100.0f)
-                activeProfilerOverlay.Paused = true;
-
             if (HasFocus)
             {
                 if (VirtualInput.IsButtonUp(toggleProfilerOverlayKey))

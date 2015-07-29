@@ -30,10 +30,9 @@ namespace BansheeEngine
 	void Selection::setSceneObjects(const Vector<HSceneObject>& sceneObjects)
 	{
 		mSelectedSceneObjects = sceneObjects;
+		mSelectedResourcePaths.clear();
 
-		GUISceneTreeView* sceneTreeView = SceneTreeViewLocator::instance();
-		if (sceneTreeView != nullptr)
-			sceneTreeView->setSelection(sceneObjects);
+		updateTreeViews();
 
 		onSelectionChanged(mSelectedSceneObjects, Vector<Path>());
 	}
@@ -46,6 +45,9 @@ namespace BansheeEngine
 	void Selection::setResourcePaths(const Vector<Path>& paths)
 	{
 		mSelectedResourcePaths = paths;
+		mSelectedSceneObjects.clear();
+
+		updateTreeViews();
 
 		onSelectionChanged(Vector<HSceneObject>(), mSelectedResourcePaths);
 	}
@@ -76,9 +78,8 @@ namespace BansheeEngine
 				mSelectedResourcePaths.push_back(path);
 		}
 
-		GUIResourceTreeView* resourceTreeView = ResourceTreeViewLocator::instance();
-		if (resourceTreeView != nullptr)
-			resourceTreeView->setSelection(mSelectedResourcePaths);
+		mSelectedSceneObjects.clear();
+		updateTreeViews();
 
 		onSelectionChanged(Vector<HSceneObject>(), mSelectedResourcePaths);
 	}
@@ -99,6 +100,7 @@ namespace BansheeEngine
 		if (sceneTreeView != nullptr)
 		{
 			mSelectedSceneObjects = sceneTreeView->getSelection();
+			mSelectedResourcePaths.clear();
 
 			onSelectionChanged(mSelectedSceneObjects, Vector<Path>());
 		}
@@ -110,8 +112,30 @@ namespace BansheeEngine
 		if (resourceTreeView != nullptr)
 		{
 			mSelectedResourcePaths = resourceTreeView->getSelection();
+			mSelectedSceneObjects.clear();
 
 			onSelectionChanged(Vector<HSceneObject>(), mSelectedResourcePaths);
+		}
+	}
+
+	void Selection::updateTreeViews()
+	{
+		GUIResourceTreeView* resourceTreeView = ResourceTreeViewLocator::instance();
+		if (resourceTreeView != nullptr)
+		{
+			// Copy in case setSelection modifies the original.
+			Vector<Path> copy = mSelectedResourcePaths;
+
+			resourceTreeView->setSelection(copy);
+		}
+
+		GUISceneTreeView* sceneTreeView = SceneTreeViewLocator::instance();
+		if (sceneTreeView != nullptr)
+		{
+			// Copy in case setSelection modifies the original.
+			Vector<HSceneObject> copy = mSelectedSceneObjects;
+
+			sceneTreeView->setSelection(copy);
 		}
 	}
 }

@@ -70,6 +70,11 @@ namespace BansheeEngine
 		 */
 		void resourceSelectionChanged();
 
+		/**
+		 * @brief	Updates scene and resource tree views with new selection.
+		 */
+		void updateTreeViews();
+
 		Vector<HSceneObject> mSelectedSceneObjects;
 		Vector<Path> mSelectedResourcePaths;
 

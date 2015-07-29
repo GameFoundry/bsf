@@ -345,12 +345,10 @@ namespace BansheeEditor
             }
             else if (objects.Length == 1)
             {
-                Debug.Log("Object selected: " + objects[0].Name);
                 SetObjectToInspect(objects[0]);
             }
             else if (paths.Length == 1)
             {
-                Debug.Log("Path selected: " + paths[0]);
                 SetObjectToInspect(paths[0]);
             }
         }
@@ -435,13 +433,6 @@ namespace BansheeEditor
                 Vector3 angles = activeSO.LocalRotation.ToEuler();
                 angles[idx] = value;
                 activeSO.LocalRotation = Quaternion.FromEuler(angles);
-
-                Debug.Log("ROTATION CHANGED: " + idx + " - " + value + " - " + angles + " - " + activeSO.LocalRotation + " - " + activeSO.LocalRotation.ToEuler());
-
-                Quaternion dbg = Quaternion.FromEuler(angles);
-
-                Debug.Log("LOCAL CHECK: " + angles + " - " + dbg + " - " + dbg.ToEuler());
-                
             }
         }
 
