@@ -26,6 +26,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_Create", &ScriptSceneViewHandler::internal_Create);
 		metaData.scriptClass->addInternalCall("Internal_Update", &ScriptSceneViewHandler::internal_Update);
 		metaData.scriptClass->addInternalCall("Internal_UpdateHandle", &ScriptSceneViewHandler::internal_UpdateHandle);
+		metaData.scriptClass->addInternalCall("Internal_UpdateSelection", &ScriptSceneViewHandler::internal_UpdateSelection);
 		metaData.scriptClass->addInternalCall("Internal_TrySelectHandle", &ScriptSceneViewHandler::internal_TrySelectHandle);
 		metaData.scriptClass->addInternalCall("Internal_IsHandleActive", &ScriptSceneViewHandler::internal_IsHandleActive);
 		metaData.scriptClass->addInternalCall("Internal_ClearHandleSelection", &ScriptSceneViewHandler::internal_ClearHandleSelection);
@@ -50,6 +51,11 @@ namespace BansheeEngine
 	void ScriptSceneViewHandler::internal_UpdateHandle(ScriptSceneViewHandler* thisPtr, Vector2I inputPos, Vector2I inputDelta)
 	{
 		thisPtr->mHandler->updateHandle(inputPos, inputDelta);
+	}
+
+	void ScriptSceneViewHandler::internal_UpdateSelection(ScriptSceneViewHandler* thisPtr)
+	{
+		thisPtr->mHandler->updateSelection();
 	}
 
 	void ScriptSceneViewHandler::internal_TrySelectHandle(ScriptSceneViewHandler* thisPtr, Vector2I inputPos)

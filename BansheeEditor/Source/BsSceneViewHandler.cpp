@@ -56,8 +56,11 @@ namespace BansheeEngine
 			mMouseDeltaCompensate = wrapCursorToWindow();
 
 		HandleManager::instance().update(mCamera, position, realDelta);
+	}
 
-		// Update selection here since this is triggered after user potentially selects a new object
+	void SceneViewHandler::updateSelection()
+	{
+		// Call this after handle update to ensure its drawn at the right place
 		mSelectionRenderer->update(mCamera);
 	}
 

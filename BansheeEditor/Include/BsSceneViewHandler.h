@@ -23,13 +23,17 @@ namespace BansheeEngine
 		void update();
 
 		/**
-		 * @brief	Updates currently active handles and updates 
-		 *			handles and selection drawing.
+		 * @brief	Updates currently active handles.
 		 *
 		 * @param	position	Position of the pointer relative to the scene camera viewport.
 		 * @param	delta		Movement of the pointer since last frame.
 		 */
 		void updateHandle(const Vector2I& position, const Vector2I& delta);
+
+		/**
+		 * @brief	Updates the selection overlay for currently selected object(s).
+		 */
+		void updateSelection();
 
 		/**
 		 * @brief	Selects a handle under the pointer position.

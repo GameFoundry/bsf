@@ -268,33 +268,33 @@ namespace BansheeEditor
                 }
             }
 
-            if (!HasFocus)
+            if (HasFocus)
             {
-                cameraController.SceneObject.Active = false;
-                return;
-            }
-            else
                 cameraController.SceneObject.Active = true;
 
-            if (inBounds)
-            {
-                if (Input.IsPointerButtonDown(PointerButton.Left))
+                if (inBounds)
                 {
-                    sceneViewHandler.TrySelectHandle(scenePos);
-                }
-                else if (Input.IsPointerButtonUp(PointerButton.Left))
-                {
-                    if (!handleActive)
+                    if (Input.IsPointerButtonDown(PointerButton.Left))
                     {
-                        bool ctrlHeld = Input.IsButtonHeld(ButtonCode.LeftControl) ||
-                            Input.IsButtonHeld(ButtonCode.RightControl);
+                        sceneViewHandler.TrySelectHandle(scenePos);
+                    }
+                    else if (Input.IsPointerButtonUp(PointerButton.Left))
+                    {
+                        if (!handleActive)
+                        {
+                            bool ctrlHeld = Input.IsButtonHeld(ButtonCode.LeftControl) ||
+                                            Input.IsButtonHeld(ButtonCode.RightControl);
 
-                        sceneViewHandler.PickObject(scenePos, ctrlHeld);
+                            sceneViewHandler.PickObject(scenePos, ctrlHeld);
+                        }
                     }
                 }
             }
+            else
+                cameraController.SceneObject.Active = false;
 
             sceneViewHandler.UpdateHandle(scenePos, Input.PointerDelta);
+            sceneViewHandler.UpdateSelection();
         }
 
         protected override void WindowResized(int width, int height)

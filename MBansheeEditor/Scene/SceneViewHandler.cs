@@ -25,6 +25,11 @@ namespace BansheeEditor
             Internal_UpdateHandle(mCachedPtr, pointerPos, inputDelta);
         }
 
+        internal void UpdateSelection()
+        {
+            Internal_UpdateSelection(mCachedPtr);
+        }
+
         internal void TrySelectHandle(Vector2I pointerPos)
         {
             Internal_TrySelectHandle(mCachedPtr, pointerPos);
@@ -53,6 +58,9 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_UpdateHandle(IntPtr thisPtr, Vector2I pointerPos, Vector2I inputDelta);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_UpdateSelection(IntPtr thisPtr);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_TrySelectHandle(IntPtr thisPtr, Vector2I pointerPos);
