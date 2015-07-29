@@ -287,7 +287,6 @@
     <ClInclude Include="Include\BsScriptInput.h" />
     <ClInclude Include="Include\BsScriptInputConfiguration.h" />
     <ClInclude Include="Include\BsScriptLightInternal.h" />
-    <ClInclude Include="Include\BsScriptMacros.h" />
     <ClInclude Include="Include\BsScriptManagedResource.h" />
     <ClInclude Include="Include\BsScriptMaterial.h" />
     <ClInclude Include="Include\BsScriptMesh.h" />

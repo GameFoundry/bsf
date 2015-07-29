@@ -6,22 +6,43 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Interop class between C++ & CLR for GUIButton.
+	 */
 	class BS_SCR_BE_EXPORT ScriptGUIButton : public TScriptGUIElement<ScriptGUIButton>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUIButton")
 
 	private:
+		ScriptGUIButton(MonoObject* instance, GUIButton* button);
+
+		/**
+		 * @brief	Triggers when the GUI button is clicked.
+		 */
+		static void onClick(MonoObject* instance);
+
+		/**
+		 * @brief	Triggers when the GUI button is double-clicked.
+		 */
+		static void onDoubleClick(MonoObject* instance);
+
+		/**
+		 * @brief	Triggers when the GUI button is hovered over.
+		 */
+		static void onHover(MonoObject* instance);
+
+		/**
+		 * @brief	Triggers when the pointer leaves the GUI button.
+		 */
+		static void onOut(MonoObject* instance);
+
+		/************************************************************************/
+		/* 								CLR HOOKS						   		*/
+		/************************************************************************/
 		static void internal_createInstance(MonoObject* instance, MonoObject* content, MonoString* style, MonoArray* guiOptions);
 		static void internal_setContent(ScriptGUIButton* nativeInstance, MonoObject* content);
 		static void internal_setTint(ScriptGUIButton* nativeInstance, Color color);
-
-		static void onClick(MonoObject* instance);
-		static void onDoubleClick(MonoObject* instance);
-		static void onHover(MonoObject* instance);
-		static void onOut(MonoObject* instance);
-
-		ScriptGUIButton(MonoObject* instance, GUIButton* button);
 
 		typedef void (__stdcall *OnClickThunkDef) (MonoObject*, MonoException**);
 		typedef void (__stdcall *OnDoubleClickThunkDef) (MonoObject*, MonoException**);

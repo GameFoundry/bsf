@@ -57,10 +57,13 @@ Code quality improvements:
 ----------------------------------------------------------------------
 Polish stage 1
 
-Selecting a resource doesn't clear selection overlay
 Test inspector selection, selecting a resource and adding/removing component updates
 Showing the inspector causes a considerable slowdown (maybe stuff gets refreshed too often?)
-Crash when showing the inspector (invalid index in Layout.InsertElement)
+ - It seems to be rebuilding a lot of GUI just because I moused over an element. Can I avoid that?
+   - Layout update should only be called if I change element size or reposition it in some way
+ - UpdateLayout seems to be taking a huge amount of time, and update meshes isn't much better
+
+Crash when showing the inspector (invalid index in Layout.InsertElement called from InspectableObject.Update)
 
 Handle seems to lag behind the selected mesh
 ProjectLibrary seems to import some files on every start-up

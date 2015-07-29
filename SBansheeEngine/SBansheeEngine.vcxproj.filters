@@ -45,9 +45,6 @@
     <ClInclude Include="Include\BsScriptTexture2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsScriptMacros.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsScriptEnginePrerequisites.h">
       <Filter>Header Files</Filter>
     </ClInclude>

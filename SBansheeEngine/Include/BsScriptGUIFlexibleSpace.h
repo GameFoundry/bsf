@@ -5,19 +5,28 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Interop class between C++ & CLR for GUIFlexibleSpace.
+	 */
 	class BS_SCR_BE_EXPORT ScriptGUIFlexibleSpace : public TScriptGUIElementBase<ScriptGUIFlexibleSpace>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUIFlexibleSpace")
 
 	private:
-		static void internal_createInstance(MonoObject* instance);
-
 		ScriptGUIFlexibleSpace(MonoObject* instance, GUIFlexibleSpace* flexibleSpace);
 
-		void destroy();
+		/**
+		 * @copydoc	ScriptGUIElementBaseTBase::destroy
+		 */
+		void destroy() override;
 
 		GUIFlexibleSpace* mFlexibleSpace;
 		bool mIsDestroyed;
+
+		/************************************************************************/
+		/* 								CLR HOOKS						   		*/
+		/************************************************************************/
+		static void internal_createInstance(MonoObject* instance);
 	};
 }
