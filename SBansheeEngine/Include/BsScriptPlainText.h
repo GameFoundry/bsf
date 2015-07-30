@@ -12,8 +12,6 @@ namespace BansheeEngine
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "PlainText")
 
-		void* getNativeRaw() const { return mPlainText.get(); }
-
 		HResource getNativeHandle() const { return mPlainText; }
 		void setNativeHandle(const HResource& resource);
 

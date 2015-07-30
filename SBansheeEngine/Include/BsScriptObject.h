@@ -31,7 +31,6 @@ namespace BansheeEngine
 		virtual ~ScriptObjectBase();
 
 		MonoObject* getManagedInstance() const { return mManagedInstance; }
-		virtual void* getNativeRaw() const { return nullptr; }
 		virtual bool isPersistent() const { return false; }
 
 		virtual void _clearManagedInstance() { }
@@ -51,7 +50,7 @@ namespace BansheeEngine
 		PersistentScriptObjectBase(MonoObject* instance);
 		virtual ~PersistentScriptObjectBase();
 
-		virtual bool isPersistent() const { return true; }
+		virtual bool isPersistent() const override { return true; }
 	};
 
 	/**
@@ -123,18 +122,6 @@ namespace BansheeEngine
 
 	protected:
 		static ScriptMeta metaData;
-
-		template <class Type2, class Base2>
-		static void throwIfInstancesDontMatch(ScriptObject<Type2, Base2>* lhs, void* rhs)
-		{
-#if BS_DEBUG_MODE
-			if((lhs == nullptr && rhs != nullptr) || (rhs == nullptr && lhs != nullptr) || lhs->getNativeRaw() != rhs)
-			{
-				BS_EXCEPT(InvalidStateException, "Native and script instance do not match. This usually happens when you modify a native object " \
-					" that is also being referenced from script code. You should only modify such objects directly from script code.");
-			}
-#endif
-		}
 
 	private:
 		static InitScriptObjectOnStart<Type, Base> initOnStart;

@@ -13,8 +13,6 @@ namespace BansheeEngine
 
 		ScriptManagedResource(MonoObject* instance, const HManagedResource& resource);
 
-		void* getNativeRaw() const { return mResource.get(); }
-
 		HResource getNativeHandle() const { return mResource; }
 		void setNativeHandle(const HResource& resource);
 	private:

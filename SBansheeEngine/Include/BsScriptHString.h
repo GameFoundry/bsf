@@ -12,7 +12,6 @@ namespace BansheeEngine
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "LocString")
 
 		const HString& getInternalValue() const { return mString; }
-		void* getNativeRaw() const { return (void*)&mString; }
 
 	private:
 		static void internal_createInstance(MonoObject* instance, MonoString* identifier);

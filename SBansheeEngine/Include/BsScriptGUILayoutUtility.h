@@ -8,6 +8,9 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Interop class between C++ & CLR for GUILayoutUtility. 
+	 */
 	class BS_SCR_BE_EXPORT ScriptGUILayoutUtility : public ScriptObject<ScriptGUILayoutUtility>
 	{
 	public:
@@ -16,6 +19,9 @@ namespace BansheeEngine
 		ScriptGUILayoutUtility();
 
 	private:
+		/************************************************************************/
+		/* 								CLR HOOKS						   		*/
+		/************************************************************************/
 		static void internal_CalculateOptimalSize(ScriptGUIElementBaseTBase* guiElement, Vector2I* output);
 		static void internal_CalculateBounds(ScriptGUIElementBaseTBase* guiElement, ScriptGUILayout* relativeTo, Rect2I* output);
 	};

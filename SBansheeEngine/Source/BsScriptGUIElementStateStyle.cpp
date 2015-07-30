@@ -48,8 +48,6 @@ namespace BansheeEngine
 
 	void ScriptGUIElementStateStyle::internal_GetTexture(ScriptGUIElementStateStyle* nativeInstance, MonoObject** value)
 	{
-		throwIfInstancesDontMatch(nativeInstance->mSpriteTexture, nativeInstance->mElementStateStyle->texture.get());	
-
 		if (nativeInstance->mSpriteTexture != nullptr)
 		{	
 			*value = nativeInstance->mSpriteTexture->getManagedInstance();

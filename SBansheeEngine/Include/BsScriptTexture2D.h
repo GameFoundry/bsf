@@ -12,8 +12,6 @@ namespace BansheeEngine
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Texture2D")
 
-		void* getNativeRaw() const { return mTexture.get(); }
-
 		HResource getNativeHandle() const { return mTexture; }
 		void setNativeHandle(const HResource& resource);
 

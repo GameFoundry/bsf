@@ -12,8 +12,6 @@ namespace BansheeEngine
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Font")
 
-		void* getNativeRaw() const { return mFont.get(); }
-
 		HResource getNativeHandle() const { return mFont; }
 		void setNativeHandle(const HResource& resource);
 	private:

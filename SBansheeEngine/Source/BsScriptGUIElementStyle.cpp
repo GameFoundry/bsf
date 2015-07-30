@@ -121,8 +121,6 @@ namespace BansheeEngine
 
 	void ScriptGUIElementStyle::internal_GetFont(ScriptGUIElementStyle* nativeInstance, MonoObject** value)
 	{
-		throwIfInstancesDontMatch(nativeInstance->mFont, nativeInstance->mElementStyle->font.get());
-
 		if (nativeInstance->mFont != nullptr)
 		{
 			*value = nativeInstance->mFont->getManagedInstance();
@@ -191,8 +189,6 @@ namespace BansheeEngine
 
 	void ScriptGUIElementStyle::internal_GetNormal(ScriptGUIElementStyle* nativeInstance, MonoObject** value)
 	{
-		throwIfInstancesDontMatch(nativeInstance->mNormal, &nativeInstance->mElementStyle->normal);
-
 		if (nativeInstance->mNormal != nullptr)
 		{
 			*value = nativeInstance->mNormal->getManagedInstance();
@@ -212,8 +208,6 @@ namespace BansheeEngine
 
 	void ScriptGUIElementStyle::internal_GetHover(ScriptGUIElementStyle* nativeInstance, MonoObject** value)
 	{
-		throwIfInstancesDontMatch(nativeInstance->mHover, &nativeInstance->mElementStyle->hover);
-
 		if (nativeInstance->mHover != nullptr)
 		{
 			*value = nativeInstance->mHover->getManagedInstance();
@@ -232,8 +226,6 @@ namespace BansheeEngine
 
 	void ScriptGUIElementStyle::internal_GetActive(ScriptGUIElementStyle* nativeInstance, MonoObject** value)
 	{
-		throwIfInstancesDontMatch(nativeInstance->mActive, &nativeInstance->mElementStyle->active);
-
 		if (nativeInstance->mActive != nullptr)
 		{
 			*value = nativeInstance->mActive->getManagedInstance();
@@ -252,8 +244,6 @@ namespace BansheeEngine
 
 	void ScriptGUIElementStyle::internal_GetFocused(ScriptGUIElementStyle* nativeInstance, MonoObject** value)
 	{
-		throwIfInstancesDontMatch(nativeInstance->mFocused, &nativeInstance->mElementStyle->focused);
-
 		if (nativeInstance->mFocused != nullptr)
 		{
 			*value = nativeInstance->mFocused->getManagedInstance();
@@ -272,8 +262,6 @@ namespace BansheeEngine
 
 	void ScriptGUIElementStyle::internal_GetNormalOn(ScriptGUIElementStyle* nativeInstance, MonoObject** value)
 	{
-		throwIfInstancesDontMatch(nativeInstance->mNormalOn, &nativeInstance->mElementStyle->normalOn);
-
 		if (nativeInstance->mNormalOn != nullptr)
 		{
 			*value = nativeInstance->mNormalOn->getManagedInstance();
@@ -292,8 +280,6 @@ namespace BansheeEngine
 
 	void ScriptGUIElementStyle::internal_GetHoverOn(ScriptGUIElementStyle* nativeInstance, MonoObject** value)
 	{
-		throwIfInstancesDontMatch(nativeInstance->mHoverOn, &nativeInstance->mElementStyle->hoverOn);
-
 		if (nativeInstance->mHoverOn != nullptr)
 		{
 			*value = nativeInstance->mHoverOn->getManagedInstance();
@@ -312,8 +298,6 @@ namespace BansheeEngine
 
 	void ScriptGUIElementStyle::internal_GetActiveOn(ScriptGUIElementStyle* nativeInstance, MonoObject** value)
 	{
-		throwIfInstancesDontMatch(nativeInstance->mActiveOn, &nativeInstance->mElementStyle->activeOn);
-
 		if (nativeInstance->mActiveOn != nullptr)
 		{
 			*value = nativeInstance->mActiveOn->getManagedInstance();
@@ -332,8 +316,6 @@ namespace BansheeEngine
 
 	void ScriptGUIElementStyle::internal_GetFocusedOn(ScriptGUIElementStyle* nativeInstance, MonoObject** value)
 	{
-		throwIfInstancesDontMatch(nativeInstance->mFocusedOn, &nativeInstance->mElementStyle->focusedOn);
-
 		if (nativeInstance->mFocusedOn != nullptr)
 		{
 			*value = nativeInstance->mFocusedOn->getManagedInstance();
