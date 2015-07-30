@@ -38,7 +38,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElement::setTint
 		 */
-		virtual void setTint(const Color& color);
+		virtual void setTint(const Color& color) override;
 
 		/**
 		 * @brief	Change the button "on" state. This state determines

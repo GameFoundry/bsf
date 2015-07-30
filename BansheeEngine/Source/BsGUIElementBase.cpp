@@ -195,6 +195,15 @@ namespace BansheeEngine
 			mIsDirty = true;
 	}
 
+	void GUIElementBase::_markContentAsDirty()
+	{
+		if (_isDisabled())
+			return;
+
+		if (mParentWidget != nullptr)
+			mParentWidget->_markContentDirty(this);
+	}
+
 	void GUIElementBase::_markMeshAsDirty()
 	{
 		if(_isDisabled())

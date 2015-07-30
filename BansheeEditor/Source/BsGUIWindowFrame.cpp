@@ -39,11 +39,18 @@ namespace BansheeEngine
 
 	void GUIWindowFrame::setFocused(bool focused)
 	{
+		Vector2I origSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
+
 		if(focused)
 			mActiveTexture = _getStyle()->focused.texture;
 		else
 			mActiveTexture = _getStyle()->normal.texture;
 
-		_markLayoutAsDirty();
+		Vector2I newSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
+
+		if (origSize != newSize)
+			_markLayoutAsDirty();
+		else
+			_markContentAsDirty();
 	}
 }

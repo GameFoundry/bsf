@@ -294,15 +294,23 @@ namespace BansheeEngine
 		virtual bool _isDestroyed() const { return false; }
 
 		/**
-		 * @brief	Marks the elements contents as dirty, which causes the sprite meshes to be recreated from scratch.
+		 * @brief	Marks the element's dimensions as dirty, triggering a layout rebuild.
 		 *
 		 * @note	Internal method.
 		 */
 		void _markLayoutAsDirty();
 
 		/**
+		 * @brief	Marks the element's contents as dirty, which causes the sprite meshes to be recreated from scratch.
+		 *
+		 * @note	Internal method.
+		 */
+		void _markContentAsDirty();
+
+		/**
 		 * @brief	Mark only the elements that operate directly on the sprite mesh without requiring the mesh
-		 * 			to be recreated as dirty. This includes position, depth and clip rectangle.
+		 * 			to be recreated as dirty. This includes position, depth and clip rectangle. This will cause
+		 *			the parent widget mesh to be rebuilt from its child element's meshes.
 		 *
 		 * @note	Internal method.
 		 */

@@ -107,15 +107,21 @@ namespace BansheeEngine
 	{
 		mColor = color;
 
-		_markLayoutAsDirty();
+		_markContentAsDirty();
 	}
 
 	void GUITexture::setTexture(const HSpriteTexture& texture)
 	{
+		Vector2I origSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
+
 		mActiveTexture = texture;
 		mUsingStyleTexture = false;
 
-		_markLayoutAsDirty();
+		Vector2I newSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
+		if (origSize != newSize)
+			_markLayoutAsDirty();
+		else
+			_markContentAsDirty();
 	}
 
 	UINT32 GUITexture::_getNumRenderElements() const

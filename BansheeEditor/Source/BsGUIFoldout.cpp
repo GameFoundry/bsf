@@ -59,8 +59,6 @@ namespace BansheeEngine
 			else
 				mToggle->toggleOff();
 
-			_markLayoutAsDirty();
-
 			if (!onStateChanged.empty())
 				onStateChanged(mIsExpanded);
 		}
@@ -80,8 +78,6 @@ namespace BansheeEngine
 	void GUIFoldout::toggleTriggered(bool value)
 	{
 		mIsExpanded = value;
-
-		_markLayoutAsDirty();
 
 		onStateChanged(value);
 	}

@@ -40,6 +40,7 @@ namespace BansheeEngine
 		mLocStringUpdatedConn.disconnect();
 		mLocStringUpdatedConn = content.getText().addOnStringModifiedCallback(std::bind(&GUIButtonBase::_markLayoutAsDirty, this));
 
+		Vector2I origSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
 		mContent = content;
 
 		HSpriteTexture contentTex = content.getImage();
@@ -57,14 +58,19 @@ namespace BansheeEngine
 			}
 		}
 
-		_markLayoutAsDirty();
+		Vector2I newSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
+
+		if (origSize != newSize)
+			_markLayoutAsDirty();
+		else
+			_markContentAsDirty();
 	}
 
 	void GUIButtonBase::setTint(const Color& color)
 	{
 		mColor = color;
 
-		_markLayoutAsDirty();
+		_markContentAsDirty();
 	}
 
 	void GUIButtonBase::_setOn(bool on) 
@@ -368,9 +374,14 @@ namespace BansheeEngine
 
 	void GUIButtonBase::setState(GUIButtonState state)
 	{
+		Vector2I origSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
 		mActiveState = state;
+		Vector2I newSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
 
-		_markLayoutAsDirty();
+		if (origSize != newSize)
+			_markLayoutAsDirty();
+		else
+			_markContentAsDirty();
 	}
 
 	const HSpriteTexture& GUIButtonBase::getActiveTexture() const

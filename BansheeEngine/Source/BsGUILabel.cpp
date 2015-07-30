@@ -80,16 +80,21 @@ namespace BansheeEngine
 		mLocStringUpdatedConn.disconnect();
 		mLocStringUpdatedConn = content.getText().addOnStringModifiedCallback(std::bind(&GUILabel::_markLayoutAsDirty, this));
 
+		Vector2I origSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
 		mContent = content;
-		
-		_markLayoutAsDirty();
+		Vector2I newSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
+
+		if (origSize != newSize)
+			_markLayoutAsDirty();
+		else
+			_markContentAsDirty();
 	}
 
 	void GUILabel::setTint(const Color& color)
 	{
 		mColor = color;
 
-		_markLayoutAsDirty();
+		_markContentAsDirty();
 	}
 
 	GUILabel* GUILabel::create(const HString& text, const String& styleName)
