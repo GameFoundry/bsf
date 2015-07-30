@@ -47,8 +47,6 @@ namespace BansheeEngine
 		// Update all children first, otherwise we can't determine our own optimal size
 		GUIElementBase::_updateOptimalLayoutSizes();
 
-		gProfilerCPU().beginSample("OptY");
-
 		if(mChildren.size() != mChildSizeRanges.size())
 			mChildSizeRanges.resize(mChildren.size());
 
@@ -82,15 +80,11 @@ namespace BansheeEngine
 		mSizeRange = _getDimensions().calculateSizeRange(optimalSize);
 		mSizeRange.min.x = std::max(mSizeRange.min.x, minSize.x);
 		mSizeRange.min.y = std::max(mSizeRange.min.y, minSize.y);
-
-		gProfilerCPU().endSample("OptY");
 	}
 
 	void GUILayoutY::_getElementAreas(const Rect2I& layoutArea, Rect2I* elementAreas, UINT32 numElements,
 		const Vector<LayoutSizeRange>& sizeRanges, const LayoutSizeRange& mySizeRange) const
 	{
-		gProfilerCPU().beginSample("areasY");
-
 		assert(mChildren.size() == numElements);
 
 		UINT32 totalOptimalSize = mySizeRange.optimal.y;
@@ -378,8 +372,6 @@ namespace BansheeEngine
 			yOffset += elemHeight + child->_getPadding().bottom;
 			childIdx++;
 		}
-
-		gProfilerCPU().endSample("areasY");
 	}
 
 	void GUILayoutY::_updateLayoutInternal(const GUILayoutData& data)

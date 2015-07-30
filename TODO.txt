@@ -93,21 +93,17 @@ Moving the mouse over inspector seems to queue a rebuild for the entire GUIWidge
 		return nullptr;
 	}
 
-ScrollArea doesn't cache its own size range. This means whenever layouts (or other scroll areas) are performing optimal size updates I'm doing 
-another whole pass on all of the scroll area's children. While I'm modifying this I should modify how layouts determine whether to retrieve cached 
-size range or calculate it (right now I'm testing for exact type, but I need a more generic solution since ScrollArea doesn't qualify as its own type)
-
 Avoid fully recalculating layout for common operations like changing button states/toggles, and modifying input boxes.
  - Layout should be fully recalculated only if:
    - optimal size changes
    - padding changes
    - dimensions change (x/y position only relevant for for panels) (perhaps even only LayoutSizeRange)
+    - if its fixed height/width then even that might not matter
    - disabled state changes
    - when initially created
  - I should probably just handle this on a case by case basis (e.g. if changing the active button texture is the same size as previous one don't call contentDirty)
+ - ADDITIONALLY consider marking the mesh not dirty after layout update if size didn't change
 
-
-Test scroll areas after optimization pass
 Get rid of all the profiling calls
 
 Test inspector selection, selecting a resource and adding/removing component updates

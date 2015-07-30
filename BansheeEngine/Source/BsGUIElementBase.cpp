@@ -357,7 +357,20 @@ namespace BansheeEngine
 	{
 		GUIElementBase* updateParent = nullptr;
 		if (mParentElement != nullptr)
+		{
 			updateParent = mParentElement->findUpdateParent();
+
+			// If parent is a panel then we can do an optimization and only update
+			// one child instead of all of them, so change parent to that child.
+			if (updateParent != nullptr && updateParent->_getType() == GUIElementBase::Type::Panel)
+			{
+				GUIElementBase* optimizedUpdateParent = this;
+				while (optimizedUpdateParent->_getParent() != updateParent)
+					optimizedUpdateParent = optimizedUpdateParent->_getParent();
+
+				updateParent = optimizedUpdateParent;
+			}
+		}
 
 		GUIPanel* anchorParent = nullptr;
 		GUIElementBase* currentParent = mParentElement;
@@ -385,20 +398,7 @@ namespace BansheeEngine
 			bool boundsDependOnChildren = !parentDimensions.fixedHeight() || !parentDimensions.fixedWidth();
 
 			if (!boundsDependOnChildren)
-			{
-				// If parent is a panel then we can do an optimization and only update
-				// one child instead of all of them, so change parent to that child.
-				if (currentElement->_getType() == GUIElementBase::Type::Panel)
-				{
-					GUIElementBase* optimizedUpdateParent = this;
-					while (optimizedUpdateParent != currentElement)
-						optimizedUpdateParent = optimizedUpdateParent->_getParent();
-
-					currentElement = optimizedUpdateParent;
-				}
-
 				return currentElement;
-			}
 
 			currentElement = currentElement->mParentElement;
 		}
@@ -411,7 +411,22 @@ namespace BansheeEngine
 		GUIElementBase* updateParent = findUpdateParent();
 
 		for (auto& child : mChildren)
-			child->setUpdateParent(updateParent);
+		{
+			GUIElementBase* childUpdateParent = updateParent;
+
+			// If parent is a panel then we can do an optimization and only update
+			// one child instead of all of them, so change parent to that child.
+			if (childUpdateParent != nullptr && childUpdateParent->_getType() == GUIElementBase::Type::Panel)
+			{
+				GUIElementBase* optimizedUpdateParent = child;
+				while (optimizedUpdateParent->_getParent() != childUpdateParent)
+					optimizedUpdateParent = optimizedUpdateParent->_getParent();
+
+				childUpdateParent = optimizedUpdateParent;
+			}
+
+			child->setUpdateParent(childUpdateParent);
+		}
 	}
 
 	void GUIElementBase::setAnchorParent(GUIPanel* anchorParent)

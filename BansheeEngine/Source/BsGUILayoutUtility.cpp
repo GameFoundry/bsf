@@ -35,12 +35,9 @@ namespace BansheeEngine
 		parentArea.width = width;
 		parentArea.height = height;
 
-		gProfilerCPU().beginSample("actualSizeB");
 		layout->_getElementAreas(parentArea, elementAreas, numElements, layout->_getCachedChildSizeRanges(), layout->_getCachedSizeRange());
-		gProfilerCPU().endSample("actualSizeB");
-		Rect2I* actualAreas = elementAreas; // We re-use the same array
 
-		gProfilerCPU().beginSample("actualSizeC");
+		Rect2I* actualAreas = elementAreas; // We re-use the same array
 		for (UINT32 i = 0; i < numElements; i++)
 		{
 			GUIElementBase* child = layout->_getChild(i);
@@ -71,7 +68,6 @@ namespace BansheeEngine
 		if (elementAreas != nullptr)
 			bs_stack_free(elementAreas);
 
-		gProfilerCPU().endSample("actualSizeC");
 		return actualSize;
 	}
 }

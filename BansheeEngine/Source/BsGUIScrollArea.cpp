@@ -89,8 +89,6 @@ namespace BansheeEngine
 		// Update all children first, otherwise we can't determine our own optimal size
 		GUIElementBase::_updateOptimalLayoutSizes();
 
-		gProfilerCPU().beginSample("OptS");
-
 		if (mChildren.size() != mChildSizeRanges.size())
 			mChildSizeRanges.resize(mChildren.size());
 
@@ -102,8 +100,6 @@ namespace BansheeEngine
 		}
 
 		mSizeRange = mContentLayout->_getLayoutSizeRange();
-
-		gProfilerCPU().endSample("OptS");
 	}
 
 	void GUIScrollArea::_getElementAreas(const Rect2I& layoutArea, Rect2I* elementAreas, UINT32 numElements,
@@ -116,8 +112,6 @@ namespace BansheeEngine
 	void GUIScrollArea::_getElementAreas(const Rect2I& layoutArea, Rect2I* elementAreas, UINT32 numElements,
 		const Vector<LayoutSizeRange>& sizeRanges, Vector2I& visibleSize, Vector2I& contentSize) const
 	{
-		gProfilerCPU().beginSample("areasS");
-
 		assert(mChildren.size() == numElements && numElements == 3);
 
 		UINT32 layoutIdx = 0;
@@ -242,14 +236,10 @@ namespace BansheeEngine
 		{
 			elementAreas[horzScrollIdx] = Rect2I(layoutArea.x, layoutArea.y + layoutHeight, 0, 0);
 		}
-
-		gProfilerCPU().endSample("areasS");
 	}
 
 	void GUIScrollArea::_updateLayoutInternal(const GUILayoutData& data)
 	{
-		gProfilerCPU().beginSample("layoutS");
-
 		UINT32 numElements = (UINT32)mChildren.size();
 		Rect2I* elementAreas = nullptr;
 
@@ -343,8 +333,6 @@ namespace BansheeEngine
 
 		if (elementAreas != nullptr)
 			bs_stack_free(elementAreas);
-
-		gProfilerCPU().endSample("layoutS");
 	}
 
 	void GUIScrollArea::vertScrollUpdate(float scrollPos)

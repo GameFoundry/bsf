@@ -67,7 +67,6 @@ namespace BansheeEngine
 		// Update all children first, otherwise we can't determine our own optimal size
 		GUIElementBase::_updateOptimalLayoutSizes();
 
-		gProfilerCPU().beginSample("OptP");
 		if (mChildren.size() != mChildSizeRanges.size())
 			mChildSizeRanges.resize(mChildren.size());
 
@@ -93,8 +92,6 @@ namespace BansheeEngine
 		}
 
 		mSizeRange = _getDimensions().calculateSizeRange(optimalSize);
-
-		gProfilerCPU().endSample("OptP");
 	}
 
 	void GUIPanel::_getElementAreas(const Rect2I& layoutArea, Rect2I* elementAreas, UINT32 numElements,
@@ -114,8 +111,6 @@ namespace BansheeEngine
 
 	Rect2I GUIPanel::_getElementArea(const Rect2I& layoutArea, const GUIElementBase* element, const LayoutSizeRange& sizeRange) const
 	{
-		gProfilerCPU().beginSample("areasP");
-
 		const GUIDimensions& dimensions = element->_getDimensions();
 
 		Rect2I area;
@@ -162,8 +157,6 @@ namespace BansheeEngine
 
 			area.height = modifiedHeight;
 		}
-
-		gProfilerCPU().endSample("areasP");
 
 		return area;
 	}
