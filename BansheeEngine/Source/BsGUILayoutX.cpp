@@ -3,6 +3,7 @@
 #include "BsGUISpace.h"
 #include "BsMath.h"
 #include "BsVector2I.h"
+#include "BsProfilerCPU.h"
 
 namespace BansheeEngine
 {
@@ -46,6 +47,8 @@ namespace BansheeEngine
 		// Update all children first, otherwise we can't determine our own optimal size
 		GUIElementBase::_updateOptimalLayoutSizes();
 
+		gProfilerCPU().beginSample("OptX");
+
 		if(mChildren.size() != mChildSizeRanges.size())
 			mChildSizeRanges.resize(mChildren.size());
 
@@ -57,22 +60,11 @@ namespace BansheeEngine
 		{
 			LayoutSizeRange& childSizeRange = mChildSizeRanges[childIdx];
 
+			childSizeRange = child->_getLayoutSizeRange();
 			if (child->_getType() == GUIElementBase::Type::FixedSpace)
 			{
-				GUIFixedSpace* fixedSpace = static_cast<GUIFixedSpace*>(child);
-
-				childSizeRange = fixedSpace->_calculateLayoutSizeRange();
 				childSizeRange.optimal.y = 0;
 				childSizeRange.min.y = 0;
-			}
-			else if (child->_getType() == GUIElementBase::Type::Element)
-			{
-				childSizeRange = child->_calculateLayoutSizeRange();
-			}
-			else if (child->_getType() == GUIElementBase::Type::Layout || child->_getType() == GUIElementBase::Type::Panel)
-			{
-				GUILayout* layout = static_cast<GUILayout*>(child);
-				childSizeRange = layout->_getCachedSizeRange();
 			}
 
 			UINT32 paddingX = child->_getPadding().left + child->_getPadding().right;
@@ -90,11 +82,15 @@ namespace BansheeEngine
 		mSizeRange = _getDimensions().calculateSizeRange(optimalSize);
 		mSizeRange.min.x = std::max(mSizeRange.min.x, minSize.x);
 		mSizeRange.min.y = std::max(mSizeRange.min.y, minSize.y);
+
+		gProfilerCPU().endSample("OptX");
 	}
 
 	void GUILayoutX::_getElementAreas(const Rect2I& layoutArea, Rect2I* elementAreas, UINT32 numElements,
 		const Vector<LayoutSizeRange>& sizeRanges, const LayoutSizeRange& mySizeRange) const
 	{
+		gProfilerCPU().beginSample("areasX");
+
 		assert(mChildren.size() == numElements);
 
 		UINT32 totalOptimalSize = mySizeRange.optimal.x;
@@ -384,6 +380,8 @@ namespace BansheeEngine
 
 		if (processedElements != nullptr)
 			bs_stack_free(processedElements);
+
+		gProfilerCPU().endSample("areasX");
 	}
 
 	void GUILayoutX::_updateLayoutInternal(const GUILayoutData& data)

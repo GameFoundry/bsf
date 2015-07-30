@@ -164,6 +164,11 @@ namespace BansheeEngine
 		~GUIScrollArea();
 
 		/**
+		 * @copydoc	GUIElementContainer::_getLayoutSizeRange
+		 */
+		virtual LayoutSizeRange _getLayoutSizeRange() const override;
+
+		/**
 		 * @copydoc GUIElementContainer::updateBounds
 		 */
 		virtual void updateClippedBounds() override;
@@ -172,6 +177,11 @@ namespace BansheeEngine
 		 * @copydoc	GUIElementBase::_calculateLayoutSizeRange
 		 */
 		LayoutSizeRange _calculateLayoutSizeRange() const override;
+
+		/**
+		 * @copydoc	GUIElementBase::_updateOptimalLayoutSizes
+		 */
+		void _updateOptimalLayoutSizes() override;
 
 		/**
 		 * @copydoc GUIElementContainer::_getOptimalSize
@@ -232,6 +242,9 @@ namespace BansheeEngine
 
 		Vector2I mVisibleSize;
 		Vector2I mContentSize;
+
+		Vector<LayoutSizeRange> mChildSizeRanges;
+		LayoutSizeRange mSizeRange;
 
 		static const UINT32 MinHandleSize;
 		static const UINT32 WheelScrollAmount;

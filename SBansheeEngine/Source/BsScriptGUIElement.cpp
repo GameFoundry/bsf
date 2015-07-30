@@ -96,6 +96,9 @@ namespace BansheeEngine
 
 	void ScriptGUIElement::internal_setVisible(ScriptGUIElementBaseTBase* nativeInstance, bool visible)
 	{
+		if (nativeInstance->isDestroyed())
+			return;
+
 		if(visible)
 			nativeInstance->getGUIElement()->enableRecursively();
 		else
@@ -104,6 +107,9 @@ namespace BansheeEngine
 
 	void ScriptGUIElement::internal_setFocus(ScriptGUIElementBaseTBase* nativeInstance, bool focus)
 	{
+		if (nativeInstance->isDestroyed())
+			return;
+
 		GUIElementBase* guiElemBase = nativeInstance->getGUIElement();
 		if (guiElemBase->_getType() == GUIElementBase::Type::Element)
 		{
@@ -114,11 +120,17 @@ namespace BansheeEngine
 
 	Rect2I ScriptGUIElement::internal_getBounds(ScriptGUIElementBaseTBase* nativeInstance)
 	{
+		if (nativeInstance->isDestroyed())
+			return Rect2I();
+
 		return nativeInstance->getGUIElement()->getBounds();
 	}
 
 	void ScriptGUIElement::internal_setBounds(ScriptGUIElementBaseTBase* nativeInstance, Rect2I bounds)
 	{
+		if (nativeInstance->isDestroyed())
+			return;
+
 		nativeInstance->getGUIElement()->setPosition(bounds.x, bounds.y);
 		nativeInstance->getGUIElement()->setWidth(bounds.width);
 		nativeInstance->getGUIElement()->setHeight(bounds.height);
@@ -126,41 +138,65 @@ namespace BansheeEngine
 
 	Rect2I ScriptGUIElement::internal_getVisibleBounds(ScriptGUIElementBaseTBase* nativeInstance)
 	{
+		if (nativeInstance->isDestroyed())
+			return Rect2I();
+
 		return nativeInstance->getGUIElement()->getVisibleBounds();
 	}
 
 	void ScriptGUIElement::internal_SetPosition(ScriptGUIElementBaseTBase* nativeInstance, INT32 x, INT32 y)
 	{
+		if (nativeInstance->isDestroyed())
+			return;
+
 		nativeInstance->getGUIElement()->setPosition(x, y);
 	}
 
 	void ScriptGUIElement::internal_SetWidth(ScriptGUIElementBaseTBase* nativeInstance, UINT32 width)
 	{
+		if (nativeInstance->isDestroyed())
+			return;
+
 		nativeInstance->getGUIElement()->setWidth(width);
 	}
 
 	void ScriptGUIElement::internal_SetFlexibleWidth(ScriptGUIElementBaseTBase* nativeInstance, UINT32 minWidth, UINT32 maxWidth)
 	{
+		if (nativeInstance->isDestroyed())
+			return;
+
 		nativeInstance->getGUIElement()->setFlexibleWidth(minWidth, maxWidth);
 	}
 
 	void ScriptGUIElement::internal_SetHeight(ScriptGUIElementBaseTBase* nativeInstance, UINT32 height)
 	{
+		if (nativeInstance->isDestroyed())
+			return;
+
 		nativeInstance->getGUIElement()->setHeight(height);
 	}
 
 	void ScriptGUIElement::internal_SetFlexibleHeight(ScriptGUIElementBaseTBase* nativeInstance, UINT32 minHeight, UINT32 maxHeight)
 	{
+		if (nativeInstance->isDestroyed())
+			return;
+
 		nativeInstance->getGUIElement()->setFlexibleHeight(minHeight, maxHeight);
 	}
 
 	void ScriptGUIElement::internal_ResetDimensions(ScriptGUIElementBaseTBase* nativeInstance)
 	{
+		if (nativeInstance->isDestroyed())
+			return;
+
 		nativeInstance->getGUIElement()->resetDimensions();
 	}
 
 	void ScriptGUIElement::internal_SetContextMenu(ScriptGUIElementBaseTBase* nativeInstance, ScriptContextMenu* contextMenu)
 	{
+		if (nativeInstance->isDestroyed())
+			return;
+
 		GUIElementBase* guiElemBase = nativeInstance->getGUIElement();
 		if (guiElemBase->_getType() == GUIElementBase::Type::Element)
 		{

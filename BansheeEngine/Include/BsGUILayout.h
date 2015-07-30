@@ -65,9 +65,21 @@ namespace BansheeEngine
 		UINT32 getNumChildren() const { return (UINT32)mChildren.size(); }
 
 		/**
-		 * @brief	Returns a size range that was cached during the last "_updateOptimalLayoutSizes" call.
+		 * @copydoc		GUIElementBase::_getLayoutSizeRange
+		 */
+		LayoutSizeRange _getLayoutSizeRange() const override { return _getCachedSizeRange(); }
+
+		/**
+		 * @brief	Returns a size range that was cached during the last 
+		 *			GUIElementBase::_updateOptimalLayoutSizes call.
 		 */
 		LayoutSizeRange _getCachedSizeRange() const { return mSizeRange; }
+
+		/**
+		 * @brief	Returns a size ranges for all children that was cached during the last 
+		 *			GUIElementBase::_updateOptimalLayoutSizes call.
+		 */
+		const Vector<LayoutSizeRange>& _getCachedChildSizeRanges() const { return mChildSizeRanges; }
 
 		/**
 		 * @copydoc	GUIElementBase::_getOptimalSize

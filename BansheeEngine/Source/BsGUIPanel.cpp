@@ -3,6 +3,7 @@
 #include "BsGUISpace.h"
 #include "BsMath.h"
 #include "BsVector2I.h"
+#include "BsProfilerCPU.h"
 
 namespace BansheeEngine
 {
@@ -51,23 +52,14 @@ namespace BansheeEngine
 	{
 		if (element->_getType() == GUIElementBase::Type::FixedSpace || element->_getType() == GUIElementBase::Type::FlexibleSpace)
 		{
-			LayoutSizeRange sizeRange = element->_calculateLayoutSizeRange();
+			LayoutSizeRange sizeRange = element->_getLayoutSizeRange();
 			sizeRange.optimal.x = 0;
 			sizeRange.optimal.y = 0;
 
 			return sizeRange;
 		}
-		else if (element->_getType() == GUIElementBase::Type::Element)
-		{
-			return element->_calculateLayoutSizeRange();
-		}
-		else if (element->_getType() == GUIElementBase::Type::Layout || element->_getType() == GUIElementBase::Type::Panel)
-		{
-			const GUILayout* layout = static_cast<const GUILayout*>(element);
-			return layout->_getCachedSizeRange();
-		}
 
-		return LayoutSizeRange();
+		return element->_getLayoutSizeRange();
 	}
 
 	void GUIPanel::_updateOptimalLayoutSizes()
@@ -75,6 +67,7 @@ namespace BansheeEngine
 		// Update all children first, otherwise we can't determine our own optimal size
 		GUIElementBase::_updateOptimalLayoutSizes();
 
+		gProfilerCPU().beginSample("OptP");
 		if (mChildren.size() != mChildSizeRanges.size())
 			mChildSizeRanges.resize(mChildren.size());
 
@@ -100,6 +93,8 @@ namespace BansheeEngine
 		}
 
 		mSizeRange = _getDimensions().calculateSizeRange(optimalSize);
+
+		gProfilerCPU().endSample("OptP");
 	}
 
 	void GUIPanel::_getElementAreas(const Rect2I& layoutArea, Rect2I* elementAreas, UINT32 numElements,
@@ -119,6 +114,8 @@ namespace BansheeEngine
 
 	Rect2I GUIPanel::_getElementArea(const Rect2I& layoutArea, const GUIElementBase* element, const LayoutSizeRange& sizeRange) const
 	{
+		gProfilerCPU().beginSample("areasP");
+
 		const GUIDimensions& dimensions = element->_getDimensions();
 
 		Rect2I area;
@@ -165,6 +162,8 @@ namespace BansheeEngine
 
 			area.height = modifiedHeight;
 		}
+
+		gProfilerCPU().endSample("areasP");
 
 		return area;
 	}

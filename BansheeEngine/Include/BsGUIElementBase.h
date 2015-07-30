@@ -198,11 +198,20 @@ namespace BansheeEngine
 		const GUIDimensions& _getDimensions() const { return mDimensions; }
 
 		/**
-		 * @brief	Returns element size range constrained by its layout options.
+		 * @brief	Calculates element size range constrained by its layout options.
 		 *
 		 * @note	Internal method.
 		 */
 		virtual LayoutSizeRange _calculateLayoutSizeRange() const ;
+
+		/**
+		 * @brief	Returns element size range constrained by its layout options. This is
+		 *			different from ::_calculateLayoutSizeRange because this method may return
+		 *			cached size range.
+		 *
+		 * @note	Internal method.
+		 */
+		virtual LayoutSizeRange _getLayoutSizeRange() const;
 
 		/**
 		 * @brief	Returns element padding that determines how far apart to space out this element

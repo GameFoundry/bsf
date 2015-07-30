@@ -19,12 +19,27 @@ namespace BansheeEngine
 		static Vector2I calcOptimalSize(const GUIElementBase* elem);
 
 		/**
-		 * @brief	Calculates the actual size of the layout taken up by all of its elements.
-		 *			
-		 * @note	Actual size means the bounds might be smaller or larger than the layout area itself.
-		 *			If larger that means certain portions of the child elements will be clipped, and if
-		 *			smaller certain portions of the layout area will be empty.
+		 * @brief	Calculates the size of elements in a layout of the specified size.
+		 * 
+		 * @param	width				Width of the layout.
+		 * @param	height				Height of the layout.
+		 * @param	layout				Parent layout of the children to calculate the area for.
+		 * @param	updateOptimalSizes	Optimization (doesn't change the results). Set to false if
+		 *								GUIElementBase::_updateOptimalLayoutSizes was already called and optimal sizes are 
+		 *								up to date to avoid recalculating them. (Normally that is true if this is being 
+		 *								called during GUI layout update)
 		 */
-		static Vector2I calcActualSize(UINT32 width, UINT32 height, const GUILayout* layout);
+		static Vector2I calcActualSize(UINT32 width, UINT32 height, GUILayout* layout, bool updateOptimalSizes = true);
+
+	private:
+		/**
+		 * @brief	Calculates the size of elements in a layout of the specified size. Assumes the layout and all its children
+		 *			have updated optimal sizes.
+		 * 
+		 * @param	width				Width of the layout.
+		 * @param	height				Height of the layout.
+		 * @param	layout				Parent layout of the children to calculate the area for.
+		 */
+		static Vector2I calcActualSizeInternal(UINT32 width, UINT32 height, GUILayout* layout);
 	};
 }

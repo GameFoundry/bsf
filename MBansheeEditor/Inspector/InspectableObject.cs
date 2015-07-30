@@ -29,7 +29,7 @@ namespace BansheeEditor
                 return true;
 
             object newPropertyValue = property.GetValue<object>();
-            if (propertyValue != newPropertyValue)
+            if (!propertyValue.Equals(newPropertyValue))
                 return true;
 
             return base.IsModified();

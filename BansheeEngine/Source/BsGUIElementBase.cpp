@@ -8,6 +8,7 @@
 #include "BsException.h"
 #include "BsGUIWidget.h"
 #include "BsGUILayoutUtility.h"
+#include "BsProfilerCPU.h"
 
 namespace BansheeEngine
 {
@@ -258,6 +259,11 @@ namespace BansheeEngine
 
 		const GUIDimensions& dimensions = _getDimensions();
 		return dimensions.calculateSizeRange(_getOptimalSize());
+	}
+
+	LayoutSizeRange GUIElementBase::_getLayoutSizeRange() const
+	{
+		return _calculateLayoutSizeRange();
 	}
 
 	void GUIElementBase::_getElementAreas(const Rect2I& layoutArea, Rect2I* elementAreas, UINT32 numElements,

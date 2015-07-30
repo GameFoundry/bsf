@@ -17,6 +17,7 @@
 #include "BsRenderWindow.h"
 #include "BsGUIWidgetRTTI.h"
 #include "BsProfilerCPU.h"
+#include "BsDebug.h"
 
 namespace BansheeEngine
 {
@@ -176,10 +177,9 @@ namespace BansheeEngine
 		else
 		{
 			GUILayoutData childLayoutData = updateParent->_getLayoutData();
-
 			updateParent->_updateLayout(childLayoutData);
 		}
-
+		
 		// Mark dirty contents
 		bs_frame_mark();
 		{

@@ -9,7 +9,9 @@
 #include "BsGUIScrollBarHorz.h"
 #include "BsGUIMouseEvent.h"
 #include "BsGUILayoutUtility.h"
+#include "BsGUISpace.h"
 #include "BsException.h"
+#include "BsProfilerCPU.h"
 
 using namespace std::placeholders;
 
@@ -77,6 +79,33 @@ namespace BansheeEngine
 		return sizeRange;
 	}
 
+	LayoutSizeRange GUIScrollArea::_getLayoutSizeRange() const
+	{
+		return mSizeRange;
+	}
+
+	void GUIScrollArea::_updateOptimalLayoutSizes()
+	{
+		// Update all children first, otherwise we can't determine our own optimal size
+		GUIElementBase::_updateOptimalLayoutSizes();
+
+		gProfilerCPU().beginSample("OptS");
+
+		if (mChildren.size() != mChildSizeRanges.size())
+			mChildSizeRanges.resize(mChildren.size());
+
+		UINT32 childIdx = 0;
+		for (auto& child : mChildren)
+		{
+			mChildSizeRanges[childIdx] = child->_getLayoutSizeRange();
+			childIdx++;
+		}
+
+		mSizeRange = mContentLayout->_getLayoutSizeRange();
+
+		gProfilerCPU().endSample("OptS");
+	}
+
 	void GUIScrollArea::_getElementAreas(const Rect2I& layoutArea, Rect2I* elementAreas, UINT32 numElements,
 		const Vector<LayoutSizeRange>& sizeRanges, const LayoutSizeRange& mySizeRange) const
 	{
@@ -87,6 +116,8 @@ namespace BansheeEngine
 	void GUIScrollArea::_getElementAreas(const Rect2I& layoutArea, Rect2I* elementAreas, UINT32 numElements,
 		const Vector<LayoutSizeRange>& sizeRanges, Vector2I& visibleSize, Vector2I& contentSize) const
 	{
+		gProfilerCPU().beginSample("areasS");
+
 		assert(mChildren.size() == numElements && numElements == 3);
 
 		UINT32 layoutIdx = 0;
@@ -122,7 +153,7 @@ namespace BansheeEngine
 		UINT32 layoutWidth = std::max(optimalContentWidth, (UINT32)layoutArea.width);
 		UINT32 layoutHeight = std::max(optimalContentHeight, (UINT32)layoutArea.height);
 
-		contentSize = GUILayoutUtility::calcActualSize(layoutWidth, layoutHeight, mContentLayout);
+		contentSize = GUILayoutUtility::calcActualSize(layoutWidth, layoutHeight, mContentLayout, false);
 		visibleSize = Vector2I(layoutArea.width, layoutArea.height);
 
 		bool addHorzScrollbar = (mHorzBarType == ScrollBarType::ShowIfDoesntFit && contentSize.x > visibleSize.x) ||
@@ -140,7 +171,7 @@ namespace BansheeEngine
 			else
 				layoutHeight = std::max(optimalContentHeight, (UINT32)visibleSize.y); // Never go below optimal size
 
-			contentSize = GUILayoutUtility::calcActualSize(layoutWidth, layoutHeight, mContentLayout);
+			contentSize = GUILayoutUtility::calcActualSize(layoutWidth, layoutHeight, mContentLayout, false);
 			hasHorzScrollbar = true;
 		}
 
@@ -157,7 +188,7 @@ namespace BansheeEngine
 			else
 				layoutWidth = std::max(optimalContentWidth, (UINT32)visibleSize.x); // Never go below optimal size
 
-			contentSize = GUILayoutUtility::calcActualSize(layoutWidth, layoutHeight, mContentLayout);
+			contentSize = GUILayoutUtility::calcActualSize(layoutWidth, layoutHeight, mContentLayout, false);
 			hasVertScrollbar = true;
 
 			if (!hasHorzScrollbar) // Since width has been reduced, we need to check if we require the horizontal scrollbar
@@ -174,7 +205,7 @@ namespace BansheeEngine
 					else
 						layoutHeight = std::max(optimalContentHeight, (UINT32)visibleSize.y); // Never go below optimal size
 
-					contentSize = GUILayoutUtility::calcActualSize(layoutWidth, layoutHeight, mContentLayout);
+					contentSize = GUILayoutUtility::calcActualSize(layoutWidth, layoutHeight, mContentLayout, false);
 					hasHorzScrollbar = true;
 				}
 			}
@@ -211,24 +242,26 @@ namespace BansheeEngine
 		{
 			elementAreas[horzScrollIdx] = Rect2I(layoutArea.x, layoutArea.y + layoutHeight, 0, 0);
 		}
+
+		gProfilerCPU().endSample("areasS");
 	}
 
 	void GUIScrollArea::_updateLayoutInternal(const GUILayoutData& data)
 	{
+		gProfilerCPU().beginSample("layoutS");
+
 		UINT32 numElements = (UINT32)mChildren.size();
 		Rect2I* elementAreas = nullptr;
 
 		if (numElements > 0)
 			elementAreas = bs_stack_new<Rect2I>(numElements);
 
-		Vector<LayoutSizeRange> sizeRanges;
 		UINT32 layoutIdx = 0;
 		UINT32 horzScrollIdx = 0;
 		UINT32 vertScrollIdx = 0;
 		for (UINT32 i = 0; i < numElements; i++)
 		{
 			GUIElementBase* child = _getChild(i);
-			sizeRanges.push_back(child->_calculateLayoutSizeRange());
 
 			if (child == mContentLayout)
 				layoutIdx = i;
@@ -240,7 +273,7 @@ namespace BansheeEngine
 				vertScrollIdx = i;
 		}
 
-		_getElementAreas(data.area, elementAreas, numElements, sizeRanges, mVisibleSize, mContentSize);
+		_getElementAreas(data.area, elementAreas, numElements, mChildSizeRanges, mVisibleSize, mContentSize);
 
 		Rect2I& layoutBounds = elementAreas[layoutIdx];
 		Rect2I& horzScrollBounds = elementAreas[horzScrollIdx];
@@ -266,9 +299,8 @@ namespace BansheeEngine
 			vertScrollData.clipRect = vertScrollBounds;
 			vertScrollData.clipRect.clip(data.clipRect);
 
-			// This element is not a child of any layout so we treat it as a root element
 			mVertScroll->_setLayoutData(vertScrollData);
-			mVertScroll->_updateLayout(vertScrollData);
+			mVertScroll->_updateLayoutInternal(vertScrollData);
 
 			// Set new handle size and update position to match the new size
 			UINT32 newHandleSize = (UINT32)Math::floorToInt(mVertScroll->getMaxHandleSize() * (vertScrollBounds.height / (float)mContentSize.y));
@@ -293,7 +325,7 @@ namespace BansheeEngine
 			horzScrollData.clipRect.clip(data.clipRect);
 
 			mHorzScroll->_setLayoutData(horzScrollData);
-			mHorzScroll->_updateLayout(horzScrollData);
+			mHorzScroll->_updateLayoutInternal(horzScrollData);
 
 			// Set new handle size and update position to match the new size
 			UINT32 newHandleSize = (UINT32)Math::floorToInt(mHorzScroll->getMaxHandleSize() * (horzScrollBounds.width / (float)mContentSize.x));
@@ -311,6 +343,8 @@ namespace BansheeEngine
 
 		if (elementAreas != nullptr)
 			bs_stack_free(elementAreas);
+
+		gProfilerCPU().endSample("layoutS");
 	}
 
 	void GUIScrollArea::vertScrollUpdate(float scrollPos)

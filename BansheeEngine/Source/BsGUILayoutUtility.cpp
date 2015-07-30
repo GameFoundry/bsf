@@ -6,6 +6,7 @@
 #include "BsGUIWidget.h"
 #include "BsViewport.h"
 #include "BsGUIPanel.h"
+#include "BsProfilerCPU.h"
 
 namespace BansheeEngine
 {
@@ -14,17 +15,17 @@ namespace BansheeEngine
 		return elem->_calculateLayoutSizeRange().optimal;
 	}
 
-	Vector2I GUILayoutUtility::calcActualSize(UINT32 width, UINT32 height, const GUILayout* layout)
+	Vector2I GUILayoutUtility::calcActualSize(UINT32 width, UINT32 height, GUILayout* layout, bool updateOptimalSizes)
+	{
+		if (updateOptimalSizes)
+			layout->_updateOptimalLayoutSizes();
+
+		return calcActualSizeInternal(width, height, layout);
+	}
+
+	Vector2I GUILayoutUtility::calcActualSizeInternal(UINT32 width, UINT32 height, GUILayout* layout)
 	{
 		UINT32 numElements = (UINT32)layout->_getNumChildren();
-
-		Vector<LayoutSizeRange> sizeRanges;
-		for (UINT32 i = 0; i < numElements; i++)
-		{
-			GUIElementBase* child = layout->_getChild(i);
-			sizeRanges.push_back(child->_calculateLayoutSizeRange());
-		}
-
 		Rect2I* elementAreas = nullptr;
 
 		if (numElements > 0)
@@ -34,9 +35,12 @@ namespace BansheeEngine
 		parentArea.width = width;
 		parentArea.height = height;
 
-		layout->_getElementAreas(parentArea, elementAreas, numElements, sizeRanges, layout->_calculateLayoutSizeRange());
+		gProfilerCPU().beginSample("actualSizeB");
+		layout->_getElementAreas(parentArea, elementAreas, numElements, layout->_getCachedChildSizeRanges(), layout->_getCachedSizeRange());
+		gProfilerCPU().endSample("actualSizeB");
 		Rect2I* actualAreas = elementAreas; // We re-use the same array
 
+		gProfilerCPU().beginSample("actualSizeC");
 		for (UINT32 i = 0; i < numElements; i++)
 		{
 			GUIElementBase* child = layout->_getChild(i);
@@ -44,7 +48,7 @@ namespace BansheeEngine
 
 			if (child->_getType() == GUIElementBase::Type::Layout || child->_getType() == GUIElementBase::Type::Panel)
 			{
-				Vector2I childActualSize = calcActualSize(childArea.width, childArea.height, static_cast<GUILayout*>(child));
+				Vector2I childActualSize = calcActualSizeInternal(childArea.width, childArea.height, static_cast<GUILayout*>(child));
 				actualAreas[i].width = (UINT32)childActualSize.x;
 				actualAreas[i].height = (UINT32)childActualSize.y;
 			}
@@ -67,6 +71,7 @@ namespace BansheeEngine
 		if (elementAreas != nullptr)
 			bs_stack_free(elementAreas);
 
+		gProfilerCPU().endSample("actualSizeC");
 		return actualSize;
 	}
 }
