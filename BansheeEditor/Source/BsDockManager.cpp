@@ -56,8 +56,14 @@ namespace BansheeEngine
 
 	DockManager::DockContainer::~DockContainer()
 	{
-		if(mIsLeaf && mWidgets != nullptr)
-			bs_delete(mWidgets);
+		if (mIsLeaf)
+		{
+			if (mWidgets != nullptr)
+				bs_delete(mWidgets);
+
+			if (mGUIWidgetSO != nullptr)
+				mGUIWidgetSO->destroy();
+		}
 
 		if(!mIsLeaf)
 		{
@@ -127,10 +133,15 @@ namespace BansheeEngine
 		}
 	}
 
-	void DockManager::DockContainer::makeLeaf(GUIWidget* widgetParent, EditorWindowBase* parentWindow)
+	void DockManager::DockContainer::makeLeaf(EditorWindowBase* parentWindow)
 	{
+		mGUIWidgetSO = SceneObject::create("DockContainer", SOF_Internal | SOF_Persistent | SOF_DontSave);
+		HGUIWidget guiWidget = mGUIWidgetSO->addComponent<GUIWidget>(parentWindow->getGUICamera()->getViewport().get());
+		guiWidget->setDepth(128);
+		guiWidget->setSkin(BuiltinEditorResources::instance().getSkin());
+
 		mIsLeaf = true;
-		mWidgets = bs_new<EditorWidgetContainer>(widgetParent, parentWindow);
+		mWidgets = bs_new<EditorWidgetContainer>(guiWidget.get(), parentWindow);
 
 		mWidgets->onWidgetClosed.connect(std::bind(&DockManager::DockContainer::widgetRemoved, this));
 
@@ -144,10 +155,11 @@ namespace BansheeEngine
 		mWidgets->setSize(mArea.width, mArea.height);
 	}
 
-	void DockManager::DockContainer::makeLeaf(EditorWidgetContainer* existingContainer)
+	void DockManager::DockContainer::makeLeaf(const HSceneObject& guiWidgetSO, EditorWidgetContainer* existingContainer)
 	{
 		mIsLeaf = true;
 		mWidgets = existingContainer;
+		mGUIWidgetSO = guiWidgetSO;
 
 		mWidgets->onWidgetClosed.connect(std::bind(&DockManager::DockContainer::widgetRemoved, this));
 
@@ -205,10 +217,11 @@ namespace BansheeEngine
 
 		mWidgets->onWidgetClosed.clear();
 		
-		children[idxA]->makeLeaf(mManager->_getParentWidget(), mManager->mParentWindow);
-		children[idxB]->makeLeaf(mWidgets);
+		children[idxA]->makeLeaf(mManager->mParentWindow);
+		children[idxB]->makeLeaf(mGUIWidgetSO, mWidgets);
 
 		mWidgets = nullptr;
+		mGUIWidgetSO = nullptr;
 		makeSplit(children[0], children[1], horizontal, splitPosition);
 	}
 
@@ -225,6 +238,12 @@ namespace BansheeEngine
 		{
 			bs_delete(mWidgets);
 			mWidgets = nullptr;
+		}
+
+		if (mGUIWidgetSO != nullptr)
+		{
+			mGUIWidgetSO->destroy();
+			mGUIWidgetSO = nullptr;
 		}
 
 		if (mSlider != nullptr)
@@ -287,6 +306,9 @@ namespace BansheeEngine
 				bs_delete(mWidgets);
 				mWidgets = nullptr;
 
+				mGUIWidgetSO->destroy();
+				mGUIWidgetSO = nullptr;
+
 				mIsLeaf = true;
 				mSplitPosition = 0.5f;
 				mIsHorizontal = false;
@@ -304,8 +326,9 @@ namespace BansheeEngine
 				{
 					sibling->mWidgets->onWidgetClosed.clear();
 
-					mParent->makeLeaf(sibling->mWidgets);
+					mParent->makeLeaf(sibling->mGUIWidgetSO, sibling->mWidgets);
 					sibling->mWidgets = nullptr;
+					sibling->mGUIWidgetSO = nullptr;
 				}
 				else
 				{
@@ -528,7 +551,7 @@ namespace BansheeEngine
 			if(mRootContainer.mWidgets != nullptr)
 				BS_EXCEPT(InternalErrorException, "Trying to insert a widget into dock manager root container but one already exists.");
 
-			mRootContainer.makeLeaf(_getParentWidget(), mParentWindow);
+			mRootContainer.makeLeaf(mParentWindow);
 			mRootContainer.addWidget(widgetToInsert);
 		}
 	}
@@ -705,7 +728,7 @@ namespace BansheeEngine
 
 		if(leafEntry->widgetNames.size() > 0) // If zero, entire layout is empty
 		{
-			mRootContainer.makeLeaf(_getParentWidget(), mParentWindow);
+			mRootContainer.makeLeaf(mParentWindow);
 			OpenWidgets(&mRootContainer, leafEntry->widgetNames);
 
 			if(!rootEntry->isLeaf)

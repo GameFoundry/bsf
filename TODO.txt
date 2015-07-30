@@ -57,30 +57,7 @@ Code quality improvements:
 ----------------------------------------------------------------------
 Polish stage 1
 
-UpdateMeshes is taking a long time to rebuild, try to optimize it
-
-Avoid fully recalculating layout for common operations like changing button states/toggles, and modifying input boxes.
- - Layout should be fully recalculated only if:
-   - optimal size changes
-   - padding changes
-   - dimensions change (x/y position only relevant for for panels) (perhaps even only LayoutSizeRange)
-    - if its fixed height/width then even that might not matter
-   - disabled state changes
-   - when initially created
- - I should probably just handle this on a case by case basis (e.g. if changing the active button texture is the same size as previous one don't call contentDirty)
-  - when button state changes, when input box contents change (by user or code), when text field data changes
- - ADDITIONALLY consider marking the mesh not dirty after layout update if size didn't change
-
 GET RID OF CONTENT STRING CALLBACKS - They're messsing with my optimization as I cannot calculate orig bounds before and after their update
-
-GUILabel
- - don't mark as dirty when contents change unless it affects optimal size
-GUIInputBox
- - don't mark as dirty when state changes unless it affects optimal size
- - don't mark as dirty when contents change unless it affects optimal size
-GUIButtonBase (toggle + normal button)
- - don't mark as dirty when state changes unless it affects optimal size
- - don't mark as dirty when contents change unless it affects optimal size
 
 Get rid of all the profiling calls
 

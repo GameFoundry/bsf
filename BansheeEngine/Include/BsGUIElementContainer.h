@@ -18,32 +18,32 @@ namespace BansheeEngine
 		/**
 		 * @copydoc GUIElement::getNumRenderElements
 		 */
-		virtual UINT32 _getNumRenderElements() const;
+		virtual UINT32 _getNumRenderElements() const override;
 
 		/**
 		 * @copydoc GUIElement::getMaterial
 		 */
-		virtual const GUIMaterialInfo& _getMaterial(UINT32 renderElementIdx) const;
+		virtual const GUIMaterialInfo& _getMaterial(UINT32 renderElementIdx) const override;
 
 		/**
 		 * @copydoc GUIElement::getNumQuads
 		 */
-		virtual UINT32 _getNumQuads(UINT32 renderElementIdx) const;
+		virtual UINT32 _getNumQuads(UINT32 renderElementIdx) const override;
 
 		/**
 		 * @copydoc GUIElement::fillBuffer
 		 */
 		virtual void _fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, 
-			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const;
+			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const override;
 
 		/**
 		 * @copydoc GUIElement::updateClippedBounds
 		 */
-		virtual void updateClippedBounds();
+		virtual void updateClippedBounds() override;
 
 		/**
 		 * @copydoc GUIElement::_getOptimalSize
 		 */
-		virtual Vector2I _getOptimalSize() const;
+		virtual Vector2I _getOptimalSize() const override;
 	};
 }

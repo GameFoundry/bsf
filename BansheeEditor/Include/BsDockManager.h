@@ -35,19 +35,19 @@ namespace BansheeEngine
 			 *			to leaf (parent to widgets). This involves creating a widget container to
 			 *			which you can dock widgets to.
 			 *
-			 * @param	widgetParent	GUI widget of the parent dock manager.
 			 * @param	parentWindow	Editor window of the parent dock manager.
 			 */
-			void makeLeaf(GUIWidget* widgetParent, EditorWindowBase* parentWindow);
+			void makeLeaf(EditorWindowBase* parentWindow);
 
 			/**
 			 * @brief	Transforms the container from non-leaf (parent to other containers)
 			 *			to leaf (parent to widgets). Unlike the other overload this one accepts
 			 *			a previously created widget container.
 			 *
+			 * @param	guiWidgetSO			Parent SceneObject of the GUIWidget used by the provided widget container.
 			 * @param	existingContainer	An existing widget container that may be used for docking widgets.
 			 */
-			void makeLeaf(EditorWidgetContainer* existingContainer);
+			void makeLeaf(const HSceneObject& guiWidgetSO, EditorWidgetContainer* existingContainer);
 
 			/**
 			 * @brief	Splits a leaf container containing a widget container (or may be empty in the case of root with no elements) 
@@ -142,6 +142,7 @@ namespace BansheeEngine
 			DockContainer* mParent;
 			DockManager* mManager;
 			EditorWidgetContainer* mWidgets;
+			HSceneObject mGUIWidgetSO;
 			GUIDockSlider* mSlider;
 			Rect2I mArea;
 			float mSplitPosition;
