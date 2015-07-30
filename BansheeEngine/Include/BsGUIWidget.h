@@ -106,6 +106,12 @@ namespace BansheeEngine
 		void _markMeshDirty(GUIElementBase* elem);
 
 		/**
+		 * @brief	Marks the elements content as dirty, meaning its internal mesh will need to be
+		 *			rebuilt (this implies the entire widget mesh will be rebuilt as well).
+		 */
+		void _markContentDirty(GUIElementBase* elem);
+
+		/**
 		 * @brief	Updates the layout of all child elements, repositioning and resizing them as needed.
 		 */
 		void _updateLayout();

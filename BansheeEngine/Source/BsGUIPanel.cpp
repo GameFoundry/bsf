@@ -17,7 +17,7 @@ namespace BansheeEngine
 		mDepthRangeMin = depthRangeMin;
 		mDepthRangeMax = depthRangeMax;
 
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 	}
 
 	LayoutSizeRange GUIPanel::_calculateLayoutSizeRange() const

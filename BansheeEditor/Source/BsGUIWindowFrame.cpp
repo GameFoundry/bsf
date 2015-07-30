@@ -44,6 +44,6 @@ namespace BansheeEngine
 		else
 			mActiveTexture = _getStyle()->normal.texture;
 
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 	}
 }

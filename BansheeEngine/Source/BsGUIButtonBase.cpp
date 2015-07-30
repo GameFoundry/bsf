@@ -21,7 +21,7 @@ namespace BansheeEngine
 		if(SpriteTexture::checkIsLoaded(contentTex))
 			mContentImageSprite = bs_new<ImageSprite>();
 
-		mLocStringUpdatedConn = mContent.getText().addOnStringModifiedCallback(std::bind(&GUIButtonBase::_markContentAsDirty, this));
+		mLocStringUpdatedConn = mContent.getText().addOnStringModifiedCallback(std::bind(&GUIButtonBase::_markLayoutAsDirty, this));
 	}
 
 	GUIButtonBase::~GUIButtonBase()
@@ -38,7 +38,7 @@ namespace BansheeEngine
 	void GUIButtonBase::setContent(const GUIContent& content)
 	{
 		mLocStringUpdatedConn.disconnect();
-		mLocStringUpdatedConn = content.getText().addOnStringModifiedCallback(std::bind(&GUIButtonBase::_markContentAsDirty, this));
+		mLocStringUpdatedConn = content.getText().addOnStringModifiedCallback(std::bind(&GUIButtonBase::_markLayoutAsDirty, this));
 
 		mContent = content;
 
@@ -57,14 +57,14 @@ namespace BansheeEngine
 			}
 		}
 
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 	}
 
 	void GUIButtonBase::setTint(const Color& color)
 	{
 		mColor = color;
 
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 	}
 
 	void GUIButtonBase::_setOn(bool on) 
@@ -370,7 +370,7 @@ namespace BansheeEngine
 	{
 		mActiveState = state;
 
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 	}
 
 	const HSpriteTexture& GUIButtonBase::getActiveTexture() const

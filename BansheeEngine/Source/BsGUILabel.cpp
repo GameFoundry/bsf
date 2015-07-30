@@ -14,7 +14,7 @@ namespace BansheeEngine
 	{
 		mTextSprite = bs_new<TextSprite, PoolAlloc>();
 
-		mLocStringUpdatedConn = mContent.getText().addOnStringModifiedCallback(std::bind(&GUILabel::_markContentAsDirty, this));
+		mLocStringUpdatedConn = mContent.getText().addOnStringModifiedCallback(std::bind(&GUILabel::_markLayoutAsDirty, this));
 	}
 
 	GUILabel::~GUILabel()
@@ -78,18 +78,18 @@ namespace BansheeEngine
 	void GUILabel::setContent(const GUIContent& content)
 	{
 		mLocStringUpdatedConn.disconnect();
-		mLocStringUpdatedConn = content.getText().addOnStringModifiedCallback(std::bind(&GUILabel::_markContentAsDirty, this));
+		mLocStringUpdatedConn = content.getText().addOnStringModifiedCallback(std::bind(&GUILabel::_markLayoutAsDirty, this));
 
 		mContent = content;
 		
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 	}
 
 	void GUILabel::setTint(const Color& color)
 	{
 		mColor = color;
 
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 	}
 
 	GUILabel* GUILabel::create(const HString& text, const String& styleName)

@@ -59,7 +59,7 @@ namespace BansheeEngine
 			setTexture(SpriteTexture::create(HTexture()));
 		}
 
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 	}
 
 	void GUIRenderTexture::updateRenderElementsInternal()

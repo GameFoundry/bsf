@@ -350,7 +350,7 @@ namespace BansheeEngine
 		UINT32 scrollableHeight = (UINT32)std::max(0, INT32(mContentSize.y) - INT32(mVisibleSize.y));
 		mVertOffset = scrollableHeight * Math::clamp01(pct);
 
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 	}
 
 	void GUIScrollArea::scrollToHorizontal(float pct)
@@ -358,7 +358,7 @@ namespace BansheeEngine
 		UINT32 scrollableWidth = (UINT32)std::max(0, INT32(mContentSize.x) - INT32(mVisibleSize.x));
 		mHorzOffset = scrollableWidth * Math::clamp01(pct);
 
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 	}
 
 	float GUIScrollArea::getVerticalScroll() const

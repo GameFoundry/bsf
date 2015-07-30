@@ -256,7 +256,7 @@ namespace BansheeEngine
 		assert(libEntry != nullptr);
 		updateFromProjectLibraryEntry(newElement, libEntry);
 
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 	}
 
 	void GUIResourceTreeView::entryRemoved(const Path& path)
@@ -303,7 +303,7 @@ namespace BansheeEngine
 		mDragPosition = Vector2I(x, y);
 		mDragInProgress = true;
 		mDropTargetDragActive = true;
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 
 		if(mBottomScrollBounds.contains(mDragPosition))
 		{
@@ -323,7 +323,7 @@ namespace BansheeEngine
 	{
 		mDragInProgress = false;
 		mDropTargetDragActive = false;
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 	}
 
 	void GUIResourceTreeView::dropTargetDragDropped(INT32 x, INT32 y)
@@ -357,7 +357,7 @@ namespace BansheeEngine
 
 		mDragInProgress = false;
 		mDropTargetDragActive = false;
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 	}
 
 	Path GUIResourceTreeView::findUniquePath(const Path& path)
@@ -436,7 +436,7 @@ namespace BansheeEngine
 	void GUIResourceTreeView::dragAndDropFinalize()
 	{
 		mDragInProgress = false;
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 
 		DraggedResources* draggedResources = reinterpret_cast<DraggedResources*>(DragAndDropManager::instance().getDragData());
 		bs_delete(draggedResources);

@@ -107,7 +107,7 @@ namespace BansheeEngine
 	{
 		mColor = color;
 
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 	}
 
 	void GUITexture::setTexture(const HSpriteTexture& texture)
@@ -115,7 +115,7 @@ namespace BansheeEngine
 		mActiveTexture = texture;
 		mUsingStyleTexture = false;
 
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 	}
 
 	UINT32 GUITexture::_getNumRenderElements() const

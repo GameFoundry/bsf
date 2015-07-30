@@ -49,14 +49,14 @@ namespace BansheeEngine
 	{
 		mColor = color;
 
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 	}
 
 	void GUIColor::setTint(const Color& color)
 	{
 		mTint = color;
 
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 	}
 
 	UINT32 GUIColor::_getNumRenderElements() const

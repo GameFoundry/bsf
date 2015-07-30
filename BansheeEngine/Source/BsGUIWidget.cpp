@@ -256,6 +256,12 @@ namespace BansheeEngine
 		mWidgetIsDirty = true;
 	}
 
+	void GUIWidget::_markContentDirty(GUIElementBase* elem)
+	{
+		if (elem->_getType() == GUIElementBase::Type::Element)
+			mDirtyContents.insert(static_cast<GUIElement*>(elem));
+	}
+
 	void GUIWidget::setSkin(const HGUISkin& skin)
 	{
 		mSkin = skin;
@@ -338,7 +344,7 @@ namespace BansheeEngine
 		mPanel->setHeight(height);
 
 		mPanel->_setLayoutData(layoutData);
-		mPanel->_markContentAsDirty();
+		mPanel->_markLayoutAsDirty();
 	}
 
 	void GUIWidget::ownerWindowFocusChanged()

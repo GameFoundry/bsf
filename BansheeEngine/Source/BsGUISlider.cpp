@@ -67,7 +67,7 @@ namespace BansheeEngine
 	void GUISlider::setPercent(float pct)
 	{
 		mSliderHandle->_setHandlePos(pct);
-		mSliderHandle->_markContentAsDirty();
+		mSliderHandle->_markLayoutAsDirty();
 	}
 
 	float GUISlider::getPercent() const

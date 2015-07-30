@@ -73,7 +73,7 @@ namespace BansheeEngine
 	void GUIProgressBar::setPercent(float pct)
 	{
 		mPercent = pct;
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 	}
 
 	void GUIProgressBar::setTint(const Color& color)

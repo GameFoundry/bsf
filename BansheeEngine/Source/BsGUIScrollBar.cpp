@@ -161,7 +161,7 @@ namespace BansheeEngine
 		float newHandlePos = Math::clamp01(mHandleBtn->getHandlePos() - amount);
 
 		mHandleBtn->_setHandlePos(newHandlePos);
-		mHandleBtn->_markContentAsDirty();
+		mHandleBtn->_markLayoutAsDirty();
 
 		if(!onScrollPositionChanged.empty())
 			onScrollPositionChanged(newHandlePos);
@@ -196,6 +196,6 @@ namespace BansheeEngine
 	{
 		mColor = color;
 
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 	}
 }

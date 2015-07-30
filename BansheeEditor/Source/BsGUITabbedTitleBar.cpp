@@ -468,12 +468,12 @@ namespace BansheeEngine
 					}
 				}
 
-				_markContentAsDirty();
+				_markLayoutAsDirty();
 			}
 			else
 			{
 				endDrag();
-				_markContentAsDirty();
+				_markLayoutAsDirty();
 
 				if(!onTabDraggedOff.empty())
 					onTabDraggedOff(tabIdx);
@@ -488,7 +488,7 @@ namespace BansheeEngine
 		if(mActiveTabIdx != tabIdx)
 			tabToggled(tabIdx, true);
 
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 	}
 
 	INT32 GUITabbedTitleBar::uniqueIdxToSeqIdx(UINT32 uniqueIdx) const

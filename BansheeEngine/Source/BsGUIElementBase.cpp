@@ -75,7 +75,7 @@ namespace BansheeEngine
 		if (isFixedBefore != isFixedAfter)
 			refreshChildUpdateParents();
 			
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 	}
 
 	void GUIElementBase::setFlexibleWidth(UINT32 minWidth, UINT32 maxWidth)
@@ -95,7 +95,7 @@ namespace BansheeEngine
 		if (isFixedBefore != isFixedAfter)
 			refreshChildUpdateParents();
 
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 	}
 
 	void GUIElementBase::setHeight(UINT32 height)
@@ -110,7 +110,7 @@ namespace BansheeEngine
 		if (isFixedBefore != isFixedAfter)
 			refreshChildUpdateParents();
 
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 	}
 
 	void GUIElementBase::setFlexibleHeight(UINT32 minHeight, UINT32 maxHeight)
@@ -130,7 +130,7 @@ namespace BansheeEngine
 		if (isFixedBefore != isFixedAfter)
 			refreshChildUpdateParents();
 
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 	}
 
 	void GUIElementBase::resetDimensions()
@@ -144,7 +144,7 @@ namespace BansheeEngine
 		if (isFixedBefore != isFixedAfter)
 			refreshChildUpdateParents();
 
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 	}
 
 	Rect2I GUIElementBase::getBounds(GUIPanel* relativeTo)
@@ -184,7 +184,7 @@ namespace BansheeEngine
 		mIsDirty = false;
 	}
 
-	void GUIElementBase::_markContentAsDirty() 
+	void GUIElementBase::_markLayoutAsDirty() 
 	{ 
 		if(_isDisabled())
 			return;
@@ -211,7 +211,7 @@ namespace BansheeEngine
 
 		// Make sure to mark everything as dirty, as we didn't track any dirty flags while the element was disabled
 		mIsDisabled = false;
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 
 		for(auto& elem : mChildren)
 		{
@@ -305,7 +305,7 @@ namespace BansheeEngine
 		if (mIsDisabled)
 			element->disableRecursively();
 
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 	}
 
 	void GUIElementBase::_unregisterChildElement(GUIElementBase* element)
@@ -321,7 +321,7 @@ namespace BansheeEngine
 				element->_setParent(nullptr);
 				foundElem = true;
 
-				_markContentAsDirty();
+				_markLayoutAsDirty();
 				break;
 			}
 		}
@@ -350,7 +350,7 @@ namespace BansheeEngine
 			child->_changeParentWidget(widget);
 		}
 
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 	}
 
 	void GUIElementBase::_updateAUParents()

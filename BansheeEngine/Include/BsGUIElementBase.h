@@ -298,7 +298,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method.
 		 */
-		void _markContentAsDirty();
+		void _markLayoutAsDirty();
 
 		/**
 		 * @brief	Mark only the elements that operate directly on the sprite mesh without requiring the mesh

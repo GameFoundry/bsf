@@ -122,7 +122,7 @@ namespace BansheeEngine
 		mDimensions = GUIDimensions::create();
 		mDimensions.updateWithStyle(mStyle);
 
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 	}
 
 	Rect2I GUIElement::getCachedVisibleBounds() const
@@ -188,7 +188,7 @@ namespace BansheeEngine
 			mDimensions.updateWithStyle(mStyle);
 			styleUpdated();
 
-			_markContentAsDirty();
+			_markLayoutAsDirty();
 		}
 	}
 

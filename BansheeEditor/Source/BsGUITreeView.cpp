@@ -280,7 +280,7 @@ namespace BansheeEngine
 					selectElement(treeElement);
 				}
 
-				_markContentAsDirty();
+				_markLayoutAsDirty();
 
 				return true;
 			}
@@ -319,7 +319,7 @@ namespace BansheeEngine
 					mDragPosition = event.getPosition();
 					mDragInProgress = true;
 					mScrollState = ScrollState::None;
-					_markContentAsDirty();
+					_markLayoutAsDirty();
 				}
 			}
 		}
@@ -329,7 +329,7 @@ namespace BansheeEngine
 			{
 				mDragPosition = event.getPosition();
 				mDragInProgress = true;
-				_markContentAsDirty();
+				_markLayoutAsDirty();
 
 				if(mBottomScrollBounds.contains(mDragPosition))
 				{
@@ -371,7 +371,7 @@ namespace BansheeEngine
 		else if(event.getType() == GUIMouseEventType::MouseOut)
 		{
 			mDragInProgress = false;
-			_markContentAsDirty();
+			_markLayoutAsDirty();
 		}
 
 		return false;
@@ -522,7 +522,7 @@ namespace BansheeEngine
 			GUIElement::destroy(iterFind->background);
 
 			mSelectedElements.erase(iterFind);
-			_markContentAsDirty();
+			_markLayoutAsDirty();
 
 			selectionChanged();
 		}
@@ -541,7 +541,7 @@ namespace BansheeEngine
 		mSelectedElements.clear();
 		mIsElementSelected = false;
 
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 
 		selectionChanged();
 	}
@@ -691,7 +691,7 @@ namespace BansheeEngine
 				unselectElement(element);
 		}
 
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 	}
 
 	void GUITreeView::elementToggled(TreeElement* element, bool toggled)

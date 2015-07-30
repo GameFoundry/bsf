@@ -57,7 +57,7 @@ namespace BansheeEngine
 			else
 				mToggle->toggleOff();
 
-			_markContentAsDirty();
+			_markLayoutAsDirty();
 
 			if(!onStateChanged.empty())
 				onStateChanged(mIsExpanded);
@@ -78,7 +78,7 @@ namespace BansheeEngine
 	{
 		mIsExpanded = value;
 
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 
 		onStateChanged(value);
 	}

@@ -317,7 +317,7 @@ namespace BansheeEngine
 	void GUISceneTreeView::dragAndDropFinalize()
 	{
 		mDragInProgress = false;
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 
 		if (DragAndDropManager::instance().getDragTypeId() == (UINT32)DragAndDropType::SceneObject)
 		{

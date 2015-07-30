@@ -133,7 +133,7 @@ namespace BansheeEngine
 			curVisIdx++;
 		}
 
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 	}
 
 	UINT32 GUIDropDownContent::getElementHeight(UINT32 idx) const

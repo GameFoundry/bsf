@@ -65,7 +65,7 @@ namespace BansheeEngine
 	{
 		mColor = color;
 
-		_markContentAsDirty();
+		_markLayoutAsDirty();
 	}
 
 	UINT32 GUISliderHandle::_getNumRenderElements() const
@@ -160,7 +160,7 @@ namespace BansheeEngine
 					mMouseOverHandle = false;
 
 					mState = State::Normal;
-					_markContentAsDirty();
+					_markLayoutAsDirty();
 
 					return true;
 				}
@@ -172,7 +172,7 @@ namespace BansheeEngine
 					mMouseOverHandle = true;
 
 					mState = State::Hover;
-					_markContentAsDirty();
+					_markLayoutAsDirty();
 
 					return true;
 				}
@@ -182,7 +182,7 @@ namespace BansheeEngine
 		if(ev.getType() == GUIMouseEventType::MouseDown && (mMouseOverHandle || mJumpOnClick))
 		{
 			mState = State::Active;
-			_markContentAsDirty();
+			_markLayoutAsDirty();
 
 			if (mJumpOnClick)
 			{
@@ -229,7 +229,7 @@ namespace BansheeEngine
 
 			onHandleMoved(mPctHandlePos);
 
-			_markContentAsDirty();
+			_markLayoutAsDirty();
 			return true;
 		}
 
@@ -237,7 +237,7 @@ namespace BansheeEngine
 		{
 			mState = State::Normal;
 			mMouseOverHandle = false;
-			_markContentAsDirty();
+			_markLayoutAsDirty();
 
 			return true;
 		}
@@ -283,7 +283,7 @@ namespace BansheeEngine
 
 			onHandleMoved(mPctHandlePos);
 
-			_markContentAsDirty();
+			_markLayoutAsDirty();
 			return true;
 		}
 
@@ -296,7 +296,7 @@ namespace BansheeEngine
 			else
 				mState = State::Normal;
 
-			_markContentAsDirty();
+			_markLayoutAsDirty();
 			return true;
 		}
 		
