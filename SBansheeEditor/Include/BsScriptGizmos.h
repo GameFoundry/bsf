@@ -2,7 +2,6 @@
 
 #include "BsScriptEditorPrerequisites.h"
 #include "BsScriptObject.h"
-#include "BsStringTable.h"
 #include "BsVector3.h"
 #include "BsMatrix4.h"
 #include "BsColor.h"

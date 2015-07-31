@@ -357,8 +357,6 @@ namespace BansheeEngine
 			bool isDirty = renderData.isDirty;
 			renderData.isDirty = false;
 
-			gProfilerCPU().beginSample("updateRenderElements");
-
 			for(auto& widget : renderData.widgets)
 			{
 				if (widget->isDirty(true))
@@ -366,8 +364,6 @@ namespace BansheeEngine
 					isDirty = true;
 				}
 			}
-
-			gProfilerCPU().endSample("updateRenderElements");
 
 			if(!isDirty)
 				continue;
@@ -386,8 +382,6 @@ namespace BansheeEngine
 						(aDepth == bDepth && a.element > b.element) || 
 						(aDepth == bDepth && a.element == b.element && a.renderElement > b.renderElement); 
 				};
-
-				gProfilerCPU().beginSample("generateMatGroups");
 
 				FrameSet<GUIGroupElement, std::function<bool(const GUIGroupElement&, const GUIGroupElement&)>> allElements(elemComp);
 
@@ -436,6 +430,7 @@ namespace BansheeEngine
 					//    overlap the current elements bounds.
 					FrameVector<GUIMaterialGroup>& allGroups = materialGroups[materialId];
 					GUIMaterialGroup* foundGroup = nullptr;
+
 					for (auto groupIter = allGroups.rbegin(); groupIter != allGroups.rend(); ++groupIter)
 					{
 						// If we separate meshes by widget, ignore any groups with widget parents other than mine
@@ -528,9 +523,6 @@ namespace BansheeEngine
 					}
 				}
 
-				gProfilerCPU().endSample("generateMatGroups");
-				gProfilerCPU().beginSample("updateMeshes");
-
 				UINT32 numMeshes = (UINT32)sortedGroups.size();
 				UINT32 oldNumMeshes = (UINT32)renderData.cachedMeshes.size();
 
@@ -600,8 +592,6 @@ namespace BansheeEngine
 
 					groupIdx++;
 				}
-
-				gProfilerCPU().endSample("updateMeshes");
 			}
 
 			bs_frame_clear();			

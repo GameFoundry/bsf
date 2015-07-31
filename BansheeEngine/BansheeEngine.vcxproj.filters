@@ -353,6 +353,9 @@
     <ClInclude Include="Include\BsProfilerOverlayRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsHEString.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsGUIElement.cpp">
@@ -603,6 +606,9 @@
     </ClCompile>
     <ClCompile Include="Source\BsLight.cpp">
       <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsHEString.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

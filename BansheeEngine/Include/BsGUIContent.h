@@ -18,7 +18,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Constructs content with just a string.
 		 */
-		explicit GUIContent(const HString& text);
+		GUIContent(const HString& text);
 
 		/**
 		 * @brief	Constructs content with a string and a tooltip.
@@ -28,7 +28,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Constructs content with just an image.
 		 */
-		explicit GUIContent(const HSpriteTexture& image);
+		GUIContent(const HSpriteTexture& image);
 
 		/**
 		 * @brief	Constructs content with an image and a tooltip.

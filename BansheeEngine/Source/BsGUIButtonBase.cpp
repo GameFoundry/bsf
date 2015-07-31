@@ -20,14 +20,10 @@ namespace BansheeEngine
 		HSpriteTexture contentTex = content.getImage();
 		if(SpriteTexture::checkIsLoaded(contentTex))
 			mContentImageSprite = bs_new<ImageSprite>();
-
-		mLocStringUpdatedConn = mContent.getText().addOnStringModifiedCallback(std::bind(&GUIButtonBase::_markLayoutAsDirty, this));
 	}
 
 	GUIButtonBase::~GUIButtonBase()
 	{
-		mLocStringUpdatedConn.disconnect();
-
 		bs_delete(mTextSprite);
 		bs_delete(mImageSprite);
 
@@ -37,9 +33,6 @@ namespace BansheeEngine
 
 	void GUIButtonBase::setContent(const GUIContent& content)
 	{
-		mLocStringUpdatedConn.disconnect();
-		mLocStringUpdatedConn = content.getText().addOnStringModifiedCallback(std::bind(&GUIButtonBase::_markLayoutAsDirty, this));
-
 		Vector2I origSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
 		mContent = content;
 

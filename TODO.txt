@@ -57,9 +57,24 @@ Code quality improvements:
 ----------------------------------------------------------------------
 Polish stage 1
 
-GET RID OF CONTENT STRING CALLBACKS - They're messsing with my optimization as I cannot calculate orig bounds before and after their update
+Add StringTableManager
+ - Takes over the functionality of current StringTable module
+ - getTable(enum)
+ - register(enum, stResource) <- load/Save this in BsApplication or BsCoreApplication
+ - unregister(enum, stResource)
 
-Get rid of all the profiling calls
+Convert current StringTable to a Resource:
+ - Add RTTI
+ - Also I need methods to enumerate and modify all strings from all languages (so an editor can be built)
+  - getNumStrings() <- might require me to keep a global list of identifiers
+  - getIdentifier(idx)
+  - getValue(language, identifier)
+  - setValue(language, identifier)
+
+Reflect new changes in C#
+ - StringTableManager -> StringTables
+ - C# StringTable resource
+
 
 Test inspector selection, selecting a resource and adding/removing component updates
 Crash when showing the inspector (invalid index in Layout.InsertElement called from InspectableObject.Update)

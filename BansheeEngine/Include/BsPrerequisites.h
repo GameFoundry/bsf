@@ -20,6 +20,7 @@
 
 #include "BsGameObject.h"
 #include "BsEnums.h"
+#include "BsHEString.h"
 
 namespace BansheeEngine
 {

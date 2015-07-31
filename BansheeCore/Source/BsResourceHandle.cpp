@@ -91,10 +91,12 @@ namespace BansheeEngine
 
 	void ResourceHandleBase::throwIfNotLoaded() const
 	{
-		if(!isLoaded()) 
+#if BS_DEBUG_MODE
+		if (!isLoaded())
 		{
 			BS_EXCEPT(InternalErrorException, "Trying to access a resource that hasn't been loaded yet.");
 		}
+#endif
 	}
 
 	RTTITypeBase* ResourceHandleBase::getRTTIStatic()

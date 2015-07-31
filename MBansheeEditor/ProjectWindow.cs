@@ -83,7 +83,7 @@ namespace BansheeEditor
 
         protected override LocString GetDisplayName()
         {
-            return "Project";
+            return new LocEdString("Project");
         }
 
         private void OnInitialize()
@@ -129,6 +129,13 @@ namespace BansheeEditor
             entryContextMenu.AddItem("Paste", PasteToSelection, new ShortcutKey(ButtonModifier.Ctrl, ButtonCode.V));
             entryContextMenu.AddSeparator("");
             entryContextMenu.AddItem("Delete", DeleteSelection, new ShortcutKey(ButtonModifier.None, ButtonCode.Delete));
+
+            entryContextMenu.SetLocalizedName("Rename", new LocEdString("Rename"));
+            entryContextMenu.SetLocalizedName("Cut", new LocEdString("Cut"));
+            entryContextMenu.SetLocalizedName("Copy", new LocEdString("Copy"));
+            entryContextMenu.SetLocalizedName("Duplicate", new LocEdString("Duplicate"));
+            entryContextMenu.SetLocalizedName("Paste", new LocEdString("Paste"));
+            entryContextMenu.SetLocalizedName("Delete", new LocEdString("Delete"));
 
             Reset();
 
@@ -761,7 +768,7 @@ namespace BansheeEditor
                         bool renameOK = true;
                         if (!PathEx.IsValidFileName(newName))
                         {
-                            DialogBox.Open("Error", "The name you specified is not a valid file name. Try another.", DialogBox.Type.OK);
+                            DialogBox.Open(new LocEdString("Error"), new LocEdString("The name you specified is not a valid file name. Try another."), DialogBox.Type.OK);
                             renameOK = false;
                         }
 
@@ -773,7 +780,7 @@ namespace BansheeEditor
 
                             if (originalPath != trimmedNewPath && ProjectLibrary.Exists(trimmedNewPath))
                             {
-                                DialogBox.Open("Error", "File/folder with that name already exists in this folder.", DialogBox.Type.OK);
+                                DialogBox.Open(new LocEdString("Error"), new LocEdString("File/folder with that name already exists in this folder."), DialogBox.Type.OK);
                                 renameOK = false;
                             }
                         }
@@ -1296,7 +1303,7 @@ namespace BansheeEditor
             if (selectionPaths.Count == 0)
                 return;
 
-            DialogBox.Open("Confirm deletion", "Are you sure you want to delete the selected object(s)?",
+            DialogBox.Open(new LocEdString("Confirm deletion"), new LocEdString("Are you sure you want to delete the selected object(s)?"),
                 DialogBox.Type.YesNo,
                 type =>
                 {
@@ -1696,10 +1703,10 @@ namespace BansheeEditor
 
             GUIToggleGroup group = new GUIToggleGroup();
 
-            GUIToggle list16 = new GUIToggle("16", group, EditorStyles.Button, GUIOption.FixedWidth(30));
-            GUIToggle grid32 = new GUIToggle("32", group, EditorStyles.Button, GUIOption.FixedWidth(30));
-            GUIToggle grid48 = new GUIToggle("48", group, EditorStyles.Button, GUIOption.FixedWidth(30));
-            GUIToggle grid64 = new GUIToggle("64", group, EditorStyles.Button, GUIOption.FixedWidth(30));
+            GUIToggle list16 = new GUIToggle(new LocEdString("16"), group, EditorStyles.Button, GUIOption.FixedWidth(30));
+            GUIToggle grid32 = new GUIToggle(new LocEdString("32"), group, EditorStyles.Button, GUIOption.FixedWidth(30));
+            GUIToggle grid48 = new GUIToggle(new LocEdString("48"), group, EditorStyles.Button, GUIOption.FixedWidth(30));
+            GUIToggle grid64 = new GUIToggle(new LocEdString("64"), group, EditorStyles.Button, GUIOption.FixedWidth(30));
 
             ProjectViewType activeType = parent.ViewType;
             switch (activeType)

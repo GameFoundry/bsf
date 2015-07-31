@@ -59,6 +59,7 @@
     <Compile Include="GUI\GUISceneTreeView.cs" />
     <Compile Include="GUI\TextureField.cs" />
     <Compile Include="HierarchyWindow.cs" />
+    <Compile Include="LocEdString.cs" />
     <Compile Include="PrefabUtility.cs" />
     <Compile Include="ProjectDropTarget.cs" />
     <Compile Include="OSDropTarget.cs" />

@@ -18,9 +18,9 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptHString::internal_getValue);
 	}
 
-	void ScriptHString::internal_createInstance(MonoObject* instance, MonoString* identifier)
+	void ScriptHString::internal_createInstance(MonoObject* instance, MonoString* identifier, UINT32 tableId)
 	{
-		HString string(MonoUtil::monoToWString(identifier));
+		HString string(MonoUtil::monoToWString(identifier), tableId);
 		
 		ScriptHString* nativeInstance = new (bs_alloc<ScriptHString>()) ScriptHString(instance, string);
 	}

@@ -17,44 +17,37 @@ namespace BansheeEngine
 	class BS_UTILITY_EXPORT HString
 	{
 	public:
-		class BS_UTILITY_EXPORT StringData
-		{
-		public:
-			StringData();
-			~StringData();
-
-			mutable Event<void()> onStringModified;
-
-		private:
-			friend class HString;
-
-			LocalizedStringData* mStringData;
-			WString* mParameters;
-			HEvent mUpdateConn;
-
-			mutable bool mIsDirty;
-			mutable WString mCachedString;
-			mutable WString* mStringPtr;
-
-			void updateString();
-		};
-
 		/**
 		 * @brief	Creates a new localized string with the specified identifier. If the identifier
 		 * 			doesn't previously exist in the string table, identifier value will also be used 
 		 * 			for initializing the default language version of the string.
+		 *
+		 * @param	identifier		String you can use for later referencing the localized string.
+		 * @param	stringTableId	Unique identifier of the string table to retrieve the string from.
 		 */
-		explicit HString(const WString& identifierString);
+		explicit HString(const WString& identifier, UINT32 stringTableId = 0);
 
 		/**
-		* @brief	Creates a new localized string with the specified identifier and sets the default language version
-		*			of the string. If a string with that identifier already exists default language string will be updated.
-		*/
-		explicit HString(const WString& identifierString, const WString& englishString);
+		 * @brief	Creates a new localized string with the specified identifier and sets the default language version
+		 *			of the string. If a string with that identifier already exists default language string will be updated.
+		 *
+		 * @param	identifier		String you can use for later referencing the localized string.
+		 * @param	default			Default string to assign to the specified identifier. Language to which it
+		 *							will be assigned depends on the StringTable::DEFAULT_LANGUAGE value.
+		 * @param	stringTableId	Unique identifier of the string table to retrieve the string from.
+		 */
+		explicit HString(const WString& identifier, const WString& default, UINT32 stringTableId = 0);
 
-		HString();
+		/**
+		 * @brief	Creates a new empty localized string.
+		 *
+		 * @param	stringTableId	Unique identifier of the string table to retrieve the string from.
+		 */
+		HString(UINT32 stringTableId = 0);
 		HString(const HString& copy);
 		~HString();
+
+		HString& operator=(const HString& rhs);
 
 		operator const WString& () const;
 		const WString& getValue() const;
@@ -68,16 +61,15 @@ namespace BansheeEngine
 		void setParameter(UINT32 idx, const WString& value);
 		
 		/**
-		 * @brief	Registers a callback that gets triggered whenever string value changes. This may happen
-		 * 			when the string table is modified, or when the active language is changed.
-		 */
-		HEvent addOnStringModifiedCallback(std::function<void()> callback) const;
-
-		/**
 		 * @brief	Returns an empty string.
 		 */
 		static const HString& dummy();
 	private:
-		std::shared_ptr<StringData> mData;
+		SPtr<LocalizedStringData> mStringData;
+		WString* mParameters;
+
+		mutable bool mIsDirty;
+		mutable WString mCachedString;
+		mutable WString* mStringPtr;
 	};
 }

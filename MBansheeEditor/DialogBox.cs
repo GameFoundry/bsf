@@ -91,7 +91,7 @@ namespace BansheeEditor
             {
                 case Type.OK:
                     {
-                        GUIButton okBtn = new GUIButton("OK");
+                        GUIButton okBtn = new GUIButton(new LocEdString("OK"));
                         okBtn.OnClick += () => ButtonClicked(ResultType.OK);
 
                         btnLayout.AddElement(okBtn);
@@ -99,10 +99,10 @@ namespace BansheeEditor
                     break;
                 case Type.OKCancel:
                     {
-                        GUIButton okBtn = new GUIButton("OK");
+                        GUIButton okBtn = new GUIButton(new LocEdString("OK"));
                         okBtn.OnClick += () => ButtonClicked(ResultType.OK);
 
-                        GUIButton cancelBtn = new GUIButton("Cancel");
+                        GUIButton cancelBtn = new GUIButton(new LocEdString("Cancel"));
                         cancelBtn.OnClick += () => ButtonClicked(ResultType.Cancel);
 
                         btnLayout.AddElement(okBtn);
@@ -112,13 +112,13 @@ namespace BansheeEditor
                     break;
                 case Type.RetryAbortIgnore:
                     {
-                        GUIButton retryBtn = new GUIButton("Retry");
+                        GUIButton retryBtn = new GUIButton(new LocEdString("Retry"));
                         retryBtn.OnClick += () => ButtonClicked(ResultType.Retry);
 
-                        GUIButton abortBtn = new GUIButton("Abort");
+                        GUIButton abortBtn = new GUIButton(new LocEdString("Abort"));
                         abortBtn.OnClick += () => ButtonClicked(ResultType.Abort);
 
-                        GUIButton ignoreBtn = new GUIButton("Ignore");
+                        GUIButton ignoreBtn = new GUIButton(new LocEdString("Ignore"));
                         ignoreBtn.OnClick += () => ButtonClicked(ResultType.Ignore);
 
                         btnLayout.AddElement(retryBtn);
@@ -130,10 +130,10 @@ namespace BansheeEditor
                     break;
                 case Type.RetryCancel:
                     {
-                        GUIButton retryBtn = new GUIButton("Retry");
+                        GUIButton retryBtn = new GUIButton(new LocEdString("Retry"));
                         retryBtn.OnClick += () => ButtonClicked(ResultType.Retry);
 
-                        GUIButton cancelBtn = new GUIButton("Cancel");
+                        GUIButton cancelBtn = new GUIButton(new LocEdString("Cancel"));
                         cancelBtn.OnClick += () => ButtonClicked(ResultType.Cancel);
 
                         btnLayout.AddElement(retryBtn);
@@ -143,13 +143,13 @@ namespace BansheeEditor
                     break;
                 case Type.TryCancelContinue:
                     {
-                        GUIButton tryBtn = new GUIButton("Try");
+                        GUIButton tryBtn = new GUIButton(new LocEdString("Try"));
                         tryBtn.OnClick += () => ButtonClicked(ResultType.Try);
 
-                        GUIButton cancelBtn = new GUIButton("Cancel");
+                        GUIButton cancelBtn = new GUIButton(new LocEdString("Cancel"));
                         cancelBtn.OnClick += () => ButtonClicked(ResultType.Cancel);
 
-                        GUIButton continueBtn = new GUIButton("Continue");
+                        GUIButton continueBtn = new GUIButton(new LocEdString("Continue"));
                         continueBtn.OnClick += () => ButtonClicked(ResultType.Continue);
 
                         btnLayout.AddElement(tryBtn);
@@ -161,10 +161,10 @@ namespace BansheeEditor
                     break;
                 case Type.YesNo:
                     {
-                        GUIButton yesBtn = new GUIButton("Yes");
+                        GUIButton yesBtn = new GUIButton(new LocEdString("Yes"));
                         yesBtn.OnClick += () => ButtonClicked(ResultType.Yes);
 
-                        GUIButton noBtn = new GUIButton("No");
+                        GUIButton noBtn = new GUIButton(new LocEdString("No"));
                         noBtn.OnClick += () => ButtonClicked(ResultType.No);
 
                         btnLayout.AddElement(yesBtn);
@@ -174,13 +174,13 @@ namespace BansheeEditor
                     break;
                 case Type.YesNoCancel:
                     {
-                        GUIButton yesBtn = new GUIButton("Yes");
+                        GUIButton yesBtn = new GUIButton(new LocEdString("Yes"));
                         yesBtn.OnClick += () => ButtonClicked(ResultType.Yes);
 
-                        GUIButton noBtn = new GUIButton("No");
+                        GUIButton noBtn = new GUIButton(new LocEdString("No"));
                         noBtn.OnClick += () => ButtonClicked(ResultType.No);
 
-                        GUIButton cancelBtn = new GUIButton("Cancel");
+                        GUIButton cancelBtn = new GUIButton(new LocEdString("Cancel"));
                         cancelBtn.OnClick += () => ButtonClicked(ResultType.Cancel);
 
                         btnLayout.AddElement(yesBtn);

@@ -4,81 +4,44 @@
 
 namespace BansheeEngine
 {
-	HString::StringData::StringData()
+	HString::HString(UINT32 stringTableId)
 		:mParameters(nullptr), mIsDirty(true), mStringPtr(nullptr)
-	{ }
-
-	HString::StringData::~StringData()
 	{
-		mUpdateConn.disconnect();
+		mStringData = StringTable::instance().getStringData(L"");
 
-		if(mParameters != nullptr)
-			bs_deleteN(mParameters, mStringData->numParameters);
+		if(mStringData->numParameters > 0)
+			mParameters = bs_newN<WString>(mStringData->numParameters);
 	}
 
-	void HString::StringData::updateString()
+	HString::HString(const WString& identifierString, UINT32 stringTableId)
+		:mParameters(nullptr), mIsDirty(true), mStringPtr(nullptr)
 	{
-		LocalizedStringData* stringData = &StringTable::instance().getStringData(mStringData->commonData->identifier);
+		mStringData = StringTable::instance().getStringData(identifierString);
 
-		// If common data changed re-apply the connections
-		if(stringData->commonData != mStringData->commonData)
-		{
-			mUpdateConn.disconnect();
-			mUpdateConn = stringData->commonData->onStringDataModified.connect(std::bind(&HString::StringData::updateString, this));
-		}
-
-		mStringData = stringData;
-		mIsDirty = true;
-
-		onStringModified();
+		if(mStringData->numParameters > 0)
+			mParameters = bs_newN<WString>(mStringData->numParameters);
 	}
 
-	HString::HString()
+	HString::HString(const WString& identifierString, const WString& defaultString, UINT32 stringTableId)
+		:mParameters(nullptr), mIsDirty(true), mStringPtr(nullptr)
 	{
-		mData = bs_shared_ptr<StringData>();
-
-		mData->mStringData = &StringTable::instance().getStringData(L"");
-
-		if(mData->mStringData->numParameters > 0)
-			mData->mParameters = bs_newN<WString>(mData->mStringData->numParameters);
-
-		mData->mUpdateConn = mData->mStringData->commonData->onStringDataModified.connect(std::bind(&HString::StringData::updateString, mData.get()));
-	}
-
-	HString::HString(const WString& identifierString)
-	{
-		mData = bs_shared_ptr<StringData>();
-
-		mData->mStringData = &StringTable::instance().getStringData(identifierString);
-
-		if(mData->mStringData->numParameters > 0)
-			mData->mParameters = bs_newN<WString>(mData->mStringData->numParameters);
-
-		mData->mUpdateConn = mData->mStringData->commonData->onStringDataModified.connect(std::bind(&HString::StringData::updateString, mData.get()));
-	}
-
-	HString::HString(const WString& identifierString, const WString& defaultString)
-	{
-		mData = bs_shared_ptr<StringData>();
-
 		StringTable::instance().setString(identifierString, StringTable::DEFAULT_LANGUAGE, defaultString);
 
-		mData->mStringData = &StringTable::instance().getStringData(identifierString);
+		mStringData = StringTable::instance().getStringData(identifierString);
 
-		if (mData->mStringData->numParameters > 0)
-			mData->mParameters = bs_newN<WString>(mData->mStringData->numParameters);
-
-		mData->mUpdateConn = mData->mStringData->commonData->onStringDataModified.connect(std::bind(&HString::StringData::updateString, mData.get()));
+		if (mStringData->numParameters > 0)
+			mParameters = bs_newN<WString>(mStringData->numParameters);
 	}
 
 	HString::HString(const HString& copy)
 	{
-		mData = copy.mData;
+		*this = copy;
 	}
 
 	HString::~HString()
 	{
-
+		if (mParameters != nullptr)
+			bs_deleteN(mParameters, mStringData->numParameters);
 	}
 
 	HString::operator const WString& () const 
@@ -86,37 +49,59 @@ namespace BansheeEngine
 		return getValue(); 
 	}
 
+	HString& HString::operator=(const HString& rhs)
+	{
+		mStringData = rhs.mStringData;
+		mIsDirty = rhs.mIsDirty;
+		mCachedString = rhs.mCachedString;
+
+		if (rhs.mStringData->numParameters > 0)
+		{
+			mParameters = bs_newN<WString>(mStringData->numParameters);
+			if (rhs.mParameters != nullptr)
+			{
+				for (UINT32 i = 0; i < mStringData->numParameters; i++)
+					mParameters[i] = rhs.mParameters[i];
+			}
+
+			mStringPtr = &mCachedString;
+		}
+		else
+		{
+			mParameters = nullptr;
+			mStringPtr = &mStringData->string;
+		}
+
+		return *this;
+	}
+
 	const WString& HString::getValue() const
 	{
-		if(mData->mIsDirty)
+		if(mIsDirty)
 		{
-			if(mData->mParameters != nullptr)
+			if(mParameters != nullptr)
 			{
-				mData->mStringData->concatenateString(mData->mCachedString, mData->mParameters, mData->mStringData->numParameters);
-				mData->mStringPtr = &mData->mCachedString;
+				mStringData->concatenateString(mCachedString, mParameters, mStringData->numParameters);
+				mStringPtr = &mCachedString;
 			}
 			else
 			{
-				mData->mStringPtr = &mData->mStringData->string;
+				mStringPtr = &mStringData->string;
 			}
 
-			mData->mIsDirty = false;
+			mIsDirty = false;
 		}
 
-		return *mData->mStringPtr; 
+		return *mStringPtr; 
 	}
 
 	void HString::setParameter(UINT32 idx, const WString& value)
 	{
-		mData->mParameters[idx] = value;
+		if (idx >= mStringData->numParameters)
+			return;
 
-		mData->mIsDirty = true;
-		mData->onStringModified();
-	}
-
-	HEvent HString::addOnStringModifiedCallback(std::function<void()> callback) const
-	{
-		return mData->onStringModified.connect(callback);
+		mParameters[idx] = value;
+		mIsDirty = true;
 	}
 
 	const HString& HString::dummy()

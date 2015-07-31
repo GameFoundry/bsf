@@ -5,9 +5,14 @@ namespace BansheeEngine
 {
     public sealed class LocString : ScriptObject
     {
-        public LocString(string identifier)
+        public LocString(int tableId = 0)
         {
-            Internal_CreateInstance(this, identifier);
+            Internal_CreateInstance(this, "", tableId);
+        }
+
+        public LocString(string identifier, int tableId = 0)
+        {
+            Internal_CreateInstance(this, identifier, tableId);
         }
 
         public static implicit operator LocString(string identifier)
@@ -28,7 +33,7 @@ namespace BansheeEngine
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(LocString instance, string identifier);
+        private static extern void Internal_CreateInstance(LocString instance, string identifier, int tableId);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetParameter(IntPtr nativeInstance, int idx, string identifier);

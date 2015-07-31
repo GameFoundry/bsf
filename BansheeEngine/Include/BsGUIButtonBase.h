@@ -161,7 +161,5 @@ namespace BansheeEngine
 
 		IMAGE_SPRITE_DESC mImageDesc;
 		GUIContent mContent;
-
-		HEvent mLocStringUpdatedConn;
 	};
 }

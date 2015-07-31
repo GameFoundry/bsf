@@ -82,7 +82,15 @@ namespace BansheeEngine
 			GUILayout* contentLayout;
 			GUIFixedSpace* labelSpace;
 
-			Vector<GUIElement*> elements;
+			GUILabel* guiName;
+			GUILabel* guiPctOfParent;
+			GUILabel* guiNumCalls;
+			GUILabel* guiNumAllocs;
+			GUILabel* guiNumFrees;
+			GUILabel* guiAvgTime;
+			GUILabel* guiTotalTime;
+			GUILabel* guiAvgTimeSelf;
+			GUILabel* guiTotalTimeSelf;
 
 			HString name;
 			HString pctOfParent;
@@ -106,7 +114,15 @@ namespace BansheeEngine
 			GUILayout* contentLayout;
 			GUIFixedSpace* labelSpace;
 
-			Vector<GUIElement*> elements;
+			GUILabel* guiName;
+			GUILabel* guiPctOfParent;
+			GUILabel* guiNumCalls;
+			GUILabel* guiNumAllocs;
+			GUILabel* guiNumFrees;
+			GUILabel* guiAvgCycles;
+			GUILabel* guiTotalCycles;
+			GUILabel* guiAvgCyclesSelf;
+			GUILabel* guiTotalCyclesSelf;
 
 			HString name;
 			HString pctOfParent;
@@ -128,7 +144,8 @@ namespace BansheeEngine
 		{
 			GUILayout* layout;
 
-			Vector<GUIElement*> elements;
+			GUILabel* guiName;
+			GUILabel* guiTime;
 
 			HString name;
 			HString time;

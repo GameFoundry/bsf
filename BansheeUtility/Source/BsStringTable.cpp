@@ -6,7 +6,7 @@ namespace BansheeEngine
 	const Language StringTable::DEFAULT_LANGUAGE = Language::EnglishUS;
 
 	LocalizedStringData::LocalizedStringData()
-		:commonData(nullptr), parameterOffsets(nullptr), numParameters(0)
+		:parameterOffsets(nullptr), numParameters(0)
 	{
 
 	}
@@ -171,16 +171,7 @@ namespace BansheeEngine
 	
 	StringTable::~StringTable()
 	{
-		for(UINT32 i = 0; i < (UINT32)Language::Count; i++)
-		{
-			for(auto& iter : mAllLanguages[i].strings)
-				bs_delete(iter.second);
-		}
-
 		bs_deleteN(mAllLanguages, (UINT32)Language::Count);
-
-		for(auto& common : mCommonData)
-			bs_delete(common.second);
 	}
 
 	void StringTable::setActiveLanguage(Language language)
@@ -190,8 +181,6 @@ namespace BansheeEngine
 
 		mActiveLanguageData = &(mAllLanguages[(UINT32)language]);
 		mActiveLanguage = language;
-
-		notifyAllStringsChanged();
 	}
 
 	void StringTable::setString(const WString& identifier, Language language, const WString& string)
@@ -200,24 +189,11 @@ namespace BansheeEngine
 
 		auto iterFind = curLanguage->strings.find(identifier);
 
-		LocalizedStringData* stringData;
+		SPtr<LocalizedStringData> stringData;
 		if(iterFind == curLanguage->strings.end())
 		{
-			auto iterFindCommon = mCommonData.find(identifier);
-
-			LocalizedStringData::Common* common = nullptr;
-			if(iterFindCommon == mCommonData.end())
-			{
-				common = bs_new<LocalizedStringData::Common>();
-				common->identifier = identifier;
-				mCommonData[identifier] = common;
-			}
-			else
-				common = iterFindCommon->second;
-
-			stringData = bs_new<LocalizedStringData>();
+			stringData = bs_shared_ptr<LocalizedStringData>();
 			curLanguage->strings[identifier] = stringData;
-			stringData->commonData = common;
 		}
 		else
 		{
@@ -225,70 +201,32 @@ namespace BansheeEngine
 		}
 
 		stringData->updateString(string);
-
-		if(mActiveLanguage == language)
-		{
-			if(!stringData->commonData->onStringDataModified.empty())
-				stringData->commonData->onStringDataModified();
-		}
 	}
 
 	void StringTable::removeString(const WString& identifier)
 	{
-		// Order of operations is very important here, in case a string that is in use
-		// is removed. In that case we want the string to be marked as modified and it should
-		// call getStringData which will generate a new entry for the string.
-		
-		LocalizedStringData* stringData = nullptr;
 		for(UINT32 i = 0; i < (UINT32)Language::Count; i++)
 		{
-			auto findIter = mAllLanguages[i].strings.find(identifier);
-			if(findIter != mAllLanguages[i].strings.end())
-			{
-				if(mActiveLanguage == (Language)i)
-					stringData = findIter->second;
-				else
-					bs_delete(findIter->second);
-
-				mAllLanguages[i].strings.erase(findIter);
-			}
+			mAllLanguages[i].strings.erase(identifier);
 		}
-
-		auto findIterCommon = mCommonData.find(identifier);
-
-		LocalizedStringData::Common* common = nullptr;
-		if(findIterCommon != mCommonData.end())
-		{
-			common = findIterCommon->second;
-			mCommonData.erase(findIterCommon);
-
-			if(!common->onStringDataModified.empty())
-				common->onStringDataModified();
-		}
-
-		if(stringData != nullptr)
-			bs_delete(stringData);
-
-		if(common != nullptr)
-			bs_delete(common);
 	}
 
-	LocalizedStringData& StringTable::getStringData(const WString& identifier, bool insertIfNonExisting)
+	SPtr<LocalizedStringData> StringTable::getStringData(const WString& identifier, bool insertIfNonExisting)
 	{
 		return getStringData(identifier, mActiveLanguage, insertIfNonExisting);
 	}
 
-	LocalizedStringData& StringTable::getStringData(const WString& identifier, Language language, bool insertIfNonExisting)
+	SPtr<LocalizedStringData> StringTable::getStringData(const WString& identifier, Language language, bool insertIfNonExisting)
 	{
 		LanguageData* curLanguage = &(mAllLanguages[(UINT32)language]);
 
 		auto iterFind = curLanguage->strings.find(identifier);
 		if(iterFind != curLanguage->strings.end())
-			return *iterFind->second;
+			return iterFind->second;
 
 		auto defaultIterFind = mDefaultLanguageData->strings.find(identifier);
 		if(defaultIterFind != mDefaultLanguageData->strings.end())
-			return *defaultIterFind->second;
+			return defaultIterFind->second;
 
 		if(insertIfNonExisting)
 		{
@@ -296,18 +234,9 @@ namespace BansheeEngine
 
 			auto defaultIterFind = mDefaultLanguageData->strings.find(identifier);
 			if(defaultIterFind != mDefaultLanguageData->strings.end())
-				return *defaultIterFind->second;
+				return defaultIterFind->second;
 		}
 
 		BS_EXCEPT(InvalidParametersException, "There is no string data for the provided identifier.");
-	}
-
-	void StringTable::notifyAllStringsChanged()
-	{
-		for(auto& iter : mCommonData)
-		{
-			if(!iter.second->onStringDataModified.empty())
-				iter.second->onStringDataModified();
-		}
 	}
 }

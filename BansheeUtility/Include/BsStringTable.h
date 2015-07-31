@@ -205,12 +205,6 @@ namespace BansheeEngine
 	 */
 	struct LocalizedStringData
 	{
-		struct Common
-		{
-			WString identifier;
-			Event<void()> onStringDataModified;
-		};
-
 		struct ParamOffset
 		{
 			ParamOffset()
@@ -232,8 +226,6 @@ namespace BansheeEngine
 		UINT32 numParameters;
 		ParamOffset* parameterOffsets; 
 
-		Common* commonData;
-
 		void concatenateString(WString& outputString, WString* parameters, UINT32 numParameterValues) const;
 		void updateString(const WString& string);
 	};
@@ -248,7 +240,7 @@ namespace BansheeEngine
 
 		struct LanguageData
 		{
-			UnorderedMap<WString, LocalizedStringData*> strings;
+			UnorderedMap<WString, SPtr<LocalizedStringData>> strings;
 		};
 	public:
 		StringTable();
@@ -285,7 +277,7 @@ namespace BansheeEngine
 		 *
 		 * @return	The string data. Don't store reference to this data as it may get deleted.
 		 */
-		LocalizedStringData& getStringData(const WString& identifier, bool insertIfNonExisting = true);
+		SPtr<LocalizedStringData> getStringData(const WString& identifier, bool insertIfNonExisting = true);
 
 		/**
 		 * @brief	Gets a string data for the specified string identifier and language.
@@ -298,7 +290,7 @@ namespace BansheeEngine
 		 *
 		 * @return	The string data. Don't store reference to this data as it may get deleted.
 		 */
-		LocalizedStringData& getStringData(const WString& identifier, Language language, bool insertIfNonExisting = true);
+		SPtr<LocalizedStringData> getStringData(const WString& identifier, Language language, bool insertIfNonExisting = true);
 
 	private:
 		friend class HString;
@@ -310,9 +302,5 @@ namespace BansheeEngine
 		LanguageData* mDefaultLanguageData;
 
 		LanguageData* mAllLanguages;
-
-		UnorderedMap<WString, LocalizedStringData::Common*> mCommonData;
-
-		void notifyAllStringsChanged();
 	};
 }

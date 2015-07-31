@@ -14,7 +14,7 @@ namespace BansheeEngine
 		const HString& getInternalValue() const { return mString; }
 
 	private:
-		static void internal_createInstance(MonoObject* instance, MonoString* identifier);
+		static void internal_createInstance(MonoObject* instance, MonoString* identifier, UINT32 tableId);
 		static void internal_setParameter(HString* nativeInstance, UINT32 idx, MonoString* value);
 		static void internal_getValue(HString* nativeInstance, MonoString** value);
 

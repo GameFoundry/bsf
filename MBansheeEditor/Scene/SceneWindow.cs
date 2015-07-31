@@ -69,7 +69,7 @@ namespace BansheeEditor
 
         protected override LocString GetDisplayName()
         {
-            return "Scene";
+            return new LocEdString("Scene");
         }
 
         private void OnInitialize()

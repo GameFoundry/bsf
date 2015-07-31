@@ -16,7 +16,7 @@ namespace BansheeEngine
 
 	Vector2I GUIHelper::calcOptimalContentsSize(const GUIContent& content, const GUIElementStyle& style, const GUIDimensions& dimensions)
 	{
-		Vector2I textContentBounds = calcOptimalContentsSize(content.getText(), style, dimensions);
+		Vector2I textContentBounds = calcOptimalContentsSize((const WString&)content.getText(), style, dimensions);
 
 		UINT32 contentWidth = style.margins.left + style.margins.right + style.contentOffset.left + style.contentOffset.right;
 		UINT32 contentHeight = style.margins.top + style.margins.bottom + style.contentOffset.top + style.contentOffset.bottom;

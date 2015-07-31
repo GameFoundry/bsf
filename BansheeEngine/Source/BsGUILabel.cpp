@@ -12,15 +12,12 @@ namespace BansheeEngine
 	GUILabel::GUILabel(const String& styleName, const GUIContent& content, const GUIDimensions& dimensions)
 		:GUIElement(styleName, dimensions), mContent(content)
 	{
-		mTextSprite = bs_new<TextSprite, PoolAlloc>();
-
-		mLocStringUpdatedConn = mContent.getText().addOnStringModifiedCallback(std::bind(&GUILabel::_markLayoutAsDirty, this));
+		mTextSprite = bs_new<TextSprite>();
 	}
 
 	GUILabel::~GUILabel()
 	{
-		mLocStringUpdatedConn.disconnect();
-		bs_delete<PoolAlloc>(mTextSprite);
+		bs_delete(mTextSprite);
 	}
 
 	UINT32 GUILabel::_getNumRenderElements() const
@@ -77,9 +74,6 @@ namespace BansheeEngine
 
 	void GUILabel::setContent(const GUIContent& content)
 	{
-		mLocStringUpdatedConn.disconnect();
-		mLocStringUpdatedConn = content.getText().addOnStringModifiedCallback(std::bind(&GUILabel::_markLayoutAsDirty, this));
-
 		Vector2I origSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
 		mContent = content;
 		Vector2I newSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;

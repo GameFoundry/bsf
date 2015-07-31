@@ -14,6 +14,7 @@
 #include "BsProfilingManager.h"
 #include "BsRenderTarget.h"
 #include "BsProfilerOverlayRTTI.h"
+#include <BsHEString.h>
 
 namespace BansheeEngine
 {
@@ -58,50 +59,30 @@ namespace BansheeEngine
 				ProfilerOverlayInternal::BasicRow& newRow = rows.back();
 
 				newRow.disabled = false;
-				newRow.name = HString(L"{0}");
-				newRow.pctOfParent = HString(L"{0} %");
-				newRow.numCalls = HString(L"{0}");
-				newRow.numAllocs = HString(L"{0}");
-				newRow.numFrees = HString(L"{0}");
-				newRow.avgTime = HString(L"{0}");
-				newRow.totalTime = HString(L"{0}");
-				newRow.avgTimeSelf = HString(L"{0}");
-				newRow.totalTimeSelf = HString(L"{0}");
+				newRow.name = HEString(L"{0}");
+				newRow.pctOfParent = HEString(L"{0} %");
+				newRow.numCalls = HEString(L"{0}");
+				newRow.numAllocs = HEString(L"{0}");
+				newRow.numFrees = HEString(L"{0}");
+				newRow.avgTime = HEString(L"{0}");
+				newRow.totalTime = HEString(L"{0}");
+				newRow.avgTimeSelf = HEString(L"{0}");
+				newRow.totalTimeSelf = HEString(L"{0}");
 
 				newRow.labelLayout = labelLayout.insertNewElement<GUILayoutX>(labelLayout.getNumChildren() - 1); // Insert before flexible space
 				newRow.contentLayout = contentLayout.insertNewElement<GUILayoutX>(contentLayout.getNumChildren() - 1); // Insert before flexible space
 
-				GUILabel* name = GUILabel::create(newRow.name, GUIOptions(GUIOption::fixedWidth(200)));
-				GUILabel* pctOfParent = GUILabel::create(newRow.pctOfParent, GUIOptions(GUIOption::fixedWidth(50)));
-				GUILabel* numCalls = GUILabel::create(newRow.numCalls, GUIOptions(GUIOption::fixedWidth(50)));
-				GUILabel* numAllocs = GUILabel::create(newRow.numAllocs, GUIOptions(GUIOption::fixedWidth(50)));
-				GUILabel* numFrees = GUILabel::create(newRow.numFrees, GUIOptions(GUIOption::fixedWidth(50)));
-				GUILabel* avgTime = GUILabel::create(newRow.avgTime, GUIOptions(GUIOption::fixedWidth(60)));
-				GUILabel* totalTime = GUILabel::create(newRow.totalTime, GUIOptions(GUIOption::fixedWidth(60)));
-				GUILabel* avgTimeSelf = GUILabel::create(newRow.avgTimeSelf, GUIOptions(GUIOption::fixedWidth(100)));
-				GUILabel* totalTimeSelf = GUILabel::create(newRow.totalTimeSelf, GUIOptions(GUIOption::fixedWidth(100)));
-
 				newRow.labelSpace = newRow.labelLayout->addNewElement<GUIFixedSpace>(0);
-				newRow.labelLayout->addElement(name);
+				newRow.guiName = newRow.labelLayout->addNewElement<GUILabel>(newRow.name, GUIOptions(GUIOption::fixedWidth(200)));
 
-				newRow.contentLayout->addElement(pctOfParent);
-				newRow.contentLayout->addElement(numCalls);
-				newRow.contentLayout->addElement(numAllocs);
-				newRow.contentLayout->addElement(numFrees);
-				newRow.contentLayout->addElement(avgTime);
-				newRow.contentLayout->addElement(totalTime);
-				newRow.contentLayout->addElement(avgTimeSelf);
-				newRow.contentLayout->addElement(totalTimeSelf);
-
-				newRow.elements.push_back(name);
-				newRow.elements.push_back(pctOfParent);
-				newRow.elements.push_back(numCalls);
-				newRow.elements.push_back(numAllocs);
-				newRow.elements.push_back(numFrees);
-				newRow.elements.push_back(avgTime);
-				newRow.elements.push_back(totalTime);
-				newRow.elements.push_back(avgTimeSelf);
-				newRow.elements.push_back(totalTimeSelf);
+				newRow.guiPctOfParent = newRow.contentLayout->addNewElement<GUILabel>(newRow.pctOfParent, GUIOptions(GUIOption::fixedWidth(50)));
+				newRow.guiNumCalls = newRow.contentLayout->addNewElement<GUILabel>(newRow.numCalls, GUIOptions(GUIOption::fixedWidth(50)));
+				newRow.guiNumAllocs = newRow.contentLayout->addNewElement<GUILabel>(newRow.numAllocs, GUIOptions(GUIOption::fixedWidth(50)));
+				newRow.guiNumFrees = newRow.contentLayout->addNewElement<GUILabel>(newRow.numFrees, GUIOptions(GUIOption::fixedWidth(50)));
+				newRow.guiAvgTime = newRow.contentLayout->addNewElement<GUILabel>(newRow.avgTime, GUIOptions(GUIOption::fixedWidth(60)));
+				newRow.guiTotalTime = newRow.contentLayout->addNewElement<GUILabel>(newRow.totalTime, GUIOptions(GUIOption::fixedWidth(60)));
+				newRow.guiAvgTimeSelf = newRow.contentLayout->addNewElement<GUILabel>(newRow.avgTimeSelf, GUIOptions(GUIOption::fixedWidth(100)));
+				newRow.guiTotalTimeSelf = newRow.contentLayout->addNewElement<GUILabel>(newRow.totalTimeSelf, GUIOptions(GUIOption::fixedWidth(100)));
 			}
 			
 			ProfilerOverlayInternal::BasicRow& row = rows[curIdx];
@@ -116,6 +97,16 @@ namespace BansheeEngine
 			row.totalTime.setParameter(0, toWString(totalTime, 2, 0, ' ', std::ios::fixed));
 			row.avgTimeSelf.setParameter(0, toWString(avgSelfTime, 2, 0, ' ', std::ios::fixed));
 			row.totalTimeSelf.setParameter(0, toWString(totalSelfTime, 2, 0, ' ', std::ios::fixed));
+
+			row.guiName->setContent(row.name);
+			row.guiPctOfParent->setContent(row.pctOfParent);
+			row.guiNumCalls->setContent(row.numCalls);
+			row.guiNumAllocs->setContent(row.numAllocs);
+			row.guiNumFrees->setContent(row.numFrees);
+			row.guiAvgTime->setContent(row.avgTime);
+			row.guiTotalTime->setContent(row.totalTime);
+			row.guiAvgTimeSelf->setContent(row.avgTimeSelf);
+			row.guiTotalTimeSelf->setContent(row.totalTimeSelf);
 
 			if (row.disabled)
 			{
@@ -169,50 +160,30 @@ namespace BansheeEngine
 				ProfilerOverlayInternal::PreciseRow& newRow = rows.back();
 
 				newRow.disabled = false;
-				newRow.name = HString(L"{0}");
-				newRow.pctOfParent = HString(L"{0}");
-				newRow.numCalls = HString(L"{0}");
-				newRow.numAllocs = HString(L"{0}");
-				newRow.numFrees = HString(L"{0}");
-				newRow.avgCycles = HString(L"{0}");
-				newRow.totalCycles = HString(L"{0}");
-				newRow.avgCyclesSelf = HString(L"{0}");
-				newRow.totalCyclesSelf = HString(L"{0}");
+				newRow.name = HEString(L"{0}");
+				newRow.pctOfParent = HEString(L"{0}");
+				newRow.numCalls = HEString(L"{0}");
+				newRow.numAllocs = HEString(L"{0}");
+				newRow.numFrees = HEString(L"{0}");
+				newRow.avgCycles = HEString(L"{0}");
+				newRow.totalCycles = HEString(L"{0}");
+				newRow.avgCyclesSelf = HEString(L"{0}");
+				newRow.totalCyclesSelf = HEString(L"{0}");
 
 				newRow.labelLayout = labelLayout.insertNewElement<GUILayoutX>(labelLayout.getNumChildren() - 1); // Insert before flexible space
 				newRow.contentLayout = contentLayout.insertNewElement<GUILayoutX>(contentLayout.getNumChildren() - 1); // Insert before flexible space
 
-				GUILabel* name = GUILabel::create(newRow.name, GUIOptions(GUIOption::fixedWidth(200)));
-				GUILabel* pctOfParent = GUILabel::create(newRow.pctOfParent, GUIOptions(GUIOption::fixedWidth(50)));
-				GUILabel* numCalls = GUILabel::create(newRow.numCalls, GUIOptions(GUIOption::fixedWidth(50)));
-				GUILabel* numAllocs = GUILabel::create(newRow.numAllocs, GUIOptions(GUIOption::fixedWidth(50)));
-				GUILabel* numFrees = GUILabel::create(newRow.numFrees, GUIOptions(GUIOption::fixedWidth(50)));
-				GUILabel* avgCycles = GUILabel::create(newRow.avgCycles,GUIOptions(GUIOption::fixedWidth(60)));
-				GUILabel* totalCycles = GUILabel::create(newRow.totalCycles, GUIOptions(GUIOption::fixedWidth(60)));
-				GUILabel* avgCyclesSelf = GUILabel::create(newRow.avgCyclesSelf, GUIOptions(GUIOption::fixedWidth(100)));
-				GUILabel* totalCyclesSelf = GUILabel::create(newRow.totalCyclesSelf, GUIOptions(GUIOption::fixedWidth(100)));
-
 				newRow.labelSpace = newRow.labelLayout->addNewElement<GUIFixedSpace>(0);
-				newRow.labelLayout->addElement(name);
+				newRow.guiName = newRow.labelLayout->addNewElement<GUILabel>(newRow.name, GUIOptions(GUIOption::fixedWidth(200)));
 
-				newRow.contentLayout->addElement(pctOfParent);
-				newRow.contentLayout->addElement(numCalls);
-				newRow.contentLayout->addElement(numAllocs);
-				newRow.contentLayout->addElement(numFrees);
-				newRow.contentLayout->addElement(avgCycles);
-				newRow.contentLayout->addElement(totalCycles);
-				newRow.contentLayout->addElement(avgCyclesSelf);
-				newRow.contentLayout->addElement(totalCyclesSelf);
-
-				newRow.elements.push_back(name);
-				newRow.elements.push_back(pctOfParent);
-				newRow.elements.push_back(numCalls);
-				newRow.elements.push_back(numAllocs);
-				newRow.elements.push_back(numFrees);
-				newRow.elements.push_back(avgCycles);
-				newRow.elements.push_back(totalCycles);
-				newRow.elements.push_back(avgCyclesSelf);
-				newRow.elements.push_back(totalCyclesSelf);
+				newRow.guiPctOfParent = newRow.contentLayout->addNewElement<GUILabel>(newRow.pctOfParent, GUIOptions(GUIOption::fixedWidth(50)));
+				newRow.guiNumCalls = newRow.contentLayout->addNewElement<GUILabel>(newRow.numCalls, GUIOptions(GUIOption::fixedWidth(50)));
+				newRow.guiNumAllocs = newRow.contentLayout->addNewElement<GUILabel>(newRow.numAllocs, GUIOptions(GUIOption::fixedWidth(50)));
+				newRow.guiNumFrees = newRow.contentLayout->addNewElement<GUILabel>(newRow.numFrees, GUIOptions(GUIOption::fixedWidth(50)));
+				newRow.guiAvgCycles = newRow.contentLayout->addNewElement<GUILabel>(newRow.avgCycles, GUIOptions(GUIOption::fixedWidth(60)));
+				newRow.guiTotalCycles = newRow.contentLayout->addNewElement<GUILabel>(newRow.totalCycles, GUIOptions(GUIOption::fixedWidth(60)));
+				newRow.guiAvgCyclesSelf = newRow.contentLayout->addNewElement<GUILabel>(newRow.avgCyclesSelf, GUIOptions(GUIOption::fixedWidth(100)));
+				newRow.guiTotalCyclesSelf = newRow.contentLayout->addNewElement<GUILabel>(newRow.totalCyclesSelf, GUIOptions(GUIOption::fixedWidth(100)));
 			}
 
 			ProfilerOverlayInternal::PreciseRow& row = rows[curIdx];
@@ -227,6 +198,16 @@ namespace BansheeEngine
 			row.totalCycles.setParameter(0, toWString(totalCycles));
 			row.avgCyclesSelf.setParameter(0, toWString(avgSelfCycles));
 			row.totalCyclesSelf.setParameter(0, toWString(totalSelfCycles));
+
+			row.guiName->setContent(row.name);
+			row.guiPctOfParent->setContent(row.pctOfParent);
+			row.guiNumCalls->setContent(row.numCalls);
+			row.guiNumAllocs->setContent(row.numAllocs);
+			row.guiNumFrees->setContent(row.numFrees);
+			row.guiAvgCycles->setContent(row.avgCycles);
+			row.guiTotalCycles->setContent(row.totalCycles);
+			row.guiAvgCyclesSelf->setContent(row.avgCyclesSelf);
+			row.guiTotalCyclesSelf->setContent(row.totalCyclesSelf);
 
 			if (row.disabled)
 			{
@@ -277,24 +258,21 @@ namespace BansheeEngine
 				ProfilerOverlayInternal::GPUSampleRow& newRow = rows.back();
 
 				newRow.disabled = false;
-				newRow.name = HString(L"{1}");
-				newRow.time = HString(L"{0}");
+				newRow.name = HEString(L"{1}");
+				newRow.time = HEString(L"{0}");
 
 				newRow.layout = layout.insertNewElement<GUILayoutX>(layout.getNumChildren());
 
-				GUILabel* nameLabel = GUILabel::create(newRow.name, GUIOptions(GUIOption::fixedWidth(100)));
-				GUILabel* timeLabel = GUILabel::create(newRow.time, GUIOptions(GUIOption::fixedWidth(100)));
-
-				newRow.layout->addElement(nameLabel);
-				newRow.layout->addElement(timeLabel);
-
-				newRow.elements.push_back(nameLabel);
-				newRow.elements.push_back(timeLabel);
+				newRow.guiName = newRow.layout->addNewElement<GUILabel>(newRow.name, GUIOptions(GUIOption::fixedWidth(100)));
+				newRow.guiTime = newRow.layout->addNewElement<GUILabel>(newRow.time, GUIOptions(GUIOption::fixedWidth(100)));
 			}
 
 			ProfilerOverlayInternal::GPUSampleRow& row = rows[curIdx];
 			row.name.setParameter(0, toWString(name));
 			row.time.setParameter(0, toWString(timeMs));
+
+			row.guiName->setContent(row.name);
+			row.guiTime->setContent(row.time);
 
 			if (row.disabled)
 			{
@@ -388,25 +366,25 @@ namespace BansheeEngine
 		mPreciseLayoutContents = mWidget->getPanel()->addNewElement<GUILayoutY>();
 
 		// Set up CPU sample title bars
-		mTitleBasicName = GUILabel::create(HString(L"Name"), GUIOptions(GUIOption::fixedWidth(200)));
-		mTitleBasicPctOfParent = GUILabel::create(HString(L"% parent"), GUIOptions(GUIOption::fixedWidth(50)));
-		mTitleBasicNumCalls = GUILabel::create(HString(L"# calls"), GUIOptions(GUIOption::fixedWidth(50)));
-		mTitleBasicNumAllocs = GUILabel::create(HString(L"# allocs"), GUIOptions(GUIOption::fixedWidth(50)));
-		mTitleBasicNumFrees = GUILabel::create(HString(L"# frees"), GUIOptions(GUIOption::fixedWidth(50)));
-		mTitleBasicAvgTime = GUILabel::create(HString(L"Avg. time"), GUIOptions(GUIOption::fixedWidth(60)));
-		mTitleBasicTotalTime = GUILabel::create(HString(L"Total time"), GUIOptions(GUIOption::fixedWidth(60)));
-		mTitleBasicAvgTitleSelf = GUILabel::create(HString(L"Avg. self time"), GUIOptions(GUIOption::fixedWidth(100)));
-		mTitleBasicTotalTimeSelf = GUILabel::create(HString(L"Total self time"), GUIOptions(GUIOption::fixedWidth(100)));
+		mTitleBasicName = GUILabel::create(HEString(L"Name"), GUIOptions(GUIOption::fixedWidth(200)));
+		mTitleBasicPctOfParent = GUILabel::create(HEString(L"% parent"), GUIOptions(GUIOption::fixedWidth(50)));
+		mTitleBasicNumCalls = GUILabel::create(HEString(L"# calls"), GUIOptions(GUIOption::fixedWidth(50)));
+		mTitleBasicNumAllocs = GUILabel::create(HEString(L"# allocs"), GUIOptions(GUIOption::fixedWidth(50)));
+		mTitleBasicNumFrees = GUILabel::create(HEString(L"# frees"), GUIOptions(GUIOption::fixedWidth(50)));
+		mTitleBasicAvgTime = GUILabel::create(HEString(L"Avg. time"), GUIOptions(GUIOption::fixedWidth(60)));
+		mTitleBasicTotalTime = GUILabel::create(HEString(L"Total time"), GUIOptions(GUIOption::fixedWidth(60)));
+		mTitleBasicAvgTitleSelf = GUILabel::create(HEString(L"Avg. self time"), GUIOptions(GUIOption::fixedWidth(100)));
+		mTitleBasicTotalTimeSelf = GUILabel::create(HEString(L"Total self time"), GUIOptions(GUIOption::fixedWidth(100)));
 
-		mTitlePreciseName = GUILabel::create(HString(L"Name"), GUIOptions(GUIOption::fixedWidth(200)));
-		mTitlePrecisePctOfParent = GUILabel::create(HString(L"% parent"), GUIOptions(GUIOption::fixedWidth(50)));
-		mTitlePreciseNumCalls = GUILabel::create(HString(L"# calls"), GUIOptions(GUIOption::fixedWidth(50)));
-		mTitlePreciseNumAllocs = GUILabel::create(HString(L"# allocs"), GUIOptions(GUIOption::fixedWidth(50)));
-		mTitlePreciseNumFrees = GUILabel::create(HString(L"# frees"), GUIOptions(GUIOption::fixedWidth(50)));
-		mTitlePreciseAvgCycles = GUILabel::create(HString(L"Avg. cycles"), GUIOptions(GUIOption::fixedWidth(60)));
-		mTitlePreciseTotalCycles = GUILabel::create(HString(L"Total cycles"), GUIOptions(GUIOption::fixedWidth(60)));
-		mTitlePreciseAvgCyclesSelf = GUILabel::create(HString(L"Avg. self cycles"), GUIOptions(GUIOption::fixedWidth(100)));
-		mTitlePreciseTotalCyclesSelf = GUILabel::create(HString(L"Total self cycles"), GUIOptions(GUIOption::fixedWidth(100)));
+		mTitlePreciseName = GUILabel::create(HEString(L"Name"), GUIOptions(GUIOption::fixedWidth(200)));
+		mTitlePrecisePctOfParent = GUILabel::create(HEString(L"% parent"), GUIOptions(GUIOption::fixedWidth(50)));
+		mTitlePreciseNumCalls = GUILabel::create(HEString(L"# calls"), GUIOptions(GUIOption::fixedWidth(50)));
+		mTitlePreciseNumAllocs = GUILabel::create(HEString(L"# allocs"), GUIOptions(GUIOption::fixedWidth(50)));
+		mTitlePreciseNumFrees = GUILabel::create(HEString(L"# frees"), GUIOptions(GUIOption::fixedWidth(50)));
+		mTitlePreciseAvgCycles = GUILabel::create(HEString(L"Avg. cycles"), GUIOptions(GUIOption::fixedWidth(60)));
+		mTitlePreciseTotalCycles = GUILabel::create(HEString(L"Total cycles"), GUIOptions(GUIOption::fixedWidth(60)));
+		mTitlePreciseAvgCyclesSelf = GUILabel::create(HEString(L"Avg. self cycles"), GUIOptions(GUIOption::fixedWidth(100)));
+		mTitlePreciseTotalCyclesSelf = GUILabel::create(HEString(L"Total self cycles"), GUIOptions(GUIOption::fixedWidth(100)));
 
 		GUILayout* basicTitleLabelLayout = mBasicLayoutLabels->addNewElement<GUILayoutX>();
 		GUILayout* preciseTitleLabelLayout = mPreciseLayoutLabels->addNewElement<GUILayoutX>();
@@ -460,29 +438,29 @@ namespace BansheeEngine
 		gpuSampleTitleRow->addElement(GUILabel::create(gpuSamplesNameStr, GUIOptions(GUIOption::fixedWidth(100))));
 		gpuSampleTitleRow->addElement(GUILabel::create(gpuSamplesTimeStr, GUIOptions(GUIOption::fixedWidth(100))));
 
-		mGPUFrameNumStr = HString(L"__ProfOvFrame", L"Frame #{0}");
-		mGPUTimeStr = HString(L"__ProfOvTime", L"Time: {0}ms");
-		mGPUDrawCallsStr = HString(L"__ProfOvDrawCalls", L"Draw calls: {0}");
-		mGPURenTargetChangesStr = HString(L"__ProfOvRTChanges", L"Render target changes: {0}");
-		mGPUPresentsStr = HString(L"__ProfOvPresents", L"Presents: {0}");
-		mGPUClearsStr = HString(L"__ProfOvClears", L"Clears: {0}");
-		mGPUVerticesStr = HString(L"__ProfOvVertices", L"Num. vertices: {0}");
-		mGPUPrimitivesStr = HString(L"__ProfOvPrimitives", L"Num. primitives: {0}");
-		mGPUSamplesStr = HString(L"__ProfOvSamples", L"Samples drawn: {0}");
-		mGPUBlendStateChangesStr = HString(L"__ProfOvBSChanges", L"Blend state changes: {0}");
-		mGPURasterStateChangesStr = HString(L"__ProfOvRSChanges", L"Rasterizer state changes: {0}");
-		mGPUDepthStencilStateChangesStr = HString(L"__ProfOvDSSChanges", L"Depth/stencil state changes: {0}");
+		mGPUFrameNumStr = HEString(L"__ProfOvFrame", L"Frame #{0}");
+		mGPUTimeStr = HEString(L"__ProfOvTime", L"Time: {0}ms");
+		mGPUDrawCallsStr = HEString(L"__ProfOvDrawCalls", L"Draw calls: {0}");
+		mGPURenTargetChangesStr = HEString(L"__ProfOvRTChanges", L"Render target changes: {0}");
+		mGPUPresentsStr = HEString(L"__ProfOvPresents", L"Presents: {0}");
+		mGPUClearsStr = HEString(L"__ProfOvClears", L"Clears: {0}");
+		mGPUVerticesStr = HEString(L"__ProfOvVertices", L"Num. vertices: {0}");
+		mGPUPrimitivesStr = HEString(L"__ProfOvPrimitives", L"Num. primitives: {0}");
+		mGPUSamplesStr = HEString(L"__ProfOvSamples", L"Samples drawn: {0}");
+		mGPUBlendStateChangesStr = HEString(L"__ProfOvBSChanges", L"Blend state changes: {0}");
+		mGPURasterStateChangesStr = HEString(L"__ProfOvRSChanges", L"Rasterizer state changes: {0}");
+		mGPUDepthStencilStateChangesStr = HEString(L"__ProfOvDSSChanges", L"Depth/stencil state changes: {0}");
 
-		mGPUObjectsCreatedStr = HString(L"__ProfOvObjsCreated", L"Objects created: {0}");
-		mGPUObjectsDestroyedStr = HString(L"__ProfOvObjsDestroyed", L"Objects destroyed: {0}");
-		mGPUResourceWritesStr = HString(L"__ProfOvResWrites", L"Resource writes: {0}");
-		mGPUResourceReadsStr = HString(L"__ProfOvResReads", L"Resource reads: {0}");
-		mGPUTextureBindsStr = HString(L"__ProfOvTexBinds", L"Texture binds: {0}");
-		mGPUSamplerBindsStr = HString(L"__ProfOvSampBinds", L"Sampler binds: {0}");
-		mGPUVertexBufferBindsStr = HString(L"__ProfOvVBBinds", L"VB binds: {0}");
-		mGPUIndexBufferBindsStr = HString(L"__ProfOvIBBinds", L"IB binds: {0}");
-		mGPUGPUProgramBufferBindsStr = HString(L"__ProfOvProgBuffBinds", L"GPU program buffer binds: {0}");
-		mGPUGPUProgramBindsStr = HString(L"__ProfOvProgBinds", L"GPU program binds: {0}");
+		mGPUObjectsCreatedStr = HEString(L"__ProfOvObjsCreated", L"Objects created: {0}");
+		mGPUObjectsDestroyedStr = HEString(L"__ProfOvObjsDestroyed", L"Objects destroyed: {0}");
+		mGPUResourceWritesStr = HEString(L"__ProfOvResWrites", L"Resource writes: {0}");
+		mGPUResourceReadsStr = HEString(L"__ProfOvResReads", L"Resource reads: {0}");
+		mGPUTextureBindsStr = HEString(L"__ProfOvTexBinds", L"Texture binds: {0}");
+		mGPUSamplerBindsStr = HEString(L"__ProfOvSampBinds", L"Sampler binds: {0}");
+		mGPUVertexBufferBindsStr = HEString(L"__ProfOvVBBinds", L"VB binds: {0}");
+		mGPUIndexBufferBindsStr = HEString(L"__ProfOvIBBinds", L"IB binds: {0}");
+		mGPUGPUProgramBufferBindsStr = HEString(L"__ProfOvProgBuffBinds", L"GPU program buffer binds: {0}");
+		mGPUGPUProgramBindsStr = HEString(L"__ProfOvProgBinds", L"GPU program binds: {0}");
 
 		mGPULayoutFrameContentsLeft->addElement(GUILabel::create(mGPUFrameNumStr, GUIOptions(GUIOption::fixedWidth(200))));
 		mGPULayoutFrameContentsLeft->addElement(GUILabel::create(mGPUTimeStr, GUIOptions(GUIOption::fixedWidth(200))));

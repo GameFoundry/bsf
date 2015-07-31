@@ -96,7 +96,7 @@ namespace BansheeEditor
 
         private void OnInitialize()
         {
-            Title = "Color Picker";
+            Title = new LocEdString("Color Picker");
             Width = 270;
             Height = 400;
 
@@ -118,18 +118,18 @@ namespace BansheeEditor
             guiSliderAHorz = new GUISliderH(EditorStyles.ColorSliderHorz);
             guiSlider2DHandle = new GUITexture(null, EditorStyles.ColorSlider2DHandle);
 
-            guiLabelR = new GUILabel("R");
-            guiLabelG = new GUILabel("G");
-            guiLabelB = new GUILabel("B");
-            guiLabelA = new GUILabel("A");
+            guiLabelR = new GUILabel(new LocEdString("R"));
+            guiLabelG = new GUILabel(new LocEdString("G"));
+            guiLabelB = new GUILabel(new LocEdString("B"));
+            guiLabelA = new GUILabel(new LocEdString("A"));
 
             guiInputR = new GUIIntField();
             guiInputG = new GUIIntField();
             guiInputB = new GUIIntField();
             guiInputA = new GUIIntField();
 
-            guiOK = new GUIButton("OK");
-            guiCancel = new GUIButton("Cancel");
+            guiOK = new GUIButton(new LocEdString("OK"));
+            guiCancel = new GUIButton(new LocEdString("Cancel"));
 
             guiColorBoxBtn.OnClick += OnColorBoxModeChanged;
             guiColorModeBtn.OnClick += OnSliderModeChanged;
@@ -580,9 +580,9 @@ namespace BansheeEditor
         {
             if (sliderMode == SliderMode.RGB)
             {
-                guiLabelR.SetContent("R");
-                guiLabelG.SetContent("G");
-                guiLabelB.SetContent("B");
+                guiLabelR.SetContent(new LocEdString("R"));
+                guiLabelG.SetContent(new LocEdString("G"));
+                guiLabelB.SetContent(new LocEdString("B"));
 
                 guiInputR.SetRange(0, 255);
                 guiInputG.SetRange(0, 255);
@@ -590,9 +590,9 @@ namespace BansheeEditor
             }
             else
             {
-                guiLabelR.SetContent("H");
-                guiLabelG.SetContent("S");
-                guiLabelB.SetContent("V");
+                guiLabelR.SetContent(new LocEdString("H"));
+                guiLabelG.SetContent(new LocEdString("S"));
+                guiLabelB.SetContent(new LocEdString("V"));
 
                 guiInputR.SetRange(0, 359);
                 guiInputG.SetRange(0, 255);

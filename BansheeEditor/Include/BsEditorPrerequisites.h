@@ -20,7 +20,6 @@
 
 namespace BansheeEngine
 {
-	// GUI
 	class EditorWindowBase;
 	class EditorWindow;
 	class EditorWidgetBase;

@@ -14,7 +14,7 @@ namespace BansheeEditor
 
         protected override LocString GetDisplayName()
         {
-            return "Hierarchy";
+            return new LocEdString("Hierarchy");
         }
 
         private void OnInitialize()

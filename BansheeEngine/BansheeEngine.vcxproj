@@ -244,6 +244,7 @@
     <ClCompile Include="Source\BsGUISkinRTTI.cpp" />
     <ClCompile Include="Source\BsGUISlider.cpp" />
     <ClCompile Include="Source\BsGUISpace.cpp" />
+    <ClCompile Include="Source\BsHEString.cpp" />
     <ClCompile Include="Source\BsInputConfiguration.cpp" />
     <ClCompile Include="Source\BsLight.cpp" />
     <ClCompile Include="Source\BsPlainText.cpp" />
@@ -273,6 +274,7 @@
     <ClInclude Include="Include\BsGUISkinRTTI.h" />
     <ClInclude Include="Include\BsGUISlider.h" />
     <ClInclude Include="Include\BsGUIWidgetRTTI.h" />
+    <ClInclude Include="Include\BsHEString.h" />
     <ClInclude Include="Include\BsLight.h" />
     <ClInclude Include="Include\BsLightInternal.h" />
     <ClInclude Include="Include\BsLightInternalRTTI.h" />
