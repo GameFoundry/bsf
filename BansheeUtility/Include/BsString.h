@@ -962,6 +962,3 @@ struct std::hash<BansheeEngine::WString>
 		return hash ^ (hash >> 16);
 	}
 };
-
-
-#include "BsHString.h"

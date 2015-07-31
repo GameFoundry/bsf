@@ -13,6 +13,7 @@
 #include "BsScriptMesh.h"
 #include "BsScriptFont.h"
 #include "BsScriptPrefab.h"
+#include "BsScriptStringTable.h"
 #include "BsScriptManagedResource.h"
 #include "BsScriptAssemblyManager.h"
 
@@ -253,6 +254,27 @@ namespace BansheeEngine
 		return scriptResource;
 	}
 
+	ScriptStringTable* ScriptResourceManager::createScriptStringTable(const HStringTable& resourceHandle)
+	{
+		MonoClass* stringTableClass = ScriptAssemblyManager::instance().getStringTableClass();
+		MonoObject* monoInstance = stringTableClass->createInstance();
+
+		return createScriptStringTable(monoInstance, resourceHandle);
+	}
+
+	ScriptStringTable* ScriptResourceManager::createScriptStringTable(MonoObject* instance, const HStringTable& resourceHandle)
+	{
+		const String& uuid = resourceHandle.getUUID();
+#if BS_DEBUG_MODE
+		throwExceptionIfInvalidOrDuplicate(uuid);
+#endif
+
+		ScriptStringTable* scriptResource = new (bs_alloc<ScriptStringTable>()) ScriptStringTable(instance, resourceHandle);
+		mScriptResources[uuid] = scriptResource;
+
+		return scriptResource;
+	}
+
 	ScriptManagedResource* ScriptResourceManager::createManagedResource(MonoObject* existingInstance, const HManagedResource& resourceHandle)
 	{
 		const String& uuid = resourceHandle.getUUID();
@@ -317,6 +339,11 @@ namespace BansheeEngine
 	ScriptPrefab* ScriptResourceManager::getScriptPrefab(const HPrefab& resourceHandle)
 	{
 		return static_cast<ScriptPrefab*>(getScriptResource(resourceHandle.getUUID()));
+	}
+
+	ScriptStringTable* ScriptResourceManager::getScriptStringTable(const HStringTable& resourceHandle)
+	{
+		return static_cast<ScriptStringTable*>(getScriptResource(resourceHandle.getUUID()));
 	}
 
 	ScriptResourceBase* ScriptResourceManager::getScriptResource(const String& uuid)

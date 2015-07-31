@@ -16,6 +16,7 @@
 #include "BsScriptMaterial.h"
 #include "BsScriptMesh.h"
 #include "BsScriptPrefab.h"
+#include "BsScriptStringTable.h"
 #include "BsScriptSceneObject.h"
 #include "BsScriptComponent.h"
 #include "BsManagedSerializableObject.h"
@@ -253,6 +254,18 @@ namespace BansheeEngine
 				{
 					ScriptPrefab* scriptPrefab = ScriptPrefab::toNative(value);
 					fieldData->value = static_resource_cast<Prefab>(scriptPrefab->getNativeHandle());
+				}
+
+				return fieldData;
+			}
+			case ScriptPrimitiveType::StringTableRef:
+			{
+				auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataResourceRef>();
+
+				if (value != nullptr)
+				{
+					ScriptStringTable* scriptStringTable = ScriptStringTable::toNative(value);
+					fieldData->value = static_resource_cast<StringTable>(scriptStringTable->getNativeHandle());
 				}
 
 				return fieldData;
@@ -667,6 +680,21 @@ namespace BansheeEngine
 					ScriptPrefab* scriptResource = ScriptResourceManager::instance().getScriptPrefab(prefab);
 					if (scriptResource == nullptr)
 						scriptResource = ScriptResourceManager::instance().createScriptPrefab(prefab);
+
+					if (scriptResource != nullptr)
+						return scriptResource->getManagedInstance();
+				}
+				else
+					return nullptr;
+			}
+			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::StringTableRef)
+			{
+				if (value)
+				{
+					HStringTable stringTable = static_resource_cast<StringTable>(value);
+					ScriptStringTable* scriptResource = ScriptResourceManager::instance().getScriptStringTable(stringTable);
+					if (scriptResource == nullptr)
+						scriptResource = ScriptResourceManager::instance().createScriptStringTable(stringTable);
 
 					if (scriptResource != nullptr)
 						return scriptResource->getManagedInstance();

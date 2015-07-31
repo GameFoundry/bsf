@@ -1,13 +1,13 @@
-#include "BsPrerequisitesUtil.h"
+#include "BsCorePrerequisites.h"
 #include "BsHString.h"
-#include "BsStringTable.h"
+#include "BsStringTableManager.h"
 
 namespace BansheeEngine
 {
 	HString::HString(UINT32 stringTableId)
 		:mParameters(nullptr), mIsDirty(true), mStringPtr(nullptr)
 	{
-		mStringData = StringTable::instance().getStringData(L"");
+		mStringData = StringTableManager::instance().getTable(stringTableId)->getStringData(L"");
 
 		if(mStringData->numParameters > 0)
 			mParameters = bs_newN<WString>(mStringData->numParameters);
@@ -16,7 +16,7 @@ namespace BansheeEngine
 	HString::HString(const WString& identifierString, UINT32 stringTableId)
 		:mParameters(nullptr), mIsDirty(true), mStringPtr(nullptr)
 	{
-		mStringData = StringTable::instance().getStringData(identifierString);
+		mStringData = StringTableManager::instance().getTable(stringTableId)->getStringData(identifierString);
 
 		if(mStringData->numParameters > 0)
 			mParameters = bs_newN<WString>(mStringData->numParameters);
@@ -25,9 +25,10 @@ namespace BansheeEngine
 	HString::HString(const WString& identifierString, const WString& defaultString, UINT32 stringTableId)
 		:mParameters(nullptr), mIsDirty(true), mStringPtr(nullptr)
 	{
-		StringTable::instance().setString(identifierString, StringTable::DEFAULT_LANGUAGE, defaultString);
+		HStringTable table = StringTableManager::instance().getTable(stringTableId);
+		table->setString(identifierString, StringTable::DEFAULT_LANGUAGE, defaultString);
 
-		mStringData = StringTable::instance().getStringData(identifierString);
+		mStringData = table->getStringData(identifierString);
 
 		if (mStringData->numParameters > 0)
 			mParameters = bs_newN<WString>(mStringData->numParameters);

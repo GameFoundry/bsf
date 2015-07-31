@@ -1,7 +1,6 @@
 #pragma once
 
 #include "BsPrerequisitesUtil.h"
-#include "BsModule.h"
 
 namespace BansheeEngine
 {

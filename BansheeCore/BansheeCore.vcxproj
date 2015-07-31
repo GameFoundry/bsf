@@ -280,6 +280,7 @@
   <ItemGroup>
     <ClInclude Include="Include\BsCoreObjectCore.h" />
     <ClInclude Include="Include\BsDrawList.h" />
+    <ClInclude Include="Include\BsHString.h" />
     <ClInclude Include="Include\BsMeshImportOptions.h" />
     <ClInclude Include="Include\BsMeshImportOptionsRTTI.h" />
     <ClInclude Include="Include\BsMeshUtility.h" />
@@ -363,6 +364,9 @@
     <ClInclude Include="Include\BsPixelBuffer.h" />
     <ClInclude Include="Include\BsShaderIncludeImporter.h" />
     <ClInclude Include="Include\BsShaderManager.h" />
+    <ClInclude Include="Include\BsStringTable.h" />
+    <ClInclude Include="Include\BsStringTableManager.h" />
+    <ClInclude Include="Include\BsStringTableRTTI.h" />
     <ClInclude Include="Include\BsSubMesh.h" />
     <ClInclude Include="Include\BsTextureImportOptions.h" />
     <ClInclude Include="Include\BsTextureImportOptionsRTTI.h" />
@@ -438,6 +442,7 @@
     <ClCompile Include="Source\BsCoreObjectCore.cpp" />
     <ClCompile Include="Source\BsCoreThread.cpp" />
     <ClCompile Include="Source\BsDrawList.cpp" />
+    <ClCompile Include="Source\BsHString.cpp" />
     <ClCompile Include="Source\BsIResourceListener.cpp" />
     <ClCompile Include="Source\BsMaterialParam.cpp" />
     <ClCompile Include="Source\BsMeshImportOptions.cpp" />
@@ -495,6 +500,8 @@
     <ClCompile Include="Source\BsResourceManifest.cpp" />
     <ClCompile Include="Source\BsResourceMetaData.cpp" />
     <ClCompile Include="Source\BsShaderManager.cpp" />
+    <ClCompile Include="Source\BsStringTable.cpp" />
+    <ClCompile Include="Source\BsStringTableManager.cpp" />
     <ClCompile Include="Source\BsTextureImportOptions.cpp" />
     <ClCompile Include="Source\BsTextureView.cpp" />
     <ClCompile Include="Source\BsTextData.cpp" />

@@ -42,9 +42,6 @@
     <Filter Include="Source Files\Threading">
       <UniqueIdentifier>{cb0d2667-8d73-4d4c-9b2b-bc18fbd7fd70}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Localization">
-      <UniqueIdentifier>{bbd99250-46cb-4299-bbfa-34addc87b878}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\ThirdParty">
       <UniqueIdentifier>{e0b74f43-dbb4-4e2a-8000-6d9f29dda203}</UniqueIdentifier>
     </Filter>
@@ -81,9 +78,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsTexAtlasGenerator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsStringTable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsString.h">
@@ -233,9 +227,6 @@
     <ClInclude Include="Include\BsVector4.h">
       <Filter>Header Files\Math</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsHString.h">
-      <Filter>Header Files\Localization</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsBitmapWriter.h">
       <Filter>Header Files\Debug</Filter>
     </ClInclude>
@@ -328,9 +319,6 @@
     <ClCompile Include="Source\BsTexAtlasGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsStringTable.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\BsString.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -347,9 +335,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsLog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsHString.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsFrameAlloc.cpp">

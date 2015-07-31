@@ -319,6 +319,7 @@
     <ClInclude Include="Include\BsScriptShader.h" />
     <ClInclude Include="Include\BsScriptSpriteTexture.h" />
     <ClInclude Include="Include\BsScriptStringTable.h" />
+    <ClInclude Include="Include\BsScriptStringTableManager.h" />
     <ClInclude Include="Include\BsScriptTexture.h" />
     <ClInclude Include="Include\BsScriptTexture2D.h" />
     <ClInclude Include="Include\BsScriptGUIContent.h" />
@@ -410,6 +411,7 @@
     <ClCompile Include="Source\BsScriptShader.cpp" />
     <ClCompile Include="Source\BsScriptSpriteTexture.cpp" />
     <ClCompile Include="Source\BsScriptStringTable.cpp" />
+    <ClCompile Include="Source\BsScriptStringTableManager.cpp" />
     <ClCompile Include="Source\BsScriptTexture.cpp" />
     <ClCompile Include="Source\BsScriptTexture2D.cpp" />
     <ClCompile Include="Source\BsScriptGUIContent.cpp" />

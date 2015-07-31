@@ -27,7 +27,7 @@ namespace BansheeEngine
 		static HScriptCode create(const WString& data, bool editorScript = false);
 
 		/**
-		 * @brief	Creates an include file resource with the specified include string.
+		 * @brief	Creates a new scriptcode resource with the specified source string.
 		 *
 		 * @note	Internal method. Use "create" for normal use.
 		 */
@@ -44,6 +44,6 @@ namespace BansheeEngine
 	public:
 		friend class ScriptCodeRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		virtual RTTITypeBase* getRTTI() const override;
 	};
 }

@@ -57,6 +57,8 @@
 
 #endif
 
+#include "BsHString.h"
+
 namespace BansheeEngine 
 {
 	static const StringID RenderAPIAny = "AnyRenderAPI";
@@ -186,6 +188,7 @@ namespace BansheeEngine
 	class Font;
 	class ResourceMetaData;
 	class OSDropTarget;
+	class StringTable;
 	// Scene
 	class SceneObject;
 	class Component;
@@ -342,7 +345,10 @@ namespace BansheeEngine
 		TID_PrefabObjectDiff = 1079,
 		TID_PrefabComponentDiff = 1080,
 		TID_GUIWidget = 1081,
-		TID_ProfilerOverlay = 1082
+		TID_ProfilerOverlay = 1082,
+		TID_StringTable = 1083,
+		TID_LanguageData = 1084,
+		TID_LocalizedStringData = 1085
 	};
 }
 
@@ -363,6 +369,7 @@ namespace BansheeEngine
 	typedef ResourceHandle<Font> HFont;
 	typedef ResourceHandle<Shader> HShader;
 	typedef ResourceHandle<Prefab> HPrefab;
+	typedef ResourceHandle<StringTable> HStringTable;
 }
 
 namespace BansheeEngine

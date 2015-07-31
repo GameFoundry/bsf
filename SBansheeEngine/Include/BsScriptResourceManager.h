@@ -144,6 +144,18 @@ namespace BansheeEngine
 		ScriptPrefab* createScriptPrefab(MonoObject* existingInstance, const HPrefab& resourceHandle);
 
 		/**
+		 * @note Throws an exception if resource for the handle already exists.
+		 * 		 Creates a new managed instance of the object.
+		 */
+		ScriptStringTable* createScriptStringTable(const HStringTable& resourceHandle);
+
+		/**
+		 * @note Throws an exception if resource for the handle already exists.
+		 * 		 Initializes the ScriptResource with an existing managed instance.
+		 */
+		ScriptStringTable* createScriptStringTable(MonoObject* existingInstance, const HStringTable& resourceHandle);
+
+		/**
 		* @note  Throws an exception if resource for the handle already exists.
 		* 		 Initializes the ScriptResource with an existing managed instance.
 		*/
@@ -203,6 +215,11 @@ namespace BansheeEngine
 		 * @note Returns nullptr if script resource doesn't exist.
 		 */
 		ScriptPrefab* getScriptPrefab(const HPrefab& resourceHandle);
+
+		/**
+		 * @note Returns nullptr if script resource doesn't exist.
+		 */
+		ScriptStringTable* getScriptStringTable(const HStringTable& resourceHandle);
 
 		/**
 		 * @note Returns nullptr if script resource doesn't exist.

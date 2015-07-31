@@ -311,6 +311,23 @@ namespace BansheeEngine
 				}
 			}
 				break;
+			case TID_Prefab:
+			{
+				if (ScriptAssemblyManager::instance().getPrefabClass()->isSubClassOf(acceptedClass))
+				{
+					setUUID(uuid);
+					found = true;
+				}
+			}
+			case TID_StringTable:
+			{
+				if (ScriptAssemblyManager::instance().getStringTableClass()->isSubClassOf(acceptedClass))
+				{
+					setUUID(uuid);
+					found = true;
+				}
+			}
+				break;
 			case TID_ManagedResource:
 			{
 				ManagedResourceMetaDataPtr managedResMetaData = std::static_pointer_cast<ManagedResourceMetaData>(meta->getResourceMetaData());

@@ -1,5 +1,7 @@
 #include "BsStringTable.h"
 #include "BsException.h"
+#include "BsResources.h"
+#include "BsStringTableRTTI.h"
 
 namespace BansheeEngine
 {
@@ -160,7 +162,7 @@ namespace BansheeEngine
 	}
 
 	StringTable::StringTable()
-		:mActiveLanguageData(nullptr), mDefaultLanguageData(nullptr), mAllLanguages(nullptr)
+		:Resource(false), mActiveLanguageData(nullptr), mDefaultLanguageData(nullptr), mAllLanguages(nullptr)
 	{
 		mAllLanguages = bs_newN<LanguageData>((UINT32)Language::Count);
 
@@ -200,7 +202,19 @@ namespace BansheeEngine
 			stringData = iterFind->second;
 		}
 
+		mIdentifiers.insert(identifier);
 		stringData->updateString(string);
+	}
+
+	WString StringTable::getString(const WString& identifier, Language language)
+	{
+		LanguageData* curLanguage = &(mAllLanguages[(UINT32)language]);
+
+		auto iterFind = curLanguage->strings.find(identifier);
+		if (iterFind != curLanguage->strings.end())
+			return iterFind->second->string;
+			
+		return identifier;
 	}
 
 	void StringTable::removeString(const WString& identifier)
@@ -209,6 +223,8 @@ namespace BansheeEngine
 		{
 			mAllLanguages[i].strings.erase(identifier);
 		}
+
+		mIdentifiers.erase(identifier);
 	}
 
 	SPtr<LocalizedStringData> StringTable::getStringData(const WString& identifier, bool insertIfNonExisting)
@@ -238,5 +254,30 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "There is no string data for the provided identifier.");
+	}
+
+	HStringTable StringTable::create()
+	{
+		return static_resource_cast<StringTable>(gResources()._createResourceHandle(_createPtr()));
+	}
+
+	SPtr<StringTable> StringTable::_createPtr()
+	{
+		SPtr<StringTable> scriptCodePtr = bs_core_ptr<StringTable, PoolAlloc>(
+			new (bs_alloc<StringTable, PoolAlloc>()) StringTable());
+		scriptCodePtr->_setThisPtr(scriptCodePtr);
+		scriptCodePtr->initialize();
+
+		return scriptCodePtr;
+	}
+
+	RTTITypeBase* StringTable::getRTTIStatic()
+	{
+		return StringTableRTTI::instance();
+	}
+
+	RTTITypeBase* StringTable::getRTTI() const
+	{
+		return StringTable::getRTTIStatic();
 	}
 }

@@ -29,7 +29,7 @@
 #include "BsCoreRenderer.h"
 #include "BsDeferredCallManager.h"
 #include "BsCoreThread.h"
-#include "BsStringTable.h"
+#include "BsStringTableManager.h"
 #include "BsProfilingManager.h"
 #include "BsProfilerCPU.h"
 #include "BsProfilerGPU.h"
@@ -101,7 +101,7 @@ namespace BansheeEngine
 		DynLibManager::shutDown();
 		Time::shutDown();
 		DeferredCallManager::shutDown();
-		StringTable::shutDown();
+		StringTableManager::shutDown();
 
 		CoreThread::shutDown();
 		RenderStats::shutDown();
@@ -134,7 +134,7 @@ namespace BansheeEngine
 		TaskScheduler::instance().removeWorker();
 		RenderStats::startUp();
 		CoreThread::startUp();
-		StringTable::startUp();
+		StringTableManager::startUp();
 		DeferredCallManager::startUp();
 		Time::startUp();
 		DynLibManager::startUp();

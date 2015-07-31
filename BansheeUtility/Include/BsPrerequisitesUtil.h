@@ -65,3 +65,4 @@
 #include "BsUtil.h"
 #include "BsPath.h"
 #include "BsStringID.h"
+#include "BsEvent.h"

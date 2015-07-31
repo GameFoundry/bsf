@@ -135,6 +135,7 @@
     <Compile Include="Sphere.cs" />
     <Compile Include="SpriteTexture.cs" />
     <Compile Include="StringTable.cs" />
+    <Compile Include="StringTables.cs" />
     <Compile Include="Texture.cs" />
     <Compile Include="Texture2D.cs" />
     <Compile Include="Math\Vector2.cs" />

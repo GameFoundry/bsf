@@ -1,7 +1,5 @@
 #pragma once
 
-#include "BsEvent.h"
-
 namespace BansheeEngine
 {
 	/**
@@ -14,7 +12,7 @@ namespace BansheeEngine
 	 *			
 	 *			Use {0}, {1}, etc. in the string value for values that might change dynamically.
 	 */
-	class BS_UTILITY_EXPORT HString
+	class BS_CORE_EXPORT HString
 	{
 	public:
 		/**

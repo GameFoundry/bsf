@@ -403,10 +403,10 @@ namespace BansheeEngine
 	}; 
 
 	/**
-	* @brief	RTTIPlainType for std::unordered_map.
-	*
-	* @see		RTTIPlainType
-	*/
+	 * @brief	RTTIPlainType for std::unordered_map.
+	 *
+	 * @see		RTTIPlainType
+	 */
 	template<class Key, class Value> 
 	struct RTTIPlainType<std::unordered_map<Key, Value, std::hash<Key>, std::equal_to<Key>, StdAlloc<std::pair<const Key, Value>>>>
 	{
@@ -447,8 +447,8 @@ namespace BansheeEngine
 		}
 
 		/**
-		* @copydoc		RTTIPlainType::fromMemory
-		*/
+		 * @copydoc		RTTIPlainType::fromMemory
+		 */
 		static UINT32 fromMemory(MapType& data, char* memory)
 		{
 			UINT32 size = 0;
@@ -476,8 +476,8 @@ namespace BansheeEngine
 		}
 
 		/**
-		* @copydoc		RTTIPlainType::getDynamicSize
-		*/
+		 * @copydoc		RTTIPlainType::getDynamicSize
+		 */
 		static UINT32 getDynamicSize(const MapType& data)
 		{
 			UINT64 dataSize = sizeof(UINT32)* 2;
@@ -486,6 +486,87 @@ namespace BansheeEngine
 			{
 				dataSize += RTTIPlainType<Key>::getDynamicSize(iter->first);
 				dataSize += RTTIPlainType<Value>::getDynamicSize(iter->second);
+			}
+
+			assert(dataSize <= std::numeric_limits<UINT32>::max());
+
+			return (UINT32)dataSize;
+		}
+	};
+
+	/**
+	 * @brief	RTTIPlainType for std::unordered_set.
+	 *
+	 * @see		RTTIPlainType
+	 */
+	template<class Key> 
+	struct RTTIPlainType<std::unordered_set<Key, std::hash<Key>, std::equal_to<Key>, StdAlloc<Key>>>
+	{
+		enum { id = TID_UnorderedSet }; enum { hasDynamicSize = 1 };
+
+		typedef std::unordered_set<Key, std::hash<Key>, std::equal_to<Key>, StdAlloc<Key>> MapType;
+
+		/**
+		* @copydoc		RTTIPlainType::toMemory
+		*/
+		static void toMemory(MapType& data, char* memory)
+		{
+			UINT32 size = sizeof(UINT32);
+			char* memoryStart = memory;
+			memory += sizeof(UINT32);
+
+			UINT32 numElements = (UINT32)data.size();
+			memcpy(memory, &numElements, sizeof(UINT32));
+			memory += sizeof(UINT32);
+			size += sizeof(UINT32);
+
+			for (auto iter = data.begin(); iter != data.end(); ++iter)
+			{
+				UINT32 keySize = RTTIPlainType<Key>::getDynamicSize(*iter);
+				RTTIPlainType<Key>::toMemory(*iter, memory);
+
+				memory += keySize;
+				size += keySize;
+			}
+
+			memcpy(memoryStart, &size, sizeof(UINT32));
+		}
+
+		/**
+		 * @copydoc		RTTIPlainType::fromMemory
+		 */
+		static UINT32 fromMemory(MapType& data, char* memory)
+		{
+			UINT32 size = 0;
+			memcpy(&size, memory, sizeof(UINT32));
+			memory += sizeof(UINT32);
+
+			UINT32 numElements;
+			memcpy(&numElements, memory, sizeof(UINT32));
+			memory += sizeof(UINT32);
+
+			for (UINT32 i = 0; i < numElements; i++)
+			{
+				Key key;
+				UINT32 keySize = RTTIPlainType<Key>::fromMemory(key, memory);
+				memory += keySize;
+
+				data.insert(key);
+			}
+
+			return size;
+		}
+
+		/**
+		 * @copydoc		RTTIPlainType::getDynamicSize
+		 */
+		static UINT32 getDynamicSize(const MapType& data)
+		{
+			UINT64 dataSize = sizeof(UINT32)* 2;
+
+			for (auto iter = data.begin(); iter != data.end(); ++iter)
+			{
+				dataSize += RTTIPlainType<Key>::getDynamicSize(*iter);
 			}
 
 			assert(dataSize <= std::numeric_limits<UINT32>::max());

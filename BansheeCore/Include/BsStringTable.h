@@ -1,8 +1,7 @@
 #pragma once
 
-#include "BsPrerequisitesUtil.h"
-#include "BsModule.h"
-#include "BsEvent.h"
+#include "BsCorePrerequisites.h"
+#include "BsResource.h"
 
 namespace BansheeEngine
 {
@@ -231,36 +230,41 @@ namespace BansheeEngine
 	};
 
 	/**
+	 * @brief	Data for a single language in the string table.
+	 */
+	struct LanguageData
+	{
+		UnorderedMap<WString, SPtr<LocalizedStringData>> strings;
+	};
+
+	/**
 	 * @brief	Class that handles string localization. Stores strings and their translations
 	 * 			in various languages, along with the ability to switch currently active language.
 	 */
-	class BS_UTILITY_EXPORT StringTable : public Module<StringTable>
+	class BS_CORE_EXPORT StringTable : public Resource
 	{
 		// TODO - When editing string table I will need to ensure that all languages of the same string have the same number of parameters
 
-		struct LanguageData
-		{
-			UnorderedMap<WString, SPtr<LocalizedStringData>> strings;
-		};
+
 	public:
 		StringTable();
 		~StringTable();
 
 		/**
-		 * @brief	Gets the currently active language.
+		 * @brief	Returns all identifiers in the table.
 		 */
-		Language getActiveLanguage() const { return mActiveLanguage; }
-
-		/**
-		 * @brief	Changes the currently active language.
-		 * 			This will update any localized string instances.
-		 */
-		void setActiveLanguage(Language language);
+		const UnorderedSet<WString>& getIdentifiers() const { return mIdentifiers; }
 
 		/**
 		 * @brief	Adds or modifies string translation for the specified language.
 		 */
 		void setString(const WString& identifier, Language language, const WString& string);
+
+		/**
+		 * @brief	Returns a string translation for the specified language. Returns
+		 *			the identifier itself if one doesn't exist.
+		 */
+		WString getString(const WString& identifier, Language language);
 
 		/**
 		 * @brief	Removes the string described by identifier, from all languages.
@@ -292,15 +296,48 @@ namespace BansheeEngine
 		 */
 		SPtr<LocalizedStringData> getStringData(const WString& identifier, Language language, bool insertIfNonExisting = true);
 
-	private:
-		friend class HString;
+		/**
+		 * @brief	Creates a new empty string table resource.
+		 */
+		static HStringTable create();
+
+		/**
+		 * @brief	Creates a new empty string table resource.
+		 *
+		 * @note	Internal method. Use "create" for normal use.
+		 */
+		static SPtr<StringTable> _createPtr();
 
 		static const Language DEFAULT_LANGUAGE;
+	private:
+		friend class HString;
+		friend class StringTableManager;
+
+		/**
+		 * @brief	Gets the currently active language.
+		 */
+		Language getActiveLanguage() const { return mActiveLanguage; }
+
+		/**
+		 * @brief	Changes the currently active language.
+		 * 			Any newly created strings will use this value.
+		 */
+		void setActiveLanguage(Language language);
 
 		Language mActiveLanguage;
 		LanguageData* mActiveLanguageData;
 		LanguageData* mDefaultLanguageData;
 
 		LanguageData* mAllLanguages;
+
+		UnorderedSet<WString> mIdentifiers;
+
+		/************************************************************************/
+		/* 								SERIALIZATION                      		*/
+		/************************************************************************/
+	public:
+		friend class StringTableRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const override;
 	};
 }

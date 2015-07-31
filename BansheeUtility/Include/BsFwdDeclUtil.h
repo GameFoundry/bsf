@@ -101,6 +101,7 @@ namespace BansheeEngine
 		TID_SerializedArray = 62,
 		TID_SerializedEntry = 63,
 		TID_SerializedArrayEntry = 64,
-		TID_SerializedSubObject = 65
+		TID_SerializedSubObject = 65,
+		TID_UnorderedSet = 66,
 	};
 }

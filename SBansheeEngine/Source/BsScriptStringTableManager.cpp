@@ -1,0 +1,60 @@
+#include "BsScriptStringTableManager.h"
+#include "BsScriptMeta.h"
+#include "BsMonoField.h"
+#include "BsMonoClass.h"
+#include "BsMonoManager.h"
+#include "BsMonoUtil.h"
+#include "BsScriptResourceManager.h"
+#include "BsScriptStringTable.h"
+
+namespace BansheeEngine
+{
+	ScriptStringTableManager::ScriptStringTableManager(MonoObject* instance)
+		:ScriptObject(instance)
+	{ }
+
+	void ScriptStringTableManager::initRuntimeData()
+	{
+		metaData.scriptClass->addInternalCall("Internal_GetActiveLanguage", &ScriptStringTableManager::internal_GetActiveLanguage);
+		metaData.scriptClass->addInternalCall("Internal_SetActiveLanguage", &ScriptStringTableManager::internal_SetActiveLanguage);
+
+		metaData.scriptClass->addInternalCall("Internal_GetTable", &ScriptStringTableManager::internal_GetTable);
+		metaData.scriptClass->addInternalCall("Internal_SetTable", &ScriptStringTableManager::internal_SetTable);
+		metaData.scriptClass->addInternalCall("Internal_RemoveTable", &ScriptStringTableManager::internal_RemoveTable);
+	}
+
+	void ScriptStringTableManager::internal_GetActiveLanguage(Language* value)
+	{
+		*value = StringTableManager::instance().getActiveLanguage();
+	}
+
+	void ScriptStringTableManager::internal_SetActiveLanguage(Language value)
+	{
+		StringTableManager::instance().setActiveLanguage(value);
+	}
+
+	MonoObject* ScriptStringTableManager::internal_GetTable(UINT32 id)
+	{
+		HStringTable table = StringTableManager::instance().getTable(id);
+
+		ScriptStringTable* scriptStringTable = ScriptResourceManager::instance().getScriptStringTable(table);
+		if (scriptStringTable == nullptr)
+			scriptStringTable = ScriptResourceManager::instance().createScriptStringTable(table);
+
+		return scriptStringTable->getManagedInstance();
+	}
+
+	void ScriptStringTableManager::internal_SetTable(UINT32 id, MonoObject* table)
+	{
+		HStringTable nativeTable;
+		if (table != nullptr)
+			nativeTable = ScriptStringTable::toNative(table)->getStringTableHandle();
+
+		StringTableManager::instance().setTable(id, nativeTable);
+	}
+
+	void ScriptStringTableManager::internal_RemoveTable(UINT32 id)
+	{
+		StringTableManager::instance().removeTable(id);
+	}
+}

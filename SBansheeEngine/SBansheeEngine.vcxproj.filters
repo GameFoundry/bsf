@@ -327,6 +327,9 @@
     <ClInclude Include="Include\BsScriptProfilerOverlayInternal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsScriptStringTableManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsScriptTexture2D.cpp">
@@ -591,6 +594,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsScriptProfilerOverlayInternal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptStringTableManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

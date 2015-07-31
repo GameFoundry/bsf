@@ -19,7 +19,7 @@ namespace BansheeEngine
 		mSerializeFieldAttribute(nullptr), mHideInInspectorAttribute(nullptr), mSystemArrayClass(nullptr), mSystemGenericListClass(nullptr),
 		mSystemGenericDictionaryClass(nullptr), mManagedResourceClass(nullptr), mFontClass(nullptr), mMissingComponentClass(nullptr),
 		mPlainTextClass(nullptr), mScriptCodeClass(nullptr), mShaderClass(nullptr), mMaterialClass(nullptr), mTexture3DClass(nullptr),
-		mTextureCubeClass(nullptr), mMeshClass(nullptr), mPrefabClass(nullptr)
+		mTextureCubeClass(nullptr), mMeshClass(nullptr), mPrefabClass(nullptr), mStringTableClass(nullptr)
 	{
 
 	}
@@ -325,6 +325,12 @@ namespace BansheeEngine
 				typeInfo->mType = ScriptPrimitiveType::PrefabRef;
 				return typeInfo;
 			}
+			else if (monoClass->isSubClassOf(mStringTableClass))
+			{
+				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr<ManagedSerializableTypeInfoPrimitive>();
+				typeInfo->mType = ScriptPrimitiveType::StringTableRef;
+				return typeInfo;
+			}
 			else if(monoClass->isSubClassOf(mSceneObjectClass))
 			{
 				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr<ManagedSerializableTypeInfoPrimitive>();
@@ -436,6 +442,7 @@ namespace BansheeEngine
 		mMaterialClass = nullptr;
 		mMeshClass = nullptr;
 		mPrefabClass = nullptr;
+		mStringTableClass = nullptr;
 		mFontClass = nullptr;
 		mPlainTextClass = nullptr;
 		mScriptCodeClass = nullptr;
@@ -526,6 +533,10 @@ namespace BansheeEngine
 		mPrefabClass = bansheeEngineAssembly->getClass("BansheeEngine", "Prefab");
 		if (mPrefabClass == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find Prefab managed class.");
+
+		mStringTableClass = bansheeEngineAssembly->getClass("BansheeEngine", "StringTable");
+		if (mStringTableClass == nullptr)
+			BS_EXCEPT(InvalidStateException, "Cannot find StringTable managed class.");
 
 		mPlainTextClass = bansheeEngineAssembly->getClass("BansheeEngine", "PlainText");
 		if (mPlainTextClass == nullptr)
