@@ -105,9 +105,9 @@ namespace BansheeEngine
 		void unbindGpuProgram(GpuProgramType gptype);
 
 		/**
-		 * @copydoc RenderAPICore::bindGpuParams()
+		 * @copydoc RenderAPICore::setConstantBuffers()
 		 */
-		void bindGpuParams(GpuProgramType gptype, const SPtr<GpuParamsCore>& params);
+		void setConstantBuffers(GpuProgramType gptype, const SPtr<GpuParamsCore>& params);
 
 		/**
 		 * @copydoc RenderAPICore::beginFrame()

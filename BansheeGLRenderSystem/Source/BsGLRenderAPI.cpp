@@ -243,7 +243,7 @@ namespace BansheeEngine
 		RenderAPICore::unbindGpuProgram(gptype);
 	}
 
-	void GLRenderAPI::bindGpuParams(GpuProgramType gptype, const SPtr<GpuParamsCore>& bindableParams)
+	void GLRenderAPI::setConstantBuffers(GpuProgramType gptype, const SPtr<GpuParamsCore>& bindableParams)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -251,40 +251,6 @@ namespace BansheeEngine
 		const GpuParamDesc& paramDesc = bindableParams->getParamDesc();
 		SPtr<GLSLGpuProgramCore> activeProgram = getActiveProgram(gptype);
 		GLuint glProgram = activeProgram->getGLHandle();
-
-		for(auto iter = paramDesc.textures.begin(); iter != paramDesc.textures.end(); ++iter)
-		{
-			SPtr<TextureCore> texture = bindableParams->getTexture(iter->second.slot);
-
-			if (!bindableParams->isLoadStoreTexture(iter->second.slot))
-			{
-				if (texture == nullptr)
-					setTexture(gptype, iter->second.slot, false, nullptr);
-				else
-					setTexture(gptype, iter->second.slot, true, texture);
-			}
-			else
-			{
-				const TextureSurface& surface = bindableParams->getLoadStoreSurface(iter->second.slot);
-
-				if (texture == nullptr)
-					setLoadStoreTexture(gptype, iter->second.slot, false, nullptr, surface);
-				else
-					setLoadStoreTexture(gptype, iter->second.slot, true, texture, surface);
-			}
-		}
-
-		for(auto iter = paramDesc.samplers.begin(); iter != paramDesc.samplers.end(); ++iter)
-		{
-			SPtr<SamplerStateCore>& samplerState = bindableParams->getSamplerState(iter->second.slot);
-
-			if(samplerState == nullptr)
-				setSamplerState(gptype, iter->second.slot, SamplerStateCore::getDefault());
-			else
-				setSamplerState(gptype, iter->second.slot, samplerState);
-
-			glProgramUniform1i(glProgram, iter->second.slot, getGLTextureUnit(gptype, iter->second.slot));
-		}
 
 		UINT8* uniformBufferData = nullptr;
 
@@ -466,6 +432,11 @@ namespace BansheeEngine
 
 		// Set border color
 		setTextureBorderColor(unit, stateProps.getBorderColor());
+
+		SPtr<GLSLGpuProgramCore> activeProgram = getActiveProgram(gptype);
+		GLuint glProgram = activeProgram->getGLHandle();
+
+		glProgramUniform1i(glProgram, unit, getGLTextureUnit(gptype, unit));
 
 		BS_INC_RENDER_STAT(NumSamplerBinds);
 	}

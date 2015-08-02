@@ -243,6 +243,7 @@
     <ClInclude Include="Include\BsBansheeRenderer.h" />
     <ClInclude Include="Include\BsBansheeRendererFactory.h" />
     <ClInclude Include="Include\BsBansheeRendererPrerequisites.h" />
+    <ClInclude Include="Include\BsRenderBeastOptions.h" />
     <ClInclude Include="Include\BsRenderTexturePool.h" />
   </ItemGroup>
   <ItemGroup>

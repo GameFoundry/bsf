@@ -823,7 +823,7 @@ namespace BansheeEngine
 				for (auto curRenderData : *renderData)
 				{
 					mIconMaterial.mTexture[passIdx].set(curRenderData.texture);
-					rs.bindGpuParams(GPT_FRAGMENT_PROGRAM, mIconMaterial.mFragParams[passIdx]);
+					rs.setGpuParams(GPT_FRAGMENT_PROGRAM, mIconMaterial.mFragParams[passIdx]);
 
 					rs.drawIndexed(curIndexOffset, curRenderData.count * 6, mesh->getVertexOffset(), curRenderData.count * 4);
 					curIndexOffset += curRenderData.count * 6;
@@ -840,7 +840,7 @@ namespace BansheeEngine
 			for (auto curRenderData : *renderData)
 			{
 				mAlphaPickingMaterial.mTexture.set(curRenderData.texture);
-				rs.bindGpuParams(GPT_FRAGMENT_PROGRAM, mAlphaPickingMaterial.mFragParams);
+				rs.setGpuParams(GPT_FRAGMENT_PROGRAM, mAlphaPickingMaterial.mFragParams);
 
 				rs.drawIndexed(curIndexOffset, curRenderData.count * 6, mesh->getVertexOffset(), curRenderData.count * 4);
 				curIndexOffset += curRenderData.count * 6;

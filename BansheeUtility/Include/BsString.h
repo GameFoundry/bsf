@@ -934,7 +934,7 @@ namespace BansheeEngine
 }
 
 /**
- * @brief	Hash value generator for SString.
+ * @brief	Hash value generator for String.
  */
 template<> 
 struct std::hash<BansheeEngine::String>

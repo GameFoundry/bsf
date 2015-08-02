@@ -26,6 +26,8 @@ namespace BansheeEngine
 			, antialiasedLineEnable(false)
 		{ }
 
+		bool operator==(const RASTERIZER_STATE_DESC& rhs) const;
+
 		PolygonMode polygonMode;
 		CullingMode cullMode;
 
@@ -115,11 +117,18 @@ namespace BansheeEngine
 		 */
 		bool getAntialiasedLineEnable() const { return mData.antialiasedLineEnable; }
 
+		/**
+		 * @brief	Returns the hash value generated from the rasterizer state properties.
+		 */
+		UINT64 getHash() const { return mHash; }
+
 	protected:
 		friend class RasterizerState;
+		friend class RasterizerStateCore;
 		friend class RasterizerStateRTTI;
 
 		RASTERIZER_STATE_DESC mData;
+		UINT64 mHash;
 	};
 
 	/**
@@ -132,7 +141,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT RasterizerStateCore : public CoreObjectCore
 	{
 	public:
-		virtual ~RasterizerStateCore() {}
+		virtual ~RasterizerStateCore();
 
 		/**
 		 * @brief	Returns information about the rasterizer state.
@@ -161,7 +170,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT RasterizerState : public IReflectable, public CoreObject
 	{
 	public:
-		virtual ~RasterizerState() {}
+		virtual ~RasterizerState();
 
 		/**
 		 * @brief	Returns information about the rasterizer state.
@@ -184,6 +193,11 @@ namespace BansheeEngine
 		 */
 		static const RasterizerStatePtr& getDefault();
 
+		/**
+		 * @brief	Generates a hash value from a rasterizer state descriptor.
+		 */
+		static UINT64 generateHash(const RASTERIZER_STATE_DESC& desc);
+
 	protected:
 		friend class RenderStateManager;
 
@@ -192,7 +206,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObjectCore::createCore
 		 */
-		SPtr<CoreObjectCore> createCore() const;
+		SPtr<CoreObjectCore> createCore() const override;
 
 		RasterizerProperties mProperties;
 
@@ -203,6 +217,18 @@ namespace BansheeEngine
 	public:
 		friend class RasterizerStateRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;	
+		virtual RTTITypeBase* getRTTI() const override;	
 	};
 }
+
+/**
+ * @brief	Hash value generator for RASTERIZER_STATE_DESC.
+ */
+template<>
+struct std::hash<BansheeEngine::RASTERIZER_STATE_DESC>
+{
+	size_t operator()(const BansheeEngine::RASTERIZER_STATE_DESC& value) const
+	{
+		return (size_t)BansheeEngine::RasterizerState::generateHash(value);
+	}
+};

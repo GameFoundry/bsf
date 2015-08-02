@@ -30,6 +30,9 @@
     <ClInclude Include="Include\BsRenderTexturePool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsRenderBeastOptions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsBansheeRenderer.cpp">

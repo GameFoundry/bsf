@@ -21,4 +21,5 @@
 namespace BansheeEngine
 {
 	class LitTexRenderableController;
+	struct RenderBeastOptions;
 }

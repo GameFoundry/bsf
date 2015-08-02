@@ -30,6 +30,8 @@ namespace BansheeEngine
 			, backStencilComparisonFunc(CMPF_ALWAYS_PASS)
 		{ }
 
+		bool operator==(const DEPTH_STENCIL_STATE_DESC& rhs) const;
+
 		bool depthReadEnable;
 		bool depthWriteEnable;
 		CompareFunction depthComparisonFunc;
@@ -140,11 +142,18 @@ namespace BansheeEngine
 		*/
 		CompareFunction getStencilBackCompFunc() const { return mData.backStencilComparisonFunc; }
 
+		/**
+		 * @brief	Returns the hash value generated from the depth-stencil state properties.
+		 */
+		UINT64 getHash() const { return mHash; }
+
 	protected:
 		friend class DepthStencilState;
+		friend class DepthStencilStateCore;
 		friend class DepthStencilStateRTTI;
 
 		DEPTH_STENCIL_STATE_DESC mData;
+		UINT64 mHash;
 	};
 
 	/**
@@ -157,7 +166,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT DepthStencilStateCore : public CoreObjectCore
 	{
 	public:
-		virtual ~DepthStencilStateCore() {}
+		virtual ~DepthStencilStateCore();
 
 		/**
 		 * @brief	Returns information about the depth stencil state.
@@ -187,7 +196,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT DepthStencilState : public IReflectable, public CoreObject
 	{
 	public:
-		virtual ~DepthStencilState() {}
+		virtual ~DepthStencilState();
 
 		/**
 		 * @brief	Returns information about the depth stencil state.
@@ -209,6 +218,12 @@ namespace BansheeEngine
 		 * @brief	Returns the default depth stencil state that you may use when no other is available.
 		 */
 		static const DepthStencilStatePtr& getDefault();
+
+		/**
+		 * @brief	Generates a hash value from a depth-stencil state descriptor.
+		 */
+		static UINT64 generateHash(const DEPTH_STENCIL_STATE_DESC& desc);
+
 	protected:
 		friend class RenderStateManager;
 
@@ -217,7 +232,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObjectCore::createCore
 		 */
-		SPtr<CoreObjectCore> createCore() const;
+		SPtr<CoreObjectCore> createCore() const override;
 
 		DepthStencilProperties mProperties;
 
@@ -228,6 +243,18 @@ namespace BansheeEngine
 	public:
 		friend class DepthStencilStateRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;	
+		virtual RTTITypeBase* getRTTI() const override;	
 	};
 }
+
+/**
+ * @brief	Hash value generator for DEPTH_STENCIL_STATE_DESC.
+ */
+template<>
+struct std::hash<BansheeEngine::DEPTH_STENCIL_STATE_DESC>
+{
+	size_t operator()(const BansheeEngine::DEPTH_STENCIL_STATE_DESC& value) const
+	{
+		return (size_t)BansheeEngine::DepthStencilState::generateHash(value);
+	}
+};

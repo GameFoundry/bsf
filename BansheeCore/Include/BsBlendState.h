@@ -25,6 +25,8 @@ namespace BansheeEngine
 			, renderTargetWriteMask(0xFF)
 		{ }
 
+		bool operator==(const RENDER_TARGET_BLEND_STATE_DESC& rhs) const;
+
 		bool blendEnable;
 		BlendFactor srcBlend;
 		BlendFactor dstBlend;
@@ -48,6 +50,8 @@ namespace BansheeEngine
 			: alphaToCoverageEnable(false)
 			, independantBlendEnable(false)
 		{ }
+
+		bool operator==(const BLEND_STATE_DESC& rhs) const;
 
 		bool alphaToCoverageEnable;
 		bool independantBlendEnable;
@@ -133,11 +137,18 @@ namespace BansheeEngine
 		 */
 		UINT8 getRenderTargetWriteMask(UINT32 renderTargetIdx) const;
 
+		/**
+		 * @brief	Returns the hash value generated from the blend state properties.
+		 */
+		UINT64 getHash() const { return mHash; }
+
 	protected:
 		friend class BlendState;
+		friend class BlendStateCore;
 		friend class BlendStateRTTI;
 
 		BLEND_STATE_DESC mData;
+		UINT64 mHash;
 	};
 
 /**
@@ -150,7 +161,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT BlendStateCore : public CoreObjectCore
 	{
 	public:
-		virtual ~BlendStateCore() {}
+		virtual ~BlendStateCore();
 
 		/**
 		 * @brief	Returns information about the blend state.
@@ -181,7 +192,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT BlendState : public IReflectable, public CoreObject
 	{
 	public:
-		virtual ~BlendState() {}
+		virtual ~BlendState();
 
 		/**
 		 * @brief	Returns information about a blend state.
@@ -205,6 +216,11 @@ namespace BansheeEngine
 		 */
 		static const BlendStatePtr& getDefault();
 
+		/**
+		 * @brief	Generates a hash value from a blend state descriptor.
+		 */
+		static UINT64 generateHash(const BLEND_STATE_DESC& desc);
+
 	protected:
 		friend class RenderStateManager;
 
@@ -213,7 +229,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObjectCore::createCore
 		 */
-		SPtr<CoreObjectCore> createCore() const;
+		SPtr<CoreObjectCore> createCore() const override;
 
 		BlendProperties mProperties;
 
@@ -224,6 +240,18 @@ namespace BansheeEngine
 	public:
 		friend class BlendStateRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;	
+		virtual RTTITypeBase* getRTTI() const override;	
 	};
 }
+
+/**
+ * @brief	Hash value generator for BLEND_STATE_DESC.
+ */
+template<>
+struct std::hash<BansheeEngine::BLEND_STATE_DESC>
+{
+	size_t operator()(const BansheeEngine::BLEND_STATE_DESC& value) const
+	{
+		return (size_t)BansheeEngine::BlendState::generateHash(value);
+	}
+};

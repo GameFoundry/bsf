@@ -23,6 +23,8 @@ namespace BansheeEngine
 			mipMax(FLT_MAX), borderColor(Color::White)
 		{ }
 
+		bool operator==(const SAMPLER_STATE_DESC& rhs) const;
+
 		UVWAddressingMode addressMode;
 		FilterOptions minFilter;
 		FilterOptions magFilter;
@@ -88,11 +90,18 @@ namespace BansheeEngine
 		 */
 		const Color& getBorderColor() const;
 
+		/**
+		 * @brief	Returns the hash value generated from the sampler state properties.
+		 */
+		UINT64 getHash() const { return mHash; }
+
 	protected:
 		friend class SamplerState;
+		friend class SamplerStateCore;
 		friend class SamplerStateRTTI;
 
 		SAMPLER_STATE_DESC mData;
+		UINT64 mHash;
 	};
 
 	/**
@@ -105,7 +114,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT SamplerStateCore : public CoreObjectCore
 	{
 	public:
-		virtual ~SamplerStateCore() {}
+		virtual ~SamplerStateCore();
 
 		/**
 		 * @brief	Returns information about the sampler state.
@@ -136,7 +145,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT SamplerState : public IReflectable, public CoreObject
     {
     public:
-		virtual ~SamplerState() {}
+		virtual ~SamplerState();
 
 		/**
 		 * @brief	Returns information about the sampler state.
@@ -159,13 +168,18 @@ namespace BansheeEngine
 		 */
 		static const SamplerStatePtr& getDefault();
 
+		/**
+		 * @brief	Generates a hash value from a sampler state descriptor.
+		 */
+		static UINT64 generateHash(const SAMPLER_STATE_DESC& desc);
+
 	protected:
 		SamplerState(const SAMPLER_STATE_DESC& desc);
 
 		/**
 		 * @copydoc	CoreObjectCore::createCore
 		 */
-		SPtr<CoreObjectCore> createCore() const;
+		SPtr<CoreObjectCore> createCore() const override;
 
 		SamplerProperties mProperties;
 
@@ -178,6 +192,18 @@ namespace BansheeEngine
 	public:
 		friend class SamplerStateRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;	
+		virtual RTTITypeBase* getRTTI() const override;
     };
 }
+
+/**
+ * @brief	Hash value generator for SAMPLER_STATE_DESC.
+ */
+template<>
+struct std::hash<BansheeEngine::SAMPLER_STATE_DESC>
+{
+	size_t operator()(const BansheeEngine::SAMPLER_STATE_DESC& value) const
+	{
+		return (size_t)BansheeEngine::SamplerState::generateHash(value);
+	}
+};

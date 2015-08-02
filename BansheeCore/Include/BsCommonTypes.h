@@ -329,6 +329,11 @@ namespace BansheeEngine
 			:u(TAM_WRAP), v(TAM_WRAP), w(TAM_WRAP)
 		{ }
 
+		bool operator==(const UVWAddressingMode& rhs) const
+		{
+			return u == rhs.u && v == rhs.v && w == rhs.w;
+		}
+
 		TextureAddressingMode u, v, w;
 	};
 

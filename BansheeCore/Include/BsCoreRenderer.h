@@ -30,6 +30,14 @@ namespace BansheeEngine
 	static StringID RPS_ViewDir = "ViewDir";
 
 	/**
+	 * @brief	Set of options that can be used for controlling the renderer.
+	 */	
+	struct BS_CORE_EXPORT CoreRendererOptions
+	{
+		virtual ~CoreRendererOptions() { }
+	};
+
+	/**
 	 * @brief	Primarily rendering class that allows you to specify how to render objects that exist
 	 *			in the scene graph. You need to provide your own implementation of your class.
 	 *
@@ -39,6 +47,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT CoreRenderer
 	{
 	public:
+		CoreRenderer();
 		virtual ~CoreRenderer() { }
 
 		/**
@@ -116,6 +125,16 @@ namespace BansheeEngine
 		 * @brief	Removes a previously registered callback registered with "_registerRenderCallback".
 		 */
 		void _unregisterRenderCallback(const CameraHandlerCore* camera, INT32 index);
+
+		/**
+		 * @brief	Sets options used for controlling the rendering.
+		 */
+		virtual void setOptions(const SPtr<CoreRendererOptions>& options) { }
+
+		/**
+		 * @brief	Returns current set of options used for controlling the rendering.
+		 */
+		virtual SPtr<CoreRendererOptions> getOptions() const { return SPtr<CoreRendererOptions>(); }
 
 		/**
 		 * @brief	Activates the specified pass on the pipeline.

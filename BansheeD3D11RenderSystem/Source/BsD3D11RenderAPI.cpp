@@ -553,50 +553,15 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumGpuProgramBinds);
 	}
 
-	void D3D11RenderAPI::bindGpuParams(GpuProgramType gptype, const SPtr<GpuParamsCore>& bindableParams)
+	void D3D11RenderAPI::setConstantBuffers(GpuProgramType gptype, const SPtr<GpuParamsCore>& bindableParams)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		bindableParams->updateHardwareBuffers();
-
 		const GpuParamDesc& paramDesc = bindableParams->getParamDesc();
-		
-		for(auto iter = paramDesc.samplers.begin(); iter != paramDesc.samplers.end(); ++iter)
-		{
-			SPtr<SamplerStateCore> samplerState = bindableParams->getSamplerState(iter->second.slot);
-
-			if(samplerState == nullptr)
-				setSamplerState(gptype, iter->second.slot, SamplerStateCore::getDefault());
-			else
-				setSamplerState(gptype, iter->second.slot, samplerState);
-		}
-
-		for(auto iter = paramDesc.textures.begin(); iter != paramDesc.textures.end(); ++iter)
-		{
-			SPtr<TextureCore> texture = bindableParams->getTexture(iter->second.slot);
-
-			if (!bindableParams->isLoadStoreTexture(iter->second.slot))
-			{
-				if (texture == nullptr)
-					setTexture(gptype, iter->second.slot, false, nullptr);
-				else
-					setTexture(gptype, iter->second.slot, true, texture);
-			}
-			else
-			{
-				const TextureSurface& surface = bindableParams->getLoadStoreSurface(iter->second.slot);
-
-				if (texture == nullptr)
-					setLoadStoreTexture(gptype, iter->second.slot, false, nullptr, surface);
-				else
-					setLoadStoreTexture(gptype, iter->second.slot, true, texture, surface);
-			}
-		}
 
 		// TODO - I assign constant buffers one by one but it might be more efficient to do them all at once?
-
 		ID3D11Buffer* bufferArray[1];
-
 		for(auto iter = paramDesc.paramBlocks.begin(); iter != paramDesc.paramBlocks.end(); ++iter)
 		{
 			SPtr<GpuParamBlockBufferCore> currentBlockBuffer = bindableParams->getParamBlockBuffer(iter->second.slot);
@@ -636,7 +601,7 @@ namespace BansheeEngine
 		}
 
 		if (mDevice->hasError())
-			BS_EXCEPT(RenderingAPIException, "Failed to bindGpuParams : " + mDevice->getErrorDescription());
+			BS_EXCEPT(RenderingAPIException, "Failed to setConstantBuffers : " + mDevice->getErrorDescription());
 	}
 
 	void D3D11RenderAPI::draw(UINT32 vertexOffset, UINT32 vertexCount)

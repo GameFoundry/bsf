@@ -19,26 +19,26 @@ namespace BansheeEngine
 			addPlainField("mData", 0, &DepthStencilStateRTTI::getData, &DepthStencilStateRTTI::setData);
 		}
 
-		virtual void onDeserializationEnded(IReflectable* obj)
+		virtual void onDeserializationEnded(IReflectable* obj) override
 		{
 			DepthStencilState* depthStencilState = static_cast<DepthStencilState*>(obj);
 			depthStencilState->initialize();
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "DepthStencilState";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_DepthStencilState;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			return RenderStateManager::instance().createEmptyDepthStencilState();
+			return RenderStateManager::instance()._createDepthStencilStatePtr(DEPTH_STENCIL_STATE_DESC());
 		}
 	};
 }

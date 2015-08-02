@@ -21,26 +21,26 @@ namespace BansheeEngine
 			addPlainField("mData", 0, &SamplerStateRTTI::getData, &SamplerStateRTTI::setData);
 		}
 
-		virtual void onDeserializationEnded(IReflectable* obj)
+		virtual void onDeserializationEnded(IReflectable* obj) override
 		{
 			SamplerState* samplerState = static_cast<SamplerState*>(obj);
 			samplerState->initialize();
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "SamplerState";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_SamplerState;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			return RenderStateManager::instance().createEmptySamplerState();
+			return RenderStateManager::instance()._createSamplerStatePtr(SAMPLER_STATE_DESC());
 		}
 	};
 }

@@ -21,26 +21,26 @@ namespace BansheeEngine
 			addPlainField("mData", 0, &RasterizerStateRTTI::getData, &RasterizerStateRTTI::setData);
 		}
 
-		virtual void onDeserializationEnded(IReflectable* obj)
+		virtual void onDeserializationEnded(IReflectable* obj) override
 		{
 			RasterizerState* rasterizerState = static_cast<RasterizerState*>(obj);
 			rasterizerState->initialize();
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "RasterizerState";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_RasterizerState;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			return RenderStateManager::instance().createEmptyRasterizerState();
+			return RenderStateManager::instance()._createRasterizerStatePtr(RASTERIZER_STATE_DESC());
 		}
 	};
 }

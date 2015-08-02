@@ -41,9 +41,16 @@ namespace BansheeEngine
 		SubMesh subMesh;
 
 		/**
-		 * @brief	Proxy of the material to render the mesh with.
+		 * @brief	Material to render the mesh with.
 		 */
 		SPtr<MaterialCore> material;
+
+		/**
+		 * @brief	Optional overrides for material sampler states.
+		 *			Used when renderer wants to override certain sampling
+		 *			properties on a global scale (e.g. filtering most commonly).
+		 */
+		SPtr<SamplerStateCore>** samplerOverrides;
 
 		/**
 		 * @brief	Custom data that may optionally be set by the RenderableHanbdler.

@@ -6,14 +6,32 @@
 
 namespace BansheeEngine
 {
+	bool RASTERIZER_STATE_DESC::operator == (const RASTERIZER_STATE_DESC& rhs) const
+	{
+		return polygonMode == rhs.polygonMode &&
+			cullMode == rhs.cullMode &&
+			depthBias == rhs.depthBias &&
+			depthBiasClamp == rhs.depthBiasClamp &&
+			slopeScaledDepthBias == rhs.slopeScaledDepthBias &&
+			depthClipEnable == rhs.depthClipEnable &&
+			scissorEnable == rhs.scissorEnable &&
+			multisampleEnable == rhs.multisampleEnable &&
+			antialiasedLineEnable == rhs.antialiasedLineEnable;
+	}
+
 	RasterizerProperties::RasterizerProperties(const RASTERIZER_STATE_DESC& desc)
-		:mData(desc)
+		:mData(desc), mHash(RasterizerState::generateHash(desc))
 	{ }
 
 	RasterizerStateCore::RasterizerStateCore(const RASTERIZER_STATE_DESC& desc)
 		: mProperties(desc)
 	{
 
+	}
+
+	RasterizerStateCore::~RasterizerStateCore()
+	{
+		RenderStateCoreManager::instance().notifyRasterizerStateDestroyed(mProperties.mData);
 	}
 
 	const RasterizerProperties& RasterizerStateCore::getProperties() const
@@ -30,6 +48,11 @@ namespace BansheeEngine
 		: mProperties(desc)
 	{
 
+	}
+
+	RasterizerState::~RasterizerState()
+	{
+		RenderStateManager::instance().notifyRasterizerStateDestroyed(mProperties.mData);
 	}
 
 	SPtr<RasterizerStateCore> RasterizerState::getCore() const
@@ -55,6 +78,22 @@ namespace BansheeEngine
 	RasterizerStatePtr RasterizerState::create(const RASTERIZER_STATE_DESC& desc)
 	{
 		return RenderStateManager::instance().createRasterizerState(desc);
+	}
+
+	UINT64 RasterizerState::generateHash(const RASTERIZER_STATE_DESC& desc)
+	{
+		size_t hash = 0;
+		hash_combine(hash, (UINT32)desc.polygonMode);
+		hash_combine(hash, (UINT32)desc.cullMode);
+		hash_combine(hash, desc.depthBias);
+		hash_combine(hash, desc.depthBiasClamp);
+		hash_combine(hash, desc.slopeScaledDepthBias);
+		hash_combine(hash, desc.depthClipEnable);
+		hash_combine(hash, desc.scissorEnable);
+		hash_combine(hash, desc.multisampleEnable);
+		hash_combine(hash, desc.antialiasedLineEnable);
+
+		return (UINT64)hash;
 	}
 
 	/************************************************************************/

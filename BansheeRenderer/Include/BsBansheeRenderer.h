@@ -51,7 +51,7 @@ namespace BansheeEngine
 		};
 
 	public:
-		BansheeRenderer() { }
+		BansheeRenderer();
 		~BansheeRenderer() { }
 
 		/**
@@ -63,6 +63,16 @@ namespace BansheeEngine
 		 * @copydoc	Renderer::renderAll
 		 */
 		virtual void renderAll() override;
+
+		/**
+		 * @brief	Sets options used for controlling the rendering.
+		 */
+		void setOptions(const SPtr<CoreRendererOptions>& options) override;
+
+		/**
+		 * @brief	Returns current set of options used for controlling the rendering.
+		 */
+		SPtr<CoreRendererOptions> getOptions() const override;
 
 		/**
 		 * @copydoc	Renderer::_onActivated
@@ -121,6 +131,13 @@ namespace BansheeEngine
 		void addToRenderQueue(const SPtr<CameraHandlerCore>& proxy, RenderQueuePtr renderQueue);
 
 		/**
+		 * @brief	Updates the render options on the core thread.
+		 *
+		 * @note	Core thread only.
+		 */
+		void syncRenderOptions(const RenderBeastOptions& options);
+
+		/**
 		 * @brief	Performs rendering over all camera proxies.
 		 *
 		 * @param	time	Current frame time in milliseconds.
@@ -154,6 +171,18 @@ namespace BansheeEngine
 		 */
 		SPtr<ShaderCore> createDefaultShader();
 
+		/**
+		 * @brief	Activates the specified pass on the pipeline.
+		 *
+		 * @param	material			Parent material of the pass.
+		 * @param	passIdx				Index of the pass in the parent material.
+		 * @param	samplerOverrides	Optional samplers to use instead of the those in the material.
+		 *								Number of samplers must match the number in the material.
+		 *
+		 * @note	Core thread.
+		 */
+		static void setPass(const SPtr<MaterialCore>& material, UINT32 passIdx, SPtr<SamplerStateCore>* samplerOverrides);
+
 		Vector<RenderTargetData> mRenderTargets; // Core thread
 		UnorderedMap<const CameraHandlerCore*, CameraData> mCameraData; // Core thread
 
@@ -163,6 +192,10 @@ namespace BansheeEngine
 		Vector<Matrix4> mWorldTransforms; // Core thread
 		Vector<Bounds> mWorldBounds; // Core thread
 
+		SPtr<RenderBeastOptions> mCoreOptions; // Core thread
+
 		LitTexRenderableController* mLitTexHandler;
+		SPtr<RenderBeastOptions> mOptions;
+		bool mOptionsDirty;
 	};
 }

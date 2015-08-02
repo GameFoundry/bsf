@@ -267,33 +267,12 @@ namespace BansheeEngine
 		RenderAPICore::unbindGpuProgram(gptype);
 	}
 
-	void D3D9RenderAPI::bindGpuParams(GpuProgramType gptype, const SPtr<GpuParamsCore>& bindableParams)
+	void D3D9RenderAPI::setConstantBuffers(GpuProgramType gptype, const SPtr<GpuParamsCore>& bindableParams)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		bindableParams->updateHardwareBuffers();
 		const GpuParamDesc& paramDesc = bindableParams->getParamDesc();
-
-		for(auto iter = paramDesc.samplers.begin(); iter != paramDesc.samplers.end(); ++iter)
-		{
-			SPtr<SamplerStateCore> samplerState = bindableParams->getSamplerState(iter->second.slot);
-			if(samplerState == nullptr)
-				setSamplerState(gptype, iter->second.slot, SamplerStateCore::getDefault());
-			else
-				setSamplerState(gptype, iter->second.slot, samplerState);
-		}
-
-		for(auto iter = paramDesc.textures.begin(); iter != paramDesc.textures.end(); ++iter)
-		{
-			if (bindableParams->isLoadStoreTexture(iter->second.slot))
-				continue; // Not supported by DX9
-
-			SPtr<TextureCore> texture = bindableParams->getTexture(iter->second.slot);
-			if(texture == nullptr)
-				setTexture(gptype, iter->second.slot, false, nullptr);
-			else
-				setTexture(gptype, iter->second.slot, true, texture);
-		}
 
 		// Read all the buffer data so we can assign it. Not the most efficient way of accessing data
 		// but it is required in order to have standardized buffer interface.

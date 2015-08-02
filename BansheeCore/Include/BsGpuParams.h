@@ -315,7 +315,7 @@ namespace BansheeEngine
 	 *			are stored internally on the CPU, and are only submitted to the GPU
 	 *			once the parameters are bound to the pipeline.
 	 *
-	 * @see		CoreThreadAccessor::bindGpuParams
+	 * @see		CoreThreadAccessor::setConstantBuffers
 	 *
 	 * @note	Sim thread only.
 	 */

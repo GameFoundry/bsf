@@ -7,9 +7,13 @@
 #include "BsBlendState.h"
 #include "BsDepthStencilState.h"
 #include "BsRasterizerState.h"
+#include "BsGpuParams.h"
 
 namespace BansheeEngine
 {
+	CoreRenderer::CoreRenderer()
+	{ }
+
 	RendererMeshDataPtr CoreRenderer::_createMeshData(UINT32 numVertices, UINT32 numIndices, VertexLayout layout, IndexType indexType)
 	{
 		return bs_shared_ptr<RendererMeshData, PoolAlloc>(new (bs_alloc<RendererMeshData, PoolAlloc>()) 
@@ -48,53 +52,56 @@ namespace BansheeEngine
 		SPtr<PassCore> pass = material->getPass(passIdx);
 		SPtr<PassParametersCore> passParams = material->getPassParameters(passIdx);
 
-		if (pass->hasVertexProgram())
+		struct StageData
 		{
-			rs.bindGpuProgram(pass->getVertexProgram());
-			rs.bindGpuParams(GPT_VERTEX_PROGRAM, passParams->mVertParams);
-		}
-		else
-			rs.unbindGpuProgram(GPT_VERTEX_PROGRAM);
+			GpuProgramType type;
+			bool enable;
+			SPtr<GpuParamsCore> params;
+			SPtr<GpuProgramCore> program;
+		};
 
-		if (pass->hasFragmentProgram())
+		const UINT32 numStages = 6;
+		StageData stages[numStages] =
 		{
-			rs.bindGpuProgram(pass->getFragmentProgram());
-			rs.bindGpuParams(GPT_FRAGMENT_PROGRAM, passParams->mFragParams);
-		}
-		else
-			rs.unbindGpuProgram(GPT_FRAGMENT_PROGRAM);
+			{
+				GPT_VERTEX_PROGRAM, pass->hasVertexProgram(),
+				passParams->mVertParams, pass->getVertexProgram()
+			},
+			{
+				GPT_FRAGMENT_PROGRAM, pass->hasFragmentProgram(),
+				passParams->mFragParams, pass->getFragmentProgram()
+			},
+			{
+				GPT_GEOMETRY_PROGRAM, pass->hasGeometryProgram(),
+				passParams->mGeomParams, pass->getGeometryProgram()
+			},
+			{
+				GPT_HULL_PROGRAM, pass->hasHullProgram(),
+				passParams->mHullParams, pass->getHullProgram()
+			},
+			{
+				GPT_DOMAIN_PROGRAM, pass->hasDomainProgram(),
+				passParams->mDomainParams, pass->getDomainProgram()
+			},
+			{
+				GPT_COMPUTE_PROGRAM, pass->hasComputeProgram(),
+				passParams->mComputeParams, pass->getComputeProgram()
+			}
+		};
 
-		if (pass->hasGeometryProgram())
+		for (UINT32 i = 0; i < numStages; i++)
 		{
-			rs.bindGpuProgram(pass->getGeometryProgram());
-			rs.bindGpuParams(GPT_GEOMETRY_PROGRAM, passParams->mGeomParams);
-		}
-		else
-			rs.unbindGpuProgram(GPT_GEOMETRY_PROGRAM);
+			const StageData& stage = stages[i];
 
-		if (pass->hasHullProgram())
-		{
-			rs.bindGpuProgram(pass->getHullProgram());
-			rs.bindGpuParams(GPT_HULL_PROGRAM, passParams->mHullParams);
-		}
-		else
-			rs.unbindGpuProgram(GPT_HULL_PROGRAM);
+			if (stage.enable)
+			{
+				rs.bindGpuProgram(stage.program);
+				rs.setGpuParams(stage.type, stage.params);
 
-		if (pass->hasDomainProgram())
-		{
-			rs.bindGpuProgram(pass->getDomainProgram());
-			rs.bindGpuParams(GPT_DOMAIN_PROGRAM, passParams->mDomainParams);
+			}
+			else
+				rs.unbindGpuProgram(stage.type);
 		}
-		else
-			rs.unbindGpuProgram(GPT_DOMAIN_PROGRAM);
-
-		if (pass->hasComputeProgram())
-		{
-			rs.bindGpuProgram(pass->getComputeProgram());
-			rs.bindGpuParams(GPT_COMPUTE_PROGRAM, passParams->mComputeParams);
-		}
-		else
-			rs.unbindGpuProgram(GPT_COMPUTE_PROGRAM);
 
 		// TODO - Try to limit amount of state changes, if previous state is already the same
 

@@ -88,8 +88,11 @@ namespace BansheeEngine
 		/** @copydoc RenderAPICore::unbindGpuProgram() */
 		static void unbindGpuProgram(CoreAccessor& accessor, GpuProgramType gptype);
 
-		/** @copydoc RenderAPICore::bindGpuParams() */
-		static void bindGpuParams(CoreAccessor& accessor, GpuProgramType gptype, const GpuParamsPtr& params);
+		/** @copydoc RenderAPICore::setConstantBuffers() */
+		static void setConstantBuffers(CoreAccessor& accessor, GpuProgramType gptype, const GpuParamsPtr& params);
+
+		/** @copydoc RenderAPICore::setGpuParams() */
+		static void setGpuParams(CoreAccessor& accessor, GpuProgramType gptype, const GpuParamsPtr& params);
 
 		/** @copydoc RenderAPICore::beginFrame() */
 		static void beginRender(CoreAccessor& accessor);
@@ -294,10 +297,16 @@ namespace BansheeEngine
 		virtual void bindGpuProgram(const SPtr<GpuProgramCore>& prg);
 
 		/**
-		 * @brief	Binds GPU program parameters. Caller must ensure these match the previously
+		 * @brief	Binds constant(uniform) GPU program parameters. Caller must ensure these match the previously
 		 *			bound GPU program.
 		 */
-		virtual void bindGpuParams(GpuProgramType gptype, const SPtr<GpuParamsCore>& params) = 0;
+		virtual void setConstantBuffers(GpuProgramType gptype, const SPtr<GpuParamsCore>& params) = 0;
+
+		/**
+		 * @brief	Binds all specified GPU program parameters. Caller must ensure these match the previously
+		 *			bound GPU program.
+		 */
+		virtual void setGpuParams(GpuProgramType gptype, const SPtr<GpuParamsCore>& params);
 
 		/**
 		 * @brief	Unbinds a program of a given type. 

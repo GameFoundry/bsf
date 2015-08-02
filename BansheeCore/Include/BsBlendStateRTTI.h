@@ -60,26 +60,26 @@ namespace BansheeEngine
 			addPlainField("mData", 0, &BlendStateRTTI::getData, &BlendStateRTTI::setData);
 		}
 
-		virtual void onDeserializationEnded(IReflectable* obj)
+		virtual void onDeserializationEnded(IReflectable* obj) override
 		{
 			BlendState* blendState = static_cast<BlendState*>(obj);
 			blendState->initialize();
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "BlendState";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_BlendState;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			return RenderStateManager::instance().createEmptyBlendState();
+			return RenderStateManager::instance()._createBlendStatePtr(BLEND_STATE_DESC());
 		}
 	};
 }

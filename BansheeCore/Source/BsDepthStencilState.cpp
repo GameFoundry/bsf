@@ -7,8 +7,26 @@
 
 namespace BansheeEngine
 {
+	bool DEPTH_STENCIL_STATE_DESC::operator == (const DEPTH_STENCIL_STATE_DESC& rhs) const
+	{
+		return depthReadEnable == rhs.depthReadEnable &&
+			depthWriteEnable == rhs.depthWriteEnable &&
+			depthComparisonFunc == rhs.depthComparisonFunc &&
+			stencilEnable == rhs.stencilEnable &&
+			stencilReadMask == rhs.stencilReadMask &&
+			stencilWriteMask == rhs.stencilWriteMask &&
+			frontStencilFailOp == rhs.frontStencilFailOp &&
+			frontStencilZFailOp == rhs.frontStencilZFailOp &&
+			frontStencilPassOp == rhs.frontStencilPassOp &&
+			frontStencilComparisonFunc == rhs.frontStencilComparisonFunc &&
+			backStencilFailOp == rhs.backStencilFailOp &&
+			backStencilZFailOp == rhs.backStencilZFailOp &&
+			backStencilPassOp == rhs.backStencilPassOp &&
+			backStencilComparisonFunc == rhs.backStencilComparisonFunc;
+	}
+
 	DepthStencilProperties::DepthStencilProperties(const DEPTH_STENCIL_STATE_DESC& desc)
-		:mData(desc)
+		:mData(desc), mHash(DepthStencilState::generateHash(desc))
 	{
 
 	}
@@ -17,6 +35,11 @@ namespace BansheeEngine
 		: mProperties(desc)
 	{
 
+	}
+
+	DepthStencilStateCore::~DepthStencilStateCore()
+	{
+		RenderStateCoreManager::instance().notifyDepthStencilStateDestroyed(mProperties.mData);
 	}
 
 	const DepthStencilProperties& DepthStencilStateCore::getProperties() const
@@ -33,6 +56,11 @@ namespace BansheeEngine
 		:mProperties(desc)
 	{
 
+	}
+
+	DepthStencilState::~DepthStencilState()
+	{
+		RenderStateManager::instance().notifyDepthStencilStateDestroyed(mProperties.mData);
 	}
 
 	SPtr<DepthStencilStateCore> DepthStencilState::getCore() const
@@ -58,6 +86,27 @@ namespace BansheeEngine
 	DepthStencilStatePtr DepthStencilState::create(const DEPTH_STENCIL_STATE_DESC& desc)
 	{
 		return RenderStateManager::instance().createDepthStencilState(desc);
+	}
+
+	UINT64 DepthStencilState::generateHash(const DEPTH_STENCIL_STATE_DESC& desc)
+	{
+		size_t hash = 0;
+		hash_combine(hash, desc.depthReadEnable);
+		hash_combine(hash, desc.depthWriteEnable);
+		hash_combine(hash, (UINT32)desc.depthComparisonFunc);
+		hash_combine(hash, desc.stencilEnable);
+		hash_combine(hash, desc.stencilReadMask);
+		hash_combine(hash, desc.stencilWriteMask);
+		hash_combine(hash, (UINT32)desc.frontStencilFailOp);
+		hash_combine(hash, (UINT32)desc.frontStencilZFailOp);
+		hash_combine(hash, (UINT32)desc.frontStencilPassOp);
+		hash_combine(hash, (UINT32)desc.frontStencilComparisonFunc);
+		hash_combine(hash, (UINT32)desc.backStencilFailOp);
+		hash_combine(hash, (UINT32)desc.backStencilZFailOp);
+		hash_combine(hash, (UINT32)desc.backStencilPassOp);
+		hash_combine(hash, (UINT32)desc.backStencilComparisonFunc);
+
+		return (UINT64)hash;
 	}
 
 	/************************************************************************/

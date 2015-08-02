@@ -29,11 +29,18 @@
 #include "BsRenderableElement.h"
 #include "BsFrameAlloc.h"
 #include "BsCoreObjectManager.h"
+#include "BsRenderBeastOptions.h"
 
 using namespace std::placeholders;
 
 namespace BansheeEngine
 {
+	BansheeRenderer::BansheeRenderer()
+		:mOptions(bs_shared_ptr<RenderBeastOptions>()), mOptionsDirty(true)
+	{
+
+	}
+
 	const StringID& BansheeRenderer::getName() const
 	{
 		static StringID name = "BansheeRenderer";
@@ -57,6 +64,7 @@ namespace BansheeEngine
 
 	void BansheeRenderer::initializeCore()
 	{
+		mCoreOptions = bs_shared_ptr<RenderBeastOptions>();
 		mLitTexHandler = bs_new<LitTexRenderableController>();
 
 		SPtr<ShaderCore> shader = createDefaultShader();
@@ -111,6 +119,8 @@ namespace BansheeEngine
 
 				if (renElement.material == nullptr)
 					renElement.material = mDummyMaterial;
+
+				renElement.samplerOverrides = nullptr; // TODO
 
 				if (renderableData.controller != nullptr)
 					renderableData.controller->initializeRenderElem(renElement);
@@ -169,6 +179,17 @@ namespace BansheeEngine
 		mCameraData.erase(camera);
 	}
 
+	void BansheeRenderer::setOptions(const SPtr<CoreRendererOptions>& options)
+	{
+		mOptions = std::static_pointer_cast<RenderBeastOptions>(options);
+		mOptionsDirty = true;
+	}
+
+	SPtr<CoreRendererOptions> BansheeRenderer::getOptions() const
+	{
+		return mOptions;
+	}
+
 	void BansheeRenderer::renderAll() 
 	{
 		// Populate direct draw lists
@@ -209,6 +230,12 @@ namespace BansheeEngine
 		// Sync all dirty sim thread CoreObject data to core thread
 		CoreObjectManager::instance().syncToCore(gCoreAccessor());
 
+		if (mOptionsDirty)
+		{
+			gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::syncRenderOptions, this, *mOptions));
+			mOptionsDirty = false;
+		}
+
 		gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::renderAllCore, this, gTime().getTime()));
 	}
 
@@ -216,6 +243,20 @@ namespace BansheeEngine
 	{
 		RenderQueuePtr cameraRenderQueue = mCameraData[camera.get()].renderQueue;
 		cameraRenderQueue->add(*renderQueue);
+	}
+
+	void BansheeRenderer::syncRenderOptions(const RenderBeastOptions& options)
+	{
+		bool filteringChanged = mCoreOptions->filtering != options.filtering;
+		if (options.filtering == RenderBeastFiltering::Anisotropic)
+			filteringChanged |= mCoreOptions->anisotropyMax != options.anisotropyMax;
+
+		if (filteringChanged)
+		{
+			// TODO - Rebuild sample overrides
+		}
+
+		*mCoreOptions = options;
 	}
 
 	void BansheeRenderer::renderAllCore(float time)
@@ -392,7 +433,12 @@ namespace BansheeEngine
 		{
 			SPtr<MaterialCore> material = iter->material;
 
-			setPass(material, iter->passIdx);
+			RenderableElement* renderable = iter->renderElem;
+			if (renderable != nullptr && renderable->samplerOverrides != nullptr)
+				setPass(material, iter->passIdx, renderable->samplerOverrides[iter->passIdx]);
+			else
+				setPass(material, iter->passIdx, nullptr);
+
 			draw(iter->mesh, iter->subMesh);
 		}
 
@@ -409,6 +455,125 @@ namespace BansheeEngine
 				callbackPair.second();
 			}
 		}
+	}
+
+	void BansheeRenderer::setPass(const SPtr<MaterialCore>& material, UINT32 passIdx, SPtr<SamplerStateCore>* samplerOverrides)
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		RenderAPICore& rs = RenderAPICore::instance();
+
+		SPtr<PassCore> pass = material->getPass(passIdx);
+		SPtr<PassParametersCore> passParams = material->getPassParameters(passIdx);
+
+		struct StageData
+		{
+			GpuProgramType type;
+			bool enable;
+			SPtr<GpuParamsCore> params;
+			SPtr<GpuProgramCore> program;
+		};
+
+		const UINT32 numStages = 6;
+		StageData stages[numStages] =
+		{
+			{
+				GPT_VERTEX_PROGRAM, pass->hasVertexProgram(),
+				passParams->mVertParams, pass->getVertexProgram()
+			},
+			{
+				GPT_FRAGMENT_PROGRAM, pass->hasFragmentProgram(),
+				passParams->mFragParams, pass->getFragmentProgram()
+			},
+			{
+				GPT_GEOMETRY_PROGRAM, pass->hasGeometryProgram(),
+				passParams->mGeomParams, pass->getGeometryProgram()
+			},
+			{
+				GPT_HULL_PROGRAM, pass->hasHullProgram(),
+				passParams->mHullParams, pass->getHullProgram()
+			},
+			{
+				GPT_DOMAIN_PROGRAM, pass->hasDomainProgram(),
+				passParams->mDomainParams, pass->getDomainProgram()
+			},
+			{
+				GPT_COMPUTE_PROGRAM, pass->hasComputeProgram(),
+				passParams->mComputeParams, pass->getComputeProgram()
+			}
+		};
+
+		for (UINT32 i = 0; i < numStages; i++)
+		{
+			const StageData& stage = stages[i];
+
+			if (stage.enable)
+			{
+				rs.bindGpuProgram(stage.program);
+
+				SPtr<GpuParamsCore> params = stage.params;
+				const GpuParamDesc& paramDesc = params->getParamDesc();
+
+				for (auto iter = paramDesc.samplers.begin(); iter != paramDesc.samplers.end(); ++iter)
+				{
+					SPtr<SamplerStateCore> samplerState;
+						
+					if (samplerOverrides != nullptr)
+						samplerState = samplerOverrides[iter->second.slot];
+					else
+						samplerState = params->getSamplerState(iter->second.slot);
+
+					if (samplerState == nullptr)
+						rs.setSamplerState(stage.type, iter->second.slot, SamplerStateCore::getDefault());
+					else
+						rs.setSamplerState(stage.type, iter->second.slot, samplerState);
+				}
+
+				for (auto iter = paramDesc.textures.begin(); iter != paramDesc.textures.end(); ++iter)
+				{
+					SPtr<TextureCore> texture = params->getTexture(iter->second.slot);
+
+					if (!params->isLoadStoreTexture(iter->second.slot))
+					{
+						if (texture == nullptr)
+							rs.setTexture(stage.type, iter->second.slot, false, nullptr);
+						else
+							rs.setTexture(stage.type, iter->second.slot, true, texture);
+					}
+					else
+					{
+						const TextureSurface& surface = params->getLoadStoreSurface(iter->second.slot);
+
+						if (texture == nullptr)
+							rs.setLoadStoreTexture(stage.type, iter->second.slot, false, nullptr, surface);
+						else
+							rs.setLoadStoreTexture(stage.type, iter->second.slot, true, texture, surface);
+					}
+				}
+
+				rs.setConstantBuffers(stage.type, params);
+			}
+			else
+				rs.unbindGpuProgram(stage.type);
+		}
+
+		// TODO - Try to limit amount of state changes, if previous state is already the same
+
+		// Set up non-texture related pass settings
+		if (pass->getBlendState() != nullptr)
+			rs.setBlendState(pass->getBlendState());
+		else
+			rs.setBlendState(BlendStateCore::getDefault());
+
+		if (pass->getDepthStencilState() != nullptr)
+			rs.setDepthStencilState(pass->getDepthStencilState(), pass->getStencilRefValue());
+		else
+			rs.setDepthStencilState(DepthStencilStateCore::getDefault(), pass->getStencilRefValue());
+
+		if (pass->getRasterizerState() != nullptr)
+			rs.setRasterizerState(pass->getRasterizerState());
+		else
+			rs.setRasterizerState(RasterizerStateCore::getDefault());
 	}
 
 	SPtr<ShaderCore> BansheeRenderer::createDefaultShader()

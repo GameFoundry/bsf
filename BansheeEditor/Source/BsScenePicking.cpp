@@ -290,16 +290,16 @@ namespace BansheeEngine
 				md.mParamPickingAlphaColor.set(color);
 				md.mParamPickingAlphaTexture.set(renderable.mainTexture->getCore());
 
-				rs.bindGpuParams(GPT_VERTEX_PROGRAM, md.mParamPickingAlphaVertParams);
-				rs.bindGpuParams(GPT_FRAGMENT_PROGRAM, md.mParamPickingAlphaFragParams);
+				rs.setGpuParams(GPT_VERTEX_PROGRAM, md.mParamPickingAlphaVertParams);
+				rs.setGpuParams(GPT_FRAGMENT_PROGRAM, md.mParamPickingAlphaFragParams);
 			}
 			else
 			{
 				md.mParamPickingWVP.set(renderable.wvpTransform);
 				md.mParamPickingColor.set(color);
 
-				rs.bindGpuParams(GPT_VERTEX_PROGRAM, md.mParamPickingVertParams);
-				rs.bindGpuParams(GPT_FRAGMENT_PROGRAM, md.mParamPickingFragParams);
+				rs.setGpuParams(GPT_VERTEX_PROGRAM, md.mParamPickingVertParams);
+				rs.setGpuParams(GPT_FRAGMENT_PROGRAM, md.mParamPickingFragParams);
 			}
 
 			CoreRenderer::draw(renderable.mesh, renderable.mesh->getProperties().getSubMesh(0));

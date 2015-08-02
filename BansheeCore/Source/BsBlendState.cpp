@@ -6,8 +6,36 @@
 
 namespace BansheeEngine
 {
+	bool RENDER_TARGET_BLEND_STATE_DESC::operator == (const RENDER_TARGET_BLEND_STATE_DESC& rhs) const
+	{
+		return blendEnable == rhs.blendEnable &&
+			srcBlend == rhs.srcBlend &&
+			dstBlend == rhs.dstBlend &&
+			blendOp == rhs.blendOp &&
+			srcBlendAlpha == rhs.srcBlendAlpha &&
+			dstBlendAlpha == rhs.dstBlendAlpha &&
+			blendOpAlpha == rhs.blendOpAlpha &&
+			renderTargetWriteMask == rhs.renderTargetWriteMask;
+	}
+
+	bool BLEND_STATE_DESC::operator == (const BLEND_STATE_DESC& rhs) const
+	{
+		bool equals = alphaToCoverageEnable == rhs.alphaToCoverageEnable &&
+			independantBlendEnable == rhs.independantBlendEnable;
+
+		if (equals)
+		{
+			for (UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
+			{
+				equals |= renderTargetDesc[i] == rhs.renderTargetDesc[i];
+			}
+		}
+
+		return equals;
+	}
+
 	BlendProperties::BlendProperties(const BLEND_STATE_DESC& desc)
-		:mData(desc)
+		:mData(desc), mHash(BlendState::generateHash(desc))
 	{ }
 
 	bool BlendProperties::getBlendEnabled(UINT32 renderTargetIdx) const
@@ -72,6 +100,11 @@ namespace BansheeEngine
 
 	}
 
+	BlendStateCore::~BlendStateCore()
+	{
+		RenderStateCoreManager::instance().notifyBlendStateDestroyed(mProperties.mData);
+	}
+
 	const BlendProperties& BlendStateCore::getProperties() const
 	{
 		return mProperties;
@@ -85,6 +118,11 @@ namespace BansheeEngine
 	BlendState::BlendState(const BLEND_STATE_DESC& desc)
 		:mProperties(desc)
 	{ }
+
+	BlendState::~BlendState()
+	{
+		RenderStateManager::instance().notifyBlendStateDestroyed(mProperties.mData);
+	}
 
 	SPtr<BlendStateCore> BlendState::getCore() const
 	{
@@ -109,6 +147,27 @@ namespace BansheeEngine
 	BlendStatePtr BlendState::create(const BLEND_STATE_DESC& desc)
 	{
 		return RenderStateManager::instance().createBlendState(desc);
+	}
+
+	UINT64 BlendState::generateHash(const BLEND_STATE_DESC& desc)
+	{
+		size_t hash = 0;
+		hash_combine(hash, desc.alphaToCoverageEnable);
+		hash_combine(hash, desc.independantBlendEnable);
+
+		for (UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
+		{
+			hash_combine(hash, desc.renderTargetDesc[i].blendEnable);
+			hash_combine(hash, (UINT32)desc.renderTargetDesc[i].srcBlend);
+			hash_combine(hash, (UINT32)desc.renderTargetDesc[i].dstBlend);
+			hash_combine(hash, (UINT32)desc.renderTargetDesc[i].blendOp);
+			hash_combine(hash, (UINT32)desc.renderTargetDesc[i].srcBlendAlpha);
+			hash_combine(hash, (UINT32)desc.renderTargetDesc[i].dstBlendAlpha);
+			hash_combine(hash, (UINT32)desc.renderTargetDesc[i].blendOpAlpha);
+			hash_combine(hash, desc.renderTargetDesc[i].renderTargetWriteMask);
+		}
+
+		return (UINT64)hash;
 	}
 
 	/************************************************************************/
