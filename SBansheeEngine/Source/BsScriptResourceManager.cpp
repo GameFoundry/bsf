@@ -259,7 +259,9 @@ namespace BansheeEngine
 		MonoClass* stringTableClass = ScriptAssemblyManager::instance().getStringTableClass();
 		MonoObject* monoInstance = stringTableClass->createInstance();
 
-		return createScriptStringTable(monoInstance, resourceHandle);
+		// Managed constructor will call ::create(MonoObject*, const HStringTable&) internally so we just need
+		// to retrieve the created object
+		return ScriptStringTable::toNative(monoInstance);
 	}
 
 	ScriptStringTable* ScriptResourceManager::createScriptStringTable(MonoObject* instance, const HStringTable& resourceHandle)
@@ -390,6 +392,10 @@ namespace BansheeEngine
 			return createScriptScriptCode(static_resource_cast<ScriptCode>(resource));
 		case TID_Shader:
 			return createScriptShader(static_resource_cast<Shader>(resource));
+		case TID_Prefab:
+			return createScriptPrefab(static_resource_cast<Prefab>(resource));
+		case TID_StringTable:
+			return createScriptStringTable(static_resource_cast<StringTable>(resource));
 		case TID_Material:
 			return createScriptMaterial(static_resource_cast<Material>(resource));
 		case TID_Mesh:

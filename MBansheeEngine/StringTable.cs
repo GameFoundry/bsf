@@ -8,9 +8,10 @@ namespace BansheeEngine
 {
     public sealed class StringTable : Resource
     {
-        // For internal use by the runtime
-        private StringTable()
-        { }
+        public StringTable()
+        {
+            Internal_CreateInstance(this);
+        }
 
         public int GetNumStrings()
         {
@@ -50,6 +51,9 @@ namespace BansheeEngine
             Internal_GetStringDefault(mCachedPtr, identifier, out value);
             return value;
         }
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_CreateInstance(StringTable instance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern int Internal_GetNumStrings(IntPtr thisPtr);

@@ -7,7 +7,7 @@ namespace BansheeEngine
 {
 	enum class ScriptResourceType
 	{
-		Texture, SpriteTexture, Mesh, Font, Shader, Material, Prefab, PlainText, ScriptCode, Undefined
+		Texture, SpriteTexture, Mesh, Font, Shader, Material, Prefab, PlainText, ScriptCode, StringTable, Undefined
 	};
 
 	class BS_SCR_BE_EXPORT ScriptResourceBase : public PersistentScriptObjectBase

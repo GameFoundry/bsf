@@ -19,6 +19,8 @@ namespace BansheeEngine
 		HStringTable getStringTableHandle() const { return mTable; }
 
 	private:
+		static void internal_CreateInstance(MonoObject* instance);
+
 		static UINT32 internal_GetNumStrings(ScriptStringTable* thisPtr);
 		static MonoArray* internal_GetIdentifiers(ScriptStringTable* thisPtr);
 

@@ -237,7 +237,7 @@ namespace BansheeEditor
     // Note: Must be the same as C++ enum ScriptResourceType
     public enum ResourceType
     {
-        Texture, SpriteTexture, Mesh, Font, Shader, Material, Prefab, PlainText, ScriptCode, Undefined
+        Texture, SpriteTexture, Mesh, Font, Shader, Material, Prefab, PlainText, ScriptCode, StringTable, Undefined
     }
 
     public class LibraryEntry : ScriptObject

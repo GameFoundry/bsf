@@ -25,6 +25,13 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetStringDefault", &ScriptStringTable::internal_GetStringDefault);
 	}
 
+	void ScriptStringTable::internal_CreateInstance(MonoObject* instance)
+	{
+		HStringTable stringTable = StringTable::create();
+
+		ScriptResourceManager::instance().createScriptStringTable(instance, stringTable);
+	}
+
 	UINT32 ScriptStringTable::internal_GetNumStrings(ScriptStringTable* thisPtr)
 	{
 		return (UINT32)thisPtr->getStringTableHandle()->getIdentifiers().size();
