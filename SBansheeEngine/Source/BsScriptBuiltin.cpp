@@ -24,9 +24,8 @@ namespace BansheeEngine
 	{
 		HSpriteTexture whiteTexture = BuiltinResources::instance().getWhiteSpriteTexture();
 
-		ScriptSpriteTexture* scriptSpriteTex = ScriptResourceManager::instance().getScriptSpriteTexture(whiteTexture);
-		if (scriptSpriteTex == nullptr)
-			scriptSpriteTex = ScriptResourceManager::instance().createScriptSpriteTexture(whiteTexture);
+		ScriptSpriteTexture* scriptSpriteTex;
+		ScriptResourceManager::instance().getScriptResource(whiteTexture, &scriptSpriteTex, true);
 
 		return scriptSpriteTex->getManagedInstance();
 	}
@@ -35,9 +34,8 @@ namespace BansheeEngine
 	{
 		HShader diffuseShader = BuiltinResources::instance().getDiffuseShader();
 
-		ScriptShader* scriptShader = ScriptResourceManager::instance().getScriptShader(diffuseShader);
-		if (scriptShader == nullptr)
-			scriptShader = ScriptResourceManager::instance().createScriptShader(diffuseShader);
+		ScriptShader* scriptShader;
+		ScriptResourceManager::instance().getScriptResource(diffuseShader, &scriptShader, true);
 
 		return scriptShader->getManagedInstance();
 	}

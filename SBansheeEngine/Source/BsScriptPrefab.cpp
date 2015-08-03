@@ -27,7 +27,8 @@ namespace BansheeEngine
 	{
 		HPrefab prefab = Prefab::create(so->getNativeSceneObject());
 
-		ScriptResourceManager::instance().createScriptPrefab(instance, prefab);
+		ScriptPrefab* scriptInstance;
+		ScriptResourceManager::instance().createScriptResource(instance, prefab, &scriptInstance);
 	}
 
 	MonoObject* ScriptPrefab::internal_GetRoot(ScriptPrefab* thisPtr)

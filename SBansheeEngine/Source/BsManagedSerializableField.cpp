@@ -16,6 +16,7 @@
 #include "BsScriptMaterial.h"
 #include "BsScriptMesh.h"
 #include "BsScriptPrefab.h"
+#include "BsScriptFont.h"
 #include "BsScriptStringTable.h"
 #include "BsScriptSceneObject.h"
 #include "BsScriptComponent.h"
@@ -254,6 +255,18 @@ namespace BansheeEngine
 				{
 					ScriptPrefab* scriptPrefab = ScriptPrefab::toNative(value);
 					fieldData->value = static_resource_cast<Prefab>(scriptPrefab->getNativeHandle());
+				}
+
+				return fieldData;
+			}
+			case ScriptPrimitiveType::FontRef:
+			{
+				auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataResourceRef>();
+
+				if (value != nullptr)
+				{
+					ScriptFont* scriptFont = ScriptFont::toNative(value);
+					fieldData->value = static_resource_cast<Font>(scriptFont->getNativeHandle());
 				}
 
 				return fieldData;
@@ -545,9 +558,9 @@ namespace BansheeEngine
 				if(value)
 				{
 					HTexture texture = static_resource_cast<Texture>(value);
-					ScriptTexture2D* scriptResource = ScriptResourceManager::instance().getScriptTexture2D(texture);
-					if(scriptResource == nullptr)
-						scriptResource = ScriptResourceManager::instance().createScriptTexture2D(texture);
+
+					ScriptTexture2D* scriptResource;
+					ScriptResourceManager::instance().getScriptResource(texture, &scriptResource, true);
 
 					return scriptResource->getManagedInstance();
 				}
@@ -559,9 +572,9 @@ namespace BansheeEngine
 				if (value)
 				{
 					HTexture texture = static_resource_cast<Texture>(value);
-					ScriptTexture3D* scriptResource = ScriptResourceManager::instance().getScriptTexture3D(texture);
-					if (scriptResource == nullptr)
-						scriptResource = ScriptResourceManager::instance().createScriptTexture3D(texture);
+
+					ScriptTexture3D* scriptResource;
+					ScriptResourceManager::instance().getScriptResource(texture, &scriptResource, true);
 
 					return scriptResource->getManagedInstance();
 				}
@@ -573,9 +586,9 @@ namespace BansheeEngine
 				if (value)
 				{
 					HTexture texture = static_resource_cast<Texture>(value);
-					ScriptTextureCube* scriptResource = ScriptResourceManager::instance().getScriptTextureCube(texture);
-					if (scriptResource == nullptr)
-						scriptResource = ScriptResourceManager::instance().createScriptTextureCube(texture);
+
+					ScriptTextureCube* scriptResource;
+					ScriptResourceManager::instance().getScriptResource(texture, &scriptResource, true);
 
 					return scriptResource->getManagedInstance();
 				}
@@ -587,9 +600,9 @@ namespace BansheeEngine
 				if(value)
 				{
 					HSpriteTexture spriteTexture = static_resource_cast<SpriteTexture>(value);
-					ScriptSpriteTexture* scriptResource = ScriptResourceManager::instance().getScriptSpriteTexture(spriteTexture);
-					if(scriptResource == nullptr)
-						scriptResource = ScriptResourceManager::instance().createScriptSpriteTexture(spriteTexture);
+
+					ScriptSpriteTexture* scriptResource;
+					ScriptResourceManager::instance().getScriptResource(spriteTexture, &scriptResource, true);
 
 					if(scriptResource != nullptr)
 						return scriptResource->getManagedInstance();
@@ -602,9 +615,9 @@ namespace BansheeEngine
 				if (value)
 				{
 					HShader shader = static_resource_cast<Shader>(value);
-					ScriptShader* scriptResource = ScriptResourceManager::instance().getScriptShader(shader);
-					if (scriptResource == nullptr)
-						scriptResource = ScriptResourceManager::instance().createScriptShader(shader);
+
+					ScriptShader* scriptResource;
+					ScriptResourceManager::instance().getScriptResource(shader, &scriptResource, true);
 
 					if (scriptResource != nullptr)
 						return scriptResource->getManagedInstance();
@@ -617,9 +630,9 @@ namespace BansheeEngine
 				if (value)
 				{
 					HMaterial material = static_resource_cast<Material>(value);
-					ScriptMaterial* scriptResource = ScriptResourceManager::instance().getScriptMaterial(material);
-					if (scriptResource == nullptr)
-						scriptResource = ScriptResourceManager::instance().createScriptMaterial(material);
+
+					ScriptMaterial* scriptResource;
+					ScriptResourceManager::instance().getScriptResource(material, &scriptResource, true);
 
 					if (scriptResource != nullptr)
 						return scriptResource->getManagedInstance();
@@ -632,9 +645,9 @@ namespace BansheeEngine
 				if (value)
 				{
 					HMesh mesh = static_resource_cast<Mesh>(value);
-					ScriptMesh* scriptResource = ScriptResourceManager::instance().getScriptMesh(mesh);
-					if (scriptResource == nullptr)
-						scriptResource = ScriptResourceManager::instance().createScriptMesh(mesh);
+
+					ScriptMesh* scriptResource;
+					ScriptResourceManager::instance().getScriptResource(mesh, &scriptResource, true);
 
 					if (scriptResource != nullptr)
 						return scriptResource->getManagedInstance();
@@ -647,9 +660,9 @@ namespace BansheeEngine
 				if (value)
 				{
 					HPlainText plainText = static_resource_cast<PlainText>(value);
-					ScriptPlainText* scriptResource = ScriptResourceManager::instance().getScriptPlainText(plainText);
-					if (scriptResource == nullptr)
-						scriptResource = ScriptResourceManager::instance().createScriptPlainText(plainText);
+
+					ScriptPlainText* scriptResource;
+					ScriptResourceManager::instance().getScriptResource(plainText, &scriptResource, true);
 
 					if (scriptResource != nullptr)
 						return scriptResource->getManagedInstance();
@@ -662,9 +675,9 @@ namespace BansheeEngine
 				if (value)
 				{
 					HScriptCode scriptCode = static_resource_cast<ScriptCode>(value);
-					ScriptScriptCode* scriptResource = ScriptResourceManager::instance().getScriptScriptCode(scriptCode);
-					if (scriptResource == nullptr)
-						scriptResource = ScriptResourceManager::instance().createScriptScriptCode(scriptCode);
+
+					ScriptScriptCode* scriptResource;
+					ScriptResourceManager::instance().getScriptResource(scriptCode, &scriptResource, true);
 
 					if (scriptResource != nullptr)
 						return scriptResource->getManagedInstance();
@@ -677,9 +690,24 @@ namespace BansheeEngine
 				if (value)
 				{
 					HPrefab prefab = static_resource_cast<Prefab>(value);
-					ScriptPrefab* scriptResource = ScriptResourceManager::instance().getScriptPrefab(prefab);
-					if (scriptResource == nullptr)
-						scriptResource = ScriptResourceManager::instance().createScriptPrefab(prefab);
+
+					ScriptPrefab* scriptResource;
+					ScriptResourceManager::instance().getScriptResource(prefab, &scriptResource, true);
+
+					if (scriptResource != nullptr)
+						return scriptResource->getManagedInstance();
+				}
+				else
+					return nullptr;
+			}
+			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::FontRef)
+			{
+				if (value)
+				{
+					HFont font = static_resource_cast<Font>(value);
+
+					ScriptFont* scriptResource;
+					ScriptResourceManager::instance().getScriptResource(font, &scriptResource, true);
 
 					if (scriptResource != nullptr)
 						return scriptResource->getManagedInstance();
@@ -692,9 +720,9 @@ namespace BansheeEngine
 				if (value)
 				{
 					HStringTable stringTable = static_resource_cast<StringTable>(value);
-					ScriptStringTable* scriptResource = ScriptResourceManager::instance().getScriptStringTable(stringTable);
-					if (scriptResource == nullptr)
-						scriptResource = ScriptResourceManager::instance().createScriptStringTable(stringTable);
+
+					ScriptStringTable* scriptResource;
+					ScriptResourceManager::instance().getScriptResource(stringTable, &scriptResource, true);
 
 					if (scriptResource != nullptr)
 						return scriptResource->getManagedInstance();
@@ -707,7 +735,10 @@ namespace BansheeEngine
 				if (value)
 				{
 					HManagedResource managedResource = static_resource_cast<ManagedResource>(value);
-					ScriptManagedResource* scriptResource = ScriptResourceManager::instance().getScriptManagedResource(managedResource);
+
+					ScriptManagedResource* scriptResource;
+					ScriptResourceManager::instance().getScriptResource(managedResource, &scriptResource, true);
+
 					assert(scriptResource != nullptr); // Managed resource managed instance is created upon creation so it may never be null
 
 					return scriptResource->getManagedInstance();

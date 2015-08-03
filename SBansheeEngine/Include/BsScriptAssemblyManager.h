@@ -26,19 +26,6 @@ namespace BansheeEngine
 		MonoClass* getComponentClass() const { return mComponentClass; }
 		MonoClass* getMissingComponentClass() const { return mMissingComponentClass; }
 		MonoClass* getSceneObjectClass() const { return mSceneObjectClass; }
-		MonoClass* getManagedResourceClass() const { return mManagedResourceClass; }
-		MonoClass* getTexture2DClass() const { return mTexture2DClass; }
-		MonoClass* getTexture3DClass() const { return mTexture3DClass; }
-		MonoClass* getTextureCubeClass() const { return mTextureCubeClass; }
-		MonoClass* getSpriteTextureClass() const { return mSpriteTextureClass; }
-		MonoClass* getShaderClass() const { return mShaderClass; }
-		MonoClass* getMaterialClass() const { return mMaterialClass; }
-		MonoClass* getMeshClass() const { return mMeshClass; }
-		MonoClass* getFontClass() const { return mFontClass; }
-		MonoClass* getPrefabClass() const { return mPrefabClass; }
-		MonoClass* getStringTableClass() const { return mStringTableClass; }
-		MonoClass* getPlainTextClass() const { return mPlainTextClass; }
-		MonoClass* getScriptCodeClass() const { return mScriptCodeClass; }
 
 		ManagedSerializableTypeInfoPtr determineType(MonoClass* monoClass);
 	private:
@@ -52,20 +39,6 @@ namespace BansheeEngine
 		MonoClass* mComponentClass;
 		MonoClass* mSceneObjectClass;
 		MonoClass* mMissingComponentClass;
-
-		MonoClass* mTexture2DClass;
-		MonoClass* mTexture3DClass;
-		MonoClass* mTextureCubeClass;
-		MonoClass* mSpriteTextureClass;
-		MonoClass* mShaderClass;
-		MonoClass* mMaterialClass;
-		MonoClass* mMeshClass;
-		MonoClass* mManagedResourceClass;
-		MonoClass* mFontClass;
-		MonoClass* mPrefabClass;
-		MonoClass* mStringTableClass;
-		MonoClass* mPlainTextClass;
-		MonoClass* mScriptCodeClass;
 
 		MonoClass* mSerializeObjectAttribute;
 		MonoClass* mDontSerializeFieldAttribute;

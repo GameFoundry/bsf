@@ -38,7 +38,8 @@ namespace BansheeEngine
 
 		HTexture texture = Texture::create(TEX_TYPE_CUBE_MAP, width, height, numMips, format, usage, gammaCorrection, numSamples);
 
-		ScriptResourceManager::instance().createScriptTextureCube(instance, texture);
+		ScriptTextureCube* scriptInstance;
+		ScriptResourceManager::instance().createScriptResource(instance, texture, &scriptInstance);
 	}
 
 	MonoObject* ScriptTextureCube::internal_getPixels(ScriptTextureCube* thisPtr, UINT32 face, UINT32 mipLevel)

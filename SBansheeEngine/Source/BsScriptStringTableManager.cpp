@@ -37,9 +37,8 @@ namespace BansheeEngine
 	{
 		HStringTable table = StringTableManager::instance().getTable(id);
 
-		ScriptStringTable* scriptStringTable = ScriptResourceManager::instance().getScriptStringTable(table);
-		if (scriptStringTable == nullptr)
-			scriptStringTable = ScriptResourceManager::instance().createScriptStringTable(table);
+		ScriptStringTable* scriptStringTable;
+		ScriptResourceManager::instance().getScriptResource(table, &scriptStringTable, true);
 
 		return scriptStringTable->getManagedInstance();
 	}

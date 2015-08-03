@@ -8,6 +8,19 @@
 #include "BsMonoField.h"
 #include "BsMonoMethod.h"
 #include "BsMonoProperty.h"
+#include "BsScriptManagedResource.h"
+#include "BsScriptTexture2D.h"
+#include "BsScriptTexture3D.h"
+#include "BsScriptTextureCube.h"
+#include "BsScriptSpriteTexture.h"
+#include "BsScriptMaterial.h"
+#include "BsScriptMesh.h"
+#include "BsScriptFont.h"
+#include "BsScriptShader.h"
+#include "BsScriptPlainText.h"
+#include "BsScriptScriptCode.h"
+#include "BsScriptStringTable.h"
+#include "BsScriptPrefab.h"
 #include "BsMonoUtil.h"
 #include "BsRTTIType.h"
 
@@ -15,11 +28,8 @@ namespace BansheeEngine
 {
 	ScriptAssemblyManager::ScriptAssemblyManager()
 		:mBaseTypesInitialized(false), mSerializeObjectAttribute(nullptr), mDontSerializeFieldAttribute(nullptr), 
-		mComponentClass(nullptr), mSceneObjectClass(nullptr), mTexture2DClass(nullptr), mSpriteTextureClass(nullptr),
-		mSerializeFieldAttribute(nullptr), mHideInInspectorAttribute(nullptr), mSystemArrayClass(nullptr), mSystemGenericListClass(nullptr),
-		mSystemGenericDictionaryClass(nullptr), mManagedResourceClass(nullptr), mFontClass(nullptr), mMissingComponentClass(nullptr),
-		mPlainTextClass(nullptr), mScriptCodeClass(nullptr), mShaderClass(nullptr), mMaterialClass(nullptr), mTexture3DClass(nullptr),
-		mTextureCubeClass(nullptr), mMeshClass(nullptr), mPrefabClass(nullptr), mStringTableClass(nullptr)
+		mComponentClass(nullptr), mSceneObjectClass(nullptr), mSerializeFieldAttribute(nullptr), mHideInInspectorAttribute(nullptr), 
+		mSystemArrayClass(nullptr), mSystemGenericListClass(nullptr), mSystemGenericDictionaryClass(nullptr), mMissingComponentClass(nullptr)
 	{
 
 	}
@@ -55,12 +65,14 @@ namespace BansheeEngine
 
 		mAssemblyInfos[assemblyName] = assemblyInfo;
 
+		MonoClass* managedResourceClass = ScriptManagedResource::getMetaData()->scriptClass;
+
 		// Populate class data
 		const Vector<MonoClass*>& allClasses = curAssembly->getAllClasses();
 		for(auto& curClass : allClasses)
 		{
-			if((curClass->isSubClassOf(mComponentClass) || curClass->isSubClassOf(mManagedResourceClass) || 
-				curClass->hasAttribute(mSerializeObjectAttribute)) && curClass != mComponentClass && curClass != mManagedResourceClass)
+			if ((curClass->isSubClassOf(mComponentClass) || curClass->isSubClassOf(managedResourceClass) ||
+				curClass->hasAttribute(mSerializeObjectAttribute)) && curClass != mComponentClass && curClass != managedResourceClass)
 			{
 				std::shared_ptr<ManagedSerializableTypeInfoObject> typeInfo = bs_shared_ptr<ManagedSerializableTypeInfoObject>();
 				typeInfo->mTypeNamespace = curClass->getNamespace();
@@ -259,73 +271,79 @@ namespace BansheeEngine
 				return typeInfo;
 			}
 		case MONO_TYPE_CLASS:
-			if(monoClass->isSubClassOf(mTexture2DClass))
+			if(monoClass->isSubClassOf(ScriptTexture2D::getMetaData()->scriptClass))
 			{
 				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::Texture2DRef;
 				return typeInfo;
 			}
-			if (monoClass->isSubClassOf(mTexture3DClass))
+			if (monoClass->isSubClassOf(ScriptTexture3D::getMetaData()->scriptClass))
 			{
 				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::Texture3DRef;
 				return typeInfo;
 			}
-			if (monoClass->isSubClassOf(mTextureCubeClass))
+			if (monoClass->isSubClassOf(ScriptTextureCube::getMetaData()->scriptClass))
 			{
 				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::TextureCubeRef;
 				return typeInfo;
 			}
-			else if(monoClass->isSubClassOf(mSpriteTextureClass))
+			else if (monoClass->isSubClassOf(ScriptSpriteTexture::getMetaData()->scriptClass))
 			{
 				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::SpriteTextureRef;
 				return typeInfo;
 			}
-			else if (monoClass->isSubClassOf(mManagedResourceClass))
+			else if (monoClass->isSubClassOf(ScriptManagedResource::getMetaData()->scriptClass))
 			{
 				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::ManagedResourceRef;
 				return typeInfo;
 			}
-			else if (monoClass->isSubClassOf(mShaderClass))
+			else if (monoClass->isSubClassOf(ScriptShader::getMetaData()->scriptClass))
 			{
 				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::ShaderRef;
 				return typeInfo;
 			}
-			else if (monoClass->isSubClassOf(mMaterialClass))
+			else if (monoClass->isSubClassOf(ScriptMaterial::getMetaData()->scriptClass))
 			{
 				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::MaterialRef;
 				return typeInfo;
 			}
-			else if (monoClass->isSubClassOf(mMeshClass))
+			else if (monoClass->isSubClassOf(ScriptMesh::getMetaData()->scriptClass))
 			{
 				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::MeshRef;
 				return typeInfo;
 			}
-			else if (monoClass->isSubClassOf(mPlainTextClass))
+			else if (monoClass->isSubClassOf(ScriptPlainText::getMetaData()->scriptClass))
 			{
 				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::PlainTextRef;
 				return typeInfo;
 			}
-			else if (monoClass->isSubClassOf(mScriptCodeClass))
+			else if (monoClass->isSubClassOf(ScriptScriptCode::getMetaData()->scriptClass))
 			{
 				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::ScriptCodeRef;
 				return typeInfo;
 			}
-			else if (monoClass->isSubClassOf(mPrefabClass))
+			else if (monoClass->isSubClassOf(ScriptPrefab::getMetaData()->scriptClass))
 			{
 				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::PrefabRef;
 				return typeInfo;
 			}
-			else if (monoClass->isSubClassOf(mStringTableClass))
+			else if (monoClass->isSubClassOf(ScriptFont::getMetaData()->scriptClass))
+			{
+				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr<ManagedSerializableTypeInfoPrimitive>();
+				typeInfo->mType = ScriptPrimitiveType::FontRef;
+				return typeInfo;
+			}
+			else if (monoClass->isSubClassOf(ScriptStringTable::getMetaData()->scriptClass))
 			{
 				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::StringTableRef;
@@ -433,20 +451,6 @@ namespace BansheeEngine
 		mSceneObjectClass = nullptr;
 		mMissingComponentClass = nullptr;
 
-		mManagedResourceClass = nullptr;
-		mTexture2DClass = nullptr;
-		mTexture3DClass = nullptr;
-		mTextureCubeClass = nullptr;
-		mSpriteTextureClass = nullptr;
-		mShaderClass = nullptr;
-		mMaterialClass = nullptr;
-		mMeshClass = nullptr;
-		mPrefabClass = nullptr;
-		mStringTableClass = nullptr;
-		mFontClass = nullptr;
-		mPlainTextClass = nullptr;
-		mScriptCodeClass = nullptr;
-
 		mSerializeFieldAttribute = nullptr;
 		mHideInInspectorAttribute = nullptr;
 	}
@@ -493,58 +497,6 @@ namespace BansheeEngine
 		mSceneObjectClass = bansheeEngineAssembly->getClass("BansheeEngine", "SceneObject");
 		if(mSceneObjectClass == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find SceneObject managed class.");
-
-		mManagedResourceClass = bansheeEngineAssembly->getClass("BansheeEngine", "ManagedResource");
-		if (mManagedResourceClass == nullptr)
-			BS_EXCEPT(InvalidStateException, "Cannot find ManagedResource managed class.");
-
-		mTexture2DClass = bansheeEngineAssembly->getClass("BansheeEngine", "Texture2D");
-		if(mTexture2DClass == nullptr)
-			BS_EXCEPT(InvalidStateException, "Cannot find Texture2D managed class.");
-
-		mTexture3DClass = bansheeEngineAssembly->getClass("BansheeEngine", "Texture3D");
-		if (mTexture3DClass == nullptr)
-			BS_EXCEPT(InvalidStateException, "Cannot find Texture3D managed class.");
-
-		mTextureCubeClass = bansheeEngineAssembly->getClass("BansheeEngine", "TextureCube");
-		if (mTextureCubeClass == nullptr)
-			BS_EXCEPT(InvalidStateException, "Cannot find TextureCube managed class.");
-
-		mSpriteTextureClass = bansheeEngineAssembly->getClass("BansheeEngine", "SpriteTexture");
-		if(mSpriteTextureClass == nullptr)
-			BS_EXCEPT(InvalidStateException, "Cannot find SpriteTexture managed class.");
-
-		mShaderClass = bansheeEngineAssembly->getClass("BansheeEngine", "Shader");
-		if (mShaderClass == nullptr)
-			BS_EXCEPT(InvalidStateException, "Cannot find Shader managed class.");
-
-		mMaterialClass = bansheeEngineAssembly->getClass("BansheeEngine", "Material");
-		if (mMaterialClass == nullptr)
-			BS_EXCEPT(InvalidStateException, "Cannot find Material managed class.");
-
-		mMeshClass = bansheeEngineAssembly->getClass("BansheeEngine", "Mesh");
-		if (mMeshClass == nullptr)
-			BS_EXCEPT(InvalidStateException, "Cannot find Mesh managed class.");
-
-		mFontClass = bansheeEngineAssembly->getClass("BansheeEngine", "Font");
-		if (mFontClass == nullptr)
-			BS_EXCEPT(InvalidStateException, "Cannot find Font managed class.");
-
-		mPrefabClass = bansheeEngineAssembly->getClass("BansheeEngine", "Prefab");
-		if (mPrefabClass == nullptr)
-			BS_EXCEPT(InvalidStateException, "Cannot find Prefab managed class.");
-
-		mStringTableClass = bansheeEngineAssembly->getClass("BansheeEngine", "StringTable");
-		if (mStringTableClass == nullptr)
-			BS_EXCEPT(InvalidStateException, "Cannot find StringTable managed class.");
-
-		mPlainTextClass = bansheeEngineAssembly->getClass("BansheeEngine", "PlainText");
-		if (mPlainTextClass == nullptr)
-			BS_EXCEPT(InvalidStateException, "Cannot find PlainText managed class.");
-
-		mScriptCodeClass = bansheeEngineAssembly->getClass("BansheeEngine", "ScriptCode");
-		if (mScriptCodeClass == nullptr)
-			BS_EXCEPT(InvalidStateException, "Cannot find ScriptCode managed class.");
 
 		mSerializeFieldAttribute = bansheeEngineAssembly->getClass("BansheeEngine", "SerializeField");
 		if(mSerializeFieldAttribute == nullptr)

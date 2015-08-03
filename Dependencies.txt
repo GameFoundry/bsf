@@ -1,9 +1,10 @@
 This document lists all Banshee 3rd party libraries and provides information on how to compile
 and include them in your own project. It is meant to be used as a guide to create your own Banshee
-project file, potentially for compiler/IDE other than Visual Studio.
+project file, potentially for compiler/IDE other than Visual Studio. Normally these files will be
+provided pre-compiled for you.
 
 BansheeEngine relies on the following 3rd party libraries:
- - Mono 3.2.3
+ - Mono 3.8.0
     - http://www.mono-project.com
 	- See MonoIntegrationGuide.txt on how to compile & integrate Mono
 
@@ -67,3 +68,6 @@ Place plug-in specific dependency files in:
 
 Other notes:
  - Some dependencies might not come with DebugRelease binaries, in which case use Release binaries (copy them to DebugRelease folder)
+ - If you wish to compile managed assemblies using Microsoft compiler (e.g. using Visual Studio) yet still be able to debug
+   the generated assemblies, you must install Mono 3.8.0., set up an environment variable MONO_INSTALL_DIR pointing to the Mono 
+   installation directory. When this is set up "pdb2mdb" script will trigger on next compile generating the needed debug symbols.

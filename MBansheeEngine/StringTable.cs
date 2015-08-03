@@ -8,6 +8,10 @@ namespace BansheeEngine
 {
     public sealed class StringTable : Resource
     {
+        // Constructor for runtime use only (dummy parameter to differentiate from the normal constructor)
+        private StringTable(bool dummy)
+        {  }
+
         public StringTable()
         {
             Internal_CreateInstance(this);

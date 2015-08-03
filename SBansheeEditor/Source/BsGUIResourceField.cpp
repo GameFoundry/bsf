@@ -17,6 +17,19 @@
 #include "BsProjectResourceMeta.h"
 #include "BsManagedResourceMetaData.h"
 #include "BsBuiltinEditorResources.h"
+#include "BsScriptTexture2D.h"
+#include "BsScriptTexture3D.h"
+#include "BsScriptTextureCube.h"
+#include "BsScriptSpriteTexture.h"
+#include "BsScriptMaterial.h"
+#include "BsScriptMesh.h"
+#include "BsScriptFont.h"
+#include "BsScriptShader.h"
+#include "BsScriptPlainText.h"
+#include "BsScriptScriptCode.h"
+#include "BsScriptStringTable.h"
+#include "BsScriptPrefab.h"
+#include "BsScriptManagedResource.h"
 
 using namespace std::placeholders;
 
@@ -239,9 +252,9 @@ namespace BansheeEngine
 			case TID_Texture:
 			{
 				// TODO - Need to distinguish from 2D/3D/Cube
-				if (ScriptAssemblyManager::instance().getTexture2DClass()->isSubClassOf(acceptedClass) ||
-					ScriptAssemblyManager::instance().getTexture3DClass()->isSubClassOf(acceptedClass) ||
-					ScriptAssemblyManager::instance().getTextureCubeClass()->isSubClassOf(acceptedClass))
+				if (ScriptTexture2D::getMetaData()->scriptClass->isSubClassOf(acceptedClass) ||
+					ScriptTexture3D::getMetaData()->scriptClass->isSubClassOf(acceptedClass) ||
+					ScriptTextureCube::getMetaData()->scriptClass->isSubClassOf(acceptedClass))
 				{
 					setUUID(uuid);
 					found = true;
@@ -250,7 +263,7 @@ namespace BansheeEngine
 				break;
 			case TID_SpriteTexture:
 			{
-				if (ScriptAssemblyManager::instance().getSpriteTextureClass()->isSubClassOf(acceptedClass))
+				if (ScriptSpriteTexture::getMetaData()->scriptClass->isSubClassOf(acceptedClass))
 				{
 					setUUID(uuid);
 					found = true;
@@ -259,7 +272,7 @@ namespace BansheeEngine
 				break;
 			case TID_Font:
 			{
-				if (ScriptAssemblyManager::instance().getFontClass()->isSubClassOf(acceptedClass))
+				if (ScriptFont::getMetaData()->scriptClass->isSubClassOf(acceptedClass))
 				{
 					setUUID(uuid);
 					found = true;
@@ -268,7 +281,7 @@ namespace BansheeEngine
 				break;
 			case TID_PlainText:
 			{
-				if (ScriptAssemblyManager::instance().getPlainTextClass()->isSubClassOf(acceptedClass))
+				if (ScriptPlainText::getMetaData()->scriptClass->isSubClassOf(acceptedClass))
 				{
 					setUUID(uuid);
 					found = true;
@@ -277,7 +290,7 @@ namespace BansheeEngine
 				break;
 			case TID_ScriptCode:
 			{
-				if (ScriptAssemblyManager::instance().getScriptCodeClass()->isSubClassOf(acceptedClass))
+				if (ScriptScriptCode::getMetaData()->scriptClass->isSubClassOf(acceptedClass))
 				{
 					setUUID(uuid);
 					found = true;
@@ -286,7 +299,7 @@ namespace BansheeEngine
 				break;
 			case TID_Shader:
 			{
-				if (ScriptAssemblyManager::instance().getShaderClass()->isSubClassOf(acceptedClass))
+				if (ScriptShader::getMetaData()->scriptClass->isSubClassOf(acceptedClass))
 				{
 					setUUID(uuid);
 					found = true;
@@ -295,7 +308,7 @@ namespace BansheeEngine
 				break;
 			case TID_Material:
 			{
-				if (ScriptAssemblyManager::instance().getMaterialClass()->isSubClassOf(acceptedClass))
+				if (ScriptMaterial::getMetaData()->scriptClass->isSubClassOf(acceptedClass))
 				{
 					setUUID(uuid);
 					found = true;
@@ -304,7 +317,7 @@ namespace BansheeEngine
 				break;
 			case TID_Mesh:
 			{
-				if (ScriptAssemblyManager::instance().getMeshClass()->isSubClassOf(acceptedClass))
+				if (ScriptMesh::getMetaData()->scriptClass->isSubClassOf(acceptedClass))
 				{
 					setUUID(uuid);
 					found = true;
@@ -313,7 +326,7 @@ namespace BansheeEngine
 				break;
 			case TID_Prefab:
 			{
-				if (ScriptAssemblyManager::instance().getPrefabClass()->isSubClassOf(acceptedClass))
+				if (ScriptPrefab::getMetaData()->scriptClass->isSubClassOf(acceptedClass))
 				{
 					setUUID(uuid);
 					found = true;
@@ -321,7 +334,7 @@ namespace BansheeEngine
 			}
 			case TID_StringTable:
 			{
-				if (ScriptAssemblyManager::instance().getStringTableClass()->isSubClassOf(acceptedClass))
+				if (ScriptStringTable::getMetaData()->scriptClass->isSubClassOf(acceptedClass))
 				{
 					setUUID(uuid);
 					found = true;

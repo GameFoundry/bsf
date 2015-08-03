@@ -23,16 +23,17 @@ namespace BansheeEngine
 	void ScriptSpriteTexture::internal_createInstance(MonoObject* instance, MonoObject* texture, Vector2 offset, Vector2 scale)
 	{
 		ScriptTexture2D* scriptTexture = ScriptTexture2D::toNative(texture);
+		ScriptSpriteTexture* scriptInstance;
 
 		if (scriptTexture == nullptr)
 		{
-			ScriptResourceManager::instance().createScriptSpriteTexture(instance, SpriteTexture::dummy());
+			ScriptResourceManager::instance().createScriptResource(instance, SpriteTexture::dummy(), &scriptInstance);
 		}
 		else
 		{
 			HSpriteTexture spriteTexture = SpriteTexture::create(offset, scale, static_resource_cast<Texture>(scriptTexture->getNativeHandle()));
 
-			ScriptResourceManager::instance().createScriptSpriteTexture(instance, spriteTexture);
+			ScriptResourceManager::instance().createScriptResource(instance, spriteTexture, &scriptInstance);
 		}
 	}
 
@@ -54,9 +55,8 @@ namespace BansheeEngine
 		if (texture == nullptr)
 			return nullptr;
 
-		ScriptSpriteTexture* scriptSpriteTex = ScriptResourceManager::instance().getScriptSpriteTexture(texture);
-		if (scriptSpriteTex == nullptr)
-			scriptSpriteTex = ScriptResourceManager::instance().createScriptSpriteTexture(texture);
+		ScriptSpriteTexture* scriptSpriteTex;
+		ScriptResourceManager::instance().getScriptResource(texture, &scriptSpriteTex, true);
 
 		return scriptSpriteTex->getManagedInstance();
 	}

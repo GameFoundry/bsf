@@ -12,6 +12,19 @@
 #include "BsScriptSceneObject.h"
 #include "BsManagedSerializableObjectInfo.h"
 #include "BsScriptAssemblyManager.h"
+#include "BsScriptTexture2D.h"
+#include "BsScriptTexture3D.h"
+#include "BsScriptTextureCube.h"
+#include "BsScriptSpriteTexture.h"
+#include "BsScriptMaterial.h"
+#include "BsScriptMesh.h"
+#include "BsScriptFont.h"
+#include "BsScriptShader.h"
+#include "BsScriptPlainText.h"
+#include "BsScriptScriptCode.h"
+#include "BsScriptStringTable.h"
+#include "BsScriptPrefab.h"
+#include "BsScriptManagedResource.h"
 
 namespace BansheeEngine
 {
@@ -148,29 +161,31 @@ namespace BansheeEngine
 		case ScriptPrimitiveType::String:
 			return mono_get_string_class();
 		case ScriptPrimitiveType::Texture2DRef:
-			return ScriptAssemblyManager::instance().getTexture2DClass()->_getInternalClass();
+			return ScriptTexture2D::getMetaData()->scriptClass->_getInternalClass();
 		case ScriptPrimitiveType::Texture3DRef:
-			return ScriptAssemblyManager::instance().getTexture3DClass()->_getInternalClass();
+			return ScriptTexture3D::getMetaData()->scriptClass->_getInternalClass();
 		case ScriptPrimitiveType::TextureCubeRef:
-			return ScriptAssemblyManager::instance().getTextureCubeClass()->_getInternalClass();
+			return ScriptTextureCube::getMetaData()->scriptClass->_getInternalClass();
 		case ScriptPrimitiveType::SpriteTextureRef:
-			return ScriptAssemblyManager::instance().getSpriteTextureClass()->_getInternalClass();
+			return ScriptSpriteTexture::getMetaData()->scriptClass->_getInternalClass();
 		case ScriptPrimitiveType::ShaderRef:
-			return ScriptAssemblyManager::instance().getShaderClass()->_getInternalClass();
+			return ScriptShader::getMetaData()->scriptClass->_getInternalClass();
 		case ScriptPrimitiveType::MaterialRef:
-			return ScriptAssemblyManager::instance().getMaterialClass()->_getInternalClass();
+			return ScriptMaterial::getMetaData()->scriptClass->_getInternalClass();
 		case ScriptPrimitiveType::MeshRef:
-			return ScriptAssemblyManager::instance().getMeshClass()->_getInternalClass();
+			return ScriptMesh::getMetaData()->scriptClass->_getInternalClass();
 		case ScriptPrimitiveType::ManagedResourceRef:
-			return ScriptAssemblyManager::instance().getManagedResourceClass()->_getInternalClass();
+			return ScriptManagedResource::getMetaData()->scriptClass->_getInternalClass();
 		case ScriptPrimitiveType::PlainTextRef:
-			return ScriptAssemblyManager::instance().getPlainTextClass()->_getInternalClass();
+			return ScriptPlainText::getMetaData()->scriptClass->_getInternalClass();
 		case ScriptPrimitiveType::ScriptCodeRef:
-			return ScriptAssemblyManager::instance().getScriptCodeClass()->_getInternalClass();
+			return ScriptScriptCode::getMetaData()->scriptClass->_getInternalClass();
 		case ScriptPrimitiveType::PrefabRef:
-			return ScriptAssemblyManager::instance().getPrefabClass()->_getInternalClass();
+			return ScriptPrefab::getMetaData()->scriptClass->_getInternalClass();
+		case ScriptPrimitiveType::FontRef:
+			return ScriptFont::getMetaData()->scriptClass->_getInternalClass();
 		case ScriptPrimitiveType::StringTableRef:
-			return ScriptAssemblyManager::instance().getStringTableClass()->_getInternalClass();
+			return ScriptStringTable::getMetaData()->scriptClass->_getInternalClass();
 		case ScriptPrimitiveType::SceneObjectRef:
 			return ScriptAssemblyManager::instance().getSceneObjectClass()->_getInternalClass();
 		case ScriptPrimitiveType::ComponentRef:

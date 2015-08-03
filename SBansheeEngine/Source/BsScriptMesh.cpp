@@ -57,7 +57,8 @@ namespace BansheeEngine
 		Vector<SubMesh> nativeSubMeshes = monoToNativeSubMeshes(subMeshes);
 		HMesh mesh = Mesh::create(numVertices, numIndices, vertexDesc, nativeSubMeshes, usage, indexType);
 
-		ScriptResourceManager::instance().createScriptMesh(instance, mesh);
+		ScriptMesh* scriptInstance;
+		ScriptResourceManager::instance().createScriptResource(instance, mesh, &scriptInstance);
 	}
 
 	void ScriptMesh::internal_CreateInstanceMeshData(MonoObject* instance, ScriptMeshData* data, MonoArray* subMeshes,
@@ -70,7 +71,8 @@ namespace BansheeEngine
 		Vector<SubMesh> nativeSubMeshes = monoToNativeSubMeshes(subMeshes);
 		HMesh mesh = Mesh::create(meshData, nativeSubMeshes, usage);
 
-		ScriptResourceManager::instance().createScriptMesh(instance, mesh);
+		ScriptMesh* scriptInstance;
+		ScriptResourceManager::instance().createScriptResource(instance, mesh, &scriptInstance);
 	}
 
 	MonoArray* ScriptMesh::internal_GetSubMeshes(ScriptMesh* thisPtr)

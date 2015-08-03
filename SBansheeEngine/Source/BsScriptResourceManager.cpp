@@ -23,330 +23,141 @@ namespace BansheeEngine
 	{
 	}
 
-	ScriptTexture2D* ScriptResourceManager::createScriptTexture2D(const HTexture& resourceHandle)
+	template<class RetType, class InType>
+	void ScriptResourceManager::createScriptResource(const ResourceHandle<InType>& resourceHandle, RetType** out)
 	{
-		MonoClass* textureClass = ScriptAssemblyManager::instance().getTexture2DClass();
-		MonoObject* monoInstance = textureClass->createInstance();
+		MonoClass* resourceClass = RetType::getMetaData()->scriptClass;
+		MonoObject* monoInstance = resourceClass->createInstance();
 
-		return createScriptTexture2D(monoInstance, resourceHandle);
+		createScriptResource(monoInstance, resourceHandle, out);
 	}
 
-	ScriptTexture3D* ScriptResourceManager::createScriptTexture3D(const HTexture& resourceHandle)
-	{
-		MonoClass* textureClass = ScriptAssemblyManager::instance().getTexture3DClass();
-		MonoObject* monoInstance = textureClass->createInstance();
-
-		return createScriptTexture3D(monoInstance, resourceHandle);
-	}
-
-	ScriptTextureCube* ScriptResourceManager::createScriptTextureCube(const HTexture& resourceHandle)
-	{
-		MonoClass* textureClass = ScriptAssemblyManager::instance().getTextureCubeClass();
-		MonoObject* monoInstance = textureClass->createInstance();
-
-		return createScriptTextureCube(monoInstance, resourceHandle);
-	}
-
-	ScriptTexture2D* ScriptResourceManager::createScriptTexture2D(MonoObject* instance, const HTexture& resourceHandle)
+	template<class RetType, class InType>
+	void ScriptResourceManager::createScriptResource(MonoObject* instance, const ResourceHandle<InType>& resourceHandle, RetType** out)
 	{
 		const String& uuid = resourceHandle.getUUID();
 #if BS_DEBUG_MODE
 		throwExceptionIfInvalidOrDuplicate(uuid);
 #endif
 
-		ScriptTexture2D* scriptResource = new (bs_alloc<ScriptTexture2D>()) ScriptTexture2D(instance, resourceHandle);
+		RetType* scriptResource = new (bs_alloc<RetType>()) RetType(instance, resourceHandle);
 		mScriptResources[uuid] = scriptResource;
 
-		return scriptResource;
+		*out = scriptResource;
 	}
 
-	ScriptTexture3D* ScriptResourceManager::createScriptTexture3D(MonoObject* instance, const HTexture& resourceHandle)
+	template<class RetType, class InType>
+	void ScriptResourceManager::getScriptResource(const ResourceHandle<InType>& resourceHandle, RetType** out, bool create)
 	{
-		const String& uuid = resourceHandle.getUUID();
+		*out = static_cast<RetType*>(getScriptResource(resourceHandle.getUUID()));
+
+		if (*out == nullptr && create)
+			createScriptResource(resourceHandle, out);
+	}
+
+	template<>
+	void ScriptResourceManager::createScriptResource(const ResourceHandle<StringTable>& resourceHandle, ScriptStringTable** out)
+	{
+		MonoClass* resourceClass = ScriptStringTable::getMetaData()->scriptClass;
+
+		bool dummy = true;
+		void* params = { &dummy };
+
+		MonoObject* monoInstance = resourceClass->createInstance(&params, 1);
+		createScriptResource(monoInstance, resourceHandle, out);
+	}
+
+	template<>
+	void ScriptResourceManager::createScriptResource(const HResource& resourceHandle, ScriptResourceBase** out)
+	{
 #if BS_DEBUG_MODE
-		throwExceptionIfInvalidOrDuplicate(uuid);
+		throwExceptionIfInvalidOrDuplicate(resourceHandle.getUUID());
 #endif
 
-		ScriptTexture3D* scriptResource = new (bs_alloc<ScriptTexture3D>()) ScriptTexture3D(instance, resourceHandle);
-		mScriptResources[uuid] = scriptResource;
+		UINT32 resTypeID = resourceHandle->getTypeId();
 
-		return scriptResource;
+		switch (resTypeID)
+		{
+		case TID_Texture:
+		{
+			HTexture texture = static_resource_cast<Texture>(resourceHandle);
+			TextureType type = texture->getProperties().getTextureType();
+
+			if (type == TEX_TYPE_3D)
+				return createScriptResource(texture, (ScriptTexture3D**)out);
+			else if (type == TEX_TYPE_CUBE_MAP)
+				return createScriptResource(texture, (ScriptTextureCube**)out);
+			else
+				return createScriptResource(texture, (ScriptTexture2D**)out);
+		}
+		case TID_SpriteTexture:
+			return createScriptResource(static_resource_cast<SpriteTexture>(resourceHandle), (ScriptSpriteTexture**)out);
+		case TID_Font:
+			return createScriptResource(static_resource_cast<Font>(resourceHandle), (ScriptFont**)out);
+		case TID_PlainText:
+			return createScriptResource(static_resource_cast<PlainText>(resourceHandle), (ScriptPlainText**)out);
+		case TID_ScriptCode:
+			return createScriptResource(static_resource_cast<ScriptCode>(resourceHandle), (ScriptScriptCode**)out);
+		case TID_Shader:
+			return createScriptResource(static_resource_cast<Shader>(resourceHandle), (ScriptShader**)out);
+		case TID_Prefab:
+			return createScriptResource(static_resource_cast<Prefab>(resourceHandle), (ScriptPrefab**)out);
+		case TID_StringTable:
+			return createScriptResource(static_resource_cast<StringTable>(resourceHandle), (ScriptStringTable**)out);
+		case TID_Material:
+			return createScriptResource(static_resource_cast<Material>(resourceHandle), (ScriptMaterial**)out);
+		case TID_Mesh:
+			return createScriptResource(static_resource_cast<Mesh>(resourceHandle), (ScriptMesh**)out);
+		case TID_ManagedResource:
+			BS_EXCEPT(InternalErrorException, "Managed resources must have a managed instance by default, this call is invalid.")
+				break;
+		default:
+			BS_EXCEPT(NotImplementedException, "Attempting to load a resource type that is not supported. Type ID: " + toString(resTypeID));
+			break;
+		}
 	}
 
-	ScriptTextureCube* ScriptResourceManager::createScriptTextureCube(MonoObject* instance, const HTexture& resourceHandle)
-	{
-		const String& uuid = resourceHandle.getUUID();
-#if BS_DEBUG_MODE
-		throwExceptionIfInvalidOrDuplicate(uuid);
-#endif
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(const ResourceHandle<Texture>&, ScriptTexture2D**);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(const ResourceHandle<Texture>&, ScriptTexture3D**);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(const ResourceHandle<Texture>&, ScriptTextureCube**);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(const ResourceHandle<SpriteTexture>&, ScriptSpriteTexture**);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(const ResourceHandle<Mesh>&, ScriptMesh**);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(const ResourceHandle<Material>&, ScriptMaterial**);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(const ResourceHandle<Shader>&, ScriptShader**);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(const ResourceHandle<Prefab>&, ScriptPrefab**);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(const ResourceHandle<Font>&, ScriptFont**);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(const ResourceHandle<PlainText>&, ScriptPlainText**);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(const ResourceHandle<ScriptCode>&, ScriptScriptCode**);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(const ResourceHandle<StringTable>&, ScriptStringTable**);
 
-		ScriptTextureCube* scriptResource = new (bs_alloc<ScriptTextureCube>()) ScriptTextureCube(instance, resourceHandle);
-		mScriptResources[uuid] = scriptResource;
-
-		return scriptResource;
-	}
-
-	ScriptShader* ScriptResourceManager::createScriptShader(const HShader& resourceHandle)
-	{
-		MonoClass* shaderClass = ScriptAssemblyManager::instance().getShaderClass();
-		MonoObject* monoInstance = shaderClass->createInstance();
-
-		return createScriptShader(monoInstance, resourceHandle);
-	}
-
-	ScriptShader* ScriptResourceManager::createScriptShader(MonoObject* instance, const HShader& resourceHandle)
-	{
-		const String& uuid = resourceHandle.getUUID();
-#if BS_DEBUG_MODE
-		throwExceptionIfInvalidOrDuplicate(uuid);
-#endif
-
-		ScriptShader* scriptResource = new (bs_alloc<ScriptShader>()) ScriptShader(instance, resourceHandle);
-		mScriptResources[uuid] = scriptResource;
-
-		return scriptResource;
-	}
-
-	ScriptMaterial* ScriptResourceManager::createScriptMaterial(const HMaterial& resourceHandle)
-	{
-		MonoClass* materialClass = ScriptAssemblyManager::instance().getMaterialClass();
-		MonoObject* monoInstance = materialClass->createInstance();
-
-		return createScriptMaterial(monoInstance, resourceHandle);
-	}
-
-	ScriptMaterial* ScriptResourceManager::createScriptMaterial(MonoObject* instance, const HMaterial& resourceHandle)
-	{
-		const String& uuid = resourceHandle.getUUID();
-#if BS_DEBUG_MODE
-		throwExceptionIfInvalidOrDuplicate(uuid);
-#endif
-
-		ScriptMaterial* scriptResource = new (bs_alloc<ScriptMaterial>()) ScriptMaterial(instance, resourceHandle);
-		mScriptResources[uuid] = scriptResource;
-
-		return scriptResource;
-	}
-
-	ScriptMesh* ScriptResourceManager::createScriptMesh(const HMesh& resourceHandle)
-	{
-		MonoClass* meshClass = ScriptAssemblyManager::instance().getMeshClass();
-		MonoObject* monoInstance = meshClass->createInstance();
-
-		return createScriptMesh(monoInstance, resourceHandle);
-	}
-
-	ScriptMesh* ScriptResourceManager::createScriptMesh(MonoObject* instance, const HMesh& resourceHandle)
-	{
-		const String& uuid = resourceHandle.getUUID();
-#if BS_DEBUG_MODE
-		throwExceptionIfInvalidOrDuplicate(uuid);
-#endif
-
-		ScriptMesh* scriptResource = new (bs_alloc<ScriptMesh>()) ScriptMesh(instance, resourceHandle);
-		mScriptResources[uuid] = scriptResource;
-
-		return scriptResource;
-	}
-
-	ScriptPlainText* ScriptResourceManager::createScriptPlainText(const HPlainText& resourceHandle)
-	{
-		MonoClass* plainTextClass = ScriptAssemblyManager::instance().getPlainTextClass();
-		MonoObject* monoInstance = plainTextClass->createInstance();
-
-		return createScriptPlainText(monoInstance, resourceHandle);
-	}
-
-	ScriptPlainText* ScriptResourceManager::createScriptPlainText(MonoObject* instance, const HPlainText& resourceHandle)
-	{
-		const String& uuid = resourceHandle.getUUID();
-#if BS_DEBUG_MODE
-		throwExceptionIfInvalidOrDuplicate(uuid);
-#endif
-
-		ScriptPlainText* scriptResource = new (bs_alloc<ScriptPlainText>()) ScriptPlainText(instance, resourceHandle);
-		mScriptResources[uuid] = scriptResource;
-
-		return scriptResource;
-	}
-
-	ScriptScriptCode* ScriptResourceManager::createScriptScriptCode(const HScriptCode& resourceHandle)
-	{
-		MonoClass* scriptCodeClass = ScriptAssemblyManager::instance().getScriptCodeClass();
-		MonoObject* monoInstance = scriptCodeClass->createInstance();
-
-		return createScriptScriptCode(monoInstance, resourceHandle);
-	}
-
-	ScriptScriptCode* ScriptResourceManager::createScriptScriptCode(MonoObject* instance, const HScriptCode& resourceHandle)
-	{
-		const String& uuid = resourceHandle.getUUID();
-#if BS_DEBUG_MODE
-		throwExceptionIfInvalidOrDuplicate(uuid);
-#endif
-
-		ScriptScriptCode* scriptResource = new (bs_alloc<ScriptScriptCode>()) ScriptScriptCode(instance, resourceHandle);
-		mScriptResources[uuid] = scriptResource;
-
-		return scriptResource;
-	}
-
-	ScriptSpriteTexture* ScriptResourceManager::createScriptSpriteTexture(const HSpriteTexture& resourceHandle)
-	{
-		MonoClass* spriteTextureClass = ScriptAssemblyManager::instance().getSpriteTextureClass();
-		MonoObject* monoInstance = spriteTextureClass->createInstance();
-
-		return createScriptSpriteTexture(monoInstance, resourceHandle);
-	}
-
-	ScriptSpriteTexture* ScriptResourceManager::createScriptSpriteTexture(MonoObject* instance, const HSpriteTexture& resourceHandle)
-	{
-		const String& uuid = resourceHandle.getUUID();
-#if BS_DEBUG_MODE
-		throwExceptionIfInvalidOrDuplicate(uuid);
-#endif
-
-		ScriptSpriteTexture* scriptResource = new (bs_alloc<ScriptSpriteTexture>()) ScriptSpriteTexture(instance, resourceHandle);
-		mScriptResources[uuid] = scriptResource;
-
-		return scriptResource;
-	}
-
-	ScriptFont* ScriptResourceManager::createScriptFont(const HFont& resourceHandle)
-	{
-		MonoClass* fontClass = ScriptAssemblyManager::instance().getFontClass();
-		MonoObject* monoInstance = fontClass->createInstance();
-
-		return createScriptFont(monoInstance, resourceHandle);
-	}
-
-	ScriptFont* ScriptResourceManager::createScriptFont(MonoObject* instance, const HFont& resourceHandle)
-	{
-		const String& uuid = resourceHandle.getUUID();
-#if BS_DEBUG_MODE
-		throwExceptionIfInvalidOrDuplicate(uuid);
-#endif
-
-		ScriptFont* scriptResource = new (bs_alloc<ScriptFont>()) ScriptFont(instance, resourceHandle);
-		mScriptResources[uuid] = scriptResource;
-
-		return scriptResource;
-	}
-
-	ScriptPrefab* ScriptResourceManager::createScriptPrefab(const HPrefab& resourceHandle)
-	{
-		MonoClass* prefabClass = ScriptAssemblyManager::instance().getPrefabClass();
-		MonoObject* monoInstance = prefabClass->createInstance();
-
-		return createScriptPrefab(monoInstance, resourceHandle);
-	}
-
-	ScriptPrefab* ScriptResourceManager::createScriptPrefab(MonoObject* instance, const HPrefab& resourceHandle)
-	{
-		const String& uuid = resourceHandle.getUUID();
-#if BS_DEBUG_MODE
-		throwExceptionIfInvalidOrDuplicate(uuid);
-#endif
-
-		ScriptPrefab* scriptResource = new (bs_alloc<ScriptPrefab>()) ScriptPrefab(instance, resourceHandle);
-		mScriptResources[uuid] = scriptResource;
-
-		return scriptResource;
-	}
-
-	ScriptStringTable* ScriptResourceManager::createScriptStringTable(const HStringTable& resourceHandle)
-	{
-		MonoClass* stringTableClass = ScriptAssemblyManager::instance().getStringTableClass();
-		MonoObject* monoInstance = stringTableClass->createInstance();
-
-		// Managed constructor will call ::create(MonoObject*, const HStringTable&) internally so we just need
-		// to retrieve the created object
-		return ScriptStringTable::toNative(monoInstance);
-	}
-
-	ScriptStringTable* ScriptResourceManager::createScriptStringTable(MonoObject* instance, const HStringTable& resourceHandle)
-	{
-		const String& uuid = resourceHandle.getUUID();
-#if BS_DEBUG_MODE
-		throwExceptionIfInvalidOrDuplicate(uuid);
-#endif
-
-		ScriptStringTable* scriptResource = new (bs_alloc<ScriptStringTable>()) ScriptStringTable(instance, resourceHandle);
-		mScriptResources[uuid] = scriptResource;
-
-		return scriptResource;
-	}
-
-	ScriptManagedResource* ScriptResourceManager::createManagedResource(MonoObject* existingInstance, const HManagedResource& resourceHandle)
-	{
-		const String& uuid = resourceHandle.getUUID();
-		throwExceptionIfInvalidOrDuplicate(uuid);
-
-		ScriptManagedResource* scriptResource = new (bs_alloc<ScriptManagedResource>()) ScriptManagedResource(existingInstance, resourceHandle);
-		mScriptResources[uuid] = scriptResource;
-
-		return scriptResource;
-	}
-
-	ScriptTexture2D* ScriptResourceManager::getScriptTexture2D(const HTexture& resourceHandle)
-	{
-		return static_cast<ScriptTexture2D*>(getScriptResource(resourceHandle.getUUID()));
-	}
-
-	ScriptTexture3D* ScriptResourceManager::getScriptTexture3D(const HTexture& resourceHandle)
-	{
-		return static_cast<ScriptTexture3D*>(getScriptResource(resourceHandle.getUUID()));
-	}
-
-	ScriptTextureCube* ScriptResourceManager::getScriptTextureCube(const HTexture& resourceHandle)
-	{
-		return static_cast<ScriptTextureCube*>(getScriptResource(resourceHandle.getUUID()));
-	}
-
-	ScriptSpriteTexture* ScriptResourceManager::getScriptSpriteTexture(const HSpriteTexture& resourceHandle)
-	{
-		return static_cast<ScriptSpriteTexture*>(getScriptResource(resourceHandle.getUUID()));
-	}
-
-	ScriptShader* ScriptResourceManager::getScriptShader(const HShader& resourceHandle)
-	{
-		return static_cast<ScriptShader*>(getScriptResource(resourceHandle.getUUID()));
-	}
-
-	ScriptMaterial* ScriptResourceManager::getScriptMaterial(const HMaterial& resourceHandle)
-	{
-		return static_cast<ScriptMaterial*>(getScriptResource(resourceHandle.getUUID()));
-	}
-
-	ScriptMesh* ScriptResourceManager::getScriptMesh(const HMesh& resourceHandle)
-	{
-		return static_cast<ScriptMesh*>(getScriptResource(resourceHandle.getUUID()));
-	}
-
-	ScriptPlainText* ScriptResourceManager::getScriptPlainText(const HPlainText& resourceHandle)
-	{
-		return static_cast<ScriptPlainText*>(getScriptResource(resourceHandle.getUUID()));
-	}
-
-	ScriptScriptCode* ScriptResourceManager::getScriptScriptCode(const HScriptCode& resourceHandle)
-	{
-		return static_cast<ScriptScriptCode*>(getScriptResource(resourceHandle.getUUID()));
-	}
-
-	ScriptManagedResource* ScriptResourceManager::getScriptManagedResource(const HManagedResource& resourceHandle)
-	{
-		return static_cast<ScriptManagedResource*>(getScriptResource(resourceHandle.getUUID()));
-	}
-
-	ScriptPrefab* ScriptResourceManager::getScriptPrefab(const HPrefab& resourceHandle)
-	{
-		return static_cast<ScriptPrefab*>(getScriptResource(resourceHandle.getUUID()));
-	}
-
-	ScriptStringTable* ScriptResourceManager::getScriptStringTable(const HStringTable& resourceHandle)
-	{
-		return static_cast<ScriptStringTable*>(getScriptResource(resourceHandle.getUUID()));
-	}
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(MonoObject*, const ResourceHandle<Texture>&, ScriptTexture2D**);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(MonoObject*, const ResourceHandle<Texture>&, ScriptTexture3D**);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(MonoObject*, const ResourceHandle<Texture>&, ScriptTextureCube**);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(MonoObject*, const ResourceHandle<SpriteTexture>&, ScriptSpriteTexture**);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(MonoObject*, const ResourceHandle<Mesh>&, ScriptMesh**);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(MonoObject*, const ResourceHandle<Material>&, ScriptMaterial**);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(MonoObject*, const ResourceHandle<Shader>&, ScriptShader**);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(MonoObject*, const ResourceHandle<Prefab>&, ScriptPrefab**);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(MonoObject*, const ResourceHandle<Font>&, ScriptFont**);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(MonoObject*, const ResourceHandle<PlainText>&, ScriptPlainText**);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(MonoObject*, const ResourceHandle<ScriptCode>&, ScriptScriptCode**);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(MonoObject*, const ResourceHandle<StringTable>&, ScriptStringTable**);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(MonoObject*, const ResourceHandle<ManagedResource>&, ScriptManagedResource**);
+	
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<Texture>& resourceHandle, ScriptTexture2D** out, bool create);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<Texture>& resourceHandle, ScriptTexture3D** out, bool create);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<Texture>& resourceHandle, ScriptTextureCube** out, bool create);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<SpriteTexture>& resourceHandle, ScriptSpriteTexture** out, bool create);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<Mesh>& resourceHandle, ScriptMesh** out, bool create);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<Material>& resourceHandle, ScriptMaterial** out, bool create);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<Shader>& resourceHandle, ScriptShader** out, bool create);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<Prefab>& resourceHandle, ScriptPrefab** out, bool create);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<Font>& resourceHandle, ScriptFont** out, bool create);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<PlainText>& resourceHandle, ScriptPlainText** out, bool create);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<ScriptCode>& resourceHandle, ScriptScriptCode** out, bool create);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<StringTable>& resourceHandle, ScriptStringTable** out, bool create);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<ManagedResource>& resourceHandle, ScriptManagedResource** out, bool create);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<Resource>& resourceHandle, ScriptResourceBase** out, bool create);
 
 	ScriptResourceBase* ScriptResourceManager::getScriptResource(const String& uuid)
 	{
@@ -358,55 +169,6 @@ namespace BansheeEngine
 			return findIter->second;
 
 		return nullptr;
-	}
-
-	ScriptResourceBase* ScriptResourceManager::createScriptResource(const HResource& resource)
-	{
-#if BS_DEBUG_MODE
-		throwExceptionIfInvalidOrDuplicate(resource.getUUID());
-#endif
-
-		UINT32 resTypeID = resource->getTypeId();
-
-		switch (resTypeID)
-		{
-		case TID_Texture:
-		{
-			HTexture texture = static_resource_cast<Texture>(resource);
-			TextureType type = texture->getProperties().getTextureType();
-
-			if (type == TEX_TYPE_3D)
-				return createScriptTexture3D(texture);
-			else if (type == TEX_TYPE_CUBE_MAP)
-				return createScriptTextureCube(texture);
-			else
-				return createScriptTexture2D(texture);
-		}
-		case TID_SpriteTexture:
-			return createScriptSpriteTexture(static_resource_cast<SpriteTexture>(resource));
-		case TID_Font:
-			return createScriptFont(static_resource_cast<Font>(resource));
-		case TID_PlainText:
-			return createScriptPlainText(static_resource_cast<PlainText>(resource));
-		case TID_ScriptCode:
-			return createScriptScriptCode(static_resource_cast<ScriptCode>(resource));
-		case TID_Shader:
-			return createScriptShader(static_resource_cast<Shader>(resource));
-		case TID_Prefab:
-			return createScriptPrefab(static_resource_cast<Prefab>(resource));
-		case TID_StringTable:
-			return createScriptStringTable(static_resource_cast<StringTable>(resource));
-		case TID_Material:
-			return createScriptMaterial(static_resource_cast<Material>(resource));
-		case TID_Mesh:
-			return createScriptMesh(static_resource_cast<Mesh>(resource));
-		case TID_ManagedResource:
-			BS_EXCEPT(InternalErrorException, "Managed resources must have a managed instance by default, this call is invalid.")
-				break;
-		default:
-			BS_EXCEPT(NotImplementedException, "Attempting to load a resource type that is not supported. Type ID: " + toString(resTypeID));
-			break;
-		}
 	}
 
 	void ScriptResourceManager::destroyScriptResource(ScriptResourceBase* resource)

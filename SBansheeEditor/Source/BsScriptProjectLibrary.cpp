@@ -93,9 +93,8 @@ namespace BansheeEngine
 		if (!resource)
 			return nullptr;
 
-		ScriptResourceBase* scriptResource = ScriptResourceManager::instance().getScriptResource(resource.getUUID());
-		if (scriptResource == nullptr)
-			scriptResource = ScriptResourceManager::instance().createScriptResource(resource);
+		ScriptResourceBase* scriptResource;
+		ScriptResourceManager::instance().getScriptResource(resource, &scriptResource, true);
 
 		return scriptResource->getManagedInstance();
 	}

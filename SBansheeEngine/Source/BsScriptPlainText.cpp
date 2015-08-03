@@ -29,7 +29,8 @@ namespace BansheeEngine
 		WString strText = MonoUtil::monoToWString(text);
 		HPlainText plainText = PlainText::create(strText);
 
-		ScriptResourceManager::instance().createScriptPlainText(instance, plainText);
+		ScriptPlainText* scriptInstance;
+		ScriptResourceManager::instance().createScriptResource(instance, plainText, &scriptInstance);
 	}
 
 	MonoString* ScriptPlainText::internal_getText(ScriptPlainText* thisPtr)

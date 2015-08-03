@@ -32,6 +32,7 @@ namespace BansheeEngine
 		MaterialRef,
 		MeshRef,
 		PrefabRef,
+		FontRef,
 		StringTableRef,
 		SceneObjectRef,
 		ComponentRef

@@ -39,7 +39,8 @@ namespace BansheeEngine
 
 		HTexture texture = Texture::create(TEX_TYPE_2D, width, height, numMips, format, usage, gammaCorrection, numSamples);
 
-		ScriptResourceManager::instance().createScriptTexture2D(instance, texture);
+		ScriptTexture2D* scriptInstance;
+		ScriptResourceManager::instance().createScriptResource(instance, texture, &scriptInstance);
 	}
 
 	MonoObject* ScriptTexture2D::internal_getPixels(ScriptTexture2D* thisPtr, UINT32 mipLevel)

@@ -59,7 +59,9 @@ namespace BansheeEngine
 			nativeShader = BuiltinResources::instance().getDummyShader();
 
 		HMaterial material = Material::create(nativeShader);
-		ScriptResourceManager::instance().createScriptMaterial(instance, material);
+
+		ScriptMaterial* scriptInstance;
+		ScriptResourceManager::instance().createScriptResource(instance, material, &scriptInstance);
 	}
 
 	MonoObject* ScriptMaterial::internal_GetShader(ScriptMaterial* nativeInstance)
@@ -69,9 +71,8 @@ namespace BansheeEngine
 		if (shader == nullptr)
 			return nullptr;
 
-		ScriptShader* scriptShader = ScriptResourceManager::instance().getScriptShader(shader);
-		if (scriptShader == nullptr)
-			scriptShader = ScriptResourceManager::instance().createScriptShader(shader);
+		ScriptShader* scriptShader;
+		ScriptResourceManager::instance().getScriptResource(shader, &scriptShader, true);
 
 		return scriptShader->getManagedInstance();
 	}
@@ -230,9 +231,8 @@ namespace BansheeEngine
 		if (texture == nullptr)
 			return nullptr;
 
-		ScriptTexture2D* scriptTexture = ScriptResourceManager::instance().getScriptTexture2D(texture);
-		if (scriptTexture == nullptr)
-			scriptTexture = ScriptResourceManager::instance().createScriptTexture2D(texture);
+		ScriptTexture2D* scriptTexture;
+		ScriptResourceManager::instance().getScriptResource(texture, &scriptTexture, true);
 
 		return scriptTexture->getManagedInstance();
 	}
@@ -245,9 +245,8 @@ namespace BansheeEngine
 		if (texture == nullptr)
 			return nullptr;
 
-		ScriptTexture3D* scriptTexture = ScriptResourceManager::instance().getScriptTexture3D(texture);
-		if (scriptTexture == nullptr)
-			scriptTexture = ScriptResourceManager::instance().createScriptTexture3D(texture);
+		ScriptTexture3D* scriptTexture;
+		ScriptResourceManager::instance().getScriptResource(texture, &scriptTexture, true);
 
 		return scriptTexture->getManagedInstance();
 	}
@@ -260,9 +259,8 @@ namespace BansheeEngine
 		if (texture == nullptr)
 			return nullptr;
 
-		ScriptTextureCube* scriptTexture = ScriptResourceManager::instance().getScriptTextureCube(texture);
-		if (scriptTexture == nullptr)
-			scriptTexture = ScriptResourceManager::instance().createScriptTextureCube(texture);
+		ScriptTextureCube* scriptTexture;
+		ScriptResourceManager::instance().getScriptResource(texture, &scriptTexture, true);
 
 		return scriptTexture->getManagedInstance();
 	}

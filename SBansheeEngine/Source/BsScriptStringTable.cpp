@@ -15,6 +15,8 @@ namespace BansheeEngine
 
 	void ScriptStringTable::initRuntimeData()
 	{
+		metaData.scriptClass->addInternalCall("internal_CreateInstance", &ScriptStringTable::internal_CreateInstance);
+
 		metaData.scriptClass->addInternalCall("Internal_GetNumStrings", &ScriptStringTable::internal_GetNumStrings);
 		metaData.scriptClass->addInternalCall("Internal_GetIdentifiers", &ScriptStringTable::internal_GetIdentifiers);
 
@@ -29,7 +31,8 @@ namespace BansheeEngine
 	{
 		HStringTable stringTable = StringTable::create();
 
-		ScriptResourceManager::instance().createScriptStringTable(instance, stringTable);
+		ScriptStringTable* scriptInstance;
+		ScriptResourceManager::instance().createScriptResource(instance, stringTable, &scriptInstance);
 	}
 
 	UINT32 ScriptStringTable::internal_GetNumStrings(ScriptStringTable* thisPtr)

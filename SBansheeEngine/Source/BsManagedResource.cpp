@@ -115,7 +115,8 @@ namespace BansheeEngine
 		mManagedHandle = mono_gchandle_new(mManagedInstance, false);
 		mMyHandle = myHandle;
 
-		ScriptResourceManager::instance().createManagedResource(object, myHandle);
+		ScriptManagedResource* scriptInstance;
+		ScriptResourceManager::instance().createScriptResource(object, myHandle, &scriptInstance);
 		ManagedResourceManager::instance().registerManagedResource(mMyHandle);
 	}
 
