@@ -29,6 +29,12 @@ namespace BansheeEditor
                 return true;
 
             object newPropertyValue = property.GetValue<object>();
+            if (propertyValue == null)
+                return newPropertyValue != null;
+            
+            if (newPropertyValue == null)
+                return propertyValue != null;
+            
             if (!propertyValue.Equals(newPropertyValue))
                 return true;
 

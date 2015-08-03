@@ -57,13 +57,12 @@ Code quality improvements:
 ----------------------------------------------------------------------
 Polish stage 1
 
-StringTable TODO:
-  - Issue in ScriptStringTable - I should allow it to be created from C# and in that case I need to call Internal_CreateInstance,
-    but it seems I'm using the default constructor for something else so I can't call it there (or can I?)
-  - Need to actually save & load the string tables from somewhere (probably don't need this for now)
+Fix inspector crashes:
+ - Try expanding/collapsing foldouts
+ - Had one with invalid index in Layout.InsertElement called from InspectableObject.Update
+ - And another 
 
 Test inspector selection, selecting a resource and adding/removing component updates
-Crash when showing the inspector (invalid index in Layout.InsertElement called from InspectableObject.Update)
 Handle seems to lag behind the selected mesh
 ProjectLibrary seems to import some files on every start-up
 Crash on shutdown in mono_gchandle_free
