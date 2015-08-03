@@ -111,6 +111,7 @@ To compile DirectX render systems you will also need a separately installed Dire
       * Math, file system, events, thread pool, task scheduler, logging, memory allocators and more
     
 ## Features (upcoming)
+ * DirectX 12/Vulkan support
  * High quality renderer
  * Physics system integration
  * Audio system integration
