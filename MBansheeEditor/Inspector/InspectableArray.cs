@@ -24,7 +24,7 @@ namespace BansheeEditor
 
             public void Refresh(InspectableObjectBase child, int seqIndex, InspectableArray parent)
             {
-                if (ownsTitleLayout)
+                if (ownsTitleLayout || (titleLayout != null && titleLayout == child.GetTitleLayout()))
                     return;
 
                 titleLayout = child.GetTitleLayout();

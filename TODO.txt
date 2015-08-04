@@ -54,6 +54,10 @@ Code quality improvements:
 ----------------------------------------------------------------------
 Polish
 
+TODO:
+ - Thoroughly test inspector
+ - Modifying structs doesn't persist changes
+
 Ribek use:
  - Camera, Renderable, Material, Texture inspector
   - Material/Shader has no color type so I cannot know when to display normal vector and when color in inspector
@@ -107,6 +111,7 @@ Other polish:
  - When I expand inspector elements and them come back to that object it should remember the previous state
    - Add a chaching mechanism to inspector (likely based on instance ID & property names)
    - This has to work not only when I come back to the object, but whenever inspector rebuilds (e.g. after removing element from array)
+   - Consider saving this information with the serialized object
  - Make sure to persist EditorSettings
  - Import option inspectors for Texture, Mesh, Font
  - DOck manager maximize doesn't work'

@@ -24,7 +24,7 @@ namespace BansheeEditor
 
             public void Refresh(InspectableObjectBase child, int seqIndex, InspectableList parent)
             {
-                if (ownsTitleLayout)
+                if (ownsTitleLayout || (titleLayout != null && titleLayout == child.GetTitleLayout()))
                     return;
 
                 titleLayout = child.GetTitleLayout();
@@ -224,6 +224,7 @@ namespace BansheeEditor
 
             int maxSize = MathEx.Min(size, list.Count);
 
+            Debug.Log("List resize: " + list.Count + " - " + newList.Count + " - " + size);
             for (int i = 0; i < maxSize; i++)
                 newList[i] = list[i];
 

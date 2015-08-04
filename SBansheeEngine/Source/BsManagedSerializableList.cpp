@@ -63,7 +63,15 @@ namespace BansheeEngine
 			return nullptr;
 
 		void* params[1] = { &size };
-		return listClass->createInstance("int", params);
+		MonoObject* instance = listClass->createInstance("int", params);
+		
+		ScriptArray tempArray(typeInfo->mElementType->getMonoClass(), size);
+		params[0] = tempArray.getInternal();
+
+		MonoMethod* addRangeMethod = listClass->getMethod("AddRange", 1);
+		addRangeMethod->invoke(instance, params);
+
+		return instance;
 	}
 
 	ManagedSerializableListPtr ManagedSerializableList::createEmpty()
@@ -165,7 +173,7 @@ namespace BansheeEngine
 		UINT32 idx = 0;
 		for (auto& entry : mCachedEntries)
 		{
-			addFieldDataInternal(entry);
+			setFieldData(idx, entry);
 			idx++;
 		}
 
