@@ -62,8 +62,8 @@ namespace BansheeEngine
 
 	void ScriptObjectManager::notifyObjectFinalized(ScriptObjectBase* instance)
 	{
-		UINT32 idx = mFinalizedQueueIdx.load(std::memory_order_relaxed);
-		mFinalizedObjects[idx].push_back(instance);
+		BS_LOCK_MUTEX(mMutex);
+		mFinalizedObjects[mFinalizedQueueIdx].push_back(instance);
 	}
 
 	void ScriptObjectManager::update()
@@ -73,8 +73,13 @@ namespace BansheeEngine
 
 	void ScriptObjectManager::processFinalizedObjects()
 	{
-		UINT32 readQueueIdx = mFinalizedQueueIdx.fetch_xor(0x1, std::memory_order_relaxed);
-
+		UINT32 readQueueIdx = 0;
+		{
+			BS_LOCK_MUTEX(mMutex);
+			readQueueIdx = mFinalizedQueueIdx;
+			mFinalizedQueueIdx = (mFinalizedQueueIdx + 1) % 2;
+		}
+		
 		for (auto& finalizedObj : mFinalizedObjects[readQueueIdx])
 			finalizedObj->_onManagedInstanceDeleted();
 

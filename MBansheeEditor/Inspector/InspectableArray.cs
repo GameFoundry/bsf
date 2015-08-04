@@ -11,41 +11,35 @@ namespace BansheeEditor
     {
         private class EntryRow
         {
-            public GUILayoutX rowLayout;
             public GUILayoutY contentLayout;
-            public GUIButton cloneBtn;
-            public GUIButton deleteBtn;
-            public GUIButton moveUpBtn;
-            public GUIButton moveDownBtn;
+            private GUILayoutX rowLayout;
 
             public EntryRow(GUILayout parentLayout, int seqIndex, InspectableArray parent)
             {
                 rowLayout = parentLayout.AddLayoutX();
                 contentLayout = rowLayout.AddLayoutY();
-                cloneBtn = new GUIButton("C");
-                deleteBtn = new GUIButton("X");
-                moveUpBtn = new GUIButton("Up");
-                moveDownBtn = new GUIButton("Down");
+                GUILayoutY buttonLayout = rowLayout.AddLayoutY();
+
+                GUIButton cloneBtn = new GUIButton("C");
+                GUIButton deleteBtn = new GUIButton("X");
+                GUIButton moveUpBtn = new GUIButton("Up");
+                GUIButton moveDownBtn = new GUIButton("Down");
 
                 cloneBtn.OnClick += () => parent.OnCloneButtonClicked(seqIndex);
                 deleteBtn.OnClick += () => parent.OnDeleteButtonClicked(seqIndex);
                 moveUpBtn.OnClick += () => parent.OnMoveUpButtonClicked(seqIndex);
                 moveDownBtn.OnClick += () => parent.OnMoveDownButtonClicked(seqIndex);
 
-                rowLayout.AddElement(cloneBtn);
-                rowLayout.AddElement(deleteBtn);
-                rowLayout.AddElement(moveUpBtn);
-                rowLayout.AddElement(moveDownBtn);
+                buttonLayout.AddElement(cloneBtn);
+                buttonLayout.AddElement(deleteBtn);
+                buttonLayout.AddElement(moveUpBtn);
+                buttonLayout.AddElement(moveDownBtn);
+                buttonLayout.AddFlexibleSpace();
             }
 
             public void Destroy()
             {
                 rowLayout.Destroy();
-                contentLayout.Destroy();
-                cloneBtn.Destroy();
-                deleteBtn.Destroy();
-                moveUpBtn.Destroy();
-                moveDownBtn.Destroy();
             }
         }
 
@@ -73,17 +67,36 @@ namespace BansheeEditor
                 return true;
 
             object newPropertyValue = property.GetValue<object>();
+            if (propertyValue == null)
+                return newPropertyValue != null;
+
+            if (newPropertyValue == null)
+                return propertyValue != null;
+
             if (!propertyValue.Equals(newPropertyValue))
                 return true;
 
-            if (newPropertyValue != null)
-            {
-                SerializableArray array = property.GetArray();
-                if (array.GetLength() != numArrayElements)
-                    return true;
-            }
+            SerializableArray array = property.GetArray();
+            if (array.GetLength() != numArrayElements)
+                return true;
 
             return base.IsModified();
+        }
+
+        public override bool Refresh(int layoutIndex)
+        {
+            bool anythingModified = false;
+
+            if (IsModified())
+            {
+                Update(layoutIndex);
+                anythingModified = true;
+            }
+
+            for (int i = 0; i < GetChildCount(); i++)
+                anythingModified |= GetChild(i).Refresh(0);
+
+            return anythingModified;
         }
 
         protected override void Update(int layoutIndex)
@@ -98,7 +111,6 @@ namespace BansheeEditor
                 row.Destroy();
 
             rows.Clear();
-
             layout.DestroyElements();
 
             propertyValue = property.GetValue<object>();

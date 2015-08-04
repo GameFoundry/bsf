@@ -83,6 +83,16 @@ namespace BansheeEditor
             children.Clear();
         }
 
+        protected InspectableObjectBase GetChild(int index)
+        {
+            return children[index];
+        }
+
+        protected int GetChildCount()
+        {
+            return children.Count;
+        }
+
         public virtual void Destroy()
         {
             layout.DestroyElements();

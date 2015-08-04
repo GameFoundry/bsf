@@ -90,8 +90,6 @@ namespace BansheeEditor
             if (so == null)
                 return;
 
-            Debug.Log("INSPECTOR REBUILD");
-
             currentType = InspectorType.SceneObject;
             activeSO = so;
 

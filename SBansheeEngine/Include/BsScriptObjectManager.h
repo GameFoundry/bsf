@@ -47,6 +47,7 @@ namespace BansheeEngine
 		Set<ScriptObjectBase*> mScriptObjects;
 
 		Vector<ScriptObjectBase*> mFinalizedObjects[2];
-		std::atomic<UINT32> mFinalizedQueueIdx;
+		UINT32 mFinalizedQueueIdx;
+		BS_MUTEX(mMutex);
 	};
 }

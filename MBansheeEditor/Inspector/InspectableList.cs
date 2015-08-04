@@ -73,17 +73,36 @@ namespace BansheeEditor
                 return true;
 
             object newPropertyValue = property.GetValue<object>();
+            if (propertyValue == null)
+                return newPropertyValue != null;
+
+            if (newPropertyValue == null)
+                return propertyValue != null;
+
             if (!propertyValue.Equals(newPropertyValue))
                 return true;
 
-            if (newPropertyValue != null)
-            {
-                SerializableList list = property.GetList();
-                if (list.GetLength() != numArrayElements)
-                    return true;
-            }
+            SerializableList list = property.GetList();
+            if (list.GetLength() != numArrayElements)
+                return true;
 
             return base.IsModified();
+        }
+
+        public override bool Refresh(int layoutIndex)
+        {
+            bool anythingModified = false;
+
+            if (IsModified())
+            {
+                Update(layoutIndex);
+                anythingModified = true;
+            }
+
+            for (int i = 0; i < GetChildCount(); i++)
+                anythingModified |= GetChild(i).Refresh(0);
+
+            return anythingModified;
         }
 
         protected override void Update(int layoutIndex)
@@ -98,6 +117,7 @@ namespace BansheeEditor
                 row.Destroy();
 
             rows.Clear();
+            layout.DestroyElements();
 
             propertyValue = property.GetValue<object>();
             if (propertyValue == null)

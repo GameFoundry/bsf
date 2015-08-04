@@ -60,7 +60,6 @@ Polish stage 1
 Fix inspector crashes:
  - Try expanding/collapsing foldouts
  - Had one with invalid index in Layout.InsertElement called from InspectableObject.Update
- - And another 
 
 Test inspector selection, selecting a resource and adding/removing component updates
 Handle seems to lag behind the selected mesh
@@ -97,14 +96,19 @@ Need a way to add scene objects and components (and remove them)
  - Adding scene objects should be doable from context menu in Hierarchy, by dropping a Prefab or by main Menu (undoable)
  - Deleting them should be doable by context menu in Hierarchy and Del keystroke (undoable)
 
+Hook up color picker to guicolor field
 Add shortcut keys for view/move/rotate/scale
 Add "focus on object" key (F) - animate it: rotate camera towards then speed towards while zooming in
 Ortographic camera views (+ gizmo in scene view corner that shows camera orientation)
 Drag to select in scene view
+Update GUISlider so it works with the new style (and to have min/max limits, plus step size)
 
 Replace "minimize" button in tabbed title bar with maximize and make sure it works
+When I expand inspector elements and them come back to that object it should remember the previous state
+ - Add a chaching mechanism to inspector (likely based on instance ID & property names)
 
 Make sure to persist EditorSettings
+Add copyright notices in all files & change license to GPL
 
 Later:
  - I could record undo/redo per-property using the new diff system
