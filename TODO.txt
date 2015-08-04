@@ -39,9 +39,6 @@ Add "dirty object" system to C#. Each ScriptResource and ScriptGameObject should
  - Record all portions where objects & components get modified so I can mark them dirty, will likely need
     to use those some points for undo/redo
 
-TODO - Later - When building level for release make sure to clear all prefab diffs (possibly store them elsewhere in the first place)
-       - And all prefab instances should have updateFromPrefab called on them.
-
  Test (likely later once I have more editor functionality working):
   - If level save/load works
   - If drag and drop works, both ways, plus double-click to load level
@@ -55,78 +52,93 @@ Code quality improvements:
    but they're identical)
 
 ----------------------------------------------------------------------
-Polish stage 1
+Polish
 
-Fix inspector crashes:
- - Try expanding/collapsing foldouts
- - Had one with invalid index in Layout.InsertElement called from InspectableObject.Update
+Ribek use:
+ - Camera, Renderable, Material, Texture inspector
+  - Material/Shader has no color type so I cannot know when to display normal vector and when color in inspector
+ - Project create/open window
+ - Load default layout on initial start
+ - Test release mode
+ - Test inspector selection, selecting a resource and adding/removing component updates
+ - Test level save/load (also test hidden & non-saveable scene objects)
+ - Ability to create assets in Project view (At least Material)
+ - Need a way to add scene objects and components (and remove them)
+  - Components adding should be only done by drag and dropping scripts to inspector (undoable)
+  - COmponent removal should be done by clicking X in inspector (undoable)
+  - Adding scene objects should be doable from context menu in Hierarchy, by dropping a Prefab or by main Menu (undoable)
+  - Deleting them should be doable by context menu in Hierarchy and Del keystroke (undoable)
+ - Hook up color picker to guicolor field
+ - (Optionally, needed for GUI editing) GUISkin resource inspector & a way to inspect and save the default editor skin
+   - Will need C# wrapper for GUISkin (and a way to assign the current skin to a window)
 
-Test inspector selection, selecting a resource and adding/removing component updates
-Handle seems to lag behind the selected mesh
-ProjectLibrary seems to import some files on every start-up
-Crash on shutdown in mono_gchandle_free
-Material/Shader has no color type so I cannot know when to display normal vector and when color in inspector
-
-First screenshot work:
-- Additional menu bar items: 
- - File: Exit, Save Project, New Project, Open Project, Save Scene As
- - Edit: Undo/Redo, Cut/Copy/Paste/Duplicate/Delete(need to make sure it works in Hierarchy, with shortcuts), Frame Selected, Preferences, Play/Pause/Step
- - Assets (also add to context): Create(Folder, Material, Shader, Script, Prefab, GUI Skin), Show in explorer
- - Game Object (also add to context): Create(Empty, Empty Child, Camera, Renderable, Point/Spot/Directional Light), Apply prefab, Break prefab, Revert prefab
+First screenshot:
+ - Inspectors for array & list don't display headers for objects neatly
+ - Additional menu bar items: 
+  - File: Exit, Save Project, New Project, Open Project, Save Scene As
+  - Edit: Undo/Redo, Cut/Copy/Paste/Duplicate/Delete(need to make sure it works in Hierarchy, with shortcuts), Frame Selected, Preferences, Play/Pause/Step
+  - Assets (also add to context): Create(Folder, Material, Shader, Script, Prefab, GUI Skin), Show in explorer
+  - Game Object (also add to context): Create(Empty, Empty Child, Camera, Renderable, Point/Spot/Directional Light), Apply prefab, Break prefab, Revert prefab
    - Possibly create helper objects: Cube, Sphere, Plane, Quad, Capsule, Cylinder
- - Component (also add to inspector context): Camera, Renderable, Point/Spot/Directional light, all other components from scripts
- - Help - About, API Reference (link to site)
-- Camera & Renderable inspector
-- Normalize colors between project and hierarchy windows (both blue or both orange selection + same ping color)
-- (Optionally) New UI look (tabs, component/array containers, better buttons)
-- (Optionally) Console window
+  - Component (also add to inspector context): Camera, Renderable, Point/Spot/Directional light, all other components from scripts
+  - Help - About, API Reference (link to site)
+ - Normalize colors between project and hierarchy windows (both blue or both orange selection + same ping color)
+ - (Optionally) New UI look (tabs, component/array containers, better buttons)
+ - (Optionally) Console window
 
------------
-
-SceneTreeView
- - Hook up ping effect so it triggers when I select a resource or sceneobject
+Other polish:
+ - C# inspectors for Point/Spot/Directional light
+ - C# interface for Font
+ - SceneTreeView
+  - Hook up ping effect so it triggers when I select a resource or sceneobject
    - Add Selection::ping method to both C++ and C# and an Event that triggers when its called
- - See if it needs other enhancements (rename, delete all work properly? etc.)
- - Add copy/cut/paste/duplicate (with context menu)
- - Cannot deselect element by clicking on empty space
+  - See if it needs other enhancements (rename, delete all work properly? etc.)
+  - Add copy/cut/paste/duplicate (with context menu)
+  - Cannot deselect element by clicking on empty space
+  - Clicking on an already selected element should start rename
+ - Handle seems to lag behind the selected mesh
+ - ProjectLibrary seems to import some files on every start-up
+ - Crash on shutdown in mono_gchandle_free
+ - Add shortcut keys for view/move/rotate/scale
+ - Add "focus on object" key (F) - animate it: rotate camera towards then speed towards while zooming in
+ - Ortographic camera views (+ gizmo in scene view corner that shows camera orientation)
+ - Drag to select in scene view
+ - Update GUISlider so it works with the new style (and to have min/max limits, plus step size)
+ - Replace "minimize" button in tabbed title bar with maximize and make sure it works
+ - When I expand inspector elements and them come back to that object it should remember the previous state
+   - Add a chaching mechanism to inspector (likely based on instance ID & property names)
+ - Make sure to persist EditorSettings
+ - Import option inspectors for Texture, Mesh, Font
+ - DOck manager maximize doesn't work'
 
-Need a way to add scene objects and components (and remove them)
- - Components adding should be only done by drag and dropping scripts to inspector (undoable)
- - COmponent removal should be done by context menu in inspector (undoable)
- - Adding scene objects should be doable from context menu in Hierarchy, by dropping a Prefab or by main Menu (undoable)
- - Deleting them should be doable by context menu in Hierarchy and Del keystroke (undoable)
+Stage 2 polish:
+ - Inject an icon into an .exe (Win32 specific)
+ - Implement C# Resources system (described below)
+ - Prefabs
+ - Game window
+ - Game play/pause/step (+ save/restore objects on play/pause switch)
+ - Resource hotswap
+ - C# script compiling in editor
+ - VS integration
+ - When managed exception happens log an error and continue execution
+ - Game publishing (Build window, collect resources, output exe, default viewport)
 
-Hook up color picker to guicolor field
-Add shortcut keys for view/move/rotate/scale
-Add "focus on object" key (F) - animate it: rotate camera towards then speed towards while zooming in
-Ortographic camera views (+ gizmo in scene view corner that shows camera orientation)
-Drag to select in scene view
-Update GUISlider so it works with the new style (and to have min/max limits, plus step size)
-
-Replace "minimize" button in tabbed title bar with maximize and make sure it works
-When I expand inspector elements and them come back to that object it should remember the previous state
- - Add a chaching mechanism to inspector (likely based on instance ID & property names)
-
-Make sure to persist EditorSettings
-Add copyright notices in all files & change license to GPL
-
-Later:
+Finalizing:
+ - Add copyright notices in all files & change license to GPL
  - I could record undo/redo per-property using the new diff system
  - When building game make sure to go over texture resources and ensure they are saved in the valid format
    as we don't want to do format conversion at runtime (Not cruical, but it should be done eventually)
    - This should something similar to Unity where when changing the platform all resources get reimported
+ - When building level for release make sure to clear all prefab diffs (possibly store them elsewhere in the first place)
+   - And all prefab instances should have updateFromPrefab called on them.
  - Save the default editor layout somewhere and make sure its used on initial startup when no layout exists
- - Undo/Redo when breaking or reverting a scene object
-
-----------------------------------------------------------------------
-Simple stuff
- - Inject an icon into an .exe (Win32 specific)
- - C# wrapper for GUISkin (and a way to assign the current skin to a window)
+ - Undo/Redo when breaking or reverting a scene object (and in general test & finalize undo/redo system)
  - Move all the code files into subfolders so their hierarchy is similar to VS filters
- - Font doesn't have a C# interface
  - Get rid of PoolAlloc and other unused allocators (plus fix bs_new and others which have weird overloads)
- - Get rid of event callback from HString and figure out a better way
  - Splash screen
+ - Settings/Preferences window
+ - Documentation
+ - (Optionally) GUI tabbing to switch between elements
 
 ----------------------------------------------------------------------
 Resources
@@ -205,11 +217,6 @@ attempting to allocate a new transient mesh, and another time I got a hang when 
 Got a crash on shutdown that was caused by locking a mutex in an Event destructor. Event was Platform::onMouseCaptureChanged. 
 Issue happened when I closed the app via the X button (if that's relevant). It doesn't seem to happen always.
  - This is likely due to some other error. When VS finds an exception it triggers a dialog box which triggers the msg loop in-engine and causes another exception.
-
-Create a stack allocatable custom vector implementation and make getResourceDependencies and getCoreDependencies use it.
- - These methods are called often and cause allocations whenever they are.
-
-I shouldn't crash the app when a managed exception happens
 
 /*********************************************************************/
 /************************ LESS IMPORTANT *****************************/

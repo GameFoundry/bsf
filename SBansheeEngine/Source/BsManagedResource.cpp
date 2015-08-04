@@ -95,7 +95,7 @@ namespace BansheeEngine
 		newRes->initialize();
 
 		HManagedResource handle = static_resource_cast<ManagedResource>(gResources()._createResourceHandle(newRes));
-		newRes->construct(managedResource, handle);
+		newRes->setHandle(managedResource, handle);
 
 		return handle;
 	}
@@ -109,7 +109,7 @@ namespace BansheeEngine
 		return newRes;
 	}
 
-	void ManagedResource::construct(MonoObject* object, const HManagedResource& myHandle)
+	void ManagedResource::setHandle(MonoObject* object, const HManagedResource& myHandle)
 	{
 		mManagedInstance = object;
 		mManagedHandle = mono_gchandle_new(mManagedInstance, false);

@@ -8,24 +8,79 @@ namespace BansheeEngine
 {
 	struct ComponentBackupData;
 
+	/**
+	 * @brief	Component that internally wraps a managed component object
+	 *			that can be of user-defined type.
+	 */
 	class BS_SCR_BE_EXPORT ManagedComponent : public Component
 	{
 	public:
 		~ManagedComponent();
 
+		/**
+		 * @brief	Returns managed component object instance.
+		 */
 		MonoObject* getManagedInstance() const { return mManagedInstance; }
+
+		/**
+		 * @brief	Returns managed type of the component.
+		 */
 		MonoReflectionType* getRuntimeType() const { return mRuntimeType; }
 
+		/**
+		 * @brief	Returns namespace of the managed component.
+		 */
 		const String& getManagedNamespace() const { return mNamespace; }
+
+		/**
+		 * @brief	Returns type name of the managed component.
+		 */
 		const String& getManagedTypeName() const { return mTypeName; }
+
+		/**
+		 * @brief	Returns namespace and type name of the component in format "namespace.typename".
+		 */
 		const String& getManagedFullTypeName() const { return mFullTypeName; }
 
+		/**
+		 * @brief	Serializes the internal managed component.
+		 *
+		 * @param	clearExisting	Should the managed component handle be released. (Will trigger a finalizer
+		 *							if this is the last reference to it)
+		 * 
+		 * @return	An object containing the serialized component. You can provide this to ::restore
+		 *			method to re-create the original component.
+		 */
 		ComponentBackupData backup(bool clearExisting = true);
+
+		/**
+		 * @brief	Restores a component from previously serialized data.
+		 *
+		 * @param	instance	New instance of the managed component. Must be of the valid component type
+		 *						or of BansheeEngine.MissingComponent type if the original type is missing.
+		 * @param	data		Serialized managed component data that will be used for initializing
+		 *						the new managed instance.
+		 * @param	missingType	Is the component's type missing (can happen after assembly reload).
+		 *						If true then the serialized data will be stored internally until later
+		 *						date when user perhaps restores the type with another refresh.
+		 *						/p instance must be null if this is true.
+		 */
 		void restore(MonoObject* instance, const ComponentBackupData& data, bool missingType);
 
+		/**
+		 * @brief	Triggers the managed OnReset callback.
+		 */
 		void triggerOnReset();
 
 	private:
+		/**
+		 * @brief	Finalizes construction of the object. Must be called before use or when
+		 *			the managed component instance changes.
+		 *
+		 * @param	object	Managed component instance.
+		 */
+		void initialize(MonoObject* object);
+
 		typedef void(__stdcall *OnInitializedThunkDef) (MonoObject*, MonoException**);
 		typedef void(__stdcall *UpdateThunkDef) (MonoObject*, MonoException**);
 		typedef void(__stdcall *OnDestroyedThunkDef) (MonoObject*, MonoException**);
@@ -57,16 +112,23 @@ namespace BansheeEngine
 		friend class SceneObject;
 		friend class ScriptComponent;
 
-		/** Standard constructor.
-        */
 		ManagedComponent(const HSceneObject& parent, MonoReflectionType* runtimeType);
-		void initialize(MonoObject* object);
 
-		void onInitialized();
-		void onDestroyed();
+		/**
+		 * @copydoc	Component::onInitialized
+		 */
+		void onInitialized() override;
+
+		/**
+		 * @copydoc	Component::onDestroyed
+		 */
+		void onDestroyed() override;
 
 	public:
-		virtual void update();
+		/**
+		 * @copydoc	Component::update
+		 */
+		virtual void update() override;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -74,12 +136,15 @@ namespace BansheeEngine
 	public:
 		friend class ManagedComponentRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		virtual RTTITypeBase* getRTTI() const override;
 
 	protected:
 		ManagedComponent(); // Serialization only
 	};
 
+	/**
+	 * @brief	Contains serialized component data buffer.
+	 */
 	struct ComponentBackupData
 	{
 		UINT8* data;

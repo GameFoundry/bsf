@@ -44,7 +44,7 @@ namespace BansheeEngine
 
 			ResourcePtr mrPtr = std::static_pointer_cast<Resource>(mr->getThisPtr());
 			HManagedResource handle = static_resource_cast<ManagedResource>(gResources()._createResourceHandle(mrPtr));
-			mr->construct(serializableObject->getManagedInstance(), handle);
+			mr->setHandle(serializableObject->getManagedInstance(), handle);
 			mr->mRTTIData = nullptr;
 		}
 
