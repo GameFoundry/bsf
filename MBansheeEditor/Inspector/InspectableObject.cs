@@ -14,6 +14,7 @@ namespace BansheeEditor
         private object propertyValue;
 
         private GUILayoutX guiChildLayout;
+        private GUILayoutX guiTitleLayout;
         private bool isExpanded;
         private bool forceUpdate = true;
 
@@ -21,6 +22,11 @@ namespace BansheeEditor
             : base(title, layout, property)
         {
             
+        }
+
+        public override GUILayoutX GetTitleLayout()
+        {
+            return guiTitleLayout;
         }
 
         protected override bool IsModified()
@@ -45,6 +51,7 @@ namespace BansheeEditor
         {
             base.Update(index);
             forceUpdate = false;
+            guiTitleLayout = null;
 
             if (property.Type != SerializableProperty.FieldType.Object)
                 return;
@@ -55,7 +62,7 @@ namespace BansheeEditor
             if (propertyValue == null)
             {
                 guiChildLayout = null;
-                GUILayoutX guiTitleLayout = layout.AddLayoutX(index);
+                guiTitleLayout = layout.AddLayoutX(index);
 
                 guiTitleLayout.AddElement(new GUILabel(title));
                 guiTitleLayout.AddElement(new GUILabel("Empty"));
@@ -69,7 +76,7 @@ namespace BansheeEditor
             }
             else
             {
-                GUILayoutX guiTitleLayout = layout.AddLayoutX(index);
+                guiTitleLayout = layout.AddLayoutX(index);
 
                 GUIFoldout guiFoldout = new GUIFoldout(title);
                 guiFoldout.SetExpanded(isExpanded);

@@ -66,6 +66,11 @@ namespace BansheeEditor
             return layout.GetNumElements();
         }
 
+        public virtual GUILayoutX GetTitleLayout()
+        {
+            return null;
+        }
+
         protected virtual bool IsModified()
         {
             return false;

@@ -11,41 +11,52 @@ namespace BansheeEditor
     {
         private class EntryRow
         {
-            public GUILayoutX rowLayout;
             public GUILayoutY contentLayout;
-            public GUIButton cloneBtn;
-            public GUIButton deleteBtn;
-            public GUIButton moveUpBtn;
-            public GUIButton moveDownBtn;
+            private GUILayoutX rowLayout;
+            private GUILayoutX titleLayout;
+            private bool ownsTitleLayout;
 
-            public EntryRow(GUILayout parentLayout, int seqIndex, InspectableList parent)
+            public EntryRow(GUILayout parentLayout)
             {
                 rowLayout = parentLayout.AddLayoutX();
                 contentLayout = rowLayout.AddLayoutY();
-                cloneBtn = new GUIButton("C");
-                deleteBtn = new GUIButton("X");
-                moveUpBtn = new GUIButton("Up");
-                moveDownBtn = new GUIButton("Down");
+            }
+
+            public void Refresh(InspectableObjectBase child, int seqIndex, InspectableList parent)
+            {
+                if (ownsTitleLayout)
+                    return;
+
+                titleLayout = child.GetTitleLayout();
+                if (titleLayout == null)
+                {
+                    GUILayoutY buttonCenter = rowLayout.AddLayoutY();
+                    buttonCenter.AddFlexibleSpace();
+                    titleLayout = buttonCenter.AddLayoutX();
+                    buttonCenter.AddFlexibleSpace();
+
+                    ownsTitleLayout = true;
+                }
+
+                GUIButton cloneBtn = new GUIButton("C");
+                GUIButton deleteBtn = new GUIButton("X");
+                GUIButton moveUpBtn = new GUIButton("Up");
+                GUIButton moveDownBtn = new GUIButton("Down");
 
                 cloneBtn.OnClick += () => parent.OnCloneButtonClicked(seqIndex);
                 deleteBtn.OnClick += () => parent.OnDeleteButtonClicked(seqIndex);
                 moveUpBtn.OnClick += () => parent.OnMoveUpButtonClicked(seqIndex);
                 moveDownBtn.OnClick += () => parent.OnMoveDownButtonClicked(seqIndex);
 
-                rowLayout.AddElement(cloneBtn);
-                rowLayout.AddElement(deleteBtn);
-                rowLayout.AddElement(moveUpBtn);
-                rowLayout.AddElement(moveDownBtn);
+                titleLayout.AddElement(cloneBtn);
+                titleLayout.AddElement(deleteBtn);
+                titleLayout.AddElement(moveUpBtn);
+                titleLayout.AddElement(moveDownBtn);
             }
 
             public void Destroy()
             {
                 rowLayout.Destroy();
-                contentLayout.Destroy();
-                cloneBtn.Destroy();
-                deleteBtn.Destroy();
-                moveUpBtn.Destroy();
-                moveDownBtn.Destroy();
             }
         }
 
@@ -56,6 +67,7 @@ namespace BansheeEditor
 
         private GUIIntField guiSizeField;
         private GUILayoutX guiChildLayout;
+        private GUILayoutX guiTitleLayout;
         private List<EntryRow> rows = new List<EntryRow>();
 
         private bool forceUpdate = true;
@@ -65,6 +77,11 @@ namespace BansheeEditor
             : base(title, layout, property)
         {
 
+        }
+
+        public override GUILayoutX GetTitleLayout()
+        {
+            return guiTitleLayout;
         }
 
         protected override bool IsModified()
@@ -100,7 +117,15 @@ namespace BansheeEditor
             }
 
             for (int i = 0; i < GetChildCount(); i++)
-                anythingModified |= GetChild(i).Refresh(0);
+            {
+                InspectableObjectBase child = GetChild(i);
+                bool childModified = child.Refresh(0);
+
+                if (childModified)
+                    rows[i].Refresh(child, i, this);
+
+                anythingModified |= childModified;
+            }
 
             return anythingModified;
         }
@@ -109,6 +134,7 @@ namespace BansheeEditor
         {
             base.Update(layoutIndex);
             forceUpdate = false;
+            guiTitleLayout = null;
 
             if (property.Type != SerializableProperty.FieldType.List)
                 return;
@@ -123,7 +149,7 @@ namespace BansheeEditor
             if (propertyValue == null)
             {
                 guiChildLayout = null;
-                GUILayoutX guiTitleLayout = layout.AddLayoutX(layoutIndex);
+                guiTitleLayout = layout.AddLayoutX(layoutIndex);
 
                 guiTitleLayout.AddElement(new GUILabel(title));
                 guiTitleLayout.AddElement(new GUILabel("Empty"));
@@ -149,7 +175,7 @@ namespace BansheeEditor
                 GUIButton guiClearBtn = new GUIButton("Clear");
                 guiClearBtn.OnClick += OnClearButtonClicked;
 
-                GUILayoutX guiTitleLayout = layout.AddLayoutX(layoutIndex);
+                guiTitleLayout = layout.AddLayoutX(layoutIndex);
                 guiTitleLayout.AddElement(guiFoldout);
                 guiTitleLayout.AddElement(guiSizeField);
                 guiTitleLayout.AddElement(guiResizeBtn);
@@ -168,13 +194,14 @@ namespace BansheeEditor
 
                     for (int i = 0; i < numArrayElements; i++)
                     {
-                        EntryRow newRow = new EntryRow(guiContentLayout, i, this);
+                        EntryRow newRow = new EntryRow(guiContentLayout);
                         rows.Add(newRow);
 
                         InspectableObjectBase childObj = CreateDefaultInspectable(i + ".", new InspectableFieldLayout(newRow.contentLayout), list.GetProperty(i));
                         AddChild(childObj);
 
                         childObj.Refresh(0);
+                        rows[i].Refresh(childObj, i, this);
                     }
                 }
                 else
