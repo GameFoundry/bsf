@@ -41,9 +41,6 @@ namespace BansheeEditor
             if (newPropertyValue == null)
                 return propertyValue != null;
             
-            if (!propertyValue.Equals(newPropertyValue))
-                return true;
-
             return base.IsModified();
         }
 

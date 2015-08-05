@@ -9,7 +9,7 @@ namespace BansheeEngine
     {
         private SerializableProperty.FieldType elementType;
         private Type internalElementType;
-        private IList referencedList;
+        private SerializableProperty parentProperty;
 
         public SerializableProperty.FieldType ElementType
         {
@@ -17,17 +17,32 @@ namespace BansheeEngine
         }
 
         // Constructed from native code
-        private SerializableList(IList list, Type internalElementType)
+        private SerializableList(Type internalElementType, SerializableProperty parentProperty)
         {
-            referencedList = list;
+            this.parentProperty = parentProperty;
             this.internalElementType = internalElementType;
             elementType = SerializableProperty.DetermineFieldType(internalElementType);
         }
 
         public SerializableProperty GetProperty(int elementIdx)
         {
-            SerializableProperty.Getter getter = () => referencedList[elementIdx];
-            SerializableProperty.Setter setter = (object value) => referencedList[elementIdx] = value;
+            SerializableProperty.Getter getter = () =>
+            {
+                IList list = parentProperty.GetValue<IList>();
+
+                if (list != null)
+                    return list[elementIdx];
+                else
+                    return null;
+            };
+
+            SerializableProperty.Setter setter = (object value) =>
+            {
+                IList list = parentProperty.GetValue<IList>();
+
+                if (list != null)
+                    list[elementIdx] = value;
+            };
 
             SerializableProperty property = Internal_CreateProperty(mCachedPtr);
             property.Construct(ElementType, internalElementType, getter, setter);
@@ -37,7 +52,12 @@ namespace BansheeEngine
 
         public int GetLength()
         {
-            return referencedList.Count;
+            IList list = parentProperty.GetValue<IList>();
+
+            if (list != null)
+                return list.Count;
+            else
+                return 0;
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

@@ -46,33 +46,30 @@ namespace BansheeEngine
 		return nativeInstance;
 	}
 
-	MonoObject* ScriptSerializableProperty::internal_createObject(ScriptSerializableProperty* nativeInstance, MonoObject* object)
+	MonoObject* ScriptSerializableProperty::internal_createObject(ScriptSerializableProperty* nativeInstance)
 	{
-		ScriptSerializableObject* newObject = ScriptSerializableObject::create(nativeInstance, object);
+		ScriptSerializableObject* newObject = ScriptSerializableObject::create(nativeInstance);
 
 		return newObject->getManagedInstance();
 	}
 
-	MonoObject* ScriptSerializableProperty::internal_createArray(ScriptSerializableProperty* nativeInstance, MonoObject* object)
+	MonoObject* ScriptSerializableProperty::internal_createArray(ScriptSerializableProperty* nativeInstance)
 	{
-		ManagedSerializableTypeInfoArrayPtr arrayTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoArray>(nativeInstance->mTypeInfo);
-		ScriptSerializableArray* newObject = ScriptSerializableArray::create(arrayTypeInfo, object);
+		ScriptSerializableArray* newObject = ScriptSerializableArray::create(nativeInstance);
 
 		return newObject->getManagedInstance();
 	}
 
-	MonoObject* ScriptSerializableProperty::internal_createList(ScriptSerializableProperty* nativeInstance, MonoObject* object)
+	MonoObject* ScriptSerializableProperty::internal_createList(ScriptSerializableProperty* nativeInstance)
 	{
-		ManagedSerializableTypeInfoListPtr listTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoList>(nativeInstance->mTypeInfo);
-		ScriptSerializableList* newObject = ScriptSerializableList::create(listTypeInfo, object);
+		ScriptSerializableList* newObject = ScriptSerializableList::create(nativeInstance);
 
 		return newObject->getManagedInstance();
 	}
 
-	MonoObject* ScriptSerializableProperty::internal_createDictionary(ScriptSerializableProperty* nativeInstance, MonoObject* object)
+	MonoObject* ScriptSerializableProperty::internal_createDictionary(ScriptSerializableProperty* nativeInstance)
 	{
-		ManagedSerializableTypeInfoDictionaryPtr dictTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoDictionary>(nativeInstance->mTypeInfo);
-		ScriptSerializableDictionary* newObject = ScriptSerializableDictionary::create(dictTypeInfo, object);
+		ScriptSerializableDictionary* newObject = ScriptSerializableDictionary::create(nativeInstance);
 
 		return newObject->getManagedInstance();
 	}

@@ -25,7 +25,7 @@ namespace BansheeEngine
 		FieldsField = metaData.scriptClass->getField("_fields");
 	}
 
-	ScriptSerializableObject* ScriptSerializableObject::create(ScriptSerializableProperty* property, MonoObject* object)
+	ScriptSerializableObject* ScriptSerializableObject::create(const ScriptSerializableProperty* property)
 	{
 		MonoType* monoInternalElementType = mono_class_get_type(property->getTypeInfo()->getMonoClass());
 		MonoReflectionType* internalElementType = mono_type_get_object(MonoManager::instance().getDomain(), monoInternalElementType);

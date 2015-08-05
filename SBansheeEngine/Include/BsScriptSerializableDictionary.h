@@ -10,7 +10,7 @@ namespace BansheeEngine
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "SerializableDictionary")
 
-		static ScriptSerializableDictionary* create(const ManagedSerializableTypeInfoDictionaryPtr& typeInfo, MonoObject* object);
+		static ScriptSerializableDictionary* create(const ScriptSerializableProperty* parentProperty);
 
 	private:
 		static MonoObject* internal_createKeyProperty(ScriptSerializableDictionary* nativeInstance);

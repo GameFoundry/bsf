@@ -54,10 +54,6 @@ Code quality improvements:
 ----------------------------------------------------------------------
 Polish
 
-TODO:
- - Thoroughly test inspector
- - Writing on a child struct field unfocused input because the inspector gets rebuilt - delay rebuild until user unfocuses from the input box?
-
 Ribek use:
  - Camera, Renderable, Material, Texture inspector
   - Material/Shader has no color type so I cannot know when to display normal vector and when color in inspector

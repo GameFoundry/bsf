@@ -20,15 +20,17 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateProperty", &ScriptSerializableList::internal_createProperty);
 	}
 
-	ScriptSerializableList* ScriptSerializableList::create(const ManagedSerializableTypeInfoListPtr& typeInfo, MonoObject* object)
+	ScriptSerializableList* ScriptSerializableList::create(const ScriptSerializableProperty* parentProperty)
 	{
-		MonoType* monoInternalElementType = mono_class_get_type(typeInfo->mElementType->getMonoClass());
+		ManagedSerializableTypeInfoListPtr listTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoList>(parentProperty->getTypeInfo());
+
+		MonoType* monoInternalElementType = mono_class_get_type(listTypeInfo->mElementType->getMonoClass());
 		MonoReflectionType* internalElementType = mono_type_get_object(MonoManager::instance().getDomain(), monoInternalElementType);
 
-		void* params[2] = { object, internalElementType };
+		void* params[2] = { internalElementType, parentProperty->getManagedInstance() };
 		MonoObject* managedInstance = metaData.scriptClass->createInstance(params, 2);
 
-		ScriptSerializableList* nativeInstance = new (bs_alloc<ScriptSerializableList>()) ScriptSerializableList(managedInstance, typeInfo);
+		ScriptSerializableList* nativeInstance = new (bs_alloc<ScriptSerializableList>()) ScriptSerializableList(managedInstance, listTypeInfo);
 
 		return nativeInstance;
 	}

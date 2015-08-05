@@ -12,7 +12,7 @@ namespace BansheeEngine
         private SerializableProperty.FieldType valueType;
         private Type internalKeyType;
         private Type internalValueType;
-        private IDictionary referencedDict;
+        private SerializableProperty parentProperty;
 
         public SerializableProperty.FieldType KeyType
         {
@@ -25,9 +25,9 @@ namespace BansheeEngine
         }
 
         // Constructed from native code
-        private SerializableDictionary(IDictionary dict, Type internalKeyType, Type internalValueType)
+        private SerializableDictionary(Type internalKeyType, Type internalValueType, SerializableProperty parentProperty)
         {
-            referencedDict = dict;
+            this.parentProperty = parentProperty;
             this.internalKeyType = internalKeyType;
             this.internalValueType = internalValueType;
             keyType = SerializableProperty.DetermineFieldType(internalKeyType);
@@ -36,7 +36,9 @@ namespace BansheeEngine
 
         public KeyValuePair<SerializableProperty, SerializableProperty> GetProperty(object key)
         {
-            if (!referencedDict.Contains(key))
+            IDictionary dictionary = parentProperty.GetValue<IDictionary>();
+
+            if (dictionary == null || !dictionary.Contains(key))
                 return new KeyValuePair<SerializableProperty, SerializableProperty>(null, null);
 
             SerializableProperty keyProperty;
@@ -50,8 +52,23 @@ namespace BansheeEngine
 
             SerializableProperty valueProperty;
             {
-                SerializableProperty.Getter getter = () => referencedDict[key];
-                SerializableProperty.Setter setter = (object value) => referencedDict[key] = value;
+                SerializableProperty.Getter getter = () =>
+                {
+                    IDictionary dict = parentProperty.GetValue<IDictionary>();
+
+                    if (dict != null)
+                        return dict[key];
+                    else
+                        return null;
+                };
+
+                SerializableProperty.Setter setter = (object value) =>
+                {
+                    IDictionary dict = parentProperty.GetValue<IDictionary>();
+
+                    if (dict != null)
+                        dict[key] = value;
+                };
 
                 valueProperty = Internal_CreateValueProperty(mCachedPtr);
                 valueProperty.Construct(ValueType, internalValueType, getter, setter);
@@ -62,7 +79,12 @@ namespace BansheeEngine
 
         public int GetLength()
         {
-            return referencedDict.Count;
+            IDictionary dictionary = parentProperty.GetValue<IDictionary>();
+
+            if (dictionary != null)
+                return dictionary.Count;
+            else
+                return 0;
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

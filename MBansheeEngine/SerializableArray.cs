@@ -8,7 +8,7 @@ namespace BansheeEngine
     {
         private SerializableProperty.FieldType elementType;
         private Type internalElementType;
-        private Array referencedArray;
+        private SerializableProperty parentProperty;
 
         public SerializableProperty.FieldType ElementType
         {
@@ -16,17 +16,32 @@ namespace BansheeEngine
         }
 
         // Constructed from native code
-        private SerializableArray(Array array, Type internalElementType)
+        private SerializableArray(Type internalElementType, SerializableProperty parentProperty)
         {
-            referencedArray = array;
+            this.parentProperty = parentProperty;
             this.internalElementType = internalElementType;
             elementType = SerializableProperty.DetermineFieldType(internalElementType);
         }
 
         public SerializableProperty GetProperty(int elementIdx)
         {
-            SerializableProperty.Getter getter = () => referencedArray.GetValue(elementIdx);
-            SerializableProperty.Setter setter = (object value) => referencedArray.SetValue(value, elementIdx);
+            SerializableProperty.Getter getter = () =>
+            {
+                Array array = parentProperty.GetValue<Array>();
+
+                if (array != null)
+                    return array.GetValue(elementIdx);
+                else
+                    return null;
+            };
+
+            SerializableProperty.Setter setter = (object value) =>
+            {
+                Array array = parentProperty.GetValue<Array>();
+
+                if(array != null)
+                    array.SetValue(value, elementIdx);
+            };
 
             SerializableProperty property = Internal_CreateProperty(mCachedPtr);
             property.Construct(ElementType, internalElementType, getter, setter);
@@ -36,7 +51,12 @@ namespace BansheeEngine
 
         public int GetLength()
         {
-            return referencedArray.GetLength(0); // TODO - Support multi-rank arrays
+            Array array = parentProperty.GetValue<Array>();
+
+            if (array != null)
+                return array.GetLength(0); // TODO - Support multi-rank arrays
+            else
+                return 0;
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

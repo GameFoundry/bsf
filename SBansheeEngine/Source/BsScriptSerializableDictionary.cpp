@@ -21,18 +21,20 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateValueProperty", &ScriptSerializableDictionary::internal_createValueProperty);
 	}
 
-	ScriptSerializableDictionary* ScriptSerializableDictionary::create(const ManagedSerializableTypeInfoDictionaryPtr& typeInfo, MonoObject* object)
+	ScriptSerializableDictionary* ScriptSerializableDictionary::create(const ScriptSerializableProperty* parentProperty)
 	{
-		MonoType* monoInternalKeyType = mono_class_get_type(typeInfo->mKeyType->getMonoClass());
+		ManagedSerializableTypeInfoDictionaryPtr dictTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoDictionary>(parentProperty->getTypeInfo());
+
+		MonoType* monoInternalKeyType = mono_class_get_type(dictTypeInfo->mKeyType->getMonoClass());
 		MonoReflectionType* internalKeyType = mono_type_get_object(MonoManager::instance().getDomain(), monoInternalKeyType);
 
-		MonoType* monoInternalValueType = mono_class_get_type(typeInfo->mValueType->getMonoClass());
+		MonoType* monoInternalValueType = mono_class_get_type(dictTypeInfo->mValueType->getMonoClass());
 		MonoReflectionType* internalValueType = mono_type_get_object(MonoManager::instance().getDomain(), monoInternalValueType);
 
-		void* params[3] = { object, internalKeyType, internalValueType };
+		void* params[3] = { internalKeyType, internalValueType, parentProperty->getManagedInstance() };
 		MonoObject* managedInstance = metaData.scriptClass->createInstance(params, 3);
 
-		ScriptSerializableDictionary* nativeInstance = new (bs_alloc<ScriptSerializableDictionary>()) ScriptSerializableDictionary(managedInstance, typeInfo);
+		ScriptSerializableDictionary* nativeInstance = new (bs_alloc<ScriptSerializableDictionary>()) ScriptSerializableDictionary(managedInstance, dictTypeInfo);
 
 		return nativeInstance;
 	}

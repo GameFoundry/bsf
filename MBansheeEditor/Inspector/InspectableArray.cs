@@ -96,9 +96,6 @@ namespace BansheeEditor
             if (newPropertyValue == null)
                 return propertyValue != null;
 
-            if (!propertyValue.Equals(newPropertyValue))
-                return true;
-
             SerializableArray array = property.GetArray();
             if (array.GetLength() != numArrayElements)
                 return true;
