@@ -10,7 +10,10 @@ namespace BansheeEngine
 
 	/**
 	 * @brief	Component that internally wraps a managed component object
-	 *			that can be of user-defined type.
+	 *			that can be of user-defined type. Acts as interop interop layer
+	 *			between native Component and a managed user defined component type
+	 *			since managed types cannot simply derive from Component
+	 *			to implement its functionality.
 	 */
 	class BS_SCR_BE_EXPORT ManagedComponent : public Component
 	{

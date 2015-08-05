@@ -13,19 +13,35 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Interop class between C++ & CLR for CameraHandler.
+	 */
 	class BS_SCR_BE_EXPORT ScriptCameraHandler : public ScriptObject<ScriptCameraHandler>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "CameraHandler")
 
+		/**
+		 * @brief	Returns the wrapped native CameraHandler object.
+		 */
 		SPtr<CameraHandler> getInternal() const { return mCameraHandler; }
 
 	private:
 		ScriptCameraHandler(MonoObject* managedInstance, const HSceneObject& parentSO);
 		~ScriptCameraHandler();
 
+		/**
+		 * @brief	Updates the internal camera handler from the transform of the
+		 *			provided scene object.
+		 */
 		void updateView(const HSceneObject& parent);
 
+		SPtr<CameraHandler> mCameraHandler;
+		UINT32 mLastUpdateHash;
+
+		/************************************************************************/
+		/* 								CLR HOOKS						   		*/
+		/************************************************************************/
 		static void internal_Create(MonoObject* managedInstance, ScriptSceneObject* parentSO);
 
 		static float internal_GetAspect(ScriptCameraHandler* instance);
@@ -101,8 +117,5 @@ namespace BansheeEngine
 
 		static void internal_UpdateView(ScriptCameraHandler* instance, ScriptSceneObject* parent);
 		static void internal_OnDestroy(ScriptCameraHandler* instance);
-
-		SPtr<CameraHandler> mCameraHandler;
-		UINT32 mLastUpdateHash;
 	};
 }

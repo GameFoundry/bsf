@@ -70,7 +70,7 @@ namespace BansheeEngine
 			BS_EXCEPT(InvalidStateException, "Script component for this Component already exists.");
 
 		ScriptComponent* nativeInstance = new (bs_alloc<ScriptComponent>()) ScriptComponent(existingInstance);
-		nativeInstance->setManagedComponent(component);
+		nativeInstance->setNativeHandle(component);
 		mScriptGameObjects[component->getInstanceId()] = ScriptGameObjectEntry(nativeInstance, true);
 
 		return nativeInstance;

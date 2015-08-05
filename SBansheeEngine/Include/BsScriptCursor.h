@@ -7,12 +7,20 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Interop class between C++ & CLR for Cursor.
+	 */
 	class BS_SCR_BE_EXPORT ScriptCursor : public ScriptObject <ScriptCursor>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Cursor")
 
 	private:
+		ScriptCursor(MonoObject* instance);
+
+		/************************************************************************/
+		/* 								CLR HOOKS						   		*/
+		/************************************************************************/
 		static void internal_getScreenPosition(Vector2I* value);
 		static void internal_setScreenPosition(Vector2I value);
 		static void internal_hide();
@@ -25,7 +33,5 @@ namespace BansheeEngine
 		static void internal_setCursorIcon(CursorType cursor, MonoObject* iconData, Vector2I hotspot);
 		static void internal_clearCursorIconStr(MonoString* name);
 		static void internal_clearCursorIcon(CursorType cursor);
-
-		ScriptCursor(MonoObject* instance);
 	};
 }

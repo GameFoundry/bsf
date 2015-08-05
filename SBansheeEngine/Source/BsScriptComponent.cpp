@@ -32,11 +32,6 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetSceneObject", &ScriptComponent::internal_getSceneObject);
 	}
 
-	void ScriptComponent::setManagedComponent(const GameObjectHandle<ManagedComponent>& managedComponent)
-	{
-		mManagedComponent = managedComponent;
-	}
-
 	MonoObject* ScriptComponent::internal_addComponent(MonoObject* parentSceneObject, MonoReflectionType* type)
 	{
 		ScriptSceneObject* scriptSO = ScriptSceneObject::toNative(parentSceneObject);
