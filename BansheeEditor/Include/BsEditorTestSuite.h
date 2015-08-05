@@ -75,6 +75,11 @@ namespace BansheeEngine
 		void SceneObjectRecord_UndoRedo();
 
 		/**
+		 * @brief	Tests SceneObject delete undo/redo operation.
+		 */
+		void SceneObjectDelete_UndoRedo();
+
+		/**
 		 * @brief	Tests native diff by modifiying an object, generating a diff
 		 *			and re-applying the modifications.
 		 */

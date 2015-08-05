@@ -27,7 +27,7 @@ namespace BansheeEngine
 		if(!mThisHandle.isDestroyed())
 		{
 			LOGWRN("Object is being deleted without being destroyed first?");
-			destroyInternal(true);
+			destroyInternal(mThisHandle, true);
 		}
 	}
 
@@ -60,43 +60,39 @@ namespace BansheeEngine
 		{
 			if(!mParent.isDestroyed())
 				mParent->removeChild(mThisHandle);
+
+			mParent = nullptr;
 		}
 
-		destroyInternal(immediate);
+		destroyInternal(mThisHandle, immediate);
 	}
 
-	void SceneObject::destroyInternal(bool immediate)
+	void SceneObject::destroyInternal(GameObjectHandleBase& handle, bool immediate)
 	{
-		for(auto iter = mChildren.begin(); iter != mChildren.end(); ++iter)
-			(*iter)->destroyInternal(immediate);
-
-		mChildren.clear();
-
-		for(auto iter = mComponents.begin(); iter != mComponents.end(); ++iter)
-		{
-			(*iter)->_setIsDestroyed();
-
-			if (isInstantiated())
-				(*iter)->onDestroyed();
-
-			if (immediate)
-			{
-				GameObjectManager::instance().unregisterObject(*iter);
-				(*iter).destroy();
-			}
-			else
-				GameObjectManager::instance().queueForDestroy(*iter);
-		}
-
-		mComponents.clear();
-
 		if (immediate)
 		{
-			GameObjectManager::instance().unregisterObject(mThisHandle);
-			mThisHandle.destroy();
+			for (auto iter = mChildren.begin(); iter != mChildren.end(); ++iter)
+				(*iter)->destroyInternal(*iter, true);
+
+			mChildren.clear();
+
+			for (auto iter = mComponents.begin(); iter != mComponents.end(); ++iter)
+			{
+				(*iter)->_setIsDestroyed();
+
+				if (isInstantiated())
+					(*iter)->onDestroyed();
+
+				(*iter)->destroyInternal(*iter, true);
+			}
+
+			mComponents.clear();
+
+			GameObjectManager::instance().unregisterObject(handle);
+			handle.destroy();
 		}
 		else
-			GameObjectManager::instance().queueForDestroy(mThisHandle);
+			GameObjectManager::instance().queueForDestroy(handle);
 	}
 
 	void SceneObject::_setInstanceData(GameObjectInstanceDataPtr& other)
@@ -600,17 +596,8 @@ namespace BansheeEngine
 			if (isInstantiated())
 				(*iter)->onDestroyed();
 			
+			(*iter)->destroyInternal(*iter, immediate);
 			mComponents.erase(iter);
-
-			if (immediate)
-			{
-				GameObjectManager::instance().unregisterObject(component);
-				(*iter).destroy();
-			}
-			else
-			{
-				GameObjectManager::instance().queueForDestroy(component);
-			}
 		}
 		else
 			LOGDBG("Trying to remove a component that doesn't exist on this SceneObject.");

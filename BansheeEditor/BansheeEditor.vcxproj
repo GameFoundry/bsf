@@ -267,10 +267,12 @@
   <ItemGroup>
     <ClInclude Include="Include\BsBuildDataRTTI.h" />
     <ClInclude Include="Include\BsBuildManager.h" />
+    <ClInclude Include="Include\BsCmdDeleteSO.h" />
     <ClInclude Include="Include\BsCmdEditPlainFieldGO.h" />
     <ClInclude Include="Include\BsCmdInputFieldValueChange.h" />
     <ClInclude Include="Include\BsCmdRecordSO.h" />
     <ClInclude Include="Include\BsCmdReparentSO.h" />
+    <ClInclude Include="Include\BsCmdUtility.h" />
     <ClInclude Include="Include\BsDockManager.h" />
     <ClInclude Include="Include\BsDockManagerLayout.h" />
     <ClInclude Include="Include\BsDockManagerLayoutRTTI.h" />
@@ -347,6 +349,8 @@
     <ClCompile Include="Source\BsBuildManager.cpp" />
     <ClCompile Include="Source\BsCmdRecordSO.cpp" />
     <ClCompile Include="Source\BsCmdReparentSO.cpp" />
+    <ClCompile Include="Source\BsCmdUtility.cpp" />
+    <ClCompile Include="Source\BsCmdDeleteSO.cpp" />
     <ClCompile Include="Source\BsDockManager.cpp" />
     <ClCompile Include="Source\BsDockManagerLayout.cpp" />
     <ClCompile Include="Source\BsDropDownWindow.cpp" />

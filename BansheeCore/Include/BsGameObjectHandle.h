@@ -48,7 +48,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns true if the object the handle is pointing to has been destroyed.
 		 *
-		 * @param checkQueued	Game objects can be queued for destruction but no actually destroyed yet, and still accessible. 
+		 * @param checkQueued	Game objects can be queued for destruction but not actually destroyed yet, and still accessible. 
 		 *						If this is false this method will return true only if the object is completely inaccessible (fully destroyed).
 		 *						If this is true this method will return true if object is completely inaccessible or if it is just queued for destruction.
 		 */
@@ -121,6 +121,7 @@ namespace BansheeEngine
 
 	protected:
 		friend class SceneObject;
+		friend class Component;
 		friend class SceneObjectRTTI;
 		friend class GameObjectManager;
 

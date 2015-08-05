@@ -12,14 +12,14 @@ namespace BansheeEngine
 	public:
 		BaseConnectionData()
 			:prev(nullptr), next(nullptr), isActive(true),
-			hasHandleLink(true)
+			handleLinks(0)
 		{
 			
 		}
 
 		virtual ~BaseConnectionData()
 		{
-			assert(!hasHandleLink && !isActive);
+			assert(!handleLinks && !isActive);
 		}
 
 		virtual void deactivate()
@@ -30,7 +30,7 @@ namespace BansheeEngine
 		BaseConnectionData* prev;
 		BaseConnectionData* next;
 		bool isActive;
-		bool hasHandleLink;
+		UINT32 handleLinks;
 	};
 
 	/**
@@ -74,9 +74,10 @@ namespace BansheeEngine
 			BS_LOCK_RECURSIVE_MUTEX(mMutex);
 
 			conn->deactivate();
-			conn->hasHandleLink = false;
+			conn->handleLinks--;
 
-			free(conn);
+			if (conn->handleLinks == 0)
+				free(conn);
 		}
 
 		/**
@@ -92,7 +93,7 @@ namespace BansheeEngine
 				BaseConnectionData* next = conn->next;
 				conn->deactivate();
 
-				if (!conn->hasHandleLink)
+				if (conn->handleLinks == 0)
 					free(conn);
 
 				conn = next;
@@ -109,9 +110,9 @@ namespace BansheeEngine
 		{
 			BS_LOCK_RECURSIVE_MUTEX(mMutex);
 
-			conn->hasHandleLink = false;
+			conn->handleLinks--;
 
-			if (!conn->isActive)
+			if (conn->handleLinks == 0 && !conn->isActive)
 				free(conn);
 		}
 
@@ -161,7 +162,9 @@ namespace BansheeEngine
 
 		explicit HEvent(const SPtr<EventInternalData>& eventData, BaseConnectionData* connection)
 			:mConnection(connection), mEventData(eventData)
-		{ }
+		{
+			connection->handleLinks++;
+		}
 
 		~HEvent()
 		{
@@ -195,6 +198,17 @@ namespace BansheeEngine
 		operator int Bool_struct::*() const
 		{
 			return (mConnection != nullptr ? &Bool_struct::_Member : 0);
+		}
+
+		HEvent& operator=(const HEvent& rhs)
+		{
+			mConnection = rhs.mConnection;
+			mEventData = rhs.mEventData;
+
+			if (mConnection != nullptr)
+				mConnection->handleLinks++;
+
+			return *this;
 		}
 
 	private:
@@ -254,7 +268,7 @@ namespace BansheeEngine
 					connData->next->prev = nullptr;
 
 				connData->isActive = true;
-				connData->hasHandleLink = true;
+				connData->handleLinks = true;
 			}
 
 			if (connData == nullptr)

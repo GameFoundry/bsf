@@ -95,6 +95,16 @@ namespace BansheeEngine
 		 */
 		void initialize(const std::shared_ptr<GameObject>& object, UINT64 instanceId);
 
+		/**
+		 * @brief	Destroys this object.
+		 *
+		 * @param [in]	handle		Game object handle to this object.
+		 * @param [in]	immediate	If true, the object will be deallocated and become unusable
+		 *							right away. Otherwise the deallocation will be delayed to the end of
+		 *							frame (preferred method).
+		 */
+		virtual void destroyInternal(GameObjectHandleBase& handle, bool immediate = false) = 0;
+
 	protected:
 		String mName;
 		INT32 mLinkId;

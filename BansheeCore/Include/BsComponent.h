@@ -55,6 +55,18 @@ namespace BansheeEngine
 		 * @brief	Called just before the component is destroyed.
 		 */
 		virtual void onDestroyed() {}
+
+		/**
+		 * @brief	Destroys this component.
+		 *
+		 * @param [in]	handle		Game object handle this this object.
+		 * @param [in]	immediate	If true, the object will be deallocated and become unusable
+		 *							right away. Otherwise the deallocation will be delayed to the end of
+		 *							frame (preferred method).
+		 *
+		 * @note	Unlike "destroy", does not remove the component from its parent.
+		 */
+		void destroyInternal(GameObjectHandleBase& handle, bool immediate = false) override;
 	private:
 		Component(const Component& other) { }
 

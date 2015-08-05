@@ -63,10 +63,7 @@ namespace BansheeEngine
 	void GameObjectManager::destroyQueuedObjects()
 	{
 		for (auto& objPair : mQueuedForDestroy)
-		{
-			unregisterObject(objPair.second);
-			objPair.second.destroy();
-		}
+			objPair.second->destroyInternal(objPair.second, true);
 
 		mQueuedForDestroy.clear();
 	}

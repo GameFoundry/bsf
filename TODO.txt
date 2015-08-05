@@ -54,6 +54,13 @@ Code quality improvements:
 ----------------------------------------------------------------------
 Polish
 
+SceneTreeView
+ - Add cut/copy/duplicate/paste functionality (+ appropriate context menu)
+ - Does delete, rename, drag and drop work properly?
+  - Delete + rename should be undoable
+ - ELement cant be deselected by clicking on empty space
+ - Clicking on an already selected element should start rename
+
 Ribek use:
  - Camera, Renderable, Material, Texture inspector
   - Material/Shader has no color type so I cannot know when to display normal vector and when color in inspector
@@ -88,13 +95,8 @@ First screenshot:
 Other polish:
  - C# inspectors for Point/Spot/Directional light
  - C# interface for Font
- - SceneTreeView
-  - Hook up ping effect so it triggers when I select a resource or sceneobject
-   - Add Selection::ping method to both C++ and C# and an Event that triggers when its called
-  - See if it needs other enhancements (rename, delete all work properly? etc.)
-  - Add copy/cut/paste/duplicate (with context menu)
-  - Cannot deselect element by clicking on empty space
-  - Clicking on an already selected element should start rename
+ - Hook up ping effect so that when resource/gameobject/texture field is clicked it triggers a ping in
+   ProjectWindow or HierarchyWindow. (Likely add Selection.Ping method and Selection.OnPing callback)
  - Handle seems to lag behind the selected mesh
  - ProjectLibrary seems to import some files on every start-up
  - Crash on shutdown in mono_gchandle_free
@@ -110,6 +112,8 @@ Other polish:
    - Consider saving this information with the serialized object
  - Make sure to persist EditorSettings
  - Import option inspectors for Texture, Mesh, Font
+ - MenuBar - will likely need a way to mark elements as disabled when not appropriate (e.g. no "frame selected unless scene is focused")
+   - Likely use a user-provided callback to trigger when populating the menus
 
 Stage 2 polish:
  - Inject an icon into an .exe (Win32 specific)

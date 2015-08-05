@@ -8,14 +8,13 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	A command used for undo/redo purposes. It records a state of the entire
-	 *			scene object at a specific point and allows you to restore it to its
-	 *			original values as needed.
+	 * @brief	A command used for undo/redo purposes. Deletes a scene object
+	 *			and restores it as an undo operation.
 	 */
-	class CmdRecordSO : public EditorCommand
+	class CmdDeleteSO : public EditorCommand
 	{
 	public:
-		~CmdRecordSO();
+		~CmdDeleteSO();
 
 		/**
 		 * @brief	Creates and executes the command on the provided scene object.
@@ -39,7 +38,7 @@ namespace BansheeEngine
 	private:
 		friend class UndoRedo;
 
-		CmdRecordSO(const HSceneObject& sceneObject);
+		CmdDeleteSO(const HSceneObject& sceneObject);
 
 		/**
 		 * @brief	Saves the state of the specified object, all of its children

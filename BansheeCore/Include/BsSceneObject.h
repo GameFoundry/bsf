@@ -104,13 +104,14 @@ namespace BansheeEngine
 		/**
 		 * @brief	Destroys this object and any of its held components.
 		 *
+		 * @param [in]	handle		Game object handle to this object.
 		 * @param [in]	immediate	If true, the object will be deallocated and become unusable
 		 *							right away. Otherwise the deallocation will be delayed to the end of
 		 *							frame (preferred method).
 		 *
 		 * @note	Unlike "destroy", does not remove the object from its parent.
 		 */
-		void destroyInternal(bool immediate = false);
+		void destroyInternal(GameObjectHandleBase& handle, bool immediate = false) override;
 
 		/**
 		 * @brief	Recursively enables the provided set of flags on

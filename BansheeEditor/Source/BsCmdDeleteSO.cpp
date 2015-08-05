@@ -1,23 +1,23 @@
-#include "BsCmdRecordSO.h"
+#include "BsCmdDeleteSO.h"
 #include "BsSceneObject.h"
 #include "BsComponent.h"
 #include "BsMemorySerializer.h"
 
 namespace BansheeEngine
 {
-	CmdRecordSO::CmdRecordSO(const HSceneObject& sceneObject)
+	CmdDeleteSO::CmdDeleteSO(const HSceneObject& sceneObject)
 		:mSceneObject(sceneObject), mSerializedObject(nullptr), mSerializedObjectParentId(0), mSerializedObjectSize(0)
 	{
 
 	}
 
-	CmdRecordSO::~CmdRecordSO()
+	CmdDeleteSO::~CmdDeleteSO()
 	{
 		mSceneObject = nullptr;
 		clear();
 	}
 
-	void CmdRecordSO::clear()
+	void CmdDeleteSO::clear()
 	{
 		mSerializedObjectSize = 0;
 		mSerializedObjectParentId = 0;
@@ -29,15 +29,15 @@ namespace BansheeEngine
 		}
 	}
 
-	void CmdRecordSO::execute(const HSceneObject& sceneObject)
+	void CmdDeleteSO::execute(const HSceneObject& sceneObject)
 	{
 		// Register command and commit it
-		CmdRecordSO* command = new (bs_alloc<CmdRecordSO>()) CmdRecordSO(sceneObject);
+		CmdDeleteSO* command = new (bs_alloc<CmdDeleteSO>()) CmdDeleteSO(sceneObject);
 		UndoRedo::instance().registerCommand(command);
 		command->commit();
 	}
 
-	void CmdRecordSO::commit()
+	void CmdDeleteSO::commit()
 	{
 		clear();
 
@@ -45,9 +45,10 @@ namespace BansheeEngine
 			return;
 
 		recordSO(mSceneObject);
+		mSceneObject->destroy();
 	}
 
-	void CmdRecordSO::revert()
+	void CmdDeleteSO::revert()
 	{
 		if (mSceneObject == nullptr)
 			return;
@@ -58,6 +59,8 @@ namespace BansheeEngine
 
 		GameObjectManager::instance().setDeserializationMode(GODM_RestoreExternal | GODM_UseNewIds);
 
+		// Object might still only be queued for destruction, but we need to fully destroy it since we're about to replace
+		// the potentially only reference to the old object
 		if (!mSceneObject.isDestroyed())
 			mSceneObject->destroy(true);
 
@@ -68,7 +71,7 @@ namespace BansheeEngine
 		restored->setParent(parent);
 	}
 
-	void CmdRecordSO::recordSO(const HSceneObject& sceneObject)
+	void CmdDeleteSO::recordSO(const HSceneObject& sceneObject)
 	{
 		MemorySerializer serializer;
 		mSerializedObject = serializer.encode(mSceneObject.get(), mSerializedObjectSize, &bs_alloc);

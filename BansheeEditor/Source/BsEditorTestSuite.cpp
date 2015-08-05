@@ -1,6 +1,7 @@
 #include "BsEditorTestSuite.h"
 #include "BsSceneObject.h"
 #include "BsCmdRecordSO.h"
+#include "BsCmdDeleteSO.h"
 #include "BsUndoRedo.h"
 #include "BsRTTIType.h"
 #include "BsGameObjectRTTI.h"
@@ -421,6 +422,7 @@ namespace BansheeEngine
 	EditorTestSuite::EditorTestSuite()
 	{
 		BS_ADD_TEST(EditorTestSuite::SceneObjectRecord_UndoRedo);
+		BS_ADD_TEST(EditorTestSuite::SceneObjectDelete_UndoRedo);
 		BS_ADD_TEST(EditorTestSuite::BinaryDiff);
 		BS_ADD_TEST(EditorTestSuite::TestPrefabDiff);
 		BS_ADD_TEST(EditorTestSuite::TestFrameAlloc)
@@ -452,6 +454,49 @@ namespace BansheeEngine
 
 		CmdRecordSO::execute(so0_0);
 		cmpB1_1->val1 = "ModifiedValue";
+		UndoRedo::instance().undo();
+
+		BS_TEST_ASSERT(!so0_0.isDestroyed());
+		BS_TEST_ASSERT(!so1_0.isDestroyed());
+		BS_TEST_ASSERT(!so1_1.isDestroyed());
+		BS_TEST_ASSERT(!so2_0.isDestroyed());
+		BS_TEST_ASSERT(!cmpA1_1.isDestroyed());
+		BS_TEST_ASSERT(!cmpB1_1.isDestroyed());
+		BS_TEST_ASSERT(!cmpA1_1->ref1.isDestroyed());
+		BS_TEST_ASSERT(!cmpA1_1->ref2.isDestroyed());
+		BS_TEST_ASSERT(!cmpB1_1->ref1.isDestroyed());
+		BS_TEST_ASSERT(!cmpExternal->ref1.isDestroyed());
+		BS_TEST_ASSERT(!cmpExternal->ref2.isDestroyed());
+		BS_TEST_ASSERT(cmpB1_1->val1 == "InitialValue");
+
+		so0_0->destroy();
+	}
+
+	void EditorTestSuite::SceneObjectDelete_UndoRedo()
+	{
+		HSceneObject so0_0 = SceneObject::create("so0_0");
+		HSceneObject so1_0 = SceneObject::create("so1_0");
+		HSceneObject so1_1 = SceneObject::create("so1_1");
+		HSceneObject so2_0 = SceneObject::create("so2_0");
+
+		so1_0->setParent(so0_0);
+		so1_1->setParent(so0_0);
+		so2_0->setParent(so1_0);
+
+		GameObjectHandle<TestComponentA> cmpA1_1 = so1_1->addComponent<TestComponentA>();
+		GameObjectHandle<TestComponentB> cmpB1_1 = so1_1->addComponent<TestComponentB>();
+
+		HSceneObject soExternal = SceneObject::create("soExternal");
+		GameObjectHandle<TestComponentA> cmpExternal = soExternal->addComponent<TestComponentA>();
+
+		cmpA1_1->ref1 = so2_0;
+		cmpA1_1->ref2 = cmpB1_1;
+		cmpB1_1->ref1 = soExternal;
+		cmpB1_1->val1 = "InitialValue";
+		cmpExternal->ref1 = so1_1;
+		cmpExternal->ref2 = cmpA1_1;
+
+		CmdDeleteSO::execute(so0_0);
 		UndoRedo::instance().undo();
 
 		BS_TEST_ASSERT(!so0_0.isDestroyed());
