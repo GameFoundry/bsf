@@ -48,7 +48,7 @@ namespace BansheeEngine
 
 	MonoObject* ScriptSerializableProperty::internal_createObject(ScriptSerializableProperty* nativeInstance, MonoObject* object)
 	{
-		ScriptSerializableObject* newObject = ScriptSerializableObject::create(nativeInstance->mTypeInfo, object);
+		ScriptSerializableObject* newObject = ScriptSerializableObject::create(nativeInstance, object);
 
 		return newObject->getManagedInstance();
 	}

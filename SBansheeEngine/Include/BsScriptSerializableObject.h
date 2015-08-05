@@ -10,10 +10,10 @@ namespace BansheeEngine
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "SerializableObject")
 
-		static ScriptSerializableObject* create(const ManagedSerializableTypeInfoPtr& typeInfo, MonoObject* object);
+		static ScriptSerializableObject* create(ScriptSerializableProperty* parentProperty, MonoObject* object);
 
 	private:
-		static void internal_createInstance(MonoObject* instance, MonoReflectionType* type, MonoObject* object);
+		static void internal_createInstance(MonoObject* instance, MonoReflectionType* type);
 
 		static ScriptSerializableObject* createInternal(MonoObject* instance, const ManagedSerializableObjectInfoPtr& objInfo);
 

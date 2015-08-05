@@ -56,8 +56,29 @@ namespace BansheeEngine
 
         public SerializableProperty GetProperty()
         {
-            SerializableProperty.Getter getter = () => Internal_GetValue(mCachedPtr, parent.referencedObject);
-            SerializableProperty.Setter setter = (object value) => Internal_SetValue(mCachedPtr, parent.referencedObject, value);
+            SerializableProperty.Getter getter = () =>
+            {
+                object parentObject = parent.GetReferencedObject();
+                
+                if (parentObject != null)
+                    return Internal_GetValue(mCachedPtr, parentObject);
+                else
+                    return null;
+            };
+
+            SerializableProperty.Setter setter = (object value) =>
+            {
+                object parentObject = parent.GetReferencedObject();
+
+                if (parentObject != null)
+                {
+                    Internal_SetValue(mCachedPtr, parentObject, value);
+
+                    // If value type we cannot just modify the parent object because it's just a copy
+                    if (parentObject.GetType().IsValueType && parent.parentProperty != null)
+                        parent.parentProperty.SetValue(parentObject);
+                }
+            };
 
             SerializableProperty newProperty = Internal_CreateProperty(mCachedPtr);
             newProperty.Construct(type, internalType, getter, setter);

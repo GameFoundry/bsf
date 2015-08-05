@@ -12,6 +12,8 @@ namespace BansheeEngine
 
 		static ScriptSerializableProperty* create(const ManagedSerializableTypeInfoPtr& typeInfo);
 
+		ManagedSerializableTypeInfoPtr getTypeInfo() const { return mTypeInfo; }
+
 		~ScriptSerializableProperty() {}
 
 	private:

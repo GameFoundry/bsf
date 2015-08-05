@@ -68,6 +68,7 @@ namespace BansheeEngine
 	class ManagedSerializableDiff;
 	class ManagedResource;
 	class ManagedResourceMetaData;
+	class ScriptSerializableProperty;
 	class ScriptAssemblyManager;
 	class ScriptHString;
 	class ScriptContextMenu;

@@ -10,20 +10,25 @@ namespace BansheeEngine
     #pragma warning disable 649
     public sealed class SerializableObject : ScriptObject
     {
-        internal object referencedObject;
+        internal SerializableProperty parentProperty;
+        internal object parentObject;
         private SerializableField[] _fields;
 
-        public SerializableObject(Type objectType, object instance)
+        // Note: Also called from native code
+        public SerializableObject(Type objectType, SerializableProperty parentProperty)
         {
-            Internal_CreateInstance(this, objectType, instance);
+            Internal_CreateInstance(this, objectType);
 
-            referencedObject = instance;
+            this.parentProperty = parentProperty;
+            this.parentObject = null;
         }
 
-        // Constructed from native code
-        private SerializableObject(object instance)
+        public SerializableObject(Type objectType, object parentObject)
         {
-            referencedObject = instance;
+            Internal_CreateInstance(this, objectType);
+
+            this.parentProperty = null;
+            this.parentObject = parentObject;
         }
 
         public SerializableField[] fields
@@ -31,7 +36,15 @@ namespace BansheeEngine
             get { return _fields; }
         }
 
+        public object GetReferencedObject()
+        {
+            if (parentProperty != null)
+                return parentProperty.GetValue<object>();
+            else
+                return parentObject;
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(SerializableObject instance, Type objectType, object objInstance);
+        private static extern void Internal_CreateInstance(SerializableObject instance, Type objectType);
     }
 }

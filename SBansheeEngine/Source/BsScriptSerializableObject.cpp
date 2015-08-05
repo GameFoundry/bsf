@@ -1,5 +1,6 @@
 #include "BsScriptSerializableObject.h"
 #include "BsScriptSerializableField.h"
+#include "BsScriptSerializableProperty.h"
 #include "BsScriptAssemblyManager.h"
 #include "BsScriptMeta.h"
 #include "BsMonoField.h"
@@ -24,12 +25,12 @@ namespace BansheeEngine
 		FieldsField = metaData.scriptClass->getField("_fields");
 	}
 
-	ScriptSerializableObject* ScriptSerializableObject::create(const ManagedSerializableTypeInfoPtr& typeInfo, MonoObject* object)
+	ScriptSerializableObject* ScriptSerializableObject::create(ScriptSerializableProperty* property, MonoObject* object)
 	{
-		MonoType* monoInternalElementType = mono_class_get_type(typeInfo->getMonoClass());
+		MonoType* monoInternalElementType = mono_class_get_type(property->getTypeInfo()->getMonoClass());
 		MonoReflectionType* internalElementType = mono_type_get_object(MonoManager::instance().getDomain(), monoInternalElementType);
 
-		void* params[2] = { internalElementType, object };
+		void* params[2] = { internalElementType, property->getManagedInstance() };
 		MonoObject* managedInstance = metaData.scriptClass->createInstance(params, 2);
 
 		// Managed constructor will call back to native which will create ScriptSerializableObject instance,
@@ -37,7 +38,7 @@ namespace BansheeEngine
 		return ScriptSerializableObject::toNative(managedInstance);
 	}
 
-	void ScriptSerializableObject::internal_createInstance(MonoObject* instance, MonoReflectionType* type, MonoObject* object)
+	void ScriptSerializableObject::internal_createInstance(MonoObject* instance, MonoReflectionType* type)
 	{
 		MonoType* internalType = mono_reflection_type_get_type(type);
 		::MonoClass* monoClass = mono_type_get_class(internalType);

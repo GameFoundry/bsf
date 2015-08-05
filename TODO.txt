@@ -56,7 +56,7 @@ Polish
 
 TODO:
  - Thoroughly test inspector
- - Modifying structs doesn't persist changes
+ - Writing on a child struct field unfocused input because the inspector gets rebuilt - delay rebuild until user unfocuses from the input box?
 
 Ribek use:
  - Camera, Renderable, Material, Texture inspector
@@ -107,14 +107,13 @@ Other polish:
  - Ortographic camera views (+ gizmo in scene view corner that shows camera orientation)
  - Drag to select in scene view
  - Update GUISlider so it works with the new style (and to have min/max limits, plus step size)
- - Replace "minimize" button in tabbed title bar with maximize and make sure it works
+ - Replace "minimize" button in tabbed title bar with maximize and make sure it works (in both docked and floating mode)
  - When I expand inspector elements and them come back to that object it should remember the previous state
    - Add a chaching mechanism to inspector (likely based on instance ID & property names)
    - This has to work not only when I come back to the object, but whenever inspector rebuilds (e.g. after removing element from array)
    - Consider saving this information with the serialized object
  - Make sure to persist EditorSettings
  - Import option inspectors for Texture, Mesh, Font
- - DOck manager maximize doesn't work'
 
 Stage 2 polish:
  - Inject an icon into an .exe (Win32 specific)
@@ -130,13 +129,13 @@ Stage 2 polish:
 
 Finalizing:
  - Add copyright notices in all files & change license to GPL
+ - UseCustomInspector isn't implemented
  - I could record undo/redo per-property using the new diff system
  - When building game make sure to go over texture resources and ensure they are saved in the valid format
    as we don't want to do format conversion at runtime (Not cruical, but it should be done eventually)
    - This should something similar to Unity where when changing the platform all resources get reimported
  - When building level for release make sure to clear all prefab diffs (possibly store them elsewhere in the first place)
    - And all prefab instances should have updateFromPrefab called on them.
- - Save the default editor layout somewhere and make sure its used on initial startup when no layout exists
  - Undo/Redo when breaking or reverting a scene object (and in general test & finalize undo/redo system)
  - Move all the code files into subfolders so their hierarchy is similar to VS filters
  - Get rid of PoolAlloc and other unused allocators (plus fix bs_new and others which have weird overloads)
