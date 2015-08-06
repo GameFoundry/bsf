@@ -55,10 +55,32 @@ namespace BansheeEngine
 		void clearResourceSelection();
 
 		/**
+		 * @brief	Pings the scene object, highlighting it in its respective editors.
+		 */
+		void ping(const HSceneObject& sceneObject);
+
+		/**
+		 * @brief	Pings the resource, highlighting it in its respective editors.
+		 */
+		void ping(const Path& resourcePath);
+
+		/**
 		 * @brief	Triggered whenever scene object or resource selection changes. The provided
 		 *			parameters will contain the newly selected objects/resource paths.
 		 */
 		Event<void(const Vector<HSceneObject>&, const Vector<Path>&)> onSelectionChanged; 
+
+		/**
+		 * @brief	Triggered when a scene object ping is requested. Ping usually means the
+		 *			object will be highlighted in its respective editors.
+		 */
+		Event<void(const HSceneObject&)> onSceneObjectPing; 
+
+		/**
+		 * @brief	Triggered when a resource ping is requested. Ping usually means the
+		 *			object will be highlighted in its respective editors.
+		 */
+		Event<void(const Path&)> onResourcePing; 
 	private:
 		/**
 		 * @brief	Triggered when the scene object selection in the scene tree view changes.

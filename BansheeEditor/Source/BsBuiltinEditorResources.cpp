@@ -209,6 +209,7 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::TreeViewExpandButtonOnHover = L"TreeViewExpandButtonOnHover.psd";
 
 	const WString BuiltinEditorResources::TreeViewSelectionBackground = L"TreeViewSelectionBackground.psd";
+	const WString BuiltinEditorResources::TreeViewHighlightBackground = L"TreeViewHighlightBackground.psd";
 	const WString BuiltinEditorResources::TreeViewEditBox = L"TreeViewEditBox.psd";
 	const WString BuiltinEditorResources::TreeViewElementHighlight = L"TreeViewElementHighlight.psd";
 	const WString BuiltinEditorResources::TreeViewElementSepHighlight = L"TreeViewElementSepHighlight.psd";
@@ -926,6 +927,16 @@ namespace BansheeEngine
 		treeViewSelBackgroundStyle.width = 2;
 
 		skin->setStyle("TreeViewSelectionBackground", treeViewSelBackgroundStyle);
+
+		// Highlight background
+		GUIElementStyle treeViewHLBackgroundStyle;
+		treeViewHLBackgroundStyle.normal.texture = getGUITexture(TreeViewHighlightBackground);
+		treeViewHLBackgroundStyle.fixedHeight = false;
+		treeViewHLBackgroundStyle.fixedWidth = false;
+		treeViewHLBackgroundStyle.height = 2;
+		treeViewHLBackgroundStyle.width = 2;
+
+		skin->setStyle("TreeViewHighlightBackground", treeViewHLBackgroundStyle);
 
 		// Edit box
 		GUIElementStyle treeViewEditBox;

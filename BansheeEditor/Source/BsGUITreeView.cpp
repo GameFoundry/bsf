@@ -25,14 +25,14 @@ namespace BansheeEngine
 	const UINT32 GUITreeView::DRAG_MIN_DISTANCE = 3;
 	const float GUITreeView::AUTO_EXPAND_DELAY_SEC = 0.5f;
 	const float GUITreeView::SCROLL_AREA_HEIGHT_PCT = 0.1f;
-	const UINT32 GUITreeView::SCROLL_SPEED_PX_PER_SEC = 25;
+	const UINT32 GUITreeView::SCROLL_SPEED_PX_PER_SEC = 100;
 
 	VirtualButton GUITreeView::mRenameVB = VirtualButton("Rename");
 	VirtualButton GUITreeView::mDeleteVB = VirtualButton("Delete");
 
 	GUITreeView::TreeElement::TreeElement()
 		:mParent(nullptr), mFoldoutBtn(nullptr), mElement(nullptr), mIsSelected(false),
-		mIsExpanded(false), mSortedIdx(0), mIsVisible(true)
+		mIsExpanded(false), mSortedIdx(0), mIsVisible(true), mIsHighlighted(false)
 	{ }
 
 	GUITreeView::TreeElement::~TreeElement()
@@ -80,13 +80,13 @@ namespace BansheeEngine
 	}
 
 	GUITreeView::GUITreeView(const String& backgroundStyle, const String& elementBtnStyle, 
-		const String& foldoutBtnStyle, const String& selectionBackgroundStyle, const String& editBoxStyle, 
-		const String& dragHighlightStyle, const String& dragSepHighlightStyle, const GUIDimensions& dimensions)
+		const String& foldoutBtnStyle, const String& selectionBackgroundStyle, const String& highlightBackgroundStyle, 
+		const String& editBoxStyle, const String& dragHighlightStyle, const String& dragSepHighlightStyle, const GUIDimensions& dimensions)
 		:GUIElementContainer(dimensions), mBackgroundStyle(backgroundStyle),
 		mElementBtnStyle(elementBtnStyle), mFoldoutBtnStyle(foldoutBtnStyle), mEditBoxStyle(editBoxStyle), mEditElement(nullptr), mIsElementSelected(false),
-		mNameEditBox(nullptr), mSelectionBackgroundStyle(selectionBackgroundStyle), mDragInProgress(nullptr), mDragHighlightStyle(dragHighlightStyle),
-		mDragSepHighlightStyle(dragSepHighlightStyle), mDragHighlight(nullptr), mDragSepHighlight(nullptr), mMouseOverDragElement(nullptr), mMouseOverDragElementTime(0.0f),
-		mScrollState(ScrollState::None), mLastScrollTime(0.0f)
+		mNameEditBox(nullptr), mHighlightBackgroundStyle(highlightBackgroundStyle), mSelectionBackgroundStyle(selectionBackgroundStyle), mDragInProgress(nullptr), 
+		mDragHighlightStyle(dragHighlightStyle), mDragSepHighlightStyle(dragSepHighlightStyle), mDragHighlight(nullptr), mDragSepHighlight(nullptr), mMouseOverDragElement(nullptr), 
+		mMouseOverDragElementTime(0.0f), mScrollState(ScrollState::None), mLastScrollTime(0.0f), mIsElementHighlighted(false)
 	{
 		if(mBackgroundStyle == StringUtil::BLANK)
 			mBackgroundStyle = "TreeViewBackground";
@@ -99,6 +99,9 @@ namespace BansheeEngine
 
 		if(mSelectionBackgroundStyle == StringUtil::BLANK)
 			mSelectionBackgroundStyle = "TreeViewSelectionBackground";
+
+		if (mHighlightBackgroundStyle == StringUtil::BLANK)
+			mHighlightBackgroundStyle = "TreeViewHighlightBackground";
 
 		if(mEditBoxStyle == StringUtil::BLANK)
 			mEditBoxStyle = "TreeViewEditBox";
@@ -209,7 +212,11 @@ namespace BansheeEngine
 
 			if (treeElement != nullptr)
 			{
-				if (event.getPosition().x >= treeElement->mElement->_getLayoutData().area.x)
+				bool onFoldout = false;
+				if (treeElement->mFoldoutBtn != nullptr)
+					onFoldout = treeElement->mFoldoutBtn->_getClippedBounds().contains(event.getPosition());
+
+				if (!onFoldout)
 				{
 					if (event.isCtrlDown())
 					{
@@ -296,6 +303,8 @@ namespace BansheeEngine
 		}
 		else if(event.getType() == GUIMouseEventType::MouseDragStart)
 		{
+			clearPing();
+
 			mDragStartPosition = event.getPosition();
 		}
 		else if(event.getType() == GUIMouseEventType::MouseDrag)
@@ -336,6 +345,8 @@ namespace BansheeEngine
 		{
 			if(acceptDragAndDrop())
 			{
+				clearPing();
+
 				mDragPosition = event.getPosition();
 				mDragInProgress = true;
 				_markLayoutAsDirty();
@@ -446,6 +457,7 @@ namespace BansheeEngine
 		{
 			if(isSelectionActive() && mEditElement == nullptr)
 			{
+				clearPing();
 				enableEdit(mSelectedElements[0].element);
 				unselectAll();
 			}
@@ -485,6 +497,7 @@ namespace BansheeEngine
 						elementsToDelete.push_back(mSelectedElements[i].element);
 				}
 
+				clearPing();
 				unselectAll();
 
 				for(auto& elem : elementsToDelete)
@@ -502,13 +515,15 @@ namespace BansheeEngine
 
 	void GUITreeView::selectElement(TreeElement* element)
 	{
+		clearPing();
+
 		auto iterFind = std::find_if(mSelectedElements.begin(), mSelectedElements.end(), 
 			[&] (const SelectedElement& x) { return x.element == element; });
 
 		if(iterFind == mSelectedElements.end())
 		{
 			GUITexture* background = GUITexture::create(mSelectionBackgroundStyle);
-			background->_setElementDepth(2);
+			background->_setElementDepth(3);
 			_registerChildElement(background);
 
 			element->mIsSelected = true;
@@ -522,6 +537,8 @@ namespace BansheeEngine
 
 	void GUITreeView::unselectElement(TreeElement* element)
 	{
+		clearPing();
+
 		auto iterFind = std::find_if(mSelectedElements.begin(), mSelectedElements.end(), 
 			[&] (const SelectedElement& x) { return x.element == element; });
 
@@ -541,6 +558,8 @@ namespace BansheeEngine
 
 	void GUITreeView::unselectAll()
 	{
+		clearPing();
+
 		for(auto& selectedElem : mSelectedElements)
 		{
 			selectedElem.element->mIsSelected = false;
@@ -553,6 +572,41 @@ namespace BansheeEngine
 		_markLayoutAsDirty();
 
 		selectionChanged();
+	}
+
+	void GUITreeView::ping(TreeElement* element)
+	{
+		clearPing();
+
+		expandToElement(element);
+		scrollToElement(element, true);
+
+		GUITexture* background = GUITexture::create(mHighlightBackgroundStyle);
+		background->_setElementDepth(2);
+		_registerChildElement(background);
+
+		element->mIsHighlighted = true;
+
+		mHighlightedElement.element = element;
+		mHighlightedElement.background = background;
+
+		mIsElementHighlighted = true;
+		_markLayoutAsDirty();
+	}
+
+	void GUITreeView::clearPing()
+	{
+		if (!mIsElementHighlighted)
+			return;
+
+		mHighlightedElement.element->mIsHighlighted = false;
+		GUIElement::destroy(mHighlightedElement.background);
+
+		mHighlightedElement.element = nullptr;
+		mHighlightedElement.background = nullptr;
+		mIsElementHighlighted = false;
+
+		_markLayoutAsDirty();
 	}
 
 	void GUITreeView::expandToElement(TreeElement* element)
@@ -630,6 +684,7 @@ namespace BansheeEngine
 				todo.pop();
 
 				curElem->mIsVisible = false;
+
 				if(curElem->mIsSelected)
 					unselectElement(curElem);
 
@@ -705,6 +760,8 @@ namespace BansheeEngine
 
 	void GUITreeView::elementToggled(TreeElement* element, bool toggled)
 	{
+		clearPing();
+
 		if(toggled)
 			expandElement(element);
 		else
@@ -948,6 +1005,17 @@ namespace BansheeEngine
 			selectedElem.background->_setLayoutData(childData);
 		}
 
+		if (mIsElementHighlighted)
+		{
+			GUILabel* targetElement = mHighlightedElement.element->mElement;
+
+			GUILayoutData childData = data;
+			childData.area.y = targetElement->_getLayoutData().area.y;
+			childData.area.height = targetElement->_getLayoutData().area.height;
+
+			mHighlightedElement.background->_setLayoutData(childData);
+		}
+
 		if(mEditElement != nullptr)
 		{
 			GUILabel* targetElement = mEditElement->mElement;
@@ -1168,9 +1236,9 @@ namespace BansheeEngine
 			INT32 elemVertCenter = element->mElement->_getLayoutData().area.y + (INT32)Math::roundToInt(element->mElement->_getLayoutData().area.height * 0.5f);
 
 			if(elemVertCenter > clipVertCenter)
-				scrollArea->scrollUpPx(elemVertCenter - clipVertCenter);
+				scrollArea->scrollDownPx(elemVertCenter - clipVertCenter);
 			else
-				scrollArea->scrollDownPx(clipVertCenter - elemVertCenter);
+				scrollArea->scrollUpPx(clipVertCenter - elemVertCenter);
 		}
 		else
 		{

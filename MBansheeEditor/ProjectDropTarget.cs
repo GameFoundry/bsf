@@ -23,9 +23,9 @@ namespace BansheeEditor
         private Rect2I bounds;
 
         private bool isMouseDown;
-        private bool isDragInProgress;
-        private bool triggerStartDrag;
-        private bool triggerEndDrag;
+        private bool isLocalDragInProgress;
+        private bool triggerStartLocalDrag;
+        private bool triggerEndLocalDrag;
         private bool isDragInBounds;
         private bool isOSDragActive;
         private Vector2I mouseDownScreenPos;
@@ -60,7 +60,7 @@ namespace BansheeEditor
         {
             Vector2I currentWindowPos = parentWindow.ScreenToWindowPos(ev.screenPos);
 
-            if (isMouseDown && !isDragInProgress)
+            if (isMouseDown && !isLocalDragInProgress)
             {
                 Vector2I startWindowPos = parentWindow.ScreenToWindowPos(mouseDownScreenPos);
                 if (!Bounds.Contains(startWindowPos))
@@ -68,17 +68,17 @@ namespace BansheeEditor
 
                 int distance = Vector2I.Distance(startWindowPos, currentWindowPos);
                 if (distance >= DragStartDistancePx)
-                    triggerStartDrag = true;
+                    triggerStartLocalDrag = true;
             }
         }
 
         void Input_OnPointerReleased(PointerEvent ev)
         {
-            isDragInProgress = false;
+            isLocalDragInProgress = false;
             isMouseDown = false;
             isDragInBounds = false;
-            triggerEndDrag = true;
-            triggerStartDrag = false;
+            triggerEndLocalDrag = true;
+            triggerStartLocalDrag = false;
         }
 
         void Input_OnPointerPressed(PointerEvent ev)
@@ -91,18 +91,18 @@ namespace BansheeEditor
         {
             Vector2I currentWindowPos = parentWindow.ScreenToWindowPos(Input.PointerPosition);
 
-            if (triggerStartDrag)
+            if (triggerStartLocalDrag)
             {
-                isDragInProgress = true;
-                triggerStartDrag = false;
+                isLocalDragInProgress = true;
+                triggerStartLocalDrag = false;
 
                 if (OnStart != null)
                     OnStart(currentWindowPos);
             }
 
-            if (triggerEndDrag)
+            if (triggerEndLocalDrag)
             {
-                triggerEndDrag = false;
+                triggerEndLocalDrag = false;
 
                 if (OnEnd != null)
                     OnEnd(currentWindowPos);
@@ -111,7 +111,8 @@ namespace BansheeEditor
             if (isOSDragActive)
                 return;
 
-            if (isDragInProgress)
+            bool externalDragInProgress = DragDrop.DragInProgress && DragDrop.Type == DragDropType.SceneObject;
+            if (isLocalDragInProgress || externalDragInProgress)
             {
                 if (lastDragWindowPos != currentWindowPos)
                 {
@@ -142,13 +143,13 @@ namespace BansheeEditor
                 }
             }
 
-            if (DragDrop.DropInProgress)
+            if (DragDrop.DropInProgress && Bounds.Contains(currentWindowPos))
             {
                 if (DragDrop.Type == DragDropType.Resource)
                 {
                     if (OnDropResource != null)
                     {
-                        ResourceDragDropData resourceDragDrop = (ResourceDragDropData) DragDrop.Data;
+                        ResourceDragDropData resourceDragDrop = (ResourceDragDropData)DragDrop.Data;
                         OnDropResource(currentWindowPos, resourceDragDrop.Paths);
                     }
                 }
@@ -156,10 +157,12 @@ namespace BansheeEditor
                 {
                     if (OnDropSceneObject != null)
                     {
-                        SceneObjectDragDropData sceneDragDrop = (SceneObjectDragDropData) DragDrop.Data;
+                        SceneObjectDragDropData sceneDragDrop = (SceneObjectDragDropData)DragDrop.Data;
                         OnDropSceneObject(currentWindowPos, sceneDragDrop.Objects);
                     }
                 }
+
+                isDragInBounds = false;
             }
         }
 

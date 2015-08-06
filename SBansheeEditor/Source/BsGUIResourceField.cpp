@@ -30,6 +30,7 @@
 #include "BsScriptStringTable.h"
 #include "BsScriptPrefab.h"
 #include "BsScriptManagedResource.h"
+#include "BsSelection.h"
 
 using namespace std::placeholders;
 
@@ -58,6 +59,7 @@ namespace BansheeEngine
 		mLayout->addElement(mClearButton);
 
 		mDropButton->onDataDropped.connect(std::bind(&GUIResourceField::dataDropped, this, _1));
+		mDropButton->onClick.connect(std::bind(&GUIResourceField::onDropButtonClicked, this));
 	}
 
 	GUIResourceField::~GUIResourceField()
@@ -220,6 +222,15 @@ namespace BansheeEngine
 	Vector2I GUIResourceField::_getOptimalSize() const
 	{
 		return mLayout->_getOptimalSize();
+	}
+
+	void GUIResourceField::onDropButtonClicked()
+	{
+		if (mUUID == "")
+			return;
+
+		Path resPath = ProjectLibrary::instance().uuidToPath(mUUID);
+		Selection::instance().ping(resPath);
 	}
 
 	void GUIResourceField::dataDropped(void* data)

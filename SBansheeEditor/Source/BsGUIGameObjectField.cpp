@@ -15,6 +15,8 @@
 #include "BsManagedComponent.h"
 #include "BsMonoManager.h"
 #include "BsBuiltinEditorResources.h"
+#include "BsComponent.h"
+#include "BsSelection.h"
 
 using namespace std::placeholders;
 
@@ -43,6 +45,7 @@ namespace BansheeEngine
 		mLayout->addElement(mClearButton);
 
 		mDropButton->onDataDropped.connect(std::bind(&GUIGameObjectField::dataDropped, this, _1));
+		mDropButton->onClick.connect(std::bind(&GUIGameObjectField::onDropButtonClicked, this));
 	}
 
 	GUIGameObjectField::~GUIGameObjectField()
@@ -202,6 +205,29 @@ namespace BansheeEngine
 	Vector2I GUIGameObjectField::_getOptimalSize() const
 	{
 		return mLayout->_getOptimalSize();
+	}
+
+	void GUIGameObjectField::onDropButtonClicked()
+	{
+		if (mInstanceId == 0)
+			return;
+
+		HGameObject go;
+		if (GameObjectManager::instance().tryGetObject(mInstanceId, go))
+		{
+			HSceneObject so;
+			if (rtti_is_of_type<SceneObject>(go.get()))
+			{
+				so = static_object_cast<SceneObject>(go);
+			}
+			else if(rtti_is_subclass<Component>(go.get()))
+			{
+				HComponent component = static_object_cast<Component>(go);
+				so = component->SO();
+			}
+
+			Selection::instance().ping(so);
+		}
 	}
 
 	void GUIGameObjectField::dataDropped(void* data)

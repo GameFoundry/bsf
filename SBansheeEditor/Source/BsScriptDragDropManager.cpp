@@ -103,7 +103,7 @@ namespace BansheeEngine
 		{
 			ScriptSceneObject* scriptSceneObject = ScriptGameObjectManager::instance().getOrCreateScriptSceneObject(so);
 
-			arrSceneObjects.set(idx, scriptSceneObject);
+			arrSceneObjects.set(idx, scriptSceneObject->getManagedInstance());
 			idx++;
 		}
 

@@ -56,6 +56,7 @@ namespace BansheeEngine
 		 * @param	backgroundStyle				Name of the style for the tree view background.
 		 * @param	elementBtnStyle				Name of the style for a normal tree view element.
 		 * @param	foldoutBtnStyle				Name of the style for a foldout element (e.g. for a folder).
+		 * @param	highlightBackgroundStyle	Name of the style for the background of highlighted elements.
 		 * @param	selectionBackgroundStyle	Name of the style for the background of selected elements.
 		 * @param	editBoxStyle				Name of the style for element that is being renamed.
 		 * @param	dragHighlightStyle			Name of the style for the element being dragged over.
@@ -64,9 +65,9 @@ namespace BansheeEngine
 		 */	
 		static GUIResourceTreeView* create(
 			const String& backgroundStyle = StringUtil::BLANK, const String& elementBtnStyle = StringUtil::BLANK, 
-			const String& foldoutBtnStyle = StringUtil::BLANK, const String& selectionBackgroundStyle = StringUtil::BLANK,
-			const String& editBoxStyle = StringUtil::BLANK, const String& dragHighlightStyle = StringUtil::BLANK, 
-			const String& dragSepHighlightStyle = StringUtil::BLANK);
+			const String& foldoutBtnStyle = StringUtil::BLANK, const String& highlightBackgroundStyle = StringUtil::BLANK,
+			const String& selectionBackgroundStyle = StringUtil::BLANK, const String& editBoxStyle = StringUtil::BLANK, 
+			const String& dragHighlightStyle = StringUtil::BLANK, const String& dragSepHighlightStyle = StringUtil::BLANK);
 
 		/**
 		 * @brief	Creates a new resource tree view element.
@@ -76,6 +77,7 @@ namespace BansheeEngine
 		 * @param	backgroundStyle				Name of the style for the tree view background.
 		 * @param	elementBtnStyle				Name of the style for a normal tree view element.
 		 * @param	foldoutBtnStyle				Name of the style for a foldout element (e.g. for a folder).
+		 * @param	highlightBackgroundStyle	Name of the style for the background of highlighted elements.
 		 * @param	selectionBackgroundStyle	Name of the style for the background of selected elements.
 		 * @param	editBoxStyle				Name of the style for element that is being renamed.
 		 * @param	dragHighlightStyle			Name of the style for the element being dragged over.
@@ -84,9 +86,9 @@ namespace BansheeEngine
 		 */	
 		static GUIResourceTreeView* create(const GUIOptions& options, 
 			const String& backgroundStyle = StringUtil::BLANK, const String& elementBtnStyle = StringUtil::BLANK, 
-			const String& foldoutBtnStyle = StringUtil::BLANK, const String& selectionBackgroundStyle = StringUtil::BLANK,
-			const String& editBoxStyle = StringUtil::BLANK, const String& dragHighlightStyle = StringUtil::BLANK, 
-			const String& dragSepHighlightStyle = StringUtil::BLANK);
+			const String& foldoutBtnStyle = StringUtil::BLANK, const String& highlightBackgroundStyle = StringUtil::BLANK, 
+			const String& selectionBackgroundStyle = StringUtil::BLANK, const String& editBoxStyle = StringUtil::BLANK, 
+			const String& dragHighlightStyle = StringUtil::BLANK, const String& dragSepHighlightStyle = StringUtil::BLANK);
 
 		/**
 		 * @brief	Returns a list of paths of currently selected resources (if any).
@@ -118,8 +120,8 @@ namespace BansheeEngine
 		HEvent mDropTargetLeaveConn;
 		HEvent mDropTargetDroppedConn;
 
-		GUIResourceTreeView(const String& backgroundStyle, const String& elementBtnStyle, 
-			const String& foldoutBtnStyle, const String& selectionBackgroundStyle, const String& editBoxStyle, 
+		GUIResourceTreeView(const String& backgroundStyle, const String& elementBtnStyle, const String& foldoutBtnStyle, 
+			const String& highlightBackgroundStyle, const String& selectionBackgroundStyle, const String& editBoxStyle,
 			const String& dragHighlightStyle, const String& dragSepHighlightStyle, const GUIDimensions& dimensions);
 
 		/**

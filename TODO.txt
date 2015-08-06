@@ -56,13 +56,10 @@ Polish
 
 SceneTreeView
  - Add cut/copy/duplicate/paste functionality (+ appropriate context menu)
- - Does delete, rename, drag and drop work properly?
-  - Delete + rename should be undoable
- - ELement cant be deselected by clicking on empty space
  - Clicking on an already selected element should start rename
  - Also add context with "New SceneObject" & "New SceneObject (Child)"
- - ping() method (scrolls to element and displays a bg for it until user clicks elsewhere)
- - Elements in SceneTreeView aren't ordered properly
+ - Elements in SceneTreeView aren't ordered properly (they reorder as I delete elements)
+ - Dragging and dropping an element caused a crash when element was dropped
 
 Ribek use:
  - Camera, Renderable, Material, Texture inspector
@@ -91,8 +88,8 @@ First screenshot:
    - Possibly create helper objects: Cube, Sphere, Plane, Quad, Capsule, Cylinder
   - Component (also add to inspector context): Camera, Renderable, Point/Spot/Directional light, all other components from scripts
   - Help - About, API Reference (link to site)
- - Normalize colors between project and hierarchy windows (both blue or both orange selection + same ping color)
  - (Optionally) New UI look (tabs, component/array containers, better buttons)
+   - Foldout in scene tree view is hard to click, make it bigger
  - (Optionally) Console window
 
 Other polish:

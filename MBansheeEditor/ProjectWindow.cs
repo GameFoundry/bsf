@@ -149,11 +149,13 @@ namespace BansheeEditor
             dropTarget.OnEnd += DoOnDragEnd;
 
             Selection.OnSelectionChanged += OnSelectionChanged;
+            Selection.OnResourcePing += OnPing;
         }
 
         private void OnDestroy()
         {
             Selection.OnSelectionChanged -= OnSelectionChanged;
+            Selection.OnResourcePing -= OnPing;
         }
 
         private ElementEntry FindElementAt(Vector2I windowPos)
@@ -329,15 +331,14 @@ namespace BansheeEditor
             if (EndDragSelection())
                 return;
 
-            string resourceDir = ProjectLibrary.ResourceFolder;
-            string destinationFolder = Path.Combine(resourceDir, currentDirectory);
+            string destinationFolder = currentDirectory;
 
             ElementEntry underCursorElement = FindElementAt(windowPos);
             if (underCursorElement != null)
             {
                 LibraryEntry entry = ProjectLibrary.GetEntry(underCursorElement.path);
                 if (entry != null && entry.Type == LibraryEntryType.Directory)
-                    destinationFolder = Path.Combine(resourceDir, entry.Path);
+                    destinationFolder = entry.Path;
             }
 
             if (objects != null)
@@ -375,7 +376,7 @@ namespace BansheeEditor
             hoverHighlightPath = "";
         }
 
-        public void Ping(Resource resource)
+        public void Ping(string path)
         {
             if (!string.IsNullOrEmpty(pingPath))
             {
@@ -384,11 +385,7 @@ namespace BansheeEditor
                     entry.MarkAsPinged(false);
             }
 
-            if (resource != null)
-                pingPath = ProjectLibrary.GetPath(resource);
-            else
-                pingPath = "";
-
+            pingPath = path;
             if (!string.IsNullOrEmpty(pingPath))
             {
                 ElementEntry entry;
@@ -560,7 +557,7 @@ namespace BansheeEditor
                 }
             }
 
-            Ping(null);
+            Ping("");
             StopRename();
 
             if (!onlyInternal)
@@ -1177,6 +1174,11 @@ namespace BansheeEditor
         {
             if(sceneObjects.Length > 0)
                 DeselectAll(true);
+        }
+
+        private void OnPing(string path)
+        {
+            Ping(path);
         }
 
         private void OnFolderButtonClicked(string path)

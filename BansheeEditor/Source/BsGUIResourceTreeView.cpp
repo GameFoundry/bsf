@@ -30,11 +30,12 @@ namespace BansheeEngine
 		resourcePaths = nullptr;
 	}
 
-	GUIResourceTreeView::GUIResourceTreeView(const String& backgroundStyle, const String& elementBtnStyle, 
-		const String& foldoutBtnStyle, const String& selectionBackgroundStyle, const String& editBoxStyle, 
+	GUIResourceTreeView::GUIResourceTreeView(const String& backgroundStyle, const String& elementBtnStyle, const String& foldoutBtnStyle, 
+		const String& highlightBackgroundStyle, const String& selectionBackgroundStyle, const String& editBoxStyle,
 		const String& dragHighlightStyle, const String& dragSepHighlightStyle, const GUIDimensions& dimensions)
-		:GUITreeView(backgroundStyle, elementBtnStyle, foldoutBtnStyle, selectionBackgroundStyle, editBoxStyle, dragHighlightStyle,
-		dragSepHighlightStyle, dimensions), mDraggedResources(nullptr), mCurrentWindow(nullptr), mDropTarget(nullptr), mDropTargetDragActive(false)
+		:GUITreeView(backgroundStyle, elementBtnStyle, foldoutBtnStyle, highlightBackgroundStyle, 
+		selectionBackgroundStyle, editBoxStyle, dragHighlightStyle, dragSepHighlightStyle, dimensions), 
+		mDraggedResources(nullptr), mCurrentWindow(nullptr), mDropTarget(nullptr), mDropTargetDragActive(false)
 	{
 		ResourceTreeViewLocator::_provide(this);
 
@@ -59,19 +60,20 @@ namespace BansheeEngine
 	}
 
 	GUIResourceTreeView* GUIResourceTreeView::create(const String& backgroundStyle, const String& elementBtnStyle, 
-		const String& foldoutBtnStyle, const String& selectionBackgroundStyle, const String& editBoxStyle, const String& dragHighlightStyle, 
-		const String& dragSepHighlightStyle)
+		const String& foldoutBtnStyle, const String& highlightBackgroundStyle, const String& selectionBackgroundStyle, 
+		const String& editBoxStyle, const String& dragHighlightStyle, const String& dragSepHighlightStyle)
 	{
 		return new (bs_alloc<GUIResourceTreeView, PoolAlloc>()) GUIResourceTreeView(backgroundStyle, elementBtnStyle, foldoutBtnStyle, 
-			selectionBackgroundStyle, editBoxStyle, dragHighlightStyle, dragSepHighlightStyle, GUIDimensions::create());
+			highlightBackgroundStyle, selectionBackgroundStyle, editBoxStyle, dragHighlightStyle, dragSepHighlightStyle, GUIDimensions::create());
 	}
 
 	GUIResourceTreeView* GUIResourceTreeView::create(const GUIOptions& options, const String& backgroundStyle,
-		const String& elementBtnStyle, const String& foldoutBtnStyle, const String& selectionBackgroundStyle, 
-		const String& editBoxStyle, const String& dragHighlightStyle, const String& dragSepHighlightStyle)
+		const String& elementBtnStyle, const String& foldoutBtnStyle, const String& highlightBackgroundStyle, 
+		const String& selectionBackgroundStyle, const String& editBoxStyle, const String& dragHighlightStyle,
+		const String& dragSepHighlightStyle)
 	{
-		return new (bs_alloc<GUIResourceTreeView, PoolAlloc>()) GUIResourceTreeView(backgroundStyle, elementBtnStyle, 
-			foldoutBtnStyle, selectionBackgroundStyle, editBoxStyle, dragHighlightStyle, dragSepHighlightStyle, GUIDimensions::create(options));
+		return new (bs_alloc<GUIResourceTreeView, PoolAlloc>()) GUIResourceTreeView(backgroundStyle, elementBtnStyle, foldoutBtnStyle, 
+			highlightBackgroundStyle, selectionBackgroundStyle, editBoxStyle, dragHighlightStyle, dragSepHighlightStyle, GUIDimensions::create(options));
 	}
 
 	void GUIResourceTreeView::_updateLayoutInternal(const GUILayoutData& data)
@@ -165,6 +167,9 @@ namespace BansheeEngine
 	void GUIResourceTreeView::deleteTreeElement(ResourceTreeElement* element)
 	{
 		closeTemporarilyExpandedElements(); // In case this element is one of them
+
+		if (element->mIsHighlighted)
+			clearPing();
 
 		if(element->mIsSelected)
 			unselectElement(element);

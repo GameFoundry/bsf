@@ -12,6 +12,7 @@
 #include "BsGUISpace.h"
 #include "BsProjectResourceMeta.h"
 #include "BsSpriteTexture.h"
+#include "BsSelection.h"
 
 using namespace std::placeholders;
 
@@ -52,6 +53,7 @@ namespace BansheeEngine
 			mLayout->addNewElement<GUIFlexibleSpace>();
 
 		mDropButton->onDataDropped.connect(std::bind(&GUITextureField::dataDropped, this, _1));
+		mDropButton->onClick.connect(std::bind(&GUITextureField::onDropButtonClicked, this));
 
 		setValue(HTexture());
 	}
@@ -221,6 +223,15 @@ namespace BansheeEngine
 	Vector2I GUITextureField::_getOptimalSize() const
 	{
 		return mLayout->_getOptimalSize();
+	}
+
+	void GUITextureField::onDropButtonClicked()
+	{
+		if (mUUID == "")
+			return;
+
+		Path resPath = ProjectLibrary::instance().uuidToPath(mUUID);
+		Selection::instance().ping(resPath);
 	}
 
 	void GUITextureField::dataDropped(void* data)

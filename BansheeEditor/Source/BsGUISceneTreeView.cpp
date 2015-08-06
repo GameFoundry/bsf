@@ -30,9 +30,9 @@ namespace BansheeEngine
 	}
 
 	GUISceneTreeView::GUISceneTreeView(const String& backgroundStyle, const String& elementBtnStyle, 
-		const String& foldoutBtnStyle, const String& selectionBackgroundStyle, const String& editBoxStyle, 
-		const String& dragHighlightStyle, const String& dragSepHighlightStyle, const GUIDimensions& dimensions)
-		:GUITreeView(backgroundStyle, elementBtnStyle, foldoutBtnStyle, selectionBackgroundStyle, editBoxStyle, dragHighlightStyle,
+		const String& foldoutBtnStyle, const String& highlightBackgroundStyle, const String& selectionBackgroundStyle, 
+		const String& editBoxStyle, const String& dragHighlightStyle, const String& dragSepHighlightStyle, const GUIDimensions& dimensions)
+		:GUITreeView(backgroundStyle, elementBtnStyle, foldoutBtnStyle, highlightBackgroundStyle, selectionBackgroundStyle, editBoxStyle, dragHighlightStyle,
 		dragSepHighlightStyle, dimensions)
 	{
 		SceneTreeViewLocator::_provide(this);
@@ -43,20 +43,21 @@ namespace BansheeEngine
 		SceneTreeViewLocator::_provide(nullptr);
 	}
 
-	GUISceneTreeView* GUISceneTreeView::create(const String& backgroundStyle, const String& elementBtnStyle, 
-		const String& foldoutBtnStyle, const String& selectionBackgroundStyle, const String& editBoxStyle, const String& dragHighlightStyle, 
+	GUISceneTreeView* GUISceneTreeView::create(const String& backgroundStyle, const String& elementBtnStyle, const String& foldoutBtnStyle, 
+		const String& highlightBackgroundStyle, const String& selectionBackgroundStyle, const String& editBoxStyle, const String& dragHighlightStyle,
 		const String& dragSepHighlightStyle)
 	{
 		return new (bs_alloc<GUISceneTreeView, PoolAlloc>()) GUISceneTreeView(backgroundStyle, elementBtnStyle, foldoutBtnStyle, 
-			selectionBackgroundStyle, editBoxStyle, dragHighlightStyle, dragSepHighlightStyle, GUIDimensions::create());
+			highlightBackgroundStyle, selectionBackgroundStyle, editBoxStyle, dragHighlightStyle, dragSepHighlightStyle, GUIDimensions::create());
 	}
 
-	GUISceneTreeView* GUISceneTreeView::create(const GUIOptions& options, const String& backgroundStyle,
-		const String& elementBtnStyle, const String& foldoutBtnStyle, const String& selectionBackgroundStyle, 
+	GUISceneTreeView* GUISceneTreeView::create(const GUIOptions& options, const String& backgroundStyle, const String& elementBtnStyle, 
+		const String& foldoutBtnStyle, const String& highlightBackgroundStyle, const String& selectionBackgroundStyle,
 		const String& editBoxStyle, const String& dragHighlightStyle, const String& dragSepHighlightStyle)
 	{
 		return new (bs_alloc<GUISceneTreeView, PoolAlloc>()) GUISceneTreeView(backgroundStyle, elementBtnStyle, 
-			foldoutBtnStyle, selectionBackgroundStyle, editBoxStyle, dragHighlightStyle, dragSepHighlightStyle, GUIDimensions::create(options));
+			foldoutBtnStyle, highlightBackgroundStyle, selectionBackgroundStyle, editBoxStyle, 
+			dragHighlightStyle, dragSepHighlightStyle, GUIDimensions::create(options));
 	}
 
 	void GUISceneTreeView::updateTreeElement(SceneTreeElement* element)
@@ -234,6 +235,9 @@ namespace BansheeEngine
 	{
 		closeTemporarilyExpandedElements(); // In case this element is one of them
 
+		if (element->mIsHighlighted)
+			clearPing();
+
 		if(element->mIsSelected)
 			unselectElement(element);
 
@@ -260,7 +264,7 @@ namespace BansheeEngine
 		}
 
 		DragAndDropManager::instance().startDrag((UINT32)DragAndDropType::SceneObject, (void*)draggedSceneObjects, 
-			std::bind(&GUISceneTreeView::dragAndDropFinalize, this), true);
+			std::bind(&GUISceneTreeView::dragAndDropFinalize, this), false);
 	}
 
 	void GUISceneTreeView::dragAndDropEnded(TreeElement* overTreeElement)
@@ -376,6 +380,32 @@ namespace BansheeEngine
 			{
 				expandToElement(currentElem);
 				selectElement(currentElem);
+			}
+
+			for (auto& child : currentElem->mChildren)
+			{
+				SceneTreeElement* sceneChild = static_cast<SceneTreeElement*>(child);
+				todo.push(sceneChild);
+			}
+		}
+	}
+
+	void GUISceneTreeView::ping(const HSceneObject& object)
+	{
+		SceneTreeElement& root = mRootElement;
+
+		Stack<SceneTreeElement*> todo;
+		todo.push(&mRootElement);
+
+		while (!todo.empty())
+		{
+			SceneTreeElement* currentElem = todo.top();
+			todo.pop();
+
+			if (currentElem->mSceneObject == object)
+			{
+				GUITreeView::ping(currentElem);
+				break;
 			}
 
 			for (auto& child : currentElem->mChildren)

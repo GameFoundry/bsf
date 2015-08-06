@@ -10,7 +10,12 @@
 namespace BansheeEngine
 {
 	ScriptSelection::OnSelectionChangedThunkDef ScriptSelection::OnSelectionChangedThunk;
+	ScriptSelection::OnPingResourceThunkDef ScriptSelection::OnPingResourceThunk;
+	ScriptSelection::OnPingSceneObjectThunkDef ScriptSelection::OnPingSceneObjectThunk;
+
 	HEvent ScriptSelection::OnSelectionChangedConn;
+	HEvent ScriptSelection::OnPingResourceConn;
+	HEvent ScriptSelection::OnPingSceneObjectConn;
 
 	ScriptSelection::ScriptSelection(MonoObject* instance)
 		:ScriptObject(instance)
@@ -26,8 +31,12 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetResourceUUIDSelection", &ScriptSelection::internal_SetResourceUUIDSelection);
 		metaData.scriptClass->addInternalCall("Internal_GetResourcePathSelection", &ScriptSelection::internal_GetResourcePathSelection);
 		metaData.scriptClass->addInternalCall("Internal_SetResourcePathSelection", &ScriptSelection::internal_SetResourcePathSelection);
+		metaData.scriptClass->addInternalCall("Internal_PingResource", &ScriptSelection::internal_PingResource);
+		metaData.scriptClass->addInternalCall("Internal_PingSceneObject", &ScriptSelection::internal_PingSceneObject);
 
 		OnSelectionChangedThunk = (OnSelectionChangedThunkDef)metaData.scriptClass->getMethod("Internal_TriggerSelectionChanged", 2)->getThunk();
+		OnPingResourceThunk = (OnPingResourceThunkDef)metaData.scriptClass->getMethod("Internal_TriggerResourcePing", 1)->getThunk();
+		OnPingSceneObjectThunk = (OnPingSceneObjectThunkDef)metaData.scriptClass->getMethod("Internal_TriggerSceneObjectPing", 1)->getThunk();
 	}
 
 	void ScriptSelection::internal_GetSceneObjectSelection(MonoArray** selection)
@@ -139,15 +148,33 @@ namespace BansheeEngine
 		Selection::instance().setResourcePaths(paths);
 	}
 
+	void ScriptSelection::internal_PingResource(MonoString* resourcePath)
+	{
+		Path path = MonoUtil::monoToString(resourcePath);
+
+		Selection::instance().ping(path);
+	}
+
+	void ScriptSelection::internal_PingSceneObject(MonoObject* so)
+	{
+		ScriptSceneObject* scriptSO = ScriptSceneObject::toNative(so);
+		HSceneObject soHandle = static_object_cast<SceneObject>(scriptSO->getNativeHandle());
+
+		Selection::instance().ping(soHandle);
+	}
 
 	void ScriptSelection::startUp()
 	{
 		OnSelectionChangedConn = Selection::instance().onSelectionChanged.connect(&ScriptSelection::onSelectionChanged);
+		OnPingResourceConn = Selection::instance().onResourcePing.connect(&ScriptSelection::onResourcePing);
+		OnPingSceneObjectConn = Selection::instance().onSceneObjectPing.connect(&ScriptSelection::onSceneObjectPing);
 	}
 
 	void ScriptSelection::shutDown()
 	{
 		OnSelectionChangedConn.disconnect();
+		OnPingResourceConn.disconnect();
+		OnPingSceneObjectConn.disconnect();
 	}
 
 	void ScriptSelection::onSelectionChanged(const Vector<HSceneObject>& sceneObjects, const Vector<Path>& resPaths)
@@ -172,5 +199,22 @@ namespace BansheeEngine
 		MonoArray* monoObjects = scriptObjects.getInternal();
 		MonoArray* monoPaths = scriptPaths.getInternal();
 		MonoUtil::invokeThunk(OnSelectionChangedThunk, monoObjects, monoPaths);
+	}
+
+	void ScriptSelection::onResourcePing(const Path& resPath)
+	{
+		MonoString* monoResPath = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), resPath.toWString());
+
+		MonoUtil::invokeThunk(OnPingResourceThunk, monoResPath);
+	}
+
+	void ScriptSelection::onSceneObjectPing(const HSceneObject& sceneObject)
+	{
+		// TODO - This bit is commonly used, I should add a method in ScriptGameObjectManager
+		ScriptSceneObject* scriptSceneObject = ScriptGameObjectManager::instance().getScriptSceneObject(sceneObject);
+		if (scriptSceneObject == nullptr)
+			scriptSceneObject = ScriptGameObjectManager::instance().createScriptSceneObject(sceneObject);
+
+		MonoUtil::invokeThunk(OnPingSceneObjectThunk, scriptSceneObject->getManagedInstance());
 	}
 }

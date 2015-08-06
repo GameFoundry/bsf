@@ -94,6 +94,20 @@ namespace BansheeEngine
 		setResourceUUIDs({});
 	}
 
+	void Selection::ping(const HSceneObject& sceneObject)
+	{
+		GUISceneTreeView* sceneTreeView = SceneTreeViewLocator::instance();
+		if (sceneTreeView != nullptr)
+			sceneTreeView->ping(sceneObject);
+
+		onSceneObjectPing(sceneObject);
+	}
+
+	void Selection::ping(const Path& resourcePath)
+	{
+		onResourcePing(resourcePath);
+	}
+
 	void Selection::sceneSelectionChanged()
 	{
 		GUISceneTreeView* sceneTreeView = SceneTreeViewLocator::instance();

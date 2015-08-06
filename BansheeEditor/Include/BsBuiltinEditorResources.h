@@ -317,6 +317,7 @@ namespace BansheeEngine
 		static const WString TreeViewExpandButtonOnHover;
 
 		static const WString TreeViewSelectionBackground;
+		static const WString TreeViewHighlightBackground;
 		static const WString TreeViewEditBox;
 
 		static const WString TreeViewElementHighlight;

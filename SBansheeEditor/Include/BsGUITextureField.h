@@ -65,6 +65,7 @@ namespace BansheeEngine
 		void styleUpdated() override;
 
 		void dataDropped(void* data);
+		void onDropButtonClicked();
 		void onClearButtonClicked();
 
 	private:

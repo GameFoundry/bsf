@@ -53,6 +53,7 @@ namespace BansheeEngine
 			UINT32 mSortedIdx;
 			bool mIsExpanded;
 			bool mIsSelected;
+			bool mIsHighlighted;
 			bool mIsVisible;
 
 			bool isParentRec(TreeElement* element) const;
@@ -82,6 +83,10 @@ namespace BansheeEngine
 		 */
 		struct SelectedElement
 		{
+			SelectedElement()
+				:element(nullptr), background(nullptr)
+			{ }
+
 			SelectedElement(TreeElement* elem, GUITexture* back)
 				:element(elem), background(back)
 			{ }
@@ -106,7 +111,7 @@ namespace BansheeEngine
 
 	protected:
 		GUITreeView(const String& backgroundStyle, const String& elementBtnStyle, 
-			const String& foldoutBtnStyle, const String& selectionBackgroundStyle, const String& editBoxStyle, 
+			const String& foldoutBtnStyle, const String& highlightBackgroundStyle, const String& selectionBackgroundStyle, const String& editBoxStyle,
 			const String& dragHighlightStyle, const String& dragSepHighlightStyle, const GUIDimensions& dimensions);
 
 		virtual ~GUITreeView();
@@ -296,6 +301,16 @@ namespace BansheeEngine
 		GUIScrollArea* findParentScrollArea() const;
 
 		/**
+		 * @brief	Scrolls the tree view to the specified element and highlights it.
+		 */
+		void ping(TreeElement* element);
+
+		/**
+		 * @brief	Clears the ping highlight on the currently highlighted element.
+		 */
+		void clearPing();
+
+		/**
 		 * @brief	Triggered when the user accepts the changes during a rename operation.
 		 */
 		void onEditAccepted();
@@ -309,6 +324,7 @@ namespace BansheeEngine
 		String mElementBtnStyle;
 		String mFoldoutBtnStyle;
 		String mSelectionBackgroundStyle;
+		String mHighlightBackgroundStyle;
 		String mEditBoxStyle;
 		String mDragHighlightStyle;
 		String mDragSepHighlightStyle;
@@ -319,6 +335,9 @@ namespace BansheeEngine
 
 		bool mIsElementSelected;
 		Vector<SelectedElement> mSelectedElements;
+
+		bool mIsElementHighlighted;
+		SelectedElement mHighlightedElement;
 
 		TreeElement* mEditElement;
 		GUITreeViewEditBox* mNameEditBox;
