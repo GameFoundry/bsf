@@ -207,80 +207,89 @@ namespace BansheeEngine
 				treeElement = element->getTreeElement();
 			}
 
-			if(treeElement != nullptr && event.getPosition().x >= treeElement->mElement->_getLayoutData().area.x)
+			if (treeElement != nullptr)
 			{
-				if(event.isCtrlDown())
+				if (event.getPosition().x >= treeElement->mElement->_getLayoutData().area.x)
 				{
-					selectElement(treeElement);
-				}
-				else if(event.isShiftDown())
-				{
-					if(isSelectionActive())
-					{
-						TreeElement* selectionRoot = mSelectedElements[0].element;
-						unselectAll();
-
-						auto iterStartFind = std::find_if(mVisibleElements.begin(), mVisibleElements.end(),
-							[&] (const InteractableElement& x) { return x.parent == selectionRoot->mParent; } );
-
-						bool foundStart = false;
-						bool foundEnd = false;
-						for(; iterStartFind != mVisibleElements.end(); ++iterStartFind)
-						{
-							if(!iterStartFind->isTreeElement())
-								continue;
-
-							TreeElement* curElem = iterStartFind->getTreeElement();
-							if(curElem == selectionRoot)
-							{
-								foundStart = true;
-								break;
-							}
-						}
-
-						auto iterEndFind = std::find_if(mVisibleElements.begin(), mVisibleElements.end(),
-							[&] (const InteractableElement& x) { return &x == element; } );
-
-						if(iterEndFind != mVisibleElements.end())
-							foundEnd = true;
-
-						if(foundStart && foundEnd)
-						{
-							if(iterStartFind < iterEndFind)
-							{
-								for(;iterStartFind != (iterEndFind + 1); ++iterStartFind)
-								{
-									if(iterStartFind->isTreeElement())
-										selectElement(iterStartFind->getTreeElement());
-								}
-							}
-							else if(iterEndFind < iterStartFind)
-							{
-								for(;iterEndFind != (iterStartFind + 1); ++iterEndFind)
-								{
-									if(iterEndFind->isTreeElement())
-										selectElement(iterEndFind->getTreeElement());
-								}
-							}
-							else
-								selectElement(treeElement);
-						}
-
-						if(!foundStart || !foundEnd)
-							selectElement(treeElement);
-					}
-					else
+					if (event.isCtrlDown())
 					{
 						selectElement(treeElement);
 					}
-				}
-				else
-				{
-					unselectAll();
-					selectElement(treeElement);
-				}
+					else if (event.isShiftDown())
+					{
+						if (isSelectionActive())
+						{
+							TreeElement* selectionRoot = mSelectedElements[0].element;
+							unselectAll();
 
-				_markLayoutAsDirty();
+							auto iterStartFind = std::find_if(mVisibleElements.begin(), mVisibleElements.end(),
+								[&](const InteractableElement& x) { return x.parent == selectionRoot->mParent; });
+
+							bool foundStart = false;
+							bool foundEnd = false;
+							for (; iterStartFind != mVisibleElements.end(); ++iterStartFind)
+							{
+								if (!iterStartFind->isTreeElement())
+									continue;
+
+								TreeElement* curElem = iterStartFind->getTreeElement();
+								if (curElem == selectionRoot)
+								{
+									foundStart = true;
+									break;
+								}
+							}
+
+							auto iterEndFind = std::find_if(mVisibleElements.begin(), mVisibleElements.end(),
+								[&](const InteractableElement& x) { return &x == element; });
+
+							if (iterEndFind != mVisibleElements.end())
+								foundEnd = true;
+
+							if (foundStart && foundEnd)
+							{
+								if (iterStartFind < iterEndFind)
+								{
+									for (; iterStartFind != (iterEndFind + 1); ++iterStartFind)
+									{
+										if (iterStartFind->isTreeElement())
+											selectElement(iterStartFind->getTreeElement());
+									}
+								}
+								else if (iterEndFind < iterStartFind)
+								{
+									for (; iterEndFind != (iterStartFind + 1); ++iterEndFind)
+									{
+										if (iterEndFind->isTreeElement())
+											selectElement(iterEndFind->getTreeElement());
+									}
+								}
+								else
+									selectElement(treeElement);
+							}
+
+							if (!foundStart || !foundEnd)
+								selectElement(treeElement);
+						}
+						else
+						{
+							selectElement(treeElement);
+						}
+					}
+					else
+					{
+						unselectAll();
+						selectElement(treeElement);
+					}
+
+					_markLayoutAsDirty();
+
+					return true;
+				}
+			}
+			else
+			{
+				unselectAll();
 
 				return true;
 			}

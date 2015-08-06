@@ -5,8 +5,8 @@
 
 namespace BansheeEngine
 {
-	CmdRecordSO::CmdRecordSO(const HSceneObject& sceneObject)
-		:mSceneObject(sceneObject), mSerializedObject(nullptr), mSerializedObjectParentId(0), mSerializedObjectSize(0)
+	CmdRecordSO::CmdRecordSO(const WString& description, const HSceneObject& sceneObject)
+		:EditorCommand(description), mSceneObject(sceneObject), mSerializedObject(nullptr), mSerializedObjectParentId(0), mSerializedObjectSize(0)
 	{
 
 	}
@@ -29,10 +29,10 @@ namespace BansheeEngine
 		}
 	}
 
-	void CmdRecordSO::execute(const HSceneObject& sceneObject)
+	void CmdRecordSO::execute(const HSceneObject& sceneObject, const WString& description)
 	{
 		// Register command and commit it
-		CmdRecordSO* command = new (bs_alloc<CmdRecordSO>()) CmdRecordSO(sceneObject);
+		CmdRecordSO* command = new (bs_alloc<CmdRecordSO>()) CmdRecordSO(description, sceneObject);
 		UndoRedo::instance().registerCommand(command);
 		command->commit();
 	}

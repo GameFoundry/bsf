@@ -21,10 +21,10 @@ namespace BansheeEngine
 		 * @brief	Creates and executes the command on the provided scene object.
 		 *			Automatically registers the command with undo/redo system.
 		 *
-		 * @param	inputField	Input field to modify the value on.
-		 * @param	value		New value for the field.
+		 * @param	sceneObject	Scene object to record.
+		 * @param	description	Optional description of what exactly the command does.
 		 */
-		static void execute(const HSceneObject& sceneObject);
+		static void execute(const HSceneObject& sceneObject, const WString& description = StringUtil::WBLANK);
 
 		/**
 		 * @copydoc	EditorCommand::commit
@@ -39,7 +39,7 @@ namespace BansheeEngine
 	private:
 		friend class UndoRedo;
 
-		CmdRecordSO(const HSceneObject& sceneObject);
+		CmdRecordSO(const WString& description, const HSceneObject& sceneObject);
 
 		/**
 		 * @brief	Saves the state of the specified object, all of its children

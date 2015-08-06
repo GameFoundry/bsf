@@ -33,9 +33,6 @@
     <ClInclude Include="Include\BsEditorCommand.h">
       <Filter>Header Files\Commands</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsCmdEditPlainFieldGO.h">
-      <Filter>Header Files\Commands</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsCmdReparentSO.h">
       <Filter>Header Files\Commands</Filter>
     </ClInclude>

@@ -21,10 +21,11 @@ namespace BansheeEngine
 		 *
 		 * @param	inputField	Input field to modify the value on.
 		 * @param	value		New value for the field.
+		 * @param	description	Optional description of what exactly the command does.
 		 */
-		static void execute(InputFieldType* inputField, const ValueType& value)
+		static void execute(InputFieldType* inputField, const ValueType& value, const WString& description = StringUtil::WBLANK)
 		{
-			CmdInputFieldValueChange* command = new (bs_alloc<CmdInputFieldValueChange>()) CmdInputFieldValueChange(inputField, value);
+			CmdInputFieldValueChange* command = new (bs_alloc<CmdInputFieldValueChange>()) CmdInputFieldValueChange(description, inputField, value);
 			UndoRedo::instance().registerCommand(command);
 			command->commit();
 		}
@@ -48,8 +49,8 @@ namespace BansheeEngine
 	private:
 		friend class UndoRedo;
 
-		CmdInputFieldValueChange(InputFieldType* inputField, const ValueType& value)
-			:mInputField(inputField), mOldValue(inputField->getValue()), mNewValue(value)
+		CmdInputFieldValueChange(const WString& description, InputFieldType* inputField, const ValueType& value)
+			:EditorCommand(description), mInputField(inputField), mOldValue(inputField->getValue()), mNewValue(value)
 		{ }
 
 		ValueType mOldValue;

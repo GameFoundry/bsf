@@ -5,8 +5,9 @@
 
 namespace BansheeEngine
 {
-	CmdDeleteSO::CmdDeleteSO(const HSceneObject& sceneObject)
-		:mSceneObject(sceneObject), mSerializedObject(nullptr), mSerializedObjectParentId(0), mSerializedObjectSize(0)
+	CmdDeleteSO::CmdDeleteSO(const WString& description, const HSceneObject& sceneObject)
+		:EditorCommand(description), mSceneObject(sceneObject), mSerializedObject(nullptr), 
+		mSerializedObjectParentId(0), mSerializedObjectSize(0)
 	{
 
 	}
@@ -29,10 +30,10 @@ namespace BansheeEngine
 		}
 	}
 
-	void CmdDeleteSO::execute(const HSceneObject& sceneObject)
+	void CmdDeleteSO::execute(const HSceneObject& sceneObject, const WString& description)
 	{
 		// Register command and commit it
-		CmdDeleteSO* command = new (bs_alloc<CmdDeleteSO>()) CmdDeleteSO(sceneObject);
+		CmdDeleteSO* command = new (bs_alloc<CmdDeleteSO>()) CmdDeleteSO(description, sceneObject);
 		UndoRedo::instance().registerCommand(command);
 		command->commit();
 	}

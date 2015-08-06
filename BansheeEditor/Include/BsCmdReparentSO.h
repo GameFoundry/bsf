@@ -20,8 +20,10 @@ namespace BansheeEngine
 		 *
 		 * @param	sceneObjects	Object(s) to change the parent for.
 		 * @param	newParent		New parent for the provided objects.
+		 * @param	description		Optional description of what exactly the command does.
 		 */
-		static void execute(const Vector<HSceneObject>& sceneObjects, const HSceneObject& newParent);
+		static void execute(const Vector<HSceneObject>& sceneObjects, const HSceneObject& newParent, 
+			const WString& description = StringUtil::WBLANK);
 
 		/**
 		 * @copydoc	EditorCommand::commit
@@ -36,7 +38,7 @@ namespace BansheeEngine
 	private:
 		friend class UndoRedo;
 
-		CmdReparentSO(const Vector<HSceneObject>& sceneObjects, const HSceneObject& newParent);
+		CmdReparentSO(const WString& description, const Vector<HSceneObject>& sceneObjects, const HSceneObject& newParent);
 
 		Vector<HSceneObject> mSceneObjects;
 		Vector<HSceneObject> mOldParents;

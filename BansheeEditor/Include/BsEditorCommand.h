@@ -11,10 +11,11 @@ namespace BansheeEngine
 	class EditorCommand
 	{
 	public:
+		EditorCommand(const WString& description);
 		virtual ~EditorCommand() { }
 
 		/**
-		 * @brief	Applies the command, commiting the change.
+		 * @brief	Applies the command, committing the change.
 		 */
 		virtual void commit() { }
 
@@ -28,5 +29,8 @@ namespace BansheeEngine
 		 * @brief	Deletes the command.
 		 */
 		static void destroy(EditorCommand* command);
+
+	private:
+		WString mDescription;
 	};
 }

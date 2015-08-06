@@ -2,9 +2,10 @@
 #include "BsSceneObject.h"
 #include "BsSceneManager.h"
 #include "BsGUISkin.h"
-#include "BsCmdEditPlainFieldGO.h"
-#include "BsDragAndDropManager.h"
+#include "BsCmdRecordSO.h"
 #include "BsCmdReparentSO.h"
+#include "BsCmdDeleteSO.h"
+#include "BsDragAndDropManager.h"
 #include "BsSelection.h"
 #include "BsGUIResourceTreeView.h"
 #include "BsProjectLibrary.h"
@@ -215,12 +216,18 @@ namespace BansheeEngine
 	void GUISceneTreeView::renameTreeElement(GUITreeView::TreeElement* element, const WString& name)
 	{
 		SceneTreeElement* sceneTreeElement = static_cast<SceneTreeElement*>(element);
-		CmdEditPlainFieldGO<String>::execute(sceneTreeElement->mSceneObject, "mName", toString(name));
+
+		HSceneObject so = sceneTreeElement->mSceneObject;
+		CmdRecordSO::execute(so, L"Renamed \"" + toWString(so->getName()) + L"\"");
+		so->setName("mName");
 	}
 
 	void GUISceneTreeView::deleteTreeElement(TreeElement* element)
 	{
-		// TODO - Actually delete the scene object
+		SceneTreeElement* sceneTreeElement = static_cast<SceneTreeElement*>(element);
+
+		HSceneObject so = sceneTreeElement->mSceneObject;
+		CmdDeleteSO::execute(so, L"Deleted \"" + toWString(so->getName()) + L"\"");
 	}
 
 	void GUISceneTreeView::deleteTreeElementInternal(GUITreeView::TreeElement* element)

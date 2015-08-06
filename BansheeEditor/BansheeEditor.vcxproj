@@ -268,7 +268,6 @@
     <ClInclude Include="Include\BsBuildDataRTTI.h" />
     <ClInclude Include="Include\BsBuildManager.h" />
     <ClInclude Include="Include\BsCmdDeleteSO.h" />
-    <ClInclude Include="Include\BsCmdEditPlainFieldGO.h" />
     <ClInclude Include="Include\BsCmdInputFieldValueChange.h" />
     <ClInclude Include="Include\BsCmdRecordSO.h" />
     <ClInclude Include="Include\BsCmdReparentSO.h" />

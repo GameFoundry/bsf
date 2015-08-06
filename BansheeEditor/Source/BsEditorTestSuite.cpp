@@ -454,6 +454,7 @@ namespace BansheeEngine
 
 		CmdRecordSO::execute(so0_0);
 		cmpB1_1->val1 = "ModifiedValue";
+		so0_0->setName("modified");
 		UndoRedo::instance().undo();
 
 		BS_TEST_ASSERT(!so0_0.isDestroyed());
@@ -468,6 +469,7 @@ namespace BansheeEngine
 		BS_TEST_ASSERT(!cmpExternal->ref1.isDestroyed());
 		BS_TEST_ASSERT(!cmpExternal->ref2.isDestroyed());
 		BS_TEST_ASSERT(cmpB1_1->val1 == "InitialValue");
+		BS_TEST_ASSERT(so0_0->getName() == "so0_0");
 
 		so0_0->destroy();
 	}

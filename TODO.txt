@@ -60,6 +60,9 @@ SceneTreeView
   - Delete + rename should be undoable
  - ELement cant be deselected by clicking on empty space
  - Clicking on an already selected element should start rename
+ - Also add context with "New SceneObject" & "New SceneObject (Child)"
+ - ping() method (scrolls to element and displays a bg for it until user clicks elsewhere)
+ - Elements in SceneTreeView aren't ordered properly
 
 Ribek use:
  - Camera, Renderable, Material, Texture inspector
