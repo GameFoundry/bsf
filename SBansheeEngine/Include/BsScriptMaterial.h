@@ -12,18 +12,43 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Interop class between C++ & CLR for Material.
+	 */
 	class BS_SCR_BE_EXPORT ScriptMaterial : public ScriptObject <ScriptMaterial, ScriptResourceBase>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Material")
 
-		HResource getNativeHandle() const { return mMaterial; }
-		void setNativeHandle(const HResource& resource);
+		/**
+		 * @copydoc	ScriptResourceBase::getNativeHandle
+		 */
+		HResource getNativeHandle() const override { return mMaterial; }
 
+		/**
+		 * @copydoc	ScriptResourceBase::setNativeHandle
+		 */
+		void setNativeHandle(const HResource& resource) override;
+
+		/**
+		 * @brief	Returns the wrapped native material handle.
+		 */
 		HMaterial getMaterialHandle() const { return mMaterial; }
 	private:
 		friend class ScriptResourceManager;
 
+		ScriptMaterial(MonoObject* instance, const HMaterial& material);
+
+		/**
+		 * @copydoc	ScriptObjectBase::_onManagedInstanceDeleted
+		 */
+		void _onManagedInstanceDeleted() override;
+
+		HMaterial mMaterial;
+
+		/************************************************************************/
+		/* 								CLR HOOKS						   		*/
+		/************************************************************************/
 		static void internal_CreateInstance(MonoObject* instance, ScriptShader* shader);
 
 		static MonoObject* internal_GetShader(ScriptMaterial* nativeInstance);
@@ -50,11 +75,5 @@ namespace BansheeEngine
 		static MonoObject* internal_GetTexture2D(ScriptMaterial* nativeInstance, MonoString* name);
 		static MonoObject* internal_GetTexture3D(ScriptMaterial* nativeInstance, MonoString* name);
 		static MonoObject* internal_GetTextureCube(ScriptMaterial* nativeInstance, MonoString* name);
-
-		ScriptMaterial(MonoObject* instance, const HMaterial& material);
-
-		void _onManagedInstanceDeleted();
-
-		HMaterial mMaterial;
 	};
 }

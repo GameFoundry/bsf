@@ -58,8 +58,6 @@ SceneTreeView
  - Add cut/copy/duplicate/paste functionality (+ appropriate context menu)
  - Clicking on an already selected element should start rename
  - Also add context with "New SceneObject" & "New SceneObject (Child)"
- - Elements in SceneTreeView aren't ordered properly (they reorder as I delete elements)
- - Dragging and dropping an element caused a crash when element was dropped
 
 Ribek use:
  - Camera, Renderable, Material, Texture inspector

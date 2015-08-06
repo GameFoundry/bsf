@@ -6,23 +6,72 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Interop class between C++ & CLR for Input.
+	 */
 	class BS_SCR_BE_EXPORT ScriptInput : public ScriptObject<ScriptInput>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Input")
 
+		/**
+		 * @brief	Registers internal callbacks. Must be called on scripting system load.
+		 */
 		static void startUp();
+
+		/**
+		 * @brief	Unregisters internal callbacks. Must be called on scripting system shutdown.
+		 */
 		static void shutDown();
 	private:
+		ScriptInput(MonoObject* instance);
+
+		/**
+		 * @brief	Triggered when the specified button is pressed.
+		 */
 		static void onButtonDown(const ButtonEvent& ev);
+
+		/**
+		 * @brief	Triggered when the specified button is released.
+		 */
 		static void onButtonUp(const ButtonEvent& ev);
+
+		/**
+		 * @brief	Triggered when the specified character is entered.
+		 */
 		static void onCharInput(const TextInputEvent& ev);
+
+		/**
+		 * @brief	Triggered when the pointer is moved.
+		 */
 		static void onPointerMoved(const PointerEvent& ev);
 
+		/**
+		 * @brief	Triggered when a pointer button is pressed.
+		 */
 		static void onPointerPressed(const PointerEvent& ev);
+
+		/**
+		 * @brief	Triggered when a pointer button is released.
+		 */
 		static void onPointerReleased(const PointerEvent& ev);
+
+		/**
+		 * @brief	Triggered when a pointer button is double-clicked.
+		 */
 		static void onPointerDoubleClick(const PointerEvent& ev);
 
+		static HEvent OnButtonPressedConn;
+		static HEvent OnButtonReleasedConn;
+		static HEvent OnCharInputConn;
+		static HEvent OnPointerPressedConn;
+		static HEvent OnPointerReleasedConn;
+		static HEvent OnPointerMovedConn;
+		static HEvent OnPointerDoubleClickConn;
+
+		/************************************************************************/
+		/* 								CLR HOOKS						   		*/
+		/************************************************************************/
 		static bool internal_isButtonHeld(ButtonCode code, UINT32 deviceIdx);
 		static bool internal_isButtonDown(ButtonCode code, UINT32 deviceIdx);
 		static bool internal_isButtonUp(ButtonCode code, UINT32 deviceIdx);
@@ -46,15 +95,5 @@ namespace BansheeEngine
 		static OnPointerEventThunkDef OnPointerReleasedThunk;
 		static OnPointerEventThunkDef OnPointerMovedThunk;
 		static OnPointerEventThunkDef OnPointerDoubleClickThunk;
-
-		static HEvent OnButtonPressedConn;
-		static HEvent OnButtonReleasedConn;
-		static HEvent OnCharInputConn;
-		static HEvent OnPointerPressedConn;
-		static HEvent OnPointerReleasedConn;
-		static HEvent OnPointerMovedConn;
-		static HEvent OnPointerDoubleClickConn;
-
-		ScriptInput(MonoObject* instance);
 	};
 }

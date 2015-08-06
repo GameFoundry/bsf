@@ -7,6 +7,11 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Possible mesh toplogy values. 
+	 *
+	 * @note	Must match C# enum MeshTopology.
+	 */
 	enum class MeshTopology
 	{
 		PointList = 1,
@@ -17,6 +22,9 @@ namespace BansheeEngine
 		TriangleFan = 6
 	};
 
+	/**
+	 * @brief	Contains data about a portion of a mesh inside MeshData.
+	 */
 	struct BS_SCR_BE_EXPORT SubMeshData
 	{
 		UINT32 indexOffset;
@@ -24,31 +32,85 @@ namespace BansheeEngine
 		MeshTopology topology;
 	};
 
+	/**
+	 * @brief	Interop class between C++ & CLR for SubMesh.
+	 */
 	class BS_SCR_BE_EXPORT ScriptSubMesh : public ScriptObject < ScriptSubMesh >
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "SubMesh")
 
+		/**
+		 * @brief	Unboxes a boxed managed SubMesh struct and returns
+		 *			the native version of the structure.
+		 */
 		static SubMeshData unbox(MonoObject* obj);
+
+		/**
+		 * @brief	Boxes a native SubMesh struct and returns
+		 *			a managed object containing it.
+		 */
 		static MonoObject* box(const SubMeshData& value);
 
 	private:
 		ScriptSubMesh(MonoObject* instance);
 	};
 
+	/**
+	 * @brief	Interop class between C++ & CLR for Mesh.
+	 */
 	class BS_SCR_BE_EXPORT ScriptMesh : public ScriptObject <ScriptMesh, ScriptResourceBase>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Mesh")
 
-		HResource getNativeHandle() const { return mMesh; }
-		void setNativeHandle(const HResource& resource);
+		/**
+		 * @copydoc	ScriptResourceBase::getNativeHandle
+		 */
+		HResource getNativeHandle() const override { return mMesh; }
 
+		/**
+		 * @copydoc	ScriptResourceBase::setNativeHandle
+		 */
+		void setNativeHandle(const HResource& resource) override;
+
+		/**
+		 * @brief	Returns the wrapped native mesh handle.
+		 */
 		HMesh getMeshHandle() const { return mMesh; }
 	private:
 		friend class ScriptResourceManager;
 
 		ScriptMesh(MonoObject* instance, const HMesh& mesh);
+
+		/**
+		 * @copydoc	ScriptObjectBase::_onManagedInstanceDeleted
+		 */
+		void _onManagedInstanceDeleted() override;
+
+		/**
+		 * @brief	Converts the C# MeshTopology enum to DrawOperationType enum
+		 *			used by engine internals.
+		 */
+		static DrawOperationType meshTopologyToDrawOp(MeshTopology topology);
+
+		/**
+		 * @brief	Converts the DrawOperationType enum used by engine 
+		 *			internals to C# MeshTopology enum.
+		 */
+		static MeshTopology drawOpToMeshTopology(DrawOperationType drawOp);
+		
+		/**
+		 * @brief	Converts a managed array of SubMeshData%es into an array
+		 *			of SubMesh%es used by engine internals.
+		 */
+		static Vector<SubMesh> monoToNativeSubMeshes(MonoArray* subMeshes);
+
+		HMesh mMesh;
+
+		/************************************************************************/
+		/* 								CLR HOOKS						   		*/
+		/************************************************************************/
 
 		static void internal_CreateInstance(MonoObject* instance, int numVertices,
 			int numIndices, MonoArray* subMeshes, MeshUsage usage, VertexLayout vertex, ScriptIndexType index);
@@ -59,13 +121,5 @@ namespace BansheeEngine
 		static void internal_GetBounds(ScriptMesh* thisPtr, AABox* box, Sphere* sphere);
 		static MonoObject* internal_GetMeshData(ScriptMesh* thisPtr);
 		static void internal_SetMeshData(ScriptMesh* thisPtr, ScriptMeshData* value);
-
-		static DrawOperationType meshTopologyToDrawOp(MeshTopology topology);
-		static MeshTopology drawOpToMeshTopology(DrawOperationType drawOp);
-		static Vector<SubMesh> monoToNativeSubMeshes(MonoArray* subMeshes);
-
-		void _onManagedInstanceDeleted();
-
-		HMesh mMesh;
 	};
 }

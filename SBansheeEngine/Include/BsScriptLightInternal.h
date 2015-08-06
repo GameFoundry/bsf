@@ -10,17 +10,29 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Interop class between C++ & CLR for LightInternal.
+	 */
 	class BS_SCR_BE_EXPORT ScriptLightInternal : public ScriptObject <ScriptLightInternal>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "LightInternal")
 
+		/**
+		 * @brief	Gets the wrapped native LightInternal object.
+		 */
 		SPtr<LightInternal> getInternal() const { return mLightInternal; }
 
 	private:
 		ScriptLightInternal(MonoObject* managedInstance, const HSceneObject& parentSO);
 		~ScriptLightInternal();
 
+		SPtr<LightInternal> mLightInternal;
+		UINT32 mLastUpdateHash;
+
+		/************************************************************************/
+		/* 								CLR HOOKS						   		*/
+		/************************************************************************/
 		static void internal_create(MonoObject* managedInstance, ScriptSceneObject* parentSO);
 
 		static Vector3 internal_getPosition(ScriptLightInternal* thisPtr);
@@ -54,8 +66,5 @@ namespace BansheeEngine
 
 		static void internal_updateTransform(ScriptLightInternal* thisPtr, ScriptSceneObject* parent);
 		static void internal_onDestroy(ScriptLightInternal* instance);
-
-		SPtr<LightInternal> mLightInternal;
-		UINT32 mLastUpdateHash;
 	};
 }

@@ -6,6 +6,9 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Interop class between C++ & CLR for ManagedResource.
+	 */
 	class BS_SCR_BE_EXPORT ScriptManagedResource : public ScriptObject<ScriptManagedResource, ScriptResourceBase>
 	{
 	public:
@@ -13,20 +16,45 @@ namespace BansheeEngine
 
 		ScriptManagedResource(MonoObject* instance, const HManagedResource& resource);
 
-		HResource getNativeHandle() const { return mResource; }
-		void setNativeHandle(const HResource& resource);
+		/**
+		 * @copydoc	ScriptResourceBase::getNativeHandle
+		 */
+		HResource getNativeHandle() const override { return mResource; }
+
+		/**
+		 * @copydoc	ScriptResourceBase::setNativeHandle
+		 */
+		void setNativeHandle(const HResource& resource) override;
 	private:
 		friend class ScriptResourceManager;
 
-		static void internal_createInstance(MonoObject* instance);
+		/**
+		 * @copydoc	ScriptObjectBase::beginRefresh
+		 */
+		virtual ScriptObjectBackup beginRefresh() override;
 
-		virtual ScriptObjectBackup beginRefresh();
-		virtual void endRefresh(const ScriptObjectBackup& backupData);
-		virtual MonoObject* _createManagedInstance(bool construct);
-		void _onManagedInstanceDeleted();
+		/**
+		 * @copydoc	ScriptObjectBase::endRefresh
+		 */
+		virtual void endRefresh(const ScriptObjectBackup& backupData) override;
+
+		/**
+		 * @copydoc	ScriptObjectBase::_createManagedInstance
+		 */
+		virtual MonoObject* _createManagedInstance(bool construct) override;
+
+		/**
+		 * @copydoc	ScriptObjectBase::_onManagedInstanceDeleted
+		 */
+		void _onManagedInstanceDeleted() override;
 
 		HManagedResource mResource;
 		String mNamespace;
 		String mType;
+
+		/************************************************************************/
+		/* 								CLR HOOKS						   		*/
+		/************************************************************************/
+		static void internal_createInstance(MonoObject* instance);
 	};
 }
