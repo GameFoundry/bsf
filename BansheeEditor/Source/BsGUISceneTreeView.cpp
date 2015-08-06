@@ -176,31 +176,32 @@ namespace BansheeEngine
 		if(needsUpdate)
 			updateElementGUI(element);
 
-		// Calculate the sorted index of the element based on its name
-		TreeElement* parent = element->mParent;
-		if(parent != nullptr)
-		{
-			for(UINT32 i = 0; i < (UINT32)parent->mChildren.size(); i++)
-			{
-				INT32 stringCompare = element->mName.compare(parent->mChildren[i]->mName);
-				if(stringCompare > 0)
-				{
-					if(element->mSortedIdx < parent->mChildren[i]->mSortedIdx)
-						std::swap(element->mSortedIdx, parent->mChildren[i]->mSortedIdx);
-				}
-				else if(stringCompare < 0)
-				{
-					if(element->mSortedIdx > parent->mChildren[i]->mSortedIdx)
-						std::swap(element->mSortedIdx, parent->mChildren[i]->mSortedIdx);
-				}
-			}
-		}
-
 		for(UINT32 i = 0; i < (UINT32)element->mChildren.size(); i++)
 		{
 			SceneTreeElement* sceneElement = static_cast<SceneTreeElement*>(element->mChildren[i]);
 			updateTreeElement(sceneElement);
 		}
+
+		// Calculate the sorted index of the elements based on their name
+		bs_frame_mark();
+		FrameVector<SceneTreeElement*> sortVector;
+		for (auto& child : element->mChildren)
+			sortVector.push_back(static_cast<SceneTreeElement*>(child));
+
+		std::sort(sortVector.begin(), sortVector.end(),
+			[&](const SceneTreeElement* lhs, const SceneTreeElement* rhs)
+		{
+			return StringUtil::compare(lhs->mName, rhs->mName, false) < 0;
+		});
+
+		UINT32 idx = 0;
+		for (auto& child : sortVector)
+		{
+			child->mSortedIdx = idx;
+			idx++;
+		}
+
+		bs_frame_clear();
 	}
 
 	void GUISceneTreeView::updateTreeElementHierarchy()

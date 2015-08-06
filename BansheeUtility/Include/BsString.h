@@ -181,9 +181,35 @@ namespace BansheeEngine
 		static const String replaceAll(const String& source, const String& replaceWhat, const String& replaceWithWhat);
 
 		/**
-         * @copydoc match(const String&, const String&, const String&)
+         * @copydoc replaceAll(const String&, const String&, const String&)
          */
 		static const WString replaceAll(const WString& source, const WString& replaceWhat, const WString& replaceWithWhat);
+
+		/**
+		 * @brief	Compares two strings. Returns 0 if the two compare equal, <0 if the value of the left
+		 *			string is lower than of the right string, or >0 if the value of the left string is
+		 *			higher than the right string.
+		 *
+		 * @param	lhs				Left string to compare.
+		 * @param	rhs				Right string to compare.
+		 * @param	caseSensitive	If true the comparison will consider uppercase and lowercase
+		 *							characters different.
+		 */
+		template <class T>
+		static int compare(const BasicString<T>& lhs, const BasicString<T>& rhs, bool caseSensitive = true)
+		{
+			if (caseSensitive)
+				return (int)lhs.compare(rhs);
+
+			int size = (int)std::min(lhs.size(), rhs.size());
+			for (int i = 0; i < size; i++)
+			{
+				if (toupper(lhs[i]) < toupper(rhs[i])) return -1;
+				if (toupper(lhs[i]) > toupper(rhs[i])) return 1;
+			}
+
+			return (lhs.size() < rhs.size() ? -1 : (lhs.size() == rhs.size() ? 0 : 1));
+		}
 
 		/**
 		 * @copydoc	StringFormat::format
@@ -215,7 +241,7 @@ namespace BansheeEngine
 
 	private:
 		template <class T>
-		static typename Vector<typename BasicString<T>> splitInternal(const typename BasicString<T>& str, const typename BasicString<T>& delims, unsigned int maxSplits)
+		static Vector<BasicString<T>> splitInternal(const BasicString<T>& str, const BasicString<T>& delims, unsigned int maxSplits)
 		{
 			Vector<BasicString<T>> ret;
 			// Pre-allocate some space for performance
@@ -256,8 +282,8 @@ namespace BansheeEngine
 		}
 
 		template <class T>
-		static typename Vector<typename BasicString<T>> tokeniseInternal(const typename BasicString<T>& str, const typename BasicString<T>& singleDelims, 
-			const typename BasicString<T>& doubleDelims, unsigned int maxSplits)
+		static Vector<BasicString<T>> tokeniseInternal(const BasicString<T>& str, const BasicString<T>& singleDelims, 
+			const BasicString<T>& doubleDelims, unsigned int maxSplits)
 		{
 			Vector<BasicString<T>> ret;
 			// Pre-allocate some space for performance
@@ -326,7 +352,7 @@ namespace BansheeEngine
 		}
 
 		template <class T>
-		static bool startsWithInternal(const typename BasicString<T>& str, const typename BasicString<T>& pattern, bool lowerCase)
+		static bool startsWithInternal(const BasicString<T>& str, const BasicString<T>& pattern, bool lowerCase)
 		{
 			size_t thisLen = str.length();
 			size_t patternLen = pattern.length();
@@ -341,7 +367,7 @@ namespace BansheeEngine
 		}
 
 		template <class T>
-		static bool endsWithInternal(const typename BasicString<T>& str, const typename BasicString<T>& pattern, bool lowerCase)
+		static bool endsWithInternal(const BasicString<T>& str, const BasicString<T>& pattern, bool lowerCase)
 		{
 			size_t thisLen = str.length();
 			size_t patternLen = pattern.length();
@@ -356,7 +382,7 @@ namespace BansheeEngine
 		}
 
 		template <class T>
-		static bool matchInternal(const typename BasicString<T>& str, const typename BasicString<T>& pattern, bool caseSensitive)
+		static bool matchInternal(const BasicString<T>& str, const BasicString<T>& pattern, bool caseSensitive)
 		{
 			BasicString<T> tmpStr = str;
 			BasicString<T> tmpPattern = pattern;
@@ -422,8 +448,8 @@ namespace BansheeEngine
 		}
 
 		template <class T>
-		static const typename BasicString<T> replaceAllInternal(const typename BasicString<T>& source, 
-			const typename BasicString<T>& replaceWhat, const typename BasicString<T>& replaceWithWhat)
+		static BasicString<T> replaceAllInternal(const BasicString<T>& source, 
+			const BasicString<T>& replaceWhat, const BasicString<T>& replaceWithWhat)
 		{
 			BasicString<T> result = source;
 			BasicString<T>::size_type pos = 0;
