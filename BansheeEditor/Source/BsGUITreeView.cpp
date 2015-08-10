@@ -26,13 +26,18 @@ namespace BansheeEngine
 	const float GUITreeView::AUTO_EXPAND_DELAY_SEC = 0.5f;
 	const float GUITreeView::SCROLL_AREA_HEIGHT_PCT = 0.1f;
 	const UINT32 GUITreeView::SCROLL_SPEED_PX_PER_SEC = 100;
+	const Color GUITreeView::GRAYED_OUT_COLOR = Color(1.0f, 1.0f, 1.0f, 0.5f);
 
 	VirtualButton GUITreeView::mRenameVB = VirtualButton("Rename");
 	VirtualButton GUITreeView::mDeleteVB = VirtualButton("Delete");
+	VirtualButton GUITreeView::mDuplicateVB = VirtualButton("Duplicate");
+	VirtualButton GUITreeView::mCutVB = VirtualButton("Cut");
+	VirtualButton GUITreeView::mCopyVB = VirtualButton("Copy");
+	VirtualButton GUITreeView::mPasteVB = VirtualButton("Paste");
 
 	GUITreeView::TreeElement::TreeElement()
 		:mParent(nullptr), mFoldoutBtn(nullptr), mElement(nullptr), mIsSelected(false),
-		mIsExpanded(false), mSortedIdx(0), mIsVisible(true), mIsHighlighted(false)
+		mIsExpanded(false), mSortedIdx(0), mIsVisible(true), mIsHighlighted(false), mIsGrayedOut(false)
 	{ }
 
 	GUITreeView::TreeElement::~TreeElement()
@@ -285,8 +290,24 @@ namespace BansheeEngine
 					}
 					else
 					{
+						bool doRename = false;
+						if (isSelectionActive())
+						{
+							for (auto& selectedElem : mSelectedElements)
+							{
+								if (selectedElem.element == treeElement)
+								{
+									doRename = true;
+									break;
+								}
+							}
+						}
+
 						unselectAll();
 						selectElement(treeElement);
+
+						if (doRename)
+							renameSelected();
 					}
 
 					_markLayoutAsDirty();
@@ -455,54 +476,33 @@ namespace BansheeEngine
 	{
 		if(ev.getButton() == mRenameVB)
 		{
-			if(isSelectionActive() && mEditElement == nullptr)
-			{
-				clearPing();
-				enableEdit(mSelectedElements[0].element);
-				unselectAll();
-			}
+			renameSelected();
 
 			return true;
 		}
 		else if(ev.getButton() == mDeleteVB)
 		{
-			if(isSelectionActive())
-			{
-				auto isChildOf = [&] (const TreeElement* parent, const TreeElement* child)
-				{
-					const TreeElement* elem = child;
-
-					while(elem != nullptr && elem != parent)
-						elem = child->mParent;
-
-					return elem == parent;
-				};
-
-				// Ensure we don't unnecessarily try to delete children if their
-				// parent is getting deleted anyway
-				Vector<TreeElement*> elementsToDelete;
-				for(UINT32 i = 0; i < (UINT32)mSelectedElements.size(); i++)
-				{
-					bool hasDeletedParent = false;
-					for(UINT32 j = i + 1; j < (UINT32)mSelectedElements.size(); j++)
-					{
-						if(isChildOf(mSelectedElements[j].element, mSelectedElements[i].element))
-						{
-							hasDeletedParent = true;
-							break;
-						}
-					}
-
-					if(!hasDeletedParent)
-						elementsToDelete.push_back(mSelectedElements[i].element);
-				}
-
-				clearPing();
-				unselectAll();
-
-				for(auto& elem : elementsToDelete)
-					deleteTreeElement(elem);
-			}
+			deleteSelection();
+		}
+		else if (ev.getButton() == mDuplicateVB)
+		{
+			duplicateSelection();
+			return true;
+		}
+		else if (ev.getButton() == mCutVB)
+		{
+			cutSelection();
+			return true;
+		}
+		else if (ev.getButton() == mCopyVB)
+		{
+			copySelection();
+			return true;
+		}
+		else if (ev.getButton() == mPasteVB)
+		{
+			paste();
+			return true;
 		}
 
 		return false;
@@ -572,6 +572,60 @@ namespace BansheeEngine
 		_markLayoutAsDirty();
 
 		selectionChanged();
+	}
+
+	void GUITreeView::renameSelected()
+	{
+		if (isSelectionActive() && mEditElement == nullptr)
+		{
+			clearPing();
+			enableEdit(mSelectedElements[0].element);
+			unselectAll();
+		}
+	}
+
+	void GUITreeView::deleteSelection()
+	{
+		if (isSelectionActive())
+		{
+			auto isChildOf = [&](const TreeElement* parent, const TreeElement* child)
+			{
+				const TreeElement* elem = child;
+
+				while (elem != nullptr && elem != parent)
+					elem = child->mParent;
+
+				return elem == parent;
+			};
+
+			// Ensure we don't unnecessarily try to delete children if their
+			// parent is getting deleted anyway
+			Vector<TreeElement*> elementsToDelete;
+			for (UINT32 i = 0; i < (UINT32)mSelectedElements.size(); i++)
+			{
+				bool hasDeletedParent = false;
+				for (UINT32 j = 0; j < (UINT32)mSelectedElements.size(); j++)
+				{
+					if (i == j)
+						continue;
+
+					if (isChildOf(mSelectedElements[j].element, mSelectedElements[i].element))
+					{
+						hasDeletedParent = true;
+						break;
+					}
+				}
+
+				if (!hasDeletedParent)
+					elementsToDelete.push_back(mSelectedElements[i].element);
+			}
+
+			clearPing();
+			unselectAll();
+
+			for (auto& elem : elementsToDelete)
+				deleteTreeElement(elem);
+		}
 	}
 
 	void GUITreeView::ping(TreeElement* element)
@@ -712,6 +766,8 @@ namespace BansheeEngine
 				element->mElement = GUILabel::create(name, mElementBtnStyle);
 				_registerChildElement(element->mElement);
 			}
+
+			element->mElement->setTint(element->mIsGrayedOut ? GRAYED_OUT_COLOR : Color::White);
 
 			if(element->mChildren.size() > 0)
 			{

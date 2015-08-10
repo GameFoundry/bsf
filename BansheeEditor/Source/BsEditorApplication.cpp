@@ -111,6 +111,7 @@ namespace BansheeEngine
 			inputConfig->registerButton("Copy", BC_C, ButtonModifier::Ctrl);
 			inputConfig->registerButton("Cut", BC_X, ButtonModifier::Ctrl);
 			inputConfig->registerButton("Paste", BC_V, ButtonModifier::Ctrl);
+			inputConfig->registerButton("Duplicate", BC_D, ButtonModifier::Ctrl);
 			inputConfig->registerButton("Delete", BC_DELETE);
 		}
 

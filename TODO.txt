@@ -55,9 +55,12 @@ Code quality improvements:
 Polish
 
 SceneTreeView
- - Add cut/copy/duplicate/paste functionality (+ appropriate context menu)
- - Clicking on an already selected element should start rename
- - Also add context with "New SceneObject" & "New SceneObject (Child)"
+ - Test: 
+    - Cut/Copy/Paste/duplicate
+    - Context menu
+	- Ignore shortcuts when out of focus
+    - Creating new objects
+	- Clicking on an already selected element should start rename
 
 Ribek use:
  - Camera, Renderable, Material, Texture inspector

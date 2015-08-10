@@ -5,6 +5,8 @@
 #include "BsCmdRecordSO.h"
 #include "BsCmdReparentSO.h"
 #include "BsCmdDeleteSO.h"
+#include "BsCmdCloneSO.h"
+#include "BsCmdCreateSO.h"
 #include "BsDragAndDropManager.h"
 #include "BsSelection.h"
 #include "BsGUIResourceTreeView.h"
@@ -12,6 +14,7 @@
 #include "BsProjectResourceMeta.h"
 #include "BsPrefab.h"
 #include "BsResources.h"
+#include "BsGUIContextMenu.h"
 
 namespace BansheeEngine
 {
@@ -33,9 +36,22 @@ namespace BansheeEngine
 		const String& foldoutBtnStyle, const String& highlightBackgroundStyle, const String& selectionBackgroundStyle, 
 		const String& editBoxStyle, const String& dragHighlightStyle, const String& dragSepHighlightStyle, const GUIDimensions& dimensions)
 		:GUITreeView(backgroundStyle, elementBtnStyle, foldoutBtnStyle, highlightBackgroundStyle, selectionBackgroundStyle, editBoxStyle, dragHighlightStyle,
-		dragSepHighlightStyle, dimensions)
+		dragSepHighlightStyle, dimensions), mCutFlag(false)
 	{
 		SceneTreeViewLocator::_provide(this);
+
+		GUIContextMenuPtr contextMenu = bs_shared_ptr<GUIContextMenu>();
+
+		contextMenu->addMenuItem(L"New", std::bind(&GUISceneTreeView::createNewSO, this), 50);
+		contextMenu->addMenuItem(L"Rename", std::bind(&GUISceneTreeView::renameSelected, this), 49, ShortcutKey(ButtonModifier::None, BC_F2));
+		contextMenu->addMenuItem(L"Delete", std::bind(&GUISceneTreeView::deleteSelection, this), 48, ShortcutKey(ButtonModifier::None, BC_DELETE));
+		contextMenu->addSeparator(L"", 40);
+		contextMenu->addMenuItem(L"Duplicate", std::bind(&GUISceneTreeView::duplicateSelection, this), 39, ShortcutKey(ButtonModifier::Ctrl, BC_D));
+		contextMenu->addMenuItem(L"Copy", std::bind(&GUISceneTreeView::copySelection, this), 38, ShortcutKey(ButtonModifier::Ctrl, BC_C));
+		contextMenu->addMenuItem(L"Cut", std::bind(&GUISceneTreeView::cutSelection, this), 37, ShortcutKey(ButtonModifier::Ctrl, BC_X));
+		contextMenu->addMenuItem(L"Paste", std::bind(&GUISceneTreeView::paste, this), 36, ShortcutKey(ButtonModifier::Ctrl, BC_V));
+
+		setContextMenu(contextMenu);
 	}
 
 	GUISceneTreeView::~GUISceneTreeView()
@@ -415,6 +431,188 @@ namespace BansheeEngine
 				todo.push(sceneChild);
 			}
 		}
+	}
+
+	GUISceneTreeView::SceneTreeElement* GUISceneTreeView::findTreeElement(const HSceneObject& so)
+	{
+		SceneTreeElement& root = mRootElement;
+
+		Stack<SceneTreeElement*> todo;
+		todo.push(&mRootElement);
+
+		while (!todo.empty())
+		{
+			SceneTreeElement* currentElem = todo.top();
+			todo.pop();
+
+			if (so == currentElem->mSceneObject)
+				return currentElem;
+
+			for (auto& child : currentElem->mChildren)
+			{
+				SceneTreeElement* sceneChild = static_cast<SceneTreeElement*>(child);
+				todo.push(sceneChild);
+			}
+		}
+
+		return nullptr;
+	}
+
+	void GUISceneTreeView::duplicateSelection()
+	{
+		Vector<HSceneObject> duplicateList;
+		for (auto& selectedElem : mSelectedElements)
+		{
+			SceneTreeElement* sceneElement = static_cast<SceneTreeElement*>(selectedElem.element);
+			duplicateList.push_back(sceneElement->mSceneObject);
+		}
+
+		cleanDuplicates(duplicateList);
+
+		if (duplicateList.size() == 0)
+			return;
+
+		WString message;
+		if (duplicateList.size() == 1)
+			message = L"Duplicated " + toWString(duplicateList[0]->getName());
+		else
+			message = L"Duplicated " + toWString(duplicateList.size()) + L" elements";
+
+		CmdCloneSO::execute(duplicateList, message);
+	}
+
+	void GUISceneTreeView::copySelection()
+	{
+		clearCopyList();
+
+		for (auto& selectedElem : mSelectedElements)
+		{
+			SceneTreeElement* sceneElement = static_cast<SceneTreeElement*>(selectedElem.element);
+			mCopyList.push_back(sceneElement->mSceneObject);
+		}
+
+		mCutFlag = false;
+	}
+
+	void GUISceneTreeView::cutSelection()
+	{
+		clearCopyList();
+
+		for (auto& selectedElem : mSelectedElements)
+		{
+			SceneTreeElement* sceneElement = static_cast<SceneTreeElement*>(selectedElem.element);
+			mCopyList.push_back(sceneElement->mSceneObject);
+
+			sceneElement->mIsGrayedOut = true;
+			updateElementGUI(sceneElement);
+		}
+
+		mCutFlag = true;
+		_markLayoutAsDirty();
+	}
+
+	void GUISceneTreeView::paste()
+	{
+		cleanDuplicates(mCopyList);
+
+		if (mCopyList.size() == 0)
+			return;
+
+		HSceneObject parent = mRootElement.mSceneObject;
+		if (mSelectedElements.size() > 0)
+		{
+			SceneTreeElement* sceneElement = static_cast<SceneTreeElement*>(mSelectedElements[0].element);
+			parent = sceneElement->mSceneObject;
+		}
+
+		if (mCutFlag)
+		{
+			WString message;
+			if (mCopyList.size() == 1)
+				message = L"Moved " + toWString(mCopyList[0]->getName());
+			else
+				message = L"Moved " + toWString(mCopyList.size()) + L" elements";
+
+			CmdReparentSO::execute(mCopyList, parent, message);
+			clearCopyList();
+		}
+		else
+		{
+			WString message;
+			if (mCopyList.size() == 1)
+				message = L"Copied " + toWString(mCopyList[0]->getName());
+			else
+				message = L"Copied " + toWString(mCopyList.size()) + L" elements";
+
+			CmdCloneSO::execute(mCopyList, message);
+		}
+	}
+
+	void GUISceneTreeView::clearCopyList()
+	{
+		for (auto& so : mCopyList)
+		{
+			if (so.isDestroyed())
+				continue;
+
+			TreeElement* treeElem = findTreeElement(so);
+
+			if (treeElem != nullptr)
+			{
+				treeElem->mIsGrayedOut = false;
+				updateElementGUI(treeElem);
+			}
+		}
+
+		mCopyList.clear();
+		_markLayoutAsDirty();
+	}
+
+	void GUISceneTreeView::createNewSO()
+	{
+		HSceneObject newSO = CmdCreateSO::execute("New", 0, L"Created a new SceneObject");
+
+		if (mSelectedElements.size() > 0)
+		{
+			SceneTreeElement* sceneElement = static_cast<SceneTreeElement*>(mSelectedElements[0].element);
+			newSO->setParent(sceneElement->mSceneObject);
+		}
+
+		updateTreeElementHierarchy();
+		setSelection({ newSO });
+		renameSelected();
+	}
+
+	void GUISceneTreeView::cleanDuplicates(Vector<HSceneObject>& objects)
+	{
+		auto isChildOf = [&](const HSceneObject& parent, const HSceneObject& child)
+		{
+			HSceneObject elem = child;
+
+			while (elem != nullptr && elem != parent)
+				elem = child->getParent();
+
+			return elem == parent;
+		};
+
+		Vector<HSceneObject> cleanList;
+		for (UINT32 i = 0; i < (UINT32)objects.size(); i++)
+		{
+			bool foundParent = false;
+			for (UINT32 j = 0; j < (UINT32)objects.size(); j++)
+			{
+				if (i != j && isChildOf(objects[j], objects[i]))
+				{
+					foundParent = true;
+					break;
+				}
+			}
+
+			if (!foundParent)
+				cleanList.push_back(objects[i]);
+		}
+
+		objects = cleanList;
 	}
 
 	const String& GUISceneTreeView::getGUITypeName()

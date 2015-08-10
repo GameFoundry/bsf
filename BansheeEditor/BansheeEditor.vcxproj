@@ -267,6 +267,8 @@
   <ItemGroup>
     <ClInclude Include="Include\BsBuildDataRTTI.h" />
     <ClInclude Include="Include\BsBuildManager.h" />
+    <ClInclude Include="Include\BsCmdCloneSO.h" />
+    <ClInclude Include="Include\BsCmdCreateSO.h" />
     <ClInclude Include="Include\BsCmdDeleteSO.h" />
     <ClInclude Include="Include\BsCmdInputFieldValueChange.h" />
     <ClInclude Include="Include\BsCmdRecordSO.h" />
@@ -346,6 +348,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsBuildManager.cpp" />
+    <ClCompile Include="Source\BsCmdCloneSO.cpp" />
+    <ClCompile Include="Source\BsCmdCreateSO.cpp" />
     <ClCompile Include="Source\BsCmdRecordSO.cpp" />
     <ClCompile Include="Source\BsCmdReparentSO.cpp" />
     <ClCompile Include="Source\BsCmdUtility.cpp" />

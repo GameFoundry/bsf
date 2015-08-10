@@ -55,6 +55,7 @@ namespace BansheeEngine
 			bool mIsSelected;
 			bool mIsHighlighted;
 			bool mIsVisible;
+			bool mIsGrayedOut;
 
 			bool isParentRec(TreeElement* element) const;
 		};
@@ -255,6 +256,16 @@ namespace BansheeEngine
 		void unselectAll();
 
 		/**
+		 * @brief	Starts rename operation on the currently selected element.
+		 */
+		void renameSelected();
+
+		/**
+		 * @brief	Deletes all currently selected elements.
+		 */
+		void deleteSelection();
+
+		/**
 		 * @brief	Expands all parents of the provided TreeElement making it interactable.
 		 */
 		void expandToElement(TreeElement* element);
@@ -268,6 +279,26 @@ namespace BansheeEngine
 		 * @brief	Collapses the provided TreeElement making its children hidden and not interactable.
 		 */
 		void collapseElement(TreeElement* element);
+
+		/**
+		 * @brief	Duplicates the currently selected entries.
+		 */
+		virtual void duplicateSelection() { }
+
+		/**
+		 * @brief	Marks the current selection for copying.
+		 */
+		virtual void copySelection() { }
+		
+		/**
+		 * @brief	Marks the current selection for cutting.
+		 */
+		virtual void cutSelection() { }
+
+		/**
+		 * @brief	Pastes a set of entries previously marked for cut or copy.
+		 */
+		virtual void paste() { }
 
 		/**
 		 * @brief	Rebuilds the needed GUI elements for the provided TreeElement.
@@ -359,6 +390,10 @@ namespace BansheeEngine
 
 		static VirtualButton mRenameVB;
 		static VirtualButton mDeleteVB;
+		static VirtualButton mDuplicateVB;
+		static VirtualButton mCutVB;
+		static VirtualButton mCopyVB;
+		static VirtualButton mPasteVB;
 
 		static const UINT32 ELEMENT_EXTRA_SPACING;
 		static const UINT32 INDENT_SIZE;
@@ -367,5 +402,6 @@ namespace BansheeEngine
 		static const float AUTO_EXPAND_DELAY_SEC;
 		static const float SCROLL_AREA_HEIGHT_PCT;
 		static const UINT32 SCROLL_SPEED_PX_PER_SEC;
+		static const Color GRAYED_OUT_COLOR;
 	};
 }

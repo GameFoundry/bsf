@@ -179,6 +179,52 @@ namespace BansheeEngine
 		 *			actually deleting the referenced SceneObject.
 		 */
 		void deleteTreeElementInternal(TreeElement* element);
+
+		/**
+		 * @brief	Attempts to find a tree element referencing the specified
+		 *			scene object.
+		 */
+		SceneTreeElement* findTreeElement(const HSceneObject& so);
+
+		/**
+		 * @copydoc	GUITreeView::duplicateSelection
+		 */
+		void duplicateSelection() override;
+
+		/**
+		 * @copydoc	GUITreeView::copySelection
+		 */
+		void copySelection() override;
+		
+		/**
+		 * @copydoc	GUITreeView::cutSelection
+		 */
+		void cutSelection() override;
+
+		/**
+		 * @copydoc	GUITreeView::paste
+		 */
+		void paste() override;
+
+		/**
+		 * @brief	Creates a new scene object as a child of the currently selected object (if any).
+		 */
+		void createNewSO();
+
+		/**
+		 * @brief	Removes all elements from the list used for copy/cut operations.
+		 */
+		void clearCopyList();
+
+		/**
+		 * @brief	Cleans duplicate objects from the provided scene object list.
+		 *			This involves removing child elements if their parents are
+		 *			already part of the list.
+		 */
+		static void cleanDuplicates(Vector<HSceneObject>& objects);
+
+		Vector<HSceneObject> mCopyList;
+		bool mCutFlag;
 	};
 
 	typedef ServiceLocator<GUISceneTreeView> SceneTreeViewLocator;

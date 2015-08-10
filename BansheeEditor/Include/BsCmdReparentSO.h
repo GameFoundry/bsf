@@ -15,7 +15,7 @@ namespace BansheeEngine
 	{
 	public:
 		/**
-		 * @brief	Creates and executes the command on the provided scene object.
+		 * @brief	Creates and executes the command on the provided scene object(s).
 		 *			Automatically registers the command with undo/redo system.
 		 *
 		 * @param	sceneObjects	Object(s) to change the parent for.
@@ -23,6 +23,17 @@ namespace BansheeEngine
 		 * @param	description		Optional description of what exactly the command does.
 		 */
 		static void execute(const Vector<HSceneObject>& sceneObjects, const HSceneObject& newParent, 
+			const WString& description = StringUtil::WBLANK);
+
+		/**
+		 * @brief	Creates and executes the command on the provided scene object.
+		 *			Automatically registers the command with undo/redo system.
+		 *
+		 * @param	sceneObject		Object to change the parent for.
+		 * @param	newParent		New parent for the provided objects.
+		 * @param	description		Optional description of what exactly the command does.
+		 */
+		static void execute(HSceneObject& sceneObject, const HSceneObject& newParent, 
 			const WString& description = StringUtil::WBLANK);
 
 		/**
