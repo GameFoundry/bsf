@@ -4,6 +4,7 @@
 #include "BsRenderer.h"
 #include "BsBounds.h"
 #include "BsRenderableElement.h"
+#include "BsSamplerOverrides.h"
 
 namespace BansheeEngine
 {
@@ -14,6 +15,22 @@ namespace BansheeEngine
 
 	static StringID RPS_Time = "Time";
 	static StringID RPS_LightDir = "LightDir";
+
+	/**
+	 * @copydoc	RenderableElement
+	 *
+	 * Contains additional data specific to RenderBeast renderer.
+	 */
+	class BS_BSRND_EXPORT BeastRenderableElement : public RenderableElement
+	{
+	public:
+		/**
+		 * @brief	Optional overrides for material sampler states.
+		 *			Used when renderer wants to override certain sampling
+		 *			properties on a global scale (e.g. filtering most commonly).
+		 */
+		MaterialSamplerOverrides* samplerOverrides;
+	};
 
 	/**
 	 * @brief	Default renderer for Banshee. Performs frustum culling, sorting and 
@@ -46,7 +63,7 @@ namespace BansheeEngine
 		struct RenderableData
 		{
 			RenderableHandlerCore* renderable;
-			Vector<RenderableElement> elements;
+			Vector<BeastRenderableElement> elements;
 			RenderableController* controller;
 		};
 
@@ -172,19 +189,28 @@ namespace BansheeEngine
 		SPtr<ShaderCore> createDefaultShader();
 
 		/**
+		 * @brief	Checks all sampler overrides in case material sampler states changed,
+		 *			and updates them.
+		 *
+		 * @param	force	If true, all sampler overrides will be updated, regardless of a change
+		 *					in the material was detected or not.
+		 */
+		void refreshSamplerOverrides(bool force = false);
+
+		/**
 		 * @brief	Activates the specified pass on the pipeline.
 		 *
 		 * @param	material			Parent material of the pass.
 		 * @param	passIdx				Index of the pass in the parent material.
 		 * @param	samplerOverrides	Optional samplers to use instead of the those in the material.
 		 *								Number of samplers must match the number in the material.
-		 *
 		 * @note	Core thread.
 		 */
-		static void setPass(const SPtr<MaterialCore>& material, UINT32 passIdx, SPtr<SamplerStateCore>* samplerOverrides);
+		static void setPass(const SPtr<MaterialCore>& material, UINT32 passIdx, PassSamplerOverrides* samplerOverrides);
 
 		Vector<RenderTargetData> mRenderTargets; // Core thread
 		UnorderedMap<const CameraHandlerCore*, CameraData> mCameraData; // Core thread
+		UnorderedMap<SPtr<MaterialCore>, MaterialSamplerOverrides*> mSamplerOverrides; // Core thread
 
 		SPtr<MaterialCore> mDummyMaterial; // Core thread
 

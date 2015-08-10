@@ -199,7 +199,7 @@ namespace BansheeEngine
 		{
 			SPtr<PassParametersCore> passParams = element.material->getPassParameters(i);
 
-			for (UINT32 j = 0; j < passParams->getNumParams(); j++)
+			for (UINT32 j = 0; j < PassParametersCore::NUM_PARAMS; j++)
 			{
 				SPtr<GpuParamsCore> gpuParams = passParams->getParamByIdx(j);
 				if (gpuParams == nullptr)

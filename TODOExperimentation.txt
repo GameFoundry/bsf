@@ -1,5 +1,8 @@
 -------------------------
 Study shadow rendering implementations
+Study how is transparency handled (is it order independant?)
+Figure out what is skylight
+Determine how is light bleeding handled (if at all)
 
 Test all APIs with new changes regarding depth buffer creation on windows
 Document RenderTargetPool and potentially move it outside of BansheeRenderer
@@ -7,16 +10,7 @@ Document RenderTargetPool and potentially move it outside of BansheeRenderer
 Implement light added/removed/updated in BansheeRenderer
 Load up and set up a test-bed with Ribek's scene
 
-Texture filtering changes:
- - Each sampler state gets a unique ID
- - I store this ID along with the sampler override
- - Every frame I run as pass over all renderable elements a check if their override
-   sampler states match the original IDs, and recreate them if not (do this at start of rendering in renderAll core)
-     - TODO - This can be potentially slower than needed. Optiomally I'd like to figure out a better way.
- - Whenever render settings are marked as dirty and filtering settings have changed run over all elements recreating their
-   sampler state overrides
- - Issue with state caching: State caching doesn't work when deserializing
-
+Issue with state caching: State caching doesn't work when deserializing
 Rename BansheeRenderer to RenderBeast
 
 Need cone to use when rendering spot light

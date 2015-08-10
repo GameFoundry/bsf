@@ -490,7 +490,7 @@ namespace BansheeEngine
 		{
 			SPtr<TPassParameters<Core>> params = *iter;
 
-			for (UINT32 i = 0; i < params->getNumParams(); i++)
+			for (UINT32 i = 0; i < TPassParameters<Core>::NUM_PARAMS; i++)
 			{
 				GpuParamsType& paramPtr = params->getParamByIdx(i);
 				if (paramPtr)
@@ -526,7 +526,7 @@ namespace BansheeEngine
 		{
 			SPtr<TPassParameters<Core>> params = *iter;
 
-			for (UINT32 i = 0; i < params->getNumParams(); i++)
+			for (UINT32 i = 0; i < TPassParameters<Core>::NUM_PARAMS; i++)
 			{
 				GpuParamsType& paramPtr = params->getParamByIdx(i);
 				if (paramPtr)
@@ -562,7 +562,7 @@ namespace BansheeEngine
 		{
 			SPtr<TPassParameters<Core>> params = *iter;
 
-			for (UINT32 i = 0; i < params->getNumParams(); i++)
+			for (UINT32 i = 0; i < TPassParameters<Core>::NUM_PARAMS; i++)
 			{
 				GpuParamsType& paramPtr = params->getParamByIdx(i);
 				if (paramPtr)
@@ -597,7 +597,7 @@ namespace BansheeEngine
 		{
 			SPtr<TPassParameters<Core>> params = *iter;
 
-			for (UINT32 i = 0; i < params->getNumParams(); i++)
+			for (UINT32 i = 0; i < TPassParameters<Core>::NUM_PARAMS; i++)
 			{
 				GpuParamsType& paramPtr = params->getParamByIdx(i);
 				if (paramPtr)
@@ -628,7 +628,7 @@ namespace BansheeEngine
 		{
 			SPtr<TPassParameters<Core>> params = *iter;
 
-			for (UINT32 i = 0; i < params->getNumParams(); i++)
+			for (UINT32 i = 0; i < TPassParameters<Core>::NUM_PARAMS; i++)
 			{
 				GpuParamsType& paramPtr = params->getParamByIdx(i);
 				if (paramPtr)
@@ -715,7 +715,7 @@ namespace BansheeEngine
 			{
 				SPtr<TPassParameters<Core>> params = *iter;
 
-				for (UINT32 i = 0; i < params->getNumParams(); i++)
+				for (UINT32 i = 0; i < TPassParameters<Core>::NUM_PARAMS; i++)
 				{
 					GpuParamsType& paramPtr = params->getParamByIdx(i);
 					if (paramPtr)
@@ -902,7 +902,7 @@ namespace BansheeEngine
 		{
 			SPtr<TPassParameters<Core>> params = *iter;
 
-			for (UINT32 i = 0; i < params->getNumParams(); i++)
+			for (UINT32 i = 0; i < TPassParameters<Core>::NUM_PARAMS; i++)
 			{
 				GpuParamsType& paramPtr = params->getParamByIdx(i);
 				if (paramPtr)
@@ -1164,8 +1164,7 @@ namespace BansheeEngine
 
 		for (auto& params : mParametersPerPass)
 		{
-			UINT32 numParams = params->getNumParams();
-			for (UINT32 i = 0; i < numParams; i++)
+			for (UINT32 i = 0; i < PassParameters::NUM_PARAMS; i++)
 			{
 				GpuParamsPtr gpuParams = params->getParamByIdx(i);
 				if (gpuParams != nullptr)

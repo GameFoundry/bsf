@@ -46,13 +46,6 @@ namespace BansheeEngine
 		SPtr<MaterialCore> material;
 
 		/**
-		 * @brief	Optional overrides for material sampler states.
-		 *			Used when renderer wants to override certain sampling
-		 *			properties on a global scale (e.g. filtering most commonly).
-		 */
-		SPtr<SamplerStateCore>** samplerOverrides;
-
-		/**
 		 * @brief	Custom data that may optionally be set by the RenderableHanbdler.
 		 */
 		Any rendererData;

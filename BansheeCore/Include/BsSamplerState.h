@@ -95,6 +95,11 @@ namespace BansheeEngine
 		 */
 		UINT64 getHash() const { return mHash; }
 
+		/**
+		 * @brief	Returns the descriptor originally used for creating the sampler state.
+		 */
+		SAMPLER_STATE_DESC getDesc() const { return mData; }
+
 	protected:
 		friend class SamplerState;
 		friend class SamplerStateCore;

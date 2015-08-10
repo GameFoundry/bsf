@@ -9,6 +9,7 @@
 #include "BsBlendState.h"
 #include "BsRasterizerState.h"
 #include "BsDepthStencilState.h"
+#include "BsSamplerState.h"
 #include "BsCoreApplication.h"
 #include "BsViewport.h"
 #include "BsRenderTarget.h"
@@ -30,6 +31,7 @@
 #include "BsFrameAlloc.h"
 #include "BsCoreObjectManager.h"
 #include "BsRenderBeastOptions.h"
+#include "BsSamplerOverrides.h"
 
 using namespace std::placeholders;
 
@@ -80,6 +82,8 @@ namespace BansheeEngine
 		mCameraData.clear();
 		mRenderables.clear();
 
+		assert(mSamplerOverrides.empty());
+
 		mDummyMaterial = nullptr;
 	}
 
@@ -107,8 +111,8 @@ namespace BansheeEngine
 			const MeshProperties& meshProps = mesh->getProperties();
 			for (UINT32 i = 0; i < meshProps.getNumSubMeshes(); i++)
 			{
-				renderableData.elements.push_back(RenderableElement());
-				RenderableElement& renElement = renderableData.elements.back();
+				renderableData.elements.push_back(BeastRenderableElement());
+				BeastRenderableElement& renElement = renderableData.elements.back();
 
 				renElement.mesh = mesh;
 				renElement.subMesh = meshProps.getSubMesh(i);
@@ -120,7 +124,20 @@ namespace BansheeEngine
 				if (renElement.material == nullptr)
 					renElement.material = mDummyMaterial;
 
-				renElement.samplerOverrides = nullptr; // TODO
+				auto iterFind = mSamplerOverrides.find(renElement.material);
+				if (iterFind != mSamplerOverrides.end())
+				{
+					renElement.samplerOverrides = iterFind->second;
+					iterFind->second->refCount++;
+				}
+				else
+				{
+					MaterialSamplerOverrides* samplerOverrides = SamplerOverrideUtility::generateSamplerOverrides(renElement.material, mCoreOptions);
+					mSamplerOverrides[renElement.material] = samplerOverrides;
+
+					renElement.samplerOverrides = samplerOverrides;
+					samplerOverrides->refCount++;
+				}
 
 				if (renderableData.controller != nullptr)
 					renderableData.controller->initializeRenderElem(renElement);
@@ -133,6 +150,23 @@ namespace BansheeEngine
 		UINT32 renderableId = renderable->getRendererId();
 		RenderableHandlerCore* lastRenerable = mRenderables.back().renderable;
 		UINT32 lastRenderableId = lastRenerable->getRendererId();
+
+		Vector<BeastRenderableElement>& elements = mRenderables[renderableId].elements;
+		for (auto& element : elements)
+		{
+			auto iterFind = mSamplerOverrides.find(element.material);
+			assert(iterFind != mSamplerOverrides.end());
+
+			MaterialSamplerOverrides* samplerOverrides = iterFind->second;
+			samplerOverrides->refCount--;
+			if (samplerOverrides->refCount == 0)
+			{
+				SamplerOverrideUtility::destroySamplerOverrides(samplerOverrides);
+				mSamplerOverrides.erase(iterFind);
+			}
+
+			element.samplerOverrides = nullptr;
+		}
 
 		if (renderableId != lastRenderableId)
 		{
@@ -252,9 +286,7 @@ namespace BansheeEngine
 			filteringChanged |= mCoreOptions->anisotropyMax != options.anisotropyMax;
 
 		if (filteringChanged)
-		{
-			// TODO - Rebuild sample overrides
-		}
+			refreshSamplerOverrides(true);
 
 		*mCoreOptions = options;
 	}
@@ -262,6 +294,11 @@ namespace BansheeEngine
 	void BansheeRenderer::renderAllCore(float time)
 	{
 		THROW_IF_NOT_CORE_THREAD;
+
+		// Note: I'm iterating over all sampler states every frame. If this ends up being a performance
+		// issue consider handling this internally in MaterialCore which can only do it when sampler states
+		// are actually modified after sync
+		refreshSamplerOverrides();
 
 		// Update global per-frame hardware buffers
 		mLitTexHandler->updatePerFrameBuffers(time);
@@ -398,7 +435,7 @@ namespace BansheeEngine
 				{
 					SPtr<PassParametersCore> passParams = renderElem.material->getPassParameters(i);
 
-					for (UINT32 j = 0; j < passParams->getNumParams(); j++)
+					for (UINT32 j = 0; j < PassParametersCore::NUM_PARAMS; j++)
 					{
 						SPtr<GpuParamsCore> params = passParams->getParamByIdx(j);
 						if (params != nullptr)
@@ -433,9 +470,9 @@ namespace BansheeEngine
 		{
 			SPtr<MaterialCore> material = iter->material;
 
-			RenderableElement* renderable = iter->renderElem;
+			BeastRenderableElement* renderable = static_cast<BeastRenderableElement*>(iter->renderElem);
 			if (renderable != nullptr && renderable->samplerOverrides != nullptr)
-				setPass(material, iter->passIdx, renderable->samplerOverrides[iter->passIdx]);
+				setPass(material, iter->passIdx, &renderable->samplerOverrides->passes[iter->passIdx]);
 			else
 				setPass(material, iter->passIdx, nullptr);
 
@@ -457,7 +494,60 @@ namespace BansheeEngine
 		}
 	}
 
-	void BansheeRenderer::setPass(const SPtr<MaterialCore>& material, UINT32 passIdx, SPtr<SamplerStateCore>* samplerOverrides)
+	void BansheeRenderer::refreshSamplerOverrides(bool force)
+	{
+		for (auto& entry : mSamplerOverrides)
+		{
+			SPtr<MaterialCore> material = entry.first;
+
+			if (force)
+			{
+				SamplerOverrideUtility::destroySamplerOverrides(entry.second);
+				entry.second = SamplerOverrideUtility::generateSamplerOverrides(material, mCoreOptions);
+			}
+			else
+			{
+				MaterialSamplerOverrides* materialOverrides = entry.second;
+				UINT32 numPasses = material->getNumPasses();
+
+				assert(numPasses == materialOverrides->numPasses);
+				for (UINT32 i = 0; i < numPasses; i++)
+				{
+					SPtr<PassParametersCore> passParams = material->getPassParameters(i);
+					PassSamplerOverrides& passOverrides = materialOverrides->passes[i];
+
+					for (UINT32 j = 0; j < PassParametersCore::NUM_PARAMS; j++)
+					{
+						StageSamplerOverrides& stageOverrides = passOverrides.stages[j];
+
+						SPtr<GpuParamsCore> params = passParams->getParamByIdx(j);
+						if (params == nullptr)
+							continue;
+
+						const GpuParamDesc& paramDesc = params->getParamDesc();
+
+						for (auto iter = paramDesc.samplers.begin(); iter != paramDesc.samplers.end(); ++iter)
+						{
+							UINT32 slot = iter->second.slot;
+							SPtr<SamplerStateCore> samplerState = params->getSamplerState(slot);
+
+							assert(stageOverrides.numStates > slot);
+
+							if (samplerState != stageOverrides.stateOverrides[slot])
+							{
+								if (samplerState != nullptr)
+									stageOverrides.stateOverrides[slot] = SamplerOverrideUtility::generateSamplerOverride(samplerState, mCoreOptions);
+								else
+									stageOverrides.stateOverrides[slot] = nullptr;
+							}	
+						}
+					}
+				}
+			}
+		}
+	}
+
+	void BansheeRenderer::setPass(const SPtr<MaterialCore>& material, UINT32 passIdx, PassSamplerOverrides* samplerOverrides)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -519,7 +609,7 @@ namespace BansheeEngine
 					SPtr<SamplerStateCore> samplerState;
 						
 					if (samplerOverrides != nullptr)
-						samplerState = samplerOverrides[iter->second.slot];
+						samplerState = samplerOverrides->stages[i].stateOverrides[iter->second.slot];
 					else
 						samplerState = params->getSamplerState(iter->second.slot);
 

@@ -245,6 +245,7 @@
     <ClInclude Include="Include\BsBansheeRendererPrerequisites.h" />
     <ClInclude Include="Include\BsRenderBeastOptions.h" />
     <ClInclude Include="Include\BsRenderTexturePool.h" />
+    <ClInclude Include="Include\BsSamplerOverrides.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsLitTexRenderableController.cpp" />
@@ -252,6 +253,7 @@
     <ClCompile Include="Source\BsBansheeRendererFactory.cpp" />
     <ClCompile Include="Source\BsBansheeRendererPlugin.cpp" />
     <ClCompile Include="Source\BsRenderTexturePool.cpp" />
+    <ClCompile Include="Source\BsSamplerOverrides.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

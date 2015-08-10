@@ -46,19 +46,17 @@ namespace BansheeEngine
 			(*paramArray[idx]) = params;
 		}
 
-		/**
-		 * @brief	Returns the total number of stored sets of 
-		 * 			GPU parameters in this object.
-		 */
-		UINT32 getNumParams() const { return 6; }
-
 		GpuParamsType mVertParams;
 		GpuParamsType mFragParams;
 		GpuParamsType mGeomParams;
 		GpuParamsType mHullParams;
 		GpuParamsType mDomainParams;
 		GpuParamsType mComputeParams;
+
+		static const UINT32 NUM_PARAMS;
 	};
+
+	template<bool Core> const UINT32 TPassParameters<Core>::NUM_PARAMS = 6;
 
 	template<bool Core> struct TGpuParamBlockBufferPtrType { };
 	template<> struct TGpuParamBlockBufferPtrType<false> { typedef SPtr<GpuParamBlockBuffer> Type; };
