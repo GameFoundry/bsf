@@ -221,7 +221,11 @@ namespace BansheeEngine
 				if (treeElement->mFoldoutBtn != nullptr)
 					onFoldout = treeElement->mFoldoutBtn->_getClippedBounds().contains(event.getPosition());
 
-				if (!onFoldout)
+				bool onEditElement = false;
+				if (mEditElement != nullptr)
+					onEditElement = treeElement == mEditElement;
+
+				if (!onFoldout && !onEditElement)
 				{
 					if (event.isCtrlDown())
 					{
@@ -334,7 +338,7 @@ namespace BansheeEngine
 
 			if(!DragAndDropManager::instance().isDragInProgress())
 			{
-				if(dist > DRAG_MIN_DISTANCE)
+				if(dist > DRAG_MIN_DISTANCE && mEditElement == nullptr)
 				{
 					const GUITreeView::InteractableElement* element = findElementUnderCoord(mDragStartPosition);
 					TreeElement* treeElement = nullptr;
@@ -841,6 +845,7 @@ namespace BansheeEngine
 
 		mEditElement = element;
 		mNameEditBox->enableRecursively();
+		mNameEditBox->setText(toWString(element->mName));
 		mNameEditBox->setFocus(true);
 
 		if(element->mElement != nullptr)
@@ -860,7 +865,9 @@ namespace BansheeEngine
 			renameTreeElement(mEditElement, newName);
 		}
 
+		mNameEditBox->setFocus(false);
 		mNameEditBox->disableRecursively();
+		selectElement(mEditElement);
 		mEditElement = nullptr;
 	}
 

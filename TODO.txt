@@ -55,12 +55,11 @@ Code quality improvements:
 Polish
 
 SceneTreeView
+ - When having scene window in focus and then right clicking on Hierarchy the cursor becomes invisible
  - Test: 
-    - Cut/Copy/Paste/duplicate
+    - Cut/Copy/Paste/duplicate/Delete
     - Context menu
-	- Ignore shortcuts when out of focus
     - Creating new objects
-	- Clicking on an already selected element should start rename
 
 Ribek use:
  - Camera, Renderable, Material, Texture inspector
@@ -96,8 +95,6 @@ First screenshot:
 Other polish:
  - C# inspectors for Point/Spot/Directional light
  - C# interface for Font
- - Hook up ping effect so that when resource/gameobject/texture field is clicked it triggers a ping in
-   ProjectWindow or HierarchyWindow. (Likely add Selection.Ping method and Selection.OnPing callback)
  - Handle seems to lag behind the selected mesh
  - ProjectLibrary seems to import some files on every start-up
  - Crash on shutdown in mono_gchandle_free

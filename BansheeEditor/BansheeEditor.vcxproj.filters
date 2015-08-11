@@ -270,6 +270,9 @@
     <ClInclude Include="Include\BsCmdCloneSO.h">
       <Filter>Header Files\Commands</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsCmdInstantiateSO.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsEditorCommand.cpp">
@@ -486,6 +489,9 @@
       <Filter>Source Files\Commands</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsCmdCloneSO.cpp">
+      <Filter>Source Files\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsCmdInstantiateSO.cpp">
       <Filter>Source Files\Commands</Filter>
     </ClCompile>
   </ItemGroup>

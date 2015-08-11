@@ -7,6 +7,7 @@
 #include "BsCmdDeleteSO.h"
 #include "BsCmdCloneSO.h"
 #include "BsCmdCreateSO.h"
+#include "BsCmdInstantiateSO.h"
 #include "BsDragAndDropManager.h"
 #include "BsSelection.h"
 #include "BsGUIResourceTreeView.h"
@@ -237,7 +238,7 @@ namespace BansheeEngine
 
 		HSceneObject so = sceneTreeElement->mSceneObject;
 		CmdRecordSO::execute(so, L"Renamed \"" + toWString(so->getName()) + L"\"");
-		so->setName("mName");
+		so->setName(toString(name));
 	}
 
 	void GUISceneTreeView::deleteTreeElement(TreeElement* element)
@@ -331,7 +332,7 @@ namespace BansheeEngine
 
 						if (prefab != nullptr)
 						{
-							HSceneObject instance = prefab->instantiate();
+							HSceneObject instance = CmdInstantiateSO::execute(prefab, L"Instantiated " + prefab->getName());
 
 							if (newParent != nullptr)
 								instance->setParent(newParent);
@@ -579,6 +580,9 @@ namespace BansheeEngine
 		}
 
 		updateTreeElementHierarchy();
+
+		TreeElement* newTreeElement = findTreeElement(newSO);
+		expandToElement(newTreeElement);
 		setSelection({ newSO });
 		renameSelected();
 	}

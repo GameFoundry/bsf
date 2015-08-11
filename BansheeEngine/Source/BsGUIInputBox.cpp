@@ -80,18 +80,21 @@ namespace BansheeEngine
 			WString oldText = mText;
 			mText = text;
 
-			TEXT_SPRITE_DESC textDesc = getTextDesc();
-			Vector2I offset = getTextOffset();
+			if (mHasFocus)
+			{
+				TEXT_SPRITE_DESC textDesc = getTextDesc();
+				Vector2I offset = getTextOffset();
 
-			gGUIManager().getInputCaretTool()->updateText(this, textDesc);
-			gGUIManager().getInputSelectionTool()->updateText(this, textDesc);
+				gGUIManager().getInputCaretTool()->updateText(this, textDesc);
+				gGUIManager().getInputSelectionTool()->updateText(this, textDesc);
 
-			if(mText.size() > 0)
-				gGUIManager().getInputCaretTool()->moveCaretToChar((UINT32)mText.size() - 1, CARET_AFTER);
-			else
-				gGUIManager().getInputCaretTool()->moveCaretToChar(0, CARET_BEFORE);
+				if (mText.size() > 0)
+					gGUIManager().getInputCaretTool()->moveCaretToChar((UINT32)mText.size() - 1, CARET_AFTER);
+				else
+					gGUIManager().getInputCaretTool()->moveCaretToChar(0, CARET_BEFORE);
 
-			scrollTextToCaret();
+				scrollTextToCaret();
+			}
 
 			Vector2I newSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
 			if (origSize != newSize)
