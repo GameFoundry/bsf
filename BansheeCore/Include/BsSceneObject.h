@@ -484,7 +484,12 @@ namespace BansheeEngine
 			mComponents.push_back(newComponent);
 
 			if (isInstantiated())
-				newComponent->onInitialized();
+			{
+				if (getActive())
+					newComponent->onInitialized();
+
+				newComponent->onEnabled();
+			}
 
 			return newComponent;
 		}

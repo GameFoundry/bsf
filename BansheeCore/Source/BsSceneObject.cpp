@@ -78,12 +78,18 @@ namespace BansheeEngine
 
 			for (auto iter = mComponents.begin(); iter != mComponents.end(); ++iter)
 			{
-				(*iter)->_setIsDestroyed();
+				HComponent component = *iter;
+				component->_setIsDestroyed();
 
 				if (isInstantiated())
-					(*iter)->onDestroyed();
+				{
+					if (getActive())
+						component->onDisabled();
 
-				(*iter)->destroyInternal(*iter, true);
+					component->onDestroyed();
+				}
+
+				component->destroyInternal(*iter, true);
 			}
 
 			mComponents.clear();
@@ -172,7 +178,12 @@ namespace BansheeEngine
 			gCoreSceneManager().registerNewSO(mThisHandle);
 
 		for (auto& component : mComponents)
+		{
 			component->onInitialized();
+
+			if (getActive())
+				component->onEnabled();
+		}
 
 		for (auto& child : mChildren)
 			child->instantiate();
@@ -535,8 +546,24 @@ namespace BansheeEngine
 
 	void SceneObject::setActiveHierarchy(bool active) 
 	{ 
-		mActiveHierarchy = active && mActiveSelf; 
+		bool activeHierarchy = active && mActiveSelf;
 
+		if (mActiveHierarchy != activeHierarchy)
+		{
+			mActiveHierarchy = activeHierarchy;
+
+			if (activeHierarchy)
+			{
+				for (auto& component : mComponents)
+					component->onEnabled();
+			}
+			else
+			{
+				for (auto& component : mComponents)
+					component->onDisabled();
+			}
+		}
+		
 		for (auto child : mChildren)
 		{
 			child->setActiveHierarchy(mActiveHierarchy);
@@ -591,7 +618,12 @@ namespace BansheeEngine
 			(*iter)->_setIsDestroyed();
 
 			if (isInstantiated())
+			{
+				if (getActive())
+					component->onDisabled();
+
 				(*iter)->onDestroyed();
+			}
 			
 			(*iter)->destroyInternal(*iter, immediate);
 			mComponents.erase(iter);

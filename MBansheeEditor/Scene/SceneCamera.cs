@@ -50,6 +50,12 @@ namespace BansheeEditor
             verticalAxis = new VirtualAxis(VerticalAxisBinding);
         }
 
+        private void OnDisable()
+        {
+            if (VirtualInput.IsButtonHeld(rotateBtn))
+                Cursor.Show();
+        }
+
         private void Update()
         {
 		    bool goingForward = VirtualInput.IsButtonHeld(moveForwardBtn);

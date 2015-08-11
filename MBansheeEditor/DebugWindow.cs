@@ -11,8 +11,6 @@ namespace BansheeEditor
 {
     internal class DebugWindow : EditorWindow
     {
-        bool debugSlowDown = false;
-
         private void OnInitialize()
         {
             GUIButton refreshAssembly = new GUIButton("Refresh assembly");
@@ -65,7 +63,6 @@ namespace BansheeEditor
         void OpenColorPicker()
         {
             ColorPicker.Show();
-            debugSlowDown = true;
         }
 
         void OnEditorUpdate()

@@ -56,7 +56,6 @@ Polish
 
 SceneTreeView
  - When having scene window in focus and then right clicking on Hierarchy the cursor becomes invisible
- - Creating a new SO causes an exception
  - Duplicating a mesh doesn't properly render the mesh
 
 Ribek use:

@@ -13,13 +13,13 @@ namespace BansheeEngine
 {
 	ManagedComponent::ManagedComponent()
 		:mManagedInstance(nullptr), mUpdateThunk(nullptr), mOnDestroyThunk(nullptr), mOnInitializedThunk(nullptr), 
-		mOnResetThunk(nullptr), mMissingType(false), mRequiresReset(true)
+		mOnResetThunk(nullptr), mMissingType(false), mRequiresReset(true), mOnEnabledThunk(nullptr), mOnDisabledThunk(nullptr)
 	{ }
 
 	ManagedComponent::ManagedComponent(const HSceneObject& parent, MonoReflectionType* runtimeType)
 		: Component(parent), mManagedInstance(nullptr), mRuntimeType(runtimeType), mUpdateThunk(nullptr), 
 		mOnDestroyThunk(nullptr), mOnInitializedThunk(nullptr), mOnResetThunk(nullptr), mMissingType(false),
-		mRequiresReset(true)
+		mRequiresReset(true), mOnEnabledThunk(nullptr), mOnDisabledThunk(nullptr)
 	{
 		MonoType* monoType = mono_reflection_type_get_type(mRuntimeType);
 		::MonoClass* monoClass = mono_type_get_class(monoType);
@@ -94,6 +94,8 @@ namespace BansheeEngine
 			mOnInitializedThunk = nullptr;
 			mUpdateThunk = nullptr;
 			mOnDestroyThunk = nullptr;
+			mOnEnabledThunk = nullptr;
+			mOnDisabledThunk = nullptr;
 		}
 
 		return backupData;
@@ -158,6 +160,14 @@ namespace BansheeEngine
 			MonoMethod* onDestroyMethod = managedClass->getMethod("OnDestroy", 0);
 			if (onDestroyMethod != nullptr)
 				mOnDestroyThunk = (OnDestroyedThunkDef)onDestroyMethod->getThunk();
+
+			MonoMethod* onDisableMethod = managedClass->getMethod("OnDisable", 0);
+			if (onDisableMethod != nullptr)
+				mOnDisabledThunk = (OnDisabledThunkDef)onDisableMethod->getThunk();
+
+			MonoMethod* onEnableMethod = managedClass->getMethod("OnEnable", 0);
+			if (onEnableMethod != nullptr)
+				mOnEnabledThunk = (OnInitializedThunkDef)onEnableMethod->getThunk();
 		}
 	}
 
@@ -230,6 +240,30 @@ namespace BansheeEngine
 		{
 			mManagedInstance = nullptr;
 			mono_gchandle_free(mManagedHandle);
+		}
+	}
+
+	void ManagedComponent::onEnabled()
+	{
+		assert(mManagedInstance != nullptr);
+
+		if (mOnEnabledThunk != nullptr)
+		{
+			// Note: Not calling virtual methods. Can be easily done if needed but for now doing this
+			// for some extra speed.
+			MonoUtil::invokeThunk(mOnEnabledThunk, mManagedInstance);
+		}
+	}
+
+	void ManagedComponent::onDisabled()
+	{
+		assert(mManagedInstance != nullptr);
+
+		if (mOnDisabledThunk != nullptr)
+		{
+			// Note: Not calling virtual methods. Can be easily done if needed but for now doing this
+			// for some extra speed.
+			MonoUtil::invokeThunk(mOnDisabledThunk, mManagedInstance);
 		}
 	}
 

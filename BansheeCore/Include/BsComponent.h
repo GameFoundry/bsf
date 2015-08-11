@@ -57,6 +57,16 @@ namespace BansheeEngine
 		virtual void onDestroyed() {}
 
 		/**
+		 * @brief	Called just before the component is deactivated or destroyed.
+		 */
+		virtual void onDisabled() {}
+
+		/**
+		 * @brief	Called when the component is activated or created.
+		 */
+		virtual void onEnabled() {}
+
+		/**
 		 * @brief	Destroys this component.
 		 *
 		 * @param [in]	handle		Game object handle this this object.

@@ -75,10 +75,6 @@ namespace BansheeEditor
 
         private FolderMonitor monitor;
 
-        // DEBUG ONLY
-        Debug_Component1 dbgComponent;
-        // END DEBUG ONLY
-
         internal EditorApplication()
         {
             instance = this;
@@ -106,19 +102,6 @@ namespace BansheeEditor
             monitor.OnAdded += OnAssetModified;
             monitor.OnRemoved += OnAssetModified;
             monitor.OnModified += OnAssetModified;
-
-            // DEBUG ONLY
-
-            //SceneObject newDbgObject = new SceneObject("NewDbgObject");
-            //dbgComponent = newDbgObject.AddComponent<Debug_Component1>();
-            //newDbgObject.AddComponent<Debug_Component2>();
-
-            //SceneObject gizmoDbgObject = new SceneObject("GizmoDebug");
-           // gizmoDbgObject.AddComponent<DbgGizmoComponent>();
-            //ProgressBar.Show("Test", 0.5f);
-            //ColorPicker.Show();
-
-            // DEBUG ONLY END
         }
 
         private void OnAssetModified(string path)
@@ -129,13 +112,6 @@ namespace BansheeEditor
         internal void OnEditorUpdate()
         {
             ProjectLibrary.Update();
-
-            // DEBUG ONLY
-
-            //if (dbgComponent != null)
-            //    dbgComponent.intArray[0] = dbgComponent.intArray[0] + 1;
-
-            // DEBUG ONLY END
         }
 
         [MenuItem("File/Save Prefab", ButtonModifier.Ctrl, ButtonCode.S)]

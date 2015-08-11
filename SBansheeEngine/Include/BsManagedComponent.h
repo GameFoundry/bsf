@@ -88,6 +88,8 @@ namespace BansheeEngine
 		typedef void(__stdcall *UpdateThunkDef) (MonoObject*, MonoException**);
 		typedef void(__stdcall *OnDestroyedThunkDef) (MonoObject*, MonoException**);
 		typedef void(__stdcall *OnResetThunkDef) (MonoObject*, MonoException**);
+		typedef void(__stdcall *OnEnabledThunkDef) (MonoObject*, MonoException**);
+		typedef void(__stdcall *OnDisabledThunkDef) (MonoObject*, MonoException**);
 
 		MonoObject* mManagedInstance;
 		MonoReflectionType* mRuntimeType;
@@ -106,6 +108,8 @@ namespace BansheeEngine
 		UpdateThunkDef mUpdateThunk;
 		OnResetThunkDef mOnResetThunk;
 		OnDestroyedThunkDef mOnDestroyThunk;
+		OnDestroyedThunkDef mOnDisabledThunk;
+		OnDestroyedThunkDef mOnEnabledThunk;
 
 		/************************************************************************/
 		/* 							COMPONENT OVERRIDES                    		*/
@@ -126,6 +130,16 @@ namespace BansheeEngine
 		 * @copydoc	Component::onDestroyed
 		 */
 		void onDestroyed() override;
+
+		/**
+		 * @copydoc	Component::onEnabled 
+		 */
+		void onEnabled() override;
+
+		/**
+		 * @copydoc	Component::onDisabled 
+		 */
+		void onDisabled() override;
 
 	public:
 		/**
