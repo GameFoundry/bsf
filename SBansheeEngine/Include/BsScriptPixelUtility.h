@@ -7,12 +7,20 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Interop class between C++ & CLR for PixelUtility.
+	 */
 	class BS_SCR_BE_EXPORT ScriptPixelUtility : public ScriptObject <ScriptPixelUtility>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "PixelUtility")
 
 	private:
+		ScriptPixelUtility(MonoObject* instance);
+
+		/************************************************************************/
+		/* 								CLR HOOKS						   		*/
+		/************************************************************************/
 		static void internal_getMemorySize(UINT32 width, UINT32 height, UINT32 depth, PixelFormat format, UINT32* value);
 		static void internal_hasAlpha(PixelFormat format, bool* value);
 		static void internal_isFloatingPoint(PixelFormat format, bool* value);
@@ -24,7 +32,5 @@ namespace BansheeEngine
 		static MonoArray* internal_generateMipmaps(MonoObject* source, MipMapGenOptions options);
 		static MonoObject* internal_scale(MonoObject* source, PixelVolume newSize, PixelUtil::Filter filter);
 		static void internal_applyGamma(MonoObject* source, float gamma);
-
-		ScriptPixelUtility(MonoObject* instance);
 	};
 }

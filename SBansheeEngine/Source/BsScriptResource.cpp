@@ -20,6 +20,11 @@ namespace BansheeEngine
 		PersistentScriptObjectBase::endRefresh(backupData);
 	}
 
+	void ScriptResource::initRuntimeData()
+	{
+		
+	}
+
 	ScriptResourceType ScriptResource::getTypeFromTypeId(UINT32 typeId)
 	{
 		switch (typeId)

@@ -538,7 +538,7 @@ namespace BansheeEngine
 								if (samplerState != nullptr)
 									stageOverrides.stateOverrides[slot] = SamplerOverrideUtility::generateSamplerOverride(samplerState, mCoreOptions);
 								else
-									stageOverrides.stateOverrides[slot] = nullptr;
+									stageOverrides.stateOverrides[slot] = SamplerOverrideUtility::generateSamplerOverride(SamplerStateCore::getDefault(), mCoreOptions);;
 							}	
 						}
 					}

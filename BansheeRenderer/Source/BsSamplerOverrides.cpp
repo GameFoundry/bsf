@@ -87,7 +87,7 @@ namespace BansheeEngine
 
 						SPtr<SamplerStateCore> samplerState = params->getSamplerState(slot);
 						if (samplerState == nullptr)
-							continue;
+							samplerState = SamplerStateCore::getDefault();
 
 						bool needsOverride = checkNeedsOverride(samplerState, options);
 

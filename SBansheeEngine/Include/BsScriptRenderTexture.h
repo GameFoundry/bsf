@@ -5,6 +5,9 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Interop class between C++ & CLR for RenderTexture.
+	 */
 	class BS_SCR_BE_EXPORT ScriptRenderTexture : public ScriptObject <ScriptRenderTexture, ScriptRenderTargetBase>
 	{
 	public:

@@ -6,6 +6,9 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Valid index types for mesh indices.
+	 */
 	// Note: Do not modify, it must match the layout of C# enum IndexType
 	enum class ScriptIndexType
 	{
@@ -13,21 +16,51 @@ namespace BansheeEngine
 		Index32
 	};
 
+	/**
+	 * @brief	Interop class between C++ & CLR for RendererMeshData.
+	 */
 	class BS_SCR_BE_EXPORT ScriptMeshData : public ScriptObject <ScriptMeshData>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "MeshData")
 
+		/**
+		 * @brief	Returns the internal wrapped mesh data.
+		 */
 		RendererMeshDataPtr getInternalValue() const { return mMeshData; }
 
+		/**
+		 * @brief	Creates a new managed MeshData object from the provided
+		 *			native render mesh data.
+		 */
 		static MonoObject* create(const RendererMeshDataPtr& meshData);
+
+		/**
+		 * @brief	Creates a new managed MeshData object from the provided
+		 *			native mesh data.
+		 */
 		static MonoObject* create(const MeshDataPtr& meshData);
 	private:
 		ScriptMeshData(MonoObject* managedInstance);
 		~ScriptMeshData();
 
+		/**
+		 * @brief	Initializes the object. Must be called after construction
+		 *			and before use.
+		 */
 		void initialize(const RendererMeshDataPtr& meshData);
 
+		/**
+		 * @brief	Checks is the underlying mesh data of the provided object locked.
+		 *			When locked mesh data cannot be accessed.
+		 */
+		static bool checkIsLocked(ScriptMeshData* thisPtr);
+
+		RendererMeshDataPtr mMeshData;
+
+		/************************************************************************/
+		/* 								CLR HOOKS						   		*/
+		/************************************************************************/
 		static void internal_CreateInstance(MonoObject* instance, int numVertices,
 			int numIndices, VertexLayout vertex, ScriptIndexType index);
 		static MonoArray* internal_GetPositions(ScriptMeshData* thisPtr);
@@ -48,9 +81,5 @@ namespace BansheeEngine
 		static void internal_SetIndices(ScriptMeshData* thisPtr, MonoArray* value);
 		static int internal_GetVertexCount(ScriptMeshData* thisPtr);
 		static int internal_GetIndexCount(ScriptMeshData* thisPtr);
-
-		static bool checkIsLocked(ScriptMeshData* thisPtr);
-		
-		RendererMeshDataPtr mMeshData;
 	};
 }

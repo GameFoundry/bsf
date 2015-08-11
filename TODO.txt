@@ -54,9 +54,10 @@ Code quality improvements:
 ----------------------------------------------------------------------
 Polish
 
-SceneTreeView
- - When having scene window in focus and then right clicking on Hierarchy the cursor becomes invisible
  - Duplicating a mesh doesn't properly render the mesh
+  - It seems to be due to renderables sharing materials. I generate a separate per-object buffer per each
+    renderable (but maybe I shouldn't? Just generate the one and update it before rendering) and then assign
+	it to the same MaterialCore which means whichever one was applied last was the one that sticks.
 
 Ribek use:
  - Camera, Renderable, Material, Texture inspector

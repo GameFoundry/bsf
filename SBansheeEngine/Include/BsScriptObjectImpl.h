@@ -6,6 +6,9 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Interop class between C++ & CLR for ScriptObject.
+	 */
 	class BS_SCR_BE_EXPORT ScriptObjectImpl : public ScriptObject<ScriptObjectImpl>
 	{
 	public:
@@ -14,6 +17,9 @@ namespace BansheeEngine
 	private:
 		ScriptObjectImpl(MonoObject* instance);
 
+		/************************************************************************/
+		/* 								CLR HOOKS						   		*/
+		/************************************************************************/
 		static void internal_managedInstanceDeleted(ScriptObjectBase* instance);
 	};
 }
