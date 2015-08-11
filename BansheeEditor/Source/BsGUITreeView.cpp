@@ -227,96 +227,107 @@ namespace BansheeEngine
 
 				if (!onFoldout && !onEditElement)
 				{
-					if (event.isCtrlDown())
+					if (event.getButton() == GUIMouseButton::Left)
 					{
-						selectElement(treeElement);
-					}
-					else if (event.isShiftDown())
-					{
-						if (isSelectionActive())
-						{
-							TreeElement* selectionRoot = mSelectedElements[0].element;
-							unselectAll();
-
-							auto iterStartFind = std::find_if(mVisibleElements.begin(), mVisibleElements.end(),
-								[&](const InteractableElement& x) { return x.parent == selectionRoot->mParent; });
-
-							bool foundStart = false;
-							bool foundEnd = false;
-							for (; iterStartFind != mVisibleElements.end(); ++iterStartFind)
-							{
-								if (!iterStartFind->isTreeElement())
-									continue;
-
-								TreeElement* curElem = iterStartFind->getTreeElement();
-								if (curElem == selectionRoot)
-								{
-									foundStart = true;
-									break;
-								}
-							}
-
-							auto iterEndFind = std::find_if(mVisibleElements.begin(), mVisibleElements.end(),
-								[&](const InteractableElement& x) { return &x == element; });
-
-							if (iterEndFind != mVisibleElements.end())
-								foundEnd = true;
-
-							if (foundStart && foundEnd)
-							{
-								if (iterStartFind < iterEndFind)
-								{
-									for (; iterStartFind != (iterEndFind + 1); ++iterStartFind)
-									{
-										if (iterStartFind->isTreeElement())
-											selectElement(iterStartFind->getTreeElement());
-									}
-								}
-								else if (iterEndFind < iterStartFind)
-								{
-									for (; iterEndFind != (iterStartFind + 1); ++iterEndFind)
-									{
-										if (iterEndFind->isTreeElement())
-											selectElement(iterEndFind->getTreeElement());
-									}
-								}
-								else
-									selectElement(treeElement);
-							}
-
-							if (!foundStart || !foundEnd)
-								selectElement(treeElement);
-						}
-						else
+						if (event.isCtrlDown())
 						{
 							selectElement(treeElement);
 						}
-					}
-					else
-					{
-						bool doRename = false;
-						if (isSelectionActive())
+						else if (event.isShiftDown())
 						{
-							for (auto& selectedElem : mSelectedElements)
+							if (isSelectionActive())
 							{
-								if (selectedElem.element == treeElement)
+								TreeElement* selectionRoot = mSelectedElements[0].element;
+								unselectAll();
+
+								auto iterStartFind = std::find_if(mVisibleElements.begin(), mVisibleElements.end(),
+									[&](const InteractableElement& x) { return x.parent == selectionRoot->mParent; });
+
+								bool foundStart = false;
+								bool foundEnd = false;
+								for (; iterStartFind != mVisibleElements.end(); ++iterStartFind)
 								{
-									doRename = true;
-									break;
+									if (!iterStartFind->isTreeElement())
+										continue;
+
+									TreeElement* curElem = iterStartFind->getTreeElement();
+									if (curElem == selectionRoot)
+									{
+										foundStart = true;
+										break;
+									}
 								}
+
+								auto iterEndFind = std::find_if(mVisibleElements.begin(), mVisibleElements.end(),
+									[&](const InteractableElement& x) { return &x == element; });
+
+								if (iterEndFind != mVisibleElements.end())
+									foundEnd = true;
+
+								if (foundStart && foundEnd)
+								{
+									if (iterStartFind < iterEndFind)
+									{
+										for (; iterStartFind != (iterEndFind + 1); ++iterStartFind)
+										{
+											if (iterStartFind->isTreeElement())
+												selectElement(iterStartFind->getTreeElement());
+										}
+									}
+									else if (iterEndFind < iterStartFind)
+									{
+										for (; iterEndFind != (iterStartFind + 1); ++iterEndFind)
+										{
+											if (iterEndFind->isTreeElement())
+												selectElement(iterEndFind->getTreeElement());
+										}
+									}
+									else
+										selectElement(treeElement);
+								}
+
+								if (!foundStart || !foundEnd)
+									selectElement(treeElement);
+							}
+							else
+							{
+								selectElement(treeElement);
 							}
 						}
+						else
+						{
+							bool doRename = false;
+							if (isSelectionActive())
+							{
+								for (auto& selectedElem : mSelectedElements)
+								{
+									if (selectedElem.element == treeElement)
+									{
+										doRename = true;
+										break;
+									}
+								}
+							}
 
+							unselectAll();
+							selectElement(treeElement);
+
+							if (doRename)
+								renameSelected();
+						}
+
+						_markLayoutAsDirty();
+
+						return true;
+					}
+					else if (event.getButton() == GUIMouseButton::Right)
+					{
 						unselectAll();
 						selectElement(treeElement);
+						_markLayoutAsDirty();
 
-						if (doRename)
-							renameSelected();
+						return true;
 					}
-
-					_markLayoutAsDirty();
-
-					return true;
 				}
 			}
 			else
@@ -675,10 +686,13 @@ namespace BansheeEngine
 		Stack<TreeElement*> todo;
 
 		TreeElement* parent = element->mParent;
-		while (parent != nullptr && !parent->mIsVisible)
+		while (parent != nullptr)
 		{
 			if (!parent->mIsExpanded)
 				todo.push(parent);
+
+			if (parent->mIsVisible)
+				break;
 
 			parent = parent->mParent;
 		}

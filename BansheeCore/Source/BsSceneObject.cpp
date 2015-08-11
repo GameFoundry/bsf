@@ -450,11 +450,8 @@ namespace BansheeEngine
 
 	void SceneObject::setParent(const HSceneObject& parent)
 	{
-		if(parent.isDestroyed())
-		{
-			BS_EXCEPT(InternalErrorException, 
-				"Trying to assign a SceneObject parent that is destroyed.");
-		}
+		if (parent.isDestroyed() || mThisHandle == parent)
+			return;
 
 		if(mParent == nullptr || mParent != parent)
 		{

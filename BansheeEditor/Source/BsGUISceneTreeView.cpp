@@ -545,7 +545,9 @@ namespace BansheeEngine
 			else
 				message = L"Copied " + toWString(mCopyList.size()) + L" elements";
 
-			CmdCloneSO::execute(mCopyList, message);
+			Vector<HSceneObject> clones = CmdCloneSO::execute(mCopyList, message);
+			for (auto& clone : clones)
+				clone->setParent(parent);
 		}
 	}
 

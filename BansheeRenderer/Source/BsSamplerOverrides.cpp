@@ -30,7 +30,7 @@ namespace BansheeEngine
 				for (auto iter = paramDesc.samplers.begin(); iter != paramDesc.samplers.end(); ++iter)
 				{
 					UINT32 slot = iter->second.slot;
-					maxSamplerSlot = std::max(maxSamplerSlot, slot);
+					maxSamplerSlot = std::max(maxSamplerSlot, slot + 1);
 				}
 
 				totalNumSamplerStates += maxSamplerSlot;
