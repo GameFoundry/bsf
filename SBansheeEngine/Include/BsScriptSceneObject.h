@@ -7,21 +7,49 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Interop class between C++ & CLR for SceneObject.
+	 */
 	class BS_SCR_BE_EXPORT ScriptSceneObject : public ScriptObject<ScriptSceneObject, ScriptGameObjectBase>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "SceneObject")
 
-		static bool checkIfDestroyed(ScriptSceneObject* nativeInstance);
+		/**
+		 * @copydoc	ScriptGameObjectBase::getNativeHandle
+		 */
+		HGameObject getNativeHandle() const override { return mSceneObject; }
 
-		virtual HGameObject getNativeHandle() const override { return mSceneObject; }
-		virtual void setNativeHandle(const HGameObject& gameObject) override;
+		/**
+		 * @copydoc	ScriptGameObjectBase::setNativeHandle
+		 */
+		void setNativeHandle(const HGameObject& gameObject) override;
 
+		/**
+		 * @brief	Returns the native internal scene object.
+		 */
 		HSceneObject getNativeSceneObject() const { return mSceneObject; }
+
+		/**
+		 * @brief	Checks is the scene object wrapped by the provided interop object destroyed.
+		 */
+		static bool checkIfDestroyed(ScriptSceneObject* nativeInstance);
 
 	private:
 		friend class ScriptGameObjectManager;
 
+		ScriptSceneObject(MonoObject* instance, const HSceneObject& sceneObject);
+
+		/**
+		 * @copydoc	ScriptObjectBase::_onManagedInstanceDeleted
+		 */
+		void _onManagedInstanceDeleted() override;
+
+		HSceneObject mSceneObject;
+
+		/************************************************************************/
+		/* 								CLR HOOKS						   		*/
+		/************************************************************************/
 		static void internal_createInstance(MonoObject* instance, MonoString* name, UINT32 flags);
 
 		static void internal_setName(ScriptSceneObject* nativeInstance, MonoString* name);
@@ -63,11 +91,5 @@ namespace BansheeEngine
 		static void internal_getRight(ScriptSceneObject* nativeInstance, Vector3* value);
 
 		static void internal_destroy(ScriptSceneObject* nativeInstance, bool immediate);
-		
-		ScriptSceneObject(MonoObject* instance, const HSceneObject& sceneObject);
-
-		void _onManagedInstanceDeleted() override;
-
-		HSceneObject mSceneObject;
 	};
 }

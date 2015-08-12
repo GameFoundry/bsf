@@ -6,27 +6,49 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Interop class between C++ & CLR for SpriteTexture.
+	 */
 	class BS_SCR_BE_EXPORT ScriptSpriteTexture : public ScriptObject<ScriptSpriteTexture, ScriptResourceBase>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "SpriteTexture")
 
+		/**
+		 * @brief	Returns the native wrapped sprite texture resource handle.
+		 */
 		const HSpriteTexture& getInternalValue() const { return mTexture; }
 
-		HResource getNativeHandle() const { return mTexture; }
-		void setNativeHandle(const HResource& resource);
+		/**
+		 * @copydoc	ScriptResourceBase::getNativeHandle
+		 */
+		HResource getNativeHandle() const override { return mTexture; }
 
+		/**
+		 * @copydoc	ScriptResourceBase::setNativeHandle
+		 */
+		void setNativeHandle(const HResource& resource) override;
+
+		/**
+		 * @brief	Returns the native internal sprite texture resource.
+		 */
 		static MonoObject* toManaged(const HSpriteTexture& texture);
 
 	private:
 		friend class ScriptResourceManager;
 
-		static void internal_createInstance(MonoObject* instance, MonoObject* texture, Vector2 offset, Vector2 scale);
-
 		ScriptSpriteTexture(MonoObject* instance, const HSpriteTexture& texture);
 
-		void _onManagedInstanceDeleted();
+		/**
+		 * @copydoc	ScriptObjectBase::_onManagedInstanceDeleted
+		 */
+		void _onManagedInstanceDeleted() override;
 
 		HSpriteTexture mTexture;
+
+		/************************************************************************/
+		/* 								CLR HOOKS						   		*/
+		/************************************************************************/
+		static void internal_createInstance(MonoObject* instance, MonoObject* texture, Vector2 offset, Vector2 scale);
 	};
 }

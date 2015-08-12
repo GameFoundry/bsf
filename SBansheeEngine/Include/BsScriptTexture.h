@@ -7,6 +7,9 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Base class for all interop objects referencing textures.
+	 */
 	class BS_SCR_BE_EXPORT ScriptTextureBase : public ScriptResourceBase
 	{
 	protected:
@@ -19,6 +22,9 @@ namespace BansheeEngine
 		virtual ~ScriptTextureBase() {}
 	};
 
+	/**
+	 * @brief	Interop class between C++ & CLR for Texture.
+	 */
 	class BS_SCR_BE_EXPORT ScriptTexture : public ScriptObject <ScriptTexture, ScriptTextureBase>
 	{
 	public:
@@ -27,6 +33,9 @@ namespace BansheeEngine
 	private:
 		ScriptTexture(MonoObject* instance);
 
+		/************************************************************************/
+		/* 								CLR HOOKS						   		*/
+		/************************************************************************/
 		static void internal_getPixelFormat(ScriptTexture* thisPtr, PixelFormat* value);
 		static void internal_getUsage(ScriptTexture* thisPtr, TextureUsage* value);
 		static void internal_getWidth(ScriptTexture* thisPtr, int* value);

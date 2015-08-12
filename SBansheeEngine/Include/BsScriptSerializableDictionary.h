@@ -5,19 +5,29 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Interop class between C++ & CLR for ManagedSerializableDictionary.
+	 */
 	class BS_SCR_BE_EXPORT ScriptSerializableDictionary : public ScriptObject<ScriptSerializableDictionary>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "SerializableDictionary")
 
+		/**
+		 * @brief	Creates a new serializable dictionary interop object from the data in the
+		 *			provided property. Caller must ensure the property references a System.Collections.Generic.Dictionary.
+		 */
 		static ScriptSerializableDictionary* create(const ScriptSerializableProperty* parentProperty);
 
 	private:
-		static MonoObject* internal_createKeyProperty(ScriptSerializableDictionary* nativeInstance);
-		static MonoObject* internal_createValueProperty(ScriptSerializableDictionary* nativeInstance);
-
 		ScriptSerializableDictionary(MonoObject* instance, const ManagedSerializableTypeInfoDictionaryPtr& typeInfo);
 
 		ManagedSerializableTypeInfoDictionaryPtr mTypeInfo;
+
+		/************************************************************************/
+		/* 								CLR HOOKS						   		*/
+		/************************************************************************/
+		static MonoObject* internal_createKeyProperty(ScriptSerializableDictionary* nativeInstance);
+		static MonoObject* internal_createValueProperty(ScriptSerializableDictionary* nativeInstance);
 	};
 }
