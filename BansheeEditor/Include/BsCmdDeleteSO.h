@@ -11,7 +11,7 @@ namespace BansheeEngine
 	 * @brief	A command used for undo/redo purposes. Deletes a scene object
 	 *			and restores it as an undo operation.
 	 */
-	class CmdDeleteSO : public EditorCommand
+	class BS_ED_EXPORT CmdDeleteSO : public EditorCommand
 	{
 	public:
 		~CmdDeleteSO();

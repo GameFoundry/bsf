@@ -186,6 +186,11 @@ namespace BansheeEngine
             return (T)Component.Internal_AddComponent(this, typeof (T));
         }
 
+        public Component AddComponent(Type type)
+        {
+            return Component.Internal_AddComponent(this, type);
+        }
+
         public T GetComponent<T>() where T : Component
         {
             return (T)Component.Internal_GetComponent(this, typeof(T));
@@ -199,6 +204,11 @@ namespace BansheeEngine
         public void RemoveComponent<T>() where T : Component
         {
             Component.Internal_RemoveComponent(this, typeof(T));
+        }
+
+        public void RemoveComponent(Type type)
+        {
+            Component.Internal_RemoveComponent(this, type);
         }
 
         public int GetNumChildren()

@@ -11,7 +11,7 @@ namespace BansheeEngine
 	 * @brief	A command used for undo/redo purposes. Instantiates scene object(s)
 	 *			from a prefab and removes them as an undo operation.
 	 */
-	class CmdInstantiateSO : public EditorCommand
+	class BS_ED_EXPORT CmdInstantiateSO : public EditorCommand
 	{
 	public:
 		~CmdInstantiateSO();

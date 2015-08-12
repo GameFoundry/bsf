@@ -1180,11 +1180,23 @@ namespace BansheeEngine
 
 		skin->setStyle(GUIComponentFoldout::getFoldoutButtonStyleType(), cmpFoldoutBtnStyle);
 
+		GUIElementStyle cmpFoldoutRemoveBtnStyle;
+		cmpFoldoutRemoveBtnStyle.normal.texture = getGUITexture(XButtonNormalTex);
+		cmpFoldoutRemoveBtnStyle.hover.texture = getGUITexture(XButtonHoverTex);
+		cmpFoldoutRemoveBtnStyle.active.texture = cmpFoldoutRemoveBtnStyle.hover.texture;
+		cmpFoldoutRemoveBtnStyle.fixedHeight = true;
+		cmpFoldoutRemoveBtnStyle.fixedWidth = true;
+		cmpFoldoutRemoveBtnStyle.height = 11;
+		cmpFoldoutRemoveBtnStyle.width = 11;
+
+		skin->setStyle(GUIComponentFoldout::getFoldoutRemoveButtonStyleType(), cmpFoldoutRemoveBtnStyle);
+
 		GUIElementStyle cmpFoldoutStyle;
 		cmpFoldoutStyle.fixedHeight = true;
 		cmpFoldoutStyle.height = 12;
 		cmpFoldoutStyle.minWidth = 30;
 		cmpFoldoutStyle.subStyles[GUIComponentFoldout::getFoldoutButtonStyleType()] = GUIComponentFoldout::getFoldoutButtonStyleType();
+		cmpFoldoutStyle.subStyles[GUIComponentFoldout::getFoldoutRemoveButtonStyleType()] = GUIComponentFoldout::getFoldoutRemoveButtonStyleType();
 
 		skin->setStyle(GUIComponentFoldout::getGUITypeName(), cmpFoldoutStyle);
 

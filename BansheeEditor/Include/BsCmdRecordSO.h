@@ -12,7 +12,7 @@ namespace BansheeEngine
 	 *			scene object at a specific point and allows you to restore it to its
 	 *			original values as needed.
 	 */
-	class CmdRecordSO : public EditorCommand
+	class BS_ED_EXPORT CmdRecordSO : public EditorCommand
 	{
 	public:
 		~CmdRecordSO();

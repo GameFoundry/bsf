@@ -109,12 +109,6 @@ namespace BansheeEngine
 		ScriptObject(MonoObject* instance)
 			:Base(instance)
 		{	
-			// Compiler will only generate code for stuff that is directly used, including static data members,
-			// so we fool it here like we're using the class directly. Otherwise compiler won't generate the code for the member
-			// and our type won't get initialized on start (Actual behavior is a bit more random)
-			// TODO - Use volatile instead?
-			initOnStart.makeSureIAmInstantiated();
-
 			Type* param = (Type*)(Base*)this; // Needed due to multiple inheritance. Safe since Type must point to an class derived from this one.
 
 			if(metaData.thisPtrField != nullptr)

@@ -29,7 +29,8 @@ namespace BansheeEngine
 	ScriptAssemblyManager::ScriptAssemblyManager()
 		:mBaseTypesInitialized(false), mSerializeObjectAttribute(nullptr), mDontSerializeFieldAttribute(nullptr), 
 		mComponentClass(nullptr), mSceneObjectClass(nullptr), mSerializeFieldAttribute(nullptr), mHideInInspectorAttribute(nullptr), 
-		mSystemArrayClass(nullptr), mSystemGenericListClass(nullptr), mSystemGenericDictionaryClass(nullptr), mMissingComponentClass(nullptr)
+		mSystemArrayClass(nullptr), mSystemGenericListClass(nullptr), mSystemGenericDictionaryClass(nullptr), mMissingComponentClass(nullptr),
+		mSystemTypeClass(nullptr)
 	{
 
 	}
@@ -443,6 +444,7 @@ namespace BansheeEngine
 		mSystemArrayClass = nullptr;
 		mSystemGenericListClass = nullptr;
 		mSystemGenericDictionaryClass = nullptr;
+		mSystemTypeClass = nullptr;
 
 		mSerializeObjectAttribute = nullptr;
 		mDontSerializeFieldAttribute = nullptr;
@@ -477,6 +479,10 @@ namespace BansheeEngine
 		mSystemGenericDictionaryClass = corlib->getClass("System.Collections.Generic", "Dictionary`2");
 		if(mSystemGenericDictionaryClass == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find Dictionary<TKey, TValue> managed class.");
+
+		mSystemTypeClass = corlib->getClass("System", "Type");
+		if (mSystemTypeClass == nullptr)
+			BS_EXCEPT(InvalidStateException, "Cannot find Type managed class.");
 
 		mSerializeObjectAttribute = bansheeEngineAssembly->getClass("BansheeEngine", "SerializeObject");
 		if(mSerializeObjectAttribute == nullptr)

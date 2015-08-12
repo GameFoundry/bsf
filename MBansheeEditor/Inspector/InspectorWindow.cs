@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using BansheeEngine;
 
 namespace BansheeEditor
@@ -29,10 +30,13 @@ namespace BansheeEditor
             public Inspector inspector;
         }
 
+        private static readonly Color HIGHLIGHT_COLOR = new Color(1.0f, 1.0f, 1.0f, 0.5f);
+
         private List<InspectorComponent> inspectorComponents = new List<InspectorComponent>();
         private InspectorResource inspectorResource;
         private GUIScrollArea inspectorScrollArea;
         private GUILayout inspectorLayout;
+        private GUITexture scrollAreaHighlight;
 
         private SceneObject activeSO;
         private GUITextBox soNameInput;
@@ -47,6 +51,8 @@ namespace BansheeEditor
         private GUIFloatField soScaleX;
         private GUIFloatField soScaleY;
         private GUIFloatField soScaleZ;
+
+        private Rect2I dropBounds;
 
         private InspectorType currentType = InspectorType.None;
         private Resource activeResource;
@@ -94,7 +100,11 @@ namespace BansheeEditor
             activeSO = so;
 
             inspectorScrollArea = new GUIScrollArea();
+            scrollAreaHighlight = new GUITexture(Builtin.WhiteTexture);
+            scrollAreaHighlight.SetTint(HIGHLIGHT_COLOR);
+
             GUI.AddElement(inspectorScrollArea);
+            GUI.AddElement(scrollAreaHighlight);
             inspectorLayout = inspectorScrollArea.Layout;
 
             // SceneObject fields
@@ -117,6 +127,7 @@ namespace BansheeEditor
 
                 data.foldout.SetExpanded(true);
                 data.foldout.OnToggled += (bool expanded) => OnComponentFoldoutToggled(data, expanded);
+                data.foldout.OnRemoveClicked += () => OnComponentRemoveClicked(allComponents[i].GetType());
 
                 inspectorComponents.Add(data);
 
@@ -124,6 +135,9 @@ namespace BansheeEditor
             }
 
             inspectorLayout.AddFlexibleSpace();
+
+            dropBounds = inspectorScrollArea.Bounds;
+            scrollAreaHighlight.Bounds = dropBounds;
         }
 
         private void OnComponentFoldoutToggled(InspectorComponent inspectorData, bool expanded)
@@ -277,6 +291,8 @@ namespace BansheeEditor
         private void OnInitialize()
         {
             Selection.OnSelectionChanged += OnSelectionChanged;
+
+            OnSelectionChanged(new SceneObject[0], new string[0]);
         }
 
         private void OnDestroy()
@@ -319,6 +335,67 @@ namespace BansheeEditor
             {
                 inspectorResource.inspector.Refresh();
             }
+
+            // Detect drag and drop
+            bool isDraggingOver = false;
+
+            if (activeSO != null && inspectorScrollArea != null)
+            {
+                Vector2I windowPos = ScreenToWindowPos(Input.PointerPosition);
+                ScriptCode droppedCodeFile = null;
+                string droppedCodeFileName = "";
+
+                if (DragDrop.DragInProgress && DragDrop.Type == DragDropType.Resource)
+                {
+                    isDraggingOver = dropBounds.Contains(windowPos);
+                }
+                else if (DragDrop.DropInProgress && DragDrop.Type == DragDropType.Resource)
+                {
+                    ResourceDragDropData dragData = DragDrop.Data as ResourceDragDropData;
+                    if (dragData != null)
+                    {
+                        foreach (var resPath in dragData.Paths)
+                        {
+                            LibraryEntry entry = ProjectLibrary.GetEntry(resPath);
+                            FileEntry fileEntry = entry as FileEntry;
+                            if (fileEntry != null)
+                            {
+                                if (fileEntry.ResType == ResourceType.ScriptCode)
+                                {
+                                    droppedCodeFile = ProjectLibrary.Load<ScriptCode>(resPath);
+                                    droppedCodeFileName = fileEntry.Name;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (droppedCodeFile != null)
+                {
+                    Type droppedComponentType = null;
+                    Type[] droppedTypes = droppedCodeFile.Types;
+                    foreach (var type in droppedTypes)
+                    {
+                        if (type.IsSubclassOf(typeof(Component)))
+                        {
+                            droppedComponentType = type;
+                            break;
+                        }
+                    }
+
+                    if (droppedComponentType != null)
+                    {
+                        UndoRedo.RecordSO(activeSO, "Added component " + droppedComponentType.Name);
+                        activeSO.AddComponent(droppedComponentType);
+                    }
+                    else
+                        Debug.LogWarning("Cannot find a Component in " + droppedCodeFileName);
+                }
+            }
+
+            if (scrollAreaHighlight != null)
+                scrollAreaHighlight.Visible = isDraggingOver;
         }
 
         private void OnSelectionChanged(SceneObject[] objects, string[] paths)
@@ -353,6 +430,15 @@ namespace BansheeEditor
             }
         }
 
+        private void OnComponentRemoveClicked(Type componentType)
+        {
+            if (activeSO != null)
+            {
+                UndoRedo.RecordSO(activeSO, "Removed component " + componentType.Name);
+                activeSO.RemoveComponent(componentType);
+            }
+        }
+
         internal void Destroy()
         {
             Clear();
@@ -380,6 +466,12 @@ namespace BansheeEditor
                 inspectorScrollArea = null;
             }
 
+            if (scrollAreaHighlight != null)
+            {
+                scrollAreaHighlight.Destroy();
+                scrollAreaHighlight = null;
+            }
+
             activeSO = null;
             soNameInput = null;
             soPrefabLayout = null;
@@ -393,6 +485,7 @@ namespace BansheeEditor
             soScaleX = null;
             soScaleY = null;
             soScaleZ = null;
+            dropBounds = new Rect2I();
 
             activeResource = null;
             currentType = InspectorType.None;
@@ -444,6 +537,17 @@ namespace BansheeEditor
             Vector3 scale = activeSO.LocalScale;
             scale[idx] = value;
             activeSO.LocalScale = scale;
+        }
+
+        protected override void WindowResized(int width, int height)
+        {
+            base.WindowResized(width, height);
+
+            if(inspectorScrollArea != null)
+                dropBounds = inspectorScrollArea.Bounds;
+
+            if (scrollAreaHighlight != null)
+                scrollAreaHighlight.Bounds = dropBounds;
         }
 
         private Inspector GetInspector(Type type)

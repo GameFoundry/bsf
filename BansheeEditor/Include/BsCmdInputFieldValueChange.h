@@ -12,7 +12,7 @@ namespace BansheeEngine
 	 *			as needed.
 	 */
 	template <class InputFieldType, class ValueType>
-	class CmdInputFieldValueChange : public EditorCommand
+	class BS_ED_EXPORT CmdInputFieldValueChange : public EditorCommand
 	{
 	public:
 		/**

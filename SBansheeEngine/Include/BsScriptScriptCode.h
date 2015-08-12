@@ -18,14 +18,17 @@ namespace BansheeEngine
 		HScriptCode getScriptCodeHandle() const { return mScriptCode; }
 	private:
 		friend class ScriptResourceManager;
+		typedef std::pair<WString, WString> FullTypeName;
 
 		static void internal_createInstance(MonoObject* instance, MonoString* text);
 		static MonoString* internal_getText(ScriptScriptCode* thisPtr);
 		static void internal_setText(ScriptScriptCode* thisPtr, MonoString* text);
+		static MonoArray* internal_getTypes(ScriptScriptCode* thisPtr);
 
 		ScriptScriptCode(MonoObject* instance, const HScriptCode& scriptCode);
 
 		void _onManagedInstanceDeleted();
+		static Vector<FullTypeName> parseTypes(const WString& code);
 
 		HScriptCode mScriptCode;
 	};

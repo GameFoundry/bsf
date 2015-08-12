@@ -73,6 +73,11 @@ namespace BansheeEngine
 		MonoClass* getSystemGenericDictionaryClass() const { return mSystemGenericDictionaryClass; }
 
 		/**
+		 * @brief	Gets the managed class for System.Type type.
+		 */
+		MonoClass* getSystemTypeClass() const { return mSystemTypeClass; }
+
+		/**
 		 * @brief	Gets the managed class for BansheeEngine.Component type.
 		 */
 		MonoClass* getComponentClass() const { return mComponentClass; }
@@ -110,6 +115,7 @@ namespace BansheeEngine
 		MonoClass* mSystemArrayClass;
 		MonoClass* mSystemGenericListClass;
 		MonoClass* mSystemGenericDictionaryClass;
+		MonoClass* mSystemTypeClass;
 
 		MonoClass* mComponentClass;
 		MonoClass* mSceneObjectClass;

@@ -18,11 +18,14 @@ namespace BansheeEngine
 		static void internal_setTint(ScriptGUIComponentFoldout* nativeInstance, Color color);
 
 		static void onToggled(MonoObject* instance, bool expanded);
+		static void onRemoveClicked(MonoObject* instance);
 
 		ScriptGUIComponentFoldout(MonoObject* instance, GUIComponentFoldout* foldout);
 
 		typedef void (__stdcall *OnToggledThunkDef) (MonoObject*, bool, MonoException**);
+		typedef void(__stdcall *OnRemoveClickedThunkDef) (MonoObject*, MonoException**);
 
 		static OnToggledThunkDef onToggledThunk;
+		static OnRemoveClickedThunkDef onRemoveClickedThunk;
 	};
 }

@@ -17,6 +17,11 @@ namespace BansheeEngine
             set { Internal_SetEditorScript(mCachedPtr, value); }
         }
 
+        public Type[] Types
+        {
+            get { return Internal_GetTypes(mCachedPtr); }
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern string Internal_GetText(IntPtr thisPtr);
 
@@ -28,5 +33,8 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetEditorScript(IntPtr thisPtr, bool value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern Type[] Internal_GetTypes(IntPtr thisPtr);
     }
 }

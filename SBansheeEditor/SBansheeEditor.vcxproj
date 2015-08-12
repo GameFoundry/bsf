@@ -281,6 +281,7 @@
     <ClInclude Include="Include\BsScriptProjectLibrary.h" />
     <ClInclude Include="Include\BsScriptSceneViewHandler.h" />
     <ClInclude Include="Include\BsScriptSelection.h" />
+    <ClInclude Include="Include\BsScriptUndoRedo.h" />
     <ClInclude Include="Include\BsScriptUnitTests.h" />
   </ItemGroup>
   <ItemGroup>
@@ -333,6 +334,7 @@
     <ClCompile Include="Source\BsScriptProjectLibrary.cpp" />
     <ClCompile Include="Source\BsScriptSceneViewHandler.cpp" />
     <ClCompile Include="Source\BsScriptSelection.cpp" />
+    <ClCompile Include="Source\BsScriptUndoRedo.cpp" />
     <ClCompile Include="Source\BsScriptUnitTests.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

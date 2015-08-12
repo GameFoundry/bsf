@@ -23,9 +23,14 @@ namespace BansheeEngine
 		static const String& getGUITypeName();
 
 		/**
-		 * Returns the style type name of the internal toggle button.
+		 * Returns the style type name of the internal toggle button that triggers expand/collapse.
 		 */
 		static const String& getFoldoutButtonStyleType();
+
+		/**
+		 * Returns the style type name of the internal toggle button that triggers component removal.
+		 */
+		static const String& getFoldoutRemoveButtonStyleType();
 
 		/**
 		 * @brief	Creates a new GUI component foldout element.
@@ -82,6 +87,7 @@ namespace BansheeEngine
 		Vector2I _getOptimalSize() const override;
 
 		Event<void(bool)> onStateChanged;
+		Event<void()> onRemoveClicked;
 	protected:
 		virtual ~GUIComponentFoldout();
 
@@ -92,11 +98,17 @@ namespace BansheeEngine
 		void toggleTriggered(bool value);
 
 		/**
+		 * @brief	Triggered when the remove button is clicked.
+		 */
+		void removeTriggered();
+
+		/**
 		 * @copydoc	GUIElement::styleUpdated
 		 */
 		void styleUpdated() override;
 
 		GUIToggle* mToggle;
+		GUIButton* mRemove;
 		bool mIsExpanded;
 	};
 }

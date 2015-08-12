@@ -11,7 +11,7 @@ namespace BansheeEngine
 	 * @brief	A command used for undo/redo purposes. Clones scene object(s)
 	 *			and removes them as an undo operation.
 	 */
-	class CmdCloneSO : public EditorCommand
+	class BS_ED_EXPORT CmdCloneSO : public EditorCommand
 	{
 	public:
 		~CmdCloneSO();

@@ -8,7 +8,7 @@ namespace BansheeEngine
 	 * @brief	A command used for undo/redo purposes. It records a change occurring on
 	 *			some object and allows you to apply or revert that change as needed.
 	 */
-	class EditorCommand
+	class BS_ED_EXPORT EditorCommand
 	{
 	public:
 		EditorCommand(const WString& description);

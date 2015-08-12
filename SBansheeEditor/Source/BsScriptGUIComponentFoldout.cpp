@@ -20,6 +20,7 @@ using namespace std::placeholders;
 namespace BansheeEngine
 {
 	ScriptGUIComponentFoldout::OnToggledThunkDef ScriptGUIComponentFoldout::onToggledThunk;
+	ScriptGUIComponentFoldout::OnRemoveClickedThunkDef ScriptGUIComponentFoldout::onRemoveClickedThunk;
 
 	ScriptGUIComponentFoldout::ScriptGUIComponentFoldout(MonoObject* instance, GUIComponentFoldout* foldout)
 		:TScriptGUIElement(instance, foldout)
@@ -36,6 +37,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIComponentFoldout::internal_setTint);
 
 		onToggledThunk = (OnToggledThunkDef)metaData.scriptClass->getMethod("DoOnToggled", 1)->getThunk();
+		onRemoveClickedThunk = (OnRemoveClickedThunkDef)metaData.scriptClass->getMethod("OnRemoveClicked")->getThunk();
 	}
 
 	void ScriptGUIComponentFoldout::internal_createInstance(MonoObject* instance, MonoObject* content, MonoString* style, MonoArray* guiOptions)
@@ -50,6 +52,7 @@ namespace BansheeEngine
 		GUIComponentFoldout* guiFoldout = GUIComponentFoldout::create(label);
 
 		guiFoldout->onStateChanged.connect(std::bind(&ScriptGUIComponentFoldout::onToggled, instance, _1));
+		guiFoldout->onRemoveClicked.connect(std::bind(&ScriptGUIComponentFoldout::onRemoveClicked, instance));
 
 		ScriptGUIComponentFoldout* nativeInstance = new (bs_alloc<ScriptGUIComponentFoldout>()) ScriptGUIComponentFoldout(instance, guiFoldout);
 	}
@@ -83,5 +86,10 @@ namespace BansheeEngine
 	void ScriptGUIComponentFoldout::onToggled(MonoObject* instance, bool expanded)
 	{
 		MonoUtil::invokeThunk(onToggledThunk, instance, expanded);
+	}
+
+	void ScriptGUIComponentFoldout::onRemoveClicked(MonoObject* instance)
+	{
+		MonoUtil::invokeThunk(onRemoveClickedThunk, instance);
 	}
 }

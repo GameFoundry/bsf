@@ -11,7 +11,7 @@ namespace BansheeEngine
 	 *			parent change operations. It allows you to apply the parent change
 	 *			or revert the object to its original parent as needed.
 	 */
-	class CmdReparentSO : public EditorCommand
+	class BS_ED_EXPORT CmdReparentSO : public EditorCommand
 	{
 	public:
 		/**

@@ -8,7 +8,7 @@ namespace BansheeEngine
 	/**
 	 * @brief	Handles editor-wide undo & redo operations.
 	 */
-	class UndoRedo : public Module<UndoRedo>
+	class BS_ED_EXPORT UndoRedo : public Module<UndoRedo>
 	{
 		/**
 		 * @brief	Contains data about a single undo/redo group.
