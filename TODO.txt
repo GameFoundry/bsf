@@ -54,10 +54,6 @@ Code quality improvements:
 ----------------------------------------------------------------------
 Polish
 
-Test:
- - Component foldout X
- - Drag and drop for components
-
  - Duplicating a mesh doesn't properly render the mesh
   - It seems to be due to renderables sharing materials. I generate a separate per-object buffer per each
     renderable (but maybe I shouldn't? Just generate the one and update it before rendering) and then assign
@@ -105,6 +101,7 @@ First screenshot:
    - Possibly create helper objects: Cube, Sphere, Plane, Quad, Capsule, Cylinder
   - Component (also add to inspector context): Camera, Renderable, Point/Spot/Directional light, all other components from scripts
   - Help - About, API Reference (link to site)
+ - Modify inspector looks by scaling down transform input box sizes, and properly aligning component entries
  - (Optionally) New UI look (tabs, component/array containers, better buttons)
    - Foldout in scene tree view is hard to click, make it bigger
  - (Optionally) Console window
@@ -129,6 +126,8 @@ Other polish:
  - Import option inspectors for Texture, Mesh, Font
  - MenuBar - will likely need a way to mark elements as disabled when not appropriate (e.g. no "frame selected unless scene is focused")
    - Likely use a user-provided callback to trigger when populating the menus
+ - CmdRecordSO records an SO and all its children but it should only record a single SO
+   - Also it doesn't record a diff, but instead the whole object
 
 Stage 2 polish:
  - Inject an icon into an .exe (Win32 specific)
@@ -157,6 +156,7 @@ Finalizing:
  - Splash screen
  - Settings/Preferences window
  - Documentation
+ - Rename D3D11RenderSystem (and DX9/GL) project to D3D11RenderAPI
  - (Optionally) GUI tabbing to switch between elements
 
 ----------------------------------------------------------------------

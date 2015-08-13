@@ -25,18 +25,18 @@ namespace BansheeEngine
 
 	void ScriptUndoRedo::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("internal_Undo", &ScriptUndoRedo::internal_Undo);
-		metaData.scriptClass->addInternalCall("internal_Redo", &ScriptUndoRedo::internal_Redo);
-		metaData.scriptClass->addInternalCall("internal_PushGroup", &ScriptUndoRedo::internal_PushGroup);
-		metaData.scriptClass->addInternalCall("internal_PopGroup", &ScriptUndoRedo::internal_PopGroup);
-		metaData.scriptClass->addInternalCall("internal_RecordSO", &ScriptUndoRedo::internal_RecordSO);
-		metaData.scriptClass->addInternalCall("internal_CloneSO", &ScriptUndoRedo::internal_CloneSO);
-		metaData.scriptClass->addInternalCall("internal_CloneSOMulti", &ScriptUndoRedo::internal_CloneSOMulti);
-		metaData.scriptClass->addInternalCall("internal_Instantiate", &ScriptUndoRedo::internal_Instantiate);
-		metaData.scriptClass->addInternalCall("internal_CreateSO", &ScriptUndoRedo::internal_CreateSO);
-		metaData.scriptClass->addInternalCall("internal_DeleteSO", &ScriptUndoRedo::internal_DeleteSO);
-		metaData.scriptClass->addInternalCall("internal_ReparentSO", &ScriptUndoRedo::internal_ReparentSO);
-		metaData.scriptClass->addInternalCall("internal_ReparentSOMulti", &ScriptUndoRedo::internal_ReparentSOMulti);
+		metaData.scriptClass->addInternalCall("Internal_Undo", &ScriptUndoRedo::internal_Undo);
+		metaData.scriptClass->addInternalCall("Internal_Redo", &ScriptUndoRedo::internal_Redo);
+		metaData.scriptClass->addInternalCall("Internal_PushGroup", &ScriptUndoRedo::internal_PushGroup);
+		metaData.scriptClass->addInternalCall("Internal_PopGroup", &ScriptUndoRedo::internal_PopGroup);
+		metaData.scriptClass->addInternalCall("Internal_RecordSO", &ScriptUndoRedo::internal_RecordSO);
+		metaData.scriptClass->addInternalCall("Internal_CloneSO", &ScriptUndoRedo::internal_CloneSO);
+		metaData.scriptClass->addInternalCall("Internal_CloneSOMulti", &ScriptUndoRedo::internal_CloneSOMulti);
+		metaData.scriptClass->addInternalCall("Internal_Instantiate", &ScriptUndoRedo::internal_Instantiate);
+		metaData.scriptClass->addInternalCall("Internal_CreateSO", &ScriptUndoRedo::internal_CreateSO);
+		metaData.scriptClass->addInternalCall("Internal_DeleteSO", &ScriptUndoRedo::internal_DeleteSO);
+		metaData.scriptClass->addInternalCall("Internal_ReparentSO", &ScriptUndoRedo::internal_ReparentSO);
+		metaData.scriptClass->addInternalCall("Internal_ReparentSOMulti", &ScriptUndoRedo::internal_ReparentSOMulti);
 	}
 
 	void ScriptUndoRedo::internal_Undo()

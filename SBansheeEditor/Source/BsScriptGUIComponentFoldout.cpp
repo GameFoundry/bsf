@@ -37,7 +37,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIComponentFoldout::internal_setTint);
 
 		onToggledThunk = (OnToggledThunkDef)metaData.scriptClass->getMethod("DoOnToggled", 1)->getThunk();
-		onRemoveClickedThunk = (OnRemoveClickedThunkDef)metaData.scriptClass->getMethod("OnRemoveClicked")->getThunk();
+		onRemoveClickedThunk = (OnRemoveClickedThunkDef)metaData.scriptClass->getMethod("DoOnRemoveClicked")->getThunk();
 	}
 
 	void ScriptGUIComponentFoldout::internal_createInstance(MonoObject* instance, MonoObject* content, MonoString* style, MonoArray* guiOptions)

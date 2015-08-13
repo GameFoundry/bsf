@@ -110,6 +110,7 @@ namespace BansheeEngine
 
 			GUILayoutData childData = data;
 			childData.area.x = data.area.x + data.area.width - optimalSize.x - 5; // 5 = arbitrary offset
+			childData.area.width = optimalSize.x;
 			childData.area.y += yOffset;
 			childData.area.height = optimalSize.y;
 
@@ -127,7 +128,7 @@ namespace BansheeEngine
 	void GUIComponentFoldout::styleUpdated()
 	{
 		mToggle->setStyle(getSubStyleName(getFoldoutButtonStyleType()));
-		mRemove->setStyle(getSubStyleName(getFoldoutButtonStyleType()));
+		mRemove->setStyle(getSubStyleName(getFoldoutRemoveButtonStyleType()));
 	}
 
 	const String& GUIComponentFoldout::getGUITypeName()

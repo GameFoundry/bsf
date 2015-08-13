@@ -614,6 +614,14 @@ namespace BansheeEngine
 			return;
 
 		Path assetPath = path;
+		if (path.isAbsolute())
+		{
+			if (!getResourcesFolder().includes(path))
+				return;
+
+			assetPath = path.getRelative(getResourcesFolder());
+		}
+
 		assetPath.setExtension(assetPath.getWExtension() + L"." + ResourceImporter::DEFAULT_EXTENSION);
 
 		LibraryEntry* existingEntry = findEntry(assetPath);

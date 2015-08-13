@@ -88,7 +88,6 @@ namespace BansheeEngine
 		virtual RTTITypeBase* getRTTI() const override;
 	};
 
-
 	/**
 	 * @brief	A serialized object consisting of multiple sub-objects,
 	 *			one for each inherited class.

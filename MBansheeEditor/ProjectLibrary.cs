@@ -42,9 +42,6 @@ namespace BansheeEditor
 
         public static void Create(Resource resource, string path)
         {
-            if (Path.IsPathRooted(path))
-                throw new ArgumentException("Provided path must be relative.", "path");
-
             Internal_Create(resource, path);
         }
 
@@ -55,9 +52,6 @@ namespace BansheeEditor
 
         public static T Load<T>(string path) where T : Resource
         {
-            if (Path.IsPathRooted(path))
-                throw new ArgumentException("Provided path must be relative.", "path");
-
             return (T) Internal_Load(path);
         }
 

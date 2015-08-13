@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.IO;
 using BansheeEngine;
 
 namespace BansheeEditor
@@ -36,6 +37,7 @@ namespace BansheeEditor
         private InspectorResource inspectorResource;
         private GUIScrollArea inspectorScrollArea;
         private GUILayout inspectorLayout;
+        private GUIPanel highlightPanel;
         private GUITexture scrollAreaHighlight;
 
         private SceneObject activeSO;
@@ -104,7 +106,8 @@ namespace BansheeEditor
             scrollAreaHighlight.SetTint(HIGHLIGHT_COLOR);
 
             GUI.AddElement(inspectorScrollArea);
-            GUI.AddElement(scrollAreaHighlight);
+            highlightPanel = GUI.AddPanel(-1);
+            highlightPanel.AddElement(scrollAreaHighlight);
             inspectorLayout = inspectorScrollArea.Layout;
 
             // SceneObject fields
@@ -126,8 +129,10 @@ namespace BansheeEditor
                 data.inspector.Initialize(this, data.panel, allComponents[i]);
 
                 data.foldout.SetExpanded(true);
+
+                Type curComponentType = allComponents[i].GetType();
                 data.foldout.OnToggled += (bool expanded) => OnComponentFoldoutToggled(data, expanded);
-                data.foldout.OnRemoveClicked += () => OnComponentRemoveClicked(allComponents[i].GetType());
+                data.foldout.OnRemoveClicked += () => OnComponentRemoveClicked(curComponentType);
 
                 inspectorComponents.Add(data);
 
@@ -320,7 +325,11 @@ namespace BansheeEditor
                 }
 
                 if (requiresRebuild)
-                    SetObjectToInspect(activeSO);
+                {
+                    SceneObject so = activeSO;
+                    Clear();
+                    SetObjectToInspect(so);
+                }
                 else
                 {
                     RefreshSceneObjectFields(false);
@@ -470,6 +479,12 @@ namespace BansheeEditor
             {
                 scrollAreaHighlight.Destroy();
                 scrollAreaHighlight = null;
+            }
+
+            if (highlightPanel != null)
+            {
+                highlightPanel.Destroy();
+                highlightPanel = null;
             }
 
             activeSO = null;

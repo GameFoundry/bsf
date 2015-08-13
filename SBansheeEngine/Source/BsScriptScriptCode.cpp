@@ -102,9 +102,11 @@ namespace BansheeEngine
 		Vector<FullTypeName> output;
 		Stack<NamespaceData> namespaces;
 
-		// Note: Won't match unicode escape sequences
-		WString identifierPattern = LR"([_@a-zA-Z][\p{Lu}\p{Ll}\p{Lt}\p{Lm}\p{Lo}\p{Nl}\p{Mn}\p{Mc}\p{Nd}\p{Pc}\p{Cf}]*)";
-		std::wregex identifierRegex(identifierPattern, std::regex_constants::ECMAScript | std::regex_constants::icase);
+		// TODO: Won't match non latin characters because C++ regex doesn't support unicode character classes
+		// and writing out Unicode ranges for all the characters C# supports as identifiers is too tedious at the moment.
+		// Classes that need to match: \p{Lu}\p{Ll}\p{Lt}\p{Lm}\p{Lo}\p{Nl}\p{Mn}\p{Mc}\p{Nd}\p{Pc}\p{Cf}
+		WString identifierPattern = LR"([_@a-zA-Z][_\da-zA-Z]*)";
+		std::wregex identifierRegex(identifierPattern);
 
 		WString nsToken = L"namespace";
 		WString classToken = L"class";
@@ -115,10 +117,10 @@ namespace BansheeEngine
 		{
 			wchar_t ch = *iter;
 			
-			if (code.compare(idx, classToken.size(), classToken))
+			if (code.compare(idx, classToken.size(), classToken) == 0)
 			{
 				std::wsmatch results;
-				if (std::regex_match(iter + classToken.size(), code.end(), results, identifierRegex))
+				if (std::regex_search(iter + classToken.size(), code.end(), results, identifierRegex))
 				{
 					WString ns = L"";
 					if (!namespaces.empty())
@@ -133,10 +135,10 @@ namespace BansheeEngine
 					nsTypePair.second = typeName;
 				}
 			}
-			else if (code.compare(idx, nsToken.size(), nsToken))
+			else if (code.compare(idx, nsToken.size(), nsToken) == 0)
 			{
 				std::wsmatch results;
-				if (std::regex_match(iter + nsToken.size(), code.end(), results, identifierRegex))
+				if (std::regex_search(iter + nsToken.size(), code.end(), results, identifierRegex))
 				{
 					std::wstring tempStr = results[0];
 					WString ns = tempStr.c_str();

@@ -203,6 +203,10 @@ namespace BansheeEngine
 		Any data;
 	};
 
+/**
+ * @brief	Helper macro to use with script interop objects that
+ *			form a link between C++ and CLR.
+ */
 #define SCRIPT_OBJ(assembly, namespace, name)		\
 	static String getAssemblyName() { return assembly; }	\
 	static String getNamespace() { return namespace; }		\
