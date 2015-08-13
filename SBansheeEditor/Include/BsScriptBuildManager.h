@@ -6,6 +6,9 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Interop class between C++ & CLR for BuildManager.
+	 */
 	class BS_SCR_BED_EXPORT ScriptBuildManager : public ScriptObject <ScriptBuildManager>
 	{
 	public:
@@ -14,6 +17,9 @@ namespace BansheeEngine
 	private:
 		ScriptBuildManager(MonoObject* instance);
 
+		/************************************************************************/
+		/* 								CLR HOOKS						   		*/
+		/************************************************************************/
 		static MonoArray* internal_GetAvailablePlatforms();
 		static PlatformType internal_GetActivePlatform();
 		static void internal_SetActivePlatform(PlatformType value);

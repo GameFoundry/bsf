@@ -6,7 +6,7 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Interop class between C++ & CLR for ScriptResourceManager.
+	 * @brief	Interop class between C++ & CLR for BuiltinResources.
 	 */
 	class BS_SCR_BE_EXPORT ScriptBuiltin : public ScriptObject <ScriptBuiltin>
 	{

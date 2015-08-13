@@ -85,8 +85,7 @@ Ribek use:
  - Test level save/load (also test hidden & non-saveable scene objects)
  - Ability to create assets in Project view (At least Material)
  - Need a way to add scene objects and components (and remove them)
-  - Components adding should be only done by drag and dropping scripts to inspector (undoable)
-  - COmponent removal should be done by clicking X in inspector (undoable)
+  - Need to add default components (Camera, Renderable, Light) to main menu
   - Adding scene objects should be doable from context menu in Hierarchy, by dropping a Prefab or by main Menu (undoable)
  - Hook up color picker to guicolor field
  - (Optionally, needed for GUI editing) GUISkin resource inspector & a way to inspect and save the default editor skin
