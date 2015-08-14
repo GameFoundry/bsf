@@ -16,6 +16,9 @@ namespace BansheeEngine
 	RTTITypeBase* MaterialVec4Param::getRTTIStatic() { return MaterialVec4ParamRTTI::instance(); }
 	RTTITypeBase* MaterialVec4Param::getRTTI() const { return MaterialVec4Param::getRTTIStatic(); }
 
+	RTTITypeBase* MaterialColorParam::getRTTIStatic() { return MaterialColorParamRTTI::instance(); }
+	RTTITypeBase* MaterialColorParam::getRTTI() const { return MaterialColorParam::getRTTIStatic(); }
+
 	RTTITypeBase* MaterialMat3Param::getRTTIStatic() { return MaterialMat3ParamRTTI::instance(); }
 	RTTITypeBase* MaterialMat3Param::getRTTI() const { return MaterialMat3Param::getRTTIStatic(); }
 
@@ -103,6 +106,19 @@ namespace BansheeEngine
 								param.arrayIdx = i;
 
 								params->vec4Params.push_back(param);
+							}
+						}
+						break;
+					case GPDT_COLOR:
+						{
+							for (UINT32 i = 0; i < paramDesc.arraySize; i++)
+							{
+								MaterialColorParam param;
+								param.name = iter->first;
+								param.value = material->getColor(iter->first, i);
+								param.arrayIdx = i;
+
+								params->colorParams.push_back(param);
 							}
 						}
 						break;
@@ -260,6 +276,19 @@ namespace BansheeEngine
 					continue;
 
 				material->setVec4(iter->name, iter->value, iter->arrayIdx);
+			}
+
+			for (auto iter = params->colorParams.begin(); iter != params->colorParams.end(); ++iter)
+			{
+				if (!shader->hasDataParam(iter->name))
+					continue;
+
+				const SHADER_DATA_PARAM_DESC& paramDesc = shader->getDataParamDesc(iter->name);
+
+				if (paramDesc.type != GPDT_COLOR || iter->arrayIdx < 0 || iter->arrayIdx >= paramDesc.arraySize)
+					continue;
+
+				material->setColor(iter->name, iter->value, iter->arrayIdx);
 			}
 
 			for(auto iter = params->mat3Params.begin(); iter != params->mat3Params.end(); ++iter)

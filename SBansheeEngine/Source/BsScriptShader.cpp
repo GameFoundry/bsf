@@ -49,8 +49,6 @@ namespace BansheeEngine
 		// TODO - Ignoring buffers and load/store textures
 		for (auto& param : dataParams)
 		{
-			// TODO - No way to identify color types
-
 			ShaderParameterType type;
 			bool isValidType = false;
 			switch (param.second.type) 
@@ -77,6 +75,10 @@ namespace BansheeEngine
 				break;
 			case GPDT_MATRIX_4X4:
 				type = ShaderParameterType::Matrix4;
+				isValidType = true;
+				break;
+			case GPDT_COLOR:
+				type = ShaderParameterType::Color;
 				isValidType = true;
 				break;
 			}

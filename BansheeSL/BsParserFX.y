@@ -72,6 +72,7 @@ void yyerror(YYLTYPE *locp, ParseState* parse_state, yyscan_t scanner, const cha
 %token <intValue> TOKEN_FLOAT2TYPE 
 %token <intValue> TOKEN_FLOAT3TYPE 
 %token <intValue> TOKEN_FLOAT4TYPE
+%token <intValue> TOKEN_COLORTYPE
 
 %token <intValue> TOKEN_MAT2x2TYPE 
 %token <intValue> TOKEN_MAT2x3TYPE 
@@ -197,6 +198,7 @@ void yyerror(YYLTYPE *locp, ParseState* parse_state, yyscan_t scanner, const cha
 %type <nodePtr> param_header_float2
 %type <nodePtr> param_header_float3
 %type <nodePtr> param_header_float4
+%type <nodePtr> param_header_color
 %type <nodePtr> param_header_mat2x2
 %type <nodePtr> param_header_mat2x3
 %type <nodePtr> param_header_mat2x4
@@ -646,6 +648,7 @@ parameter
 	| param_header_float2	qualifier_list param_body_float2	';' { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$3); nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
 	| param_header_float3	qualifier_list param_body_float3	';' { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$3); nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
 	| param_header_float4	qualifier_list param_body_float4	';' { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$3); nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
+	| param_header_color	qualifier_list param_body_float4	';' { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$3); nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
 	| param_header_mat2x2	qualifier_list param_body_float4	';' { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$3); nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
 	| param_header_mat2x3	qualifier_list param_body_mat6		';' { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$3); nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
 	| param_header_mat2x4	qualifier_list param_body_mat8		';' { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$3); nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
@@ -685,6 +688,10 @@ param_header_float3
 
 param_header_float4 
 	: TOKEN_FLOAT4TYPE TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	;
+
+param_header_color
+	: TOKEN_COLORTYPE TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
 	;
 
 param_header_mat2x2

@@ -249,6 +249,7 @@ namespace BansheeEngine
 		GPDT_INT4 = 23,
 		GPDT_BOOL = 24,
 		GPDT_STRUCT = 25,
+		GPDT_COLOR = 26, // Same as GPDT_FLOAT4, but can be used to better deduce usage
 		GPDT_UNKNOWN = 0xffff
 	};
 

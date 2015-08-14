@@ -348,7 +348,8 @@ namespace BansheeEngine
 		TID_ProfilerOverlay = 1082,
 		TID_StringTable = 1083,
 		TID_LanguageData = 1084,
-		TID_LocalizedStringData = 1085
+		TID_LocalizedStringData = 1085,
+		TID_MaterialParamColor = 1086
 	};
 }
 

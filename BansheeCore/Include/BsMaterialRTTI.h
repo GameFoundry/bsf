@@ -68,6 +68,19 @@ namespace BansheeEngine
 		virtual RTTITypeBase* getRTTI() const;	
 	};
 
+	class BS_CORE_EXPORT MaterialColorParam : public IReflectable
+	{
+	public:
+		String name;
+		Color value;
+		UINT32 arrayIdx;
+
+		friend class MaterialColorParamRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
+	};
+
+
 	class BS_CORE_EXPORT MaterialMat3Param : public IReflectable
 	{
 	public:
@@ -136,6 +149,7 @@ namespace BansheeEngine
 		Vector<MaterialVec4Param> vec4Params;
 		Vector<MaterialMat3Param> mat3Params;
 		Vector<MaterialMat4Param> mat4Params;
+		Vector<MaterialColorParam> colorParams;
 		Vector<MaterialStructParam> structParams;
 		Vector<MaterialTextureParam> textureParams;
 		Vector<MaterialSamplerStateParam> samplerStateParams;
@@ -274,6 +288,38 @@ namespace BansheeEngine
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{
 			return bs_shared_ptr<MaterialVec4Param, ScratchAlloc>();
+		}
+	};
+
+	class BS_CORE_EXPORT MaterialColorParamRTTI : public RTTIType <MaterialColorParam, IReflectable, MaterialColorParamRTTI>
+	{
+	public:
+		String& getName(MaterialColorParam* obj) { return obj->name; }
+		void setName(MaterialColorParam* obj, String& name) { obj->name = name; }
+
+		Color& getValue(MaterialColorParam* obj) { return obj->value; }
+		void setValue(MaterialColorParam* obj, Color& value) { obj->value = value; }
+
+		UINT32& getArrayIdx(MaterialColorParam* obj) { return obj->arrayIdx; }
+		void setArrayIdx(MaterialColorParam* obj, UINT32& value) { obj->arrayIdx = value; }
+
+		MaterialColorParamRTTI()
+		{
+			addPlainField("name", 0, &MaterialColorParamRTTI::getName, &MaterialColorParamRTTI::setName);
+			addPlainField("value", 1, &MaterialColorParamRTTI::getValue, &MaterialColorParamRTTI::setValue);
+			addPlainField("arrayIdx", 2, &MaterialColorParamRTTI::getArrayIdx, &MaterialColorParamRTTI::setArrayIdx);
+		}
+
+		virtual const String& getRTTIName()
+		{
+			static String name = "MaterialColorParam";
+			return name;
+		}
+
+		virtual UINT32 getRTTIId() { return TID_MaterialParamColor; }
+		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		{
+			return bs_shared_ptr<MaterialColorParam, ScratchAlloc>();
 		}
 	};
 
@@ -470,6 +516,11 @@ namespace BansheeEngine
 		UINT32 getVec4ArraySize(MaterialParams* obj) { return (UINT32)obj->vec4Params.size(); }
 		void setVec4ArraySize(MaterialParams* obj, UINT32 size) { obj->vec4Params.resize(size); }
 
+		MaterialColorParam& getColorParam(MaterialParams* obj, UINT32 idx) { return obj->colorParams[idx]; }
+		void setColorParam(MaterialParams* obj, UINT32 idx, MaterialColorParam& param) { obj->colorParams[idx] = param; }
+		UINT32 getColorArraySize(MaterialParams* obj) { return (UINT32)obj->colorParams.size(); }
+		void setColorArraySize(MaterialParams* obj, UINT32 size) { obj->colorParams.resize(size); }
+
 		MaterialMat3Param& getMat3Param(MaterialParams* obj, UINT32 idx) { return obj->mat3Params[idx]; }
 		void setMat3Param(MaterialParams* obj, UINT32 idx, MaterialMat3Param& param) { obj->mat3Params[idx] = param; }
 		UINT32 getMat3ArraySize(MaterialParams* obj) { return (UINT32)obj->mat3Params.size(); }
@@ -523,6 +574,9 @@ namespace BansheeEngine
 
 			addReflectableArrayField("samplerStateParams", 8, &MaterialParamsRTTI::getSamplerStateParam, 
 				&MaterialParamsRTTI::getSamplerStateArraySize, &MaterialParamsRTTI::setSamplerStateParam, &MaterialParamsRTTI::setSamplerStateArraySize);
+
+			addReflectableArrayField("colorParams", 9, &MaterialParamsRTTI::getColorParam,
+				&MaterialParamsRTTI::getColorArraySize, &MaterialParamsRTTI::setColorParam, &MaterialParamsRTTI::setColorArraySize);
 		}
 
 		virtual const String& getRTTIName()

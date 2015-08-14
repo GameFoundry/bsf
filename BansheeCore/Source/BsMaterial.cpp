@@ -276,7 +276,7 @@ namespace BansheeEngine
 			if (findIter == validDataParameters.end())
 				continue;
 
-			if (findIter->second->type != iter->second.type)
+			if (findIter->second->type != iter->second.type && !(iter->second.type == GPDT_COLOR && findIter->second->type == GPDT_FLOAT4))
 			{
 				LOGWRN("Ignoring shader parameter \"" + iter->first + "\". Type doesn't match the one defined in the gpu program. "
 					+ "Shader defined type: " + toString(iter->second.type) + " - Gpu program defined type: " + toString(findIter->second->type));
@@ -295,7 +295,6 @@ namespace BansheeEngine
 			if (findBlockIter == paramToParamBlockMap.end())
 				BS_EXCEPT(InternalErrorException, "Parameter doesn't exist in param to param block map but exists in valid param map.");
 
-			String& paramBlockName = findBlockIter->second;
 			validParams[iter->first] = iter->second.gpuVariableName;
 		}
 
@@ -836,6 +835,9 @@ namespace BansheeEngine
 				break;
 			case GPDT_BOOL:
 				setParamValue<int>(iterFind->first, buffer, paramData.second.arraySize);
+				break;
+			case GPDT_COLOR:
+				setParamValue<Color>(iterFind->first, buffer, paramData.second.arraySize);
 				break;
 			case GPDT_STRUCT:
 			{

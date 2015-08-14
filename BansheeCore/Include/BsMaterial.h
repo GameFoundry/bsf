@@ -200,10 +200,7 @@ namespace BansheeEngine
 		 *
 		 *			Optionally if the parameter is an array you may provide an array index to assign the value to.
 		 */
-		void setColor(const String& name, const Color& value, UINT32 arrayIdx = 0)
-		{
-			return getParamVec4(name).set(Vector4(value.r, value.g, value.b, value.a), arrayIdx);
-		}
+		void setColor(const String& name, const Color& value, UINT32 arrayIdx = 0) { return getParamColor(name).set(value, arrayIdx); }
 
 		/**   
 		 *  @brief	Assigns a 2D vector to the shader parameter with the specified name. 

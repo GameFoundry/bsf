@@ -33,6 +33,7 @@ float			{ yylval->intValue = PT_Float; return TOKEN_FLOATTYPE; }
 float2			{ yylval->intValue = PT_Float2; return TOKEN_FLOAT2TYPE; } 
 float3			{ yylval->intValue = PT_Float3; return TOKEN_FLOAT3TYPE; } 
 float4			{ yylval->intValue = PT_Float4; return TOKEN_FLOAT4TYPE; }
+color			{ yylval->intValue = PT_Color; return TOKEN_COLORTYPE; }
 
 mat2x2			{ yylval->intValue = PT_Mat2x2; return TOKEN_MAT2x2TYPE; } 
 mat2x3			{ yylval->intValue = PT_Mat2x3; return TOKEN_MAT2x3TYPE; } 

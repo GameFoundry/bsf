@@ -122,7 +122,7 @@ enum tagOptionDataType
 
 enum tagParamType
 {
-	PT_Float, PT_Float2, PT_Float3, PT_Float4,
+	PT_Float, PT_Float2, PT_Float3, PT_Float4, PT_Color,
 	PT_Mat2x2, PT_Mat2x3, PT_Mat2x4,
 	PT_Mat3x2, PT_Mat3x3, PT_Mat3x4,
 	PT_Mat4x2, PT_Mat4x3, PT_Mat4x4,
