@@ -103,12 +103,12 @@ namespace BansheeEngine
 
 	GUILabel* GUILabel::create(const GUIContent& content, const String& styleName)
 	{
-		return new (bs_alloc<GUILabel, PoolAlloc>()) GUILabel(getStyleName<GUILabel>(styleName), content, GUIDimensions::create());
+		return new (bs_alloc<GUILabel>()) GUILabel(getStyleName<GUILabel>(styleName), content, GUIDimensions::create());
 	}
 
 	GUILabel* GUILabel::create(const GUIContent& content, const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUILabel, PoolAlloc>()) GUILabel(getStyleName<GUILabel>(styleName), content, GUIDimensions::create(options));
+		return new (bs_alloc<GUILabel>()) GUILabel(getStyleName<GUILabel>(styleName), content, GUIDimensions::create(options));
 	}
 
 	const String& GUILabel::getGUITypeName()

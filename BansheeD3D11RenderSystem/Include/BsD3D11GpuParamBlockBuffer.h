@@ -17,12 +17,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc GpuParamBlockBufferCore::writeData.
 		 */
-		void writeToGPU(const UINT8* data);
+		void writeToGPU(const UINT8* data) override;
 
 		/**
 		 * @copydoc GpuParamBlockBufferCore::readData.
 		 */
-		void readFromGPU(UINT8* data) const;
+		void readFromGPU(UINT8* data) const override;
 
 		/**
 		 * @brief	Returns internal DX11 buffer object.
@@ -32,7 +32,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc GpuParamBlockBufferCore::initialize
 		 */
-		virtual void initialize();
+		virtual void initialize() override;
 
 	private:
 		D3D11HardwareBuffer* mBuffer;

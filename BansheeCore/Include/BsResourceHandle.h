@@ -122,7 +122,7 @@ namespace BansheeEngine
 		ResourceHandle(const String& uuid)
 			:ResourceHandleBase()
 		{
-			mData = bs_shared_ptr<ResourceHandleData, PoolAlloc>();
+			mData = bs_shared_ptr_new<ResourceHandleData>();
 			mData->mUUID = uuid;
 		}
 
@@ -223,7 +223,7 @@ namespace BansheeEngine
 		explicit ResourceHandle(T* ptr, const String& uuid)
 			:ResourceHandleBase()
 		{
-			mData = bs_shared_ptr<ResourceHandleData, PoolAlloc>();
+			mData = bs_shared_ptr_new<ResourceHandleData>();
 			_setHandleData(std::shared_ptr<Resource>(ptr, uuid));
 		}
 
@@ -233,7 +233,7 @@ namespace BansheeEngine
 		ResourceHandle(std::shared_ptr<T> ptr, const String& uuid)
 			:ResourceHandleBase()
 		{
-			mData = bs_shared_ptr<ResourceHandleData, PoolAlloc>();
+			mData = bs_shared_ptr_new<ResourceHandleData>();
 			_setHandleData(ptr, uuid);
 		}
 	};

@@ -17,19 +17,19 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GpuProgramFactory::getLanguage
 		 */
-		const String& getLanguage() const;
+		const String& getLanguage() const override;
 
 		/**
 		 * @copydoc	GpuProgramFactory::create(const String&, const String&, GpuProgramType,
 		 *			GpuProgramProfile, bool)
 		 */
 		SPtr<GpuProgramCore> create(const String& source, const String& entryPoint, GpuProgramType gptype, 
-			GpuProgramProfile profile, bool requireAdjacencyInfo);
+			GpuProgramProfile profile, bool requireAdjacencyInfo) override;
 
 		/**
 		* @copydoc	GpuProgramFactory::create(GpuProgramType)
 		*/
-		SPtr<GpuProgramCore> create(GpuProgramType type);
+		SPtr<GpuProgramCore> create(GpuProgramType type) override;
 
 	protected:
 		static const String LANGUAGE_NAME;

@@ -14,7 +14,7 @@ namespace BansheeEngine
 	FileEncoder::FileEncoder(const Path& fileLocation)
 		:mWriteBuffer(nullptr)
 	{
-		mWriteBuffer = (UINT8*)bs_alloc<ScratchAlloc>(WRITE_BUFFER_SIZE);
+		mWriteBuffer = (UINT8*)bs_alloc(WRITE_BUFFER_SIZE);
 
 		Path parentDir = fileLocation.getDirectory();
 		if (!FileSystem::exists(parentDir))
@@ -25,7 +25,7 @@ namespace BansheeEngine
 
 	FileEncoder::~FileEncoder()
 	{
-		bs_free<ScratchAlloc>(mWriteBuffer);
+		bs_free(mWriteBuffer);
 
 		mOutputStream.close();
 		mOutputStream.clear();
@@ -80,13 +80,13 @@ namespace BansheeEngine
 		UINT32 objectSize = 0;
 		mInputStream.read((char*)&objectSize, sizeof(objectSize));
 
-		UINT8* readBuffer = (UINT8*)bs_alloc<ScratchAlloc>((UINT32)objectSize); // TODO - Low priority. Consider upgrading BinarySerializer so we don't have to read everything at once
+		UINT8* readBuffer = (UINT8*)bs_alloc((UINT32)objectSize); // TODO - Low priority. Consider upgrading BinarySerializer so we don't have to read everything at once
 		mInputStream.read((char*)readBuffer, objectSize);
 
 		BinarySerializer bs;
 		std::shared_ptr<IReflectable> object = bs.decode(readBuffer, objectSize);
 
-		bs_free<ScratchAlloc>(readBuffer);
+		bs_free(readBuffer);
 
 		return object;
 	}

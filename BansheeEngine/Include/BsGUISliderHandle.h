@@ -90,12 +90,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElement::setTint
 		 */
-		virtual void setTint(const Color& color);
+		virtual void setTint(const Color& color) override;
 
 		/**
 		 * @copydoc	GUIElement::_getOptimalSize
 		 */
-		virtual Vector2I _getOptimalSize() const;
+		virtual Vector2I _getOptimalSize() const override;
 
 		Event<void(float newPosition)> onHandleMoved;
 	protected:
@@ -104,33 +104,33 @@ namespace BansheeEngine
 		/**
 		 * @copydoc GUIElement::getNumRenderElements()
 		 */
-		virtual UINT32 _getNumRenderElements() const;
+		virtual UINT32 _getNumRenderElements() const override;
 
 		/**
 		 * @copydoc GUIElement::getMaterial()
 		 */
-		virtual const GUIMaterialInfo& _getMaterial(UINT32 renderElementIdx) const;
+		virtual const GUIMaterialInfo& _getMaterial(UINT32 renderElementIdx) const override;
 
 		/**
 		 * @copydoc GUIElement::getNumQuads()
 		 */
-		virtual UINT32 _getNumQuads(UINT32 renderElementIdx) const;
+		virtual UINT32 _getNumQuads(UINT32 renderElementIdx) const override;
 
 		/**
 		 * @copydoc GUIElement::fillBuffer()
 		 */
 		virtual void _fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, 
-			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const;
+			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const override;
 
 		/**
 		 * @copydoc GUIElement::updateRenderElementsInternal()
 		 */
-		virtual void updateRenderElementsInternal();
+		virtual void updateRenderElementsInternal() override;
 
 		/**
 		 * @copydoc GUIElement::updateBounds()
 		 */
-		virtual void updateClippedBounds();
+		virtual void updateClippedBounds() override;
 	private:
 		GUISliderHandle(bool horizontal, bool jumpOnClick, const String& styleName, const GUIDimensions& dimensions);
 
@@ -142,7 +142,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElement::mouseEvent
 		 */
-		virtual bool _mouseEvent(const GUIMouseEvent& ev);
+		virtual bool _mouseEvent(const GUIMouseEvent& ev) override;
 
 		/**
 		 * @brief	Checks are the specified over the scroll handle. Coordinates are relative

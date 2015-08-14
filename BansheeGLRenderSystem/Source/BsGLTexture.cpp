@@ -251,11 +251,11 @@ namespace BansheeEngine
 		{
 			for (UINT32 mip = 0; mip <= mProperties.getNumMipmaps(); mip++)
 			{
-                GLPixelBuffer *buf = bs_new<GLTextureBuffer, PoolAlloc>(getGLTextureTarget(), mTextureID, face, mip,
+                GLPixelBuffer *buf = bs_new<GLTextureBuffer>(getGLTextureTarget(), mTextureID, face, mip,
 					static_cast<GpuBufferUsage>(mProperties.getUsage()), 
 					mProperties.isHardwareGammaEnabled(), mProperties.getMultisampleCount());
 
-				mSurfaceList.push_back(bs_shared_ptr<GLPixelBuffer, PoolAlloc>(buf));
+				mSurfaceList.push_back(bs_shared_ptr<GLPixelBuffer>(buf));
                 if(buf->getWidth() == 0 || buf->getHeight() == 0 || buf->getDepth() == 0)
                 {
 					BS_EXCEPT(RenderingAPIException, 

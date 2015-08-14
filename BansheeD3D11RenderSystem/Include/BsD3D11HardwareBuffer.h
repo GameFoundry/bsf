@@ -36,19 +36,19 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	HardwareBuffer::readData
 		 */
-		void readData(UINT32 offset, UINT32 length, void* pDest);
+		void readData(UINT32 offset, UINT32 length, void* pDest) override;
 
 		/**
 		 * @copydoc	HardwareBuffer::writeData
 		 */
 		void writeData(UINT32 offset, UINT32 length, const void* pSource, 
-			BufferWriteType writeFlags = BufferWriteType::Normal);
+			BufferWriteType writeFlags = BufferWriteType::Normal) override;
 
 		/**
 		 * @copydoc	HardwareBuffer::copyData
 		 */
 		void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, 
-			UINT32 length, bool discardWholeBuffer = false);
+			UINT32 length, bool discardWholeBuffer = false) override;
 
 		/**
 		 * @brief	Returns the internal DX11 buffer object.
@@ -59,12 +59,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	HardwareBuffer::lockImpl
 		 */
-		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
+		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options) override;
 
 		/**
 		 * @copydoc	HardwareBuffer::unlockImpl
 		 */
-		void unlockImpl();
+		void unlockImpl() override;
 
 		BufferType mBufferType;
 		bool mRandomGpuWrite;

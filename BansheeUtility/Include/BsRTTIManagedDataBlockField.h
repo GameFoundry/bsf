@@ -62,7 +62,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RTTIField::getTypeSize
 		 */
-		virtual UINT32 getTypeSize()
+		virtual UINT32 getTypeSize() override
 		{
 			return 0; // Data block types don't store size the conventional way
 		}
@@ -70,7 +70,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RTTIField::hasDynamicSize
 		 */
-		virtual bool hasDynamicSize()
+		virtual bool hasDynamicSize() override
 		{
 			return true;
 		}
@@ -78,7 +78,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RTTIField::getArraySize
 		 */
-		virtual UINT32 getArraySize(void* object)
+		virtual UINT32 getArraySize(void* object) override
 		{
 			BS_EXCEPT(InternalErrorException, 
 				"Data block types don't support arrays.");
@@ -87,7 +87,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RTTIField::setArraySize
 		 */
-		virtual void setArraySize(void* object, UINT32 size)
+		virtual void setArraySize(void* object, UINT32 size) override
 		{
 			BS_EXCEPT(InternalErrorException, 
 				"Data block types don't support arrays.");
@@ -96,7 +96,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RTTIManagedDataBlockFieldBase::getValue
 		 */
-		virtual ManagedDataBlock getValue(void* object)
+		virtual ManagedDataBlock getValue(void* object) override
 		{
 			ObjectType* castObj = static_cast<ObjectType*>(object);
 			std::function<ManagedDataBlock(ObjectType*)> f = any_cast<std::function<ManagedDataBlock(ObjectType*)>>(valueGetter);
@@ -106,7 +106,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RTTIManagedDataBlockFieldBase::setValue
 		 */
-		virtual void setValue(void* object, ManagedDataBlock value)
+		virtual void setValue(void* object, ManagedDataBlock value) override
 		{
 			ObjectType* castObj = static_cast<ObjectType*>(object);
 			std::function<void(ObjectType*, ManagedDataBlock)> f = any_cast<std::function<void(ObjectType*, ManagedDataBlock)>>(valueSetter);
@@ -116,10 +116,10 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RTTIManagedDataBlockFieldBase::allocate
 		 */
-		virtual UINT8* allocate(void* object, UINT32 bytes)
+		virtual UINT8* allocate(void* object, UINT32 bytes) override
 		{
 			if(mCustomAllocator.empty())
-				return (UINT8*)bs_alloc<ScratchAlloc>(bytes);
+				return (UINT8*)bs_alloc(bytes);
 			else
 			{
 				ObjectType* castObj = static_cast<ObjectType*>(object);

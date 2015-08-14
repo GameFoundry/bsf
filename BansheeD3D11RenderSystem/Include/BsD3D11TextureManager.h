@@ -14,18 +14,18 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	TextureManager::getNativeFormat
 		 */
-		PixelFormat getNativeFormat(TextureType ttype, PixelFormat format, int usage, bool hwGamma);
+		PixelFormat getNativeFormat(TextureType ttype, PixelFormat format, int usage, bool hwGamma) override;
 
 	protected:		
 		/**
 		 * @copydoc	TextureManager::createRenderTextureImpl
 		 */
-		RenderTexturePtr createRenderTextureImpl(const RENDER_TEXTURE_DESC& desc);
+		RenderTexturePtr createRenderTextureImpl(const RENDER_TEXTURE_DESC& desc) override;
 
 		/**
 		 * @copydoc	TextureManager::createMultiRenderTextureImpl
 		 */
-		MultiRenderTexturePtr createMultiRenderTextureImpl(const MULTI_RENDER_TEXTURE_DESC& desc);
+		MultiRenderTexturePtr createMultiRenderTextureImpl(const MULTI_RENDER_TEXTURE_DESC& desc) override;
 	};
 
 	/**
@@ -39,16 +39,16 @@ namespace BansheeEngine
 		 */
 		SPtr<TextureCore> createTextureInternal(TextureType texType, UINT32 width, UINT32 height, UINT32 depth,
 			int numMips, PixelFormat format, int usage = TU_DEFAULT, bool hwGammaCorrection = false,
-			UINT32 multisampleCount = 0);
+			UINT32 multisampleCount = 0) override;
 
 		/**
 		 * @copydoc	TextureCoreManager::createRenderTextureInternal
 		 */
-		SPtr<RenderTextureCore> createRenderTextureInternal(const RENDER_TEXTURE_CORE_DESC& desc);
+		SPtr<RenderTextureCore> createRenderTextureInternal(const RENDER_TEXTURE_CORE_DESC& desc) override;
 
 		/**
 		 * @copydoc	TextureCoreManager::createMultiRenderTextureInternal
 		 */
-		SPtr<MultiRenderTextureCore> createMultiRenderTextureInternal(const MULTI_RENDER_TEXTURE_CORE_DESC& desc);
+		SPtr<MultiRenderTextureCore> createMultiRenderTextureInternal(const MULTI_RENDER_TEXTURE_CORE_DESC& desc) override;
 	};
 }

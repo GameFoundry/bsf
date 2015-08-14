@@ -93,7 +93,7 @@ namespace BansheeEngine
 			if (!obj->isDestroyed())
 				obj->destroy();
 
-			bs_delete<MemAlloc, T>((T*)obj);
+			bs_delete<T, MemAlloc>((T*)obj);
 		}
 
 		/**
@@ -237,7 +237,7 @@ namespace BansheeEngine
 	 * 			and you should not create them manually.
 	 */
 	template<class Type, class MainAlloc, class PtrDataAlloc, class... Args>
-	std::shared_ptr<Type> bs_core_ptr(Args &&...args)
+	std::shared_ptr<Type> bs_core_ptr_new(Args &&...args)
 	{
 		return std::shared_ptr<Type>(bs_new<Type, MainAlloc>(std::forward<Args>(args)...),
 			&CoreObject::_delete<Type, MainAlloc>, StdAlloc<Type, PtrDataAlloc>());
@@ -250,7 +250,7 @@ namespace BansheeEngine
 	 * 			and you should not create them manually.
 	 */
 	template<class Type, class MainAlloc, class... Args>
-	std::shared_ptr<Type> bs_core_ptr(Args &&...args)
+	std::shared_ptr<Type> bs_core_ptr_new(Args &&...args)
 	{
 		return std::shared_ptr<Type>(bs_new<Type, MainAlloc>(std::forward<Args>(args)...),
 			&CoreObject::_delete<Type, MainAlloc>, StdAlloc<Type, GenAlloc>());
@@ -263,7 +263,7 @@ namespace BansheeEngine
 	 * 			and you should not create them manually.
 	 */
 	template<class Type, class... Args>
-	std::shared_ptr<Type> bs_core_ptr(Args &&...args)
+	std::shared_ptr<Type> bs_core_ptr_new(Args &&...args)
 	{
 		return std::shared_ptr<Type>(bs_new<Type, GenAlloc>(std::forward<Args>(args)...),
 			&CoreObject::_delete<Type, GenAlloc>, StdAlloc<Type, GenAlloc>());
@@ -275,19 +275,7 @@ namespace BansheeEngine
 	 * @note	All core thread object shared pointers must be created using this method or its overloads
 	 * 			and you should not create them manually.
 	 */
-	template<class Type, class MainAlloc>
-	std::shared_ptr<Type> bs_core_ptr(Type* data)
-	{
-		return std::shared_ptr<Type>(data, &CoreObject::_delete<Type, MainAlloc>, StdAlloc<Type, GenAlloc>());  
-	}
-
-	/**
-	 * @brief	Creates a core object shared pointer using a previously constructed object.
-	 *
-	 * @note	All core thread object shared pointers must be created using this method or its overloads
-	 * 			and you should not create them manually.
-	 */
-	template<class Type, class MainAlloc, class PtrDataAlloc>
+	template<class Type, class MainAlloc = GenAlloc, class PtrDataAlloc = GenAlloc>
 	std::shared_ptr<Type> bs_core_ptr(Type* data)
 	{
 		return std::shared_ptr<Type>(data, &CoreObject::_delete<Type, MainAlloc>, StdAlloc<Type, PtrDataAlloc>());  

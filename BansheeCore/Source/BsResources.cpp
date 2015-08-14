@@ -290,7 +290,7 @@ namespace BansheeEngine
 		for (UINT32 i = 0; i < (UINT32)dependencyList.size(); i++)
 			dependencyUUIDs[i] = dependencyList[i].resource.getUUID();
 
-		SPtr<SavedResourceData> resourceData = bs_shared_ptr<SavedResourceData>(dependencyUUIDs, resource->allowAsyncLoading());
+		SPtr<SavedResourceData> resourceData = bs_shared_ptr_new<SavedResourceData>(dependencyUUIDs, resource->allowAsyncLoading());
 
 		FileEncoder fs(filePath);
 		fs.encode(resourceData.get());

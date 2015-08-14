@@ -16,12 +16,12 @@ namespace BansheeEngine
 
 	GUIScrollBarHorz* GUIScrollBarHorz::create(const String& styleName)
 	{
-		return new (bs_alloc<GUIScrollBarHorz, PoolAlloc>()) GUIScrollBarHorz(getStyleName<GUIScrollBarHorz>(styleName), GUIDimensions::create());
+		return new (bs_alloc<GUIScrollBarHorz>()) GUIScrollBarHorz(getStyleName<GUIScrollBarHorz>(styleName), GUIDimensions::create());
 	}
 
 	GUIScrollBarHorz* GUIScrollBarHorz::create(const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUIScrollBarHorz, PoolAlloc>()) GUIScrollBarHorz(getStyleName<GUIScrollBarHorz>(styleName), GUIDimensions::create(options));
+		return new (bs_alloc<GUIScrollBarHorz>()) GUIScrollBarHorz(getStyleName<GUIScrollBarHorz>(styleName), GUIDimensions::create(options));
 	}
 
 	const String& GUIScrollBarHorz::getGUITypeName()

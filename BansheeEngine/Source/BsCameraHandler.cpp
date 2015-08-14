@@ -743,7 +743,7 @@ namespace BansheeEngine
 	CameraHandlerPtr CameraHandler::create(RenderTargetPtr target, float left, float top, float width, float height)
 	{
 		CameraHandler* handler = new (bs_alloc<CameraHandler>()) CameraHandler(target, left, top, width, height);
-		CameraHandlerPtr handlerPtr = bs_core_ptr<CameraHandler, GenAlloc>(handler);
+		CameraHandlerPtr handlerPtr = bs_core_ptr<CameraHandler>(handler);
 		handlerPtr->_setThisPtr(handlerPtr);
 		handlerPtr->initialize();
 
@@ -753,7 +753,7 @@ namespace BansheeEngine
 	CameraHandlerPtr CameraHandler::createEmpty()
 	{
 		CameraHandler* handler = new (bs_alloc<CameraHandler>()) CameraHandler();
-		CameraHandlerPtr handlerPtr = bs_core_ptr<CameraHandler, GenAlloc>(handler);
+		CameraHandlerPtr handlerPtr = bs_core_ptr<CameraHandler>(handler);
 		handlerPtr->_setThisPtr(handlerPtr);
 
 		return handlerPtr;
@@ -764,7 +764,7 @@ namespace BansheeEngine
 		Rect2 normArea = mViewport->getNormArea();
 
 		CameraHandlerCore* handler = new (bs_alloc<CameraHandlerCore>()) CameraHandlerCore(mViewport->getCore());
-		SPtr<CameraHandlerCore> handlerPtr = bs_shared_ptr<CameraHandlerCore, GenAlloc>(handler);
+		SPtr<CameraHandlerCore> handlerPtr = bs_shared_ptr<CameraHandlerCore>(handler);
 		handlerPtr->_setThisPtr(handlerPtr);
 
 		return handlerPtr;

@@ -23,7 +23,7 @@ namespace BansheeEngine
 	GUIMenuItem::~GUIMenuItem()
 	{
 		for(auto& child : mChildren)
-			bs_delete<PoolAlloc>(child);
+			bs_delete(child);
 	}
 
 	const GUIMenuItem* GUIMenuItem::findChild(const WString& name) const
@@ -52,7 +52,7 @@ namespace BansheeEngine
 
 		if(iterFind != mChildren.end())
 		{
-			bs_delete<PoolAlloc>(*iterFind);
+			bs_delete(*iterFind);
 			mChildren.erase(iterFind);
 		}
 	}
@@ -97,10 +97,10 @@ namespace BansheeEngine
 				bool isLastElem = i == (UINT32)(pathElements.size() - 1);
 
 				if(isLastElem)
-					existingItem = bs_new<GUIMenuItem, PoolAlloc>(curSubMenu, pathElem, callback, priority, key);
+					existingItem = bs_new<GUIMenuItem>(curSubMenu, pathElem, callback, priority, key);
 				else
 				{
-					existingItem = bs_alloc<GUIMenuItem, PoolAlloc>();
+					existingItem = bs_alloc<GUIMenuItem>();
 					existingItem = new (existingItem)GUIMenuItem(curSubMenu, pathElem, nullptr, 0, ShortcutKey::NONE);
 				}
 
@@ -112,7 +112,7 @@ namespace BansheeEngine
 
 		if(isSeparator)
 		{
-			GUIMenuItem* separatorItem = bs_new<GUIMenuItem, PoolAlloc>(curSubMenu, priority);
+			GUIMenuItem* separatorItem = bs_new<GUIMenuItem>(curSubMenu, priority);
 			curSubMenu->addChild(separatorItem);
 
 			return separatorItem;

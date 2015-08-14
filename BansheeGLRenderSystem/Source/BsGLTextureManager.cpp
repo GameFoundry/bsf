@@ -19,16 +19,16 @@ namespace BansheeEngine
 
 	RenderTexturePtr GLTextureManager::createRenderTextureImpl(const RENDER_TEXTURE_DESC& desc)
 	{
-		GLRenderTexture* tex = new (bs_alloc<GLRenderTexture, PoolAlloc>()) GLRenderTexture(desc);
+		GLRenderTexture* tex = new (bs_alloc<GLRenderTexture>()) GLRenderTexture(desc);
 
-		return bs_core_ptr<GLRenderTexture, PoolAlloc>(tex);
+		return bs_core_ptr<GLRenderTexture>(tex);
 	}
 
 	MultiRenderTexturePtr GLTextureManager::createMultiRenderTextureImpl(const MULTI_RENDER_TEXTURE_DESC& desc)
 	{
-		GLMultiRenderTexture* tex = new (bs_alloc<GLMultiRenderTexture, PoolAlloc>()) GLMultiRenderTexture(desc);
+		GLMultiRenderTexture* tex = new (bs_alloc<GLMultiRenderTexture>()) GLMultiRenderTexture(desc);
 
-		return bs_core_ptr<GLMultiRenderTexture, PoolAlloc>(tex);
+		return bs_core_ptr<GLMultiRenderTexture>(tex);
 	}
 
 	PixelFormat GLTextureManager::getNativeFormat(TextureType ttype, PixelFormat format, int usage, bool hwGamma)
@@ -70,7 +70,7 @@ namespace BansheeEngine
 		GLTextureCore* tex = new (bs_alloc<GLTextureCore>()) GLTextureCore(mGLSupport, texType,
 			width, height, depth, numMips, format, usage, hwGammaCorrection, multisampleCount);
 
-		SPtr<GLTextureCore> texPtr = bs_shared_ptr<GLTextureCore, GenAlloc>(tex);
+		SPtr<GLTextureCore> texPtr = bs_shared_ptr<GLTextureCore>(tex);
 		texPtr->_setThisPtr(texPtr);
 
 		return texPtr;
@@ -78,7 +78,7 @@ namespace BansheeEngine
 
 	SPtr<RenderTextureCore> GLTextureCoreManager::createRenderTextureInternal(const RENDER_TEXTURE_CORE_DESC& desc)
 	{
-		SPtr<GLRenderTextureCore> texPtr = bs_shared_ptr<GLRenderTextureCore>(desc);
+		SPtr<GLRenderTextureCore> texPtr = bs_shared_ptr_new<GLRenderTextureCore>(desc);
 		texPtr->_setThisPtr(texPtr);
 
 		return texPtr;
@@ -86,7 +86,7 @@ namespace BansheeEngine
 
 	SPtr<MultiRenderTextureCore> GLTextureCoreManager::createMultiRenderTextureInternal(const MULTI_RENDER_TEXTURE_CORE_DESC& desc)
 	{
-		SPtr<GLMultiRenderTextureCore> texPtr = bs_shared_ptr<GLMultiRenderTextureCore>(desc);
+		SPtr<GLMultiRenderTextureCore> texPtr = bs_shared_ptr_new<GLMultiRenderTextureCore>(desc);
 		texPtr->_setThisPtr(texPtr);
 
 		return texPtr;

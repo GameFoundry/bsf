@@ -34,7 +34,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			return bs_shared_ptr<PrefabComponentDiff>();
+			return bs_shared_ptr_new<PrefabComponentDiff>();
 		}
 	};
 
@@ -79,7 +79,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			return bs_shared_ptr<PrefabObjectDiff>();
+			return bs_shared_ptr_new<PrefabObjectDiff>();
 		}
 	};
 
@@ -219,7 +219,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			return bs_shared_ptr<PrefabDiff>();
+			return bs_shared_ptr_new<PrefabDiff>();
 		}
 	};
 }

@@ -878,12 +878,12 @@ namespace BansheeEngine
 			memory += sizeof(UINT32);
 
 			UINT32 stringSize = size - sizeof(UINT32);
-			char* buffer = (char*)bs_alloc<ScratchAlloc>(stringSize + 1);
+			char* buffer = (char*)bs_alloc(stringSize + 1);
 			memcpy(buffer, memory, stringSize); 
 			buffer[stringSize] = '\0';
 			data = String(buffer);
 
-			bs_free<ScratchAlloc>(buffer);
+			bs_free(buffer);
 
 			return size;
 		}
@@ -930,7 +930,7 @@ namespace BansheeEngine
 			memory += sizeof(UINT32);
 
 			UINT32 stringSize = size - sizeof(UINT32);
-			WString::value_type* buffer = (WString::value_type*)bs_alloc<ScratchAlloc>(stringSize + sizeof(WString::value_type));
+			WString::value_type* buffer = (WString::value_type*)bs_alloc(stringSize + sizeof(WString::value_type));
 			memcpy(buffer, memory, stringSize); 
 
 			UINT32 numChars =  stringSize / sizeof(WString::value_type);
@@ -938,7 +938,7 @@ namespace BansheeEngine
 
 			data = WString(buffer);
 
-			bs_free<ScratchAlloc>(buffer);
+			bs_free(buffer);
 
 			return size;
 		}

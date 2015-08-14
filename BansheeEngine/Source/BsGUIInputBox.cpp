@@ -37,29 +37,29 @@ namespace BansheeEngine
 		mCaretShown(false), mSelectionShown(false), mIsMultiline(multiline), mHasFocus(false), mIsMouseOver(false),
 		mState(State::Normal)
 	{
-		mImageSprite = bs_new<ImageSprite, PoolAlloc>();
-		mTextSprite = bs_new<TextSprite, PoolAlloc>();
+		mImageSprite = bs_new<ImageSprite>();
+		mTextSprite = bs_new<TextSprite>();
 	}
 
 	GUIInputBox::~GUIInputBox()
 	{
-		bs_delete<PoolAlloc>(mTextSprite);
-		bs_delete<PoolAlloc>(mImageSprite);
+		bs_delete(mTextSprite);
+		bs_delete(mImageSprite);
 	}
 
 	GUIInputBox* GUIInputBox::create(bool multiline, const String& styleName)
 	{
-		return new (bs_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUIDimensions::create(), multiline);
+		return new (bs_alloc<GUIInputBox>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUIDimensions::create(), multiline);
 	}
 
 	GUIInputBox* GUIInputBox::create(bool multiline, const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUIDimensions::create(options), multiline);
+		return new (bs_alloc<GUIInputBox>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUIDimensions::create(options), multiline);
 	}
 
 	GUIInputBox* GUIInputBox::create(const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUIDimensions::create(options), false);
+		return new (bs_alloc<GUIInputBox>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUIDimensions::create(options), false);
 	}
 
 	void GUIInputBox::setText(const WString& text)
@@ -1168,7 +1168,7 @@ namespace BansheeEngine
 
 		if (contextMenu == nullptr)
 		{
-			contextMenu = bs_shared_ptr<GUIContextMenu>();
+			contextMenu = bs_shared_ptr_new<GUIContextMenu>();
 
 			contextMenu->addMenuItem(L"Cut", std::bind(&GUIInputBox::cutText, const_cast<GUIInputBox*>(this)), 0);
 			contextMenu->addMenuItem(L"Copy", std::bind(&GUIInputBox::copyText, const_cast<GUIInputBox*>(this)), 0);

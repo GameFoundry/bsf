@@ -84,8 +84,6 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT GpuProgramCoreManager : public Module<GpuProgramCoreManager>
 	{
 	public:
-		
-	public:
 		GpuProgramCoreManager();
 		virtual ~GpuProgramCoreManager();
 

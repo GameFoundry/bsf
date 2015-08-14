@@ -42,7 +42,7 @@
 // Thread objects and related functions
 #define BS_THREAD_TYPE std::thread
 #define BS_THREAD_CREATE(name, worker) std::thread* name = new (BansheeEngine::MemoryAllocator<BansheeEngine::GenAlloc>::allocate(sizeof(std::thread))) std::thread(worker);
-#define BS_THREAD_DESTROY(name) BansheeEngine::bs_delete<BansheeEngine::GenAlloc, std::thread>(name);
+#define BS_THREAD_DESTROY(name) BansheeEngine::bs_delete<std::thread, BansheeEngine::GenAlloc>(name);
 #define BS_THREAD_HARDWARE_CONCURRENCY std::thread::hardware_concurrency()
 #define BS_THREAD_CURRENT_ID std::this_thread::get_id()
 #define BS_THREAD_ID_TYPE std::thread::id

@@ -24,13 +24,13 @@ namespace BansheeEngine
 		UINT32 dataLength = 0;
 		UINT8* diffData = ms.encode(diff.get(), dataLength, &bs_alloc);
 
-		SPtr<SerializedObject> output = bs_shared_ptr<SerializedObject>();
+		SPtr<SerializedObject> output = bs_shared_ptr_new<SerializedObject>();
 		output->subObjects.push_back(SerializedSubObject());
 
 		SerializedSubObject& subObject = output->subObjects.back();
 		subObject.typeId = ManagedSerializableObject::getRTTIStatic()->getRTTIId();
 
-		SPtr<SerializedField> field = bs_shared_ptr<SerializedField>();
+		SPtr<SerializedField> field = bs_shared_ptr_new<SerializedField>();
 		field->value = diffData;
 		field->size = dataLength;
 		field->ownsMemory = true;

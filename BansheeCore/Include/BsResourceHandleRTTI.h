@@ -24,7 +24,7 @@ namespace BansheeEngine
 			addPlainField("mUUID", 0, &ResourceHandleRTTI::getUUID, &ResourceHandleRTTI::setUUID);
 		}
 
-		void onDeserializationEnded(IReflectable* obj)
+		void onDeserializationEnded(IReflectable* obj) override
 		{
 			ResourceHandleBase* resourceHandle = static_cast<ResourceHandleBase*>(obj);
 
@@ -40,21 +40,21 @@ namespace BansheeEngine
 			}
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "ResourceHandleBase";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_ResourceHandle;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			std::shared_ptr<ResourceHandleBase> obj = bs_shared_ptr<ResourceHandleBase, PoolAlloc>(new (bs_alloc<ResourceHandleBase, PoolAlloc>()) ResourceHandleBase());
-			obj->mData = bs_shared_ptr<ResourceHandleData>();
+			std::shared_ptr<ResourceHandleBase> obj = bs_shared_ptr<ResourceHandleBase>(new (bs_alloc<ResourceHandleBase>()) ResourceHandleBase());
+			obj->mData = bs_shared_ptr_new<ResourceHandleData>();
 
 			return obj;
 		}

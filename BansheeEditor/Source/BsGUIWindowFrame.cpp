@@ -29,12 +29,12 @@ namespace BansheeEngine
 
 	GUIWindowFrame* GUIWindowFrame::create(const String& styleName)
 	{
-		return new (bs_alloc<GUIWindowFrame, PoolAlloc>()) GUIWindowFrame(getStyleName<GUIWindowFrame>(styleName), GUIDimensions::create());
+		return new (bs_alloc<GUIWindowFrame>()) GUIWindowFrame(getStyleName<GUIWindowFrame>(styleName), GUIDimensions::create());
 	}
 
 	GUIWindowFrame* GUIWindowFrame::create(const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUIWindowFrame, PoolAlloc>()) GUIWindowFrame(getStyleName<GUIWindowFrame>(styleName), GUIDimensions::create(options));
+		return new (bs_alloc<GUIWindowFrame>()) GUIWindowFrame(getStyleName<GUIWindowFrame>(styleName), GUIDimensions::create(options));
 	}
 
 	void GUIWindowFrame::setFocused(bool focused)

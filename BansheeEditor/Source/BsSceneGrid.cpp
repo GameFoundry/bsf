@@ -26,7 +26,7 @@ namespace BansheeEngine
 
 	SceneGrid::SceneGrid()
 	{
-		mVertexDesc = bs_shared_ptr<VertexDataDesc>();
+		mVertexDesc = bs_shared_ptr_new<VertexDataDesc>();
 		mVertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
 		mVertexDesc->addVertElem(VET_FLOAT3, VES_NORMAL);
 
@@ -121,7 +121,7 @@ namespace BansheeEngine
 		extents[1] = mSize * 0.5f;
 
 		Rect3 quad(mOrigin, axes, extents);
-		MeshDataPtr meshData = bs_shared_ptr<MeshData, PoolAlloc>(8, 12, mVertexDesc);
+		MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(8, 12, mVertexDesc);
 
 		ShapeMeshes3D::solidQuad(quad, meshData, 0, 0);
 		mGridMesh = Mesh::create(meshData);

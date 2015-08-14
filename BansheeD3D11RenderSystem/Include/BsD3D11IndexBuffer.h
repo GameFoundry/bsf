@@ -19,17 +19,17 @@ namespace BansheeEngine
 		/**
 		 * @copydoc IndexBufferCore::readData
 		 */
-		void readData(UINT32 offset, UINT32 length, void* pDest);
+		void readData(UINT32 offset, UINT32 length, void* pDest) override;
 
 		/**
 		 * @copydoc IndexBufferCore::writeData
 		 */
-		void writeData(UINT32 offset, UINT32 length, const void* pSource, BufferWriteType writeFlags = BufferWriteType::Normal);
+		void writeData(UINT32 offset, UINT32 length, const void* pSource, BufferWriteType writeFlags = BufferWriteType::Normal) override;
 
 		/**
 		 * @copydoc IndexBufferCore::copyData
 		 */
-		void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length, bool discardWholeBuffer = false);
+		void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length, bool discardWholeBuffer = false) override;
 
 		/**
 		 * @brief	Gets the internal DX11 index buffer object.
@@ -40,17 +40,17 @@ namespace BansheeEngine
 		/**
 		 * @copydoc IndexBufferCore::lockImpl
 		 */
-		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
+		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options) override;
 
 		/**
 		 * @copydoc IndexBufferCore::unlockImpl
 		 */
-		void unlockImpl();
+		void unlockImpl() override;
 
 		/**
 		 * @copydoc IndexBufferCore::initialize
 		 */
-		void initialize();	
+		void initialize() override;
 
 		D3D11HardwareBuffer* mBuffer;
 		D3D11Device& mDevice;

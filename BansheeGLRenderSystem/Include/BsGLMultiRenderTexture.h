@@ -22,14 +22,14 @@ namespace BansheeEngine
 		/**
 		 * @copydoc MultiRenderTextureCore::getCustomAttribute
 		 */
-		void getCustomAttribute(const String& name, void* pData) const;
+		void getCustomAttribute(const String& name, void* pData) const override;
 	protected:
 		friend class GLTextureManager;
 
 		/**
 		 * @copydoc	CoreObjectCore::initialize
 		 */
-		virtual void initialize();
+		virtual void initialize() override;
 
 	private:
 		GLFrameBufferObject* mFB;
@@ -37,7 +37,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	MultiRenderTextureCore::getProperties
 		 */
-		const RenderTargetProperties& getPropertiesInternal() const { return mProperties; }
+		const RenderTargetProperties& getPropertiesInternal() const override { return mProperties; }
 
 		MultiRenderTextureProperties mProperties;
 	};
@@ -60,7 +60,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	MultiRenderTexture::getProperties
 		 */
-		const RenderTargetProperties& getPropertiesInternal() const { return mProperties; }
+		const RenderTargetProperties& getPropertiesInternal() const override { return mProperties; }
 
 		MultiRenderTextureProperties mProperties;
 	};

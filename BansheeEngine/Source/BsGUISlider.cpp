@@ -94,12 +94,12 @@ namespace BansheeEngine
 
 	GUISliderHorz* GUISliderHorz::create(const String& styleName)
 	{
-		return new (bs_alloc<GUISliderHorz, PoolAlloc>()) GUISliderHorz(getStyleName<GUISliderHorz>(styleName), GUIDimensions::create());
+		return new (bs_alloc<GUISliderHorz>()) GUISliderHorz(getStyleName<GUISliderHorz>(styleName), GUIDimensions::create());
 	}
 
 	GUISliderHorz* GUISliderHorz::create(const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUISliderHorz, PoolAlloc>()) GUISliderHorz(getStyleName<GUISliderHorz>(styleName), GUIDimensions::create(options));
+		return new (bs_alloc<GUISliderHorz>()) GUISliderHorz(getStyleName<GUISliderHorz>(styleName), GUIDimensions::create(options));
 	}
 
 	const String& GUISliderHorz::getGUITypeName()
@@ -116,12 +116,12 @@ namespace BansheeEngine
 
 	GUISliderVert* GUISliderVert::create(const String& styleName)
 	{
-		return new (bs_alloc<GUISliderVert, PoolAlloc>()) GUISliderVert(getStyleName<GUISliderVert>(styleName), GUIDimensions::create());
+		return new (bs_alloc<GUISliderVert>()) GUISliderVert(getStyleName<GUISliderVert>(styleName), GUIDimensions::create());
 	}
 
 	GUISliderVert* GUISliderVert::create(const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUISliderVert, PoolAlloc>()) GUISliderVert(getStyleName<GUISliderVert>(styleName), GUIDimensions::create(options));
+		return new (bs_alloc<GUISliderVert>()) GUISliderVert(getStyleName<GUISliderVert>(styleName), GUIDimensions::create(options));
 	}
 
 	const String& GUISliderVert::getGUITypeName()

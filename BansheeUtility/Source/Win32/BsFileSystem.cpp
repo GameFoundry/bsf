@@ -234,13 +234,13 @@ namespace BansheeEngine
 		if (!readOnly)
 		{
 			mode |= std::ios::out;
-			rwStream = bs_shared_ptr<std::fstream, ScratchAlloc>();
+			rwStream = bs_shared_ptr_new<std::fstream>();
 			rwStream->open(fullPath.toWString().c_str(), mode);
 			baseStream = rwStream;
 		}
 		else
 		{
-			roStream = bs_shared_ptr<std::ifstream, ScratchAlloc>();
+			roStream = bs_shared_ptr_new<std::ifstream>();
 			roStream->open(fullPath.toWString().c_str(), mode);
 			baseStream = roStream;
 		}
@@ -254,15 +254,15 @@ namespace BansheeEngine
 		if (rwStream)
 		{
 			// use the writeable stream 
-			stream = bs_new<FileDataStream, ScratchAlloc>(rwStream, (size_t)fileSize, true);
+			stream = bs_new<FileDataStream>(rwStream, (size_t)fileSize, true);
 		}
 		else
 		{
 			// read-only stream
-			stream = bs_new<FileDataStream, ScratchAlloc>(roStream, (size_t)fileSize, true);
+			stream = bs_new<FileDataStream>(roStream, (size_t)fileSize, true);
 		}
 
-		return bs_shared_ptr<FileDataStream, ScratchAlloc>(stream);
+		return bs_shared_ptr<FileDataStream>(stream);
 	}
 
 	DataStreamPtr FileSystem::createAndOpenFile(const Path& fullPath)
@@ -270,7 +270,7 @@ namespace BansheeEngine
 		// Always open in binary mode
 		// Also, always include reading
 		std::ios::openmode mode = std::ios::out | std::ios::binary;
-		std::shared_ptr<std::fstream> rwStream = bs_shared_ptr<std::fstream, ScratchAlloc>();
+		std::shared_ptr<std::fstream> rwStream = bs_shared_ptr_new<std::fstream>();
 		rwStream->open(fullPath.toWString().c_str(), mode);
 
 		// Should check ensure open succeeded, in case fail for some reason.
@@ -278,7 +278,7 @@ namespace BansheeEngine
 			BS_EXCEPT(FileNotFoundException, "Cannot open file: " + fullPath.toString());
 
 		/// Construct return stream, tell it to delete on destroy
-		return bs_shared_ptr<FileDataStream, ScratchAlloc>(rwStream, 0, true);
+		return bs_shared_ptr_new<FileDataStream>(rwStream, 0, true);
 	}
 
 	UINT64 FileSystem::getFileSize(const Path& fullPath)

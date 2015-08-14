@@ -69,14 +69,14 @@ namespace BansheeEngine
 		DataStreamPtr ds = FileSystem::createAndOpenFile(filePath);
 
 		UINT32 bmpDataSize = BitmapWriter::getBMPSize(width, height, bytesPerPixel);
-		UINT8* bmpBuffer = bs_newN<UINT8, ScratchAlloc>(bmpDataSize);
+		UINT8* bmpBuffer = bs_newN<UINT8>(bmpDataSize);
 
 		BitmapWriter::rawPixelsToBMP(rawPixels, bmpBuffer, width, height, bytesPerPixel);
 
 		ds->write(bmpBuffer, bmpDataSize);
 		ds->close();
 
-		bs_deleteN<ScratchAlloc>(bmpBuffer, bmpDataSize);
+		bs_deleteN(bmpBuffer, bmpDataSize);
 	}
 
 	BS_UTILITY_EXPORT Debug& gDebug()

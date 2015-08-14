@@ -100,7 +100,7 @@ namespace BansheeEngine
 				WString identifier;
 				memory = rttiReadElem(identifier, memory);
 
-				SPtr<LocalizedStringData> entryData = bs_shared_ptr<LocalizedStringData>();
+				SPtr<LocalizedStringData> entryData = bs_shared_ptr_new<LocalizedStringData>();
 				memory = rttiReadElem(*entryData, memory);
 
 				data.strings[identifier] = entryData;

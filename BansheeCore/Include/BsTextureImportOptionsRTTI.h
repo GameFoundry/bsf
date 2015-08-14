@@ -34,20 +34,20 @@ namespace BansheeEngine
 			addPlainField("mSRGB", 4, &TextureImportOptionsRTTI::getSRGB, &TextureImportOptionsRTTI::setSRGB);
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "TextureImportOptions";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_TextureImportOptions;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			return bs_shared_ptr<TextureImportOptions, PoolAlloc>();
+			return bs_shared_ptr_new<TextureImportOptions>();
 		}
 	};
 }

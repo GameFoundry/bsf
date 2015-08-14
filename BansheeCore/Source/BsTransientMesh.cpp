@@ -63,7 +63,7 @@ namespace BansheeEngine
 		TransientMeshCore* core = new (bs_alloc<TransientMeshCore>()) TransientMeshCore(
 			mParentHeap->getCore(), mId, mProperties.mNumVertices, mProperties.mNumIndices, mProperties.mSubMeshes);
 
-		SPtr<CoreObjectCore> meshCore = bs_shared_ptr<TransientMeshCore, GenAlloc>(core);
+		SPtr<CoreObjectCore> meshCore = bs_shared_ptr<TransientMeshCore>(core);
 		meshCore->_setThisPtr(meshCore);
 
 		return meshCore;

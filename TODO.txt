@@ -77,7 +77,6 @@ BE AWARE - That in Unity when accessed from inspector materials aren't instantia
 
 Ribek use:
  - Camera, Renderable, Material, Texture inspector
-  - Material/Shader has no color type so I cannot know when to display normal vector and when color in inspector
  - Project create/open window
  - Load default layout on initial start
  - Test release mode

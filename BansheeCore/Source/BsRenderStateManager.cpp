@@ -126,7 +126,7 @@ namespace BansheeEngine
 		SPtr<SamplerState> state = findCachedState(desc);
 		if (state == nullptr)
 		{
-			state = bs_core_ptr<SamplerState, GenAlloc>(new (bs_alloc<SamplerState>()) SamplerState(desc));
+			state = bs_core_ptr<SamplerState>(new (bs_alloc<SamplerState>()) SamplerState(desc));
 			state->_setThisPtr(state);
 			state->initialize();
 
@@ -141,7 +141,7 @@ namespace BansheeEngine
 		SPtr<DepthStencilState> state = findCachedState(desc);
 		if (state == nullptr)
 		{
-			state = bs_core_ptr<DepthStencilState, GenAlloc>(new (bs_alloc<DepthStencilState>()) DepthStencilState(desc));
+			state = bs_core_ptr<DepthStencilState>(new (bs_alloc<DepthStencilState>()) DepthStencilState(desc));
 			state->_setThisPtr(state);
 			state->initialize();
 
@@ -156,7 +156,7 @@ namespace BansheeEngine
 		SPtr<RasterizerState> state = findCachedState(desc);
 		if (state == nullptr)
 		{
-			state = bs_core_ptr<RasterizerState, GenAlloc>(new (bs_alloc<RasterizerState>()) RasterizerState(desc));
+			state = bs_core_ptr<RasterizerState>(new (bs_alloc<RasterizerState>()) RasterizerState(desc));
 			state->_setThisPtr(state);
 			state->initialize();
 
@@ -171,7 +171,7 @@ namespace BansheeEngine
 		SPtr<BlendState> state = findCachedState(desc);
 		if (state == nullptr)
 		{
-			state = bs_core_ptr<BlendState, GenAlloc>(new (bs_alloc<BlendState>()) BlendState(desc));
+			state = bs_core_ptr<BlendState>(new (bs_alloc<BlendState>()) BlendState(desc));
 			state->_setThisPtr(state);
 			state->initialize();
 
@@ -183,7 +183,7 @@ namespace BansheeEngine
 
 	SamplerStatePtr RenderStateManager::_createSamplerStatePtr(const SAMPLER_STATE_DESC& desc) const
 	{
-		SamplerStatePtr samplerState = bs_core_ptr<SamplerState, GenAlloc>(
+		SamplerStatePtr samplerState = bs_core_ptr<SamplerState>(
 			new (bs_alloc<SamplerState>()) SamplerState(desc));
 		samplerState->_setThisPtr(samplerState);
 
@@ -192,7 +192,7 @@ namespace BansheeEngine
 
 	DepthStencilStatePtr RenderStateManager::_createDepthStencilStatePtr(const DEPTH_STENCIL_STATE_DESC& desc) const
 	{
-		DepthStencilStatePtr depthStencilState = bs_core_ptr<DepthStencilState, GenAlloc>(
+		DepthStencilStatePtr depthStencilState = bs_core_ptr<DepthStencilState>(
 			new (bs_alloc<DepthStencilState>()) DepthStencilState(desc));
 		depthStencilState->_setThisPtr(depthStencilState);
 
@@ -201,7 +201,7 @@ namespace BansheeEngine
 
 	RasterizerStatePtr RenderStateManager::_createRasterizerStatePtr(const RASTERIZER_STATE_DESC& desc) const
 	{
-		RasterizerStatePtr rasterizerState = bs_core_ptr<RasterizerState, GenAlloc>(
+		RasterizerStatePtr rasterizerState = bs_core_ptr<RasterizerState>(
 			new (bs_alloc<RasterizerState>()) RasterizerState(desc));
 		rasterizerState->_setThisPtr(rasterizerState);
 
@@ -210,7 +210,7 @@ namespace BansheeEngine
 
 	BlendStatePtr RenderStateManager::_createBlendStatePtr(const BLEND_STATE_DESC& desc) const
 	{
-		BlendStatePtr blendState = bs_core_ptr<BlendState, GenAlloc>(
+		BlendStatePtr blendState = bs_core_ptr<BlendState>(
 			new (bs_alloc<BlendState>()) BlendState(desc));
 		blendState->_setThisPtr(blendState);
 
@@ -318,7 +318,7 @@ namespace BansheeEngine
 		SPtr<SamplerStateCore> state = findCachedState(desc);
 		if (state == nullptr)
 		{
-			state = bs_shared_ptr<SamplerStateCore, GenAlloc>(new (bs_alloc<SamplerStateCore>()) SamplerStateCore(desc));
+			state = bs_shared_ptr<SamplerStateCore>(new (bs_alloc<SamplerStateCore>()) SamplerStateCore(desc));
 			state->_setThisPtr(state);
 
 			notifySamplerStateCreated(desc, state);
@@ -332,7 +332,7 @@ namespace BansheeEngine
 		SPtr<DepthStencilStateCore> state = findCachedState(desc);
 		if (state == nullptr)
 		{
-			SPtr<DepthStencilStateCore> state = bs_shared_ptr<DepthStencilStateCore, GenAlloc>(new (bs_alloc<DepthStencilStateCore>()) DepthStencilStateCore(desc));
+			SPtr<DepthStencilStateCore> state = bs_shared_ptr<DepthStencilStateCore>(new (bs_alloc<DepthStencilStateCore>()) DepthStencilStateCore(desc));
 			state->_setThisPtr(state);
 
 			notifyDepthStencilStateCreated(desc, state);
@@ -346,7 +346,7 @@ namespace BansheeEngine
 		SPtr<RasterizerStateCore> state = findCachedState(desc);
 		if (state == nullptr)
 		{
-			SPtr<RasterizerStateCore> state = bs_shared_ptr<RasterizerStateCore, GenAlloc>(new (bs_alloc<RasterizerStateCore>()) RasterizerStateCore(desc));
+			SPtr<RasterizerStateCore> state = bs_shared_ptr<RasterizerStateCore>(new (bs_alloc<RasterizerStateCore>()) RasterizerStateCore(desc));
 			state->_setThisPtr(state);
 
 			notifyRasterizerStateCreated(desc, state);
@@ -360,7 +360,7 @@ namespace BansheeEngine
 		SPtr<BlendStateCore> state = findCachedState(desc);
 		if (state == nullptr)
 		{
-			state = bs_shared_ptr<BlendStateCore, GenAlloc>(new (bs_alloc<BlendStateCore>()) BlendStateCore(desc));
+			state = bs_shared_ptr<BlendStateCore>(new (bs_alloc<BlendStateCore>()) BlendStateCore(desc));
 			state->_setThisPtr(state);
 
 			notifyBlendStateCreated(desc, state);

@@ -103,7 +103,7 @@ namespace BansheeEngine
 
 	ImportOptionsPtr FBXImporter::createImportOptions() const
 	{
-		return bs_shared_ptr<MeshImportOptions, PoolAlloc>();
+		return bs_shared_ptr_new<MeshImportOptions>();
 	}
 
 	ResourcePtr FBXImporter::import(const Path& filePath, ConstImportOptionsPtr importOptions)

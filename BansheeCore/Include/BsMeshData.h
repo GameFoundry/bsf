@@ -258,7 +258,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns the size of the internal buffer in bytes.
 		 */
-		UINT32 getInternalBufferSize() const;
+		UINT32 getInternalBufferSize() const override;
 
 	private:
 		/**
@@ -332,6 +332,6 @@ namespace BansheeEngine
 	public:
 		friend class MeshDataRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		virtual RTTITypeBase* getRTTI() const override;
 	};
 }

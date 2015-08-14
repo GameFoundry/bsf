@@ -21,7 +21,7 @@ namespace BansheeEngine
 	Input::Input()
 		:mLastPositionSet(false), mPointerDoubleClicked(false)
 	{ 
-		mOSInputHandler = bs_shared_ptr<OSInputHandler>();
+		mOSInputHandler = bs_shared_ptr_new<OSInputHandler>();
 
 		mOSInputHandler->onCharInput.connect(std::bind(&Input::charInput, this, _1));
 		mOSInputHandler->onCursorMoved.connect(std::bind(&Input::cursorMoved, this, _1));

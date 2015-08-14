@@ -25,17 +25,17 @@ namespace BansheeEngine
 
 		if (gptype == GPT_VERTEX_PROGRAM)
 		{
-			D3D9GpuVertexProgramCore* prog = new (bs_alloc<D3D9GpuVertexProgramCore, GenAlloc>())
+			D3D9GpuVertexProgramCore* prog = new (bs_alloc<D3D9GpuVertexProgramCore>())
 				D3D9GpuVertexProgramCore(source, entryPoint, profile);
 
-			gpuProg = bs_shared_ptr<D3D9GpuVertexProgramCore, GenAlloc>(prog);
+			gpuProg = bs_shared_ptr<D3D9GpuVertexProgramCore>(prog);
 		}
 		else if (gptype == GPT_FRAGMENT_PROGRAM)
 		{
-			D3D9GpuFragmentProgramCore* prog = new (bs_alloc<D3D9GpuFragmentProgramCore, GenAlloc>())
+			D3D9GpuFragmentProgramCore* prog = new (bs_alloc<D3D9GpuFragmentProgramCore>())
 				D3D9GpuFragmentProgramCore(source, entryPoint, profile);
 
-			gpuProg = bs_shared_ptr<D3D9GpuFragmentProgramCore, GenAlloc>(prog);
+			gpuProg = bs_shared_ptr<D3D9GpuFragmentProgramCore>(prog);
 		}
 
 		if (gpuProg != nullptr)
@@ -50,17 +50,17 @@ namespace BansheeEngine
 
 		if (type == GPT_VERTEX_PROGRAM)
 		{
-			D3D9GpuVertexProgramCore* prog = new (bs_alloc<D3D9GpuVertexProgramCore, GenAlloc>())
+			D3D9GpuVertexProgramCore* prog = new (bs_alloc<D3D9GpuVertexProgramCore>())
 				D3D9GpuVertexProgramCore("", "", GPP_NONE);
 
-			gpuProg = bs_shared_ptr<D3D9GpuVertexProgramCore, GenAlloc>(prog);
+			gpuProg = bs_shared_ptr<D3D9GpuVertexProgramCore>(prog);
 		}
 		else if (type == GPT_FRAGMENT_PROGRAM)
 		{
-			D3D9GpuFragmentProgramCore* prog = new (bs_alloc<D3D9GpuFragmentProgramCore, GenAlloc>())
+			D3D9GpuFragmentProgramCore* prog = new (bs_alloc<D3D9GpuFragmentProgramCore>())
 				D3D9GpuFragmentProgramCore("", "", GPP_NONE);
 
-			gpuProg = bs_shared_ptr<D3D9GpuFragmentProgramCore, GenAlloc>(prog);
+			gpuProg = bs_shared_ptr<D3D9GpuFragmentProgramCore>(prog);
 		}
 
 		if (gpuProg != nullptr)

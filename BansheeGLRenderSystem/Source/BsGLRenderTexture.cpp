@@ -30,7 +30,7 @@ namespace BansheeEngine
 	GLRenderTextureCore::~GLRenderTextureCore()
 	{ 
 		if (mFB != nullptr)
-			bs_delete<PoolAlloc>(mFB);
+			bs_delete(mFB);
 	}
 
 	void GLRenderTextureCore::initialize()
@@ -38,9 +38,9 @@ namespace BansheeEngine
 		RenderTextureCore::initialize();
 
 		if (mFB != nullptr)
-			bs_delete<PoolAlloc>(mFB);
+			bs_delete(mFB);
 
-		mFB = bs_new<GLFrameBufferObject, PoolAlloc>();
+		mFB = bs_new<GLFrameBufferObject>();
 
 		GLTextureCore* glTexture = static_cast<GLTextureCore*>(mColorSurface->getTexture().get());
 

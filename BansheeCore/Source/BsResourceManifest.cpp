@@ -18,12 +18,12 @@ namespace BansheeEngine
 
 	ResourceManifestPtr ResourceManifest::create(const String& name)
 	{
-		return bs_shared_ptr<ResourceManifest>(name);
+		return bs_shared_ptr_new<ResourceManifest>(name);
 	}
 
 	ResourceManifestPtr ResourceManifest::createEmpty()
 	{
-		return bs_shared_ptr<ResourceManifest>(ConstructPrivately());
+		return bs_shared_ptr_new<ResourceManifest>(ConstructPrivately());
 	}
 
 	void ResourceManifest::registerResource(const String& uuid, const Path& filePath)

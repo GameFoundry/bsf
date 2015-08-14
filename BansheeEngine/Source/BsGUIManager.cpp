@@ -82,15 +82,15 @@ namespace BansheeEngine
 		mWindowLostFocusConn = RenderWindowManager::instance().onFocusLost.connect(std::bind(&GUIManager::onWindowFocusLost, this, _1));
 		mMouseLeftWindowConn = RenderWindowManager::instance().onMouseLeftWindow.connect(std::bind(&GUIManager::onMouseLeftWindow, this, _1));
 
-		mInputCaret = bs_new<GUIInputCaret, PoolAlloc>();
-		mInputSelection = bs_new<GUIInputSelection, PoolAlloc>();
+		mInputCaret = bs_new<GUIInputCaret>();
+		mInputSelection = bs_new<GUIInputSelection>();
 
 		DragAndDropManager::startUp();
 		mDragEndedConn = DragAndDropManager::instance().onDragEnded.connect(std::bind(&GUIManager::onMouseDragEnded, this, _1, _2));
 
 		GUIDropDownBoxManager::startUp();
 
-		mVertexDesc = bs_shared_ptr<VertexDataDesc>();
+		mVertexDesc = bs_shared_ptr_new<VertexDataDesc>();
 		mVertexDesc->addVertElem(VET_FLOAT2, VES_POSITION);
 		mVertexDesc->addVertElem(VET_FLOAT2, VES_TEXCOORD);
 
@@ -131,8 +131,8 @@ namespace BansheeEngine
 
 		mMouseLeftWindowConn.disconnect();
 
-		bs_delete<PoolAlloc>(mInputCaret);
-		bs_delete<PoolAlloc>(mInputSelection);
+		bs_delete(mInputCaret);
+		bs_delete(mInputSelection);
 
 		assert(mCachedGUIData.size() == 0);
 	}
@@ -556,7 +556,7 @@ namespace BansheeEngine
 						}
 					}
 
-					MeshDataPtr meshData = bs_shared_ptr<MeshData, PoolAlloc>(group->numQuads * 4, group->numQuads * 6, mVertexDesc);
+					MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(group->numQuads * 4, group->numQuads * 6, mVertexDesc);
 
 					UINT8* vertices = meshData->getElementData(VES_POSITION);
 					UINT8* uvs = meshData->getElementData(VES_TEXCOORD);
@@ -1424,7 +1424,7 @@ namespace BansheeEngine
 
 		while (!toDestroy.empty())
 		{
-			bs_delete<PoolAlloc>(toDestroy.top());
+			bs_delete(toDestroy.top());
 			toDestroy.pop();
 		}
 

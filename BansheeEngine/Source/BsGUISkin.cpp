@@ -42,7 +42,7 @@ namespace BansheeEngine
 
 	GUISkinPtr GUISkin::_createPtr()
 	{
-		GUISkinPtr newSkin = bs_core_ptr<GUISkin, PoolAlloc>(new (bs_alloc<GUISkin, PoolAlloc>()) GUISkin());
+		GUISkinPtr newSkin = bs_core_ptr<GUISkin>(new (bs_alloc<GUISkin>()) GUISkin());
 		newSkin->_setThisPtr(newSkin);
 		newSkin->initialize();
 

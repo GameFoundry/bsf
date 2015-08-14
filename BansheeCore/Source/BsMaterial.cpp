@@ -35,7 +35,7 @@ namespace BansheeEngine
 
 	SPtr<PassParametersCore> convertParamsToCore(const SPtr<PassParameters>& passParams)
 	{
-		SPtr<PassParametersCore> passParameters = bs_shared_ptr<PassParametersCore>();
+		SPtr<PassParametersCore> passParameters = bs_shared_ptr_new<PassParametersCore>();
 
 		if (passParams->mVertParams != nullptr)
 			passParameters->mVertParams = passParams->mVertParams->getCore();
@@ -483,7 +483,7 @@ namespace BansheeEngine
 		}
 
 		const String& gpuVarName = iterFind->second;
-		SPtr<Vector<TGpuParamStruct<Core>>> gpuParams = bs_shared_ptr<Vector<TGpuParamStruct<Core>>>();
+		SPtr<Vector<TGpuParamStruct<Core>>> gpuParams = bs_shared_ptr_new<Vector<TGpuParamStruct<Core>>>();
 
 		for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
 		{
@@ -519,7 +519,7 @@ namespace BansheeEngine
 		}
 
 		const String& gpuVarName = iterFind->second;
-		SPtr<Vector<TGpuParamTexture<Core>>> gpuParams = bs_shared_ptr<Vector<TGpuParamTexture<Core>>>();
+		SPtr<Vector<TGpuParamTexture<Core>>> gpuParams = bs_shared_ptr_new<Vector<TGpuParamTexture<Core>>>();
 
 		for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
 		{
@@ -555,7 +555,7 @@ namespace BansheeEngine
 		}
 
 		const String& gpuVarName = iterFind->second;
-		SPtr<Vector<TGpuParamLoadStoreTexture<Core>>> gpuParams = bs_shared_ptr<Vector<TGpuParamLoadStoreTexture<Core>>>();
+		SPtr<Vector<TGpuParamLoadStoreTexture<Core>>> gpuParams = bs_shared_ptr_new<Vector<TGpuParamLoadStoreTexture<Core>>>();
 
 		for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
 		{
@@ -591,7 +591,7 @@ namespace BansheeEngine
 		}
 
 		const String& gpuVarName = iterFind->second;
-		SPtr<Vector<TGpuParamSampState<Core>>> gpuParams = bs_shared_ptr<Vector<TGpuParamSampState<Core>>>();
+		SPtr<Vector<TGpuParamSampState<Core>>> gpuParams = bs_shared_ptr_new<Vector<TGpuParamSampState<Core>>>();
 		for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
 		{
 			SPtr<TPassParameters<Core>> params = *iter;
@@ -898,7 +898,7 @@ namespace BansheeEngine
 		}
 
 		const String& gpuVarName = iterFind->second;
-		SPtr<Vector<TGpuDataParam<T, Core>>> gpuParams = bs_shared_ptr<Vector<TGpuDataParam<T, Core>>>();
+		SPtr<Vector<TGpuDataParam<T, Core>>> gpuParams = bs_shared_ptr_new<Vector<TGpuDataParam<T, Core>>>();
 
 		for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
 		{
@@ -1039,7 +1039,7 @@ namespace BansheeEngine
 	SPtr<MaterialCore> MaterialCore::create(const SPtr<ShaderCore>& shader)
 	{
 		MaterialCore* material = new (bs_alloc<MaterialCore>()) MaterialCore(shader);
-		SPtr<MaterialCore> materialPtr = bs_shared_ptr<MaterialCore, GenAlloc>(material);
+		SPtr<MaterialCore> materialPtr = bs_shared_ptr<MaterialCore>(material);
 		materialPtr->_setThisPtr(materialPtr);
 		materialPtr->initialize();
 
@@ -1112,7 +1112,7 @@ namespace BansheeEngine
 		if (material == nullptr)
 			material = new (bs_alloc<MaterialCore>()) MaterialCore(shader);
 
-		SPtr<MaterialCore> materialPtr = bs_shared_ptr<MaterialCore, GenAlloc>(material);
+		SPtr<MaterialCore> materialPtr = bs_shared_ptr<MaterialCore>(material);
 		materialPtr->_setThisPtr(materialPtr);
 
 		return materialPtr;

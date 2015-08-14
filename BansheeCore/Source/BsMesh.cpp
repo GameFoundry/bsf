@@ -40,7 +40,7 @@ namespace BansheeEngine
 		mIndexBuffer = HardwareBufferCoreManager::instance().createIndexBuffer(mIndexType,
 			mProperties.mNumIndices, isDynamic ? GBU_DYNAMIC : GBU_STATIC);
 
-		mVertexData = std::shared_ptr<VertexData>(bs_new<VertexData, PoolAlloc>());
+		mVertexData = std::shared_ptr<VertexData>(bs_new<VertexData>());
 
 		mVertexData->vertexCount = mProperties.mNumVertices;
 
@@ -354,7 +354,7 @@ namespace BansheeEngine
 
 	MeshDataPtr Mesh::allocateSubresourceBuffer(UINT32 subresourceIdx) const
 	{
-		MeshDataPtr meshData = bs_shared_ptr<MeshData>(mProperties.mNumVertices, mProperties.mNumIndices, mVertexDesc, mIndexType);
+		MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(mProperties.mNumVertices, mProperties.mNumIndices, mVertexDesc, mIndexType);
 
 		return meshData;
 	}
@@ -386,7 +386,7 @@ namespace BansheeEngine
 		MeshCore* obj = new (bs_alloc<MeshCore>()) MeshCore(mProperties.mNumVertices, mProperties.mNumIndices, 
 			mVertexDesc, mProperties.mSubMeshes, mUsage, mIndexType, mCPUData);
 
-		SPtr<CoreObjectCore> meshCore = bs_shared_ptr<MeshCore, GenAlloc>(obj);
+		SPtr<CoreObjectCore> meshCore = bs_shared_ptr<MeshCore>(obj);
 		meshCore->_setThisPtr(meshCore);
 
 		if ((mUsage & MU_CPUCACHED) == 0)

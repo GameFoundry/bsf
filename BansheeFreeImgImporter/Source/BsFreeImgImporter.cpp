@@ -121,7 +121,7 @@ namespace BansheeEngine
 
 	ImportOptionsPtr FreeImgImporter::createImportOptions() const
 	{
-		return bs_shared_ptr<TextureImportOptions, ScratchAlloc>();
+		return bs_shared_ptr_new<TextureImportOptions>();
 	}
 
 	ResourcePtr FreeImgImporter::import(const Path& filePath, ConstImportOptionsPtr importOptions)
@@ -338,7 +338,7 @@ namespace BansheeEngine
 		UINT32 size = dstPitch * height;
 
 		// Bind output buffer
-		PixelDataPtr texData = bs_shared_ptr<PixelData>(width, height, 1, format);
+		PixelDataPtr texData = bs_shared_ptr_new<PixelData>(width, height, 1, format);
 		texData->allocateInternalBuffer();
 		UINT8* output = texData->getData();
 

@@ -290,7 +290,7 @@ namespace BansheeEngine
 	void MeshHeapCore::growVertexBuffer(UINT32 numVertices)
 	{
 		mNumVertices = numVertices;
-		mVertexData = std::shared_ptr<VertexData>(bs_new<VertexData, PoolAlloc>());
+		mVertexData = std::shared_ptr<VertexData>(bs_new<VertexData>());
 
 		mVertexData->vertexCount = mNumVertices;
 		List<VertexElement> elements = mVertexDesc->createElements();
@@ -639,7 +639,7 @@ namespace BansheeEngine
 		const VertexDataDescPtr& vertexDesc, IndexType indexType)
 	{
 		MeshHeap* meshHeap = new (bs_alloc<MeshHeap>()) MeshHeap(numVertices, numIndices, vertexDesc, indexType); 
-		MeshHeapPtr meshHeapPtr = bs_core_ptr<MeshHeap, GenAlloc>(meshHeap);
+		MeshHeapPtr meshHeapPtr = bs_core_ptr<MeshHeap>(meshHeap);
 
 		meshHeapPtr->_setThisPtr(meshHeapPtr);
 		meshHeapPtr->initialize();
@@ -653,7 +653,7 @@ namespace BansheeEngine
 
 		MeshHeapPtr thisPtr = std::static_pointer_cast<MeshHeap>(getThisPtr());
 		TransientMesh* transientMesh = new (bs_alloc<TransientMesh>()) TransientMesh(thisPtr, meshIdx, meshData->getNumVertices(), meshData->getNumIndices(), drawOp); 
-		TransientMeshPtr transientMeshPtr = bs_core_ptr<TransientMesh, GenAlloc>(transientMesh);
+		TransientMeshPtr transientMeshPtr = bs_core_ptr<TransientMesh>(transientMesh);
 
 		transientMeshPtr->_setThisPtr(transientMeshPtr);
 		transientMeshPtr->initialize();
@@ -687,7 +687,7 @@ namespace BansheeEngine
 		MeshHeapCore* obj = new (bs_alloc<MeshHeapCore>()) MeshHeapCore(mNumVertices, mNumIndices,
 			mVertexDesc, mIndexType);
 
-		SPtr<MeshHeapCore> corePtr = bs_shared_ptr<MeshHeapCore, GenAlloc>(obj);
+		SPtr<MeshHeapCore> corePtr = bs_shared_ptr<MeshHeapCore>(obj);
 		obj->_setThisPtr(corePtr);
 
 		return corePtr;

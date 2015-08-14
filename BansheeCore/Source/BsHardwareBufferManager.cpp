@@ -16,9 +16,9 @@ namespace BansheeEngine
 
 	VertexDeclarationPtr HardwareBufferManager::createVertexDeclaration(const List<VertexElement>& elements)
     {
-		VertexDeclaration* decl = new (bs_alloc<VertexDeclaration, GenAlloc>()) VertexDeclaration(elements);
+		VertexDeclaration* decl = new (bs_alloc<VertexDeclaration>()) VertexDeclaration(elements);
 
-		VertexDeclarationPtr declPtr = bs_core_ptr<VertexDeclaration, GenAlloc>(decl);
+		VertexDeclarationPtr declPtr = bs_core_ptr<VertexDeclaration>(decl);
 		declPtr->_setThisPtr(declPtr);
 		declPtr->initialize();
 
@@ -29,7 +29,7 @@ namespace BansheeEngine
 	{
 		assert (numVerts > 0);
 
-		VertexBufferPtr vbuf = bs_core_ptr<VertexBuffer, GenAlloc>(new (bs_alloc<VertexBuffer>()) VertexBuffer(vertexSize, numVerts, usage, streamOut));
+		VertexBufferPtr vbuf = bs_core_ptr<VertexBuffer>(new (bs_alloc<VertexBuffer>()) VertexBuffer(vertexSize, numVerts, usage, streamOut));
 		vbuf->_setThisPtr(vbuf);
 		vbuf->initialize();
 		return vbuf;
@@ -39,7 +39,7 @@ namespace BansheeEngine
 	{
 		assert (numIndexes > 0);
 
-		IndexBufferPtr ibuf = bs_core_ptr<IndexBuffer, GenAlloc>(new (bs_alloc<IndexBuffer>()) IndexBuffer(itype, numIndexes, usage));
+		IndexBufferPtr ibuf = bs_core_ptr<IndexBuffer>(new (bs_alloc<IndexBuffer>()) IndexBuffer(itype, numIndexes, usage));
 		ibuf->_setThisPtr(ibuf);
 		ibuf->initialize();
 		return ibuf;
@@ -48,7 +48,7 @@ namespace BansheeEngine
 
 	GpuParamBlockBufferPtr HardwareBufferManager::createGpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage)
 	{
-		GpuParamBlockBufferPtr paramBlockPtr = bs_core_ptr<GpuParamBlockBuffer, GenAlloc>(new (bs_alloc<GpuParamBlockBuffer>()) GpuParamBlockBuffer(size, usage));
+		GpuParamBlockBufferPtr paramBlockPtr = bs_core_ptr<GpuParamBlockBuffer>(new (bs_alloc<GpuParamBlockBuffer>()) GpuParamBlockBuffer(size, usage));
 		paramBlockPtr->_setThisPtr(paramBlockPtr);
 		paramBlockPtr->initialize();
 		return paramBlockPtr;
@@ -57,7 +57,7 @@ namespace BansheeEngine
 	GpuBufferPtr HardwareBufferManager::createGpuBuffer(UINT32 elementCount, UINT32 elementSize, 
 		GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
 	{
-		GpuBufferPtr gbuf = bs_core_ptr<GpuBuffer, GenAlloc>(new (bs_alloc<GpuBuffer>()) GpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter));
+		GpuBufferPtr gbuf = bs_core_ptr<GpuBuffer>(new (bs_alloc<GpuBuffer>()) GpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter));
 		gbuf->_setThisPtr(gbuf);
 		gbuf->initialize();
 
@@ -110,9 +110,9 @@ namespace BansheeEngine
 
 	SPtr<VertexDeclarationCore> HardwareBufferCoreManager::createVertexDeclarationInternal(const List<VertexElement>& elements)
 	{
-		VertexDeclarationCore* decl = new (bs_alloc<VertexDeclarationCore, GenAlloc>()) VertexDeclarationCore(elements);
+		VertexDeclarationCore* decl = new (bs_alloc<VertexDeclarationCore>()) VertexDeclarationCore(elements);
 
-		SPtr<VertexDeclarationCore> ret = bs_shared_ptr<VertexDeclarationCore, GenAlloc>(decl);
+		SPtr<VertexDeclarationCore> ret = bs_shared_ptr<VertexDeclarationCore>(decl);
 		ret->_setThisPtr(ret);
 
 		return ret;

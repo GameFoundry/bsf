@@ -57,8 +57,8 @@ namespace BansheeEngine
 
 	HSpriteTexture SpriteTexture::create(const HTexture& texture)
 	{
-		SpriteTexturePtr texturePtr = bs_core_ptr<SpriteTexture, PoolAlloc>
-			(new (bs_alloc<SpriteTexture, PoolAlloc>()) SpriteTexture(Vector2(0.0f, 0.0f), Vector2(1.0f, 1.0f), texture));
+		SpriteTexturePtr texturePtr = bs_core_ptr<SpriteTexture>
+			(new (bs_alloc<SpriteTexture>()) SpriteTexture(Vector2(0.0f, 0.0f), Vector2(1.0f, 1.0f), texture));
 
 		texturePtr->_setThisPtr(texturePtr);
 		texturePtr->initialize();
@@ -68,8 +68,8 @@ namespace BansheeEngine
 
 	HSpriteTexture SpriteTexture::create(const Vector2& uvOffset, const Vector2& uvScale, const HTexture& texture)
 	{
-		SpriteTexturePtr texturePtr = bs_core_ptr<SpriteTexture, PoolAlloc>
-			(new (bs_alloc<SpriteTexture, PoolAlloc>()) SpriteTexture(uvOffset, uvScale, texture));
+		SpriteTexturePtr texturePtr = bs_core_ptr<SpriteTexture>
+			(new (bs_alloc<SpriteTexture>()) SpriteTexture(uvOffset, uvScale, texture));
 
 		texturePtr->_setThisPtr(texturePtr);
 		texturePtr->initialize();
@@ -79,8 +79,8 @@ namespace BansheeEngine
 
 	SpriteTexturePtr SpriteTexture::createEmpty()
 	{
-		SpriteTexturePtr texturePtr = bs_core_ptr<SpriteTexture, PoolAlloc>
-			(new (bs_alloc<SpriteTexture, PoolAlloc>()) SpriteTexture(Vector2(0.0f, 0.0f), Vector2(1.0f, 1.0f), Texture::dummy()));
+		SpriteTexturePtr texturePtr = bs_core_ptr<SpriteTexture>
+			(new (bs_alloc<SpriteTexture>()) SpriteTexture(Vector2(0.0f, 0.0f), Vector2(1.0f, 1.0f), Texture::dummy()));
 
 		texturePtr->_setThisPtr(texturePtr);
 		texturePtr->initialize();

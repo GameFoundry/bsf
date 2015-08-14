@@ -20,17 +20,17 @@ namespace BansheeEngine
 		/**
 		 * @copydoc VertexBufferCore::readData
 		 */
-		void readData(UINT32 offset, UINT32 length, void* pDest);
+		void readData(UINT32 offset, UINT32 length, void* pDest) override;
 
 		/**
 		 * @copydoc VertexBufferCore::writeData
 		 */
-		void writeData(UINT32 offset, UINT32 length, const void* pSource, BufferWriteType writeFlags = BufferWriteType::Normal);
+		void writeData(UINT32 offset, UINT32 length, const void* pSource, BufferWriteType writeFlags = BufferWriteType::Normal) override;
 
 		/**
 		 * @copydoc VertexBufferCore::copyData
 		 */
-		void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length, bool discardWholeBuffer = false);
+		void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length, bool discardWholeBuffer = false) override;
 
 		/**
 		 * @brief	Get the D3D-specific index buffer
@@ -41,17 +41,17 @@ namespace BansheeEngine
 		/**
 		* @copydoc VertexBufferCore::lockImpl
 		 */
-		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
+		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options) override;
 
 		/**
 		 * @copydoc VertexBufferCore::unlockImpl
 		 */
-		void unlockImpl(void);
+		void unlockImpl(void) override;
 
 		/**
 		 * @copydoc VertexBufferCore::initialize
 		 */
-		void initialize();
+		void initialize() override;
 
 		D3D11HardwareBuffer* mBuffer;
 		D3D11Device& mDevice;

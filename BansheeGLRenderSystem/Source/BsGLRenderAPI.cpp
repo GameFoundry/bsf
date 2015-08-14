@@ -266,7 +266,7 @@ namespace BansheeEngine
 				// 0 means uniforms are not in block, in which case we handle it specially
 				if (uniformBufferData == nullptr && paramBlockBuffer->getSize() > 0)
 				{
-					uniformBufferData = (UINT8*)bs_alloc<ScratchAlloc>(paramBlockBuffer->getSize());
+					uniformBufferData = (UINT8*)bs_alloc(paramBlockBuffer->getSize());
 					paramBlockBuffer->readFromGPU(uniformBufferData); // TODO - Don't read from GPU!? Just read the cached version
 				}
 
@@ -372,7 +372,7 @@ namespace BansheeEngine
 
 		if(uniformBufferData != nullptr)
 		{
-			bs_free<ScratchAlloc>(uniformBufferData);
+			bs_free(uniformBufferData);
 		}
 	}
 

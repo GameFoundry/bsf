@@ -48,7 +48,7 @@ namespace BansheeEngine
 		if(!ScriptAssemblyManager::instance().getSerializableObjectInfo(elementNs, elementTypeName, objInfo))
 			return nullptr;
 
-		return bs_shared_ptr<ManagedSerializableObject>(ConstructPrivately(), objInfo, managedInstance);
+		return bs_shared_ptr_new<ManagedSerializableObject>(ConstructPrivately(), objInfo, managedInstance);
 	}
 
 	ManagedSerializableObjectPtr ManagedSerializableObject::createNew(const ManagedSerializableTypeInfoObjectPtr& type)
@@ -59,7 +59,7 @@ namespace BansheeEngine
 		if (!ScriptAssemblyManager::instance().getSerializableObjectInfo(type->mTypeNamespace, type->mTypeName, currentObjInfo))
 			return nullptr;
 
-		return bs_shared_ptr<ManagedSerializableObject>(ConstructPrivately(), currentObjInfo, createManagedInstance(type));
+		return bs_shared_ptr_new<ManagedSerializableObject>(ConstructPrivately(), currentObjInfo, createManagedInstance(type));
 	}
 
 	MonoObject* ManagedSerializableObject::createManagedInstance(const ManagedSerializableTypeInfoObjectPtr& type)
@@ -78,7 +78,7 @@ namespace BansheeEngine
 
 	ManagedSerializableObjectPtr ManagedSerializableObject::createEmpty()
 	{
-		return bs_shared_ptr<ManagedSerializableObject>(ConstructPrivately());
+		return bs_shared_ptr_new<ManagedSerializableObject>(ConstructPrivately());
 	}
 
 	void ManagedSerializableObject::serialize()

@@ -154,7 +154,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObjectCore::syncToCore
 		 */
-		void syncToCore(const CoreSyncData& data);
+		void syncToCore(const CoreSyncData& data) override;
     };
 
 	/**
@@ -187,17 +187,17 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObject::syncToCore
 		 */
-		CoreSyncData syncToCore(FrameAlloc* allocator);
+		CoreSyncData syncToCore(FrameAlloc* allocator) override;
 
 		/**
 		 * @copydoc	CoreObject::createCore
 		 */
-		SPtr<CoreObjectCore> createCore() const;
+		SPtr<CoreObjectCore> createCore() const override;
 
 		/**
 		 * @copydoc	CoreObject::syncToCore
 		 */
-		void getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies);
+		void getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies) override;
 
 		/**
 		 * @brief	Creates a new empty pass but doesn't initialize it.
@@ -210,6 +210,6 @@ namespace BansheeEngine
 	public:
 		friend class PassRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;	
+		virtual RTTITypeBase* getRTTI() const override;
     };
 }

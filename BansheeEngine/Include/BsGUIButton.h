@@ -68,7 +68,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElement::getElementType
 		 */
-		virtual ElementType _getElementType() const { return ElementType::Button; }
+		virtual ElementType _getElementType() const override { return ElementType::Button; }
 	private:
 		GUIButton(const String& styleName, const GUIContent& content, const GUIDimensions& dimensions);
 	};

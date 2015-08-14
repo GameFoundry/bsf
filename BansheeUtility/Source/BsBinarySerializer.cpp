@@ -448,14 +448,14 @@ namespace BansheeEngine
 				auto iterFind = mInterimObjectMap.find(objectId);
 				if (iterFind == mInterimObjectMap.end())
 				{
-					output = bs_shared_ptr<SerializedObject>();
+					output = bs_shared_ptr_new<SerializedObject>();
 					mInterimObjectMap.insert(std::make_pair(objectId, output));
 				}
 				else
 					output = iterFind->second;
 			}
 			else // Not a reflectable ptr referenced object
-				output = bs_shared_ptr<SerializedObject>();
+				output = bs_shared_ptr_new<SerializedObject>();
 
 			output->subObjects.push_back(SerializedSubObject());
 			serializedSubObject = &output->subObjects.back();
@@ -584,7 +584,7 @@ namespace BansheeEngine
 				SPtr<SerializedArray> serializedArray;
 				if (curGenericField != nullptr)
 				{
-					serializedArray = bs_shared_ptr<SerializedArray>();
+					serializedArray = bs_shared_ptr_new<SerializedArray>();
 					serializedArray->numElements = arrayNumElems;
 
 					serializedEntry = serializedArray;
@@ -619,7 +619,7 @@ namespace BansheeEngine
 								auto findObj = mInterimObjectMap.find(childObjectId);
 								if (findObj == mInterimObjectMap.end())
 								{
-									serializedArrayEntry = bs_shared_ptr<SerializedObject>();
+									serializedArrayEntry = bs_shared_ptr_new<SerializedObject>();
 									mInterimObjectMap.insert(std::make_pair(childObjectId, serializedArrayEntry));
 								}
 								else
@@ -683,7 +683,7 @@ namespace BansheeEngine
 
 						if (curField != nullptr)
 						{
-							SPtr<SerializedField> serializedField = bs_shared_ptr<SerializedField>();
+							SPtr<SerializedField> serializedField = bs_shared_ptr_new<SerializedField>();
 
 							if (copyData)
 							{
@@ -742,7 +742,7 @@ namespace BansheeEngine
 							auto findObj = mInterimObjectMap.find(childObjectId);
 							if (findObj == mInterimObjectMap.end())
 							{
-								serializedField = bs_shared_ptr<SerializedObject>();
+								serializedField = bs_shared_ptr_new<SerializedObject>();
 								mInterimObjectMap.insert(std::make_pair(childObjectId, serializedField));
 							}
 							else
@@ -796,7 +796,7 @@ namespace BansheeEngine
 
 					if (curField != nullptr)
 					{
-						SPtr<SerializedField> serializedField = bs_shared_ptr<SerializedField>();
+						SPtr<SerializedField> serializedField = bs_shared_ptr_new<SerializedField>();
 
 						if (copyData)
 						{
@@ -842,7 +842,7 @@ namespace BansheeEngine
 					// Data block data
 					if (curField != nullptr)
 					{
-						SPtr<SerializedField> serializedField = bs_shared_ptr<SerializedField>();
+						SPtr<SerializedField> serializedField = bs_shared_ptr_new<SerializedField>();
 
 						if (copyData)
 						{

@@ -87,7 +87,7 @@ namespace BansheeEngine
 		SAFE_RELEASE(mD3DBuffer);
 
 		if(mpTempStagingBuffer != nullptr)
-			bs_delete<PoolAlloc>(mpTempStagingBuffer);
+			bs_delete(mpTempStagingBuffer);
 	}
 
 	void* D3D11HardwareBuffer::lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options)
@@ -179,7 +179,7 @@ namespace BansheeEngine
 			if (!mpTempStagingBuffer)
 			{
 				// Create another buffer instance but use system memory
-				mpTempStagingBuffer = bs_new<D3D11HardwareBuffer, PoolAlloc>(mBufferType, mUsage, 1, mSizeInBytes, std::ref(mDevice), true);
+				mpTempStagingBuffer = bs_new<D3D11HardwareBuffer>(mBufferType, mUsage, 1, mSizeInBytes, std::ref(mDevice), true);
 			}
 
 			// Schedule a copy to the staging
@@ -206,7 +206,7 @@ namespace BansheeEngine
 
 			if(mpTempStagingBuffer != nullptr)
 			{
-				bs_delete<PoolAlloc>(mpTempStagingBuffer);
+				bs_delete(mpTempStagingBuffer);
 				mpTempStagingBuffer = nullptr;
 			}
 		}

@@ -45,7 +45,7 @@ namespace BansheeEngine
 
 	ImportOptionsPtr FontImporter::createImportOptions() const
 	{
-		return bs_shared_ptr<FontImportOptions, ScratchAlloc>();
+		return bs_shared_ptr_new<FontImportOptions>();
 	}
 
 	ResourcePtr FontImporter::import(const Path& filePath, ConstImportOptionsPtr importOptions)
@@ -140,7 +140,7 @@ namespace BansheeEngine
 				UINT32 bufferSize = pageIter->width * pageIter->height * 2;
 
 				// TODO - I don't actually need a 2 channel texture
-				PixelDataPtr pixelData = bs_shared_ptr<PixelData>(pageIter->width, pageIter->height, 1, PF_R8G8);
+				PixelDataPtr pixelData = bs_shared_ptr_new<PixelData>(pageIter->width, pageIter->height, 1, PF_R8G8);
 
 				pixelData->allocateInternalBuffer();
 				UINT8* pixelBuffer = pixelData->getData();

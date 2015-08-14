@@ -691,13 +691,13 @@ namespace BansheeEngine
 		{
 			UINT32 maxRenderTargets = mCurrentCapabilities->getNumMultiRenderTargets();
 
-			ID3D11RenderTargetView** views = bs_newN<ID3D11RenderTargetView*, ScratchAlloc>(maxRenderTargets);
+			ID3D11RenderTargetView** views = bs_newN<ID3D11RenderTargetView*>(maxRenderTargets);
 			memset(views, 0, sizeof(ID3D11RenderTargetView*) * maxRenderTargets);
 
 			mActiveRenderTarget->getCustomAttribute("RTV", views);
 			if (!views[0])
 			{
-				bs_deleteN<ScratchAlloc>(views, maxRenderTargets);
+				bs_deleteN(views, maxRenderTargets);
 				return;
 			}
 
@@ -713,7 +713,7 @@ namespace BansheeEngine
 					mDevice->getImmediateContext()->ClearRenderTargetView(views[i], clearColor);
 			}
 
-			bs_deleteN<ScratchAlloc>(views, maxRenderTargets);
+			bs_deleteN(views, maxRenderTargets);
 		}
 
 		// Clear depth stencil
@@ -746,12 +746,12 @@ namespace BansheeEngine
 
 		// Retrieve render surfaces
 		UINT32 maxRenderTargets = mCurrentCapabilities->getNumMultiRenderTargets();
-		ID3D11RenderTargetView** views = bs_newN<ID3D11RenderTargetView*, ScratchAlloc>(maxRenderTargets);
+		ID3D11RenderTargetView** views = bs_newN<ID3D11RenderTargetView*>(maxRenderTargets);
 		memset(views, 0, sizeof(ID3D11RenderTargetView*) * maxRenderTargets);
 		target->getCustomAttribute("RTV", views);
 		if (!views[0])
 		{
-			bs_deleteN<ScratchAlloc>(views, maxRenderTargets);
+			bs_deleteN(views, maxRenderTargets);
 			return;
 		}
 
@@ -764,7 +764,7 @@ namespace BansheeEngine
 		if (mDevice->hasError())
 			BS_EXCEPT(RenderingAPIException, "Failed to setRenderTarget : " + mDevice->getErrorDescription());
 
-		bs_deleteN<ScratchAlloc>(views, maxRenderTargets);
+		bs_deleteN(views, maxRenderTargets);
 		applyViewport();
 
 		BS_INC_RENDER_STAT(NumRenderTargetChanges);

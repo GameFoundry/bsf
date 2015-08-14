@@ -36,18 +36,18 @@ namespace BansheeEngine
 				&VertexDataDescRTTI::getNumVertexElementData, &VertexDataDescRTTI::setVertexElementData, &VertexDataDescRTTI::setNumVertexElementData);
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() 
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			return bs_shared_ptr<VertexDataDesc, PoolAlloc>(new (bs_alloc<VertexDataDesc, PoolAlloc>()) VertexDataDesc());
+			return bs_shared_ptr<VertexDataDesc>(new (bs_alloc<VertexDataDesc>()) VertexDataDesc());
 		}
 
-		virtual const String& getRTTIName() 
+		virtual const String& getRTTIName() override
 		{
 			static String name = "VertexDataDesc";
 			throw name;
 		}
 
-		virtual UINT32 getRTTIId() 
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_VertexDataDesc;
 		}

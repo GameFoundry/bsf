@@ -44,12 +44,12 @@ namespace BansheeEngine
 		if(ScriptAssemblyManager::instance().getSystemGenericListClass()->getFullName() != fullName)
 			return nullptr;
 
-		return bs_shared_ptr<ManagedSerializableList>(ConstructPrivately(), typeInfo, managedInstance);
+		return bs_shared_ptr_new<ManagedSerializableList>(ConstructPrivately(), typeInfo, managedInstance);
 	}
 
 	ManagedSerializableListPtr ManagedSerializableList::createNew(const ManagedSerializableTypeInfoListPtr& typeInfo, UINT32 size)
 	{
-		return bs_shared_ptr<ManagedSerializableList>(ConstructPrivately(), typeInfo, createManagedInstance(typeInfo, size));
+		return bs_shared_ptr_new<ManagedSerializableList>(ConstructPrivately(), typeInfo, createManagedInstance(typeInfo, size));
 	}
 
 	MonoObject* ManagedSerializableList::createManagedInstance(const ManagedSerializableTypeInfoListPtr& typeInfo, UINT32 size)
@@ -76,7 +76,7 @@ namespace BansheeEngine
 
 	ManagedSerializableListPtr ManagedSerializableList::createEmpty()
 	{
-		return bs_shared_ptr<ManagedSerializableList>(ConstructPrivately());
+		return bs_shared_ptr_new<ManagedSerializableList>(ConstructPrivately());
 	}
 
 	void ManagedSerializableList::setFieldData(UINT32 arrayIdx, const ManagedSerializableFieldDataPtr& val)

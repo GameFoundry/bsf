@@ -17,12 +17,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	D3D9Resource::notifyOnDeviceCreate
 		 */
-		virtual void notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device);
+		virtual void notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device) override;
 
 		/**
 		 * @copydoc	D3D9Resource::notifyOnDeviceDestroy
 		 */
-		virtual void notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device);
+		virtual void notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device) override;
 
 		/**
 		 * @brief	Creates a DirectX 9 vertex declaration object.

@@ -13,17 +13,17 @@ namespace BansheeEngine
 
 	GameObjectHandleBase::GameObjectHandleBase(const std::shared_ptr<GameObject> ptr)
 	{
-		mData = bs_shared_ptr<GameObjectHandleData, PoolAlloc>(ptr->mInstanceData);
+		mData = bs_shared_ptr_new<GameObjectHandleData>(ptr->mInstanceData);
 	}
 
 	GameObjectHandleBase::GameObjectHandleBase(std::nullptr_t ptr)
 	{
-		mData = bs_shared_ptr<GameObjectHandleData, PoolAlloc>(nullptr);
+		mData = bs_shared_ptr_new<GameObjectHandleData>(nullptr);
 	}
 
 	GameObjectHandleBase::GameObjectHandleBase()
 	{
-		mData = bs_shared_ptr<GameObjectHandleData, PoolAlloc>(nullptr);
+		mData = bs_shared_ptr_new<GameObjectHandleData>(nullptr);
 	}
 
 	void GameObjectHandleBase::_resolve(const GameObjectHandleBase& object) 

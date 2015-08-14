@@ -16,7 +16,7 @@ namespace BansheeEngine
 
 	D3D11GpuBufferCore::~D3D11GpuBufferCore()
 	{ 
-		bs_delete<PoolAlloc>(mBuffer);
+		bs_delete(mBuffer);
 		clearBufferViews();
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_GpuBuffer);
 	}
@@ -46,7 +46,7 @@ namespace BansheeEngine
 			BS_EXCEPT(InvalidParametersException, "Unsupported buffer type " + toString(props.getType()));
 		}
 
-		mBuffer = bs_new<D3D11HardwareBuffer, PoolAlloc>(bufferType, props.getUsage(), props.getElementCount(), props.getElementSize(),
+		mBuffer = bs_new<D3D11HardwareBuffer>(bufferType, props.getUsage(), props.getElementCount(), props.getElementSize(),
 			d3d11rs->getPrimaryDevice(), false, false, props.getRandomGpuWrite(), props.getUseCounter());
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_GpuBuffer);
@@ -105,12 +105,12 @@ namespace BansheeEngine
 
 	GpuBufferView* D3D11GpuBufferCore::createView()
 	{
-		return bs_new<D3D11GpuBufferView, PoolAlloc>();
+		return bs_new<D3D11GpuBufferView>();
 	}
 
 	void D3D11GpuBufferCore::destroyView(GpuBufferView* view)
 	{
 		if(view != nullptr)
-			bs_delete<PoolAlloc>(view);
+			bs_delete(view);
 	}
 }

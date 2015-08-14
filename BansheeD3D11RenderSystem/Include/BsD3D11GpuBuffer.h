@@ -16,29 +16,29 @@ namespace BansheeEngine
 		/**
 		 * @copydoc GpuBufferCore::lock
 		 */
-		virtual void* lock(UINT32 offset, UINT32 length, GpuLockOptions options);
+		virtual void* lock(UINT32 offset, UINT32 length, GpuLockOptions options) override;
 
 		/**
 		 * @copydoc GpuBufferCore::unlock
 		 */
-		virtual void unlock();
+		virtual void unlock() override;
 
 		/**
 		 * @copydoc GpuBufferCore::readData
 		 */
-        virtual void readData(UINT32 offset, UINT32 length, void* pDest);
+		virtual void readData(UINT32 offset, UINT32 length, void* pDest) override;
 
 		/**
 		 * @copydoc GpuBufferCore::writeData
 		 */
         virtual void writeData(UINT32 offset, UINT32 length, const void* pSource,
-			BufferWriteType writeFlags = BufferWriteType::Normal);
+			BufferWriteType writeFlags = BufferWriteType::Normal) override;
 
 		/**
 		 * @copydoc GpuBufferCore::copyData
 		 */
 		void copyData(GpuBufferCore& srcBuffer, UINT32 srcOffset, 
-			UINT32 dstOffset, UINT32 length, bool discardWholeBuffer = false);
+			UINT32 dstOffset, UINT32 length, bool discardWholeBuffer = false) override;
 
 		/**
 		 * @brief	Returns the internal DX11 GPU buffer object.
@@ -57,17 +57,17 @@ namespace BansheeEngine
 		/**
 		 * @copydoc GpuBufferCore::createView
 		 */
-		virtual GpuBufferView* createView();
+		virtual GpuBufferView* createView() override;
 
 		/**
 		 * @copydoc GpuBufferCore::destroyView
 		 */
-		virtual void destroyView(GpuBufferView* view);
+		virtual void destroyView(GpuBufferView* view) override;
 
 		/**
 		 * @copydoc GpuBufferCore::initialize
 		 */
-		void initialize();	
+		void initialize() override;
 
 	private:
 		D3D11HardwareBuffer* mBuffer;

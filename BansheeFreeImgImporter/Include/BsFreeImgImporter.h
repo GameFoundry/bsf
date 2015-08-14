@@ -21,22 +21,22 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	SpecificImporter::isExtensionSupported
 		 */
-		virtual bool isExtensionSupported(const WString& ext) const;
+		virtual bool isExtensionSupported(const WString& ext) const override;
 
 		/**
 		 * @copydoc	SpecificImporter::isMagicNumberSupported
 		 */
-		virtual bool isMagicNumberSupported(const UINT8* magicNumPtr, UINT32 numBytes) const; 
+		virtual bool isMagicNumberSupported(const UINT8* magicNumPtr, UINT32 numBytes) const override;
 
 		/**
 		 * @copydoc	SpecificImporter::import
 		 */
-		virtual ResourcePtr import(const Path& filePath, ConstImportOptionsPtr importOptions);
+		virtual ResourcePtr import(const Path& filePath, ConstImportOptionsPtr importOptions) override;
 
 		/**
 		 * @copydoc SpecificImporter::createImportOptions
 		 */
-		virtual ImportOptionsPtr createImportOptions() const;
+		virtual ImportOptionsPtr createImportOptions() const override;
 	private:
 		/**
 		 * @brief	Converts a magic number into an extension name.

@@ -287,7 +287,7 @@ namespace BansheeEngine
 			{
 				SPtr<GpuParamBlockBufferCore> paramBlock = bindableParams->getParamBlockBuffer(paramBlockSlot);
 
-				UINT8* data = (UINT8*)bs_alloc<ScratchAlloc>(paramBlock->getSize());
+				UINT8* data = (UINT8*)bs_alloc(paramBlock->getSize());
 				paramBlock->readFromGPU(data);
 
 				bufferData[paramBlockSlot] = data;
@@ -404,7 +404,7 @@ namespace BansheeEngine
 
 		for(auto& curBufferData : bufferData)
 		{
-			bs_free<ScratchAlloc>(curBufferData.second);
+			bs_free(curBufferData.second);
 		}
 
 		BS_INC_RENDER_STAT(NumGpuParamBufferBinds);
@@ -1028,12 +1028,12 @@ namespace BansheeEngine
 
 		// Retrieve render surfaces
 		UINT32 maxRenderTargets = mCurrentCapabilities->getNumMultiRenderTargets();
-		IDirect3DSurface9** pBack = bs_newN<IDirect3DSurface9*, ScratchAlloc>(maxRenderTargets);
+		IDirect3DSurface9** pBack = bs_newN<IDirect3DSurface9*>(maxRenderTargets);
 		memset(pBack, 0, sizeof(IDirect3DSurface9*) * maxRenderTargets);
 		target->getCustomAttribute("DDBACKBUFFER", pBack);
 		if (!pBack[0])
 		{
-			bs_deleteN<ScratchAlloc>(pBack, maxRenderTargets);
+			bs_deleteN(pBack, maxRenderTargets);
 			return;
 		}
 
@@ -1053,7 +1053,7 @@ namespace BansheeEngine
 			}
 		}
 
-		bs_deleteN<ScratchAlloc>(pBack, maxRenderTargets);
+		bs_deleteN(pBack, maxRenderTargets);
 
 		hr = getActiveD3D9Device()->SetDepthStencilSurface(pDepth);
 		if (FAILED(hr))

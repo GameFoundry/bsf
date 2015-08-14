@@ -12,7 +12,7 @@ namespace BansheeEngine
 	{
 		assert(numVerts > 0);
 
-		SPtr<D3D9VertexBufferCore> ret = bs_shared_ptr<D3D9VertexBufferCore>(vertexSize, numVerts, usage, streamOut);
+		SPtr<D3D9VertexBufferCore> ret = bs_shared_ptr_new<D3D9VertexBufferCore>(vertexSize, numVerts, usage, streamOut);
 		ret->_setThisPtr(ret);
 
 		return ret;
@@ -22,7 +22,7 @@ namespace BansheeEngine
 	{
 		assert(numIndexes > 0);
 
-		SPtr<D3D9IndexBufferCore> ret = bs_shared_ptr<D3D9IndexBufferCore>(itype, numIndexes, usage);
+		SPtr<D3D9IndexBufferCore> ret = bs_shared_ptr_new<D3D9IndexBufferCore>(itype, numIndexes, usage);
 		ret->_setThisPtr(ret);
 
 		return ret;
@@ -30,9 +30,9 @@ namespace BansheeEngine
 
 	SPtr<VertexDeclarationCore> D3D9HardwareBufferCoreManager::createVertexDeclarationInternal(const List<VertexElement>& elements)
 	{
-		D3D9VertexDeclarationCore* decl = new (bs_alloc<D3D9VertexDeclarationCore, GenAlloc>()) D3D9VertexDeclarationCore(elements);
+		D3D9VertexDeclarationCore* decl = new (bs_alloc<D3D9VertexDeclarationCore>()) D3D9VertexDeclarationCore(elements);
 		
-		SPtr<D3D9VertexDeclarationCore> declPtr = bs_shared_ptr<D3D9VertexDeclarationCore, GenAlloc>(decl);
+		SPtr<D3D9VertexDeclarationCore> declPtr = bs_shared_ptr<D3D9VertexDeclarationCore>(decl);
 		declPtr->_setThisPtr(declPtr);
 
 		return declPtr;
@@ -40,9 +40,9 @@ namespace BansheeEngine
 
 	SPtr<GpuParamBlockBufferCore> D3D9HardwareBufferCoreManager::createGpuParamBlockBufferInternal(UINT32 size, GpuParamBlockUsage usage)
 	{
-		GenericGpuParamBlockBufferCore* paramBlockBuffer = new (bs_alloc<GenericGpuParamBlockBufferCore, GenAlloc>()) GenericGpuParamBlockBufferCore(size, usage);
+		GenericGpuParamBlockBufferCore* paramBlockBuffer = new (bs_alloc<GenericGpuParamBlockBufferCore>()) GenericGpuParamBlockBufferCore(size, usage);
 
-		SPtr<GpuParamBlockBufferCore> paramBlockBufferPtr = bs_shared_ptr<GenericGpuParamBlockBufferCore, GenAlloc>(paramBlockBuffer);
+		SPtr<GpuParamBlockBufferCore> paramBlockBufferPtr = bs_shared_ptr<GenericGpuParamBlockBufferCore>(paramBlockBuffer);
 		paramBlockBufferPtr->_setThisPtr(paramBlockBufferPtr);
 
 		return paramBlockBufferPtr;
@@ -51,9 +51,9 @@ namespace BansheeEngine
 	SPtr<GpuBufferCore> D3D9HardwareBufferCoreManager::createGpuBufferInternal(UINT32 elementCount, UINT32 elementSize,
 		GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
 	{
-		D3D9GpuBufferCore* buffer = new (bs_alloc<D3D9GpuBufferCore, GenAlloc>()) D3D9GpuBufferCore(elementCount, elementSize, type, usage, randomGpuWrite, useCounter);
+		D3D9GpuBufferCore* buffer = new (bs_alloc<D3D9GpuBufferCore>()) D3D9GpuBufferCore(elementCount, elementSize, type, usage, randomGpuWrite, useCounter);
 
-		SPtr<GpuBufferCore> bufferPtr = bs_shared_ptr<D3D9GpuBufferCore, GenAlloc>(buffer);
+		SPtr<GpuBufferCore> bufferPtr = bs_shared_ptr<D3D9GpuBufferCore>(buffer);
 		bufferPtr->_setThisPtr(bufferPtr);
 
 		return bufferPtr;

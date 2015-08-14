@@ -98,7 +98,7 @@ namespace BansheeEngine
 		Application::onStartUp();
 
 		// TODO - Load project settings
-		mEditorSettings = bs_shared_ptr<EditorSettings>();
+		mEditorSettings = bs_shared_ptr_new<EditorSettings>();
 
 		BuiltinEditorResources::startUp();
 
@@ -313,7 +313,7 @@ namespace BansheeEngine
 
 	ShaderIncludeHandlerPtr EditorApplication::getShaderIncludeHandler() const
 	{
-		return bs_shared_ptr<EditorShaderIncludeHandler>();
+		return bs_shared_ptr_new<EditorShaderIncludeHandler>();
 	}
 
 	EditorApplication& gEditorApplication()

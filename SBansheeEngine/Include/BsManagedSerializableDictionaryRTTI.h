@@ -50,7 +50,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return bs_shared_ptr<ManagedSerializableDictionaryKeyValue>();
+			return bs_shared_ptr_new<ManagedSerializableDictionaryKeyValue>();
 		}
 	};
 

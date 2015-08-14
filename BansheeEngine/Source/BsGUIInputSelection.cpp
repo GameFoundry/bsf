@@ -13,7 +13,7 @@ namespace BansheeEngine
 	GUIInputSelection::~GUIInputSelection()
 	{
 		for(auto& sprite : mSprites)
-			bs_delete<PoolAlloc>(sprite);
+			bs_delete(sprite);
 	}
 
 	void GUIInputSelection::updateSprite()

@@ -29,13 +29,13 @@ namespace BansheeEngine
 
 	GUIDropButton* GUIDropButton::create(UINT32 dragType, const String& styleName)
 	{
-		return new (bs_alloc<GUIDropButton, PoolAlloc>()) GUIDropButton(dragType, 
+		return new (bs_alloc<GUIDropButton>()) GUIDropButton(dragType, 
 			getStyleName<GUIDropButton>(styleName), GUIDimensions::create());
 	}
 
 	GUIDropButton* GUIDropButton::create(UINT32 dragType, const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUIDropButton, PoolAlloc>()) GUIDropButton(dragType, 
+		return new (bs_alloc<GUIDropButton>()) GUIDropButton(dragType, 
 			getStyleName<GUIDropButton>(styleName), GUIDimensions::create(options));
 	}
 

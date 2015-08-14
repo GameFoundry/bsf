@@ -44,7 +44,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return bs_shared_ptr<EditorWidgetLayout>(EditorWidgetLayout::PrivatelyConstruct());
+			return bs_shared_ptr_new<EditorWidgetLayout>(EditorWidgetLayout::PrivatelyConstruct());
 		}
 	};
 }

@@ -76,7 +76,7 @@ namespace BansheeEngine
 
 	SPtr<ManagedSerializableDiff::ModifiedObject> ManagedSerializableDiff::ModifiedObject::create()
 	{
-		return bs_shared_ptr<ModifiedObject>();
+		return bs_shared_ptr_new<ModifiedObject>();
 	}
 
 	RTTITypeBase* ManagedSerializableDiff::ModifiedObject::getRTTIStatic()
@@ -91,7 +91,7 @@ namespace BansheeEngine
 
 	SPtr<ManagedSerializableDiff::ModifiedArray> ManagedSerializableDiff::ModifiedArray::create()
 	{
-		return bs_shared_ptr<ModifiedArray>();
+		return bs_shared_ptr_new<ModifiedArray>();
 	}
 
 	RTTITypeBase* ManagedSerializableDiff::ModifiedArray::getRTTIStatic()
@@ -106,7 +106,7 @@ namespace BansheeEngine
 
 	SPtr<ManagedSerializableDiff::ModifiedDictionary> ManagedSerializableDiff::ModifiedDictionary::create()
 	{
-		return bs_shared_ptr<ModifiedDictionary>();
+		return bs_shared_ptr_new<ModifiedDictionary>();
 	}
 
 	RTTITypeBase* ManagedSerializableDiff::ModifiedDictionary::getRTTIStatic()
@@ -127,7 +127,7 @@ namespace BansheeEngine
 
 	SPtr<ManagedSerializableDiff::ModifiedEntry> ManagedSerializableDiff::ModifiedEntry::create(const ManagedSerializableFieldDataPtr& value)
 	{
-		return bs_shared_ptr<ModifiedEntry>(value);
+		return bs_shared_ptr_new<ModifiedEntry>(value);
 	}
 
 	RTTITypeBase* ManagedSerializableDiff::ModifiedEntry::getRTTIStatic()
@@ -157,7 +157,7 @@ namespace BansheeEngine
 		ManagedSerializableObjectInfoPtr oldObjInfo = oldObj->getObjectInfo();
 		ManagedSerializableObjectInfoPtr newObjInfo = newObj->getObjectInfo();
 
-		ManagedSerializableDiffPtr output = bs_shared_ptr<ManagedSerializableDiff>();
+		ManagedSerializableDiffPtr output = bs_shared_ptr_new<ManagedSerializableDiff>();
 		if (!oldObjInfo->mTypeInfo->matches(newObjInfo->mTypeInfo))
 			return output;
 

@@ -134,8 +134,8 @@ namespace BansheeEngine
 			arrObjA = { TestObjectB(), TestObjectB(), TestObjectB() };
 			arrObjB = { TestObjectB(), TestObjectB(), TestObjectB() };
 
-			arrObjPtrA = { bs_shared_ptr<TestObjectB>(), bs_shared_ptr<TestObjectB>(), bs_shared_ptr<TestObjectB>() };
-			arrObjPtrB = { bs_shared_ptr<TestObjectB>(), bs_shared_ptr<TestObjectB>(), bs_shared_ptr<TestObjectB>() };
+			arrObjPtrA = { bs_shared_ptr_new<TestObjectB>(), bs_shared_ptr_new<TestObjectB>(), bs_shared_ptr_new<TestObjectB>() };
+			arrObjPtrB = { bs_shared_ptr_new<TestObjectB>(), bs_shared_ptr_new<TestObjectB>(), bs_shared_ptr_new<TestObjectB>() };
 		}
 
 		UINT32 intA = 5;
@@ -145,9 +145,9 @@ namespace BansheeEngine
 		TestObjectB objA;
 		TestObjectB objB;
 
-		SPtr<TestObjectB> objPtrA = bs_shared_ptr<TestObjectB>();
-		SPtr<TestObjectB> objPtrB = bs_shared_ptr<TestObjectB>();
-		SPtr<TestObjectB> objPtrC = bs_shared_ptr<TestObjectB>();
+		SPtr<TestObjectB> objPtrA = bs_shared_ptr_new<TestObjectB>();
+		SPtr<TestObjectB> objPtrB = bs_shared_ptr_new<TestObjectB>();
+		SPtr<TestObjectB> objPtrC = bs_shared_ptr_new<TestObjectB>();
 		SPtr<TestObjectB> objPtrD = nullptr;
 
 		Vector<String> arrStrA;
@@ -233,7 +233,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return bs_shared_ptr<TestObjectA>();
+			return bs_shared_ptr_new<TestObjectA>();
 		}
 	};
 
@@ -263,7 +263,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return bs_shared_ptr<TestObjectB>();
+			return bs_shared_ptr_new<TestObjectB>();
 		}
 	};
 
@@ -519,8 +519,8 @@ namespace BansheeEngine
 
 	void EditorTestSuite::BinaryDiff()
 	{
-		SPtr<TestObjectA> orgObj = bs_shared_ptr<TestObjectA>();
-		SPtr<TestObjectA> newObj = bs_shared_ptr<TestObjectA>();
+		SPtr<TestObjectA> orgObj = bs_shared_ptr_new<TestObjectA>();
+		SPtr<TestObjectA> newObj = bs_shared_ptr_new<TestObjectA>();
 
 		newObj->intA = 995;
 		newObj->strA = "potato";
@@ -529,7 +529,7 @@ namespace BansheeEngine
 		newObj->objB.intA = 9940;
 		newObj->objPtrB->strA = "kiwi";
 		newObj->objPtrC = nullptr;
-		newObj->objPtrD = bs_shared_ptr<TestObjectB>();
+		newObj->objPtrD = bs_shared_ptr_new<TestObjectB>();
 		newObj->arrObjB[1].strA = "strawberry";
 		newObj->arrObjPtrB[0]->intA = 99100;
 

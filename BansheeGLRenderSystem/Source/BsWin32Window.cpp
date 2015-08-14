@@ -55,7 +55,7 @@ namespace BansheeEngine
 
 		if (mDeviceName != NULL)
 		{
-			bs_free<ScratchAlloc>(mDeviceName);
+			bs_free(mDeviceName);
 			mDeviceName = NULL;
 		}
 	}
@@ -180,7 +180,7 @@ namespace BansheeEngine
 			GetMonitorInfo(hMonitor, &monitorInfoEx);
 
 			size_t devNameLen = strlen(monitorInfoEx.szDevice);
-			mDeviceName = (char*)bs_alloc<ScratchAlloc>((UINT32)(devNameLen + 1));
+			mDeviceName = (char*)bs_alloc((UINT32)(devNameLen + 1));
 
 			strcpy_s(mDeviceName, devNameLen + 1, monitorInfoEx.szDevice);
 
@@ -611,7 +611,7 @@ namespace BansheeEngine
 		{
 			size_t rowSpan = dst.getWidth() * PixelUtil::getNumElemBytes(dst.getFormat());
 			size_t height = dst.getHeight();
-			UINT8 *tmpData = (UINT8*)bs_alloc<ScratchAlloc>((UINT32)(rowSpan * height));
+			UINT8 *tmpData = (UINT8*)bs_alloc((UINT32)(rowSpan * height));
 			UINT8 *srcRow = (UINT8 *)dst.getData(), *tmpRow = tmpData + (height - 1) * rowSpan;
 
 			while (tmpRow >= tmpData)
@@ -622,7 +622,7 @@ namespace BansheeEngine
 			}
 			memcpy(dst.getData(), tmpData, rowSpan * height);
 
-			bs_free<ScratchAlloc>(tmpData);
+			bs_free(tmpData);
 		}
 	}
 

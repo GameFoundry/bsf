@@ -21,23 +21,23 @@ namespace BansheeEngine
 		:GUIElement(styleName, dimensions), mHorizontal(horizontal), mHandleSize(0), mMouseOverHandle(false), mPctHandlePos(0.0f), mDragStartPos(0),
 		mHandleDragged(false), mState(State::Normal), mJumpOnClick(jumpOnClick)
 	{
-		mImageSprite = bs_new<ImageSprite, PoolAlloc>();
+		mImageSprite = bs_new<ImageSprite>();
 	}
 
 	GUISliderHandle::~GUISliderHandle()
 	{
-		bs_delete<PoolAlloc>(mImageSprite);
+		bs_delete(mImageSprite);
 	}
 
 	GUISliderHandle* GUISliderHandle::create(bool horizontal, bool jumpOnClick, const String& styleName)
 	{
-		return new (bs_alloc<GUISliderHandle, PoolAlloc>()) GUISliderHandle(horizontal, jumpOnClick, 
+		return new (bs_alloc<GUISliderHandle>()) GUISliderHandle(horizontal, jumpOnClick, 
 			getStyleName<GUISliderHandle>(styleName), GUIDimensions::create());
 	}
 
 	GUISliderHandle* GUISliderHandle::create(bool horizontal, bool jumpOnClick, const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUISliderHandle, PoolAlloc>()) GUISliderHandle(horizontal, jumpOnClick, 
+		return new (bs_alloc<GUISliderHandle>()) GUISliderHandle(horizontal, jumpOnClick, 
 			getStyleName<GUISliderHandle>(styleName), GUIDimensions::create(options));
 	}
 

@@ -67,7 +67,7 @@ namespace BansheeEngine
 			totalIndexCount += meshData->getNumIndices();
 		}
 
-		VertexDataDescPtr vertexData = bs_shared_ptr<VertexDataDesc, PoolAlloc>();
+		VertexDataDescPtr vertexData = bs_shared_ptr_new<VertexDataDesc>();
 		
 		Vector<VertexElement> combinedVertexElements;
 		for(auto& meshData : meshes)
@@ -104,7 +104,7 @@ namespace BansheeEngine
 			}
 		}
 
-		MeshDataPtr combinedMeshData = bs_shared_ptr<MeshData, PoolAlloc>(totalVertexCount, totalIndexCount, vertexData);
+		MeshDataPtr combinedMeshData = bs_shared_ptr_new<MeshData>(totalVertexCount, totalIndexCount, vertexData);
 
 		// Copy indices
 		UINT32 vertexOffset = 0;

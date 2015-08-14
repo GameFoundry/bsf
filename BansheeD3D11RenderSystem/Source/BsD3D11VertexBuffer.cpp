@@ -11,7 +11,7 @@ namespace BansheeEngine
 	D3D11VertexBufferCore::~D3D11VertexBufferCore()
 	{
 		if (mBuffer != nullptr)
-			bs_delete<PoolAlloc>(mBuffer);
+			bs_delete(mBuffer);
 
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_VertexBuffer);
 	}
@@ -58,7 +58,7 @@ namespace BansheeEngine
 
 	void D3D11VertexBufferCore::initialize()
 	{
-		mBuffer = bs_new<D3D11HardwareBuffer, PoolAlloc>(D3D11HardwareBuffer::BT_VERTEX, 
+		mBuffer = bs_new<D3D11HardwareBuffer>(D3D11HardwareBuffer::BT_VERTEX, 
 			mUsage, 1, mSizeInBytes, std::ref(mDevice), mSystemMemory, mStreamOut);
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_VertexBuffer);

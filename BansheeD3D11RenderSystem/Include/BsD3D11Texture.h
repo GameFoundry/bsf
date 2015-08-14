@@ -37,32 +37,32 @@ namespace BansheeEngine
 		/**
 		* @copydoc	CoreObjectCore::initialize()
 		*/
-		void initialize();
+		void initialize() override;
 
 		/**
 		 * @copydoc Texture::lockImpl
 		 */
-		PixelData lockImpl(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0);
+		PixelData lockImpl(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0) override;
 
 		/**
 		 * @copydoc Texture::unlockImpl
 		 */
-		void unlockImpl();
+		void unlockImpl() override;
 
 		/**
 		 * @copydoc Texture::copyImpl
 		 */
-		void copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, const SPtr<TextureCore>& target);
+		void copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, const SPtr<TextureCore>& target) override;
 
 		/**
 		 * @copydoc Texture::readData
 		 */
-		void readData(PixelData& dest, UINT32 mipLevel = 0, UINT32 face = 0);
+		void readData(PixelData& dest, UINT32 mipLevel = 0, UINT32 face = 0) override;
 
 		/**
 		 * @copydoc Texture::writeData
 		 */
-		void writeData(const PixelData& src, UINT32 mipLevel = 0, UINT32 face = 0, bool discardWholeBuffer = false);
+		void writeData(const PixelData& src, UINT32 mipLevel = 0, UINT32 face = 0, bool discardWholeBuffer = false) override;
 
 		/**
 		 * @brief	Creates a blank DX11 1D texture object.

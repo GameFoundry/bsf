@@ -73,7 +73,7 @@ namespace BansheeEngine
 			if (depth != 1) depth /= 2;
 		}
 
-		PixelDataPtr dst = bs_shared_ptr<PixelData, PoolAlloc>(width, height, depth, getFormat());
+		PixelDataPtr dst = bs_shared_ptr_new<PixelData>(width, height, depth, getFormat());
 
 		dst->allocateInternalBuffer();
 
@@ -210,7 +210,7 @@ namespace BansheeEngine
 
 	TextureViewPtr TextureCore::createView(const SPtr<TextureCore>& texture, const TEXTURE_VIEW_DESC& desc)
 	{
-		return bs_shared_ptr<TextureView, PoolAlloc>(new (bs_alloc<TextureView, PoolAlloc>()) TextureView(texture, desc));
+		return bs_shared_ptr<TextureView>(new (bs_alloc<TextureView>()) TextureView(texture, desc));
 	}
 
 	void TextureCore::clearBufferViews()
@@ -235,7 +235,7 @@ namespace BansheeEngine
 		if (iterFind == texture->mTextureViews.end())
 		{
 			TextureViewPtr newView = texture->createView(texture, key);
-			texture->mTextureViews[key] = new (bs_alloc<TextureViewReference, PoolAlloc>()) TextureViewReference(newView);
+			texture->mTextureViews[key] = new (bs_alloc<TextureViewReference>()) TextureViewReference(newView);
 
 			iterFind = texture->mTextureViews.find(key);
 		}
@@ -266,7 +266,7 @@ namespace BansheeEngine
 
 			texture->mTextureViews.erase(iterFind);
 
-			bs_delete<PoolAlloc>(toRemove);
+			bs_delete(toRemove);
 		}
 	}
 
@@ -431,7 +431,7 @@ namespace BansheeEngine
 			{
 				UINT32 subresourceIdx = mProperties.mapToSubresourceIdx(i, j);
 
-				mCPUSubresourceData[subresourceIdx] = bs_shared_ptr<PixelData>(curWidth, curHeight, curDepth, mProperties.getFormat());
+				mCPUSubresourceData[subresourceIdx] = bs_shared_ptr_new<PixelData>(curWidth, curHeight, curDepth, mProperties.getFormat());
 				mCPUSubresourceData[subresourceIdx]->allocateInternalBuffer();
 
 				if (curWidth > 1)

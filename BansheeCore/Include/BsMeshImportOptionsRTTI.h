@@ -42,20 +42,20 @@ namespace BansheeEngine
 			addPlainField("mImportScale", 6, &MeshImportOptionsRTTI::getImportScale, &MeshImportOptionsRTTI::setImportScale);
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "MeshImportOptions";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_MeshImportOptions;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			return bs_shared_ptr<MeshImportOptions, PoolAlloc>();
+			return bs_shared_ptr_new<MeshImportOptions>();
 		}
 	};
 }

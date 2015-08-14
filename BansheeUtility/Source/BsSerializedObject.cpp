@@ -5,7 +5,7 @@ namespace BansheeEngine
 {
 	SPtr<SerializedInstance> SerializedField::clone(bool cloneData)
 	{
-		SPtr<SerializedField> copy = bs_shared_ptr<SerializedField>();
+		SPtr<SerializedField> copy = bs_shared_ptr_new<SerializedField>();
 		copy->size = size;
 
 		if (cloneData)
@@ -25,7 +25,7 @@ namespace BansheeEngine
 
 	SPtr<SerializedInstance> SerializedObject::clone(bool cloneData)
 	{
-		SPtr<SerializedObject> copy = bs_shared_ptr<SerializedObject>();
+		SPtr<SerializedObject> copy = bs_shared_ptr_new<SerializedObject>();
 		copy->subObjects = Vector<SerializedSubObject>(subObjects.size());
 
 		UINT32 i = 0;
@@ -51,7 +51,7 @@ namespace BansheeEngine
 
 	SPtr<SerializedInstance> SerializedArray::clone(bool cloneData)
 	{
-		SPtr<SerializedArray> copy = bs_shared_ptr<SerializedArray>();
+		SPtr<SerializedArray> copy = bs_shared_ptr_new<SerializedArray>();
 		copy->numElements = numElements;
 
 		for (auto& entryPair : entries)

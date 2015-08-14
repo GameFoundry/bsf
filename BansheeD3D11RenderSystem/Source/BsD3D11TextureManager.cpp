@@ -9,16 +9,16 @@ namespace BansheeEngine
 {
 	RenderTexturePtr D3D11TextureManager::createRenderTextureImpl(const RENDER_TEXTURE_DESC& desc)
 	{
-		D3D11RenderTexture* tex = new (bs_alloc<D3D11RenderTexture, PoolAlloc>()) D3D11RenderTexture(desc);
+		D3D11RenderTexture* tex = new (bs_alloc<D3D11RenderTexture>()) D3D11RenderTexture(desc);
 
-		return bs_core_ptr<D3D11RenderTexture, PoolAlloc>(tex);
+		return bs_core_ptr<D3D11RenderTexture>(tex);
 	}
 
 	MultiRenderTexturePtr D3D11TextureManager::createMultiRenderTextureImpl(const MULTI_RENDER_TEXTURE_DESC& desc)
 	{
-		D3D11MultiRenderTexture* tex = new (bs_alloc<D3D11MultiRenderTexture, PoolAlloc>()) D3D11MultiRenderTexture(desc);
+		D3D11MultiRenderTexture* tex = new (bs_alloc<D3D11MultiRenderTexture>()) D3D11MultiRenderTexture(desc);
 
-		return bs_core_ptr<D3D11MultiRenderTexture, PoolAlloc>(tex);
+		return bs_core_ptr<D3D11MultiRenderTexture>(tex);
 	}
 
 	PixelFormat D3D11TextureManager::getNativeFormat(TextureType ttype, PixelFormat format, int usage, bool hwGamma)
@@ -35,7 +35,7 @@ namespace BansheeEngine
 		D3D11TextureCore* tex = new (bs_alloc<D3D11TextureCore>()) D3D11TextureCore(texType, 
 			width, height, depth, numMips, format, usage, hwGammaCorrection, multisampleCount);
 
-		SPtr<D3D11TextureCore> texPtr = bs_shared_ptr<D3D11TextureCore, GenAlloc>(tex);
+		SPtr<D3D11TextureCore> texPtr = bs_shared_ptr<D3D11TextureCore>(tex);
 		texPtr->_setThisPtr(texPtr);
 
 		return texPtr;
@@ -43,7 +43,7 @@ namespace BansheeEngine
 
 	SPtr<RenderTextureCore> D3D11TextureCoreManager::createRenderTextureInternal(const RENDER_TEXTURE_CORE_DESC& desc)
 	{
-		SPtr<D3D11RenderTextureCore> texPtr = bs_shared_ptr<D3D11RenderTextureCore>(desc);
+		SPtr<D3D11RenderTextureCore> texPtr = bs_shared_ptr_new<D3D11RenderTextureCore>(desc);
 		texPtr->_setThisPtr(texPtr);
 
 		return texPtr;
@@ -51,7 +51,7 @@ namespace BansheeEngine
 
 	SPtr<MultiRenderTextureCore> D3D11TextureCoreManager::createMultiRenderTextureInternal(const MULTI_RENDER_TEXTURE_CORE_DESC& desc)
 	{
-		SPtr<D3D11MultiRenderTextureCore> texPtr = bs_shared_ptr<D3D11MultiRenderTextureCore>(desc);
+		SPtr<D3D11MultiRenderTextureCore> texPtr = bs_shared_ptr_new<D3D11MultiRenderTextureCore>(desc);
 		texPtr->_setThisPtr(texPtr);
 
 		return texPtr;

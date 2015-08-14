@@ -17,8 +17,8 @@ namespace BansheeEngine
 
 	ShaderIncludePtr ShaderInclude::_createPtr(const String& includeString)
 	{
-		ShaderIncludePtr shaderIncludePtr = bs_core_ptr<ShaderInclude, PoolAlloc>(
-			new (bs_alloc<ShaderInclude, PoolAlloc>()) ShaderInclude(includeString));
+		ShaderIncludePtr shaderIncludePtr = bs_core_ptr<ShaderInclude>(
+			new (bs_alloc<ShaderInclude>()) ShaderInclude(includeString));
 		shaderIncludePtr->_setThisPtr(shaderIncludePtr);
 		shaderIncludePtr->initialize();
 

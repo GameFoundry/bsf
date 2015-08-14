@@ -56,18 +56,18 @@ namespace BansheeEngine
 			addDataBlockField("data", 4, &MeshDataRTTI::getData, &MeshDataRTTI::setData, 0, &MeshDataRTTI::allocateData);
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() 
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			return bs_shared_ptr<MeshData, PoolAlloc>(new (bs_alloc<MeshData, PoolAlloc>()) MeshData());
+			return bs_shared_ptr<MeshData>(new (bs_alloc<MeshData>()) MeshData());
 		}
 
-		virtual const String& getRTTIName() 
+		virtual const String& getRTTIName() override
 		{
 			static String name = "MeshData";
 			throw name;
 		}
 
-		virtual UINT32 getRTTIId() 
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_MeshData;
 		}

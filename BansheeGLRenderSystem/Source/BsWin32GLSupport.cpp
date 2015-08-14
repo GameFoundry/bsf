@@ -35,18 +35,18 @@ namespace BansheeEngine
 			desc.platformSpecific["parentWindowHandle"] = toString(hWnd);
 		}
 
-		Win32Window* window = new (bs_alloc<Win32Window, PoolAlloc>()) Win32Window(desc, windowId, *this);
-		return RenderWindowPtr(window, &CoreObject::_delete<Win32Window, PoolAlloc>);
+		Win32Window* window = new (bs_alloc<Win32Window>()) Win32Window(desc, windowId, *this);
+		return RenderWindowPtr(window, &CoreObject::_delete<Win32Window, GenAlloc>);
 	}
 
 	SPtr<RenderWindowCore> Win32GLSupport::newWindowCore(RENDER_WINDOW_DESC& desc, UINT32 windowId)
 	{
-		Win32WindowCore* window = new (bs_alloc<Win32WindowCore, GenAlloc>()) Win32WindowCore(desc, windowId, *this);
+		Win32WindowCore* window = new (bs_alloc<Win32WindowCore>()) Win32WindowCore(desc, windowId, *this);
 
 		if (!mInitialWindow)
 			mInitialWindow = window;
 
-		return bs_shared_ptr<Win32WindowCore, GenAlloc>(window);
+		return bs_shared_ptr<Win32WindowCore>(window);
 	}
 
 	void Win32GLSupport::start()
@@ -129,7 +129,7 @@ namespace BansheeEngine
 			glrc = wglGetCurrentContext();
 		}
 
-		return bs_shared_ptr<Win32Context>(hdc, glrc, createdNew);
+		return bs_shared_ptr_new<Win32Context>(hdc, glrc, createdNew);
 	}
 
 	void* Win32GLSupport::getProcAddress(const String& procname)
@@ -325,7 +325,7 @@ namespace BansheeEngine
 
 	VideoModeInfoPtr Win32GLSupport::getVideoModeInfo() const
 	{
-		return bs_shared_ptr<Win32VideoModeInfo>();
+		return bs_shared_ptr_new<Win32VideoModeInfo>();
 	}
 
 	String translateWGLError()

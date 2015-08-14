@@ -56,23 +56,23 @@ namespace BansheeEngine
 
 	GUIToggle* GUIToggle::create(const GUIContent& content, const String& styleName)
 	{
-		return new (bs_alloc<GUIToggle, PoolAlloc>()) GUIToggle(getStyleName<GUIToggle>(styleName), content, nullptr, GUIDimensions::create());
+		return new (bs_alloc<GUIToggle>()) GUIToggle(getStyleName<GUIToggle>(styleName), content, nullptr, GUIDimensions::create());
 	}
 
 	GUIToggle* GUIToggle::create(const GUIContent& content, const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUIToggle, PoolAlloc>()) GUIToggle(getStyleName<GUIToggle>(styleName), content, nullptr, GUIDimensions::create(options));
+		return new (bs_alloc<GUIToggle>()) GUIToggle(getStyleName<GUIToggle>(styleName), content, nullptr, GUIDimensions::create(options));
 	}
 
 	GUIToggle* GUIToggle::create(const GUIContent& content, std::shared_ptr<GUIToggleGroup> toggleGroup, const String& styleName)
 	{
-		return new (bs_alloc<GUIToggle, PoolAlloc>()) GUIToggle(getStyleName<GUIToggle>(styleName), content, toggleGroup, GUIDimensions::create());
+		return new (bs_alloc<GUIToggle>()) GUIToggle(getStyleName<GUIToggle>(styleName), content, toggleGroup, GUIDimensions::create());
 	}
 
 	GUIToggle* GUIToggle::create(const GUIContent& content, std::shared_ptr<GUIToggleGroup> toggleGroup, 
 		const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUIToggle, PoolAlloc>()) GUIToggle(getStyleName<GUIToggle>(styleName), content, toggleGroup, GUIDimensions::create(options));
+		return new (bs_alloc<GUIToggle>()) GUIToggle(getStyleName<GUIToggle>(styleName), content, toggleGroup, GUIDimensions::create(options));
 	}
 
 	std::shared_ptr<GUIToggleGroup> GUIToggle::createToggleGroup()

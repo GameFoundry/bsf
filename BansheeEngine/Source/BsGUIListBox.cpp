@@ -33,12 +33,12 @@ namespace BansheeEngine
 
 	GUIListBox* GUIListBox::create(const Vector<HString>& elements, const String& styleName)
 	{
-		return new (bs_alloc<GUIListBox, PoolAlloc>()) GUIListBox(getStyleName<GUIListBox>(styleName), elements, GUIDimensions::create());
+		return new (bs_alloc<GUIListBox>()) GUIListBox(getStyleName<GUIListBox>(styleName), elements, GUIDimensions::create());
 	}
 
 	GUIListBox* GUIListBox::create(const Vector<HString>& elements, const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUIListBox, PoolAlloc>()) GUIListBox(getStyleName<GUIListBox>(styleName), elements, GUIDimensions::create(options));
+		return new (bs_alloc<GUIListBox>()) GUIListBox(getStyleName<GUIListBox>(styleName), elements, GUIDimensions::create(options));
 	}
 
 	void GUIListBox::setElements(const Vector<HString>& elements)

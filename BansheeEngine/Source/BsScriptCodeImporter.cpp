@@ -52,6 +52,6 @@ namespace BansheeEngine
 
 	ImportOptionsPtr ScriptCodeImporter::createImportOptions() const
 	{
-		return bs_shared_ptr<ScriptCodeImportOptions>();
+		return bs_shared_ptr_new<ScriptCodeImportOptions>();
 	}
 }

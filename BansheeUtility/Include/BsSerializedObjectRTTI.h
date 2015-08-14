@@ -71,7 +71,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			return bs_shared_ptr<SerializedField>();
+			return bs_shared_ptr_new<SerializedField>();
 		}
 	};
 
@@ -117,7 +117,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			return bs_shared_ptr<SerializedObject>();
+			return bs_shared_ptr_new<SerializedObject>();
 		}
 	};
 
@@ -193,7 +193,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			return bs_shared_ptr<SerializedArray>();
+			return bs_shared_ptr_new<SerializedArray>();
 		}
 	};
 
@@ -269,7 +269,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			return bs_shared_ptr<SerializedSubObject>();
+			return bs_shared_ptr_new<SerializedSubObject>();
 		}
 	};
 
@@ -316,7 +316,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			return bs_shared_ptr<SerializedEntry>();
+			return bs_shared_ptr_new<SerializedEntry>();
 		}
 	};
 
@@ -363,7 +363,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			return bs_shared_ptr<SerializedArrayEntry>();
+			return bs_shared_ptr_new<SerializedArrayEntry>();
 		}
 	};
 }

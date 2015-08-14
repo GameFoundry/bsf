@@ -14,7 +14,7 @@ namespace BansheeEngine
 	{
 		VertexDataDescPtr vertexDesc = vertexLayoutVertexDesc(layout);
 
-		mMeshData = bs_shared_ptr<MeshData>(numVertices, numIndices, vertexDesc, indexType);
+		mMeshData = bs_shared_ptr_new<MeshData>(numVertices, numIndices, vertexDesc, indexType);
 	}
 
 	RendererMeshData::RendererMeshData(const MeshDataPtr& meshData)

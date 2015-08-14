@@ -63,7 +63,7 @@ namespace BansheeEngine
 			return nullptr;
 
 		PixelDataPtr sourcePixelData = sourceScriptPixelData->getInternalValue();
-		PixelDataPtr outputData = bs_shared_ptr<PixelData>(sourcePixelData->getWidth(), sourcePixelData->getHeight(), 
+		PixelDataPtr outputData = bs_shared_ptr_new<PixelData>(sourcePixelData->getWidth(), sourcePixelData->getHeight(), 
 			sourcePixelData->getDepth(), newFormat);
 		outputData->allocateInternalBuffer();
 
@@ -79,7 +79,7 @@ namespace BansheeEngine
 			return nullptr;
 
 		PixelDataPtr sourcePixelData = sourceScriptPixelData->getInternalValue();
-		PixelDataPtr outputData = bs_shared_ptr<PixelData>(sourcePixelData->getWidth(), sourcePixelData->getHeight(), 
+		PixelDataPtr outputData = bs_shared_ptr_new<PixelData>(sourcePixelData->getWidth(), sourcePixelData->getHeight(), 
 			sourcePixelData->getDepth(), options.format);
 		outputData->allocateInternalBuffer();
 
@@ -118,7 +118,7 @@ namespace BansheeEngine
 			return nullptr;
 
 		PixelDataPtr sourcePixelData = sourceScriptPixelData->getInternalValue();
-		PixelDataPtr outputData = bs_shared_ptr<PixelData>(sourcePixelData->getWidth(), sourcePixelData->getHeight(),
+		PixelDataPtr outputData = bs_shared_ptr_new<PixelData>(sourcePixelData->getWidth(), sourcePixelData->getHeight(),
 			sourcePixelData->getDepth(), sourcePixelData->getFormat());
 		outputData->allocateInternalBuffer();
 

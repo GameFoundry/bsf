@@ -20,9 +20,9 @@ namespace BansheeEngine
 			desc.platformSpecific["parentWindowHandle"] = toString(hWnd);
 		}
 
-		D3D9RenderWindow* window = new (bs_alloc<D3D9RenderWindow, PoolAlloc>()) D3D9RenderWindow(desc, windowId, mRenderSystem->getInstanceHandle());
+		D3D9RenderWindow* window = new (bs_alloc<D3D9RenderWindow>()) D3D9RenderWindow(desc, windowId, mRenderSystem->getInstanceHandle());
 
-		return RenderWindowPtr(window, &CoreObject::_delete<D3D9RenderWindow, PoolAlloc>);
+		return RenderWindowPtr(window, &CoreObject::_delete<D3D9RenderWindow, GenAlloc>);
 	}
 
 	D3D9RenderWindowCoreManager::D3D9RenderWindowCoreManager(D3D9RenderAPI* renderSystem)
@@ -33,9 +33,9 @@ namespace BansheeEngine
 
 	SPtr<RenderWindowCore> D3D9RenderWindowCoreManager::createInternal(RENDER_WINDOW_DESC& desc, UINT32 windowId)
 	{
-		D3D9RenderWindowCore* window = new (bs_alloc<D3D9RenderWindowCore, GenAlloc>()) D3D9RenderWindowCore(desc, windowId, mRenderSystem->getInstanceHandle());
+		D3D9RenderWindowCore* window = new (bs_alloc<D3D9RenderWindowCore>()) D3D9RenderWindowCore(desc, windowId, mRenderSystem->getInstanceHandle());
 
-		SPtr<D3D9RenderWindowCore> renderWindowPtr = bs_shared_ptr<D3D9RenderWindowCore, GenAlloc>(window);
+		SPtr<D3D9RenderWindowCore> renderWindowPtr = bs_shared_ptr<D3D9RenderWindowCore>(window);
 		renderWindowPtr->_setThisPtr(renderWindowPtr);
 
 		windowCreated(window);

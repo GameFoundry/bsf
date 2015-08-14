@@ -89,7 +89,7 @@ namespace BansheeEngine
 	{
 		ViewportCore* viewport = new (bs_alloc<Viewport>()) ViewportCore(target, x, y, width, height);
 
-		SPtr<ViewportCore> viewportPtr = bs_shared_ptr<ViewportCore, GenAlloc>(viewport);
+		SPtr<ViewportCore> viewportPtr = bs_shared_ptr<ViewportCore>(viewport);
 		viewportPtr->_setThisPtr(viewportPtr);
 		viewportPtr->initialize();
 
@@ -162,7 +162,7 @@ namespace BansheeEngine
 		ViewportCore* viewport = new (bs_alloc<Viewport>()) 
 			ViewportCore(targetCore, mNormArea.x, mNormArea.y, mNormArea.width, mNormArea.height);
 
-		SPtr<ViewportCore> viewportPtr = bs_shared_ptr<ViewportCore, GenAlloc>(viewport);
+		SPtr<ViewportCore> viewportPtr = bs_shared_ptr<ViewportCore>(viewport);
 		viewportPtr->_setThisPtr(viewportPtr);
 
 		return viewportPtr;
@@ -209,7 +209,7 @@ namespace BansheeEngine
 	ViewportPtr Viewport::create(const RenderTargetPtr& target, float x, float y, float width, float height)
 	{
 		Viewport* viewport = new (bs_alloc<Viewport>()) Viewport(target, x, y, width, height);
-		ViewportPtr viewportPtr = bs_core_ptr<Viewport, GenAlloc>(viewport);
+		ViewportPtr viewportPtr = bs_core_ptr<Viewport>(viewport);
 		viewportPtr->_setThisPtr(viewportPtr);
 		viewportPtr->initialize();
 
@@ -219,7 +219,7 @@ namespace BansheeEngine
 	ViewportPtr Viewport::createEmpty()
 	{
 		Viewport* viewport = new (bs_alloc<Viewport>()) Viewport();
-		ViewportPtr viewportPtr = bs_core_ptr<Viewport, GenAlloc>(viewport);
+		ViewportPtr viewportPtr = bs_core_ptr<Viewport>(viewport);
 		viewportPtr->_setThisPtr(viewportPtr);
 
 		return viewportPtr;

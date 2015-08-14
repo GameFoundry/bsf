@@ -52,14 +52,14 @@ namespace BansheeEngine
 			{
 				GLint charsWritten = 0;
 
-				GLchar* infoLog = (GLchar*)bs_alloc<ScratchAlloc>(sizeof(GLchar)* infologLength);
+				GLchar* infoLog = (GLchar*)bs_alloc(sizeof(GLchar)* infologLength);
 
 				glGetProgramInfoLog(programObj, infologLength, &charsWritten, infoLog);
 
 				stream << "Compile and linker info log: \n";
 				stream << String(infoLog);
 
-				bs_free<ScratchAlloc>(infoLog);
+				bs_free(infoLog);
 			}
 		}
 

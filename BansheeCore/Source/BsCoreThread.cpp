@@ -130,7 +130,7 @@ namespace BansheeEngine
 	{
 		if(mAccessor == nullptr)
 		{
-			CoreAccessorPtr newAccessor = bs_shared_ptr<CoreThreadAccessor<CommandQueueNoSync>>(BS_THREAD_CURRENT_ID);
+			CoreAccessorPtr newAccessor = bs_shared_ptr_new<CoreThreadAccessor<CommandQueueNoSync>>(BS_THREAD_CURRENT_ID);
 			mAccessor = bs_new<AccessorContainer>();
 			mAccessor->accessor = newAccessor;
 			mAccessor->isMain = BS_THREAD_CURRENT_ID == mSimThreadId;

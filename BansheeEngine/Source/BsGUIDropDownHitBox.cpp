@@ -14,13 +14,13 @@ namespace BansheeEngine
 
 	GUIDropDownHitBox* GUIDropDownHitBox::create(bool captureMouseOver, bool captureMousePresses)
 	{
-		return new (bs_alloc<GUIDropDownHitBox, PoolAlloc>()) 
+		return new (bs_alloc<GUIDropDownHitBox>()) 
 			GUIDropDownHitBox(captureMouseOver, captureMousePresses, GUIDimensions::create());
 	}
 
 	GUIDropDownHitBox* GUIDropDownHitBox::create(bool captureMouseOver, bool captureMousePresses, const GUIOptions& options)
 	{
-		return new (bs_alloc<GUIDropDownHitBox, PoolAlloc>()) 
+		return new (bs_alloc<GUIDropDownHitBox>()) 
 			GUIDropDownHitBox(captureMouseOver, captureMousePresses, GUIDimensions::create(options));
 	}
 

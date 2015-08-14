@@ -51,13 +51,13 @@ namespace BansheeEngine
 	ScriptImportOptions::ScriptImportOptions(MonoObject* instance)
 		:ScriptObject(instance)
 	{ 
-		mImportOptions = bs_shared_ptr<ImportOptions>();
+		mImportOptions = bs_shared_ptr_new<ImportOptions>();
 	}
 
 	ScriptTextureImportOptions::ScriptTextureImportOptions(MonoObject* instance)
 		:ScriptObject(instance)
 	{
-		mImportOptions = bs_shared_ptr<TextureImportOptions>();
+		mImportOptions = bs_shared_ptr_new<TextureImportOptions>();
 	}
 
 	void ScriptTextureImportOptions::initRuntimeData()
@@ -128,7 +128,7 @@ namespace BansheeEngine
 	ScriptFontImportOptions::ScriptFontImportOptions(MonoObject* instance)
 		:ScriptObject(instance)
 	{
-		mImportOptions = bs_shared_ptr<FontImportOptions>();
+		mImportOptions = bs_shared_ptr_new<FontImportOptions>();
 	}
 
 	void ScriptFontImportOptions::initRuntimeData()
@@ -241,7 +241,7 @@ namespace BansheeEngine
 	ScriptScriptCodeImportOptions::ScriptScriptCodeImportOptions(MonoObject* instance)
 		:ScriptObject(instance)
 	{
-		mImportOptions = bs_shared_ptr<ScriptCodeImportOptions>();
+		mImportOptions = bs_shared_ptr_new<ScriptCodeImportOptions>();
 	}
 
 	void ScriptScriptCodeImportOptions::initRuntimeData()

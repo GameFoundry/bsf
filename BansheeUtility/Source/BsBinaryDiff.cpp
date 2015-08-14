@@ -259,7 +259,7 @@ namespace BansheeEngine
 							{
 								if (serializedArray == nullptr)
 								{
-									serializedArray = bs_shared_ptr<SerializedArray>();
+									serializedArray = bs_shared_ptr_new<SerializedArray>();
 									serializedArray->numElements = newArrayData->numElements;
 								}
 
@@ -272,7 +272,7 @@ namespace BansheeEngine
 					}
 					else if (newEntryData == nullptr)
 					{
-						serializedArray = bs_shared_ptr<SerializedArray>();
+						serializedArray = bs_shared_ptr_new<SerializedArray>();
 					}
 					else if (orgEntryData == nullptr)
 					{
@@ -295,7 +295,7 @@ namespace BansheeEngine
 						{
 						case SerializableFT_Plain:
 						case SerializableFT_DataBlock:
-							modification = bs_shared_ptr<SerializedField>();
+							modification = bs_shared_ptr_new<SerializedField>();
 							break;
 						}
 
@@ -311,7 +311,7 @@ namespace BansheeEngine
 				if (hasModification)
 				{
 					if (output == nullptr)
-						output = bs_shared_ptr<SerializedObject>();
+						output = bs_shared_ptr_new<SerializedObject>();
 
 					if (diffSubObject == nullptr)
 					{

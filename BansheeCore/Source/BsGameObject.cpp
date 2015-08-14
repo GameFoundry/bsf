@@ -13,7 +13,7 @@ namespace BansheeEngine
 
 	void GameObject::initialize(const std::shared_ptr<GameObject>& object, UINT64 instanceId)
 	{
-		mInstanceData = bs_shared_ptr<GameObjectInstanceData>();
+		mInstanceData = bs_shared_ptr_new<GameObjectInstanceData>();
 		mInstanceData->object = object;
 		mInstanceData->mInstanceId = instanceId;
 	}

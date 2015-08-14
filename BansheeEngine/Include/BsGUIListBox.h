@@ -55,7 +55,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIButtonBase::getElementType
 		 */
-		virtual ElementType _getElementType() const { return ElementType::ListBox; }
+		virtual ElementType _getElementType() const override { return ElementType::ListBox; }
 
 		/**
 		 * @brief	Triggered whenever user selects a new element in the list box. Returned index
@@ -71,7 +71,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIButtonBase::mouseEvent
 		 */
-		virtual bool _mouseEvent(const GUIMouseEvent& ev);
+		virtual bool _mouseEvent(const GUIMouseEvent& ev) override;
 
 		/**
 		 * @brief	Triggered when user clicks on an element.

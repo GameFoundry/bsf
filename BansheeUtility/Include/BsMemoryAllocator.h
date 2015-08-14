@@ -104,24 +104,6 @@ namespace BansheeEngine
 	{ };
 
 	/**
-	 * @brief	Allocator used for allocating small amounts of temporary memory that
-	 * 			used and then quickly released
-	 * 			
-	 * @note	Currently not used.
-	 */
-	class ScratchAlloc
-	{ };
-
-	/**
-	 * @brief	Pool allocator that is only suited for allocating one specific type of data. Most useful when you are
-	 * 			often allocating one certain data type, with no specific allocation or deallocation order.
-	 * 			
-	 * @note	Currently not used.
-	 */
-	class PoolAlloc
-	{ };
-
-	/**
 	 * @brief	Allocates the specified number of bytes.
 	 */
 	template<class Alloc> 
@@ -174,7 +156,7 @@ namespace BansheeEngine
 	/**
 	 * @brief	Destructs and frees the specified object.
 	 */
-	template<class Alloc, class T> 
+	template<class T, class Alloc = GenAlloc>
 	inline void bs_delete(T* ptr)
 	{
 		(ptr)->~T();
@@ -185,7 +167,7 @@ namespace BansheeEngine
 	/**
 	 * @brief	Destructs and frees the specified array of objects.
 	 */
-	template<class Alloc, class T> 
+	template<class T, class Alloc = GenAlloc>
 	inline void bs_deleteN(T* ptr, UINT32 count)
 	{
 		for(unsigned int i = 0; i < count; i++)
@@ -245,30 +227,6 @@ namespace BansheeEngine
 	{
 		MemoryAllocator<GenAlloc>::free(ptr);
 	}
-
-	/**
-	 * @brief	Destructs and frees the specified object.
-	 */
-	template<class T> 
-	inline void bs_delete(T* ptr)
-	{
-		(ptr)->~T();
-
-		MemoryAllocator<GenAlloc>::free(ptr);
-	}
-
-	/**
-	 * @brief	Destructs and frees the specified array of objects.
-	 */
-	template<class T> 
-	inline void bs_deleteN(T* ptr, UINT32 count)
-	{
-		for(unsigned int i = 0; i < count; i++)
-			ptr[i].~T();
-
-		MemoryAllocator<GenAlloc>::freeArray(ptr, count);
-	}
-
 
 /************************************************************************/
 /* 							MACRO VERSIONS                      		*/

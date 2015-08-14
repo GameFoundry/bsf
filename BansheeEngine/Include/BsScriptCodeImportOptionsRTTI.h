@@ -17,20 +17,20 @@ namespace BansheeEngine
 			addPlainField("mEditorScript", 0, &ScriptCodeImportOptionsRTTI::getEditorScript, &ScriptCodeImportOptionsRTTI::setEditorScript);
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "ScriptCodeImportOptions";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_ScriptCodeImportOptions;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			return bs_shared_ptr<ScriptCodeImportOptions, PoolAlloc>();
+			return bs_shared_ptr_new<ScriptCodeImportOptions>();
 		}
 	};
 }

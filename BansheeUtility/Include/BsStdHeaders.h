@@ -142,7 +142,7 @@ namespace BansheeEngine
 	 * @brief	Create a new shared pointer using a custom allocator category.
 	 */
 	template<class Type, class AllocCategory, class... Args> 
-	std::shared_ptr<Type> bs_shared_ptr(Args &&... args) 
+	std::shared_ptr<Type> bs_shared_ptr_new(Args &&... args) 
 	{
 		return std::allocate_shared<Type>(StdAlloc<Type, AllocCategory>(), std::forward<Args>(args)...);
 	}
@@ -151,7 +151,7 @@ namespace BansheeEngine
 	 * @brief	Create a new shared pointer using the default allocator category.
 	 */
 	template<class Type, class... Args>
-	std::shared_ptr<Type> bs_shared_ptr(Args &&... args)
+	std::shared_ptr<Type> bs_shared_ptr_new(Args &&... args)
 	{
 		return std::allocate_shared<Type>(StdAlloc<Type, GenAlloc>(), std::forward<Args>(args)...);
 	}
@@ -160,19 +160,9 @@ namespace BansheeEngine
 	 * @brief	Create a new shared pointer from a previously constructed object.
 	 *			Pointer specific data will be allocated using the provided allocator category.
 	 */
-	template<class Type, class MainAlloc>
+	template<class Type, class MainAlloc = GenAlloc, class PtrDataAlloc = GenAlloc>
 	std::shared_ptr<Type> bs_shared_ptr(Type* data) 
 	{
-		return std::shared_ptr<Type>(data, &bs_delete<MainAlloc, Type>, StdAlloc<Type, GenAlloc>());
-	}
-
-	/**
-	 * @brief	Create a new shared pointer from a previously constructed object.
-	 *			Pointer specific data will be allocated using the provided allocator category.
-	 */
-	template<class Type, class MainAlloc, class PtrDataAlloc>
-	std::shared_ptr<Type> bs_shared_ptr(Type* data) 
-	{
-		return std::shared_ptr<Type>(data, &bs_delete<MainAlloc, Type>, StdAlloc<Type, PtrDataAlloc>());
+		return std::shared_ptr<Type>(data, &bs_delete<Type, MainAlloc>, StdAlloc<Type, PtrDataAlloc>());
 	}
 }

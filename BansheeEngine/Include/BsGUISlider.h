@@ -37,12 +37,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElement::setTint
 		 */
-		virtual void setTint(const Color& color);
+		virtual void setTint(const Color& color) override;
 
 		/**
 		 * @copydoc	GUIElementContainer::_getOptimalSize
 		 */
-		virtual Vector2I _getOptimalSize() const;
+		virtual Vector2I _getOptimalSize() const override;
 
 		Event<void(float percent)> onChanged;
 	protected:
@@ -52,12 +52,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElementContainer::_updateLayoutInternal
 		 */
-		virtual void _updateLayoutInternal(const GUILayoutData& data);
+		virtual void _updateLayoutInternal(const GUILayoutData& data) override;
 
 		/**
 		 * @copydoc	GUIElementContainer::styleUpdated
 		 */
-		void styleUpdated();
+		void styleUpdated() override;
 
 		/**
 		 * @brief	Triggered when the slider handles moves.

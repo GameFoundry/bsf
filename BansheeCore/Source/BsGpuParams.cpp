@@ -442,7 +442,7 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 	SPtr<GpuParamsCore> GpuParamsCore::create(const GpuParamDescPtr& paramDesc, bool transposeMatrices)
 	{
 		GpuParamsCore* params = new (bs_alloc<GpuParamsCore>()) GpuParamsCore(paramDesc, transposeMatrices);
-		SPtr<GpuParamsCore> paramsPtr = bs_shared_ptr<GpuParamsCore, GenAlloc>(params);
+		SPtr<GpuParamsCore> paramsPtr = bs_shared_ptr<GpuParamsCore>(params);
 		paramsPtr->_setThisPtr(paramsPtr);
 
 		return paramsPtr;
@@ -468,7 +468,7 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 	{
 		GpuParamsCore* obj = new (bs_alloc<GpuParamsCore>()) GpuParamsCore(mParamDesc, mTransposeMatrices);
 
-		SPtr<CoreObjectCore> coreObj = bs_shared_ptr<GpuParamsCore, GenAlloc>(obj);
+		SPtr<CoreObjectCore> coreObj = bs_shared_ptr<GpuParamsCore>(obj);
 		coreObj->_setThisPtr(coreObj);
 
 		return coreObj;
@@ -487,7 +487,7 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 	SPtr<GpuParams> GpuParams::create(const GpuParamDescPtr& paramDesc, bool transposeMatrices)
 	{
 		GpuParams* params = new (bs_alloc<GpuParams>()) GpuParams(paramDesc, transposeMatrices);
-		SPtr<GpuParams> paramsPtr = bs_core_ptr<GpuParams, GenAlloc>(params);
+		SPtr<GpuParams> paramsPtr = bs_core_ptr<GpuParams>(params);
 		paramsPtr->_setThisPtr(paramsPtr);
 		paramsPtr->initialize();
 		

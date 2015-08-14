@@ -194,7 +194,7 @@ namespace BansheeEngine
 		SPtr<LocalizedStringData> stringData;
 		if(iterFind == curLanguage->strings.end())
 		{
-			stringData = bs_shared_ptr<LocalizedStringData>();
+			stringData = bs_shared_ptr_new<LocalizedStringData>();
 			curLanguage->strings[identifier] = stringData;
 		}
 		else
@@ -263,8 +263,8 @@ namespace BansheeEngine
 
 	SPtr<StringTable> StringTable::_createPtr()
 	{
-		SPtr<StringTable> scriptCodePtr = bs_core_ptr<StringTable, PoolAlloc>(
-			new (bs_alloc<StringTable, PoolAlloc>()) StringTable());
+		SPtr<StringTable> scriptCodePtr = bs_core_ptr<StringTable>(
+			new (bs_alloc<StringTable>()) StringTable());
 		scriptCodePtr->_setThisPtr(scriptCodePtr);
 		scriptCodePtr->initialize();
 

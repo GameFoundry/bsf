@@ -62,7 +62,7 @@ namespace BansheeEngine
 
 		freeInternalBuffer();
 
-		mData = (UINT8*)bs_alloc<ScratchAlloc>(size);
+		mData = (UINT8*)bs_alloc(size);
 		mOwnsData = true;
 	}
 
@@ -79,7 +79,7 @@ namespace BansheeEngine
 		}
 #endif
 
-		bs_free<ScratchAlloc>(mData);
+		bs_free(mData);
 		mData = nullptr;
 	}
 

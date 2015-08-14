@@ -174,7 +174,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return bs_shared_ptr<GUIElementStyle>();
+			return bs_shared_ptr_new<GUIElementStyle>();
 		}
 	};
 }

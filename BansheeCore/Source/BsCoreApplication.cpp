@@ -367,7 +367,7 @@ namespace BansheeEngine
 
 	ShaderIncludeHandlerPtr CoreApplication::getShaderIncludeHandler() const
 	{
-		return bs_shared_ptr<DefaultShaderIncludeHandler>();
+		return bs_shared_ptr_new<DefaultShaderIncludeHandler>();
 	}
 
 	CoreApplication& gCoreApplication()

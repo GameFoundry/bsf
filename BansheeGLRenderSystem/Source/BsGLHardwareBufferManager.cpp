@@ -11,7 +11,7 @@ namespace BansheeEngine
 {
 	SPtr<VertexBufferCore> GLHardwareBufferCoreManager::createVertexBufferInternal(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
 	{
-		SPtr<GLVertexBufferCore> ret = bs_shared_ptr<GLVertexBufferCore>(vertexSize, numVerts, usage, streamOut);
+		SPtr<GLVertexBufferCore> ret = bs_shared_ptr_new<GLVertexBufferCore>(vertexSize, numVerts, usage, streamOut);
 		ret->_setThisPtr(ret);
 
 		return ret;
@@ -19,7 +19,7 @@ namespace BansheeEngine
 
 	SPtr<IndexBufferCore> GLHardwareBufferCoreManager::createIndexBufferInternal(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
 	{
-		SPtr<GLIndexBufferCore> ret = bs_shared_ptr<GLIndexBufferCore>(itype, numIndexes, usage);
+		SPtr<GLIndexBufferCore> ret = bs_shared_ptr_new<GLIndexBufferCore>(itype, numIndexes, usage);
 		ret->_setThisPtr(ret);
 
 		return ret;
@@ -27,9 +27,9 @@ namespace BansheeEngine
 
 	SPtr<GpuParamBlockBufferCore> GLHardwareBufferCoreManager::createGpuParamBlockBufferInternal(UINT32 size, GpuParamBlockUsage usage)
 	{
-		GLGpuParamBlockBufferCore* paramBlockBuffer = new (bs_alloc<GLGpuParamBlockBufferCore, GenAlloc>()) GLGpuParamBlockBufferCore(size, usage);
+		GLGpuParamBlockBufferCore* paramBlockBuffer = new (bs_alloc<GLGpuParamBlockBufferCore>()) GLGpuParamBlockBufferCore(size, usage);
 
-		SPtr<GpuParamBlockBufferCore> paramBlockBufferPtr = bs_shared_ptr<GLGpuParamBlockBufferCore, GenAlloc>(paramBlockBuffer);
+		SPtr<GpuParamBlockBufferCore> paramBlockBufferPtr = bs_shared_ptr<GLGpuParamBlockBufferCore>(paramBlockBuffer);
 		paramBlockBufferPtr->_setThisPtr(paramBlockBufferPtr);
 
 		return paramBlockBufferPtr;
@@ -38,9 +38,9 @@ namespace BansheeEngine
 	SPtr<GpuBufferCore> GLHardwareBufferCoreManager::createGpuBufferInternal(UINT32 elementCount, UINT32 elementSize,
 		GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
 	{
-		GLGpuBufferCore* buffer = new (bs_alloc<GLGpuBufferCore, GenAlloc>()) GLGpuBufferCore(elementCount, elementSize, type, usage, randomGpuWrite, useCounter);
+		GLGpuBufferCore* buffer = new (bs_alloc<GLGpuBufferCore>()) GLGpuBufferCore(elementCount, elementSize, type, usage, randomGpuWrite, useCounter);
 
-		SPtr<GpuBufferCore> bufferPtr = bs_shared_ptr<GLGpuBufferCore, GenAlloc>(buffer);
+		SPtr<GpuBufferCore> bufferPtr = bs_shared_ptr<GLGpuBufferCore>(buffer);
 		bufferPtr->_setThisPtr(bufferPtr);
 
 		return bufferPtr;

@@ -157,7 +157,7 @@ namespace BansheeEngine
 	{
 		LightInternal* handler = new (bs_alloc<LightInternal>()) 
 			LightInternal(type, color, intensity, range, castsShadows, spotAngle, spotFalloffAngle);
-		SPtr<LightInternal> handlerPtr = bs_core_ptr<LightInternal, GenAlloc>(handler);
+		SPtr<LightInternal> handlerPtr = bs_core_ptr<LightInternal>(handler);
 		handlerPtr->_setThisPtr(handlerPtr);
 		handlerPtr->initialize();
 
@@ -167,7 +167,7 @@ namespace BansheeEngine
 	SPtr<LightInternal> LightInternal::createEmpty()
 	{
 		LightInternal* handler = new (bs_alloc<LightInternal>()) LightInternal();
-		SPtr<LightInternal> handlerPtr = bs_core_ptr<LightInternal, GenAlloc>(handler);
+		SPtr<LightInternal> handlerPtr = bs_core_ptr<LightInternal>(handler);
 		handlerPtr->_setThisPtr(handlerPtr);
 
 		return handlerPtr;
@@ -177,7 +177,7 @@ namespace BansheeEngine
 	{
 		LightInternalCore* handler = new (bs_alloc<LightInternalCore>()) 
 			LightInternalCore(mType, mColor, mIntensity, mRange, mCastsShadows, mSpotAngle, mSpotFalloffAngle);
-		SPtr<LightInternalCore> handlerPtr = bs_shared_ptr<LightInternalCore, GenAlloc>(handler);
+		SPtr<LightInternalCore> handlerPtr = bs_shared_ptr<LightInternalCore>(handler);
 		handlerPtr->_setThisPtr(handlerPtr);
 
 		return handlerPtr;

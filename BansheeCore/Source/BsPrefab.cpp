@@ -27,7 +27,7 @@ namespace BansheeEngine
 
 	PrefabPtr Prefab::createEmpty()
 	{
-		PrefabPtr newPrefab = bs_core_ptr<Prefab, PoolAlloc>(new (bs_alloc<Prefab, PoolAlloc>()) Prefab());
+		PrefabPtr newPrefab = bs_core_ptr<Prefab>(new (bs_alloc<Prefab>()) Prefab());
 		newPrefab->_setThisPtr(newPrefab);
 
 		return newPrefab;

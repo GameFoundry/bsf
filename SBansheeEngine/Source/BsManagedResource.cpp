@@ -20,7 +20,7 @@ namespace BansheeEngine
 	ManagedResource::ManagedResource(MonoObject* managedInstance)
 		:Resource(false), mManagedInstance(nullptr)
 	{
-		ManagedResourceMetaDataPtr metaData = bs_shared_ptr<ManagedResourceMetaData>();
+		ManagedResourceMetaDataPtr metaData = bs_shared_ptr_new<ManagedResourceMetaData>();
 		mMetaData = metaData;
 
 		String elementNs;
@@ -90,7 +90,7 @@ namespace BansheeEngine
 
 	HManagedResource ManagedResource::create(MonoObject* managedResource)
 	{
-		ManagedResourcePtr newRes = bs_core_ptr<ManagedResource, GenAlloc>(new (bs_alloc<ManagedResource>()) ManagedResource(managedResource));
+		ManagedResourcePtr newRes = bs_core_ptr<ManagedResource>(new (bs_alloc<ManagedResource>()) ManagedResource(managedResource));
 		newRes->_setThisPtr(newRes);
 		newRes->initialize();
 
@@ -102,7 +102,7 @@ namespace BansheeEngine
 
 	ManagedResourcePtr ManagedResource::createEmpty()
 	{
-		ManagedResourcePtr newRes = bs_core_ptr<ManagedResource, GenAlloc>(new (bs_alloc<ManagedResource>()) ManagedResource());
+		ManagedResourcePtr newRes = bs_core_ptr<ManagedResource>(new (bs_alloc<ManagedResource>()) ManagedResource());
 		newRes->_setThisPtr(newRes);
 		newRes->initialize();
 

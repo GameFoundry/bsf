@@ -460,7 +460,7 @@ namespace BansheeEngine
 
 	DockManager* DockManager::create(EditorWindowBase* parentWindow)
 	{
-		return new (bs_alloc<DockManager, PoolAlloc>()) DockManager(parentWindow, GUIDimensions::create());
+		return new (bs_alloc<DockManager>()) DockManager(parentWindow, GUIDimensions::create());
 	}
 
 	void DockManager::update()
@@ -599,7 +599,7 @@ namespace BansheeEngine
 			return widgetNames;
 		};
 
-		DockManagerLayoutPtr layout = bs_shared_ptr<DockManagerLayout>();
+		DockManagerLayoutPtr layout = bs_shared_ptr_new<DockManagerLayout>();
 		DockManagerLayout::Entry* rootEntry = &layout->getRootEntry();
 
 		if(mRootContainer.mIsLeaf)
@@ -813,12 +813,12 @@ namespace BansheeEngine
 		Vector2 inBotLeft((float)(x + inXOffset), (float)(y + inYOffset + inHeight));
 		Vector2 inBotRight((float)(x + inXOffset + inWidth), (float)(y + inYOffset + inHeight));
 
-		VertexDataDescPtr vertexDesc = bs_shared_ptr<VertexDataDesc>();
+		VertexDataDescPtr vertexDesc = bs_shared_ptr_new<VertexDataDesc>();
 		
 		vertexDesc->addVertElem(VET_FLOAT2, VES_POSITION);
 		vertexDesc->addVertElem(VET_COLOR, VES_COLOR);
 
-		MeshDataPtr meshData = bs_shared_ptr<MeshData, ScratchAlloc>(16, 24, vertexDesc);
+		MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(16, 24, vertexDesc);
 
 		auto vertIter = meshData->getVec2DataIter(VES_POSITION);
 		auto colIter = meshData->getDWORDDataIter(VES_COLOR);

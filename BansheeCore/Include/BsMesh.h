@@ -29,17 +29,17 @@ namespace BansheeEngine
 		/**
 		 * @brief	CoreObjectCore::initialize
 		 */
-		virtual void initialize();
+		virtual void initialize() override;
 
 		/**
 		 * @copydoc MeshCoreBase::getVertexData
 		 */
-		virtual SPtr<VertexData> getVertexData() const;
+		virtual SPtr<VertexData> getVertexData() const override;
 
 		/**
 		 * @copydoc MeshCoreBase::getIndexBuffer
 		 */
-		virtual SPtr<IndexBufferCore> getIndexBuffer() const;
+		virtual SPtr<IndexBufferCore> getIndexBuffer() const override;
 
 		/**
 		 * @brief	Updates a part of the current mesh with the provided data.
@@ -95,7 +95,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	MeshBase::initialize
 		 */
-		virtual void initialize();
+		virtual void initialize() override;
 
 		/**
 		 * @brief	Updates the mesh with new data. The actual write will be queued for later execution on the core thread.
@@ -181,7 +181,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObject::createCore
 		 */
-		SPtr<CoreObjectCore> createCore() const;
+		SPtr<CoreObjectCore> createCore() const override;
 
 		/**
 		 * @brief	Creates buffers used for caching of CPU mesh data.
@@ -210,7 +210,7 @@ namespace BansheeEngine
 	public:
 		friend class MeshRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		virtual RTTITypeBase* getRTTI() const override;
 
 		/************************************************************************/
 		/* 								STATICS		                     		*/

@@ -6,7 +6,7 @@ namespace BansheeEngine
 {
 	CoreRendererPtr BansheeRendererFactory::create()
 	{
-		return bs_shared_ptr<BansheeRenderer>();
+		return bs_shared_ptr_new<BansheeRenderer>();
 	}
 
 	const String& BansheeRendererFactory::name() const

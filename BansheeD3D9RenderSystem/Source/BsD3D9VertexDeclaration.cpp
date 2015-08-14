@@ -47,7 +47,7 @@ namespace BansheeEngine
 		// Case we have to create the declaration for this device.
 		if (it == mMapDeviceToDeclaration.end() || it->second == NULL)
 		{
-			D3DVERTEXELEMENT9* d3delems = bs_newN<D3DVERTEXELEMENT9, PoolAlloc>((UINT32)( getProperties().getElements().size() + 1));
+			D3DVERTEXELEMENT9* d3delems = bs_newN<D3DVERTEXELEMENT9>((UINT32)( getProperties().getElements().size() + 1));
 
 			unsigned int idx;
 			auto iend = elementList.end();
@@ -78,7 +78,7 @@ namespace BansheeEngine
 				BS_EXCEPT(InternalErrorException, "Cannot create D3D9 vertex declaration: ");
 			}
 
-			bs_deleteN<PoolAlloc>(d3delems, (UINT32)(elementList.size() + 1));
+			bs_deleteN(d3delems, (UINT32)(elementList.size() + 1));
 
 			mMapDeviceToDeclaration[pCurDevice] = lpVertDecl;
 

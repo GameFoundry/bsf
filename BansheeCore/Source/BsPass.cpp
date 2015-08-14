@@ -85,7 +85,7 @@ namespace BansheeEngine
 	SPtr<PassCore> PassCore::create(const PASS_DESC_CORE& desc)
 	{
 		PassCore* newPass = new (bs_alloc<PassCore>()) PassCore(desc);
-		SPtr<PassCore> newPassPtr = bs_shared_ptr<PassCore, GenAlloc>(newPass);
+		SPtr<PassCore> newPassPtr = bs_shared_ptr<PassCore>(newPass);
 		newPassPtr->_setThisPtr(newPassPtr);
 		newPassPtr->initialize();
 
@@ -107,7 +107,7 @@ namespace BansheeEngine
 		convertPassDesc(mData, desc);
 
 		PassCore* pass = new (bs_alloc<PassCore>()) PassCore(desc);
-		SPtr<PassCore> passPtr = bs_shared_ptr<PassCore, GenAlloc>(pass);
+		SPtr<PassCore> passPtr = bs_shared_ptr<PassCore>(pass);
 		passPtr->_setThisPtr(passPtr);
 
 		return passPtr;
@@ -157,7 +157,7 @@ namespace BansheeEngine
 	PassPtr Pass::create(const PASS_DESC& desc)
 	{
 		Pass* newPass = new (bs_alloc<Pass>()) Pass(desc);
-		PassPtr newPassPtr = bs_core_ptr<Pass, GenAlloc>(newPass);
+		PassPtr newPassPtr = bs_core_ptr<Pass>(newPass);
 		newPassPtr->_setThisPtr(newPassPtr);
 		newPassPtr->initialize();
 
@@ -167,7 +167,7 @@ namespace BansheeEngine
 	PassPtr Pass::createEmpty()
 	{
 		Pass* newPass = new (bs_alloc<Pass>()) Pass();
-		PassPtr newPassPtr = bs_core_ptr<Pass, GenAlloc>(newPass);
+		PassPtr newPassPtr = bs_core_ptr<Pass>(newPass);
 		newPassPtr->_setThisPtr(newPassPtr);
 
 		return newPassPtr;

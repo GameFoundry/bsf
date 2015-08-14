@@ -54,7 +54,7 @@ namespace BansheeEngine
 
 	void ScriptPixelData::internal_createInstance(MonoObject* instance, PixelVolume volume, PixelFormat format)
 	{
-		PixelDataPtr pixelData = bs_shared_ptr<PixelData>(volume, format);
+		PixelDataPtr pixelData = bs_shared_ptr_new<PixelData>(volume, format);
 		pixelData->allocateInternalBuffer();
 
 		ScriptPixelData* scriptPixelData = new (bs_alloc<ScriptPixelData>()) ScriptPixelData(instance);

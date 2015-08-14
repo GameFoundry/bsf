@@ -188,17 +188,17 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObject::getTargetWidth
 		 */
-		UINT32 getTargetWidth() const;
+		UINT32 getTargetWidth() const override;
 
 		/**
 		 * @copydoc	CoreObject::getTargetHeight
 		 */
-		UINT32 getTargetHeight() const;
+		UINT32 getTargetHeight() const override;
 
 		/**
 		 * @copydoc	CoreObject::syncToCore
 		 */
-		void syncToCore(const CoreSyncData& data);
+		void syncToCore(const CoreSyncData& data) override;
 
 		SPtr<RenderTargetCore> mTarget;
     };
@@ -240,32 +240,32 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObject::markCoreDirty
 		 */
-		void _markCoreDirty();
+		void _markCoreDirty() override;
 
 		/**
 		 * @copydoc	CoreObject::getTargetWidth
 		 */
-		UINT32 getTargetWidth() const;
+		UINT32 getTargetWidth() const override;
 
 		/**
 		 * @copydoc	CoreObject::getTargetHeight
 		 */
-		UINT32 getTargetHeight() const;
+		UINT32 getTargetHeight() const override;
 
 		/**
 		 * @copydoc	CoreObject::syncToCore
 		 */
-		CoreSyncData syncToCore(FrameAlloc* allocator);
+		CoreSyncData syncToCore(FrameAlloc* allocator) override;
 
 		/**
 		 * @copydoc	CoreObject::getCoreDependencies
 		 */
-		void getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies);
+		void getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies) override;
 
 		/**
 		 * @copydoc	CoreObject::createCore
 		 */
-		SPtr<CoreObjectCore> createCore() const;
+		SPtr<CoreObjectCore> createCore() const override;
 
         RenderTargetPtr mTarget;
 
@@ -281,6 +281,6 @@ namespace BansheeEngine
 	public:
 		friend class ViewportRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		virtual RTTITypeBase* getRTTI() const override;
     };
 }

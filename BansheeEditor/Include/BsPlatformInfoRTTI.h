@@ -34,7 +34,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return bs_shared_ptr<PlatformInfo>();
+			return bs_shared_ptr_new<PlatformInfo>();
 		}
 	};
 
@@ -62,7 +62,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return bs_shared_ptr<WinPlatformInfo>();
+			return bs_shared_ptr_new<WinPlatformInfo>();
 		}
 	};
 }

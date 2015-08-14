@@ -43,6 +43,6 @@ namespace BansheeEngine
 	public:
 		friend class PlainTextRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		virtual RTTITypeBase* getRTTI() const override;
 	};
 }

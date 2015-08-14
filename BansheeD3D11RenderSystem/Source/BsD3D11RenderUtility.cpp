@@ -218,7 +218,7 @@ namespace BansheeEngine
 		}
 
 		// Create input layout
-		D3D11_INPUT_ELEMENT_DESC* declElements = bs_newN<D3D11_INPUT_ELEMENT_DESC, ScratchAlloc>(2);
+		D3D11_INPUT_ELEMENT_DESC* declElements = bs_newN<D3D11_INPUT_ELEMENT_DESC>(2);
 		ZeroMemory(declElements, sizeof(D3D11_INPUT_ELEMENT_DESC) * 2);
 
 		declElements[0].SemanticName			= "POSITION";
@@ -240,7 +240,7 @@ namespace BansheeEngine
 		hr = mDevice->getD3D11Device()->CreateInputLayout(declElements, 2, microcode->GetBufferPointer(), 
 			microcode->GetBufferSize(), &mClearQuadIL);
 
-		bs_deleteN<ScratchAlloc>(declElements, 2);
+		bs_deleteN(declElements, 2);
 
 		if (FAILED(hr))
 		{

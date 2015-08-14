@@ -59,20 +59,20 @@ namespace BansheeEngine
 			addReflectableArrayField("texturePages", 2, &FontDataRTTI::getTexture, &FontDataRTTI::getTextureArraySize, &FontDataRTTI::setTexture, &FontDataRTTI::setTextureArraySize);
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "FontData";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_FontData;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			return bs_shared_ptr<FontData, PoolAlloc>();
+			return bs_shared_ptr_new<FontData>();
 		}
 	};
 
@@ -121,39 +121,39 @@ namespace BansheeEngine
 			addReflectableArrayField("mFontDataPerSize", 0, &FontRTTI::getFontData, &FontRTTI::getNumFontData, &FontRTTI::setFontData, &FontRTTI::setNumFontData);
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "Font";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_Font;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return FontManager::instance()._createEmpty();
 		}
 
 	protected:
-		virtual void onDeserializationStarted(IReflectable* obj)
+		virtual void onDeserializationStarted(IReflectable* obj) override
 		{
-			FontInitData* initData = bs_new<FontInitData, PoolAlloc>();
+			FontInitData* initData = bs_new<FontInitData>();
 
 			Font* font = static_cast<Font*>(obj);
 			font->mRTTIData = initData;
 		}
 
-		virtual void onDeserializationEnded(IReflectable* obj)
+		virtual void onDeserializationEnded(IReflectable* obj) override
 		{
 			Font* font = static_cast<Font*>(obj);
 			FontInitData* initData = any_cast<FontInitData*>(font->mRTTIData);
 
 			font->initialize(initData->fontDataPerSize);
 
-			bs_delete<PoolAlloc>(initData);
+			bs_delete(initData);
 		}
 	};
 }

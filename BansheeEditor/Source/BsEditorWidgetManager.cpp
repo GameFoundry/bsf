@@ -190,7 +190,7 @@ namespace BansheeEngine
 
 		MainEditorWindow* mainWindow = EditorWindowManager::instance().getMainWindow();
 		DockManager& dockManager = mainWindow->getDockManager();
-		EditorWidgetLayoutPtr layout = bs_shared_ptr<EditorWidgetLayout>(dockManager.getLayout());
+		EditorWidgetLayoutPtr layout = bs_shared_ptr_new<EditorWidgetLayout>(dockManager.getLayout());
 
 		Vector<EditorWidgetLayout::Entry>& layoutEntries = layout->getEntries();
 		UnorderedSet<EditorWidgetContainer*> widgetContainers;

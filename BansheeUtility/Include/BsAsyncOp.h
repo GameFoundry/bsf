@@ -49,14 +49,14 @@ namespace BansheeEngine
 
 	public:
 		AsyncOp()
-			:mData(bs_shared_ptr<AsyncOpData, ScratchAlloc>())
+			:mData(bs_shared_ptr_new<AsyncOpData>())
 		{ }
 
 		AsyncOp(AsyncOpEmpty empty)
 		{ }
 
 		AsyncOp(const AsyncOpSyncDataPtr& syncData)
-			:mData(bs_shared_ptr<AsyncOpData, ScratchAlloc>()), mSyncData(syncData)
+			:mData(bs_shared_ptr_new<AsyncOpData>()), mSyncData(syncData)
 		{ }
 
 		AsyncOp(AsyncOpEmpty empty, const AsyncOpSyncDataPtr& syncData)

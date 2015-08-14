@@ -16,10 +16,10 @@ namespace BansheeEngine
 	ProfilingManager::~ProfilingManager()
 	{
 		if(mSavedSimReports != nullptr)
-			bs_deleteN<ProfilerAlloc>(mSavedSimReports, NUM_SAVED_FRAMES);
+			bs_deleteN<ProfilerReport, ProfilerAlloc>(mSavedSimReports, NUM_SAVED_FRAMES);
 
 		if(mSavedCoreReports != nullptr)
-			bs_deleteN<ProfilerAlloc>(mSavedCoreReports, NUM_SAVED_FRAMES);
+			bs_deleteN<ProfilerReport, ProfilerAlloc>(mSavedCoreReports, NUM_SAVED_FRAMES);
 	}
 
 	void ProfilingManager::_update()

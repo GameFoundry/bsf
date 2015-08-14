@@ -67,7 +67,7 @@ namespace BansheeEngine
 
 		for(auto& menu : mChildMenus)
 		{
-			bs_delete<PoolAlloc>(menu.menu);
+			bs_delete(menu.menu);
 			GUIElement::destroy(menu.button);
 		}
 
@@ -193,7 +193,7 @@ namespace BansheeEngine
 
 			mMainLayout->removeElement(subMenuToRemove->button);
 			GUIElement::destroy(subMenuToRemove->button);
-			bs_delete<PoolAlloc>(subMenuToRemove->menu);
+			bs_delete(subMenuToRemove->menu);
 
 			mChildMenus.erase(mChildMenus.begin() + curIdx);
 

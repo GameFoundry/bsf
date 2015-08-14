@@ -892,7 +892,7 @@ namespace BansheeEngine
 			{
 				for (UINT32 mip = 0; mip <= numMips; mip++)
 				{
-					mSurfaceList.push_back(bs_shared_ptr<D3D9PixelBuffer>((GpuBufferUsage)usage, this));
+					mSurfaceList.push_back(bs_shared_ptr_new<D3D9PixelBuffer>((GpuBufferUsage)usage, this));
 				}
 			}
 		}

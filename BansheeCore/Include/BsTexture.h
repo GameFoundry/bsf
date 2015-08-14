@@ -458,12 +458,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	Resource::initialize
 		 */
-		void initialize();
+		void initialize() override;
 
 		/**
 		 * @copydoc	CoreObject::createCore
 		 */
-		SPtr<CoreObjectCore> createCore() const;
+		SPtr<CoreObjectCore> createCore() const override;
 
 		/**
 		 * @copydoc	Resource::calculateSize
@@ -494,6 +494,6 @@ namespace BansheeEngine
 
 		friend class TextureRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		virtual RTTITypeBase* getRTTI() const override;
     };
 }

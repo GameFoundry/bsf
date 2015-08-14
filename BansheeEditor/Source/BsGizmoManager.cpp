@@ -36,7 +36,7 @@ namespace BansheeEngine
 		mDrawHelper = bs_new<DrawHelper>();
 		mPickingDrawHelper = bs_new<DrawHelper>();
 
-		mIconVertexDesc = bs_shared_ptr<VertexDataDesc>();
+		mIconVertexDesc = bs_shared_ptr_new<VertexDataDesc>();
 		mIconVertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
 		mIconVertexDesc->addVertElem(VET_FLOAT2, VES_TEXCOORD);
 		mIconVertexDesc->addVertElem(VET_COLOR, VES_COLOR, 0);
@@ -408,7 +408,7 @@ namespace BansheeEngine
 
 		mIconMesh = nullptr;
 
-		IconRenderDataVecPtr iconRenderData = bs_shared_ptr<IconRenderDataVec>();
+		IconRenderDataVecPtr iconRenderData = bs_shared_ptr_new<IconRenderDataVec>();
 		gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::updateData, mCore, nullptr, nullptr, nullptr, nullptr, iconRenderData));
 	}
 
@@ -466,7 +466,7 @@ namespace BansheeEngine
 				return a.distance > b.distance;
 		});
 
-		MeshDataPtr meshData = bs_shared_ptr<MeshData>(actualNumIcons * 4, actualNumIcons * 6, mIconVertexDesc);
+		MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(actualNumIcons * 4, actualNumIcons * 6, mIconVertexDesc);
 
 		auto positionIter = meshData->getVec3DataIter(VES_POSITION);
 		auto texcoordIter = meshData->getVec2DataIter(VES_TEXCOORD);
@@ -484,7 +484,7 @@ namespace BansheeEngine
 			cameraScale = (camera->getViewport()->getHeight() * 0.5f) / vertFOV.valueRadians();
 		}
 
-		iconRenderData = bs_shared_ptr<IconRenderDataVec>();
+		iconRenderData = bs_shared_ptr_new<IconRenderDataVec>();
 		UINT32 lastTextureIdx = std::numeric_limits<UINT32>::max();
 		HTexture curTexture;
 

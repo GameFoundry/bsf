@@ -17,8 +17,8 @@ namespace BansheeEngine
 
 	ScriptCodePtr ScriptCode::_createPtr(const WString& data, bool editorScript)
 	{
-		ScriptCodePtr scriptCodePtr = bs_core_ptr<ScriptCode, PoolAlloc>(
-			new (bs_alloc<ScriptCode, PoolAlloc>()) ScriptCode(data, editorScript));
+		ScriptCodePtr scriptCodePtr = bs_core_ptr<ScriptCode>(
+			new (bs_alloc<ScriptCode>()) ScriptCode(data, editorScript));
 		scriptCodePtr->_setThisPtr(scriptCodePtr);
 		scriptCodePtr->initialize();
 

@@ -52,7 +52,7 @@ namespace BansheeEngine
 		{
 			static_assert((std::is_base_of<TestSuite, T>::value), "Invalid test suite type. It needs to derive from BansheeEngine::TestSuite.");
 
-			return std::static_pointer_cast<TestSuite>(bs_shared_ptr<T>());
+			return std::static_pointer_cast<TestSuite>(bs_shared_ptr_new<T>());
 		}
 
 	protected:

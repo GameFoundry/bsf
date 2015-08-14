@@ -15,12 +15,12 @@ namespace BansheeEngine
 	{
 		mTransform = Matrix4::IDENTITY;
 
-		mSolidVertexDesc = bs_shared_ptr<VertexDataDesc>();
+		mSolidVertexDesc = bs_shared_ptr_new<VertexDataDesc>();
 		mSolidVertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
 		mSolidVertexDesc->addVertElem(VET_FLOAT3, VES_NORMAL);
 		mSolidVertexDesc->addVertElem(VET_COLOR, VES_COLOR);
 
-		mWireVertexDesc = bs_shared_ptr<VertexDataDesc>();
+		mWireVertexDesc = bs_shared_ptr_new<VertexDataDesc>();
 		mWireVertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
 		mWireVertexDesc->addVertElem(VET_COLOR, VES_COLOR);
 
@@ -517,7 +517,7 @@ namespace BansheeEngine
 		{
 			if (batch.type == MeshType::Solid)
 			{
-				MeshDataPtr meshData = bs_shared_ptr<MeshData>(batch.numVertices, batch.numIndices, mSolidVertexDesc);
+				MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(batch.numVertices, batch.numIndices, mSolidVertexDesc);
 
 				UINT32 curVertexOffset = 0;
 				UINT32 curIndexOffet = 0;
@@ -618,7 +618,7 @@ namespace BansheeEngine
 			}
 			else // Wire
 			{
-				MeshDataPtr meshData = bs_shared_ptr<MeshData>(batch.numVertices,
+				MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(batch.numVertices,
 					batch.numIndices, mWireVertexDesc);
 
 				UINT32 curVertexOffset = 0;

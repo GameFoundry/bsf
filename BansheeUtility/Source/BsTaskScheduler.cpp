@@ -13,7 +13,7 @@ namespace BansheeEngine
 
 	TaskPtr Task::create(const String& name, std::function<void()> taskWorker, TaskPriority priority, TaskPtr dependency)
 	{
-		return bs_shared_ptr<Task>(PrivatelyConstruct(), name, taskWorker, priority, dependency);
+		return bs_shared_ptr_new<Task>(PrivatelyConstruct(), name, taskWorker, priority, dependency);
 	}
 
 	bool Task::isComplete() const

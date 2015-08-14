@@ -60,7 +60,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return bs_shared_ptr<ManagedSerializableDiff::ModifiedField>();
+			return bs_shared_ptr_new<ManagedSerializableDiff::ModifiedField>();
 		}
 	};
 
@@ -107,7 +107,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return bs_shared_ptr<ManagedSerializableDiff::ModifiedArrayEntry>();
+			return bs_shared_ptr_new<ManagedSerializableDiff::ModifiedArrayEntry>();
 		}
 	};
 
@@ -154,7 +154,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return bs_shared_ptr<ManagedSerializableDiff::ModifiedDictionaryEntry>();
+			return bs_shared_ptr_new<ManagedSerializableDiff::ModifiedDictionaryEntry>();
 		}
 	};
 
@@ -441,7 +441,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return bs_shared_ptr<ManagedSerializableDiff>();
+			return bs_shared_ptr_new<ManagedSerializableDiff>();
 		}
 	};
 }

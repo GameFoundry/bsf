@@ -57,7 +57,7 @@ namespace BansheeEngine
 	SPtr<TechniqueCore> TechniqueCore::create(const StringID& renderAPI, const StringID& renderer, const Vector<SPtr<PassCore>>& passes)
 	{
 		TechniqueCore* technique = new (bs_alloc<TechniqueCore>()) TechniqueCore(renderAPI, renderer, passes);
-		SPtr<TechniqueCore> techniquePtr = bs_shared_ptr<TechniqueCore, GenAlloc>(technique);
+		SPtr<TechniqueCore> techniquePtr = bs_shared_ptr<TechniqueCore>(technique);
 		techniquePtr->_setThisPtr(techniquePtr);
 		techniquePtr->initialize();
 
@@ -84,7 +84,7 @@ namespace BansheeEngine
 			passes.push_back(pass->getCore());
 
 		TechniqueCore* technique = new (bs_alloc<TechniqueCore>()) TechniqueCore(mRenderAPI, mRenderer, passes);
-		SPtr<TechniqueCore> techniquePtr = bs_shared_ptr<TechniqueCore, GenAlloc>(technique);
+		SPtr<TechniqueCore> techniquePtr = bs_shared_ptr<TechniqueCore>(technique);
 		techniquePtr->_setThisPtr(techniquePtr);
 
 		return techniquePtr;
@@ -99,7 +99,7 @@ namespace BansheeEngine
 	TechniquePtr Technique::create(const StringID& renderAPI, const StringID& renderer, const Vector<SPtr<Pass>>& passes)
 	{
 		Technique* technique = new (bs_alloc<Technique>()) Technique(renderAPI, renderer, passes);
-		TechniquePtr techniquePtr = bs_core_ptr<Technique, GenAlloc>(technique);
+		TechniquePtr techniquePtr = bs_core_ptr<Technique>(technique);
 		techniquePtr->_setThisPtr(techniquePtr);
 		techniquePtr->initialize();
 
@@ -109,7 +109,7 @@ namespace BansheeEngine
 	TechniquePtr Technique::createEmpty()
 	{
 		Technique* technique = new (bs_alloc<Technique>()) Technique();
-		TechniquePtr techniquePtr = bs_core_ptr<Technique, GenAlloc>(technique);
+		TechniquePtr techniquePtr = bs_core_ptr<Technique>(technique);
 		techniquePtr->_setThisPtr(techniquePtr);
 
 		return techniquePtr;

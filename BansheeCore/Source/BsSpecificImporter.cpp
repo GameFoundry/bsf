@@ -6,7 +6,7 @@ namespace BansheeEngine
 {
 	ImportOptionsPtr SpecificImporter::createImportOptions() const
 	{
-		return bs_shared_ptr<ImportOptions, PoolAlloc>();
+		return bs_shared_ptr_new<ImportOptions>();
 	}
 
 	ConstImportOptionsPtr SpecificImporter::getDefaultImportOptions() const

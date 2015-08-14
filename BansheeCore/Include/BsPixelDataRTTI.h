@@ -71,20 +71,20 @@ namespace BansheeEngine
 			addDataBlockField("data", 9, &PixelDataRTTI::getData, &PixelDataRTTI::setData, 0, &PixelDataRTTI::allocateData);
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "PixelData";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_PixelData;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			PixelDataPtr newPixelData = bs_shared_ptr<PixelData, PoolAlloc>();
+			PixelDataPtr newPixelData = bs_shared_ptr_new<PixelData>();
 
 			return newPixelData;
 		}

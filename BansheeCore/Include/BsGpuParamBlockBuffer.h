@@ -78,7 +78,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObjectCore::syncToCore
 		 */
-		virtual void syncToCore(const CoreSyncData& data);
+		virtual void syncToCore(const CoreSyncData& data)  override;
 
 		GpuParamBlockUsage mUsage;
 		UINT32 mSize;
@@ -152,12 +152,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObject::createCore
 		 */
-		SPtr<CoreObjectCore> createCore() const;
+		SPtr<CoreObjectCore> createCore() const override;
 
 		/**
 		 * @copydoc	CoreObject::syncToCore
 		 */
-		virtual CoreSyncData syncToCore(FrameAlloc* allocator);
+		virtual CoreSyncData syncToCore(FrameAlloc* allocator) override;
 
 		GpuParamBlockUsage mUsage;
 		UINT32 mSize;
@@ -177,12 +177,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GpuParamBlockBufferCore::writeData
 		 */
-		void writeToGPU(const UINT8* data);
+		void writeToGPU(const UINT8* data) override;
 
 		/**
 		 * @copydoc GpuParamBlockBufferCore::readData.
 		 */
-		void readFromGPU(UINT8* data) const;
+		void readFromGPU(UINT8* data) const override;
 
 	protected:
 		UINT8* mData;
@@ -190,6 +190,6 @@ namespace BansheeEngine
 		/**
 		 * @copydoc CoreObjectCore::initialize
 		 */
-		virtual void initialize();
+		virtual void initialize() override;
 	};
 }

@@ -157,7 +157,7 @@ namespace BansheeEngine
 	public:
 		friend class GameObjectHandleRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		virtual RTTITypeBase* getRTTI() const override;
 	};
 
 	/**
@@ -176,7 +176,7 @@ namespace BansheeEngine
 		GameObjectHandle()
 			:GameObjectHandleBase()
 		{	
-			mData = bs_shared_ptr<GameObjectHandleData, PoolAlloc>();
+			mData = bs_shared_ptr_new<GameObjectHandleData>();
 		}
 
 		/**
@@ -203,7 +203,7 @@ namespace BansheeEngine
 		 */
 		inline GameObjectHandle<T>& operator=(std::nullptr_t ptr)
 		{ 	
-			mData = bs_shared_ptr<GameObjectHandleData, PoolAlloc>();
+			mData = bs_shared_ptr_new<GameObjectHandleData>();
 
 			return *this;
 		}

@@ -48,7 +48,7 @@ namespace BansheeEngine
 			}
 		}
 
-		SPtr<PooledRenderTexture> newTextureData = bs_shared_ptr<PooledRenderTexture>(this);
+		SPtr<PooledRenderTexture> newTextureData = bs_shared_ptr_new<PooledRenderTexture>(this);
 		_registerTexture(newTextureData);
 
 		RENDER_SURFACE_CORE_DESC surfaceDesc;

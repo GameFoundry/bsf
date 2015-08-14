@@ -325,7 +325,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return bs_shared_ptr<ShaderMetaData>();
+			return bs_shared_ptr_new<ShaderMetaData>();
 		}
 	};
 }

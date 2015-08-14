@@ -58,7 +58,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc		Module::onStartUp
 		 */
-		virtual void onStartUp();
+		virtual void onStartUp() override;
 
 	private:
 		MeshDataPtr mDummyMeshData;

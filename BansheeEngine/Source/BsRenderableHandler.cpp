@@ -223,7 +223,7 @@ namespace BansheeEngine
 	SPtr<CoreObjectCore> RenderableHandler::createCore() const
 	{
 		RenderableHandlerCore* handler = new (bs_alloc<RenderableHandlerCore>()) RenderableHandlerCore();
-		SPtr<RenderableHandlerCore> handlerPtr = bs_shared_ptr<RenderableHandlerCore, GenAlloc>(handler);
+		SPtr<RenderableHandlerCore> handlerPtr = bs_shared_ptr<RenderableHandlerCore>(handler);
 		handlerPtr->_setThisPtr(handlerPtr);
 
 		return handlerPtr;
@@ -316,7 +316,7 @@ namespace BansheeEngine
 	RenderableHandlerPtr RenderableHandler::createEmpty()
 	{
 		RenderableHandler* handler = new (bs_alloc<RenderableHandler>()) RenderableHandler();
-		RenderableHandlerPtr handlerPtr = bs_core_ptr<RenderableHandler, GenAlloc>(handler);
+		RenderableHandlerPtr handlerPtr = bs_core_ptr<RenderableHandler>(handler);
 		handlerPtr->_setThisPtr(handlerPtr);
 
 		return handlerPtr;

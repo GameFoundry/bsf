@@ -55,7 +55,7 @@ namespace BansheeEngine
 	ScriptWinPlatformInfo::ScriptWinPlatformInfo(MonoObject* instance)
 		:ScriptObject(instance)
 	{
-		mPlatformInfo = bs_shared_ptr<WinPlatformInfo>();
+		mPlatformInfo = bs_shared_ptr_new<WinPlatformInfo>();
 	}
 
 	void ScriptWinPlatformInfo::initRuntimeData()

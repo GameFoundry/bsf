@@ -133,7 +133,7 @@ namespace BansheeEngine
 
 				// Bug?: Regardless me of not providing the std::little_endian flag it seems that is how the data is read
 				// so I manually flip it
-				UINT32 numChars = (string.size() - 2) / 2;
+				UINT32 numChars = (UINT32)(string.size() - 2) / 2;
 				for (UINT32 i = 0; i < numChars; i++)
 					std::swap(string[i * 2 + 0], string[i * 2 + 1]);
 

@@ -36,17 +36,17 @@ namespace BansheeEngine
 		if(!ScriptAssemblyManager::instance().getSystemArrayClass()->isInstanceOfType(managedInstance))
 			return nullptr;
 
-		return bs_shared_ptr<ManagedSerializableArray>(ConstructPrivately(), typeInfo, managedInstance);
+		return bs_shared_ptr_new<ManagedSerializableArray>(ConstructPrivately(), typeInfo, managedInstance);
 	}
 
 	ManagedSerializableArrayPtr ManagedSerializableArray::createNew(const ManagedSerializableTypeInfoArrayPtr& typeInfo, const Vector<UINT32>& sizes)
 	{
-		return bs_shared_ptr<ManagedSerializableArray>(ConstructPrivately(), typeInfo, createManagedInstance(typeInfo, sizes));
+		return bs_shared_ptr_new<ManagedSerializableArray>(ConstructPrivately(), typeInfo, createManagedInstance(typeInfo, sizes));
 	}
 
 	ManagedSerializableArrayPtr ManagedSerializableArray::createNew()
 	{
-		return bs_shared_ptr<ManagedSerializableArray>(ConstructPrivately());
+		return bs_shared_ptr_new<ManagedSerializableArray>(ConstructPrivately());
 	}
 
 	MonoObject* ManagedSerializableArray::createManagedInstance(const ManagedSerializableTypeInfoArrayPtr& typeInfo, const Vector<UINT32>& sizes)

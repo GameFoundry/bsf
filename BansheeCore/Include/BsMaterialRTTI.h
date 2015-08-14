@@ -29,7 +29,7 @@ namespace BansheeEngine
 
 		friend class MaterialFloatParamRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;	
+		virtual RTTITypeBase* getRTTI() const override;
 	};
 
 	class BS_CORE_EXPORT MaterialVec2Param : public IReflectable
@@ -41,7 +41,7 @@ namespace BansheeEngine
 
 		friend class MaterialVec2ParamRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;	
+		virtual RTTITypeBase* getRTTI() const override;
 	};
 
 	class BS_CORE_EXPORT MaterialVec3Param : public IReflectable
@@ -53,7 +53,7 @@ namespace BansheeEngine
 
 		friend class MaterialVec3ParamRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;	
+		virtual RTTITypeBase* getRTTI() const override;
 	};
 
 	class BS_CORE_EXPORT MaterialVec4Param : public IReflectable
@@ -65,7 +65,7 @@ namespace BansheeEngine
 
 		friend class MaterialVec4ParamRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;	
+		virtual RTTITypeBase* getRTTI() const override;
 	};
 
 	class BS_CORE_EXPORT MaterialColorParam : public IReflectable
@@ -77,7 +77,7 @@ namespace BansheeEngine
 
 		friend class MaterialColorParamRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		virtual RTTITypeBase* getRTTI() const override;
 	};
 
 
@@ -90,7 +90,7 @@ namespace BansheeEngine
 
 		friend class MaterialMat3ParamRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;	
+		virtual RTTITypeBase* getRTTI() const override;
 	};
 
 	class BS_CORE_EXPORT MaterialMat4Param : public IReflectable
@@ -102,7 +102,7 @@ namespace BansheeEngine
 
 		friend class MaterialMat4ParamRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;	
+		virtual RTTITypeBase* getRTTI() const override;
 	};
 
 	class BS_CORE_EXPORT MaterialStructParam : public IReflectable
@@ -115,7 +115,7 @@ namespace BansheeEngine
 
 		friend class MaterialStructParamRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;	
+		virtual RTTITypeBase* getRTTI() const override;
 	};
 
 	class BS_CORE_EXPORT MaterialTextureParam : public IReflectable
@@ -126,7 +126,7 @@ namespace BansheeEngine
 
 		friend class MaterialTextureParamRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;	
+		virtual RTTITypeBase* getRTTI() const override;
 	};
 
 	class BS_CORE_EXPORT MaterialSamplerStateParam : public IReflectable
@@ -137,7 +137,7 @@ namespace BansheeEngine
 
 		friend class MaterialSamplerStateParamRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;	
+		virtual RTTITypeBase* getRTTI() const override;
 	};
 
 	class BS_CORE_EXPORT MaterialParams : public IReflectable
@@ -156,7 +156,7 @@ namespace BansheeEngine
 
 		friend class MaterialParamsRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;	
+		virtual RTTITypeBase* getRTTI() const override;
 	};
 
 	/************************************************************************/
@@ -182,16 +182,16 @@ namespace BansheeEngine
 			addPlainField("arrayIdx", 2, &MaterialFloatParamRTTI::getArrayIdx, &MaterialFloatParamRTTI::setArrayIdx);
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "MaterialFloatParam";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() { return TID_MaterialParamFloat; }
-		virtual std::shared_ptr<IReflectable> newRTTIObject() 
+		virtual UINT32 getRTTIId() override { return TID_MaterialParamFloat; }
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{ 
-			return bs_shared_ptr<MaterialFloatParam, ScratchAlloc>(); 
+			return bs_shared_ptr_new<MaterialFloatParam>(); 
 		}
 	};
 
@@ -214,16 +214,16 @@ namespace BansheeEngine
 			addPlainField("arrayIdx", 2, &MaterialVec2ParamRTTI::getArrayIdx, &MaterialVec2ParamRTTI::setArrayIdx);
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "MaterialVec2Param";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() { return TID_MaterialParamVec2; }
-		virtual std::shared_ptr<IReflectable> newRTTIObject() 
+		virtual UINT32 getRTTIId() override { return TID_MaterialParamVec2; }
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{ 
-			return bs_shared_ptr<MaterialVec2Param, ScratchAlloc>(); 
+			return bs_shared_ptr_new<MaterialVec2Param>(); 
 		}
 	};
 
@@ -246,16 +246,16 @@ namespace BansheeEngine
 			addPlainField("arrayIdx", 2, &MaterialVec3ParamRTTI::getArrayIdx, &MaterialVec3ParamRTTI::setArrayIdx);
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "MaterialVec3Param";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() { return TID_MaterialParamVec3; }
-		virtual std::shared_ptr<IReflectable> newRTTIObject() 
+		virtual UINT32 getRTTIId() override { return TID_MaterialParamVec3; }
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{ 
-			return bs_shared_ptr<MaterialVec3Param, ScratchAlloc>(); 
+			return bs_shared_ptr_new<MaterialVec3Param>(); 
 		}
 	};
 
@@ -278,16 +278,16 @@ namespace BansheeEngine
 			addPlainField("arrayIdx", 2, &MaterialVec4ParamRTTI::getArrayIdx, &MaterialVec4ParamRTTI::setArrayIdx);
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "MaterialVec4Param";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() { return TID_MaterialParamVec4; }
-		virtual std::shared_ptr<IReflectable> newRTTIObject() 
+		virtual UINT32 getRTTIId() override { return TID_MaterialParamVec4; }
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			return bs_shared_ptr<MaterialVec4Param, ScratchAlloc>();
+			return bs_shared_ptr_new<MaterialVec4Param>();
 		}
 	};
 
@@ -310,16 +310,16 @@ namespace BansheeEngine
 			addPlainField("arrayIdx", 2, &MaterialColorParamRTTI::getArrayIdx, &MaterialColorParamRTTI::setArrayIdx);
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "MaterialColorParam";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() { return TID_MaterialParamColor; }
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual UINT32 getRTTIId() override { return TID_MaterialParamColor; }
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			return bs_shared_ptr<MaterialColorParam, ScratchAlloc>();
+			return bs_shared_ptr_new<MaterialColorParam>();
 		}
 	};
 
@@ -342,16 +342,16 @@ namespace BansheeEngine
 			addPlainField("arrayIdx", 2, &MaterialMat3ParamRTTI::getArrayIdx, &MaterialMat3ParamRTTI::setArrayIdx);
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "MaterialMat3Param";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() { return TID_MaterialParamMat3; }
-		virtual std::shared_ptr<IReflectable> newRTTIObject() 
+		virtual UINT32 getRTTIId() override { return TID_MaterialParamMat3; }
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{ 
-			return bs_shared_ptr<MaterialMat3Param, ScratchAlloc>();
+			return bs_shared_ptr_new<MaterialMat3Param>();
 		}
 	};
 
@@ -374,16 +374,16 @@ namespace BansheeEngine
 			addPlainField("arrayIdx", 2, &MaterialMat4ParamRTTI::getArrayIdx, &MaterialMat4ParamRTTI::setArrayIdx);
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "MaterialMat4Param";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() { return TID_MaterialParamMat4; }
-		virtual std::shared_ptr<IReflectable> newRTTIObject() 
+		virtual UINT32 getRTTIId() override { return TID_MaterialParamMat4; }
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{ 
-			return bs_shared_ptr<MaterialMat4Param, ScratchAlloc>();
+			return bs_shared_ptr_new<MaterialMat4Param>();
 		}
 	};
 
@@ -424,16 +424,16 @@ namespace BansheeEngine
 			addPlainField("elementSize", 3, &MaterialStructParamRTTI::getElementSize, &MaterialStructParamRTTI::setElementSize);
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "MaterialStructParam";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() { return TID_MaterialParamStruct; }
-		virtual std::shared_ptr<IReflectable> newRTTIObject() 
+		virtual UINT32 getRTTIId() override { return TID_MaterialParamStruct; }
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{ 
-			return bs_shared_ptr<MaterialStructParam, ScratchAlloc>();
+			return bs_shared_ptr_new<MaterialStructParam>();
 		}
 	};
 
@@ -452,16 +452,16 @@ namespace BansheeEngine
 			addReflectableField("value", 1, &MaterialTextureParamRTTI::getValue, &MaterialTextureParamRTTI::setValue);
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "MaterialTextureParam";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() { return TID_MaterialParamTexture; }
-		virtual std::shared_ptr<IReflectable> newRTTIObject() 
+		virtual UINT32 getRTTIId() override { return TID_MaterialParamTexture; }
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{ 
-			return bs_shared_ptr<MaterialTextureParam, ScratchAlloc>();
+			return bs_shared_ptr_new<MaterialTextureParam>();
 		}
 	};
 
@@ -480,16 +480,16 @@ namespace BansheeEngine
 			addReflectablePtrField("value", 1, &MaterialSamplerStateParamRTTI::getValue, &MaterialSamplerStateParamRTTI::setValue);
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "MaterialSamplerStateParam";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() { return TID_MaterialParamSamplerState; }
-		virtual std::shared_ptr<IReflectable> newRTTIObject() 
+		virtual UINT32 getRTTIId() override { return TID_MaterialParamSamplerState; }
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{ 
-			return bs_shared_ptr<MaterialSamplerStateParam, ScratchAlloc>();
+			return bs_shared_ptr_new<MaterialSamplerStateParam>();
 		}
 	};
 
@@ -579,16 +579,16 @@ namespace BansheeEngine
 				&MaterialParamsRTTI::getColorArraySize, &MaterialParamsRTTI::setColorParam, &MaterialParamsRTTI::setColorArraySize);
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName()  override
 		{
 			static String name = "MaterialParams";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() { return TID_MaterialParams; }
-		virtual std::shared_ptr<IReflectable> newRTTIObject() 
+		virtual UINT32 getRTTIId() override { return TID_MaterialParams; }
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{ 
-			return bs_shared_ptr<MaterialParams, ScratchAlloc>();
+			return bs_shared_ptr_new<MaterialParams>();
 		}
 	};
 
@@ -625,22 +625,22 @@ namespace BansheeEngine
 			addReflectablePtrField("mMaterialParams", 1, &MaterialRTTI::getMaterialParams, &MaterialRTTI::setMaterialParams);
 		}
 
-		virtual void onSerializationStarted(IReflectable* obj);
-		virtual void onSerializationEnded(IReflectable* obj);
-		virtual void onDeserializationStarted(IReflectable* obj);
-		virtual void onDeserializationEnded(IReflectable* obj);
+		virtual void onSerializationStarted(IReflectable* obj) override;
+		virtual void onSerializationEnded(IReflectable* obj) override;
+		virtual void onDeserializationStarted(IReflectable* obj) override;
+		virtual void onDeserializationEnded(IReflectable* obj) override;
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "Material";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_Material;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject();
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override;
 	};
 }

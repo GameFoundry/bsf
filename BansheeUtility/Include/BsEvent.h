@@ -242,7 +242,7 @@ namespace BansheeEngine
 
 	public:
 		TEvent()
-			:mInternalData(bs_shared_ptr<EventInternalData>())
+			:mInternalData(bs_shared_ptr_new<EventInternalData>())
 		{ }
 
 		~TEvent()

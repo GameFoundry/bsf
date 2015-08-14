@@ -21,10 +21,10 @@ namespace BansheeEngine
 		GpuParamDescPtr vertParamDesc = defaultPass->getVertexProgram()->getParamDesc();
 		GpuParamDescPtr fragParamDesc = defaultPass->getFragmentProgram()->getParamDesc();
 
-		GpuParamDescPtr staticParamsDesc = bs_shared_ptr<GpuParamDesc>();
-		GpuParamDescPtr perFrameParamsDesc = bs_shared_ptr<GpuParamDesc>();
-		GpuParamDescPtr perObjectParamsDesc = bs_shared_ptr<GpuParamDesc>();
-		GpuParamDescPtr perCameraParamsDesc = bs_shared_ptr<GpuParamDesc>();
+		GpuParamDescPtr staticParamsDesc = bs_shared_ptr_new<GpuParamDesc>();
+		GpuParamDescPtr perFrameParamsDesc = bs_shared_ptr_new<GpuParamDesc>();
+		GpuParamDescPtr perObjectParamsDesc = bs_shared_ptr_new<GpuParamDesc>();
+		GpuParamDescPtr perCameraParamsDesc = bs_shared_ptr_new<GpuParamDesc>();
 
 		bool foundLightDir = false;
 		bool foundTime = false;

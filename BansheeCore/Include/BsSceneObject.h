@@ -474,9 +474,9 @@ namespace BansheeEngine
 			static_assert((std::is_base_of<BansheeEngine::Component, T>::value),
 				"Specified type is not a valid Component.");
 
-			std::shared_ptr<T> gameObject(new (bs_alloc<T, PoolAlloc>()) T(mThisHandle,
+			std::shared_ptr<T> gameObject(new (bs_alloc<T>()) T(mThisHandle,
 				std::forward<Args>(args)...),
-				&bs_delete<PoolAlloc, T>, StdAlloc<T, PoolAlloc>());
+				&bs_delete<T>, StdAlloc<T>());
 
 			GameObjectHandle<T> newComponent =
 				GameObjectHandle<T>(GameObjectManager::instance().registerObject(gameObject));
@@ -585,7 +585,8 @@ namespace BansheeEngine
 		{
 			static_assert((std::is_base_of<BansheeEngine::Component, T>::value), "Specified type is not a valid Component.");
 
-			std::shared_ptr<T> gameObject(new (bs_alloc<T, PoolAlloc>()) T(), &bs_delete<PoolAlloc, T>, StdAlloc<T, PoolAlloc>());
+			T* rawPtr = new (bs_alloc<T>()) T();
+			std::shared_ptr<T> gameObject(rawPtr, &bs_delete<T>, StdAlloc<T>());
 			GameObjectHandle<T>(GameObjectManager::instance().registerObject(gameObject));
 
 			return gameObject;
@@ -605,6 +606,6 @@ namespace BansheeEngine
 		friend class GameObjectRTTI;
 		friend class SceneObjectRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		virtual RTTITypeBase* getRTTI() const override;
 	};
 }

@@ -23,158 +23,158 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RenderAPICore::getName()
 		 */
-		const StringID& getName() const;
+		const StringID& getName() const override;
 
 		/**
 		 * @copydoc RenderAPICore::getShadingLanguageName()
 		 */
-		const String& getShadingLanguageName() const;
+		const String& getShadingLanguageName() const override;
 
 		/**
 		 * @copydoc RenderAPICore::setRenderTarget()
 		 */
-		void setRenderTarget(const SPtr<RenderTargetCore>& target);
+		void setRenderTarget(const SPtr<RenderTargetCore>& target) override;
 
 		/**
 		 * @copydoc RenderAPICore::bindGpuProgram()
 		 */
-		void bindGpuProgram(const SPtr<GpuProgramCore>& prg);
+		void bindGpuProgram(const SPtr<GpuProgramCore>& prg) override;
 
 		/**
 		 * @copydoc RenderAPICore::unbindGpuProgram()
 		 */
-		void unbindGpuProgram(GpuProgramType gptype);
+		void unbindGpuProgram(GpuProgramType gptype) override;
 
 		/**
 		 * @copydoc RenderAPICore::setConstantBuffers()
 		 */
-		void setConstantBuffers(GpuProgramType gptype, const SPtr<GpuParamsCore>& params);
+		void setConstantBuffers(GpuProgramType gptype, const SPtr<GpuParamsCore>& params) override;
 
 		/**
 		 * @copydoc RenderAPICore::setVertexBuffers()
 		 */
-		void setVertexBuffers(UINT32 index, SPtr<VertexBufferCore>* buffers, UINT32 numBuffers);
+		void setVertexBuffers(UINT32 index, SPtr<VertexBufferCore>* buffers, UINT32 numBuffers) override;
 
 		/**
 		 * @copydoc RenderAPICore::setIndexBuffer()
 		 */
-		void setIndexBuffer(const SPtr<IndexBufferCore>& buffer);
+		void setIndexBuffer(const SPtr<IndexBufferCore>& buffer) override;
 
 		/**
 		 * @copydoc RenderAPICore::setVertexDeclaration()
 		 */
-		void setVertexDeclaration(const SPtr<VertexDeclarationCore>& vertexDeclaration);
+		void setVertexDeclaration(const SPtr<VertexDeclarationCore>& vertexDeclaration) override;
 
 		/**
 		 * @copydoc RenderAPICore::setDrawOperation()
 		 */
-		void setDrawOperation(DrawOperationType op);
+		void setDrawOperation(DrawOperationType op) override;
 
 		/**
 		 * @copydoc RenderAPICore::setTexture()
 		 */
-		void setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& texPtr);
+		void setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& texPtr) override;
 
 		/**
 		 * @copydoc RenderAPICore::setLoadStoreTexture()
 		 */
 		void setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& texPtr,
-			const TextureSurface& surface);
+			const TextureSurface& surface) override;
 
 		/**
 		 * @copydoc RenderAPICore::setSamplerState()
 		 */
-		void setSamplerState(GpuProgramType gptype, UINT16 unit, const SPtr<SamplerStateCore>& state);
+		void setSamplerState(GpuProgramType gptype, UINT16 unit, const SPtr<SamplerStateCore>& state) override;
 
 		/**
 		 * @copydoc RenderAPICore::setBlendState()
 		 */
-		void setBlendState(const SPtr<BlendStateCore>& blendState);
+		void setBlendState(const SPtr<BlendStateCore>& blendState) override;
 
 		/**
 		 * @copydoc RenderAPICore::setRasterizerState()
 		 */
-		void setRasterizerState(const SPtr<RasterizerStateCore>& rasterizerState);
+		void setRasterizerState(const SPtr<RasterizerStateCore>& rasterizerState) override;
 
 		/**
 		 * @copydoc RenderAPICore::setDepthStencilState()
 		 */
-		void setDepthStencilState(const SPtr<DepthStencilStateCore>& depthStencilState, UINT32 stencilRefValue);
+		void setDepthStencilState(const SPtr<DepthStencilStateCore>& depthStencilState, UINT32 stencilRefValue) override;
 
 		/**
 		 * @copydoc RenderAPICore::setViewport()
 		 */
-		void setViewport(const Rect2& vp);
+		void setViewport(const Rect2& vp) override;
 
 		/**
 		 * @copydoc RenderAPICore::beginFrame()
 		 */
-		void beginFrame();
+		void beginFrame() override;
 
 		/**
 		 * @copydoc RenderAPICore::endFrame()
 		 */
-		void endFrame();		
+		void endFrame() override;
 
 		/**
 		 * @copydoc RenderAPICore::draw()
 		 */
-		void draw(UINT32 vertexOffset, UINT32 vertexCount);
+		void draw(UINT32 vertexOffset, UINT32 vertexCount) override;
 
 		/**
 		 * @copydoc RenderAPICore::drawIndexed()
 		 */
-		void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount);
+		void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount) override;
 
 		/**
 		 * @copydoc RenderAPICore::setScissorRect()
 		 */
-        void setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom);
+		void setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom) override;
 
 		/**
 		 * @copydoc RenderAPICore::clearRenderTarget()
 		 */
-		void clearRenderTarget(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0);
+		void clearRenderTarget(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0) override;
 
 		/**
 		 * @copydoc RenderAPICore::clearViewport()
 		 */
-		void clearViewport(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0);
+		void clearViewport(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0) override;
 
 		/**
 		 * @copydoc RenderAPICore::convertProjectionMatrix()
 		 */
-		void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest);
+		void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest) override;
 
 		/**
 		 * @copydoc	RenderAPICore::getHorizontalTexelOffset
 		 */
-        float getHorizontalTexelOffset();
+		float getHorizontalTexelOffset() override;
 
 		/**
 		 * @copydoc	RenderAPICore::getVerticalTexelOffset
 		 */
-        float getVerticalTexelOffset();
+		float getVerticalTexelOffset() override;
 
 		/**
 		 * @copydoc	RenderAPICore::getMinimumDepthInputValue
 		 */
-        float getMinimumDepthInputValue();
+		float getMinimumDepthInputValue() override;
 
 		/**
 		 * @copydoc	RenderAPICore::getMaximumDepthInputValue
 		 */
-        float getMaximumDepthInputValue();
+		float getMaximumDepthInputValue() override;
 
 		/**
 		 * @copydoc	RenderAPICore::getColorVertexElementType
 		 */
-		VertexElementType getColorVertexElementType() const;
+		VertexElementType getColorVertexElementType() const override;
 
 		/**
 		 * @copydoc	RenderAPICore::getColorVertexElementType
 		 */
-		bool getVertexColorFlipRequired() const { return true; }
+		bool getVertexColorFlipRequired() const override { return true; }
 
 		/************************************************************************/
 		/* 				Internal use by DX9 RenderSystem only                   */
@@ -243,17 +243,17 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	RenderAPICore::initializePrepare
 		 */
-		void initializePrepare();
+		void initializePrepare() override;
 
 		/**
 		 * @copydoc	RenderAPICore::initializeFinalize
 		 */
-		void initializeFinalize(const SPtr<RenderWindowCore>& primaryWindow);
+		void initializeFinalize(const SPtr<RenderWindowCore>& primaryWindow) override;
 
 		/**
 		 * @copydoc	RenderAPICore::destroy_internal
 		 */
-		void destroyCore();
+		void destroyCore() override;
 
 		/**
 		 * @brief	Returns a list of available drivers and their properties.
@@ -309,7 +309,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	RenderAPICore::setClipPlanesImpl
 		 */
-		void setClipPlanesImpl(const PlaneList& clipPlanes);	
+		void setClipPlanesImpl(const PlaneList& clipPlanes) override;
 
 		/**
 		 * @brief	Converts a HRESULT error number into an error description.

@@ -38,7 +38,7 @@ using namespace std::placeholders;
 namespace BansheeEngine
 {
 	BansheeRenderer::BansheeRenderer()
-		:mOptions(bs_shared_ptr<RenderBeastOptions>()), mOptionsDirty(true)
+		:mOptions(bs_shared_ptr_new<RenderBeastOptions>()), mOptionsDirty(true)
 	{
 
 	}
@@ -66,7 +66,7 @@ namespace BansheeEngine
 
 	void BansheeRenderer::initializeCore()
 	{
-		mCoreOptions = bs_shared_ptr<RenderBeastOptions>();
+		mCoreOptions = bs_shared_ptr_new<RenderBeastOptions>();
 		mLitTexHandler = bs_new<LitTexRenderableController>();
 
 		SPtr<ShaderCore> shader = createDefaultShader();
@@ -205,7 +205,7 @@ namespace BansheeEngine
 	void BansheeRenderer::_notifyCameraAdded(const CameraHandlerCore* camera)
 	{
 		CameraData& camData = mCameraData[camera];
-		camData.renderQueue = bs_shared_ptr<RenderQueue>();
+		camData.renderQueue = bs_shared_ptr_new<RenderQueue>();
 	}
 
 	void BansheeRenderer::_notifyCameraRemoved(const CameraHandlerCore* camera)
@@ -233,7 +233,7 @@ namespace BansheeEngine
 			CameraHandlerPtr camera = cameraData.second.camera;
 			HSceneObject cameraSO = cameraData.second.sceneObject;
 
-			DrawListPtr drawList = bs_shared_ptr<DrawList>();
+			DrawListPtr drawList = bs_shared_ptr_new<DrawList>();
 
 			// Get GUI render operations
 			GUIManager::instance().render(camera->getViewport(), *drawList);
@@ -245,7 +245,7 @@ namespace BansheeEngine
 			const Viewport* viewportRawPtr = camera->getViewport().get();
 			onRenderViewport(viewportRawPtr, *drawList);
 
-			RenderQueuePtr renderQueue = bs_shared_ptr<RenderQueue>();
+			RenderQueuePtr renderQueue = bs_shared_ptr_new<RenderQueue>();
 			const Vector<DrawOperation>& drawOps = drawList->getDrawOperations();
 
 			for (auto& drawOp : drawOps)

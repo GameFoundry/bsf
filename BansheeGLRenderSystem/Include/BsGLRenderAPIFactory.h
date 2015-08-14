@@ -37,7 +37,7 @@ namespace BansheeEngine
 				static RenderAPIFactoryPtr newFactory;
 				if(newFactory == nullptr)
 				{
-					newFactory = bs_shared_ptr<GLRenderAPIFactory>();
+					newFactory = bs_shared_ptr_new<GLRenderAPIFactory>();
 					RenderAPIManager::instance().registerFactory(newFactory);
 				}
 			}

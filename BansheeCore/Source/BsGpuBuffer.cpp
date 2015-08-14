@@ -29,7 +29,7 @@ namespace BansheeEngine
 		for (auto iter = mBufferViews.begin(); iter != mBufferViews.end(); ++iter)
 		{
 			destroyView(iter->second->view);
-			bs_delete<PoolAlloc>(iter->second);
+			bs_delete(iter->second);
 		}
 
 		mBufferViews.clear();
@@ -50,7 +50,7 @@ namespace BansheeEngine
 		{
 			GpuBufferView* newView = buffer->createView();
 			newView->initialize(buffer, key);
-			buffer->mBufferViews[key] = bs_new<GpuBufferReference, PoolAlloc>(newView);
+			buffer->mBufferViews[key] = bs_new<GpuBufferReference>(newView);
 
 			iterFind = buffer->mBufferViews.find(key);
 		}
@@ -78,7 +78,7 @@ namespace BansheeEngine
 			buffer->mBufferViews.erase(iterFind);
 
 			buffer->destroyView(toRemove->view);
-			bs_delete<PoolAlloc>(toRemove);
+			bs_delete(toRemove);
 		}
 	}
 

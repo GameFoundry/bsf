@@ -26,20 +26,20 @@ namespace BansheeEngine
 		 * @copydoc HardwareBufferCoreManager::createVertexBufferImpl
 		 */
         SPtr<VertexBufferCore> createVertexBufferInternal(UINT32 vertexSize, 
-            UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false);
+			UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false) override;
 
 		/**
 		 * @copydoc HardwareBufferCoreManager::createIndexBufferImpl
 		 */
-        SPtr<IndexBufferCore> createIndexBufferInternal(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
+		SPtr<IndexBufferCore> createIndexBufferInternal(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage) override;
 
 		/** @copydoc HardwareBufferCoreManager::createGpuParamBlockBufferInternal */
-		SPtr<GpuParamBlockBufferCore> createGpuParamBlockBufferInternal(UINT32 size, GpuParamBlockUsage usage = GPBU_DYNAMIC);
+		SPtr<GpuParamBlockBufferCore> createGpuParamBlockBufferInternal(UINT32 size, GpuParamBlockUsage usage = GPBU_DYNAMIC) override;
 
 		/**
 		 * @copydoc HardwareBufferCoreManager::createGenericBufferInternal
 		 */
 		SPtr<GpuBufferCore> createGpuBufferInternal(UINT32 elementCount, UINT32 elementSize, 
-			GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
+			GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false) override;
     };
 }

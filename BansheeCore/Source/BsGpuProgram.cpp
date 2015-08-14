@@ -22,7 +22,7 @@ namespace BansheeEngine
 		: mProperties(source, entryPoint, gptype, profile), mIsCompiled(false),
 		mNeedsAdjacencyInfo(isAdjacencyInfoRequired)
 	{
-		mParametersDesc = bs_shared_ptr<GpuParamDesc>();
+		mParametersDesc = bs_shared_ptr_new<GpuParamDesc>();
 	}
 
 	bool GpuProgramCore::isSupported() const

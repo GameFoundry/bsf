@@ -16,7 +16,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GpuProgramCore::isSupported
 		 */
-		bool isSupported() const;
+		bool isSupported() const override;
 
 		/**
 		 * @brief	Gets vertex declaration that determines which input attributes does the GPU
@@ -28,18 +28,18 @@ namespace BansheeEngine
 		/**
 		 * @brief	Gets internal OpenGL handle to the program.
 		 */
-		const GLuint getGLHandle() const { return mGLHandle; }
+		GLuint getGLHandle() const { return mGLHandle; }
 
 		/**
 		 * @brief	Gets an unique index for this GPU program. Each created GPU program is
 		 *			assigned a unique index on creation.
 		 */
-		const UINT32 getProgramID() const { return mProgramID; }
+		UINT32 getProgramID() const { return mProgramID; }
 
 		/**
 		 * @copydoc	GpuProgramCore::hasColumnMajorMatrices
 		 */
-		bool hasColumnMajorMatrices() const { return true; }
+		bool hasColumnMajorMatrices() const override { return true; }
 
 	private:
 		friend class GLSLProgramFactory;
@@ -50,7 +50,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc GpuProgramCore::initialize
 		 */
-		void initialize();
+		void initialize() override;
 
 	private:
 		UINT32 mProgramID;

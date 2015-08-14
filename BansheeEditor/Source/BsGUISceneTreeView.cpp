@@ -41,7 +41,7 @@ namespace BansheeEngine
 	{
 		SceneTreeViewLocator::_provide(this);
 
-		GUIContextMenuPtr contextMenu = bs_shared_ptr<GUIContextMenu>();
+		GUIContextMenuPtr contextMenu = bs_shared_ptr_new<GUIContextMenu>();
 
 		contextMenu->addMenuItem(L"New", std::bind(&GUISceneTreeView::createNewSO, this), 50);
 		contextMenu->addMenuItem(L"Rename", std::bind(&GUISceneTreeView::renameSelected, this), 49, ShortcutKey(ButtonModifier::None, BC_F2));
@@ -64,7 +64,7 @@ namespace BansheeEngine
 		const String& highlightBackgroundStyle, const String& selectionBackgroundStyle, const String& editBoxStyle, const String& dragHighlightStyle,
 		const String& dragSepHighlightStyle)
 	{
-		return new (bs_alloc<GUISceneTreeView, PoolAlloc>()) GUISceneTreeView(backgroundStyle, elementBtnStyle, foldoutBtnStyle, 
+		return new (bs_alloc<GUISceneTreeView>()) GUISceneTreeView(backgroundStyle, elementBtnStyle, foldoutBtnStyle, 
 			highlightBackgroundStyle, selectionBackgroundStyle, editBoxStyle, dragHighlightStyle, dragSepHighlightStyle, GUIDimensions::create());
 	}
 
@@ -72,7 +72,7 @@ namespace BansheeEngine
 		const String& foldoutBtnStyle, const String& highlightBackgroundStyle, const String& selectionBackgroundStyle,
 		const String& editBoxStyle, const String& dragHighlightStyle, const String& dragSepHighlightStyle)
 	{
-		return new (bs_alloc<GUISceneTreeView, PoolAlloc>()) GUISceneTreeView(backgroundStyle, elementBtnStyle, 
+		return new (bs_alloc<GUISceneTreeView>()) GUISceneTreeView(backgroundStyle, elementBtnStyle, 
 			foldoutBtnStyle, highlightBackgroundStyle, selectionBackgroundStyle, editBoxStyle, 
 			dragHighlightStyle, dragSepHighlightStyle, GUIDimensions::create(options));
 	}

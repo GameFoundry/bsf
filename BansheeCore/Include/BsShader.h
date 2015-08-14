@@ -447,12 +447,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObject::getCoreDependencies
 		 */
-		void getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies);
+		void getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies) override;
 
 		/**
 		 * @copydoc	CoreObject::createCore
 		 */
-		SPtr<CoreObjectCore> createCore() const;
+		SPtr<CoreObjectCore> createCore() const override;
 
 		/**
 		 * @brief	Converts a sim thread version of the shader descriptor to
@@ -469,7 +469,7 @@ namespace BansheeEngine
 	public:
 		friend class ShaderRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;	
+		virtual RTTITypeBase* getRTTI() const override;
 	};
 
 	/**
@@ -487,6 +487,6 @@ namespace BansheeEngine
 	public:
 		friend class ShaderMetaDataRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		virtual RTTITypeBase* getRTTI() const override;
 	};
 }

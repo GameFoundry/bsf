@@ -53,7 +53,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc GUIElement::updateRenderElementsInternal
 		 */
-		virtual void updateRenderElementsInternal();
+		virtual void updateRenderElementsInternal() override;
 
 		RenderTexturePtr mSourceTexture;
 	};

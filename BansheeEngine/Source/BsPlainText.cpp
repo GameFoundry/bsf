@@ -17,8 +17,8 @@ namespace BansheeEngine
 
 	PlainTextPtr PlainText::_createPtr(const WString& data)
 	{
-		PlainTextPtr plainTextPtr = bs_core_ptr<PlainText, PoolAlloc>(
-			new (bs_alloc<PlainText, PoolAlloc>()) PlainText(data));
+		PlainTextPtr plainTextPtr = bs_core_ptr<PlainText>(
+			new (bs_alloc<PlainText>()) PlainText(data));
 		plainTextPtr->_setThisPtr(plainTextPtr);
 		plainTextPtr->initialize();
 

@@ -309,7 +309,7 @@ namespace BansheeEngine
 	SPtr<ShaderCore> ShaderCore::create(const String& name, const SHADER_DESC_CORE& desc, const Vector<SPtr<TechniqueCore>>& techniques)
 	{
 		ShaderCore* shaderCore = new (bs_alloc<ShaderCore>()) ShaderCore(name, desc, techniques);
-		SPtr<ShaderCore> shaderCorePtr = bs_shared_ptr<ShaderCore, GenAlloc>(shaderCore);
+		SPtr<ShaderCore> shaderCorePtr = bs_shared_ptr<ShaderCore>(shaderCore);
 		shaderCorePtr->_setThisPtr(shaderCorePtr);
 		shaderCorePtr->initialize();
 
@@ -319,7 +319,7 @@ namespace BansheeEngine
 	Shader::Shader(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques)
 		:TShader(name, desc, techniques)
 	{
-		mMetaData = bs_shared_ptr<ShaderMetaData>();
+		mMetaData = bs_shared_ptr_new<ShaderMetaData>();
 	}
 
 	SPtr<ShaderCore> Shader::getCore() const
@@ -340,7 +340,7 @@ namespace BansheeEngine
 			techniques.push_back(technique->getCore());
 
 		ShaderCore* shaderCore = new (bs_alloc<ShaderCore>()) ShaderCore(mName, convertDesc(mDesc), techniques);
-		SPtr<ShaderCore> shaderCorePtr = bs_shared_ptr<ShaderCore, GenAlloc>(shaderCore);
+		SPtr<ShaderCore> shaderCorePtr = bs_shared_ptr<ShaderCore>(shaderCore);
 		shaderCorePtr->_setThisPtr(shaderCorePtr);
 
 		return shaderCorePtr;
@@ -468,7 +468,7 @@ namespace BansheeEngine
 
 	ShaderPtr Shader::_createPtr(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques)
 	{
-		ShaderPtr newShader = bs_core_ptr<Shader, PoolAlloc>(new (bs_alloc<Shader, PoolAlloc>()) Shader(name, desc, techniques));
+		ShaderPtr newShader = bs_core_ptr<Shader>(new (bs_alloc<Shader>()) Shader(name, desc, techniques));
 		newShader->_setThisPtr(newShader);
 		newShader->initialize();
 
@@ -477,7 +477,7 @@ namespace BansheeEngine
 
 	ShaderPtr Shader::createEmpty()
 	{
-		ShaderPtr newShader = bs_core_ptr<Shader, PoolAlloc>(new (bs_alloc<Shader, PoolAlloc>()) Shader());
+		ShaderPtr newShader = bs_core_ptr<Shader>(new (bs_alloc<Shader>()) Shader());
 		newShader->_setThisPtr(newShader);
 
 		return newShader;

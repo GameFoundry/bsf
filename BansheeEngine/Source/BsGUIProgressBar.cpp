@@ -84,12 +84,12 @@ namespace BansheeEngine
 
 	GUIProgressBar* GUIProgressBar::create(const String& styleName)
 	{
-		return new (bs_alloc<GUIProgressBar, PoolAlloc>()) GUIProgressBar(getStyleName<GUIProgressBar>(styleName), GUIDimensions::create());
+		return new (bs_alloc<GUIProgressBar>()) GUIProgressBar(getStyleName<GUIProgressBar>(styleName), GUIDimensions::create());
 	}
 
 	GUIProgressBar* GUIProgressBar::create(const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUIProgressBar, PoolAlloc>()) GUIProgressBar(getStyleName<GUIProgressBar>(styleName), GUIDimensions::create(options));
+		return new (bs_alloc<GUIProgressBar>()) GUIProgressBar(getStyleName<GUIProgressBar>(styleName), GUIDimensions::create(options));
 	}
 
 	const String& GUIProgressBar::getGUITypeName()

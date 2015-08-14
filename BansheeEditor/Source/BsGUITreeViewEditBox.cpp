@@ -13,12 +13,12 @@ namespace BansheeEngine
 
 	GUITreeViewEditBox* GUITreeViewEditBox::create(const String& styleName)
 	{
-		return new (bs_alloc<GUITreeViewEditBox, PoolAlloc>()) GUITreeViewEditBox(getStyleName<GUITreeViewEditBox>(styleName), GUIDimensions::create());
+		return new (bs_alloc<GUITreeViewEditBox>()) GUITreeViewEditBox(getStyleName<GUITreeViewEditBox>(styleName), GUIDimensions::create());
 	}
 
 	GUITreeViewEditBox* GUITreeViewEditBox::create(const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUITreeViewEditBox, PoolAlloc>()) GUITreeViewEditBox(getStyleName<GUITreeViewEditBox>(styleName), GUIDimensions::create(options));
+		return new (bs_alloc<GUITreeViewEditBox>()) GUITreeViewEditBox(getStyleName<GUITreeViewEditBox>(styleName), GUIDimensions::create(options));
 	}
 
 	GUITreeViewEditBox::GUITreeViewEditBox(const String& styleName, const GUIDimensions& dimensions)

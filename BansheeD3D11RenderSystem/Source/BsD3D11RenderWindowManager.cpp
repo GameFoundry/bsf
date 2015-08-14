@@ -24,8 +24,8 @@ namespace BansheeEngine
 		}
 
 		// Create the window
-		D3D11RenderWindow* renderWindow = new (bs_alloc<D3D11RenderWindow, PoolAlloc>()) D3D11RenderWindow(desc, windowId, d3d11rs->getPrimaryDevice(), d3d11rs->getDXGIFactory());
-		return bs_core_ptr<D3D11RenderWindow, PoolAlloc>(renderWindow);
+		D3D11RenderWindow* renderWindow = new (bs_alloc<D3D11RenderWindow>()) D3D11RenderWindow(desc, windowId, d3d11rs->getPrimaryDevice(), d3d11rs->getDXGIFactory());
+		return bs_core_ptr<D3D11RenderWindow>(renderWindow);
 	}
 
 	D3D11RenderWindowCoreManager::D3D11RenderWindowCoreManager(D3D11RenderAPI* renderSystem)
@@ -40,9 +40,9 @@ namespace BansheeEngine
 		D3D11RenderAPI* d3d11rs = static_cast<D3D11RenderAPI*>(rs);
 
 		// Create the window
-		D3D11RenderWindowCore* renderWindow = new (bs_alloc<D3D11RenderWindowCore, GenAlloc>()) D3D11RenderWindowCore(desc, windowId, d3d11rs->getPrimaryDevice(), d3d11rs->getDXGIFactory());
+		D3D11RenderWindowCore* renderWindow = new (bs_alloc<D3D11RenderWindowCore>()) D3D11RenderWindowCore(desc, windowId, d3d11rs->getPrimaryDevice(), d3d11rs->getDXGIFactory());
 
-		SPtr<D3D11RenderWindowCore> renderWindowPtr = bs_shared_ptr<D3D11RenderWindowCore, GenAlloc>(renderWindow);
+		SPtr<D3D11RenderWindowCore> renderWindowPtr = bs_shared_ptr<D3D11RenderWindowCore>(renderWindow);
 		renderWindowPtr->_setThisPtr(renderWindowPtr);
 
 		windowCreated(renderWindow);

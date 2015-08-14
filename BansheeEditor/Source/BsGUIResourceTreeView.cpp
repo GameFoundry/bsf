@@ -63,7 +63,7 @@ namespace BansheeEngine
 		const String& foldoutBtnStyle, const String& highlightBackgroundStyle, const String& selectionBackgroundStyle, 
 		const String& editBoxStyle, const String& dragHighlightStyle, const String& dragSepHighlightStyle)
 	{
-		return new (bs_alloc<GUIResourceTreeView, PoolAlloc>()) GUIResourceTreeView(backgroundStyle, elementBtnStyle, foldoutBtnStyle, 
+		return new (bs_alloc<GUIResourceTreeView>()) GUIResourceTreeView(backgroundStyle, elementBtnStyle, foldoutBtnStyle, 
 			highlightBackgroundStyle, selectionBackgroundStyle, editBoxStyle, dragHighlightStyle, dragSepHighlightStyle, GUIDimensions::create());
 	}
 
@@ -72,7 +72,7 @@ namespace BansheeEngine
 		const String& selectionBackgroundStyle, const String& editBoxStyle, const String& dragHighlightStyle,
 		const String& dragSepHighlightStyle)
 	{
-		return new (bs_alloc<GUIResourceTreeView, PoolAlloc>()) GUIResourceTreeView(backgroundStyle, elementBtnStyle, foldoutBtnStyle, 
+		return new (bs_alloc<GUIResourceTreeView>()) GUIResourceTreeView(backgroundStyle, elementBtnStyle, foldoutBtnStyle, 
 			highlightBackgroundStyle, selectionBackgroundStyle, editBoxStyle, dragHighlightStyle, dragSepHighlightStyle, GUIDimensions::create(options));
 	}
 

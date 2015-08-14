@@ -16,13 +16,13 @@ namespace BansheeEngine
 
 	RendererMeshDataPtr CoreRenderer::_createMeshData(UINT32 numVertices, UINT32 numIndices, VertexLayout layout, IndexType indexType)
 	{
-		return bs_shared_ptr<RendererMeshData, PoolAlloc>(new (bs_alloc<RendererMeshData, PoolAlloc>()) 
+		return bs_shared_ptr<RendererMeshData>(new (bs_alloc<RendererMeshData>()) 
 			RendererMeshData(numVertices, numIndices, layout, indexType));
 	}
 
 	RendererMeshDataPtr CoreRenderer::_createMeshData(const MeshDataPtr& meshData)
 	{
-		return bs_shared_ptr<RendererMeshData, PoolAlloc>(new (bs_alloc<RendererMeshData, PoolAlloc>())
+		return bs_shared_ptr<RendererMeshData>(new (bs_alloc<RendererMeshData>())
 			RendererMeshData(meshData));
 	}
 

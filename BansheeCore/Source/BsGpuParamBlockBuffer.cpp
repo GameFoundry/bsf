@@ -173,7 +173,7 @@ namespace BansheeEngine
 	GenericGpuParamBlockBufferCore::~GenericGpuParamBlockBufferCore()
 	{
 		if (mData != nullptr)
-			bs_free<ScratchAlloc>(mData);
+			bs_free(mData);
 	}
 
 	void GenericGpuParamBlockBufferCore::writeToGPU(const UINT8* data)
@@ -189,7 +189,7 @@ namespace BansheeEngine
 	void GenericGpuParamBlockBufferCore::initialize()
 	{
 		if (mSize > 0)
-			mData = (UINT8*)bs_alloc<ScratchAlloc>(mSize);
+			mData = (UINT8*)bs_alloc(mSize);
 		else
 			mData = nullptr;
 

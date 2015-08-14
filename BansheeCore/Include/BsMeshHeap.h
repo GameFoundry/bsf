@@ -71,7 +71,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc CoreObjectCore::initialize()
 		 */
-		virtual void initialize();
+		virtual void initialize() override;
 
 		/**
 		 * @brief	Allocates a new mesh in the heap, expanding the heap if needed. 
@@ -246,7 +246,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObject::createCore
 		 */
-		SPtr<CoreObjectCore> createCore() const;
+		SPtr<CoreObjectCore> createCore() const override;
 
 	private:
 		UINT32 mNumVertices;

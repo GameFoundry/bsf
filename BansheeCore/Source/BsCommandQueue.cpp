@@ -9,8 +9,8 @@ namespace BansheeEngine
 	CommandQueueBase::CommandQueueBase(BS_THREAD_ID_TYPE threadId)
 		:mMyThreadId(threadId), mMaxDebugIdx(0)
 	{
-		mAsyncOpSyncData = bs_shared_ptr<AsyncOpSyncData>();
-		mCommands = bs_new<BansheeEngine::Queue<QueuedCommand>, PoolAlloc>();
+		mAsyncOpSyncData = bs_shared_ptr_new<AsyncOpSyncData>();
+		mCommands = bs_new<BansheeEngine::Queue<QueuedCommand>>();
 
 		{
 			BS_LOCK_MUTEX(CommandQueueBreakpointMutex);
@@ -87,7 +87,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			mCommands = bs_new<BansheeEngine::Queue<QueuedCommand>, PoolAlloc>();
+			mCommands = bs_new<BansheeEngine::Queue<QueuedCommand>>();
 		}
 
 		return oldCommands;

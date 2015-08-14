@@ -30,20 +30,20 @@ namespace BansheeEngine
 			addPlainField("mAntialiasing", 3, &FontImportOptionsRTTI::getAntialiasing, &FontImportOptionsRTTI::setAntialiasing);
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "FontImportOptions";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_FontImportOptions;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			return bs_shared_ptr<FontImportOptions, PoolAlloc>();
+			return bs_shared_ptr_new<FontImportOptions>();
 		}
 	};
 }

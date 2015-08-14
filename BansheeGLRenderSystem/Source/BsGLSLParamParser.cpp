@@ -24,7 +24,7 @@ namespace BansheeEngine
 		GLint maxNameSize = 0;
 		glGetProgramiv(glProgram, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &maxNameSize);
 
-		GLchar* attributeName = (GLchar*)bs_alloc<ScratchAlloc>(sizeof(GLchar)* maxNameSize);
+		GLchar* attributeName = (GLchar*)bs_alloc(sizeof(GLchar)* maxNameSize);
 
 		List<VertexElement> elementList;
 		for (GLint i = 0; i < numAttributes; i++)
@@ -47,7 +47,7 @@ namespace BansheeEngine
 			}
 		}
 
-		bs_free<ScratchAlloc>(attributeName);
+		bs_free(attributeName);
 
 		return elementList;
 	}
@@ -111,7 +111,7 @@ namespace BansheeEngine
 		if (maxBlockNameBufferSize > maxBufferSize)
 			maxBufferSize = maxBlockNameBufferSize;
 
-		GLchar* uniformName = (GLchar*)bs_alloc<ScratchAlloc>(sizeof(GLchar)* maxBufferSize);
+		GLchar* uniformName = (GLchar*)bs_alloc(sizeof(GLchar)* maxBufferSize);
 
 		GpuParamBlockDesc newGlobalBlockDesc;
 		newGlobalBlockDesc.slot = 0;
@@ -458,7 +458,7 @@ namespace BansheeEngine
 		}
 #endif
 
-		bs_free<ScratchAlloc>(uniformName);
+		bs_free(uniformName);
 	}
 
 	void GLSLParamParser::determineParamInfo(GpuParamDataDesc& desc, const String& paramName, GLuint programHandle, GLuint uniformIndex)

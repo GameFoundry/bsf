@@ -10,7 +10,7 @@ namespace BansheeEngine
         PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount)
     {
 		Texture* tex = new (bs_alloc<Texture>()) Texture(texType, width, height, depth, numMipmaps, format, usage, hwGamma, multisampleCount);
-		TexturePtr ret = bs_core_ptr<Texture, GenAlloc>(tex);
+		TexturePtr ret = bs_core_ptr<Texture>(tex);
 
 		ret->_setThisPtr(ret);
 		ret->initialize();
@@ -21,7 +21,7 @@ namespace BansheeEngine
 	TexturePtr TextureManager::_createEmpty()
 	{
 		Texture* tex = new (bs_alloc<Texture>()) Texture();
-		TexturePtr texture = bs_core_ptr<Texture, GenAlloc>(tex);
+		TexturePtr texture = bs_core_ptr<Texture>(tex);
 		texture->_setThisPtr(texture);
 
 		return texture;

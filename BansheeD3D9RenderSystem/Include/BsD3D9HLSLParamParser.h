@@ -83,7 +83,7 @@ namespace BansheeEngine
 		// Derive parameter names from const table
 		assert(mpConstTable && "Program not loaded!");
 
-		mParamDesc = bs_shared_ptr<GpuParamDesc>();
+		mParamDesc = bs_shared_ptr_new<GpuParamDesc>();
 
 		// Get contents of the constant table
 		D3DXCONSTANTTABLE_DESC desc;

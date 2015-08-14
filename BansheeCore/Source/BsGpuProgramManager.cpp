@@ -36,23 +36,23 @@ namespace BansheeEngine
 		NullProgramFactory() {}
 		~NullProgramFactory() {}
 
-		const String& getLanguage() const 
+		const String& getLanguage() const override
 		{ 
 			return sNullLang;
 		}
 
 		SPtr<GpuProgramCore> create(const String& source, const String& entryPoint, GpuProgramType gptype, 
-			GpuProgramProfile profile, bool requiresAdjacencyInformation)
+			GpuProgramProfile profile, bool requiresAdjacencyInformation) override
 		{
-			SPtr<NullProgramCore> ret = bs_shared_ptr<NullProgramCore>();
+			SPtr<NullProgramCore> ret = bs_shared_ptr_new<NullProgramCore>();
 			ret->_setThisPtr(ret);
 
 			return ret;
 		}
 
-		SPtr<GpuProgramCore> create(GpuProgramType type)
+		SPtr<GpuProgramCore> create(GpuProgramType type) override
 		{
-			SPtr<NullProgramCore> ret = bs_shared_ptr<NullProgramCore>();
+			SPtr<NullProgramCore> ret = bs_shared_ptr_new<NullProgramCore>();
 			ret->_setThisPtr(ret);
 
 			return ret;
@@ -64,7 +64,7 @@ namespace BansheeEngine
 		bool requiresAdjacencyInformation)
 	{
 		GpuProgram* program = new (bs_alloc<GpuProgram>()) GpuProgram(source, entryPoint, language, gptype, profile, requiresAdjacencyInformation);
-		GpuProgramPtr ret = bs_core_ptr<GpuProgram, GenAlloc>(program);
+		GpuProgramPtr ret = bs_core_ptr<GpuProgram>(program);
 		ret->_setThisPtr(ret);
 		ret->initialize();
 
@@ -74,7 +74,7 @@ namespace BansheeEngine
 	GpuProgramPtr GpuProgramManager::createEmpty(const String& language, GpuProgramType type)
 	{
 		GpuProgram* program = new (bs_alloc<GpuProgram>()) GpuProgram("", "", language, GPT_VERTEX_PROGRAM, GPP_VS_1_1, false);
-		GpuProgramPtr ret = bs_core_ptr<GpuProgram, GenAlloc>(program);
+		GpuProgramPtr ret = bs_core_ptr<GpuProgram>(program);
 		ret->_setThisPtr(ret);
 
 		return ret;

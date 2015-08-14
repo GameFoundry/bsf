@@ -11,7 +11,7 @@ namespace BansheeEngine
 	ProjectResourceMetaPtr ProjectResourceMeta::create(const String& uuid, UINT32 typeId, const ResourceMetaDataPtr& resourceMetaData,
 		const ImportOptionsPtr& importOptions)
 	{
-		ProjectResourceMetaPtr meta = bs_shared_ptr<ProjectResourceMeta>(ConstructPrivately());
+		ProjectResourceMetaPtr meta = bs_shared_ptr_new<ProjectResourceMeta>(ConstructPrivately());
 		meta->mUUID = uuid;
 		meta->mTypeId = typeId;
 		meta->mResourceMeta = resourceMetaData;
@@ -22,7 +22,7 @@ namespace BansheeEngine
 
 	ProjectResourceMetaPtr ProjectResourceMeta::createEmpty()
 	{
-		return bs_shared_ptr<ProjectResourceMeta>(ConstructPrivately());
+		return bs_shared_ptr_new<ProjectResourceMeta>(ConstructPrivately());
 	}
 
 	/************************************************************************/

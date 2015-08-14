@@ -16,7 +16,7 @@ namespace BansheeEngine
 		BS_LOCK_RECURSIVE_MUTEX(mMutex);
 
 		for(auto iter = mEntries.begin(); iter != mEntries.end(); ++iter)
-			bs_delete<PoolAlloc>(*iter);
+			bs_delete(*iter);
 	}
 
 	void Log::logMsg(const String& message, UINT32 channel)
@@ -34,7 +34,7 @@ namespace BansheeEngine
 		BS_LOCK_RECURSIVE_MUTEX(mMutex);
 
 		for(auto iter = mEntries.begin(); iter != mEntries.end(); ++iter)
-			bs_delete<PoolAlloc>(*iter);
+			bs_delete(*iter);
 
 		mEntries.clear();
 	}

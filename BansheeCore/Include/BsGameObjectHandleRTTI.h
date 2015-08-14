@@ -19,27 +19,27 @@ namespace BansheeEngine
 			addPlainField("mInstanceID", 0, &GameObjectHandleRTTI::getInstanceId, &GameObjectHandleRTTI::setInstanceId);
 		}
 
-		void onDeserializationEnded(IReflectable* obj)
+		void onDeserializationEnded(IReflectable* obj) override
 		{
 			GameObjectHandleBase* gameObjectHandle = static_cast<GameObjectHandleBase*>(obj);
 
 			GameObjectManager::instance().registerUnresolvedHandle(*gameObjectHandle);
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "GameObjectHandleBase";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_GameObjectHandleBase;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			std::shared_ptr<GameObjectHandleBase> obj = bs_shared_ptr<GameObjectHandleBase, PoolAlloc>(new (bs_alloc<GameObjectHandleBase, PoolAlloc>()) GameObjectHandleBase());
+			std::shared_ptr<GameObjectHandleBase> obj = bs_shared_ptr<GameObjectHandleBase>(new (bs_alloc<GameObjectHandleBase>()) GameObjectHandleBase());
 
 			return obj;
 		}

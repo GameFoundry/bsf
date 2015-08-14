@@ -40,7 +40,7 @@ namespace BansheeEngine
 	void MaterialRTTI::onSerializationStarted(IReflectable* obj)
 	{
 		Material* material = static_cast<Material*>(obj);
-		std::shared_ptr<MaterialParams> params = bs_shared_ptr<MaterialParams, ScratchAlloc>();
+		std::shared_ptr<MaterialParams> params = bs_shared_ptr_new<MaterialParams>();
 
 		HShader shader = material->getShader();
 		if(shader != nullptr)

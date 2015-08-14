@@ -127,12 +127,12 @@ namespace BansheeEngine
 		if(ScriptAssemblyManager::instance().getSystemGenericDictionaryClass()->getFullName() != fullName)
 			return nullptr;
 
-		return bs_shared_ptr<ManagedSerializableDictionary>(ConstructPrivately(), typeInfo, managedInstance);
+		return bs_shared_ptr_new<ManagedSerializableDictionary>(ConstructPrivately(), typeInfo, managedInstance);
 	}
 
 	ManagedSerializableDictionaryPtr ManagedSerializableDictionary::createNew(const ManagedSerializableTypeInfoDictionaryPtr& typeInfo)
 	{
-		return bs_shared_ptr<ManagedSerializableDictionary>(ConstructPrivately(), typeInfo, createManagedInstance(typeInfo));
+		return bs_shared_ptr_new<ManagedSerializableDictionary>(ConstructPrivately(), typeInfo, createManagedInstance(typeInfo));
 	}
 
 	MonoObject* ManagedSerializableDictionary::createManagedInstance(const ManagedSerializableTypeInfoDictionaryPtr& typeInfo)
@@ -150,7 +150,7 @@ namespace BansheeEngine
 
 	ManagedSerializableDictionaryPtr ManagedSerializableDictionary::createEmpty()
 	{
-		return bs_shared_ptr<ManagedSerializableDictionary>(ConstructPrivately());
+		return bs_shared_ptr_new<ManagedSerializableDictionary>(ConstructPrivately());
 	}
 
 	void ManagedSerializableDictionary::serialize()

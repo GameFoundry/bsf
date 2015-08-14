@@ -17,7 +17,7 @@ namespace BansheeEngine
 	ScriptContextMenu::ScriptContextMenu(MonoObject* instance)
 		: ScriptObject(instance)
 	{
-		mContextMenu = bs_shared_ptr<GUIContextMenu>();
+		mContextMenu = bs_shared_ptr_new<GUIContextMenu>();
 	}
 
 	void ScriptContextMenu::initRuntimeData()

@@ -10,7 +10,7 @@ namespace BansheeEngine
 	Resource::Resource(bool initializeOnRenderThread)
 		:CoreObject(initializeOnRenderThread), mSize(0)
 	{ 
-		mMetaData = bs_shared_ptr<ResourceMetaData>();
+		mMetaData = bs_shared_ptr_new<ResourceMetaData>();
 	}
 
 	const WString& Resource::getName() const 

@@ -60,7 +60,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return bs_shared_ptr<ManagedSerializableAssemblyInfo>();
+			return bs_shared_ptr_new<ManagedSerializableAssemblyInfo>();
 		}
 	};
 
@@ -129,7 +129,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return bs_shared_ptr<ManagedSerializableObjectInfo>();
+			return bs_shared_ptr_new<ManagedSerializableObjectInfo>();
 		}
 	};
 
@@ -209,7 +209,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return bs_shared_ptr<ManagedSerializableFieldInfo>();
+			return bs_shared_ptr_new<ManagedSerializableFieldInfo>();
 		}
 	};
 
@@ -272,7 +272,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return bs_shared_ptr<ManagedSerializableTypeInfoPrimitive>();
+			return bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
 		}
 	};
 
@@ -341,7 +341,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return bs_shared_ptr<ManagedSerializableTypeInfoObject>();
+			return bs_shared_ptr_new<ManagedSerializableTypeInfoObject>();
 		}
 	};
 
@@ -388,7 +388,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return bs_shared_ptr<ManagedSerializableTypeInfoArray>();
+			return bs_shared_ptr_new<ManagedSerializableTypeInfoArray>();
 		}
 	};
 
@@ -424,7 +424,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return bs_shared_ptr<ManagedSerializableTypeInfoList>();
+			return bs_shared_ptr_new<ManagedSerializableTypeInfoList>();
 		}
 	};
 
@@ -471,7 +471,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return bs_shared_ptr<ManagedSerializableTypeInfoDictionary>();
+			return bs_shared_ptr_new<ManagedSerializableTypeInfoDictionary>();
 		}
 	};
 }

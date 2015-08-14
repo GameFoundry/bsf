@@ -94,7 +94,7 @@ namespace BansheeEngine
 		HTexture texture = thisPtr->mTexture;
 		const TextureProperties& props = texture->getProperties();
 
-		PixelDataPtr pixelData = bs_shared_ptr<PixelData>(props.getWidth(), props.getHeight(), props.getDepth(), props.getFormat());
+		PixelDataPtr pixelData = bs_shared_ptr_new<PixelData>(props.getWidth(), props.getHeight(), props.getDepth(), props.getFormat());
 		pixelData->allocateInternalBuffer();
 		pixelData->setColors(colorsRaw, numElements);
 

@@ -51,32 +51,32 @@ namespace BansheeEngine
 		/**
 		 * @copydoc TextureCore::initialize
 		 */
-		void initialize();
+		void initialize() override;
 
 		/**
 		 * @copydoc TextureCore::lock
 		 */
-		PixelData lockImpl(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0);
+		PixelData lockImpl(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0) override;
 
 		/**
 		 * @copydoc TextureCore::unlock
 		 */
-		void unlockImpl();
+		void unlockImpl() override;
 
 		/**
 		 * @copydoc TextureCore::copy
 		 */
-		void copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, const SPtr<TextureCore>& target);
+		void copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, const SPtr<TextureCore>& target) override;
 
 		/**
 		 * @copydoc TextureCore::readData
 		 */
-		void readData(PixelData& dest, UINT32 mipLevel = 0, UINT32 face = 0);
+		void readData(PixelData& dest, UINT32 mipLevel = 0, UINT32 face = 0) override;
 
 		/**
 		 * @copydoc TextureCore::writeData
 		 */
-		void writeData(const PixelData& src, UINT32 mipLevel = 0, UINT32 face = 0, bool discardWholeBuffer = false);
+		void writeData(const PixelData& src, UINT32 mipLevel = 0, UINT32 face = 0, bool discardWholeBuffer = false) override;
 
 		/**
 		 * @brief	Creates pixel buffers for each face and mip level. Texture must 

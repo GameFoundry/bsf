@@ -254,7 +254,7 @@ namespace BansheeEngine
 		BS_LOCK_MUTEX(mThreadSync);
 
 		for(auto& threadInfo : mActiveThreads)
-			bs_delete<ProfilerAlloc>(threadInfo);
+			bs_delete<ThreadInfo, ProfilerAlloc>(threadInfo);
 	}
 
 	void ProfilerCPU::beginThread(const char* name)

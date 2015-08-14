@@ -35,7 +35,7 @@ namespace BansheeEngine
 		Vector<RenamedGameObject> renamedObjects;
 		renameInstanceIds(prefab, instance, renamedObjects);
 
-		SPtr<PrefabDiff> output = bs_shared_ptr<PrefabDiff>();
+		SPtr<PrefabDiff> output = bs_shared_ptr_new<PrefabDiff>();
 		output->mRoot = generateDiff(prefab, instance);
 
 		restoreInstanceIds(renamedObjects);
@@ -140,7 +140,7 @@ namespace BansheeEngine
 		if (prefab->getName() != instance->getName())
 		{
 			if (output == nullptr)
-				output = bs_shared_ptr<PrefabObjectDiff>();
+				output = bs_shared_ptr_new<PrefabObjectDiff>();
 		}
 
 		UINT32 prefabChildCount = prefab->getNumChildren();
@@ -170,7 +170,7 @@ namespace BansheeEngine
 				if (childDiff != nullptr)
 				{
 					if (output == nullptr)
-						output = bs_shared_ptr<PrefabObjectDiff>();
+						output = bs_shared_ptr_new<PrefabObjectDiff>();
 
 					output->childDiffs.push_back(childDiff);
 				}
@@ -178,7 +178,7 @@ namespace BansheeEngine
 			else
 			{
 				if (output == nullptr)
-					output = bs_shared_ptr<PrefabObjectDiff>();
+					output = bs_shared_ptr_new<PrefabObjectDiff>();
 
 				output->removedChildren.push_back(prefabChild->getLinkId());
 			}	
@@ -210,7 +210,7 @@ namespace BansheeEngine
 				SPtr<SerializedObject> obj = bs._encodeIntermediate(instanceChild.get());
 
 				if (output == nullptr)
-					output = bs_shared_ptr<PrefabObjectDiff>();
+					output = bs_shared_ptr_new<PrefabObjectDiff>();
 
 				output->addedChildren.push_back(obj);
 			}
@@ -244,7 +244,7 @@ namespace BansheeEngine
 
 					if (diff != nullptr)
 					{
-						childDiff = bs_shared_ptr<PrefabComponentDiff>();
+						childDiff = bs_shared_ptr_new<PrefabComponentDiff>();
 						childDiff->id = prefabComponent->getLinkId();
 						childDiff->data = diff;
 					}
@@ -259,7 +259,7 @@ namespace BansheeEngine
 				if (childDiff != nullptr)
 				{
 					if (output == nullptr)
-						output = bs_shared_ptr<PrefabObjectDiff>();
+						output = bs_shared_ptr_new<PrefabObjectDiff>();
 
 					output->componentDiffs.push_back(childDiff);
 				}
@@ -267,7 +267,7 @@ namespace BansheeEngine
 			else
 			{
 				if (output == nullptr)
-					output = bs_shared_ptr<PrefabObjectDiff>();
+					output = bs_shared_ptr_new<PrefabObjectDiff>();
 
 				output->removedComponents.push_back(prefabComponent->getLinkId());
 			}
@@ -299,7 +299,7 @@ namespace BansheeEngine
 				SPtr<SerializedObject> obj = bs._encodeIntermediate(instanceComponent.get());
 
 				if (output == nullptr)
-					output = bs_shared_ptr<PrefabObjectDiff>();
+					output = bs_shared_ptr_new<PrefabObjectDiff>();
 
 				output->addedComponents.push_back(obj);
 			}

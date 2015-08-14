@@ -49,13 +49,13 @@ namespace BansheeEngine
 
 	ManagedSerializableFieldKeyPtr ManagedSerializableFieldKey::create(UINT16 typeId, UINT16 fieldId)
 	{
-		ManagedSerializableFieldKeyPtr fieldKey = bs_shared_ptr<ManagedSerializableFieldKey>(typeId, fieldId);
+		ManagedSerializableFieldKeyPtr fieldKey = bs_shared_ptr_new<ManagedSerializableFieldKey>(typeId, fieldId);
 		return fieldKey;
 	}
 
 	ManagedSerializableFieldDataEntryPtr ManagedSerializableFieldDataEntry::create(const ManagedSerializableFieldKeyPtr& key, const ManagedSerializableFieldDataPtr& value)
 	{
-		ManagedSerializableFieldDataEntryPtr fieldDataEntry = bs_shared_ptr<ManagedSerializableFieldDataEntry>();
+		ManagedSerializableFieldDataEntryPtr fieldDataEntry = bs_shared_ptr_new<ManagedSerializableFieldDataEntry>();
 		fieldDataEntry->mKey = key;
 		fieldDataEntry->mValue = value;
 
@@ -71,7 +71,7 @@ namespace BansheeEngine
 			{
 			case ScriptPrimitiveType::Bool:
 				{
-					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataBool>();
+					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataBool>();
 					if(value != nullptr)
 						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 
@@ -79,77 +79,77 @@ namespace BansheeEngine
 				}
 			case ScriptPrimitiveType::Char:
 				{
-					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataChar>();
+					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataChar>();
 					if(value != nullptr)
 						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 					return fieldData;
 				}
 			case ScriptPrimitiveType::I8:
 				{
-					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataI8>();
+					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataI8>();
 					if(value != nullptr)
 						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 					return fieldData;
 				}
 			case ScriptPrimitiveType::U8:
 				{
-					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataU8>();
+					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataU8>();
 					if(value != nullptr)
 						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 					return fieldData;
 				}
 			case ScriptPrimitiveType::I16:
 				{
-					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataI16>();
+					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataI16>();
 					if(value != nullptr)
 						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 					return fieldData;
 				}
 			case ScriptPrimitiveType::U16:
 				{
-					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataU16>();
+					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataU16>();
 					if(value != nullptr)
 						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 					return fieldData;
 				}
 			case ScriptPrimitiveType::I32:
 				{
-					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataI32>();
+					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataI32>();
 					if(value != nullptr)
 						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 					return fieldData;
 				}
 			case ScriptPrimitiveType::U32:
 				{
-					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataU32>();
+					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataU32>();
 					if(value != nullptr)
 						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 					return fieldData;
 				}
 			case ScriptPrimitiveType::I64:
 				{
-					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataI64>();
+					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataI64>();
 					if(value != nullptr)
 						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 					return fieldData;
 				}
 			case ScriptPrimitiveType::U64:
 				{
-					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataU64>();
+					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataU64>();
 					if(value != nullptr)
 						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 					return fieldData;
 				}
 			case ScriptPrimitiveType::Float:
 				{
-					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataFloat>();
+					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataFloat>();
 					if(value != nullptr)
 						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 					return fieldData;
 				}
 			case ScriptPrimitiveType::Double:
 				{
-					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataDouble>();
+					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataDouble>();
 					if(value != nullptr)
 						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 					return fieldData;
@@ -158,14 +158,14 @@ namespace BansheeEngine
 				{
 					MonoString* strVal = (MonoString*)(value);
 
-					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataString>();
+					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataString>();
 					if(strVal != nullptr)
 						fieldData->value = MonoUtil::monoToWString(strVal);
 					return fieldData;
 				}
 			case ScriptPrimitiveType::Texture2DRef:
 				{
-					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataResourceRef>();
+					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
 
 					if(value != nullptr)
 					{
@@ -177,7 +177,7 @@ namespace BansheeEngine
 				}
 			case ScriptPrimitiveType::Texture3DRef:
 			{
-				auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataResourceRef>();
+				auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
 
 				if (value != nullptr)
 				{
@@ -189,7 +189,7 @@ namespace BansheeEngine
 			}
 			case ScriptPrimitiveType::TextureCubeRef:
 			{
-				auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataResourceRef>();
+				auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
 
 				if (value != nullptr)
 				{
@@ -201,7 +201,7 @@ namespace BansheeEngine
 			}
 			case ScriptPrimitiveType::SpriteTextureRef:
 				{
-					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataResourceRef>();
+					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
 					
 					if(value != nullptr)
 					{
@@ -213,7 +213,7 @@ namespace BansheeEngine
 				}
 			case ScriptPrimitiveType::ShaderRef:
 			{
-				auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataResourceRef>();
+				auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
 
 				if (value != nullptr)
 				{
@@ -225,7 +225,7 @@ namespace BansheeEngine
 			}
 			case ScriptPrimitiveType::MaterialRef:
 			{
-				auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataResourceRef>();
+				auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
 
 				if (value != nullptr)
 				{
@@ -237,7 +237,7 @@ namespace BansheeEngine
 			}
 			case ScriptPrimitiveType::MeshRef:
 			{
-				auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataResourceRef>();
+				auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
 
 				if (value != nullptr)
 				{
@@ -249,7 +249,7 @@ namespace BansheeEngine
 			}
 			case ScriptPrimitiveType::PrefabRef:
 			{
-				auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataResourceRef>();
+				auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
 
 				if (value != nullptr)
 				{
@@ -261,7 +261,7 @@ namespace BansheeEngine
 			}
 			case ScriptPrimitiveType::FontRef:
 			{
-				auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataResourceRef>();
+				auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
 
 				if (value != nullptr)
 				{
@@ -273,7 +273,7 @@ namespace BansheeEngine
 			}
 			case ScriptPrimitiveType::StringTableRef:
 			{
-				auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataResourceRef>();
+				auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
 
 				if (value != nullptr)
 				{
@@ -285,7 +285,7 @@ namespace BansheeEngine
 			}
 			case ScriptPrimitiveType::ManagedResourceRef:
 				{
-					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataResourceRef>();
+					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
 					
 					if(value != nullptr)
 					{
@@ -297,7 +297,7 @@ namespace BansheeEngine
 				}
 			case ScriptPrimitiveType::PlainTextRef:
 			{
-				auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataResourceRef>();
+				auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
 
 				if (value != nullptr)
 				{
@@ -309,7 +309,7 @@ namespace BansheeEngine
 			}
 			case ScriptPrimitiveType::ScriptCodeRef:
 			{
-				auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataResourceRef>();
+				auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
 
 				if (value != nullptr)
 				{
@@ -321,7 +321,7 @@ namespace BansheeEngine
 			}
 			case ScriptPrimitiveType::SceneObjectRef:
 				{
-					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataGameObjectRef>();
+					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataGameObjectRef>();
 
 					if(value != nullptr)
 					{
@@ -333,7 +333,7 @@ namespace BansheeEngine
 				}
 			case ScriptPrimitiveType::ComponentRef:
 				{
-					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataGameObjectRef>();
+					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataGameObjectRef>();
 
 					if(value != nullptr)
 					{
@@ -347,7 +347,7 @@ namespace BansheeEngine
 		}
 		else if(typeInfo->getTypeId() == TID_SerializableTypeInfoObject)
 		{
-			auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataObject>();
+			auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataObject>();
 			if(value != nullptr)
 			{
 				fieldData->value = ManagedSerializableObject::createFromExisting(value);
@@ -357,7 +357,7 @@ namespace BansheeEngine
 		}
 		else if(typeInfo->getTypeId() == TID_SerializableTypeInfoArray)
 		{
-			auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataArray>();
+			auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataArray>();
 			if(value != nullptr)
 			{
 				fieldData->value = ManagedSerializableArray::createFromExisting(value, std::static_pointer_cast<ManagedSerializableTypeInfoArray>(typeInfo));
@@ -367,7 +367,7 @@ namespace BansheeEngine
 		}
 		else if(typeInfo->getTypeId() == TID_SerializableTypeInfoList)
 		{
-			auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataList>();
+			auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataList>();
 			if(value != nullptr)
 			{
 				fieldData->value = ManagedSerializableList::createFromExisting(value, std::static_pointer_cast<ManagedSerializableTypeInfoList>(typeInfo));
@@ -377,7 +377,7 @@ namespace BansheeEngine
 		}
 		else if(typeInfo->getTypeId() == TID_SerializableTypeInfoDictionary)
 		{
-			auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataDictionary>();
+			auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataDictionary>();
 			if(value != nullptr)
 			{
 				fieldData->value = ManagedSerializableDictionary::createFromExisting(value, std::static_pointer_cast<ManagedSerializableTypeInfoDictionary>(typeInfo));
