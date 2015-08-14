@@ -11,6 +11,10 @@ namespace BansheeEditor
     internal sealed class SceneWindow : EditorWindow
     {
         internal const string ToggleProfilerOverlayBinding = "ToggleProfilerOverlay";
+        internal const string ViewToolBinding = "ViewTool";
+        internal const string MoveToolBinding = "MoveTool";
+        internal const string RotateToolBinding = "RotateTool";
+        internal const string ScaleToolBinding = "ScaleTool";
 
         private const int HeaderHeight = 20;
         private const float DefaultPlacementDepth = 5.0f;
@@ -43,6 +47,12 @@ namespace BansheeEditor
         private GUIFloatField rotateSnapInput;
 
         private int editorSettingsHash = int.MaxValue;
+
+        // Tool shortcuts
+        private VirtualButton viewToolKey;
+        private VirtualButton moveToolKey;
+        private VirtualButton rotateToolKey;
+        private VirtualButton scaleToolKey;
 
         // Profiler overlay
         private ProfilerOverlay activeProfilerOverlay;
@@ -132,6 +142,10 @@ namespace BansheeEditor
             handlesLayout.AddElement(rotateSnapInput);
 
             toggleProfilerOverlayKey = new VirtualButton(ToggleProfilerOverlayBinding);
+            viewToolKey = new VirtualButton(ViewToolBinding);
+            moveToolKey = new VirtualButton(MoveToolBinding);
+            rotateToolKey = new VirtualButton(RotateToolBinding);
+            scaleToolKey = new VirtualButton(ScaleToolBinding);
 
             UpdateRenderTexture(Width, Height - HeaderHeight);
             UpdateProfilerOverlay();
@@ -170,6 +184,18 @@ namespace BansheeEditor
             {
                 if (VirtualInput.IsButtonUp(toggleProfilerOverlayKey))
                     EditorSettings.SetBool(ProfilerOverlayActiveKey, !EditorSettings.GetBool(ProfilerOverlayActiveKey));
+
+                if(VirtualInput.IsButtonUp(viewToolKey))
+                    EditorApplication.ActiveSceneTool = SceneViewTool.View;
+
+                if (VirtualInput.IsButtonUp(moveToolKey))
+                    EditorApplication.ActiveSceneTool = SceneViewTool.Move;
+
+                if(VirtualInput.IsButtonUp(rotateToolKey))
+                    EditorApplication.ActiveSceneTool = SceneViewTool.Rotate;
+
+                if (VirtualInput.IsButtonUp(scaleToolKey))
+                    EditorApplication.ActiveSceneTool = SceneViewTool.Scale;
             }
 
             // Refresh GUI buttons if needed (in case someones changes the values from script)

@@ -93,7 +93,7 @@ Ribek use:
 First screenshot:
  - Additional menu bar items: 
   - File: Exit, Save Project, New Project, Open Project, Save Scene As
-  - Edit: Undo/Redo, Cut/Copy/Paste/Duplicate/Delete(need to make sure it works in Hierarchy, with shortcuts), Frame Selected, Preferences, Play/Pause/Step
+  - Edit: Undo/Redo, Cut/Copy/Paste/Duplicate/Delete(need to make sure it works in Hierarchy, with shortcuts), Frame Selected, Preferences, Play/Pause/Step, View/Move/rotate/scale
   - Assets (also add to context): Create(Folder, Material, Shader, Script, Prefab, GUI Skin), Show in explorer
   - Game Object (also add to context): Create(Empty, Empty Child, Camera, Renderable, Point/Spot/Directional Light), Apply prefab, Break prefab, Revert prefab
    - Possibly create helper objects: Cube, Sphere, Plane, Quad, Capsule, Cylinder
@@ -150,7 +150,6 @@ Finalizing:
    - And all prefab instances should have updateFromPrefab called on them.
  - Undo/Redo when breaking or reverting a scene object (and in general test & finalize undo/redo system)
  - Move all the code files into subfolders so their hierarchy is similar to VS filters
- - Get rid of PoolAlloc and other unused allocators (plus fix bs_new and others which have weird overloads)
  - Splash screen
  - Settings/Preferences window
  - Documentation

@@ -96,6 +96,10 @@ namespace BansheeEditor
             inputConfig.RegisterAxis(SceneCamera.VerticalAxisBinding, InputAxis.MouseY);
 
             inputConfig.RegisterButton(SceneWindow.ToggleProfilerOverlayBinding, ButtonCode.P, ButtonModifier.CtrlAlt);
+            inputConfig.RegisterButton(SceneWindow.ViewToolBinding, ButtonCode.Q);
+            inputConfig.RegisterButton(SceneWindow.MoveToolBinding, ButtonCode.W);
+            inputConfig.RegisterButton(SceneWindow.RotateToolBinding, ButtonCode.E);
+            inputConfig.RegisterButton(SceneWindow.ScaleToolBinding, ButtonCode.R);
 
             ProjectLibrary.Refresh();
             monitor = new FolderMonitor(ProjectLibrary.ResourceFolder);
