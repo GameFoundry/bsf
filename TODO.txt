@@ -110,7 +110,6 @@ Other polish:
  - Handle seems to lag behind the selected mesh
  - ProjectLibrary seems to import some files on every start-up
  - Crash on shutdown in mono_gchandle_free
- - Add shortcut keys for view/move/rotate/scale
  - Add "focus on object" key (F) - animate it: rotate camera towards then speed towards while zooming in
  - Ortographic camera views (+ gizmo in scene view corner that shows camera orientation)
  - Drag to select in scene view

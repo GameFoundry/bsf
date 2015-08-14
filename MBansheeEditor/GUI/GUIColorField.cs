@@ -43,6 +43,11 @@ namespace BansheeEditor
                 OnChanged(newValue);
         }
 
+        private void DoOnClicked()
+        {
+            // TODO
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateInstance(GUIColorField instance, GUIContent title, int titleWidth,
             string style, GUIOption[] options, bool withTitle);

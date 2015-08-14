@@ -5,12 +5,20 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Interop class between C++ & CLR for BuiltinEditorResources.
+	 */
 	class BS_SCR_BED_EXPORT ScriptEditorBuiltin : public ScriptObject <ScriptEditorBuiltin>
 	{
 	public:
 		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "EditorBuiltin")
 
 	private:
+		ScriptEditorBuiltin(MonoObject* instance);
+
+		/************************************************************************/
+		/* 								CLR HOOKS						   		*/
+		/************************************************************************/
 		static MonoObject* internal_getFolderIcon();
 		static MonoObject* internal_getMeshIcon();
 		static MonoObject* internal_getFontIcon();
@@ -22,7 +30,5 @@ namespace BansheeEngine
 		static MonoObject* internal_getMaterialIcon();
 		static MonoObject* internal_getSpriteTextureIcon();
 		static MonoObject* internal_getPrefabIcon();
-
-		ScriptEditorBuiltin(MonoObject* instance);
 	};
 }

@@ -90,6 +90,18 @@ namespace BansheeEditor
             return picker;
         }
 
+        public static ColorPicker Show(Color color, Action<bool, Color> closedCallback = null)
+        {
+            ColorPicker picker = new ColorPicker();
+            picker.colRed = color.r;
+            picker.colGreen = color.g;
+            picker.colBlue = color.b; 
+            picker.colAlpha = color.a;
+            picker.closedCallback = closedCallback;
+
+            return picker;
+        }
+
         protected ColorPicker()
             : base(false)
         { }

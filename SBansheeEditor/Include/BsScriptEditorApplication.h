@@ -5,6 +5,9 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Interop class between C++ & CLR for EditorApplication.
+	 */
 	class BS_SCR_BED_EXPORT ScriptEditorApplication : public ScriptObject <ScriptEditorApplication>
 	{
 	public:
@@ -13,6 +16,9 @@ namespace BansheeEngine
 	private:
 		ScriptEditorApplication(MonoObject* instance);
 
+		/************************************************************************/
+		/* 								CLR HOOKS						   		*/
+		/************************************************************************/
 		static MonoString* internal_GetProjectPath();
 		static MonoString* internal_GetProjectName();
 		static MonoString* internal_GetCompilerPath();

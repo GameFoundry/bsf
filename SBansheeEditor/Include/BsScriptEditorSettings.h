@@ -5,6 +5,9 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Interop class between C++ & CLR for EditorSettings stored in EditorApplication.
+	 */
 	class BS_SCR_BED_EXPORT ScriptEditorSettings : public ScriptObject < ScriptEditorSettings >
 	{
 	public:
@@ -13,6 +16,9 @@ namespace BansheeEngine
 	private:
 		ScriptEditorSettings(MonoObject* instance);
 
+		/************************************************************************/
+		/* 								CLR HOOKS						   		*/
+		/************************************************************************/
 		static bool internal_GetMoveHandleSnapActive();
 		static void internal_SetMoveHandleSnapActive(bool value);
 		static bool internal_GetRotateHandleSnapActive();
