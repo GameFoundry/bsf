@@ -9,7 +9,7 @@ namespace BansheeEngine
 	/**
 	 * @brief	Types of available render systems.
 	 */
-	enum class RenderSystemPlugin
+	enum class RenderAPIPlugin
 	{
 		DX11,
 		DX9,
@@ -30,7 +30,7 @@ namespace BansheeEngine
 	class BS_EXPORT Application : public CoreApplication
 	{
 	public:
-		Application(RENDER_WINDOW_DESC& primaryWindowDesc, RenderSystemPlugin renderSystem, RendererPlugin renderer);
+		Application(RENDER_WINDOW_DESC& primaryWindowDesc, RenderAPIPlugin renderAPI, RendererPlugin renderer);
 		virtual ~Application();
 
 		/**
@@ -40,7 +40,7 @@ namespace BansheeEngine
 		 * @param	renderSystem		Render system to use.
 		 * @param	renderer			Renderer to use.
 		 */
-		static void startUp(RENDER_WINDOW_DESC& primaryWindowDesc, RenderSystemPlugin renderSystem, RendererPlugin renderer = RendererPlugin::Default);
+		static void startUp(RENDER_WINDOW_DESC& primaryWindowDesc, RenderAPIPlugin renderAPI, RendererPlugin renderer = RendererPlugin::Default);
 
 		/**
 		 * @brief	Returns the primary viewport of the application.
@@ -94,7 +94,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Translates render system type into library name.
 		 */
-		static const String& getLibNameForRenderSystem(RenderSystemPlugin plugin);
+		static const String& getLibNameForRenderAPI(RenderAPIPlugin plugin);
 
 		/**
 		 * @brief	Translates renderer type into library name.

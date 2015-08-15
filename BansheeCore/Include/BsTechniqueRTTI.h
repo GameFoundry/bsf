@@ -9,8 +9,8 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT TechniqueRTTI : public RTTIType<Technique, IReflectable, TechniqueRTTI>
 	{
 	private:
-		StringID& getRenderSystem(Technique* obj) { return obj->mRenderAPI; }
-		void setRenderSystem(Technique* obj, StringID& val) { obj->mRenderAPI = val; }
+		StringID& getRenderAPI(Technique* obj) { return obj->mRenderAPI; }
+		void setRenderAPI(Technique* obj, StringID& val) { obj->mRenderAPI = val; }
 
 		StringID& getRenderer(Technique* obj) { return obj->mRenderer; }
 		void setRenderer(Technique* obj, StringID& val) { obj->mRenderer = val; }
@@ -38,7 +38,7 @@ namespace BansheeEngine
 	public:
 		TechniqueRTTI()
 		{
-			addPlainField("mRenderSystem", 0, &TechniqueRTTI::getRenderSystem, &TechniqueRTTI::setRenderSystem);
+			addPlainField("mRenderAPI", 0, &TechniqueRTTI::getRenderAPI, &TechniqueRTTI::setRenderAPI);
 			addPlainField("mRenderer", 1, &TechniqueRTTI::getRenderer, &TechniqueRTTI::setRenderer);
 
 			addReflectablePtrArrayField("mPasses", 2, &TechniqueRTTI::getPass, &TechniqueRTTI::getPassArraySize, &TechniqueRTTI::setPass, &TechniqueRTTI::setPassArraySize);

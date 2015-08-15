@@ -13,7 +13,7 @@ namespace BansheeEngine
 	 */
 	struct START_UP_DESC
 	{
-		String renderSystem; /**< Name of the render system plugin to use. */
+		String renderAPI; /**< Name of the render system plugin to use. */
 		String renderer; /**< Name of the renderer plugin to use. */
 
 		String input; /**< Name of the input plugin to use. */

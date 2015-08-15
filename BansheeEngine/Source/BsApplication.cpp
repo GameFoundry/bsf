@@ -19,10 +19,10 @@
 
 namespace BansheeEngine
 {
-	START_UP_DESC createStartUpDesc(RENDER_WINDOW_DESC& primaryWindowDesc, const String& renderSystem, const String& renderer)
+	START_UP_DESC createStartUpDesc(RENDER_WINDOW_DESC& primaryWindowDesc, const String& renderAPI, const String& renderer)
 	{
 		START_UP_DESC desc;
-		desc.renderSystem = renderSystem;
+		desc.renderAPI = renderAPI;
 		desc.renderer = renderer;
 		desc.primaryWindowDesc = primaryWindowDesc;
 
@@ -35,8 +35,8 @@ namespace BansheeEngine
 		return desc;
 	}
 
-	Application::Application(RENDER_WINDOW_DESC& primaryWindowDesc, RenderSystemPlugin renderSystem, RendererPlugin renderer)
-		:CoreApplication(createStartUpDesc(primaryWindowDesc, getLibNameForRenderSystem(renderSystem), getLibNameForRenderer(renderer))),
+	Application::Application(RENDER_WINDOW_DESC& primaryWindowDesc, RenderAPIPlugin renderAPI, RendererPlugin renderer)
+		:CoreApplication(createStartUpDesc(primaryWindowDesc, getLibNameForRenderAPI(renderAPI), getLibNameForRenderer(renderer))),
 		mMonoPlugin(nullptr), mSBansheeEnginePlugin(nullptr)
 	{
 
@@ -106,9 +106,9 @@ namespace BansheeEngine
 		CoreApplication::onShutDown();
 	}
 
-	void Application::startUp(RENDER_WINDOW_DESC& primaryWindowDesc, RenderSystemPlugin renderSystem, RendererPlugin renderer)
+	void Application::startUp(RENDER_WINDOW_DESC& primaryWindowDesc, RenderAPIPlugin renderAPI, RendererPlugin renderer)
 	{
-		CoreApplication::startUp<Application>(primaryWindowDesc, renderSystem, renderer);
+		CoreApplication::startUp<Application>(primaryWindowDesc, renderAPI, renderer);
 	}
 
 	void Application::preUpdate()
@@ -163,19 +163,19 @@ namespace BansheeEngine
 		return assemblyFolder;
 	}	
 
-	const String& Application::getLibNameForRenderSystem(RenderSystemPlugin plugin)
+	const String& Application::getLibNameForRenderAPI(RenderAPIPlugin plugin)
 	{
-		static String DX11Name = "BansheeD3D11RenderSystem";
-		static String DX9Name = "BansheeD3D9RenderSystem";
-		static String OpenGLName = "BansheeGLRenderSystem";
+		static String DX11Name = "BansheeD3D11RenderAPI";
+		static String DX9Name = "BansheeD3D9RenderAPI";
+		static String OpenGLName = "BansheeGLRenderAPI";
 
 		switch (plugin)
 		{
-		case RenderSystemPlugin::DX11:
+		case RenderAPIPlugin::DX11:
 			return DX11Name;
-		case RenderSystemPlugin::DX9:
+		case RenderAPIPlugin::DX9:
 			return DX9Name;
-		case RenderSystemPlugin::OpenGL:
+		case RenderAPIPlugin::OpenGL:
 			return OpenGLName;
 		}
 
@@ -184,7 +184,7 @@ namespace BansheeEngine
 
 	const String& Application::getLibNameForRenderer(RendererPlugin plugin)
 	{
-		static String DefaultName = "BansheeRenderer";
+		static String DefaultName = "RenderBeast";
 
 		switch (plugin)
 		{

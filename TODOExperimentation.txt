@@ -4,16 +4,19 @@ Study how is transparency handled (is it order independant?)
 Figure out what is skylight
 Determine how is light bleeding handled (if at all)
 
+Think about/set up deferred buffers per camera (don't activate them just yet)
+RenderTexturePool needs support for cube and 3D textures
+Lights need getLightMesh() method
+
+Think about how to start with deferred
+
+
 Test all APIs with new changes regarding depth buffer creation on windows
-Document RenderTargetPool and potentially move it outside of BansheeRenderer
- - Quantize buffer sizes so they're divideable by 8
-Implement light added/removed/updated in BansheeRenderer
 Load up and set up a test-bed with Ribek's scene
-
 Issue with state caching: State caching doesn't work when deserializing
-Rename BansheeRenderer to RenderBeast
-
 Need cone to use when rendering spot light
+Quantize buffer sizes so they're divideable by 8 when requesting them from RenderTexturePool
+
 
 Create a basic GBuffer - albedo, normal, depth
  - Using HDR formats where needed

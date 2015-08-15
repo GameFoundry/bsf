@@ -60,9 +60,9 @@ namespace BansheeEngine
 		return renderWindowDesc;
 	}
 
-	EditorApplication::EditorApplication(RenderSystemPlugin renderSystemPlugin)
-		:Application(createRenderWindowDesc(), renderSystemPlugin, RendererPlugin::Default), 
-		mActiveRSPlugin(renderSystemPlugin), mSBansheeEditorPlugin(nullptr)
+	EditorApplication::EditorApplication(RenderAPIPlugin renderAPIPlugin)
+		:Application(createRenderWindowDesc(), renderAPIPlugin, RendererPlugin::Default), 
+		mActiveRAPIPlugin(renderAPIPlugin), mSBansheeEditorPlugin(nullptr)
 	{
 
 	}
@@ -150,7 +150,7 @@ namespace BansheeEngine
 		HShader dummyParsedShader = Importer::instance().import<Shader>("..\\..\\..\\..\\Data\\Raw\\Engine\\Shaders\\TestFX.bsl");
 		assert(dummyParsedShader != nullptr); // Ad hoc unit test
 
-		RenderAPICore* renderSystem = RenderAPICore::instancePtr();
+		RenderAPICore* renderAPI = RenderAPICore::instancePtr();
 
 		HSceneObject testModelGO = SceneObject::create("TestMesh");
 		HRenderable testRenderable = testModelGO->addComponent<Renderable>();
@@ -224,9 +224,9 @@ namespace BansheeEngine
 		Application::onShutDown();
 	}
 
-	void EditorApplication::startUp(RenderSystemPlugin renderSystemPlugin)
+	void EditorApplication::startUp(RenderAPIPlugin renderAPI)
 	{
-		CoreApplication::startUp<EditorApplication>(renderSystemPlugin);
+		CoreApplication::startUp<EditorApplication>(renderAPI);
 	}
 
 	void EditorApplication::preUpdate()

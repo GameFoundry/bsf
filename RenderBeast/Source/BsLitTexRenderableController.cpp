@@ -1,7 +1,7 @@
 #include "BsLitTexRenderableController.h"
 #include "BsShader.h"
 #include "BsGpuParams.h"
-#include "BsBansheeRenderer.h"
+#include "BsRenderBeast.h"
 #include "BsHardwareBufferManager.h"
 #include "BsGpuParamBlockBuffer.h"
 #include "BsTechnique.h"

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BsBansheeRendererPrerequisites.h"
+#include "BsRenderBeastPrerequisites.h"
 #include "BsRenderer.h"
 
 namespace BansheeEngine

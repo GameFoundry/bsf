@@ -217,7 +217,7 @@ namespace BansheeEngine
 
 namespace BansheeEngine
 {
-	typedef std::shared_ptr<RenderAPICore> RenderSystemPtr;
+	typedef std::shared_ptr<RenderAPICore> RenderAPIPtr;
 	typedef std::shared_ptr<GpuProgram> GpuProgramPtr;
 	typedef std::shared_ptr<PixelBuffer> PixelBufferPtr;
 	typedef std::shared_ptr<VertexBuffer> VertexBufferPtr;

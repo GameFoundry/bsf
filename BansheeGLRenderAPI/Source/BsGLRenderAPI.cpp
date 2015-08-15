@@ -1658,7 +1658,7 @@ namespace BansheeEngine
 
 	void GLRenderAPI::initFromCaps(RenderAPICapabilities* caps)
 	{
-		if(caps->getRenderSystemName() != getName())
+		if(caps->getRenderAPIName() != getName())
 		{
 			BS_EXCEPT(InvalidParametersException, 
 				"Trying to initialize GLRenderAPI from RenderSystemCapabilities that do not support OpenGL");
@@ -1773,7 +1773,7 @@ namespace BansheeEngine
 		const char* deviceName = (const char*)glGetString(GL_RENDERER);
 		const char* vendorName = (const char*)glGetString(GL_VENDOR);
 		rsc->setDeviceName(deviceName);
-		rsc->setRenderSystemName(getName());
+		rsc->setRenderAPIName(getName());
 
 		// determine vendor
 		if (strstr(vendorName, "NVIDIA"))

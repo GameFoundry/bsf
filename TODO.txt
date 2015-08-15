@@ -152,7 +152,6 @@ Finalizing:
  - Splash screen
  - Settings/Preferences window
  - Documentation
- - Rename D3D11RenderSystem (and DX9/GL) project to D3D11RenderAPI
  - (Optionally) GUI tabbing to switch between elements
 
 ----------------------------------------------------------------------

@@ -27,9 +27,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{1437BB4E-DDB3-4307-AA41-8C035DA3014B}</ProjectGuid>
-    <RootNamespace>CamelotD3D11RenderSystem</RootNamespace>
-    <ProjectName>BansheeD3D11RenderSystem</ProjectName>
+    <ProjectGuid>{F58FF869-2EA6-4FFF-AB84-328C531BA9D9}</ProjectGuid>
+    <RootNamespace>CamelotGLRenderer</RootNamespace>
+    <ProjectName>BansheeGLRenderAPI</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -99,8 +99,8 @@
     <IntDir>.\Intermediate\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IntDir>.\Intermediate\$(Platform)\$(Configuration)\</IntDir>
     <OutDir>..\bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>.\Intermediate\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>..\bin\x86\$(Configuration)\</OutDir>
@@ -111,43 +111,44 @@
     <IntDir>.\Intermediate\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IntDir>.\Intermediate\$(Platform)\$(Configuration)\</IntDir>
     <OutDir>..\bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>.\Intermediate\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">
-    <IntDir>.\Intermediate\$(Platform)\$(Configuration)\</IntDir>
     <OutDir>..\bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>.\Intermediate\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.\Include;..\BansheeCore\Include;..\BansheeUtility\Include;..\Dependencies\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>BS_RSD3D11_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>./Source/win32;./Source/GLSL/include;./Source/atifs/include;../BansheeUtility/Include;../BansheeCore/Include;./Include;../Dependencies/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINDLL;GLEW_STATIC;BS_RSGL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;dxguid.lib;D3DCompiler.lib;BansheeCore.lib;BansheeUtility.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(DXSDK_DIR)Lib\x86;..\lib\x86\$(Configuration);..\Dependencies\lib\x86\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glu32.lib;opengl32.lib;BansheeCore.lib;BansheeUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
+      <AdditionalLibraryDirectories>..\lib\x86\$(Configuration);..\Dependencies\lib\x86\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.\Include;..\BansheeCore\Include;..\BansheeUtility\Include;..\Dependencies\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>BS_RSD3D11_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>./Source/win32;./Source/GLSL/include;./Source/atifs/include;../BansheeUtility/Include;../BansheeCore/Include;./Include;../Dependencies/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINDLL;GLEW_STATIC;BS_RSGL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;dxguid.lib;D3DCompiler.lib;BansheeCore.lib;BansheeUtility.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(DXSDK_DIR)Lib\x64;..\lib\$(Platform)\$(Configuration);..\Dependencies\lib\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glu32.lib;opengl32.lib;BansheeCore.lib;BansheeUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
+      <AdditionalLibraryDirectories>..\lib\$(Platform)\$(Configuration);..\Dependencies\lib\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ShowProgress>NotSet</ShowProgress>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -156,8 +157,8 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>.\Include;..\BansheeCore\Include;..\BansheeUtility\Include;..\Dependencies\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>BS_RSD3D11_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>./Source/win32;./Source/GLSL/include;./Source/atifs/include;../BansheeUtility/Include;../BansheeCore/Include;./Include;../Dependencies/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINDLL;GLEW_STATIC;BS_RSGL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <DebugInformationFormat>None</DebugInformationFormat>
@@ -167,9 +168,9 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;dxguid.lib;D3DCompiler.lib;BansheeCore.lib;BansheeUtility.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(DXSDK_DIR)Lib\x86;..\lib\x86\$(Configuration);..\Dependencies\lib\x86\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glu32.lib;opengl32.lib;BansheeCore.lib;BansheeUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
+      <AdditionalLibraryDirectories>..\lib\x86\$(Configuration);..\Dependencies\lib\x86\Release</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">
@@ -178,8 +179,8 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>.\Include;..\BansheeCore\Include;..\BansheeUtility\Include;..\Dependencies\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>BS_RSD3D11_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>./Source/win32;./Source/GLSL/include;./Source/atifs/include;../BansheeUtility/Include;../BansheeCore/Include;./Include;../Dependencies/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINDLL;GLEW_STATIC;BS_RSGL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <MinimalRebuild>true</MinimalRebuild>
@@ -189,9 +190,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;dxguid.lib;D3DCompiler.lib;BansheeCore.lib;BansheeUtility.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(DXSDK_DIR)Lib\x86;..\lib\x86\$(Configuration);..\Dependencies\lib\x86\DebugRelease;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glu32.lib;opengl32.lib;BansheeCore.lib;BansheeUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
+      <AdditionalLibraryDirectories>..\lib\x86\$(Configuration);..\Dependencies\lib\x86\DebugRelease</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -200,8 +201,8 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>.\Include;..\BansheeCore\Include;..\BansheeUtility\Include;..\Dependencies\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>BS_RSD3D11_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>./Source/win32;./Source/GLSL/include;./Source/atifs/include;../BansheeUtility/Include;../BansheeCore/Include;./Include;../Dependencies/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINDLL;GLEW_STATIC;BS_RSGL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <DebugInformationFormat>None</DebugInformationFormat>
@@ -211,9 +212,9 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;dxguid.lib;D3DCompiler.lib;BansheeCore.lib;BansheeUtility.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(DXSDK_DIR)Lib\x64;..\lib\$(Platform)\$(Configuration);..\Dependencies\lib\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glu32.lib;opengl32.lib;BansheeCore.lib;BansheeUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
+      <AdditionalLibraryDirectories>..\lib\$(Platform)\$(Configuration);..\Dependencies\lib\x64\Release</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">
@@ -222,8 +223,8 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>.\Include;..\BansheeCore\Include;..\BansheeUtility\Include;..\Dependencies\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>BS_RSD3D11_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>./Source/win32;./Source/GLSL/include;./Source/atifs/include;../BansheeUtility/Include;../BansheeCore/Include;./Include;../Dependencies/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINDLL;GLEW_STATIC;BS_RSGL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <MinimalRebuild>true</MinimalRebuild>
@@ -233,86 +234,79 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;dxguid.lib;D3DCompiler.lib;BansheeCore.lib;BansheeUtility.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(DXSDK_DIR)Lib\x64;..\lib\$(Platform)\$(Configuration);..\Dependencies\lib\x64\DebugRelease;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glu32.lib;opengl32.lib;BansheeCore.lib;BansheeUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
+      <AdditionalLibraryDirectories>..\lib\$(Platform)\$(Configuration);..\Dependencies\lib\x64\DebugRelease</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Include\BsD3D11BlendState.h" />
-    <ClInclude Include="Include\BsD3D11DepthStencilState.h" />
-    <ClInclude Include="Include\BsD3D11EventQuery.h" />
-    <ClInclude Include="Include\BsD3D11GpuBuffer.h" />
-    <ClInclude Include="Include\BsD3D11GpuBufferView.h" />
-    <ClInclude Include="Include\BsD3D11HardwareBufferManager.h" />
-    <ClInclude Include="Include\BsD3D11Device.h" />
-    <ClInclude Include="Include\BsD3D11Driver.h" />
-    <ClInclude Include="Include\BsD3D11DriverList.h" />
-    <ClInclude Include="Include\BsD3D11GpuProgram.h" />
-    <ClInclude Include="Include\BsD3D11HardwareBuffer.h" />
-    <ClInclude Include="Include\BsD3D11HLSLParamParser.h" />
-    <ClInclude Include="Include\BsD3D11IndexBuffer.h" />
-    <ClInclude Include="Include\BsD3D11HLSLProgramFactory.h" />
-    <ClInclude Include="Include\BsD3D11Mappings.h" />
-    <ClInclude Include="Include\BsD3D11MultiRenderTexture.h" />
-    <ClInclude Include="Include\BsD3D11GpuParamBlockBuffer.h" />
-    <ClInclude Include="Include\BsD3D11OcclusionQuery.h" />
-    <ClInclude Include="Include\BsD3D11Prerequisites.h" />
-    <ClInclude Include="Include\BsD3D11QueryManager.h" />
-    <ClInclude Include="Include\BsD3D11RenderUtility.h" />
-    <ClInclude Include="Include\BsD3D11TextureView.h" />
-    <ClInclude Include="Include\BsD3D11TimerQuery.h" />
-    <ClInclude Include="Include\BsD3D11VertexBuffer.h" />
-    <ClInclude Include="Include\BsD3D11RasterizerState.h" />
-    <ClInclude Include="Include\BsD3D11RenderStateManager.h" />
-    <ClInclude Include="Include\BsD3D11RenderAPI.h" />
-    <ClInclude Include="Include\BsD3D11RenderAPIFactory.h" />
-    <ClInclude Include="Include\BsD3D11RenderTexture.h" />
-    <ClInclude Include="Include\BsD3D11RenderWindow.h" />
-    <ClInclude Include="Include\BsD3D11RenderWindowManager.h" />
-    <ClInclude Include="Include\BsD3D11SamplerState.h" />
-    <ClInclude Include="Include\BsD3D11Texture.h" />
-    <ClInclude Include="Include\BsD3D11TextureManager.h" />
-    <ClInclude Include="Include\BsD3D11VideoModeInfo.h" />
-    <ClInclude Include="Include\BsD3D11InputLayoutManager.h" />
+    <ClInclude Include="Include\BsGLVertexArrayObjectManager.h" />
+    <ClInclude Include="Include\BsGLContext.h" />
+    <ClInclude Include="Include\BsGLEventQuery.h" />
+    <ClInclude Include="Include\BsGLFrameBufferObject.h" />
+    <ClInclude Include="Include\BsGLGpuBuffer.h" />
+    <ClInclude Include="Include\BsGLGpuParamBlockBuffer.h" />
+    <ClInclude Include="Include\BsGLHardwareBufferManager.h" />
+    <ClInclude Include="Include\BsGLIndexBuffer.h" />
+    <ClInclude Include="Include\BsGLOcclusionQuery.h" />
+    <ClInclude Include="Include\BsGLPixelBuffer.h" />
+    <ClInclude Include="Include\BsGLQueryManager.h" />
+    <ClInclude Include="Include\BsGLTimerQuery.h" />
+    <ClInclude Include="Include\BsGLVertexBuffer.h" />
+    <ClInclude Include="Include\BsGLMultiRenderTexture.h" />
+    <ClInclude Include="Include\BsGLPixelFormat.h" />
+    <ClInclude Include="Include\BsGLPrerequisites.h" />
+    <ClInclude Include="Include\BsGLRenderAPI.h" />
+    <ClInclude Include="Include\BsGLRenderAPIFactory.h" />
+    <ClInclude Include="Include\BsGLRenderTexture.h" />
+    <ClInclude Include="Include\BsGLRenderWindowManager.h" />
+    <ClInclude Include="Include\BsGLSupport.h" />
+    <ClInclude Include="Include\BsGLTexture.h" />
+    <ClInclude Include="Include\BsGLTextureManager.h" />
+    <ClInclude Include="Include\BsWin32Context.h" />
+    <ClInclude Include="Include\BsWin32GLSupport.h" />
+    <ClInclude Include="Include\BsWin32Prerequisites.h" />
+    <ClInclude Include="Include\BsWin32VideoModeInfo.h" />
+    <ClInclude Include="Include\BsWin32Window.h" />
+    <ClInclude Include="Source\GLSL\include\BsGLSLGpuProgram.h" />
+    <ClInclude Include="Source\GLSL\include\BsGLSLParamParser.h" />
+    <ClInclude Include="Source\GLSL\include\BsGLSLProgramFactory.h" />
+    <ClInclude Include="Source\GLSL\include\BsGLSLProgramPipelineManager.h" />
+    <ClInclude Include="Source\win32\BsGLUtil.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\BsD3D11BlendState.cpp" />
-    <ClCompile Include="Source\BsD3D11DepthStencilState.cpp" />
-    <ClCompile Include="Source\BsD3D11Device.cpp" />
-    <ClCompile Include="Source\BsD3D11Driver.cpp" />
-    <ClCompile Include="Source\BsD3D11DriverList.cpp" />
-    <ClCompile Include="Source\BsD3D11EventQuery.cpp" />
-    <ClCompile Include="Source\BsD3D11GpuBuffer.cpp" />
-    <ClCompile Include="Source\BsD3D11GpuBufferView.cpp" />
-    <ClCompile Include="Source\BsD3D11GpuParamBlockBuffer.cpp" />
-    <ClCompile Include="Source\BsD3D11GpuProgram.cpp" />
-    <ClCompile Include="Source\BsD3D11HardwareBuffer.cpp" />
-    <ClCompile Include="Source\BsD3D11HardwareBufferManager.cpp" />
-    <ClCompile Include="Source\BsD3D11HLSLParamParser.cpp" />
-    <ClCompile Include="Source\BsD3D11IndexBuffer.cpp" />
-    <ClCompile Include="Source\BsD3D11HLSLProgramFactory.cpp" />
-    <ClCompile Include="Source\BsD3D11InputLayoutManager.cpp" />
-    <ClCompile Include="Source\BsD3D11Mappings.cpp" />
-    <ClCompile Include="Source\BsD3D11OcclusionQuery.cpp" />
-    <ClCompile Include="Source\BsD3D11Plugin.cpp" />
-    <ClCompile Include="Source\BsD3D11QueryManager.cpp" />
-    <ClCompile Include="Source\BsD3D11RenderUtility.cpp" />
-    <ClCompile Include="Source\BsD3D11TextureView.cpp" />
-    <ClCompile Include="Source\BsD3D11TimerQuery.cpp" />
-    <ClCompile Include="Source\BsD3D11VertexBuffer.cpp" />
-    <ClCompile Include="Source\BsD3D11MultiRenderTexture.cpp" />
-    <ClCompile Include="Source\BsD3D11RasterizerState.cpp" />
-    <ClCompile Include="Source\BsD3D11RenderStateManager.cpp" />
-    <ClCompile Include="Source\BsD3D11RenderAPI.cpp" />
-    <ClCompile Include="Source\BsD3D11RenderAPIFactory.cpp" />
-    <ClCompile Include="Source\BsD3D11RenderTexture.cpp" />
-    <ClCompile Include="Source\BsD3D11RenderWindow.cpp" />
-    <ClCompile Include="Source\BsD3D11RenderWindowManager.cpp" />
-    <ClCompile Include="Source\BsD3D11SamplerState.cpp" />
-    <ClCompile Include="Source\BsD3D11Texture.cpp" />
-    <ClCompile Include="Source\BsD3D11TextureManager.cpp" />
-    <ClCompile Include="Source\BsD3D11VideoModeInfo.cpp" />
+    <ClCompile Include="BsGLPlugin.cpp" />
+    <ClCompile Include="Source\BsGLSLParamParser.cpp" />
+    <ClCompile Include="Source\BsGLVertexArrayObjectManager.cpp" />
+    <ClCompile Include="Source\BsGLContext.cpp" />
+    <ClCompile Include="Source\BsGLEventQuery.cpp" />
+    <ClCompile Include="Source\BsGLFrameBufferObject.cpp" />
+    <ClCompile Include="Source\BsGLGpuBuffer.cpp" />
+    <ClCompile Include="Source\BsGLGpuParamBlockBuffer.cpp" />
+    <ClCompile Include="Source\BsGLHardwareBufferManager.cpp" />
+    <ClCompile Include="Source\BsGLIndexBuffer.cpp" />
+    <ClCompile Include="Source\BsGLOcclusionQuery.cpp" />
+    <ClCompile Include="Source\BsGLPixelBuffer.cpp" />
+    <ClCompile Include="Source\BsGLQueryManager.cpp" />
+    <ClCompile Include="Source\BsGLTimerQuery.cpp" />
+    <ClCompile Include="Source\BsGLVertexBuffer.cpp" />
+    <ClCompile Include="Source\BsGLMultiRenderTexture.cpp" />
+    <ClCompile Include="Source\BsGLPixelFormat.cpp" />
+    <ClCompile Include="Source\BsGLRenderAPI.cpp" />
+    <ClCompile Include="Source\BsGLRenderAPIFactory.cpp" />
+    <ClCompile Include="Source\BsGLRenderTexture.cpp" />
+    <ClCompile Include="Source\BsGLRenderWindowManager.cpp" />
+    <ClCompile Include="Source\BsGLSupport.cpp" />
+    <ClCompile Include="Source\BsGLTexture.cpp" />
+    <ClCompile Include="Source\BsGLTextureManager.cpp" />
+    <ClCompile Include="Source\BsWin32GLSupport.cpp" />
+    <ClCompile Include="Source\BsWin32VideoModeInfo.cpp" />
+    <ClCompile Include="Source\BsWin32Window.cpp" />
+    <ClCompile Include="Source\glew.cpp" />
+    <ClCompile Include="Source\GLSL\src\BsGLSLGpuProgram.cpp" />
+    <ClCompile Include="Source\GLSL\src\BsGLSLProgramFactory.cpp" />
+    <ClCompile Include="Source\GLSL\src\BsGLSLProgramPipelineManager.cpp" />
+    <ClCompile Include="Source\win32\BsWin32Context.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

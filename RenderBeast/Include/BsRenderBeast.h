@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BsBansheeRendererPrerequisites.h"
+#include "BsRenderBeastPrerequisites.h"
 #include "BsRenderer.h"
 #include "BsBounds.h"
 #include "BsRenderableElement.h"
@@ -38,7 +38,7 @@ namespace BansheeEngine
 	 *
 	 * @note	Sim thread unless otherwise noted.
 	 */
-	class BS_BSRND_EXPORT BansheeRenderer : public Renderer
+	class BS_BSRND_EXPORT RenderBeast : public Renderer
 	{
 		/**
 		 * @brief	Render data for a single render target.
@@ -67,9 +67,17 @@ namespace BansheeEngine
 			RenderableController* controller;
 		};
 
+		/**
+		 * @brief	Data used by the renderer for lights.
+		 */
+		struct LightData
+		{
+			LightInternalCore* internal;
+		};
+
 	public:
-		BansheeRenderer();
-		~BansheeRenderer() { }
+		RenderBeast();
+		~RenderBeast() { }
 
 		/**
 		 * @copydoc	Renderer::getName
@@ -115,12 +123,17 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	Renderer::_notifyLightAdded
 		 */
-		void _notifyLightAdded(const LightInternalCore* light) override;
+		void _notifyLightAdded(LightInternalCore* light) override;
+
+		/**
+		 * @copydoc	Renderer::_notifyLightUpdated
+		 */
+		void _notifyLightUpdated(LightInternalCore* light) override;
 
 		/**
 		 * @copydoc	Renderer::_notifyLightRemoved
 		 */
-		void _notifyLightRemoved(const LightInternalCore* light) override;
+		void _notifyLightRemoved(LightInternalCore* light) override;
 
 		/**
 		 * @copydoc	Renderer::_notifyRenderableAdded
@@ -217,6 +230,9 @@ namespace BansheeEngine
 		Vector<RenderableData> mRenderables; // Core thread
 		Vector<Matrix4> mWorldTransforms; // Core thread
 		Vector<Bounds> mWorldBounds; // Core thread
+
+		Vector<LightData> mLights; // Core thread
+		Vector<Sphere> mLightWorldBounds; // Core thread
 
 		SPtr<RenderBeastOptions> mCoreOptions; // Core thread
 

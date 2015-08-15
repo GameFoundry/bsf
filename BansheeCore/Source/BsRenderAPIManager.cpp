@@ -7,12 +7,12 @@
 namespace BansheeEngine
 {
 	RenderAPIManager::RenderAPIManager()
-		:mRenderSystemInitialized(false)
+		:mRenderAPIInitialized(false)
 	{ }
 
 	RenderAPIManager::~RenderAPIManager()
 	{
-		if(mRenderSystemInitialized)
+		if(mRenderAPIInitialized)
 		{
 			RenderAPICore::instance().destroy();
 			RenderAPICore::shutDown();
@@ -21,7 +21,7 @@ namespace BansheeEngine
 
 	RenderWindowPtr RenderAPIManager::initialize(const String& pluginFilename, RENDER_WINDOW_DESC& primaryWindowDesc)
 	{
-		if(mRenderSystemInitialized)
+		if(mRenderAPIInitialized)
 			return nullptr;
 
 		DynLib* loadedLibrary = gDynLibManager().load(pluginFilename);
@@ -40,7 +40,7 @@ namespace BansheeEngine
 			if((*iter)->name() == name)
 			{
 				(*iter)->create();		
-				mRenderSystemInitialized = true;
+				mRenderAPIInitialized = true;
 				return RenderAPICore::instance().initialize(primaryWindowDesc);
 			}
 		}

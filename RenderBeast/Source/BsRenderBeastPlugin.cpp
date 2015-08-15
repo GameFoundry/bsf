@@ -1,5 +1,5 @@
-#include "BsBansheeRendererPrerequisites.h"
-#include "BsBansheeRendererFactory.h"
+#include "BsRenderBeastPrerequisites.h"
+#include "BsRenderBeastFactory.h"
 #include "BsRendererManager.h"
 
 namespace BansheeEngine
@@ -17,7 +17,7 @@ namespace BansheeEngine
 	 */
 	extern "C" BS_BSRND_EXPORT void* loadPlugin()
 	{
-		RendererManager::instance()._registerFactory(bs_shared_ptr_new<BansheeRendererFactory>());
+		RendererManager::instance()._registerFactory(bs_shared_ptr_new<RenderBeastFactory>());
 
 		return nullptr;
 	}

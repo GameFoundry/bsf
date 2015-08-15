@@ -72,16 +72,16 @@ namespace BansheeEngine
 		}
 	}
 
+	LightInternalCore::LightInternalCore(LightType type, Color color,
+		float intensity, float range, bool castsShadows, Degree spotAngle, Degree spotFalloffAngle)
+		:LightInternalBase(type, color, intensity, range, castsShadows, spotAngle, spotFalloffAngle), mRendererId(0)
+	{
+
+	}
+
 	LightInternalCore::~LightInternalCore()
 	{
 		gRenderer()->_notifyLightRemoved(this);
-	}
-
-	LightInternalCore::LightInternalCore(LightType type, Color color,
-		float intensity, float range, bool castsShadows, Degree spotAngle, Degree spotFalloffAngle)
-		:LightInternalBase(type, color, intensity, range, castsShadows, spotAngle, spotFalloffAngle)
-	{
-
 	}
 
 	void LightInternalCore::initialize()

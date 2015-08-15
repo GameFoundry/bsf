@@ -277,8 +277,8 @@ namespace BansheeEngine
 				}
 			}
 
-			RenderAPICore* renderSystem = BansheeEngine::RenderAPICore::instancePtr();
-			renderSystem->convertProjectionMatrix(mProjMatrix, mProjMatrixRS);
+			RenderAPICore* renderAPI = BansheeEngine::RenderAPICore::instancePtr();
+			renderAPI->convertProjectionMatrix(mProjMatrix, mProjMatrixRS);
 			mProjMatrixInv = mProjMatrix.inverse();
 			mProjMatrixRSInv = mProjMatrixRS.inverse();
 

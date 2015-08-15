@@ -43,7 +43,7 @@ namespace BansheeEngine
 		 * @note	Core thread.
 		 *			Internal method.
 		 */
-		virtual void _notifyLightAdded(const LightInternalCore* light) { }
+		virtual void _notifyLightAdded(LightInternalCore* light) { }
 
 		/**
 		 * @brief	Called whenever a light is updated.
@@ -51,7 +51,7 @@ namespace BansheeEngine
 		 * @note	Core thread.
 		 *			Internal method.
 		 */
-		virtual void _notifyLightUpdated(const LightInternalCore* light) { }
+		virtual void _notifyLightUpdated(LightInternalCore* light) { }
 
 		/**
 		 * @brief	Called whenever a light is destroyed.
@@ -59,7 +59,7 @@ namespace BansheeEngine
 		 * @note	Core thread.
 		 *			Internal method.
 		 */
-		virtual void _notifyLightRemoved(const LightInternalCore* light) { }
+		virtual void _notifyLightRemoved(LightInternalCore* light) { }
 	};
 
 	/**

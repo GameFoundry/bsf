@@ -83,7 +83,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObjectCore::syncToCore
 		 */
-		virtual void syncToCore(const CoreSyncData& data);
+		virtual void syncToCore(const CoreSyncData& data) override;
 
 	private:
 		/**
@@ -168,12 +168,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	RenderTexture::createCore
 		 */
-		virtual SPtr<CoreObjectCore> createCore() const;
+		virtual SPtr<CoreObjectCore> createCore() const override;
 
 		/**
 		 * @copydoc	CoreObjectCore::syncToCore
 		 */
-		virtual CoreSyncData syncToCore(FrameAlloc* allocator);
+		virtual CoreSyncData syncToCore(FrameAlloc* allocator) override;
 
 	protected:
 		HTexture mBindableColorTex;

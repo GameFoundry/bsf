@@ -18,7 +18,7 @@ namespace BansheeEngine
 	RenderTexturePool::~RenderTexturePool()
 	{
 		for (auto& texture : mTextures)
-			texture.second->mPool = nullptr;
+			texture.second.lock()->mPool = nullptr;
 	}
 
 	SPtr<PooledRenderTexture> RenderTexturePool::get(PixelFormat format, UINT32 width, UINT32 height, bool hwGamma, UINT32 samples)
@@ -27,7 +27,7 @@ namespace BansheeEngine
 
 		for (auto& texturePair : mTextures)
 		{
-			SPtr<PooledRenderTexture> textureData = texturePair.second;
+			SPtr<PooledRenderTexture> textureData = texturePair.second.lock();
 
 			if (!textureData->mIsFree)
 				continue;
@@ -67,10 +67,10 @@ namespace BansheeEngine
 		return newTextureData;
 	}
 
-	void RenderTexturePool::free(const SPtr<PooledRenderTexture>& texture)
+	void RenderTexturePool::release(const SPtr<PooledRenderTexture>& texture)
 	{
 		auto iterFind = mTextures.find(texture.get());
-		iterFind->second->mIsFree = true;
+		iterFind->second.lock()->mIsFree = true;
 	}
 
 	bool RenderTexturePool::matches(const SPtr<TextureCore>& texture, PixelFormat format, UINT32 width, UINT32 height, bool hwGamma, UINT32 samples)

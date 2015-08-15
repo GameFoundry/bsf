@@ -147,7 +147,7 @@ namespace BansheeEngine
 		GpuProgramCoreManager::startUp();
 		RenderAPIManager::startUp();
 
-		mPrimaryWindow = RenderAPIManager::instance().initialize(mStartUpDesc.renderSystem, mStartUpDesc.primaryWindowDesc);
+		mPrimaryWindow = RenderAPIManager::instance().initialize(mStartUpDesc.renderAPI, mStartUpDesc.primaryWindowDesc);
 
 		Input::startUp();
 		RendererManager::startUp();

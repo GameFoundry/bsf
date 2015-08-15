@@ -136,7 +136,7 @@ namespace BansheeEngine
 		/**
 		* @brief	Switches the window to fullscreen mode. Child windows cannot go into fullscreen mode.
 		*
-		* @param	videoMode	Mode retrieved from VideoModeInfo in RenderSystem.
+		* @param	videoMode	Mode retrieved from VideoModeInfo in RenderAPI.
 		*/
 		virtual void setFullscreen(const VideoMode& mode) { }
 

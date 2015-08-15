@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BsBansheeRendererPrerequisites.h"
+#include "BsRenderBeastPrerequisites.h"
 #include "BsRenderableController.h"
 #include "BsGpuParamDesc.h"
 #include "BsGpuParam.h"

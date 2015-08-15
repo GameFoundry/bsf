@@ -40,7 +40,7 @@ BansheeOISInput (optional) relies on:
  - BansheeOIS - Slightly modified version of OIS 1.3 specifically for Banshee
   - Supplied with Banshee source code but compiled as a separate project into a dependency
 
-BansheeD3D11RenderSystem & BansheeD3D9RenderSystem (both optional) rely on:
+BansheeD3D11RenderAPI & BansheeD3D9RenderAPI (both optional) rely on:
  - Microsoft DirectX SDK June 2010
   - http://www.microsoft.com/en-us/download/details.aspx?id=6812
   - After installing the SDK make sure DXSDK_DIR environment variable is set up pointing to the installation path

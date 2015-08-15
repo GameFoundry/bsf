@@ -193,6 +193,16 @@ namespace BansheeEngine
 	public:
 		~LightInternalCore();
 
+		/**
+		 * @brief	Sets an ID that can be used for uniquely identifying this object by the renderer.
+		 */
+		void setRendererId(UINT32 id) { mRendererId = id; }
+
+		/**
+		 * @brief	Retrieves an ID that can be used for uniquely identifying this object by the renderer.
+		 */
+		UINT32 getRendererId() const { return mRendererId; }
+
 	protected:
 		friend class LightInternal;
 
@@ -208,6 +218,8 @@ namespace BansheeEngine
 		 * @copydoc	CoreObject::syncToCore
 		 */
 		void syncToCore(const CoreSyncData& data) override;
+
+		UINT32 mRendererId;
 	};
 
 	/**

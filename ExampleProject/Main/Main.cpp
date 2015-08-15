@@ -110,7 +110,7 @@ int CALLBACK WinMain(
 	// You may use other render systems than DirectX 11, however this example for simplicity only uses DirectX 11.
 	// If you wanted other render systems you would need to create separate shaders for them and import them
 	// along with (or replace) the DX11 ones.
-	Application::startUp(renderWindowDesc, RenderSystemPlugin::DX11);
+	Application::startUp(renderWindowDesc, RenderAPIPlugin::DX11);
 
 	// Imports all of ours assets and prepares GameObject that handle the example logic.
 	setUpExample();

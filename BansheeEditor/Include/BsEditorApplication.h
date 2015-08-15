@@ -11,13 +11,13 @@ namespace BansheeEngine
 	class BS_ED_EXPORT EditorApplication : public Application
 	{
 	public:
-		EditorApplication(RenderSystemPlugin renderSystemPlugin);
+		EditorApplication(RenderAPIPlugin renderAPI);
 		virtual ~EditorApplication();
 
 		/**
 		 * @brief	Starts the editorn with the specified render system.
 		 */
-		static void startUp(RenderSystemPlugin renderSystemPlugin);
+		static void startUp(RenderAPIPlugin renderAPI);
 
 		/**
 		 * @brief	Checks whether the editor currently has a project loaded.
@@ -80,7 +80,7 @@ namespace BansheeEngine
 	private:
 		static const Path WIDGET_LAYOUT_PATH;
 		static const Path BUILD_DATA_PATH;
-		RenderSystemPlugin mActiveRSPlugin;
+		RenderAPIPlugin mActiveRAPIPlugin;
 		EditorSettingsPtr mEditorSettings;
 
 		DynLib* mSBansheeEditorPlugin;

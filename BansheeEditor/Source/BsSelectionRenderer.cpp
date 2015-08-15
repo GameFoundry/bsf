@@ -78,7 +78,7 @@ namespace BansheeEngine
 		vertParams->getParam("matWorldViewProj", mMatWorldViewProj);
 
 		SPtr<GpuParamsCore> fragParams = mat->getPassParameters(0)->mFragParams;
-		fragParams->getParam("color", mColor);
+		fragParams->getParam("selColor", mColor);
 	}
 
 	void SelectionRendererCore::updateData(const SPtr<CameraHandlerCore>& camera, const Vector<SelectionRenderer::ObjectData>& objects)

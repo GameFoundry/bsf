@@ -177,7 +177,7 @@ namespace BansheeEngine
 		bool getVertexColorFlipRequired() const override { return true; }
 
 		/************************************************************************/
-		/* 				Internal use by DX9 RenderSystem only                   */
+		/* 				Internal use by DX9 RenderAPI only                   */
 		/************************************************************************/
 
 		/**

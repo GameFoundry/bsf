@@ -27,7 +27,7 @@ namespace BansheeEngine
 	static const StringID RenderAPIDX9 = "D3D9RenderAPI";
 	static const StringID RenderAPIDX11 = "D3D11RenderAPI";
 	static const StringID RenderAPIOpenGL = "GLRenderAPI";
-	static const StringID RendererDefault = "BansheeRenderer";
+	static const StringID RendererDefault = "RenderBeast";
 
 	class VirtualButton;
 	class VirtualInput;

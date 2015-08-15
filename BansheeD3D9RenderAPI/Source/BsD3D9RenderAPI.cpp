@@ -1527,7 +1527,7 @@ namespace BansheeEngine
 
 		rsc->setDriverVersion(mDriverVersion);
 		rsc->setDeviceName(mActiveD3DDriver->getDriverDescription());
-		rsc->setRenderSystemName(getName());
+		rsc->setRenderAPIName(getName());
 
 		// Init caps to maximum.		
 		rsc->setCapability(RSC_ANISOTROPY);

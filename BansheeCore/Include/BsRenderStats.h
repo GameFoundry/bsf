@@ -135,7 +135,7 @@ namespace BansheeEngine
 			// TODO - I'm ignoring resourceType for now. Later I will want to
 			// count object creation/destruction/read/write per type. I will
 			// also want to allow the caller to assign names to specific "resourceType" id.
-			// (Since many types will be RenderSystem specific).
+			// (Since many types will be RenderAPI specific).
 
 			// TODO - I should also track number of active GPU objects using this method, instead
 			// of just keeping track of how many were created and destroyed during the frame.

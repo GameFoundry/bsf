@@ -34,7 +34,7 @@ namespace BansheeEngine
 		void registerFactory(RenderAPIFactoryPtr factory);
 	private:
 		Vector<RenderAPIFactoryPtr> mAvailableFactories;
-		bool mRenderSystemInitialized;
+		bool mRenderAPIInitialized;
 	};
 }
 
