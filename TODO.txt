@@ -55,25 +55,9 @@ Code quality improvements:
 Polish
 
  - Duplicating a mesh doesn't properly render the mesh
-  - It seems to be due to renderables sharing materials. I generate a separate per-object buffer per each
-    renderable (but maybe I shouldn't? Just generate the one and update it before rendering) and then assign
-	it to the same MaterialCore which means whichever one was applied last was the one that sticks.
-
-Maybe:
-Make current material not a resource
-Store material in Renderable by value (so its copied when cloning happens)
- - TODO - Does cloning even properly clone Renderable or do they point to the same RenderableHandler? (If not, switching RTTI to non-ptr might be okay)
-  - Same issue will be with CameraHandler and LightInternal
-
-Add a new MaterialPrefab type that is a resource
- - Internally it stores a Material and it can be instantiated (copied) for use on Renderable
-POTENTIALLY - When serializing Renderable don't serialize a handle to the resource but the material directly. Then cloning it will ensure it has an unique instance.
-  - Same would go for assignment of material to Renderable, it would need to be cloned
-  - A pointer to the original resource could still be held
-BE AWARE - That in Unity when accessed from inspector materials aren't instantiated (they all share parameters)
- - However sometimes it will be useful to modify the materials without cloning & reassigning them (i.e. I'd still like to keep the original reference)
-  - But I think this will only happen at runtime, and it's probably fine to lose the original reference
-   - or maybe I don't lose the original reference but just don't persist (i.e. serialize) the instantiated ones
+  - RenderableHandler, CameraHandler, LightInternal needs to be serialized by value to avoid issues when cloning them
+  - Per-object parameters should be updated just before object rendering
+  - (Later) Material will need a clone() method, in both C++ and C#, for when the user needs to customize a specific object instance
 
 Ribek use:
  - Camera, Renderable, Material, Texture inspector
@@ -125,6 +109,7 @@ Other polish:
    - Likely use a user-provided callback to trigger when populating the menus
  - CmdRecordSO records an SO and all its children but it should only record a single SO
    - Also it doesn't record a diff, but instead the whole object
+ - Ctrl+D should perform duplicate in scene view as well
 
 Stage 2 polish:
  - Inject an icon into an .exe (Win32 specific)
@@ -152,6 +137,7 @@ Finalizing:
  - Splash screen
  - Settings/Preferences window
  - Documentation
+ - Need to generate a proper merge of dev and preview branches
  - (Optionally) GUI tabbing to switch between elements
 
 ----------------------------------------------------------------------

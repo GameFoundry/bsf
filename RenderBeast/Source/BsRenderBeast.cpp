@@ -117,6 +117,7 @@ namespace BansheeEngine
 
 				renElement.mesh = mesh;
 				renElement.subMesh = meshProps.getSubMesh(i);
+				renElement.renderableId = renderableId;
 
 				renElement.material = renderable->getMaterial(i);
 				if (renElement.material == nullptr)
@@ -450,32 +451,6 @@ namespace BansheeEngine
 			if ((renderable->getLayer() & cameraLayers) == 0)
 				continue;
 
-			// Update buffers
-			for (auto& renderElem : renderableData.elements)
-			{
-				if (controller != nullptr)
-					controller->bindPerObjectBuffers(renderElem);
-
-				if (renderableType == RenType_LitTextured)
-				{
-					Matrix4 worldViewProjMatrix = viewProjMatrix * mWorldTransforms[rendererId];
-					mLitTexHandler->updatePerObjectBuffers(renderElem, worldViewProjMatrix);
-				}
-
-				UINT32 numPasses = renderElem.material->getNumPasses();
-				for (UINT32 i = 0; i < numPasses; i++)
-				{
-					SPtr<PassParametersCore> passParams = renderElem.material->getPassParameters(i);
-
-					for (UINT32 j = 0; j < PassParametersCore::NUM_PARAMS; j++)
-					{
-						SPtr<GpuParamsCore> params = passParams->getParamByIdx(j);
-						if (params != nullptr)
-							params->updateHardwareBuffers();
-					}
-				}
-			}
-
 			// Do frustum culling
 			// TODO - This is bound to be a bottleneck at some point. When it is ensure that intersect
 			// methods use vector operations, as it is trivial to update them.
@@ -502,9 +477,44 @@ namespace BansheeEngine
 		{
 			SPtr<MaterialCore> material = iter->material;
 
-			BeastRenderableElement* renderable = static_cast<BeastRenderableElement*>(iter->renderElem);
-			if (renderable != nullptr && renderable->samplerOverrides != nullptr)
-				setPass(material, iter->passIdx, &renderable->samplerOverrides->passes[iter->passIdx]);
+			BeastRenderableElement* renderElem = static_cast<BeastRenderableElement*>(iter->renderElem);
+			if (renderElem != nullptr)
+			{
+				UINT32 rendererId = renderElem->renderableId;
+				const RenderableData& renderableData = mRenderables[rendererId];
+
+				RenderableHandlerCore* renderable = renderableData.renderable;
+				RenderableController* controller = renderableData.controller;
+				UINT32 renderableType = renderable->getRenderableType();
+				
+				if (controller != nullptr)
+					controller->bindPerObjectBuffers(*renderElem);
+
+				if (renderableType == RenType_LitTextured)
+				{
+					Matrix4 worldViewProjMatrix = viewProjMatrix * mWorldTransforms[rendererId];
+					mLitTexHandler->updatePerObjectBuffers(*renderElem, worldViewProjMatrix);
+				}
+
+				UINT32 numPasses = renderElem->material->getNumPasses();
+				for (UINT32 i = 0; i < numPasses; i++)
+				{
+					SPtr<PassParametersCore> passParams = renderElem->material->getPassParameters(i);
+
+					for (UINT32 j = 0; j < PassParametersCore::NUM_PARAMS; j++)
+					{
+						SPtr<GpuParamsCore> params = passParams->getParamByIdx(j);
+						if (params != nullptr)
+							params->updateHardwareBuffers();
+					}
+				}
+				
+				if (renderElem != nullptr && renderElem->samplerOverrides != nullptr)
+					setPass(material, iter->passIdx, &renderElem->samplerOverrides->passes[iter->passIdx]);
+				else
+					setPass(material, iter->passIdx, nullptr);
+
+			}
 			else
 				setPass(material, iter->passIdx, nullptr);
 

@@ -8,6 +8,8 @@
 
 namespace BansheeEngine
 {
+	class BeastRenderableElement;
+
 	/**
 	 * Semantics that may be used for signaling the renderer
 	 * for what is a certain shader parameter used for.
@@ -15,6 +17,16 @@ namespace BansheeEngine
 
 	static StringID RPS_Time = "Time";
 	static StringID RPS_LightDir = "LightDir";
+
+	/**
+	 * @brief	Data used by the renderer when rendering renderable handlers.
+	 */
+	struct RenderableData
+	{
+		RenderableHandlerCore* renderable;
+		Vector<BeastRenderableElement> elements;
+		RenderableController* controller;
+	};
 
 	/**
 	 * @copydoc	RenderableElement
@@ -30,6 +42,11 @@ namespace BansheeEngine
 		 *			properties on a global scale (e.g. filtering most commonly).
 		 */
 		MaterialSamplerOverrides* samplerOverrides;
+
+		/**
+		 * @brief	Id of the owner renderable.
+		 */
+		UINT32 renderableId;
 	};
 
 	/**
@@ -55,16 +72,6 @@ namespace BansheeEngine
 		struct CameraData
 		{
 			RenderQueuePtr renderQueue;
-		};
-
-		/**
-		 * @brief	Data used by the renderer when rendering renderable handlers.
-		 */
-		struct RenderableData
-		{
-			RenderableHandlerCore* renderable;
-			Vector<BeastRenderableElement> elements;
-			RenderableController* controller;
 		};
 
 		/**

@@ -1,29 +1,52 @@
--------------------------
+------------------------- STUDY --------------------------------
 Study shadow rendering implementations
 Study how is transparency handled (is it order independant?)
 Figure out what is skylight
 Determine how is light bleeding handled (if at all)
 
-Think about/set up deferred buffers per camera (don't activate them just yet)
+---------------------- IMPLEMENTATION ---------------------------
+
 RenderTexturePool needs support for cube and 3D textures
 Lights need getLightMesh() method
-
-Think about how to start with deferred
-
-
-Test all APIs with new changes regarding depth buffer creation on windows
+ - Need cone to use when rendering spot light, sphere otherwise
 Load up and set up a test-bed with Ribek's scene
-Issue with state caching: State caching doesn't work when deserializing
-Need cone to use when rendering spot light
 Quantize buffer sizes so they're divideable by 8 when requesting them from RenderTexturePool
 
+Keep a list of all renderables per camera depending on their layer
+ - This would be an optimization so I don't need to filter them every frame
+ - I'd need to update this list when renderable is added/removed, when camera is added/removed and when layer is changed (camera's or renderable's)
 
-Create a basic GBuffer - albedo, normal, depth
- - Using HDR formats where needed
- - Will need some kind of a pool that handles multiple viewports (each with its own gbuffer) and viewport resizing
+Before any rendering is done generate separate render queues for all elements
+ - Iterate over all elements valid for the camera and perform frustum culling
+ - Initially this would be different queues for transparent & opaque, but later there might be more types
+ - Store these queues per-camera
+ - Do the same for lights (separate them by type most likely)
 
-Implement deferred rendering (just basic lambert shading for now, only point light)
- - Then convert to tiled rendering (will likely need normal deferred too as a fallback - and to be able to toggle and compare)
+Generate different RenderableController for each set of elements
+ - Will likely want to rename current LitTexRenderableController to OpaqueSomething
+ - Each controller would be connected to its own render queue (generated in above step)
+ - Renderable controller should probably be notified when rendering starts/ends so it may bind gbuffer and/or other resoures.
+
+Create a class RenderTargets
+ - ::create(CameraPtr)
+ - ::bind (calls RenderTargetPool::get() and sets the render targets)
+ - ::unbind (calls RenderTargetPool::free)
+ - Holds references to PooledRenderTarget
+
+Store RenderTargets per camera
+ - Only create it if camera is rendering some renderables
+ - If none are rendered clear the reference to free the targets
+
+I sort rendering based on render targets so I don't need to rebind them
+ - I should do something similar with GBuffers
+ - First sort by GBuffers, then sort by output render targets
+ - This means I'll need to find out what kind of gbuffers cameras need before rendering the camera
+   - Move the renderable by layer filtering in renderAll, or do it when renderers are updated (as described above)
+   - Don't actually allocate targets at this point to avoid allocating a lot of memory at once.
+
+--------------------------- DESIGN ---------------------------
+
+Issue with state caching: State caching doesn't work when deserializing
 
 How will cameras interact with the renderer? The cameras currently available shouldn't have depth buffers
  - Need to modify RenderWindow so it doesn't create depth buffers
@@ -33,71 +56,48 @@ How will cameras interact with the renderer? The cameras currently available sho
    - Print out a warning and ignore it?
    - Or resolve the gbuffer into it? Probably this, as I want to be able to read the depth buffer from script code if needed
      - This still isn't perfect as I'd have duplicate buffers when using non-MSAA buffer that require no resolve
+ - Similar issue when a multisampled buffer is used for the camera
 
-Render:
- - Iterate over all cameras and create their render queues, record whether a camera requires a gbuffer or not
-    - How will "render()" callback signify whether they want a gbuffer or something else? 
-     - Assume they need it? Probably - although it would be nice to be able to customize the render targets
-	   of the render() calls. But I should probably think about that if it ever comes up, and implement it simply for now.
-	 - Potentially restrict cameras to only non-multisampled RGBA8 targets. Then later we can add a special
-	   mechanism for reading the depth buffer from sim thread(as well as reading other gbuffers)
-	    - But I don't think this should be needed (It will probably be enough to signal to the rendering
-		  thread to bind any one of those buffers, as we're only likely to use them from shaders. And shaders
-		  can then even render them out to an outside target if needed.)
-		- ALTHOUGH I do want to be able to set up custom render targets for the camera. So that custom scripts
-		  and shaders can be executed as needed, possibly outputting multiple targets of various formats.
- - Sort cameras based on render targets and priority as we do now, additionally sort by whether they require gbuffer or not
- - Add new class RendererTargets
-   - beginSceneRendering
-   - endSceneRendering
-   - resolve(RenderTarget)
-  - Add new class RenderTargetPool
-   - RTHandle handle = find(format, width, height, depth)
-   - RTHandle keeps a shared ptr so that all cameras that use it can hold (once it runs out the render targets are freed)
-
- - Separate GUI rendering into a separate part to be rendered after gbuffer is resolved?
+Separate GUI rendering into a separate part to be rendered after gbuffer is resolved?
 
 Will likely need an easy way to determine supported feature set (likely just depending on shader model)
 Consider encapsulating shaders together with methods for setting their parameters (and possibly retrieving output)
  - So that external code doesn't need to know about its internal and do less work
+ - This would contain a reference to the shader and its parameters
+ - It would then have a SetParameters method (custom per each shader) which updates its params in a simple manner
+ - (Later) Possibly allow them to return a feature level and/or platform they're to be used on
+ - (Later) It might be important to be easily able to use different versions of the shader (e.g. different defines)
+   - This might require handling compilation on this class, instead on resource load (But then again I could potentially
+     have the shader in an include file and then specific shader files for each define version)
 
--------------
+--------------------------- LONG TERM ------------------------
 
-Implement gamma correct rendering, HDR, tone mapping
- - Will likely need a simple framework for rendering full-screen effects
-   (e.g. I will need to downsample scene to determine brightness here, but will
-    also need that framework for all post-processing)
-
--------------
+Deferred:
+ - Create a tile deferred renderer
+ - Support for point, directional and spot lights
+ - Basic lambert shading initially
+  - Create brand new default shaders
+ - HDR, tone mapping and gamma correct (toggle-able)
+   - Will likely need a simple framework for rendering full-screen effects
+     (e.g. I will need to downsample scene to determine brightness here, but will
+      also need that framework for all post-processing)
 
 Implement shadows
  - Start with hard shadows
  - Move to PCF soft shadows (see if there's anything better)
  - Then cascaded maps
 
--------------
-
 Later: 
- - Finish up all light types
  - Reflection probes
  - Proper PBR materials with reflection
  - Post-processing system - FXAA, SSAO, Color correction, Depth of field (Bokeh)
  - Forward rendering for transparent objects
- - Need a way to toggle texture filtering mode for all textures (Some kind of an override?)
-
------------------
-
-SECOND STAGE(S)
  - Occlusion
  - GI
  - Volumetric lighting
  - SSR
  - Depth pre-pass - Make sure this can be toggled on and off as needed
  - HDR skybox, skylight stuff
-
------------------
-
-THIRD STAGE(S)
  - Skin & vegetation shaders
  - Tesselation/displacement/parallax
  - Water
@@ -105,3 +105,6 @@ THIRD STAGE(S)
  - Motion blur
  - Per object shadows
  - Extend camera with shutter speed (motion blur), aperture size and focal distance (depth of field), exposure (HDR)
+--------------------------- TEST -----------------------------
+
+Test all APIs with new changes regarding depth buffer creation on windows

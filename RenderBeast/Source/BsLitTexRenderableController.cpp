@@ -136,6 +136,7 @@ namespace BansheeEngine
 		staticParamBuffer = HardwareBufferCoreManager::instance().createGpuParamBlockBuffer(staticParamBlockDesc.blockSize * sizeof(UINT32));
 		perFrameParamBuffer = HardwareBufferCoreManager::instance().createGpuParamBlockBuffer(perFrameParamBlockDesc.blockSize * sizeof(UINT32));
 		perCameraParamBuffer = HardwareBufferCoreManager::instance().createGpuParamBlockBuffer(perCameraParamBlockDesc.blockSize * sizeof(UINT32));
+		perObjectParamBuffer = HardwareBufferCoreManager::instance().createGpuParamBlockBuffer(perObjectParamBlockDesc.blockSize * sizeof(UINT32));
 
 		staticParams->setParamBlockBuffer(staticParamBlockDesc.slot, staticParamBuffer);
 		perFrameParams->setParamBlockBuffer(perFrameParamBlockDesc.slot, perFrameParamBuffer);
@@ -255,10 +256,7 @@ namespace BansheeEngine
 					{
 						if (findIter->second.blockSize == perObjectParamBlockDesc.blockSize)
 						{
-							if (rendererData->perObjectParamBuffer == nullptr)
-								rendererData->perObjectParamBuffer = HardwareBufferCoreManager::instance().createGpuParamBlockBuffer(perObjectParamBlockDesc.blockSize * sizeof(UINT32));
-
-							rendererData->perObjectBuffers.push_back(RenderableElement::BufferBindInfo(i, j, findIter->second.slot, rendererData->perObjectParamBuffer));
+							rendererData->perObjectBuffers.push_back(RenderableElement::BufferBindInfo(i, j, findIter->second.slot, perObjectParamBuffer));
 
 							if (rendererData->wvpParam == nullptr && wvpParamName != "")
 							{
@@ -285,7 +283,7 @@ namespace BansheeEngine
 		{
 			SPtr<GpuParamsCore> params = element.material->getPassParameters(perObjectBuffer.passIdx)->getParamByIdx(perObjectBuffer.paramsIdx);
 
-			params->setParamBlockBuffer(perObjectBuffer.slotIdx, rendererData->perObjectParamBuffer);
+			params->setParamBlockBuffer(perObjectBuffer.slotIdx, perObjectParamBuffer);
 		}
 	}
 
@@ -308,9 +306,6 @@ namespace BansheeEngine
 		PerObjectData* rendererData = any_cast_unsafe<PerObjectData>(&element.rendererData);
 
 		rendererData->wvpParam.set(wvpMatrix);
-
-		if (rendererData->perObjectParamBuffer != nullptr)
-			rendererData->perObjectParamBuffer->flushToGPU();
 	}
 
 	SPtr<ShaderCore> LitTexRenderableController::createDefaultShader()

@@ -38,7 +38,7 @@ namespace BansheeEngine
 
 		Event<void()> onInputConfirmed; /**< Triggered when the user confirms the input in the edit box. */
 		Event<void()> onInputCanceled; /**< Triggered when the user cancels the input in the edit box. */
-
+		Event<void()> onFocusLost; /**< Triggered when the user clicks outside of the editor box. */
 	private:
 		GUITreeViewEditBox(const String& styleName, const GUIDimensions& dimensions);
 

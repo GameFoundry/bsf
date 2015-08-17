@@ -351,6 +351,11 @@ namespace BansheeEngine
 		 */
 		void onEditCanceled();
 
+		/**
+		 * @brief	Triggered when the user clicks outside of the edit box during a rename operation.
+		 */
+		void onEditFocusLost();
+
 		String mBackgroundStyle;
 		String mElementBtnStyle;
 		String mFoldoutBtnStyle;

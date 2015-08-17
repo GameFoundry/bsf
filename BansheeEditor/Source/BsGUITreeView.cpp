@@ -123,6 +123,7 @@ namespace BansheeEngine
 
 		mNameEditBox->onInputConfirmed.connect(std::bind(&GUITreeView::onEditAccepted, this));
 		mNameEditBox->onInputCanceled.connect(std::bind(&GUITreeView::onEditCanceled, this));
+		mNameEditBox->onFocusLost.connect(std::bind(&GUITreeView::onEditFocusLost, this));
 
 		mDragHighlight = GUITexture::create(mDragHighlightStyle);
 		mDragSepHighlight = GUITexture::create(mDragSepHighlightStyle);
@@ -844,12 +845,24 @@ namespace BansheeEngine
 
 	void GUITreeView::onEditAccepted()
 	{
+		TreeElement* elem = mEditElement;
 		disableEdit(true);
+		selectElement(elem);
 	}
 
 	void GUITreeView::onEditCanceled()
 	{
-		if(mEditElement != nullptr)
+		if (mEditElement != nullptr)
+		{
+			TreeElement* elem = mEditElement;
+			disableEdit(false);
+			selectElement(elem);
+		}
+	}
+
+	void GUITreeView::onEditFocusLost()
+	{
+		if (mEditElement != nullptr)
 			disableEdit(false);
 	}
 
@@ -881,7 +894,6 @@ namespace BansheeEngine
 
 		mNameEditBox->setFocus(false);
 		mNameEditBox->disableRecursively();
-		selectElement(mEditElement);
 		mEditElement = nullptr;
 	}
 

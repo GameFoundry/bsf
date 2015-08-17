@@ -23,8 +23,6 @@ namespace BansheeEngine
 		 */
 		struct PerObjectData
 		{
-			SPtr<GpuParamBlockBufferCore> perObjectParamBuffer;
-
 			GpuParamMat4Core wvpParam;
 
 			Vector<RenderableElement::BufferBindInfo> perObjectBuffers;
@@ -83,6 +81,7 @@ namespace BansheeEngine
 		SPtr<GpuParamBlockBufferCore> staticParamBuffer;
 		SPtr<GpuParamBlockBufferCore> perFrameParamBuffer;
 		SPtr<GpuParamBlockBufferCore> perCameraParamBuffer;
+		SPtr<GpuParamBlockBufferCore> perObjectParamBuffer;
 
 		SPtr<GpuParamsCore> staticParams;
 		SPtr<GpuParamsCore> perFrameParams;

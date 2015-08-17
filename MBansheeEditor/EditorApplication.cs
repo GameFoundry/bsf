@@ -100,6 +100,7 @@ namespace BansheeEditor
             inputConfig.RegisterButton(SceneWindow.MoveToolBinding, ButtonCode.W);
             inputConfig.RegisterButton(SceneWindow.RotateToolBinding, ButtonCode.E);
             inputConfig.RegisterButton(SceneWindow.ScaleToolBinding, ButtonCode.R);
+            inputConfig.RegisterButton(SceneWindow.DuplicateBinding, ButtonCode.D, ButtonModifier.Ctrl);
 
             ProjectLibrary.Refresh();
             monitor = new FolderMonitor(ProjectLibrary.ResourceFolder);

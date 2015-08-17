@@ -11,10 +11,11 @@ namespace BansheeEditor
     internal sealed class SceneWindow : EditorWindow
     {
         internal const string ToggleProfilerOverlayBinding = "ToggleProfilerOverlay";
-        internal const string ViewToolBinding = "ViewTool";
-        internal const string MoveToolBinding = "MoveTool";
-        internal const string RotateToolBinding = "RotateTool";
-        internal const string ScaleToolBinding = "ScaleTool";
+        internal const string ViewToolBinding = "EdViewTool";
+        internal const string MoveToolBinding = "EdMoveTool";
+        internal const string RotateToolBinding = "EdRotateTool";
+        internal const string ScaleToolBinding = "EdScaleTool";
+        internal const string DuplicateBinding = "EdDuplicate";
 
         private const int HeaderHeight = 20;
         private const float DefaultPlacementDepth = 5.0f;
@@ -47,6 +48,8 @@ namespace BansheeEditor
         private GUIFloatField rotateSnapInput;
 
         private int editorSettingsHash = int.MaxValue;
+
+        private VirtualButton duplicateKey;
 
         // Tool shortcuts
         private VirtualButton viewToolKey;
@@ -146,6 +149,7 @@ namespace BansheeEditor
             moveToolKey = new VirtualButton(MoveToolBinding);
             rotateToolKey = new VirtualButton(RotateToolBinding);
             scaleToolKey = new VirtualButton(ScaleToolBinding);
+            duplicateKey = new VirtualButton(DuplicateBinding);
 
             UpdateRenderTexture(Width, Height - HeaderHeight);
             UpdateProfilerOverlay();
@@ -196,6 +200,23 @@ namespace BansheeEditor
 
                 if (VirtualInput.IsButtonUp(scaleToolKey))
                     EditorApplication.ActiveSceneTool = SceneViewTool.Scale;
+
+                if (VirtualInput.IsButtonUp(duplicateKey))
+                {
+                    SceneObject[] selectedObjects = Selection.sceneObjects;
+                    CleanDuplicates(ref selectedObjects);
+
+                    if (selectedObjects.Length > 0)
+                    {
+                        String message;
+		                if (selectedObjects.Length == 1)
+			                message = "Duplicated " + selectedObjects[0].Name;
+		                else
+			                message = "Duplicated " + selectedObjects.Length + " elements";
+
+                        UndoRedo.CloneSO(selectedObjects, message);
+                    }
+                }
             }
 
             // Refresh GUI buttons if needed (in case someones changes the values from script)
@@ -503,6 +524,35 @@ namespace BansheeEditor
 
             if (profilerCamera != null)
                 profilerCamera.Target = renderTexture;
+	    }
+
+        private void CleanDuplicates(ref SceneObject[] objects)
+	    {
+		    List<SceneObject> cleanList = new List<SceneObject>();
+		    for (int i = 0; i < objects.Length; i++)
+		    {
+			    bool foundParent = false;
+                for (int j = 0; j < objects.Length; j++)
+                {
+                    SceneObject elem = objects[i];
+
+                    while (elem != null && elem != objects[j])
+                        elem = objects[i].Parent;
+
+                    bool isChildOf =  elem == objects[j];
+
+				    if (i != j && isChildOf)
+				    {
+					    foundParent = true;
+					    break;
+				    }
+			    }
+
+			    if (!foundParent)
+				    cleanList.Add(objects[i]);
+		    }
+
+		    objects = cleanList.ToArray();
 	    }
     }
 }
