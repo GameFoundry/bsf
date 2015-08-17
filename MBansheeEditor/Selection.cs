@@ -10,6 +10,24 @@ namespace BansheeEditor
         public static Action<SceneObject> OnSceneObjectPing;
         public static Action<string> OnResourcePing;
 
+        public static SceneObject sceneObject
+        {
+            get
+            {
+                SceneObject[] selection;
+                Internal_GetSceneObjectSelection(out selection);
+
+                if(selection.Length > 0)
+                    return selection[0];
+
+                return null;
+            }
+            set
+            {
+                Internal_SetSceneObjectSelection(new SceneObject[] { value });
+            }
+        }
+
         public static SceneObject[] sceneObjects
         {
             get

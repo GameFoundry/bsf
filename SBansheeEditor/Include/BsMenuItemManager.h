@@ -35,11 +35,12 @@ namespace BansheeEngine
 		 * @param	path		Output path defined in the MenuItem attribute.
 		 * @param	shortcut	Shortcut key defined in the MenuItem attribute.
 		 * @param	priority	Menu item priority defined in the MenuItem attribute.
+		 * @param	separator	Should the separator be inserted before the menu item.
 		 *
 		 * @return	True if the method has a MenuItem attribute. If false is returned output parameters
 		 *			from this method are undefined.
 		 */
-		bool parseMenuItemMethod(MonoMethod* method, WString& path, ShortcutKey& shortcut, INT32& priority) const;
+		bool parseMenuItemMethod(MonoMethod* method, WString& path, ShortcutKey& shortcut, INT32& priority, bool& separator) const;
 
 		/**
 		 * @brief	Triggered when one of the managed menu items is clicked. 
@@ -55,6 +56,7 @@ namespace BansheeEngine
 		MonoField* mPathField;
 		MonoField* mShortcutField;
 		MonoField* mPriorityField;
+		MonoField* mSeparatorField;
 
 		Vector<WString> mMenuItems;
 	};

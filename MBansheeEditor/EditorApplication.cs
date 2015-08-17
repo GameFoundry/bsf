@@ -119,7 +119,7 @@ namespace BansheeEditor
             ProjectLibrary.Update();
         }
 
-        [MenuItem("File/Save Prefab", ButtonModifier.Ctrl, ButtonCode.S)]
+        [MenuItem("File/Save Prefab", ButtonModifier.Ctrl, ButtonCode.S, 50, true)]
         private static void SavePrefab()
         {
             if (!string.IsNullOrEmpty(Scene.ActiveSceneUUID))
@@ -128,23 +128,27 @@ namespace BansheeEditor
                 Internal_SaveScene(scenePath);
             }
             else
+                SavePrefabAs();
+        }
+
+        [MenuItem("File/Save Prefab As", 50)]
+        private static void SavePrefabAs()
+        {
+            string scenePath = "";
+            BrowseDialog.SaveFile(ProjectLibrary.ResourceFolder, "", out scenePath);
+
+            if (!PathEx.IsPartOf(scenePath, ProjectLibrary.ResourceFolder))
+                DialogBox.Open("Error", "The location must be inside the Resources folder of the project.", DialogBox.Type.OK);
+            else
             {
-                string scenePath = "";
-                BrowseDialog.SaveFile(ProjectLibrary.ResourceFolder, "", out scenePath);
+                // TODO - If path points to an existing non-scene asset or folder I should delete it otherwise
+                //        Internal_SaveScene will silently fail.
 
-                if (!PathEx.IsPartOf(scenePath, ProjectLibrary.ResourceFolder))
-                    DialogBox.Open("Error", "The location must be inside the Resources folder of the project.", DialogBox.Type.OK);
-                else
-                {
-                    // TODO - If path points to an existing non-scene asset or folder I should delete it otherwise
-                    //        Internal_SaveScene will silently fail.
-
-                    Scene.ActiveSceneUUID = Internal_SaveScene(scenePath);
-                }
+                Scene.ActiveSceneUUID = Internal_SaveScene(scenePath);
             }
         }
 
-        [MenuItem("File/Load Prefab", ButtonModifier.Ctrl, ButtonCode.L)]
+        [MenuItem("File/Load Prefab", ButtonModifier.Ctrl, ButtonCode.L, 50)]
         private static void LoadPrefab()
         {
             Action doLoad =
@@ -176,6 +180,112 @@ namespace BansheeEditor
             }
             else
                 doLoad();
+        }
+
+        [MenuItem("Components/Camera")]
+        private static void AddCamera()
+        {
+            SceneObject so = Selection.sceneObject;
+            if (so == null)
+                return;
+
+            UndoRedo.RecordSO(so, "Added a Camera component");
+            so.AddComponent<Camera>();
+        }
+
+        [MenuItem("Components/Renderable")]
+        private static void AddRenderable()
+        {
+            SceneObject so = Selection.sceneObject;
+            if (so == null)
+                return;
+
+            UndoRedo.RecordSO(so, "Added a Renderable component");
+            so.AddComponent<Renderable>();
+        }
+
+        [MenuItem("Components/Point light")]
+        private static void AddPointLight()
+        {
+            SceneObject so = Selection.sceneObject;
+            if (so == null)
+                return;
+
+            UndoRedo.RecordSO(so, "Added a Light component");
+            Light light = so.AddComponent<Light>();
+            light.Type = LightType.Point;
+        }
+
+        [MenuItem("Components/Spot light")]
+        private static void AddSpotLight()
+        {
+            SceneObject so = Selection.sceneObject;
+            if (so == null)
+                return;
+
+            UndoRedo.RecordSO(so, "Added a Light component");
+            Light light = so.AddComponent<Light>();
+            light.Type = LightType.Spot;
+        }
+
+        [MenuItem("Components/Directional light")]
+        private static void AddDirectionalLight()
+        {
+            SceneObject so = Selection.sceneObject;
+            if (so == null)
+                return;
+
+            UndoRedo.RecordSO(so, "Added a Light component");
+            Light light = so.AddComponent<Light>();
+            light.Type = LightType.Directional;
+        }
+
+        [MenuItem("Scene Objects/Camera")]
+        private static void AddCameraSO()
+        {
+            SceneObject so = UndoRedo.CreateSO("Camera", "Created a Camera");
+            so.AddComponent<Camera>();
+
+            Selection.sceneObject = so;
+        }
+
+        [MenuItem("Scene Objects/Renderable")]
+        private static void AddRenderableSO()
+        {
+            SceneObject so = UndoRedo.CreateSO("Renderable", "Created a Renderable");
+            so.AddComponent<Renderable>();
+
+            Selection.sceneObject = so;
+        }
+
+        [MenuItem("Scene Objects/Point light")]
+        private static void AddPointLightSO()
+        {
+            SceneObject so = UndoRedo.CreateSO("Point light", "Created a Light");
+            Light light = so.AddComponent<Light>();
+            light.Type = LightType.Point;
+
+            Selection.sceneObject = so;
+        }
+
+        [MenuItem("Scene Objects/Spot light")]
+        private static void AddSpotLightSO()
+        {
+            SceneObject so = UndoRedo.CreateSO("Spot light", "Created a Light");
+            Light light = so.AddComponent<Light>();
+            light.Type = LightType.Spot;
+
+            Selection.sceneObject = so;
+        }
+
+        [MenuItem("Scene Objects/Directional light")]
+        private static void AddDirectionalLightSO()
+        {
+            SceneObject so = UndoRedo.CreateSO("Directional light", "Created a Light");
+            Light light = so.AddComponent<Light>();
+            light.Type = LightType.Directional;
+
+            Selection.sceneObject = so;
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

@@ -21,6 +21,12 @@ Before any rendering is done generate separate render queues for all elements
  - Initially this would be different queues for transparent & opaque, but later there might be more types
  - Store these queues per-camera
  - Do the same for lights (separate them by type most likely)
+ - Later:
+  - Extend render queues so they also sort by material (if needed, it should be easy to change sort order)
+  - Materials should be transformed into a set of material diffs (e.g. only set new shader, buffer, texture or cbuffer
+    if they don't match the previous material)
+	 - i.e. some elements in the render queue would be renderable elements (with no material info) and others
+	   would be material diffs that change the state
 
 Generate different RenderableController for each set of elements
  - Will likely want to rename current LitTexRenderableController to OpaqueSomething

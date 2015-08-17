@@ -54,29 +54,22 @@ Code quality improvements:
 ----------------------------------------------------------------------
 Polish
 
- - Duplicating a mesh doesn't properly render the mesh
-  - RenderableHandler, CameraHandler, LightInternal needs to be serialized by value to avoid issues when cloning them
-  - Per-object parameters should be updated just before object rendering
-  - (Later) Material will need a clone() method, in both C++ and C#, for when the user needs to customize a specific object instance
-
 Ribek use:
+ - Test level save/load (also test hidden & non-saveable scene objects)
+ - Hook up color picker to guicolor field
  - Camera, Renderable, Material, Texture inspector
  - Project create/open window
  - Load default layout on initial start
  - Test release mode
- - Test inspector selection, selecting a resource and adding/removing component updates
- - Test level save/load (also test hidden & non-saveable scene objects)
  - Ability to create assets in Project view (At least Material)
  - Need a way to add scene objects and components (and remove them)
   - Need to add default components (Camera, Renderable, Light) to main menu
   - Adding scene objects should be doable from context menu in Hierarchy, by dropping a Prefab or by main Menu (undoable)
- - Hook up color picker to guicolor field
  - (Optionally, needed for GUI editing) GUISkin resource inspector & a way to inspect and save the default editor skin
    - Will need C# wrapper for GUISkin (and a way to assign the current skin to a window)
 
 First screenshot:
  - Additional menu bar items: 
-  - File: Exit, Save Project, New Project, Open Project, Save Scene As
   - Edit: Undo/Redo, Cut/Copy/Paste/Duplicate/Delete(need to make sure it works in Hierarchy, with shortcuts), Frame Selected, Preferences, Play/Pause/Step, View/Move/rotate/scale
   - Assets (also add to context): Create(Folder, Material, Shader, Script, Prefab, GUI Skin), Show in explorer
   - Game Object (also add to context): Create(Empty, Empty Child, Camera, Renderable, Point/Spot/Directional Light), Apply prefab, Break prefab, Revert prefab
@@ -89,15 +82,13 @@ First screenshot:
  - (Optionally) Console window
 
 Other polish:
+ - CmdRecordSO records an SO and all its children but it should only record a single SO
+   - Also it doesn't record a diff, but instead the whole object
+ - Crash on shutdown in mono_gchandle_free
  - C# inspectors for Point/Spot/Directional light
  - C# interface for Font
  - Handle seems to lag behind the selected mesh
  - ProjectLibrary seems to import some files on every start-up
- - Crash on shutdown in mono_gchandle_free
- - Add "focus on object" key (F) - animate it: rotate camera towards then speed towards while zooming in
- - Ortographic camera views (+ gizmo in scene view corner that shows camera orientation)
- - Drag to select in scene view
- - Update GUISlider so it works with the new style (and to have min/max limits, plus step size)
  - Replace "minimize" button in tabbed title bar with maximize and make sure it works (in both docked and floating mode)
  - When I expand inspector elements and them come back to that object it should remember the previous state
    - Add a chaching mechanism to inspector (likely based on instance ID & property names)
@@ -105,11 +96,13 @@ Other polish:
    - Consider saving this information with the serialized object
  - Make sure to persist EditorSettings
  - Import option inspectors for Texture, Mesh, Font
+ - Update GUISlider so it works with the new style (and to have min/max limits, plus step size)
+ - Add "focus on object" key (F) - animate it: rotate camera towards then speed towards while zooming in
+ - Ortographic camera views (+ gizmo in scene view corner that shows camera orientation)
+ - Drag to select in scene view
  - MenuBar - will likely need a way to mark elements as disabled when not appropriate (e.g. no "frame selected unless scene is focused")
    - Likely use a user-provided callback to trigger when populating the menus
- - CmdRecordSO records an SO and all its children but it should only record a single SO
-   - Also it doesn't record a diff, but instead the whole object
- - Ctrl+D should perform duplicate in scene view as well
+ 
 
 Stage 2 polish:
  - Inject an icon into an .exe (Win32 specific)
@@ -138,6 +131,7 @@ Finalizing:
  - Settings/Preferences window
  - Documentation
  - Need to generate a proper merge of dev and preview branches
+ - Save/Load project menu item does nothing at the moment
  - (Optionally) GUI tabbing to switch between elements
 
 ----------------------------------------------------------------------

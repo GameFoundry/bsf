@@ -9,7 +9,7 @@ namespace BansheeEngine
     // Don't reorder, used by native code
     public enum LightType
     {
-        Directional, Point, Light
+        Directional, Point, Spot
     }
 
     internal class LightInternal : ScriptObject

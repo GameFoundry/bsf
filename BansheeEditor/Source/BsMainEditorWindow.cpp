@@ -28,8 +28,8 @@ namespace BansheeEngine
 
 		mMenuBar->addMenuItem(L"File/New project", nullptr, 100);
 		mMenuBar->addMenuItem(L"File/Open project", nullptr, 100);
-		mMenuBar->addSeparator(L"File", 99);
-		mMenuBar->addMenuItem(L"File/Exit", nullptr, 98);
+		mMenuBar->addSeparator(L"File", 0);
+		mMenuBar->addMenuItem(L"File/Exit", nullptr, 0);
 
 		TestSuitePtr testSuite = TestSuite::create<EditorTestSuite>();
 		testSuite->run(ExceptionTestOutput());

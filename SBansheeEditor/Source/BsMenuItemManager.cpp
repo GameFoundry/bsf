@@ -50,6 +50,7 @@ namespace BansheeEngine
 		mPathField = mMenuItemAttribute->getField("path");
 		mShortcutField = mMenuItemAttribute->getField("shortcut");
 		mPriorityField = mMenuItemAttribute->getField("priority");
+		mSeparatorField = mMenuItemAttribute->getField("separator");
 
 		MainEditorWindow* mainWindow = EditorWindowManager::instance().getMainWindow();
 
@@ -68,9 +69,24 @@ namespace BansheeEngine
 					WString path;
 					ShortcutKey shortcutKey = ShortcutKey::NONE;
 					INT32 priority = 0;
-					if (parseMenuItemMethod(curMethod, path, shortcutKey, priority))
+					bool separator = false;
+					if (parseMenuItemMethod(curMethod, path, shortcutKey, priority, separator))
 					{
 						std::function<void()> callback = std::bind(&MenuItemManager::menuItemCallback, curMethod);
+
+						if (separator)
+						{
+							Vector<WString> pathElements = StringUtil::split(path, L"/");
+							WString separatorPath;
+							if (pathElements.size() > 1)
+							{
+								const WString& lastElem = pathElements[pathElements.size() - 1];
+								separatorPath = path;
+								separatorPath.erase(path.size() - lastElem.size() - 1, lastElem.size() + 1);
+							}
+
+							mainWindow->getMenuBar().addSeparator(separatorPath, priority);
+						}
 
 						mainWindow->getMenuBar().addMenuItem(path, callback, priority, shortcutKey);
 						mMenuItems.push_back(path);
@@ -80,7 +96,7 @@ namespace BansheeEngine
 		}
 	}
 
-	bool MenuItemManager::parseMenuItemMethod(MonoMethod* method, WString& path, ShortcutKey& shortcut, INT32& priority) const
+	bool MenuItemManager::parseMenuItemMethod(MonoMethod* method, WString& path, ShortcutKey& shortcut, INT32& priority, bool& separator) const
 	{
 		if (!method->hasAttribute(mMenuItemAttribute))
 			return false;
@@ -99,6 +115,7 @@ namespace BansheeEngine
 		mShortcutField->getValue(menuItemAttrib, &shortcut);
 		path = MonoUtil::monoToWString(monoPath);
 		mPriorityField->getValue(menuItemAttrib, &priority);
+		mSeparatorField->getValue(menuItemAttrib, &separator);
 
 		return true;
 	}
