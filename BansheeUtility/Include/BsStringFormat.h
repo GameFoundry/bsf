@@ -231,7 +231,7 @@ namespace BansheeEngine
 				return;
 
 			std::basic_string<char> sourceParam = toString(param);
-			parameters[idx].buffer = (char*)bs_alloc(sourceParam.size() * sizeof(char));
+			parameters[idx].buffer = (char*)bs_alloc((UINT32)sourceParam.size() * sizeof(char));
 			parameters[idx].size = (UINT32)sourceParam.size();
 
 			sourceParam.copy(parameters[idx].buffer, parameters[idx].size, 0);
@@ -250,7 +250,7 @@ namespace BansheeEngine
 				return;
 
 			std::basic_string<wchar_t> sourceParam = toWString(param);
-			parameters[idx].buffer = (wchar_t*)bs_alloc(sourceParam.size() * sizeof(wchar_t));
+			parameters[idx].buffer = (wchar_t*)bs_alloc((UINT32)sourceParam.size() * sizeof(wchar_t));
 			parameters[idx].size = (UINT32)sourceParam.size();
 			
 			sourceParam.copy(parameters[idx].buffer, parameters[idx].size, 0);

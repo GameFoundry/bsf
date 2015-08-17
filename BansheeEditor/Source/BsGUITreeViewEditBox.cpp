@@ -47,8 +47,8 @@ namespace BansheeEngine
 		}
 		else if(ev.getType() == GUICommandEventType::FocusLost)
 		{
-			if(!onInputCanceled.empty())
-				onInputCanceled();
+			if(!onFocusLost.empty())
+				onFocusLost();
 
 			return true;
 		}

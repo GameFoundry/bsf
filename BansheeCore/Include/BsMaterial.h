@@ -640,6 +640,11 @@ namespace BansheeEngine
 		void initialize() override;
 
 		/**
+		 * @brief	Creates a deep copy of the material and returns the new object.
+		 */
+		HMaterial Material::clone();
+
+		/**
 		 * @brief	Creates a new empty material.
 		 * 			
 		 * @note	Make sure you call Material::setShader before using it.

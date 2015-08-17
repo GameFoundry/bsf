@@ -15,6 +15,7 @@
 #include "BsFrameAlloc.h"
 #include "BsMatrixNxM.h"
 #include "BsVectorNI.h"
+#include "BsMemorySerializer.h"
 
 namespace BansheeEngine
 {
@@ -1246,6 +1247,19 @@ namespace BansheeEngine
 	void Material::notifyResourceChanged(const HResource& resource)
 	{
 		initializeIfLoaded();
+	}
+
+	HMaterial Material::clone()
+	{
+		UINT32 bufferSize = 0;
+
+		MemorySerializer serializer;
+		UINT8* buffer = serializer.encode(this, bufferSize, (void*(*)(UINT32))&bs_alloc);
+
+		std::shared_ptr<Material> cloneObj = std::static_pointer_cast<Material>(serializer.decode(buffer, bufferSize));
+		bs_free(buffer);
+
+		return static_resource_cast<Material>(gResources()._createResourceHandle(cloneObj));
 	}
 
 	HMaterial Material::create()

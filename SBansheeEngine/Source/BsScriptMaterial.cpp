@@ -22,6 +22,7 @@ namespace BansheeEngine
 	void ScriptMaterial::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptMaterial::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_Clone", &ScriptMaterial::internal_Clone);
 
 		metaData.scriptClass->addInternalCall("Internal_GetShader", &ScriptMaterial::internal_GetShader);
 		metaData.scriptClass->addInternalCall("Internal_SetShader", &ScriptMaterial::internal_SetShader);
@@ -62,6 +63,16 @@ namespace BansheeEngine
 
 		ScriptMaterial* scriptInstance;
 		ScriptResourceManager::instance().createScriptResource(instance, material, &scriptInstance);
+	}
+
+	MonoObject* ScriptMaterial::internal_Clone(ScriptMaterial* nativeInstance)
+	{
+		HMaterial clone = nativeInstance->mMaterial->clone();
+
+		ScriptMaterial* scriptClone;
+		ScriptResourceManager::instance().createScriptResource(clone, &scriptClone);
+
+		return scriptClone->getManagedInstance();
 	}
 
 	MonoObject* ScriptMaterial::internal_GetShader(ScriptMaterial* nativeInstance)

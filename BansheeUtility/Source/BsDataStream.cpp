@@ -63,7 +63,7 @@ namespace BansheeEngine
 		// Read the entire buffer - ideally in one read, but if the size of
 		// the buffer is unknown, do multiple fixed size reads.
 		size_t bufSize = (mSize > 0 ? mSize : 4096);
-		std::stringstream::char_type* tempBuffer = (std::stringstream::char_type*)bs_alloc(bufSize);
+		std::stringstream::char_type* tempBuffer = (std::stringstream::char_type*)bs_alloc((UINT32)bufSize);
 
 		// Ensure read from begin of stream
 		seek(0);
@@ -153,7 +153,7 @@ namespace BansheeEngine
 		// Read the entire buffer - ideally in one read, but if the size of
 		// the buffer is unknown, do multiple fixed size reads.
 		size_t bufSize = (mSize > 0 ? mSize : 4096);
-		std::stringstream::char_type* tempBuffer = (std::stringstream::char_type*)bs_alloc(bufSize);
+		std::stringstream::char_type* tempBuffer = (std::stringstream::char_type*)bs_alloc((UINT32)bufSize);
 
 		// Ensure read from begin of stream
 		seek(0);
@@ -238,7 +238,7 @@ namespace BansheeEngine
         // Copy data from incoming stream
         mSize = sourceStream.size();
 
-		mData = (UINT8*)bs_alloc(sizeof(UINT8) * mSize);
+		mData = (UINT8*)bs_alloc((UINT32)mSize);
 		mPos = mData;
 		mEnd = mData + sourceStream.read(mData, mSize);
 
@@ -251,7 +251,7 @@ namespace BansheeEngine
         // Copy data from incoming stream
         mSize = sourceStream->size();
 
-		mData = (UINT8*)bs_alloc(sizeof(UINT8) * mSize);
+		mData = (UINT8*)bs_alloc((UINT32)mSize);
 		mPos = mData;
 		mEnd = mData + sourceStream->read(mData, mSize);
 

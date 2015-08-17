@@ -147,6 +147,11 @@ namespace BansheeEngine
             return Internal_GetTextureCube(mCachedPtr, name);
         }
 
+        public Material Clone()
+        {
+            return Internal_Clone(mCachedPtr);
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateInstance(Material instance, IntPtr shader);
 
@@ -215,5 +220,8 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern TextureCube Internal_GetTextureCube(IntPtr nativeInstance, string name);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern Material Internal_Clone(IntPtr nativeInstance);
     }
 }

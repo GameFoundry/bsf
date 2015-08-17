@@ -107,7 +107,7 @@ namespace BansheeEngine
 	 * @brief	Allocates the specified number of bytes.
 	 */
 	template<class Alloc> 
-	inline void* bs_alloc(size_t count)
+	inline void* bs_alloc(UINT32 count)
 	{
 		return MemoryAllocator<Alloc>::allocate(count);
 	}
@@ -183,7 +183,7 @@ namespace BansheeEngine
 	/**
 	 * @brief	Allocates the specified number of bytes.
 	 */
-	inline void* bs_alloc(size_t count)
+	inline void* bs_alloc(UINT32 count)
 	{
 		return MemoryAllocator<GenAlloc>::allocate(count);
 	}
@@ -313,7 +313,7 @@ namespace BansheeEngine
 		 */
 		pointer allocate (size_type num, const void* = 0) 
 		{
-			pointer ret = (pointer)(bs_alloc<Alloc>((size_t)num*sizeof(T)));
+			pointer ret = (pointer)(bs_alloc<Alloc>((UINT32)num*sizeof(T)));
 			return ret;
 		}
 

@@ -50,6 +50,7 @@ namespace BansheeEngine
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
 		static void internal_CreateInstance(MonoObject* instance, ScriptShader* shader);
+		static MonoObject* internal_Clone(ScriptMaterial* nativeInstance);
 
 		static MonoObject* internal_GetShader(ScriptMaterial* nativeInstance);
 		static void internal_SetShader(ScriptMaterial* nativeInstance, ScriptShader* shader);
