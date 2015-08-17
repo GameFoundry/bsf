@@ -62,9 +62,6 @@ Ribek use:
  - Load default layout on initial start
  - Test release mode
  - Ability to create assets in Project view (At least Material)
- - Need a way to add scene objects and components (and remove them)
-  - Need to add default components (Camera, Renderable, Light) to main menu
-  - Adding scene objects should be doable from context menu in Hierarchy, by dropping a Prefab or by main Menu (undoable)
  - (Optionally, needed for GUI editing) GUISkin resource inspector & a way to inspect and save the default editor skin
    - Will need C# wrapper for GUISkin (and a way to assign the current skin to a window)
 
@@ -74,7 +71,6 @@ First screenshot:
   - Assets (also add to context): Create(Folder, Material, Shader, Script, Prefab, GUI Skin), Show in explorer
   - Game Object (also add to context): Create(Empty, Empty Child, Camera, Renderable, Point/Spot/Directional Light), Apply prefab, Break prefab, Revert prefab
    - Possibly create helper objects: Cube, Sphere, Plane, Quad, Capsule, Cylinder
-  - Component (also add to inspector context): Camera, Renderable, Point/Spot/Directional light, all other components from scripts
   - Help - About, API Reference (link to site)
  - Modify inspector looks by scaling down transform input box sizes, and properly aligning component entries
  - (Optionally) New UI look (tabs, component/array containers, better buttons)
@@ -102,7 +98,7 @@ Other polish:
  - Drag to select in scene view
  - MenuBar - will likely need a way to mark elements as disabled when not appropriate (e.g. no "frame selected unless scene is focused")
    - Likely use a user-provided callback to trigger when populating the menus
- 
+ - Need to list all script components in the Components menu
 
 Stage 2 polish:
  - Inject an icon into an .exe (Win32 specific)

@@ -157,8 +157,8 @@ namespace BansheeEditor
             GUILayoutY sceneObjectLayout = sceneObjectPanel.AddLayoutY();
 
             GUILayoutX nameLayout = sceneObjectLayout.AddLayoutX();
-            GUILabel nameLbl = new GUILabel(new LocEdString("Name"), GUIOption.FixedWidth(70));
-            soNameInput = new GUITextBox(false, GUIOption.FlexibleWidth(200));
+            GUILabel nameLbl = new GUILabel(new LocEdString("Name"), GUIOption.FixedWidth(50));
+            soNameInput = new GUITextBox(false, GUIOption.FlexibleWidth(180));
             soNameInput.Text = activeSO.Name;
             soNameInput.OnChanged += (x) => { if (activeSO != null) activeSO.Name = x; };
 
@@ -169,10 +169,10 @@ namespace BansheeEditor
             soPrefabLayout = sceneObjectLayout.AddLayoutX();
 
             GUILayoutX positionLayout = sceneObjectLayout.AddLayoutX();
-            GUILabel positionLbl = new GUILabel(new LocEdString("Position"), GUIOption.FixedWidth(70));
-            soPosX = new GUIFloatField(new LocEdString("X"), 10, "", GUIOption.FlexibleWidth(50));
-            soPosY = new GUIFloatField(new LocEdString("Y"), 10, "", GUIOption.FlexibleWidth(50));
-            soPosZ = new GUIFloatField(new LocEdString("Z"), 10, "", GUIOption.FlexibleWidth(50));
+            GUILabel positionLbl = new GUILabel(new LocEdString("Position"), GUIOption.FixedWidth(50));
+            soPosX = new GUIFloatField(new LocEdString("X"), 10, "", GUIOption.FixedWidth(60));
+            soPosY = new GUIFloatField(new LocEdString("Y"), 10, "", GUIOption.FixedWidth(60));
+            soPosZ = new GUIFloatField(new LocEdString("Z"), 10, "", GUIOption.FixedWidth(60));
 
             soPosX.OnChanged += (x) => OnPositionChanged(0, x);
             soPosY.OnChanged += (y) => OnPositionChanged(1, y);
@@ -181,16 +181,18 @@ namespace BansheeEditor
             positionLayout.AddElement(positionLbl);
             positionLayout.AddElement(soPosX);
             positionLayout.AddSpace(10);
+            positionLayout.AddFlexibleSpace();
             positionLayout.AddElement(soPosY);
             positionLayout.AddSpace(10);
+            positionLayout.AddFlexibleSpace();
             positionLayout.AddElement(soPosZ);
             positionLayout.AddFlexibleSpace();
 
             GUILayoutX rotationLayout = sceneObjectLayout.AddLayoutX();
-            GUILabel rotationLbl = new GUILabel(new LocEdString("Rotation"), GUIOption.FixedWidth(70));
-            soRotX = new GUIFloatField(new LocEdString("X"), 10, "", GUIOption.FlexibleWidth(50));
-            soRotY = new GUIFloatField(new LocEdString("Y"), 10, "", GUIOption.FlexibleWidth(50));
-            soRotZ = new GUIFloatField(new LocEdString("Z"), 10, "", GUIOption.FlexibleWidth(50));
+            GUILabel rotationLbl = new GUILabel(new LocEdString("Rotation"), GUIOption.FixedWidth(50));
+            soRotX = new GUIFloatField(new LocEdString("X"), 10, "", GUIOption.FixedWidth(60));
+            soRotY = new GUIFloatField(new LocEdString("Y"), 10, "", GUIOption.FixedWidth(60));
+            soRotZ = new GUIFloatField(new LocEdString("Z"), 10, "", GUIOption.FixedWidth(60));
 
             soRotX.OnChanged += (x) => OnRotationChanged(0, x);
             soRotY.OnChanged += (y) => OnRotationChanged(1, y);
@@ -199,16 +201,18 @@ namespace BansheeEditor
             rotationLayout.AddElement(rotationLbl);
             rotationLayout.AddElement(soRotX);
             rotationLayout.AddSpace(10);
+            rotationLayout.AddFlexibleSpace();
             rotationLayout.AddElement(soRotY);
             rotationLayout.AddSpace(10);
+            rotationLayout.AddFlexibleSpace();
             rotationLayout.AddElement(soRotZ);
             rotationLayout.AddFlexibleSpace();
 
             GUILayoutX scaleLayout = sceneObjectLayout.AddLayoutX();
-            GUILabel scaleLbl = new GUILabel(new LocEdString("Scale"), GUIOption.FixedWidth(70));
-            soScaleX = new GUIFloatField(new LocEdString("X"), 10, "", GUIOption.FlexibleWidth(50));
-            soScaleY = new GUIFloatField(new LocEdString("Y"), 10, "", GUIOption.FlexibleWidth(50));
-            soScaleZ = new GUIFloatField(new LocEdString("Z"), 10, "", GUIOption.FlexibleWidth(50));
+            GUILabel scaleLbl = new GUILabel(new LocEdString("Scale"), GUIOption.FixedWidth(50));
+            soScaleX = new GUIFloatField(new LocEdString("X"), 10, "", GUIOption.FixedWidth(60));
+            soScaleY = new GUIFloatField(new LocEdString("Y"), 10, "", GUIOption.FixedWidth(60));
+            soScaleZ = new GUIFloatField(new LocEdString("Z"), 10, "", GUIOption.FixedWidth(60));
 
             soScaleX.OnChanged += (x) => OnScaleChanged(0, x);
             soScaleY.OnChanged += (y) => OnScaleChanged(1, y);
@@ -217,8 +221,10 @@ namespace BansheeEditor
             scaleLayout.AddElement(scaleLbl);
             scaleLayout.AddElement(soScaleX);
             scaleLayout.AddSpace(10);
+            scaleLayout.AddFlexibleSpace();
             scaleLayout.AddElement(soScaleY);
             scaleLayout.AddSpace(10);
+            scaleLayout.AddFlexibleSpace();
             scaleLayout.AddElement(soScaleZ);
             scaleLayout.AddFlexibleSpace();
 
@@ -239,14 +245,14 @@ namespace BansheeEditor
                 for (int i = 0; i < numChildren; i++)
                     soPrefabLayout.GetChild(0).Destroy();
 
-                GUILabel prefabLabel =new GUILabel(new LocEdString("Prefab"), GUIOption.FixedWidth(70));
+                GUILabel prefabLabel =new GUILabel(new LocEdString("Prefab"), GUIOption.FixedWidth(50));
                 soPrefabLayout.AddElement(prefabLabel);
 
                 //if (hasPrefab) // TODO - Disabled check for preview purposes
                 {
-                    GUIButton btnApplyPrefab = new GUIButton(new LocEdString("Apply"));
-                    GUIButton btnRevertPrefab = new GUIButton(new LocEdString("Revert"));
-                    GUIButton btnBreakPrefab = new GUIButton(new LocEdString("Break"));
+                    GUIButton btnApplyPrefab = new GUIButton(new LocEdString("Apply"), GUIOption.FixedWidth(60));
+                    GUIButton btnRevertPrefab = new GUIButton(new LocEdString("Revert"), GUIOption.FixedWidth(60));
+                    GUIButton btnBreakPrefab = new GUIButton(new LocEdString("Break"), GUIOption.FixedWidth(60));
 
                     btnApplyPrefab.OnClick += () => PrefabUtility.ApplyPrefab(activeSO);
                     btnRevertPrefab.OnClick += () => PrefabUtility.RevertPrefab(activeSO);
@@ -417,7 +423,12 @@ namespace BansheeEditor
                 inspectorScrollArea = new GUIScrollArea();
                 GUI.AddElement(inspectorScrollArea);
                 inspectorLayout = inspectorScrollArea.Layout;
-                inspectorLayout.AddElement(new GUILabel(new LocEdString("No object selected")));
+
+                inspectorLayout.AddFlexibleSpace();
+                GUILayoutX layoutMsg = inspectorLayout.AddLayoutX();
+                layoutMsg.AddFlexibleSpace();
+                layoutMsg.AddElement(new GUILabel(new LocEdString("No object selected")));
+                layoutMsg.AddFlexibleSpace();
                 inspectorLayout.AddFlexibleSpace();
             }
             else if ((objects.Length + paths.Length) > 1)
@@ -426,7 +437,12 @@ namespace BansheeEditor
                 inspectorScrollArea = new GUIScrollArea();
                 GUI.AddElement(inspectorScrollArea);
                 inspectorLayout = inspectorScrollArea.Layout;
-                inspectorLayout.AddElement(new GUILabel(new LocEdString("Multiple objects selected")));
+
+                inspectorLayout.AddFlexibleSpace();
+                GUILayoutX layoutMsg = inspectorLayout.AddLayoutX();
+                layoutMsg.AddFlexibleSpace();
+                layoutMsg.AddElement(new GUILabel(new LocEdString("Multiple objects selected")));
+                layoutMsg.AddFlexibleSpace();
                 inspectorLayout.AddFlexibleSpace();
             }
             else if (objects.Length == 1)

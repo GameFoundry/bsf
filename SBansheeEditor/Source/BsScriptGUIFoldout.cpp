@@ -47,7 +47,7 @@ namespace BansheeEngine
 			options.addOption(mono_array_get(guiOptions, GUIOption, i));
 
 		HString label = ScriptGUIContent::getText(content);
-		GUIFoldout* guiFoldout = GUIFoldout::create(label);
+		GUIFoldout* guiFoldout = GUIFoldout::create(label, options);
 
 		guiFoldout->onStateChanged.connect(std::bind(&ScriptGUIFoldout::onToggled, instance, _1));
 

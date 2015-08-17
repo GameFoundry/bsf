@@ -122,7 +122,7 @@ namespace BansheeEngine
 		optimalsize.x += labelOptimalSize.x;
 		optimalsize.y = std::max(optimalsize.y, labelOptimalSize.y);
 
-		return optimalsize;
+		return mDimensions.calculateSizeRange(optimalsize).optimal;
 	}
 
 	void GUIFoldout::styleUpdated()

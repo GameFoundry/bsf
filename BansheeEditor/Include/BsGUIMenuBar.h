@@ -22,6 +22,7 @@ namespace BansheeEngine
 			WString name;
 			GUIMenu* menu;
 			GUIButton* button;
+			GUIFixedSpace* space;
 		};
 
 	public:
@@ -77,6 +78,7 @@ namespace BansheeEngine
 		void removeMenuItem(const WString& path);
 	private:
 		static const UINT32 NUM_ELEMENTS_AFTER_CONTENT;
+		static const UINT32 ELEMENT_SPACING;
 
 		RenderWindow* mParentWindow;
 		GUIWidget* mParentWidget;

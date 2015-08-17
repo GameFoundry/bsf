@@ -61,13 +61,14 @@ namespace BansheeEditor
                 guiChildLayout = null;
                 guiTitleLayout = layout.AddLayoutX(index);
 
-                guiTitleLayout.AddElement(new GUILabel(title));
+                guiTitleLayout.AddElement(new GUILabel(title, GUIOption.FixedWidth(100)));
                 guiTitleLayout.AddElement(new GUILabel("Empty"));
 
                 if (!property.IsValueType)
                 {
-                    GUIButton createBtn = new GUIButton("Create");
+                    GUIButton createBtn = new GUIButton("Cr", GUIOption.FixedWidth(20));
                     createBtn.OnClick += OnCreateButtonClicked;
+                    guiTitleLayout.AddFlexibleSpace();
                     guiTitleLayout.AddElement(createBtn);
                 }
             }
@@ -75,13 +76,14 @@ namespace BansheeEditor
             {
                 guiTitleLayout = layout.AddLayoutX(index);
 
-                GUIFoldout guiFoldout = new GUIFoldout(title);
+                GUIFoldout guiFoldout = new GUIFoldout(title, GUIOption.FixedWidth(100));
                 guiFoldout.SetExpanded(isExpanded);
                 guiFoldout.OnToggled += OnFoldoutToggled;
                 guiTitleLayout.AddElement(guiFoldout);
 
-                GUIButton clearBtn = new GUIButton("Clear");
+                GUIButton clearBtn = new GUIButton("Cl", GUIOption.FixedWidth(20));
                 clearBtn.OnClick += OnClearButtonClicked;
+                guiTitleLayout.AddFlexibleSpace();
                 guiTitleLayout.AddElement(clearBtn);
 
                 if (isExpanded)

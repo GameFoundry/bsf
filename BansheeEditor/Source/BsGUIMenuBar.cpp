@@ -17,6 +17,7 @@
 namespace BansheeEngine
 {
 	const UINT32 GUIMenuBar::NUM_ELEMENTS_AFTER_CONTENT = 8;
+	const UINT32 GUIMenuBar::ELEMENT_SPACING = 10;
 
 	GUIMenuBar::GUIMenuBar(GUIWidget* parent, RenderWindow* parentWindow)
 		:mParentWidget(parent), mParentWindow(parentWindow), mMainPanel(nullptr), mMainLayout(nullptr),
@@ -69,6 +70,7 @@ namespace BansheeEngine
 		{
 			bs_delete(menu.menu);
 			GUIElement::destroy(menu.button);
+			GUIFixedSpace::destroy(menu.space);
 		}
 
 		GUILayout::destroy(mMainPanel);
@@ -143,9 +145,12 @@ namespace BansheeEngine
 		GUIButton* newButton = GUIButton::create(HString(name), "MenuBarBtn");
 		newButton->onClick.connect(std::bind(&GUIMenuBar::openSubMenu, this, name));
 		newButton->onHover.connect(std::bind(&GUIMenuBar::onSubMenuHover, this, name));
+
+		GUIFixedSpace* space = mMainLayout->insertNewElement<GUIFixedSpace>(mMainLayout->getNumChildren() - NUM_ELEMENTS_AFTER_CONTENT, ELEMENT_SPACING);
 		mMainLayout->insertElement(mMainLayout->getNumChildren() - NUM_ELEMENTS_AFTER_CONTENT, newButton);
 
 		newSubMenu.button = newButton;
+		newSubMenu.space = space;
 
 		return &newSubMenu;
 	}
@@ -192,7 +197,9 @@ namespace BansheeEngine
 				return;
 
 			mMainLayout->removeElement(subMenuToRemove->button);
+			mMainLayout->removeElement(subMenuToRemove->space);
 			GUIElement::destroy(subMenuToRemove->button);
+			GUIFixedSpace::destroy(subMenuToRemove->space);
 			bs_delete(subMenuToRemove->menu);
 
 			mChildMenus.erase(mChildMenus.begin() + curIdx);

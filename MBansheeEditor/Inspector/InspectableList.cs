@@ -38,10 +38,10 @@ namespace BansheeEditor
                     ownsTitleLayout = true;
                 }
 
-                GUIButton cloneBtn = new GUIButton("C");
-                GUIButton deleteBtn = new GUIButton("X");
-                GUIButton moveUpBtn = new GUIButton("Up");
-                GUIButton moveDownBtn = new GUIButton("Down");
+                GUIButton cloneBtn = new GUIButton("C", GUIOption.FixedWidth(20));
+                GUIButton deleteBtn = new GUIButton("X", GUIOption.FixedWidth(20));
+                GUIButton moveUpBtn = new GUIButton("U", GUIOption.FixedWidth(20));
+                GUIButton moveDownBtn = new GUIButton("D", GUIOption.FixedWidth(20));
 
                 cloneBtn.OnClick += () => parent.OnCloneButtonClicked(seqIndex);
                 deleteBtn.OnClick += () => parent.OnDeleteButtonClicked(seqIndex);
@@ -148,13 +148,14 @@ namespace BansheeEditor
                 guiChildLayout = null;
                 guiTitleLayout = layout.AddLayoutX(layoutIndex);
 
-                guiTitleLayout.AddElement(new GUILabel(title));
+                guiTitleLayout.AddElement(new GUILabel(title, GUIOption.FixedWidth(100)));
                 guiTitleLayout.AddElement(new GUILabel("Empty"));
 
                 if (!property.IsValueType)
                 {
-                    GUIButton createBtn = new GUIButton("Create");
+                    GUIButton createBtn = new GUIButton("Cr", GUIOption.FixedWidth(20));
                     createBtn.OnClick += OnCreateButtonClicked;
+                    guiTitleLayout.AddFlexibleSpace();
                     guiTitleLayout.AddElement(createBtn);
                 }
 
@@ -162,19 +163,20 @@ namespace BansheeEditor
             }
             else
             {
-                GUIFoldout guiFoldout = new GUIFoldout(title);
+                GUIFoldout guiFoldout = new GUIFoldout(title, GUIOption.FixedWidth(100));
                 guiFoldout.SetExpanded(isExpanded);
                 guiFoldout.OnToggled += OnFoldoutToggled;
                 guiSizeField = new GUIIntField();
                 guiSizeField.SetRange(0, int.MaxValue);
-                GUIButton guiResizeBtn = new GUIButton("Resize");
+                GUIButton guiResizeBtn = new GUIButton("R", GUIOption.FixedWidth(20));
                 guiResizeBtn.OnClick += OnResizeButtonClicked;
-                GUIButton guiClearBtn = new GUIButton("Clear");
+                GUIButton guiClearBtn = new GUIButton("Cl", GUIOption.FixedWidth(20));
                 guiClearBtn.OnClick += OnClearButtonClicked;
 
                 guiTitleLayout = layout.AddLayoutX(layoutIndex);
                 guiTitleLayout.AddElement(guiFoldout);
                 guiTitleLayout.AddElement(guiSizeField);
+                guiTitleLayout.AddFlexibleSpace();
                 guiTitleLayout.AddElement(guiResizeBtn);
                 guiTitleLayout.AddElement(guiClearBtn);
 
@@ -220,8 +222,6 @@ namespace BansheeEditor
             IList list = property.GetValue<IList>();
 
             int maxSize = MathEx.Min(size, list.Count);
-
-            Debug.Log("List resize: " + list.Count + " - " + newList.Count + " - " + size);
             for (int i = 0; i < maxSize; i++)
                 newList[i] = list[i];
 
