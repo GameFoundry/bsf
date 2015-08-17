@@ -333,22 +333,28 @@ namespace BansheeEngine
 
 	bool ScriptEditorWidget::createManagedInstance()
 	{
-		MonoAssembly* assembly = MonoManager::instance().getAssembly(EDITOR_ASSEMBLY);
+		const char* assemblies[2] = { EDITOR_ASSEMBLY, SCRIPT_EDITOR_ASSEMBLY };
+		UINT32 numAssemblies = sizeof(assemblies) / sizeof(assemblies[0]);
 
-		if (assembly != nullptr)
+		for (UINT32 i = 0; i < numAssemblies; i++)
 		{
-			MonoClass* editorWindowClass = assembly->getClass(mNamespace, mTypename);
+			MonoAssembly* assembly = MonoManager::instance().getAssembly(assemblies[i]);
 
-			if (editorWindowClass != nullptr)
+			if (assembly != nullptr)
 			{
-				mManagedInstance = editorWindowClass->createInstance();
+				MonoClass* editorWindowClass = assembly->getClass(mNamespace, mTypename);
 
-				MonoObject* guiPanel = ScriptGUIPanel::createFromExisting(mContent);
-				mContentsPanel = ScriptGUILayout::toNative(guiPanel);
-				ScriptEditorWindow::guiPanelField->setValue(mManagedInstance, guiPanel);
+				if (editorWindowClass != nullptr)
+				{
+					mManagedInstance = editorWindowClass->createInstance();
 
-				reloadMonoTypes(editorWindowClass);
-				return true;
+					MonoObject* guiPanel = ScriptGUIPanel::createFromExisting(mContent);
+					mContentsPanel = ScriptGUILayout::toNative(guiPanel);
+					ScriptEditorWindow::guiPanelField->setValue(mManagedInstance, guiPanel);
+
+					reloadMonoTypes(editorWindowClass);
+					return true;
+				}
 			}
 		}
 

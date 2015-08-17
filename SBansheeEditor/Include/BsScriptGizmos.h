@@ -8,12 +8,18 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Interop class between C++ & CLR for GizmoManager.
+	 */
 	class BS_SCR_BED_EXPORT ScriptGizmos : public ScriptObject<ScriptGizmos>
 	{
 	public:
 		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "Gizmos")
 
 	private:
+		/************************************************************************/
+		/* 								CLR HOOKS						   		*/
+		/************************************************************************/
 		static void internal_SetColor(Color color);
 		static void internal_GetColor(Color* color);
 		static void internal_SetTransform(Matrix4 transform);

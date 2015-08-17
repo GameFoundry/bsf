@@ -2,6 +2,7 @@
 
 namespace BansheeEditor
 {
+    // Note: Must match the C++ enum DrawGizmoFlags
     public enum DrawGizmoFlags
     {
         Selected = 0x01,

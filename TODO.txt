@@ -72,7 +72,6 @@ First screenshot:
   - Game Object (also add to context): Create(Empty, Empty Child, Camera, Renderable, Point/Spot/Directional Light), Apply prefab, Break prefab, Revert prefab
    - Possibly create helper objects: Cube, Sphere, Plane, Quad, Capsule, Cylinder
   - Help - About, API Reference (link to site)
- - Modify inspector looks by scaling down transform input box sizes, and properly aligning component entries
  - (Optionally) New UI look (tabs, component/array containers, better buttons)
    - Foldout in scene tree view is hard to click, make it bigger
  - (Optionally) Console window

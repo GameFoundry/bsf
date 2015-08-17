@@ -5,12 +5,28 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Interop class between C++ & CLR for GUIVector3Field.
+	 */
 	class BS_SCR_BED_EXPORT ScriptGUIVector3Field : public TScriptGUIElement<ScriptGUIVector3Field>
 	{
 	public:
 		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "GUIVector3Field")
 
 	private:
+		/**
+		 * @brief	Triggered when the value in the native vector field changes.
+		 *
+		 * @param	instance	Managed GUIVector3Field instance.
+		 * @param	newValue	New vector value.
+		 */
+		static void onChanged(MonoObject* instance, Vector3 newValue);
+
+		ScriptGUIVector3Field(MonoObject* instance, GUIVector3Field* vector3Field);
+
+		/************************************************************************/
+		/* 								CLR HOOKS						   		*/
+		/************************************************************************/
 		static void internal_createInstance(MonoObject* instance, MonoObject* title, UINT32 titleWidth,
 			MonoString* style, MonoArray* guiOptions, bool withTitle);
 
@@ -18,10 +34,6 @@ namespace BansheeEngine
 		static void internal_setValue(ScriptGUIVector3Field* nativeInstance, Vector3 value);
 		static void internal_hasInputFocus(ScriptGUIVector3Field* nativeInstance, bool* output);
 		static void internal_setTint(ScriptGUIVector3Field* nativeInstance, Color color);
-
-		static void onChanged(MonoObject* instance, Vector3 newValue);
-
-		ScriptGUIVector3Field(MonoObject* instance, GUIVector3Field* vector3Field);
 
 		typedef void(__stdcall *OnChangedThunkDef) (MonoObject*, Vector3, MonoException**);
 
