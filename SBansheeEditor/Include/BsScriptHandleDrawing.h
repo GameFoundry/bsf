@@ -9,12 +9,18 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Interop class between C++ & CLR for HandleDrawManager.
+	 */
 	class BS_SCR_BED_EXPORT ScriptHandleDrawing : public ScriptObject <ScriptHandleDrawing>
 	{
 	public:
 		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "HandleDrawing")
 
 	private:
+		/************************************************************************/
+		/* 								CLR HOOKS						   		*/
+		/************************************************************************/
 		static void internal_SetColor(Color color);
 		static void internal_SetTransform(Matrix4 transform);
 

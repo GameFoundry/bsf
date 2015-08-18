@@ -69,7 +69,6 @@ Ribek use:
  - Test release mode
  - Ability to create assets in Project view (At least Material)
  - (Optionally, needed for GUI editing) GUISkin resource inspector & a way to inspect and save the default editor skin
-   - Will need C# wrapper for GUISkin (and a way to assign the current skin to a window)
 
 First screenshot:
  - Additional menu bar items: 
