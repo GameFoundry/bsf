@@ -12,14 +12,14 @@
 namespace BansheeEngine
 {
 	ScriptGUIElementStyle::ScriptGUIElementStyle(MonoObject* instance, const String& name)
-		:ScriptObject(instance), mName(name), mElementStyle(bs_new<GUIElementStyle>()), mFont(nullptr), mOwnsStyle(true), mNormal(nullptr), mHover(nullptr),
+		:ScriptObject(instance), mName(name), mFont(nullptr), mNormal(nullptr), mHover(nullptr),
 		mActive(nullptr), mFocused(nullptr), mNormalOn(nullptr), mHoverOn(nullptr), mActiveOn(nullptr), mFocusedOn(nullptr)
 	{
 
 	}
 
-	ScriptGUIElementStyle::ScriptGUIElementStyle(MonoObject* instance, const String& name, GUIElementStyle* externalStyle)
-		:ScriptObject(instance), mName(name), mElementStyle(externalStyle), mFont(nullptr), mOwnsStyle(false), mNormal(nullptr), mHover(nullptr),
+	ScriptGUIElementStyle::ScriptGUIElementStyle(MonoObject* instance, const String& name, const GUIElementStyle& externalStyle)
+		:ScriptObject(instance), mName(name), mElementStyle(externalStyle), mFont(nullptr), mNormal(nullptr), mHover(nullptr),
 		mActive(nullptr), mFocused(nullptr), mNormalOn(nullptr), mHoverOn(nullptr), mActiveOn(nullptr), mFocusedOn(nullptr)
 	{
 
@@ -27,8 +27,7 @@ namespace BansheeEngine
 
 	ScriptGUIElementStyle::~ScriptGUIElementStyle()
 	{
-		if(mOwnsStyle)
-			bs_delete(mElementStyle);
+
 	}
 
 	void ScriptGUIElementStyle::initRuntimeData()
@@ -93,6 +92,19 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetFixedHeight", &ScriptGUIElementStyle::internal_SetFixedHeight);
 	}
 
+	MonoObject* ScriptGUIElementStyle::create(const String& name, const GUIElementStyle& style)
+	{
+		bool dummy = false;
+
+		void* params[1];
+		params[0] = &dummy;;
+
+		MonoObject* instance = metaData.scriptClass->createInstance(params, true);
+
+		ScriptGUIElementStyle* nativeInstance = new (bs_alloc<ScriptGUIElementStyle>()) ScriptGUIElementStyle(instance, name, style);
+		return instance;
+	}
+
 	void ScriptGUIElementStyle::internal_createInstance(MonoObject* instance, MonoString* name)
 	{
 		char* nativeName = mono_string_to_utf8(name);
@@ -102,21 +114,12 @@ namespace BansheeEngine
 		ScriptGUIElementStyle* nativeInstance = new (bs_alloc<ScriptGUIElementStyle>()) ScriptGUIElementStyle(instance, styleName);
 	}
 
-	void ScriptGUIElementStyle::internal_createInstanceExternal(MonoObject* instance, MonoString* name, GUIElementStyle* externalStyle)
-	{
-		char* nativeName = mono_string_to_utf8(name);
-		String styleName(nativeName);
-		free(nativeName);
-
-		ScriptGUIElementStyle* nativeInstance = new (bs_alloc<ScriptGUIElementStyle>()) ScriptGUIElementStyle(instance, styleName, externalStyle);
-	}
-
 	void ScriptGUIElementStyle::internal_addSubStyle(ScriptGUIElementStyle* nativeInstance, MonoString* guiType, MonoString* styleName)
 	{
 		String guiTypeStr = MonoUtil::monoToString(guiType);
 		String styleNameStr = MonoUtil::monoToString(styleName);
 
-		nativeInstance->getInternalValue()->subStyles[guiTypeStr] = styleNameStr;
+		nativeInstance->getInternalValue().subStyles[guiTypeStr] = styleNameStr;
 	}
 
 	void ScriptGUIElementStyle::internal_GetFont(ScriptGUIElementStyle* nativeInstance, MonoObject** value)
@@ -133,58 +136,58 @@ namespace BansheeEngine
 	void ScriptGUIElementStyle::internal_SetFont(ScriptGUIElementStyle* nativeInstance, MonoObject* value)
 	{
 		ScriptFont* nativeValue = ScriptFont::toNative(value);
-		nativeInstance->mElementStyle->font = static_resource_cast<Font>(nativeValue->getNativeHandle());
+		nativeInstance->mElementStyle.font = static_resource_cast<Font>(nativeValue->getNativeHandle());
 		nativeInstance->mFont = nativeValue;
 	}
 
 	void ScriptGUIElementStyle::internal_GetFontSize(ScriptGUIElementStyle* nativeInstance, UINT32* value)
 	{
-		*value = nativeInstance->mElementStyle->fontSize;
+		*value = nativeInstance->mElementStyle.fontSize;
 	}
 
 	void ScriptGUIElementStyle::internal_SetFontSize(ScriptGUIElementStyle* nativeInstance, UINT32 value)
 	{
-		nativeInstance->mElementStyle->fontSize = value;
+		nativeInstance->mElementStyle.fontSize = value;
 	}
 
 	void ScriptGUIElementStyle::internal_GetTextHorzAlign(ScriptGUIElementStyle* nativeInstance, TextHorzAlign*value)
 	{
-		*value = nativeInstance->mElementStyle->textHorzAlign;
+		*value = nativeInstance->mElementStyle.textHorzAlign;
 	}
 
 	void ScriptGUIElementStyle::internal_SetTextHorzAlign(ScriptGUIElementStyle* nativeInstance, TextHorzAlign value)
 	{
-		nativeInstance->mElementStyle->textHorzAlign = value;
+		nativeInstance->mElementStyle.textHorzAlign = value;
 	}
 
 	void ScriptGUIElementStyle::internal_GetTextVertAlign(ScriptGUIElementStyle* nativeInstance, TextVertAlign* value)
 	{
-		*value = nativeInstance->mElementStyle->textVertAlign;
+		*value = nativeInstance->mElementStyle.textVertAlign;
 	}
 
 	void ScriptGUIElementStyle::internal_SetTextVertAlign(ScriptGUIElementStyle* nativeInstance, TextVertAlign value)
 	{
-		nativeInstance->mElementStyle->textVertAlign = value;
+		nativeInstance->mElementStyle.textVertAlign = value;
 	}
 
 	void ScriptGUIElementStyle::internal_GetImagePosition(ScriptGUIElementStyle* nativeInstance, GUIImagePosition* value)
 	{
-		*value = nativeInstance->mElementStyle->imagePosition;
+		*value = nativeInstance->mElementStyle.imagePosition;
 	}
 
 	void ScriptGUIElementStyle::internal_SetImagePosition(ScriptGUIElementStyle* nativeInstance, GUIImagePosition value)
 	{
-		nativeInstance->mElementStyle->imagePosition = value;
+		nativeInstance->mElementStyle.imagePosition = value;
 	}
 
 	void ScriptGUIElementStyle::internal_GetWordWrap(ScriptGUIElementStyle* nativeInstance, bool* value)
 	{
-		*value = nativeInstance->mElementStyle->wordWrap;
+		*value = nativeInstance->mElementStyle.wordWrap;
 	}
 
 	void ScriptGUIElementStyle::internal_SetWordWrap(ScriptGUIElementStyle* nativeInstance, bool value)
 	{
-		nativeInstance->mElementStyle->wordWrap = value;
+		nativeInstance->mElementStyle.wordWrap = value;
 	}
 
 	void ScriptGUIElementStyle::internal_GetNormal(ScriptGUIElementStyle* nativeInstance, MonoObject** value)
@@ -201,7 +204,7 @@ namespace BansheeEngine
 	void ScriptGUIElementStyle::internal_SetNormal(ScriptGUIElementStyle* nativeInstance, MonoObject* value)
 	{
 		ScriptGUIElementStateStyle* nativeValue = ScriptGUIElementStateStyle::toNative(value);
-		nativeInstance->mElementStyle->normal = nativeValue->getInternalValue();
+		nativeInstance->mElementStyle.normal = nativeValue->getInternalValue();
 		nativeInstance->mNormal = nativeValue;
 	}
 
@@ -220,7 +223,7 @@ namespace BansheeEngine
 	void ScriptGUIElementStyle::internal_SetHover(ScriptGUIElementStyle* nativeInstance, MonoObject* value)
 	{
 		ScriptGUIElementStateStyle* nativeValue = ScriptGUIElementStateStyle::toNative(value);
-		nativeInstance->mElementStyle->hover = nativeValue->getInternalValue();
+		nativeInstance->mElementStyle.hover = nativeValue->getInternalValue();
 		nativeInstance->mHover = nativeValue;
 	}
 
@@ -238,7 +241,7 @@ namespace BansheeEngine
 	void ScriptGUIElementStyle::internal_SetActive(ScriptGUIElementStyle* nativeInstance, MonoObject* value)
 	{
 		ScriptGUIElementStateStyle* nativeValue = ScriptGUIElementStateStyle::toNative(value);
-		nativeInstance->mElementStyle->active = nativeValue->getInternalValue();
+		nativeInstance->mElementStyle.active = nativeValue->getInternalValue();
 		nativeInstance->mActive = nativeValue;
 	}
 
@@ -256,7 +259,7 @@ namespace BansheeEngine
 	void ScriptGUIElementStyle::internal_SetFocused(ScriptGUIElementStyle* nativeInstance, MonoObject* value)
 	{
 		ScriptGUIElementStateStyle* nativeValue = ScriptGUIElementStateStyle::toNative(value);
-		nativeInstance->mElementStyle->focused = nativeValue->getInternalValue();
+		nativeInstance->mElementStyle.focused = nativeValue->getInternalValue();
 		nativeInstance->mFocused = nativeValue;
 	}
 
@@ -274,7 +277,7 @@ namespace BansheeEngine
 	void ScriptGUIElementStyle::internal_SetNormalOn(ScriptGUIElementStyle* nativeInstance, MonoObject* value)
 	{
 		ScriptGUIElementStateStyle* nativeValue = ScriptGUIElementStateStyle::toNative(value);
-		nativeInstance->mElementStyle->normalOn = nativeValue->getInternalValue();
+		nativeInstance->mElementStyle.normalOn = nativeValue->getInternalValue();
 		nativeInstance->mNormalOn = nativeValue;
 	}
 
@@ -292,7 +295,7 @@ namespace BansheeEngine
 	void ScriptGUIElementStyle::internal_SetHoverOn(ScriptGUIElementStyle* nativeInstance, MonoObject* value)
 	{
 		ScriptGUIElementStateStyle* nativeValue = ScriptGUIElementStateStyle::toNative(value);
-		nativeInstance->mElementStyle->hoverOn = nativeValue->getInternalValue();
+		nativeInstance->mElementStyle.hoverOn = nativeValue->getInternalValue();
 		nativeInstance->mHoverOn = nativeValue;
 	}
 
@@ -310,7 +313,7 @@ namespace BansheeEngine
 	void ScriptGUIElementStyle::internal_SetActiveOn(ScriptGUIElementStyle* nativeInstance, MonoObject* value)
 	{
 		ScriptGUIElementStateStyle* nativeValue = ScriptGUIElementStateStyle::toNative(value);
-		nativeInstance->mElementStyle->activeOn = nativeValue->getInternalValue();
+		nativeInstance->mElementStyle.activeOn = nativeValue->getInternalValue();
 		nativeInstance->mActiveOn = nativeValue;
 	}
 
@@ -328,117 +331,117 @@ namespace BansheeEngine
 	void ScriptGUIElementStyle::internal_SetFocusedOn(ScriptGUIElementStyle* nativeInstance, MonoObject* value)
 	{
 		ScriptGUIElementStateStyle* nativeValue = ScriptGUIElementStateStyle::toNative(value);
-		nativeInstance->mElementStyle->focusedOn = nativeValue->getInternalValue();
+		nativeInstance->mElementStyle.focusedOn = nativeValue->getInternalValue();
 		nativeInstance->mFocusedOn = nativeValue;
 	}
 
 	void ScriptGUIElementStyle::internal_GetBorder(ScriptGUIElementStyle* nativeInstance, RectOffset* value)
 	{
-		*value = nativeInstance->mElementStyle->border;
+		*value = nativeInstance->mElementStyle.border;
 	}
 
 	void ScriptGUIElementStyle::internal_SetBorder(ScriptGUIElementStyle* nativeInstance, RectOffset* value)
 	{
-		nativeInstance->mElementStyle->border = *value;
+		nativeInstance->mElementStyle.border = *value;
 	}
 
 	void ScriptGUIElementStyle::internal_GetMargins(ScriptGUIElementStyle* nativeInstance, RectOffset* value)
 	{
-		*value = nativeInstance->mElementStyle->margins;
+		*value = nativeInstance->mElementStyle.margins;
 	}
 
 	void ScriptGUIElementStyle::internal_SetMargins(ScriptGUIElementStyle* nativeInstance, RectOffset* value)
 	{
-		nativeInstance->mElementStyle->margins = *value;
+		nativeInstance->mElementStyle.margins = *value;
 	}
 
 	void ScriptGUIElementStyle::internal_GetContentOffset(ScriptGUIElementStyle* nativeInstance, RectOffset* value)
 	{
-		*value = nativeInstance->mElementStyle->contentOffset;
+		*value = nativeInstance->mElementStyle.contentOffset;
 	}
 
 	void ScriptGUIElementStyle::internal_SetContentOffset(ScriptGUIElementStyle* nativeInstance, RectOffset* value)
 	{
-		nativeInstance->mElementStyle->contentOffset = *value;
+		nativeInstance->mElementStyle.contentOffset = *value;
 	}
 
 	void ScriptGUIElementStyle::internal_GetWidth(ScriptGUIElementStyle* nativeInstance, UINT32* value)
 	{
-		*value = nativeInstance->mElementStyle->width;
+		*value = nativeInstance->mElementStyle.width;
 	}
 
 	void ScriptGUIElementStyle::internal_SetWidth(ScriptGUIElementStyle* nativeInstance, UINT32 value)
 	{
-		nativeInstance->mElementStyle->width = value;
+		nativeInstance->mElementStyle.width = value;
 	}
 
 	void ScriptGUIElementStyle::internal_GetHeight(ScriptGUIElementStyle* nativeInstance, UINT32* value)
 	{
-		*value = nativeInstance->mElementStyle->height;
+		*value = nativeInstance->mElementStyle.height;
 	}
 
 	void ScriptGUIElementStyle::internal_SetHeight(ScriptGUIElementStyle* nativeInstance, UINT32 value)
 	{
-		nativeInstance->mElementStyle->height = value;
+		nativeInstance->mElementStyle.height = value;
 	}
 
 	void ScriptGUIElementStyle::internal_GetMinWidth(ScriptGUIElementStyle* nativeInstance, UINT32* value)
 	{
-		*value = nativeInstance->mElementStyle->minWidth;
+		*value = nativeInstance->mElementStyle.minWidth;
 	}
 
 	void ScriptGUIElementStyle::internal_SetMinWidth(ScriptGUIElementStyle* nativeInstance, UINT32 value)
 	{
-		nativeInstance->mElementStyle->minWidth = value;
+		nativeInstance->mElementStyle.minWidth = value;
 	}
 
 	void ScriptGUIElementStyle::internal_GetMaxWidth(ScriptGUIElementStyle* nativeInstance, UINT32* value)
 	{
-		*value = nativeInstance->mElementStyle->maxWidth;
+		*value = nativeInstance->mElementStyle.maxWidth;
 	}
 
 	void ScriptGUIElementStyle::internal_SetMaxWidth(ScriptGUIElementStyle* nativeInstance, UINT32 value)
 	{
-		nativeInstance->mElementStyle->maxWidth = value;
+		nativeInstance->mElementStyle.maxWidth = value;
 	}
 
 	void ScriptGUIElementStyle::internal_GetMinHeight(ScriptGUIElementStyle* nativeInstance, UINT32* value)
 	{
-		*value = nativeInstance->mElementStyle->minHeight;
+		*value = nativeInstance->mElementStyle.minHeight;
 	}
 
 	void ScriptGUIElementStyle::internal_SetMinHeight(ScriptGUIElementStyle* nativeInstance, UINT32 value)
 	{
-		nativeInstance->mElementStyle->minHeight = value;
+		nativeInstance->mElementStyle.minHeight = value;
 	}
 
 	void ScriptGUIElementStyle::internal_GetMaxHeight(ScriptGUIElementStyle* nativeInstance, UINT32* value)
 	{
-		*value = nativeInstance->mElementStyle->maxHeight;
+		*value = nativeInstance->mElementStyle.maxHeight;
 	}
 
 	void ScriptGUIElementStyle::internal_SetMaxHeight(ScriptGUIElementStyle* nativeInstance, UINT32 value)
 	{
-		nativeInstance->mElementStyle->maxHeight = value;
+		nativeInstance->mElementStyle.maxHeight = value;
 	}
 
 	void ScriptGUIElementStyle::internal_GetFixedWidth(ScriptGUIElementStyle* nativeInstance, bool* value)
 	{
-		*value = nativeInstance->mElementStyle->fixedWidth;
+		*value = nativeInstance->mElementStyle.fixedWidth;
 	}
 
 	void ScriptGUIElementStyle::internal_SetFixedWidth(ScriptGUIElementStyle* nativeInstance, bool value)
 	{
-		nativeInstance->mElementStyle->fixedWidth = value;
+		nativeInstance->mElementStyle.fixedWidth = value;
 	}
 
 	void ScriptGUIElementStyle::internal_GetFixedHeight(ScriptGUIElementStyle* nativeInstance, bool* value)
 	{
-		*value = nativeInstance->mElementStyle->fixedHeight;
+		*value = nativeInstance->mElementStyle.fixedHeight;
 	}
 
 	void ScriptGUIElementStyle::internal_SetFixedHeight(ScriptGUIElementStyle* nativeInstance, bool value)
 	{
-		nativeInstance->mElementStyle->fixedHeight = value;
+		nativeInstance->mElementStyle.fixedHeight = value;
 	}
 }

@@ -14,6 +14,7 @@
 #include "BsScriptFont.h"
 #include "BsScriptPrefab.h"
 #include "BsScriptStringTable.h"
+#include "BsScriptGUISkin.h"
 #include "BsScriptManagedResource.h"
 #include "BsScriptAssemblyManager.h"
 
@@ -108,6 +109,8 @@ namespace BansheeEngine
 			return createScriptResource(static_resource_cast<Material>(resourceHandle), (ScriptMaterial**)out);
 		case TID_Mesh:
 			return createScriptResource(static_resource_cast<Mesh>(resourceHandle), (ScriptMesh**)out);
+		case TID_GUISkin:
+			return createScriptResource(static_resource_cast<GUISkin>(resourceHandle), (ScriptGUISkin**)out);
 		case TID_ManagedResource:
 			BS_EXCEPT(InternalErrorException, "Managed resources must have a managed instance by default, this call is invalid.")
 				break;
@@ -129,6 +132,7 @@ namespace BansheeEngine
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(const ResourceHandle<PlainText>&, ScriptPlainText**);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(const ResourceHandle<ScriptCode>&, ScriptScriptCode**);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(const ResourceHandle<StringTable>&, ScriptStringTable**);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(const ResourceHandle<GUISkin>&, ScriptGUISkin**);
 
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(MonoObject*, const ResourceHandle<Texture>&, ScriptTexture2D**);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(MonoObject*, const ResourceHandle<Texture>&, ScriptTexture3D**);
@@ -142,8 +146,9 @@ namespace BansheeEngine
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(MonoObject*, const ResourceHandle<PlainText>&, ScriptPlainText**);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(MonoObject*, const ResourceHandle<ScriptCode>&, ScriptScriptCode**);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(MonoObject*, const ResourceHandle<StringTable>&, ScriptStringTable**);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(MonoObject*, const ResourceHandle<GUISkin>&, ScriptGUISkin**);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(MonoObject*, const ResourceHandle<ManagedResource>&, ScriptManagedResource**);
-	
+
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<Texture>& resourceHandle, ScriptTexture2D** out, bool create);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<Texture>& resourceHandle, ScriptTexture3D** out, bool create);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<Texture>& resourceHandle, ScriptTextureCube** out, bool create);
@@ -156,6 +161,7 @@ namespace BansheeEngine
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<PlainText>& resourceHandle, ScriptPlainText** out, bool create);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<ScriptCode>& resourceHandle, ScriptScriptCode** out, bool create);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<StringTable>& resourceHandle, ScriptStringTable** out, bool create);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<GUISkin>& resourceHandle, ScriptGUISkin** out, bool create);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<ManagedResource>& resourceHandle, ScriptManagedResource** out, bool create);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<Resource>& resourceHandle, ScriptResourceBase** out, bool create);
 

@@ -33,6 +33,20 @@ namespace BansheeEngine
 		mStyles[guiElemType] = style;
 	}
 
+	void GUISkin::removeStyle(const String& guiElemType)
+	{
+		mStyles.erase(guiElemType);
+	}
+
+	Vector<String> GUISkin::getStyleNames() const
+	{
+		Vector<String> output;
+		for (auto& pair : mStyles)
+			output.push_back(pair.first);
+
+		return output;
+	}
+
 	HGUISkin GUISkin::create()
 	{
 		GUISkinPtr newSkin = _createPtr();

@@ -25,6 +25,10 @@ namespace BansheeEngine
 
     public sealed class GUIElementStyle : ScriptObject
     {
+        // Constructor for runtime use only (dummy parameter to differentiate from the normal constructor)
+        private GUIElementStyle(bool dummy)
+        {  }
+
 		public GUIElementStyle()
         {
 		    Internal_CreateInstance(this);

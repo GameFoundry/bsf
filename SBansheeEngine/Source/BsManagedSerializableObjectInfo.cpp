@@ -23,6 +23,7 @@
 #include "BsScriptPlainText.h"
 #include "BsScriptScriptCode.h"
 #include "BsScriptStringTable.h"
+#include "BsScriptGUISkin.h"
 #include "BsScriptPrefab.h"
 #include "BsScriptManagedResource.h"
 
@@ -186,6 +187,8 @@ namespace BansheeEngine
 			return ScriptFont::getMetaData()->scriptClass->_getInternalClass();
 		case ScriptPrimitiveType::StringTableRef:
 			return ScriptStringTable::getMetaData()->scriptClass->_getInternalClass();
+		case ScriptPrimitiveType::GUISkinRef:
+			return ScriptGUISkin::getMetaData()->scriptClass->_getInternalClass();
 		case ScriptPrimitiveType::SceneObjectRef:
 			return ScriptAssemblyManager::instance().getSceneObjectClass()->_getInternalClass();
 		case ScriptPrimitiveType::ComponentRef:

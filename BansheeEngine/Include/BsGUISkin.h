@@ -28,6 +28,18 @@ namespace BansheeEngine
 		void setStyle(const String& guiElemType, const GUIElementStyle& style);
 
 		/**
+		 * @brief	Removes a style for the specified GUI element type.
+		 *
+		 * @see		GUIElement::getGUITypeName
+		 */
+		void removeStyle(const String& guiElemType);
+
+		/**
+		 * @brief	Returns names of all styles registered on this skin.
+		 */
+		Vector<String> getStyleNames() const;
+
+		/**
 		 * @brief	Default style that may be used when no other is available.
 		 */
 		static GUIElementStyle DefaultStyle;

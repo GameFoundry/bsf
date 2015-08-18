@@ -37,6 +37,7 @@ namespace BansheeEngine
 		PrefabRef,
 		FontRef,
 		StringTableRef,
+		GUISkinRef,
 		SceneObjectRef,
 		ComponentRef
 	};

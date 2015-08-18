@@ -20,6 +20,7 @@
 #include "BsScriptPlainText.h"
 #include "BsScriptScriptCode.h"
 #include "BsScriptStringTable.h"
+#include "BsScriptGUISkin.h"
 #include "BsScriptPrefab.h"
 #include "BsMonoUtil.h"
 #include "BsRTTIType.h"
@@ -348,6 +349,12 @@ namespace BansheeEngine
 			{
 				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::StringTableRef;
+				return typeInfo;
+			}
+			else if (monoClass->isSubClassOf(ScriptGUISkin::getMetaData()->scriptClass))
+			{
+				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
+				typeInfo->mType = ScriptPrimitiveType::GUISkinRef;
 				return typeInfo;
 			}
 			else if(monoClass->isSubClassOf(mSceneObjectClass))

@@ -18,6 +18,7 @@
 #include "BsScriptPrefab.h"
 #include "BsScriptFont.h"
 #include "BsScriptStringTable.h"
+#include "BsScriptGUISkin.h"
 #include "BsScriptSceneObject.h"
 #include "BsScriptComponent.h"
 #include "BsManagedSerializableObject.h"
@@ -279,6 +280,18 @@ namespace BansheeEngine
 				{
 					ScriptStringTable* scriptStringTable = ScriptStringTable::toNative(value);
 					fieldData->value = static_resource_cast<StringTable>(scriptStringTable->getNativeHandle());
+				}
+
+				return fieldData;
+			}
+			case ScriptPrimitiveType::GUISkinRef:
+			{
+				auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
+
+				if (value != nullptr)
+				{
+					ScriptGUISkin* scriptGUISkin = ScriptGUISkin::toNative(value);
+					fieldData->value = static_resource_cast<GUISkin>(scriptGUISkin->getNativeHandle());
 				}
 
 				return fieldData;
@@ -723,6 +736,21 @@ namespace BansheeEngine
 
 					ScriptStringTable* scriptResource;
 					ScriptResourceManager::instance().getScriptResource(stringTable, &scriptResource, true);
+
+					if (scriptResource != nullptr)
+						return scriptResource->getManagedInstance();
+				}
+				else
+					return nullptr;
+			}
+			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::GUISkinRef)
+			{
+				if (value)
+				{
+					HGUISkin guiSkin = static_resource_cast<GUISkin>(value);
+
+					ScriptGUISkin* scriptResource;
+					ScriptResourceManager::instance().getScriptResource(guiSkin, &scriptResource, true);
 
 					if (scriptResource != nullptr)
 						return scriptResource->getManagedInstance();

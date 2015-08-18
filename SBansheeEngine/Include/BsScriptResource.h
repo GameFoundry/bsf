@@ -11,7 +11,7 @@ namespace BansheeEngine
 	// Note: Must be the same as C# enum ScriptResourceType
 	enum class ScriptResourceType
 	{
-		Texture, SpriteTexture, Mesh, Font, Shader, Material, Prefab, PlainText, ScriptCode, StringTable, Undefined
+		Texture, SpriteTexture, Mesh, Font, Shader, Material, Prefab, PlainText, ScriptCode, StringTable, GUISkin, Undefined
 	};
 
 	/**

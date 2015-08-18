@@ -22,7 +22,12 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns the wrapped GUIElementStyle instance.
 		 */
-		GUIElementStyle* getInternalValue() const { return mElementStyle; }
+		GUIElementStyle& getInternalValue() { return mElementStyle; }
+
+		/**
+		 * @brief	Creates a new managed object containing a copy of the provided style.
+		 */
+		static MonoObject* create(const String& name, const GUIElementStyle& style);
 
 	private:
 		/**
@@ -33,11 +38,10 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates the interop object referencing an existing style.
 		 */
-		ScriptGUIElementStyle(MonoObject* instance, const String& name, GUIElementStyle* externalStyle);
+		ScriptGUIElementStyle(MonoObject* instance, const String& name, const GUIElementStyle& externalStyle);
 
 		String mName;
-		GUIElementStyle* mElementStyle;
-		bool mOwnsStyle;
+		GUIElementStyle mElementStyle;
 
 		ScriptFont* mFont;
 		ScriptGUIElementStateStyle* mNormal;
@@ -53,7 +57,6 @@ namespace BansheeEngine
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
 		static void internal_createInstance(MonoObject* instance, MonoString* name);
-		static void internal_createInstanceExternal(MonoObject* instance, MonoString* name, GUIElementStyle* externalStyle);
 		static void internal_addSubStyle(ScriptGUIElementStyle* nativeInstance, MonoString* guiType, MonoString* styleName);
 
 		static void internal_GetFont(ScriptGUIElementStyle* nativeInstance, MonoObject** value);

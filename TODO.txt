@@ -54,8 +54,14 @@ Code quality improvements:
 ----------------------------------------------------------------------
 Polish
 
+Test:
+ - If level load works by doing main menu -> Load
+  - This should clear existing level
+  - Internal scene objects should remain
+ - If level prefab instantiation works by dragging it from project to scene
+ - When starting drag from hierarchy tree view it tends to select another object (can't repro)
+
 Ribek use:
- - Test level save/load (also test hidden & non-saveable scene objects)
  - Hook up color picker to guicolor field
  - Camera, Renderable, Material, Texture inspector
  - Project create/open window

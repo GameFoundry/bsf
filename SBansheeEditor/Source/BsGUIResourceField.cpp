@@ -28,6 +28,7 @@
 #include "BsScriptPlainText.h"
 #include "BsScriptScriptCode.h"
 #include "BsScriptStringTable.h"
+#include "BsScriptGUISkin.h"
 #include "BsScriptPrefab.h"
 #include "BsScriptManagedResource.h"
 #include "BsSelection.h"
@@ -346,6 +347,15 @@ namespace BansheeEngine
 			case TID_StringTable:
 			{
 				if (ScriptStringTable::getMetaData()->scriptClass->isSubClassOf(acceptedClass))
+				{
+					setUUID(uuid);
+					found = true;
+				}
+			}
+				break;
+			case TID_GUISkin:
+			{
+				if (ScriptGUISkin::getMetaData()->scriptClass->isSubClassOf(acceptedClass))
 				{
 					setUUID(uuid);
 					found = true;

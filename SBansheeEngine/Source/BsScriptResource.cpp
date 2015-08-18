@@ -49,6 +49,8 @@ namespace BansheeEngine
 			return ScriptResourceType::PlainText;
 		case TID_ScriptCode:
 			return ScriptResourceType::ScriptCode;
+		case TID_GUISkin:
+			return ScriptResourceType::GUISkin;
 		}
 
 		return ScriptResourceType::Undefined;
@@ -78,6 +80,8 @@ namespace BansheeEngine
 			return TID_PlainText;
 		case ScriptResourceType::ScriptCode:
 			return TID_ScriptCode;
+		case ScriptResourceType::GUISkin:
+			return TID_GUISkin;
 		}
 
 		return 0;

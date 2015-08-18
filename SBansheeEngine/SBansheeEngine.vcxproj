@@ -279,6 +279,7 @@
     <ClInclude Include="Include\BsScriptGUIProgressBar.h" />
     <ClInclude Include="Include\BsScriptGUIRenderTexture.h" />
     <ClInclude Include="Include\BsScriptGUIScrollArea.h" />
+    <ClInclude Include="Include\BsScriptGUISkin.h" />
     <ClInclude Include="Include\BsScriptGUISlider.h" />
     <ClInclude Include="Include\BsScriptGUITexture.h" />
     <ClInclude Include="Include\BsScriptGUIToggle.h" />
@@ -366,6 +367,7 @@
     <ClCompile Include="Source\BsScriptGUIProgressBar.cpp" />
     <ClCompile Include="Source\BsScriptGUIRenderTexture.cpp" />
     <ClCompile Include="Source\BsScriptGUIScrollArea.cpp" />
+    <ClCompile Include="Source\BsScriptGUISkin.cpp" />
     <ClCompile Include="Source\BsScriptGUISlider.cpp" />
     <ClCompile Include="Source\BsScriptGUITexture.cpp" />
     <ClCompile Include="Source\BsScriptGUIToggle.cpp" />
