@@ -69,6 +69,53 @@ namespace BansheeEditor
                 SetupGUI();
         }
 
+        private void OnEditorUpdate()
+        {
+            if (Input.IsButtonDown(ButtonCode.Return))
+            {
+                switch (type)
+                {
+                    case Type.OK:
+                    case Type.OKCancel:
+                        ButtonClicked(ResultType.OK);
+                        break;
+                    case Type.RetryAbortIgnore:
+                    case Type.RetryCancel:
+                        ButtonClicked(ResultType.Retry);
+                        break;
+                    case Type.TryCancelContinue:
+                        ButtonClicked(ResultType.Try);
+                        break;
+                    case Type.YesNo:
+                    case Type.YesNoCancel:
+                        ButtonClicked(ResultType.Yes); 
+                        break;
+                }
+            }
+
+            if (Input.IsButtonDown(ButtonCode.Escape))
+            {
+                switch (type)
+                {
+                    case Type.OK:
+                        ButtonClicked(ResultType.OK);
+                        break;
+                    case Type.RetryAbortIgnore:
+                        ButtonClicked(ResultType.Ignore);
+                        break;
+                    case Type.OKCancel:
+                    case Type.RetryCancel:
+                    case Type.YesNoCancel:
+                    case Type.TryCancelContinue:
+                        ButtonClicked(ResultType.Cancel);
+                        break;
+                    case Type.YesNo:
+                        ButtonClicked(ResultType.No);
+                        break;
+                }
+            }
+        }
+
         private void SetupGUI()
         {
             messageLabel = new GUILabel("", EditorStyles.MultiLineLabel,

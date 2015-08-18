@@ -668,7 +668,7 @@ namespace BansheeEditor
                 pathNoExtension = path.Remove(path.Length - extension.Length);
 
             int idx = 0;
-            string destination = pathNoExtension;
+            string destination = path;
             while (ProjectLibrary.Exists(destination))
             {
                 destination = pathNoExtension + "_" + idx;

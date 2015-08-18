@@ -569,6 +569,9 @@
     <ClInclude Include="Include\BsStringTableRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsPrefabImporter.h">
+      <Filter>Header Files\Importer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsCoreApplication.cpp">
@@ -900,6 +903,9 @@
     </ClCompile>
     <ClCompile Include="Source\BsStringTableManager.cpp">
       <Filter>Source Files\Localization</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsPrefabImporter.cpp">
+      <Filter>Source Files\Importer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

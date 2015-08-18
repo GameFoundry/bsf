@@ -16,13 +16,12 @@ namespace BansheeEngine
 		virtual ~ShaderIncludeImporter();
 
 		/** @copydoc SpecificImporter::isExtensionSupported */
-		virtual bool isExtensionSupported(const WString& ext) const;
+		virtual bool isExtensionSupported(const WString& ext) const override;
 
 		/** @copydoc SpecificImporter::isMagicNumberSupported */
-		virtual bool isMagicNumberSupported(const UINT8* magicNumPtr, UINT32 numBytes) const; 
+		virtual bool isMagicNumberSupported(const UINT8* magicNumPtr, UINT32 numBytes) const override;
 
 		/** @copydoc SpecificImporter::import */
-		virtual ResourcePtr import(const Path& filePath, ConstImportOptionsPtr importOptions);
-	private:
+		virtual ResourcePtr import(const Path& filePath, ConstImportOptionsPtr importOptions) override;
 	};
 }

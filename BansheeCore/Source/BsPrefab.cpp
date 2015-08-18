@@ -14,8 +14,6 @@ namespace BansheeEngine
 
 	HPrefab Prefab::create(const HSceneObject& sceneObject)
 	{
-		assert(sceneObject->mPrefabLinkUUID.empty());
-
 		PrefabPtr newPrefab = createEmpty();
 		newPrefab->initialize(sceneObject);
 

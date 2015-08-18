@@ -15,13 +15,13 @@ namespace BansheeEngine
 		virtual ~PlainTextImporter();
 
 		/** @copydoc SpecificImporter::isExtensionSupported */
-		virtual bool isExtensionSupported(const WString& ext) const;
+		virtual bool isExtensionSupported(const WString& ext) const override;
 
 		/** @copydoc SpecificImporter::isMagicNumberSupported */
-		virtual bool isMagicNumberSupported(const UINT8* magicNumPtr, UINT32 numBytes) const;
+		virtual bool isMagicNumberSupported(const UINT8* magicNumPtr, UINT32 numBytes) const override;
 
 		/** @copydoc SpecificImporter::import */
-		virtual ResourcePtr import(const Path& filePath, ConstImportOptionsPtr importOptions);
+		virtual ResourcePtr import(const Path& filePath, ConstImportOptionsPtr importOptions) override;
 
 		static const WString DEFAULT_EXTENSION;
 	};

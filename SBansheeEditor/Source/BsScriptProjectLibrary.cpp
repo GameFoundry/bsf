@@ -412,6 +412,10 @@ namespace BansheeEngine
 			return ScriptResourceType::Undefined;
 
 		ProjectLibrary::ResourceEntry* fileEntry = static_cast<ProjectLibrary::ResourceEntry*>(entry);
-		return ScriptResource::getTypeFromTypeId(fileEntry->meta->getTypeID());
+
+		if (fileEntry->meta != nullptr)
+			return ScriptResource::getTypeFromTypeId(fileEntry->meta->getTypeID());
+
+		return ScriptResourceType::Undefined;
 	}
 }

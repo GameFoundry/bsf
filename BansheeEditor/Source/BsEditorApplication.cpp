@@ -17,6 +17,7 @@
 #include "BsScriptCodeImporter.h"
 #include "BsShaderIncludeHandler.h"
 #include "BsDropDownWindowManager.h"
+#include "BsPrefabImporter.h"
 
 // DEBUG ONLY
 #include "BsResources.h"
@@ -120,6 +121,9 @@ namespace BansheeEngine
 
 		ResourceImporter* resourceImporter = bs_new<ResourceImporter>();
 		Importer::instance()._registerAssetImporter(resourceImporter);
+
+		PrefabImporter* prefabImporter = bs_new<PrefabImporter>();
+		Importer::instance()._registerAssetImporter(prefabImporter);
 
 		ProjectLibrary::startUp(getProjectPath());
 

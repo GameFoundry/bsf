@@ -38,10 +38,10 @@ namespace BansheeEngine
 
 		void onAssemblyRefreshStarted();
 
-		void _onManagedInstanceDeleted();
-		ScriptObjectBackup beginRefresh();
-		void endRefresh(const ScriptObjectBackup& backupData);
-		MonoObject* _createManagedInstance(bool construct);
+		void _onManagedInstanceDeleted() override;
+		ScriptObjectBackup beginRefresh() override;
+		void endRefresh(const ScriptObjectBackup& backupData) override;
+		MonoObject* _createManagedInstance(bool construct) override;
 		void notifyWindowDestroyed();
 
 		ManagedModalWindow* mModalWindow;
@@ -61,15 +61,15 @@ namespace BansheeEngine
 		void releaseManagedInstance();
 
 		void setParent(ScriptModalWindow* parent);
-		void update();
+		void update() override;
 		void reloadMonoTypes(MonoClass* windowClass);
 		void triggerOnInitialize();
 		void triggerOnDestroy();
 
 		MonoObject* getManagedInstance() const { return mManagedInstance; }
 	protected:
-		virtual void resized();
-		virtual void close();
+		virtual void resized() override;
+		virtual void close() override;
 
 	private:
 		friend class ScriptModalWindow;

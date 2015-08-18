@@ -80,11 +80,6 @@ namespace BansheeEngine
 		if(!foundUUID)
 			uuid = UUIDGenerator::generateRandom();
 
-		
-		// TODO - Load dependencies not implemented
-
-
-
 		HResource outputResource;
 		bool alreadyLoading = false;
 		{

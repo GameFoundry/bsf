@@ -135,7 +135,7 @@ namespace BansheeEditor
         private static void SavePrefabAs()
         {
             string scenePath = "";
-            BrowseDialog.SaveFile(ProjectLibrary.ResourceFolder, "", out scenePath);
+            BrowseDialog.SaveFile(ProjectLibrary.ResourceFolder, "*.prefab", out scenePath);
 
             if (!PathEx.IsPartOf(scenePath, ProjectLibrary.ResourceFolder))
                 DialogBox.Open("Error", "The location must be inside the Resources folder of the project.", DialogBox.Type.OK);
@@ -144,7 +144,7 @@ namespace BansheeEditor
                 // TODO - If path points to an existing non-scene asset or folder I should delete it otherwise
                 //        Internal_SaveScene will silently fail.
 
-                Scene.ActiveSceneUUID = Internal_SaveScene(scenePath);
+                Scene.ActiveSceneUUID = Internal_SaveScene(scenePath + ".prefab");
             }
         }
 

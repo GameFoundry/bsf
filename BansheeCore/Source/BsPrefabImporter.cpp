@@ -1,36 +1,34 @@
-#include "BsResourceImporter.h"
+#include "BsPrefabImporter.h"
 #include "BsFileSerializer.h"
 #include "BsResource.h"
 
 namespace BansheeEngine
 {
-	const WString ResourceImporter::DEFAULT_EXTENSION = L"asset";
-
-	ResourceImporter::ResourceImporter()
+	PrefabImporter::PrefabImporter()
 		:SpecificImporter()
 	{
 
 	}
 
-	ResourceImporter::~ResourceImporter()
+	PrefabImporter::~PrefabImporter()
 	{
 
 	}
 
-	bool ResourceImporter::isExtensionSupported(const WString& ext) const
+	bool PrefabImporter::isExtensionSupported(const WString& ext) const
 	{
 		WString lowerCaseExt = ext;
 		StringUtil::toLowerCase(lowerCaseExt);
 
-		return lowerCaseExt == DEFAULT_EXTENSION;
+		return lowerCaseExt == L"prefab";
 	}
 
-	bool ResourceImporter::isMagicNumberSupported(const UINT8* magicNumPtr, UINT32 numBytes) const
+	bool PrefabImporter::isMagicNumberSupported(const UINT8* magicNumPtr, UINT32 numBytes) const
 	{
 		return true; // No magic number of asset files, they must always rely on extension
 	}
 
-	ResourcePtr ResourceImporter::import(const Path& filePath, ConstImportOptionsPtr importOptions)
+	ResourcePtr PrefabImporter::import(const Path& filePath, ConstImportOptionsPtr importOptions)
 	{
 		FileDecoder fs(filePath);
 		fs.skip(); // Skipped over saved resource data

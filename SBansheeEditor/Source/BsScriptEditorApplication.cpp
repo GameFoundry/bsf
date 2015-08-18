@@ -118,14 +118,16 @@ namespace BansheeEngine
 
 			scene = static_resource_cast<Prefab>(ProjectLibrary::instance().load(nativePath));
 			scene->update(sceneRoot);
+
+			PrefabUtility::recordPrefabDiff(sceneRoot);
+			ProjectLibrary::instance().saveEntry(scene);
 		}
 		else
 		{
 			scene = Prefab::create(sceneRoot);
+			PrefabUtility::recordPrefabDiff(sceneRoot);
+			ProjectLibrary::instance().createEntry(scene, nativePath);
 		}
-
-		PrefabUtility::recordPrefabDiff(sceneRoot);
-		ProjectLibrary::instance().saveEntry(scene);
 
 		return MonoUtil::stringToMono(MonoManager::instance().getDomain(), scene.getUUID());
 	}

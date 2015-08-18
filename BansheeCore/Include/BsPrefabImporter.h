@@ -1,18 +1,19 @@
 #pragma once
 
-#include "BsPrerequisites.h"
+#include "BsCorePrerequisites.h"
 #include "BsSpecificImporter.h"
 
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Imports C# script source code files (.cs).
+	 * @brief	Importer using for importing Prefab resources.
+	 * 			Prefab resources are serialized engine objects ending in ".prefab" extension.
 	 */
-	class BS_EXPORT ScriptCodeImporter : public SpecificImporter
+	class BS_CORE_EXPORT PrefabImporter : public SpecificImporter
 	{
 	public:
-		ScriptCodeImporter();
-		virtual ~ScriptCodeImporter();
+		PrefabImporter();
+		virtual ~PrefabImporter();
 
 		/** @copydoc SpecificImporter::isExtensionSupported */
 		virtual bool isExtensionSupported(const WString& ext) const override;
@@ -22,10 +23,5 @@ namespace BansheeEngine
 
 		/** @copydoc SpecificImporter::import */
 		virtual ResourcePtr import(const Path& filePath, ConstImportOptionsPtr importOptions) override;
-
-		/** @copydoc SpecificImporter::createImportOptions */
-		virtual ImportOptionsPtr createImportOptions() const override;
-
-		static const WString DEFAULT_EXTENSION;
 	};
 }

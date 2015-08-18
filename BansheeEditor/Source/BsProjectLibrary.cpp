@@ -377,7 +377,9 @@ namespace BansheeEngine
 		Path metaPath = resource->path;
 		metaPath.setFilename(metaPath.getWFilename() + L".meta");
 
-		ext = ext.substr(1, ext.size() - 1); // Remove the .
+		if (ext.size() > 0)
+			ext = ext.substr(1, ext.size() - 1); // Remove the .
+
 		if (!Importer::instance().supportsFileType(ext))
 			return;
 
@@ -622,13 +624,11 @@ namespace BansheeEngine
 			assetPath = path.getRelative(getResourcesFolder());
 		}
 
-		assetPath.setExtension(assetPath.getWExtension() + L"." + ResourceImporter::DEFAULT_EXTENSION);
-
 		LibraryEntry* existingEntry = findEntry(assetPath);
 		if (existingEntry != nullptr)
 			BS_EXCEPT(InvalidParametersException, "Resource already exists at the specified path: " + assetPath.toString());
 
-		Resources::instance().save(resource, assetPath, false);
+		Resources::instance().save(resource, assetPath.getAbsolute(getResourcesFolder()), false);
 		checkForModifications(assetPath);
 	}
 
