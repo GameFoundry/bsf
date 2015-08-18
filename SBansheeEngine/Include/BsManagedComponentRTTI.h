@@ -41,7 +41,7 @@ namespace BansheeEngine
 
 		void setObjectData(ManagedComponent* obj, ManagedSerializableObjectPtr val)
 		{
-			obj->mRTTIData = val;
+			obj->mSerializedObjectData = val;
 		}
 
 		bool& getMissingType(ManagedComponent* obj)
@@ -54,16 +54,6 @@ namespace BansheeEngine
 			obj->mMissingType = val;
 		}
 
-		ManagedSerializableObjectPtr getMissingTypeObjectData(ManagedComponent* obj)
-		{
-			return obj->mMissingTypeObjectData;
-		}
-
-		void setMissingTypeObjectData(ManagedComponent* obj, ManagedSerializableObjectPtr val)
-		{
-			obj->mMissingTypeObjectData = val;
-		}
-
 	public:
 		ManagedComponentRTTI()
 		{
@@ -71,49 +61,27 @@ namespace BansheeEngine
 			addPlainField("mTypename", 1, &ManagedComponentRTTI::getTypename, &ManagedComponentRTTI::setTypename);
 			addReflectablePtrField("mObjectData", 2, &ManagedComponentRTTI::getObjectData, &ManagedComponentRTTI::setObjectData);
 			addPlainField("mMissingType", 3, &ManagedComponentRTTI::getMissingType, &ManagedComponentRTTI::setMissingType);
-			addReflectablePtrField("mMissingTypeObjectData", 5, &ManagedComponentRTTI::getMissingTypeObjectData, &ManagedComponentRTTI::setMissingTypeObjectData);
 		}
 
-		void onSerializationStarted(IReflectable* obj)
+		void onSerializationStarted(IReflectable* obj) override
 		{
 			ManagedComponent* mc = static_cast<ManagedComponent*>(obj);
 
 			mc->mRTTIData = ManagedSerializableObject::createFromExisting(mc->getManagedInstance());
 		}
 
-		virtual void onDeserializationStarted(IReflectable* obj)
-		{
-			ManagedComponent* mc = static_cast<ManagedComponent*>(obj);
-
-			GameObjectManager::instance().registerOnDeserializationEndCallback(std::bind(&ManagedComponentRTTI::finalizeDeserialization, mc));
-		}
-
-		static void finalizeDeserialization(ManagedComponent* mc)
-		{
-			ManagedSerializableObjectPtr serializableObject = any_cast<ManagedSerializableObjectPtr>(mc->mRTTIData);
-			serializableObject->deserialize();
-			MonoObject* managedInstance = serializableObject->getManagedInstance();
-
-			// Note: This callback must be triggered before any child ManagedSerializable* object's callbacks.
-			// This is because their callbacks will try to resolve native GameObject handles to managed objects
-			// but the managed ScriptComponent will only be created in the code below.
-			// I'm noting this specially as it's somewhat of a hidden requirement.
-			mc->initialize(managedInstance);
-			mc->mRTTIData = nullptr;
-		}
-
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "ManagedComponent";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_ManagedComponent;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return GameObjectRTTI::createGameObject<ManagedComponent>();
 		}

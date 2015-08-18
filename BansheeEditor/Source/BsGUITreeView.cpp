@@ -786,7 +786,15 @@ namespace BansheeEngine
 				_registerChildElement(element->mElement);
 			}
 
-			element->mElement->setTint(element->mIsGrayedOut ? GRAYED_OUT_COLOR : Color::White);
+			if (element->mIsGrayedOut)
+			{
+				Color grayedOutTint = element->mTint;
+				grayedOutTint.a = GRAYED_OUT_COLOR.a;
+
+				element->mElement->setTint(grayedOutTint);
+			}
+			else
+				element->mElement->setTint(element->mTint);
 
 			if(element->mChildren.size() > 0)
 			{

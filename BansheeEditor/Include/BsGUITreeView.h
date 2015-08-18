@@ -56,6 +56,7 @@ namespace BansheeEngine
 			bool mIsHighlighted;
 			bool mIsVisible;
 			bool mIsGrayedOut;
+			Color mTint;
 
 			bool isParentRec(TreeElement* element) const;
 		};

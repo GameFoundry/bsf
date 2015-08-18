@@ -174,19 +174,34 @@ namespace BansheeEngine
 	{
 		mFlags &= ~SOF_DontInstantiate;
 
-		if (mParent == nullptr)
-			gCoreSceneManager().registerNewSO(mThisHandle);
-
-		for (auto& component : mComponents)
+		std::function<void(SceneObject*)> instantiateRecursive = [&](SceneObject* obj)
 		{
-			component->onInitialized();
+			if (obj->mParent == nullptr)
+				gCoreSceneManager().registerNewSO(obj->mThisHandle);
 
-			if (getActive())
-				component->onEnabled();
-		}
+			for (auto& component : obj->mComponents)
+				component->instantiate();
 
-		for (auto& child : mChildren)
-			child->instantiate();
+			for (auto& child : obj->mChildren)
+				instantiateRecursive(child.get());
+		};
+
+		std::function<void(SceneObject*)> triggerEventsRecursive = [&](SceneObject* obj)
+		{
+			for (auto& component : obj->mComponents)
+			{
+				component->onInitialized();
+
+				if (obj->getActive())
+					component->onEnabled();
+			}
+
+			for (auto& child : obj->mChildren)
+				triggerEventsRecursive(child.get());
+		};
+
+		instantiateRecursive(this);
+		triggerEventsRecursive(this);
 	}
 
 	/************************************************************************/

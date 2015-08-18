@@ -100,6 +100,19 @@ namespace BansheeEngine
 		void deserialize();
 
 		/**
+		 * @brief	Deserializes a set of cached data into an existing managed object. Caller must ensure the provided object
+		 *			is of proper type.
+		 *
+		 *			This action transfers the object into linked mode. All further operations will operate directly on the managed instance
+		 *			and the cached data will be cleared. If you call this method on an already linked object the old object will be
+		 *			replaced and initialized with empty data (since cached data does not exist).
+		 *
+		 * @param	instance	Existing managed instance of the same type this serializable object represents.
+		 * @param	objInfo		Serializable object info for the managed object type.
+		 */
+		void deserialize(MonoObject* instance, const ManagedSerializableObjectInfoPtr& objInfo);
+
+		/**
 		 * @brief	Creates a managed serializable object that references an existing managed object. Created object will be in linked mode.
 		 *
 		 * @param	managedInstance		Constructed managed instance of the object to link with.

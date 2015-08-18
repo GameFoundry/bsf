@@ -128,9 +128,10 @@ namespace BansheeEngine
 			for(UINT32 i = 0; i < currentSO->getNumChildren(); i++)
 			{
 				HSceneObject currentSOChild = currentSO->getChild(i);
+				bool isInternal = currentSOChild->hasFlag(SOF_Internal);
 
 #if BS_DEBUG_MODE == 0
-				if (currentSOChild->hasFlag(SOF_Internal))
+				if (isInternal)
 					continue;
 #endif
 
@@ -161,6 +162,7 @@ namespace BansheeEngine
 					newChild->mName = currentSOChild->getName();
 					newChild->mSortedIdx = (UINT32)newChildren.size();
 					newChild->mIsVisible = element->mIsVisible && element->mIsExpanded;
+					newChild->mTint = isInternal ? Color::Red : Color::White;
 
 					newChildren.push_back(newChild);
 

@@ -47,6 +47,13 @@ namespace BansheeEngine
 		virtual ~Component();
 
 		/**
+		 * @brief	Construct any resources the component needs before use. Called when the parent
+		 *			scene object is instantiated. A non-instantiated component shouldn't be used for
+		 *			any other purpose than serialization.
+		 */
+		virtual void instantiate() {}
+
+		/**
 		 * @brief	Called when the component is ready to be initialized.
 		 */
 		virtual void onInitialized() {}

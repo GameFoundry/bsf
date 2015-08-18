@@ -90,6 +90,7 @@ Other polish:
    - This has to work not only when I come back to the object, but whenever inspector rebuilds (e.g. after removing element from array)
    - Consider saving this information with the serialized object
  - Make sure to persist EditorSettings
+ - Doubleclick on a prefab in Project should open that level
  - Import option inspectors for Texture, Mesh, Font
  - Update GUISlider so it works with the new style (and to have min/max limits, plus step size)
  - Add "focus on object" key (F) - animate it: rotate camera towards then speed towards while zooming in

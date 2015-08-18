@@ -485,10 +485,11 @@ namespace BansheeEngine
 
 			if (isInstantiated())
 			{
-				if (getActive())
-					newComponent->onInitialized();
+				newComponent->instantiate();
+				newComponent->onInitialized();
 
-				newComponent->onEnabled();
+				if (getActive())
+					newComponent->onEnabled();
 			}
 
 			return newComponent;

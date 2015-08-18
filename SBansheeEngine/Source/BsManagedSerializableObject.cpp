@@ -112,18 +112,23 @@ namespace BansheeEngine
 
 	void ManagedSerializableObject::deserialize()
 	{
-		mManagedInstance = createManagedInstance(mObjInfo->mTypeInfo);
-
-		if (mManagedInstance == nullptr)
+		// See if this type even still exists
+		ManagedSerializableObjectInfoPtr currentObjInfo = nullptr;
+		if (!ScriptAssemblyManager::instance().getSerializableObjectInfo(mObjInfo->mTypeInfo->mTypeNamespace, mObjInfo->mTypeInfo->mTypeName, currentObjInfo))
 		{
+			mManagedInstance = nullptr;
 			mCachedData.clear();
 			return;
 		}
 
-		ManagedSerializableObjectInfoPtr currentObjInfo = nullptr;
+		deserialize(createManagedInstance(currentObjInfo->mTypeInfo), currentObjInfo);
+	}
 
-		// See if this type even still exists
-		if (!ScriptAssemblyManager::instance().getSerializableObjectInfo(mObjInfo->mTypeInfo->mTypeNamespace, mObjInfo->mTypeInfo->mTypeName, currentObjInfo))
+	void ManagedSerializableObject::deserialize(MonoObject* instance, const ManagedSerializableObjectInfoPtr& objInfo)
+	{
+		mManagedInstance = instance;
+
+		if (mManagedInstance == nullptr)
 		{
 			mCachedData.clear();
 			return;
@@ -147,7 +152,7 @@ namespace BansheeEngine
 
 					ManagedSerializableFieldKey key(typeID, fieldId);
 
-					ManagedSerializableFieldInfoPtr matchingFieldInfo = currentObjInfo->findMatchingField(field.second, curType->mTypeInfo);
+					ManagedSerializableFieldInfoPtr matchingFieldInfo = objInfo->findMatchingField(field.second, curType->mTypeInfo);
 					if (matchingFieldInfo != nullptr)
 						setFieldData(matchingFieldInfo, mCachedData[key]);
 
@@ -158,7 +163,7 @@ namespace BansheeEngine
 			curType = curType->mBaseClass;
 		}
 
-		mObjInfo = currentObjInfo;
+		mObjInfo = objInfo;
 		mCachedData.clear();
 	}
 

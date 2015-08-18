@@ -100,9 +100,9 @@ namespace BansheeEngine
 		String mFullTypeName;
 		bool mRequiresReset;
 
-		// We store data of a missing component type in hope it will be restored later
 		bool mMissingType;
-		ManagedSerializableObjectPtr mMissingTypeObjectData;
+		ManagedSerializableObjectPtr mSerializedObjectData;
+		ManagedSerializableObjectInfoPtr mObjInfo; // Transient
 
 		OnInitializedThunkDef mOnInitializedThunk;
 		UpdateThunkDef mUpdateThunk;
@@ -120,6 +120,11 @@ namespace BansheeEngine
 		friend class ScriptComponent;
 
 		ManagedComponent(const HSceneObject& parent, MonoReflectionType* runtimeType);
+
+		/**
+		 * @copydoc	Component::instantiate
+		 */
+		void instantiate() override;
 
 		/**
 		 * @copydoc	Component::onInitialized

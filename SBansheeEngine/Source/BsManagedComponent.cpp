@@ -7,6 +7,7 @@
 #include "BsMemorySerializer.h"
 #include "BsManagedSerializableObject.h"
 #include "BsScriptGameObjectManager.h"
+#include "BsScriptAssemblyManager.h"
 #include "BsDebug.h"
 
 namespace BansheeEngine
@@ -25,17 +26,7 @@ namespace BansheeEngine
 		::MonoClass* monoClass = mono_type_get_class(monoType);
 
 		MonoUtil::getClassName(monoClass, mNamespace, mTypeName);
-
-		MonoClass* managedClass = MonoManager::instance().findClass(mNamespace, mTypeName);
-		if(managedClass == nullptr)
-		{
-			LOGWRN("Cannot create managed component: " + mNamespace + "." + mTypeName + " because that type doesn't exist.");
-			return;
-		}
-
 		setName(mTypeName);
-
-		initialize(managedClass->createInstance());
 	}
 
 	ManagedComponent::~ManagedComponent()
@@ -75,8 +66,8 @@ namespace BansheeEngine
 
 			backupData.size = 0;
 
-			if (mMissingTypeObjectData != nullptr)
-				backupData.data = ms.encode(mMissingTypeObjectData.get(), backupData.size);
+			if (mSerializedObjectData != nullptr)
+				backupData.data = ms.encode(mSerializedObjectData.get(), backupData.size);
 			else
 				backupData.data = nullptr;
 		}
@@ -104,6 +95,7 @@ namespace BansheeEngine
 	void ManagedComponent::restore(MonoObject* instance, const ComponentBackupData& data, bool missingType)
 	{
 		initialize(instance);
+		mObjInfo = nullptr;
 
 		if (instance != nullptr && data.data != nullptr)
 		{
@@ -114,13 +106,17 @@ namespace BansheeEngine
 			GameObjectManager::instance().endDeserialization();
 
 			if (!missingType)
-				serializableObject->deserialize();
+			{
+				ScriptAssemblyManager::instance().getSerializableObjectInfo(mNamespace, mTypeName, mObjInfo);
+
+				serializableObject->deserialize(instance, mObjInfo);
+			}
 			else
-				mMissingTypeObjectData = serializableObject;
+				mSerializedObjectData = serializableObject;
 		}
 
 		if (!missingType)
-			mMissingTypeObjectData = nullptr;
+			mSerializedObjectData = nullptr;
 
 		mMissingType = missingType;
 		mRequiresReset = true;
@@ -173,7 +169,9 @@ namespace BansheeEngine
 
 	void ManagedComponent::update()
 	{
-		if (mUpdateThunk != nullptr && mManagedInstance != nullptr)
+		assert(mManagedInstance != nullptr);
+
+		if (mUpdateThunk != nullptr)
 		{
 			// Note: Not calling virtual methods. Can be easily done if needed but for now doing this
 			// for some extra speed.
@@ -183,7 +181,9 @@ namespace BansheeEngine
 
 	void ManagedComponent::triggerOnReset()
 	{
-		if (mRequiresReset && mOnResetThunk != nullptr && mManagedInstance != nullptr)
+		assert(mManagedInstance != nullptr);
+
+		if (mRequiresReset && mOnResetThunk != nullptr)
 		{
 			// Note: Not calling virtual methods. Can be easily done if needed but for now doing this
 			// for some extra speed.
@@ -193,8 +193,22 @@ namespace BansheeEngine
 		mRequiresReset = false;
 	}
 
-	void ManagedComponent::onInitialized()
+	void ManagedComponent::instantiate()
 	{
+		mObjInfo = nullptr;
+		if (!ScriptAssemblyManager::instance().getSerializableObjectInfo(mNamespace, mTypeName, mObjInfo))
+		{
+			MonoObject* instance = ScriptAssemblyManager::instance().getMissingComponentClass()->createInstance(true);
+
+			initialize(instance);
+			mMissingType = true;
+		}
+		else
+		{
+			initialize(mObjInfo->mMonoClass->createInstance());
+			mMissingType = false;
+		}
+
 		assert(mManagedInstance != nullptr);
 
 		// Find handle to self
@@ -214,6 +228,17 @@ namespace BansheeEngine
 
 		assert(componentHandle != nullptr);
 		ScriptComponent* nativeInstance = ScriptGameObjectManager::instance().createScriptComponent(mManagedInstance, componentHandle);
+	}
+
+	void ManagedComponent::onInitialized()
+	{
+		assert(mManagedInstance != nullptr);
+
+		if (mSerializedObjectData != nullptr && !mMissingType)
+		{
+			mSerializedObjectData->deserialize(mManagedInstance, mObjInfo);
+			mSerializedObjectData = nullptr;
+		}
 
 		if (mOnInitializedThunk != nullptr)
 		{
@@ -236,11 +261,8 @@ namespace BansheeEngine
 			MonoUtil::invokeThunk(mOnDestroyThunk, mManagedInstance);
 		}
 
-		if (mManagedInstance != nullptr)
-		{
-			mManagedInstance = nullptr;
-			mono_gchandle_free(mManagedHandle);
-		}
+		mManagedInstance = nullptr;
+		mono_gchandle_free(mManagedHandle);
 	}
 
 	void ManagedComponent::onEnabled()
