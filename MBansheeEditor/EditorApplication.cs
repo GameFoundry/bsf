@@ -135,16 +135,18 @@ namespace BansheeEditor
         private static void SavePrefabAs()
         {
             string scenePath = "";
-            BrowseDialog.SaveFile(ProjectLibrary.ResourceFolder, "*.prefab", out scenePath);
-
-            if (!PathEx.IsPartOf(scenePath, ProjectLibrary.ResourceFolder))
-                DialogBox.Open("Error", "The location must be inside the Resources folder of the project.", DialogBox.Type.OK);
-            else
+            if (BrowseDialog.SaveFile(ProjectLibrary.ResourceFolder, "*.prefab", out scenePath))
             {
-                // TODO - If path points to an existing non-scene asset or folder I should delete it otherwise
-                //        Internal_SaveScene will silently fail.
+                if (!PathEx.IsPartOf(scenePath, ProjectLibrary.ResourceFolder))
+                    DialogBox.Open("Error", "The location must be inside the Resources folder of the project.",
+                        DialogBox.Type.OK);
+                else
+                {
+                    // TODO - If path points to an existing non-scene asset or folder I should delete it otherwise
+                    //        Internal_SaveScene will silently fail.
 
-                Scene.ActiveSceneUUID = Internal_SaveScene(scenePath + ".prefab");
+                    Scene.ActiveSceneUUID = Internal_SaveScene(scenePath + ".prefab");
+                }
             }
         }
 
@@ -155,10 +157,11 @@ namespace BansheeEditor
                 () =>
                 {
                     string[] scenePaths;
-                    BrowseDialog.OpenFile(ProjectLibrary.ResourceFolder, "", false, out scenePaths);
-
-                    if(scenePaths.Length > 0)
-                        Scene.Load(scenePaths[0]);
+                    if (BrowseDialog.OpenFile(ProjectLibrary.ResourceFolder, "", false, out scenePaths))
+                    {
+                        if (scenePaths.Length > 0)
+                            Scene.Load(scenePaths[0]);
+                    }
                 };
 
             Action<DialogBox.ResultType> dialogCallback =

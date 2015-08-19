@@ -29,7 +29,7 @@ namespace BansheeEditor
         private VirtualButton moveRightBtn;
         private VirtualButton moveBackwardBtn;
         private VirtualButton fastMoveBtn;
-        private VirtualButton rotateBtn;
+        private VirtualButton activeBtn;
         private VirtualAxis horizontalAxis;
         private VirtualAxis verticalAxis;
 
@@ -45,14 +45,14 @@ namespace BansheeEditor
             moveRightBtn = new VirtualButton(MoveRightBinding);
             moveBackwardBtn = new VirtualButton(MoveBackBinding);
             fastMoveBtn = new VirtualButton(FastMoveBinding);
-            rotateBtn = new VirtualButton(RotateBinding);
+            activeBtn = new VirtualButton(RotateBinding);
             horizontalAxis = new VirtualAxis(HorizontalAxisBinding);
             verticalAxis = new VirtualAxis(VerticalAxisBinding);
         }
 
         private void OnDisable()
         {
-            if (VirtualInput.IsButtonHeld(rotateBtn))
+            if (VirtualInput.IsButtonHeld(activeBtn))
                 Cursor.Show();
         }
 
@@ -63,20 +63,20 @@ namespace BansheeEditor
 		    bool goingLeft = VirtualInput.IsButtonHeld(moveLeftBtn);
 		    bool goingRight = VirtualInput.IsButtonHeld(moveRightBtn);
 		    bool fastMove = VirtualInput.IsButtonHeld(fastMoveBtn);
-		    bool camRotating = VirtualInput.IsButtonHeld(rotateBtn);
+		    bool camActive = VirtualInput.IsButtonHeld(activeBtn);
 
-            if (camRotating != lastButtonState)
+            if (camActive != lastButtonState)
             {
-                if (camRotating)
+                if (camActive)
                     Cursor.Hide();
                 else
                     Cursor.Show();
 
-                lastButtonState = camRotating;
+                lastButtonState = camActive;
             }
 
 		    float frameDelta = Time.FrameDelta;
-		    if (camRotating)
+		    if (camActive)
 		    {
 		        float horzValue = VirtualInput.GetAxisValue(horizontalAxis);
                 float vertValue = VirtualInput.GetAxisValue(verticalAxis);
@@ -94,36 +94,36 @@ namespace BansheeEditor
                 camRot.Normalize();
 
                 SceneObject.Rotation = camRot;
+
+                Vector3 direction = Vector3.zero;
+                if (goingForward) direction += SceneObject.Forward;
+                if (goingBack) direction -= SceneObject.Forward;
+                if (goingRight) direction += SceneObject.Right;
+                if (goingLeft) direction -= SceneObject.Right;
+
+                if (direction.SqrdMagnitude != 0)
+                {
+                    direction.Normalize();
+
+                    float multiplier = 1.0f;
+                    if (fastMove)
+                        multiplier = FastModeMultiplier;
+
+                    currentSpeed = MathEx.Clamp(currentSpeed + Acceleration * frameDelta, StartSpeed, TopSpeed);
+                    currentSpeed *= multiplier;
+                }
+                else
+                {
+                    currentSpeed = 0.0f;
+                }
+
+                const float tooSmall = 0.0001f;
+                if (currentSpeed > tooSmall)
+                {
+                    Vector3 velocity = direction * currentSpeed;
+                    SceneObject.Move(velocity * frameDelta);
+                }
 		    }
-
-            Vector3 direction = Vector3.zero;
-            if (goingForward) direction += SceneObject.Forward;
-            if (goingBack) direction -= SceneObject.Forward;
-            if (goingRight) direction += SceneObject.Right;
-            if (goingLeft) direction -= SceneObject.Right;
-
-            if (direction.SqrdMagnitude != 0)
-            {
-                direction.Normalize();
-
-                float multiplier = 1.0f;
-                if (fastMove)
-                    multiplier = FastModeMultiplier;
-
-                currentSpeed = MathEx.Clamp(currentSpeed + Acceleration * frameDelta, StartSpeed, TopSpeed);
-                currentSpeed *= multiplier;
-            }
-            else
-            {
-                currentSpeed = 0.0f;
-            }
-
-            const float tooSmall = 0.0001f;
-            if (currentSpeed > tooSmall)
-            {
-                Vector3 velocity = direction * currentSpeed;
-                SceneObject.Move(velocity * frameDelta);
-            }
         }
     }
 }

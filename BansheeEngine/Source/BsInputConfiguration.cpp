@@ -69,7 +69,7 @@ namespace BansheeEngine
 		INT32 idx = -1;
 		for(UINT32 i = 0; i < (UINT32)btnData.size(); i++)
 		{
-			if(btnData[i].desc.modifiers == modifiers)
+			if (btnData[i].name == name)
 			{
 				idx = (INT32)i;
 				break;
@@ -136,21 +136,22 @@ namespace BansheeEngine
 		}
 	}
 
-	bool InputConfiguration::_getButton(ButtonCode code, UINT32 modifiers, VirtualButton& btn, VIRTUAL_BUTTON_DESC& btnDesc) const
+	bool InputConfiguration::_getButtons(ButtonCode code, UINT32 modifiers, Vector<VirtualButton>& btns, Vector<VIRTUAL_BUTTON_DESC>& btnDesc) const
 	{
 		const Vector<VirtualButtonData>& btnData = mButtons[code & 0x0000FFFF];
 
+		bool foundAny = false;
 		for(UINT32 i = 0; i < (UINT32)btnData.size(); i++)
 		{
 			if((((UINT32)btnData[i].desc.modifiers) & modifiers) == ((UINT32)btnData[i].desc.modifiers))
 			{
-				btn = btnData[i].button;
-				btnDesc = btnData[i].desc;
-				return true;
+				btns.push_back(btnData[i].button);
+				btnDesc.push_back(btnData[i].desc);
+				foundAny = true;
 			}
 		}
 
-		return false;
+		return foundAny;
 	}
 
 	bool InputConfiguration::_getAxis(const VirtualAxis& axis, VIRTUAL_AXIS_DESC& axisDesc) const

@@ -106,7 +106,6 @@ Other polish:
 
 Stage 2 polish:
  - Inject an icon into an .exe (Win32 specific)
- - Implement C# Resources system (described below)
  - Prefabs
  - Game window
  - Game play/pause/step (+ save/restore objects on play/pause switch)

@@ -28,7 +28,7 @@ namespace BansheeEngine
 	public:
 		friend class FontDataRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		virtual RTTITypeBase* getRTTI() const override;
 	};
 
 	// TODO - When saved on disk font currently stores a copy of the texture pages. This should be acceptable

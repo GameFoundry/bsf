@@ -186,35 +186,38 @@ namespace BansheeEditor
         {
             if (HasFocus)
             {
-                if (VirtualInput.IsButtonUp(toggleProfilerOverlayKey))
-                    EditorSettings.SetBool(ProfilerOverlayActiveKey, !EditorSettings.GetBool(ProfilerOverlayActiveKey));
-
-                if(VirtualInput.IsButtonUp(viewToolKey))
-                    EditorApplication.ActiveSceneTool = SceneViewTool.View;
-
-                if (VirtualInput.IsButtonUp(moveToolKey))
-                    EditorApplication.ActiveSceneTool = SceneViewTool.Move;
-
-                if(VirtualInput.IsButtonUp(rotateToolKey))
-                    EditorApplication.ActiveSceneTool = SceneViewTool.Rotate;
-
-                if (VirtualInput.IsButtonUp(scaleToolKey))
-                    EditorApplication.ActiveSceneTool = SceneViewTool.Scale;
-
-                if (VirtualInput.IsButtonUp(duplicateKey))
+                if (!Input.IsPointerButtonHeld(PointerButton.Right))
                 {
-                    SceneObject[] selectedObjects = Selection.sceneObjects;
-                    CleanDuplicates(ref selectedObjects);
+                    if (VirtualInput.IsButtonUp(toggleProfilerOverlayKey))
+                        EditorSettings.SetBool(ProfilerOverlayActiveKey, !EditorSettings.GetBool(ProfilerOverlayActiveKey));
 
-                    if (selectedObjects.Length > 0)
+                    if (VirtualInput.IsButtonUp(viewToolKey))
+                        EditorApplication.ActiveSceneTool = SceneViewTool.View;
+
+                    if (VirtualInput.IsButtonUp(moveToolKey))
+                        EditorApplication.ActiveSceneTool = SceneViewTool.Move;
+
+                    if (VirtualInput.IsButtonUp(rotateToolKey))
+                        EditorApplication.ActiveSceneTool = SceneViewTool.Rotate;
+
+                    if (VirtualInput.IsButtonUp(scaleToolKey))
+                        EditorApplication.ActiveSceneTool = SceneViewTool.Scale;
+
+                    if (VirtualInput.IsButtonUp(duplicateKey))
                     {
-                        String message;
-		                if (selectedObjects.Length == 1)
-			                message = "Duplicated " + selectedObjects[0].Name;
-		                else
-			                message = "Duplicated " + selectedObjects.Length + " elements";
+                        SceneObject[] selectedObjects = Selection.sceneObjects;
+                        CleanDuplicates(ref selectedObjects);
 
-                        UndoRedo.CloneSO(selectedObjects, message);
+                        if (selectedObjects.Length > 0)
+                        {
+                            String message;
+                            if (selectedObjects.Length == 1)
+                                message = "Duplicated " + selectedObjects[0].Name;
+                            else
+                                message = "Duplicated " + selectedObjects.Length + " elements";
+
+                            UndoRedo.CloneSO(selectedObjects, message);
+                        }
                     }
                 }
             }

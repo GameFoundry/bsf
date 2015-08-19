@@ -189,9 +189,10 @@ namespace BansheeEngine
 		UINT64 getRepeatInterval() const { return mRepeatInterval; }
 
 		/**
-		 * @brief	Returns data about a virtual button from a physical button code and modifier flags.
+		 * @brief	Returns data about virtual buttons that are triggered 
+		 *			by the specified physical button code and modifier flags.
 		 */
-		bool _getButton(ButtonCode code, UINT32 modifiers, VirtualButton& btn, VIRTUAL_BUTTON_DESC& btnDesc) const;
+		bool _getButtons(ButtonCode code, UINT32 modifiers, Vector<VirtualButton>& btns, Vector<VIRTUAL_BUTTON_DESC>& btnDescs) const;
 
 		/**
 		 * @brief	Retrieves virtual axis descriptor for the provided axis.

@@ -147,6 +147,10 @@ namespace BansheeEngine
 		Vector<DeviceData> mDevices;
 		Queue<VirtualButtonEvent> mEvents;
 		UINT32 mActiveModifiers;
+
+		// Transient
+		Vector<VirtualButton> tempButtons;
+		Vector<VIRTUAL_BUTTON_DESC> tempBtnDescs;
 	};
 
 	/**

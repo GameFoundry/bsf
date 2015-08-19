@@ -21,6 +21,18 @@ namespace BansheeEngine
 			bool isDeserializationParent;
 		};
 
+		Vector3& getPosition(SceneObject* obj) { return obj->mPosition; }
+		void setPosition(SceneObject* obj, Vector3& value) { obj->mPosition = value; }
+
+		Quaternion& getRotation(SceneObject* obj) { return obj->mRotation; }
+		void setRotation(SceneObject* obj, Quaternion& value) { obj->mRotation = value; }
+
+		Vector3& getScale(SceneObject* obj) { return obj->mScale; }
+		void setScale(SceneObject* obj, Vector3& value) { obj->mScale = value; }
+
+		bool& getActive(SceneObject* obj) { return obj->mActiveSelf; }
+		void setActive(SceneObject* obj, bool& value) { obj->mActiveSelf = value; }
+
 		// NOTE - These can only be set sequentially, specific array index is ignored
 		std::shared_ptr<SceneObject> getChild(SceneObject* obj, UINT32 idx) { return obj->mChildren[idx].getInternalPtr(); }
 		void setChild(SceneObject* obj, UINT32 idx, std::shared_ptr<SceneObject> param) { param->setParent(obj->mThisHandle); } // NOTE: Can only be used for sequentially adding elements
@@ -55,6 +67,10 @@ namespace BansheeEngine
 			addPlainField("mFlags", 3, &SceneObjectRTTI::getFlags, &SceneObjectRTTI::setFlags);
 			addReflectablePtrField("mPrefabDiff", 4, &SceneObjectRTTI::getPrefabDiff, &SceneObjectRTTI::setPrefabDiff);
 			addPlainField("mPrefabHash", 5, &SceneObjectRTTI::getPrefabHash, &SceneObjectRTTI::setPrefabHash);
+			addPlainField("mPosition", 6, &SceneObjectRTTI::getPosition, &SceneObjectRTTI::setPosition);
+			addPlainField("mRotation", 7, &SceneObjectRTTI::getRotation, &SceneObjectRTTI::setRotation);
+			addPlainField("mScale", 8, &SceneObjectRTTI::getScale, &SceneObjectRTTI::setScale);
+			addPlainField("mActiveSelf", 9, &SceneObjectRTTI::getActive, &SceneObjectRTTI::setActive);
 		}
 
 		virtual void onDeserializationStarted(IReflectable* obj) override
