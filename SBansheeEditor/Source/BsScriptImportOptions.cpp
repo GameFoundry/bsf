@@ -25,6 +25,9 @@ namespace BansheeEngine
 		:ScriptObjectBase(instance)
 	{ }
 
+	void ScriptImportOptions::initRuntimeData() 
+	{ }
+
 	MonoObject* ScriptImportOptions::create(const SPtr<ImportOptions>& importOptions)
 	{
 		UINT32 typeId = importOptions->getRTTI()->getRTTIId();
