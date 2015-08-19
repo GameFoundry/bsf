@@ -285,11 +285,23 @@ namespace BansheeEngine
 
 		mutable CameraHandlerPtr mInternal;
 
+		// Only valid during construction
+		RenderTargetPtr mTarget;
+		float mLeft;
+		float mTop;
+		float mWidth;
+		float mHeight;
+
 		/************************************************************************/
 		/* 						COMPONENT OVERRIDES                      		*/
 		/************************************************************************/
 	protected:
 		friend class SceneObject;
+
+		/**
+		 * @copydoc	Component::onInitialized
+		 */
+		void onInitialized() override;
 
 		/**
 		 * @copydoc	Component::onDestroyed
@@ -308,7 +320,7 @@ namespace BansheeEngine
 	public:
 		friend class CameraRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		virtual RTTITypeBase* getRTTI() const override;
 
 	protected:
 		Camera() {} // Serialization only

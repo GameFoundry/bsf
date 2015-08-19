@@ -14,11 +14,17 @@ namespace BansheeEngine
 		:Component(parent)
 	{
 		setName("Renderable");
-		mInternal = RenderableHandler::create();
 	}
 
 	void Renderable::onInitialized()
 	{
+		// If mInternal already exists this means this object was deserialized,
+		// so all we need to do is initialize it.
+		if (mInternal != nullptr)
+			mInternal->initialize();
+		else
+			mInternal = RenderableHandler::create();
+
 		gSceneManager()._registerRenderable(mInternal, sceneObject());
 	}
 

@@ -63,7 +63,6 @@ Test:
 
 Ribek use:
  - Hook up color picker to guicolor field
- - Move forward in scene view doesn't work because the W tool handle shortcut messes with it
  - When starting drag from hierarchy tree view it tends to select another object (can't repro)
  - Camera, Renderable, Material, Texture inspector
  - Project create/open window

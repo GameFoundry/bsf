@@ -29,24 +29,26 @@ namespace BansheeEngine
 				&RenderableHandlerRTTI::getNumMaterials, &RenderableHandlerRTTI::setMaterial, &RenderableHandlerRTTI::setNumMaterials);
 		}
 
-		virtual void onDeserializationEnded(IReflectable* obj)
+		virtual void onDeserializationEnded(IReflectable* obj) override
 		{
-			RenderableHandler* renderable = static_cast<RenderableHandler*>(obj);
-			renderable->initialize();
+			// Note: Since this is a CoreObject I should call initialize() right after deserialization,
+			// but since this specific type is used in Components we delay initialization until Component
+			// itself does it. Keep this is mind in case this ever needs to be deserialized for non-Component 
+			// purposes (you'll need to call initialize manually).
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "RenderableHandler";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_RenderableHandler;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return RenderableHandler::createEmpty();
 		}

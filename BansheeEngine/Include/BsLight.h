@@ -21,16 +21,6 @@ namespace BansheeEngine
 		virtual ~Light();
 
 	    /**
-		 * @copydoc	Component::onInitialized
-	     */
-		void onInitialized() override;
-
-	    /**
-		 * @copydoc	Component::onDestroyed
-	     */
-		void onDestroyed() override;
-
-	    /**
 		 * @copydoc	LightInternal::getPosition
 	     */
 		Vector3 getPosition() const { return mInternal->getPosition(); }
@@ -123,13 +113,31 @@ namespace BansheeEngine
     protected:
 		mutable SPtr<LightInternal> mInternal;
 
+		// Only valid during construction
+		LightType mType;
+		Color mColor;
+		float mIntensity; 
+		float mRange; 
+		bool mCastsShadows; 
+		Degree mSpotAngle; 
+		Degree mSpotFalloffAngle;
+
 		/************************************************************************/
 		/* 						COMPONENT OVERRIDES                      		*/
 		/************************************************************************/
 	protected:
 		friend class SceneObject;
 
-	public:
+	    /**
+		 * @copydoc	Component::onInitialized
+	     */
+		void onInitialized() override;
+
+	    /**
+		 * @copydoc	Component::onDestroyed
+	     */
+		void onDestroyed() override;
+
 		/**
 		 * @copydoc	Component::update
 		 */

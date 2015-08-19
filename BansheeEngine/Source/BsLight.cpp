@@ -6,11 +6,9 @@ namespace BansheeEngine
 {
 	Light::Light(const HSceneObject& parent, LightType type, Color color,
 		float intensity, float range, bool castsShadows, Degree spotAngle, Degree spotFalloffAngle)
-		: Component(parent)
+		: Component(parent), mType(type), mColor(color), mIntensity(intensity), mRange(range),
+		mCastsShadows(castsShadows), mSpotAngle(spotAngle), mSpotFalloffAngle(spotFalloffAngle)
 	{
-		mInternal = LightInternal::create(type, color, intensity, 
-			range, castsShadows, spotAngle, spotFalloffAngle);
-
 		setName("Light");
 	}
 
@@ -28,6 +26,16 @@ namespace BansheeEngine
 
 	void Light::onInitialized()
 	{
+		// If mInternal already exists this means this object was deserialized,
+		// so all we need to do is initialize it.
+		if (mInternal != nullptr)
+			mInternal->initialize();
+		else
+		{
+			mInternal = LightInternal::create(mType, mColor, mIntensity,
+				mRange, mCastsShadows, mSpotAngle, mSpotFalloffAngle);
+		}
+
 		gSceneManager()._registerLight(mInternal, sceneObject());
 	}
 

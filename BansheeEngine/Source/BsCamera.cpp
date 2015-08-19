@@ -17,11 +17,8 @@
 namespace BansheeEngine 
 {
 	Camera::Camera(const HSceneObject& parent, RenderTargetPtr target, float left, float top, float width, float height)
-		: Component(parent)
+		: Component(parent), mTarget(target), mLeft(left), mTop(top), mWidth(width), mHeight(height)
     {
-		mInternal = CameraHandler::create(target, left, top, width, height);
-		gSceneManager()._registerCamera(mInternal, parent);
-
 		setName("Camera");
     }
 
@@ -61,6 +58,21 @@ namespace BansheeEngine
 	void Camera::update() 
 	{
 
+	}
+
+	void Camera::onInitialized()
+	{
+		// If mInternal already exists this means this object was deserialized,
+		// so all we need to do is initialize it.
+		if (mInternal != nullptr)
+			mInternal->initialize();
+		else
+		{
+			mInternal = CameraHandler::create(mTarget, mLeft, mTop, mWidth, mHeight);
+			mTarget = nullptr;
+		}
+
+		gSceneManager()._registerCamera(mInternal, SO());
 	}
 
 	void Camera::onDestroyed()
