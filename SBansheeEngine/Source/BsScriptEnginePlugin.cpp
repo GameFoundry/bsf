@@ -9,6 +9,7 @@
 #include "BsScriptInput.h"
 #include "BsScriptVirtualInput.h"
 #include "BsScriptObjectManager.h"
+#include "BsGameResourceManager.h"
 #include "BsApplication.h"
 
 namespace BansheeEngine
@@ -28,6 +29,7 @@ namespace BansheeEngine
 
 		// TODO - Load Game assembly (gApplication().getGameAssemblyPath())
 
+		GameResourceManager::startUp();
 		ScriptObjectManager::startUp();
 		ManagedResourceManager::startUp();
 		ScriptAssemblyManager::startUp();
@@ -60,5 +62,6 @@ namespace BansheeEngine
 		ScriptResourceManager::shutDown();
 		ScriptAssemblyManager::shutDown();
 		ScriptObjectManager::shutDown();
+		GameResourceManager::shutDown();
 	}
 }

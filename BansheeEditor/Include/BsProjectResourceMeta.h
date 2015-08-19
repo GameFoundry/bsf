@@ -50,11 +50,24 @@ namespace BansheeEngine
 		 */
 		UINT32 getTypeID() const { return mTypeId; }
 
+		/**
+		 * @brief	Checks should this resource always be included in the build, regardless if
+		 *			it's being referenced or not.
+		 */
+		bool getIncludeInBuild() const { return mIncludeInBuild; }
+
+		/**
+		 * @brief	Determines if this resource will always be included in the build, regardless if
+		 *			it's being referenced or not.
+		 */
+		void setIncludeInBuild(bool include) { mIncludeInBuild = include; }
+
 	private:
 		String mUUID;
 		ResourceMetaDataPtr mResourceMeta;
 		ImportOptionsPtr mImportOptions;
 		UINT32 mTypeId;
+		bool mIncludeInBuild;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

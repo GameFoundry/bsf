@@ -161,7 +161,7 @@ namespace BansheeEngine
 		assemblyFolder.append(ASSEMBLY_PATH);
 
 		return assemblyFolder;
-	}	
+	}
 
 	const String& Application::getLibNameForRenderAPI(RenderAPIPlugin plugin)
 	{

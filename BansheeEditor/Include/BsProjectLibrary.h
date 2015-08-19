@@ -108,7 +108,8 @@ namespace BansheeEngine
 		 *
 		 * @param	path	Path to the entry, either absolute or relative to resources folder.
 		 *
-		 * @return	Found entry, or null if not found.
+		 * @return	Found entry, or null if not found. Value returned by this method is transient,
+		 *			it may be destroyed on any following ProjectLibrary call.
 		 */
 		LibraryEntry* findEntry(const Path& path) const;
 
@@ -117,7 +118,8 @@ namespace BansheeEngine
 		 *
 		 * @param	pattern	Pattern to search for. Use wildcard * to match any character(s).
 		 *
-		 * @return	A list of entries matching the pattern.
+		 * @return	A list of entries matching the pattern. Values returned by this method are transient,
+		 *			they may be destroyed on any following ProjectLibrary call.
 		 */
 		Vector<LibraryEntry*> search(const WString& pattern);
 
@@ -127,7 +129,8 @@ namespace BansheeEngine
 		 * @param	pattern	Pattern to search for. Use wildcard * to match any character(s).
 		 * @param	typeIds	RTTI type IDs of the resource types we're interested in searching.
 		 *
-		 * @return	A list of entries matching the pattern.
+		 * @return	A list of entries matching the pattern. Values returned by this method are transient, 
+		 *			they may be destroyed on any following ProjectLibrary call.
 		 */
 		Vector<LibraryEntry*> search(const WString& pattern, const Vector<UINT32>& typeIds);
 
@@ -206,6 +209,22 @@ namespace BansheeEngine
 		 *							if import options changed since last import.
 		 */
 		void reimport(const Path& path, const ImportOptionsPtr& importOptions = nullptr, bool forceReimport = false);
+
+		/**
+		 * @brief	Determines if this resource will always be included in the build, regardless if
+		 *			it's being referenced or not.
+		 *
+		 * @param	path	Path to the resource to modify, absolute or relative to resources folder.
+		 * @param	force	True if we want the resource to be included in the build, false otherwise.
+		 */
+		void setIncludeInBuild(const Path& path, bool force);
+
+		/**
+		 * @brief	Finds all resource entries that should be included in a build.
+		 *			Values returned by this method are transient, they may be destroyed
+		 *			on any following ProjectLibrary call.
+		 */
+		Vector<ResourceEntry*> getResourcesForBuild() const;
 
 		/**
 		 * @brief	Loads a resource at the specified path, synchronously.

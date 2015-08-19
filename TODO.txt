@@ -40,8 +40,6 @@ Add "dirty object" system to C#. Each ScriptResource and ScriptGameObject should
     to use those some points for undo/redo
 
  Test (likely later once I have more editor functionality working):
-  - If level save/load works
-  - If drag and drop works, both ways, plus double-click to load level
   - Game object handle compare
   - ID restore systems 
   - Native+Managed diff (only the link between the two)
@@ -56,13 +54,16 @@ Polish
 
 Test:
  - If level load works by doing main menu -> Load
-  - This should clear existing level
-  - Internal scene objects should remain
  - If level prefab instantiation works by dragging it from project to scene
- - When starting drag from hierarchy tree view it tends to select another object (can't repro)
+ - Loaded scene doesn't display the mesh
+   - Presumably this is because we construct that mesh manually without persisting its resources (it should work if level is saved and loaded during the same run)
+ - Loaded scene test component has empty values
+ - Finish up ScriptScene.Load - it doesn't work when given relative paths
 
 Ribek use:
  - Hook up color picker to guicolor field
+ - Move forward in scene view doesn't work because the W tool handle shortcut messes with it
+ - When starting drag from hierarchy tree view it tends to select another object (can't repro)
  - Camera, Renderable, Material, Texture inspector
  - Project create/open window
  - Load default layout on initial start
@@ -82,8 +83,6 @@ First screenshot:
  - (Optionally) Console window
 
 Other polish:
- - CmdRecordSO records an SO and all its children but it should only record a single SO
-   - Also it doesn't record a diff, but instead the whole object
  - Crash on shutdown in mono_gchandle_free
  - C# inspectors for Point/Spot/Directional light
  - C# interface for Font
@@ -95,7 +94,6 @@ Other polish:
    - This has to work not only when I come back to the object, but whenever inspector rebuilds (e.g. after removing element from array)
    - Consider saving this information with the serialized object
  - Make sure to persist EditorSettings
- - Doubleclick on a prefab in Project should open that level
  - Import option inspectors for Texture, Mesh, Font
  - Update GUISlider so it works with the new style (and to have min/max limits, plus step size)
  - Add "focus on object" key (F) - animate it: rotate camera towards then speed towards while zooming in
@@ -115,18 +113,11 @@ Stage 2 polish:
  - C# script compiling in editor
  - VS integration
  - When managed exception happens log an error and continue execution
- - Game publishing (Build window, collect resources, output exe, default viewport)
+ - Game publishing (Build window, collect resources, output exe, default viewport) (described below)
 
 Finalizing:
  - Add copyright notices in all files & change license to GPL
  - UseCustomInspector isn't implemented
- - I could record undo/redo per-property using the new diff system
- - When building game make sure to go over texture resources and ensure they are saved in the valid format
-   as we don't want to do format conversion at runtime (Not cruical, but it should be done eventually)
-   - This should something similar to Unity where when changing the platform all resources get reimported
- - When building level for release make sure to clear all prefab diffs (possibly store them elsewhere in the first place)
-   - And all prefab instances should have updateFromPrefab called on them.
- - Undo/Redo when breaking or reverting a scene object (and in general test & finalize undo/redo system)
  - Move all the code files into subfolders so their hierarchy is similar to VS filters
  - Splash screen
  - Settings/Preferences window
@@ -134,73 +125,27 @@ Finalizing:
  - Need to generate a proper merge of dev and preview branches
  - Save/Load project menu item does nothing at the moment
  - (Optionally) GUI tabbing to switch between elements
+ - Undo/Redo
+  - CmdRecordSO records an SO and all its children but it should only record a single SO
+  - CmdRecordSO should instead of recording the entire object record a diff
+  - There should be a CmdRecordSO equivalent for resources (probably)
+  - Add commands for breaking or reverting a scene object 
+  - Test & finalize undo/redo system
 
 ----------------------------------------------------------------------
-Resources
- - Load/Unload/UnloadUnused
- - Uses same paths as ProjectLibrary
- - It uses different logic depending on Application.isEditor
-   - If not in editor then a different path is used
-   - That path is ..\..\Data (relative to the executable)
-   - When in editor it also does special ProjectLibrary check to ensure that resource is included in final project
- - Internally just calls Resources (C++) Load/Unload/UnloadUnused
- - Need a flag in ProjectLibrary to include a resource in the final build
-   - Need to be able to set that flag from C# (Likely through ProjectLibrary) interface
- - The final build procedure for the game would then be:
+Build system
+ - Test Resources (if loading works and if they're properly packaged in build)
+ - The final build procedure for the game should be:
    - Copy all the prebuilt binaries (Banshee libraries, Banshee assemblies, 3rd party libraries and prebuilt executable) from Editor install folder to output folder
     - Which set of binaries is used depends on selected platform (e.g. win/mac/linux or 32/64bit)
    - Recompile script assemblies if needed and copy them from project Internal folder to output folder
    - Copy the Builtin resources for engine from Editor install folder to output folder
    - Copy all the resources marked with the flag mentioned above to \Data subfolder in the output folder, preserving the same asset structure
-
-----------------------------------------------------------------------
-Project window
-
-Later:
- - Might need to improve search (need to test). Do multiple search keywords work properly?
- - Consider delaying search until user stops pressing keys (so not to have thousands of search results in the initial stages)
- - Save & restore scroll position when Refresh happens
-
-----------------------------------------------------------------------
-Handles
-
-Ideally free scale handle indicator should always render and be interactable and never be hidden by axis scale indicators (Not high priority)
-
-Later:
- - Raycast snapping Ribek suggested
-
-----------------------------------------------------------------------
-Include files:
-
-Test:
- - Test if default values work
- - Test project library dependant resources (e.g. changing an include and seeing if shader is reimported)
-
-----------------------------------------------------------------------
-Scene View
-
-Test:
- - Custom handles from C#
- - Handle snapping
- - Multi-select Move/Rotate/scale
-
-----------------------------------------------------------------------
-Undo/Redo C#
-
-UndoRedo class
- - RegisterCommand(cmd, operationName)
- - pushGroup
- - popGroup
- - undo
- - redo
- - clear
-
-RecordObjectCommand
- - Saves the entire object and at the end of the frame performs a diff of the object to actually generate the undo operation
- - Must work for scene objects, components and resources
-SetParentCommand - For reparenting scene objects
-AddComponentCommand
-DestroyCommand - for destroying scene objects or components
+   - Make sure to go over texture resources and ensure they are saved in the valid format
+     as we don't want to do format conversion at runtime (Not cruical, but it should be done eventually)
+     - This should something similar to Unity where when changing the platform all resources get reimported
+   - Make sure to clear all prefab diffs (possibly store them elsewhere in the first place)
+	 - And all prefab instances should have updateFromPrefab called on them.
 
 ----------------------------------------------------------------------
 Other
@@ -236,25 +181,49 @@ Mono cannot marshal structures? Taken from their documentation:
 ----------------------------------------------------------------------
 MenuItem
 
-LATER: Add keyboard controls to GUIMenuBar (left/right arrows should move between entries if user is not browsing a sub-menu)
- - esc should cancel out of the menu bar
- - alt should focus the menu bar
+ - Add keyboard controls to GUIMenuBar (left/right arrows should move between entries if user is not browsing a sub-menu)
+  - esc should cancel out of the menu bar
+  - alt should focus the menu bar
 
 ----------------------------------------------------------------------
 VisualStudio integration
 
-VS integration will likely not work with VSExpress or Community edition
- - VSExpress doesn't support EnvDTE so the only option is to open it using a shell command which doesn't seem to offer precise parameters
- - Community edition should work similarily to Pro, but might have a different executable and/or registry paths
-
-For later:
+ - VS integration will likely not work with VSExpress or Community edition
+  - VSExpress doesn't support EnvDTE so the only option is to open it using a shell command which doesn't seem to offer precise parameters
+  - Community edition should work similarily to Pro, but might have a different executable and/or registry paths
  - Make sure that 3rd party assemblies can be imported in the project, and that they are properly referenced in VS project generation and compilation
 
 ----------------------------------------------------------------------
 Script compilation
 
-For later:
  - I need to hook up script compilation with assembly refresh, and the build system.
    - e.g. when recompiling inside the editor it should automatically start compiling when changes are detected,
      show some kind of visual indicator and refresh assemblies when its done. When publishing it should recompile
 	 assemblies for release. Also hook up console to compiler output?
+
+----------------------------------------------------------------------
+Project window
+
+ - Might need to improve search (need to test). Do multiple search keywords work properly?
+ - Consider delaying search until user stops pressing keys (so not to have thousands of search results in the initial stages)
+ - Save & restore scroll position when Refresh happens
+
+----------------------------------------------------------------------
+Handles
+
+ - Ideally free scale handle indicator should always render and be interactable and never be hidden by axis scale indicators (Not high priority)
+ - Raycast snapping Ribek suggested
+
+----------------------------------------------------------------------
+Include files:
+
+ - Test if default values work
+ - Test project library dependant resources (e.g. changing an include and seeing if shader is reimported)
+
+----------------------------------------------------------------------
+Scene View
+
+Test:
+ - Custom handles from C#
+ - Handle snapping
+ - Multi-select Move/Rotate/scale

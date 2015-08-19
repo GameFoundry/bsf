@@ -18,6 +18,7 @@
 #include "BsEditorApplication.h"
 #include "BsScriptSelection.h"
 #include "BsTestOutput.h"
+#include "BsEditorResourceLoader.h"
 
 namespace BansheeEngine
 {
@@ -27,6 +28,9 @@ namespace BansheeEngine
 	EditorScriptManager::EditorScriptManager()
 		:mEditorAssembly(nullptr), mProgramEdClass(nullptr), mUpdateMethod(nullptr)
 	{
+		SPtr<EditorResourceLoader> resourceLoader = bs_shared_ptr_new<EditorResourceLoader>();
+		GameResourceManager::instance().setLoader(resourceLoader);
+
 		loadMonoTypes();
 		ScriptAssemblyManager::instance().loadAssemblyInfo(EDITOR_ASSEMBLY);
 

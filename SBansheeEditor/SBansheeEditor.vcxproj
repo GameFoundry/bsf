@@ -232,6 +232,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\BsEditorResourceLoader.h" />
     <ClInclude Include="Include\BsEditorScriptManager.h" />
     <ClInclude Include="Include\BsGUIGameObjectField.h" />
     <ClInclude Include="Include\BsGUIResourceField.h" />
@@ -285,6 +286,7 @@
     <ClInclude Include="Include\BsScriptUnitTests.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\BsEditorResourceLoader.cpp" />
     <ClCompile Include="Source\BsGUITextureField.cpp" />
     <ClCompile Include="Source\BsMenuItemManager.cpp" />
     <ClCompile Include="Source\BsScriptBuildManager.cpp" />

@@ -18,6 +18,7 @@
 #include "BsShaderIncludeHandler.h"
 #include "BsDropDownWindowManager.h"
 #include "BsPrefabImporter.h"
+#include "BsProjectLibrary.h"
 
 // DEBUG ONLY
 #include "BsResources.h"
@@ -32,7 +33,6 @@
 #include "BsRenderable.h"
 #include "BsVirtualInput.h"
 #include "BsFolderMonitor.h"
-#include "BsProjectLibrary.h"
 #include "BsCamera.h"
 #include "BsGUIWidget.h"
 #include "BsGUIButton.h"

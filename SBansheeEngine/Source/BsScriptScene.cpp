@@ -6,7 +6,9 @@
 #include "BsSceneManager.h"
 #include "BsResources.h"
 #include "BsPrefab.h"
+#include "BsApplication.h"
 #include "BsSceneObject.h"
+#include "BsGameResourceManager.h"
 
 namespace BansheeEngine
 {
@@ -24,8 +26,20 @@ namespace BansheeEngine
 	{
 		Path nativePath = MonoUtil::monoToWString(path);
 
-		HPrefab prefab = gResources().load<Prefab>(nativePath);
-		HSceneObject root = prefab->instantiate();
+		HPrefab prefab = GameResourceManager::instance().load<Prefab>(nativePath);
+		if (prefab.isLoaded(false))
+		{
+			HSceneObject root = prefab->instantiate();
+
+			UINT32 numChildren = root->getNumChildren();
+			for (UINT32 i = 0; i < numChildren; i++)
+			{
+				HSceneObject child = root->getChild(0);
+				child->setParent(gSceneManager().getRootNode());
+			}
+
+			root->destroy();
+		}
 
 		MonoString* uuid = MonoUtil::stringToMono(MonoManager::instance().getDomain(), prefab.getUUID());
 

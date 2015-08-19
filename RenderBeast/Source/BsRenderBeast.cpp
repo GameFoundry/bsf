@@ -178,6 +178,10 @@ namespace BansheeEngine
 			std::swap(mWorldTransforms[renderableId], mWorldTransforms[lastRenderableId]);
 
 			lastRenerable->setRendererId(renderableId);
+
+			Vector<BeastRenderableElement>& lastRenderableElements = mRenderables[renderableId].elements;
+			for (auto& element : elements)
+				element.renderableId = renderableId;
 		}
 
 		// Last element is the one we want to erase

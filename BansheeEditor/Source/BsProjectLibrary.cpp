@@ -897,6 +897,53 @@ namespace BansheeEngine
 		}
 	}
 
+	void ProjectLibrary::setIncludeInBuild(const Path& path, bool include)
+	{
+		LibraryEntry* entry = findEntry(path);
+
+		if (entry == nullptr || entry->type == LibraryEntryType::Directory)
+			return;
+
+		ResourceEntry* resEntry = static_cast<ResourceEntry*>(entry);
+		resEntry->meta->setIncludeInBuild(include);
+
+		Path metaPath = resEntry->path;
+		metaPath.setFilename(metaPath.getWFilename() + L".meta");
+
+		FileEncoder fs(metaPath);
+		fs.encode(resEntry->meta.get());
+	}
+
+	Vector<ProjectLibrary::ResourceEntry*> ProjectLibrary::getResourcesForBuild() const
+	{
+		Vector<ResourceEntry*> output;
+
+		Stack<DirectoryEntry*> todo;
+		todo.push(mRootEntry);
+
+		while (!todo.empty())
+		{
+			DirectoryEntry* directory = todo.top();
+			todo.pop();
+
+			for (auto& child : directory->mChildren)
+			{
+				if (child->type == LibraryEntryType::File)
+				{
+					ResourceEntry* resEntry = static_cast<ResourceEntry*>(child);
+					if (resEntry->meta != nullptr && resEntry->meta->getIncludeInBuild())
+						output.push_back(resEntry);
+				}
+				else if (child->type == LibraryEntryType::Directory)
+				{
+					todo.push(static_cast<DirectoryEntry*>(child));
+				}
+			}
+		}
+
+		return output;
+	}
+
 	HResource ProjectLibrary::load(const Path& path)
 	{
 		LibraryEntry* entry = findEntry(path);

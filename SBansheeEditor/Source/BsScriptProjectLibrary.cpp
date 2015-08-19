@@ -49,6 +49,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_Move", &ScriptProjectLibrary::internal_Move);
 		metaData.scriptClass->addInternalCall("Internal_Copy", &ScriptProjectLibrary::internal_Copy);
 		metaData.scriptClass->addInternalCall("Internal_GetResourceFolder", &ScriptProjectLibrary::internal_GetResourceFolder);
+		metaData.scriptClass->addInternalCall("Internal_SetIncludeInBuild", &ScriptProjectLibrary::internal_SetIncludeInBuild);
 
 		OnEntryAddedThunk = (OnEntryChangedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnEntryAdded", 1)->getThunk();
 		OnEntryRemovedThunk = (OnEntryChangedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnEntryRemoved", 1)->getThunk();
@@ -239,6 +240,13 @@ namespace BansheeEngine
 		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), ProjectLibrary::instance().getResourcesFolder().toWString());
 	}
 
+	void ScriptProjectLibrary::internal_SetIncludeInBuild(MonoString* path, bool include)
+	{
+		Path pathNative = MonoUtil::monoToWString(path);
+
+		ProjectLibrary::instance().setIncludeInBuild(pathNative, include);
+	}
+
 	void ScriptProjectLibrary::startUp()
 	{
 		mOnEntryAddedConn = ProjectLibrary::instance().onEntryAdded.connect(std::bind(&ScriptProjectLibrary::onEntryAdded, _1));
@@ -377,6 +385,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetUUID", &ScriptFileEntry::internal_GetUUID);
 		metaData.scriptClass->addInternalCall("Internal_GetIcon", &ScriptFileEntry::internal_GetIcon);
 		metaData.scriptClass->addInternalCall("Internal_GetResourceType", &ScriptFileEntry::internal_GetResourceType);
+		metaData.scriptClass->addInternalCall("Internal_GetIncludeInBuild", &ScriptFileEntry::internal_GetIncludeInBuild);
 	}
 
 	MonoObject* ScriptFileEntry::internal_GetImportOptions(ScriptFileEntry* thisPtr)
@@ -386,7 +395,11 @@ namespace BansheeEngine
 			return nullptr;
 
 		ProjectLibrary::ResourceEntry* fileEntry = static_cast<ProjectLibrary::ResourceEntry*>(entry);
-		return ScriptImportOptions::create(fileEntry->meta->getImportOptions());
+
+		if (fileEntry->meta != nullptr)
+			return ScriptImportOptions::create(fileEntry->meta->getImportOptions());
+		else
+			return nullptr;
 	}
 
 	MonoString* ScriptFileEntry::internal_GetUUID(ScriptFileEntry* thisPtr)
@@ -396,7 +409,11 @@ namespace BansheeEngine
 			return nullptr;
 
 		ProjectLibrary::ResourceEntry* fileEntry = static_cast<ProjectLibrary::ResourceEntry*>(entry);
-		return MonoUtil::stringToMono(MonoManager::instance().getDomain(), fileEntry->meta->getUUID());
+
+		if (fileEntry->meta != nullptr)
+			return MonoUtil::stringToMono(MonoManager::instance().getDomain(), fileEntry->meta->getUUID());
+		else
+			return nullptr;
 	}
 
 	MonoObject* ScriptFileEntry::internal_GetIcon(ScriptFileEntry* thisPtr)
@@ -417,5 +434,19 @@ namespace BansheeEngine
 			return ScriptResource::getTypeFromTypeId(fileEntry->meta->getTypeID());
 
 		return ScriptResourceType::Undefined;
+	}
+
+	bool ScriptFileEntry::internal_GetIncludeInBuild(ScriptFileEntry* thisPtr)
+	{
+		ProjectLibrary::LibraryEntry* entry = ProjectLibrary::instance().findEntry(thisPtr->getAssetPath());
+		if (entry == nullptr || entry->type != ProjectLibrary::LibraryEntryType::File)
+			return false;
+
+		ProjectLibrary::ResourceEntry* fileEntry = static_cast<ProjectLibrary::ResourceEntry*>(entry);
+
+		if (fileEntry->meta != nullptr)
+			return fileEntry->meta->getIncludeInBuild();
+
+		return false;
 	}
 }

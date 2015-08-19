@@ -4,6 +4,7 @@
 namespace BansheeEngine
 {
 	ProjectResourceMeta::ProjectResourceMeta(const ConstructPrivately& dummy)
+		:mIncludeInBuild(false), mTypeId(0)
 	{
 
 	}
@@ -16,6 +17,7 @@ namespace BansheeEngine
 		meta->mTypeId = typeId;
 		meta->mResourceMeta = resourceMetaData;
 		meta->mImportOptions = importOptions;
+		meta->mIncludeInBuild = false;
 
 		return meta;
 	}

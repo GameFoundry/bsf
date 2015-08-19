@@ -232,6 +232,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\BsGameResourceManager.h" />
     <ClInclude Include="Include\BsManagedComponent.h" />
     <ClInclude Include="Include\BsManagedComponentRTTI.h" />
     <ClInclude Include="Include\BsManagedDiff.h" />
@@ -306,6 +307,7 @@
     <ClInclude Include="Include\BsScriptRenderTexture2D.h" />
     <ClInclude Include="Include\BsScriptResource.h" />
     <ClInclude Include="Include\BsScriptResourceManager.h" />
+    <ClInclude Include="Include\BsScriptResources.h" />
     <ClInclude Include="Include\BsScriptScene.h" />
     <ClInclude Include="Include\BsScriptSceneObject.h" />
     <ClInclude Include="Include\BsManagedSerializableObjectInfoRTTI.h" />
@@ -334,6 +336,7 @@
     <ClInclude Include="Include\BsScriptVirtualInput.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\BsGameResourceManager.cpp" />
     <ClCompile Include="Source\BsManagedComponent.cpp" />
     <ClCompile Include="Source\BsManagedDiff.cpp" />
     <ClCompile Include="Source\BsManagedResource.cpp" />
@@ -395,6 +398,7 @@
     <ClCompile Include="Source\BsScriptRenderTexture2D.cpp" />
     <ClCompile Include="Source\BsScriptResource.cpp" />
     <ClCompile Include="Source\BsScriptResourceManager.cpp" />
+    <ClCompile Include="Source\BsScriptResources.cpp" />
     <ClCompile Include="Source\BsScriptScene.cpp" />
     <ClCompile Include="Source\BsScriptSceneObject.cpp" />
     <ClCompile Include="Source\BsManagedSerializableArray.cpp" />

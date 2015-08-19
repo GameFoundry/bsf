@@ -110,6 +110,11 @@ namespace BansheeEditor
             Internal_Copy(source, destination, overwrite);
         }
 
+        public static void SetIncludeInBuild(string path, bool include)
+        {
+            Internal_SetIncludeInBuild(path, include);
+        }
+
         internal static void Update()
         {
             if (queuedForImport.Count > 0)
@@ -220,6 +225,9 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern string Internal_GetResourceFolder();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetIncludeInBuild(string path, bool force);
     }
 
     // Note: Must be the same as C++ enum ProjectLibrary::LibraryEntryType
@@ -269,6 +277,7 @@ namespace BansheeEditor
         public string UUID { get { return Internal_GetUUID(mCachedPtr); } }
         public Texture2D Icon { get { return Internal_GetIcon(mCachedPtr); } }
         public ResourceType ResType { get { return Internal_GetResourceType(mCachedPtr); } }
+        public bool IncludeInBuild { get { return Internal_GetIncludeInBuild(mCachedPtr); } }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern ImportOptions Internal_GetImportOptions(IntPtr thisPtr);
@@ -281,5 +290,8 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern ResourceType Internal_GetResourceType(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_GetIncludeInBuild(IntPtr thisPtr);
     }
 }

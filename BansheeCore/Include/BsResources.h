@@ -44,7 +44,7 @@ namespace BansheeEngine
 		template <class T>
 		ResourceHandle<T> load(const Path& filePath, bool loadDependencies = true)
 		{
-			return static_resource_cast<T>(load(filePath));
+			return static_resource_cast<T>(load(filePath, loadDependencies));
 		}
 
 		/**
