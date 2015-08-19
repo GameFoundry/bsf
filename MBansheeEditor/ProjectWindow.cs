@@ -1208,7 +1208,7 @@ namespace BansheeEditor
                     FileEntry resEntry = (FileEntry) entry;
                     if (resEntry.ResType == ResourceType.Prefab)
                     {
-                        Scene.Load(resEntry.Path);
+                        EditorApplication.LoadScene(resEntry.Path);
                     }
                 }
             }

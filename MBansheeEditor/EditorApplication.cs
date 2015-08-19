@@ -119,8 +119,8 @@ namespace BansheeEditor
             ProjectLibrary.Update();
         }
 
-        [MenuItem("File/Save Prefab", ButtonModifier.Ctrl, ButtonCode.S, 50, true)]
-        private static void SavePrefab()
+        [MenuItem("File/Save Scene", ButtonModifier.Ctrl, ButtonCode.S, 50, true)]
+        private static void SaveScene()
         {
             if (!string.IsNullOrEmpty(Scene.ActiveSceneUUID))
             {
@@ -128,11 +128,11 @@ namespace BansheeEditor
                 Internal_SaveScene(scenePath);
             }
             else
-                SavePrefabAs();
+                SaveSceneAs();
         }
 
-        [MenuItem("File/Save Prefab As", 50)]
-        private static void SavePrefabAs()
+        [MenuItem("File/Save Scene As", 50)]
+        private static void SaveSceneAs()
         {
             string scenePath = "";
             if (BrowseDialog.SaveFile(ProjectLibrary.ResourceFolder, "*.prefab", out scenePath))
@@ -150,31 +150,30 @@ namespace BansheeEditor
             }
         }
 
-        [MenuItem("File/Load Prefab", ButtonModifier.Ctrl, ButtonCode.L, 50)]
-        private static void LoadPrefab()
+        [MenuItem("File/Load Scene", ButtonModifier.Ctrl, ButtonCode.L, 50)]
+        private static void LoadScene()
         {
-            Action doLoad =
-                () =>
-                {
-                    string[] scenePaths;
-                    if (BrowseDialog.OpenFile(ProjectLibrary.ResourceFolder, "", false, out scenePaths))
-                    {
-                        if (scenePaths.Length > 0)
-                            Scene.Load(scenePaths[0]);
-                    }
-                };
+            string[] scenePaths;
+            if (BrowseDialog.OpenFile(ProjectLibrary.ResourceFolder, "", false, out scenePaths))
+            {
+                if (scenePaths.Length > 0)
+                    LoadScene(scenePaths[0]);
+            }
+        }
 
+        public static void LoadScene(string path)
+        {
             Action<DialogBox.ResultType> dialogCallback =
-                (result) =>
+            (result) =>
+            {
+                if (result == DialogBox.ResultType.Yes)
                 {
-                    if (result == DialogBox.ResultType.Yes)
-                    {
-                        SavePrefab();
-                        doLoad();
-                    }
-                    else if (result == DialogBox.ResultType.No)
-                        doLoad();
-                };
+                    SaveScene();
+                    Scene.Load(path);
+                }
+                else if (result == DialogBox.ResultType.No)
+                    Scene.Load(path);
+            };
 
             if (Scene.IsModified())
             {
@@ -182,7 +181,7 @@ namespace BansheeEditor
                     DialogBox.Type.YesNoCancel, dialogCallback);
             }
             else
-                doLoad();
+                Scene.Load(path);
         }
 
         [MenuItem("Components/Camera")]

@@ -53,11 +53,6 @@ Code quality improvements:
 Polish
 
 Test:
- - Saving a scene seems to create another (unselectable) copy of the dragon mesh
-  - Renderable/Light/Camera components initialize their handlers in constructors
-  - Moving them to OnInitialize doesn't solve the issue because when deserializing
-    those components OnInitialize will then overwrite any deserialized data
- - Loading a saved level doesn't seem to persist scene object positions
  - Loaded scene test component has empty values
  - Loading a scene multiple times causes an exception when updating Renderables in scene manager
 
