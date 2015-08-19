@@ -234,9 +234,8 @@ namespace BansheeEngine
 		}
 
 		// Last element is the one we want to erase
-		mRenderables.erase(mRenderables.end() - 1);
-		mWorldBounds.erase(mWorldBounds.end() - 1);
-		mWorldTransforms.erase(mWorldTransforms.end() - 1);
+		mLights.erase(mLights.end() - 1);
+		mLightWorldBounds.erase(mLightWorldBounds.end() - 1);
 	}
 
 	void RenderBeast::_notifyCameraAdded(const CameraHandlerCore* camera)

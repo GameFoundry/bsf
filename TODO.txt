@@ -53,12 +53,10 @@ Code quality improvements:
 Polish
 
 Test:
- - If level load works by doing main menu -> Load
- - If level prefab instantiation works by dragging it from project to scene
- - Loaded scene doesn't display the mesh
-   - Presumably this is because we construct that mesh manually without persisting its resources (it should work if level is saved and loaded during the same run)
+ - Saving a scene seems to create another (unselectable) copy of the dragon mesh
+ - Loading a saved level doesn't seem to persist scene object positions
  - Loaded scene test component has empty values
- - Finish up ScriptScene.Load - it doesn't work when given relative paths
+ - Loading a scene multiple times causes an exception when updating Renderables in scene manager
 
 Ribek use:
  - Hook up color picker to guicolor field
@@ -131,6 +129,7 @@ Finalizing:
   - There should be a CmdRecordSO equivalent for resources (probably)
   - Add commands for breaking or reverting a scene object 
   - Test & finalize undo/redo system
+  - When opening editor load last open scene
 
 ----------------------------------------------------------------------
 Build system
