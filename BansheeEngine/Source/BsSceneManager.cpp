@@ -3,6 +3,7 @@
 #include "BsRenderableHandler.h"
 #include "BsCameraHandler.h"
 #include "BsLightInternal.h"
+#include "BsDebug.h"
 
 namespace BansheeEngine
 {

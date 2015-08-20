@@ -172,10 +172,10 @@ namespace BansheeEngine
 
 	void SceneObject::instantiate()
 	{
-		mFlags &= ~SOF_DontInstantiate;
-
 		std::function<void(SceneObject*)> instantiateRecursive = [&](SceneObject* obj)
 		{
+			obj->mFlags &= ~SOF_DontInstantiate;
+
 			if (obj->mParent == nullptr)
 				gCoreSceneManager().registerNewSO(obj->mThisHandle);
 
