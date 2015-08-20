@@ -42,13 +42,13 @@ namespace BansheeEngine
 	const Path BuiltinResources::SkinFolder = L"Skin\\";
 	const Path BuiltinResources::ShaderIncludeFolder = L"Includes\\";
 
-	const Path BuiltinResources::BuiltinRawDataFolder = L"..\\..\\..\\..\\Data\\Raw\\Engine\\";
+	const Path BuiltinResources::BuiltinRawDataFolder = RUNTIME_DATA_PATH + L"Raw\\Engine\\";
 	const Path BuiltinResources::EngineRawSkinFolder = BuiltinRawDataFolder + SkinFolder;
 	const Path BuiltinResources::EngineRawCursorFolder = BuiltinRawDataFolder + CursorFolder;
 	const Path BuiltinResources::EngineRawShaderFolder = BuiltinRawDataFolder + ShaderFolder;
 	const Path BuiltinResources::EngineRawShaderIncludeFolder = BuiltinRawDataFolder + ShaderIncludeFolder;
 
-	const Path BuiltinResources::BuiltinDataFolder = L"..\\..\\..\\..\\Data\\Engine\\";
+	const Path BuiltinResources::BuiltinDataFolder = RUNTIME_DATA_PATH + L"Engine\\";
 	const Path BuiltinResources::EngineSkinFolder = BuiltinDataFolder + SkinFolder;
 	const Path BuiltinResources::EngineCursorFolder = BuiltinDataFolder + CursorFolder;
 	const Path BuiltinResources::EngineShaderFolder = BuiltinDataFolder + ShaderFolder;

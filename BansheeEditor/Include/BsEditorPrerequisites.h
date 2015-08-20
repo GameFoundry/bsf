@@ -67,11 +67,13 @@ namespace BansheeEngine
 	class SceneViewHandler;
 	class SelectionRenderer;
 	class DropDownWindow;
+	class ProjectSettings;
 
 	typedef std::shared_ptr<ProjectResourceMeta> ProjectResourceMetaPtr;
 	typedef std::shared_ptr<DockManagerLayout> DockManagerLayoutPtr;
 	typedef std::shared_ptr<EditorWidgetLayout> EditorWidgetLayoutPtr;
 	typedef std::shared_ptr<EditorSettings> EditorSettingsPtr;
+	typedef std::shared_ptr<ProjectSettings> ProjectSettingsPtr;
 
 	static const char* EDITOR_ASSEMBLY = "MBansheeEditor";
 	static const char* SCRIPT_EDITOR_ASSEMBLY = "MScriptEditor";
@@ -123,6 +125,10 @@ namespace BansheeEngine
 		TID_TestObjectA = 40013,
 		TID_TestObjectB = 40014,
 		TID_TestComponentC = 40015,
-		TID_TestComponentD = 40016
+		TID_TestComponentD = 40016,
+		TID_EditorSettings = 40017,
+		TID_RecentProject = 40018,
+		TID_Settings = 40019,
+		TID_ProjectSettings = 40020
 	};
 }

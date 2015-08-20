@@ -126,9 +126,9 @@ int CALLBACK WinMain(
 
 namespace BansheeEngine
 {
-	Path exampleModelPath = "..\\..\\..\\..\\Data\\Examples\\Dragon.fbx";
-	Path exampleTexturePath = "..\\..\\..\\..\\Data\\Examples\\Dragon.tga";
-	Path exampleShaderPath = "..\\..\\..\\..\\Data\\Examples\\Example.bsl";
+	Path exampleModelPath = RUNTIME_DATA_PATH + "Examples\\Dragon.fbx";
+	Path exampleTexturePath = RUNTIME_DATA_PATH + "Examples\\Dragon.tga";
+	Path exampleShaderPath = RUNTIME_DATA_PATH + "Examples\\Example.bsl";
 
 	GUIButton* toggleFullscreenButton = nullptr;
 	bool fullscreen = false;

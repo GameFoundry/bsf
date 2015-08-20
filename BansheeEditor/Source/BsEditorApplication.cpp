@@ -19,6 +19,8 @@
 #include "BsDropDownWindowManager.h"
 #include "BsPrefabImporter.h"
 #include "BsProjectLibrary.h"
+#include "BsProjectSettings.h"
+#include "BsEditorSettings.h"
 
 // DEBUG ONLY
 #include "BsResources.h"
@@ -39,7 +41,6 @@
 #include "BsGUILayout.h"
 #include "BsEvent.h"
 #include "BsCoreRenderer.h"
-#include "BsEditorSettings.h"
 #include "BsMesh.h"
 #include "BsMath.h"
 #include "BsDebug.h"
@@ -48,6 +49,8 @@ namespace BansheeEngine
 {
 	const Path EditorApplication::WIDGET_LAYOUT_PATH = L"Internal\\Layout.asset";
 	const Path EditorApplication::BUILD_DATA_PATH = L"Internal\\BuildData.asset";
+	const Path EditorApplication::EDITOR_SETTINGS_PATH = RUNTIME_DATA_PATH + L"Settings.asset";
+	const Path EditorApplication::PROJECT_SETTINGS_PATH = L"Internal\\Settings.asset";
 
 	RENDER_WINDOW_DESC createRenderWindowDesc()
 	{
@@ -98,8 +101,8 @@ namespace BansheeEngine
 	{
 		Application::onStartUp();
 
-		// TODO - Load project settings
-		mEditorSettings = bs_shared_ptr_new<EditorSettings>();
+		loadEditorSettings();
+		loadProjectSettings();
 
 		BuiltinEditorResources::startUp();
 
@@ -151,7 +154,7 @@ namespace BansheeEngine
 		/* 								DEBUG CODE                      		*/
 		/************************************************************************/
 
-		HShader dummyParsedShader = Importer::instance().import<Shader>("..\\..\\..\\..\\Data\\Raw\\Engine\\Shaders\\TestFX.bsl");
+		HShader dummyParsedShader = Importer::instance().import<Shader>(RUNTIME_DATA_PATH + "Raw\\Engine\\Shaders\\TestFX.bsl");
 		assert(dummyParsedShader != nullptr); // Ad hoc unit test
 
 		RenderAPICore* renderAPI = RenderAPICore::instancePtr();
@@ -159,7 +162,7 @@ namespace BansheeEngine
 		HSceneObject testModelGO = SceneObject::create("TestMesh");
 		HRenderable testRenderable = testModelGO->addComponent<Renderable>();
 
-		WString testShaderLoc = L"..\\..\\..\\..\\Data\\Test.bsl";;
+		Path testShaderLoc = RUNTIME_DATA_PATH + L"Test.bsl";;
 		
 		mTestShader = Importer::instance().import<Shader>(testShaderLoc);
 
@@ -169,8 +172,8 @@ namespace BansheeEngine
 
 		mTestMaterial = Material::create(mTestShader);
 
-		mTestTexRef = static_resource_cast<Texture>(Importer::instance().import(L"..\\..\\..\\..\\Data\\Examples\\Dragon.tga"));
-		mDbgMeshRef = static_resource_cast<Mesh>(Importer::instance().import(L"..\\..\\..\\..\\Data\\Examples\\Dragon.fbx"));
+		mTestTexRef = static_resource_cast<Texture>(Importer::instance().import(RUNTIME_DATA_PATH + L"Examples\\Dragon.tga"));
+		mDbgMeshRef = static_resource_cast<Mesh>(Importer::instance().import(RUNTIME_DATA_PATH + L"Examples\\Dragon.fbx"));
 
 		gResources().save(mTestTexRef, L"C:\\ExportTest.tex", true);
 		gResources().save(mDbgMeshRef, L"C:\\ExportMesh.mesh", true);
@@ -218,7 +221,8 @@ namespace BansheeEngine
 		ScenePicking::shutDown();
 
 		saveWidgetLayout(EditorWidgetManager::instance().getLayout());
-		// TODO - Save project settings
+		saveEditorSettings();
+		saveProjectSettings();
 
 		DropDownWindowManager::shutDown();
 		EditorWidgetManager::shutDown();
@@ -313,6 +317,63 @@ namespace BansheeEngine
 
 		FileEncoder fs(layoutPath);
 		fs.encode(layout.get());
+	}
+
+	void EditorApplication::loadEditorSettings()
+	{
+		Path absoluteDataPath = FileSystem::getWorkingDirectoryPath();
+		absoluteDataPath.append(EDITOR_SETTINGS_PATH);
+
+		if (FileSystem::exists(absoluteDataPath))
+		{
+			FileDecoder fs(absoluteDataPath);
+			mEditorSettings = std::static_pointer_cast<EditorSettings>(fs.decode());
+		}
+		
+		if (mEditorSettings == nullptr)
+			mEditorSettings = bs_shared_ptr_new<EditorSettings>();
+	}
+
+	void EditorApplication::saveEditorSettings()
+	{
+		if (mEditorSettings == nullptr)
+			return;
+
+		Path absoluteDataPath = FileSystem::getWorkingDirectoryPath();
+		absoluteDataPath.append(EDITOR_SETTINGS_PATH);
+
+		FileEncoder fs(absoluteDataPath);
+		fs.encode(mEditorSettings.get());
+	}
+
+	void EditorApplication::loadProjectSettings()
+	{
+		if (isProjectLoaded())
+		{
+			Path absoluteDataPath = getProjectPath();
+			absoluteDataPath.append(PROJECT_SETTINGS_PATH);
+
+			if (FileSystem::exists(absoluteDataPath))
+			{
+				FileDecoder fs(absoluteDataPath);
+				mProjectSettings = std::static_pointer_cast<ProjectSettings>(fs.decode());
+			}
+		}
+
+		if (mProjectSettings == nullptr)
+			mProjectSettings = bs_shared_ptr_new<ProjectSettings>();
+	}
+
+	void EditorApplication::saveProjectSettings()
+	{
+		if (mProjectSettings == nullptr || !isProjectLoaded())
+			return;
+
+		Path absoluteDataPath = getProjectPath();
+		absoluteDataPath.append(PROJECT_SETTINGS_PATH);
+
+		FileEncoder fs(absoluteDataPath);
+		fs.encode(mProjectSettings.get());
 	}
 
 	ShaderIncludeHandlerPtr EditorApplication::getShaderIncludeHandler() const

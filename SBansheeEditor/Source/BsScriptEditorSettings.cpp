@@ -30,6 +30,12 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetActiveCoordinateMode", &ScriptEditorSettings::internal_SetActiveCoordinateMode);
 		metaData.scriptClass->addInternalCall("Internal_GetActivePivotMode", &ScriptEditorSettings::internal_GetActivePivotMode);
 		metaData.scriptClass->addInternalCall("Internal_SetActivePivotMode", &ScriptEditorSettings::internal_SetActivePivotMode);
+		metaData.scriptClass->addInternalCall("Internal_GetLastOpenProject", &ScriptEditorSettings::internal_GetLastOpenProject);
+		metaData.scriptClass->addInternalCall("Internal_SetLastOpenProject", &ScriptEditorSettings::internal_SetLastOpenProject);
+		metaData.scriptClass->addInternalCall("Internal_GetAutoLoadLastProject", &ScriptEditorSettings::internal_GetAutoLoadLastProject);
+		metaData.scriptClass->addInternalCall("Internal_SetAutoLoadLastProject", &ScriptEditorSettings::internal_SetAutoLoadLastProject);
+		metaData.scriptClass->addInternalCall("Internal_GetRecentProjects", &ScriptEditorSettings::internal_GetRecentProjects);
+		metaData.scriptClass->addInternalCall("Internal_SetRecentProjects", &ScriptEditorSettings::internal_SetRecentProjects);
 		metaData.scriptClass->addInternalCall("Internal_SetFloat", &ScriptEditorSettings::internal_SetFloat);
 		metaData.scriptClass->addInternalCall("Internal_SetInt", &ScriptEditorSettings::internal_SetInt);
 		metaData.scriptClass->addInternalCall("Internal_SetBool", &ScriptEditorSettings::internal_SetBool);
@@ -42,6 +48,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_DeleteKey", &ScriptEditorSettings::internal_DeleteKey);
 		metaData.scriptClass->addInternalCall("Internal_DeleteAllKeys", &ScriptEditorSettings::internal_DeleteAllKeys);
 		metaData.scriptClass->addInternalCall("Internal_GetHash", &ScriptEditorSettings::internal_GetHash);
+		metaData.scriptClass->addInternalCall("Internal_Save", &ScriptEditorSettings::internal_Save);
 	}
 
 	bool ScriptEditorSettings::internal_GetMoveHandleSnapActive()
@@ -140,6 +147,68 @@ namespace BansheeEngine
 		settings->setActivePivotMode(value);
 	}
 
+	MonoString* ScriptEditorSettings::internal_GetLastOpenProject()
+	{
+		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), settings->getLastOpenProject().toWString());
+	}
+
+	void ScriptEditorSettings::internal_SetLastOpenProject(MonoString* value)
+	{
+		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		settings->setLastOpenProject(MonoUtil::monoToWString(value));
+	}
+
+	bool ScriptEditorSettings::internal_GetAutoLoadLastProject()
+	{
+		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		return settings->getAutoLoadLastProject();
+	}
+
+	void ScriptEditorSettings::internal_SetAutoLoadLastProject(bool value)
+	{
+		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		settings->setAutoLoadLastProject(value);
+	}
+
+	void ScriptEditorSettings::internal_GetRecentProjects(MonoArray** paths, MonoArray** timeStamps)
+	{
+		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		const Vector<RecentProject>& recentProjects = settings->getRecentProjects();
+		UINT32 numEntries = (UINT32)recentProjects.size();
+
+		ScriptArray outputPaths = ScriptArray::create<WString>(numEntries);
+		ScriptArray outputTimeStamps = ScriptArray::create<UINT64>(numEntries);
+
+		for (UINT32 i = 0; i < numEntries; i++)
+		{
+			MonoString* monoPath = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), recentProjects[i].path.toWString());
+
+			outputPaths.set(i, monoPath);
+			outputTimeStamps.set(i, recentProjects[i].accessTimestamp);
+		}
+
+		*paths = outputPaths.getInternal();
+		*timeStamps = outputPaths.getInternal();
+	}
+
+	void ScriptEditorSettings::internal_SetRecentProjects(MonoArray* paths, MonoArray* timeStamps)
+	{
+		ScriptArray pathsArray(paths);
+		ScriptArray timeStampsArray(timeStamps);
+		UINT32 numEntries = pathsArray.size();
+
+		Vector<RecentProject> recentProjects(numEntries);
+		for (UINT32 i = 0; i < numEntries; i++)
+		{
+			recentProjects[i].path = pathsArray.get<WString>(i);
+			recentProjects[i].accessTimestamp = timeStampsArray.get<UINT64>(i);
+		}
+
+		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		settings->setRecentProjects(recentProjects);
+	}
+
 	void ScriptEditorSettings::internal_SetFloat(MonoString* name, float value)
 	{
 		String nativeName = MonoUtil::monoToString(name);
@@ -178,7 +247,7 @@ namespace BansheeEngine
 		String nativeName = MonoUtil::monoToString(name);
 
 		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
-		return settings->getFloat(nativeName);
+		return settings->getFloat(nativeName, defaultValue);
 	}
 
 	int ScriptEditorSettings::internal_GetInt(MonoString* name, int defaultValue)
@@ -186,7 +255,7 @@ namespace BansheeEngine
 		String nativeName = MonoUtil::monoToString(name);
 
 		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
-		return settings->getInt(nativeName);
+		return settings->getInt(nativeName, defaultValue);
 	}
 
 	bool ScriptEditorSettings::internal_GetBool(MonoString* name, bool defaultValue)
@@ -194,15 +263,16 @@ namespace BansheeEngine
 		String nativeName = MonoUtil::monoToString(name);
 
 		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
-		return settings->getBool(nativeName);
+		return settings->getBool(nativeName, defaultValue);
 	}
 
 	MonoString* ScriptEditorSettings::internal_GetString(MonoString* name, MonoString* defaultValue)
 	{
 		String nativeName = MonoUtil::monoToString(name);
+		WString nativeDefaultValue = MonoUtil::monoToWString(defaultValue);
 
 		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
-		WString nativeValue = settings->getString(nativeName);
+		WString nativeValue = settings->getString(nativeName, nativeDefaultValue);
 
 		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), nativeValue);
 	}
@@ -233,5 +303,10 @@ namespace BansheeEngine
 	{
 		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
 		return settings->getHash();
+	}
+
+	void ScriptEditorSettings::internal_Save()
+	{
+		gEditorApplication().saveEditorSettings();
 	}
 }

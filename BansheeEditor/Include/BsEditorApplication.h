@@ -55,6 +55,23 @@ namespace BansheeEngine
 		 */
 		EditorSettingsPtr getEditorSettings() const { return mEditorSettings; }
 
+		/**
+		 * @brief	Returns a set of serializable project settings that contain
+		 *			every customizable property specific to a project.
+		 */
+		ProjectSettingsPtr getProjectSettings() const { return mProjectSettings; }
+
+		/**
+		 * @brief	Saves the current editor settings at the default location.
+		 */
+		void saveEditorSettings();
+
+		/**
+		 * @brief	Saves the current project settings at the default location.
+		 *			Does nothing if no project is loaded.
+		 */
+		void saveProjectSettings();
+
 	private:
 		virtual void onStartUp() override;
 		virtual void onShutDown() override;
@@ -73,6 +90,19 @@ namespace BansheeEngine
 		void saveWidgetLayout(const EditorWidgetLayoutPtr& layout);
 
 		/**
+		 * @brief	Loads the previously saved editor settings from the default location.
+		 *			Overwrites any current settings.
+		 */
+		void loadEditorSettings();
+
+		/**
+		 * @brief	Loads the previously saved project settings from the default location
+		 *			within the active project. Loads default settings if no project is active.
+		 *			Overwrites any current settings.
+		 */
+		void loadProjectSettings();
+
+		/**
 		 * @copydoc	Application::getShaderIncludeHandler
 		 */
 		virtual ShaderIncludeHandlerPtr getShaderIncludeHandler() const override;
@@ -80,8 +110,12 @@ namespace BansheeEngine
 	private:
 		static const Path WIDGET_LAYOUT_PATH;
 		static const Path BUILD_DATA_PATH;
+		static const Path EDITOR_SETTINGS_PATH;
+		static const Path PROJECT_SETTINGS_PATH;
+
 		RenderAPIPlugin mActiveRAPIPlugin;
 		EditorSettingsPtr mEditorSettings;
+		ProjectSettingsPtr mProjectSettings;
 
 		DynLib* mSBansheeEditorPlugin;
 

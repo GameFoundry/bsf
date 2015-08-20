@@ -66,12 +66,12 @@ namespace BansheeEngine
 	const Path BuiltinEditorResources::IconFolder = L"Skin\\Icons";
 	const Path BuiltinEditorResources::ShaderIncludeFolder = L"Includes\\";
 
-	const Path BuiltinEditorResources::BuiltinRawDataFolder = L"..\\..\\..\\..\\Data\\Raw\\Editor\\";
+	const Path BuiltinEditorResources::BuiltinRawDataFolder = RUNTIME_DATA_PATH + L"Raw\\Editor\\";
 	const Path BuiltinEditorResources::EditorRawSkinFolder = BuiltinRawDataFolder + SkinFolder;
 	const Path BuiltinEditorResources::EditorRawShaderFolder = BuiltinRawDataFolder + ShaderFolder;
 	const Path BuiltinEditorResources::EditorRawShaderIncludeFolder = BuiltinRawDataFolder + ShaderIncludeFolder;
 
-	const Path BuiltinEditorResources::BuiltinDataFolder = L"..\\..\\..\\..\\Data\\Editor\\";
+	const Path BuiltinEditorResources::BuiltinDataFolder = RUNTIME_DATA_PATH + L"Editor\\";
 	const Path BuiltinEditorResources::EditorSkinFolder = BuiltinDataFolder + SkinFolder;
 	const Path BuiltinEditorResources::EditorIconFolder = BuiltinDataFolder + IconFolder;
 	const Path BuiltinEditorResources::EditorShaderFolder = BuiltinDataFolder + ShaderFolder;

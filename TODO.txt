@@ -59,7 +59,7 @@ Move data folder within current repo
 Add Create Project & Open Project entries in main menu
 Rename ProjectWindow to LibraryWindow
 Store last open project location, should the last project be loaded by default, and a list of all known projects (listed by last opened date)
-(Store last open level too. WIll likely need ProjectSettings similar to EditorSettings)
+(Store last open level too in ProjectSettings)
 ProjectWindow
  - Show this on start-up if last open project is empty or load last project is off
   - Main editor window should show up but nothing should be loaded in it 
@@ -85,6 +85,8 @@ Ribek use:
  - Camera, Renderable, Material, Texture inspector
  - Project create/open window
  - Load default layout on initial start
+ - When opening editor load last open scene
+ - Make sure to persist EditorSettings
  - Test release mode
  - Ability to create assets in Project view (At least Material)
  - (Optionally, needed for GUI editing) GUISkin resource inspector & a way to inspect and save the default editor skin
@@ -111,9 +113,7 @@ Other polish:
    - Add a chaching mechanism to inspector (likely based on instance ID & property names)
    - This has to work not only when I come back to the object, but whenever inspector rebuilds (e.g. after removing element from array)
    - Consider saving this information with the serialized object
- - Make sure to persist EditorSettings
  - Import option inspectors for Texture, Mesh, Font
- - When opening editor load last open scene
 
 Stage 2 polish:
  - Inject an icon into an .exe (Win32 specific)

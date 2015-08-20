@@ -282,6 +282,7 @@
     <ClInclude Include="Include\BsEditorApplication.h" />
     <ClInclude Include="Include\BsEditorCommand.h" />
     <ClInclude Include="Include\BsBuiltinEditorResources.h" />
+    <ClInclude Include="Include\BsEditorSettingsRTTI.h" />
     <ClInclude Include="Include\BsEditorTestSuite.h" />
     <ClInclude Include="Include\BsEditorUtility.h" />
     <ClInclude Include="Include\BsEditorWidgetLayout.h" />
@@ -314,6 +315,8 @@
     <ClInclude Include="Include\BsModalWindow.h" />
     <ClInclude Include="Include\BsPlatformInfo.h" />
     <ClInclude Include="Include\BsPlatformInfoRTTI.h" />
+    <ClInclude Include="Include\BsProjectSettings.h" />
+    <ClInclude Include="Include\BsProjectSettingsRTTI.h" />
     <ClInclude Include="Include\BsScenePicking.h" />
     <ClInclude Include="Include\BsProjectLibraryEntriesRTTI.h" />
     <ClInclude Include="Include\BsEditorPrerequisites.h" />
@@ -343,6 +346,8 @@
     <ClInclude Include="Include\BsSceneViewHandler.h" />
     <ClInclude Include="Include\BsSelection.h" />
     <ClInclude Include="Include\BsSelectionRenderer.h" />
+    <ClInclude Include="Include\BsSettings.h" />
+    <ClInclude Include="Include\BsSettingsRTTI.h" />
     <ClInclude Include="Include\BsShaderIncludeHandler.h" />
     <ClInclude Include="Include\BsUndoRedo.h" />
     <ClInclude Include="Include\Win32\BsVSCodeEditor.h" />
@@ -408,6 +413,7 @@
     <ClCompile Include="Source\BsEditorSettings.cpp" />
     <ClCompile Include="Source\BsModalWindow.cpp" />
     <ClCompile Include="Source\BsPlatformInfo.cpp" />
+    <ClCompile Include="Source\BsProjectSettings.cpp" />
     <ClCompile Include="Source\BsScenePicking.cpp" />
     <ClCompile Include="Source\BsProjectLibrary.cpp" />
     <ClCompile Include="Source\BsProjectLibraryEntries.cpp" />
@@ -417,6 +423,7 @@
     <ClCompile Include="Source\BsSceneViewHandler.cpp" />
     <ClCompile Include="Source\BsSelection.cpp" />
     <ClCompile Include="Source\BsSelectionRenderer.cpp" />
+    <ClCompile Include="Source\BsSettings.cpp" />
     <ClCompile Include="Source\BsShaderIncludeHandler.cpp" />
     <ClCompile Include="Source\BsUndoRedo.cpp" />
     <ClCompile Include="Source\BsEditorApplication.cpp" />

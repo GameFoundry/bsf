@@ -1,14 +1,17 @@
 #pragma once
 
 #include "BsEditorPrerequisites.h"
+#include "BsSettings.h"
 #include "BsDegree.h"
 
 namespace BansheeEngine
 {
+	struct RecentProject;
+
 	/**
 	 * @brief	Contains various globally accessible editor preferences.
 	 */
-	class BS_ED_EXPORT EditorSettings
+	class BS_ED_EXPORT EditorSettings : public Settings
 	{
 	public:
 		EditorSettings();
@@ -66,6 +69,22 @@ namespace BansheeEngine
 		UINT32 getActivePivotMode() const { return mActivePivotMode; }
 
 		/**
+		 * @brief	Retrieves the path to the last project open in the editor.
+		 */
+		Path getLastOpenProject() const { return mLastOpenProject; }
+
+		/**
+		 * @brief	Retrieves whether the last open project should be automatically loaded
+		 *			on editor start up.
+		 */
+		bool getAutoLoadLastProject() const { return mAutoLoadLastProject; }
+
+		/**
+		 * @brief	Retrieves a list of most recently loaded project paths and their last access times.
+		 */
+		const Vector<RecentProject>& getRecentProjects() const { return mRecentProjects; }
+
+		/**
 		 * @brief	Enables/disables snapping for move handles in scene view.
 		 */
 		void setMoveHandleSnapActive(bool snapActive) { mMoveSnapActive = snapActive; markAsDirty(); }
@@ -116,76 +135,22 @@ namespace BansheeEngine
 		void setActivePivotMode(UINT32 value) { mActivePivotMode = value; markAsDirty(); }
 
 		/**
-		 * @brief	Adds or updates a property key/value pair with a floating point value.
+		 * @brief	Sets the path to the last project open in the editor.
 		 */
-		void setFloat(const String& name, float value);
+		void setLastOpenProject(const Path& value) { mLastOpenProject = value; markAsDirty(); }
 
 		/**
-		 * @brief	Adds or updates a property key/value pair with a signed integer value.
+		 * @brief	Sets whether the last open project should be automatically loaded
+		 *			on editor start up.
 		 */
-		void setInt(const String& name, INT32 value);
+		void setAutoLoadLastProject(bool value) { mAutoLoadLastProject = value; markAsDirty(); }
 
 		/**
-		 * @brief	Adds or updates a property key/value pair with a boolean value.
+		 * @brief	Sets a list of most recently loaded project paths and their last access times.
 		 */
-		void setBool(const String& name, bool value);
-
-		/**
-		 * @brief	Adds or updates a property key/value pair with a string value.
-		 */
-		void setString(const String& name, const WString& value);
-
-		/**
-		 * @brief	Returns the floating point value of the specified key, or the default value
-		 *			if such key cannot be found.
-		 */
-		float getFloat(const String& name, float defaultValue = 0.0f);
-
-		/**
-		 * @brief	Returns the integer point value of the specified key, or the default value
-		 *			if such key cannot be found.
-		 */
-		INT32 getInt(const String& name, INT32 defaultValue = 0);
-
-		/**
-		 * @brief	Returns the boolean point value of the specified key, or the default value
-		 *			if such key cannot be found.
-		 */
-		bool getBool(const String& name, bool defaultValue = false);
-
-		/**
-		 * @brief	Returns the string point value of the specified key, or the default value
-		 *			if such key cannot be found.
-		 */
-		WString getString(const String& name, const WString& defaultValue = StringUtil::WBLANK);
-
-		/**
-		 * @brief	Returns true if the key with the specified name exists.
-		 */
-		bool hasKey(const String& name);
-
-		/**
-		 * @brief	Deletes a key with the specified name.
-		 */
-		void deleteKey(const String& name);
-
-		/**
-		 * @brief	Deletes all key/value pairs.
-		 */
-		void deleteAllKeys();
-
-		/**
-		 * @brief	Returns a hash value that may be used for checking if any internal settings were
-		 *			modified.
-		 */
-		UINT32 getHash() const { return mHash; }
+		void setRecentProjects(const Vector<RecentProject>& value) { mRecentProjects = value; markAsDirty(); }
 
 	private:
-		/**
-		 * @brief	Marks the object as dirty so that outside objects know when to update.
-		 */
-		void markAsDirty() const { mHash++; }
-
 		bool mMoveSnapActive;
 		bool mRotateSnapActive;
 
@@ -201,11 +166,25 @@ namespace BansheeEngine
 
 		float mHandleSize;
 
-		Map<String, float> mFloatProperties;
-		Map<String, INT32> mIntProperties;
-		Map<String, bool> mBoolProperties;
-		Map<String, WString> mStringProperties;
+		Path mLastOpenProject;
+		bool mAutoLoadLastProject;
+		Vector<RecentProject> mRecentProjects;
 
-		mutable UINT32 mHash;
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+	public:
+		friend class EditorSettingsRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const override;
+	};
+
+	/**
+	 * @brief	Data about a recently loaded project.
+	 */
+	struct RecentProject
+	{
+		Path path;
+		UINT64 accessTimestamp;
 	};
 }

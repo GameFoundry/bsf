@@ -73,6 +73,18 @@ namespace BansheeEngine
 		}
 
 		template<>
+		static ScriptArray create<UINT64>(UINT32 size)
+		{
+			return ScriptArray(mono_get_uint64_class(), size);
+		}
+
+		template<>
+		static ScriptArray create<INT64>(UINT32 size)
+		{
+			return ScriptArray(mono_get_int64_class(), size);
+		}
+
+		template<>
 		static ScriptArray create<WString>(UINT32 size)
 		{
 			return ScriptArray(mono_get_string_class(), size);

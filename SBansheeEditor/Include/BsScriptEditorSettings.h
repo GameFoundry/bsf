@@ -36,6 +36,13 @@ namespace BansheeEngine
 		static UINT32 internal_GetActivePivotMode();
 		static void internal_SetActivePivotMode(UINT32 value);
 
+		static MonoString* internal_GetLastOpenProject();
+		static void internal_SetLastOpenProject(MonoString* value);
+		static bool internal_GetAutoLoadLastProject();
+		static void internal_SetAutoLoadLastProject(bool value);
+		static void internal_GetRecentProjects(MonoArray** paths, MonoArray** timeStamps);
+		static void internal_SetRecentProjects(MonoArray* paths, MonoArray* timeStamps);
+
 		static void internal_SetFloat(MonoString* name, float value);
 		static void internal_SetInt(MonoString* name, int value);
 		static void internal_SetBool(MonoString* name, bool value);
@@ -51,5 +58,6 @@ namespace BansheeEngine
 		static void internal_DeleteAllKeys();
 
 		static UINT32 internal_GetHash();
+		static void internal_Save();
 	};
 }

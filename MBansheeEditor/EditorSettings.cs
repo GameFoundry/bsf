@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using BansheeEngine;
@@ -56,6 +58,58 @@ namespace BansheeEditor
         {
             get { return (HandlePivotMode)Internal_GetActivePivotMode(); }
             set { Internal_SetActivePivotMode((int)value); }
+        }
+
+        public static string LastOpenProject
+        {
+            get { return Internal_GetLastOpenProject(); }
+            set { Internal_SetLastOpenProject(value); }
+        }
+
+        public static bool AutoLoadLastProject
+        {
+            get { return Internal_GetAutoLoadLastProject(); }
+            set { Internal_SetAutoLoadLastProject(value); }
+        }
+
+        public static RecentProject[] RecentProjects
+        {
+            get
+            {
+                string[] paths;
+                UInt64[] timeStamps;
+
+                Internal_GetRecentProjects(out paths, out timeStamps);
+                RecentProject[] output = new RecentProject[paths.Length];
+
+                for (int i = 0; i < paths.Length; i++)
+                    output[i] = new RecentProject(paths[i], timeStamps[i]);
+
+                return output;
+            }
+
+            set
+            {
+                int numEntries = 0;
+                if (value != null)
+                    numEntries = value.Length;
+
+                string[] paths = new string[numEntries];
+                UInt64[] timeStamps = new UInt64[numEntries];
+
+                for (int i = 0; i < numEntries; i++)
+                {
+                    paths[i] = value[i].path;
+                    timeStamps[i] = value[i].accessTimestamp;
+                }
+
+                Internal_SetRecentProjects(paths, timeStamps);
+            }
+        }
+
+        public static int Hash
+        {
+            get { return Internal_GetHash(); }
         }
 
         public static void SetFloat(string name, float value)
@@ -113,9 +167,9 @@ namespace BansheeEditor
             Internal_DeleteAllKeys();
         }
 
-        public static int Hash
+        public static void Save()
         {
-            get { return Internal_GetHash(); }
+            Internal_Save();
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -159,6 +213,21 @@ namespace BansheeEditor
         private static extern void Internal_SetActivePivotMode(int value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string Internal_GetLastOpenProject();
+        [MethodImpl(MethodImplOptions.InternalCall)]
+         private static extern void Internal_SetLastOpenProject(string value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_GetAutoLoadLastProject();
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetAutoLoadLastProject(bool value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_GetRecentProjects(out string[] paths, out UInt64[] timestamps);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetRecentProjects(string[] paths, UInt64[] timestamps);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetFloat(string name, float value);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetInt(string name, int value);
@@ -185,5 +254,21 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern int Internal_GetHash();
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_Save();
+    }
+
+    // Note: Must match C++ struct RecentProject
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RecentProject
+    {
+        public RecentProject(string path, UInt64 timestamp)
+        {
+            this.path = path;
+            this.accessTimestamp = timestamp;
+        }
+
+        public string path;
+        public UInt64 accessTimestamp;
     }
 }

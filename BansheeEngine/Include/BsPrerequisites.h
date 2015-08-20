@@ -136,6 +136,7 @@ namespace BansheeEngine
 	static const char* SCRIPT_GAME_ASSEMBLY = "MScriptGame";
 	static const Path ASSEMBLY_PATH = "..\\..\\Assemblies\\";
 	static const Path GAME_RESOURCES_PATH = "..\\..\\..\\Resources\\";
+	static const Path RUNTIME_DATA_PATH = L"..\\..\\..\\..\\Data\\";
 
 	/**
 	 * @brief	RTTI types.
