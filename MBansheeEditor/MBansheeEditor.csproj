@@ -61,7 +61,7 @@
     <Compile Include="HierarchyWindow.cs" />
     <Compile Include="LocEdString.cs" />
     <Compile Include="PrefabUtility.cs" />
-    <Compile Include="ProjectDropTarget.cs" />
+    <Compile Include="LibraryDropTarget.cs" />
     <Compile Include="OSDropTarget.cs" />
     <Compile Include="EditorApplication.cs" />
     <Compile Include="EditorBuiltin.cs" />
@@ -105,6 +105,7 @@
     <Compile Include="ModalWindow.cs" />
     <Compile Include="ProgressBar.cs" />
     <Compile Include="ProjectSettings.cs" />
+    <Compile Include="LibraryWindow.cs" />
     <Compile Include="ProjectWindow.cs" />
     <Compile Include="Scene\SceneCamera.cs" />
     <Compile Include="Scene\SceneViewHandler.cs" />

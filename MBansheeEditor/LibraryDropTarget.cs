@@ -5,7 +5,7 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
-    public class ProjectDropTarget
+    public class LibraryDropTarget
     {
         private const int DragStartDistancePx = 3;
 
@@ -41,7 +41,7 @@ namespace BansheeEditor
             }
         }
 
-        public ProjectDropTarget(EditorWindow window)
+        public LibraryDropTarget(EditorWindow window)
         {
             parentWindow = window;
 
