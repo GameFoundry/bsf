@@ -90,13 +90,7 @@ Other polish:
    - Consider saving this information with the serialized object
  - Make sure to persist EditorSettings
  - Import option inspectors for Texture, Mesh, Font
- - Update GUISlider so it works with the new style (and to have min/max limits, plus step size)
- - Add "focus on object" key (F) - animate it: rotate camera towards then speed towards while zooming in
- - Ortographic camera views (+ gizmo in scene view corner that shows camera orientation)
- - Drag to select in scene view
- - MenuBar - will likely need a way to mark elements as disabled when not appropriate (e.g. no "frame selected unless scene is focused")
-   - Likely use a user-provided callback to trigger when populating the menus
- - Need to list all script components in the Components menu
+ - When opening editor load last open scene
 
 Stage 2 polish:
  - Inject an icon into an .exe (Win32 specific)
@@ -125,7 +119,13 @@ Finalizing:
   - There should be a CmdRecordSO equivalent for resources (probably)
   - Add commands for breaking or reverting a scene object 
   - Test & finalize undo/redo system
-  - When opening editor load last open scene
+ - Update GUISlider so it works with the new style (and to have min/max limits, plus step size)
+ - Add "focus on object" key (F) - animate it: rotate camera towards then speed towards while zooming in
+ - Ortographic camera views (+ gizmo in scene view corner that shows camera orientation)
+ - Drag to select in scene view
+ - MenuBar - will likely need a way to mark elements as disabled when not appropriate (e.g. no "frame selected unless scene is focused")
+   - Likely use a user-provided callback to trigger when populating the menus
+ - Need to list all script components in the Components menu
 
 ----------------------------------------------------------------------
 Build system

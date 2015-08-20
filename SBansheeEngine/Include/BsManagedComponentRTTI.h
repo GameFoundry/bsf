@@ -66,8 +66,18 @@ namespace BansheeEngine
 		void onSerializationStarted(IReflectable* obj) override
 		{
 			ManagedComponent* mc = static_cast<ManagedComponent*>(obj);
+			MonoObject* managedInstance = mc->getManagedInstance();
 
-			mc->mRTTIData = ManagedSerializableObject::createFromExisting(mc->getManagedInstance());
+			if (managedInstance != nullptr)
+				mc->mRTTIData = ManagedSerializableObject::createFromExisting(managedInstance);
+			else
+				mc->mRTTIData = mc->mSerializedObjectData;
+		}
+
+		void onSerializationEnded(IReflectable* obj) override
+		{
+			ManagedComponent* mc = static_cast<ManagedComponent*>(obj);
+			mc->mRTTIData = nullptr;
 		}
 
 		virtual const String& getRTTIName() override
