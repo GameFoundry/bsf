@@ -66,7 +66,7 @@ namespace BansheeEngine
 		void setFlexibleHeight(UINT32 minHeight = 0, UINT32 maxHeight = 0);
 
 		/**
-		 * @brief	Resets element dimensions to their initial values dictated by the elements style.
+		 * @brief	Resets element dimensions to their initial values dictated by the element's style.
 		 */
 		virtual void resetDimensions();
 

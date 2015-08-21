@@ -3,19 +3,31 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
+    /// <summary>
+    /// Container for texture and text color used in a particular GUI element style.
+    /// </summary>
     public sealed class GUIElementStateStyle : ScriptObject
     {
+        /// <summary>
+        /// Constructs a new GUI element state style with default values.
+        /// </summary>
         public GUIElementStateStyle()
         {
             Internal_CreateInstance(this);
         }
 
+        /// <summary>
+        /// Texture used by the GUI element style state. Can be null.
+        /// </summary>
         public SpriteTexture texture
         {
             get { SpriteTexture value; Internal_GetTexture(mCachedPtr, out value); return value; }
             set { Internal_SetTexture(mCachedPtr, value); }
         }
 
+        /// <summary>
+        /// Color applied to the text when GUI element style state is active.
+        /// </summary>
         public Color textColor
         {
             get { Color value; Internal_GetTextColor(mCachedPtr, out value); return value; }

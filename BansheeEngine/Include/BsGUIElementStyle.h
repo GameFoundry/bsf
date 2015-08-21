@@ -18,12 +18,14 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	GUI element style that determines GUI element look depending on its active state
+	 * @brief	GUI element style that determines the look of a GUI element, as well as
+	 *			the element's default layout options. Different looks can be provided
+	 *			for different element states.
 	 */
 	struct BS_EXPORT GUIElementStyle : public IReflectable
 	{
 		/**
-		 * @brief	Specific texture and text color used in a particular GUI element style
+		 * @brief	Specific texture and text color used in a particular GUI element style.
 		 */
 		struct BS_EXPORT GUIElementStateStyle
 		{
@@ -65,10 +67,10 @@ namespace BansheeEngine
 
 		UINT32 width; /** Wanted width of the GUI element in pixels. Only used if fixedWidth is enabled. */
 		UINT32 height; /** Wanted height of the GUI element in pixels. Only used if fixedHeight is enabled. */
-		UINT32 minWidth, maxWidth; /**< Minimum and maximum width allowed for this object. Used by the layout only when exact width is not specified. */
-		UINT32 minHeight, maxHeight; /**< Minimum and maximum height allowed for this object. Used by the layout only when exact height is not specified. */
-		bool fixedWidth; /**< If width is fixed, layout will not attempt to resize the element depending on available size. */
-		bool fixedHeight; /**< If height is fixed, layout will not attempt to resize the element depending on available size. */
+		UINT32 minWidth, maxWidth; /**< Minimum and maximum width allowed for the GUI element. Used by the layout only when exact width is not specified. */
+		UINT32 minHeight, maxHeight; /**< Minimum and maximum height allowed for the GUI element. Used by the layout only when exact height is not specified. */
+		bool fixedWidth; /**< Determines should the layout resize the element depending on available size. If true no resizing will be done. */
+		bool fixedHeight; /**< Determines should the layout resize the element depending on available size. If true no resizing will be done. */
 
 		Map<String, String> subStyles; /**< Sub-styles used by certain more complex elements. */
 
