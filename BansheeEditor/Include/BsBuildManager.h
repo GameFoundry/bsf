@@ -87,6 +87,11 @@ namespace BansheeEngine
 		 */
 		void load(const Path& inFile);
 
+		/**
+		 * @brief	Clears currently active build settings.
+		 */
+		void clear();
+
 	private:
 		SPtr<BuildData> mBuildData;
 	};

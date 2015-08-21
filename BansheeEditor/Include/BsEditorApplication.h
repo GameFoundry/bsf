@@ -15,24 +15,24 @@ namespace BansheeEngine
 		virtual ~EditorApplication();
 
 		/**
-		 * @brief	Starts the editorn with the specified render system.
+		 * @brief	Starts the editor with the specified render system.
 		 */
 		static void startUp(RenderAPIPlugin renderAPI);
 
 		/**
 		 * @brief	Checks whether the editor currently has a project loaded.
 		 */
-		bool isProjectLoaded() const;
+		bool isProjectLoaded() const { return mIsProjectLoaded; }
 
 		/**
 		 * @brief	Returns the path to the currently loaded project.
 		 */
-		const Path& getProjectPath() const;
+		const Path& getProjectPath() const { return mProjectPath; }
 
 		/**
 		 * @brief	Returns the name of the currently loaded project.
 		 */
-		const WString& getProjectName() const;
+		const WString& getProjectName() const { return mProjectName; }
 
 		/**
 		 * @brief	Returns the absolute path to the built-in managed editor assembly file.
@@ -72,10 +72,45 @@ namespace BansheeEngine
 		 */
 		void saveProjectSettings();
 
+		/**
+		 * @brief	Unloads the currently loaded project, if any.
+		 */
+		void unloadProject();
+
+		/**
+		 * @brief	Loads a new project, unloading the current one. 
+		 *
+		 * @param	path	Absolute path to the root project folder. Must be pointing
+		 *					to a valid project.
+		 */
+		void loadProject(const Path& path);
+
+		/**
+		 * @brief	Checks is the provided folder a valid project.
+		 *
+		 * @param	path	Absolute path to the root project folder.
+		 */
+		bool isValidProjectPath(const Path& path);
+
 	private:
+		/**
+		 * @copydoc	Module::onStartUp
+		 */
 		virtual void onStartUp() override;
+
+		/**
+		 * @copydoc	Module::onShutDown
+		 */
 		virtual void onShutDown() override;
+
+		/**
+		 * @copydoc	Module::preUpdate
+		 */
 		virtual void preUpdate() override;
+
+		/**
+		 * @copydoc	Module::postUpdate
+		 */
 		virtual void postUpdate() override;
 
 		/**
@@ -116,6 +151,10 @@ namespace BansheeEngine
 		RenderAPIPlugin mActiveRAPIPlugin;
 		EditorSettingsPtr mEditorSettings;
 		ProjectSettingsPtr mProjectSettings;
+
+		bool mIsProjectLoaded;
+		Path mProjectPath;
+		WString mProjectName;
 
 		DynLib* mSBansheeEditorPlugin;
 

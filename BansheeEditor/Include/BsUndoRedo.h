@@ -60,6 +60,11 @@ namespace BansheeEngine
 		 */
 		void registerCommand(EditorCommand* command);
 
+		/**
+		 * @brief	Resets the undo/redo stacks.
+		 */
+		void clear();
+
 	private:
 		/**
 		 * @brief	Removes the last undo command from the undo stack, and returns it.

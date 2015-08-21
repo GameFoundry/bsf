@@ -314,6 +314,16 @@ namespace BansheeEngine
 			*findIter = manifest;
 	}
 
+	void Resources::unregisterResourceManifest(const ResourceManifestPtr& manifest)
+	{
+		if (manifest->getName() == "Default")
+			return;
+
+		auto findIter = std::find(mResourceManifests.begin(), mResourceManifests.end(), manifest);
+		if (findIter != mResourceManifests.end())
+			mResourceManifests.erase(findIter);
+	}
+
 	ResourceManifestPtr Resources::getResourceManifest(const String& name) const
 	{
 		for(auto iter = mResourceManifests.rbegin(); iter != mResourceManifests.rend(); ++iter) 

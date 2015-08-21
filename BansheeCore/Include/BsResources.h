@@ -149,6 +149,11 @@ namespace BansheeEngine
 		void registerResourceManifest(const ResourceManifestPtr& manifest);
 
 		/**
+		 * @brief	Unregisters a resource manifest previously registered with ::registerResourceManifest.
+		 */
+		void unregisterResourceManifest(const ResourceManifestPtr& manifest);
+
+		/**
 		 * @brief	Allows you to retrieve resource manifest containing UUID <-> file path mapping that is
 		 * 			used when resolving resource references.
 		 * 			

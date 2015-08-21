@@ -66,7 +66,7 @@ namespace BansheeEngine
 
 	EditorApplication::EditorApplication(RenderAPIPlugin renderAPIPlugin)
 		:Application(createRenderWindowDesc(), renderAPIPlugin, RendererPlugin::Default), 
-		mActiveRAPIPlugin(renderAPIPlugin), mSBansheeEditorPlugin(nullptr)
+		mActiveRAPIPlugin(renderAPIPlugin), mSBansheeEditorPlugin(nullptr), mIsProjectLoaded(false)
 	{
 
 	}
@@ -102,7 +102,7 @@ namespace BansheeEngine
 		Application::onStartUp();
 
 		loadEditorSettings();
-		loadProjectSettings();
+		mProjectSettings = bs_shared_ptr_new<ProjectSettings>();
 
 		BuiltinEditorResources::startUp();
 
@@ -128,7 +128,7 @@ namespace BansheeEngine
 		PrefabImporter* prefabImporter = bs_new<PrefabImporter>();
 		Importer::instance()._registerAssetImporter(prefabImporter);
 
-		ProjectLibrary::startUp(getProjectPath());
+		ProjectLibrary::startUp();
 
 		UndoRedo::startUp();
 		EditorWindowManager::startUp();
@@ -143,12 +143,6 @@ namespace BansheeEngine
 
 		MainEditorWindow* mainWindow = MainEditorWindow::create(getPrimaryWindow());
 		loadPlugin("SBansheeEditor", &mSBansheeEditorPlugin); // Managed part of the editor
-
-		EditorWidgetLayoutPtr layout = loadWidgetLayout();
-		if (layout != nullptr)
-			EditorWidgetManager::instance().setLayout(layout);
-
-		BuildManager::instance().load(BUILD_DATA_PATH);
 
 		/************************************************************************/
 		/* 								DEBUG CODE                      		*/
@@ -212,7 +206,7 @@ namespace BansheeEngine
 
 	void EditorApplication::onShutDown()
 	{
-		BuildManager::instance().save(BUILD_DATA_PATH);
+		unloadProject();
 
 		CodeEditorManager::shutDown();
 		BuildManager::shutDown();
@@ -220,9 +214,7 @@ namespace BansheeEngine
 		Selection::shutDown();
 		ScenePicking::shutDown();
 
-		saveWidgetLayout(EditorWidgetManager::instance().getLayout());
 		saveEditorSettings();
-		saveProjectSettings();
 
 		DropDownWindowManager::shutDown();
 		EditorWidgetManager::shutDown();
@@ -253,25 +245,6 @@ namespace BansheeEngine
 		EditorWindowManager::instance().update();	
 	}
 
-	bool EditorApplication::isProjectLoaded() const
-	{
-		return true; // TODO - DEBUG ONLY
-	}
-
-	const Path& EditorApplication::getProjectPath() const
-	{
-		static Path dummyProjectPath = L"D:\\DummyBansheeProject\\";
-
-		return dummyProjectPath;
-	}
-
-	const WString& EditorApplication::getProjectName() const
-	{
-		static WString dummyProjectName = L"DummyBansheeProject";
-
-		return dummyProjectName;
-	}
-
 	Path EditorApplication::getEditorAssemblyPath() const
 	{
 		Path assemblyPath = getBuiltinAssemblyFolder();
@@ -294,6 +267,54 @@ namespace BansheeEngine
 		assemblyFolder.append(INTERNAL_ASSEMBLY_PATH);
 
 		return assemblyFolder;
+	}
+
+	void EditorApplication::unloadProject()
+	{
+		if (!isProjectLoaded())
+			return;
+
+		BuildManager::instance().save(BUILD_DATA_PATH);
+		saveWidgetLayout(EditorWidgetManager::instance().getLayout());
+		saveEditorSettings();
+		saveProjectSettings();
+
+		mProjectSettings = bs_shared_ptr_new<ProjectSettings>();
+		BuildManager::instance().clear();
+		UndoRedo::instance().clear();
+
+		ProjectLibrary::instance().saveLibrary();
+		ProjectLibrary::instance().unloadLibrary();
+
+		Resources::instance().unloadAllUnused();
+	}
+
+	void EditorApplication::loadProject(const Path& projectPath)
+	{
+		unloadProject();
+
+		mProjectPath = projectPath;
+		mProjectName = projectPath.getWTail();
+		mIsProjectLoaded = true;
+
+		loadProjectSettings();
+		BuildManager::instance().load(BUILD_DATA_PATH);
+		ProjectLibrary::instance().loadLibrary();
+
+		EditorWidgetLayoutPtr layout = loadWidgetLayout();
+		if (layout != nullptr)
+			EditorWidgetManager::instance().setLayout(layout);
+	}
+
+	bool EditorApplication::isValidProjectPath(const Path& path)
+	{
+		if (!path.isAbsolute())
+			return false;
+
+		if (!FileSystem::isDirectory(path))
+			return false;
+
+		return true;
 	}
 
 	EditorWidgetLayoutPtr EditorApplication::loadWidgetLayout()

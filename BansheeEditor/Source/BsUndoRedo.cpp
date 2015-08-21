@@ -16,8 +16,7 @@ namespace BansheeEngine
 
 	UndoRedo::~UndoRedo()
 	{
-		clearUndoStack();
-		clearRedoStack();
+		clear();
 
 		bs_deleteN(mUndoStack, MAX_STACK_ELEMENTS);
 		bs_deleteN(mRedoStack, MAX_STACK_ELEMENTS);
@@ -88,6 +87,12 @@ namespace BansheeEngine
 	{
 		addToUndoStack(command);
 
+		clearRedoStack();
+	}
+
+	void UndoRedo::clear()
+	{
+		clearUndoStack();
 		clearRedoStack();
 	}
 

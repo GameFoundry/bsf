@@ -68,7 +68,7 @@ namespace BansheeEngine
 		};
 
 	public:
-		ProjectLibrary(const Path& projectFolder);
+		ProjectLibrary();
 		~ProjectLibrary();
 
 		/**
@@ -241,22 +241,28 @@ namespace BansheeEngine
 		 */
 		const Path& getResourcesFolder() const { return mResourcesFolder; }
 
-		Event<void(const Path&)> onEntryRemoved; /**< Triggered whenever an entry is removed from the library. Path provided is absolute. */
-		Event<void(const Path&)> onEntryAdded; /**< Triggered whenever an entry is added to the library. Path provided is absolute. */
-	private:
 		/**
 		 * @brief	Saves all the project library data so it may be restored later,
-		 *			at the default save location in the project folder.
+		 *			at the default save location in the project folder. Project
+		 *			must be loaded when calling this.
 		 */
-		void save();
+		void saveLibrary();
 
 		/**
 		 * @brief	Loads previously saved project library data from the default save 
 		 *			location in the project folder. Nothing is loaded if it doesn't
-		 *			exist.
+		 *			exist.Project must be loaded when calling this.
 		 */
-		void load();
+		void loadLibrary();
 
+		/**
+		 * @brief	Clears all library data.
+		 */
+		void unloadLibrary();
+
+		Event<void(const Path&)> onEntryRemoved; /**< Triggered whenever an entry is removed from the library. Path provided is absolute. */
+		Event<void(const Path&)> onEntryAdded; /**< Triggered whenever an entry is added to the library. Path provided is absolute. */
+	private:
 		/**
 		 * @brief	Common code for adding a new resource entry to the library.
 		 *
@@ -379,6 +385,7 @@ namespace BansheeEngine
 		DirectoryEntry* mRootEntry;
 		Path mProjectFolder;
 		Path mResourcesFolder;
+		bool mIsLoaded;
 
 		UnorderedMap<Path, Vector<Path>> mDependencies;
 		UnorderedSet<Path> mReimportQueue;

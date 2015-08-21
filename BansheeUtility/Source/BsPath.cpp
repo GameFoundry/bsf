@@ -425,7 +425,7 @@ namespace BansheeEngine
 		else if (mDirectories.size() > 0)
 			return mDirectories.back();
 		else
-			return toWString(type);
+			return StringUtil::WBLANK;
 	}
 
 	String Path::getTail(PathType type) const

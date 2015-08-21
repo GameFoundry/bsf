@@ -18,6 +18,29 @@ namespace BansheeEngine
 			addPlainField("mRootEntry", 0, &DockManagerLayoutRTTI::getRootEntry, &DockManagerLayoutRTTI::setRootEntry);
 		}
 
+		void onDeserializationEnded(IReflectable* obj) override
+		{
+			DockManagerLayout* layout = static_cast<DockManagerLayout*>(obj);
+
+			Stack<DockManagerLayout::Entry*> todo;
+			todo.push(&layout->mRootEntry);
+
+			while (!todo.empty())
+			{
+				DockManagerLayout::Entry* current = todo.top();
+				todo.pop();
+
+				if (!current->isLeaf)
+				{
+					current->children[0]->parent = current;
+					current->children[1]->parent = current;
+
+					todo.push(current->children[0]);
+					todo.push(current->children[1]);
+				}
+			}
+		}
+
 		virtual const String& getRTTIName() override
 		{
 			static String name = "DockManagerLayout";

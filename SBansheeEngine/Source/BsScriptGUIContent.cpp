@@ -20,9 +20,9 @@ namespace BansheeEngine
 
 	void ScriptGUIContent::initRuntimeData()
 	{
-		mTextField = metaData.scriptClass->getField("_text");
-		mTooltipField = metaData.scriptClass->getField("_tooltip");
-		mImageField = metaData.scriptClass->getField("_image");
+		mTextField = metaData.scriptClass->getField("text");
+		mTooltipField = metaData.scriptClass->getField("tooltip");
+		mImageField = metaData.scriptClass->getField("image");
 	}
 
 	const HString& ScriptGUIContent::getText(MonoObject* instance)

@@ -62,6 +62,7 @@ namespace BansheeEditor
 
         public static string ProjectPath { get { return Internal_GetProjectPath(); } }
         public static string ProjectName { get { return Internal_GetProjectName(); } }
+        public static bool IsProjectLoaded { get { return Internal_GetProjectLoaded(); } }
         internal static string CompilerPath { get { return Internal_GetCompilerPath(); } }
         internal static string BuiltinAssemblyPath { get { return Internal_GetBuiltinAssemblyPath(); } }
         internal static string ScriptAssemblyPath { get { return Internal_GetScriptAssemblyPath(); } }
@@ -73,7 +74,7 @@ namespace BansheeEditor
 
         private static EditorApplication instance;
 
-        private FolderMonitor monitor;
+        private static FolderMonitor monitor;
 
         internal EditorApplication()
         {
@@ -102,14 +103,18 @@ namespace BansheeEditor
             inputConfig.RegisterButton(SceneWindow.ScaleToolBinding, ButtonCode.R);
             inputConfig.RegisterButton(SceneWindow.DuplicateBinding, ButtonCode.D, ButtonModifier.Ctrl);
 
-            ProjectLibrary.Refresh();
-            monitor = new FolderMonitor(ProjectLibrary.ResourceFolder);
-            monitor.OnAdded += OnAssetModified;
-            monitor.OnRemoved += OnAssetModified;
-            monitor.OnModified += OnAssetModified;
+            if (EditorSettings.AutoLoadLastProject)
+            {
+                string projectPath = EditorSettings.LastOpenProject;
+                if (Internal_IsValidProject(projectPath))
+                    LoadProject(projectPath);
+            }
+
+            if (!IsProjectLoaded)
+                ProjectWindow.Show();
         }
 
-        private void OnAssetModified(string path)
+        private static void OnAssetModified(string path)
         {
             ProjectLibrary.Refresh(path);
         }
@@ -163,16 +168,25 @@ namespace BansheeEditor
 
         public static void LoadScene(string path)
         {
+            Action<string> continueLoad =
+                (scenePath) =>
+                {
+                    Scene.Load(path);
+
+                    ProjectSettings.LastOpenScene = scenePath;
+                    ProjectSettings.Save();
+                };
+
             Action<DialogBox.ResultType> dialogCallback =
             (result) =>
             {
                 if (result == DialogBox.ResultType.Yes)
                 {
                     SaveScene();
-                    Scene.Load(path);
+                    continueLoad(path);
                 }
                 else if (result == DialogBox.ResultType.No)
-                    Scene.Load(path);
+                    continueLoad(path);
             };
 
             if (Scene.IsModified())
@@ -181,7 +195,67 @@ namespace BansheeEditor
                     DialogBox.Type.YesNoCancel, dialogCallback);
             }
             else
-                Scene.Load(path);
+                continueLoad(path);
+        }
+
+        public static void LoadProject(string path)
+        {
+            if (Internal_IsValidProject(path))
+            {
+                Debug.LogWarning("Provided path: \"" + path + "\" is not a valid project.");
+                return;
+            }
+
+            Internal_LoadProject(path);
+
+            ProjectLibrary.Refresh();
+            monitor = new FolderMonitor(ProjectLibrary.ResourceFolder);
+            monitor.OnAdded += OnAssetModified;
+            monitor.OnRemoved += OnAssetModified;
+            monitor.OnModified += OnAssetModified;
+
+            if(!string.IsNullOrWhiteSpace(ProjectSettings.LastOpenScene))
+                Scene.Load(ProjectSettings.LastOpenScene);
+        }
+
+        public static void UnloadProject()
+        {
+            // TODO - Save dirty assets
+
+            Action continueUnload =
+                () =>
+                {
+                    Scene.Clear();
+
+                    if (monitor != null)
+                    {
+                        monitor.Destroy();
+                        monitor = null;
+                    }
+
+                    LibraryWindow window = EditorWindow.GetWindow<LibraryWindow>();
+                    if(window != null)
+                        window.Reset();
+
+                    Internal_UnloadProject();
+                };
+
+            Action<DialogBox.ResultType> dialogCallback =
+            (result) =>
+            {
+                if (result == DialogBox.ResultType.Yes)
+                    SaveScene();
+
+                continueUnload();
+            };
+
+            if (Scene.IsModified())
+            {
+                DialogBox.Open("Warning", "You current scene has modifications. Do you wish to save them first?",
+                    DialogBox.Type.YesNoCancel, dialogCallback);
+            }
+            else
+                continueUnload();
         }
 
         [MenuItem("Components/Camera")]
@@ -297,6 +371,9 @@ namespace BansheeEditor
         private static extern string Internal_GetProjectName();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_GetProjectLoaded();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern string Internal_GetCompilerPath();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -322,5 +399,14 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern string Internal_SaveScene(string path);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_IsValidProject(string path);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_LoadProject(string path);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_UnloadProject();
     }
 }

@@ -12,6 +12,7 @@
 #include "BsDebug.h"
 #include "BsProjectLibraryEntries.h"
 #include "BsResource.h"
+#include "BsEditorApplication.h"
 #include "BsResourceImporter.h"
 #include "BsShader.h"
 #include <regex>
@@ -48,24 +49,14 @@ namespace BansheeEngine
 		:LibraryEntry(path, name, parent, LibraryEntryType::Directory)
 	{ }
 
-	ProjectLibrary::ProjectLibrary(const Path& projectFolder)
-		:mRootEntry(nullptr), mProjectFolder(projectFolder)
+	ProjectLibrary::ProjectLibrary()
+		: mRootEntry(nullptr), mIsLoaded(false)
 	{
-		mResourcesFolder = mProjectFolder;
-		mResourcesFolder.append(RESOURCES_DIR);
-
-		load();
-
-		if(mResourceManifest == nullptr)
-			mResourceManifest = ResourceManifest::create("ProjectLibrary");
-
-		gResources().registerResourceManifest(mResourceManifest);
+		mRootEntry = bs_new<DirectoryEntry>(mResourcesFolder, mResourcesFolder.getWTail(), nullptr);
 	}
 
 	ProjectLibrary::~ProjectLibrary()
 	{
-		save();
-
 		if(mRootEntry != nullptr)
 			deleteDirectoryInternal(mRootEntry);
 	}
@@ -1014,8 +1005,32 @@ namespace BansheeEngine
 		return fullPath.getWExtension() == L".meta";
 	}
 
-	void ProjectLibrary::save()
+	void ProjectLibrary::unloadLibrary()
 	{
+		if (!mIsLoaded)
+			return;
+
+		mProjectFolder = Path::BLANK;
+		mResourcesFolder = Path::BLANK;
+
+		if (mRootEntry != nullptr)
+		{
+			deleteDirectoryInternal(mRootEntry);
+			mRootEntry = bs_new<DirectoryEntry>(mResourcesFolder, mResourcesFolder.getWTail(), nullptr);
+		}
+
+		mReimportQueue.clear();
+		mDependencies.clear();
+		gResources().unregisterResourceManifest(mResourceManifest);
+		mResourceManifest = nullptr;
+		mIsLoaded = false;
+	}
+
+	void ProjectLibrary::saveLibrary()
+	{
+		if (!mIsLoaded)
+			return;
+
 		std::shared_ptr<ProjectLibraryEntries> libEntries = ProjectLibraryEntries::create(*mRootEntry);
 
 		Path libraryEntriesPath = mProjectFolder;
@@ -1032,13 +1047,13 @@ namespace BansheeEngine
 		ResourceManifest::save(mResourceManifest, resourceManifestPath, mProjectFolder);
 	}
 
-	void ProjectLibrary::load()
+	void ProjectLibrary::loadLibrary()
 	{
-		if(mRootEntry != nullptr)
-		{
-			deleteDirectoryInternal(mRootEntry);
-			mRootEntry = nullptr;
-		}
+		unloadLibrary();
+
+		mProjectFolder = gEditorApplication().getProjectPath();
+		mResourcesFolder = mProjectFolder;
+		mResourcesFolder.append(RESOURCES_DIR);
 
 		mRootEntry = bs_new<DirectoryEntry>(mResourcesFolder, mResourcesFolder.getWTail(), nullptr);
 
@@ -1064,9 +1079,11 @@ namespace BansheeEngine
 		resourceManifestPath.append(RESOURCE_MANIFEST_FILENAME);
 
 		if (FileSystem::exists(resourceManifestPath))
-		{
 			mResourceManifest = ResourceManifest::load(resourceManifestPath, mProjectFolder);
-		}
+		else
+			mResourceManifest = ResourceManifest::create("ProjectLibrary");
+
+		gResources().registerResourceManifest(mResourceManifest);
 
 		// Load all meta files
 		Stack<DirectoryEntry*> todo;
@@ -1120,6 +1137,8 @@ namespace BansheeEngine
 				}
 			}
 		}
+
+		mIsLoaded = true;
 	}
 
 	void ProjectLibrary::doOnEntryRemoved(const LibraryEntry* entry)

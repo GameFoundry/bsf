@@ -21,6 +21,7 @@ namespace BansheeEngine
 		/************************************************************************/
 		static MonoString* internal_GetProjectPath();
 		static MonoString* internal_GetProjectName();
+		static bool internal_GetProjectLoaded();
 		static MonoString* internal_GetCompilerPath();
 		static MonoString* internal_GetBuiltinAssemblyPath();
 		static MonoString* internal_GetScriptAssemblyPath();
@@ -30,5 +31,8 @@ namespace BansheeEngine
 		static MonoString* internal_GetScriptGameAssemblyName();
 		static MonoString* internal_GetScriptEditorAssemblyName();
 		static MonoString* internal_SaveScene(MonoString* path);
+		static bool internal_IsValidProject(MonoString* path);
+		static void internal_LoadProject(MonoString* path);
+		static void internal_UnloadProject();
 	};
 }

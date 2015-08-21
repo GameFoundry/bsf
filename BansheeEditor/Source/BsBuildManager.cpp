@@ -91,6 +91,11 @@ namespace BansheeEngine
 		return getPlatformInfo(type)->defines;
 	}
 
+	void BuildManager::clear()
+	{
+		mBuildData = nullptr;
+	}
+
 	void BuildManager::save(const Path& outFile)
 	{
 		FileEncoder fe(outFile);

@@ -75,7 +75,7 @@ namespace BansheeEditor
             set { viewType = value; Refresh(); }
         }
 
-        [MenuItem("Windows/Library", ButtonModifier.CtrlAlt, ButtonCode.P)]
+        [MenuItem("Windows/Library", ButtonModifier.CtrlAlt, ButtonCode.L)]
         private static void OpenLibraryWindow()
         {
             OpenWindow<LibraryWindow>();
@@ -394,6 +394,18 @@ namespace BansheeEditor
 
                 ScrollToEntry(pingPath);
             }
+        }
+
+        public void Reset()
+        {
+            currentDirectory = ProjectLibrary.Root.Path;
+            selectionAnchorStart = -1;
+            selectionAnchorEnd = -1;
+            selectionPaths.Clear();
+            pingPath = "";
+            hoverHighlightPath = "";
+
+            Refresh();
         }
 
         private void DeselectAll(bool onlyInternal = false)
@@ -1345,18 +1357,6 @@ namespace BansheeEditor
 
             LibraryDropDown dropDown = DropDownWindow.Open<LibraryDropDown>(this, openPosition);
             dropDown.SetParent(this);
-        }
-
-        private void Reset()
-        {
-            currentDirectory = ProjectLibrary.Root.Path;
-            selectionAnchorStart = -1;
-            selectionAnchorEnd = -1;
-            selectionPaths.Clear();
-            pingPath = "";
-            hoverHighlightPath = "";
-
-            Refresh();
         }
 
         private Rect2I GetScrollAreaBounds()

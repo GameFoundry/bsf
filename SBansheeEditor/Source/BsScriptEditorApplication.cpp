@@ -27,6 +27,7 @@ namespace BansheeEngine
 	{
 		metaData.scriptClass->addInternalCall("Internal_GetProjectPath", &ScriptEditorApplication::internal_GetProjectPath);
 		metaData.scriptClass->addInternalCall("Internal_GetProjectName", &ScriptEditorApplication::internal_GetProjectName);
+		metaData.scriptClass->addInternalCall("Internal_GetProjectLoaded", &ScriptEditorApplication::internal_GetProjectLoaded);
 		metaData.scriptClass->addInternalCall("Internal_GetCompilerPath", &ScriptEditorApplication::internal_GetCompilerPath);
 		metaData.scriptClass->addInternalCall("Internal_GetBuiltinAssemblyPath", &ScriptEditorApplication::internal_GetBuiltinAssemblyPath);
 		metaData.scriptClass->addInternalCall("Internal_GetScriptAssemblyPath", &ScriptEditorApplication::internal_GetScriptAssemblyPath);
@@ -36,6 +37,9 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetScriptGameAssemblyName", &ScriptEditorApplication::internal_GetScriptGameAssemblyName);
 		metaData.scriptClass->addInternalCall("Internal_GetScriptEditorAssemblyName", &ScriptEditorApplication::internal_GetScriptEditorAssemblyName);
 		metaData.scriptClass->addInternalCall("Internal_SaveScene", &ScriptEditorApplication::internal_SaveScene);
+		metaData.scriptClass->addInternalCall("Internal_IsValidProject", &ScriptEditorApplication::internal_IsValidProject);
+		metaData.scriptClass->addInternalCall("Internal_LoadProject", &ScriptEditorApplication::internal_LoadProject);
+		metaData.scriptClass->addInternalCall("Internal_UnloadProject", &ScriptEditorApplication::internal_UnloadProject);
 	}
 
 	MonoString* ScriptEditorApplication::internal_GetProjectPath()
@@ -50,6 +54,11 @@ namespace BansheeEngine
 		WString projectName = gEditorApplication().getProjectName();
 
 		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), projectName);
+	}
+
+	bool ScriptEditorApplication::internal_GetProjectLoaded()
+	{
+		return gEditorApplication().isProjectLoaded();
 	}
 
 	MonoString* ScriptEditorApplication::internal_GetCompilerPath()
@@ -130,5 +139,22 @@ namespace BansheeEngine
 		}
 
 		return MonoUtil::stringToMono(MonoManager::instance().getDomain(), scene.getUUID());
+	}
+
+	bool ScriptEditorApplication::internal_IsValidProject(MonoString* path)
+	{
+		Path nativePath = MonoUtil::monoToWString(path);
+		return gEditorApplication().isValidProjectPath(nativePath);
+	}
+
+	void ScriptEditorApplication::internal_LoadProject(MonoString* path)
+	{
+		Path nativePath = MonoUtil::monoToWString(path);
+		gEditorApplication().loadProject(nativePath);
+	}
+
+	void ScriptEditorApplication::internal_UnloadProject()
+	{
+		gEditorApplication().unloadProject();
 	}
 }
