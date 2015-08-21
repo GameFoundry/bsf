@@ -1714,16 +1714,16 @@ namespace BansheeEditor
             switch (activeType)
             {
                 case ProjectViewType.List16:
-                    list16.ToggleOn();
+                    list16.Value = true;
                     break;
                 case ProjectViewType.Grid32:
-                    grid32.ToggleOn();
+                    grid32.Value = true;
                     break;
                 case ProjectViewType.Grid48:
-                    grid48.ToggleOn();
+                    grid48.Value = true;
                     break;
                 case ProjectViewType.Grid64:
-                    grid64.ToggleOn();
+                    grid64.Value = true;
                     break;
             }
 

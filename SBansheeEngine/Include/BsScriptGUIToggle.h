@@ -36,24 +36,31 @@ namespace BansheeEngine
 		 */
 		static void onToggled(MonoObject* instance, bool toggled);
 
+		/**
+		 * @brief	Triggers when the native toggle button is double-clicked.
+		 */
+		static void onDoubleClick(MonoObject* instance);
+
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
 		static void internal_createInstance(MonoObject* instance, MonoObject* content,
 			MonoObject* toggleGroup, MonoString* style, MonoArray* guiOptions);
 		static void internal_setContent(ScriptGUIToggle* nativeInstance, MonoObject* content);
-		static void internal_toggleOn(ScriptGUIToggle* nativeInstance);
-		static void internal_toggleOff(ScriptGUIToggle* nativeInstance);
+		static bool internal_getValue(ScriptGUIToggle* nativeInstance);
+		static void internal_setValue(ScriptGUIToggle* nativeInstance, bool value);
 		static void internal_setTint(ScriptGUIToggle* nativeInstance, Color color);
 
 		typedef void (__stdcall *OnClickThunkDef) (MonoObject*, MonoException**);
 		typedef void (__stdcall *OnHoverThunkDef) (MonoObject*, MonoException**);
 		typedef void (__stdcall *OnOutThunkDef) (MonoObject*, MonoException**);
 		typedef void (__stdcall *OnToggledThunkDef) (MonoObject*, bool toggled, MonoException**);
+		typedef void(__stdcall *OnDoubleClickThunkDef) (MonoObject*, MonoException**);
 
 		static OnClickThunkDef onClickThunk;
 		static OnHoverThunkDef onHoverThunk;
 		static OnOutThunkDef onOutThunk;
 		static OnToggledThunkDef onToggledThunk;
+		static OnDoubleClickThunkDef onDoubleClickThunk;
 	};
 }

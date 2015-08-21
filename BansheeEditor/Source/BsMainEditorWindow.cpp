@@ -26,8 +26,6 @@ namespace BansheeEngine
 
 		updateAreas();
 
-		mMenuBar->addMenuItem(L"File/New project", nullptr, 100);
-		mMenuBar->addMenuItem(L"File/Open project", nullptr, 100);
 		mMenuBar->addSeparator(L"File", 0);
 		mMenuBar->addMenuItem(L"File/Exit", nullptr, 0);
 

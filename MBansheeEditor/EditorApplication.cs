@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.IO;
 using BansheeEngine;
 
 namespace BansheeEditor
@@ -111,7 +112,7 @@ namespace BansheeEditor
             }
 
             if (!IsProjectLoaded)
-                ProjectWindow.Show();
+                ProjectWindow.Open();
         }
 
         private static void OnAssetModified(string path)
@@ -198,15 +199,97 @@ namespace BansheeEditor
                 continueLoad(path);
         }
 
+        public static bool IsValidProject(string path)
+        {
+            return Internal_IsValidProject(path);
+        }
+
+        [MenuItem("File/Create Project", 0)]
+        public static void CreateProject()
+        {
+            string projectPath = EditorSettings.LastOpenProject;
+            if (!Directory.Exists(projectPath))
+                projectPath = Directory.GetCurrentDirectory();
+
+            string selectedPath;
+            if (BrowseDialog.OpenFolder(projectPath, "", out selectedPath))
+            {
+                CreateProject(selectedPath);
+                LoadProject(selectedPath);
+            }
+        }
+
+        public static void CreateProject(string path)
+        {
+            // TODO
+        }
+
+        [MenuItem("File/Load Project", 0)]
+        public static void BrowseForProject()
+        {
+            string projectPath = EditorSettings.LastOpenProject;
+            if (!Directory.Exists(projectPath))
+                projectPath = Directory.GetCurrentDirectory();
+
+            string selectedPath;
+            if (BrowseDialog.OpenFolder(projectPath, "", out selectedPath))
+                LoadProject(selectedPath);
+        }
+
+        [MenuItem("File/Save Project", 0)]
+        public static void SaveProject()
+        {
+            // TODO
+        }
+
         public static void LoadProject(string path)
         {
+            if (IsProjectLoaded && path == ProjectPath)
+                return;
+
             if (Internal_IsValidProject(path))
             {
                 Debug.LogWarning("Provided path: \"" + path + "\" is not a valid project.");
                 return;
             }
 
+            if (IsProjectLoaded)
+                UnloadProject();
+
             Internal_LoadProject(path);
+
+            if (IsProjectLoaded)
+            {
+                RecentProject[] recentProjects = EditorSettings.RecentProjects;
+                bool foundPath = false;
+                for (int i = 0; i < recentProjects.Length; i++)
+                {
+                    if (PathEx.Compare(recentProjects[i].path, path))
+                    {
+                        recentProjects[i].accessTimestamp = (ulong)DateTime.Now.Ticks;
+                        EditorSettings.RecentProjects = recentProjects;
+                        foundPath = true;
+                        break;
+                    }
+                }
+
+                if (!foundPath)
+                {
+                    List<RecentProject> extendedRecentProjects = new List<RecentProject>();
+                    extendedRecentProjects.AddRange(recentProjects);
+
+                    RecentProject newProject = new RecentProject();
+                    newProject.path = path;
+                    newProject.accessTimestamp = (ulong) DateTime.Now.Ticks;
+
+                    extendedRecentProjects.Add(newProject);
+
+                    EditorSettings.RecentProjects = extendedRecentProjects.ToArray();
+                }
+
+                EditorSettings.LastOpenProject = ProjectPath;
+                EditorSettings.Save();
+            }
 
             ProjectLibrary.Refresh();
             monitor = new FolderMonitor(ProjectLibrary.ResourceFolder);

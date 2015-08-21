@@ -208,7 +208,6 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::TreeViewExpandButtonOnNormal = L"TreeViewExpandButtonOnNormal.psd";
 	const WString BuiltinEditorResources::TreeViewExpandButtonOnHover = L"TreeViewExpandButtonOnHover.psd";
 
-	const WString BuiltinEditorResources::TreeViewSelectionBackground = L"TreeViewSelectionBackground.psd";
 	const WString BuiltinEditorResources::TreeViewHighlightBackground = L"TreeViewHighlightBackground.psd";
 	const WString BuiltinEditorResources::TreeViewEditBox = L"TreeViewEditBox.psd";
 	const WString BuiltinEditorResources::TreeViewElementHighlight = L"TreeViewElementHighlight.psd";
@@ -222,6 +221,7 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::ProgressBarBgTex = L"ProgressBarBg.psd";
 
 	const WString BuiltinEditorResources::SelectionAreaTex = L"SelectionHighlight.psd";
+	const WString BuiltinEditorResources::SelectionBgTex = L"SelectionBg.psd";
 
 	const WString BuiltinEditorResources::TextureDropTex = L"TextureDrop.psd";
 	const WString BuiltinEditorResources::TextureDropOnTex = L"TextureDropOn.psd";
@@ -920,7 +920,7 @@ namespace BansheeEngine
 
 		// Selection background
 		GUIElementStyle treeViewSelBackgroundStyle;
-		treeViewSelBackgroundStyle.normal.texture = getGUITexture(TreeViewSelectionBackground);
+		treeViewSelBackgroundStyle.normal.texture = getGUITexture(SelectionBgTex);
 		treeViewSelBackgroundStyle.fixedHeight = false;
 		treeViewSelBackgroundStyle.fixedWidth = false;
 		treeViewSelBackgroundStyle.height = 2;
@@ -1390,6 +1390,20 @@ namespace BansheeEngine
 		selectionAreaStyle.border.bottom = 1;
 
 		skin->setStyle("SelectionArea", selectionAreaStyle);
+
+		// Selectable label
+		GUIElementStyle selectableLabelStyle;
+		selectableLabelStyle.normalOn.texture = getGUITexture(SelectionBgTex);
+		selectableLabelStyle.hoverOn.texture = selectableLabelStyle.normalOn.texture;
+		selectableLabelStyle.activeOn.texture = selectableLabelStyle.normalOn.texture;
+		selectableLabelStyle.fixedHeight = true;
+		selectableLabelStyle.height = 11;
+		selectableLabelStyle.minWidth = 10;
+		selectableLabelStyle.font = font;
+		selectableLabelStyle.fontSize = DefaultFontSize;
+		selectableLabelStyle.textHorzAlign = THA_Center;
+
+		skin->setStyle("SelectableLabel", selectableLabelStyle);
 
 		return skin;
 	}

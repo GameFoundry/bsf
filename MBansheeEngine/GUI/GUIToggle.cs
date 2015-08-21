@@ -9,11 +9,19 @@ namespace BansheeEngine
         public delegate void OnHoverDelegate();
         public delegate void OnOutDelegate();
         public delegate void OnToggleDelegate(bool toggled);
+        public delegate void OnDoubleClickDelegate();
 
         public event OnClickDelegate OnClick;
         public event OnHoverDelegate OnHover;
         public event OnOutDelegate OnOut;
         public event OnToggleDelegate OnToggled;
+        public event OnDoubleClickDelegate OnDoubleClick;
+
+        public bool Value
+        {
+            get { return Internal_GetValue(mCachedPtr); }
+            set { Internal_SetValue(mCachedPtr, value); }
+        }
 
         public GUIToggle(GUIContent content, GUIToggleGroup toggleGroup, string style, params GUIOption[] options)
         {
@@ -50,16 +58,6 @@ namespace BansheeEngine
             Internal_SetContent(mCachedPtr, content);
         }
 
-        public void ToggleOn()
-        {
-            Internal_ToggleOn(mCachedPtr);
-        }
-
-        public void ToggleOff()
-        {
-            Internal_ToggleOff(mCachedPtr);
-        }
-
         public void SetTint(Color color)
         {
             Internal_SetTint(mCachedPtr, color);
@@ -89,6 +87,12 @@ namespace BansheeEngine
                 OnToggled(toggled);
         }
 
+        private void DoOnDoubleClick()
+        {
+            if (OnDoubleClick != null)
+                OnDoubleClick();
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateInstance(GUIToggle instance, GUIContent content,
             GUIToggleGroup toggleGroup, string style, GUIOption[] options);
@@ -97,10 +101,10 @@ namespace BansheeEngine
         private static extern void Internal_SetContent(IntPtr nativeInstance, GUIContent content);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_ToggleOn(IntPtr nativeInstance);
+        private static extern bool Internal_GetValue(IntPtr nativeInstance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_ToggleOff(IntPtr nativeInstance);
+        private static extern void Internal_SetValue(IntPtr nativeInstance, bool value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetTint(IntPtr nativeInstance, Color color);

@@ -316,7 +316,6 @@ namespace BansheeEngine
 		static const WString TreeViewExpandButtonOnNormal;
 		static const WString TreeViewExpandButtonOnHover;
 
-		static const WString TreeViewSelectionBackground;
 		static const WString TreeViewHighlightBackground;
 		static const WString TreeViewEditBox;
 
@@ -331,6 +330,7 @@ namespace BansheeEngine
 		static const WString ProgressBarBgTex;
 
 		static const WString SelectionAreaTex;
+		static const WString SelectionBgTex;
 
 		static const WString TextureDropTex;
 		static const WString TextureDropOnTex;

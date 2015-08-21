@@ -409,50 +409,50 @@ namespace BansheeEditor
             switch (EditorApplication.ActiveSceneTool)
             {
                 case SceneViewTool.View:
-                    viewButton.ToggleOn();
+                    viewButton.Value = true;
                     break;
                 case SceneViewTool.Move:
-                    moveButton.ToggleOn();
+                    moveButton.Value = true;
                     break;
                 case SceneViewTool.Rotate:
-                    rotateButton.ToggleOn();
+                    rotateButton.Value = true;
                     break;
                 case SceneViewTool.Scale:
-                    scaleButton.ToggleOn();
+                    scaleButton.Value = true;
                     break;
             }
 
             switch (EditorApplication.ActiveCoordinateMode)
             {
                 case HandleCoordinateMode.Local:
-                    localCoordButton.ToggleOn();
+                    localCoordButton.Value = true;
                     break;
                 case HandleCoordinateMode.World:
-                    worldCoordButton.ToggleOn();
+                    worldCoordButton.Value = true;
                     break;
             }
 
             switch (EditorApplication.ActivePivotMode)
             {
                 case HandlePivotMode.Center:
-                    centerButton.ToggleOn();
+                    centerButton.Value = true;
                     break;
                 case HandlePivotMode.Pivot:
-                    pivotButton.ToggleOn();
+                    pivotButton.Value = true;
                     break;
             }
 
             if (Handles.MoveHandleSnapActive)
-                moveSnapButton.ToggleOn();
+                moveSnapButton.Value = true;
             else
-                moveSnapButton.ToggleOff();
+                moveSnapButton.Value = false;
 
             moveSnapInput.Value = Handles.MoveSnapAmount;
 
             if (Handles.RotateHandleSnapActive)
-                rotateSnapButton.ToggleOn();
+                rotateSnapButton.Value = true;
             else
-                rotateSnapButton.ToggleOff();
+                rotateSnapButton.Value = false;
 
             moveSnapInput.Value = Handles.RotateSnapAmount.Degrees;
         }
