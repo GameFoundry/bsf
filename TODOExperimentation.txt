@@ -12,43 +12,59 @@ Lights need getLightMesh() method
 Load up and set up a test-bed with Ribek's scene
 Quantize buffer sizes so they're divideable by 8 when requesting them from RenderTexturePool
 
-Keep a list of all renderables per camera depending on their layer
- - This would be an optimization so I don't need to filter them every frame
- - I'd need to update this list when renderable is added/removed, when camera is added/removed and when layer is changed (camera's or renderable's)
+R11G11B10 and R10G10B10A2 formats haven't been tested
 
-Before any rendering is done generate separate render queues for all elements
- - Iterate over all elements valid for the camera and perform frustum culling
- - Initially this would be different queues for transparent & opaque, but later there might be more types
- - Store these queues per-camera
- - Do the same for lights (separate them by type most likely)
- - Later:
-  - Extend render queues so they also sort by material (if needed, it should be easy to change sort order)
-  - Materials should be transformed into a set of material diffs (e.g. only set new shader, buffer, texture or cbuffer
-    if they don't match the previous material)
-	 - i.e. some elements in the render queue would be renderable elements (with no material info) and others
-	   would be material diffs that change the state
+Make sure materials can generate unique "hash" values so I can quickly check if they're equal
+ - Generate unique ID for each shader (32bit)
+ - Limit state IDs to 10 bits
+ - Generate a combined 64bit hash value for the material using shader + 3 states
+
+Make GUI and Overlay render separately without using the main render queue
+ - Get rid of DrawList and make them render similar to how handles/gizmos do it
+ - They should render after everything else
+ - Disable depth test and depth write in their material
+ - Since most GUI elements share a material check if material changed from the last element and don't set new shaders/states otherwise
+   - (changing params and param buffers should still apply)
+   - Since I'm doing the rendering directly in GUIManager I can exactly control which states I modify
+
+Make scene grid rendering more akin to handle & gizmo rendering so I can remove the onRenderViewport callback
+ - Similar thing with dock manager
+
+Add material flag "transparent". 
+ - Priority is always applied within its transparent/opaque queue. Priority and sort order are kept as is. 
+ - Transparent flag just determines the rendering method. Later I can probably also add "animated" and similar.
+ - Depending on set flag populate two different render queues per camera (+ a special render queue for GUI and overlay)
+
+Rendering procedure should be:
+ - For each camera go over each renderable and determine if their layers match
+ - If they match do frustum culling
+ - Add renderables to opaque or transparent queue depending on material
+ - This should happen in renderAllCore before actual rendering starts
+ - When rendering bind gbuffer render targets and render opaque queue
+ - Unbind gbuffer and resolve to scene color
+ - Bind scene color and render transparent queue
+ - Resolve scene color to frame buffer (they could be the same target if no MSAA is used, and gamma correction is properly set)
+ - After rendering is done make sure to clear the queues so I don't hold invalid references
+
+Reduce state switching:
+ - Extend render queues so they compare material hash values and sort accordingly
+ - Add a flag that allows me to control whether the queue should prefer distance sort or material sort
+ - Extend entries output from render queue with a flag that signals that a material should be re-applied
+ - When rendering only apply new shaders & states when that flag is encountered
+ - Switch buffers, textures and sampler for each renderable (possibly ignoring static/per-frame/per-camera ones)
+
+Store RenderTargets per camera
+ - Only create it if camera is rendering some renderables
+ - If none are rendered clear the reference to free the targets
 
 Generate different RenderableController for each set of elements
  - Will likely want to rename current LitTexRenderableController to OpaqueSomething
  - Each controller would be connected to its own render queue (generated in above step)
  - Renderable controller should probably be notified when rendering starts/ends so it may bind gbuffer and/or other resoures.
 
-Create a class RenderTargets
- - ::create(CameraPtr)
- - ::bind (calls RenderTargetPool::get() and sets the render targets)
- - ::unbind (calls RenderTargetPool::free)
- - Holds references to PooledRenderTarget
-
-Store RenderTargets per camera
- - Only create it if camera is rendering some renderables
- - If none are rendered clear the reference to free the targets
-
-I sort rendering based on render targets so I don't need to rebind them
- - I should do something similar with GBuffers
- - First sort by GBuffers, then sort by output render targets
- - This means I'll need to find out what kind of gbuffers cameras need before rendering the camera
-   - Move the renderable by layer filtering in renderAll, or do it when renderers are updated (as described above)
-   - Don't actually allocate targets at this point to avoid allocating a lot of memory at once.
+Light queues:
+ - Will likely need to generate a set of visible lights per camera similar to renderables (separate them by type most likely)
+ - Will also need a set of renderables per light when rendering shadows
 
 --------------------------- DESIGN ---------------------------
 
@@ -67,6 +83,7 @@ How will cameras interact with the renderer? The cameras currently available sho
 Separate GUI rendering into a separate part to be rendered after gbuffer is resolved?
 
 Will likely need an easy way to determine supported feature set (likely just depending on shader model)
+
 Consider encapsulating shaders together with methods for setting their parameters (and possibly retrieving output)
  - So that external code doesn't need to know about its internal and do less work
  - This would contain a reference to the shader and its parameters

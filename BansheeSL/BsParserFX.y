@@ -112,7 +112,7 @@ void yyerror(YYLTYPE *locp, ParseState* parse_state, yyscan_t scanner, const cha
 %token TOKEN_AUTO TOKEN_ALIAS TOKEN_SHARED TOKEN_USAGE
 
 	/* Shader keywords */
-%token TOKEN_SEPARABLE TOKEN_QUEUE TOKEN_PRIORITY
+%token TOKEN_SEPARABLE TOKEN_QUEUE TOKEN_PRIORITY TOKEN_TRANSPARENT
 %token TOKEN_PARAMETERS TOKEN_BLOCKS TOKEN_TECHNIQUE
 
 	/* Technique keywords */
@@ -244,6 +244,7 @@ shader_option
 	| TOKEN_QUEUE '=' TOKEN_INTEGER ';'			{ $$.type = OT_Queue; $$.value.intValue = $3; }
 	| TOKEN_PRIORITY '=' TOKEN_INTEGER ';'		{ $$.type = OT_Priority; $$.value.intValue = $3; }
 	| TOKEN_INCLUDE '=' TOKEN_STRING ';'		{ $$.type = OT_Include; $$.value.strValue = $3; }
+	| TOKEN_TRANSPARENT '=' TOKEN_BOOLEAN ';'	{ $$.type = OT_Transparent; $$.value.intValue = $3; }
 	;
 
 	/* Technique */

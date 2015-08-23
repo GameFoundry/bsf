@@ -12,7 +12,7 @@ namespace BansheeEngine
 {
 	template<bool Core>
 	TSHADER_DESC<Core>::TSHADER_DESC()
-		:queuePriority(0), queueSortType(QueueSortType::None), separablePasses(false)
+		:queuePriority(0), queueSortType(QueueSortType::None), separablePasses(false), flags(0)
 	{
 
 	}

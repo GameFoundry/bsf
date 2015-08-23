@@ -530,6 +530,7 @@ namespace BansheeEngine
 			case OT_Separable:
 			case OT_Queue:
 			case OT_Priority:
+			case OT_Transparent:
 				nodeOptionsAdd(mergeInto->memContext, mergeInto->rootNode->options, option);
 				break;
 			case OT_Technique:
@@ -1587,6 +1588,9 @@ namespace BansheeEngine
 				break;
 			case OT_Priority:
 				shaderDesc.queuePriority = option->value.intValue;
+				break;
+			case OT_Transparent:
+				shaderDesc.flags |= (UINT32)ShaderFlags::Transparent;
 				break;
 			case OT_Technique:
 			{

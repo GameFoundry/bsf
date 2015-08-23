@@ -33,6 +33,7 @@
 #include "BsRenderBeastOptions.h"
 #include "BsSamplerOverrides.h"
 #include "BsLightInternal.h"
+#include "BsRenderTexturePool.h"
 
 using namespace std::placeholders;
 
@@ -70,6 +71,8 @@ namespace BansheeEngine
 		mCoreOptions = bs_shared_ptr_new<RenderBeastOptions>();
 		mLitTexHandler = bs_new<LitTexRenderableController>();
 
+		RenderTexturePool::startUp();
+
 		SPtr<ShaderCore> shader = createDefaultShader();
 		mDummyMaterial = MaterialCore::create(shader);
 	}
@@ -82,6 +85,8 @@ namespace BansheeEngine
 		mRenderTargets.clear();
 		mCameraData.clear();
 		mRenderables.clear();
+
+		RenderTexturePool::shutDown();
 
 		assert(mSamplerOverrides.empty());
 
@@ -270,12 +275,13 @@ namespace BansheeEngine
 			HSceneObject cameraSO = cameraData.second.sceneObject;
 
 			DrawListPtr drawList = bs_shared_ptr_new<DrawList>();
+			ViewportPtr viewport = camera->getViewport();
 
 			// Get GUI render operations
-			GUIManager::instance().render(camera->getViewport(), *drawList);
+			GUIManager::instance().render(viewport, *drawList);
 
 			// Get overlay render operations
-			OverlayManager::instance().render(camera->getViewport(), *drawList);
+			OverlayManager::instance().render(viewport, *drawList);
 
 			// Get any operations from hooked up callbacks
 			const Viewport* viewportRawPtr = camera->getViewport().get();

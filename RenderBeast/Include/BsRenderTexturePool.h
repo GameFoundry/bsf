@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BsRenderBeastPrerequisites.h"
+#include "BsModule.h"
 #include "BsPixelUtil.h"
 
 namespace BansheeEngine
@@ -15,7 +16,7 @@ namespace BansheeEngine
 		PooledRenderTexture(RenderTexturePool* pool);
 		~PooledRenderTexture();
 
-		SPtr<RenderTextureCore> texture;
+		SPtr<TextureCore> texture;
 
 	private:
 		friend class RenderTexturePool;
@@ -28,7 +29,7 @@ namespace BansheeEngine
 	 * @brief	Contains a pool of render textures meant to accommodate reuse of
 	 *			render textures of the same size and format.
 	 */
-	class RenderTexturePool
+	class RenderTexturePool : public Module<RenderTexturePool>
 	{
 	public:
 		~RenderTexturePool();

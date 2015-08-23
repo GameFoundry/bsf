@@ -47,6 +47,7 @@ enum tagOptionType
 	OT_Separable,
 	OT_Priority,
 	OT_Queue,
+	OT_Transparent,
 	OT_Technique,
 	OT_Renderer,
 	OT_Language,

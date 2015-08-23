@@ -90,8 +90,12 @@ namespace BansheeEngine
 		PF_D32 = 31,
 		// Depth format, 16bits
 		PF_D16 = 32,
+		// 32-bit float format, 11 bits (float) for red, 11 bits (float) for green, 10 bits (float) for blue. Framebuffer only format, not for CPU use.
+		PF_FLOAT_R11G11B10 = 33,
+		// 32-bit unsigned normalized format, 10 bits (float) for red, 10 bits (float) for green, 10 bits (float) for blue, and two bits for alpha. Framebuffer only format, not for CPU use.
+		PF_UNORM_R10G10B10A2 = 34,
 		// Number of pixel formats currently defined
-        PF_COUNT = 33
+        PF_COUNT = 35
     };
 	typedef Vector<PixelFormat> PixelFormatList;
 
@@ -122,6 +126,8 @@ namespace BansheeEngine
         PCT_SHORT = 1,   /**< Short per component */
         PCT_FLOAT16 = 2, /**< 16 bit float per component */
         PCT_FLOAT32 = 3, /**< 32 bit float per component */
+		PCT_PACKED_R11G11B10 = 4, /**< 11 bits for first two components, 10 for third component. */
+		PCT_PACKED_R10G10B10A2 = 5, /**< 10 bits for first three components, 2 bits for last component */
         PCT_COUNT = 4    /**< Number of pixel types */
     };
     

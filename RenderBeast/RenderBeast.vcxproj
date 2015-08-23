@@ -244,6 +244,7 @@
     <ClInclude Include="Include\BsRenderBeastFactory.h" />
     <ClInclude Include="Include\BsRenderBeastPrerequisites.h" />
     <ClInclude Include="Include\BsRenderBeastOptions.h" />
+    <ClInclude Include="Include\BsRenderTargets.h" />
     <ClInclude Include="Include\BsRenderTexturePool.h" />
     <ClInclude Include="Include\BsSamplerOverrides.h" />
   </ItemGroup>
@@ -252,6 +253,7 @@
     <ClCompile Include="Source\BsRenderBeast.cpp" />
     <ClCompile Include="Source\BsRenderBeastFactory.cpp" />
     <ClCompile Include="Source\BsRenderBeastPlugin.cpp" />
+    <ClCompile Include="Source\BsRenderTargets.cpp" />
     <ClCompile Include="Source\BsRenderTexturePool.cpp" />
     <ClCompile Include="Source\BsSamplerOverrides.cpp" />
   </ItemGroup>

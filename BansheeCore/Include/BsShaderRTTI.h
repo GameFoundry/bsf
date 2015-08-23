@@ -235,6 +235,9 @@ namespace BansheeEngine
 		bool& getAllowSeparablePasses(Shader* obj) { return obj->mDesc.separablePasses; }
 		void setAllowSeparablePasses(Shader* obj, bool& value) { obj->mDesc.separablePasses = value; }
 
+		UINT32& getFlags(Shader* obj) { return obj->mDesc.flags; }
+		void setFlags(Shader* obj, UINT32& value) { obj->mDesc.flags = value; }
+
 		Vector<UINT8>& getDataDefaultValues(Shader* obj) { return obj->mDesc.dataDefaultValues; }
 		void setDataDefaultValues(Shader* obj, Vector<UINT8>& value) { obj->mDesc.dataDefaultValues = value; }
 
@@ -275,21 +278,23 @@ namespace BansheeEngine
 				&ShaderRTTI::setDefaultTexture, &ShaderRTTI::setDefaultTextureArraySize);
 			addReflectablePtrArrayField("mSamplerDefaultValues", 12, &ShaderRTTI::getDefaultSampler, &ShaderRTTI::getDefaultSamplerArraySize,
 				&ShaderRTTI::setDefaultSampler, &ShaderRTTI::setDefaultSamplerArraySize);
+
+			addPlainField("mFlags", 13, &ShaderRTTI::getFlags, &ShaderRTTI::setFlags);
 		}
 
-		virtual void onDeserializationEnded(IReflectable* obj)
+		virtual void onDeserializationEnded(IReflectable* obj) override
 		{
 			Shader* shader = static_cast<Shader*>(obj);
 			shader->initialize();
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "Shader";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_Shader;
 		}

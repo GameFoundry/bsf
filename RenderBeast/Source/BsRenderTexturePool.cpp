@@ -32,16 +32,10 @@ namespace BansheeEngine
 			if (!textureData->mIsFree)
 				continue;
 
-			SPtr<TextureCore> textureCore;
-			if (!depth)
-				textureCore = textureData->texture->getBindableColorTexture(); 
-			else
-				textureCore = textureData->texture->getBindableDepthStencilTexture();
-
-			if (textureCore == nullptr)
+			if (textureData->texture == nullptr)
 				continue;
 
-			if (matches(textureCore, format, width, height, hwGamma, samples))
+			if (matches(textureData->texture, format, width, height, hwGamma, samples))
 			{
 				textureData->mIsFree = false;
 				return textureData;
@@ -51,19 +45,9 @@ namespace BansheeEngine
 		SPtr<PooledRenderTexture> newTextureData = bs_shared_ptr_new<PooledRenderTexture>(this);
 		_registerTexture(newTextureData);
 
-		RENDER_SURFACE_CORE_DESC surfaceDesc;
-		surfaceDesc.texture = TextureCoreManager::instance().createTexture(TEX_TYPE_2D, width, height, 1, 0, 
+		newTextureData->texture = TextureCoreManager::instance().createTexture(TEX_TYPE_2D, width, height, 1, 0,
 			format, depth ? TU_DEPTHSTENCIL : TU_RENDERTARGET, hwGamma, samples);
-		surfaceDesc.face = 0;
-		surfaceDesc.mipLevel = 0;
-
-		RENDER_TEXTURE_CORE_DESC desc;
-		if (!depth)
-			desc.colorSurface = surfaceDesc;
-		else
-			desc.depthStencilSurface = surfaceDesc;
-
-		newTextureData->texture = TextureCoreManager::instance().createRenderTexture(desc);
+		
 		return newTextureData;
 	}
 

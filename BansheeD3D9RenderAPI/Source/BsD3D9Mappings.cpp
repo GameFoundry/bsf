@@ -455,6 +455,8 @@ namespace BansheeEngine
 			return PF_D32;
 		case D3DFMT_D16:
 			return PF_D16;
+		case D3DFMT_A2B10G10R10:
+			return PF_UNORM_R10G10B10A2;
 		default:
 			return PF_UNKNOWN;
 		}
@@ -499,6 +501,8 @@ namespace BansheeEngine
 			return D3DFMT_D32F_LOCKABLE;
 		case PF_D16:
 			return D3DFMT_D16;
+		case PF_UNORM_R10G10B10A2:
+			return D3DFMT_A2B10G10R10;
 		case PF_UNKNOWN:
 		default:
 			return D3DFMT_UNKNOWN;

@@ -43,6 +43,10 @@ namespace BansheeEngine
                 return GL_RGB;
             case PF_FLOAT32_RGBA:
                 return GL_RGBA;
+			case PF_FLOAT_R11G11B10:
+				return GL_RGB;
+			case PF_UNORM_R10G10B10A2:
+				return GL_RGBA;
             case PF_BC1:
             case PF_BC1a:
             case PF_BC3:
@@ -88,6 +92,10 @@ namespace BansheeEngine
             case PF_FLOAT32_RGB:
             case PF_FLOAT32_RGBA:
                 return GL_FLOAT;
+			case PF_FLOAT_R11G11B10:
+				return GL_UNSIGNED_INT_10F_11F_11F_REV;
+			case PF_UNORM_R10G10B10A2:
+				return GL_UNSIGNED_INT_2_10_10_10_REV;
             default:
                 return 0;
         }
@@ -194,6 +202,10 @@ namespace BansheeEngine
 				return GL_DEPTH24_STENCIL8;
 			case PF_D32_S8X24:
 				return GL_DEPTH32F_STENCIL8;
+			case PF_FLOAT_R11G11B10:
+				return GL_R11F_G11F_B10F;
+			case PF_UNORM_R10G10B10A2:
+				return GL_RGB10_A2;
             default:
                 return GL_NONE;
         }
@@ -291,6 +303,10 @@ namespace BansheeEngine
 			return PF_D24S8;
 		case GL_DEPTH32F_STENCIL8:
 			return PF_D32_S8X24;
+		case GL_RGB10_A2:
+			return PF_UNORM_R10G10B10A2;
+		case GL_R11F_G11F_B10F:
+			return PF_FLOAT_R11G11B10;
 		default:
 			return PF_R8G8B8A8;
 		};
@@ -350,6 +366,10 @@ namespace BansheeEngine
 			return PF_D24S8;
 		case PF_D32_S8X24:
 			return PF_D32_S8X24;
+		case PF_UNORM_R10G10B10A2:
+			return PF_UNORM_R10G10B10A2;
+		case PF_FLOAT_R11G11B10:
+			return PF_FLOAT_R11G11B10;
 		default:
 			return PF_UNKNOWN;
 		}

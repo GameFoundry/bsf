@@ -74,6 +74,7 @@ Block			{ return TOKEN_PARAMSBLOCK; }
 Separable		{ return TOKEN_SEPARABLE; }
 Queue			{ return TOKEN_QUEUE; }
 Priority		{ return TOKEN_PRIORITY; }
+Transparent		{ return TOKEN_TRANSPARENT; }
 Technique		{ return TOKEN_TECHNIQUE; }
 Parameters		{ return TOKEN_PARAMETERS; }
 Blocks			{ return TOKEN_BLOCKS; }

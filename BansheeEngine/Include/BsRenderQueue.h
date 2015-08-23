@@ -43,6 +43,7 @@ namespace BansheeEngine
 
 	public:
 		RenderQueue();
+		virtual ~RenderQueue() { }
 
 		/**
 		 * @brief	Adds a new entry to the render queue.

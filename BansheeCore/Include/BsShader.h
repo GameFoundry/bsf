@@ -182,6 +182,11 @@ namespace BansheeEngine
 		 */
 		bool separablePasses;
 
+		/**
+		 * @brief	Flags that let the renderer know how should it interpret the shader.
+		 */
+		UINT32 flags;
+
 		Map<String, SHADER_DATA_PARAM_DESC> dataParams;
 		Map<String, SHADER_OBJECT_PARAM_DESC> textureParams;
 		Map<String, SHADER_OBJECT_PARAM_DESC> bufferParams;
@@ -263,6 +268,12 @@ namespace BansheeEngine
 		 * @see		SHADER_DESC::separablePasses
 		 */
 		bool getAllowSeparablePasses() const { return mDesc.separablePasses; }
+
+		/**
+		 * @brief	Returns flags that control how the renderer interprets the shader.
+		 *			Actual interpretation of the flags depends on the active renderer.
+		 */
+		UINT32 getFlags() const { return mDesc.flags; }
 
 		/**
 		 * @brief	Returns type of the parameter with the specified name. Throws exception if

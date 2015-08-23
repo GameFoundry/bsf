@@ -7,6 +7,7 @@ OptionInfo OPTION_LOOKUP[] =
 	{ OT_Separable, ODT_Bool },
 	{ OT_Priority, ODT_Int },
 	{ OT_Queue, ODT_Int },
+	{ OT_Transparent, ODT_Bool },
 	{ OT_Technique, ODT_Complex }, 
 	{ OT_Renderer, ODT_String }, 
 	{ OT_Language, ODT_String }, 

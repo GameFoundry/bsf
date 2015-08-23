@@ -796,6 +796,34 @@ namespace BansheeEngine
 		/* Masks and shifts */
 		0, 0, 0, 0, 0, 0, 0, 0
 		}, 
+	//-----------------------------------------------------------------------
+		{ "PF_FLOAT_R11G11B10",
+		/* Bytes per element */
+		4,
+		/* Flags */
+		PFF_FLOAT,
+		/* Component type and count */
+		PCT_PACKED_R11G11B10, 1,
+		/* rbits, gbits, bbits, abits */
+		11, 11, 10, 0,
+		/* Masks and shifts */
+		0x000007FF, 0x003FF800, 0xFFC00000, 0,
+		0, 11, 22, 0
+		},
+	//-----------------------------------------------------------------------
+		{ "PF_UNORM_R10G10B10A2",
+		/* Bytes per element */
+		4,
+		/* Flags */
+		PFF_FLOAT | PFF_HASALPHA,
+		/* Component type and count */
+		PCT_PACKED_R10G10B10A2, 1,
+		/* rbits, gbits, bbits, abits */
+		10, 10, 10, 2,
+		/* Masks and shifts */
+		0x000003FF, 0x000FFC00, 0x3FF00000, 0xC0000000,
+		0, 10, 20, 30
+		},
     };
 
     static inline const PixelFormatDescription &getDescriptionFor(const PixelFormat fmt)
@@ -815,10 +843,10 @@ namespace BansheeEngine
 			:buffer(buffer), bufferWritePos(buffer), bufferEnd(buffer + sizeBytes)
 		{ }
 
-		virtual void beginImage(int size, int width, int height, int depth, int face, int miplevel)
+		virtual void beginImage(int size, int width, int height, int depth, int face, int miplevel) override
 		{ }
 
-		virtual bool writeData(const void* data, int size)
+		virtual bool writeData(const void* data, int size) override
 		{
 			assert((bufferWritePos + size) <= bufferEnd);
 			memcpy(bufferWritePos, data, size);
