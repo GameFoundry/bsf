@@ -30,11 +30,6 @@ Make GUI and Overlay render separately without using the main render queue
 Make scene grid rendering more akin to handle & gizmo rendering so I can remove the onRenderViewport callback
  - Similar thing with dock manager
 
-Add material flag "transparent". 
- - Priority is always applied within its transparent/opaque queue. Priority and sort order are kept as is. 
- - Transparent flag just determines the rendering method. Later I can probably also add "animated" and similar.
- - Depending on set flag populate two different render queues per camera (+ a special render queue for GUI and overlay)
-
 Rendering procedure should be:
  - For each camera go over each renderable and determine if their layers match
  - If they match do frustum culling
@@ -67,8 +62,6 @@ Light queues:
  - Will also need a set of renderables per light when rendering shadows
 
 --------------------------- DESIGN ---------------------------
-
-Issue with state caching: State caching doesn't work when deserializing
 
 How will cameras interact with the renderer? The cameras currently available shouldn't have depth buffers
  - Need to modify RenderWindow so it doesn't create depth buffers

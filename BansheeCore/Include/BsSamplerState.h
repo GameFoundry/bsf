@@ -136,6 +136,16 @@ namespace BansheeEngine
 
 		SamplerStateCore(const SAMPLER_STATE_DESC& desc);
 
+		/**
+		 * @copydoc	CoreObjectCore::initialize
+		 */
+		void initialize() override;
+
+		/**
+		 * @brief	Creates any API-specific state objects.
+		 */
+		virtual void createInternal() { }
+
 		SamplerProperties mProperties;
 	};
 

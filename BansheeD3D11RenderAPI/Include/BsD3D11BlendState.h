@@ -22,12 +22,12 @@ namespace BansheeEngine
 	protected:
 		friend class D3D11RenderStateCoreManager;
 
-		D3D11BlendStateCore(const BLEND_STATE_DESC& desc);
+		D3D11BlendStateCore(const BLEND_STATE_DESC& desc, UINT32 id);
 
 		/**
-		 * @copydoc BlendStateCore::initialize
+		 * @copydoc BlendStateCore::createInternal
 		 */
-		void initialize();
+		void createInternal() override;
 
 		ID3D11BlendState* mBlendState;
 	};

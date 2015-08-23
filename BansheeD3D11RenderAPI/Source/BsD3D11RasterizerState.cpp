@@ -6,8 +6,8 @@
 
 namespace BansheeEngine
 {
-	D3D11RasterizerStateCore::D3D11RasterizerStateCore(const RASTERIZER_STATE_DESC& desc)
-		:RasterizerStateCore(desc), mRasterizerState(nullptr)
+	D3D11RasterizerStateCore::D3D11RasterizerStateCore(const RASTERIZER_STATE_DESC& desc, UINT32 id)
+		:RasterizerStateCore(desc, id), mRasterizerState(nullptr)
 	{ }
 
 	D3D11RasterizerStateCore::~D3D11RasterizerStateCore()
@@ -17,7 +17,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_RasterizerState);
 	}
 
-	void D3D11RasterizerStateCore::initialize()
+	void D3D11RasterizerStateCore::createInternal()
 	{
 		INT32 scaledDepthBias = Math::floorToInt(-mProperties.getDepthBias() * float((1 << 24))); // Note: Assumes 24-bit depth buffer
 
@@ -46,6 +46,6 @@ namespace BansheeEngine
 		}
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_RasterizerState);
-		RasterizerStateCore::initialize();
+		RasterizerStateCore::createInternal();
 	}
 }

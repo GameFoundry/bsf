@@ -149,6 +149,11 @@ namespace BansheeEngine
 		const RasterizerProperties& getProperties() const;
 
 		/**
+		 * @brief	Returns a unique state ID. Only the lowest 10 bits are used.
+		 */
+		UINT32 getId() const { return mId; }
+
+		/**
 		 * @brief	Returns the default rasterizer state.
 		 */
 		static const SPtr<RasterizerStateCore>& getDefault();
@@ -156,9 +161,20 @@ namespace BansheeEngine
 	protected:
 		friend class RenderStateCoreManager;
 
-		RasterizerStateCore(const RASTERIZER_STATE_DESC& desc);
+		RasterizerStateCore(const RASTERIZER_STATE_DESC& desc, UINT32 id);
+
+		/**
+		 * @copydoc	CoreObjectCore::initialize
+		 */
+		void initialize() override;
+
+		/**
+		 * @brief	Creates any API-specific state objects.
+		 */
+		virtual void createInternal() { }
 
 		RasterizerProperties mProperties;
+		UINT32 mId;
 	};
 
 	/**

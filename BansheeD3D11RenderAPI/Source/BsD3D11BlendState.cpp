@@ -6,8 +6,8 @@
 
 namespace BansheeEngine
 {
-	D3D11BlendStateCore::D3D11BlendStateCore(const BLEND_STATE_DESC& desc)
-		:BlendStateCore(desc), mBlendState(nullptr)
+	D3D11BlendStateCore::D3D11BlendStateCore(const BLEND_STATE_DESC& desc, UINT32 id)
+		:BlendStateCore(desc, id), mBlendState(nullptr)
 	{ }
 
 	D3D11BlendStateCore::~D3D11BlendStateCore()
@@ -17,7 +17,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_BlendState);
 	}
 
-	void D3D11BlendStateCore::initialize()
+	void D3D11BlendStateCore::createInternal()
 	{
 		D3D11_BLEND_DESC blendStateDesc;
 		ZeroMemory(&blendStateDesc, sizeof(D3D11_BLEND_DESC));
@@ -49,6 +49,6 @@ namespace BansheeEngine
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_BlendState);
 
-		BlendStateCore::initialize();
+		BlendStateCore::createInternal();
 	}
 }

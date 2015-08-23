@@ -14,25 +14,25 @@ namespace BansheeEngine
 		return ret;
 	}
 
-	SPtr<BlendStateCore> D3D11RenderStateCoreManager::createBlendStateInternal(const BLEND_STATE_DESC& desc) const
+	SPtr<BlendStateCore> D3D11RenderStateCoreManager::createBlendStateInternal(const BLEND_STATE_DESC& desc, UINT32 id) const
 	{
-		SPtr<BlendStateCore> ret = bs_shared_ptr<D3D11BlendStateCore>(new (bs_alloc<D3D11BlendStateCore>()) D3D11BlendStateCore(desc));
+		SPtr<BlendStateCore> ret = bs_shared_ptr<D3D11BlendStateCore>(new (bs_alloc<D3D11BlendStateCore>()) D3D11BlendStateCore(desc, id));
 		ret->_setThisPtr(ret);
 
 		return ret;
 	}
 
-	SPtr<RasterizerStateCore> D3D11RenderStateCoreManager::createRasterizerStateInternal(const RASTERIZER_STATE_DESC& desc) const
+	SPtr<RasterizerStateCore> D3D11RenderStateCoreManager::createRasterizerStateInternal(const RASTERIZER_STATE_DESC& desc, UINT32 id) const
 	{
-		SPtr<RasterizerStateCore> ret = bs_shared_ptr<D3D11RasterizerStateCore>(new (bs_alloc<D3D11RasterizerStateCore>()) D3D11RasterizerStateCore(desc));
+		SPtr<RasterizerStateCore> ret = bs_shared_ptr<D3D11RasterizerStateCore>(new (bs_alloc<D3D11RasterizerStateCore>()) D3D11RasterizerStateCore(desc, id));
 		ret->_setThisPtr(ret);
 
 		return ret;
 	}
 
-	SPtr<DepthStencilStateCore> D3D11RenderStateCoreManager::createDepthStencilStateInternal(const DEPTH_STENCIL_STATE_DESC& desc) const
+	SPtr<DepthStencilStateCore> D3D11RenderStateCoreManager::createDepthStencilStateInternal(const DEPTH_STENCIL_STATE_DESC& desc, UINT32 id) const
 	{
-		SPtr<DepthStencilStateCore> ret = bs_shared_ptr<D3D11DepthStencilStateCore>(new (bs_alloc<D3D11DepthStencilStateCore>()) D3D11DepthStencilStateCore(desc));
+		SPtr<DepthStencilStateCore> ret = bs_shared_ptr<D3D11DepthStencilStateCore>(new (bs_alloc<D3D11DepthStencilStateCore>()) D3D11DepthStencilStateCore(desc, id));
 		ret->_setThisPtr(ret);
 
 		return ret;

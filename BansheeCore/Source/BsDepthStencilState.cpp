@@ -31,15 +31,26 @@ namespace BansheeEngine
 
 	}
 
-	DepthStencilStateCore::DepthStencilStateCore(const DEPTH_STENCIL_STATE_DESC& desc)
-		: mProperties(desc)
+	DepthStencilStateCore::DepthStencilStateCore(const DEPTH_STENCIL_STATE_DESC& desc, UINT32 id)
+		: mProperties(desc), mId(id)
 	{
 
 	}
 
 	DepthStencilStateCore::~DepthStencilStateCore()
 	{
-		RenderStateCoreManager::instance().notifyDepthStencilStateDestroyed(mProperties.mData);
+
+	}
+
+	void DepthStencilStateCore::initialize()
+	{
+		// Since we cache states it's possible this object was already initialized
+		// (i.e. multiple sim-states can share a single core-state)
+		if (isInitialized())
+			return;
+
+		createInternal();
+		CoreObjectCore::initialize();
 	}
 
 	const DepthStencilProperties& DepthStencilStateCore::getProperties() const
@@ -60,7 +71,7 @@ namespace BansheeEngine
 
 	DepthStencilState::~DepthStencilState()
 	{
-		RenderStateManager::instance().notifyDepthStencilStateDestroyed(mProperties.mData);
+
 	}
 
 	SPtr<DepthStencilStateCore> DepthStencilState::getCore() const
@@ -70,7 +81,7 @@ namespace BansheeEngine
 
 	SPtr<CoreObjectCore> DepthStencilState::createCore() const
 	{
-		return RenderStateCoreManager::instance().createDepthStencilStateInternal(mProperties.mData);
+		return RenderStateCoreManager::instance()._createDepthStencilState(mProperties.mData);
 	}
 
 	const DepthStencilStatePtr& DepthStencilState::getDefault()

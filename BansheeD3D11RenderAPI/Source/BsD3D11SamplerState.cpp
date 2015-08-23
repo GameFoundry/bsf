@@ -17,7 +17,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_SamplerState);
 	}
 
-	void D3D11SamplerStateCore::initialize()
+	void D3D11SamplerStateCore::createInternal()
 	{
 		D3D11_SAMPLER_DESC samplerState;
 		ZeroMemory(&samplerState, sizeof(D3D11_SAMPLER_DESC));
@@ -104,6 +104,6 @@ namespace BansheeEngine
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_SamplerState);
 
-		SamplerStateCore::initialize();
+		SamplerStateCore::createInternal();
 	}
 }

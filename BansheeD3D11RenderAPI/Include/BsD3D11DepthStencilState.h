@@ -22,12 +22,12 @@ namespace BansheeEngine
 	protected:
 		friend class D3D11RenderStateCoreManager;
 
-		D3D11DepthStencilStateCore(const DEPTH_STENCIL_STATE_DESC& desc);
+		D3D11DepthStencilStateCore(const DEPTH_STENCIL_STATE_DESC& desc, UINT32 id);
 
 		/**
-		 * @copydoc DepthStencilStateCore::initialize()
+		 * @copydoc DepthStencilStateCore::createInternal()
 		 */
-		void initialize();
+		void createInternal() override;
 
 		ID3D11DepthStencilState* mDepthStencilState;
 	};

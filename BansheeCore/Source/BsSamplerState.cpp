@@ -56,6 +56,17 @@ namespace BansheeEngine
 		RenderStateCoreManager::instance().notifySamplerStateDestroyed(mProperties.mData);
 	}
 
+	void SamplerStateCore::initialize()
+	{
+		// Since we cache states it's possible this object was already initialized
+		// (i.e. multiple sim-states can share a single core-state)
+		if (isInitialized())
+			return;
+
+		createInternal();
+		CoreObjectCore::initialize();
+	}
+
 	const SamplerProperties& SamplerStateCore::getProperties() const
 	{
 		return mProperties;
@@ -74,7 +85,7 @@ namespace BansheeEngine
 
 	SamplerState::~SamplerState()
 	{
-		RenderStateManager::instance().notifySamplerStateDestroyed(mProperties.mData);
+
 	}
 
 	SPtr<SamplerStateCore> SamplerState::getCore() const
@@ -84,7 +95,7 @@ namespace BansheeEngine
 
 	SPtr<CoreObjectCore> SamplerState::createCore() const
 	{
-		return RenderStateCoreManager::instance().createSamplerStateInternal(mProperties.mData);
+		return RenderStateCoreManager::instance()._createSamplerState(mProperties.mData);
 	}
 
 	SamplerStatePtr SamplerState::create(const SAMPLER_STATE_DESC& desc)

@@ -6,8 +6,8 @@
 
 namespace BansheeEngine
 {
-	D3D11DepthStencilStateCore::D3D11DepthStencilStateCore(const DEPTH_STENCIL_STATE_DESC& desc)
-		:DepthStencilStateCore(desc), mDepthStencilState(nullptr)
+	D3D11DepthStencilStateCore::D3D11DepthStencilStateCore(const DEPTH_STENCIL_STATE_DESC& desc, UINT32 id)
+		:DepthStencilStateCore(desc, id), mDepthStencilState(nullptr)
 	{ }
 
 	D3D11DepthStencilStateCore::~D3D11DepthStencilStateCore()
@@ -17,7 +17,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_DepthStencilState);
 	}
 
-	void D3D11DepthStencilStateCore::initialize()
+	void D3D11DepthStencilStateCore::createInternal()
 	{
 		D3D11_DEPTH_STENCIL_DESC depthStencilState;
 		ZeroMemory(&depthStencilState, sizeof(D3D11_DEPTH_STENCIL_DESC));
@@ -49,6 +49,6 @@ namespace BansheeEngine
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_DepthStencilState);
 
-		DepthStencilStateCore::initialize();
+		DepthStencilStateCore::createInternal();
 	}
 }

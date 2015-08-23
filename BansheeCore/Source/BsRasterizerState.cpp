@@ -23,15 +23,26 @@ namespace BansheeEngine
 		:mData(desc), mHash(RasterizerState::generateHash(desc))
 	{ }
 
-	RasterizerStateCore::RasterizerStateCore(const RASTERIZER_STATE_DESC& desc)
-		: mProperties(desc)
+	RasterizerStateCore::RasterizerStateCore(const RASTERIZER_STATE_DESC& desc, UINT32 id)
+		: mProperties(desc), mId(id)
 	{
 
 	}
 
 	RasterizerStateCore::~RasterizerStateCore()
 	{
-		RenderStateCoreManager::instance().notifyRasterizerStateDestroyed(mProperties.mData);
+
+	}
+
+	void RasterizerStateCore::initialize()
+	{
+		// Since we cache states it's possible this object was already initialized
+		// (i.e. multiple sim-states can share a single core-state)
+		if (isInitialized())
+			return;
+
+		createInternal();
+		CoreObjectCore::initialize();
 	}
 
 	const RasterizerProperties& RasterizerStateCore::getProperties() const
@@ -52,7 +63,7 @@ namespace BansheeEngine
 
 	RasterizerState::~RasterizerState()
 	{
-		RenderStateManager::instance().notifyRasterizerStateDestroyed(mProperties.mData);
+
 	}
 
 	SPtr<RasterizerStateCore> RasterizerState::getCore() const
@@ -62,7 +73,7 @@ namespace BansheeEngine
 
 	SPtr<CoreObjectCore> RasterizerState::createCore() const
 	{
-		return RenderStateCoreManager::instance().createRasterizerStateInternal(mProperties.mData);
+		return RenderStateCoreManager::instance()._createRasterizerState(mProperties.mData);
 	}
 
 	const RasterizerProperties& RasterizerState::getProperties() const

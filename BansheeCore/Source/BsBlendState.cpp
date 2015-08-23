@@ -94,15 +94,26 @@ namespace BansheeEngine
 		return mData.renderTargetDesc[renderTargetIdx].renderTargetWriteMask;
 	}
 
-	BlendStateCore::BlendStateCore(const BLEND_STATE_DESC& desc)
-		:mProperties(desc)
+	BlendStateCore::BlendStateCore(const BLEND_STATE_DESC& desc, UINT32 id)
+		:mProperties(desc), mId(id)
 	{
 
 	}
 
 	BlendStateCore::~BlendStateCore()
 	{
-		RenderStateCoreManager::instance().notifyBlendStateDestroyed(mProperties.mData);
+
+	}
+
+	void BlendStateCore::initialize()
+	{
+		// Since we cache states it's possible this object was already initialized
+		// (i.e. multiple sim-states can share a single core-state)
+		if (isInitialized())
+			return;
+
+		createInternal();
+		CoreObjectCore::initialize();
 	}
 
 	const BlendProperties& BlendStateCore::getProperties() const
@@ -121,7 +132,7 @@ namespace BansheeEngine
 
 	BlendState::~BlendState()
 	{
-		RenderStateManager::instance().notifyBlendStateDestroyed(mProperties.mData);
+
 	}
 
 	SPtr<BlendStateCore> BlendState::getCore() const
@@ -131,7 +142,7 @@ namespace BansheeEngine
 
 	SPtr<CoreObjectCore> BlendState::createCore() const
 	{
-		return RenderStateCoreManager::instance().createBlendStateInternal(mProperties.mData);
+		return RenderStateCoreManager::instance()._createBlendState(mProperties.mData);
 	}
 
 	const BlendProperties& BlendState::getProperties() const

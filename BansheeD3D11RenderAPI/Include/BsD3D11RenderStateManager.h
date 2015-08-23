@@ -19,16 +19,16 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	RenderStateCoreManager::createBlendStateInternal
 		 */
-		virtual SPtr<BlendStateCore> createBlendStateInternal(const BLEND_STATE_DESC& desc) const override;
+		virtual SPtr<BlendStateCore> createBlendStateInternal(const BLEND_STATE_DESC& desc, UINT32 id) const override;
 
 		/**
 		 * @copydoc	RenderStateCoreManager::createRasterizerStateInternal
 		 */
-		virtual SPtr<RasterizerStateCore> createRasterizerStateInternal(const RASTERIZER_STATE_DESC& desc) const override;
+		virtual SPtr<RasterizerStateCore> createRasterizerStateInternal(const RASTERIZER_STATE_DESC& desc, UINT32 id) const override;
 
 		/**
 		 * @copydoc	RenderStateCoreManager::createDepthStencilStateInternal
 		 */
-		virtual SPtr<DepthStencilStateCore> createDepthStencilStateInternal(const DEPTH_STENCIL_STATE_DESC& desc) const override;
+		virtual SPtr<DepthStencilStateCore> createDepthStencilStateInternal(const DEPTH_STENCIL_STATE_DESC& desc, UINT32 id) const override;
 	};
 }
