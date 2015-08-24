@@ -1,16 +1,7 @@
 #include "BsScriptEnginePrerequisites.h"
-#include "BsMonoManager.h"
-#include "BsMonoAssembly.h"
-#include "BsScriptAssemblyManager.h"
-#include "BsScriptResourceManager.h"
-#include "BsScriptGameObjectManager.h"
-#include "BsManagedResourceManager.h"
-#include "BsScriptManager.h"
-#include "BsScriptInput.h"
-#include "BsScriptVirtualInput.h"
 #include "BsScriptObjectManager.h"
-#include "BsGameResourceManager.h"
-#include "BsApplication.h"
+#include "BsEngineScriptLibrary.h"
+#include "BsScriptManager.h"
 
 namespace BansheeEngine
 {
@@ -22,25 +13,8 @@ namespace BansheeEngine
 
 	extern "C" BS_SCR_BE_EXPORT void* loadPlugin()
 	{
-		Path engineAssemblyPath = gApplication().getEngineAssemblyPath();
-		const String ASSEMBLY_ENTRY_POINT = "Program::Start";
-
-		MonoAssembly& bansheeEngineAssembly = MonoManager::instance().loadAssembly(engineAssemblyPath.toString(), ENGINE_ASSEMBLY);
-
-		// TODO - Load Game assembly (gApplication().getGameAssemblyPath())
-
-		GameResourceManager::startUp();
-		ScriptObjectManager::startUp();
-		ManagedResourceManager::startUp();
-		ScriptAssemblyManager::startUp();
-		ScriptResourceManager::startUp();
-		ScriptGameObjectManager::startUp();
-		ScriptInput::startUp();
-		ScriptVirtualInput::startUp();
-
-		ScriptAssemblyManager::instance().loadAssemblyInfo(ENGINE_ASSEMBLY);
-
-		bansheeEngineAssembly.invoke(ASSEMBLY_ENTRY_POINT);
+		SPtr<EngineScriptLibrary> library = bs_shared_ptr_new<EngineScriptLibrary>();
+		ScriptManager::instance()._setScriptLibrary(library);
 
 		return nullptr;
 	}
@@ -48,20 +22,5 @@ namespace BansheeEngine
 	extern "C" BS_SCR_BE_EXPORT void updatePlugin()
 	{
 		ScriptObjectManager::instance().update();
-	}
-
-	extern "C" BS_SCR_BE_EXPORT void unloadPlugin()
-	{
-		ScriptVirtualInput::shutDown();
-		ScriptInput::shutDown();
-		ManagedResourceManager::shutDown();
-		ScriptManager::instance().destroy();
-		ScriptObjectManager::instance().processFinalizedObjects();
-
-		ScriptGameObjectManager::shutDown();
-		ScriptResourceManager::shutDown();
-		ScriptAssemblyManager::shutDown();
-		ScriptObjectManager::shutDown();
-		GameResourceManager::shutDown();
 	}
 }

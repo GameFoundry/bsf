@@ -84,7 +84,6 @@ namespace BansheeEngine
 		RenderStateManager::shutDown();
 
 		RendererManager::shutDown();
-		shutdownPlugin(mRendererPlugin);
 
 		// All CoreObject related modules should be shut down now. They have likely queued CoreObjects for destruction, so
 		// we need to wait for those objects to get destroyed before continuing.
@@ -350,19 +349,8 @@ namespace BansheeEngine
 		if(unloadPluginFunc != nullptr)
 			unloadPluginFunc();
 
-		gDynLibManager().unload(library);
-	}
-
-	void CoreApplication::shutdownPlugin(DynLib* library)
-	{
-		typedef void(*ShutdownPluginFunc)();
-
-		ShutdownPluginFunc shutdownPluginFunc = (ShutdownPluginFunc)library->getSymbol("shutdownPlugin");
-
-		if (shutdownPluginFunc != nullptr)
-			shutdownPluginFunc();
-
 		mPluginUpdateFunctions.erase(library);
+		gDynLibManager().unload(library);
 	}
 
 	ShaderIncludeHandlerPtr CoreApplication::getShaderIncludeHandler() const

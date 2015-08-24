@@ -90,6 +90,16 @@ namespace BansheeEngine
 		 */
 		virtual void postUpdate() override;
 
+		/**
+		 * @brief	Loads the script system and all script libraries.
+		 */
+		virtual void loadScriptSystem();
+
+		/**
+		 * @brief	Unloads script libraries and shuts down the script system.
+		 */
+		virtual void unloadScriptSystem();
+
 	private:
 		/**
 		 * @brief	Translates render system type into library name.

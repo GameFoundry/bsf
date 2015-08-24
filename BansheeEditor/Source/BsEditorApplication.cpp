@@ -21,6 +21,7 @@
 #include "BsProjectLibrary.h"
 #include "BsProjectSettings.h"
 #include "BsEditorSettings.h"
+#include "BsScriptManager.h"
 
 // DEBUG ONLY
 #include "BsResources.h"
@@ -65,7 +66,7 @@ namespace BansheeEngine
 	}
 
 	EditorApplication::EditorApplication(RenderAPIPlugin renderAPIPlugin)
-		:Application(createRenderWindowDesc(), renderAPIPlugin, RendererPlugin::Default), 
+		:Application(createRenderWindowDesc(), renderAPIPlugin, RendererPlugin::Default),
 		mActiveRAPIPlugin(renderAPIPlugin), mSBansheeEditorPlugin(nullptr), mIsProjectLoaded(false)
 	{
 
@@ -73,8 +74,6 @@ namespace BansheeEngine
 
 	EditorApplication::~EditorApplication()
 	{
-		shutdownPlugin(mSBansheeEditorPlugin);
-
 		/************************************************************************/
 		/* 								DEBUG CODE                      		*/
 		/************************************************************************/
@@ -142,7 +141,6 @@ namespace BansheeEngine
 		CodeEditorManager::startUp();
 
 		MainEditorWindow* mainWindow = MainEditorWindow::create(getPrimaryWindow());
-		loadPlugin("SBansheeEditor", &mSBansheeEditorPlugin); // Managed part of the editor
 
 		/************************************************************************/
 		/* 								DEBUG CODE                      		*/
@@ -157,7 +155,7 @@ namespace BansheeEngine
 		HRenderable testRenderable = testModelGO->addComponent<Renderable>();
 
 		Path testShaderLoc = RUNTIME_DATA_PATH + L"Test.bsl";;
-		
+
 		mTestShader = Importer::instance().import<Shader>(testShaderLoc);
 
 		gResources().save(mTestShader, L"C:\\testShader.asset", true);
@@ -224,6 +222,13 @@ namespace BansheeEngine
 		Application::onShutDown();
 	}
 
+	void EditorApplication::loadScriptSystem()
+	{
+		Application::loadScriptSystem();
+
+		loadPlugin("SBansheeEditor", &mSBansheeEditorPlugin); // Managed part of the editor
+	}
+
 	void EditorApplication::startUp(RenderAPIPlugin renderAPI)
 	{
 		CoreApplication::startUp<EditorApplication>(renderAPI);
@@ -263,6 +268,9 @@ namespace BansheeEngine
 
 	Path EditorApplication::getScriptAssemblyFolder() const
 	{
+		if (!isProjectLoaded())
+			return Path::BLANK;
+
 		Path assemblyFolder = getProjectPath();
 		assemblyFolder.append(INTERNAL_ASSEMBLY_PATH);
 
@@ -304,6 +312,8 @@ namespace BansheeEngine
 		EditorWidgetLayoutPtr layout = loadWidgetLayout();
 		if (layout != nullptr)
 			EditorWidgetManager::instance().setLayout(layout);
+
+		ScriptManager::instance().reload();
 	}
 
 	bool EditorApplication::isValidProjectPath(const Path& path)

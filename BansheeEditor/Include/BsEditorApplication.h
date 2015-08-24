@@ -114,6 +114,11 @@ namespace BansheeEngine
 		virtual void postUpdate() override;
 
 		/**
+		 * @copydoc	Application::loadScriptSystem
+		 */
+		void loadScriptSystem() override;
+
+		/**
 		 * @brief	Loads the previously saved editor widget layout from the default location.
 		 *			Can return null if no layout was previously saved.
 		 */

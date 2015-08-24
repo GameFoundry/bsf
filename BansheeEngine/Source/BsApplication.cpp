@@ -57,7 +57,6 @@ namespace BansheeEngine
 		GUIManager::shutDown();
 		GUIMaterialManager::shutDown();
 		BuiltinResources::shutDown();
-		ScriptManager::shutDown();
 		VirtualInput::shutDown();
 	}
 
@@ -69,7 +68,6 @@ namespace BansheeEngine
 		Importer::instance()._registerAssetImporter(importer);
 
 		VirtualInput::startUp();
-		ScriptManager::startUp();
 		BuiltinResources::startUp();
 		GUIManager::startUp();
 		GUIMaterialManager::startUp();
@@ -77,13 +75,10 @@ namespace BansheeEngine
 		ShortcutManager::startUp();
 
 		Cursor::startUp();
-
-#if BS_VER == BS_VER_DEV
-		loadPlugin("BansheeMono", &mMonoPlugin);
-		loadPlugin("SBansheeEngine", &mSBansheeEnginePlugin); // Scripting interface
-#endif
-
 		Cursor::instance().setCursor(CursorType::Arrow);
+
+		loadScriptSystem();
+		ScriptManager::instance().initialize();
 	}
 
 	void Application::onShutDown()
@@ -92,16 +87,7 @@ namespace BansheeEngine
 		// could have allocated parts or all of those objects.
 		SceneManager::instance().clearScene(true);
 
-		// These plugins must be unloaded before any other script plugins, because
-		// they will cause finalizers to trigger and various modules those finalizers
-		// might reference must still be active
-#if BS_VER == BS_VER_DEV
-		shutdownPlugin(mSBansheeEnginePlugin);
-		unloadPlugin(mSBansheeEnginePlugin);
-
-		shutdownPlugin(mMonoPlugin);
-		unloadPlugin(mMonoPlugin);
-#endif
+		unloadScriptSystem();
 
 		CoreApplication::onShutDown();
 	}
@@ -123,6 +109,25 @@ namespace BansheeEngine
 		CoreApplication::postUpdate();
 
 		PROFILE_CALL(GUIManager::instance().update(), "GUI");
+	}
+
+	void Application::loadScriptSystem()
+	{
+		ScriptManager::startUp();
+
+		loadPlugin("BansheeMono", &mMonoPlugin);
+		loadPlugin("SBansheeEngine", &mSBansheeEnginePlugin); 
+	}
+
+	void Application::unloadScriptSystem()
+	{
+		ScriptManager::shutDown();
+
+		// These plugins must be unloaded before any other script plugins, because
+		// they will cause finalizers to trigger and various modules those finalizers
+		// might reference must still be active
+		unloadPlugin(mSBansheeEnginePlugin);
+		unloadPlugin(mMonoPlugin);
 	}
 
 	ViewportPtr Application::getPrimaryViewport() const

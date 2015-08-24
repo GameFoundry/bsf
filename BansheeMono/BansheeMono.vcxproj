@@ -242,7 +242,6 @@
     <ClInclude Include="Include\BsMonoMethod.h" />
     <ClInclude Include="Include\BsMonoPrerequisites.h" />
     <ClInclude Include="Include\BsMonoProperty.h" />
-    <ClInclude Include="Include\BsMonoScriptManager.h" />
     <ClInclude Include="Include\BsMonoUtil.h" />
     <ClInclude Include="Include\BsScriptMeta.h" />
   </ItemGroup>
@@ -255,7 +254,6 @@
     <ClCompile Include="Source\BsMonoMethod.cpp" />
     <ClCompile Include="Source\BsMonoPlugin.cpp" />
     <ClCompile Include="Source\BsMonoProperty.cpp" />
-    <ClCompile Include="Source\BsMonoScriptManager.cpp" />
     <ClCompile Include="Source\BsMonoUtil.cpp" />
     <ClCompile Include="Source\BsScriptMeta.cpp" />
   </ItemGroup>

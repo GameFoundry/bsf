@@ -2,6 +2,7 @@
 #include "BsScriptObject.h"
 #include "BsMonoManager.h"
 #include "BsScriptAssemblyManager.h"
+#include "BsMonoAssembly.h"
 
 namespace BansheeEngine
 {
@@ -26,7 +27,7 @@ namespace BansheeEngine
 		mScriptObjects.erase(instance);
 	}
 
-	void ScriptObjectManager::refreshAssemblies()
+	void ScriptObjectManager::refreshAssemblies(const Vector<std::pair<String, Path>>& assemblies)
 	{
 		Map<ScriptObjectBase*, ScriptObjectBackup> backupData;
 
@@ -46,8 +47,13 @@ namespace BansheeEngine
 		for (auto& scriptObject : mScriptObjects)
 			scriptObject->_clearManagedInstance();
 
-		MonoManager::instance().loadScriptDomain();
-		ScriptAssemblyManager::instance().refreshAssemblyInfo();
+		ScriptAssemblyManager::instance().clearAssemblyInfo();
+
+		for (auto& assemblyPair : assemblies)
+		{
+			MonoManager::instance().loadAssembly(assemblyPair.second.toString(), assemblyPair.first);
+			ScriptAssemblyManager::instance().loadAssemblyInfo(assemblyPair.first);
+		}
 
 		onRefreshDomainLoaded();
 

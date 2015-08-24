@@ -211,7 +211,7 @@ namespace BansheeEngine
 		for (auto& assemblyEntry : mAssemblies)
 			assemblyEntry.second->unload();
 
-		mAssemblies.erase("corlib");
+		mAssemblies.clear();
 		mIsCoreLoaded = false;
 	}
 

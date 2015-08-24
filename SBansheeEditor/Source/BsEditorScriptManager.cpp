@@ -19,6 +19,7 @@
 #include "BsScriptSelection.h"
 #include "BsTestOutput.h"
 #include "BsEditorResourceLoader.h"
+#include "BsScriptManager.h"
 
 namespace BansheeEngine
 {
@@ -89,7 +90,7 @@ namespace BansheeEngine
 
 		if (mDebugRefresh)
 		{
-			ScriptObjectManager::instance().refreshAssemblies();
+			ScriptManager::instance().reload();
 			mDebugRefresh = false;
 		}
 
@@ -118,8 +119,6 @@ namespace BansheeEngine
 	{
 		const String editorAssemblyPath = gEditorApplication().getEditorAssemblyPath().toString();
 		mEditorAssembly = &MonoManager::instance().loadAssembly(editorAssemblyPath, EDITOR_ASSEMBLY);
-
-		// TODO - Load Editor script assembly (gEditorApplication.getEditorScriptAssemblyPath())
 
 		mProgramEdClass = mEditorAssembly->getClass("BansheeEditor", "Program");
 		mUpdateMethod = mProgramEdClass->getMethod("OnEditorUpdate");

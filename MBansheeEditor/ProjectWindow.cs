@@ -84,7 +84,6 @@ namespace BansheeEditor
             {
                 // Remove invalid project from recent projects list
                 RecentProject[] recentProjects = EditorSettings.RecentProjects;
-                bool foundPath = false;
                 for (int i = 0; i < recentProjects.Length; i++)
                 {
                     if (PathEx.Compare(recentProjects[i].path, projectPath))

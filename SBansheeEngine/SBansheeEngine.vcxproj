@@ -232,6 +232,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\BsEngineScriptLibrary.h" />
     <ClInclude Include="Include\BsGameResourceManager.h" />
     <ClInclude Include="Include\BsManagedComponent.h" />
     <ClInclude Include="Include\BsManagedComponentRTTI.h" />
@@ -336,6 +337,7 @@
     <ClInclude Include="Include\BsScriptVirtualInput.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\BsEngineScriptLibrary.cpp" />
     <ClCompile Include="Source\BsGameResourceManager.cpp" />
     <ClCompile Include="Source\BsManagedComponent.cpp" />
     <ClCompile Include="Source\BsManagedDiff.cpp" />

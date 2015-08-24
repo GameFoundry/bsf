@@ -1,5 +1,7 @@
 #include "BsScriptEditorPrerequisites.h"
 #include "BsEditorScriptManager.h"
+#include "BsEditorScriptLibrary.h"
+#include "BsScriptManager.h"
 
 namespace BansheeEngine
 {
@@ -11,7 +13,8 @@ namespace BansheeEngine
 
 	extern "C" BS_SCR_BED_EXPORT void* loadPlugin()
 	{
-		EditorScriptManager::startUp();
+		SPtr<EditorScriptLibrary> library = bs_shared_ptr_new<EditorScriptLibrary>();
+		ScriptManager::instance()._setScriptLibrary(library);
 
 		return nullptr;
 	}
@@ -19,15 +22,5 @@ namespace BansheeEngine
 	extern "C" BS_SCR_BED_EXPORT void updatePlugin()
 	{
 		EditorScriptManager::instance().update();
-	}
-
-	extern "C" BS_SCR_BED_EXPORT void shutdownPlugin()
-	{
-		EditorScriptManager::shutDown();
-	}
-
-	extern "C" BS_SCR_BED_EXPORT void unloadPlugin()
-	{
-		
 	}
 }

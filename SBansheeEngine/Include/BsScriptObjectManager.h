@@ -25,11 +25,15 @@ namespace BansheeEngine
 		void unregisterScriptObject(ScriptObjectBase* instance);
 
 		/**
-		 * @brief	Reloads all script assemblies. This involves backup up managed
-		 *			object data, destroying all managed objects and restoring
-		 *			the objects after reload.
+		 * @brief	Refreshes the list of active assemblies. Unloads all current assemblies and loads 
+		 *			the newly provided set. This involves backup up managed object data, destroying all 
+		 *			managed objects and restoring the objects after reload.
+		 *
+		 * @param	assemblies	A list of assembly names and paths to load. First value represents
+		 *						the assembly name, and second a path its the assembly .dll.
+		 *						Assemblies will be loaded in order specified.
 		 */
-		void refreshAssemblies();
+		void refreshAssemblies(const Vector<std::pair<String, Path>>& assemblies);
 
 		/**
 		 * @brief	Called once per frame. Triggers queued finalizer callbacks.

@@ -25,10 +25,9 @@ namespace BansheeEngine
 		void loadAssemblyInfo(const String& assemblyName);
 
 		/**
-		 * @brief	Reloads assembly data for all assemblies that were previously loaded using
-		 *			::loadAssemblyInfo. Useful for quickly updating all data after an assembly reload.
+		 * @brief	Clears any assembly data previously loaded with ::loadAssemblyInfo.
 		 */
-		void refreshAssemblyInfo();
+		void clearAssemblyInfo();
 
 		/**
 		 * @brief	Returns managed serializable object info for a specific managed type.

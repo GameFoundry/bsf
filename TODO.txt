@@ -63,7 +63,6 @@ EditorApplication.CreateProject not implemented
  - Copy default layout from Data/Editor to the project folder
  - Create Resources & Internal folders
 
-TODO - On project unload and load I need to trigger assembly reload
 TODO - Test if project loading/unloading/reloading works
 
 Ribek use:
@@ -117,7 +116,6 @@ Finalizing:
  - Settings/Preferences window
  - Documentation
  - Need to generate a proper merge of dev and preview branches
- - Save/Load project menu item does nothing at the moment
  - (Optionally) GUI tabbing to switch between elements
  - Undo/Redo
   - CmdRecordSO records an SO and all its children but it should only record a single SO

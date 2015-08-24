@@ -163,16 +163,10 @@ namespace BansheeEngine
 		}
 	}
 
-	void ScriptAssemblyManager::refreshAssemblyInfo()
+	void ScriptAssemblyManager::clearAssemblyInfo()
 	{
-		for (auto& assemblyInfoEntry : mAssemblyInfos)
-			assemblyInfoEntry.second = nullptr;
-
 		clearScriptObjects();
-		for (auto& assemblyInfoEntry : mAssemblyInfos)
-		{
-			loadAssemblyInfo(assemblyInfoEntry.first);
-		}
+		mAssemblyInfos.clear();
 	}
 
 	ManagedSerializableTypeInfoPtr ScriptAssemblyManager::determineType(MonoClass* monoClass)

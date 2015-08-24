@@ -6,12 +6,12 @@
 namespace BansheeEngine 
 {
 	/**
-	 * @brief	Abstraction of a specific scripting system.
+	 * @brief	Abstraction that handles a specific set of script libraries.
 	 */
-	class BS_EXPORT ScriptSystem
+	class BS_EXPORT ScriptLibrary
 	{
 	public:
-		virtual ~ScriptSystem() { }
+		virtual ~ScriptLibrary() { }
 
 		/**
 		 * @brief	Called when the script system is being activated.
@@ -19,7 +19,13 @@ namespace BansheeEngine
 		virtual void initialize() = 0;
 
 		/**
-		 * @brief	Called when the script system is being destryoed.
+		 * @brief	Called when the script libraries should be reloaded.
+		 *			(e.g. when they are recompiled).
+		 */
+		virtual void reload() = 0;
+
+		/**
+		 * @brief	Called when the script system is being destroyed.
 		 */
 		virtual void destroy() = 0;
 	};
@@ -34,23 +40,30 @@ namespace BansheeEngine
 		~ScriptManager() { }
 
 		/**
-		 * @brief	Initializes the script managed with the specified script system,
-		 *			making it active. Should be called right after construction.
+		 * @brief	Initializes the currently active script library loading the scripts
+		 *			contained within.
 		 */
-		void initialize(const std::shared_ptr<ScriptSystem>& scriptSystem);
+		void initialize();
 
 		/**
-		 * @brief	Destroys the currently active script system. Must be called just
-		 *			before shutdown.
+		 * @brief	Reloads any scripts in the currently active library. Should be called after
+		 *			some change to the scripts was made (e.g. project was changed, or scripts were
+		 *			recompiled).
 		 */
-		void destroy();
+		void reload();
+
+		/**
+		 * @brief	Sets the active script library that controls what kind and which
+		 *			scripts are loaded.
+		 */
+		void _setScriptLibrary(const SPtr<ScriptLibrary>& library);
 
 	private:
 		/**
 		 * @copydoc	ScriptManager::onShutDown
 		 */
-		void onShutDown();
+		void onShutDown() override;
 
-		std::shared_ptr<ScriptSystem> mScriptSystem;
+		SPtr<ScriptLibrary> mScriptLibrary;
 	};
 }
