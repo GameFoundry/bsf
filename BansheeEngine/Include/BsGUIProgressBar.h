@@ -7,8 +7,8 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Contains a background image and a fill image that
-	 *			is scaled depending on the percentage set by the user.
+	 * @brief	GUI element containing a background image and a fill image that
+	 *			is scaled depending on the percentage set by the caller.
 	 */
 	class BS_EXPORT GUIProgressBar : public GUIElementContainer
 	{

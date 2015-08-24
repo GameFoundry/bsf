@@ -38,9 +38,8 @@ namespace BansheeEngine
 	};
 
     /// <summary>
-    /// GUI element style that determines the look of a GUI element, as well as
-    /// the element's default layout options. Different looks can be provided
-    /// for different element states.
+    /// GUI element style that determines the look of a GUI element, as well as the element's default layout options. 
+    /// Different looks can be provided for different element states.
     /// </summary>
     public sealed class GUIElementStyle : ScriptObject
     {
@@ -286,11 +285,10 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Registers a new sub-style that is used by complex GUI elements that contain
-        /// one or multiple sub-elements.
+        /// Registers a new sub-style that is used by complex GUI elements that contain one or multiple sub-elements.
         /// </summary>
-        /// <param name="guiType">Name of the sub-element this style is to be used for. 
-        /// This depends on GUI element the style is applied to.
+        /// <param name="guiType">Name of the sub-element this style is to be used for.  This depends on GUI element the style
+        /// is applied to.
         /// </param>
         /// <param name="styleName">Name of the style in GUI skin to use for the sub-element.
         /// </param>

@@ -5,9 +5,8 @@ using System.Runtime.CompilerServices;
 namespace BansheeEngine
 {
     /// <summary>
-    /// Base class for all GUI elements. Every GUI element can at least
-    /// be positioned in it's parent layout/panel and be hidden/visible,
-    /// focused/unfocused and assigned a context menu.
+    /// Base class for all GUI elements. Every GUI element can at least be positioned in it's parent layout/panel and be 
+    /// hidden/visible, focused/unfocused and assigned a context menu.
     /// </summary>
     public abstract class GUIElement : ScriptObject
     {
@@ -26,8 +25,7 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Gets or sets non-clipped bounds of the GUI element including the margins. 
-        /// Relative to a parent GUI panel.
+        /// Gets or sets non-clipped bounds of the GUI element including the margins. Relative to a parent GUI panel.
         /// </summary>
         public Rect2I VisualBounds
         {
@@ -51,13 +49,11 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Destroys this element and all its children. Removes the element
-        /// from parent layout/panel.
+        /// Destroys this element and all its children. Removes the element from parent layout/panel.
         /// </summary>
         /// <remarks>
-        /// Calling methods on a destroyed element is a no-operation.
-        /// Destroyed elements aren't allowed to be assigned as children
-        /// of other elements, or be parents of other elements.
+        /// Calling methods on a destroyed element is a no-operation. Destroyed elements aren't allowed to be assigned as 
+        /// children of other elements, or be parents of other elements.
         /// </remarks>
         public virtual void Destroy()
         {
@@ -70,8 +66,8 @@ namespace BansheeEngine
         /// <param name="x">X position of the element in pixels, relative to parent GUI panel.</param>
         /// <param name="y">Y position of the element in pixels, relative to parent GUI panel.</param>
         /// <remarks>
-        /// Be aware that this value will be ignored if GUI element is part of a layout because the 
-        /// layout controls placement of child elements.
+        /// Be aware that this value will be ignored if GUI element is part of a layout because the layout controls placement 
+        /// of child elements.
         /// </remarks>
         public void SetPosition(int x, int y)
         {
@@ -88,13 +84,13 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Sets a flexible element width. Element will be resized according to its 
-        /// contents and parent layout but will always stay within the provided range.
+        /// Sets a flexible element width. Element will be resized according to its contents and parent layout but will always
+        /// stay within the provided range.
         /// </summary>
         /// <param name="minWidth">Minimum width in pixels. Element will never be smaller than this width.
         /// </param>
-        /// <param name="maxWidth">Maximum width in pixels. Element will never be larger than this width.
-        /// Specify zero for unlimited width.
+        /// <param name="maxWidth">Maximum width in pixels. Element will never be larger than this width. Specify zero for 
+        /// unlimited width.
         /// </param>
         public void SetFlexibleWidth(int minWidth, int maxWidth)
         {
@@ -111,13 +107,13 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Sets a flexible element height. Element will be resized according to its 
-        /// contents and parent layout but will always stay within the provided range.
+        /// Sets a flexible element height. Element will be resized according to its contents and parent layout but will 
+        /// always stay within the provided range.
         /// </summary>
         /// <param name="minHeight">Minimum height in pixels. Element will never be smaller than this height.
         /// </param>
-        /// <param name="maxHeight">Maximum height in pixels. Element will never be larger than this height.
-        /// Specify zero for unlimited width.
+        /// <param name="maxHeight">Maximum height in pixels. Element will never be larger than this height. Specify zero for 
+        /// unlimited height.
         /// </param>
         public void SetFlexibleHeight(int minHeight, int maxHeight)
         {
@@ -146,8 +142,7 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Triggered by the native interop object when the keyboard
-        /// focus of this element changes.
+        /// Triggered by the native interop object when the keyboard focus of this element changes.
         /// </summary>
         private void InternalOnFocusChanged(bool focus)
         {

@@ -38,12 +38,12 @@ namespace BansheeEngine
         /// </summary>
         /// <param name="content">Content to display on the button.
         /// </param>
-        /// <param name="style">Optional style to use for the element. Style controls the look
-        /// of the element, as well as default layout options. Style will be retrieved
-        /// from the active GUISkin. If not specified default button style is used.
+        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as 
+        /// default layout options. Style will be retrieved from the active GUISkin. If not specified default element style 
+        /// is used.
         /// </param>
-        /// <param name="options">Options that allow you to control how is the element 
-        /// positioned and sized. This will override any similar options set by style.
+        /// <param name="options">Options that allow you to control how is the element positioned and sized. This will 
+        /// override any similar options set by style.
         /// </param>
         public GUIButton(GUIContent content, string style, params GUIOption[] options)
         {
@@ -55,9 +55,9 @@ namespace BansheeEngine
         /// </summary>
         /// <param name="content">Content to display on the button.
         /// </param>
-        /// <param name="style">Optional style to use for the element. Style controls the look
-        /// of the element, as well as default layout options. Style will be retrieved
-        /// from the active GUISkin. If not specified default button style is used.
+        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as 
+        /// default layout options. Style will be retrieved from the active GUISkin. If not specified default element style 
+        /// is used.
         /// </param>
         public GUIButton(GUIContent content, string style)
         {
@@ -69,8 +69,8 @@ namespace BansheeEngine
         /// </summary>
         /// <param name="content">Content to display on the button.
         /// </param>
-        /// <param name="options">Options that allow you to control how is the element 
-        /// positioned and sized. This will override any similar options set by style.
+        /// <param name="options">Options that allow you to control how is the element positioned and sized. This will 
+        /// override any similar options set by style.
         /// </param>
         public GUIButton(GUIContent content, params GUIOption[] options)
         {
@@ -78,7 +78,7 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Creates a new button with the specified label.
+        /// Updates the contents displayed on the button.
         /// </summary>
         /// <param name="content">Content to display on the button.</param>
         public void SetContent(GUIContent content)
@@ -132,7 +132,8 @@ namespace BansheeEngine
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(GUIButton instance, GUIContent content, string style, GUIOption[] options);
+        private static extern void Internal_CreateInstance(GUIButton instance, GUIContent content, string style, 
+            GUIOption[] options);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetContent(IntPtr nativeInstance, GUIContent content);

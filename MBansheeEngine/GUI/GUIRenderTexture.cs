@@ -3,10 +3,17 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
+    /// <summary>
+    /// Allows you to display a render texture in the GUI. Has the same functionality as GUITexture, but also forwards any 
+    /// input to underlying GUI elements being rendered on the provided render texture.
+    /// </summary>
     public sealed class GUIRenderTexture : GUIElement
     {
         private RenderTexture2D renderTexture;
 
+        /// <summary>
+        /// Render texture that is displayed on the GUI element.
+        /// </summary>
         public RenderTexture2D RenderTexture
         {
             get
@@ -25,6 +32,17 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Creates a new render texture element.
+        /// </summary>
+        /// <param name="texture">Render texture to display in the element.</param>
+        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as 
+        /// default layout options. Style will be retrieved from the active GUISkin. If not specified default element style 
+        /// is used.
+        /// </param>
+        /// <param name="options">Options that allow you to control how is the element  positioned and sized. This will 
+        /// override any similar options set by style.
+        /// </param>
         public GUIRenderTexture(RenderTexture2D texture, string style, params GUIOption[] options)
         {
             IntPtr texturePtr = IntPtr.Zero;
@@ -34,6 +52,13 @@ namespace BansheeEngine
             Internal_CreateInstance(this, texturePtr, style, options);
         }
 
+        /// <summary>
+        /// Creates a new render texture element.
+        /// </summary>
+        /// <param name="texture">Render texture to display in the element.</param>
+        /// <param name="options">Options that allow you to control how is the element  positioned and sized. This will 
+        /// override any similar options set by style.
+        /// </param>
         public GUIRenderTexture(RenderTexture2D texture, params GUIOption[] options)
         {
             IntPtr texturePtr = IntPtr.Zero;
@@ -43,6 +68,10 @@ namespace BansheeEngine
             Internal_CreateInstance(this, texturePtr, "", options);
         }
 
+        /// <summary>
+        /// Colors the element with a specific tint.
+        /// </summary>
+        /// <param name="color">Tint to apply to the element.</param>
         public void SetTint(Color color)
         {
             Internal_SetTint(mCachedPtr, color);

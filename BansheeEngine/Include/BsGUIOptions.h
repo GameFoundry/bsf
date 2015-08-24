@@ -5,8 +5,9 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Controls GUI element properties, possibly by overriding
-	 *			the default properties specified in GUI element style.
+	 * @brief	Controls GUI element layout options, possibly by overriding
+	 *			the default options specified in GUI element style. These options
+	 *			control GUI element placement and size in a GUI layout.
 	 */
 	class BS_EXPORT GUIOption
 	{
@@ -28,32 +29,32 @@ namespace BansheeEngine
 		/**
 		 * @brief	Constructs a GUI option notifying the GUI layout that this element should be positioned
 		 *			at this offset from the parent GUI panel. This option is ignored if element is part of a 
-		 layout since it controls its placement.
+		 *			layout since it controls its placement.
 		 */
 		static GUIOption position(INT32 x, INT32 y);
 
 		/**
 		 * @brief	Constructs a GUI option notifying the GUI layout that this element has a fixed width.
-		 *			This will override width property set in element style.
+		 *			This will override the width property set in element style.
 		 */
 		static GUIOption fixedWidth(UINT32 value);
 
 		/**
 		 * @brief	Constructs a GUI option notifying the GUI layout that this element has a flexible width with
-		 *			optional min/max constraints (value of 0 means no constraint). This will override width property 
+		 *			optional min/max constraints (value of 0 means no constraint). This will override the width property 
 		 *			set in element style.
 		 */
 		static GUIOption flexibleWidth(UINT32 min = 0, UINT32 max = 0);
 
 		/**
 		 * @brief	Constructs a GUI option notifying the GUI layout that this element has a fixed height.
-		 *			This will override height property set in element style.
+		 *			This will override the height property set in element style.
 		 */
 		static GUIOption fixedHeight(UINT32 value);
 
 		/**
 		 * @brief	Constructs a GUI option notifying the GUI layout that this element has a flexible height with
-		 *			optional min/max constraints (value of 0 means no constraint). This will override height property 
+		 *			optional min/max constraints (value of 0 means no constraint). This will override the height property 
 		 *			set in element style.
 		 */
 		static GUIOption flexibleHeight(UINT32 min = 0, UINT32 max = 0);

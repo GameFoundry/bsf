@@ -6,10 +6,8 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Allows you to display a render texture in the GUI.
-	 * 			
-	 * @note	Has the same functionality as GUITexture, but also forwards any input to the control
-	 * 			to underlying GUI elements.
+	 * @brief	Allows you to display a render texture in the GUI. Has the same functionality as GUITexture, but also forwards
+	 *			any input to underlying GUI elements being rendered on the provided render texture.
 	 */
 	class BS_EXPORT GUIRenderTexture : public GUITexture
 	{

@@ -3,8 +3,8 @@
 namespace BansheeEngine
 {
     /// <summary>
-    /// Holds data used for displaying content in a GUIElement. 
-    /// Content can consist of a string, image, a tooltip or none of those.
+    /// Holds data used for displaying content in a GUIElement.  Content can consist of a string, image, a tooltip or none 
+    /// of those.
     /// </summary>
     public sealed class GUIContent
     {
@@ -81,8 +81,8 @@ namespace BansheeEngine
         /// </summary>
         /// <param name="text">Textual portion of the content to be displayed as label in GUI elements.
         /// </param>
-        /// <param name="image">Image to be displayed on top of the GUI element. Image will be placed to the
-        /// right or to the left of the text depending on active GUI style.
+        /// <param name="image">Image to be displayed on top of the GUI element. Image will be placed to the right or to the 
+        /// left of the text depending on active GUI style.
         /// </param>
         public GUIContent(LocString text, SpriteTexture image)
         {
@@ -95,8 +95,8 @@ namespace BansheeEngine
         /// </summary>
         /// <param name="text">Textual portion of the content to be displayed as label in GUI elements.
         /// </param>
-        /// <param name="image">Image to be displayed on top of the GUI element. Image will be placed to the
-        /// right or to the left of the text depending on active GUI style.
+        /// <param name="image">Image to be displayed on top of the GUI element. Image will be placed to the right or to the 
+        /// left of the text depending on active GUI style.
         /// </param>
         /// <param name="tooltip">Tooltip to be displayed when user hovers over a GUI element.
         /// </param>

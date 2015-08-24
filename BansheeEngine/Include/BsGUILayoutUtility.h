@@ -14,7 +14,8 @@ namespace BansheeEngine
 	{
 	public:
 		/**
-		 * Calculates optimal size of a GUI element.
+		 * Calculates optimal size of a GUI element. This is the size that allows the GUI element to properly display all of
+		 * its content.
 		 */
 		static Vector2I calcOptimalSize(const GUIElementBase* elem);
 
