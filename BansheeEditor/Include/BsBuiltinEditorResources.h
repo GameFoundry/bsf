@@ -124,6 +124,8 @@ namespace BansheeEngine
 		static const Path EditorShaderFolder;
 		static const Path EditorShaderIncludeFolder;
 
+		static const Path DefaultWidgetLayoutPath;
+
 	private:
 		/**
 		 * @brief	Imports all necessary resources and converts them to engine-ready format.

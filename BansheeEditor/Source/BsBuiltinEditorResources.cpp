@@ -78,6 +78,7 @@ namespace BansheeEngine
 	const Path BuiltinEditorResources::EditorShaderIncludeFolder = BuiltinDataFolder + ShaderIncludeFolder;
 
 	const Path BuiltinEditorResources::ResourceManifestPath = BuiltinDataFolder + "ResourceManifest.asset";
+	const Path BuiltinEditorResources::DefaultWidgetLayoutPath = BuiltinDataFolder + "Layout.asset";
 
 	const WString BuiltinEditorResources::FolderIconTex = L"FolderIcon.psd";
 	const WString BuiltinEditorResources::MeshIconTex = L"MeshIcon.psd";

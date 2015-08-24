@@ -73,6 +73,11 @@ namespace BansheeEngine
 		void saveProjectSettings();
 
 		/**
+		 * @brief	Saves any project specific data, if a project is currently loaded.
+		 */
+		void saveProject();
+
+		/**
 		 * @brief	Unloads the currently loaded project, if any.
 		 */
 		void unloadProject();
@@ -86,12 +91,21 @@ namespace BansheeEngine
 		void loadProject(const Path& path);
 
 		/**
+		 * @brief	Creates a new project at the specified path.
+		 *
+		 * @param	path	Path to the folder where to create the project in. Name of this
+		 *					folder will be the name of the project.
+		 */
+		void createProject(const Path& path);
+
+		/**
 		 * @brief	Checks is the provided folder a valid project.
 		 *
 		 * @param	path	Absolute path to the root project folder.
 		 */
 		bool isValidProjectPath(const Path& path);
 
+		static const Path PROJECT_INTERNAL_DIR;
 	private:
 		/**
 		 * @copydoc	Module::onStartUp

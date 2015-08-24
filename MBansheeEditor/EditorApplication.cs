@@ -221,7 +221,7 @@ namespace BansheeEditor
 
         public static void CreateProject(string path)
         {
-            // TODO
+            Internal_CreateProject(path);
         }
 
         [MenuItem("File/Load Project", 0)]
@@ -239,7 +239,9 @@ namespace BansheeEditor
         [MenuItem("File/Save Project", 0)]
         public static void SaveProject()
         {
-            // TODO
+            // TODO - Save dirty resources
+
+            Internal_SaveProject();
         }
 
         public static void LoadProject(string path)
@@ -487,9 +489,15 @@ namespace BansheeEditor
         private static extern bool Internal_IsValidProject(string path);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SaveProject();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_LoadProject(string path);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_UnloadProject();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_CreateProject(string path);
     }
 }

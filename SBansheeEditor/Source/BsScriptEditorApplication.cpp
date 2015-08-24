@@ -38,8 +38,10 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetScriptEditorAssemblyName", &ScriptEditorApplication::internal_GetScriptEditorAssemblyName);
 		metaData.scriptClass->addInternalCall("Internal_SaveScene", &ScriptEditorApplication::internal_SaveScene);
 		metaData.scriptClass->addInternalCall("Internal_IsValidProject", &ScriptEditorApplication::internal_IsValidProject);
+		metaData.scriptClass->addInternalCall("Internal_SaveProject", &ScriptEditorApplication::internal_SaveProject);
 		metaData.scriptClass->addInternalCall("Internal_LoadProject", &ScriptEditorApplication::internal_LoadProject);
 		metaData.scriptClass->addInternalCall("Internal_UnloadProject", &ScriptEditorApplication::internal_UnloadProject);
+		metaData.scriptClass->addInternalCall("Internal_CreateProject", &ScriptEditorApplication::internal_CreateProject);
 	}
 
 	MonoString* ScriptEditorApplication::internal_GetProjectPath()
@@ -147,6 +149,11 @@ namespace BansheeEngine
 		return gEditorApplication().isValidProjectPath(nativePath);
 	}
 
+	void ScriptEditorApplication::internal_SaveProject()
+	{
+		gEditorApplication().saveProject();
+	}
+
 	void ScriptEditorApplication::internal_LoadProject(MonoString* path)
 	{
 		Path nativePath = MonoUtil::monoToWString(path);
@@ -156,5 +163,12 @@ namespace BansheeEngine
 	void ScriptEditorApplication::internal_UnloadProject()
 	{
 		gEditorApplication().unloadProject();
+	}
+
+	void ScriptEditorApplication::internal_CreateProject(MonoString* path)
+	{
+		Path nativePath = MonoUtil::monoToWString(path);
+
+		gEditorApplication().createProject(nativePath);
 	}
 }

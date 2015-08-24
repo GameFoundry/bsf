@@ -22,6 +22,7 @@
 #include "BsProjectSettings.h"
 #include "BsEditorSettings.h"
 #include "BsScriptManager.h"
+#include "BsFileSystem.h"
 
 // DEBUG ONLY
 #include "BsResources.h"
@@ -48,10 +49,11 @@
 
 namespace BansheeEngine
 {
-	const Path EditorApplication::WIDGET_LAYOUT_PATH = L"Internal\\Layout.asset";
-	const Path EditorApplication::BUILD_DATA_PATH = L"Internal\\BuildData.asset";
+	const Path EditorApplication::PROJECT_INTERNAL_DIR = L"Internal\\";
+	const Path EditorApplication::WIDGET_LAYOUT_PATH = PROJECT_INTERNAL_DIR + L"Layout.asset";
+	const Path EditorApplication::BUILD_DATA_PATH = PROJECT_INTERNAL_DIR + L"BuildData.asset";
 	const Path EditorApplication::EDITOR_SETTINGS_PATH = RUNTIME_DATA_PATH + L"Settings.asset";
-	const Path EditorApplication::PROJECT_SETTINGS_PATH = L"Internal\\Settings.asset";
+	const Path EditorApplication::PROJECT_SETTINGS_PATH = PROJECT_INTERNAL_DIR + L"Settings.asset";
 
 	RENDER_WINDOW_DESC createRenderWindowDesc()
 	{
@@ -277,7 +279,7 @@ namespace BansheeEngine
 		return assemblyFolder;
 	}
 
-	void EditorApplication::unloadProject()
+	void EditorApplication::saveProject()
 	{
 		if (!isProjectLoaded())
 			return;
@@ -287,13 +289,21 @@ namespace BansheeEngine
 		saveEditorSettings();
 		saveProjectSettings();
 
+		ProjectLibrary::instance().saveLibrary();
+	}
+
+	void EditorApplication::unloadProject()
+	{
+		if (!isProjectLoaded())
+			return;
+
+		saveProject();
+
 		mProjectSettings = bs_shared_ptr_new<ProjectSettings>();
 		BuildManager::instance().clear();
 		UndoRedo::instance().clear();
 
-		ProjectLibrary::instance().saveLibrary();
 		ProjectLibrary::instance().unloadLibrary();
-
 		Resources::instance().unloadAllUnused();
 	}
 
@@ -314,6 +324,27 @@ namespace BansheeEngine
 			EditorWidgetManager::instance().setLayout(layout);
 
 		ScriptManager::instance().reload();
+	}
+
+	void EditorApplication::createProject(const Path& path)
+	{
+		Path resourceDir = Path::combine(path, ProjectLibrary::RESOURCES_DIR);
+		Path internalResourcesDir = Path::combine(path, ProjectLibrary::INTERNAL_RESOURCES_DIR);
+
+		if (!FileSystem::exists(resourceDir))
+			FileSystem::createDir(resourceDir);
+
+		if (!FileSystem::exists(internalResourcesDir))
+			FileSystem::createDir(internalResourcesDir);
+
+		Path defaultLayoutPath = FileSystem::getWorkingDirectoryPath();
+		defaultLayoutPath.append(BuiltinEditorResources::DefaultWidgetLayoutPath);
+
+		if (FileSystem::exists(defaultLayoutPath))
+		{
+			Path projectLayoutPath = Path::combine(path, WIDGET_LAYOUT_PATH);
+			FileSystem::copy(defaultLayoutPath, projectLayoutPath, false);
+		}
 	}
 
 	bool EditorApplication::isValidProjectPath(const Path& path)

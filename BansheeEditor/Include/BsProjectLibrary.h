@@ -262,6 +262,9 @@ namespace BansheeEngine
 
 		Event<void(const Path&)> onEntryRemoved; /**< Triggered whenever an entry is removed from the library. Path provided is absolute. */
 		Event<void(const Path&)> onEntryAdded; /**< Triggered whenever an entry is added to the library. Path provided is absolute. */
+
+		static const Path RESOURCES_DIR;
+		static const Path INTERNAL_RESOURCES_DIR;
 	private:
 		/**
 		 * @brief	Common code for adding a new resource entry to the library.
@@ -376,8 +379,6 @@ namespace BansheeEngine
 		 */
 		void queueDependantForReimport(const ResourceEntry* entry);
 
-		static const Path RESOURCES_DIR;
-		static const Path INTERNAL_RESOURCES_DIR;
 		static const WString LIBRARY_ENTRIES_FILENAME;
 		static const WString RESOURCE_MANIFEST_FILENAME;
 
