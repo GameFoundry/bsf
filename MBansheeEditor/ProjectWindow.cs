@@ -25,46 +25,66 @@ namespace BansheeEditor
             Title = "Project Manager";
 
             Width = 500;
-            Height = 350;
+            Height = 250;
         }
 
         private void OnInitialize()
         {
             GUILayout vertLayout = GUI.AddLayoutY();
+
+            vertLayout.AddSpace(5);
             GUILayout firstRow = vertLayout.AddLayoutX();
+            vertLayout.AddFlexibleSpace();
             GUILayout secondRow = vertLayout.AddLayoutX();
             GUILayout thirdRow = vertLayout.AddLayoutX();
+            vertLayout.AddFlexibleSpace();
+            GUILayout fourthRow = vertLayout.AddLayoutX();
+            vertLayout.AddSpace(5);
 
-            projectInputBox = new GUITextField(new LocEdString("Project path"), 70);
+            projectInputBox = new GUITextField(new LocEdString("Project path"), 70, false, "", GUIOption.FixedWidth(425));
             projectInputBox.Value = EditorSettings.LastOpenProject;
 
-            GUIButton openBtn = new GUIButton(new LocEdString("Open"));
+            GUIButton openBtn = new GUIButton(new LocEdString("Open"), GUIOption.FixedWidth(50));
             openBtn.OnClick += OpenProject;
 
+            firstRow.AddSpace(5);
             firstRow.AddElement(projectInputBox);
+            firstRow.AddSpace(15);
             firstRow.AddElement(openBtn);
+            firstRow.AddSpace(5);
 
-            recentProjectsArea = new GUIScrollArea();
-            secondRow.AddElement(recentProjectsArea);
+            GUILabel recentProjectsLabel = new GUILabel(new LocEdString("Recent projects:"));
 
-            GUILayout browseBtnLayout = secondRow.AddLayoutY();
-            GUIButton browseBtn = new GUIButton(new LocEdString("Browse"));
+            secondRow.AddSpace(5);
+            secondRow.AddElement(recentProjectsLabel);
+            secondRow.AddFlexibleSpace();
+
+            recentProjectsArea = new GUIScrollArea(GUIOption.FixedWidth(425), GUIOption.FixedHeight(150));
+            thirdRow.AddSpace(5);
+            thirdRow.AddElement(recentProjectsArea);
+            thirdRow.AddSpace(15);
+
+            GUILayout browseBtnLayout = thirdRow.AddLayoutY();
+            GUIButton browseBtn = new GUIButton(new LocEdString("Browse"), GUIOption.FixedWidth(50));
             browseBtn.OnClick += BrowseClicked;
             browseBtnLayout.AddElement(browseBtn);
             browseBtnLayout.AddFlexibleSpace();
+            thirdRow.AddSpace(5);
 
             autoLoadToggle = new GUIToggle("");
             autoLoadToggle.Value = EditorSettings.AutoLoadLastProject;
 
             GUILabel autoLoadLabel = new GUILabel(new LocEdString("Automatically load last open project"));
 
-            GUIButton createBtn = new GUIButton(new LocEdString("Create"));
+            GUIButton createBtn = new GUIButton(new LocEdString("Create"), GUIOption.FixedWidth(50));
             createBtn.OnClick += CreateClicked;
 
-            thirdRow.AddElement(autoLoadToggle);
-            thirdRow.AddElement(autoLoadLabel);
-            thirdRow.AddFlexibleSpace();
-            thirdRow.AddElement(createBtn);
+            fourthRow.AddSpace(5);
+            fourthRow.AddElement(autoLoadToggle);
+            fourthRow.AddElement(autoLoadLabel);
+            fourthRow.AddFlexibleSpace();
+            fourthRow.AddElement(createBtn);
+            fourthRow.AddSpace(5);
 
             RefreshRecentProjects();
         }

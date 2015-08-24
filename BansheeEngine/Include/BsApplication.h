@@ -100,7 +100,7 @@ namespace BansheeEngine
 		 */
 		virtual void unloadScriptSystem();
 
-	private:
+	protected:
 		/**
 		 * @brief	Translates render system type into library name.
 		 */

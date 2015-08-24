@@ -77,8 +77,8 @@ namespace BansheeEngine
 		Cursor::startUp();
 		Cursor::instance().setCursor(CursorType::Arrow);
 
+		ScriptManager::startUp();
 		loadScriptSystem();
-		ScriptManager::instance().initialize();
 	}
 
 	void Application::onShutDown()
@@ -87,6 +87,7 @@ namespace BansheeEngine
 		// could have allocated parts or all of those objects.
 		SceneManager::instance().clearScene(true);
 
+		ScriptManager::shutDown();
 		unloadScriptSystem();
 
 		CoreApplication::onShutDown();
@@ -113,16 +114,14 @@ namespace BansheeEngine
 
 	void Application::loadScriptSystem()
 	{
-		ScriptManager::startUp();
-
 		loadPlugin("BansheeMono", &mMonoPlugin);
 		loadPlugin("SBansheeEngine", &mSBansheeEnginePlugin); 
+
+		ScriptManager::instance().initialize();
 	}
 
 	void Application::unloadScriptSystem()
 	{
-		ScriptManager::shutDown();
-
 		// These plugins must be unloaded before any other script plugins, because
 		// they will cause finalizers to trigger and various modules those finalizers
 		// might reference must still be active

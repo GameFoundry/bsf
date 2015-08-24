@@ -143,6 +143,7 @@ namespace BansheeEngine
 		CodeEditorManager::startUp();
 
 		MainEditorWindow* mainWindow = MainEditorWindow::create(getPrimaryWindow());
+		ScriptManager::instance().initialize();
 
 		/************************************************************************/
 		/* 								DEBUG CODE                      		*/
@@ -226,9 +227,9 @@ namespace BansheeEngine
 
 	void EditorApplication::loadScriptSystem()
 	{
-		Application::loadScriptSystem();
-
-		loadPlugin("SBansheeEditor", &mSBansheeEditorPlugin); // Managed part of the editor
+		loadPlugin("BansheeMono", &mMonoPlugin);
+		loadPlugin("SBansheeEngine", &mSBansheeEnginePlugin);
+		loadPlugin("SBansheeEditor", &mSBansheeEditorPlugin);
 	}
 
 	void EditorApplication::startUp(RenderAPIPlugin renderAPI)

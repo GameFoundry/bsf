@@ -71,12 +71,7 @@ namespace BansheeEngine
 		// then they're not needed and the range is valid. And if it doesn't
 		// fit the area will get clipped anyway and including the scroll bars
 		// won't change the size much, but it would complicate this method significantly.
-		LayoutSizeRange sizeRange = mContentLayout->_calculateLayoutSizeRange();
-
-		sizeRange.optimal.x = std::max(10, sizeRange.optimal.x);
-		sizeRange.optimal.y = std::max(10, sizeRange.optimal.y);
-
-		return sizeRange;
+		return mDimensions.calculateSizeRange(_getOptimalSize());
 	}
 
 	LayoutSizeRange GUIScrollArea::_getLayoutSizeRange() const
@@ -99,7 +94,7 @@ namespace BansheeEngine
 			childIdx++;
 		}
 
-		mSizeRange = mContentLayout->_getLayoutSizeRange();
+		mSizeRange = mDimensions.calculateSizeRange(_getOptimalSize());
 	}
 
 	void GUIScrollArea::_getElementAreas(const Rect2I& layoutArea, Rect2I* elementAreas, UINT32 numElements,
