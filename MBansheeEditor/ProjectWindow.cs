@@ -22,16 +22,18 @@ namespace BansheeEditor
         protected ProjectWindow()
             : base(false)
         {
-            Title = "Project Manager";
 
-            Width = 500;
-            Height = 250;
         }
 
         private void OnInitialize()
         {
-            GUILayout vertLayout = GUI.AddLayoutY();
+            Title = "Project Manager";
 
+            Width = 500;
+            Height = 250;
+
+            GUILayout vertLayout = GUI.AddLayoutY();
+            
             vertLayout.AddSpace(5);
             GUILayout firstRow = vertLayout.AddLayoutX();
             vertLayout.AddFlexibleSpace();
@@ -87,6 +89,20 @@ namespace BansheeEditor
             fourthRow.AddSpace(5);
 
             RefreshRecentProjects();
+
+            // Add scroll area background
+            GUIPanel scrollAreaBgPanel = GUI.AddPanel(1);
+
+            GUITexture scrollAreaBgTex = new GUITexture(null, true, EditorStyles.ScrollAreaBg);
+            scrollAreaBgPanel.AddElement(scrollAreaBgTex);
+
+            Rect2I bounds = vertLayout.Bounds;
+            Rect2I scrollAreaBounds = recentProjectsArea.Bounds;
+            Debug.Log(scrollAreaBounds + " - " + vertLayout.Bounds);
+            scrollAreaBounds.y += bounds.y;
+            scrollAreaBounds.height += 2;
+
+            scrollAreaBgTex.Bounds = scrollAreaBounds;
         }
 
         void OpenProject()
@@ -127,8 +143,8 @@ namespace BansheeEditor
                 }
 
                 // Warn user
-                LocString message = new LocEdString("Provided project path \"") + projectPath +
-                                    new LocEdString("\" doesn't contain a valid project.");
+                LocString message = new LocEdString("Provided project path \"{0}\" doesn't contain a valid project.");
+                message.setParameter(0, projectPath);
 
                 DialogBox.Open(new LocEdString("Error"), message, DialogBox.Type.OK);
             }

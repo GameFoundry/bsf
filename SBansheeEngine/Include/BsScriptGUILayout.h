@@ -67,12 +67,13 @@ namespace BansheeEngine
 	private:
 		friend class ScriptGUIPanel;
 
-		ScriptGUILayout(MonoObject* instance, GUILayout* layout);
+		ScriptGUILayout(MonoObject* instance, GUILayout* layout, bool ownsNative = true);
 
 		GUILayout* mLayout;
 		Vector<ChildInfo> mChildren;
 
 		bool mIsDestroyed;
+		bool mOwnsNative;
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/

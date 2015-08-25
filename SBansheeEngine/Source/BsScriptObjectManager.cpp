@@ -57,10 +57,15 @@ namespace BansheeEngine
 
 		onRefreshDomainLoaded();
 
+		Vector<ScriptObjectBase*> scriptObjCopy(mScriptObjects.size()); // Store originals as we could add new objects during the next iteration
+		UINT32 idx = 0;
 		for (auto& scriptObject : mScriptObjects)
+			scriptObjCopy[idx++] = scriptObject;
+
+		for (auto& scriptObject : scriptObjCopy)
 			scriptObject->_restoreManagedInstance();
 
-		for (auto& scriptObject : mScriptObjects)
+		for (auto& scriptObject : scriptObjCopy)
 			scriptObject->endRefresh(backupData[scriptObject]);
 
 		onRefreshComplete();
@@ -68,6 +73,8 @@ namespace BansheeEngine
 
 	void ScriptObjectManager::notifyObjectFinalized(ScriptObjectBase* instance)
 	{
+		assert(instance != nullptr);
+
 		BS_LOCK_MUTEX(mMutex);
 		mFinalizedObjects[mFinalizedQueueIdx].push_back(instance);
 	}

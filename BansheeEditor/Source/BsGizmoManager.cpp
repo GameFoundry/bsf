@@ -58,7 +58,7 @@ namespace BansheeEngine
 		initData.pickingMat = pickingMaterial->getCore();
 		initData.alphaPickingMat = alphaPickingMaterial->getCore();
 
-		mCore = bs_new<GizmoManagerCore>(GizmoManagerCore::PrivatelyConstuct());
+		mCore.store(bs_new<GizmoManagerCore>(GizmoManagerCore::PrivatelyConstuct()), std::memory_order_release);
 
 		gCoreAccessor().queueCommand(std::bind(&GizmoManager::initializeCore, this, initData));
 	}
@@ -71,12 +71,12 @@ namespace BansheeEngine
 		bs_delete(mDrawHelper);
 		bs_delete(mPickingDrawHelper);
 
-		gCoreAccessor().queueCommand(std::bind(&GizmoManager::destroyCore, this, mCore));
+		gCoreAccessor().queueCommand(std::bind(&GizmoManager::destroyCore, this, mCore.load(std::memory_order_relaxed)));
 	}
 
 	void GizmoManager::initializeCore(const CoreInitData& initData)
 	{
-		mCore->initialize(initData);
+		mCore.load(std::memory_order_acquire)->initialize(initData);
 	}
 
 	void GizmoManager::destroyCore(GizmoManagerCore* core)
@@ -263,7 +263,9 @@ namespace BansheeEngine
 		mIconMesh = buildIconMesh(camera, mIconData, false, iconRenderData);
 		SPtr<MeshCoreBase> iconMesh = mIconMesh->getCore();
 
-		gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::updateData, mCore, camera->getCore(),
+		GizmoManagerCore* core = mCore.load(std::memory_order_relaxed);
+
+		gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::updateData, core, camera->getCore(),
 			solidMesh, wireMesh, iconMesh, iconRenderData));
 	}
 
@@ -360,24 +362,26 @@ namespace BansheeEngine
 		Matrix4 projMat = camera->getProjectionMatrixRS();
 		ViewportPtr viewport = camera->getViewport();
 
+		GizmoManagerCore* core = mCore.load(std::memory_order_relaxed);
+
 		for (auto& meshData : meshes)
 		{
 			if (meshData.type == DrawHelper::MeshType::Solid)
 			{
 				gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::renderGizmos,
-					mCore, viewMat, projMat, camera->getForward(), meshData.mesh->getCore(), GizmoMaterial::Picking));
+					core, viewMat, projMat, camera->getForward(), meshData.mesh->getCore(), GizmoMaterial::Picking));
 			}
 			else // Wire
 			{
 				gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::renderGizmos,
-					mCore, viewMat, projMat, camera->getForward(), meshData.mesh->getCore(), GizmoMaterial::Picking));
+					core, viewMat, projMat, camera->getForward(), meshData.mesh->getCore(), GizmoMaterial::Picking));
 			}
 		}
 
 		Rect2I screenArea = camera->getViewport()->getArea();
 
 		gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::renderIconGizmos,
-			mCore, screenArea, iconMesh->getCore(), iconRenderData, true));
+			core, screenArea, iconMesh->getCore(), iconRenderData, true));
 
 		mPickingDrawHelper->clearMeshes();
 		mIconMeshHeap->dealloc(iconMesh);
@@ -408,8 +412,10 @@ namespace BansheeEngine
 
 		mIconMesh = nullptr;
 
+		GizmoManagerCore* core = mCore.load(std::memory_order_relaxed);
 		IconRenderDataVecPtr iconRenderData = bs_shared_ptr_new<IconRenderDataVec>();
-		gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::updateData, mCore, nullptr, nullptr, nullptr, nullptr, iconRenderData));
+		
+		gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::updateData, core, nullptr, nullptr, nullptr, nullptr, iconRenderData));
 	}
 
 	TransientMeshPtr GizmoManager::buildIconMesh(const CameraHandlerPtr& camera, const Vector<IconData>& iconData,

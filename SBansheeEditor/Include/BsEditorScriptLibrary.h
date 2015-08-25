@@ -12,6 +12,8 @@ namespace BansheeEngine
 	class BS_SCR_BED_EXPORT EditorScriptLibrary : public EngineScriptLibrary
 	{
 	public:
+		EditorScriptLibrary();
+
 		/**
 		 * @copydoc	ScriptLibrary::initialize
 		 */
@@ -26,5 +28,8 @@ namespace BansheeEngine
 		 * @copydoc	ScriptLibrary::destroy
 		 */
 		void destroy() override;
+
+	private:
+		bool mScriptAssembliesLoaded;
 	};
 }

@@ -110,9 +110,6 @@ namespace BansheeEditor
                 if (Internal_IsValidProject(projectPath))
                     LoadProject(projectPath);
             }
-
-            if (!IsProjectLoaded)
-                ProjectWindow.Open();
         }
 
         private static void OnAssetModified(string path)
@@ -244,54 +241,66 @@ namespace BansheeEditor
             Internal_SaveProject();
         }
 
+        // Note: Async, runs next frame
         public static void LoadProject(string path)
         {
             if (IsProjectLoaded && path == ProjectPath)
                 return;
 
-            if (Internal_IsValidProject(path))
+            if (!Internal_IsValidProject(path))
             {
                 Debug.LogWarning("Provided path: \"" + path + "\" is not a valid project.");
                 return;
             }
 
             if (IsProjectLoaded)
-                UnloadProject();
-
-            Internal_LoadProject(path);
-
-            if (IsProjectLoaded)
             {
-                RecentProject[] recentProjects = EditorSettings.RecentProjects;
-                bool foundPath = false;
-                for (int i = 0; i < recentProjects.Length; i++)
-                {
-                    if (PathEx.Compare(recentProjects[i].path, path))
-                    {
-                        recentProjects[i].accessTimestamp = (ulong)DateTime.Now.Ticks;
-                        EditorSettings.RecentProjects = recentProjects;
-                        foundPath = true;
-                        break;
-                    }
-                }
-
-                if (!foundPath)
-                {
-                    List<RecentProject> extendedRecentProjects = new List<RecentProject>();
-                    extendedRecentProjects.AddRange(recentProjects);
-
-                    RecentProject newProject = new RecentProject();
-                    newProject.path = path;
-                    newProject.accessTimestamp = (ulong) DateTime.Now.Ticks;
-
-                    extendedRecentProjects.Add(newProject);
-
-                    EditorSettings.RecentProjects = extendedRecentProjects.ToArray();
-                }
-
-                EditorSettings.LastOpenProject = ProjectPath;
-                EditorSettings.Save();
+                SaveProject();
+                UnloadProject();
             }
+
+            Internal_LoadProject(path); // Triggers OnProjectLoaded when done
+        }
+
+        private static void OnProjectLoaded()
+        {
+            if (!IsProjectLoaded)
+            {
+                ProjectWindow.Open();
+                return;
+            }
+
+            string projectPath = ProjectPath;
+
+            RecentProject[] recentProjects = EditorSettings.RecentProjects;
+            bool foundPath = false;
+            for (int i = 0; i < recentProjects.Length; i++)
+            {
+                if (PathEx.Compare(recentProjects[i].path, projectPath))
+                {
+                    recentProjects[i].accessTimestamp = (ulong)DateTime.Now.Ticks;
+                    EditorSettings.RecentProjects = recentProjects;
+                    foundPath = true;
+                    break;
+                }
+            }
+
+            if (!foundPath)
+            {
+                List<RecentProject> extendedRecentProjects = new List<RecentProject>();
+                extendedRecentProjects.AddRange(recentProjects);
+
+                RecentProject newProject = new RecentProject();
+                newProject.path = projectPath;
+                newProject.accessTimestamp = (ulong)DateTime.Now.Ticks;
+
+                extendedRecentProjects.Add(newProject);
+
+                EditorSettings.RecentProjects = extendedRecentProjects.ToArray();
+            }
+
+            EditorSettings.LastOpenProject = projectPath;
+            EditorSettings.Save();
 
             ProjectLibrary.Refresh();
             monitor = new FolderMonitor(ProjectLibrary.ResourceFolder);
@@ -299,14 +308,12 @@ namespace BansheeEditor
             monitor.OnRemoved += OnAssetModified;
             monitor.OnModified += OnAssetModified;
 
-            if(!string.IsNullOrWhiteSpace(ProjectSettings.LastOpenScene))
+            if (!string.IsNullOrWhiteSpace(ProjectSettings.LastOpenScene))
                 Scene.Load(ProjectSettings.LastOpenScene);
         }
 
-        public static void UnloadProject()
+        private static void UnloadProject()
         {
-            // TODO - Save dirty assets
-
             Action continueUnload =
                 () =>
                 {

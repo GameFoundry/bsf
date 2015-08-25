@@ -231,6 +231,7 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::XButtonHoverTex = L"XBtnHover.psd";
 
 	const WString BuiltinEditorResources::StatusBarBgTex = L"StatusBarBg.psd";
+	const WString BuiltinEditorResources::ScrollAreaBgTex = L"ScrollAreaBg.png";
 
 	/************************************************************************/
 	/* 									SHADERS                      		*/
@@ -1405,6 +1406,18 @@ namespace BansheeEngine
 		selectableLabelStyle.textHorzAlign = THA_Center;
 
 		skin->setStyle("SelectableLabel", selectableLabelStyle);
+
+		// Scroll area background
+		GUIElementStyle scrollAreaBg;
+		scrollAreaBg.normal.texture = getGUITexture(ScrollAreaBgTex);
+		scrollAreaBg.minHeight = 6;
+		scrollAreaBg.minWidth = 4;
+		scrollAreaBg.border.left = 2;
+		scrollAreaBg.border.right = 2;
+		scrollAreaBg.border.top = 2;
+		scrollAreaBg.border.bottom = 4;
+		
+		skin->setStyle("ScrollAreaBg", scrollAreaBg);
 
 		return skin;
 	}

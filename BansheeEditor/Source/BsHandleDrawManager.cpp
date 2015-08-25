@@ -29,7 +29,7 @@ namespace BansheeEngine
 		SPtr<MaterialCore> solidMaterialProxy = solidMaterial->getCore();
 		SPtr<MaterialCore> wireMaterialProxy = wireMaterial->getCore();
 
-		mCore = bs_new<HandleDrawManagerCore>(HandleDrawManagerCore::PrivatelyConstruct());
+		mCore.store(bs_new<HandleDrawManagerCore>(HandleDrawManagerCore::PrivatelyConstruct()), std::memory_order_release);
 
 		gCoreAccessor().queueCommand(std::bind(&HandleDrawManager::initializeCore, this, wireMaterialProxy, solidMaterialProxy));
 	}
@@ -38,14 +38,14 @@ namespace BansheeEngine
 	{
 		bs_delete(mDrawHelper);
 
-		gCoreAccessor().queueCommand(std::bind(&HandleDrawManager::destroyCore, this, mCore));
+		gCoreAccessor().queueCommand(std::bind(&HandleDrawManager::destroyCore, this, mCore.load(std::memory_order_relaxed)));
 	}
 
 	void HandleDrawManager::initializeCore(const SPtr<MaterialCore>& wireMat, const SPtr<MaterialCore>& solidMat)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		mCore->initialize(wireMat, solidMat);
+		mCore.load(std::memory_order_acquire)->initialize(wireMat, solidMat);
 	}
 
 	void HandleDrawManager::destroyCore(HandleDrawManagerCore* core)
@@ -175,7 +175,9 @@ namespace BansheeEngine
 			}
 		}
 
-		gCoreAccessor().queueCommand(std::bind(&HandleDrawManagerCore::updateData, mCore, 
+		HandleDrawManagerCore* core = mCore.load(std::memory_order_relaxed);
+
+		gCoreAccessor().queueCommand(std::bind(&HandleDrawManagerCore::updateData, core,
 			camera->getCore(), proxyData));
 
 		mDrawHelper->clear();

@@ -62,6 +62,11 @@ namespace BansheeEngine
 		void close(EditorWidgetBase* widget);
 
 		/**
+		 * @brief	Closes all open editor widgets.
+		 */
+		void closeAll();
+
+		/**
 		 * @brief	Retrieves the layout of all currently active widgets. You may later
 		 * 			use this layout to restore exact position of the widgets.
 		 */

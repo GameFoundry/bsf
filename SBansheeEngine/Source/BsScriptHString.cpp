@@ -25,13 +25,13 @@ namespace BansheeEngine
 		ScriptHString* nativeInstance = new (bs_alloc<ScriptHString>()) ScriptHString(instance, string);
 	}
 
-	void ScriptHString::internal_setParameter(HString* nativeInstance, UINT32 idx, MonoString* value)
+	void ScriptHString::internal_setParameter(ScriptHString* nativeInstance, UINT32 idx, MonoString* value)
 	{
-		nativeInstance->setParameter(idx, MonoUtil::monoToWString(value));
+		nativeInstance->mString.setParameter(idx, MonoUtil::monoToWString(value));
 	}
 
-	void ScriptHString::internal_getValue(HString* nativeInstance, MonoString** value)
+	void ScriptHString::internal_getValue(ScriptHString* nativeInstance, MonoString** value)
 	{
-		*value = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), nativeInstance->getValue());
+		*value = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), nativeInstance->mString.getValue());
 	}
 }

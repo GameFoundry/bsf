@@ -3,9 +3,16 @@
 #include "BsEditorApplication.h"
 #include "BsScriptObjectManager.h"
 #include "BsFileSystem.h"
+#include "BsMonoManager.h"
+#include "BsScriptAssemblyManager.h"
+#include "BsMonoAssembly.h"
 
 namespace BansheeEngine
 {
+	EditorScriptLibrary::EditorScriptLibrary()
+		:mScriptAssembliesLoaded(false)
+	{ }
+
 	void EditorScriptLibrary::initialize()
 	{
 		EngineScriptLibrary::initialize();
@@ -15,29 +22,60 @@ namespace BansheeEngine
 
 	void EditorScriptLibrary::reload()
 	{
-		Vector<std::pair<String, Path>> assemblies;
-
 		Path engineAssemblyPath = gApplication().getEngineAssemblyPath();
-		assemblies.push_back({ ENGINE_ASSEMBLY, engineAssemblyPath });
+		Path gameAssemblyPath = gApplication().getGameAssemblyPath();
 
-		if (gEditorApplication().isProjectLoaded())
+		Path editorAssemblyPath = gEditorApplication().getEditorAssemblyPath();
+		Path editorScriptAssemblyPath = gEditorApplication().getEditorScriptAssemblyPath();
+
+#if BS_DEBUG_MODE
+		mScriptAssembliesLoaded = true; // Force assembly refresh as an ad hoc unit test in debug mode
+#endif
+
+		// Do a full refresh if we have already loaded script assemblies
+		if (mScriptAssembliesLoaded)
 		{
-			Path gameAssemblyPath = gApplication().getGameAssemblyPath();
+			Vector<std::pair<String, Path>> assemblies;
+
+			assemblies.push_back({ ENGINE_ASSEMBLY, engineAssemblyPath });
+			if (gEditorApplication().isProjectLoaded())
+			{
+				if (FileSystem::exists(gameAssemblyPath))
+					assemblies.push_back({ SCRIPT_GAME_ASSEMBLY, gameAssemblyPath });
+			}
+
+			assemblies.push_back({ EDITOR_ASSEMBLY, editorAssemblyPath });
+			if (gEditorApplication().isProjectLoaded())
+			{
+				
+				if (FileSystem::exists(editorScriptAssemblyPath))
+					assemblies.push_back({ SCRIPT_EDITOR_ASSEMBLY, editorScriptAssemblyPath });
+			}
+
+			ScriptObjectManager::instance().refreshAssemblies(assemblies);
+		}
+		else // Otherwise just additively load them
+		{
+			MonoManager::instance().loadAssembly(engineAssemblyPath.toString(), ENGINE_ASSEMBLY);
+			ScriptAssemblyManager::instance().loadAssemblyInfo(ENGINE_ASSEMBLY);
+
 			if (FileSystem::exists(gameAssemblyPath))
-				assemblies.push_back({ SCRIPT_GAME_ASSEMBLY, gameAssemblyPath });
-		}
+			{
+				MonoManager::instance().loadAssembly(gameAssemblyPath.toString(), SCRIPT_GAME_ASSEMBLY);
+				ScriptAssemblyManager::instance().loadAssemblyInfo(SCRIPT_GAME_ASSEMBLY);
+			}
 
-		String editorAssemblyPath = gEditorApplication().getEditorAssemblyPath().toString();
-		assemblies.push_back({ EDITOR_ASSEMBLY, editorAssemblyPath });
+			MonoManager::instance().loadAssembly(editorAssemblyPath.toString(), EDITOR_ASSEMBLY);
+			ScriptAssemblyManager::instance().loadAssemblyInfo(EDITOR_ASSEMBLY);
 
-		if (gEditorApplication().isProjectLoaded())
-		{
-			Path editorScriptAssemblyPath = gEditorApplication().getEditorScriptAssemblyPath();
 			if (FileSystem::exists(editorScriptAssemblyPath))
-				assemblies.push_back({ SCRIPT_EDITOR_ASSEMBLY, editorScriptAssemblyPath });
-		}
+			{
+				MonoManager::instance().loadAssembly(editorScriptAssemblyPath.toString(), SCRIPT_EDITOR_ASSEMBLY);
+				ScriptAssemblyManager::instance().loadAssemblyInfo(SCRIPT_EDITOR_ASSEMBLY);
+			}
 
-		ScriptObjectManager::instance().refreshAssemblies(assemblies);
+			mScriptAssembliesLoaded = true;
+		}
 	}
 
 	void EditorScriptLibrary::destroy()

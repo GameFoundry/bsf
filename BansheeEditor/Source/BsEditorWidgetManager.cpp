@@ -134,6 +134,18 @@ namespace BansheeEngine
 		EditorWidgetBase::destroy(widget);
 	}
 
+	void EditorWidgetManager::closeAll()
+	{
+		Vector<EditorWidgetBase*> toClose(mActiveWidgets.size());
+
+		UINT32 idx = 0;
+		for (auto& widget : mActiveWidgets)
+			toClose[idx++] = widget.second;
+
+		for (auto& widget : toClose)
+			widget->close();
+	}
+
 	EditorWidgetBase* EditorWidgetManager::create(const String& name, EditorWidgetContainer& parentContainer)
 	{
 		auto iterFind = mActiveWidgets.find(name);

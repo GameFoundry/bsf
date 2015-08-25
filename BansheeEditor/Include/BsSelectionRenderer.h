@@ -51,7 +51,7 @@ namespace BansheeEngine
 		 */
 		void destroyCore(SelectionRendererCore* core);
 
-		SelectionRendererCore* mCore;
+		std::atomic<SelectionRendererCore*> mCore;
 	};
 
 	/**

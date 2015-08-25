@@ -1083,13 +1083,14 @@ namespace BansheeEngine
 			{
 				// TODO - Not handling IME input
 
+				// Ignore rarely used special command characters, usually triggered by ctrl+key
+				// combinations. (We want to keep ctrl+key free for shortcuts instead)
+				if (wParam <= 23)
+					break;
+
 				switch (wParam) 
 				{ 
-				case VK_BACK:
-				case 0x0A:  // linefeed 
-				case 0x0D:  // carriage return 
 				case VK_ESCAPE:
-				case VK_TAB: 
 					break; 
 				default:    // displayable character 
 					{

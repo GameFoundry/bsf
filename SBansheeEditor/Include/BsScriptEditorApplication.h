@@ -13,8 +13,16 @@ namespace BansheeEngine
 	public:
 		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "EditorApplication")
 
+		/**
+		 * @brief	Called every frame. Triggers delayed project load.
+		 */
+		 static void update();
+
 	private:
 		ScriptEditorApplication(MonoObject* instance);
+
+		static bool mRequestProjectLoad;
+		static Path mProjectLoadPath;
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
@@ -36,5 +44,9 @@ namespace BansheeEngine
 		static void internal_LoadProject(MonoString* path);
 		static void internal_UnloadProject();
 		static void internal_CreateProject(MonoString* path);
+
+		typedef void(__stdcall *OnProjectLoadedThunkDef)(MonoException**);
+
+		static OnProjectLoadedThunkDef onProjectLoadedThunk;
 	};
 }

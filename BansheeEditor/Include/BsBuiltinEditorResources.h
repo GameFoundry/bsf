@@ -341,6 +341,7 @@ namespace BansheeEngine
 		static const WString XButtonHoverTex;
 
 		static const WString StatusBarBgTex;
+		static const WString ScrollAreaBgTex;
 
 		static const WString ShaderDockOverlayFile;
 		static const WString ShaderSceneGridFile;

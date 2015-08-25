@@ -104,8 +104,6 @@ namespace BansheeEngine
 		 * @param	path	Absolute path to the root project folder.
 		 */
 		bool isValidProjectPath(const Path& path);
-
-		static const Path PROJECT_INTERNAL_DIR;
 	private:
 		/**
 		 * @copydoc	Module::onStartUp

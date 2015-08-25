@@ -20,6 +20,7 @@
 #include "BsTestOutput.h"
 #include "BsEditorResourceLoader.h"
 #include "BsScriptManager.h"
+#include "BsScriptEditorApplication.h"
 
 namespace BansheeEngine
 {
@@ -97,6 +98,7 @@ namespace BansheeEngine
 		ScriptGizmoManager::instance().update();
 		ScriptDragDropManager::instance().update();
 		ScriptFolderMonitorManager::instance().update();
+		ScriptEditorApplication::update();
 	}
 
 	void EditorScriptManager::debug_refreshAssembly()

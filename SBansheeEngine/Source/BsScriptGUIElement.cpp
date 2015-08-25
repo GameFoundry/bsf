@@ -37,6 +37,8 @@ namespace BansheeEngine
 	void ScriptGUIElementBaseTBase::_onManagedInstanceDeleted()
 	{
 		destroy();
+
+		ScriptObjectBase::_onManagedInstanceDeleted();
 	}
 
 	ScriptGUIElementTBase::ScriptGUIElementTBase(MonoObject* instance)

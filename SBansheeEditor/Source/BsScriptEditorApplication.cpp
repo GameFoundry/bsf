@@ -19,6 +19,11 @@
 
 namespace BansheeEngine
 {
+	bool ScriptEditorApplication::mRequestProjectLoad = false;
+	Path ScriptEditorApplication::mProjectLoadPath;
+
+	ScriptEditorApplication::OnProjectLoadedThunkDef ScriptEditorApplication::onProjectLoadedThunk;
+
 	ScriptEditorApplication::ScriptEditorApplication(MonoObject* instance)
 		:ScriptObject(instance)
 	{ }
@@ -42,6 +47,22 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_LoadProject", &ScriptEditorApplication::internal_LoadProject);
 		metaData.scriptClass->addInternalCall("Internal_UnloadProject", &ScriptEditorApplication::internal_UnloadProject);
 		metaData.scriptClass->addInternalCall("Internal_CreateProject", &ScriptEditorApplication::internal_CreateProject);
+
+		onProjectLoadedThunk = (OnProjectLoadedThunkDef)metaData.scriptClass->getMethod("OnProjectLoaded")->getThunk();
+	}
+
+	void ScriptEditorApplication::update()
+	{
+		// Project load must be delayed when requested from managed code because it
+		// triggers managed assembly reload, and that can't be performed when called
+		// from the Mono thread.
+		if (mRequestProjectLoad)
+		{
+			gEditorApplication().loadProject(mProjectLoadPath);
+
+			mRequestProjectLoad = false;
+			MonoUtil::invokeThunk(onProjectLoadedThunk);
+		}
 	}
 
 	MonoString* ScriptEditorApplication::internal_GetProjectPath()
@@ -156,8 +177,8 @@ namespace BansheeEngine
 
 	void ScriptEditorApplication::internal_LoadProject(MonoString* path)
 	{
-		Path nativePath = MonoUtil::monoToWString(path);
-		gEditorApplication().loadProject(nativePath);
+		mRequestProjectLoad = true;
+		mProjectLoadPath = MonoUtil::monoToWString(path);
 	}
 
 	void ScriptEditorApplication::internal_UnloadProject()

@@ -166,7 +166,7 @@ namespace BansheeEngine
 		static const UINT32 ARC_QUALITY;
 
 		Matrix4 mTransform;
-		HandleDrawManagerCore* mCore;
+		std::atomic<HandleDrawManagerCore*> mCore;
 		DrawHelper* mDrawHelper;
 	};
 

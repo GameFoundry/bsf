@@ -22,18 +22,19 @@ namespace BansheeEngine
 	{
 		HMaterial selectionMat = BuiltinEditorResources::instance().createSelectionMat();
 			
-		mCore = bs_new<SelectionRendererCore>(SelectionRendererCore::PrivatelyConstuct());
+		mCore.store(bs_new<SelectionRendererCore>(SelectionRendererCore::PrivatelyConstuct()), std::memory_order_release);
+
 		gCoreAccessor().queueCommand(std::bind(&SelectionRenderer::initializeCore, this, selectionMat->getCore()));;
 	}
 
 	SelectionRenderer::~SelectionRenderer()
 	{
-		gCoreAccessor().queueCommand(std::bind(&SelectionRenderer::destroyCore, this, mCore));
+		gCoreAccessor().queueCommand(std::bind(&SelectionRenderer::destroyCore, this, mCore.load(std::memory_order_relaxed)));
 	}
 
 	void SelectionRenderer::initializeCore(const SPtr<MaterialCore>& initData)
 	{
-		mCore->initialize(initData);
+		mCore.load(std::memory_order_acquire)->initialize(initData);
 	}
 
 	void SelectionRenderer::destroyCore(SelectionRendererCore* core)
@@ -59,7 +60,8 @@ namespace BansheeEngine
 			}
 		}
 
-		gCoreAccessor().queueCommand(std::bind(&SelectionRendererCore::updateData, mCore, camera->getCore(), objects));
+		SelectionRendererCore* core = mCore.load(std::memory_order_relaxed);
+		gCoreAccessor().queueCommand(std::bind(&SelectionRendererCore::updateData, core, camera->getCore(), objects));
 	}
 
 	const Color SelectionRendererCore::SELECTION_COLOR = Color(1.0f, 1.0f, 1.0f, 0.3f);

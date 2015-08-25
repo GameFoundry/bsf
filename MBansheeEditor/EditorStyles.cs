@@ -20,5 +20,6 @@ namespace BansheeEditor
         public const string ColorSlider2DHandle = "ColorSlider2DHandle";
         public const string SelectionArea = "SelectionArea";
         public const string SelectableLabel = "SelectableLabel";
+        public const string ScrollAreaBg = "ScrollAreaBg";
     }
 }

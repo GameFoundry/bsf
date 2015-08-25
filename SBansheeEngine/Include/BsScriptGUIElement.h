@@ -80,19 +80,6 @@ namespace BansheeEngine
 		{ 
 			initialize(element);
 		}
-
-		/**
-		 * @copydoc	ScriptObjectBase::_onManagedInstanceDeleted
-		 */
-		void _onManagedInstanceDeleted()
-		{
-			// Elements with a GUIWidget parent are destroyed automatically when widget is destroyed, but those without one
-			// we need to destroy manually.
-			if (getGUIElement()->_getParentWidget() == nullptr) 
-				destroy();
-
-			ScriptObject::_onManagedInstanceDeleted();
-		}
 	};
 
 	/**
@@ -126,19 +113,6 @@ namespace BansheeEngine
 			:ScriptObject(instance)
 		{
 			initialize(element);
-		}
-
-		/**
-		 * @copydoc	ScriptObjectBase::_onManagedInstanceDeleted
-		 */
-		void _onManagedInstanceDeleted()
-		{
-			// Elements with a GUIWidget parent are destroyed automatically when widget is destroyed, but those without one
-			// we need to destroy manually.
-			if (!mIsDestroyed && getGUIElement()->_getParentWidget() == nullptr)
-				destroy();
-
-			ScriptObject::_onManagedInstanceDeleted();
 		}
 	};
 

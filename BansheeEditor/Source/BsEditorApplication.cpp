@@ -49,7 +49,6 @@
 
 namespace BansheeEngine
 {
-	const Path EditorApplication::PROJECT_INTERNAL_DIR = L"Internal\\";
 	const Path EditorApplication::WIDGET_LAYOUT_PATH = PROJECT_INTERNAL_DIR + L"Layout.asset";
 	const Path EditorApplication::BUILD_DATA_PATH = PROJECT_INTERNAL_DIR + L"BuildData.asset";
 	const Path EditorApplication::EDITOR_SETTINGS_PATH = RUNTIME_DATA_PATH + L"Settings.asset";
@@ -304,6 +303,7 @@ namespace BansheeEngine
 		BuildManager::instance().clear();
 		UndoRedo::instance().clear();
 
+		EditorWidgetManager::instance().closeAll();
 		ProjectLibrary::instance().unloadLibrary();
 		Resources::instance().unloadAllUnused();
 	}
@@ -318,13 +318,14 @@ namespace BansheeEngine
 
 		loadProjectSettings();
 		BuildManager::instance().load(BUILD_DATA_PATH);
+
+		// Do this before restoring windows and loading library to ensure types are loaded
+		ScriptManager::instance().reload();
 		ProjectLibrary::instance().loadLibrary();
 
 		EditorWidgetLayoutPtr layout = loadWidgetLayout();
 		if (layout != nullptr)
 			EditorWidgetManager::instance().setLayout(layout);
-
-		ScriptManager::instance().reload();
 	}
 
 	void EditorApplication::createProject(const Path& path)

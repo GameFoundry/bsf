@@ -15,6 +15,10 @@
 
 namespace BansheeEngine
 {
+	EngineScriptLibrary::EngineScriptLibrary()
+		:mScriptAssembliesLoaded(false)
+	{ }
+
 	void EngineScriptLibrary::initialize()
 	{
 		Path engineAssemblyPath = gApplication().getEngineAssemblyPath();
@@ -41,13 +45,30 @@ namespace BansheeEngine
 		Path engineAssemblyPath = gApplication().getEngineAssemblyPath();
 		Path gameAssemblyPath = gApplication().getGameAssemblyPath();
 
-		Vector<std::pair<String, Path>> assemblies;
-		assemblies.push_back({ ENGINE_ASSEMBLY, engineAssemblyPath });
+		// Do a full refresh if we have already loaded script assemblies
+		if (mScriptAssembliesLoaded)
+		{
+			Vector<std::pair<String, Path>> assemblies;
+			assemblies.push_back({ ENGINE_ASSEMBLY, engineAssemblyPath });
 
-		if (FileSystem::exists(gameAssemblyPath))
-			assemblies.push_back({ SCRIPT_GAME_ASSEMBLY, gameAssemblyPath });
+			if (FileSystem::exists(gameAssemblyPath))
+				assemblies.push_back({ SCRIPT_GAME_ASSEMBLY, gameAssemblyPath });
 
-		ScriptObjectManager::instance().refreshAssemblies(assemblies);
+			ScriptObjectManager::instance().refreshAssemblies(assemblies);
+		}
+		else // Otherwise just additively load them
+		{
+			MonoManager::instance().loadAssembly(engineAssemblyPath.toString(), ENGINE_ASSEMBLY);
+			ScriptAssemblyManager::instance().loadAssemblyInfo(ENGINE_ASSEMBLY);
+
+			if (FileSystem::exists(gameAssemblyPath))
+			{
+				MonoManager::instance().loadAssembly(gameAssemblyPath.toString(), SCRIPT_GAME_ASSEMBLY);
+				ScriptAssemblyManager::instance().loadAssemblyInfo(SCRIPT_GAME_ASSEMBLY);
+			}
+
+			mScriptAssembliesLoaded = true;
+		}
 	}
 
 	void EngineScriptLibrary::destroy()

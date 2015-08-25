@@ -339,7 +339,7 @@ namespace BansheeEngine
 
 		TransientMeshPtr mIconMesh;
 
-		GizmoManagerCore* mCore;
+		std::atomic<GizmoManagerCore*> mCore;
 
 		// Immutable
 		VertexDataDescPtr mIconVertexDesc;

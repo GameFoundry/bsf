@@ -12,8 +12,8 @@
 
 namespace BansheeEngine
 {
-	ScriptGUILayout::ScriptGUILayout(MonoObject* instance, GUILayout* layout)
-		:TScriptGUIElementBase(instance, layout), mLayout(layout), mIsDestroyed(false)
+	ScriptGUILayout::ScriptGUILayout(MonoObject* instance, GUILayout* layout, bool ownsNative)
+		:TScriptGUIElementBase(instance, layout), mLayout(layout), mIsDestroyed(false), mOwnsNative(ownsNative)
 	{
 
 	}
@@ -39,7 +39,8 @@ namespace BansheeEngine
 
 			destroyChildren();
 
-			GUILayout::destroy(mLayout);
+			if (mOwnsNative)
+				GUILayout::destroy(mLayout);
 
 			mLayout = nullptr;
 			mIsDestroyed = true;
@@ -200,7 +201,7 @@ namespace BansheeEngine
 	MonoObject* ScriptGUIPanel::createFromExisting(GUIPanel* panel)
 	{
 		MonoObject* managedInstance = metaData.scriptClass->createInstance();
-		ScriptGUILayout* nativeInstance = new (bs_alloc<ScriptGUILayout>()) ScriptGUILayout(managedInstance, panel);
+		ScriptGUILayout* nativeInstance = new (bs_alloc<ScriptGUILayout>()) ScriptGUILayout(managedInstance, panel, false);
 
 		return managedInstance;
 	}

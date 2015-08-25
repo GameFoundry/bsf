@@ -77,7 +77,8 @@ namespace BansheeEngine
 
 	static const char* EDITOR_ASSEMBLY = "MBansheeEditor";
 	static const char* SCRIPT_EDITOR_ASSEMBLY = "MScriptEditor";
-	static const Path INTERNAL_ASSEMBLY_PATH = "Internal//Assemblies//";
+	static const Path PROJECT_INTERNAL_DIR = L"Internal\\";
+	static const Path INTERNAL_ASSEMBLY_PATH = PROJECT_INTERNAL_DIR + "Assemblies\\";
 
 	/**
 	 * @brief	Types of drag and drop operations. Different types specify
