@@ -31,7 +31,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElementBase::_getType
 		 */
-		Type _getType() const { return GUIElementBase::Type::FixedSpace; }
+		Type _getType() const override { return GUIElementBase::Type::FixedSpace; }
 
 		/**
 		 * @copydoc	GUIElementBase::_getOptimalSize

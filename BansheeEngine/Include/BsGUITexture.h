@@ -7,7 +7,7 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Type of scaling modes for GUI images
+	 * @brief	Type of scaling modes for GUI images.
 	 */
 	enum class GUIImageScaleMode
 	{
@@ -18,7 +18,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	A GUI element that allows you to display a texture.
+	 * @brief	A GUI element that displays a texture.
 	 */
 	class BS_EXPORT GUITexture : public GUIElement
 	{
@@ -31,7 +31,8 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates a new GUI texture element.
 		 *
-		 * @param	texture			Texture element to display.
+		 * @param	texture			Texture element to display. If this is null then the texture specified
+		 *							by the style will be used.
 		 * @param	scale			Scale mode to use when sizing the texture.
 		 * @param	transparent		Determines should the texture be rendered with transparency active.
 		 * @param	options			Options that allow you to control how is the element positioned and sized.
@@ -46,7 +47,8 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates a new GUI texture element.
 		 *
-		 * @param	texture			Texture element to display.
+		 * @param	texture			Texture element to display. If this is null then the texture specified
+		 *							by the style will be used.
 		 * @param	scale			Scale mode to use when sizing the texture.
 		 * @param	transparent		Determines should the texture be rendered with transparency active.
 		 * @param	styleName		Optional style to use for the element. Style will be retrieved
@@ -59,7 +61,8 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates a new GUI texture element.
 		 *
-		 * @param	texture			Texture element to display.
+		 * @param	texture			Texture element to display. If this is null then the texture specified
+		 *							by the style will be used.
 		 * @param	scale			Scale mode to use when sizing the texture.
 		 * @param	options			Options that allow you to control how is the element positioned and sized.
 		 *							This will override any similar options set by style.
@@ -73,7 +76,8 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates a new GUI texture element.
 		 *
-		 * @param	texture			Texture element to display.
+		 * @param	texture			Texture element to display. If this is null then the texture specified
+		 *							by the style will be used.
 		 * @param	scale			Scale mode to use when sizing the texture.
 		 * @param	styleName		Optional style to use for the element. Style will be retrieved
 		 *							from GUISkin of the GUIWidget the element is used on. If not specified
@@ -85,7 +89,8 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates a new GUI texture element. Uses the default StretchToFit scale mode.
 		 *
-		 * @param	texture			Texture element to display.
+		 * @param	texture			Texture element to display. If this is null then the texture specified
+		 *							by the style will be used.
 		 * @param	options			Options that allow you to control how is the element positioned and sized.
 		 *							This will override any similar options set by style.
 		 * @param	styleName		Optional style to use for the element. Style will be retrieved
@@ -98,7 +103,8 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates a new GUI texture element. Uses the default StretchToFit scale mode.
 		 *
-		 * @param	texture			Texture element to display.
+		 * @param	texture			Texture element to display. If this is null then the texture specified
+		 *							by the style will be used.
 		 * @param	styleName		Optional style to use for the element. Style will be retrieved
 		 *							from GUISkin of the GUIWidget the element is used on. If not specified
 		 *							default style is used.
@@ -151,7 +157,8 @@ namespace BansheeEngine
 		static GUITexture* create(const String& styleName = StringUtil::BLANK);
 
 		/**
-		 * @brief	Changes the active texture.
+		 * @brief	Changes the active texture. If the provided texture is null 
+		 *			then the texture specified by the style will be used.
 		 */
 		void setTexture(const HSpriteTexture& texture);
 

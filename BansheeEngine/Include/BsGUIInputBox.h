@@ -9,7 +9,7 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Input box is a GUI element at accepts Unicode textual input. It can be
+	 * @brief	Input box is a GUI element that accepts Unicode textual input. It can be
 	 *			single or multi-line and handles various types of text manipulation.
 	 */
 	class BS_EXPORT GUIInputBox : public GUIElement
@@ -84,17 +84,17 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElement::setTint
 		 */
-		virtual void setTint(const Color& color);
+		virtual void setTint(const Color& color) override;
 
 		/**
 		 * @copydoc	GUIElement::getElementType
 		 */
-		virtual ElementType _getElementType() const { return ElementType::InputBox; }
+		virtual ElementType _getElementType() const override { return ElementType::InputBox; }
 
 		/**
 		 * @copydoc	GUIElement::_getOptimalSize
 		 */
-		virtual Vector2I _getOptimalSize() const;
+		virtual Vector2I _getOptimalSize() const override;
 
 		/**
 		 * @brief	Triggered whenever input text has changed.
@@ -117,53 +117,53 @@ namespace BansheeEngine
 		/**
 		 * @copydoc GUIElement::getNumRenderElements()
 		 */
-		virtual UINT32 _getNumRenderElements() const;
+		virtual UINT32 _getNumRenderElements() const override;
 
 		/**
 		 * @copydoc GUIElement::getMaterial()
 		 */
-		virtual const GUIMaterialInfo& _getMaterial(UINT32 renderElementIdx) const;
+		virtual const GUIMaterialInfo& _getMaterial(UINT32 renderElementIdx) const override;
 
 		/**
 		 * @copydoc GUIElement::getNumQuads()
 		 */
-		virtual UINT32 _getNumQuads(UINT32 renderElementIdx) const;
+		virtual UINT32 _getNumQuads(UINT32 renderElementIdx) const override;
 
 		/**
 		 * @copydoc GUIElement::fillBuffer()
 		 */
 		virtual void _fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, 
-			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const;
+			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const override;
 
 		/**
 		 * @copydoc GUIElement::updateRenderElementsInternal()
 		 */
-		virtual void updateRenderElementsInternal();
+		virtual void updateRenderElementsInternal() override;
 
 		/**
 		 * @copydoc GUIElement::updateBounds()
 		 */
-		virtual void updateClippedBounds();
+		virtual void updateClippedBounds() override;
 
 		/**
 		 * @copydoc	GUIElement::mouseEvent
 		 */
-		virtual bool _mouseEvent(const GUIMouseEvent& ev);
+		virtual bool _mouseEvent(const GUIMouseEvent& ev) override;
 
 		/**
 		 * @copydoc	GUIElement::textInputEvent
 		 */
-		virtual bool _textInputEvent(const GUITextInputEvent& ev);
+		virtual bool _textInputEvent(const GUITextInputEvent& ev) override;
 
 		/**
 		 * @copydoc	GUIElement::commandEvent
 		 */
-		virtual bool _commandEvent(const GUICommandEvent& ev);
+		virtual bool _commandEvent(const GUICommandEvent& ev) override;
 
 		/**
 		 * @copydoc	GUIElement::virtualButtonEvent
 		 */
-		virtual bool _virtualButtonEvent(const GUIVirtualButtonEvent& ev);
+		virtual bool _virtualButtonEvent(const GUIVirtualButtonEvent& ev) override;
 
 		/**
 		 * @brief	Returns how much to offset text due to scrolling.
@@ -172,28 +172,28 @@ namespace BansheeEngine
 		 *			caret moves the text will scroll so that the caret remains visible, and
 		 *			how much scroll is applied is determined by this value.
 		 */
-		virtual Vector2I _getTextInputOffset() const;
+		virtual Vector2I _getTextInputOffset() const override;
 
 		/**
 		 * @brief	Returns rectangle in which the text can be displayed, in local
 		 *			coordinates (i.e. text will start at 0, 0).
 		 */
-		virtual Rect2I _getTextInputRect() const;
+		virtual Rect2I _getTextInputRect() const override;
 
 		/**
 		 * @copydoc	GUIElement::_getRenderElementDepth
 		 */
-		virtual UINT32 _getRenderElementDepth(UINT32 renderElementIdx) const;
+		virtual UINT32 _getRenderElementDepth(UINT32 renderElementIdx) const override;
 
 		/**
 		 * @copydoc	GUIElement::_getRenderElementDepthRange
 		 */
-		virtual UINT32 _getRenderElementDepthRange() const;
+		virtual UINT32 _getRenderElementDepthRange() const override;
 
 		/**
 		 * @copydoc	GUIElement::_hasCustomCursor
 		 */
-		virtual bool _hasCustomCursor(const Vector2I position, CursorType& type) const;
+		virtual bool _hasCustomCursor(const Vector2I position, CursorType& type) const override;
 
 		/**
 		 * @copydoc	GUIElement::getContextMenu
