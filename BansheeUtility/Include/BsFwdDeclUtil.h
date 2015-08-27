@@ -6,7 +6,7 @@ namespace BansheeEngine
 {
 	/**
 	 * @brief	Values that represent in which order are euler
-	 * 			angles applied when used in transformations
+	 * 			angles applied when used in transformations.
 	 */
 	enum class EulerAngleOrder
 	{

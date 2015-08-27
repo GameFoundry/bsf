@@ -2,25 +2,37 @@
 
 namespace BansheeEngine
 {
+    /// <summary>
+    /// Axis aligned box represented by minimum and maximum point.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential), SerializeObject]
-	public struct AABox
+	public struct AABox // Note: Must match C++ class AABox
 	{
         private Vector3 _minimum;
 		private Vector3 _maximum;
 
-        public Vector3 minimum
+        /// <summary>
+        /// Corner of the box with minimum values (opposite to maximum corner).
+        /// </summary>
+        public Vector3 Minimum
         {
             get { return _minimum; }
             set { _minimum = value; }
         }
 
-        public Vector3 maximum
+        /// <summary>
+        /// Corner of the box with maximum values (opposite to minimum corner).
+        /// </summary>
+        public Vector3 Maximum
         {
             get { return _maximum; }
             set { _maximum = value; }
         }
 
-        public Vector3 center
+        /// <summary>
+        /// Returns the center of the box.
+        /// </summary>
+        public Vector3 Center
         {
             get 
             { 		
@@ -30,7 +42,10 @@ namespace BansheeEngine
             }
         }
 
-	    public Vector3 size
+        /// <summary>
+        /// Returns the width, height and depth of the box.
+        /// </summary>
+	    public Vector3 Size
 	    {
 	        get
 	        {
@@ -38,6 +53,11 @@ namespace BansheeEngine
 	        }
 	    }
 
+        /// <summary>
+        /// Creates a new axis aligned box.
+        /// </summary>
+        /// <param name="min">Corner of the box with minimum values.</param>
+        /// <param name="max">Corner of the box with maximum values.</param>
         public AABox(Vector3 min, Vector3 max)
         {
             _minimum = min;

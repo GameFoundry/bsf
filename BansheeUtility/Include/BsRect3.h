@@ -49,12 +49,12 @@ namespace BansheeEngine
 		const Vector3& getCenter() const { return mCenter; }
 
 		/**
-		 * @brief	Returns the rectangles horizontal axis.
+		 * @brief	Returns the rectangle's horizontal axis.
 		 */
 		const Vector3& getAxisHorz() const { return mAxisHorz; }
 
 		/**
-		 * @brief	Returns the rectangles vertical axis.
+		 * @brief	Returns the rectangle's vertical axis.
 		 */
 		const Vector3& getAxisVert() const { return mAxisVert; }
 

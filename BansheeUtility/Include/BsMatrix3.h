@@ -6,7 +6,8 @@
 namespace BansheeEngine
 {
     /**
-     * @brief	Class representing a 3x3 matrix.
+     * @brief	A 3x3 matrix. Can be used for non-homogenous transformations
+     *          of three dimensional vectors and points.
      */
     class BS_UTILITY_EXPORT Matrix3
     {
@@ -203,12 +204,12 @@ namespace BansheeEngine
         void singularValueDecomposition(Matrix3& matL, Vector3& matS, Matrix3& matR) const;
 
         /**
-         * @brief	Decomposes the matrix into various useful values.
+         * @brief	Decomposes the matrix into a set of values.
          *
          * @param [out]	matQ	Columns form orthonormal bases. If your matrix is affine and
          * 						doesn't use non-uniform scaling this matrix will be the rotation part of the matrix.
-         * @param [out]	vecD	If your matrix is affine these will be scaling factors of the matrix.
-		 * @param [out]	vecU	If your matrix is affine these will be shear factors of the matrix.
+         * @param [out]	vecD	If the matrix is affine these will be scaling factors of the matrix.
+		 * @param [out]	vecU	If the matrix is affine these will be shear factors of the matrix.
          */
 		void QDUDecomposition(Matrix3& matQ, Vector3& vecD, Vector3& vecU) const;
 
@@ -247,7 +248,7 @@ namespace BansheeEngine
 		void fromAxes(const Vector3& xAxis, const Vector3& yAxis, const Vector3& zAxis);
 
         /**
-         * @brief	Extracts Pitch/Yaw/Roll rotations from this matrix.
+         * @brief	Converts an orthonormal matrix to euler angle (pitch/yaw/roll) representation.
          *
          * @param [in,out]	xAngle	Rotation about x axis. (AKA Pitch)
          * @param [in,out]	yAngle  Rotation about y axis. (AKA Yaw)
@@ -278,8 +279,8 @@ namespace BansheeEngine
 		 * @param	xAngle	Rotation about x axis. (AKA Pitch)
 		 * @param	yAngle	Rotation about y axis. (AKA Yaw)
 		 * @param	zAngle	Rotation about z axis. (AKA Roll)
-		 * @param	order 	The order in which rotations will be extracted.
-		 * 					Different values can be retrieved depending on the order.
+		 * @param	order 	The order in which rotations will be applied.
+		 * 					Different rotations can be created depending on the order.
          *
          * @note	Matrix must be orthonormal.
          */

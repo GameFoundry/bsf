@@ -37,8 +37,8 @@ namespace BansheeEngine
         {
             Vector3 end = this * 1.0f;
 
-            origin = matrix.MultiplyAffine(origin);
-            end = matrix.MultiplyAffine(end);
+            origin = matrix.MultiplyDirection(origin);
+            end = matrix.MultiplyDirection(end);
 
             direction = Vector3.Normalize(end - origin);
         }

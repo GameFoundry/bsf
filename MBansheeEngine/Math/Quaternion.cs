@@ -3,9 +3,15 @@ using System.Runtime.InteropServices;
 
 namespace BansheeEngine
 {
+    /// <summary>
+    /// Quaternion used for representing rotations.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential), SerializeObject]
-    public struct Quaternion
+    public struct Quaternion // Note: Must match C++ class Quaternion
     {
+        /// <summary>
+        /// Contains constant data that is used when calculating euler angles in a certain order.
+        /// </summary>
         private struct EulerAngleOrderData
 		{
             public EulerAngleOrderData(int a, int b, int c)
@@ -18,8 +24,15 @@ namespace BansheeEngine
 			public int a, b, c;
 		};
 
-        public static readonly Quaternion zero = new Quaternion(0.0f, 0.0f, 0.0f, 0.0f);
-        public static readonly Quaternion identity = new Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
+        /// <summary>
+        /// Quaternion with all zero elements.
+        /// </summary>
+        public static readonly Quaternion Zero = new Quaternion(0.0f, 0.0f, 0.0f, 0.0f);
+
+        /// <summary>
+        /// Quaternion representing no rotation.
+        /// </summary>
+        public static readonly Quaternion Identity = new Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
 
         private static readonly float epsilon = 1e-03f;
 
@@ -32,6 +45,11 @@ namespace BansheeEngine
         public float z;
         public float w;
 
+        /// <summary>
+        /// Accesses a specific component of the quaternion.
+        /// </summary>
+        /// <param name="index">Index of the component (0 - x, 1 - y, 2 - z, 3 - w).</param>
+        /// <returns>Value of the specific component.</returns>
         public float this[int index]
         {
             get
@@ -72,6 +90,9 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Gets the positive x-axis of the coordinate system transformed by this quaternion.
+        /// </summary>
         public Vector3 Right
         {
             get
@@ -89,6 +110,9 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Gets the positive y-axis of the coordinate system transformed by this quaternion.
+        /// </summary>
         public Vector3 Up
         {
             get
@@ -107,6 +131,9 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Gets the positive z-axis of the coordinate system transformed by this quaternion.
+        /// </summary>
         public Vector3 Forward
         {
             get
@@ -125,6 +152,10 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Returns the inverse of the quaternion. Quaternion must be non-zero. Inverse quaternion has the opposite
+        /// rotation of the original.
+        /// </summary>
         public Quaternion Inverse
         {
             get
@@ -135,6 +166,9 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Returns a normalized copy of the quaternion.
+        /// </summary>
         public Quaternion Normalized
         {
             get
@@ -145,6 +179,9 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Constructs a new quaternion with the specified components.
+        /// </summary>
         public Quaternion(float x, float y, float z, float w)
         {
             this.x = x;
@@ -191,21 +228,47 @@ namespace BansheeEngine
             return !(lhs == rhs);
         }
 
+        /// <summary>
+        /// Calculates a dot product between two quaternions.
+        /// </summary>
+        /// <param name="a">First quaternion.</param>
+        /// <param name="b">Second quaternion.</param>
+        /// <returns>Dot product between the two quaternions.</returns>
         public static float Dot(Quaternion a, Quaternion b)
         {
             return (a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w);
         }
 
+        /// <summary>
+        /// Applies quaternion rotation to the specified point.
+        /// </summary>
+        /// <param name="point">Point to rotate.</param>
+        /// <returns>Point rotated by the quaternion.</returns>
         public Vector3 Rotate(Vector3 point)
         {
             return ToRotationMatrix().Transform(point);
         }
 
+        /// <summary>
+        /// Initializes the quaternion with rotation that rotates from one direction to another.
+        /// </summary>
+        /// <param name="fromDirection">Rotation to start at.</param>
+        /// <param name="toDirection">Rotation to end at.</param>
         public void SetFromToRotation(Vector3 fromDirection, Vector3 toDirection)
         {
             SetFromToRotation(fromDirection, toDirection, Vector3.zero);
         }
 
+        /// <summary>
+        /// Initializes the quaternion with rotation that rotates from one direction to another.
+        /// </summary>
+        /// <param name="fromDirection">Rotation to start at.
+        /// </param>
+        /// <param name="toDirection">Rotation to end at.
+        /// </param>
+        /// <param name="fallbackAxis">Fallback axis to use if the from/to vectors are almost completely opposite.
+        /// Fallback axis should be perpendicular to both vectors.
+        /// </param>
         public void SetFromToRotation(Vector3 fromDirection, Vector3 toDirection, Vector3 fallbackAxis)
         {
 		    fromDirection.Normalize();
@@ -216,7 +279,7 @@ namespace BansheeEngine
 		    // If dot == 1, vectors are the same
             if (d >= 1.0f)
             {
-                this = identity;
+                this = Identity;
                 return;
             }
 
@@ -252,6 +315,10 @@ namespace BansheeEngine
 		    }
         }
 
+        /// <summary>
+        /// Normalizes the quaternion.
+        /// </summary>
+        /// <returns>Length of the quaternion prior to normalization.</returns>
         public float Normalize()
         {
             float len = w*w+x*x+y*y+z*z;
@@ -264,6 +331,9 @@ namespace BansheeEngine
             return len;
         }
 
+        /// <summary>
+        /// Calculates the inverse of the quaternion. Inverse quaternion has the opposite rotation of the original.
+        /// </summary>
         public void Invert()
         {
             float fNorm = w * w + x * x + y * y + z * z;
@@ -277,15 +347,24 @@ namespace BansheeEngine
             }
             else
             {
-                this = zero;
+                this = Zero;
             }
         }
 
+        /// <summary>
+        /// Initializes the quaternion so that it orients an object so it faces in te provided direction.
+        /// </summary>
+        /// <param name="forward">Direction to orient the object towards.</param>
         public void SetLookRotation(Vector3 forward)
         {
             SetLookRotation(forward, Vector3.yAxis);
         }
 
+        /// <summary>
+        /// Initializes the quaternion so that it orients an object so it faces in te provided direction.
+        /// </summary>
+        /// <param name="forward">Direction to orient the object towards.</param>
+        /// <param name="up">Axis that determines the upward direction of the object.</param>
         public void SetLookRotation(Vector3 forward, Vector3 up)
         {
             Quaternion forwardRot = FromToRotation(Vector3.zAxis, forward);
@@ -294,6 +373,20 @@ namespace BansheeEngine
             this = forwardRot * upRot;
         }
 
+        /// <summary>
+        /// Performs spherical interpolation between two quaternions. Spherical interpolation neatly interpolates between
+        /// two rotations without modifying the size of the vector it is applied to (unlike linear interpolation).
+        /// </summary>
+        /// <param name="from">Start quaternion.
+        /// </param>
+        /// <param name="to">End quaternion.
+        /// </param>
+        /// <param name="t">Interpolation factor in range [0, 1] that determines how much to interpolate between
+        /// <paramref name="from"/> and <paramref name="to"/>.</param>
+        /// <param name="shortestPath">Should the interpolation be performed between the shortest or longest path between
+        /// the two quaternions.</param>
+        /// <returns>Interpolated quaternion representing a rotation between <paramref name="from"/> and 
+        /// <paramref name="to"/>.</returns>
         public static Quaternion Slerp(Quaternion from, Quaternion to, float t, bool shortestPath = false)
         {
             float cos = from.w*to.w + from.x*to.x + from.y*to.y + from.z*from.z;
@@ -311,40 +404,29 @@ namespace BansheeEngine
 
             if (MathEx.Abs(cos) < (1 - epsilon))
             {
-                // Standard case (slerp)
                 float sin = MathEx.Sqrt(1 - (cos*cos));
                 float angle = MathEx.Atan2(sin, cos);
                 float invSin = 1.0f / sin;
-                float coeff0 = MathEx.Sin((1.0f - t) * angle) * invSin;
-                float coeff1 = MathEx.Sin(t * angle) * invSin;
-                return coeff0 * from + coeff1 * quat;
+                float a = MathEx.Sin((1.0f - t) * angle) * invSin;
+                float b = MathEx.Sin(t * angle) * invSin;
+
+                return a * from + b * quat;
             }
             else
             {
-                // There are two situations:
-                // 1. "p" and "q" are very close (fCos ~= +1), so we can do a linear
-                //    interpolation safely.
-                // 2. "p" and "q" are almost inverse of each other (fCos ~= -1), there
-                //    are an infinite number of possibilities interpolation. but we haven't
-                //    have method to fix this case, so just use linear interpolation here.
                 Quaternion ret = (1.0f - t) * from + t * quat;
 
-                // Taking the complement requires renormalization
                 ret.Normalize();
                 return ret;
             }
         }
 
-        public static Quaternion RotateTowards(Quaternion from, Quaternion to, Degree maxDeg)
-        {
-            Degree num = Angle(from, to);
-            if (num == 0.0f)
-                return to;
-
-            float t = MathEx.Min(1f, (float)(maxDeg / num));
-            return Slerp(from, to, t);
-        }
-
+        /// <summary>
+        /// Returns the inverse of the quaternion. Quaternion must be non-zero. Inverse quaternion has the opposite
+        /// rotation of the original.
+        /// </summary>
+        /// <param name="rotation">Quaternion to calculate the inverse for.</param>
+        /// <returns>Inverse of the provided quaternion.</returns>
         public static Quaternion Invert(Quaternion rotation)
         {
             Quaternion copy = rotation;
@@ -353,11 +435,22 @@ namespace BansheeEngine
             return copy;
         }
 
+        /// <summary>
+        /// Calculates an angle between two rotations.
+        /// </summary>
+        /// <param name="a">First rotation.</param>
+        /// <param name="b">Second rotation.</param>
+        /// <returns>Angle between the rotations, in degrees.</returns>
         public static Degree Angle(Quaternion a, Quaternion b)
         {
             return (MathEx.Acos(MathEx.Min(MathEx.Abs(Dot(a, b)), 1.0f)) * 2.0f * MathEx.Rad2Deg);
         }
 
+        /// <summary>
+        /// Converts the quaternion rotation into axis/angle rotation.
+        /// </summary>
+        /// <param name="axis">Axis around which the rotation is performed.</param>
+        /// <param name="angle">Amount of rotation.</param>
         public void ToAxisAngle(out Vector3 axis, out Degree angle)
         {
             float fSqrLength = x*x+y*y+z*z;
@@ -379,13 +472,20 @@ namespace BansheeEngine
 		    }
         }
 
-        // Returns angles in degrees
+        /// <summary>
+        /// Converts the quaternion rotation into euler angle (pitch/yaw/roll) rotation.
+        /// </summary>
+        /// <returns>Rotation as euler angles, in degrees.</returns>
         public Vector3 ToEuler()
         {
             Matrix3 matRot = ToRotationMatrix();
             return matRot.ToEulerAngles();
         }
 
+        /// <summary>
+        /// Converts a quaternion rotation into a rotation matrix.
+        /// </summary>
+        /// <returns>Matrix representing the rotation.</returns>
         public Matrix3 ToRotationMatrix()
         {
             Matrix3 mat = new Matrix3();
@@ -416,6 +516,13 @@ namespace BansheeEngine
             return mat;
         }
 
+        /// <summary>
+        /// Creates a quaternion with rotation that rotates from one direction to another.
+        /// </summary>
+        /// <param name="fromDirection">Rotation to start at.</param>
+        /// <param name="toDirection">Rotation to end at.</param>
+        /// <returns>Quaternion that rotates an object from <paramref name="fromDirection"/> to 
+        /// <paramref name="toDirection"/></returns>
         public static Quaternion FromToRotation(Vector3 fromDirection, Vector3 toDirection)
         {
             Quaternion q = new Quaternion();
@@ -423,6 +530,18 @@ namespace BansheeEngine
             return q;
         }
 
+        /// <summary>
+        /// Creates a quaternion with rotation that rotates from one direction to another.
+        /// </summary>
+        /// <param name="fromDirection">Rotation to start at.
+        /// </param>
+        /// <param name="toDirection">Rotation to end at.
+        /// </param>
+        /// <param name="fallbackAxis">Fallback axis to use if the from/to vectors are almost completely opposite.
+        /// Fallback axis should be perpendicular to both vectors.
+        /// </param>
+        /// <returns>Quaternion that rotates an object from <paramref name="fromDirection"/> to 
+        /// <paramref name="toDirection"/></returns>
         public static Quaternion FromToRotation(Vector3 fromDirection, Vector3 toDirection, Vector3 fallbackAxis)
         {
             Quaternion q = new Quaternion();
@@ -430,6 +549,10 @@ namespace BansheeEngine
             return q;
         }
 
+        /// <summary>
+        /// Creates a quaternion that orients an object so it faces in te provided direction.
+        /// </summary>
+        /// <param name="forward">Direction to orient the object towards.</param>
         public static Quaternion LookRotation(Vector3 forward)
         {
             Quaternion quat = new Quaternion();
@@ -438,6 +561,11 @@ namespace BansheeEngine
             return quat;
         }
 
+        /// <summary>
+        /// Creates a quaternion that orients an object so it faces in te provided direction.
+        /// </summary>
+        /// <param name="forward">Direction to orient the object towards.</param>
+        /// <param name="up">Axis that determines the upward direction of the object.</param>
         public static Quaternion LookRotation(Vector3 forward, Vector3 up)
         {
             Quaternion quat = new Quaternion();
@@ -446,16 +574,32 @@ namespace BansheeEngine
             return quat;
         }
 
+        /// <summary>
+        /// Converts the quaternion rotation into euler angle (pitch/yaw/roll) rotation.
+        /// </summary>
+        /// <param name="rotation">Quaternion to convert.</param>
+        /// <returns>Rotation as euler angles, in degrees.</returns>
         public static Vector3 ToEuler(Quaternion rotation)
         {
             return rotation.ToEuler();
         }
 
-        public static void ToAxisAngle(Quaternion rotation, out Vector3 axis, out Degree angleDeg)
+        /// <summary>
+        /// Converts the quaternion rotation into axis/angle rotation.
+        /// </summary>
+        /// <param name="rotation">Quaternion to convert.</param>
+        /// <param name="axis">Axis around which the rotation is performed.</param>
+        /// <param name="angle">Amount of rotation.</param>
+        public static void ToAxisAngle(Quaternion rotation, out Vector3 axis, out Degree angle)
         {
-            rotation.ToAxisAngle(out axis, out angleDeg);
+            rotation.ToAxisAngle(out axis, out angle);
         }
 
+        /// <summary>
+        /// Creates a quaternion from a rotation matrix.
+        /// </summary>
+        /// <param name="rotMatrix">Rotation matrix to convert to quaternion.</param>
+        /// <returns>Newly created quaternion that has equivalent rotation as the provided rotation matrix.</returns>
         public static Quaternion FromRotationMatrix(Matrix3 rotMatrix)
         {
             // Algorithm in Ken Shoemake's article in 1987 SIGGRAPH course notes
@@ -505,11 +649,17 @@ namespace BansheeEngine
             return quat;
         }
 
-        public static Quaternion FromAxisAngle(Vector3 axis, Degree angleDeg)
+        /// <summary>
+        /// Creates a quaternion from axis/angle rotation.
+        /// </summary>
+        /// <param name="axis">Axis around which the rotation is performed.</param>
+        /// <param name="angle">Amount of rotation.</param>
+        /// <returns>Quaternion that rotates an object around the specified axis for the specified amount.</returns>
+        public static Quaternion FromAxisAngle(Vector3 axis, Degree angle)
         {
             Quaternion quat;
 
-            float halfAngle = (float)(0.5f*angleDeg*MathEx.Deg2Rad);
+            float halfAngle = (float)(0.5f*angle*MathEx.Deg2Rad);
             float sin = (float)MathEx.Sin(halfAngle);
             quat.w = (float)MathEx.Cos(halfAngle);
             quat.x = sin * axis.x;
@@ -519,13 +669,23 @@ namespace BansheeEngine
             return quat;
         }
 
-        public static Quaternion FromEuler(Degree xDeg, Degree yDeg, Degree zDeg, EulerAngleOrder order = EulerAngleOrder.YXZ)
+        /// <summary>
+        /// Creates a quaternion from the provided euler angle (pitch/yaw/roll) rotation.
+        /// </summary>
+        /// <param name="xAngle">Pitch angle of rotation.</param>
+        /// <param name="yAngle">Yar angle of rotation.</param>
+        /// <param name="zAngle">Roll angle of rotation.</param>
+        /// <param name="order">The order in which rotations will be applied. Different rotations can be created depending
+        /// on the order.</param>
+        /// <returns>Quaternion that can rotate an object to the specified angles.</returns>
+        public static Quaternion FromEuler(Degree xAngle, Degree yAngle, Degree zAngle, 
+            EulerAngleOrder order = EulerAngleOrder.YXZ)
         {
 		    EulerAngleOrderData l = EA_LOOKUP[(int)order];
 
-		    Radian halfXAngle = xDeg * 0.5f;
-		    Radian halfYAngle = yDeg * 0.5f;
-		    Radian halfZAngle = zDeg * 0.5f;
+		    Radian halfXAngle = xAngle * 0.5f;
+		    Radian halfYAngle = yAngle * 0.5f;
+		    Radian halfZAngle = zAngle * 0.5f;
 
 		    float cx = MathEx.Cos(halfXAngle);
 		    float sx = MathEx.Sin(halfXAngle);
@@ -544,19 +704,25 @@ namespace BansheeEngine
 		    return (quats[l.a] * quats[l.b]) * quats[l.c];
         }
 
-        /**
-         * @note Angles in degrees.
-         */
+        /// <summary>
+        /// Creates a quaternion from the provided euler angle (pitch/yaw/roll) rotation.
+        /// </summary>
+        /// <param name="euler">Euler angles in degrees.</param>
+        /// <param name="order">The order in which rotations will be applied. Different rotations can be created depending
+        /// on the order.</param>
+        /// <returns>Quaternion that can rotate an object to the specified angles.</returns>
         public static Quaternion FromEuler(Vector3 euler, EulerAngleOrder order = EulerAngleOrder.YXZ)
         {
             return FromEuler(euler.x, euler.y, euler.z, order);
         }
 
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
             return x.GetHashCode() ^ y.GetHashCode() << 2 ^ z.GetHashCode() >> 2 ^ w.GetHashCode() >> 1;
         }
 
+        /// <inheritdoc/>
         public override bool Equals(object other)
         {
             if (!(other is Quaternion))
@@ -569,6 +735,7 @@ namespace BansheeEngine
             return false;
         }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             return String.Format("({0}, {1}, {2}, {3})", x, y, z, w);

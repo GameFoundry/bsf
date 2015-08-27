@@ -23,7 +23,7 @@ namespace BansheeEngine
 		|/    |/
 		6-----7
 		*/
-		typedef enum CornerEnum {
+		enum CornerEnum {
 			FAR_LEFT_BOTTOM = 0,
 			FAR_LEFT_TOP = 1,
 			FAR_RIGHT_TOP = 2,
@@ -41,16 +41,41 @@ namespace BansheeEngine
 		AABox& operator=(const AABox& rhs);
 
 		~AABox() { }
-
+		
+		/**
+		 * @brief	Gets the corner of the box with minimum values (opposite to maximum corner).
+		 */
 		const Vector3& getMin() const { return mMinimum; }
+
+		/**
+		 * @brief	Gets the corner of the box with maximum values (opposite to minimum corner).
+		 */
 		const Vector3& getMax() const { return mMaximum; }
 
+		/**
+		 * @brief	Sets the corner of the box with minimum values (opposite to maximum corner).
+		 */
 		void setMin(const Vector3& vec) { mMinimum = vec; }
+
+		/**
+		 * @brief	Sets the corner of the box with maximum values (opposite to minimum corner).
+		 */
 		void setMax(const Vector3& vec) { mMaximum = vec; }
 
+		/**
+		 * @brief	Sets the minimum and maximum corners.
+		 */
 		void setExtents(const Vector3& min, const Vector3& max);
+
+		/**
+		 * @brief	Scales the box around the center by multiplying
+		 * 			its extends with the provided scale.
+		 */
 		void scale(const Vector3& s);
 
+		/**
+		 * @brief	Returns the coordinates of a specific corner.
+		 */
 		Vector3 getCorner(CornerEnum cornerToGet) const;
 
 		/**

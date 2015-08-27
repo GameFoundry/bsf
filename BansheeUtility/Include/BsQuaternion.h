@@ -169,17 +169,17 @@ namespace BansheeEngine
         bool toEulerAngles(Radian& xAngle, Radian& yAngle, Radian& zAngle) const;
 
         /**
-         * @brief	Get the local x-axis.
+         * @brief	Gets the positive x-axis of the coordinate system transformed by this quaternion.
          */
         Vector3 xAxis() const;
 
         /**
-         * @brief	Get the local y-axis.
+         * @brief	Gets the positive y-axis of the coordinate system transformed by this quaternion.
          */
         Vector3 yAxis() const;
 
 		/**
-         * @brief	Get the local z-axis.
+         * @brief	Gets the positive z-axis of the coordinate system transformed by this quaternion.
          */
         Vector3 zAxis() const;
 
@@ -242,7 +242,9 @@ namespace BansheeEngine
 		}
 
         /**
-         * @brief	Spherical linear interpolation
+         * @brief	Performs spherical interpolation between two quaternions. Spherical interpolation 
+         *          neatly interpolates between two rotations without modifying the size of the vector 
+         *          it is applied to (unlike linear interpolation).
          */
         static Quaternion slerp(float t, const Quaternion& p,
             const Quaternion& q, bool shortestPath = false);

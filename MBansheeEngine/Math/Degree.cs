@@ -6,41 +6,74 @@ using System.Text;
 
 namespace BansheeEngine
 {
+    /// <summary>
+    ///	Wrapper class which indicates a given angle value is in degrees. Degree values are interchangeable with radian 
+    /// values, and conversions will be done automatically between them.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential), SerializeObject]
-	public struct Degree
+	public struct Degree // Note: Must match C++ class Degree
 	{
         readonly float value;
 
+        /// <summary>
+        /// Creates a new degree value.
+        /// </summary>
+        /// <param name="value">Value in degrees.</param>
 		public Degree(float value = 0.0f)
 	    {
 	        this.value = value;
 	    }
 
+        /// <summary>
+        /// Creates a new degree value.
+        /// </summary>
+        /// <param name="r">Value in radians.</param>
         public Degree(Radian r)
         {
             this.value = r.Degrees;
         }
 
+        /// <summary>
+        /// Converts a undefined angle value to a degree value.
+        /// </summary>
+        /// <param name="value">Value in degrees.</param>
+        /// <returns>Degree object wrapping the value.</returns>
         public static implicit operator Degree(float value)
         {
             return new Degree(value);
         }
 
+        /// <summary>
+        /// Converts a radian angle value to a degree value.
+        /// </summary>
+        /// <param name="r">Value in radians.</param>
+        /// <returns>Degree object wrapping the value.</returns>
         public static implicit operator Degree(Radian r)
         {
             return new Degree(r.Degrees);
         }
 
+        /// <summary>
+        /// Converts a degree value to a regular floating point value.
+        /// </summary>
+        /// <param name="d">Degree value to convert.</param>
+        /// <returns>Value in degrees as floating point type.</returns>
 	    public static explicit operator float(Degree d)
 	    {
             return d.value;
 	    }
 
+        /// <summary>
+        /// Returns the value in degrees as a floating point type.
+        /// </summary>
         public float Degrees
         {
             get { return value; }
         }
 
+        /// <summary>
+        /// Returns the value in radians as a floating point type.
+        /// </summary>
         public float Radians
         {
             get { return value*MathEx.Deg2Rad; }
@@ -126,6 +159,7 @@ namespace BansheeEngine
             return a.value != b.value;
         }
 
+        /// <inheritdoc/>
         public override bool Equals(object other)
         {
             if (!(other is Degree))
@@ -138,11 +172,13 @@ namespace BansheeEngine
             return false;
         }
 
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
             return value.GetHashCode();
         }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             return value.ToString();

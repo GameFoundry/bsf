@@ -67,7 +67,7 @@ namespace BansheeEditor
             else
             {
                 isDragged = false;
-                dragStartRotation = Quaternion.identity;
+                dragStartRotation = Quaternion.Identity;
             }
 
             Degree xValue = 0.0f;
@@ -132,7 +132,7 @@ namespace BansheeEditor
             // Draw "bounds" and free handle
             Color gray = new Color(1.0f, 1.0f, 1.0f, 0.3f);
             Vector3 cameraNormal = EditorApplication.SceneViewCamera.SceneObject.Rotation.Rotate(Vector3.zAxis);
-            HandleDrawing.SetTransform(Matrix4.TRS(Position, Quaternion.identity, Vector3.one));
+            HandleDrawing.SetTransform(Matrix4.TRS(Position, Quaternion.Identity, Vector3.one));
             HandleDrawing.SetColor(gray);
 
             HandleDrawing.DrawWireDisc(cameraNormal * 0.1f, cameraNormal, 1.0f, handleSize);
@@ -192,7 +192,7 @@ namespace BansheeEditor
             Quaternion rot = Quaternion.FromToRotation(up, Vector3.yAxis);
 
             Matrix4 worldToPlane = Matrix4.TRS(Vector3.zero, rot, Vector3.one);
-            point = worldToPlane.MultiplyAffine(point);
+            point = worldToPlane.MultiplyDirection(point);
 
             return (MathEx.Atan2(-point.z, -point.x) + MathEx.Pi) * MathEx.Rad2Deg;
         }

@@ -6,41 +6,74 @@ using System.Text;
 
 namespace BansheeEngine
 {
+    /// <summary>
+    ///	Wrapper class which indicates a given angle value is in radians. Radian values are interchangeable with degree 
+    /// values, and conversions will be done automatically between them.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential), SerializeObject]
-    public struct Radian
+    public struct Radian // Note: Must match C++ class Radian
     {
 		readonly float value;
 
+        /// <summary>
+        /// Creates a new radian value.
+        /// </summary>
+        /// <param name="value">Value in radians.</param>
 		public Radian(float value = 0.0f)
 	    {
 	        this.value = value;
 	    }
 
+        /// <summary>
+        /// Creates a new radian value.
+        /// </summary>
+        /// <param name="d">Value in degrees.</param>
         public Radian(Degree d)
         {
             this.value = d.Radians;
         }
 
+        /// <summary>
+        /// Converts a undefined angle value to a radian value.
+        /// </summary>
+        /// <param name="value">Value in degrees.</param>
+        /// <returns>Radian object wrapping the value.</returns>
         public static implicit operator Radian(float value)
         {
             return new Radian(value);
         }
 
+        /// <summary>
+        /// Converts a degree angle value to a radian value.
+        /// </summary>
+        /// <param name="d">Value in degrees.</param>
+        /// <returns>Radian object wrapping the value.</returns>
         public static implicit operator Radian(Degree d)
         {
             return new Radian(d.Radians);
         }
 
-        public static explicit operator float(Radian d)
+        /// <summary>
+        /// Converts a radian value to a regular floating point value.
+        /// </summary>
+        /// <param name="r">Radian value to convert.</param>
+        /// <returns>Value in radians as floating point type.</returns>
+        public static explicit operator float(Radian r)
         {
-            return d.value;
+            return r.value;
         }
 
+        /// <summary>
+        /// Returns the value in degrees as a floating point type.
+        /// </summary>
         public float Degrees
         {
             get { return value*MathEx.Rad2Deg; }
         }
 
+        /// <summary>
+        /// Returns the value in radians as a floating point type.
+        /// </summary>
         public float Radians
         {
             get { return value; }
@@ -126,6 +159,7 @@ namespace BansheeEngine
             return a.value != b.value;
         }
 
+        /// <inheritdoc/>
         public override bool Equals(object other)
         {
             if (!(other is Radian))
@@ -138,11 +172,13 @@ namespace BansheeEngine
             return false;
         }
 
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
             return value.GetHashCode();
         }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             return value.ToString();

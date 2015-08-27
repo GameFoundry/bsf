@@ -67,7 +67,7 @@ namespace BansheeEditor
 
         public static void DrawRect(Rect3 area, float size = 1.0f)
         {
-            Internal_DrawRect(area.center, area.axisHorz, area.axisVert, area.extentHorz, area.extentVert, size);
+            Internal_DrawRect(area.Center, area.AxisHorz, area.AxisVert, area.ExtentHorz, area.ExtentVert, size);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

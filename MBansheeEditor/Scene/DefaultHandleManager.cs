@@ -73,7 +73,7 @@ namespace BansheeEditor
             {
                 Quaternion rotation;
                 if (EditorApplication.ActiveCoordinateMode == HandleCoordinateMode.World)
-                    rotation = Quaternion.identity;
+                    rotation = Quaternion.Identity;
                 else
                     rotation = selectedSceneObjects[0].Rotation; // We don't average rotation in case of multi-selection
 
@@ -87,7 +87,7 @@ namespace BansheeEditor
                         flatenedHierarchy.AddRange(EditorUtility.FlattenHierarchy(so));
 
                     AABox selectionBounds = EditorUtility.CalculateBounds(flatenedHierarchy.ToArray());
-                    position = selectionBounds.center;
+                    position = selectionBounds.Center;
                 }
 
                 activeHandle.Position = position;
