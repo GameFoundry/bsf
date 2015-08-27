@@ -65,6 +65,8 @@ Move data folder within current repo
  - Finally test if opening/creating a project while another one is open is possible
   - Also test save project
 
+Test and fix project unload
+
 Ribek use:
  - Hook up color picker to guicolor field
  - When starting drag from hierarchy tree view it tends to select another object (can't repro)

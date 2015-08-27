@@ -9,6 +9,7 @@
 #include "BsMemorySerializer.h"
 #include "BsScriptResourceManager.h"
 #include "BsMonoUtil.h"
+#include "BsScriptAssemblyManager.h"
 #include "BsDebug.h"
 
 namespace BansheeEngine
@@ -23,8 +24,6 @@ namespace BansheeEngine
 		ManagedResourceMetaDataPtr metaData = bs_shared_ptr_new<ManagedResourceMetaData>();
 		mMetaData = metaData;
 
-		String elementNs;
-		String elementTypeName;
 		MonoUtil::getClassName(managedInstance, metaData->typeNamespace, metaData->typeName);
 
 		MonoClass* managedClass = MonoManager::instance().findClass(metaData->typeNamespace, metaData->typeName);
@@ -78,7 +77,12 @@ namespace BansheeEngine
 			{
 				MemorySerializer ms;
 				ManagedSerializableObjectPtr serializableObject = std::static_pointer_cast<ManagedSerializableObject>(ms.decode(data.data, data.size));
-				serializableObject->deserialize();
+				
+				ManagedResourceMetaDataPtr managedResMetaData = std::static_pointer_cast<ManagedResourceMetaData>(mMetaData);
+				ManagedSerializableObjectInfoPtr currentObjInfo = nullptr;
+
+				if (ScriptAssemblyManager::instance().getSerializableObjectInfo(managedResMetaData->typeNamespace, managedResMetaData->typeName, currentObjInfo))
+					serializableObject->deserialize(mManagedInstance, currentObjInfo);
 			}
 		}
 		else

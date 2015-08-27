@@ -274,6 +274,10 @@ namespace BansheeEditor
                 return;
             }
 
+            Debug.Log("PRE COLLECT 0");
+            GC.Collect();
+            Debug.Log("POST COLLECT 0");
+
             string projectPath = ProjectPath;
 
             RecentProject[] recentProjects = EditorSettings.RecentProjects;

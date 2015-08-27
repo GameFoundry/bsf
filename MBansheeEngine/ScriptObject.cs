@@ -9,7 +9,17 @@ namespace BansheeEngine
 
         ~ScriptObject()
         {
-            Internal_ManagedInstanceDeleted(mCachedPtr);
+            if (mCachedPtr == IntPtr.Zero)
+            {
+                Debug.LogError("Script object is being finalized but doesn't have a pointer to its interop object. Type: " + GetType());
+
+#if DEBUG
+                // This will cause a crash, so we ignore it in release mode hoping all it causes is a memory leak.
+                Internal_ManagedInstanceDeleted(mCachedPtr);
+#endif
+            }
+            else
+                Internal_ManagedInstanceDeleted(mCachedPtr);
         }
 
         internal IntPtr GetCachedPtr()
