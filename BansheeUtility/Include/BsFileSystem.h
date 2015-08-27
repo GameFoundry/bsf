@@ -129,5 +129,10 @@ namespace BansheeEngine
 		 * @brief	Returns the path to the currently working directory.
 		 */
 		static Path getWorkingDirectoryPath();
+
+		/**
+		 * @brief	Returns the path to a directory where temporary files may be stored.
+		 */
+		static Path getTempDirectoryPath();
 	};
 }

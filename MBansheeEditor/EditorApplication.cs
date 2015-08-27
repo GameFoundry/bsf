@@ -109,7 +109,11 @@ namespace BansheeEditor
                 string projectPath = EditorSettings.LastOpenProject;
                 if (Internal_IsValidProject(projectPath))
                     LoadProject(projectPath);
+                else
+                    ProjectWindow.Open();
             }
+            else
+                ProjectWindow.Open();
         }
 
         private static void OnAssetModified(string path)

@@ -38,6 +38,7 @@ namespace BansheeEditor
             GUILayout firstRow = vertLayout.AddLayoutX();
             vertLayout.AddFlexibleSpace();
             GUILayout secondRow = vertLayout.AddLayoutX();
+            vertLayout.AddSpace(15);
             GUILayout thirdRow = vertLayout.AddLayoutX();
             vertLayout.AddFlexibleSpace();
             GUILayout fourthRow = vertLayout.AddLayoutX();
@@ -61,10 +62,10 @@ namespace BansheeEditor
             secondRow.AddElement(recentProjectsLabel);
             secondRow.AddFlexibleSpace();
 
-            recentProjectsArea = new GUIScrollArea(GUIOption.FixedWidth(425), GUIOption.FixedHeight(150));
-            thirdRow.AddSpace(5);
+            recentProjectsArea = new GUIScrollArea(GUIOption.FixedWidth(405), GUIOption.FixedHeight(140));
+            thirdRow.AddSpace(5 + 10);
             thirdRow.AddElement(recentProjectsArea);
-            thirdRow.AddSpace(15);
+            thirdRow.AddSpace(15 + 10);
 
             GUILayout browseBtnLayout = thirdRow.AddLayoutY();
             GUIButton browseBtn = new GUIButton(new LocEdString("Browse"), GUIOption.FixedWidth(50));
@@ -98,9 +99,11 @@ namespace BansheeEditor
 
             Rect2I bounds = vertLayout.Bounds;
             Rect2I scrollAreaBounds = recentProjectsArea.Bounds;
-            Debug.Log(scrollAreaBounds + " - " + vertLayout.Bounds);
-            scrollAreaBounds.y += bounds.y;
-            scrollAreaBounds.height += 2;
+
+            scrollAreaBounds.x -= 10;
+            scrollAreaBounds.y += bounds.y - 10;
+            scrollAreaBounds.height += 20;
+            scrollAreaBounds.width += 20;
 
             scrollAreaBgTex.Bounds = scrollAreaBounds;
         }

@@ -160,23 +160,23 @@ namespace BansheeEngine
 
 		mTestShader = Importer::instance().import<Shader>(testShaderLoc);
 
-		gResources().save(mTestShader, L"C:\\testShader.asset", true);
+		gResources().save(mTestShader, L"E:\\testShader.asset", true);
 		gResources().unload(mTestShader);
-		mTestShader = gResources().load<Shader>(L"C:\\testShader.asset");
+		mTestShader = gResources().load<Shader>(L"E:\\testShader.asset");
 
 		mTestMaterial = Material::create(mTestShader);
 
 		mTestTexRef = static_resource_cast<Texture>(Importer::instance().import(RUNTIME_DATA_PATH + L"Examples\\Dragon.tga"));
 		mDbgMeshRef = static_resource_cast<Mesh>(Importer::instance().import(RUNTIME_DATA_PATH + L"Examples\\Dragon.fbx"));
 
-		gResources().save(mTestTexRef, L"C:\\ExportTest.tex", true);
-		gResources().save(mDbgMeshRef, L"C:\\ExportMesh.mesh", true);
+		gResources().save(mTestTexRef, L"E:\\ExportTest.tex", true);
+		gResources().save(mDbgMeshRef, L"E:\\ExportMesh.mesh", true);
 
 		gResources().unload(mTestTexRef);
 		gResources().unload(mDbgMeshRef);
 
-		mTestTexRef = static_resource_cast<Texture>(gResources().loadAsync(L"C:\\ExportTest.tex"));
-		mDbgMeshRef = static_resource_cast<Mesh>(gResources().loadAsync(L"C:\\ExportMesh.mesh"));
+		mTestTexRef = static_resource_cast<Texture>(gResources().loadAsync(L"E:\\ExportTest.tex"));
+		mDbgMeshRef = static_resource_cast<Mesh>(gResources().loadAsync(L"E:\\ExportMesh.mesh"));
 
 		mDbgMeshRef.blockUntilLoaded();
 		mDbgMeshRef->blockUntilCoreInitialized();
@@ -184,14 +184,14 @@ namespace BansheeEngine
 		mTestTexRef->blockUntilCoreInitialized();
 
 		mTestMaterial->setTexture("tex", mTestTexRef);
-		gResources().save(mTestShader, L"C:\\ExportShader.asset", true);
-		gResources().save(mTestMaterial, L"C:\\ExportMaterial.mat", true);
+		gResources().save(mTestShader, L"E:\\ExportShader.asset", true);
+		gResources().save(mTestMaterial, L"E:\\ExportMaterial.mat", true);
 
 		gResources().unload(mTestMaterial);
 		gResources().unload(mTestShader);
 
-		mTestShader = gResources().load<Shader>(L"C:\\ExportShader.asset");
-		mTestMaterial = gResources().load<Material>(L"C:\\ExportMaterial.mat");
+		mTestShader = gResources().load<Shader>(L"E:\\ExportShader.asset");
+		mTestMaterial = gResources().load<Material>(L"E:\\ExportMaterial.mat");
 
 		testRenderable->setMesh(mDbgMeshRef);
 		testRenderable->setMaterial(0, mTestMaterial);

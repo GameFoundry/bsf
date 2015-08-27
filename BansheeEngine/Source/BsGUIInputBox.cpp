@@ -452,30 +452,27 @@ namespace BansheeEngine
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDown && ev.getButton() == GUIMouseButton::Left)
 		{
-			if(mHasFocus)
+			if(ev.isShiftDown())
 			{
-				if(ev.isShiftDown())
-				{
-					if(!mSelectionShown)
-						showSelection(gGUIManager().getInputCaretTool()->getCaretPos());
-				}
-				else
-				{
-					clearSelection();
-					showCaret();
-				}
-
-				if(mText.size() > 0)
-					gGUIManager().getInputCaretTool()->moveCaretToPos(ev.getPosition());
-				else
-					gGUIManager().getInputCaretTool()->moveCaretToStart();
-
-				if(ev.isShiftDown())
-					gGUIManager().getInputSelectionTool()->moveSelectionToCaret(gGUIManager().getInputCaretTool()->getCaretPos());
-
-				scrollTextToCaret();
-				_markContentAsDirty();
+				if(!mSelectionShown)
+					showSelection(gGUIManager().getInputCaretTool()->getCaretPos());
 			}
+			else
+			{
+				clearSelection();
+				showCaret();
+			}
+
+			if(mText.size() > 0)
+				gGUIManager().getInputCaretTool()->moveCaretToPos(ev.getPosition());
+			else
+				gGUIManager().getInputCaretTool()->moveCaretToStart();
+
+			if(ev.isShiftDown())
+				gGUIManager().getInputSelectionTool()->moveSelectionToCaret(gGUIManager().getInputCaretTool()->getCaretPos());
+
+			scrollTextToCaret();
+			_markContentAsDirty();
 
 			return true;
 		}

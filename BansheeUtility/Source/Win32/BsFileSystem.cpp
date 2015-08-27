@@ -76,6 +76,30 @@ namespace BansheeEngine
 		return StringUtil::WBLANK;
 	}
 
+	WString win32_getTempDirectory()
+	{
+		DWORD len = GetTempPathW(0, NULL);
+		if (len > 0)
+		{
+			wchar_t* buffer = (wchar_t*)bs_alloc(len * sizeof(wchar_t));
+
+			DWORD n = GetTempPathW(len, buffer);
+			if (n > 0 && n <= len)
+			{
+				WString result(buffer);
+				if (result[result.size() - 1] != '\\')
+					result.append(L"\\");
+
+				bs_free(buffer);
+				return result;
+			}
+
+			bs_free(buffer);
+		}
+
+		return StringUtil::WBLANK;
+	}
+
 	bool win32_pathExists(const WString& path)
 	{
 		DWORD attr = GetFileAttributesW(path.c_str());
@@ -564,5 +588,10 @@ namespace BansheeEngine
 	Path FileSystem::getWorkingDirectoryPath()
 	{
 		return Path(win32_getCurrentDirectory());
+	}
+
+	Path FileSystem::getTempDirectoryPath()
+	{
+		return Path(win32_getTempDirectory());
 	}
 }

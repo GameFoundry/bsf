@@ -4,7 +4,7 @@
 #include "BsIReflectable.h"
 #include "BsBinarySerializer.h"
 #include "BsFileSystem.h"
-
+#include "BsDebug.h"
 #include <numeric>
 
 using namespace std::placeholders;
@@ -21,6 +21,10 @@ namespace BansheeEngine
 			FileSystem::createDir(parentDir);
 
 		mOutputStream.open(fileLocation.toString().c_str(), std::ios::out | std::ios::binary);
+		if (mOutputStream.fail())
+		{
+			LOGWRN("Failed to save file: \"" + fileLocation.toString() + "\". Error: " + strerror(errno) + ".");
+		}
 	}
 
 	FileEncoder::~FileEncoder()
@@ -55,6 +59,11 @@ namespace BansheeEngine
 	FileDecoder::FileDecoder(const Path& fileLocation)
 	{
 		mInputStream.open(fileLocation.toString().c_str(), std::ios::in | std::ios::ate | std::ios::binary);
+
+		if (mInputStream.fail())
+		{
+			LOGWRN("Failed to open file: \"" + fileLocation.toString() + "\". Error: " + strerror(errno) + ".");
+		}
 
 		std::streamoff fileSize = mInputStream.tellg();
 		if (fileSize > std::numeric_limits<UINT32>::max())

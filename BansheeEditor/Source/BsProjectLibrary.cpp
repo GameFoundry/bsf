@@ -1026,11 +1026,52 @@ namespace BansheeEngine
 		mIsLoaded = false;
 	}
 
+	void ProjectLibrary::makeEntriesRelative()
+	{
+		// Make all paths relative before saving
+		std::function<void(LibraryEntry*, const Path&)> makeRelative =
+			[&](LibraryEntry* entry, const Path& root)
+		{
+			entry->path.makeRelative(root);
+
+			if (entry->type == LibraryEntryType::Directory)
+			{
+				DirectoryEntry* dirEntry = static_cast<DirectoryEntry*>(entry);
+				for (auto& child : dirEntry->mChildren)
+					makeRelative(child, root);
+			}
+		};
+
+		Path root = getResourcesFolder();
+		makeRelative(mRootEntry, root);
+	}
+
+	void ProjectLibrary::makeEntriesAbsolute()
+	{
+		std::function<void(LibraryEntry*, const Path&)> makeAbsolute =
+			[&](LibraryEntry* entry, const Path& root)
+		{
+			entry->path.makeAbsolute(root);
+
+			if (entry->type == LibraryEntryType::Directory)
+			{
+				DirectoryEntry* dirEntry = static_cast<DirectoryEntry*>(entry);
+				for (auto& child : dirEntry->mChildren)
+					makeAbsolute(child, root);
+			}
+		};
+
+		Path root = getResourcesFolder();
+		makeAbsolute(mRootEntry, root);
+	}
+
 	void ProjectLibrary::saveLibrary()
 	{
 		if (!mIsLoaded)
 			return;
 
+		// Make all paths relative before saving
+		makeEntriesRelative();		
 		std::shared_ptr<ProjectLibraryEntries> libEntries = ProjectLibraryEntries::create(*mRootEntry);
 
 		Path libraryEntriesPath = mProjectFolder;
@@ -1039,6 +1080,9 @@ namespace BansheeEngine
 
 		FileEncoder fs(libraryEntriesPath);
 		fs.encode(libEntries.get());
+
+		// Restore absolute entry paths
+		makeEntriesAbsolute();
 
 		Path resourceManifestPath = mProjectFolder;
 		resourceManifestPath.append(INTERNAL_RESOURCES_DIR);
@@ -1072,6 +1116,9 @@ namespace BansheeEngine
 
 			mRootEntry->parent = nullptr;
 		}
+
+		// Entries are stored relative to project folder, but we want their absolute paths now
+		makeEntriesAbsolute();
 
 		// Load resource manifest
 		Path resourceManifestPath = mProjectFolder;

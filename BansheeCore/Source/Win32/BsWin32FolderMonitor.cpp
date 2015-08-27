@@ -77,7 +77,7 @@ namespace BansheeEngine
 			BS_LOCK_MUTEX_NAMED(mStatusMutex, lock);
 
 			mState = MonitorState::Starting;
-			PostQueuedCompletionStatus(compPortHandle, sizeof(this), (DWORD)this, &mOverlapped);
+			PostQueuedCompletionStatus(compPortHandle, sizeof(this), (ULONG_PTR)this, &mOverlapped);
 
 			while(mState != MonitorState::Monitoring)
 				BS_THREAD_WAIT(mStartStopEvent, mStatusMutex, lock);
@@ -102,7 +102,7 @@ namespace BansheeEngine
 			BS_LOCK_MUTEX_NAMED(mStatusMutex, lock);
 
 			mState = MonitorState::Shutdown;
-			PostQueuedCompletionStatus(compPortHandle, sizeof(this), (DWORD)this, &mOverlapped);
+			PostQueuedCompletionStatus(compPortHandle, sizeof(this), (ULONG_PTR)this, &mOverlapped);
 
 			while(mState != MonitorState::Inactive)
 				BS_THREAD_WAIT(mStartStopEvent, mStatusMutex, lock);
@@ -364,7 +364,7 @@ namespace BansheeEngine
 		mPimpl->mFoldersToWatch.push_back(bs_new<FolderWatchInfo>(folderPath, dirHandle, subdirectories, filterFlags));
 		FolderWatchInfo* watchInfo = mPimpl->mFoldersToWatch.back();
 
-		mPimpl->mCompPortHandle = CreateIoCompletionPort(dirHandle, mPimpl->mCompPortHandle, (DWORD)watchInfo, 0);
+		mPimpl->mCompPortHandle = CreateIoCompletionPort(dirHandle, mPimpl->mCompPortHandle, (ULONG_PTR)watchInfo, 0);
 
 		if(mPimpl->mCompPortHandle == nullptr)
 		{

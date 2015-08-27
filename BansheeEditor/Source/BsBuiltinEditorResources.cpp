@@ -1403,7 +1403,7 @@ namespace BansheeEngine
 		selectableLabelStyle.minWidth = 10;
 		selectableLabelStyle.font = font;
 		selectableLabelStyle.fontSize = DefaultFontSize;
-		selectableLabelStyle.textHorzAlign = THA_Center;
+		selectableLabelStyle.textHorzAlign = THA_Left;
 
 		skin->setStyle("SelectableLabel", selectableLabelStyle);
 

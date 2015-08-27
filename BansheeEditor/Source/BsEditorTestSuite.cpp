@@ -12,6 +12,7 @@
 #include "BsResources.h"
 #include "BsPrefabDiff.h"
 #include "BsFrameAlloc.h"
+#include "BsFileSystem.h"
 
 namespace BansheeEngine
 {
@@ -627,8 +628,9 @@ namespace BansheeEngine
 
 		GameObjectHandle<TestComponentD> cmp2 = so2->addComponent<TestComponentD>();
 
+		Path prefabPath = Path::combine(FileSystem::getTempDirectoryPath(), "testprefab.asset");
 		HPrefab prefab = Prefab::create(root);
-		gResources().save(prefab, "C:\\testprefab.asset", true);
+		gResources().save(prefab, prefabPath, true);
 
 		// Perform modifications
 		GameObjectHandle<TestComponentC> cmp1_3;
@@ -663,7 +665,7 @@ namespace BansheeEngine
 
 		SPtr<PrefabDiff> prefabDiff = PrefabDiff::create(prefab->getRoot(), root);
 
-		prefab = gResources().load<Prefab>("C:\\testprefab.asset");
+		prefab = gResources().load<Prefab>(prefabPath);
 		HSceneObject newRoot = prefab->instantiate();
 		prefabDiff->apply(newRoot);
 

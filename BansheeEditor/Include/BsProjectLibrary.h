@@ -379,6 +379,17 @@ namespace BansheeEngine
 		 */
 		void queueDependantForReimport(const ResourceEntry* entry);
 
+		/**
+		 * @brief	Makes all library entry paths relative to the current resources folder.
+		 */
+		void makeEntriesRelative();
+
+		/**
+		 * @brief	Makes all library entry paths absolute by appending them to the current resources folder.
+		 *			Entries must have previously been made relative by calling ::makeEntriesRelative.
+		 */
+		void makeEntriesAbsolute();
+
 		static const WString LIBRARY_ENTRIES_FILENAME;
 		static const WString RESOURCE_MANIFEST_FILENAME;
 
