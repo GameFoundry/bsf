@@ -63,6 +63,7 @@ Move data folder within current repo
  - Finally test if opening/creating a project while another one is open is possible
 
 Ribek use:
+ - Crash on shutdown due to RenderStateCoreManager getting shut down before all states are freed
  - When mousing over GUIMenu elements cursor changes if underlying GUI element changes
  - Hook up color picker to guicolor field
  - When starting drag from hierarchy tree view it tends to select another object (can't repro)

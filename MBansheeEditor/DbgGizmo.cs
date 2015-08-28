@@ -21,12 +21,12 @@ namespace BansheeEditor
             }
 
             Gizmos.DrawCube(target.SceneObject.Position, new Vector3(1, 1, 1));
-            Gizmos.DrawSphere(target.SceneObject.Position + 2 * Vector3.xAxis, 1.0f);
-            Gizmos.DrawWireCube(target.SceneObject.Position + 4 * Vector3.xAxis, new Vector3(1, 1, 1));
-            Gizmos.DrawWireSphere(target.SceneObject.Position + 6 * Vector3.xAxis, 1.0f);
-            Gizmos.DrawLine(target.SceneObject.Position + 7.5f * Vector3.xAxis,
-                target.SceneObject.Position + 8.5f * Vector3.xAxis);
-            Gizmos.DrawFrustum(target.SceneObject.Position + 10 * Vector3.xAxis, 1920.0f / 1080.0f, 90, 1.0f, 1000.0f);
+            Gizmos.DrawSphere(target.SceneObject.Position + 2 * Vector3.XAxis, 1.0f);
+            Gizmos.DrawWireCube(target.SceneObject.Position + 4 * Vector3.XAxis, new Vector3(1, 1, 1));
+            Gizmos.DrawWireSphere(target.SceneObject.Position + 6 * Vector3.XAxis, 1.0f);
+            Gizmos.DrawLine(target.SceneObject.Position + 7.5f * Vector3.XAxis,
+                target.SceneObject.Position + 8.5f * Vector3.XAxis);
+            Gizmos.DrawFrustum(target.SceneObject.Position + 10 * Vector3.XAxis, 1920.0f / 1080.0f, 90, 1.0f, 1000.0f);
 
             Gizmos.DrawIcon(target.SceneObject.Position + new Vector3(0, 10, 0), iconTexture, false);
         }

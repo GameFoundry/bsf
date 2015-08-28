@@ -3,12 +3,20 @@ using System.Runtime.InteropServices;
 
 namespace BansheeEngine
 {
+    /// <summary>
+    /// A two dimensional vector with integer coordinates.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct Vector2I
+    public struct Vector2I // Note: Must match C++ class Vector2I
     {
         public int x;
         public int y;
 
+        /// <summary>
+        /// Accesses a specific component of the vector.
+        /// </summary>
+        /// <param name="index">Index of the component.</param>
+        /// <returns>Value of the specific component.</returns>
         public int this[int index]
         {
             get
@@ -40,13 +48,21 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Creates a new two dimensional vector.
+        /// </summary>
+        /// <param name="x">X coordinate.</param>
+        /// <param name="y">Y coordinate.</param>
         public Vector2I(int x, int y)
         {
             this.x = x;
             this.y = y;
         }
 
-        public float Magnitude
+        /// <summary>
+        /// Returns length of the vector.
+        /// </summary>
+        public float Length
         {
             get
             {
@@ -54,7 +70,10 @@ namespace BansheeEngine
             }
         }
 
-        public float SqrdMagnitude
+        /// <summary>
+        /// Returns the squared length of the vector.
+        /// </summary>
+        public float SqrdLength
         {
             get
             {
@@ -62,7 +81,12 @@ namespace BansheeEngine
             }
         }
 
-        // Manhattan distance
+        /// <summary>
+        /// Returns the manhattan distance between two points.
+        /// </summary>
+        /// <param name="a">First two dimensional point.</param>
+        /// <param name="b">Second two dimensional point.</param>
+        /// <returns>Manhattan distance between the two points.</returns>
         public static int Distance(Vector2I a, Vector2I b)
 		{
 			return Math.Abs(b.x - a.x) + Math.Abs(b.y - a.y);
@@ -108,11 +132,13 @@ namespace BansheeEngine
             return !(lhs == rhs);
         }
 
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
             return x.GetHashCode() ^ y.GetHashCode() << 2;
         }
 
+        /// <inheritdoc/>
         public override bool Equals(object other)
         {
             if (!(other is Vector2I))
@@ -125,6 +151,7 @@ namespace BansheeEngine
             return false;
         }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             return "(" + x + ", " + y + ")";

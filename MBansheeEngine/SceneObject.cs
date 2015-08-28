@@ -225,7 +225,7 @@ namespace BansheeEngine
 
         public void LookAt(Vector3 direction)
         {
-            Internal_LookAt(mCachedPtr, direction, Vector3.yAxis);
+            Internal_LookAt(mCachedPtr, direction, Vector3.YAxis);
         }
 
         public void LookAt(Vector3 direction, Vector3 up)

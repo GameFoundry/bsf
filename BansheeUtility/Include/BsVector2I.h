@@ -35,7 +35,7 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Returns the manhattan distance between this and another vector.
+		 * @brief	Returns the manhattan distance between this and another point.
 		 */
 		UINT32 manhattanDist(const Vector2I& other)
 		{

@@ -79,7 +79,7 @@ namespace BansheeEngine
 
         private void OnInitialize()
         {
-            serializableData.position = Vector3.zero;
+            serializableData.position = Vector3.Zero;
             serializableData.rotation = Quaternion.Identity;
             serializableData.color = Color.White;
             serializableData.spotAngle = new Degree(45);

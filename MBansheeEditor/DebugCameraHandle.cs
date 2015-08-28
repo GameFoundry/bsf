@@ -13,7 +13,7 @@ namespace BansheeEditor
         {
             this.target = target;
 
-            xAxis = new HandleSliderLine(this, Vector3.xAxis, 5.0f);
+            xAxis = new HandleSliderLine(this, Vector3.XAxis, 5.0f);
         }
 
         protected override void PreInput()
@@ -28,7 +28,7 @@ namespace BansheeEditor
 
         protected override void Draw()
         {
-            Vector3 end = target.SceneObject.Position + Vector3.xAxis * 5;
+            Vector3 end = target.SceneObject.Position + Vector3.XAxis * 5;
 
             if (xAxis.State == HandleSlider.StateType.Active)
                 HandleDrawing.SetColor(Color.White);

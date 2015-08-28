@@ -12,7 +12,7 @@ namespace BansheeEngine
 
         public SpriteTexture(Texture2D texture)
         {
-            Internal_CreateInstance(this, texture, Vector2.zero, Vector2.one);
+            Internal_CreateInstance(this, texture, Vector2.Zero, Vector2.One);
         }
 
         public SpriteTexture(Texture2D texture, Vector2 uvOffset, Vector2 uvScale)

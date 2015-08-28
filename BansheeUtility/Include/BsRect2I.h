@@ -6,7 +6,7 @@ namespace BansheeEngine
 {
 	/**
 	 * @brief	Represents a 2D rectangle using integer values.
-	 * 			Rectangle is represented with an origin and size values.
+	 * 			Rectangle is represented with an origin in top left and width/height.
 	 */
 	class BS_UTILITY_EXPORT Rect2I
 	{

@@ -34,13 +34,13 @@ namespace BansheeEditor
 
         public MoveHandle()
         {
-            xAxis = new HandleSliderLine(this, Vector3.xAxis, 1.0f);
-            yAxis = new HandleSliderLine(this, Vector3.yAxis, 1.0f);
-            zAxis = new HandleSliderLine(this, Vector3.zAxis, 1.0f);
+            xAxis = new HandleSliderLine(this, Vector3.XAxis, 1.0f);
+            yAxis = new HandleSliderLine(this, Vector3.YAxis, 1.0f);
+            zAxis = new HandleSliderLine(this, Vector3.ZAxis, 1.0f);
 
-            xyPlane = new HandleSliderPlane(this, Vector3.xAxis, Vector3.yAxis, 0.3f);
-            yzPlane = new HandleSliderPlane(this, Vector3.yAxis, Vector3.zAxis, 0.3f);
-            zxPlane = new HandleSliderPlane(this, Vector3.zAxis, Vector3.xAxis, 0.3f);
+            xyPlane = new HandleSliderPlane(this, Vector3.XAxis, Vector3.YAxis, 0.3f);
+            yzPlane = new HandleSliderPlane(this, Vector3.YAxis, Vector3.ZAxis, 0.3f);
+            zxPlane = new HandleSliderPlane(this, Vector3.ZAxis, Vector3.XAxis, 0.3f);
         }
 
         protected override void PreInput()
@@ -64,7 +64,7 @@ namespace BansheeEditor
 
         protected override void PostInput()
         {
-            delta = Vector3.zero;
+            delta = Vector3.Zero;
 
             if (Handles.MoveHandleSnapActive)
             {
@@ -96,7 +96,7 @@ namespace BansheeEditor
 
         protected override void Draw()
         {
-            HandleDrawing.SetTransform(Matrix4.TRS(Position, Rotation, Vector3.one));
+            HandleDrawing.SetTransform(Matrix4.TRS(Position, Rotation, Vector3.One));
             float handleSize = Handles.GetHandleSize(EditorApplication.SceneViewCamera, position);
 
             // Draw 1D arrows
@@ -107,9 +107,9 @@ namespace BansheeEditor
             else
                 HandleDrawing.SetColor(Color.Red);
 
-            Vector3 xConeStart = Vector3.xAxis*(1.0f - CONE_HEIGHT);
-            HandleDrawing.DrawLine(Vector3.zero, xConeStart, handleSize);
-            HandleDrawing.DrawCone(xConeStart, Vector3.xAxis, CONE_HEIGHT, CONE_RADIUS, handleSize);
+            Vector3 xConeStart = Vector3.XAxis*(1.0f - CONE_HEIGHT);
+            HandleDrawing.DrawLine(Vector3.Zero, xConeStart, handleSize);
+            HandleDrawing.DrawCone(xConeStart, Vector3.XAxis, CONE_HEIGHT, CONE_RADIUS, handleSize);
 
             if (yAxis.State == HandleSlider.StateType.Active)
                 HandleDrawing.SetColor(Color.White);
@@ -118,9 +118,9 @@ namespace BansheeEditor
             else
                 HandleDrawing.SetColor(Color.Green);
 
-            Vector3 yConeStart = Vector3.yAxis * (1.0f - CONE_HEIGHT);
-            HandleDrawing.DrawLine(Vector3.zero, yConeStart, handleSize);
-            HandleDrawing.DrawCone(yConeStart, Vector3.yAxis, CONE_HEIGHT, CONE_RADIUS, handleSize);
+            Vector3 yConeStart = Vector3.YAxis * (1.0f - CONE_HEIGHT);
+            HandleDrawing.DrawLine(Vector3.Zero, yConeStart, handleSize);
+            HandleDrawing.DrawCone(yConeStart, Vector3.YAxis, CONE_HEIGHT, CONE_RADIUS, handleSize);
 
             if (zAxis.State == HandleSlider.StateType.Active)
                 HandleDrawing.SetColor(Color.White);
@@ -129,18 +129,18 @@ namespace BansheeEditor
             else
                 HandleDrawing.SetColor(Color.Blue);
 
-            Vector3 zConeStart = Vector3.zAxis * (1.0f - CONE_HEIGHT);
-            HandleDrawing.DrawLine(Vector3.zero, zConeStart, handleSize);
-            HandleDrawing.DrawCone(zConeStart, Vector3.zAxis, CONE_HEIGHT, CONE_RADIUS, handleSize);
+            Vector3 zConeStart = Vector3.ZAxis * (1.0f - CONE_HEIGHT);
+            HandleDrawing.DrawLine(Vector3.Zero, zConeStart, handleSize);
+            HandleDrawing.DrawCone(zConeStart, Vector3.ZAxis, CONE_HEIGHT, CONE_RADIUS, handleSize);
 
             // Draw 2D planes
             Color planeNormal = new Color(1.0f, 1.0f, 1.0f, 0.2f);
             Color planeHover = new Color(1.0f, 1.0f, 1.0f, 0.4f);
             Color planeActive = new Color(1.0f, 1.0f, 1.0f, 0.6f);
 
-            Vector3 planeXOffset = Vector3.xAxis * 0.3f;
-            Vector3 planeYOffset = Vector3.yAxis * 0.3f;
-            Vector3 planeZOffset = Vector3.zAxis * 0.3f;
+            Vector3 planeXOffset = Vector3.XAxis * 0.3f;
+            Vector3 planeYOffset = Vector3.YAxis * 0.3f;
+            Vector3 planeZOffset = Vector3.ZAxis * 0.3f;
 
             //// XY plane
             HandleDrawing.SetColor(Color.Blue);
@@ -157,7 +157,7 @@ namespace BansheeEditor
 
             Rect3 xyPlaneArea = new Rect3(
                 (planeXOffset + planeYOffset) * 0.5f,
-                new Vector3[] { Vector3.xAxis, Vector3.yAxis}, 
+                new Vector3[] { Vector3.XAxis, Vector3.YAxis}, 
                 new float[] { 0.15f, 0.15f});
             HandleDrawing.DrawRect(xyPlaneArea, handleSize);
 
@@ -176,7 +176,7 @@ namespace BansheeEditor
 
             Rect3 yzPlaneArea = new Rect3(
                 (planeYOffset + planeZOffset) * 0.5f,
-                new Vector3[] { Vector3.yAxis, Vector3.zAxis },
+                new Vector3[] { Vector3.YAxis, Vector3.ZAxis },
                 new float[] { 0.15f, 0.15f });
 
             HandleDrawing.DrawRect(yzPlaneArea, handleSize);
@@ -196,24 +196,24 @@ namespace BansheeEditor
 
             Rect3 zxPlaneArea = new Rect3(
                 (planeZOffset + planeXOffset) * 0.5f,
-                new Vector3[] { Vector3.zAxis, Vector3.xAxis },
+                new Vector3[] { Vector3.ZAxis, Vector3.XAxis },
                 new float[] { 0.15f, 0.15f });
             HandleDrawing.DrawRect(zxPlaneArea, handleSize);
         }
 
         private Vector3 GetXDir()
         {
-             return rotation.Rotate(Vector3.xAxis);
+             return rotation.Rotate(Vector3.XAxis);
         }
 
         private Vector3 GetYDir()
         {
-            return rotation.Rotate(Vector3.yAxis);
+            return rotation.Rotate(Vector3.YAxis);
         }
 
         private Vector3 GetZDir()
         {
-            return rotation.Rotate(Vector3.zAxis);
+            return rotation.Rotate(Vector3.ZAxis);
         }
     }
 }

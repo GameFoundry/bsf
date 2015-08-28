@@ -87,21 +87,21 @@ namespace BansheeEditor
                 yaw = MathEx.WrapAngle(yaw);
                 pitch = MathEx.WrapAngle(pitch);
 
-		        Quaternion yRot = Quaternion.FromAxisAngle(Vector3.yAxis, yaw);
-                Quaternion xRot = Quaternion.FromAxisAngle(Vector3.xAxis, pitch);
+		        Quaternion yRot = Quaternion.FromAxisAngle(Vector3.YAxis, yaw);
+                Quaternion xRot = Quaternion.FromAxisAngle(Vector3.XAxis, pitch);
 
                 Quaternion camRot = yRot * xRot;
                 camRot.Normalize();
 
                 SceneObject.Rotation = camRot;
 
-                Vector3 direction = Vector3.zero;
+                Vector3 direction = Vector3.Zero;
                 if (goingForward) direction += SceneObject.Forward;
                 if (goingBack) direction -= SceneObject.Forward;
                 if (goingRight) direction += SceneObject.Right;
                 if (goingLeft) direction -= SceneObject.Right;
 
-                if (direction.SqrdMagnitude != 0)
+                if (direction.SqrdLength != 0)
                 {
                     direction.Normalize();
 

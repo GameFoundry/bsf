@@ -256,7 +256,7 @@ namespace BansheeEngine
         /// <param name="toDirection">Rotation to end at.</param>
         public void SetFromToRotation(Vector3 fromDirection, Vector3 toDirection)
         {
-            SetFromToRotation(fromDirection, toDirection, Vector3.zero);
+            SetFromToRotation(fromDirection, toDirection, Vector3.Zero);
         }
 
         /// <summary>
@@ -285,7 +285,7 @@ namespace BansheeEngine
 
             if (d < (1e-6f - 1.0f))
 		    {
-			    if (fallbackAxis != Vector3.zero)
+			    if (fallbackAxis != Vector3.Zero)
 			    {
 				    // Rotate 180 degrees about the fallback axis
 				    this = FromAxisAngle(fallbackAxis, MathEx.Pi * MathEx.Rad2Deg);
@@ -293,9 +293,9 @@ namespace BansheeEngine
 			    else
 			    {
 				    // Generate an axis
-				    Vector3 axis = Vector3.Cross(Vector3.xAxis, fromDirection);
-                    if (axis.SqrdMagnitude < ((1e-06f * 1e-06f))) // Pick another if collinear
-					    axis = Vector3.Cross(Vector3.yAxis, fromDirection);
+				    Vector3 axis = Vector3.Cross(Vector3.XAxis, fromDirection);
+                    if (axis.SqrdLength < ((1e-06f * 1e-06f))) // Pick another if collinear
+					    axis = Vector3.Cross(Vector3.YAxis, fromDirection);
 				    axis.Normalize();
                     this = FromAxisAngle(axis, MathEx.Pi * MathEx.Rad2Deg);
 			    }
@@ -357,7 +357,7 @@ namespace BansheeEngine
         /// <param name="forward">Direction to orient the object towards.</param>
         public void SetLookRotation(Vector3 forward)
         {
-            SetLookRotation(forward, Vector3.yAxis);
+            SetLookRotation(forward, Vector3.YAxis);
         }
 
         /// <summary>
@@ -367,8 +367,8 @@ namespace BansheeEngine
         /// <param name="up">Axis that determines the upward direction of the object.</param>
         public void SetLookRotation(Vector3 forward, Vector3 up)
         {
-            Quaternion forwardRot = FromToRotation(Vector3.zAxis, forward);
-            Quaternion upRot = FromToRotation(Vector3.yAxis, up);
+            Quaternion forwardRot = FromToRotation(Vector3.ZAxis, forward);
+            Quaternion upRot = FromToRotation(Vector3.YAxis, up);
 
             this = forwardRot * upRot;
         }

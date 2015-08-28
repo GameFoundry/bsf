@@ -648,7 +648,7 @@ namespace BansheeEditor
 
         void GetColorBoxValues(out Vector2 xy, out float z)
         {
-            xy = Vector2.zero;
+            xy = Vector2.Zero;
             z = 0.0f;
 
             switch (colorBoxMode)
@@ -688,7 +688,7 @@ namespace BansheeEditor
 
         void Update2DSliderValues()
         {
-            Vector2 xy = Vector2.zero;
+            Vector2 xy = Vector2.Zero;
             float z = 0.0f;
 
             GetColorBoxValues(out xy, out z);
@@ -934,7 +934,7 @@ namespace BansheeEditor
 
                     if (bounds.Contains(windowPos))
                     {
-                        Vector2 newValue = Vector2.zero;
+                        Vector2 newValue = Vector2.Zero;
                         newValue.x = (windowPos.x - bounds.x) / (float)bounds.width;
                         newValue.y = 1.0f - (windowPos.y - bounds.y) / (float)bounds.height;
 
