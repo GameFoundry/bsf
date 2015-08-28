@@ -267,6 +267,17 @@ namespace BansheeEngine
 			return *this;
 
 		mDirectories.erase(mDirectories.begin(), mDirectories.begin() + base.mDirectories.size());
+
+		// Sometimes a directory name can be interpreted as a file and we're okay with that. Check for that
+		// special case.
+		if (base.isFile())
+		{
+			if (mDirectories.size() > 0)
+				mDirectories.erase(mDirectories.begin());
+			else
+				mFilename = L"";
+		}
+
 		mDevice = L"";
 		mNode = L"";
 		mIsAbsolute = false;
