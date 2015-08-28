@@ -21,8 +21,6 @@ using namespace std::placeholders;
 
 namespace BansheeEngine 
 {
-    static const SPtr<TextureCore> sNullTexPtr;
-
 	void RenderAPI::disableTextureUnit(CoreAccessor& accessor, GpuProgramType gptype, UINT16 texUnit)
 	{
 		accessor.queueCommand(std::bind(&RenderAPICore::disableTextureUnit, RenderAPICore::instancePtr(), gptype, texUnit));
@@ -294,10 +292,10 @@ namespace BansheeEngine
     {
 		THROW_IF_NOT_CORE_THREAD;
 
-        setTexture(gptype, texUnit, false, sNullTexPtr);
+		setTexture(gptype, texUnit, false, SPtr<TextureCore>());
     }
 
-	void RenderAPICore::addClipPlane (const Plane &p)
+	void RenderAPICore::addClipPlane(const Plane &p)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 

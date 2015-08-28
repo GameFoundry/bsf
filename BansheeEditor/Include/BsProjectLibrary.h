@@ -390,6 +390,11 @@ namespace BansheeEngine
 		 */
 		void makeEntriesAbsolute();
 
+		/**  
+		 * @brief	Deletes all library entries.
+		 */
+		void clearEntries();
+
 		static const WString LIBRARY_ENTRIES_FILENAME;
 		static const WString RESOURCE_MANIFEST_FILENAME;
 

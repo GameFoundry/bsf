@@ -57,8 +57,7 @@ namespace BansheeEngine
 
 	ProjectLibrary::~ProjectLibrary()
 	{
-		if(mRootEntry != nullptr)
-			deleteDirectoryInternal(mRootEntry);
+		clearEntries();
 	}
 
 	void ProjectLibrary::update()
@@ -1013,11 +1012,8 @@ namespace BansheeEngine
 		mProjectFolder = Path::BLANK;
 		mResourcesFolder = Path::BLANK;
 
-		if (mRootEntry != nullptr)
-		{
-			deleteDirectoryInternal(mRootEntry);
-			mRootEntry = bs_new<DirectoryEntry>(mResourcesFolder, mResourcesFolder.getWTail(), nullptr);
-		}
+		clearEntries();
+		mRootEntry = bs_new<DirectoryEntry>(mResourcesFolder, mResourcesFolder.getWTail(), nullptr);
 
 		mReimportQueue.clear();
 		mDependencies.clear();
@@ -1186,6 +1182,29 @@ namespace BansheeEngine
 		}
 
 		mIsLoaded = true;
+	}
+
+	void ProjectLibrary::clearEntries()
+	{
+		if (mRootEntry == nullptr)
+			return;
+
+		std::function<void(LibraryEntry*)> deleteRecursive =
+			[&](LibraryEntry* entry)
+		{
+			if (entry->type == LibraryEntryType::Directory)
+			{
+				DirectoryEntry* dirEntry = static_cast<DirectoryEntry*>(entry);
+
+				for (auto& child : dirEntry->mChildren)
+					deleteRecursive(child);
+			}
+
+			bs_delete(entry);
+		};
+
+		deleteRecursive(mRootEntry);
+		mRootEntry = nullptr;
 	}
 
 	void ProjectLibrary::doOnEntryRemoved(const LibraryEntry* entry)
