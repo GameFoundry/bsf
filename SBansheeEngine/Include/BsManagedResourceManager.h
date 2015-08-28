@@ -14,6 +14,11 @@ namespace BansheeEngine
 		ManagedResourceManager();
 		~ManagedResourceManager();
 
+		/**   
+		 * @brief	 Unloads all managed resources.
+		 */
+		void clear();
+
 		/**
 		 * @brief	Register a newly created managed resource.
 		 */

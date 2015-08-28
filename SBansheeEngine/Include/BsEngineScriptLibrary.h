@@ -29,6 +29,17 @@ namespace BansheeEngine
 		 */
 		void destroy() override;
 
+	protected:
+		/**   
+		 *	@brief	Unloads all manages assemblies and the mono domain. 
+		 */
+		void unloadAssemblies();
+
+		/**   
+		 *	@brief	Shutd down all script engine modules.
+		 */
+		void shutdownModules();
+
 	private:
 		bool mScriptAssembliesLoaded;
 	};

@@ -284,7 +284,10 @@ namespace BansheeEngine
 		if (!isProjectLoaded())
 			return;
 
-		BuildManager::instance().save(BUILD_DATA_PATH);
+		Path buildDataPath = getProjectPath();
+		buildDataPath.append(BUILD_DATA_PATH);
+
+		BuildManager::instance().save(buildDataPath);
 		saveWidgetLayout(EditorWidgetManager::instance().getLayout());
 		saveEditorSettings();
 		saveProjectSettings();
@@ -317,7 +320,11 @@ namespace BansheeEngine
 		mIsProjectLoaded = true;
 
 		loadProjectSettings();
-		BuildManager::instance().load(BUILD_DATA_PATH);
+
+		Path buildDataPath = getProjectPath();
+		buildDataPath.append(BUILD_DATA_PATH);
+
+		BuildManager::instance().load(buildDataPath);
 
 		// Do this before restoring windows and loading library to ensure types are loaded
 		ScriptManager::instance().reload();

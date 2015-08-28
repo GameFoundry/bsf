@@ -80,8 +80,8 @@ namespace BansheeEngine
 
 	void EditorScriptLibrary::destroy()
 	{
+		unloadAssemblies();
 		EditorScriptManager::shutDown();
-
-		EngineScriptLibrary::destroy();
+		shutdownModules();
 	}
 }

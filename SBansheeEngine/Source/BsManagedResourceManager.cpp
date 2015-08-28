@@ -10,6 +10,11 @@ namespace BansheeEngine
 
 	ManagedResourceManager::~ManagedResourceManager()
 	{
+		clear();
+	}
+
+	void ManagedResourceManager::clear()
+	{
 		UnorderedMap<String, HManagedResource> resourceCopy = mResources;
 		for (auto& resourcePair : resourceCopy)
 		{

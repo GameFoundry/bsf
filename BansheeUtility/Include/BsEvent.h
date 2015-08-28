@@ -181,6 +181,7 @@ namespace BansheeEngine
 			{
 				mEventData->disconnect(mConnection);
 				mConnection = nullptr;
+				mEventData = nullptr;
 			}
 		}
 
@@ -268,7 +269,6 @@ namespace BansheeEngine
 					connData->next->prev = nullptr;
 
 				connData->isActive = true;
-				connData->handleLinks = true;
 			}
 
 			if (connData == nullptr)
@@ -298,14 +298,14 @@ namespace BansheeEngine
 
 			// Hidden dependency: If any new connections are made during these callbacks they must be
 			// inserted at the start of the linked list so that we don't trigger them here.
-			ConnectionData* conn = static_cast<ConnectionData*>(mInternalData->mConnections);
+			ConnectionData* conn = static_cast<ConnectionData*>(internalData->mConnections);
 			while (conn != nullptr)
 			{
 				// Save next here in case the callback itself disconnects this connection
 				ConnectionData* next = static_cast<ConnectionData*>(conn->next);
 				
 				if (conn->func != nullptr)
-					conn->func(args...);
+					conn->func(std::forward<Args>(args)...);
 
 				conn = next;
 			}
@@ -324,7 +324,7 @@ namespace BansheeEngine
 		 *
 		 * @note	It is safe to trigger an event even if no callbacks are registered.
 		 */
-		bool empty()
+		bool empty() const
 		{
 			BS_LOCK_RECURSIVE_MUTEX(mInternalData->mMutex);
 

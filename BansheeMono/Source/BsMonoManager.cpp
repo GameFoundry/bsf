@@ -194,6 +194,8 @@ namespace BansheeEngine
 	{
 		if (mScriptDomain != nullptr)
 		{
+			onDomainUnload();
+
 			mono_domain_set(mono_get_root_domain(), false);
 			mono_domain_finalize(mScriptDomain, 2000);
 

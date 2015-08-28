@@ -126,7 +126,18 @@ namespace BansheeEditor
             ProjectLibrary.Update();
         }
 
-        [MenuItem("File/Save Scene", ButtonModifier.Ctrl, ButtonCode.S, 50, true)]
+        [MenuItem("File/Open Scene", ButtonModifier.Ctrl, ButtonCode.L, 50, true)]
+        private static void LoadScene()
+        {
+            string[] scenePaths;
+            if (BrowseDialog.OpenFile(ProjectLibrary.ResourceFolder, "", false, out scenePaths))
+            {
+                if (scenePaths.Length > 0)
+                    LoadScene(scenePaths[0]);
+            }
+        }
+
+        [MenuItem("File/Save Scene", ButtonModifier.Ctrl, ButtonCode.S, 49)]
         private static void SaveScene()
         {
             if (!string.IsNullOrEmpty(Scene.ActiveSceneUUID))
@@ -138,7 +149,7 @@ namespace BansheeEditor
                 SaveSceneAs();
         }
 
-        [MenuItem("File/Save Scene As", 50)]
+        [MenuItem("File/Save Scene As", 48)]
         private static void SaveSceneAs()
         {
             string scenePath = "";
@@ -154,17 +165,6 @@ namespace BansheeEditor
 
                     Scene.ActiveSceneUUID = Internal_SaveScene(scenePath + ".prefab");
                 }
-            }
-        }
-
-        [MenuItem("File/Load Scene", ButtonModifier.Ctrl, ButtonCode.L, 50)]
-        private static void LoadScene()
-        {
-            string[] scenePaths;
-            if (BrowseDialog.OpenFile(ProjectLibrary.ResourceFolder, "", false, out scenePaths))
-            {
-                if (scenePaths.Length > 0)
-                    LoadScene(scenePaths[0]);
             }
         }
 
@@ -205,27 +205,12 @@ namespace BansheeEditor
             return Internal_IsValidProject(path);
         }
 
-        [MenuItem("File/Create Project", 0)]
-        public static void CreateProject()
-        {
-            string projectPath = EditorSettings.LastOpenProject;
-            if (!Directory.Exists(projectPath))
-                projectPath = Directory.GetCurrentDirectory();
-
-            string selectedPath;
-            if (BrowseDialog.OpenFolder(projectPath, "", out selectedPath))
-            {
-                CreateProject(selectedPath);
-                LoadProject(selectedPath);
-            }
-        }
-
         public static void CreateProject(string path)
         {
             Internal_CreateProject(path);
         }
 
-        [MenuItem("File/Load Project", 0)]
+        [MenuItem("File/Open Project", 100)]
         public static void BrowseForProject()
         {
             string projectPath = EditorSettings.LastOpenProject;
@@ -237,7 +222,7 @@ namespace BansheeEditor
                 LoadProject(selectedPath);
         }
 
-        [MenuItem("File/Save Project", 0)]
+        [MenuItem("File/Save Project", 99)]
         public static void SaveProject()
         {
             // TODO - Save dirty resources
@@ -273,10 +258,6 @@ namespace BansheeEditor
                 ProjectWindow.Open();
                 return;
             }
-
-            Debug.Log("PRE COLLECT 0");
-            GC.Collect();
-            Debug.Log("POST COLLECT 0");
 
             string projectPath = ProjectPath;
 

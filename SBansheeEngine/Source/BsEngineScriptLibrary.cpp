@@ -73,12 +73,23 @@ namespace BansheeEngine
 
 	void EngineScriptLibrary::destroy()
 	{
+		unloadAssemblies();
+		shutdownModules();
+	}
+
+	void EngineScriptLibrary::unloadAssemblies()
+	{
+		ManagedResourceManager::instance().clear();
+		MonoManager::instance().unloadScriptDomain();
+		ScriptObjectManager::instance().processFinalizedObjects();
+	}
+
+	void EngineScriptLibrary::shutdownModules()
+	{
 		ScriptVirtualInput::shutDown();
 		ScriptInput::shutDown();
 		ManagedResourceManager::shutDown();
 		MonoManager::shutDown();
-		ScriptObjectManager::instance().processFinalizedObjects();
-
 		ScriptGameObjectManager::shutDown();
 		ScriptResourceManager::shutDown();
 		ScriptAssemblyManager::shutDown();

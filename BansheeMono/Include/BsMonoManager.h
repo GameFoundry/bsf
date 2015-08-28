@@ -90,6 +90,10 @@ namespace BansheeEngine
 		 */
 		static void registerScriptType(ScriptMeta* metaData);
 
+		/**  
+		 * @brief	Triggered when the assembly domain and all relevant assemblies are about to be unloaded.
+		 */
+		Event<void()> onDomainUnload;
 	private:
 		/**
 		 * @brief	Initializes a previous loaded assembly.

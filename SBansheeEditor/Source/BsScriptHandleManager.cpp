@@ -18,24 +18,16 @@ namespace BansheeEngine
 	ScriptHandleManager::ScriptHandleManager(ScriptAssemblyManager& scriptObjectManager)
 		:mScriptObjectManager(scriptObjectManager)
 	{
-		mDomainLoadConn = ScriptObjectManager::instance().onRefreshDomainLoaded.connect(std::bind(&ScriptHandleManager::reloadAssemblyData, this));
-		reloadAssemblyData();
+		mDomainLoadConn = ScriptObjectManager::instance().onRefreshDomainLoaded.connect(std::bind(&ScriptHandleManager::loadAssemblyData, this));
+		mDomainUnloadConn = MonoManager::instance().onDomainUnload.connect(std::bind(&ScriptHandleManager::clearAssemblyData, this));
+		loadAssemblyData();
 	}
 
 	ScriptHandleManager::~ScriptHandleManager()
 	{
-		for (auto& handle : mActiveHandleData.handles)
-		{
-			callDestroy(handle.object);
-			mono_gchandle_free(handle.gcHandle);
-		}
+		clearAssemblyData();
 
-		if (mDefaultHandleManager != nullptr)
-		{
-			callDestroy(mDefaultHandleManager);
-			mono_gchandle_free(mDefaultHandleManagerGCHandle);
-		}
-
+		mDomainUnloadConn.disconnect();
 		mDomainLoadConn.disconnect();
 	}
 
@@ -125,9 +117,29 @@ namespace BansheeEngine
 		}
 	}
 
-	void ScriptHandleManager::reloadAssemblyData()
+	void ScriptHandleManager::clearAssemblyData()
 	{
-		// Reload types from editor assembly
+		for (auto& handle : mActiveHandleData.handles)
+		{
+			callDestroy(handle.object);
+			mono_gchandle_free(handle.gcHandle);
+		}
+
+		mActiveHandleData.selectedObject = HSceneObject();
+		mActiveHandleData.handles.clear();
+
+		if (mDefaultHandleManager != nullptr)
+		{
+			callDestroy(mDefaultHandleManager);
+			mono_gchandle_free(mDefaultHandleManagerGCHandle);
+		}
+
+		mDefaultHandleManager = nullptr;
+		mDefaultHandleManagerGCHandle = 0;
+	}
+
+	void ScriptHandleManager::loadAssemblyData()
+	{
 		MonoAssembly* editorAssembly = MonoManager::instance().getAssembly(EDITOR_ASSEMBLY);
 		mCustomHandleAttribute = editorAssembly->getClass("BansheeEditor", "CustomHandle");
 		if (mCustomHandleAttribute == nullptr)
@@ -147,9 +159,6 @@ namespace BansheeEngine
 		mPostInputMethod = mHandleBaseClass->getMethod("PostInput", 0);
 		mDrawMethod = mHandleBaseClass->getMethod("Draw", 0);
 		mDestroyThunk = (DestroyThunkDef)mHandleBaseClass->getMethod("Destroy", 0)->getThunk();
-
-		mDefaultHandleManager = nullptr; // Freed on assembly unload, so not valid anymore
-		mDefaultHandleManagerGCHandle = 0;
 
 		Vector<String> scriptAssemblyNames = mScriptObjectManager.getScriptAssemblies();
 		for (auto& assemblyName : scriptAssemblyNames)
@@ -175,10 +184,6 @@ namespace BansheeEngine
 				}
 			}
 		}
-
-		// Clear selection data
-		mActiveHandleData.selectedObject = HSceneObject();
-		mActiveHandleData.handles.clear();
 	}
 
 	bool ScriptHandleManager::isValidHandleType(MonoClass* type, MonoClass*& componentType, MonoMethod*& ctor)

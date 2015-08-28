@@ -67,11 +67,17 @@ namespace BansheeEngine
 		 */
 		void queueDrawCommands() override;
 
+		/**   
+		 * @brief	 Clears references to all managed types and objects. Must be called before loadAssemblyData if 
+		 * 			 loadAssemblyData was called previously.
+		 */
+		void clearAssemblyData();
+
 		/**
-		 * @brief	Reloads internal managed assembly types and finds all custom handle classes.
+		 * @brief	Loads internal managed assembly types and finds all custom handle classes.
 		 *			Must be called after construction and after assembly reload.
 		 */
-		void reloadAssemblyData();
+		void loadAssemblyData();
 
 		/**
 		 * @brief	Checks is the provided type a valid custom handle class. Custom handles
@@ -113,6 +119,7 @@ namespace BansheeEngine
 		void callDestroy(MonoObject* instance);
 
 		ScriptAssemblyManager& mScriptObjectManager;
+		HEvent mDomainUnloadConn;
 		HEvent mDomainLoadConn;
 
 		Map<String, CustomHandleData> mHandles;
