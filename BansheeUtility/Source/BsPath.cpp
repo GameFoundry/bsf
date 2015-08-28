@@ -294,8 +294,22 @@ namespace BansheeEngine
 				return false;
 		}
 
-		if (isFile() && mFilename != child.mFilename)
-			return false;
+		if (!mFilename.empty())
+		{
+			if (iterChild == child.mDirectories.end())
+			{
+				if (child.mFilename.empty())
+					return false;
+
+				if (!comparePathElem(child.mFilename, mFilename))
+					return false;
+			}
+			else
+			{
+				if (!comparePathElem(*iterChild, mFilename))
+					return false;
+			}			
+		}
 
 		return true;
 	}
