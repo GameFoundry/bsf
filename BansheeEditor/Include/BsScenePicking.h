@@ -41,7 +41,7 @@ namespace BansheeEngine
 		 *
 		 * @return	Nearest SceneObject under the provided area, or an empty handle if no object is found.
 		 */
-		HSceneObject pickClosestObject(const CameraHandlerPtr& cam, const Vector2I& position, const Vector2I& area);
+		HSceneObject pickClosestObject(const CameraPtr& cam, const Vector2I& position, const Vector2I& area);
 
 
 		/**
@@ -55,7 +55,7 @@ namespace BansheeEngine
 		 *
 		 * @return	A list of SceneObject%s under the provided area.
 		 */
-		Vector<HSceneObject> pickObjects(const CameraHandlerPtr& cam, const Vector2I& position, const Vector2I& area);
+		Vector<HSceneObject> pickObjects(const CameraPtr& cam, const Vector2I& position, const Vector2I& area);
 
 	private:
 		friend class ScenePickingCore;

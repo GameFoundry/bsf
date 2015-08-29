@@ -10,7 +10,7 @@
 #include "BsCoreApplication.h"
 #include "BsRenderQueue.h"
 #include "BsException.h"
-#include "BsCamera.h"
+#include "BsCCamera.h"
 #include "BsBuiltinResources.h"
 #include "BsVertexDataDesc.h"
 

@@ -6,7 +6,7 @@
 #include "BsRendererManager.h"
 #include "BsCoreRenderer.h"
 #include "BsTransientMesh.h"
-#include "BsCameraHandler.h"
+#include "BsCamera.h"
 #include "BsSceneObject.h"
 
 using namespace std::placeholders;
@@ -153,7 +153,7 @@ namespace BansheeEngine
 		mDrawHelper->rectangle(area);
 	}
 
-	void HandleDrawManager::draw(const CameraHandlerPtr& camera)
+	void HandleDrawManager::draw(const CameraPtr& camera)
 	{
 		mDrawHelper->clearMeshes();
 		mDrawHelper->buildMeshes(DrawHelper::SortType::BackToFront, camera->getPosition());
@@ -202,7 +202,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void HandleDrawManagerCore::updateData(const SPtr<CameraHandlerCore>& camera, const Vector<MeshData>& meshes)
+	void HandleDrawManagerCore::updateData(const SPtr<CameraCore>& camera, const Vector<MeshData>& meshes)
 	{
 		if (mCamera != camera)
 		{

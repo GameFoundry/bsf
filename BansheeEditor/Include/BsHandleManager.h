@@ -23,7 +23,7 @@ namespace BansheeEngine
 		 * @param	inputPos	Position of the pointer, relative to the provided camera viewport.
 		 * @param	inputDelta	Determines pointer movement since last call to this method.
 		 */
-		void update(const CameraHandlerPtr& camera, const Vector2I& inputPos, const Vector2I& inputDelta);
+		void update(const CameraPtr& camera, const Vector2I& inputPos, const Vector2I& inputDelta);
 
 		/**
 		 * @brief	Select a handle slider at the specified location, if there is any under the pointer. Makes
@@ -32,7 +32,7 @@ namespace BansheeEngine
 		 * @param	camera		Camera that the input positions are relative to, and destination to draw the handles to.
 		 * @param	inputPos	Position of the pointer, relative to the provided camera viewport.
 		 */
-		void trySelect(const CameraHandlerPtr& camera, const Vector2I& inputPos);
+		void trySelect(const CameraPtr& camera, const Vector2I& inputPos);
 
 		/**
 		 * @brief	Clears the currently selected/active handle slider.
@@ -59,7 +59,7 @@ namespace BansheeEngine
 		 *			position @p handlePos. The handles will be scaled so that they appear
 		 *			the same size regardless of distance from camera.
 		 */
-		float getHandleSize(const CameraHandlerPtr& camera, const Vector3& handlePos) const;
+		float getHandleSize(const CameraPtr& camera, const Vector3& handlePos) const;
 
 		/**
 		 * @brief	Sets the default handle size. This controls the uniform scale returned from

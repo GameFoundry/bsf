@@ -143,7 +143,7 @@ namespace BansheeEngine
 		 * @brief	Queues all the handle draw commands executed so far for rendering. All commands
 		 *			are cleared and will need to be called again to draw them again.
 		 */
-		void draw(const CameraHandlerPtr& camera);
+		void draw(const CameraPtr& camera);
 
 	private:
 		friend class HandleDrawManagerCore;
@@ -240,14 +240,14 @@ namespace BansheeEngine
 		 * @param	camera	Camera to render to.
 		 * @param	meshes	Meshes to render.
 		 */
-		void updateData(const SPtr<CameraHandlerCore>& camera, const Vector<MeshData>& meshes);
+		void updateData(const SPtr<CameraCore>& camera, const Vector<MeshData>& meshes);
 
 		/**
 		 * @brief	Callback triggered by the renderer. Draws the stored meshes.
 		 */
 		void render();
 
-		SPtr<CameraHandlerCore> mCamera;
+		SPtr<CameraCore> mCamera;
 		Vector<MeshData> mMeshes;
 
 		// Immutable

@@ -6,7 +6,7 @@
 #include "BsMesh.h"
 #include "BsDrawList.h"
 #include "BsBuiltinEditorResources.h"
-#include "BsCamera.h"
+#include "BsCCamera.h"
 #include "BsRect3.h"
 #include "BsCoreThread.h"
 #include "BsEditorSettings.h"
@@ -21,7 +21,7 @@ namespace BansheeEngine
 	const float SceneGridCore::FADE_OUT_START = 5.0f;
 	const float SceneGridCore::FADE_OUT_END = 40.0f;
 
-	SceneGrid::SceneGrid(const CameraHandlerPtr& camera)
+	SceneGrid::SceneGrid(const CameraPtr& camera)
 		:mCoreDirty(true), mCore(nullptr)
 	{
 		mVertexDesc = bs_shared_ptr_new<VertexDataDesc>();
@@ -42,7 +42,7 @@ namespace BansheeEngine
 		gCoreAccessor().queueCommand(std::bind(&SceneGrid::destroyCore, this, mCore.load(std::memory_order_relaxed)));
 	}
 
-	void SceneGrid::initializeCore(const SPtr<CameraHandlerCore>& camera, const SPtr<MaterialCore>& material)
+	void SceneGrid::initializeCore(const SPtr<CameraCore>& camera, const SPtr<MaterialCore>& material)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -135,7 +135,7 @@ namespace BansheeEngine
 		activeRenderer->_unregisterRenderCallback(mCamera.get(), -20);
 	}
 
-	void SceneGridCore::initialize(const SPtr<CameraHandlerCore>& camera, const SPtr<MaterialCore>& material)
+	void SceneGridCore::initialize(const SPtr<CameraCore>& camera, const SPtr<MaterialCore>& material)
 	{
 		mCamera = camera;
 		mGridMaterial = material;

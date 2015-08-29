@@ -46,7 +46,7 @@
     <Compile Include="Bounds.cs" />
     <Compile Include="Builtin.cs" />
     <Compile Include="Camera.cs" />
-    <Compile Include="CameraHandler.cs" />
+    <Compile Include="NativeCamera.cs" />
     <Compile Include="ContextMenu.cs" />
     <Compile Include="Cursor.cs" />
     <Compile Include="Debug.cs" />
@@ -84,7 +84,7 @@
     <Compile Include="Input.cs" />
     <Compile Include="InputConfiguration.cs" />
     <Compile Include="Light.cs" />
-    <Compile Include="LightInternal.cs" />
+    <Compile Include="NativeLight.cs" />
     <Compile Include="LocString.cs" />
     <Compile Include="ManagedResource.cs" />
     <Compile Include="Material.cs" />
@@ -113,7 +113,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Math\Quaternion.cs" />
     <Compile Include="Renderable.cs" />
-    <Compile Include="RenderableHandler.cs" />
+    <Compile Include="NativeRenderable.cs" />
     <Compile Include="RenderTarget.cs" />
     <Compile Include="RenderTexture.cs" />
     <Compile Include="RenderTexture2D.cs" />

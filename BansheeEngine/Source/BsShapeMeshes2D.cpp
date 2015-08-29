@@ -7,7 +7,7 @@
 #include "BsPass.h"
 #include "BsCoreApplication.h"
 #include "BsRenderQueue.h"
-#include "BsCamera.h"
+#include "BsCCamera.h"
 #include "BsCoreThreadAccessor.h"
 #include "BsBuiltinResources.h"
 #include "BsVertexDataDesc.h"

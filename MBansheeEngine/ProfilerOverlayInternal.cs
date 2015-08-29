@@ -12,7 +12,7 @@ namespace BansheeEngine
         {
             IntPtr ptr = IntPtr.Zero;
             if (camera != null)
-                ptr = camera.Handler.GetCachedPtr();
+                ptr = camera.Native.GetCachedPtr();
 
             Internal_CreateInstance(this, ptr);
         }
@@ -33,7 +33,7 @@ namespace BansheeEngine
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(ProfilerOverlayInternal instance, IntPtr cameraHandler);
+        private static extern void Internal_CreateInstance(ProfilerOverlayInternal instance, IntPtr camera);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetType(IntPtr instance, ProfilerOverlayType type);

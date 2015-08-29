@@ -19,7 +19,7 @@ namespace BansheeEngine
         None = 0, Color = 0x01, Depth = 0x02, Stencil = 0x04
     }
 
-    internal class CameraHandler : ScriptObject
+    internal class NativeCamera : ScriptObject
     {
         internal float aspectRatio
         {
@@ -174,7 +174,7 @@ namespace BansheeEngine
 
         private RenderTarget _target;
 
-        public CameraHandler(SceneObject sceneObject)
+        public NativeCamera(SceneObject sceneObject)
         {
             IntPtr sceneObjPtr = IntPtr.Zero;
             if (sceneObject != null)
@@ -194,7 +194,7 @@ namespace BansheeEngine
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_Create(CameraHandler instance, IntPtr parentSO);
+        private static extern void Internal_Create(NativeCamera instance, IntPtr parentSO);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern float Internal_GetAspect(IntPtr instance);

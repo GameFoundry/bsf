@@ -34,10 +34,10 @@
 #include "BsMaterial.h"
 #include "BsTechnique.h"
 #include "BsPass.h"
-#include "BsRenderable.h"
+#include "BsCRenderable.h"
 #include "BsVirtualInput.h"
 #include "BsFolderMonitor.h"
-#include "BsCamera.h"
+#include "BsCCamera.h"
 #include "BsGUIWidget.h"
 #include "BsGUIButton.h"
 #include "BsGUILayout.h"
@@ -154,7 +154,7 @@ namespace BansheeEngine
 		RenderAPICore* renderAPI = RenderAPICore::instancePtr();
 
 		HSceneObject testModelGO = SceneObject::create("TestMesh");
-		HRenderable testRenderable = testModelGO->addComponent<Renderable>();
+		HRenderable testRenderable = testModelGO->addComponent<CRenderable>();
 
 		Path testShaderLoc = RUNTIME_DATA_PATH + L"Test.bsl";;
 

@@ -147,7 +147,7 @@ namespace BansheeEngine
 	class VideoOutputInfo;
 	class VideoModeInfo;
 	class RenderableElement;
-	class CameraHandlerCore;
+	class CameraCore;
 	class MeshCoreBase;
 	class MeshCore;
 	class DrawList;
@@ -171,8 +171,8 @@ namespace BansheeEngine
 	class Prefab;
 	class PrefabDiff;
 	class RendererMeshData;
-	class LightInternalCore;
-	class LightInternal;
+	class LightCore;
+	class Light;
 	// Asset import
 	class SpecificImporter;
 	class Importer;

@@ -4,11 +4,11 @@
 #include "BsMatrix4.h"
 #include "BsDebug.h"
 #include "BsMath.h"
-#include "BsRenderable.h"
+#include "BsCRenderable.h"
 #include "BsSceneObject.h"
 #include "BsMesh.h"
 #include "BsConvexVolume.h"
-#include "BsCamera.h"
+#include "BsCCamera.h"
 #include "BsCoreThread.h"
 #include "BsRenderAPI.h"
 #include "BsMaterial.h"
@@ -51,7 +51,7 @@ namespace BansheeEngine
 		gCoreAccessor().queueCommand(std::bind(&ScenePickingCore::destroy, mCore));
 	}
 
-	HSceneObject ScenePicking::pickClosestObject(const CameraHandlerPtr& cam, const Vector2I& position, const Vector2I& area)
+	HSceneObject ScenePicking::pickClosestObject(const CameraPtr& cam, const Vector2I& position, const Vector2I& area)
 	{
 		Vector<HSceneObject> selectedObjects = pickObjects(cam, position, area);
 		if (selectedObjects.size() == 0)
@@ -60,7 +60,7 @@ namespace BansheeEngine
 		return selectedObjects[0];
 	}
 
-	Vector<HSceneObject> ScenePicking::pickObjects(const CameraHandlerPtr& cam, const Vector2I& position, const Vector2I& area)
+	Vector<HSceneObject> ScenePicking::pickObjects(const CameraPtr& cam, const Vector2I& position, const Vector2I& area)
 	{
 		auto comparePickElement = [&] (const ScenePicking::RenderablePickData& a, const ScenePicking::RenderablePickData& b)
 		{
@@ -78,13 +78,13 @@ namespace BansheeEngine
 
 		Matrix4 viewProjMatrix = cam->getProjectionMatrixRS() * cam->getViewMatrix();
 
-		const Map<RenderableHandler*, SceneRenderableData>& renderables = SceneManager::instance().getAllRenderables();
+		const Map<Renderable*, SceneRenderableData>& renderables = SceneManager::instance().getAllRenderables();
 		RenderableSet pickData(comparePickElement);
 		Map<UINT32, HSceneObject> idxToRenderable;
 
 		for (auto& renderableData : renderables)
 		{
-			RenderableHandlerPtr renderable = renderableData.second.renderable;
+			RenderablePtr renderable = renderableData.second.renderable;
 			HSceneObject so = renderableData.second.sceneObject;
 
 			if (!so->getActive())

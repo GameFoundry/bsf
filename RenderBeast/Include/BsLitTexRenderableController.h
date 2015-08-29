@@ -31,12 +31,12 @@ namespace BansheeEngine
 		LitTexRenderableController();
 
 		/**
-		 * @copydoc	RenderableHandler::initializeRenderElem
+		 * @copydoc	RenderableController::initializeRenderElem
 		 */
 		void initializeRenderElem(RenderableElement& element) override;
 
 		/**
-		 * @copydoc	RenderableHandler::bindPerObjectBuffers
+		 * @copydoc	RenderableController::bindPerObjectBuffers
 		 */
 		void bindPerObjectBuffers(const RenderableElement& element) override;
 

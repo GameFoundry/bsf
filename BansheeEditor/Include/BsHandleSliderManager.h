@@ -21,7 +21,7 @@ namespace BansheeEngine
 		 * @param	inputPos	Position of the pointer.
 		 * @param	inputDelta	Movement of the pointer since last frame.
 		 */
-		void update(const CameraHandlerPtr& camera, const Vector2I& inputPos, const Vector2I& inputDelta);
+		void update(const CameraPtr& camera, const Vector2I& inputPos, const Vector2I& inputDelta);
 
 		/**
 		 * @brief	Attempts to select (activate) a slider at the specified position (if there is any).
@@ -29,7 +29,7 @@ namespace BansheeEngine
 		 * @param	camera		Camera through which we're interacting with sliders.
 		 * @param	inputPos	Position of the pointer.
 		 */
-		void trySelect(const CameraHandlerPtr& camera, const Vector2I& inputPos);
+		void trySelect(const CameraPtr& camera, const Vector2I& inputPos);
 
 		/**
 		 * @brief	Clears the 0active slider (deactivates it).
@@ -61,7 +61,7 @@ namespace BansheeEngine
 		 *
 		 * @return	Slider if we're intersecting with one, or null otherwise.
 		 */
-		HandleSlider* findUnderCursor(const CameraHandlerPtr& camera, const Vector2I& inputPos) const;
+		HandleSlider* findUnderCursor(const CameraPtr& camera, const Vector2I& inputPos) const;
 
 		HandleSlider* mActiveSlider;
 		HandleSlider* mHoverSlider;

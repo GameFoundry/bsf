@@ -87,10 +87,10 @@ namespace BansheeEngine
 	class ProfilerOverlay;
 	class ProfilerOverlayInternal;
 	class DrawHelper;
-	class CameraHandler;
-	class RenderableHandler;
-	class CameraHandlerCore;
-	class RenderableHandlerCore;
+	class Camera;
+	class Renderable;
+	class CameraCore;
+	class RenderableCore;
 	class PlainText;
 	class ScriptCode;
 	class ScriptCodeImportOptions;
@@ -103,19 +103,19 @@ namespace BansheeEngine
 	class OverlayManager;
 
 	// Components
-	class Overlay;
-	class Renderable;
-	class Camera;
-	class Light;
+	class COverlay;
+	class CRenderable;
+	class CCamera;
+	class CLight;
 
 	typedef std::shared_ptr<TextSprite> TextSpritePtr;
 	typedef std::shared_ptr<SpriteTexture> SpriteTexturePtr;
-	typedef std::shared_ptr<Overlay> OverlayPtr;
+	typedef std::shared_ptr<COverlay> COverlayPtr;
+	typedef std::shared_ptr<CCamera> CCameraPtr;
+	typedef std::shared_ptr<CRenderable> CRenderablePtr;
+	typedef std::shared_ptr<GUIToggleGroup> GUIToggleGroupPtr;
 	typedef std::shared_ptr<Camera> CameraPtr;
 	typedef std::shared_ptr<Renderable> RenderablePtr;
-	typedef std::shared_ptr<GUIToggleGroup> GUIToggleGroupPtr;
-	typedef std::shared_ptr<CameraHandler> CameraHandlerPtr;
-	typedef std::shared_ptr<RenderableHandler> RenderableHandlerPtr;
 	typedef std::shared_ptr<InputConfiguration> InputConfigurationPtr;
 	typedef std::shared_ptr<PlainText> PlainTextPtr;
 	typedef std::shared_ptr<ScriptCode> ScriptCodePtr;
@@ -123,8 +123,8 @@ namespace BansheeEngine
 	typedef std::shared_ptr<GUIContextMenu> GUIContextMenuPtr;
 
 	typedef GameObjectHandle<GUIWidget> HGUIWidget;
-	typedef GameObjectHandle<Camera> HCamera;
-	typedef GameObjectHandle<Renderable> HRenderable;
+	typedef GameObjectHandle<CCamera> HCamera;
+	typedef GameObjectHandle<CRenderable> HRenderable;
 	typedef GameObjectHandle<ProfilerOverlay> HProfilerOverlay;
 
 	typedef ResourceHandle<SpriteTexture> HSpriteTexture;
@@ -143,18 +143,18 @@ namespace BansheeEngine
 	 */
 	enum TypeID_Banshee
 	{
-		TID_Camera = 30000,
-		TID_Renderable = 30001,
+		TID_CCamera = 30000,
+		TID_CRenderable = 30001,
 		TID_SpriteTexture = 30002,
-		TID_CameraHandler = 30003,
-		TID_RenderableHandler = 30004,
+		TID_Camera = 30003,
+		TID_Renderable = 30004,
 		TID_PlainText = 30005,
 		TID_ScriptCode = 30006,
 		TID_ScriptCodeImportOptions = 30007,
 		TID_GUIElementStyle = 30008,
 		TID_GUISkin = 30009,
 		TID_GUISkinEntry = 30010,
-		TID_LightInternal = 30011,
-		TID_Light = 30012
+		TID_Light = 30011,
+		TID_CLight = 30012
 	};
 }

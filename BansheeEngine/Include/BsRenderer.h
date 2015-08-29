@@ -19,7 +19,7 @@ namespace BansheeEngine
 		 * @note	Core thread.
 		 *			Internal method.
 		 */
-		virtual void _notifyRenderableAdded(RenderableHandlerCore* renderable) { }
+		virtual void _notifyRenderableAdded(RenderableCore* renderable) { }
 
 		/**
 		 * @brief	Called whenever a renderable is updated.
@@ -27,7 +27,7 @@ namespace BansheeEngine
 		 * @note	Core thread.
 		 *			Internal method.
 		 */
-		virtual void _notifyRenderableUpdated(RenderableHandlerCore* renderable) { }
+		virtual void _notifyRenderableUpdated(RenderableCore* renderable) { }
 
 		/**
 		 * @brief	Called whenever a renderable is destroyed.
@@ -35,7 +35,7 @@ namespace BansheeEngine
 		 * @note	Core thread.
 		 *			Internal method.
 		 */
-		virtual void _notifyRenderableRemoved(RenderableHandlerCore* renderable) { }
+		virtual void _notifyRenderableRemoved(RenderableCore* renderable) { }
 
 		/**
 		 * @brief	Called whenever a new light is created.
@@ -43,7 +43,7 @@ namespace BansheeEngine
 		 * @note	Core thread.
 		 *			Internal method.
 		 */
-		virtual void _notifyLightAdded(LightInternalCore* light) { }
+		virtual void _notifyLightAdded(LightCore* light) { }
 
 		/**
 		 * @brief	Called whenever a light is updated.
@@ -51,7 +51,7 @@ namespace BansheeEngine
 		 * @note	Core thread.
 		 *			Internal method.
 		 */
-		virtual void _notifyLightUpdated(LightInternalCore* light) { }
+		virtual void _notifyLightUpdated(LightCore* light) { }
 
 		/**
 		 * @brief	Called whenever a light is destroyed.
@@ -59,7 +59,7 @@ namespace BansheeEngine
 		 * @note	Core thread.
 		 *			Internal method.
 		 */
-		virtual void _notifyLightRemoved(LightInternalCore* light) { }
+		virtual void _notifyLightRemoved(LightCore* light) { }
 	};
 
 	/**

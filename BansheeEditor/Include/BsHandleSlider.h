@@ -51,14 +51,14 @@ namespace BansheeEngine
 		 * @param	camera		Camera through which we're interacting with the slider.
 		 * @param	inputDelta	Pointer movement since the last time this method was called.
 		 */
-		virtual void handleInput(const CameraHandlerPtr& camera, const Vector2I& inputDelta) = 0;
+		virtual void handleInput(const CameraPtr& camera, const Vector2I& inputDelta) = 0;
 
 		/**
 		 * @brief	Updates the state of the slider. Must be called every frame.
 		 *
 		 * @param	camera	Camera through which we're interacting with the slider.
 		 */
-		void update(const CameraHandlerPtr& camera);
+		void update(const CameraPtr& camera);
 
 		/**
 		 * @brief	Returns the state the slider is currently in.
@@ -117,7 +117,7 @@ namespace BansheeEngine
 		 * @param	camera		Camera through which the slider was activated.
 		 * @param	pointerPos	Position of the pointer when the slider was activated.
 		 */
-		void setActive(const CameraHandlerPtr& camera, const Vector2I& pointerPos);
+		void setActive(const CameraPtr& camera, const Vector2I& pointerPos);
 
 		/**
 		 * @brief	Toggles the slider state to hovered.
@@ -138,7 +138,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Triggered when the slider state is changed to active.
 		 */
-		virtual void activate(const CameraHandlerPtr& camera, const Vector2I& pointerPos) { }
+		virtual void activate(const CameraPtr& camera, const Vector2I& pointerPos) { }
 
 		/**
 		 * @brief	Triggered when the slider state is changed from active to some other state.
@@ -159,7 +159,7 @@ namespace BansheeEngine
 		 * @param	pointerStart	Starting position of the pointer when movement started, in pixels relative to provided camera.
 		 * @param	pointerEnd		Current position of the pointer, in pixels relative to provided camera.
 		 */
-		float calcDelta(const CameraHandlerPtr& camera, const Vector3& position, const Vector3& direction,
+		float calcDelta(const CameraPtr& camera, const Vector3& position, const Vector3& direction,
 			const Vector2I& pointerStart, const Vector2I& pointerEnd);
 
 		bool mFixedScale;

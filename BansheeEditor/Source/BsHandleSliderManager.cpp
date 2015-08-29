@@ -6,7 +6,7 @@
 #include "BsRendererManager.h"
 #include "BsCoreRenderer.h"
 #include "BsTransientMesh.h"
-#include "BsCamera.h"
+#include "BsCCamera.h"
 #include "BsHandleSlider.h"
 
 using namespace std::placeholders;
@@ -24,7 +24,7 @@ namespace BansheeEngine
 
 	}
 
-	void HandleSliderManager::update(const CameraHandlerPtr& camera, const Vector2I& inputPos, const Vector2I& inputDelta)
+	void HandleSliderManager::update(const CameraPtr& camera, const Vector2I& inputPos, const Vector2I& inputDelta)
 	{
 		for (auto& slider : mSliders)
 			slider->update(camera);
@@ -54,7 +54,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void HandleSliderManager::trySelect(const CameraHandlerPtr& camera, const Vector2I& inputPos)
+	void HandleSliderManager::trySelect(const CameraPtr& camera, const Vector2I& inputPos)
 	{
 		HandleSlider* newActiveSlider = findUnderCursor(camera, inputPos);
 
@@ -89,7 +89,7 @@ namespace BansheeEngine
 		}
 	}
 
-	HandleSlider* HandleSliderManager::findUnderCursor(const CameraHandlerPtr& camera, const Vector2I& inputPos) const
+	HandleSlider* HandleSliderManager::findUnderCursor(const CameraPtr& camera, const Vector2I& inputPos) const
 	{
 		Ray inputRay = camera->screenPointToRay(inputPos);
 

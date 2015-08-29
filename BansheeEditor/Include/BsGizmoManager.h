@@ -137,7 +137,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method.
 		 */
-		void update(const CameraHandlerPtr& camera);
+		void update(const CameraPtr& camera);
 
 		/**
 		 * @brief	Queues all gizmos to be rendered for picking. Each gizmo is draw with a separate
@@ -148,7 +148,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method.
 		 */
-		void renderForPicking(const CameraHandlerPtr& camera, std::function<Color(UINT32)> idxToColorCallback);
+		void renderForPicking(const CameraPtr& camera, std::function<Color(UINT32)> idxToColorCallback);
 
 		/**
 		 * @brief	Clears all gizmo data, but doesn't update the meshes
@@ -277,7 +277,7 @@ namespace BansheeEngine
 		 *
 		 * @returns	A mesh containing all of the visible icons. Mesh is allocated using the icon mesh heap and should be deallocated manually.
 		 */
-		TransientMeshPtr buildIconMesh(const CameraHandlerPtr& camera, const Vector<IconData>& iconData, bool forPicking, IconRenderDataVecPtr& renderData);
+		TransientMeshPtr buildIconMesh(const CameraPtr& camera, const Vector<IconData>& iconData, bool forPicking, IconRenderDataVecPtr& renderData);
 
 		/**
 		 * @brief	Resizes the icon width/height so it is always scaled to optimal size (with preserved aspect).
@@ -294,7 +294,7 @@ namespace BansheeEngine
 		 * @param	normalColor	Normal color of the icon.
 		 * @param	fadedColor	Faded color to be used when icon is occluded by geometry.
 		 */
-		void calculateIconColors(const Color& tint, const CameraHandlerPtr& camera, UINT32 iconHeight, bool fixedScale,
+		void calculateIconColors(const Color& tint, const CameraPtr& camera, UINT32 iconHeight, bool fixedScale,
 			Color& normalColor, Color& fadedColor);
 
 		/**
@@ -461,12 +461,12 @@ namespace BansheeEngine
 		 * @param	iconMesh		Mesh containing icon meshes.
 		 * @param	iconRenderData	Icon render data outlining which parts of the icon mesh use which textures.
 		 */
-		void updateData(const SPtr<CameraHandlerCore>& camera, const SPtr<MeshCoreBase>& solidMesh, const SPtr<MeshCoreBase>& wireMesh,
+		void updateData(const SPtr<CameraCore>& camera, const SPtr<MeshCoreBase>& solidMesh, const SPtr<MeshCoreBase>& wireMesh,
 			const SPtr<MeshCoreBase>& iconMesh, const GizmoManager::IconRenderDataVecPtr& iconRenderData);
 
 		static const float PICKING_ALPHA_CUTOFF;
 
-		SPtr<CameraHandlerCore> mCamera;
+		SPtr<CameraCore> mCamera;
 
 		SPtr<MeshCoreBase> mSolidMesh;
 		SPtr<MeshCoreBase> mWireMesh;

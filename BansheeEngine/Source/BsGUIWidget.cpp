@@ -11,7 +11,7 @@
 #include "BsMesh.h"
 #include "BsVector2I.h"
 #include "BsOverlayManager.h"
-#include "BsCamera.h"
+#include "BsCCamera.h"
 #include "BsViewport.h"
 #include "BsSceneObject.h"
 #include "BsRenderWindow.h"

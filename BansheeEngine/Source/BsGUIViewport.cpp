@@ -3,7 +3,7 @@
 #include "BsGUISkin.h"
 #include "BsSpriteTexture.h"
 #include "BsGUIDimensions.h"
-#include "BsCamera.h"
+#include "BsCCamera.h"
 #include "BsViewport.h"
 #include "BsRenderTarget.h"
 #include "BsException.h"

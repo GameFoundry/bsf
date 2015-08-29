@@ -5,7 +5,7 @@
 #include "BsVertexDataDesc.h"
 #include "BsShapeMeshes3D.h"
 #include "BsMeshHeap.h"
-#include "BsCamera.h"
+#include "BsCCamera.h"
 #include "BsSpriteTexture.h"
 #include "BsCoreThread.h"
 #include "BsBuiltinEditorResources.h"
@@ -228,7 +228,7 @@ namespace BansheeEngine
 		mIdxToSceneObjectMap[iconData.idx] = mActiveSO;
 	}
 
-	void GizmoManager::update(const CameraHandlerPtr& camera)
+	void GizmoManager::update(const CameraPtr& camera)
 	{
 		mDrawHelper->clearMeshes();
 
@@ -269,7 +269,7 @@ namespace BansheeEngine
 			solidMesh, wireMesh, iconMesh, iconRenderData));
 	}
 
-	void GizmoManager::renderForPicking(const CameraHandlerPtr& camera, std::function<Color(UINT32)> idxToColorCallback)
+	void GizmoManager::renderForPicking(const CameraPtr& camera, std::function<Color(UINT32)> idxToColorCallback)
 	{
 		Vector<IconData> iconData;
 		IconRenderDataVecPtr iconRenderData;
@@ -418,7 +418,7 @@ namespace BansheeEngine
 		gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::updateData, core, nullptr, nullptr, nullptr, nullptr, iconRenderData));
 	}
 
-	TransientMeshPtr GizmoManager::buildIconMesh(const CameraHandlerPtr& camera, const Vector<IconData>& iconData,
+	TransientMeshPtr GizmoManager::buildIconMesh(const CameraPtr& camera, const Vector<IconData>& iconData,
 		bool forPicking, GizmoManager::IconRenderDataVecPtr& iconRenderData)
 	{
 		mSortedIconData.clear();
@@ -600,7 +600,7 @@ namespace BansheeEngine
 		height = Math::roundToInt(height * scale);
 	}
 
-	void GizmoManager::calculateIconColors(const Color& tint, const CameraHandlerPtr& camera,
+	void GizmoManager::calculateIconColors(const Color& tint, const CameraPtr& camera,
 		UINT32 iconHeight, bool fixedScale, Color& normalColor, Color& fadedColor)
 	{
 		normalColor = tint;
@@ -708,7 +708,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GizmoManagerCore::updateData(const SPtr<CameraHandlerCore>& camera, const SPtr<MeshCoreBase>& solidMesh, const SPtr<MeshCoreBase>& wireMesh,
+	void GizmoManagerCore::updateData(const SPtr<CameraCore>& camera, const SPtr<MeshCoreBase>& solidMesh, const SPtr<MeshCoreBase>& wireMesh,
 		const SPtr<MeshCoreBase>& iconMesh, const GizmoManager::IconRenderDataVecPtr& iconRenderData)
 	{
 		if (mCamera != camera)

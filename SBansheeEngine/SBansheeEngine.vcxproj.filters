@@ -258,9 +258,6 @@
     <ClInclude Include="Include\BsScriptGUIRenderTexture.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsScriptCameraHandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsScriptObjectManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -300,9 +297,6 @@
     <ClInclude Include="Include\BsScriptBoneWeight.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsScriptRenderableHandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsScriptContextMenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -321,9 +315,6 @@
     <ClInclude Include="Include\BsScriptScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsScriptLightInternal.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsScriptProfilerOverlayInternal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -340,6 +331,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsEngineScriptLibrary.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptCamera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptRenderable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptLight.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -536,9 +536,6 @@
     <ClCompile Include="Source\BsScriptGUIRenderTexture.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsScriptCameraHandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\BsScriptObjectManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -584,9 +581,6 @@
     <ClCompile Include="Source\BsScriptBoneWeight.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsScriptRenderableHandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\BsScriptContextMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -600,9 +594,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsScriptScene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsScriptLightInternal.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsScriptProfilerOverlayInternal.cpp">
@@ -621,6 +612,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsEngineScriptLibrary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptCamera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptRenderable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptLight.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

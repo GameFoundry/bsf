@@ -1,10 +1,10 @@
 #include "BsOverlayManager.h"
-#include "BsCamera.h"
-#include "BsOverlay.h"
+#include "BsCCamera.h"
+#include "BsCOverlay.h"
 
 namespace BansheeEngine
 {
-	bool OverlayManager::OverlayComparer::operator() (const Overlay* const& a, const Overlay* const& b)
+	bool OverlayManager::OverlayComparer::operator() (const COverlay* const& a, const COverlay* const& b)
 	{
 		return a->getDepth() > b->getDepth();
 	}
@@ -23,17 +23,17 @@ namespace BansheeEngine
 		}
 	}
 
-	void OverlayManager::attachOverlay(const Viewport* target, const Overlay* overlay)
+	void OverlayManager::attachOverlay(const Viewport* target, const COverlay* overlay)
 	{
 		mOverlaysPerTarget[target].insert(overlay);
 	}
 
-	void OverlayManager::detachOverlay(const Viewport* target, const Overlay* overlay)
+	void OverlayManager::detachOverlay(const Viewport* target, const COverlay* overlay)
 	{
 		mOverlaysPerTarget[target].erase(overlay);
 	}
 
-	void OverlayManager::detachOverlayFromAll(const Overlay* overlay)
+	void OverlayManager::detachOverlayFromAll(const COverlay* overlay)
 	{
 		for(auto& overlays : mOverlaysPerTarget)
 		{

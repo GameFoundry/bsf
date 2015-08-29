@@ -81,7 +81,7 @@ namespace BansheeEngine
 		 * @note	Core thread.
 		 *			Internal method.
 		 */
-		virtual void _notifyCameraAdded(const CameraHandlerCore* camera) { }
+		virtual void _notifyCameraAdded(const CameraCore* camera) { }
 
 		/**
 		 * @brief	Called whenever a camera is destroyed.
@@ -89,7 +89,7 @@ namespace BansheeEngine
 		 * @note	Core thread.
 		 *			Internal method.
 		 */
-		virtual void _notifyCameraRemoved(const CameraHandlerCore* camera) { }
+		virtual void _notifyCameraRemoved(const CameraCore* camera) { }
 
 		/**
 		 * @brief	Creates a new empty renderer mesh data.
@@ -119,12 +119,12 @@ namespace BansheeEngine
 		 * @note	Core thread.
 		 *			Internal method.
 		 */
-		void _registerRenderCallback(const CameraHandlerCore* camera, INT32 index, const std::function<void()>& callback);
+		void _registerRenderCallback(const CameraCore* camera, INT32 index, const std::function<void()>& callback);
 
 		/**
 		 * @brief	Removes a previously registered callback registered with "_registerRenderCallback".
 		 */
-		void _unregisterRenderCallback(const CameraHandlerCore* camera, INT32 index);
+		void _unregisterRenderCallback(const CameraCore* camera, INT32 index);
 
 		/**
 		 * @brief	Sets options used for controlling the rendering.
@@ -161,6 +161,6 @@ namespace BansheeEngine
 		Event<void(const Viewport*, DrawList&)> onRenderViewport;
 
 	protected:
-		UnorderedMap<const CameraHandlerCore*, Map<UINT32, std::function<void()>>> mRenderCallbacks;
+		UnorderedMap<const CameraCore*, Map<UINT32, std::function<void()>>> mRenderCallbacks;
 	};
 }

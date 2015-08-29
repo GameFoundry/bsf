@@ -1,7 +1,7 @@
 #include "BsHandleManager.h"
 #include "BsHandleDrawManager.h"
 #include "BsHandleSliderManager.h"
-#include "BsCamera.h"
+#include "BsCCamera.h"
 #include "BsSceneObject.h"
 #include "BsEditorSettings.h"
 
@@ -25,7 +25,7 @@ namespace BansheeEngine
 		return mSliderManager->isSliderActive();
 	}
 
-	void HandleManager::update(const CameraHandlerPtr& camera, const Vector2I& inputPos, const Vector2I& inputDelta)
+	void HandleManager::update(const CameraPtr& camera, const Vector2I& inputPos, const Vector2I& inputDelta)
 	{
 		if (mSettings != nullptr && mSettingsHash != mSettings->getHash())
 			updateFromEditorSettings();
@@ -52,7 +52,7 @@ namespace BansheeEngine
 		mSettingsHash = mSettings->getHash();
 	}
 
-	void HandleManager::trySelect(const CameraHandlerPtr& camera, const Vector2I& inputPos)
+	void HandleManager::trySelect(const CameraPtr& camera, const Vector2I& inputPos)
 	{
 		return mSliderManager->trySelect(camera, inputPos);
 	}
@@ -62,7 +62,7 @@ namespace BansheeEngine
 		return mSliderManager->clearSelection();
 	}
 
-	float HandleManager::getHandleSize(const CameraHandlerPtr& camera, const Vector3& handlePos) const
+	float HandleManager::getHandleSize(const CameraPtr& camera, const Vector3& handlePos) const
 	{
 		Vector3 cameraPos = camera->getPosition();
 

@@ -5,7 +5,7 @@
 #include "BsRenderWindow.h"
 
 #include "BsEditorWindowManager.h"
-#include "BsCamera.h"
+#include "BsCCamera.h"
 #include "BsGUIWindowFrameWidget.h"
 #include "BsBuiltinEditorResources.h"
 
@@ -65,7 +65,7 @@ namespace BansheeEngine
 		mRenderWindow = renderWindow;
 		mSceneObject = SceneObject::create("EditorWindow", SOF_Internal | SOF_Persistent | SOF_DontSave);
 
-		mCamera = mSceneObject->addComponent<Camera>(renderWindow, 0.0f, 0.0f, 1.0f, 1.0f);
+		mCamera = mSceneObject->addComponent<CCamera>(renderWindow, 0.0f, 0.0f, 1.0f, 1.0f);
 		mCamera->setNearClipDistance(5);
 		mCamera->setAspectRatio(1.0f);
 		mCamera->setLayers(0);

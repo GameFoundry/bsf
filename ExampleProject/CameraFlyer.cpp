@@ -3,7 +3,7 @@
 #include "BsTime.h"
 #include "BsMath.h"
 #include "BsSceneObject.h"
-#include "BsCamera.h"
+#include "BsCCamera.h"
 #include "BsPlatform.h"
 #include "BsCursor.h"
 #include "BsDebug.h"
@@ -32,7 +32,7 @@ namespace BansheeEngine
 	{
 		setName("CameraFlyer");
 
-		mCamera = sceneObject()->getComponent<Camera>();
+		mCamera = sceneObject()->getComponent<CCamera>();
 		mCamera->setNearClipDistance(5);
 
 		mMoveForward = VirtualButton("Forward");

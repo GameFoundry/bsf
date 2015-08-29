@@ -15,7 +15,7 @@
 #include "BsGUIManager.h"
 #include "BsBuiltinEditorResources.h"
 #include "BsGUIWidget.h"
-#include "BsCamera.h"
+#include "BsCCamera.h"
 #include "BsDragAndDropManager.h"
 #include "BsGUIDockSlider.h"
 #include "BsVertexDataDesc.h"

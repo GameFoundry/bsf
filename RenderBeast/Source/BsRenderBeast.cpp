@@ -1,8 +1,8 @@
 #include "BsRenderBeast.h"
-#include "BsCamera.h"
+#include "BsCCamera.h"
 #include "BsSceneObject.h"
 #include "BsSceneManager.h"
-#include "BsRenderable.h"
+#include "BsCRenderable.h"
 #include "BsMaterial.h"
 #include "BsMesh.h"
 #include "BsPass.h"
@@ -32,7 +32,7 @@
 #include "BsCoreObjectManager.h"
 #include "BsRenderBeastOptions.h"
 #include "BsSamplerOverrides.h"
-#include "BsLightInternal.h"
+#include "BsLight.h"
 #include "BsRenderTexturePool.h"
 
 using namespace std::placeholders;
@@ -93,7 +93,7 @@ namespace BansheeEngine
 		mDummyMaterial = nullptr;
 	}
 
-	void RenderBeast::_notifyRenderableAdded(RenderableHandlerCore* renderable)
+	void RenderBeast::_notifyRenderableAdded(RenderableCore* renderable)
 	{
 		UINT32 renderableId = (UINT32)mRenderables.size();
 
@@ -152,10 +152,10 @@ namespace BansheeEngine
 		}
 	}
 
-	void RenderBeast::_notifyRenderableRemoved(RenderableHandlerCore* renderable)
+	void RenderBeast::_notifyRenderableRemoved(RenderableCore* renderable)
 	{
 		UINT32 renderableId = renderable->getRendererId();
-		RenderableHandlerCore* lastRenerable = mRenderables.back().renderable;
+		RenderableCore* lastRenerable = mRenderables.back().renderable;
 		UINT32 lastRenderableId = lastRenerable->getRendererId();
 
 		Vector<BeastRenderableElement>& elements = mRenderables[renderableId].elements;
@@ -195,7 +195,7 @@ namespace BansheeEngine
 		mWorldTransforms.erase(mWorldTransforms.end() - 1);
 	}
 
-	void RenderBeast::_notifyRenderableUpdated(RenderableHandlerCore* renderable)
+	void RenderBeast::_notifyRenderableUpdated(RenderableCore* renderable)
 	{
 		UINT32 renderableId = renderable->getRendererId();
 
@@ -203,7 +203,7 @@ namespace BansheeEngine
 		mWorldBounds[renderableId] = renderable->getBounds();
 	}
 
-	void RenderBeast::_notifyLightAdded(LightInternalCore* light)
+	void RenderBeast::_notifyLightAdded(LightCore* light)
 	{
 		UINT32 lightId = (UINT32)mLights.size();
 
@@ -216,17 +216,17 @@ namespace BansheeEngine
 		lightData.internal = light;
 	}
 
-	void RenderBeast::_notifyLightUpdated(LightInternalCore* light)
+	void RenderBeast::_notifyLightUpdated(LightCore* light)
 	{
 		UINT32 lightId = light->getRendererId();
 
 		mLightWorldBounds[lightId] = light->getBounds();
 	}
 
-	void RenderBeast::_notifyLightRemoved(LightInternalCore* light)
+	void RenderBeast::_notifyLightRemoved(LightCore* light)
 	{
 		UINT32 lightId = light->getRendererId();
-		LightInternalCore* lastLight = mLights.back().internal;
+		LightCore* lastLight = mLights.back().internal;
 		UINT32 lastLightId = lastLight->getRendererId();
 
 		if (lightId != lastLightId)
@@ -243,13 +243,13 @@ namespace BansheeEngine
 		mLightWorldBounds.erase(mLightWorldBounds.end() - 1);
 	}
 
-	void RenderBeast::_notifyCameraAdded(const CameraHandlerCore* camera)
+	void RenderBeast::_notifyCameraAdded(const CameraCore* camera)
 	{
 		CameraData& camData = mCameraData[camera];
 		camData.renderQueue = bs_shared_ptr_new<RenderQueue>();
 	}
 
-	void RenderBeast::_notifyCameraRemoved(const CameraHandlerCore* camera)
+	void RenderBeast::_notifyCameraRemoved(const CameraCore* camera)
 	{
 		mCameraData.erase(camera);
 	}
@@ -268,10 +268,10 @@ namespace BansheeEngine
 	void RenderBeast::renderAll() 
 	{
 		// Populate direct draw lists
-		const Map<CameraHandler*, SceneCameraData>& allCameras = gSceneManager().getAllCameras();
+		const Map<Camera*, SceneCameraData>& allCameras = gSceneManager().getAllCameras();
 		for (auto& cameraData : allCameras)
 		{
-			CameraHandlerPtr camera = cameraData.second.camera;
+			CameraPtr camera = cameraData.second.camera;
 			HSceneObject cameraSO = cameraData.second.sceneObject;
 
 			DrawListPtr drawList = bs_shared_ptr_new<DrawList>();
@@ -315,7 +315,7 @@ namespace BansheeEngine
 		gCoreAccessor().queueCommand(std::bind(&RenderBeast::renderAllCore, this, gTime().getTime()));
 	}
 
-	void RenderBeast::addToRenderQueue(const SPtr<CameraHandlerCore>& camera, RenderQueuePtr renderQueue)
+	void RenderBeast::addToRenderQueue(const SPtr<CameraCore>& camera, RenderQueuePtr renderQueue)
 	{
 		RenderQueuePtr cameraRenderQueue = mCameraData[camera.get()].renderQueue;
 		cameraRenderQueue->add(*renderQueue);
@@ -348,7 +348,7 @@ namespace BansheeEngine
 		// Sort cameras by render target
 		for (auto& cameraData : mCameraData)
 		{
-			const CameraHandlerCore* camera = cameraData.first;
+			const CameraCore* camera = cameraData.first;
 			SPtr<RenderTargetCore> renderTarget = camera->getViewport()->getTarget();
 
 			if (renderTarget == nullptr)
@@ -370,14 +370,14 @@ namespace BansheeEngine
 		}
 
 		// Sort everything based on priority
-		auto cameraComparer = [&](const CameraHandlerCore* a, const CameraHandlerCore* b) { return a->getPriority() > b->getPriority(); };
+		auto cameraComparer = [&](const CameraCore* a, const CameraCore* b) { return a->getPriority() > b->getPriority(); };
 		auto renderTargetInfoComparer = [&](const RenderTargetData& a, const RenderTargetData& b)
 		{ return a.target->getProperties().getPriority() > b.target->getProperties().getPriority(); };
 		std::sort(begin(mRenderTargets), end(mRenderTargets), renderTargetInfoComparer);
 
 		for (auto& camerasPerTarget : mRenderTargets)
 		{
-			Vector<const CameraHandlerCore*>& cameras = camerasPerTarget.cameras;
+			Vector<const CameraCore*>& cameras = camerasPerTarget.cameras;
 
 			std::sort(begin(cameras), end(cameras), cameraComparer);
 		}
@@ -386,7 +386,7 @@ namespace BansheeEngine
 		for (auto& renderTargetData : mRenderTargets)
 		{
 			SPtr<RenderTargetCore> target = renderTargetData.target;
-			Vector<const CameraHandlerCore*>& cameras = renderTargetData.cameras;
+			Vector<const CameraCore*>& cameras = renderTargetData.cameras;
 
 			RenderAPICore::instance().beginFrame();
 			RenderAPICore::instance().setRenderTarget(target);
@@ -419,7 +419,7 @@ namespace BansheeEngine
 		mRenderTargets.clear();
 	}
 
-	void RenderBeast::render(const CameraHandlerCore& camera, RenderQueuePtr& renderQueue)
+	void RenderBeast::render(const CameraCore& camera, RenderQueuePtr& renderQueue)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -452,7 +452,7 @@ namespace BansheeEngine
 		// Update per-object param buffers and queue render elements
 		for (auto& renderableData : mRenderables)
 		{
-			RenderableHandlerCore* renderable = renderableData.renderable;
+			RenderableCore* renderable = renderableData.renderable;
 			RenderableController* controller = renderableData.controller;
 			UINT32 renderableType = renderable->getRenderableType();
 			UINT32 rendererId = renderable->getRendererId();
@@ -492,7 +492,7 @@ namespace BansheeEngine
 				UINT32 rendererId = renderElem->renderableId;
 				const RenderableData& renderableData = mRenderables[rendererId];
 
-				RenderableHandlerCore* renderable = renderableData.renderable;
+				RenderableCore* renderable = renderableData.renderable;
 				RenderableController* controller = renderableData.controller;
 				UINT32 renderableType = renderable->getRenderableType();
 				

@@ -12,7 +12,7 @@ namespace BansheeEngine
         Directional, Point, Spot
     }
 
-    internal class LightInternal : ScriptObject
+    internal class NativeLight : ScriptObject
     {
         internal Vector3 Position
         {
@@ -73,7 +73,7 @@ namespace BansheeEngine
             get { return Internal_GetBounds(mCachedPtr); }
         }
 
-        internal LightInternal(SceneObject sceneObject)
+        internal NativeLight(SceneObject sceneObject)
         {
             IntPtr sceneObjPtr = IntPtr.Zero;
             if (sceneObject != null)
@@ -94,7 +94,7 @@ namespace BansheeEngine
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_Create(LightInternal instance, IntPtr parentSO);
+        private static extern void Internal_Create(NativeLight instance, IntPtr parentSO);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern Vector3 Internal_GetPosition(IntPtr instance);

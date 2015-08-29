@@ -5,12 +5,12 @@
 #include "BsMonoManager.h"
 #include "BsMonoUtil.h"
 #include "BsApplication.h"
-#include "BsCameraHandler.h"
-#include "BsScriptCameraHandler.h"
+#include "BsCamera.h"
+#include "BsScriptCamera.h"
 
 namespace BansheeEngine
 {
-	ScriptProfilerOverlayInternal::ScriptProfilerOverlayInternal(MonoObject* managedInstance, const SPtr<CameraHandler>& camera)
+	ScriptProfilerOverlayInternal::ScriptProfilerOverlayInternal(MonoObject* managedInstance, const SPtr<Camera>& camera)
 		:ScriptObject(managedInstance), mProfilerOverlayInternal(nullptr)
 	{
 		if (camera != nullptr)
@@ -31,13 +31,13 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptProfilerOverlayInternal::internal_DestroyInstance);
 	}
 
-	void ScriptProfilerOverlayInternal::internal_CreateInstance(MonoObject* instance, ScriptCameraHandler* camera)
+	void ScriptProfilerOverlayInternal::internal_CreateInstance(MonoObject* instance, ScriptCamera* camera)
 	{
-		SPtr<CameraHandler> cameraHandler;
+		SPtr<Camera> nativeCamera;
 		if (camera != nullptr)
-			cameraHandler = camera->getInternal();
+			nativeCamera = camera->getInternal();
 
-		ScriptProfilerOverlayInternal* nativeInstance = new (bs_alloc<ScriptProfilerOverlayInternal>()) ScriptProfilerOverlayInternal(instance, cameraHandler);
+		ScriptProfilerOverlayInternal* nativeInstance = new (bs_alloc<ScriptProfilerOverlayInternal>()) ScriptProfilerOverlayInternal(instance, nativeCamera);
 	}
 
 	void ScriptProfilerOverlayInternal::internal_SetType(ScriptProfilerOverlayInternal* thisPtr, ProfilerOverlayType type)

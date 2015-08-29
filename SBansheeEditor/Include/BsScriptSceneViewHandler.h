@@ -14,7 +14,7 @@ namespace BansheeEngine
 		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "SceneViewHandler")
 
 	private:
-		ScriptSceneViewHandler(MonoObject* object, EditorWidgetBase* parentWidget, const SPtr<CameraHandler>& camera);
+		ScriptSceneViewHandler(MonoObject* object, EditorWidgetBase* parentWidget, const SPtr<Camera>& camera);
 		~ScriptSceneViewHandler();
 
 		SceneViewHandler* mHandler;
@@ -22,7 +22,7 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		static void internal_Create(MonoObject* managedInstance, ScriptEditorWindow* parentWindow, ScriptCameraHandler* camera);
+		static void internal_Create(MonoObject* managedInstance, ScriptEditorWindow* parentWindow, ScriptCamera* camera);
 		static void internal_Update(ScriptSceneViewHandler* thisPtr);
 		static void internal_UpdateHandle(ScriptSceneViewHandler* thisPtr, Vector2I inputPos, Vector2I inputDelta);
 		static void internal_UpdateSelection(ScriptSceneViewHandler* thisPtr);

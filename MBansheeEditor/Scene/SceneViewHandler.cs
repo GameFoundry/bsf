@@ -12,7 +12,7 @@ namespace BansheeEditor
     {
         internal SceneViewHandler(EditorWindow parent, Camera sceneCamera)
         {
-            Internal_Create(this, parent.GetCachedPtr(), sceneCamera.Handler.GetCachedPtr());
+            Internal_Create(this, parent.GetCachedPtr(), sceneCamera.Native.GetCachedPtr());
         }
 
         internal void Update()

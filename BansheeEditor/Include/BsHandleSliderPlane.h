@@ -38,7 +38,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	HandleSlider::handleInput
 		 */
-		void handleInput(const CameraHandlerPtr& camera, const Vector2I& inputDelta) override;
+		void handleInput(const CameraPtr& camera, const Vector2I& inputDelta) override;
 
 		/**
 		 * @brief	Returns a delta value that is the result of dragging/sliding the pointer 
@@ -51,7 +51,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	HandleSlider::activate
 		 */
-		void activate(const CameraHandlerPtr& camera, const Vector2I& pointerPos) override;
+		void activate(const CameraPtr& camera, const Vector2I& pointerPos) override;
 
 		/**
 		 * @copydoc	HandleSlider::reset
@@ -64,7 +64,7 @@ namespace BansheeEngine
 		 * @param	camera		Camera we're interacting through.
 		 * @param	pointerPos	Position of the pointer in pixels relative to the provided camera's viewport.
 		 */
-		Vector3 getPositionOnPlane(const CameraHandlerPtr& camera, const Vector2I& pointerPos) const;
+		Vector3 getPositionOnPlane(const CameraPtr& camera, const Vector2I& pointerPos) const;
 
 		Vector3 mDirection1;
 		Vector3 mDirection2;

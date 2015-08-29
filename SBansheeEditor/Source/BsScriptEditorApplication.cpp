@@ -15,7 +15,7 @@
 #include "BsProfilerOverlay.h"
 #include "BsGUIWidget.h"
 #include "BsSceneObject.h"
-#include "BsCamera.h"
+#include "BsCCamera.h"
 
 namespace BansheeEngine
 {

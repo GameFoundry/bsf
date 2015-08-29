@@ -14,7 +14,7 @@ namespace BansheeEngine
 	class BS_ED_EXPORT SceneViewHandler
 	{
 	public:
-		SceneViewHandler(EditorWidgetBase* parentWidget, const SPtr<CameraHandler>& camera);
+		SceneViewHandler(EditorWidgetBase* parentWidget, const SPtr<Camera>& camera);
 		virtual ~SceneViewHandler();
 
 		/**
@@ -72,7 +72,7 @@ namespace BansheeEngine
 
 	private:
 		EditorWidgetBase* mParentWidget;
-		SPtr<CameraHandler> mCamera;
+		SPtr<Camera> mCamera;
 		SceneGrid* mSceneGrid;
 		SelectionRenderer* mSelectionRenderer;
 

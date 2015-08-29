@@ -6,7 +6,7 @@
 #include "BsSceneGrid.h"
 #include "BsSelection.h"
 #include "BsScenePicking.h"
-#include "BsCameraHandler.h"
+#include "BsCamera.h"
 #include "BsEditorApplication.h"
 #include "BsEditorWidget.h"
 #include "BsEditorWindowBase.h"
@@ -20,7 +20,7 @@ using namespace std::placeholders;
 
 namespace BansheeEngine
 {
-	SceneViewHandler::SceneViewHandler(EditorWidgetBase* parentWidget, const SPtr<CameraHandler>& camera)
+	SceneViewHandler::SceneViewHandler(EditorWidgetBase* parentWidget, const SPtr<Camera>& camera)
 		:mCamera(camera), mSceneGrid(nullptr), mParentWidget(parentWidget)
 	{
 		mSelectionRenderer = bs_new<SelectionRenderer>();

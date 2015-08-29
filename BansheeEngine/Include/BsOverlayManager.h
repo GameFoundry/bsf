@@ -22,7 +22,7 @@ namespace BansheeEngine
 		 */
 		struct OverlayComparer
 		{
-			bool operator() (const Overlay* const& a, const Overlay* const& b);
+			bool operator() (const COverlay* const& a, const COverlay* const& b);
 		};
 
 	public:
@@ -33,23 +33,23 @@ namespace BansheeEngine
 		void render(ViewportPtr& target, DrawList& drawList) const;
 
 	private:
-		friend class Overlay;
+		friend class COverlay;
 
 		/**
 		 * @brief	Attaches the specified overlay to the viewport.
 		 */
-		void attachOverlay(const Viewport* target, const Overlay* overlay);
+		void attachOverlay(const Viewport* target, const COverlay* overlay);
 
 		/**
 		 * @brief	Detaches the specified overlay from the viewport.
 		 */
-		void detachOverlay(const Viewport* target, const Overlay* overlay);
+		void detachOverlay(const Viewport* target, const COverlay* overlay);
 
 		/**
 		 * @brief	Detaches the specified overlay from all viewports.
 		 */
-		void detachOverlayFromAll(const Overlay* overlay);
+		void detachOverlayFromAll(const COverlay* overlay);
 
-		UnorderedMap<const Viewport*, Set<const Overlay*, OverlayComparer>> mOverlaysPerTarget;
+		UnorderedMap<const Viewport*, Set<const COverlay*, OverlayComparer>> mOverlaysPerTarget;
 	};
 }

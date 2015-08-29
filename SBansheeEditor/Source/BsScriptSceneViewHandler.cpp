@@ -3,14 +3,14 @@
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
 #include "BsSceneViewHandler.h"
-#include "BsScriptCameraHandler.h"
+#include "BsScriptCamera.h"
 #include "BsScriptEditorWindow.h"
 #include "BsEditorWidgetContainer.h"
 #include "BsEditorWindowBase.h"
 
 namespace BansheeEngine
 {
-	ScriptSceneViewHandler::ScriptSceneViewHandler(MonoObject* object, EditorWidgetBase* parentWidget, const SPtr<CameraHandler>& camera)
+	ScriptSceneViewHandler::ScriptSceneViewHandler(MonoObject* object, EditorWidgetBase* parentWidget, const SPtr<Camera>& camera)
 		:ScriptObject(object), mHandler(nullptr)
 	{ 
 		mHandler = bs_new<SceneViewHandler>(parentWidget, camera);
@@ -33,7 +33,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_PickObject", &ScriptSceneViewHandler::internal_PickObject);
 	}
 
-	void ScriptSceneViewHandler::internal_Create(MonoObject* managedInstance, ScriptEditorWindow* parentWindow, ScriptCameraHandler* camera)
+	void ScriptSceneViewHandler::internal_Create(MonoObject* managedInstance, ScriptEditorWindow* parentWindow, ScriptCamera* camera)
 	{
 		EditorWidgetBase* widget = nullptr;
 		

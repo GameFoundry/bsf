@@ -1,5 +1,5 @@
 #include "BsHandleSlider.h"
-#include "BsCamera.h"
+#include "BsCCamera.h"
 #include "BsHandleManager.h"
 #include "BsDebug.h"
 
@@ -12,7 +12,7 @@ namespace BansheeEngine
 
 	}
 
-	void HandleSlider::update(const CameraHandlerPtr& camera)
+	void HandleSlider::update(const CameraPtr& camera)
 	{
 		if (mFixedScale)
 		{
@@ -77,7 +77,7 @@ namespace BansheeEngine
 		reset(); 
 	}
 
-	void HandleSlider::setActive(const CameraHandlerPtr& camera, const Vector2I& pointerPos)
+	void HandleSlider::setActive(const CameraPtr& camera, const Vector2I& pointerPos)
 	{ 
 		mState = State::Active; 
 		mStartPointerPos = pointerPos; 
@@ -91,7 +91,7 @@ namespace BansheeEngine
 		reset(); 
 	}
 
-	float HandleSlider::calcDelta(const CameraHandlerPtr& camera, const Vector3& position, const Vector3& direction,
+	float HandleSlider::calcDelta(const CameraPtr& camera, const Vector3& position, const Vector3& direction,
 		const Vector2I& pointerStart, const Vector2I& pointerEnd)
 	{
 		// position + direction can sometimes project behind the camera (if the camera is looking at position

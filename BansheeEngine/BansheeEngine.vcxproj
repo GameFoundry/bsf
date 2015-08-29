@@ -232,7 +232,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Source\BsCameraHandler.cpp" />
+    <ClCompile Include="Source\BsCamera.cpp" />
     <ClCompile Include="Source\BsCursor.cpp" />
     <ClCompile Include="Source\BsDrawHelper.cpp" />
     <ClCompile Include="Source\BsDropDownAreaPlacement.cpp" />
@@ -246,11 +246,11 @@
     <ClCompile Include="Source\BsGUISpace.cpp" />
     <ClCompile Include="Source\BsHEString.cpp" />
     <ClCompile Include="Source\BsInputConfiguration.cpp" />
-    <ClCompile Include="Source\BsLight.cpp" />
+    <ClCompile Include="Source\BsCLight.cpp" />
     <ClCompile Include="Source\BsPlainText.cpp" />
     <ClCompile Include="Source\BsPlainTextImporter.cpp" />
     <ClCompile Include="Source\BsRenderableController.cpp" />
-    <ClCompile Include="Source\BsRenderableHandler.cpp" />
+    <ClCompile Include="Source\BsRenderable.cpp" />
     <ClCompile Include="Source\BsRenderer.cpp" />
     <ClCompile Include="Source\BsRenderQueue.cpp" />
     <ClCompile Include="Source\BsScriptCode.cpp" />
@@ -259,10 +259,10 @@
     <ClCompile Include="Source\BsShortcutKey.cpp" />
     <ClCompile Include="Source\BsShortcutManager.cpp" />
     <ClCompile Include="Source\BsVirtualInput.cpp" />
-    <ClCompile Include="Source\BsLightInternal.cpp" />
+    <ClCompile Include="Source\BsLight.cpp" />
     <ClInclude Include="Include\BsApplication.h" />
-    <ClInclude Include="Include\BsCameraHandler.h" />
-    <ClInclude Include="Include\BsCameraHandlerRTTI.h" />
+    <ClInclude Include="Include\BsCamera.h" />
+    <ClInclude Include="Include\BsCameraRTTI.h" />
     <ClInclude Include="Include\BsCursor.h" />
     <ClInclude Include="Include\BsDrawHelper.h" />
     <ClInclude Include="Include\BsDropDownAreaPlacement.h" />
@@ -275,16 +275,16 @@
     <ClInclude Include="Include\BsGUISlider.h" />
     <ClInclude Include="Include\BsGUIWidgetRTTI.h" />
     <ClInclude Include="Include\BsHEString.h" />
+    <ClInclude Include="Include\BsCLight.h" />
     <ClInclude Include="Include\BsLight.h" />
-    <ClInclude Include="Include\BsLightInternal.h" />
-    <ClInclude Include="Include\BsLightInternalRTTI.h" />
     <ClInclude Include="Include\BsLightRTTI.h" />
+    <ClInclude Include="Include\BsCLightRTTI.h" />
     <ClInclude Include="Include\BsPlainText.h" />
     <ClInclude Include="Include\BsPlainTextImporter.h" />
     <ClInclude Include="Include\BsPlainTextRTTI.h" />
     <ClInclude Include="Include\BsRenderableElement.h" />
-    <ClInclude Include="Include\BsRenderableHandler.h" />
-    <ClInclude Include="Include\BsRenderableHandlerRTTI.h" />
+    <ClInclude Include="Include\BsRenderable.h" />
+    <ClInclude Include="Include\BsRenderableRTTI.h" />
     <ClInclude Include="Include\BsRenderer.h" />
     <ClInclude Include="Include\BsScriptCode.h" />
     <ClInclude Include="Include\BsScriptCodeImporter.h" />
@@ -356,13 +356,12 @@
     <ClInclude Include="Include\BsSprite.h" />
     <ClInclude Include="Include\BsSpriteTexture.h" />
     <ClInclude Include="Include\BsTextSprite.h" />
-    <ClInclude Include="Include\BsCamera.h" />
-    <ClInclude Include="Include\BsCameraRTTI.h" />
-    <ClInclude Include="Include\BsOverlay.h" />
+    <ClInclude Include="Include\BsCCamera.h" />
+    <ClInclude Include="Include\BsCCameraRTTI.h" />
+    <ClInclude Include="Include\BsCOverlay.h" />
     <ClInclude Include="Include\BsOverlayManager.h" />
-    <ClInclude Include="Include\BsRenderable.h" />
-    <ClInclude Include="Include\BsRenderableRTTI.h" />
-    <ClInclude Include="Include\BsUpdateCallback.h" />
+    <ClInclude Include="Include\BsCRenderable.h" />
+    <ClInclude Include="Include\BsCRenderableRTTI.h" />
     <ClCompile Include="Source\BsGUIButtonBase.cpp" />
     <ClCompile Include="Source\BsGUIContextMenu.cpp" />
     <ClInclude Include="Include\BsVirtualInput.h" />
@@ -415,11 +414,10 @@
     <ClCompile Include="Source\BsSprite.cpp" />
     <ClCompile Include="Source\BsSpriteTexture.cpp" />
     <ClCompile Include="Source\BsTextSprite.cpp" />
-    <ClCompile Include="Source\BsCamera.cpp" />
-    <ClCompile Include="Source\BsOverlay.cpp" />
+    <ClCompile Include="Source\BsCCamera.cpp" />
+    <ClCompile Include="Source\BsCOverlay.cpp" />
     <ClCompile Include="Source\BsOverlayManager.cpp" />
-    <ClCompile Include="Source\BsRenderable.cpp" />
-    <ClCompile Include="Source\BsUpdateCallback.cpp" />
+    <ClCompile Include="Source\BsCRenderable.cpp" />
     <ClCompile Include="Source\BsGUILayoutX.cpp" />
     <ClCompile Include="Source\BsGUIViewport.cpp" />
     <ClCompile Include="Source\BsGUIMenu.cpp" />

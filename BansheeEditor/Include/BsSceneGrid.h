@@ -15,7 +15,7 @@ namespace BansheeEngine
 	class SceneGrid
 	{
 	public:
-		SceneGrid(const CameraHandlerPtr& camera);
+		SceneGrid(const CameraPtr& camera);
 		~SceneGrid();
 
 		/**
@@ -62,7 +62,7 @@ namespace BansheeEngine
 		 * @param	material	Material used for drawing the grid.
 		 * @param	camera		Camera to render the scene grid to.
 		 */
-		void initializeCore(const SPtr<CameraHandlerCore>& camera, const SPtr<MaterialCore>& material);
+		void initializeCore(const SPtr<CameraCore>& camera, const SPtr<MaterialCore>& material);
 
 		/**
 		 * @brief	Destroys the core thread portion of the draw manager.
@@ -100,7 +100,7 @@ namespace BansheeEngine
 		 * @param	material	Material used for drawing the grid.
 		 * @param	camera		Camera to render the scene grid to.
 		 */
-		void initialize(const SPtr<CameraHandlerCore>& camera, const SPtr<MaterialCore>& material);
+		void initialize(const SPtr<CameraCore>& camera, const SPtr<MaterialCore>& material);
 
 		/**
 		 * @brief	Updates the grid mesh to render.
@@ -115,7 +115,7 @@ namespace BansheeEngine
 		 */
 		void render();
 
-		SPtr<CameraHandlerCore> mCamera;
+		SPtr<CameraCore> mCamera;
 		SPtr<MeshCore> mGridMesh;
 		SPtr<MaterialCore> mGridMaterial;
 		float mSpacing = 1.0f;

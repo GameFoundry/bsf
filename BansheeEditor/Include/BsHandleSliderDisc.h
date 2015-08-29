@@ -33,7 +33,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	HandleSlider::handleInput
 		 */
-		void handleInput(const CameraHandlerPtr& camera, const Vector2I& inputDelta) override;
+		void handleInput(const CameraPtr& camera, const Vector2I& inputDelta) override;
 
 		/**
 		 * @brief	Enables or disables a cut-off plane that can allow the disc to be intersected
@@ -63,7 +63,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	HandleSlider::activate
 		 */
-		void activate(const CameraHandlerPtr& camera, const Vector2I& pointerPos) override;
+		void activate(const CameraPtr& camera, const Vector2I& pointerPos) override;
 
 		/**
 		 * @copydoc	HandleSlider::reset

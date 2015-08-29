@@ -4,22 +4,22 @@ namespace BansheeEngine
 {
     public class Renderable : Component
     {
-        private RenderableHandler handler;
+        private NativeRenderable _native;
 
         [SerializeField]
         private SerializableData serializableData = new SerializableData();
 
-        internal RenderableHandler Handler
+        internal NativeRenderable Native
         {
-            get { return handler; }
+            get { return _native; }
         }
 
         public Mesh Mesh
         {
-            get { return handler.Mesh; }
+            get { return _native.Mesh; }
             set 
             { 
-                handler.Mesh = value; 
+                _native.Mesh = value; 
                 serializableData.mesh = value;
 
                 int subMeshCount = 0;
@@ -35,31 +35,31 @@ namespace BansheeEngine
 
         public Material Material
         {
-            get { return handler.GetMaterial(0); }
+            get { return _native.GetMaterial(0); }
             set 
-            { handler.SetMaterial(value); serializableData.materials[0] = value; }
+            { _native.SetMaterial(value); serializableData.materials[0] = value; }
         }
 
         public Material GetMaterial(int index = 0)
         {
-            return handler.GetMaterial(index);
+            return _native.GetMaterial(index);
         }
 
         public void SetMaterial(Material material, int index = 0)
         {
-            handler.SetMaterial(material, index);
+            _native.SetMaterial(material, index);
             serializableData.materials[index] = material;
         }
 
         public UInt64 Layers
         {
-            get { return handler.Layers; }
-            set { handler.Layers = value; serializableData.layers = value; }
+            get { return _native.Layers; }
+            set { _native.Layers = value; serializableData.layers = value; }
         }
 
         public Bounds Bounds
         {
-            get { return handler.GetBounds(SceneObject); }
+            get { return _native.GetBounds(SceneObject); }
         }
 
         private void OnInitialize()
@@ -70,31 +70,31 @@ namespace BansheeEngine
 
         private void OnReset()
         {
-            if (handler != null)
-                handler.OnDestroy();
+            if (_native != null)
+                _native.OnDestroy();
 
-            handler = new RenderableHandler(SceneObject);
+            _native = new NativeRenderable(SceneObject);
 
             // Restore saved values after reset
-            handler.Mesh = serializableData.mesh;
+            _native.Mesh = serializableData.mesh;
 
             if (serializableData.materials != null)
             {
                 for (int i = 0; i < serializableData.materials.Length; i++)
-                    handler.SetMaterial(serializableData.materials[i], i);
+                    _native.SetMaterial(serializableData.materials[i], i);
             }
 
-            handler.Layers = serializableData.layers;
+            _native.Layers = serializableData.layers;
         }
 
         private void Update()
         {
-            handler.UpdateTransform(SceneObject);
+            _native.UpdateTransform(SceneObject);
         }
 
         private void OnDestroy()
         {
-            handler.OnDestroy();
+            _native.OnDestroy();
         }
 
         [SerializeObject]

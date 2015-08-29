@@ -35,7 +35,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	HandleSlider::handleInput
 		 */
-		void handleInput(const CameraHandlerPtr& camera, const Vector2I& inputDelta) override;
+		void handleInput(const CameraPtr& camera, const Vector2I& inputDelta) override;
 
 		/**
 		 * @brief	Returns a delta value that is the result of dragging/sliding the pointer 
@@ -47,7 +47,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	HandleSlider::activate
 		 */
-		void activate(const CameraHandlerPtr& camera, const Vector2I& pointerPos) override { mStartPosition = getPosition(); }
+		void activate(const CameraPtr& camera, const Vector2I& pointerPos) override { mStartPosition = getPosition(); }
 
 		/**
 		 * @copydoc	HandleSlider::reset

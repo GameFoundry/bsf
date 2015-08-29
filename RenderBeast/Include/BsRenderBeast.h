@@ -23,7 +23,7 @@ namespace BansheeEngine
 	 */
 	struct RenderableData
 	{
-		RenderableHandlerCore* renderable;
+		RenderableCore* renderable;
 		Vector<BeastRenderableElement> elements;
 		RenderableController* controller;
 	};
@@ -63,7 +63,7 @@ namespace BansheeEngine
 		struct RenderTargetData
 		{
 			SPtr<RenderTargetCore> target;
-			Vector<const CameraHandlerCore*> cameras;
+			Vector<const CameraCore*> cameras;
 		};
 
 		/**
@@ -79,7 +79,7 @@ namespace BansheeEngine
 		 */
 		struct LightData
 		{
-			LightInternalCore* internal;
+			LightCore* internal;
 		};
 
 	public:
@@ -120,42 +120,42 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	Renderer::_notifyCameraAdded
 		 */
-		void _notifyCameraAdded(const CameraHandlerCore* camera) override;
+		void _notifyCameraAdded(const CameraCore* camera) override;
 
 		/**
 		 * @copydoc	Renderer::_notifyCameraRemoved
 		 */
-		void _notifyCameraRemoved(const CameraHandlerCore* camera) override;
+		void _notifyCameraRemoved(const CameraCore* camera) override;
 
 		/**
 		 * @copydoc	Renderer::_notifyLightAdded
 		 */
-		void _notifyLightAdded(LightInternalCore* light) override;
+		void _notifyLightAdded(LightCore* light) override;
 
 		/**
 		 * @copydoc	Renderer::_notifyLightUpdated
 		 */
-		void _notifyLightUpdated(LightInternalCore* light) override;
+		void _notifyLightUpdated(LightCore* light) override;
 
 		/**
 		 * @copydoc	Renderer::_notifyLightRemoved
 		 */
-		void _notifyLightRemoved(LightInternalCore* light) override;
+		void _notifyLightRemoved(LightCore* light) override;
 
 		/**
 		 * @copydoc	Renderer::_notifyRenderableAdded
 		 */
-		void _notifyRenderableAdded(RenderableHandlerCore* renderable) override;
+		void _notifyRenderableAdded(RenderableCore* renderable) override;
 
 		/**
 		 * @copydoc	Renderer::_notifyRenderableUpdated
 		 */
-		void _notifyRenderableUpdated(RenderableHandlerCore* renderable) override;
+		void _notifyRenderableUpdated(RenderableCore* renderable) override;
 
 		/**
 		 * @copydoc	Renderer::_notifyRenderableRemoved
 		 */
-		void _notifyRenderableRemoved(RenderableHandlerCore* renderable) override;
+		void _notifyRenderableRemoved(RenderableCore* renderable) override;
 
 		/**
 		 * @brief	Adds a new set of objects to the cameras render queue.
@@ -165,7 +165,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Core thread only.
 		 */
-		void addToRenderQueue(const SPtr<CameraHandlerCore>& proxy, RenderQueuePtr renderQueue);
+		void addToRenderQueue(const SPtr<CameraCore>& proxy, RenderQueuePtr renderQueue);
 
 		/**
 		 * @brief	Updates the render options on the core thread.
@@ -191,7 +191,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Core thread only.
 		 */
-		virtual void render(const CameraHandlerCore& camera, RenderQueuePtr& renderQueue);
+		virtual void render(const CameraCore& camera, RenderQueuePtr& renderQueue);
 
 		/**
 		 * @brief	Creates data used by the renderer on the core thread.
@@ -229,7 +229,7 @@ namespace BansheeEngine
 		static void setPass(const SPtr<MaterialCore>& material, UINT32 passIdx, PassSamplerOverrides* samplerOverrides);
 
 		Vector<RenderTargetData> mRenderTargets; // Core thread
-		UnorderedMap<const CameraHandlerCore*, CameraData> mCameraData; // Core thread
+		UnorderedMap<const CameraCore*, CameraData> mCameraData; // Core thread
 		UnorderedMap<SPtr<MaterialCore>, MaterialSamplerOverrides*> mSamplerOverrides; // Core thread
 
 		SPtr<MaterialCore> mDummyMaterial; // Core thread

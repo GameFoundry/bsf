@@ -1,40 +1,40 @@
 #include "BsSceneManager.h"
 #include "BsSceneObject.h"
-#include "BsRenderableHandler.h"
-#include "BsCameraHandler.h"
-#include "BsLightInternal.h"
+#include "BsRenderable.h"
+#include "BsCamera.h"
+#include "BsLight.h"
 #include "BsDebug.h"
 
 namespace BansheeEngine
 {
 	volatile SceneManager::InitOnStart SceneManager::DoInitOnStart;
 
-	void SceneManager::_registerRenderable(const SPtr<RenderableHandler>& renderable, const HSceneObject& so)
+	void SceneManager::_registerRenderable(const SPtr<Renderable>& renderable, const HSceneObject& so)
 	{
 		mRenderables[renderable.get()] = SceneRenderableData(renderable, so);
 	}
 
-	void SceneManager::_unregisterRenderable(const SPtr<RenderableHandler>& renderable)
+	void SceneManager::_unregisterRenderable(const SPtr<Renderable>& renderable)
 	{
 		mRenderables.erase(renderable.get());
 	}
 
-	void SceneManager::_registerCamera(const SPtr<CameraHandler>& camera, const HSceneObject& so)
+	void SceneManager::_registerCamera(const SPtr<Camera>& camera, const HSceneObject& so)
 	{
 		mCameras[camera.get()] = SceneCameraData(camera, so);
 	}
 
-	void SceneManager::_unregisterCamera(const SPtr<CameraHandler>& camera)
+	void SceneManager::_unregisterCamera(const SPtr<Camera>& camera)
 	{
 		mCameras.erase(camera.get());
 	}
 
-	void SceneManager::_registerLight(const SPtr<LightInternal>& light, const HSceneObject& so)
+	void SceneManager::_registerLight(const SPtr<Light>& light, const HSceneObject& so)
 	{
 		mLights[light.get()] = SceneLightData(light, so);
 	}
 
-	void SceneManager::_unregisterLight(const SPtr<LightInternal>& light)
+	void SceneManager::_unregisterLight(const SPtr<Light>& light)
 	{
 		mLights.erase(light.get());
 	}
@@ -43,7 +43,7 @@ namespace BansheeEngine
 	{
 		for (auto& renderablePair : mRenderables)
 		{
-			RenderableHandlerPtr handler = renderablePair.second.renderable;
+			RenderablePtr handler = renderablePair.second.renderable;
 			HSceneObject so = renderablePair.second.sceneObject;
 
 			UINT32 curHash = so->getTransformHash();
@@ -61,7 +61,7 @@ namespace BansheeEngine
 
 		for (auto& cameraPair : mCameras)
 		{
-			CameraHandlerPtr handler = cameraPair.second.camera;
+			CameraPtr handler = cameraPair.second.camera;
 			HSceneObject so = cameraPair.second.sceneObject;
 
 			UINT32 curHash = so->getTransformHash();
@@ -76,7 +76,7 @@ namespace BansheeEngine
 
 		for (auto& lightPair : mLights)
 		{
-			SPtr<LightInternal> handler = lightPair.second.light;
+			SPtr<Light> handler = lightPair.second.light;
 			HSceneObject so = lightPair.second.sceneObject;
 
 			UINT32 curHash = so->getTransformHash();

@@ -12,11 +12,11 @@ namespace BansheeEngine
 	{
 		SceneCameraData() { }
 
-		SceneCameraData(const CameraHandlerPtr& camera, const HSceneObject& sceneObject)
+		SceneCameraData(const CameraPtr& camera, const HSceneObject& sceneObject)
 			:camera(camera), sceneObject(sceneObject)
 		{ }
 
-		CameraHandlerPtr camera;
+		CameraPtr camera;
 		HSceneObject sceneObject;
 	};
 
@@ -27,11 +27,11 @@ namespace BansheeEngine
 	{
 		SceneRenderableData() { }
 
-		SceneRenderableData(const RenderableHandlerPtr& renderable, const HSceneObject& sceneObject)
+		SceneRenderableData(const RenderablePtr& renderable, const HSceneObject& sceneObject)
 			:renderable(renderable), sceneObject(sceneObject)
 		{ }
 
-		RenderableHandlerPtr renderable;
+		RenderablePtr renderable;
 		HSceneObject sceneObject;
 	};
 
@@ -42,11 +42,11 @@ namespace BansheeEngine
 	{
 		SceneLightData() { }
 
-		SceneLightData(const SPtr<LightInternal>& light, const HSceneObject& sceneObject)
+		SceneLightData(const SPtr<Light>& light, const HSceneObject& sceneObject)
 			:light(light), sceneObject(sceneObject)
 		{ }
 
-		SPtr<LightInternal> light;
+		SPtr<Light> light;
 		HSceneObject sceneObject;
 	};
 
@@ -79,56 +79,56 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method.
 		 */
-		const Map<CameraHandler*, SceneCameraData>& getAllCameras() const { return mCameras; }
+		const Map<Camera*, SceneCameraData>& getAllCameras() const { return mCameras; }
 
 		/**
 		 * @brief	Returns all renderables in the scene.
 		 *
 		 * @note	Internal method.
 		 */
-		const Map<RenderableHandler*, SceneRenderableData>& getAllRenderables() const { return mRenderables; }
+		const Map<Renderable*, SceneRenderableData>& getAllRenderables() const { return mRenderables; }
 
 		/**
 		 * @brief	Notifies the scene manager that a new renderable was created.
 		 * 
 		 * @note	Internal method.
 		 */
-		void _registerRenderable(const SPtr<RenderableHandler>& renderable, const HSceneObject& so);
+		void _registerRenderable(const SPtr<Renderable>& renderable, const HSceneObject& so);
 
 		/**
 		 * @brief	Notifies the scene manager that a renderable was removed.
 		 *
 		 * @note	Internal method.
 		 */
-		void _unregisterRenderable(const SPtr<RenderableHandler>& renderable);
+		void _unregisterRenderable(const SPtr<Renderable>& renderable);
 
 		/**
 		 * @brief	Notifies the scene manager that a new camera was created.
 		 *
 		 * @note	Internal method.
 		 */
-		void _registerCamera(const SPtr<CameraHandler>& camera, const HSceneObject& so);
+		void _registerCamera(const SPtr<Camera>& camera, const HSceneObject& so);
 
 		/**
 		 * @brief	Notifies the scene manager that a camera was removed.
 		 *
 		 * @note	Internal method.
 		 */
-		void _unregisterCamera(const SPtr<CameraHandler>& camera);
+		void _unregisterCamera(const SPtr<Camera>& camera);
 
 		/**
 		 * @brief	Notifies the scene manager that a new light was created.
 		 *
 		 * @note	Internal method.
 		 */
-		void _registerLight(const SPtr<LightInternal>& light, const HSceneObject& so);
+		void _registerLight(const SPtr<Light>& light, const HSceneObject& so);
 
 		/**
 		 * @brief	Notifies the scene manager that a light was removed.
 		 *
 		 * @note	Internal method.
 		 */
-		void _unregisterLight(const SPtr<LightInternal>& light);
+		void _unregisterLight(const SPtr<Light>& light);
 
 		/**
 		 * @copydoc	CoreSceneManager::_updateCoreObjectTransforms
@@ -146,9 +146,9 @@ namespace BansheeEngine
 		static SceneManager* instancePtr();
 
 	private:
-		Map<CameraHandler*, SceneCameraData> mCameras;
-		Map<RenderableHandler*, SceneRenderableData> mRenderables;
-		Map<LightInternal*, SceneLightData> mLights;
+		Map<Camera*, SceneCameraData> mCameras;
+		Map<Renderable*, SceneRenderableData> mRenderables;
+		Map<Light*, SceneLightData> mLights;
 
 		volatile static InitOnStart DoInitOnStart;
 	};

@@ -10,8 +10,8 @@
 #include "BsCoreThreadAccessor.h"
 #include "BsApplication.h"
 #include "BsVirtualInput.h"
-#include "BsCamera.h"
-#include "BsRenderable.h"
+#include "BsCCamera.h"
+#include "BsCRenderable.h"
 #include "BsGUIWidget.h"
 #include "BsGUILayoutX.h"
 #include "BsGUILayoutY.h"
@@ -215,7 +215,7 @@ namespace BansheeEngine
 
 		// Attach the Renderable component and hook up the mesh we imported earlier,
 		// and the material we created in the previous section.
-		HRenderable renderable = dragonSO->addComponent<Renderable>();
+		HRenderable renderable = dragonSO->addComponent<CRenderable>();
 		renderable->setMesh(mesh);
 		renderable->setMaterial(material);
 
@@ -235,7 +235,7 @@ namespace BansheeEngine
 
 		// Add a Camera component that will output whatever it sees into that window 
 		// (You could also use a render texture or another window you created).
-		sceneCamera = sceneCameraSO->addComponent<Camera>(window);
+		sceneCamera = sceneCameraSO->addComponent<CCamera>(window);
 
 		// Set up camera component properties
 
@@ -305,7 +305,7 @@ namespace BansheeEngine
 		RenderWindowPtr window = gApplication().getPrimaryWindow();
 
 		// First we want another camera that is responsible for rendering GUI
-		HCamera guiCamera = guiSO->addComponent<Camera>(window);
+		HCamera guiCamera = guiSO->addComponent<CCamera>(window);
 
 		// Set up GUI camera properties. 
 		// We don't care about aspect ratio for GUI camera.

@@ -32,7 +32,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method.
 		 */
-		void update(const CameraHandlerPtr& camera);
+		void update(const CameraPtr& camera);
 
 	private:
 		friend class SelectionRendererCore;
@@ -88,10 +88,10 @@ namespace BansheeEngine
 		 * @param	camera	Camera to render the selection overlay in.
 		 * @param	objects	A set of objects to render with the selection overlay.
 		 */
-		void updateData(const SPtr<CameraHandlerCore>& camera, const Vector<SelectionRenderer::ObjectData>& objects);
+		void updateData(const SPtr<CameraCore>& camera, const Vector<SelectionRenderer::ObjectData>& objects);
 
 		Vector<SelectionRenderer::ObjectData> mObjects;
-		SPtr<CameraHandlerCore> mCamera;
+		SPtr<CameraCore> mCamera;
 
 		// Immutable
 		SPtr<MaterialCore> mMaterial;

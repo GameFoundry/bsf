@@ -8,154 +8,154 @@ namespace BansheeEngine
 {
     public class Camera : Component
     {
-        private CameraHandler handler;
+        private NativeCamera native;
 
         [SerializeField]
         private SerializableData serializableData = new SerializableData();
 
-        internal CameraHandler Handler
+        internal NativeCamera Native
         {
-            get { return handler; }
+            get { return native; }
         }
 
         public float AspectRatio
         {
-            get { return handler.aspectRatio; }
-            set { handler.aspectRatio = value; serializableData.aspectRatio = value; }
+            get { return native.aspectRatio; }
+            set { native.aspectRatio = value; serializableData.aspectRatio = value; }
         }
 
         public float NearClipPlane
         {
-            get { return handler.nearClipPlane; }
-            set { handler.nearClipPlane = value; serializableData.nearClipPlane = value; }
+            get { return native.nearClipPlane; }
+            set { native.nearClipPlane = value; serializableData.nearClipPlane = value; }
         }
 
         public float FarClipPlane
         {
-            get { return handler.farClipPlane; }
-            set { handler.farClipPlane = value; serializableData.farClipPlane = value; }
+            get { return native.farClipPlane; }
+            set { native.farClipPlane = value; serializableData.farClipPlane = value; }
         }
 
         public Degree FieldOfView
         {
-            get { return handler.fieldOfView; }
-            set { handler.fieldOfView = value; serializableData.fieldOfView = value; }
+            get { return native.fieldOfView; }
+            set { native.fieldOfView = value; serializableData.fieldOfView = value; }
         }
 
         public Rect2 ViewportRect
         {
-            get { return handler.viewportRect; }
-            set { handler.viewportRect = value; serializableData.viewportRect = value; }
+            get { return native.viewportRect; }
+            set { native.viewportRect = value; serializableData.viewportRect = value; }
         }
 
         public ProjectionType ProjectionType
         {
-            get { return handler.projectionType; }
-            set { handler.projectionType = value; serializableData.projectionType = value; }
+            get { return native.projectionType; }
+            set { native.projectionType = value; serializableData.projectionType = value; }
         }
 
         public float OrthoHeight
         {
-            get { return handler.orthoHeight; }
-            set { handler.orthoHeight = value; serializableData.orthoHeight = value; }
+            get { return native.orthoHeight; }
+            set { native.orthoHeight = value; serializableData.orthoHeight = value; }
         }
 
         public float OrthoWidth
         {
-            get { return handler.orthoWidth; }
+            get { return native.orthoWidth; }
         }
 
         public Color ClearColor
         {
-            get { return handler.clearColor; }
-            set { handler.clearColor = value; serializableData.clearColor = value; }
+            get { return native.clearColor; }
+            set { native.clearColor = value; serializableData.clearColor = value; }
         }
 
         public float ClearDepth
         {
-            get { return handler.clearDepth; }
-            set { handler.clearDepth = value; serializableData.clearDepth = value; }
+            get { return native.clearDepth; }
+            set { native.clearDepth = value; serializableData.clearDepth = value; }
         }
 
         public UInt16 ClearStencil
         {
-            get { return handler.clearStencil; }
-            set { handler.clearStencil = value; serializableData.clearStencil = value; }
+            get { return native.clearStencil; }
+            set { native.clearStencil = value; serializableData.clearStencil = value; }
         }
 
         public ClearFlags ClearFlags
         {
-            get { return handler.clearFlags; }
-            set { handler.clearFlags = value; serializableData.clearFlags = value; }
+            get { return native.clearFlags; }
+            set { native.clearFlags = value; serializableData.clearFlags = value; }
         }
 
         public int Priority
         {
-            get { return handler.priority; }
-            set { handler.priority = value; serializableData.priority = value; }
+            get { return native.priority; }
+            set { native.priority = value; serializableData.priority = value; }
         }
 
         public UInt64 Layers
         {
-            get { return handler.layers; }
-            set { handler.layers = value; serializableData.layers = value; }
+            get { return native.layers; }
+            set { native.layers = value; serializableData.layers = value; }
         }
 
         public Matrix4 ProjMatrix
         {
-            get { return handler.projMatrix; }
+            get { return native.projMatrix; }
         }
 
         public Matrix4 ProjMatrixInverse
         {
-            get { return handler.projMatrixInv; }
+            get { return native.projMatrixInv; }
         }
 
         public Matrix4 ViewMatrix
         {
-            get { return handler.viewMatrix; }
+            get { return native.viewMatrix; }
         }
 
         public Matrix4 ViewMatrixInverse
         {
-            get { return handler.viewMatrixInv; }
+            get { return native.viewMatrixInv; }
         }
 
         public int WidthPixels
         {
-            get { return handler.widthPixels; }
+            get { return native.widthPixels; }
         }
 
         public int HeightPixels
         {
-            get { return handler.heightPixels; }
+            get { return native.heightPixels; }
         }
 
         public RenderTarget Target
         {
-            get { return handler.target; }
-            set { handler.target = value; }
+            get { return native.target; }
+            set { native.target = value; }
         }
 
-        public Vector2I WorldToScreen(Vector3 value) { return handler.WorldToScreen(value); }
-        public Vector2 WorldToClip(Vector3 value) { return handler.WorldToClip(value); }
-        public Vector3 WorldToView(Vector3 value) { return handler.WorldToView(value); }
+        public Vector2I WorldToScreen(Vector3 value) { return native.WorldToScreen(value); }
+        public Vector2 WorldToClip(Vector3 value) { return native.WorldToClip(value); }
+        public Vector3 WorldToView(Vector3 value) { return native.WorldToView(value); }
 
-        public Vector3 ScreenToWorld(Vector2I value, float depth = 0.5f) { return handler.ScreenToWorld(value, depth); }
-        public Vector3 ScreenToView(Vector2I value, float depth = 0.5f) { return handler.ScreenToView(value, depth); }
-        public Vector2 ScreenToClip(Vector2I value) { return handler.ScreenToClip(value); }
+        public Vector3 ScreenToWorld(Vector2I value, float depth = 0.5f) { return native.ScreenToWorld(value, depth); }
+        public Vector3 ScreenToView(Vector2I value, float depth = 0.5f) { return native.ScreenToView(value, depth); }
+        public Vector2 ScreenToClip(Vector2I value) { return native.ScreenToClip(value); }
 
-        public Vector3 ViewToWorld(Vector3 value) { return handler.ViewToWorld(value); }
-        public Vector2I ViewToScreen(Vector3 value) { return handler.ViewToScreen(value); }
-        public Vector2 ViewToClip(Vector3 value) { return handler.ViewToClip(value); }
+        public Vector3 ViewToWorld(Vector3 value) { return native.ViewToWorld(value); }
+        public Vector2I ViewToScreen(Vector3 value) { return native.ViewToScreen(value); }
+        public Vector2 ViewToClip(Vector3 value) { return native.ViewToClip(value); }
 
-        public Vector3 ClipToWorld(Vector2 value, float depth = 0.5f) { return handler.ClipToWorld(value, depth); }
-        public Vector3 ClipToView(Vector2 value, float depth = 0.5f) { return handler.ClipToView(value, depth); }
-        public Vector2I ClipToScreen(Vector2 value) { return handler.ClipToScreen(value); }
+        public Vector3 ClipToWorld(Vector2 value, float depth = 0.5f) { return native.ClipToWorld(value, depth); }
+        public Vector3 ClipToView(Vector2 value, float depth = 0.5f) { return native.ClipToView(value, depth); }
+        public Vector2I ClipToScreen(Vector2 value) { return native.ClipToScreen(value); }
 
-        public Ray ScreenToWorldRay(Vector2I value) { return handler.ScreenToWorldRay(value); }
-        public Vector3 ProjectPoint(Vector3 value) { return handler.ProjectPoint(value); }
-        public Vector3 UnprojectPoint(Vector3 value) { return handler.UnprojectPoint(value); }
+        public Ray ScreenToWorldRay(Vector2I value) { return native.ScreenToWorldRay(value); }
+        public Vector3 ProjectPoint(Vector3 value) { return native.ProjectPoint(value); }
+        public Vector3 UnprojectPoint(Vector3 value) { return native.UnprojectPoint(value); }
 
         private void OnInitialize()
         {
@@ -173,37 +173,37 @@ namespace BansheeEngine
 
         private void OnReset()
         {
-            if (handler != null)
-                handler.OnDestroy();
+            if (native != null)
+                native.OnDestroy();
 
-            handler = new CameraHandler(SceneObject);
+            native = new NativeCamera(SceneObject);
 
             // Restore saved values after reset
-            handler.aspectRatio = serializableData.aspectRatio;
-            handler.nearClipPlane = serializableData.nearClipPlane;
-            handler.farClipPlane = serializableData.farClipPlane;
-            handler.fieldOfView = serializableData.fieldOfView;
-            handler.viewportRect = serializableData.viewportRect;
-            handler.projectionType = serializableData.projectionType;
-            handler.orthoHeight = serializableData.orthoHeight;
-            handler.clearColor = serializableData.clearColor;
-            handler.clearDepth = serializableData.clearDepth;
-            handler.clearStencil = serializableData.clearStencil;
-            handler.clearFlags = serializableData.clearFlags;
-            handler.priority = serializableData.priority;
-            handler.layers = serializableData.layers;
+            native.aspectRatio = serializableData.aspectRatio;
+            native.nearClipPlane = serializableData.nearClipPlane;
+            native.farClipPlane = serializableData.farClipPlane;
+            native.fieldOfView = serializableData.fieldOfView;
+            native.viewportRect = serializableData.viewportRect;
+            native.projectionType = serializableData.projectionType;
+            native.orthoHeight = serializableData.orthoHeight;
+            native.clearColor = serializableData.clearColor;
+            native.clearDepth = serializableData.clearDepth;
+            native.clearStencil = serializableData.clearStencil;
+            native.clearFlags = serializableData.clearFlags;
+            native.priority = serializableData.priority;
+            native.layers = serializableData.layers;
 
             // TODO - Make RenderTexture a resource so I can save/restore it?
         }
 
         private void Update()
         {
-            handler.UpdateView(SceneObject);
+            native.UpdateView(SceneObject);
         }
 
         private void OnDestroy()
         {
-            handler.OnDestroy();
+            native.OnDestroy();
         }
 
         [SerializeObject]

@@ -8,73 +8,73 @@ namespace BansheeEngine
 {
     public class Light : Component
     {
-        private LightInternal internalLight;
+        private NativeLight _nativeLight;
 
         [SerializeField]
         private SerializableData serializableData = new SerializableData();
 
-        internal LightInternal Internal
+        internal NativeLight Native
         {
-            get { return internalLight; }
+            get { return _nativeLight; }
         }
 
         public Vector3 Position
         {
-            get { return internalLight.Position; }
-            set { internalLight.Position = value; serializableData.position = value; }
+            get { return _nativeLight.Position; }
+            set { _nativeLight.Position = value; serializableData.position = value; }
         }
 
         public Quaternion Rotation
         {
-            get { return internalLight.Rotation; }
-            set { internalLight.Rotation = value; serializableData.rotation = value; }
+            get { return _nativeLight.Rotation; }
+            set { _nativeLight.Rotation = value; serializableData.rotation = value; }
         }
 
         public LightType Type
         {
-            get { return internalLight.Type; }
-            set { internalLight.Type = value; serializableData.type = value; }
+            get { return _nativeLight.Type; }
+            set { _nativeLight.Type = value; serializableData.type = value; }
         }
 
         public Color Color
         {
-            get { return internalLight.Color; }
-            set { internalLight.Color = value; serializableData.color = value; }
+            get { return _nativeLight.Color; }
+            set { _nativeLight.Color = value; serializableData.color = value; }
         }
 
         public float Range
         {
-            get { return internalLight.Range; }
-            set { internalLight.Range = value; serializableData.range = value; }
+            get { return _nativeLight.Range; }
+            set { _nativeLight.Range = value; serializableData.range = value; }
         }
 
         public float Intensity
         {
-            get { return internalLight.Intensity; }
-            set { internalLight.Intensity = value; serializableData.intensity = value; }
+            get { return _nativeLight.Intensity; }
+            set { _nativeLight.Intensity = value; serializableData.intensity = value; }
         }
 
         public Degree SpotAngle
         {
-            get { return internalLight.SpotAngle; }
-            set { internalLight.SpotAngle = value; serializableData.spotAngle = value; }
+            get { return _nativeLight.SpotAngle; }
+            set { _nativeLight.SpotAngle = value; serializableData.spotAngle = value; }
         }
 
         public Degree SpotFalloffAngle
         {
-            get { return internalLight.SpotFalloffAngle; }
-            set { internalLight.SpotFalloffAngle = value; serializableData.spotFalloffAngle = value; }
+            get { return _nativeLight.SpotFalloffAngle; }
+            set { _nativeLight.SpotFalloffAngle = value; serializableData.spotFalloffAngle = value; }
         }
 
         public bool CastsShadow
         {
-            get { return internalLight.CastsShadow; }
-            set { internalLight.CastsShadow = value; serializableData.castShadows = value; }
+            get { return _nativeLight.CastsShadow; }
+            set { _nativeLight.CastsShadow = value; serializableData.castShadows = value; }
         }
 
         public Sphere Bounds
         {
-            get { Internal.UpdateTransform(SceneObject); return Internal.Bounds; }
+            get { Native.UpdateTransform(SceneObject); return Native.Bounds; }
         }
 
         private void OnInitialize()
@@ -92,21 +92,21 @@ namespace BansheeEngine
 
         private void OnReset()
         {
-            if (internalLight != null)
-                internalLight.OnDestroy();
+            if (_nativeLight != null)
+                _nativeLight.OnDestroy();
 
-            internalLight = new LightInternal(SceneObject);
+            _nativeLight = new NativeLight(SceneObject);
 
             // Restore saved values after reset
-            internalLight.Position = serializableData.position;
-            internalLight.Rotation = serializableData.rotation;
-            internalLight.Color = serializableData.color;
-            internalLight.SpotAngle = serializableData.spotAngle;
-            internalLight.SpotFalloffAngle = serializableData.spotFalloffAngle;
-            internalLight.Range = serializableData.range;
-            internalLight.Intensity = serializableData.intensity;
-            internalLight.Type = serializableData.type;
-            internalLight.CastsShadow = serializableData.castShadows;
+            _nativeLight.Position = serializableData.position;
+            _nativeLight.Rotation = serializableData.rotation;
+            _nativeLight.Color = serializableData.color;
+            _nativeLight.SpotAngle = serializableData.spotAngle;
+            _nativeLight.SpotFalloffAngle = serializableData.spotFalloffAngle;
+            _nativeLight.Range = serializableData.range;
+            _nativeLight.Intensity = serializableData.intensity;
+            _nativeLight.Type = serializableData.type;
+            _nativeLight.CastsShadow = serializableData.castShadows;
         }
 
         private void Update()
@@ -116,7 +116,7 @@ namespace BansheeEngine
 
         private void OnDestroy()
         {
-            internalLight.OnDestroy();
+            _nativeLight.OnDestroy();
         }
 
         [SerializeObject]

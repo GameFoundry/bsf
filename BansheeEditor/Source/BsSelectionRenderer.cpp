@@ -1,7 +1,7 @@
 #include "BsSelectionRenderer.h"
 #include "BsMesh.h"
 #include "BsVertexDataDesc.h"
-#include "BsCamera.h"
+#include "BsCCamera.h"
 #include "BsCoreThread.h"
 #include "BsBuiltinEditorResources.h"
 #include "BsMaterial.h"
@@ -11,7 +11,7 @@
 #include "BsRendererManager.h"
 #include "BsSelection.h"
 #include "BsSceneObject.h"
-#include "BsRenderable.h"
+#include "BsCRenderable.h"
 
 using namespace std::placeholders;
 
@@ -42,14 +42,14 @@ namespace BansheeEngine
 		bs_delete(core);
 	}
 
-	void SelectionRenderer::update(const CameraHandlerPtr& camera)
+	void SelectionRenderer::update(const CameraPtr& camera)
 	{
 		Vector<ObjectData> objects;
 
 		const Vector<HSceneObject>& sceneObjects = Selection::instance().getSceneObjects();
 		for (auto& so : sceneObjects)
 		{
-			HRenderable renderable = so->getComponent<Renderable>();
+			HRenderable renderable = so->getComponent<CRenderable>();
 			if (renderable != nullptr && renderable->getMesh() != nullptr)
 			{
 				objects.push_back(ObjectData());
@@ -83,7 +83,7 @@ namespace BansheeEngine
 		fragParams->getParam("selColor", mColor);
 	}
 
-	void SelectionRendererCore::updateData(const SPtr<CameraHandlerCore>& camera, const Vector<SelectionRenderer::ObjectData>& objects)
+	void SelectionRendererCore::updateData(const SPtr<CameraCore>& camera, const Vector<SelectionRenderer::ObjectData>& objects)
 	{
 		if (mCamera != camera)
 		{

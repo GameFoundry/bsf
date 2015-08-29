@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
-    internal class RenderableHandler : ScriptObject
+    internal class NativeRenderable : ScriptObject
     {
         internal Mesh Mesh
         {
@@ -52,7 +52,7 @@ namespace BansheeEngine
         private Material[] materials = new Material[0];
         private Mesh mesh;
         
-        public RenderableHandler(SceneObject sceneObject)
+        public NativeRenderable(SceneObject sceneObject)
         {
             IntPtr sceneObjPtr = IntPtr.Zero;
             if (sceneObject != null)
@@ -88,7 +88,7 @@ namespace BansheeEngine
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_Create(RenderableHandler instance, IntPtr parentSO);
+        private static extern void Internal_Create(NativeRenderable instance, IntPtr parentSO);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_UpdateTransform(IntPtr thisPtr, IntPtr parentSO);

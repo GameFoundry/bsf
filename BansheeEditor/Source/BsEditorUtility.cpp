@@ -1,6 +1,6 @@
 #include "BsEditorUtility.h"
 #include "BsSceneObject.h"
-#include "BsRenderable.h"
+#include "BsCRenderable.h"
 
 namespace BansheeEngine
 {
@@ -41,9 +41,9 @@ namespace BansheeEngine
 
 	bool EditorUtility::calculateMeshBounds(const HSceneObject& object, AABox& bounds)
 	{
-		if (object->hasComponent<Renderable>())
+		if (object->hasComponent<CRenderable>())
 		{
-			HRenderable renderable = object->getComponent<Renderable>();
+			HRenderable renderable = object->getComponent<CRenderable>();
 			bounds = renderable->getBounds().getBox();
 
 			return true;

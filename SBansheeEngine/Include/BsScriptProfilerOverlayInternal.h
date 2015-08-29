@@ -20,7 +20,7 @@ namespace BansheeEngine
 		ProfilerOverlayInternal* getInternal() const { return mProfilerOverlayInternal; }
 
 	private:
-		ScriptProfilerOverlayInternal(MonoObject* managedInstance, const SPtr<CameraHandler>& camera);
+		ScriptProfilerOverlayInternal(MonoObject* managedInstance, const SPtr<Camera>& camera);
 		~ScriptProfilerOverlayInternal();
 
 		ProfilerOverlayInternal* mProfilerOverlayInternal;
@@ -28,7 +28,7 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		static void internal_CreateInstance(MonoObject* instance, ScriptCameraHandler* camera);
+		static void internal_CreateInstance(MonoObject* instance, ScriptCamera* camera);
 		static void internal_SetType(ScriptProfilerOverlayInternal* thisPtr, ProfilerOverlayType type);
 		static void internal_Update(ScriptProfilerOverlayInternal* thisPtr);
 		static void internal_DestroyInstance(ScriptProfilerOverlayInternal* thisPtr);
