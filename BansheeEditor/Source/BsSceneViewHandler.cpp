@@ -23,9 +23,8 @@ namespace BansheeEngine
 	SceneViewHandler::SceneViewHandler(EditorWidgetBase* parentWidget, const SPtr<CameraHandler>& camera)
 		:mCamera(camera), mSceneGrid(nullptr), mParentWidget(parentWidget)
 	{
-		mRenderCallback = RendererManager::instance().getActive()->onRenderViewport.connect(std::bind(&SceneViewHandler::render, this, _1, _2));
 		mSelectionRenderer = bs_new<SelectionRenderer>();
-		mSceneGrid = bs_new<SceneGrid>();
+		mSceneGrid = bs_new<SceneGrid>(mCamera);
 		mSceneGrid->setSettings(gEditorApplication().getEditorSettings());
 		HandleManager::instance().setSettings(gEditorApplication().getEditorSettings());
 	}
@@ -34,7 +33,6 @@ namespace BansheeEngine
 	{
 		bs_delete(mSceneGrid);
 		bs_delete(mSelectionRenderer);
-		mRenderCallback.disconnect();
 
 		if (GizmoManager::isStarted()) // If not active, we don't care
 			GizmoManager::instance().clearRenderData();
@@ -108,17 +106,6 @@ namespace BansheeEngine
 		}
 		else
 			Selection::instance().clearSceneSelection();
-	}
-
-	void SceneViewHandler::render(const Viewport* viewport, DrawList& drawList)
-	{
-		if (mCamera == nullptr)
-			return;
-
-		if (mCamera->getViewport().get() != viewport)
-			return;
-
-		mSceneGrid->_render(mCamera, drawList);
 	}
 
 	Vector2I SceneViewHandler::wrapCursorToWindow()

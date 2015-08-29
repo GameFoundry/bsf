@@ -113,7 +113,7 @@ namespace BansheeEngine
 		 * @param	camera			Camera for which to trigger the callback.
 		 * @param	index			Index that determines the order of rendering when there are multiple registered callbacks.
 		 *							This must be unique. Lower indices get rendered sooner. Indices below 0 get rendered before the
-		 *							main viewport elements, while indices equal to greater to zero, after.
+		 *							main viewport elements, while indices equal or greater to zero, after.
 		 * @param	callback		Callback to trigger when the specified camera is being rendered.
 		 *
 		 * @note	Core thread.

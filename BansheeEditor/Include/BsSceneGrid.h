@@ -7,13 +7,16 @@
 
 namespace BansheeEngine
 {
+	class SceneGridCore;
+
 	/**
 	 * @brief	Handles rendering of the grid in the scene view.
 	 */
 	class SceneGrid
 	{
 	public:
-		SceneGrid();
+		SceneGrid(const CameraHandlerPtr& camera);
+		~SceneGrid();
 
 		/**
 		 * @brief	Sets the grid origin in world coordinates.
@@ -37,16 +40,6 @@ namespace BansheeEngine
 		void setSettings(const EditorSettingsPtr& settings);
 
 		/**
-		 * @brief	Triggered by the renderer when rendering the specified camera.
-		 *
-		 * @param	camera		Camera about to be rendered.
-		 * @param	drawList	Draw list we can use to queue our render commands in.
-		 *
-		 * @note	Internal method.
-		 */
-		void _render(const CameraHandlerPtr& camera, DrawList& drawList);
-
-		/**
 		 * @brief	Called once per frame.
 		 *
 		 * @note	Internal method.
@@ -54,44 +47,90 @@ namespace BansheeEngine
 		void update();
 	private:
 		/**
+		 * @brief	Updates internal grid parameters from the attached settings object.
+		 */
+		void updateFromEditorSettings();
+
+		/**
 		 * @brief	Rebuilds the scene grid mesh. Call this whenever grid parameters change.
 		 */
 		void updateGridMesh();
 
 		/**
-		 * @brief	Updates internal grid parameters from the attached settings object.
+		 * @brief	Initializes the core thread portion of the scene grid renderer.
+		 *
+		 * @param	material	Material used for drawing the grid.
+		 * @param	camera		Camera to render the scene grid to.
 		 */
-		void updateFromEditorSettings();
+		void initializeCore(const SPtr<CameraHandlerCore>& camera, const SPtr<MaterialCore>& material);
 
-		HMesh mGridMesh;
-		HMaterial mGridMaterial;
-		MaterialParamMat4 mViewProjParam;
-		MaterialParamVec4 mWorldCameraPosParam;
-		MaterialParamColor mGridColorParam;
-		MaterialParamFloat mGridSpacingParam;
-		MaterialParamFloat mGridBorderWidthParam;
-		MaterialParamFloat mGridFadeOutStartParam;
-		MaterialParamFloat mGridFadeOutEndParam;
-		VertexDataDescPtr mVertexDesc;
-
-		EditorSettingsPtr mSettings;
-		UINT32 mSettingsHash = 0;
+		/**
+		 * @brief	Destroys the core thread portion of the draw manager.
+		 */
+		void destroyCore(SceneGridCore* core);
 
 		Vector3 mOrigin;
 		float mSpacing = 1.0f;
 		UINT32 mSize = 256;
-		UINT32 mMajorAxisSpacing = 10;
-		UINT32 mAxisMarkerSpacing = 25;
+		bool mCoreDirty;
+
+		EditorSettingsPtr mSettings;
+		UINT32 mSettingsHash = 0;
+
+		HMesh mGridMesh;
+		VertexDataDescPtr mVertexDesc;
+		std::atomic<SceneGridCore*> mCore;
+	};
+
+	/**
+	 * @brief	Core thread portion of the scene grid. Handles interaction with the renderer.
+	 */
+	class SceneGridCore
+	{
+	public:
+		SceneGridCore() { }
+		~SceneGridCore();
+
+	private:
+		friend class SceneGrid;
+
+		/**
+		 * @brief	Initializes the object. Must be called right after construction and before any use.
+		 *
+		 * @param	material	Material used for drawing the grid.
+		 * @param	camera		Camera to render the scene grid to.
+		 */
+		void initialize(const SPtr<CameraHandlerCore>& camera, const SPtr<MaterialCore>& material);
+
+		/**
+		 * @brief	Updates the grid mesh to render.
+		 * 			
+		 * @param	mesh		Grid mesh to render.
+		 * @param	scpacing	Spacing between the grid lines.
+		 */
+		void updateData(const SPtr<MeshCore>& mesh, float spacing);
+
+		/**
+		 * @brief	Callback triggered by the renderer, actually draws the grid mesh.
+		 */
+		void render();
+
+		SPtr<CameraHandlerCore> mCamera;
+		SPtr<MeshCore> mGridMesh;
+		SPtr<MaterialCore> mGridMaterial;
+		float mSpacing = 1.0f;
+
+		MaterialParamMat4Core mViewProjParam;
+		MaterialParamVec4Core mWorldCameraPosParam;
+		MaterialParamColorCore mGridColorParam;
+		MaterialParamFloatCore mGridSpacingParam;
+		MaterialParamFloatCore mGridBorderWidthParam;
+		MaterialParamFloatCore mGridFadeOutStartParam;
+		MaterialParamFloatCore mGridFadeOutEndParam;
 
 		static const Color GRID_LINE_COLOR;
 		static const float LINE_WIDTH;
 		static const float LINE_BORDER_WIDTH;
-		static const float MAJOR_AXIS_WIDTH;
-		static const float MAJOR_AXIS_BORDER_WIDTH;
-		static const float AXIS_MARKER_WIDTH;
-		static const float AXIS_MARKER_BORDER_WIDTH;
-		static const Color AXIS_X_MARKER_COLOR;
-		static const Color AXIS_Z_MARKER_COLOR;
 		static const float FADE_OUT_START;
 		static const float FADE_OUT_END;
 	};

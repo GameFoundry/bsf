@@ -8,38 +8,52 @@
 #include "BsBuiltinEditorResources.h"
 #include "BsCamera.h"
 #include "BsRect3.h"
+#include "BsCoreThread.h"
 #include "BsEditorSettings.h"
+#include "BsRendererManager.h"
+#include "BsRenderer.h"
 
 namespace BansheeEngine
 {
-	const Color SceneGrid::GRID_LINE_COLOR = Color(0.5f, 0.5f, 0.5f);
-	const float SceneGrid::LINE_WIDTH = 0.025f;
-	const float SceneGrid::LINE_BORDER_WIDTH = 0.00075f;
-	const float SceneGrid::MAJOR_AXIS_WIDTH = 0.075f;
-	const float SceneGrid::MAJOR_AXIS_BORDER_WIDTH = 0.015f;
-	const float SceneGrid::AXIS_MARKER_WIDTH = 0.1f;
-	const float SceneGrid::AXIS_MARKER_BORDER_WIDTH = 0.02f;
-	const Color SceneGrid::AXIS_X_MARKER_COLOR = Color::Red;
-	const Color SceneGrid::AXIS_Z_MARKER_COLOR = Color::Blue;
-	const float SceneGrid::FADE_OUT_START = 5.0f;
-	const float SceneGrid::FADE_OUT_END = 40.0f;
+	const Color SceneGridCore::GRID_LINE_COLOR = Color(0.5f, 0.5f, 0.5f);
+	const float SceneGridCore::LINE_WIDTH = 0.025f;
+	const float SceneGridCore::LINE_BORDER_WIDTH = 0.00075f;
+	const float SceneGridCore::FADE_OUT_START = 5.0f;
+	const float SceneGridCore::FADE_OUT_END = 40.0f;
 
-	SceneGrid::SceneGrid()
+	SceneGrid::SceneGrid(const CameraHandlerPtr& camera)
+		:mCoreDirty(true), mCore(nullptr)
 	{
 		mVertexDesc = bs_shared_ptr_new<VertexDataDesc>();
 		mVertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
 		mVertexDesc->addVertElem(VET_FLOAT3, VES_NORMAL);
 
-		mGridMaterial = BuiltinEditorResources::instance().createSceneGridMaterial();
-		mViewProjParam = mGridMaterial->getParamMat4("matViewProj");
-		mWorldCameraPosParam = mGridMaterial->getParamVec4("worldCameraPos");
-		mGridColorParam = mGridMaterial->getParamColor("gridColor");
-		mGridSpacingParam = mGridMaterial->getParamFloat("gridSpacing");
-		mGridBorderWidthParam = mGridMaterial->getParamFloat("gridBorderWidth");
-		mGridFadeOutStartParam = mGridMaterial->getParamFloat("gridFadeOutStart");
-		mGridFadeOutEndParam = mGridMaterial->getParamFloat("gridFadeOutEnd");
+		mCore.store(bs_new<SceneGridCore>(), std::memory_order_release);
+
+		HMaterial gridMaterial = BuiltinEditorResources::instance().createSceneGridMaterial();
+		SPtr<MaterialCore> materialCore = gridMaterial->getCore();
+		gCoreAccessor().queueCommand(std::bind(&SceneGrid::initializeCore, this, camera->getCore(), materialCore));
 
 		updateGridMesh();
+	}
+
+	SceneGrid::~SceneGrid()
+	{
+		gCoreAccessor().queueCommand(std::bind(&SceneGrid::destroyCore, this, mCore.load(std::memory_order_relaxed)));
+	}
+
+	void SceneGrid::initializeCore(const SPtr<CameraHandlerCore>& camera, const SPtr<MaterialCore>& material)
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		mCore.load()->initialize(camera, material);
+	}
+
+	void SceneGrid::destroyCore(SceneGridCore* core)
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		bs_delete(core);
 	}
 
 	void SceneGrid::setOrigin(const Vector3& origin)
@@ -65,7 +79,7 @@ namespace BansheeEngine
 		if (mSpacing != spacing)
 		{
 			mSpacing = spacing;
-			updateGridMesh();
+			mCoreDirty = true;
 		}
 	}
 
@@ -79,27 +93,14 @@ namespace BansheeEngine
 	{
 		if (mSettings != nullptr && mSettingsHash != mSettings->getHash())
 			updateFromEditorSettings();
-	}
 
-	void SceneGrid::_render(const CameraHandlerPtr& camera, DrawList& drawList)
-	{
-		MaterialPtr mat = mGridMaterial.getInternalPtr();
-		MeshPtr mesh = mGridMesh.getInternalPtr();
+		if (mCoreDirty)
+		{
+			SceneGridCore* core = mCore.load(std::memory_order_relaxed);
+			gCoreAccessor().queueCommand(std::bind(&SceneGridCore::updateData, core, mGridMesh->getCore(), mSpacing));
 
-		Matrix4 projMatrix = camera->getProjectionMatrixRS();
-		Matrix4 viewMatrix = camera->getViewMatrix();
-
-		Matrix4 viewProjMatrix = projMatrix * viewMatrix;
-		mViewProjParam.set(viewProjMatrix);
-
-		mWorldCameraPosParam.set(Vector4(camera->getPosition(), 1.0f));
-		mGridColorParam.set(GRID_LINE_COLOR);
-		mGridSpacingParam.set(mSpacing);
-		mGridBorderWidthParam.set(LINE_BORDER_WIDTH);
-		mGridFadeOutStartParam.set(FADE_OUT_START);
-		mGridFadeOutEndParam.set(FADE_OUT_END);
-
-		drawList.add(mat, mesh, 0, Vector3::ZERO);
+			mCoreDirty = false;
+		}
 	}
 
 	void SceneGrid::updateFromEditorSettings()
@@ -125,5 +126,56 @@ namespace BansheeEngine
 
 		ShapeMeshes3D::solidQuad(quad, meshData, 0, 0);
 		mGridMesh = Mesh::create(meshData);
+		mCoreDirty = true;
+	}
+
+	SceneGridCore::~SceneGridCore()
+	{
+		CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
+		activeRenderer->_unregisterRenderCallback(mCamera.get(), -20);
+	}
+
+	void SceneGridCore::initialize(const SPtr<CameraHandlerCore>& camera, const SPtr<MaterialCore>& material)
+	{
+		mCamera = camera;
+		mGridMaterial = material;
+
+		mViewProjParam = mGridMaterial->getParamMat4("matViewProj");
+		mWorldCameraPosParam = mGridMaterial->getParamVec4("worldCameraPos");
+		mGridColorParam = mGridMaterial->getParamColor("gridColor");
+		mGridSpacingParam = mGridMaterial->getParamFloat("gridSpacing");
+		mGridBorderWidthParam = mGridMaterial->getParamFloat("gridBorderWidth");
+		mGridFadeOutStartParam = mGridMaterial->getParamFloat("gridFadeOutStart");
+		mGridFadeOutEndParam = mGridMaterial->getParamFloat("gridFadeOutEnd");
+
+		CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
+		activeRenderer->_registerRenderCallback(camera.get(), -20, std::bind(&SceneGridCore::render, this));			
+	}
+
+	void SceneGridCore::updateData(const SPtr<MeshCore>& mesh, float spacing)
+	{
+		mGridMesh = mesh;
+		mSpacing = spacing;
+	}
+
+	void SceneGridCore::render()
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		Matrix4 projMatrix = mCamera->getProjectionMatrixRS();
+		Matrix4 viewMatrix = mCamera->getViewMatrix();
+
+		Matrix4 viewProjMatrix = projMatrix * viewMatrix;
+		mViewProjParam.set(viewProjMatrix);
+
+		mWorldCameraPosParam.set(Vector4(mCamera->getPosition(), 1.0f));
+		mGridColorParam.set(GRID_LINE_COLOR);
+		mGridSpacingParam.set(mSpacing);
+		mGridBorderWidthParam.set(LINE_BORDER_WIDTH);
+		mGridFadeOutStartParam.set(FADE_OUT_START);
+		mGridFadeOutEndParam.set(FADE_OUT_END);
+
+		CoreRenderer::setPass(mGridMaterial, 0);
+		CoreRenderer::draw(mGridMesh, mGridMesh->getProperties().getSubMesh(0));
 	}
 }

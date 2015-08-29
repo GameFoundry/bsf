@@ -62,14 +62,6 @@ namespace BansheeEngine
 
 	protected:
 		/**
-		 * @brief	Triggered by the Renderer when rendering the specified viewport.
-		 *
-		 * @param	viewport	Viewport about to be rendered.
-		 * @param	drawList	Draw list we can use to queue our render commands in.
-		 */
-		void render(const Viewport* viewport, DrawList& drawList);
-
-		/**
 		 * @brief	Checks is the pointer currently within the provided window, and if it is not
 		 *			the cursor is wrapped in such a way so that it is returned to within the window bounds.
 		 *		
@@ -83,7 +75,6 @@ namespace BansheeEngine
 		SPtr<CameraHandler> mCamera;
 		SceneGrid* mSceneGrid;
 		SelectionRenderer* mSelectionRenderer;
-		HEvent mRenderCallback;
 
 		Vector2I mMouseDeltaCompensate;
 	};
