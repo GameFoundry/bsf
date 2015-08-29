@@ -24,9 +24,10 @@
 #include "BsDockManagerLayout.h"
 #include "BsEditorWindow.h"
 #include "BsGUIPanel.h"
-
+#include "BsCoreThread.h"
 #include "BsGUISkin.h"
 #include "BsGUIButton.h"
+#include <BsSelectionRenderer.h>
 
 using namespace std::placeholders;
 
@@ -34,9 +35,6 @@ namespace BansheeEngine
 {
 	const UINT32 DockManager::DockContainer::SLIDER_SIZE = 4;
 	const UINT32 DockManager::DockContainer::MIN_CHILD_SIZE = 20;
-
-	const Color DockManager::TINT_COLOR = Color(0.44f, 0.44f, 0.44f, 0.22f);
-	const Color DockManager::HIGHLIGHT_COLOR = Color(0.44f, 0.44f, 0.44f, 0.42f);
 
 	DockManager::DockContainer::DockContainer(DockManager* manager)
 		:mIsLeaf(true), mWidgets(nullptr), mSplitPosition(0.5f),
@@ -443,19 +441,32 @@ namespace BansheeEngine
 		mLeftDropPolygon = bs_newN<Vector2>(4);
 		mRightDropPolygon = bs_newN<Vector2>(4);
 
-		mDropOverlayMat = BuiltinEditorResources::instance().createDockDropOverlayMaterial();
+		HMaterial dropOverlayMat = BuiltinEditorResources::instance().createDockDropOverlayMaterial();
 
-		mRenderCallback = RendererManager::instance().getActive()->onRenderViewport.connect(std::bind(&DockManager::render, this, _1, _2));
+		mCore.store(bs_new<DockOverlayRenderer>(), std::memory_order_release);
+		gCoreAccessor().queueCommand(std::bind(&DockManager::initializeOverlayRenderer, 
+			this, dropOverlayMat->getCore()));
 	}
 
 	DockManager::~DockManager()
 	{
-		mRenderCallback.disconnect();
-
 		bs_deleteN(mTopDropPolygon, 4);
 		bs_deleteN(mBotDropPolygon, 4);
 		bs_deleteN(mLeftDropPolygon, 4);
 		bs_deleteN(mRightDropPolygon, 4);
+
+		gCoreAccessor().queueCommand(std::bind(&DockManager::destroyOverlayRenderer,
+			this, mCore.load(std::memory_order_relaxed)));
+	}
+
+	void DockManager::initializeOverlayRenderer(const SPtr<MaterialCore>& initData)
+	{
+		mCore.load(std::memory_order_acquire)->initialize(initData);
+	}
+
+	void DockManager::destroyOverlayRenderer(DockOverlayRenderer* core)
+	{
+		bs_delete(core);
 	}
 
 	DockManager* DockManager::create(EditorWindowBase* parentWindow)
@@ -472,54 +483,12 @@ namespace BansheeEngine
 		}
 
 		mRootContainer.update();
-	}
 
-	void DockManager::render(const Viewport* viewport, DrawList& drawList)
-	{
-		if (_getParentWidget() == nullptr || _getParentWidget()->getTarget() != viewport)
-			return;
+		HCamera camera = mParentWindow->getGUICamera();
 
-		if(!mShowOverlay)
-			return;
-
-		float invViewportWidth = 1.0f / (viewport->getWidth() * 0.5f);
-		float invViewportHeight = 1.0f / (viewport->getHeight() * 0.5f);
-
-		if(!mDropOverlayMesh.isLoaded())
-			return;
-
-		if(!mDropOverlayMat.isLoaded())
-			return;
-
-		mDropOverlayMat->setFloat("invViewportWidth", invViewportWidth);
-		mDropOverlayMat->setFloat("invViewportHeight", invViewportHeight);
-
-		mDropOverlayMat->setColor("tintColor", TINT_COLOR);
-		mDropOverlayMat->setColor("highlightColor", HIGHLIGHT_COLOR);
-
-		Color highlightColor;
-		switch(mHighlightedDropLoc)
-		{
-		case DockLocation::Top:
-			highlightColor = Color(1.0f, 0.0f, 0.0f, 0.0f);
-			break;
-		case DockLocation::Bottom:
-			highlightColor = Color(0.0f, 1.0f, 0.0f, 0.0f);
-			break;
-		case DockLocation::Left:
-			highlightColor = Color(0.0f, 0.0f, 1.0f, 0.0f);
-			break;
-		case DockLocation::Right:
-			highlightColor = Color(0.0f, 0.0f, 0.0f, 1.0f);
-			break;
-		case DockLocation::None:
-			highlightColor = Color(0.0f, 0.0f, 0.0f, 0.0f);
-			break;
-		}
-
-		mDropOverlayMat->setColor("highlightActive", highlightColor);
-
-		drawList.add(mDropOverlayMat.getInternalPtr(), mDropOverlayMesh.getInternalPtr(), 0, Vector3::ZERO);
+		DockOverlayRenderer* core = mCore.load(std::memory_order_relaxed);
+		gCoreAccessor().queueCommand(std::bind(&DockOverlayRenderer::updateData, core, camera->_getCamera()->getCore(),
+			mDropOverlayMesh->getCore(), mShowOverlay, mHighlightedDropLoc));
 	}
 
 	void DockManager::insert(EditorWidgetContainer* relativeTo, EditorWidgetBase* widgetToInsert, DockLocation location)
@@ -1069,5 +1038,91 @@ namespace BansheeEngine
 		}
 
 		return isInside;
+	}
+
+	const Color DockOverlayRenderer::TINT_COLOR = Color(0.44f, 0.44f, 0.44f, 0.22f);
+	const Color DockOverlayRenderer::HIGHLIGHT_COLOR = Color(0.44f, 0.44f, 0.44f, 0.42f);
+
+	DockOverlayRenderer::DockOverlayRenderer()
+		:mShowOverlay(false), mHighlightedDropLoc(DockManager::DockLocation::None)
+	{
+		
+	}
+
+	DockOverlayRenderer::~DockOverlayRenderer()
+	{
+		if (mCamera != nullptr)
+		{
+			CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
+			activeRenderer->_unregisterRenderCallback(mCamera.get(), -20);
+		}
+	}
+
+	void DockOverlayRenderer::initialize(const SPtr<MaterialCore>& material)
+	{
+		mMaterial = material;
+	}
+
+	void DockOverlayRenderer::updateData(const SPtr<CameraCore>& camera, const SPtr<MeshCore>& mesh, bool active, 
+		DockManager::DockLocation location)
+	{
+		if (mCamera != camera)
+		{
+			CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
+			if (mCamera != nullptr)
+				activeRenderer->_unregisterRenderCallback(mCamera.get(), -20);
+
+			if (camera != nullptr)
+				activeRenderer->_registerRenderCallback(camera.get(), -20, std::bind(&DockOverlayRenderer::render, this));
+		}
+
+		mCamera = camera;
+		mMesh = mesh;
+		mShowOverlay = active;
+		mHighlightedDropLoc = location;
+	}
+
+	void DockOverlayRenderer::render()
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		if (!mShowOverlay)
+			return;
+
+		SPtr<ViewportCore> viewport = mCamera->getViewport();
+
+		float invViewportWidth = 1.0f / (viewport->getWidth() * 0.5f);
+		float invViewportHeight = 1.0f / (viewport->getHeight() * 0.5f);
+
+		mMaterial->setFloat("invViewportWidth", invViewportWidth);
+		mMaterial->setFloat("invViewportHeight", invViewportHeight);
+
+		mMaterial->setColor("tintColor", TINT_COLOR);
+		mMaterial->setColor("highlightColor", HIGHLIGHT_COLOR);
+
+		Color highlightColor;
+		switch (mHighlightedDropLoc)
+		{
+		case DockManager::DockLocation::Top:
+			highlightColor = Color(1.0f, 0.0f, 0.0f, 0.0f);
+			break;
+		case DockManager::DockLocation::Bottom:
+			highlightColor = Color(0.0f, 1.0f, 0.0f, 0.0f);
+			break;
+		case DockManager::DockLocation::Left:
+			highlightColor = Color(0.0f, 0.0f, 1.0f, 0.0f);
+			break;
+		case DockManager::DockLocation::Right:
+			highlightColor = Color(0.0f, 0.0f, 0.0f, 1.0f);
+			break;
+		case DockManager::DockLocation::None:
+			highlightColor = Color(0.0f, 0.0f, 0.0f, 0.0f);
+			break;
+		}
+
+		mMaterial->setColor("highlightActive", highlightColor);
+
+		CoreRenderer::setPass(mMaterial, 0);
+		CoreRenderer::draw(mMesh, mMesh->getProperties().getSubMesh(0));
 	}
 }

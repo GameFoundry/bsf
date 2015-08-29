@@ -106,9 +106,9 @@ namespace BansheeEngine
 		Sphere getBounds() const;
 
 	    /**
-		 * @brief	Returns the light internals that this component wraps.
+		 * @brief	Returns the light that this component wraps.
 	     */
-		SPtr<Light> _getInternal() const { return mInternal; }
+		SPtr<Light> _getLight() const { return mInternal; }
 
     protected:
 		mutable SPtr<Light> mInternal;

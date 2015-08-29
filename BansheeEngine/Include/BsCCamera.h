@@ -273,10 +273,10 @@ namespace BansheeEngine
 		Vector3 unprojectPoint(const Vector3& point) const { return mInternal->unprojectPoint(point); }
 
 		/**
-		 * @brief	Returns the internal camera handler that is used for
+		 * @brief	Returns the internal camera that is used for
 		 *			majority of operations by this component.
 		 */
-		CameraPtr _getHandler() const { updateView(); return mInternal; }
+		CameraPtr _getCamera() const { updateView(); return mInternal; }
 
     protected:
 		/**

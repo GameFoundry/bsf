@@ -153,13 +153,6 @@ namespace BansheeEngine
 		 */
 		static void draw(const SPtr<MeshCoreBase>& mesh, const SubMesh& subMesh);
 
-		/**
-		 * @brief	Callback that gets triggered before a viewport gets rendered.
-		 *
-		 * @note	Sim thread.
-		 */
-		Event<void(const Viewport*, DrawList&)> onRenderViewport;
-
 	protected:
 		UnorderedMap<const CameraCore*, Map<UINT32, std::function<void()>>> mRenderCallbacks;
 	};

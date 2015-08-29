@@ -6,6 +6,8 @@
 
 namespace BansheeEngine
 {
+	class DockOverlayRenderer;
+
 	/**
 	 * @brief	GUI element that allows editor widgets to be docked in it using arbitrary
 	 *			layouts. Docked widgets can be resized, undocked, maximizes or closed as needed.
@@ -228,33 +230,6 @@ namespace BansheeEngine
 		DockManager(EditorWindowBase* parentWindow, const GUIDimensions& dimensions);
 		~DockManager();
 
-		static const Color TINT_COLOR;
-		static const Color HIGHLIGHT_COLOR;
-
-		EditorWindowBase* mParentWindow;
-		DockContainer mRootContainer;
-		Rect2I mArea;
-
-		HMesh mDropOverlayMesh;
-		HMaterial mDropOverlayMat;
-		Rect2I mLastOverlayBounds;
-
-		DockContainer* mMouseOverContainer;
-		DockLocation mHighlightedDropLoc;
-		bool mShowOverlay;
-		Vector2* mTopDropPolygon;
-		Vector2* mBotDropPolygon;
-		Vector2* mLeftDropPolygon;
-		Vector2* mRightDropPolygon;
-
-		HEvent mRenderCallback;
-
-		/**
-		 * @brief	Render callback that allows the dock manager to render its overlay when needed.
-		 *			Called once per frame by the renderer.
-		 */
-		void render(const Viewport* viewport, DrawList& renderQueue);
-
 		/**
 		 * @brief	Updates the dock overlay mesh that is displayed when user is dragging a widget
 		 *			over a certain area.
@@ -273,6 +248,16 @@ namespace BansheeEngine
 		bool insidePolygon(Vector2* polyPoints, UINT32 numPoints, Vector2 point) const;
 
 		/**
+		 * @brief	Initializes the renderer used for displaying the dock overlay.
+		 */
+		void initializeOverlayRenderer(const SPtr<MaterialCore>& initData);
+
+		/**
+		 * @brief	Destroys the dock overlay renderer.
+		 */
+		void destroyOverlayRenderer(DockOverlayRenderer* core);
+
+		/**
 		 * @copydoc GUIElementBase::updateClippedBounds
 		 */
 		void updateClippedBounds() override;
@@ -281,5 +266,69 @@ namespace BansheeEngine
 		 * @copydoc GUIElementBase::_mouseEvent
 		 */
 		bool _mouseEvent(const GUIMouseEvent& event) override;
+
+		std::atomic<DockOverlayRenderer*> mCore;
+
+		EditorWindowBase* mParentWindow;
+		DockContainer mRootContainer;
+		Rect2I mArea;
+
+		HMesh mDropOverlayMesh;
+		Rect2I mLastOverlayBounds;
+
+		DockContainer* mMouseOverContainer;
+		DockLocation mHighlightedDropLoc;
+		bool mShowOverlay;
+		Vector2* mTopDropPolygon;
+		Vector2* mBotDropPolygon;
+		Vector2* mLeftDropPolygon;
+		Vector2* mRightDropPolygon;
+	};
+
+	/**
+	 * @brief	Handles rendering of the dock overlay, on the core thread.
+	 * 			
+	 * @note	Core thread only.
+	 */
+	class DockOverlayRenderer
+	{
+	public:
+		DockOverlayRenderer();
+		~DockOverlayRenderer();
+
+	private:
+		friend class DockManager;
+
+		/**
+		 * @brief	Initializes the object. Must be called right after construction and before any use.
+		 *
+		 * @param	material	Material used for drawing the dock overlay.
+		 */
+		void initialize(const SPtr<MaterialCore>& material);
+
+		/**
+		 * @brief	Updates the grid mesh to render.
+		 * 			
+		 * @param	camera		Camera to render the dock overlay to.
+		 * @param	mesh		Overlay mesh to render.
+		 * @param	active		Should the overlay be shown or not.
+		 * @param	location	Highlighted location of the overlay.
+		 */
+		void updateData(const SPtr<CameraCore>& camera, const SPtr<MeshCore>& mesh, bool active,
+			DockManager::DockLocation location);
+
+		/**
+		 * @brief	Callback triggered by the renderer, actually draws the dock overlay.
+		 */
+		void render();
+		
+		SPtr<CameraCore> mCamera;
+		SPtr<MaterialCore> mMaterial;
+		SPtr<MeshCore> mMesh;
+		DockManager::DockLocation mHighlightedDropLoc;
+		bool mShowOverlay;
+
+		static const Color TINT_COLOR;
+		static const Color HIGHLIGHT_COLOR;
 	};
 }

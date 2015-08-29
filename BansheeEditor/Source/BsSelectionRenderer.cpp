@@ -24,7 +24,7 @@ namespace BansheeEngine
 			
 		mCore.store(bs_new<SelectionRendererCore>(SelectionRendererCore::PrivatelyConstuct()), std::memory_order_release);
 
-		gCoreAccessor().queueCommand(std::bind(&SelectionRenderer::initializeCore, this, selectionMat->getCore()));;
+		gCoreAccessor().queueCommand(std::bind(&SelectionRenderer::initializeCore, this, selectionMat->getCore()));
 	}
 
 	SelectionRenderer::~SelectionRenderer()

@@ -56,10 +56,10 @@ namespace BansheeEngine
 		Bounds getBounds() const;
 
 		/**
-		 * @brief	Returns the internal renderable handler that is used for
+		 * @brief	Returns the internal renderable that is used for
 		 *			majority of operations by this component.
 		 */
-		RenderablePtr _getHandler() const { return mInternal; }
+		RenderablePtr _getRenderable() const { return mInternal; }
 
 	private:
 		/**

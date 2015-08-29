@@ -83,7 +83,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Core thread portion of the scene grid. Handles interaction with the renderer.
+	 * @brief	Handles scene grid rendering on the core thread.
 	 */
 	class SceneGridCore
 	{
@@ -106,7 +106,7 @@ namespace BansheeEngine
 		 * @brief	Updates the grid mesh to render.
 		 * 			
 		 * @param	mesh		Grid mesh to render.
-		 * @param	scpacing	Spacing between the grid lines.
+		 * @param	spacing		Spacing between the grid lines.
 		 */
 		void updateData(const SPtr<MeshCore>& mesh, float spacing);
 

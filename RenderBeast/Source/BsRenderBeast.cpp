@@ -283,10 +283,6 @@ namespace BansheeEngine
 			// Get overlay render operations
 			OverlayManager::instance().render(viewport, *drawList);
 
-			// Get any operations from hooked up callbacks
-			const Viewport* viewportRawPtr = camera->getViewport().get();
-			onRenderViewport(viewportRawPtr, *drawList);
-
 			RenderQueuePtr renderQueue = bs_shared_ptr_new<RenderQueue>();
 			const Vector<DrawOperation>& drawOps = drawList->getDrawOperations();
 
